@@ -2577,7 +2577,7 @@ void initsnes()
 }
 
 bool PatchUsingIPS(char *);
-void DosExit(), OpenSramFile(), CheatCodeLoad(), LoadSecondState();
+void DosExit(), OpenSramFile(), CheatCodeLoad(), LoadSecondState(), LoadGameSpecificInput();
 extern unsigned char GUIOn, GUIOn2;
 
 bool loadfileGUI()
@@ -2594,6 +2594,7 @@ bool loadfileGUI()
     SramExists = 0;
     OpenSramFile();
     OpenCombFile();
+    LoadGameSpecificInput();
 
     if (!(GUIOn || GUIOn2))
     {

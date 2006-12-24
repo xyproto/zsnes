@@ -44,6 +44,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "cfg.h"
 #include "zmovie.h"
 #include "chips/dsp4emu.h"
+#include "input.h"
 
 #define NUMCONV_FR3
 #define NUMCONV_FW3
@@ -1422,3 +1423,42 @@ void savespcdata()
     }
   }
 }
+
+void SaveGameSpecificInput()
+{
+  if (GameSpecificInput && *ZSaveName)
+  {
+    char *path;
+    setextension(ZSaveName, "inp");
+    path = strdupcat(ZSramPath, ZSaveName);
+    if (path)
+    {
+      write_input_vars(path);
+      free(path);
+    }
+    else
+    {
+      write_input_vars(ZSaveName);
+    }
+  }
+}
+
+void LoadGameSpecificInput()
+{
+  if (GameSpecificInput && *ZSaveName)
+  {
+    char *path;
+    setextension(ZSaveName, "inp");
+    path = strdupcat(ZSramPath, ZSaveName);
+    if (path)
+    {
+      read_input_vars(path);
+      free(path);
+    }
+    else
+    {
+      read_input_vars(ZSaveName);
+    }
+  }
+}
+

@@ -1,0 +1,277 @@
+%define PSR_EXTERN
+@ PSR-produced config file (stock default in CAPS)
+@
+@ Note, if you're worried you messed up a setting, removing the line will have
+@ ZSNES use the default settings for that option.
+@ The next time ZSNES is run, the line will reappear with the default settings.
+@
+
+@
+@  ----
+@ -- Input --
+@  ----
+
+@
+@ Player 1 input stuff
+%ifdef __MSDOS__
+@ Input device: 0 = Unplugged, 1 = KEYBOARD, 2 = 2-button pad, 3 = 4-button pad
+@   4 = 6-button pad, 5 = 8-button pad, 6-9 = Sidewinder #1-4
+@   10-11 = Gamepad Pro #0-1, 12-16 = Parallel port LPT1 #1-5
+%else
+@ Input device: 0 = Unplugged, 1 = KEYBOARD/GAMEPAD
+%endif
+pl1contrl db 1
+@ Keys for select, start, up, down, left, right, X, A, L, Y, B, R
+pl1selk dd 54
+pl1startk dd 28
+%ifdef __MSDOS__
+pl1upk dd 72
+pl1downk dd 80
+pl1leftk dd 75
+pl1rightk dd 77
+%elifdef __UNIXSDL__
+pl1upk dd 90
+pl1downk dd 96
+pl1leftk dd 92
+pl1rightk dd 94
+%elifdef __WIN32__
+pl1upk dd 200
+pl1downk dd 208
+pl1leftk dd 203
+pl1rightk dd 205
+%endif
+pl1Xk dd 31
+pl1Ak dd 45
+pl1Lk dd 32
+pl1Yk dd 30
+pl1Bk dd 44
+pl1Rk dd 46
+@ Turbo keys for A, B, X, Y, L, R
+pl1Atk dd 0
+pl1Btk dd 0
+pl1Xtk dd 0
+pl1Ytk dd 0
+pl1Ltk dd 0
+pl1Rtk dd 0
+@ Diagonal keys for up-right, down-left, down-right, up-left
+pl1ULk dd 0
+pl1URk dd 0
+pl1DLk dd 0
+pl1DRk dd 0
+%ifdef __MSDOS__
+@ Use port 209h (0 = NO, 1 = Yes)
+@ Enable if your gameport is using said resource
+pl1p209 db 0
+%endif
+
+@
+@ Player 2
+%ifdef __MSDOS__
+@ Input device: 0 = UNPLUGGED, 1 = Keyboard, 2 = 2-button pad, 3 = 4-button pad
+@   4 = 6-button pad, 5 = 8-button pad, 6-9 = Sidewinder #1-4
+@   10-11 = Gamepad Pro #0-1, 12-16 = Parallel port LPT1 #1-5
+%else
+@ Input device: 0 = UNPLUGGED, 1 = Keyboard/Gamepad
+%endif
+pl2contrl db 0
+@ Keys for select, start, up, down, left, right, X, A, L, Y, B, R
+pl2selk dd 0
+pl2startk dd 0
+pl2upk dd 0
+pl2downk dd 0
+pl2leftk dd 0
+pl2rightk dd 0
+pl2Xk dd 0
+pl2Ak dd 0
+pl2Lk dd 0
+pl2Yk dd 0
+pl2Bk dd 0
+pl2Rk dd 0
+@ Turbo keys for A, B, X, Y, L, R
+pl2Atk dd 0
+pl2Btk dd 0
+pl2Xtk dd 0
+pl2Ytk dd 0
+pl2Ltk dd 0
+pl2Rtk dd 0
+@ Diagonal keys for up-right, down-left, down-right, up-left
+pl2ULk dd 0
+pl2URk dd 0
+pl2DLk dd 0
+pl2DRk dd 0
+%ifdef __MSDOS__
+@ Use port 209h (0 = NO, 1 = Yes)
+@ Enable if your gameport is using said resource
+pl2p209 db 0
+%endif
+
+@
+@ Player 3
+%ifdef __MSDOS__
+@ Input device: 0 = UNPLUGGED, 1 = Keyboard, 2 = 2-button pad, 3 = 4-button pad
+@   4 = 6-button pad, 5 = 8-button pad, 6-9 = Sidewinder #1-4
+@   10-11 = Gamepad Pro #0-1, 12-16 = Parallel port LPT1 #1-5
+%else
+@ Input device: 0 = UNPLUGGED, 1 = Keyboard/Gamepad
+%endif
+pl3contrl db 0
+@ Keys for select, start, up, down, left, right, X, A, L, Y, B, R
+pl3selk dd 0
+pl3startk dd 0
+pl3upk dd 0
+pl3downk dd 0
+pl3leftk dd 0
+pl3rightk dd 0
+pl3Xk dd 0
+pl3Ak dd 0
+pl3Lk dd 0
+pl3Yk dd 0
+pl3Bk dd 0
+pl3Rk dd 0
+@ Turbo keys for A, B, X, Y, L, R
+pl3Atk dd 0
+pl3Btk dd 0
+pl3Xtk dd 0
+pl3Ytk dd 0
+pl3Ltk dd 0
+pl3Rtk dd 0
+@ Diagonal keys for up-right, down-left, down-right, up-left
+pl3ULk dd 0
+pl3URk dd 0
+pl3DLk dd 0
+pl3DRk dd 0
+%ifdef __MSDOS__
+@ Use port 209h (0 = NO, 1 = Yes)
+@ Enable if your gameport is using said resource
+pl3p209 db 0
+%endif
+
+@
+@ Player 4
+%ifdef __MSDOS__
+@ Input device: 0 = UNPLUGGED, 1 = Keyboard, 2 = 2-button pad, 3 = 4-button pad
+@   4 = 6-button pad, 5 = 8-button pad, 6-9 = Sidewinder #1-4
+@   10-11 = Gamepad Pro #0-1, 12-16 = Parallel port LPT1 #1-5
+%else
+@ Input device: 0 = UNPLUGGED, 1 = Keyboard/Gamepad
+%endif
+pl4contrl db 0
+@ Keys for select, start, up, down, left, right, X, A, L, Y, B, R
+pl4selk dd 0
+pl4startk dd 0
+pl4upk dd 0
+pl4downk dd 0
+pl4leftk dd 0
+pl4rightk dd 0
+pl4Xk dd 0
+pl4Ak dd 0
+pl4Lk dd 0
+pl4Yk dd 0
+pl4Bk dd 0
+pl4Rk dd 0
+@ Turbo keys for A, B, X, Y, L, R
+pl4Atk dd 0
+pl4Btk dd 0
+pl4Xtk dd 0
+pl4Ytk dd 0
+pl4Ltk dd 0
+pl4Rtk dd 0
+@ Diagonal keys for up-right, down-left, down-right, up-left
+pl4ULk dd 0
+pl4URk dd 0
+pl4DLk dd 0
+pl4DRk dd 0
+%ifdef __MSDOS__
+@ Use port 209h (0 = NO, 1 = Yes)
+@ Enable if your gameport is using said resource
+pl4p209 db 0
+%endif
+
+@
+@ Player 5
+%ifdef __MSDOS__
+@ Input device: 0 = UNPLUGGED, 1 = Keyboard, 2 = 2-button pad, 3 = 4-button pad
+@   4 = 6-button pad, 5 = 8-button pad, 6-9 = Sidewinder #1-4
+@   10-11 = Gamepad Pro #0-1, 12-16 = Parallel port LPT1 #1-5
+%else
+@ Input device: 0 = UNPLUGGED, 1 = Keyboard/Gamepad
+%endif
+pl5contrl db 0
+@ Keys for select, start, up, down, left, right, X, A, L, Y, B, R
+pl5selk dd 0
+pl5startk dd 0
+pl5upk dd 0
+pl5downk dd 0
+pl5leftk dd 0
+pl5rightk dd 0
+pl5Xk dd 0
+pl5Ak dd 0
+pl5Lk dd 0
+pl5Yk dd 0
+pl5Bk dd 0
+pl5Rk dd 0
+@ Turbo keys for A, B, X, Y, L, R
+pl5Atk dd 0
+pl5Btk dd 0
+pl5Xtk dd 0
+pl5Ytk dd 0
+pl5Ltk dd 0
+pl5Rtk dd 0
+@ Diagonal keys for up-right, down-left, down-right, up-left
+pl5ULk dd 0
+pl5URk dd 0
+pl5DLk dd 0
+pl5DRk dd 0
+%ifdef __MSDOS__
+@ Use port 209h (0 = NO, 1 = Yes)
+@ Enable if your gameport is using said resource
+pl5p209 db 0
+%endif
+
+%ifndef __MSDOS__
+@
+@ Joystick Sensitivity [0..32767]
+@ Change this value if you have input issues. Higher value = less sensitive.
+@ If your joystick is not being read at all, try 128 or other low values.
+joy_sensitivity dw 16384
+%endif
+
+%ifdef __WIN32__
+@
+@ Mouse Sensitivity [1..255]
+@ Only change this value to lower the mouse movement speed on certain mice
+@ The mouse speed will be lowered by a factor of the entered number
+MouseSensitivity db 1
+%endif
+
+@
+@ Share Player 3 & 4 Control Inputs w/Player 1 & 2 (0 = DISABLE, 1 = Enable)
+@ Allow 2 devices to be  used for one player
+@ (enabling this disables Multiplayer 5 support).
+pl12s34 db 0
+
+@
+@ Allow Up+Down and Left+Right Pad Input (0 = NO, 1 = Yes)
+AllowUDLR db 0
+
+@
+@ Turbo Keys Equal 30 Presses/sec Instead of 60 (0 = No, 1 = YES)
+Turbo30hz db 1
+
+%ifdef __MSDOS__
+@
+@ Enable Sidewinder Fix (0 = NO, 1 = Yes)
+@ Enable this if the Sidewinder is still not detected properly.
+SidewinderFix db 0
+%endif
+
+@
+@ Left Handed Mouse Behavior for SNES Devices (0 = NO SWAP, 1 = Swap)
+@ (swap left and right mouse buttons)
+mouse1lh db 0 @First device
+mouse2lh db 0 @Second device
+
+@
+@ Super Scope Buttons
+SSAutoFire dd 13
+SSPause dd 14

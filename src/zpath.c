@@ -145,6 +145,8 @@ void cfgpath_ensure(const char *launch_command)
 
 #endif
 
+void SaveGameSpecificInput();
+
 void deinit_paths()
 {
   //Save data that depends on paths before deinit of them
@@ -155,6 +157,7 @@ void deinit_paths()
 
   SaveSramData();
   GUISaveVars();
+  SaveGameSpecificInput();
 
   //Now deallocate the paths
   if (ZStartAlloc && ZStartPath) { free(ZStartPath); }
@@ -262,6 +265,7 @@ bool init_rom_path(char *path)
   if (realpath_native(path, ZRomPath))
   {
     char *p;
+    SaveGameSpecificInput();
 
     natify_slashes(ZRomPath);
     p = strrchr(ZRomPath, DIR_SLASH_C);

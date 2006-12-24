@@ -280,6 +280,10 @@ SSPause dd 14
 GUIComboGameSpec db 0
 
 @
+@ Enable Game-Specific Key Input (0 = NO, 1 = Yes)
+GameSpecificInput db 0
+
+@
 @  ----
 @ -- Options --
 @  ----

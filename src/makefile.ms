@@ -203,7 +203,7 @@ endif
 
 MAINOBJ=endmem${OE} init${OE} initc${OE} patch${OE}\
 	ui${OE} vcache${OE} version${OE} zmovie${OE} zstate${OE} zloader${OE}\
-	cfg${OE} md${OE} zpath${OE} ztimec${OE} ztime${OE}
+	cfg${OE} md${OE} input${OE} zpath${OE} ztimec${OE} ztime${OE}
 
 ifneq (${DEBUGGER},no)
 ifeq (${OLDDEBUGGER},yes)
@@ -312,6 +312,7 @@ init${OE}: init.asm macros.mac
 initc${OE}: initc.c asm_call.h cfg${OE} zpath.h ${CPUDIR}/memtable.h \
 	${JMADIR}/zsnesjma.h ${ZIPDIR}/zunzip.h
 md${OE}: md.psr ${PSR}
+input${OE}: input.psr ${PSR}
 patch${OE}: patch.c zpath.h ${JMADIR}/zsnesjma.h ${ZIPDIR}/zunzip.h
 ui${OE}: ui.c asm_call.h cfg${OE} zpath.h ${JMADIR}/zsnesjma.h \
 	${MMLIBDIR}/mm.h ${ZIPDIR}/zunzip.h
@@ -324,7 +325,7 @@ zmovie${OE}: zmovie.c asm_call.h cfg${OE} gblvars.h md${OE} numconv.h zpath.h \
 zpath${OE}: zpath.c cfg${OE} zpath.h ${DOSDIR}/lib.h ${JMADIR}/zsnesjma.h \
 	${WINDIR}/lib.h ${WINDIR}/safelib.h ${ZIPDIR}/zunzip.h
 zstate${OE}: zstate.c asm_call.h cfg${OE} gblvars.h numconv.h zpath.h \
-	${JMADIR}/zsnesjma.h ${ZIPDIR}/zunzip.h zmovie.h
+	${JMADIR}/zsnesjma.h ${ZIPDIR}/zunzip.h zmovie.h input${OE}
 ztime${OE}: ztime.asm
 ztimec${OE}: ztimec.c
 
