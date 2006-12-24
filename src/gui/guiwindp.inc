@@ -1759,10 +1759,8 @@ DisplayGUIOption:       ; Emu Options
 
   GUIDisplayTextY 4,11,13,GUIOptionTextA
   GUIDisplayCheckboxu 4,11,18,MMXSupport,GUIOptionTextA1,7
-%ifndef __MSDOS__
-  GUIDisplayCheckboxu 4,11,28,PauseFocusChange,GUIOptionTextA2,13
-%endif
 %ifdef __WIN32__
+  GUIDisplayCheckboxu 4,11,28,PauseFocusChange,GUIOptionTextA2,13
   GUIDisplayCheckboxu 4,11,38,HighPriority,GUIOptionTextA3,6
   GUIDisplayCheckboxu 4,11,48,DisableScreenSaver,GUIOptionTextA4,0
 %endif
