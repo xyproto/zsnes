@@ -533,13 +533,13 @@ KitchenSyncPAL db 0
 scanlines db 0
 
 @
-%ifndef __UNIXSDL__
-@ Enable Video Interpolation (0 = NO, 1 = Yes)
-@ This is compatible with scanlines.
-%else
+%ifdef __OPENGL__
 @ Enable Video Interpolation, Bilinear Filter (0 = NO, 1 = Yes)
 @ This is compatible with all filters except NTSC.
 @ Bilinear Filter is OpenGL only.
+%else
+@ Enable Video Interpolation (0 = NO, 1 = Yes)
+@ This is compatible with scanlines.
 %endif
 @ Blends the neighboring pixels on the screen to eliminate pixelation.
 %ifdef __MSDOS__
