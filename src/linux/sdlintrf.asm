@@ -387,7 +387,6 @@ NEWSYM GUIIEVID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (DOS Eagle+
 NEWSYM GUIFSVID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (DOS Fullscreen)
 NEWSYM GUIWSVID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (DOS Widescreen)
 NEWSYM GUISSVID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (DOS Smallscreen)
-NEWSYM GUITBVID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (DOS Triple Buffer)
 NEWSYM GUIHSVID,  db 0,0,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1 ; Half/Quarter Scanlines
 NEWSYM GUI2xVID,  db 0,0,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1 ; 2xSaI/Super Engines
 NEWSYM GUIM7VID,  db 0,0,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1 ; Hires Mode 7
@@ -395,7 +394,6 @@ NEWSYM GUIWFVID,  db 0,1,0,1,1,0,0,1,0,0,0,1,0,0,1,0,0,1,1,1,0,0,1 ; Fullscreen
 NEWSYM GUIDSIZE,  db 0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; D modes
 NEWSYM GUIRATIO,  db 0,1,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; Ratio-Fullscreen modes
 NEWSYM GUIBIFIL,  db 0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1 ; SDL Bilinear Filter
-NEWSYM GUITBWVID, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (Win Triple Buffer)
 NEWSYM GUIHQ2X,   db 0,0,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1 ; hq2x filter
 NEWSYM GUIHQ3X,   db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (hq3x filter)
 NEWSYM GUIHQ4X,   db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (hq4x filter)

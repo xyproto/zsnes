@@ -533,15 +533,14 @@ static void handle_params(int argc, char *argv[])
             ConvertJoyMap2();
             break;
 
+          #ifndef __UNIXSDL__
+          case '3': //Enable triple buffering for DOS/Windows
+            vsyncon = 0;
           #ifdef __MSDOS__
-          case '3': //Enable triple buffering for DOS
-            vsyncon = 0;
             Triplebufen = 1;
-            break;
           #elif __WIN32__
-          case '3': //Enable triple buffering for Windows
-            vsyncon = 0;
             TripleBufferWin = 1;
+          #endif
             break;
           #endif
 
@@ -677,15 +676,14 @@ static void handle_params(int argc, char *argv[])
             }
             break;
 
+          #ifndef __UNIXSDL__
+          case 'w': //Enable vsync for DOS/Windows
+            vsyncon = 1;
           #ifdef __MSDOS__
-          case 'w': //Enable vsync for DOS
             Triplebufen = 0;
-            vsyncon = 1;
-            break;
           #elif __WIN32__
-          case 'w': //Enable vsync for Windows
             TripleBufferWin = 0;
-            vsyncon = 1;
+          #endif
             break;
           #endif
 

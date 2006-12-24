@@ -1293,7 +1293,6 @@ GUIVideoKeys:
   cmp byte[GUITBVID+ebx],0
   je .notriplebuffer
   xor byte[Triplebufen],1
-;    mov byte[vsyncon],0
 .notriplebuffer
 %endif
 %ifndef __UNIXSDL__
@@ -1305,8 +1304,6 @@ GUIVideoKeys:
   pushad
   call Clear2xSaIBuffer
   popad
-%else
-;    mov byte[Triplebufen],0
 %endif
 .novsync
 %endif

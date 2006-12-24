@@ -1859,7 +1859,9 @@ SECTION .text
 DisplayGUIVideo:
   cmp byte[TripBufAvail],0        ; Check features
   jne .notexttb
+%ifdef __MSDOS__
   mov byte[Triplebufen],0
+%endif
 .notexttb
   cmp byte[MMXSupport],1
   jne .2xSaIdis
@@ -1872,7 +1874,9 @@ DisplayGUIVideo:
 .no2xSaIdis
   cmp byte[En2xSaI],0
   je .no2xsaien
+%ifdef __MSDOS__
   mov byte[Triplebufen],0
+%endif
   mov byte[hqFilter],0
   mov byte[scanlines],0
   mov byte[antienab],0
@@ -2121,16 +2125,19 @@ DisplayGUIVideo:
 
   GUIDisplayCheckboxu 5,121,113,GrayscaleMode,GUIVideoTextB3b,0 ; Grayscale
 
-  %ifndef __UNIXSDL__                            ; vsync
+%ifndef __UNIXSDL__                              ; vsync
   GUIDisplayCheckboxu 5,11,123,vsyncon,GUIVideoTextB3c,0
 %endif
 
+%ifdef __WIN32__
   xor eax,eax                                    ; triple buffs
   mov al,[cvidmode]
   cmp byte[GUITBWVID+eax],0
   je near .nocheckboxslw2
   GUIDisplayCheckboxu 5,121,123,TripleBufferWin,GUIVideoTextB3d,0
 .nocheckboxslw2
+%endif
+%ifdef __MSDOS__
   xor eax,eax
   mov al,[cvidmode]
   cmp byte[GUITBVID+eax],0
@@ -2139,6 +2146,7 @@ DisplayGUIVideo:
   je near .nocheckboxtbb
   GUIDisplayCheckboxu 5,121,123,Triplebufen,GUIVideoTextB3d,0
 .nocheckboxtbb
+%endif
 
   xor eax,eax                                   ; Small Screen
   mov al,[cvidmode]

@@ -479,35 +479,31 @@ CustomResY dd 480
 Keep4_3Ratio db 1
 %endif
 
-@
 #ifndef __UNIXSDL__
+@
 @ Sync Frames to Monitor Refresh Rate (0 = NO, 1 = Yes)
 @ Do not enable if you cannot normally sustain 60fps
-#else
-@ VSync is forced - don't edit this value
-#endif
 vsyncon db 0
 
 @
-%ifdef __WIN32__
 @ Use Triple Buffering (0 = NO, 1 = Yes) - replaces vsync
-%else
-@ Win port only, don't edit
-%endif
+#endif
+#ifdef __WIN32__
 TripleBufferWin db 0
+#elifdef __MSDOS__
+Triplebufen db 0
+#endif
 
 @
 %ifdef __MSDOS__
-@ Small Screen, Stretch Screen, Triple Buffering (0 = NO, 1 = Yes)
+@ Small Screen, Stretch Screen (0 = NO, 1 = Yes)
 @ Enabling small screen will render in 256x224 res (probably not a good idea).
 @ Enabling stretch screen will stretch the image to fill the screen.
-@ Enabling Triple Buffering will disable the vsync option.
 %else
 @ DOS-only options, don't edit them
 %endif
 smallscreenon dd 0
 ScreenScale db 0
-Triplebufen db 0
 
 %ifdef __WIN32__
 @

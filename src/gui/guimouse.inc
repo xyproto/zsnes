@@ -2277,7 +2277,8 @@ DisplayGUIVideoClick:
   GUIClickCButtonT 121,123,byte[Triplebufen],byte[vsyncon]
 .nocheckboxttb
   GUIClickCButtonT 11,123,byte[vsyncon],byte[Triplebufen]
-%else
+%endif
+%ifdef __WIN32__
   xor ebx,ebx
   mov bl,[cvidmode]
   cmp byte[GUITBWVID+ebx],0

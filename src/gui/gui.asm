@@ -41,7 +41,7 @@
 
 %include "macros.mac"
 
-EXTSYM curblank,vidpastecopyscr,frameskip,newengen,vsyncon,cvidmode,antienab
+EXTSYM curblank,vidpastecopyscr,frameskip,newengen,cvidmode,antienab
 EXTSYM smallscreenon,soundon,StereoSound,SoundQuality,MusicRelVol,endprog
 EXTSYM continueprog,spcBuffera,cbitmode,makepal,t1cc
 EXTSYM romloadskip,romdata,init65816,current_zst
@@ -110,8 +110,8 @@ EXTSYM KeyFastFrwrd,KeySlowDown,KeyResetSpeed,EMUPauseKey,INCRFrameKey
 EXTSYM KeyWinDisble,KeyOffsetMSw,JoyPad1Move,init_save_paths,loadquickfname
 EXTSYM mousewrap,GUIRClick,SaveSramData,SwapMouseButtons
 EXTSYM FPSAtStart,Turbo30hz,TimerEnable,SmallMsgText,mouse1lh,mouse2lh
-EXTSYM AutoPatch,RomInfo,AllowUDLR,Triplebufen,GrayscaleMode
-EXTSYM Mode7HiRes16b,FFRatio,SDRatio,EmuSpeed,mouseshad,TripleBufferWin
+EXTSYM AutoPatch,RomInfo,AllowUDLR,GrayscaleMode
+EXTSYM Mode7HiRes16b,FFRatio,SDRatio,EmuSpeed,mouseshad
 EXTSYM BilinearFilter,esctomenu,GUILoadKeysJumpTo,lhguimouse,zst_name
 EXTSYM GUIEnableTransp,FilteredGUI,Surround,SPCDisable,nosaveSRAM
 EXTSYM FastFwdToggle,gui_key,gui_key_extended,GUILoadKeysNavigate
@@ -127,17 +127,21 @@ EXTSYM GUIJT_offset,GUIJT_viewable,GUIGenericJumpTo,SSAutoFire,SSPause
 EXTSYM numlockptr
 %elifdef __WIN32__
 EXTSYM initDirectDraw,reInitSound,CheckAlwaysOnTop,CheckPriority,AlwaysOnTop
-EXTSYM CheckScreenSaver,MouseWheel,TrapMouseCursor,AllowMultipleInst
+EXTSYM CheckScreenSaver,MouseWheel,TrapMouseCursor,AllowMultipleInst,TripleBufferWin
 EXTSYM HighPriority,DisableScreenSaver,SaveMainWindowPos,PrimaryBuffer
 EXTSYM GUIDSMODE,GUISMODE,CBBuffer,CBLength,PasteClipBoard,ctrlptr,PauseFocusChange
 %elifdef __MSDOS__
 EXTSYM dssel,SetInputDevice209,initvideo2,Force8b,SBHDMA,vibracard
-EXTSYM pl1p209,pl2p209,pl3p209,pl4p209,pl5p209,SidewinderFix
+EXTSYM pl1p209,pl2p209,pl3p209,pl4p209,pl5p209,SidewinderFix,Triplebufen
 %endif
 
 %ifndef __MSDOS__
 EXTSYM ZsnesPage,DocsPage,GUICustomX,GUICustomY,GetCustomXY,SetCustomXY,initwinvideo
 EXTSYM Keep4_3Ratio
+%endif
+
+%ifndef __UNIXSDL__
+EXTSYM vsyncon
 %endif
 
 %include "gui/guitools.inc"
@@ -774,7 +778,9 @@ NEWSYM StartGUI
   mov byte[GUILoadPos],0
   cmp byte[TripBufAvail],0
   jne .notexttb
+%ifdef __MSDOS__
   mov byte[Triplebufen],0
+%endif
 .notexttb
   cmp byte[MMXSupport],1
   jne .2xSaIdis
@@ -787,7 +793,9 @@ NEWSYM StartGUI
 .no2xSaIdis
   cmp byte[En2xSaI],0
   je .no2xsaien
+%ifdef __MSDOS__
   mov byte[Triplebufen],0
+%endif
   mov byte[hqFilter],0
   mov byte[scanlines],0
   mov byte[antienab],0

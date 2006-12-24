@@ -571,7 +571,6 @@ NEWSYM GUIWFVID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (Fullscreen)
 NEWSYM GUII2VID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (Interpolation)
 NEWSYM GUIM7VID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0 ; Hires Mode 7
 NEWSYM GUIBIFIL,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (SDL Bilinear Filter)
-NEWSYM GUITBWVID, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (Win Triple Buffer)
 NEWSYM GUIHQ2X,   db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (hq2x Filter)
 NEWSYM GUIHQ3X,   db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (hq3x Filter)
 NEWSYM GUIHQ4X,   db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (hq4x Filter)
