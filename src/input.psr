@@ -275,3 +275,8 @@ mouse2lh db 0 @Second device
 @ Super Scope Buttons
 SSAutoFire dd 13
 SSPause dd 14
+
+@
+@ Port 0 and Port 1 device settings
+device1 db 0
+device2 db 0
