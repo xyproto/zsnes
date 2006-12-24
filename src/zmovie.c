@@ -916,7 +916,7 @@ Create and record ZMV
 
 */
 
-static void zmv_create(char *filename)
+static bool zmv_create(char *filename)
 {
   memset(&zmv_vars, 0, sizeof(zmv_vars));
   if ((zmv_vars.fp = fopen_dir(ZSramPath, filename,"w+b")))
@@ -967,11 +967,10 @@ static void zmv_create(char *filename)
     strcpy(zmv_vars.filename, filename);
 
     debug_input_start;
-  }
-  else
-  {
 
+    return(true);
   }
+  return(false);
 }
 
 static void zmv_rle_flush()
@@ -2844,31 +2843,33 @@ void MovieRecord()
       SRAMState = true;
 
       SetMovieMode(MOVIE_RECORD);
-      zmv_create(ZSaveName);
-      zmv_alloc_rewind_buffer(AllocatedRewindStates);
-      Msgptr = "MOVIE RECORDING.";
-      MessageOn = MsgCount;
-
-      oldframeskip = frameskip;
-      oldmaxskip = maxskip;
-      frameskip = 0;
-      maxskip = 0;
-
-      //Cleanup old MZTs
-      mzt_chdir_up();
-      if ((dir = opendir(ZSramPath)))
+      if (zmv_create(ZSaveName))
       {
-        struct dirent *entry;
-        while ((entry = readdir(dir)))
+        zmv_alloc_rewind_buffer(AllocatedRewindStates);
+        Msgptr = "MOVIE RECORDING.";
+        MessageOn = MsgCount;
+
+        oldframeskip = frameskip;
+        oldmaxskip = maxskip;
+        frameskip = 0;
+        maxskip = 0;
+
+        //Cleanup old MZTs
+        mzt_chdir_up();
+        if ((dir = opendir(ZSramPath)))
         {
-          if (*entry->d_name != '.')
+          struct dirent *entry;
+          while ((entry = readdir(dir)))
           {
-            remove_dir(ZSramPath, entry->d_name);
+            if (*entry->d_name != '.')
+            {
+              remove_dir(ZSramPath, entry->d_name);
+            }
           }
+          closedir(dir);
         }
-        closedir(dir);
+        mzt_chdir_down();
       }
-      mzt_chdir_down();
     }
     else
     {
