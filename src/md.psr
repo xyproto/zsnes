@@ -1,3 +1,5 @@
+%define PSR_HASH
+
 md_raw_file times 50 db "rawvideo.bin" @ Only for Raw Video
 md_pcm_audio times 50 db "audio.wav" @ AVI dumping always dumps audio seperatly
 md_compressed_audio times 50 db "audio.mp3" @ For when selecting compressed
@@ -8,22 +10,41 @@ md_pal times 5 db "50/1"
 @
 md_file times 50 db "video.avi"
 md_prog times 50 db "mencoder"
-md_raw times 100 db "-demuxer rawvideo -rawvideo format=0x42475218:w=256:h=224:size=172032"
+md_raw times 150 db "-demuxer rawvideo -rawvideo format=0x42475218:w=256:h=224:size=172032:fps=$md_video_rate"
 md_other times 75 db "-aspect 4:3 -mc 0"
 md_no_sound times 25 db "-nosound"
-md_sound times 50 db "-oac mp3lame -lameopts aq=0:preset=64:mode=1"
+md_sound times 100 db "-oac mp3lame -lameopts aq=0:preset=64:mode=1 -audiofile $md_pcm_audio"
+md_compressed_sound times 100 db "-oac copy -audiofile $md_compressed_audio"
 md_x264 times 100 db "-ovc x264 -x264encopts qp=0:frameref=15"
 md_ffv1 times 100 db "-ovc lavc -lavcopts vcodec=ffv1:vstrict=-2:aspect=4/3"
 md_xvid times 100 db "-ovc xvid -xvidencopts fixed_quant=2"
 @
 @Valid variables to use in the next four lines are:
 @$md_file, $md_prog, $md_raw, $md_other, $md_no_sound, $md_sound, $md_pcm_audio, $md_compressed_audio
-@and $md_video_rate, $md_vcodec
+@and $md_video_rate, $md_vcodec, $md_smode
 @These variables are defined above.
 @$md_video_rate is $md_ntsc or $md_pal depending on the game as needed
 @$md_vcodec is $md_x264, $md_ffv1, or $md_xvid depending on the codec selected
+@$md_smode is $md_no_sound, $md_sound, or $md_compressed_sound depending on the audio options selected
 @
-md_command times 256 db "$md_prog $md_other $md_no_sound $md_raw:fps=$md_video_rate $md_vcodec -o $md_file -"
-md_merge times 256 db "$md_prog $md_other $md_sound -audiofile $md_pcm_audio -force-avi-aspect 4:3 -ovc copy -o merged.avi $md_file"
+md_command times 256 db "$md_prog $md_other $md_no_sound $md_raw $md_vcodec -o $md_file -"
 md_audio_compress times 256 db "lame -m j --preset 64 -q 0 - $md_compressed_audio"
-md_merge_compressed times 256 db "$md_prog $md_other -oac copy -audiofile $md_compressed_audio -force-avi-aspect 4:3 -ovc copy -o merged.avi $md_file"
+md_merge times 256 db "$md_prog $md_other $md_smode -force-avi-aspect 4:3 -ovc copy -o merged.avi $md_file"
+
+@
+@Code for how the custom option works.
+@
+@ These are 3 temporary variables you can use with the various passes
+md_custom_temp1 times 100 db "-ovc x264 -x264encopts zones=0,360,q=28:bframes=0:keyint=300:partitions=all:me=umh:turbo=1:frameref=15:subq=6"
+md_custom_temp2 times 100 db ""
+md_custom_temp3 times 100 db ""
+
+@
+@ Can use the same vars as above in addition to these temp ones.
+@ Also $null for the nul file.
+@
+
+md_custom_passes db 4 ;How many passes should be performed
+md_custom_first_pass times 512 db "$md_prog $md_other $md_no_sound $md_raw $md_custom_temp1:pass=1 -o $null -"
+md_custom_middle_passes times 512 db "$md_prog $md_other $md_no_sound $md_raw:fps=$md_video_rate $md_custom_temp1:pass=3:bitrate=250 -o $null -"
+md_custom_last_pass times 512 db "$md_prog $md_other $md_smode $md_raw:fps=$md_video_rate $md_custom_temp1:pass=2:bitrate=250 -o custom.avi -"

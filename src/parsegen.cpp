@@ -34,6 +34,7 @@ Config file handler creator by Nach (C) 2005-2006
 using namespace std;
 
 #include <errno.h>
+#include <zlib.h>
 
 #ifdef _MSC_VER //MSVC
 typedef int ssize_t;
@@ -961,6 +962,11 @@ void output_write_var(ostream& c_stream)
       c_stream << ");" << dependancy_suffix << "\n";
     }
   }
+  if (defines.find("PSR_HASH") != defines.end())
+  {
+    c_stream << "  outf(fp, \"\\n\\n\\n;Do not modify the following, for internal use only.\\n\");\n"
+             << "  outf(fp, \"PSR_HASH" << "=%u\\n\", PSR_HASH);\n";
+  }
   c_stream << "}\n"
            << "\n"
            << "unsigned char write_" << family_name << "_vars(const char *file)\n"
@@ -1237,6 +1243,10 @@ void output_read_var(ostream& c_stream)
       c_stream << " continue; }\n";
     }
   }
+  if (defines.find("PSR_HASH") != defines.end())
+  {
+    c_stream << "    if (!strcmp(var, \"PSR_HASH\")) { if ((unsigned int)atoi(value) != PSR_HASH) { init_" << family_name << "_vars(); break; } continue; }\n";
+  }
   c_stream << "  }\n"
            << "}\n"
            << "\n"
@@ -1492,8 +1502,8 @@ void output_header_conditional(ostream& cheader_stream, const char *instruction,
 void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_stream, string cheader_file = "")
 {
   current_location.line_number = current_location.column_number = 0;
-
   ostringstream cvars(""), hvars("");
+  uLong psr_file_hash = crc32(0L, Z_NULL, 0);
 
   while (!psr_stream.eof())
   {
@@ -1501,8 +1511,10 @@ void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_st
     char *parser_comment;
     char *config_comment;
 
+
     psr_stream.getline(line, LINE_LENGTH);
     current_location.line_number++;
+    psr_file_hash = crc32(psr_file_hash, (const Bytef *)line, strlen(line));
 
     parser_comment = get_comment(';');
 
@@ -1534,7 +1546,7 @@ void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_st
         char *next_token = get_token(0, " ");
         handle_directive(token+1, next_token);
 
-        if (cheader_stream)
+        if (cheader_stream && (!next_token || strncasecmp(next_token, "PSR_", strlen("PSR_"))))
         {
           output_header_conditional(hvars, token+1, next_token);
         }
@@ -1751,6 +1763,12 @@ void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_st
   {
     cerr << "Error: Requested PSR_EXTERN yet no header file specified." << endl;
   }
+
+  if (defines.find("PSR_HASH") != defines.end())
+  {
+    c_stream << "static unsigned int PSR_HASH = 0x" << hex << psr_file_hash << dec << ";\n";
+  }
+
   output_write_var(c_stream);
   output_read_var(c_stream);
   c_stream << "\n";

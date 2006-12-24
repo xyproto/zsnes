@@ -494,13 +494,13 @@ ${OBJFIX}: objfix.c
 endif
 ${PSR}: parsegen.cpp
 ifeq (${ENV},msvc)
-	cl /nologo /EHsc /Fe$@ parsegen.cpp
+	cl /nologo /EHsc /Fe$@ parsegen.cpp zlib.lib
 	${DELETECOMMAND} parsegen.obj
 else
 ifeq (${ENV},dos)
-	gpp -O3 -s -o $@ parsegen.cpp
+	gpp -O3 -s -o $@ parsegen.cpp -lz
 else
-	g++ -O3 -s -o $@ parsegen.cpp
+	g++ -O3 -s -o $@ parsegen.cpp -lz
 endif
 endif
 

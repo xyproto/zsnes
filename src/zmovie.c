@@ -1987,9 +1987,37 @@ unsigned char AudioLogging;
 
 extern unsigned char ZMVRawDump;
 
-#define PICK_HELP(var) if (!strncmp(*str, "$"#var, strlen(#var)+1)) { *str += strlen(#var)+1; return(var); }
 
-static char *pick_var(char **str)
+/*
+Replaces a substring of str. The replace begins at the beginning of str for rep_len length.
+The new charaters are taken from new_str. The entire length of str will not exceed n.
+Amount need to contain the entire replaced str is returned.
+Thus if return is <= n, the replace was performed.
+*/
+static size_t string_replace(char *str, size_t rep_len, const char *new_str, size_t n)
+{
+  size_t str_len = strlen(str);
+  size_t new_str_len = strlen(new_str);
+  size_t replaced_len = (str_len-rep_len)+new_str_len+1;
+  if (replaced_len <= n)
+  {
+    if (new_str_len == rep_len)
+    {
+      memcpy(str, new_str, rep_len);
+    }
+    else
+    {
+      memmove(str+new_str_len, str+rep_len, (str_len-rep_len)+1);
+      memcpy(str, new_str, new_str_len);
+    }
+  }
+  return(replaced_len);
+}
+
+
+#define PICK_HELP(var) if (!strncmp(str, "$"#var, strlen(#var)+1)) { *len = strlen(#var)+1; return(var); }
+
+static char *pick_var(char *str, size_t *len)
 {
   PICK_HELP(md_prog);
   PICK_HELP(md_raw);
@@ -2000,43 +2028,63 @@ static char *pick_var(char **str)
   PICK_HELP(md_pcm_audio);
   PICK_HELP(md_compressed_audio);
 
-  if (!strncmp(*str, "$md_video_rate", strlen("$md_video_rate")))
+  if (!strncmp(str, "$md_video_rate", strlen("$md_video_rate")))
   {
-    *str += strlen("$md_video_rate");
+    *len = strlen("$md_video_rate");
     return(romispal ? md_pal : md_ntsc);
   }
-  if (!strncmp(*str, "$md_vcodec", strlen("$md_vcodec")))
+  if (!strncmp(str, "$md_vcodec", strlen("$md_vcodec")))
   {
-    *str += strlen("$md_vcodec");
+    *len = strlen("$md_vcodec");
     switch (MovieVideoMode)
     {
       case 2: return(md_ffv1); break;
       case 3: return(md_x264); break;
       case 4: return(md_xvid); break;
     }
+    return("");
   }
-  *str += strlen(*str);
-  fprintf(stderr, "Unknown Variable: %s", *str);
-  return("");
+  if (!strncmp(str, "$md_smode", strlen("$md_smode")))
+  {
+    *len = strlen("$md_smode");
+    if (MovieAudioCompress) { return(md_compressed_sound); }
+    else if (MovieAudio) { return(md_sound); }
+    else { return(md_no_sound); }
+  }
+  fprintf(stderr, "Unknown Variable: %s\n", str);
+  *len = 0;
+  return(0);
 }
 
 static char *encode_command(char *p)
 {
-  static char command[800];
-  char *var;
-  *command = 0;
+  static char command[1024];
+  strncpy(command, p, sizeof(command));
+  command[sizeof(command)-1] = 0;
 
-  while (*p)
+  for (p = command; *p;)
   {
-    if ((var = strchr(p, '$')))
+    char *var = strchr(p, '$');
+    if (var)
     {
-      strncat(command, p, var - p);
-      strcat(command, pick_var(&var));
-      p = var;
+      size_t var_len;
+      char *replace = pick_var(var, &var_len);
+      if (var_len)
+      {
+        size_t remaining = sizeof(command)-(var-command);
+        if (string_replace(var, var_len, replace, remaining) > remaining)
+        {
+          fputs("Encoding command has been cut off, check your settings in zmovie.cfg", stderr);
+          break;
+        }
+      }
+      else
+      {
+        p = var+1;
+      }
     }
     else
     {
-      strcat(command, p);
       break;
     }
   }
@@ -2143,14 +2191,13 @@ static void raw_video_close()
 
   if (audio_and_video && MovieVideoAudio)
   {
+    if (mencoderExists) { system_dir(ZCfgPath, encode_command(md_merge)); }
     if (MovieAudioCompress)
     {
-      if (mencoderExists) { system_dir(ZCfgPath, encode_command(md_merge_compressed)); }
       remove_dir(ZCfgPath, md_compressed_audio);
     }
     else
     {
-      if (mencoderExists) { system_dir(ZCfgPath, encode_command(md_merge)); }
       remove_dir(ZCfgPath, md_pcm_audio);
     }
     remove_dir(ZCfgPath, md_file);
