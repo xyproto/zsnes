@@ -128,12 +128,12 @@ EXTSYM numlockptr
 %elifdef __WIN32__
 EXTSYM initDirectDraw,reInitSound,CheckAlwaysOnTop,CheckPriority,AlwaysOnTop
 EXTSYM CheckScreenSaver,MouseWheel,TrapMouseCursor,AllowMultipleInst,TripleBufferWin
-EXTSYM HighPriority,DisableScreenSaver,SaveMainWindowPos,PrimaryBuffer,GUII2VID
+EXTSYM HighPriority,DisableScreenSaver,SaveMainWindowPos,PrimaryBuffer
 EXTSYM GUIDSMODE,GUISMODE,CBBuffer,CBLength,PasteClipBoard,ctrlptr,PauseFocusChange
 %elifdef __MSDOS__
 EXTSYM dssel,SetInputDevice209,initvideo2,Force8b,SBHDMA,vibracard,smallscreenon
 EXTSYM pl1p209,pl2p209,pl3p209,pl4p209,pl5p209,SidewinderFix,Triplebufen,ScreenScale
-EXTSYM GUIINVID,GUIEAVID,GUIIEVID,GUIFSVID,GUIWSVID,GUISSVID
+EXTSYM GUIINVID,GUIEAVID,GUIIEVID,GUIFSVID,GUIWSVID,GUISSVID,GUII2VID
 %endif
 
 %ifndef __MSDOS__
