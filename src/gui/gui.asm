@@ -63,12 +63,12 @@ EXTSYM GUIDeInit,SpecialLine,DrawWater,DrawBurn,MMXCheck
 EXTSYM GetDate,horizon_get,ErrorPointer,MessageOn,GetTime
 EXTSYM GetScreen,GUITBWVID,Clear2xSaIBuffer,MouseWindow,ExitFromGUI
 EXTSYM GUIWFVID,newgfx16b,NumVideoModes,MusicVol,DSPMem,NumInputDevices
-EXTSYM GUIInputNames,GUIVideoModeNames,GUISLVID,GUIINVID,GUIEAVID,GUIIEVID
-EXTSYM GUIFSVID,GUIWSVID,GUISSVID,GUITBVID,GUIHSVID,GUI2xVID,GUII2VID,GUIM7VID
+EXTSYM GUIInputNames,GUIVideoModeNames,GUISLVID
+EXTSYM GUITBVID,GUIHSVID,GUI2xVID,GUIM7VID
 EXTSYM GUINTVID,device1,device2,TwelveHourClock,JoyX
 EXTSYM JoyY,JoyMinX,JoyMinY,JoyMaxX,JoyMaxY,JoyMinX209,JoyMaxX209,JoyMinY209
 EXTSYM JoyMaxY209,GetCoords,GetCoords3,MultiTap,SFXEnable,RestoreSystemVars
-EXTSYM GUIBIFIL,GUIHQ2X,GUIHQ3X,GUIHQ4X,nssdip1,nssdip2,nssdip3
+EXTSYM GUIHQ2X,GUIHQ3X,GUIHQ4X,nssdip1,nssdip2,nssdip3
 EXTSYM nssdip4,nssdip5,nssdip6,SkipMovie,MovieStop,MoviePlay,MovieRecord
 EXTSYM MovieInsertChapter,MovieSeekAhead,MovieSeekBehind,ResetDuringMovie
 EXTSYM MovieDumpRaw,MovieAppend,AutoLoadCht,GUIQuickLoadUpdate,GUILoadData
@@ -128,11 +128,12 @@ EXTSYM numlockptr
 %elifdef __WIN32__
 EXTSYM initDirectDraw,reInitSound,CheckAlwaysOnTop,CheckPriority,AlwaysOnTop
 EXTSYM CheckScreenSaver,MouseWheel,TrapMouseCursor,AllowMultipleInst,TripleBufferWin
-EXTSYM HighPriority,DisableScreenSaver,SaveMainWindowPos,PrimaryBuffer
+EXTSYM HighPriority,DisableScreenSaver,SaveMainWindowPos,PrimaryBuffer,GUII2VID
 EXTSYM GUIDSMODE,GUISMODE,CBBuffer,CBLength,PasteClipBoard,ctrlptr,PauseFocusChange
 %elifdef __MSDOS__
 EXTSYM dssel,SetInputDevice209,initvideo2,Force8b,SBHDMA,vibracard,smallscreenon
 EXTSYM pl1p209,pl2p209,pl3p209,pl4p209,pl5p209,SidewinderFix,Triplebufen,ScreenScale
+EXTSYM GUIINVID,GUIEAVID,GUIIEVID,GUIFSVID,GUIWSVID,GUISSVID
 %endif
 
 %ifndef __MSDOS__
@@ -145,7 +146,7 @@ EXTSYM vsyncon
 %endif
 
 %ifdef __OPENGL__
-EXTSYM BilinearFilter
+EXTSYM BilinearFilter,GUIBIFIL
 %endif
 
 %include "gui/guitools.inc"

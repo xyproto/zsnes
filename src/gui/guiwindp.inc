@@ -2061,6 +2061,7 @@ DisplayGUIVideo:
   GUIDisplayCheckboxun 5,11,73,En2xSaI,3,GUIVideoTextB2c,0 ;S2x
 .nocheckboxx
 
+%ifdef __MSDOS__
   xor eax,eax                                     ; Interpolations
   mov al,[cvidmode]
   cmp byte[GUIINVID+eax],0
@@ -2069,16 +2070,18 @@ DisplayGUIVideo:
 .notext3
   xor eax,eax
   mov al,[cvidmode]
-  cmp byte[GUII2VID+eax],0
-  je near .nocheckboxi2
-  GUIDisplayCheckboxu 5,121,73,antienab,GUIVideoTextB2d,0
-.nocheckboxi2
-  xor eax,eax
-  mov al,[cvidmode]
   cmp byte[GUIEAVID+eax],0
   je near .notext4
   GUIDisplayCheckboxu 5,121,73,antienab,GUIVideoTextB2e,9
 .notext4
+%else
+  xor eax,eax
+  mov al,[cvidmode]
+  cmp byte[GUII2VID+eax],0
+  je near .nocheckboxi2
+  GUIDisplayCheckboxu 5,121,73,antienab,GUIVideoTextB2d,0
+.nocheckboxi2
+%endif
 
 %ifdef __OPENGL__
   xor eax,eax                                     ; Bilinear

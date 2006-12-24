@@ -975,8 +975,12 @@ NEWSYM SwitchFullScreen
   call Clear2xSaIBuffer
   xor eax,eax
   mov al,[cvidmode]
+%ifndef __MSDOS__
   cmp byte[GUIWFVID+eax],0
   je .fullsc
+%else
+  jmp .fullsc
+%endif
 %ifndef __MSDOS__
   mov al,[PrevWinMode]
   mov [cvidmode],al
@@ -2215,7 +2219,7 @@ DisplayGUIVideoClick:
   GUIClickCButton6 121,63,byte[En2xSaI],2
   GUIClickCButton6 11,73,byte[En2xSaI],3
 .no2xSaI
-
+%ifdef __MSDOS__
   xor ebx,ebx                             ; interpolations
   mov bl,[cvidmode]
   cmp byte[GUIIEVID+ebx],0
@@ -2226,6 +2230,7 @@ DisplayGUIVideoClick:
   FilterExcl 121,73,hqFilter,NTSCFilter,En2xSaI
   GUIClickCButton3 121,73,byte[antienab],byte[antienab],1
 .nocheckbox1b
+%else
   xor ebx,ebx
   mov bl,[cvidmode]
   cmp byte[GUII2VID+ebx],0
@@ -2233,6 +2238,7 @@ DisplayGUIVideoClick:
   FilterExcl 121,73,hqFilter,NTSCFilter,En2xSaI
   GUIClickCButton3 121,73,byte[antienab],byte[antienab],1
 .nocheckboxi2
+%endif
 
 %ifdef __OPENGL__
   xor ebx,ebx                             ; bilinear
@@ -3322,3 +3328,4 @@ DrawMouse:
   dec edx
   jnz near .next2
   ret
+ 

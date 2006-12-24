@@ -544,7 +544,7 @@ scanlines db 0
 @ Blends the neighboring pixels on the screen to eliminate pixelation.
 %ifdef __MSDOS__
 @ Available in most VESA2 16-bit modes
-@ Note: this option controls Eagle filter in 640x480 8bit mode
+@ Note: This option enables the Eagle filter in the VESA2 640x480 8-bit mode.
 %endif
 antienab db 0
 %ifdef __OPENGL__
@@ -569,7 +569,7 @@ En2xSaI db 0
 @ hq4x = 1024x896 or above
 @ This is disabled when other filters are used.
 %else
-@ Non-DOS option, don't edit it
+@ The HQ*x filter is not available for DOS at the moment, sorry.
 %endif
 hqFilter db 0
 
@@ -855,7 +855,7 @@ showallext db 0
 
 @
 %ifdef __MSDOS__
-@ Filename Display Mode (0 = Long filename, 1 = Internal header name, 2 = 8.3)
+@ Filename Display Mode (0 = Win9x Long filename, 1 = Internal header name, 2 = DOS 8.3)
 GUIloadfntype db 2
 %else
 @ Filename Display Mode (0 = LONG FILENAME, 1 = Internal header name)

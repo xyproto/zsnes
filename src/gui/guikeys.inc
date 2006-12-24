@@ -1176,10 +1176,13 @@ GUIVideoKeys:
   jne .nointerpolation
   xor eax,eax
   mov al,[cvidmode]
-  cmp byte[GUII2VID+eax],0
-  jne .interpolation
+%ifdef __MSDOS__
   cmp byte[GUIIEVID+eax],0
   je .nointerpolation
+%else
+  cmp byte[GUII2VID+eax],0
+  jne .interpolation
+%endif
 .interpolation
   xor byte[antienab],1
   mov byte[En2xSaI],0
