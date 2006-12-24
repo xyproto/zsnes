@@ -30,7 +30,7 @@ using namespace std;
 
 #define LINE_LENGTH 2048
 
-static unsigned char getsize(const string& token, const char mode)
+static unsigned char getsize(const string_ci& token, const char mode)
 {
   unsigned char val = 0;
 
@@ -62,9 +62,9 @@ static unsigned char getsize(const string& token, const char mode)
   return (val);
 }
 
-static bool isredund(string& cur_line, const vector<string>& tokens, const char offset)
+static bool isredund(string_ci& cur_line, const vector<string_ci>& tokens, const char offset)
 {
-  if (getsize(tokens[offset],'t') == getsize(tokens[(offset+2)%3], 'r'))
+  if (getsize(tokens[offset], 't') == getsize(tokens[(offset+2)%3], 'r'))
   {
     size_t loc = cur_line.find(tokens[offset]);
     cur_line.erase(loc, cur_line.find(tokens[offset+1])-loc-1);
@@ -77,7 +77,7 @@ static bool isredund(string& cur_line, const vector<string>& tokens, const char 
 void handle_file(const char *filename, size_t orig_fsize)
 {
   bool modify_file = false;
-  vector<string> file_buffer;
+  vector<string_ci> file_buffer;
 
   ifstream file(filename, ios::in);
   if (file)
@@ -86,8 +86,8 @@ void handle_file(const char *filename, size_t orig_fsize)
 
     while (file.getline(line, LINE_LENGTH))
     {
-      vector<string> tokens;
-      string mline(line);
+      vector<string_ci> tokens;
+      string_ci mline(line);
       char *p = line;
       while (isspace(*p)) { p++; }
 
@@ -96,7 +96,7 @@ void handle_file(const char *filename, size_t orig_fsize)
         p += strlen("mov ");
         while (isspace(*p)) { p++; }
         Tokenize(p, tokens, ";");
-        string not_commented = tokens[0];
+        string_ci not_commented = tokens[0];
         tokens.clear();
         Tokenize(not_commented, tokens, ", []");
 
@@ -122,7 +122,7 @@ void handle_file(const char *filename, size_t orig_fsize)
     ofstream file(filename, ios::out);
     if (file)
     {
-      for (vector<string>::iterator i = file_buffer.begin(); i != file_buffer.end(); i++)
+      for (vector<string_ci>::iterator i = file_buffer.begin(); i != file_buffer.end(); i++)
       {
         file.write(i->data(), i->length());
         file << "\n";
