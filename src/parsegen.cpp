@@ -1250,9 +1250,9 @@ void output_read_var(ostream& c_stream)
              << "       if ((unsigned int)atoi(value) == PSR_HASH)\n"
              << "       {\n"
              << "         psr_init_done = 2;\n"
-             << "         break;\n"
+             << "         continue;\n"
              << "       }\n"
-             << "       continue;\n"
+             << "       break;\n"
              << "    }\n";
   }
   c_stream << "  }\n";
