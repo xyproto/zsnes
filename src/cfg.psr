@@ -455,9 +455,6 @@ PrevFSMode db 3
 @  16 = 640x480x16B (VESA2)  17 = 800x600x8B (VESA2)
 @  18 = 800x600x16B (VESA2)
 cvidmode db 4
-@ Non-DOS variables used for alt-tabbing, don't edit them
-PrevWinMode db 0
-PrevFSMode db 0
 #endif
 
 %ifndef __MSDOS__
@@ -536,24 +533,23 @@ KitchenSyncPAL db 0
 scanlines db 0
 
 @
-@ Enable Video Interpolation (0 = OFF, 1 = On)
-@ Blends the neighboring pixels on the screen to eliminate pixelation.
+%ifndef __UNIXSDL__
+@ Enable Video Interpolation (0 = NO, 1 = Yes)
 @ This is compatible with scanlines.
-#ifdef __MSDOS__
+%else
+@ Enable Video Interpolation, Bilinear Filter (0 = NO, 1 = Yes)
+@ This is compatible with all filters except NTSC.
+@ Bilinear Filter is OpenGL only.
+%endif
+@ Blends the neighboring pixels on the screen to eliminate pixelation.
+%ifdef __MSDOS__
 @ Available in most VESA2 16-bit modes
 @ Note: this option controls Eagle filter in 640x480 8bit mode
-#endif
-antienab db 0
-
-@
-%ifdef __UNIXSDL__
-@ Enable Bilinear Filter (0 = NO, 1 = Yes)
-@ Blends the neighboring pixels on the screen to eliminate pixelation.
-@ This is compatible with all filters except NTSC.
-%else
-@ SDL-only option, don't edit it
 %endif
+antienab db 0
+%ifdef __OPENGL__
 BilinearFilter db 0
+%endif
 
 @
 @ Enable Kreed's 2x Filters (0 = NONE, 1 = 2xSaI, 2 = Super Eagle, 3 = Super 2xSaI)

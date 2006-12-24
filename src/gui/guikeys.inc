@@ -1250,7 +1250,9 @@ GUIVideoKeys:
   mov byte[hqFilter],0
   mov byte[scanlines],0
   mov byte[antienab],0
+%ifdef __OPENGL__
   mov byte[BilinearFilter],0
+%endif
 %ifdef __WIN32__
   cmp byte[NTSCFilter],0
   je .noforce4_3
@@ -1261,7 +1263,7 @@ GUIVideoKeys:
   call NTSCFilterInit
   popad
 .nontscfilter
-%ifdef __UNIXSDL__
+%ifdef __OPENGL__
   cmp dh,'I'
   jne .nobilinearfilter
   xor ebx,ebx

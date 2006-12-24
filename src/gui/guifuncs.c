@@ -414,7 +414,7 @@ void GUIRestoreVars()
   CheckValueBounds(&ScreenScale, 0, 1, 0, UB);
   CheckValueBounds(&Triplebufen, 0, 1, 0, UB);
 #endif
-#ifdef __UNIXSDL__
+#ifdef __OPENGL__
   CheckValueBounds(&BilinearFilter, 0, 1, 0, UB);
 #endif
   CheckValueBounds(&En2xSaI, 0, 3, 0, UB);

@@ -80,7 +80,7 @@ EXTSYM SnapPath,SPCPath,BSXPath,SGPath,STPath,GNextPath,FEOEZPath,SJNSPath
 EXTSYM MDHPath,SPL4Path,SRAMPath,CheatSrcByteSize,prevloadfnamel,NTSCFilterInit
 EXTSYM prevloadiname,prevloaddnamel,prevlfreeze,FirstTimeData,MMXSupport
 EXTSYM GUIRAdd,GUIGAdd,GUIBAdd,GUITRAdd,GUITGAdd,GUITBAdd,GUIWRAdd
-EXTSYM GUIWGAdd,GUIWBAdd,GUIloadfntype,SoundInterpType,PrevFSMode,PrevWinMode
+EXTSYM GUIWGAdd,GUIWBAdd,GUIloadfntype,SoundInterpType
 EXTSYM CheatSrcByteBase,CheatSrcSearchType,CheatUpperByteOnly,GUIComboGameSpec
 EXTSYM KeyStateSlc0,KeyStateSlc1,KeyStateSlc2,KeyStateSlc3,KeyStateSlc4
 EXTSYM KeyStateSlc5,KeyStateSlc6,KeyStateSlc7,KeyStateSlc8,KeyStateSlc9
@@ -112,7 +112,7 @@ EXTSYM mousewrap,GUIRClick,SaveSramData,SwapMouseButtons
 EXTSYM FPSAtStart,Turbo30hz,TimerEnable,SmallMsgText,mouse1lh,mouse2lh
 EXTSYM AutoPatch,RomInfo,AllowUDLR,GrayscaleMode
 EXTSYM Mode7HiRes16b,FFRatio,SDRatio,EmuSpeed,mouseshad
-EXTSYM BilinearFilter,esctomenu,GUILoadKeysJumpTo,lhguimouse,zst_name
+EXTSYM esctomenu,GUILoadKeysJumpTo,lhguimouse,zst_name
 EXTSYM GUIEnableTransp,FilteredGUI,Surround,SPCDisable,nosaveSRAM
 EXTSYM FastFwdToggle,gui_key,gui_key_extended,GUILoadKeysNavigate
 EXTSYM KeyDisplayBatt,KeyIncreaseGamma,KeyDecreaseGamma
@@ -137,11 +137,15 @@ EXTSYM pl1p209,pl2p209,pl3p209,pl4p209,pl5p209,SidewinderFix,Triplebufen,ScreenS
 
 %ifndef __MSDOS__
 EXTSYM ZsnesPage,DocsPage,GUICustomX,GUICustomY,GetCustomXY,SetCustomXY,initwinvideo
-EXTSYM Keep4_3Ratio
+EXTSYM Keep4_3Ratio,PrevFSMode,PrevWinMode
 %endif
 
 %ifndef __UNIXSDL__
 EXTSYM vsyncon
+%endif
+
+%ifdef __OPENGL__
+EXTSYM BilinearFilter
 %endif
 
 %include "gui/guitools.inc"

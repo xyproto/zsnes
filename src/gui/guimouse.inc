@@ -924,7 +924,9 @@ GUIProcVideo:
   mov dword[GUIkeydelay],0
   ret
 .fullsc
+%ifndef __MSDOS__
   mov [PrevFSMode],al
+%endif
   ret
 .failed
   mov byte[videotroub],0
@@ -975,14 +977,18 @@ NEWSYM SwitchFullScreen
   mov al,[cvidmode]
   cmp byte[GUIWFVID+eax],0
   je .fullsc
+%ifndef __MSDOS__
   mov al,[PrevWinMode]
   mov [cvidmode],al
+%endif
   call initvideo
   popad
   ret
 .fullsc
+%ifndef __MSDOS__
   mov al,[PrevFSMode]
   mov [cvidmode],al
+%endif
   call initvideo
   popad
   ret
@@ -2228,7 +2234,7 @@ DisplayGUIVideoClick:
   GUIClickCButton3 121,73,byte[antienab],byte[antienab],1
 .nocheckboxi2
 
-%ifdef __UNIXSDL__
+%ifdef __OPENGL__
   xor ebx,ebx                             ; bilinear
   mov bl,[cvidmode]
   cmp byte[GUIBIFIL+ebx],0
@@ -2256,7 +2262,11 @@ DisplayGUIVideoClick:
   mov bl,[cvidmode]
   cmp byte[GUINTVID+ebx],0
   je near .nontscfilter
+%ifdef __OPENGL__
   FilterExcl 121,83,En2xSaI,hqFilter,scanlines,antienab,BilinearFilter
+%else
+  FilterExcl 121,83,En2xSaI,hqFilter,scanlines,antienab
+%endif
   GUIClickCButtonN 121,83,byte[NTSCFilter],NTSCFilterInit
 .nontscfilter
 

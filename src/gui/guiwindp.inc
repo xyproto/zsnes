@@ -2080,12 +2080,14 @@ DisplayGUIVideo:
   GUIDisplayCheckboxu 5,121,73,antienab,GUIVideoTextB2e,9
 .notext4
 
+%ifdef __OPENGL__
   xor eax,eax                                     ; Bilinear
   mov al,[cvidmode]
   cmp byte[GUIBIFIL+eax],0
   je near .nocheckboxe
   GUIDisplayCheckboxu 5,121,73,BilinearFilter,GUIVideoTextB2h,1
 .nocheckboxe
+%endif
 
   xor eax,eax                                     ; hq*x
   mov al,[cvidmode]
