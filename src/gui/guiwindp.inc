@@ -2240,7 +2240,7 @@ GUIVideoTextB1a db 'INTERPOLATION',0     ; -y
 GUIVideoTextB1b db 'EAGLE ENGINE',0      ; same loc at interpolation   -y
 GUIVideoTextB1c db 'BILINEAR FILTER',0
 GUIVideoTextB1d db 'NTSC',0
-GUIVideoTextB1e db '2XSAI ENGINE',0 
+GUIVideoTextB1e db '2XSAI ENGINE',0
 GUIVideoTextB1f db 'SUPER EAGLE',0
 GUIVideoTextB1g db 'SUPER 2XSAI',0
 GUIVideoTextB1h db 'HQ2X',0
