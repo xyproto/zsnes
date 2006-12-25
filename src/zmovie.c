@@ -2792,13 +2792,8 @@ void MovieStop()
       case MOVIE_PLAYBACK:
         zmv_replay_finished();
         MovieSub_Close();
-        if (RawDumpInProgress)
-        {
-          raw_video_close();
-          RawDumpInProgress = false;
-          MovieForcedLength = 0;
-          MovieForcedLengthEnabled = false;
-        }
+        MovieForcedLength = 0;
+        DumpVideoFrame(false);
         MessageOn = 0;
         break;
 
@@ -2813,20 +2808,13 @@ void MovieStop()
       case MOVIE_OLD_PLAY:
         fclose(old_movie.fp);
         MovieSub_Close();
-        if (RawDumpInProgress)
-        {
-          raw_video_close();
-          RawDumpInProgress = false;
-          MovieForcedLength = 0;
-          MovieForcedLengthEnabled = false;
-        }
+        MovieForcedLength = 0;
+        DumpVideoFrame(false);
         MessageOn = 0;
         break;
       case MOVIE_ENDING_DUMPING:
-        raw_video_close();
-        RawDumpInProgress = false;
         MovieForcedLength = 0;
-        MovieForcedLengthEnabled = false;
+        DumpVideoFrame(false);
         break;
     }
 
