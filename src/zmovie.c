@@ -2456,12 +2456,8 @@ bool PrevSRAMState;
 extern unsigned char ComboCounter, MovieRecordWinVal, AllocatedRewindStates;
 extern unsigned char SloMo, EMUPause;
 char MovieFrameStr[10];
-
-/*
-
-Code to playback old ZMVs
-
-*/
+bool MovieForcedLengthEnabled = false;
+unsigned int MovieForcedLength = 0;
 
 struct
 {
@@ -2476,6 +2472,47 @@ struct
     unsigned int E;
   } last_joy_state;
 } old_movie;
+
+
+static void DumpVideoFrame(bool playback_over)
+{
+  if (RawDumpInProgress)
+  {
+    if (playback_over && MovieForcedLengthEnabled)
+    {
+      SetMovieMode(MOVIE_ENDING_DUMPING);
+    }
+
+    if ((playback_over && !MovieForcedLengthEnabled) || (MovieForcedLengthEnabled && !MovieForcedLength))
+    {
+      switch (MovieProcessing)
+      {
+        case MOVIE_PLAYBACK:
+          zmv_replay_finished();
+          MovieSub_Close();
+          break;
+        case MOVIE_OLD_PLAY:
+          fclose(old_movie.fp);
+          MovieSub_Close();
+          break;
+      }
+      raw_video_close();
+      RawDumpInProgress = false;
+      SetMovieMode(MOVIE_OFF);
+    }
+    else
+    {
+      raw_video_write_frame();
+      if (MovieForcedLength) { MovieForcedLength--; }
+    }
+  }
+}
+
+/*
+
+Code to playback old ZMVs
+
+*/
 
 static void OldMovieReplay()
 {
@@ -2508,11 +2545,7 @@ static void OldMovieReplay()
         MessageOn = MovieSub_GetDuration();
       }
 
-      if (RawDumpInProgress)
-      {
-        raw_video_write_frame();
-      }
-
+      DumpVideoFrame(false);
       old_movie.frames_replayed++;
     }
     else // anything else is bad - the file isn't a movie.
@@ -2540,11 +2573,7 @@ static void OldMovieReplay()
     fclose(old_movie.fp);
     MovieSub_Close();
 
-    if (RawDumpInProgress)
-    {
-      raw_video_close();
-      RawDumpInProgress = false;
-    }
+    DumpVideoFrame(true);
   }
 }
 
@@ -2696,10 +2725,7 @@ void Replay()
       MessageOn = MovieSub_GetDuration();
     }
 
-    if (RawDumpInProgress)
-    {
-      raw_video_write_frame();
-    }
+    DumpVideoFrame(false);
   }
   else
   {
@@ -2718,11 +2744,7 @@ void Replay()
     zmv_dealloc_rewind_buffer();
     MovieSub_Close();
 
-    if (RawDumpInProgress)
-    {
-      raw_video_close();
-      RawDumpInProgress = false;
-    }
+    DumpVideoFrame(true);
 
     SRAMState = PrevSRAMState;
   }
@@ -2740,6 +2762,9 @@ void ProcessMovies()
       break;
     case MOVIE_OLD_PLAY:
       OldMovieReplay();
+      break;
+    case MOVIE_ENDING_DUMPING:
+      DumpVideoFrame(true);
       break;
   }
 }
@@ -2770,6 +2795,7 @@ void MovieStop()
         {
           raw_video_close();
           RawDumpInProgress = false;
+          MovieForcedLength = 0;
         }
         MessageOn = 0;
         break;
@@ -2789,8 +2815,14 @@ void MovieStop()
         {
           raw_video_close();
           RawDumpInProgress = false;
+          MovieForcedLength = 0;
         }
         MessageOn = 0;
+        break;
+      case MOVIE_ENDING_DUMPING:
+        raw_video_close();
+        RawDumpInProgress = false;
+        MovieForcedLength = 0;
         break;
     }
 

@@ -49,9 +49,9 @@ void ImportDirectX();
 
 extern unsigned char romtype, MouseDis, ZMVZClose, ZMVRawDump, debugger, debugdisble;
 extern unsigned char gammalevel, spcon, ForcePal, DSPDisable, V8Mode;
-extern unsigned char autoloadstate, autoloadmovie;
+extern unsigned char autoloadstate, autoloadmovie, MovieForcedLengthEnabled;
 extern char *STCart2;
-extern unsigned int NumInputDevices;
+extern unsigned int NumInputDevices, MovieForcedLength;
 void zstart();
 #ifdef __WIN32__
 void InitDebugger();
@@ -122,6 +122,7 @@ static void display_help()
   put_line("  -md #   Dump Video (use with -zm)");
   put_line("             1 = Raw  2 = FFV1 3 = x264");
   put_line("             4 = XviD 5 = Custom");
+  put_line("  -ml #   Define movie dump length in amount of frames (use with -md)");
   put_line("  -n #    Enable scanlines (when available)");
   put_line("             0 = None, 1 = Full, 2 = 25%, 3 = 50%");
   put_line("  -o      Disable MMX support");
@@ -764,6 +765,13 @@ static void handle_params(int argc, char *argv[])
             puts("Movie mode must be a number 1 to 5");
             exit(1);
           }
+        }
+
+        else if (tolower(argv[i][1]) == 'm' && tolower(argv[i][2]) == 'l') //Force ZMV length
+        {
+          i++;
+          MovieForcedLengthEnabled = true;
+          MovieForcedLength = zatoi(argv[i]);
         }
 
         #ifdef __MSDOS__
