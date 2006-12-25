@@ -2186,71 +2186,68 @@ DisplayGUIVideoClick:
 
 .notmodestab
 
-  cmp dword[GUIVideoTabs],2  ; filters tab
+  cmp dword[GUIVideoTabs],2               ; Filters tab
   jne near .notfilterstab
+
   pushad
   call Clear2xSaIBuffer
   popad
-  xor ebx,ebx                             ; scanlines
-  mov bl,[cvidmode]
-  cmp byte[GUISLVID+ebx],0
-  je near .nocheckboxb
-  FilterExcl 21,34,En2xSaI,hqFilter,NTSCFilter
-  GUIClickCButton4 21,34,byte[scanlines],byte[scanlines],1
-.nocheckboxb
-  xor ebx,ebx
-  mov bl,[cvidmode]
-  cmp byte[GUIHSVID+ebx],0
-  je near .nohsline
-  FilterExcl 61,34,En2xSaI,hqFilter,NTSCFilter
-  FilterExcl 101,34,En2xSaI,hqFilter,NTSCFilter
-  GUIClickCButton4 61,34,byte[scanlines],byte[scanlines],3
-  GUIClickCButton4 101,34,byte[scanlines],byte[scanlines],2
-.nohsline
 
-  xor ebx,ebx                              ; 2xsai and supers
-  mov bl,[cvidmode]
-  cmp byte[GUI2xVID+ebx],0
-  je near .no2xSaI
-  FilterExcl 11,63,hqFilter,scanlines,antienab,NTSCFilter
-  FilterExcl 121,63,hqFilter,scanlines,antienab,NTSCFilter
-  FilterExcl 11,73,hqFilter,scanlines,antienab,NTSCFilter
-  GUIClickCButton6 11,63,byte[En2xSaI],1
-  GUIClickCButton6 121,63,byte[En2xSaI],2
-  GUIClickCButton6 11,73,byte[En2xSaI],3
-.no2xSaI
-%ifdef __MSDOS__
-  xor ebx,ebx                             ; interpolations
+%ifdef __MSDOS__
+  xor ebx,ebx                             ; Interpolations
   mov bl,[cvidmode]
   cmp byte[GUIIEVID+ebx],0
   je near .nocheckbox1b
   mov byte[En2xSaI],0
   mov byte[hqFilter],0
   mov byte[NTSCFilter],0
-  FilterExcl 121,73,hqFilter,NTSCFilter,En2xSaI
-  GUIClickCButton3 121,73,byte[antienab],byte[antienab],1
+  FilterExcl 18,35,hqFilter,NTSCFilter,En2xSaI
+  GUIClickCButton3 18,35,byte[antienab],byte[antienab],1
 .nocheckbox1b
 %else
   xor ebx,ebx
   mov bl,[cvidmode]
   cmp byte[GUII2VID+ebx],0
   je near .nocheckboxi2
-  FilterExcl 121,73,hqFilter,NTSCFilter,En2xSaI
-  GUIClickCButton3 121,73,byte[antienab],byte[antienab],1
+  FilterExcl 18,35,hqFilter,NTSCFilter,En2xSaI
+  GUIClickCButton3 18,35,byte[antienab],byte[antienab],1
 .nocheckboxi2
 %endif
-
 %ifdef __OPENGL__
-  xor ebx,ebx                             ; bilinear
+  xor ebx,ebx                             ; Bilinear
   mov bl,[cvidmode]
   cmp byte[GUIBIFIL+ebx],0
   je .nocheckbox1bf
-  FilterExcl 121,73,NTSCFilter
-  GUIClickCButton 121,73,byte[BilinearFilter]
+  FilterExcl 18,35,NTSCFilter
+  GUIClickCButton 18,35,byte[BilinearFilter]
 .nocheckbox1bf
 %endif
 
-  xor ebx,ebx                             ; hq filters
+  xor ebx,ebx                             ; NTSC filter
+  mov bl,[cvidmode]
+  cmp byte[GUINTVID+ebx],0
+  je near .nontscfilter
+%ifdef __OPENGL__
+  FilterExcl 128,35,En2xSaI,hqFilter,scanlines,antienab,BilinearFilter
+%else
+  FilterExcl 128,35,En2xSaI,hqFilter,scanlines,antienab
+%endif
+  GUIClickCButtonN 128,35,byte[NTSCFilter],NTSCFilterInit
+.nontscfilter
+
+  xor ebx,ebx                             ; Kreed 2x filters
+  mov bl,[cvidmode]
+  cmp byte[GUI2xVID+ebx],0
+  je near .no2xSaI
+  FilterExcl 18,45,hqFilter,scanlines,antienab,NTSCFilter
+  FilterExcl 128,45,hqFilter,scanlines,antienab,NTSCFilter
+  FilterExcl 18,55,hqFilter,scanlines,antienab,NTSCFilter
+  GUIClickCButton6 18,45,byte[En2xSaI],1
+  GUIClickCButton6 128,45,byte[En2xSaI],2
+  GUIClickCButton6 18,55,byte[En2xSaI],3
+.no2xSaI
+
+  xor ebx,ebx                             ; Hq*x filters
   mov bl,[cvidmode]
   cmp byte[GUIHQ2X+ebx],0
   jne .checkboxhq
@@ -2260,65 +2257,54 @@ DisplayGUIVideoClick:
   jne .checkboxhq
   jmp .nocheckboxhq
 .checkboxhq
-  FilterExcl 11,83,En2xSaI,scanlines,antienab,NTSCFilter
-  GUIClickCButton 11,83,byte[hqFilter]
+  FilterExcl 128,55,En2xSaI,scanlines,antienab,NTSCFilter
+  GUIClickCButton 128,55,byte[hqFilter]
 .nocheckboxhq
 
-  xor ebx,ebx                             ; ntsc effect
+  xor ebx,ebx                             ; Scanlines
   mov bl,[cvidmode]
-  cmp byte[GUINTVID+ebx],0
-  je near .nontscfilter
-%ifdef __OPENGL__
-  FilterExcl 121,83,En2xSaI,hqFilter,scanlines,antienab,BilinearFilter
-%else
-  FilterExcl 121,83,En2xSaI,hqFilter,scanlines,antienab
-%endif
-  GUIClickCButtonN 121,83,byte[NTSCFilter],NTSCFilterInit
-.nontscfilter
+  cmp byte[GUISLVID+ebx],0
+  je near .nocheckboxb
+  FilterExcl 168,85,En2xSaI,hqFilter,NTSCFilter
+  GUIPButtonHole 18,85,byte[scanlines],0
+  GUIPButtonHole 168,85,byte[scanlines],1
+.nocheckboxb
+  xor ebx,ebx
+  mov bl,[cvidmode]
+  cmp byte[GUIHSVID+ebx],0
+  je near .nohsline
+  FilterExcl 68,85,En2xSaI,hqFilter,NTSCFilter
+  FilterExcl 118,85,En2xSaI,hqFilter,NTSCFilter
+  GUIPButtonHole 68,85,byte[scanlines],2
+  GUIPButtonHole 118,85,byte[scanlines],3
+.nohsline
 
-  xor ebx,ebx                             ; hires m7
+  GUIClickCButton 18,115,byte[GrayscaleMode]  ; Grayscale
+
+  xor ebx,ebx                             ; Hires Mode7
   mov bl,[cvidmode]
   cmp byte[GUIM7VID+ebx],0
   je .nocheckboxtm7
-  GUIClickCButton5 11,113,byte[Mode7HiRes16b],1
+  GUIClickCButton5 128,115,byte[Mode7HiRes16b],1
 .nocheckboxtm7
 
-  GUIClickCButton 121,113,byte[GrayscaleMode] ; Grayscale
-
 %ifdef __MSDOS__
-  xor ebx,ebx                            ; triple buffs/vsyncs
+  xor ebx,ebx                             ; Triple buffs/vsyncs
   mov bl,[cvidmode]
   cmp byte[GUITBVID+ebx],0
   je .nocheckboxttb
-  GUIClickCButtonT 121,123,byte[Triplebufen],byte[vsyncon]
+  GUIClickCButtonT 128,145,byte[Triplebufen],byte[vsyncon]
 .nocheckboxttb
-  GUIClickCButtonT 11,123,byte[vsyncon],byte[Triplebufen]
+  GUIClickCButtonT 18,145,byte[vsyncon],byte[Triplebufen]
 %endif
 %ifdef __WIN32__
   xor ebx,ebx
   mov bl,[cvidmode]
   cmp byte[GUITBWVID+ebx],0
   je near .notriplebufferwin
-  GUIClickCButtonf 121,123,byte[TripleBufferWin],initDirectDraw
+  GUIClickCButtonf 128,145,byte[TripleBufferWin],initDirectDraw
 .notriplebufferwin
-  GUIClickCButtonf 11,123,byte[vsyncon],initDirectDraw
-%endif
-
-%ifdef __MSDOS__
-  xor ebx,ebx                            ; small/fullscreen
-  mov bl,[cvidmode]
-  cmp byte[GUISSVID+ebx],0
-  je .nocheckbox2b
-  FilterExcl 11,133,ScreenScale
-  GUIClickCButton3 11,133,byte[smallscreenon],byte[smallscreenon],1
-.nocheckbox2b
-  xor ebx,ebx
-  mov bl,[cvidmode]
-  cmp byte[GUIFSVID+ebx],0
-  je .nocheckbox3b
-  FilterExcl 121,133,smallscreenon
-  GUIClickCButton3 121,133,byte[ScreenScale],byte[ScreenScale],1
-.nocheckbox3b
+  GUIClickCButtonf 18,145,byte[vsyncon],initDirectDraw
 %endif
 
 %ifndef __MSDOS__
@@ -2335,8 +2321,26 @@ DisplayGUIVideoClick:
   jl .nocheckboxk43
 %endif
 .checkboxk43
-  GUIClickCButtonK 11,143,byte[Keep4_3Ratio],initwinvideo
+  GUIClickCButtonK 18,175,byte[Keep4_3Ratio],initwinvideo
 .nocheckboxk43
+%endif
+
+%ifdef __MSDOS__
+  xor ebx,ebx                             ; Small Screen
+  mov bl,[cvidmode]
+  cmp byte[GUISSVID+ebx],0
+  je .nocheckbox2b
+  FilterExcl 18,175,ScreenScale
+  GUIClickCButton3 18,175,byte[smallscreenon],byte[smallscreenon],1
+.nocheckbox2b
+
+  xor ebx,ebx                             ; Full/Wide Screen
+  mov bl,[cvidmode]
+  cmp byte[GUIFSVID+ebx],0
+  je .nocheckbox3b
+  FilterExcl 128,175,smallscreenon
+  GUIClickCButton3 128,175,byte[ScreenScale],byte[ScreenScale],1
+.nocheckbox3b
 %endif
 
 .notfilterstab
@@ -3328,4 +3332,3 @@ DrawMouse:
   dec edx
   jnz near .next2
   ret
- 

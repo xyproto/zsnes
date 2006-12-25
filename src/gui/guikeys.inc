@@ -1082,13 +1082,14 @@ GUIVideoKeys:
   mov al,[cvidmode]
   cmp byte[GUISLVID+eax],0
   je .nofullscanlines
+  GUIKeyButtonHole scanlines,0,'O'
   cmp dh,'F'
   jne .nofullscanlines
   mov byte[En2xSaI],0
   mov byte[hqFilter],0
   mov byte[NTSCFilter],0
   call ClearScreen
-  GUIkeystoggleoptn byte[scanlines],1
+  GUIKeyButtonHole scanlines,1,'F'
 %ifdef __MSDOS__
   cmp byte[cvidmode],2
   jne .nomodeq
@@ -1113,7 +1114,7 @@ GUIVideoKeys:
   mov byte[hqFilter],0
   mov byte[NTSCFilter],0
   call ClearScreen
-  GUIkeystoggleoptn byte[scanlines],3
+  GUIKeyButtonHole scanlines,3,'5'
 .nohalfscanlines
   cmp dh,'2'
   jne .noquarterscanlines
@@ -1121,7 +1122,7 @@ GUIVideoKeys:
   mov byte[hqFilter],0
   mov byte[NTSCFilter],0
   call ClearScreen
-  GUIkeystoggleoptn byte[scanlines],2
+  GUIKeyButtonHole scanlines,2,'2'
 .noquarterscanlines
   cmp dh,'Q'
   jne .nohqfilter
@@ -1189,6 +1190,17 @@ GUIVideoKeys:
   mov byte[hqFilter],0
   mov byte[NTSCFilter],0
 .nointerpolation
+%ifdef __OPENGL__
+  cmp dh,'I'
+  jne .nobilinearfilter
+  xor ebx,ebx
+  mov bl,[cvidmode]
+  cmp byte[GUIBIFIL+ebx],0
+  je .nobilinearfilter
+  xor byte[BilinearFilter],1
+  mov byte[NTSCFilter],0
+.nobilinearfilter
+%endif
 %ifdef __MSDOS__
   cmp dh,'C'
   jne .nofullscreen
@@ -1266,17 +1278,6 @@ GUIVideoKeys:
   call NTSCFilterInit
   popad
 .nontscfilter
-%ifdef __OPENGL__
-  cmp dh,'I'
-  jne .nobilinearfilter
-  xor ebx,ebx
-  mov bl,[cvidmode]
-  cmp byte[GUIBIFIL+ebx],0
-  je .nobilinearfilter
-  xor byte[BilinearFilter],1
-  mov byte[NTSCFilter],0
-.nobilinearfilter
-%endif
 %ifdef __WIN32__
   cmp dh,'T'
   jne .notriplebufferwin
@@ -1298,6 +1299,7 @@ GUIVideoKeys:
   cmp byte[GUITBVID+ebx],0
   je .notriplebuffer
   xor byte[Triplebufen],1
+  mov byte[vsyncon],0
 .notriplebuffer
 %endif
 %ifndef __UNIXSDL__
@@ -1309,6 +1311,8 @@ GUIVideoKeys:
   pushad
   call Clear2xSaIBuffer
   popad
+%else
+  mov byte[Triplebufen],0
 %endif
 .novsync
 %endif

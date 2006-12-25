@@ -120,7 +120,7 @@ static void display_help()
   put_line("  -m      Disable GUI (Must specify ROM filename)");
   put_line("  -mc     Exit ZSNES when closing a movie (use with -zm)");
   put_line("  -md #   Dump Video (use with -zm)");
-  put_line("             1 = raw  2 = FFV1 3 = x264");
+  put_line("             1 = Raw  2 = FFV1 3 = x264");
   put_line("             4 = XviD 5 = Custom");
   put_line("  -n #    Enable scanlines (when available)");
   put_line("             0 = None, 1 = Full, 2 = 25%, 3 = 50%");
@@ -713,7 +713,7 @@ static void handle_params(int argc, char *argv[])
         }
 
         #ifdef __MSDOS__
-        else if (tolower(argv[i][1]) == 'c' && tolower(argv[i][2]) == 'c') //Enable small screen
+        else if (tolower(argv[i][1]) == 'c' && tolower(argv[i][2]) == 'c') //Enable small screen (when available)
         {
           smallscreenon = 1;
         }

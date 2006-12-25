@@ -466,19 +466,96 @@ cvidmode db 4
 @ Custom Resolution X and Y for Custom Video Modes [256x224..2048x1536]
 CustomResX dd 640
 CustomResY dd 480
+%endif
 
 @
-@ Keep 4:3 Ratio (0 = No, 1 = YES)
-@ This is particularly handy for those that use laptops/LCDs+non 4:3 resolutions.
-%ifdef __WIN32__
-@ This can be used for any S/DS mode and any Custom Windowed mode.
-%elifdef __UNIXSDL__
-@ This can be used for Variable ODS Windowed and Custom Res OD Fullscreen.
+%ifdef __OPENGL__
+@ Enable Video Interpolation, Bilinear Filtering (0 = NO, 1 = Yes)
+@ Bilinear Filtering is compatible with all filters except NTSC.
+@ Bilinear Filtering replaces Interpolation and is OpenGL only.
+%else
+@ Enable Video Interpolation (0 = NO, 1 = Yes)
 %endif
-@ It is not recommended to enable this while under 298x224.
-@ Disable this if you want to use the non-standard ratio instead.
-Keep4_3Ratio db 1
+@ Video Interpolation is compatible with scanlines.
+@ Blends the neighboring pixels on the screen to eliminate pixelation.
+%ifdef __MSDOS__
+@ Available in most VESA2 16-bit modes
+@ Note: This option enables the Eagle filter in the VESA2 640x480 8-bit mode.
 %endif
+antienab db 0
+%ifdef __OPENGL__
+BilinearFilter db 0
+%endif
+
+@
+%ifndef __MSDOS__
+@ Enable NTSC Filter (0 = NO, 1 = Yes)
+@ Enable Blargg's wonderful NTSC filter which simulates the artifacts of an
+@ NTSC TV set - it is probably not a good idea to use with TV-out
+@ Requires a minimum res of 600x448
+%else
+@ The NTSC filter is not available for DOS at the moment, sorry.
+%endif
+NTSCFilter db 0
+%ifndef __MSDOS__
+@ Blend Frames, Refresh Screen (0 = OFF, 1 = On)
+@ Blend Frames allows smoother transitions between frames for non-60Hz refresh rates.
+@ Refresh Screen allows the screen to be updated while changing the filter's parameters.
+%endif
+NTSCBlend db 0
+NTSCRef db 0
+%ifndef __MSDOS__
+@ NTSC TV Attributes [-100..100]
+%endif
+NTSCHue sb 0
+NTSCSat sb 0
+NTSCCont sb 0
+NTSCBright sb 0
+NTSCSharp sb 0
+NTSCWarp sb 0
+
+@
+@ Enable Kreed's 2x Filters (0 = NONE, 1 = 2xSaI, 2 = Super Eagle, 3 = Super 2xSaI)
+@ These are Kreed's various 2x filters. They do not exhibit the same level of
+@ blurring than interpolation/bilinear. MMX support is required.
+@ This is disabled when other filters are used.
+En2xSaI db 0
+
+@
+%ifndef __MSDOS__
+@ Use Hq*x Filter (0 = NO, 1 = Yes)
+@ This is a filter MaxSt has created. These are very CPU intensive filters that
+@ do very awesome blending to remove the pixelation.
+@ The level of filtering depends on the current resolution used
+@ hq2x = 512x448 but below HQ3x min res
+@ hq3x = 768x672 but below HQ4x min res
+@ hq4x = 1024x896 or above
+@ This is disabled when other filters are used. MMX support is required.
+%else
+@ The HQ*x filter is not available for DOS at the moment, sorry.
+%endif
+hqFilter db 0
+
+@
+@ Enable Scanlines (0 = NONE, 1 = Full, 2 = 25%, 3 = 50%) - simulate TV scanlines
+@ This is compatible with interpolation.
+#ifdef __MSDOS__
+@ 256x256 or 640x480 8bit modes only (25% and 50% in 640x480 16bit mode only)
+#endif
+scanlines db 0
+
+@
+@ Enable Grayscale Mode (0 = NO, 1 = Yes) - don't enable this for other than nostalgia
+@ The whole screen is displayed in monochrome color.
+GrayscaleMode db 0
+
+@
+@ Enable High-Res Mode 7 (0 = NO, 1 = Yes)
+@ Doubles the internal resolution of the image when Mode 7 is in use
+@ However this disables most filters, except for interpolation.
+@ This is only useful in certain games and is not useful in general.
+@ Requires a minimum res of 512x448
+Mode7HiRes16b dd 0
 
 #ifndef __UNIXSDL__
 @
@@ -488,21 +565,14 @@ vsyncon db 0
 
 @
 @ Use Triple Buffering (0 = NO, 1 = Yes) - replaces vsync
+@ This is usually more beneficial than VSync.
 #endif
 #ifdef __WIN32__
+@ This is not available in Windowed modes.
 TripleBufferWin db 0
 #elifdef __MSDOS__
 Triplebufen db 0
 #endif
-
-%ifdef __MSDOS__
-@
-@ Small Screen, Stretch Screen (0 = NO, 1 = Yes)
-@ Enabling small screen will render in 256x224 res (probably not a good idea).
-@ Enabling stretch screen will stretch the image to fill the screen.
-smallscreenon dd 0
-ScreenScale db 0
-%endif
 
 %ifdef __WIN32__
 @
@@ -529,86 +599,27 @@ KitchenSync db 0
 KitchenSyncPAL db 0
 %endif
 
-@
-@ Enable Scanlines (0 = NONE, 1 = Full, 2 = 25%, 3 = 50%) - simulate TV scanlines
-#ifdef __MSDOS__
-@ 256x256 or 640x480 8bit modes only (25% and 50% in 640x480 16bit mode only)
-#endif
-scanlines db 0
-
-@
-%ifdef __OPENGL__
-@ Enable Video Interpolation, Bilinear Filter (0 = NO, 1 = Yes)
-@ This is compatible with all filters except NTSC.
-@ Bilinear Filter is OpenGL only.
-%else
-@ Enable Video Interpolation (0 = NO, 1 = Yes)
-@ This is compatible with scanlines.
-%endif
-@ Blends the neighboring pixels on the screen to eliminate pixelation.
-%ifdef __MSDOS__
-@ Available in most VESA2 16-bit modes
-@ Note: This option enables the Eagle filter in the VESA2 640x480 8-bit mode.
-%endif
-antienab db 0
-%ifdef __OPENGL__
-BilinearFilter db 0
-%endif
-
-@
-@ Enable Kreed's 2x Filters (0 = NONE, 1 = 2xSaI, 2 = Super Eagle, 3 = Super 2xSaI)
-@ These are Kreed's various 2x filters. They do not exhibit the same level of
-@ blurring than interpolation/bilinear.
-@ This is disabled when other filters are used.
-En2xSaI db 0
-
-@
 %ifndef __MSDOS__
-@ Use Hq*x Filter (0 = NO, 1 = Yes)
-@ This is a filter MaxSt has created. These are very CPU intensive filters that
-@ do very awesome blending to remove the pixelation.
-@ The level of filtering depends on the current resolution used
-@ hq2x = 512x448 but below HQ3x min res
-@ hq3x = 768x672 but below HQ4x min res
-@ hq4x = 1024x896 or above
-@ This is disabled when other filters are used.
+@
+@ Keep 4:3 Ratio (0 = No, 1 = YES)
+@ This is particularly handy for those that use laptops/LCDs+non 4:3 resolutions.
+%ifdef __WIN32__
+@ This can be used for any S/DS mode and any Custom Windowed mode.
+%elifdef __UNIXSDL__
+@ This can be used for Variable ODS Windowed and Custom Res OD Fullscreen.
+%endif
+@ It is not recommended to enable this while under 298x224.
+@ Disable this if you want to use the non-standard ratio instead.
+Keep4_3Ratio db 1
+
 %else
-@ The HQ*x filter is not available for DOS at the moment, sorry.
+@
+@ Small Screen, Stretch Screen (0 = NO, 1 = Yes)
+@ Enabling small screen will render in 256x224 res (probably not a good idea).
+@ Enabling stretch screen will stretch the image to fill the screen.
+smallscreenon dd 0
+ScreenScale db 0
 %endif
-hqFilter db 0
-
-@
-%ifdef __MSDOS__
-@ The NTSC filter is not available for DOS, so don't edit those settings.
-%endif
-@ Enable NTSC Filter (0 = OFF, 1 = On)
-@ Enable Blargg's wonderful NTSC filter which simulates the artifacts of an
-@ NTSC TV set - don't use it if you're already using TV-out...
-NTSCFilter db 0
-@ Blend frames (0 = OFF, 1 = On)
-@ Smoother transition between frames for non-60Hz refresh rates
-NTSCBlend db 0
-@ Parameters [-100..100]
-NTSCHue sb 0
-NTSCSat sb 0
-NTSCCont sb 0
-NTSCBright sb 0
-NTSCSharp sb 0
-NTSCWarp sb 0
-@ Refresh screen while changing the NTSC filter's parameters (0 = OFF, 1 = On)
-NTSCRef db 0
-
-@
-@ Enable Grayscale Mode (0 = NO, 1 = Yes) - don't enable this for other than nostalgia
-@ The whole screen is displayed in monochrome color.
-GrayscaleMode db 0
-
-@
-@ Enable High-Res Mode 7 (0 = NO, 1 = Yes)
-@ Doubles the internal resolution of the image when Mode 7 is in use
-@ However this disables most filters, except for interpolation.
-@ This is only useful in certain games and is not useful in general.
-Mode7HiRes16b dd 0
 
 @
 @  ----
