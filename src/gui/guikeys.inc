@@ -1177,30 +1177,25 @@ GUIVideoKeys:
   jne .nointerpolation
   xor eax,eax
   mov al,[cvidmode]
-%ifdef __MSDOS__
-  cmp byte[GUIIEVID+eax],0
-  je .nointerpolation
-%else
-  cmp byte[GUII2VID+eax],0
+%ifdef __OPENGL__
+  cmp byte[GUIBIFIL+eax],0
+  je .nobilinearfilter
+  xor byte[BilinearFilter],1
+  mov byte[NTSCFilter],0
+  jmp .nointerpolation
+.nobilinearfilter
+%elifdef __MSDOS__
+  cmp byte[GUIEAVID+eax],0
   jne .interpolation
 %endif
+  cmp byte[GUII2VID+eax],0
+  je .nointerpolation
 .interpolation
   xor byte[antienab],1
   mov byte[En2xSaI],0
   mov byte[hqFilter],0
   mov byte[NTSCFilter],0
 .nointerpolation
-%ifdef __OPENGL__
-  cmp dh,'I'
-  jne .nobilinearfilter
-  xor ebx,ebx
-  mov bl,[cvidmode]
-  cmp byte[GUIBIFIL+ebx],0
-  je .nobilinearfilter
-  xor byte[BilinearFilter],1
-  mov byte[NTSCFilter],0
-.nobilinearfilter
-%endif
 %ifdef __MSDOS__
   cmp dh,'C'
   jne .nofullscreen

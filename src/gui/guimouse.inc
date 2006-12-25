@@ -2193,26 +2193,18 @@ DisplayGUIVideoClick:
   call Clear2xSaIBuffer
   popad
 
-%ifdef __MSDOS__
   xor ebx,ebx                             ; Interpolations
   mov bl,[cvidmode]
-  cmp byte[GUIIEVID+ebx],0
-  je near .nocheckbox1b
-  mov byte[En2xSaI],0
-  mov byte[hqFilter],0
-  mov byte[NTSCFilter],0
-  FilterExcl 18,35,hqFilter,NTSCFilter,En2xSaI
-  GUIClickCButton3 18,35,byte[antienab],byte[antienab],1
-.nocheckbox1b
-%else
-  xor ebx,ebx
-  mov bl,[cvidmode]
+%ifdef __MSDOS__
+  cmp byte[GUIEAVID+ebx],0
+  jne near .yesinterp
+%endif
   cmp byte[GUII2VID+ebx],0
   je near .nocheckboxi2
+.yesinterp
   FilterExcl 18,35,hqFilter,NTSCFilter,En2xSaI
   GUIClickCButton3 18,35,byte[antienab],byte[antienab],1
 .nocheckboxi2
-%endif
 %ifdef __OPENGL__
   xor ebx,ebx                             ; Bilinear
   mov bl,[cvidmode]

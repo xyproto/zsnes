@@ -2027,15 +2027,15 @@ DisplayGUIVideo:
                                                   ; Filters tab
   cmp dword[GUIVideoTabs],2
   jne near .notfilterstab
-
-%ifdef __MSDOS__                                  ; Video Filters
+                                                  ; Video Filters
   xor eax,eax                                     ; Interpolations
   mov al,[cvidmode]
-  cmp byte[GUIINVID+eax],0
+  cmp byte[GUII2VID+eax],0
   je near .notext3
   GUIDisplayTextY 5,13,30,GUIVideoTextB1
   GUIDisplayCheckboxu 5,18,35,antienab,GUIVideoTextB1a,0
 .notext3
+%ifdef __MSDOS__                                  ; Eagle Filter
   xor eax,eax
   mov al,[cvidmode]
   cmp byte[GUIEAVID+eax],0
@@ -2043,14 +2043,6 @@ DisplayGUIVideo:
   GUIDisplayTextY 5,13,30,GUIVideoTextB1
   GUIDisplayCheckboxu 5,18,35,antienab,GUIVideoTextB1b,9
 .notext4
-%else
-  xor eax,eax
-  mov al,[cvidmode]
-  cmp byte[GUII2VID+eax],0
-  je near .nocheckboxi2
-  GUIDisplayTextY 5,13,30,GUIVideoTextB1
-  GUIDisplayCheckboxu 5,18,35,antienab,GUIVideoTextB1a,0
-.nocheckboxi2
 %endif
 %ifdef __OPENGL__
   xor eax,eax                                     ; Bilinear

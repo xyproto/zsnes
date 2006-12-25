@@ -110,7 +110,7 @@ EXTSYM KeyFastFrwrd,KeySlowDown,KeyResetSpeed,EMUPauseKey,INCRFrameKey
 EXTSYM KeyWinDisble,KeyOffsetMSw,JoyPad1Move,init_save_paths,loadquickfname
 EXTSYM mousewrap,GUIRClick,SaveSramData,SwapMouseButtons
 EXTSYM FPSAtStart,Turbo30hz,TimerEnable,SmallMsgText,mouse1lh,mouse2lh
-EXTSYM AutoPatch,RomInfo,AllowUDLR,GrayscaleMode
+EXTSYM AutoPatch,RomInfo,AllowUDLR,GrayscaleMode,GUII2VID
 EXTSYM Mode7HiRes16b,FFRatio,SDRatio,EmuSpeed,mouseshad
 EXTSYM esctomenu,GUILoadKeysJumpTo,lhguimouse,zst_name
 EXTSYM GUIEnableTransp,FilteredGUI,Surround,SPCDisable,nosaveSRAM
@@ -133,12 +133,12 @@ EXTSYM GUIDSMODE,GUISMODE,CBBuffer,CBLength,PasteClipBoard,ctrlptr,PauseFocusCha
 %elifdef __MSDOS__
 EXTSYM dssel,SetInputDevice209,initvideo2,Force8b,SBHDMA,vibracard,smallscreenon
 EXTSYM pl1p209,pl2p209,pl3p209,pl4p209,pl5p209,SidewinderFix,Triplebufen,ScreenScale
-EXTSYM GUIINVID,GUIEAVID,GUIIEVID,GUIFSVID,GUIWSVID,GUISSVID
+EXTSYM GUIEAVID,GUIFSVID,GUIWSVID,GUISSVID
 %endif
 
 %ifndef __MSDOS__
 EXTSYM ZsnesPage,DocsPage,GUICustomX,GUICustomY,GetCustomXY,SetCustomXY,initwinvideo
-EXTSYM Keep4_3Ratio,PrevFSMode,PrevWinMode,GUII2VID
+EXTSYM Keep4_3Ratio,PrevFSMode,PrevWinMode
 %endif
 
 %ifndef __UNIXSDL__
