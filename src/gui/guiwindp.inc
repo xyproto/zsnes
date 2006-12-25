@@ -2225,8 +2225,8 @@ GUIVideoTextA1 db 'LEGEND:',0
 GUIVideoTextA1a db 'D = ALLOW FILTERS',0
 GUIVideoTextA1b db 'S = STRETCH',0
 GUIVideoTextA1c db 'R = KEEP 8:7 RATIO',0
-GUIVideoTextA1d db 'W = WIN',0
-GUIVideoTextA1e db 'F = FULL',0
+GUIVideoTextA1d db 'W = WINDOWED',0
+GUIVideoTextA1e db 'F = FULLSCREEN',0
 GUIVideoTextA1f db 'O = USES OPENGL',0
 
 GUIVideoTextA2 db 'CUSTOM:',0
