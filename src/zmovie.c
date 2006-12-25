@@ -2499,6 +2499,7 @@ static void DumpVideoFrame(bool playback_over)
       raw_video_close();
       RawDumpInProgress = false;
       SetMovieMode(MOVIE_OFF);
+      MovieForcedLengthEnabled = false;
     }
     else
     {
@@ -2796,6 +2797,7 @@ void MovieStop()
           raw_video_close();
           RawDumpInProgress = false;
           MovieForcedLength = 0;
+          MovieForcedLengthEnabled = false;
         }
         MessageOn = 0;
         break;
@@ -2816,6 +2818,7 @@ void MovieStop()
           raw_video_close();
           RawDumpInProgress = false;
           MovieForcedLength = 0;
+          MovieForcedLengthEnabled = false;
         }
         MessageOn = 0;
         break;
@@ -2823,6 +2826,7 @@ void MovieStop()
         raw_video_close();
         RawDumpInProgress = false;
         MovieForcedLength = 0;
+        MovieForcedLengthEnabled = false;
         break;
     }
 
