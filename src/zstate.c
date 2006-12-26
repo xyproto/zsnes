@@ -1006,8 +1006,8 @@ bool zst_load(FILE *fp, size_t Compressed)
     prevoamptr = 0xFF;
     ioportval = 0xFF;
     spcnumread = 0;
-    nexthdma = 0;
   }
+  nexthdma = 0;
 
   repackfunct();
   initpitch();
