@@ -2414,30 +2414,30 @@ void map_sfx()
   map_set(snesmmap,ROM,0x40,0x10000);
 
   // set banks 40-7F (40h x128KB ROM banks @20000h)
-  map_set(snesmmap+0x40,ROM+0x8000,0x20,0x20000);
-  map_set(snesmmap+0x60,ROM+0x8000,0x20,0x20000);
+  map_set(snesmmap+0x40,ROM+0x8000,0x30,0x20000);
+  map_set(snesmmap+0x70,ROM+0x8000,0x10,0x20000);
 
   // set banks 80-BF (40h x 64KB ROM banks @10000h)
   map_set(snesmmap+0x80,ROM,0x40,0x10000);
 
   // set banks C0-FF (40h x128KB ROM banks @20000h)
-  map_set(snesmmap+0xC0,ROM+0x8000,0x20,0x20000);
-  map_set(snesmmap+0xE0,ROM+0x8000,0x20,0x20000);
+  map_set(snesmmap+0xC0,ROM+0x8000,0x30,0x20000);
+  map_set(snesmmap+0xF0,ROM+0x8000,0x10,0x20000);
 
   // set addresses 0000-7FFF
   // set banks 00-3F (40h x WRAM)
   map_set(snesmap2,wramdata,0x40,0);
 
   // set banks 40-7F (40h x128KB ROM banks @20000h)
-  map_set(snesmap2+0x40,ROM+0x8000,0x20,0x20000);
-  map_set(snesmap2+0x60,ROM+0x8000,0x20,0x20000);
+  map_set(snesmap2+0x40,ROM+0x8000,0x30,0x20000);
+  map_set(snesmap2+0x70,ROM+0x8000,0x10,0x20000);
 
   // set banks 80-BF (40h x WRAM)
   map_set(snesmap2+0x80,wramdata,0x40,0);
 
   // set banks C0-FF (40h x128KB ROM banks @20000h)
-  map_set(snesmap2+0xC0,ROM+0x8000,0x20,0x20000);
-  map_set(snesmap2+0xE0,ROM+0x8000,0x20,0x20000);
+  map_set(snesmap2+0xC0,ROM+0x8000,0x30,0x20000);
+  map_set(snesmap2+0xF0,ROM+0x8000,0x10,0x20000);
 
   // set banks 70-73/78/79 (SFXRAM & SRAM)
   map_set(snesmap2+0x70,sfxramdata,4,0x10000);
