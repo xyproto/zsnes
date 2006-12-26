@@ -2365,13 +2365,16 @@ void map_ehirom()
 
   // set addresses 8000-FFFF
   // set banks 00-3F (40h x 32KB ROM banks @ 10000h)
-  map_set(snesmmap,ROM+0x400000,0x40,0x10000);
+  map_set(snesmmap,ROM+0x400000,0x20,0x10000);
+  map_set(snesmmap+0x20,ROM+0x400000,0x20,0x10000);
 
   // set banks 40-7F (40h x 32KB ROM banks @ 10000h)
-  map_set(snesmmap+0x40,ROM+0x400000,0x40,0x10000);
+  map_set(snesmmap+0x40,ROM+0x400000,0x20,0x10000);
+  map_set(snesmmap+0x60,ROM+0x400000,0x20,0x10000);
 
   // set banks 80-BF (40h x 32KB ROM banks @10000h)
-  map_set(snesmmap+0x80,ROM+0x400000,0x40,0x10000);
+  map_set(snesmmap+0x80,ROM+0x400000,0x20,0x10000);
+  map_set(snesmmap+0xA0,ROM+0x400000,0x20,0x10000);
 
   // set banks C0-FF (40h x 64KB ROM banks @10000h)
   map_set(snesmmap+0xC0,ROM,0x40,0x10000);
@@ -2381,7 +2384,8 @@ void map_ehirom()
   map_set(snesmap2,wramdata,0x40,0);
 
   // set banks 40-7F (40h x 32KB ROM banks @ 8000h)
-  map_set(snesmap2+0x40,ROM+0x400000,0x40,0x10000);
+  map_set(snesmap2+0x40,ROM+0x400000,0x20,0x10000);
+  map_set(snesmap2+0x60,ROM+0x400000,0x20,0x10000);
 
   // set banks 80-BF (40h x WRAM)
   map_set(snesmap2+0x80,wramdata,0x40,0);
