@@ -49,7 +49,7 @@ case x$target in
     NFLAGS="$NFLAGS -D__BSDSDL__ -f elf -DELF"
     ;;
   *-*-darwin* )
-    CFLAGS="$CFLAGS -D__MACOSX__ -D__OPENGL__ -arch i386 -mdynamic-no-pic -mstackrealign"
+    CFLAGS="$CFLAGS -D__MACOSX__ -D__OPENGL__ -arch i386 -mdynamic-no-pic -mstackrealign -fno-unit-at-a-time"
     NFLAGS="$NFLAGS -D__MACOSX__ -D__OPENGL__ -f macho -DMACHO"
     PSRFLAGS="$PSRFLAGS -D__OPENGL__"
     MMLIB_FILES="$MMLIB_FILES \$(MMLIB_D)/osx.o"

@@ -2334,7 +2334,7 @@ void map_hirom()
   // set banks 80-BF (40h x 64KB ROM banks @10000h)
   map_set(snesmmap+0x80,ROM,0x40,0x10000);
 
-  // set banks C0-FF (40h x 64KB ROM banks @ 0000h)
+  // set banks C0-FF (40h x 64KB ROM banks @10000h)
   map_set(snesmmap+0xC0,ROM,0x40,0x10000);
 
   // set addresses 0000-7FFF
