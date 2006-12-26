@@ -2578,6 +2578,7 @@ void initsnes()
 
 bool PatchUsingIPS(char *);
 void DosExit(), OpenSramFile(), CheatCodeLoad(), LoadSecondState(), LoadGameSpecificInput();
+char *zst_name();
 extern unsigned char GUIOn, GUIOn2;
 
 bool loadfileGUI()
@@ -2595,6 +2596,7 @@ bool loadfileGUI()
     OpenSramFile();
     OpenCombFile();
     LoadGameSpecificInput();
+    zst_name();
 
     if (!(GUIOn || GUIOn2))
     {
