@@ -1042,7 +1042,7 @@ void zst_sram_load(FILE *fp)
   if (SETAEnable) { fread(setaramdata, 1, 4096, fp); } // SETA sram
   if (SPC7110Enable) { fseek(fp, PHnum2writespc7110reg + 65536, SEEK_CUR); }
   if (DSP4Enable) {fseek(fp, 1294, SEEK_CUR); }
-  fseek(fp, 227, SEEK_CUR);
+  fseek(fp, 220, SEEK_CUR);
   if (ramsize) { fread(sram, 1, ramsize, fp); } // normal sram
 }
 
@@ -1081,7 +1081,7 @@ void zst_sram_load_compressed(FILE *fp)
           if (SETAEnable) { memcpyrinc(&data, setaramdata, 4096); } // SETA sram
           if (SPC7110Enable)  { data += PHnum2writespc7110reg + 65536; }
           if (DSP4Enable) { data += 1294; }
-          data += 227;
+          data += 220;
           if (ramsize)  { memcpyrinc(&data, sram, ramsize); } // normal sram
         }
         free(compressed_buffer);
