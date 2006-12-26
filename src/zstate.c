@@ -1007,7 +1007,11 @@ bool zst_load(FILE *fp, size_t Compressed)
     ioportval = 0xFF;
     spcnumread = 0;
   }
-  nexthdma = 0;
+
+  if (MovieProcessing != MOVIE_RECORD)
+  {
+    nexthdma = 0;
+  }
 
   repackfunct();
   initpitch();
