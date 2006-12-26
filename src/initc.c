@@ -147,7 +147,7 @@ bool valid_normal_bank(unsigned char bankbyte)
 
 bool EHiHeader(unsigned char *ROM, int BankLoc)
 {
-  if (validChecksum(ROM, BankLoc) && ROM[BankLoc+BankOffset] == 53)
+  if (validChecksum(ROM, BankLoc) && (ROM[BankLoc+BankOffset] == 53 || ROM[BankLoc+BankOffset] == 37))
   {
     return(true);
   }

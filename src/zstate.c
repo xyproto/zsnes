@@ -1041,6 +1041,7 @@ void zst_sram_load(FILE *fp)
   if (DSP1Enable) { fseek(fp, 2874, SEEK_CUR); }
   if (SETAEnable) { fread(setaramdata, 1, 4096, fp); } // SETA sram
   if (SPC7110Enable) { fseek(fp, PHnum2writespc7110reg + 65536, SEEK_CUR); }
+  if (DSP4Enable) {fseek(fp, 1294, SEEK_CUR); }
   fseek(fp, 227, SEEK_CUR);
   if (ramsize) { fread(sram, 1, ramsize, fp); } // normal sram
 }
