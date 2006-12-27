@@ -1,6 +1,23 @@
+#Copyright (C) 1997-2007 ZSNES Team ( theoddone33, grinvader, Nach )
+#
+#http://www.zsnes.com
+#http://sourceforge.net/projects/zsnes
+#https://zsnes.bountysource.com
+#
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#version 2 as published by the Free Software Foundation.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
 dnl -- Begin zlib autoconf macro
-dnl Copyright (c) 2002 Patrick McFarland
-dnl Under the GPL License
 dnl When copying, include from Begin to End zlib autoconf macro, including
 dnl those tags, so others can easily copy it too. (Maybe someday this will
 dnl become zlib.m4?)
@@ -117,8 +134,6 @@ dnl -- End zlib autoconf macro
 dnl ----
 
 dnl -- Begin libpng autoconf macro
-dnl Copyright (c) 2002 Patrick McFarland
-dnl Under the GPL License
 dnl When copying, include from Begin to End libpng autoconf macro, including
 dnl those tags, so others can easily copy it too. (Maybe someday this will
 dnl become libpng.m4?)
@@ -257,8 +272,6 @@ dnl -- End libpng autoconf macro
 dnl ----
 
 dnl -- Begin custom tools use
-dnl Copyright (c) 2006 grinvader
-dnl Under the GPL2 License
 dnl
 AC_DEFUN([AM_ARCH_DETECT],
 [
