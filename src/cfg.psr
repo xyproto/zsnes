@@ -969,9 +969,9 @@ GUIEffect db 1
 @
 @ GUI Palette Mods:
 @ Background RGB Tint [0..31]
-GUIRAdd db 4
-GUIGAdd db 4
-GUIBAdd db 8
+GUIRAdd db 15
+GUIGAdd db 10
+GUIBAdd db 31
 @ Titlebar RGB Tint [0..31]
 GUITRAdd db 0
 GUITGAdd db 10
