@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2005-2006 Nach ( http://nsrt.edgeemu.com )
+Copyright (C) 2005-2007 Nach ( http://nsrt.edgeemu.com )
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -16,7 +16,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
 /*
-Config file handler creator by Nach (C) 2005-2006
+Config file handler creator by Nach (C) 2005-2007
 */
 
 #if !defined(__GNUC__) && !defined(_MSC_VER)
@@ -1851,7 +1851,7 @@ int main(size_t argc, const char **argv)
 
   if ((argc-param_pos) != 2)
   {
-    cout << "Config file handler creator by Nach (C) 2005-2006\n"
+    cout << "Config file handler creator by Nach (C) 2005-2007\n"
          << "\n"
          << "Usage:\n"
          << "parsegen [options] <output> <input>\n"
