@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2003-2006 Ryan C. Gordon and others.
+Copyright (c) 2003-2007 Ryan C. Gordon and others.
 
 http://icculus.org/manymouse/
 
