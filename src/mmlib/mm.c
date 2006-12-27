@@ -31,7 +31,7 @@ misrepresented as being the original software.
 #include "mm.h"
 
 static const char *manymouse_copyright =
-    "ManyMouse " MANYMOUSE_VERSION " (c) 2003-2006 Ryan C. Gordon.";
+    "ManyMouse " MANYMOUSE_VERSION " (c) 2003-2007 Ryan C. Gordon.";
 
 extern const ManyMouseDriver ManyMouseDriver_windows;
 extern const ManyMouseDriver ManyMouseDriver_evdev;
