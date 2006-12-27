@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2005-2006 NSRT Team ( http://nsrt.edgeemu.com )
+Copyright (C) 2005-2007 NSRT Team ( http://nsrt.edgeemu.com )
 Copyright (C) 2002 Andrea Mazzoleni ( http://advancemame.sf.net )
 
 This library is free software; you can redistribute it and/or

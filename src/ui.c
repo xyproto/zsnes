@@ -356,7 +356,7 @@ void zstart()
   asm_call(StartUp);
 
   // Print welcome message.
-  printf("ZSNES v%s, (c) 1997-2006, ZSNES Team\n", ZVERSION);
+  printf("ZSNES v%s, (c) 1997-2007, ZSNES Team\n", ZVERSION);
   puts("Be sure to check http://www.zsnes.com/ for the latest version.\n");
   puts("ZSNES is written by the ZSNES Team (See AUTHORS.TXT)");
   puts("ZSNES comes with ABSOLUTELY NO WARRANTY.  This is free software,");
