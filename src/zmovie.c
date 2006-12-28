@@ -2829,6 +2829,8 @@ void MovieStop()
   MovieWaiting = false;
 }
 
+void InitRewindVarsForMovie();
+
 void MoviePlay()
 {
   if (!MovieProcessing)
@@ -2854,6 +2856,7 @@ void MoviePlay()
 
         if (zmv_open(ZSaveName))
         {
+          InitRewindVarsForMovie();
           zmv_alloc_rewind_buffer(AllocatedRewindStates);
           SetMovieMode(MOVIE_PLAYBACK);
           setextension(ZSaveName, "sub");
@@ -2917,6 +2920,7 @@ void MovieRecord()
       SetMovieMode(MOVIE_RECORD);
       if (zmv_create(ZSaveName))
       {
+        InitRewindVarsForMovie();
         zmv_alloc_rewind_buffer(AllocatedRewindStates);
         Msgptr = "MOVIE RECORDING.";
         MessageOn = MsgCount;
@@ -2969,6 +2973,7 @@ void MovieAppend()
       SRAMState = true;
 
       SetMovieMode(MOVIE_RECORD);
+      InitRewindVarsForMovie();
       zmv_alloc_rewind_buffer(AllocatedRewindStates);
       Msgptr = "MOVIE APPENDING.";
       MessageOn = MsgCount;

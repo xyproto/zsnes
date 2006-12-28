@@ -488,6 +488,15 @@ void InitRewindVars()
   DblRewTimer = 1;
 }
 
+void InitRewindVarsForMovie()
+{
+  LatestRewindPos = 0;
+  EarliestRewindPos = 0;
+  RewindPosPassed = false;
+  RewindTimer = 1;
+  DblRewTimer = 1;
+}
+
 //This is used to preserve system load state between game loads
 static unsigned char *BackupSystemBuffer = 0;
 
