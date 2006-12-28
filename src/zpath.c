@@ -67,7 +67,11 @@ static bool ZCartAlloc = false, ZSaveAlloc = false, ZStateAlloc = false, ZSaveST
 void cfgpath_ensure(const char *launch_command)
 {
   struct passwd *userinfo;
+#ifdef ZCONF
+  const char *const zpath = ZCONF;
+#else
   const char *const zpath = ".zsnes";
+#endif
 
   if ((userinfo = getpwuid(getuid())))
   {

@@ -1,6 +1,25 @@
 dnl - Process this file with autoconf to produce a configure script.
+dnl
+dnl Copyright (C) 1997-2007 ZSNES Team ( zsKnight, _Demo_, pagefault, Nach )
+dnl 
+dnl http://www.zsnes.com
+dnl http://sourceforge.net/projects/zsnes
+dnl https://zsnes.bountysource.com
+dnl 
+dnl This program is free software; you can redistribute it and/or
+dnl modify it under the terms of the GNU General Public License
+dnl version 2 as published by the Free Software Foundation.
+dnl 
+dnl This program is distributed in the hope that it will be useful,
+dnl but WITHOUT ANY WARRANTY; without even the implied warranty of
+dnl MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+dnl GNU General Public License for more details.
+dnl 
+dnl You should have received a copy of the GNU General Public License
+dnl along with this program; if not, write to the Free Software
+dnl Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-AC_INIT
+AC_INIT([zsnes], [], [http://www.zsnes.com])
 AC_PREREQ(2.50)
 AC_CONFIG_SRCDIR(init.asm)
 AC_CONFIG_HEADER(config.h)
@@ -30,6 +49,11 @@ if test x$NASMPATH = xno; then
   AC_MSG_ERROR(You need NASM installed to compile ZSNES)
 fi
 
+AC_ARG_WITH(zconf-path,
+  [  --with-zconf-path=PATH  Path where ZSNES looks for zsnesl.cfg (default is .zsnes)],
+  ZCONF="$withval",
+  ZCONF="")
+
 CFLAGS="$CFLAGS -D__UNIXSDL__"
 NFLAGS="$NFLAGS -w-orphan-labels -D__UNIXSDL__"
 PSRFLAGS="$PSRFLAGS -D__UNIXSDL__"
@@ -57,6 +81,9 @@ case x$target in
     LDFLAGS="$LDFLAGS -framework Carbon -framework IOKit -framework Foundation -framework OpenGL -mdynamic-no-pic -read_only_relocs suppress -undefined dynamic_lookup"
     GL_DRAW="\$(PORT_D)/gl_draw.o"
     found_opengl=yes
+    if test x$ZCONF != x; then
+      ZCONF="Library/Application Support/ZSNES"
+    fi
     ;;
   *-*-cygwin* | *-*-*ming*)
     NFLAGS="$NFLAGS -f win32"
@@ -65,6 +92,10 @@ case x$target in
     AC_MSG_ERROR(This target is not supported)
     ;;
 esac
+
+if test x$ZCONF != x; then
+  CFLAGS="$CFLAGS -DZCONF=\"\\\"$ZCONF\\\"\""
+fi
 
 dnl - Checks for libraries: libSDL*, zlib*, libpng, curses, OpenGL, JMAlib
 dnl - libs marked * are required, the other are optionnal
@@ -208,8 +239,7 @@ else
     force_arch=""
     CFLAGS="$CFLAGSBAK"
     AC_MSG_CHECKING(for autodetected architecture)])
-  fi
-  if test x$force_arch = x; then
+  else
     if test x$ARCH_INFO = x; then
       case x$target in
         i686-*-*)
