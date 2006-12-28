@@ -108,5 +108,6 @@ void setextension(char *base, const char *ext);
 bool isextension(const char *fname, const char *ext);
 void strdirname(char *str);
 void strbasename(char *str);
+bool mkpath(const char *path, mode_t mode);
 
 #endif

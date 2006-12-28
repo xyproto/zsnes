@@ -44,7 +44,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #ifdef __WIN32__
 #define mkdir_p(path) mkdir(path)
 #else
-#define mkdir_p(path) mkdir(path, (S_IRWXU|S_IRWXG|S_IRWXO)) //0777
+#define mkdir_p(path) mkdir(path, mmode)
 #endif
 
 #ifdef __MSDOS__
@@ -84,22 +84,24 @@ void cfgpath_ensure(const char *launch_command)
 
   if (ZCfgPath)
   {
+    struct stat stat_buffer;
+
     ZCfgAlloc = true;
     strcpy(ZCfgPath, userinfo->pw_dir);
     strcatslash(ZCfgPath);
     strcat(ZCfgPath, zpath);
 
-    if (access(ZCfgPath, F_OK) && mkdir(ZCfgPath, (S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH)))
+    if (mkpath(ZCfgPath, 0755) && !stat(ZCfgPath, &stat_buffer) && S_ISDIR(stat_buffer.st_mode) && !access(ZCfgPath, W_OK))
+    {
+      strcatslash(ZCfgPath);
+    }
+    else
     {
       printf("Error creating: %s\n", ZCfgPath);
       free(ZCfgPath);
       ZCfgAlloc = false;
 
       ZCfgPath = ZStartPath;
-    }
-    else
-    {
-      strcatslash(ZCfgPath);
     }
   }
   else
@@ -426,6 +428,7 @@ int remove_dir(const char *path, const char *file)
 
 int mkdir_dir(const char *path, const char *dir)
 {
+  mode_t mmode = 0755;
   return(mkdir_p(strdupcat_internal(path, dir)));
 }
 
@@ -560,4 +563,57 @@ void strbasename(char *str)
   {
     memmove(str, p+1, strlen(p));
   }
+}
+
+static bool mkpath_help(char *path, char *element, mode_t mmode)
+{
+  bool success = true;
+  if (*path)
+  {
+    char *p;
+    bool created;
+
+    while (*element == DIR_SLASH_C) { element++; }
+
+    if (*element)
+    {
+      p = strchr(element, DIR_SLASH_C);
+      if (p) { *p = 0; }
+      if ((created = !mkdir_p(path)) || (errno == EEXIST)) //Current path fragment created or already exists
+      {
+        if (p)
+        {
+          *p = DIR_SLASH_C;
+          if (!mkpath_help(path, p+1, mmode)) //If creation of next fragment fails
+          {
+            if (created)
+            {
+              *p = 0;
+              rmdir(path);
+            }
+            success = false;
+          }
+        }
+      }
+      else { success = false; }
+    }
+  }
+  return(success);
+}
+
+bool mkpath(const char *path, mode_t mode)
+{
+  bool success = true;
+  if (path && *path)
+  {
+    char *p = strdup(path);
+    if (p)
+    {
+      natify_slashes(p);
+      success = mkpath_help(p, p, mode);
+      free(p);
+    }
+    else { success = false; }
+  }
+  return(success);
 }
