@@ -366,7 +366,11 @@ void zstart()
 
 #ifndef __RELEASE__
   puts("This is a work in progress build. It contains code which");
-  puts("May or may not be complete");
+  puts("May or may not be complete\n");
+#ifdef __UNIXSDL__
+  puts("If this is supposed to be an official release, you forgot to");
+  puts("run configure with --enable-release, go rebuild.\n");
+#endif
 #endif
 
 #ifdef __UNIXSDL__
