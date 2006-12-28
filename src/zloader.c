@@ -882,7 +882,7 @@ int PASCAL WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
     handle_params(__argc, __argv);
 
     atexit(ZCleanup);
-    srand(time(0));
+    srand((unsigned int)time(0));
     zstart();
   }
   return(0);

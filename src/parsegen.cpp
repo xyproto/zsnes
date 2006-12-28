@@ -39,6 +39,7 @@ using namespace std;
 #ifdef _MSC_VER //MSVC
 typedef int ssize_t;
 #define strcasecmp stricmp
+#define strncasecmp strnicmp
 #define __WIN32__
 #endif
 

@@ -65,7 +65,7 @@ EXTSYM GetDate,horizon_get,ErrorPointer,MessageOn,GetTime
 EXTSYM GetScreen,GUITBWVID,Clear2xSaIBuffer,MouseWindow,ExitFromGUI
 EXTSYM GUIWFVID,newgfx16b,NumVideoModes,MusicVol,DSPMem,NumInputDevices
 EXTSYM GUIInputNames,GUIVideoModeNames,GUISLVID
-EXTSYM GUITBVID,GUIHSVID,GUI2xVID,GUIM7VID
+EXTSYM GUIHSVID,GUI2xVID,GUIM7VID
 EXTSYM GUINTVID,device1,device2,TwelveHourClock,JoyX
 EXTSYM JoyY,JoyMinX,JoyMinY,JoyMaxX,JoyMaxY,JoyMinX209,JoyMaxX209,JoyMinY209
 EXTSYM JoyMaxY209,GetCoords,GetCoords3,MultiTap,SFXEnable,RestoreSystemVars
@@ -134,7 +134,7 @@ EXTSYM GUIDSMODE,GUISMODE,CBBuffer,CBLength,PasteClipBoard,ctrlptr,PauseFocusCha
 %elifdef __MSDOS__
 EXTSYM dssel,SetInputDevice209,initvideo2,Force8b,SBHDMA,vibracard,smallscreenon
 EXTSYM pl1p209,pl2p209,pl3p209,pl4p209,pl5p209,SidewinderFix,Triplebufen,ScreenScale
-EXTSYM GUIEAVID,GUIFSVID,GUIWSVID,GUISSVID
+EXTSYM GUIEAVID,GUIFSVID,GUIWSVID,GUISSVID,GUITBVID
 %endif
 
 %ifndef __MSDOS__

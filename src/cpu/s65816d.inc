@@ -19,7 +19,10 @@
 
 
 
-EXTSYM Sflagnz,Sflago,Sflagc,dmadata,IRAM,debuggeron
+EXTSYM Sflagnz,Sflago,Sflagc,dmadata,IRAM
+%ifndef NO_DEBUGGER
+EXTSYM debuggeron
+%endif
 
 ;*******************************************************
 ; Flag Setting Macros

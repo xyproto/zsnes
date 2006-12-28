@@ -87,8 +87,8 @@ ifeq (${ENV},win32)
 endif
 
 ifeq (${ENV},msvc)
-  CFLAGSORIG=/nologo /Ox /G6 /c /EHsc /D__WIN32__
-  MSVCLIBS=zlib.lib libpng.lib wsock32.lib user32.lib gdi32.lib shell32.lib winmm.lib dinput8.lib dxguid.lib pdcurses.lib
+  CFLAGSORIG=/nologo /Ox /G6 /c /EHsc
+  MSVCLIBS=zlib.lib libpng.lib wsock32.lib user32.lib gdi32.lib shell32.lib winmm.lib dinput8.lib dxguid.lib
   DRESOBJ=${WINDIR}/zsnes.res
   OS=__WIN32__
 endif
@@ -207,16 +207,19 @@ MAINOBJ=endmem${OE} init${OE} initc${OE} patch${OE}\
 	cfg${OE} md${OE} input${OE} zpath${OE} ztimec${OE} ztime${OE}
 
 ifneq (${DEBUGGER},no)
-ifeq (${OLDDEBUGGER},yes)
-  DOSOBJORIG += ${DOSDIR}/debug${OE}
-else
-  MAINOBJ += debugger${OE} debugasm${OE}
-ifeq (${OS},__MSDOS__)
-  LIBS+= -lpdcur
-else
-  LIBS+= -lpdcurses
-endif
-endif
+  ifeq (${OLDDEBUGGER},yes)
+    DOSOBJORIG+= ${DOSDIR}/debug${OE}
+    CFLAGSORIG+= -DOLD_DEBUGGER
+    ASMFLAGSORIG+= -DOLD_DEBUGGER
+  else
+    MAINOBJ+= debugger${OE} debugasm${OE}
+    ifeq (${OS},__MSDOS__)
+      LIBS+= -lpdcur
+    else
+      LIBS+= -lpdcurses
+      MSVCLIBS+= pdcurses.lib
+    endif
+  endif
 endif
 
 NETOBJ=
@@ -273,10 +276,10 @@ ifeq (${OS},__WIN32__)
 endif
 else
 %.obj : %.c
-	cl ${CFLAGSORIG} /Fo$@ $<
+	cl ${CFLAGS} /Fo$@ $<
 
 %.obj: %.cpp
-	cl ${CFLAGSORIG} /Fo$@ $<
+	cl ${CFLAGS} /Fo$@ $<
 
 %.obj: %.asm
 	${ASM} ${ASMOPT} ${ASMFLAGS} -o $@ $<
@@ -287,7 +290,7 @@ endif
 ifneq (${ENV},msvc)
 	${CC} ${CFLAGS} -O1 -o $@ -c temppsr.c
 else
-	cl ${CFLAGSORIG} /Fo$@ temppsr.c
+	cl ${CFLAGS} /Fo$@ temppsr.c
 endif
 	${DELETECOMMAND} temppsr.c
 

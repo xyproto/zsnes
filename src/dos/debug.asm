@@ -23,7 +23,7 @@
 
 EXTSYM DosExit,curblank,start65816,UpdateDPage,splitflags,joinflags,delay
 EXTSYM LastLog,endprog,printhex,vesa2_rfull,vesa2_rtrcl,vesa2_gfull,vesa2_gtrcl
-EXTSYM spcnumread,Curtableaddr,statesaver,memtablew8
+EXTSYM spcnumread,Curtableaddr,statesaver,memtablew8,Output_Text
 EXTSYM writeon,curcyc,dmadata,execsingle,initaddrl,memtabler8,pdh,debugloadstate
 EXTSYM regaccessbankr8,selcB800,snesmap2,snesmmap,ram7f,exiter,Check_Key,Get_Key
 EXTSYM CurrentCPU,SA1RegP,curypos,xa,xd,xdb,xe,xp,xpb,xpc,xs,xx,xy,SA1xpb,SA1xpc
@@ -3297,6 +3297,10 @@ SECTION .text
     pop ecx
     ret
 
+SECTION .data
+.hexdat db '0123456789ABCDEF'
+SECTION .text
+
 printhex8:
     mov ecx,2
     xor ebx,ebx
@@ -3304,7 +3308,7 @@ printhex8:
     mov bx,ax
     and bx,0F0h
     shr bx,4
-    mov dl,[printhex.hexdat+ebx]
+    mov dl,[nextopcode.hexdat+ebx]
     push ax
     mov ah,02h
     call Output_Text
@@ -3313,10 +3317,6 @@ printhex8:
     dec ecx
     jnz .loopb
     ret
-
-SECTION .data
-.hexdat db '0123456789ABCDEF'
-SECTION .text
 
 NEWSYM nextopcodesa1
     push es

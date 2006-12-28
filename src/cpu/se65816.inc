@@ -23,7 +23,10 @@ EXTSYM membank0r16,membank0r8,membank0w16,membank0w8
 EXTSYM memtabler16,memtabler8,memtablew16,memtablew8
 EXTSYM regaccessbankr8,snesmap2,snesmmap,stackand,stackor
 EXTSYM wramdata,SA1xa,SA1xd,SA1xdb,xe,xirqb,SA1xpb,xpc,SA1xs,SA1xx,SA1xy
-EXTSYM debstop4,SA1RegP,nextopcode,debugsa1,skipdebugsa1
+EXTSYM SA1RegP
+%ifndef NO_DEBUGGER
+EXTSYM debstop4,nextopcode,debugsa1,skipdebugsa1
+%endif
 
 
 SECTION .text
