@@ -3493,6 +3493,7 @@ DisplayGUIOptns:              ; GUI Options
   GUIDisplayButtonHoleTu 10,72,88,byte[GUIEffect],0,GUIGUIOptnsTextE1,3
   GUIDisplayButtonHoleTu 10,122,88,byte[GUIEffect],1,GUIGUIOptnsTextE2,1
   GUIDisplayButtonHoleTu 10,182,88,byte[GUIEffect],4,GUIGUIOptnsTextE5,2
+  GUIDisplayButtonHoleTu 10,72,98,byte[GUIEffect],5,GUIGUIOptnsTextE6,3
   GUIDisplayButtonHoleTu 10,122,98,byte[GUIEffect],2,GUIGUIOptnsTextE3,6
   GUIDisplayButtonHoleTu 10,182,98,byte[GUIEffect],3,GUIGUIOptnsTextE4,6
 
@@ -3554,6 +3555,7 @@ GUIGUIOptnsTextE2 db 'SNOW',0
 GUIGUIOptnsTextE3 db 'WATER A',0
 GUIGUIOptnsTextE4 db 'WATER B',0
 GUIGUIOptnsTextE5 db 'BURNING',0
+GUIGUIOptnsTextE6 db 'SMOKE',0
 
 SECTION .text
 

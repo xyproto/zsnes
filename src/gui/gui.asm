@@ -60,7 +60,7 @@ EXTSYM SaveCheatSearchFile,Get_Date,Check_Key,Get_Key,sram
 EXTSYM TripBufAvail,ResetTripleBuf,GUINGVID,ScanCodeListing
 EXTSYM AdjustFrequency,GUISaveVars,Init_Mouse,Get_MouseData,Set_MouseXMax
 EXTSYM Set_MouseYMax,Set_MousePosition,Get_MousePositionDisplacement,GUIInit
-EXTSYM GUIDeInit,SpecialLine,DrawWater,DrawBurn,MMXCheck
+EXTSYM GUIDeInit,SpecialLine,DrawWater,DrawBurn,DrawSmoke,MMXCheck
 EXTSYM GetDate,horizon_get,ErrorPointer,MessageOn,GetTime
 EXTSYM GetScreen,GUITBWVID,Clear2xSaIBuffer,MouseWindow,ExitFromGUI
 EXTSYM GUIWFVID,newgfx16b,NumVideoModes,MusicVol,DSPMem,NumInputDevices
@@ -1016,9 +1016,12 @@ NEWSYM StartGUI
   call DrawWater
 .nowater2
   cmp byte[GUIEffect],4
-  jne .nosmoke
-;    call DrawSmoke
+  jne .noburn
   call DrawBurn
+.noburn
+  cmp byte[GUIEffect],5
+  jne .nosmoke
+  call DrawSmoke
 .nosmoke
 
   cmp dword[GUIEditStringcWin],0

@@ -982,7 +982,8 @@ GUIwinposx sd 0, 6,65,33,42, 2,34, 6,64, 8, 8,33,56,64,56, 5, 3,28,48, 6,28,53,0
 GUIwinposy sd 0,20,70,30,20,20,20,20,30,30,20,20,60,30,60,20,20,60,60,20,30,20,0
 
 @
-@ GUI Background Effect (0 = NONE, 1 = Snow, 2 = Water A, 3 = Water B, 4 = Burn)
+@ GUI Background Effect
+@ (0 = NONE, 1 = Snow, 2 = Water A, 3 = Water B, 4 = Burn, 5 = Smoke)
 GUIEffect db 1
 
 @

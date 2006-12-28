@@ -902,6 +902,7 @@ GUIGUIOptnsKeys:
   GUIKeyButtonHole GUIEffect,2,'A'
   GUIKeyButtonHole GUIEffect,3,'B'
   GUIKeyButtonHole GUIEffect,4,'R'
+  GUIKeyButtonHole GUIEffect,5,'K'
 
 %ifdef __WIN32__
   GUIKeyCheckbox MouseWheel,'H'

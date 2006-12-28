@@ -2783,6 +2783,7 @@ DisplayGUIOptnsClick:
   GUIPButtonHole 72,88,byte[GUIEffect],0    ; Radio Buttons
   GUIPButtonHole 122,88,byte[GUIEffect],1
   GUIPButtonHole 182,88,byte[GUIEffect],4
+  GUIPButtonHole 72,98,byte[GUIEffect],5
   GUIPButtonHole 122,98,byte[GUIEffect],2
   GUIPButtonHole 182,98,byte[GUIEffect],3
 

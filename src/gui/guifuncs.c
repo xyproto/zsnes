@@ -509,7 +509,7 @@ void GUIRestoreVars()
   CheckValueBounds(&GUIWRAdd, 0, 31, 8, UB);
   CheckValueBounds(&GUIWGAdd, 0, 31, 8, UB);
   CheckValueBounds(&GUIWBAdd, 0, 31, 25, UB);
-  CheckValueBounds(&GUIEffect, 0, 4, 0, UB);
+  CheckValueBounds(&GUIEffect, 0, 5, 0, UB);
   CheckValueBounds(&FilteredGUI, 0, 1, 1, UB);
   CheckValueBounds(&mousewrap, 0, 1, 0, UB);
   CheckValueBounds(&mouseshad, 0, 1, 1, UB);
