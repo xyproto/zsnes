@@ -21,7 +21,6 @@
 
 %include "macros.mac"
 
-%ifdef __MSDOS__
 EXTSYM pl1contrl,pl2contrl,pl3contrl,pl4contrl,pl5contrl
 EXTSYM pressed,CalibXmin,CalibYmin,CalibXmax,CalibYmax
 EXTSYM CalibXmin209,CalibYmin209,CalibXmax209,CalibYmax209
@@ -37,7 +36,8 @@ EXTSYM pl4upk,pl4downk,pl4leftk,pl4rightk,pl4startk,pl4selk
 EXTSYM pl4Ak,pl4Bk,pl4Xk,pl4Yk,pl4Lk,pl4Rk
 EXTSYM pl5upk,pl5downk,pl5leftk,pl5rightk,pl5startk,pl5selk
 EXTSYM pl5Ak,pl5Bk,pl5Xk,pl5Yk,pl5Lk,pl5Rk
-%endif
+EXTSYM JoyX,JoyY,JoyX2,JoyY2,JoyMaxX,JoyMaxY,JoyMinX,JoyMinY
+EXTSYM JoyExists,JoyExists2,GetCoords,GetCoords3
 
 SECTION .data
 NEWSYM JoyAltrn2,  db 2
@@ -54,22 +54,12 @@ NEWSYM joy421Bj, resb 1
 
 NEWSYM JoyCenterX, resd 1
 NEWSYM JoyCenterY, resd 1
-NEWSYM JoyMaxX,    resd 1
-NEWSYM JoyMaxY,    resd 1
-NEWSYM JoyMinX,    resd 1
-NEWSYM JoyMinY,    resd 1
-NEWSYM JoyExists,  resb 1
-NEWSYM JoyX,       resd 1
-NEWSYM JoyY,       resd 1
 NEWSYM JoyCenterX2, resd 1
 NEWSYM JoyCenterY2, resd 1
 NEWSYM JoyMaxX2,    resd 1
 NEWSYM JoyMaxY2,    resd 1
 NEWSYM JoyMinX2,    resd 1
 NEWSYM JoyMinY2,    resd 1
-NEWSYM JoyExists2,  resb 1
-NEWSYM JoyX2,       resd 1
-NEWSYM JoyY2,       resd 1
 NEWSYM JoyAltrn,   resb 1
 NEWSYM JoyCenterX209, resd 1
 NEWSYM JoyCenterY209, resd 1
@@ -99,108 +89,6 @@ Buttons6209    resb 1
 
 SECTION .text
 
-NEWSYM GetCoords
-  mov dword[JoyX],0
-  mov dword[JoyY],0
-  cli
-  mov al,0
-  out dx,al
-  mov ecx,00FFFFh
-.loopa
-  in al,dx
-  test al,01h
-  jz .YAxis
-  test al,02h
-  jz .XAxis
-  inc dword[JoyX]
-  inc dword[JoyY]
-  dec ecx
-  jnz .loopa
-  mov byte[JoyExists], 0
-  mov dword[JoyX],0
-  mov dword[JoyY],0
-  jmp .End
-.YAxis
-  in al,dx
-  test al,02h
-  jz .YAxisOk
-  nop
-  nop
-  inc dword[JoyY]
-  nop
-  dec ecx
-  jnz .YAxis
-  mov byte[JoyExists], 0
-  mov dword[JoyX],0
-  mov dword[JoyY],0
-.YAxisOk
-  jmp .End
-.XAxis
-  in al,dx
-  test al,01h
-  jz .XAxisOk
-  nop
-  nop
-  inc dword[JoyX]
-  nop
-  dec ecx
-  jnz .XAxis
-  mov byte[JoyExists], 0
-  mov dword[JoyX],0
-  mov dword[JoyY],0
-.XAxisOk
-.End
-  sti
-  ret
-
-; Dual Joysticks
-
-NEWSYM GetCoords3
-  mov dword[JoyX],0
-  mov dword[JoyY],0
-  mov dword[JoyX2],0
-  mov dword[JoyY2],0
-  cli
-  mov al,0
-  out dx,al
-  mov ecx,01FFFFh
-.loopa
-  in al,dx
-  test al,01h
-  jz .YAxis
-  inc dword[JoyX]
-  nop
-.YAxis
-  test al,02h
-  jz .XAxis
-  inc dword[JoyY]
-  nop
-.XAxis
-  test al,04h
-  jz .YAxis2
-  inc dword[JoyX2]
-  nop
-.YAxis2
-  test al,08h
-  jz .XAxis2
-  inc dword[JoyY2]
-  nop
-.XAxis2
-  test al,0Fh
-  jz .nomore
-  dec ecx
-  jnz .loopa
-  mov byte[JoyExists], 0
-  mov dword[JoyX],0
-  mov dword[JoyY],0
-  mov byte[JoyExists2], 0
-  mov dword[JoyX2],0
-  mov dword[JoyY2],0
-.nomore
-  sti
-  ret
-
-%ifdef __MSDOS__
 NEWSYM DosUpdateDevices
     mov byte[PPad],0
     mov byte[JoyQuant],0
@@ -1527,4 +1415,3 @@ NEWSYM SetInputDevice209
 .nopp5
 .exit
     ret
-%endif

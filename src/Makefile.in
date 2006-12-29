@@ -48,8 +48,6 @@ CPU_O=$(CPU_D)/dma.o $(CPU_D)/dsp.o $(CPU_D)/dspproc.o $(CPU_D)/execute.o\
 
 DEBUG_O=@DEBUGGER_FILES@
 
-DOS_O=$(DOS_D)/joy.o $(DOS_D)/vesa2.o
-
 EFF_O=$(EFF_D)/burn.o $(EFF_D)/water.o $(EFF_D)/smoke.o
 
 GUI_O=$(GUI_D)/gui.o $(GUI_D)/guifuncs.o $(GUI_D)/menu.o
@@ -82,7 +80,7 @@ VID_O=$(VID_D)/makev16b.o $(VID_D)/makev16t.o $(VID_D)/makevid.o\
 ZIP_O=$(ZIP_D)/unzip.o $(ZIP_D)/zpng.o
 
 Z_OBJS=$(MAIN_O) $(CHIP_O) $(CPU_O) $(DEBUG_O) $(GUI_O) $(EFF_O) $(JMA_O)\
-	$(MMLIB_O) $(NET_O) $(VID_O) $(PORT_O) $(DOS_O) $(ZIP_O)
+	$(MMLIB_O) $(NET_O) $(VID_O) $(PORT_O) $(ZIP_O)
 
 .PHONY: default main tools all install clean tclean distclean
 .SUFFIXES: .asm .c .cpp .psr

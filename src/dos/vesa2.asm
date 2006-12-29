@@ -24,112 +24,25 @@
 EXTSYM DosExit,PrintStr,newengen,HalfTransB,HalfTransC
 EXTSYM fulladdtab,UnusedBit,HalfTrans,UnusedBitXor
 EXTSYM ngrposng,nggposng,ngbposng
-%ifdef __MSDOS__
 EXTSYM Init_2xSaIMMX,ZSNESBase
-%endif
+EXTSYM videotroub,ExitFromGUI,ErrorPointer,vesa2_x,vesa2_y,vesa2_bits,TripBufAvail,vesa2red10
+EXTSYM vesa2_rposng,vesa2_gposng,vesa2_bposng,vesa2_clbitng,vesa2_clbitng2,vesa2_clbitng3
+EXTSYM vesa2_clbit,vesa2_usbit,vesa2_rpos,vesa2_rfull,vesa2_rtrcl,vesa2_rtrcla,genfulladdtab
+EXTSYM vesa2_gpos,vesa2_gfull,vesa2_gtrcl,vesa2_gtrcla,vesa2_bpos,vesa2_bfull,vesa2_btrcl,vesa2_btrcla
 
 SECTION .data
 ; add 0214h video mode
 anticrash times 10 db 0
 
 ALIGN32
-NEWSYM vesa2_usbit,     dd 0            ; Unused bit in proper bit location
-NEWSYM vesa2_clbit,     dd 0            ; clear all bit 0's if AND is used
-NEWSYM vesa2_clbitng,   dd 0            ; clear all bit 0's if AND is used
-NEWSYM vesa2_clbitng2,  dd 0,0          ; clear all bit 0's if AND is used
-NEWSYM vesa2_clbitng3,  dd 0            ; clear all bit 0's if AND is used
-NEWSYM vesa2_x,         dd 320          ; Desired screen width
-NEWSYM vesa2_y,         dd 240          ; Height
 NEWSYM vesa2selec,      dd 0            ; VESA2 Selector Location
-NEWSYM vesa2_bits,      dd 8            ; Bits per pixel
-NEWSYM vesa2_rpos,      dd 0            ; Red bit position
-NEWSYM vesa2_gpos,      dd 0            ; Green bit position
-NEWSYM vesa2_bpos,      dd 0            ; Blue bit position
-NEWSYM vesa2_rposng,    dd 0            ; Red bit position
-NEWSYM vesa2_gposng,    dd 0            ; Green bit position
-NEWSYM vesa2_bposng,    dd 0            ; Blue bit position
-
-NEWSYM vesa2_rtrcl,     dd 0            ; red transparency clear     (bit+4)
-NEWSYM vesa2_rtrcla,    dd 0            ; red transparency (AND) clear (not(bit+4))
-NEWSYM vesa2_rfull,     dd 0            ; red max (or bit*1Fh)
-NEWSYM vesa2_gtrcl,     dd 0            ; red transparency clear     (bit+4)
-NEWSYM vesa2_gtrcla,    dd 0            ; red transparency (AND) clear (not(bit+4))
-NEWSYM vesa2_gfull,     dd 0            ; red max (or bit*1Fh)
-NEWSYM vesa2_btrcl,     dd 0            ; red transparency clear     (bit+4)
-NEWSYM vesa2_btrcla,    dd 0            ; red transparency (AND) clear (not(bit+4))
-NEWSYM vesa2_bfull,     dd 0            ; red max (or bit*1Fh)
-NEWSYM vesa2red10,      dd 0            ; red position at bit 10
-NEWSYM videotroub,      dd 0            ; red position at bit 10
 NEWSYM vesa3en,         dd 0
 NEWSYM VESAAddr,        dd 0
-NEWSYM ExitFromGUI,     db 0
-NEWSYM ErrorPointer,    dd 0
-NEWSYM TripBufAvail,    db 0
 
 SECTION .bss
-NEWSYM dcolortab, resd 256
 
 SECTION .text
 
-NEWSYM genfulladdtab
-    ; Write to buffer
-    cmp byte[newengen],1
-    jne .notneweng
-    cmp byte[vesa2red10],0
-    jne near genfulladdtabred
-.notneweng
-    xor ecx,ecx
-.loopers
-    mov ax,cx
-    test [vesa2_rtrcl],cx
-    jz .nor
-    and ax,[vesa2_rtrcla]
-    or ax,[vesa2_rfull]
-.nor
-    test [vesa2_gtrcl],cx
-    jz .nog
-    and ax,[vesa2_gtrcla]
-    or ax,[vesa2_gfull]
-.nog
-    test [vesa2_btrcl],cx
-    jz .nob
-    and ax,[vesa2_btrcla]
-    or ax,[vesa2_bfull]
-.nob
-    shl ax,1
-    mov [fulladdtab+ecx*2],ax
-    dec cx
-    jnz .loopers
-    ret
-
-NEWSYM genfulladdtabred
-NEWSYM genfulladdtabng
-    ; Write to buffer
-    xor ecx,ecx
-.loopers
-    mov ax,cx
-    test cx,0100000000000000b
-    jz .nor
-    and ax,1011111111111111b
-    or ax, 0011110000000000b
-.nor
-    test cx,0000001000000000b
-    jz .nog
-    and ax,1111110111111111b
-    or ax, 0000000111100000b
-.nog
-    test cx,0000000000010000b
-    jz .nob
-    and ax,1111111111101111b
-    or ax, 0000000000001111b
-.nob
-    shl ax,1
-    mov [fulladdtab+ecx*2],ax
-    dec cx
-    jnz .loopers
-    ret
-
-%ifdef __MSDOS__
 NEWSYM VESA2EXITTODOS
     mov byte[videotroub],1
     cmp byte[ExitFromGUI],0
@@ -741,4 +654,3 @@ NEWSYM RMREGS
 .ss   resw 1
 .spare   times 20 resd 1
 ;----------------------------------------------------------------------
-%endif

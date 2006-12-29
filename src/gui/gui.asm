@@ -66,9 +66,8 @@ EXTSYM GetScreen,GUITBWVID,Clear2xSaIBuffer,MouseWindow,ExitFromGUI
 EXTSYM GUIWFVID,newgfx16b,NumVideoModes,MusicVol,DSPMem,NumInputDevices
 EXTSYM GUIInputNames,GUIVideoModeNames,GUISLVID
 EXTSYM GUIHSVID,GUI2xVID,GUIM7VID
-EXTSYM GUINTVID,device1,device2,TwelveHourClock,JoyX
-EXTSYM JoyY,JoyMinX,JoyMinY,JoyMaxX,JoyMaxY,JoyMinX209,JoyMaxX209,JoyMinY209
-EXTSYM JoyMaxY209,GetCoords,GetCoords3,MultiTap,SFXEnable,RestoreSystemVars
+EXTSYM GUINTVID,device1,device2,TwelveHourClock,JoyMinX209,JoyMaxX209,JoyMinY209
+EXTSYM JoyMaxY209,MultiTap,SFXEnable,RestoreSystemVars
 EXTSYM GUIHQ2X,GUIHQ3X,GUIHQ4X,nssdip1,nssdip2,nssdip3
 EXTSYM nssdip4,nssdip5,nssdip6,SkipMovie,MovieStop,MoviePlay,MovieRecord
 EXTSYM MovieInsertChapter,MovieSeekAhead,MovieSeekBehind,ResetDuringMovie
