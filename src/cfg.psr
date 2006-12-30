@@ -916,23 +916,27 @@ GUIRClick db 0
 lhguimouse db 0
 
 @
-@ Mouse Cursor Shadow (0 = No, 1 = YES)
+@ Show Mouse Cursor Shadow (0 = No, 1 = YES)
 @ Displays a shadow under the mouse cursor.
 mouseshad db 1
 
 @
 @ Wrap Mouse Cursor (0 = NO, 1 = Yes)
 @ If enabled, the cursor will wrap around to the other side.
+%ifndef __MSDOS__
+@ Only useful for Fullscreen modes.
+%endif
 mousewrap db 0
 
 %ifdef __WIN32__
 @
-@ Use Mouse Wheel to Scroll (0 = No, 1 = YES)
-MouseWheel db 1
+@ Trap Mouse Cursor in Window (0 = NO, 1 = Yes)
+@ Only useful in Windowed modes.
+TrapMouseCursor db 0
 
 @
-@ Trap Mouse Cursor in Window (0 = NO, 1 = Yes)
-TrapMouseCursor db 0
+@ Use Mouse Wheel to Scroll (0 = No, 1 = YES)
+MouseWheel db 1
 %endif
 
 @

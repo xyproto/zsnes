@@ -1762,7 +1762,7 @@ DisplayGUIOption:       ; Emu Options
   GUIDisplayCheckboxu 4,11,18,MMXSupport,GUIOptionTextA1,7
 %ifdef __WIN32__
   GUIDisplayCheckboxu 4,11,28,PauseFocusChange,GUIOptionTextA2,13
-  GUIDisplayCheckboxu 4,11,38,HighPriority,GUIOptionTextA3,6
+  GUIDisplayCheckboxu 4,11,38,HighPriority,GUIOptionTextA3,16
   GUIDisplayCheckboxu 4,11,48,DisableScreenSaver,GUIOptionTextA4,0
 %endif
 
@@ -1783,7 +1783,7 @@ DisplayGUIOption:       ; Emu Options
   GUIDisplayCheckboxu 4,11,118,RomInfo,GUIOptionTextC3,4
 
   GUIDisplayTextY 4,11,133,GUIOptionTextD
-  GUIDisplayCheckboxu 4,11,138,FPSAtStart,GUIOptionTextD1,0
+  GUIDisplayCheckboxu 4,11,138,FPSAtStart,GUIOptionTextD1,5
   GUIDisplayCheckboxu 4,11,148,TimerEnable,GUIOptionTextD2,5
   cmp byte[TimerEnable],1
   jne near .noclock
@@ -1800,7 +1800,7 @@ SECTION .data
 GUIOptionTextA db 'SYSTEM:',0
 GUIOptionTextA1 db 'ENABLE MMX SUPPORT',0
 GUIOptionTextA2 db 'PAUSE EMU IN BACKGROUND',0
-GUIOptionTextA3 db 'USE A HIGHER PRIORITY',0
+GUIOptionTextA3 db 'INCREASE EMU PRIORITY',0
 GUIOptionTextA4 db 'DISABLE POWER MANAGEMENT',0
 
 GUIOptionTextB db 'GFX ENGINES:',0
@@ -1813,7 +1813,7 @@ GUIOptionTextC2 db 'SHOW ROM INFO ON LOAD',0
 GUIOptionTextC3 db 'LOG ROM INFO',0
 
 GUIOptionTextD db 'OVERLAY:',0
-GUIOptionTextD1 db 'FPS AT PROGRAM START',0
+GUIOptionTextD1 db 'SHOW FPS CNTR ON EMU LOAD',0
 GUIOptionTextD2 db 'SHOW CLOCK',0
 GUIOptionTextD3 db '12 HOUR MODE',0
 GUIOptionTextD4 db 'SHOW CLOCK BOX',0
@@ -3474,10 +3474,9 @@ DisplayGUIOptns:              ; GUI Options
   GUIDisplayTextY 10,6,16,GUIGUIOptnsTextA
                                                                  ;Checkboxes
   GUIDisplayCheckboxu 10,12,23,GUIRClick,GUIGUIOptnsTextA1a,1
-  GUIDisplayCheckboxu 10,12,33,lhguimouse,GUIGUIOptnsTextA1b,8
-  GUIDisplayCheckboxu 10,12,43,mouseshad,GUIGUIOptnsTextA1c,6
+  GUIDisplayCheckboxu 10,12,33,lhguimouse,GUIGUIOptnsTextA1b,15
+  GUIDisplayCheckboxu 10,12,43,mouseshad,GUIGUIOptnsTextA1c,0
   GUIDisplayCheckboxu 10,12,53,mousewrap,GUIGUIOptnsTextA1d,0
-
 %ifdef __WIN32__
   GUIDisplayCheckboxu 10,12,63,TrapMouseCursor,GUIGUIOptnsTextA1e,3
   GUIDisplayCheckboxu 10,12,73,MouseWheel,GUIGUIOptnsTextA1f,1
@@ -3504,7 +3503,7 @@ DisplayGUIOptns:              ; GUI Options
 
 %ifdef __WIN32__
   GUIDisplayTextY 10,6,161,GUIGUIOptnsTextC
-  GUIDisplayCheckboxu 10,12,168,AlwaysOnTop,GUIGUIOptnsTextC1,10
+  GUIDisplayCheckboxu 10,12,168,AlwaysOnTop,GUIGUIOptnsTextC1,14
   GUIDisplayCheckboxu 10,12,178,SaveMainWindowPos,GUIGUIOptnsTextC2,2
   GUIDisplayCheckboxu 10,12,188,AllowMultipleInst,GUIGUIOptnsTextC3,1
 %endif
@@ -3524,8 +3523,8 @@ DisplayGUIOptns:              ; GUI Options
 SECTION .data
 GUIGUIOptnsTextA db 'GUI SWITCHES:',0
 GUIGUIOptnsTextA1a db 'RCLICK OPENS GUI',0
-GUIGUIOptnsTextA1b db 'LEFT HANDED MOUSE',0
-GUIGUIOptnsTextA1c db 'MOUSE SHADOW',0
+GUIGUIOptnsTextA1b db 'SWAP L/R MBUTTONS',0
+GUIGUIOptnsTextA1c db 'SHOW MOUSE SHADOW',0
 GUIGUIOptnsTextA1d db 'MOUSE WRAP',0
 GUIGUIOptnsTextA1e db 'TRAP MOUSE CURSOR',0
 GUIGUIOptnsTextA1f db 'WHEEL MICE SCROLL',0
@@ -3542,7 +3541,7 @@ GUIGUIOptnsTextB2 db 'TITLE',0
 GUIGUIOptnsTextB3 db 'WIN',0
 
 GUIGUIOptnsTextC db 'MAIN WINDOW OPTIONS:',0
-GUIGUIOptnsTextC1 db 'ALWAYS ON TOP',0
+GUIGUIOptnsTextC1 db 'EMU ALWAYS ON TOP',0
 GUIGUIOptnsTextC2 db 'SAVE MAIN WINDOW POSITION',0
 GUIGUIOptnsTextC3 db 'ALLOW MULTIPLE INSTANCES',0
 

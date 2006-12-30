@@ -796,7 +796,7 @@ GUIOptionKeys:
   GUIKeyCheckbox GUIEnableTransp,'T'
 %ifdef __WIN32__
   GUIKeyCheckbox PauseFocusChange,'B'
-  GUIKeyCheckbox HighPriority,'H'
+  GUIKeyCheckbox HighPriority,'O'
   pushad
   call CheckPriority
   popad
@@ -877,7 +877,7 @@ GUIGUIOptnsKeys:
   GUIKeyCheckbox GUIRClick,'C'
   GUIKeyCheckbox JoyPad1Move,'U'
   GUIKeyCheckbox newfont,'O'
-  GUIKeyCheckbox lhguimouse,'D'
+  GUIKeyCheckbox lhguimouse,'N'
 
   cmp dh,'F'
   jne .guioptn8
