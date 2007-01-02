@@ -886,9 +886,9 @@ ProcessMouseButtons:
 
 GUIProcVideo:
   cmp byte[GUICBHold],37
-  jl .noreset
+  jl near .noreset
   cmp byte[GUICBHold],39
-  jg .noreset
+  jg near .noreset
   cmp byte[GUICBHold],37
   je .reset1
   cmp byte[GUICBHold],39
