@@ -86,6 +86,10 @@ extern unsigned short latchx, latchy;
 #define IS_MOUSE_2() (device2 == 1)
 #define IS_SCOPE()   (device2 == 2)
 
+#define SET_MOUSE_1(x) (device1 = (x) ? 1 : 0)
+#define SET_MOUSE_2(x) (device2 = (x) ? 1 : 0)
+#define SET_SCOPE(x)   (device2 = (x) ? 2 : 0)
+
 void GUIDoReset();
 void powercycle(bool, bool);
 void zst_sram_load(FILE *);
@@ -1240,6 +1244,16 @@ static bool zmv_open(char *filename)
       zmv_open_vars.input_start_pos = ftell(zmv_vars.fp);
       Msgptr = "MOVIE STARTED.";
     }
+
+    pl1contrl = (zmv_vars.header.initial_input & BIT(0xF)) ? 1 : 0;
+    pl2contrl = (zmv_vars.header.initial_input & BIT(0xE)) ? 1 : 0;
+    pl3contrl = (zmv_vars.header.initial_input & BIT(0xD)) ? 1 : 0;
+    pl4contrl = (zmv_vars.header.initial_input & BIT(0xC)) ? 1 : 0;
+    pl5contrl = (zmv_vars.header.initial_input & BIT(0xB)) ? 1 : 0;
+
+    SET_MOUSE_1(zmv_vars.header.initial_input & BIT(0xA));
+    SET_MOUSE_2(zmv_vars.header.initial_input & BIT(0x9));
+    SET_SCOPE(zmv_vars.header.initial_input & BIT(0x8));
 
     fseek(zmv_vars.fp, -((signed)EXT_CHAP_COUNT_END_DIST), SEEK_END);
     zmv_open_vars.external_chapter_count = fread2(zmv_vars.fp);
