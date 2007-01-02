@@ -275,8 +275,8 @@ bool init_rom_path(char *path)
     SaveGameSpecificInput();
 
     natify_slashes(ZRomPath);
-    p = strrchr(ZRomPath, DIR_SLASH_C);
-    strcpy(ZCartName, (p) ? p+1 : ZRomPath);
+    p = strrchr(path, DIR_SLASH_C);
+    strcpy(ZCartName, (p) ? p+1 : path);
     strcpy(ZSaveName, ZCartName);
     strcpy(ZStateName, ZCartName);
     setextension(ZStateName, "zst");
