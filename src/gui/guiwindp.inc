@@ -2197,31 +2197,63 @@ DisplayGUIVideo:
   GUIDisplayCheckboxu 5,5,25,NTSCBlend,GUIVideoTextC1a,0
   GUIDisplayCheckboxu 5,135,25,NTSCRef,GUIVideoTextC1b,0
 
-  DrawGUIButton 5,5,166,42,177,GUIVideoTextC4,37,0,0
+  DrawGUIButton 5,8,166,67,177,GUIVideoTextE2,81,0,0
+  DrawGUIButton 5,72,166,119,177,GUIVideoTextE3,82,0,0
+  DrawGUIButton 5,124,166,147,177,GUIVideoTextE4,83,0,0
+  DrawGUIButton 5,152,166,217,177,GUIVideoTextE5,84,0,0
+  DrawGUIButton 5,102,186,137,197,GUIVideoTextE6,37,0,0
+  DrawGUIButton 5,148,186,207,197,GUIVideoTextE7,39,0,0
 
   GUIDisplayTextY 5,7,46,GUIVideoTextC2a
   GUIDisplayTextY 5,7,66,GUIVideoTextC2b
   GUIDisplayTextY 5,7,86,GUIVideoTextC2c
   GUIDisplayTextY 5,7,106,GUIVideoTextC2d
   GUIDisplayTextY 5,7,126,GUIVideoTextC2e
-  GUIDisplayTextY 5,7,146,GUIVideoTextC2f
+  GUIDisplayTextY 5,7,156,GUIVideoTextE1
 
   GUIDrawSlider 5,8,200,56,NTSCHue,GUIVideoTextC3,NTSCslidSet,NTSCslidText
   GUIDrawSlider 5,8,200,76,NTSCSat,GUIVideoTextC3,NTSCslidSet,NTSCslidText
   GUIDrawSlider 5,8,200,96,NTSCCont,GUIVideoTextC3,NTSCslidSet,NTSCslidText
   GUIDrawSlider 5,8,200,116,NTSCBright,GUIVideoTextC3,NTSCslidSet,NTSCslidText
   GUIDrawSlider 5,8,200,136,NTSCSharp,GUIVideoTextC3,NTSCslidSet,NTSCslidText
-  GUIDrawSlider 5,8,200,156,NTSCWarp,GUIVideoTextC3,NTSCslidSet,NTSCslidText
 
 .notntsctab
+  
+  cmp dword[GUIVntscTab],2                        ; Advanced NTSC Options Tab
+  jne near .notadvntsctab
+
+  DrawGUIButton 5,8,166,67,177,GUIVideoTextE2,81,0,0
+  DrawGUIButton 5,72,166,119,177,GUIVideoTextE3,82,0,0
+  DrawGUIButton 5,124,166,147,177,GUIVideoTextE4,83,0,0
+  DrawGUIButton 5,152,166,217,177,GUIVideoTextE5,84,0,0
+  DrawGUIButton 5,102,186,137,197,GUIVideoTextE6,38,0,0
+  DrawGUIButton 5,148,186,207,197,GUIVideoTextE7,39,0,0
+
+  GUIDisplayTextY 5,7,36,GUIVideoTextD1a
+  GUIDisplayTextY 5,7,56,GUIVideoTextD1b
+  GUIDisplayTextY 5,7,76,GUIVideoTextD1c
+  GUIDisplayTextY 5,7,96,GUIVideoTextD1d
+  GUIDisplayTextY 5,7,116,GUIVideoTextD1e
+  GUIDisplayTextY 5,7,136,GUIVideoTextD1f
+  GUIDisplayTextY 5,7,156,GUIVideoTextE1
+
+  GUIDrawSlider 5,8,200,46,NTSCGamma,GUIVideoTextC3,NTSCslidSet,NTSCslidText
+  GUIDrawSlider 5,8,200,66,NTSCRes,GUIVideoTextC3,NTSCslidSet,NTSCslidText
+  GUIDrawSlider 5,8,200,86,NTSCArt,GUIVideoTextC3,NTSCslidSet,NTSCslidText
+  GUIDrawSlider 5,8,200,106,NTSCFringe,GUIVideoTextC3,NTSCslidSet,NTSCslidText
+  GUIDrawSlider 5,8,200,126,NTSCBleed,GUIVideoTextC3,NTSCslidSet,NTSCslidText
+  GUIDrawSlider 5,8,200,146,NTSCWarp,GUIVideoTextC3,NTSCslidSet,NTSCslidText
+
+.notadvntsctab
   ret
 
 SECTION .data
 GUIVideoTabs dd 1,2
   db 'MODES',0
   db 'FILTERS',0
-GUIVntscTab dd 0,1
+GUIVntscTab dd 0,2
   db 'NTSC',0
+  db 'ADV NTSC',0
 
 %ifndef __MSDOS__                        ; Modes Tab
 GUIVideoTextA1 db 'LEGEND:',0
@@ -2277,9 +2309,22 @@ GUIVideoTextC2b db 'SATURATION:',0
 GUIVideoTextC2c db 'CONTRAST:',0
 GUIVideoTextC2d db 'BRIGHTNESS:',0
 GUIVideoTextC2e db 'SHARPNESS:',0
-GUIVideoTextC2f db 'HUE WARPING:',0
 GUIVideoTextC3 db '----%',0
-GUIVideoTextC4 db 'RESET',0
+
+GUIVideoTextD1a db 'GAMMA',0             ; NTSC Adv Tab
+GUIVideoTextD1b db 'RESOLUTION',0
+GUIVideoTextD1c db 'ARTIFACTS:',0
+GUIVideoTextD1d db 'FRINGING:',0
+GUIVideoTextD1e db 'BLEED:',0
+GUIVideoTextD1f db 'HUE WARPING:',0
+
+GUIVideoTextE1 db 'PRESETS:',0            ; NTSC Filter buttons
+GUIVideoTextE2 db 'COMPOSITE',0
+GUIVideoTextE3 db 'S-VIDEO',0
+GUIVideoTextE4 db 'RGB',0
+GUIVideoTextE5 db 'MONOCHROME',0
+GUIVideoTextE6 db 'RESET',0
+GUIVideoTextE7 db 'RESET ALL',0
 
 SECTION .bss
 GUIVStA resd 3

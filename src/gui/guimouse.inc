@@ -612,6 +612,18 @@ ProcessMouseButtons:
 %endif
   cmp byte[GUICBHold],37 ; reset ntsc options
   je near GUIProcVideo
+  cmp byte[GUICBHold],38 ; reset ntsc options
+  je near GUIProcVideo
+  cmp byte[GUICBHold],39 ; reset ntsc options
+  je near GUIProcVideo
+  cmp byte[GUICBHold],81 ; reset ntsc options
+  je near GUINTSCPreset
+  cmp byte[GUICBHold],82 ; reset ntsc options
+  je near GUINTSCPreset
+  cmp byte[GUICBHold],83 ; reset ntsc options
+  je near GUINTSCPreset
+  cmp byte[GUICBHold],84 ; reset ntsc options
+  je near GUINTSCPreset
   cmp byte[GUICBHold],10
   je near GUIProcStates
   cmp byte[GUICBHold],11
@@ -874,8 +886,15 @@ ProcessMouseButtons:
 
 GUIProcVideo:
   cmp byte[GUICBHold],37
-  mov byte[GUICBHold],0
-  jne .noreset
+  jl .noreset
+  cmp byte[GUICBHold],39
+  jg .noreset
+  cmp byte[GUICBHold],37
+  je .reset1
+  cmp byte[GUICBHold],39
+  je .reset1
+  jmp .reset1done
+.reset1
   mov byte[NTSCBlend],0
   mov byte[NTSCRef],0
   mov byte[NTSCHue],0
@@ -883,12 +902,25 @@ GUIProcVideo:
   mov byte[NTSCCont],0
   mov byte[NTSCBright],0
   mov byte[NTSCSharp],0
+.reset1done
+  cmp byte[GUICBHold],38
+  jge .reset2
+  jmp .reset2done
+.reset2
+  mov byte[NTSCGamma],0
+  mov byte[NTSCRes],0
+  mov byte[NTSCArt],0
+  mov byte[NTSCFringe],0
+  mov byte[NTSCBleed],0
   mov byte[NTSCWarp],0
+.reset2done
+  mov byte[GUICBHold],0
   pushad
   call NTSCFilterInit
   popad
   ret
 .noreset
+  mov byte[GUICBHold],0
 %ifdef __MSDOS__
   mov al,[GUIcurrentvideocursloc]
   cmp al,3
@@ -950,6 +982,31 @@ GUIProcVideo:
 SECTION .bss
 .prevvid resb 1
 SECTION .text
+
+GUINTSCPreset:
+  cmp byte[GUICBHold],81 ; reset ntsc options
+  jne near .nextpreset
+  mov byte[GUICBHold],0
+  ret
+.nextpreset
+  cmp byte[GUICBHold],82 ; reset ntsc options
+  jne near .nextpreset2
+  mov byte[GUICBHold],0
+
+  ret
+.nextpreset2
+  cmp byte[GUICBHold],83 ; reset ntsc options
+  jne near .nextpreset3
+  mov byte[GUICBHold],0
+
+  ret
+.nextpreset3
+  cmp byte[GUICBHold],84 ; reset ntsc options
+  jne near .lastpreset
+
+.lastpreset
+  mov byte[GUICBHold],0
+  ret
 
 %ifndef __MSDOS__
 GUIProcCustomVideo:
@@ -2163,6 +2220,7 @@ DisplayGUIVideoClick:
   cmp byte[NTSCFilter],1
   jne .nontscf
   GUIPTabClick 92,125,1,GUIVntscTab,GUIVideoTabs
+  GUIPTabClick 126,184,2,GUIVntscTab,GUIVideoTabs
 .nontscf
 
   cmp dword[GUIVideoTabs],1  ; modes
@@ -2350,7 +2408,12 @@ DisplayGUIVideoClick:
   GUIClickCButton 5,25,byte[NTSCBlend]     ; Checkboxes
   GUIClickCButton 135,25,byte[NTSCRef]
 
-  GUIPHoldbutton 5,166,42,177,37  ; button
+  GUIPHoldbutton 8,166,67,177,81     ; button
+  GUIPHoldbutton 72,166,119,177,82   ; button
+  GUIPHoldbutton 124,166,147,177,83  ; button
+  GUIPHoldbutton 152,166,217,177,84  ; button
+  GUIPHoldbutton 102,186,137,197,37  ; button
+  GUIPHoldbutton 148,186,207,197,39  ; button
 
   ;Sliders
   cmp eax,8                      ; X-Range for click-area
@@ -2369,7 +2432,7 @@ DisplayGUIVideoClick:
   mov eax,[GUIwinposy+5*4]
   add eax,56
   mov [GUIHoldYlim],eax
-  jmp .nowarpbar
+  jmp .nosharpbar
 .nohuebar
   cmp edx,74
   jl near .nomovebar
@@ -2382,7 +2445,7 @@ DisplayGUIVideoClick:
   mov eax,[GUIwinposy+5*4]
   add eax,76
   mov [GUIHoldYlim],eax
-  jmp .nowarpbar
+  jmp .nosharpbar
 .nosatbar
   cmp edx,94
   jl near .nomovebar
@@ -2395,7 +2458,7 @@ DisplayGUIVideoClick:
   mov eax,[GUIwinposy+5*4]
   add eax,96
   mov [GUIHoldYlim],eax
-  jmp .nowarpbar
+  jmp .nosharpbar
 .nocontbar
   cmp edx,114
   jl near .nomovebar
@@ -2408,7 +2471,7 @@ DisplayGUIVideoClick:
   mov eax,[GUIwinposy+5*4]
   add eax,116
   mov [GUIHoldYlim],eax
-  jmp .nowarpbar
+  jmp .nosharpbar
 .nobrightbar
   cmp edx,134
   jl near .nomovebar
@@ -2423,18 +2486,6 @@ DisplayGUIVideoClick:
   mov [GUIHoldYlim],eax
   jmp .nowarpbar
 .nosharpbar
-  cmp edx,154
-  jl .nomovebar
-  cmp edx,158
-  jg .nomovebar
-  mov [NTSCWarp],al
-  mov [ntscCurVar],al
-  mov byte[ntscWhVar],5
-  mov byte[GUIHold],7
-  mov eax,[GUIwinposy+5*4]
-  add eax,156
-  mov [GUIHoldYlim],eax
-.nowarpbar
   mov eax,[GUIwinposx+5*4]
   add eax,8
   mov [GUIHoldXlimL],eax
@@ -2447,6 +2498,117 @@ DisplayGUIVideoClick:
   call NTSCFilterInit
   popad
 .notntsctab
+
+  cmp dword[GUIVntscTab],2  ; NTSC Tab
+  jne near .notadvntsctab
+  mov eax,[GUImouseposx]    ; update mouse location
+  sub eax,[GUIwinposx+5*4]
+  mov edx,[GUImouseposy]
+  sub edx,[GUIwinposy+5*4]
+
+  GUIPHoldbutton 8,166,67,177,81     ; button
+  GUIPHoldbutton 72,166,119,177,82   ; button
+  GUIPHoldbutton 124,166,147,177,83  ; button
+  GUIPHoldbutton 152,166,217,177,84  ; button
+  GUIPHoldbutton 102,186,137,197,38  ; button
+  GUIPHoldbutton 148,186,207,197,39  ; button
+
+  ;Sliders
+  cmp eax,8                      ; X-Range for click-area
+  jl near .nomovebar2
+  cmp eax,8+200
+  jg near .nomovebar2
+  sub al,108
+  cmp edx,44                     ; Y-Range for click-area
+  jl near .nomovebar2
+  cmp edx,48
+  jg .nogammabar
+  mov [NTSCGamma],al
+  mov [ntscCurVar],al
+  mov byte[ntscWhVar],0
+  mov byte[GUIHold],7            ; Lock mouse to bar when clicked
+  mov eax,[GUIwinposy+5*4]
+  add eax,46
+  mov [GUIHoldYlim],eax
+  jmp .nowarpbar
+.nogammabar
+  cmp edx,64
+  jl near .nomovebar2
+  cmp edx,68
+  jg .noresbar
+  mov [NTSCRes],al
+  mov [ntscCurVar],al
+  mov byte[ntscWhVar],1
+  mov byte[GUIHold],7
+  mov eax,[GUIwinposy+5*4]
+  add eax,66
+  mov [GUIHoldYlim],eax
+  jmp .nowarpbar
+.noresbar
+  cmp edx,84
+  jl near .nomovebar2
+  cmp edx,88
+  jg .noartbar
+  mov [NTSCArt],al
+  mov [ntscCurVar],al
+  mov byte[ntscWhVar],2
+  mov byte[GUIHold],7
+  mov eax,[GUIwinposy+5*4]
+  add eax,86
+  mov [GUIHoldYlim],eax
+  jmp .nowarpbar
+.noartbar
+  cmp edx,104
+  jl near .nomovebar2
+  cmp edx,108
+  jg .nofringebar
+  mov [NTSCFringe],al
+  mov [ntscCurVar],al
+  mov byte[ntscWhVar],3
+  mov byte[GUIHold],7
+  mov eax,[GUIwinposy+5*4]
+  add eax,106
+  mov [GUIHoldYlim],eax
+  jmp .nowarpbar
+.nofringebar
+  cmp edx,124
+  jl near .nomovebar2
+  cmp edx,128
+  jg .nobleedbar
+  mov [NTSCBleed],al
+  mov [ntscCurVar],al
+  mov byte[ntscWhVar],4
+  mov byte[GUIHold],7
+  mov eax,[GUIwinposy+5*4]
+  add eax,126
+  mov [GUIHoldYlim],eax
+  jmp .nowarpbar
+.nobleedbar
+  cmp edx,144
+  jl .nomovebar2
+  cmp edx,148
+  jg .nomovebar2
+  mov [NTSCWarp],al
+  mov [ntscCurVar],al
+  mov byte[ntscWhVar],5
+  mov byte[GUIHold],7
+  mov eax,[GUIwinposy+5*4]
+  add eax,146
+  mov [GUIHoldYlim],eax
+.nowarpbar
+  mov eax,[GUIwinposx+5*4]
+  add eax,8
+  mov [GUIHoldXlimL],eax
+  add eax,200
+  mov [GUIHoldXlimR],eax
+.nomovebar2
+  cmp byte[NTSCRef],0
+  je .notadvntsctab
+  pushad
+  call NTSCFilterInit
+  popad
+.notadvntsctab
+
   xor eax,eax
   ret
 

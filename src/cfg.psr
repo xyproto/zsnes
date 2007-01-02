@@ -531,6 +531,11 @@ NTSCSat sb 0
 NTSCCont sb 0
 NTSCBright sb 0
 NTSCSharp sb 0
+NTSCGamma sb 0
+NTSCRes sb 0
+NTSCArt sb 0
+NTSCFringe sb 0
+NTSCBleed sb 0
 NTSCWarp sb 0
 
 @
