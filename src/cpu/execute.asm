@@ -60,6 +60,7 @@ EXTSYM debuggeron,startdebugger
 
 %ifdef __MSDOS__
 EXTSYM dssel,Game60hzcall,NextLineStart,FlipWait,LastLineStart,smallscreenon,ScreenScale
+EXTSYM cvidmode,GUI16VID,ScreenShotFormat
 %endif
 
 SECTION .data
@@ -1168,6 +1169,13 @@ NEWSYM cpuover
     jz .nosskey
     test byte[pressed+eax],1
     jz .nosskey
+%ifdef __MSDOS__
+    movzx eax,byte[cvidmode]
+    cmp byte[GUI16VID+eax],1
+    je .pngok
+    mov byte[ScreenShotFormat],0
+.pngok
+%endif
     mov byte[SSKeyPressed],1
     mov byte[pressed+eax],2
     jmp exitloop
