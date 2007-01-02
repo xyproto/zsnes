@@ -1319,11 +1319,14 @@ static void replay_pad(unsigned char pad, unsigned char flag, unsigned char *buf
   if (flag & bit_mask)
   {
     size_t bits_needed = pad_bit_decoder(pad, buffer, 0);
-    size_t leftover_bits = (8 - (*skip_bits&7)) & 7;
-    bits_needed -= leftover_bits;
+    if (bits_needed)
+    {
+      size_t leftover_bits = (8 - (*skip_bits&7)) & 7;
+      bits_needed -= leftover_bits;
 
-    fread(buffer + (*skip_bits>>3) + ((*skip_bits&7) ? 1 : 0), 1, (bits_needed>>3) + ((bits_needed&7) ? 1 : 0), zmv_vars.fp);
-    *skip_bits = pad_bit_decoder(pad, buffer, *skip_bits);
+      fread(buffer + (*skip_bits>>3) + ((*skip_bits&7) ? 1 : 0), 1, (bits_needed>>3) + ((bits_needed&7) ? 1 : 0), zmv_vars.fp);
+      *skip_bits = pad_bit_decoder(pad, buffer, *skip_bits);
+    }
   }
   *current_state = *last_state;
   latchx = zmv_vars.last_joy_state.latchx;
