@@ -68,7 +68,7 @@ EXTSYM GUIInputNames,GUIVideoModeNames,GUISLVID
 EXTSYM GUIHSVID,GUI2xVID,GUIM7VID
 EXTSYM GUINTVID,device1,device2,TwelveHourClock,JoyMinX209,JoyMaxX209,JoyMinY209
 EXTSYM JoyMaxY209,MultiTap,SFXEnable,RestoreSystemVars
-EXTSYM GUIHQ2X,GUIHQ3X,GUIHQ4X,nssdip1,nssdip2,nssdip3
+EXTSYM GUIHQ2X,nssdip1,nssdip2,nssdip3
 EXTSYM nssdip4,nssdip5,nssdip6,SkipMovie,MovieStop,MoviePlay,MovieRecord
 EXTSYM MovieInsertChapter,MovieSeekAhead,MovieSeekBehind,ResetDuringMovie
 EXTSYM MovieDumpRaw,MovieAppend,AutoLoadCht,GUIQuickLoadUpdate,GUILoadData
@@ -138,7 +138,7 @@ EXTSYM GUIEAVID,GUIFSVID,GUIWSVID,GUISSVID,GUITBVID
 
 %ifndef __MSDOS__
 EXTSYM ZsnesPage,DocsPage,GUICustomX,GUICustomY,GetCustomXY,SetCustomXY,initwinvideo
-EXTSYM Keep4_3Ratio,PrevFSMode,PrevWinMode
+EXTSYM Keep4_3Ratio,PrevFSMode,PrevWinMode,GUIHQ3X,GUIHQ4X
 %endif
 
 %ifndef __UNIXSDL__

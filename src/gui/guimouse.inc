@@ -2244,10 +2244,12 @@ DisplayGUIVideoClick:
   mov bl,[cvidmode]
   cmp byte[GUIHQ2X+ebx],0
   jne .checkboxhq
+%ifndef __MSDOS__
   cmp byte[GUIHQ3X+ebx],0
   jne .checkboxhq
   cmp byte[GUIHQ4X+ebx],0
   jne .checkboxhq
+%endif
   jmp .nocheckboxhq
 .checkboxhq
   FilterExcl 128,55,En2xSaI,scanlines,antienab,NTSCFilter

@@ -569,9 +569,7 @@ NEWSYM GUIHSVID,  db 0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0 ; Half/Quarter Scanli
 NEWSYM GUI2xVID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0 ; 2xSaI/Super Engines
 NEWSYM GUIM7VID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0 ; Hires Mode 7
 NEWSYM GUIHQ2X,   db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (hq2x Filter)
-NEWSYM GUIHQ3X,   db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (hq3x Filter)
-NEWSYM GUIHQ4X,   db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (hq4x Filter)
-NEWSYM GUINTVID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; NTSC Filter
+NEWSYM GUINTVID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (NTSC Filter)
 SECTION .text
 
 ; ****************************

@@ -1132,10 +1132,12 @@ GUIVideoKeys:
   mov bl,[cvidmode]
   cmp byte[GUIHQ2X+ebx],0
   jne .hqfilter
+%ifndef __MSDOS__
   cmp byte[GUIHQ3X+ebx],0
   jne .hqfilter
   cmp byte[GUIHQ4X+ebx],0
   jne .hqfilter
+%endif
   jmp .nohqfilter
 .hqfilter
   pushad

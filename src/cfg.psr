@@ -678,15 +678,13 @@ Surround db 0
 PrimaryBuffer db 0
 %endif
 
-@
 #ifdef __MSDOS__
+@
 @ Force 8-bit Sound (0 = NO, 1 = Yes)
 @ Enable this option if your sound card is producing nothing or static.
 @ This will limit the max frequency while using Stereo sound to 22KHz
-#else
-@ DOS-only option, don't edit
-#endif
 Force8b db 0
+#endif
 
 @
 @ Sampling Rate: (0 = 8000Hz, 1 = 11025Hz, 2 = 22050Hz, 3 = 44100Hz,

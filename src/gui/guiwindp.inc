@@ -2082,6 +2082,7 @@ DisplayGUIVideo:
   GUIDisplayCheckboxu 5,128,55,hqFilter,GUIVideoTextB1h,1
   jmp .notexthq4xa
 .notexthq2xa
+%ifndef __MSDOS__
   cmp byte[GUIHQ3X+eax],0
   je near .notexthq3xa
   GUIDisplayCheckboxu 5,128,55,hqFilter,GUIVideoTextB1i,1
@@ -2090,6 +2091,7 @@ DisplayGUIVideo:
   cmp byte[GUIHQ4X+eax],0
   je near .notexthq4xa
   GUIDisplayCheckboxu 5,128,55,hqFilter,GUIVideoTextB1j,1
+%endif
 .notexthq4xa
 
   xor eax,eax                                     ; Scanlines
