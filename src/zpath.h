@@ -110,4 +110,10 @@ void strdirname(char *str);
 void strbasename(char *str);
 bool mkpath(const char *path, mode_t mode);
 
+#ifdef __UNIXSDL__
+char *realpath_link(const char *path, char *resolved_path);
+#else
+#define realpath_link realpath_native
+#endif
+
 #endif

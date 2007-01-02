@@ -269,14 +269,14 @@ void init_save_paths()
 
 bool init_rom_path(char *path)
 {
-  if (realpath_native(path, ZRomPath))
+  if (realpath_link(path, ZRomPath))
   {
     char *p;
     SaveGameSpecificInput();
 
     natify_slashes(ZRomPath);
-    p = strrchr(path, DIR_SLASH_C);
-    strcpy(ZCartName, (p) ? p+1 : path);
+    p = strrchr(ZRomPath, DIR_SLASH_C);
+    strcpy(ZCartName, (p) ? p+1 : ZRomPath);
     strcpy(ZSaveName, ZCartName);
     strcpy(ZStateName, ZCartName);
     setextension(ZStateName, "zst");
@@ -617,3 +617,36 @@ bool mkpath(const char *path, mode_t mode)
   }
   return(success);
 }
+
+#ifdef __UNIXSDL__
+
+//Like realpath(), but will return the last element as the link it is
+char *realpath_link(const char *path, char *resolved_path)
+{
+  char buffer[PATH_SIZE], *p, *base, *last_element;
+  strcpy(buffer, path);
+  natify_slashes(buffer);
+  p = strrchr(buffer, DIR_SLASH_C);
+  if (p)
+  {
+    *p = 0;
+    base = buffer;
+    last_element = p+1;
+  }
+  else
+  {
+    base = ".";
+    last_element = buffer;
+  }
+
+  p = realpath(base, resolved_path);
+  if (p)
+  {
+    strcatslash(resolved_path);
+    strcat(resolved_path, last_element);
+    return(resolved_path);
+  }
+  return(0);
+}
+
+#endif
