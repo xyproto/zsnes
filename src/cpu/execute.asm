@@ -21,7 +21,7 @@
 
 EXTSYM KeyRewind,statesaver,Voice0Status,UpdateDPage
 EXTSYM StartGUI,romdata,initvideo,DosExit,sfxramdata,deinitvideo
-EXTSYM vidbufferofsa,device2
+EXTSYM vidbufferofsa,device2,AutoState,SaveSecondState
 EXTSYM KeySaveState,KeyLoadState,KeyQuickExit,KeyQuickLoad,KeyQuickRst
 EXTSYM GUIDoReset,GUIReset,KeyOnStA,KeyOnStB,ProcessKeyOn,C4Enable,KeyQuickClock
 EXTSYM KeyQuickSaveSPC,TimerEnable,splitflags,joinflags
@@ -491,6 +491,12 @@ reexecuteb2:
     jmp StartGUI
 
 NEWSYM endprog
+    cmp byte[AutoState],1
+    jne near .noautostate
+    pushad
+    call SaveSecondState
+    popad
+.noautostate
     call deinitvideo
     pushad
     call MovieStop
