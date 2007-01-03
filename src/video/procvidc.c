@@ -116,39 +116,3 @@ void Clear2xSaIBuffer()
 {
   memset(vidbufferofsb, 0xFF, 576*256);
 }
-
-// NTSC filter variables
-
-#ifndef __MSDOS__
-unsigned char ntsc_phase = 0;
-snes_ntsc_setup_t ntsc_setup;
-snes_ntsc_t ntsc_snes;
-extern unsigned char NTSCBlend;
-extern signed char NTSCHue, NTSCSat, NTSCCont, NTSCBright, NTSCSharp, NTSCWarp;
-#endif
-
-// Init NTSC filter command, should be called whenever changes are made in the GUI related to the GUI
-void NTSCFilterInit()
-{
-#ifndef __MSDOS__
-  // Set GUI options
-  ntsc_setup.hue = (float)(NTSCHue / 100.0);
-  ntsc_setup.saturation = (float)(NTSCSat / 100.0);
-  ntsc_setup.contrast = (float)(NTSCCont / 100.0);
-  ntsc_setup.brightness = (float)(NTSCBright / 100.0);
-  ntsc_setup.sharpness = (float)(NTSCSharp / 100.0);
-  ntsc_setup.hue_warping = (float)(NTSCWarp / 100.0);
-  ntsc_setup.merge_fields = (int) NTSCBlend;
-  snes_ntsc_init(&ntsc_snes, &ntsc_setup);
-#endif
-}
-
-void NTSCFilterDraw(int SurfaceX, int SurfaceY, int pitch, unsigned char *buffer)
-{
-#ifndef __MSDOS__
-  snes_ntsc_blit(&ntsc_snes, vidbuffer+16, 576, ntsc_phase, SurfaceX, SurfaceY, buffer, pitch);
-
-  // Change phase on alternating frames
-  ntsc_phase ^= 1;
-#endif
-}
