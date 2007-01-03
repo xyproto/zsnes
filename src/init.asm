@@ -41,9 +41,9 @@ EXTSYM pl4Ltk,pl4Rtk,pl4ULk,pl4URk,pl4DLk,pl4DRk,pl5contrl,pl5selk,pl5startk
 EXTSYM pl5upk,pl5downk,pl5leftk,pl5rightk,pl5Xk,pl5Ak,pl5Lk,pl5Yk,pl5Bk,pl5Rk
 EXTSYM pl5Xtk,pl5Ytk,pl5Atk,pl5Btk,pl5Ltk,pl5Rtk,pl5ULk,pl5URk,pl5DLk,pl5DRk
 EXTSYM CombinDataGlob,NumCombo,GUIComboGameSpec,mousexloc,mouseyloc,extlatch
-EXTSYM MMXSupport,MMXextSupport,romdata,procexecloop,wramdata
-EXTSYM romispal,initregr,initregw,loadfileGUI,loadstate2,CMovieExt
-EXTSYM MoviePlay,MovieDumpRaw,AllowUDLR,device1,device2,processmouse1
+EXTSYM MMXSupport,MMXextSupport,romdata,procexecloop,wramdata,LoadSecondState
+EXTSYM romispal,initregr,initregw,loadfileGUI,loadstate2,CMovieExt,AutoState
+EXTSYM MoviePlay,MovieDumpRaw,AllowUDLR,device1,device2,processmouse1,SaveSecondState
 EXTSYM processmouse2,cpalval,init65816,clearmem,SetupROM,ZCartName,initsnes,SSPause
 
 %ifdef __MSDOS__
@@ -170,6 +170,13 @@ NEWSYM init
     mov dl,127
 .noof
     mov [MusicVol],dl
+
+    cmp byte[AutoState],1
+    jne .noloadzss
+    pushad
+    call LoadSecondState
+    popad
+.noloadzss
 
 ; FIX STATMAT
     ; Here's the auto-load ZST file stuff
@@ -894,6 +901,12 @@ NEWSYM NumofBytes,    resd 1
 SECTION .text
 
 NEWSYM DosExit ; Terminate Program
+  cmp byte[AutoState],1
+  jne .noautostate
+  pushad
+  call SaveSecondState
+  popad
+.noautostate
 %ifdef __MSDOS__
   call init18_2hz
 %endif
