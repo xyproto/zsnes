@@ -2506,10 +2506,6 @@ DisplayGUIVideoClick:
   mov edx,[GUImouseposy]
   sub edx,[GUIwinposy+5*4]
 
-  GUIPHoldbutton 8,166,67,177,81     ; button
-  GUIPHoldbutton 72,166,119,177,82   ; button
-  GUIPHoldbutton 124,166,147,177,83  ; button
-  GUIPHoldbutton 152,166,217,177,84  ; button
   GUIPHoldbutton 102,186,137,197,38  ; button
   GUIPHoldbutton 148,186,207,197,39  ; button
 

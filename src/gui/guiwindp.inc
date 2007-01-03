@@ -2222,10 +2222,6 @@ DisplayGUIVideo:
   cmp dword[GUIVntscTab],2                        ; Advanced NTSC Options Tab
   jne near .notadvntsctab
 
-  DrawGUIButton 5,8,166,67,177,GUIVideoTextE2,81,0,0
-  DrawGUIButton 5,72,166,119,177,GUIVideoTextE3,82,0,0
-  DrawGUIButton 5,124,166,147,177,GUIVideoTextE4,83,0,0
-  DrawGUIButton 5,152,166,217,177,GUIVideoTextE5,84,0,0
   DrawGUIButton 5,102,186,137,197,GUIVideoTextE6,38,0,0
   DrawGUIButton 5,148,186,207,197,GUIVideoTextE7,39,0,0
 
@@ -2235,7 +2231,6 @@ DisplayGUIVideo:
   GUIDisplayTextY 5,7,96,GUIVideoTextD1d
   GUIDisplayTextY 5,7,116,GUIVideoTextD1e
   GUIDisplayTextY 5,7,136,GUIVideoTextD1f
-  GUIDisplayTextY 5,7,156,GUIVideoTextE1
 
   GUIDrawSlider 5,8,200,46,NTSCGamma,GUIVideoTextC3,NTSCslidSet,NTSCslidText
   GUIDrawSlider 5,8,200,66,NTSCRes,GUIVideoTextC3,NTSCslidSet,NTSCslidText
