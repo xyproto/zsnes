@@ -646,6 +646,10 @@ ScreenScale db 0
 %endif
 
 @
+@ Set Gamma Level [0..15]
+gammalevel db 0
+
+@
 @  ----
 @ -- Sound --
 @  ----

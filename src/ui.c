@@ -85,7 +85,6 @@ unsigned char opexec358b    = 155;  // # of opcodes/scanline in 3.58Mhz mode (22
 unsigned char opexec268cphb = 42;   // # of opcodes/hblank in 2.68Mhz mode
 unsigned char opexec358cphb = 45;   // # of opcodes/hblank in 3.58Mhz mode (56/50)
 unsigned char debugdisble   = 1;    // debugger disable.  0 = no, 1 = yes
-unsigned char gammalevel    = 0;    // gamma level (8-bit engine)
 unsigned char gammalevel16b = 0;    // gamma level (16-bit engine)
 unsigned char AddSub256     = 0;    // screen add/sub in 256 colors
 unsigned char dmadeddis     = 0;    // DMA deduction

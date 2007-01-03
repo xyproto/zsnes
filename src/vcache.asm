@@ -51,6 +51,7 @@ EXTSYM EmuSpeed,SDRatio,FFRatio,DisplayBatteryStatus,lhguimouse,SwapMouseButtons
 EXTSYM KeyResetSpeed,KeyEmuSpeedUp,KeyEmuSpeedDown,KeyDisplayBatt,EMUPause
 EXTSYM device1,device2,snesinputdefault1,snesinputdefault2
 EXTSYM KeyExtraEnab1,KeyExtraEnab2,cycleinputdevice1,cycleinputdevice2,MouseDis
+EXTSYM KeyIncreaseGamma,KeyDecreaseGamma,gammalevel,gammalevel16b
 
 %ifndef NO_DEBUGGER
 EXTSYM debuggeron
@@ -669,6 +670,54 @@ NEWSYM cachevideo
     call DisplayBatteryStatus
     popad
 .nodisplaybatt
+    mov eax,[KeyIncreaseGamma]
+    test byte[pressed+eax],1
+    je .noincgamma
+    mov byte[pressed+eax],2
+    cmp byte[gammalevel],15
+    jge .noincgamma
+    inc byte[gammalevel]
+    mov al,[gammalevel]
+    mov [gammalevel16b],al
+    shr byte[gammalevel16b],1
+    cmp byte[gammalevel],10
+    jl .gammanot10
+    mov byte[gammamsg+13],'1'
+    sub al,10
+    jmp .postgamma
+.gammanot10
+    mov byte[gammamsg+13],' '
+.postgamma
+    add al,'0'
+    mov byte[gammamsg+14],al
+    mov dword[Msgptr],gammamsg
+    mov eax,[MsgCount]
+    mov [MessageOn],eax
+.noincgamma
+    mov eax,[KeyDecreaseGamma]
+    test byte[pressed+eax],1
+    je .nodecgamma
+    mov byte[pressed+eax],2
+    cmp byte [gammalevel],0
+    je .nodecgamma
+    dec byte[gammalevel]
+    mov eax,[gammalevel]
+    mov [gammalevel16b],eax
+    shr byte[gammalevel16b],1
+    cmp byte[gammalevel],10
+    jl .gamma2not10
+    mov byte[gammamsg+13],'1'
+    sub al,10
+    jmp .postgamma2
+.gamma2not10
+    mov byte[gammamsg+13],' '
+.postgamma2
+    add al,'0'
+    mov byte[gammamsg+14],al
+    mov dword[Msgptr],gammamsg
+    mov eax,[MsgCount]
+    mov [MessageOn],eax
+.nodecgamma
     mov eax,[KeyDisplayFPS]
     test byte[pressed+eax],1
     je .nodisplayfps
@@ -894,6 +943,7 @@ bg2laydis db 'BG2 LAYER DISABLED',0
 bg3laydis db 'BG3 LAYER DISABLED',0
 bg4laydis db 'BG4 LAYER DISABLED',0
 sprlaydis db 'SPRITE LAYER DISABLED',0
+gammamsg db 'GAMMA LEVEL:   ',0
 section .text
 
 ;*******************************************************

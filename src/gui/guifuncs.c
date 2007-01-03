@@ -425,14 +425,19 @@ void GUIRestoreVars()
   CheckValueBounds(&GrayscaleMode, 0, 1, 0, UB);
   CheckValueBounds(&Mode7HiRes16b, 0, 1, 0, UD);
   CheckValueBounds(&NTSCFilter, 0, 1, 0, UB);
+  CheckValueBounds(&NTSCRef, 0, 1, 0, UB);
   CheckValueBounds(&NTSCBlend, 0, 1, 0, UB);
   CheckValueBounds(&NTSCHue, -100, 100, 0, SB);
   CheckValueBounds(&NTSCSat, -100, 100, 0, SB);
   CheckValueBounds(&NTSCCont, -100, 100, 0, SB);
   CheckValueBounds(&NTSCBright, -100, 100, 0, SB);
   CheckValueBounds(&NTSCSharp, -100, 100, 0, SB);
+  CheckValueBounds(&NTSCGamma, -100, 100, 0, SB);
+  CheckValueBounds(&NTSCRes, -100, 100, 0, SB);
+  CheckValueBounds(&NTSCArt, -100, 100, 0, SB);
+  CheckValueBounds(&NTSCFringe, -100, 100, 0, SB);
+  CheckValueBounds(&NTSCBleed, -100, 100, 0, SB);
   CheckValueBounds(&NTSCWarp, -100, 100, 0, SB);
-  CheckValueBounds(&NTSCRef, 0, 1, 0, UB);
 
   CheckValueBounds(&soundon, 0, 1, 1, UB);
   CheckValueBounds(&StereoSound, 0, 1, 1, UB);
@@ -555,6 +560,7 @@ void GUIRestoreVars()
   CheckValueBounds(&mouse1lh, 0, 1, 0, UB);
   CheckValueBounds(&mouse2lh, 0, 1, 0, UB);
   CheckValueBounds(&lhguimouse, 0, 1, 0, UB);
+  CheckValueBounds(&gammalevel, 0, 15, 0, UB);
 
   //if (TimeChecker == CalcCfgChecksum()) //What does this do?
   {
