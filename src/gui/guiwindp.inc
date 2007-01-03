@@ -2218,7 +2218,7 @@ DisplayGUIVideo:
   GUIDrawSlider 5,8,200,136,NTSCSharp,GUIVideoTextC3,NTSCslidSet,NTSCslidText
 
 .notntsctab
-  
+
   cmp dword[GUIVntscTab],2                        ; Advanced NTSC Options Tab
   jne near .notadvntsctab
 

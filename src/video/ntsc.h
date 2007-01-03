@@ -38,7 +38,7 @@ typedef struct snes_ntsc_setup_t
 	double contrast;
 	double brightness;
 	double sharpness;  /* edge contrast enhancement/blurring */
-	
+
 	/* Advanced parameters */
 	double gamma;
 	double resolution; /* image resolution */
@@ -48,7 +48,7 @@ typedef struct snes_ntsc_setup_t
 	double hue_warping;/* -1 = expand purple & green, +1 = expand orange & cyan */
 	int merge_fields;  /* if 1, merges even and odd fields together to reduce flicker */
 	float const* decoder_matrix; /* optional RGB decoder matrix, 6 elements */
-	
+
 	unsigned long const* bsnes_colortbl; /* temporary feature for bsnes only; set to 0 */
 } snes_ntsc_setup_t;
 

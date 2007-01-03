@@ -21,10 +21,8 @@
 
 %include "macros.mac"
 
-EXTSYM DosExit,PrintStr,newengen,HalfTransB,HalfTransC
-EXTSYM fulladdtab,UnusedBit,HalfTrans,UnusedBitXor
-EXTSYM ngrposng,nggposng,ngbposng
-EXTSYM Init_2xSaIMMX,ZSNESBase
+EXTSYM DosExit,PrintStr,HalfTransB,HalfTransC,Init_2xSaIMMX,ZSNESBase
+EXTSYM UnusedBit,HalfTrans,UnusedBitXor,ngrposng,nggposng,ngbposng
 EXTSYM videotroub,ExitFromGUI,ErrorPointer,vesa2_x,vesa2_y,vesa2_bits,TripBufAvail,vesa2red10
 EXTSYM vesa2_rposng,vesa2_gposng,vesa2_bposng,vesa2_clbitng,vesa2_clbitng2,vesa2_clbitng3
 EXTSYM vesa2_clbit,vesa2_usbit,vesa2_rpos,vesa2_rfull,vesa2_rtrcl,vesa2_rtrcla,genfulladdtab
