@@ -70,7 +70,11 @@ void cfgpath_ensure(const char *launch_command)
 #ifdef ZCONF
   const char *const zpath = ZCONF;
 #else
+#ifndef __MACOSX__
   const char *const zpath = ".zsnes";
+#else
+  const char *const zpath = "Library/Application Support/ZSNES";
+#endif
 #endif
 
   if ((userinfo = getpwuid(getuid())))
