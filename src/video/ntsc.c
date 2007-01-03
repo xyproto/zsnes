@@ -3,7 +3,7 @@
 
 /* compilable in C or C++; just change the file extension */
 
-#include "snes_ntsc.h"
+#include "ntsc.h"
 
 #include <assert.h>
 #include <math.h>
