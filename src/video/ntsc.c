@@ -21,7 +21,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #include "ntsc.h"
 
-#ifndef __MSDOS__
 	/* Source image */
 	/* width = 288 pixels, height = 223 pixels or more */
 	extern unsigned short* vidbuffer;
@@ -31,49 +30,40 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 	static void ntsc_blit( snes_ntsc_t const* ntsc, unsigned short const* input, long in_pitch,
 			int burst_phase, int out_width, int out_height, void* rgb_out, long out_pitch );
-#endif
 
 void NTSCFilterInit()
 {
-	#ifndef __MSDOS__
-	{
-		/* Set GUI options */
-		snes_ntsc_setup_t ntsc_setup = snes_ntsc_composite; /* start with preset */
-		float to_float = 1.0f / 100.0f; /* convert to -1.0 to +1.0 range */
+	/* Set GUI options */
+	snes_ntsc_setup_t ntsc_setup = snes_ntsc_composite; /* start with preset */
+	float to_float = 1.0f / 100.0f; /* convert to -1.0 to +1.0 range */
 
-		/* artifacts */
-		float enhance = to_float * NTSCWarp; /* new use of NTSCWarp control */
-		ntsc_setup.resolution   = (enhance < 0.0f ? 0.0f : enhance);
-		ntsc_setup.artifacts    = -enhance;
-		ntsc_setup.fringing     = -enhance;
+	/* artifacts */
+	float enhance = to_float * NTSCWarp; /* new use of NTSCWarp control */
+	ntsc_setup.resolution   = (enhance < 0.0f ? 0.0f : enhance);
+	ntsc_setup.artifacts    = -enhance;
+	ntsc_setup.fringing     = -enhance;
 
-		/* standard controls */
-		ntsc_setup.sharpness    = to_float * NTSCSharp;
-		ntsc_setup.hue          = to_float * NTSCHue;
-		ntsc_setup.saturation   = to_float * NTSCSat;
-		ntsc_setup.contrast     = to_float * NTSCCont;
-		ntsc_setup.brightness   = to_float * NTSCBright;
+	/* standard controls */
+	ntsc_setup.sharpness    = to_float * NTSCSharp;
+	ntsc_setup.hue          = to_float * NTSCHue;
+	ntsc_setup.saturation   = to_float * NTSCSat;
+	ntsc_setup.contrast     = to_float * NTSCCont;
+	ntsc_setup.brightness   = to_float * NTSCBright;
 
-		/*ntsc_setup.hue_warping = to_float * NTSCWarp; // not supported anymore */
-		ntsc_setup.merge_fields = NTSCBlend;
+	/*ntsc_setup.hue_warping = to_float * NTSCWarp; // not supported anymore */
+	ntsc_setup.merge_fields = NTSCBlend;
 
-		snes_ntsc_init( &ntsc_snes, &ntsc_setup );
-	}
-	#endif
+	snes_ntsc_init( &ntsc_snes, &ntsc_setup );
 }
 
 void NTSCFilterDraw( int out_width, int out_height, int out_pitch, unsigned char* rgb16_out )
 {
-	#ifndef __MSDOS__
-	{
-		ntsc_blit( &ntsc_snes, vidbuffer+16, 576, ntsc_phase,
-				out_width, out_height, rgb16_out, out_pitch );
+	ntsc_blit( &ntsc_snes, vidbuffer+16, 576, ntsc_phase,
+			out_width, out_height, rgb16_out, out_pitch );
 
-		/* Change phase on alternating frames unless blending is enabled */
-		if ( !NTSCBlend )
-			ntsc_phase ^= 1;
-	}
-	#endif
+	/* Change phase on alternating frames unless blending is enabled */
+	if ( !NTSCBlend )
+		ntsc_phase ^= 1;
 }
 
 /* custom blitter that doubles image height and darkens every other row */

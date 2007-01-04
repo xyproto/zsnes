@@ -1273,9 +1273,11 @@ GUIVideoKeys:
   mov byte[Keep4_3Ratio],1
 .noforce4_3
 %endif
+%ifndef __MSDOS__
   pushad
   call NTSCFilterInit
   popad
+%endif
 .nontscfilter
 %ifdef __WIN32__
   cmp dh,'T'
@@ -1345,7 +1347,7 @@ GUIVideoKeys:
 .notfilterstab
 
   cmp dword[GUIVntscTab],1
-  jne .notntsctab
+  jl .notntsctab
   cmp dh,'B'
   jne .noblend
   xor byte[NTSCBlend],1
@@ -1354,6 +1356,11 @@ GUIVideoKeys:
   jne .norefresh
   xor byte[NTSCRef],1
 .norefresh
+  GUIKeyButtonHole NTSCPresetVar,0,'N'
+  GUIKeyButtonHole NTSCPresetVar,1,'C'
+  GUIKeyButtonHole NTSCPresetVar,2,'S'
+  GUIKeyButtonHole NTSCPresetVar,3,'G'
+  GUIKeyButtonHole NTSCPresetVar,4,'M'
 .notntsctab
   ret
 
@@ -2809,18 +2816,6 @@ WaitForKey:
   push edx
   call delay
   call JoyRead
-;    mov dword[pressed+0CCh],0    ; Up,Down,Left,Right, pl1
-;    mov dword[pressed+0E8h],0    ; Up,Down,Left,Right, pl2
-;    mov dword[pressed+14Ch],0    ; Up,Down,Left,Right, pl1
-;    mov dword[pressed+168h],0    ; Up,Down,Left,Right, pl2
-;    mov dword[pressed+080h],0    ; Button 7
-;    mov dword[pressed+081h],0    ; Button 8
-;    mov dword[pressed+086h],0    ; Button 5
-;    mov dword[pressed+087h],0    ; Button 6
-;    mov dword[pressed+100h],0    ; Button 7
-;    mov dword[pressed+101h],0    ; Button 8
-;    mov dword[pressed+106h],0    ; Button 5
-;    mov dword[pressed+107h],0    ; Button 6
   pop edx
   xor ebx,ebx
   mov ecx,256+128+64
@@ -2834,18 +2829,6 @@ WaitForKey:
   jnz near .again4
 .again
   call JoyRead
-;    mov dword[pressed+0CCh],0    ; Up,Down,Left,Right, pl1
-;    mov dword[pressed+0E8h],0    ; Up,Down,Left,Right, pl2
-;    mov dword[pressed+14Ch],0    ; Up,Down,Left,Right, pl1
-;    mov dword[pressed+168h],0    ; Up,Down,Left,Right, pl2
-;    mov dword[pressed+080h],0    ; Button 7
-;    mov dword[pressed+081h],0    ; Button 8
-;    mov dword[pressed+086h],0    ; Button 5
-;    mov dword[pressed+087h],0    ; Button 6
-;    mov dword[pressed+100h],0    ; Button 7
-;    mov dword[pressed+101h],0    ; Button 8
-;    mov dword[pressed+106h],0    ; Button 5
-;    mov dword[pressed+107h],0    ; Button 6
   xor ebx,ebx
   mov ecx,256+128+64
 .b

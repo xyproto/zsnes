@@ -962,16 +962,14 @@ GUIOuttextwin2 %1,%2-1,%3-1,%4
 DisplayGUILoad:
   GUIDrawWindowBox 1,GUILoadDisp
 
-%ifdef __MSDOS__
-  GUIDisplayTextY 1,6,157,GUILoadText2
-  GUIDisplayText 1,21,166,GUILoadText3
+%ifndef __MSDOS__
+  GUIDisplayText 1,21,166,GUILoadText3a
 %else
+  GUIDisplayTextY 1,6,157,GUILoadText2
   GUIDisplayText 1,21,166,GUILoadText3b
+  GUIDisplayText 1,21,182,GUILoadText4
 %endif
-  GUIDisplayText 1,21,174,GUILoadText4
-%ifdef __MSDOS__
-  GUIDisplayText 1,21,182,GUILoadText5
-%endif
+  GUIDisplayText 1,21,174,GUILoadText5
   GUIDisplayText 1,6,16,GUILoadText7
   GUIDisplayText 1,161,16,GUILoadText8
   GUIDisplayText 1,146,172,GUILoadTextB
@@ -1197,10 +1195,13 @@ DisplayGUILoad:
 SECTION .data
 GUILoadText1 db 'SELECT FILE TO LOAD:',0
 GUILoadText2 db 'DISPLAY TYPE:',0
-GUILoadText3 db 'WIN9X LONG FILENAME',0
-GUILoadText3b db 'LONG FILENAME',0
-GUILoadText4 db 'SNES HEADER NAME',0
-GUILoadText5 db 'DOS 8.3 FORMAT',0
+%ifndef __MSDOS__
+GUILoadText3a db 'LONG FILENAME',0
+%else
+GUILoadText3b db 'WIN9X LONG FILENAME',0
+GUILoadText4 db 'DOS 8.3 FORMAT',0
+%endif
+GUILoadText5 db 'SNES HEADER NAME',0
 GUILoadText6 db 'SHOW ALL EXTENSIONS',0
 GUILoadText7 db 'FILENAME',0
 GUILoadText8 db 'DIRECTORY',0
@@ -1739,12 +1740,14 @@ GUIInputTextD4 db 'DR',0
 GUIInputTextE dd 0
 GUIInputTextE1 db 'SET',0
 GUIInputTextE2 db 'SET KEYS',0
+%ifdef __MSDOS__
 GUIInputTextE3 db 'CALIBRATE',0
 GUIInputTextE4 db 'USE JOYSTICK PORT 209H',0
+GUIInputTextE5 db 'SIDEWINDER FIX',0
+%endif
 GUIInputTextE6 db 'USE PL3/4 AS PL1/2',0
 GUIInputTextE7 db 'ALLOW U+D/L+R',0
 GUIInputTextE8 db 'TURBO AT 30HZ',0
-GUIInputTextE5 db 'SIDEWINDER FIX',0
 
 GUIFreshInputSelect db 1
 
@@ -1799,9 +1802,11 @@ DisplayGUIOption:       ; Emu Options
 SECTION .data
 GUIOptionTextA db 'SYSTEM:',0
 GUIOptionTextA1 db 'ENABLE MMX SUPPORT',0
+%ifdef __WIN32__
 GUIOptionTextA2 db 'PAUSE EMU IN BACKGROUND',0
 GUIOptionTextA3 db 'INCREASE EMU PRIORITY',0
 GUIOptionTextA4 db 'DISABLE POWER MANAGEMENT',0
+%endif
 
 GUIOptionTextB db 'GFX ENGINES:',0
 GUIOptionTextB1 db 'USE NEW GFX ENG',0
@@ -2197,33 +2202,35 @@ DisplayGUIVideo:
   GUIDisplayCheckboxu 5,5,25,NTSCBlend,GUIVideoTextC1a,0
   GUIDisplayCheckboxu 5,135,25,NTSCRef,GUIVideoTextC1b,0
 
-  DrawGUIButton 5,8,166,67,177,GUIVideoTextE2,81,0,0
-  DrawGUIButton 5,72,166,119,177,GUIVideoTextE3,82,0,0
-  DrawGUIButton 5,124,166,147,177,GUIVideoTextE4,83,0,0
-  DrawGUIButton 5,152,166,217,177,GUIVideoTextE5,84,0,0
-  DrawGUIButton 5,102,186,137,197,GUIVideoTextE6,37,0,0
-  DrawGUIButton 5,148,186,207,197,GUIVideoTextE7,39,0,0
+  GUIDisplayButtonHoleTu 5,6,163,byte[NTSCPresetVar],0,GUIVideoTextC3a,0
+  GUIDisplayButtonHoleTu 5,66,163,byte[NTSCPresetVar],1,GUIVideoTextC3b,0
+  GUIDisplayButtonHoleTu 5,146,163,byte[NTSCPresetVar],2,GUIVideoTextC3c,0
+  GUIDisplayButtonHoleTu 5,66,173,byte[NTSCPresetVar],3,GUIVideoTextC3d,1
+  GUIDisplayButtonHoleTu 5,146,173,byte[NTSCPresetVar],4,GUIVideoTextC3e,0
+
+  DrawGUIButton 5,102,186,137,197,GUIVideoTextCD1,37,0,0
+  DrawGUIButton 5,148,186,207,197,GUIVideoTextCD2,39,0,0
 
   GUIDisplayTextY 5,7,46,GUIVideoTextC2a
   GUIDisplayTextY 5,7,66,GUIVideoTextC2b
   GUIDisplayTextY 5,7,86,GUIVideoTextC2c
   GUIDisplayTextY 5,7,106,GUIVideoTextC2d
   GUIDisplayTextY 5,7,126,GUIVideoTextC2e
-  GUIDisplayTextY 5,7,156,GUIVideoTextE1
+  GUIDisplayTextY 5,7,156,GUIVideoTextC3
 
-  GUIDrawSlider 5,8,200,56,NTSCHue,GUIVideoTextC3,NTSCslidSet,NTSCslidText
-  GUIDrawSlider 5,8,200,76,NTSCSat,GUIVideoTextC3,NTSCslidSet,NTSCslidText
-  GUIDrawSlider 5,8,200,96,NTSCCont,GUIVideoTextC3,NTSCslidSet,NTSCslidText
-  GUIDrawSlider 5,8,200,116,NTSCBright,GUIVideoTextC3,NTSCslidSet,NTSCslidText
-  GUIDrawSlider 5,8,200,136,NTSCSharp,GUIVideoTextC3,NTSCslidSet,NTSCslidText
+  GUIDrawSlider 5,8,200,56,NTSCHue,GUIVideoTextCD3,NTSCslidSet,NTSCslidText
+  GUIDrawSlider 5,8,200,76,NTSCSat,GUIVideoTextCD3,NTSCslidSet,NTSCslidText
+  GUIDrawSlider 5,8,200,96,NTSCCont,GUIVideoTextCD3,NTSCslidSet,NTSCslidText
+  GUIDrawSlider 5,8,200,116,NTSCBright,GUIVideoTextCD3,NTSCslidSet,NTSCslidText
+  GUIDrawSlider 5,8,200,136,NTSCSharp,GUIVideoTextCD3,NTSCslidSet,NTSCslidText
 
 .notntsctab
 
   cmp dword[GUIVntscTab],2                        ; Advanced NTSC Options Tab
   jne near .notadvntsctab
 
-  DrawGUIButton 5,102,186,137,197,GUIVideoTextE6,38,0,0
-  DrawGUIButton 5,148,186,207,197,GUIVideoTextE7,39,0,0
+  DrawGUIButton 5,102,186,137,197,GUIVideoTextCD1,38,0,0
+  DrawGUIButton 5,148,186,207,197,GUIVideoTextCD2,39,0,0
 
   GUIDisplayTextY 5,7,36,GUIVideoTextD1a
   GUIDisplayTextY 5,7,56,GUIVideoTextD1b
@@ -2232,12 +2239,12 @@ DisplayGUIVideo:
   GUIDisplayTextY 5,7,116,GUIVideoTextD1e
   GUIDisplayTextY 5,7,136,GUIVideoTextD1f
 
-  GUIDrawSlider 5,8,200,46,NTSCGamma,GUIVideoTextC3,NTSCslidSet,NTSCslidText
-  GUIDrawSlider 5,8,200,66,NTSCRes,GUIVideoTextC3,NTSCslidSet,NTSCslidText
-  GUIDrawSlider 5,8,200,86,NTSCArt,GUIVideoTextC3,NTSCslidSet,NTSCslidText
-  GUIDrawSlider 5,8,200,106,NTSCFringe,GUIVideoTextC3,NTSCslidSet,NTSCslidText
-  GUIDrawSlider 5,8,200,126,NTSCBleed,GUIVideoTextC3,NTSCslidSet,NTSCslidText
-  GUIDrawSlider 5,8,200,146,NTSCWarp,GUIVideoTextC3,NTSCslidSet,NTSCslidText
+  GUIDrawSlider 5,8,200,46,NTSCGamma,GUIVideoTextCD3,NTSCslidSet,NTSCslidText
+  GUIDrawSlider 5,8,200,66,NTSCRes,GUIVideoTextCD3,NTSCslidSet,NTSCslidText
+  GUIDrawSlider 5,8,200,86,NTSCArt,GUIVideoTextCD3,NTSCslidSet,NTSCslidText
+  GUIDrawSlider 5,8,200,106,NTSCFringe,GUIVideoTextCD3,NTSCslidSet,NTSCslidText
+  GUIDrawSlider 5,8,200,126,NTSCBleed,GUIVideoTextCD3,NTSCslidSet,NTSCslidText
+  GUIDrawSlider 5,8,200,146,NTSCWarp,GUIVideoTextCD3,NTSCslidSet,NTSCslidText
 
 .notadvntsctab
   ret
@@ -2257,7 +2264,9 @@ GUIVideoTextA1b db 'S = STRETCH',0
 GUIVideoTextA1c db 'R = KEEP 8:7 RATIO',0
 GUIVideoTextA1d db 'W = WINDOWED',0
 GUIVideoTextA1e db 'F = FULLSCREEN',0
+%ifdef __OPENGL__
 GUIVideoTextA1f db 'O = USES OPENGL',0
+%endif
 
 GUIVideoTextA2 db 'CUSTOM:',0
 GUIVideoTextA2a db 'X',0
@@ -2267,15 +2276,21 @@ GUIVideoTextA4 db 'SET',0                ; set button
 
 GUIVideoTextB1 db 'VIDEO FILTERS:',0     ; Filters.Exclusive
 GUIVideoTextB1a db 'INTERPOLATION',0     ; -y
+%ifdef __MSDOS__
 GUIVideoTextB1b db 'EAGLE ENGINE',0      ; same loc at interpolation   -y
+%endif
+%ifdef __OPENGL__
 GUIVideoTextB1c db 'BILINEAR FILTER',0
+%endif
 GUIVideoTextB1d db 'NTSC',0
 GUIVideoTextB1e db '2XSAI ENGINE',0
 GUIVideoTextB1f db 'SUPER EAGLE',0
 GUIVideoTextB1g db 'SUPER 2XSAI',0
 GUIVideoTextB1h db 'HQ2X',0
+%ifndef __MSDOS__
 GUIVideoTextB1i db 'HQ3X',0              ; same loc as HQ2x
 GUIVideoTextB1j db 'HQ4X',0              ; same loc as HQ2x
+%endif
 
 GUIVideoTextB2 db 'SCANLINES:',0         ; Filters.Scanlines
 GUIVideoTextB2a db 'NONE',0
@@ -2287,39 +2302,47 @@ GUIVideoTextB3 db 'MISC FILTERS:',0      ; Filters.Other
 GUIVideoTextB3a db 'GRAYSCALE MODE',0    ; -v8
 GUIVideoTextB3b db 'HI-RES MODE 7',0     ;
 
+%ifndef __UNIXSDL__
 GUIVideoTextB4 db 'MONITOR SYNC:',0      ; Video.Sync
 GUIVideoTextB4a db 'VSYNC',0             ; -w
 GUIVideoTextB4b db 'TRIPLE BUFFERING',0  ; -3
+%endif
 
 GUIVideoTextB5 db 'DISPLAY OPTIONS:',0   ; Video.Display
+%ifndef __MSDOS__
 GUIVideoTextB5a db 'USE 4:3 RATIO',0
+%else
 GUIVideoTextB5b db 'SMALL SCREEN',0      ; -c
 GUIVideoTextB5c db 'FULL SCREEN',0       ; -cc
 GUIVideoTextB5d db 'WIDE SCREEN',0       ; -cc
+%endif
 
 GUIVideoTextC1a db 'BLEND FRAMES',0      ; NTSC Tab
 GUIVideoTextC1b db 'REFRESH',0
+
 GUIVideoTextC2a db 'HUE:',0
 GUIVideoTextC2b db 'SATURATION:',0
 GUIVideoTextC2c db 'CONTRAST:',0
 GUIVideoTextC2d db 'BRIGHTNESS:',0
 GUIVideoTextC2e db 'SHARPNESS:',0
-GUIVideoTextC3 db '----%',0
 
-GUIVideoTextD1a db 'GAMMA',0             ; NTSC Adv Tab
-GUIVideoTextD1b db 'RESOLUTION',0
+GUIVideoTextC3 db 'PRESETS:',0           ; NTSC Presets
+GUIVideoTextC3a db 'NONE',0
+GUIVideoTextC3b db 'COMPOSITE',0
+GUIVideoTextC3c db 'S-VIDEO',0
+GUIVideoTextC3d db 'RGB',0
+GUIVideoTextC3e db 'MONOCHROME',0
+
+GUIVideoTextD1a db 'GAMMA:',0            ; NTSC Adv Tab
+GUIVideoTextD1b db 'RESOLUTION:',0
 GUIVideoTextD1c db 'ARTIFACTS:',0
 GUIVideoTextD1d db 'FRINGING:',0
 GUIVideoTextD1e db 'BLEED:',0
 GUIVideoTextD1f db 'HUE WARPING:',0
 
-GUIVideoTextE1 db 'PRESETS:',0            ; NTSC Filter buttons
-GUIVideoTextE2 db 'COMPOSITE',0
-GUIVideoTextE3 db 'S-VIDEO',0
-GUIVideoTextE4 db 'RGB',0
-GUIVideoTextE5 db 'MONOCHROME',0
-GUIVideoTextE6 db 'RESET',0
-GUIVideoTextE7 db 'RESET ALL',0
+GUIVideoTextCD1 db 'RESET',0             ; NTSC buttons + counter
+GUIVideoTextCD2 db 'RESET ALL',0
+GUIVideoTextCD3 db '----%',0
 
 SECTION .bss
 GUIVStA resd 3
@@ -3568,8 +3591,10 @@ GUIGUIOptnsTextA1a db 'RCLICK OPENS GUI',0
 GUIGUIOptnsTextA1b db 'SWAP L/R MBUTTONS',0
 GUIGUIOptnsTextA1c db 'SHOW MOUSE SHADOW',0
 GUIGUIOptnsTextA1d db 'MOUSE WRAP',0
+%ifdef __WIN32__
 GUIGUIOptnsTextA1e db 'TRAP MOUSE CURSOR',0
 GUIGUIOptnsTextA1f db 'WHEEL MICE SCROLL',0
+%endif
 
 GUIGUIOptnsTextA2a db 'ESC TO GAME MENU',0
 GUIGUIOptnsTextA2b db 'CTRL GUI W/GPAD1',0
@@ -3582,10 +3607,12 @@ GUIGUIOptnsTextB1 db 'BACK',0
 GUIGUIOptnsTextB2 db 'TITLE',0
 GUIGUIOptnsTextB3 db 'WIN',0
 
+%ifdef __WIN32__
 GUIGUIOptnsTextC db 'MAIN WINDOW OPTIONS:',0
 GUIGUIOptnsTextC1 db 'EMU ALWAYS ON TOP',0
 GUIGUIOptnsTextC2 db 'SAVE MAIN WINDOW POSITION',0
 GUIGUIOptnsTextC3 db 'ALLOW MULTIPLE INSTANCES',0
+%endif
 
 GUIGUIOptnsTextD1 db '@',0
 GUIGUIOptnsTextD2 db '  ',0

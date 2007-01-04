@@ -78,7 +78,7 @@ EXTSYM NTSCBlend,NTSCHue,NTSCSat,NTSCCont,NTSCBright,NTSCSharp,NTSCRef
 EXTSYM NTSCGamma,NTSCRes,NTSCArt,NTSCFringe,NTSCBleed,NTSCWarp
 EXTSYM LowPassFilterType,MovieStartMethod,MovieDisplayFrame,savewinpos
 EXTSYM SnapPath,SPCPath,BSXPath,SGPath,STPath,GNextPath,FEOEZPath,SJNSPath
-EXTSYM MDHPath,SPL4Path,SRAMPath,CheatSrcByteSize,prevloadfnamel,NTSCFilterInit
+EXTSYM MDHPath,SPL4Path,SRAMPath,CheatSrcByteSize,prevloadfnamel
 EXTSYM prevloadiname,prevloaddnamel,prevlfreeze,FirstTimeData,MMXSupport
 EXTSYM GUIRAdd,GUIGAdd,GUIBAdd,GUITRAdd,GUITGAdd,GUITBAdd,GUIWRAdd
 EXTSYM GUIWGAdd,GUIWBAdd,GUIloadfntype,SoundInterpType
@@ -139,7 +139,7 @@ EXTSYM GUIEAVID,GUIFSVID,GUIWSVID,GUISSVID,GUITBVID
 
 %ifndef __MSDOS__
 EXTSYM ZsnesPage,DocsPage,GUICustomX,GUICustomY,GetCustomXY,SetCustomXY,initwinvideo
-EXTSYM Keep4_3Ratio,PrevFSMode,PrevWinMode,GUIHQ3X,GUIHQ4X
+EXTSYM Keep4_3Ratio,PrevFSMode,PrevWinMode,GUIHQ3X,GUIHQ4X,NTSCFilterInit
 %endif
 
 %ifndef __UNIXSDL__
