@@ -2163,7 +2163,9 @@ DisplayGUIOptionClick:
 .invalidng
   GUIClickCButton 11,78,byte[bgfixer]
   GUIPButtonHole 143,70,byte[ScreenShotFormat],0
+%ifndef NO_PNG
   GUIPButtonHole 143,80,byte[ScreenShotFormat],1
+%endif
   GUIClickCButton 11,98,byte[AutoPatch]
   GUIClickCButton 11,108,byte[DisplayInfo]
   GUIClickCButton 11,118,byte[RomInfo]

@@ -1778,7 +1778,9 @@ DisplayGUIOption:       ; Emu Options
 
   GUIDisplayTextY 4,140,63,GUIOptionTextF
   GUIDisplayButtonHoleTu 4,143,70,byte[ScreenShotFormat],0,GUIOptionTextF1,2
+%ifndef NO_PNG
   GUIDisplayButtonHoleTu 4,143,80,byte[ScreenShotFormat],1,GUIOptionTextF2,2
+%endif
 
   GUIDisplayTextY 4,11,93,GUIOptionTextC
   GUIDisplayCheckboxu 4,11,98,AutoPatch,GUIOptionTextC1,7
@@ -1829,7 +1831,9 @@ GUIOptionTextE2 db 'USE TRANSPARENT TEXT',0
 
 GUIOptionTextF db 'SSHOTS:',0
 GUIOptionTextF1 db 'BMP',0
+%ifndef NO_PNG
 GUIOptionTextF2 db 'PNG',0
+%endif
 
 SECTION .text
 

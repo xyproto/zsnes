@@ -785,7 +785,9 @@ GUIOptionKeys:
   call MMXCheck
 .nommxcopy
   GUIKeyButtonHole ScreenShotFormat,0,'P'
+%ifndef NO_PNG
   GUIKeyButtonHole ScreenShotFormat,1,'G'
+%endif
   GUIKeyCheckbox FPSAtStart,'F'
   GUIKeyCheckbox TimerEnable,'C'
   GUIKeyCheckbox ClockBox,'X'
