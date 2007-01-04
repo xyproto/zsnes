@@ -1649,7 +1649,7 @@ int InitDirectDraw()
         return FALSE;
      }
 
-     if (((SurfaceX==512) || (SurfaceX==600) || (SurfaceX==640)) && (HQMode==0))
+     if (((SurfaceX==512) || (SurfaceX==602) || (SurfaceX==640)) && (HQMode==0))
        AltSurface = 1;
    }
 
@@ -1903,7 +1903,7 @@ void SetHQx()
 
 void SetNTSCFOpt()
 {
-  if(CustomResX >= 600 && CustomResY >= 448)
+  if(CustomResX >= 602 && CustomResY >= 448)
     GUINTVID[cvidmode] = 1;
   else
     GUINTVID[cvidmode] = 0;
@@ -2084,7 +2084,7 @@ void initwinvideo(void)
 
         if (NTSCMode && NTSCFilter)
         {
-          SurfaceX = 600;
+          SurfaceX = 602;
           SurfaceY = 446;
         }
       }
@@ -2118,7 +2118,7 @@ void initwinvideo(void)
       BlitArea.left = 0;
       BlitArea.right = SurfaceX;
 
-      if ((SurfaceX == 600) || (SurfaceX == 640) || (SurfaceX == 320))
+      if ((SurfaceX == 602) || (SurfaceX == 640) || (SurfaceX == 320))
         BlitArea.bottom = SurfaceY;
       else
         if (!NTSCFilter) BlitArea.bottom = (SurfaceY/240)*resolutn;
@@ -2841,7 +2841,7 @@ void drawscreenwin(void)
             drawscreenwin();
        }
      }
-     if (SurfaceX == 600 && SurfaceY == 446)
+     if (SurfaceX == 602 && SurfaceY == 446)
      {
        switch (BitDepth)
        {
