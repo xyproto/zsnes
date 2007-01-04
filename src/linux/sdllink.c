@@ -1020,7 +1020,7 @@ void initwinvideo(void)
       case 6:
         if (NTSCFilter)
         {
-           WindowWidth = 600;
+           WindowWidth = 602;
            WindowHeight = 446;
         }
         else

@@ -204,7 +204,7 @@ void sw_drawwin()
     }
     else copy640x480x16bwin();
   }
-  else if ((SurfaceX == 600) && NTSCFilter)
+  else if ((SurfaceX == 602) && NTSCFilter)
   {
     AddEndBytes = pitch-1024;
     NumBytesPerLine = pitch;
