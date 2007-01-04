@@ -742,6 +742,7 @@ GUIInputKeys:
   KeyTabInc GUIInputTabs
   mov byte[GUIFreshInputSelect],1
 .notab
+  GUIKeyCheckbox GameSpecificInput,'G'
   GUIKeyCheckbox AllowUDLR,'A'
   GUIKeyCheckbox Turbo30hz,'T'
   cmp dh,'U'
@@ -762,6 +763,34 @@ GUIInputKeys:
 .nousepl34
 %ifdef __MSDOS__
   GUIKeyCheckbox SidewinderFix,'S'
+  cmp dh,'J'
+  jne .nop209
+  cmp byte[cplayernum],0
+  jne .nopl1
+  GUIKeyCheckbox pl1p209,'J'
+  jmp .nopl5
+.nopl1
+  cmp byte[cplayernum],1
+  jne .nopl2
+  GUIKeyCheckbox pl2p209,'J'
+  jmp .nopl5
+.nopl2
+  cmp byte[cplayernum],2
+  jne .nopl3
+  GUIKeyCheckbox pl3p209,'J'
+  jmp .nopl5
+.nopl3
+  cmp byte[cplayernum],3
+  jne .nopl4
+  GUIKeyCheckbox pl4p209,'J'
+  jmp .nopl5
+.nopl4
+  cmp byte[cplayernum],4
+  jne .nopl5
+  GUIKeyCheckbox pl5p209,'J'
+.nopl5
+  call SetDevice
+.nop209
 %endif
   ret
 

@@ -1565,46 +1565,34 @@ DisplayGUIInput:    ; Player Select, Joystick/keyboard Type List, Button Assignm
   GUIDisplayText 3,113,154,GUIInputTextD4
 
 %ifdef __MSDOS__
-  GUIDisplayText 3,20,165,GUIInputTextE4
+  GUIDisplayCheckboxu 3,105,160,SidewinderFix,GUIInputTextE4,0
 
-  mov dword[GUITemp],GUIIconDataCheckBoxUC              ; Checkbox
   cmp byte[cplayernum],0
   jne .notp1
-  cmp byte[pl1p209],0
-  je .nocheckbox2
-  jmp .checkbox2
+  GUIDisplayCheckboxu 3,5,190,pl1p209,GUIInputTextE5,4
 .notp1
   cmp byte[cplayernum],1
   jne .notp2
-  cmp byte[pl2p209],0
-  je .nocheckbox2
-  jmp .checkbox2
+  GUIDisplayCheckboxu 3,5,190,pl2p209,GUIInputTextE5,4
 .notp2
   cmp byte[cplayernum],2
   jne .notp3
-  cmp byte[pl3p209],0
-  je .nocheckbox2
-  jmp .checkbox2
+  GUIDisplayCheckboxu 3,5,190,pl3p209,GUIInputTextE5,4
 .notp3
   cmp byte[cplayernum],3
   jne .notp4
-  cmp byte[pl4p209],0
-  je .nocheckbox2
-  jmp .checkbox2
+  GUIDisplayCheckboxu 3,5,190,pl4p209,GUIInputTextE5,4
 .notp4
-  cmp byte[pl5p209],0
-  je .nocheckbox2
-.checkbox2
-  mov dword[GUITemp],GUIIconDataCheckBoxC
-.nocheckbox2
-  GUIDisplayIconWin 3,5,160,[GUITemp]
-
-  GUIDisplayCheckboxu 3,5,190,SidewinderFix,GUIInputTextE5,0
+  cmp byte[cplayernum],4
+  jne .notp5
+  GUIDisplayCheckboxu 3,5,190,pl5p209,GUIInputTextE5,4
+.notp5
 %endif
 
-  GUIDisplayCheckboxu 3,5,170,pl12s34,GUIInputTextE6,0
-  GUIDisplayCheckboxu 3,5,180,AllowUDLR,GUIInputTextE7,0
-  GUIDisplayCheckboxu 3,105,180,Turbo30hz,GUIInputTextE8,0
+  GUIDisplayCheckboxu 3,5,160,GameSpecificInput,GUIInputTextE6,0
+  GUIDisplayCheckboxu 3,5,170,pl12s34,GUIInputTextE7,0
+  GUIDisplayCheckboxu 3,5,180,AllowUDLR,GUIInputTextE8,0
+  GUIDisplayCheckboxu 3,105,180,Turbo30hz,GUIInputTextE9,0
 
   DrawGUIButton 3,123,34,153,45,GUIInputTextE1,14,0,0   ; Buttons
   DrawGUIButton 3,123,50,177,61,GUIInputTextE2,40,0,0
@@ -1742,12 +1730,13 @@ GUIInputTextE1 db 'SET',0
 GUIInputTextE2 db 'SET KEYS',0
 %ifdef __MSDOS__
 GUIInputTextE3 db 'CALIBRATE',0
-GUIInputTextE4 db 'USE JOYSTICK PORT 209H',0
-GUIInputTextE5 db 'SIDEWINDER FIX',0
+GUIInputTextE4 db 'SIDEWINDER FIX',0
+GUIInputTextE5 db 'USE JOYSTICK PORT 209H',0
 %endif
-GUIInputTextE6 db 'USE PL3/4 AS PL1/2',0
-GUIInputTextE7 db 'ALLOW U+D/L+R',0
-GUIInputTextE8 db 'TURBO AT 30HZ',0
+GUIInputTextE6 db 'GAME SPECIFIC',0
+GUIInputTextE7 db 'USE PL3/4 AS PL1/2',0
+GUIInputTextE8 db 'ALLOW U+D/L+R',0
+GUIInputTextE9 db 'TURBO AT 30HZ',0
 
 GUIFreshInputSelect db 1
 

@@ -262,6 +262,14 @@ MouseSensitivity db 1
 %endif
 
 @
+@ Enable Game-Specific Key Combos (0 = NO, 1 = Yes)
+GUIComboGameSpec db 0
+
+@
+@ Enable Game-Specific Key Input (0 = NO, 1 = Yes)
+GameSpecificInput db 0
+
+@
 @ Share Player 3 & 4 Control Inputs w/Player 1 & 2 (0 = DISABLE, 1 = Enable)
 @ Allow 2 devices to be  used for one player
 @ (enabling this disables Multiplayer 5 support).
@@ -292,14 +300,6 @@ mouse2lh db 0 @Second device
 @ Super Scope Buttons
 SSAutoFire dd 13
 SSPause dd 14
-
-@
-@ Enable Game-Specific Key Combos (0 = NO, 1 = Yes)
-GUIComboGameSpec db 0
-
-@
-@ Enable Game-Specific Key Input (0 = NO, 1 = Yes)
-GameSpecificInput db 0
 
 @
 @  ----

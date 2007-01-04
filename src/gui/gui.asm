@@ -65,7 +65,7 @@ EXTSYM GetDate,horizon_get,ErrorPointer,MessageOn,GetTime
 EXTSYM GetScreen,GUITBWVID,Clear2xSaIBuffer,MouseWindow,ExitFromGUI
 EXTSYM GUIWFVID,newgfx16b,NumVideoModes,MusicVol,DSPMem,NumInputDevices
 EXTSYM GUIInputNames,GUIVideoModeNames,GUISLVID
-EXTSYM GUIHSVID,GUI2xVID,GUIM7VID
+EXTSYM GUIHSVID,GUI2xVID,GUIM7VID,GameSpecificInput
 EXTSYM GUINTVID,device1,device2,TwelveHourClock,JoyMinX209,JoyMaxX209,JoyMinY209
 EXTSYM JoyMaxY209,MultiTap,SFXEnable,RestoreSystemVars
 EXTSYM GUIHQ2X,nssdip1,nssdip2,nssdip3
@@ -279,7 +279,7 @@ GUIMiscMenuData:
 ;                LOAD STAT INPT OPT  VID  SND  CHT  NET  GMKEY GUIOP ABT  RSET SRC  STCN MOVE CMBO ADDO CHIP PATH SAVE SPED
 GUIwinposxo dd 0,6   ,65  ,33  ,42  ,5   ,34  ,6   ,64  ,8    ,5    ,33  ,56  ,64  ,56  ,5   ,3   ,28  ,48  ,6    ,28  ,53
 GUIwinposyo dd 0,20  ,70  ,20  ,20  ,20  ,20  ,20  ,30  ,30   ,20   ,20  ,60  ,30  ,60  ,20  ,20  ,60  ,60  ,20   ,30  ,20
-GUIwinsizex dd 0,244 ,126 ,200 ,180 ,245 ,188 ,244 ,128 ,240  ,245  ,190 ,144 ,128 ,144 ,246 ,250 ,200 ,160 ,244  ,200 ,150
+GUIwinsizex dd 0,244 ,126 ,205 ,180 ,245 ,188 ,244 ,128 ,240  ,245  ,190 ,144 ,128 ,144 ,246 ,250 ,200 ,160 ,244  ,200 ,150
 GUIwinsizey dd 0,190 ,68  ,192 ,190 ,190 ,188 ,191 ,40  ,170  ,150  ,190 ,42  ,40  ,42  ,190 ,190 ,120 ,100 ,190  ,168 ,180
 NEWSYM GUIwinptr, db 0
 
