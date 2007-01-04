@@ -54,7 +54,7 @@ extern unsigned char autoloadstate, autoloadmovie, MovieForcedLengthEnabled;
 extern char *STCart2;
 extern unsigned int NumInputDevices, MovieForcedLength;
 void zstart();
-#ifdef __WIN32__
+#ifndef __MSDOS__
 void InitDebugger();
 #endif
 
