@@ -334,9 +334,6 @@ static const char *strdupcat_internal(const char *path, const char *file)
 
 static const char *strdupcat_internal(const char *path, const char *file, const char *func, const char *mode)
 {
-#ifndef NO_DEBUGGER
-  extern char debuggeron; // should put this in a file called debugger.h?
-#endif
   static char buffer_dir[PATH_SIZE*2];
   if (!IS_ABSOLUTE(file))
   {
