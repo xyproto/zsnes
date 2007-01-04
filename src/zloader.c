@@ -54,7 +54,7 @@ extern unsigned char autoloadstate, autoloadmovie, MovieForcedLengthEnabled;
 extern char *STCart2;
 extern unsigned int NumInputDevices, MovieForcedLength;
 void zstart();
-#ifndef __MSDOS__
+#ifdef __WIN32__
 void InitDebugger();
 #endif
 
@@ -579,7 +579,7 @@ static void handle_params(int argc, char *argv[])
           case 'd': //Start with debugger enabled
             debugger = 1;
             debugdisble = 0;
-          #ifndef __MSDOS__
+          #ifdef __WIN32__
             InitDebugger();
           #endif
             break;
