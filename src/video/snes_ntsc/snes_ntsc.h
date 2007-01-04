@@ -20,7 +20,7 @@ typedef struct snes_ntsc_setup_t
 	double contrast;   /* -1 = dark (0.5)       +1 = light (1.5) */
 	double brightness; /* -1 = dark (0.5)       +1 = light (1.5) */
 	double sharpness;  /* edge contrast enhancement/blurring */
-	
+
 	/* Advanced parameters */
 	double gamma;      /* -1 = dark (1.5)       +1 = light (0.5) */
 	double resolution; /* image resolution */

@@ -83,7 +83,7 @@ static void ntsc_blit( snes_ntsc_t const* ntsc, unsigned short const* input, lon
 		unsigned short* __restrict line_out2 = (unsigned short*) ((char*) line_out + out_pitch);
 		int n;
 		line_in++;
-		
+
 	/* output second scanline darkened by 25% */
 	#define PIXEL_OUT( x )\
 	{\
@@ -99,30 +99,30 @@ static void ntsc_blit( snes_ntsc_t const* ntsc, unsigned short const* input, lon
 			SNES_NTSC_COLOR_IN( 0, line_in [0] );
 			PIXEL_OUT( 0 );
 			PIXEL_OUT( 1 );
-			
+
 			SNES_NTSC_COLOR_IN( 1, line_in [1] );
 			PIXEL_OUT( 2 );
 			PIXEL_OUT( 3 );
-			
+
 			SNES_NTSC_COLOR_IN( 2, line_in [2] );
 			PIXEL_OUT( 4 );
 			PIXEL_OUT( 5 );
 			PIXEL_OUT( 6 );
-			
+
 			line_in   += 3;
 			line_out  += 7;
 			line_out2 += 7;
 		}
-		
+
 		/* finish final pixels */
 		SNES_NTSC_COLOR_IN( 0, snes_ntsc_black );
 		PIXEL_OUT( 0 );
 		PIXEL_OUT( 1 );
-		
+
 		SNES_NTSC_COLOR_IN( 1, snes_ntsc_black );
 		PIXEL_OUT( 2 );
 		PIXEL_OUT( 3 );
-		
+
 		SNES_NTSC_COLOR_IN( 2, snes_ntsc_black );
 		PIXEL_OUT( 4 );
 		/* last pixels is cut off a bit, so would be good to uncomment these two */
@@ -130,7 +130,7 @@ static void ntsc_blit( snes_ntsc_t const* ntsc, unsigned short const* input, lon
 		/* 602 output pixels instead of the current 600 */
 		/*PIXEL_OUT( 5 ); */
 		/*PIXEL_OUT( 6 ); */
-		
+
 		burst_phase = (burst_phase + 1) % snes_ntsc_burst_count;
 		input = (unsigned short const*) ((char const*) input + in_pitch);
 		rgb_out = (char*) rgb_out + out_pitch * 2;

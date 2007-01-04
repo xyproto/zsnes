@@ -689,7 +689,7 @@ NEWSYM cachevideo
     mov byte[gammamsg+13],' '
 .postgamma
     add al,'0'
-    mov byte[gammamsg+14],al
+    mov [gammamsg+14],al
     mov dword[Msgptr],gammamsg
     mov eax,[MsgCount]
     mov [MessageOn],eax
@@ -713,7 +713,7 @@ NEWSYM cachevideo
     mov byte[gammamsg+13],' '
 .postgamma2
     add al,'0'
-    mov byte[gammamsg+14],al
+    mov [gammamsg+14],al
     mov dword[Msgptr],gammamsg
     mov eax,[MsgCount]
     mov [MessageOn],eax
