@@ -561,6 +561,9 @@ void GUIRestoreVars()
   CheckValueBounds(&mouse2lh, 0, 1, 0, UB);
   CheckValueBounds(&lhguimouse, 0, 1, 0, UB);
   CheckValueBounds(&gammalevel, 0, 15, 0, UB);
+#ifndef NO_DEBUGGER
+  CheckValueBounds(&debuggeron, 0, 1, 0, UB);
+#endif
 
   //if (TimeChecker == CalcCfgChecksum()) //What does this do?
   {
@@ -1815,3 +1818,4 @@ void SetCustomXY()
   }
 }
 #endif
+ 

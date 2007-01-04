@@ -1924,10 +1924,9 @@ DisplayGUIVideo:
   GUIDisplayText 5,130,74,GUIVideoTextA1c
   GUIDisplayText 5,130,82,GUIVideoTextA1d
   GUIDisplayText 5,130,90,GUIVideoTextA1e
-%ifdef __UNIXSDL__
+%ifdef __OPENGL__
   GUIDisplayText 5,130,98,GUIVideoTextA1f
 %endif
-
 
   DrawGUIButton 5,180,115,216,126,GUIVideoTextA4,12,0,0        ; Custom Set Button
 

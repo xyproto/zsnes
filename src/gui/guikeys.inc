@@ -252,8 +252,8 @@ GUIgetcurrentinput:
   GUIgetprkeys 81,81 ; KP1
   GUIgetprkeys 73,73 ; KP3
 %else
-;    GUIgetprkeys 72,72
-;    GUIgetprkeys 80,80
+  GUIgetprkeys 72,72
+  GUIgetprkeys 80,80
   GUIgetprkeys 75,75
   GUIgetprkeys 77,77
   GUIgetprkeys 71,71
@@ -295,12 +295,14 @@ GUIgetcurrentinput:
   GUIgetprkeys 09Ch,13 ; ENTER
 %endif
 %ifdef __WIN32__
+  GUIgetprkeys 0C8h,72
+  GUIgetprkeys 0D0h,80
   GUIgetprkeys 0CBh,75
   GUIgetprkeys 0CDh,77
-  GUIgetprkeys 0C9h,73
-  GUIgetprkeys 0D1h,81
   GUIgetprkeys 0C7h,71
   GUIgetprkeys 0CFh,79
+  GUIgetprkeys 0D1h,81
+  GUIgetprkeys 0C9h,73
   GUIgetprkeys 09Ch,13
 %endif
 ;.notwinport2

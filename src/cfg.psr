@@ -22,7 +22,6 @@
 @ Note, if you're worried you messed up a setting, removing the line will have
 @ ZSNES use the default settings for that option.
 @ The next time ZSNES is run, the line will reappear with the default settings.
-@
 
 @
 @  ----
@@ -344,9 +343,13 @@ newengen db 1
 bgfixer db 0
 
 @
+%ifndef NO_PNG
 @ Snapshot Format (0 = BMP, 1 = PNG)
 %ifdef __MSDOS__
 @ Note: in 8 bit video modes PNG is not selectable
+%endif
+%else
+@ Snapshot Format (0 = BMP)
 %endif
 ScreenShotFormat db 0
 
@@ -1231,6 +1234,12 @@ PrevBuildNum dd 0
 @
 @ Display First-Time Use Reminder (0 = YES, 1 = No)
 FirstTimeData db 0
+
+%ifndef NO_DEBUGGER
+@
+@ Enable Debugger (0 = NO, 1 = Yes)
+debuggeron db 0
+%endif
 
 @
 @ Prevent ZSNES from Saving the Configuration on Exit (0 = NO, 1 = Yes)

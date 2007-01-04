@@ -101,7 +101,9 @@ static void display_help()
   put_line("  -c      Enable full/wide screen (when available)");
   put_line("  -cc     Enable small screen (when available)");
 #endif
+#ifndef NO_DEBUGGER
   put_line("  -d      Start with debugger enabled");
+#endif
   put_line("  -dd     Disable sound SPC700/DSP emulation which also disables sound output");
   put_line("  -ds     Disable sound output");
   put_line("  -dh     Disable ROM-specific hacks");
@@ -573,13 +575,15 @@ static void handle_params(int argc, char *argv[])
             break;
           #endif
 
+          #ifndef NO_DEBUGGER
           case 'd': //Start with debugger enabled
             debugger = 1;
             debugdisble = 0;
-          #ifdef __WIN32__
+          #ifndef __MSDOS__
             InitDebugger();
           #endif
             break;
+          #endif
 
           case 'f': //Enable fixed frame rate
             i++;
