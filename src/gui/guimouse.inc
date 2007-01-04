@@ -613,11 +613,11 @@ ProcessMouseButtons:
   je near GUIProcCustomVideo
 %endif
   cmp byte[GUICBHold],37 ; reset ntsc options
-  je near GUIProcVideo
+  je near GUINTSCReset
   cmp byte[GUICBHold],38 ; reset ntsc options
-  je near GUIProcVideo
+  je near GUINTSCReset
   cmp byte[GUICBHold],39 ; reset ntsc options
-  je near GUIProcVideo
+  je near GUINTSCReset
   cmp byte[GUICBHold],10
   je near GUIProcStates
   cmp byte[GUICBHold],11
@@ -879,43 +879,6 @@ ProcessMouseButtons:
   ret
 
 GUIProcVideo:
-  cmp byte[GUICBHold],37
-  jl near .noreset
-  cmp byte[GUICBHold],39
-  jg near .noreset
-  cmp byte[GUICBHold],37
-  je .reset1
-  cmp byte[GUICBHold],39
-  je .reset1
-  jmp .reset1done
-.reset1
-  mov byte[NTSCBlend],0
-  mov byte[NTSCRef],0
-  mov byte[NTSCHue],0
-  mov byte[NTSCSat],0
-  mov byte[NTSCCont],0
-  mov byte[NTSCBright],0
-  mov byte[NTSCSharp],0
-.reset1done
-  cmp byte[GUICBHold],38
-  jge .reset2
-  jmp .reset2done
-.reset2
-  mov byte[NTSCGamma],0
-  mov byte[NTSCRes],0
-  mov byte[NTSCArt],0
-  mov byte[NTSCFringe],0
-  mov byte[NTSCBleed],0
-  mov byte[NTSCWarp],0
-.reset2done
-  mov byte[GUICBHold],0
-%ifndef __MSDOS__
-  pushad
-  call NTSCFilterInit
-  popad
-%endif
-  ret
-.noreset
   mov byte[GUICBHold],0
 %ifdef __MSDOS__
   mov al,[GUIcurrentvideocursloc]
@@ -978,6 +941,38 @@ GUIProcVideo:
 SECTION .bss
 .prevvid resb 1
 SECTION .text
+
+GUINTSCReset:
+  cmp byte[GUICBHold],37
+  je .reset1
+  cmp byte[GUICBHold],39
+  je .reset1
+  jmp .reset1done
+.reset1
+  mov byte[NTSCBlend],0
+  mov byte[NTSCRef],0
+  mov byte[NTSCHue],0
+  mov byte[NTSCSat],0
+  mov byte[NTSCCont],0
+  mov byte[NTSCBright],0
+  mov byte[NTSCSharp],0
+.reset1done
+  cmp byte[GUICBHold],38
+  jl .reset2done
+  mov byte[NTSCGamma],0
+  mov byte[NTSCRes],0
+  mov byte[NTSCArt],0
+  mov byte[NTSCFringe],0
+  mov byte[NTSCBleed],0
+  mov byte[NTSCWarp],0
+.reset2done
+  mov byte[GUICBHold],0
+%ifndef __MSDOS__
+  pushad
+  call NTSCFilterInit
+  popad
+%endif
+  ret
 
 %ifndef __MSDOS__
 GUIProcCustomVideo:
