@@ -2074,40 +2074,29 @@ DisplayGUIVideo:
   je near .notexthq4xa
   cmp byte[GUIHQ2X+eax],0
   je near .notexthq2xa
-%ifndef __UNIXSDL__
+%ifdef __MSDOS__
   GUIDisplayCheckboxu 5,128,55,hqFilter,GUIVideoTextB1h,1
 %else
-  GUIDisplayCheckboxu 5,128,55,hqFilter,GUIVideoTextB1k,1
+  GUIDisplayCheckboxu 5,128,55,hqFilter,GUIVideoTextB1i,1
   cmp byte[hqFilter],0
   je near .notexthq4xa
-  GUIDisplayButtonHoleTu 5,128,68,byte[hqFilterlevel],1,GUIVideoTextB1l,1
+  GUIDisplayButtonHoleTu 5,128,68,byte[hqFilterlevel],2,GUIVideoTextB1j,1
   jmp .notexthq2xa
 %endif
   jmp .notexthq4xa
 .notexthq2xa
-
 %ifndef __MSDOS__
   xor eax,eax
   mov al,[cvidmode]
   cmp byte[GUIHQ3X+eax],0
   je near .notexthq3xa
-%ifdef __WIN32__
-  GUIDisplayCheckboxu 5,128,55,hqFilter,GUIVideoTextB1i,1
-%else
-  GUIDisplayButtonHoleTu 5,158,68,byte[hqFilterlevel],2,GUIVideoTextB1m,0
-  jmp .notexthq3xa
-%endif
-  jmp .notexthq4xa
+  GUIDisplayButtonHoleTu 5,158,68,byte[hqFilterlevel],3,GUIVideoTextB1k,0
 .notexthq3xa
   xor eax,eax
   mov al,[cvidmode]
   cmp byte[GUIHQ4X+eax],0
   je near .notexthq4xa
-%ifdef __WIN32__
-  GUIDisplayCheckboxu 5,128,55,hqFilter,GUIVideoTextB1j,1
-%else
-  GUIDisplayButtonHoleTu 5,188,68,byte[hqFilterlevel],3,GUIVideoTextB1n,0
-%endif
+  GUIDisplayButtonHoleTu 5,188,68,byte[hqFilterlevel],4,GUIVideoTextB1l,0
 %endif
 .notexthq4xa
 
@@ -2300,17 +2289,13 @@ GUIVideoTextB1e db '2XSAI ENGINE',0
 GUIVideoTextB1f db 'SUPER EAGLE',0
 GUIVideoTextB1g db 'SUPER 2XSAI',0
 
-%ifndef __UNIXSDL__
+%ifdef __MSDOS__
 GUIVideoTextB1h db 'HQ2X',0
-%ifdef __WIN32__
-GUIVideoTextB1i db 'HQ3X',0              ; same loc as HQ2x
-GUIVideoTextB1j db 'HQ4X',0              ; same loc as HQ2x
-%endif
 %else
-GUIVideoTextB1k db 'HQ FILTER',0
-GUIVideoTextB1l db '2X',0
-GUIVideoTextB1m db '3X',0
-GUIVideoTextB1n db '4X',0
+GUIVideoTextB1i db 'HQ FILTER',0
+GUIVideoTextB1j db '2X',0
+GUIVideoTextB1k db '3X',0
+GUIVideoTextB1l db '4X',0
 %endif
 
 GUIVideoTextB2 db 'SCANLINES:',0         ; Filters.Scanlines

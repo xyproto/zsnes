@@ -568,12 +568,12 @@ En2xSaI db 0
 @ The HQ*x filter is not available for DOS at the moment, sorry.
 %endif
 hqFilter db 0
-%ifdef __UNIXSDL__
-@ Set HQ*x level [1..3] (1 = 2X, 3 = 4x)
+%ifndef __MSDOS__
+@ Set HQ*x level [2..4]
 %ifdef __OPENGL_
 @ HQ2x is only available for OpenGL.
 %endif
-hqFilterlevel db 1
+hqFilterlevel db 2
 %endif
 
 @

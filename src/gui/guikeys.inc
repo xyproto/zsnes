@@ -1173,8 +1173,8 @@ GUIVideoKeys:
 %endif
   jmp .nohqfilter
 .hqfilter
-%ifdef __UNIXSDL__
-  mov byte[hqFilterlevel],1
+%ifndef __MSDOS__
+  mov byte[hqFilterlevel],2
 %endif
   pushad
   call Clear2xSaIBuffer
@@ -1186,7 +1186,7 @@ GUIVideoKeys:
   mov byte[antienab],0
   mov byte[NTSCFilter],0
 .nohqfilter
-%ifdef __UNIXSDL__
+%ifndef __MSDOS__
   cmp dh,'X'
   jne .nohq2x
   cmp byte[hqFilter],0
@@ -1198,7 +1198,7 @@ GUIVideoKeys:
   pushad
   call Clear2xSaIBuffer
   popad
-  GUIKeyButtonHole hqFilterlevel,1,'X'
+  GUIKeyButtonHole hqFilterlevel,2,'X'
 .nohq2x
   cmp dh,'3'
   jne .nohq3x
@@ -1211,7 +1211,7 @@ GUIVideoKeys:
   pushad
   call Clear2xSaIBuffer
   popad
-  GUIKeyButtonHole hqFilterlevel,2,'3'
+  GUIKeyButtonHole hqFilterlevel,3,'3'
 .nohq3x
   cmp dh,'4'
   jne .nohq4x
@@ -1224,7 +1224,7 @@ GUIVideoKeys:
   pushad
   call Clear2xSaIBuffer
   popad
-  GUIKeyButtonHole hqFilterlevel,3,'4'
+  GUIKeyButtonHole hqFilterlevel,4,'4'
 .nohq4x
 %endif
   xor ebx,ebx

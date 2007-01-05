@@ -1411,6 +1411,7 @@ extern "C" BYTE GUIHQ2X[];
 extern "C" BYTE GUIHQ3X[];
 extern "C" BYTE GUIHQ4X[];
 extern "C" BYTE GUINTVID[];
+extern "C" BYTE hqFilterlevel;
 
 int InitDirectDraw()
 {
@@ -1463,9 +1464,9 @@ int InitDirectDraw()
 
    if ( hqFilter != 0 )
    {
-     if ( GUIHQ2X[cvidmode] != 0 ) HQMode=2;
-     if ( GUIHQ3X[cvidmode] != 0 ) HQMode=3;
-     if ( GUIHQ4X[cvidmode] != 0 ) HQMode=4;
+     if ((GUIHQ2X[cvidmode] != 0) && (hqFilterlevel == 2)) HQMode=2;
+     if ((GUIHQ3X[cvidmode] != 0) && (hqFilterlevel == 3)) HQMode=3;
+     if ((GUIHQ4X[cvidmode] != 0) && (hqFilterlevel == 4)) HQMode=4;
    }
 
   if (FullScreen == 1)
@@ -1864,43 +1865,6 @@ void NTSCFilterDraw(int SurfaceX, int SurfaceY, int pitch, unsigned char* buffer
 
 extern "C" char GUIM7VID[];
 
-void SetHQx()
-{
-  int maxHQ;
-  if(CustomResX/256 < CustomResY/224)
-    maxHQ = CustomResX/256;
-  else
-    maxHQ = CustomResY/224;
-
-  if(maxHQ >= 4)
-  {
-    GUIHQ2X[cvidmode] = 0;
-    GUIHQ3X[cvidmode] = 0;
-    GUIHQ4X[cvidmode] = 1;
-  }
-
-  else if(maxHQ == 3)
-  {
-    GUIHQ2X[cvidmode] = 0;
-    GUIHQ3X[cvidmode] = 1;
-    GUIHQ4X[cvidmode] = 0;
-  }
-
-  else if(maxHQ == 2)
-  {
-    GUIHQ2X[cvidmode] = 1;
-    GUIHQ3X[cvidmode] = 0;
-    GUIHQ4X[cvidmode] = 0;
-  }
-
-  else
-  {
-    GUIHQ2X[cvidmode] = 0;
-    GUIHQ3X[cvidmode] = 0;
-    GUIHQ4X[cvidmode] = 0;
-  }
-}
-
 void SetNTSCFOpt()
 {
   if(CustomResX >= 602 && CustomResY >= 448)
@@ -1955,18 +1919,11 @@ void initwinvideo(void)
 
    if (FirstActivate && NTSCFilter) NTSCFilterInit();
 
-   if (cvidmode==37 || cvidmode==38 || cvidmode==41)
-   {
-     SetHQx();
-     SetNTSCFOpt();
-     SetHiresOpt();
-   }
-
    if ( hqFilter != 0 )
    {
-     if ( GUIHQ2X[cvidmode] != 0 ) HQMode=2;
-     if ( GUIHQ3X[cvidmode] != 0 ) HQMode=3;
-     if ( GUIHQ4X[cvidmode] != 0 ) HQMode=4;
+     if ((GUIHQ2X[cvidmode] != 0) && (hqFilterlevel == 2)) HQMode=2;
+     if ((GUIHQ3X[cvidmode] != 0) && (hqFilterlevel == 3)) HQMode=3;
+     if ((GUIHQ4X[cvidmode] != 0) && (hqFilterlevel == 4)) HQMode=4;
    }
 
    if ((CurMode!=cvidmode) || (prevHQMode!=HQMode) || (prevNTSCMode!=NTSCFilter) || (prevCustomResX != CustomResX) || (prevCustomResY != CustomResY))
@@ -2605,9 +2562,9 @@ void drawscreenwin(void)
 
    if ( hqFilter != 0 )
    {
-     if ( GUIHQ2X[cvidmode] != 0 ) HQMode=2;
-     if ( GUIHQ3X[cvidmode] != 0 ) HQMode=3;
-     if ( GUIHQ4X[cvidmode] != 0 ) HQMode=4;
+     if ((GUIHQ2X[cvidmode] != 0) && (hqFilterlevel == 2)) HQMode=2;
+     if ((GUIHQ3X[cvidmode] != 0) && (hqFilterlevel == 3)) HQMode=3;
+     if ((GUIHQ4X[cvidmode] != 0) && (hqFilterlevel == 4)) HQMode=4;
    }
 
    if (PrevRes != resolutn)

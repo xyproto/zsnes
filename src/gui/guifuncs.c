@@ -421,9 +421,7 @@ void GUIRestoreVars()
   CheckValueBounds(&En2xSaI, 0, 3, 0, UB);
 #ifndef __MSDOS__
   CheckValueBounds(&hqFilter, 0, 1, 0, UB);
-#endif
-#ifdef __UNIXSDL__
-  CheckValueBounds(&hqFilterlevel, 1, 3, 1, UB);
+  CheckValueBounds(&hqFilterlevel, 2, 4, 2, UB);
 #endif
   CheckValueBounds(&GrayscaleMode, 0, 1, 0, UB);
   CheckValueBounds(&Mode7HiRes16b, 0, 1, 0, UD);

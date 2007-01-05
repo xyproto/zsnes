@@ -125,7 +125,7 @@ EXTSYM GUIJT_currentviewloc,GUIJT_currentcursloc,GUIJT_entries,ScreenShotFormat
 EXTSYM GUIJT_offset,GUIJT_viewable,GUIGenericJumpTo,SSAutoFire,SSPause
 
 %ifdef __UNIXSDL__
-EXTSYM numlockptr,hqFilterlevel
+EXTSYM numlockptr
 %elifdef __WIN32__
 EXTSYM initDirectDraw,reInitSound,CheckAlwaysOnTop,CheckPriority,AlwaysOnTop
 EXTSYM CheckScreenSaver,MouseWheel,TrapMouseCursor,AllowMultipleInst,TripleBufferWin
@@ -139,7 +139,7 @@ EXTSYM GUIEAVID,GUIFSVID,GUIWSVID,GUISSVID,GUITBVID
 
 %ifndef __MSDOS__
 EXTSYM ZsnesPage,DocsPage,GUICustomX,GUICustomY,GetCustomXY,SetCustomXY,initwinvideo
-EXTSYM Keep4_3Ratio,PrevFSMode,PrevWinMode,GUIHQ3X,GUIHQ4X,NTSCFilterInit
+EXTSYM Keep4_3Ratio,PrevFSMode,PrevWinMode,GUIHQ3X,GUIHQ4X,NTSCFilterInit,hqFilterlevel
 %endif
 
 %ifndef __UNIXSDL__

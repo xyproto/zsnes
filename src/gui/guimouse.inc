@@ -2273,20 +2273,12 @@ DisplayGUIVideoClick:
   mov bl,[cvidmode]
 %ifndef __MSDOS__
   cmp byte[GUIHQ4X+ebx],0
-%ifdef __WIN32__
-  jne .checkboxhq
-%else
   jne near .radiobuttonhq4x
-%endif
   cmp byte[GUIHQ3X+ebx],0
-%ifdef __WIN32__
-  jne .checkboxhq
-%else
   jne near .radiobuttonhq3x
 %endif
-%endif
   cmp byte[GUIHQ2X+ebx],0
-%ifndef __UNIXSDL__
+%ifdef __MSDOS__
   jne .checkboxhq
 %else
   jne near .radiobuttonhq2x
@@ -2297,14 +2289,14 @@ DisplayGUIVideoClick:
   GUIClickCButton 128,55,byte[hqFilter]
 .nocheckboxhq
 
-%ifdef __UNIXSDL__
+%ifndef __MSDOS__
   jmp .noradiobuttons
 .radiobuttonhq4x
-  GUIPButtonHole 188,68,byte[hqFilterlevel],3
+  GUIPButtonHole 188,68,byte[hqFilterlevel],4
 .radiobuttonhq3x
-  GUIPButtonHole 158,68,byte[hqFilterlevel],2
+  GUIPButtonHole 158,68,byte[hqFilterlevel],3
 .radiobuttonhq2x
-  GUIPButtonHole 128,68,byte[hqFilterlevel],1
+  GUIPButtonHole 128,68,byte[hqFilterlevel],2
   FilterExcl 128,55,En2xSaI,scanlines,antienab,NTSCFilter
   GUIClickCButton 128,55,byte[hqFilter]
 .noradiobuttons
