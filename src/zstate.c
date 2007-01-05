@@ -1228,7 +1228,7 @@ void SaveCombFile();
 void SaveSramData()
 {
   extern unsigned int sramb4save;
-  if (!SRAMSave5Sec || sramb4save)
+  if (*ZSaveName && (!SRAMSave5Sec || sramb4save))
   {
     FILE *fp = 0;
     unsigned char special = 0;
@@ -1258,7 +1258,7 @@ void SaveSramData()
       if (!special || CHIPBATT)
       {
         clim();
-        if (!nosaveSRAM && *ZSaveName && (fp = fopen_dir(ZSramPath, ZSaveName,"wb")))
+        if (!nosaveSRAM && (fp = fopen_dir(ZSramPath, ZSaveName,"wb")))
         {
           fwrite(data_to_save, 1, ramsize, fp);
           fclose(fp);
@@ -1272,8 +1272,8 @@ void SaveSramData()
       }
     }
     sramb4save = 0;
-    SaveCombFile();
   }
+  SaveCombFile();
 }
 
 extern bool SramExists;
