@@ -550,18 +550,27 @@ En2xSaI db 0
 
 @
 %ifndef __MSDOS__
-@ Use Hq*x Filter (0 = NO, 1 = Yes)
+@ Use HQ*x Filter (0 = NO, 1 = Yes)
 @ This is a filter MaxSt has created. These are very CPU intensive filters that
 @ do very awesome blending to remove the pixelation.
 @ The level of filtering depends on the current resolution used
+%ifdef __WIN32__
 @ hq2x = 512x448 but below HQ3x min res
 @ hq3x = 768x672 but below HQ4x min res
 @ hq4x = 1024x896 or above
+%endif
 @ This is disabled when other filters are used. MMX support is required.
 %else
 @ The HQ*x filter is not available for DOS at the moment, sorry.
 %endif
 hqFilter db 0
+%ifdef __UNIXSDL__
+@ Set HQ*x level [1..3] (1 = 2X, 3 = 4x)
+%ifdef __OPENGL_
+@ HQ2x is only available for OpenGL.
+%endif
+hqFilterlevel db 1
+%endif
 
 @
 @ Enable Scanlines (0 = NONE, 1 = Full, 2 = 25%, 3 = 50%) - simulate TV scanlines

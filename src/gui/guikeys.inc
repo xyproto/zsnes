@@ -1173,6 +1173,9 @@ GUIVideoKeys:
 %endif
   jmp .nohqfilter
 .hqfilter
+%ifdef __UNIXSDL__
+  mov byte[hqFilterlevel],1
+%endif
   pushad
   call Clear2xSaIBuffer
   popad
@@ -1183,11 +1186,52 @@ GUIVideoKeys:
   mov byte[antienab],0
   mov byte[NTSCFilter],0
 .nohqfilter
+%ifdef __UNIXSDL__
+  cmp dh,'X'
+  jne .nohq2x
+  cmp byte[hqFilter],0
+  je .nohq2x
+  xor ebx,ebx
+  mov bl,[cvidmode]
+  cmp byte[GUIHQ2X+ebx],0
+  je .nohq2x
+  pushad
+  call Clear2xSaIBuffer
+  popad
+  GUIKeyButtonHole hqFilterlevel,1,'X'
+.nohq2x
+  cmp dh,'3'
+  jne .nohq3x
+  cmp byte[hqFilter],0
+  je .nohq3x
+  xor ebx,ebx
+  mov bl,[cvidmode]
+  cmp byte[GUIHQ3X+ebx],0
+  je .nohq3x
+  pushad
+  call Clear2xSaIBuffer
+  popad
+  GUIKeyButtonHole hqFilterlevel,2,'3'
+.nohq3x
+  cmp dh,'4'
+  jne .nohq4x
+  cmp byte[hqFilter],0
+  je .nohq4x
+  xor ebx,ebx
+  mov bl,[cvidmode]
+  cmp byte[GUIHQ4X+ebx],0
+  je .nohq4x
+  pushad
+  call Clear2xSaIBuffer
+  popad
+  GUIKeyButtonHole hqFilterlevel,3,'4'
+.nohq4x
+%endif
   xor ebx,ebx
   mov bl,[cvidmode]
   cmp byte[GUI2xVID+ebx],0
   je near .nosuper2xsai
-  cmp dh,'X'
+  cmp dh,'S'
   jne .no2xsai
   mov eax,1
   jmp .yesfilter
@@ -1197,7 +1241,7 @@ GUIVideoKeys:
   mov eax,2
   jmp .yesfilter
 .nosupereagle
-  cmp dh,'S'
+  cmp dh,'P'
   jne .nosuper2xsai
   mov eax,3
 .yesfilter

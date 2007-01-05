@@ -962,11 +962,9 @@ GUIOuttextwin2 %1,%2-1,%3-1,%4
 DisplayGUILoad:
   GUIDrawWindowBox 1,GUILoadDisp
 
-%ifndef __MSDOS__
-  GUIDisplayText 1,21,166,GUILoadText3a
-%else
+  GUIDisplayText 1,21,166,GUILoadText3
+%ifdef __MSDOS__
   GUIDisplayTextY 1,6,157,GUILoadText2
-  GUIDisplayText 1,21,166,GUILoadText3b
   GUIDisplayText 1,21,182,GUILoadText4
 %endif
   GUIDisplayText 1,21,174,GUILoadText5
@@ -1194,11 +1192,11 @@ DisplayGUILoad:
 
 SECTION .data
 GUILoadText1 db 'SELECT FILE TO LOAD:',0
-GUILoadText2 db 'DISPLAY TYPE:',0
 %ifndef __MSDOS__
-GUILoadText3a db 'LONG FILENAME',0
+GUILoadText3 db 'LONG FILENAME',0
 %else
-GUILoadText3b db 'WIN9X LONG FILENAME',0
+GUILoadText2 db 'DISPLAY TYPE:',0
+GUILoadText3 db 'WIN9X LONG FILENAME',0
 GUILoadText4 db 'DOS 8.3 FORMAT',0
 %endif
 GUILoadText5 db 'SNES HEADER NAME',0
@@ -2065,9 +2063,9 @@ DisplayGUIVideo:
   je near .nocheckboxx
   cmp byte[MMXSupport],0
   je near .nocheckboxx
-  GUIDisplayCheckboxun 5,18,45,En2xSaI,1,GUIVideoTextB1e,1   ;2x
+  GUIDisplayCheckboxun 5,18,45,En2xSaI,1,GUIVideoTextB1e,2   ;2x
   GUIDisplayCheckboxun 5,128,45,En2xSaI,2,GUIVideoTextB1f,6  ;Seagle
-  GUIDisplayCheckboxun 5,18,55,En2xSaI,3,GUIVideoTextB1g,0   ;S2x
+  GUIDisplayCheckboxun 5,18,55,En2xSaI,3,GUIVideoTextB1g,2   ;S2x
 .nocheckboxx
 
   xor eax,eax                                     ; Hq*x
@@ -2076,18 +2074,32 @@ DisplayGUIVideo:
   je near .notexthq4xa
   cmp byte[GUIHQ2X+eax],0
   je near .notexthq2xa
+%ifndef __UNIXSDL__
   GUIDisplayCheckboxu 5,128,55,hqFilter,GUIVideoTextB1h,1
+%else
+  GUIDisplayCheckboxu 5,128,55,hqFilter,GUIVideoTextB1k,1
+  GUIDisplayButtonHoleTu 5,128,65,byte[hqFilterlevel],1,GUIVideoTextB1l,1
+%endif
   jmp .notexthq4xa
 .notexthq2xa
+
 %ifndef __MSDOS__
   cmp byte[GUIHQ3X+eax],0
   je near .notexthq3xa
+%ifdef __WIN32__
   GUIDisplayCheckboxu 5,128,55,hqFilter,GUIVideoTextB1i,1
+%else
+  GUIDisplayButtonHoleTu 5,148,65,byte[hqFilterlevel],2,GUIVideoTextB1m,0
+%endif
   jmp .notexthq4xa
 .notexthq3xa
   cmp byte[GUIHQ4X+eax],0
   je near .notexthq4xa
+%ifdef __WIN32__
   GUIDisplayCheckboxu 5,128,55,hqFilter,GUIVideoTextB1j,1
+%else
+  GUIDisplayButtonHoleTu 5,168,65,byte[hqFilterlevel],3,GUIVideoTextB1n,0
+%endif
 %endif
 .notexthq4xa
 
@@ -2263,6 +2275,7 @@ GUIVideoTextA1f db 'O = USES OPENGL',0
 GUIVideoTextA2 db 'CUSTOM:',0
 GUIVideoTextA2a db 'X',0
 %endif
+
 GUIVideoTextA3 db 'CURRENT:',0
 GUIVideoTextA4 db 'SET',0                ; set button
 
@@ -2278,10 +2291,18 @@ GUIVideoTextB1d db 'NTSC',0
 GUIVideoTextB1e db '2XSAI ENGINE',0
 GUIVideoTextB1f db 'SUPER EAGLE',0
 GUIVideoTextB1g db 'SUPER 2XSAI',0
+
+%ifndef __UNIXSDL__
 GUIVideoTextB1h db 'HQ2X',0
-%ifndef __MSDOS__
+%ifdef __WIN32__
 GUIVideoTextB1i db 'HQ3X',0              ; same loc as HQ2x
 GUIVideoTextB1j db 'HQ4X',0              ; same loc as HQ2x
+%endif
+%else
+GUIVideoTextB1k db 'HQ*X',0
+GUIVideoTextB1l db '2X',0
+GUIVideoTextB1m db '3X',0
+GUIVideoTextB1n db '4X',0
 %endif
 
 GUIVideoTextB2 db 'SCANLINES:',0         ; Filters.Scanlines
