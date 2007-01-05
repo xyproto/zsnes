@@ -664,6 +664,12 @@ gammalevel db 0
 @ -- Sound --
 @  ----
 
+%ifdef __UNIXSDL__
+@
+@ libAO driver to use. Use zsnes --help to see valid list.
+@libAoDriver times 10 db "auto"
+%endif
+
 @
 @ Disable SPC Emulation (0 = NO, 1 = Yes)
 @ Disabling SPC emulation can improve performance, but at the expense of
