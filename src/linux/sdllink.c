@@ -23,8 +23,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "sw_draw.h"
 #include "gl_draw.h"
 
-#include <ao/ao.h>
-
 #include <SDL_thread.h>
 
 #include <sys/time.h>
@@ -54,7 +52,7 @@ typedef enum { FALSE = 0, TRUE = 1 } BOOL;
 typedef enum vidstate_e { vid_null, vid_none, vid_soft, vid_gl } vidstate_t;
 
 // SOUND RELATED VARIABLES
-//SDL_AudioSpec audiospec;
+SDL_AudioSpec audiospec;
 int SoundEnabled = 1;
 BYTE PrevStereoSound;
 DWORD PrevSoundQuality;
@@ -727,123 +725,6 @@ void ProcessKeyBuf(int scancode)
   }
 }
 
-typedef unsigned long long uint64;
-#define SAMPLE_NTSC_HI_SCALE 995ULL
-#define SAMPLE_NTSC_LO 59649ULL
-#define SAMPLE_PAL_HI_SCALE  1ULL
-#define SAMPLE_PAL_LO       50ULL
-uint64 sample_hi;
-uint64 sample_lo;
-uint64 sample_balance;
-
-static const int freqtab[7] = { 8000, 11025, 22050, 44100, 16000, 32000, 48000 };
-#define RATE freqtab[SoundQuality]
-
-static ao_device *device;
-
-int InitSound(void)
-{
-  if (!SoundEnabled)
-  {
-    return FALSE;
-  }
-
-  PrevSoundQuality = SoundQuality;
-  PrevStereoSound = StereoSound;
-
-  ao_initialize();
-
-  int driver_count;
-  ao_info **driver_info = ao_driver_info_list(&driver_count);
-  puts("Valid Audio Drivers:");
-  while (driver_count--)
-  {
-    if (driver_info[driver_count]->type == AO_TYPE_LIVE)
-    {
-      puts(driver_info[driver_count]->short_name);
-    }
-  }
-
-  int driver_id = ao_default_driver_id();
-  driver_id = ao_driver_id("oss");
-
-  ao_sample_format driver_format;
-  driver_format.bits = 16;
-  driver_format.channels = StereoSound+1;
-  driver_format.rate = freqtab[SoundQuality = ((SoundQuality > 6) ? 1 : SoundQuality)];
-  driver_format.byte_format = AO_FMT_LITTLE;
-
-  device = ao_open_live(driver_id, &driver_format, 0);
-  if (device)
-  {
-    printf("Audio Opened.\nChannels: %u Rate: %u\n", driver_format.channels, driver_format.rate);
-  }
-  else
-  {
-    puts("Audio Open Failed");
-  }
-
-  if (romispal)
-  {
-    sample_hi = SAMPLE_PAL_HI_SCALE*RATE;
-    sample_lo = SAMPLE_PAL_LO;
-  }
-  else
-  {
-    sample_hi = SAMPLE_NTSC_HI_SCALE*RATE;
-    sample_lo = SAMPLE_NTSC_LO;
-  }
-  sample_balance = sample_hi;
-
-  return TRUE;
-}
-
-void WriteSamples(unsigned int samples)
-{
-  extern unsigned int BufferSizeB, BufferSizeW;
-  extern int DSPBuffer[1280];
-  void ProcessSoundBuffer();
-  short stemp[1280];
-
-  int *d = 0;
-  short *p = 0;
-
-  if (samples > 1280)
-  {
-    WriteSamples(1280);
-    samples -= 1280;
-  }
-
-  //printf("samples %d\n", samples);
-
-  BufferSizeB = samples;
-  BufferSizeW = samples<<1;
-
-  asm_call(ProcessSoundBuffer);
-
-  d = DSPBuffer;
-  p = stemp;
-
-  for (; d < DSPBuffer+samples; d++, p++)
-  {
-    if ((unsigned int)(*d + 0x8000) <= 0xFFFF) { *p = *d; continue; }
-    if (*d > 0x7FFF) { *p = 0x7FFF; }
-    else { *p = 0x8000; }
-  }
-
-  ao_play(device, (char *)stemp, samples*2);
-}
-
-void WriteAudio()
-{
-  unsigned int samples = (unsigned int)((sample_balance/sample_lo) << StereoSound);
-  sample_balance %= sample_lo;
-  sample_balance += sample_hi;
-
-  WriteSamples(samples);
-}
-
-/*
 int InitSound(void)
 {
   SDL_AudioSpec wanted;
@@ -895,12 +776,11 @@ int InitSound(void)
   SDL_PauseAudio(0);
 
   Buffer_len = (audiospec.size * 2);
-  Buffer_len = (Buffer_len + 255) & ~255; // Align to SPCSize
+  Buffer_len = (Buffer_len + 255) & ~255; /* Align to SPCSize */
   Buffer = malloc(Buffer_len);
 
   return TRUE;
 }
-*/
 
 int ReInitSound(void)
 {
@@ -1319,7 +1199,6 @@ void CheckTimers(void)
   }
 }
 
-/*
 //Why in the world did someone make this use signed values??? -Nach
 void UpdateSound(void *userdata, Uint8 * stream, int len)
 {
@@ -1346,7 +1225,6 @@ void UpdateSound(void *userdata, Uint8 * stream, int len)
     Buffer_fill -= len;
   }
 }
-*/
 
 void sem_sleep(void)
 {
@@ -1397,7 +1275,7 @@ void sem_sleep_die(void)
 
 void UpdateVFrame(void)
 {
-  //extern unsigned char DSPDisable;
+  extern unsigned char DSPDisable;
   extern unsigned int BufferSizeB, BufferSizeW;
 
   //Quick fix for GUI CPU usage
@@ -1406,19 +1284,11 @@ void UpdateVFrame(void)
   CheckTimers();
   Main_Proc();
 
-/*
-  if (!GUIOn2 && !GUIOn && !EMUPause)
-  {
-    WriteAudio();
-  }
-*/
-
-/*
-  // Process sound
+  /* Process sound */
   BufferSizeB = 256;
   BufferSizeW = BufferSizeB+BufferSizeB;
 
-  // take care of the things we left behind last time
+  /* take care of the things we left behind last time */
   SDL_LockAudio();
   while (Buffer_fill < Buffer_len)
   {
@@ -1447,7 +1317,6 @@ void UpdateVFrame(void)
     if (Buffer_tail >= Buffer_len) { Buffer_tail = 0; }
   }
   SDL_UnlockAudio();
-  */
 }
 
 void clearwin()
@@ -1475,12 +1344,6 @@ void drawscreenwin(void)
   else
 #endif
     sw_drawwin();
-
-  if (!GUIOn2 && !GUIOn && !EMUPause)
-  {
-    WriteAudio();
-  }
-
 }
 
 void UnloadSDL()
