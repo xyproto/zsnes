@@ -17,13 +17,11 @@
 ;along with this program; if not, write to the Free Software
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-%define PSR_EXTERN
 @ PSR-produced config file (stock default in CAPS)
 @
 @ Note, if you're worried you messed up a setting, removing the line will have
 @ ZSNES use the default settings for that option.
 @ The next time ZSNES is run, the line will reappear with the default settings.
-@
 
 @
 @  ----
@@ -263,6 +261,13 @@ joy_sensitivity dw 16384
 MouseSensitivity db 1
 %endif
 
+%ifdef __MSDOS__
+@
+@ Enable Sidewinder Fix (0 = NO, 1 = Yes)
+@ Enable this if the Sidewinder is still not detected properly.
+SidewinderFix db 0
+%endif
+
 @
 @ Share Player 3 & 4 Control Inputs w/Player 1 & 2 (0 = DISABLE, 1 = Enable)
 @ Allow 2 devices to be  used for one player
@@ -276,13 +281,6 @@ AllowUDLR db 0
 @
 @ Turbo Keys Equal 30 Presses/sec Instead of 60 (0 = No, 1 = YES)
 Turbo30hz db 1
-
-%ifdef __MSDOS__
-@
-@ Enable Sidewinder Fix (0 = NO, 1 = Yes)
-@ Enable this if the Sidewinder is still not detected properly.
-SidewinderFix db 0
-%endif
 
 @
 @ Left Handed Mouse Behavior for SNES Devices (0 = NO SWAP, 1 = Swap)

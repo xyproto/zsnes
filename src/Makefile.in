@@ -31,7 +31,7 @@ VID_D=video
 ZIP_D=zip
 
 PSR=parsegen
-PSR_H=cfg.h md.h
+PSR_H=cfg.h md.h input.h
 
 CHIP_O=$(CHIP_D)/c4emu.o $(CHIP_D)/c4proc.o $(CHIP_D)/dsp1emu.o\
 	$(CHIP_D)/dsp1proc.o $(CHIP_D)/dsp2proc.o $(CHIP_D)/dsp3emu.o\

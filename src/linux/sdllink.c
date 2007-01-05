@@ -32,6 +32,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "safelib.h"
 #include "../asm_call.h"
 #include "../cfg.h"
+#include "../input.h"
 
 //C++ style code in C
 #define bool unsigned char

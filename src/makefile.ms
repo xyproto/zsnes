@@ -308,24 +308,24 @@ else
 endif
 
 cfg${OE}: cfg.psr ${PSR}
+input${OE}: input.psr ${PSR}
 debugasm${OE}: debugasm.asm macros.mac
 debugger${OE}: debugger.c asm_call.h zpath.h ${JMADIR}/zsnesjma.h \
 	${ZIPDIR}/zunzip.h
 endmem${OE}: endmem.asm macros.mac
 init${OE}: init.asm macros.mac
 initc${OE}: initc.c asm_call.h cfg${OE} zpath.h ${CPUDIR}/memtable.h \
-	${JMADIR}/zsnesjma.h ${ZIPDIR}/zunzip.h
+	${JMADIR}/zsnesjma.h ${ZIPDIR}/zunzip.h input${OE}
 md${OE}: md.psr ${PSR}
-input${OE}: input.psr ${PSR}
 patch${OE}: patch.c zpath.h ${JMADIR}/zsnesjma.h ${ZIPDIR}/zunzip.h
 ui${OE}: ui.c asm_call.h cfg${OE} zpath.h ${JMADIR}/zsnesjma.h \
-	${MMLIBDIR}/mm.h ${ZIPDIR}/zunzip.h
+	${MMLIBDIR}/mm.h ${ZIPDIR}/zunzip.h input${OE}
 vcache${OE}: vcache.asm macros.mac
 version${OE}: version.c
 zloader${OE}: zloader.c asm_call.h cfg${OE} zloader.h zpath.h \
-	${JMADIR}/zsnesjma.h ${ZIPDIR}/zunzip.h
+	${JMADIR}/zsnesjma.h ${ZIPDIR}/zunzip.h input${OE}
 zmovie${OE}: zmovie.c asm_call.h cfg${OE} gblvars.h md${OE} numconv.h zpath.h \
-	${JMADIR}/zsnesjma.h ${WINDIR}/safelib.h ${ZIPDIR}/zunzip.h zmovie.h
+	${JMADIR}/zsnesjma.h ${WINDIR}/safelib.h ${ZIPDIR}/zunzip.h zmovie.h input${OE}
 zpath${OE}: zpath.c cfg${OE} zpath.h ${DOSDIR}/lib.h ${JMADIR}/zsnesjma.h \
 	${WINDIR}/lib.h ${WINDIR}/safelib.h ${ZIPDIR}/zunzip.h
 zstate${OE}: zstate.c asm_call.h cfg${OE} gblvars.h numconv.h zpath.h \
@@ -402,7 +402,7 @@ ${GUIDIR}/gui${OE}: ${GUIDIR}/gui.asm macros.mac ${GUIDIR}/guicheat.inc \
 	${GUIDIR}/guimouse.inc ${GUIDIR}/guitools.inc ${GUIDIR}/guiwindp.inc
 ${GUIDIR}/guifuncs${OE}: ${GUIDIR}/guifuncs.c asm_call.h cfg${OE} md${OE} \
 	zloader.h zpath.h ${DOSDIR}/lib.h ${JMADIR}/zsnesjma.h ${WINDIR}/lib.h \
-	${ZIPDIR}/zunzip.h
+	${ZIPDIR}/zunzip.h input${OE}
 ${GUIDIR}/menu${OE}: ${GUIDIR}/menu.asm macros.mac
 
 ${JMADIR}/7zlzma${OE}: ${JMADIR}/7zlzma.cpp ${JMADIR}/7z.h \
@@ -486,11 +486,11 @@ ${WINDIR}/lib${OE}: ${WINDIR}/lib.c zpath.h ${JMADIR}/zsnesjma.h \
 ${WINDIR}/safelib${OE}: ${WINDIR}/safelib.c argv.h
 ifeq (${ENV},msvc)
 ${WINDIR}/winintrf${OE}: ${WINDIR}/winintrf.asm macros.mac
-${WINDIR}/winlink.obj: ${WINDIR}/winlink.cpp cfg${OE} ${WINDIR}/resource.h
+${WINDIR}/winlink.obj: ${WINDIR}/winlink.cpp cfg${OE} ${WINDIR}/resource.h input${OE}
 ${WINDIR}/zsnes.res: ${WINDIR}/zsnes.rc ${WINDIR}/resource.h
 	rc ${WINDIR}/zsnes.rc
 else
-${WINDIR}/winlink${OE}: ${WINDIR}/winlink.cpp cfg${OE} ${WINDIR}/resource.h
+${WINDIR}/winlink${OE}: ${WINDIR}/winlink.cpp cfg${OE} input${OE} ${WINDIR}/resource.h
 	${CPPC} ${COPT} ${CFLAGS} -masm=intel -o $@ -c ${WINDIR}/winlink.cpp
 ${WINDIR}/zsnes${OE}: ${WINDIR}/zsnes.rc ${WINDIR}/resource.h
 	${WINDRES} --include-dir ${WINDIR} ${WINDIR}/zsnes.rc -o${WINDIR}/zsnes${OE}

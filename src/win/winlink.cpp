@@ -36,6 +36,7 @@ extern "C" {
 #include <winuser.h>
 #include "resource.h"
 #include "../cfg.h"
+#include "../input.h"
 
 
 /*

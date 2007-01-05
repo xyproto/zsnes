@@ -1441,11 +1441,24 @@ void savespcdata()
 
 void SaveGameSpecificInput()
 {
+  char *path;
   if (GameSpecificInput && *ZSaveName)
   {
-    char *path;
     setextension(ZSaveName, "inp");
     path = strdupcat(ZSramPath, ZSaveName);
+    if (path)
+    {
+      write_input_vars(path);
+      free(path);
+    }
+    else
+    {
+      write_input_vars(ZSaveName);
+    }
+  }
+  else
+  {
+    path = strdupcat(ZCfgPath,"zinput.inp");
     if (path)
     {
       write_input_vars(path);
@@ -1460,11 +1473,24 @@ void SaveGameSpecificInput()
 
 void LoadGameSpecificInput()
 {
+  char *path;
   if (GameSpecificInput && *ZSaveName)
   {
-    char *path;
     setextension(ZSaveName, "inp");
     path = strdupcat(ZSramPath, ZSaveName);
+    if (path)
+    {
+      read_input_vars(path);
+      free(path);
+    }
+    else
+    {
+      read_input_vars(ZSaveName);
+    }
+  }
+  else
+  {
+    path = strdupcat(ZCfgPath,"zinput.inp");
     if (path)
     {
       read_input_vars(path);

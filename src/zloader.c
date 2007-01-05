@@ -40,6 +40,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #endif
 #include "asm_call.h"
 #include "cfg.h"
+#include "input.h"
 #include "zpath.h"
 #include "zloader.h"
 

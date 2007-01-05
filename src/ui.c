@@ -32,6 +32,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #include "asm_call.h"
 #include "cfg.h"
+#include "input.h"
 #include "mmlib/mm.h"
 #include "zpath.h"
 
@@ -41,7 +42,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define false 0
 
 extern unsigned int xa, MessageOn, maxromspace;
-extern unsigned char FPSOn, spcon;
+extern unsigned char FPSOn, spcon, device1, device2;
 extern char *Msgptr, CSStatus[], CSStatus2[], CSStatus3[];
 
 unsigned short selc0040, selcA000, selcB800;
@@ -88,8 +89,6 @@ unsigned char debugdisble   = 1;    // debugger disable.  0 = no, 1 = yes
 unsigned char gammalevel16b = 0;    // gamma level (16-bit engine)
 unsigned char AddSub256     = 0;    // screen add/sub in 256 colors
 unsigned char dmadeddis     = 0;    // DMA deduction
-unsigned char device1       = 0;    // Device in port 1?
-unsigned char device2       = 0;    // Device in port 2?
 unsigned char OldStyle      = 1;    // Old style joystick on
 unsigned char SecondPort    = 0;    // Secondary Joystick Port Enabled (209h) (DOS port only)
 

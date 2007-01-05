@@ -53,6 +53,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "../zpath.h"
 #include "../md.h"
 #include "../cfg.h"
+#include "../input.h"
 #include "../asm_call.h"
 #include "../zloader.h"
 
@@ -342,6 +343,17 @@ void GUIRestoreVars()
   else
   {
     read_md_vars("zmovie.cfg");
+  }
+
+  path = strdupcat(ZCfgPath, "zinput.inp");
+  if (path)
+  {
+    read_input_vars(path);
+    free(path);
+  }
+  else
+  {
+    read_input_vars("zinput.inp");
   }
 
   CheckValueBounds(&per2exec, 50, 150, 100, UD);

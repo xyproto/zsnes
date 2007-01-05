@@ -53,8 +53,9 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "gblvars.h"
 #include "asm_call.h"
 #include "md.h"
-#include "zpath.h"
+#include "input.h"
 #include "cfg.h"
+#include "zpath.h"
 #include "zmovie.h"
 
 #define NUMCONV_FR2
