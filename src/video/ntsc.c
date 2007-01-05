@@ -49,8 +49,11 @@ void NTSCFilterInit()
 	ntsc_setup.saturation   = to_float * NTSCSat;
 	ntsc_setup.contrast     = to_float * NTSCCont;
 	ntsc_setup.brightness   = to_float * NTSCBright;
-	ntsc_setup.artifacts    = to_float * NTSCArt;
 	ntsc_setup.gamma        = to_float * NTSCGamma;
+	ntsc_setup.resolution   = to_float * NTSCRes;
+	ntsc_setup.artifacts    = to_float * NTSCArt;
+	ntsc_setup.fringing     = to_float * NTSCFringe;
+	ntsc_setup.bleed        = to_float * NTSCBleed;
 
 	/*ntsc_setup.hue_warping = to_float * NTSCWarp; // not supported anymore */
 	ntsc_setup.merge_fields = NTSCBlend;
