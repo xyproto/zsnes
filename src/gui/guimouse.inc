@@ -2300,11 +2300,11 @@ DisplayGUIVideoClick:
 %ifdef __UNIXSDL__
   jmp .noradiobuttons
 .radiobuttonhq4x
-  GUIPButtonHole 168,65,byte[hqFilterlevel],3
+  GUIPButtonHole 168,68,byte[hqFilterlevel],3
 .radiobuttonhq3x
-  GUIPButtonHole 148,65,byte[hqFilterlevel],2
+  GUIPButtonHole 148,68,byte[hqFilterlevel],2
 .radiobuttonhq2x
-  GUIPButtonHole 128,65,byte[hqFilterlevel],1
+  GUIPButtonHole 128,68,byte[hqFilterlevel],1
   FilterExcl 128,55,En2xSaI,scanlines,antienab,NTSCFilter
   GUIClickCButton 128,55,byte[hqFilter]
 .noradiobuttons

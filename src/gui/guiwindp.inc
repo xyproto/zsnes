@@ -2078,7 +2078,10 @@ DisplayGUIVideo:
   GUIDisplayCheckboxu 5,128,55,hqFilter,GUIVideoTextB1h,1
 %else
   GUIDisplayCheckboxu 5,128,55,hqFilter,GUIVideoTextB1k,1
-  GUIDisplayButtonHoleTu 5,128,65,byte[hqFilterlevel],1,GUIVideoTextB1l,1
+  cmp byte[hqFilter],0
+  je .notexthq4xa
+  GUIDisplayButtonHoleTu 5,128,68,byte[hqFilterlevel],1,GUIVideoTextB1l,1
+  jmp .notexthq2xa
 %endif
   jmp .notexthq4xa
 .notexthq2xa
@@ -2089,7 +2092,8 @@ DisplayGUIVideo:
 %ifdef __WIN32__
   GUIDisplayCheckboxu 5,128,55,hqFilter,GUIVideoTextB1i,1
 %else
-  GUIDisplayButtonHoleTu 5,148,65,byte[hqFilterlevel],2,GUIVideoTextB1m,0
+  GUIDisplayButtonHoleTu 5,148,68,byte[hqFilterlevel],2,GUIVideoTextB1m,0
+  jmp .notexthq3xa
 %endif
   jmp .notexthq4xa
 .notexthq3xa
@@ -2098,7 +2102,7 @@ DisplayGUIVideo:
 %ifdef __WIN32__
   GUIDisplayCheckboxu 5,128,55,hqFilter,GUIVideoTextB1j,1
 %else
-  GUIDisplayButtonHoleTu 5,168,65,byte[hqFilterlevel],3,GUIVideoTextB1n,0
+  GUIDisplayButtonHoleTu 5,168,68,byte[hqFilterlevel],3,GUIVideoTextB1n,0
 %endif
 %endif
 .notexthq4xa
@@ -2299,7 +2303,7 @@ GUIVideoTextB1i db 'HQ3X',0              ; same loc as HQ2x
 GUIVideoTextB1j db 'HQ4X',0              ; same loc as HQ2x
 %endif
 %else
-GUIVideoTextB1k db 'HQ*X',0
+GUIVideoTextB1k db 'HQ FILTER',0
 GUIVideoTextB1l db '2X',0
 GUIVideoTextB1m db '3X',0
 GUIVideoTextB1n db '4X',0
