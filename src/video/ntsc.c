@@ -83,7 +83,7 @@ void NTSCFilterInit()
 
 void NTSCFilterDraw( int out_width, int out_height, int out_pitch, unsigned char* rgb16_out )
 {
-	ntsc_blit( &ntsc_snes, vidbuffer+576+16, 576, ntsc_phase,
+	ntsc_blit( &ntsc_snes, vidbuffer, 576, ntsc_phase,
 			out_width, out_height, rgb16_out, out_pitch );
 
 	/* Change phase on alternating frames unless blending is enabled */
