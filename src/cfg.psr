@@ -540,6 +540,7 @@ NTSCArt sb 0
 NTSCFringe sb 0
 NTSCBleed sb 0
 NTSCWarp sb 0
+NTSCPresetVar sb 0
 
 @
 @ Enable Kreed's 2x Filters (0 = NONE, 1 = 2xSaI, 2 = Super Eagle, 3 = Super 2xSaI)

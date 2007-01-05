@@ -49,11 +49,33 @@ void NTSCFilterInit()
 	ntsc_setup.saturation   = to_float * NTSCSat;
 	ntsc_setup.contrast     = to_float * NTSCCont;
 	ntsc_setup.brightness   = to_float * NTSCBright;
+	ntsc_setup.artifacts    = to_float * NTSCArt;
+	ntsc_setup.gamma        = to_float * NTSCGamma;
 
 	/*ntsc_setup.hue_warping = to_float * NTSCWarp; // not supported anymore */
 	ntsc_setup.merge_fields = NTSCBlend;
+	
+	switch (NTSCPresetVar)
+	{
+	case 0:
+		snes_ntsc_init( &ntsc_snes, &ntsc_setup );
+		break;
+	case 1:
+		snes_ntsc_init( &ntsc_snes, &snes_ntsc_composite );
+		break;
+	case 2:
+		snes_ntsc_init( &ntsc_snes, &snes_ntsc_svideo );
+		break;
+	case 3:
+		snes_ntsc_init( &ntsc_snes, &snes_ntsc_rgb );
+		break;
+	case 4:
+		snes_ntsc_init( &ntsc_snes, &snes_ntsc_monochrome );
+		break;
+	default:
+		break;
+	}
 
-	snes_ntsc_init( &ntsc_snes, &ntsc_setup );
 }
 
 void NTSCFilterDraw( int out_width, int out_height, int out_pitch, unsigned char* rgb16_out )

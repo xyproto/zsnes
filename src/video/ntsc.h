@@ -27,7 +27,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "snes_ntsc/snes_ntsc.h"
 
 /* Parameters vary from -100 to +100 */
-extern signed char NTSCHue, NTSCSat, NTSCCont, NTSCBright, NTSCSharp, NTSCWarp;
+extern signed char NTSCHue, NTSCSat, NTSCCont, NTSCBright, NTSCSharp, NTSCWarp, NTSCBleed, NTSCRes, NTSCArt, NTSCGamma, NTSCPresetVar;
 extern unsigned char NTSCBlend; /* 0 or 1 */
 
 /* (Re)initialize filter with new NTSC settings above */
