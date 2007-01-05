@@ -2087,6 +2087,8 @@ DisplayGUIVideo:
 .notexthq2xa
 
 %ifndef __MSDOS__
+  xor eax,eax
+  mov al,[cvidmode]
   cmp byte[GUIHQ3X+eax],0
   je near .notexthq3xa
 %ifdef __WIN32__
@@ -2097,6 +2099,8 @@ DisplayGUIVideo:
 %endif
   jmp .notexthq4xa
 .notexthq3xa
+  xor eax,eax
+  mov al,[cvidmode]
   cmp byte[GUIHQ4X+eax],0
   je near .notexthq4xa
 %ifdef __WIN32__
