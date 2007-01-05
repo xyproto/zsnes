@@ -2094,7 +2094,7 @@ DisplayGUIVideo:
 %ifdef __WIN32__
   GUIDisplayCheckboxu 5,128,55,hqFilter,GUIVideoTextB1i,1
 %else
-  GUIDisplayButtonHoleTu 5,153,68,byte[hqFilterlevel],2,GUIVideoTextB1m,0
+  GUIDisplayButtonHoleTu 5,158,68,byte[hqFilterlevel],2,GUIVideoTextB1m,0
   jmp .notexthq3xa
 %endif
   jmp .notexthq4xa
@@ -2106,7 +2106,7 @@ DisplayGUIVideo:
 %ifdef __WIN32__
   GUIDisplayCheckboxu 5,128,55,hqFilter,GUIVideoTextB1j,1
 %else
-  GUIDisplayButtonHoleTu 5,178,68,byte[hqFilterlevel],3,GUIVideoTextB1n,0
+  GUIDisplayButtonHoleTu 5,188,68,byte[hqFilterlevel],3,GUIVideoTextB1n,0
 %endif
 %endif
 .notexthq4xa
