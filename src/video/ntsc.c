@@ -57,7 +57,7 @@ void NTSCFilterInit()
 
 	/*ntsc_setup.hue_warping = to_float * NTSCWarp; // not supported anymore */
 	ntsc_setup.merge_fields = NTSCBlend;
-	
+
 	switch (NTSCPresetVar)
 	{
 	case 0:

@@ -2079,7 +2079,7 @@ DisplayGUIVideo:
 %else
   GUIDisplayCheckboxu 5,128,55,hqFilter,GUIVideoTextB1k,1
   cmp byte[hqFilter],0
-  je .notexthq4xa
+  je near .notexthq4xa
   GUIDisplayButtonHoleTu 5,128,68,byte[hqFilterlevel],1,GUIVideoTextB1l,1
   jmp .notexthq2xa
 %endif

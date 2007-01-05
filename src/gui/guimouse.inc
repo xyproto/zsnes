@@ -2276,20 +2276,20 @@ DisplayGUIVideoClick:
 %ifdef __WIN32__
   jne .checkboxhq
 %else
-  jne .radiobuttonhq4x
+  jne near .radiobuttonhq4x
 %endif
   cmp byte[GUIHQ3X+ebx],0
 %ifdef __WIN32__
   jne .checkboxhq
 %else
-  jne .radiobuttonhq3x
+  jne near .radiobuttonhq3x
 %endif
 %endif
   cmp byte[GUIHQ2X+ebx],0
 %ifndef __UNIXSDL__
   jne .checkboxhq
 %else
-  jne .radiobuttonhq2x
+  jne near .radiobuttonhq2x
 %endif
   jmp .nocheckboxhq
 .checkboxhq
