@@ -943,11 +943,11 @@ SECTION .bss
 SECTION .text
 
 GUINTSCReset:
-  cmp byte[GUICBHold],37
-  je .reset1
+  cmp byte[GUICBHold],38
+  je .reset2
   cmp byte[GUICBHold],39
-  je .reset1
-  jmp .reset1done
+  jne .reset1
+  mov byte[NTSCPresetVar],0
 .reset1
   mov byte[NTSCBlend],0
   mov byte[NTSCRef],0
@@ -956,9 +956,9 @@ GUINTSCReset:
   mov byte[NTSCCont],0
   mov byte[NTSCBright],0
   mov byte[NTSCSharp],0
-.reset1done
-  cmp byte[GUICBHold],38
-  jl .reset2done
+  cmp byte[GUICBHold],37
+  je .reset2done
+.reset2
   mov byte[NTSCGamma],0
   mov byte[NTSCRes],0
   mov byte[NTSCArt],0
