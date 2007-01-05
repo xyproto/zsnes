@@ -667,7 +667,7 @@ gammalevel db 0
 %ifdef __UNIXSDL__
 @
 @ libAO driver to use. Use zsnes --help to see valid list.
-@libAoDriver times 10 db "auto"
+libAoDriver times 10 db "auto"
 %endif
 
 @
