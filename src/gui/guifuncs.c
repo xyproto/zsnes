@@ -422,6 +422,9 @@ void GUIRestoreVars()
 #ifndef __MSDOS__
   CheckValueBounds(&hqFilter, 0, 1, 0, UB);
 #endif
+#ifdef __UNIXSDL__
+  CheckValueBounds(&hqFilterlevel, 1, 3, 1, UB);
+#endif
   CheckValueBounds(&GrayscaleMode, 0, 1, 0, UB);
   CheckValueBounds(&Mode7HiRes16b, 0, 1, 0, UD);
   CheckValueBounds(&NTSCFilter, 0, 1, 0, UB);
@@ -438,6 +441,7 @@ void GUIRestoreVars()
   CheckValueBounds(&NTSCFringe, -100, 100, 0, SB);
   CheckValueBounds(&NTSCBleed, -100, 100, 0, SB);
   CheckValueBounds(&NTSCWarp, -100, 100, 0, SB);
+  CheckValueBounds(&NTSCPresetVar, 0, 4, 0, UB);
 
   CheckValueBounds(&soundon, 0, 1, 1, UB);
   CheckValueBounds(&StereoSound, 0, 1, 1, UB);

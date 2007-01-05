@@ -1438,6 +1438,19 @@ GUIVideoKeys:
   GUIKeyButtonHole NTSCPresetVar,2,'S'
   GUIKeyButtonHole NTSCPresetVar,3,'G'
   GUIKeyButtonHole NTSCPresetVar,4,'M'
+
+  xor ebx,ebx
+  mov bl,[NTSCPresetVar]
+  cmp byte[NTSCPrevPreset],bl
+  je .nontscchange
+  mov [NTSCPrevPreset],bl
+%ifndef __MSDOS__
+  pushad
+  call NTSCFilterInit
+  popad
+%endif
+.nontscchange
+
 .notntsctab
   ret
 

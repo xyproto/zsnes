@@ -2410,6 +2410,18 @@ DisplayGUIVideoClick:
   GUIPButtonHole 66,173,byte[NTSCPresetVar],3
   GUIPButtonHole 146,173,byte[NTSCPresetVar],4
 
+  xor ebx,ebx
+  mov bl,[NTSCPresetVar]
+  cmp byte[NTSCPrevPreset],bl
+  je .nontscchange
+  mov [NTSCPrevPreset],bl
+%ifndef __MSDOS__
+  pushad
+  call NTSCFilterInit
+  popad
+%endif
+.nontscchange
+
   GUIPHoldbutton 102,186,137,197,37  ; button
   GUIPHoldbutton 148,186,207,197,39  ; button
 
@@ -2616,6 +2628,7 @@ GUIBlankVar resd 1
 ntscLastVar resb 6
 ntscCurVar resb 1
 ntscWhVar resb 1
+NTSCPrevPreset resb 1
 SECTION .text
 
 DisplayGUISoundClick:
