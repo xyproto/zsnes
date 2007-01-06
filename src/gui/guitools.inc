@@ -118,10 +118,8 @@ GUIoutputchar:
   mov edi,GUIFontData
   jmp .endfont
 .nozero
-  cmp byte[newfont],1
   mov edi,GUIFontData1
-  jmp .endfont
-  .endfont
+.endfont
 
 ;  mov edi,GUIFontData
   lea ebx,[ebx*5]
@@ -376,9 +374,7 @@ GUIoutputcharwin:
   mov edi,GUIFontData
   jmp .endfont
 .nozero
-  cmp byte[newfont],1
   mov edi,GUIFontData1
-  jmp .endfont
 .endfont
 
 ;  mov edi,GUIFontData

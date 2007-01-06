@@ -373,7 +373,6 @@ CheatCodeFix:
     jne .nonone
     ret
 .nonone
-    call DisableCheatCode
     mov esi,[GUIcurrentcheatcursloc]
     shl esi,5
     sub esi,[GUIcurrentcheatcursloc]
@@ -381,6 +380,9 @@ CheatCodeFix:
     sub esi,[GUIcurrentcheatcursloc]
     sub esi,[GUIcurrentcheatcursloc]
     add esi,cheatdata
+    push esi
+    call DisableCheatCode
+    pop esi
     xor byte[esi+3],80h
     call EnableCheatCodeNoPrevMod
     ret
