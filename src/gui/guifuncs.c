@@ -320,6 +320,7 @@ unsigned char CalcCfgChecksum()
 
 void GUIRestoreVars()
 {
+  void LoadMasterInput();
   int i;
   FILE *cfg_fp;
 
@@ -345,16 +346,7 @@ void GUIRestoreVars()
     read_md_vars("zmovie.cfg");
   }
 
-  path = strdupcat(ZCfgPath, "zinput.inp");
-  if (path)
-  {
-    read_input_vars(path);
-    free(path);
-  }
-  else
-  {
-    read_input_vars("zinput.inp");
-  }
+  LoadMasterInput();
 
   CheckValueBounds(&per2exec, 50, 150, 100, UD);
   CheckValueBounds(&SRAMSave5Sec, 0, 1, 0, UB);
@@ -606,6 +598,7 @@ void GUIRestoreVars()
 
 void GUISaveVars()
 {
+  void SaveMasterInput();
   FILE *cfg_fp;
 
   if (ShowTimer == 1) { TimeChecker = CalcCfgChecksum(); }
@@ -619,6 +612,11 @@ void GUISaveVars()
       write_cfg_vars(path);
       free(path);
       swap_backup_vars();
+    }
+
+    if (!GameSpecificInput)
+    {
+      SaveMasterInput();
     }
   }
 
