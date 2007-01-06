@@ -3722,7 +3722,7 @@ DisplayGUIMovies:    ; Movie Record/Playback options
   GUIDrawTabs GUIMovieTabs
 
   cmp dword[GUIMovieTabs],1
-  jne .notcontrols
+  jne near .notcontrols
 
   cmp byte[MovieRecordWinVal],0
   je near .displayboxa
@@ -3826,7 +3826,7 @@ DisplayGUIMovies:    ; Movie Record/Playback options
 .notcontrols
 
   cmp dword[GUIMovieTabs],2
-  jne .nodumping
+  jne near .nodumping
 
   GUIDisplayTextY 15,8,31,GUIMovieTextB        ; Slot text
   mov byte[GUIMovieTextB1],'0'

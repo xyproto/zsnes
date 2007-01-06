@@ -1970,7 +1970,7 @@ DisplayGUIMovieClick:
   GUIPTabClick 58,110,2,GUIMovieTabs
 
   cmp dword[GUIMovieTabs],1
-  jne .nocontrols
+  jne near .nocontrols
 
   cmp byte[MovieRecordWinVal],0        ; Overwrite Window
   je near .displayboxa
@@ -2011,7 +2011,7 @@ DisplayGUIMovieClick:
 .nocontrols
 
   cmp dword[GUIMovieTabs],2
-  jne .nodumping
+  jne near .nodumping
 
   GUIPHoldbutton 130,101,198,112,34
 

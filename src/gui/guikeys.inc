@@ -1668,7 +1668,7 @@ GUIMovieKeys:
 .notab
 
   cmp dword[GUIMovieTabs],1
-  jne .nocontrols
+  jne near .nocontrols
 
   GUIKeyButtonHole CMovieExt,'v','0'         ; Select Radio Buttons
   GUIKeyButtonHole CMovieExt,'1','1'
@@ -1690,7 +1690,7 @@ GUIMovieKeys:
 .nocontrols
 
   cmp dword[GUIMovieTabs],2
-  jne .nodumping
+  jne near .nodumping
 
   GUIKeyButtonHole CMovieExt,'v','0'         ; Select Radio Buttons
   GUIKeyButtonHole CMovieExt,'1','1'
