@@ -252,8 +252,8 @@ GUIgetcurrentinput:
   GUIgetprkeys 81,81 ; KP1
   GUIgetprkeys 73,73 ; KP3
 %else
-  GUIgetprkeys 72,72
-  GUIgetprkeys 80,80
+  ;GUIgetprkeys 72,72
+  ;GUIgetprkeys 80,80
   GUIgetprkeys 75,75
   GUIgetprkeys 77,77
   GUIgetprkeys 71,71
@@ -295,8 +295,8 @@ GUIgetcurrentinput:
   GUIgetprkeys 09Ch,13 ; ENTER
 %endif
 %ifdef __WIN32__
-  GUIgetprkeys 0C8h,72
-  GUIgetprkeys 0D0h,80
+  ;GUIgetprkeys 0C8h,72
+  ;GUIgetprkeys 0D0h,80
   GUIgetprkeys 0CBh,75
   GUIgetprkeys 0CDh,77
   GUIgetprkeys 0C7h,71
@@ -1662,6 +1662,14 @@ SECTION .text
 
 GUIMovieKeys:
   ToUpperASM
+  cmp dh,9
+  jne .notab
+  KeyTabInc GUIMovieTabs
+.notab
+
+  cmp dword[GUIMovieTabs],1
+  jne .nocontrols
+
   GUIKeyButtonHole CMovieExt,'v','0'         ; Select Radio Buttons
   GUIKeyButtonHole CMovieExt,'1','1'
   GUIKeyButtonHole CMovieExt,'2','2'
@@ -1678,6 +1686,23 @@ GUIMovieKeys:
   GUIKeyButtonHole MovieStartMethod,2,'R'
   GUIKeyButtonHole MovieStartMethod,3,'S'
 
+  GUIKeyCheckbox MovieDisplayFrame,'D'      ; Checkbox
+.nocontrols
+
+  cmp dword[GUIMovieTabs],2
+  jne .nodumping
+
+  GUIKeyButtonHole CMovieExt,'v','0'         ; Select Radio Buttons
+  GUIKeyButtonHole CMovieExt,'1','1'
+  GUIKeyButtonHole CMovieExt,'2','2'
+  GUIKeyButtonHole CMovieExt,'3','3'
+  GUIKeyButtonHole CMovieExt,'4','4'
+  GUIKeyButtonHole CMovieExt,'5','5'
+  GUIKeyButtonHole CMovieExt,'6','6'
+  GUIKeyButtonHole CMovieExt,'7','7'
+  GUIKeyButtonHole CMovieExt,'8','8'
+  GUIKeyButtonHole CMovieExt,'9','9'
+
   GUIKeyButtonHole MovieVideoMode,0,'O'
   GUIKeyButtonHole MovieVideoMode,1,'W'
   GUIKeyButtonHole MovieVideoMode,2,'F'
@@ -1688,8 +1713,8 @@ GUIMovieKeys:
   GUIKeyCheckbox MovieAudio,'A'
   GUIKeyCheckbox MovieVideoAudio,'V'
   GUIKeyCheckbox MovieAudioCompress,'M'
+.nodumping
 
-  GUIKeyCheckbox MovieDisplayFrame,'D'      ; Checkbox
   ret
 
 GUIComboKeys:

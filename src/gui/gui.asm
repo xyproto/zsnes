@@ -169,8 +169,8 @@ EXTSYM BilinearFilter,GUIBIFIL
 ; |  Game        Config     Cheat     MultiPlay    Misc
 ;-------------------------------------------------------
 ;    Load        Input      Add Code  Modem        Misc Keys
-;    Run         -----      Browse    IPX          GUI Opns
-;    Reset       Devices    Search                 Movie Opn
+;    Run         -----      Browse    IPX          GUI Opts
+;    Reset       Devices    Search                 Movie Opt
 ;    -----       Chip Cfg                          Key Comb.
 ;    Save State  -----                             Save Cfg
 ;    Load State  Options                           -----
@@ -268,8 +268,8 @@ GUINetPlayMenuData:
 %endif
 GUIMiscMenuData:
   db 1,'MISC KEYS   ',0
-  db 1,'GUI OPNS    ',0
-  db 1,'MOVIE OPN   ',0
+  db 1,'GUI OPTS    ',0
+  db 1,'MOVIE OPT   ',0
   db 1,'KEY COMB.   ',0
   db 1,'SAVE CFG    ',0
   db 0,'------------',0

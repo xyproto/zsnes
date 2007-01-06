@@ -1966,6 +1966,12 @@ DisplayGUIChoseSaveClick:
   ret
 
 DisplayGUIMovieClick:
+  GUIPTabClick 0,57,1,GUIMovieTabs
+  GUIPTabClick 58,110,2,GUIMovieTabs
+
+  cmp dword[GUIMovieTabs],1
+  jne .nocontrols
+
   cmp byte[MovieRecordWinVal],0        ; Overwrite Window
   je near .displayboxa
   GUIPHoldbutton 17,55,59,66,19
@@ -1973,47 +1979,65 @@ DisplayGUIMovieClick:
   ret
 
 .displayboxa                             ; Main Window
-  GUIPHoldbutton 9,50,48,61,16         ; Buttons
-  GUIPHoldbutton 55,50,94,61,17
-  GUIPHoldbutton 103,50,144,61,18
-  GUIPHoldbutton 153,50,193,61,32
-  GUIPHoldbutton 9,68,112,79,29
-  GUIPHoldbutton 9,84,112,95,30
-  GUIPHoldbutton 9,100,112,111,31
-  GUIPHoldbutton 132,165,197,176,34
+  GUIPHoldbutton 7,80,49,91,16           ; Buttons
+  GUIPHoldbutton 55,80,97,91,17
+  GUIPHoldbutton 103,80,145,91,18
+  GUIPHoldbutton 151,80,193,91,32
+  GUIPHoldbutton 7,98,112,109,29
+  GUIPHoldbutton 7,114,112,125,30
+  GUIPHoldbutton 7,130,112,141,31
 
-  GUIPButtonHole 10,25,byte[CMovieExt],'v'       ; Radios buttons
-  GUIPButtonHole 30,25,byte[CMovieExt],'1'
-  GUIPButtonHole 50,25,byte[CMovieExt],'2'
-  GUIPButtonHole 70,25,byte[CMovieExt],'3'
-  GUIPButtonHole 90,25,byte[CMovieExt],'4'
-  GUIPButtonHole 10,35,byte[CMovieExt],'5'
-  GUIPButtonHole 30,35,byte[CMovieExt],'6'
-  GUIPButtonHole 50,35,byte[CMovieExt],'7'
-  GUIPButtonHole 70,35,byte[CMovieExt],'8'
-  GUIPButtonHole 90,35,byte[CMovieExt],'9'
+  GUIPButtonHole 8,40,byte[CMovieExt],'v'       ; Radio buttons
+  GUIPButtonHole 28,40,byte[CMovieExt],'1'
+  GUIPButtonHole 48,40,byte[CMovieExt],'2'
+  GUIPButtonHole 68,40,byte[CMovieExt],'3'
+  GUIPButtonHole 88,40,byte[CMovieExt],'4'
+  GUIPButtonHole 108,40,byte[CMovieExt],'5'
+  GUIPButtonHole 128,40,byte[CMovieExt],'6'
+  GUIPButtonHole 148,40,byte[CMovieExt],'7'
+  GUIPButtonHole 168,40,byte[CMovieExt],'8'
+  GUIPButtonHole 188,40,byte[CMovieExt],'9'
 
-  GUIPButtonHole 115,25,byte[MovieStartMethod],0    ; Start From
-  GUIPButtonHole 152,25,byte[MovieStartMethod],1
-  GUIPButtonHole 200,25,byte[MovieStartMethod],2
-  GUIPButtonHole 115,35,byte[MovieStartMethod],3
+  GUIPButtonHole 8,64,byte[MovieStartMethod],0    ; Start From
+  GUIPButtonHole 43,64,byte[MovieStartMethod],1
+  GUIPButtonHole 89,64,byte[MovieStartMethod],2
+  GUIPButtonHole 135,64,byte[MovieStartMethod],3
 
-  GUIPButtonHole 9,128,byte[MovieVideoMode],0      ; Movie Options
-  GUIPButtonHole 9,138,byte[MovieVideoMode],1
-  GUIPButtonHole 9,148,byte[MovieVideoMode],2
-  GUIPButtonHole 9,158,byte[MovieVideoMode],3
-  GUIPButtonHole 9,168,byte[MovieVideoMode],4
-  ;GUIPButtonHole 9,178,byte[MovieVideoMode],5
-
-  GUIClickCButton 130,128,byte[MovieAudio]
-  GUIClickCButton 130,138,byte[MovieAudioCompress]
-  GUIClickCButton 130,148,byte[MovieVideoAudio]
-
-  DGOptnsProcBox 116,71,[KeyInsrtChap]           ; Keyboard Shortcut Boxes
-  DGOptnsProcBox 116,87,[KeyPrevChap]
-  DGOptnsProcBox 116,103,[KeyNextChap]
+  DGOptnsProcBox 116,101,[KeyInsrtChap]           ; Keyboard Shortcut Boxes
+  DGOptnsProcBox 116,117,[KeyPrevChap]
+  DGOptnsProcBox 116,133,[KeyNextChap]
 
   GUIClickCButton 144,67,byte[MovieDisplayFrame]   ; Checkbox
+.nocontrols
+
+  cmp dword[GUIMovieTabs],2
+  jne .nodumping
+
+  GUIPHoldbutton 130,101,198,112,34
+
+  GUIPButtonHole 8,40,byte[CMovieExt],'v'       ; Radio buttons
+  GUIPButtonHole 28,40,byte[CMovieExt],'1'
+  GUIPButtonHole 48,40,byte[CMovieExt],'2'
+  GUIPButtonHole 68,40,byte[CMovieExt],'3'
+  GUIPButtonHole 88,40,byte[CMovieExt],'4'
+  GUIPButtonHole 108,40,byte[CMovieExt],'5'
+  GUIPButtonHole 128,40,byte[CMovieExt],'6'
+  GUIPButtonHole 148,40,byte[CMovieExt],'7'
+  GUIPButtonHole 168,40,byte[CMovieExt],'8'
+  GUIPButtonHole 188,40,byte[CMovieExt],'9'
+
+  GUIPButtonHole 9,64,byte[MovieVideoMode],0      ; Movie Options
+  GUIPButtonHole 9,74,byte[MovieVideoMode],1
+  GUIPButtonHole 9,84,byte[MovieVideoMode],2
+  GUIPButtonHole 9,94,byte[MovieVideoMode],3
+  GUIPButtonHole 9,104,byte[MovieVideoMode],4
+  ;GUIPButtonHole 9,114,byte[MovieVideoMode],5
+
+  GUIClickCButton 130,62,byte[MovieAudio]
+  GUIClickCButton 130,72,byte[MovieAudioCompress]
+  GUIClickCButton 130,82,byte[MovieVideoAudio]
+.nodumping
+
   ret
 
 %macro GUIInputSetIndKey 1
