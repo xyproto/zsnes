@@ -23,6 +23,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #ifdef __UNIXSDL__
 #include "gblhdr.h"
+#include "linux/audio.h"
 #define DIR_SLASH "/"
 #else
 #include <stdio.h>
@@ -2174,6 +2175,10 @@ void SetupROM()
     default:
       romispal = ((!BSEnable) && (ROM[infoloc+CountryOffset] > 1) && (ROM[infoloc+CountryOffset] < 0xD));
   }
+
+  #ifdef __UNIXSDL__
+  InitSampleControl();
+  #endif
 
   if (romispal)
   {

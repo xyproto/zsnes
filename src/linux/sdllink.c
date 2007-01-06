@@ -23,22 +23,17 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "sw_draw.h"
 #include "gl_draw.h"
 
+#include <stdbool.h>
 #include <SDL_thread.h>
 
 #include <sys/time.h>
 #include <time.h>
 #include <dirent.h>
 
+#include "audio.h"
 #include "safelib.h"
-#include "../asm_call.h"
 #include "../cfg.h"
 #include "../input.h"
-
-//C++ style code in C
-#define bool unsigned char
-#define true 1
-#define false 0
-
 
 typedef unsigned char BYTE;
 typedef unsigned short WORD;
@@ -51,17 +46,6 @@ typedef long long LARGE_INTEGER;
 
 typedef enum { FALSE = 0, TRUE = 1 } BOOL;
 typedef enum vidstate_e { vid_null, vid_none, vid_soft, vid_gl } vidstate_t;
-
-// SOUND RELATED VARIABLES
-SDL_AudioSpec audiospec;
-int SoundEnabled = 1;
-BYTE PrevStereoSound;
-DWORD PrevSoundQuality;
-Uint8 *Buffer = NULL;
-int Buffer_len = 0, Buffer_fill = 0;
-int Buffer_head = 0, Buffer_tail = 0;
-
-extern int DSPBuffer[];
 
 /* VIDEO VARIABLES */
 SDL_Surface *surface;
@@ -726,68 +710,6 @@ void ProcessKeyBuf(int scancode)
   }
 }
 
-int InitSound(void)
-{
-  SDL_AudioSpec wanted;
-  const int samptab[7] = { 1, 1, 2, 4, 2, 4, 4 };
-  const int freqtab[7] = { 8000, 11025, 22050, 44100, 16000, 32000, 48000 };
-
-  SDL_CloseAudio();
-
-  if (!SoundEnabled)
-  {
-    return FALSE;
-  }
-
-  if (Buffer)
-    free(Buffer);
-  Buffer = NULL;
-  Buffer_len = 0;
-
-  PrevSoundQuality = SoundQuality;
-  PrevStereoSound = StereoSound;
-
-  if (SoundQuality > 6)
-    SoundQuality = 1;
-  wanted.freq = freqtab[SoundQuality];
-
-  if (StereoSound)
-  {
-    wanted.channels = 2;
-  }
-  else
-  {
-    wanted.channels = 1;
-  }
-
-  wanted.samples = samptab[SoundQuality] * 128 * wanted.channels;
-
-  wanted.format = AUDIO_S16LSB;
-  wanted.userdata = NULL;
-  wanted.callback = UpdateSound;
-
-  if (SDL_OpenAudio(&wanted, &audiospec) < 0)
-  {
-    fprintf(stderr, "Sound init failed!\n");
-    fprintf(stderr, "freq: %d, channels: %d, samples: %d\n",
-      wanted.freq, wanted.channels, wanted.samples);
-    SoundEnabled = 0;
-    return FALSE;
-  }
-  SDL_PauseAudio(0);
-
-  Buffer_len = (audiospec.size * 2);
-  Buffer_len = (Buffer_len + 255) & ~255; /* Align to SPCSize */
-  Buffer = malloc(Buffer_len);
-
-  return TRUE;
-}
-
-int ReInitSound(void)
-{
-  return InitSound();
-}
-
 BOOL InitJoystickInput(void)
 {
   int i, max_num_joysticks;
@@ -1159,9 +1081,10 @@ void initwinvideo(void)
     InitInput();
   }
 
-  if (((PrevStereoSound != StereoSound)
-       || (PrevSoundQuality != SoundQuality)))
-    ReInitSound();
+  if (((PrevStereoSound != StereoSound) || (PrevSoundQuality != SoundQuality)))
+  {
+    InitSound();
+  }
 }
 
 void CheckTimers(void)
@@ -1197,33 +1120,6 @@ void CheckTimers(void)
       GUI36hzcall();
       start += update_ticks_pc;
     }
-  }
-}
-
-//Why in the world did someone make this use signed values??? -Nach
-void UpdateSound(void *userdata, Uint8 * stream, int len)
-{
-  int left = Buffer_len - Buffer_head;
-
-  if (left < 0)
-  {
-    return;
-  }
-
-  if (left <= len)
-  {
-    memcpy(stream, &Buffer[Buffer_head], left);
-    stream += left;
-    len -= left;
-    Buffer_head = 0;
-    Buffer_fill -= left;
-  }
-
-  if (len)
-  {
-    memcpy(stream, &Buffer[Buffer_head], len);
-    Buffer_head += len;
-    Buffer_fill -= len;
   }
 }
 
@@ -1276,48 +1172,16 @@ void sem_sleep_die(void)
 
 void UpdateVFrame(void)
 {
-  extern unsigned char DSPDisable;
-  extern unsigned int BufferSizeB, BufferSizeW;
-
   //Quick fix for GUI CPU usage
   if (GUIOn || GUIOn2 || EMUPause) { usleep(6000); }
 
   CheckTimers();
   Main_Proc();
 
-  /* Process sound */
-  BufferSizeB = 256;
-  BufferSizeW = BufferSizeB+BufferSizeB;
-
-  /* take care of the things we left behind last time */
-  SDL_LockAudio();
-  while (Buffer_fill < Buffer_len)
+  if (sound_sdl)
   {
-    short *ptr = (short*)&Buffer[Buffer_tail];
-
-    if (soundon && !DSPDisable) { asm_call(ProcessSoundBuffer); }
-
-    if (T36HZEnabled)
-    {
-      memset(ptr, 0, BufferSizeW);
-    }
-    else
-    {
-      int *d = DSPBuffer;
-      int *end_d = DSPBuffer+BufferSizeB;
-      for (; d < end_d; d++, ptr++)
-      {
-        if ((unsigned) (*d + 0x8000) <= 0xFFFF) { *ptr = *d; continue; }
-        if (*d > 0x7FFF) { *ptr = 0x7FFF; }
-        else { *d = 0x8000; }
-      }
-    }
-
-    Buffer_fill += BufferSizeW;
-    Buffer_tail += BufferSizeW;
-    if (Buffer_tail >= Buffer_len) { Buffer_tail = 0; }
+    SoundWrite_sdl();
   }
-  SDL_UnlockAudio();
 }
 
 void clearwin()
@@ -1336,6 +1200,10 @@ void clearwin()
 
 void drawscreenwin(void)
 {
+#ifdef __LIBAO__
+  extern bool RawDumpInProgress;
+#endif
+
   /* Just in case - DDOI */
   if (sdl_state == vid_none) return;
 
@@ -1345,12 +1213,19 @@ void drawscreenwin(void)
   else
 #endif
     sw_drawwin();
+
+#ifdef __LIBAO__
+  if (!sound_sdl && !GUIOn2 && !GUIOn && !EMUPause && !RawDumpInProgress)
+  {
+    SoundWrite_ao();
+  }
+#endif
 }
 
 void UnloadSDL()
 {
+  DeinitSound();
   sem_sleep_die(); // Shutdown semaphore
-  if (Buffer) { free(Buffer); }
   if (sdl_state == vid_soft) { sw_end(); }
 #ifdef __OPENGL__
   else if (sdl_state == vid_gl) { gl_end(); }

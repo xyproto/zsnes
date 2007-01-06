@@ -21,6 +21,9 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #ifdef __UNIXSDL__
 #include "gblhdr.h"
+#ifdef __LIBAO__
+#include <ao/ao.h>
+#endif
 #else
 #define _POSIX_
 #include <stdio.h>
@@ -73,6 +76,13 @@ static void display_help()
 {
   size_t lines_out = 0;
   bool tty = isatty(fileno(stdout));
+#ifdef __UNIXSDL__
+#ifdef __LIBAO__
+  int driver_count;
+  ao_info **driver_info;
+#endif
+  char line[75];
+#endif
 
   put_line("Usage : zsnes [-d,-f #, ... ] <filename.sfc>");
   put_line("   Eg : zsnes -s -r 2 game.sfc");
@@ -96,6 +106,24 @@ static void display_help()
 #endif
 #ifdef __WIN32__
   put_line("  -6 #    Force a user-specified refresh rate for fullscreen modes [50..180]");
+#endif
+#ifdef __UNIXSDL__
+  put_line("  -ad <>  Select Audio Driver :");
+  snprintf(line, sizeof(line), "%22s = Automatically select output", "auto");
+  put_line(line);
+#ifdef __LIBAO__
+  driver_info = ao_driver_info_list(&driver_count);
+  while (driver_count--)
+  {
+    if (driver_info[driver_count]->type == AO_TYPE_LIVE)
+    {
+      snprintf(line, sizeof(line), "%22s = %s", driver_info[driver_count]->short_name, driver_info[driver_count]->name);
+      put_line(line);
+    }
+  }
+#endif
+  snprintf(line, sizeof(line), "%22s = Simple DirectMedia Layer output", "sdl");
+  put_line(line);
 #endif
 #ifdef __MSDOS__
   put_line("  -8      Force 8-bit sound");
@@ -714,6 +742,26 @@ static void handle_params(int argc, char *argv[])
           DSPDisable = 1;
         }
 
+        #ifdef __UNIXSDL__
+        else if (tolower(argv[i][1]) == 'a' && tolower(argv[i][2]) == 'd') //Disable sound DSP emulation
+        {
+          i++;
+          #ifdef __LIBAO__
+          if (!strcmp(argv[i], "auto") || !strcmp(argv[i], "sdl") || (ao_driver_id(argv[i]) >= 0))
+          #else
+          if (!strcmp(argv[i], "auto") || !strcmp(argv[i], "sdl"))
+          #endif
+          {
+            strcpy(libAoDriver, argv[i]);
+          }
+          else
+          {
+            puts("Audio driver selection invalid.");
+            exit(1);
+          }
+        }
+        #endif
+
         else if (tolower(argv[i][1]) == 'd' && tolower(argv[i][2]) == 's') //Disable sound output
         {
           soundon = 0;
@@ -899,6 +947,10 @@ int main(int zargc, char *zargv[])
 {
   if (init_paths(*zargv))
   {
+    #ifdef __LIBAO__
+    ao_initialize();
+    atexit(ao_shutdown);
+    #endif
     handle_params(zargc, zargv);
 
     atexit(ZCleanup);
