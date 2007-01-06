@@ -82,7 +82,6 @@ void NTSCFilterInit()
 	{
 	case 0:
 		snes_ntsc_init( &ntsc_snes, &ntsc_setup );
-		set_ntsc_preset(0);
 		break;
 	case 1:
 		snes_ntsc_init( &ntsc_snes, &snes_ntsc_composite );
