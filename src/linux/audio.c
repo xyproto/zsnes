@@ -77,11 +77,11 @@ void InitSampleControl()
 
 
 #ifdef __LIBAO__
-static void WriteSamples(unsigned int samples)
+static void SoundWriteSamples_ao(unsigned int samples)
 {
   extern unsigned int BufferSizeB, BufferSizeW;
   extern int DSPBuffer[1280];
-  void ProcessSoundsdl_audio_buffer();
+  void ProcessSoundBuffer();
   short stemp[1280];
 
   int *d = 0;
@@ -89,7 +89,7 @@ static void WriteSamples(unsigned int samples)
 
   while (samples > 1280)
   {
-    WriteSamples(1280);
+    SoundWriteSamples_ao(1280);
     samples -= 1280;
   }
 
@@ -129,7 +129,7 @@ void SoundWrite_ao()
   }
 }
 
-static void *AudioThread(void *useless)
+static void *SoundThread_ao(void *useless)
 {
   for (;;)
   {
@@ -137,7 +137,7 @@ static void *AudioThread(void *useless)
     {
       int samples = samples_waiting;
       samples_waiting = 0;
-      WriteSamples(samples);
+      SoundWriteSamples_ao(samples);
     }
     else
     {
@@ -164,7 +164,7 @@ static int SoundInit_ao()
   }
   else
   {
-    pthread_create(&audio_thread, 0, AudioThread, 0);
+    pthread_create(&audio_thread, 0, SoundThread_ao, 0);
     InitSampleControl();
   }
 
