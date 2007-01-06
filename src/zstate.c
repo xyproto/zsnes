@@ -1458,7 +1458,7 @@ void SaveGameSpecificInput()
   }
   else
   {
-    path = strdupcat(ZCfgPath,"zinput.inp");
+    path = strdupcat(ZCfgPath, "zinput.cfg");
     if (path)
     {
       write_input_vars(path);
@@ -1490,7 +1490,7 @@ void LoadGameSpecificInput()
   }
   else
   {
-    path = strdupcat(ZCfgPath,"zinput.inp");
+    path = strdupcat(ZCfgPath, "zinput.cfg");
     if (path)
     {
       read_input_vars(path);
