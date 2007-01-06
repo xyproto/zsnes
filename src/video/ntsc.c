@@ -81,23 +81,20 @@ void NTSCFilterInit()
 	switch (NTSCPresetVar)
 	{
 	case 0:
-		snes_ntsc_init( &ntsc_snes, &ntsc_setup );
+		snes_ntsc_init( &ntsc_snes, &snes_ntsc_composite );
+		set_ntsc_preset(0);
 		break;
 	case 1:
-		snes_ntsc_init( &ntsc_snes, &snes_ntsc_composite );
+		snes_ntsc_init( &ntsc_snes, &snes_ntsc_svideo );
 		set_ntsc_preset(1);
 		break;
 	case 2:
-		snes_ntsc_init( &ntsc_snes, &snes_ntsc_svideo );
+		snes_ntsc_init( &ntsc_snes, &snes_ntsc_rgb );
 		set_ntsc_preset(2);
 		break;
 	case 3:
-		snes_ntsc_init( &ntsc_snes, &snes_ntsc_rgb );
-		set_ntsc_preset(3);
-		break;
-	case 4:
 		snes_ntsc_init( &ntsc_snes, &snes_ntsc_monochrome );
-		set_ntsc_preset(4);
+		set_ntsc_preset(3);
 		break;
 	default:
 		break;
