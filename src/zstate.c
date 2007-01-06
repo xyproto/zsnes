@@ -1466,7 +1466,7 @@ void SaveGameSpecificInput()
     }
     else
     {
-      write_input_vars(ZSaveName);
+      write_input_vars("zinput.cfg");
     }
   }
 }
@@ -1498,7 +1498,7 @@ void LoadGameSpecificInput()
     }
     else
     {
-      read_input_vars(ZSaveName);
+      read_input_vars("zinput.cfg");
     }
   }
 }
