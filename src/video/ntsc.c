@@ -31,6 +31,26 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 	static void ntsc_blit( snes_ntsc_t const* ntsc, unsigned short const* input, long in_pitch,
 			int burst_phase, int out_width, int out_height, void* rgb_out, long out_pitch );
 
+void set_ntsc_preset( int i )
+{
+    static const signed char presets [4] [6] = {
+        /*Sharp Sat   Res   Art Fringe Bleed */
+        { 0,     0,    0,    0,    0,    0},/* Composite */
+        {20,     0,   20, -100, -100,    0},/* S-Video */
+        {20,     0,   70, -100, -100, -100},/* RGB */
+        {20,  -100,   20,  -20,  -20, -100} /* Monochrome */
+    };
+    if ( i >= 0 && i < 4 )
+    {
+        NTSCSharp  = presets [i] [0];
+        NTSCSat    = presets [i] [1];
+        NTSCRes    = presets [i] [2];
+        NTSCArt    = presets [i] [3];
+        NTSCFringe = presets [i] [4];
+        NTSCBleed  = presets [i] [5];
+    }
+}
+
 void NTSCFilterInit()
 {
 	/* Set GUI options */
@@ -62,24 +82,31 @@ void NTSCFilterInit()
 	{
 	case 0:
 		snes_ntsc_init( &ntsc_snes, &ntsc_setup );
+		set_ntsc_preset(0);
 		break;
 	case 1:
 		snes_ntsc_init( &ntsc_snes, &snes_ntsc_composite );
+		set_ntsc_preset(1);
 		break;
 	case 2:
 		snes_ntsc_init( &ntsc_snes, &snes_ntsc_svideo );
+		set_ntsc_preset(2);
 		break;
 	case 3:
 		snes_ntsc_init( &ntsc_snes, &snes_ntsc_rgb );
+		set_ntsc_preset(3);
 		break;
 	case 4:
 		snes_ntsc_init( &ntsc_snes, &snes_ntsc_monochrome );
+		set_ntsc_preset(4);
 		break;
 	default:
 		break;
 	}
 
 }
+
+
 
 void NTSCFilterDraw( int out_width, int out_height, int out_pitch, unsigned char* rgb16_out )
 {
