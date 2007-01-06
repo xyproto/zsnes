@@ -228,7 +228,7 @@ void SoundWrite_sdl()
   SDL_UnlockAudio();
 }
 
-void UpdateSound_sdl(void *userdata, unsigned char *stream, int len)
+static void SoundUpdate_sdl(void *userdata, unsigned char *stream, int len)
 {
   int left = sdl_audio_buffer_len - sdl_audio_buffer_head;
 
@@ -272,7 +272,7 @@ static int SoundInit_sdl()
   wanted.samples = samptab[SoundQuality] * 128 * wanted.channels;
   wanted.format = AUDIO_S16LSB;
   wanted.userdata = 0;
-  wanted.callback = UpdateSound_sdl;
+  wanted.callback = SoundUpdate_sdl;
 
   if (SDL_OpenAudio(&wanted, &audiospec) < 0)
   {

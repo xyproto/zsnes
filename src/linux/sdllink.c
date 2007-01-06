@@ -1237,7 +1237,7 @@ void UnloadSDL()
   }
   SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
   SDL_QuitSubSystem(SDL_INIT_VIDEO);
-  SDL_Quit(SDL_INIT_VIDEO);
+  SDL_Quit();
 }
 
 int GetMouseX(void)
