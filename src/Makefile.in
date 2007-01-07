@@ -48,22 +48,23 @@ CPU_O=$(CPU_D)/dma.o $(CPU_D)/dsp.o $(CPU_D)/dspproc.o $(CPU_D)/execute.o\
 
 DEBUG_O=@DEBUGGER_FILES@
 
-EFF_O=$(EFF_D)/burn.o $(EFF_D)/water.o $(EFF_D)/smoke.o
+EFF_O=$(EFF_D)/burn.o $(EFF_D)/smoke.o $(EFF_D)/water.o
 
 GUI_O=$(GUI_D)/gui.o $(GUI_D)/guifuncs.o $(GUI_D)/menu.o
 
 JMA_O=@JMA_FILES@
 
-MAIN_O=cfg.o endmem.o init.o initc.o md.o patch.o ui.o vcache.o version.o\
-	zloader.o zmovie.o zpath.o zstate.o ztime.o ztimec.o input.o
+MAIN_O=cfg.o endmem.o init.o initc.o input.o md.o patch.o ui.o vcache.o\
+	version.o zloader.o zmovie.o zpath.o zstate.o ztime.o ztimec.o
 
 MMLIB_O=@MMLIB_FILES@
 
 NET_O=
 #$(NET_D)/ztcp.o
 
-PORT_O=$(PORT_D)/copyvwin.o $(PORT_D)/sdlintrf.o $(PORT_D)/sdllink.o @GL_DRAW@\
-	$(PORT_D)/sw_draw.o $(PORT_D)/safelib.o $(PORT_D)/audio.o
+PORT_O=$(PORT_D)/audio.o $(PORT_D)/battery.o $(PORT_D)/copyvwin.o\
+	$(PORT_D)/sdlintrf.o $(PORT_D)/sdllink.o @GL_DRAW@ $(PORT_D)/sw_draw.o\
+	$(PORT_D)/safelib.o
 
 TOOL_O=$(TOOL_D)/fileutil.o $(TOOL_D)/strutil.o
 
