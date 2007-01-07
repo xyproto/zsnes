@@ -728,8 +728,8 @@ savewinpos db 0
 @    Game          Config        Cheat      Netplay       Misc
 @ -------------------------------------------------------------------
 @  1:Load         3:Input      7:Add Code  [Internet]   9:Misc Keys
-@    Run          -------      7:Browse                10:GUI Opns
-@ 12:Reset       17:Devices   13:Search                15:Movie Opn
+@    Run          -------      7:Browse                10:GUI Opts
+@ 12:Reset       17:Devices   13:Search                15:Movie Opt
 @  -------       18:Chip Cfg                           16:Key Comb.
 @ 14:Save State   -------                                 Save Cfg
 @  2:Open State   4:Options                             -------
