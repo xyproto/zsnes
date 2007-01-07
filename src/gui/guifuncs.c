@@ -64,7 +64,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define BIT(X) (1 << (X))
 
 extern unsigned char ComboHeader[23], ComboBlHeader[23], CombinDataGlob[3300];
-extern unsigned char ShowTimer, savecfgforce,NTSCPresetVar;
+extern unsigned char ShowTimer, savecfgforce;
 extern unsigned int SnowTimer, NumSnow, NumComboGlob;
 extern unsigned char GUIFontData1[705], GUIFontData[705];
 enum vtype { UB, UW, UD, SB, SW, SD };
@@ -443,7 +443,6 @@ void GUIRestoreVars()
   CheckValueBounds(&NTSCFringe, -100, 100, 0, SB);
   CheckValueBounds(&NTSCBleed, -100, 100, 0, SB);
   CheckValueBounds(&NTSCWarp, -100, 100, 0, SB);
-  CheckValueBounds(&NTSCPresetVar, 0, 4, 0, UB);
 
   CheckValueBounds(&soundon, 0, 1, 1, UB);
   CheckValueBounds(&StereoSound, 0, 1, 1, UB);

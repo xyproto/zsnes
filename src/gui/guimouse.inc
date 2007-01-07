@@ -955,7 +955,6 @@ GUINTSCReset:
   je .reset2
   cmp byte[GUICBHold],39
   jne .reset1
-  mov byte[NTSCPresetVar],0
 .reset1
   mov byte[NTSCBlend],0
   mov byte[NTSCRef],0
@@ -1007,6 +1006,7 @@ GUINTSCPreset:
   call NTSCFilterInit
   popad
 %endif
+  mov byte[NTSCPresetVar],4
   mov byte[GUICBHold],0
   ret
 
