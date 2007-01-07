@@ -651,3 +651,18 @@ char *realpath_link(const char *path, char *resolved_path)
 }
 
 #endif
+
+void psr_cfg_run(unsigned char (*psr_func)(const char *), const char *dir, const char *fname)
+{
+  char *path = strdupcat(dir, fname);
+  if (path)
+  {
+    psr_func(path);
+    free(path);
+  }
+  else
+  {
+    psr_func(fname);
+  }
+}
+

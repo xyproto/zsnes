@@ -320,33 +320,12 @@ unsigned char CalcCfgChecksum()
 
 void GUIRestoreVars()
 {
-  void LoadMasterInput();
   int i;
   FILE *cfg_fp;
 
-  char *path = strdupcat(ZCfgPath, ZCfgFile);
-  if (path)
-  {
-    read_cfg_vars(path);
-    free(path);
-  }
-  else
-  {
-    read_cfg_vars(ZCfgFile);
-  }
-
-  path = strdupcat(ZCfgPath, "zmovie.cfg");
-  if (path)
-  {
-    read_md_vars(path);
-    free(path);
-  }
-  else
-  {
-    read_md_vars("zmovie.cfg");
-  }
-
-  LoadMasterInput();
+  psr_cfg_run(read_cfg_vars, ZCfgPath, ZCfgFile);
+  psr_cfg_run(read_md_vars, ZCfgPath, "zmovie.cfg");
+  psr_cfg_run(read_input_vars, ZCfgPath, "zinput.cfg");
 
   CheckValueBounds(&per2exec, 50, 150, 100, UD);
   CheckValueBounds(&SRAMSave5Sec, 0, 1, 0, UB);
@@ -597,25 +576,19 @@ void GUIRestoreVars()
 
 void GUISaveVars()
 {
-  void SaveMasterInput();
   FILE *cfg_fp;
 
   if (ShowTimer == 1) { TimeChecker = CalcCfgChecksum(); }
 
   if (!cfgdontsave || savecfgforce)
   {
-    char *path = strdupcat(ZCfgPath, ZCfgFile);
-    if (path)
-    {
-      swap_backup_vars();
-      write_cfg_vars(path);
-      free(path);
-      swap_backup_vars();
-    }
+    swap_backup_vars();
+    psr_cfg_run(write_cfg_vars, ZCfgPath, ZCfgFile);
+    swap_backup_vars();
 
     if (!GameSpecificInput)
     {
-      SaveMasterInput();
+      psr_cfg_run(write_input_vars, ZCfgPath, "zinput.cfg");
     }
   }
 

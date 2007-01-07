@@ -1444,56 +1444,17 @@ void savespcdata()
   }
 }
 
-void SaveMasterInput()
-{
-  char *path = strdupcat(ZCfgPath, "zinput.cfg");
-  if (path)
-  {
-    write_input_vars(path);
-    free(path);
-  }
-  else
-  {
-    write_input_vars("zinput.cfg");
-  }
-}
-
 void SaveGameSpecificInput()
 {
   if (!*ZSaveName)
   {
-    SaveMasterInput();
+    psr_cfg_run(write_input_vars, ZCfgPath, "zinput.cfg");
   }
 
   if (GameSpecificInput && *ZSaveName)
   {
-    char *path;
-
     setextension(ZSaveName, "inp");
-    path = strdupcat(ZSramPath, ZSaveName);
-    if (path)
-    {
-      write_input_vars(path);
-      free(path);
-    }
-    else
-    {
-      write_input_vars(ZSaveName);
-    }
-  }
-}
-
-void LoadMasterInput()
-{
-  char *path = strdupcat(ZCfgPath, "zinput.cfg");
-  if (path)
-  {
-    read_input_vars(path);
-    free(path);
-  }
-  else
-  {
-    read_input_vars("zinput.cfg");
+    psr_cfg_run(write_input_vars, ZSramPath, ZSaveName);
   }
 }
 
@@ -1501,21 +1462,10 @@ void LoadGameSpecificInput()
 {
   if (GameSpecificInput && *ZSaveName)
   {
-    char *path;
-
-    LoadMasterInput();
+    psr_cfg_run(read_input_vars, ZCfgPath, "zinput.cfg");
 
     setextension(ZSaveName, "inp");
-    path = strdupcat(ZSramPath, ZSaveName);
-    if (path)
-    {
-      read_input_vars(path);
-      free(path);
-    }
-    else
-    {
-      read_input_vars(ZSaveName);
-    }
+    psr_cfg_run(read_input_vars, ZSramPath, ZSaveName);
   }
 }
 
