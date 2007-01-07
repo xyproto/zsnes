@@ -252,8 +252,8 @@ GUIgetcurrentinput:
   GUIgetprkeys 81,81 ; KP1
   GUIgetprkeys 73,73 ; KP3
 %else
-  ;GUIgetprkeys 72,72
-  ;GUIgetprkeys 80,80
+  GUIgetprkeys 72,72
+  GUIgetprkeys 80,80
   GUIgetprkeys 75,75
   GUIgetprkeys 77,77
   GUIgetprkeys 71,71
