@@ -84,8 +84,8 @@ static void SoundWriteSamples_ao(unsigned int samples)
   void ProcessSoundBuffer();
   short stemp[1280];
 
-  int *d = 0;
-  short *p = 0;
+  int *d = DSPBuffer, *end_d = 0;
+  short *p = stemp;
 
   while (samples > 1280)
   {
@@ -100,14 +100,12 @@ static void SoundWriteSamples_ao(unsigned int samples)
 
   asm_call(ProcessSoundBuffer);
 
-  d = DSPBuffer;
-  p = stemp;
-
-  for (; d < DSPBuffer+samples; d++, p++)
+  end_d = DSPBuffer+samples;
+  for (; d < end_d; d++, p++)
   {
-    if ((unsigned int)(*d + 0x8000) <= 0xFFFF) { *p = *d; continue; }
+    if ((unsigned int)(*d + 0x7FFF) < 0xFFFF) { *p = *d; continue; }
     if (*d > 0x7FFF) { *p = 0x7FFF; }
-    else { *p = 0x8000; }
+    else { *p = 0x8001; }
   }
 
   ao_play(device, (char *)stemp, samples*2);
@@ -201,23 +199,23 @@ void SoundWrite_sdl()
   SDL_LockAudio();
   while (sdl_audio_buffer_fill < sdl_audio_buffer_len)
   {
-    short *ptr = (short*)&sdl_audio_buffer[sdl_audio_buffer_tail];
+    short *p = (short*)&sdl_audio_buffer[sdl_audio_buffer_tail];
 
     if (soundon && !DSPDisable) { asm_call(ProcessSoundBuffer); }
 
     if (T36HZEnabled)
     {
-      memset(ptr, 0, BufferSizeW);
+      memset(p, 0, BufferSizeW);
     }
     else
     {
-      int *d = DSPBuffer;
-      int *end_d = DSPBuffer+BufferSizeB;
-      for (; d < end_d; d++, ptr++)
+      int *d = DSPBuffer, *end_d = DSPBuffer+BufferSizeB;
+
+      for (; d < end_d; d++, p++)
       {
-        if ((unsigned) (*d + 0x8000) <= 0xFFFF) { *ptr = *d; continue; }
-        if (*d > 0x7FFF) { *ptr = 0x7FFF; }
-        else { *d = 0x8000; }
+        if ((unsigned int)(*d + 0x7fff) < 0xffff) { *p = *d; continue; }
+        if (*d > 0x7fff) { *p = 0x7fff; }
+        else { *p = 0x8001; }
       }
     }
 
