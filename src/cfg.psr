@@ -278,10 +278,6 @@ NTSCArt sb 0
 NTSCFringe sb 0
 NTSCBleed sb 0
 NTSCWarp sb 0
-%ifndef __MSDOS__
-@ NTSC Presets (0 = NONE, 1 = Composite, 2 = S-Video, 3 = Rgb, 4 = Monochrome)
-%endif
-NTSCPresetVar db 0
 
 @
 @ Enable Kreed's 2x Filters (0 = NONE, 1 = 2xSaI, 2 = Super Eagle, 3 = Super 2xSaI)

@@ -618,6 +618,14 @@ ProcessMouseButtons:
   je near GUINTSCReset
   cmp byte[GUICBHold],39 ; reset ntsc options
   je near GUINTSCReset
+  cmp byte[GUICBHold],81 ; ntsc preset
+  je near GUINTSCPreset
+  cmp byte[GUICBHold],82 ; ntsc preset
+  je near GUINTSCPreset
+  cmp byte[GUICBHold],83 ; ntsc preset
+  je near GUINTSCPreset
+  cmp byte[GUICBHold],84 ; ntsc preset
+  je near GUINTSCPreset
   cmp byte[GUICBHold],10
   je near GUIProcStates
   cmp byte[GUICBHold],11
@@ -972,6 +980,34 @@ GUINTSCReset:
   call NTSCFilterInit
   popad
 %endif
+  ret
+
+GUINTSCPreset:
+  cmp byte[GUICBHold],81
+  jne near .nextpreset
+  mov byte[NTSCPresetVar],0
+  jmp .lastpreset
+.nextpreset
+  cmp byte[GUICBHold],82
+  jne near .nextpreset2
+  mov byte[NTSCPresetVar],1
+  jmp .lastpreset
+.nextpreset2
+  cmp byte[GUICBHold],83
+  jne near .nextpreset3
+  mov byte[NTSCPresetVar],2
+  jmp .lastpreset
+.nextpreset3
+  cmp byte[GUICBHold],84
+  jne near .lastpreset
+  mov byte[NTSCPresetVar],3
+.lastpreset
+%ifndef __MSDOS__
+  pushad
+  call NTSCFilterInit
+  popad
+%endif
+  mov byte[GUICBHold],0
   ret
 
 %ifndef __MSDOS__
@@ -1969,13 +2005,17 @@ DisplayGUIMovieClick:
   GUIPTabClick 0,57,1,GUIMovieTabs
   GUIPTabClick 58,110,2,GUIMovieTabs
 
+  cmp byte[MovieProcessing],2
+  jne near .godump
+.godump
+
   cmp dword[GUIMovieTabs],1
   jne near .nocontrols
 
   cmp byte[MovieRecordWinVal],0        ; Overwrite Window
   je near .displayboxa
-  GUIPHoldbutton 17,55,59,66,19
-  GUIPHoldbutton 70,55,112,66,20
+  GUIPHoldbutton 17,65,59,76,19
+  GUIPHoldbutton 70,65,112,76,20
   ret
 
 .displayboxa                             ; Main Window
@@ -2420,24 +2460,10 @@ DisplayGUIVideoClick:
   GUIClickCButton 5,25,byte[NTSCBlend]     ; Checkboxes
   GUIClickCButton 135,25,byte[NTSCRef]
 
-  GUIPButtonHole 6,163,byte[NTSCPresetVar],0
-  GUIPButtonHole 66,163,byte[NTSCPresetVar],1
-  GUIPButtonHole 146,163,byte[NTSCPresetVar],2
-  GUIPButtonHole 66,173,byte[NTSCPresetVar],3
-  GUIPButtonHole 146,173,byte[NTSCPresetVar],4
-
-  xor ebx,ebx
-  mov bl,[NTSCPresetVar]
-  cmp byte[NTSCPrevPreset],bl
-  je .nontscchange
-  mov [NTSCPrevPreset],bl
-%ifndef __MSDOS__
-  pushad
-  call NTSCFilterInit
-  popad
-%endif
-.nontscchange
-
+  GUIPHoldbutton 8,166,67,177,81
+  GUIPHoldbutton 72,166,119,177,82
+  GUIPHoldbutton 124,166,147,177,83
+  GUIPHoldbutton 152,166,217,177,84
   GUIPHoldbutton 102,186,137,197,37  ; button
   GUIPHoldbutton 148,186,207,197,39  ; button
 
@@ -2644,7 +2670,7 @@ GUIBlankVar resd 1
 ntscLastVar resb 6
 ntscCurVar resb 1
 ntscWhVar resb 1
-NTSCPrevPreset resb 1
+NEWSYM NTSCPresetVar, resb 1
 SECTION .text
 
 DisplayGUISoundClick:

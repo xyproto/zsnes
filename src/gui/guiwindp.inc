@@ -2203,12 +2203,10 @@ DisplayGUIVideo:
   GUIDisplayCheckboxu 5,5,25,NTSCBlend,GUIVideoTextC1a,0
   GUIDisplayCheckboxu 5,135,25,NTSCRef,GUIVideoTextC1b,0
 
-  GUIDisplayButtonHoleTu 5,6,163,byte[NTSCPresetVar],0,GUIVideoTextC3a,0
-  GUIDisplayButtonHoleTu 5,66,163,byte[NTSCPresetVar],1,GUIVideoTextC3b,0
-  GUIDisplayButtonHoleTu 5,146,163,byte[NTSCPresetVar],2,GUIVideoTextC3c,0
-  GUIDisplayButtonHoleTu 5,66,173,byte[NTSCPresetVar],3,GUIVideoTextC3d,1
-  GUIDisplayButtonHoleTu 5,146,173,byte[NTSCPresetVar],4,GUIVideoTextC3e,0
-
+  DrawGUIButton 5,8,166,67,177,GUIVideoTextC3a,81,0,0
+  DrawGUIButton 5,72,166,119,177,GUIVideoTextC3b,82,0,0
+  DrawGUIButton 5,124,166,147,177,GUIVideoTextC3c,83,0,0
+  DrawGUIButton 5,152,166,217,177,GUIVideoTextC3d,84,0,0
   DrawGUIButton 5,102,186,137,197,GUIVideoTextCD1,37,0,0
   DrawGUIButton 5,148,186,207,197,GUIVideoTextCD2,39,0,0
 
@@ -2333,11 +2331,10 @@ GUIVideoTextC2d db 'BRIGHTNESS:',0
 GUIVideoTextC2e db 'SHARPNESS:',0
 
 GUIVideoTextC3 db 'PRESETS:',0           ; NTSC Presets
-GUIVideoTextC3a db 'NONE',0
-GUIVideoTextC3b db 'COMPOSITE',0
-GUIVideoTextC3c db 'S-VIDEO',0
-GUIVideoTextC3d db 'RGB',0
-GUIVideoTextC3e db 'MONOCHROME',0
+GUIVideoTextC3a db 'COMPOSITE',0
+GUIVideoTextC3b db 'S-VIDEO',0
+GUIVideoTextC3c db 'RGB',0
+GUIVideoTextC3d db 'MONOCHROME',0
 
 GUIVideoTextD1a db 'GAMMA:',0            ; NTSC Adv Tab
 GUIVideoTextD1b db 'RESOLUTION:',0
@@ -3727,17 +3724,17 @@ DisplayGUIMovies:    ; Movie Record/Playback options
   cmp byte[MovieRecordWinVal],0
   je near .displayboxa
 
-  GUIDisplayText 15,9,16,GUIMovieTextX1       ; Overwrite Message Box
-  GUIDisplayText 15,9,26,GUIMovieTextX2
-  GUIDisplayText 15,9,41,GUIMovieTextX3
+  GUIDisplayText 15,9,26,GUIMovieTextX1       ; Overwrite Message Box
+  GUIDisplayText 15,9,36,GUIMovieTextX2
+  GUIDisplayText 15,9,51,GUIMovieTextX3
 
   mov byte[GUItextcolor],217
   cmp byte[GUIWincoladd],0
   je .zero4
   mov byte[GUItextcolor],211
 .zero4
-  DrawGUIButton 15,17,55,59,66,GUIMovieTextX4,19,0,0 ; Yes/No Buttons
-  DrawGUIButton 15,70,55,112,66,GUIMovieTextX5,20,0,0
+  DrawGUIButton 15,17,65,59,76,GUIMovieTextX4,19,0,0 ; Yes/No Buttons
+  DrawGUIButton 15,70,65,112,76,GUIMovieTextX5,20,0,0
   ret
 
 .displayboxa                            ; Main Window
@@ -3881,6 +3878,24 @@ DisplayGUIMovies:    ; Movie Record/Playback options
 .nomux
 
   DrawGUIButton 15,130,101,198,112,GUIMovieTextDE,34,0,0
+
+  mov dword[GUIMovieTextZ+8],'INAC'    ; Determine and Display Status
+  mov dword[GUIMovieTextZ+12],'TIVE'
+  mov dword[GUIMovieTextZ+16],'    '
+  cmp byte[MovieProcessing],1
+  jne .noplay2
+  mov dword[GUIMovieTextZ+8],'PLAY'
+  mov dword[GUIMovieTextZ+12],'ING '
+  mov dword[GUIMovieTextZ+16],'    '
+.noplay2
+  cmp byte[MovieProcessing],3
+  jne .nooldplay2
+  mov dword[GUIMovieTextZ+8],'OLD '
+  mov dword[GUIMovieTextZ+12],'PLAY'
+  mov dword[GUIMovieTextZ+16],'ING '
+.nooldplay2
+
+  GUIDisplayTextY 15,6,192,GUIMovieTextZ
 .nodumping
 
   ret
