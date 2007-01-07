@@ -3718,9 +3718,6 @@ DisplayGUIMovies:    ; Movie Record/Playback options
   GUIDrawTArea 15
   GUIDrawTabs GUIMovieTabs
 
-  cmp dword[GUIMovieTabs],1
-  jne near .notcontrols
-
   cmp byte[MovieRecordWinVal],0
   je near .displayboxa
 
@@ -3778,20 +3775,6 @@ DisplayGUIMovies:    ; Movie Record/Playback options
   GUIDisplayButtonHole 15,168,40,byte[CMovieExt],'8'
   GUIDisplayButtonHole 15,188,40,byte[CMovieExt],'9'
 
-  GUIDisplayTextY 15,8,56,GUIMovieTextC           ; "Start From" Section
-  GUIDisplayButtonHoleTu 15,8,64,byte[MovieStartMethod],0,GUIMovieTextC1,0
-  GUIDisplayButtonHoleTu 15,43,64,byte[MovieStartMethod],1,GUIMovieTextC2,0
-  GUIDisplayButtonHoleTu 15,89,64,byte[MovieStartMethod],2,GUIMovieTextC3,0
-  GUIDisplayButtonHoleTu 15,135,64,byte[MovieStartMethod],3,GUIMovieTextC4,6
-
-  DrawGUIButton 15,7,80,49,91,GUIMovieTextA1,16,0,0  ; Draw Buttons
-  DrawGUIButton 15,55,80,97,91,GUIMovieTextA2,17,0,0
-  DrawGUIButton 15,103,80,145,91,GUIMovieTextA3,18,0,0
-  DrawGUIButton 15,151,80,193,91,GUIMovieTextA4,32,0,0
-  DrawGUIButton 15,7,98,109,109,GUIMovieTextA5,29,0,0
-  DrawGUIButton 15,7,114,109,125,GUIMovieTextA6,30,0,0
-  DrawGUIButton 15,7,130,109,141,GUIMovieTextA7,31,0,0
-
   mov dword[GUIMovieTextZ+8],'INAC'    ; Determine and Display Status
   mov dword[GUIMovieTextZ+12],'TIVE'
   mov dword[GUIMovieTextZ+16],'    '
@@ -3815,6 +3798,23 @@ DisplayGUIMovies:    ; Movie Record/Playback options
 .nooldplay
   GUIDisplayTextY 15,6,192,GUIMovieTextZ
 
+  cmp dword[GUIMovieTabs],1
+  jne near .notcontrols
+
+  GUIDisplayTextY 15,8,56,GUIMovieTextC           ; "Start From" Section
+  GUIDisplayButtonHoleTu 15,8,64,byte[MovieStartMethod],0,GUIMovieTextC1,0
+  GUIDisplayButtonHoleTu 15,43,64,byte[MovieStartMethod],1,GUIMovieTextC2,0
+  GUIDisplayButtonHoleTu 15,89,64,byte[MovieStartMethod],2,GUIMovieTextC3,0
+  GUIDisplayButtonHoleTu 15,135,64,byte[MovieStartMethod],3,GUIMovieTextC4,6
+
+  DrawGUIButton 15,7,80,49,91,GUIMovieTextA1,16,0,0  ; Draw Buttons
+  DrawGUIButton 15,55,80,97,91,GUIMovieTextA2,17,0,0
+  DrawGUIButton 15,103,80,145,91,GUIMovieTextA3,18,0,0
+  DrawGUIButton 15,151,80,193,91,GUIMovieTextA4,32,0,0
+  DrawGUIButton 15,7,98,109,109,GUIMovieTextA5,29,0,0
+  DrawGUIButton 15,7,114,109,125,GUIMovieTextA6,30,0,0
+  DrawGUIButton 15,7,130,109,141,GUIMovieTextA7,31,0,0
+
   DDrawBox 15,115,100,[KeyInsrtChap]        ; Chapter Keyboard Shortcut Boxes
   DDrawBox 15,115,116,[KeyPrevChap]
   DDrawBox 15,115,132,[KeyNextChap]
@@ -3824,40 +3824,6 @@ DisplayGUIMovies:    ; Movie Record/Playback options
 
   cmp dword[GUIMovieTabs],2
   jne near .nodumping
-
-  GUIDisplayTextY 15,8,31,GUIMovieTextB        ; Slot text
-  mov byte[GUIMovieTextB1],'0'
-  GUIDisplayText 15,20,43,GUIMovieTextB1
-  mov byte[GUIMovieTextB1],'1'
-  GUIDisplayText 15,40,43,GUIMovieTextB1
-  mov byte[GUIMovieTextB1],'2'
-  GUIDisplayText 15,60,43,GUIMovieTextB1
-  mov byte[GUIMovieTextB1],'3'
-  GUIDisplayText 15,80,43,GUIMovieTextB1
-  mov byte[GUIMovieTextB1],'4'
-  GUIDisplayText 15,100,43,GUIMovieTextB1
-  mov byte[GUIMovieTextB1],'5'
-  GUIDisplayText 15,120,43,GUIMovieTextB1
-  mov byte[GUIMovieTextB1],'6'
-  GUIDisplayText 15,140,43,GUIMovieTextB1
-  mov byte[GUIMovieTextB1],'7'
-  GUIDisplayText 15,160,43,GUIMovieTextB1
-  mov byte[GUIMovieTextB1],'8'
-  GUIDisplayText 15,180,43,GUIMovieTextB1
-  mov byte[GUIMovieTextB1],'9'
-  GUIDisplayText 15,200,43,GUIMovieTextB1
-
-  ; Display Radio buttons
-  GUIDisplayButtonHole 15,8,40,byte[CMovieExt],'v'
-  GUIDisplayButtonHole 15,28,40,byte[CMovieExt],'1'
-  GUIDisplayButtonHole 15,48,40,byte[CMovieExt],'2'
-  GUIDisplayButtonHole 15,68,40,byte[CMovieExt],'3'
-  GUIDisplayButtonHole 15,88,40,byte[CMovieExt],'4'
-  GUIDisplayButtonHole 15,108,40,byte[CMovieExt],'5'
-  GUIDisplayButtonHole 15,128,40,byte[CMovieExt],'6'
-  GUIDisplayButtonHole 15,148,40,byte[CMovieExt],'7'
-  GUIDisplayButtonHole 15,168,40,byte[CMovieExt],'8'
-  GUIDisplayButtonHole 15,188,40,byte[CMovieExt],'9'
 
   GUIDisplayTextY 15,8,56,GUIMovieTextD           ; Video Section
   GUIDisplayButtonHoleTu 15,9,64,byte[MovieVideoMode],0,GUIMovieTextD1,1
@@ -3878,24 +3844,6 @@ DisplayGUIMovies:    ; Movie Record/Playback options
 .nomux
 
   DrawGUIButton 15,130,101,198,112,GUIMovieTextDE,34,0,0
-
-  mov dword[GUIMovieTextZ+8],'INAC'    ; Determine and Display Status
-  mov dword[GUIMovieTextZ+12],'TIVE'
-  mov dword[GUIMovieTextZ+16],'    '
-  cmp byte[MovieProcessing],1
-  jne .noplay2
-  mov dword[GUIMovieTextZ+8],'PLAY'
-  mov dword[GUIMovieTextZ+12],'ING '
-  mov dword[GUIMovieTextZ+16],'    '
-.noplay2
-  cmp byte[MovieProcessing],3
-  jne .nooldplay2
-  mov dword[GUIMovieTextZ+8],'OLD '
-  mov dword[GUIMovieTextZ+12],'PLAY'
-  mov dword[GUIMovieTextZ+16],'ING '
-.nooldplay2
-
-  GUIDisplayTextY 15,6,192,GUIMovieTextZ
 .nodumping
 
   ret

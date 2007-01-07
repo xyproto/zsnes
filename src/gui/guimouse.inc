@@ -2002,9 +2002,16 @@ DisplayGUIMovieClick:
   GUIPTabClick 0,57,1,GUIMovieTabs
   GUIPTabClick 58,110,2,GUIMovieTabs
 
-  cmp byte[MovieProcessing],2
-  jne near .godump
-.godump
+  GUIPButtonHole 8,40,byte[CMovieExt],'v'       ; Radio buttons
+  GUIPButtonHole 28,40,byte[CMovieExt],'1'
+  GUIPButtonHole 48,40,byte[CMovieExt],'2'
+  GUIPButtonHole 68,40,byte[CMovieExt],'3'
+  GUIPButtonHole 88,40,byte[CMovieExt],'4'
+  GUIPButtonHole 108,40,byte[CMovieExt],'5'
+  GUIPButtonHole 128,40,byte[CMovieExt],'6'
+  GUIPButtonHole 148,40,byte[CMovieExt],'7'
+  GUIPButtonHole 168,40,byte[CMovieExt],'8'
+  GUIPButtonHole 188,40,byte[CMovieExt],'9'
 
   cmp dword[GUIMovieTabs],1
   jne near .nocontrols
@@ -2024,17 +2031,6 @@ DisplayGUIMovieClick:
   GUIPHoldbutton 7,114,112,125,30
   GUIPHoldbutton 7,130,112,141,31
 
-  GUIPButtonHole 8,40,byte[CMovieExt],'v'       ; Radio buttons
-  GUIPButtonHole 28,40,byte[CMovieExt],'1'
-  GUIPButtonHole 48,40,byte[CMovieExt],'2'
-  GUIPButtonHole 68,40,byte[CMovieExt],'3'
-  GUIPButtonHole 88,40,byte[CMovieExt],'4'
-  GUIPButtonHole 108,40,byte[CMovieExt],'5'
-  GUIPButtonHole 128,40,byte[CMovieExt],'6'
-  GUIPButtonHole 148,40,byte[CMovieExt],'7'
-  GUIPButtonHole 168,40,byte[CMovieExt],'8'
-  GUIPButtonHole 188,40,byte[CMovieExt],'9'
-
   GUIPButtonHole 8,64,byte[MovieStartMethod],0    ; Start From
   GUIPButtonHole 43,64,byte[MovieStartMethod],1
   GUIPButtonHole 89,64,byte[MovieStartMethod],2
@@ -2047,21 +2043,15 @@ DisplayGUIMovieClick:
   GUIClickCButton 144,67,byte[MovieDisplayFrame]   ; Checkbox
 .nocontrols
 
+  cmp byte[MovieProcessing],2
+  jne near .godump
+  mov dword[GUIMovieTabs],1
+.godump
+
   cmp dword[GUIMovieTabs],2
   jne near .nodumping
 
   GUIPHoldbutton 130,101,198,112,34
-
-  GUIPButtonHole 8,40,byte[CMovieExt],'v'       ; Radio buttons
-  GUIPButtonHole 28,40,byte[CMovieExt],'1'
-  GUIPButtonHole 48,40,byte[CMovieExt],'2'
-  GUIPButtonHole 68,40,byte[CMovieExt],'3'
-  GUIPButtonHole 88,40,byte[CMovieExt],'4'
-  GUIPButtonHole 108,40,byte[CMovieExt],'5'
-  GUIPButtonHole 128,40,byte[CMovieExt],'6'
-  GUIPButtonHole 148,40,byte[CMovieExt],'7'
-  GUIPButtonHole 168,40,byte[CMovieExt],'8'
-  GUIPButtonHole 188,40,byte[CMovieExt],'9'
 
   GUIPButtonHole 9,64,byte[MovieVideoMode],0      ; Movie Options
   GUIPButtonHole 9,74,byte[MovieVideoMode],1

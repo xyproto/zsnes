@@ -1650,9 +1650,6 @@ GUIMovieKeys:
   KeyTabInc GUIMovieTabs
 .notab
 
-  cmp dword[GUIMovieTabs],1
-  jne near .nocontrols
-
   GUIKeyButtonHole CMovieExt,'v','0'         ; Select Radio Buttons
   GUIKeyButtonHole CMovieExt,'1','1'
   GUIKeyButtonHole CMovieExt,'2','2'
@@ -1663,6 +1660,9 @@ GUIMovieKeys:
   GUIKeyButtonHole CMovieExt,'7','7'
   GUIKeyButtonHole CMovieExt,'8','8'
   GUIKeyButtonHole CMovieExt,'9','9'
+
+  cmp dword[GUIMovieTabs],1
+  jne near .nocontrols
 
   GUIKeyButtonHole MovieStartMethod,0,'N'   ; Start From Radio Buttons
   GUIKeyButtonHole MovieStartMethod,1,'P'
@@ -1679,17 +1679,6 @@ GUIMovieKeys:
 
   cmp dword[GUIMovieTabs],2
   jne near .nodumping
-
-  GUIKeyButtonHole CMovieExt,'v','0'         ; Select Radio Buttons
-  GUIKeyButtonHole CMovieExt,'1','1'
-  GUIKeyButtonHole CMovieExt,'2','2'
-  GUIKeyButtonHole CMovieExt,'3','3'
-  GUIKeyButtonHole CMovieExt,'4','4'
-  GUIKeyButtonHole CMovieExt,'5','5'
-  GUIKeyButtonHole CMovieExt,'6','6'
-  GUIKeyButtonHole CMovieExt,'7','7'
-  GUIKeyButtonHole CMovieExt,'8','8'
-  GUIKeyButtonHole CMovieExt,'9','9'
 
   GUIKeyButtonHole MovieVideoMode,0,'O'
   GUIKeyButtonHole MovieVideoMode,1,'W'
