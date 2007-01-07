@@ -1999,8 +1999,11 @@ DisplayGUIChoseSaveClick:
   ret
 
 DisplayGUIMovieClick:
-  GUIPTabClick 0,57,1,GUIMovieTabs
-  GUIPTabClick 58,110,2,GUIMovieTabs
+  GUIPTabClick 0,57,1,GUIMovieTabs,GUIDumpingTab
+  cmp byte[MovieProcessing],2
+  je near .cannotdump
+  GUIPTabClick 58,110,1,GUIDumpingTab,GUIMovieTabs
+.cannotdump
 
   GUIPButtonHole 8,40,byte[CMovieExt],'v'       ; Radio buttons
   GUIPButtonHole 28,40,byte[CMovieExt],'1'
@@ -2043,12 +2046,7 @@ DisplayGUIMovieClick:
   GUIClickCButton 144,67,byte[MovieDisplayFrame]   ; Checkbox
 .nocontrols
 
-  cmp byte[MovieProcessing],2
-  jne near .godump
-  mov dword[GUIMovieTabs],1
-.godump
-
-  cmp dword[GUIMovieTabs],2
+  cmp dword[GUIDumpingTab],1
   jne near .nodumping
 
   GUIPHoldbutton 130,101,198,112,34

@@ -1647,6 +1647,11 @@ GUIMovieKeys:
   ToUpperASM
   cmp dh,9
   jne .notab
+  cmp byte[MovieProcessing],2
+  je .cannotdump
+  KeyTabInc GUIMovieTabs,GUIDumpingTab
+  jmp .notab
+.cannotdump
   KeyTabInc GUIMovieTabs
 .notab
 
@@ -1672,12 +1677,7 @@ GUIMovieKeys:
   GUIKeyCheckbox MovieDisplayFrame,'D'      ; Checkbox
 .nocontrols
 
-  cmp byte[MovieProcessing],2
-  jne near .godump
-  mov dword[GUIMovieTabs],1
-.godump
-
-  cmp dword[GUIMovieTabs],2
+  cmp dword[GUIDumpingTab],1
   jne near .nodumping
 
   GUIKeyButtonHole MovieVideoMode,0,'O'

@@ -3718,6 +3718,11 @@ DisplayGUIMovies:    ; Movie Record/Playback options
   GUIDrawTArea 15
   GUIDrawTabs GUIMovieTabs
 
+  cmp byte[MovieProcessing],2
+  je near .cannotdump
+  GUIDrawTabs GUIDumpingTab
+.cannotdump
+
   cmp byte[MovieRecordWinVal],0
   je near .displayboxa
 
@@ -3822,7 +3827,7 @@ DisplayGUIMovies:    ; Movie Record/Playback options
   GUIDisplayCheckboxu 15,144,98,MovieDisplayFrame,GUIMovieTextB2,0 ; Checkbox
 .notcontrols
 
-  cmp dword[GUIMovieTabs],2
+  cmp dword[GUIDumpingTab],1
   jne near .nodumping
 
   GUIDisplayTextY 15,8,56,GUIMovieTextD           ; Video Section
@@ -3850,8 +3855,9 @@ DisplayGUIMovies:    ; Movie Record/Playback options
 
 SECTION .data
 
-GUIMovieTabs dd 1,2
+GUIMovieTabs dd 1,1
   db 'CONTROLS',0
+GUIDumpingTab dd 0,1
   db 'DUMPING',0
 
 GUIMovieTextA1 db 'PLAY',0
