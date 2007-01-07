@@ -27,25 +27,6 @@ EXTSYM _2xSaISuperEagleLineW,_2xSaISuper2xSaILineW,newengen,cfield,HalfTrans
 EXTSYM GUIOn2,FilteredGUI,SpecialLine,vidbufferofsb,HalfTransB,HalfTransC
 
 ALIGN32
-section .data
-NEWSYM frametot, dd 0
-
-section .text
-
-NEWSYM CheckFrame
-    pushad
-    mov ebx,[vidbuffer]
-    mov eax,[ebx]
-    mov ecx,32767
-.loopit
-    add ebx,4
-    add eax,[ebx]
-    dec ecx
-    jnz .loopit
-    mov [frametot],eax
-    popad
-    ret
-
 SECTION .bss
 NEWSYM AddEndBytes, resd 1         ; Number of bytes between each line
 NEWSYM NumBytesPerLine, resd 1     ; Total number of bytes per line (1024+AddEndBytes)

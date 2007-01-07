@@ -44,7 +44,7 @@ extern DWORD converta;
 extern unsigned char curblank;
 extern int frametot;
 extern BYTE GUIOn,GUIOn2;
-int prevtot = 0;
+
 void UpdateVFrame(void);
 void NTSCFilterInit();
 void NTSCFilterDraw(int SurfaceX, int SurfaceY, int pitch, unsigned char * buffer);
@@ -148,12 +148,7 @@ void sw_drawwin()
                               //  for ZSNES' current transparency code)
 
 
-  prevtot = frametot;
-  CheckFrame();
-
   UpdateVFrame();
-
-  if (prevtot == frametot && (!GUIOn || !GUIOn2)) { return; }
 
   if (curblank || OGLModeCheck()) return;
   LockSurface();
