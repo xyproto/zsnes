@@ -1646,7 +1646,7 @@ SECTION .text
 GUIMovieKeys:
   ToUpperASM
   cmp dh,9
-  jne .notab
+  jne near .notab
   cmp byte[MovieProcessing],2
   je .cannotdump
   KeyTabInc GUIMovieTabs,GUIDumpingTab
