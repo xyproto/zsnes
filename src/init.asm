@@ -25,7 +25,7 @@ EXTSYM UpdateDevices,Makemode7Table,MusicRelVol,MusicVol,makesprprtable
 EXTSYM romloadskip,start65816,showinfogui,inittable,zexit
 EXTSYM SA1inittable,MessageOn,Msgptr,MsgCount,sndrot,SnowTimer
 EXTSYM inittablec,newgfx16b,DisplayInfo,ssautosw,GUIDelayB,pl12s34
-EXTSYM Output_Text,Turbo30hz,CombinDataLocl,current_zst,zst_name
+EXTSYM Output_Text,Turbo30hz,CombinDataLocl,current_zst
 EXTSYM BackupSystemVars,SnowData,SnowVelDist,Setper2exec
 EXTSYM JoyRead,pressed,mousebuttons,mousexdir,mouseydir,mousexpos,mouseypos
 EXTSYM pl1selk,pl1startk,pl1upk,pl1downk,pl1leftk,pl1rightk,pl1Xk
@@ -188,7 +188,6 @@ NEWSYM init
 
     ; Load the specified state file
     pushad
-    call zst_name
     call loadstate2
     popad
 .noautoloadstate

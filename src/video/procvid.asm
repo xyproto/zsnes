@@ -32,7 +32,7 @@ EXTSYM makepal,bg1objptr,DecompAPtr,HalfTransB,HalfTransC
 EXTSYM changepal,saveselectpal,displayfpspal,superscopepal,DrawScreen,MMXSupport
 EXTSYM Get_MouseData,Get_MousePositionDisplacement,GUIEnableTransp,GUIFontData
 EXTSYM StopSound,StartSound,PrevPicture,nggposng,current_zst,newest_zst
-EXTSYM GetTimeInSeconds,bg3ptr,bg3scroly,bg3scrolx,C4Ram,zst_name
+EXTSYM GetTimeInSeconds,bg3ptr,bg3scroly,bg3scrolx,C4Ram
 EXTSYM genfulladdtab,genfulladdtabng,TimerEnable,ShowTimer,debugdisble,GUIOn
 EXTSYM FilteredGUI,HalfTrans,SmallMsgText,ClearScreen,Mode7HiRes,mosenng,mosszng
 EXTSYM intrlng,mode7hr,newgfx16b,vesa2_clbitng,vesa2_clbitng2,CSStatus
@@ -1751,9 +1751,6 @@ NEWSYM saveselect
     call makepal
     mov byte[f3menuen],0
     mov byte[ForceNonTransp],0
-    pushad
-    call zst_name
-    popad
     ret
 
 SECTION .bss

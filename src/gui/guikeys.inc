@@ -2716,9 +2716,6 @@ GUIStateSelKeys:
   mul dl
   add al,cl
   mov [current_zst],eax
-  pushad
-  call zst_name
-  popad
   ret
 .nochange
 %ifdef __UNIXSDL__
@@ -2734,9 +2731,6 @@ GUIStateSelKeys:
   cmp dword[current_zst],90
   jge .nochange2
   add dword[current_zst],10
-  pushad
-  call zst_name
-  popad
   ret
 .nopgup
 %ifdef __UNIXSDL__
@@ -2752,9 +2746,6 @@ GUIStateSelKeys:
   cmp dword[current_zst],10
   jl .nochange2
   sub dword[current_zst],10
-  pushad
-  call zst_name
-  popad
   ret
 .nopgdn
 .nochange2
