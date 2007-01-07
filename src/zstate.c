@@ -1161,6 +1161,11 @@ void stateloader(char *statename, bool keycheck, bool xfercheck)
 
   clim();
 
+  if(!isextension(ZStateName, "zss"))
+  {
+    zst_name();
+  }
+
   //Actual state loading code
   if ((fhandle = fopen_dir(ZSramPath, statename, "rb")))
   {
