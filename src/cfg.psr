@@ -824,6 +824,10 @@ MovieDisplayFrame db 0
 MovieStartMethod db 0
 
 @
+@ Switch from replay to record when loading an MZT (0 = NO, 1 = Yes)
+MZTForceRTR db 0
+
+@
 @ ZMV -> AVI Conversion Mode: (0 = No Video, 1 = Raw Video, 2 = Ffv1, 3 = x264,
 @                              4 = XVID, 5 = Custom (not functional yet))
 @ The compression codecs can only be used if you provide them yourself.

@@ -1121,6 +1121,12 @@ void stateloader(char *statename, bool keycheck, bool xfercheck)
     MessageOn = MsgCount;
   }
 
+  if (MZTForceRTR && (MovieProcessing == MOVIE_PLAYBACK))
+  {
+    void MovieRecord();
+    MovieRecord();
+  }
+
   switch (MovieProcessing)
   {
     case MOVIE_PLAYBACK:
