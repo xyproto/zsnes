@@ -2667,7 +2667,9 @@ GUIBlankVar resd 1
 ntscLastVar resb 6
 ntscCurVar resb 1
 ntscWhVar resb 1
-NEWSYM NTSCPresetVar, resb 1
+SECTION .data
+NEWSYM NTSCPresetVar, dd 4
+
 SECTION .text
 
 DisplayGUISoundClick:

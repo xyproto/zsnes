@@ -48,6 +48,12 @@ void set_ntsc_preset( int i )
         NTSCArt    = presets [i] [3];
         NTSCFringe = presets [i] [4];
         NTSCBleed  = presets [i] [5];
+        NTSCHue = 0;
+        NTSCCont = 0;
+        NTSCBright = 0;
+        NTSCGamma = 0;
+        NTSCBleed = 0;
+        NTSCWarp = 0;
     }
 }
 
@@ -97,6 +103,7 @@ void NTSCFilterInit()
 		set_ntsc_preset(NTSCPresetVar);
 		break;
 	default:
+		snes_ntsc_init( &ntsc_snes, &ntsc_setup );
 		break;
 	}
 
