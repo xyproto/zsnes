@@ -3716,7 +3716,18 @@ SECTION .text
 DisplayGUIMovies:    ; Movie Record/Playback options
   GUIDrawWindowBox 15,GUIMovieDisp   ; Display Window
   GUIDrawTArea 15
+
+  mov byte[GUIMovieOnlyTab],0
+
+  cmp byte[MovieProcessing],4
+  je near .cannotzmv
+  cmp byte[MovieProcessing],5
+  je near .cannotzmv
+  cmp byte[MovieProcessing],6
+  je near .cannotzmv
   GUIDrawTabs GUIMovieTabs
+  or byte[GUIMovieOnlyTab],1
+.cannotzmv
 
   cmp byte[MovieProcessing],1
   je near .cannotdump
@@ -3725,6 +3736,7 @@ DisplayGUIMovies:    ; Movie Record/Playback options
   cmp byte[MovieProcessing],3
   je near .cannotdump
   GUIDrawTabs GUIDumpingTab
+  or byte[GUIMovieOnlyTab],2
 .cannotdump
 
   cmp byte[MovieRecordWinVal],0
@@ -3835,6 +3847,8 @@ DisplayGUIMovies:    ; Movie Record/Playback options
 
   cmp dword[GUIMovieTabs],1
   jne near .notcontrols
+  cmp byte[GUIMovieOnlyTab],2
+  je near .notcontrols
 
   GUIDisplayTextY 15,8,56,GUIMovieTextC           ; "Start From" Section
   GUIDisplayButtonHoleTu 15,8,64,byte[MovieStartMethod],0,GUIMovieTextC1,0
@@ -3858,8 +3872,11 @@ DisplayGUIMovies:    ; Movie Record/Playback options
   GUIDisplayCheckboxu 15,8,158,MZTForceRTR,GUIMovieTextB3,22
 .notcontrols
 
+  cmp byte[GUIMovieOnlyTab],2
+  je near .dumping
   cmp dword[GUIDumpingTab],1
   jne near .nodumping
+.dumping
 
   GUIDisplayTextY 15,8,56,GUIMovieTextD           ; Video Section
   GUIDisplayButtonHoleTu 15,9,64,byte[MovieVideoMode],0,GUIMovieTextD1,1
@@ -3899,6 +3916,7 @@ GUIMovieTabs dd 1,1
   db 'CONTROLS',0
 GUIDumpingTab dd 0,1
   db 'DUMPING',0
+GUIMovieOnlyTab db 3
 
 GUIMovieTextA1 db 'PLAY',0
 GUIMovieTextA2 db 'RECORD',0
