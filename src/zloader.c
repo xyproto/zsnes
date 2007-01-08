@@ -457,11 +457,15 @@ void swap_backup_vars()
 static size_t zatoi(const char *str)
 {
   const char *orig_str = str;
-  while (*str)
+  if (str)
   {
-    if (!isdigit(*str++)) { return(~0); }
+    while (*str)
+    {
+      if (!isdigit(*str++)) { return(~0); }
+    }
+    return((size_t)atoi(orig_str));
   }
-  return((size_t)atoi(orig_str));
+  return(~0);
 }
 
 static void handle_params(int argc, char *argv[])
