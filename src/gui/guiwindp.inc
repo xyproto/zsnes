@@ -3845,10 +3845,10 @@ DisplayGUIMovies:    ; Movie Record/Playback options
 
   GUIDisplayTextY 15,6,192,GUIMovieTextZ
 
-  cmp dword[GUIMovieTabs],1
-  jne near .notcontrols
   cmp byte[GUIMovieOnlyTab],2
   je near .notcontrols
+  cmp dword[GUIMovieTabs],1
+  jne near .notcontrols
 
   GUIDisplayTextY 15,8,56,GUIMovieTextC           ; "Start From" Section
   GUIDisplayButtonHoleTu 15,8,64,byte[MovieStartMethod],0,GUIMovieTextC1,0
@@ -3872,11 +3872,8 @@ DisplayGUIMovies:    ; Movie Record/Playback options
   GUIDisplayCheckboxu 15,8,158,MZTForceRTR,GUIMovieTextB3,22
 .notcontrols
 
-  cmp byte[GUIMovieOnlyTab],2
-  je near .dumping
   cmp dword[GUIDumpingTab],1
   jne near .nodumping
-.dumping
 
   GUIDisplayTextY 15,8,56,GUIMovieTextD           ; Video Section
   GUIDisplayButtonHoleTu 15,9,64,byte[MovieVideoMode],0,GUIMovieTextD1,1
