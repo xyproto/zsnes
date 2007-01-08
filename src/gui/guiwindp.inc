@@ -3718,7 +3718,11 @@ DisplayGUIMovies:    ; Movie Record/Playback options
   GUIDrawTArea 15
   GUIDrawTabs GUIMovieTabs
 
+  cmp byte[MovieProcessing],1
+  je near .cannotdump
   cmp byte[MovieProcessing],2
+  je near .cannotdump
+  cmp byte[MovieProcessing],3
   je near .cannotdump
   GUIDrawTabs GUIDumpingTab
 .cannotdump
