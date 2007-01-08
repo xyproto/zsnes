@@ -3801,6 +3801,13 @@ DisplayGUIMovies:    ; Movie Record/Playback options
   mov dword[GUIMovieTextZ+12],'PLAY'
   mov dword[GUIMovieTextZ+16],'ING '
 .nooldplay
+  cmp byte[MovieProcessing],4
+  jne .noendingdump
+  mov dword[GUIMovieTextZ+8],'DUMP'
+  mov dword[GUIMovieTextZ+12],'ING '
+  mov dword[GUIMovieTextZ+16],'ENDI'
+  mov dword[GUIMovieTextZ+16],'NG  '
+.noendingdump
   GUIDisplayTextY 15,6,192,GUIMovieTextZ
 
   cmp dword[GUIMovieTabs],1
@@ -3912,7 +3919,7 @@ GUIMovieTextX3 db 'OKAY TO OVERWRITE ?',0
 GUIMovieTextX4 db 'YES',0
 GUIMovieTextX5 db 'NO',0
 
-GUIMovieTextZ db 'STATUS:              ',0
+GUIMovieTextZ db 'STATUS:                  ',0
 
 NEWSYM CMovieExt, db 'v'
 
