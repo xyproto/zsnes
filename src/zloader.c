@@ -750,6 +750,11 @@ static void handle_params(int argc, char *argv[])
         else if (tolower(argv[i][1]) == 'a' && tolower(argv[i][2]) == 'd') //Disable sound DSP emulation
         {
           i++;
+          if (!argv[i])
+          {
+            display_help();
+          }
+
           #ifdef __LIBAO__
           if (!strcmp(argv[i], "auto") || !strcmp(argv[i], "sdl") || (ao_driver_id(argv[i]) >= 0))
           #else
