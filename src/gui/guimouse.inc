@@ -741,7 +741,7 @@ ProcessMouseButtons:
   mov byte[GUICBHold],0
   mov byte[GUIQuit],2
   pushad
-  ;call MovieDumpRaw
+  call MovieStop
   popad
   ret
 .noStopDumping
@@ -2008,16 +2008,24 @@ DisplayGUIChoseSaveClick:
   ret
 
 DisplayGUIMovieClick:
-  cmp byte[GUIMovieOnlyTab],2
-  jne near .difftab
-  GUIPTabClick 0,52,1,GUIDumpingTab
-  jmp .donemovietab
-.difftab
+
+  cmp byte[MovieProcessing],4
+  je near .cannotzmv
+  cmp byte[MovieProcessing],5
+  je near .cannotzmv
+  cmp byte[MovieProcessing],6
+  je near .cannotzmv
   GUIPTabClick 0,57,1,GUIMovieTabs,GUIDumpingTab
-  cmp byte[GUIMovieOnlyTab],3
-  jne .donemovietab
+.cannotzmv
+
+  cmp byte[MovieProcessing],1
+  je near .cannotdump
+  cmp byte[MovieProcessing],2
+  je near .cannotdump
+  cmp byte[MovieProcessing],3
+  je near .cannotdump
   GUIPTabClick 58,110,1,GUIDumpingTab,GUIMovieTabs
-.donemovietab
+.cannotdump
 
   GUIPButtonHole 8,40,byte[CMovieExt],'v'       ; Radio buttons
   GUIPButtonHole 28,40,byte[CMovieExt],'1'
@@ -2030,10 +2038,8 @@ DisplayGUIMovieClick:
   GUIPButtonHole 168,40,byte[CMovieExt],'8'
   GUIPButtonHole 188,40,byte[CMovieExt],'9'
 
-  cmp byte[GUIMovieOnlyTab],2
-  je near .notcontrols
   cmp dword[GUIMovieTabs],1
-  jne near .notcontrols
+  jne near .nocontrols
 
   cmp byte[MovieRecordWinVal],0        ; Overwrite Window
   je near .displayboxa
@@ -2062,7 +2068,7 @@ DisplayGUIMovieClick:
   GUIClickCButton 8,148,byte[MovieDisplayFrame]   ; Checkbox
   GUIClickCButton 8,158,byte[MZTForceRTR]
 
-.notcontrols
+.nocontrols
 
   cmp dword[GUIDumpingTab],1
   jne near .nodumping

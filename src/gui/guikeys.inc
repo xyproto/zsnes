@@ -1652,8 +1652,8 @@ GUIMovieKeys:
   ToUpperASM
   cmp dh,9
   jne near .notab
-  cmp byte[GUIMovieOnlyTab],3
-  jne near .notab
+  cmp byte[MovieProcessing],1
+  jae .notab
   KeyTabInc GUIMovieTabs,GUIDumpingTab
 .notab
 
@@ -1668,10 +1668,8 @@ GUIMovieKeys:
   GUIKeyButtonHole CMovieExt,'8','8'
   GUIKeyButtonHole CMovieExt,'9','9'
 
-  cmp byte[GUIMovieOnlyTab],2
-  je near .notcontrols
   cmp dword[GUIMovieTabs],1
-  jne near .notcontrols
+  jne near .nocontrols
 
   GUIKeyButtonHole MovieStartMethod,0,'N'   ; Start From Radio Buttons
   GUIKeyButtonHole MovieStartMethod,1,'P'
@@ -1680,7 +1678,7 @@ GUIMovieKeys:
 
   GUIKeyCheckbox MovieDisplayFrame,'D'      ; Checkbox
   GUIKeyCheckbox MZTForceRTR,'L'
-.notcontrols
+.nocontrols
 
   cmp dword[GUIDumpingTab],1
   jne near .nodumping
