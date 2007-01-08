@@ -2500,6 +2500,8 @@ static void DumpVideoFrame(bool playback_over)
     if (playback_over && MovieForcedLengthEnabled)
     {
       SetMovieMode(MOVIE_ENDING_DUMPING);
+      //Disable Input
+      JoyAOrig = JoyBOrig = JoyCOrig = JoyDOrig = JoyEOrig = 0;
     }
 
     if ((playback_over && !MovieForcedLengthEnabled) || (MovieForcedLengthEnabled && !MovieForcedLength))
