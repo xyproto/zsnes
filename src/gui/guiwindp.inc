@@ -3910,7 +3910,8 @@ GUIMovieTextE2 db 'COMPRESS AUDIO',0
 GUIMovieTextE3 db 'MERGE WITH VIDEO',0
 
 GUIMovieTextDE db 'DUMP MOVIE',0
-GUIMovieTextF1 db 'FORCE MOVIE LENGTH',0
+
+GUIMovieTextF1 db 'FORCE MOVIE LENGTH',0
 GUIMovieTextF2 db '   ',0
 
 GUIMovieTextX1 db 'WARNING: THIS MOVIE',0  ; Overwrite Window
