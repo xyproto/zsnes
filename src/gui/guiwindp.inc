@@ -3824,7 +3824,8 @@ DisplayGUIMovies:    ; Movie Record/Playback options
   DDrawBox 15,115,116,[KeyPrevChap]
   DDrawBox 15,115,132,[KeyNextChap]
 
-  GUIDisplayCheckboxu 15,144,98,MovieDisplayFrame,GUIMovieTextB2,0 ; Checkbox
+  GUIDisplayCheckboxu 15,8,148,MovieDisplayFrame,GUIMovieTextB2,0   ; Checkbox
+  GUIDisplayCheckboxu 15,8,158,MZTForceRTR,GUIMovieTextB3,22
 .notcontrols
 
   cmp dword[GUIDumpingTab],1
@@ -3849,6 +3850,15 @@ DisplayGUIMovies:    ; Movie Record/Playback options
 .nomux
 
   DrawGUIButton 15,130,101,198,112,GUIMovieTextDE,34,0,0
+
+  GUIDisplayCheckboxu 15,9,134,MovieForcedLengthEnabled,GUIMovieTextF1,2
+  GUIDisplayBBox 15,136,135,156,145,167
+
+  pushad
+  ;call GetCustomXY
+  popad
+
+  GUIOuttextwin2d 15,144,138,GUIMovieTextF2,3
 .nodumping
 
   ret
@@ -3870,7 +3880,8 @@ GUIMovieTextA7 db 'NEXT CHAPTER',0
 
 GUIMovieTextB db 'SELECT MOVIE:',0
 GUIMovieTextB1 db ' ',0
-GUIMovieTextB2 db 'DISPLAY FRAMES',0
+GUIMovieTextB2 db 'DISPLAY FRAME COUNTER',0
+GUIMovieTextB3 db 'RECORD ON MOVIE STATE LOAD',0
 
 GUIMovieTextC db 'RECORD FROM:',0
 GUIMovieTextC1 db 'NOW',0
@@ -3892,6 +3903,8 @@ GUIMovieTextE2 db 'COMPRESS AUDIO',0
 GUIMovieTextE3 db 'MERGE WITH VIDEO',0
 
 GUIMovieTextDE db 'DUMP MOVIE',0
+GUIMovieTextF1 db 'FORCE MOVIE LENGTH',0
+GUIMovieTextF2 db '   ',0
 
 GUIMovieTextX1 db 'WARNING: THIS MOVIE',0  ; Overwrite Window
 GUIMovieTextX2 db 'FILE ALREADY EXISTS',0
@@ -4693,6 +4706,10 @@ BlinkCursorCheck:
   mov ebx,GUICustomY
 .notBox13
 %endif
+  cmp dword[GUIInputBox],14
+  jne .notBox14
+  mov ebx,MovieForcedLength
+.notBox14
   ret
 
 DisplayGUIPaths:
@@ -5115,3 +5132,4 @@ NEWSYM GUIMenuItem
   db 'NETPLAY',0
   db 'MISC  ',0
   db 25,0
+ 

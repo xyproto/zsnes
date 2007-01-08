@@ -1576,6 +1576,11 @@ GUIPathKeys:
   jmp .boxselected
 .notBox13
 %endif
+  cmp dword[GUIInputBox],14
+  jne .notBox14
+  mov eax,MovieForcedLength
+  jmp .boxselected
+.notBox14
 
 .boxselected
   mov ecx,eax
@@ -1675,6 +1680,7 @@ GUIMovieKeys:
   GUIKeyButtonHole MovieStartMethod,3,'S'
 
   GUIKeyCheckbox MovieDisplayFrame,'D'      ; Checkbox
+  GUIKeyCheckbox MZTForceRTR,'L'
 .nocontrols
 
   cmp dword[GUIDumpingTab],1
@@ -1690,6 +1696,8 @@ GUIMovieKeys:
   GUIKeyCheckbox MovieAudio,'A'
   GUIKeyCheckbox MovieVideoAudio,'V'
   GUIKeyCheckbox MovieAudioCompress,'M'
+
+  GUIKeyCheckbox MovieForcedLengthEnabled,'R'
 .nodumping
 
   ret

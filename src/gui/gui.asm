@@ -112,11 +112,11 @@ EXTSYM KeyWinDisble,KeyOffsetMSw,JoyPad1Move,init_save_paths,loadquickfname
 EXTSYM mousewrap,GUIRClick,SaveSramData,SwapMouseButtons
 EXTSYM FPSAtStart,Turbo30hz,TimerEnable,SmallMsgText,mouse1lh,mouse2lh
 EXTSYM AutoPatch,RomInfo,AllowUDLR,GrayscaleMode,GUII2VID
-EXTSYM Mode7HiRes16b,FFRatio,SDRatio,EmuSpeed,mouseshad
-EXTSYM esctomenu,GUILoadKeysJumpTo,lhguimouse
+EXTSYM Mode7HiRes16b,FFRatio,SDRatio,EmuSpeed,mouseshad,MovieForcedLengthEnabled
+EXTSYM esctomenu,GUILoadKeysJumpTo,lhguimouse,MZTForceRTR
 EXTSYM GUIEnableTransp,FilteredGUI,Surround,SPCDisable,nosaveSRAM
 EXTSYM FastFwdToggle,gui_key,gui_key_extended,GUILoadKeysNavigate
-EXTSYM KeyDisplayBatt,KeyIncreaseGamma,KeyDecreaseGamma
+EXTSYM KeyDisplayBatt,KeyIncreaseGamma,KeyDecreaseGamma,MovieForcedLength
 EXTSYM MovieVideoMode,MovieAudio,MovieVideoAudio,MovieAudioCompress,newfont
 EXTSYM d_names,selected_names,GUIfileentries,GUIdirentries,GUIcurrentdirviewloc
 EXTSYM GUIcurrentfilewin,GUIcurrentcursloc,GUIcurrentviewloc

@@ -2043,7 +2043,9 @@ DisplayGUIMovieClick:
   DGOptnsProcBox 116,117,[KeyPrevChap]
   DGOptnsProcBox 116,133,[KeyNextChap]
 
-  GUIClickCButton 144,67,byte[MovieDisplayFrame]   ; Checkbox
+  GUIClickCButton 8,148,byte[MovieDisplayFrame]   ; Checkbox
+  GUIClickCButton 8,158,byte[MZTForceRTR]
+
 .nocontrols
 
   cmp dword[GUIDumpingTab],1
@@ -2061,6 +2063,11 @@ DisplayGUIMovieClick:
   GUIClickCButton 130,62,byte[MovieAudio]
   GUIClickCButton 130,72,byte[MovieAudioCompress]
   GUIClickCButton 130,82,byte[MovieVideoAudio]
+
+  GUIClickCButton 9,134,byte[MovieForcedLengthEnabled]
+
+  GUITextBoxInputNach 136,135,156,145,14,3
+
 .nodumping
 
   ret
