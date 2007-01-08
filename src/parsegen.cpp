@@ -1160,10 +1160,10 @@ void output_array_read(ostream& c_stream, variable::ctype type)
              << "{\n"
              << "  size_t i;\n"
              << "  char *token;\n"
-             << "  *var = (" << variable::info[type].CTypeSpace << ")atoi(strtok(line, \", \\t\\r\\n\"));\n"
+             << "  *var = (" << variable::info[type].CTypeSpace << ")atoll(strtok(line, \", \\t\\r\\n\"));\n"
              << "  for (i = 1; (i < size) && (token = strtok(0, \", \\t\\r\\n\")); i++)\n"
              << "  {\n"
-             << "    var[i] = (" << variable::info[type].CTypeSpace << ")atoi(token);\n"
+             << "    var[i] = (" << variable::info[type].CTypeSpace << ")atoll(token);\n"
              << "  }\n"
              << "}\n";
   }
@@ -1225,7 +1225,7 @@ void output_read_var(ostream& c_stream)
       c_stream << "    if (!strcmp(var, \"" << i->dependancy << i->name << "\")) { ";
       if (i->format == variable::single)
       {
-        c_stream << i->name << " = (" << variable::info[i->type].CTypeSpace << ")atoi(value);";
+        c_stream << i->name << " = (" << variable::info[i->type].CTypeSpace << ")atoll(value);";
       }
       else if ((i->format == variable::mult) || (i->format == variable::ptr))
       {
@@ -1248,7 +1248,7 @@ void output_read_var(ostream& c_stream)
   {
     c_stream << "    if (!strcmp(var, \"PSR_HASH\"))\n"
              << "    {\n"
-             << "       if ((unsigned int)atoi(value) == PSR_HASH)\n"
+             << "       if ((unsigned int)atoll(value) == PSR_HASH)\n"
              << "       {\n"
              << "         psr_init_done = 2;\n"
              << "         continue;\n"
