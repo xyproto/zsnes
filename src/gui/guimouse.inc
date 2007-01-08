@@ -728,7 +728,7 @@ ProcessMouseButtons:
   pushad
   call MovieDumpRaw
   popad
-  cmp byte[MovieVideoMode],2
+  cmp byte[MovieVideoMode],4
   jb .nomencoder
   cmp byte[mencoderExists],0
   jne .nomencoder
