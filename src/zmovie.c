@@ -24,6 +24,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <signal.h>
 #define DIR_SLASH "/"
 #define WRITE_BINARY "w"
+#define NULL_FILE "/dev/null"
 #include "linux/safelib.h"
 #else
 #define _POSIX_
@@ -45,6 +46,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #endif
 #define DIR_SLASH "\\"
 #define WRITE_BINARY "wb"
+#define NULL_FILE "nul"
 #endif
 #ifndef _MSC_VER
 #include <dirent.h>
@@ -2052,8 +2054,10 @@ static size_t string_replace(char *str, size_t rep_len, const char *new_str, siz
 
 #define PICK_HELP(var) if (!strncmp(str, "$"#var, strlen(#var)+1)) { *len = strlen(#var)+1; return(var); }
 
-static char *pick_var(char *str, size_t *len)
+static const char *pick_var(char *str, size_t *len)
 {
+  const char *null = NULL_FILE;
+
   PICK_HELP(md_prog);
   PICK_HELP(md_raw);
   PICK_HELP(md_other);
@@ -2062,6 +2066,14 @@ static char *pick_var(char *str, size_t *len)
   PICK_HELP(md_no_sound);
   PICK_HELP(md_pcm_audio);
   PICK_HELP(md_compressed_audio);
+
+  if (MovieVideoMode == 5)
+  {
+    PICK_HELP(md_custom_temp1);
+    PICK_HELP(md_custom_temp2);
+    PICK_HELP(md_custom_temp3);
+    PICK_HELP(null);
+  }
 
   if (!strncmp(str, "$md_video_rate", strlen("$md_video_rate")))
   {
@@ -2103,7 +2115,7 @@ static char *encode_command(char *p)
     if (var)
     {
       size_t var_len;
-      char *replace = pick_var(var, &var_len);
+      const char *replace = pick_var(var, &var_len);
       if (var_len)
       {
         size_t remaining = sizeof(command)-(var-command);
@@ -2131,6 +2143,15 @@ static char *encode_command(char *p)
   return(command);
 }
 
+static char *encode_command_custom(unsigned char pass)
+{
+  char *p;
+  if (pass == md_custom_passes) { p = md_custom_last_pass; }
+  else if (pass == 1) { p = md_custom_first_pass; }
+  else { p = md_custom_middle_passes; }
+  return(encode_command(p));
+}
+
 #ifdef __UNIXSDL__
 static void broken_pipe(int sig)
 {
@@ -2142,7 +2163,6 @@ static void broken_pipe(int sig)
 struct
 {
   FILE *vp;
-
   FILE *ap;
 
   size_t aud_dsize_pos;
@@ -2180,6 +2200,8 @@ static void raw_embed_logo(bool audio)
   }
 }
 
+unsigned char movie_current_pass = 0;
+
 static void raw_video_close()
 {
   bool audio_and_video = raw_vid.vp && raw_vid.ap;
@@ -2191,7 +2213,7 @@ static void raw_video_close()
       case 1:
         fclose(raw_vid.vp);
         break;
-      case 2: case 3: case 4:
+      case 2: case 3: case 4: case 5:
         pclose(raw_vid.vp);
         break;
     }
@@ -2224,17 +2246,15 @@ static void raw_video_close()
     AudioLogging = 0;
   }
 
-  if (audio_and_video && MovieVideoAudio)
+  if (movie_current_pass == md_custom_passes)
+  {
+    remove_dir(ZCfgPath, MovieAudioCompress ? md_compressed_audio : md_pcm_audio);
+  }
+
+  if ((MovieVideoMode != 5) && (audio_and_video && MovieVideoAudio))
   {
     if (mencoderExists) { system_dir(ZCfgPath, encode_command(md_merge)); }
-    if (MovieAudioCompress)
-    {
-      remove_dir(ZCfgPath, md_compressed_audio);
-    }
-    else
-    {
-      remove_dir(ZCfgPath, md_pcm_audio);
-    }
+    remove_dir(ZCfgPath, MovieAudioCompress ? md_compressed_audio : md_pcm_audio);
     remove_dir(ZCfgPath, md_file);
   }
   signal(SIGPIPE, SIG_IGN);
@@ -2260,6 +2280,20 @@ static bool raw_video_open()
     case 2: case 3: case 4:
       signal(SIGPIPE, broken_pipe);
       mencoderExists = (raw_vid.vp = popen_dir(ZCfgPath, encode_command(md_command), WRITE_BINARY)) ? 1 : 0;
+      break;
+
+   case 5:
+      signal(SIGPIPE, broken_pipe);
+      mencoderExists = (raw_vid.vp = popen_dir(ZCfgPath, encode_command_custom(movie_current_pass), WRITE_BINARY)) ? 1 : 0;
+      if (movie_current_pass == 1)
+      {
+        MovieAudio = 1;
+      }
+      else if (movie_current_pass < md_custom_passes)
+      {
+        if (*md_logo) { raw_embed_logo(false); }
+        return(true);
+      }
       break;
 
     default:
@@ -2493,6 +2527,7 @@ extern unsigned char SloMo, EMUPause;
 char MovieFrameStr[10];
 bool MovieForcedLengthEnabled = false;
 unsigned int MovieForcedLength = 0;
+unsigned char MoviePassWaiting = 0;
 
 struct
 {
@@ -2537,6 +2572,15 @@ static void DumpVideoFrame(bool playback_over)
       RawDumpInProgress = false;
       SetMovieMode(MOVIE_OFF);
       MovieForcedLengthEnabled = false;
+      if ((MovieVideoMode == 5) && (movie_current_pass < md_custom_passes))
+      {
+        movie_current_pass++;
+        MoviePassWaiting = 1;
+      }
+      else
+      {
+        movie_current_pass = 0;
+      }
     }
     else
     {
@@ -3041,9 +3085,11 @@ void GetMovieFrameStr()
 
 void MovieDumpRaw()
 {
+  MoviePassWaiting = 0;
   if (!MovieProcessing)
   {
     MoviePlay();
+    if ((MovieVideoMode == 5) && !movie_current_pass) { movie_current_pass = 1; }
     RawDumpInProgress = raw_video_open();
 
     switch (MovieProcessing)

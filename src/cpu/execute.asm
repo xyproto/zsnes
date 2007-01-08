@@ -43,7 +43,7 @@ EXTSYM SA1Message,MultiTapStat,idledetectspc,SA1Control,SA1Enable,SA1IRQEnable
 EXTSYM SPC700read,SPC700write,numspcvblleft,spc700idle,SA1IRQExec,ForceNewGfxOff
 EXTSYM LethEnData,GUIQuit,IRAM,SA1Ptr,SA1BWPtr,scrnon,scaddset,outofmemfix
 EXTSYM yesoutofmemory,ProcessMovies,MovieStop,ppustatus,C4VBlank
-EXTSYM ReturnFromSPCStall,scanlines,MainLoop
+EXTSYM ReturnFromSPCStall,scanlines,MainLoop,MoviePassWaiting,MovieDumpRaw
 EXTSYM NumberOfOpcodes,SfxCLSR,SfxSCMR,SfxPOR,sfx128lineloc,sfx160lineloc
 EXTSYM sfx192lineloc,sfxobjlineloc,sfxclineloc,PLOTJmpa,PLOTJmpb,FxTable
 EXTSYM FxTableb,FxTablec,FxTabled,SfxPBR,SCBRrel,SfxSCBR,SfxCOLR,SFXCounter
@@ -390,6 +390,15 @@ reexecuteb2:
     je .skippostgame
     call DeInitPostGame
 .skippostgame
+
+    ;Multipass Movies
+    cmp byte[MoviePassWaiting],1
+    jne .nomoviepasswaiting
+    pushad
+    call MovieDumpRaw
+    popad
+    jmp continueprog
+.nomoviepasswaiting
 
     ; clear all keys
     call Check_Key
@@ -1016,6 +1025,12 @@ NEWSYM cpuover
     mov byte[KeyOnStA],0
     test byte[exiter],01h
     jnz near exitloop2
+    ;Multipass Movies
+    cmp byte[MoviePassWaiting],1
+    jne .nomoviepasswaiting
+    jmp exitloop2
+.nomoviepasswaiting
+
 
     test byte[SfxSFR],20h
     jnz near StartSFX
