@@ -29,7 +29,7 @@ bool mzt_load(int, bool);
 
 extern unsigned char MovieProcessing;
 
-enum MovieStatus { MOVIE_OFF = 0, MOVIE_PLAYBACK, MOVIE_RECORD, MOVIE_OLD_PLAY, MOVIE_ENDING_DUMPING };
+enum MovieStatus { MOVIE_OFF = 0, MOVIE_PLAYBACK, MOVIE_RECORD, MOVIE_OLD_PLAY, MOVIE_ENDING_DUMPING, MOVIE_DUMPING_NEW, MOVIE_DUMPING_OLD };
 #define SetMovieMode(mode) (MovieProcessing = (unsigned char)mode)
 
 

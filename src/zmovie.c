@@ -2508,11 +2508,11 @@ static void DumpVideoFrame(bool playback_over)
     {
       switch (MovieProcessing)
       {
-        case MOVIE_PLAYBACK:
+        case MOVIE_DUMPING_NEW:
           zmv_replay_finished();
           MovieSub_Close();
           break;
-        case MOVIE_OLD_PLAY:
+        case MOVIE_DUMPING_OLD:
           fclose(old_movie.fp);
           MovieSub_Close();
           break;
@@ -2669,7 +2669,7 @@ void MovieInsertChapter()
 {
   switch (MovieProcessing)
   {
-    case MOVIE_PLAYBACK: // replaying - external
+    case MOVIE_PLAYBACK: case MOVIE_DUMPING_NEW: // replaying - external
       zmv_add_chapter();
       Msgptr = "EXTERNAL CHAPTER ADDED.";
       break;
@@ -2776,13 +2776,13 @@ void ProcessMovies()
 {
   switch (MovieProcessing)
   {
-    case MOVIE_PLAYBACK:
+    case MOVIE_PLAYBACK: case MOVIE_DUMPING_NEW:
       Replay();
       break;
     case MOVIE_RECORD:
       zmv_record(EMUPause ? true : false, ComboCounter, SloMo);
       break;
-    case MOVIE_OLD_PLAY:
+    case MOVIE_OLD_PLAY: case MOVIE_DUMPING_OLD:
       OldMovieReplay();
       break;
     case MOVIE_ENDING_DUMPING:
@@ -2810,7 +2810,7 @@ void MovieStop()
   {
     switch (MovieProcessing)
     {
-      case MOVIE_PLAYBACK:
+      case MOVIE_PLAYBACK: case MOVIE_DUMPING_NEW:
         zmv_replay_finished();
         MovieSub_Close();
         MovieForcedLength = 0;
@@ -2826,7 +2826,7 @@ void MovieStop()
           MessageOn = MsgCount;
         }
         break;
-      case MOVIE_OLD_PLAY:
+      case MOVIE_OLD_PLAY: case MOVIE_DUMPING_OLD:
         fclose(old_movie.fp);
         MovieSub_Close();
         MovieForcedLength = 0;
@@ -3011,13 +3011,13 @@ void GetMovieFrameStr()
   *MovieFrameStr = 0;
   switch (MovieProcessing)
   {
-    case MOVIE_PLAYBACK:
+    case MOVIE_PLAYBACK: case MOVIE_DUMPING_NEW:
       sprintf(MovieFrameStr, "%u",(unsigned int)zmv_frames_replayed());
       break;
     case MOVIE_RECORD:
       sprintf(MovieFrameStr, "%u",(unsigned int)zmv_frames_recorded());
       break;
-    case MOVIE_OLD_PLAY:
+    case MOVIE_OLD_PLAY: case MOVIE_DUMPING_OLD:
       sprintf(MovieFrameStr, "%u",(unsigned int)(old_movie.frames_replayed));
       break;
   }
@@ -3025,11 +3025,19 @@ void GetMovieFrameStr()
 
 void MovieDumpRaw()
 {
-  switch (MovieProcessing)
+  if (!MovieProcessing)
   {
-    case MOVIE_OFF:
-      MoviePlay();
-      RawDumpInProgress = raw_video_open();
-      break;
+    MoviePlay();
+    RawDumpInProgress = raw_video_open();
+
+    switch (MovieProcessing)
+    {
+      case MOVIE_PLAYBACK:
+        SetMovieMode(MOVIE_DUMPING_NEW);
+        break;
+      case MOVIE_OLD_PLAY:
+        SetMovieMode(MOVIE_DUMPING_OLD);
+        break;
+    }
   }
 }

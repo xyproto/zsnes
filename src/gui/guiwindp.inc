@@ -3783,23 +3783,27 @@ DisplayGUIMovies:    ; Movie Record/Playback options
   mov dword[GUIMovieTextZ+8],'INAC'    ; Determine and Display Status
   mov dword[GUIMovieTextZ+12],'TIVE'
   mov dword[GUIMovieTextZ+16],'    '
+  mov dword[GUIMovieTextZ+20],'    '
   cmp byte[MovieProcessing],1
   jne .noplay
   mov dword[GUIMovieTextZ+8],'PLAY'
   mov dword[GUIMovieTextZ+12],'ING '
   mov dword[GUIMovieTextZ+16],'    '
+  mov dword[GUIMovieTextZ+20],'    '
 .noplay
   cmp byte[MovieProcessing],2
   jne .norec
   mov dword[GUIMovieTextZ+8],'RECO'
   mov dword[GUIMovieTextZ+12],'RDIN'
   mov dword[GUIMovieTextZ+16],'G   '
+  mov dword[GUIMovieTextZ+20],'    '
 .norec
   cmp byte[MovieProcessing],3
   jne .nooldplay
   mov dword[GUIMovieTextZ+8],'OLD '
   mov dword[GUIMovieTextZ+12],'PLAY'
   mov dword[GUIMovieTextZ+16],'ING '
+  mov dword[GUIMovieTextZ+20],'    '
 .nooldplay
   cmp byte[MovieProcessing],4
   jne .noendingdump
@@ -3808,6 +3812,21 @@ DisplayGUIMovies:    ; Movie Record/Playback options
   mov dword[GUIMovieTextZ+16],'ENDI'
   mov dword[GUIMovieTextZ+20],'NG  '
 .noendingdump
+  cmp byte[MovieProcessing],5
+  jne .nodump
+  mov dword[GUIMovieTextZ+8],'DUMP'
+  mov dword[GUIMovieTextZ+12],'ING '
+  mov dword[GUIMovieTextZ+16],'    '
+  mov dword[GUIMovieTextZ+20],'    '
+.nodump
+  cmp byte[MovieProcessing],6
+  jne .noolddump
+  mov dword[GUIMovieTextZ+8],'DUMP'
+  mov dword[GUIMovieTextZ+12],'ING '
+  mov dword[GUIMovieTextZ+16],'OLD '
+  mov dword[GUIMovieTextZ+20],'    '
+.noolddump
+
   GUIDisplayTextY 15,6,192,GUIMovieTextZ
 
   cmp dword[GUIMovieTabs],1

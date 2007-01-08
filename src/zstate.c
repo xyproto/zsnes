@@ -864,7 +864,7 @@ void statesaver()
     return;
   }
 
-  if (MovieProcessing == MOVIE_PLAYBACK)
+  if ((MovieProcessing == MOVIE_PLAYBACK) || (MovieProcessing == MOVIE_DUMPING_NEW))
   {
     //'Auto increment savestate slot' code
     current_zst += AutoIncSaveSlot;
@@ -1155,7 +1155,6 @@ void stateloader(char *statename, bool keycheck, bool xfercheck)
         set_state_message("UNABLE TO LOAD STATE ", ".");
       }
       return;
-
     case MOVIE_OLD_PLAY:
     {
       extern unsigned char CMovieExt;
@@ -1163,6 +1162,9 @@ void stateloader(char *statename, bool keycheck, bool xfercheck)
       setextension(statename, "zmv");
       if (isdigit(CMovieExt)) { statename[fname_len-1] = CMovieExt; }
     }
+    case MOVIE_ENDING_DUMPING: case MOVIE_DUMPING_NEW: case MOVIE_DUMPING_OLD:
+      return;
+      break;
   }
 
   clim();
