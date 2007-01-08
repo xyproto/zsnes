@@ -1688,7 +1688,7 @@ GUIMovieKeys:
   GUIKeyButtonHole MovieVideoMode,2,'F'
   GUIKeyButtonHole MovieVideoMode,3,'L'
   GUIKeyButtonHole MovieVideoMode,4,'X'
-  ;GUIKeyButtonHole MovieVideoMode,5,'C'
+  GUIKeyButtonHole MovieVideoMode,5,'C'
 
   GUIKeyCheckbox MovieAudio,'A'
   GUIKeyCheckbox MovieVideoAudio,'V'
