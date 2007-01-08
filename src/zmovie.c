@@ -2289,7 +2289,7 @@ static bool raw_video_open()
       {
         MovieAudio = 1;
       }
-      else if (movie_current_pass < md_custom_passes)
+      else
       {
         if (*md_logo) { raw_embed_logo(false); }
         return(true);
