@@ -1156,14 +1156,22 @@ static void zmv_record_finish()
   internal_chapter_write(&zmv_vars.internal_chapters, zmv_vars.fp);
   internal_chapter_free_chain(zmv_vars.internal_chapters.next);
 
-  free(zmv_vars.filename);
+  if (!zmv_vars.filename)
+  {
+    free(zmv_vars.filename);
+    zmv_vars.filename = 0;
+  }
 
   fwrite2(0, zmv_vars.fp); //External chapter count
 
   rewind(zmv_vars.fp);
   zmv_header_write(&zmv_vars.header, zmv_vars.fp);
 
-  fclose(zmv_vars.fp);
+  if (zmv_vars.fp)
+  {
+    fclose(zmv_vars.fp);
+    zmv_vars.fp = 0;
+  }
 
   debug_input_used;
 }
@@ -1619,8 +1627,16 @@ static void zmv_replay_finished()
 {
   internal_chapter_free_chain(zmv_vars.internal_chapters.next);
   internal_chapter_free_chain(zmv_open_vars.external_chapters.next);
-  free(zmv_vars.filename);
-  fclose(zmv_vars.fp);
+  if (!zmv_vars.filename)
+  {
+    free(zmv_vars.filename);
+    zmv_vars.filename = 0;
+  }
+  if (zmv_vars.fp)
+  {
+    fclose(zmv_vars.fp);
+    zmv_vars.fp = 0;
+  }
 }
 
 static void zmv_replay_to_record()
