@@ -3806,7 +3806,7 @@ DisplayGUIMovies:    ; Movie Record/Playback options
   mov dword[GUIMovieTextZ+8],'DUMP'
   mov dword[GUIMovieTextZ+12],'ING '
   mov dword[GUIMovieTextZ+16],'ENDI'
-  mov dword[GUIMovieTextZ+16],'NG  '
+  mov dword[GUIMovieTextZ+20],'NG  '
 .noendingdump
   GUIDisplayTextY 15,6,192,GUIMovieTextZ
 
