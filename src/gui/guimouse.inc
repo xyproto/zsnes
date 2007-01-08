@@ -736,6 +736,15 @@ ProcessMouseButtons:
 .nomencoder
   ret
 .noDumpRaw
+  cmp byte[GUICBHold],35  ; stop dump
+  jne .noStopDumping
+  mov byte[GUICBHold],0
+  mov byte[GUIQuit],2
+  pushad
+  ;call MovieDumpRaw
+  popad
+  ret
+.noStopDumping
   cmp byte[GUICBHold],40
   je near SetAllKeys
   cmp byte[GUICBHold],50
@@ -2052,6 +2061,7 @@ DisplayGUIMovieClick:
   jne near .nodumping
 
   GUIPHoldbutton 130,101,198,112,34
+  GUIPHoldbutton 130,119,198,130,35
 
   GUIPButtonHole 9,64,byte[MovieVideoMode],0      ; Movie Options
   GUIPButtonHole 9,74,byte[MovieVideoMode],1

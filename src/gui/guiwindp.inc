@@ -3896,16 +3896,17 @@ DisplayGUIMovies:    ; Movie Record/Playback options
   GUIDisplayCheckboxu 15,130,82,MovieVideoAudio,GUIMovieTextE3,11
 .nomux
 
-  DrawGUIButton 15,130,101,198,112,GUIMovieTextDE,34,0,0
+  DrawGUIButton 15,130,101,198,112,GUIMovieTextF1,34,0,0
+  DrawGUIButton 15,130,119,198,130,GUIMovieTextF2,35,0,0
 
-  GUIDisplayCheckboxu 15,9,134,MovieForcedLengthEnabled,GUIMovieTextF1,2
+  GUIDisplayCheckboxu 15,9,134,MovieForcedLengthEnabled,GUIMovieTextG1,2
   GUIDisplayBBox 15,136,135,156,145,167
 
   pushad
   ;call GetCustomXY
   popad
 
-  GUIOuttextwin2d 15,144,138,GUIMovieTextF2,3
+  GUIOuttextwin2d 15,144,138,GUIMovieTextG2,3
 .nodumping
 
   ret
@@ -3950,10 +3951,11 @@ GUIMovieTextE1 db 'DUMP AUDIO',0
 GUIMovieTextE2 db 'COMPRESS AUDIO',0
 GUIMovieTextE3 db 'MERGE WITH VIDEO',0
 
-GUIMovieTextDE db 'DUMP MOVIE',0
+GUIMovieTextF1 db 'DUMP MOVIE',0
+GUIMovieTextF2 db 'STOP DUMP',0
 
-GUIMovieTextF1 db 'FORCE MOVIE LENGTH',0
-GUIMovieTextF2 db '   ',0
+GUIMovieTextG1 db 'FORCE MOVIE LENGTH',0
+GUIMovieTextG2 db '   ',0
 
 GUIMovieTextX1 db 'WARNING: THIS MOVIE',0  ; Overwrite Window
 GUIMovieTextX2 db 'FILE ALREADY EXISTS',0
