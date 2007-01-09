@@ -32,12 +32,9 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "../cfg.h"
 
 #ifdef __LIBAO__
-#define READ_FD 0
-#define WRITE_FD 1
-
 static pthread_t audio_thread;
 static pthread_mutex_t audio_mutex;
-static int audio_filedes[2];
+static pthread_cond_t audio_wait;
 static ao_device *audio_device = 0;
 static volatile unsigned int samples_waiting = 0;
 #endif
@@ -120,34 +117,38 @@ static void SoundWriteSamples_ao(unsigned int samples)
 void SoundWrite_ao()
 {
   unsigned int samples = 0;
-  if (sample_control.lo)
-  {
-    samples = (unsigned int)((sample_control.balance/sample_control.lo) << StereoSound);
-    sample_control.balance %= sample_control.lo;
-    sample_control.balance += sample_control.hi;
-  }
 
-  pthread_mutex_lock(&audio_mutex);
-  if (!samples_waiting)
+  if (!pthread_mutex_trylock(&audio_mutex))
   {
-    samples_waiting = samples;
-    write(audio_filedes[WRITE_FD], &samples, 1);
+    if (!samples_waiting)
+    {
+      if (sample_control.lo)
+      {
+        samples = (unsigned int)((sample_control.balance/sample_control.lo) << StereoSound);
+        sample_control.balance %= sample_control.lo;
+        sample_control.balance += sample_control.hi;
+
+        samples_waiting = samples;
+        pthread_cond_broadcast(&audio_wait); //Send signal
+      }
+    }
+    pthread_mutex_unlock(&audio_mutex);
   }
-  pthread_mutex_unlock(&audio_mutex);
 }
 
 static void *SoundThread_ao(void *useless)
 {
   unsigned int samples;
-  char byte;
   for (;;)
   {
-    if (read(audio_filedes[READ_FD], &byte, 1) < 1)
+    pthread_mutex_lock(&audio_mutex);
+
+    //The while() is there to prevent error codes from breaking havoc
+    while (!samples_waiting)
     {
-      break;
+      pthread_cond_wait(&audio_wait, &audio_mutex); //Wait for signal
     }
 
-    pthread_mutex_lock(&audio_mutex);
     samples = samples_waiting;
     samples_waiting = 0;
     pthread_mutex_unlock(&audio_mutex);
@@ -176,8 +177,7 @@ static int SoundInit_ao()
   {
     pthread_create(&audio_thread, 0, SoundThread_ao, 0);
     pthread_mutex_init(&audio_mutex, 0);
-    pipe(audio_filedes);
-    fcntl(audio_filedes[WRITE_FD], F_SETFD, O_NONBLOCK);
+    pthread_cond_init(&audio_wait, 0);
     InitSampleControl();
   }
 
@@ -335,10 +335,9 @@ void DeinitSound()
   #ifdef __LIBAO__
   if (audio_device)
   {
-    close(audio_filedes[WRITE_FD]);
     pthread_kill(audio_thread, SIGTERM);
-    close(audio_filedes[READ_FD]);
     pthread_mutex_destroy(&audio_mutex);
+    pthread_cond_destroy(&audio_wait);
     ao_close(audio_device);
   }
   #endif
