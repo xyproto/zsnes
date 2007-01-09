@@ -3878,12 +3878,17 @@ DisplayGUIMovies:    ; Movie Record/Playback options
   GUIDisplayButtonHoleTu 15,9,114,byte[MovieVideoMode],5,GUIMovieTextD6,0
 
   GUIDisplayTextY 15,129,56,GUIMovieTextE           ; Audio Section
+  cmp byte[MovieVideoMode],5
+  je near .custom
   GUIDisplayCheckboxu 15,130,62,MovieAudio,GUIMovieTextE1,5
   cmp byte[MovieAudio],1
   jne near .nomux
+.custom
   GUIDisplayCheckboxu 15,130,72,MovieAudioCompress,GUIMovieTextE2,2
   cmp byte[MovieVideoMode],2
   jl near .nomux
+  cmp byte[MovieVideoMode],5
+  je near .nomux
   GUIDisplayCheckboxu 15,130,82,MovieVideoAudio,GUIMovieTextE3,11
 .nomux
 
