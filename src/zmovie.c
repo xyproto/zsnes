@@ -2249,6 +2249,7 @@ static void raw_video_close()
   if (movie_current_pass == md_custom_passes)
   {
     remove_dir(ZCfgPath, MovieAudioCompress ? md_compressed_audio : md_pcm_audio);
+    remove_dir(ZCfgPath, md_custom_pass_log_file);
   }
 
   if ((MovieVideoMode != 5) && (audio_and_video && MovieVideoAudio))
