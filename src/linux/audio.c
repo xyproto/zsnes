@@ -175,9 +175,18 @@ static int SoundInit_ao()
   }
   else
   {
-    pthread_create(&audio_thread, 0, SoundThread_ao, 0);
-    pthread_mutex_init(&audio_mutex, 0);
-    pthread_cond_init(&audio_wait, 0);
+    if (pthread_create(&audio_thread, 0, SoundThread_ao, 0))
+    {
+      puts("pthread_create() failed.");
+    }
+    else if (pthread_mutex_init(&audio_mutex, 0))
+    {
+      puts("pthread_mutex_init() failed.");
+    }
+    else if (pthread_cond_init(&audio_wait, 0))
+    {
+      puts("pthread_cond_init() failed.");
+    }
     InitSampleControl();
   }
 
