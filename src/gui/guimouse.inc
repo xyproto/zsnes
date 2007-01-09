@@ -2073,8 +2073,8 @@ DisplayGUIMovieClick:
   cmp dword[GUIDumpingTab],1
   jne near .nodumping
 
-  GUIPHoldbutton 130,101,198,112,34
-  GUIPHoldbutton 130,119,198,130,35
+  GUIPHoldbutton 130,101,214,112,34
+  GUIPHoldbutton 130,119,208,130,35
 
   GUIPButtonHole 9,64,byte[MovieVideoMode],0      ; Movie Options
   GUIPButtonHole 9,74,byte[MovieVideoMode],1

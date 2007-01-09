@@ -3887,8 +3887,8 @@ DisplayGUIMovies:    ; Movie Record/Playback options
   GUIDisplayCheckboxu 15,130,82,MovieVideoAudio,GUIMovieTextE3,11
 .nomux
 
-  DrawGUIButton 15,130,101,198,112,GUIMovieTextF1,34,0,0
-  DrawGUIButton 15,130,119,198,130,GUIMovieTextF2,35,0,0
+  DrawGUIButton 15,130,101,214,112,GUIMovieTextF1,34,0,0
+  DrawGUIButton 15,130,119,208,130,GUIMovieTextF2,35,0,0
 
   GUIDisplayCheckboxu 15,9,134,MovieForcedLengthEnabled,GUIMovieTextG1,2
   GUIDisplayBBox 15,136,135,156,145,167
@@ -3941,8 +3941,8 @@ GUIMovieTextE1 db 'DUMP AUDIO',0
 GUIMovieTextE2 db 'COMPRESS AUDIO',0
 GUIMovieTextE3 db 'MERGE WITH VIDEO',0
 
-GUIMovieTextF1 db 'DUMP MOVIE',0
-GUIMovieTextF2 db 'STOP DUMP',0
+GUIMovieTextF1 db 'START DUMPING',0
+GUIMovieTextF2 db 'STOP DUMPING',0
 
 GUIMovieTextG1 db 'FORCE MOVIE LENGTH',0
 GUIMovieTextG2 db '   ',0
