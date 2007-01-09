@@ -178,7 +178,6 @@ static int SoundInit_ao()
     pthread_mutex_init(&audio_mutex, 0);
     pipe(audio_filedes);
     fcntl(audio_filedes[WRITE_FD], F_SETFD, O_NONBLOCK);
-    //pthread_cond_init(&audio_wait, 0);
     InitSampleControl();
   }
 
