@@ -2348,7 +2348,7 @@ static bool raw_video_open()
       raw_vid.sample_balance = raw_vid.sample_hi;
 
       AudioLogging = 1;
-      if (*md_logo) { raw_embed_logo(true); }
+      if (MovieVideoMode && *md_logo) { raw_embed_logo(true); }
       return(true);
     }
   }
