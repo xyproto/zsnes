@@ -1,3 +1,4 @@
+#include <windows.h>
 #include <process.h>
 #include <io.h>
 #define _POSIX_
@@ -14,12 +15,20 @@
 #define dup2 _dup2
 #define pipe _pipe
 #define flushall _flushall
+#define cwait _cwait
 
 
 //Introducing a popen which doesn't return until it knows for sure of program launched or couldn't open -Nach
 
 #define READ_FD 0
 #define WRITE_FD 1
+
+static struct fp_pid_link
+{
+  FILE *fp;
+  int pid;
+  struct fp_pid_link *next;
+} fp_pids = { 0, 0, 0 };
 
 FILE *safe_popen(char *command, const char *mode)
 {
@@ -58,13 +67,32 @@ FILE *safe_popen(char *command, const char *mode)
 
       if (fp)
       {
-        int status;
+        intptr_t childpid;
         flushall();
 
-        status = spawnvp(P_NOWAIT, argv[0], (const char* const*)argv);
-        if (status > 0)
+        childpid = spawnvp(P_NOWAIT, argv[0], (const char* const*)argv);
+        if (childpid > 0)
         {
-          ret = fp;
+          struct fp_pid_link *link = &fp_pids;
+          while (link->next)
+          {
+            link = link->next;
+          }
+
+          link->next = (struct fp_pid_link *)malloc(sizeof(struct fp_pid_link));
+          if (link->next)
+          {
+            link->next->fp = fp;
+            link->next->pid = childpid;
+            link->next->next = 0;
+            ret = fp;
+          }
+          else
+          {
+            fclose(fp);
+            TerminateProcess((HANDLE)childpid, 0);
+            cwait(0, childpid, WAIT_CHILD);
+          }
         }
         else
         {
@@ -85,4 +113,22 @@ FILE *safe_popen(char *command, const char *mode)
     free(argv);
   }
   return(ret);
+}
+
+void safe_pclose(FILE *fp)
+{
+  struct fp_pid_link *link = &fp_pids;
+
+  while (link->next && link->next->fp != fp)
+  {
+    link = link->next;
+  }
+  if (link->next->fp == fp)
+  {
+    struct fp_pid_link *dellink = link->next;
+    fclose(fp);
+    cwait(0, link->next->pid, WAIT_CHILD);
+    link->next = link->next->next;
+    free(dellink);
+  }
 }

@@ -12,8 +12,9 @@
 #endif
 
 FILE *safe_popen(char *, const char *);
+void safe_pclose(FILE *fp);
 
 #define popen safe_popen
-#define pclose fclose
+#define pclose safe_pclose
 
 #endif
