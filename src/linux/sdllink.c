@@ -1201,6 +1201,10 @@ void drawscreenwin(void)
 {
 #ifdef __LIBAO__
   extern bool RawDumpInProgress;
+  if (!sound_sdl && !GUIOn2 && !GUIOn && !EMUPause && !RawDumpInProgress)
+  {
+    SoundWrite_ao();
+  }
 #endif
 
   /* Just in case - DDOI */
@@ -1212,13 +1216,6 @@ void drawscreenwin(void)
   else
 #endif
     sw_drawwin();
-
-#ifdef __LIBAO__
-  if (!sound_sdl && !GUIOn2 && !GUIOn && !EMUPause && !RawDumpInProgress)
-  {
-    SoundWrite_ao();
-  }
-#endif
 }
 
 void UnloadSDL()

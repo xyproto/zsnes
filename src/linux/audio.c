@@ -32,8 +32,10 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #ifdef __LIBAO__
 static pthread_t audio_thread;
-static ao_device *device = 0;
-static unsigned int samples_waiting = 0;
+static pthread_mutex_t audio_mutex;
+static pthread_cond_t audio_wait;
+static ao_device *audio_device = 0;
+static volatile unsigned int samples_waiting = 0;
 #endif
 
 unsigned char *sdl_audio_buffer = 0;
@@ -108,7 +110,7 @@ static void SoundWriteSamples_ao(unsigned int samples)
     else { *p = 0x8001; }
   }
 
-  ao_play(device, (char *)stemp, samples*2);
+  ao_play(audio_device, (char *)stemp, samples*2);
 }
 
 void SoundWrite_ao()
@@ -121,26 +123,30 @@ void SoundWrite_ao()
     sample_control.balance += sample_control.hi;
   }
 
-  if (!samples_waiting)
-  {
-    samples_waiting = samples;
-  }
+  pthread_mutex_lock(&audio_mutex);
+  samples_waiting = samples;
+  pthread_cond_broadcast(&audio_wait); //Send signal
+  pthread_mutex_unlock(&audio_mutex);
 }
 
 static void *SoundThread_ao(void *useless)
 {
+  unsigned int samples;
   for (;;)
   {
-    if (samples_waiting)
+    pthread_mutex_lock(&audio_mutex);
+
+    //The while() is there to prevent error codes from breaking havoc
+    while (!samples_waiting)
     {
-      int samples = samples_waiting;
-      samples_waiting = 0;
-      SoundWriteSamples_ao(samples);
+      pthread_cond_wait(&audio_wait, &audio_mutex); //Wait for signal
     }
-    else
-    {
-      usleep(10);
-    }
+
+    samples = samples_waiting;
+    samples_waiting = 0;
+    pthread_mutex_unlock(&audio_mutex);
+
+    SoundWriteSamples_ao(samples);
   }
   return(0);
 }
@@ -156,20 +162,22 @@ static int SoundInit_ao()
   driver_format.rate = freqtab[SoundQuality = ((SoundQuality > 6) ? 1 : SoundQuality)];
   driver_format.byte_format = AO_FMT_LITTLE;
 
-  if (device)
+  if (audio_device)
   {
-    ao_close(device);
+    ao_close(audio_device);
   }
   else
   {
     pthread_create(&audio_thread, 0, SoundThread_ao, 0);
+    pthread_mutex_init(&audio_mutex, 0);
+    pthread_cond_init(&audio_wait, 0);
     InitSampleControl();
   }
 
   //ao_option driver_options = { "buf_size", "32768", 0 };
 
-  device = ao_open_live(driver_id, &driver_format, 0);
-  if (device)
+  audio_device = ao_open_live(driver_id, &driver_format, 0);
+  if (audio_device)
   {
     ao_info *di = ao_driver_info(driver_id);
     printf("\nAudio Opened.\nDriver: %s\nChannels: %u\nRate: %u\n\n", di->name, driver_format.channels, driver_format.rate);
@@ -318,7 +326,12 @@ int InitSound()
 void DeinitSound()
 {
   #ifdef __LIBAO__
-  if (device) { ao_close(device); }
+  if (audio_device)
+  {
+    pthread_mutex_destroy(&audio_mutex);
+    pthread_cond_destroy(&audio_wait);
+    ao_close(audio_device);
+  }
   #endif
   SDL_CloseAudio();
   if (sdl_audio_buffer) { free(sdl_audio_buffer); }
