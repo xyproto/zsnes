@@ -120,25 +120,27 @@ void SoundWrite_ao()
 
   if (!pthread_mutex_trylock(&audio_mutex))
   {
-    if (!samples_waiting)
+    if (!samples_waiting && sample_control.lo)
     {
-      if (sample_control.lo)
-      {
-        samples = (unsigned int)((sample_control.balance/sample_control.lo) << StereoSound);
-        sample_control.balance %= sample_control.lo;
-        sample_control.balance += sample_control.hi;
+      samples = (unsigned int)((sample_control.balance/sample_control.lo) << StereoSound);
+      sample_control.balance %= sample_control.lo;
+      sample_control.balance += sample_control.hi;
 
-        samples_waiting = samples;
-        pthread_cond_broadcast(&audio_wait); //Send signal
-      }
+      samples_waiting = samples;
+      pthread_cond_broadcast(&audio_wait); //Send signal
     }
     pthread_mutex_unlock(&audio_mutex);
+  }
+  else
+  {
+    pthread_cond_broadcast(&audio_wait); //Send signal
   }
 }
 
 static void *SoundThread_ao(void *useless)
 {
   unsigned int samples;
+
   for (;;)
   {
     pthread_mutex_lock(&audio_mutex);
