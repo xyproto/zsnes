@@ -1806,7 +1806,7 @@ GUIOptionTextC1 db 'ENABLE IPS AUTO-PATCHING',0
 GUIOptionTextC2 db 'SHOW ROM INFO ON LOAD',0
 GUIOptionTextC3 db 'LOG ROM INFO',0
 
-GUIOptionTextD db 'OVERLAY:',0
+GUIOptionTextD db 'OVERLAYS:',0
 GUIOptionTextD1 db 'SHOW FPS CNTR ON EMU LOAD',0
 GUIOptionTextD2 db 'SHOW CLOCK',0
 GUIOptionTextD3 db '12 HOUR MODE',0
@@ -2105,15 +2105,15 @@ DisplayGUIVideo:
   cmp byte[GUISLVID+eax],0
   je near .nocheckboxb
   GUIDisplayTextY 5,13,80,GUIVideoTextB2          ; Scanlines text
-  GUIDisplayButtonHoleTu 5,18,85,byte[scanlines],0,GUIVideoTextB2a,1   ; None
-  GUIDisplayButtonHoleTu 5,168,85,byte[scanlines],1,GUIVideoTextB2d,0  ; Full
+  GUIDisplayButtonHoleTu 5,18,87,byte[scanlines],0,GUIVideoTextB2a,1   ; None
+  GUIDisplayButtonHoleTu 5,168,87,byte[scanlines],1,GUIVideoTextB2d,0  ; Full
 .nocheckboxb
   xor eax,eax
   mov al,[cvidmode]
   cmp byte[GUIHSVID+eax],0
   je near .nocheckboxw
-  GUIDisplayButtonHoleTu 5,68,85,byte[scanlines],2,GUIVideoTextB2b,0   ; 25%
-  GUIDisplayButtonHoleTu 5,118,85,byte[scanlines],3,GUIVideoTextB2c,0  ; 50%
+  GUIDisplayButtonHoleTu 5,68,87,byte[scanlines],2,GUIVideoTextB2b,0   ; 25%
+  GUIDisplayButtonHoleTu 5,118,87,byte[scanlines],3,GUIVideoTextB2c,0  ; 50%
 .nocheckboxw
 
   GUIDisplayTextY 5,13,110,GUIVideoTextB3         ; Misc Filters
@@ -3758,39 +3758,39 @@ DisplayGUIMovies:    ; Movie Record/Playback options
   mov byte[GUItextcolor],211
 .zero
 
-  GUIDisplayTextY 15,8,31,GUIMovieTextB        ; Slot text
-  mov byte[GUIMovieTextB1],'0'
-  GUIDisplayText 15,20,43,GUIMovieTextB1
-  mov byte[GUIMovieTextB1],'1'
-  GUIDisplayText 15,40,43,GUIMovieTextB1
-  mov byte[GUIMovieTextB1],'2'
-  GUIDisplayText 15,60,43,GUIMovieTextB1
-  mov byte[GUIMovieTextB1],'3'
-  GUIDisplayText 15,80,43,GUIMovieTextB1
-  mov byte[GUIMovieTextB1],'4'
-  GUIDisplayText 15,100,43,GUIMovieTextB1
-  mov byte[GUIMovieTextB1],'5'
-  GUIDisplayText 15,120,43,GUIMovieTextB1
-  mov byte[GUIMovieTextB1],'6'
-  GUIDisplayText 15,140,43,GUIMovieTextB1
-  mov byte[GUIMovieTextB1],'7'
-  GUIDisplayText 15,160,43,GUIMovieTextB1
-  mov byte[GUIMovieTextB1],'8'
-  GUIDisplayText 15,180,43,GUIMovieTextB1
-  mov byte[GUIMovieTextB1],'9'
-  GUIDisplayText 15,200,43,GUIMovieTextB1
+  GUIDisplayTextY 15,8,31,GUIMovieTextA        ; Slot text
+  mov byte[GUIMovieTextA1],'0'
+  GUIDisplayText 15,20,42,GUIMovieTextA1
+  mov byte[GUIMovieTextA1],'1'
+  GUIDisplayText 15,40,42,GUIMovieTextA1
+  mov byte[GUIMovieTextA1],'2'
+  GUIDisplayText 15,60,42,GUIMovieTextA1
+  mov byte[GUIMovieTextA1],'3'
+  GUIDisplayText 15,80,42,GUIMovieTextA1
+  mov byte[GUIMovieTextA1],'4'
+  GUIDisplayText 15,100,42,GUIMovieTextA1
+  mov byte[GUIMovieTextA1],'5'
+  GUIDisplayText 15,120,42,GUIMovieTextA1
+  mov byte[GUIMovieTextA1],'6'
+  GUIDisplayText 15,140,42,GUIMovieTextA1
+  mov byte[GUIMovieTextA1],'7'
+  GUIDisplayText 15,160,42,GUIMovieTextA1
+  mov byte[GUIMovieTextA1],'8'
+  GUIDisplayText 15,180,42,GUIMovieTextA1
+  mov byte[GUIMovieTextA1],'9'
+  GUIDisplayText 15,200,42,GUIMovieTextA1
 
   ; Display Radio buttons
-  GUIDisplayButtonHole 15,8,40,byte[CMovieExt],'v'
-  GUIDisplayButtonHole 15,28,40,byte[CMovieExt],'1'
-  GUIDisplayButtonHole 15,48,40,byte[CMovieExt],'2'
-  GUIDisplayButtonHole 15,68,40,byte[CMovieExt],'3'
-  GUIDisplayButtonHole 15,88,40,byte[CMovieExt],'4'
-  GUIDisplayButtonHole 15,108,40,byte[CMovieExt],'5'
-  GUIDisplayButtonHole 15,128,40,byte[CMovieExt],'6'
-  GUIDisplayButtonHole 15,148,40,byte[CMovieExt],'7'
-  GUIDisplayButtonHole 15,168,40,byte[CMovieExt],'8'
-  GUIDisplayButtonHole 15,188,40,byte[CMovieExt],'9'
+  GUIDisplayButtonHole 15,8,39,byte[CMovieExt],'v'
+  GUIDisplayButtonHole 15,28,39,byte[CMovieExt],'1'
+  GUIDisplayButtonHole 15,48,39,byte[CMovieExt],'2'
+  GUIDisplayButtonHole 15,68,39,byte[CMovieExt],'3'
+  GUIDisplayButtonHole 15,88,39,byte[CMovieExt],'4'
+  GUIDisplayButtonHole 15,108,39,byte[CMovieExt],'5'
+  GUIDisplayButtonHole 15,128,39,byte[CMovieExt],'6'
+  GUIDisplayButtonHole 15,148,39,byte[CMovieExt],'7'
+  GUIDisplayButtonHole 15,168,39,byte[CMovieExt],'8'
+  GUIDisplayButtonHole 15,188,39,byte[CMovieExt],'9'
 
   mov dword[GUIMovieTextZ+8],'INAC'    ; Determine and Display Status
   mov dword[GUIMovieTextZ+12],'TIVE'
@@ -3844,65 +3844,69 @@ DisplayGUIMovies:    ; Movie Record/Playback options
   cmp dword[GUIMovieTabs],1
   jne near .notcontrols
 
-  GUIDisplayTextY 15,8,56,GUIMovieTextC           ; "Start From" Section
-  GUIDisplayButtonHoleTu 15,8,64,byte[MovieStartMethod],0,GUIMovieTextC1,0
-  GUIDisplayButtonHoleTu 15,43,64,byte[MovieStartMethod],1,GUIMovieTextC2,0
-  GUIDisplayButtonHoleTu 15,89,64,byte[MovieStartMethod],2,GUIMovieTextC3,0
-  GUIDisplayButtonHoleTu 15,135,64,byte[MovieStartMethod],3,GUIMovieTextC4,6
+  GUIDisplayTextY 15,8,56,GUIMovieTextB           ; "Start From" Section
+  GUIDisplayTextY 15,8,101,GUIMovieTextD           ; "Chapters"
 
-  DrawGUIButton 15,7,80,49,91,GUIMovieTextA1,16,0,0  ; Draw Buttons
-  DrawGUIButton 15,55,80,97,91,GUIMovieTextA2,17,0,0
-  DrawGUIButton 15,103,80,145,91,GUIMovieTextA3,18,0,0
-  DrawGUIButton 15,151,80,193,91,GUIMovieTextA4,32,0,0
-  DrawGUIButton 15,7,98,109,109,GUIMovieTextA5,29,0,0
-  DrawGUIButton 15,7,114,109,125,GUIMovieTextA6,30,0,0
-  DrawGUIButton 15,7,130,109,141,GUIMovieTextA7,31,0,0
+  GUIDisplayButtonHoleTu 15,8,64,byte[MovieStartMethod],0,GUIMovieTextB1,0
+  GUIDisplayButtonHoleTu 15,43,64,byte[MovieStartMethod],1,GUIMovieTextB2,0
+  GUIDisplayButtonHoleTu 15,89,64,byte[MovieStartMethod],2,GUIMovieTextB3,0
+  GUIDisplayButtonHoleTu 15,135,64,byte[MovieStartMethod],3,GUIMovieTextB4,6
 
-  DDrawBox 15,115,100,[KeyInsrtChap]        ; Chapter Keyboard Shortcut Boxes
-  DDrawBox 15,115,116,[KeyPrevChap]
-  DDrawBox 15,115,132,[KeyNextChap]
+  DrawGUIButton 15,7,80,49,91,GUIMovieTextC1,16,0,0  ; Draw Buttons
+  DrawGUIButton 15,55,80,97,91,GUIMovieTextC2,17,0,0
+  DrawGUIButton 15,103,80,145,91,GUIMovieTextC3,18,0,0
+  DrawGUIButton 15,151,80,193,91,GUIMovieTextC4,32,0,0
+  DrawGUIButton 15,7,109,50,120,GUIMovieTextD1,29,0,0
+  DrawGUIButton 15,85,109,138,120,GUIMovieTextD2,30,0,0
+  DrawGUIButton 15,173,109,203,120,GUIMovieTextD3,31,0,0
 
-  GUIDisplayCheckboxu 15,8,148,MovieDisplayFrame,GUIMovieTextB2,0   ; Checkbox
-  GUIDisplayCheckboxu 15,8,158,MZTForceRTR,GUIMovieTextB3,22
+  DDrawBox 15,57,110,[KeyInsrtChap]        ; Chapter Keyboard Shortcut Boxes
+  DDrawBox 15,145,110,[KeyPrevChap]
+  DDrawBox 15,210,110,[KeyNextChap]
+
+  GUIDisplayCheckboxu 15,8,138,MovieDisplayFrame,GUIMovieTextE1,0   ; Checkbox
+  GUIDisplayCheckboxu 15,8,148,MZTForceRTR,GUIMovieTextE2,22
 .notcontrols
 
   cmp dword[GUIDumpingTab],1
   jne near .nodumping
 
-  GUIDisplayTextY 15,8,56,GUIMovieTextD           ; Video Section
-  GUIDisplayButtonHoleTu 15,9,64,byte[MovieVideoMode],0,GUIMovieTextD1,1
-  GUIDisplayButtonHoleTu 15,9,74,byte[MovieVideoMode],1,GUIMovieTextD2,2
-  GUIDisplayButtonHoleTu 15,9,84,byte[MovieVideoMode],2,GUIMovieTextD3,0
-  GUIDisplayButtonHoleTu 15,9,94,byte[MovieVideoMode],3,GUIMovieTextD4,9
-  GUIDisplayButtonHoleTu 15,9,104,byte[MovieVideoMode],4,GUIMovieTextD5,0
-  GUIDisplayButtonHoleTu 15,9,114,byte[MovieVideoMode],5,GUIMovieTextD6,0
+  GUIDisplayTextY 15,8,56,GUIMovieTextF           ; Video Section
+  GUIDisplayButtonHoleTu 15,9,64,byte[MovieVideoMode],0,GUIMovieTextF1,1
+  GUIDisplayButtonHoleTu 15,9,74,byte[MovieVideoMode],1,GUIMovieTextF2,2
+  GUIDisplayButtonHoleTu 15,9,84,byte[MovieVideoMode],2,GUIMovieTextF3,0
+  GUIDisplayButtonHoleTu 15,9,94,byte[MovieVideoMode],3,GUIMovieTextF4,9
+  GUIDisplayButtonHoleTu 15,9,104,byte[MovieVideoMode],4,GUIMovieTextF5,0
+  GUIDisplayButtonHoleTu 15,9,114,byte[MovieVideoMode],5,GUIMovieTextF6,0
 
-  GUIDisplayTextY 15,129,56,GUIMovieTextE           ; Audio Section
+  GUIDisplayTextY 15,129,56,GUIMovieTextG           ; Audio Section
+  GUIDisplayTextY 15,162,154,GUIMovieTextI
+
   cmp byte[MovieVideoMode],5
   je near .custom
-  GUIDisplayCheckboxu 15,130,62,MovieAudio,GUIMovieTextE1,5
+  GUIDisplayCheckboxu 15,130,62,MovieAudio,GUIMovieTextG1,5
   cmp byte[MovieAudio],1
   jne near .nomux
 .custom
-  GUIDisplayCheckboxu 15,130,72,MovieAudioCompress,GUIMovieTextE2,2
+  GUIDisplayCheckboxu 15,130,72,MovieAudioCompress,GUIMovieTextG2,2
   cmp byte[MovieVideoMode],2
   jl near .nomux
   cmp byte[MovieVideoMode],5
   je near .nomux
-  GUIDisplayCheckboxu 15,130,82,MovieVideoAudio,GUIMovieTextE3,11
+  GUIDisplayCheckboxu 15,130,82,MovieVideoAudio,GUIMovieTextG3,11
 .nomux
 
-  DrawGUIButton 15,130,101,214,112,GUIMovieTextF1,34,0,0
-  DrawGUIButton 15,130,119,208,130,GUIMovieTextF2,35,0,0
+  DrawGUIButton 15,165,161,200,172,GUIMovieTextI1,34,0,0
+  DrawGUIButton 15,167,178,196,189,GUIMovieTextI2,35,0,0
 
-  GUIDisplayCheckboxu 15,9,134,MovieForcedLengthEnabled,GUIMovieTextG1,2
+  GUIDisplayCheckboxu 15,9,134,MovieForcedLengthEnabled,GUIMovieTextH1,2
   GUIDisplayBBox 15,136,135,156,145,167
 
   pushad
   ;call GetCustomXY
   popad
 
-  GUIOuttextwin2d 15,144,138,GUIMovieTextG2,3
+  GUIOuttextwin2d 15,144,138,GUIMovieTextH2,3
 .nodumping
 
   ret
@@ -3914,43 +3918,47 @@ GUIMovieTabs dd 1,1
 GUIDumpingTab dd 0,1
   db 'DUMPING',0
 
-GUIMovieTextA1 db 'PLAY',0
-GUIMovieTextA2 db 'RECORD',0
-GUIMovieTextA3 db 'STOP',0
-GUIMovieTextA4 db 'APPEND',0
-GUIMovieTextA5 db 'INSERT CHAPTER',0
-GUIMovieTextA6 db 'PREVIOUS CHAPTER',0
-GUIMovieTextA7 db 'NEXT CHAPTER',0
+GUIMovieTextA db 'SELECT MOVIE:',0
+GUIMovieTextA1 db ' ',0
 
-GUIMovieTextB db 'SELECT MOVIE:',0
-GUIMovieTextB1 db ' ',0
-GUIMovieTextB2 db 'DISPLAY FRAME COUNTER',0
-GUIMovieTextB3 db 'RECORD ON MOVIE STATE LOAD',0
+GUIMovieTextB db 'RECORD FROM:',0
+GUIMovieTextB1 db 'NOW',0
+GUIMovieTextB2 db 'POWER',0
+GUIMovieTextB3 db 'RESET',0
+GUIMovieTextB4 db 'POWER+SRAM CLEAR',0
 
-GUIMovieTextC db 'RECORD FROM:',0
-GUIMovieTextC1 db 'NOW',0
-GUIMovieTextC2 db 'POWER',0
-GUIMovieTextC3 db 'RESET',0
-GUIMovieTextC4 db 'POWER+SRAM CLEAR',0
+GUIMovieTextC1 db 'PLAY',0
+GUIMovieTextC2 db 'RECORD',0
+GUIMovieTextC3 db 'STOP',0
+GUIMovieTextC4 db 'APPEND',0
 
-GUIMovieTextD db 'VIDEO OPTIONS:',0
-GUIMovieTextD1 db 'NO VIDEO DUMP',0
-GUIMovieTextD2 db 'RAW VIDEO',0
-GUIMovieTextD3 db 'FFV1',0
-GUIMovieTextD4 db 'X264 LOSSLESS',0
-GUIMovieTextD5 db 'XVID LOSSLESS',0
-GUIMovieTextD6 db 'CUSTOM',0
+GUIMovieTextD db 'CHAPTERS:',0
+GUIMovieTextD1 db 'INSERT',0
+GUIMovieTextD2 db 'PREVIOUS',0
+GUIMovieTextD3 db 'NEXT',0
 
-GUIMovieTextE db 'AUDIO OPTIONS:',0
-GUIMovieTextE1 db 'DUMP AUDIO',0
-GUIMovieTextE2 db 'COMPRESS AUDIO',0
-GUIMovieTextE3 db 'MERGE WITH VIDEO',0
+GUIMovieTextE1 db 'DISPLAY FRAME COUNTER',0
+GUIMovieTextE2 db 'RECORD ON MOVIE STATE LOAD',0
 
-GUIMovieTextF1 db 'START DUMPING',0
-GUIMovieTextF2 db 'STOP DUMPING',0
+GUIMovieTextF db 'VIDEO OPTIONS:',0
+GUIMovieTextF1 db 'NO VIDEO DUMP',0
+GUIMovieTextF2 db 'RAW VIDEO',0
+GUIMovieTextF3 db 'FFV1',0
+GUIMovieTextF4 db 'X264 LOSSLESS',0
+GUIMovieTextF5 db 'XVID LOSSLESS',0
+GUIMovieTextF6 db 'CUSTOM',0
 
-GUIMovieTextG1 db 'FORCE MOVIE LENGTH',0
-GUIMovieTextG2 db '   ',0
+GUIMovieTextG db 'AUDIO OPTIONS:',0
+GUIMovieTextG1 db 'DUMP AUDIO',0
+GUIMovieTextG2 db 'COMPRESS AUDIO',0
+GUIMovieTextG3 db 'MERGE WITH VIDEO',0
+
+GUIMovieTextH1 db 'FORCE MOVIE LENGTH',0
+GUIMovieTextH2 db '   ',0
+
+GUIMovieTextI db 'DUMPING:',0
+GUIMovieTextI1 db 'START',0
+GUIMovieTextI2 db 'STOP',0
 
 GUIMovieTextX1 db 'WARNING: THIS MOVIE',0  ; Overwrite Window
 GUIMovieTextX2 db 'FILE ALREADY EXISTS',0

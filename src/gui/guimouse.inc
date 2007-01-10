@@ -2008,7 +2008,6 @@ DisplayGUIChoseSaveClick:
   ret
 
 DisplayGUIMovieClick:
-
   cmp byte[MovieProcessing],4
   je near .cannotzmv
   cmp byte[MovieProcessing],5
@@ -2027,16 +2026,16 @@ DisplayGUIMovieClick:
   GUIPTabClick 58,110,1,GUIDumpingTab,GUIMovieTabs
 .cannotdump
 
-  GUIPButtonHole 8,40,byte[CMovieExt],'v'       ; Radio buttons
-  GUIPButtonHole 28,40,byte[CMovieExt],'1'
-  GUIPButtonHole 48,40,byte[CMovieExt],'2'
-  GUIPButtonHole 68,40,byte[CMovieExt],'3'
-  GUIPButtonHole 88,40,byte[CMovieExt],'4'
-  GUIPButtonHole 108,40,byte[CMovieExt],'5'
-  GUIPButtonHole 128,40,byte[CMovieExt],'6'
-  GUIPButtonHole 148,40,byte[CMovieExt],'7'
-  GUIPButtonHole 168,40,byte[CMovieExt],'8'
-  GUIPButtonHole 188,40,byte[CMovieExt],'9'
+  GUIPButtonHole 8,39,byte[CMovieExt],'v'       ; Radio buttons
+  GUIPButtonHole 28,39,byte[CMovieExt],'1'
+  GUIPButtonHole 48,39,byte[CMovieExt],'2'
+  GUIPButtonHole 68,39,byte[CMovieExt],'3'
+  GUIPButtonHole 88,39,byte[CMovieExt],'4'
+  GUIPButtonHole 108,39,byte[CMovieExt],'5'
+  GUIPButtonHole 128,39,byte[CMovieExt],'6'
+  GUIPButtonHole 148,39,byte[CMovieExt],'7'
+  GUIPButtonHole 168,39,byte[CMovieExt],'8'
+  GUIPButtonHole 188,39,byte[CMovieExt],'9'
 
   cmp dword[GUIMovieTabs],1
   jne near .nocontrols
@@ -2052,29 +2051,28 @@ DisplayGUIMovieClick:
   GUIPHoldbutton 55,80,97,91,17
   GUIPHoldbutton 103,80,145,91,18
   GUIPHoldbutton 151,80,193,91,32
-  GUIPHoldbutton 7,98,112,109,29
-  GUIPHoldbutton 7,114,112,125,30
-  GUIPHoldbutton 7,130,112,141,31
+  GUIPHoldbutton 7,109,50,120,29
+  GUIPHoldbutton 85,109,138,120,30
+  GUIPHoldbutton 173,109,203,120,31
 
   GUIPButtonHole 8,64,byte[MovieStartMethod],0    ; Start From
   GUIPButtonHole 43,64,byte[MovieStartMethod],1
   GUIPButtonHole 89,64,byte[MovieStartMethod],2
   GUIPButtonHole 135,64,byte[MovieStartMethod],3
 
-  DGOptnsProcBox 116,101,[KeyInsrtChap]           ; Keyboard Shortcut Boxes
-  DGOptnsProcBox 116,117,[KeyPrevChap]
-  DGOptnsProcBox 116,133,[KeyNextChap]
+  DGOptnsProcBox 58,111,[KeyInsrtChap]           ; Keyboard Shortcut Boxes
+  DGOptnsProcBox 146,111,[KeyPrevChap]
+  DGOptnsProcBox 210,111,[KeyNextChap]
 
-  GUIClickCButton 8,148,byte[MovieDisplayFrame]   ; Checkbox
-  GUIClickCButton 8,158,byte[MZTForceRTR]
-
+  GUIClickCButton 8,138,byte[MovieDisplayFrame]   ; Checkbox
+  GUIClickCButton 8,148,byte[MZTForceRTR]
 .nocontrols
 
   cmp dword[GUIDumpingTab],1
   jne near .nodumping
 
-  GUIPHoldbutton 130,101,214,112,34
-  GUIPHoldbutton 130,119,208,130,35
+  GUIPHoldbutton 165,161,200,172,34
+  GUIPHoldbutton 167,178,196,189,35
 
   GUIPButtonHole 9,64,byte[MovieVideoMode],0      ; Movie Options
   GUIPButtonHole 9,74,byte[MovieVideoMode],1
@@ -2090,7 +2088,6 @@ DisplayGUIMovieClick:
   GUIClickCButton 9,134,byte[MovieForcedLengthEnabled]
 
   GUITextBoxInputNach 136,135,156,145,14,3
-
 .nodumping
 
   ret
@@ -2385,18 +2382,18 @@ DisplayGUIVideoClick:
   mov bl,[cvidmode]
   cmp byte[GUISLVID+ebx],0
   je near .nocheckboxb
-  FilterExcl 168,85,En2xSaI,hqFilter,NTSCFilter
-  GUIPButtonHole 18,85,byte[scanlines],0
-  GUIPButtonHole 168,85,byte[scanlines],1
+  FilterExcl 168,87,En2xSaI,hqFilter,NTSCFilter
+  GUIPButtonHole 18,87,byte[scanlines],0
+  GUIPButtonHole 168,87,byte[scanlines],1
 .nocheckboxb
   xor ebx,ebx
   mov bl,[cvidmode]
   cmp byte[GUIHSVID+ebx],0
   je near .nohsline
-  FilterExcl 68,85,En2xSaI,hqFilter,NTSCFilter
-  FilterExcl 118,85,En2xSaI,hqFilter,NTSCFilter
-  GUIPButtonHole 68,85,byte[scanlines],2
-  GUIPButtonHole 118,85,byte[scanlines],3
+  FilterExcl 68,87,En2xSaI,hqFilter,NTSCFilter
+  FilterExcl 118,87,En2xSaI,hqFilter,NTSCFilter
+  GUIPButtonHole 68,87,byte[scanlines],2
+  GUIPButtonHole 118,87,byte[scanlines],3
 .nohsline
 
   GUIClickCButton 18,115,byte[GrayscaleMode]  ; Grayscale
