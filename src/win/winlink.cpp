@@ -1866,14 +1866,6 @@ void NTSCFilterDraw(int SurfaceX, int SurfaceY, int pitch, unsigned char* buffer
 
 extern "C" char GUIM7VID[];
 
-void SetNTSCFOpt()
-{
-  if(CustomResX >= 602 && CustomResY >= 448)
-    GUINTVID[cvidmode] = 1;
-  else
-    GUINTVID[cvidmode] = 0;
-}
-
 void SetHiresOpt()
 {
   if(CustomResX >= 512 && CustomResY >= 448)
@@ -1919,6 +1911,11 @@ void initwinvideo(void)
    DWORD HQMode=0;
 
    if (FirstActivate && NTSCFilter) NTSCFilterInit();
+
+   if (cvidmode == 37 || cvidmode == 38 || cvidmode == 41)
+   {
+     SetHiresOpt();
+   }
 
    if ( hqFilter != 0 )
    {

@@ -252,7 +252,7 @@ BilinearFilter db 0
 @ Enable NTSC Filter (0 = NO, 1 = Yes)
 @ Enable Blargg's wonderful NTSC filter which simulates the artifacts of an
 @ NTSC TV set - it is probably not a good idea to use with TV-out
-@ Requires a minimum res of 600x448
+@ Recommended to use a minimum res of 602x448
 %else
 @ The NTSC filter is not available for DOS at the moment, sorry.
 %endif
@@ -298,6 +298,10 @@ En2xSaI db 0
 hqFilter db 0
 %ifndef __MSDOS__
 @ Set HQ*x level [2..4]
+@ Recommended min resolutions
+@ HQ2x = 512x448
+@ HQ3x = 768x672
+@ HQ4x = 1024x896
 %ifdef __OPENGL_
 @ HQ2x is only available for OpenGL.
 %endif
