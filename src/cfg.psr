@@ -982,6 +982,10 @@ KeyPrevChap dd 0
 KeyNextChap dd 0
 
 @
+@ Movie state load mode cycle
+KeyRTRCycle dd 0
+
+@
 @  ----
 @ -- Misc --
 @  ----

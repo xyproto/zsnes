@@ -116,7 +116,7 @@ EXTSYM Mode7HiRes16b,FFRatio,SDRatio,EmuSpeed,mouseshad,MovieForcedLengthEnabled
 EXTSYM esctomenu,GUILoadKeysJumpTo,lhguimouse,MZTForceRTR,GetMovieForcedLength
 EXTSYM GUIEnableTransp,FilteredGUI,Surround,SPCDisable,nosaveSRAM
 EXTSYM FastFwdToggle,gui_key,gui_key_extended,GUILoadKeysNavigate
-EXTSYM KeyDisplayBatt,KeyIncreaseGamma,KeyDecreaseGamma,MovieForcedLength
+EXTSYM KeyDisplayBatt,KeyIncreaseGamma,KeyDecreaseGamma
 EXTSYM MovieVideoMode,MovieAudio,MovieVideoAudio,MovieAudioCompress,newfont
 EXTSYM d_names,selected_names,GUIfileentries,GUIdirentries,GUIcurrentdirviewloc
 EXTSYM GUIcurrentfilewin,GUIcurrentcursloc,GUIcurrentviewloc,SetMovieForcedLength

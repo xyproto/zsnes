@@ -26,10 +26,10 @@ EXTSYM Voice1Status,Voice2Disable,Voice2Status,Voice3Disable,Voice3Status
 EXTSYM Voice4Disable,Voice4Status,Voice5Disable,Voice5Status,Voice6Disable
 EXTSYM Voice6Status,Voice7Disable,Voice7Status,bgcmsung,bgmode
 EXTSYM cgmod,disableeffects,frameskip,frskipper,current_zst
-EXTSYM maxbr,modeused,mousexloc,mouseyloc,newengen
+EXTSYM maxbr,modeused,mousexloc,mouseyloc,newengen,KeyRTRCycle
 EXTSYM nextdrawallng,pal16b,pal16bxcl,pressed,prevbright,prevpal
 EXTSYM scaddsngb,scaddtngb,scaddtngbx,scfbl,scrndis,sprprdrn,t1cc
-EXTSYM vidbright,vidbuffer,vidbufferofsa,vidmemch2
+EXTSYM vidbright,vidbuffer,vidbufferofsa,vidmemch2,MZTForceRTR
 EXTSYM GUIRClick,MousePRClick,ngmsdraw,cvidmode,fulladdtab
 EXTSYM KeyDisableSC0,KeyDisableSC1,KeyDisableSC2,KeyDisableSC3,KeyDisableSC4
 EXTSYM KeyDisableSC5,KeyDisableSC6,KeyDisableSC7,KeyFastFrwrd,SRAMSave5Sec
@@ -496,6 +496,27 @@ NEWSYM cachevideo
     mov eax,[MsgCount]
     mov [MessageOn],eax
 .nodis6
+    mov eax,[KeyRTRCycle]
+    test byte[pressed+eax],1
+    je near .nortrcycle
+    mov byte[pressed+eax],2
+    inc byte[MZTForceRTR]
+    cmp byte[MZTForceRTR],3
+    jne .notrtrwrap
+    mov byte[MZTForceRTR],0
+    mov dword[Msgptr],mztrtr0
+    jmp .mztrtrmesg
+.notrtrwrap
+    cmp byte[MZTForceRTR],1
+    jne .nomztrtr1
+    mov dword[Msgptr],mztrtr1
+    jmp .mztrtrmesg
+.nomztrtr1
+    mov dword[Msgptr],mztrtr2
+.mztrtrmesg
+    mov eax,[MsgCount]
+    mov [MessageOn],eax
+.nortrcycle
     mov eax,[KeyExtraEnab1]
     test byte[pressed+eax],1
     je near .nodisd1
@@ -910,6 +931,9 @@ NEWSYM curcolbg2,   db 0
 NEWSYM curcolbg3,   db 0
 NEWSYM curcolbg4,   db 0
 NEWSYM panickeyp,   db 'ALL SWITCHES NORMAL',0
+NEWSYM mztrtr0, db 'LOAD MZT MODE - OFF',0
+NEWSYM mztrtr1, db 'LOAD MZT MODE - RECORD',0
+NEWSYM mztrtr2, db 'LOAD MZT MODE - REPLAY',0
 NEWSYM snesmousep0, db 'EXTRA DEVICES DISABLED',0
 NEWSYM snesmousep1, db 'MOUSE ENABLED IN PORT 1',0
 NEWSYM snesmousep2, db 'MOUSE ENABLED IN PORT 2',0
