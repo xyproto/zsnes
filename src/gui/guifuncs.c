@@ -1802,3 +1802,21 @@ void SetCustomXY()
   }
 }
 #endif
+
+extern char MovieForcedLength;
+char GUIMovieForcedText[4];
+
+void GetMovieForcedLength()
+{
+  static bool first_time = true;
+  if (first_time)
+  {
+    int_to_str(GUIMovieForcedText, 3, MovieForcedLength);
+    first_time = false;
+  }
+}
+
+void SetMovieForcedLength()
+{
+  MovieForcedLength = atoi(GUIMovieForcedText);
+}

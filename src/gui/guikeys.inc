@@ -1578,7 +1578,7 @@ GUIPathKeys:
 %endif
   cmp dword[GUIInputBox],14
   jne .notBox14
-  mov eax,MovieForcedLength
+  mov eax,GUIMovieForcedText
   jmp .boxselected
 .notBox14
 
@@ -1625,6 +1625,7 @@ GUIPathKeys:
   mov dword[GUIInputBox],0
   pushad
   call init_save_paths
+  call SetMovieForcedLength
   popad
   xor dx,dx
   ret
@@ -1650,6 +1651,7 @@ SECTION .text
 
 GUIMovieKeys:
   ToUpperASM
+  call GUIPathKeys
   cmp dh,9
   jne near .notab
   cmp byte[MovieProcessing],1

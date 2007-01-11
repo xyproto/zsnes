@@ -1687,6 +1687,7 @@ SECTION .text
   GUIClickArea %1,%2,%3,%4,%%noclick
   pushad
   call init_save_paths
+  call SetMovieForcedLength
   popad
   mov dword[GUIInputBox],%5
   mov dword[GUIInputLimit],%6-1
@@ -2087,7 +2088,7 @@ DisplayGUIMovieClick:
 
   GUIClickCButton 9,134,byte[MovieForcedLengthEnabled]
 
-  GUITextBoxInputNach 136,135,156,145,14,3
+  GUITextBoxInputNach 136,135,156,145,14,4
 .nodumping
 
   ret

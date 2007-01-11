@@ -3900,13 +3900,13 @@ DisplayGUIMovies:    ; Movie Record/Playback options
   DrawGUIButton 15,167,178,196,189,GUIMovieTextI2,35,0,0
 
   GUIDisplayCheckboxu 15,9,134,MovieForcedLengthEnabled,GUIMovieTextH1,2
-  GUIDisplayBBox 15,136,135,156,145,167
+  GUIDisplayBBox 15,136,135,161,145,167
 
   pushad
-  ;call GetCustomXY
+  call GetMovieForcedLength
   popad
 
-  GUIOuttextwin2d 15,144,138,GUIMovieTextH2,3
+  GUIOuttextwin2d 15,139,139,GUIMovieForcedText,3
 .nodumping
 
   ret
@@ -3954,7 +3954,6 @@ GUIMovieTextG2 db 'COMPRESS AUDIO',0
 GUIMovieTextG3 db 'MERGE WITH VIDEO',0
 
 GUIMovieTextH1 db 'FORCE MOVIE LENGTH',0
-GUIMovieTextH2 db '   ',0
 
 GUIMovieTextI db 'DUMPING:',0
 GUIMovieTextI1 db 'START',0
@@ -4762,7 +4761,7 @@ BlinkCursorCheck:
 %endif
   cmp dword[GUIInputBox],14
   jne .notBox14
-  mov ebx,MovieForcedLength
+  mov ebx,GUIMovieForcedText
 .notBox14
   ret
 
