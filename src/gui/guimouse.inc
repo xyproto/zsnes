@@ -2061,6 +2061,8 @@ DisplayGUIMovieClick:
   DGOptnsProcBox 146,111,[KeyPrevChap]
   DGOptnsProcBox 210,111,[KeyNextChap]
 
+  DGOptnsProcBox 135,124,[KeyRTRCycle]
+
   GUIPButtonHole 8,133,byte[MZTForceRTR],0
   GUIPButtonHole 8,143,byte[MZTForceRTR],1
   GUIPButtonHole 8,153,byte[MZTForceRTR],2

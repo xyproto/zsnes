@@ -3870,6 +3870,8 @@ DisplayGUIMovies:    ; Movie Record/Playback options
   GUIDisplayButtonHoleTu 15,8,143,byte[MZTForceRTR],1,GUIMovieTextE2,12
   GUIDisplayButtonHoleTu 15,8,153,byte[MZTForceRTR],2,GUIMovieTextE3,14
 
+  DDrawBox 15,134,123,[KeyRTRCycle] ; MZT Load Shortcut Box
+
   GUIDisplayCheckboxu 15,8,163,MovieDisplayFrame,GUIMovieTextE9,0   ; Checkbox
 .notcontrols
 
