@@ -3845,7 +3845,7 @@ DisplayGUIMovies:    ; Movie Record/Playback options
   jne near .notcontrols
 
   GUIDisplayTextY 15,8,56,GUIMovieTextB           ; "Start From" Section
-  GUIDisplayTextY 15,8,101,GUIMovieTextD           ; "Chapters"
+  GUIDisplayTextY 15,8,101,GUIMovieTextD           ; Chapters
 
   GUIDisplayButtonHoleTu 15,8,64,byte[MovieStartMethod],0,GUIMovieTextB1,0
   GUIDisplayButtonHoleTu 15,43,64,byte[MovieStartMethod],1,GUIMovieTextB2,0
@@ -3864,8 +3864,13 @@ DisplayGUIMovies:    ; Movie Record/Playback options
   DDrawBox 15,145,110,[KeyPrevChap]
   DDrawBox 15,210,110,[KeyNextChap]
 
-  GUIDisplayCheckboxu 15,8,138,MovieDisplayFrame,GUIMovieTextE1,0   ; Checkbox
-  GUIDisplayCheckboxu 15,8,148,MZTForceRTR,GUIMovieTextE2,22
+  GUIDisplayTextY 15,8,125,GUIMovieTextE           ; Movie State Load
+
+  GUIDisplayButtonHoleTu 15,8,133,byte[MZTForceRTR],0,GUIMovieTextE1,14
+  GUIDisplayButtonHoleTu 15,8,143,byte[MZTForceRTR],1,GUIMovieTextE2,12
+  GUIDisplayButtonHoleTu 15,8,153,byte[MZTForceRTR],2,GUIMovieTextE3,14
+
+  GUIDisplayCheckboxu 15,8,163,MovieDisplayFrame,GUIMovieTextE9,0   ; Checkbox
 .notcontrols
 
   cmp dword[GUIDumpingTab],1
@@ -3899,7 +3904,7 @@ DisplayGUIMovies:    ; Movie Record/Playback options
   DrawGUIButton 15,165,161,200,172,GUIMovieTextI1,34,0,0
   DrawGUIButton 15,167,178,196,189,GUIMovieTextI2,35,0,0
 
-  GUIDisplayCheckboxu 15,9,134,MovieForcedLengthEnabled,GUIMovieTextH1,2
+  GUIDisplayCheckboxu 15,9,134,MovieForcedLengthEnabled,GUIMovieTextH1,11
   GUIDisplayBBox 15,136,135,205,145,167
 
   pushad
@@ -3937,8 +3942,11 @@ GUIMovieTextD1 db 'INSERT',0
 GUIMovieTextD2 db 'PREVIOUS',0
 GUIMovieTextD3 db 'NEXT',0
 
-GUIMovieTextE1 db 'DISPLAY FRAME COUNTER',0
-GUIMovieTextE2 db 'RECORD ON MOVIE STATE LOAD',0
+GUIMovieTextE db 'ON MOVIE STATE LOAD:',0
+GUIMovieTextE1 db 'DO NOT SWITCH MODES',0
+GUIMovieTextE2 db 'SWITCH TO RECORD',0
+GUIMovieTextE3 db 'SWITCH TO PLAYBACK',0
+GUIMovieTextE9 db 'DISPLAY FRAME COUNTER',0
 
 GUIMovieTextF db 'VIDEO OPTIONS:',0
 GUIMovieTextF1 db 'NO VIDEO DUMP',0
@@ -3953,7 +3961,7 @@ GUIMovieTextG1 db 'DUMP AUDIO',0
 GUIMovieTextG2 db 'COMPRESS AUDIO',0
 GUIMovieTextG3 db 'MERGE WITH VIDEO',0
 
-GUIMovieTextH1 db 'FORCE MOVIE LENGTH',0
+GUIMovieTextH1 db 'DUMP # OF FRAMES',0
 
 GUIMovieTextI db 'DUMPING:',0
 GUIMovieTextI1 db 'START',0

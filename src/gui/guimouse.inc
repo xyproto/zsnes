@@ -2061,8 +2061,11 @@ DisplayGUIMovieClick:
   DGOptnsProcBox 146,111,[KeyPrevChap]
   DGOptnsProcBox 210,111,[KeyNextChap]
 
-  GUIClickCButton 8,138,byte[MovieDisplayFrame]   ; Checkbox
-  GUIClickCButton 8,148,byte[MZTForceRTR]
+  GUIPButtonHole 8,133,byte[MZTForceRTR],0
+  GUIPButtonHole 8,143,byte[MZTForceRTR],1
+  GUIPButtonHole 8,153,byte[MZTForceRTR],2
+
+  GUIClickCButton 8,163,byte[MovieDisplayFrame]   ; Checkbox
 .nocontrols
 
   cmp dword[GUIDumpingTab],1

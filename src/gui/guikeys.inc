@@ -1678,8 +1678,11 @@ GUIMovieKeys:
   GUIKeyButtonHole MovieStartMethod,2,'R'
   GUIKeyButtonHole MovieStartMethod,3,'S'
 
+  GUIKeyButtonHole MZTForceRTR,0,'M'   ; Start From Radio Buttons
+  GUIKeyButtonHole MZTForceRTR,1,'C'
+  GUIKeyButtonHole MZTForceRTR,2,'B'
+
   GUIKeyCheckbox MovieDisplayFrame,'D'      ; Checkbox
-  GUIKeyCheckbox MZTForceRTR,'L'
 .nocontrols
 
   cmp dword[GUIDumpingTab],1
