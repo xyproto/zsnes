@@ -27,6 +27,11 @@ void mzt_chdir_down();
 bool mzt_save(int, bool, bool);
 bool mzt_load(int, bool);
 
+void MovieRecord();
+void MoviePlay();
+void MovieStop();
+void MovieAppend();
+
 extern unsigned char MovieProcessing;
 
 enum MovieStatus { MOVIE_OFF = 0, MOVIE_PLAYBACK, MOVIE_RECORD, MOVIE_OLD_PLAY, MOVIE_ENDING_DUMPING, MOVIE_DUMPING_NEW, MOVIE_DUMPING_OLD };
