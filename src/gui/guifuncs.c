@@ -1804,14 +1804,14 @@ void SetCustomXY()
 #endif
 
 extern char MovieForcedLength;
-char GUIMovieForcedText[4];
+char GUIMovieForcedText[11];
 
 void GetMovieForcedLength()
 {
   static bool first_time = true;
   if (first_time)
   {
-    int_to_str(GUIMovieForcedText, 3, MovieForcedLength);
+    int_to_str(GUIMovieForcedText, 10, MovieForcedLength);
     first_time = false;
   }
 }

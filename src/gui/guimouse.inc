@@ -2084,7 +2084,7 @@ DisplayGUIMovieClick:
 
   GUIClickCButton 9,134,byte[MovieForcedLengthEnabled]
 
-  GUITextBoxInputNach 136,135,156,145,14,4,SetMovieForcedLength
+  GUITextBoxInputNach 136,135,205,145,14,11,SetMovieForcedLength
 .nodumping
 
   ret

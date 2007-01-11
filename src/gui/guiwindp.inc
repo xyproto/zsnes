@@ -3900,13 +3900,13 @@ DisplayGUIMovies:    ; Movie Record/Playback options
   DrawGUIButton 15,167,178,196,189,GUIMovieTextI2,35,0,0
 
   GUIDisplayCheckboxu 15,9,134,MovieForcedLengthEnabled,GUIMovieTextH1,2
-  GUIDisplayBBox 15,136,135,161,145,167
+  GUIDisplayBBox 15,136,135,205,145,167
 
   pushad
   call GetMovieForcedLength
   popad
 
-  GUIOuttextwin2d 15,139,139,GUIMovieForcedText,3
+  GUIOuttextwin2d 15,139,139,GUIMovieForcedText,10
 .nodumping
 
   ret
