@@ -828,7 +828,7 @@ MovieDisplayFrame db 0
 MovieStartMethod db 0
 
 @
-@ Switch from replay to record when loading an MZT (0 = NO, 1 = Yes)
+@ Switch Modes when Loading a Movie State (0 = NO, 1 = Switch to Record, 2 = Switch to Playback)
 MZTForceRTR db 0
 
 @

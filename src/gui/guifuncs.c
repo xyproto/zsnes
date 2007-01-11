@@ -548,6 +548,7 @@ void GUIRestoreVars()
 #ifndef NO_DEBUGGER
   CheckValueBounds(&debuggeron, 0, 1, 0, UB);
 #endif
+  CheckValueBounds(&MZTForceRTR, 0, 2, 0, UB);
 
   //if (TimeChecker == CalcCfgChecksum()) //What does this do?
   {
