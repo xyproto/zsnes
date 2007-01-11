@@ -1743,8 +1743,6 @@ void GUILoadKeysJumpTo()
   }
 }
 
-#ifndef __MSDOS__
-
 //Not entirely accurate pow, but good for most needs and very fast
 static unsigned int npow(register unsigned int base, register unsigned int exponent)
 {
@@ -1778,6 +1776,8 @@ static void int_to_str(char *dest, unsigned int len, unsigned int num)
     }
   }
 }
+
+#ifndef __MSDOS__
 
 char GUICustomX[5], GUICustomY[5];
 void GetCustomXY()
