@@ -55,7 +55,7 @@ md_merge times 256 db "$md_prog $md_other $md_smode -force-avi-aspect 4:3 -ovc c
 @
 @ These are 3 temporary variables you can use with the various passes
 md_custom_temp1 times 150 db "-ovc x264 -x264encopts bframes=0:keyint=300:partitions=all:me=umh:frameref=15:subq=7:8x8dct"
-md_custom_temp2 times 150 db "bitrate=300"
+md_custom_temp2 times 150 db "bitrate=350"
 md_custom_temp3 times 150 db ""
 
 @
