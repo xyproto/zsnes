@@ -21,7 +21,7 @@
 
 EXTSYM KeyRewind,statesaver,Voice0Status,UpdateDPage
 EXTSYM StartGUI,romdata,initvideo,DosExit,sfxramdata,deinitvideo
-EXTSYM vidbufferofsa,device2
+EXTSYM vidbufferofsa,device2,RawDumpInProgress
 EXTSYM KeySaveState,KeyLoadState,KeyQuickExit,KeyQuickLoad,KeyQuickRst
 EXTSYM GUIDoReset,GUIReset,KeyOnStA,KeyOnStB,ProcessKeyOn,C4Enable,KeyQuickClock
 EXTSYM KeyQuickSaveSPC,TimerEnable,splitflags,joinflags
@@ -1287,6 +1287,8 @@ NEWSYM cpuover
 
     cmp byte[EMUPause],1
     jne .noemupause
+    cmp byte[RawDumpInProgress],1
+    je .noemupause
 
     cmp byte[PauseFrameMode],1
     jne .nopauseframemode1
