@@ -54,7 +54,7 @@ md_merge times 256 db "$md_prog $md_other $md_smode -force-avi-aspect 4:3 -ovc c
 @Code for how the custom option works.
 @
 @ These are 3 temporary variables you can use with the various passes
-md_custom_temp1 times 150 db "-ovc x264 -x264encopts zones=0,360,q=28:bframes=0:keyint=300:partitions=all:me=umh:frameref=15:subq=7"
+md_custom_temp1 times 150 db "-ovc x264 -x264encopts bframes=0:keyint=300:partitions=all:me=umh:frameref=15:subq=7:8x8dct"
 md_custom_temp2 times 150 db "bitrate=300"
 md_custom_temp3 times 150 db ""
 
@@ -63,7 +63,7 @@ md_custom_temp3 times 150 db ""
 @ Also $null for the nul file.
 @
 
-md_custom_passes db 4 ;How many passes should be performed, make this at least 2
+md_custom_passes db 3 ;How many passes should be performed, make this at least 2
 md_custom_first_pass times 512 db "$md_prog $md_other $md_no_sound $md_raw $md_custom_temp1:turbo=1:pass=1 -o $null -"
 md_custom_middle_passes times 512 db "$md_prog $md_other $md_no_sound $md_raw $md_custom_temp1:$md_custom_temp2:pass=3 -o $null -"
 md_custom_last_pass times 512 db "$md_prog $md_other $md_smode $md_raw $md_custom_temp1:$md_custom_temp2:pass=2 -o custom.avi -"
