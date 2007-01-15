@@ -80,12 +80,14 @@ char *generate_image_filename(const char *image_suffix)
 }
 
 extern unsigned short *vidbuffer;
+extern unsigned short resolutn;
+
+#define SNAP_HEIGHT resolutn
+#define SNAP_WIDTH 256
 #define PIXEL (vidbuffer[((y+1)*288) + x + 16])
 
 #ifndef NO_PNG
 
-#define SNAP_HEIGHT 224
-#define SNAP_WIDTH 256
 #define PIXEL_SIZE 3
 int Png_Dump(const char *filename, unsigned short width, unsigned short height, unsigned char *image_data, bool usebgr)
 {
@@ -194,7 +196,6 @@ void Grab_PNG_Data()
 
 #endif
 
-extern unsigned short resolutn;
 void Grab_BMP_Data()
 {
   char *filename = generate_image_filename("bmp");
@@ -204,8 +205,8 @@ void Grab_BMP_Data()
     if (fp)
     {
       const unsigned int header_size = 26;
-      const unsigned short width = 256;
-      const unsigned short height = resolutn;
+      const unsigned short width = SNAP_WIDTH;
+      const unsigned short height = SNAP_HEIGHT;
       unsigned short y = height, x;
 
       fputs("BM", fp);                            //Header
@@ -242,8 +243,8 @@ void Grab_BMP_Data_8()
       const unsigned int colors = 256;
       const unsigned int palette_size = colors*4;
       const unsigned int header_size = palette_size+54;
-      const unsigned short width = 256;
-      const unsigned short height = resolutn;
+      const unsigned short width = SNAP_WIDTH;
+      const unsigned short height = SNAP_HEIGHT;
       unsigned short y = height, x;
 
       fputs("BM", fp);                          //Header
