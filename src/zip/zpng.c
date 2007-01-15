@@ -80,7 +80,7 @@ char *generate_image_filename(const char *image_suffix)
 }
 
 extern unsigned short *vidbuffer;
-#define PIXEL (vidbuffer[(i*288) + j + 16])
+#define PIXEL (vidbuffer[((i+1)*288) + j + 16])
 
 #ifndef NO_PNG
 
@@ -275,7 +275,7 @@ void Grab_BMP_Data_8()
       {
         for (j=0 ; j<width ; j++)
         {
-          fwrite((unsigned char *)vidbuffer+i*288+j+16, 1, 1, fp);
+          fwrite((unsigned char *)&PIXEL, 1, 1, fp);
         }
       }
       fclose(fp);
