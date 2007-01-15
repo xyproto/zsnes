@@ -275,7 +275,7 @@ void Grab_BMP_Data_8()
       {
         for (x = 0; x < width; x++)
         {
-          fwrite((unsigned char *)vidbuffer+(y+1)*288+x+16, 1, 1, fp);
+          fwrite((unsigned char *)vidbuffer+y*288+x+16, 1, 1, fp);
         }
       }
       fclose(fp);
