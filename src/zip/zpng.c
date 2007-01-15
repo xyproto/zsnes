@@ -80,7 +80,7 @@ char *generate_image_filename(const char *image_suffix)
 }
 
 extern unsigned short *vidbuffer;
-#define PIXEL (vidbuffer[((i+1)*288) + j + 16])
+#define PIXEL (vidbuffer[((y+1)*288) + x + 16])
 
 #ifndef NO_PNG
 
@@ -173,15 +173,15 @@ void Grab_PNG_Data()
     if (DBits)
     {
       //These are the variables used to perform the 24-bit conversion
-      unsigned int i = SNAP_HEIGHT, j;
+      unsigned int y = SNAP_HEIGHT, x;
       // We can fill the array in any order, so might as well optimize loops
-      while (i--)
+      while (y--)
       {
-        for (j=SNAP_WIDTH ; j-- ;)
+        for (x=SNAP_WIDTH ; x-- ;)
         {
-          DBits[PIXEL_SIZE*(i*SNAP_WIDTH+j)]   = (PIXEL&0xF800) >> 8;
-          DBits[PIXEL_SIZE*(i*SNAP_WIDTH+j)+1] = (PIXEL&0x07E0) >> 3;
-          DBits[PIXEL_SIZE*(i*SNAP_WIDTH+j)+2] = (PIXEL&0x001F) << 3;
+          DBits[PIXEL_SIZE*(y*SNAP_WIDTH+x)]   = (PIXEL&0xF800) >> 8;
+          DBits[PIXEL_SIZE*(y*SNAP_WIDTH+x)+1] = (PIXEL&0x07E0) >> 3;
+          DBits[PIXEL_SIZE*(y*SNAP_WIDTH+x)+2] = (PIXEL&0x001F) << 3;
         }
       }
       //compress and write the PNG
@@ -206,7 +206,7 @@ void Grab_BMP_Data()
       const unsigned int header_size = 26;
       const unsigned short width = 256;
       const unsigned short height = resolutn;
-      unsigned short i = height, j;
+      unsigned short y = height, x;
 
       fputs("BM", fp);                            //Header
       fwrite4(width*height*3+header_size, fp);    //File size
@@ -218,9 +218,9 @@ void Grab_BMP_Data()
       fwrite2(1, fp);                             //Planes
       fwrite2(24, fp);                            //Bits per pixel
 
-      while (i--) //Have to write image upside down
+      while (y--) //Have to write image upside down
       {
-        for (j=0 ; j<width ; j++)
+        for (x=0 ; x<width ; x++)
         {
           fwrite3(((PIXEL&0xF800) << 8) | ((PIXEL&0x07E0) << 5) | ((PIXEL&0x001F) << 3), fp);
         }
@@ -244,7 +244,7 @@ void Grab_BMP_Data_8()
       const unsigned int header_size = palette_size+54;
       const unsigned short width = 256;
       const unsigned short height = resolutn;
-      unsigned short i, j;
+      unsigned short y = height, x;
 
       fputs("BM", fp);                          //Header
       fwrite4(width*height+header_size, fp);    //File size
@@ -262,20 +262,20 @@ void Grab_BMP_Data_8()
       fwrite4(colors, fp);                      //Colors
       fwrite4(colors, fp);                      //Important Colors
 
-      for (i=0 ; i<colors ; i++) //Write palette
+      for (y = 0; y < colors; y++) //Write palette
       {
         unsigned char byte = 0;
-        fwrite((unsigned char *)vidbuffer+100000+i*3+3, 1, 1, fp);
-        fwrite((unsigned char *)vidbuffer+100000+i*3+2, 1, 1, fp);
-        fwrite((unsigned char *)vidbuffer+100000+i*3+1, 1, 1, fp);
+        fwrite((unsigned char *)vidbuffer+100000+y*3+3, 1, 1, fp);
+        fwrite((unsigned char *)vidbuffer+100000+y*3+2, 1, 1, fp);
+        fwrite((unsigned char *)vidbuffer+100000+y*3+1, 1, 1, fp);
         fwrite(&byte, 1, 1, fp);
       }
 
-      for (i=height ; i-- ;) //Have to write image upside down
+      while (y--) //Have to write image upside down
       {
-        for (j=0 ; j<width ; j++)
+        for (x = 0; x < width; x++)
         {
-          fwrite((unsigned char *)&PIXEL, 1, 1, fp);
+          fwrite((unsigned char *)vidbuffer+(y+1)*288+x+16, 1, 1, fp);
         }
       }
       fclose(fp);
