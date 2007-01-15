@@ -2876,7 +2876,7 @@ void MovieStop()
         zmv_replay_finished();
         MovieSub_Close();
         MovieForcedLength = 0;
-        DumpVideoFrame(false);
+        DumpVideoFrame(true);
         MessageOn = 0;
         break;
 
@@ -2892,12 +2892,12 @@ void MovieStop()
         fclose(old_movie.fp);
         MovieSub_Close();
         MovieForcedLength = 0;
-        DumpVideoFrame(false);
+        DumpVideoFrame(true);
         MessageOn = 0;
         break;
       case MOVIE_ENDING_DUMPING:
         MovieForcedLength = 0;
-        DumpVideoFrame(false);
+        DumpVideoFrame(true);
         break;
     }
 
