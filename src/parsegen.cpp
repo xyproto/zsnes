@@ -584,6 +584,18 @@ namespace variable
       return(false);
     }
 
+    bool unsigned_used()
+    {
+      for (config_data_array::iterator i = data_array.begin(); i != data_array.end(); i++)
+      {
+        if (!info[i->type].Signed)
+        {
+          return(true);
+        }
+      }
+      return(false);
+    }
+
     config_data_array::iterator begin() { return(data_array.begin()); }
     config_data_array::iterator end() { return(data_array.end()); }
   } config_data;
@@ -764,8 +776,16 @@ void output_parser_start(ostream& c_stream, string& cheader_file)
            << "  }\n"
            << "  return(pos);\n"
            << "}\n"
-           << "\n"
            << "\n";
+  if (variable::config_data.unsigned_used())
+  {
+    c_stream << "\n"
+             << "static int atoui(const char *nptr)\n"
+             << "{\n"
+             << "  return(strtoul(nptr, 0, 10));\n"
+             << "}\n";
+  }
+  c_stream << "\n";
 }
 
 void output_cheader_start(ostream& cheader_stream)
@@ -1160,10 +1180,10 @@ void output_array_read(ostream& c_stream, variable::ctype type)
              << "{\n"
              << "  size_t i;\n"
              << "  char *token;\n"
-             << "  *var = (" << variable::info[type].CTypeSpace << ")atoll(strtok(line, \", \\t\\r\\n\"));\n"
+             << "  *var = (" << variable::info[type].CTypeSpace << ")" << (variable::info[type].Signed ? "atoi" : "atoui") << "(strtok(line, \", \\t\\r\\n\"));\n"
              << "  for (i = 1; (i < size) && (token = strtok(0, \", \\t\\r\\n\")); i++)\n"
              << "  {\n"
-             << "    var[i] = (" << variable::info[type].CTypeSpace << ")atoll(token);\n"
+             << "    var[i] = (" << variable::info[type].CTypeSpace << ")" << (variable::info[type].Signed ? "atoi" : "atoui") << "(token);\n"
              << "  }\n"
              << "}\n";
   }
@@ -1225,7 +1245,7 @@ void output_read_var(ostream& c_stream)
       c_stream << "    if (!strcmp(var, \"" << i->dependancy << i->name << "\")) { ";
       if (i->format == variable::single)
       {
-        c_stream << i->name << " = (" << variable::info[i->type].CTypeSpace << ")atoll(value);";
+        c_stream << i->name << " = (" << variable::info[i->type].CTypeSpace << ")" << (variable::info[i->type].Signed ? "atoi" : "atoui") << "(value);";
       }
       else if ((i->format == variable::mult) || (i->format == variable::ptr))
       {
@@ -1248,7 +1268,7 @@ void output_read_var(ostream& c_stream)
   {
     c_stream << "    if (!strcmp(var, \"PSR_HASH\"))\n"
              << "    {\n"
-             << "       if ((unsigned int)atoll(value) == PSR_HASH)\n"
+             << "       if ((unsigned int)atoui(value) == PSR_HASH)\n"
              << "       {\n"
              << "         psr_init_done = 2;\n"
              << "         continue;\n"
