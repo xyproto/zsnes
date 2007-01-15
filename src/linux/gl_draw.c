@@ -22,6 +22,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #include "../cfg.h"
 #include "../gblhdr.h"
+#include "../asm_call.h"
 
 #define BYTE  unsigned char
 #define WORD  unsigned short
@@ -291,7 +292,7 @@ void gl_drawwin()
     WinVidMemStart = (void *) glvidbuffer;
 
     if (hqFilter) hq2x_16b();
-    else copy640x480x16bwin();
+    else asm_call(copy640x480x16bwin);
 
     /* Display 1 512x448 quad for the 512x448 buffer */
     glBindTexture(GL_TEXTURE_2D, gltextures[1]);

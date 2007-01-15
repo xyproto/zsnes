@@ -62,7 +62,7 @@ MMLIB_O=@MMLIB_FILES@
 NET_O=
 #$(NET_D)/ztcp.o
 
-PORT_O=$(PORT_D)/audio.o $(PORT_D)/battery.o $(PORT_D)/copyvwin.o\
+PORT_O=$(PORT_D)/audio.o $(PORT_D)/battery.o\
 	$(PORT_D)/sdlintrf.o $(PORT_D)/sdllink.o @GL_DRAW@ $(PORT_D)/sw_draw.o\
 	$(PORT_D)/safelib.o
 
@@ -76,7 +76,7 @@ VID_O=$(VID_D)/makev16b.o $(VID_D)/makev16t.o $(VID_D)/makevid.o\
 	$(VID_D)/newgfx2.o $(VID_D)/procvid.o $(VID_D)/procvidc.o\
 	$(VID_D)/sw_draw.o $(VID_D)/2xsaiw.o $(VID_D)/hq2x16.o $(VID_D)/hq2x32.o\
 	$(VID_D)/hq3x16.o $(VID_D)/hq3x32.o $(VID_D)/hq4x16.o $(VID_D)/hq4x32.o\
-	$(VID_D)/ntsc.o
+	$(VID_D)/ntsc.o $(VID_D)/copyvwin.o
 
 ZIP_O=$(ZIP_D)/unzip.o $(ZIP_D)/zpng.o
 

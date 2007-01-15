@@ -22,6 +22,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #include "../gblhdr.h"
 #include "../cfg.h"
+#include "../asm_call.h"
 
 
 #define BYTE  unsigned char
@@ -197,7 +198,7 @@ void sw_drawwin()
           break;
       }
     }
-    else copy640x480x16bwin();
+    else asm_call(copy640x480x16bwin);
   }
   else if ((SurfaceX == 602) && NTSCFilter)
   {
@@ -230,7 +231,7 @@ void sw_drawwin()
           break;
       }
     }
-    else if (NTSCFilter) NTSCFilterDraw(SurfaceX, SurfaceY, pitch, WinVidMemStart-16*640*2-64*2); else copy640x480x16bwin();
+    else if (NTSCFilter) NTSCFilterDraw(SurfaceX, SurfaceY, pitch, WinVidMemStart-16*640*2-64*2); else asm_call(copy640x480x16bwin);
   }
 
   UnlockSurface();
