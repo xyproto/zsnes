@@ -221,7 +221,7 @@ void Grab_BMP_Data()
 
       while (y--) //Have to write image upside down
       {
-        for (x=0 ; x<width ; x++)
+        for (x = 0; x < width; x++)
         {
           fwrite3(((PIXEL&0xF800) << 8) | ((PIXEL&0x07E0) << 5) | ((PIXEL&0x001F) << 3), fp);
         }
@@ -245,7 +245,7 @@ void Grab_BMP_Data_8()
       const unsigned int header_size = palette_size+54;
       const unsigned short width = SNAP_WIDTH;
       const unsigned short height = SNAP_HEIGHT;
-      unsigned short y = height, x;
+      unsigned short y, x;
 
       fputs("BM", fp);                          //Header
       fwrite4(width*height+header_size, fp);    //File size
@@ -272,11 +272,11 @@ void Grab_BMP_Data_8()
         fwrite(&byte, 1, 1, fp);
       }
 
-      while (y--) //Have to write image upside down
+      for (y = height; y-- ;) //Have to write image upside down
       {
         for (x = 0; x < width; x++)
         {
-          fwrite((unsigned char *)vidbuffer+y*288+x+16, 1, 1, fp);
+          fwrite((unsigned char *)vidbuffer+(y+1)*288+x+16, 1, 1, fp);
         }
       }
       fclose(fp);
