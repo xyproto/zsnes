@@ -78,7 +78,7 @@ typedef unsigned __int64 uint64;
 extern unsigned int versionNumber, CRC32, cur_zst_size, MsgCount, MessageOn;
 extern unsigned int JoyAOrig, JoyBOrig, JoyCOrig, JoyDOrig, JoyEOrig;
 extern unsigned char GUIReset, ReturnFromSPCStall, GUIQuit;
-extern unsigned char CMovieExt, mencoderExists;
+extern unsigned char CMovieExt, mencoderExists, lameExists;
 extern char *Msgptr;
 extern bool romispal;
 bool MovieWaiting = false;
@@ -2314,7 +2314,7 @@ static bool raw_video_open()
     if (MovieAudioCompress)
     {
       signal(SIGPIPE, broken_pipe);
-      raw_vid.ap = popen_dir(ZCfgPath, encode_command(md_audio_compress), WRITE_BINARY);
+      lameExists = (raw_vid.ap = popen_dir(ZCfgPath, encode_command(md_audio_compress), WRITE_BINARY)) ? 1 : 0;
     }
     else
     {

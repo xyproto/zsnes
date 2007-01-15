@@ -23,6 +23,7 @@ EXTSYM VERSION_STR,placedate
 
 SECTION .data
 NEWSYM mencoderExists, db 0
+NEWSYM lameExists, db 0
 
 SECTION .text
 
