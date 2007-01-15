@@ -52,6 +52,7 @@ EXTSYM KeyResetSpeed,KeyEmuSpeedUp,KeyEmuSpeedDown,KeyDisplayBatt,EMUPause
 EXTSYM device1,device2,snesinputdefault1,snesinputdefault2
 EXTSYM KeyExtraEnab1,KeyExtraEnab2,cycleinputdevice1,cycleinputdevice2,MouseDis
 EXTSYM KeyIncreaseGamma,KeyDecreaseGamma,gammalevel,gammalevel16b
+EXTSYM RawDumpInProgress
 
 %ifndef NO_DEBUGGER
 EXTSYM debuggeron
@@ -260,6 +261,9 @@ NEWSYM cachevideo
     cmp byte[EMUPause],1
     je near .ttldone
     ; fast forward goes over all other throttles
+    ; don't fast forward while dumping a movie
+    cmp byte[RawDumpInProgress],1
+    je .ffskip
     cmp byte[FastFwdToggle],0
     jne .ffmode2
     mov eax,[KeyFastFrwrd]
