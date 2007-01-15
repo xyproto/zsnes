@@ -435,7 +435,11 @@ int mkdir_dir(const char *path, const char *dir)
 
 char *realpath_dir(const char *path, const char *file, char *buf)
 {
+#ifdef __UNIXSDL__
+  return(realpath_tilde(strdupcat_internal(path, file), buf));
+#else
   return(realpath(strdupcat_internal(path, file), buf));
+#endif
 }
 
 #ifdef __MSDOS__
@@ -648,6 +652,44 @@ char *realpath_link(const char *path, char *resolved_path)
     return(resolved_path);
   }
   return(0);
+}
+
+//realpath() with ~ support
+char *realpath_tilde(const char *path, char *resolved_path)
+{
+  if (*path == '~')
+  {
+    char buffer[PATH_SIZE];
+    struct passwd *userinfo;
+
+    strcpy(buffer, "~");
+    path++;
+
+    if (isalpha(*path))
+    {
+      char *p = buffer+1;
+      while (isalnum(*path))
+      {
+        *p++ = *path++;
+      }
+      *p = 0;
+      if ((userinfo = getpwnam(buffer+1)))
+      {
+        strcpy(buffer, userinfo->pw_dir);
+      }
+    }
+    else
+    {
+      if ((userinfo = getpwuid(getuid())))
+      {
+        strcpy(buffer, userinfo->pw_dir);
+      }
+    }
+    strcat(buffer, path);
+
+    return(realpath(buffer, resolved_path));
+  }
+  return(realpath(path, resolved_path));
 }
 
 #endif

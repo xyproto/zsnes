@@ -52,7 +52,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define DIR_SLASH_C_OTHER '\\'
 #define ROOT_LEN 1 //"/"
 #define DIR_R_ACCESS (R_OK|X_OK)
-#define IS_ABSOLUTE(path) (*(path) == '/')
+#define IS_ABSOLUTE(path) ((*(path) == '/') || (*(path) == '~'))
 #else
 #define DIR_SLASH "\\"
 #define DIR_SLASH_C '\\'
@@ -112,6 +112,7 @@ bool mkpath(const char *path, mode_t mode);
 
 #ifdef __UNIXSDL__
 char *realpath_link(const char *path, char *resolved_path);
+char *realpath_tilde(const char *path, char *resolved_path);
 #else
 #define realpath_link realpath_native
 #endif
