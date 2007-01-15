@@ -839,6 +839,7 @@ NEWSYM ChangeOps, dd 0
 NEWSYM SFXProc,    dd 0
 NEWSYM EMUPause, db 0
 NEWSYM INCRFrame, db 0
+NEWSYM NoHDMALine, db 0
 SECTION .text
 
 NEWSYM cpuover
@@ -1070,12 +1071,17 @@ NEWSYM cpuover
     ProcessIRQStuff
     mov ax,[resolutn]
     cmp [curypos],ax
-    jb .drawline
-
-
-;    mov ax,[resolutn]
-;    cmp [curypos],ax
-;    jb .drawline
+    jne .step2
+    cmp byte[doirqnext],1
+    je .drawline2
+    mov byte[NoHDMALine],1
+.drawline2
+    je .drawline
+    jmp .skiphdma
+.step2
+    cmp [curypos],ax
+    jbe .drawline
+.skiphdma
     xor ebx,ebx
     mov bl,[esi]
     inc esi
@@ -1127,8 +1133,11 @@ NEWSYM cpuover
     cmp word[VIRQLoc],0
     je .nodohdma
 .nooffby1line
+    cmp byte[NoHDMALine],1
+    je .nodohdma
     call exechdma
 .nodohdma
+    mov byte[NoHDMALine],0
     cmp word[curypos],1
     jne .nocache
     call cachevideo
