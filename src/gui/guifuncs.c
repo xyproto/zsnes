@@ -327,10 +327,6 @@ void GUIRestoreVars()
   psr_cfg_run(read_md_vars, ZCfgPath, "zmovie.cfg");
   psr_cfg_run(read_input_vars, ZCfgPath, "zinput.cfg");
 
-  CheckValueBounds(&per2exec, 50, 150, 100, UD);
-  CheckValueBounds(&SRAMSave5Sec, 0, 1, 0, UB);
-  CheckValueBounds(&bgfixer, 0, 1, 0, UB);
-
 #ifdef __MSDOS__
   CheckValueBounds(&pl1contrl, 0, 16, 1, UB);
   CheckValueBounds(&pl1p209, 0, 1, 0, UB);
@@ -353,13 +349,48 @@ void GUIRestoreVars()
 #ifndef __MSDOS__
   CheckValueBounds(&joy_sensitivity, 0, 32767, 16384, UW);
 #endif
-
-  CheckValueBounds(&pl12s34, 0, 1, 0, UB);
-  CheckValueBounds(&AllowUDLR, 0, 1, 0, UB);
+#ifdef __WIN32__
+  CheckValueBounds(&MouseSensitivity, 1, 255, 1, UB);
+#endif
 #ifdef __MSDOS__
   CheckValueBounds(&SidewinderFix, 0, 1, 0, UB);
 #endif
+  CheckValueBounds(&pl12s34, 0, 1, 0, UB);
+  CheckValueBounds(&AllowUDLR, 0, 1, 0, UB);
+  CheckValueBounds(&Turbo30hz, 0, 1, 1, UB);
+  CheckValueBounds(&mouse1lh, 0, 1, 0, UB);
+  CheckValueBounds(&mouse2lh, 0, 1, 0, UB);
+  CheckValueBounds(&device1, 0, 1, 0, UB);
+  CheckValueBounds(&device2, 0, 4, 0, UB);
+  CheckValueBounds(&GUIComboGameSpec, 0, 1, 0, UB);
+  CheckValueBounds(&GameSpecificInput, 0, 1, 0, UB);
 
+  CheckValueBounds(&MMXSupport, 0, 1, 1, UB);
+#ifdef __WIN32__
+  CheckValueBounds(&PauseFocusChange, 0, 1, 0, UB);
+  CheckValueBounds(&HighPriority, 0, 1, 0, UB);
+  CheckValueBounds(&DisableScreenSaver, 0, 1, 1, UB);
+#endif
+  CheckValueBounds(&newengen, 0, 1, 1, UB);
+  CheckValueBounds(&bgfixer, 0, 1, 0, UB);
+#ifdef NO_PNG
+  CheckValueBounds(&ScreenShotFormat, 0, 0, 0, UB);
+#else
+  CheckValueBounds(&ScreenShotFormat, 0, 1, 0, UB);
+#endif
+  CheckValueBounds(&AutoPatch, 0, 1, 1, UB);
+  CheckValueBounds(&DisplayInfo, 0, 1, 1, UB);
+  CheckValueBounds(&RomInfo, 0, 1, 1, UB);
+  CheckValueBounds(&FPSAtStart, 0, 1, 0, UB);
+  CheckValueBounds(&TimerEnable, 0, 1, 0, UB);
+  CheckValueBounds(&TwelveHourClock, 0, 1, 0, UB);
+  CheckValueBounds(&ClockBox, 0, 1, 1, UB);
+  CheckValueBounds(&SmallMsgText, 0, 1, 0, UB);
+  CheckValueBounds(&GUIEnableTransp, 0, 1, 0, UB);
+
+#ifdef __MSDOS__
+  CheckValueBounds(&Palette0, 0, 1, 1, UB);
+#endif
 #ifdef __WIN32__
   CheckValueBounds(&cvidmode, 0, 41, 2, UB);
   CheckValueBounds(&PrevWinMode, 0, 41, 2, UB);
@@ -382,35 +413,15 @@ void GUIRestoreVars()
 #ifndef __MSDOS__
   CheckValueBounds(&CustomResX, 256, 2048, 640, UD);
   CheckValueBounds(&CustomResY, 224, 1536, 480, UD);
-  CheckValueBounds(&Keep4_3Ratio, 0, 1, 1, UB);
 #endif
-  CheckValueBounds(&newengen, 0, 1, 1, UB);
-  CheckValueBounds(&scanlines, 0, 3, 0, UB);
+
   CheckValueBounds(&antienab, 0, 1, 0, UB);
-#ifndef __UNIXSDL__
-  CheckValueBounds(&vsyncon, 0, 1, 0, UB);
-#endif
-#ifdef __WIN32__
-  CheckValueBounds(&TripleBufferWin, 0, 1, 0, UB);
-#endif
-#ifdef __MSDOS__
-  CheckValueBounds(&smallscreenon, 0, 1, 0, UD);
-  CheckValueBounds(&ScreenScale, 0, 1, 0, UB);
-  CheckValueBounds(&Triplebufen, 0, 1, 0, UB);
-#endif
 #ifdef __OPENGL__
   CheckValueBounds(&BilinearFilter, 0, 1, 0, UB);
 #endif
-  CheckValueBounds(&En2xSaI, 0, 3, 0, UB);
-#ifndef __MSDOS__
-  CheckValueBounds(&hqFilter, 0, 1, 0, UB);
-  CheckValueBounds(&hqFilterlevel, 2, 4, 2, UB);
-#endif
-  CheckValueBounds(&GrayscaleMode, 0, 1, 0, UB);
-  CheckValueBounds(&Mode7HiRes16b, 0, 1, 0, UD);
   CheckValueBounds(&NTSCFilter, 0, 1, 0, UB);
-  CheckValueBounds(&NTSCRef, 0, 1, 0, UB);
   CheckValueBounds(&NTSCBlend, 0, 1, 0, UB);
+  CheckValueBounds(&NTSCRef, 0, 1, 0, UB);
   CheckValueBounds(&NTSCHue, -100, 100, 0, SB);
   CheckValueBounds(&NTSCSat, -100, 100, 0, SB);
   CheckValueBounds(&NTSCCont, -100, 100, 0, SB);
@@ -422,73 +433,105 @@ void GUIRestoreVars()
   CheckValueBounds(&NTSCFringe, -100, 100, 0, SB);
   CheckValueBounds(&NTSCBleed, -100, 100, 0, SB);
   CheckValueBounds(&NTSCWarp, -100, 100, 0, SB);
+  CheckValueBounds(&En2xSaI, 0, 3, 0, UB);
+#ifndef __MSDOS__
+  CheckValueBounds(&hqFilter, 0, 1, 0, UB);
+  CheckValueBounds(&hqFilterlevel, 2, 4, 2, UB);
+#endif
+  CheckValueBounds(&scanlines, 0, 3, 0, UB);
+  CheckValueBounds(&GrayscaleMode, 0, 1, 0, UB);
+  CheckValueBounds(&Mode7HiRes16b, 0, 1, 0, UD);
+#ifndef __UNIXSDL__
+  CheckValueBounds(&vsyncon, 0, 1, 0, UB);
+#endif
+#ifdef __WIN32__
+  CheckValueBounds(&TripleBufferWin, 0, 1, 0, UB);
+#endif
+#ifdef __MSDOS__
+  CheckValueBounds(&Triplebufen, 0, 1, 0, UB);
+#endif
+#ifdef __WIN32__
+  CheckValueBounds(&ForceRefreshRate, 0, 1, 0, UB);
+  CheckValueBounds(&SetRefreshRate, 50, 180, 60, UB);
+  CheckValueBounds(&KitchenSync, 0, 1, 0, UB);
+  CheckValueBounds(&KitchenSyncPAL, 0, 1, 0, UB);
+#endif
+#ifndef __MSDOS__
+  CheckValueBounds(&Keep4_3Ratio, 0, 1, 1, UB);
+#else
+  CheckValueBounds(&smallscreenon, 0, 1, 0, UD);
+  CheckValueBounds(&ScreenScale, 0, 1, 0, UB);
+#endif
+  CheckValueBounds(&gammalevel, 0, 15, 0, UB);
 
+  CheckValueBounds(&SPCDisable, 0, 1, 0, UB);
   CheckValueBounds(&soundon, 0, 1, 1, UB);
   CheckValueBounds(&StereoSound, 0, 1, 1, UB);
-  CheckValueBounds(&SoundQuality, 0, 6, 5, UD);
-  CheckValueBounds(&MusicRelVol, 0, 100, 100, UB);
   CheckValueBounds(&RevStereo, 0, 1, 0, UB);
-#ifdef __MSDOS__
-  CheckValueBounds(&Force8b, 0, 1, 0, UB);
-#endif
-  CheckValueBounds(&SPCDisable, 0, 1, 0, UB);
-  CheckValueBounds(&EchoDis, 0, 1, 0, UB);
   CheckValueBounds(&Surround, 0, 1, 0, UB);
-  CheckValueBounds(&SoundInterpType, 0, 3, 1, UB);
-  CheckValueBounds(&LowPassFilterType, 0, 3, 0, UB);
 #ifdef __WIN32__
   CheckValueBounds(&PrimaryBuffer, 0, 1, 0, UB);
 #endif
+#ifdef __MSDOS__
+  CheckValueBounds(&Force8b, 0, 1, 0, UB);
+#endif
+  CheckValueBounds(&SoundQuality, 0, 6, 5, UD);
+  CheckValueBounds(&MusicRelVol, 0, 100, 100, UB);
+  CheckValueBounds(&SoundInterpType, 0, 3, 1, UB);
+  CheckValueBounds(&LowPassFilterType, 0, 3, 0, UB);
+#ifdef __MSDOS__
+  CheckValueBounds(&DisplayS, 0, 1, 0, UB);
+#endif
+  CheckValueBounds(&EchoDis, 0, 1, 0, UB);
 
+  CheckValueBounds(&RewindStates, 0, 99, 8, UB);
+  CheckValueBounds(&RewindFrames, 1, 99, 15, UB);
+  CheckValueBounds(&nosaveSRAM, 0, 1, 0, UB);
+  CheckValueBounds(&SRAMSave5Sec, 0, 1, 0, UB);
+  CheckValueBounds(&SRAMState, 0, 1, 1, UB);
+  CheckValueBounds(&LatestSave, 0, 1, 0, UB);
+  CheckValueBounds(&AutoIncSaveSlot, 0, 1, 0, UB);
+  CheckValueBounds(&AutoIncSaveSlotBlock, 0, 1, 0, UB);
+  CheckValueBounds(&AutoState, 0, 1, 0, UB);
+  CheckValueBounds(&PauseLoad, 0, 1, 0, UB);
+  CheckValueBounds(&PauseRewind, 0, 1, 0, UB);
+
+  CheckValueBounds(&per2exec, 50, 150, 100, UD);
+  CheckValueBounds(&HacksDisable, 0, 1, 0, UB);
   CheckValueBounds(&frameskip, 0, 10, 0, UB);
   CheckValueBounds(&maxskip, 0, 9, 9, UB);
-  CheckValueBounds(&EmuSpeed, 0, 58, 29, UB);
-  CheckValueBounds(&Turbo30hz, 0, 1, 1, UB);
   CheckValueBounds(&FastFwdToggle, 0, 1, 0, UB);
   CheckValueBounds(&FFRatio, 0, 28, 8, UB);
   CheckValueBounds(&SDRatio, 0, 28, 0, UB);
-  CheckValueBounds(&SRAMState, 0, 1, 1, UB);
-  CheckValueBounds(&AutoIncSaveSlot, 0, 1, 0, UB);
-  CheckValueBounds(&AutoIncSaveSlotBlock, 0, 1, 0, UB);
-  CheckValueBounds(&LatestSave, 0, 1, 0, UB);
-  CheckValueBounds(&AutoState, 0, 1, 0, UB);
-  CheckValueBounds(&RewindStates, 0, 99, 8, UB);
-  CheckValueBounds(&RewindFrames, 1, 99, 15, UB);
-#ifdef NO_PNG
-  CheckValueBounds(&ScreenShotFormat, 0, 0, 0, UB);
-#else
-  CheckValueBounds(&ScreenShotFormat, 0, 1, 0, UB);
-#endif
-  CheckValueBounds(&MMXSupport, 0, 1, 1, UB);
-  CheckValueBounds(&SmallMsgText, 0, 1, 0, UB);
-  CheckValueBounds(&GUIEnableTransp, 0, 1, 0, UB);
-  CheckValueBounds(&PauseLoad, 0, 1, 0, UB);
-  CheckValueBounds(&PauseRewind, 0, 1, 0, UB);
-  CheckValueBounds(&FPSAtStart, 0, 1, 0, UB);
-  CheckValueBounds(&TimerEnable, 0, 1, 0, UB);
-  CheckValueBounds(&TwelveHourClock, 0, 1, 0, UB);
-  CheckValueBounds(&AutoLoadCht, 0, 1, 0, UB);
-  CheckValueBounds(&AutoPatch, 0, 1, 1, UB);
-  CheckValueBounds(&DisplayInfo, 0, 1, 1, UB);
-  CheckValueBounds(&RomInfo, 0, 1, 1, UB);
-#ifdef __WIN32__
-  CheckValueBounds(&PauseFocusChange, 0, 1, 0, UB);
-  CheckValueBounds(&HighPriority, 0, 1, 0, UB);
-  CheckValueBounds(&SaveMainWindowPos, 0, 1, 1, UB);
-  CheckValueBounds(&AllowMultipleInst, 0, 1, 1, UB);
-  CheckValueBounds(&DisableScreenSaver, 0, 1, 1, UB);
-#endif
-  CheckValueBounds(&cfgdontsave, 0, 1, 0, UB);
-  CheckValueBounds(&FirstTimeData, 0, 1, 1, UB);
+  CheckValueBounds(&EmuSpeed, 0, 58, 29, UB);
 
   CheckValueBounds(&guioff, 0, 1, 0, UB);
   CheckValueBounds(&showallext, 0, 1, 0, UB);
 #ifdef __MSDOS__
-  CheckValueBounds(&GUIloadfntype, 0, 2, 0, UB);
+  CheckValueBounds(&GUIloadfntype, 0, 2, 2, UB);
 #else
   CheckValueBounds(&GUIloadfntype, 0, 1, 0, UB);
 #endif
   CheckValueBounds(&prevlfreeze, 0, 1, 0, UB);
+  CheckValueBounds(&GUIRClick, 0, 1, 0, UB);
+  CheckValueBounds(&lhguimouse, 0, 1, 0, UB);
+  CheckValueBounds(&mouseshad, 0, 1, 1, UB);
+  CheckValueBounds(&mousewrap, 0, 1, 0, UB);
+#ifdef __WIN32__
+  CheckValueBounds(&TrapMouseCursor, 0, 1, 0, UB);
+  CheckValueBounds(&MouseWheel, 0, 1, 1, UB);
+#endif
+  CheckValueBounds(&esctomenu, 0, 1, 1, UB);
+  CheckValueBounds(&JoyPad1Move, 0, 1, 0, UB);
+  CheckValueBounds(&FilteredGUI, 0, 1, 1, UB);
+  CheckValueBounds(&newfont, 0, 1, 0, UB);
+  CheckValueBounds(&savewinpos, 0, 1, 0, UB);
+  for (i=1 ; i<22 ; i++)
+  {
+    CheckValueBounds(GUIwinposx+i, -233, 254, 10, SD);
+    CheckValueBounds(GUIwinposy+i, 8, 221, 20, SD);
+  }
+  CheckValueBounds(&GUIEffect, 0, 5, 0, UB);
   CheckValueBounds(&GUIRAdd, 0, 31, 15, UB);
   CheckValueBounds(&GUIGAdd, 0, 31, 10, UB);
   CheckValueBounds(&GUIBAdd, 0, 31, 31, UB);
@@ -498,26 +541,13 @@ void GUIRestoreVars()
   CheckValueBounds(&GUIWRAdd, 0, 31, 8, UB);
   CheckValueBounds(&GUIWGAdd, 0, 31, 8, UB);
   CheckValueBounds(&GUIWBAdd, 0, 31, 25, UB);
-  CheckValueBounds(&GUIEffect, 0, 5, 0, UB);
-  CheckValueBounds(&FilteredGUI, 0, 1, 1, UB);
-  CheckValueBounds(&mousewrap, 0, 1, 0, UB);
-  CheckValueBounds(&mouseshad, 0, 1, 1, UB);
-  CheckValueBounds(&esctomenu, 0, 1, 1, UB);
-  CheckValueBounds(&savewinpos, 0, 1, 0, UB);
-  for (i=1 ; i<22 ; i++)
-  {
-    CheckValueBounds(GUIwinposx+i, -233, 254, 10, SD);
-    CheckValueBounds(GUIwinposy+i, 8, 221, 20, SD);
-  }
 #ifdef __WIN32__
-  CheckValueBounds(&MouseWheel, 0, 1, 1, UB);
-  CheckValueBounds(&TrapMouseCursor, 0, 1, 0, UB);
   CheckValueBounds(&AlwaysOnTop, 0, 1, 0, UB);
+  CheckValueBounds(&SaveMainWindowPos, 0, 1, 1, UB);
+  CheckValueBounds(&AllowMultipleInst, 0, 1, 1, UB);
 #endif
-  CheckValueBounds(&GUIComboGameSpec, 0, 1, 0, UB);
-  CheckValueBounds(&GUIRClick, 0, 1, 0, UB);
-  CheckValueBounds(&JoyPad1Move, 0, 1, 0, UB);
 
+  CheckValueBounds(&AutoLoadCht, 0, 1, 0, UB);
   CheckValueBounds(&CheatSrcByteSize, 0, 3, 0, UB);
   CheckValueBounds(&CheatSrcByteBase, 0, 1, 0, UB);
   CheckValueBounds(&CheatSrcSearchType, 0, 1, 0, UB);
@@ -525,30 +555,17 @@ void GUIRestoreVars()
 
   CheckValueBounds(&MovieDisplayFrame, 0, 1, 0, UB);
   CheckValueBounds(&MovieStartMethod, 0, 3, 0, UB);
+  CheckValueBounds(&MZTForceRTR, 0, 2, 0, UB);
   CheckValueBounds(&MovieVideoMode, 0, 5, 4, UB);
   CheckValueBounds(&MovieAudio, 0, 1, 1, UB);
-  CheckValueBounds(&MovieVideoAudio, 0, 1, 1, UB);
   CheckValueBounds(&MovieAudioCompress, 0, 1, 1, UB);
-#ifdef __MSDOS__
-  CheckValueBounds(&DisplayS, 0, 1, 0, UB);
-  CheckValueBounds(&Palette0, 0, 1, 1, UB);
-#endif
-#ifdef __WIN32__
-  CheckValueBounds(&KitchenSync, 0, 1, 0, UB);
-  CheckValueBounds(&KitchenSyncPAL, 0, 1, 0, UB);
-  CheckValueBounds(&ForceRefreshRate, 0, 1, 0, UB);
-  CheckValueBounds(&SetRefreshRate, 50, 180, 60, UB);
-  CheckValueBounds(&MouseSensitivity, 1, 255, 1, UB);
-#endif
-  CheckValueBounds(&ClockBox, 0, 1, 1, UB);
-  CheckValueBounds(&mouse1lh, 0, 1, 0, UB);
-  CheckValueBounds(&mouse2lh, 0, 1, 0, UB);
-  CheckValueBounds(&lhguimouse, 0, 1, 0, UB);
-  CheckValueBounds(&gammalevel, 0, 15, 0, UB);
+  CheckValueBounds(&MovieVideoAudio, 0, 1, 1, UB);
+
+  CheckValueBounds(&FirstTimeData, 0, 1, 1, UB);
 #ifndef NO_DEBUGGER
   CheckValueBounds(&debuggeron, 0, 1, 0, UB);
 #endif
-  CheckValueBounds(&MZTForceRTR, 0, 2, 0, UB);
+  CheckValueBounds(&cfgdontsave, 0, 1, 0, UB);
 
   //if (TimeChecker == CalcCfgChecksum()) //What does this do?
   {
