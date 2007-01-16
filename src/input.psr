@@ -294,6 +294,7 @@ SSAutoFire dd 13
 SSPause dd 14
 
 @
-@ Port 0 and Port 1 device settings
+@ Port 1 and Port 2 device settings (0 = GAMEPAD, 1 = Mouse)
 device1 db 0
+@ (0 = GAMEPAD, 1 = Mouse, 2 = Super Scope, 3 = 1 Justifier, 4 = 2 Justifiers)
 device2 db 0
