@@ -728,12 +728,20 @@ ProcessMouseButtons:
   pushad
   call MovieDumpRaw
   popad
-  cmp byte[MovieVideoMode],4
+  cmp byte[MovieVideoMode],2
   jb .nomencoder
   cmp byte[mencoderExists],0
   jne .nomencoder
   call guimencodermsg
 .nomencoder
+  cmp byte[MovieAudio],0
+  je .nolame
+  cmp byte[MovieAudioCompress],0
+  je .nolame
+  cmp byte[lameExists],0
+  jne .nolame
+  call guilamemsg
+.nolame
   ret
 .noDumpRaw
   cmp byte[GUICBHold],35  ; stop dump
