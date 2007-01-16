@@ -26,7 +26,7 @@ EXTSYM coladdr,curblank,curfps,cvidmode,delay,extlatch,En2xSaI
 EXTSYM gammalevel,hirestiledat,ignor512,latchx,latchy,maxbr,ForceNewGfxOff
 EXTSYM newengen,nextframe,objptr,pressed,prevpal,res512switch,resolutn
 EXTSYM romispal,scaddtype,scanlines,selcA000,t1cc,vcache4b,vesa2_bpos
-EXTSYM spritetablea,vesa2_clbit,vesa2_gpos,vesa2_rpos,vesa2red10,vesa2selec
+EXTSYM spritetablea,vesa2_clbit,vesa2_gpos,vesa2_rpos,vesa2red10
 EXTSYM vidbuffer,vram,KeyStateSelct,soundon
 EXTSYM makepal,bg1objptr,DecompAPtr,HalfTransB,HalfTransC
 EXTSYM changepal,saveselectpal,displayfpspal,superscopepal,DrawScreen,MMXSupport
@@ -44,7 +44,7 @@ EXTSYM zst_determine_newest,newestfiledate,zst_exists,ClockBox,SSAutoFire
 %ifndef __MSDOS__
 EXTSYM MouseMoveX,MouseMoveY,MouseButtons,MultiMouseProcess,mouse
 %else
-EXTSYM SB_blank,vsyncon,Triplebufen,granadd,Palette0,smallscreenon,ScreenScale
+EXTSYM SB_blank,vsyncon,Triplebufen,granadd,Palette0,smallscreenon,ScreenScale,vesa2selec
 %endif
 
 %ifdef __UNIXSDL__
