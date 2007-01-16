@@ -1295,38 +1295,6 @@ GUIWinClicked:
 %%noclick
 %endmacro
 
-%macro GUIClickCButton4 5
-  GUIClickArea %1+1,%2+3,%1+6,%2+8,%%noclick
-  cmp %3,%5
-  jne %%set
-  xor %3,%5
-  jmp %%done
-%%set
-  mov %3,%5
-%%done
-  mov al,%3
-  mov %4,al
-%ifdef __MSDOS__
-  call ClearScreen
-  cmp byte[En2xSaI],0
-  jne %%nomodeq
-  cmp byte[cvidmode],2
-  jne %%nomodeq
-  jmp %%refresh
-%%nomodeq
-  cmp byte[cvidmode],5
-  jne %%nomodex
-%%refresh
-  mov byte[cbitmode],1
-  call initvideo2
-  mov byte[cbitmode],0
-  call GUISetPal
-%%nomodex
-%endif
-  ret
-%%noclick
-%endmacro
-
 %macro GUIClickCButton5 4
   GUIClickArea %1+1,%2+3,%1+6,%2+8,%%noclick
   cmp %3,%4
@@ -1708,6 +1676,30 @@ SECTION .text
   GUIClickArea %1+1,%2+1,%1+7,%2+7,%%noclick
   mov %3,%4
   mov %5,%6
+%%noclick
+%endmacro
+
+%macro GUIPButtonHoleS 4
+  GUIClickArea %1+1,%2+1,%1+7,%2+7,%%noclick
+  mov %3,%4
+%ifdef __MSDOS__
+  cmp %3,0
+  je %%noclear
+  pushad
+  call ClearScreen
+  popad
+%%noclear
+  cmp byte[cvidmode],2  ;modeQ
+  je %%refresh
+  cmp byte[cvidmode],5
+  jne %%nomodex
+%%refresh
+  mov byte[cbitmode],1
+  call initvideo2
+  mov byte[cbitmode],0
+  call GUISetPal
+%%nomodex
+%endif
 %%noclick
 %endmacro
 
@@ -2393,8 +2385,8 @@ DisplayGUIVideoClick:
   cmp byte[GUISLVID+ebx],0
   je near .nocheckboxb
   FilterExcl 168,87,En2xSaI,hqFilter,NTSCFilter
-  GUIPButtonHole 18,87,byte[scanlines],0
-  GUIPButtonHole 168,87,byte[scanlines],1
+  GUIPButtonHoleS 18,87,byte[scanlines],0
+  GUIPButtonHoleS 168,87,byte[scanlines],1
 .nocheckboxb
   xor ebx,ebx
   mov bl,[cvidmode]
@@ -2402,8 +2394,8 @@ DisplayGUIVideoClick:
   je near .nohsline
   FilterExcl 68,87,En2xSaI,hqFilter,NTSCFilter
   FilterExcl 118,87,En2xSaI,hqFilter,NTSCFilter
-  GUIPButtonHole 68,87,byte[scanlines],2
-  GUIPButtonHole 118,87,byte[scanlines],3
+  GUIPButtonHoleS 68,87,byte[scanlines],2
+  GUIPButtonHoleS 118,87,byte[scanlines],3
 .nohsline
 
   GUIClickCButton 18,115,byte[GrayscaleMode]  ; Grayscale

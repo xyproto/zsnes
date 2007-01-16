@@ -136,6 +136,25 @@
 %%nohotkey
 %endmacro
 
+%macro GUIKeyButtonHoleS 3
+  cmp dh,%3
+  jne %%nohotkey
+  mov byte[%1],%2
+%%nohotkey
+%ifdef __MSDOS__
+  cmp byte[cvidmode],2  ;modeQ
+  je %%refresh
+  cmp byte[cvidmode],5
+  jne %%nomodex
+%%refresh
+  mov byte[cbitmode],1
+  call initvideo2
+  mov byte[cbitmode],0
+  call GUISetPal
+%%nomodex
+%endif
+%endmacro
+
 %macro ToUpperASM 0
   cmp dh,'a'
   jb %%notlcase
@@ -1117,27 +1136,16 @@ GUIVideoKeys:
   mov al,[cvidmode]
   cmp byte[GUISLVID+eax],0
   je .nofullscanlines
-  GUIKeyButtonHole scanlines,0,'O'
+  GUIKeyButtonHoleS scanlines,0,'O'
   cmp dh,'F'
   jne .nofullscanlines
   mov byte[En2xSaI],0
   mov byte[hqFilter],0
   mov byte[NTSCFilter],0
+  pushad
   call ClearScreen
-  GUIKeyButtonHole scanlines,1,'F'
-%ifdef __MSDOS__
-  cmp byte[cvidmode],2
-  jne .nomodeq
-  jmp .refresh
-.nomodeq
-  cmp byte[cvidmode],5
-  jne .nofullscanlines
-.refresh
-  mov byte[cbitmode],1
-  call initvideo2
-  mov byte[cbitmode],0
-  call GUISetPal
-%endif
+  popad
+  GUIKeyButtonHoleS scanlines,1,'F'
 .nofullscanlines
   xor eax,eax
   mov al,[cvidmode]
@@ -1149,7 +1157,7 @@ GUIVideoKeys:
   mov byte[hqFilter],0
   mov byte[NTSCFilter],0
   call ClearScreen
-  GUIKeyButtonHole scanlines,3,'5'
+  GUIKeyButtonHoleS scanlines,3,'5'
 .nohalfscanlines
   cmp dh,'2'
   jne .noquarterscanlines
@@ -1157,7 +1165,7 @@ GUIVideoKeys:
   mov byte[hqFilter],0
   mov byte[NTSCFilter],0
   call ClearScreen
-  GUIKeyButtonHole scanlines,2,'2'
+  GUIKeyButtonHoleS scanlines,2,'2'
 .noquarterscanlines
   cmp dh,'Q'
   jne .nohqfilter
