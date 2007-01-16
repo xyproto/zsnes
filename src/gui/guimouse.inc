@@ -1687,8 +1687,6 @@ SECTION .text
   je %%noclear
   pushad
   call ClearScreen
-  popad
-%%noclear
   cmp byte[cvidmode],2  ;modeQ
   je %%refresh
   cmp byte[cvidmode],5
@@ -1699,6 +1697,8 @@ SECTION .text
   mov byte[cbitmode],0
   call GUISetPal
 %%nomodex
+  popad
+%%noclear
 %endif
 %%noclick
 %endmacro
