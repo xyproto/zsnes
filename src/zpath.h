@@ -37,6 +37,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define X_OK F_OK //Drop down to F_OK because MSVC is stupid
 #define W_OK 2
 #define R_OK 4
+typedef unsigned short mode_t;
 #endif
 
 #if !defined(__cplusplus) && !defined(bool)
