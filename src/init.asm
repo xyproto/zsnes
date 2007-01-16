@@ -26,7 +26,7 @@ EXTSYM romloadskip,start65816,showinfogui,inittable,zexit
 EXTSYM SA1inittable,MessageOn,Msgptr,MsgCount,sndrot,SnowTimer
 EXTSYM inittablec,newgfx16b,DisplayInfo,ssautosw,GUIDelayB,pl12s34
 EXTSYM Output_Text,Turbo30hz,CombinDataLocl,current_zst
-EXTSYM BackupSystemVars,SnowData,SnowVelDist,Setper2exec
+EXTSYM BackupSystemVars,SnowData,SnowVelDist,Setper2exec,ShowMMXSupport
 EXTSYM JoyRead,pressed,mousebuttons,mousexdir,mouseydir,mousexpos,mouseypos
 EXTSYM pl1selk,pl1startk,pl1upk,pl1downk,pl1leftk,pl1rightk,pl1Xk
 EXTSYM pl1Ak,pl1Lk,pl1Yk,pl1Bk,pl1Rk,pl1Xtk,pl1Ytk,pl1Atk,pl1Btk,pl1Ltk,pl1Rtk
@@ -913,11 +913,6 @@ NEWSYM DosExit ; Terminate Program
 
 NEWSYM MMXCheck
     ; Check for cpu that doesn't support CPUID
-
-    cmp byte[MMXSupport],0
-    je .nommx
-
-    mov byte[MMXSupport],0
     mov byte[MMXextSupport],0
 
     ; Real way to check for presence of CPUID instruction  -kode54
@@ -930,15 +925,15 @@ NEWSYM MMXCheck
     pushfd
     pop eax
     xor eax,edx
-    jz .nommx
+    jz .nommx2
 
     ; MMX support
     mov eax,1
     CPUID
 
     test edx,1 << 23
-    jz .nommx
-    mov byte[MMXSupport],1
+    jz .nommx2
+    mov byte[ShowMMXSupport],1
 
     ; Check if CPU has SSE (also support mmxext)
     test edx,1 << 25
@@ -954,6 +949,10 @@ NEWSYM MMXCheck
     jz .nommx
     mov byte[MMXextSupport],1
 .nommx
+    ret
+.nommx2
+    mov byte[ShowMMXSupport],0
+    mov byte[MMXSupport],0
     ret
 
 ;*******************************************************

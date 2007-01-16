@@ -810,8 +810,9 @@ GUIOptionKeys:
 .nonewgfx
   cmp dh,'M'
   jne .nommxcopy
-  xor byte[MMXSupport],1
-  call MMXCheck
+  cmp byte[ShowMMXSupport],1
+  jne .nommxcopy
+  GUIKeyCheckbox MMXSupport,'M'
 .nommxcopy
   GUIKeyButtonHole ScreenShotFormat,0,'P'
 %ifndef NO_PNG

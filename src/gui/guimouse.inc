@@ -1370,13 +1370,6 @@ GUIWinClicked:
 %%noclick
 %endmacro
 
-%macro GUIClickCButtonMMX 3
-  GUIClickArea %1+1,%2+3,%1+6,%2+8,%%noclick
-  xor %3,1
-  call MMXCheck
-%%noclick
-%endmacro
-
 %macro GUIClickCButton5MMXC 4
   GUIClickArea %1+1,%2+3,%1+6,%2+8,%%noclick
   cmp byte[MMXSupport],0
@@ -2217,7 +2210,10 @@ DisplayGUIInputClick:
   ret
 
 DisplayGUIOptionClick:
-  GUIClickCButtonMMX 11,18,byte[MMXSupport]
+  cmp byte[ShowMMXSupport],1
+  jne .nommx
+  GUIClickCButton 11,18,byte[MMXSupport]
+.nommx
 %ifdef __WIN32__
   GUIClickCButton 11,28,byte[PauseFocusChange]
   GUIClickCButton 11,38,byte[HighPriority]

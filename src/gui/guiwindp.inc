@@ -1749,8 +1749,15 @@ SECTION .text
 DisplayGUIOption:       ; Emu Options
   GUIDrawWindowBox 4,GUIOptionDisp
 
+%ifndef __WIN32__
+  cmp byte[ShowMMXSupport],1
+  jne .nommx
+%endif
   GUIDisplayTextY 4,11,13,GUIOptionTextA
+  cmp byte[ShowMMXSupport],1
+  jne .nommx
   GUIDisplayCheckboxu 4,11,18,MMXSupport,GUIOptionTextA1,7
+.nommx
 %ifdef __WIN32__
   GUIDisplayCheckboxu 4,11,28,PauseFocusChange,GUIOptionTextA2,13
   GUIDisplayCheckboxu 4,11,38,HighPriority,GUIOptionTextA3,16
@@ -1797,6 +1804,7 @@ GUIOptionTextA2 db 'PAUSE EMU IN BACKGROUND',0
 GUIOptionTextA3 db 'INCREASE EMU PRIORITY',0
 GUIOptionTextA4 db 'DISABLE POWER MANAGEMENT',0
 %endif
+NEWSYM ShowMMXSupport, db 2
 
 GUIOptionTextB db 'GFX ENGINES:',0
 GUIOptionTextB1 db 'USE NEW GFX ENG',0
