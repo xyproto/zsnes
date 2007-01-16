@@ -19,6 +19,17 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+#ifndef restrict
+  #if defined (__GNUC__)
+    #define restrict __restrict__
+  #elif defined (_MSC_VER) && _MSC_VER > 1300
+    #define restrict __restrict
+  #else
+    /* no support for restricted pointers */
+    #define restrict
+  #endif
+#endif
+
 #include "ntsc.h"
 
 	/* Source image */
@@ -137,8 +148,8 @@ static void ntsc_blit( snes_ntsc_t const* ntsc, unsigned short const* input, lon
 		SNES_NTSC_BEGIN_ROW( ntsc, burst_phase,
 				snes_ntsc_black, snes_ntsc_black, *line_in );
 		/* use of __restrict allows compiler to optimize memory accesses better */
-		unsigned short* __restrict line_out  = (unsigned short*) rgb_out;
-		unsigned short* __restrict line_out2 = (unsigned short*) ((char*) line_out + out_pitch);
+		unsigned short* restrict line_out  = (unsigned short*) rgb_out;
+		unsigned short* restrict line_out2 = (unsigned short*) ((char*) line_out + out_pitch);
 		int n;
 		line_in++;
 
