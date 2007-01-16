@@ -2056,18 +2056,18 @@ DisplayGUIMovieClick:
   GUIPHoldbutton 55,80,97,91,17
   GUIPHoldbutton 103,80,145,91,18
   GUIPHoldbutton 151,80,193,91,32
-  GUIPHoldbutton 7,109,50,120,29
-  GUIPHoldbutton 85,109,138,120,30
-  GUIPHoldbutton 173,109,203,120,31
+  GUIPHoldbutton 7,108,50,119,29
+  GUIPHoldbutton 85,108,138,119,30
+  GUIPHoldbutton 173,108,203,119,31
 
   GUIPButtonHole 8,64,byte[MovieStartMethod],0    ; Start From
   GUIPButtonHole 43,64,byte[MovieStartMethod],1
   GUIPButtonHole 89,64,byte[MovieStartMethod],2
   GUIPButtonHole 135,64,byte[MovieStartMethod],3
 
-  DGOptnsProcBox 58,111,[KeyInsrtChap]           ; Keyboard Shortcut Boxes
-  DGOptnsProcBox 146,111,[KeyPrevChap]
-  DGOptnsProcBox 210,111,[KeyNextChap]
+  DGOptnsProcBox 58,110,[KeyInsrtChap]           ; Keyboard Shortcut Boxes
+  DGOptnsProcBox 146,110,[KeyPrevChap]
+  DGOptnsProcBox 210,110,[KeyNextChap]
 
   DGOptnsProcBox 135,124,[KeyRTRCycle]
 

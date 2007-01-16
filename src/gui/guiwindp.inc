@@ -3846,7 +3846,7 @@ DisplayGUIMovies:    ; Movie Record/Playback options
   jne near .notcontrols
 
   GUIDisplayTextY 15,8,56,GUIMovieTextB           ; "Start From" Section
-  GUIDisplayTextY 15,8,101,GUIMovieTextD           ; Chapters
+  GUIDisplayTextY 15,8,100,GUIMovieTextD           ; Chapters
 
   GUIDisplayButtonHoleTu 15,8,64,byte[MovieStartMethod],0,GUIMovieTextB1,0
   GUIDisplayButtonHoleTu 15,43,64,byte[MovieStartMethod],1,GUIMovieTextB2,0
@@ -3857,13 +3857,13 @@ DisplayGUIMovies:    ; Movie Record/Playback options
   DrawGUIButton 15,55,80,97,91,GUIMovieTextC2,17,0,0
   DrawGUIButton 15,103,80,145,91,GUIMovieTextC3,18,0,0
   DrawGUIButton 15,151,80,193,91,GUIMovieTextC4,32,0,0
-  DrawGUIButton 15,7,109,50,120,GUIMovieTextD1,29,0,0
-  DrawGUIButton 15,85,109,138,120,GUIMovieTextD2,30,0,0
-  DrawGUIButton 15,173,109,203,120,GUIMovieTextD3,31,0,0
+  DrawGUIButton 15,7,108,50,119,GUIMovieTextD1,29,0,0
+  DrawGUIButton 15,85,108,138,119,GUIMovieTextD2,30,0,0
+  DrawGUIButton 15,173,108,203,119,GUIMovieTextD3,31,0,0
 
-  DDrawBox 15,57,110,[KeyInsrtChap]        ; Chapter Keyboard Shortcut Boxes
-  DDrawBox 15,145,110,[KeyPrevChap]
-  DDrawBox 15,210,110,[KeyNextChap]
+  DDrawBox 15,57,109,[KeyInsrtChap]        ; Chapter Keyboard Shortcut Boxes
+  DDrawBox 15,145,109,[KeyPrevChap]
+  DDrawBox 15,210,109,[KeyNextChap]
 
   GUIDisplayTextY 15,8,125,GUIMovieTextE           ; Movie State Load
 
