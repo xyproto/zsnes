@@ -66,7 +66,11 @@ NEWSYM copy640x480x16bwin
     cmp byte[antienab],1
     je near interpolate640x480x16bwin
 .nointerp
+%ifdef __UNIXSDL__
+    mov dl,224
+%else
     mov dl,[resolutn]
+%endif
     cmp byte[scanlines],1
     je near .scanlines
     cmp byte[scanlines],3
@@ -817,8 +821,12 @@ Process2xSaIwin:
     mov [InterPtr],ebx
 
 ;    add edi,[VESAAddr]
+%ifdef __UNIXSDL__
+    mov dl,223
+%else
     mov dl,[resolutn]
     sub dl,1    ; Compensate for top/bottom line + 2 lines in 2xSaI
+%endif
     mov [lineleft],dl
     mov dword[esi+512],0
     mov dword[esi+512+576*2],0
@@ -916,7 +924,11 @@ MMXInterpolwin:
     mov ebx,SpecialLine+1
 .loopab
 
+%ifdef __UNIXSDL__
+    mov dl,224
+%else
     mov dl,[resolutn]
+%endif
     movq mm2,[HalfTransC]
     cmp byte[scanlines],1
     je near .scanlines
@@ -1243,7 +1255,11 @@ NEWSYM interpolate640x480x16bwin
 .loopabi
     mov [InterPtr],ebx
 
+%ifdef __UNIXSDL__
+    mov dl,224
+%else
     mov dl,[resolutn]
+%endif
     cmp byte[scanlines],1
     je near .scanlines
     cmp byte[scanlines],2
