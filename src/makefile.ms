@@ -207,18 +207,12 @@ MAINOBJ=endmem${OE} init${OE} initc${OE} patch${OE}\
 	cfg${OE} md${OE} input${OE} zpath${OE} ztimec${OE} ztime${OE}
 
 ifneq (${DEBUGGER},no)
-  ifeq (${OLDDEBUGGER},yes)
-    DOSOBJORIG+= ${DOSDIR}/debug${OE}
-    CFLAGSORIG+= -DOLD_DEBUGGER
-    ASMFLAGSORIG+= -DOLD_DEBUGGER
+  MAINOBJ+= debugger${OE} debugasm${OE}
+  ifeq (${OS},__MSDOS__)
+    LIBS+= -lpdcur
   else
-    MAINOBJ+= debugger${OE} debugasm${OE}
-    ifeq (${OS},__MSDOS__)
-      LIBS+= -lpdcur
-    else
-      LIBS+= -lpdcurses
-      MSVCLIBS+= pdcurses.lib
-    endif
+    LIBS+= -lpdcurses
+    MSVCLIBS+= pdcurses.lib
   endif
 endif
 
