@@ -189,6 +189,8 @@ void SetHiresOpt(unsigned int ResX, unsigned int ResY)
     GUIM7VID[cvidmode] = 0;
 }
 
+void Clear2xSaIBuffer();
+
 int Main_Proc(void)
 {
   SDL_Event event;
@@ -477,6 +479,7 @@ int Main_Proc(void)
         glDisable(GL_DEPTH_TEST);
         glFlush();
         gl_clearwin();
+        Clear2xSaIBuffer();
         break;
 #endif
       default:
