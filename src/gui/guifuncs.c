@@ -1819,6 +1819,17 @@ void SetCustomXY()
       Keep4_3Ratio = 0;
   }
 }
+
+extern char ShowKeep43;
+
+void Keep43Check()
+{
+  if((CustomResX*3) == (CustomResY*4))
+    ShowKeep43 = 0;
+  else
+    ShowKeep43 = 1;
+}
+
 #endif
 
 extern char MovieForcedLength;

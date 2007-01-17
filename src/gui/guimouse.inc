@@ -2426,17 +2426,8 @@ DisplayGUIVideoClick:
 %ifndef __MSDOS__
   xor ebx,ebx                             ; Keep 4:3 Ratio
   mov bl,[cvidmode]
-%ifdef __WIN32__
-  cmp byte[GUIDSMODE+ebx],0
-  jne near .checkboxk43
-  cmp byte[GUISMODE+ebx],0
-  jne near .checkboxk43
-  jmp .nocheckboxk43
-%else
-  cmp bl,21
-  jl .nocheckboxk43
-%endif
-.checkboxk43
+  cmp byte[GUIKEEP43+ebx],0
+  je near .nocheckboxk43
   GUIClickCButtonK 18,175,byte[Keep4_3Ratio],initwinvideo
 .nocheckboxk43
 %endif

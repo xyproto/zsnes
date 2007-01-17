@@ -1898,9 +1898,11 @@ void KeepTVRatio()
   }
 }
 
+extern "C" char GUIKEEP43[];
+
 bool CheckTVRatioReq()
 {
-  return(((DSMode == 1 || SMode == 1)) && (Keep4_3Ratio));
+  return(GUIKEEP43[cvidmode] && Keep4_3Ratio);
 }
 
 void initwinvideo(void)

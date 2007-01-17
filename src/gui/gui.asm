@@ -133,14 +133,14 @@ EXTSYM GUIDSMODE,GUISMODE,CBBuffer,CBLength,PasteClipBoard,ctrlptr,PauseFocusCha
 %elifdef __MSDOS__
 EXTSYM dssel,SetInputDevice209,initvideo2,Force8b,SBHDMA,vibracard,smallscreenon
 EXTSYM pl1p209,pl2p209,pl3p209,pl4p209,pl5p209,SidewinderFix,Triplebufen,ScreenScale
-EXTSYM GUIEAVID,GUIFSVID,GUIWSVID,GUISSVID,GUITBVID,JoyMinX209,JoyMaxX209,JoyMinY209,JoyMaxY209
-EXTSYM GUISLVID,GUIHSVID,GUI2xVID
+EXTSYM GUIEAVID,GUIFSVID,GUIWSVID,GUISSVID,GUITBVID,GUISLVID,GUIHSVID,GUI2xVID
+EXTSYM JoyMinX209,JoyMaxX209,JoyMinY209,JoyMaxY209
 %endif
 
 %ifndef __MSDOS__
 EXTSYM ZsnesPage,DocsPage,GUICustomX,GUICustomY,GetCustomXY,SetCustomXY,initwinvideo
-EXTSYM Keep4_3Ratio,PrevFSMode,PrevWinMode,GUIHQ3X,GUIHQ4X,NTSCFilterInit,hqFilterlevel
-EXTSYM GUIWFVID,GUIDSIZE
+EXTSYM Keep4_3Ratio,PrevFSMode,PrevWinMode,NTSCFilterInit,hqFilterlevel
+EXTSYM GUIWFVID,GUIDSIZE,GUIHQ3X,GUIHQ4X,GUIKEEP43,Keep43Check
 %endif
 
 %ifndef __WIN32__

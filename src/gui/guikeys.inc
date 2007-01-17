@@ -1408,17 +1408,8 @@ GUIVideoKeys:
   jne .nokeep4_3
   xor ebx,ebx
   mov bl,[cvidmode]
-%ifdef __WIN32__
-  cmp byte[GUIDSMODE+ebx],0
-  jne near .allowk43
-  cmp byte[GUISMODE+ebx],0
-  jne near .allowk43
-  jmp .nokeep4_3
-%else
-  cmp bl,21
-  jl .nokeep4_3
-%endif
-.allowk43
+  cmp byte[GUIKEEP43+ebx],0
+  je near .nokeep4_3
   xor byte[Keep4_3Ratio],1
   pushad
   call initwinvideo

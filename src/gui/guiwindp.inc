@@ -2181,17 +2181,13 @@ DisplayGUIVideo:
 %ifndef __MSDOS__
   xor eax,eax                                     ; Keep 4:3 Ratio
   mov al,[cvidmode]
-%ifdef __WIN32__
-  cmp byte[GUIDSMODE+eax],0
-  jne near .checkboxk43
-  cmp byte[GUISMODE+eax],0
-  jne near .checkboxk43
-  jmp .nocheckboxk43
-%else
-  cmp al,21
-  jl near .nocheckboxk43
-%endif
-.checkboxk43
+  cmp byte[GUIKEEP43+eax],0
+  je near .nocheckboxk43
+  pushad
+  call Keep43Check
+  popad
+  cmp byte[ShowKeep43],0
+  je near .nocheckboxk43
   GUIDisplayTextY 5,13,170,GUIVideoTextB5
   GUIDisplayCheckboxu 5,18,175,Keep4_3Ratio,GUIVideoTextB5a,8
 .nocheckboxk43
@@ -2341,6 +2337,7 @@ GUIVideoTextB4b db 'TRIPLE BUFFERING',0  ; -3
 GUIVideoTextB5 db 'DISPLAY OPTIONS:',0   ; Video.Display
 %ifndef __MSDOS__
 GUIVideoTextB5a db 'USE 4:3 RATIO',0
+NEWSYM ShowKeep43, db 0
 %else
 GUIVideoTextB5b db 'SMALL SCREEN',0      ; -c
 GUIVideoTextB5c db 'FULL SCREEN',0       ; -cc
