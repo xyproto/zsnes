@@ -1622,6 +1622,7 @@ GUIPathKeys:
   pushad
   call init_save_paths
   call SetMovieForcedLength
+  call SetCustomXY
   popad
   xor dx,dx
   ret
