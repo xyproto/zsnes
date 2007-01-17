@@ -60,7 +60,7 @@ EXTSYM SaveCheatSearchFile,Get_Date,Check_Key,Get_Key,sram
 EXTSYM TripBufAvail,ResetTripleBuf,GUINGVID,ScanCodeListing
 EXTSYM AdjustFrequency,GUISaveVars,Init_Mouse,Get_MouseData,Set_MouseXMax
 EXTSYM Set_MouseYMax,Set_MousePosition,Get_MousePositionDisplacement,GUIInit
-EXTSYM GUIDeInit,SpecialLine,DrawWater,DrawBurn,DrawSmoke,MMXCheck
+EXTSYM GUIDeInit,SpecialLine,DrawWater,DrawBurn,DrawSmoke
 EXTSYM GetDate,horizon_get,ErrorPointer,MessageOn,GetTime
 EXTSYM GetScreen,GUITBWVID,Clear2xSaIBuffer,MouseWindow,ExitFromGUI
 EXTSYM GUIWFVID,newgfx16b,NumVideoModes,MusicVol,DSPMem,NumInputDevices
