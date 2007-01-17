@@ -312,9 +312,6 @@ NEWSYM DrawScreen               ; In-game screen render w/ triple buffer check
 
 NEWSYM vidpastecopyscr       ; GUI screen render
    pushad
-   movzx eax,byte[cvidmode]
-   cmp byte[GUI16VID+eax],1
-   jne .no16bconv
    mov eax,[vidbuffer]
    mov ecx,224*288
    mov edx,ecx
@@ -327,7 +324,6 @@ NEWSYM vidpastecopyscr       ; GUI screen render
    dec edx
    dec ecx
    jnz .loop
-.no16bconv
    popad
    jmp DrawScreen
 
