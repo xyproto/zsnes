@@ -1751,11 +1751,11 @@ DisplayGUIOption:       ; Emu Options
 
 %ifndef __WIN32__
   cmp byte[ShowMMXSupport],1
-  jne .nommx
+  jne near .nommx
 %endif
   GUIDisplayTextY 4,11,13,GUIOptionTextA
   cmp byte[ShowMMXSupport],1
-  jne .nommx
+  jne near .nommx
   GUIDisplayCheckboxu 4,11,18,MMXSupport,GUIOptionTextA1,7
 .nommx
 %ifdef __WIN32__
