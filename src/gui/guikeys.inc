@@ -1622,7 +1622,9 @@ GUIPathKeys:
   pushad
   call init_save_paths
   call SetMovieForcedLength
+%ifndef __MSDOS__
   call SetCustomXY
+%endif
   popad
   xor dx,dx
   ret
