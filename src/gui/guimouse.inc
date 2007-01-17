@@ -1039,6 +1039,7 @@ GUIProcCustomVideo:
   jl .notcustomres
   pushad
   call initwinvideo
+  call Clear2xSaIBuffer
   popad
 .notcustomres
   ret
