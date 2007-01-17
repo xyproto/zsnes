@@ -376,7 +376,7 @@ db 'CUSTOM       OD F',0  ;22
 ; vid mode column =  0,1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9,0,1,2
 NEWSYM GUII2VID,  db 0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; Interpolation
 NEWSYM GUIWFVID,  db 0,1,0,1,1,0,0,1,0,0,0,1,0,0,1,0,0,1,1,1,0,0,1 ; Fullscreen
-NEWSYM GUIDSIZE,  db 0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; D modes
+NEWSYM GUIDSIZE,  db 0,0,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1 ; D modes
 NEWSYM GUIM7VID,  db 0,0,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1 ; Hires Mode 7
 NEWSYM GUIHQ2X,   db 0,0,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1 ; hq2x filter
 NEWSYM GUIHQ3X,   db 0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (hq3x filter)
