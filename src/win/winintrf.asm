@@ -471,9 +471,6 @@ NEWSYM DrawScreen               ; In-game screen render w/ triple buffer check
 
 NEWSYM vidpastecopyscr       ; GUI screen render
    pushad
-   movzx eax,byte[cvidmode]
-   cmp byte[GUI16VID+eax],1
-   jne .no16bconv
    mov eax,[vidbuffer]
    mov ecx,224*288
    mov edx,ecx
@@ -486,7 +483,6 @@ NEWSYM vidpastecopyscr       ; GUI screen render
    dec edx
    dec ecx
    jnz .loop
-.no16bconv
    popad
    jmp DrawScreen
 
@@ -550,19 +546,11 @@ db 'CUSTOM       DR F',0  ;41
 ; Video Mode Feature Availability (1 = Available, 0 = Not Available)
 ; Left side starts with Video Mode 0
 ;                    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-NEWSYM GUI16VID,  db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1; 16-bit mode
-NEWSYM GUINGVID,  db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1; New Graphics engine
-NEWSYM GUISLVID,  db 0,0,0,1,0,1,1,1,0,0,1,0,1,0,1,1,0,1,0,1,1,0,1,0,1,0,1,1,0,1,0,1,1,0,1,1,1,1,1,0,0,1; Scanlines
-NEWSYM GUII2VID,  db 0,0,0,1,0,1,1,1,0,0,1,0,1,0,1,1,0,1,0,1,1,0,1,0,1,0,1,1,0,1,0,1,1,0,1,1,1,1,1,0,0,1; Interpolation
-NEWSYM GUIHSVID,  db 0,0,0,1,0,1,1,1,0,0,1,0,1,0,1,1,0,1,0,1,1,0,1,0,1,0,1,1,0,1,0,1,1,0,1,1,1,1,1,0,0,1; Half/Quarter Scanlines
-NEWSYM GUI2xVID,  db 0,0,0,1,0,1,1,1,0,0,1,0,1,0,1,1,0,1,0,1,1,0,1,0,1,0,1,1,0,1,0,1,1,0,1,1,1,1,1,0,0,1; 2xSaI/Super Engines
-NEWSYM GUIM7VID,  db 0,0,0,1,0,1,1,1,0,0,1,0,1,0,1,1,0,1,0,1,1,0,1,0,1,0,1,1,0,1,0,1,1,0,1,1,1,1,1,0,0,1; Hires Mode 7
 NEWSYM GUIWFVID,  db 0,1,0,0,0,0,1,1,1,0,0,0,0,1,1,1,0,0,1,1,1,0,0,0,0,1,1,1,0,0,1,1,1,0,0,1,1,0,1,0,1,1; Fullscreen
 NEWSYM GUIDSIZE,  db 0,0,0,1,0,1,1,1,0,0,1,0,1,0,1,1,0,1,0,1,1,0,1,0,1,0,1,1,0,1,0,1,1,0,1,1,1,1,1,0,0,1; D-only modes
-NEWSYM GUIRATIO,  db 0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0; Ratio-Fullscreen modes
-NEWSYM GUITBWVID, db 0,1,0,0,0,0,1,1,1,0,0,0,0,1,1,1,0,0,1,1,1,0,0,0,0,1,1,1,0,0,1,1,1,0,0,1,1,0,1,0,1,1; Win Triple Buffer
 NEWSYM GUISMODE,  db 0,0,0,0,1,0,0,0,1,0,0,1,0,1,0,0,1,0,1,0,0,0,0,1,0,1,0,0,1,0,1,0,0,0,0,0,0,0,0,1,1,0; Win Stretched modes
 NEWSYM GUIDSMODE, db 0,0,0,0,0,1,0,1,0,0,0,0,1,0,0,1,0,1,0,0,1,0,0,0,1,0,0,1,0,1,0,0,1,0,1,0,1,1,1,0,0,0; Win D-Stretched modes
+NEWSYM GUIM7VID,  db 0,0,0,1,0,1,1,1,0,0,1,0,1,0,1,1,0,1,0,1,1,0,1,0,1,0,1,1,0,1,0,1,1,0,1,1,1,1,1,0,0,1; Hires Mode 7
 NEWSYM GUIHQ2X,   db 0,0,0,1,0,1,1,1,0,0,1,0,1,0,1,0,0,1,0,1,1,0,1,0,1,0,1,1,0,1,0,1,1,0,1,1,1,1,1,0,0,1; hq2x filter
 NEWSYM GUIHQ3X,   db 0,0,0,0,0,0,0,0,0,0,1,0,1,0,1,1,0,1,0,1,1,0,1,0,1,0,1,1,0,1,0,1,1,0,1,1,1,1,1,0,0,1; hq3x filter
 NEWSYM GUIHQ4X,   db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,1,1,0,1,0,1,1,0,1,1,1,1,1,0,0,1; hq4x filter

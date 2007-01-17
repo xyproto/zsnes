@@ -378,21 +378,15 @@ db 'CUSTOM       OD F',0  ;22
 ; Video Mode Feature Availability (1 = Available, 0 = Not Available)
 ; Left side starts with Video Mode 0
 ; vid mode column =  0,1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9,0,1,2
-NEWSYM GUI16VID,  db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1 ; 16-bit mode
-NEWSYM GUINGVID,  db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1 ; New Graphics Engine
-NEWSYM GUISLVID,  db 0,0,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1 ; Scanlines
 NEWSYM GUII2VID,  db 0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; Interpolation
-NEWSYM GUIHSVID,  db 0,0,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1 ; Half/Quarter Scanlines
-NEWSYM GUI2xVID,  db 0,0,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1 ; 2xSaI/Super Engines
-NEWSYM GUIM7VID,  db 0,0,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1 ; Hires Mode 7
 NEWSYM GUIWFVID,  db 0,1,0,1,1,0,0,1,0,0,0,1,0,0,1,0,0,1,1,1,0,0,1 ; Fullscreen
 NEWSYM GUIDSIZE,  db 0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; D modes
-NEWSYM GUIRATIO,  db 0,1,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; Ratio-Fullscreen modes
+NEWSYM GUIM7VID,  db 0,0,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1 ; Hires Mode 7
 NEWSYM GUIHQ2X,   db 0,0,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1 ; hq2x filter
 NEWSYM GUIHQ3X,   db 0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (hq3x filter)
 NEWSYM GUIHQ4X,   db 0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (hq4x filter)
-NEWSYM GUIRESIZE, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0 ; SDL Resizable
 NEWSYM GUINTVID,  db 0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; NTSC Filter
+NEWSYM GUIRESIZE, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0 ; SDL Resizable
 %ifdef __OPENGL__
 NEWSYM GUIBIFIL,  db 0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1 ; SDL Bilinear Filter
 %endif

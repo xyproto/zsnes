@@ -799,25 +799,15 @@ GUITCPIPKeys:
 
 GUIOptionKeys:
   ToUpperASM
-  cmp dh,'N'                             ; Checkboxes
-  jne .nonewgfx
-  xor eax,eax
-  mov al,[cvidmode]
-  cmp byte[GUINGVID+eax],1
-  jne near .invalidng
-  xor byte[newengen],1
-.invalidng
-.nonewgfx
-  cmp dh,'M'
-  jne .nommxcopy
   cmp byte[ShowMMXSupport],1
   jne .nommxcopy
-  GUIKeyCheckbox MMXSupport,'M'
+  GUIKeyCheckbox MMXSupport,'M'          ; Checkboxes
 .nommxcopy
   GUIKeyButtonHole ScreenShotFormat,0,'P'
 %ifndef NO_PNG
   GUIKeyButtonHole ScreenShotFormat,1,'G'
 %endif
+  GUIKeyCheckbox newengen, 'N'
   GUIKeyCheckbox FPSAtStart,'F'
   GUIKeyCheckbox TimerEnable,'C'
   GUIKeyCheckbox ClockBox,'X'
@@ -1116,7 +1106,11 @@ GUIVideoKeys:
   jne near .notfilterstab
   xor eax,eax
   mov al,[cvidmode]
+%ifdef __MSDOS__
   cmp byte[GUISLVID+eax],0
+%else
+  cmp byte[GUIDSIZE+eax],0
+%endif
   je .nofullscanlines
   GUIKeyButtonHole scanlines,0,'O'
   cmp dh,'F'
@@ -1143,7 +1137,11 @@ GUIVideoKeys:
 .nofullscanlines
   xor eax,eax
   mov al,[cvidmode]
+%ifdef __MSDOS__
   cmp byte[GUIHSVID+eax],0
+%else
+  cmp byte[GUIDSIZE+eax],0
+%endif
   je near .noquarterscanlines
   cmp dh,'5'
   jne .nohalfscanlines
@@ -1231,7 +1229,11 @@ GUIVideoKeys:
 %endif
   xor ebx,ebx
   mov bl,[cvidmode]
+%ifdef __MSDOS__
   cmp byte[GUI2xVID+ebx],0
+%else
+  cmp byte[GUIDSIZE+ebx],0
+%endif
   je near .nosuper2xsai
   cmp dh,'S'
   jne .no2xsai
@@ -1271,7 +1273,11 @@ GUIVideoKeys:
   cmp byte[GUIEAVID+eax],0
   jne .interpolation
 %endif
+%ifdef __WIN32__
+  cmp byte[GUIDSIZE+eax],0
+%else
   cmp byte[GUII2VID+eax],0
+%endif
   je .nointerpolation
 .interpolation
   xor byte[antienab],1
@@ -1358,28 +1364,25 @@ GUIVideoKeys:
   popad
 %endif
 .nontscfilter
-%ifdef __WIN32__
+%ifndef __UNIXSDL__
   cmp dh,'T'
-  jne .notriplebufferwin
+  jne .notriplebuffer
   xor eax,eax
   mov al,[cvidmode]
-  cmp byte[GUITBWVID+eax],0
-  je near .notriplebufferwin
+%ifdef __WIN32__
+  cmp byte[GUIWFVID+eax],0
+  je near .notriplebuffer
   xor byte[TripleBufferWin],1
   call initDirectDraw
   pushad
   call Clear2xSaIBuffer
   popad
-.notriplebufferwin
-%elifdef __MSDOS__
-  cmp dh,'T'
-  jne .notriplebuffer
-  xor ebx,ebx
-  mov bl,[cvidmode]
+%else
   cmp byte[GUITBVID+ebx],0
-  je .notriplebuffer
+  je near .notriplebuffer
   xor byte[Triplebufen],1
   mov byte[vsyncon],0
+%endif
 .notriplebuffer
 %endif
 %ifndef __UNIXSDL__

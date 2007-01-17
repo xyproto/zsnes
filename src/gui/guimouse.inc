@@ -1265,15 +1265,6 @@ GUIWinClicked:
 %%noclick
 %endmacro
 
-%macro GUIClickCButton2 5
-  GUIClickArea %1+1,%2+3,%1+6,%2+8,%%noclick
-  xor %3,%5
-  mov al,%3
-  mov %4,al
-  ret
-%%noclick
-%endmacro
-
 %macro GUIClickCButton3 5
   GUIClickArea %1+1,%2+3,%1+6,%2+8,%%noclick
   xor %3,%5
@@ -2225,12 +2216,7 @@ DisplayGUIOptionClick:
   call CheckScreenSaver
   popad
 %endif
-  xor ebx,ebx
-  mov bl,[cvidmode]
-  cmp byte[GUINGVID+ebx],1
-  jne near .invalidng
-  GUIClickCButton2 11,68,byte[newengen],byte[newengen],1
-.invalidng
+  GUIClickCButton 11,68,byte[newengen]
   GUIClickCButton 11,78,byte[bgfixer]
   GUIPButtonHole 143,70,byte[ScreenShotFormat],0
 %ifndef NO_PNG
@@ -2301,7 +2287,11 @@ DisplayGUIVideoClick:
   cmp byte[GUIEAVID+ebx],0
   jne near .yesinterp
 %endif
+%ifdef __WIN32__
+  cmp byte[GUIDSIZE+ebx],0
+%else
   cmp byte[GUII2VID+ebx],0
+%endif
   je near .nocheckboxi2
 .yesinterp
   FilterExcl 18,35,hqFilter,NTSCFilter,En2xSaI
@@ -2333,7 +2323,11 @@ DisplayGUIVideoClick:
 
   xor ebx,ebx                             ; Kreed 2x filters
   mov bl,[cvidmode]
+%ifdef __MSDOS__
   cmp byte[GUI2xVID+ebx],0
+%else
+  cmp byte[GUIDSIZE+ebx],0
+%endif
   je near .no2xSaI
   FilterExcl 18,45,hqFilter,scanlines,antienab,NTSCFilter
   FilterExcl 128,45,hqFilter,scanlines,antienab,NTSCFilter
@@ -2362,7 +2356,6 @@ DisplayGUIVideoClick:
   FilterExcl 128,55,En2xSaI,scanlines,antienab,NTSCFilter
   GUIClickCButton 128,55,byte[hqFilter]
 .nocheckboxhq
-
 %ifndef __MSDOS__
   jmp .noradiobuttons
 .radiobuttonhq4x
@@ -2378,7 +2371,11 @@ DisplayGUIVideoClick:
 
   xor ebx,ebx                             ; Scanlines
   mov bl,[cvidmode]
+%ifdef __MSDOS__
   cmp byte[GUISLVID+ebx],0
+%else
+  cmp byte[GUIDSIZE+ebx],0
+%endif
   je near .nocheckboxb
   FilterExcl 168,87,En2xSaI,hqFilter,NTSCFilter
   GUIPButtonHoleS 18,87,byte[scanlines],0
@@ -2386,7 +2383,11 @@ DisplayGUIVideoClick:
 .nocheckboxb
   xor ebx,ebx
   mov bl,[cvidmode]
+%ifdef __MSDOS__
   cmp byte[GUIHSVID+ebx],0
+%else
+  cmp byte[GUIDSIZE+ebx],0
+%endif
   je near .nohsline
   FilterExcl 68,87,En2xSaI,hqFilter,NTSCFilter
   FilterExcl 118,87,En2xSaI,hqFilter,NTSCFilter
@@ -2415,7 +2416,7 @@ DisplayGUIVideoClick:
 %ifdef __WIN32__
   xor ebx,ebx
   mov bl,[cvidmode]
-  cmp byte[GUITBWVID+ebx],0
+  cmp byte[GUIWFVID+ebx],0
   je near .notriplebufferwin
   GUIClickCButtonf 128,145,byte[TripleBufferWin],initDirectDraw
 .notriplebufferwin

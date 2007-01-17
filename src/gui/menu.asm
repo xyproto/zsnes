@@ -32,7 +32,11 @@ EXTSYM SPCKeyPressed,StopSound,StartSound,ExecExitOkay,t1cc,Clear2xSaIBuffer
 EXTSYM ScreenShotFormat,spcsaved,savespcdata
 EXTSYM exiter,xpb,xpc,snesmmap,memtabler8,snesmap2,regaccessbankr8,dmadata,initaddrl
 EXTSYM spcPCRam,xp,curcyc,Curtableaddr,UpdateDPage,splitflags,execsingle,joinflags
-EXTSYM pdh,SPCRAM,cvidmode,GUI16VID
+EXTSYM pdh,SPCRAM,cvidmode
+
+%ifdef __MSDOS__
+EXTSYM GUI16VID
+%endif
 
 %ifndef NO_DEBUGGER
 EXTSYM numinst,debuggeron

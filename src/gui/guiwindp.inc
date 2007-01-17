@@ -2032,10 +2032,15 @@ DisplayGUIVideo:
                                                   ; Filters tab
   cmp dword[GUIVideoTabs],2
   jne near .notfilterstab
+
                                                   ; Video Filters
   xor eax,eax                                     ; Interpolations
   mov al,[cvidmode]
+%ifdef __WIN32__
+  cmp byte[GUIDSIZE+eax],0
+%else
   cmp byte[GUII2VID+eax],0
+%endif
   je near .notext3
   GUIDisplayTextY 5,13,30,GUIVideoTextB1
   GUIDisplayCheckboxu 5,18,35,antienab,GUIVideoTextB1a,0
@@ -2066,21 +2071,25 @@ DisplayGUIVideo:
   GUIDisplayCheckboxu 5,128,35,NTSCFilter,GUIVideoTextB1d,0
 .nocheckboxbf
 
+  cmp byte[MMXSupport],0
+  je near .nocheckboxx
   xor eax,eax                                     ; Kreed 2x filters
   mov al,[cvidmode]
+%ifdef __MSDOS__
   cmp byte[GUI2xVID+eax],0
-  je near .nocheckboxx
-  cmp byte[MMXSupport],0
+%else
+  cmp byte[GUIDSIZE+eax],0
+%endif
   je near .nocheckboxx
   GUIDisplayCheckboxun 5,18,45,En2xSaI,1,GUIVideoTextB1e,2   ;2x
   GUIDisplayCheckboxun 5,128,45,En2xSaI,2,GUIVideoTextB1f,6  ;Seagle
   GUIDisplayCheckboxun 5,18,55,En2xSaI,3,GUIVideoTextB1g,2   ;S2x
 .nocheckboxx
 
-  xor eax,eax                                     ; Hq*x
-  mov al,[cvidmode]
   cmp byte[MMXSupport],0
   je near .notexthq4xa
+  xor eax,eax                                     ; Hq*x
+  mov al,[cvidmode]
   cmp byte[GUIHQ2X+eax],0
   je near .notexthq2xa
 %ifdef __MSDOS__
@@ -2111,7 +2120,11 @@ DisplayGUIVideo:
 
   xor eax,eax                                     ; Scanlines
   mov al,[cvidmode]
+%ifdef __MSDOS__
   cmp byte[GUISLVID+eax],0
+%else
+  cmp byte[GUIDSIZE+eax],0
+%endif
   je near .nocheckboxb
   GUIDisplayTextY 5,13,80,GUIVideoTextB2          ; Scanlines text
   GUIDisplayButtonHoleTu 5,18,87,byte[scanlines],0,GUIVideoTextB2a,1   ; None
@@ -2119,7 +2132,11 @@ DisplayGUIVideo:
 .nocheckboxb
   xor eax,eax
   mov al,[cvidmode]
+%ifdef __MSDOS__
   cmp byte[GUIHSVID+eax],0
+%else
+  cmp byte[GUIDSIZE+eax],0
+%endif
   je near .nocheckboxw
   GUIDisplayButtonHoleTu 5,68,87,byte[scanlines],2,GUIVideoTextB2b,0   ; 25%
   GUIDisplayButtonHoleTu 5,118,87,byte[scanlines],3,GUIVideoTextB2c,0  ; 50%
@@ -2145,7 +2162,7 @@ DisplayGUIVideo:
 %ifdef __WIN32__
   xor eax,eax                                     ; Triple Buffering
   mov al,[cvidmode]
-  cmp byte[GUITBWVID+eax],0
+  cmp byte[GUIWFVID+eax],0
   je near .nocheckboxslw2
   GUIDisplayCheckboxu 5,128,145,TripleBufferWin,GUIVideoTextB4b,0
 .nocheckboxslw2
