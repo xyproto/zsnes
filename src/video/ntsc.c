@@ -115,7 +115,6 @@ void NTSCFilterInit()
 		break;
 	case 4:
 		snes_ntsc_init( &ntsc_snes, &ntsc_setup );
-		NTSCPresetVar = 5;
 		break;
 	default:
 		break;

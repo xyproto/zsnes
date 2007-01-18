@@ -2551,6 +2551,7 @@ DisplayGUIVideoClick:
   cmp byte[NTSCRef],0
   je .notntsctab
 %ifndef __MSDOS__
+  mov dword[NTSCPresetVar],4
   pushad
   call NTSCFilterInit
   popad
@@ -2659,6 +2660,7 @@ DisplayGUIVideoClick:
   cmp byte[NTSCRef],0
   je .notadvntsctab
 %ifndef __MSDOS__
+  mov dword[NTSCPresetVar],4
   pushad
   call NTSCFilterInit
   popad
