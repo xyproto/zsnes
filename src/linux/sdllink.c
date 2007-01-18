@@ -904,7 +904,7 @@ void initwinvideo(void)
   init_hqNx();
 
   if ((CurMode != cvidmode) || (prevNTSCMode != NTSCFilter) ||
-      (changeres) || (prevKeep4_3Ratio != Keep4_3Ratio))
+      (changeRes) || (prevKeep4_3Ratio != Keep4_3Ratio))
   {
     CurMode = cvidmode;
     newmode = 1;
