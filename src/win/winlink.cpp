@@ -2011,14 +2011,15 @@ void initwinvideo(void)
       case 34:
       case 35:
       case 36:
+      case 37:
          WindowWidth=1600;
          WindowHeight=1200;
          break;
-      case 37:
       case 38:
-      case 41:
       case 39:
       case 40:
+      case 41:
+      case 42:
          WindowWidth=CustomResX;
          WindowHeight=CustomResY;
          break;

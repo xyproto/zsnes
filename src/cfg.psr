@@ -147,28 +147,29 @@ Palette0 db 0
 
 @
 #ifdef __WIN32__
-@ Video Mode [0..41]
-@   0 = 256x224   R  WIN      1 = 256x224   R  FULL
-@   2 = 512x448   R  WIN      3 = 512x448   DR WIN
-@   4 = 640x480   S  WIN      5 = 640x480   DS WIN
-@   6 = 640x480   DR FULL     7 = 640x480   DS FULL
-@   8 = 640x480   S  FULL     9 = 768x672   R  WIN
-@  10 = 768x672   DR WIN     11 = 800x600   S  WIN
-@  12 = 800x600   DS WIN     13 = 800x600   S  FULL
-@  14 = 800x600   DR FULL    15 = 800x600   DS FULL
-@  16 = 1024x768  S  WIN     17 = 1024x768  DS WIN
-@  18 = 1024x768  S  FULL    19 = 1024x768  DR FULL
-@  20 = 1024x768  DS FULL    21 = 1024x896  R  WIN
-@  22 = 1024x896  DR WIN     23 = 1280x960  S  WIN
-@  24 = 1280x960  DS WIN     25 = 1280x960  S  FULL
-@  26 = 1280x960  DR FULL    27 = 1280x960  DS FULL
-@  28 = 1280x1024 S  WIN     29 = 1280x1024 DS WIN
-@  30 = 1280x1024 S  FULL    31 = 1280x1024 DR FULL
-@  32 = 1280x1024 DS FULL    33 = 1600x1200 S  WIN
-@  34 = 1600x1200 DS WIN     35 = 1600x1200 DR FULL
-@  36 = 1600x1200 DS FULL    37 = CUSTOM    D  WIN
-@  38 = CUSTOM    DS FULL    39 = CUSTOM       WIN
-@  40 = CUSTOM    S  FULL    41 = CUSTOM    DR FULL
+@ Video Mode [0..42]
+@   0 = 256x224      R WIN     1 = 256x224        R FULL
+@   2 = 512x448      R WIN     3 = 512x448       DR WIN
+@   4 = 640x480      S WIN     5 = 640x480       DS WIN
+@   6 = 640x480     DR FULL    7 = 640x480       DS FULL
+@   8 = 640x480      S FULL    9 = 768x672        R WIN
+@  10 = 768x672     DR WIN    11 = 800x600        S WIN
+@  12 = 800x600     DS WIN    13 = 800x600        S FULL
+@  14 = 800x600     DR FULL   15 = 800x600       DS FULL
+@  16 = 1024x768     S WIN    17 = 1024x768      DS WIN
+@  18 = 1024x768     S FULL   19 = 1024x768      DR FULL
+@  20 = 1024x768    DS FULL   21 = 1024x896       R WIN
+@  22 = 1024x896    DR WIN    23 = 1280x960       S WIN
+@  24 = 1280x960    DS WIN    25 = 1280x960       S FULL
+@  26 = 1280x960    DR FULL   27 = 1280x960      DS FULL
+@  28 = 1280x1024    S WIN    29 = 1280x1024     DS WIN
+@  30 = 1280x1024    S FULL   31 = 1280x1024     DR FULL
+@  32 = 1280x1024   DS FULL   33 = 1600x1200      S WIN
+@  34 = 1600x1200   DS WIN    35 = 1600x1200     DR FULL
+@  36 = 1600x1200   DS FULL   37 = 1600x1200      S FULL
+@  38 = CUSTOM      D  WIN    39 = CUSTOM        DS FULL
+@  40 = CUSTOM         WIN    41 = CUSTOM         S FULL
+@  42 = CUSTOM      DR FULL
 @ You need to select one of the custom video modes and modify CustomResX/Y to
 @ properly use custom res support.
 @ WARNING: Custom resolutions are only valid if they are supported by your system!
@@ -185,19 +186,19 @@ PrevFSMode db 6
 %else
 @ Video Mode [0..22]
 %endif
-@   0 = 256x224   R  WIN      1 = 256x224   R  FULL
-@   2 = 512x448   DR WIN      3 = 512x448   DR FULL
-@   4 = 640x480   DR FULL
+@   0 = 256x224      R WIN     1 = 256x224      R FULL
+@   2 = 512x448     DR WIN     3 = 512x448     DR FULL
+@   4 = 640x480     DR FULL
 %ifdef __OPENGL__
-@   5 = 256x224   OR  WIN     6 = 512x448   ODR WIN
-@   7 = 640x480   ODS FULL    8 = 640x480   ODS WIN
-@   9 = 640x560   ODR WIN    10 = 768x672   ODR WIN
-@  11 = 800x600   ODS FULL   12 = 800x600   ODS WIN
-@  13 = 896x784   ODR WIN    14 = 1024x768  ODS FULL
-@  15 = 1024x768  ODS WIN    16 = 1024x896  ODR WIN
-@  17 = 1280x960  ODS FULL   18 = 1280x1024 ODS FULL
-@  19 = 1600x1200 ODS FULL   20 = VARIABLE  ODR WIN
-@  21 = VARIABLE  ODS WIN    22 = CUSTOM    OD  FULL
+@   5 = 256x224    OR  WIN     6 = 512x448    ODR WIN
+@   7 = 640x480    ODS FULL    8 = 640x480    ODS WIN
+@   9 = 640x560    ODR WIN    10 = 768x672    ODR WIN
+@  11 = 800x600    ODS FULL   12 = 800x600    ODS WIN
+@  13 = 896x784    ODR WIN    14 = 1024x768   ODS FULL
+@  15 = 1024x768   ODS WIN    16 = 1024x896   ODR WIN
+@  17 = 1280x960   ODS FULL   18 = 1280x1024  ODS FULL
+@  19 = 1600x1200  ODS FULL   20 = VARIABLE   ODR WIN
+@  21 = VARIABLE   ODS WIN    22 = CUSTOM     OD  FULL
 @ You need to select the custom video mode and modify CustomResX/Y to properly
 @ use custom res support.
 %endif
@@ -208,16 +209,16 @@ PrevFSMode db 3
 
 #elifdef __MSDOS__
 @ Video Mode [0..18]
-@   0 = 256x224x8B  (MODEQ)   1 = 256x240x8B (MODEQ)
-@   2 = 256x256x8B  (MODEQ)   3 = 320x224x8B (MODEX)
-@   4 = 320x240x8B  (MODEX)   5 = 320x256x8B (MODEX)
-@   6 = 640x480x16B (VESA1)   7 = 320x240x8B (VESA2)
-@   8 = 320x240x16B (VESA2)   9 = 320x480x8B (VESA2)
-@  10 = 320x480x16B (VESA2)  11 = 512x384x8B (VESA2)
-@  12 = 512x384x16B (VESA2)  13 = 640x400x8B (VESA2)
-@  14 = 640x400x16B (VESA2)  15 = 640x480x8B (VESA2)
-@  16 = 640x480x16B (VESA2)  17 = 800x600x8B (VESA2)
-@  18 = 800x600x16B (VESA2)
+@   0 = 256x224x8B   MODEQ     1 = 256x240x8B MODEQ
+@   2 = 256x256x8B   MODEQ     3 = 320x224x8B MODEX
+@   4 = 320x240x8B   MODEX     5 = 320x256x8B MODEX
+@   6 = 640x480x16B  VESA1     7 = 320x240x8B VESA2
+@   8 = 320x240x16B  VESA2     9 = 320x480x8B VESA2
+@  10 = 320x480x16B  VESA2    11 = 512x384x8B VESA2
+@  12 = 512x384x16B  VESA2    13 = 640x400x8B VESA2
+@  14 = 640x400x16B  VESA2    15 = 640x480x8B VESA2
+@  16 = 640x480x16B  VESA2    17 = 800x600x8B VESA2
+@  18 = 800x600x16B  VESA2
 cvidmode db 4
 #endif
 

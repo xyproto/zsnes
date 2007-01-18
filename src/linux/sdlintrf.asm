@@ -350,7 +350,7 @@ db '512x448      DR W',0  ;2
 db '512x448      DR F',0  ;3
 db '640x480      DR F',0  ;4
 %ifdef __OPENGL__
-db '256x224      OR W',0  ;5
+db '256x224     OR  W',0  ;5
 db '512x448     ODR W',0  ;6
 db '640x480     ODS F',0  ;7
 db '640x480     ODS W',0  ;8
@@ -367,8 +367,7 @@ db '1280x1024   ODS F',0  ;18
 db '1600x1200   ODS F',0  ;19
 db 'VARIABLE    ODR W',0  ;20
 db 'VARIABLE    ODS W',0  ;21
-db 'CUSTOM       OD F',0  ;22
-
+db 'CUSTOM      OD  F',0  ;22
 %endif
 
 ; Video Mode Feature Availability (1 = Available, 0 = Not Available)
