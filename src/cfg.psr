@@ -196,7 +196,7 @@ PrevFSMode db 6
 @  13 = 896x784   ODR WIN    14 = 1024x768  ODS FULL
 @  15 = 1024x768  ODS WIN    16 = 1024x896  ODR WIN
 @  17 = 1280x960  ODS FULL   18 = 1280x1024 ODS FULL
-@  19 = 1600x1200 ODR FULL   20 = VARIABLE  ODR WIN
+@  19 = 1600x1200 ODS FULL   20 = VARIABLE  ODR WIN
 @  21 = VARIABLE  ODS WIN    22 = CUSTOM    OD  FULL
 @ You need to select the custom video mode and modify CustomResX/Y to properly
 @ use custom res support.

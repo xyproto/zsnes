@@ -1037,6 +1037,7 @@ GUIProcCustomVideo:
   cmp byte[cvidmode],20
 %endif
   jl .notcustomres
+  mov byte[changeRes],1
   pushad
   call initwinvideo
   call Clear2xSaIBuffer

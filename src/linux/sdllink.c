@@ -889,8 +889,7 @@ void init_hqNx(void)
 }
 
 unsigned char prevNTSCMode = 0;
-unsigned int prevCustomResX = 0;
-unsigned int prevCustomResY = 0;
+unsigned char changeRes = 1;
 unsigned char prevKeep4_3Ratio = 0;
 
 bool OGLModeCheck()
@@ -905,15 +904,14 @@ void initwinvideo(void)
   init_hqNx();
 
   if ((CurMode != cvidmode) || (prevNTSCMode != NTSCFilter) ||
-      (prevCustomResX != CustomResX) || (prevCustomResY != CustomResY) || (prevKeep4_3Ratio != Keep4_3Ratio))
+      (changeres) || (prevKeep4_3Ratio != Keep4_3Ratio))
   {
     CurMode = cvidmode;
     newmode = 1;
     WindowWidth = 256;
     WindowHeight = 224;
     prevNTSCMode = NTSCFilter;
-    prevCustomResX = CustomResX;
-    prevCustomResY = CustomResY;
+    changeRes = 0;
     prevKeep4_3Ratio = Keep4_3Ratio;
 
     FullScreen = GUIWFVID[cvidmode];

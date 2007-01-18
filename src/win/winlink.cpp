@@ -1401,8 +1401,7 @@ DWORD NTSCMode=0;
 DWORD prevHQMode=~0;
 DWORD prevNTSCMode=0;
 DWORD prevScanlines=~0;
-DWORD prevCustomResX=0;
-DWORD prevCustomResY=0;
+BYTE changeRes=1;
 WORD Refresh = 0;
 extern "C" BYTE GUIWFVID[];
 extern "C" BYTE GUIDSIZE[];
@@ -1926,13 +1925,12 @@ void initwinvideo(void)
      if ((GUIHQ4X[cvidmode] != 0) && (hqFilterlevel == 4)) HQMode=4;
    }
 
-   if ((CurMode!=cvidmode) || (prevHQMode!=HQMode) || (prevNTSCMode!=NTSCFilter) || (prevCustomResX != CustomResX) || (prevCustomResY != CustomResY))
+   if ((CurMode!=cvidmode) || (prevHQMode!=HQMode) || (prevNTSCMode!=NTSCFilter) || (changeRes))
    {
       CurMode=cvidmode;
       prevHQMode=HQMode;
       prevNTSCMode=NTSCFilter;
-      prevCustomResX=CustomResX;
-      prevCustomResY=CustomResY;
+      changeRes = 0;
       newmode=1;
       SurfaceX=256;
       SurfaceY=240;
@@ -2591,7 +2589,7 @@ void drawscreenwin(void)
      prevScanlines = scanlines;
    }
 
-   if ((prevCustomResX != CustomResX) || (prevCustomResY != CustomResY)) initwinvideo();
+   if (changeRes) initwinvideo();
 
    SurfBufD=(DWORD) &SurfBuf[0];
    SURFDW=(DWORD *) &SurfBuf[0];

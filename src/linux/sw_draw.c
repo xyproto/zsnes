@@ -134,8 +134,7 @@ void sw_clearwin()
 }
 
 extern unsigned char prevNTSCMode;
-extern unsigned int prevCustomResX;
-extern unsigned int prevCustomResY;
+extern unsigned char changeRes;
 extern unsigned char prevKeep4_3Ratio;
 
 void sw_drawwin()
@@ -156,7 +155,7 @@ void sw_drawwin()
 
   if (NTSCFilter != prevNTSCMode) initwinvideo();
 
-  if ((prevCustomResX != CustomResX) || (prevCustomResY != CustomResY)) initwinvideo();
+  if (changeRes) initwinvideo();
 
   if (prevKeep4_3Ratio != Keep4_3Ratio) initwinvideo();
 
