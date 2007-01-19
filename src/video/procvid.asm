@@ -29,7 +29,7 @@ EXTSYM romispal,scaddtype,scanlines,selcA000,t1cc,vcache4b,vesa2_bpos
 EXTSYM spritetablea,vesa2_clbit,vesa2_gpos,vesa2_rpos,vesa2red10
 EXTSYM vidbuffer,vram,KeyStateSelct,soundon
 EXTSYM bg1objptr,DecompAPtr,HalfTransB,HalfTransC
-EXTSYM changepal,saveselectpal,displayfpspal,superscopepal,DrawScreen,MMXSupport
+EXTSYM saveselectpal,displayfpspal,superscopepal,DrawScreen,MMXSupport
 EXTSYM Get_MouseData,Get_MousePositionDisplacement,GUIEnableTransp,GUIFontData
 EXTSYM StopSound,StartSound,PrevPicture,nggposng,current_zst,newest_zst
 EXTSYM GetTimeInSeconds,bg3ptr,bg3scroly,bg3scrolx,C4Ram
@@ -3166,13 +3166,13 @@ NEWSYM vidpaste
     jne .novsync
     call waitvsync
 .novsync
-%endif
     cmp byte[cbitmode],1
     je .nopal
     cmp byte[curblank],0
     jne .nopal
-    call changepal
+    call doschangepal
 .nopal
+%endif
     cmp byte[FPSOn],0
     je .nofps
     cmp byte[curblank],0
