@@ -153,7 +153,7 @@
 %endmacro
 
 %ifdef __MSDOS__
-%macro DOSClearScreen2 0
+%macro DOSClearScreenKey 0
   call DOSClearScreen
   push eax
   push ecx
@@ -1304,16 +1304,6 @@ GUIVideoKeys:
   FilterExcl2 En2xSaI,hqFilter,NTSCFilter
 .nointerpolation
 %ifdef __MSDOS__
-  cmp dh,'C'
-  jne .nofullscreen
-  xor eax,eax
-  mov al,[cvidmode]
-  cmp byte[GUIFSVID+eax],0
-  je .nofullscreen
-  xor byte[ScreenScale],1
-  FilterExcl2 smallscreenon
-  DOSClearScreen2
-.nofullscreen
   cmp dh,'M'
   jne .nosmallscreen
   xor eax,eax
@@ -1321,9 +1311,19 @@ GUIVideoKeys:
   cmp byte[GUISSVID+eax],0
   je .nosmallscreen
   xor byte[smallscreenon],1
-  FilterExcl2 ScreenScale
-  DOSClearScreen2
+  FilterExcl2 ScreenScale,antienab,En2xSaI,scanlines
+  DOSClearScreenKey
 .nosmallscreen
+  cmp dh,'C'
+  jne .nofullscreen
+  xor eax,eax
+  mov al,[cvidmode]
+  cmp byte[GUIFSVID+eax],0
+  je .nofullscreen
+  xor byte[ScreenScale],1
+  FilterExcl2 smallscreenon,antienab,En2xSaI
+  DOSClearScreenKey
+.nofullscreen
 %endif
   cmp dh,'H'
   jne .nohiresmode7

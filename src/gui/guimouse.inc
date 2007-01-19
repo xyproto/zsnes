@@ -1282,6 +1282,12 @@ GUIWinClicked:
 %macro GUIClickCButton3 3
   GUIClickArea %1+1,%2+3,%1+6,%2+8,%%noclick
   xor %3,1
+  DOSClearScreenMouse
+  ret
+%%noclick
+%endmacro
+
+%macro DOSClearScreenMouse 0
   call DOSClearScreen
   push eax
   push ecx
@@ -1295,7 +1301,6 @@ GUIWinClicked:
   pop ecx
   pop eax
   ret
-%%noclick
 %endmacro
 %endif
 
@@ -2460,7 +2465,7 @@ DisplayGUIVideoClick:
   mov bl,[cvidmode]
   cmp byte[GUISSVID+ebx],0
   je .nocheckbox2b
-  FilterExcl 18,175,ScreenScale
+  FilterExcl 18,175,ScreenScale,antienab,En2xSaI,scanlines
   GUIClickCButton3 18,175,byte[smallscreenon]
 .nocheckbox2b
 
@@ -2468,7 +2473,7 @@ DisplayGUIVideoClick:
   mov bl,[cvidmode]
   cmp byte[GUIFSVID+ebx],0
   je .nocheckbox3b
-  FilterExcl 128,175,smallscreenon
+  FilterExcl 128,175,smallscreenon,antienab,En2xSaI
   GUIClickCButton3 128,175,byte[ScreenScale]
 .nocheckbox3b
 %endif
