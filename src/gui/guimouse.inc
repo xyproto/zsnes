@@ -1352,7 +1352,7 @@ GUIWinClicked:
   xor %3,1
   pushad
 %ifdef __OPENGL__
-  call drawscreenwin
+  call drawscreenvid
 %endif
   call Clear2xSaIBuffer
   popad
