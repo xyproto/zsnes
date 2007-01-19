@@ -3908,15 +3908,15 @@ DisplayGUIMovies:    ; Movie Record/Playback options
   jne near .nodumping
 
   GUIDisplayTextY 15,8,56,GUIMovieTextF           ; Video Section
-  GUIDisplayButtonHoleTu 15,9,64,byte[MovieVideoMode],0,GUIMovieTextF1,1
-  GUIDisplayButtonHoleTu 15,9,74,byte[MovieVideoMode],1,GUIMovieTextF2,2
-  GUIDisplayButtonHoleTu 15,9,84,byte[MovieVideoMode],2,GUIMovieTextF3,0
-  GUIDisplayButtonHoleTu 15,9,94,byte[MovieVideoMode],3,GUIMovieTextF4,9
-  GUIDisplayButtonHoleTu 15,9,104,byte[MovieVideoMode],4,GUIMovieTextF5,0
-  GUIDisplayButtonHoleTu 15,9,114,byte[MovieVideoMode],5,GUIMovieTextF6,0
+  GUIDisplayButtonHoleTu 15,8,64,byte[MovieVideoMode],0,GUIMovieTextF1,1
+  GUIDisplayButtonHoleTu 15,8,74,byte[MovieVideoMode],1,GUIMovieTextF2,2
+  GUIDisplayButtonHoleTu 15,8,84,byte[MovieVideoMode],2,GUIMovieTextF3,0
+  GUIDisplayButtonHoleTu 15,8,94,byte[MovieVideoMode],3,GUIMovieTextF4,9
+  GUIDisplayButtonHoleTu 15,8,104,byte[MovieVideoMode],4,GUIMovieTextF5,0
+  GUIDisplayButtonHoleTu 15,8,114,byte[MovieVideoMode],5,GUIMovieTextF6,0
 
   GUIDisplayTextY 15,129,56,GUIMovieTextG           ; Audio Section
-  GUIDisplayTextY 15,162,154,GUIMovieTextI
+  GUIDisplayTextY 15,162,171,GUIMovieTextI
 
   cmp byte[MovieVideoMode],5
   je near .custom
@@ -3932,17 +3932,21 @@ DisplayGUIMovies:    ; Movie Record/Playback options
   GUIDisplayCheckboxu 15,130,82,MovieVideoAudio,GUIMovieTextG3,11
 .nomux
 
-  DrawGUIButton 15,165,161,200,172,GUIMovieTextI1,34,0,0
-  DrawGUIButton 15,167,178,196,189,GUIMovieTextI2,35,0,0
+  DrawGUIButton 15,165,178,200,189,GUIMovieTextI1,34,0,0
+  DrawGUIButton 15,206,178,235,189,GUIMovieTextI2,35,0,0
 
-  GUIDisplayCheckboxu 15,9,134,MovieForcedLengthEnabled,GUIMovieTextH1,11
-  GUIDisplayBBox 15,136,135,205,145,167
+  GUIDisplayTextY 15,8,127,GUIMovieTextH           ; Video Section
+  GUIDisplayButtonHoleTu 15,8,135,byte[MovieForcedLengthEnabled],0,GUIMovieTextH1,3
+  GUIDisplayButtonHoleTu 15,8,145,byte[MovieForcedLengthEnabled],1,GUIMovieTextH2,11
+  GUIDisplayButtonHoleTu 15,8,155,byte[MovieForcedLengthEnabled],2,GUIMovieTextH3,0
+
+  GUIDisplayBBox 15,136,144,205,154,167
 
   pushad
   call GetMovieForcedLength
   popad
 
-  GUIOuttextwin2d 15,139,139,GUIMovieForcedText,10
+  GUIOuttextwin2d 15,139,148,GUIMovieForcedText,10
 .nodumping
 
   ret
@@ -3992,7 +3996,10 @@ GUIMovieTextG1 db 'DUMP AUDIO',0
 GUIMovieTextG2 db 'COMPRESS AUDIO',0
 GUIMovieTextG3 db 'MERGE WITH VIDEO',0
 
-GUIMovieTextH1 db 'DUMP # OF FRAMES',0
+GUIMovieTextH db 'DUMPING LENGTH:',0
+GUIMovieTextH1 db 'COMPLETE MOVIE',0
+GUIMovieTextH2 db 'DUMP # OF FRAMES',0
+GUIMovieTextH3 db 'NEVER ENDING',0
 
 GUIMovieTextI db 'DUMPING:',0
 GUIMovieTextI1 db 'START',0

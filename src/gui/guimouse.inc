@@ -2079,23 +2079,25 @@ DisplayGUIMovieClick:
   cmp dword[GUIDumpingTab],1
   jne near .nodumping
 
-  GUIPHoldbutton 165,161,200,172,34
-  GUIPHoldbutton 167,178,196,189,35
+  GUIPHoldbutton 165,178,200,189,34
+  GUIPHoldbutton 206,178,235,189,35
 
-  GUIPButtonHole 9,64,byte[MovieVideoMode],0      ; Movie Options
-  GUIPButtonHole 9,74,byte[MovieVideoMode],1
-  GUIPButtonHole 9,84,byte[MovieVideoMode],2
-  GUIPButtonHole 9,94,byte[MovieVideoMode],3
-  GUIPButtonHole 9,104,byte[MovieVideoMode],4
-  GUIPButtonHole 9,114,byte[MovieVideoMode],5
+  GUIPButtonHole 8,64,byte[MovieVideoMode],0      ; Movie Options
+  GUIPButtonHole 8,74,byte[MovieVideoMode],1
+  GUIPButtonHole 8,84,byte[MovieVideoMode],2
+  GUIPButtonHole 8,94,byte[MovieVideoMode],3
+  GUIPButtonHole 8,104,byte[MovieVideoMode],4
+  GUIPButtonHole 8,114,byte[MovieVideoMode],5
 
   GUIClickCButton 130,62,byte[MovieAudio]
   GUIClickCButton 130,72,byte[MovieAudioCompress]
   GUIClickCButton 130,82,byte[MovieVideoAudio]
 
-  GUIClickCButton 9,134,byte[MovieForcedLengthEnabled]
+  GUIPButtonHole 8,135,byte[MovieForcedLengthEnabled],0      ; Movie Options
+  GUIPButtonHole 8,145,byte[MovieForcedLengthEnabled],1
+  GUIPButtonHole 8,155,byte[MovieForcedLengthEnabled],2
 
-  GUITextBoxInputNach 136,135,205,145,14,11,SetMovieForcedLength
+  GUITextBoxInputNach 136,144,205,154,14,11,SetMovieForcedLength
 .nodumping
 
   ret

@@ -1708,7 +1708,9 @@ GUIMovieKeys:
   GUIKeyCheckbox MovieVideoAudio,'V'
   GUIKeyCheckbox MovieAudioCompress,'M'
 
-  GUIKeyCheckbox MovieForcedLengthEnabled,'R'
+  GUIKeyButtonHole MovieForcedLengthEnabled,0,'P'
+  GUIKeyButtonHole MovieForcedLengthEnabled,1,'R'
+  GUIKeyButtonHole MovieForcedLengthEnabled,2,'N'
 .nodumping
 
   ret
