@@ -28,7 +28,7 @@ EXTSYM NoSoundReinit,soundon,DSPDisable,SBInt,PICMaskP,SBIrq,SBHandler,InitSB
 EXTSYM handler8h,handler9h,init60hz,Interror,init18_2hz,DeInitSPC,GUIinit36_4hz
 EXTSYM GUIoldhand9s,GUIoldhand9o,GUIoldhand8s,GUIoldhand8o,GUIhandler9h
 EXTSYM GUIhandler8h,GUIinit18_2hz,dosmakepal,doschangepal,dosinitvideo
-EXTSYM DosDrawScreen,cvidmode,vidbuffer,GUICPC,DosDrawScreenB,DOSClearScreen
+EXTSYM DosDrawScreen,cvidmode,vidbuffer,GUICPC,DosDrawScreenB
 EXTSYM DosUpdateDevices,DOSJoyRead,pl1contrl,pl2contrl,pl3contrl,pl4contrl
 EXTSYM pl5contrl,GrayscaleMode
 EXTSYM pl1upk,pl1downk,pl1leftk,pl1rightk,pl1startk,pl1selk
@@ -518,11 +518,6 @@ NEWSYM vidpastecopyscr       ; GUI screen render
 .no16bconv
    popad
    jmp DosDrawScreenB
-
-; ** Clear Screen function **
-NEWSYM ClearScreen
-   call DOSClearScreen
-   ret
 
 ; ** Video Mode Variables **
 SECTION .data

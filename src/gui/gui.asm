@@ -48,7 +48,7 @@ EXTSYM continueprog,spcBuffera,cbitmode,makepal,t1cc
 EXTSYM romloadskip,romdata,init65816,current_zst
 EXTSYM procexecloop,SPCRAM,spcPCRam,spcS,spcRamDP,spcA,spcX,spcY,spcP,spcNZ
 EXTSYM Voice0Status,Voice1Status,Voice2Status,Voice3Status,Voice4Status
-EXTSYM Voice5Status,Voice6Status,Voice7Status,ClearScreen,statesaver,loadstate2
+EXTSYM Voice5Status,Voice6Status,Voice7Status,statesaver,loadstate2
 EXTSYM vidbuffer,ASCII2Font,hirestiledat,showallext,scanlines
 EXTSYM sprlefttot,spritetablea,KeyRTRCycle
 EXTSYM cgram,tempco0,prevbright,maxbr,prevpal,coladdr,coladdg
@@ -134,7 +134,7 @@ EXTSYM CBBuffer,CBLength,PasteClipBoard,ctrlptr,PauseFocusChange
 EXTSYM dssel,SetInputDevice209,initvideo2,Force8b,SBHDMA,vibracard,smallscreenon
 EXTSYM pl1p209,pl2p209,pl3p209,pl4p209,pl5p209,SidewinderFix,Triplebufen,ScreenScale
 EXTSYM GUIEAVID,GUIFSVID,GUIWSVID,GUISSVID,GUITBVID,GUISLVID,GUIHSVID,GUI2xVID
-EXTSYM JoyMinX209,JoyMaxX209,JoyMinY209,JoyMaxY209
+EXTSYM JoyMinX209,JoyMaxX209,JoyMinY209,JoyMaxY209,DOSClearScreen
 %endif
 
 %ifndef __MSDOS__
@@ -1099,7 +1099,9 @@ NEWSYM StartGUI
   xor eax,eax
   rep stosd
   GUIDeInitIRQs
-  call ClearScreen
+%ifdef __MSDOS__
+  call DOSClearScreen
+%endif
   cmp byte[cbitmode],0
   jne .nomakepal
   call makepal
@@ -2382,7 +2384,9 @@ InitGUI:
   je .nong16b
   call GetScreen
 .nong16b
-  call ClearScreen
+%ifdef __MSDOS__
+  call DOSClearScreen
+%endif
   pushad
   call Clear2xSaIBuffer
   popad

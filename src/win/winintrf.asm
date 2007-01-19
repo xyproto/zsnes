@@ -486,11 +486,6 @@ NEWSYM vidpastecopyscr       ; GUI screen render
    popad
    jmp DrawScreen
 
-
-; ** Clear Screen function **
-NEWSYM ClearScreen
-   ret
-
 ; ** Video Mode Variables **
 SECTION .data
 

@@ -462,7 +462,9 @@ SetDevice:
     ret
 
 NEWSYM GUIDoReset
-    call ClearScreen
+%ifdef __MSDOS__
+    call DOSClearScreen
+%endif
     pushad
     call Clear2xSaIBuffer
     popad

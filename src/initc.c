@@ -1858,7 +1858,7 @@ extern unsigned short totlines;
 void SetAddressingModes(), GenerateBank0Table();
 void SetAddressingModesSA1(), GenerateBank0TableSA1();
 void InitDSP(), InitDSP2(), InitDSP3(), InitDSP4(), InitOBC1(), InitFxTables();
-void initregr(), initregw(), DOSClearScreen(), dosmakepal();
+void initregr(), initregw(), dosmakepal();
 
 void CheckROMType()
 {
@@ -2091,8 +2091,6 @@ void SetupROM()
   SetIRQVectors();
 
   #ifdef __MSDOS__
-//  asm_call(DOSClearScreen);
-
   if (!cbitmode) // 8-bit mode uses a palette
   {
     asm_call(dosmakepal);

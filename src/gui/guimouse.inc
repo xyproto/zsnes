@@ -1277,12 +1277,13 @@ GUIWinClicked:
 %%noclick
 %endmacro
 
+%ifdef __MSDOS__
 %macro GUIClickCButton3 5
   GUIClickArea %1+1,%2+3,%1+6,%2+8,%%noclick
   xor %3,%5
   mov al,%3
   mov %4,al
-  call ClearScreen
+  call DOSClearScreen
   push eax
   push ecx
   mov eax,[vidbufferofsb]
@@ -1297,6 +1298,7 @@ GUIWinClicked:
   ret
 %%noclick
 %endmacro
+%endif
 
 %macro GUIClickCButton5 4
   GUIClickArea %1+1,%2+3,%1+6,%2+8,%%noclick
@@ -1689,7 +1691,7 @@ SECTION .text
   cmp %3,0
   je %%noclear
   pushad
-  call ClearScreen
+  call DOSClearScreen
   cmp byte[cvidmode],2  ;modeQ
   je %%refresh
   cmp byte[cvidmode],5

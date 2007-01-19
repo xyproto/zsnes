@@ -906,7 +906,9 @@ GUIGUIOptnsKeys:
   cmp dh,'F'
   jne .guioptn8
   xor byte[FilteredGUI],1
-  call ClearScreen
+%ifdef __MSDOS__
+  call DOSClearScreen
+%endif
   pushad
 %ifdef __OPENGL__
   cmp byte[cvidmode],5
@@ -1117,8 +1119,8 @@ GUIVideoKeys:
   mov byte[hqFilter],0
   mov byte[NTSCFilter],0
   pushad
-  call ClearScreen
 %ifdef __MSDOS__
+  call DOSClearScreen
   cmp byte[cvidmode],2  ;modeQ
   je .refresh
   cmp byte[cvidmode],5
@@ -1146,7 +1148,9 @@ GUIVideoKeys:
   mov byte[En2xSaI],0
   mov byte[hqFilter],0
   mov byte[NTSCFilter],0
-  call ClearScreen
+%ifdef __MSDOS__
+  call DOSClearScreen
+%endif
   GUIKeyButtonHole scanlines,3,'5'
 .nohalfscanlines
   cmp dh,'2'
@@ -1154,7 +1158,9 @@ GUIVideoKeys:
   mov byte[En2xSaI],0
   mov byte[hqFilter],0
   mov byte[NTSCFilter],0
-  call ClearScreen
+%ifdef __MSDOS__
+  call DOSClearScreen
+%endif
   GUIKeyButtonHole scanlines,2,'2'
 .noquarterscanlines
   cmp dh,'Q'
@@ -1292,7 +1298,9 @@ GUIVideoKeys:
   mov al,[cvidmode]
   cmp byte[GUIFSVID+eax],0
   je .nofullscreen
-  call ClearScreen
+%ifdef __MSDOS__
+  call DOSClearScreen
+%endif
   xor byte[ScreenScale],1
   mov byte[smallscreenon],0
   push eax
@@ -1313,7 +1321,9 @@ GUIVideoKeys:
   mov al,[cvidmode]
   cmp byte[GUISSVID+eax],0
   je .nosmallscreen
-  call ClearScreen
+%ifdef __MSDOS__
+  call DOSClearScreen
+%endif
   xor byte[smallscreenon],1
   mov byte[ScreenScale],0
   push eax

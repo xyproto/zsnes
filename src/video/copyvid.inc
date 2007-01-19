@@ -6227,8 +6227,8 @@ NEWSYM copyvesa12640x480x16b
 ;*******************************************************
 ; Clear Screen
 ;*******************************************************
-NEWSYM DOSClearScreen
 %ifdef __MSDOS__
+NEWSYM DOSClearScreen
     cmp byte[cvidmode],0
     je near cscopymodeq
     cmp byte[cvidmode],1
@@ -6267,8 +6267,8 @@ NEWSYM DOSClearScreen
     je near cscopyvesa2800x600x8b
     cmp byte[cvidmode],18
     je near cscopyvesa2800x600x16b
-%endif
     ret
+%endif
 
 %macro TripleBufferClear 0
    cmp byte[Triplebufen],0
