@@ -203,16 +203,6 @@ NEWSYM DeInitPostGame           ; Called after game is ended
 ; Video Stuff
 ; ****************************
 
-; ** Palette Functions **
-NEWSYM displayfpspal
-    ret
-
-NEWSYM superscopepal
-    ret
-
-NEWSYM saveselectpal
-    ret
-
 ; ** init video mode functions **
 SECTION .data
 NEWSYM firstvideo, dd 1

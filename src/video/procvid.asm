@@ -29,7 +29,7 @@ EXTSYM romispal,scaddtype,scanlines,selcA000,t1cc,vcache4b,vesa2_bpos
 EXTSYM spritetablea,vesa2_clbit,vesa2_gpos,vesa2_rpos,vesa2red10
 EXTSYM vidbuffer,vram,KeyStateSelct,soundon
 EXTSYM bg1objptr,DecompAPtr,HalfTransB,HalfTransC
-EXTSYM saveselectpal,displayfpspal,superscopepal,DrawScreen,MMXSupport
+EXTSYM DrawScreen,MMXSupport
 EXTSYM Get_MouseData,Get_MousePositionDisplacement,GUIEnableTransp,GUIFontData
 EXTSYM StopSound,StartSound,PrevPicture,nggposng,current_zst,newest_zst
 EXTSYM GetTimeInSeconds,bg3ptr,bg3scroly,bg3scrolx,C4Ram
@@ -45,6 +45,7 @@ EXTSYM zst_determine_newest,newestfiledate,zst_exists,ClockBox,SSAutoFire
 EXTSYM MouseMoveX,MouseMoveY,MouseButtons,MultiMouseProcess,mouse
 %else
 EXTSYM SB_blank,vsyncon,Triplebufen,granadd,Palette0,smallscreenon,ScreenScale,vesa2selec
+EXTSYM displayfpspal,superscopepal,saveselectpal
 %endif
 
 %ifdef __UNIXSDL__
@@ -1561,7 +1562,9 @@ NEWSYM saveselect
     cmp byte[cbitmode],1
     je near .16b
 .updatescreen8b
+%ifdef __MSDOS__
     call saveselectpal
+%endif
     ; draw a small blue box with a white border
     mov esi,70+70*288
     add esi,[vidbuffer]
@@ -2448,7 +2451,9 @@ NEWSYM showfps
     cmp byte[cbitmode],1
     je near .do16b
 
+%ifdef __MSDOS__
     call displayfpspal
+%endif
 
     movzx ax,byte[lastfps]
     mov bl,10
@@ -2532,7 +2537,9 @@ NEWSYM ClockOutput
     cmp byte[cbitmode],1
     je near .do16b3
 .no16b3
+%ifdef __MSDOS__
     call displayfpspal
+%endif
     mov esi,215*288+32+192
     add esi,[vidbuffer]
     mov ebx,7
@@ -2699,7 +2706,9 @@ NEWSYM ClockOutputB
     cmp byte[cbitmode],1
     je near .do16b3
 .no16b3
+%ifdef __MSDOS__
     call displayfpspal
+%endif
     mov esi,208*288+32+192
     add esi,[vidbuffer]
     mov ebx,7
@@ -2873,7 +2882,9 @@ NEWSYM hextestoutput
     add eax,40h
     mov edx,eax
     mov [Testval],edx
+%ifdef __MSDOS__
     call displayfpspal
+%endif
 
     mov esi,[vram]
     mov ax,0
@@ -2961,7 +2972,9 @@ NEWSYM ShowSound
     ret
 
 NEWSYM sounddisplay
+%ifdef __MSDOS__
     call displayfpspal
+%endif
 
     push esi
     push ebx
@@ -3201,10 +3214,12 @@ NEWSYM vidpaste
     jmp DrawScreen
 
 .drawss
+%ifdef __MSDOS__
     cmp byte[cbitmode],1
     je .noss8b
     call superscopepal
 .noss8b
+%endif
     xor eax,eax
     mov al,[mouseyloc]
     mov ebx,288
