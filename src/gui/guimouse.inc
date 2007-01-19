@@ -1217,6 +1217,16 @@ GUIWinClicked:
 %%noclick
 %endmacro
 
+%macro GUIClickCButtonB 3
+  GUIClickArea %1+1,%2+3,%1+6,%2+8,%%noclick
+  xor %3,1
+  pushad
+  call drawscreenvid
+  call initwinvideo
+  popad
+%%noclick
+%endmacro
+
 %macro GUIClickCButtonN 4
   GUIClickArea %1+1,%2+3,%1+6,%2+8,%%noclick
 %ifdef __WIN32__
@@ -1352,7 +1362,11 @@ GUIWinClicked:
   xor %3,1
   pushad
 %ifdef __OPENGL__
+  cmp byte[cvidmode],5
+  jl %%skipinit
   call drawscreenwin
+  call initwinvideo
+%%skipinit
 %endif
   call Clear2xSaIBuffer
   popad

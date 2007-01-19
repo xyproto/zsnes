@@ -909,7 +909,11 @@ GUIGUIOptnsKeys:
   call ClearScreen
   pushad
 %ifdef __OPENGL__
+  cmp byte[cvidmode],5
+  jl near .skipinit
   call drawscreenwin
+  call initwinvideo
+.skipinit
 %endif
   call Clear2xSaIBuffer
   popad
