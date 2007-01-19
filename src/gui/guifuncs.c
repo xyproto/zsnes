@@ -1832,7 +1832,7 @@ void Keep43Check()
 
 #endif
 
-extern char MovieForcedLength;
+extern unsigned int MovieForcedLength;
 char GUIMovieForcedText[11];
 
 void GetMovieForcedLength()
