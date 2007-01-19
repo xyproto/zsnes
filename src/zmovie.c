@@ -2528,7 +2528,7 @@ extern unsigned char ComboCounter, MovieRecordWinVal, AllocatedRewindStates;
 extern unsigned char SloMo, EMUPause;
 char MovieFrameStr[10];
 bool MovieForcedLengthEnabled = false;
-unsigned int MovieForcedLength = 0;
+unsigned int MovieForcedLength = 0, MovieForcedLengthInternal;
 unsigned char MoviePassWaiting = 0;
 
 struct
@@ -2557,7 +2557,7 @@ static void DumpVideoFrame(bool playback_over)
       JoyAOrig = JoyBOrig = JoyCOrig = JoyDOrig = JoyEOrig = 0;
     }
 
-    if ((playback_over && !MovieForcedLengthEnabled) || (MovieForcedLengthEnabled && !MovieForcedLength))
+    if ((playback_over && !MovieForcedLengthEnabled) || (MovieForcedLengthEnabled && !MovieForcedLengthInternal))
     {
       switch (MovieProcessing)
       {
@@ -2573,7 +2573,6 @@ static void DumpVideoFrame(bool playback_over)
       raw_video_close();
       RawDumpInProgress = false;
       SetMovieMode(MOVIE_OFF);
-      MovieForcedLengthEnabled = false;
       if ((MovieVideoMode == 5) && (movie_current_pass < md_custom_passes))
       {
         movie_current_pass++;
@@ -2587,7 +2586,7 @@ static void DumpVideoFrame(bool playback_over)
     else
     {
       raw_video_write_frame();
-      if (MovieForcedLength) { MovieForcedLength--; }
+      if (MovieForcedLengthInternal) { MovieForcedLengthInternal--; }
     }
   }
 }
@@ -2875,7 +2874,7 @@ void MovieStop()
       case MOVIE_PLAYBACK: case MOVIE_DUMPING_NEW:
         zmv_replay_finished();
         MovieSub_Close();
-        MovieForcedLength = 0;
+        MovieForcedLengthInternal = 0;
         DumpVideoFrame(true);
         MessageOn = 0;
         break;
@@ -2891,12 +2890,12 @@ void MovieStop()
       case MOVIE_OLD_PLAY: case MOVIE_DUMPING_OLD:
         fclose(old_movie.fp);
         MovieSub_Close();
-        MovieForcedLength = 0;
+        MovieForcedLengthInternal = 0;
         DumpVideoFrame(true);
         MessageOn = 0;
         break;
       case MOVIE_ENDING_DUMPING:
-        MovieForcedLength = 0;
+        MovieForcedLengthInternal = 0;
         DumpVideoFrame(true);
         break;
     }
@@ -3092,6 +3091,7 @@ void MovieDumpRaw()
   {
     MoviePlay();
     if ((MovieVideoMode == 5) && !movie_current_pass) { movie_current_pass = 1; }
+    MovieForcedLengthInternal = MovieForcedLength;
     RawDumpInProgress = raw_video_open();
 
     switch (MovieProcessing)
