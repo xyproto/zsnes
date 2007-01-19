@@ -1279,11 +1279,9 @@ GUIWinClicked:
 %endmacro
 
 %ifdef __MSDOS__
-%macro GUIClickCButton3 5
+%macro GUIClickCButton3 3
   GUIClickArea %1+1,%2+3,%1+6,%2+8,%%noclick
-  xor %3,%5
-  mov al,%3
-  mov %4,al
+  xor %3,1
   call DOSClearScreen
   push eax
   push ecx
@@ -1367,8 +1365,10 @@ GUIWinClicked:
 %ifdef __OPENGL__
   cmp byte[cvidmode],5
   jl %%skipinit
+  pushad
   call drawscreenwin
   call initwinvideo
+  popad
 %%skipinit
 %endif
   call Clear2xSaIBuffer
@@ -2335,10 +2335,9 @@ DisplayGUIVideoClick:
   mov bl,[cvidmode]
   cmp byte[GUINTVID+ebx],0
   je near .nontscfilter
-%ifdef __OPENGL__
-  FilterExcl 128,35,En2xSaI,hqFilter,scanlines,antienab,BilinearFilter
-%else
   FilterExcl 128,35,En2xSaI,hqFilter,scanlines,antienab
+%ifdef __OPENGL__
+  FilterExcl 128,35,BilinearFilter
 %endif
 %ifndef __MSDOS__
   GUIClickCButtonN 128,35,byte[NTSCFilter],NTSCFilterInit
@@ -2462,7 +2461,7 @@ DisplayGUIVideoClick:
   cmp byte[GUISSVID+ebx],0
   je .nocheckbox2b
   FilterExcl 18,175,ScreenScale
-  GUIClickCButton3 18,175,byte[smallscreenon],byte[smallscreenon],1
+  GUIClickCButton3 18,175,byte[smallscreenon]
 .nocheckbox2b
 
   xor ebx,ebx                             ; Full/Wide Screen
@@ -2470,7 +2469,7 @@ DisplayGUIVideoClick:
   cmp byte[GUIFSVID+ebx],0
   je .nocheckbox3b
   FilterExcl 128,175,smallscreenon
-  GUIClickCButton3 128,175,byte[ScreenScale],byte[ScreenScale],1
+  GUIClickCButton3 128,175,byte[ScreenScale]
 .nocheckbox3b
 %endif
 
