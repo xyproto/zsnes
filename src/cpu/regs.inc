@@ -1076,18 +1076,7 @@ reg4212r:
 %endif
     mov bx,[resolutn]
     cmp word[curypos],bx
-    jne .notres
-    cmp byte[nmistatus],2
-    je .vblank
-.notres
-    inc bx
-    cmp word[curypos],bx
-    jb .novbl
-    mov bx,[totlines]
-    dec bx
-    cmp word[curypos],bx
-    jae .novbl
-.vblank
+    jbe .novbl
     or al,80h
 ;    jmp .nohblank
 .novbl
@@ -1114,18 +1103,7 @@ debblah2:
     mov dh,[pdh]
     mov bx,[resolutn]
     cmp word[curypos],bx
-    jne .notres
-    cmp byte[nmistatus],2
-    je .vblank
-.notres
-    inc bx
-    cmp word[curypos],bx
-    jb .novbl
-    mov bx,[totlines]
-    dec bx
-    cmp word[curypos],bx
-    jae .novbl
-.vblank
+    jbe .novbl
     or al,80h
 ;    jmp .nohblank
 .novbl
