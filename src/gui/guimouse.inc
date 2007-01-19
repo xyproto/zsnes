@@ -1221,7 +1221,7 @@ GUIWinClicked:
   GUIClickArea %1+1,%2+3,%1+6,%2+8,%%noclick
   xor %3,1
   pushad
-  call drawscreenvid
+  call drawscreenwin
   call initwinvideo
   popad
 %%noclick
