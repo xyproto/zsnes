@@ -1266,6 +1266,7 @@ GUIVideoKeys:
   xor byte[BilinearFilter],1
   mov byte[NTSCFilter],0
   call drawscreenwin
+  call initwinvideo
   jmp .nointerpolation
 .nobilinearfilter
 %elifdef __MSDOS__
