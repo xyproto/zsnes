@@ -28,7 +28,7 @@ EXTSYM newengen,nextframe,objptr,pressed,prevpal,res512switch,resolutn
 EXTSYM romispal,scaddtype,scanlines,selcA000,t1cc,vcache4b,vesa2_bpos
 EXTSYM spritetablea,vesa2_clbit,vesa2_gpos,vesa2_rpos,vesa2red10
 EXTSYM vidbuffer,vram,KeyStateSelct,soundon
-EXTSYM makepal,bg1objptr,DecompAPtr,HalfTransB,HalfTransC
+EXTSYM bg1objptr,DecompAPtr,HalfTransB,HalfTransC
 EXTSYM changepal,saveselectpal,displayfpspal,superscopepal,DrawScreen,MMXSupport
 EXTSYM Get_MouseData,Get_MousePositionDisplacement,GUIEnableTransp,GUIFontData
 EXTSYM StopSound,StartSound,PrevPicture,nggposng,current_zst,newest_zst
@@ -1748,7 +1748,9 @@ NEWSYM saveselect
     mov byte[csounddisable],0
     call StartSound
 
-    call makepal
+%ifdef __MSDOS__
+    call dosmakepal
+%endif
     mov byte[f3menuen],0
     mov byte[ForceNonTransp],0
     ret
@@ -2412,7 +2414,6 @@ NEWSYM doschangepal
     call dovegrest
 .noveg2
     ret
-
 %endif
 
 ;*******************************************************
@@ -3095,9 +3096,11 @@ NEWSYM copyvid
 .nfivex5b
     dec dword[MessageOn]
     jnz near .nomsg
+%ifdef __MSDOS__
     cmp byte[cbitmode],1
     je near .nomsg
-    call makepal
+    call dosmakepal
+%endif
     jmp .nomsg
 .do16b
     mov edi,[Msgptr]

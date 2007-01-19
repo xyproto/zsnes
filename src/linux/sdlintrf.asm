@@ -204,9 +204,6 @@ NEWSYM DeInitPostGame           ; Called after game is ended
 ; ****************************
 
 ; ** Palette Functions **
-NEWSYM makepal  ; 8-bit palette set
-    ret
-;    jmp dosmakepal
 NEWSYM changepal  ; 8-bit palette set (changes only)
     ret
 ;    jmp doschangepal

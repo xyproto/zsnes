@@ -44,7 +44,7 @@
 
 EXTSYM curblank,vidpastecopyscr,frameskip,newengen,cvidmode,antienab
 EXTSYM soundon,StereoSound,SoundQuality,MusicRelVol,endprog
-EXTSYM continueprog,spcBuffera,cbitmode,makepal,t1cc
+EXTSYM continueprog,spcBuffera,cbitmode,dosmakepal,t1cc
 EXTSYM romloadskip,romdata,init65816,current_zst
 EXTSYM procexecloop,SPCRAM,spcPCRam,spcS,spcRamDP,spcA,spcX,spcY,spcP,spcNZ
 EXTSYM Voice0Status,Voice1Status,Voice2Status,Voice3Status,Voice4Status
@@ -1101,11 +1101,11 @@ NEWSYM StartGUI
   GUIDeInitIRQs
 %ifdef __MSDOS__
   call DOSClearScreen
-%endif
   cmp byte[cbitmode],0
   jne .nomakepal
-  call makepal
+  call dosmakepal
 .nomakepal
+%endif
   mov word[t1cc],1
 
   pushad

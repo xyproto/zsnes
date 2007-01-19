@@ -27,7 +27,7 @@ EXTSYM oldhand9s,oldhand9o,interror,oldhand8s,oldhand8o,oldhandSBs,oldhandSBo
 EXTSYM NoSoundReinit,soundon,DSPDisable,SBInt,PICMaskP,SBIrq,SBHandler,InitSB
 EXTSYM handler8h,handler9h,init60hz,Interror,init18_2hz,DeInitSPC,GUIinit36_4hz
 EXTSYM GUIoldhand9s,GUIoldhand9o,GUIoldhand8s,GUIoldhand8o,GUIhandler9h
-EXTSYM GUIhandler8h,GUIinit18_2hz,dosmakepal,doschangepal,dosinitvideo
+EXTSYM GUIhandler8h,GUIinit18_2hz,doschangepal,dosinitvideo
 EXTSYM DosDrawScreen,cvidmode,vidbuffer,GUICPC,DosDrawScreenB
 EXTSYM DosUpdateDevices,DOSJoyRead,pl1contrl,pl2contrl,pl3contrl,pl4contrl
 EXTSYM pl5contrl,GrayscaleMode
@@ -401,8 +401,6 @@ NEWSYM GUIDeInit
 ; ****************************
 
 ; ** Palette Functions **
-NEWSYM makepal  ; 8-bit palette set
-    jmp dosmakepal
 NEWSYM changepal  ; 8-bit palette set (changes only)
     jmp doschangepal
 NEWSYM displayfpspal
