@@ -726,6 +726,7 @@ ProcessMouseButtons:
   mov byte[GUICBHold],0
   mov byte[GUIQuit],2
   pushad
+  call SetMovieForcedLength
   call MovieDumpRaw
   popad
   cmp byte[MovieVideoMode],2
