@@ -1351,6 +1351,9 @@ GUIWinClicked:
   GUIClickArea %1+1,%2+3,%1+6,%2+8,%%noclick
   xor %3,1
   pushad
+%ifdef __OPENGL__
+  call drawscreenwin
+%endif
   call Clear2xSaIBuffer
   popad
 %%noclick
@@ -2297,7 +2300,7 @@ DisplayGUIVideoClick:
   je near .nocheckboxi2
 .yesinterp
   FilterExcl 18,35,hqFilter,NTSCFilter,En2xSaI
-  GUIClickCButton3 18,35,byte[antienab],byte[antienab],1
+  GUIClickCButton 18,35,byte[antienab]
 .nocheckboxi2
 %ifdef __OPENGL__
   xor ebx,ebx                             ; Bilinear
@@ -2305,7 +2308,7 @@ DisplayGUIVideoClick:
   cmp byte[GUIBIFIL+ebx],0
   je .nocheckbox1bf
   FilterExcl 18,35,NTSCFilter
-  GUIClickCButton 18,35,byte[BilinearFilter]
+  GUIClickCButtonK 18,35,byte[BilinearFilter],drawscreenwin
 .nocheckbox1bf
 %endif
 

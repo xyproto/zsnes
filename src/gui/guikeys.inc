@@ -906,20 +906,14 @@ GUIGUIOptnsKeys:
   cmp dh,'F'
   jne .guioptn8
   xor byte[FilteredGUI],1
-  cmp byte[En2xSaI],1
-  jnae .guioptn8
   call ClearScreen
   pushad
+%ifdef __OPENGL__
+  call drawscreenvid
+%endif
   call Clear2xSaIBuffer
   popad
 .guioptn8
-  cmp byte[hqFilter],0
-  je .guioptn9
-  call ClearScreen
-  pushad
-  call Clear2xSaIBuffer
-  popad
-.guioptn9
 
   GUIKeyButtonHole GUIEffect,0,'E'   ; Start From Radio Buttons
   GUIKeyButtonHole GUIEffect,1,'N'
@@ -1267,6 +1261,7 @@ GUIVideoKeys:
   je .nobilinearfilter
   xor byte[BilinearFilter],1
   mov byte[NTSCFilter],0
+  call drawscreenwin
   jmp .nointerpolation
 .nobilinearfilter
 %elifdef __MSDOS__

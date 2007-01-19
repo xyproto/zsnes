@@ -152,7 +152,7 @@ EXTSYM vsyncon
 %endif
 
 %ifdef __OPENGL__
-EXTSYM BilinearFilter,GUIBIFIL
+EXTSYM BilinearFilter,GUIBIFIL,drawscreenvid
 %endif
 
 %include "gui/guitools.inc"
