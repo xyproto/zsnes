@@ -3758,6 +3758,12 @@ DisplayGUIMovies:    ; Movie Record/Playback options
   GUIDrawTabs GUIDumpingTab
 .cannotdump
 
+  cmp byte[RawDumpInProgress],0
+  je .notdumping
+  mov dword[GUIMovieTabs],0
+  mov dword[GUIDumpingTab],1
+.notdumping
+
   cmp byte[MovieRecordWinVal],0
   je near .displayboxa
 

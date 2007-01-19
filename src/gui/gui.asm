@@ -65,7 +65,7 @@ EXTSYM GetDate,horizon_get,ErrorPointer,MessageOn,GetTime
 EXTSYM GetScreen,Clear2xSaIBuffer,MouseWindow,ExitFromGUI
 EXTSYM newgfx16b,NumVideoModes,MusicVol,DSPMem,NumInputDevices
 EXTSYM GUIInputNames,GUIVideoModeNames,GameSpecificInput,device1,device2,TwelveHourClock
-EXTSYM GUIM7VID,GUINTVID,GUIHQ2X
+EXTSYM GUIM7VID,GUINTVID,GUIHQ2X,RawDumpInProgress
 EXTSYM MultiTap,SFXEnable,RestoreSystemVars
 EXTSYM nssdip1,nssdip2,nssdip3,nssdip4,nssdip5,nssdip6
 EXTSYM SkipMovie,MovieStop,MoviePlay,MovieRecord
