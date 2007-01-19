@@ -1261,7 +1261,7 @@ GUIVideoKeys:
   je .nobilinearfilter
   xor byte[BilinearFilter],1
   mov byte[NTSCFilter],0
-  call drawscreenwin
+  call drawscreenvid
   jmp .nointerpolation
 .nobilinearfilter
 %elifdef __MSDOS__

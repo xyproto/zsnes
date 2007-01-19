@@ -2308,7 +2308,7 @@ DisplayGUIVideoClick:
   cmp byte[GUIBIFIL+ebx],0
   je .nocheckbox1bf
   FilterExcl 18,35,NTSCFilter
-  GUIClickCButtonK 18,35,byte[BilinearFilter],drawscreenwin
+  GUIClickCButtonK 18,35,byte[BilinearFilter],drawscreenvid
 .nocheckbox1bf
 %endif
 
