@@ -1913,7 +1913,7 @@ SECTION .text
 %%noclick
 %endmacro
 
-%macro GUIPTabClick 3-* ; minX, maxX, value, var, vars to zero
+%macro GUIPTabClick 4-* ; minX, maxX, value, var, vars to zero
   GUIClickArea %1+1,11,%2-1,22,%%noclick
   mov dword[%4],%3
 %if (%0>4)
