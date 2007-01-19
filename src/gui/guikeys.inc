@@ -909,7 +909,7 @@ GUIGUIOptnsKeys:
   call ClearScreen
   pushad
 %ifdef __OPENGL__
-  call drawscreenvid
+  call drawscreenwin
 %endif
   call Clear2xSaIBuffer
   popad
@@ -1261,7 +1261,7 @@ GUIVideoKeys:
   je .nobilinearfilter
   xor byte[BilinearFilter],1
   mov byte[NTSCFilter],0
-  call drawscreenvid
+  call drawscreenwin
   jmp .nointerpolation
 .nobilinearfilter
 %elifdef __MSDOS__

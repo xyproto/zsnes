@@ -1352,7 +1352,7 @@ GUIWinClicked:
   xor %3,1
   pushad
 %ifdef __OPENGL__
-  call drawscreenvid
+  call drawscreenwin
 %endif
   call Clear2xSaIBuffer
   popad
@@ -2308,7 +2308,7 @@ DisplayGUIVideoClick:
   cmp byte[GUIBIFIL+ebx],0
   je .nocheckbox1bf
   FilterExcl 18,35,NTSCFilter
-  GUIClickCButtonK 18,35,byte[BilinearFilter],drawscreenvid
+  GUIClickCButtonK 18,35,byte[BilinearFilter],drawscreenwin
 .nocheckbox1bf
 %endif
 
