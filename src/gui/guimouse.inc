@@ -2310,6 +2310,12 @@ DisplayGUIVideoClick:
   call Clear2xSaIBuffer
   popad
 
+%ifdef __MSDOS__
+  cmp byte[smallscreenon],1
+  je .noradiobuttons
+  cmp byte[ScreenScale],1
+  je .noradiobuttons
+%endif
   xor ebx,ebx                             ; Interpolations
   mov bl,[cvidmode]
 %ifdef __MSDOS__
@@ -2394,9 +2400,13 @@ DisplayGUIVideoClick:
   GUIPButtonHole 128,68,byte[hqFilterlevel],2
   FilterExcl 128,55,En2xSaI,scanlines,antienab,NTSCFilter
   GUIClickCButton 128,55,byte[hqFilter]
-.noradiobuttons
 %endif
+.noradiobuttons
 
+%ifdef __MSDOS__
+  cmp byte[smallscreenon],1
+  je .nohsline
+%endif
   xor ebx,ebx                             ; Scanlines
   mov bl,[cvidmode]
 %ifdef __MSDOS__
@@ -2409,6 +2419,10 @@ DisplayGUIVideoClick:
   GUIPButtonHoleS 18,87,byte[scanlines],0
   GUIPButtonHoleS 168,87,byte[scanlines],1
 .nocheckboxb
+%ifdef __MSDOS__
+  cmp byte[ScreenScale],1
+  je .nohsline
+%endif
   xor ebx,ebx
   mov bl,[cvidmode]
 %ifdef __MSDOS__

@@ -1130,59 +1130,95 @@ GUIVideoKeys:
 
   cmp dword[GUIVideoTabs],2
   jne near .notfilterstab
+
+%ifdef __MSDOS__
+  cmp byte[smallscreenon],1
+  je .nohq4x
+  cmp byte[ScreenScale],1
+  je .nohq4x
+%endif
+  cmp dh,'I'
+  jne .nointerpolation
   xor eax,eax
   mov al,[cvidmode]
-%ifdef __MSDOS__
-  cmp byte[GUISLVID+eax],0
-%else
-  cmp byte[GUIDSIZE+eax],0
-%endif
-  je .nofullscanlines
-  GUIKeyButtonHole scanlines,0,'O'
-  cmp dh,'F'
-  jne .nofullscanlines
-  FilterExcl2 En2xSaI,hqFilter,NTSCFilter
+%ifdef __OPENGL__
+  cmp byte[GUIBIFIL+eax],0
+  je .nobilinearfilter
+  xor byte[BilinearFilter],1
+  FilterExcl2 NTSCFilter
   pushad
-%ifdef __MSDOS__
-  call DOSClearScreen
-  cmp byte[cvidmode],2  ;modeQ
-  je .refresh
-  cmp byte[cvidmode],5
-  jne .nomodex
-.refresh
-  mov byte[cbitmode],1
-  call initvideo2
-  mov byte[cbitmode],0
-  call GUISetPal
-.nomodex
-%endif
+  call drawscreenwin
+  call initwinvideo
   popad
-  GUIKeyButtonHole scanlines,1,'F'
-.nofullscanlines
-  xor eax,eax
-  mov al,[cvidmode]
-%ifdef __MSDOS__
-  cmp byte[GUIHSVID+eax],0
-%else
+  jmp .nointerpolation
+.nobilinearfilter
+%elifdef __MSDOS__
+  cmp byte[GUIEAVID+eax],0
+  jne .interpolation
+%endif
+%ifdef __WIN32__
   cmp byte[GUIDSIZE+eax],0
+%else
+  cmp byte[GUII2VID+eax],0
 %endif
-  je near .noquarterscanlines
-  cmp dh,'5'
-  jne .nohalfscanlines
+  je .nointerpolation
+.interpolation
+  xor byte[antienab],1
+  jz near .nointerpolation
   FilterExcl2 En2xSaI,hqFilter,NTSCFilter
-%ifdef __MSDOS__
-  call DOSClearScreen
+.nointerpolation
+  cmp dh,'N'
+  jne .nontscfilter
+  xor ebx,ebx
+  mov bl,[cvidmode]
+  cmp byte[GUINTVID+ebx],0
+  je .nontscfilter
+  xor byte[NTSCFilter],1
+  jz .nontscfilter
+  FilterExcl2 En2xSaI,hqFilter,scanlines,antienab
+%ifdef __OPENGL__
+  FilterExcl2 BilinearFilter
 %endif
-  GUIKeyButtonHole scanlines,3,'5'
-.nohalfscanlines
-  cmp dh,'2'
-  jne .noquarterscanlines
-  FilterExcl2 En2xSaI,hqFilter,NTSCFilter
-%ifdef __MSDOS__
-  call DOSClearScreen
+%ifdef __WIN32__
+  cmp byte[NTSCFilter],0
+  je .noforce4_3
+  mov byte[Keep4_3Ratio],1
+.noforce4_3
 %endif
-  GUIKeyButtonHole scanlines,2,'2'
-.noquarterscanlines
+%ifndef __MSDOS__
+  pushad
+  call NTSCFilterInit
+  popad
+%endif
+.nontscfilter
+  xor ebx,ebx
+  mov bl,[cvidmode]
+%ifdef __MSDOS__
+  cmp byte[GUI2xVID+ebx],0
+%else
+  cmp byte[GUIDSIZE+ebx],0
+%endif
+  je near .nosuper2xsai
+  cmp dh,'S'
+  jne .no2xsai
+  mov eax,1
+  jmp .yesfilter
+.no2xsai
+  cmp dh,'E'
+  jne .nosupereagle
+  mov eax,2
+  jmp .yesfilter
+.nosupereagle
+  cmp dh,'P'
+  jne .nosuper2xsai
+  mov eax,3
+.yesfilter
+  pushad
+  call Clear2xSaIBuffer
+  popad
+  FilterExcl2 hqFilter,scanlines,antienab,NTSCFilter
+  GUIkeystoggleoptn byte[En2xSaI],al
+.nosuper2xsai
   cmp dh,'Q'
   jne .nohqfilter
   xor ebx,ebx
@@ -1243,88 +1279,74 @@ GUIVideoKeys:
   call Clear2xSaIBuffer
   popad
   GUIKeyButtonHole hqFilterlevel,4,'4'
+%endif
 .nohq4x
-%endif
-  xor ebx,ebx
-  mov bl,[cvidmode]
+
 %ifdef __MSDOS__
-  cmp byte[GUI2xVID+ebx],0
-%else
-  cmp byte[GUIDSIZE+ebx],0
+  cmp byte[smallscreenon],1
+  je .noquarterscanlines
 %endif
-  je near .nosuper2xsai
-  cmp dh,'S'
-  jne .no2xsai
-  mov eax,1
-  jmp .yesfilter
-.no2xsai
-  cmp dh,'E'
-  jne .nosupereagle
-  mov eax,2
-  jmp .yesfilter
-.nosupereagle
-  cmp dh,'P'
-  jne .nosuper2xsai
-  mov eax,3
-.yesfilter
-  pushad
-  call Clear2xSaIBuffer
-  popad
-  FilterExcl2 hqFilter,scanlines,antienab,NTSCFilter
-  GUIkeystoggleoptn byte[En2xSaI],al
-.nosuper2xsai
-  cmp dh,'I'
-  jne .nointerpolation
   xor eax,eax
   mov al,[cvidmode]
-%ifdef __OPENGL__
-  cmp byte[GUIBIFIL+eax],0
-  je .nobilinearfilter
-  xor byte[BilinearFilter],1
-  FilterExcl2 NTSCFilter
-  pushad
-  call drawscreenwin
-  call initwinvideo
-  popad
-  jmp .nointerpolation
-.nobilinearfilter
-%elifdef __MSDOS__
-  cmp byte[GUIEAVID+eax],0
-  jne .interpolation
-%endif
-%ifdef __WIN32__
+%ifdef __MSDOS__
+  cmp byte[GUISLVID+eax],0
+%else
   cmp byte[GUIDSIZE+eax],0
-%else
-  cmp byte[GUII2VID+eax],0
 %endif
-  je .nointerpolation
-.interpolation
-  xor byte[antienab],1
-  jz near .nointerpolation
+  je .nofullscanlines
+  GUIKeyButtonHole scanlines,0,'O'
+  cmp dh,'F'
+  jne .nofullscanlines
   FilterExcl2 En2xSaI,hqFilter,NTSCFilter
-.nointerpolation
+  pushad
 %ifdef __MSDOS__
-  cmp dh,'M'
-  jne .nosmallscreen
-  xor eax,eax
-  mov al,[cvidmode]
-  cmp byte[GUISSVID+eax],0
-  je .nosmallscreen
-  xor byte[smallscreenon],1
-  FilterExcl2 ScreenScale,antienab,En2xSaI,scanlines
-  DOSClearScreenKey
-.nosmallscreen
-  cmp dh,'C'
-  jne .nofullscreen
-  xor eax,eax
-  mov al,[cvidmode]
-  cmp byte[GUIFSVID+eax],0
-  je .nofullscreen
-  xor byte[ScreenScale],1
-  FilterExcl2 smallscreenon,antienab,En2xSaI
-  DOSClearScreenKey
-.nofullscreen
+  call DOSClearScreen
+  cmp byte[cvidmode],2  ;modeQ
+  je .refresh
+  cmp byte[cvidmode],5
+  jne .nomodex
+.refresh
+  mov byte[cbitmode],1
+  call initvideo2
+  mov byte[cbitmode],0
+  call GUISetPal
+.nomodex
 %endif
+  popad
+  GUIKeyButtonHole scanlines,1,'F'
+.nofullscanlines
+%ifdef __MSDOS__
+  cmp byte[ScreenScale],1
+  je .noquarterscanlines
+%endif
+  xor eax,eax
+  mov al,[cvidmode]
+%ifdef __MSDOS__
+  cmp byte[GUIHSVID+eax],0
+%else
+  cmp byte[GUIDSIZE+eax],0
+%endif
+  je near .noquarterscanlines
+  cmp dh,'5'
+  jne .nohalfscanlines
+  FilterExcl2 En2xSaI,hqFilter,NTSCFilter
+%ifdef __MSDOS__
+  call DOSClearScreen
+%endif
+  GUIKeyButtonHole scanlines,3,'5'
+.nohalfscanlines
+  cmp dh,'2'
+  jne .noquarterscanlines
+  FilterExcl2 En2xSaI,hqFilter,NTSCFilter
+%ifdef __MSDOS__
+  call DOSClearScreen
+%endif
+  GUIKeyButtonHole scanlines,2,'2'
+.noquarterscanlines
+  cmp dh,'G'
+  jne .nograyscale
+  xor byte[GrayscaleMode],1
+.nograyscale
   cmp dh,'H'
   jne .nohiresmode7
   xor ebx,ebx
@@ -1333,30 +1355,21 @@ GUIVideoKeys:
   je .nohiresmode7
   xor byte[Mode7HiRes16b],1
 .nohiresmode7
-  cmp dh,'N'
-  jne .nontscfilter
-  xor ebx,ebx
-  mov bl,[cvidmode]
-  cmp byte[GUINTVID+ebx],0
-  je .nontscfilter
-  xor byte[NTSCFilter],1
-  jz .nontscfilter
-  FilterExcl2 En2xSaI,hqFilter,scanlines,antienab
-%ifdef __OPENGL__
-  FilterExcl2 BilinearFilter
-%endif
+%ifndef __UNIXSDL__
+  cmp dh,'V'
+  jne .novsync
+  xor byte[vsyncon],1
 %ifdef __WIN32__
-  cmp byte[NTSCFilter],0
-  je .noforce4_3
-  mov byte[Keep4_3Ratio],1
-.noforce4_3
-%endif
-%ifndef __MSDOS__
   pushad
-  call NTSCFilterInit
+  call initDirectDraw
+  call Clear2xSaIBuffer
   popad
+%else
+  jz .novsync
+  FilterExcl2 Triplebufen
 %endif
-.nontscfilter
+.novsync
+%endif
 %ifndef __UNIXSDL__
   cmp dh,'T'
   jne .notriplebuffer
@@ -1379,25 +1392,6 @@ GUIVideoKeys:
 %endif
 .notriplebuffer
 %endif
-%ifndef __UNIXSDL__
-  cmp dh,'V'
-  jne .novsync
-  xor byte[vsyncon],1
-%ifdef __WIN32__
-  pushad
-  call initDirectDraw
-  call Clear2xSaIBuffer
-  popad
-%else
-  jz .novsync
-  FilterExcl2 Triplebufen
-%endif
-.novsync
-%endif
-  cmp dh,'G'
-  jne .nograyscale
-  xor byte[GrayscaleMode],1
-.nograyscale
 %ifndef __MSDOS__
   cmp dh,'R'
   jne .nokeep4_3
@@ -1411,6 +1405,28 @@ GUIVideoKeys:
   call Clear2xSaIBuffer
   popad
 .nokeep4_3
+%endif
+%ifdef __MSDOS__
+  cmp dh,'M'
+  jne .nosmallscreen
+  xor eax,eax
+  mov al,[cvidmode]
+  cmp byte[GUISSVID+eax],0
+  je .nosmallscreen
+  xor byte[smallscreenon],1
+  FilterExcl2 ScreenScale,antienab,En2xSaI,scanlines
+  DOSClearScreenKey
+.nosmallscreen
+  cmp dh,'C'
+  jne .nofullscreen
+  xor eax,eax
+  mov al,[cvidmode]
+  cmp byte[GUIFSVID+eax],0
+  je .nofullscreen
+  xor byte[ScreenScale],1
+  FilterExcl2 smallscreenon,antienab,En2xSaI
+  DOSClearScreenKey
+.nofullscreen
 %endif
 .notfilterstab
 
