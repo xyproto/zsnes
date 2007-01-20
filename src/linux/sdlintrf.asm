@@ -44,6 +44,10 @@ EXTSYM pl4Ak,pl4Bk,pl4Xk,pl4Yk,pl4Lk,pl4Rk
 EXTSYM pl5upk,pl5downk,pl5leftk,pl5rightk,pl5startk,pl5selk
 EXTSYM pl5Ak,pl5Bk,pl5Xk,pl5Yk,pl5Lk,pl5Rk
 
+%ifdef __OPENGL__
+EXTSYM BilinearFilter
+%endif
+
 ; NOTE: For timing, Game60hzcall should be called at 50hz or 60hz (depending
 ;   on romispal) after a call to InitPreGame and before DeInitPostGame are
 ;   made.  GUI36hzcall should be called at 36hz after a call GUIInit and
@@ -159,8 +163,9 @@ NEWSYM InitPreGame   ; Executes before starting/continuing a game
     mov byte[pressed+1],2
     pushad
     call Start60HZ
-    popad
-    pushad
+%ifdef __OPENGL__
+    call drawscreenwin
+%endif
     call initwinvideo
     popad
 
@@ -263,6 +268,9 @@ NEWSYM deinitvideo
 ; ** copy video mode functions **
 SECTION .data
 NEWSYM converta, dd 0
+%ifdef __OPENGL__
+blinit, db 1
+%endif
 
 SECTION .text
 NEWSYM DrawScreen               ; In-game screen render w/ triple buffer check
@@ -290,6 +298,13 @@ NEWSYM DrawScreen               ; In-game screen render w/ triple buffer check
 .skipconv
     pushad
     call drawscreenwin
+%ifdef __OPENGL__
+    cmp byte[blinit],1
+    jne .noreinit
+    call initwinvideo
+    mov byte[blinit],0
+.noreinit
+%endif
     popad
 
     ret

@@ -62,6 +62,9 @@ EXTSYM debuggeron,startdebugger
 EXTSYM dssel,Game60hzcall,NextLineStart,FlipWait,LastLineStart,smallscreenon,ScreenScale
 EXTSYM cvidmode,GUI16VID,ScreenShotFormat
 %endif
+%ifdef __OPENGL__
+EXTSYM blinit,BilinearFilter
+%endif
 
 SECTION .data
 NEWSYM tempedx, dd 0
@@ -497,6 +500,12 @@ reexecuteb2:
     mov eax,[KeyQuickExit]
     test byte[pressed+eax],1
     jnz near endprog
+%ifdef __OPENGL__
+    cmp byte[BilinearFilter],1
+    jne .skipblinit
+    mov byte[blinit],1
+.skipblinit
+%endif
     jmp StartGUI
 
 NEWSYM endprog
@@ -2208,3 +2217,4 @@ NEWSYM execsingle
     mov byte[intrset],2
 .nointrset2
     jmp switchtovirqdeb
+ 
