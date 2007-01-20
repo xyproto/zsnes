@@ -1221,7 +1221,7 @@ static bool zmv_open(char *filename)
     {
       zst_compressed_loader(zmv_vars.fp);
       zmv_open_vars.input_start_pos = ftell(zmv_vars.fp);
-      Msgptr = "VERSION MISMATCH - MAY DESYNC.";
+      Msgptr = "ZSNES VERSION MISMATCH.";
     }
     else
     {
