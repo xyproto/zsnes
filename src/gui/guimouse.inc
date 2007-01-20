@@ -1030,6 +1030,9 @@ GUINTSCPreset:
 
 %ifndef __MSDOS__
 GUIProcCustomVideo:
+  pushad
+  call SetCustomXY
+  popad
   mov byte[GUICBHold],0
   mov dword[GUIInputBox],0
 %ifdef __WIN32__
