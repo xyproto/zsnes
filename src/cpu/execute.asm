@@ -1068,28 +1068,22 @@ NEWSYM cpuover
 ;    je near .hdma
 .hdmacont
 
-    cmp byte[curypos],100
-    jne .noline100
-    mov ax,[scrnon]
-    mov [TempVidInfo],ax
-    mov ax,[scaddset]
-    mov [TempVidInfo+2],ax
-.noline100
-
     ; check for VIRQ/HIRQ/NMI
     ProcessIRQStuff
     mov ax,[resolutn]
+    test byte[nmistatus],0
+    jz .drawline2
     cmp [curypos],ax
-    jne .step2
-    cmp byte[doirqnext],1
-    je .drawline2
-    mov byte[NoHDMALine],1
+    je .step2
 .drawline2
-    je .drawline
+    test byte[nmistatus],1
+    jnz near .step2
+    cmp [curypos],ax
+    jbe .drawline
     jmp .skiphdma
 .step2
     cmp [curypos],ax
-    jbe .drawline
+    jb .drawline
 .skiphdma
     xor ebx,ebx
     mov bl,[esi]
@@ -1142,11 +1136,13 @@ NEWSYM cpuover
     cmp word[VIRQLoc],0
     je .nodohdma
 .nooffby1line
-    cmp byte[NoHDMALine],1
-    je .nodohdma
+    mov ax,[resolutn]
+    dec ax
+    cmp [curypos],ax
+    jae .nodohdma
+.dohdma3
     call exechdma
 .nodohdma
-    mov byte[NoHDMALine],0
     cmp word[curypos],1
     jne .nocache
     call cachevideo
