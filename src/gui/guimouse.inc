@@ -2116,30 +2116,30 @@ DisplayGUIMovieClick:
   pop eax
   je near %%lockInputChange
 
-  DGOptnsProcBox 45,105,[%1upk]    ; Up
-  DGOptnsProcBox 45,115,[%1downk]  ; Down
-  DGOptnsProcBox 45,125,[%1leftk]  ; Left
-  DGOptnsProcBox 45,135,[%1rightk] ; Right
-  DGOptnsProcBox 45,145,[%1startk] ; Start
-  DGOptnsProcBox 45,155,[%1selk]   ; Select
-  DGOptnsProcBox 85,105,[%1Ak]     ; A
-  DGOptnsProcBox 85,115,[%1Bk]     ; B
-  DGOptnsProcBox 85,125,[%1Xk]     ; X
-  DGOptnsProcBox 85,135,[%1Yk]     ; Y
-  DGOptnsProcBox 85,145,[%1Lk]     ; L
-  DGOptnsProcBox 85,155,[%1Rk]     ; R
+  DGOptnsProcBox 45,102,[%1upk]    ; Up
+  DGOptnsProcBox 45,112,[%1downk]  ; Down
+  DGOptnsProcBox 45,122,[%1leftk]  ; Left
+  DGOptnsProcBox 45,132,[%1rightk] ; Right
+  DGOptnsProcBox 45,142,[%1startk] ; Start
+  DGOptnsProcBox 45,152,[%1selk]   ; Select
+  DGOptnsProcBox 85,102,[%1Ak]     ; A
+  DGOptnsProcBox 85,112,[%1Bk]     ; B
+  DGOptnsProcBox 85,122,[%1Xk]     ; X
+  DGOptnsProcBox 85,132,[%1Yk]     ; Y
+  DGOptnsProcBox 85,142,[%1Lk]     ; L
+  DGOptnsProcBox 85,152,[%1Rk]     ; R
 
-  DGOptnsProcBox 125,105,[%1Xtk]   ; X Turbo
-  DGOptnsProcBox 125,115,[%1Ytk]   ; Y Turbo
-  DGOptnsProcBox 125,125,[%1Ltk]   ; L Turbo
-  DGOptnsProcBox 165,105,[%1Atk]   ; A Turbo
-  DGOptnsProcBox 165,115,[%1Btk]   ; B Turbo
-  DGOptnsProcBox 165,125,[%1Rtk]   ; R Turbo
+  DGOptnsProcBox 125,102,[%1Xtk]   ; X Turbo
+  DGOptnsProcBox 125,112,[%1Ytk]   ; Y Turbo
+  DGOptnsProcBox 125,122,[%1Ltk]   ; L Turbo
+  DGOptnsProcBox 165,102,[%1Atk]   ; A Turbo
+  DGOptnsProcBox 165,112,[%1Btk]   ; B Turbo
+  DGOptnsProcBox 165,122,[%1Rtk]   ; R Turbo
 
-  DGOptnsProcBox 125,145,[%1DLk]   ; Down-Left
-  DGOptnsProcBox 125,155,[%1DRk]   ; Down-Right
-  DGOptnsProcBox 165,145,[%1ULk]   ; Up-Left
-  DGOptnsProcBox 165,155,[%1URk]   ; Up-Right
+  DGOptnsProcBox 125,142,[%1DLk]   ; Down-Left
+  DGOptnsProcBox 125,152,[%1DRk]   ; Down-Right
+  DGOptnsProcBox 165,142,[%1ULk]   ; Up-Left
+  DGOptnsProcBox 165,152,[%1URk]   ; Up-Right
 %%lockInputChange
 %endmacro
 
