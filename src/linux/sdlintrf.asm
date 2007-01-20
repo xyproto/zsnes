@@ -269,7 +269,7 @@ NEWSYM deinitvideo
 SECTION .data
 NEWSYM converta, dd 0
 %ifdef __OPENGL__
-blinit, db 1
+NEWSYM blinit, db 1
 %endif
 
 SECTION .text
