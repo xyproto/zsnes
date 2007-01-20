@@ -2587,14 +2587,8 @@ static void DumpVideoFrame(bool playback_over)
     else
     {
       raw_video_write_frame();
-      switch (MovieForcedLengthEnabled)
-      {
-        case 2:
-          MovieForcedLength++;
-        case 1:
-          MovieForcedLengthInternal++;
-          break;
-      }
+      MovieForcedLengthInternal++;
+      if (MovieForcedLengthEnabled == 2) { MovieForcedLength++; }
     }
   }
 }
