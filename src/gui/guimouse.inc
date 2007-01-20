@@ -2316,9 +2316,9 @@ DisplayGUIVideoClick:
 
 %ifdef __MSDOS__
   cmp byte[smallscreenon],1
-  je .noradiobuttons
-  cmp byte[ScreenScale],1
   je .nohsline
+  cmp byte[ScreenScale],1
+  je .noradiobuttons
 %endif
   xor ebx,ebx                             ; Interpolations
   mov bl,[cvidmode]

@@ -1133,9 +1133,9 @@ GUIVideoKeys:
 
 %ifdef __MSDOS__
   cmp byte[smallscreenon],1
-  je .nohq4x
-  cmp byte[ScreenScale],1
   je .noquarterscanlines
+  cmp byte[ScreenScale],1
+  je .nohq4x
 %endif
   cmp dh,'I'
   jne .nointerpolation

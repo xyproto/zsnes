@@ -2036,9 +2036,9 @@ DisplayGUIVideo:
                                                   ; Video Filters
 %ifdef __MSDOS__
   cmp byte[smallscreenon],1
-  je .notexthq4xa
-  cmp byte[ScreenScale],1
   je .nocheckboxw
+  cmp byte[ScreenScale],1
+  je .notexthq4xa
 %endif
   xor eax,eax                                     ; Interpolations
   mov al,[cvidmode]
