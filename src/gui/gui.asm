@@ -44,7 +44,7 @@
 
 EXTSYM curblank,vidpastecopyscr,frameskip,newengen,cvidmode,antienab
 EXTSYM soundon,StereoSound,SoundQuality,MusicRelVol,endprog
-EXTSYM continueprog,spcBuffera,cbitmode,dosmakepal,t1cc
+EXTSYM continueprog,spcBuffera,cbitmode,t1cc
 EXTSYM romloadskip,romdata,init65816,current_zst
 EXTSYM procexecloop,SPCRAM,spcPCRam,spcS,spcRamDP,spcA,spcX,spcY,spcP,spcNZ
 EXTSYM Voice0Status,Voice1Status,Voice2Status,Voice3Status,Voice4Status
@@ -134,7 +134,7 @@ EXTSYM CBBuffer,CBLength,PasteClipBoard,ctrlptr,PauseFocusChange
 EXTSYM dssel,SetInputDevice209,initvideo2,Force8b,SBHDMA,vibracard,smallscreenon
 EXTSYM pl1p209,pl2p209,pl3p209,pl4p209,pl5p209,SidewinderFix,Triplebufen,ScreenScale
 EXTSYM GUIEAVID,GUIFSVID,GUIWSVID,GUISSVID,GUITBVID,GUISLVID,GUIHSVID,GUI2xVID
-EXTSYM JoyMinX209,JoyMaxX209,JoyMinY209,JoyMaxY209,DOSClearScreen
+EXTSYM JoyMinX209,JoyMaxX209,JoyMinY209,JoyMaxY209,DOSClearScreen,dosmakepal
 %endif
 
 %ifndef __MSDOS__
