@@ -45,7 +45,7 @@ EXTSYM pl5upk,pl5downk,pl5leftk,pl5rightk,pl5startk,pl5selk
 EXTSYM pl5Ak,pl5Bk,pl5Xk,pl5Yk,pl5Lk,pl5Rk
 
 %ifdef __OPENGL__
-EXTSYM BilinearFilter
+EXTSYM BilinearFilter,Clear2xSaIBuffer
 %endif
 
 ; NOTE: For timing, Game60hzcall should be called at 50hz or 60hz (depending
@@ -302,6 +302,7 @@ NEWSYM DrawScreen               ; In-game screen render w/ triple buffer check
     cmp byte[blinit],1
     jne .noreinit
     call initwinvideo
+    call Clear2xSaIBuffer
     mov byte[blinit],0
 .noreinit
 %endif
