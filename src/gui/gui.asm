@@ -152,7 +152,7 @@ EXTSYM vsyncon
 %endif
 
 %ifdef __OPENGL__
-EXTSYM BilinearFilter,GUIBIFIL,drawscreenwin
+EXTSYM BilinearFilter,GUIBIFIL,drawscreenwin,blinit
 %endif
 
 %include "gui/guitools.inc"
@@ -786,6 +786,12 @@ SECTION .data
 SECTION .text
 
 NEWSYM StartGUI
+%ifdef __OPENGL__
+  cmp byte[BilinearFilter],1
+  jne near .skipbl
+  mov byte[blinit],1
+.skipbl
+%endif
   mov byte[GUILoadPos],0
   cmp byte[TripBufAvail],0
   jne .notexttb
