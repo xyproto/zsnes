@@ -2200,7 +2200,7 @@ static void raw_embed_logo(bool audio)
   }
 }
 
-unsigned char movie_current_pass = 0;
+static unsigned char movie_current_pass = 0;
 
 static void raw_video_close()
 {
@@ -2557,7 +2557,7 @@ static void DumpVideoFrame(bool playback_over)
       JoyAOrig = JoyBOrig = JoyCOrig = JoyDOrig = JoyEOrig = 0;
     }
 
-    if ((playback_over && !MovieForcedLengthEnabled) || (MovieForcedLengthEnabled && !MovieForcedLengthInternal))
+    if ((playback_over && !MovieForcedLengthEnabled) || (MovieForcedLengthEnabled && (MovieForcedLengthInternal >= MovieForcedLength)))
     {
       switch (MovieProcessing)
       {
@@ -2581,12 +2581,20 @@ static void DumpVideoFrame(bool playback_over)
       else
       {
         movie_current_pass = 0;
+        MovieForcedLengthEnabled = 0;
       }
     }
     else
     {
       raw_video_write_frame();
-      if (MovieForcedLengthInternal) { MovieForcedLengthInternal--; }
+      switch (MovieForcedLengthEnabled)
+      {
+        case 2:
+          MovieForcedLength++;
+        case 1:
+          MovieForcedLengthInternal++;
+          break;
+      }
     }
   }
 }
@@ -2869,12 +2877,18 @@ void MovieStop()
 {
   if (MovieProcessing && !MovieWaiting)
   {
+    if ((MovieForcedLengthEnabled == 2) || movie_current_pass)
+    {
+      MovieForcedLengthEnabled = 1;
+      MovieForcedLength = MovieForcedLengthInternal;
+    }
+
     switch (MovieProcessing)
     {
       case MOVIE_PLAYBACK: case MOVIE_DUMPING_NEW:
         zmv_replay_finished();
         MovieSub_Close();
-        MovieForcedLengthInternal = 0;
+        MovieForcedLengthInternal = MovieForcedLength;
         DumpVideoFrame(true);
         MessageOn = 0;
         break;
@@ -2890,12 +2904,12 @@ void MovieStop()
       case MOVIE_OLD_PLAY: case MOVIE_DUMPING_OLD:
         fclose(old_movie.fp);
         MovieSub_Close();
-        MovieForcedLengthInternal = 0;
+        MovieForcedLengthInternal = MovieForcedLength;
         DumpVideoFrame(true);
         MessageOn = 0;
         break;
       case MOVIE_ENDING_DUMPING:
-        MovieForcedLengthInternal = 0;
+        MovieForcedLengthInternal = MovieForcedLength;
         DumpVideoFrame(true);
         break;
     }
@@ -3091,7 +3105,8 @@ void MovieDumpRaw()
   {
     MoviePlay();
     if ((MovieVideoMode == 5) && !movie_current_pass) { movie_current_pass = 1; }
-    MovieForcedLengthInternal = MovieForcedLength;
+    if (MovieForcedLengthEnabled == 2) { MovieForcedLength = 1; }
+    MovieForcedLengthInternal = 0;
     RawDumpInProgress = raw_video_open();
 
     switch (MovieProcessing)
