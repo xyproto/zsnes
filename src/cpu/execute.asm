@@ -41,7 +41,7 @@ EXTSYM switchtovirq,totlines,updatetimer,SA1Swap,SA1DoIRQ,JoyAOrig,JoyANow
 EXTSYM JoyBOrig,JoyBNow,JoyCOrig,JoyCNow,JoyDOrig,JoyDNow,JoyEOrig,JoyENow
 EXTSYM SA1Message,MultiTapStat,idledetectspc,SA1Control,SA1Enable,SA1IRQEnable
 EXTSYM SPC700read,SPC700write,numspcvblleft,spc700idle,SA1IRQExec,ForceNewGfxOff
-EXTSYM LethEnData,GUIQuit,IRAM,SA1Ptr,SA1BWPtr,scrnon,scaddset,outofmemfix
+EXTSYM LethEnData,GUIQuit,IRAM,SA1Ptr,SA1BWPtr,outofmemfix
 EXTSYM yesoutofmemory,ProcessMovies,MovieStop,ppustatus,C4VBlank
 EXTSYM ReturnFromSPCStall,scanlines,MainLoop,MoviePassWaiting,MovieDumpRaw
 EXTSYM NumberOfOpcodes,SfxCLSR,SfxSCMR,SfxPOR,sfx128lineloc,sfx160lineloc
