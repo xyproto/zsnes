@@ -2397,7 +2397,7 @@ static void raw_video_write_frame()
     size_t x, y;
 
     //Convert 16 bit image to 24 bit image
-    for (y = 0; y < RAW_HEIGHT; y++)
+    for (y = 1; y <= RAW_HEIGHT; y++)
     {
       for (x = 0; x < RAW_WIDTH; x++)
       {
