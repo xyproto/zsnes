@@ -3575,7 +3575,7 @@ DisplayGUIOptns:              ; GUI Options
   GUIDisplayTextY 10,6,16,GUIGUIOptnsTextA
                                                                  ;Checkboxes
   GUIDisplayCheckboxu 10,12,23,GUIRClick,GUIGUIOptnsTextA1a,1
-  GUIDisplayCheckboxu 10,12,33,lhguimouse,GUIGUIOptnsTextA1b,15
+  GUIDisplayCheckboxu 10,12,33,lhguimouse,GUIGUIOptnsTextA1b,6
   GUIDisplayCheckboxu 10,12,43,mouseshad,GUIGUIOptnsTextA1c,0
   GUIDisplayCheckboxu 10,12,53,mousewrap,GUIGUIOptnsTextA1d,0
 %ifdef __WIN32__

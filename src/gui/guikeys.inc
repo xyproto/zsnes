@@ -925,7 +925,7 @@ GUIGUIOptnsKeys:
   GUIKeyCheckbox GUIRClick,'C'
   GUIKeyCheckbox JoyPad1Move,'U'
   GUIKeyCheckbox newfont,'O'
-  GUIKeyCheckbox lhguimouse,'N'
+  GUIKeyCheckbox lhguimouse,'/'
 
   cmp dh,'F'
   jne .guioptn8
