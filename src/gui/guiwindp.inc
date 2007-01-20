@@ -2038,7 +2038,7 @@ DisplayGUIVideo:
   cmp byte[smallscreenon],1
   je .notexthq4xa
   cmp byte[ScreenScale],1
-  je .notexthq4xa
+  je .nocheckboxw
 %endif
   xor eax,eax                                     ; Interpolations
   mov al,[cvidmode]
@@ -2124,10 +2124,6 @@ DisplayGUIVideo:
 %endif
 .notexthq4xa
 
-%ifdef __MSDOS__
-  cmp byte[smallscreenon],1
-  je .nocheckboxw
-%endif
   xor eax,eax                                     ; Scanlines
   mov al,[cvidmode]
 %ifdef __MSDOS__

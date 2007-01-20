@@ -1224,6 +1224,7 @@ GUIWinClicked:
   pushad
   call drawscreenwin
   call initwinvideo
+  call Clear2xSaIBuffer
   popad
 %%noclick
 %endmacro
@@ -2314,7 +2315,7 @@ DisplayGUIVideoClick:
   cmp byte[smallscreenon],1
   je .noradiobuttons
   cmp byte[ScreenScale],1
-  je .noradiobuttons
+  je .nohsline
 %endif
   xor ebx,ebx                             ; Interpolations
   mov bl,[cvidmode]
@@ -2403,10 +2404,6 @@ DisplayGUIVideoClick:
 %endif
 .noradiobuttons
 
-%ifdef __MSDOS__
-  cmp byte[smallscreenon],1
-  je .nohsline
-%endif
   xor ebx,ebx                             ; Scanlines
   mov bl,[cvidmode]
 %ifdef __MSDOS__

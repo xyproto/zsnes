@@ -1135,7 +1135,7 @@ GUIVideoKeys:
   cmp byte[smallscreenon],1
   je .nohq4x
   cmp byte[ScreenScale],1
-  je .nohq4x
+  je .noquarterscanlines
 %endif
   cmp dh,'I'
   jne .nointerpolation
@@ -1149,6 +1149,7 @@ GUIVideoKeys:
   pushad
   call drawscreenwin
   call initwinvideo
+  call Clear2xSaIBuffer
   popad
   jmp .nointerpolation
 .nobilinearfilter
@@ -1282,10 +1283,6 @@ GUIVideoKeys:
 %endif
 .nohq4x
 
-%ifdef __MSDOS__
-  cmp byte[smallscreenon],1
-  je .noquarterscanlines
-%endif
   xor eax,eax
   mov al,[cvidmode]
 %ifdef __MSDOS__
