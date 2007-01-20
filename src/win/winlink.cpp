@@ -1401,7 +1401,7 @@ DWORD NTSCMode=0;
 DWORD prevHQMode=~0;
 DWORD prevNTSCMode=0;
 DWORD prevScanlines=~0;
-BYTE changeRes=1;
+unsigned char changeRes=1;
 WORD Refresh = 0;
 extern "C" BYTE GUIWFVID[];
 extern "C" BYTE GUIDSIZE[];
