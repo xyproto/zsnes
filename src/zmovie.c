@@ -1254,7 +1254,9 @@ static bool zmv_open(char *filename)
 
     if (zmv_vars.header.rom_crc32 != CRC32)
     {
-      Msgptr = "ROM MISMATCH.";
+      static char buffer[29]; //"ROM MISMATCH. NEED: 01234567"
+      sprintf(buffer, "ROM MISMATCH. NEED: %08X", zmv_vars.header.rom_crc32);
+      Msgptr = buffer;
     }
 
     pl1contrl = (zmv_vars.header.initial_input & BIT(0xF)) ? 1 : 0;
