@@ -2545,10 +2545,15 @@ NEWSYM ClockOutput
     mov ebx,7
 .loop2
     mov ecx,12
+    cmp byte[ClockBox],1
+    jne .loop
     mov byte[esi-1],0C0h
 .loop
+    cmp byte[ClockBox],1
+    jne .nobox8
     mov dword[esi],0C0C0C0C0h
     add esi,4
+.nobox8
     dec ecx
     jnz .loop
     add esi,288-48
@@ -2569,12 +2574,12 @@ NEWSYM ClockOutput
     cmp byte[ForceNonTransp],1
     je .menuon
     cmp byte[ClockBox],1
-    jne .nobox
+    jne .nobox16
 .menuon
     mov dword[esi],0
     mov dword[esi+75036*4],0
     add esi,4
-.nobox
+.nobox16
     dec ecx
     jnz .loopb
     add esi,288*2-48*2

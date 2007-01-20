@@ -118,9 +118,6 @@ TwelveHourClock db 0
 
 @
 @ Display Black Box Around Clock (0 = No, 1 = YES)
-%ifdef __MSDOS__
-@ This does not work under an 8-bit mode
-%endif
 ClockBox db 1
 
 @
