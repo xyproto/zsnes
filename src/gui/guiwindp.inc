@@ -3946,7 +3946,7 @@ DisplayGUIMovies:    ; Movie Record/Playback options
   DrawGUIButton 15,206,178,235,189,GUIMovieTextI2,35,0,0
 
   GUIDisplayTextY 15,8,127,GUIMovieTextH           ; Video Section
-  GUIDisplayButtonHoleTu 15,8,135,byte[MovieForcedLengthEnabled],0,GUIMovieTextH1,3
+  GUIDisplayButtonHoleTu 15,8,135,byte[MovieForcedLengthEnabled],0,GUIMovieTextH1,0
   GUIDisplayButtonHoleTu 15,8,145,byte[MovieForcedLengthEnabled],1,GUIMovieTextH2,11
   GUIDisplayButtonHoleTu 15,8,155,byte[MovieForcedLengthEnabled],2,GUIMovieTextH3,0
 
@@ -4007,9 +4007,9 @@ GUIMovieTextG2 db 'COMPRESS AUDIO',0
 GUIMovieTextG3 db 'MERGE WITH VIDEO',0
 
 GUIMovieTextH db 'DUMPING LENGTH:',0
-GUIMovieTextH1 db 'COMPLETE MOVIE',0
+GUIMovieTextH1 db 'ZMV LENGTH',0
 GUIMovieTextH2 db 'DUMP # OF FRAMES',0
-GUIMovieTextH3 db 'NEVER ENDING',0
+GUIMovieTextH3 db 'UNTIL STOP',0
 
 GUIMovieTextI db 'DUMPING:',0
 GUIMovieTextI1 db 'START',0
