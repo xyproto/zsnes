@@ -1210,84 +1210,87 @@ static bool zmv_open(char *filename)
   if (zmv_vars.fp && zmv_header_read(&zmv_vars.header, zmv_vars.fp) &&
       !strncmp(zmv_vars.header.magic, "ZMV", 3))
   {
-    unsigned short i;
-    size_t filename_len = strlen(filename);
-
-    if (zmv_vars.header.rom_crc32 != CRC32)
+    if (zmv_vars.header.rom_crc32 == CRC32)
     {
+      unsigned short i;
+      size_t filename_len = strlen(filename);
 
-    }
+      MovieStartMethod = (unsigned char)zmv_vars.header.zmv_flag.start_method;
+      zmv_vars.inputs_enabled = zmv_vars.header.initial_input;
+      zmv_open_vars.first_chapter_pos = ftell(zmv_vars.fp);
 
-    MovieStartMethod = (unsigned char)zmv_vars.header.zmv_flag.start_method;
-    zmv_vars.inputs_enabled = zmv_vars.header.initial_input;
-    zmv_open_vars.first_chapter_pos = ftell(zmv_vars.fp);
+      if (zmv_vars.header.zsnes_version != (versionNumber & 0xFFFF))
+      {
+        zst_compressed_loader(zmv_vars.fp);
+        zmv_open_vars.input_start_pos = ftell(zmv_vars.fp);
+        Msgptr = "VERSION MISMATCH - MAY DESYNC.";
+      }
+      else
+      {
+        switch (zmv_vars.header.zmv_flag.start_method)
+        {
+          case zmv_sm_zst:
+            zst_compressed_loader(zmv_vars.fp);
+            break;
+          case zmv_sm_power:
+            MovieWaiting = true;
+            powercycle(false, false);
+            zst_sram_load_compressed(zmv_vars.fp);
+            break;
+          case zmv_sm_reset:
+            GUIReset = 1;
+            asm_call(GUIDoReset);
+            ReturnFromSPCStall = 0;
+            zst_sram_load_compressed(zmv_vars.fp);
+            break;
+          case zmv_sm_clear_all:
+            MovieWaiting = true;
+            powercycle(false, false);
+            fseek(zmv_vars.fp, internal_chapter_length(ftell(zmv_vars.fp)), SEEK_CUR);
+            break;
+        }
 
-    if (zmv_vars.header.zsnes_version != (versionNumber & 0xFFFF))
-    {
-      zst_compressed_loader(zmv_vars.fp);
-      Msgptr = "MOVIE VERSION MISMATCH - MAY DESYNC.";
+        zmv_open_vars.input_start_pos = ftell(zmv_vars.fp);
+        Msgptr = "MOVIE STARTED.";
+      }
+
+      pl1contrl = (zmv_vars.header.initial_input & BIT(0xF)) ? 1 : 0;
+      pl2contrl = (zmv_vars.header.initial_input & BIT(0xE)) ? 1 : 0;
+      pl3contrl = (zmv_vars.header.initial_input & BIT(0xD)) ? 1 : 0;
+      pl4contrl = (zmv_vars.header.initial_input & BIT(0xC)) ? 1 : 0;
+      pl5contrl = (zmv_vars.header.initial_input & BIT(0xB)) ? 1 : 0;
+
+      SET_MOUSE_1(zmv_vars.header.initial_input & BIT(0xA));
+      SET_MOUSE_2(zmv_vars.header.initial_input & BIT(0x9));
+      SET_SCOPE(zmv_vars.header.initial_input & BIT(0x8));
+
+      fseek(zmv_vars.fp, -((signed)EXT_CHAP_COUNT_END_DIST), SEEK_END);
+      zmv_open_vars.external_chapter_count = fread2(zmv_vars.fp);
+
+      fseek(zmv_vars.fp, -((signed)INT_CHAP_END_DIST), SEEK_END);
+
+      internal_chapter_read(&zmv_vars.internal_chapters, zmv_vars.fp, zmv_vars.header.internal_chapters);
+
+      for (i = 0; i < zmv_open_vars.external_chapter_count; i++)
+      {
+        //Seek to 4 bytes before end of chapter, since last 4 bytes is where it contains offset value
+        fseek(zmv_vars.fp, EXT_CHAP_SIZE-4, SEEK_CUR);
+        internal_chapter_add_offset(&zmv_open_vars.external_chapters, fread4(zmv_vars.fp));
+      }
+
+      fseek(zmv_vars.fp, zmv_open_vars.input_start_pos, SEEK_SET);
+
+      zmv_vars.filename = (char *)malloc(filename_len+1); //+1 for null
+      strcpy(zmv_vars.filename, filename);
+
+      debug_input_start;
+
+      return(true);
     }
     else
     {
-      switch (zmv_vars.header.zmv_flag.start_method)
-      {
-        case zmv_sm_zst:
-          zst_compressed_loader(zmv_vars.fp);
-          break;
-        case zmv_sm_power:
-          MovieWaiting = true;
-          powercycle(false, false);
-          zst_sram_load_compressed(zmv_vars.fp);
-          break;
-        case zmv_sm_reset:
-          GUIReset = 1;
-          asm_call(GUIDoReset);
-          ReturnFromSPCStall = 0;
-          zst_sram_load_compressed(zmv_vars.fp);
-          break;
-        case zmv_sm_clear_all:
-          MovieWaiting = true;
-          powercycle(false, false);
-          fseek(zmv_vars.fp, internal_chapter_length(ftell(zmv_vars.fp)), SEEK_CUR);
-          break;
-      }
-
-      zmv_open_vars.input_start_pos = ftell(zmv_vars.fp);
-      Msgptr = "MOVIE STARTED.";
+      puts("ROM MISMATCH.");
     }
-
-    pl1contrl = (zmv_vars.header.initial_input & BIT(0xF)) ? 1 : 0;
-    pl2contrl = (zmv_vars.header.initial_input & BIT(0xE)) ? 1 : 0;
-    pl3contrl = (zmv_vars.header.initial_input & BIT(0xD)) ? 1 : 0;
-    pl4contrl = (zmv_vars.header.initial_input & BIT(0xC)) ? 1 : 0;
-    pl5contrl = (zmv_vars.header.initial_input & BIT(0xB)) ? 1 : 0;
-
-    SET_MOUSE_1(zmv_vars.header.initial_input & BIT(0xA));
-    SET_MOUSE_2(zmv_vars.header.initial_input & BIT(0x9));
-    SET_SCOPE(zmv_vars.header.initial_input & BIT(0x8));
-
-    fseek(zmv_vars.fp, -((signed)EXT_CHAP_COUNT_END_DIST), SEEK_END);
-    zmv_open_vars.external_chapter_count = fread2(zmv_vars.fp);
-
-    fseek(zmv_vars.fp, -((signed)INT_CHAP_END_DIST), SEEK_END);
-
-    internal_chapter_read(&zmv_vars.internal_chapters, zmv_vars.fp, zmv_vars.header.internal_chapters);
-
-    for (i = 0; i < zmv_open_vars.external_chapter_count; i++)
-    {
-      //Seek to 4 bytes before end of chapter, since last 4 bytes is where it contains offset value
-      fseek(zmv_vars.fp, EXT_CHAP_SIZE-4, SEEK_CUR);
-      internal_chapter_add_offset(&zmv_open_vars.external_chapters, fread4(zmv_vars.fp));
-    }
-
-    fseek(zmv_vars.fp, zmv_open_vars.input_start_pos, SEEK_SET);
-
-    zmv_vars.filename = (char *)malloc(filename_len+1); //+1 for null
-    strcpy(zmv_vars.filename, filename);
-
-    debug_input_start;
-
-    return(true);
   }
   return(false);
 }
