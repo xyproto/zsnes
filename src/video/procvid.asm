@@ -2540,17 +2540,17 @@ NEWSYM ClockOutput
 %ifdef __MSDOS__
     call displayfpspal
 %endif
-    mov esi,215*288+32+192
+    mov esi,215*288+32+191
     add esi,[vidbuffer]
     mov ebx,7
 .loop2
     mov ecx,12
-    cmp byte[ClockBox],1
-    jne .loop
-    mov byte[esi-1],0C0h
 .loop
+    cmp byte[ForceNonTransp],1
+    je .menuon8
     cmp byte[ClockBox],1
     jne .nobox8
+.menuon8
     mov dword[esi],0C0C0C0C0h
     add esi,4
 .nobox8
@@ -2561,21 +2561,17 @@ NEWSYM ClockOutput
     jnz .loop2
     jmp .do8b
 .do16b3
-    mov esi,215*288*2+32*2+192*2
+    mov esi,215*288*2+32*2+191*2
     add esi,[vidbuffer]
     mov ebx,7
 .loop2b
     mov ecx,24
-    cmp byte[ClockBox],1
-    jne .loopb
-    mov word[esi-2],0
-    mov word[esi-2+75036*4],0
 .loopb
     cmp byte[ForceNonTransp],1
-    je .menuon
+    je .menuon16
     cmp byte[ClockBox],1
     jne .nobox16
-.menuon
+.menuon16
     mov dword[esi],0
     mov dword[esi+75036*4],0
     add esi,4
