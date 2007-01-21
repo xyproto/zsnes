@@ -58,7 +58,7 @@ SECTION .text
 ;*******************************************************
 NEWSYM switchtonmi
     mov byte[curnmi],1
-    add dh,16
+    add dh,15
     test byte[xe],1
     jne near NMIemulmode
     mov ebx,esi
@@ -168,7 +168,7 @@ NEWSYM NMIemulmode
 
 NEWSYM switchtovirq
     mov byte[irqon],80h
-    add dh,10
+    add dh,9
     test byte[xe],1
     jne near IRQemulmode
 
