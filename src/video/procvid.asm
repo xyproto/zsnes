@@ -2540,17 +2540,18 @@ NEWSYM ClockOutput
 %ifdef __MSDOS__
     call displayfpspal
 %endif
-    mov esi,215*288+32+191
+    mov esi,215*288+32+192
     add esi,[vidbuffer]
-    mov ebx,7
-.loop2
-    mov ecx,12
-.loop
     cmp byte[ForceNonTransp],1
     je .menuon8
     cmp byte[ClockBox],1
-    jne .nobox8
+    jne .do8b
 .menuon8
+    mov ebx,7
+.loop2
+    mov ecx,12
+    mov byte[esi-1],0C0h
+.loop
     mov dword[esi],0C0C0C0C0h
     add esi,4
 .nobox8
@@ -2561,17 +2562,19 @@ NEWSYM ClockOutput
     jnz .loop2
     jmp .do8b
 .do16b3
-    mov esi,215*288*2+32*2+191*2
+    mov esi,215*288*2+32*2+192*2
     add esi,[vidbuffer]
-    mov ebx,7
-.loop2b
-    mov ecx,24
-.loopb
     cmp byte[ForceNonTransp],1
     je .menuon16
     cmp byte[ClockBox],1
-    jne .nobox16
+    jne .do8b
 .menuon16
+    mov ebx,7
+.loop2b
+    mov ecx,24
+    mov word[esi-2],0
+    mov word[esi-2+75036*4],0
+.loopb
     mov dword[esi],0
     mov dword[esi+75036*4],0
     add esi,4
@@ -2655,155 +2658,6 @@ NEWSYM ClockOutput
     call outputchar16b5x5
     popad
     mov esi,216*288*2+32*2+204*2
-    add esi,[vidbuffer]
-    xor eax,eax
-    add al,':'
-    mov al,[ASCII2Font+eax]
-    pushad
-    call outputchar16b5x5
-    popad
-    ret
-.output
-    ; output char value at al and dl
-    cmp byte[cbitmode],1
-    je .do16b
-.no16b5
-    add esi,[vidbuffer]
-    and eax,0FFh
-    add al,48
-    mov al,[ASCII2Font+eax]
-    pushad
-    call outputchar5x5
-    popad
-    xor eax,eax
-    mov al,dl
-    add al,48
-    mov al,[ASCII2Font+eax]
-    add esi,6
-    pushad
-    call outputchar5x5
-    popad
-    ret
-.do16b
-    add esi,esi
-    add esi,[vidbuffer]
-    and eax,0FFh
-    add al,48
-    mov al,[ASCII2Font+eax]
-    pushad
-    call outputchar16b5x5
-    popad
-    xor eax,eax
-    mov al,dl
-    add al,48
-    mov al,[ASCII2Font+eax]
-    add esi,12
-    pushad
-    call outputchar16b5x5
-    popad
-    ret
-
-NEWSYM ClockOutputB
-    cmp byte[cbitmode],1
-    je near .do16b3
-.no16b3
-%ifdef __MSDOS__
-    call displayfpspal
-%endif
-    mov esi,208*288+32+192
-    add esi,[vidbuffer]
-    mov ebx,7
-.loop2
-    mov ecx,12
-    mov byte[esi-1],0C0h
-.loop
-    mov dword[esi],0C0C0C0C0h
-    add esi,4
-    dec ecx
-    jnz .loop
-    add esi,288-48
-    dec ebx
-    jnz .loop2
-    jmp .do8b
-.do16b3
-    mov esi,208*288*2+32*2+192*2
-    add esi,[vidbuffer]
-    mov ebx,7
-.loop2b
-    mov ecx,24
-    mov word[esi-2],0
-    mov word[esi-2+75036*4],0
-.loopb
-    mov dword[esi],0
-    mov dword[esi+75036*4],0
-    add esi,4
-    dec ecx
-    jnz .loopb
-    add esi,288*2-48*2
-    dec ebx
-    jnz .loop2b
-.do8b
-    call GetTimeInSeconds
-    xor edx,edx
-    mov ebx,60
-    div ebx
-    push eax
-    ; edx = seconds
-    mov eax,edx
-    xor edx,edx
-    mov ebx,10
-    div ebx
-    mov esi,209*288+32+228
-    call .output
-    pop eax
-    mov ebx,60
-    xor edx,edx
-    div ebx
-    push eax
-    ; edx = minutes
-    mov eax,edx
-    xor edx,edx
-    mov ebx,10
-    div ebx
-    mov esi,209*288+32+210
-    call .output
-    pop eax
-    ; eax = hours
-    xor edx,edx
-    mov ebx,10
-    div ebx
-    mov esi,209*288+32+192
-    call .output
-    cmp byte[cbitmode],1
-    je .do16b2
-.no16b4
-    mov esi,209*288+32+222
-    add esi,[vidbuffer]
-    xor eax,eax
-    add al,':'
-    mov al,[ASCII2Font+eax]
-    pushad
-    call outputchar5x5
-    popad
-    mov esi,209*288+32+204
-    add esi,[vidbuffer]
-    xor eax,eax
-    add al,':'
-    mov al,[ASCII2Font+eax]
-    pushad
-    call outputchar5x5
-    popad
-    ret
-.do16b2
-    mov esi,209*288*2+32*2+222*2
-    add esi,[vidbuffer]
-    xor eax,eax
-    add al,':'
-    mov al,[ASCII2Font+eax]
-    pushad
-    call outputchar16b5x5
-    popad
-    mov esi,209*288*2+32*2+204*2
     add esi,[vidbuffer]
     xor eax,eax
     add al,':'
@@ -3193,8 +3047,6 @@ NEWSYM vidpaste
     jne .nofps
     call showfps
 .nofps
-;    call ClockOutputB
-
     cmp byte[TimerEnable],0
     je .noclock
     cmp byte[ShowTimer],0
