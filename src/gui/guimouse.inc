@@ -2228,9 +2228,9 @@ DisplayGUIInputClick:
 %endif
 
   GUIClickCButton 5,160,byte[GameSpecificInput]
-  GUIClickCButtonM 5,170,byte[pl12s34]
-  GUIClickCButton 5,180,byte[AllowUDLR]
-  GUIClickCButton 105,180,byte[Turbo30hz]
+  GUIClickCButton 5,170,byte[AllowUDLR]
+  GUIClickCButton 105,170,byte[Turbo30hz]
+  GUIClickCButtonM 5,180,byte[pl12s34]
   ret
 
 DisplayGUIOptionClick:

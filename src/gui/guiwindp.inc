@@ -1589,9 +1589,9 @@ DisplayGUIInput:    ; Player Select, Joystick/keyboard Type List, Button Assignm
 %endif
 
   GUIDisplayCheckboxu 3,5,160,GameSpecificInput,GUIInputTextE6,0
-  GUIDisplayCheckboxu 3,5,170,pl12s34,GUIInputTextE7,0
-  GUIDisplayCheckboxu 3,5,180,AllowUDLR,GUIInputTextE8,0
-  GUIDisplayCheckboxu 3,105,180,Turbo30hz,GUIInputTextE9,0
+  GUIDisplayCheckboxu 3,5,170,AllowUDLR,GUIInputTextE7,0
+  GUIDisplayCheckboxu 3,105,170,Turbo30hz,GUIInputTextE8,0
+  GUIDisplayCheckboxu 3,5,180,pl12s34,GUIInputTextE9,0
 
   DrawGUIButton 3,123,34,153,45,GUIInputTextE1,14,0,0   ; Buttons
   DrawGUIButton 3,123,50,177,61,GUIInputTextE2,40,0,0
@@ -1733,9 +1733,9 @@ GUIInputTextE4 db 'SIDEWINDER FIX',0
 GUIInputTextE5 db 'USE JOYSTICK PORT 209H',0
 %endif
 GUIInputTextE6 db 'GAME SPECIFIC',0
-GUIInputTextE7 db 'USE PL3/4 AS PL1/2',0
-GUIInputTextE8 db 'ALLOW U+D/L+R',0
-GUIInputTextE9 db 'TURBO AT 30HZ',0
+GUIInputTextE7 db 'ALLOW U+D/L+R',0
+GUIInputTextE8 db 'TURBO AT 30HZ',0
+GUIInputTextE9 db 'USE PL3/4 AS PL1/2',0
 
 GUIFreshInputSelect db 1
 
