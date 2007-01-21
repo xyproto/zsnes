@@ -1388,10 +1388,23 @@ void TestJoy()
    }
 }
 
-extern "C" DWORD converta;
-extern "C" unsigned int BitConv32Ptr;
-extern "C" unsigned int RGBtoYUVPtr;
-extern "C" unsigned short resolutn;
+extern "C" {
+BYTE changeRes=1;
+extern DWORD converta;
+extern unsigned int BitConv32Ptr;
+extern unsigned int RGBtoYUVPtr;
+extern unsigned short resolutn;
+extern BYTE GUIWFVID[];
+extern BYTE GUIDSIZE[];
+extern BYTE GUISMODE[];
+extern BYTE GUIDSMODE[];
+extern BYTE GUIHQ2X[];
+extern BYTE GUIHQ3X[];
+extern BYTE GUIHQ4X[];
+extern BYTE GUINTVID[];
+extern BYTE hqFilterlevel;
+}
+
 DWORD FirstVid=1;
 DWORD FirstFull=1;
 DWORD DMode=0;
@@ -1401,17 +1414,7 @@ DWORD NTSCMode=0;
 DWORD prevHQMode=~0;
 DWORD prevNTSCMode=0;
 DWORD prevScanlines=~0;
-extern "C" BYTE changeRes=1;
 WORD Refresh = 0;
-extern "C" BYTE GUIWFVID[];
-extern "C" BYTE GUIDSIZE[];
-extern "C" BYTE GUISMODE[];
-extern "C" BYTE GUIDSMODE[];
-extern "C" BYTE GUIHQ2X[];
-extern "C" BYTE GUIHQ3X[];
-extern "C" BYTE GUIHQ4X[];
-extern "C" BYTE GUINTVID[];
-extern "C" BYTE hqFilterlevel;
 
 int InitDirectDraw()
 {
