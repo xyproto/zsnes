@@ -2545,7 +2545,7 @@ NEWSYM ClockOutput
     cmp byte[ForceNonTransp],1
     je .menuon8
     cmp byte[ClockBox],1
-    jne .do8b
+    jne near .do8b
 .menuon8
     mov ebx,7
 .loop2
