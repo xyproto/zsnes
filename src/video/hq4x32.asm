@@ -4060,7 +4060,7 @@ HighResProc:
     jnz .a
     mov ecx,256
     sub esi,512
-    sub edi,2048
+    sub edi,4096
     add edi,ebx
     add edi,ebx
 .a2
