@@ -439,6 +439,7 @@ func(joy_sensitivity); \
   func(guioff); \
   func(per2exec); \
   func(HacksDisable); \
+  func(AllowMMX); \
   BACKUP_HELP_DOS(func) \
   BACKUP_HELP_WIN(func) \
   BACKUP_HELP_SDL(func)
@@ -672,7 +673,7 @@ static void handle_params(int argc, char *argv[])
             break;
 
           case 'o': //Disable MMX support
-            MMXSupport = 0;
+            AllowMMX = 0;
             break;
 
           case 'p': //Percentage of instructions to execute

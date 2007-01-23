@@ -41,7 +41,7 @@ EXTSYM pl4Ltk,pl4Rtk,pl4ULk,pl4URk,pl4DLk,pl4DRk,pl5contrl,pl5selk,pl5startk
 EXTSYM pl5upk,pl5downk,pl5leftk,pl5rightk,pl5Xk,pl5Ak,pl5Lk,pl5Yk,pl5Bk,pl5Rk
 EXTSYM pl5Xtk,pl5Ytk,pl5Atk,pl5Btk,pl5Ltk,pl5Rtk,pl5ULk,pl5URk,pl5DLk,pl5DRk
 EXTSYM CombinDataGlob,NumCombo,GUIComboGameSpec,mousexloc,mouseyloc,extlatch
-EXTSYM MMXSupport,MMXextSupport,romdata,procexecloop,wramdata,LoadSecondState
+EXTSYM AllowMMX,MMXextSupport,romdata,procexecloop,wramdata,LoadSecondState
 EXTSYM romispal,initregr,initregw,loadfileGUI,loadstate2,CMovieExt,AutoState
 EXTSYM MoviePlay,MovieDumpRaw,AllowUDLR,device1,device2,processmouse1,SaveSecondState
 EXTSYM processmouse2,cpalval,init65816,clearmem,SetupROM,ZCartName,initsnes,SSPause
@@ -936,7 +936,9 @@ NEWSYM MMXCheck
     test edx,1 << 23
     jz .nommx
     mov byte[ShowMMXSupport],1
-    mov byte[MMXSupport],1
+    mov al,[AllowMMX]
+    mov [MMXSupport],al
+    jz .nommx
 
     ; Check if CPU has SSE (also support mmxext)
     test edx,1 << 25
@@ -995,6 +997,7 @@ NEWSYM outofmemfix
 
 SECTION .bss
 NEWSYM yesoutofmemory, resb 1
+NEWSYM MMXSupport, resb 1
 SECTION .data
 NEWSYM outofmemoryerror, db 'OUT OF MEMORY.',0
 NEWSYM outofmemoryerror2, db 'ROM IS TOO BIG.',0

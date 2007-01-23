@@ -36,6 +36,7 @@ struct backup_cmdline_vars
   unsigned char _guioff;
   unsigned char _per2exec;
   unsigned char _HacksDisable;
+  unsigned char _AllowMMX;
 };
 
 extern struct backup_cmdline_vars saved_cmdline_vars;

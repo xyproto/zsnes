@@ -45,11 +45,11 @@ GameSpecificInput db 0
 @  ----
 
 @
-@ Enable MMX Support (0 = No, 1 = YES)
+@ Allow MMX Support (0 = No, 1 = YES)
 @ Disable this only if you actually do NOT have a processor that supports MMX.
 @ Disabling this option will prevent you from using some of the more advanced
 @ video/sound filters.
-MMXSupport db 1
+AllowMMX db 1
 
 %ifdef __WIN32__
 @
