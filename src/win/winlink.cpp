@@ -2270,6 +2270,7 @@ void CheckTimers(void)
 extern "C" {
 volatile int SPCSize;
 volatile int buffer_ptr;
+extern unsigned char MMXSupport;
 }
 
 void UpdateVFrame(void)
