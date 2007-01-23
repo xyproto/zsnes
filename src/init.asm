@@ -913,7 +913,8 @@ NEWSYM DosExit ; Terminate Program
 
 NEWSYM MMXCheck
     ; Check for cpu that doesn't support CPUID
-    mov byte[MMXextSupport],0
+    mov byte[ShowMMXSupport],0
+    mov byte[MMXSupport],0
 
     ; Real way to check for presence of CPUID instruction  -kode54
     pushfd
@@ -925,21 +926,22 @@ NEWSYM MMXCheck
     pushfd
     pop eax
     xor eax,edx
-    jz .nommx2
+    jz .nommx
 
     ; MMX support
     mov eax,1
     CPUID
 
     test edx,1 << 23
-    jz .nommx2
+    jz .nommx
     mov byte[ShowMMXSupport],1
+    mov byte[MMXSupport],1
 
     ; Check if CPU has SSE (also support mmxext)
     test edx,1 << 25
     jz .tryextmmx
     mov byte[MMXextSupport],1
-    jmp .nommx
+    ret
 
 .tryextmmx
     ; Test extended CPU flag
@@ -949,10 +951,6 @@ NEWSYM MMXCheck
     jz .nommx
     mov byte[MMXextSupport],1
 .nommx
-    ret
-.nommx2
-    mov byte[ShowMMXSupport],0
-    mov byte[MMXSupport],0
     ret
 
 ;*******************************************************
