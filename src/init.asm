@@ -915,6 +915,7 @@ NEWSYM MMXCheck
     ; Check for cpu that doesn't support CPUID
     mov byte[ShowMMXSupport],0
     mov byte[MMXSupport],0
+    mov byte[MMXextSupport],0
 
     ; Real way to check for presence of CPUID instruction  -kode54
     pushfd
