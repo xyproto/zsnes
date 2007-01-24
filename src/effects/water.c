@@ -19,6 +19,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+/* Water effects implementation by Pharos, Nach, et al. */
+
 #ifdef __UNIXSDL__
 #include "../gblhdr.h"
 #else
@@ -44,12 +46,10 @@ static int Height[2][SCRW*SCRH];
 
 extern char NetPlayNoMore;
 
-/* static void DrawWaterNoLight(int *ptr); */
 static void DrawWaterWithLight(int *ptr,int light);
 static void SineBlob(int x, int y, int radius, int height, int page);
 static void CalcWater(int *nptr,int *optr,int density);
 
-//static int x,y;
 static int ox=80,oy=60;
 static int xang,yang;
 static int density=5;
@@ -63,30 +63,12 @@ extern char GUIEffect;
 
 void DrawWater(void)
 {
-	//		tslast=tscurrent;
-//		tscurrent=time(NULL);
-
-      /*
-      if (NetPlayNoMore == 1)
-      {
-        DrawWaterNoLight(Height[Hpage]);
-      }
-      else
-      {
         DrawWaterWithLight(Height[Hpage],1);
-      }
-      */
-
-#if 0
-        DrawWaterNoLight(Height[Hpage]);
-#else
-        DrawWaterWithLight(Height[Hpage],1);
-#endif
 
         if (GUIEffect==2) { mode=0x0001; }
         else { mode = 0x0004; }
 
-        if(mode&2)  //  && (tscurrent-tslast))
+        if(mode&2)
 		{
 			int x,y;
          x=rand()%(SCRW-2)+1;
@@ -143,11 +125,6 @@ void DrawWater(void)
             int x,y;
             if(rand()%14 == 7)
 			{
-/*
-				if(mode & 0x4000)
-//					HeightBlob(-1, -1, radius/2, pheight, Hpage);
-				else
-*/
                      x=rand()%(SCRW-2)+1;
                      y=rand()%(SCRH-2)+1;
                     SineBlob(x, y, radius, -pheight*6, Hpage);
@@ -157,89 +134,6 @@ void DrawWater(void)
 		Hpage ^= 1; /* flip flop */
 
 }
-
-
-#if 0
-void DrawWaterNoLight(int *ptr)
-{
-	int dx,dy;
-	int x,y;
-	int c;
-	int p;
-
-	int offset = SCRW+1;
-	if(ptr == NULL)
-	{
-		return;
-	}
-
-	for(y=((SCRH-1)*SCRW); offset < y; offset+=2)
-	{
-		for(x = offset+SCRW-2;offset<x;offset++)
-		{
-			dx=ptr[offset]-ptr[offset+1];
-			dy=ptr[offset]-ptr[offset+SCRW];
-			p=offset+SCRW*(dy>>3)+(dx>>3);
-/*			if(p>(SCRH*SCRW))
-			{
-				for(;p<(SCRH*SCRW);p-=SCRW);
-			}
-			if(p<0)
-			{
-				for(;p>0;p+=SCRW);
-			}
-*/
-			if(p >= (SCRW*SCRH) )
-			{
-				p=(SCRW*SCRH)-1;
-			}
-			else
-			{
-				if(p < 0)
-				{
-					p=0;
-				}
-			}
-			c=vidbuffer[p];
-			(c<1) ? c=1 : (c > 31) ? c=31 : 0;
-			vscr[offset]=c;
-			offset++;
-			dx=ptr[offset]-ptr[offset+1];
-			dy=ptr[offset]-ptr[offset+SCRW];
-			p=offset+SCRW*(dy>>3)+(dx>>3);
-/*
-			if(p>(SCRH*SCRW))
-			{
-				for(;p<(SCRH*SCRW);p-=SCRW);
-			}
-			if(p<0)
-			{
-				for(;p>=0;p+=SCRW);
-			}
-*/
-			if(p >= (SCRW*SCRH) )
-			{
-				p=(SCRW*SCRH)-1;
-			}
-			else
-			{
-				if(p < 0)
-				{
-					p=0;
-				}
-			}
-
-			c=vidbuffer[p];
-			(c<1) ? c=1 : (c > 31) ? c=31 : 0;
-			vscr[offset]=c;
-		}
-	}
-
-	memcpy( vidbuffer,vscr,SCRW*SCRH);
-//	frames++;
-
-}
-#endif
 
 void DrawWaterWithLight(int *ptr,int light)
 {
@@ -264,19 +158,6 @@ void DrawWaterWithLight(int *ptr,int light)
 			p=offset+SCRW*(dy>>3)+(dx>>3);
 			if (p>(SCRH*SCRW)) p = (p % SCRW) + ((SCRH-((p - (SCRH*SCRW)) / SCRW)) * SCRW);
 			if (p<0) p = (SCRW + (p % SCRW)) + abs(p / SCRW) * SCRW;
-/*
-			if(p >= (SCRW*SCRH) )
-			{
-				p=(SCRW*SCRH)-1;
-			}
-			else
-			{
-				if(p < 0)
-				{
-					p=0;
-				}
-			}
-*/
 			c=vidbuffer[p];
 			c-=(dx>>light);
 			(c<1) ? c=1 : (c > 31) ? c=31 : 0;
@@ -287,19 +168,6 @@ void DrawWaterWithLight(int *ptr,int light)
 			p=offset+SCRW*(dy>>3)+(dx>>3);
 			if (p>(SCRH*SCRW)) p = (p % SCRW) + ((SCRH-((p - (SCRH*SCRW)) / SCRW)) * SCRW);
 			if (p<0) p = (SCRW + (p % SCRW)) + abs(p / SCRW) * SCRW;
-/*
-			if(p >= (SCRW*SCRH) )
-			{
-				p=(SCRW*SCRH)-1;
-			}
-			else
-			{
-				if(p < 0)
-				{
-					p=0;
-				}
-			}
-*/
 			c=vidbuffer[p];
 
 			c-=(dx>>light);
@@ -309,10 +177,6 @@ void DrawWaterWithLight(int *ptr,int light)
 	}
 
 	memcpy( vidbuffer,vscr,SCRW*SCRH);
-//	memcpy( VGLDisplay->Bitmap,vscr,SCRW*SCRH);
-//	frames++;
-
-
 }
 
 void CalcWater(int *nptr,int *optr,int density)
@@ -352,22 +216,6 @@ void SineBlob(int x, int y, int radius, int height, int page)
 
   if(x<0) x = 1+radius+ rand()%(SCRW-2*radius-1);
   if(y<0) y = 1+radius+ rand()%(SCRH-2*radius-1);
-
-
-//  radsquare = (radius*radius) << 8;
-  radsquare = (radius*radius);
-
-  /*
-  if (NetPlayNoMore == 1)
-  {
-    radsquare = (radius*radius);
-  }
-  else
-  {
-    radsquare = (radius*radius) << 8;
-    height /= 8;
-  }
-  */
 
   radsquare = (radius*radius);
 
