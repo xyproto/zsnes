@@ -77,7 +77,7 @@ JOY.ASM         ; DOS Joystick Drivers
 COPYVID.INC     ; Graphics blitter routines for DOS (copys screen to display)
 INITVID.ASM     ; Video Initialization routines (DOS)
 DEBUG.ASM       ; SNES Debugger routines
-SW.ASM          ; Sidewinder routines 
+SW.ASM          ; Sidewinder routines
 SW32.ASM        ; More Sidewinder routines (not sure which file is the real
                 ;   one)
 GPPRO.ASM       ; Gamepad Pro routines (non-USB)
