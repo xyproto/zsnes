@@ -41,8 +41,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define BUF_HEIGHT 224
 
 const int rootrand = 20;	/* Max/Min decrease of the root of the flames */
-const int decay = 5;		/* How far should the flames go up on the screen? */
-/* This MUST be positive - JF */
+const int decay = 5;		/* How far should the flames go up on the screen? This MUST be positive - JF */
 const int miny = 1;		/* Starting line of the flame routine. (should be adjusted along with MinY above) */
 const int smooth = 1;   /* How discrete can the flames be? */
 const int minfire = 50; /* limit between the "starting to burn" and the "is burning" routines */
