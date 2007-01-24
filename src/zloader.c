@@ -934,29 +934,35 @@ static void ZCleanup(void)
 
 }
 
+void zmain(int zargc, char *zargv[])
+{
+  if (init_paths(*zargv))
+  {
+    #ifdef __LIBAO__
+    ao_initialize();
+    atexit(ao_shutdown);
+    #endif
+    handle_params(zargc, zargv);
+
+    atexit(ZCleanup);
+    srand(time(0));
+    zstart();
+  }
+}
+
 #ifdef __WIN32__
 extern HINSTANCE hInst;
 int PASCAL WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow)
 {
   hInst=hInstance;
   ImportDirectX();
-#else
-int main(int __argc, char *__argv[])
-{
-#endif
-
-  if (init_paths(*__argv))
-  {
-    #ifdef __LIBAO__
-    ao_initialize();
-    atexit(ao_shutdown);
-    #endif
-
-    handle_params(__argc, __argv);
-
-    atexit(ZCleanup);
-    srand((unsigned int)time(0));
-    zstart();
-  }
+  zmain(__argc, __argv);
   return(0);
 }
+#else
+int main(int zargc, char *zargv[])
+{
+  zmain(zargc, zargv);
+  return(0);
+}
+#endif
