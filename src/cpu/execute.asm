@@ -2160,7 +2160,7 @@ NEWSYM execsingle
     jmp dword near [edi+ebx*4]
 
 .overy
-    mov dh,42
+    mov dh,46
     mov word[curypos],0
     xor byte[ppustatus],80h
     mov byte[NMIEnab],01h
