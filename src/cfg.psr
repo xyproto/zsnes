@@ -187,7 +187,7 @@ PrevFSMode db 6
 @   2 = 512x448     DR WIN     3 = 512x448     DR FULL
 @   4 = 640x480     DR FULL
 %ifdef __OPENGL__
-@   5 = 256x224    OR  WIN     6 = 512x448    ODR WIN
+@   5 = 256x224    O R WIN     6 = 512x448    ODR WIN
 @   7 = 640x480    ODS FULL    8 = 640x480    ODS WIN
 @   9 = 640x560    ODR WIN    10 = 768x672    ODR WIN
 @  11 = 800x600    ODS FULL   12 = 800x600    ODS WIN

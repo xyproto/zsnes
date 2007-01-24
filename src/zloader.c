@@ -203,7 +203,7 @@ static void display_help()
 #define VIDEO_MODE_COUNT 4
 #else
 #define VIDEO_MODE_COUNT 22
-  put_line("             5 = 256x224    OR  WIN     6 = 512x448    ODR WIN");
+  put_line("             5 = 256x224    O R WIN     6 = 512x448    ODR WIN");
   put_line("             7 = 640x480    ODS FULL    8 = 640x480    ODS WIN");
   put_line("             9 = 640x560    ODR WIN    10 = 768x672    ODR WIN");
   put_line("            11 = 800x600    ODS FULL   12 = 800x600    ODS WIN");
