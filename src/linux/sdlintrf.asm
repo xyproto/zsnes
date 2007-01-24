@@ -346,7 +346,7 @@ db '512x448      DR W',0  ;2
 db '512x448      DR F',0  ;3
 db '640x480      DR F',0  ;4
 %ifdef __OPENGL__
-db '256x224     OR  W',0  ;5
+db '256x224      OR W',0  ;5
 db '512x448     ODR W',0  ;6
 db '640x480     ODS F',0  ;7
 db '640x480     ODS W',0  ;8

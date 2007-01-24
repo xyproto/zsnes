@@ -751,8 +751,7 @@ GUIgetcurrentinput:
   %rotate -1
   sub eax,[%1]
   adc dword[%1],0
-  cmp dword[%1],0
-  jne %%exit
+  jnz %%exit
   %rotate 1
 %endrep
 %%exit

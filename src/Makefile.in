@@ -154,5 +154,5 @@ clean:
 tclean:
 	rm -f $(TOOL_O) $(TOOLSEXE)
 distclean: clean tclean
-	rm -f Makefile makefile.dep aclocal.m4 configure config.log config.status\
-	config.h $(TOOL_D)/depbuild
+	rm -f Makefile makefile.dep aclocal.m4 configure config.log \
+	config.status config.h $(TOOL_D)/depbuild
