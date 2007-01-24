@@ -168,7 +168,7 @@ NEWSYM NMIemulmode
 
 NEWSYM switchtovirq
     mov byte[irqon],80h
-    sub dh,10
+    sub dh,3
     test byte[xe],1
     jne near IRQemulmode
 
