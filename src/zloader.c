@@ -940,9 +940,18 @@ int PASCAL WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
 {
   hInst=hInstance;
   ImportDirectX();
+#else
+int main(int __argc, char *__argv[])
+{
+#endif
 
   if (init_paths(*__argv))
   {
+    #ifdef __LIBAO__
+    ao_initialize();
+    atexit(ao_shutdown);
+    #endif
+
     handle_params(__argc, __argv);
 
     atexit(ZCleanup);
@@ -951,23 +960,3 @@ int PASCAL WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
   }
   return(0);
 }
-
-#else
-
-int main(int zargc, char *zargv[])
-{
-  if (init_paths(*zargv))
-  {
-    #ifdef __LIBAO__
-    ao_initialize();
-    atexit(ao_shutdown);
-    #endif
-    handle_params(zargc, zargv);
-
-    atexit(ZCleanup);
-    srand(time(0));
-    zstart();
-  }
-  return(0);
-}
-#endif
