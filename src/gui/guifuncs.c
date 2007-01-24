@@ -602,12 +602,11 @@ void GUISaveVars()
   {
     swap_backup_vars();
     psr_cfg_run(write_cfg_vars, ZCfgPath, ZCfgFile);
-    swap_backup_vars();
-
     if (!GameSpecificInput)
     {
       psr_cfg_run(write_input_vars, ZCfgPath, "zinput.cfg");
     }
+    swap_backup_vars();
   }
 
   if (NumComboGlob && (cfg_fp = fopen_dir(ZCfgPath, "data.cmb", "wb")))

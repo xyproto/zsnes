@@ -436,21 +436,24 @@ func(joy_sensitivity); \
 
 
 #define BACKUP_HELP(func) \
-  func(guioff); \
-  func(per2exec); \
-  func(HacksDisable); \
-  func(AllowMMX); \
+  func(guioff) \
+  func(per2exec) \
+  func(HacksDisable) \
+  func(AllowMMX) \
   BACKUP_HELP_DOS(func) \
   BACKUP_HELP_WIN(func) \
   BACKUP_HELP_SDL(func)
 
-#define BACKUP_VAR(var) (saved_cmdline_vars._ ## var = var)
+#define BACKUP_VAR(var) saved_cmdline_vars._ ## var = var;
 static void backup_all_vars()
 {
   BACKUP_HELP(BACKUP_VAR)
 }
 
-#define SWAP_BACKUP_VAR(var) (saved_cmdline_vars._ ## var ^= var ^= saved_cmdline_vars._ ## var ^= var)
+#define SWAP_BACKUP_VAR(var) \
+  saved_cmdline_vars._ ## var ^= var; \
+  var ^= saved_cmdline_vars._ ## var; \
+  saved_cmdline_vars._ ## var ^= var;
 void swap_backup_vars()
 {
   BACKUP_HELP(SWAP_BACKUP_VAR)
