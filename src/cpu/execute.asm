@@ -1478,7 +1478,7 @@ NEWSYM cpuover
 
 
 .overy
-    mov dh,46
+    mov dh,80
 %ifdef __MSDOS__
     cmp byte[smallscreenon],1
     je .nocfield

@@ -58,7 +58,7 @@ SECTION .text
 ;*******************************************************
 NEWSYM switchtonmi
     mov byte[curnmi],1
-    sub dh,18
+    sub dh,100
     test byte[xe],1
     jne near NMIemulmode
     mov ebx,esi
