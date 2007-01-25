@@ -1624,6 +1624,7 @@ void Setper2exec()
     opexec358b = (unsigned char)((opexec358 * 87 * per2exec) / 10000); // 82
     opexec268cphb = (unsigned char)((opexec268cph * 95 * per2exec) / 10000);
     opexec358cphb = (unsigned char)((opexec358cph * 87 * per2exec) / 10000); // 82
+    printf("%d %d %d %d", opexec268b, opexec358b, opexec268cphb, opexec358cphb);
   }
 }
 

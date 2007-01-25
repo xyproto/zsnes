@@ -774,13 +774,19 @@ ALIGN16
 %%noflip
 %endif
 %endmacro
-
+EXTSYM xe	
 NEWSYM execute
 NEWSYM execloop
    mov bl,dl
    test byte[curexecstate],2
    jnz .sound
 .startagain
+   cmp byte[xe],1
+   je .notxe
+   cmp byte[curnmi],0
+   je .notxe
+   sub dh,25h
+.notxe
    call dword near [edi+ebx*4]
 .cpuover
    jmp cpuover
