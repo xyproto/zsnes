@@ -783,7 +783,7 @@ NEWSYM execloop
 .startagain
    cmp byte[xe],1
    je .notxe
-   cmp byte[curnmi],0
+   test dl,1
    je .notxe
    sub dh,25h
 .notxe
