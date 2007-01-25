@@ -53,7 +53,6 @@ EXTSYM MovieSeekBehind,BackupCVFrame,RestoreCVFrame,loadstate
 EXTSYM KeyInsrtChap,KeyNextChap,KeyPrevChap,MovieInsertChapter,MovieSeekAhead
 EXTSYM ResetDuringMovie,EMUPauseKey,INCRFrameKey,MovieWaiting,NoInputRead
 EXTSYM AllocatedRewindStates,PauseFrameMode,RestorePauseFrame,BackupPauseFrame
-EXTSYM xe,curhdma
 
 %ifndef NO_DEBUGGER
 EXTSYM debuggeron,startdebugger
@@ -775,7 +774,7 @@ ALIGN16
 %%noflip
 %endif
 %endmacro
-
+EXTSYM xe,curhdma
 NEWSYM execute
 NEWSYM execloop
    mov bl,dl
@@ -788,7 +787,7 @@ NEWSYM execloop
    jz .notxe
    cmp byte[curhdma],0
    je .notxe
-   sub dh,16h
+   sub dh,14h
 .notxe
    call dword near [edi+ebx*4]
 .cpuover
