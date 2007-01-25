@@ -130,9 +130,11 @@ if test x$enable_debugger != xyes; then
   CFLAGS="$CFLAGS -DNO_DEBUGGER"
   NFLAGS="$NFLAGS -DNO_DEBUGGER"
   PSRFLAGS="$PSRFLAGS -DNO_DEBUGGER"
-  DEBUGGER_FILES=""
+  DEBUGGER_A=""
+  DEBUGGER_C=""
 else
-  DEBUGGER_FILES="debugasm.o debugger.o"
+  DEBUGGER_A="debugasm.o"
+  DEBUGGER_C="debugger.o"
 
   AC_CHECK_LIB(curses, initscr, found_curses=yes,found_curses=no)
   AC_CHECK_LIB(ncurses, initscr, found_ncurses=yes,found_ncurses=no)
@@ -149,7 +151,8 @@ else
         LDFLAGS="$LDFLAGS -lpdcurses"
       else
         AC_MSG_ERROR(A curses library is required to use the debugger)
-        DEBUGGER_FILES=""
+        DEBUGGER_A=""
+        DEBUGGER_C=""
       fi
     fi
   fi
@@ -237,7 +240,7 @@ if test x$debug = xyes; then
 dnl - It is easier to debug zsnes with no optimization enabled.
   ZSNESEXE="zsnesd"
   PSR_TEMP=""
-  CFLAGS="$CFLAGS -Wall -W -DDEBUG -O0 -fno-omit-frame-pointer -gstabs3"
+  CFLAGS="$CFLAGS -Wall -W -DDEBUG -O0 -fomit-frame-pointer -gstabs3"
   NFLAGS="$NFLAGS -DDEBUG -g -F stabs -s -O0"
 else
   ZSNESEXE="zsnes"
@@ -328,7 +331,8 @@ AC_SUBST(ZSNESEXE)
 AC_SUBST(GL_DRAW)
 AC_SUBST(JMA_FILES)
 AC_SUBST(MMLIB_FILES)
-AC_SUBST(DEBUGGER_FILES)
+AC_SUBST(DEBUGGER_A)
+AC_SUBST(DEBUGGER_C)
 AC_SUBST(PSR_TEMP)
 
 AC_CONFIG_FILES(Makefile)
