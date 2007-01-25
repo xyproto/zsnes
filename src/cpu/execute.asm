@@ -787,7 +787,7 @@ NEWSYM execloop
    jz .notxe
    cmp byte[curhdma],0
    je .notxe
-   sub dh,40h
+   sub dh,30h
 .notxe
    call dword near [edi+ebx*4]
 .cpuover
