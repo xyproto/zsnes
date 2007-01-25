@@ -864,7 +864,6 @@ NEWSYM cpuover
     je near .nosa1b
     test byte[exiter],01h
     jnz near .nosa1
-    mov byte[cycpl],150
     test byte[SA1Control],60h
     jnz near .nosa1
     call SA1Swap
@@ -990,7 +989,6 @@ NEWSYM cpuover
     mov byte[cycpl],10
     cmp byte[CurrentExecSA1],255
     jne .notsa1255
-    mov byte[cycpl],160
 .notsa1255
     mov byte[CurrentExecSA1],0
     test dl,04h
