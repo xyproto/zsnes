@@ -791,7 +791,7 @@ NEWSYM execloop
 .notxe
    cmp byte[doirqnext],1
    je .noirq
-   sub dh,10
+   sub dh,11
 .noirq
    call dword near [edi+ebx*4]
 .cpuover
@@ -1004,7 +1004,7 @@ NEWSYM cpuover
     mov [SA1Message+3],al
     or byte[SA1IRQExec],1
     ; Start IRQ
-    add dh,10
+;    add dh,10
     jmp .virq
 .nosa1
     test byte[SA1IRQEnable],20h
