@@ -791,7 +791,7 @@ NEWSYM execloop
 .notxe
    cmp byte[doirqnext],1
    je .noirq
-   sub dh,30
+   sub dh,10
 .noirq
    call dword near [edi+ebx*4]
 .cpuover
