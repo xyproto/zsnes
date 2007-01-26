@@ -931,7 +931,9 @@ GUIProcVideo:
   mov [.prevvid],al
   mov al,[GUIcurrentvideocursloc]
   mov [cvidmode],al
+%ifdef __MSDOS__
   mov byte[ExitFromGUI],1
+%endif
   call initvideo
   cmp byte[videotroub],1
   je .failed

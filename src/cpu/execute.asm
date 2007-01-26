@@ -25,7 +25,7 @@ EXTSYM vidbufferofsa,device2,RawDumpInProgress
 EXTSYM KeySaveState,KeyLoadState,KeyQuickExit,KeyQuickLoad,KeyQuickRst
 EXTSYM GUIDoReset,GUIReset,KeyOnStA,KeyOnStB,ProcessKeyOn,C4Enable,KeyQuickClock
 EXTSYM KeyQuickSaveSPC,TimerEnable,splitflags,joinflags
-EXTSYM KeyQuickSnapShot,csounddisable,videotroub,ResetTripleBuf
+EXTSYM KeyQuickSnapShot,csounddisable,videotroub
 EXTSYM InitPreGame,Curtableaddr,curcyc,debugdisble,dmadata,guioff,memtabler8
 EXTSYM SetupPreGame,memtablew8,regaccessbankr8,showmenu,snesmap2,snesmmap
 EXTSYM DeInitPostGame,spcPCRam,xp,xpb,xpc,tablead
@@ -60,7 +60,7 @@ EXTSYM debuggeron,startdebugger
 
 %ifdef __MSDOS__
 EXTSYM dssel,Game60hzcall,NextLineStart,FlipWait,LastLineStart,smallscreenon,ScreenScale
-EXTSYM cvidmode,GUI16VID,ScreenShotFormat
+EXTSYM cvidmode,GUI16VID,ScreenShotFormat,ResetTripleBuf
 %endif
 
 SECTION .data
@@ -373,7 +373,9 @@ reexecuteb2:
     mov eax,[initaddrl]
     sub esi,eax                 ; subtract program counter by address
     mov [xpc],si
+%ifdef __MSDOS__
     call ResetTripleBuf
+%endif
 
     mov eax,[KeySaveState]
     test byte[pressed+eax],1

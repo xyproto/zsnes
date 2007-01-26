@@ -1863,12 +1863,12 @@ SECTION .text
 %endmacro
 
 DisplayGUIVideo:
+%ifdef __MSDOS__
   cmp byte[TripBufAvail],0        ; Check features
   jne .notexttb
-%ifdef __MSDOS__
   mov byte[Triplebufen],0
-%endif
 .notexttb
+%endif
   cmp byte[MMXSupport],1
   jne .2xSaIdis
   cmp byte[newgfx16b],0

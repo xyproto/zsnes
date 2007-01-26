@@ -27,7 +27,7 @@ EXTSYM Voice4Disable,Voice4Status,Voice5Disable,Voice5Status,Voice6Disable
 EXTSYM Voice6Status,Voice7Disable,Voice7Status,bgcmsung,bgmode
 EXTSYM cgmod,disableeffects,frameskip,frskipper,current_zst
 EXTSYM maxbr,modeused,mousexloc,mouseyloc,newengen,KeyRTRCycle
-EXTSYM nextdrawallng,pal16b,pal16bxcl,pressed,prevbright,prevpal
+EXTSYM pal16b,pal16bxcl,pressed,prevbright,prevpal
 EXTSYM scaddsngb,scaddtngb,scaddtngbx,scfbl,scrndis,sprprdrn,t1cc
 EXTSYM vidbright,vidbuffer,vidbufferofsa,vidmemch2,MZTForceRTR
 EXTSYM GUIRClick,MousePRClick,ngmsdraw,cvidmode,fulladdtab
@@ -580,7 +580,6 @@ NEWSYM cachevideo
 .disng
     mov eax,[MsgCount]
     mov [MessageOn],eax
-    mov dword[nextdrawallng],1
     mov edi,vidmemch2
     mov ecx,1024*3
     mov eax,01010101h
@@ -3882,9 +3881,7 @@ SECTION .bss
 NEWSYM dcolortab, resd 256
 
 SECTION .data
-NEWSYM ExitFromGUI,     db 0
 NEWSYM videotroub,      dd 0
-NEWSYM TripBufAvail,    db 0
 NEWSYM vesa2_clbit,     dd 0            ; clear all bit 0's if AND is used
 NEWSYM vesa2_rpos,      dd 0            ; Red bit position
 NEWSYM vesa2_gpos,      dd 0            ; Green bit position
@@ -3909,7 +3906,6 @@ NEWSYM vesa2_rposng,    dd 0            ; Red bit position
 NEWSYM vesa2_gposng,    dd 0            ; Green bit position
 NEWSYM vesa2_bposng,    dd 0            ; Blue bit position
 NEWSYM vesa2_usbit,     dd 0            ; Unused bit in proper bit location
-NEWSYM ErrorPointer,    dd 0
 
 SECTION .text
 NEWSYM genfulladdtab

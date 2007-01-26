@@ -17,7 +17,7 @@
 ;along with this program; if not, write to the Free Software
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-
+%ifdef __MSDOS__
 %macro MMXStuff 0
 %%1
     movq mm0,[esi]
@@ -173,7 +173,6 @@ NEWSYM ResetTripleBuf
    mov byte[CVidStartAd],0
    ret
 
-%ifdef __MSDOS__
 GUITripleBuffer:
    cmp byte[TriplebufTech],0
    je near .tech2
@@ -352,7 +351,6 @@ PreTripleBuffer:
 .failed
    mov byte[Triplebufen],0
    ret
-%endif
 
 SECTION .data
 ; Please don't break this again. :)
@@ -371,7 +369,6 @@ NEWSYM FlipWait, resb 1
 NEWSYM TriplebufTech, resb 1
 SECTION .text
 
-%ifdef __MSDOS__
 NEWSYM DosDrawScreen
    cmp byte[curblank],40h
    je .nocopy
@@ -435,7 +432,6 @@ ScreenShow:
     cmp byte[curblank],40h
     jne .startcopy
     inc byte[curfps2]
-;    call sounddisplay
     call hextestoutput
 .startcopy
     jmp copymodeq256
@@ -840,14 +836,7 @@ NEWSYM copyvesa2320x240x8b
 ; Copy VESA2 320x480x8b  Copies buffer to 320x480x8bVBE2
 ;*******************************************************
 
-;NEWSYM copyvesa2320x480x8bgui
-;    jmp copyvesa2320x480x8b
-;    mov byte[CurrentGUIOn],1
-;    jmp copyvesa2320x480x8b.nogui
-
 NEWSYM copyvesa2320x480x8b
-;    mov byte[CurrentGUIOn],0
-; .nogui
     cmp byte[curblank],40h
     jne .startcopy
     ret
@@ -1377,26 +1366,28 @@ NEWSYM copyvesa2640x400x16b
 .done
     pop es
     ret
+%endif
 
 ;*******************************************************
 ; Copy VESA2 640x480x8b  Copies buffer to 640x480x8bVBE2
 ;*******************************************************
-%endif
+
 
 SECTION .bss
 NEWSYM res640, resb 1
 NEWSYM res480, resb 1
 
-SECTION .data
 
-NEWSYM EagleHold, dd 0
-NEWSYM CurrentGUIOn, dd 0
+SECTION .data
 vesavaland dd 0,0
 mmxvalanda dd 11111111110000001111111111000000b,11111111110000001111111111000000b
 mmxvalandb dd 00000000000111110000000000011111b,00000000000111110000000000011111b
-SECTION .text
 
 %ifdef __MSDOS__
+NEWSYM EagleHold, dd 0
+NEWSYM CurrentGUIOn, dd 0
+SECTION .text
+
 NEWSYM copyvesa2640x480x8bgui
     mov byte[CurrentGUIOn],1
     cmp byte[smallscreenon],1
@@ -2489,17 +2480,19 @@ NEWSYM copyvesa2320x240x16b
 .done
     pop es
     ret
-
 %endif
 
+
 SECTION .bss
+NEWSYM lineleft, resd 1
+%ifdef __MSDOS__
 NEWSYM rescompareng, resd 1
-NEWSYM nextdrawallng, resd 1
 NEWSYM prevcol0ng, resd 1
 NEWSYM numbytelng, resd 1
-NEWSYM lineleft, resd 1
 NEWSYM lineleft2, resd 1
 bankpos resd 1
+%endif
+
 SECTION .text
 
 NEWSYM ConvertToAFormat
@@ -2559,28 +2552,6 @@ NEWSYM ConvertToAFormat
     jnz .crgbloopm
     emms
 .nocopyvesa2r
-    ret
-
-NEWSYM UnConvertToAFormat
-    mov esi,[vidbuffer]
-    add esi,16*2+256*2+32*2
-    mov dl,[resolutn]
-.crgbloop
-    mov ecx,128
-.crgbloop2
-    mov eax,[esi]
-    mov ebx,eax
-    and eax,01111111111000000111111111100000b
-    and ebx,00000000000111110000000000011111b
-    shl eax,1
-    or ebx,eax
-    mov [esi],ebx
-    add esi,4
-    dec ecx
-    jnz .crgbloop2
-    add esi,64
-    dec dl
-    jnz .crgbloop
     ret
 
 %ifdef __MSDOS__
@@ -2874,30 +2845,6 @@ NEWSYM copyvesa2320x480x16b
 ;*******************************************************
 ; Copy VESA2 640x480x16b Copies buffer to 640x480x16bVB2
 ;*******************************************************
-
-%macro copya640x480 0
-    mov [es:edi],dx
-    mov [es:edi+2],dx
-    mov [es:edi+640*2],dx
-    mov [es:edi+640*2+2],dx
-%endmacro
-
-%macro copyb640x480 0
-    mov [es:edi+4],dx
-    mov [es:edi+6],dx
-    mov [es:edi+640*2+4],dx
-    mov [es:edi+640*2+6],dx
-%endmacro
-
-%macro copya640x480sl 0
-    mov [es:edi],dx
-    mov [es:edi+2],dx
-%endmacro
-
-%macro copyb640x480sl 0
-    mov [es:edi+4],dx
-    mov [es:edi+6],dx
-%endmacro
 
 %macro precheckvesa12 1
     cmp edx,%1
@@ -5318,11 +5265,11 @@ NEWSYM copyvesa12640x480x16b
     jnz near .loopac
     pop es
     ret
-%endif
+
 ;*******************************************************
 ; Clear Screen
 ;*******************************************************
-%ifdef __MSDOS__
+
 NEWSYM DOSClearScreen
     cmp byte[cvidmode],0
     je near cscopymodeq
@@ -5363,7 +5310,6 @@ NEWSYM DOSClearScreen
     cmp byte[cvidmode],18
     je near cscopyvesa2800x600x16b
     ret
-%endif
 
 %macro TripleBufferClear 0
    cmp byte[Triplebufen],0
@@ -5376,7 +5322,6 @@ NEWSYM DOSClearScreen
 %%noclear
 %endmacro
 
-%ifdef __MSDOS__
 NEWSYM cscopymodeq
     push es
     mov ax,[selcA000]
@@ -5582,9 +5527,7 @@ NEWSYM cscopyvesa2512x384x16b
     jnz .loopb
     pop es
     ret
-%endif
 
-%ifdef __MSDOS__
 NEWSYM getcopyvesa2320x240x16b
     push es
     mov ax,[vesa2selec]
@@ -5685,5 +5628,3 @@ NEWSYM cscopyvesa12640x480x16b
     pop es
     ret
 %endif
-
-

@@ -23,7 +23,7 @@
 
 EXTSYM DosExit,PrintStr,HalfTransB,HalfTransC,Init_2xSaIMMX,ZSNESBase
 EXTSYM UnusedBit,HalfTrans,UnusedBitXor,ngrposng,nggposng,ngbposng
-EXTSYM videotroub,ExitFromGUI,ErrorPointer,vesa2_x,vesa2_y,vesa2_bits,TripBufAvail,vesa2red10
+EXTSYM videotroub,vesa2_x,vesa2_y,vesa2_bits,vesa2red10
 EXTSYM vesa2_rposng,vesa2_gposng,vesa2_bposng,vesa2_clbitng,vesa2_clbitng2,vesa2_clbitng3
 EXTSYM vesa2_clbit,vesa2_usbit,vesa2_rpos,vesa2_rfull,vesa2_rtrcl,vesa2_rtrcla,genfulladdtab
 EXTSYM vesa2_gpos,vesa2_gfull,vesa2_gtrcl,vesa2_gtrcla,vesa2_bpos,vesa2_bfull,vesa2_btrcl,vesa2_btrcla
@@ -613,6 +613,9 @@ SECTION .data
 .unablelfb db 'Unable to set selector to LFB.',0
 .unablesets db 'Unable to set size of selector.',0
 .unablesetar db 'Unable to set selector access rights.',0
+NEWSYM TripBufAvail,    db 0
+NEWSYM ErrorPointer,    dd 0
+NEWSYM ExitFromGUI,     db 0
 
 NEWSYM LFBpointer
     dd 0

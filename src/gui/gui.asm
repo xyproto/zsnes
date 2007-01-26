@@ -57,12 +57,12 @@ EXTSYM memtablew8,writeon,JoyRead,SetInputDevice,delay,FPSOn,RevStereo,WDSPReg0C
 EXTSYM WDSPReg1C,pl12s34,resolutn,Makemode7Table,vidbufferofsb,wramdata,bgfixer
 EXTSYM videotroub,CheatCodeSave,CheatCodeLoad,LoadCheatSearchFile
 EXTSYM SaveCheatSearchFile,Get_Date,Check_Key,Get_Key,sram
-EXTSYM TripBufAvail,ResetTripleBuf,ScanCodeListing
+EXTSYM ScanCodeListing
 EXTSYM AdjustFrequency,GUISaveVars,Init_Mouse,Get_MouseData,Set_MouseXMax
 EXTSYM Set_MouseYMax,Set_MousePosition,Get_MousePositionDisplacement,GUIInit
 EXTSYM GUIDeInit,SpecialLine,DrawWater,DrawBurn,DrawSmoke
-EXTSYM GetDate,horizon_get,ErrorPointer,MessageOn,GetTime
-EXTSYM Clear2xSaIBuffer,MouseWindow,ExitFromGUI
+EXTSYM GetDate,horizon_get,MessageOn,GetTime
+EXTSYM Clear2xSaIBuffer,MouseWindow
 EXTSYM newgfx16b,NumVideoModes,MusicVol,DSPMem,NumInputDevices
 EXTSYM GUIInputNames,GUIVideoModeNames,GameSpecificInput,device1,device2,TwelveHourClock
 EXTSYM GUIM7VID,GUINTVID,GUIHQ2X,RawDumpInProgress
@@ -131,10 +131,10 @@ EXTSYM CheckScreenSaver,MouseWheel,TrapMouseCursor,AllowMultipleInst,TripleBuffe
 EXTSYM HighPriority,DisableScreenSaver,SaveMainWindowPos,PrimaryBuffer
 EXTSYM CBBuffer,CBLength,PasteClipBoard,ctrlptr,PauseFocusChange
 %elifdef __MSDOS__
-EXTSYM dssel,SetInputDevice209,initvideo2,Force8b,SBHDMA,vibracard,smallscreenon
-EXTSYM pl1p209,pl2p209,pl3p209,pl4p209,pl5p209,SidewinderFix,Triplebufen,ScreenScale
-EXTSYM GUIEAVID,GUIFSVID,GUIWSVID,GUISSVID,GUITBVID,GUISLVID,GUIHSVID,GUI2xVID
-EXTSYM JoyMinX209,JoyMaxX209,JoyMinY209,JoyMaxY209,DOSClearScreen,dosmakepal
+EXTSYM dssel,SetInputDevice209,initvideo2,Force8b,SBHDMA,vibracard,smallscreenon,ExitFromGUI
+EXTSYM pl1p209,pl2p209,pl3p209,pl4p209,pl5p209,SidewinderFix,Triplebufen,ScreenScale,ErrorPointer
+EXTSYM GUIEAVID,GUIFSVID,GUIWSVID,GUISSVID,GUITBVID,GUISLVID,GUIHSVID,GUI2xVID,TripBufAvail
+EXTSYM JoyMinX209,JoyMaxX209,JoyMinY209,JoyMaxY209,DOSClearScreen,dosmakepal,ResetTripleBuf
 %endif
 
 %ifndef __MSDOS__
@@ -793,12 +793,12 @@ NEWSYM StartGUI
 .skipbl
 %endif
   mov byte[GUILoadPos],0
+%ifdef __MSDOS__
   cmp byte[TripBufAvail],0
   jne .notexttb
-%ifdef __MSDOS__
   mov byte[Triplebufen],0
-%endif
 .notexttb
+%endif
   cmp byte[MMXSupport],1
   jne .2xSaIdis
   cmp byte[newgfx16b],0
@@ -841,7 +841,9 @@ NEWSYM StartGUI
   mov eax,[NumComboGlob]
 .local
   mov [NumCombo],eax
+%ifdef __MSDOS__
   call ResetTripleBuf
+%endif
 
   cmp dword[GUIwinposx+16*4],0
   jne .notzero
@@ -1467,7 +1469,9 @@ guipostvideofail:
   mov byte[guipostvidmsg3b],0
   mov byte[guipostvidmsg4b],0
   mov byte[guipostvidmsg5b],0
+%ifdef __MSDOS__
   mov eax,[ErrorPointer]
+%endif
   mov ebx,eax
 .loop
   cmp byte[ebx],0
