@@ -822,10 +822,9 @@ Process2xSaIwin:
 
 ;    add edi,[VESAAddr]
 %ifdef __UNIXSDL__
-    mov dl,223
+    mov dl,224
 %else
     mov dl,[resolutn]
-    sub dl,1    ; Compensate for top/bottom line + 2 lines in 2xSaI
 %endif
     mov [lineleft],dl
     mov dword[esi+512],0

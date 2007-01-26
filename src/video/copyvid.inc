@@ -440,58 +440,6 @@ ScreenShow:
 .startcopy
     jmp copymodeq256
 
-;NEWSYM dosvidpastecopyscr
-;   cmp byte[curblank],40h
-;   je .nocopy
-;   call GUITripleBuffer
-;.nocopy
-;   call ScreenShowGUI
-;   ret
-
-;ScreenShowGUI:
-;    cmp byte[cvidmode],0
-;    je near copymodeq224
-;    cmp byte[cvidmode],1
-;    je near copymodeq240
-;    cmp byte[cvidmode],2
-;    je near copymodeq256
-;    cmp byte[cvidmode],3
-;    je near copymodex224
-;    cmp byte[cvidmode],4
-;    je near copymodex240
-;    cmp byte[cvidmode],5
-;    je near copymodex256
-;    cmp byte[cvidmode],6
-;    je near copyvesa12640x480x16bgui
-;    cmp byte[cvidmode],7
-;    je near copyvesa2320x240x8b
-;    cmp byte[cvidmode],8
-;    je near copyvesa2320x240x16bgui
-;    cmp byte[cvidmode],9
-;    je near copyvesa2320x480x8bgui
-;    cmp byte[cvidmode],10
-;    je near copyvesa2320x480x16bgui
-;    cmp byte[cvidmode],11
-;    je near copyvesa2512x384x8b
-;    cmp byte[cvidmode],12
-;    je near copyvesa2512x384x16bgui
-;    cmp byte[cvidmode],13
-;    je near copyvesa2640x400x8b
-;    cmp byte[cvidmode],14
-;    je near copyvesa2640x400x16b
-;    cmp byte[cvidmode],15
-;    je near copyvesa2640x480x8bgui
-;    cmp byte[cvidmode],16
-;    je near copyvesa2640x480x16bgui
-;    cmp byte[cvidmode],17
-;    je near copyvesa2800x600x8b
-;    cmp byte[cvidmode],18
-;    je near copyvesa2800x600x16b
-;    jmp copymodeq256
-%endif
-
-
-%ifdef __MSDOS__
 ;*******************************************************
 ; CopyModeX 224     Copies buffer into unchained 320x224
 ;*******************************************************
@@ -516,9 +464,9 @@ NEWSYM copymodex224
     add esi,(16+256+16)+16
 
     ; 2nd page address
-    mov eax,(320*225)/4
+    mov eax,(320*224)/4
 
-    mov bl,224-2
+    mov bl,224
     jmp copymodexloop
 
 ;*******************************************************
@@ -553,7 +501,6 @@ NEWSYM copymodex240
     mov eax,(320*240)/4
 
     mov bl,[resolutn]
-    sub bl,2
     jmp copymodexloop
 
 ;*******************************************************
@@ -588,7 +535,6 @@ NEWSYM copymodex256
     mov eax,(320*256)/4
 
     mov bl,[resolutn]
-    sub bl,2
 
 ;eax = VGA address of 2nd page
 ;edi = offset in current page of first line
@@ -718,7 +664,7 @@ NEWSYM copymodeq224
     ; address of first source line to copy
     add esi,(16+256+16)+16
 
-    mov bl,224-2
+    mov bl,224
     jmp copymodeqloop
 
 
@@ -752,7 +698,6 @@ NEWSYM copymodeq240
     add esi,(16+256+16)+16
 
     mov bl,[resolutn]
-    sub bl,2
     jmp copymodeqloop
 
 
@@ -786,7 +731,6 @@ NEWSYM copymodeq256
     add esi,(16+256+16)+16
 
     mov bl,[resolutn]
-    sub bl,2
 
 ;edi = offset in output of first line
 ;esi = address of first line to be copied
@@ -847,8 +791,6 @@ NEWSYM copyvesa2320x240x8b
     add esi,16+256+16+16
     xor eax,eax
     mov dl,[resolutn]
-    dec dl
-    dec dl
     cmp byte[ScreenScale],1
     je .fullscreen
 
@@ -924,21 +866,10 @@ NEWSYM copyvesa2320x480x8b
     add esi,16+256+16+16
     xor eax,eax
     mov dl,[resolutn]
-    dec dl
-    dec dl
     cmp byte[ScreenScale],1
     je near .fullscreen
     cmp byte[scanlines],1
     je near .scanlines
-
-;    cmp byte[GUIOn],1
-;    je .loopa
-;    cmp byte[f3menuen],1
-;    je .loopa
-;    cmp byte[ForceNewGfxOff],1
-;    je .loopa
-;    cmp byte[newengen],1
-;    je near copyvesa2320x480x8ng
 
     cmp byte[MMXSupport],1
     je .loopb
@@ -1025,99 +956,6 @@ NEWSYM copyvesa2320x480x8b
     pop es
     ret
 
-
-;copyvesa2320x480x8ng:
-;    jmp .mode7hires
-;    mov ebx,1
-;.loopa
-;    cmp dword[ignor512],0
-;    je .ignore
-;    test byte[intrlng+ebx],01h
-;    jnz near .interlaced
-;.ignore
-;    cmp byte[Mode7HiRes],0
-;    je .nomode7hires
-;    test byte[mosenng+ebx],1
-;    jz .yesmode7hires
-;    cmp byte[mosszng+ebx],0
-;    jne .nomode7hires
-;.yesmode7hires
-;    test byte[intrlng+ebx],40h
-;    jnz .nomode7hires
-;    cmp byte[BGMA+ebx],7
-;    jne .nomode7hires
-;    cmp byte[BGMA+ebx+1],7
-;    je near .mode7hires
-;.nomode7hires
-;    mov ecx,64
-;.a
-;    mov eax,[esi]
-;    mov [es:edi],eax
-;    add esi,4
-;    add edi,4
-;    dec ecx
-;    jnz .a
-;    mov ecx,64
-;    add edi,64
-;    sub esi,256
-;.a2r
-;    mov eax,[esi]
-;    mov [es:edi],eax
-;    add esi,4
-;    add edi,4
-;    dec ecx
-;    jnz .a2r
-;.returnloop
-;    add esi,32
-;    add edi,64
-;    inc ebx
-;    dec dl
-;    jnz near .loopa
-;    pop es
-;    ret
-;
-;.mode7hires
-;    mov ecx,64
-;.a7
-;    mov eax,[esi]
-;    mov [es:edi],eax
-;    add esi,4
-;    add edi,4
-;    dec ecx
-;    jnz .a7
-;    mov ecx,64
-;    add edi,64
-;    add esi,75036-256
-;.a2r7
-;    mov eax,[esi]
-;    mov [es:edi],eax
-;    add esi,4
-;    add edi,4
-;    dec ecx
-;    jnz .a2r7
-;    sub esi,75036
-;    jmp .returnloop
-;
-;.interlaced
-;    test byte[cfield],1
-;    jz .b
-;    add edi,320
-;.b
-;    mov ecx,64
-;.ai
-;    mov eax,[esi]
-;    mov [es:edi],eax
-;    add esi,4
-;    add edi,4
-;    dec ecx
-;    jnz .ai
-;    test byte[cfield],1
-;    jnz .bi
-;    add edi,320
-;.bi
-;    jmp .returnloop
-
-
 ;*******************************************************
 ; Copy VESA2 800x600x8b  Copies buffer to 800x600x8bVBE2
 ;*******************************************************
@@ -1141,8 +979,6 @@ NEWSYM copyvesa2800x600x8b
     add esi,16+256+16+16
     xor eax,eax
     mov dl,[resolutn]
-    dec dl
-    dec dl
     cmp byte[smallscreenon],1
     je near .smallscreen
 
@@ -1230,8 +1066,6 @@ NEWSYM copyvesa2800x600x16b
     add esi,16*2+256*2+16*2+16*2
     xor eax,eax
     mov dl,[resolutn]
-    dec dl
-    dec dl
     cmp byte[smallscreenon],1
     je near .smallscreen
 
@@ -1329,8 +1163,6 @@ NEWSYM copyvesa2640x400x8b
     add esi,16+256+16+16
     xor eax,eax
     mov dl,[resolutn]
-    dec dl
-    dec dl
     cmp byte[ScreenScale],1
     je near .fullscreen
     cmp byte[smallscreenon],1
@@ -1451,8 +1283,6 @@ NEWSYM copyvesa2640x400x16b
     add esi,16*2+256*2+16*2+16*2
     xor eax,eax
     mov dl,[resolutn]
-    dec dl
-    dec dl
     cmp byte[ScreenScale],1
     je near .fullscreen
     cmp byte[smallscreenon],1
@@ -1622,8 +1452,6 @@ NEWSYM copyvesa2640x480x8b
     xor eax,eax
     mov ebx,hirestiledat+1
     mov dl,[resolutn]
-    dec dl
-    dec dl
 .loopa
     cmp byte[Triplebufen],1
     je .ignorehr
@@ -1711,8 +1539,6 @@ NEWSYM copyvesa2640x480x8ng
     xor eax,eax
     mov ebx,1
     mov dl,[resolutn]
-    dec dl
-    dec dl
 .loopa
     mov ecx,256
     cmp dword[ignor512],0
@@ -1945,8 +1771,6 @@ NEWSYM smallscreen640x480x8b
     xor eax,eax
     mov ebx,hirestiledat+1
     mov dl,[resolutn]
-    dec dl
-    dec dl
 .loopa
     mov ecx,64
     rep movsd
@@ -1977,8 +1801,6 @@ NEWSYM smallscreen640x480x8b
     xor eax,eax
     mov ebx,hirestiledat+1
     mov dl,[resolutn]
-    dec dl
-    dec dl
     cmp byte[scanlines],1
     je near .scanlines
 .loopa3
@@ -2051,8 +1873,6 @@ NEWSYM copyvesa2640x480x8bs
     xor eax,eax
     mov ebx,hirestiledat+1
     mov dl,[resolutn]
-    dec dl
-    dec dl
     cmp byte[CurrentGUIOn],1
     je .loopa
     cmp byte[ForceNewGfxOff],0
@@ -2164,13 +1984,13 @@ NEWSYM proceagle
     mov es,ax
     mov esi,[vidbuffer]
     add esi,16+256+32
-    mov dl,237
+    mov dl,239
     mov edi,32*2           ; Draw @ Y from 9 to 247
     cmp word[resolutn],224
     jne .res239
     mov edi,8*640+32*2
     add edi,[VidStartDraw]
-    mov dl,222
+    mov dl,224
 .res239
     call draweagle
     pop es
@@ -2402,8 +2222,6 @@ NEWSYM copyvesa2512x384x8b
     xor eax,eax
     mov ebx,hirestiledat+1
     mov dl,[resolutn]
-    dec dl
-    dec dl
     xor dh,dh
 .loopa
     mov al,[ebx]
@@ -2489,8 +2307,6 @@ NEWSYM copyvesa2512x384x8b
 .ssres239
     xor eax,eax
     mov dl,[resolutn]
-    dec dl
-    dec dl
     cmp byte[MMXSupport],1
     je .ssloopb
 .ssloopa
@@ -2535,8 +2351,6 @@ NEWSYM copyvesa2512x384x8ng
     xor eax,eax
     mov ebx,1
     mov dl,[resolutn]
-    dec dl
-    dec dl
     xor dh,dh
 .loopa
     cmp dword[ignor512],0
@@ -2603,93 +2417,7 @@ SECTION .text
 ; Copy VESA2 320x240x16b Copies buffer to 320x240x16bVB2
 ;*******************************************************
 
-
-;copyvesa2320x240x16bgui:
-;    cmp byte[curblank],40h
-;    jne .startcopy
-;    ret
-;.startcopy
-;    cmp byte[ScreenScale],1
-;    je near .scalescreen
-;    push es
-;    mov ax,[vesa2selec]
-;    mov es,ax
-;    mov esi,[vidbuffer]
-;    mov edi,32*2           ; Draw @ Y from 9 to 247
-;    cmp word[resolutn],224
-;    jne .res239
-;    mov edi,8*320*2+32*2
-;.res239
-;    add edi,[VidStartDraw]
-;    add esi,16+256+32
-;    xor eax,eax
-;    mov dl,[resolutn]
-;    sub dl,2
-;.loopa
-;    mov ecx,256
-;    xor eax,eax
-;.loopa2
-;    mov al,[esi]
-;    inc esi
-;    mov bx,[GUICPC+eax*2]
-;    mov [es:edi],bx
-;    add edi,byte 2
-;    dec ecx
-;    jnz .loopa2
-;    add esi,32
-;    add edi,128
-;    dec dl
-;    jnz .loopa
-;    pop es
-;    ret
-;.scalescreen
-;    push es
-;    mov ax,[vesa2selec]
-;    mov es,ax
-;    mov esi,[vidbuffer]
-;    xor edi,edi
-;    cmp word[resolutn],224
-;    jne .res239b
-;    mov edi,8*320*2
-;.res239b
-;    add edi,[VidStartDraw]
-;    add esi,16+256+32
-;    xor eax,eax
-;    mov dl,[resolutn]
-;    sub dl,2
-;.loopab
-;    mov ecx,64
-;    xor eax,eax
-;.loopbb
-;    mov al,[esi]
-;    mov bx,[GUICPC+eax*2]
-;    mov [es:edi],bx
-;    mov [es:edi+2],bx
-;    mov al,[esi+1]
-;    mov bx,[GUICPC+eax*2]
-;    mov [es:edi+4],bx
-;    mov al,[esi+2]
-;    mov bx,[GUICPC+eax*2]
-;    mov [es:edi+6],bx
-;    mov al,[esi+3]
-;    mov bx,[GUICPC+eax*2]
-;    mov [es:edi+8],bx
-;    add esi,4
-;    add edi,10
-;    dec ecx
-;    jnz .loopbb
-;    add esi,32
-;    dec dl
-;    jnz .loopab
-;    pop es
-;    ret
-
 NEWSYM copyvesa2320x240x16b
-;    cmp byte[vesa2red10],1
-;    jne .notbr
-;    call ConvertToAFormat
-;.notbr
-;    je near copyvesa2320x240x16br
     cmp byte[curblank],40h
     jne .startcopy
     ret
@@ -2708,8 +2436,6 @@ NEWSYM copyvesa2320x240x16b
     add esi,16*2+256*2+16*2+16*2
     xor eax,eax
     mov dl,[resolutn]
-    dec dl
-    dec dl
     cmp byte[ScreenScale],1
     je near .fullscreen
 
@@ -2776,162 +2502,6 @@ NEWSYM lineleft2, resd 1
 bankpos resd 1
 SECTION .text
 
-%ifdef __MSDOS__
-;*******************************************************
-; Copy VESA2 320x480x16b Copies buffer to 320x480x16bVB2
-;*******************************************************
-
-;NEWSYM copyvesa2320x480x16bgui
-;    cmp byte[curblank],40h
-;    jne .startcopy
-;    ret
-;.startcopy
-;    push es
-;    mov ax,[vesa2selec]
-;    mov es,ax
-;    mov esi,[vidbuffer]
-;    mov edi,32*2           ; Draw @ Y from 9 to 247
-;    cmp word[resolutn],224
-;    jne .res239
-;    mov edi,8*320*2+32*2
-;.res239
-;    add edi,[VidStartDraw]
-;    add esi,16+256+32
-;    xor eax,eax
-;    mov dl,[resolutn]
-;    sub dl,2
-;    cmp byte[scanlines],3
-;    je near .halfscanlines
-;    cmp byte[scanlines],2
-;    je near .quarterscanlines
-;    cmp byte[scanlines],1
-;    je near .scanlines
-;.loopa
-;    mov ecx,256
-;    xor eax,eax
-;.a
-;    mov al,[esi]
-;    mov bx,[GUICPC+eax*2]
-;    mov [es:edi],bx
-;    inc esi
-;    add edi,byte 2
-;    dec ecx
-;    jnz .a
-;    sub esi,256
-;    add edi,64*2
-;    mov ecx,256
-;    xor eax,eax
-;.a2
-;    mov al,[esi]
-;    mov bx,[GUICPC+eax*2]
-;    mov [es:edi],bx
-;    inc esi
-;    add edi,byte 2
-;    dec ecx
-;    jnz .a2
-;    add esi,32
-;    add edi,64*2
-;    dec dl
-;    jnz .loopa
-;    pop es
-;    ret
-;
-;.scanlines
-;.loopab
-;    mov ecx,256
-;    xor eax,eax
-;.ab
-;    mov al,[esi]
-;    mov bx,[GUICPC+eax*2]
-;    mov [es:edi],bx
-;    inc esi
-;    add edi,byte 2
-;    dec ecx
-;    jnz .ab
-;.returnb
-;    add esi,32
-;    add edi,64*2+320*2
-;    dec dl
-;    jnz .loopab
-;    pop es
-;    ret
-;
-;.halfscanlines
-;.loopabh
-;    mov ecx,256
-;    xor eax,eax
-;.abh
-;    mov al,[esi]
-;    mov bx,[GUICPC+eax*2]
-;    mov [es:edi],bx
-;    inc esi
-;    add edi,byte 2
-;    dec ecx
-;    jnz .abh
-;    add edi,64*2
-;    mov ecx,128
-;    sub esi,256
-;.abh2
-;    mov al,[esi+1]
-;    mov bx,[GUICPC+eax*2]
-;    mov al,[esi]
-;    shl ebx,16
-;    mov bx,[GUICPC+eax*2]
-;    and ebx,[vesa2_clbitng2]
-;    shr ebx,1
-;    mov [es:edi],ebx
-;    add esi,byte 2
-;    add edi,4
-;    dec ecx
-;    jnz .abh2
-;    add esi,32
-;    add edi,64*2
-;    dec dl
-;    jnz .loopabh
-;    pop es
-;    ret
-;
-;.quarterscanlines
-;.loopabhq
-;    mov ecx,256
-;    xor eax,eax
-;.abhq
-;    mov al,[esi]
-;    mov bx,[GUICPC+eax*2]
-;    mov [es:edi],bx
-;    inc esi
-;    add edi,byte 2
-;    dec ecx
-;    jnz .abhq
-;    add edi,64*2
-;    mov ecx,128
-;    sub esi,256
-;.abh2q
-;    mov al,[esi+1]
-;    mov bx,[GUICPC+eax*2]
-;    mov al,[esi]
-;    shl ebx,16
-;    mov bx,[GUICPC+eax*2]
-;    and ebx,[vesa2_clbitng2]
-;    shr ebx,1
-;    mov eax,ebx
-;    and eax,[vesa2_clbitng2]
-;    shr eax,1
-;    add ebx,eax
-;    mov [es:edi],ebx
-;    xor eax,eax
-;    add esi,byte 2
-;    add edi,4
-;    dec ecx
-;    jnz .abh2q
-;    add esi,32
-;    add edi,64*2
-;    dec dl
-;    jnz .loopabhq
-;    pop es
-;    ret
-%endif
-
 NEWSYM ConvertToAFormat
     cmp byte[GUIOn],1
     je .nonewgfx
@@ -2949,8 +2519,6 @@ NEWSYM ConvertToAFormat
     mov esi,[vidbuffer]
     add esi,16*2+256*2+32*2
     mov dl,[resolutn]
-    dec dl
-    dec dl
     cmp byte[MMXSupport],1
     je near .mmxconv
 .crgbloop
@@ -2997,8 +2565,6 @@ NEWSYM UnConvertToAFormat
     mov esi,[vidbuffer]
     add esi,16*2+256*2+32*2
     mov dl,[resolutn]
-    dec dl
-    dec dl
 .crgbloop
     mov ecx,128
 .crgbloop2
@@ -3024,13 +2590,6 @@ NEWSYM copyvesa2320x480x16b
     ret
 
 .startcopy
-;    mov eax,[vesa2_clbitng2]
-;    mov [vesavaland],eax
-;    mov [vesavaland+4],eax
-;    cmp byte[vesa2red10],1
-;    jne .nocopyvesa2r
-;    call ConvertToAFormat
-;.nocopyvesa2r
     push es
     mov ax,[vesa2selec]
     mov es,ax
@@ -3044,8 +2603,6 @@ NEWSYM copyvesa2320x480x16b
     add esi,16*2+256*2+16*2+16*2
     xor eax,eax
     mov dl,[resolutn]
-    dec dl
-    dec dl
     cmp byte[ScreenScale],1
     je near .fullscreen
 
@@ -3368,115 +2925,6 @@ NEWSYM copyvesa2320x480x16b
 %%nobankswitch
 %endmacro
 
-;NEWSYM copyvesa12640x480x16bgui
-;    cmp byte[curblank],40h
-;    jne .startcopy
-;    ret
-;.startcopy
-;    push es
-;    mov word[bankpos],0
-;    call VESA12Bankswitch
-;    mov ax,[selcA000]
-;    mov es,ax
-;    mov esi,[vidbuffer]
-;    mov edi,32*2*2           ; Draw @ Y from 9 to 247
-;    cmp word[resolutn],224
-;    jne .res239
-;    mov edi,8*320*2*2+32*2*2
-;.res239
-;    add esi,16+256+32
-;    xor eax,eax
-;    mov dl,[resolutn]
-;    sub dl,2
-;    mov [lineleft],dl
-;    mov edx,65536
-;    sub edx,edi
-;    shr edx,2
-;    cmp byte[smallscreenon],1
-;    je near .smallscreen
-;    cmp byte[scanlines],1
-;    je near .scanlines
-;.loopa
-;    mov ecx,256
-;    xor eax,eax
-;    precheckvesa12 256
-;.a
-;    mov al,[esi]
-;    mov bx,[GUICPC+eax*2]
-;    mov [es:edi],bx
-;    mov [es:edi+2],bx
-;    inc esi
-;    add edi,4
-;    dec ecx
-;    jnz .a
-;    postcheckvesa12 .a,64,256,16384
-;    sub esi,256
-;    add edi,128*2
-;    mov ecx,256
-;    xor eax,eax
-;    precheckvesa12 256
-;.a2
-;    mov al,[esi]
-;    mov bx,[GUICPC+eax*2]
-;    mov [es:edi],bx
-;    mov [es:edi+2],bx
-;    inc esi
-;    add edi,4
-;    dec ecx
-;    jnz .a2
-;    postcheckvesa12 .a2,64,256,16384
-;    add esi,32
-;    add edi,128*2
-;    dec byte[lineleft]
-;    jnz near .loopa
-;    pop es
-;    ret
-;
-;.scanlines
-;.loopa2
-;    mov ecx,256
-;    xor eax,eax
-;    precheckvesa12 256
-;.ab
-;    mov al,[esi]
-;    mov bx,[GUICPC+eax*2]
-;    mov [es:edi],bx
-;    mov [es:edi+2],bx
-;    inc esi
-;    add edi,4
-;    dec ecx
-;    jnz .ab
-;    postcheckvesa12 .ab,64+320,256,16384
-;    add esi,32
-;    add edi,128*2+640*2
-;    dec byte[lineleft]
-;    jnz near .loopa2
-;    pop es
-;    ret
-;
-;.smallscreen
-;    add edx,edx
-;.loopa3
-;    mov ecx,256
-;    xor eax,eax
-;    precheckvesa12 256
-;.ac
-;    mov al,[esi]
-;    mov bx,[GUICPC+eax*2]
-;    mov [es:edi],bx
-;    inc esi
-;    add edi,byte 2
-;    dec ecx
-;    jnz .ac
-;    postcheckvesa12 .ac,128+256,256,32768
-;    add esi,32
-;    add edi,128*2+256*2
-;    dec byte[lineleft]
-;    jnz near .loopa3
-;    pop es
-;    ret
-
-
 VESA12Bankswitch:
     pushad
     mov ax,4F05h
@@ -3489,292 +2937,10 @@ VESA12Bankswitch:
     sub edi,65536
     ret
 
-;NEWSYM copyvesa2640x480x16bgui
-;    je near smallscreen640x480x16bgui.fullscreen
-;    cmp byte[curblank],40h
-;    jne .startcopy
-;    ret
-;.startcopy
-;    push es
-;    mov ax,[vesa2selec]
-;    mov es,ax
-;    mov esi,[vidbuffer]
-;    mov edi,32*2*2           ; Draw @ Y from 9 to 247
-;    cmp word[resolutn],224
-;    jne .res239
-;    mov edi,8*320*2*2+32*2*2
-;.res239
-;    add edi,[VidStartDraw]
-;    add esi,16+256+32
-;    xor eax,eax
-;    mov dl,[resolutn]
-;    sub dl,2
-;    cmp byte[scanlines],3
-;    je near .halfscanlines
-;    cmp byte[scanlines],2
-;    je near .quarterscanlines
-;    cmp byte[scanlines],1
-;    je near .scanlines
-;.loopa
-;    mov ecx,256
-;    xor eax,eax
-;.a
-;    mov al,[esi]
-;    mov bx,[GUICPC+eax*2]
-;    mov [es:edi],bx
-;    mov [es:edi+2],bx
-;    inc esi
-;    add edi,4
-;    dec ecx
-;    jnz .a
-;    sub esi,256
-;    add edi,128*2
-;    mov ecx,256
-;    xor eax,eax
-;.a2
-;    mov al,[esi]
-;    mov bx,[GUICPC+eax*2]
-;    mov [es:edi],bx
-;    mov [es:edi+2],bx
-;    inc esi
-;    add edi,4
-;    dec ecx
-;    jnz .a2
-;    add esi,32
-;    add edi,128*2
-;    dec dl
-;    jnz .loopa
-;    pop es
-;    ret
-;
-;.scanlines
-;.loopab
-;    mov ecx,256
-;    xor eax,eax
-;.ab
-;    mov al,[esi]
-;    mov bx,[GUICPC+eax*2]
-;    mov [es:edi],bx
-;    mov [es:edi+2],bx
-;    inc esi
-;    add edi,4
-;    dec ecx
-;    jnz .ab
-;.returnb
-;    add esi,32
-;    add edi,128*2+640*2
-;    dec dl
-;    jnz .loopab
-;    pop es
-;    ret
-;
-;.halfscanlines
-;.loopabh
-;    mov ecx,256
-;    xor eax,eax
-;.abh
-;    mov al,[esi]
-;    mov bx,[GUICPC+eax*2]
-;    mov [es:edi],bx
-;    mov [es:edi+2],bx
-;    inc esi
-;    add edi,4
-;    dec ecx
-;    jnz .abh
-;    add edi,128*2
-;    mov ecx,256
-;    sub esi,256
-;.abh2
-;    mov al,[esi]
-;    mov bx,[GUICPC+eax*2]
-;    shl ebx,16
-;    mov bx,[GUICPC+eax*2]
-;    and ebx,[vesa2_clbitng2]
-;    shr ebx,1
-;    mov [es:edi],ebx
-;    inc esi
-;    add edi,4
-;    dec ecx
-;    jnz .abh2
-;    add esi,32
-;    add edi,128*2
-;    dec dl
-;    jnz .loopabh
-;    pop es
-;    ret
-;
-;.quarterscanlines
-;.loopabhq
-;    mov ecx,256
-;    xor eax,eax
-;.abhq
-;    mov al,[esi]
-;    mov bx,[GUICPC+eax*2]
-;    mov [es:edi],bx
-;    mov [es:edi+2],bx
-;    inc esi
-;    add edi,4
-;    dec ecx
-;    jnz .abhq
-;    add edi,128*2
-;    mov ecx,256
-;    sub esi,256
-;.abh2q
-;    mov al,[esi]
-;    mov bx,[GUICPC+eax*2]
-;    shl ebx,16
-;    mov bx,[GUICPC+eax*2]
-;    and ebx,[vesa2_clbitng2]
-;    shr ebx,1
-;    mov eax,ebx
-;    and eax,[vesa2_clbitng2]
-;    shr eax,1
-;    add ebx,eax
-;    mov [es:edi],ebx
-;    xor eax,eax
-;    inc esi
-;    add edi,4
-;    dec ecx
-;    jnz .abh2q
-;    add esi,32
-;    add edi,128*2
-;    dec dl
-;    jnz .loopabhq
-;    pop es
-;    ret
-;
-;NEWSYM smallscreen640x480x16bgui
-;    cmp byte[curblank],40h
-;    jne .startcopy
-;    ret
-;.startcopy
-;    push es
-;    mov ax,[vesa2selec]
-;    mov es,ax
-;    mov esi,[vidbuffer]
-;    mov edi,32*2*2           ; Draw @ Y from 9 to 247
-;    cmp word[resolutn],224
-;    jne .res239
-;    mov edi,8*640*2+32*2*2
-;.res239
-;    add edi,[VidStartDraw]
-;    add edi,128*2+120*640*2
-;    add esi,16+256+32
-;    xor eax,eax
-;    mov ebx,hirestiledat+1
-;    mov dl,[resolutn]
-;    sub dl,2
-;.loopa
-;    mov ecx,256
-;    xor eax,eax
-;.a3
-;    mov al,[esi]
-;    mov bx,[GUICPC+eax*2]
-;    mov [es:edi],bx
-;    inc esi
-;    add edi,byte 2
-;    dec ecx
-;    jnz .a3
-;    add esi,32
-;    add edi,640*2-256*2
-;    inc ebx
-;    dec dl
-;    jnz .loopa
-;    pop es
-;    ret
-;
-;.fullscreen
-;    cmp byte[curblank],40h
-;    jne .startcopy2
-;    ret
-;.startcopy2
-;    push es
-;    mov ax,[vesa2selec]
-;    mov es,ax
-;    mov esi,[vidbuffer]
-;    xor edi,edi
-;    cmp word[resolutn],224
-;    jne .res239b
-;    mov edi,8*320*2*2
-;.res239b
-;    add edi,[VidStartDraw]
-;    add esi,16+256+32
-;    xor eax,eax
-;    mov dl,[resolutn]
-;    sub dl,2
-;    cmp byte[scanlines],1
-;    je near .scanlines
-;.loopa2
-;    mov ecx,128
-;    xor eax,eax
-;.a
-;    mov al,[esi]
-;    mov bx,[GUICPC+eax*2]
-;    mov [es:edi],bx
-;    mov [es:edi+2],bx
-;    mov al,[esi+1]
-;    mov bx,[GUICPC+eax*2]
-;    mov [es:edi+4],bx
-;    mov [es:edi+6],bx
-;    mov [es:edi+8],bx
-;    add esi,byte 2
-;    add edi,10
-;    dec ecx
-;    jnz .a
-;    sub esi,256
-;    mov ecx,128
-;.a2
-;    mov al,[esi]
-;    mov bx,[GUICPC+eax*2]
-;    mov [es:edi],bx
-;    mov [es:edi+2],bx
-;    mov al,[esi+1]
-;    mov bx,[GUICPC+eax*2]
-;    mov [es:edi+4],bx
-;    mov [es:edi+6],bx
-;    mov [es:edi+8],bx
-;    add esi,byte 2
-;    add edi,10
-;    dec ecx
-;    jnz .a2
-;    add esi,32
-;    dec dl
-;    jnz near .loopa2
-;    pop es
-;    ret
-;
-;.scanlines
-;.loopab
-;    mov ecx,128
-;    xor eax,eax
-;.ab
-;    mov al,[esi]
-;    mov bx,[GUICPC+eax*2]
-;    mov [es:edi],bx
-;    mov [es:edi+2],bx
-;    mov al,[esi+1]
-;    mov bx,[GUICPC+eax*2]
-;    mov [es:edi+4],bx
-;    mov [es:edi+6],bx
-;    mov [es:edi+8],bx
-;    add esi,byte 2
-;    add edi,10
-;    dec ecx
-;    jnz .ab
-;    add esi,32
-;    add edi,640*2
-;    dec dl
-;    jnz .loopab
-;    pop es
-;    ret
-
 NEWSYM copyvesa2640x480x16b
-;    cmp byte[vesa2red10],1
-;    je near copyvesa2640x480x16br
     cmp byte[vesa2red10],1
     jne .notbr
     call ConvertToAFormat
-;    call UnConvertToAFormat
 .notbr
     cmp byte[smallscreenon],1
     je near smallscreen640x480x16b
@@ -3813,8 +2979,6 @@ NEWSYM copyvesa2640x480x16b
     je near interpolate640x480x16b
 .nointerp
     mov dl,[resolutn]
-    dec dl
-    dec dl
     cmp byte[scanlines],1
     je near .scanlines
     cmp byte[scanlines],3
@@ -4544,10 +3708,7 @@ Process2xSaI:
 .loopabi
     mov [InterPtr],ebx
 
-;    add edi,[VESAAddr]
     mov dl,[resolutn]
-    dec dl
-    dec dl    ; Compensate for top/bottom line + 2 lines in 2xSaI
     mov [lineleft],dl
     mov dword[esi+512],0
     mov dword[esi+512+576*2],0
@@ -4700,8 +3861,6 @@ NEWSYM smallscreen640x480x16b
     xor eax,eax
     mov ebx,hirestiledat+1
     mov dl,[resolutn]
-    dec dl
-    dec dl
 .loopa
     mov ecx,128
     rep movsd
@@ -4738,8 +3897,6 @@ NEWSYM smallscreen640x480x16b
     add esi,16*2+256*2+32*2
     xor eax,eax
     mov dl,[resolutn]
-    dec dl
-    dec dl
     cmp byte[scanlines],1
     je near .scanlines
 .loopa2
@@ -4814,7 +3971,6 @@ MMXInterpolFS:
     mov dword[lineleft2],14
 .res239
     mov dl,[resolutn]
-    sub dl,3
     movq mm2,[HalfTrans]
     mov [lineleft],dl
     mov edx,[spritetablea]
@@ -5013,7 +4169,6 @@ SECTION .text
 
 MMXInterpol:
     mov dl,[resolutn]
-    sub dl,3
     movq mm2,[HalfTransC]
 
     mov ebx,hirestiledat+1
@@ -5357,7 +4512,6 @@ NEWSYM interpolate640x480x16b
     mov [InterPtr],ebx
 
     mov dl,[resolutn]
-    sub dl,3
     cmp byte[scanlines],1
     je near .scanlines
     cmp byte[scanlines],2
@@ -5652,59 +4806,6 @@ SECTION .text
 ; Copy VESA2 512x384x16b  Copies buffer to 512x384x16bV2
 ;*******************************************************
 
-;NEWSYM copyvesa2512x384x16bgui
-;    cmp byte[curblank],40h
-;    jne .startcopy
-;    ret
-;.startcopy
-;    push es
-;    mov byte[.lastrep],0
-;    mov ax,[vesa2selec]
-;    mov es,ax
-;    mov esi,[vidbuffer]
-;    mov byte[.scratio],61       ; 60.6695
-;    cmp word[resolutn],224
-;    jne .res239
-;    mov byte[.scratio],72       ; 72.4286
-;.res239
-;    mov edi,[VidStartDraw]
-;    add esi,16+256+32
-;    xor eax,eax
-;    mov dl,[resolutn]
-;    sub dl,2
-;    xor dh,dh
-;.loopa
-;    mov ecx,256
-;    xor eax,eax
-;.a
-;    mov al,[esi]
-;    mov bx,[GUICPC+eax*2]
-;    mov [es:edi],bx
-;    mov [es:edi+2],bx
-;    inc esi
-;    add edi,4
-;    dec ecx
-;    jnz .a
-;    cmp byte[.lastrep],1
-;    je .no2
-;    sub dh,[.scratio]
-;    jnc .no2
-;    add dh,100
-;    sub esi,256
-;    inc dl
-;    dec ebx
-;    mov byte[.lastrep],1
-;    jmp .yes2
-;.no2
-;    mov byte[.lastrep],0
-;    add esi,32
-;.yes2
-;    dec dl
-;    jnz .loopa
-;    pop es
-;    ret
-;
-
 NEWSYM copyvesa2512x384x16b
     cmp byte[vesa2red10],1
     jne .noconvertr
@@ -5731,8 +4832,6 @@ NEWSYM copyvesa2512x384x16b
     xor eax,eax
     mov ebx,hirestiledat+1
     mov dl,[resolutn]
-    dec dl
-    dec dl
     xor dh,dh
 .loopa
     mov al,[ebx]
@@ -5816,8 +4915,6 @@ NEWSYM copyvesa2512x384x16b
 .ssres239
     xor eax,eax
     mov dl,[resolutn]
-    dec dl
-    dec dl
     cmp byte[MMXSupport],1
     je .ssloopb
 .ssloopa
@@ -6138,8 +5235,6 @@ NEWSYM copyvesa12640x480x16b
     ; Check if interpolation mode
 .nommx
     mov dl,[resolutn]
-    dec dl
-    dec dl
     mov [lineleft],dl
     mov edx,65536
     sub edx,edi
@@ -6488,17 +5583,6 @@ NEWSYM cscopyvesa2512x384x16b
     pop es
     ret
 %endif
-
-NEWSYM GetScreen
-%ifdef __MSDOS__
-    cmp byte[cvidmode],9
-    je near getcopyvesa2320x240x16b
-    cmp byte[cvidmode],14
-;    je near getcopyvesa2640x480x16b
-    cmp byte[cvidmode],12
-;    je near getcopyvesa2512x384x16b
-%endif
-    ret
 
 %ifdef __MSDOS__
 NEWSYM getcopyvesa2320x240x16b

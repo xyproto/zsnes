@@ -1533,14 +1533,6 @@ NEWSYM drawbox16b
 NEWSYM saveselect
     mov byte[f3menuen],1
     mov byte[ForceNonTransp],1
-    cmp byte[ForceNewGfxOff],0
-    jne .nong16b
-    cmp byte[cbitmode],0
-    je .nong16b
-%ifdef __MSDOS__
-    call GetScreen
-%endif
-.nong16b
     cmp dword[MessageOn],0
     je .nochangem
     mov dword[MessageOn],1

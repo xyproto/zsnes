@@ -62,7 +62,7 @@ EXTSYM AdjustFrequency,GUISaveVars,Init_Mouse,Get_MouseData,Set_MouseXMax
 EXTSYM Set_MouseYMax,Set_MousePosition,Get_MousePositionDisplacement,GUIInit
 EXTSYM GUIDeInit,SpecialLine,DrawWater,DrawBurn,DrawSmoke
 EXTSYM GetDate,horizon_get,ErrorPointer,MessageOn,GetTime
-EXTSYM GetScreen,Clear2xSaIBuffer,MouseWindow,ExitFromGUI
+EXTSYM Clear2xSaIBuffer,MouseWindow,ExitFromGUI
 EXTSYM newgfx16b,NumVideoModes,MusicVol,DSPMem,NumInputDevices
 EXTSYM GUIInputNames,GUIVideoModeNames,GameSpecificInput,device1,device2,TwelveHourClock
 EXTSYM GUIM7VID,GUINTVID,GUIHQ2X,RawDumpInProgress
@@ -2384,12 +2384,6 @@ GUIMenuDisplay:
   ret
 
 InitGUI:
-  cmp byte[newengen],0
-  je .nong16b
-  cmp byte[cbitmode],0
-  je .nong16b
-  call GetScreen
-.nong16b
 %ifdef __MSDOS__
   call DOSClearScreen
 %endif

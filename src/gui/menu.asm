@@ -27,7 +27,7 @@ EXTSYM curblank,drawhline,drawhline16b,drawvline,drawvline16b,frameskip
 EXTSYM pressed,dumpsound,Grab_BMP_Data,Grab_BMP_Data_8
 EXTSYM spcon,vesa2_bpos,vesa2_clbit,vesa2_gpos,vesa2_rpos,
 EXTSYM spritetablea,sprlefttot,newengen,Get_Key,continueprognokeys
-EXTSYM ForceNonTransp,GUIOn,Check_Key,JoyRead,GetScreen,SSKeyPressed
+EXTSYM ForceNonTransp,GUIOn,Check_Key,JoyRead,SSKeyPressed
 EXTSYM SPCKeyPressed,StopSound,StartSound,ExecExitOkay,t1cc,Clear2xSaIBuffer
 EXTSYM ScreenShotFormat,spcsaved,savespcdata
 EXTSYM exiter,xpb,xpc,snesmmap,memtabler8,snesmap2,regaccessbankr8,dmadata,initaddrl
@@ -160,12 +160,6 @@ NEWSYM showmenu
 .nopal16b
 
     mov byte[NoInputRead],0
-    cmp byte[newengen],0
-    je .nong16b
-    cmp byte[cbitmode],0
-    je .nong16b
-    call GetScreen
-.nong16b
     cmp byte[SSKeyPressed],1
     jne .nosskey
     mov byte[SSKeyPressed],0
