@@ -539,12 +539,14 @@ reg2134r:
 
 ; Multiply Result Middle
 reg2135r:
+ret
     checkmultchange
     mov al,[compmult+1]
     ret
 
 ; Multiply Result High
 reg2136r:
+ret
     checkmultchange
     mov al,[compmult+2]
     ret
@@ -649,6 +651,7 @@ debblah:
 
 ; Read OAM Data (Low, High)
 reg2138r:
+ret
     xor ebx,ebx
     mov bx,[oamaddr]
     add ebx,oamram
