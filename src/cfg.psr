@@ -89,7 +89,15 @@ bgfixer db 0
 %else
 @ Snapshot Format (0 = BMP)
 %endif
+%ifndef NO_PNG
+%ifndef __MSDOS__
+ScreenShotFormat db 1
+%else
 ScreenShotFormat db 0
+%endif
+%else
+ScreenShotFormat db 0
+%endif
 
 @
 @ Auto-Patch ROM with IPS (0 = No, 1 = YES)

@@ -373,10 +373,14 @@ void GUIRestoreVars()
 #endif
   CheckValueBounds(&newengen, 0, 1, 1, UB);
   CheckValueBounds(&bgfixer, 0, 1, 0, UB);
-#ifdef NO_PNG
-  CheckValueBounds(&ScreenShotFormat, 0, 0, 0, UB);
+#ifndef NO_PNG
+#ifndef __MSDOS__
+  CheckValueBounds(&ScreenShotFormat, 0, 1, 1, UB);
 #else
   CheckValueBounds(&ScreenShotFormat, 0, 1, 0, UB);
+#endif
+#else
+  CheckValueBounds(&ScreenShotFormat, 0, 0, 0, UB);
 #endif
   CheckValueBounds(&AutoPatch, 0, 1, 1, UB);
   CheckValueBounds(&DisplayInfo, 0, 1, 1, UB);
