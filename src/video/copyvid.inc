@@ -17,7 +17,8 @@
 ;along with this program; if not, write to the Free Software
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-%ifdef __MSDOS__
+EXTSYM res640, lineleft, ConvertToAFormat
+
 %macro MMXStuff 0
 %%1
     movq mm0,[esi]
@@ -1366,26 +1367,15 @@ NEWSYM copyvesa2640x400x16b
 .done
     pop es
     ret
-%endif
 
 ;*******************************************************
 ; Copy VESA2 640x480x8b  Copies buffer to 640x480x8bVBE2
 ;*******************************************************
 
-
-SECTION .bss
-NEWSYM res640, resb 1
-NEWSYM res480, resb 1
-
-
 SECTION .data
-vesavaland dd 0,0
-mmxvalanda dd 11111111110000001111111111000000b,11111111110000001111111111000000b
-mmxvalandb dd 00000000000111110000000000011111b,00000000000111110000000000011111b
-
-%ifdef __MSDOS__
 NEWSYM EagleHold, dd 0
 NEWSYM CurrentGUIOn, dd 0
+
 SECTION .text
 
 NEWSYM copyvesa2640x480x8bgui
@@ -2480,81 +2470,15 @@ NEWSYM copyvesa2320x240x16b
 .done
     pop es
     ret
-%endif
-
 
 SECTION .bss
-NEWSYM lineleft, resd 1
-%ifdef __MSDOS__
 NEWSYM rescompareng, resd 1
 NEWSYM prevcol0ng, resd 1
 NEWSYM numbytelng, resd 1
 NEWSYM lineleft2, resd 1
 bankpos resd 1
-%endif
 
 SECTION .text
-
-NEWSYM ConvertToAFormat
-    cmp byte[GUIOn],1
-    je .nonewgfx
-    cmp byte[newengen],0
-    je .nonewgfx
-    ret
-.nonewgfx
-    mov eax,[vesa2_clbitng2]
-    mov ebx,eax
-    and eax,11111111110000001111111111000000b
-    and ebx,00000000000111110000000000011111b
-    or eax,ebx
-    mov [vesavaland],eax
-    mov [vesavaland+4],eax
-    mov esi,[vidbuffer]
-    add esi,16*2+256*2+32*2
-    mov dl,[resolutn]
-    cmp byte[MMXSupport],1
-    je near .mmxconv
-.crgbloop
-    mov ecx,128
-.crgbloop2
-    mov eax,[esi]
-    mov ebx,eax
-    and eax,11111111110000001111111111000000b
-    and ebx,00000000000111110000000000011111b
-    shr eax,1
-    or ebx,eax
-    mov [esi],ebx
-    add esi,4
-    dec ecx
-    jnz .crgbloop2
-    add esi,64
-    dec dl
-    jnz .crgbloop
-    jmp .nocopyvesa2r
-.mmxconv
-.crgbloopm
-    mov ecx,64
-    movq mm6,[mmxvalanda]
-    movq mm7,[mmxvalandb]
-.crgbloop2m
-    movq mm0,[esi]
-    movq mm1,mm0
-    pand mm0,mm6
-    pand mm1,mm7
-    psrlw mm0,1
-    por mm0,mm1
-    movq [esi],mm0
-    add esi,8
-    dec ecx
-    jnz .crgbloop2m
-    add esi,64
-    dec dl
-    jnz .crgbloopm
-    emms
-.nocopyvesa2r
-    ret
-
-%ifdef __MSDOS__
 NEWSYM copyvesa2320x480x16b
     cmp byte[curblank],40h
     jne .startcopy
@@ -5595,8 +5519,6 @@ NEWSYM cscopyvesa12640x480x16b
     mov edi,32*2*2           ; Draw @ Y from 9 to 247
     xor eax,eax
     mov dl,239
-    dec dl
-    dec dl
     mov [lineleft],dl
     mov edx,65536
     sub edx,edi
@@ -5627,4 +5549,3 @@ NEWSYM cscopyvesa12640x480x16b
     jnz near .loopa
     pop es
     ret
-%endif

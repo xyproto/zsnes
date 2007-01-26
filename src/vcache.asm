@@ -52,7 +52,7 @@ EXTSYM KeyResetSpeed,KeyEmuSpeedUp,KeyEmuSpeedDown,KeyDisplayBatt,EMUPause
 EXTSYM device1,device2,snesinputdefault1,snesinputdefault2
 EXTSYM KeyExtraEnab1,KeyExtraEnab2,cycleinputdevice1,cycleinputdevice2,MouseDis
 EXTSYM KeyIncreaseGamma,KeyDecreaseGamma,gammalevel,gammalevel16b
-EXTSYM RawDumpInProgress
+EXTSYM RawDumpInProgress,MMXSupport,GUIOn
 
 %ifndef NO_DEBUGGER
 EXTSYM debuggeron
@@ -3879,6 +3879,9 @@ NEWSYM cachesingle8bng
 
 SECTION .bss
 NEWSYM dcolortab, resd 256
+NEWSYM res640, resb 1
+NEWSYM res480, resb 1
+NEWSYM lineleft, resd 1
 
 SECTION .data
 NEWSYM videotroub,      dd 0
@@ -3906,6 +3909,9 @@ NEWSYM vesa2_rposng,    dd 0            ; Red bit position
 NEWSYM vesa2_gposng,    dd 0            ; Green bit position
 NEWSYM vesa2_bposng,    dd 0            ; Blue bit position
 NEWSYM vesa2_usbit,     dd 0            ; Unused bit in proper bit location
+vesavaland dd 0,0
+mmxvalanda dd 11111111110000001111111111000000b,11111111110000001111111111000000b
+mmxvalandb dd 00000000000111110000000000011111b,00000000000111110000000000011111b
 
 SECTION .text
 NEWSYM genfulladdtab
@@ -3964,4 +3970,63 @@ NEWSYM genfulladdtabng
     mov [fulladdtab+ecx*2],ax
     dec cx
     jnz .loopers
+    ret
+
+NEWSYM ConvertToAFormat
+    cmp byte[GUIOn],1
+    je .nonewgfx
+    cmp byte[newengen],0
+    je .nonewgfx
+    ret
+.nonewgfx
+    mov eax,[vesa2_clbitng2]
+    mov ebx,eax
+    and eax,11111111110000001111111111000000b
+    and ebx,00000000000111110000000000011111b
+    or eax,ebx
+    mov [vesavaland],eax
+    mov [vesavaland+4],eax
+    mov esi,[vidbuffer]
+    add esi,16*2+256*2+32*2
+    mov dl,[resolutn]
+    cmp byte[MMXSupport],1
+    je near .mmxconv
+.crgbloop
+    mov ecx,128
+.crgbloop2
+    mov eax,[esi]
+    mov ebx,eax
+    and eax,11111111110000001111111111000000b
+    and ebx,00000000000111110000000000011111b
+    shr eax,1
+    or ebx,eax
+    mov [esi],ebx
+    add esi,4
+    dec ecx
+    jnz .crgbloop2
+    add esi,64
+    dec dl
+    jnz .crgbloop
+    jmp .nocopyvesa2r
+.mmxconv
+.crgbloopm
+    mov ecx,64
+    movq mm6,[mmxvalanda]
+    movq mm7,[mmxvalandb]
+.crgbloop2m
+    movq mm0,[esi]
+    movq mm1,mm0
+    pand mm0,mm6
+    pand mm1,mm7
+    psrlw mm0,1
+    por mm0,mm1
+    movq [esi],mm0
+    add esi,8
+    dec ecx
+    jnz .crgbloop2m
+    add esi,64
+    dec dl
+    jnz .crgbloopm
+    emms
+.nocopyvesa2r
     ret
