@@ -819,21 +819,21 @@ Process2xSaIwin:
     mov ebx,SpecialLine+1
 .loopabi
     mov [InterPtr],ebx
-
-;    add edi,[VESAAddr]
 %ifdef __UNIXSDL__
     mov dl,224
 %else
     mov dl,[resolutn]
 %endif
     mov [lineleft],dl
-    mov dword[esi+512],0
-    mov dword[esi+512+576*2],0
+    mov word[esi+512],0
+
     mov ebx,[vidbufferofsb]
     add ebx,288*2
 
 .next
-    mov dword[esi+512+576*3],0
+    mov word[esi+512+576],0
+    mov dword[edi+576+288+156-2],0
+    mov dword[edi+576*3+256+64-4],0
 
     mov eax,[InterPtr]
     cmp byte[eax],1
