@@ -26,8 +26,16 @@ This program generates dependencies for all C/C++/Assembly files
 #include <cstdio>
 using namespace std;
 
+#include <unistd.h>
+
 #include "fileutil.h"
 #include "strutil.h"
+
+#if defined(__MSDOS__) || defined(__WIN32__)
+#define IS_ABSOLUTE(path) (((path)[0] == '\\') || ((path)[0] && ((path)[1] == ':')))
+#else
+#define IS_ABSOLUTE(path) (((path)[0] == '/') || ((path)[0] == '~'))
+#endif
 
 string cc;
 string nasm;
@@ -84,7 +92,7 @@ void dependency_calculate_c(const char *filename)
       Tokenize(string(line), tokens, " \t\n\\"); //Break apart into each dependency
       for (vector<string>::iterator i = tokens.begin(); i != tokens.end(); i++)
       {
-        if ((*i)[0] != '/') //If dependency isn't a system header (all system headers would begin with /)
+        if (!IS_ABSOLUTE(*i)) //If dependency isn't a system header (all system headers would begin with /)
         {
           //This if has to be before the dependency is added onto the processed line string
           if (processed_line.length() > 50) //Let's wrap every time we go over 50 characters
