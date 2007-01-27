@@ -2918,9 +2918,6 @@ NEWSYM copyvid
     je .notatud
     mov [prevengval],al
     call genfulladdtab
-    jmp .notatud
-.redadd
-    call genfulladdtabng
 .notatud
     cmp dword[MessageOn],0
     je near .nomsg
