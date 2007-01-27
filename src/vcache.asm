@@ -3946,7 +3946,6 @@ NEWSYM genfulladdtab
     ret
 
 NEWSYM genfulladdtabred
-NEWSYM genfulladdtabng
     ; Write to buffer
     xor ecx,ecx
 .loopers
