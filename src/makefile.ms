@@ -190,8 +190,6 @@ CPUOBJ=${CPUDIR}/dma${OE} ${CPUDIR}/dsp${OE} ${CPUDIR}/dspproc${OE}\
 	${CPUDIR}/stable${OE} ${CPUDIR}/table${OE}\
 	${CPUDIR}/tablec${OE}
 
-DOSOBJORIG=${DOSDIR}/joy${OE} ${DOSDIR}/vesa2${OE}
-
 EFFECTSOBJ=${EFFECTSDIR}/burn${OE} ${EFFECTSDIR}/water${OE} ${EFFECTSDIR}/smoke${OE}
 
 GUIOBJ=${GUIDIR}/gui${OE} ${GUIDIR}/guifuncs${OE} ${GUIDIR}/menu${OE}
@@ -224,35 +222,34 @@ VIDEOBJ=${VIDEODIR}/makev16b${OE} ${VIDEODIR}/makev16t${OE} ${VIDEODIR}/makevid$
 	${VIDEODIR}/mode716e${OE} ${VIDEODIR}/mode716t${OE} ${VIDEODIR}/mode7${OE}\
 	${VIDEODIR}/mode7ext${OE} ${VIDEODIR}/mv16tms${OE} ${VIDEODIR}/newg162${OE}\
 	${VIDEODIR}/newgfx16${OE} ${VIDEODIR}/newgfx2${OE} ${VIDEODIR}/newgfx${OE}\
-	${VIDEODIR}/m716text${OE} ${VIDEODIR}/procvid${OE} ${VIDEODIR}/procvidc${OE}\
+	${VIDEODIR}/m716text${OE} ${VIDEODIR}/procvid${OE} ${VIDEODIR}/procvidc${OE}
 
-#only used on Win32
-WINOBJ= ${DRESOBJ}\
+ZIPOBJ=${ZIPDIR}/unzip${OE} ${ZIPDIR}/zpng${OE}
+
+OBJS=${CHIPSOBJ} ${CPUOBJ} ${GUIOBJ} ${VIDEOBJ} ${MAINOBJ} ${ZIPOBJ} ${EFFECTSOBJ} ${JMAOBJ}
+
+ifeq (${OS},__MSDOS__)
+DOSOBJ=${DOSDIR}/dosintrf${OE} ${DOSDIR}/gppro${OE} ${DOSDIR}/initvid${OE}\
+	${DOSDIR}/sound${OE} ${DOSDIR}/sw${OE} ${DOSDIR}/vesa12${OE}\
+	${DOSDIR}/lib${OE} ${DOSDIR}/joy${OE} ${DOSDIR}/vesa2${OE}
+
+OBJS+=${DOSOBJ}
+endif
+
+ifeq (${OS},__WIN32__)
+WINOBJ=${DRESOBJ}\
 	${WINDIR}/winintrf${OE} ${WINDIR}/winlink${OE} ${WINDIR}/lib${OE}\
 	${WINDIR}/safelib${OE} ${MMLIBDIR}/mm${OE} ${MMLIBDIR}/windows${OE}
 
 WINVIDOBJ=${VIDEODIR}/sw_draw${OE} ${VIDEODIR}/hq2x16${OE} ${VIDEODIR}/hq2x32${OE}\
 	${VIDEODIR}/2xsaiw${OE} ${VIDEODIR}/hq3x16${OE} ${VIDEODIR}/hq3x32${OE}\
-	${VIDEODIR}/hq4x16${OE} ${VIDEODIR}/hq4x32${OE} ${VIDEODIR}/copyvwin${OE}
+	${VIDEODIR}/hq4x16${OE} ${VIDEODIR}/hq4x32${OE} ${VIDEODIR}/copyvwin${OE}\
+	${VIDEODIR}/ntsc${OE}
 
-ZIPOBJ=${ZIPDIR}/unzip${OE} ${ZIPDIR}/zpng${OE}
-
-
-OBJSORIG=${CHIPSOBJ} ${CPUOBJ} ${GUIOBJ} ${VIDEOBJ} ${MAINOBJ} ${ZIPOBJ} ${EFFECTSOBJ} ${JMAOBJ}
-
-ifeq (${OS},__MSDOS__)
-DOSOBJ=${DOSOBJORIG} ${DOSDIR}/dosintrf${OE} ${DOSDIR}/gppro${OE} ${DOSDIR}/initvid${OE}\
-	${DOSDIR}/sound${OE} ${DOSDIR}/sw${OE} ${DOSDIR}/vesa12${OE} ${DOSDIR}/lib${OE}
-OBJS=${OBJSORIG} ${DOSOBJ}
-DELETEOBJS=${OBJSORIG} ${DOSOBJ}
+OBJS+=${WINOBJ} ${WINVIDOBJ} ${NETOBJ}
 endif
 
-ifeq (${OS},__WIN32__)
-VIDEOBJ+= ${VIDEODIR}/ntsc${OE}
-OBJS=${OBJSORIG} ${WINOBJ} ${WINVIDOBJ} ${NETOBJ}
 DELETEOBJS=${OBJS}
-endif
-
 
 .SUFFIXES: .c .cpp .asm .psr
 
