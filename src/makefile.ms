@@ -222,7 +222,8 @@ VIDEOBJ=${VIDEODIR}/makev16b${OE} ${VIDEODIR}/makev16t${OE} ${VIDEODIR}/makevid$
 	${VIDEODIR}/mode716e${OE} ${VIDEODIR}/mode716t${OE} ${VIDEODIR}/mode7${OE}\
 	${VIDEODIR}/mode7ext${OE} ${VIDEODIR}/mv16tms${OE} ${VIDEODIR}/newg162${OE}\
 	${VIDEODIR}/newgfx16${OE} ${VIDEODIR}/newgfx2${OE} ${VIDEODIR}/newgfx${OE}\
-	${VIDEODIR}/m716text${OE} ${VIDEODIR}/procvid${OE} ${VIDEODIR}/procvidc${OE}
+	${VIDEODIR}/m716text${OE} ${VIDEODIR}/procvid${OE} ${VIDEODIR}/procvidc${OE}\
+	${VIDEODIR}/2xsaiw${OE}
 
 ZIPOBJ=${ZIPDIR}/unzip${OE} ${ZIPDIR}/zpng${OE}
 
@@ -242,7 +243,7 @@ WINOBJ=${DRESOBJ}\
 	${WINDIR}/safelib${OE} ${MMLIBDIR}/mm${OE} ${MMLIBDIR}/windows${OE}
 
 WINVIDOBJ=${VIDEODIR}/sw_draw${OE} ${VIDEODIR}/hq2x16${OE} ${VIDEODIR}/hq2x32${OE}\
-	${VIDEODIR}/2xsaiw${OE} ${VIDEODIR}/hq3x16${OE} ${VIDEODIR}/hq3x32${OE}\
+	${VIDEODIR}/hq3x16${OE} ${VIDEODIR}/hq3x32${OE}\
 	${VIDEODIR}/hq4x16${OE} ${VIDEODIR}/hq4x32${OE} ${VIDEODIR}/copyvwin${OE}\
 	${VIDEODIR}/ntsc${OE}
 
@@ -466,7 +467,7 @@ ${VIDEODIR}/newgfx2${OE}: ${VIDEODIR}/newgfx2.asm macros.mac \
 	${VIDEODIR}/vidmacro.mac
 ${VIDEODIR}/ntsc${OE}: ${VIDEODIR}/ntsc.c ${VIDEODIR}/ntsc.h
 ${VIDEODIR}/procvid${OE}: ${VIDEODIR}/procvid.asm macros.mac \
-	${VIDEODIR}/2xsaimmx.inc ${VIDEODIR}/copyvid.inc
+	${VIDEODIR}/copyvid.inc
 ${VIDEODIR}/procvidc${OE}: ${VIDEODIR}/procvidc.c zpath.h \
 	${JMADIR}/zsnesjma.h ${VIDEODIR}/ntsc.h ${ZIPDIR}/zunzip.h zmovie.h
 ${VIDEODIR}/sw_draw${OE}: ${VIDEODIR}/sw_draw.asm macros.mac

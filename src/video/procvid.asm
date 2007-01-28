@@ -53,7 +53,6 @@ EXTSYM numlockptr
 %endif
 
 %ifdef __MSDOS__
-%include "video/2xsaimmx.inc"
 %include "video/copyvid.inc"
 %endif
 

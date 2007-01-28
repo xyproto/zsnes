@@ -22,8 +22,8 @@
 %include "macros.mac"
 
 EXTSYM vidbuffer,GUIOn,MMXSupport,resolutn,En2xSaI,antienab,scanlines
-EXTSYM hirestiledat,res512switch,curblank,spritetablea,lineleft,_2xSaILineW
-EXTSYM _2xSaISuperEagleLineW,_2xSaISuper2xSaILineW,newengen,cfield,HalfTrans
+EXTSYM hirestiledat,res512switch,curblank,spritetablea,lineleft,_2xSaILine
+EXTSYM _2xSaISuperEagleLine,_2xSaISuper2xSaILine,newengen,cfield,HalfTrans
 EXTSYM GUIOn2,FilteredGUI,SpecialLine,vidbufferofsb,HalfTransB,HalfTransC
 
 ALIGN32
@@ -878,13 +878,13 @@ Process2xSaIwin:
     je .supereagle
     cmp byte[En2xSaI],3
     je .super2xSaI
-    call _2xSaILineW
+    call _2xSaILine
     jmp .normal
 .supereagle
-    call _2xSaISuperEagleLineW
+    call _2xSaISuperEagleLine
     jmp .normal
 .super2xSaI
-    call _2xSaISuper2xSaILineW
+    call _2xSaISuper2xSaILine
 .normal
     add esp,24
     pop ebx

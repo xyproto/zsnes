@@ -75,18 +75,13 @@ colorA2   equ 2
 colorA3   equ 4
 
 
-NEWSYM _2xSaISuper2xSaILineW
+NEWSYM _2xSaISuper2xSaILine
 ; Store some stuff
     push ebp
     mov ebp, esp
     pushad
 
 ; Prepare the destination
-%ifdef __DJGPP__
-    ; Set the selector
-    mov eax, [ebp+dstSegment]
-    mov fs, ax
-%endif
     mov edx, [ebp+dstOffset]        ; edx points to the screen
 ; Prepare the source
     ; eax points to colorA
@@ -753,13 +748,13 @@ NEWSYM _2xSaISuper2xSaILineW
     punpckhwd mm5, mm6
 
 
-%ifdef __DJGPP__
-    movq [fs:edx], mm0
-    movq [fs:edx+8], mm1
+%ifdef __MSDOS__
+    movq [es:edx], mm0
+    movq [es:edx+8], mm1
     push edx
     add edx, [ebp+dstPitch]
-    movq [fs:edx], mm4
-    movq [fs:edx+8], mm5
+    movq [es:edx], mm4
+    movq [es:edx+8], mm5
     pop edx
 %else
     movq [edx], mm0
@@ -797,7 +792,7 @@ NEWSYM _2xSaISuper2xSaILineW
 
 
 
-NEWSYM _2xSaISuperEagleLineW
+NEWSYM _2xSaISuperEagleLine
 
 ; Store some stuff
     push ebp
@@ -805,11 +800,6 @@ NEWSYM _2xSaISuperEagleLineW
     pushad
 
 ; Prepare the destination
-%ifdef __DJGPP__
-    ; Set the selector
-    mov eax, [ebp+dstSegment]
-    mov fs, ax
-%endif
     mov edx, [ebp+dstOffset]         ; edx points to the screen
 ; Prepare the source
     ; eax points to colorA
@@ -1307,13 +1297,13 @@ NEWSYM _2xSaISuperEagleLineW
 
 
 
-%ifdef __DJGPP__
-    movq [fs:edx], mm0
-    movq [fs:edx+8], mm1
+%ifdef __MSDOS__
+    movq [es:edx], mm0
+    movq [es:edx+8], mm1
     push edx
     add edx, [ebp+dstPitch]
-    movq [fs:edx], mm4
-    movq [fs:edx+8], mm5
+    movq [es:edx], mm4
+    movq [es:edx+8], mm5
     pop edx
 %else
     movq [edx], mm0
@@ -1374,18 +1364,13 @@ colorN   equ 0
 colorO   equ 2
 colorP   equ 4
 
-NEWSYM _2xSaILineW
+NEWSYM _2xSaILine
 ; Store some stuff
     push ebp
     mov ebp, esp
     pushad
 
 ; Prepare the destination
-%ifdef __DJGPP__
-    ; Set the selector
-    mov eax, [ebp+dstSegment]
-    mov fs, ax
-%endif
     mov edx, [ebp+dstOffset]         ; edx points to the screen
 ; Prepare the source
     ; eax points to colorA
@@ -1571,9 +1556,9 @@ NEWSYM _2xSaILineW
     punpcklwd mm5, mm0
     punpckhwd mm6, mm0
 
-%ifdef __DJGPP__
-    movq [fs:edx], mm5
-    movq [fs:edx+8], mm6
+%ifdef __MSDOS__
+    movq [es:edx], mm5
+    movq [es:edx+8], mm6
 %else
     movq [edx], mm5
     movq [edx+8], mm6
@@ -1924,9 +1909,9 @@ NEWSYM _2xSaILineW
     push edx
     add edx, [ebp+dstPitch]
 
-%ifdef __DJGPP__
-    movq [fs:edx], mm0
-    movq [fs:edx+8], mm1
+%ifdef __MSDOS__
+    movq [es:edx], mm0
+    movq [es:edx+8], mm1
 %else
     movq [edx], mm0
     movq [edx+8], mm1
@@ -1960,7 +1945,7 @@ NEWSYM _2xSaILineW
 ;-------------------------------------------------------------------------
 ;-------------------------------------------------------------------------
 
-NEWSYM Init_2xSaIMMXW
+NEWSYM Init_2xSaIMMX
 ; Store some stuff
     push ebp
     mov ebp, esp

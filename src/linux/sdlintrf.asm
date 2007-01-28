@@ -32,7 +32,7 @@ EXTSYM ngrposng,nggposng,ngbposng,HalfTransB,HalfTransC,UpdateVFrame,GetMouseX
 EXTSYM GetMouseY,GetMouseMoveX,GetMouseMoveY,GetMouseButton,T36HZEnabled
 EXTSYM MouseButton,Start36HZ,Stop36HZ,CheckTimers,vesa2_rfull,vesa2_rtrcl
 EXTSYM vesa2_rtrcla,vesa2_gfull,vesa2_gtrcl,vesa2_gtrcla,vesa2_bfull,vesa2_btrcl
-EXTSYM vesa2_btrcla,Init_2xSaIMMXW,V8Mode,GrayscaleMode,PrevWinMode
+EXTSYM vesa2_btrcla,Init_2xSaIMMX,V8Mode,GrayscaleMode,PrevWinMode
 EXTSYM pl1upk,pl1downk,pl1leftk,pl1rightk,pl1startk,pl1selk
 EXTSYM pl1Ak,pl1Bk,pl1Xk,pl1Yk,pl1Lk,pl1Rk
 EXTSYM pl2upk,pl2downk,pl2leftk,pl2rightk,pl2startk,pl2selk
@@ -737,7 +737,7 @@ InitializeGfxStuff:
          mov eax,555
 .red11
          push eax
-         call Init_2xSaIMMXW
+         call Init_2xSaIMMX
          pop eax
 
         ret
