@@ -656,7 +656,7 @@ NEWSYM copymodeq224
     mov esi,[vidbuffer]
 
     ; center on output screen
-    mov edi,256
+    mov edi,0
 
     ; address of first source line to copy
     add esi,(16+256+16)+16
@@ -684,11 +684,11 @@ NEWSYM copymodeq240
     mov esi,[vidbuffer]
 
     ; center on output screen
-    mov edi,256
+    mov edi,0
 
     cmp word[resolutn],224
     jne .res239
-    mov edi,8*256+256
+    mov edi,8*256
 .res239
 
     ; address of first source line to copy
@@ -717,11 +717,11 @@ NEWSYM copymodeq256
     mov esi,[vidbuffer]
 
     ; center on output screen
-    mov edi,8*256+256
+    mov edi,8*256
 
     cmp word[resolutn],224
     jne .res239
-    mov edi,16*256+256
+    mov edi,16*256
 .res239
 
     ; address of first source line to copy
