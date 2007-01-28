@@ -3588,8 +3588,10 @@ Process2xSaI:
 
 .next
     mov word[esi+512+576],0
-    mov dword[edi+576+288+156-2],0
-    mov dword[edi+576*3+256+64-4],0
+    mov dword[es:edi+512*2-4],0
+    mov word[es:edi+512*2-6],0
+    mov dword[es:edi+576*4-4],0
+    mov word[es:edi+576*4-6],0
 
     mov eax,[InterPtr]
     cmp byte[eax],1
@@ -3617,10 +3619,6 @@ Process2xSaI:
 ;dstPitch      equ 28
 ;dstSegment    equ 32
 
-%ifdef asdfasdfasdfsafdasdf
-    cmp byte[En2xSaI],3
-    je .super2xsai
-%endif
     mov eax,1280        ; destination pitch
     push eax
     mov eax,edi         ; destination offset
@@ -3634,60 +3632,17 @@ Process2xSaI:
     push eax
     cmp byte[En2xSaI],2
     je .supereagle
+    cmp byte[En2xSaI],3
+    je .super2xsai
     call _2xSaILine
     jmp .normal
 .supereagle
     call _2xSaISuperEagleLine
     jmp .normal
-
-%ifdef asdgawe65egfdgfdg
 .super2xsai
-    pushad
-    mov eax,1280        ; destination pitch
-    push eax
-    mov eax,[spritetablea]     ; destination offset
-    add eax,512
-    push eax
-    mov eax,256         ; width
-    push eax
-    mov eax,576         ; source pitch
-    push eax
-    push ebx
-    mov eax,esi         ; source pointer
-    push eax
-    call Super2xSaI
-    add esp,24
-    popad
-    ; blit to screen
-    mov eax,edi
-    mov edx,[spritetablea]
-    add edx,512
-    mov ecx,128
-.s2xsailoop
-    movq mm0,[edx]
-    movq [es:eax],mm0
-    add edx,8
-    add eax,8
-    dec ecx
-    jnz .s2xsailoop
-    mov edx,[spritetablea]
-    add edx,512+1280
-    add eax,128*2
-    mov ecx,128
-.s2xsailoop2
-    movq mm0,[edx]
-    movq [es:eax],mm0
-    add edx,8
-    add eax,8
-    dec ecx
-    jnz .s2xsailoop2
-    jmp .dones2xsai
-%endif
-
-
+    call _2xSaISuper2xSaILine
 .normal
     add esp,24
-.dones2xsai
     add esi,576
     inc dword[InterPtr]
     add edi,1280*2
