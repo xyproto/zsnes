@@ -584,7 +584,7 @@ void MultiMouseInit()
   if (value) { mouse |= BIT(bit); } \
   else { mouse &= ~BIT(bit); }
 
-unsigned char mouse;
+unsigned char mouse = 0;
 void MultiMouseProcess()
 {
   ManyMouseEvent event;
