@@ -1485,10 +1485,10 @@ SECTION .text
   GUIInputDispKey 165,112,%1Btk   ; B Turbo
   GUIInputDispKey 165,122,%1Rtk   ; R Turbo
 
-  GUIInputDispKey 125,142,%1DLk   ; Down-Left
-  GUIInputDispKey 125,152,%1DRk   ; Down-Right
-  GUIInputDispKey 165,142,%1ULk   ; Up-Left
-  GUIInputDispKey 165,152,%1URk   ; Up-Right
+  GUIInputDispKey 125,142,%1ULk   ; Up-Left
+  GUIInputDispKey 125,152,%1DLk   ; Down-Left
+  GUIInputDispKey 165,142,%1URk   ; Up-Right
+  GUIInputDispKey 165,152,%1DRk   ; Down-Right
 %endmacro
 
 %macro GUIInputDispKey 3
@@ -1558,10 +1558,10 @@ DisplayGUIInput:    ; Player Select, Joystick/keyboard Type List, Button Assignm
   GUIDisplayText 3,116,124,GUIInputTextC5
 
   GUIDisplayTextY 3,113,134,GUIInputTextD
-  GUIDisplayText 3,153,144,GUIInputTextD1
-  GUIDisplayText 3,153,154,GUIInputTextD2
-  GUIDisplayText 3,113,144,GUIInputTextD3
-  GUIDisplayText 3,113,154,GUIInputTextD4
+  GUIDisplayText 3,113,144,GUIInputTextD1
+  GUIDisplayText 3,153,144,GUIInputTextD2
+  GUIDisplayText 3,113,154,GUIInputTextD3
+  GUIDisplayText 3,153,154,GUIInputTextD4
 
 %ifdef __MSDOS__
   GUIDisplayCheckboxu 3,105,160,SidewinderFix,GUIInputTextE4,0

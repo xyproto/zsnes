@@ -2141,10 +2141,10 @@ DisplayGUIMovieClick:
   DGOptnsProcBox 165,112,[%1Btk]   ; B Turbo
   DGOptnsProcBox 165,122,[%1Rtk]   ; R Turbo
 
-  DGOptnsProcBox 125,142,[%1DLk]   ; Down-Left
-  DGOptnsProcBox 125,152,[%1DRk]   ; Down-Right
-  DGOptnsProcBox 165,142,[%1ULk]   ; Up-Left
-  DGOptnsProcBox 165,152,[%1URk]   ; Up-Right
+  DGOptnsProcBox 125,142,[%1ULk]   ; Up-Left
+  DGOptnsProcBox 125,152,[%1DLk]   ; Down-Left
+  DGOptnsProcBox 165,142,[%1URk]   ; Up-Right
+  DGOptnsProcBox 165,152,[%1DRk]   ; Down-Right
 %%lockInputChange
 %endmacro
 
