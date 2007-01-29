@@ -377,7 +377,7 @@ else
   echo "${ECHO_T}Enabled"
 fi
 echo
-echo The binary will be installed in $prefix/bin
+echo The binary will be installed in ${prefix}/bin
 echo
 echo $ECHO_N "Configure complete, now type '$ECHO_C"
 case x$target in
