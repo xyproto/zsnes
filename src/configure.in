@@ -26,12 +26,12 @@ AC_CONFIG_HEADER(config.h)
 
 VERSION=1.51
 
-CFLAGS="$CFLAGS -pipe -I. -I/usr/local/include -I/usr/include"
+CFLAGS+=" -pipe -I. -I/usr/local/include -I/usr/include"
 dnl - You might wanna change -I/usr/include if you're trying to do this with
 dnl Mingw, because it doesnt have a standard file tree. Maybe if ming do this
 dnl else do -I/usr/include. Or some shit. You figure it out.
 
-LDFLAGS="$LDFLAGS -L/usr/local/lib -L/usr/lib"
+LDFLAGS+=" -L/usr/local/lib -L/usr/lib"
 dnl - Same thing here.
 
 dnl - Where are our compilers, and who are we compiling for?
@@ -50,40 +50,40 @@ if test x$NASMPATH = xno; then
 fi
 
 AC_ARG_WITH(zconf-path,
-  [  --with-zconf-path=PATH  Path where ZSNES looks for zsnesl.cfg (default is .zsnes)],
+  [  --with-zconf-path=PATH  Path for configuration files (default: ~/.zsnes)],
   ZCONF="$withval",
   ZCONF="")
 
-CFLAGS="$CFLAGS -D__UNIXSDL__"
-NFLAGS="$NFLAGS -w-orphan-labels -D__UNIXSDL__"
-PSRFLAGS="$PSRFLAGS -D__UNIXSDL__"
+CFLAGS+=" -D__UNIXSDL__"
+NFLAGS+=" -w-orphan-labels -D__UNIXSDL__"
+PSRFLAGS+=" -D__UNIXSDL__"
 MMLIB_FILES="\$(MMLIB_D)/mm.o"
 STRIP="-s"
 case x$target in
   *-*-linux*)
-    NFLAGS="$NFLAGS -f elf -DELF"
-    MMLIB_FILES="$MMLIB_FILES \$(MMLIB_D)/linux.o"
+    NFLAGS+=" -f elf -DELF"
+    MMLIB_FILES+=" \$(MMLIB_D)/linux.o"
     ;;
   *-*-beos*)
-    CFLAGS="$CFLAGS -D__BEOS__"
-    NFLAGS="$NFLAGS -D__BEOS__ -f elf -DELF"
+    CFLAGS+=" -D__BEOS__"
+    NFLAGS+=" -D__BEOS__ -f elf -DELF"
     ;;
   *-*-*bsd*)
-    CFLAGS="$CFLAGS -D__BSDSDL__"
-    NFLAGS="$NFLAGS -D__BSDSDL__ -f elf -DELF"
+    CFLAGS+=" -D__BSDSDL__"
+    NFLAGS+=" -D__BSDSDL__ -f elf -DELF"
     ;;
   *-*-darwin* )
-    CFLAGS="$CFLAGS -D__MACOSX__ -D__OPENGL__ -arch i386 -mdynamic-no-pic -mstackrealign -fno-unit-at-a-time"
-    NFLAGS="$NFLAGS -D__MACOSX__ -D__OPENGL__ -f macho -DMACHO"
-    PSRFLAGS="$PSRFLAGS -D__OPENGL__"
-    MMLIB_FILES="$MMLIB_FILES \$(MMLIB_D)/osx.o"
+    CFLAGS+=" -D__MACOSX__ -D__OPENGL__ -arch i386 -mdynamic-no-pic -mstackrealign -fno-unit-at-a-time"
+    NFLAGS+=" -D__MACOSX__ -D__OPENGL__ -f macho -DMACHO"
+    PSRFLAGS+=" -D__OPENGL__"
+    MMLIB_FILES+=" \$(MMLIB_D)/osx.o"
     STRIP=""
-    LDFLAGS="$LDFLAGS -framework Carbon -framework IOKit -framework Foundation -framework OpenGL -mdynamic-no-pic -read_only_relocs suppress -undefined dynamic_lookup"
+    LDFLAGS+=" -framework Carbon -framework IOKit -framework Foundation -framework OpenGL -mdynamic-no-pic -read_only_relocs suppress -undefined dynamic_lookup"
     GL_DRAW="\$(PORT_D)/gl_draw.o"
     found_opengl=yes
     ;;
   *-*-cygwin* | *-*-*ming*)
-    NFLAGS="$NFLAGS -f win32"
+    NFLAGS+=" -f win32"
     ;;
   *)
     AC_MSG_ERROR(This target is not supported)
@@ -91,7 +91,7 @@ case x$target in
 esac
 
 if test x$ZCONF != x; then
-  CFLAGS="$CFLAGS -DZCONF=\"\\\"$ZCONF\\\"\""
+  CFLAGS+=" -DZCONF=\"\\\"$ZCONF\\\"\""
 fi
 
 dnl - Library checks (requisites marked *, others optionnal):
@@ -102,21 +102,21 @@ AM_PATH_SDL(1.2.0,,[AC_MSG_ERROR(SDL >= 1.2.0 is required)])
 
 dnl - zlib stuff
 AM_PATH_ZLIB(1.2.3,,[AC_MSG_ERROR(zlib >= 1.2.3 is required)])
-CFLAGS="$CFLAGS $ZLIB_CFLAGS"
-LDFLAGS="$LDFLAGS $ZLIB_LIBS"
+CFLAGS+=" $ZLIB_CFLAGS"
+LDFLAGS+=" $ZLIB_LIBS"
 
 dnl - libpng stuff
 AM_PATH_LIBPNG(1.2.0,,)
-CFLAGS="$CFLAGS $SDL_CFLAGS"
-LDFLAGS="$LDFLAGS $SDL_LIBS"
+CFLAGS+=" $SDL_CFLAGS"
+LDFLAGS+=" $SDL_LIBS"
 
 if test x$with_libpng != xyes; then
-  CFLAGS="$CFLAGS -DNO_PNG"
-  NFLAGS="$NFLAGS -DNO_PNG"
-  PSRFLAGS="$PSRFLAGS -DNO_PNG"
+  CFLAGS+=" -DNO_PNG"
+  NFLAGS+=" -DNO_PNG"
+  PSRFLAGS+=" -DNO_PNG"
 else
-  CFLAGS="$CFLAGS $LIBPNG_CFLAGS"
-  LDFLAGS="$LDFLAGS $LIBPNG_LIBS"
+  CFLAGS+=" $LIBPNG_CFLAGS"
+  LDFLAGS+=" $LIBPNG_LIBS"
 fi
 
 dnl - debugger stuff
@@ -127,9 +127,9 @@ AC_ARG_ENABLE(debugger,
 AC_MSG_CHECKING(if you want the zsnes debugger)
 AC_MSG_RESULT($enable_debugger)
 if test x$enable_debugger != xyes; then
-  CFLAGS="$CFLAGS -DNO_DEBUGGER"
-  NFLAGS="$NFLAGS -DNO_DEBUGGER"
-  PSRFLAGS="$PSRFLAGS -DNO_DEBUGGER"
+  CFLAGS+=" -DNO_DEBUGGER"
+  NFLAGS+=" -DNO_DEBUGGER"
+  PSRFLAGS+=" -DNO_DEBUGGER"
   DEBUGGER_A=""
   DEBUGGER_C=""
 else
@@ -141,14 +141,14 @@ else
   AC_CHECK_LIB(pdcurses, initscr, found_pdcurses=yes,found_pdcurses=no)
 
   if test x$found_curses = xyes; then
-    LDFLAGS="$LDFLAGS -lcurses"
+    LDFLAGS+=" -lcurses"
   else
     if test x$found_ncurses = xyes; then
-      CFLAGS="$CFLAGS -DNCURSES"
-      LDFLAGS="$LDFLAGS -lncurses"
+      CFLAGS+=" -DNCURSES"
+      LDFLAGS+=" -lncurses"
     else
       if test x$found_pdcurses = xyes; then
-        LDFLAGS="$LDFLAGS -lpdcurses"
+        LDFLAGS+=" -lpdcurses"
       else
         AC_MSG_ERROR(A curses library is required to use the debugger)
         DEBUGGER_A=""
@@ -169,8 +169,8 @@ if test x$want_ao = xyes; then
   AC_CHECK_LIB(ao, ao_initialize, got_ao=yes, got_ao=no)
 
   if test x$got_ao = xyes; then
-    CFLAGS="$CFLAGS -D__LIBAO__"
-    LDFLAGS="$LDFLAGS -lao"
+    CFLAGS+=" -D__LIBAO__"
+    LDFLAGS+=" -lao"
   else
     AC_MSG_ERROR(Couldn't find libao)
   fi
@@ -190,11 +190,11 @@ if test x$found_opengl != xyes; then
   if test x$enable_opengl != xno; then
     AC_PATH_X
     if test x$opengl_prefix != x; then
-      CFLAGS="$CFLAGS -I$opengl_prefix/include"
-      LDFLAGS-"$LDFLAGS -L$opengl_prefix/lib"
+      CFLAGS+=" -I$opengl_prefix/include"
+      LDFLAGS+=" -L$opengl_prefix/lib"
     fi
     if test x$x_libraries != x; then
-      LDFLAGS="$LDFLAGS -L$x_libraries"
+      LDFLAGS+=" -L$x_libraries"
     fi
     AC_CHECK_LIB(GL, glGetError, found_opengl=yes,found_opengl=no)
   fi
@@ -202,10 +202,10 @@ if test x$found_opengl != xyes; then
   AC_MSG_CHECKING(for OpenGL)
   if test x$enable_opengl != xno; then
     if test x$found_opengl = xyes; then
-      LDFLAGS="$LDFLAGS -lGL"
-      CFLAGS="$CFLAGS -D__OPENGL__"
-      NFLAGS="$NFLAGS -D__OPENGL__"
-      PSRFLAGS="$PSRFLAGS -D__OPENGL__"
+      LDFLAGS+=" -lGL"
+      CFLAGS+=" -D__OPENGL__"
+      NFLAGS+=" -D__OPENGL__"
+      PSRFLAGS+=" -D__OPENGL__"
       GL_DRAW="\$(PORT_D)/gl_draw.o"
     fi
     AC_MSG_RESULT($found_opengl)
@@ -222,9 +222,9 @@ AC_ARG_ENABLE(jma,
 AC_MSG_CHECKING(for JMA support)
 AC_MSG_RESULT($enable_jma)
 if test x$enable_jma != xyes; then
-  CFLAGS="$CFLAGS -DNO_JMA"
-  NFLAGS="$NFLAGS -DNO_JMA"
-  PSRFLAGS="$PSRFLAGS -DNO_JMA"
+  CFLAGS+=" -DNO_JMA"
+  NFLAGS+=" -DNO_JMA"
+  PSRFLAGS+=" -DNO_JMA"
 fi
 
 dnl - Various debug and optimization option checks
@@ -239,49 +239,48 @@ AC_MSG_RESULT($debug)
 if test x$debug = xyes; then
 dnl - It is easier to debug zsnes with no optimization enabled.
   ZSNESEXE="zsnesd"
-  PSR_TEMP=""
-  CFLAGS="$CFLAGS -Wall -W -DDEBUG -O0 -fomit-frame-pointer -gstabs3"
-  NFLAGS="$NFLAGS -DDEBUG -g -F stabs -s -O0"
+  CFLAGS+=" -Wall -W -DDEBUG -O0 -fomit-frame-pointer -gstabs3"
+  NFLAGS+=" -DDEBUG -g -F stabs -s -O0"
 else
   ZSNESEXE="zsnes"
-  PSR_TEMP="	rm -f t_\$*.c"
 
   CFLAGSBAK="$CFLAGS"
   AC_ARG_VAR(force_arch, [Force architecture to optimize GCC/G++ for])
   AC_MSG_CHECKING(which cpu architecture to optimize for)
   if test x$force_arch != x; then
-    CFLAGS="$CFLAGS -march=$force_arch"
+    CFLAGS+=" -march=$force_arch"
     AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]])],
     [AC_MSG_RESULT(forcing $force_arch)],
     [AC_MSG_RESULT($force_arch ??)
     AC_MSG_WARN(incorrect force_arch parameter)
     force_arch=""
-    CFLAGS="$CFLAGSBAK"
-    AC_MSG_CHECKING(for autodetected architecture)])
-  else
+    CFLAGS="$CFLAGSBAK"])
+  fi
+  if test x$force_arch = x; then
+    AC_MSG_CHECKING(for autodetected architecture)
     if test x$ARCH_INFO = x; then
       case x$target in
         i686-*-*)
           AC_MSG_RESULT(guessing i686)
-          CFLAGS="$CFLAGS -march=i686"
+          CFLAGS+=" -march=i686"
           ;;
         i586-*-*)
           AC_MSG_RESULT(guessing i586)
-          CFLAGS="$CFLAGS -march=i586"
+          CFLAGS+=" -march=i586"
           ;;
         i486-*-*)
           AC_MSG_RESULT(guessing i486)
-          CFLAGS="$CFLAGS -march=i486"
+          CFLAGS+=" -march=i486"
           ;;
         *)
           AC_MSG_RESULT(guessing i386)
-          CFLAGS="$CFLAGS -march=i386"
-          AC_MSG_WARN([This is not what you want, use --target or force-arch])
+          CFLAGS+=" -march=i386"
+          AC_MSG_WARN([This is not what you want, use --target or force_arch])
           ;;
       esac
     else
       AC_MSG_RESULT($ARCH_INFO)
-      CFLAGS="$CFLAGS -march=$ARCH_INFO"
+      CFLAGS+=" -march=$ARCH_INFO"
     fi
   fi
 
@@ -293,13 +292,13 @@ else
   AC_MSG_RESULT($release)
   if test x$release = xyes; then
     if test x$force_arch = x; then
-      AC_MSG_WARN([If you intend to distribute this binary, make sure you use force_arch and set to i586 (or whichever CPU Arch you intend for)])
+      AC_MSG_WARN([If you intend to distribute this binary, make sure you use force_arch and set to i586 (or whichever CPU arch you intend for)])
     fi
-    CFLAGS="$CFLAGS -O3 -fomit-frame-pointer -fprefetch-loop-arrays -fforce-addr $STRIP -D__RELEASE__"
-    NFLAGS="$NFLAGS -O99999999 -D__RELEASE__"
+    CFLAGS+=" -O3 -fomit-frame-pointer -fprefetch-loop-arrays -fforce-addr $STRIP -D__RELEASE__"
+    NFLAGS+=" -O99999999 -D__RELEASE__"
   else
-    CFLAGS="$CFLAGS -O3 -fomit-frame-pointer $STRIP"
-    NFLAGS="$NFLAGS -O1"
+    CFLAGS+=" -O3 -fomit-frame-pointer $STRIP"
+    NFLAGS+=" -O1"
   fi
 fi
 CXXFLAGS="$CFLAGS -fno-rtti"
@@ -333,7 +332,6 @@ AC_SUBST(JMA_FILES)
 AC_SUBST(MMLIB_FILES)
 AC_SUBST(DEBUGGER_A)
 AC_SUBST(DEBUGGER_C)
-AC_SUBST(PSR_TEMP)
 
 AC_CONFIG_FILES(Makefile)
 touch -t 198001010000 makefile.dep
@@ -343,7 +341,11 @@ AC_OUTPUT
 dnl - Info output
 echo
 echo
-echo ZSNES v$VERSION
+echo $ECHO_N "ZSNES v$VERSION (with$ECHO_C"
+if test x$enable_debugger = xno; then
+  echo $ECHO_N "${ECHO_T}out$ECHO_C"
+fi
+echo "${ECHO_T} debugger)"
 echo
 echo "SDL support                   Version `$SDL_CONFIG --version`"
 echo "NASM support                  `nasm -v`"
@@ -370,11 +372,11 @@ if test x$enable_jma = xno; then
 else
   echo "${ECHO_T}Yes"
 fi
-echo $ECHO_N "ZSNES debugger                $ECHO_C"
-if test x$enable_debugger = xno; then
-  echo "${ECHO_T}Disabled"
+echo $ECHO_N "LibAO support                 $ECHO_C"
+if test x$want_ao = xno; then
+  echo "${ECHO_T}No"
 else
-  echo "${ECHO_T}Enabled"
+  echo "${ECHO_T}Yes"
 fi
 echo
 echo The binary will be installed in ${prefix}/bin
