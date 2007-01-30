@@ -1254,6 +1254,7 @@ NEWSYM cpuover
     cmp byte[nextmenupopup],2
     jb .skipmenupop
     dec byte[nextmenupopup]
+    dec byte[nextmenupopup]
 .skipmenupop
     mov eax,[KeySaveState]
     test byte[pressed+eax],01h
@@ -1334,9 +1335,9 @@ NEWSYM cpuover
 
     ;Update screen - DISABLED FOR NOW
     pushad
-    ;call StartDrawNewGfx
-    ;call showvideo
-    ;call cachevideo
+    call StartDrawNewGfx
+    call showvideo
+    call cachevideo
     popad
 
     jmp .nonewgfx
