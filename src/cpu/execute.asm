@@ -1335,7 +1335,6 @@ NEWSYM cpuover
     jmp .noemupause
 .noframeincr
 
-    ;Update screen - DISABLED FOR NOW
     pushad
     call StartDrawNewGfx
     call showvideo
