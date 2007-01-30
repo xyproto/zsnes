@@ -53,6 +53,7 @@ EXTSYM MovieSeekBehind,BackupCVFrame,RestoreCVFrame,loadstate
 EXTSYM KeyInsrtChap,KeyNextChap,KeyPrevChap,MovieInsertChapter,MovieSeekAhead
 EXTSYM ResetDuringMovie,EMUPauseKey,INCRFrameKey,MovieWaiting,NoInputRead
 EXTSYM AllocatedRewindStates,PauseFrameMode,RestorePauseFrame,BackupPauseFrame
+EXTSYM xe,HIRQLoc,cycphb
 
 %ifndef NO_DEBUGGER
 EXTSYM debuggeron,startdebugger
@@ -776,7 +777,6 @@ ALIGN16
 %%noflip
 %endif
 %endmacro
-EXTSYM xe,HIRQLoc,hdmadelay,INTEnab,cycphb
 NEWSYM execute
 NEWSYM execloop
    mov bl,dl
