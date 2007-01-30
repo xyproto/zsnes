@@ -30,7 +30,7 @@ EXTSYM maxbr,modeused,mousexloc,mouseyloc,newengen,KeyRTRCycle
 EXTSYM pal16b,pal16bxcl,pressed,prevbright,prevpal
 EXTSYM scaddsngb,scaddtngb,scaddtngbx,scfbl,scrndis,sprprdrn,t1cc
 EXTSYM vidbright,vidbuffer,vidbufferofsa,vidmemch2,MZTForceRTR
-EXTSYM GUIRClick,MousePRClick,ngmsdraw,cvidmode,fulladdtab
+EXTSYM GUIRClick,MousePRClick,ngmsdraw,fulladdtab
 EXTSYM KeyDisableSC0,KeyDisableSC1,KeyDisableSC2,KeyDisableSC3,KeyDisableSC4
 EXTSYM KeyDisableSC5,KeyDisableSC6,KeyDisableSC7,KeyFastFrwrd,SRAMSave5Sec
 EXTSYM KeyBGDisble0,KeyBGDisble1,KeyBGDisble2,KeyBGDisble3,KeySprDisble
@@ -39,7 +39,7 @@ EXTSYM KeyStateSlc0,KeyStateSlc1,KeyStateSlc2,KeyStateSlc3,KeyStateSlc4
 EXTSYM KeyStateSlc5,KeyStateSlc6,KeyStateSlc7,KeyStateSlc8,KeyStateSlc9
 EXTSYM KeyIncStateSlot,KeyDecStateSlot,KeyUsePlayer1234,maxskip,DSPMem
 EXTSYM FastFwdToggle,SaveSramData,ngextbg,Mode7HiRes,Check60hz
-EXTSYM Get_MouseData,Get_MousePositionDisplacement,scanlines
+EXTSYM Get_MouseData,Get_MousePositionDisplacement
 EXTSYM romispal,MusicRelVol,MusicVol,WDSPReg0C,WDSPReg1C,KeySlowDown
 EXTSYM KeyFRateDown,KeyFRateUp,KeyVolUp,KeyVolDown,KeyDisplayFPS
 EXTSYM FPSOn,pl12s34,bg1ptr,bg2ptr,bg3ptr,bg4ptr,cachebg1,resolutn,curypos
@@ -210,15 +210,6 @@ NEWSYM cachevideo
 
     call ClockCounter
 
-    cmp byte[scanlines],1
-    je .nohires
-    cmp byte[cvidmode],9
-    je .yeshires
-    cmp byte[cvidmode],15
-    jne .nohires
-.yeshires
-    mov byte[Mode7HiRes],1
-.nohires
     mov dword[scfbl],1
     mov al,[vidbright]
     mov [maxbr],al
