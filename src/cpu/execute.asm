@@ -776,7 +776,7 @@ ALIGN16
 %%noflip
 %endif
 %endmacro
-EXTSYM xe,curhdma
+EXTSYM xe,HIRQLoc,hdmadelay,INTEnab,cycphb
 NEWSYM execute
 NEWSYM execloop
    mov bl,dl
@@ -787,13 +787,15 @@ NEWSYM execloop
    je .notxe
    test dl,1
    jz .notxe
-   cmp byte[curhdma],0
-   je .notxe
-   sub dh,30h
+   test byte[INTEnab],0C0h
+   jnz .notxe
+   sub dh,50h
 .notxe
    cmp byte[doirqnext],1
    je .noirq
-   sub dh,11
+   cmp byte[irqon],0
+   je .noirq
+   sub dh,12
 .noirq
    call dword near [edi+ebx*4]
 .cpuover
