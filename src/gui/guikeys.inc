@@ -333,8 +333,10 @@ GUIgetcurrentinput:
 
   cmp byte[JoyPad1Move],0
   je near .nopad1b
+%ifndef __WIN32__
   GUIgetprkeys2 [pl1upk],72,0
   GUIgetprkeys2 [pl1downk],80,1
+%endif
   GUIgetprkeys2 [pl1leftk],75,2
   GUIgetprkeys2 [pl1rightk],77,3
   GUIgetprkeys2 [pl1Lk],73,4
