@@ -341,8 +341,8 @@ static void allocmem()
   regptw -= 0x8000;
 }
 
-const unsigned int versionNumber = 0x00000097; // 1.51
-char *ZVERSION = "1.51";
+const unsigned int versionNumber = 0x00000098; // 1.51
+char *ZVERSION = "1.52";
 unsigned char txtfailedalignd[] = "Data Alignment Failure : ";
 unsigned char txtfailedalignc[] = "Code Alignment Failure : ";
 
