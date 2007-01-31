@@ -49,11 +49,10 @@ EXTSYM sfx192lineloc,sfxobjlineloc,sfxclineloc,PLOTJmpa,PLOTJmpb,FxTable
 EXTSYM FxTableb,FxTablec,FxTabled,SfxPBR,SCBRrel,SfxSCBR,SfxCOLR,SFXCounter
 EXTSYM fxbit01,fxbit01pcal,fxbit23,fxbit23pcal,fxbit45,fxbit45pcal,fxbit67
 EXTSYM fxbit67pcal,SfxSFR,nosprincr,cpucycle,switchtovirqdeb,switchtonmideb
-EXTSYM MovieSeekBehind,BackupCVFrame,RestoreCVFrame,loadstate
+EXTSYM MovieSeekBehind,BackupCVFrame,RestoreCVFrame,loadstate,xe
 EXTSYM KeyInsrtChap,KeyNextChap,KeyPrevChap,MovieInsertChapter,MovieSeekAhead
 EXTSYM ResetDuringMovie,EMUPauseKey,INCRFrameKey,MovieWaiting,NoInputRead
 EXTSYM AllocatedRewindStates,PauseFrameMode,RestorePauseFrame,BackupPauseFrame
-EXTSYM xe,HIRQLoc,cycphb
 
 %ifndef NO_DEBUGGER
 EXTSYM debuggeron,startdebugger
