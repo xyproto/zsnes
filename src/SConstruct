@@ -11,7 +11,7 @@ parsegen_tool = env.Program(target= 'parsegen', source = 'parsegen.cpp')
 def parsegen_emitter(target,source,env):
 	env.Depends(target,parsegen_tool)
 	return (target,source)
-	
+
 if platform == 'posix':
 	os.system('rm cfgparse.c version.o')
 	print 'cfgparse.c and version.o removed'
@@ -19,7 +19,7 @@ if platform == 'posix':
 		emitter = parsegen_emitter,
 		suffix = '.c', src_suffix = '.psr')
 
-env['BUILDERS']['PARSEGEN'] = psrbld	
+env['BUILDERS']['PARSEGEN'] = psrbld
 env.PARSEGEN('cfgparse.c', 'cfgparse.psr')
 
 objfix_tool = env.Program(target= 'objfix.exe', source= 'objfix.c')
@@ -210,7 +210,7 @@ if platform == 'win32':
 			# free version
 			def isMicrosoftSDKDir(dir):
 				return os.path.exists(dir+os.sep+'Include'+os.sep+'Windows.h') and os.path.exists(dir+os.sep+'Lib'+os.sep+'WinMM.lib')
- 	
+
 			def findMicrosoftSDK():
 				import SCons.Platform.win32
 				import SCons.Util
@@ -227,7 +227,7 @@ if platform == 'win32':
 				if isMicrosoftSDKDir(p): return p
 			except SCons.Util.RegError:
 		                pass
- 
+
 			K = r'SOFTWARE\Microsoft\MicrosoftSDK\InstalledSDKs'
 			try:
 				k = SCons.Util.RegOpenKeyEx(HLM, K)
@@ -247,7 +247,7 @@ if platform == 'win32':
 				pass
 
 			return None
- 
+
 		# End of local defs. Actual freeMSVCHack begins here
 		if not env['MSVS'].get('VCINSTALLDIR'):
 			if os.environ.get('VCToolkitInstallDir'):
@@ -272,14 +272,14 @@ if platform == 'win32':
 					# the single-threaded lib, /MLd
 					vclibs['Debug']='/MLd'
 					vclibs['Release']='/MT'
- 
+
 		# MSVC SETUP
 		# MDd is for multithreaded debug dll CRT (msvcrtd)
 		# MD is for multithreaded dll CRT (msvcrt)
 		# These are just my preferences
 		vclibs = {'Debug':'/MDd','Release':'/MD'}
 		freeMSVCHack(env, vclibs)
-		
+
 		env.Append(CCFLAGS=[vclibs[variant]])
 		if debug:
 			env.Append(CCFLAGS=Split('/Zi /Fd${TARGET}.pdb'))
@@ -294,7 +294,7 @@ if platform == 'win32':
 		src = chipssrc + cpusrc + dossrc + effectssrc + guisrc + videosrc + zipsrc + jmasrc + winsrc
 		env.Append (CCFLAGS = '-D__WIN32__')
 		env.Append (ASFLAGS = '-f win32')
-		
+
 		#Build ZSNESW
 		env.Program('zsnesw.exe',src)
 	else:
@@ -305,6 +305,6 @@ if platform == 'win32':
 		else:
 			env.Append (CCFLAGS = '-D__WIN32__')
 			env.Append (CCFLAGS = '-f win32')
-		
+
 		#Build ZSNESW
 		env.Program('zsnesw.exe',src)
