@@ -629,3 +629,473 @@ void MultiMouseProcess()
 
 #endif
 
+char panickeyp[] = "ALL SWITCHES NORMAL\0";
+char mztrtr0[] = "LOAD MZT MODE - OFF\0";
+char mztrtr1[] = "LOAD MZT MODE - RECORD\0";
+char mztrtr2[] = "LOAD MZT MODE - REPLAY\0";
+char snesmousep0[] = "EXTRA DEVICES DISABLED\0";
+char snesmousep1[] = "MOUSE ENABLED IN PORT 1\0";
+char snesmousep2[] = "MOUSE ENABLED IN PORT 2\0";
+char snesss[] = "SUPER SCOPE ENABLED\0";
+char snesle1[] = "1 JUSTIFIER ENABLED\0";
+char snesle2[] = "2 JUSTIFIERS ENABLED\0";
+char windissw[] = "WINDOWING DISABLED\0";
+char winenasw[] = "WINDOWING ENABLED\0";
+char ofsdissw[] = "OFFSET MODE DISABLED\0";
+char ofsenasw[] = "OFFSET MODE ENABLED\0";
+char ngena[] = "NEW GFX ENGINE ENABLED\0";
+char ngdis[] = "NEW GFX ENGINE DISABLED\0";
+char sselm[] = "STATE SLOT  0 SELECTED\0";
+char vollv[] = "VOLUME LEVEL :    \0";
+char frlev[] = "FRAME SKIP SET TO  \0";
+char frlv0[] = "AUTO FRAMERATE ENABLED\0";
+char pluse1234en[] = "USE PLAYER 1/2 with 3/4 ON\0";
+char pluse1234dis[] = "USE PLAYER 1/2 with 3/4 OFF\0";
+char sndchena[] = "SOUND CH   ENABLED\0";
+char sndchdis[] = "SOUND CH   DISABLED\0";
+char sprlayena[] = "SPRITE LAYER ENABLED\0";
+char sprlaydis[] = "SPRITE LAYER DISABLED\0";
+char bglayermsg[] = "BG  LAYER DISABLED\0";
+char gammamsg[] = "GAMMA LEVEL:   \0";
+
+extern unsigned int MsgCount, MessageOn;
+extern unsigned char pressed[];
+extern unsigned char scrndis, disableeffects, osm2dis, snesinputdefault1, snesinputdefault2;
+extern unsigned char mousexloc, mouseyloc, t1cc, current_zst;
+extern unsigned char Voice0Disable, Voice1Disable, Voice2Disable, Voice3Disable;
+extern unsigned char Voice4Disable, Voice5Disable, Voice6Disable, Voice7Disable;
+extern unsigned char Voice0Status, Voice1Status, Voice2Status, Voice3Status;
+extern unsigned char Voice4Status, Voice5Status, Voice6Status, Voice7Status;
+
+void adjbglayermsg(char num, char toggleon)
+{
+    if(toggleon)
+      memcpy(&bglayermsg[10], "ENABLED ",8);
+    else
+      memcpy(&bglayermsg[10], "DISABLED",8);
+
+    memcpy(&bglayermsg[2], &num, 1);
+    Msgptr = bglayermsg;
+    MessageOn = MsgCount;
+}
+
+void adjstateslotmsg()
+{
+    if((sselm[11] = current_zst/10))
+      sselm[11] += 48;
+    else
+      sselm[11] = ' ';
+    sselm[12] = current_zst%10+48;
+    Msgptr = sselm;
+    MessageOn = MsgCount;
+}
+
+void adjsoundchmsg(char *soundch, char *soundstatus, char num)
+{
+    *soundch ^= 0x01;
+    *soundstatus = 0;
+    sndchena[9] = num;
+    sndchdis[9] = num;
+    if(*soundch == 0x01)
+      Msgptr = sndchena;
+    else
+      Msgptr = sndchdis;
+    MessageOn = MsgCount;
+}
+
+void QuickKeyCheck()
+{
+    // disable all necessary backgrounds
+
+    if(pressed[KeyBGDisble0] == 1)
+    {
+      scrndis ^= 0x01;
+      pressed[KeyBGDisble0] = 2;
+      if(scrndis == 0x01)
+        adjbglayermsg('1',0);
+      else
+        adjbglayermsg('1',1);
+    }
+
+    if(pressed[KeyBGDisble1] == 1)
+    {
+      scrndis ^= 0x02;
+      pressed[KeyBGDisble1] = 2;
+      if(scrndis == 0x02)
+        adjbglayermsg('2',0);
+      else
+        adjbglayermsg('2',1);
+    }
+
+    if(pressed[KeyBGDisble2] == 1)
+    {
+      scrndis ^= 0x04;
+      pressed[KeyBGDisble2] = 2;
+      if(scrndis == 0x04)
+        adjbglayermsg('3',0);
+      else
+        adjbglayermsg('3',1);
+    }
+
+    if(pressed[KeyBGDisble3] == 1)
+    {
+      scrndis ^= 0x08;
+      pressed[KeyBGDisble3] = 2;
+      if(scrndis == 0x08)
+        adjbglayermsg('4',0);
+      else
+        adjbglayermsg('4',1);
+    }
+
+    if(pressed[KeySprDisble] == 1)
+    {
+      scrndis ^= 0x10;
+      pressed[KeySprDisble] = 2;
+      if(scrndis == 0x10)
+        Msgptr = sprlaydis;
+      else
+        Msgptr = sprlayena;
+      MessageOn = MsgCount;
+    }
+
+    if(pressed[KeyEmuSpeedDown] == 1)
+    {
+      pressed[KeyEmuSpeedDown] = 2;
+      if(EmuSpeed)
+        EmuSpeed--;
+    }
+
+    if(pressed[KeyEmuSpeedUp] == 1)
+    {
+      pressed[KeyEmuSpeedUp] = 2;
+      if(EmuSpeed < 58)
+        EmuSpeed++;
+    }
+
+    if(pressed[KeyResetSpeed] == 1)
+    {
+      pressed[KeyResetSpeed] = 2;
+      EmuSpeed = 29;
+    }
+
+    if(pressed[KeyResetAll] == 1)
+    {
+      pressed[KeyResetAll] = 2;
+      Voice0Disable = 1;
+      Voice1Disable = 1;
+      Voice2Disable = 1;
+      Voice3Disable = 1;
+      Voice4Disable = 1;
+      Voice5Disable = 1;
+      Voice6Disable = 1;
+      Voice7Disable = 1;
+      scrndis = 0;
+      disableeffects = 0;
+      osm2dis = 0;
+      EmuSpeed = 29;
+      device1 = snesinputdefault1;
+      device2 = snesinputdefault2;
+      Msgptr = panickeyp;
+      MessageOn = MsgCount;
+    }
+
+    if(pressed[KeyRTRCycle] == 1)
+    {
+      pressed[KeyRTRCycle] = 2;
+      MZTForceRTR++;
+      switch(MZTForceRTR)
+      {
+        case 1:   Msgptr = mztrtr1;
+                  break;
+        case 2:   Msgptr = mztrtr2;
+                  break;
+        default:  Msgptr = mztrtr0;
+                  MZTForceRTR = 0;                 
+      }
+
+      MessageOn = MsgCount;
+    }
+
+    if(pressed[KeyExtraEnab1] == 1)
+    {
+      pressed[KeyExtraEnab1] = 2;
+      cycleinputdevice1();
+      if(device1)
+        Msgptr = snesmousep1;
+      else
+        Msgptr = snesmousep0;
+      MessageOn = MsgCount;
+      asm_call(Get_MousePositionDisplacement);
+    }
+
+    if(pressed[KeyExtraEnab2] == 1)
+    {
+      pressed[KeyExtraEnab2] = 2;
+      cycleinputdevice2();
+      switch(device2)
+      {
+        case 1:   Msgptr = snesmousep2;
+                  break;
+        case 2:   Msgptr = snesss;
+                  mousexloc = 128;
+                  mouseyloc = 112;
+                  break;
+        case 3:   Msgptr = snesle1;
+                  break;
+        case 4:   Msgptr = snesle2;
+                  break;
+        default:  Msgptr = snesmousep0;
+      }
+
+      MessageOn = MsgCount;
+      asm_call(Get_MousePositionDisplacement);
+    }
+
+    if(pressed[KeyWinDisble] == 1)
+    {
+      pressed[KeyWinDisble] = 2;
+      disableeffects ^= 1;
+      if(disableeffects)
+        Msgptr = windissw;
+      else
+        Msgptr = winenasw;
+      MessageOn = MsgCount;
+    }
+
+    if(pressed[KeyOffsetMSw] == 1)
+    {
+      pressed[KeyOffsetMSw] = 2;
+      osm2dis ^= 1;
+      if(osm2dis)
+        Msgptr = ofsdissw;
+      else
+        Msgptr = ofsenasw;
+      MessageOn = MsgCount;
+    }
+
+    if(pressed[KeyFRateUp] == 1)
+    {
+      pressed[KeyFRateUp] = 2;
+      if(frameskip < 10)
+      {
+        FPSOn = 0;
+        frameskip++;
+        frlev[18] = frameskip+47;
+        Msgptr = frlev;
+        MessageOn = MsgCount;
+      }
+    }
+
+    if(pressed[KeyFRateDown] == 1)
+    {
+      pressed[KeyFRateDown] = 2;
+      if(frameskip)
+      {
+        frameskip--;
+        if(frameskip)
+        {
+          frlev[18] = frameskip+47;
+          Msgptr = frlev;
+        }
+        else
+        {
+          Msgptr = frlv0;
+          t1cc = 0;
+        }
+
+        MessageOn = MsgCount;
+      }
+    }
+
+    if(pressed[KeyDisplayBatt] == 1)
+    {
+      pressed[KeyDisplayBatt] = 2;
+      DisplayBatteryStatus();
+    }
+
+    if(pressed[KeyIncreaseGamma] == 1)
+    {
+      pressed[KeyIncreaseGamma] = 2;
+      if(gammalevel < 15)
+      {
+        gammalevel++;
+        gammalevel16b = gammalevel >> 1;
+        if(gammalevel < 10)
+          gammamsg[13] = ' ';
+        else
+          gammamsg[13] = '1';
+        gammamsg[14] = gammalevel%10+48;
+        Msgptr = gammamsg;
+        MessageOn = MsgCount;       
+      }
+    }
+
+    if(pressed[KeyDecreaseGamma] == 1)
+    {
+      pressed[KeyDecreaseGamma] = 2;
+      if(gammalevel)
+      {
+        gammalevel--;
+        gammalevel16b = gammalevel >> 1;
+        if(gammalevel < 10)
+          gammamsg[13] = ' ';
+        else
+          gammamsg[13] = '1';
+        gammamsg[14] = gammalevel%10+48;
+        Msgptr = gammamsg;
+        MessageOn = MsgCount;
+      }
+    }
+
+    if(pressed[KeyDisplayFPS] == 1)
+    {
+      pressed[KeyDisplayFPS] = 2;
+      if(!frameskip)
+        FPSOn ^= 1;
+    }
+
+    // do state selects
+
+    if(pressed[KeyStateSlc0] == 1)
+    {
+      pressed[KeyStateSlc0] = 2;
+      current_zst = current_zst/10*10;
+      adjstateslotmsg();
+    }
+
+    if(pressed[KeyStateSlc1] == 1)
+    {
+      pressed[KeyStateSlc1] = 2;
+      current_zst = current_zst/10*10+1;
+      adjstateslotmsg();
+    }
+
+    if(pressed[KeyStateSlc2] == 1)
+    {
+      pressed[KeyStateSlc2] = 2;
+      current_zst = current_zst/10*10+2;
+      adjstateslotmsg();
+    }
+
+    if(pressed[KeyStateSlc3] == 1)
+    {
+      pressed[KeyStateSlc3] = 2;
+      current_zst = current_zst/10*10+3;
+      adjstateslotmsg();
+    }
+
+    if(pressed[KeyStateSlc4] == 1)
+    {
+      pressed[KeyStateSlc4] = 2;
+      current_zst = current_zst/10*10+4;
+      adjstateslotmsg();
+    }
+
+    if(pressed[KeyStateSlc5] == 1)
+    {
+      pressed[KeyStateSlc5] = 2;
+      current_zst = current_zst/10*10+5;
+      adjstateslotmsg();
+    }
+
+    if(pressed[KeyStateSlc6] == 1)
+    {
+      pressed[KeyStateSlc6] = 2;
+      current_zst = current_zst/10*10+6;
+      adjstateslotmsg();
+    }
+
+    if(pressed[KeyStateSlc7] == 1)
+    {
+      pressed[KeyStateSlc7] = 2;
+      current_zst = current_zst/10*10+7;
+      adjstateslotmsg();
+    }
+
+    if(pressed[KeyStateSlc8] == 1)
+    {
+      pressed[KeyStateSlc8] = 2;
+      current_zst = current_zst/10*10+8;
+      adjstateslotmsg();
+    }
+
+    if(pressed[KeyStateSlc9] == 1)
+    {
+      pressed[KeyStateSlc9] = 2;
+      current_zst = current_zst/10*10+9;
+      adjstateslotmsg();
+    }
+
+    if(pressed[KeyIncStateSlot] == 1)
+    {
+      pressed[KeyIncStateSlot] = 2;
+      current_zst = (current_zst+1)%100;
+      adjstateslotmsg();
+    }
+
+    if(pressed[KeyDecStateSlot] == 1)
+    {
+      pressed[KeyDecStateSlot] = 2;
+      current_zst = (current_zst+99)%100;
+      adjstateslotmsg();
+    }
+
+    if(pressed[KeyUsePlayer1234] == 1)
+    {
+      pressed[KeyUsePlayer1234] = 2;
+      pl12s34 ^= 1;
+      if(pl12s34)
+        Msgptr = pluse1234en;
+      else
+        Msgptr = pluse1234dis;
+      MessageOn = MsgCount;
+    }
+
+    if(pressed[KeyDisableSC0] == 1)
+    {
+      pressed[KeyDisableSC0] = 2;
+      adjsoundchmsg(&Voice0Disable, &Voice0Status, '1');
+    }
+
+    if(pressed[KeyDisableSC1] == 1)
+    {
+      pressed[KeyDisableSC1] = 2;
+      adjsoundchmsg(&Voice1Disable, &Voice1Status, '2');
+    }
+
+    if(pressed[KeyDisableSC2] == 1)
+    {
+      pressed[KeyDisableSC2] = 2;
+      adjsoundchmsg(&Voice2Disable, &Voice2Status, '3');
+    }
+
+    if(pressed[KeyDisableSC3] == 1)
+    {
+      pressed[KeyDisableSC3] = 2;
+      adjsoundchmsg(&Voice3Disable, &Voice3Status, '4');
+    }
+
+    if(pressed[KeyDisableSC4] == 1)
+    {
+      pressed[KeyDisableSC4] = 2;
+      adjsoundchmsg(&Voice4Disable, &Voice4Status, '5');
+    }
+
+    if(pressed[KeyDisableSC5] == 1)
+    {
+      pressed[KeyDisableSC5] = 2;
+      adjsoundchmsg(&Voice5Disable, &Voice5Status, '6');
+    }
+
+    if(pressed[KeyDisableSC6] == 1)
+    {
+      pressed[KeyDisableSC6] = 2;
+      adjsoundchmsg(&Voice6Disable, &Voice6Status, '7');
+    }
+
+    if(pressed[KeyDisableSC7] == 1)
+    {
+      pressed[KeyDisableSC7] = 2;
+      adjsoundchmsg(&Voice7Disable, &Voice7Status, '8');
+    }
+}

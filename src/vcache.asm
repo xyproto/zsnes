@@ -52,7 +52,7 @@ EXTSYM KeyResetSpeed,KeyEmuSpeedUp,KeyEmuSpeedDown,KeyDisplayBatt,EMUPause
 EXTSYM device1,device2,snesinputdefault1,snesinputdefault2
 EXTSYM KeyExtraEnab1,KeyExtraEnab2,cycleinputdevice1,cycleinputdevice2,MouseDis
 EXTSYM KeyIncreaseGamma,KeyDecreaseGamma,gammalevel,gammalevel16b
-EXTSYM RawDumpInProgress,MMXSupport,GUIOn
+EXTSYM RawDumpInProgress,MMXSupport,GUIOn,QuickKeyCheck,ngena,ngdis,vollv
 
 %ifndef NO_DEBUGGER
 EXTSYM debuggeron
@@ -78,46 +78,24 @@ NEWSYM overalltimer, dd 0
 
 SECTION .text
 
-%macro stateselcomp 2
-    mov eax,[%1]
-    test byte[pressed+eax],1
-    je %%nostsl
-    mov byte[pressed+eax],2
-    mov eax,[current_zst]
-    mov cl,10
-    div cl
-    mov ah,%2
-    add al,'0'
-    add ah,'0'
-    mov [sselm+11],ax
-    sub al,'0'
-    mul cl
-    add al,%2
-    mov [current_zst],eax
-    mov dword[Msgptr],sselm
-    mov eax,[MsgCount]
-    mov [MessageOn],eax
-%%nostsl
-%endmacro
-
-%macro soundselcomp 4
-    mov eax,[%1]
-    test byte[pressed+eax],1
-    je %%nosdis
-    xor byte[%2],01h
-    mov byte[%3],0
-    mov byte[pressed+eax],2
-    mov byte[sndchena+9],%4
-    mov byte[sndchdis+9],%4
-    mov dword[Msgptr],sndchena
-    test byte[%2],01h
-    jnz %%sen
-    mov dword[Msgptr],sndchdis
-%%sen
-    mov eax,[MsgCount]
-    mov [MessageOn],eax
-%%nosdis
-%endmacro
+ClockCounter:
+    inc dword[overalltimer]
+    cmp byte[romispal],0
+    jne .dopal
+    cmp dword[overalltimer],60
+    jne .notimer
+    sub dword[overalltimer],60
+    jmp .notimer
+.dopal
+    cmp dword[overalltimer],50
+    jne .notimer
+    sub dword[overalltimer],50
+.notimer
+    test byte[pressed+2Eh],1
+    jz .noclear
+    mov dword[overalltimer],0
+.noclear
+    ret
 
 UpdateVolume:
     pushad
@@ -163,25 +141,6 @@ UpdateVolume:
     mov eax,[MsgCount]
     mov [MessageOn],eax
     popad
-    ret
-
-ClockCounter:
-    inc dword[overalltimer]
-    cmp byte[romispal],0
-    jne .dopal
-    cmp dword[overalltimer],60
-    jne .notimer
-    sub dword[overalltimer],60
-    jmp .notimer
-.dopal
-    cmp dword[overalltimer],50
-    jne .notimer
-    sub dword[overalltimer],50
-.notimer
-    test byte[pressed+2Eh],1
-    jz .noclear
-    mov dword[overalltimer],0
-.noclear
     ret
 
 SECTION .bss
@@ -358,6 +317,7 @@ NEWSYM cachevideo
     push esi
     push edi
     push edx
+
     cmp byte[MouseDis],1
     je .noclick
     cmp byte[GUIRClick],0
@@ -379,185 +339,11 @@ NEWSYM cachevideo
 .norclick
     mov byte[MousePRClick],0
 .noclick
-    ; disable all necessary backgrounds
-    mov eax,[KeyBGDisble0]
-    test byte[pressed+eax],1
-    je .nodis1
-    xor byte[scrndis],01h
-    mov byte[pressed+eax],2
-    mov dword[Msgptr],bg1layena
-    test byte[scrndis],01h
-    jz .en1
-    mov dword[Msgptr],bg1laydis
-.en1
-    mov eax,[MsgCount]
-    mov [MessageOn],eax
-.nodis1
-    mov eax,[KeyBGDisble1]
-    test byte[pressed+eax],1
-    je .nodis2
-    xor byte[scrndis],02h
-    mov byte[pressed+eax],2
-    mov dword[Msgptr],bg2layena
-    test byte[scrndis],02h
-    jz .en2
-    mov dword[Msgptr],bg2laydis
-.en2
-    mov eax,[MsgCount]
-    mov [MessageOn],eax
-.nodis2
-    mov eax,[KeyBGDisble2]
-    test byte[pressed+eax],1
-    je .nodis3
-    xor byte[scrndis],04h
-    mov byte[pressed+eax],2
-    mov dword[Msgptr],bg3layena
-    test byte[scrndis],04h
-    jz .en3
-    mov dword[Msgptr],bg3laydis
-.en3
-    mov eax,[MsgCount]
-    mov [MessageOn],eax
-.nodis3
-    mov eax,[KeyBGDisble3]
-    test byte[pressed+eax],1
-    je .nodis4
-    xor byte[scrndis],08h
-    mov byte[pressed+eax],2
-    mov dword[Msgptr],bg4layena
-    test byte[scrndis],08h
-    jz .en4
-    mov dword[Msgptr],bg4laydis
-.en4
-    mov eax,[MsgCount]
-    mov [MessageOn],eax
-.nodis4
-    mov eax,[KeySprDisble]
-    test byte[pressed+eax],1
-    je .nodis5
-    xor byte[scrndis],10h
-    mov byte[pressed+eax],2
-    mov dword[Msgptr],sprlayena
-    test byte[scrndis],10h
-    jz .en5
-    mov dword[Msgptr],sprlaydis
-.en5
-    mov eax,[MsgCount]
-    mov [MessageOn],eax
-.nodis5
-    mov eax,[KeyEmuSpeedDown]
-    test byte[pressed+eax],1
-    jz .nospeeddown
-    mov byte[pressed+eax],2
-    cmp byte[EmuSpeed],0
-    je .nospeeddown
-    dec byte[EmuSpeed]
-.nospeeddown
-    mov eax,[KeyEmuSpeedUp]
-    test byte[pressed+eax],1
-    jz .nospeedup
-    mov byte[pressed+eax],2
-    cmp byte[EmuSpeed],58
-    je .nospeedup
-    inc byte[EmuSpeed]
-.nospeedup
-    mov eax,[KeyResetSpeed]
-    test byte[pressed+eax],1
-    jz .nospeedreset
-    mov byte[pressed+eax],2
-    mov byte[EmuSpeed],29
-.nospeedreset
-    mov eax,[KeyResetAll]
-    test byte[pressed+eax],1
-    je near .nodis6
-    mov byte[pressed+eax],2
-    mov byte[Voice0Disable],1
-    mov byte[Voice1Disable],1
-    mov byte[Voice2Disable],1
-    mov byte[Voice3Disable],1
-    mov byte[Voice4Disable],1
-    mov byte[Voice5Disable],1
-    mov byte[Voice6Disable],1
-    mov byte[Voice7Disable],1
-    mov byte[scrndis],0
-    mov byte[disableeffects],0
-    mov byte[osm2dis],0
-    mov byte[EmuSpeed],29
-    mov al,[snesinputdefault1]
-    mov [device1],al
-    mov al,[snesinputdefault2]
-    mov [device2],al
-    mov dword[Msgptr],panickeyp
-    mov eax,[MsgCount]
-    mov [MessageOn],eax
-.nodis6
-    mov eax,[KeyRTRCycle]
-    test byte[pressed+eax],1
-    je near .nortrcycle
-    mov byte[pressed+eax],2
-    inc byte[MZTForceRTR]
-    cmp byte[MZTForceRTR],3
-    jne .notrtrwrap
-    mov byte[MZTForceRTR],0
-    mov dword[Msgptr],mztrtr0
-    jmp .mztrtrmesg
-.notrtrwrap
-    cmp byte[MZTForceRTR],1
-    jne .nomztrtr1
-    mov dword[Msgptr],mztrtr1
-    jmp .mztrtrmesg
-.nomztrtr1
-    mov dword[Msgptr],mztrtr2
-.mztrtrmesg
-    mov eax,[MsgCount]
-    mov [MessageOn],eax
-.nortrcycle
-    mov eax,[KeyExtraEnab1]
-    test byte[pressed+eax],1
-    je near .nodisd1
-    mov byte[pressed+eax],2
+
     pushad
-    call cycleinputdevice1
+    call QuickKeyCheck
     popad
-    mov dword[Msgptr],snesmousep0
-    cmp byte[device1],1
-    jne .nom11
-    mov dword[Msgptr],snesmousep1
-.nom11
-    mov eax,[MsgCount]
-    mov [MessageOn],eax
-    call Get_MousePositionDisplacement
-.nodisd1
-    mov eax,[KeyExtraEnab2]
-    test byte[pressed+eax],1
-    je near .nodisd2
-    mov byte[pressed+eax],2
-    pushad
-    call cycleinputdevice2
-    popad
-    mov dword[Msgptr],snesmousep0
-    cmp byte[device2],1
-    jne .nom21
-    mov dword[Msgptr],snesmousep2
-.nom21
-    cmp byte[device2],2
-    jne .nom22
-    mov dword[Msgptr],snesss
-    mov word[mousexloc],128
-    mov word[mouseyloc],112
-.nom22
-    cmp byte[device2],3
-    jne .nom23
-    mov dword[Msgptr],snesle1
-.nom23
-    cmp byte[device2],4
-    jne .nom24
-    mov dword[Msgptr],snesle2
-.nom24
-    mov eax,[MsgCount]
-    mov [MessageOn],eax
-    call Get_MousePositionDisplacement
-.nodisd2
+
     mov eax,[KeyNewGfxSwt]
     test byte[pressed+eax],1
     je near .nodis8
@@ -596,32 +382,7 @@ NEWSYM cachevideo
 .yesng
 .disng2
 .nodis8
-    mov eax,[KeyWinDisble]
-    test byte[pressed+eax],1
-    je .nodis9
-    mov byte[pressed+eax],2
-    xor byte[disableeffects],1
-    mov dword[Msgptr],windissw
-    cmp byte[disableeffects],1
-    je .disablew
-    mov dword[Msgptr],winenasw
-.disablew
-    mov eax,[MsgCount]
-    mov [MessageOn],eax
-.nodis9
-    mov eax,[KeyOffsetMSw]
-    test byte[pressed+eax],1
-    je .nodis10
-    mov byte[pressed+eax],2
-    xor byte[osm2dis],1
-    mov dword[Msgptr],ofsdissw
-    cmp byte[osm2dis],1
-    je .disableom
-    mov dword[Msgptr],ofsenasw
-.disableom
-    mov eax,[MsgCount]
-    mov [MessageOn],eax
-.nodis10
+
     mov eax,[KeyVolUp]
     test byte[pressed+eax],1
     je .novolup
@@ -638,195 +399,6 @@ NEWSYM cachevideo
     dec byte[MusicRelVol]
     call UpdateVolume
 .novoldown
-    mov eax,[KeyFRateUp]
-    test byte[pressed+eax],1
-    je .nofrup
-    mov byte[pressed+eax],2
-    cmp byte[frameskip],10
-    je .nofrup
-    mov byte[FPSOn],0
-    inc byte[frameskip]
-    mov al,[frameskip]
-    add al,47
-    mov [frlev+18],al
-    mov dword[Msgptr],frlev
-    mov eax,[MsgCount]
-    mov [MessageOn],eax
-.nofrup
-    mov eax,[KeyFRateDown]
-    test byte[pressed+eax],1
-    je .nofrdown
-    mov byte[pressed+eax],2
-    cmp byte[frameskip],0
-    je .nofrdown
-    dec byte[frameskip]
-    cmp byte[frameskip],0
-    je .min
-    mov al,[frameskip]
-    add al,47
-    mov [frlev+18],al
-    mov dword[Msgptr],frlev
-    jmp .nomin
-.min
-    mov dword[Msgptr],frlv0
-    mov word[t1cc],0
-.nomin
-    mov eax,[MsgCount]
-    mov [MessageOn],eax
-.nofrdown
-    mov eax,[KeyDisplayBatt]
-    test byte[pressed+eax],1
-    je .nodisplaybatt
-    mov byte[pressed+eax],2
-    pushad
-    call DisplayBatteryStatus
-    popad
-.nodisplaybatt
-    mov eax,[KeyIncreaseGamma]
-    test byte[pressed+eax],1
-    je .noincgamma
-    mov byte[pressed+eax],2
-    cmp byte[gammalevel],15
-    jge .noincgamma
-    inc byte[gammalevel]
-    mov al,[gammalevel]
-    mov [gammalevel16b],al
-    shr byte[gammalevel16b],1
-    cmp byte[gammalevel],10
-    jl .gammanot10
-    mov byte[gammamsg+13],'1'
-    sub al,10
-    jmp .postgamma
-.gammanot10
-    mov byte[gammamsg+13],' '
-.postgamma
-    add al,'0'
-    mov [gammamsg+14],al
-    mov dword[Msgptr],gammamsg
-    mov eax,[MsgCount]
-    mov [MessageOn],eax
-.noincgamma
-    mov eax,[KeyDecreaseGamma]
-    test byte[pressed+eax],1
-    je .nodecgamma
-    mov byte[pressed+eax],2
-    cmp byte [gammalevel],0
-    je .nodecgamma
-    dec byte[gammalevel]
-    mov eax,[gammalevel]
-    mov [gammalevel16b],eax
-    shr byte[gammalevel16b],1
-    cmp byte[gammalevel],10
-    jl .gamma2not10
-    mov byte[gammamsg+13],'1'
-    sub al,10
-    jmp .postgamma2
-.gamma2not10
-    mov byte[gammamsg+13],' '
-.postgamma2
-    add al,'0'
-    mov [gammamsg+14],al
-    mov dword[Msgptr],gammamsg
-    mov eax,[MsgCount]
-    mov [MessageOn],eax
-.nodecgamma
-    mov eax,[KeyDisplayFPS]
-    test byte[pressed+eax],1
-    je .nodisplayfps
-    mov byte[pressed+eax],2
-    cmp byte[frameskip],0
-    jne .nodisplayfps
-    xor byte[FPSOn],1
-.nodisplayfps
-
-    ; do state selects
-    stateselcomp KeyStateSlc0,0
-    stateselcomp KeyStateSlc1,1
-    stateselcomp KeyStateSlc2,2
-    stateselcomp KeyStateSlc3,3
-    stateselcomp KeyStateSlc4,4
-    stateselcomp KeyStateSlc5,5
-    stateselcomp KeyStateSlc6,6
-    stateselcomp KeyStateSlc7,7
-    stateselcomp KeyStateSlc8,8
-    stateselcomp KeyStateSlc9,9
-    mov eax,[KeyStateSlc0]
-    test byte[pressed+eax],1
-    je .nostsl0
-    mov byte[pressed+eax],2
-    mov byte[sselm+11],'0'
-    mov dword[Msgptr],sselm
-    mov eax,[MsgCount]
-    mov [MessageOn],eax
-.nostsl0
-
-    mov eax,[KeyIncStateSlot]
-    test byte[pressed+eax],1
-    je near .noincstateslot
-    mov byte[pressed+eax],2
-    mov eax,[current_zst]
-    inc eax
-    cmp eax,100
-    jne .notend
-    xor eax,eax
-.notend
-    mov [current_zst],eax
-    mov dl,10
-    div dl
-    add ah,'0'
-    add al,'0'
-    mov [sselm+11],ax
-    mov dword[Msgptr],sselm
-    mov eax,[MsgCount]
-    mov [MessageOn],eax
-    xor dx,dx
-.noincstateslot
-
-    mov eax,[KeyDecStateSlot]
-    test byte[pressed+eax],1
-    je near .nodecstateslot
-    mov byte[pressed+eax],2
-    mov eax,[current_zst]
-    cmp eax,0
-    jne .notstart
-    mov eax,100
-.notstart
-    dec eax
-    mov [current_zst],eax
-    mov dl,10
-    div dl
-    add ah,'0'
-    add al,'0'
-    mov [sselm+11],ax
-    mov dword[Msgptr],sselm
-    mov eax,[MsgCount]
-    mov [MessageOn],eax
-    xor dx,dx
-.nodecstateslot
-
-    mov eax,[KeyUsePlayer1234]
-    test byte[pressed+eax],1
-    je .nousepl1234
-    mov byte[pressed+eax],2
-    xor byte[pl12s34],1
-    mov dword[Msgptr],pluse1234en
-    cmp byte[pl12s34],1
-    je .usepl1234
-    mov dword[Msgptr],pluse1234dis
-.usepl1234
-    mov eax,[MsgCount]
-    mov [MessageOn],eax
-.nousepl1234
-
-    ; do sound disables
-    soundselcomp KeyDisableSC0,Voice0Disable,Voice0Status,'1'
-    soundselcomp KeyDisableSC1,Voice1Disable,Voice1Status,'2'
-    soundselcomp KeyDisableSC2,Voice2Disable,Voice2Status,'3'
-    soundselcomp KeyDisableSC3,Voice3Disable,Voice3Status,'4'
-    soundselcomp KeyDisableSC4,Voice4Disable,Voice4Status,'5'
-    soundselcomp KeyDisableSC5,Voice5Disable,Voice5Status,'6'
-    soundselcomp KeyDisableSC6,Voice6Disable,Voice6Status,'7'
-    soundselcomp KeyDisableSC7,Voice7Disable,Voice7Status,'8'
 
     cmp byte[curblank],0h
     jne near yesblank
@@ -924,41 +496,6 @@ NEWSYM curcolbg1,   db 0
 NEWSYM curcolbg2,   db 0
 NEWSYM curcolbg3,   db 0
 NEWSYM curcolbg4,   db 0
-NEWSYM panickeyp,   db 'ALL SWITCHES NORMAL',0
-NEWSYM mztrtr0, db 'LOAD MZT MODE - OFF',0
-NEWSYM mztrtr1, db 'LOAD MZT MODE - RECORD',0
-NEWSYM mztrtr2, db 'LOAD MZT MODE - REPLAY',0
-NEWSYM snesmousep0, db 'EXTRA DEVICES DISABLED',0
-NEWSYM snesmousep1, db 'MOUSE ENABLED IN PORT 1',0
-NEWSYM snesmousep2, db 'MOUSE ENABLED IN PORT 2',0
-NEWSYM snesss,      db 'SUPER SCOPE ENABLED',0
-NEWSYM snesle1,      db '1 JUSTIFIER ENABLED',0
-NEWSYM snesle2,      db '2 JUSTIFIERS ENABLED',0
-NEWSYM windissw,    db 'WINDOWING DISABLED',0
-NEWSYM winenasw,    db 'WINDOWING ENABLED',0
-NEWSYM ofsdissw,    db 'OFFSET MODE DISABLED',0
-NEWSYM ofsenasw,    db 'OFFSET MODE ENABLED',0
-NEWSYM ngena, db 'NEW GFX ENGINE ENABLED',0
-NEWSYM ngdis, db 'NEW GFX ENGINE DISABLED',0
-NEWSYM sselm, db 'STATE SLOT  0 SELECTED',0
-NEWSYM vollv, db 'VOLUME LEVEL :    ',0
-NEWSYM frlev, db 'FRAME SKIP SET TO  ',0
-NEWSYM frlv0, db 'AUTO FRAMERATE ENABLED',0
-NEWSYM pluse1234en, db 'USE PLAYER 1/2 with 3/4 ON',0
-NEWSYM pluse1234dis, db 'USE PLAYER 1/2 with 3/4 OFF',0
-sndchena db 'SOUND CH   ENABLED',0
-sndchdis db 'SOUND CH   DISABLED',0
-bg1layena db 'BG1 LAYER ENABLED',0
-bg2layena db 'BG2 LAYER ENABLED',0
-bg3layena db 'BG3 LAYER ENABLED',0
-bg4layena db 'BG4 LAYER ENABLED',0
-sprlayena db 'SPRITE LAYER ENABLED',0
-bg1laydis db 'BG1 LAYER DISABLED',0
-bg2laydis db 'BG2 LAYER DISABLED',0
-bg3laydis db 'BG3 LAYER DISABLED',0
-bg4laydis db 'BG4 LAYER DISABLED',0
-sprlaydis db 'SPRITE LAYER DISABLED',0
-gammamsg db 'GAMMA LEVEL:   ',0
 section .text
 
 ;*******************************************************
