@@ -97,7 +97,6 @@ EXTSYM m7starty
     mov [.mode7xadder],eax
     imul eax,ebx
     and eax,~63
-    ;neg eax
     add [.mode7xpos],eax
 
     movsx eax,word[mode7C]

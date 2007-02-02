@@ -434,7 +434,8 @@ ${VIDEODIR}/hq3x16${OE}: ${VIDEODIR}/hq3x16.asm macros.mac
 ${VIDEODIR}/hq3x32${OE}: ${VIDEODIR}/hq3x32.asm macros.mac
 ${VIDEODIR}/hq4x16${OE}: ${VIDEODIR}/hq4x16.asm macros.mac
 ${VIDEODIR}/hq4x32${OE}: ${VIDEODIR}/hq4x32.asm macros.mac
-${VIDEODIR}/m716text${OE}: ${VIDEODIR}/m716text.asm macros.mac
+${VIDEODIR}/m716text${OE}: ${VIDEODIR}/m716text.asm macros.mac \
+	${VIDEODIR}/mode7.mac
 ${VIDEODIR}/makev16b${OE}: ${VIDEODIR}/makev16b.asm macros.mac \
 	${VIDEODIR}/vidmacro.mac
 ${VIDEODIR}/makev16t${OE}: ${VIDEODIR}/makev16t.asm macros.mac \
@@ -448,7 +449,8 @@ ${VIDEODIR}/mode716b${OE}: ${VIDEODIR}/mode716b.asm macros.mac \
 	${VIDEODIR}/mode7.mac
 ${VIDEODIR}/mode716d${OE}: ${VIDEODIR}/mode716d.asm macros.mac \
 	${VIDEODIR}/mode7.mac
-${VIDEODIR}/mode716e${OE}: ${VIDEODIR}/mode716e.asm macros.mac
+${VIDEODIR}/mode716e${OE}: ${VIDEODIR}/mode716e.asm macros.mac \
+	${VIDEODIR}/mode7.mac
 ${VIDEODIR}/mode716t${OE}: ${VIDEODIR}/mode716t.asm macros.mac \
 	${VIDEODIR}/mode7.mac
 ${VIDEODIR}/mode7ext${OE}: ${VIDEODIR}/mode7ext.asm macros.mac \

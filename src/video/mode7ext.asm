@@ -43,83 +43,8 @@ SECTION .text
 NEWSYM drawmode7extbg
     mov esi,[cwinptr]
     mov [winptrref],esi
-    ; mode 7, ax = curyposition, dx = curxposition (left side)
-    ; draw center map coordinates at (X0-bg1scrolx,Y0-bg1scroly) on screen
-    ; center map coordinates = (X0,Y0)
-    ; 1.) cx=X0-bg1scrolx, cy =Y0-ax
 
-    mov bx,[mode7X0]
-    and bx,0001111111111111b    ; 13 -> 16 bit signed value
-    test bx,0001000000000000b
-    jz .nonega
-    or bx,1110000000000000b
-.nonega
-    mov [.cxloc],bx
-    mov bx,dx
-    and bx,0001111111111111b    ; 13 -> 16 bit signed value
-    test bx,0001000000000000b
-    jz .nonegb
-    or bx,1110000000000000b
-.nonegb
-    sub [.cxloc],bx
-    mov bx,ax
-    and bx,0001111111111111b    ; 13 -> 16 bit signed value
-    test bx,0001000000000000b
-    jz .nonegc
-    or bx,1110000000000000b
-.nonegc
-    mov [.cyloc],bx
-    mov bx,[mode7Y0]
-    and bx,0001111111111111b    ; 13 -> 16 bit signed value
-    test bx,0001000000000000b
-    jz .nonegd
-    or bx,1110000000000000b
-.nonegd
-    sub word[.cyloc],bx
-
-    ; 2.) Find position at scaled y, centered x at SCX=X0-(cy*C),SCY=Y0-(cy*D)
-
-    movsx eax,word[mode7B]
-    movsx ebx,word[.cyloc]
-    imul eax,ebx
-    mov [.mode7xpos],eax
-    mov bx,[mode7X0]
-    add [.mode7xpos+1],bx
-
-    movsx ebx,word[.cyloc]
-    movsx eax,word[mode7D]
-    imul eax,ebx
-    mov [.mode7ypos],eax
-    mov bx,[mode7Y0]
-    add [.mode7ypos+1],bx
-
-    ; 3.) Find left scaled location : SCX=SCX-(cx*A),SCY=SCY-(cx*B)
-
-    movsx ebx,word[.cxloc]
-    movsx eax,word[mode7A]
-    mov [.mode7xadder],eax
-    imul eax,ebx
-    neg eax
-    add [.mode7xpos],eax
-
-    movsx eax,word[mode7C]
-    movsx ebx,word[.cxloc]
-    neg eax
-    mov [.mode7yadder],eax
-    imul eax,ebx
-    add [.mode7ypos],eax
-
-    test byte[mode7set],1
-    jz .nohflip
-    mov eax,[.mode7xadder]
-    shl eax,8
-    add [.mode7xpos],eax
-    neg dword[.mode7xadder]
-    mov eax,[.mode7yadder]
-    shl eax,8
-    sub [.mode7ypos],eax
-    neg dword[.mode7yadder]
-.nohflip
+    Mode7Calculate
 
     ; esi = pointer to video buffer
     mov esi,[curvidoffset]       ; esi = [vidbuffer] + curypos * 288 + 16

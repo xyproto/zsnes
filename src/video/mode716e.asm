@@ -25,6 +25,8 @@ EXTSYM curmosaicsz,curvidoffset,domosaic16b,winptrref,mode7A,mode7B,mode7C
 EXTSYM mode7D,mode7X0,mode7Y0,mode7set,pal16b,vram,vrama,winon,mode7tab,xtravbuf
 EXTSYM cwinptr
 
+%include "video/mode7.mac"
+
 ;*******************************************************
 ; Processes & Draws Mode 7
 ;*******************************************************
@@ -43,83 +45,8 @@ NEWSYM drawmode716extbg
     cmp byte[winon],0
     jne near drawmode716bwinonextbg
 .domosaic
-    ; mode 7, ax = curyposition, dx = curxposition (left side)
-    ; draw center map coordinates at (X0-bg1scrolx,Y0-bg1scroly) on screen
-    ; center map coordinates = (X0,Y0)
-    ; 1.) cx=X0-bg1scrolx, cy =Y0-ax
 
-    mov bx,[mode7X0]
-    and bx,0001111111111111b    ; 13 -> 16 bit signed value
-    test bx,0001000000000000b
-    jz .nonega
-    or bx,1110000000000000b
-.nonega
-    mov [.cxloc],bx
-    mov bx,dx
-    and bx,0001111111111111b    ; 13 -> 16 bit signed value
-    test bx,0001000000000000b
-    jz .nonegb
-    or bx,1110000000000000b
-.nonegb
-    sub [.cxloc],bx
-    mov bx,ax
-    and bx,0001111111111111b    ; 13 -> 16 bit signed value
-    test bx,0001000000000000b
-    jz .nonegc
-    or bx,1110000000000000b
-.nonegc
-    mov [.cyloc],bx
-    mov bx,[mode7Y0]
-    and bx,0001111111111111b    ; 13 -> 16 bit signed value
-    test bx,0001000000000000b
-    jz .nonegd
-    or bx,1110000000000000b
-.nonegd
-    sub word[.cyloc],bx
-
-    ; 2.) Find position at scaled y, centered x at SCX=X0-(cy*C),SCY=Y0-(cy*D)
-
-    movsx eax,word[mode7B]
-    movsx ebx,word[.cyloc]
-    imul eax,ebx
-    mov [.mode7xpos],eax
-    mov bx,[mode7X0]
-    add [.mode7xpos+1],bx
-
-    movsx ebx,word[.cyloc]
-    movsx eax,word[mode7D]
-    imul eax,ebx
-    mov [.mode7ypos],eax
-    mov bx,[mode7Y0]
-    add [.mode7ypos+1],bx
-
-    ; 3.) Find left scaled location : SCX=SCX-(cx*A),SCY=SCY-(cx*B)
-
-    movsx ebx,word[.cxloc]
-    movsx eax,word[mode7A]
-    mov [.mode7xadder],eax
-    imul eax,ebx
-    neg eax
-    add [.mode7xpos],eax
-
-    movsx eax,word[mode7C]
-    movsx ebx,word[.cxloc]
-    neg eax
-    mov [.mode7yadder],eax
-    imul eax,ebx
-    add [.mode7ypos],eax
-
-    test byte[mode7set],1
-    jz .nohflip
-    mov eax,[.mode7xadder]
-    shl eax,8
-    add [.mode7xpos],eax
-    neg dword[.mode7xadder]
-    mov eax,[.mode7yadder]
-    shl eax,8
-    sub [.mode7ypos],eax
-    neg dword[.mode7yadder]
-.nohflip
+    Mode7Calculate
 
     ; esi = pointer to video buffer
     mov esi,[curvidoffset]       ; esi = [vidbuffer] + curypos * 288 + 16
@@ -629,52 +556,53 @@ NEWSYM drawmode716bwinonextbg
     ; center map coordinates = (X0,Y0)
     ; 1.) cx=X0-bg1scrolx, cy =Y0-ax
 
-    mov bx,[mode7X0]
-    and bx,0001111111111111b    ; 13 -> 16 bit signed value
-    test bx,0001000000000000b
-    jz .nonega
-    or bx,1110000000000000b
-.nonega
-    mov [.cxloc],bx
     mov bx,dx
-    and bx,0001111111111111b    ; 13 -> 16 bit signed value
-    test bx,0001000000000000b
-    jz .nonegb
-    or bx,1110000000000000b
-.nonegb
+    Convert13Bit
+    mov [.cxloc],bx
+    mov bx,[mode7X0]
+    Convert13Bit
     sub [.cxloc],bx
+    CLIP .cxloc
     mov bx,ax
-    and bx,0001111111111111b    ; 13 -> 16 bit signed value
-    test bx,0001000000000000b
-    jz .nonegc
-    or bx,1110000000000000b
-.nonegc
+    Convert13Bit
     mov [.cyloc],bx
     mov bx,[mode7Y0]
-    and bx,0001111111111111b    ; 13 -> 16 bit signed value
-    test bx,0001000000000000b
-    jz .nonegd
-    or bx,1110000000000000b
-.nonegd
+    Convert13Bit
     sub word[.cyloc],bx
+    CLIP .cyloc
 
     ; 2.) Find position at scaled y, centered x at SCX=X0-(cy*C),SCY=Y0-(cy*D)
 
-    movsx ebx,word[.cyloc]
     movsx eax,word[mode7C]
+    movsx ebx,word[.cyloc]
     imul eax,ebx
     neg eax
+    and eax,~63
     mov [.mode7xpos],eax
     mov bx,[mode7X0]
+    Convert13Bit
     add [.mode7xpos+1],bx
+
+    movsx eax,word[mode7C]
+    movzx ebx,word[m7starty]
+    imul eax,ebx
+    and eax,~63
+    add [.mode7xpos],eax
 
     movsx ebx,word[.cyloc]
     movsx eax,word[mode7D]
     imul eax,ebx
-;    neg ax
+    and eax,~63
     mov [.mode7ypos],eax
     mov bx,[mode7Y0]
+    Convert13Bit
     add [.mode7ypos+1],bx
+
+    movsx eax,word[mode7D]
+    movzx ebx,word[m7starty]
+    imul eax,ebx
+    and eax,~63
+    add [.mode7ypos],eax
 
     ; 3.) Find left scaled location : SCX=SCX-(cx*A),SCY=SCY-(cx*B)
 
@@ -682,13 +610,15 @@ NEWSYM drawmode716bwinonextbg
     movsx eax,word[mode7A]
     mov [.mode7xadder],eax
     imul eax,ebx
-    neg eax
+    and eax,~63
     add [.mode7xpos],eax
 
-    movsx ebx,word[.cxloc]
     movsx eax,word[mode7B]
+    movsx ebx,word[.cxloc]
     mov [.mode7yadder],eax
     imul eax,ebx
+    neg eax
+    and eax,~63
     add [.mode7ypos],eax
 
     ; esi = pointer to video buffer
