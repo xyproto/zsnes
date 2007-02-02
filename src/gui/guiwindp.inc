@@ -2449,6 +2449,7 @@ DisplayGUISound:                     ; Sound Related Options
   GUIDisplayButtonHoleTu 6,111,187,byte[LowPassFilterType],3,GUISoundTextE3,0
 .nohiqualityfilter
 
+  GUIDisplayTextY 6,6,93,GUISoundTextB
 %ifdef __MSDOS__
   cmp byte[SoundQuality],2
   jbe .okay
@@ -2466,7 +2467,6 @@ DisplayGUISound:                     ; Sound Related Options
 .okay
 %endif
 
-  GUIDisplayTextY 6,6,93,GUISoundTextB
   GUIDisplayBBox 6,15,101,69,109,167            ;Sampling Rate Box
   mov eax,[SoundQuality]
   lea eax,[eax*8+GUISoundTextB1]
