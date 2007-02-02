@@ -1293,11 +1293,17 @@ GUIVideoKeys:
 %endif
   je .nofullscanlines
   GUIKeyButtonHole scanlines,0,'O'
+%ifdef __MSDOS__
+  cmp dh,'O'
+  je .needupdate
+%endif
   cmp dh,'F'
   jne .nofullscanlines
   FilterExcl2 En2xSaI,hqFilter,NTSCFilter
-  pushad
+  GUIKeyButtonHole scanlines,1,'F'
 %ifdef __MSDOS__
+.needupdate
+  pushad
   call DOSClearScreen
   cmp byte[cvidmode],2  ;modeQ
   je .refresh
@@ -1309,9 +1315,8 @@ GUIVideoKeys:
   mov byte[cbitmode],0
   call GUISetPal
 .nomodex
-%endif
   popad
-  GUIKeyButtonHole scanlines,1,'F'
+%endif
 .nofullscanlines
 %ifdef __MSDOS__
   cmp byte[ScreenScale],1

@@ -1700,8 +1700,6 @@ SECTION .text
   GUIClickArea %1+1,%2+1,%1+7,%2+7,%%noclick
   mov %3,%4
 %ifdef __MSDOS__
-  cmp %3,0
-  je %%noclear
   pushad
   call DOSClearScreen
   cmp byte[cvidmode],2  ;modeQ
@@ -1715,7 +1713,6 @@ SECTION .text
   call GUISetPal
 %%nomodex
   popad
-%%noclear
 %endif
 %%noclick
 %endmacro
