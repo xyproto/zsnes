@@ -444,7 +444,7 @@ void GUIRestoreVars()
 #endif
   CheckValueBounds(&scanlines, 0, 3, 0, UB);
   CheckValueBounds(&GrayscaleMode, 0, 1, 0, UB);
-  CheckValueBounds(&Mode7HiRes16b, 0, 1, 0, UD);
+  CheckValueBounds(&Mode7HiRes16b, 0, 1, 0, UB);
 #ifndef __UNIXSDL__
   CheckValueBounds(&vsyncon, 0, 1, 0, UB);
 #endif

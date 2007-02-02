@@ -333,7 +333,7 @@ GrayscaleMode db 0
 @ However this disables most filters, except for interpolation.
 @ This is only useful in certain games and is not useful in general.
 @ Requires a minimum res of 512x448
-Mode7HiRes16b dd 0
+Mode7HiRes16b db 0
 
 #ifndef __UNIXSDL__
 @
