@@ -162,11 +162,11 @@ uninstall:
 	rm -f @bindir@/$(notdir @ZSNESEXE@) @mandir@/man1/zsnes.1
 
 clean:
-	rm -f $(Z_OBJS) $(PSR) $(PSR_H) @ZSNESEXE@
+	rm -f makefile.dep $(Z_OBJS) $(PSR) $(PSR_H) @ZSNESEXE@
 cclean:
 	rm -f $(Z_COBJS) $(PSR) $(PSR_H) @ZSNESEXE@
 tclean:
 	rm -f $(TOOL_CO) $(TOOLSEXE)
 distclean: clean tclean
-	rm -f Makefile makefile.dep aclocal.m4 configure config.log \
+	rm -f Makefile aclocal.m4 configure config.log \
 	config.status config.h $(TOOL_D)/depbuild
