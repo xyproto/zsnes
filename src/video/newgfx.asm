@@ -603,6 +603,8 @@ NEWSYM newengine8b
 %%finwin
 %endmacro
 
+SECTION .text
+
 NEWSYM BuildWindow2
     jmp BuildWindow.ns2
 NEWSYM BuildWindow
