@@ -37,9 +37,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #endif
 #include "../zpath.h"
 #include "../zmovie.h"
-#ifndef __MSDOS__
-#include "ntsc.h"
-#endif
 
 extern unsigned char newengen;
 extern unsigned int nggposng[];

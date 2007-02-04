@@ -1398,9 +1398,6 @@ extern unsigned char *vram;
 extern unsigned char *vcache2b;
 extern unsigned char *vcache4b;
 extern unsigned char *vcache8b;
-#ifdef OLD_DEBUGGER
-extern unsigned char *debugbuf;
-#endif
 extern unsigned char *sram;
 
 void clearSPCRAM()
@@ -1441,9 +1438,6 @@ void clearmem()
   memset(ram7fa, 0, 65536);
   memset(vram, 0, 65536);
   memset(sram, 0, 65536*2);
-#ifdef OLD_DEBUGGER
-  memset(debugbuf, 0, 80000);
-#endif
   memset(regptra, 0, 49152);
   memset(regptwa, 0, 49152);
   memset(vcache2b, 0, 262144+256);

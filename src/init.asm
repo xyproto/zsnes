@@ -21,7 +21,7 @@
 
 %include "macros.mac"
 
-EXTSYM UpdateDevices,Makemode7Table,MusicRelVol,MusicVol,makesprprtable
+EXTSYM UpdateDevices,Makemode7Table,MusicRelVol,MusicVol
 EXTSYM romloadskip,start65816,showinfogui,inittable,zexit
 EXTSYM SA1inittable,MessageOn,Msgptr,MsgCount,sndrot,SnowTimer
 EXTSYM inittablec,newgfx16b,DisplayInfo,ssautosw,GUIDelayB,pl12s34
@@ -130,7 +130,6 @@ NEWSYM init
     call Setper2exec
     popad
     call Makemode7Table
-    call makesprprtable
     mov eax,[ZCartName]
     cmp byte[eax],0
     jne .found

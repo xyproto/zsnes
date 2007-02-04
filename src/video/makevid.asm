@@ -26,10 +26,10 @@ EXTSYM winenabm,winobjen,winlogicb,scrndis,scrnon,bgmode,bgtilesz,winbg1en
 EXTSYM winenabs,bg1objptr,bg1ptr,bg1ptrb,bg1ptrc,bg1ptrd,bg1scrolx,bg1scroly
 EXTSYM cachebg1,curbgofs1,curcolbg1,vcache2b,vcache4b,vcache8b
 EXTSYM vidbuffer,bg3highst,cbitmode,colormodedef,ngptrdat2
-EXTSYM colormodeofs,drawline16b,forceblnk,newengine8b,preparesprpr,scaddset
-EXTSYM spritetablea,sprleftpr,vidbright,ForceNewGfxOff,curypos,drawmode7
+EXTSYM colormodeofs,drawline16b,forceblnk,preparesprpr,scaddset
+EXTSYM spritetablea,sprleftpr,vidbright,ForceNewGfxOff,curypos
 EXTSYM mode7set,mosaicon,mosaicsz,sprleftpr1,sprleftpr2,sprleftpr3,sprlefttot
-EXTSYM sprprifix,drawmode7extbg,interlval,drawmode7extbg2,sprclprio,sprpriodata
+EXTSYM sprprifix,interlval,sprclprio,sprpriodata
 EXTSYM sprsingle,cachetile2b,cachetile4b,cachetile8b,vram,newengen,ofshvaladd
 EXTSYM cachetile2b16x16,cachetile4b16x16,cachetile8b16x16,osm2dis,xtravbuf
 EXTSYM bg3ptr,bg3scrolx,bg3scroly,vidmemch4,ofsmcptr,ofsmady,ofsmadx,yposngom
@@ -37,7 +37,11 @@ EXTSYM flipyposngom,ofsmtptr,ofsmmptr,ofsmcyps,bgtxadd,bg1ptrx,bg1ptry
 EXTSYM bg1scrolx_m7,bg1scroly_m7,OMBGTestVal,Testval,cachesingle4bng,m7starty
 EXTSYM ofsmtptrs,ofsmcptr2
 
+%ifdef __MSDOS__
+EXTSYM newengine8b,drawmode7,drawmode7extbg,drawmode7extbg2
+
 %include "video/vidmacro.mac"
+%endif
 
 SECTION .bss
 NEWSYM bgcoloradder, resb 1
@@ -1025,6 +1029,7 @@ SECTION .text
 .finishwin
 %endmacro
 
+%ifdef __MSDOS__
 NEWSYM procspritessub
     test byte[scrndis],10h
     jnz .nosprites
@@ -1068,11 +1073,13 @@ NEWSYM procspritesmain
     call drawsprites
 .nosprites
     ret
+%endif
 
 SECTION .bss
 NEWSYM curbgnum, resb 1
 SECTION .text
 
+%ifdef __MSDOS__
 NEWSYM drawbackgrndsub
     mov esi,[colormodeofs]
     mov bl,[esi+ebp]
@@ -1204,6 +1211,7 @@ NEWSYM drawbackgrndmain
 .notalldrawnb
 .noback
     ret
+%endif
 
 NEWSYM procbackgrnd
     mov esi,[colormodeofs]
@@ -1349,6 +1357,7 @@ NEWSYM bg3draw, resb 1
 NEWSYM maxbr,   resb 1
 SECTION .text
 
+%ifdef __MSDOS__
 NEWSYM blanker
     ; calculate current video offset
     push ebx
@@ -1370,6 +1379,7 @@ NEWSYM blanker
     pop esi
     pop ebx
     ret
+%endif
 
 ALIGN32
 SECTION .bss
@@ -1387,6 +1397,7 @@ NEWSYM drawline
     mov al,[bg3highst]
     mov [bg3high2],al
 .nohigh
+%ifdef __MSDOS__
     cmp byte[cbitmode],1
     je near drawline16b
     mov al,[vidbright]
@@ -1617,7 +1628,11 @@ NEWSYM drawline
     xor ecx,ecx
 NEWSYM nodrawline
     ret
+%else
+    jmp drawline16b
+%endif
 
+%ifdef __MSDOS__
 NEWSYM priority2
     test byte[scaddset],02h
     jz near .nosubsc
@@ -1684,6 +1699,7 @@ NEWSYM priority2
     xor eax,eax
     xor ecx,ecx
     ret
+%endif
 
 ALIGN32
 SECTION .bss
@@ -1693,7 +1709,7 @@ NEWSYM curmosaicsz,   resd 1
 NEWSYM extbgdone, resb 1
 SECTION .text
 
-
+%ifdef __MSDOS__
 NEWSYM processmode7
     mov al,[winenabm]
     mov [cwinenabm],al
@@ -1915,7 +1931,6 @@ NEWSYM processmode7
 NEWSYM drawsprites
     cmp byte[sprprifix],1
     je near drawspritesprio
-.returnfrompr
     test byte[cwinenabm],10h
     jz .drawnowin
     cmp byte[winonsp],0
@@ -2424,9 +2439,9 @@ NEWSYM drawspritespriowinon
     dec cl
     jnz near .loopobj2
     ret
+%endif
 
 SECTION .data
-NEWSYM prfixobjl, db 0
 NEWSYM csprbit, db 1
 NEWSYM csprprlft, db 0
 SECTION .text
@@ -2663,6 +2678,7 @@ SECTION .bss
 NEWSYM winptrref, resd 1
 SECTION .text
 
+%ifdef __MSDOS__
 NEWSYM draw8x8
     cmp byte[osm2dis],1
     je .osm2dis
@@ -2938,12 +2954,13 @@ NEWSYM draw8x8winon
     dec ch
     jnz near .loopa
     ret
+%endif
 
 SECTION .bss
-NEWSYM alttile, resb 1
 NEWSYM hirestiledat, resb 256
 SECTION .text
 
+%ifdef __MSDOS__
 NEWSYM draw16x8
     push eax
     xor eax,eax
@@ -3671,6 +3688,7 @@ NEWSYM dowindow
 .finishwin
     xor eax,eax
     ret
+%endif
 
 ALIGN32
 
@@ -3692,6 +3710,7 @@ NEWSYM bgsubby,    resd 1
 SECTION .text
 
 
+%ifdef __MSDOS__
 NEWSYM draw8x8offset
     mov [temp],al
     mov [bshifter],ah
@@ -3951,30 +3970,16 @@ NEWSYM draw8x8winonoffset
     jnz near .loopa
     xor eax,eax
     ret
-
 ALIGN32
 
 SECTION .bss
-NEWSYM offsetmodeptr, resd 1
-NEWSYM offsetptra,    resd 1
-NEWSYM offsetptrb,    resd 1
-NEWSYM prevtempcache, resd 1
-NEWSYM prevoffsetdat, resd 1
-NEWSYM offsetenab,    resd 1
 NEWSYM offsettilel,   resd 1
-NEWSYM offsetrevval,  resd 1
-NEWSYM posyscroll,    resd 1
-NEWSYM offsetmcol,    resd 1
-NEWSYM offsetmshl,    resd 1
-NEWSYM offsetmptr,    resd 1
-NEWSYM offsetmtst,    resd 1
-NEWSYM offsetmclr,    resd 1
-NEWSYM offsetcedi,    resd 1
 SECTION .text
 
 ;*******************************************************
 ; Processes & Draws 16x16 tiles in 2, 4, & 8 bit mode
 ;*******************************************************
+%endif
 
 NEWSYM proc16x16
     ; ax = # of rows down
@@ -4084,6 +4089,7 @@ NEWSYM proc16x16
     ; al = current x position
     ret
 
+%ifdef __MSDOS__
 NEWSYM draw16x16
     mov byte[drawn],0
     mov [temp],eax
@@ -4429,6 +4435,7 @@ NEWSYM draw16x16winon
     dec ch
     jnz near .loopa
     ret
+%endif
 
 SECTION .bss
 NEWSYM temp,       resb 1

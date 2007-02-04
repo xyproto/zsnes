@@ -36,16 +36,22 @@ EXTSYM prdatb,prdatc,res640,resolutn,scrndis,scrnon,spritetablea,sprleftpr
 EXTSYM sprlefttot,sprpriodata,sprtbng,sprtlng,t16x161,t16x162,t16x163,t16x164
 EXTSYM tltype2b,tltype8b,vcache2b,vcache8b,vidbuffer,vidmemch2,ngptrdat2
 EXTSYM vidmemch8,vram,vrama,winon,xtravbuf,ng16bbgval,ng16bprval,ofshvaladd
-EXTSYM bgwinchange,res480,drawtileng2b,drawtileng4b,drawtileng8b,drawmode7win
-EXTSYM drawtileng16x162b,drawtileng16x164b,drawtileng16x168b
-EXTSYM osm2dis,drawlineng2b,drawlineng4b,drawlineng8b,processmode7hires
-EXTSYM drawlineng16x162b,drawlineng16x164b,drawlineng16x168b,winboundary
+EXTSYM bgwinchange,res480
+EXTSYM osm2dis
+EXTSYM winboundary
 EXTSYM winbg1enval,winbg2enval,winbg3enval,winbg4enval,winbgobjenval
 EXTSYM winlogicaval,disableeffects,winenabs,scanlines,winl1,winbg1en,winobjen
 EXTSYM winlogica,winenabm,bgallchange,bg1change,bg2change,bg3change,bg4change
-EXTSYM hiresstuff,drawlineng16x84b,drawlineng16x82b,drawlinengom4b,WindowRedraw
+EXTSYM hiresstuff,WindowRedraw
 EXTSYM winlogicb,ngwinptr,objwlrpos,objwen,objclineptr,CSprWinPtr
-EXTSYM ofsmtptrs,ofsmcptr2,drawmode7ngextbg,drawmode7ngextbg2
+EXTSYM ofsmtptrs,ofsmcptr2
+
+%ifdef __MSDOS__
+EXTSYM drawtileng2b,drawtileng4b,drawtileng8b,drawmode7win
+EXTSYM drawtileng16x162b,drawtileng16x164b,drawtileng16x168b
+EXTSYM drawlineng2b,drawlineng4b,drawlineng8b,drawmode7ngextbg,drawmode7ngextbg2
+EXTSYM processmode7hires,drawlineng16x162b,drawlineng16x164b,drawlineng16x168b
+EXTSYM drawlineng16x84b,drawlineng16x82b,drawlinengom4b
 
 %include "video/vidmacro.mac"
 %include "video/newgfx2.mac"
@@ -547,14 +553,13 @@ NEWSYM newengine8b
     je .single
     cmp ebx,01000000h
     je .single
-    or [sprprdrn],ebx
     xor ebx,ebx
     ret
 .single
-    or [sprprdrn],ebx
     or dword[sprleftpr+eax*4],80000000h
     xor ebx,ebx
     ret
+%endif
 
 %macro Process1DualWindow 0
     test ch,1
@@ -603,7 +608,6 @@ NEWSYM BuildWindow2
 NEWSYM BuildWindow
     cmp byte[WindowRedraw],1
     je .ns2
-    mov dword[valtemp],0EE00h
     push edx
     push ecx
     mov edx,[winlogicaval+eax*2]
@@ -872,20 +876,11 @@ NEWSYM BuildWindow
     pop edx
     ret
 
-SECTION .data
-NEWSYM firstdrawn, db 0
-
-NEWSYM bgusedng
-         dd 01010101h,00010101h,00000101h,00000101h,00000101h,00000101h
-         dd 00000001h,00000001h
-
 SECTION .bss
 NEWSYM bgcmsung, resd 1
 NEWSYM modeused, resd 2
 NEWSYM reslbyl,  resd 1
-NEWSYM sprprdrn, resd 1
 NEWSYM csprival, resd 1
-NEWSYM pesimpng2, resd 1
 NEWSYM cfieldad, resd 1
 NEWSYM ignor512, resd 1
 NEWSYM ofsmcptr, resd 1
@@ -894,16 +889,12 @@ NEWSYM ofsmmptr, resd 1
 NEWSYM ofsmcyps, resd 1
 NEWSYM ofsmady,  resd 1
 NEWSYM ofsmadx,  resd 1
-NEWSYM mosoldtab, resd 15
 
 SECTION .data
 ALIGN32
 
 NEWSYM ngwintable, times 16 dd 0EE00h
-NEWSYM ngwintableb, times 16 dd 0EE00h
 NEWSYM ngwintablec, times 16 dd 0EE00h
-NEWSYM ngwintabled, times 16 dd 0EE00h
-NEWSYM valtemp, dd 0EE00h, 0EE00h
 NEWSYM ngcwinptr, dd ngwintable
 
 SECTION .bss
@@ -936,9 +927,8 @@ NEWSYM XNorLogicTable, db 1,0,1,0
 
 SECTION .bss
 NEWSYM nglogicval, resd 1
-NEWSYM pnglogicval, resd 1
 NEWSYM mosjmptab, resd 15
-NEWSYM Mode7HiRes, resd 1
+NEWSYM Mode7HiRes, resb 1
 NEWSYM pesimpng, resd 1
 NEWSYM bgtxadd2, resd 1
 SECTION .text
@@ -957,6 +947,7 @@ NEWSYM StartDrawNewGfx
     mov ax,[resolutn]
     sub ax,8
     mov [reslbyl],ax
+%ifdef __MSDOS__
     cmp byte[cbitmode],1
     je near StartDrawNewGfx16b
     push edx
@@ -1002,7 +993,6 @@ NEWSYM StartDrawNewGfx
     mov ecx,64
     rep stosd
 
-    mov byte[firstdrawn],1
     mov dword[bg1totng],0
     mov dword[bg2totng],0
     mov dword[bg3totng],0
@@ -1377,7 +1367,11 @@ NEWSYM StartDrawNewGfx
     pop esi
     pop edx
     ret
+%else
+    jmp StartDrawNewGfx16b
+%endif
 
+%ifdef __MSDOS__
 NEWSYM drawbg1tile
     mov byte[prdatb+ebx],1
     drawbgtileng 0,0
@@ -1710,12 +1704,10 @@ NEWSYM drawbg3linepr1
 
 NEWSYM drawbg4linepr1
     drawbglinengpr1 3,1
-
+%endif
 
 SECTION .bss
 NEWSYM bgtxadd,  resd 1
-NEWSYM bgcyval,  resd 1
-NEWSYM bgcxval,  resd 1
 NEWSYM tleftn,   resd 1
 NEWSYM tleftnb,  resd 1
 NEWSYM bg1totng, resd 1
@@ -1726,7 +1718,6 @@ NEWSYM bg1drwng, resd 1
 NEWSYM bg2drwng, resd 1
 NEWSYM bg3drwng, resd 1
 NEWSYM bg4drwng, resd 1
-NEWSYM sprcurng, resd 1
 NEWSYM scfbl,    resd 1
 NEWSYM mode0ads, resd 1
 NEWSYM mode0add, resd 1
@@ -1739,6 +1730,7 @@ NEWSYM yposngom,     resd 1
 NEWSYM flipyposngom, resd 1
 SECTION .text
 
+%ifdef __MSDOS__
 NEWSYM drawsprng
     cmp byte[winbg1enval+ebx+4*256],0
     jne near drawsprngw
@@ -1875,148 +1867,13 @@ NEWSYM drawsprng
     pop ebx
     pop esi
     ret
-
-NEWSYM drawsprngm7h
-    cmp byte[winbg1enval+ebx+4*256],0
-    jne near drawsprngm7w
-    test dword[sprleftpr+ebx*4],80000000h
-    jnz near .drawsingle
-    push esi
-    push ebx
-    mov edi,esi
-    mov esi,[sprtbng+ebx*4]
-    mov edx,esi
-    xor ebx,ebx
-.loopobj
-    test byte[esi+7],20h
-    jnz near .drawspriteflipx
-    mov bx,[esi]
-    push edx
-    mov ch,[esi+6]
-    mov dl,[esi+7]
-    and edx,03h
-    cmp edx,[csprival]
-    jne near .notprio
-    mov esi,[esi+2]
-    mov dl,[csprbit]
-    sprdrawa sprdrawpra
-    pop edx
-.nodrawspr
-    add edx,8
-    mov esi,edx
-    dec cl
-    jnz near .loopobj
-    rol byte[csprbit],1
-    cmp byte[csprbit],1
-    je near .clearcsprmem
-    pop ebx
-    pop esi
-    ret
-.notprio
-    mov esi,[esi+2]
-    mov dl,[csprbit]
-    sprdrawa sprdrawpra2
-    pop edx
-    add edx,8
-    mov esi,edx
-    dec cl
-    jnz near .loopobj
-    rol byte[csprbit],1
-    cmp byte[csprbit],1
-    je near .clearcsprmem
-    pop ebx
-    pop esi
-    ret
-.drawspriteflipx
-    mov bx,[esi]
-    push edx
-    mov ch,[esi+6]
-    mov dl,[esi+7]
-    and edx,03h
-    cmp edx,[csprival]
-    jne near .notpriof
-    mov esi,[esi+2]
-    mov dl,[csprbit]
-    sprdrawaf sprdrawpra
-    pop edx
-    add edx,8
-    mov esi,edx
-    dec cl
-    jnz near .loopobj
-    rol byte[csprbit],1
-    cmp byte[csprbit],1
-    je near .clearcsprmem
-.endobj
-    pop ebx
-    pop esi
-    ret
-.notpriof
-    mov esi,[esi+2]
-    mov dl,[csprbit]
-    sprdrawaf sprdrawpra2
-    pop edx
-    add edx,8
-    mov esi,edx
-    dec cl
-    jnz near .loopobj
-    rol byte[csprbit],1
-    cmp byte[csprbit],1
-    je near .clearcsprmem
-    pop ebx
-    pop esi
-    ret
-.clearcsprmem
-    xor eax,eax
-    mov ecx,64
-    mov edi,sprpriodata+16
-    rep stosd
-    pop ebx
-    pop esi
-    ret
-
-.drawsingle
-    push esi
-    push ebx
-    mov edi,esi
-    mov esi,[sprtbng+ebx*4]
-    mov edx,ecx
-    and edx,0FFh
-    shl edx,3
-    sub edx,8
-    add edx,esi
-    mov esi,edx
-    xor ebx,ebx
-.loopobj2
-    test byte[esi+7],20h
-    jnz near .drawspriteflipx2
-    mov bx,[esi]
-    mov ch,[esi+6]
-    mov esi,[esi+2]
-    sprdrawa sprdrawprb
-    sub edx,8
-    mov esi,edx
-    dec cl
-    jnz near .loopobj2
-    pop ebx
-    pop esi
-    ret
-.drawspriteflipx2
-    mov bx,[esi]
-    mov ch,[esi+6]
-    mov esi,[esi+2]
-    sprdrawaf sprdrawprb
-    sub edx,8
-    mov esi,edx
-    dec cl
-    jnz near .loopobj2
-    pop ebx
-    pop esi
-    ret
+%endif
 
 SECTION .bss
 NEWSYM NGNumSpr, resb 1
 SECTION .text
 
+%ifdef __MSDOS__
 NEWSYM drawsprngw
     mov [NGNumSpr],cl
     mov ecx,[objclineptr+ebx*4]
@@ -2166,162 +2023,10 @@ NEWSYM drawsprngw
     pop esi
     xor ecx,ecx
     ret
-
-NEWSYM drawsprngm7w
-    mov [NGNumSpr],cl
-    mov ecx,[objclineptr+ebx*4]
-    add ecx,[ngwinptr]
-    test dword[sprleftpr+ebx*4],80000000h
-    jnz near .drawsingle
-    push esi
-    push ebx
-    mov edi,esi
-    mov esi,[sprtbng+ebx*4]
-    mov edx,esi
-    xor ebx,ebx
-.loopobj
-    test byte[esi+7],20h
-    jnz near .drawspriteflipx
-    mov bx,[esi]
-    push edx
-    mov dl,[esi+7]
-    and edx,03h
-    cmp edx,[csprival]
-    jne near .notprio
-    mov dh,[esi+6]
-    mov esi,[esi+2]
-    mov dl,[csprbit]
-    sprdrawa sprdrawprawb
-    pop edx
-.nodrawspr
-    add edx,8
-    mov esi,edx
-    dec byte[NGNumSpr]
-    jnz near .loopobj
-    rol byte[csprbit],1
-    cmp byte[csprbit],1
-    je near .clearcsprmem
-    pop ebx
-    pop esi
-    xor ecx,ecx
-    ret
-.notprio
-    mov esi,[esi+2]
-    mov dl,[csprbit]
-    sprdrawa sprdrawpra2
-    pop edx
-    add edx,8
-    mov esi,edx
-    dec byte[NGNumSpr]
-    jnz near .loopobj
-    rol byte[csprbit],1
-    cmp byte[csprbit],1
-    je near .clearcsprmem
-    pop ebx
-    pop esi
-    xor ecx,ecx
-    ret
-.drawspriteflipx
-    mov bx,[esi]
-    push edx
-    mov dl,[esi+7]
-    and edx,03h
-    cmp edx,[csprival]
-    jne near .notpriof
-    mov dh,[esi+6]
-    mov esi,[esi+2]
-    mov dl,[csprbit]
-    sprdrawaf sprdrawprawb
-    pop edx
-    add edx,8
-    mov esi,edx
-    dec byte[NGNumSpr]
-    jnz near .loopobj
-    rol byte[csprbit],1
-    cmp byte[csprbit],1
-    je near .clearcsprmem
-.endobj
-    pop ebx
-    pop esi
-    xor ecx,ecx
-    ret
-.notpriof
-    mov esi,[esi+2]
-    mov dl,[csprbit]
-    sprdrawaf sprdrawpra2
-    pop edx
-    add edx,8
-    mov esi,edx
-    dec byte[NGNumSpr]
-    jnz near .loopobj
-    rol byte[csprbit],1
-    cmp byte[csprbit],1
-    je near .clearcsprmem
-    pop ebx
-    pop esi
-    xor ecx,ecx
-    ret
-.clearcsprmem
-    xor eax,eax
-    mov ecx,64
-    mov edi,sprpriodata+16
-    rep stosd
-    pop ebx
-    pop esi
-    ret
-
-.drawsingle
-    push esi
-    push ebx
-    mov edi,esi
-    mov esi,[sprtbng+ebx*4]
-    xor edx,edx
-    mov dl,[NGNumSpr]
-    and edx,0FFh
-    shl edx,3
-    sub edx,8
-    add edx,esi
-    mov esi,edx
-    xor ebx,ebx
-.loopobj2
-    test byte[esi+7],20h
-    jnz near .drawspriteflipx2
-    push edx
-    mov bx,[esi]
-    mov dh,[esi+6]
-    mov esi,[esi+2]
-    sprdrawa sprdrawprbwb
-    pop edx
-    sub edx,8
-    mov esi,edx
-    dec byte[NGNumSpr]
-    jnz near .loopobj2
-    pop ebx
-    pop esi
-    xor ecx,ecx
-    ret
-.drawspriteflipx2
-    push edx
-    mov bx,[esi]
-    mov dh,[esi+6]
-    mov esi,[esi+2]
-    sprdrawaf sprdrawprbwb
-    pop edx
-    sub edx,8
-    mov esi,edx
-    dec byte[NGNumSpr]
-    jnz near .loopobj2
-    pop ebx
-    pop esi
-    xor ecx,ecx
-    ret
-
+%endif
 ;*******************************************************
 ; Prepare Sprite Priorities
 ;*******************************************************
-
-NEWSYM makesprprtable
-    ret
 
 NEWSYM preparesprpr
     xor ebx,ebx

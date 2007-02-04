@@ -19,10 +19,7 @@
 
 %include "macros.mac"
 
-EXTSYM mosjmptab,mosdraw10,mosdraw11,mosdraw12,mosdraw13
-EXTSYM mosdraw14,mosdraw15,mosdraw16,mosdraw2,mosdraw3
-EXTSYM mosdraw4,mosdraw5,mosdraw6,mosdraw7,mosdraw8
-EXTSYM mosdraw9,ngpalcon2b,ngpalcon4b
+EXTSYM ngpalcon2b,ngpalcon4b
 EXTSYM mosjmptab16b,mosdraw1016b,mosdraw1116b,mosdraw1216b,mosdraw1316b
 EXTSYM mosdraw1416b,mosdraw1516b,mosdraw1616b,mosdraw216b,mosdraw316b
 EXTSYM mosdraw416b,mosdraw516b,mosdraw616b,mosdraw716b,mosdraw816b
@@ -43,6 +40,12 @@ EXTSYM tableA,tableB,tableC,tableD,tableE,tableF,tableG,tableH
 EXTSYM DPageR8,DPageW8,DPageR16,DPageW16
 EXTSYM SDD1Enable
 EXTSYM JoyAOrig,JoyANow,JoyBOrig,JoyBNow,JoyCOrig,JoyCNow,JoyDOrig,JoyDNow
+
+%ifdef __MSDOS__
+EXTSYM mosdraw10,mosdraw11,mosdraw12,mosdraw13,mosdraw9,mosjmptab
+EXTSYM mosdraw14,mosdraw15,mosdraw16,mosdraw2,mosdraw3
+EXTSYM mosdraw4,mosdraw5,mosdraw6,mosdraw7,mosdraw8
+%endif
 
 %include "cpu/65816d.inc"
 %include "cpu/address.inc"
@@ -79,6 +82,7 @@ section .text
 
 NEWSYM inittable
     ; set up mosaic
+%ifdef __MSDOS__
     mov dword[mosjmptab],mosdraw2
     mov dword[mosjmptab+4],mosdraw3
     mov dword[mosjmptab+8],mosdraw4
@@ -94,6 +98,7 @@ NEWSYM inittable
     mov dword[mosjmptab+48],mosdraw14
     mov dword[mosjmptab+52],mosdraw15
     mov dword[mosjmptab+56],mosdraw16
+%endif
     mov dword[mosjmptab16b],mosdraw216b
     mov dword[mosjmptab16b+4],mosdraw316b
     mov dword[mosjmptab16b+8],mosdraw416b

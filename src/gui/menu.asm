@@ -23,7 +23,7 @@
 
 EXTSYM FPSOn,MessageOn,cbitmode,copyvid
 EXTSYM MsgCount,Msgptr,OutputGraphicString,OutputGraphicString16b,vidbuffer
-EXTSYM curblank,drawhline,drawhline16b,drawvline,drawvline16b,frameskip
+EXTSYM curblank,drawhline16b,drawvline16b,frameskip
 EXTSYM pressed,dumpsound,Grab_BMP_Data,Grab_BMP_Data_8
 EXTSYM spcon,vesa2_bpos,vesa2_clbit,vesa2_gpos,vesa2_rpos,
 EXTSYM spritetablea,sprlefttot,newengen,Get_Key,continueprognokeys
@@ -35,7 +35,7 @@ EXTSYM spcPCRam,xp,curcyc,Curtableaddr,UpdateDPage,splitflags,execsingle,joinfla
 EXTSYM pdh,SPCRAM,cvidmode
 
 %ifdef __MSDOS__
-EXTSYM GUI16VID
+EXTSYM GUI16VID,drawhline,drawvline
 %endif
 
 %ifndef NO_DEBUGGER
@@ -49,11 +49,15 @@ EXTSYM Grab_PNG_Data
 SECTION .text
 
 GUIBufferData:
+%ifdef __MSDOS__
     mov ecx,16000
     cmp byte[cbitmode],1
     jne near .16b
     add ecx,16384
 .16b
+%else
+    mov ecx,32384
+%endif
     ; copy to spritetable
     mov esi,[vidbuffer]
     mov edi,[spritetablea]
@@ -76,11 +80,15 @@ GUIBufferData:
     ret
 
 GUIUnBuffer:
+%ifdef __MSDOS__
     mov ecx,16000
     cmp byte[cbitmode],1
     jne near .16b
     add ecx,16384
 .16b
+%else
+    mov ecx,32384
+%endif
     ; copy from spritetable
     mov esi,[vidbuffer]
     mov edi,[spritetablea]
@@ -107,9 +115,9 @@ NEWSYM SPCSave, resb 1
 SECTION .text
 
 NEWSYM showmenu
-    mov byte[ForceNonTransp],1
+%ifdef __MSDOS__
     cmp byte[cbitmode],1
-    je near .nopalread
+    je near .nopal16b
     mov edi,[vidbuffer]
     add edi,100000
     mov dx,03C7h
@@ -126,10 +134,7 @@ NEWSYM showmenu
     inc edi
     dec ecx
     jnz .b
-.nopalread
 
-    cmp byte[cbitmode],1
-    je near .nopal16b
     ; set palette of colors 128,144, and 160 to white, blue, and red
     mov al,128
     mov dx,03C8h
@@ -159,6 +164,8 @@ NEWSYM showmenu
     out dx,al
 .nopal16b
 
+%endif
+    mov byte[ForceNonTransp],1
     mov byte[NoInputRead],0
     cmp byte[SSKeyPressed],1
     jne .nosskey
@@ -307,8 +314,10 @@ NEWSYM showmenu
 .noskipframe
     cmp dword[menucloc],70*288
     jne .noimagechange
+%ifdef __MSDOS__
     cmp byte[cbitmode],0
     je .noimagechange
+%endif
     xor byte[ScreenShotFormat],1
     mov byte[MenuNoExit],1
     mov byte[ExecExitOkay],0
@@ -403,6 +412,7 @@ NEWSYM showmenu
     call copyvid
 ;    pop eax
 ;    mov [newengen],al
+%ifdef __MSDOS__
     cmp byte[cbitmode],1
     je near .nopalwrite
     mov edi,[vidbuffer]
@@ -420,6 +430,7 @@ NEWSYM showmenu
     inc edi
     dec ecx
     jnz .c
+%endif
 .nopalwrite
     mov eax,pressed
     mov ecx,256
@@ -463,6 +474,7 @@ SECTION .data
 SECTION .text
 
 NEWSYM menudrawbox8b
+%ifdef __MSDOS__
     cmp byte[cbitmode],1
     je near menudrawbox16b
     ; draw a small blue box with a white border
@@ -564,6 +576,9 @@ NEWSYM menudrawbox8b
     call copyvid
 ;    pop eax
 ;    mov [newengen],al
+%else
+    jmp menudrawbox16b
+%endif
     ret
 
 SECTION .data
@@ -580,6 +595,7 @@ SECTION .data
 SECTION .text
 
 NEWSYM menudrawcursor8b
+%ifdef __MSDOS__
     cmp byte[cbitmode],1
     je near menudrawcursor16b
     ; draw a small red box
@@ -600,6 +616,9 @@ NEWSYM menudrawcursor8b
     jnz .loop
 
     mov al,128
+%else
+    jmp menudrawcursor16b
+%endif
     ret
 
 SECTION .bss
@@ -801,14 +820,15 @@ saveimage:
 .notpng
 %endif
 
+%ifdef __MSDOS__
     cmp byte[cbitmode],1
     je near .save16b
     pushad
     call Grab_BMP_Data_8
     popad
     ret
-
 .save16b
+%endif
     pushad
     call Grab_BMP_Data
     popad

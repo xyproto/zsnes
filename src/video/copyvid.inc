@@ -17,7 +17,7 @@
 ;along with this program; if not, write to the Free Software
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-EXTSYM res640,lineleft,ConvertToAFormat
+EXTSYM res640,lineleft,ConvertToAFormat,Mode7HiRes,ForceNewGfxOff
 EXTSYM _2xSaILine,_2xSaISuperEagleLine,_2xSaISuper2xSaILine
 
 %macro MMXStuff 0
@@ -168,6 +168,96 @@ EXTSYM _2xSaILine,_2xSaISuperEagleLine,_2xSaISuper2xSaILine
 
 
 SECTION .text
+
+NEWSYM hextestoutput
+
+    mov dx,[bg3scroly]
+;    and dx,0F8h
+    shr edx,3
+    shl edx,6
+    xor eax,eax
+    mov ax,[bg3ptr]
+    add ax,dx
+    xor edx,edx
+    mov dx,[bg3scrolx]
+    and dx,0F8h
+    shr edx,3
+    shl edx,1
+    add ax,dx
+    mov dx,[bg3scrolx]
+    test dx,8000h
+    jz .nooma
+    and dx,0F000h
+    shr dx,5
+    add ax,dx
+.nooma
+    add eax,40h
+    mov edx,eax
+    mov [Testval],edx
+    call displayfpspal
+
+    mov esi,[vram]
+    mov ax,0
+    mov ecx,400h
+.loop
+;    mov word[esi],ax
+    add esi,2
+    dec ecx
+    jnz .loop
+    inc word[blahrnr]
+    mov esi,216*288+32
+    add esi,[vidbuffer]
+    xor eax,eax
+    ; 4F00h
+    mov ebx,[C4Ram]
+    mov ebx,[vram]
+    mov al,[DecompAPtr+1h]
+    call outputhex
+    mov esi,216*288+32+16
+    add esi,[vidbuffer]
+    xor eax,eax
+    mov ebx,[C4Ram]
+    mov ebx,[vram]
+    mov al,[DecompAPtr]
+    call outputhex
+    mov esi,216*288+70
+    add esi,[vidbuffer]
+    xor eax,eax
+    mov ebx,[C4Ram]
+    mov al,[bg1objptr+1]
+    call outputhex
+    mov esi,216*288+70+16
+    add esi,[vidbuffer]
+    xor eax,eax
+    mov ebx,[C4Ram]
+    mov al,[bg1objptr]
+    call outputhex
+    mov esi,216*288+108
+    add esi,[vidbuffer]
+    xor eax,eax
+    mov ebx,[C4Ram]
+    mov al,[ebx+4]
+    call outputhex
+    mov esi,216*288+108+16
+    add esi,[vidbuffer]
+    xor eax,eax
+    mov ebx,[C4Ram]
+    mov al,[ebx+9]
+    call outputhex
+    mov esi,216*288+146
+    add esi,[vidbuffer]
+    xor eax,eax
+    mov ebx,[C4Ram]
+    mov al,[ebx+10]
+    call outputhex
+    xor eax,eax
+    mov esi,216*288+146+16
+    add esi,[vidbuffer]
+    or al,[bg1scroly]
+    mov ebx,[C4Ram]
+    mov al,[ebx+11]
+    call outputhex
+    ret
 
 NEWSYM ResetTripleBuf
    mov byte[FlipWait],0

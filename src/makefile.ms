@@ -35,17 +35,18 @@ ENV=$(PLATFORM)
 ifneq (${ENV},) #end if is at the bottom of the file
 
 
-CHIPDIR=chips
-CPUDIR=cpu
-DOSDIR=dos
-EFFECTSDIR=effects
-GUIDIR=gui
-JMADIR=jma
-NETDIR=net
-VIDEODIR=video
-WINDIR=win
-ZIPDIR=zip
-MMLIBDIR=mmlib
+CHIP_D=chips
+CPU_D=cpu
+DOS_D=dos
+EFF_D=effects
+GUI_D=gui
+JMA_D=jma
+MMLIB_D=mmlib
+NET_D=net
+VID_D=video
+NTSC_D=video/snes_ntsc
+WIN_D=win
+ZIP_D=zip
 
 DELETECOMMAND=rm -f
 DELPRE=rm -f
@@ -62,7 +63,7 @@ CPUOPT=$(CPU)
 endif
 CFLAGSORIG=-march=${CPUOPT} -ffast-math -fomit-frame-pointer -fno-unroll-loops -Wall -Wno-unused -I.
 LIBSORIG=-lz -lpng
-DRESOBJ=${WINDIR}/zsnes.obj
+DRESOBJ=${WIN_D}/zsnes.obj
 CROSS=no
 STRIP=-Ws -s
 
@@ -89,7 +90,7 @@ endif
 ifeq (${ENV},msvc)
   CFLAGSORIG=/nologo /Ox /G6 /c /EHsc
   MSVCLIBS=zlib.lib libpng.lib wsock32.lib user32.lib gdi32.lib shell32.lib winmm.lib dinput8.lib dxguid.lib
-  DRESOBJ=${WINDIR}/zsnes.res
+  DRESOBJ=${WIN_D}/zsnes.res
   OS=__WIN32__
 endif
 
@@ -175,29 +176,29 @@ CFLAGS=${CFLAGSORIG} -D${OS}
 ASMFLAGS=${ASMFLAGSORIG} -f ${FILEFORMAT} -D${OS}
 
 
-CHIPSOBJ=${CHIPDIR}/dsp1emu${OE} ${CHIPDIR}/fxemu2${OE} ${CHIPDIR}/sfxproc${OE}\
-	${CHIPDIR}/fxemu2b${OE} ${CHIPDIR}/fxemu2c${OE} ${CHIPDIR}/fxtable${OE}\
-	${CHIPDIR}/sa1proc${OE} ${CHIPDIR}/sa1regs${OE} ${CHIPDIR}/dsp1proc${OE}\
-	${CHIPDIR}/st10proc${OE} ${CHIPDIR}/seta10${OE} ${CHIPDIR}/dsp2proc${OE}\
-	${CHIPDIR}/sdd1emu${OE} ${CHIPDIR}/c4emu${OE} ${CHIPDIR}/dsp4proc${OE}\
-	${CHIPDIR}/dsp4emu${OE} ${CHIPDIR}/dsp3proc${OE} ${CHIPDIR}/dsp3emu${OE}\
-	${CHIPDIR}/obc1emu${OE} ${CHIPDIR}/obc1proc${OE} ${CHIPDIR}/c4proc${OE}\
-	${CHIPDIR}/7110proc${OE} ${CHIPDIR}/st11proc${OE} ${CHIPDIR}/seta11${OE}
+CHIPSOBJ=${CHIP_D}/dsp1emu${OE} ${CHIP_D}/fxemu2${OE} ${CHIP_D}/sfxproc${OE}\
+	${CHIP_D}/fxemu2b${OE} ${CHIP_D}/fxemu2c${OE} ${CHIP_D}/fxtable${OE}\
+	${CHIP_D}/sa1proc${OE} ${CHIP_D}/sa1regs${OE} ${CHIP_D}/dsp1proc${OE}\
+	${CHIP_D}/st10proc${OE} ${CHIP_D}/seta10${OE} ${CHIP_D}/dsp2proc${OE}\
+	${CHIP_D}/sdd1emu${OE} ${CHIP_D}/c4emu${OE} ${CHIP_D}/dsp4proc${OE}\
+	${CHIP_D}/dsp4emu${OE} ${CHIP_D}/dsp3proc${OE} ${CHIP_D}/dsp3emu${OE}\
+	${CHIP_D}/obc1emu${OE} ${CHIP_D}/obc1proc${OE} ${CHIP_D}/c4proc${OE}\
+	${CHIP_D}/7110proc${OE} ${CHIP_D}/st11proc${OE} ${CHIP_D}/seta11${OE}
 
-CPUOBJ=${CPUDIR}/dma${OE} ${CPUDIR}/dsp${OE} ${CPUDIR}/dspproc${OE}\
-	${CPUDIR}/execute${OE} ${CPUDIR}/executec${OE} ${CPUDIR}/irq${OE}\
-	${CPUDIR}/memory${OE} ${CPUDIR}/memtable${OE} ${CPUDIR}/spc700${OE}\
-	${CPUDIR}/stable${OE} ${CPUDIR}/table${OE}\
-	${CPUDIR}/tablec${OE}
+CPUOBJ=${CPU_D}/dma${OE} ${CPU_D}/dsp${OE} ${CPU_D}/dspproc${OE}\
+	${CPU_D}/execute${OE} ${CPU_D}/executec${OE} ${CPU_D}/irq${OE}\
+	${CPU_D}/memory${OE} ${CPU_D}/memtable${OE} ${CPU_D}/spc700${OE}\
+	${CPU_D}/stable${OE} ${CPU_D}/table${OE}\
+	${CPU_D}/tablec${OE}
 
-EFFECTSOBJ=${EFFECTSDIR}/burn${OE} ${EFFECTSDIR}/water${OE} ${EFFECTSDIR}/smoke${OE}
+EFFECTSOBJ=${EFF_D}/burn${OE} ${EFF_D}/water${OE} ${EFF_D}/smoke${OE}
 
-GUIOBJ=${GUIDIR}/gui${OE} ${GUIDIR}/guifuncs${OE} ${GUIDIR}/menu${OE}
+GUIOBJ=${GUI_D}/gui${OE} ${GUI_D}/guifuncs${OE} ${GUI_D}/menu${OE}
 
 ifneq (${JMA},no)
-JMAOBJ=${JMADIR}/7zlzma${OE} ${JMADIR}/crc32${OE} ${JMADIR}/iiostrm${OE}\
-	${JMADIR}/inbyte${OE} ${JMADIR}/jma${OE} ${JMADIR}/lzma${OE} ${JMADIR}/lzmadec${OE}\
-	${JMADIR}/winout${OE} ${JMADIR}/zsnesjma${OE}
+JMAOBJ=${JMA_D}/7zlzma${OE} ${JMA_D}/crc32${OE} ${JMA_D}/iiostrm${OE}\
+	${JMA_D}/inbyte${OE} ${JMA_D}/jma${OE} ${JMA_D}/lzma${OE} ${JMA_D}/lzmadec${OE}\
+	${JMA_D}/winout${OE} ${JMA_D}/zsnesjma${OE}
 endif
 
 MAINOBJ=endmem${OE} init${OE} initc${OE} patch${OE}\
@@ -215,37 +216,38 @@ ifneq (${DEBUGGER},no)
 endif
 
 NETOBJ=
-#${NETDIR}/ztcp${OE}
+#${NET_D}/ztcp${OE}
 
-VIDEOBJ=${VIDEODIR}/makev16b${OE} ${VIDEODIR}/makev16t${OE} ${VIDEODIR}/makevid${OE}\
-	${VIDEODIR}/mode716${OE} ${VIDEODIR}/mode716b${OE} ${VIDEODIR}/mode716d${OE}\
-	${VIDEODIR}/mode716e${OE} ${VIDEODIR}/mode716t${OE} ${VIDEODIR}/mode7${OE}\
-	${VIDEODIR}/mode7ext${OE} ${VIDEODIR}/mv16tms${OE} ${VIDEODIR}/newg162${OE}\
-	${VIDEODIR}/newgfx16${OE} ${VIDEODIR}/newgfx2${OE} ${VIDEODIR}/newgfx${OE}\
-	${VIDEODIR}/m716text${OE} ${VIDEODIR}/procvid${OE} ${VIDEODIR}/procvidc${OE}\
-	${VIDEODIR}/2xsaiw${OE}
+VIDEOBJ=${VID_D}/makev16b${OE} ${VID_D}/makev16t${OE} ${VID_D}/makevid${OE}\
+	${VID_D}/mode716${OE} ${VID_D}/mode716b${OE} ${VID_D}/mode716d${OE}\
+	${VID_D}/mode716e${OE} ${VID_D}/mode716t${OE}\
+	${VID_D}/mv16tms${OE} ${VID_D}/newg162${OE}\
+	${VID_D}/newgfx16${OE} ${VID_D}/newgfx${OE}\
+	${VID_D}/m716text${OE} ${VID_D}/procvid${OE} ${VID_D}/procvidc${OE}\
+	${VID_D}/2xsaiw${OE}
 
-ZIPOBJ=${ZIPDIR}/unzip${OE} ${ZIPDIR}/zpng${OE}
+ZIPOBJ=${ZIP_D}/unzip${OE} ${ZIP_D}/zpng${OE}
 
 OBJS=${CHIPSOBJ} ${CPUOBJ} ${GUIOBJ} ${VIDEOBJ} ${MAINOBJ} ${ZIPOBJ} ${EFFECTSOBJ} ${JMAOBJ}
 
 ifeq (${OS},__MSDOS__)
-DOSOBJ=${DOSDIR}/dosintrf${OE} ${DOSDIR}/gppro${OE} ${DOSDIR}/initvid${OE}\
-	${DOSDIR}/sound${OE} ${DOSDIR}/sw${OE} ${DOSDIR}/vesa12${OE}\
-	${DOSDIR}/lib${OE} ${DOSDIR}/joy${OE} ${DOSDIR}/vesa2${OE}
+DOSOBJ=${DOS_D}/dosintrf${OE} ${DOS_D}/gppro${OE} ${DOS_D}/initvid${OE}\
+	${DOS_D}/sound${OE} ${DOS_D}/sw${OE} ${DOS_D}/vesa12${OE}\
+	${DOS_D}/lib${OE} ${DOS_D}/joy${OE} ${DOS_D}/vesa2${OE}
 
-OBJS+=${DOSOBJ}
+DOSVIDOBJ=${VID_D}/mode7ext${OE} ${VID_D}/newgfx2${OE} ${VID_D}/mode7${OE}
+OBJS+=${DOSOBJ} ${DOSVIDOBJ}
 endif
 
 ifeq (${OS},__WIN32__)
 WINOBJ=${DRESOBJ}\
-	${WINDIR}/winintrf${OE} ${WINDIR}/winlink${OE} ${WINDIR}/lib${OE}\
-	${WINDIR}/safelib${OE} ${MMLIBDIR}/mm${OE} ${MMLIBDIR}/windows${OE}
+	${WIN_D}/winintrf${OE} ${WIN_D}/winlink${OE} ${WIN_D}/lib${OE}\
+	${WIN_D}/safelib${OE} ${MMLIB_D}/mm${OE} ${MMLIB_D}/windows${OE}
 
-WINVIDOBJ=${VIDEODIR}/sw_draw${OE} ${VIDEODIR}/hq2x16${OE} ${VIDEODIR}/hq2x32${OE}\
-	${VIDEODIR}/hq3x16${OE} ${VIDEODIR}/hq3x32${OE}\
-	${VIDEODIR}/hq4x16${OE} ${VIDEODIR}/hq4x32${OE} ${VIDEODIR}/copyvwin${OE}\
-	${VIDEODIR}/ntsc${OE}
+WINVIDOBJ=${VID_D}/sw_draw${OE} ${VID_D}/hq2x16${OE} ${VID_D}/hq2x32${OE}\
+	${VID_D}/hq3x16${OE} ${VID_D}/hq3x32${OE}\
+	${VID_D}/hq4x16${OE} ${VID_D}/hq4x32${OE} ${VID_D}/copyvwin${OE}\
+	${VID_D}/ntsc${OE}
 
 OBJS+=${WINOBJ} ${WINVIDOBJ} ${NETOBJ}
 endif
@@ -293,201 +295,193 @@ zsnes: ${PSR} ${OBJFIX} ${OBJS}
 ifneq (${ENV},msvc)
 	${LINK} ${STRIP} -o ${EXE} ${OBJS} ${LIBS}
 else
-	 @echo /Fezsnesw.exe *.obj ${CPUDIR}\*.obj ${VIDEODIR}\*.obj ${CHIPDIR}\*.obj ${EFFECTSDIR}\*.obj ${DOSDIR}\*.obj ${WINDIR}\*.obj ${GUIDIR}\*.obj > link.vc
-	 @echo ${ZIPDIR}\*.obj ${JMADIR}\*.obj ${NETDIR}\*.obj ${MMLIBDIR}\*.obj >> link.vc
+	 @echo /Fezsnesw.exe *.obj ${CPU_D}\*.obj ${VID_D}\*.obj ${CHIP_D}\*.obj ${EFF_D}\*.obj ${DOS_D}\*.obj ${WIN_D}\*.obj ${GUI_D}\*.obj > link.vc
+	 @echo ${ZIP_D}\*.obj ${JMA_D}\*.obj ${NET_D}\*.obj ${MMLIB_D}\*.obj >> link.vc
 	 @echo ${MSVCLIBS} >> link.vc
-	 cl /nologo @link.vc ${WINDIR}/zsnes.res /link
+	 cl /nologo @link.vc ${WIN_D}/zsnes.res /link
 endif
 
 cfg${OE}: cfg.psr ${PSR}
-input${OE}: input.psr ${PSR}
 debugasm${OE}: debugasm.asm macros.mac
-debugger${OE}: debugger.c asm_call.h zpath.h ${JMADIR}/zsnesjma.h \
-	${ZIPDIR}/zunzip.h
+debugger${OE}: debugger.c asm_call.h zpath.h ${JMA_D}/zsnesjma.h \
+	${ZIP_D}/zunzip.h
 endmem${OE}: endmem.asm macros.mac
 init${OE}: init.asm macros.mac
-initc${OE}: initc.c asm_call.h cfg${OE} zpath.h ${CPUDIR}/memtable.h \
-	${JMADIR}/zsnesjma.h ${ZIPDIR}/zunzip.h input${OE}
+initc${OE}: initc.c asm_call.h cfg${OE} input${OE} numconv.h zpath.h ${CPU_D}/memtable.h \
+	${JMA_D}/zsnesjma.h ${ZIP_D}/zunzip.h
+input${OE}: input.psr ${PSR}
 md${OE}: md.psr ${PSR}
-patch${OE}: patch.c zpath.h ${JMADIR}/zsnesjma.h ${ZIPDIR}/zunzip.h
-ui${OE}: ui.c asm_call.h cfg${OE} zpath.h ${JMADIR}/zsnesjma.h \
-	${MMLIBDIR}/mm.h ${ZIPDIR}/zunzip.h input${OE}
+patch${OE}: patch.c zpath.h ${JMA_D}/zsnesjma.h ${ZIP_D}/zunzip.h
+ui${OE}: ui.c asm_call.h cfg${OE} input${OE} zpath.h ${JMA_D}/zsnesjma.h \
+	${MMLIB_D}/mm.h ${ZIP_D}/zunzip.h
 vcache${OE}: vcache.asm macros.mac
 version${OE}: version.c
-zloader${OE}: zloader.c asm_call.h cfg${OE} zloader.h zpath.h \
-	${JMADIR}/zsnesjma.h ${ZIPDIR}/zunzip.h input${OE}
-zmovie${OE}: zmovie.c asm_call.h cfg${OE} gblvars.h md${OE} numconv.h zpath.h \
-	${JMADIR}/zsnesjma.h ${WINDIR}/safelib.h ${ZIPDIR}/zunzip.h zmovie.h input${OE}
-zpath${OE}: zpath.c cfg${OE} zpath.h ${DOSDIR}/lib.h ${JMADIR}/zsnesjma.h \
-	${WINDIR}/lib.h ${WINDIR}/safelib.h ${ZIPDIR}/zunzip.h
-zstate${OE}: zstate.c asm_call.h cfg${OE} gblvars.h numconv.h zpath.h \
-	${JMADIR}/zsnesjma.h ${ZIPDIR}/zunzip.h zmovie.h input${OE}
-ztime${OE}: ztime.asm
+zloader${OE}: zloader.c asm_call.h cfg${OE} input${OE} zloader.h zpath.h \
+	${JMA_D}/zsnesjma.h ${ZIP_D}/zunzip.h
+zmovie${OE}: zmovie.c asm_call.h cfg${OE} gblvars.h input${OE} md${OE} numconv.h zmovie.h zpath.h \
+	${JMA_D}/zsnesjma.h ${WIN_D}/lib.h ${WIN_D}/safelib.h ${ZIP_D}/zunzip.h
+zpath${OE}: zpath.c cfg${OE} zpath.h ${DOS_D}/lib.h ${JMA_D}/zsnesjma.h \
+	${WIN_D}/lib.h ${WIN_D}/safelib.h ${ZIP_D}/zunzip.h
+zstate${OE}: zstate.c asm_call.h cfg${OE} gblvars.h input${OE} numconv.h zmovie.h zpath.h \
+	${CHIP_D}/dsp4emu.h ${JMA_D}/zsnesjma.h ${ZIP_D}/zunzip.h
+ztime${OE}: ztime.asm macros.mac
 ztimec${OE}: ztimec.c
 
-${CHIPDIR}/7110proc${OE}: ${CHIPDIR}/7110proc.asm macros.mac \
-	${CPUDIR}/regs.mac ${CPUDIR}/regsw.mac
-${CHIPDIR}/c4emu${OE}: ${CHIPDIR}/c4emu.c
-${CHIPDIR}/c4proc${OE}: ${CHIPDIR}/c4proc.asm macros.mac
-${CHIPDIR}/dsp1emu${OE}: ${CHIPDIR}/dsp1emu.c
-${CHIPDIR}/dsp1proc${OE}: ${CHIPDIR}/dsp1proc.asm macros.mac
-${CHIPDIR}/dsp2proc${OE}: ${CHIPDIR}/dsp2proc.asm macros.mac
-${CHIPDIR}/dsp3emu${OE}: ${CHIPDIR}/dsp3emu.c
-${CHIPDIR}/dsp3proc${OE}: ${CHIPDIR}/dsp3proc.asm macros.mac
-${CHIPDIR}/dsp4emu${OE}: ${CHIPDIR}/dsp4emu.c
-${CHIPDIR}/dsp4proc${OE}: ${CHIPDIR}/dsp4proc.asm macros.mac
-${CHIPDIR}/fxemu2${OE}: ${CHIPDIR}/fxemu2.asm macros.mac ${CHIPDIR}/fxemu2.mac
-${CHIPDIR}/fxemu2b${OE}: ${CHIPDIR}/fxemu2b.asm macros.mac \
-	${CHIPDIR}/fxemu2.mac ${CHIPDIR}/fxemu2b.mac
-${CHIPDIR}/fxemu2c${OE}: ${CHIPDIR}/fxemu2c.asm macros.mac \
-	${CHIPDIR}/fxemu2.mac ${CHIPDIR}/fxemu2c.mac
-${CHIPDIR}/fxtable${OE}: ${CHIPDIR}/fxtable.asm macros.mac
-${CHIPDIR}/obc1emu${OE}: ${CHIPDIR}/obc1emu.c
-${CHIPDIR}/obc1proc${OE}: ${CHIPDIR}/obc1proc.asm macros.mac
-${CHIPDIR}/sa1proc${OE}: ${CHIPDIR}/sa1proc.asm macros.mac
-${CHIPDIR}/sa1regs${OE}: ${CHIPDIR}/sa1regs.asm macros.mac ${CPUDIR}/regs.mac \
-	${CPUDIR}/regsw.mac
-${CHIPDIR}/sdd1emu${OE}: ${CHIPDIR}/sdd1emu.c
-${CHIPDIR}/seta10${OE}: ${CHIPDIR}/seta10.c
-${CHIPDIR}/seta11${OE}: ${CHIPDIR}/seta11.c
-${CHIPDIR}/sfxproc${OE}: ${CHIPDIR}/sfxproc.asm macros.mac ${CPUDIR}/regs.mac \
-	${CPUDIR}/regsw.mac
-${CHIPDIR}/st10proc${OE}: ${CHIPDIR}/st10proc.asm macros.mac
-${CHIPDIR}/st11proc${OE}: ${CHIPDIR}/st11proc.asm macros.mac
+${CHIP_D}/7110proc${OE}: ${CHIP_D}/7110proc.asm macros.mac \
+	${CPU_D}/regs.mac ${CPU_D}/regsw.mac
+${CHIP_D}/c4emu${OE}: ${CHIP_D}/c4emu.c
+${CHIP_D}/c4proc${OE}: ${CHIP_D}/c4proc.asm macros.mac
+${CHIP_D}/dsp1emu${OE}: ${CHIP_D}/dsp1emu.c
+${CHIP_D}/dsp1proc${OE}: ${CHIP_D}/dsp1proc.asm macros.mac
+${CHIP_D}/dsp2proc${OE}: ${CHIP_D}/dsp2proc.asm macros.mac
+${CHIP_D}/dsp3emu${OE}: ${CHIP_D}/dsp3emu.c
+${CHIP_D}/dsp3proc${OE}: ${CHIP_D}/dsp3proc.asm macros.mac
+${CHIP_D}/dsp4emu${OE}: ${CHIP_D}/dsp4emu.c ${CHIP_D}/dsp4emu.h
+${CHIP_D}/dsp4proc${OE}: ${CHIP_D}/dsp4proc.asm macros.mac
+${CHIP_D}/fxemu2${OE}: ${CHIP_D}/fxemu2.asm macros.mac ${CHIP_D}/fxemu2.mac
+${CHIP_D}/fxemu2b${OE}: ${CHIP_D}/fxemu2b.asm macros.mac \
+	${CHIP_D}/fxemu2.mac ${CHIP_D}/fxemu2b.mac
+${CHIP_D}/fxemu2c${OE}: ${CHIP_D}/fxemu2c.asm macros.mac \
+	${CHIP_D}/fxemu2.mac ${CHIP_D}/fxemu2c.mac
+${CHIP_D}/fxtable${OE}: ${CHIP_D}/fxtable.asm macros.mac
+${CHIP_D}/obc1emu${OE}: ${CHIP_D}/obc1emu.c
+${CHIP_D}/obc1proc${OE}: ${CHIP_D}/obc1proc.asm macros.mac
+${CHIP_D}/sa1proc${OE}: ${CHIP_D}/sa1proc.asm macros.mac
+${CHIP_D}/sa1regs${OE}: ${CHIP_D}/sa1regs.asm macros.mac ${CPU_D}/regs.mac \
+	${CPU_D}/regsw.mac
+${CHIP_D}/sdd1emu${OE}: ${CHIP_D}/sdd1emu.c
+${CHIP_D}/seta10${OE}: ${CHIP_D}/seta10.c
+${CHIP_D}/seta11${OE}: ${CHIP_D}/seta11.c
+${CHIP_D}/sfxproc${OE}: ${CHIP_D}/sfxproc.asm macros.mac ${CPU_D}/regs.mac \
+	${CPU_D}/regsw.mac
+${CHIP_D}/st10proc${OE}: ${CHIP_D}/st10proc.asm macros.mac
+${CHIP_D}/st11proc${OE}: ${CHIP_D}/st11proc.asm macros.mac
 
-${CPUDIR}/dma${OE}: ${CPUDIR}/dma.asm macros.mac
-${CPUDIR}/dsp${OE}: ${CPUDIR}/dsp.asm macros.mac
-${CPUDIR}/dspproc${OE}: ${CPUDIR}/dspproc.asm macros.mac ${CPUDIR}/firtable.inc
-${CPUDIR}/execute${OE}: ${CPUDIR}/execute.asm macros.mac
-${CPUDIR}/executec${OE}: ${CPUDIR}/executec.c gblvars.h
-${CPUDIR}/irq${OE}: ${CPUDIR}/irq.asm macros.mac
-${CPUDIR}/memory${OE}: ${CPUDIR}/memory.asm macros.mac
-${CPUDIR}/memtable${OE}: ${CPUDIR}/memtable.c gblvars.h ${CPUDIR}/memtable.h
-${CPUDIR}/spc700${OE}: ${CPUDIR}/spc700.asm macros.mac ${CPUDIR}/regsw.mac \
-	${CPUDIR}/spcaddr.inc ${CPUDIR}/spcdef.inc
-${CPUDIR}/stable${OE}: ${CPUDIR}/stable.asm macros.mac ${CPUDIR}/s65816d.inc \
-	${CPUDIR}/saddress.inc ${CPUDIR}/saddrni.inc ${CPUDIR}/se65816.inc
-${CPUDIR}/table${OE}: ${CPUDIR}/table.asm macros.mac ${CPUDIR}/65816d.inc \
-	${CPUDIR}/address.inc ${CPUDIR}/addrni.inc ${CPUDIR}/e65816.inc \
-	${CPUDIR}/regs.inc ${CPUDIR}/regs.mac ${CPUDIR}/regsw.inc \
-	${CPUDIR}/regsw.mac
-${CPUDIR}/tablec${OE}: ${CPUDIR}/tablec.asm macros.mac ${CPUDIR}/65816dc.inc \
-	${CPUDIR}/address.inc ${CPUDIR}/addrni.inc ${CPUDIR}/e65816c.inc
+${CPU_D}/dma${OE}: ${CPU_D}/dma.asm macros.mac
+#${CPU_D}/dsp${OE}: ${CPU_D}/dsp.asm macros.mac
+#${CPU_D}/dspproc${OE}: ${CPU_D}/dspproc.asm macros.mac ${CPU_D}/firtable.inc
+${CPU_D}/spc/dsp${OE}: ${CPU_D}/spc/dsp.cpp ${CPU_D}/spc/b_common.h \
+	${CPU_D}/spc/b_config.h ${CPU_D}/spc/b_endian.h ${CPU_D}/spc/b_source.h \
+	${CPU_D}/spc/dsp.h
+${CPU_D}/spc/dspbind${OE}: ${CPU_D}/spc/dspbind.cpp ${CPU_D}/spc/b_common.h \
+	${CPU_D}/spc/b_config.h ${CPU_D}/spc/dsp.h ${CPU_D}/spc/dspbind.h
+${CPU_D}/execute${OE}: ${CPU_D}/execute.asm macros.mac
+${CPU_D}/executec${OE}: ${CPU_D}/executec.c gblvars.h
+${CPU_D}/irq${OE}: ${CPU_D}/irq.asm macros.mac
+${CPU_D}/memory${OE}: ${CPU_D}/memory.asm macros.mac
+${CPU_D}/memtable${OE}: ${CPU_D}/memtable.c gblvars.h ${CPU_D}/memtable.h
+${CPU_D}/spc700${OE}: ${CPU_D}/spc700.asm macros.mac ${CPU_D}/regsw.mac \
+	${CPU_D}/spcaddr.inc ${CPU_D}/spcdef.inc
+${CPU_D}/stable${OE}: ${CPU_D}/stable.asm macros.mac ${CPU_D}/s65816d.inc \
+	${CPU_D}/saddress.inc ${CPU_D}/saddrni.inc ${CPU_D}/se65816.inc
+${CPU_D}/table${OE}: ${CPU_D}/table.asm macros.mac ${CPU_D}/65816d.inc \
+	${CPU_D}/address.inc ${CPU_D}/addrni.inc ${CPU_D}/e65816.inc \
+	${CPU_D}/regs.inc ${CPU_D}/regs.mac ${CPU_D}/regsw.inc \
+	${CPU_D}/regsw.mac
+${CPU_D}/tablec${OE}: ${CPU_D}/tablec.asm macros.mac ${CPU_D}/65816dc.inc \
+	${CPU_D}/address.inc ${CPU_D}/addrni.inc ${CPU_D}/e65816c.inc
 
-${DOSDIR}/debug${OE}: ${DOSDIR}/debug.asm macros.mac
-${DOSDIR}/dosintrf${OE}: ${DOSDIR}/dosintrf.asm macros.mac
-${DOSDIR}/gppro${OE}: ${DOSDIR}/gppro.asm macros.mac
-${DOSDIR}/initvid${OE}: ${DOSDIR}/initvid.asm macros.mac ${DOSDIR}/vga.inc
-${DOSDIR}/joy${OE}: ${DOSDIR}/joy.asm macros.mac
-${DOSDIR}/lib${OE}: ${DOSDIR}/lib.c
-${DOSDIR}/sound${OE}: ${DOSDIR}/sound.asm macros.mac
-${DOSDIR}/sw${OE}: ${DOSDIR}/sw.asm macros.mac
-${DOSDIR}/vesa12${OE}: ${DOSDIR}/vesa12.asm macros.mac
-${DOSDIR}/vesa2${OE}: ${DOSDIR}/vesa2.asm macros.mac
+${DOS_D}/dosintrf${OE}: ${DOS_D}/dosintrf.asm macros.mac
+${DOS_D}/gppro${OE}: ${DOS_D}/gppro.asm macros.mac
+${DOS_D}/initvid${OE}: ${DOS_D}/initvid.asm macros.mac ${DOS_D}/vga.inc
+${DOS_D}/joy${OE}: ${DOS_D}/joy.asm macros.mac
+${DOS_D}/lib${OE}: ${DOS_D}/lib.c
+${DOS_D}/sound${OE}: ${DOS_D}/sound.asm macros.mac
+${DOS_D}/sw${OE}: ${DOS_D}/sw.asm macros.mac
+${DOS_D}/vesa12${OE}: ${DOS_D}/vesa12.asm macros.mac
+${DOS_D}/vesa2${OE}: ${DOS_D}/vesa2.asm macros.mac
 
-${EFFECTSDIR}/burn${OE}: ${EFFECTSDIR}/burn.c
-${EFFECTSDIR}/smoke${OE}: ${EFFECTSDIR}/smoke.c
-${EFFECTSDIR}/water${OE}: ${EFFECTSDIR}/water.c ${EFFECTSDIR}/fixsin.h
+${EFF_D}/burn${OE}: ${EFF_D}/burn.c
+${EFF_D}/smoke${OE}: ${EFF_D}/smoke.c
+${EFF_D}/water${OE}: ${EFF_D}/water.c ${EFF_D}/fixsin.h
 
-${GUIDIR}/gui${OE}: ${GUIDIR}/gui.asm macros.mac ${GUIDIR}/guicheat.inc \
-	${GUIDIR}/guicombo.inc ${GUIDIR}/guikeys.inc ${GUIDIR}/guimisc.inc \
-	${GUIDIR}/guimouse.inc ${GUIDIR}/guitools.inc ${GUIDIR}/guiwindp.inc
-${GUIDIR}/guifuncs${OE}: ${GUIDIR}/guifuncs.c asm_call.h cfg${OE} md${OE} \
-	zloader.h zpath.h ${DOSDIR}/lib.h ${JMADIR}/zsnesjma.h ${WINDIR}/lib.h \
-	${ZIPDIR}/zunzip.h input${OE}
-${GUIDIR}/menu${OE}: ${GUIDIR}/menu.asm macros.mac
+${GUI_D}/gui${OE}: ${GUI_D}/gui.asm macros.mac ${GUI_D}/guicheat.inc \
+	${GUI_D}/guicombo.inc ${GUI_D}/guikeys.inc ${GUI_D}/guimisc.inc \
+	${GUI_D}/guimouse.inc ${GUI_D}/guitools.inc ${GUI_D}/guiwindp.inc
+${GUI_D}/guifuncs${OE}: ${GUI_D}/guifuncs.c asm_call.h cfg${OE} input${OE} md${OE} \
+	zloader.h zpath.h ${DOS_D}/lib.h ${JMA_D}/zsnesjma.h ${WIN_D}/lib.h \
+	${ZIP_D}/zunzip.h
+${GUI_D}/menu${OE}: ${GUI_D}/menu.asm macros.mac
 
-${JMADIR}/7zlzma${OE}: ${JMADIR}/7zlzma.cpp ${JMADIR}/7z.h \
-	${JMADIR}/aribitcd.h ${JMADIR}/ariconst.h ${JMADIR}/btreecd.h \
-	${JMADIR}/iiostrm.h ${JMADIR}/inbyte.h ${JMADIR}/lencoder.h \
-	${JMADIR}/litcoder.h ${JMADIR}/lzma.h ${JMADIR}/lzmadec.h \
-	${JMADIR}/portable.h ${JMADIR}/rcdefs.h ${JMADIR}/rngcoder.h \
-	${JMADIR}/winout.h
-${JMADIR}/crc32${OE}: ${JMADIR}/crc32.cpp
-${JMADIR}/iiostrm${OE}: ${JMADIR}/iiostrm.cpp ${JMADIR}/crc32.h \
-	${JMADIR}/iiostrm.h ${JMADIR}/portable.h
-${JMADIR}/inbyte${OE}: ${JMADIR}/inbyte.cpp ${JMADIR}/iiostrm.h \
-	${JMADIR}/inbyte.h ${JMADIR}/portable.h
-${JMADIR}/jma${OE}: ${JMADIR}/jma.cpp ${JMADIR}/7z.h ${JMADIR}/crc32.h \
-	${JMADIR}/iiostrm.h ${JMADIR}/jma.h ${JMADIR}/portable.h
-${JMADIR}/lzma${OE}: ${JMADIR}/lzma.cpp ${JMADIR}/aribitcd.h \
-	${JMADIR}/ariconst.h ${JMADIR}/btreecd.h ${JMADIR}/iiostrm.h \
-	${JMADIR}/inbyte.h ${JMADIR}/lencoder.h ${JMADIR}/lzma.h \
-	${JMADIR}/portable.h ${JMADIR}/rcdefs.h ${JMADIR}/rngcoder.h
-${JMADIR}/lzmadec${OE}: ${JMADIR}/lzmadec.cpp ${JMADIR}/aribitcd.h \
-	${JMADIR}/ariconst.h ${JMADIR}/btreecd.h ${JMADIR}/iiostrm.h \
-	${JMADIR}/inbyte.h ${JMADIR}/lencoder.h ${JMADIR}/litcoder.h \
-	${JMADIR}/lzma.h ${JMADIR}/lzmadec.h ${JMADIR}/portable.h \
-	${JMADIR}/rcdefs.h ${JMADIR}/rngcoder.h ${JMADIR}/winout.h
-${JMADIR}/winout${OE}: ${JMADIR}/winout.cpp ${JMADIR}/iiostrm.h \
-	${JMADIR}/portable.h ${JMADIR}/winout.h
-${JMADIR}/zsnesjma${OE}: ${JMADIR}/zsnesjma.cpp ${JMADIR}/jma.h \
-	${JMADIR}/zsnesjma.h
+${JMA_D}/7zlzma${OE}: ${JMA_D}/7zlzma.cpp ${JMA_D}/7z.h \
+	${JMA_D}/aribitcd.h ${JMA_D}/ariconst.h ${JMA_D}/btreecd.h \
+	${JMA_D}/iiostrm.h ${JMA_D}/inbyte.h ${JMA_D}/lencoder.h \
+	${JMA_D}/litcoder.h ${JMA_D}/lzma.h ${JMA_D}/lzmadec.h \
+	${JMA_D}/portable.h ${JMA_D}/rcdefs.h ${JMA_D}/rngcoder.h \
+	${JMA_D}/winout.h
+${JMA_D}/crc32${OE}: ${JMA_D}/crc32.cpp
+${JMA_D}/iiostrm${OE}: ${JMA_D}/iiostrm.cpp ${JMA_D}/crc32.h \
+	${JMA_D}/iiostrm.h ${JMA_D}/portable.h
+${JMA_D}/inbyte${OE}: ${JMA_D}/inbyte.cpp ${JMA_D}/iiostrm.h \
+	${JMA_D}/inbyte.h ${JMA_D}/portable.h
+${JMA_D}/jma${OE}: ${JMA_D}/jma.cpp ${JMA_D}/7z.h ${JMA_D}/crc32.h \
+	${JMA_D}/iiostrm.h ${JMA_D}/jma.h ${JMA_D}/portable.h
+${JMA_D}/lzma${OE}: ${JMA_D}/lzma.cpp ${JMA_D}/aribitcd.h \
+	${JMA_D}/ariconst.h ${JMA_D}/btreecd.h ${JMA_D}/iiostrm.h \
+	${JMA_D}/inbyte.h ${JMA_D}/lencoder.h ${JMA_D}/lzma.h \
+	${JMA_D}/portable.h ${JMA_D}/rcdefs.h ${JMA_D}/rngcoder.h
+${JMA_D}/lzmadec${OE}: ${JMA_D}/lzmadec.cpp ${JMA_D}/aribitcd.h \
+	${JMA_D}/ariconst.h ${JMA_D}/btreecd.h ${JMA_D}/iiostrm.h \
+	${JMA_D}/inbyte.h ${JMA_D}/lencoder.h ${JMA_D}/litcoder.h \
+	${JMA_D}/lzma.h ${JMA_D}/lzmadec.h ${JMA_D}/portable.h \
+	${JMA_D}/rcdefs.h ${JMA_D}/rngcoder.h ${JMA_D}/winout.h
+${JMA_D}/winout${OE}: ${JMA_D}/winout.cpp ${JMA_D}/iiostrm.h \
+	${JMA_D}/portable.h ${JMA_D}/winout.h
+${JMA_D}/zsnesjma${OE}: ${JMA_D}/zsnesjma.cpp ${JMA_D}/jma.h \
+	${JMA_D}/zsnesjma.h
 
-${MMLIBDIR}/mm${OE}: ${MMLIBDIR}/mm.c ${MMLIBDIR}/mm.h
-${MMLIBDIR}/windows${OE}: ${MMLIBDIR}/windows.c ${MMLIBDIR}/mm.h
+${MMLIB_D}/mm${OE}: ${MMLIB_D}/mm.c ${MMLIB_D}/mm.h
+${MMLIB_D}/windows${OE}: ${MMLIB_D}/windows.c ${MMLIB_D}/mm.h
 
-${VIDEODIR}/2xsaiw${OE}: ${VIDEODIR}/2xsaiw.asm macros.mac
-${VIDEODIR}/hq2x16${OE}: ${VIDEODIR}/hq2x16.asm macros.mac
-${VIDEODIR}/hq2x32${OE}: ${VIDEODIR}/hq2x32.asm macros.mac
-${VIDEODIR}/hq3x16${OE}: ${VIDEODIR}/hq3x16.asm macros.mac
-${VIDEODIR}/hq3x32${OE}: ${VIDEODIR}/hq3x32.asm macros.mac
-${VIDEODIR}/hq4x16${OE}: ${VIDEODIR}/hq4x16.asm macros.mac
-${VIDEODIR}/hq4x32${OE}: ${VIDEODIR}/hq4x32.asm macros.mac
-${VIDEODIR}/m716text${OE}: ${VIDEODIR}/m716text.asm macros.mac \
-	${VIDEODIR}/mode7.mac
-${VIDEODIR}/makev16b${OE}: ${VIDEODIR}/makev16b.asm macros.mac \
-	${VIDEODIR}/vidmacro.mac
-${VIDEODIR}/makev16t${OE}: ${VIDEODIR}/makev16t.asm macros.mac \
-	${VIDEODIR}/vidmacro.mac
-${VIDEODIR}/makevid${OE}: ${VIDEODIR}/makevid.asm macros.mac \
-	${VIDEODIR}/vidmacro.mac
-${VIDEODIR}/mode7${OE}: ${VIDEODIR}/mode7.asm macros.mac ${VIDEODIR}/mode7.mac
-${VIDEODIR}/mode716${OE}: ${VIDEODIR}/mode716.asm macros.mac \
-	${VIDEODIR}/mode716.mac
-${VIDEODIR}/mode716b${OE}: ${VIDEODIR}/mode716b.asm macros.mac \
-	${VIDEODIR}/mode7.mac
-${VIDEODIR}/mode716d${OE}: ${VIDEODIR}/mode716d.asm macros.mac \
-	${VIDEODIR}/mode7.mac
-${VIDEODIR}/mode716e${OE}: ${VIDEODIR}/mode716e.asm macros.mac \
-	${VIDEODIR}/mode7.mac
-${VIDEODIR}/mode716t${OE}: ${VIDEODIR}/mode716t.asm macros.mac \
-	${VIDEODIR}/mode7.mac
-${VIDEODIR}/mode7ext${OE}: ${VIDEODIR}/mode7ext.asm macros.mac \
-	${VIDEODIR}/mode7.mac
-${VIDEODIR}/mv16tms${OE}: ${VIDEODIR}/mv16tms.asm macros.mac \
-	${VIDEODIR}/vidmacro.mac
-${VIDEODIR}/newg162${OE}: ${VIDEODIR}/newg162.asm macros.mac \
-	${VIDEODIR}/newg162.mac ${VIDEODIR}/newg16wn.mac ${VIDEODIR}/newgfx16.mac \
-	${VIDEODIR}/vidmacro.mac
-${VIDEODIR}/newgfx${OE}: ${VIDEODIR}/newgfx.asm macros.mac \
-	${VIDEODIR}/newgfx.mac ${VIDEODIR}/newgfx2.mac ${VIDEODIR}/vidmacro.mac
-${VIDEODIR}/newgfx16${OE}: ${VIDEODIR}/newgfx16.asm macros.mac \
-	${VIDEODIR}/newg162.mac ${VIDEODIR}/newgfx16.mac ${VIDEODIR}/vidmacro.mac
-${VIDEODIR}/newgfx2${OE}: ${VIDEODIR}/newgfx2.asm macros.mac \
-	${VIDEODIR}/newgfx.mac ${VIDEODIR}/newgfx2.mac ${VIDEODIR}/newgfxwn.mac \
-	${VIDEODIR}/vidmacro.mac
-${VIDEODIR}/ntsc${OE}: ${VIDEODIR}/ntsc.c ${VIDEODIR}/ntsc.h
-${VIDEODIR}/procvid${OE}: ${VIDEODIR}/procvid.asm macros.mac \
-	${VIDEODIR}/copyvid.inc
-${VIDEODIR}/procvidc${OE}: ${VIDEODIR}/procvidc.c zpath.h \
-	${JMADIR}/zsnesjma.h ${VIDEODIR}/ntsc.h ${ZIPDIR}/zunzip.h zmovie.h
-${VIDEODIR}/sw_draw${OE}: ${VIDEODIR}/sw_draw.asm macros.mac
+${VID_D}/2xsaiw${OE}: ${VID_D}/2xsaiw.asm macros.mac
+${VID_D}/copyvwin${OE}: ${VID_D}/copyvwin.asm macros.mac
+${VID_D}/hq2x16${OE}: ${VID_D}/hq2x16.asm macros.mac
+${VID_D}/hq2x32${OE}: ${VID_D}/hq2x32.asm macros.mac
+${VID_D}/hq3x16${OE}: ${VID_D}/hq3x16.asm macros.mac
+${VID_D}/hq3x32${OE}: ${VID_D}/hq3x32.asm macros.mac
+${VID_D}/hq4x16${OE}: ${VID_D}/hq4x16.asm macros.mac
+${VID_D}/hq4x32${OE}: ${VID_D}/hq4x32.asm macros.mac
+${VID_D}/m716text${OE}: ${VID_D}/m716text.asm macros.mac \
+	${VID_D}/mode7.mac
+${VID_D}/makev16b${OE}: ${VID_D}/makev16b.asm macros.mac ${VID_D}/vidmacro.mac
+${VID_D}/makev16t${OE}: ${VID_D}/makev16t.asm macros.mac ${VID_D}/vidmacro.mac
+${VID_D}/makevid${OE}: ${VID_D}/makevid.asm macros.mac ${VID_D}/vidmacro.mac
+${VID_D}/mode7${OE}: ${VID_D}/mode7.asm macros.mac ${VID_D}/mode7.mac
+${VID_D}/mode716${OE}: ${VID_D}/mode716.asm macros.mac ${VID_D}/mode716.mac
+${VID_D}/mode716b${OE}: ${VID_D}/mode716b.asm macros.mac ${VID_D}/mode7.mac
+${VID_D}/mode716d${OE}: ${VID_D}/mode716d.asm macros.mac ${VID_D}/mode7.mac
+${VID_D}/mode716e${OE}: ${VID_D}/mode716e.asm macros.mac ${VID_D}/mode7.mac
+${VID_D}/mode716t${OE}: ${VID_D}/mode716t.asm macros.mac ${VID_D}/mode7.mac
+${VID_D}/mode7ext${OE}: ${VID_D}/mode7ext.asm macros.mac ${VID_D}/mode7.mac
+${VID_D}/mv16tms${OE}: ${VID_D}/mv16tms.asm macros.mac ${VID_D}/vidmacro.mac
+${VID_D}/newg162${OE}: ${VID_D}/newg162.asm macros.mac ${VID_D}/newg162.mac \
+	${VID_D}/newg16wn.mac ${VID_D}/newgfx16.mac ${VID_D}/vidmacro.mac
+${VID_D}/newgfx${OE}: ${VID_D}/newgfx.asm macros.mac ${VID_D}/newgfx.mac \
+	${VID_D}/newgfx2.mac ${VID_D}/vidmacro.mac
+${VID_D}/newgfx16${OE}: ${VID_D}/newgfx16.asm macros.mac \
+	${VID_D}/newg162.mac ${VID_D}/newgfx16.mac ${VID_D}/vidmacro.mac
+${VID_D}/newgfx2${OE}: ${VID_D}/newgfx2.asm macros.mac ${VID_D}/newgfx.mac \
+	${VID_D}/newgfx2.mac ${VID_D}/newgfxwn.mac ${VID_D}/vidmacro.mac
+${VID_D}/ntsc${OE}: ${VID_D}/ntsc.c ${VID_D}/ntsc.h ${NTSC_D}/snes_ntsc.c \
+	${NTSC_D}/snes_ntsc.h ${NTSC_D}/snes_ntsc_config.h ${NTSC_D}/snes_ntsc_impl.h
+${VID_D}/procvid${OE}: ${VID_D}/procvid.asm macros.mac ${VID_D}/copyvid.inc
+${VID_D}/procvidc${OE}: ${VID_D}/procvidc.c zmovie.h zpath.h \
+	${JMA_D}/zsnesjma.h ${ZIP_D}/zunzip.h
+${VID_D}/sw_draw${OE}: ${VID_D}/sw_draw.asm macros.mac
 
-${WINDIR}/copyvwin${OE}: ${WINDIR}/copyvwin.asm macros.mac
-${WINDIR}/lib${OE}: ${WINDIR}/lib.c zpath.h ${JMADIR}/zsnesjma.h \
-	${WINDIR}/lib.h ${ZIPDIR}/zunzip.h
-${WINDIR}/safelib${OE}: ${WINDIR}/safelib.c argv.h
+${WIN_D}/lib${OE}: ${WIN_D}/lib.c zpath.h ${JMA_D}/zsnesjma.h \
+	${WIN_D}/lib.h ${ZIP_D}/zunzip.h
+${WIN_D}/safelib${OE}: ${WIN_D}/safelib.c argv.h ${WIN_D}/safelib.h
+${WIN_D}/winintrf${OE}: ${WIN_D}/winintrf.asm macros.mac
 ifeq (${ENV},msvc)
-${WINDIR}/winintrf${OE}: ${WINDIR}/winintrf.asm macros.mac
-${WINDIR}/winlink.obj: ${WINDIR}/winlink.cpp cfg${OE} ${WINDIR}/resource.h input${OE}
-${WINDIR}/zsnes.res: ${WINDIR}/zsnes.rc ${WINDIR}/resource.h
-	rc ${WINDIR}/zsnes.rc
+${WIN_D}/winlink.obj: ${WIN_D}/winlink.cpp cfg${OE} input${OE} ${WIN_D}/resource.h
+${WIN_D}/zsnes.res: ${WIN_D}/zsnes.rc ${WIN_D}/resource.h
+	rc ${WIN_D}/zsnes.rc
 else
-${WINDIR}/winlink${OE}: ${WINDIR}/winlink.cpp cfg${OE} input${OE} ${WINDIR}/resource.h
-	${CPPC} ${COPT} ${CFLAGS} -masm=intel -o $@ -c ${WINDIR}/winlink.cpp
-${WINDIR}/zsnes${OE}: ${WINDIR}/zsnes.rc ${WINDIR}/resource.h
-	${WINDRES} --include-dir ${WINDIR} ${WINDIR}/zsnes.rc -o${WINDIR}/zsnes${OE}
+${WIN_D}/winlink${OE}: ${WIN_D}/winlink.cpp cfg${OE} input${OE} ${WIN_D}/resource.h
+	${CPPC} ${COPT} ${CFLAGS} -masm=intel -o $@ -c ${WIN_D}/winlink.cpp
+${WIN_D}/zsnes${OE}: ${WIN_D}/zsnes.rc ${WIN_D}/resource.h
+	${WINDRES} --include-dir ${WIN_D} ${WIN_D}/zsnes.rc -o${WIN_D}/zsnes${OE}
 ${OBJFIX}: objfix.c
 	gcc -O3 -s -o $@ objfix.c
 endif
@@ -503,9 +497,9 @@ else
 endif
 endif
 
-${ZIPDIR}/unzip${OE}: ${ZIPDIR}/unzip.c ${ZIPDIR}/zunzip.h
-${ZIPDIR}/zpng${OE}: ${ZIPDIR}/zpng.c numconv.h zpath.h ${JMADIR}/zsnesjma.h \
-	${ZIPDIR}/zunzip.h
+${ZIP_D}/unzip${OE}: ${ZIP_D}/unzip.c ${ZIP_D}/zunzip.h
+${ZIP_D}/zpng${OE}: ${ZIP_D}/zpng.c numconv.h zpath.h ${JMA_D}/zsnesjma.h \
+	${ZIP_D}/zunzip.h
 
 else  #else no ENV specified
 	@echo Please specify which platform to compile for with PLATFORM=platform_name
@@ -516,12 +510,12 @@ clean:
 ifneq (${ENV},)
 # Take care that the expanded text between pre and suf is less than 28 characters
 	${DELPRE} ${EXE}${SEP} ${PSR}${DELSUF}
-	${DELPRE} *${OE}${SEP} ${NETDIR}${SLASH}*${OE}${DELSUF}
-	${DELPRE} ${CPUDIR}${SLASH}*${OE}${SEP} ${GUIDIR}${SLASH}*${OE}${DELSUF}
-	${DELPRE} ${JMADIR}${SLASH}*${OE}${SEP} ${MMLIBDIR}${SLASH}*${OE}${DELSUF}
-	${DELPRE} ${EFFECTSDIR}${SLASH}*${OE}${SEP} ${ZIPDIR}${SLASH}*${OE}${DELSUF}
-	${DELPRE} ${DOSDIR}${SLASH}*${OE}${SEP} ${WINDIR}${SLASH}*${OE}${DELSUF}
-	${DELPRE} ${CHIPDIR}${SLASH}*${OE}${SEP} ${VIDEODIR}${SLASH}*${OE}${DELSUF}
+	${DELPRE} *${OE}${SEP} ${NET_D}${SLASH}*${OE}${DELSUF}
+	${DELPRE} ${CPU_D}${SLASH}*${OE}${SEP} ${GUI_D}${SLASH}*${OE}${DELSUF}
+	${DELPRE} ${JMA_D}${SLASH}*${OE}${SEP} ${MMLIB_D}${SLASH}*${OE}${DELSUF}
+	${DELPRE} ${EFF_D}${SLASH}*${OE}${SEP} ${ZIP_D}${SLASH}*${OE}${DELSUF}
+	${DELPRE} ${DOS_D}${SLASH}*${OE}${SEP} ${WIN_D}${SLASH}*${OE}${DELSUF}
+	${DELPRE} ${CHIP_D}${SLASH}*${OE}${SEP} ${VID_D}${SLASH}*${OE}${DELSUF}
 else
 	@echo Please specify which platform to clean for with PLATFORM=platform_name
 endif

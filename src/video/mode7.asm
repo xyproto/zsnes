@@ -25,6 +25,8 @@ EXTSYM mode7tab,winptrref,nglogicval,winlogicaval,curmosaicsz,curvidoffset
 EXTSYM cwinptr,domosaic,mode7A,mode7B,mode7C,mode7D,mode7X0,mode7Y0,mode7set
 EXTSYM vram,vrama,winon,xtravbuf,ngwinen,winbg1enval,BuildWindow,ngwintable
 EXTSYM ngcwinptr,domosaicng,pesimpng,mode7hr,BGMA,mode7ab,mode7cd,BG1SYl,BG1SXl
+EXTSYM ngwleft,ngwleftb,mode7xpos,mode7ypos,mode7xrpos,mode7yrpos
+EXTSYM mode7yadder,mode7xadder
 
 %include "video/mode7.mac"
 
@@ -52,22 +54,6 @@ EXTSYM ngcwinptr,domosaicng,pesimpng,mode7hr,BGMA,mode7ab,mode7cd,BG1SYl,BG1SXl
 %endmacro
 
 SECTION .text
-
-NEWSYM Makemode7Table
-    xor eax,eax
-.nextentry
-    mov cl,al
-    mov dl,ah
-    and cl,07h
-    and dl,07h
-    shl cl,4
-    shl dl,1
-    inc dl
-    add dl,cl
-    mov [mode7tab+eax],dl
-    dec ax
-    jnz .nextentry
-    ret
 
 ; backup mode7X0, mode7Y0, Mode7A, and Mode7B
 NEWSYM drawmode7
@@ -647,15 +633,6 @@ SECTION .bss
 .m7yaddofa   resd 1
 .m7yaddof2a  resd 1
 
-;ALIGN32
-NEWSYM ngwleft,       resd 1       ; for byte move left
-NEWSYM ngwleftb,      resd 1       ; for byte move left
-NEWSYM mode7xpos,   resd 2         ; x position
-NEWSYM mode7ypos,   resd 2         ; x position
-NEWSYM mode7xrpos,  resd 2         ; x position, relative
-NEWSYM mode7yrpos,  resd 2         ; y position, relative
-NEWSYM mode7xadder, resd 2         ; number to add for x
-NEWSYM mode7yadder, resd 2         ; number to add for y
 SECTION .text
 
 NEWSYM ProcessMode7ngwin

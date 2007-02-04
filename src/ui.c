@@ -59,9 +59,6 @@ unsigned char *wramdata;            // stack (64K = 65536)
 unsigned char *ram7f;               // ram @ 7f = 65536
 unsigned char *vram;                // vram = 65536
 unsigned char *sram;                // sram = 65536*2 = 131072
-#ifdef OLD_DEBUGGER
-unsigned char *debugbuf;            // debug buffer = 80x1000 = 80000
-#endif
 unsigned char regptra[49152];
 unsigned char regptwa[49152];
 unsigned char *regptr = regptra;
@@ -257,9 +254,6 @@ void deallocmem()
   deallocmemhelp(vcache2b);
   deallocmemhelp(vcache4b);
   deallocmemhelp(vcache8b);
-#ifdef OLD_DEBUGGER
-  deallocmemhelp(debugbuf);
-#endif
   deallocmemhelp(sram);
   deallocmemhelp(SPC7110PackPtr);
   deallocmemhelp(SPC7110IndexPtr);
@@ -282,9 +276,6 @@ static void allocmem()
   AllocmemFail(vcache2bs,65536*4*4+4096);
   AllocmemFail(vcache4bs,65536*4*2+4096);
   AllocmemFail(vcache8bs,65536*4+4096);
-#ifdef OLD_DEBUGGER
-  AllocmemFail(debugbuf,80000);
-#endif
   AllocmemFail(sram,65536*2);
   AllocmemFail(vcache2b,262144+256);
   AllocmemFail(vcache4b,131072+256);

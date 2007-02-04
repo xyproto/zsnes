@@ -28,9 +28,9 @@ EXTSYM Voice6Status,Voice7Disable,Voice7Status,bgcmsung,bgmode
 EXTSYM cgmod,disableeffects,frameskip,frskipper,current_zst
 EXTSYM maxbr,modeused,mousexloc,mouseyloc,newengen,KeyRTRCycle
 EXTSYM pal16b,pal16bxcl,pressed,prevbright,prevpal
-EXTSYM scaddsngb,scaddtngb,scaddtngbx,scfbl,scrndis,sprprdrn,t1cc
+EXTSYM scaddsngb,scaddtngb,scaddtngbx,scfbl,scrndis,t1cc
 EXTSYM vidbright,vidbuffer,vidbufferofsa,vidmemch2,MZTForceRTR
-EXTSYM GUIRClick,MousePRClick,ngmsdraw,fulladdtab
+EXTSYM GUIRClick,MousePRClick,ngmsdraw,cvidmode,fulladdtab
 EXTSYM KeyDisableSC0,KeyDisableSC1,KeyDisableSC2,KeyDisableSC3,KeyDisableSC4
 EXTSYM KeyDisableSC5,KeyDisableSC6,KeyDisableSC7,KeyFastFrwrd,SRAMSave5Sec
 EXTSYM KeyBGDisble0,KeyBGDisble1,KeyBGDisble2,KeyBGDisble3,KeySprDisble
@@ -39,14 +39,14 @@ EXTSYM KeyStateSlc0,KeyStateSlc1,KeyStateSlc2,KeyStateSlc3,KeyStateSlc4
 EXTSYM KeyStateSlc5,KeyStateSlc6,KeyStateSlc7,KeyStateSlc8,KeyStateSlc9
 EXTSYM KeyIncStateSlot,KeyDecStateSlot,KeyUsePlayer1234,maxskip,DSPMem
 EXTSYM FastFwdToggle,SaveSramData,ngextbg,Mode7HiRes,Check60hz
-EXTSYM Get_MouseData,Get_MousePositionDisplacement
+EXTSYM Get_MouseData,Get_MousePositionDisplacement,scanlines
 EXTSYM romispal,MusicRelVol,MusicVol,WDSPReg0C,WDSPReg1C,KeySlowDown
 EXTSYM KeyFRateDown,KeyFRateUp,KeyVolUp,KeyVolDown,KeyDisplayFPS
 EXTSYM FPSOn,pl12s34,bg1ptr,bg2ptr,bg3ptr,bg4ptr,cachebg1,resolutn,curypos
 EXTSYM oamram,objhipr,objptr,objptrn,objsize1,objsize2,spritetablea,sprleftpr
 EXTSYM sprlefttot,vcache4b,objadds1,objadds2,objmovs1,objmovs2,tltype4b
 EXTSYM vidmemch4,vram,bgptr,bgptrc,bgptrd,curtileptr,vcache2b,vcache8b,vidmemch8
-EXTSYM offsetmshl,NextLineCache,tltype2b,tltype8b,objwlrpos
+EXTSYM NextLineCache,tltype2b,tltype8b,objwlrpos
 EXTSYM EmuSpeed,SDRatio,FFRatio,DisplayBatteryStatus,lhguimouse,SwapMouseButtons
 EXTSYM KeyResetSpeed,KeyEmuSpeedUp,KeyEmuSpeedDown,KeyDisplayBatt,EMUPause
 EXTSYM device1,device2,snesinputdefault1,snesinputdefault2
@@ -160,7 +160,6 @@ NEWSYM cachevideo
     mov dword[modeused+4],0
     mov dword[scaddsngb],0
     mov dword[scaddtngb],0
-    mov dword[sprprdrn],0
     mov dword[ngmsdraw],0
     mov dword[ngextbg],0
     mov dword[scaddtngbx],0FFFFFFFFh
@@ -3158,10 +3157,10 @@ NEWSYM cache8bit16x16
     ret
 
 NEWSYM cachesingle
-    cmp byte[offsetmshl],1
-    je near cachesingle4b
-    cmp byte[offsetmshl],2
-    je near cachesingle2b
+;    cmp byte[offsetmshl],1
+;    je near cachesingle4b
+;    cmp byte[offsetmshl],2
+;    je near cachesingle2b
     ret
 
 %macro processcache4b2 1
@@ -3444,11 +3443,13 @@ mmxvalandb dd 00000000000111110000000000011111b,00000000000111110000000000011111
 SECTION .text
 NEWSYM genfulladdtab
     ; Write to buffer
+%ifdef __MSDOS__
     cmp byte[newengen],1
     jne .notneweng
     cmp byte[vesa2red10],0
     jne near genfulladdtabred
 .notneweng
+%endif
     xor ecx,ecx
 .loopers
     mov ax,cx
@@ -3473,6 +3474,7 @@ NEWSYM genfulladdtab
     jnz .loopers
     ret
 
+%ifdef __MSDOS__
 NEWSYM genfulladdtabred
     ; Write to buffer
     xor ecx,ecx
@@ -3498,6 +3500,7 @@ NEWSYM genfulladdtabred
     dec cx
     jnz .loopers
     ret
+%endif
 
 NEWSYM ConvertToAFormat
     cmp byte[GUIOn],1

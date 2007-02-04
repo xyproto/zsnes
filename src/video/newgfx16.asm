@@ -31,12 +31,12 @@ EXTSYM bg3scrolx,bg3scroly,bg3totng,bg4drwng,bg4objptr,bg4ptr,bg4ptrx,bg4ptry
 EXTSYM bg4scrolx,bg4scroly,bg4totng,bgcmsung,bgmode,bgtxad,bgtxadd,ngextbg
 EXTSYM cachesingle2bng,cachesingle8bng,cfieldad,cgmod,cgram,coladdb,coladdg
 EXTSYM coladdr,colleft16b,colormodedef,cpalval,csprbit,csprival,curmosaicsz
-EXTSYM curvidoffset,curypos,firstdrawn,flipyposng,forceblnk,interlval,intrlng
+EXTSYM curvidoffset,curypos,flipyposng,forceblnk,interlval,intrlng
 EXTSYM mode0add,mode0ads,mode7A,mode7C,mode7X0,mode7ab,mode7cd,mode7set,mode7st
 EXTSYM mode7xy,modeused,mosaicon,mosaicsz,mosenng,mosszng,ngceax,ngcedi
 EXTSYM ngpalcon2b,ngpalcon8b,ngptrdat,pesimpng,prdata,prdatb,prdatc,prevbright
 EXTSYM reslbyl,resolutn,scaddset,scaddtype,scadsng,scadtng,scfbl,scrndis,scrnon
-EXTSYM spritetablea,sprleftpr,sprlefttot,sprprdrn,sprpriodata,sprtbng,sprtlng
+EXTSYM spritetablea,sprleftpr,sprlefttot,sprpriodata,sprtbng,sprtlng
 EXTSYM t16x161,t16x162,t16x163,t16x164,taddfy16x16,taddnfy16x16,ngptrdat2
 EXTSYM tleftn,tltype2b,tltype8b,vcache2b,vcache8b,vidbright,ofshvaladd
 EXTSYM vidbuffer,vidmemch2,vidmemch8,vrama,winon,xtravbuf,yposng
@@ -1332,11 +1332,9 @@ NEWSYM newengine16b
     je .single
     cmp ebx,01000000h
     je .single
-    or [sprprdrn],ebx
     xor ebx,ebx
     ret
 .single
-    or [sprprdrn],ebx
     or dword[sprleftpr+eax*4],80000000h
     xor ebx,ebx
     ret
@@ -1414,7 +1412,6 @@ NEWSYM StartDrawNewGfx16b
     mov ecx,64
     rep stosd
 
-    mov byte[firstdrawn],1
     mov dword[bg1totng],0
     mov dword[bg2totng],0
     mov dword[bg3totng],0

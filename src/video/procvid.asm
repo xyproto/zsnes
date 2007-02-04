@@ -23,7 +23,7 @@
 
 EXTSYM BGMA,V8Mode,antienab,cacheud,cbitmode,ccud,cfield,cgram,coladdb,coladdg
 EXTSYM coladdr,curblank,curfps,cvidmode,delay,extlatch,En2xSaI
-EXTSYM gammalevel,hirestiledat,ignor512,latchx,latchy,maxbr,ForceNewGfxOff
+EXTSYM gammalevel,hirestiledat,ignor512,latchx,latchy,maxbr
 EXTSYM newengen,nextframe,objptr,pressed,prevpal,res512switch,resolutn
 EXTSYM romispal,scaddtype,scanlines,selcA000,t1cc,vcache4b,vesa2_bpos
 EXTSYM spritetablea,vesa2_clbit,vesa2_gpos,vesa2_rpos,vesa2red10
@@ -34,7 +34,7 @@ EXTSYM Get_MouseData,Get_MousePositionDisplacement,GUIEnableTransp,GUIFontData
 EXTSYM StopSound,StartSound,PrevPicture,nggposng,current_zst,newest_zst
 EXTSYM GetTimeInSeconds,bg3ptr,bg3scroly,bg3scrolx,C4Ram
 EXTSYM genfulladdtab,TimerEnable,ShowTimer,debugdisble,GUIOn
-EXTSYM FilteredGUI,HalfTrans,SmallMsgText,Mode7HiRes,mosenng,mosszng
+EXTSYM FilteredGUI,HalfTrans,SmallMsgText,mosenng,mosszng
 EXTSYM intrlng,mode7hr,newgfx16b,vesa2_clbitng,vesa2_clbitng2,CSStatus
 EXTSYM CSStatus2,CSStatus3,CSStatus4,SpecialLine,Clear2xSaIBuffer,vidbufferofsb,bg1scroly
 EXTSYM MovieProcessing,MovieFrameStr,GetMovieFrameStr,mouse1lh,mouse2lh
@@ -302,6 +302,7 @@ SECTION .text
 ; Output Hex                 Outputs the hex in al @ esi
 ;*******************************************************
 
+%ifdef __MSDOS__
 NEWSYM outputhex
     push edi
     push esi
@@ -367,6 +368,7 @@ NEWSYM outputhex
     pop esi
     pop edi
     ret
+%endif
 
 OutputText16b:
     cmp byte[ForceNonTransp],1
@@ -641,6 +643,7 @@ SECTION .text
 ; Output Char                   Outputs char in al @ esi
 ;*******************************************************
 
+%ifdef __MSDOS__
 NEWSYM outputchar
     push edi
     push esi
@@ -673,6 +676,7 @@ NEWSYM outputchar
     pop esi
     pop edi
     ret
+%endif
 
 NEWSYM outputchar16b
     push edi
@@ -704,6 +708,7 @@ NEWSYM textcolor, db 128
 NEWSYM textcolor16b, dw 0FFFFh
 SECTION .text
 
+%ifdef __MSDOS__
 NEWSYM outputchar5x5
     push edi
     push esi
@@ -738,6 +743,7 @@ NEWSYM outputchar5x5
     pop esi
     pop edi
     ret
+%endif
 
 NEWSYM outputchar16b5x5
     push edi
@@ -782,6 +788,7 @@ NEWSYM outputchar16b5x5
 ;*******************************************************
 
 NEWSYM OutputGraphicString
+%ifdef __MSDOS__
     cmp byte[cbitmode],1
     je .do16b
 .no16bit
@@ -799,6 +806,7 @@ NEWSYM OutputGraphicString
     ret
 
 .do16b
+%endif
     sub esi,[vidbuffer]
     shl esi,1
     add esi,[vidbuffer]
@@ -847,7 +855,6 @@ NEWSYM OutputGraphicString
     add ax,bx
     mov [textcolor16b],ax
 .no131
-    jmp OutputGraphicString16b
 
 NEWSYM OutputGraphicString16b
     xor eax,eax
@@ -863,6 +870,7 @@ NEWSYM OutputGraphicString16b
 .nomore
     ret
 
+%ifdef __MSDOS__
 NEWSYM OutputGraphicString5x5
     cmp byte[cbitmode],1
     je .do16b
@@ -929,7 +937,7 @@ NEWSYM OutputGraphicString5x5
     add ax,bx
     mov [textcolor16b],ax
 .no131
-    jmp OutputGraphicString16b5x5
+%endif
 
 NEWSYM OutputGraphicString16b5x5
     xor eax,eax
@@ -957,6 +965,7 @@ PrevPictureVal resb 1
 CurPictureVal resb 1
 SECTION .text
 
+%ifdef __MSDOS__
 NEWSYM drawhline
 .loop
     mov [esi],al
@@ -964,6 +973,7 @@ NEWSYM drawhline
     dec ecx
     jnz .loop
     ret
+%endif
 
 NEWSYM drawhline16b
 .loop
@@ -973,6 +983,7 @@ NEWSYM drawhline16b
     jnz .loop
     ret
 
+%ifdef __MSDOS__
 NEWSYM drawvline
 .loop
     mov [esi],al
@@ -980,6 +991,7 @@ NEWSYM drawvline
     dec ecx
     jnz .loop
     ret
+%endif
 
 NEWSYM drawvline16b
 .loop
@@ -1080,6 +1092,7 @@ GetPicture:
     jnz .ploopa2
     ret
 
+%ifdef __MSDOS__
 NEWSYM drawfillboxsc
     pushad
     call zst_exists
@@ -1116,6 +1129,7 @@ NEWSYM drawfillboxsc
     pop eax
 .nodraw
     ret
+%endif
 
 NEWSYM drawfillboxsc16b
     pushad
@@ -1155,6 +1169,7 @@ NEWSYM drawfillboxsc16b
 .nodraw
     ret
 
+%ifdef __MSDOS__
 NEWSYM drawbox
     ; draws a box according to position bl and color dl
     xor eax,eax
@@ -1181,6 +1196,7 @@ NEWSYM drawbox
     mov ecx,12
     call drawhline
     ret
+%endif
 
 NEWSYM drawbox16b
     ; draws a box according to position bl and color dx
@@ -1550,12 +1566,11 @@ NEWSYM saveselect
     call SB_blank
 %endif
 .nosound
+%ifdef __MSDOS__
     cmp byte[cbitmode],1
     je near .16b
 .updatescreen8b
-%ifdef __MSDOS__
     call saveselectpal
-%endif
     ; draw a small blue box with a white border
     mov esi,70+70*288
     add esi,[vidbuffer]
@@ -1734,31 +1749,20 @@ NEWSYM saveselect
     inc eax
     dec ecx
     jnz .looppr
-%ifdef __MSDOS__
     mov byte[pressed+1],0
-%endif
 
     mov word[t1cc],0
     mov byte[csounddisable],0
     call StartSound
 
-%ifdef __MSDOS__
     call dosmakepal
-%endif
     mov byte[f3menuen],0
     mov byte[ForceNonTransp],0
     ret
 
-SECTION .bss
-.allred resw 1
-.allgrn resw 1
-.allgrnb resw 1
-.blue   resw 1
-.stepb  resw 1
-SECTION .text
-
 ; Start 16-bit stuff here
 .16b
+%endif
     cmp byte[newengen],0
     je .notng
     mov byte[GUIOn],1
@@ -2037,6 +2041,14 @@ SECTION .text
     call Clear2xSaIBuffer
     popad
     ret
+
+SECTION .bss
+.allred resw 1
+.allgrn resw 1
+.allgrnb resw 1
+.blue   resw 1
+.stepb  resw 1
+SECTION .text
 
 SECTION .data
 .stringa db 'PLEASE SELECT',0
@@ -2439,12 +2451,11 @@ NEWSYM showfps
 .noslw
     mov cl,al
 
+%ifdef __MSDOS__
     cmp byte[cbitmode],1
     je near .do16b
 
-%ifdef __MSDOS__
     call displayfpspal
-%endif
 
     movzx ax,byte[lastfps]
     mov bl,10
@@ -2476,6 +2487,7 @@ NEWSYM showfps
     ret
 
 .do16b
+%endif
   mov esi,208*288*2+48*2
   add esi,[vidbuffer]
   mov al,[lastfps]
@@ -2525,12 +2537,11 @@ SECTION .text
 EXTSYM TwelveHourClock
 
 NEWSYM ClockOutput
+%ifdef __MSDOS__
     cmp byte[cbitmode],1
     je near .do16b3
 .no16b3
-%ifdef __MSDOS__
     call displayfpspal
-%endif
     mov esi,215*288+32+192
     add esi,[vidbuffer]
     cmp byte[ForceNonTransp],1
@@ -2553,6 +2564,7 @@ NEWSYM ClockOutput
     jnz .loop2
     jmp .do8b
 .do16b3
+%endif
     mov esi,215*288*2+32*2+192*2
     add esi,[vidbuffer]
     cmp byte[ForceNonTransp],1
@@ -2618,6 +2630,7 @@ NEWSYM ClockOutput
     div ebx
     mov esi,216*288+32+192
     call .output
+%ifdef __MSDOS__
     cmp byte[cbitmode],1
     je .do16b2
 .no16b4
@@ -2640,6 +2653,7 @@ NEWSYM ClockOutput
     ret
 
 .do16b2
+%endif
     mov esi,216*288*2+32*2+222*2
     add esi,[vidbuffer]
     xor eax,eax
@@ -2659,6 +2673,7 @@ NEWSYM ClockOutput
     ret
 .output
     ; output char value at al and dl
+%ifdef __MSDOS__
     cmp byte[cbitmode],1
     je .do16b
 .no16b5
@@ -2679,6 +2694,7 @@ NEWSYM ClockOutput
     popad
     ret
 .do16b
+%endif
     add esi,esi
     add esi,[vidbuffer]
     and eax,0FFh
@@ -2703,190 +2719,7 @@ blahrnr resw 1
 
 SECTION .text
 
-NEWSYM hextestoutput
-
-    mov dx,[bg3scroly]
-;    and dx,0F8h
-    shr edx,3
-    shl edx,6
-    xor eax,eax
-    mov ax,[bg3ptr]
-    add ax,dx
-    xor edx,edx
-    mov dx,[bg3scrolx]
-    and dx,0F8h
-    shr edx,3
-    shl edx,1
-    add ax,dx
-    mov dx,[bg3scrolx]
-    test dx,8000h
-    jz .nooma
-    and dx,0F000h
-    shr dx,5
-    add ax,dx
-.nooma
-    add eax,40h
-    mov edx,eax
-    mov [Testval],edx
 %ifdef __MSDOS__
-    call displayfpspal
-%endif
-
-    mov esi,[vram]
-    mov ax,0
-    mov ecx,400h
-.loop
-;    mov word[esi],ax
-    add esi,2
-    dec ecx
-    jnz .loop
-    inc word[blahrnr]
-    mov esi,216*288+32
-    add esi,[vidbuffer]
-    xor eax,eax
-    ; 4F00h
-    mov ebx,[C4Ram]
-    mov ebx,[vram]
-    mov al,[DecompAPtr+1h]
-    call outputhex
-    mov esi,216*288+32+16
-    add esi,[vidbuffer]
-    xor eax,eax
-    mov ebx,[C4Ram]
-    mov ebx,[vram]
-    mov al,[DecompAPtr]
-    call outputhex
-    mov esi,216*288+70
-    add esi,[vidbuffer]
-    xor eax,eax
-    mov ebx,[C4Ram]
-    mov al,[bg1objptr+1]
-    call outputhex
-    mov esi,216*288+70+16
-    add esi,[vidbuffer]
-    xor eax,eax
-    mov ebx,[C4Ram]
-    mov al,[bg1objptr]
-    call outputhex
-    mov esi,216*288+108
-    add esi,[vidbuffer]
-    xor eax,eax
-    mov ebx,[C4Ram]
-    mov al,[ebx+4]
-    call outputhex
-    mov esi,216*288+108+16
-    add esi,[vidbuffer]
-    xor eax,eax
-    mov ebx,[C4Ram]
-    mov al,[ebx+9]
-    call outputhex
-    mov esi,216*288+146
-    add esi,[vidbuffer]
-    xor eax,eax
-    mov ebx,[C4Ram]
-    mov al,[ebx+10]
-    call outputhex
-    xor eax,eax
-    mov esi,216*288+146+16
-    add esi,[vidbuffer]
-    or al,[bg1scroly]
-    mov ebx,[C4Ram]
-    mov al,[ebx+11]
-    call outputhex
-    ret
-
-SECTION .bss
-NEWSYM SoundPlayed0, resb 1
-NEWSYM SoundPlayed1, resb 1
-NEWSYM SoundPlayed2, resb 1
-NEWSYM SoundPlayed3, resb 1
-NEWSYM SoundPlayed4, resb 1
-NEWSYM SoundPlayed5, resb 1
-NEWSYM SoundPlayed6, resb 1
-NEWSYM SoundPlayed7, resb 1
-SECTION .text
-
-NEWSYM ShowSound
-    add esi,[vidbuffer]
-.next
-    mov [esi],ebx
-    mov [esi+4],ebx
-    mov [esi+8],bx
-    sub esi,288
-    dec al
-    jnz .next
-    ret
-
-NEWSYM sounddisplay
-%ifdef __MSDOS__
-    call displayfpspal
-%endif
-
-    push esi
-    push ebx
-    push eax
-    mov ebx,80808080h
-    cmp byte[SoundPlayed0],0
-    je .nosnd0
-    mov al,[SoundPlayed0]
-    mov esi,223*288+16
-    call ShowSound
-    sub byte[SoundPlayed0],2
-.nosnd0
-    cmp byte[SoundPlayed1],0
-    je .nosnd1
-    mov al,[SoundPlayed1]
-    mov esi,223*288+28
-    call ShowSound
-    sub byte[SoundPlayed1],2
-.nosnd1
-    cmp byte[SoundPlayed2],0
-    je .nosnd2
-    mov al,[SoundPlayed2]
-    mov esi,223*288+40
-    call ShowSound
-    sub byte[SoundPlayed2],2
-.nosnd2
-    cmp byte[SoundPlayed3],0
-    je .nosnd3
-    mov al,[SoundPlayed3]
-    mov esi,223*288+52
-    call ShowSound
-    sub byte[SoundPlayed3],2
-.nosnd3
-    cmp byte[SoundPlayed4],0
-    je .nosnd4
-    mov al,[SoundPlayed4]
-    mov esi,223*288+64
-    call ShowSound
-    sub byte[SoundPlayed4],2
-.nosnd4
-    cmp byte[SoundPlayed5],0
-    je .nosnd5
-    mov al,[SoundPlayed5]
-    mov esi,223*288+76
-    call ShowSound
-    sub byte[SoundPlayed5],2
-.nosnd5
-    cmp byte[SoundPlayed6],0
-    je .nosnd6
-    mov al,[SoundPlayed6]
-    mov esi,223*288+88
-    call ShowSound
-    sub byte[SoundPlayed6],2
-.nosnd6
-    cmp byte[SoundPlayed7],0
-    je .nosnd7
-    mov al,[SoundPlayed7]
-    mov esi,223*288+100
-    call ShowSound
-    sub byte[SoundPlayed7],2
-.nosnd7
-    pop eax
-    pop esi
-    pop ebx
-    ret
-
 NEWSYM waitvsync
     mov dx,3DAh             ;VGA status port
 ;.loop
@@ -2901,13 +2734,14 @@ NEWSYM waitvsync
 
 SECTION .data
 NEWSYM prevengval, db 10
-
+%endif
 
 SECTION .text
 
 NEWSYM copyvid
     mov dword[.sdrawptr],0
     ; Test if add table needs updating
+%ifdef __MSDOS__
     cmp byte[cbitmode],0
     je .notatud
     cmp byte[vesa2red10],0
@@ -2918,8 +2752,10 @@ NEWSYM copyvid
     mov [prevengval],al
     call genfulladdtab
 .notatud
+%endif
     cmp dword[MessageOn],0
     je near .nomsg
+%ifdef __MSDOS__
     cmp byte[cbitmode],1
     je near .do16b
 .no16b
@@ -2952,13 +2788,12 @@ NEWSYM copyvid
 .nfivex5b
     dec dword[MessageOn]
     jnz near .nomsg
-%ifdef __MSDOS__
     cmp byte[cbitmode],1
     je near .nomsg
     call dosmakepal
-%endif
     jmp .nomsg
 .do16b
+%endif
     mov edi,[Msgptr]
     mov esi,192*288*2+32*2
     add esi,[vidbuffer]
@@ -2996,16 +2831,20 @@ NEWSYM copyvid
     call GetMovieFrameStr
     popad
     mov edi,MovieFrameStr
+%ifdef __MSDOS__
     cmp byte[cbitmode],1
     jne .not16bframe
+%endif
     mov esi,216*288*2+32*2
     add esi,[vidbuffer]
     call OutputGraphicString16b5x5
+%ifdef __MSDOS__
     jmp .nomovie4
 .not16bframe
     mov esi,216*288+32
     add esi,[vidbuffer]
     call OutputGraphicString5x5
+%endif
 .nomovie4
     jmp vidpaste
 SECTION .bss
@@ -3070,6 +2909,7 @@ NEWSYM vidpaste
     xor ebx,ebx
     mov bl,[mousexloc]
     add ebx,6
+%ifdef __MSDOS__
     cmp byte[cbitmode],1
     je near .ss16b
     mov cl,20
@@ -3095,6 +2935,7 @@ NEWSYM vidpaste
     jmp .returnfromdraw
 
 .ss16b
+%endif
     push ebx
     mov cl,[vesa2_rpos]
     mov bx,31

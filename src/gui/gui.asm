@@ -1464,14 +1464,13 @@ guipostvidmsg1 db 'VIDEO MODE CHANGED.',0
 guipostvidmsg2 db '  PRESS SPACEBAR.',0
 SECTION .text
 
+%ifdef __MSDOS__
 guipostvideofail:
   mov dword[guipostvidptr],guipostvidmsg3b
   mov byte[guipostvidmsg3b],0
   mov byte[guipostvidmsg4b],0
   mov byte[guipostvidmsg5b],0
-%ifdef __MSDOS__
   mov eax,[ErrorPointer]
-%endif
   mov ebx,eax
 .loop
   cmp byte[ebx],0
@@ -1549,11 +1548,7 @@ guipostvideofail:
   call GUIUnBuffer
   call DisplayBoxes
   call DisplayMenu
-%ifndef __UNIXSDL__
   mov dword[GUIkeydelay],0FFFFFFFFh
-%else
-  mov dword[GUIkeydelay],0x0
-%endif
   jmp guipostvideo.pressedfail
 
 SECTION .data
@@ -1566,6 +1561,7 @@ guipostvidmsg8b db 'PRESS ANY KEY',0
 SECTION .bss
 guipostvidptr resd 1
 SECTION .text
+%endif
 
 NEWSYM guicheaterror
     xor ebx,ebx
@@ -2399,6 +2395,7 @@ InitGUI:
   ret
 
 GUISetPal:
+%ifdef __MSDOS__
   cmp byte[cbitmode],1
   je near GUISetPal16
   ; set palette
@@ -2768,6 +2765,9 @@ GUISetPal:
   inc esi
   dec ecx
   jnz .next
+%else
+  jmp GUISetPal16
+%endif
   ret
 
 SECTION .bss
@@ -3218,15 +3218,15 @@ SECTION .data
 SECTION .text
 
 GUIBufferData:
+%ifdef __MSDOS__
   mov ecx,16384
   cmp byte[cbitmode],1
   jne near .16b
   add ecx,16384
-  cmp word[PrevResoln],224
-  je .nobufb
-  add esi,288*8
-.nobufb
 .16b
+%else
+  mov ecx,32768
+%endif
   ; copy to spritetable
   mov esi,[vidbuffer]
   cmp word[PrevResoln],224

@@ -906,26 +906,7 @@ ProcessMouseButtons:
 
 GUIProcVideo:
   mov byte[GUICBHold],0
-%ifdef __MSDOS__
-  mov al,[GUIcurrentvideocursloc]
-  cmp al,3
-  je .yes16b
-  cmp al,5
-  je .yes16b
-  cmp al,7
-  je .yes16b
-  cmp al,10
-  je .yes16b
-  cmp al,8
-  jne .no16b
-.yes16b
-%endif
-;    mov byte[newengen],0
-;    mov byte[cfgnewgfx],0
-;    jmp .skipno16b
-.no16b
   mov byte[newengen],1
-.skipno16b
   call guiprevideo
   mov al,[cvidmode]
   mov [.prevvid],al
@@ -935,8 +916,10 @@ GUIProcVideo:
   mov byte[ExitFromGUI],1
 %endif
   call initvideo
+%ifdef __MSDOS__
   cmp byte[videotroub],1
   je .failed
+%endif
   call GUISetPal
   call guipostvideo
   cmp dword[GUIkeydelay],0
@@ -948,6 +931,7 @@ GUIProcVideo:
   mov [PrevFSMode],al
 %endif
   ret
+%ifdef __MSDOS__
 .failed
   mov byte[videotroub],0
   mov al,[.prevvid]
@@ -957,6 +941,7 @@ GUIProcVideo:
   call guipostvideofail
   mov dword[GUIkeydelay],0
   ret
+%endif
 .failed2
   mov byte[videotroub],0
   mov al,[.prevvid]

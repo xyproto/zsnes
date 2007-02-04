@@ -23,8 +23,7 @@
 
 EXTSYM mode7tab,winptrref,nglogicval,winlogicaval,curmosaicsz,curvidoffset
 EXTSYM cwinptr,mode7A,mode7B,mode7C,mode7D,mode7X0,mode7Y0,mode7set,vram,vrama
-EXTSYM xtravbuf,ngwleft,ngwleftb,mode7xpos,mode7ypos,mode7xrpos,mode7yrpos
-EXTSYM mode7xadder,mode7yadder,mode7hr,dcolortab,UnusedBitXor,UnusedBit,scrndis
+EXTSYM xtravbuf,mode7hr,dcolortab,UnusedBitXor,UnusedBit,scrndis
 EXTSYM vidbright,prevbrightdc,Gendcolortable,mode7ab,mode7cd,BGMA,BG1SXl,BG1SYl
 
 %include "video/mode716.mac"
@@ -275,6 +274,22 @@ EXTSYM vidbright,prevbrightdc,Gendcolortable,mode7ab,mode7cd,BGMA,BG1SXl,BG1SYl
 %endmacro
 
 SECTION .text
+
+NEWSYM Makemode7Table
+    xor eax,eax
+.nextentry
+    mov cl,al
+    mov dl,ah
+    and cl,07h
+    and dl,07h
+    shl cl,4
+    shl dl,1
+    inc dl
+    add dl,cl
+    mov [mode7tab+eax],dl
+    dec ax
+    jnz .nextentry
+    ret
 
 NEWSYM drawmode7win16b
     test byte[scrndis],1
@@ -586,6 +601,17 @@ mm7xaddof resd 1
 mm7xaddof2 resd 1
 mm7yaddof resd 1
 mm7yaddof2 resd 1
+
+;ALIGN32
+NEWSYM ngwleft,       resd 1       ; for byte move left
+NEWSYM ngwleftb,      resd 1       ; for byte move left
+NEWSYM mode7xpos,   resd 2         ; x position
+NEWSYM mode7ypos,   resd 2         ; x position
+NEWSYM mode7xrpos,  resd 2         ; x position, relative
+NEWSYM mode7yrpos,  resd 2         ; y position, relative
+NEWSYM mode7xadder, resd 2         ; number to add for x
+NEWSYM mode7yadder, resd 2         ; number to add for y
+
 SECTION .text
 
 %macro newvaluepred 2
