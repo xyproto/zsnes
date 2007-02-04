@@ -2218,36 +2218,46 @@ DisplayGUIInputClick:
   ret
 
 DisplayGUIOptionClick:
+  GUIPTabClick 0,39,1,GUIOptionTabs
+  GUIPTabClick 40,74,2,GUIOptionTabs
+  cmp dword[GUIOptionTabs],1
+  jne near .notbasic
   cmp byte[ShowMMXSupport],1
   jne .nommx
-  GUIClickCButton 11,18,byte[MMXSupport]
+  GUIClickCButton 11,31,byte[MMXSupport]
 .nommx
+  GUIClickCButton 11,41,byte[Show224Lines]
+  GUIClickCButton 11,71,byte[newengen]
+  GUIClickCButton 11,81,byte[bgfixer]
+  GUIClickCButton 11,111,byte[AutoPatch]
+  GUIClickCButton 11,121,byte[DisplayInfo]
+  GUIClickCButton 11,131,byte[RomInfo]
 %ifdef __WIN32__
-  GUIClickCButton 11,28,byte[PauseFocusChange]
-  GUIClickCButton 11,38,byte[HighPriority]
+  GUIClickCButton 11,161,byte[PauseFocusChange]
+  GUIClickCButton 11,171,byte[HighPriority]
   pushad
   call CheckPriority
   popad
-  GUIClickCButton 11,48,byte[DisableScreenSaver]
+  GUIClickCButton 11,181,byte[DisableScreenSaver]
   pushad
   call CheckScreenSaver
   popad
 %endif
-  GUIClickCButton 11,68,byte[newengen]
-  GUIClickCButton 11,78,byte[bgfixer]
-  GUIPButtonHole 143,70,byte[ScreenShotFormat],0
+.notbasic
+
+  cmp dword[GUIOptionTabs],2
+  jne near .notmore
+  GUIClickCButton 11,31,byte[FPSAtStart]
+  GUIClickCButton 11,41,byte[TimerEnable]
+  GUIClickCButton 89,41,byte[TwelveHourClock]
+  GUIClickCButton 11,51,byte[ClockBox]
+  GUIClickCButton 11,81,byte[SmallMsgText]
+  GUIClickCButton 11,91,byte[GUIEnableTransp]
+  GUIPButtonHole 11,121,byte[ScreenShotFormat],0
 %ifndef NO_PNG
-  GUIPButtonHole 143,80,byte[ScreenShotFormat],1
+  GUIPButtonHole 11,131,byte[ScreenShotFormat],1
 %endif
-  GUIClickCButton 11,98,byte[AutoPatch]
-  GUIClickCButton 11,108,byte[DisplayInfo]
-  GUIClickCButton 11,118,byte[RomInfo]
-  GUIClickCButton 11,138,byte[FPSAtStart]
-  GUIClickCButton 11,148,byte[TimerEnable]
-  GUIClickCButton 89,148,byte[TwelveHourClock]
-  GUIClickCButton 11,158,byte[ClockBox]
-  GUIClickCButton 11,178,byte[SmallMsgText]
-  GUIClickCButton 11,188,byte[GUIEnableTransp]
+.notmore
   ret
 
 DisplayGUIVideoClick2:

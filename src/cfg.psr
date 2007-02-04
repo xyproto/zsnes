@@ -51,6 +51,34 @@ GameSpecificInput db 0
 @ video/sound filters.
 AllowMMX db 1
 
+@
+@ Show 224 Lines (0 = No, 1 = YES)
+@ Toggle off if you do not want to see the last line
+Show224Lines db 1
+
+@
+@ Enable New Graphics Engine (0 = No, 1 = YES)
+@ Toggle off when there are graphical problems in the new graphics engine
+newengen db 1
+
+@
+@ Enable Older Graphics Engine Tweak for Mode 2 (0 = NO, 1 = Yes)
+@ Enable this to see if it helps with rendering problems
+@ Only works with old graphic engine
+bgfixer db 0
+
+@
+@ Auto-Patch ROM with IPS (0 = No, 1 = YES)
+AutoPatch db 1
+
+@
+@ Display ROM Info on Load (0 = No, 1 = YES)
+DisplayInfo db 1
+
+@
+@ Log Info About the Last ROM Loaded to rominfo.txt (0 = No, 1 = YES)
+RomInfo db 1
+
 %ifdef __WIN32__
 @
 @ Pause Emulation when ZSNES is Out of Focus (0 = NO, 1 = Yes)
@@ -68,48 +96,6 @@ HighPriority db 0
 @ This is very necessary for gamepad users.
 DisableScreenSaver db 1
 %endif
-
-@
-@ Enable New Graphics Engine (0 = No, 1 = YES)
-@ Toggle off when there are graphical problems in the new graphics engine
-newengen db 1
-
-@
-@ Enable Older Graphics Engine Tweak for Mode 2 (0 = NO, 1 = Yes)
-@ Enable this to see if it helps with rendering problems
-@ Only works with old graphic engine
-bgfixer db 0
-
-@
-%ifndef NO_PNG
-@ Snapshot Format (0 = BMP, 1 = PNG)
-%ifdef __MSDOS__
-@ Note: in 8 bit video modes PNG is not selectable
-%endif
-%else
-@ Snapshot Format (0 = BMP)
-%endif
-%ifndef NO_PNG
-%ifndef __MSDOS__
-ScreenShotFormat db 1
-%else
-ScreenShotFormat db 0
-%endif
-%else
-ScreenShotFormat db 0
-%endif
-
-@
-@ Auto-Patch ROM with IPS (0 = No, 1 = YES)
-AutoPatch db 1
-
-@
-@ Display ROM Info on Load (0 = No, 1 = YES)
-DisplayInfo db 1
-
-@
-@ Log Info About the Last ROM Loaded to rominfo.txt (0 = No, 1 = YES)
-RomInfo db 1
 
 @
 @ Enable FPS Counter when ZSNES is Started (0 = NO, 1 = Yes)
@@ -135,6 +121,25 @@ SmallMsgText db 0
 @
 @ Transparent Messages - doesn't work with small font (0 = NO, 1 = Yes)
 GUIEnableTransp db 0
+
+@
+%ifndef NO_PNG
+@ Snapshot Format (0 = BMP, 1 = PNG)
+%ifdef __MSDOS__
+@ Note: in 8 bit video modes PNG is not selectable
+%endif
+%else
+@ Snapshot Format (0 = BMP)
+%endif
+%ifndef NO_PNG
+%ifndef __MSDOS__
+ScreenShotFormat db 1
+%else
+ScreenShotFormat db 0
+%endif
+%else
+ScreenShotFormat db 0
+%endif
 
 @
 @  ----

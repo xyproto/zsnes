@@ -62,7 +62,7 @@ EXTSYM AdjustFrequency,GUISaveVars,Init_Mouse,Get_MouseData,Set_MouseXMax
 EXTSYM Set_MouseYMax,Set_MousePosition,Get_MousePositionDisplacement,GUIInit
 EXTSYM GUIDeInit,SpecialLine,DrawWater,DrawBurn,DrawSmoke
 EXTSYM GetDate,horizon_get,MessageOn,GetTime
-EXTSYM Clear2xSaIBuffer,MouseWindow
+EXTSYM Clear2xSaIBuffer,MouseWindow,Show224Lines
 EXTSYM newgfx16b,NumVideoModes,MusicVol,DSPMem,NumInputDevices
 EXTSYM GUIInputNames,GUIVideoModeNames,GameSpecificInput,device1,device2,TwelveHourClock
 EXTSYM GUIM7VID,GUINTVID,GUIHQ2X,RawDumpInProgress

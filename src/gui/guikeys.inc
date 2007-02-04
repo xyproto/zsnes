@@ -823,29 +823,26 @@ GUITCPIPKeys:
   ret
 
 GUIOptionKeys:
+  cmp dh,9
+  jne near .notab
+  KeyTabInc GUIOptionTabs
+.notab
   ToUpperASM
+  cmp dword[GUIOptionTabs],1
+  jne near .notbasic
   cmp byte[ShowMMXSupport],1
   jne .nommxcopy
   GUIKeyCheckbox MMXSupport,'M'          ; Checkboxes
 .nommxcopy
-  GUIKeyButtonHole ScreenShotFormat,0,'P'
-%ifndef NO_PNG
-  GUIKeyButtonHole ScreenShotFormat,1,'G'
-%endif
+  GUIKeyCheckbox Show224Lines,'L'
   GUIKeyCheckbox newengen, 'N'
-  GUIKeyCheckbox FPSAtStart,'F'
-  GUIKeyCheckbox TimerEnable,'C'
-  GUIKeyCheckbox ClockBox,'X'
-  GUIKeyCheckbox TwelveHourClock,'1'
   GUIKeyCheckbox bgfixer,'A'
-  GUIKeyCheckbox SmallMsgText,'S'
   GUIKeyCheckbox AutoPatch,'I'
-  GUIKeyCheckbox RomInfo,'R'
-  GUIKeyCheckbox DisplayInfo,'W'
-  GUIKeyCheckbox GUIEnableTransp,'T'
+  GUIKeyCheckbox DisplayInfo,'R'
+  GUIKeyCheckbox RomInfo,'G'
 %ifdef __WIN32__
   GUIKeyCheckbox PauseFocusChange,'B'
-  GUIKeyCheckbox HighPriority,'O'
+  GUIKeyCheckbox HighPriority,'P'
   pushad
   call CheckPriority
   popad
@@ -854,6 +851,21 @@ GUIOptionKeys:
   call CheckScreenSaver
   popad
 %endif
+.notbasic
+
+  cmp byte[GUIOptionTabs],2
+  jne near .notmore
+  GUIKeyCheckbox FPSAtStart,'F'
+  GUIKeyCheckbox TimerEnable,'C'
+  GUIKeyCheckbox TwelveHourClock,'H'
+  GUIKeyCheckbox ClockBox,'X'
+  GUIKeyCheckbox SmallMsgText,'S'
+  GUIKeyCheckbox GUIEnableTransp,'T'
+  GUIKeyButtonHole ScreenShotFormat,0,'B'
+%ifndef NO_PNG
+  GUIKeyButtonHole ScreenShotFormat,1,'P'
+%endif
+.notmore
   ret
 
 GUIAboutKeys:

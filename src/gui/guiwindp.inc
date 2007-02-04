@@ -1748,63 +1748,71 @@ SECTION .text
 
 DisplayGUIOption:       ; Emu Options
   GUIDrawWindowBox 4,GUIOptionDisp
+  GUIDrawTArea 4
+  GUIDrawTabs GUIOptionTabs
 
-%ifndef __WIN32__
+  cmp dword[GUIOptionTabs],1
+  jne near .notbasic
+  GUIDisplayTextY 4,11,26,GUIOptionTextA
   cmp byte[ShowMMXSupport],1
   jne near .nommx
-%endif
-  GUIDisplayTextY 4,11,13,GUIOptionTextA
-  cmp byte[ShowMMXSupport],1
-  jne near .nommx
-  GUIDisplayCheckboxu 4,11,18,MMXSupport,GUIOptionTextA1,7
+  GUIDisplayCheckboxu 4,11,31,MMXSupport,GUIOptionTextA1,7
 .nommx
-%ifdef __WIN32__
-  GUIDisplayCheckboxu 4,11,28,PauseFocusChange,GUIOptionTextA2,13
-  GUIDisplayCheckboxu 4,11,38,HighPriority,GUIOptionTextA3,16
-  GUIDisplayCheckboxu 4,11,48,DisableScreenSaver,GUIOptionTextA4,0
-%endif
+  GUIDisplayCheckboxu 4,11,41,Show224Lines,GUIOptionTextA2,9
 
-  GUIDisplayTextY 4,11,63,GUIOptionTextB
-  GUIDisplayCheckboxu 4,11,68,newengen,GUIOptionTextB1,4
+  GUIDisplayTextY 4,11,66,GUIOptionTextB
+  GUIDisplayCheckboxu 4,11,71,newengen,GUIOptionTextB1,4
   cmp byte[newengen],0
   jne near .newengen
-  GUIDisplayCheckboxu 4,11,78,bgfixer,GUIOptionTextB2,4
+  GUIDisplayCheckboxu 4,11,81,bgfixer,GUIOptionTextB2,4
 .newengen
 
-  GUIDisplayTextY 4,140,63,GUIOptionTextF
-  GUIDisplayButtonHoleTu 4,143,70,byte[ScreenShotFormat],0,GUIOptionTextF1,2
-%ifndef NO_PNG
-  GUIDisplayButtonHoleTu 4,143,80,byte[ScreenShotFormat],1,GUIOptionTextF2,2
+  GUIDisplayTextY 4,11,106,GUIOptionTextC
+  GUIDisplayCheckboxu 4,11,111,AutoPatch,GUIOptionTextC1,7
+  GUIDisplayCheckboxu 4,11,121,DisplayInfo,GUIOptionTextC2,5
+  GUIDisplayCheckboxu 4,11,131,RomInfo,GUIOptionTextC3,2
+
+%ifdef __WIN32__
+  GUIDisplayTextY 4,11,156,GUIOptionTextG
+  GUIDisplayCheckboxu 4,11,161,PauseFocusChange,GUIOptionTextG1,13
+  GUIDisplayCheckboxu 4,11,171,HighPriority,GUIOptionTextG2,13
+  GUIDisplayCheckboxu 4,11,181,DisableScreenSaver,GUIOptionTextG3,0
 %endif
+.notbasic
 
-  GUIDisplayTextY 4,11,93,GUIOptionTextC
-  GUIDisplayCheckboxu 4,11,98,AutoPatch,GUIOptionTextC1,7
-  GUIDisplayCheckboxu 4,11,108,DisplayInfo,GUIOptionTextC2,3
-  GUIDisplayCheckboxu 4,11,118,RomInfo,GUIOptionTextC3,4
-
-  GUIDisplayTextY 4,11,133,GUIOptionTextD
-  GUIDisplayCheckboxu 4,11,138,FPSAtStart,GUIOptionTextD1,5
-  GUIDisplayCheckboxu 4,11,148,TimerEnable,GUIOptionTextD2,5
+  cmp byte[GUIOptionTabs],2
+  jne near .notmore
+  GUIDisplayTextY 4,11,26,GUIOptionTextD
+  GUIDisplayCheckboxu 4,11,31,FPSAtStart,GUIOptionTextD1,5
+  GUIDisplayCheckboxu 4,11,41,TimerEnable,GUIOptionTextD2,5
   cmp byte[TimerEnable],1
   jne near .noclock
-  GUIDisplayCheckboxu 4,89,148,TwelveHourClock,GUIOptionTextD3,0
-  GUIDisplayCheckboxu 4,11,158,ClockBox,GUIOptionTextD4,13
+  GUIDisplayCheckboxu 4,89,41,TwelveHourClock,GUIOptionTextD3,3
+  GUIDisplayCheckboxu 4,11,51,ClockBox,GUIOptionTextD4,13
 .noclock
 
-  GUIDisplayTextY 4,11,173,GUIOptionTextE
-  GUIDisplayCheckboxu 4,11,178,SmallMsgText,GUIOptionTextE1,4
-  GUIDisplayCheckboxu 4,11,188,GUIEnableTransp,GUIOptionTextE2,4
+  GUIDisplayTextY 4,11,76,GUIOptionTextE
+  GUIDisplayCheckboxu 4,11,81,SmallMsgText,GUIOptionTextE1,4
+  GUIDisplayCheckboxu 4,11,91,GUIEnableTransp,GUIOptionTextE2,4
+
+  GUIDisplayTextY 4,11,116,GUIOptionTextF
+  GUIDisplayButtonHoleTu 4,11,121,byte[ScreenShotFormat],0,GUIOptionTextF1,0
+%ifndef NO_PNG
+  GUIDisplayButtonHoleTu 4,11,131,byte[ScreenShotFormat],1,GUIOptionTextF2,0
+%endif
+.notmore
   ret
 
 SECTION .data
+GUIOptionTabs dd 1,2
+  db 'BASIC',0
+  db 'MORE',0
+
+NEWSYM ShowMMXSupport, db 2
+
 GUIOptionTextA db 'SYSTEM:',0
 GUIOptionTextA1 db 'ENABLE MMX SUPPORT',0
-%ifdef __WIN32__
-GUIOptionTextA2 db 'PAUSE EMU IN BACKGROUND',0
-GUIOptionTextA3 db 'INCREASE EMU PRIORITY',0
-GUIOptionTextA4 db 'DISABLE POWER MANAGEMENT',0
-%endif
-NEWSYM ShowMMXSupport, db 2
+GUIOptionTextA2 db 'SHOW 224 LINES',0
 
 GUIOptionTextB db 'GFX ENGINES:',0
 GUIOptionTextB1 db 'USE NEW GFX ENG',0
@@ -1825,10 +1833,17 @@ GUIOptionTextE db 'MESSAGES:',0
 GUIOptionTextE1 db 'USE SMALL MESSAGE TEXT',0
 GUIOptionTextE2 db 'USE TRANSPARENT TEXT',0
 
-GUIOptionTextF db 'SSHOTS:',0
+GUIOptionTextF db 'SCREENSHOT FORMAT:',0
 GUIOptionTextF1 db 'BMP',0
 %ifndef NO_PNG
 GUIOptionTextF2 db 'PNG',0
+%endif
+
+%ifdef __WIN32__
+GUIOptionTextG db 'WINDOWS SPECIFIC:',0
+GUIOptionTextG1 db 'PAUSE EMU IN BACKGROUND',0
+GUIOptionTextG2 db 'INCREASE EMU PRIORITY',0
+GUIOptionTextG3 db 'DISABLE POWER MANAGEMENT',0
 %endif
 
 SECTION .text
