@@ -96,7 +96,7 @@ NEWSYM DrawWin256x224x16
 %ifdef __WIN32__
     cmp  eax,edx
 %else
-    cmp  eax,224
+    cmp  eax,223
 %endif
     jne .Copying3
     xor  eax,eax
@@ -123,7 +123,7 @@ NEWSYM DrawWin256x224x16
 %ifdef __WIN32__
     cmp  eax,edx
 %else
-    cmp  eax,224
+    cmp  eax,223
 %endif
     jne .Copying
     xor  eax,edx
@@ -229,7 +229,7 @@ NEWSYM DrawWin320x240x16
 %ifdef __WIN32__
     cmp  ebx,239
 %else
-    cmp  ebx,224
+    cmp  ebx,223
 %endif
     jne .Copying2MMX
     mov  ecx,128
