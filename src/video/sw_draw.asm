@@ -78,7 +78,6 @@ NEWSYM DrawWin256x224x16
     mov  edi, [SurfBufD]
     xor  eax,eax
     movsx edx, word[resolutn]
-    sub  edx,2
 .Copying3:
     mov  ecx,32
 .CopyLoop:
@@ -97,7 +96,7 @@ NEWSYM DrawWin256x224x16
 %ifdef __WIN32__
     cmp  eax,edx
 %else
-    cmp  eax,223
+    cmp  eax,224
 %endif
     jne .Copying3
     xor  eax,eax
@@ -113,7 +112,6 @@ NEWSYM DrawWin256x224x16
     mov  esi, [ScreenPtr]
     mov  edi, [SurfBufD]
     movsx edx, word[resolutn]
-    sub  edx,2
 .Copying:
     mov  ecx,128
     rep  movsd
@@ -125,7 +123,7 @@ NEWSYM DrawWin256x224x16
 %ifdef __WIN32__
     cmp  eax,edx
 %else
-    cmp  eax,223
+    cmp  eax,224
 %endif
     jne .Copying
     xor  eax,edx
@@ -140,7 +138,6 @@ NEWSYM DrawWin256x224x32
     mov  es,ax
     xor  eax,eax
     movsx edx, word[resolutn]
-    sub  edx,2
     mov  esi, [ScreenPtr]
     mov  edi, [SurfBufD]
     movq mm4, [copymaskRB]
@@ -232,7 +229,7 @@ NEWSYM DrawWin320x240x16
 %ifdef __WIN32__
     cmp  ebx,239
 %else
-    cmp  ebx,223
+    cmp  ebx,224
 %endif
     jne .Copying2MMX
     mov  ecx,128
@@ -248,7 +245,6 @@ NEWSYM DrawWin320x240x16
     mov  esi, [ScreenPtr]
     mov  edi, [SurfBufD]
     movsx edx, word[resolutn]
-    sub  edx,2
 .Blank1:
     xor  eax,eax
     mov  ecx,160
