@@ -19,11 +19,12 @@
 
 %include "macros.mac"
 
-EXTSYM ProcessSoundBuffer,DosExit,getenv,PrintStr,printhex,WaitForKey
-EXTSYM SBHDMA,soundon,csounddisable,DisplayS,SPCRAM,DSPMem
-EXTSYM StereoSound,SoundQuality,SoundSpeeds,SBToSPCSpeeds2
-EXTSYM SoundSpeedt,DSPBuffer,BufferSize,BufferSizes,BufferSizeB
-EXTSYM BufferSizeW,dssel,PrintChar
+EXTSYM DosExit,getenv,PrintStr,printhex,WaitForKey
+EXTSYM soundon,csounddisable,DisplayS,SPCRAM
+EXTSYM StereoSound,SoundQuality
+EXTSYM dssel,PrintChar
+;EXTSYM DSPMem,DSPBuffer,BufferSizeB,BufferSizeW,SBToSPCSpeeds2
+;EXTSYM ProcessSoundBuffer,BufferSize,BufferSizes,SoundSpeeds,SoundSpeedt
 
 SECTION .text
 
@@ -146,7 +147,7 @@ NEWSYM SBInt,  db 5+8
 NEWSYM SBIrq,  db 5
 NEWSYM SBDMA,  db 1
 NEWSYM SBDMAPage, db 83
-;NEWSYM SBHDMA, db 0
+NEWSYM SBHDMA, db 0
 NEWSYM SBHDMAPage, db 0
 NEWSYM vibracard, db 0
 
@@ -288,7 +289,7 @@ NEWSYM handlersbseg
 
     cmp byte[csounddisable],1
     je near stopsbsound
-    test byte[DSPMem+6Ch],11000000b
+    ;test byte[DSPMem+6Ch],11000000b
     jnz near stopsbsound
 
     ; Process the sound :I
@@ -302,11 +303,11 @@ NEWSYM handlersbseg
     ; copy to 2nd block
     ; clear memory
     mov edi,[sbpmofs]
-    add edi,[BufferSizeB]
+    ;add edi,[BufferSizeB]
 .startblockcopy
 
-    mov esi,DSPBuffer
-    mov ecx,[BufferSizeB]
+    ;mov esi,DSPBuffer
+    ;mov ecx,[BufferSizeB]
 .loopb
     mov eax,[esi]
     cmp eax,-32768
@@ -330,7 +331,7 @@ NEWSYM handlersbseg
    ; move the good data at SPCRAM+0f3h
       xor eax,eax
       mov al,[SPCRAM+0F2h]
-      mov bl,[DSPMem+eax]
+      ;mov bl,[DSPMem+eax]
       mov [SPCRAM+0F3h],bl
     ; acknowledge SB for IRQing
     mov dx,[SBPort]
@@ -358,8 +359,8 @@ NEWSYM stopsbsound
 
     mov ax,ds
     mov es,ax
-    mov edi,DSPBuffer
-    mov ecx,[BufferSizeB]
+    ;mov edi,DSPBuffer
+    ;mov ecx,[BufferSizeB]
     xor eax,eax
     rep stosd
 
@@ -369,7 +370,7 @@ NEWSYM stopsbsound
     ; clear block
     mov es,[sbselec]
     mov edi,[sbpmofs]
-    mov ecx,[BufferSizeB]
+    ;mov ecx,[BufferSizeB]
     shr ecx,2
 .loopa
     mov dword[es:edi],80808080h
@@ -382,8 +383,8 @@ NEWSYM stopsbsound
     ; clear memory
     mov es,[sbselec]
     mov edi,[sbpmofs]
-    add edi,[BufferSizeB]
-    mov ecx,[BufferSizeB]
+    ;add edi,[BufferSizeB]
+    ;mov ecx,[BufferSizeB]
     shr ecx,2
 .loopb
     mov dword[es:edi],80808080h
@@ -437,7 +438,7 @@ NEWSYM SBHandler16
 
     cmp byte[csounddisable],1
     je near stopsbsound16
-    test byte[DSPMem+6Ch],11000000b
+    ;test byte[DSPMem+6Ch],11000000b
     jnz near stopsbsound16
 
     mov es,[sbselec]
@@ -450,10 +451,10 @@ NEWSYM SBHandler16
     ; copy to 2nd block
     ; clear memory
     mov edi,[sbpmofs]
-    add edi,[BufferSizeW]
+    ;add edi,[BufferSizeW]
 .doneblock
-    mov esi,DSPBuffer
-    mov ecx,[BufferSizeB]
+    ;mov esi,DSPBuffer
+    ;mov ecx,[BufferSizeB]
 .loopb
     mov eax,[esi]
     cmp eax,-32768
@@ -489,7 +490,7 @@ NEWSYM SBHandler16
 
 Startprocsbdata:
     push ebp
-    call ProcessSoundBuffer
+    ;call ProcessSoundBuffer
     pop ebp
     pop es
     pop esi
@@ -513,8 +514,8 @@ NEWSYM stopsbsound16
 
     mov ax,ds
     mov es,ax
-    mov edi,DSPBuffer
-    mov ecx,[BufferSizeB]
+    ;mov edi,DSPBuffer
+    ;mov ecx,[BufferSizeB]
     xor eax,eax
     rep stosd
 
@@ -524,7 +525,7 @@ NEWSYM stopsbsound16
     ; clear block
     mov es,[sbselec]
     mov edi,[sbpmofs]
-    mov ecx,[BufferSizeB]
+    ;mov ecx,[BufferSizeB]
     shr ecx,1
 .loopa
     mov dword[es:edi],00000000h
@@ -537,8 +538,8 @@ NEWSYM stopsbsound16
     ; clear memory
     mov es,[sbselec]
     mov edi,[sbpmofs]
-    add edi,[BufferSizeW]
-    mov ecx,[BufferSizeB]
+    ;add edi,[BufferSizeW]
+    ;mov ecx,[BufferSizeB]
     shr ecx,1
 .loopb
     mov dword[es:edi],00000000h
@@ -587,15 +588,15 @@ NEWSYM InitSB
     mov eax,[SoundQuality]
     cmp byte[StereoSound],1
     jne .nostereobuf
-    mov ax,[BufferSizes+eax*2]
+    ;mov ax,[BufferSizes+eax*2]
     jmp .skipstereobuf
 .nostereobuf
-    mov ax,[BufferSize+eax*2]
+    ;mov ax,[BufferSize+eax*2]
 .skipstereobuf
 
-    mov [BufferSizeB],ax
+    ;mov [BufferSizeB],ax
     add ax,ax
-    mov [BufferSizeW],ax
+    ;mov [BufferSizeW],ax
 
     mov byte[SBswitch],0
     ; Allocate pointer
@@ -640,7 +641,7 @@ NEWSYM InitSB
     jbe .okay
     mov eax,2
 .okay
-    mov al,[SoundSpeedt+eax]
+    ;mov al,[SoundSpeedt+eax]
     call SB_dsp_write
     ; Set Stereo
     mov dx, [SBPort]
@@ -654,14 +655,14 @@ NEWSYM InitSB
     jmp .donestereo
 .nostereo8b
     mov eax,[SoundQuality]
-    mov al,[SoundSpeeds+eax]
+    ;mov al,[SoundSpeeds+eax]
     call SB_dsp_write
 .donestereo
 
     cmp byte[StereoSound],1
     je .highmode
     mov eax,[SoundQuality]
-    cmp byte[SoundSpeeds+eax],211
+    ;cmp byte[SoundSpeeds+eax],211
     ja .highmode
     mov byte[.Versionnum],1
 .highmode
@@ -688,7 +689,7 @@ NEWSYM InitSB
     mov al,[memoryloc+1]
     out dx,al
     ; Send length of entire block
-    mov ax,[BufferSizeW]
+    ;mov ax,[BufferSizeW]
     dec ax
     inc dx
     out dx,al
@@ -709,7 +710,7 @@ NEWSYM InitSB
     call SB_dsp_write
 
     ; Send Length-1 to DSP port
-    mov ax,[BufferSizeB]
+    ;mov ax,[BufferSizeB]
     dec ax
     call SB_dsp_write
     mov al,ah
@@ -773,7 +774,7 @@ SECTION .text
     mov al,[memoryloc+1]
     out dx,al
     ; Send length of entire block
-    mov ax,[BufferSizeW]
+    ;mov ax,[BufferSizeW]
     shl ax, 1
     dec ax
     inc dx
@@ -794,12 +795,12 @@ SECTION .text
     call SB_dsp_write
     push ecx
     mov ecx,[SoundQuality]
-    mov al,[SBToSPCSpeeds2+ecx*4+1]
+    ;mov al,[SBToSPCSpeeds2+ecx*4+1]
     pop ecx
     call SB_dsp_write
     push ecx
     mov ecx,[SoundQuality]
-    mov al,[SBToSPCSpeeds2+ecx*4]
+    ;mov al,[SBToSPCSpeeds2+ecx*4]
     pop ecx
     call SB_dsp_write
 
@@ -819,7 +820,7 @@ SECTION .text
 ._AfterStereo
 
     ; Send Length-1 to DSP port
-    mov ax,[BufferSizeB]
+    ;mov ax,[BufferSizeB]
     dec ax
     call SB_dsp_write
     mov al,ah
@@ -841,7 +842,7 @@ SECTION .text
 
     push ecx
     mov ecx,[SoundQuality]
-    mov al,[SoundSpeeds+ecx]
+    ;mov al,[SoundSpeeds+ecx]
     pop ecx
     call SB_dsp_write
 
@@ -897,7 +898,7 @@ SECTION .text
     out dx,al
 
     ; Send length of entire block
-    mov ax,[BufferSizeW]
+    ;mov ax,[BufferSizeW]
     dec ax
     add dx,2
     out dx,al
@@ -925,7 +926,7 @@ SECTION .text
 .AfterStereol
 
     ; Send Length-1 to DSP port
-    mov ax,[BufferSizeB]
+    ;mov ax,[BufferSizeB]
     dec ax
     call SB_dsp_write
     mov al,ah
@@ -956,12 +957,12 @@ SECTION .text
     call SB_dsp_write
     push ecx
     mov ecx,[SoundQuality]
-    mov al,[SBToSPCSpeeds2+ecx*4+1]
+    ;mov al,[SBToSPCSpeeds2+ecx*4+1]
     pop ecx
     call SB_dsp_write
     push ecx
     mov ecx,[SoundQuality]
-    mov al,[SBToSPCSpeeds2+ecx*4]
+    ;mov al,[SBToSPCSpeeds2+ecx*4]
     pop ecx
     call SB_dsp_write
 
@@ -1001,7 +1002,7 @@ SECTION .text
     out dx,al
 
     ; Send length of entire block
-    mov ax,[BufferSizeW]
+    ;mov ax,[BufferSizeW]
     dec ax
     add dx,2
     out dx,al
@@ -1030,7 +1031,7 @@ SECTION .text
 .AfterStereo
 
     ; Send Length-1 to DSP port
-    mov ax,[BufferSizeB]
+    ;mov ax,[BufferSizeB]
     dec ax
     call SB_dsp_write
     mov al,ah
@@ -1083,7 +1084,7 @@ GetCDMAPos:
     add bx,bx
 .ldma2
     ; value returned = bx, # of bytes left for transfer
-    mov cx,[BufferSizeB]
+    ;mov cx,[BufferSizeB]
     mov dx,cx
     add cx,cx
     cmp byte[SBHDMA],4
