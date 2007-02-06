@@ -59,6 +59,9 @@ SECTION .text
 NEWSYM switchtonmi
     mov byte[curnmi],1
     sub dh,130
+    jnc .nooverflow
+    mov dh,130
+.nooverflow
     test byte[xe],1
     jne near NMIemulmode
     mov ebx,esi

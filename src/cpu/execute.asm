@@ -792,6 +792,8 @@ NEWSYM execloop
 .notxe
    cmp byte[doirqnext],1
    je .noirq
+   cmp byte[SA1IRQEnable],0
+   je .noirq
    cmp byte[irqon],0
    je .noirq
    sub dh,12
