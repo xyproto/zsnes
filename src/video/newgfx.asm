@@ -896,7 +896,7 @@ SECTION .data
 ALIGN32
 
 NEWSYM ngwintable, times 16 dd 0EE00h
-NEWSYM ngwintablec, times 16 dd 0EE00h
+NEWSYM ngwintablec, times 18 dd 0EE00h
 NEWSYM ngcwinptr, dd ngwintable
 
 SECTION .bss
