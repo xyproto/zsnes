@@ -854,7 +854,9 @@ static bool snes_extension_match(const char *filename)
   {
     dot++;
     if (!strcasecmp(dot, "sfc") ||
+        #ifndef NO_JMA
         !strcasecmp(dot, "jma") ||
+        #endif
         !strcasecmp(dot, "zip") ||
         !strcasecmp(dot, "gz") ||
         !strcasecmp(dot, "st") ||
