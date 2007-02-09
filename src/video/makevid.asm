@@ -80,7 +80,6 @@ SECTION .text
     xor eax,eax
     xor edx,edx
     mov ax,[curypos]
-    inc ax
     test byte[mode7set],02h
     jz %%noflip
     neg ax
@@ -113,7 +112,6 @@ SECTION .text
     xor eax,eax
     xor edx,edx
     mov ax,[curypos]
-    inc ax
     test byte[mode7set],02h
     jz %%noflip
     neg ax
@@ -146,7 +144,6 @@ SECTION .text
     xor eax,eax
     xor edx,edx
     mov ax,[curypos]
-    inc ax
     test byte[mode7set],02h
     jz %%noflip
     neg ax

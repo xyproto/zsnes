@@ -121,7 +121,6 @@ NEWSYM procmode716tsub
     xor eax,eax
     xor edx,edx
     mov ax,[curypos]
-    inc ax
     test byte[mode7set],02h
     jz .noflip
     neg ax
@@ -169,7 +168,6 @@ NEWSYM procmode716tsubextbg
     xor eax,eax
     xor edx,edx
     mov ax,[curypos]
-    inc ax
     test byte[mode7set],02h
     jz .noflip
     neg ax
@@ -218,7 +216,6 @@ NEWSYM procmode716tsubextbgb
     xor eax,eax
     xor edx,edx
     mov ax,[curypos]
-    inc ax
     test byte[mode7set],02h
     jz .noflip
     neg ax
@@ -297,7 +294,6 @@ NEWSYM procmode716tmain
     xor eax,eax
     xor edx,edx
     mov ax,[curypos]
-    inc ax
     test byte[mode7set],02h
     jz .noflip
     neg ax
@@ -354,7 +350,6 @@ NEWSYM procmode716tmainextbg
     xor eax,eax
     xor edx,edx
     mov ax,[curypos]
-    inc ax
     test byte[mode7set],02h
     jz .noflip
     neg ax
@@ -407,7 +402,6 @@ NEWSYM procmode716tmainextbgb
     xor eax,eax
     xor edx,edx
     mov ax,[curypos]
-    inc ax
     test byte[mode7set],02h
     jz .noflip
     neg ax
@@ -458,7 +452,6 @@ NEWSYM procmode716tmainextbg2
     xor eax,eax
     xor edx,edx
     mov ax,[curypos]
-    inc ax
     test byte[mode7set],02h
     jz .noflip
     neg ax
