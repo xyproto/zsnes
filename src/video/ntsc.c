@@ -22,7 +22,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #ifndef restrict
   #if defined (__GNUC__)
     #define restrict __restrict__
-  #elif defined (_MSC_VER) && (_MSC_VER > 1400)
+  #elif defined (_MSC_VER) && (_MSC_VER >= 1400)
     #define restrict __restrict
   #else
     /* no support for restricted pointers */
