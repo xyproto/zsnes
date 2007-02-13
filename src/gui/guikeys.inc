@@ -1420,8 +1420,7 @@ GUIVideoKeys:
   call Clear2xSaIBuffer
   popad
 .nokeep4_3
-%endif
-%ifdef __MSDOS__
+%else
   cmp dh,'M'
   jne .nosmallscreen
   xor eax,eax
@@ -1436,7 +1435,7 @@ GUIVideoKeys:
   jne .nofullscreen
   xor eax,eax
   mov al,[cvidmode]
-  cmp byte[GUIFSVID+eax],0
+  cmp byte[GUIWSVID+eax],0
   je .nofullscreen
   xor byte[ScreenScale],1
   FilterExcl2 smallscreenon,antienab,En2xSaI

@@ -2216,9 +2216,8 @@ DisplayGUIVideo:
   GUIDisplayTextY 5,13,170,GUIVideoTextB5
   GUIDisplayCheckboxu 5,18,175,Keep4_3Ratio,GUIVideoTextB5a,8
 .nocheckboxk43
-%endif
 
-%ifdef __MSDOS__
+%else
   xor eax,eax                                     ; Small Screen
   mov al,[cvidmode]
   cmp byte[GUISSVID+eax],0
@@ -2229,19 +2228,12 @@ DisplayGUIVideo:
 
   xor eax,eax                                     ; Full/Widescreen
   mov al,[cvidmode]
-  cmp byte[GUIFSVID+eax],0
-  je near .notext5
   cmp byte[GUIWSVID+eax],0
-  jne near .notext4a
+  je near .nofs
   GUIDisplayTextY 5,13,170,GUIVideoTextB5
   GUIDisplayCheckboxu 5,128,175,ScreenScale,GUIVideoTextB5c,6
-  jmp .notext5
-.notext4a
-  GUIDisplayTextY 5,13,170,GUIVideoTextB5
-  GUIDisplayCheckboxu 5,128,175,ScreenScale,GUIVideoTextB5d,6
-.notext5
+.nofs
 %endif
-
 .notfilterstab
 
   cmp dword[GUIVntscTab],1                        ; NTSC Tab
@@ -2365,8 +2357,7 @@ GUIVideoTextB5a db 'USE 4:3 RATIO',0
 NEWSYM ShowKeep43, db 0
 %else
 GUIVideoTextB5b db 'SMALL SCREEN',0      ; -c
-GUIVideoTextB5c db 'FULL SCREEN',0       ; -cc
-GUIVideoTextB5d db 'WIDE SCREEN',0       ; -cc
+GUIVideoTextB5c db 'WIDE SCREEN',0       ; -cc
 %endif
 
 GUIVideoTextC1a db 'BLEND FRAMES',0      ; NTSC Tab

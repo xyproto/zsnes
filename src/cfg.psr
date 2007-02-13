@@ -397,10 +397,13 @@ Keep4_3Ratio db 1
 
 %else
 @
-@ Small Screen, Stretch Screen (0 = NO, 1 = Yes)
-@ Enabling small screen will render in 256x224 res (probably not a good idea).
-@ Enabling stretch screen will stretch the image to fill the screen.
+@ Small Screen (0 = NO, 1 = Yes)
+@ Enabling small screen will render in 256x224 (not a good idea generally).
 smallscreenon dd 0
+
+@
+@ Wide Screen (0 = NO, 1 = Yes)
+@ Enabling wide screen will widen the image as much as possible.
 ScreenScale db 0
 %endif
 
@@ -464,7 +467,7 @@ Force8b db 0
 
 @
 @ Sampling Rate: (0 = 8000Hz, 1 = 11025Hz, 2 = 22050Hz, 3 = 44100Hz,
-@                            4 = 16000Hz, 5 = 32000Hz, 6 = 48000Hz)
+@                             4 = 16000Hz, 5 = 32000Hz, 6 = 48000Hz)
 @ Using any other sound frequencies other than the default 32000Hz
 @ is COMPLETELY UNACCEPTABLE in use for sound bug reports.
 #ifdef __MSDOS__
@@ -834,7 +837,7 @@ CheatUpperByteOnly db 0
 MovieDisplayFrame db 0
 
 @
-@ Movie Default Start Method (0 = NOW, 1 = Power-On,
+@ Movie Default Start Method (0 = NOW,   1 = Power-On,
 @                             2 = Reset, 3 = Power-On without SRAM)
 MovieStartMethod db 0
 
@@ -843,8 +846,8 @@ MovieStartMethod db 0
 MZTForceRTR db 0
 
 @
-@ ZMV -> AVI Conversion Mode: (0 = No Video, 1 = Raw Video, 2 = Ffv1, 3 = x264,
-@                              4 = XVID, 5 = Custom)
+@ ZMV -> AVI Conversion Mode: (0 = No Video, 1 = Raw Video, 2 = Ffv1,
+@                              3 = x264,     4 = XVID,      5 = Custom)
 @ The compression codecs can only be used if you provide them yourself.
 @ See zmovie.cfg for details.
 MovieVideoMode db 4

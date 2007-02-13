@@ -553,8 +553,7 @@ NEWSYM GUIHSVID,  db 0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0 ; Half/Quarter Scanli
 NEWSYM GUII2VID,  db 0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,1,0,1 ; DOS Interpolation
 NEWSYM GUIEAVID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0 ; DOS Eagle
 NEWSYM GUITBVID,  db 0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1 ; DOS Triple Buffering
-NEWSYM GUIFSVID,  db 0,0,0,0,0,0,0,1,1,1,1,0,0,1,1,1,1,0,0 ; DOS Fullscreen
-NEWSYM GUIWSVID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0 ; DOS Widescreen
+NEWSYM GUIWSVID,  db 0,0,0,0,0,0,0,1,1,1,1,0,0,1,1,1,1,0,0 ; DOS Widescreen
 NEWSYM GUISSVID,  db 0,0,0,0,0,0,1,0,0,0,0,1,1,1,1,1,1,1,1 ; DOS Smallscreen
 NEWSYM GUI2xVID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0 ; 2xSaI/Super Engines
 NEWSYM GUIM7VID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0 ; Hires Mode 7

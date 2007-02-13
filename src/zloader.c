@@ -127,7 +127,7 @@ static void display_help()
 #endif
 #ifdef __MSDOS__
   put_line("  -8      Force 8-bit sound");
-  put_line("  -c      Enable full/wide screen (when available)");
+  put_line("  -c      Enable wide screen (when available)");
   put_line("  -cc     Enable small screen (when available)");
 #endif
 #ifndef NO_DEBUGGER
