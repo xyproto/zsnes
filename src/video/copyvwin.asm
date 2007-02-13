@@ -25,6 +25,9 @@ EXTSYM vidbuffer,GUIOn,MMXSupport,resolutn,En2xSaI,antienab,scanlines
 EXTSYM hirestiledat,res512switch,curblank,spritetablea,lineleft,_2xSaILine
 EXTSYM _2xSaISuperEagleLine,_2xSaISuper2xSaILine,newengen,cfield,HalfTrans
 EXTSYM GUIOn2,FilteredGUI,SpecialLine,vidbufferofsb,HalfTransB,HalfTransC
+%ifdef __WIN32__
+EXTSYM cvidmode,GUIDSMODE
+%endif
 
 ALIGN32
 SECTION .bss
@@ -832,9 +835,20 @@ Process2xSaIwin:
 
 .next
     mov word[esi+512+576],0
-    mov dword[edi+576+288+156-2],0
-    mov dword[edi+576*3+256+64-4],0
-
+    mov dword[edi+512*2-6],0
+%ifdef __WIN32__
+    pushad
+    xor eax,eax
+    mov al,[cvidmode]
+    cmp byte[cvidmode+eax],0
+    popad
+    jne near .isdsmode
+    mov dword[edi+576*4-6],0
+    jmp near .notdsmode
+%endif
+.isdsmode
+    mov dword[edi+512*4-4],0
+.notdsmode
     mov eax,[InterPtr]
     cmp byte[eax],1
     jbe .ignorehr
@@ -1551,3 +1565,4 @@ NEWSYM interpolate640x480x16bwin
 SECTION .data
 InterPtr dd 0
 SECTION .text
+ 
