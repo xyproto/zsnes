@@ -3402,7 +3402,7 @@ DisplayGUIPathsClick:
   GUIPTabClick 0,51,1,GUIPathTabs
   GUIPTabClick 52,86,2,GUIPathTabs
   GUIPTabClick 87,157,3,GUIPathTabs
-  GUIPTabClick 158,211,4,GUIPathTabs
+  GUIPTabClick 158,219,4,GUIPathTabs
 
   cmp dword[GUIPathTabs],1
   jne near .notgeneral

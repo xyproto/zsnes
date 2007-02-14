@@ -4939,7 +4939,7 @@ SECTION .data
 GUIPathTabs dd 1,4
   db 'GENERAL',0
   db 'MORE',0
-  db 'BIOS/CARTS',0
+  db 'BIOS+CARTS',0
   db 'GFX PACKS',0
 
 GUIPathsTextA1 db 'SAVES:',0
