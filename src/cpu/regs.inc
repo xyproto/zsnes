@@ -385,11 +385,13 @@ NEWSYM joyalt,    db 0             ; temporary joystick alternation
 
 NEWSYM wramrwadr, dd 0             ; continuous read/write to wram address
 NEWSYM dmadata, times 129 db 0FFh  ; dma data (written from ports 43xx)
+ALIGN32
 NEWSYM irqon,     db 0             ; if IRQ has been called (80h) or not (0)
 NEWSYM nexthdma,  db 0             ; HDMA data to execute once vblank ends
 NEWSYM curhdma,   db 0             ; Currently executed hdma
 NEWSYM hdmadata, times 8*19 db 0   ; 4 dword register addresses, # of bytes to
                            ; transfer/line, address increment (word)
+ALIGN32
 NEWSYM hdmatype,  db 0             ; if first time executing hdma or not
 NEWSYM coladdr,   db 0             ; red value of color to add
 NEWSYM coladdg,   db 0             ; green value of color to add

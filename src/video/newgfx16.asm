@@ -584,9 +584,9 @@ NEWSYM newengine16b
     mov dword[palchanged],0
 
     ; BG3 Priority
-    test byte[scaddset],2
+    test byte[scaddset],2h
     jz .noscaddset
-    or [bgcmsung],ebx
+    or byte[bgcmsung],0FFh
 .noscaddset
 
     mov bl,[bg3highst]
