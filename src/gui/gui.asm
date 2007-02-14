@@ -78,6 +78,7 @@ EXTSYM NTSCGamma,NTSCRes,NTSCArt,NTSCFringe,NTSCBleed,NTSCWarp
 EXTSYM LowPassFilterType,MovieStartMethod,MovieDisplayFrame,savewinpos
 EXTSYM SnapPath,SPCPath,BSXPath,SGPath,STPath,GNextPath,FEOEZPath,SJNSPath
 EXTSYM MDHPath,SPL4Path,SRAMPath,CheatSrcByteSize,prevloadfnamel
+EXTSYM IPSPath,MoviePath,CHTPath,ComboPath,INPPath
 EXTSYM prevloadiname,prevloaddnamel,prevlfreeze,FirstTimeData,MMXSupport
 EXTSYM GUIRAdd,GUIGAdd,GUIBAdd,GUITRAdd,GUITGAdd,GUITBAdd,GUIWRAdd
 EXTSYM GUIWGAdd,GUIWBAdd,GUIloadfntype,SoundInterpType

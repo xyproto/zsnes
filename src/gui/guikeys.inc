@@ -1608,6 +1608,31 @@ GUIPathKeys:
   mov eax,GUIMovieForcedText
   jmp .boxselected
 .notBox14
+  cmp dword[GUIInputBox],15
+  jne .notBox15
+  mov eax,IPSPath
+  jmp .boxselected
+.notBox15
+  cmp dword[GUIInputBox],16
+  jne .notBox16
+  mov eax,MoviePath
+  jmp .boxselected
+.notBox16
+  cmp dword[GUIInputBox],17
+  jne .notBox17
+  mov eax,CHTPath
+  jmp .boxselected
+.notBox17
+  cmp dword[GUIInputBox],18
+  jne .notBox18
+  mov eax,ComboPath
+  jmp .boxselected
+.notBox18
+  cmp dword[GUIInputBox],19
+  jne .notBox19
+  mov eax,INPPath
+  jmp .boxselected
+.notBox19
 
 .boxselected
   mov ecx,eax

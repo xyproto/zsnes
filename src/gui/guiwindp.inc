@@ -4825,6 +4825,26 @@ BlinkCursorCheck:
   jne .notBox14
   mov ebx,GUIMovieForcedText
 .notBox14
+  cmp dword[GUIInputBox],15
+  jne .notBox15
+  mov ebx,IPSPath
+.notBox15
+  cmp dword[GUIInputBox],16
+  jne .notBox16
+  mov ebx,MoviePath
+.notBox16
+  cmp dword[GUIInputBox],17
+  jne .notBox17
+  mov ebx,CHTPath
+.notBox17
+  cmp dword[GUIInputBox],18
+  jne .notBox18
+  mov ebx,ComboPath
+.notBox18
+  cmp dword[GUIInputBox],19
+  jne .notBox19
+  mov ebx,INPPath
+.notBox19
   ret
 
 DisplayGUIPaths:
@@ -4836,25 +4856,47 @@ DisplayGUIPaths:
   jne near .notgeneral
 
   GUIDisplayText 19,8,31,GUIPathsTextA1           ; Text
-  GUIDisplayText 19,8,56,GUIPathsTextA2
-  GUIDisplayText 19,8,81,GUIPathsTextA3
+  GUIDisplayText 19,8,66,GUIPathsTextA2
+  GUIDisplayText 19,8,101,GUIPathsTextA3
+  GUIDisplayText 19,8,136,GUIPathsTextA4
 
-  GUIDisplayBBox  19,8,39,236,49,167              ; Input boxes
-  GUIDisplayBBox  19,8,64,236,74,167
-  GUIDisplayBBox  19,8,89,236,99,167
+  GUIDisplayBBox  19,8,41,236,51,167              ; Input boxes
+  GUIDisplayBBox  19,8,76,236,86,167
+  GUIDisplayBBox  19,8,111,236,121,167
+  GUIDisplayBBox  19,8,146,236,156,167
 
-  GUIOuttextwin2d 19,10,43,SRAMPath,37            ; Green Text
-  GUIOuttextwin2d 19,10,68,SnapPath,37
-  GUIOuttextwin2d 19,10,93,SPCPath,37
+  GUIOuttextwin2d 19,10,45,SRAMPath,37            ; Green Text
+  GUIOuttextwin2d 19,10,80,SnapPath,37
+  GUIOuttextwin2d 19,10,115,IPSPath,37
+  GUIOuttextwin2d 19,10,150,MoviePath,37
 .notgeneral
 
   cmp dword[GUIPathTabs],2
-  jne near .notbc
+  jne near .notmorepaths
 
   GUIDisplayText 19,8,31,GUIPathsTextB1
   GUIDisplayText 19,8,66,GUIPathsTextB2
   GUIDisplayText 19,8,101,GUIPathsTextB3
   GUIDisplayText 19,8,136,GUIPathsTextB4
+
+  GUIDisplayBBox  19,8,41,236,51,167
+  GUIDisplayBBox  19,8,76,236,86,167
+  GUIDisplayBBox  19,8,111,236,121,167
+  GUIDisplayBBox  19,8,146,236,156,167
+
+  GUIOuttextwin2d 19,10,45,SPCPath,37
+  GUIOuttextwin2d 19,10,80,CHTPath,37
+  GUIOuttextwin2d 19,10,115,ComboPath,37
+  GUIOuttextwin2d 19,10,150,INPPath,37
+.notmorepaths
+
+  cmp dword[GUIPathTabs],3
+  jne near .notbc
+
+  GUIDisplayText 19,8,31,GUIPathsTextC1
+  GUIDisplayText 19,8,66,GUIPathsTextC2
+  GUIDisplayText 19,8,101,GUIPathsTextC3
+  GUIDisplayText 19,8,136,GUIPathsTextC4
 
   GUIDisplayBBox  19,8,41,236,51,167
   GUIDisplayBBox  19,8,76,236,86,167
@@ -4867,12 +4909,12 @@ DisplayGUIPaths:
   GUIOuttextwin2d 19,10,150,SGPath,37
 .notbc
 
-  cmp dword[GUIPathTabs],3
+  cmp dword[GUIPathTabs],4
   jne near .notgfxpack
-  GUIDisplayText 19,8,31,GUIPathsTextC1
-  GUIDisplayText 19,8,66,GUIPathsTextC2
-  GUIDisplayText 19,8,101,GUIPathsTextC3
-  GUIDisplayText 19,8,136,GUIPathsTextC4
+  GUIDisplayText 19,8,31,GUIPathsTextD1
+  GUIDisplayText 19,8,66,GUIPathsTextD2
+  GUIDisplayText 19,8,101,GUIPathsTextD3
+  GUIDisplayText 19,8,136,GUIPathsTextD4
 
   GUIDisplayBBox  19,8,41,236,51,167
   GUIDisplayBBox  19,8,76,236,86,167
@@ -4887,24 +4929,31 @@ DisplayGUIPaths:
   ret
 
 SECTION .data
-GUIPathTabs dd 1,3
+GUIPathTabs dd 1,4
   db 'GENERAL',0
+  db 'MORE',0
   db 'BIOS/CARTS',0
   db 'GFX PACKS',0
 
 GUIPathsTextA1 db 'SAVES:',0
 GUIPathsTextA2 db 'SNAPSHOTS:',0
-GUIPathsTextA3 db 'SPCS:',0
+GUIPathsTextA3 db 'IPS:',0
+GUIPathsTextA4 db 'MOVIE:',0
 
-GUIPathsTextB1 db 'BS-X:',0
-GUIPathsTextB2 db 'SUFAMI TURBO:',0
-GUIPathsTextB3 db 'SD GUNDAM G-NEXT:',0
-GUIPathsTextB4 db 'SAME GAME:',0
+GUIPathsTextB1 db 'SPCS:',0
+GUIPathsTextB2 db 'CHEATS:',0
+GUIPathsTextB3 db 'COMBOS:',0
+GUIPathsTextB4 db 'GAME SPECIFIC INPUT:',0
 
-GUIPathsTextC1 db 'FEOEZ:',0
-GUIPathsTextC2 db 'FEOEZ - SJNS:',0
-GUIPathsTextC3 db 'MDH:',0
-GUIPathsTextC4 db 'SPL4:',0
+GUIPathsTextC1 db 'BS-X:',0
+GUIPathsTextC2 db 'SUFAMI TURBO:',0
+GUIPathsTextC3 db 'SD GUNDAM G-NEXT:',0
+GUIPathsTextC4 db 'SAME GAME:',0
+
+GUIPathsTextD1 db 'FEOEZ:',0
+GUIPathsTextD2 db 'FEOEZ - SJNS:',0
+GUIPathsTextD3 db 'MDH:',0
+GUIPathsTextD4 db 'SPL4:',0
 GUIBlinkCursor db 0,0
 GUIBlinkCursorLoop db 0
 

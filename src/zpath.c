@@ -56,7 +56,8 @@ char ZCfgFile[] = "zsnesl.cfg";
 #endif
 
 char *ZStartPath = 0, *ZCfgPath = 0, *ZSramPath = 0, *ZRomPath = 0;
-char *ZSnapPath = 0, *ZSpcPath = 0;
+char *ZSnapPath = 0, *ZSpcPath = 0, *ZIpsPath = 0, *ZMoviePath = 0;
+char *ZChtPath = 0, *ZComboPath = 0, *ZInpPath = 0;
 char *ZCartName = 0, *ZSaveName = 0, *ZStateName = 0, *ZSaveST2Name = 0;
 
 static bool ZStartAlloc = false, ZCfgAlloc = false, ZSramAlloc = false, ZRomAlloc = false;
@@ -234,6 +235,23 @@ bool init_paths(char *launch_command)
   return(false);
 }
 
+/*
+void set_save_path(char *ZPathPtr, char *Path)
+{
+  if(*Path)
+  {
+    ZPathPtr = Path;
+  }
+
+  else
+  {
+    ZPathPtr = ZSramPath;
+  }
+
+  strcatslash(ZPathPtr);
+}
+*/
+
 void init_save_paths()
 {
   if (*SRAMPath)
@@ -249,6 +267,16 @@ void init_save_paths()
     #endif
   }
   strcatslash(ZSramPath);
+
+/*
+  set_save_path(ZSnapPath,SnapPath);
+  set_save_path(ZSpcPath,SPCPath);
+  set_save_path(ZIpsPath,IPSPath);
+  set_save_path(ZMoviePath,MoviePath);
+  set_save_path(ZChtPath,CHTPath);
+  set_save_path(ZComboPath,ComboPath);
+  set_save_path(ZInpPath,INPPath);
+*/
 
   if (*SnapPath)
   {
@@ -269,6 +297,56 @@ void init_save_paths()
     ZSpcPath = ZSramPath;
   }
   strcatslash(ZSpcPath);
+
+  if (*IPSPath)
+  {
+    ZIpsPath = IPSPath;
+  }
+  else
+  {
+    ZIpsPath = ZSramPath;
+  }
+  strcatslash(ZIpsPath);
+
+  if (*MoviePath)
+  {
+    ZMoviePath = MoviePath;
+  }
+  else
+  {
+    ZMoviePath = ZSramPath;
+  }
+  strcatslash(ZMoviePath);
+
+  if (*CHTPath)
+  {
+    ZChtPath = CHTPath;
+  }
+  else
+  {
+    ZChtPath = ZSramPath;
+  }
+  strcatslash(ZChtPath);
+
+  if (*ComboPath)
+  {
+    ZComboPath = ComboPath;
+  }
+  else
+  {
+    ZComboPath = ZSramPath;
+  }
+  strcatslash(ZComboPath);
+
+  if (*INPPath)
+  {
+    ZInpPath = INPPath;
+  }
+  else
+  {
+    ZInpPath = ZSramPath;
+  }
+  strcatslash(ZInpPath);
 }
 
 bool init_rom_path(char *path)

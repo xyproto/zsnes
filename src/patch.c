@@ -96,7 +96,7 @@ bool initPatch(const char *ext)
   memset(&IPSPatch, 0, sizeof(IPSPatch));
   setextension(ZSaveName, ext);
 
-  IPSPatch.fp = fopen_dir(ZSramPath, ZSaveName, "rb");
+  IPSPatch.fp = fopen_dir(ZIpsPath, ZSaveName, "rb");
   if (!IPSPatch.fp) { IPSPatch.fp = fopen_dir(ZRomPath, ZSaveName, "rb"); }
   if (!IPSPatch.fp) { return(false); }
 

@@ -927,7 +927,7 @@ Create and record ZMV
 static bool zmv_create(char *filename)
 {
   memset(&zmv_vars, 0, sizeof(zmv_vars));
-  if ((zmv_vars.fp = fopen_dir(ZSramPath, filename,"w+b")))
+  if ((zmv_vars.fp = fopen_dir(ZMoviePath, filename,"w+b")))
   {
     size_t filename_len = strlen(filename);
     strncpy(zmv_vars.header.magic, "ZMV", 3);
@@ -1139,12 +1139,12 @@ static void zmv_record_finish()
 
   //Now write the save for append data
   mzt_chdir_up();
-  if ((fp = fopen_dir(ZSramPath, "append.zst", "wb")))
+  if ((fp = fopen_dir(ZMoviePath, "append.zst", "wb")))
   {
     zst_save(fp, false, false);
     fclose(fp);
 
-    if ((fp = fopen_dir(ZSramPath, "append.mzi","wb")))
+    if ((fp = fopen_dir(ZMoviePath, "append.mzi","wb")))
     {
       fwrite4(zmv_vars.header.frames, fp);
       write_last_joy_state(fp);
@@ -1206,7 +1206,7 @@ static bool zmv_open(char *filename)
   memset(&zmv_vars, 0, sizeof(zmv_vars));
   memset(&zmv_open_vars, 0, sizeof(zmv_open_vars));
 
-  zmv_vars.fp = fopen_dir(ZSramPath, filename,"r+b");
+  zmv_vars.fp = fopen_dir(ZMoviePath, filename,"r+b");
   if (zmv_vars.fp && zmv_header_read(&zmv_vars.header, zmv_vars.fp) &&
       !strncmp(zmv_vars.header.magic, "ZMV", 3))
   {
@@ -1676,12 +1676,12 @@ static bool zmv_append(char *filename)
     FILE *fp;
 
     mzt_chdir_up();
-    if ((fp = fopen_dir(ZSramPath, "append.zst", "rb")))
+    if ((fp = fopen_dir(ZMoviePath, "append.zst", "rb")))
     {
       zst_load(fp, 0);
       fclose(fp);
 
-      if ((fp = fopen_dir(ZSramPath, "append.mzi", "rb")))
+      if ((fp = fopen_dir(ZMoviePath, "append.mzi", "rb")))
       {
         zmv_open_vars.frames_replayed = fread4(fp);
         read_last_joy_state(fp);
@@ -1782,9 +1782,9 @@ size_t mzt_filename_generate()
   {
     zmv_vars.filename[filename_len-1] = 't';
   }
-  if (access_dir(ZSramPath, zmv_vars.filename, F_OK))
+  if (access_dir(ZMoviePath, zmv_vars.filename, F_OK))
   {
-    mkdir_dir(ZSramPath, zmv_vars.filename);
+    mkdir_dir(ZMoviePath, zmv_vars.filename);
   }
   return(filename_len);
 }
@@ -1792,14 +1792,14 @@ size_t mzt_filename_generate()
 void mzt_chdir_up()
 {
   mzt_filename_generate();
-  strcat(ZSramPath, zmv_vars.filename);
-  strcatslash(ZSramPath);
+  strcat(ZMoviePath, zmv_vars.filename);
+  strcatslash(ZMoviePath);
 }
 
 void mzt_chdir_down()
 {
-  strdirname(ZSramPath);
-  strcatslash(ZSramPath);
+  strdirname(ZMoviePath);
+  strcatslash(ZMoviePath);
 }
 
 bool mzt_save(int position, bool thumb, bool playback)
@@ -1813,13 +1813,13 @@ bool mzt_save(int position, bool thumb, bool playback)
 
   sprintf(name_buf, "%.2d.zst", position);
 
-  if ((fp = fopen_dir(ZSramPath, name_buf, "wb")))
+  if ((fp = fopen_dir(ZMoviePath, name_buf, "wb")))
   {
     zst_save(fp, thumb, false);
     fclose(fp);
 
     setextension(name_buf, "mzi");
-    if ((fp = fopen_dir(ZSramPath, name_buf,"wb")))
+    if ((fp = fopen_dir(ZMoviePath, name_buf,"wb")))
     {
       gzFile gzp = 0;
       size_t rewind_point = ftell(zmv_vars.fp);;
@@ -1830,7 +1830,7 @@ bool mzt_save(int position, bool thumb, bool playback)
       fclose(fp);
 
       setextension(name_buf, "zmv");
-      if ((gzp = gzopen_dir(ZSramPath, name_buf, "wb9")))
+      if ((gzp = gzopen_dir(ZMoviePath, name_buf, "wb9")))
       {
         if (playback)
         {
@@ -1920,13 +1920,13 @@ bool mzt_load(int position, bool playback)
 
   sprintf(name_buf, "%.2d.zst", position);
 
-  if ((fp = fopen_dir(ZSramPath, name_buf, "rb")))
+  if ((fp = fopen_dir(ZMoviePath, name_buf, "rb")))
   {
     zst_load(fp, 0);
     fclose(fp);
 
     setextension(name_buf, "mzi");
-    if ((fp = fopen_dir(ZSramPath, name_buf, "rb")))
+    if ((fp = fopen_dir(ZMoviePath, name_buf, "rb")))
     {
       size_t rewind_point;
 
@@ -1942,7 +1942,7 @@ bool mzt_load(int position, bool playback)
         gzFile gzp = 0;
 
         setextension(name_buf, "zmv");
-        if ((gzp = gzopen_dir(ZSramPath, name_buf, "rb")))
+        if ((gzp = gzopen_dir(ZMoviePath, name_buf, "rb")))
         {
           size_t rerecords = zmv_vars.header.rerecords+1;
           size_t removed_frames = zmv_vars.header.removed_frames + (zmv_vars.header.frames - current_frame);
@@ -2452,7 +2452,7 @@ static struct
 static void MovieSub_Open(const char *filename)
 {
   memset(&MovieSub, 0, sizeof(MovieSub));
-  MovieSub.fp = fopen_dir(ZSramPath, filename, "r");
+  MovieSub.fp = fopen_dir(ZMoviePath, filename, "r");
 }
 
 static void MovieSub_Close()
@@ -2937,7 +2937,7 @@ void MoviePlay()
     setextension(ZSaveName, "zmv");
     ZSaveName[fname_len-1] = CMovieExt;
 
-    if ((fp = fopen_dir(ZSramPath, ZSaveName, "rb")))
+    if ((fp = fopen_dir(ZMoviePath, ZSaveName, "rb")))
     {
       char header_buf[3];
       fread(header_buf, 3, 1, fp);
@@ -2998,11 +2998,11 @@ void MovieRecord()
     if (MovieRecordWinVal == 1)
     {
       //Erase old ZMV
-      remove_dir(ZSramPath, ZSaveName);
+      remove_dir(ZMoviePath, ZSaveName);
       MovieRecordWinVal = 0;
     }
 
-    if (access_dir(ZSramPath, ZSaveName, F_OK))
+    if (access_dir(ZMoviePath, ZSaveName, F_OK))
     {
       DIR *dir;
 
@@ -3024,14 +3024,14 @@ void MovieRecord()
 
         //Cleanup old MZTs
         mzt_chdir_up();
-        if ((dir = opendir(ZSramPath)))
+        if ((dir = opendir(ZMoviePath)))
         {
           struct dirent *entry;
           while ((entry = readdir(dir)))
           {
             if (*entry->d_name != '.')
             {
-              remove_dir(ZSramPath, entry->d_name);
+              remove_dir(ZMoviePath, entry->d_name);
             }
           }
           closedir(dir);

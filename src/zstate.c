@@ -1466,7 +1466,7 @@ void SaveGameSpecificInput()
   if (GameSpecificInput && *ZSaveName)
   {
     setextension(ZSaveName, "inp");
-    psr_cfg_run(write_input_vars, ZSramPath, ZSaveName);
+    psr_cfg_run(write_input_vars, ZInpPath, ZSaveName);
   }
 }
 
@@ -1477,7 +1477,7 @@ void LoadGameSpecificInput()
     psr_cfg_run(read_input_vars, ZCfgPath, "zinput.cfg");
 
     setextension(ZSaveName, "inp");
-    psr_cfg_run(read_input_vars, ZSramPath, ZSaveName);
+    psr_cfg_run(read_input_vars, ZInpPath, ZSaveName);
   }
 }
 

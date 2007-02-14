@@ -3400,33 +3400,44 @@ DisplayGUIChipClick:
 
 DisplayGUIPathsClick:
   GUIPTabClick 0,51,1,GUIPathTabs
-  GUIPTabClick 52,122,2,GUIPathTabs
-  GUIPTabClick 123,186,3,GUIPathTabs
+  GUIPTabClick 52,86,2,GUIPathTabs
+  GUIPTabClick 87,157,3,GUIPathTabs
+  GUIPTabClick 158,211,4,GUIPathTabs
 
   cmp dword[GUIPathTabs],1
   jne near .notgeneral
 
-  GUITextBoxInputNach 8,39,237,49,1,path_length,init_save_paths       ;SRAMPath
-  GUITextBoxInputNach 8,64,237,74,2,path_length,init_save_paths       ;SnapPath
-  GUITextBoxInputNach 8,89,237,99,3,path_length,init_save_paths       ;SPCPath
+  GUITextBoxInputNach 8,41,237,51,1,path_length,init_save_paths        ;SRAMPath
+  GUITextBoxInputNach 8,76,237,86,2,path_length,init_save_paths        ;SnapPath
+  GUITextBoxInputNach 8,111,237,121,15,path_length,init_save_paths     ;IPSPath
+  GUITextBoxInputNach 8,146,237,156,16,path_length,init_save_paths     ;MoviePath
 .notgeneral
 
   cmp dword[GUIPathTabs],2
-  jne near .notbc
+  jne near .notmorepaths
 
-  GUITextBoxInputNach 8,41,237,51,4,path_length,init_save_paths       ;BSXPath
-  GUITextBoxInputNach 8,76,237,86,5,path_length,init_save_paths       ;STPath
-  GUITextBoxInputNach 8,111,237,121,6,path_length,init_save_paths     ;GNextPath
-  GUITextBoxInputNach 8,146,237,156,7,path_length,init_save_paths     ;SGPath
-.notbc
+  GUITextBoxInputNach 8,41,237,51,3,path_length,init_save_paths        ;SPCPath
+  GUITextBoxInputNach 8,76,237,86,17,path_length,init_save_paths       ;CHTPath
+  GUITextBoxInputNach 8,111,237,121,18,path_length,init_save_paths     ;ComboPath
+  GUITextBoxInputNach 8,146,237,156,19,path_length,init_save_paths     ;INPPath
+.notmorepaths
 
   cmp dword[GUIPathTabs],3
+  jne near .notbc
+
+  GUITextBoxInputNach 8,41,237,51,4,path_length,init_save_paths        ;BSXPath
+  GUITextBoxInputNach 8,76,237,86,5,path_length,init_save_paths        ;STPath
+  GUITextBoxInputNach 8,111,237,121,6,path_length,init_save_paths      ;GNextPath
+  GUITextBoxInputNach 8,146,237,156,7,path_length,init_save_paths      ;SGPath
+.notbc
+
+  cmp dword[GUIPathTabs],4
   jne near .notgfxpacks
 
-  GUITextBoxInputNach 8,41,237,51,8,path_length,init_save_paths       ;FEOEZPath
-  GUITextBoxInputNach 8,76,237,86,9,path_length,init_save_paths       ;SJNSPath
-  GUITextBoxInputNach 8,111,237,121,10,path_length,init_save_paths    ;MDHPath
-  GUITextBoxInputNach 8,146,237,156,11,path_length,init_save_paths    ;SPL4Path
+  GUITextBoxInputNach 8,41,237,51,8,path_length,init_save_paths        ;FEOEZPath
+  GUITextBoxInputNach 8,76,237,86,9,path_length,init_save_paths        ;SJNSPath
+  GUITextBoxInputNach 8,111,237,121,10,path_length,init_save_paths     ;MDHPath
+  GUITextBoxInputNach 8,146,237,156,11,path_length,init_save_paths     ;SPL4Path
 .notgfxpacks
   ret
 

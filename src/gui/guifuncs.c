@@ -757,7 +757,7 @@ void CheatCodeSave()
 
     setextension(ZSaveName, "cht");
 
-    if ((fp = fopen_dir(ZSramPath,ZSaveName,"wb")))
+    if ((fp = fopen_dir(ZChtPath,ZSaveName,"wb")))
     {
       fwrite(cheatdata, 1, 28*NumCheats, fp);
       fclose(fp);
@@ -777,7 +777,7 @@ void CheatCodeLoad()
   setextension(ZSaveName, "cht");
   GUICBHold = 0;
 
-  if ((fp = fopen_dir(ZSramPath,ZSaveName,"rb")))
+  if ((fp = fopen_dir(ZChtPath,ZSaveName,"rb")))
   {
     asm_call(DisableCheatsOnLoad);
 

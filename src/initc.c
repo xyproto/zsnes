@@ -2151,7 +2151,7 @@ void SaveCombFile()
     {
       ComboHeader[22] = NumComboLocl;
 
-      if ((fp = fopen_dir(ZSramPath, ZSaveName, "wb")))
+      if ((fp = fopen_dir(ZComboPath, ZSaveName, "wb")))
       {
         fwrite(ComboHeader, 1, 23, fp);
         fwrite(CombinDataLocl, 1, NumComboLocl*66, fp);
@@ -2168,7 +2168,7 @@ void OpenCombFile()
   setextension(ZSaveName, "cmb");
   NumComboLocl = 0;
 
-  if ((fp = fopen_dir(ZSramPath, ZSaveName, "rb")))
+  if ((fp = fopen_dir(ZComboPath, ZSaveName, "rb")))
   {
     fread(ComboHeader, 1, 23, fp);
     NumComboLocl = ComboHeader[22];
