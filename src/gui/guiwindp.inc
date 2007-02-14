@@ -4852,37 +4852,37 @@ DisplayGUIPaths:
   jne near .notbc
 
   GUIDisplayText 19,8,31,GUIPathsTextB1
-  GUIDisplayText 19,8,61,GUIPathsTextB2
-  GUIDisplayText 19,8,91,GUIPathsTextB3
-  GUIDisplayText 19,8,121,GUIPathsTextB4
+  GUIDisplayText 19,8,66,GUIPathsTextB2
+  GUIDisplayText 19,8,101,GUIPathsTextB3
+  GUIDisplayText 19,8,136,GUIPathsTextB4
 
   GUIDisplayBBox  19,8,41,236,51,167
-  GUIDisplayBBox  19,8,71,236,81,167
-  GUIDisplayBBox  19,8,101,236,111,167
-  GUIDisplayBBox  19,8,131,236,141,167
+  GUIDisplayBBox  19,8,76,236,86,167
+  GUIDisplayBBox  19,8,111,236,121,167
+  GUIDisplayBBox  19,8,146,236,156,167
 
   GUIOuttextwin2d 19,10,45,BSXPath,37
-  GUIOuttextwin2d 19,10,75,STPath,37
-  GUIOuttextwin2d 19,10,105,GNextPath,37
-  GUIOuttextwin2d 19,10,135,SGPath,37
+  GUIOuttextwin2d 19,10,80,STPath,37
+  GUIOuttextwin2d 19,10,115,GNextPath,37
+  GUIOuttextwin2d 19,10,150,SGPath,37
 .notbc
 
   cmp dword[GUIPathTabs],3
   jne near .notgfxpack
   GUIDisplayText 19,8,31,GUIPathsTextC1
-  GUIDisplayText 19,8,61,GUIPathsTextC2
-  GUIDisplayText 19,8,91,GUIPathsTextC3
-  GUIDisplayText 19,8,121,GUIPathsTextC4
+  GUIDisplayText 19,8,66,GUIPathsTextC2
+  GUIDisplayText 19,8,101,GUIPathsTextC3
+  GUIDisplayText 19,8,136,GUIPathsTextC4
 
   GUIDisplayBBox  19,8,41,236,51,167
-  GUIDisplayBBox  19,8,71,236,81,167
-  GUIDisplayBBox  19,8,101,236,111,167
-  GUIDisplayBBox  19,8,131,236,141,167
+  GUIDisplayBBox  19,8,76,236,86,167
+  GUIDisplayBBox  19,8,111,236,121,167
+  GUIDisplayBBox  19,8,146,236,156,167
 
   GUIOuttextwin2d 19,10,45,FEOEZPath,37
-  GUIOuttextwin2d 19,10,75,SJNSPath,37
-  GUIOuttextwin2d 19,10,105,MDHPath,37
-  GUIOuttextwin2d 19,10,135,SPL4Path,37
+  GUIOuttextwin2d 19,10,80,SJNSPath,37
+  GUIOuttextwin2d 19,10,115,MDHPath,37
+  GUIOuttextwin2d 19,10,150,SPL4Path,37
 .notgfxpack
   ret
 
