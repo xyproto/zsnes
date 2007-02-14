@@ -241,22 +241,18 @@ bool init_paths(char *launch_command)
   return(false);
 }
 
-/*
-void set_save_path(char *ZPathPtr, char *Path)
+char *set_save_path(char *Path)
 {
   if(*Path)
   {
-    ZPathPtr = Path;
+    return(Path);
   }
 
   else
   {
-    ZPathPtr = ZSramPath;
+    return(ZSramPath);
   }
-
-  strcatslash(ZPathPtr);
 }
-*/
 
 void init_save_paths()
 {
@@ -274,95 +270,21 @@ void init_save_paths()
   }
   strcatslash(ZSramPath);
 
-/*
-  set_save_path(ZSnapPath,SnapPath);
-  set_save_path(ZSpcPath,SPCPath);
-  set_save_path(ZIpsPath,IPSPath);
-  set_save_path(ZMoviePath,MoviePath);
-  set_save_path(ZChtPath,CHTPath);
-  set_save_path(ZComboPath,ComboPath);
-  set_save_path(ZInpPath,INPPath);
-  set_save_path(ZSStatePath,SStatePath);
-*/
-
-  if (*SnapPath)
-  {
-    ZSnapPath = SnapPath;
-  }
-  else
-  {
-    ZSnapPath = ZSramPath;
-  }
+  ZSnapPath = set_save_path(SnapPath);
+  ZSpcPath = set_save_path(SPCPath);
+  ZIpsPath = set_save_path(IPSPath);
+  ZMoviePath = set_save_path(MoviePath);
+  ZChtPath = set_save_path(CHTPath);
+  ZComboPath = set_save_path(ComboPath);
+  ZInpPath = set_save_path(INPPath);
+  ZSStatePath = set_save_path(SStatePath);
   strcatslash(ZSnapPath);
-
-  if (*SPCPath)
-  {
-    ZSpcPath = SPCPath;
-  }
-  else
-  {
-    ZSpcPath = ZSramPath;
-  }
   strcatslash(ZSpcPath);
-
-  if (*IPSPath)
-  {
-    ZIpsPath = IPSPath;
-  }
-  else
-  {
-    ZIpsPath = ZSramPath;
-  }
   strcatslash(ZIpsPath);
-
-  if (*MoviePath)
-  {
-    ZMoviePath = MoviePath;
-  }
-  else
-  {
-    ZMoviePath = ZSramPath;
-  }
   strcatslash(ZMoviePath);
-
-  if (*CHTPath)
-  {
-    ZChtPath = CHTPath;
-  }
-  else
-  {
-    ZChtPath = ZSramPath;
-  }
   strcatslash(ZChtPath);
-
-  if (*ComboPath)
-  {
-    ZComboPath = ComboPath;
-  }
-  else
-  {
-    ZComboPath = ZSramPath;
-  }
   strcatslash(ZComboPath);
-
-  if (*INPPath)
-  {
-    ZInpPath = INPPath;
-  }
-  else
-  {
-    ZInpPath = ZSramPath;
-  }
   strcatslash(ZInpPath);
-
-  if (*SStatePath)
-  {
-    ZSStatePath = SStatePath;
-  }
-  else
-  {
-    ZSStatePath = ZSramPath;
-  }
   strcatslash(ZSStatePath);
 }
 
