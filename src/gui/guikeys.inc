@@ -1633,6 +1633,11 @@ GUIPathKeys:
   mov eax,INPPath
   jmp .boxselected
 .notBox19
+  cmp dword[GUIInputBox],20
+  jne .notBox20
+  mov eax,SStatePath
+  jmp .boxselected
+.notBox20
 
 .boxselected
   mov ecx,eax

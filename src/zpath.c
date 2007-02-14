@@ -57,7 +57,7 @@ char ZCfgFile[] = "zsnesl.cfg";
 
 char *ZStartPath = 0, *ZCfgPath = 0, *ZSramPath = 0, *ZRomPath = 0;
 char *ZSnapPath = 0, *ZSpcPath = 0, *ZIpsPath = 0, *ZMoviePath = 0;
-char *ZChtPath = 0, *ZComboPath = 0, *ZInpPath = 0;
+char *ZChtPath = 0, *ZComboPath = 0, *ZInpPath = 0, *ZSStatePath = 0;
 char *ZCartName = 0, *ZSaveName = 0, *ZStateName = 0, *ZSaveST2Name = 0;
 
 static bool ZStartAlloc = false, ZCfgAlloc = false, ZSramAlloc = false, ZRomAlloc = false;
@@ -229,6 +229,12 @@ bool init_paths(char *launch_command)
     printf("ZSramPath: %s\n", ZSramPath);
     printf("ZSnapPath: %s\n", ZSnapPath);
     printf("ZSpcPath: %s\n", ZSpcPath);
+    printf("ZIpsPath: %s\n", ZIpsPath);
+    printf("ZMoviePath: %s\n", ZMoviePath);
+    printf("ZChtPath: %s\n", ZChtPath);
+    printf("ZComboPath: %s\n", ZComboPath);
+    printf("ZInpPath: %s\n", ZInpPath);
+    printf("ZSStatePath: %s\n", ZSStatePath);
 #endif
     return(true);
   }
@@ -276,6 +282,7 @@ void init_save_paths()
   set_save_path(ZChtPath,CHTPath);
   set_save_path(ZComboPath,ComboPath);
   set_save_path(ZInpPath,INPPath);
+  set_save_path(ZSStatePath,SStatePath);
 */
 
   if (*SnapPath)
@@ -347,6 +354,16 @@ void init_save_paths()
     ZInpPath = ZSramPath;
   }
   strcatslash(ZInpPath);
+
+  if (*SStatePath)
+  {
+    ZSStatePath = SStatePath;
+  }
+  else
+  {
+    ZSStatePath = ZSramPath;
+  }
+  strcatslash(ZSStatePath);
 }
 
 bool init_rom_path(char *path)

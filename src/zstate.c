@@ -680,17 +680,29 @@ char *zst_name()
   return(ZStateName);
 }
 
+bool MovieCheck();
+
 void zst_determine_newest()
 {
   struct stat filestat;
+  char *filename;
 
-  if ((MovieProcessing == MOVIE_PLAYBACK) || (MovieProcessing == MOVIE_RECORD)) { mzt_chdir_up(); }
-  if (!stat_dir(ZSramPath, zst_name(), &filestat) && filestat.st_mtime > newestfiledate)
+  if (MovieCheck())
+  {
+    mzt_chdir_up();
+    filename = ZMoviePath;
+  }
+  else
+  {
+    filename = ZSStatePath;
+  }
+
+  if (!stat_dir(filename, zst_name(), &filestat) && filestat.st_mtime > newestfiledate)
   {
     newestfiledate = filestat.st_mtime;
     newest_zst = current_zst;
   }
-  if ((MovieProcessing == MOVIE_PLAYBACK) || (MovieProcessing == MOVIE_RECORD)) { mzt_chdir_down(); }
+  if (MovieCheck()) { mzt_chdir_down(); }
 }
 
 void zst_init()
@@ -709,10 +721,20 @@ void zst_init()
 int zst_exists()
 {
   int ret;
+  char *filename;
 
-  if ((MovieProcessing == MOVIE_PLAYBACK) || (MovieProcessing == MOVIE_RECORD)) { mzt_chdir_up(); }
-  ret = access_dir(ZSramPath, zst_name(), F_OK) ? 0 : 1;
-  if ((MovieProcessing == MOVIE_PLAYBACK) || (MovieProcessing == MOVIE_RECORD)){ mzt_chdir_down(); }
+  if (MovieCheck())
+  {
+    mzt_chdir_up();
+    filename = ZMoviePath;
+  }
+  else
+  {
+    filename = ZSStatePath;
+  }
+
+  ret = access_dir(filename, zst_name(), F_OK) ? 0 : 1;
+  if (MovieCheck()){ mzt_chdir_down(); }
 
   return(ret);
 }
@@ -892,7 +914,7 @@ void statesaver()
     zst_name();
   }
 
-  if ((fhandle = fopen_dir(ZSramPath, ZStateName, "wb")))
+  if ((fhandle = fopen_dir(ZSStatePath, ZStateName, "wb")))
   {
     zst_save(fhandle, (bool)(cbitmode && !NoPictureSave), false);
     fclose(fhandle);
@@ -1179,7 +1201,7 @@ void stateloader(char *statename, bool keycheck, bool xfercheck)
   }
 
   //Actual state loading code
-  if ((fhandle = fopen_dir(ZSramPath, statename, "rb")))
+  if ((fhandle = fopen_dir(ZSStatePath, statename, "rb")))
   {
     if (xfercheck) { Totalbyteloaded = 0; }
 

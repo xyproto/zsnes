@@ -4845,6 +4845,10 @@ BlinkCursorCheck:
   jne .notBox19
   mov ebx,INPPath
 .notBox19
+  cmp dword[GUIInputBox],20
+  jne .notBox20
+  mov ebx,SStatePath
+.notBox20
   ret
 
 DisplayGUIPaths:
@@ -4859,16 +4863,19 @@ DisplayGUIPaths:
   GUIDisplayText 19,8,66,GUIPathsTextA2
   GUIDisplayText 19,8,101,GUIPathsTextA3
   GUIDisplayText 19,8,136,GUIPathsTextA4
+  GUIDisplayText 19,8,171,GUIPathsTextA5
 
   GUIDisplayBBox  19,8,41,236,51,167              ; Input boxes
   GUIDisplayBBox  19,8,76,236,86,167
   GUIDisplayBBox  19,8,111,236,121,167
   GUIDisplayBBox  19,8,146,236,156,167
+  GUIDisplayBBox  19,8,181,236,191,167
 
   GUIOuttextwin2d 19,10,45,SRAMPath,37            ; Green Text
-  GUIOuttextwin2d 19,10,80,SnapPath,37
-  GUIOuttextwin2d 19,10,115,IPSPath,37
-  GUIOuttextwin2d 19,10,150,MoviePath,37
+  GUIOuttextwin2d 19,10,80,SStatePath,37
+  GUIOuttextwin2d 19,10,115,SnapPath,37
+  GUIOuttextwin2d 19,10,150,IPSPath,37
+  GUIOuttextwin2d 19,10,185,MoviePath,37
 .notgeneral
 
   cmp dword[GUIPathTabs],2
@@ -4936,9 +4943,10 @@ GUIPathTabs dd 1,4
   db 'GFX PACKS',0
 
 GUIPathsTextA1 db 'SAVES:',0
-GUIPathsTextA2 db 'SNAPSHOTS:',0
-GUIPathsTextA3 db 'IPS:',0
-GUIPathsTextA4 db 'MOVIE:',0
+GUIPathsTextA2 db 'SAVESTATES:',0
+GUIPathsTextA3 db 'SNAPSHOTS:',0
+GUIPathsTextA4 db 'IPS:',0
+GUIPathsTextA5 db 'MOVIES:',0
 
 GUIPathsTextB1 db 'SPCS:',0
 GUIPathsTextB2 db 'CHEATS:',0

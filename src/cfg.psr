@@ -621,6 +621,7 @@ EmuSpeed db 29
 ROMPath times 256 db ""
 @ Save states & SRAMs, snapshots, SPCs
 SRAMPath times 256 db ""
+SStatePath times 256 db ""
 SnapPath times 256 db ""
 IPSPath times 256 db ""
 MoviePath times 256 db ""
@@ -642,6 +643,7 @@ SPL4Path times 256 db ""
 ROMPath times 1024 db ""
 @ Save states & SRAMs, snapshots, SPCs
 SRAMPath times 1024 db ""
+SStatePath times 1024 db ""
 SnapPath times 1024 db ""
 IPSPath times 1024 db ""
 MoviePath times 1024 db ""

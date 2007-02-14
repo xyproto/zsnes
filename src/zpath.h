@@ -76,7 +76,7 @@ typedef unsigned short mode_t;
 extern char ZCfgFile[];
 extern char *ZStartPath, *ZCfgPath, *ZSramPath, *ZRomPath;
 extern char *ZSnapPath, *ZSpcPath, *ZIpsPath, *ZMoviePath;
-extern char *ZChtPath, *ZComboPath, *ZInpPath;
+extern char *ZChtPath, *ZComboPath, *ZInpPath, *ZSStatePath;
 extern char *ZCartName, *ZSaveName, *ZStateName, *ZSaveST2Name;
 
 bool init_paths(char *launch_command);

@@ -3408,9 +3408,10 @@ DisplayGUIPathsClick:
   jne near .notgeneral
 
   GUITextBoxInputNach 8,41,237,51,1,path_length,init_save_paths        ;SRAMPath
-  GUITextBoxInputNach 8,76,237,86,2,path_length,init_save_paths        ;SnapPath
-  GUITextBoxInputNach 8,111,237,121,15,path_length,init_save_paths     ;IPSPath
-  GUITextBoxInputNach 8,146,237,156,16,path_length,init_save_paths     ;MoviePath
+  GUITextBoxInputNach 8,76,237,86,20,path_length,init_save_paths       ;SStatePath
+  GUITextBoxInputNach 8,111,237,121,2,path_length,init_save_paths      ;SnapPath
+  GUITextBoxInputNach 8,146,237,156,15,path_length,init_save_paths     ;IPSPath
+  GUITextBoxInputNach 8,181,237,191,16,path_length,init_save_paths     ;MoviePath
 .notgeneral
 
   cmp dword[GUIPathTabs],2

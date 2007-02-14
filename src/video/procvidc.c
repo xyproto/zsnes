@@ -83,15 +83,31 @@ extern unsigned int cur_zst_size, old_zst_size;
 
 char *zst_name();
 
+bool MovieCheck()
+{
+  return((MovieProcessing == MOVIE_PLAYBACK) || (MovieProcessing == MOVIE_RECORD));
+}
+
 void LoadPicture()
 {
   const unsigned int pic_size = 64*56*2;
   FILE *fp;
+  char *filename;
 
   memset(PrevPicture, 0, pic_size);
 
-  if ((MovieProcessing == MOVIE_PLAYBACK) || (MovieProcessing == MOVIE_RECORD)) { mzt_chdir_up(); }
-  if ((fp = fopen_dir(ZSramPath, zst_name(), "rb")))
+  if (MovieCheck())
+  {
+    mzt_chdir_up();
+    filename = ZMoviePath;
+  }
+
+  else
+  {
+    filename = ZSStatePath;
+  }
+
+  if ((fp = fopen_dir(filename, zst_name(), "rb")))
   {
     unsigned int file_size;
 
@@ -106,7 +122,7 @@ void LoadPicture()
 
     fclose(fp);
   }
-  if ((MovieProcessing == MOVIE_PLAYBACK) || (MovieProcessing == MOVIE_RECORD)) { mzt_chdir_down(); }
+  if (MovieCheck()) { mzt_chdir_down(); }
 }
 
 void Clear2xSaIBuffer()
