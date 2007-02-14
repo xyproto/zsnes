@@ -1527,6 +1527,12 @@ SECTION .text
 GUIPathKeys:
   cmp dh,0
   je near .nokeypressed
+
+  cmp dh,9
+  jne near .notab
+  KeyTabInc GUIPathTabs
+.notab
+
   cmp dword[GUIInputBox],0
   je near .nokeypressed
 
@@ -1552,17 +1558,17 @@ GUIPathKeys:
 .notBox4
   cmp dword[GUIInputBox],5
   jne .notBox5
-  mov eax,SGPath
+  mov eax,STPath
   jmp .boxselected
 .notBox5
   cmp dword[GUIInputBox],6
   jne .notBox6
-  mov eax,STPath
+  mov eax,GNextPath
   jmp .boxselected
 .notBox6
   cmp dword[GUIInputBox],7
   jne .notBox7
-  mov eax,GNextPath
+  mov eax,SGPath
   jmp .boxselected
 .notBox7
   cmp dword[GUIInputBox],8

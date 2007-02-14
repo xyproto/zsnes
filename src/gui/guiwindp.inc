@@ -4778,17 +4778,17 @@ BlinkCursorCheck:
 .notBox4
   cmp dword[GUIInputBox],5
   jne .notBox5
-  mov ebx,SGPath
+  mov ebx,STPath
   ret
 .notBox5
   cmp dword[GUIInputBox],6
   jne .notBox6
-  mov ebx,STPath
+  mov ebx,GNextPath
   ret
 .notBox6
   cmp dword[GUIInputBox],7
   jne .notBox7
-  mov ebx,GNextPath
+  mov ebx,SGPath
   ret
 .notBox7
   cmp dword[GUIInputBox],8
@@ -4829,60 +4829,82 @@ BlinkCursorCheck:
 
 DisplayGUIPaths:
   GUIDrawWindowBox 19,GUIPathsDisp
+  GUIDrawTArea 19
+  GUIDrawTabs GUIPathTabs
 
-  GUIDisplayText 19,8,18,GUIPathsText1         ; Text
-  GUIDisplayText 19,8,38,GUIPathsText2
-  GUIDisplayText 19,8,58,GUIPathsText3
-  GUIDisplayText 19,60,78,GUIPathsText4
-  GUIDisplayText 19,8,88,GUIPathsText5
-  GUIDisplayText 19,135,88,GUIPathsText6
-  GUIDisplayText 19,8,113,GUIPathsText8
-  GUIDisplayText 19,135,113,GUIPathsText7
-  GUIDisplayText 19,45,138,GUIPathsText9
-  GUIDisplayText 19,8,148,GUIPathsTextA
-  GUIDisplayText 19,135,148,GUIPathsTextB
-  GUIDisplayText 19,8,173,GUIPathsTextC
-  GUIDisplayText 19,135,173,GUIPathsTextD
+  cmp dword[GUIPathTabs],1
+  jne near .notgeneral
 
-  GUIDisplayBBox  19,75,15,231,25,167            ;Input boxes
-  GUIDisplayBBox  19,75,35,231,45,167
-  GUIDisplayBBox  19,75,55,231,65,167
-  GUIDisplayBBox  19,8,95,106,105,167
-  GUIDisplayBBox  19,8,120,106,130,167
-  GUIDisplayBBox  19,135,95,235,105,167
-  GUIDisplayBBox  19,135,120,235,130,167
-  GUIDisplayBBox  19,8,155,106,165,167
-  GUIDisplayBBox  19,8,180,106,190,167
-  GUIDisplayBBox  19,135,155,235,165,167
-  GUIDisplayBBox  19,135,180,235,190,167
+  GUIDisplayText 19,8,31,GUIPathsTextA1           ; Text
+  GUIDisplayText 19,8,56,GUIPathsTextA2
+  GUIDisplayText 19,8,81,GUIPathsTextA3
 
-  GUIOuttextwin2d 19,77,19,SRAMPath,25            ; Green Text
-  GUIOuttextwin2d 19,77,39,SnapPath,25
-  GUIOuttextwin2d 19,77,59,SPCPath,25
-  GUIOuttextwin2d 19,10,99,BSXPath,15
-  GUIOuttextwin2d 19,10,124,SGPath,15
-  GUIOuttextwin2d 19,137,99,STPath,15
-  GUIOuttextwin2d 19,137,124,GNextPath,15
-  GUIOuttextwin2d 19,10,159,FEOEZPath,15
-  GUIOuttextwin2d 19,10,184,MDHPath,15
-  GUIOuttextwin2d 19,137,159,SJNSPath,15
-  GUIOuttextwin2d 19,137,184,SPL4Path,15
+  GUIDisplayBBox  19,8,39,236,49,167              ; Input boxes
+  GUIDisplayBBox  19,8,64,236,74,167
+  GUIDisplayBBox  19,8,89,236,99,167
+
+  GUIOuttextwin2d 19,10,43,SRAMPath,37            ; Green Text
+  GUIOuttextwin2d 19,10,68,SnapPath,37
+  GUIOuttextwin2d 19,10,93,SPCPath,37
+.notgeneral
+
+  cmp dword[GUIPathTabs],2
+  jne near .notbc
+
+  GUIDisplayText 19,8,31,GUIPathsTextB1
+  GUIDisplayText 19,8,61,GUIPathsTextB2
+  GUIDisplayText 19,8,91,GUIPathsTextB3
+  GUIDisplayText 19,8,121,GUIPathsTextB4
+
+  GUIDisplayBBox  19,8,41,236,51,167
+  GUIDisplayBBox  19,8,71,236,81,167
+  GUIDisplayBBox  19,8,101,236,111,167
+  GUIDisplayBBox  19,8,131,236,141,167
+
+  GUIOuttextwin2d 19,10,45,BSXPath,37
+  GUIOuttextwin2d 19,10,75,STPath,37
+  GUIOuttextwin2d 19,10,105,GNextPath,37
+  GUIOuttextwin2d 19,10,135,SGPath,37
+.notbc
+
+  cmp dword[GUIPathTabs],3
+  jne near .notgfxpack
+  GUIDisplayText 19,8,31,GUIPathsTextC1
+  GUIDisplayText 19,8,61,GUIPathsTextC2
+  GUIDisplayText 19,8,91,GUIPathsTextC3
+  GUIDisplayText 19,8,121,GUIPathsTextC4
+
+  GUIDisplayBBox  19,8,41,236,51,167
+  GUIDisplayBBox  19,8,71,236,81,167
+  GUIDisplayBBox  19,8,101,236,111,167
+  GUIDisplayBBox  19,8,131,236,141,167
+
+  GUIOuttextwin2d 19,10,45,FEOEZPath,37
+  GUIOuttextwin2d 19,10,75,SJNSPath,37
+  GUIOuttextwin2d 19,10,105,MDHPath,37
+  GUIOuttextwin2d 19,10,135,SPL4Path,37
+.notgfxpack
   ret
 
 SECTION .data
-GUIPathsText1 db 'SAVES:',0
-GUIPathsText2 db 'SNAPSHOTS:',0
-GUIPathsText3 db 'SPCS:',0
-GUIPathsText4 db '--BIOS/BASE CARTS--',0
-GUIPathsText5 db 'BS-X:',0
-GUIPathsText6 db 'SUFAMI TURBO:',0
-GUIPathsText7 db 'SD GUNDAM G-NEXT:',0
-GUIPathsText8 db 'SAME GAME:',0
-GUIPathsText9 db '--SPC7110 GRAPHIC PACKS--',0
-GUIPathsTextA db 'FEOEZ:',0
-GUIPathsTextB db 'FEOEZ - SJNS:',0
-GUIPathsTextC db 'MDH:',0
-GUIPathsTextD db 'SPL4:',0
+GUIPathTabs dd 1,3
+  db 'GENERAL',0
+  db 'BIOS/CARTS',0
+  db 'GFX PACKS',0
+
+GUIPathsTextA1 db 'SAVES:',0
+GUIPathsTextA2 db 'SNAPSHOTS:',0
+GUIPathsTextA3 db 'SPCS:',0
+
+GUIPathsTextB1 db 'BS-X:',0
+GUIPathsTextB2 db 'SUFAMI TURBO:',0
+GUIPathsTextB3 db 'SD GUNDAM G-NEXT:',0
+GUIPathsTextB4 db 'SAME GAME:',0
+
+GUIPathsTextC1 db 'FEOEZ:',0
+GUIPathsTextC2 db 'FEOEZ - SJNS:',0
+GUIPathsTextC3 db 'MDH:',0
+GUIPathsTextC4 db 'SPL4:',0
 GUIBlinkCursor db 0,0
 GUIBlinkCursorLoop db 0
 
