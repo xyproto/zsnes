@@ -125,37 +125,6 @@ NEWSYM UpdateRewind
 .norewinds
     ret
 
-SECTION .data
-NEWSYM MuteVoiceF, dd 0
-SECTION .text
-
-VoiceEndMute:
-    mov byte[MuteVoiceF],0
-    ret
-
-%macro StartMute 1
-    mov al,[Voice0Status+%1]
-    or al,al
-    jz %%notmuted
-    or byte[MuteVoiceF],1 << %1
-%%notmuted
-%endmacro
-
-VoiceStartMute:
-    mov byte[MuteVoiceF],0
-    push eax
-    StartMute 0
-    StartMute 1
-    StartMute 2
-    StartMute 3
-    StartMute 4
-    StartMute 5
-    StartMute 6
-    StartMute 7
-    pop eax
-    ret
-
-
 %macro stim 0
 %ifdef __MSDOS__
     sti

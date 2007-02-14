@@ -33,7 +33,7 @@ EXTSYM Voice0Status,Voice1Status,Voice2Status,Voice3Status
 EXTSYM Voice4Status,Voice5Status,Voice6Status,Voice7Status
 EXTSYM GainDecBendDataPos,GainDecBendDataTime,GainDecBendDataDat
 EXTSYM AdsrSustLevLoc,AdsrBlocksLeft,AdsrNextTimeDepth
-EXTSYM MuteVoiceF,VoiceStarter,DecayRate,SustainRate
+EXTSYM VoiceStarter,DecayRate,SustainRate
 EXTSYM KeyOnStA,KeyOnStB,SoundTest,keyonsn
 
 SECTION .data
@@ -1442,8 +1442,6 @@ NEWSYM RDSPRegFF      ;
 %endmacro
 
 %macro VoiceAdsr 1
-      test byte[MuteVoiceF],1 << %1
-      jnz near .nogain
       cmp byte[Voice0State+%1],200
       je near .nogain
       cmp [DSPMem+05h+%1*10h],al
@@ -1488,8 +1486,6 @@ NEWSYM RDSPRegFF      ;
 %endmacro
 
 %macro VoiceAdsr2 1
-      test byte[MuteVoiceF],1 << %1
-      jnz near .noadsrswitch
       cmp byte[Voice0State+%1],200
       je near .noadsrswitch
       cmp [DSPMem+06h+%1*10h],al
@@ -1506,8 +1502,6 @@ NEWSYM RDSPRegFF      ;
 
 
 %macro VoiceGain 1
-      test byte[MuteVoiceF],1 << %1
-      jnz .nogain
       cmp byte[Voice0State+%1],200
       je .nogain
       cmp [DSPMem+07h+%1*10h],al
@@ -1933,19 +1927,16 @@ NEWSYM WDSPReg4B       ; Voice  4
       ret
 
 NEWSYM WDSPReg4C       ; Key On
-      push ebx
-      mov bl,[MuteVoiceF]
-      xor bl,0FFh
-      and bl,al
+      push eax
 
       xor byte[DSPMem+05Ch],0FFh
       jnz .notzero
-      and bl,[DSPMem+05Ch]
+      and al,[DSPMem+05Ch]
 .notzero
       xor byte[DSPMem+05Ch],0FFh
 
-      or byte[KeyOnStA],bl
-      pop ebx
+      or byte[KeyOnStA],al
+      pop eax
       test al,80h
       jz .nokon
       inc byte[SoundTest]
@@ -2077,8 +2068,6 @@ NEWSYM WDSPReg5B       ; Voice  5
       ret
 
 %macro keyoffm 1
-    test byte[MuteVoiceF],1 << %1
-    jnz %%nokeyoff
     push eax
     push edx
     push ebx
@@ -2093,7 +2082,6 @@ NEWSYM WDSPReg5B       ; Voice  5
     pop ebx
     pop edx
     pop eax
-%%nokeyoff
 %endmacro
 
 NEWSYM WDSPReg5C       ; Key Off
