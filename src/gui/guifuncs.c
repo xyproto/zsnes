@@ -488,6 +488,8 @@ void GUIRestoreVars()
 #endif
   CheckValueBounds(&EchoDis, 0, 1, 0, UB);
 
+  CheckValueBounds(&RelPathBase, 0, 1, 0, UB);
+
   CheckValueBounds(&RewindStates, 0, 99, 8, UB);
   CheckValueBounds(&RewindFrames, 1, 99, 15, UB);
   CheckValueBounds(&nosaveSRAM, 0, 1, 0, UB);

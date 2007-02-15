@@ -4789,9 +4789,7 @@ DisplayGUIPaths:
   GUIDisplayButtonHole 19,88,178,byte[RelPathBase],1
 
   cmp dword[GUIInputBox],0
-  je .inputboxselected
-  jmp .noinputboxselected
-  .inputboxselected
+  jne near .noinputboxselected
   GUIDisplayButtonHoleTu 19,8,178,byte[RelPathBase],0,GUIPathsTextA5A,0
   GUIDisplayButtonHoleTu 19,88,178,byte[RelPathBase],1,GUIPathsTextA5B,0
 .noinputboxselected
