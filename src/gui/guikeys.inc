@@ -1606,6 +1606,12 @@ GUIPathKeys:
   jne near .notab
   KeyTabInc GUIPathTabs
 .notab
+
+  cmp dword[GUIPathTabs],1
+  jne near .notgeneral
+  GUIKeyButtonHole RelPathBase,0,'C'
+  GUIKeyButtonHole RelPathBase,1,'R'
+.notgeneral
   ret
 
 SECTION .bss

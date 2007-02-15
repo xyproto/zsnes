@@ -4775,13 +4775,24 @@ DisplayGUIPaths:
   GUIDisplayBBox  19,8,76,236,86,167
   GUIDisplayBBox  19,8,111,236,121,167
   GUIDisplayBBox  19,8,146,236,156,167
-  GUIDisplayBBox  19,8,181,236,191,167
                                                   ; Green Text
   GUIOuttextwin2d 19,10,45,SRAMPath,37,GUIPathsTab1Ptr,0
   GUIOuttextwin2d 19,10,80,SStatePath,37,GUIPathsTab1Ptr,1
-  GUIOuttextwin2d 19,10,115,SnapPath,37,GUIPathsTab1Ptr,2
+  GUIOuttextwin2d 19,10,115,MoviePath,37,GUIPathsTab1Ptr,2
   GUIOuttextwin2d 19,10,150,IPSPath,37,GUIPathsTab1Ptr,3
-  GUIOuttextwin2d 19,10,185,MoviePath,37,GUIPathsTab1Ptr,4
+
+  ; Display Radio buttons
+  GUIDisplayText 19,23,181,GUIPathsTextA5A
+  GUIDisplayText 19,103,181,GUIPathsTextA5B
+
+  GUIDisplayButtonHole 19,8,178,byte[RelPathBase],0
+  GUIDisplayButtonHole 19,88,178,byte[RelPathBase],1
+
+  cmp dword[GUIInputBox],0
+  jne .noinputboxselected
+  GUIDisplayButtonHoleTu 19,8,178,byte[RelPathBase],0,GUIPathsTextA5A,0
+  GUIDisplayButtonHoleTu 19,88,178,byte[RelPathBase],1,GUIPathsTextA5B,0
+.noinputboxselected
 .notgeneral
 
   cmp dword[GUIPathTabs],2
@@ -4797,18 +4808,13 @@ DisplayGUIPaths:
   GUIDisplayBBox  19,8,76,236,86,167
   GUIDisplayBBox  19,8,111,236,121,167
   GUIDisplayBBox  19,8,146,236,156,167
+  GUIDisplayBBox  19,8,181,236,191,167
 
-  GUIOuttextwin2d 19,10,45,SPCPath,37,GUIPathsTab2Ptr,0
-  GUIOuttextwin2d 19,10,80,CHTPath,37,GUIPathsTab2Ptr,1
-  GUIOuttextwin2d 19,10,115,ComboPath,37,GUIPathsTab2Ptr,2
-  GUIOuttextwin2d 19,10,150,INPPath,37,GUIPathsTab2Ptr,3
-
-  ; Display Radio buttons
-  GUIDisplayText 19,23,181,GUIPathsTextB5A
-  GUIDisplayText 19,103,181,GUIPathsTextB5B
-
-  GUIDisplayButtonHole 19,8,178,byte[RelPathBase],0
-  GUIDisplayButtonHole 19,88,178,byte[RelPathBase],1
+  GUIOuttextwin2d 19,10,45,SnapPath,37,GUIPathsTab2Ptr,0
+  GUIOuttextwin2d 19,10,80,SPCPath,37,GUIPathsTab2Ptr,1
+  GUIOuttextwin2d 19,10,115,CHTPath,37,GUIPathsTab2Ptr,2
+  GUIOuttextwin2d 19,10,150,ComboPath,37,GUIPathsTab2Ptr,3
+  GUIOuttextwin2d 19,10,185,INPPath,37,GUIPathsTab2Ptr,4
 .notmorepaths
 
   cmp dword[GUIPathTabs],3
@@ -4859,17 +4865,17 @@ GUIPathTabs dd 1,4
 
 GUIPathsTextA1 db 'SAVES:',0
 GUIPathsTextA2 db 'SAVESTATES:',0
-GUIPathsTextA3 db 'SNAPSHOTS:',0
+GUIPathsTextA3 db 'MOVIES:',0
 GUIPathsTextA4 db 'IPS:',0
-GUIPathsTextA5 db 'MOVIES:',0
+GUIPathsTextA5 db 'RELATIVE PATH BASE:',0
+GUIPathsTextA5A db 'CONFIG DIR',0
+GUIPathsTextA5B db 'ROM DIR',0
 
-GUIPathsTextB1 db 'SPCS:',0
-GUIPathsTextB2 db 'CHEATS:',0
-GUIPathsTextB3 db 'COMBOS:',0
-GUIPathsTextB4 db 'GAME SPECIFIC INPUT:',0
-GUIPathsTextB5 db 'RELATIVE PATH BASE:',0
-GUIPathsTextB5A db 'CONFIG DIR',0
-GUIPathsTextB5B db 'ROM DIR',0
+GUIPathsTextB1 db 'SNAPSHOTS:',0
+GUIPathsTextB2 db 'SPCS:',0
+GUIPathsTextB3 db 'CHEATS:',0
+GUIPathsTextB4 db 'COMBOS:',0
+GUIPathsTextB5 db 'GAME SPECIFIC INPUT:',0
 
 GUIPathsTextC1 db 'BS-X:',0
 GUIPathsTextC2 db 'SUFAMI TURBO:',0
@@ -4882,8 +4888,8 @@ GUIPathsTextD3 db 'MDH:',0
 GUIPathsTextD4 db 'SPL4:',0
 GUIBlinkCursor db 0,0
 GUIBlinkCursorLoop db 0
-GUIPathsTab1Ptr dd SRAMPath,SStatePath,SnapPath,IPSPath,MoviePath
-GUIPathsTab2Ptr dd SPCPath,CHTPath,ComboPath,INPPath
+GUIPathsTab1Ptr dd SRAMPath,SStatePath,MoviePath,IPSPath
+GUIPathsTab2Ptr dd SnapPath,SPCPath,CHTPath,ComboPath,INPPath
 GUIPathsTab3Ptr dd BSXPath,STPath,GNextPath,SGPath
 GUIPathsTab4Ptr dd FEOEZPath,SJNSPath,MDHPath,SPL4Path
 GUIMovieTextPtr dd GUIMovieForcedText
