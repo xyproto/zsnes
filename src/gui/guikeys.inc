@@ -169,6 +169,78 @@
 %endmacro
 %endif
 
+%macro GUIInputBoxText 2
+  cmp dh,0
+  je near %%nokeypressed
+
+  cmp dword[GUIInputBox],0
+  je near %%nokeypressed
+
+  push ebx
+  mov ebx,[GUIInputBox]
+  mov eax,[%1+ebx*4-4]
+  pop ebx
+
+  mov ecx,eax
+
+%ifdef __WIN32__
+  ;Look for paste request
+  cmp byte[ctrlptr],0
+  je %%nopaste
+  cmp dh,56h ;V
+  jne %%nopaste
+  mov [CBBuffer],ecx
+  mov eax,[GUIInputLimit]
+  mov [CBLength],eax
+  pushad
+  call PasteClipBoard
+  popad
+  xor dx,dx
+  ret
+%%nopaste
+%endif
+
+  ;Find end of string
+%%findend
+  cmp byte[eax],0
+  je %%foundend
+  inc eax
+  jmp %%findend
+%%foundend
+
+  cmp dh,8    ;Backspace
+  jne %%notbackspace
+  cmp eax,ecx
+  je %%cantback
+  mov byte[eax-1],0
+%%cantback
+  xor dx,dx
+  ret
+%%notbackspace
+
+  cmp dh,13    ;Enter
+  jne %%notenter
+  mov dword[GUIInputBox],0
+  pushad
+  call %2
+  popad
+  xor dx,dx
+  ret
+%%notenter
+
+  ;check if we're at the end
+  add ecx,dword[GUIInputLimit]
+  cmp eax,ecx
+  jne %%stillroom
+  xor dx,dx
+  ret
+%%stillroom
+  mov [eax],dh
+
+  xor dx,dx
+%%nokeypressed
+%endmacro
+
 SECTION .bss
 GUIfirstkey resd 1
 GUIlastkey resd 1
@@ -978,7 +1050,7 @@ ret
 
 GUIVideoKeys:
 %ifndef __MSDOS__
-  call GUIPathKeys
+  GUIInputBoxText GUICustomResTextPtr,SetCustomXY
 %endif
   cmp dh,9
   jne near .tabdone
@@ -1525,183 +1597,15 @@ GUIEditStringcWin resd 1          ; 0 = no text window selected
 SECTION .text
 
 GUIPathKeys:
-  cmp dh,0
-  je near .nokeypressed
+  GUIInputBoxText GUIPathsTab1Ptr,init_save_paths
+  GUIInputBoxText GUIPathsTab2Ptr,init_save_paths
+  GUIInputBoxText GUIPathsTab3Ptr,init_save_paths
+  GUIInputBoxText GUIPathsTab4Ptr,init_save_paths
 
   cmp dh,9
   jne near .notab
   KeyTabInc GUIPathTabs
 .notab
-
-  cmp dword[GUIInputBox],0
-  je near .nokeypressed
-
-  cmp dword[GUIInputBox],1
-  jne .notBox1
-  mov eax,SRAMPath
-  jmp .boxselected
-.notBox1
-  cmp dword[GUIInputBox],2
-  jne .notBox2
-  mov eax,SnapPath
-  jmp .boxselected
-.notBox2
-  cmp dword[GUIInputBox],3
-  jne .notBox3
-  mov eax,SPCPath
-  jmp .boxselected
-.notBox3
-  cmp dword[GUIInputBox],4
-  jne .notBox4
-  mov eax,BSXPath
-  jmp .boxselected
-.notBox4
-  cmp dword[GUIInputBox],5
-  jne .notBox5
-  mov eax,STPath
-  jmp .boxselected
-.notBox5
-  cmp dword[GUIInputBox],6
-  jne .notBox6
-  mov eax,GNextPath
-  jmp .boxselected
-.notBox6
-  cmp dword[GUIInputBox],7
-  jne .notBox7
-  mov eax,SGPath
-  jmp .boxselected
-.notBox7
-  cmp dword[GUIInputBox],8
-  jne .notBox8
-  mov eax,FEOEZPath
-  jmp .boxselected
-.notBox8
-  cmp dword[GUIInputBox],9
-  jne .notBox9
-  mov eax,SJNSPath
-  jmp .boxselected
-.notBox9
-  cmp dword[GUIInputBox],10
-  jne .notBox10
-  mov eax,MDHPath
-  jmp .boxselected
-.notBox10
-  cmp dword[GUIInputBox],11
-  jne .notBox11
-  mov eax,SPL4Path
-  jmp .boxselected
-.notBox11
-%ifndef __MSDOS__
-  cmp dword[GUIInputBox],12
-  jne .notBox12
-  mov eax,GUICustomX
-  jmp .boxselected
-.notBox12
-  cmp dword[GUIInputBox],13
-  jne .notBox13
-  mov eax,GUICustomY
-  jmp .boxselected
-.notBox13
-%endif
-  cmp dword[GUIInputBox],14
-  jne .notBox14
-  mov eax,GUIMovieForcedText
-  jmp .boxselected
-.notBox14
-  cmp dword[GUIInputBox],15
-  jne .notBox15
-  mov eax,IPSPath
-  jmp .boxselected
-.notBox15
-  cmp dword[GUIInputBox],16
-  jne .notBox16
-  mov eax,MoviePath
-  jmp .boxselected
-.notBox16
-  cmp dword[GUIInputBox],17
-  jne .notBox17
-  mov eax,CHTPath
-  jmp .boxselected
-.notBox17
-  cmp dword[GUIInputBox],18
-  jne .notBox18
-  mov eax,ComboPath
-  jmp .boxselected
-.notBox18
-  cmp dword[GUIInputBox],19
-  jne .notBox19
-  mov eax,INPPath
-  jmp .boxselected
-.notBox19
-  cmp dword[GUIInputBox],20
-  jne .notBox20
-  mov eax,SStatePath
-  jmp .boxselected
-.notBox20
-
-.boxselected
-  mov ecx,eax
-
-%ifdef __WIN32__
-  ;Look for paste request
-  cmp byte[ctrlptr],0
-  je .nopaste
-  cmp dh,56h ;V
-  jne .nopaste
-  mov [CBBuffer],ecx
-  mov eax,[GUIInputLimit]
-  mov [CBLength],eax
-  pushad
-  call PasteClipBoard
-  popad
-  xor dx,dx
-  ret
-.nopaste
-%endif
-
-  ;Find end of string
-.findend
-  cmp byte[eax],0
-  je .foundend
-  inc eax
-  jmp .findend
-.foundend
-
-  cmp dh,8    ;Backspace
-  jne .notbackspace
-  cmp eax,ecx
-  je .cantback
-  mov byte[eax-1],0
-.cantback
-  xor dx,dx
-  ret
-.notbackspace
-
-  cmp dh,13    ;Enter
-  jne .notenter
-  mov dword[GUIInputBox],0
-  pushad
-  call init_save_paths
-  call SetMovieForcedLength
-%ifndef __MSDOS__
-  call SetCustomXY
-%endif
-  popad
-  xor dx,dx
-  ret
-.notenter
-
-  ;check if we're at the end
-  add ecx,dword[GUIInputLimit]
-  cmp eax,ecx
-  jne .stillroom
-  xor dx,dx
-  ret
-.stillroom
-  mov [eax],dh
-
-  xor dx,dx
-.nokeypressed
   ret
 
 SECTION .bss
@@ -1711,7 +1615,7 @@ SECTION .text
 
 GUIMovieKeys:
   ToUpperASM
-  call GUIPathKeys
+  GUIInputBoxText GUIMovieTextPtr,SetMovieForcedLength
   cmp dh,9
   jne near .notab
   cmp byte[MovieProcessing],1

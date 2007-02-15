@@ -1105,6 +1105,14 @@ GUIWinClicked:
   mov byte[GUIwinorder+eax],0
   mov byte[GUIwinactiv+ebx],0
   dec byte[GUIwinptr]
+  mov dword[GUIInputBox],0
+  pushad
+  call init_save_paths
+  call SetMovieForcedLength
+%ifndef __MSDOS__
+  call SetCustomXY
+%endif
+  popad
   ret
 .noclose
   cmp edx,10
@@ -1127,6 +1135,7 @@ GUIWinClicked:
   sub eax,[GUIwinposx+ebx*4]
   mov edx,[GUImouseposy]
   sub edx,[GUIwinposy+ebx*4]
+  mov dword[GUIInputBox],0
   cmp ebx,1
   je near DisplayGUIConfirmClick
   cmp ebx,2
@@ -1663,7 +1672,7 @@ SECTION .text
   pushad
   call %7
   popad
-  mov dword[GUIInputBox],%5
+  mov dword[GUIInputBox],%5+1
   mov dword[GUIInputLimit],%6-1
 %%noclick
 %endmacro
@@ -1908,6 +1917,7 @@ SECTION .text
 
 %macro GUIPTabClick 4-* ; minX, maxX, value, var, vars to zero
   GUIClickArea %1+1,11,%2-1,22,%%noclick
+  mov dword[GUIInputBox],0
   mov dword[%4],%3
 %if (%0>4)
   %rotate 4
@@ -2090,7 +2100,7 @@ DisplayGUIMovieClick:
   GUIPButtonHole 8,145,byte[MovieForcedLengthEnabled],1
   GUIPButtonHole 8,155,byte[MovieForcedLengthEnabled],2
 
-  GUITextBoxInputNach 136,144,205,154,14,11,SetMovieForcedLength
+  GUITextBoxInputNach 136,144,205,154,0,11,SetMovieForcedLength
 .nodumping
 
   ret
@@ -2295,8 +2305,8 @@ DisplayGUIVideoClick:
 %ifndef __MSDOS__
   GUIPHoldbutton 182,116,218,126,12
 
-  GUITextBoxInputNach 130,130,178,140,12,5,SetCustomXY
-  GUITextBoxInputNach 191,130,239,140,13,5,SetCustomXY
+  GUITextBoxInputNach 130,130,178,140,0,5,SetCustomXY
+  GUITextBoxInputNach 191,130,239,140,1,5,SetCustomXY
 %endif
 
 .notmodestab
@@ -3407,20 +3417,20 @@ DisplayGUIPathsClick:
   cmp dword[GUIPathTabs],1
   jne near .notgeneral
 
-  GUITextBoxInputNach 8,41,237,51,1,path_length,init_save_paths        ;SRAMPath
-  GUITextBoxInputNach 8,76,237,86,20,path_length,init_save_paths       ;SStatePath
+  GUITextBoxInputNach 8,41,237,51,0,path_length,init_save_paths        ;SRAMPath
+  GUITextBoxInputNach 8,76,237,86,1,path_length,init_save_paths       ;SStatePath
   GUITextBoxInputNach 8,111,237,121,2,path_length,init_save_paths      ;SnapPath
-  GUITextBoxInputNach 8,146,237,156,15,path_length,init_save_paths     ;IPSPath
-  GUITextBoxInputNach 8,181,237,191,16,path_length,init_save_paths     ;MoviePath
+  GUITextBoxInputNach 8,146,237,156,3,path_length,init_save_paths     ;IPSPath
+  GUITextBoxInputNach 8,181,237,191,4,path_length,init_save_paths     ;MoviePath
 .notgeneral
 
   cmp dword[GUIPathTabs],2
   jne near .notmorepaths
 
-  GUITextBoxInputNach 8,41,237,51,3,path_length,init_save_paths        ;SPCPath
-  GUITextBoxInputNach 8,76,237,86,17,path_length,init_save_paths       ;CHTPath
-  GUITextBoxInputNach 8,111,237,121,18,path_length,init_save_paths     ;ComboPath
-  GUITextBoxInputNach 8,146,237,156,19,path_length,init_save_paths     ;INPPath
+  GUITextBoxInputNach 8,41,237,51,0,path_length,init_save_paths        ;SPCPath
+  GUITextBoxInputNach 8,76,237,86,1,path_length,init_save_paths       ;CHTPath
+  GUITextBoxInputNach 8,111,237,121,2,path_length,init_save_paths     ;ComboPath
+  GUITextBoxInputNach 8,146,237,156,3,path_length,init_save_paths     ;INPPath
 
   GUIPButtonHole 8,178,byte[RelPathBase],0
   GUIPButtonHole 88,178,byte[RelPathBase],1
@@ -3429,19 +3439,19 @@ DisplayGUIPathsClick:
   cmp dword[GUIPathTabs],3
   jne near .notbc
 
-  GUITextBoxInputNach 8,41,237,51,4,path_length,init_save_paths        ;BSXPath
-  GUITextBoxInputNach 8,76,237,86,5,path_length,init_save_paths        ;STPath
-  GUITextBoxInputNach 8,111,237,121,6,path_length,init_save_paths      ;GNextPath
-  GUITextBoxInputNach 8,146,237,156,7,path_length,init_save_paths      ;SGPath
+  GUITextBoxInputNach 8,41,237,51,0,path_length,init_save_paths        ;BSXPath
+  GUITextBoxInputNach 8,76,237,86,1,path_length,init_save_paths        ;STPath
+  GUITextBoxInputNach 8,111,237,121,2,path_length,init_save_paths      ;GNextPath
+  GUITextBoxInputNach 8,146,237,156,3,path_length,init_save_paths      ;SGPath
 .notbc
 
   cmp dword[GUIPathTabs],4
   jne near .notgfxpacks
 
-  GUITextBoxInputNach 8,41,237,51,8,path_length,init_save_paths        ;FEOEZPath
-  GUITextBoxInputNach 8,76,237,86,9,path_length,init_save_paths        ;SJNSPath
-  GUITextBoxInputNach 8,111,237,121,10,path_length,init_save_paths     ;MDHPath
-  GUITextBoxInputNach 8,146,237,156,11,path_length,init_save_paths     ;SPL4Path
+  GUITextBoxInputNach 8,41,237,51,0,path_length,init_save_paths        ;FEOEZPath
+  GUITextBoxInputNach 8,76,237,86,1,path_length,init_save_paths        ;SJNSPath
+  GUITextBoxInputNach 8,111,237,121,2,path_length,init_save_paths     ;MDHPath
+  GUITextBoxInputNach 8,146,237,156,3,path_length,init_save_paths     ;SPL4Path
 .notgfxpacks
   ret
 

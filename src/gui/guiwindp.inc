@@ -879,7 +879,14 @@ GUIOuttextwin2 %1,%2-1,%3-1,%4
   pop esi
 %endmacro
 
-%macro GUIOuttextwin2d 5        ; Boxed, green text, limited to 5th param
+%macro BlinkCursorCheck 2
+  cmp dword[GUIInputBox],%2+1
+  jne %%notselected
+  mov ebx,[%1+%2*4] 
+%%notselected
+%endmacro
+
+%macro GUIOuttextwin2d 7        ; Boxed, green text, limited to 5th param
   push ecx
   mov ecx,%4                  ;Move pointer to text into ecx
 %%zero
@@ -901,7 +908,7 @@ GUIOuttextwin2 %1,%2-1,%3-1,%4
   pop eax
   push ebx
   pop ecx
-  call BlinkCursorCheck
+  BlinkCursorCheck %6,%7
   cmp ebx,%4
   pop ebx
   jne near %%fixreg
@@ -1954,8 +1961,8 @@ DisplayGUIVideo:
   call GetCustomXY
   popad
 
-  GUIOuttextwin2d 5,138,133,GUICustomX,4
-  GUIOuttextwin2d 5,199,133,GUICustomY,4
+  GUIOuttextwin2d 5,138,133,GUICustomX,4,GUICustomResTextPtr,0
+  GUIOuttextwin2d 5,199,133,GUICustomY,4,GUICustomResTextPtr,1
 %endif
 
   GUIDisplayBBoxS 5,5,26,115,189,167           ; Video Modes Box
@@ -3962,7 +3969,7 @@ DisplayGUIMovies:    ; Movie Record/Playback options
   call GetMovieForcedLength
   popad
 
-  GUIOuttextwin2d 15,139,148,GUIMovieForcedText,10
+  GUIOuttextwin2d 15,139,148,GUIMovieForcedText,10,GUIMovieTextPtr,0
 .nodumping
 
   ret
@@ -4750,107 +4757,6 @@ GUIChipText7Alt db 67,65,84,83,85,80,0
 
 SECTION .text
 
-BlinkCursorCheck:
-  cmp dword[GUIInputBox],0
-  jne .checkboxes
-  mov ebx,0
-  ret
-.checkboxes
-  cmp dword[GUIInputBox],1
-  jne .notBox1
-  mov ebx,SRAMPath
-  ret
-.notBox1
-  cmp dword[GUIInputBox],2
-  jne .notBox2
-  mov ebx,SnapPath
-  ret
-.notBox2
-  cmp dword[GUIInputBox],3
-  jne .notBox3
-  mov ebx,SPCPath
-  ret
-.notBox3
-  cmp dword[GUIInputBox],4
-  jne .notBox4
-  mov ebx,BSXPath
-  ret
-.notBox4
-  cmp dword[GUIInputBox],5
-  jne .notBox5
-  mov ebx,STPath
-  ret
-.notBox5
-  cmp dword[GUIInputBox],6
-  jne .notBox6
-  mov ebx,GNextPath
-  ret
-.notBox6
-  cmp dword[GUIInputBox],7
-  jne .notBox7
-  mov ebx,SGPath
-  ret
-.notBox7
-  cmp dword[GUIInputBox],8
-  jne .notBox8
-  mov ebx,FEOEZPath
-  ret
-.notBox8
-  cmp dword[GUIInputBox],9
-  jne .notBox9
-  mov ebx,SJNSPath
-  ret
-.notBox9
-  cmp dword[GUIInputBox],10
-  jne .notBox10
-  mov ebx,MDHPath
-  ret
-.notBox10
-  cmp dword[GUIInputBox],11
-  jne .notBox11
-  mov ebx,SPL4Path
-.notBox11
-%ifndef __MSDOS__
-  cmp dword[GUIInputBox],12
-  jne .notBox12
-  mov ebx,GUICustomX
-  ret
-.notBox12
-  cmp dword[GUIInputBox],13
-  jne .notBox13
-  mov ebx,GUICustomY
-.notBox13
-%endif
-  cmp dword[GUIInputBox],14
-  jne .notBox14
-  mov ebx,GUIMovieForcedText
-.notBox14
-  cmp dword[GUIInputBox],15
-  jne .notBox15
-  mov ebx,IPSPath
-.notBox15
-  cmp dword[GUIInputBox],16
-  jne .notBox16
-  mov ebx,MoviePath
-.notBox16
-  cmp dword[GUIInputBox],17
-  jne .notBox17
-  mov ebx,CHTPath
-.notBox17
-  cmp dword[GUIInputBox],18
-  jne .notBox18
-  mov ebx,ComboPath
-.notBox18
-  cmp dword[GUIInputBox],19
-  jne .notBox19
-  mov ebx,INPPath
-.notBox19
-  cmp dword[GUIInputBox],20
-  jne .notBox20
-  mov ebx,SStatePath
-.notBox20
-  ret
-
 DisplayGUIPaths:
   GUIDrawWindowBox 19,GUIPathsDisp
   GUIDrawTArea 19
@@ -4870,12 +4776,12 @@ DisplayGUIPaths:
   GUIDisplayBBox  19,8,111,236,121,167
   GUIDisplayBBox  19,8,146,236,156,167
   GUIDisplayBBox  19,8,181,236,191,167
-
-  GUIOuttextwin2d 19,10,45,SRAMPath,37            ; Green Text
-  GUIOuttextwin2d 19,10,80,SStatePath,37
-  GUIOuttextwin2d 19,10,115,SnapPath,37
-  GUIOuttextwin2d 19,10,150,IPSPath,37
-  GUIOuttextwin2d 19,10,185,MoviePath,37
+                                                  ; Green Text
+  GUIOuttextwin2d 19,10,45,SRAMPath,37,GUIPathsTab1Ptr,0
+  GUIOuttextwin2d 19,10,80,SStatePath,37,GUIPathsTab1Ptr,1
+  GUIOuttextwin2d 19,10,115,SnapPath,37,GUIPathsTab1Ptr,2
+  GUIOuttextwin2d 19,10,150,IPSPath,37,GUIPathsTab1Ptr,3
+  GUIOuttextwin2d 19,10,185,MoviePath,37,GUIPathsTab1Ptr,4
 .notgeneral
 
   cmp dword[GUIPathTabs],2
@@ -4892,10 +4798,10 @@ DisplayGUIPaths:
   GUIDisplayBBox  19,8,111,236,121,167
   GUIDisplayBBox  19,8,146,236,156,167
 
-  GUIOuttextwin2d 19,10,45,SPCPath,37
-  GUIOuttextwin2d 19,10,80,CHTPath,37
-  GUIOuttextwin2d 19,10,115,ComboPath,37
-  GUIOuttextwin2d 19,10,150,INPPath,37
+  GUIOuttextwin2d 19,10,45,SPCPath,37,GUIPathsTab2Ptr,0
+  GUIOuttextwin2d 19,10,80,CHTPath,37,GUIPathsTab2Ptr,1
+  GUIOuttextwin2d 19,10,115,ComboPath,37,GUIPathsTab2Ptr,2
+  GUIOuttextwin2d 19,10,150,INPPath,37,GUIPathsTab2Ptr,3
 
   ; Display Radio buttons
   GUIDisplayText 19,23,181,GUIPathsTextB5A
@@ -4918,14 +4824,15 @@ DisplayGUIPaths:
   GUIDisplayBBox  19,8,111,236,121,167
   GUIDisplayBBox  19,8,146,236,156,167
 
-  GUIOuttextwin2d 19,10,45,BSXPath,37
-  GUIOuttextwin2d 19,10,80,STPath,37
-  GUIOuttextwin2d 19,10,115,GNextPath,37
-  GUIOuttextwin2d 19,10,150,SGPath,37
+  GUIOuttextwin2d 19,10,45,BSXPath,37,GUIPathsTab3Ptr,0
+  GUIOuttextwin2d 19,10,80,STPath,37,GUIPathsTab3Ptr,1
+  GUIOuttextwin2d 19,10,115,GNextPath,37,GUIPathsTab3Ptr,2
+  GUIOuttextwin2d 19,10,150,SGPath,37,GUIPathsTab3Ptr,3
 .notbc
 
   cmp dword[GUIPathTabs],4
   jne near .notgfxpack
+
   GUIDisplayText 19,8,31,GUIPathsTextD1
   GUIDisplayText 19,8,66,GUIPathsTextD2
   GUIDisplayText 19,8,101,GUIPathsTextD3
@@ -4936,10 +4843,10 @@ DisplayGUIPaths:
   GUIDisplayBBox  19,8,111,236,121,167
   GUIDisplayBBox  19,8,146,236,156,167
 
-  GUIOuttextwin2d 19,10,45,FEOEZPath,37
-  GUIOuttextwin2d 19,10,80,SJNSPath,37
-  GUIOuttextwin2d 19,10,115,MDHPath,37
-  GUIOuttextwin2d 19,10,150,SPL4Path,37
+  GUIOuttextwin2d 19,10,45,FEOEZPath,37,GUIPathsTab4Ptr,0
+  GUIOuttextwin2d 19,10,80,SJNSPath,37,GUIPathsTab4Ptr,1
+  GUIOuttextwin2d 19,10,115,MDHPath,37,GUIPathsTab4Ptr,2
+  GUIOuttextwin2d 19,10,150,SPL4Path,37,GUIPathsTab4Ptr,3
 .notgfxpack
   ret
 
@@ -4975,6 +4882,12 @@ GUIPathsTextD3 db 'MDH:',0
 GUIPathsTextD4 db 'SPL4:',0
 GUIBlinkCursor db 0,0
 GUIBlinkCursorLoop db 0
+GUIPathsTab1Ptr dd SRAMPath,SStatePath,SnapPath,IPSPath,MoviePath
+GUIPathsTab2Ptr dd SPCPath,CHTPath,ComboPath,INPPath
+GUIPathsTab3Ptr dd BSXPath,STPath,GNextPath,SGPath
+GUIPathsTab4Ptr dd FEOEZPath,SJNSPath,MDHPath,SPL4Path
+GUIMovieTextPtr dd GUIMovieForcedText
+GUICustomResTextPtr dd GUICustomX,GUICustomY
 
 SECTION .text
 
