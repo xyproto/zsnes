@@ -3421,6 +3421,9 @@ DisplayGUIPathsClick:
   GUITextBoxInputNach 8,76,237,86,17,path_length,init_save_paths       ;CHTPath
   GUITextBoxInputNach 8,111,237,121,18,path_length,init_save_paths     ;ComboPath
   GUITextBoxInputNach 8,146,237,156,19,path_length,init_save_paths     ;INPPath
+
+  GUIPButtonHole 8,178,byte[RelPathBase],0
+  GUIPButtonHole 88,178,byte[RelPathBase],1
 .notmorepaths
 
   cmp dword[GUIPathTabs],3

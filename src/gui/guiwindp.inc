@@ -4885,6 +4885,7 @@ DisplayGUIPaths:
   GUIDisplayText 19,8,66,GUIPathsTextB2
   GUIDisplayText 19,8,101,GUIPathsTextB3
   GUIDisplayText 19,8,136,GUIPathsTextB4
+  GUIDisplayText 19,8,171,GUIPathsTextB5
 
   GUIDisplayBBox  19,8,41,236,51,167
   GUIDisplayBBox  19,8,76,236,86,167
@@ -4895,6 +4896,13 @@ DisplayGUIPaths:
   GUIOuttextwin2d 19,10,80,CHTPath,37
   GUIOuttextwin2d 19,10,115,ComboPath,37
   GUIOuttextwin2d 19,10,150,INPPath,37
+
+  ; Display Radio buttons
+  GUIDisplayText 19,23,181,GUIPathsTextB5A
+  GUIDisplayText 19,103,181,GUIPathsTextB5B
+
+  GUIDisplayButtonHole 19,8,178,byte[RelPathBase],0
+  GUIDisplayButtonHole 19,88,178,byte[RelPathBase],1
 .notmorepaths
 
   cmp dword[GUIPathTabs],3
@@ -4952,6 +4960,9 @@ GUIPathsTextB1 db 'SPCS:',0
 GUIPathsTextB2 db 'CHEATS:',0
 GUIPathsTextB3 db 'COMBOS:',0
 GUIPathsTextB4 db 'GAME SPECIFIC INPUT:',0
+GUIPathsTextB5 db 'RELATIVE PATH BASE:',0
+GUIPathsTextB5A db 'ZSNES DIR',0
+GUIPathsTextB5B db 'ROM DIR',0
 
 GUIPathsTextC1 db 'BS-X:',0
 GUIPathsTextC2 db 'SUFAMI TURBO:',0

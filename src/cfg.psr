@@ -664,6 +664,11 @@ SPL4Path times 1024 db ""
 %endif
 
 @
+@ Relative Path Base (0 = ZSNES DIR, 1 = Rom Dir)
+@ Change the default base path used by ZSNES when using relative paths
+RelPathBase db 0
+
+@
 @  ----
 @ -- GUI --
 @  ----
