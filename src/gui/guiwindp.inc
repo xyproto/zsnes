@@ -4961,7 +4961,7 @@ GUIPathsTextB2 db 'CHEATS:',0
 GUIPathsTextB3 db 'COMBOS:',0
 GUIPathsTextB4 db 'GAME SPECIFIC INPUT:',0
 GUIPathsTextB5 db 'RELATIVE PATH BASE:',0
-GUIPathsTextB5A db 'ZSNES DIR',0
+GUIPathsTextB5A db 'CONFIG DIR',0
 GUIPathsTextB5B db 'ROM DIR',0
 
 GUIPathsTextC1 db 'BS-X:',0
