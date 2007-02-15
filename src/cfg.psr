@@ -664,9 +664,13 @@ SPL4Path times 1024 db ""
 %endif
 
 @
-@ Relative Path Base (0 = ZSNES DIR, 1 = Rom Dir)
+@ Relative Path Base (0 = Config dir, 1 = ROM Dir)
 @ Change the default base path used by ZSNES when using relative paths
+%ifdef __UNIXSDL__
 RelPathBase db 0
+%else
+RelPathBase db 1
+%endif
 
 @
 @  ----
