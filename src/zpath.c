@@ -230,27 +230,27 @@ bool init_paths(char *launch_command)
     printf("ZSnapPath: %s\n", ZSnapPath);
     printf("ZSpcPath: %s\n", ZSpcPath);
     printf("ZIpsPath: %s\n", ZIpsPath);
-    printf("ZMoviePath: %s\n", ZMoviePath);
     printf("ZChtPath: %s\n", ZChtPath);
     printf("ZComboPath: %s\n", ZComboPath);
     printf("ZInpPath: %s\n", ZInpPath);
     printf("ZSStatePath: %s\n", ZSStatePath);
+    printf("ZMoviePath: %s\n", ZMoviePath);
 #endif
     return(true);
   }
   return(false);
 }
 
-char *set_save_path(char *Path)
+static void set_save_path(char **path, char *primary, char *secondary)
 {
-  if(*Path)
+  if (*primary)
   {
-    return(Path);
+    *path = primary;
+    strcatslash(*path);
   }
-
   else
   {
-    return(ZSramPath);
+    *path = secondary;
   }
 }
 
@@ -270,22 +270,16 @@ void init_save_paths()
   }
   strcatslash(ZSramPath);
 
-  ZSnapPath = set_save_path(SnapPath);
-  ZSpcPath = set_save_path(SPCPath);
-  ZIpsPath = set_save_path(IPSPath);
-  ZMoviePath = set_save_path(MoviePath);
-  ZChtPath = set_save_path(CHTPath);
-  ZComboPath = set_save_path(ComboPath);
-  ZInpPath = set_save_path(INPPath);
-  ZSStatePath = set_save_path(SStatePath);
-  strcatslash(ZSnapPath);
-  strcatslash(ZSpcPath);
-  strcatslash(ZIpsPath);
-  strcatslash(ZMoviePath);
-  strcatslash(ZChtPath);
-  strcatslash(ZComboPath);
-  strcatslash(ZInpPath);
-  strcatslash(ZSStatePath);
+  set_save_path(&ZSnapPath, SnapPath, ZSramPath);
+  set_save_path(&ZSpcPath, SPCPath, ZSramPath);
+  set_save_path(&ZIpsPath, IPSPath, ZSramPath);
+  set_save_path(&ZChtPath, CHTPath, ZSramPath);
+  set_save_path(&ZComboPath, ComboPath, ZSramPath);
+  set_save_path(&ZInpPath, INPPath, ZSramPath);
+
+  set_save_path(&ZSStatePath, SStatePath, ZSramPath);
+  set_save_path(&ZMoviePath, MoviePath, ZSStatePath);
+
 }
 
 bool init_rom_path(char *path)
