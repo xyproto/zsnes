@@ -2284,7 +2284,9 @@ DisplayGUIVideoClick:
   GUIPTabClick 0,39,1,GUIVideoTabs,GUIVntscTab
   GUIPTabClick 40,91,2,GUIVideoTabs,GUIVntscTab
   cmp byte[NTSCFilter],1
-  jne .nontscf
+  je .ntscf
+  jmp .nontscf
+  .ntscf
   GUIPTabClick 92,125,1,GUIVntscTab,GUIVideoTabs
   GUIPTabClick 126,184,2,GUIVntscTab,GUIVideoTabs
 .nontscf
