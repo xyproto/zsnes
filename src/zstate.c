@@ -680,29 +680,27 @@ char *zst_name()
   return(ZStateName);
 }
 
-bool MovieCheck();
-
 void zst_determine_newest()
 {
   struct stat filestat;
-  char *filename;
+  char *zst_path;
 
-  if (MovieCheck())
+  if (MovieInProgress())
   {
     mzt_chdir_up();
-    filename = ZMoviePath;
+    zst_path = ZMoviePath;
   }
   else
   {
-    filename = ZSStatePath;
+    zst_path = ZSStatePath;
   }
 
-  if (!stat_dir(filename, zst_name(), &filestat) && filestat.st_mtime > newestfiledate)
+  if (!stat_dir(zst_path, zst_name(), &filestat) && filestat.st_mtime > newestfiledate)
   {
     newestfiledate = filestat.st_mtime;
     newest_zst = current_zst;
   }
-  if (MovieCheck()) { mzt_chdir_down(); }
+  if (MovieInProgress()) { mzt_chdir_down(); }
 }
 
 void zst_init()
@@ -721,20 +719,20 @@ void zst_init()
 int zst_exists()
 {
   int ret;
-  char *filename;
+  char *zst_path;
 
-  if (MovieCheck())
+  if (MovieInProgress())
   {
     mzt_chdir_up();
-    filename = ZMoviePath;
+    zst_path = ZMoviePath;
   }
   else
   {
-    filename = ZSStatePath;
+    zst_path = ZSStatePath;
   }
 
-  ret = access_dir(filename, zst_name(), F_OK) ? 0 : 1;
-  if (MovieCheck()){ mzt_chdir_down(); }
+  ret = access_dir(zst_path, zst_name(), F_OK) ? 0 : 1;
+  if (MovieInProgress()){ mzt_chdir_down(); }
 
   return(ret);
 }

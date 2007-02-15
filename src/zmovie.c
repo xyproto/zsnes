@@ -3117,3 +3117,8 @@ void MovieDumpRaw()
     }
   }
 }
+
+bool MovieInProgress()
+{
+  return((MovieProcessing == MOVIE_PLAYBACK) || (MovieProcessing == MOVIE_RECORD));
+}
