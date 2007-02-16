@@ -1354,7 +1354,7 @@ Cleaned up by Nach
 0002Ch-0002Dh - Reserved (1 byte)
 0002Eh-0004Dh - SubTitle/Song Name (32 bytes)
 0004Eh-0006Dh - Title of Game (32 bytes)
-0006Eh-0007Dh - Name of Dumper (32 bytes)
+0006Eh-0007Dh - Name of Dumper (16 bytes)
 0007Eh-0009Dh - Comments (32 bytes)
 0009Eh-000A1h - Date the SPC was Dumped (4 bytes)
 000A2h-000A8h - Reserved (7 bytes)
