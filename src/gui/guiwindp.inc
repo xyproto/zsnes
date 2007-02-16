@@ -4893,7 +4893,9 @@ GUIPathsTab2Ptr dd SnapPath,SPCPath,CHTPath,ComboPath,INPPath
 GUIPathsTab3Ptr dd BSXPath,STPath,GNextPath,SGPath
 GUIPathsTab4Ptr dd FEOEZPath,SJNSPath,MDHPath,SPL4Path
 GUIMovieTextPtr dd GUIMovieForcedText
+%ifndef __MSDOS__
 GUICustomResTextPtr dd GUICustomX,GUICustomY
+%endif
 
 SECTION .text
 
