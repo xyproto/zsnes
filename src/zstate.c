@@ -1351,7 +1351,7 @@ Cleaned up by Nach
 00029h        - Y Register Value (1 byte)
 0002Ah        - Status Flags Value (1 byte)
 0002Bh        - Stack Register Value (1 byte)
-0002Ch-0002Dh - Reserved (1 byte)
+0002Ch-0002Dh - Reserved (2 bytes)
 0002Eh-0004Dh - SubTitle/Song Name (32 bytes)
 0004Eh-0006Dh - Title of Game (32 bytes)
 0006Eh-0007Dh - Name of Dumper (16 bytes)
