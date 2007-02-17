@@ -1597,10 +1597,22 @@ GUIEditStringcWin resd 1          ; 0 = no text window selected
 SECTION .text
 
 GUIPathKeys:
+  cmp dword[GUIPathTabs],1
+  jne near .notpathtab1
   GUIInputBoxText GUIPathsTab1Ptr,init_save_paths
+.notpathtab1
+  cmp dword[GUIPathTabs],2
+  jne near .notpathtab2
   GUIInputBoxText GUIPathsTab2Ptr,init_save_paths
+.notpathtab2
+  cmp dword[GUIPathTabs],3
+  jne near .notpathtab3
+.notpathtab3
   GUIInputBoxText GUIPathsTab3Ptr,init_save_paths
+  cmp dword[GUIPathTabs],4
+  jne near .notpathtab4
   GUIInputBoxText GUIPathsTab4Ptr,init_save_paths
+.notpathtab4
 
   cmp dh,9
   jne near .notab
