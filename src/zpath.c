@@ -329,11 +329,12 @@ static const char *strdupcat_internal(const char *path, const char *file)
   static char buffer_dir[PATH_SIZE*2];
   if (!IS_ABSOLUTE(file))
   {
+    *buffer_dir = 0;
     if (!IS_ABSOLUTE(path))
     {
-      strcpy(buffer_dir, RelPathBase ? ZRomPath : ZCfgPath);
+      strcat(buffer_dir, RelPathBase ? ZRomPath : ZCfgPath);
     }
-    strcpy(buffer_dir, path);
+    strcat(buffer_dir, path);
   }
   else
   {
@@ -352,11 +353,12 @@ static const char *strdupcat_internal(const char *path, const char *file, const 
   static char buffer_dir[PATH_SIZE*2];
   if (!IS_ABSOLUTE(file))
   {
+    *buffer_dir = 0;
     if (!IS_ABSOLUTE(path))
     {
-      strcpy(buffer_dir, RelPathBase ? ZRomPath : ZCfgPath);
+      strcat(buffer_dir, RelPathBase ? ZRomPath : ZCfgPath);
     }
-    strcpy(buffer_dir, path);
+    strcat(buffer_dir, path);
   }
   else
   {
