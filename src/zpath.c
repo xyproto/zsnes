@@ -89,14 +89,12 @@ void cfgpath_ensure(const char *launch_command)
 
   if (ZCfgPath)
   {
-    struct stat stat_buffer;
-
     ZCfgAlloc = true;
     strcpy(ZCfgPath, userinfo->pw_dir);
     strcatslash(ZCfgPath);
     strcat(ZCfgPath, zpath);
 
-    if (mkpath(ZCfgPath, 0755) && !stat(ZCfgPath, &stat_buffer) && S_ISDIR(stat_buffer.st_mode) && !access(ZCfgPath, W_OK))
+    if (mkpath(ZCfgPath, 0755) && !access(ZCfgPath, W_OK))
     {
       strcatslash(ZCfgPath);
     }
@@ -600,7 +598,7 @@ static bool mkpath_help(char *path, char *element, mode_t mmode)
       if (p) { *p = 0; }
 
       //Current path fragment created or already exists as a directory already
-      if ((created = !mkdir_p(path)) || ((errno == EEXIST) && !stat(path, &stat_buffer) && S_ISDIR(stat_buffer.st_mode)))
+      if ((created = !mkdir_p(path)) || (!stat(path, &stat_buffer) && S_ISDIR(stat_buffer.st_mode)))
       {
         if (p)
         {
