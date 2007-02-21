@@ -595,9 +595,12 @@ static bool mkpath_help(char *path, char *element, mode_t mmode)
 
     if (*element)
     {
+      struct stat stat_buffer;
       p = strchr(element, DIR_SLASH_C);
       if (p) { *p = 0; }
-      if ((created = !mkdir_p(path)) || (errno == EEXIST)) //Current path fragment created or already exists
+
+      //Current path fragment created or already exists as a directory already
+      if ((created = !mkdir_p(path)) || ((errno == EEXIST) && !stat(path, &stat_buffer) && S_ISDIR(stat_buffer.st_mode)))
       {
         if (p)
         {

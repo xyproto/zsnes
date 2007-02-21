@@ -57,10 +57,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "../asm_call.h"
 #include "../zloader.h"
 
-#ifndef S_ISDIR
-#define S_ISDIR(m) (((m) & S_IFMT) == S_IFDIR)
-#endif
-
 #define BIT(X) (1 << (X))
 
 extern unsigned char ComboHeader[23], ComboBlHeader[23], CombinDataGlob[3300];

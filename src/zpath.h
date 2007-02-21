@@ -73,6 +73,10 @@ typedef unsigned short mode_t;
 #define realpath_native realpath_sfn
 #endif
 
+#ifndef S_ISDIR
+#define S_ISDIR(m) (((m) & S_IFMT) == S_IFDIR)
+#endif
+
 extern char ZCfgFile[];
 extern char *ZStartPath, *ZCfgPath, *ZSramPath, *ZRomPath;
 extern char *ZSnapPath, *ZSpcPath, *ZIpsPath, *ZMoviePath;
