@@ -952,13 +952,12 @@ MMXInterpolwin:
     je near .scanlinesquart
     cmp byte[scanlines],3
     je near .scanlineshalf
-    inc ebx
     mov [lineleft],dl
     ; do scanlines
     mov edx,[spritetablea]
-    mov ecx,64
-    mov eax,[esi+510]
     add edx,512
+    mov eax,[esi+510]
+    mov ecx,64
     mov [esi+512],eax
 .a2
     movq mm0,[esi]
@@ -1070,7 +1069,6 @@ MMXInterpolwin:
     ret
 
 .scanlines
-    inc dl
     mov [lineleft],dl
     ; do scanlines
     mov eax,[esi+510]
@@ -1120,7 +1118,6 @@ MMXInterpolwin:
     ret
 
 .scanlineshalf
-    inc dl
     mov [lineleft],dl
     ; do scanlines
 .ahb
@@ -1183,7 +1180,6 @@ MMXInterpolwin:
     ret
 
 .scanlinesquart
-    inc dl
     mov [lineleft],dl
     ; do scanlines
 .ahb2
