@@ -163,9 +163,6 @@ NEWSYM InitPreGame   ; Executes before starting/continuing a game
     mov byte[pressed+1],2
     pushad
     call Start60HZ
-%ifdef __OPENGL__
-    call drawscreenwin
-%endif
     call initwinvideo
     popad
 
@@ -269,7 +266,7 @@ NEWSYM deinitvideo
 SECTION .data
 NEWSYM converta, dd 0
 %ifdef __OPENGL__
-NEWSYM blinit, db 1
+NEWSYM blinit, db 0
 %endif
 
 SECTION .text

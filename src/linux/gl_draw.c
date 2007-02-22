@@ -63,12 +63,28 @@ bool OGLModeCheck();
 
 int gl_start(int width, int height, int req_depth, int FullScreen)
 {
-  Uint32 flags = SDL_DOUBLEBUF | SDL_HWSURFACE | SDL_HWPALETTE | SDL_OPENGL;
+  Uint32 flags = SDL_OPENGL;
   int i;
 
   flags |= (GUIRESIZE[cvidmode] ? SDL_RESIZABLE : 0);
   flags |= (FullScreen ? SDL_FULLSCREEN : 0);
 
+  if (BilinearFilter)
+  {
+    glfilters = GL_LINEAR;
+    if (GUIOn2 && !FilteredGUI)
+      glfilters = GL_NEAREST;
+  }
+  else
+  {
+    glfilters = GL_NEAREST;
+  }
+
+  SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+#if (SDL_MAJOR_VERSION > 1) || ((SDL_MINOR_VERSION > 2) || ((SDL_MINOR_VERSION == 2) && (SDL_PATCHLEVEL >= 10)))
+  SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL, 1);
+  SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL,1);
+#endif
 
   SurfaceX = width; SurfaceY = height;
   surface = SDL_SetVideoMode(SurfaceX, SurfaceY, req_depth, flags);
@@ -77,11 +93,6 @@ int gl_start(int width, int height, int req_depth, int FullScreen)
     fprintf(stderr, "Could not set %dx%d-GL video mode.\n",SurfaceX, SurfaceY);
     return false;
   }
-
-  SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-#if (SDL_MAJOR_VERSION > 1) || ((SDL_MINOR_VERSION > 2) || ((SDL_MINOR_VERSION == 2) && (SDL_PATCHLEVEL >= 10)))
-  SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL, 1);
-#endif
 
   if (!glvidbuffer)
   {
@@ -273,17 +284,6 @@ void gl_drawwin()
   UpdateVFrame();
   if (curblank || !OGLModeCheck())
     return;
-
-  if (BilinearFilter)
-  {
-    glfilters = GL_LINEAR;
-    if (GUIOn2 && !FilteredGUI)
-      glfilters = GL_NEAREST;
-  }
-  else
-  {
-    glfilters = GL_NEAREST;
-  }
 
   if (SurfaceX >= 512 && (hqFilter || En2xSaI))
   {

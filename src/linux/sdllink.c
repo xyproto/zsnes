@@ -422,6 +422,11 @@ int Main_Proc(void)
       case SDL_VIDEORESIZE:
         if(!GUIRESIZE[cvidmode])
         {
+          SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+#if (SDL_MAJOR_VERSION > 1) || ((SDL_MINOR_VERSION > 2) || ((SDL_MINOR_VERSION == 2) && (SDL_PATCHLEVEL >= 10)))
+          SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL, 1);
+          SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL,1);
+#endif
           surface = SDL_SetVideoMode(WindowWidth, WindowHeight, BitDepth, surface->flags & ~SDL_RESIZABLE);
           adjustMouseXScale();
           adjustMouseYScale();
@@ -431,6 +436,11 @@ int Main_Proc(void)
         WindowHeight = SurfaceY = event.resize.h;
         SetHQx(SurfaceX,SurfaceY);
         SetHiresOpt(SurfaceX,SurfaceY);
+        SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+#if (SDL_MAJOR_VERSION > 1) || ((SDL_MINOR_VERSION > 2) || ((SDL_MINOR_VERSION == 2) && (SDL_PATCHLEVEL >= 10)))
+        SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL, 1);
+        SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL,1);
+#endif
         surface = SDL_SetVideoMode(WindowWidth, WindowHeight, BitDepth, surface->flags);
         adjustMouseXScale();
         adjustMouseYScale();
@@ -1021,6 +1031,11 @@ void initwinvideo(void)
     #ifdef __OPENGL__
     if(OGLModeCheck())
     {
+      SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+#if (SDL_MAJOR_VERSION > 1) || ((SDL_MINOR_VERSION > 2) || ((SDL_MINOR_VERSION == 2) && (SDL_PATCHLEVEL >= 10)))
+      SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL, 1);
+      SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL,1);
+#endif
       surface = SDL_SetVideoMode(WindowWidth, WindowHeight, BitDepth, surface->flags);
       adjustMouseXScale();
       adjustMouseYScale();
@@ -1071,6 +1086,7 @@ void initwinvideo(void)
     }
     #endif
     clearwin();
+    Clear2xSaIBuffer();
   }
 
   if (FirstVid == 1)
