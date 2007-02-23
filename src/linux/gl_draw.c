@@ -61,6 +61,18 @@ void gl_scanlines();
 
 bool OGLModeCheck();
 
+void SetGLAttributes()
+{
+  SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+#if (SDL_MAJOR_VERSION > 1) || ((SDL_MINOR_VERSION > 2) || ((SDL_MINOR_VERSION == 2) && (SDL_PATCHLEVEL >= 10)))
+  //if(vsyncon)
+    SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL, 1);
+  //else
+  //  SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL, 0);
+  SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL,1);
+#endif
+}
+
 int gl_start(int width, int height, int req_depth, int FullScreen)
 {
   Uint32 flags = SDL_OPENGL;
@@ -80,13 +92,8 @@ int gl_start(int width, int height, int req_depth, int FullScreen)
     glfilters = GL_NEAREST;
   }
 
-  SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-#if (SDL_MAJOR_VERSION > 1) || ((SDL_MINOR_VERSION > 2) || ((SDL_MINOR_VERSION == 2) && (SDL_PATCHLEVEL >= 10)))
-  SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL, 1);
-  SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL,1);
-#endif
-
   SurfaceX = width; SurfaceY = height;
+  SetGLAttributes();
   surface = SDL_SetVideoMode(SurfaceX, SurfaceY, req_depth, flags);
   if (surface == NULL)
   {
