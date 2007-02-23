@@ -2190,18 +2190,15 @@ DisplayGUIVideo:
 %ifdef __OPENGL__                                 ; VSync
   cmp byte[allow_glvsync],1
   jne .novsync
+  xor eax,eax
+  mov al,[cvidmode]
+  cmp byte[GUIBIFIL+eax],0
+  je near .novsync
 %else
   jmp .novsync
 %endif
 %endif
   GUIDisplayTextY 5,13,140,GUIVideoTextB4
-
-%ifdef __OPENGL__
-  xor eax,eax
-  mov al,[cvidmode]
-  cmp byte[GUIBIFIL+eax],0
-  je near .novsync
-%endif
   GUIDisplayCheckboxu 5,18,145,vsyncon,GUIVideoTextB4a,0
 .novsync
 

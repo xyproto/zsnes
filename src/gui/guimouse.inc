@@ -2456,8 +2456,8 @@ DisplayGUIVideoClick:
 %endif
 %ifdef __OPENGL__
   xor ebx,ebx
-  mov al,[cvidmode]
-  cmp byte[GUIBIFIL+eax],0
+  mov bl,[cvidmode]
+  cmp byte[GUIBIFIL+ebx],0
   je near .novsync
   GUIClickCButtonI 18,145,byte[vsyncon]
 .novsync
