@@ -340,12 +340,18 @@ GrayscaleMode db 0
 @ Requires a minimum res of 512x448
 Mode7HiRes16b db 0
 
-#ifndef __UNIXSDL__
 @
 @ Sync Frames to Monitor Refresh Rate (0 = NO, 1 = Yes)
-@ Do not enable if you cannot normally sustain 60fps
+@ It is not recommended to be used if you cannot normally sustain 60fps
+#ifdef __UNIXSDL__
+%ifdef __OPENGL__
+@ OpenGL only - You need SDL 1.2.10 or later to use this.
+%endif
+@ VSync is automatically enforced in SDL software modes.
+#endif
 vsyncon db 0
 
+#ifndef __UNIXSDL__
 @
 @ Use Triple Buffering (0 = NO, 1 = Yes) - replaces vsync
 @ This is usually more beneficial than VSync.
