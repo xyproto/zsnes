@@ -1444,6 +1444,10 @@ GUIVideoKeys:
 %ifdef __OPENGL__
   cmp byte[allow_glvsync],1
   jne .novsync
+  xor eax,eax
+  mov al,[cvidmode]
+  cmp byte[GUIBIFIL+eax],0
+  je near .novsync
 %else
   jmp .novsync
 %endif
@@ -1461,10 +1465,6 @@ GUIVideoKeys:
   FilterExcl2 Triplebufen
 %elif __OPENGL__
   pushad
-  xor eax,eax
-  mov al,[cvidmode]
-  cmp byte[GUIBIFIL+eax],0
-  je near .novsync
   call initwinvideo
   call Clear2xSaIBuffer
   popad
