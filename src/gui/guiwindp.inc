@@ -2189,7 +2189,7 @@ DisplayGUIVideo:
 %ifdef __UNIXSDL__
 %ifdef __OPENGL__                                 ; VSync
   cmp byte[allow_glvsync],1
-  jne .novsync
+  jne near .novsync
   xor eax,eax
   mov al,[cvidmode]
   cmp byte[GUIBIFIL+eax],0

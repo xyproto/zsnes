@@ -1,0 +1,38 @@
+@ This allows you to define where ZSNES settings are stored
+@ and enables/disables multiuser support.
+@
+@ 0 = User's directory contains ZSNES config files. (multiuser)
+@ 1 = ZSNES directory contains ZSNES config files. (no multiuser)
+@
+@ On 9x system that all users don't have seperate profiles,
+@ the user's directory will be:
+@ <windows directory>\Application Data\ZSNES
+@
+@ On 9x systems that are configured to use seperate profiles,
+@ the user's directory will be:
+@ <windows directory>\Profiles\<username>\Application Data\ZSNES
+@
+@ On older NT systems, the user's directory will be:
+@ C:\Documents and Settings\<username>\Application Data\ZSNES
+@
+@ On NT 6+ (Vista) the user's directory will be:
+@ C:\Users\<username>\AppData\Roaming\ZSNES
+@
+@ Note: all the default locations listed above can be changed
+@ in Windows using software such as TweakUI
+@
+@
+@ If you plan on putting ZSNES on a CD, it is advisable to
+@ enable multiuser here so you can save your settings on
+@ any machine you use the CD in.
+@
+@ If you want different copies of ZSNES tweaked for different
+@ things, you can disable multiuser support and each directory
+@ with ZSNES will contain it's own configuration settings.
+@
+@ If one user of your PC would like to use the User's directory
+@ for settings and another wants the ZSNES directory, just
+@ copy ZSNES into two different directories and edit this file
+@ appropriatly in both of them.
+@
+zsnesw_config_location db -1

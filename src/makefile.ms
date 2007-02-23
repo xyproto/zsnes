@@ -89,7 +89,7 @@ endif
 
 ifeq (${ENV},msvc)
   CFLAGSORIG=/nologo /Ox /G6 /c /EHsc
-  MSVCLIBS=zlib.lib libpng.lib wsock32.lib user32.lib gdi32.lib shell32.lib winmm.lib dinput8.lib dxguid.lib
+  MSVCLIBS=zlib.lib libpng.lib wsock32.lib user32.lib gdi32.lib shfolder.lib shell32.lib winmm.lib dinput8.lib dxguid.lib
   DRESOBJ=${WIN_D}/zsnes.res
   OS=__WIN32__
 endif
@@ -128,13 +128,15 @@ ifeq (${OS},__MSDOS__)
   FILEFORMAT=coff
   LIBS=${LIBSORIG} -lm
   OE=.do
+  CONFLOC=
 endif
 
 ifeq (${OS},__WIN32__)
   EXE=zsnesw.exe
   FILEFORMAT=win32
-  LIBS=${LIBSORIG} -ldxguid -ldinput8 -lwsock32 -luser32 -lgdi32 -lshell32 -lwinmm -mwindows
+  LIBS=${LIBSORIG} -ldxguid -ldinput8 -lwsock32 -luser32 -lgdi32 -lshfolder -lshell32 -lwinmm -mwindows
   OE=.obj
+  CONFLOC=${WIN_D}/confloc${OE}
 endif
 
 ifeq (${DEBUG},yes)
@@ -241,8 +243,9 @@ endif
 
 ifeq (${OS},__WIN32__)
 WINOBJ=${DRESOBJ}\
-	${WIN_D}/winintrf${OE} ${WIN_D}/winlink${OE} ${WIN_D}/lib${OE}\
-	${WIN_D}/safelib${OE} ${MMLIB_D}/mm${OE} ${MMLIB_D}/windows${OE}
+	${CONFLOC} ${WIN_D}/winintrf${OE} ${WIN_D}/winlink${OE} \
+	${WIN_D}/lib${OE} ${WIN_D}/safelib${OE} ${MMLIB_D}/mm${OE} \
+	${MMLIB_D}/windows${OE}
 
 WINVIDOBJ=${VID_D}/sw_draw${OE} ${VID_D}/hq2x16${OE} ${VID_D}/hq2x32${OE}\
 	${VID_D}/hq3x16${OE} ${VID_D}/hq3x32${OE}\
@@ -280,7 +283,7 @@ else
 endif
 
 %${OE}: %.psr
-	${PSR} -D${OS} -cheader $(patsubst %${OE},%.h,$@) -fname $(patsubst %${OE},%,$@) temppsr.c $<
+	${PSR} -D${OS} -cheader $(patsubst %${OE},%.h,$@) -fname $(notdir $(patsubst %${OE},%,$@)) temppsr.c $<
 ifneq (${ENV},msvc)
 	${CC} ${CFLAGS} -O1 -o $@ -c temppsr.c
 else
@@ -321,7 +324,7 @@ zloader${OE}: zloader.c asm_call.h cfg${OE} input${OE} zloader.h zpath.h \
 zmovie${OE}: zmovie.c asm_call.h cfg${OE} gblvars.h input${OE} md${OE} numconv.h zmovie.h zpath.h \
 	${JMA_D}/zsnesjma.h ${WIN_D}/lib.h ${WIN_D}/safelib.h ${ZIP_D}/zunzip.h
 zpath${OE}: zpath.c cfg${OE} zpath.h ${DOS_D}/lib.h ${JMA_D}/zsnesjma.h \
-	${WIN_D}/lib.h ${WIN_D}/safelib.h ${ZIP_D}/zunzip.h
+	${WIN_D}/lib.h ${WIN_D}/safelib.h ${ZIP_D}/zunzip.h ${CONFLOC}
 zstate${OE}: zstate.c asm_call.h cfg${OE} gblvars.h input${OE} numconv.h zmovie.h zpath.h \
 	${CHIP_D}/dsp4emu.h ${JMA_D}/zsnesjma.h ${ZIP_D}/zunzip.h
 ztime${OE}: ztime.asm macros.mac
@@ -469,6 +472,7 @@ ${VID_D}/procvidc${OE}: ${VID_D}/procvidc.c zmovie.h zpath.h \
 	${JMA_D}/zsnesjma.h ${ZIP_D}/zunzip.h
 ${VID_D}/sw_draw${OE}: ${VID_D}/sw_draw.asm macros.mac
 
+${WIN_D}/confloc${OE}: ${WIN_D}/confloc.psr ${PSR}
 ${WIN_D}/lib${OE}: ${WIN_D}/lib.c zpath.h ${JMA_D}/zsnesjma.h \
 	${WIN_D}/lib.h ${ZIP_D}/zunzip.h
 ${WIN_D}/safelib${OE}: ${WIN_D}/safelib.c argv.h ${WIN_D}/safelib.h
