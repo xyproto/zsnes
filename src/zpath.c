@@ -123,6 +123,7 @@ void cfgpath_ensure(const char *launch_command)
 static void user_specifc_path()
 {
   char path_buffer[PATH_SIZE];
+  bool relbase_override = false;
 
   psr_cfg_run(read_confloc_vars, ZCfgPath, "zcfgloc.cfg");
 
@@ -136,6 +137,7 @@ static void user_specifc_path()
         (version.dwPlatformId > 2)) //>NT
     {
       zsnesw_config_location = 0;
+      relbase_override = true;
     }
     else
     {
@@ -154,6 +156,12 @@ static void user_specifc_path()
     {
       strcatslash(path_buffer);
       strcpy(ZCfgPath, path_buffer);
+
+      if (relbase_override)
+      {
+        psr_cfg_run(read_cfg_vars, ZCfgPath, ZCfgFile);
+        RelPathBase = 0;
+      }
     }
   }
 }
