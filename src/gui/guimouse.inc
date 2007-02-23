@@ -1217,16 +1217,6 @@ GUIWinClicked:
 %%noclick
 %endmacro
 
-%macro GUIClickCButtonB 3
-  GUIClickArea %1+1,%2+3,%1+6,%2+8,%%noclick
-  xor %3,1
-  pushad
-  call initwinvideo
-  call Clear2xSaIBuffer
-  popad
-%%noclick
-%endmacro
-
 %macro GUIClickCButtonN 4
   GUIClickArea %1+1,%2+3,%1+6,%2+8,%%noclick
 %ifdef __WIN32__
@@ -2342,7 +2332,7 @@ DisplayGUIVideoClick:
   cmp byte[GUIBIFIL+ebx],0
   je .nocheckbox1bf
   FilterExcl 18,35,NTSCFilter
-  GUIClickCButtonB 18,35,byte[BilinearFilter]
+  GUIClickCButtonI 18,35,byte[BilinearFilter]
 .nocheckbox1bf
 %endif
 
@@ -2463,6 +2453,14 @@ DisplayGUIVideoClick:
   GUIClickCButtonf 128,145,byte[TripleBufferWin],initDirectDraw
 .notriplebufferwin
   GUIClickCButtonf 18,145,byte[vsyncon],initDirectDraw
+%endif
+%ifdef __OPENGL__
+  xor ebx,ebx
+  mov al,[cvidmode]
+  cmp byte[GUIBIFIL+eax],0
+  je near .novsync
+  GUIClickCButtonI 18,145,byte[vsyncon]
+.novsync
 %endif
 
 %ifndef __MSDOS__

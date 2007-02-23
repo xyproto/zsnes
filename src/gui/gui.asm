@@ -116,7 +116,7 @@ EXTSYM Mode7HiRes16b,FFRatio,SDRatio,EmuSpeed,mouseshad,MovieForcedLengthEnabled
 EXTSYM esctomenu,GUILoadKeysJumpTo,lhguimouse,MZTForceRTR,GetMovieForcedLength
 EXTSYM GUIEnableTransp,FilteredGUI,Surround,SPCDisable,nosaveSRAM
 EXTSYM FastFwdToggle,gui_key,gui_key_extended,GUILoadKeysNavigate
-EXTSYM KeyDisplayBatt,KeyIncreaseGamma,KeyDecreaseGamma
+EXTSYM KeyDisplayBatt,KeyIncreaseGamma,KeyDecreaseGamma,vsyncon
 EXTSYM MovieVideoMode,MovieAudio,MovieVideoAudio,MovieAudioCompress,newfont
 EXTSYM d_names,selected_names,GUIfileentries,GUIdirentries,GUIcurrentdirviewloc
 EXTSYM GUIcurrentfilewin,GUIcurrentcursloc,GUIcurrentviewloc,SetMovieForcedLength
@@ -148,12 +148,8 @@ EXTSYM GUIWFVID,GUIDSIZE,GUIHQ3X,GUIHQ4X,GUIKEEP43,Keep43Check,changeRes
 EXTSYM GUII2VID
 %endif
 
-%ifndef __UNIXSDL__
-EXTSYM vsyncon
-%endif
-
 %ifdef __OPENGL__
-EXTSYM BilinearFilter,GUIBIFIL,blinit
+EXTSYM BilinearFilter,GUIBIFIL,blinit,allow_glvsync
 %endif
 
 %include "gui/guitools.inc"

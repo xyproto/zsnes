@@ -2186,10 +2186,24 @@ DisplayGUIVideo:
   GUIDisplayCheckboxu 5,128,115,Mode7HiRes16b,GUIVideoTextB3b,0
 .nocheckboxm72
                                                   ; Monitor Refresh
-%ifndef __UNIXSDL__                               ; VSync
-  GUIDisplayTextY 5,13,140,GUIVideoTextB4
-  GUIDisplayCheckboxu 5,18,145,vsyncon,GUIVideoTextB4a,0
+%ifdef __UNIXSDL__
+%ifdef __OPENGL__                                 ; VSync
+  cmp byte[allow_glvsync],1
+  jne .novsync
+%else
+  jmp .novsync
 %endif
+%endif
+  GUIDisplayTextY 5,13,140,GUIVideoTextB4
+
+%ifdef __OPENGL__
+  xor eax,eax
+  mov al,[cvidmode]
+  cmp byte[GUIBIFIL+eax],0
+  je near .novsync
+%endif
+  GUIDisplayCheckboxu 5,18,145,vsyncon,GUIVideoTextB4a,0
+.novsync
 
 %ifdef __WIN32__
   xor eax,eax                                     ; Triple Buffering
@@ -2352,9 +2366,9 @@ GUIVideoTextB3 db 'MISC FILTERS:',0      ; Filters.Other
 GUIVideoTextB3a db 'GRAYSCALE MODE',0    ; -v8
 GUIVideoTextB3b db 'HI-RES MODE 7',0     ;
 
-%ifndef __UNIXSDL__
 GUIVideoTextB4 db 'MONITOR SYNC:',0      ; Video.Sync
 GUIVideoTextB4a db 'VSYNC',0             ; -w
+%ifndef __UNIXSDL__
 GUIVideoTextB4b db 'TRIPLE BUFFERING',0  ; -3
 %endif
 

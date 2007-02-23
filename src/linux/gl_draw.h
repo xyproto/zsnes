@@ -29,6 +29,8 @@ void gl_clearwin();
 void gl_drawwin();
 void SetGLAttributes();
 
+extern char allow_glvsync;
+
 #endif
 
 

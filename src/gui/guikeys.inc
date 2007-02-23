@@ -1440,7 +1440,14 @@ GUIVideoKeys:
   je .nohiresmode7
   xor byte[Mode7HiRes16b],1
 .nohiresmode7
-%ifndef __UNIXSDL__
+%ifdef __UNIXSDL__
+%ifdef __OPENGL__
+  cmp byte[allow_glvsync],1
+  jne .novsync
+%else
+  jmp .novsync
+%endif
+%endif
   cmp dh,'V'
   jne .novsync
   xor byte[vsyncon],1
@@ -1449,12 +1456,20 @@ GUIVideoKeys:
   call initDirectDraw
   call Clear2xSaIBuffer
   popad
-%else
+%elif __MSDOS__
   jz .novsync
   FilterExcl2 Triplebufen
+%elif __OPENGL__
+  pushad
+  xor eax,eax
+  mov al,[cvidmode]
+  cmp byte[GUIBIFIL+eax],0
+  je near .novsync
+  call initwinvideo
+  call Clear2xSaIBuffer
+  popad
 %endif
 .novsync
-%endif
 %ifndef __UNIXSDL__
   cmp dh,'T'
   jne .notriplebuffer

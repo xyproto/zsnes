@@ -61,14 +61,20 @@ void gl_scanlines();
 
 bool OGLModeCheck();
 
+#if (SDL_MAJOR_VERSION > 1) || ((SDL_MINOR_VERSION > 2) || ((SDL_MINOR_VERSION == 2) && (SDL_PATCHLEVEL >= 10)))
+char allow_glvsync = 1;
+#else
+char allow_glvsync = 0;
+#endif
+
 void SetGLAttributes()
 {
   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 #if (SDL_MAJOR_VERSION > 1) || ((SDL_MINOR_VERSION > 2) || ((SDL_MINOR_VERSION == 2) && (SDL_PATCHLEVEL >= 10)))
-  //if(vsyncon)
+  if(vsyncon)
     SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL, 1);
-  //else
-  //  SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL, 0);
+  else
+    SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL, 0);
   SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL,1);
 #endif
 }
