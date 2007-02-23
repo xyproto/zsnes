@@ -1460,10 +1460,10 @@ GUIVideoKeys:
   call initDirectDraw
   call Clear2xSaIBuffer
   popad
-%elif __MSDOS__
+%elifdef __MSDOS__
   jz .novsync
   FilterExcl2 Triplebufen
-%elif __OPENGL__
+%elifdef __OPENGL__
   pushad
   call initwinvideo
   call Clear2xSaIBuffer
