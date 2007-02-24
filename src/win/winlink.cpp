@@ -37,6 +37,7 @@ extern "C" {
 #include "resource.h"
 #include "../cfg.h"
 #include "../input.h"
+#include "../zmovie.h"
 
 
 /*
@@ -652,7 +653,7 @@ LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
          {
             IsActivated = 1;
             if (FirstActivate == 0) initwinvideo();
-            if (PauseFocusChange) EMUPause = 0;
+            if (PauseFocusChange && !MovieProcessing) EMUPause = 0;
             InputAcquire();
             if (FirstActivate == 1) FirstActivate = 0;
             if (FullScreen == 1) Clear2xSaIBuffer();
