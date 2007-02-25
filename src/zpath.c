@@ -161,6 +161,7 @@ static void user_specifc_path()
       {
         psr_cfg_run(read_cfg_vars, ZCfgPath, ZCfgFile);
         RelPathBase = 0;
+        psr_cfg_run(write_cfg_vars, ZCfgPath, ZCfgFile);
       }
     }
   }
