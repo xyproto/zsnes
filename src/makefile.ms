@@ -52,7 +52,7 @@ DELETECOMMAND=rm -f
 DELPRE=rm -f
 DELSUF=
 SLASH=/
-PSR=parsegen.exe
+PSR=parsegen
 ASM=nasm
 ASMOPT=-O1
 ASMFLAGSORIG=
@@ -111,6 +111,7 @@ ifeq (${ENV},win32-cross)
 endif
 
 ifeq (${CROSS},no)
+  PSR=parsegen.exe
   DELETECOMMAND=del
   ifeq (${OS},__WIN32__)
     DELPRE=@for %%n in (znotfile.nt,
@@ -269,7 +270,7 @@ ifneq (${ENV},msvc)
 %${OE}: %.asm
 	${ASM} ${ASMOPT} ${ASMFLAGS} -o $@ $<
 ifeq (${OS},__WIN32__)
-	objfix $@
+	.${SLASH}objfix $@
 endif
 else
 %.obj : %.c
@@ -283,7 +284,7 @@ else
 endif
 
 %${OE}: %.psr
-	${PSR} -D${OS} -cheader $(patsubst %${OE},%.h,$@) -fname $(notdir $(patsubst %${OE},%,$@)) temppsr.c $<
+	.${SLASH}parsegen -D${OS} -cheader $(patsubst %${OE},%.h,$@) -fname $(notdir $(patsubst %${OE},%,$@)) temppsr.c $<
 ifneq (${ENV},msvc)
 	${CC} ${CFLAGS} -O1 -o $@ -c temppsr.c
 else
