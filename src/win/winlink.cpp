@@ -2090,10 +2090,12 @@ void initwinvideo(void)
 
    if (!FirstVid)
    {
+      /*
       if (X<0)X=0;
       if (X>(int)(GetSystemMetrics(SM_CXSCREEN) - WindowWidth)) X=(GetSystemMetrics(SM_CXSCREEN) - WindowWidth);
       if (Y<0)Y=0;
       if (Y>(int)(GetSystemMetrics(SM_CYSCREEN) - WindowHeight)) Y=(GetSystemMetrics(SM_CYSCREEN) - WindowHeight);
+      */
 
       if (FullScreen==1) {X=0; Y=0;}
 
