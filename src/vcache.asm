@@ -1376,7 +1376,7 @@ SECTION .text
     xor eax,eax
     mov bl,dl
     cmp bx,[curypos]
-    jb .overflow
+    jb .overflow2
     mov al,[sprlefttot+ebx]
     cmp al,45
     ja near .overflow2
