@@ -21,7 +21,7 @@
 
 %include "macros.mac"
 
-EXTSYM selcA000,selcB800,selc0040,previdmode,DosExit,
+EXTSYM selcA000,selcB800,selc0040,previdmode,DosExit,_djstat_flags
 EXTSYM V8Mode,getblaster,Force8b,SBHDMA
 EXTSYM oldhand9s,oldhand9o,interror,oldhand8s,oldhand8o,oldhandSBs,oldhandSBo
 EXTSYM NoSoundReinit,soundon,DSPDisable,SBInt,PICMaskP,SBIrq,SBHandler,InitSB
@@ -52,6 +52,8 @@ NEWSYM dssel, dw 0
 SECTION .text
 
 NEWSYM StartUp
+    mov word[_djstat_flags],0FFFFh ;Optimize stat() calls by not calculating data useless for ZSNES
+
     mov    ax,901h             ;enable interrupts
     int    31h
     mov ax,ds
