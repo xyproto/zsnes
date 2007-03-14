@@ -37,12 +37,14 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define FIND_FAIL(handle) (handle)
 #define S_IWRITE S_IWUSR
 #define S_IREAD S_IRUSR
+#define WILD_ALL "*.*"
 #else
 #define FIND_GOOD(handle) ((handle) != -1)
 #define FIND_FAIL(handle) ((handle) == -1)
 #define ff_name name
 #define ff_fsize size
 #define ff_attrib attrib
+#define WILD_ALL "*"
 #endif
 
 //Note, these are faster than the built in DJGPP/MinGW ones
@@ -54,11 +56,7 @@ z_DIR *z_opendir(const char *path)
     char search[PATH_SIZE];
     strcpy(search, path);
     strcatslash(search);
-#ifdef __MSDOS__
-    strcat(search, "*.*");
-#else
-    strcat(search, "*");
-#endif
+    strcat(search, WILD_ALL);
 
     dir = malloc(sizeof(z_DIR));
     if (dir)
