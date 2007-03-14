@@ -58,8 +58,8 @@ GUI_CO=$(GUI_D)/guifuncs.o
 JMA_CO=@JMA_FILES@
 
 MAIN_AO=@DEBUGGER_A@ endmem.o init.o vcache.o ztime.o
-MAIN_CO=cfg.o @DEBUGGER_C@ initc.o input.o md.o patch.o ui.o version.o zloader.o\
-	zmovie.o zpath.o zstate.o ztimec.o
+MAIN_CO=cfg.o @DEBUGGER_C@ initc.o input.o md.o patch.o ui.o version.o zdir.o\
+	zloader.o zmovie.o zpath.o zstate.o ztimec.o
 
 MMLIB_CO=@MMLIB_FILES@
 
@@ -67,8 +67,8 @@ NET_CO=
 #$(NET_D)/ztcp.o
 
 PORT_AO=$(PORT_D)/sdlintrf.o
-PORT_CO=$(PORT_D)/audio.o $(PORT_D)/battery.o @GL_DRAW@ $(PORT_D)/safelib.o\
-	$(PORT_D)/sdllink.o $(PORT_D)/sw_draw.o
+PORT_CO=$(PORT_D)/audio.o $(PORT_D)/battery.o @GL_DRAW@ $(PORT_D)/lib.o\
+	$(PORT_D)/safelib.o $(PORT_D)/sdllink.o $(PORT_D)/sw_draw.o
 
 TOOL_CO=$(TOOL_D)/fileutil.o $(TOOL_D)/strutil.o
 

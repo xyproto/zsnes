@@ -204,9 +204,9 @@ JMAOBJ=${JMA_D}/7zlzma${OE} ${JMA_D}/crc32${OE} ${JMA_D}/iiostrm${OE}\
 	${JMA_D}/winout${OE} ${JMA_D}/zsnesjma${OE}
 endif
 
-MAINOBJ=endmem${OE} init${OE} initc${OE} patch${OE}\
-	ui${OE} vcache${OE} version${OE} zmovie${OE} zstate${OE} zloader${OE}\
-	cfg${OE} md${OE} input${OE} zpath${OE} ztimec${OE} ztime${OE}
+MAINOBJ=endmem${OE} init${OE} initc${OE} patch${OE} ui${OE} vcache${OE}\
+	version${OE} zmovie${OE} zstate${OE} zloader${OE} cfg${OE} md${OE}\
+	input${OE} zdir${OE} zpath${OE} ztimec${OE} ztime${OE}
 
 ifneq (${DEBUGGER},no)
   MAINOBJ+= debugger${OE} debugasm${OE}
@@ -320,10 +320,12 @@ ui${OE}: ui.c asm_call.h cfg${OE} input${OE} zpath.h ${JMA_D}/zsnesjma.h \
 	${MMLIB_D}/mm.h ${ZIP_D}/zunzip.h
 vcache${OE}: vcache.asm macros.mac
 version${OE}: version.c
+zdir${OE}: zdir.h zpath.h
 zloader${OE}: zloader.c asm_call.h cfg${OE} input${OE} zloader.h zpath.h \
 	${JMA_D}/zsnesjma.h ${ZIP_D}/zunzip.h
-zmovie${OE}: zmovie.c asm_call.h cfg${OE} gblvars.h input${OE} md${OE} numconv.h zmovie.h zpath.h \
-	${JMA_D}/zsnesjma.h ${WIN_D}/lib.h ${WIN_D}/safelib.h ${ZIP_D}/zunzip.h
+zmovie${OE}: zmovie.c asm_call.h cfg${OE} gblvars.h input${OE} md${OE} \
+	numconv.h zmovie.h zpath.h ${JMA_D}/zsnesjma.h zdir.h ${WIN_D}/safelib.h \
+	${ZIP_D}/zunzip.h
 zpath${OE}: zpath.c cfg${OE} zpath.h ${DOS_D}/lib.h ${JMA_D}/zsnesjma.h \
 	${WIN_D}/lib.h ${WIN_D}/safelib.h ${ZIP_D}/zunzip.h ${CONFLOC}
 zstate${OE}: zstate.c asm_call.h cfg${OE} gblvars.h input${OE} numconv.h zmovie.h zpath.h \

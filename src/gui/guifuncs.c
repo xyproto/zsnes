@@ -46,7 +46,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #ifndef _MSC_VER
 #include <stdint.h>
-#include <dirent.h>
 #include <unistd.h>
 #endif
 
@@ -56,6 +55,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "../input.h"
 #include "../asm_call.h"
 #include "../zloader.h"
+#include "../zdir.h"
 
 #define BIT(X) (1 << (X))
 
@@ -889,21 +889,21 @@ static bool snes_extension_match(const char *filename)
 #define INFO_LEN (0xFF - 0xC0)
 #define INAME_LEN 21
 
-static const char *get_rom_name(const char *filename, char *namebuffer, struct stat *filestats)
+static const char *get_rom_name(struct dirent_info *entry, char *namebuffer)
 {
   int InfoScore(char *);
   unsigned int sum(unsigned char *array, unsigned int size);
 
-  char *last_dot = strrchr(filename, '.');
+  char *last_dot = strrchr(entry->name, '.');
   if (!last_dot || (strcasecmp(last_dot, ".zip") && strcasecmp(last_dot, ".gz") && strcasecmp(last_dot, ".jma")))
   {
-    if ((filestats->st_size >= 0x8000) && (filestats->st_size <= 0x600000+HEADER_SIZE))
+    if ((entry->size >= 0x8000) && (entry->size <= 0x600000+HEADER_SIZE))
     {
-      FILE *fp = fopen_dir(ZRomPath, filename, "rb");
+      FILE *fp = fopen_dir(ZRomPath, entry->name, "rb");
       if (fp)
       {
         unsigned char HeaderBuffer[HEADER_SIZE];
-        int HeaderSize = 0, HasHeadScore = 0, NoHeadScore = 0, HeadRemain = filestats->st_size & 0x7FFF;
+        int HeaderSize = 0, HasHeadScore = 0, NoHeadScore = 0, HeadRemain = entry->size & 0x7FFF;
         bool EHi = false;
 
         switch(HeadRemain)
@@ -945,7 +945,7 @@ static const char *get_rom_name(const char *filename, char *namebuffer, struct s
 
         HeaderSize = HasHeadScore > NoHeadScore ? HEADER_SIZE : 0;
 
-        if (filestats->st_size - HeaderSize >= 0x500000)
+        if (entry->size - HeaderSize >= 0x500000)
         {
           fseek(fp, 0x40FFC0 + HeaderSize, SEEK_SET);
           fread(HeaderBuffer, 1, INFO_LEN, fp);
@@ -958,7 +958,7 @@ static const char *get_rom_name(const char *filename, char *namebuffer, struct s
 
         if (!EHi)
         {
-          if (filestats->st_size - HeaderSize >= 0x10000)
+          if (entry->size - HeaderSize >= 0x10000)
           {
             char LoHead[INFO_LEN], HiHead[INFO_LEN];
             int LoScore, HiScore;
@@ -973,10 +973,10 @@ static const char *get_rom_name(const char *filename, char *namebuffer, struct s
 
             strncpy(namebuffer, LoScore > HiScore ? LoHead : HiHead, INAME_LEN);
 
-            if (filestats->st_size - HeaderSize >= 0x20000)
+            if (entry->size - HeaderSize >= 0x20000)
             {
               int IntLScore;
-              fseek(fp, (filestats->st_size - HeaderSize) / 2 + 0x7FC0 + HeaderSize, SEEK_SET);
+              fseek(fp, (entry->size - HeaderSize) / 2 + 0x7FC0 + HeaderSize, SEEK_SET);
               fread(LoHead, 1, INFO_LEN, fp);
               IntLScore = InfoScore(LoHead) / 2;
 
@@ -1006,7 +1006,7 @@ static const char *get_rom_name(const char *filename, char *namebuffer, struct s
   }
   else //Compressed archive
   {
-    return(filename);
+    return(entry->name);
   }
   namebuffer[21] = 0;
   return(namebuffer);
@@ -1142,31 +1142,30 @@ void populate_lists(unsigned int lists, bool snes_ext_match)
 
   if ((dir = opendir(ZRomPath)))
   {
-    struct stat stat_buffer;
-    struct dirent *entry;
+    struct dirent_info *entry;
 
-    while ((entry = readdir(dir)))
+    while ((entry = readdir_info(dir)))
     {
-      if ((*entry->d_name != '.') && !stat_dir(ZRomPath, entry->d_name, &stat_buffer))
+      if (*entry->name != '.')
       {
-        if (S_ISDIR(stat_buffer.st_mode))
+        if (S_ISDIR(entry->mode))
         {
           if (lists&LIST_DN)
           {
-            add_list(&d_names, entry->d_name);
+            add_list(&d_names, entry->name);
           }
         }
-        else if (!snes_ext_match || snes_extension_match(entry->d_name))
+        else if (!snes_ext_match || snes_extension_match(entry->name))
         {
           if (_USE_LFN && (lists&LIST_LFN))
           {
-            add_list(&lf_names, entry->d_name);
+            add_list(&lf_names, entry->name);
           }
 
           if (lists&LIST_IN)
           {
             char namebuffer[22];
-            add_list(&i_names, get_rom_name(entry->d_name, namebuffer, &stat_buffer));
+            add_list(&i_names, get_rom_name(entry, namebuffer));
           }
 
 #ifdef __MSDOS__
@@ -1174,11 +1173,11 @@ void populate_lists(unsigned int lists, bool snes_ext_match)
           {
             if (!_USE_LFN) //_USE_LFN won't be true when running under pure DOS
             {
-              add_list(&et_names, entry->d_name);
+              add_list(&et_names, entry->name);
             }
             else
             {
-              char *sfn = realpath_sfn_dir(ZRomPath, entry->d_name, 0);
+              char *sfn = realpath_sfn_dir(ZRomPath, entry->name, 0);
               if (sfn)
               {
                 add_list(&et_names, basename(sfn));
@@ -1187,7 +1186,7 @@ void populate_lists(unsigned int lists, bool snes_ext_match)
               else
               {
                 char sfn[13];
-                _lfn_gen_short_fname(entry->d_name, sfn);
+                _lfn_gen_short_fname(entry->name, sfn);
                 add_list(&et_names, sfn);
               }
             }

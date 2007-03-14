@@ -19,26 +19,19 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include "lib.h"
-#include <stdlib.h>
-#include <string.h>
-#include <errno.h>
-#include "../zpath.h"
+#ifndef LIB_H
+#define LIB_H
 
-#define fullpath _fullpath
+#include <sys/stat.h>
 
+#ifndef AT_FDCWD
+#define AT_FDCWD -2
+#endif
 
-//This file contains library functions that can be found on other OSs
+#ifndef AT_SYMLINK_NOFOLLOW
+#define AT_SYMLINK_NOFOLLOW 1
+#endif
 
-char *realpath(const char *path, char *resolved_path)
-{
-  char *ret = 0;
+int fstatat(int dirfd, const char *pathname, struct stat *buf, int flags);
 
-  if (!path || !resolved_path) { errno = EINVAL; }
-  else if (!access(path, F_OK))
-  {
-    ret = fullpath(resolved_path, path, PATH_SIZE);
-  }
-
-  return(ret);
-}
+#endif

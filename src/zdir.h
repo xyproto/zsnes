@@ -19,17 +19,57 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef LIB_H
-#define LIB_H
+#ifndef ZDIR_H
+#define ZDIR_H
 
-#include <io.h>
+struct dirent_info
+{
+  char *name;
+  mode_t mode;
+  off_t size;
+};
+
+#ifndef __UNIXSDL__
+#include <dir.h>
+
+#ifdef __MSDOS__
+#include <stdint.h>
+#define _finddata_t ffblk
+#else
 #include <windows.h>
-
-#ifdef _MSC_VER
-#define strcasecmp stricmp
-#define strncasecmp strnicmp
 #endif
 
-char *realpath(const char *path, char *resolved_path);
+//Avoid clashing with DJGPP and MinGW extras
+
+struct z_dirent
+{
+  char d_name[256];
+};
+
+typedef struct
+{
+  intptr_t find_first_handle;
+  struct _finddata_t fileinfo;
+  struct z_dirent entry;
+} z_DIR;
+
+z_DIR *z_opendir(const char *path);
+struct z_dirent *z_readdir(z_DIR *dir);
+int z_closedir(z_DIR *dir);
+
+#ifndef NO_ZDIR_TYPEDEF
+#define dirent z_dirent
+typedef z_DIR DIR;
+#define opendir z_opendir
+#define readdir z_readdir
+#define closedir z_closedir
+#endif
+
+#else
+#include <dirent.h>
+typedef DIR z_DIR;
+#endif
+
+struct dirent_info *readdir_info(z_DIR *dir);
 
 #endif

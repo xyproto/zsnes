@@ -42,14 +42,12 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <io.h>
 #define ftruncate chsize
 #include "win/safelib.h"
-#include "win/lib.h"
 #endif
 #define DIR_SLASH "\\"
 #define WRITE_BINARY "wb"
 #define NULL_FILE "nul"
 #endif
 #ifndef _MSC_VER
-#include <dirent.h>
 #include <unistd.h>
 #endif
 #include "gblvars.h"
@@ -59,6 +57,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "cfg.h"
 #include "zpath.h"
 #include "zmovie.h"
+#include "zdir.h"
 
 #define NUMCONV_FR2
 #define NUMCONV_FR3
