@@ -26,13 +26,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #include "lib.h"
 
-static int open_cwd()
-{
-  int cwdfd = open(".", O_RDONLY);
-  if (cwdfd == -1) { cwdfd = open(".", O_WRONLY); }
-  return(cwdfd);
-}
-
 int fstatat(int dirfd, const char *pathname, struct stat *buf, int flags)
 {
   int success = -1;
@@ -40,7 +33,7 @@ int fstatat(int dirfd, const char *pathname, struct stat *buf, int flags)
   if ((!flags || (flags == AT_SYMLINK_NOFOLLOW)))
   {
     int cwdfd = -1;
-    if ((dirfd == AT_FDCWD) || (pathname && (*pathname == '/')) || (((cwdfd=open_cwd()) != -1) && !fchdir(dirfd)))
+    if ((dirfd == AT_FDCWD) || (pathname && (*pathname == '/')) || (((cwdfd=open(".", O_RDONLY)) != -1) && !fchdir(dirfd)))
     {
       success = (!flags) ? stat(pathname, buf) : lstat(pathname, buf);
     }
