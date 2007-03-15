@@ -22,7 +22,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #ifdef __UNIXSDL__
 #include "gblhdr.h"
-#include <dirent.h>
+#include "zdir.h"
 #else
 #include <stdio.h>
 #include <stdlib.h>
@@ -527,14 +527,14 @@ void MultiMouseInit()
   input_dir = opendir("/dev/input");
   if (input_dir)
   {
-    struct dirent *ent;
-    while ((ent = readdir(input_dir)))
+    struct dirent_info *entry;
+    while ((entry = readdir_info(input_dir)))
     {
-      if (!strncasecmp(ent->d_name, "event", strlen("event")))
+      if (!strncasecmp(entry->name, "event", strlen("event")))
       {
-        if (access_dir("/dev/input/", ent->d_name, R_OK))
+        if (dirent_access(entry, R_OK))
         {
-          printf("Unable to poll /dev/input/%s. Make sure you have read permissions to it.\n", ent->d_name);
+          printf("Unable to poll /dev/input/%s. Make sure you have read permissions to it.\n", entry->name);
         }
       }
     }

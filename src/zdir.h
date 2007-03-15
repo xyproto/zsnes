@@ -27,6 +27,10 @@ struct dirent_info
   char *name;
   mode_t mode;
   off_t size;
+#ifdef __UNIXSDL__
+  uid_t uid;
+  gid_t gid;
+#endif
 };
 
 #ifndef __UNIXSDL__
@@ -71,5 +75,6 @@ typedef DIR z_DIR;
 #endif
 
 struct dirent_info *readdir_info(z_DIR *dir);
+int dirent_access(struct dirent_info *entry, int mode);
 
 #endif

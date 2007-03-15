@@ -172,6 +172,8 @@ struct dirent_info *readdir_info(z_DIR *dir)
       info.name = entry->d_name;
       info.size = stat_buffer.st_size;
       info.mode = stat_buffer.st_mode;
+      info.uid = stat_buffer.st_uid;
+      info.gid = stat_buffer.st_gid;
       infop = &info;
     }
     else
@@ -181,4 +183,33 @@ struct dirent_info *readdir_info(z_DIR *dir)
   }
   return(infop);
 }
+
+int dirent_access(struct dirent_info *entry, int mode)
+{
+  int accessable = 0; //This is accessable, non access is -1
+
+  if (!entry)
+  {
+    accessable = -1;
+    errno = EACCES;
+  }
+  else if (mode)
+  {
+    uid_t uid = geteuid();
+    gid_t gid = getegid();
+
+    if (!(
+          (!(mode&R_OK)||((entry->mode&S_IROTH)||((gid == entry->gid)&&(entry->mode&S_IRGRP))||((uid == entry->uid)&&(entry->mode&S_IRUSR)))) &&
+          (!(mode&W_OK)||((entry->mode&S_IWOTH)||((gid == entry->gid)&&(entry->mode&S_IWGRP))||((uid == entry->uid)&&(entry->mode&S_IWUSR)))) &&
+          (!(mode&X_OK)||((entry->mode&S_IXOTH)||((gid == entry->gid)&&(entry->mode&S_IXGRP))||((uid == entry->uid)&&(entry->mode&S_IXUSR))))
+         ))
+    {
+      accessable = -1;
+      errno = EACCES;
+    }
+  }
+
+  return(accessable);
+}
+
 #endif
