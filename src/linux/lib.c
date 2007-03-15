@@ -37,25 +37,18 @@ int fstatat(int dirfd, const char *pathname, struct stat *buf, int flags)
 {
   int success = -1;
 
-  if ((!flags || (flags == AT_SYMLINK_NOFOLLOW)) && buf)
+  if ((!flags || (flags == AT_SYMLINK_NOFOLLOW)))
   {
-    if (pathname && *pathname)
+    int cwdfd = -1;
+    if ((dirfd == AT_FDCWD) || (pathname && (*pathname == '/')) || (((cwdfd=open_cwd()) != -1) && !fchdir(dirfd)))
     {
-      int cwdfd = -1;
-      if ((dirfd == AT_FDCWD) || (*pathname == '/') || (((cwdfd=open_cwd()) != -1) && !fchdir(dirfd)))
-      {
-        success = (!flags) ? stat(pathname, buf) : lstat(pathname, buf);
-      }
-
-      if (cwdfd != -1)
-      {
-        fchdir(cwdfd);
-        close(cwdfd);
-      }
+      success = (!flags) ? stat(pathname, buf) : lstat(pathname, buf);
     }
-    else
+
+    if (cwdfd != -1)
     {
-      success = (dirfd == AT_FDCWD) ? stat(".", buf) : fstat(dirfd, buf);
+      fchdir(cwdfd);
+      close(cwdfd);
     }
   }
   else
