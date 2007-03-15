@@ -23,9 +23,15 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <errno.h>
-#include <stdbool.h>
 
 #include "lib.h"
+
+static int open_cwd()
+{
+  int cwdfd = open(".", O_RDONLY);
+  if (cwdfd == -1) { cwdfd = open(".", O_WRONLY); }
+  return(cwdfd);
+}
 
 int fstatat(int dirfd, const char *pathname, struct stat *buf, int flags)
 {
@@ -35,45 +41,21 @@ int fstatat(int dirfd, const char *pathname, struct stat *buf, int flags)
   {
     if (pathname && *pathname)
     {
-      int current_dir = -1;
-      bool good = true;
-      if ((dirfd != AT_FDCWD) && (*pathname != '/'))
+      int cwdfd = -1;
+      if ((dirfd == AT_FDCWD) || (*pathname == '/') || (((cwdfd=open_cwd()) != -1) && !fchdir(dirfd)))
       {
-        current_dir = open(".", O_RDONLY); //Backup CWD
-        if (fchdir(dirfd))
-        {
-          good = false;
-        }
+        success = (!flags) ? stat(pathname, buf) : lstat(pathname, buf);
       }
 
-      if (good)
+      if (cwdfd != -1)
       {
-        if (!flags)
-        {
-          success = stat(pathname, buf);
-        }
-        else //AT_SYMLINK_NOFOLLOW
-        {
-          success = lstat(pathname, buf);
-        }
-      }
-
-      if (current_dir != -1)
-      {
-        fchdir(current_dir);
-        close(current_dir);
+        fchdir(cwdfd);
+        close(cwdfd);
       }
     }
     else
     {
-      if (dirfd == AT_FDCWD)
-      {
-        success = stat(".", buf);
-      }
-      else
-      {
-        success = fstat(dirfd, buf);
-      }
+      success = (dirfd == AT_FDCWD) ? stat(".", buf) : fstat(dirfd, buf);
     }
   }
   else
