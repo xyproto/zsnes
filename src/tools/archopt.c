@@ -20,6 +20,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <string.h>
 #include <ctype.h>
 
+#ifdef __GNUC__
 #ifdef __x86_64__
 #define cpuid(in, a, b, c, d) asm volatile("cpuid": "=a" (a), "=b" (b), "=c" (c), "=d" (d) : "a" (in));
 #else
@@ -29,6 +30,22 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
   cpuid;\
   movl %%ebx,%%edi;\
   popl %%ebx": "=a" (a), "=D" (b), "=c" (c), "=d" (d) : "a" (in));
+#endif
+#else
+char cpubuf[256];
+int z_in, z_a, z_b, z_c, z_d;
+void cpuid_run()
+{
+  _asm {
+    mov eax,z_in
+    cpuid
+    mov z_a,eax
+    mov z_b,ebx
+    mov z_c,ecx
+    mov z_d,edx
+  };
+}
+#define cpuid(in, a, b, c, d) z_in = in; cpuid_run(); a = z_a; b = z_b; c = z_c; d = z_d;
 #endif
 
 char *x86_flags[] =
@@ -79,6 +96,7 @@ int have_cpuid()
 {
   int have = 0x200000;
   #ifndef __x86_64__
+  #ifdef __GNUC__
   asm volatile
   (
   "  pushfl;"
@@ -93,6 +111,23 @@ int have_cpuid()
     : "=a" (have)
     : "c" (have)
   );
+  #else
+  z_c = have;
+  _asm {
+    mov ecx,z_c
+    pushfd
+    pop eax
+    mov edx,eax
+    xor eax,ecx
+    push eax
+    popfd
+    pushfd
+    pop eax
+    xor eax,edx
+    mov z_a,eax
+  };
+  have = z_a;
+  #endif
   #endif
   return(have);
 }
@@ -216,6 +251,7 @@ int main(int argc, const char *const *const argv)
 
   if (!cpu && *cpu_family && *vendor_id)
   {
+    #ifdef __GNUC__
     if (!strcmp(vendor_id, "AuthenticAMD") || strstr(model_name, "AMD"))
     {
       if (strstr(flags, " mmx "))
@@ -438,6 +474,32 @@ int main(int argc, const char *const *const argv)
         cpu = "i386";
       }
     }
+    #else //MSVC
+    cpu = cpubuf;
+    *cpu = 0;
+
+    if (strstr(flags, " sse2 "))
+    {
+      strcat(cpu, " /arch:SSE2");
+    }
+    else if (strstr(flags, " sse "))
+    {
+      strcat(cpu, " /arch:SSE");
+    }
+
+    if (strstr(flags, " lm ")) //64 bit
+    {
+      if (!strcmp(vendor_id, "AuthenticAMD") || strstr(model_name, "AMD"))
+      {
+        strcat(cpu, " /favor:AMD64");
+      }
+      else if (!strcmp(vendor_id, "GenuineIntel") || strstr(model_name, "Intel"))
+      {
+        strcat(cpu, " /favor:EM64T");
+      }
+    }
+    #endif
+
     puts(cpu);
   }
   else
