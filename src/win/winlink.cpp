@@ -35,9 +35,12 @@ extern "C" {
 #include <dinput.h>
 #include <winuser.h>
 #include "resource.h"
+
+extern "C" {
 #include "../cfg.h"
 #include "../input.h"
 #include "../zmovie.h"
+}
 
 
 /*
