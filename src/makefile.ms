@@ -61,7 +61,9 @@ CPUOPT=i586
 ifneq ($(CPU),)
 CPUOPT=$(CPU)
 endif
+CFLAGONLY=-std=c99 -U__STRICT_ANSI__ -Wdeclaration-after-statement
 CFLAGSORIG=-march=${CPUOPT} -ffast-math -fomit-frame-pointer -fno-unroll-loops -Wall -Wno-unused -I.
+CXXFLAGSORIG=
 LIBSORIG=-lz -lpng
 DRESOBJ=${WIN_D}/zsnes.obj
 CROSS=no
@@ -88,6 +90,7 @@ ifeq (${ENV},win32)
 endif
 
 ifeq (${ENV},msvc)
+  CFLAGONLY=
   CFLAGSORIG=/nologo /Ox /G6 /c /EHsc
   MSVCLIBS=zlib.lib libpng.lib wsock32.lib user32.lib gdi32.lib shfolder.lib shell32.lib winmm.lib dinput8.lib dxguid.lib
   DRESOBJ=${WIN_D}/zsnes.res
@@ -175,7 +178,8 @@ ifeq (${JMA},no)
   endif
 endif
 
-CFLAGS=${CFLAGSORIG} -D${OS}
+CFLAGS=${CFLAGSORIG} -D${OS} ${CFLAGONLY}
+CXXFLAGS=${CFLAGSORIG} -D${OS} ${CXXFLAGSORIG}
 ASMFLAGS=${ASMFLAGSORIG} -f ${FILEFORMAT} -D${OS}
 
 
@@ -265,7 +269,7 @@ ifneq (${ENV},msvc)
 	${CC} ${COPT} ${CFLAGS} -o $@ -c $<
 
 %${OE}: %.cpp
-	${CPPC} ${COPT} ${CFLAGS} -o $@ -c $<
+	${CPPC} ${COPT} ${CXXFLAGS} -o $@ -c $<
 
 %${OE}: %.asm
 	${ASM} ${ASMOPT} ${ASMFLAGS} -o $@ $<
@@ -277,7 +281,7 @@ else
 	cl ${CFLAGS} /Fo$@ $<
 
 %.obj: %.cpp
-	cl ${CFLAGS} /Fo$@ $<
+	cl ${CXXFLAGS} /Fo$@ $<
 
 %.obj: %.asm
 	${ASM} ${ASMOPT} ${ASMFLAGS} -o $@ $<
