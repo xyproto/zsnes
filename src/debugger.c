@@ -132,14 +132,14 @@ unsigned char *findoppage();
 void startdebugger() {
     static int firsttime = 1;
 
-    curblank = 0x40;
-    debuggeron = 1;
-
 #ifdef __MSDOS__
     __dpmi_regs regs;
     regs.x.ax = 0x0003;
     __dpmi_int(0x10, &regs);
 #endif // __MSDOS__
+
+    curblank = 0x40;
+    debuggeron = 1;
 
     if (firsttime) {
     initscr(); cbreak(); noecho();
