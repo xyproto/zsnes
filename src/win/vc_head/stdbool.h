@@ -23,7 +23,15 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define _MSC_INTTYPES_H_
 
 #ifndef __cplusplus
-enum { false = 0, true = 1 };
+
+#ifndef false
+#define false 0
+#endif
+
+#ifndef true
+#define true 1
+#endif
+
 typedef unsigned char _Bool;
 typedef _Bool bool;
 #else
