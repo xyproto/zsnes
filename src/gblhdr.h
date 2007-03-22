@@ -119,7 +119,7 @@ however it's a static value that we can just define */
 #endif
 
 #ifdef __UNIXSDL__
-#ifdef linux
+#ifdef __linux__
 #include <asm/ioctls.h>
 #else
 #include <sys/filio.h>

@@ -57,14 +57,14 @@ static bool spc_drop_privileges()
   {
     setgroups(1, &userinfo->pw_gid);
 
-#if !defined(linux)
+#ifndef __linux__
     setegid(userinfo->pw_gid);
     if (setgid(userinfo->pw_gid) == -1) { return(false); }
 #else
     if (setregid(userinfo->pw_gid, userinfo->pw_gid) == -1) { return(false); }
 #endif
 
-#if !defined(linux)
+#ifndef __linux__
     seteuid(userinfo->pw_uid);
     if (setuid(userinfo->pw_uid) == -1) { return(false); }
 #else

@@ -32,7 +32,7 @@ but it'll compile fine for older versions too
 Special thanks David Lee Lambert for most of the code here
 */
 
-#ifdef linux
+#ifdef __linux__
 #include <dirent.h>
 #include <math.h>
 

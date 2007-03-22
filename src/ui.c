@@ -520,7 +520,7 @@ void MultiMouseShutdown(void)
 
 void MultiMouseInit()
 {
-#ifdef linux
+#ifdef __linux__
   DIR *input_dir;
 
   puts("Starting Mouse detection.");
