@@ -20,6 +20,10 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <string.h>
 #include <ctype.h>
 
+#ifdef _M_X64
+#define __x86_64__
+#endif
+
 #ifdef __GNUC__
 #ifdef __x86_64__
 #define cpuid(in, a, b, c, d) asm volatile("cpuid": "=a" (a), "=b" (b), "=c" (c), "=d" (d) : "a" (in));
@@ -487,6 +491,7 @@ int main(int argc, const char *const *const argv)
       strcat(cpu, " /arch:SSE");
     }
 
+    #ifdef __x86_64__
     if (strstr(flags, " lm ")) //64 bit
     {
       if (!strcmp(vendor_id, "AuthenticAMD") || strstr(model_name, "AMD"))
@@ -498,6 +503,7 @@ int main(int argc, const char *const *const argv)
         strcat(cpu, " /favor:EM64T");
       }
     }
+    #endif
     #endif
 
     puts(cpu);

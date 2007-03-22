@@ -44,6 +44,10 @@ I'd fix that if anyone knows if that parameter defines something I can check
 #define ASM_CALL_H
 ////////////////////////////////////////////////////////
 
+#ifdef _M_X64
+#define __x86_64__
+#endif
+
 #ifdef __GNUC__
 
 #define ASM_COMMAND(line) #line"\n\t"
