@@ -91,7 +91,8 @@ endif
 
 ifeq (${ENV},msvc)
   CFLAGONLY=
-  CFLAGSORIG=/nologo /Ox /G6 /c /EHsc
+  CFLAGSORIG=/nologo /c /Ox /EHsc /GS-
+  CXXFLAGSORIG=/Zc:forScope-
   MSVCLIBS=zlib.lib libpng.lib wsock32.lib user32.lib gdi32.lib shfolder.lib shell32.lib winmm.lib dinput8.lib dxguid.lib
   DRESOBJ=${WIN_D}/zsnes.res
   OS=__WIN32__
@@ -146,11 +147,14 @@ endif
 ifeq (${DEBUG},yes)
   ifneq (${ENV},msvc)
     CFLAGSORIG=-fno-omit-frame-pointer -ggdb3 -DDEBUG
-    COPT=-O0
-    ASMFLAGSORIG=-DDEBUG -g
-    EXE=zsnesd.exe
-    STRIP=
+  else
+    CFLAGSORIG=/nologo /c /Od /Oy /GS /Wp64 /Yd /EHsc /DDEBUG
   endif
+  COPT=-O0
+  ASMFLAGSORIG=-DDEBUG -g
+  EXE=zsnesd.exe
+  STRIP=
+
 endif
 
 ifeq (${RELEASE},yes)
