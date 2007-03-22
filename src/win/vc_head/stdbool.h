@@ -19,8 +19,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef _MSC_INTTYPES_H_
-#define _MSC_INTTYPES_H_
+#ifndef _MSC_STDBOOL_H_
+#define _MSC_STDBOOL_H_
 
 #ifndef __cplusplus
 
@@ -32,7 +32,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define true 1
 #endif
 
-typedef unsigned char _Bool;
 typedef unsigned char bool;
 #else
 typedef bool _Bool;
