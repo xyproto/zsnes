@@ -33,7 +33,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #endif
 
 typedef unsigned char _Bool;
-typedef _Bool bool;
+typedef unsigned char bool;
 #else
 typedef bool _Bool;
 #endif
