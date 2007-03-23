@@ -31,6 +31,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <ctype.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <stdbool.h>
 #define DIR_SLASH "\\"
 #endif
 #include "asm_call.h"
@@ -46,11 +47,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define strcasecmp stricmp
 #define strncasecmp strnicmp
 #endif
-
-//C++ style code in C
-#define bool unsigned char
-#define true 1
-#define false 0
 
 //NSRT Goodness
 #define Lo 0x7FC0
@@ -1506,7 +1502,6 @@ Would be nice to trash this section in the future
 extern unsigned char ENVDisable, cycpb268, cycpb358, cycpbl2, cycpblt2, cycpbl;
 extern unsigned char cycpblt, opexec268, opexec358, opexec268b, opexec358b;
 extern unsigned char opexec268cph, opexec358cph, opexec268cphb, opexec358cphb;
-bool HacksDisable;
 
 void headerhack()
 {

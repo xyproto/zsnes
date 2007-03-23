@@ -28,6 +28,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <stdbool.h>
 #endif
 
 #include "asm_call.h"
@@ -35,11 +36,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "input.h"
 #include "mmlib/mm.h"
 #include "zpath.h"
-
-//C++ style code in C
-#define bool unsigned char
-#define true 1
-#define false 0
 
 extern unsigned int xa, MessageOn, maxromspace;
 extern unsigned char FPSOn, spcon, device1, device2;

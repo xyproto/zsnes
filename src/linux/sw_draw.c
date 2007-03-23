@@ -29,11 +29,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define WORD  unsigned short
 #define DWORD unsigned long
 
-//C++ style code in C
-#define bool unsigned char
-#define true 1
-#define false 0
-
 void CheckFrame();
 // VIDEO VARIABLES
 extern SDL_Surface *surface;

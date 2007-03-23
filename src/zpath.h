@@ -42,9 +42,7 @@ typedef unsigned short mode_t;
 
 #if !defined(__cplusplus) && !defined(bool)
 //C++ style code in C
-#define bool unsigned char
-#define true 1
-#define false 0
+#include <stdbool.h>
 #endif
 
 #ifdef __UNIXSDL__

@@ -19,7 +19,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-
 #include "../cfg.h"
 #include "../gblhdr.h"
 #include "../asm_call.h"
@@ -27,11 +26,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define BYTE  unsigned char
 #define WORD  unsigned short
 #define DWORD unsigned long
-
-//C++ style code in C
-#define bool unsigned char
-#define true 1
-#define false 0
 
 // FUNCTIONS
 void hq2x_16b(void);

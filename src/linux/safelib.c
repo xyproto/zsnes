@@ -19,7 +19,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include "gblhdr.h"
+#include "../gblhdr.h"
 
 #include <sys/param.h>
 #include <sys/wait.h>
@@ -35,12 +35,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "safelib.h"
 
 #include "../argv.h"
-
-//C++ style code in C
-#define bool unsigned char
-#define true 1
-#define false 0
-
 
 //Introducing secure forking ;) -Nach
 

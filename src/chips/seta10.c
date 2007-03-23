@@ -26,17 +26,13 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #else
 #include <math.h> //sqrt()
 #include <stdlib.h> //abs()
+#include <stdbool.h>
 #endif
 
 #define SRAM setaramdata
 
 extern unsigned char *setaramdata;
 void ST010DoCommand(void);
-
-//C++ style code in C
-#define bool unsigned char
-#define true 1
-#define false 0
 
 typedef signed char     int8;
 typedef unsigned char   uint8;

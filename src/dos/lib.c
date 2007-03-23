@@ -32,11 +32,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <dos.h>
 #include <sys/stat.h>
 #include <dir.h>
-
-//C++ style code in C
-#define bool unsigned char
-#define true 1
-#define false 0
+#include <stdbool.h>
 
 #define BIT(X) (1 << (X))
 

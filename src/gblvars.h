@@ -19,10 +19,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-//C++ style code in C
-#define bool unsigned char
-#define true 1
-#define false 0
+#include <stdbool.h>
 
 extern unsigned int cycpbl;
 extern unsigned int *wramdata, *vram, PHspcsave, PHdspsave, *C4Ram, *sfxramdata;

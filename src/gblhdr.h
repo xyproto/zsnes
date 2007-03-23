@@ -33,6 +33,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "fcntl.h"
 #include <string.h>
 #include <errno.h>
+#include <stdbool.h>
 
 #include "config.h"
 // General time.h checking
