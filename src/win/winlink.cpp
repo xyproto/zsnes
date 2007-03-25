@@ -3138,12 +3138,12 @@ int GetMouseY(void)
 
 int GetMouseMoveX(void)
 {
-   return((int)MouseMoveX);
+   return((int)MouseMoveX/MouseSensitivity);
 }
 
 int GetMouseMoveY(void)
 {
-   return((int)MouseMoveY);
+   return((int)MouseMoveY/MouseSensitivity);
 }
 
 int GetMouseButton(void)
