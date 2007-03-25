@@ -903,7 +903,7 @@ MovieVideoAudio db 1
 @ Super Scope Keys:
 @ Extra Device in Port 1/2 Cycle
 KeyExtraEnab1 dd 0
-KeyExtraEnab2 dd 0
+KeyExtraEnab2 dd 8
 
 @
 @ State Keys:
