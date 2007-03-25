@@ -3057,7 +3057,7 @@ int GetMouseX(void)
 
       if (TrapMouseCursor == 1)
       {
-         if (abs((int)MouseMoveX) > 10 && T36HZEnabled == 1 && FullScreen == 0 && MouseButtonPressed == 0)
+         if (abs((int)MouseMoveX) > 10*MouseSensitivity && T36HZEnabled == 1 && FullScreen == 0 && MouseButtonPressed == 0)
          {
             MouseInput->Unacquire();
             SetCursorPos(X + WindowWidth + 32, (int)(Y + (MouseY * WindowHeight / 224)));
@@ -3076,7 +3076,7 @@ int GetMouseX(void)
 
       if (TrapMouseCursor == 1)
       {
-         if (abs((int)MouseMoveX) > 10 && T36HZEnabled == 1 && FullScreen == 0 && MouseButtonPressed == 0)
+         if (abs((int)MouseMoveX) > 10*MouseSensitivity && T36HZEnabled == 1 && FullScreen == 0 && MouseButtonPressed == 0)
          {
             MouseInput->Unacquire();
             SetCursorPos(X - 32, (int)(Y + (MouseY * WindowHeight / 224)));
@@ -3101,7 +3101,7 @@ int GetMouseY(void)
 
       if (TrapMouseCursor == 1)
       {
-         if (abs((int)MouseMoveY) > 10 && T36HZEnabled == 1 && FullScreen == 0 && MouseButtonPressed == 0)
+         if (abs((int)MouseMoveY) > 10*MouseSensitivity && T36HZEnabled == 1 && FullScreen == 0 && MouseButtonPressed == 0)
          {
             MouseInput->Unacquire();
             SetCursorPos((int)(X+(MouseX * WindowWidth / 256)), Y + WindowHeight + 32);
@@ -3120,7 +3120,7 @@ int GetMouseY(void)
 
       if (TrapMouseCursor == 1)
       {
-         if (abs((int)MouseMoveY) > 10 && T36HZEnabled == 1 && FullScreen == 0 && MouseButtonPressed == 0)
+         if (abs((int)MouseMoveY) > 10*MouseSensitivity && T36HZEnabled == 1 && FullScreen == 0 && MouseButtonPressed == 0)
          {
             MouseInput->Unacquire();
             SetCursorPos((int)(X + (MouseX * WindowWidth / 256)), Y - 32);
