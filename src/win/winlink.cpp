@@ -3157,15 +3157,11 @@ int GetMouseButton(void)
          Moving = 1;
          X += (int) MouseMoveX;
          Y += (int) MouseMoveY;
-         /* This code prevents dragging ZSNES between monitors...
-         if (X < 0)X = 0;
-         if (X > (int)(GetSystemMetrics(SM_CXSCREEN) - WindowWidth)) X = (GetSystemMetrics(SM_CXSCREEN) - WindowWidth);
-         if (Y < 0)Y=0;
-         if (Y > (int)(GetSystemMetrics(SM_CYSCREEN) - WindowHeight)) Y = (GetSystemMetrics(SM_CYSCREEN) - WindowHeight);
-         */
+
          InputRead();
          initwinvideo();
-      }
+
+	  }
    }
    if (Moving == 1)
    {
