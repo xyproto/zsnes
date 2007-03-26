@@ -620,7 +620,7 @@ char panickeyp[] = "ALL SWITCHES NORMAL\0";
 char mztrtr0[] = "LOAD MZT MODE - OFF\0";
 char mztrtr1[] = "LOAD MZT MODE - RECORD\0";
 char mztrtr2[] = "LOAD MZT MODE - REPLAY\0";
-char snesdevicemsg[] = "P1:           P2:               \0";
+char snesdevicemsg[] = "P1:          P2:               \0";
 char windissw[] = "WINDOWING DISABLED\0";
 char winenasw[] = "WINDOWING ENABLED\0";
 char ofsdissw[] = "OFFSET MODE DISABLED\0";
@@ -710,15 +710,15 @@ void cycleinputdevicemsg()
 
   switch(device2)
   {
-    case 1:   memcpy(&snesdevicemsg[18], "MOUSE         ",14);
+    case 1:   memcpy(&snesdevicemsg[17], "MOUSE         ",14);
               break;
-    case 2:   memcpy(&snesdevicemsg[18], "SUPER SCOPE   ",14);
+    case 2:   memcpy(&snesdevicemsg[17], "SUPER SCOPE   ",14);
               break;
-    case 3:   memcpy(&snesdevicemsg[18], "ONE JUSTIFIER ",14);
+    case 3:   memcpy(&snesdevicemsg[17], "1 JUSTIFIER ",14);
               break;
-    case 4:   memcpy(&snesdevicemsg[18], "TWO JUSTIFIERS",14);
+    case 4:   memcpy(&snesdevicemsg[17], "2 JUSTIFIERS",14);
               break;
-    default:  memcpy(&snesdevicemsg[18], "GAMEPAD       ",14);
+    default:  memcpy(&snesdevicemsg[17], "GAMEPAD       ",14);
   }
 }
 
