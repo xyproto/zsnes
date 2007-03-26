@@ -133,6 +133,8 @@ void cycleinputdevice1()
   }
 }
 
+static bool device2_wrap = false;
+
 void cycleinputdevice2()
 {
   for (;;)
@@ -140,6 +142,7 @@ void cycleinputdevice2()
     device2++;
     if (device2 >= 5)
     {
+      device2_wrap = true;
       device2 = 0;
     }
     if (device2 == 0)
@@ -697,7 +700,7 @@ void adjsoundchmsg(char *soundch, char *soundstatus, char num)
     MessageOn = MsgCount;
 }
 
-void cycleinputdevicemsg()
+static void cycleinputdevicemsg()
 {
   if(!device1)
   {
@@ -720,6 +723,30 @@ void cycleinputdevicemsg()
               break;
     default:  memcpy(&snesdevicemsg[17], "GAMEPAD       ",14);
   }
+}
+
+static void cycleinputs(bool input1, bool input2)
+{
+  if (input2)
+  {
+    cycleinputdevice2();
+    if (input1 && device2_wrap) { cycleinputdevice1(); }
+    if(device2 == 2)
+    {
+      mousexloc = 128;
+      mouseyloc = 112;
+    }
+    device2_wrap = false;
+  }
+  else if (input1)
+  {
+    cycleinputdevice1();
+  }
+
+  cycleinputdevicemsg();
+  Msgptr = snesdevicemsg;
+  MessageOn = MsgCount;
+  asm_call(Get_MousePositionDisplacement);
 }
 
 #define PRESSED(key) ((pressed[(key)] == 1) && (pressed[(key)]=2))
@@ -799,46 +826,17 @@ void QuickKeyCheck()
 
     if (PRESSED(KeyExtraEnab1))
     {
-      cycleinputdevice1();
-      cycleinputdevicemsg();
-      Msgptr = snesdevicemsg;
-      MessageOn = MsgCount;
-      asm_call(Get_MousePositionDisplacement);
+      cycleinputs(true, false);
     }
 
     if (PRESSED(KeyExtraEnab2))
     {
-      cycleinputdevice2();
-      if(device2 == 2)
-      {
-        mousexloc = 128;
-        mouseyloc = 112;
-      }
-
-      cycleinputdevicemsg();
-      Msgptr = snesdevicemsg;
-      MessageOn = MsgCount;
-      asm_call(Get_MousePositionDisplacement);
+      cycleinputs(false, true);
     }
 
     if (PRESSED(KeyExtraRotate))
     {
-      cycleinputdevice2();
-      if(!device2)
-      {
-        cycleinputdevice1();
-      }
-
-      else if(device2 == 2)
-      {
-        mousexloc = 128;
-        mouseyloc = 112;
-      }
-
-      cycleinputdevicemsg();
-      Msgptr = snesdevicemsg;
-      MessageOn = MsgCount;
-      asm_call(Get_MousePositionDisplacement);
+      cycleinputs(true, true);
     }
 
     if (PRESSED(KeyWinDisble))
