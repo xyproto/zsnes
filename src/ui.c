@@ -620,12 +620,7 @@ char panickeyp[] = "ALL SWITCHES NORMAL\0";
 char mztrtr0[] = "LOAD MZT MODE - OFF\0";
 char mztrtr1[] = "LOAD MZT MODE - RECORD\0";
 char mztrtr2[] = "LOAD MZT MODE - REPLAY\0";
-char snesmousep0[] = "EXTRA DEVICES DISABLED\0";
-char snesmousep1[] = "MOUSE ENABLED IN PORT 1\0";
-char snesmousep2[] = "MOUSE ENABLED IN PORT 2\0";
-char snesss[] = "SUPER SCOPE ENABLED\0";
-char snesle1[] = "1 JUSTIFIER ENABLED\0";
-char snesle2[] = "2 JUSTIFIERS ENABLED\0";
+char snesdevicemsg[] = "P1:           P2:               \0";
 char windissw[] = "WINDOWING DISABLED\0";
 char winenasw[] = "WINDOWING ENABLED\0";
 char ofsdissw[] = "OFFSET MODE DISABLED\0";
@@ -700,6 +695,31 @@ void adjsoundchmsg(char *soundch, char *soundstatus, char num)
     else
       Msgptr = sndchdis;
     MessageOn = MsgCount;
+}
+
+void cycleinputdevicemsg()
+{
+  if(!device1)
+  {
+    memcpy(&snesdevicemsg[4],"GAMEPAD",7);
+  }
+  else
+  {
+    memcpy(&snesdevicemsg[4],"MOUSE  ",7);
+  }
+
+  switch(device2)
+  {
+    case 1:   memcpy(&snesdevicemsg[18], "MOUSE         ",14);
+              break;
+    case 2:   memcpy(&snesdevicemsg[18], "SUPER SCOPE   ",14);
+              break;
+    case 3:   memcpy(&snesdevicemsg[18], "ONE JUSTIFIER ",14);
+              break;
+    case 4:   memcpy(&snesdevicemsg[18], "TWO JUSTIFIERS",14);
+              break;
+    default:  memcpy(&snesdevicemsg[18], "GAMEPAD       ",14);
+  }
 }
 
 void QuickKeyCheck()
@@ -819,10 +839,8 @@ void QuickKeyCheck()
     {
       pressed[KeyExtraEnab1] = 2;
       cycleinputdevice1();
-      if(device1)
-        Msgptr = snesmousep1;
-      else
-        Msgptr = snesmousep0;
+      cycleinputdevicemsg();
+      Msgptr = snesdevicemsg;
       MessageOn = MsgCount;
       asm_call(Get_MousePositionDisplacement);
     }
@@ -831,21 +849,35 @@ void QuickKeyCheck()
     {
       pressed[KeyExtraEnab2] = 2;
       cycleinputdevice2();
-      switch(device2)
+      if(device2 == 2)
       {
-        case 1:   Msgptr = snesmousep2;
-                  break;
-        case 2:   Msgptr = snesss;
-                  mousexloc = 128;
-                  mouseyloc = 112;
-                  break;
-        case 3:   Msgptr = snesle1;
-                  break;
-        case 4:   Msgptr = snesle2;
-                  break;
-        default:  Msgptr = snesmousep0;
+        mousexloc = 128;
+        mouseyloc = 112;
       }
 
+      cycleinputdevicemsg();
+      Msgptr = snesdevicemsg;
+      MessageOn = MsgCount;
+      asm_call(Get_MousePositionDisplacement);
+    }
+
+    if(pressed[KeyExtraRotate] == 1)
+    {
+      pressed[KeyExtraRotate] = 2;
+      cycleinputdevice2();
+      if(!device2)
+      {
+        cycleinputdevice1();
+      }
+
+      else if(device2 == 2)
+      {
+        mousexloc = 128;
+        mouseyloc = 112;
+      }
+
+      cycleinputdevicemsg();
+      Msgptr = snesdevicemsg;
       MessageOn = MsgCount;
       asm_call(Get_MousePositionDisplacement);
     }
