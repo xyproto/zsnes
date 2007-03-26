@@ -392,9 +392,9 @@ void GUIRestoreVars()
   CheckValueBounds(&Palette0, 0, 1, 1, UB);
 #endif
 #ifdef __WIN32__
-  CheckValueBounds(&cvidmode, 0, 42, 2, UB);
-  CheckValueBounds(&PrevWinMode, 0, 42, 2, UB);
-  CheckValueBounds(&PrevFSMode, 0, 42, 6, UB);
+  CheckValueBounds(&cvidmode, 0, 59, 2, UB);
+  CheckValueBounds(&PrevWinMode, 0, 59, 2, UB);
+  CheckValueBounds(&PrevFSMode, 0, 59, 6, UB);
 #endif
 #ifdef __UNIXSDL__
 #ifdef __OPENGL__
