@@ -8,9 +8,6 @@ typedef unsigned int uint32;
 typedef char int8;
 typedef short int16;
 typedef long int32;
-#define FALSE 0
-#define TRUE 1
-
 
 struct DSP4_t
 {

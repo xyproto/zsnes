@@ -20,6 +20,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
 #include <string.h>
+#include <stdbool.h>
 #include "dsp4emu.h"
 
 
@@ -172,7 +173,7 @@ void DSP4_Multiply(int16 Multiplicand, int16 Multiplier, int32 *Product)
 
 void DSP4_OP01()
 {
-  DSP4.waiting4command = FALSE;
+  DSP4.waiting4command = false;
 
   // op flow control
   switch (DSP4_vars.DSP4_Logic)
@@ -379,7 +380,7 @@ void DSP4_OP01()
   while (1);
 
   // terminate op
-  DSP4.waiting4command = TRUE;
+  DSP4.waiting4command = true;
 }
 
 //////////////////////////////////////////////////////////////
@@ -417,7 +418,7 @@ void DSP4_OP06()
 
 void DSP4_OP07()
 {
-  DSP4.waiting4command = FALSE;
+  DSP4.waiting4command = false;
 
   // op flow control
   switch (DSP4_vars.DSP4_Logic)
@@ -579,7 +580,7 @@ void DSP4_OP07()
   }
   while (1);
 
-  DSP4.waiting4command = TRUE;
+  DSP4.waiting4command = true;
 }
 
 //////////////////////////////////////////////////////////////
@@ -590,7 +591,7 @@ void DSP4_OP08()
   int16 view_x[2], view_y[2];
   int16 envelope[2][2];
 
-  DSP4.waiting4command = FALSE;
+  DSP4.waiting4command = false;
 
   // op flow control
   switch (DSP4_vars.DSP4_Logic)
@@ -910,14 +911,14 @@ void DSP4_OP08()
   DSP4_WRITE_WORD(0);
 
 
-  DSP4.waiting4command = TRUE;
+  DSP4.waiting4command = true;
 }
 
 //////////////////////////////////////////////////////////////
 
 void DSP4_OP09()
 {
-  DSP4.waiting4command = FALSE;
+  DSP4.waiting4command = false;
 
   // op flow control
   switch (DSP4_vars.DSP4_Logic)
@@ -1087,7 +1088,7 @@ void DSP4_OP09()
       DSP4.in_count = 2;
       DSP4_WAIT(5) resume5 :
 
-      draw = TRUE;
+      draw = true;
 
       // opcode termination
       DSP4_vars.raster = DSP4_READ_WORD();
@@ -1121,7 +1122,7 @@ void DSP4_OP09()
       DSP4.in_count = 4;
       DSP4_WAIT(6) resume6 :
 
-      draw = TRUE;
+      draw = true;
 
       /////////////////////////////////////
       // process tile data
@@ -1173,7 +1174,7 @@ void DSP4_OP09()
   }
   while (1);
 
-  terminate : DSP4.waiting4command = TRUE;
+  terminate : DSP4.waiting4command = true;
 }
 
 //////////////////////////////////////////////////////////////
@@ -1278,7 +1279,7 @@ void DSP4_OP0B(bool8 *draw, int16 sp_x, int16 sp_y, int16 sp_attr, bool8 size, b
 
 void DSP4_OP0D()
 {
-  DSP4.waiting4command = FALSE;
+  DSP4.waiting4command = false;
 
   // op flow control
   switch (DSP4_vars.DSP4_Logic)
@@ -1458,7 +1459,7 @@ void DSP4_OP0D()
   }
   while (1);
 
-  DSP4.waiting4command = TRUE;
+  DSP4.waiting4command = true;
 }
 
 //////////////////////////////////////////////////////////////
@@ -1475,7 +1476,7 @@ void DSP4_OP0E()
 
 void DSP4_OP0F()
 {
-  DSP4.waiting4command = FALSE;
+  DSP4.waiting4command = false;
 
   // op flow control
   switch (DSP4_vars.DSP4_Logic)
@@ -1718,7 +1719,7 @@ void DSP4_OP0F()
   while (1);
 
   // terminate op
-  DSP4.waiting4command = TRUE;
+  DSP4.waiting4command = true;
 }
 
 //////////////////////////////////////////////////////////////
@@ -1726,7 +1727,7 @@ void DSP4_OP0F()
 
 void DSP4_OP10()
 {
-  DSP4.waiting4command = FALSE;
+  DSP4.waiting4command = false;
 
   // op flow control
   switch (DSP4_vars.DSP4_Logic)
@@ -1927,7 +1928,7 @@ void DSP4_OP10()
   }
   while (1);
 
-  DSP4.waiting4command = TRUE;
+  DSP4.waiting4command = true;
 }
 
 //////////////////////////////////////////////////////////////
@@ -1954,7 +1955,7 @@ uint16 dsp4_address;
 void InitDSP4()
 {
   memset(&DSP4, 0, sizeof(DSP4));
-  DSP4.waiting4command = TRUE;
+  DSP4.waiting4command = true;
 }
 
 void DSP4SetByte()
@@ -1972,8 +1973,8 @@ void DSP4SetByte()
     {
       DSP4.command |= (dsp4_byte << 8);
       DSP4.in_index = 0;
-      DSP4.waiting4command = FALSE;
-      DSP4.half_command = FALSE;
+      DSP4.waiting4command = false;
+      DSP4.half_command = false;
       DSP4.out_count = 0;
       DSP4.out_index = 0;
 
@@ -2013,14 +2014,14 @@ void DSP4SetByte()
         case 0x0011:
           DSP4.in_count = 8; break;
         default:
-          DSP4.waiting4command = TRUE;
+          DSP4.waiting4command = true;
           break;
       }
     }
     else
     {
       DSP4.command = dsp4_byte;
-      DSP4.half_command = TRUE;
+      DSP4.half_command = true;
     }
   }
   else
@@ -2032,7 +2033,7 @@ void DSP4SetByte()
   if (!DSP4.waiting4command && DSP4.in_count == DSP4.in_index)
   {
     // Actually execute the command
-    DSP4.waiting4command = TRUE;
+    DSP4.waiting4command = true;
     DSP4.out_index = 0;
     DSP4.in_index = 0;
 
