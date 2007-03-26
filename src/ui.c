@@ -722,54 +722,21 @@ void cycleinputdevicemsg()
   }
 }
 
+#define PRESSED(key) ((pressed[(key)] == 1) && (pressed[(key)]=2))
+#define SCREEN_FLIP(num) adjbglayermsg((num)+'1', ((scrndis ^= BIT(num)) != BIT(num)))
+
 void QuickKeyCheck()
 {
     // disable all necessary backgrounds
 
-    if(pressed[KeyBGDisble0] == 1)
-    {
-      scrndis ^= 0x01;
-      pressed[KeyBGDisble0] = 2;
-      if(scrndis == 0x01)
-        adjbglayermsg('1',0);
-      else
-        adjbglayermsg('1',1);
-    }
+    if (PRESSED(KeyBGDisble0)) { SCREEN_FLIP(0); }
+    if (PRESSED(KeyBGDisble1)) { SCREEN_FLIP(1); }
+    if (PRESSED(KeyBGDisble2)) { SCREEN_FLIP(2); }
+    if (PRESSED(KeyBGDisble3)) { SCREEN_FLIP(3); }
 
-    if(pressed[KeyBGDisble1] == 1)
-    {
-      scrndis ^= 0x02;
-      pressed[KeyBGDisble1] = 2;
-      if(scrndis == 0x02)
-        adjbglayermsg('2',0);
-      else
-        adjbglayermsg('2',1);
-    }
-
-    if(pressed[KeyBGDisble2] == 1)
-    {
-      scrndis ^= 0x04;
-      pressed[KeyBGDisble2] = 2;
-      if(scrndis == 0x04)
-        adjbglayermsg('3',0);
-      else
-        adjbglayermsg('3',1);
-    }
-
-    if(pressed[KeyBGDisble3] == 1)
-    {
-      scrndis ^= 0x08;
-      pressed[KeyBGDisble3] = 2;
-      if(scrndis == 0x08)
-        adjbglayermsg('4',0);
-      else
-        adjbglayermsg('4',1);
-    }
-
-    if(pressed[KeySprDisble] == 1)
+    if (PRESSED(KeySprDisble))
     {
       scrndis ^= 0x10;
-      pressed[KeySprDisble] = 2;
       if(scrndis == 0x10)
         Msgptr = sprlaydis;
       else
@@ -777,29 +744,25 @@ void QuickKeyCheck()
       MessageOn = MsgCount;
     }
 
-    if(pressed[KeyEmuSpeedDown] == 1)
+    if (PRESSED(KeyEmuSpeedDown))
     {
-      pressed[KeyEmuSpeedDown] = 2;
       if(EmuSpeed)
         EmuSpeed--;
     }
 
-    if(pressed[KeyEmuSpeedUp] == 1)
+    if (PRESSED(KeyEmuSpeedUp))
     {
-      pressed[KeyEmuSpeedUp] = 2;
       if(EmuSpeed < 58)
         EmuSpeed++;
     }
 
-    if(pressed[KeyResetSpeed] == 1)
+    if (PRESSED(KeyResetSpeed))
     {
-      pressed[KeyResetSpeed] = 2;
       EmuSpeed = 29;
     }
 
-    if(pressed[KeyResetAll] == 1)
+    if (PRESSED(KeyResetAll))
     {
-      pressed[KeyResetAll] = 2;
       Voice0Disable = 1;
       Voice1Disable = 1;
       Voice2Disable = 1;
@@ -818,9 +781,8 @@ void QuickKeyCheck()
       MessageOn = MsgCount;
     }
 
-    if(pressed[KeyRTRCycle] == 1)
+    if (PRESSED(KeyRTRCycle))
     {
-      pressed[KeyRTRCycle] = 2;
       MZTForceRTR++;
       switch(MZTForceRTR)
       {
@@ -835,9 +797,8 @@ void QuickKeyCheck()
       MessageOn = MsgCount;
     }
 
-    if(pressed[KeyExtraEnab1] == 1)
+    if (PRESSED(KeyExtraEnab1))
     {
-      pressed[KeyExtraEnab1] = 2;
       cycleinputdevice1();
       cycleinputdevicemsg();
       Msgptr = snesdevicemsg;
@@ -845,9 +806,8 @@ void QuickKeyCheck()
       asm_call(Get_MousePositionDisplacement);
     }
 
-    if(pressed[KeyExtraEnab2] == 1)
+    if (PRESSED(KeyExtraEnab2))
     {
-      pressed[KeyExtraEnab2] = 2;
       cycleinputdevice2();
       if(device2 == 2)
       {
@@ -861,9 +821,8 @@ void QuickKeyCheck()
       asm_call(Get_MousePositionDisplacement);
     }
 
-    if(pressed[KeyExtraRotate] == 1)
+    if (PRESSED(KeyExtraRotate))
     {
-      pressed[KeyExtraRotate] = 2;
       cycleinputdevice2();
       if(!device2)
       {
@@ -882,9 +841,8 @@ void QuickKeyCheck()
       asm_call(Get_MousePositionDisplacement);
     }
 
-    if(pressed[KeyWinDisble] == 1)
+    if (PRESSED(KeyWinDisble))
     {
-      pressed[KeyWinDisble] = 2;
       disableeffects ^= 1;
       if(disableeffects)
         Msgptr = windissw;
@@ -893,9 +851,8 @@ void QuickKeyCheck()
       MessageOn = MsgCount;
     }
 
-    if(pressed[KeyOffsetMSw] == 1)
+    if (PRESSED(KeyOffsetMSw))
     {
-      pressed[KeyOffsetMSw] = 2;
       osm2dis ^= 1;
       if(osm2dis)
         Msgptr = ofsdissw;
@@ -904,9 +861,8 @@ void QuickKeyCheck()
       MessageOn = MsgCount;
     }
 
-    if(pressed[KeyFRateUp] == 1)
+    if (PRESSED(KeyFRateUp))
     {
-      pressed[KeyFRateUp] = 2;
       if(frameskip < 10)
       {
         FPSOn = 0;
@@ -917,9 +873,8 @@ void QuickKeyCheck()
       }
     }
 
-    if(pressed[KeyFRateDown] == 1)
+    if (PRESSED(KeyFRateDown))
     {
-      pressed[KeyFRateDown] = 2;
       if(frameskip)
       {
         frameskip--;
@@ -938,15 +893,13 @@ void QuickKeyCheck()
       }
     }
 
-    if(pressed[KeyDisplayBatt] == 1)
+    if (PRESSED(KeyDisplayBatt))
     {
-      pressed[KeyDisplayBatt] = 2;
       DisplayBatteryStatus();
     }
 
-    if(pressed[KeyIncreaseGamma] == 1)
+    if (PRESSED(KeyIncreaseGamma))
     {
-      pressed[KeyIncreaseGamma] = 2;
       if(gammalevel < 15)
       {
         gammalevel++;
@@ -954,9 +907,8 @@ void QuickKeyCheck()
       }
     }
 
-    if(pressed[KeyDecreaseGamma] == 1)
+    if (PRESSED(KeyDecreaseGamma))
     {
-      pressed[KeyDecreaseGamma] = 2;
       if(gammalevel)
       {
         gammalevel--;
@@ -964,102 +916,88 @@ void QuickKeyCheck()
       }
     }
 
-    if(pressed[KeyDisplayFPS] == 1)
+    if (PRESSED(KeyDisplayFPS))
     {
-      pressed[KeyDisplayFPS] = 2;
       if(!frameskip)
         FPSOn ^= 1;
     }
 
     // do state selects
 
-    if(pressed[KeyStateSlc0] == 1)
+    if (PRESSED(KeyStateSlc0))
     {
-      pressed[KeyStateSlc0] = 2;
       current_zst = current_zst/10*10;
       adjstateslotmsg();
     }
 
-    if(pressed[KeyStateSlc1] == 1)
+    if (PRESSED(KeyStateSlc1))
     {
-      pressed[KeyStateSlc1] = 2;
       current_zst = current_zst/10*10+1;
       adjstateslotmsg();
     }
 
-    if(pressed[KeyStateSlc2] == 1)
+    if (PRESSED(KeyStateSlc2))
     {
-      pressed[KeyStateSlc2] = 2;
       current_zst = current_zst/10*10+2;
       adjstateslotmsg();
     }
 
-    if(pressed[KeyStateSlc3] == 1)
+    if (PRESSED(KeyStateSlc3))
     {
-      pressed[KeyStateSlc3] = 2;
       current_zst = current_zst/10*10+3;
       adjstateslotmsg();
     }
 
-    if(pressed[KeyStateSlc4] == 1)
+    if (PRESSED(KeyStateSlc4))
     {
-      pressed[KeyStateSlc4] = 2;
       current_zst = current_zst/10*10+4;
       adjstateslotmsg();
     }
 
-    if(pressed[KeyStateSlc5] == 1)
+    if (PRESSED(KeyStateSlc5))
     {
-      pressed[KeyStateSlc5] = 2;
       current_zst = current_zst/10*10+5;
       adjstateslotmsg();
     }
 
-    if(pressed[KeyStateSlc6] == 1)
+    if (PRESSED(KeyStateSlc6))
     {
-      pressed[KeyStateSlc6] = 2;
       current_zst = current_zst/10*10+6;
       adjstateslotmsg();
     }
 
-    if(pressed[KeyStateSlc7] == 1)
+    if (PRESSED(KeyStateSlc7))
     {
-      pressed[KeyStateSlc7] = 2;
       current_zst = current_zst/10*10+7;
       adjstateslotmsg();
     }
 
-    if(pressed[KeyStateSlc8] == 1)
+    if (PRESSED(KeyStateSlc8))
     {
-      pressed[KeyStateSlc8] = 2;
       current_zst = current_zst/10*10+8;
       adjstateslotmsg();
     }
 
-    if(pressed[KeyStateSlc9] == 1)
+    if (PRESSED(KeyStateSlc9))
     {
-      pressed[KeyStateSlc9] = 2;
       current_zst = current_zst/10*10+9;
       adjstateslotmsg();
     }
 
-    if(pressed[KeyIncStateSlot] == 1)
+    if (PRESSED(KeyIncStateSlot))
     {
-      pressed[KeyIncStateSlot] = 2;
       current_zst = (current_zst+1)%100;
       adjstateslotmsg();
     }
 
-    if(pressed[KeyDecStateSlot] == 1)
+    if (PRESSED(KeyDecStateSlot))
     {
-      pressed[KeyDecStateSlot] = 2;
       current_zst = (current_zst+99)%100;
       adjstateslotmsg();
     }
 
-    if(pressed[KeyUsePlayer1234] == 1)
+    if (PRESSED(KeyUsePlayer1234))
     {
-      pressed[KeyUsePlayer1234] = 2;
       pl12s34 ^= 1;
       if(pl12s34)
         Msgptr = pluse1234en;
@@ -1068,51 +1006,43 @@ void QuickKeyCheck()
       MessageOn = MsgCount;
     }
 
-    if(pressed[KeyDisableSC0] == 1)
+    if (PRESSED(KeyDisableSC0))
     {
-      pressed[KeyDisableSC0] = 2;
       adjsoundchmsg(&Voice0Disable, &Voice0Status, '1');
     }
 
-    if(pressed[KeyDisableSC1] == 1)
+    if (PRESSED(KeyDisableSC1))
     {
-      pressed[KeyDisableSC1] = 2;
       adjsoundchmsg(&Voice1Disable, &Voice1Status, '2');
     }
 
-    if(pressed[KeyDisableSC2] == 1)
+    if (PRESSED(KeyDisableSC2))
     {
-      pressed[KeyDisableSC2] = 2;
       adjsoundchmsg(&Voice2Disable, &Voice2Status, '3');
     }
 
-    if(pressed[KeyDisableSC3] == 1)
+    if (PRESSED(KeyDisableSC3))
     {
-      pressed[KeyDisableSC3] = 2;
       adjsoundchmsg(&Voice3Disable, &Voice3Status, '4');
     }
 
-    if(pressed[KeyDisableSC4] == 1)
+    if (PRESSED(KeyDisableSC4))
     {
-      pressed[KeyDisableSC4] = 2;
       adjsoundchmsg(&Voice4Disable, &Voice4Status, '5');
     }
 
-    if(pressed[KeyDisableSC5] == 1)
+    if (PRESSED(KeyDisableSC5))
     {
-      pressed[KeyDisableSC5] = 2;
       adjsoundchmsg(&Voice5Disable, &Voice5Status, '6');
     }
 
-    if(pressed[KeyDisableSC6] == 1)
+    if (PRESSED(KeyDisableSC6))
     {
-      pressed[KeyDisableSC6] = 2;
       adjsoundchmsg(&Voice6Disable, &Voice6Status, '7');
     }
 
-    if(pressed[KeyDisableSC7] == 1)
+    if (PRESSED(KeyDisableSC7))
     {
-      pressed[KeyDisableSC7] = 2;
       adjsoundchmsg(&Voice7Disable, &Voice7Status, '8');
     }
 }
