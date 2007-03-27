@@ -60,7 +60,7 @@ static int gltexture256, gltexture512;
 static int glfilters = GL_NEAREST;
 static int glscanready = 0;
 extern Uint8 En2xSaI, scanlines;
-extern Uint8 BilinearFilter;
+//extern Uint8 BilinearFilter;
 extern Uint8 FilteredGUI;
 extern Uint8 GUIOn2;
 
@@ -101,7 +101,7 @@ int gl_start(int width, int height, int req_depth, int FullScreen)
 
 	glvidbuffer = (unsigned short *) malloc(512 * 512 * sizeof(short));
 	gl_clearwin();
-	BilinearFilter = 1;
+//	BilinearFilter = 1;
 
 	// Grab mouse in fullscreen mode
 	//todo
@@ -288,7 +288,7 @@ void gl_drawwin()
 	if (curblank != 0)
 		return;
 
-	if (BilinearFilter)
+/*	if (BilinearFilter)
 	{
 		glfilters = GL_LINEAR;
 		if (GUIOn2 && !FilteredGUI)
@@ -296,8 +296,10 @@ void gl_drawwin()
 	}
 	else
 	{
-		glfilters = GL_NEAREST;
-	}
+
+	*/
+	glfilters = GL_NEAREST;
+//	}
 
 	if (SurfaceX >= 512 && (hqFilter || En2xSaI) && 0)
 	{

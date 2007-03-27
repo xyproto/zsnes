@@ -37,6 +37,7 @@ extern "C" {
 #include "resource.h"
 
 extern "C" {
+#include "gl_draw.h"
 #include "../cfg.h"
 #include "../input.h"
 #include "../zmovie.h"
@@ -115,12 +116,14 @@ DWORD FirstActivate = 1;
 #define WORD   unsigned short
 #define DWORD  unsigned long
 
-HWND hMainWindow;
 HANDLE debugWindow = 0;
 
 extern "C"
 {
+HWND hMainWindow;
 HINSTANCE hInst;
+HDC hDC;
+HGLRC hRC;
 }
 
 LPDIRECTSOUND8          lpDirectSound = NULL;
@@ -2030,6 +2033,11 @@ void initwinvideo(void)
          WindowWidth=CustomResX;
          WindowHeight=CustomResY;
          break;
+	  case 43:
+         WindowWidth=512;
+         WindowHeight=448;
+		 gl_start(WindowWidth, WindowHeight, 16, 0);
+		 break;
       default:
          WindowWidth=256;
          WindowHeight=224;
