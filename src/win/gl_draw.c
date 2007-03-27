@@ -23,8 +23,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 //#include "gblhdr.h"
 #include <windows.h>
-#include <gl/gl.h>
-#include <gl/glext.h>
+#include <GL/gl.h>
+#include <GL/glext.h>
 
 #define BYTE  unsigned char
 #define WORD  unsigned short
