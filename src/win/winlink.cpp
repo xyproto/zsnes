@@ -1455,7 +1455,7 @@ int InitDirectDraw()
      v = 128 + ((-r + 2*g -b)>>3);
      *(((unsigned int *)RGBtoYUVPtr) + (i << 11) + (j << 5) + k) = (Y<<16) + (u<<8) + v;
    }
-      gl_start(1024, 768, 16,0);
+      gl_start(512, 448, 16,0);
 
    if (!hMainWindow)
    {
@@ -2037,7 +2037,7 @@ void initwinvideo(void)
 	  case 43:
          WindowWidth=512;
          WindowHeight=448;
-		 gl_start(640, 480, 16, 0);
+//		 gl_start(100, 100, 16, 0);
 		 break;
       default:
          WindowWidth=256;

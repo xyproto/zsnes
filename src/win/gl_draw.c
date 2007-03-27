@@ -262,9 +262,9 @@ static void gl_drawspan(int hires, int start, int end)
 
 		glBegin(GL_QUADS);
 			glTexCoord2f(0.0f, (224.0 / 256.0) * (start / 224.0));
-			glVertex2f(-1.0f, (112 - start) / 112.0);
+			glVertex2f(-1.0f, (98 - start) / 112.0);
 			glTexCoord2f(1.0f, (224.0 / 256.0) * (start / 224.0));
-			glVertex2f(1.0f, (112 - start) / 112.0);
+			glVertex2f(1.0f, (98 - start) / 112.0);
 			glTexCoord2f(1.0f, (224.0 / 256.0) * (end / 224.0));
 			glVertex2f(1.0f, (112 - end) / 112.0);
 			glTexCoord2f(0.0f, (224.0 / 256.0) * (end / 224.0));
