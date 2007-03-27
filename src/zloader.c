@@ -171,7 +171,7 @@ static void display_help()
   put_line("  -u      Force PAL timing");
   put_line("  -v #    Select video mode :");
 #ifdef __WIN32__
-#define VIDEO_MODE_COUNT 42
+#define VIDEO_MODE_COUNT 59
   put_line("             0 = 256x224      R WIN     1 = 256x224      R FULL");
   put_line("             2 = 512x448      R WIN     3 = 512x448     DR WIN");
   put_line("             4 = 640x480      S WIN     5 = 640x480     DS WIN");
