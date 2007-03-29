@@ -37,6 +37,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "mmlib/mm.h"
 #include "zpath.h"
 
+#define BIT(x) (1 << (x))
+
 extern unsigned int xa, MessageOn, maxromspace;
 extern unsigned char FPSOn, spcon, device1, device2;
 extern char *Msgptr, CSStatus[], CSStatus2[], CSStatus3[];
@@ -569,7 +571,6 @@ void MultiMouseInit()
   }
 }
 
-#define BIT(x) (1 << (x))
 #define MOUSE_BUTTON_HANDLE(mouse, bit, value) \
   if (value) { mouse |= BIT(bit); } \
   else { mouse &= ~BIT(bit); }
