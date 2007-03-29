@@ -752,16 +752,17 @@ static void cycleinputs(bool input1, bool input2)
 
 #define PRESSED(key) ((pressed[(key)] == 1) && (pressed[(key)]=2))
 #define SCREEN_FLIP(num) adjbglayermsg((num)+'1', ((scrndis ^= BIT(num)) != BIT(num)))
+#define STATE_SELECT(num) current_zst = (current_zst/10)*10+num; adjstateslotmsg();
+#define KEY_HANDLE(key_base, action, num) if (PRESSED(key_base ## num)) { action(num); }
 
 void QuickKeyCheck()
 {
     // disable all necessary backgrounds
 
-    if (PRESSED(KeyBGDisble0)) { SCREEN_FLIP(0); }
-    if (PRESSED(KeyBGDisble1)) { SCREEN_FLIP(1); }
-    if (PRESSED(KeyBGDisble2)) { SCREEN_FLIP(2); }
-    if (PRESSED(KeyBGDisble3)) { SCREEN_FLIP(3); }
-
+    KEY_HANDLE(KeyBGDisble, SCREEN_FLIP, 0)
+    KEY_HANDLE(KeyBGDisble, SCREEN_FLIP, 1)
+    KEY_HANDLE(KeyBGDisble, SCREEN_FLIP, 2)
+    KEY_HANDLE(KeyBGDisble, SCREEN_FLIP, 3)
     if (PRESSED(KeySprDisble))
     {
       scrndis ^= 0x10;
@@ -922,66 +923,16 @@ void QuickKeyCheck()
     }
 
     // do state selects
-
-    if (PRESSED(KeyStateSlc0))
-    {
-      current_zst = current_zst/10*10;
-      adjstateslotmsg();
-    }
-
-    if (PRESSED(KeyStateSlc1))
-    {
-      current_zst = current_zst/10*10+1;
-      adjstateslotmsg();
-    }
-
-    if (PRESSED(KeyStateSlc2))
-    {
-      current_zst = current_zst/10*10+2;
-      adjstateslotmsg();
-    }
-
-    if (PRESSED(KeyStateSlc3))
-    {
-      current_zst = current_zst/10*10+3;
-      adjstateslotmsg();
-    }
-
-    if (PRESSED(KeyStateSlc4))
-    {
-      current_zst = current_zst/10*10+4;
-      adjstateslotmsg();
-    }
-
-    if (PRESSED(KeyStateSlc5))
-    {
-      current_zst = current_zst/10*10+5;
-      adjstateslotmsg();
-    }
-
-    if (PRESSED(KeyStateSlc6))
-    {
-      current_zst = current_zst/10*10+6;
-      adjstateslotmsg();
-    }
-
-    if (PRESSED(KeyStateSlc7))
-    {
-      current_zst = current_zst/10*10+7;
-      adjstateslotmsg();
-    }
-
-    if (PRESSED(KeyStateSlc8))
-    {
-      current_zst = current_zst/10*10+8;
-      adjstateslotmsg();
-    }
-
-    if (PRESSED(KeyStateSlc9))
-    {
-      current_zst = current_zst/10*10+9;
-      adjstateslotmsg();
-    }
+    KEY_HANDLE(KeyStateSlc, STATE_SELECT, 0)
+    KEY_HANDLE(KeyStateSlc, STATE_SELECT, 1)
+    KEY_HANDLE(KeyStateSlc, STATE_SELECT, 2)
+    KEY_HANDLE(KeyStateSlc, STATE_SELECT, 3)
+    KEY_HANDLE(KeyStateSlc, STATE_SELECT, 4)
+    KEY_HANDLE(KeyStateSlc, STATE_SELECT, 5)
+    KEY_HANDLE(KeyStateSlc, STATE_SELECT, 6)
+    KEY_HANDLE(KeyStateSlc, STATE_SELECT, 7)
+    KEY_HANDLE(KeyStateSlc, STATE_SELECT, 8)
+    KEY_HANDLE(KeyStateSlc, STATE_SELECT, 9)
 
     if (PRESSED(KeyIncStateSlot))
     {
