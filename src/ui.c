@@ -631,7 +631,6 @@ char ofsdissw[] = "OFFSET MODE DISABLED\0";
 char ofsenasw[] = "OFFSET MODE ENABLED\0";
 char ngena[] = "NEW GFX ENGINE ENABLED\0";
 char ngdis[] = "NEW GFX ENGINE DISABLED\0";
-char sselm[] = "STATE SLOT  0 SELECTED\0";
 char vollv[] = "VOLUME LEVEL :    \0";
 char frlev[] = "FRAME SKIP SET TO  \0";
 char frlv0[] = "AUTO FRAMERATE ENABLED\0";
@@ -652,6 +651,7 @@ extern unsigned char Voice0Disable, Voice1Disable, Voice2Disable, Voice3Disable;
 extern unsigned char Voice4Disable, Voice5Disable, Voice6Disable, Voice7Disable;
 extern unsigned char Voice0Status, Voice1Status, Voice2Status, Voice3Status;
 extern unsigned char Voice4Status, Voice5Status, Voice6Status, Voice7Status;
+void set_state_message(char *, char *);
 
 void adjbglayermsg(char num, char toggleon)
 {
@@ -662,17 +662,6 @@ void adjbglayermsg(char num, char toggleon)
 
     memcpy(&bglayermsg[2], &num, 1);
     Msgptr = bglayermsg;
-    MessageOn = MsgCount;
-}
-
-void adjstateslotmsg()
-{
-    if((sselm[11] = current_zst/10))
-      sselm[11] += 48;
-    else
-      sselm[11] = ' ';
-    sselm[12] = current_zst%10+48;
-    Msgptr = sselm;
     MessageOn = MsgCount;
 }
 
@@ -752,7 +741,7 @@ static void cycleinputs(bool input1, bool input2)
 
 #define PRESSED(key) ((pressed[(key)] == 1) && (pressed[(key)]=2))
 #define SCREEN_FLIP(num) adjbglayermsg((num)+'1', ((scrndis ^= BIT(num)) != BIT(num)))
-#define STATE_SELECT(num) current_zst = (current_zst/10)*10+num; adjstateslotmsg();
+#define STATE_SELECT(num) current_zst = (current_zst/10)*10+num; set_state_message("STATE SLOT ", " SELECTED.");
 #define KEY_HANDLE(key_base, action, num) if (PRESSED(key_base ## num)) { action(num); }
 
 void QuickKeyCheck()
@@ -937,13 +926,13 @@ void QuickKeyCheck()
     if (PRESSED(KeyIncStateSlot))
     {
       current_zst = (current_zst+1)%100;
-      adjstateslotmsg();
+      set_state_message("STATE SLOT ", " SELECTED.");
     }
 
     if (PRESSED(KeyDecStateSlot))
     {
       current_zst = (current_zst+99)%100;
-      adjstateslotmsg();
+      set_state_message("STATE SLOT ", " SELECTED.");
     }
 
     if (PRESSED(KeyUsePlayer1234))
