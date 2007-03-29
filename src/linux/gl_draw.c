@@ -53,7 +53,7 @@ void UpdateVFrame();
 
 void gl_scanlines();
 
-bool OGLModeCheck();
+char CheckOGLMode();
 
 #if (SDL_MAJOR_VERSION > 1) || ((SDL_MINOR_VERSION > 2) || ((SDL_MINOR_VERSION == 2) && (SDL_PATCHLEVEL >= 10)))
 char allow_glvsync = 1;
@@ -289,7 +289,7 @@ void gl_drawwin()
         // (see ProcessTransparencies in newgfx16.asm
         //  for ZSNES' current transparency code)
   UpdateVFrame();
-  if (curblank || !OGLModeCheck())
+  if (curblank || !CheckOGLMode())
     return;
 
   if (SurfaceX >= 512 && (hqFilter || En2xSaI))

@@ -1832,18 +1832,11 @@ void Keep43Check()
     ShowKeep43 = 1;
 }
 
-extern char OGLCheckVar;
+extern char GUIBIFIL[];
 
-void CheckOpenGL()
+char CheckOGLMode()
 {
-#ifdef __WIN32__
-  if(cvidmode > 42)
-#elif __UNIXSDL__
-  if(cvidmode > 4)
-#endif
-    OGLCheckVar = 1;
-  else
-    OGLCheckVar = 0;
+  return(GUIBIFIL[cvidmode]);
 }
 
 #endif

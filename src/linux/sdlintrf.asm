@@ -376,9 +376,7 @@ NEWSYM GUIHQ3X,   db 0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (Hq3x Filte
 NEWSYM GUIHQ4X,   db 0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (Hq4x Filter)
 NEWSYM GUINTVID,  db 0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; NTSC Filter
 NEWSYM GUIRESIZE, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0 ; SDL Resizable
-%ifdef __OPENGL__
 NEWSYM GUIBIFIL,  db 0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1 ; SDL Bilinear Filter
-%endif
 
 SECTION .text
 

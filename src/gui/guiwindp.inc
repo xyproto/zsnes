@@ -2082,6 +2082,17 @@ DisplayGUIVideo:
   cmp byte[ScreenScale],1
   je .notexthq4xa
 %endif
+
+%ifndef __MSDOS__
+  xor eax,eax                                     ; Bilinear
+  mov al,[cvidmode]
+  cmp byte[GUIBIFIL+eax],0
+  je near .nocheckboxe
+  GUIDisplayTextY 5,13,30,GUIVideoTextB1
+  GUIDisplayCheckboxu 5,18,35,BilinearFilter,GUIVideoTextB1c,1
+  jmp near .noswinterp
+.nocheckboxe
+%endif
   xor eax,eax                                     ; Interpolations
   mov al,[cvidmode]
 %ifdef __WIN32__
@@ -2102,15 +2113,7 @@ DisplayGUIVideo:
   GUIDisplayCheckboxu 5,18,35,antienab,GUIVideoTextB1b,9
 .notext4
 %endif
-%ifdef __OPENGL__
-  xor eax,eax                                     ; Bilinear
-  mov al,[cvidmode]
-  cmp byte[GUIBIFIL+eax],0
-  je near .nocheckboxe
-  GUIDisplayTextY 5,13,30,GUIVideoTextB1
-  GUIDisplayCheckboxu 5,18,35,BilinearFilter,GUIVideoTextB1c,1
-.nocheckboxe
-%endif
+.noswinterp
 
   xor eax,eax                                     ; NTSC filter
   mov al,[cvidmode]
@@ -2167,13 +2170,15 @@ DisplayGUIVideo:
 .notexthq4xa
 
 %ifndef __MSDOS__
-  pushad
-  call CheckOpenGL
-  popad
-  cmp byte[OGLCheckVar],1
-  je near .glscanlines
+  xor eax,eax                                     ; GL Scanlines
+  mov al,[cvidmode]
+  cmp byte[GUIBIFIL+eax],0
+  je .noglscanlines
+  GUIDisplayTextY 5,13,80,GUIVideoTextB2          ; Scanlines text
+  GUIDrawSlider 5,23,100,90,sl_intensity,GUIVideoTextB2z,glscslidSet,glscslidText
+  jmp near .noswscanlines
+.noglscanlines
 %endif
-
   xor eax,eax                                     ; Scanlines
   mov al,[cvidmode]
 %ifdef __MSDOS__
@@ -2201,14 +2206,7 @@ DisplayGUIVideo:
   GUIDisplayButtonHoleTu 5,68,87,byte[scanlines],2,GUIVideoTextB2b,0   ; 25%
   GUIDisplayButtonHoleTu 5,118,87,byte[scanlines],3,GUIVideoTextB2c,0  ; 50%
 .nocheckboxw
-%ifndef __MSDOS__
-  jmp near .swscanlines
-
-.glscanlines
-  GUIDisplayTextY 5,13,80,GUIVideoTextB2          ; Scanlines text
-  GUIDrawSlider 5,23,100,90,sl_intensity,GUIVideoTextB2z,glscslidSet,glscslidText
-.swscanlines
-%endif
+.noswscanlines
 
   GUIDisplayTextY 5,13,110,GUIVideoTextB3         ; Misc Filters
   GUIDisplayCheckboxu 5,18,115,GrayscaleMode,GUIVideoTextB3a,0  ; Grayscale
@@ -2372,7 +2370,7 @@ GUIVideoTextB1a db 'INTERPOLATION',0     ; -y
 %ifdef __MSDOS__
 GUIVideoTextB1b db 'EAGLE ENGINE',0      ; same loc at interpolation   -y
 %endif
-%ifdef __OPENGL__
+%ifndef __MSDOS__
 GUIVideoTextB1c db 'BILINEAR FILTER',0
 %endif
 GUIVideoTextB1d db 'NTSC FILTER',0

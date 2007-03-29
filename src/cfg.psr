@@ -240,7 +240,7 @@ CustomResY dd 480
 %endif
 
 @
-%ifdef __OPENGL__
+%ifndef __MSDOS__
 @ Enable Video Interpolation, Bilinear Filtering (0 = NO, 1 = Yes)
 @ Bilinear Filtering is compatible with all filters except NTSC.
 @ Bilinear Filtering replaces Interpolation and is OpenGL only.
@@ -254,7 +254,7 @@ CustomResY dd 480
 @ Note: This option enables the Eagle filter in the VESA2 640x480 8-bit mode.
 %endif
 antienab db 0
-%ifdef __OPENGL__
+%ifndef __MSDOS__
 BilinearFilter db 0
 %endif
 

@@ -20,11 +20,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-
-//#include "gblhdr.h"
 #include <windows.h>
 #include <GL/gl.h>
 #include <GL/glext.h>
+#include "../cfg.h"
 
 #define BYTE  unsigned char
 #define WORD  unsigned short
@@ -40,11 +39,9 @@ BOOL;*/
 
 // FUNCTIONS
 extern void hq2x_16b(void);
-extern char hqFilter;
 
 // VIDEO VARIABLES
 extern unsigned char cvidmode;
-//extern SDL_Surface *surface;
 extern int SurfaceX, SurfaceY;
 extern int SurfaceLocking;
 extern DWORD BitDepth;
@@ -60,7 +57,6 @@ static int gltexture256, gltexture512;
 static int glfilters = GL_NEAREST;
 static int glscanready = 0;
 extern Uint8 En2xSaI, sl_intensity;
-//extern Uint8 BilinearFilter;
 extern Uint8 FilteredGUI;
 extern Uint8 GUIOn2;
 
@@ -101,7 +97,17 @@ int gl_start(int width, int height, int req_depth, int FullScreen)
 
 	glvidbuffer = (unsigned short *) malloc(512 * 512 * sizeof(short));
 	gl_clearwin();
-//	BilinearFilter = 1;
+	if (BilinearFilter)
+	{
+		glfilters = GL_LINEAR;
+		if (GUIOn2 && !FilteredGUI)
+			glfilters = GL_NEAREST;
+	}
+	else
+	{
+		glfilters = GL_NEAREST;
+	}
+
 
 	// Grab mouse in fullscreen mode
 	//todo
@@ -123,8 +129,8 @@ int gl_start(int width, int height, int req_depth, int FullScreen)
 	glGenTextures(4, gltextures);
 	for (i = 0; i < 3; i++) {
 		glBindTexture(GL_TEXTURE_2D, gltextures[i]);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, glfilters);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, glfilters);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 	}
@@ -287,19 +293,6 @@ void gl_drawwin()
 	UpdateVFrame();
 	if (curblank != 0)
 		return;
-
-/*	if (BilinearFilter)
-	{
-		glfilters = GL_LINEAR;
-		if (GUIOn2 && !FilteredGUI)
-			glfilters = GL_NEAREST;
-	}
-	else
-	{
-
-	*/
-	glfilters = GL_NEAREST;
-//	}
 
 	if (SurfaceX >= 512 && (hqFilter || En2xSaI) && 0)
 	{
