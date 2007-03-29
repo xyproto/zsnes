@@ -1832,6 +1832,20 @@ void Keep43Check()
     ShowKeep43 = 1;
 }
 
+extern char OGLCheckVar;
+
+void CheckOpenGL()
+{
+#ifdef __WIN32__
+  if(cvidmode > 42)
+#elif __UNIXSDL__
+  if(cvidmode > 4)
+#endif
+    OGLCheckVar = 1;
+  else
+    OGLCheckVar = 0;
+}
+
 #endif
 
 extern unsigned int MovieForcedLength;

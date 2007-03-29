@@ -1855,6 +1855,26 @@ GUIOptionTextG3 db 'DISABLE POWER MANAGEMENT',0
 
 SECTION .text
 
+%macro glscslidSet 1 ; slider variable
+  mov al,[%1]
+%endmacro
+
+%macro glscslidText 2 ; slider var, text
+  mov word[%2],'  '
+  mov esi,%2+3
+  mov al,[%1]
+  mov bl,10
+%%asciilp                            ; turns decimal into ascii
+  dec esi
+  xor ah,ah
+  div bl
+  add ah,48
+  mov [esi],ah
+  cmp al,0
+  jne %%asciilp
+  mov esi,%2
+%endmacro
+
 %macro NTSCslidSet 1 ; slider variable
   mov al,[%1]
   add al,100
@@ -2146,6 +2166,14 @@ DisplayGUIVideo:
 %endif
 .notexthq4xa
 
+%ifndef __MSDOS__
+  pushad
+  call CheckOpenGL
+  popad
+  cmp byte[OGLCheckVar],1
+  je near .glscanlines
+%endif
+
   xor eax,eax                                     ; Scanlines
   mov al,[cvidmode]
 %ifdef __MSDOS__
@@ -2173,6 +2201,14 @@ DisplayGUIVideo:
   GUIDisplayButtonHoleTu 5,68,87,byte[scanlines],2,GUIVideoTextB2b,0   ; 25%
   GUIDisplayButtonHoleTu 5,118,87,byte[scanlines],3,GUIVideoTextB2c,0  ; 50%
 .nocheckboxw
+%ifndef __MSDOS__
+  jmp near .swscanlines
+
+.glscanlines
+  GUIDisplayTextY 5,13,80,GUIVideoTextB2          ; Scanlines text
+  GUIDrawSlider 5,23,100,90,sl_intensity,GUIVideoTextB2z,glscslidSet,glscslidText
+.swscanlines
+%endif
 
   GUIDisplayTextY 5,13,110,GUIVideoTextB3         ; Misc Filters
   GUIDisplayCheckboxu 5,18,115,GrayscaleMode,GUIVideoTextB3a,0  ; Grayscale
@@ -2358,6 +2394,7 @@ GUIVideoTextB2a db 'NONE',0
 GUIVideoTextB2b db '25%',0
 GUIVideoTextB2c db '50%',0
 GUIVideoTextB2d db 'FULL',0
+GUIVideoTextB2z db '---%',0
 
 GUIVideoTextB3 db 'MISC FILTERS:',0      ; Filters.Other
 GUIVideoTextB3a db 'GRAYSCALE MODE',0    ; -v8

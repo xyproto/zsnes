@@ -141,7 +141,7 @@ EXTSYM JoyMinX209,JoyMaxX209,JoyMinY209,JoyMaxY209,DOSClearScreen,dosmakepal,Res
 %ifndef __MSDOS__
 EXTSYM ZsnesPage,DocsPage,GUICustomX,GUICustomY,GetCustomXY,SetCustomXY,initwinvideo
 EXTSYM Keep4_3Ratio,PrevFSMode,PrevWinMode,NTSCFilterInit,hqFilterlevel
-EXTSYM GUIWFVID,GUIDSIZE,GUIHQ3X,GUIHQ4X,GUIKEEP43,Keep43Check,changeRes
+EXTSYM GUIWFVID,GUIDSIZE,GUIHQ3X,GUIHQ4X,GUIKEEP43,Keep43Check,changeRes,sl_intensity,CheckOpenGL
 %endif
 
 %ifndef __WIN32__

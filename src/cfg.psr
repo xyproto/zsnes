@@ -326,6 +326,10 @@ hqFilterlevel db 2
 @ 256x256 or 640x480 8bit modes only (25% and 50% in 640x480 16bit mode only)
 #endif
 scanlines db 0
+#ifndef __MSDOS__
+@ OpenGL scanlines intensity [0..100]
+sl_intensity db 0
+#endif
 
 @
 @ Enable Grayscale Mode (0 = NO, 1 = Yes) - don't enable this for other than nostalgia

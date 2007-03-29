@@ -73,6 +73,8 @@ ProcessMouse:
   je .holdslider
   cmp byte[GUIHold],2 ; Colour Slider
   je .holdslider
+  cmp byte[GUIHold],8 ; Scanline Slider
+  je .holdslider
   cmp byte[GUIHold],7 ; Video Slider
   jne .nohold2m
 .holdslider
@@ -369,6 +371,8 @@ ProcessMouseButtons:
   cmp byte[GUIHold],6
   je near .hold6
   cmp byte[GUIHold],7
+  je near .hold7
+  cmp byte[GUIHold],8
   je near .hold7
   cmp byte[GUIHold],1
   je near .hold
@@ -2397,6 +2401,11 @@ DisplayGUIVideoClick:
 %endif
 .noradiobuttons
 
+%ifndef __MSDOS__
+  cmp byte[OGLCheckVar],1
+  je near .glscanlines
+%endif
+
   xor ebx,ebx                             ; Scanlines
   mov bl,[cvidmode]
 %ifdef __MSDOS__
@@ -2426,6 +2435,33 @@ DisplayGUIVideoClick:
   GUIPButtonHoleS 68,87,byte[scanlines],2
   GUIPButtonHoleS 118,87,byte[scanlines],3
 .nohsline
+%ifndef __MSDOS__
+  jmp near .swsldone
+
+.glscanlines
+  cmp eax,23                     ; X-Range for click-area
+  jl near .nobar
+  cmp eax,23+100
+  jg near .nobar
+  sub al,23
+  cmp edx,88                     ; Y-Range for click-area
+  jl near .nobar
+  cmp edx,92
+  jg near .barnotselected
+  mov [sl_intensity],al
+  mov byte[GUIHold],8            ; Lock mouse to bar when clicked
+  mov eax,[GUIwinposy+5*4]
+  add eax,90
+  mov [GUIHoldYlim],eax
+.barnotselected
+  mov eax,[GUIwinposx+5*4]
+  add eax,23
+  mov [GUIHoldXlimL],eax
+  add eax,100
+  mov [GUIHoldXlimR],eax
+.nobar
+.swsldone
+%endif
 
   GUIClickCButton 18,115,byte[GrayscaleMode]  ; Grayscale
 
@@ -2714,6 +2750,7 @@ ntscCurVar resb 1
 ntscWhVar resb 1
 SECTION .data
 NEWSYM NTSCPresetVar, dd 4
+NEWSYM OGLCheckVar, db 0
 
 SECTION .text
 
