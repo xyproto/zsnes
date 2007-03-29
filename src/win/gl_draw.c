@@ -82,7 +82,7 @@ int gl_start(int width, int height, int req_depth, int FullScreen)
     ZeroMemory (&pfd, sizeof (pfd));
     pfd.nSize = sizeof (pfd);
     pfd.nVersion = 1;
-    pfd.dwFlags = PFD_DRAW_TO_WINDOW | 
+    pfd.dwFlags = PFD_DRAW_TO_WINDOW |
       PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
     pfd.iPixelType = PFD_TYPE_RGBA;
     pfd.cColorBits = 16;
@@ -112,7 +112,7 @@ int gl_start(int width, int height, int req_depth, int FullScreen)
 	// Grab mouse in fullscreen mode
 	//todo
 
-	
+
 
 	/* Setup some GL stuff */
 
@@ -145,7 +145,7 @@ void gl_end()
     wglMakeCurrent (NULL, NULL);
     wglDeleteContext (hRC);
     ReleaseDC (hMainWindow, hDC);
-    
+
 	glDeleteTextures(4, gltextures);
 	free(glvidbuffer);
 }

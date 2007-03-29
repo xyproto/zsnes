@@ -2173,7 +2173,7 @@ DisplayGUIVideo:
   xor eax,eax                                     ; GL Scanlines
   mov al,[cvidmode]
   cmp byte[GUIBIFIL+eax],0
-  je .noglscanlines
+  je near .noglscanlines
   GUIDisplayTextY 5,13,80,GUIVideoTextB2          ; Scanlines text
   GUIDrawSlider 5,23,100,90,sl_intensity,GUIVideoTextB2z,glscslidSet,glscslidText
   jmp near .noswscanlines
