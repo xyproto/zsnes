@@ -38,6 +38,31 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 //Introducing secure forking ;) -Nach
 
+#ifdef __linux__
+static int z_setreuid(uid_t uid)
+{
+  return(setreuid(uid, uid));
+}
+
+static int z_setregid(gid_t gid)
+{
+  return(setregid(gid, gid));
+}
+#else
+static int z_setreuid(uid_t uid)
+{
+  seteuid(uid);
+  return(setuid(uid));
+}
+
+static int z_setregid(gid_t gid)
+{
+  setegid(gid);
+  return(setgid(gid));
+}
+#endif
+
+
 //Taken from the secure programming cookbook, somewhat modified
 static bool spc_drop_privileges()
 {
@@ -47,54 +72,26 @@ static bool spc_drop_privileges()
   char *name =  getlogin();
   struct passwd *userinfo;
 
-  if (!olduid && name && (userinfo = getpwnam(name)) && userinfo->pw_uid)
+  if (!olduid && name && (userinfo = getpwnam(name)) && userinfo->pw_uid) //If currently using su to root or sudo
   {
     setgroups(1, &userinfo->pw_gid);
 
-#ifndef __linux__
-    setegid(userinfo->pw_gid);
-    if (setgid(userinfo->pw_gid) == -1) { return(false); }
-#else
-    if (setregid(userinfo->pw_gid, userinfo->pw_gid) == -1) { return(false); }
-#endif
-
-#ifndef __linux__
-    seteuid(userinfo->pw_uid);
-    if (setuid(userinfo->pw_uid) == -1) { return(false); }
-#else
-    if (setreuid(userinfo->pw_uid, userinfo->pw_uid) == -1) { return(false); }
-#endif
-
+    if ((z_setregid(userinfo->pw_gid) == -1) || (z_setreuid(userinfo->pw_uid) == -1)) { return(false); }
     if ((setegid(oldgid) != -1) || (getegid() != userinfo->pw_gid)) { return(false); }
     if ((seteuid(olduid) != -1) || (geteuid() != userinfo->pw_uid)) { return(false); }
   }
-  else
+  else //Now check for root via +s as a mode on the binary
   {
     //If root privileges are to be dropped, be sure to pare down the ancillary
     //groups for the process before doing anything else because the setgroups()
     //system call requires root privileges.  Drop ancillary groups regardless of
     //whether privileges are being dropped temporarily or permanently.
 
-    if (!olduid) setgroups(1, &newgid);
+    if (!olduid) { setgroups(1, &newgid); }
 
-    if (newgid != oldgid)
+    if (((newgid != oldgid) && (z_setregid(newgid) == -1)) || ((newuid != olduid) && (z_setreuid(newuid) == -1)))
     {
-#if !defined(linux)
-      setegid(newgid);
-      if (setgid(newgid) == -1) { return(false); }
-#else
-      if (setregid(newgid, newgid) == -1) { return(false); }
-#endif
-    }
-
-    if (newuid != olduid)
-    {
-#if !defined(linux)
-      seteuid(newuid);
-      if (setuid(newuid) == -1) { return(false); }
-#else
-      if (setreuid(newuid, newuid) == -1) { return(false); }
-#endif
+      return(false);
     }
 
     //verify that the changes were successful
