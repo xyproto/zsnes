@@ -69,35 +69,39 @@ static bool spc_drop_privileges()
   gid_t newgid = getgid(), oldgid = getegid();
   uid_t newuid = getuid(), olduid = geteuid();
 
-  char *name =  getlogin();
+  char *name = getlogin();
   struct passwd *userinfo;
 
-  if (!olduid && name && (userinfo = getpwnam(name)) && userinfo->pw_uid) //If currently using su to root or sudo
+  if (name) { userinfo = getpwnam(name); }
+
+  if (!olduid && !newuid && userinfo && userinfo->pw_uid) //If currently using su to root or sudo
   {
-    setgroups(1, &userinfo->pw_gid);
-
-    if ((z_setregid(userinfo->pw_gid) == -1) || (z_setreuid(userinfo->pw_uid) == -1)) { return(false); }
-    if ((setegid(oldgid) != -1) || (getegid() != userinfo->pw_gid)) { return(false); }
-    if ((seteuid(olduid) != -1) || (geteuid() != userinfo->pw_uid)) { return(false); }
+    newuid = userinfo->pw_uid;
   }
-  else //Now check for root via +s as a mode on the binary
+
+  if (!oldgid && !newgid && userinfo && userinfo->pw_gid) //Same thing, but now check the group
   {
-    //If root privileges are to be dropped, be sure to pare down the ancillary
-    //groups for the process before doing anything else because the setgroups()
-    //system call requires root privileges.  Drop ancillary groups regardless of
-    //whether privileges are being dropped temporarily or permanently.
-
-    if (!olduid) { setgroups(1, &newgid); }
-
-    if (((newgid != oldgid) && (z_setregid(newgid) == -1)) || ((newuid != olduid) && (z_setreuid(newuid) == -1)))
-    {
-      return(false);
-    }
-
-    //verify that the changes were successful
-    if (newgid != oldgid && (setegid(oldgid) != -1 || getegid() != newgid)) { return(false); }
-    if (newuid != olduid && (seteuid(olduid) != -1 || geteuid() != newuid)) { return(false); }
+    newgid = userinfo->pw_gid;
   }
+
+  //If the above failed, we check for root via +s as a mode on the binary
+
+  //If root privileges are to be dropped, be sure to pare down the ancillary
+  //groups for the process before doing anything else because the setgroups()
+  //system call requires root privileges.  Drop ancillary groups regardless of
+  //whether privileges are being dropped temporarily or permanently.
+
+  if (!olduid) { setgroups(1, &newgid); }
+
+  if (((newgid != oldgid) && (z_setregid(newgid) == -1)) || ((newuid != olduid) && (z_setreuid(newuid) == -1)))
+  {
+    return(false);
+  }
+
+  //verify that the changes were successful
+  if (newgid != oldgid && (setegid(oldgid) != -1 || getegid() != newgid)) { return(false); }
+  if (newuid != olduid && (seteuid(olduid) != -1 || geteuid() != newuid)) { return(false); }
+
   return(true);
 }
 
