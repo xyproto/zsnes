@@ -26,8 +26,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <windows.h>
 
 #ifdef _MSC_VER
-#define strcasecmp stricmp
-#define strncasecmp strnicmp
+#define strcasecmp stricmp_s
+#define strncasecmp strnicmp_s
 #endif
 
 char *realpath(const char *path, char *resolved_path);
