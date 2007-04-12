@@ -33,10 +33,10 @@ BOOL;*/
 extern void hq2x_16b(void);
 
 // VIDEO VARIABLES
-extern unsigned char cvidmode;
-extern int SurfaceX, SurfaceY;
-extern int SurfaceLocking;
-extern DWORD BitDepth;
+extern uint8_t cvidmode;
+extern int32_t SurfaceX, SurfaceY;
+extern int32_t SurfaceLocking;
+extern uint32_t BitDepth;
 
 extern HWND hMainWindow;
 extern HDC hDC;
@@ -143,14 +143,14 @@ void gl_end()
 	free(glvidbuffer);
 }
 
-extern DWORD AddEndBytes;
-extern DWORD NumBytesPerLine;
-extern unsigned char *WinVidMemStart;
-extern unsigned char MMXSupport;
-extern unsigned char NGNoTransp;
-extern unsigned char newengen;
+extern uint32_t AddEndBytes;
+extern uint32_t NumBytesPerLine;
+extern uint8_t *WinVidMemStart;
+extern uint8_t MMXSupport;
+extern uint8_t NGNoTransp;
+extern uint8_t newengen;
 extern void copy640x480x16bwin(void);
-extern unsigned char SpecialLine[224];	/* 0 if lo-res, > 0 if hi-res */
+extern uint8_t SpecialLine[224];	/* 0 if lo-res, > 0 if hi-res */
 
 void gl_clearwin()
 {
