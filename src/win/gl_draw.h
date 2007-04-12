@@ -44,9 +44,9 @@ extern HGLRC hRC;
 // OPENGL VARIABLES
 static unsigned short *glvidbuffer = 0;
 static GLuint gltextures[4];
-static uint32_t gltexture256, gltexture512;
-static uint32_t glfilters = GL_NEAREST;
-static uint32_t glscanready = 0;
+static int32_t gltexture256, gltexture512;
+static int32_t glfilters = GL_NEAREST;
+static int32_t glscanready = 0;
 extern uint8_t En2xSaI;
 extern uint8_t sl_intensity;
 extern uint8_t FilteredGUI;
