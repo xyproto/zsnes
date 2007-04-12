@@ -28,6 +28,38 @@ void gl_end();
 void gl_clearwin();
 void gl_drawwin();
 
+// FUNCTIONS
+extern void hq2x_16b(void);
+
+// VIDEO VARIABLES
+extern uint8_t cvidmode;
+extern int32_t SurfaceX, SurfaceY;
+extern int32_t SurfaceLocking;
+extern uint32_t BitDepth;
+
+extern HWND hMainWindow;
+extern HDC hDC;
+extern HGLRC hRC;
+
+// OPENGL VARIABLES
+static unsigned short *glvidbuffer = 0;
+static GLuint gltextures[4];
+static uint32_t gltexture256, gltexture512;
+static uint32_t glfilters = GL_NEAREST;
+static uint32_t glscanready = 0;
+extern uint8_t En2xSaI;
+extern uint8_t sl_intensity;
+extern uint8_t FilteredGUI;
+extern uint8_t GUIOn2;
+extern uint8_t vidbuffer;
+extern uint8_t curblank;
+extern uint8_t GUIRESIZE[];
+
+void gl_clearwin();
+void UpdateVFrame(void);
+void gl_scanlines(void);
+
+
 #endif
 
 

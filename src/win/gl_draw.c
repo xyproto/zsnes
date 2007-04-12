@@ -52,7 +52,6 @@ extern uint8_t En2xSaI;
 extern uint8_t sl_intensity;
 extern uint8_t FilteredGUI;
 extern uint8_t GUIOn2;
-
 extern uint8_t vidbuffer;
 extern uint8_t curblank;
 extern uint8_t GUIRESIZE[];
