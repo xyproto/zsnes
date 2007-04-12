@@ -23,14 +23,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <GL/gl.h>
 #include <GL/glext.h>
 #include "../cfg.h"
-
-#define BYTE  unsigned char
-#define WORD  unsigned short
-#define DWORD unsigned long
-
-#define Uint8 unsigned char
-
-#define Uint32 unsigned long
+#include <stdint.h>
 
 /*typedef enum
 { FALSE = 0, TRUE = !FALSE }
@@ -52,16 +45,17 @@ extern HGLRC hRC;
 // OPENGL VARIABLES
 static unsigned short *glvidbuffer = 0;
 static GLuint gltextures[4];
-static int gltexture256, gltexture512;
-static int glfilters = GL_NEAREST;
-static int glscanready = 0;
-extern Uint8 En2xSaI, sl_intensity;
-extern Uint8 FilteredGUI;
-extern Uint8 GUIOn2;
+static uint32_t gltexture256, gltexture512;
+static uint32_t glfilters = GL_NEAREST;
+static uint32_t glscanready = 0;
+extern uint8_t En2xSaI;
+extern uint8_t sl_intensity;
+extern uint8_t FilteredGUI;
+extern uint8_t GUIOn2;
 
-extern unsigned int vidbuffer;
-extern unsigned char curblank;
-extern BYTE GUIRESIZE[];
+extern uint8_t vidbuffer;
+extern uint8_t curblank;
+extern uint8_t GUIRESIZE[];
 
 void gl_clearwin();
 void UpdateVFrame(void);
