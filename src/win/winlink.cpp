@@ -364,18 +364,26 @@ void DrawScreen()
     if (TripleBufferWin == 1 || KitchenSync == 1 || (KitchenSyncPAL == 1 && totlines == 314))
     {
       if (DD_BackBuffer->Blt(&rcWindow, DD_CFB, &BlitArea, DDBLT_WAIT, NULL) == DDERR_SURFACELOST)
+      {
         DD_Primary->Restore();
+      }
 
       if (DD_Primary->Flip(NULL, DDFLIP_WAIT) == DDERR_SURFACELOST)
+      {
         DD_Primary->Restore();
+      }
 
       if (KitchenSync == 1 || (KitchenSyncPAL == 1 && totlines == 314))
       {
         if (DD_BackBuffer->Blt(&rcWindow, DD_CFB, &BlitArea, DDBLT_WAIT, NULL) == DDERR_SURFACELOST)
+        {
           DD_Primary->Restore();
+        }
 
         if (DD_Primary->Flip(NULL, DDFLIP_WAIT) == DDERR_SURFACELOST)
+        {
           DD_Primary->Restore();
+        }
       }
     }
     else
@@ -563,43 +571,49 @@ BOOL InputRead(void)
 
     if (SUCCEEDED(hr))
     {
-      MouseMoveX = (float) dims.lX;
-      MouseMoveY = (float) dims.lY;
+      MouseMoveX = (float)dims.lX;
+      MouseMoveY = (float)dims.lY;
 
       if (MouseWheel == 1)
       {
         long zDelta = dims.lZ - PrevZ;
         if (!dims.lZ)
+        {
           zDelta = 0;
+        }
         while (zDelta > 0)
         {
           zDelta -= 40;
-          if (!((CurKeyPos + 1 == CurKeyReadPos) || ((CurKeyPos + 1 == 16) && (CurKeyReadPos == 0))))
+          if (!((CurKeyPos + 1 == CurKeyReadPos) ||
+                ((CurKeyPos + 1 == 16) && (CurKeyReadPos == 0))))
           {
             KeyBuffer[CurKeyPos] = 72 + 256;
             CurKeyPos++;
             if (CurKeyPos == 16)
+            {
               CurKeyPos = 0;
+            }
           }
         }
         while (zDelta < 0)
         {
           zDelta += 40;
-          if (!((CurKeyPos + 1 == CurKeyReadPos) || ((CurKeyPos + 1 == 16) && (CurKeyReadPos == 0))))
+          if (!((CurKeyPos + 1 == CurKeyReadPos) ||
+                ((CurKeyPos + 1 == 16) && (CurKeyReadPos == 0))))
           {
             KeyBuffer[CurKeyPos] = 80 + 256;
             CurKeyPos++;
             if (CurKeyPos == 16)
+            {
               CurKeyPos = 0;
+            }
           }
         }
         PrevZ = dims.lZ;
       }
 
-      MouseButton = (dims.rgbButtons[0] >> 7) |
-                    (dims.rgbButtons[1] >> 6) |
-                    (dims.rgbButtons[2] >> 5) |
-                    (dims.rgbButtons[3] >> 4);
+      MouseButton = (dims.rgbButtons[0] >> 7) | (dims.rgbButtons[1] >> 6) |
+                    (dims.rgbButtons[2] >> 5) | (dims.rgbButtons[3] >> 4);
     }
     else
     {
@@ -649,16 +663,15 @@ LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         accept = false;
 
         if (wParam == 16)
+        {
           shiftpr = true;
+        }
         else if (wParam == 17)
+        {
           ctrlptr = true;
-        if (((wParam >= 'A') && (wParam <= 'Z')) ||
-            ((wParam >= 'a') && (wParam <= 'z')) ||
-            (wParam == 27) ||
-            (wParam == 32) ||
-            (wParam == 8) ||
-            (wParam == 13) ||
-            (wParam == 9))
+        }
+        if (((wParam >= 'A') && (wParam <= 'Z')) || ((wParam >= 'a') && (wParam <= 'z')) ||
+            (wParam == 27) || (wParam == 32) || (wParam == 8) || (wParam == 13) || (wParam == 9))
         {
           accept = true; vkeyval = wParam;
         }
@@ -788,20 +801,28 @@ LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
           KeyBuffer[CurKeyPos] = vkeyval;
           CurKeyPos++;
           if (CurKeyPos == 16)
+          {
             CurKeyPos = 0;
+          }
         }
       }
       break;
     case WM_KEYUP:
       // sent when user releases a key
       if (wParam == 16)
+      {
         shiftpr = false;
+      }
       else if (wParam == 17)
+      {
         ctrlptr = false;
+      }
       break;
     case WM_MOUSEMOVE:
       if (MouseInput && GUIOn2)
+      {
         MouseInput->Acquire();
+      }
       break;
     case WM_MOVE:
       break;
@@ -813,14 +834,22 @@ LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
       {
         IsActivated = 1;
         if (FirstActivate == 0)
+        {
           initwinvideo();
+        }
         if (PauseFocusChange && !MovieProcessing)
+        {
           EMUPause = 0;
+        }
         InputAcquire();
         if (FirstActivate == 1)
+        {
           FirstActivate = 0;
+        }
         if (FullScreen == 1)
+        {
           Clear2xSaIBuffer();
+        }
         CheckPriority();
         CheckScreenSaver();
       }
@@ -828,16 +857,22 @@ LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
       {
         IsActivated = 0;
         if (PauseFocusChange)
+        {
           EMUPause = 1;
+        }
         InputDeAcquire();
         if (GUIOn || GUIOn2 || EMUPause)
+        {
           SetPriorityClass(GetCurrentProcess(), IDLE_PRIORITY_CLASS);
+        }
         CheckScreenSaver();
       }
       break;
     case WM_SETFOCUS:
       if (FullScreen == 0)
+      {
         ShowWindow(hMainWindow, SW_SHOWNORMAL);
+      }
       CheckPriority();
       CheckScreenSaver();
       InputAcquire();
@@ -846,7 +881,9 @@ LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
       InputDeAcquire();
       IsActivated = 0;
       if (GUIOn || GUIOn2 || EMUPause)
+      {
         SetPriorityClass(GetCurrentProcess(), IDLE_PRIORITY_CLASS);
+      }
       CheckScreenSaver();
       break;
     case WM_DESTROY:
@@ -880,8 +917,8 @@ int RegisterWinClass(void)
   wcl.hIcon = LoadIcon(hInst, MAKEINTRESOURCE(IDI_ICON1));
   wcl.hCursor = NULL;
   wcl.hInstance = hInst;
-  wcl.lpfnWndProc = (WNDPROC) Main_Proc;
-  wcl.hbrBackground = (HBRUSH) GetStockObject(BLACK_BRUSH);
+  wcl.lpfnWndProc = (WNDPROC)Main_Proc;
+  wcl.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
   wcl.lpszMenuName = NULL;
   wcl.lpszClassName = "ZSNES";
 
@@ -920,20 +957,28 @@ BOOL InitSound()
       if (DS_OK != lpDirectSound->SetCooperativeLevel(hMainWindow, DSSCL_WRITEPRIMARY))
       {
         if (DS_OK != lpDirectSound->SetCooperativeLevel(hMainWindow, DSSCL_EXCLUSIVE))
+        {
           return FALSE;
+        }
       }
       else
+      {
         UsePrimaryBuffer = 1;
+      }
     }
     else
     {
       if (DS_OK != lpDirectSound->SetCooperativeLevel(hMainWindow, DSSCL_NORMAL))
       {
         if (DS_OK != lpDirectSound->SetCooperativeLevel(hMainWindow, DSSCL_EXCLUSIVE))
+        {
           return FALSE;
+        }
       }
       else
+      {
         UsePrimaryBuffer = 0;
+      }
     }
   }
   else
@@ -1008,7 +1053,8 @@ BOOL InitSound()
   {
     if (!UsePrimaryBuffer)
     {
-      if (DS_OK == lpPrimaryBuffer->QueryInterface(IID_IDirectSoundBuffer8, (LPVOID *) &lpSoundBuffer))
+      if (DS_OK ==
+          lpPrimaryBuffer->QueryInterface(IID_IDirectSoundBuffer8, (LPVOID *)&lpSoundBuffer))
       {
         if (DS_OK != lpSoundBuffer->Play(0, 0, DSBPLAY_LOOPING))
         {
@@ -1016,7 +1062,9 @@ BOOL InitSound()
         }
       }
       else
+      {
         return FALSE;
+      }
     }
     else
     {
@@ -1143,7 +1191,8 @@ BOOL ReInitSound()
   {
     if (!UsePrimaryBuffer)
     {
-      if (DS_OK == lpPrimaryBuffer->QueryInterface(IID_IDirectSoundBuffer8, (LPVOID *) &lpSoundBuffer))
+      if (DS_OK ==
+          lpPrimaryBuffer->QueryInterface(IID_IDirectSoundBuffer8, (LPVOID *)&lpSoundBuffer))
       {
         if (DS_OK != lpSoundBuffer->Play(0, 0, DSBPLAY_LOOPING))
         {
@@ -1151,7 +1200,9 @@ BOOL ReInitSound()
         }
       }
       else
+      {
         return FALSE;
+      }
     }
     else
     {
@@ -1178,7 +1229,7 @@ BOOL ReInitSound()
 
 BOOL FAR PASCAL InitJoystickInput(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef)
 {
-  LPDIRECTINPUT8 pdi = (LPDIRECTINPUT8) pvRef;
+  LPDIRECTINPUT8 pdi = (LPDIRECTINPUT8)pvRef;
   GUID DeviceGuid = pdinst->guidInstance;
 
   if (CurrentJoy > 4)
@@ -1198,7 +1249,8 @@ BOOL FAR PASCAL InitJoystickInput(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef)
     return DIENUM_CONTINUE;
   }
 
-  if (JoystickInput[CurrentJoy]->SetCooperativeLevel(hMainWindow, DISCL_EXCLUSIVE | DISCL_BACKGROUND) != DI_OK)
+  if (JoystickInput[CurrentJoy]->SetCooperativeLevel(hMainWindow,
+                                                     DISCL_EXCLUSIVE | DISCL_BACKGROUND) != DI_OK)
   {
     JoystickInput[CurrentJoy]->Release();
     return DIENUM_CONTINUE;
@@ -1439,7 +1491,8 @@ bool InitInput()
   char message1[256];
   HRESULT hr;
 
-  if (FAILED(hr = pDirectInput8Create(hInst, DIRECTINPUT_VERSION, IID_IDirectInput8A, (void * *) &DInput, NULL)))
+  if (FAILED(hr = pDirectInput8Create(hInst, DIRECTINPUT_VERSION, IID_IDirectInput8A, (void**)&DInput,
+                                      NULL)))
   {
     sprintf(message1,
             "Error initializing DirectInput\nYou may need to install DirectX 8.0a or higher located at www.microsoft.com/directx%c",
@@ -1504,7 +1557,8 @@ bool InitInput()
     DInputError();return FALSE;
   }
 
-  JoystickInput[0] = NULL;JoystickInput[1] = NULL;JoystickInput[2] = NULL;JoystickInput[3] = NULL;JoystickInput[4] = NULL;
+  JoystickInput[0] = NULL;JoystickInput[1] = NULL;JoystickInput[2] = NULL;JoystickInput[3] = NULL;JoystickInput[4] =
+  NULL;
 
   hr = DInput->EnumDevices(DI8DEVCLASS_GAMECTRL, InitJoystickInput, DInput, DIEDFL_ATTACHEDONLY);
 
@@ -1531,93 +1585,125 @@ void TestJoy()
       if (JoystickInput[i]->GetDeviceState(sizeof(DIJOYSTATE), &js[i]) == DIERR_INPUTLOST)
       {
         if (JoystickInput[i])
+        {
           JoystickInput[i]->Acquire();
+        }
         if (FAILED(JoystickInput[i]->GetDeviceState(sizeof(DIJOYSTATE), &js[i])))
+        {
           return;
+        }
       }
 
       if (!X1Disable[i])
       {
         if (js[i].lX > 0)
+        {
           X1Disable[i] = 1;
+        }
       }
 
       if (!X2Disable[i])
       {
         if (js[i].lX < 0)
+        {
           X2Disable[i] = 1;
+        }
       }
 
       if (!Y1Disable[i])
       {
         if (js[i].lY > 0)
+        {
           Y1Disable[i] = 1;
+        }
       }
 
       if (!Y2Disable[i])
       {
         if (js[i].lY < 0)
+        {
           Y2Disable[i] = 1;
+        }
       }
 
       if (!Z1Disable[i])
       {
         if (js[i].lZ > 0)
+        {
           Z1Disable[i] = 1;
+        }
       }
 
       if (!Z2Disable[i])
       {
         if (js[i].lZ < 0)
+        {
           Z2Disable[i] = 1;
+        }
       }
 
       if (!RY1Disable[i])
       {
         if (js[i].lRy > 0)
+        {
           RY1Disable[i] = 1;
+        }
       }
 
       if (!RY2Disable[i])
       {
         if (js[i].lRy < 0)
+        {
           RY2Disable[i] = 1;
+        }
       }
 
       if (!RZ1Disable[i])
       {
         if (js[i].lRz > 0)
+        {
           RZ1Disable[i] = 1;
+        }
       }
 
       if (!RZ2Disable[i])
       {
         if (js[i].lRz < 0)
+        {
           RZ2Disable[i] = 1;
+        }
       }
 
       if (!S01Disable[i])
       {
         if (js[i].rglSlider[0] > 0)
+        {
           S01Disable[i] = 1;
+        }
       }
 
       if (!S02Disable[i])
       {
         if (js[i].rglSlider[0] < 0)
+        {
           S02Disable[i] = 1;
+        }
       }
 
       if (!S11Disable[i])
       {
         if (js[i].rglSlider[1] > 0)
+        {
           S11Disable[i] = 1;
+        }
       }
 
       if (!S12Disable[i])
       {
         if (js[i].rglSlider[1] < 0)
+        {
           S12Disable[i] = 1;
+        }
       }
     }
   }
@@ -1659,14 +1745,14 @@ int InitDirectDraw()
   //MK: unused 2003/08/31
   //HRESULT hr;
   //char message1[256];
-  unsigned int color32,ScreenPtr2;
+  unsigned int color32, ScreenPtr2;
   int i, j, k, r, g, b, Y, u, v;
 
   ScreenPtr2 = BitConv32Ptr;
   for (i = 0; i < 65536; i++)
   {
     color32 = ((i & 0xF800) << 8) + ((i & 0x07E0) << 5) + ((i & 0x001F) << 3) + 0xFF000000;
-    (*(unsigned int *) (ScreenPtr2)) = color32;
+    (*(unsigned int*)(ScreenPtr2)) = color32;
     ScreenPtr2 += 4;
   }
 
@@ -1682,7 +1768,7 @@ int InitDirectDraw()
         Y = (r + g + b) >> 2;
         u = 128 + ((r - b) >> 2);
         v = 128 + ((-r + 2 * g - b) >> 3);
-        *(((unsigned int *) RGBtoYUVPtr) + (i << 11) + (j << 5) + k) = (Y << 16) + (u << 8) + v;
+        *(((unsigned int*)RGBtoYUVPtr) + (i << 11) + (j << 5) + k) = (Y << 16) + (u << 8) + v;
       }
     }
   }
@@ -1696,8 +1782,8 @@ int InitDirectDraw()
   ReleaseDirectDraw();
 
   GetClientRect(hMainWindow, &rcWindow);
-  ClientToScreen(hMainWindow, (LPPOINT) & rcWindow);
-  ClientToScreen(hMainWindow, (LPPOINT) & rcWindow + 1);
+  ClientToScreen(hMainWindow, (LPPOINT)&rcWindow);
+  ClientToScreen(hMainWindow, (LPPOINT)&rcWindow + 1);
 
   FullScreen = GUIWFVID[cvidmode];
   DSMode = GUIDSMODE[cvidmode];
@@ -1707,11 +1793,17 @@ int InitDirectDraw()
   if (hqFilter != 0)
   {
     if ((GUIHQ2X[cvidmode] != 0) && (hqFilterlevel == 2))
+    {
       HQMode = 2;
+    }
     if ((GUIHQ3X[cvidmode] != 0) && (hqFilterlevel == 3))
+    {
       HQMode = 3;
+    }
     if ((GUIHQ4X[cvidmode] != 0) && (hqFilterlevel == 4))
+    {
       HQMode = 4;
+    }
   }
 
   if (FullScreen == 1)
@@ -1744,7 +1836,7 @@ int InitDirectDraw()
     }
   }
 
-  if (pDirectDrawCreateEx(NULL, (void * *) &lpDD, IID_IDirectDraw7, NULL) != DD_OK)
+  if (pDirectDrawCreateEx(NULL, (void**)&lpDD, IID_IDirectDraw7, NULL) != DD_OK)
   {
     MessageBox(NULL, "DirectDrawCreateEx failed.", "DirectDraw Error", MB_ICONERROR);
     return FALSE;
@@ -1752,19 +1844,21 @@ int InitDirectDraw()
 
   if (FullScreen == 1)
   {
-    if (lpDD->SetCooperativeLevel(hMainWindow, DDSCL_FULLSCREEN | DDSCL_EXCLUSIVE | DDSCL_ALLOWREBOOT) !=
-        DD_OK)
+    if (lpDD->SetCooperativeLevel(hMainWindow,
+                                  DDSCL_FULLSCREEN | DDSCL_EXCLUSIVE | DDSCL_ALLOWREBOOT) != DD_OK)
     {
-      MessageBox(NULL, "IDirectDraw7::SetCooperativeLevel failed.", "DirectDraw Error", MB_ICONERROR);
+      MessageBox(NULL, "IDirectDraw7::SetCooperativeLevel failed.", "DirectDraw Error",
+                 MB_ICONERROR);
       return FALSE;
     }
     if (lpDD->SetDisplayMode(WindowWidth, WindowHeight, 16, Refresh, 0) != DD_OK)
     {
       if (lpDD->SetDisplayMode(WindowWidth, WindowHeight, 16, 0, 0) != DD_OK)
       {
-        MessageBox(NULL,
-                   "IDirectDraw7::SetDisplayMode failed.\nMake sure your video card supports this mode.",
-                   "DirectDraw Error", MB_ICONERROR);
+        MessageBox(
+        NULL,
+        "IDirectDraw7::SetDisplayMode failed.\nMake sure your video card supports this mode.",
+        "DirectDraw Error", MB_ICONERROR);
         return FALSE;
       }
       else
@@ -1779,7 +1873,8 @@ int InitDirectDraw()
   {
     if (lpDD->SetCooperativeLevel(hMainWindow, DDSCL_NORMAL) != DD_OK)
     {
-      MessageBox(NULL, "IDirectDraw7::SetCooperativeLevel failed.", "DirectDraw Error", MB_ICONERROR);
+      MessageBox(NULL, "IDirectDraw7::SetCooperativeLevel failed.", "DirectDraw Error",
+                 MB_ICONERROR);
       return FALSE;
     }
     CheckAlwaysOnTop();
@@ -1819,7 +1914,8 @@ int InitDirectDraw()
     ddsd2.ddsCaps.dwCaps = DDSCAPS_BACKBUFFER;
     if (DD_Primary->GetAttachedSurface(&ddsd2.ddsCaps, &DD_BackBuffer) != DD_OK)
     {
-      MessageBox(NULL, "IDirectDrawSurface7::GetAttachedSurface failed.", "DirectDraw Error", MB_ICONERROR);
+      MessageBox(NULL, "IDirectDrawSurface7::GetAttachedSurface failed.", "DirectDraw Error",
+                 MB_ICONERROR);
       return FALSE;
     }
   }
@@ -1849,7 +1945,8 @@ int InitDirectDraw()
 
   if (DD_Primary->GetPixelFormat(&format) != DD_OK)
   {
-    MessageBox(NULL, "IDirectDrawSurface7::GetPixelFormat failed.", "DirectDraw Error", MB_ICONERROR);
+    MessageBox(NULL, "IDirectDrawSurface7::GetPixelFormat failed.", "DirectDraw Error",
+               MB_ICONERROR);
     return FALSE;
   }
 
@@ -1858,9 +1955,10 @@ int InitDirectDraw()
 
   if (BitDepth == 24)
   {
-    MessageBox(NULL,
-               "ZSNESw does not support 24bit color.\nPlease change your resolution to either 16bit or 32bit color",
-               "Error", MB_OK);
+    MessageBox(
+    NULL,
+    "ZSNESw does not support 24bit color.\nPlease change your resolution to either 16bit or 32bit color",
+    "Error", MB_OK);
     exit(0);
   }
 
@@ -1885,7 +1983,9 @@ int InitDirectDraw()
   if (BitDepth == 32)
   {
     if (DMode == 1 && HQMode == 0)
+    {
       ddsd2.ddsCaps.dwCaps |= DDSCAPS_VIDEOMEMORY;
+    }
     ddsd2.dwFlags |= DDSD_PIXELFORMAT;
     ddsd2.ddpfPixelFormat.dwSize = sizeof(DDPIXELFORMAT);
     ddsd2.ddpfPixelFormat.dwFlags = DDPF_RGB;
@@ -1896,14 +1996,17 @@ int InitDirectDraw()
 
     if (lpDD->CreateSurface(&ddsd2, &DD_CFB16, NULL) != DD_OK)
     {
-      MessageBox(NULL,
-                 "IDirectDraw7::CreateSurface failed. You should update your video card drivers. Alternatively, you could use a 16-bit desktop or use a non-D mode.",
-                 "DirectDraw Error", MB_ICONERROR);
+      MessageBox(
+      NULL,
+      "IDirectDraw7::CreateSurface failed. You should update your video card drivers. Alternatively, you could use a 16-bit desktop or use a non-D mode.",
+      "DirectDraw Error", MB_ICONERROR);
       return FALSE;
     }
 
     if (((SurfaceX == 512) || (SurfaceX == 602) || (SurfaceX == 640)) && (HQMode == 0))
+    {
       AltSurface = 1;
+    }
   }
 
   return TRUE;
@@ -1928,7 +2031,7 @@ DWORD LockSurface()
 
       if (hRes == DD_OK)
       {
-        SurfBuf = (BYTE *) ddsd.lpSurface;
+        SurfBuf = (BYTE *)ddsd.lpSurface;
         return(ddsd.lPitch);
       }
       else
@@ -1959,7 +2062,7 @@ DWORD LockSurface()
 
       if (hRes == DD_OK)
       {
-        SurfBuf = (BYTE *) ddsd.lpSurface;
+        SurfBuf = (BYTE *)ddsd.lpSurface;
         return(ddsd.lPitch);
       }
       else
@@ -1984,11 +2087,11 @@ void UnlockSurface()
 {
   if (AltSurface == 0)
   {
-    DD_CFB->Unlock((struct tagRECT *) ddsd.lpSurface);
+    DD_CFB->Unlock((struct tagRECT *)ddsd.lpSurface);
   }
   else
   {
-    DD_CFB16->Unlock((struct tagRECT *) ddsd.lpSurface);
+    DD_CFB16->Unlock((struct tagRECT *)ddsd.lpSurface);
   }
 }
 
