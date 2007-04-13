@@ -22,19 +22,16 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "../cfg.h"
 #include "../gblhdr.h"
 #include "../asm_call.h"
-
-#define BYTE  unsigned char
-#define WORD  unsigned short
-#define DWORD unsigned long
+#include <stdint.h>
 
 // FUNCTIONS
-void hq2x_16b(void);
+void hq2x_16b();
 
 // VIDEO VARIABLES
 extern SDL_Surface *surface;
 extern int SurfaceX, SurfaceY;
 extern int SurfaceLocking;
-extern DWORD BitDepth;
+extern uint64_t BitDepth;
 
 // OPENGL VARIABLES
 static unsigned short *glvidbuffer = 0;
@@ -46,7 +43,7 @@ extern Uint8 GUIOn2;
 
 extern unsigned int vidbuffer;
 extern unsigned char curblank;
-extern BYTE GUIRESIZE[];
+extern uint8_t GUIRESIZE[];
 
 void gl_clearwin();
 void UpdateVFrame();
@@ -79,7 +76,7 @@ void SetGLAttributes()
 
 int gl_start(int width, int height, int req_depth, int FullScreen)
 {
-  Uint32 flags = SDL_OPENGL;
+  uint32_t flags = SDL_OPENGL;
   int i;
 
   flags |= (GUIRESIZE[cvidmode] ? SDL_RESIZABLE : 0);
@@ -160,11 +157,11 @@ void gl_end()
   }
 }
 
-extern DWORD AddEndBytes;
-extern DWORD NumBytesPerLine;
+extern uint64_t AddEndBytes;
+extern uint64_t NumBytesPerLine;
 extern unsigned char *WinVidMemStart;
 extern unsigned char NGNoTransp;
-void copy640x480x16bwin(void);
+void copy640x480x16bwin();
 extern unsigned char SpecialLine[224];  /* 0 if lo-res, > 0 if hi-res */
 
 void gl_clearwin()
@@ -422,7 +419,7 @@ void gl_drawwin()
   SDL_GL_SwapBuffers();
 }
 
-void gl_scanlines(void)
+void gl_scanlines()
 {
   GLubyte scanbuffer[256][4];
   int i, j = (100 - sl_intensity) * 256 / 100;

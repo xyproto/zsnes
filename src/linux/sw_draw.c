@@ -23,11 +23,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "../gblhdr.h"
 #include "../cfg.h"
 #include "../asm_call.h"
+#include <stdint.h>
 
-
-#define BYTE  unsigned char
-#define WORD  unsigned short
-#define DWORD unsigned long
 
 void CheckFrame();
 // VIDEO VARIABLES
@@ -36,12 +33,12 @@ extern int SurfaceX, SurfaceY;
 extern int SurfaceLocking;
 
 extern unsigned int vidbuffer;
-extern DWORD converta;
+extern uint32_t converta;
 extern unsigned char curblank;
 extern int frametot;
-extern BYTE GUIOn, GUIOn2;
+extern uint8_t GUIOn, GUIOn2;
 
-void UpdateVFrame(void);
+void UpdateVFrame();
 void NTSCFilterInit();
 void NTSCFilterDraw(int SurfaceX, int SurfaceY, int pitch, unsigned char *buffer);
 char CheckOGLMode();
@@ -52,11 +49,11 @@ bool sw_start(int width, int height, int req_depth, int FullScreen)
   //unsigned int color32, p;
   //int i;
 #ifndef __MACOSX__
-  Uint32 flags = SDL_DOUBLEBUF | SDL_HWSURFACE;
+  uint32_t flags = SDL_DOUBLEBUF | SDL_HWSURFACE;
 #else
-  Uint32 flags = SDL_SWSURFACE;
+  uint32_t flags = SDL_SWSURFACE;
 #endif
-  DWORD GBitMask;
+  uint32_t GBitMask;
 
   flags |= (FullScreen ? SDL_FULLSCREEN : 0);
 
@@ -101,7 +98,7 @@ void sw_end()
   // Do nothing
 }
 
-static void LockSurface(void)
+static void LockSurface()
 {
   if (SurfaceLocking)
   {
@@ -109,7 +106,7 @@ static void LockSurface(void)
   }
 }
 
-static void UnlockSurface(void)
+static void UnlockSurface()
 {
   if (SurfaceLocking)
   {
@@ -118,26 +115,26 @@ static void UnlockSurface(void)
   SDL_Flip(surface);
 }
 
-extern DWORD AddEndBytes;
-extern DWORD NumBytesPerLine;
+extern uint32_t AddEndBytes;
+extern uint32_t NumBytesPerLine;
 extern unsigned char *WinVidMemStart;
 extern unsigned char NGNoTransp;
 extern unsigned short resolutn;
-void copy640x480x16bwin(void);
-void hq2x_16b(void);
-void hq3x_16b(void);
-void hq4x_16b(void);
-void ClearWin16(void);
-void DrawWin256x224x16(void);
-void DrawWin320x240x16(void);
-DWORD ScreenPtr;
-DWORD SurfBufD;
-DWORD pitch;
+void copy640x480x16bwin();
+void hq2x_16b();
+void hq3x_16b();
+void hq4x_16b();
+void ClearWin16();
+void DrawWin256x224x16();
+void DrawWin320x240x16();
+uint32_t ScreenPtr;
+uint32_t SurfBufD;
+uint32_t pitch;
 
 void sw_clearwin()
 {
   pitch = surface->pitch;
-  SurfBufD = (DWORD)surface->pixels;
+  SurfBufD = (uint32_t)surface->pixels;
 
   LockSurface();
   ClearWin16();
@@ -191,7 +188,7 @@ void sw_drawwin()
   }
 
   pitch = surface->pitch;
-  SurfBufD = (DWORD)surface->pixels;
+  SurfBufD = (uint32_t)surface->pixels;
 
   if (SurfBufD == 0)
   {
