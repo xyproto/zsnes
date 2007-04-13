@@ -84,13 +84,15 @@ int gl_start(int width, int height, int req_depth, int FullScreen)
   hRC = wglCreateContext(hDC);
   wglMakeCurrent(hDC, hRC);
 
-  glvidbuffer = (unsigned short *) malloc(512 * 512 * sizeof(short));
+  glvidbuffer = (unsigned short*)malloc(512 * 512 * sizeof(short));
   gl_clearwin();
   if (BilinearFilter)
   {
     glfilters = GL_LINEAR;
     if (GUIOn2 && !FilteredGUI)
+    {
       glfilters = GL_NEAREST;
+    }
   }
   else
   {
@@ -187,23 +189,28 @@ static void gl_drawspan(int hires, int start, int end)
   {
     if (hires != gltexture512)
     {
-      unsigned short * vbuf1 = &((unsigned short *) vidbuffer)[16];
-      unsigned short * vbuf2 = &((unsigned short *) vidbuffer)[75036 * 2 + 16];
-      unsigned short * vbuf = &glvidbuffer[0];
+      unsigned short *vbuf1 = &((unsigned short *)vidbuffer)[16];
+      unsigned short *vbuf2 = &((unsigned short *)vidbuffer)[75036 * 2 + 16];
+      unsigned short *vbuf = &glvidbuffer[0];
 
       if (hires > 1) // mode 7
       {
         for (j = 224; j--;)
         {
           for (i = 256; i--;)
+          {
             *vbuf++ = *vbuf1++;
+          }
           for (i = 256; i--;)
+          {
             *vbuf++ = *vbuf2++;
+          }
           vbuf1 += 32;
           vbuf2 += 32;
         }
         glBindTexture(GL_TEXTURE_2D, gltextures[1]);
-        glTexImage2D(GL_TEXTURE_2D, 0, 3, 256, 512, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, glvidbuffer);
+        glTexImage2D(GL_TEXTURE_2D, 0, 3, 256, 512, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5,
+                     glvidbuffer);
 
         gltexture512 = 2;
       }
@@ -221,7 +228,8 @@ static void gl_drawspan(int hires, int start, int end)
         }
 
         glBindTexture(GL_TEXTURE_2D, gltextures[1]);
-        glTexImage2D(GL_TEXTURE_2D, 0, 3, 512, 256, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, glvidbuffer);
+        glTexImage2D(GL_TEXTURE_2D, 0, 3, 512, 256, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5,
+                     glvidbuffer);
 
         gltexture512 = 1;
       }
@@ -248,7 +256,7 @@ static void gl_drawspan(int hires, int start, int end)
       glPixelStorei(GL_UNPACK_ROW_LENGTH, 288);
 
       glTexImage2D(GL_TEXTURE_2D, 0, 3, 256, 256, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5,
-                   ((unsigned short *) vidbuffer) + 288);
+                   ((unsigned short*)vidbuffer) + 288);
 
       glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
       glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
@@ -290,7 +298,7 @@ void gl_drawwin()
   {
     AddEndBytes = 0;
     NumBytesPerLine = 1024;
-    WinVidMemStart = (void *) glvidbuffer;
+    WinVidMemStart = (void*)glvidbuffer;
 
     if (hqFilter)
     {
@@ -304,7 +312,8 @@ void gl_drawwin()
     /* Display 1 512x448 quad for the 512x448 buffer */
     glBindTexture(GL_TEXTURE_2D, gltextures[1]);
     glTexEnvi(GL_TEXTURE_2D, GL_TEXTURE_ENV_MODE, GL_DECAL);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 512, 512, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, glvidbuffer);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 512, 512, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5,
+                 glvidbuffer);
 
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_LIGHTING);
@@ -337,7 +346,9 @@ void gl_drawwin()
       if (SpecialLine[i + 1])
       {
         if (lasthires)
+        {
           continue;
+        }
         gl_drawspan(lasthires, lasthires_line, i);
 
         lasthires = SpecialLine[i + 1];
@@ -346,7 +357,9 @@ void gl_drawwin()
       else
       {
         if (!lasthires)
+        {
           continue;
+        }
         gl_drawspan(lasthires, lasthires_line, i);
 
         lasthires = SpecialLine[i + 1];
@@ -355,7 +368,9 @@ void gl_drawwin()
     }
 
     if (i - lasthires_line > 1)
+    {
       gl_drawspan(lasthires, lasthires_line, i);
+    }
 
     /*
      * This is here rather than right outside this if because the
@@ -370,7 +385,9 @@ void gl_drawwin()
       glEnable(GL_BLEND);
 
       if (sl_intensity != glscanready)
+      {
         gl_scanlines();
+      }
 
       glBlendFunc(GL_DST_COLOR, GL_ZERO);
       glBindTexture(GL_TEXTURE_1D, gltextures[3]);

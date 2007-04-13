@@ -137,7 +137,7 @@ DWORD pitch;
 void sw_clearwin()
 {
   pitch = surface->pitch;
-  SurfBufD = (DWORD) surface->pixels;
+  SurfBufD = (DWORD)surface->pixels;
 
   LockSurface();
   ClearWin16();
@@ -191,7 +191,7 @@ void sw_drawwin()
   }
 
   pitch = surface->pitch;
-  SurfBufD = (DWORD) surface->pixels;
+  SurfBufD = (DWORD)surface->pixels;
 
   if (SurfBufD == 0)
   {
@@ -211,7 +211,7 @@ void sw_drawwin()
   {
     AddEndBytes = pitch - 1024;
     NumBytesPerLine = pitch;
-    WinVidMemStart = (void *) SurfBufD;
+    WinVidMemStart = (void*)SurfBufD;
 
     if (hqFilter)
     {
@@ -231,13 +231,15 @@ void sw_drawwin()
       }
     }
     else
+    {
       asm_call(copy640x480x16bwin);
+    }
   }
   else if ((SurfaceX == 602) && NTSCFilter)
   {
     AddEndBytes = pitch - 1024;
     NumBytesPerLine = pitch;
-    WinVidMemStart = (void *) SurfBufD;
+    WinVidMemStart = (void*)SurfBufD;
 
     NTSCFilterDraw(SurfaceX, SurfaceY, pitch, WinVidMemStart);
   }
@@ -245,7 +247,7 @@ void sw_drawwin()
   {
     AddEndBytes = pitch - 1024;
     NumBytesPerLine = pitch;
-    WinVidMemStart = (void *) (SurfBufD + 16 * 640 * 2 + 64 * 2);
+    WinVidMemStart = (void*)(SurfBufD + 16 * 640 * 2 + 64 * 2);
     if (hqFilter)
     {
       switch (hqFilter)
@@ -264,9 +266,13 @@ void sw_drawwin()
       }
     }
     else if (NTSCFilter)
+    {
       NTSCFilterDraw(SurfaceX, SurfaceY, pitch, WinVidMemStart - 16 * 640 * 2 - 64 * 2);
+    }
     else
+    {
       asm_call(copy640x480x16bwin);
+    }
   }
 
   UnlockSurface();
