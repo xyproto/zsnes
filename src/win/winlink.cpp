@@ -252,9 +252,7 @@ extern "C" void DXLoadError()
 {
   if (MessageBox(NULL,
                  "Sorry, you need to install or reinstall DirectX v8.0 or higher\nto use ZSNESW.\nWould you like to go to the DirectX homepage?",
-                 "Error", MB_ICONINFORMATION |
-                 MB_YESNO) ==
-      IDYES)
+                 "Error", MB_ICONINFORMATION | MB_YESNO) == IDYES)
   {
     ShellExecute(NULL, NULL, "http://www.microsoft.com/directx/", NULL, NULL, 0);
   }
@@ -350,7 +348,7 @@ void DDrawError()
 {
   char message1[256];
 
-  sprintf(message1, "Error drawing to the screen\nMake sure the device is not being used by another process ");
+  strcpy(message1, "Error drawing to the screen\nMake sure the device is not being used by another process");
   MessageBox(NULL, message1, "DirectDraw Error", MB_ICONERROR);
 }
 
@@ -602,7 +600,9 @@ BOOL InputRead(void)
                     (dims.rgbButtons[3] >> 4);
     }
     else
+    {
       return FALSE;
+    }
   }
   return TRUE;
 }
