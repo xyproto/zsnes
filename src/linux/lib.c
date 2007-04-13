@@ -26,6 +26,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #include "lib.h"
 
+#ifndef HAVE_AT_FUNCTIONS
+
 int fstatat(int dirfd, const char *pathname, struct stat *buf, int flags)
 {
   int success = -1;
@@ -51,3 +53,5 @@ int fstatat(int dirfd, const char *pathname, struct stat *buf, int flags)
 
   return(success);
 }
+
+#endif

@@ -24,6 +24,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #include <sys/stat.h>
 
+#ifndef HAVE_AT_FUNCTIONS
+
 #ifndef AT_FDCWD
 #define AT_FDCWD -2
 #endif
@@ -33,5 +35,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #endif
 
 int fstatat(int dirfd, const char *pathname, struct stat *buf, int flags);
+
+#endif
 
 #endif
