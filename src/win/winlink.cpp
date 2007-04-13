@@ -337,7 +337,7 @@ int ReInitSound();
 
 extern "C"
 {
-  void drawscreenwin(void);
+  void drawscreenwin();
   DWORD LastUsedPos = 0;
   DWORD CurMode = ~0;
   void reInitSound()
@@ -422,7 +422,7 @@ extern "C"
   DWORD InputEn = 0;
 }
 
-BOOL InputAcquire(void)
+BOOL InputAcquire()
 {
   for (unsigned int i = 0; i < 5; i++)
   {
@@ -448,7 +448,7 @@ BOOL InputAcquire(void)
   return TRUE;
 }
 
-BOOL InputDeAcquire(void)
+BOOL InputDeAcquire()
 {
   if (KeyboardInput)
   {
@@ -478,7 +478,7 @@ BOOL InputDeAcquire(void)
 extern "C"
 {
   void initwinvideo();
-  void DosExit(void);
+  void DosExit();
   extern BYTE EMUPause;
   extern int CurKeyPos;
   extern int CurKeyReadPos;
@@ -535,7 +535,7 @@ extern "C" void MinimizeWindow()
   IsActivated = 0;
 }
 
-BOOL InputRead(void)
+BOOL InputRead()
 {
   static int PrevZ = 0;
   MouseMoveX = 0;
@@ -871,7 +871,7 @@ LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
   return DefWindowProc(hWnd, uMsg, wParam, lParam);;
 }
 
-int RegisterWinClass(void)
+int RegisterWinClass()
 {
   if (AllowMultipleInst == 0)
   {
@@ -2092,7 +2092,7 @@ extern "C"
   extern unsigned int pressed;
   extern unsigned char romispal;
 
-  void Start60HZ(void)
+  void Start60HZ()
   {
     update_ticks_pc2 = UPDATE_TICKS_UDP * freq / 1000.0;
 
@@ -2122,7 +2122,7 @@ extern "C"
     //if (!device1 && !device2) MouseInput->Unacquire();
   }
 
-  void Stop60HZ(void)
+  void Stop60HZ()
   {
     T60HZEnabled = 0;
 
@@ -2136,7 +2136,7 @@ extern "C"
     ShutdownSemaphore();
   }
 
-  void Start36HZ(void)
+  void Start36HZ()
   {
     update_ticks_pc2 = UPDATE_TICKS_UDP * freq / 1000.0;
     update_ticks_pc = UPDATE_TICKS_GUI * freq / 1000.0;
@@ -2148,7 +2148,7 @@ extern "C"
     T36HZEnabled = 1;
   }
 
-  void Stop36HZ(void)
+  void Stop36HZ()
   {
     T36HZEnabled = 0;
   }
@@ -2205,7 +2205,7 @@ extern "C"
     return(GUIKEEP43[cvidmode] && Keep4_3Ratio);
   }
 
-  void initwinvideo(void)
+  void initwinvideo()
   {
     WINDOWPLACEMENT wndpl;
     RECT rc1;
@@ -2593,10 +2593,10 @@ extern "C"
   int *DSPBuffer1;
   DWORD ScreenPtr;
   DWORD ScreenPtr2;
-  void GUI36hzcall(void);
-  void Game60hzcall(void);
+  void GUI36hzcall();
+  void Game60hzcall();
 
-  void CheckTimers(void)
+  void CheckTimers()
   {
     // Lame fix for GUI using 100% CPU
     if (GUIOn || GUIOn2 || EMUPause)
@@ -2638,7 +2638,7 @@ extern "C"
   volatile int buffer_ptr;
   extern unsigned char MMXSupport;
 
-  void UpdateVFrame(void)
+  void UpdateVFrame()
   {
     int DataNeeded;
     SPCSize = 256;
@@ -2799,13 +2799,13 @@ ASM_COMMAND(_top_mmx:)
   extern DWORD AddEndBytes;
   extern DWORD NumBytesPerLine;
   extern unsigned char *WinVidMemStart;
-  void copy640x480x16bwin(void);
-  void hq2x_16b(void);
-  void hq2x_32b(void);
-  void hq3x_16b(void);
-  void hq3x_32b(void);
-  void hq4x_16b(void);
-  void hq4x_32b(void);
+  void copy640x480x16bwin();
+  void hq2x_16b();
+  void hq2x_32b();
+  void hq3x_16b();
+  void hq3x_32b();
+  void hq4x_16b();
+  void hq4x_32b();
   extern unsigned char NGNoTransp;
   void ClearWin16();
   void ClearWin32();
@@ -2923,7 +2923,7 @@ ASM_COMMAND(_top_mmx:)
   volatile uint64_t copymaskG = UINT64_C(0x0000FC000000FC00);
   volatile uint64_t copymagic = UINT64_C(0x0008010000080100);
 
-  void drawscreenwin(void)
+  void drawscreenwin()
   {
     DWORD i, j, color32;
     DWORD *SURFDW;
@@ -3299,7 +3299,7 @@ ASM_COMMAND(_top_mmx:)
     gl_drawwin();
   }
 
-  void SwitchFullScreen(void);
+  void SwitchFullScreen();
 
   void WinUpdateDevices()
   {
@@ -3539,7 +3539,7 @@ ASM_COMMAND(_top_mmx:)
     }
   }
 
-  int GetMouseX(void)
+  int GetMouseX()
   {
     InputRead();
     MouseX += MouseMoveX / MouseSensitivity;
@@ -3588,7 +3588,7 @@ ASM_COMMAND(_top_mmx:)
     return((int)MouseX);
   }
 
-  int GetMouseY(void)
+  int GetMouseY()
   {
     MouseY += MouseMoveY / MouseSensitivity;
 
@@ -3637,17 +3637,17 @@ ASM_COMMAND(_top_mmx:)
     return((int)MouseY);
   }
 
-  int GetMouseMoveX(void)
+  int GetMouseMoveX()
   {
     return((int)MouseMoveX / MouseSensitivity);
   }
 
-  int GetMouseMoveY(void)
+  int GetMouseMoveY()
   {
     return((int)MouseMoveY / MouseSensitivity);
   }
 
-  int GetMouseButton(void)
+  int GetMouseButton()
   {
     if (MouseButton == (lhguimouse ? 2 : 1))
     {

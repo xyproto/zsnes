@@ -28,7 +28,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 
 // FUNCTIONS
-extern void hq2x_16b(void);
+extern void hq2x_16b();
 
 // VIDEO VARIABLES
 extern uint8_t cvidmode;
@@ -54,9 +54,9 @@ extern uint8_t curblank;
 extern uint8_t GUIRESIZE[];
 
 void gl_clearwin();
-void UpdateVFrame(void);
+void UpdateVFrame();
 
-void gl_scanlines(void);
+void gl_scanlines();
 
 int gl_start(int width, int height, int req_depth, int FullScreen)
 {
@@ -151,7 +151,7 @@ extern uint8_t *WinVidMemStart;
 extern uint8_t MMXSupport;
 extern uint8_t NGNoTransp;
 extern uint8_t newengen;
-extern void copy640x480x16bwin(void);
+extern void copy640x480x16bwin();
 extern uint8_t SpecialLine[224];  /* 0 if lo-res, > 0 if hi-res */
 
 void gl_clearwin()
@@ -412,7 +412,7 @@ void gl_drawwin()
   SwapBuffers(hDC);
 }
 
-void gl_scanlines(void)
+void gl_scanlines()
 {
   GLubyte scanbuffer[256][4];
   int i, j = (100 - sl_intensity) * 256 / 100;

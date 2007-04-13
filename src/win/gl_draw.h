@@ -32,7 +32,7 @@ void gl_clearwin();
 void gl_drawwin();
 
 // FUNCTIONS
-extern void hq2x_16b(void);
+extern void hq2x_16b();
 
 // VIDEO VARIABLES
 extern uint8_t cvidmode;
@@ -61,8 +61,8 @@ extern uint8_t curblank;
 extern uint8_t GUIRESIZE[];
 
 void gl_clearwin();
-void UpdateVFrame(void);
-void gl_scanlines(void);
+void UpdateVFrame();
+void gl_scanlines();
 
 
 #endif
