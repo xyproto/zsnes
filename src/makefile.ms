@@ -296,13 +296,11 @@ else
 endif
 
 %${OE}: %.psr
-	.${SLASH}parsegen -D${OS} -cheader $(patsubst %${OE},%.h,$@) -fname $(notdir $(patsubst %${OE},%,$@)) temppsr.c $<
 ifneq (${ENV},msvc)
-	${CC} ${CFLAGS} -O1 -o $@ -c temppsr.c
+	.${SLASH}parsegen -D${OS} -gcc ${CC} -compile -flags "${CFLAGS} -O1" -cheader $(patsubst %${OE},%.h,$@) -fname $(notdir $(patsubst %${OE},%,$@)) $@ $<
 else
-	cl ${CFLAGS} /Fo$@ temppsr.c
+	.${SLASH}parsegen -D${OS} -compile -flags "${CFLAGS}" -cheader $(patsubst %${OE},%.h,$@) -fname $(notdir $(patsubst %${OE},%,$@)) $@ $<
 endif
-	${DELETECOMMAND} temppsr.c
 
 ALL: zsnes
 	${DELETECOMMAND} version${OE}
