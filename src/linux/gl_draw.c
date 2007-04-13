@@ -65,11 +65,15 @@ void SetGLAttributes()
 {
   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 #if (SDL_MAJOR_VERSION > 1) || ((SDL_MINOR_VERSION > 2) || ((SDL_MINOR_VERSION == 2) && (SDL_PATCHLEVEL >= 10)))
-  if(vsyncon)
+  if (vsyncon)
+  {
     SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL, 1);
+  }
   else
+  {
     SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL, 0);
-  SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL,1);
+  }
+  SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
 #endif
 }
 
@@ -97,7 +101,7 @@ int gl_start(int width, int height, int req_depth, int FullScreen)
   surface = SDL_SetVideoMode(SurfaceX, SurfaceY, req_depth, flags);
   if (surface == NULL)
   {
-    fprintf(stderr, "Could not set %dx%d-GL video mode.\n",SurfaceX, SurfaceY);
+    fprintf(stderr, "Could not set %dx%d-GL video mode.\n", SurfaceX, SurfaceY);
     return false;
   }
 
@@ -109,8 +113,7 @@ int gl_start(int width, int height, int req_depth, int FullScreen)
   SDL_WarpMouse(SurfaceX / 4, SurfaceY / 4);
 
   // Grab mouse in fullscreen mode
-  FullScreen ? SDL_WM_GrabInput(SDL_GRAB_ON) :
-               SDL_WM_GrabInput(SDL_GRAB_OFF);
+  FullScreen ? SDL_WM_GrabInput(SDL_GRAB_ON) : SDL_WM_GrabInput(SDL_GRAB_OFF);
 
   SDL_WM_SetCaption("ZSNES", "ZSNES");
   SDL_ShowCursor(0);
@@ -128,7 +131,8 @@ int gl_start(int width, int height, int req_depth, int FullScreen)
    * gltextures[3]: 1D texture, 256 lines of alternating alpha
    */
   glGenTextures(4, gltextures);
-  for (i = 0; i < 3; i++) {
+  for (i = 0; i < 3; i++)
+  {
     glBindTexture(GL_TEXTURE_2D, gltextures[i]);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, glfilters);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, glfilters);
@@ -136,7 +140,10 @@ int gl_start(int width, int height, int req_depth, int FullScreen)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
   }
 
-  if (sl_intensity) gl_scanlines();
+  if (sl_intensity)
+  {
+    gl_scanlines();
+  }
 
   return true;
 }
@@ -190,11 +197,11 @@ static void gl_drawspan(int hires, int start, int end)
   {
     if (hires != gltexture512)
     {
-      unsigned short *vbuf1 = &((unsigned short *) vidbuffer)[16];
-      unsigned short *vbuf2 = &((unsigned short *) vidbuffer)[75036 * 2 + 16];
-      unsigned short *vbuf = &glvidbuffer[0];
+      unsigned short * vbuf1 = &((unsigned short *) vidbuffer)[16];
+      unsigned short * vbuf2 = &((unsigned short *) vidbuffer)[75036 * 2 + 16];
+      unsigned short * vbuf = &glvidbuffer[0];
 
-      if (hires>1) // mode 7
+      if (hires > 1) // mode 7
       {
         for (j = 224; j--;)
         {
@@ -206,9 +213,7 @@ static void gl_drawspan(int hires, int start, int end)
           vbuf2 += 32;
         }
         glBindTexture(GL_TEXTURE_2D, gltextures[1]);
-        glTexImage2D(GL_TEXTURE_2D, 0, 3, 256, 512, 0,
-               GL_RGB, GL_UNSIGNED_SHORT_5_6_5,
-               glvidbuffer);
+        glTexImage2D(GL_TEXTURE_2D, 0, 3, 256, 512, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, glvidbuffer);
 
         gltexture512 = 2;
       }
@@ -226,9 +231,7 @@ static void gl_drawspan(int hires, int start, int end)
         }
 
         glBindTexture(GL_TEXTURE_2D, gltextures[1]);
-        glTexImage2D(GL_TEXTURE_2D, 0, 3, 512, 256, 0,
-               GL_RGB, GL_UNSIGNED_SHORT_5_6_5,
-               glvidbuffer);
+        glTexImage2D(GL_TEXTURE_2D, 0, 3, 512, 256, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, glvidbuffer);
 
         gltexture512 = 1;
       }
@@ -236,14 +239,14 @@ static void gl_drawspan(int hires, int start, int end)
 
     glBindTexture(GL_TEXTURE_2D, gltextures[1]);
     glBegin(GL_QUADS);
-      glTexCoord2f(0.0f, (224.0 / 256.0) * (start / 224.0));
-      glVertex2f(-1.0f, (112 - start) / 112.0);
-      glTexCoord2f(1.0f, (224.0 / 256.0) * (start / 224.0));
-      glVertex2f(1.0f, (112 - start) / 112.0);
-      glTexCoord2f(1.0f, (224.0 / 256.0) * (end / 224.0));
-      glVertex2f(1.0f, (112 - end) / 112.0);
-      glTexCoord2f(0.0f, (224.0 / 256.0) * (end / 224.0));
-      glVertex2f(-1.0f, (112 - end) / 112.0);
+    glTexCoord2f(0.0f, (224.0 / 256.0) * (start / 224.0));
+    glVertex2f(-1.0f, (112 - start) / 112.0);
+    glTexCoord2f(1.0f, (224.0 / 256.0) * (start / 224.0));
+    glVertex2f(1.0f, (112 - start) / 112.0);
+    glTexCoord2f(1.0f, (224.0 / 256.0) * (end / 224.0));
+    glVertex2f(1.0f, (112 - end) / 112.0);
+    glTexCoord2f(0.0f, (224.0 / 256.0) * (end / 224.0));
+    glVertex2f(-1.0f, (112 - end) / 112.0);
     glEnd();
   }
   else
@@ -254,9 +257,8 @@ static void gl_drawspan(int hires, int start, int end)
       glPixelStorei(GL_UNPACK_SKIP_PIXELS, 16);
       glPixelStorei(GL_UNPACK_ROW_LENGTH, 288);
 
-      glTexImage2D(GL_TEXTURE_2D, 0, 3, 256, 256, 0,
-             GL_RGB, GL_UNSIGNED_SHORT_5_6_5,
-             ((unsigned short *) vidbuffer) + 288);
+      glTexImage2D(GL_TEXTURE_2D, 0, 3, 256, 256, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5,
+                   ((unsigned short *) vidbuffer) + 288);
 
       glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
       glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
@@ -265,14 +267,14 @@ static void gl_drawspan(int hires, int start, int end)
     }
 
     glBegin(GL_QUADS);
-      glTexCoord2f(0.0f, (224.0 / 256.0) * (start / 224.0));
-      glVertex2f(-1.0f, (112 - start) / 112.0);
-      glTexCoord2f(1.0f, (224.0 / 256.0) * (start / 224.0));
-      glVertex2f(1.0f, (112 - start) / 112.0);
-      glTexCoord2f(1.0f, (224.0 / 256.0) * (end / 224.0));
-      glVertex2f(1.0f, (112 - end) / 112.0);
-      glTexCoord2f(0.0f, (224.0 / 256.0) * (end / 224.0));
-      glVertex2f(-1.0f, (112 - end) / 112.0);
+    glTexCoord2f(0.0f, (224.0 / 256.0) * (start / 224.0));
+    glVertex2f(-1.0f, (112 - start) / 112.0);
+    glTexCoord2f(1.0f, (224.0 / 256.0) * (start / 224.0));
+    glVertex2f(1.0f, (112 - start) / 112.0);
+    glTexCoord2f(1.0f, (224.0 / 256.0) * (end / 224.0));
+    glVertex2f(1.0f, (112 - end) / 112.0);
+    glTexCoord2f(0.0f, (224.0 / 256.0) * (end / 224.0));
+    glVertex2f(-1.0f, (112 - end) / 112.0);
     glEnd();
   }
 }
@@ -282,15 +284,17 @@ void gl_drawwin()
   int i;
 
   NGNoTransp = 0;    // Set this value to 1 within the appropriate
-        // video mode if you want to add a custom
-        // transparency routine or hardware
-        // transparency.  This only works if
-        // the value of newengen is equal to 1.
-        // (see ProcessTransparencies in newgfx16.asm
-        //  for ZSNES' current transparency code)
+  // video mode if you want to add a custom
+  // transparency routine or hardware
+  // transparency.  This only works if
+  // the value of newengen is equal to 1.
+  // (see ProcessTransparencies in newgfx16.asm
+  //  for ZSNES' current transparency code)
   UpdateVFrame();
   if (curblank || !CheckOGLMode())
+  {
     return;
+  }
 
   if (SurfaceX >= 512 && (hqFilter || En2xSaI))
   {
@@ -298,28 +302,29 @@ void gl_drawwin()
     NumBytesPerLine = 1024;
     WinVidMemStart = (void *) glvidbuffer;
 
-    if (hqFilter) hq2x_16b();
-    else asm_call(copy640x480x16bwin);
+    if (hqFilter)
+      hq2x_16b();
+    else
+      asm_call(copy640x480x16bwin);
 
     /* Display 1 512x448 quad for the 512x448 buffer */
     glBindTexture(GL_TEXTURE_2D, gltextures[1]);
     glTexEnvi(GL_TEXTURE_2D, GL_TEXTURE_ENV_MODE, GL_DECAL);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 512, 512, 0,
-                 GL_RGB, GL_UNSIGNED_SHORT_5_6_5, glvidbuffer);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 512, 512, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, glvidbuffer);
 
-    glDisable (GL_DEPTH_TEST);
-    glDisable (GL_LIGHTING);
-    glDisable (GL_BLEND);
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_LIGHTING);
+    glDisable(GL_BLEND);
 
     glBegin(GL_QUADS);
-      glTexCoord2f(0.0f, 0.0f);
-      glVertex3f(-1.0f, 1.0f, -1.0f);
-      glTexCoord2f(1.0f, 0.0f);
-      glVertex3f(1.0f, 1.0f, -1.0f);
-      glTexCoord2f(1.0f, 448.0f / 512.0f);
-      glVertex3f(1.0f, -1.0f, -1.0f);
-      glTexCoord2f(0.0f, 448.0f / 512.0f);
-      glVertex3f(-1.0f, -1.0f, -1.0f);
+    glTexCoord2f(0.0f, 0.0f);
+    glVertex3f(-1.0f, 1.0f, -1.0f);
+    glTexCoord2f(1.0f, 0.0f);
+    glVertex3f(1.0f, 1.0f, -1.0f);
+    glTexCoord2f(1.0f, 448.0f / 512.0f);
+    glVertex3f(1.0f, -1.0f, -1.0f);
+    glTexCoord2f(0.0f, 448.0f / 512.0f);
+    glVertex3f(-1.0f, -1.0f, -1.0f);
     glEnd();
   }
   else
@@ -370,7 +375,8 @@ void gl_drawwin()
       glDisable(GL_TEXTURE_2D);
       glEnable(GL_BLEND);
 
-      if (sl_intensity != glscanready) gl_scanlines();
+      if (sl_intensity != glscanready)
+        gl_scanlines();
 
       glBlendFunc(GL_DST_COLOR, GL_ZERO);
       glBindTexture(GL_TEXTURE_1D, gltextures[3]);
@@ -398,22 +404,21 @@ void gl_drawwin()
 void gl_scanlines(void)
 {
   GLubyte scanbuffer[256][4];
-  int i, j = (100-sl_intensity)*256/100;
+  int i, j = (100 - sl_intensity) * 256 / 100;
 
   for (i = 0; i < 256; i += 2)
   {
     scanbuffer[i][0] = scanbuffer[i][1] = scanbuffer[i][2] = j;
     scanbuffer[i][3] = 0xFF;
 
-    scanbuffer[i+1][0] = scanbuffer[i+1][1] = scanbuffer[i+1][2] = 0xFF;
-    scanbuffer[i+1][3] = 0xFF;
+    scanbuffer[i + 1][0] = scanbuffer[i + 1][1] = scanbuffer[i + 1][2] = 0xFF;
+    scanbuffer[i + 1][3] = 0xFF;
   }
 
   glBindTexture(GL_TEXTURE_1D, gltextures[3]);
   glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA, 256, 0, GL_RGBA,
-         GL_UNSIGNED_BYTE, scanbuffer);
+  glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA, 256, 0, GL_RGBA, GL_UNSIGNED_BYTE, scanbuffer);
 
   glscanready = sl_intensity;
 }
