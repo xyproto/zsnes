@@ -913,7 +913,7 @@ static void handle_params(int argc, char *argv[])
   }
 }
 
-static void ZCleanup(void)
+static void ZCleanup()
 {
   void deinit_paths();
   void deallocmem();

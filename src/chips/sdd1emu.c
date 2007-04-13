@@ -210,7 +210,7 @@ void SDD1_init(unsigned char *in){
     num_bits=0;
 }
 
-unsigned char SDD1_get_byte(void){
+unsigned char SDD1_get_byte(){
     unsigned char bit;
     unsigned char byte=0;
 

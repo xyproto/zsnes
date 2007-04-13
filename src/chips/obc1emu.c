@@ -19,27 +19,17 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-typedef unsigned char bool8;
-typedef unsigned char uint8;
-typedef unsigned short uint16;
-typedef unsigned int uint32;
-typedef char int8;
-typedef short int16;
-typedef long int32;
+#include <stdint.h>
+#include <stdbool.h>
 
-//C++ in C
-typedef unsigned char bool;
-#define true 1
-#define false 0
-
-static uint8 *OBC1_RAM = 0;
+static uint8_t *OBC1_RAM = 0;
 
 int OBC1_Address;
 int OBC1_BasePtr;
 int OBC1_Shift;
 
-uint16 obc1_address;
-uint8 obc1_byte;
+uint16_t obc1_address;
+uint8_t obc1_byte;
 
 void GetOBC1 ()
 {

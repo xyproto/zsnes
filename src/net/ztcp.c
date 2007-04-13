@@ -864,7 +864,7 @@ void PacketResend()
    }
 }
 
-extern void UpdateVFrame(void);
+extern void UpdateVFrame();
 
 int SendData(int dsize,unsigned char *dptr)
 {
@@ -1234,7 +1234,7 @@ void UDPDisableMode(){
   UDPMode2=0;
 }
 
-void WinErrorA2(void){
+void WinErrorA2(){
 #ifdef __UNIXSDL__
     STUB_FUNCTION;
 #else
@@ -1244,7 +1244,7 @@ void WinErrorA2(void){
 #endif
 }
 
-void WinErrorB2(void){
+void WinErrorB2(){
 #ifdef __UNIXSDL__
     STUB_FUNCTION;
 #else
@@ -1254,7 +1254,7 @@ void WinErrorB2(void){
 #endif
 }
 
-void WinErrorC2(void){
+void WinErrorC2(){
 #ifdef __UNIXSDL__
     STUB_FUNCTION;
 #else

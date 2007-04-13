@@ -49,7 +49,7 @@ void Log_Message (char *Message, ...)
    fflush (LogFile);
 }
 
-void Start_Log (void)
+void Start_Log ()
 {
 	char LogFileName[255];
 //  [4/15/2001]	char *p;
@@ -59,7 +59,7 @@ void Start_Log (void)
    LogFile = fopen(LogFileName,"wb");
 }
 
-void Stop_Log (void)
+void Stop_Log ()
 {
    if (LogFile)
    {
@@ -204,7 +204,7 @@ const unsigned short DSP1ROM[1024] = {
 *  DSP1 code                                                                *
 \***************************************************************************/
 
-void InitDSP(void)
+void InitDSP()
 {
 #ifdef DebugDSP1
 	Start_Log();

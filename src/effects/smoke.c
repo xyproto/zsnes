@@ -43,7 +43,7 @@ static unsigned char fire_buffer [SCRW * SCRH];
 
 static int fire_init_flag;
 
-static void draw_bottom_line_of_fire (void)
+static void draw_bottom_line_of_fire ()
 {
     int count, count2;
 
@@ -82,7 +82,7 @@ static void draw_bottom_line_of_fire (void)
 }
 
 
-static void init_fire (void)
+static void init_fire ()
 {
     int x, y, pixel, count;
 
@@ -115,7 +115,7 @@ static void init_fire (void)
     fire_init_flag = 1;
 }
 
-void DrawSmoke (void)
+void DrawSmoke ()
 {
     int x, y, pixel, pixel2;
 

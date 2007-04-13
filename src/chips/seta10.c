@@ -26,23 +26,17 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #else
 #include <math.h> //sqrt()
 #include <stdlib.h> //abs()
+#include <stdint.h>
 #include <stdbool.h>
 #endif
 
 #define SRAM setaramdata
 
 extern unsigned char *setaramdata;
-void ST010DoCommand(void);
-
-typedef signed char     int8;
-typedef unsigned char   uint8;
-typedef short           int16;
-typedef unsigned short  uint16;
-typedef int             int32;
-typedef unsigned int    uint32;
+void ST010DoCommand();
 
 // Mode 7 scaling constants for all raster lines
-const int16 ST010_M7Scale[176] = {
+const int16_t ST010_M7Scale[176] = {
 	0x0380,  0x0325,  0x02da,  0x029c,  0x0268,  0x023b,  0x0215,  0x01f3,
 	0x01d5,  0x01bb,  0x01a3,  0x018e,  0x017b,  0x016a,  0x015a,  0x014b,
 	0x013e,  0x0132,  0x0126,  0x011c,  0x0112,  0x0109,  0x0100,  0x00f8,
@@ -67,7 +61,7 @@ const int16 ST010_M7Scale[176] = {
 	0x002d,  0x002c,  0x002c,  0x002c,  0x002c,  0x002b,  0x002b,  0x002b
 };
 
-const int16 ST010_SinTable[256] = {
+const int16_t ST010_SinTable[256] = {
 	 0x0000,  0x0324,  0x0648,  0x096a,  0x0c8c,  0x0fab,  0x12c8,  0x15e2,
 	 0x18f9,  0x1c0b,  0x1f1a,  0x2223,  0x2528,  0x2826,  0x2b1f,  0x2e11,
 	 0x30fb,  0x33df,  0x36ba,  0x398c,  0x3c56,  0x3f17,  0x41ce,  0x447a,
@@ -232,10 +226,10 @@ void ST010_Rotate(short Theta, short X0, short Y0, short *X1, short *Y1)
   *Y1 = (Y0 * ST010_Cos(Theta) >> 15) - (X0 * ST010_Sin(Theta) >> 15);
 }
 
-void ST010_SortDrivers(uint16 Positions, uint16 Places[32], uint16 Drivers[32])
+void ST010_SortDrivers(uint16_t Positions, uint16_t Places[32], uint16_t Drivers[32])
 {
   bool Sorted;
-  uint16 Temp;
+  uint16_t Temp;
 
   if (Positions > 1)
   {
@@ -266,7 +260,7 @@ void ST010_SortDrivers(uint16 Positions, uint16 Places[32], uint16 Drivers[32])
 #define ST010_WORD(offset) (*((short *)(SRAM+offset)))
 //#define ST010_WORD(offset) (SRAM[offset + 1] << 8) | SRAM[offset]
 
-void ST010DoCommand(void)
+void ST010DoCommand()
 {
   switch(SRAM[0x20])
   {
@@ -292,7 +286,7 @@ void ST010DoCommand(void)
 
     case 0x02:
     {
-      ST010_SortDrivers(*(short*)&SRAM[0x0024], (uint16*)&SRAM[0x0040], (uint16*)&SRAM[0x0080]);
+      ST010_SortDrivers(*(short*)&SRAM[0x0024], (uint16_t*)&SRAM[0x0040], (uint16_t*)&SRAM[0x0080]);
     }
     break;
 
@@ -318,11 +312,11 @@ void ST010DoCommand(void)
 
     case 0x04:
     {
-      int16 square, x,y;
-      x=*((int16*)SRAM);
-      y=*((int16*)&SRAM[2]);
-      square=(int16)sqrt((double)(y*y+x*x));
-      *((int16*)&SRAM[0x10])=square;
+      int16_t square, x,y;
+      x=*((int16_t*)SRAM);
+      y=*((int16_t*)&SRAM[2]);
+      square=(int16_t)sqrt((double)(y*y+x*x));
+      *((int16_t*)&SRAM[0x10])=square;
       break;
     }
 
@@ -330,35 +324,35 @@ void ST010DoCommand(void)
     case 0x05:
     {
       int dx,dy;
-      int16 a1,b1,c1;
-      uint16 o1;
+      int16_t a1,b1,c1;
+      uint16_t o1;
 
       bool wrap=false;
 
       //Target (x,y) coordinates
-      int16 ypos_max = ST010_WORD(0x00C0);
-      int16 xpos_max = ST010_WORD(0x00C2);
+      int16_t ypos_max = ST010_WORD(0x00C0);
+      int16_t xpos_max = ST010_WORD(0x00C2);
 
       //Current coordinates and direction
-      int32 ypos = SRAM[0xC4]|(SRAM[0xC5]<<8)|(SRAM[0xC6]<<16)|(SRAM[0xC7]<<24);
-      int32 xpos = SRAM[0xC8]|(SRAM[0xC9]<<8)|(SRAM[0xCA]<<16)|(SRAM[0xCB]<<24);
-      uint16 rot = SRAM[0xCC]|(SRAM[0xCD]<<8);
+      int32_t ypos = SRAM[0xC4]|(SRAM[0xC5]<<8)|(SRAM[0xC6]<<16)|(SRAM[0xC7]<<24);
+      int32_t xpos = SRAM[0xC8]|(SRAM[0xC9]<<8)|(SRAM[0xCA]<<16)|(SRAM[0xCB]<<24);
+      uint16_t rot = SRAM[0xCC]|(SRAM[0xCD]<<8);
 
       //Physics
-      uint16 speed = ST010_WORD(0x00D4);
-      uint16 accel = ST010_WORD(0x00D6);
-      uint16 speed_max = ST010_WORD(0x00D8);
+      uint16_t speed = ST010_WORD(0x00D4);
+      uint16_t accel = ST010_WORD(0x00D6);
+      uint16_t speed_max = ST010_WORD(0x00D8);
 
       //Special condition acknowledgment
-      int16 system = ST010_WORD(0x00DA);
-      int16 flags = ST010_WORD(0x00DC);
+      int16_t system = ST010_WORD(0x00DA);
+      int16_t flags = ST010_WORD(0x00DC);
 
       //New target coordinates
-      int16 ypos_new = ST010_WORD(0x00DE);
-      int16 xpos_new = ST010_WORD(0x00E0);
+      int16_t ypos_new = ST010_WORD(0x00DE);
+      int16_t xpos_new = ST010_WORD(0x00E0);
 
       //Backup speed
-      uint16 old_speed = speed;
+      uint16_t old_speed = speed;
 
       //Mask upper bit
       xpos_new &= 0x7FFF;
@@ -374,7 +368,7 @@ void ST010DoCommand(void)
       SRAM[0xDB]=0;
 
       //Grab the target angle
-      ST010_OP01(dy,dx,&a1,&b1,&c1,(int16 *)&o1);
+      ST010_OP01(dy,dx,&a1,&b1,&c1,(int16_t *)&o1);
 
       //Check for wrapping
       if (abs(o1-rot)>0x8000)
@@ -393,7 +387,7 @@ void ST010DoCommand(void)
       //Slow down for sharp curves
       else if (abs(o1-rot)>=0x1000)
       {
-        uint32 slow = abs(o1-rot);
+        uint32_t slow = abs(o1-rot);
         slow >>= 4; //Scaling
         speed -= slow;
       }
@@ -450,24 +444,24 @@ void ST010DoCommand(void)
       xpos &= 0x1FFFFFFF;
       ypos &= 0x1FFFFFFF;
 
-      SRAM[0x00C0]=(uint8)(ypos_max);
-      SRAM[0x00C1]=(uint8)(ypos_max >> 8);
-      SRAM[0x00C2]=(uint8)(xpos_max);
-      SRAM[0x00C3]=(uint8)(xpos_max >> 8);
-      SRAM[0x00C4]=(uint8)(ypos);
-      SRAM[0x00C5]=(uint8)(ypos >> 8);
-      SRAM[0x00C6]=(uint8)(ypos >> 16);
-      SRAM[0x00C7]=(uint8)(ypos >> 24);
-      SRAM[0x00C8]=(uint8)(xpos);
-      SRAM[0x00C9]=(uint8)(xpos >> 8);
-      SRAM[0x00CA]=(uint8)(xpos >> 16);
-      SRAM[0x00CB]=(uint8)(xpos >> 24);
-      SRAM[0x00CC]=(uint8)(rot);
-      SRAM[0x00CD]=(uint8)(rot >> 8);
-      SRAM[0x00D4]=(uint8)(speed);
-      SRAM[0x00D5]=(uint8)(speed >> 8);
-      SRAM[0x00DC]=(uint8)(flags);
-      SRAM[0x00DD]=(uint8)(flags >> 8);
+      SRAM[0x00C0]=(uint8_t)(ypos_max);
+      SRAM[0x00C1]=(uint8_t)(ypos_max >> 8);
+      SRAM[0x00C2]=(uint8_t)(xpos_max);
+      SRAM[0x00C3]=(uint8_t)(xpos_max >> 8);
+      SRAM[0x00C4]=(uint8_t)(ypos);
+      SRAM[0x00C5]=(uint8_t)(ypos >> 8);
+      SRAM[0x00C6]=(uint8_t)(ypos >> 16);
+      SRAM[0x00C7]=(uint8_t)(ypos >> 24);
+      SRAM[0x00C8]=(uint8_t)(xpos);
+      SRAM[0x00C9]=(uint8_t)(xpos >> 8);
+      SRAM[0x00CA]=(uint8_t)(xpos >> 16);
+      SRAM[0x00CB]=(uint8_t)(xpos >> 24);
+      SRAM[0x00CC]=(uint8_t)(rot);
+      SRAM[0x00CD]=(uint8_t)(rot >> 8);
+      SRAM[0x00D4]=(uint8_t)(speed);
+      SRAM[0x00D5]=(uint8_t)(speed >> 8);
+      SRAM[0x00DC]=(uint8_t)(flags);
+      SRAM[0x00DD]=(uint8_t)(flags >> 8);
     }
     break;
 
@@ -501,29 +495,29 @@ void ST010DoCommand(void)
 
     case 0x07:
     {
-      int16 data;
-      int32 offset = 0;
-      int16 Theta = ST010_WORD(0x0000);
+      int16_t data;
+      int32_t offset = 0;
+      int16_t Theta = ST010_WORD(0x0000);
 
-      int32 line;
+      int32_t line;
       for (line = 0; line < 176; line++)
       {
         //Calculate Mode 7 Matrix A/D data
         data = ST010_M7Scale[line] * ST010_Cos(Theta) >> 15;
-        SRAM[0x00f0 + offset]=(uint8)(data);
-        SRAM[0x00f1 + offset]=(uint8)(data >> 8);
-        SRAM[0x0510 + offset]=(uint8)(data);
-        SRAM[0x0511 + offset]=(uint8)(data >> 8);
+        SRAM[0x00f0 + offset]=(uint8_t)(data);
+        SRAM[0x00f1 + offset]=(uint8_t)(data >> 8);
+        SRAM[0x0510 + offset]=(uint8_t)(data);
+        SRAM[0x0511 + offset]=(uint8_t)(data >> 8);
 
         //Calculate Mode 7 Matrix B/C data
         data = ST010_M7Scale[line] * ST010_Sin(Theta) >> 15;
-        SRAM[0x0250 + offset]=(uint8)(data);
-        SRAM[0x0251 + offset]=(uint8)(data >> 8);
+        SRAM[0x0250 + offset]=(uint8_t)(data);
+        SRAM[0x0251 + offset]=(uint8_t)(data >> 8);
 
         if (data) { data = ~data; }
 
-        SRAM[0x03b0 + offset]=(uint8)(data);
-        SRAM[0x03b1 + offset]=(uint8)(data >> 8);
+        SRAM[0x03b0 + offset]=(uint8_t)(data);
+        SRAM[0x03b1 + offset]=(uint8_t)(data >> 8);
 
         offset += 2;
       }

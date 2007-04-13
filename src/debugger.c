@@ -67,7 +67,7 @@ extern unsigned char spcA, spcX, spcY, spcS, spcNZ, spcP;
 // these really shouldn't be written in ASM... (they are in debugasm.asm)
 extern unsigned char memtabler8_wrapper(unsigned char, unsigned short);
 extern          void memtablew8_wrapper(unsigned char, unsigned short, unsigned char);
-extern void breakops_wrapper(void);
+extern void breakops_wrapper();
 
 extern void regaccessbankr8();
 extern void start65816();
