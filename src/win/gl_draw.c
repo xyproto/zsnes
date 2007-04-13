@@ -20,14 +20,12 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
 #include <windows.h>
+#include <stdint.h>
 #include <GL/gl.h>
 #include <GL/glext.h>
+#include "gl_draw.h"
 #include "../cfg.h"
-#include <stdint.h>
 
-/*typedef enum
-{ FALSE = 0, TRUE = !FALSE }
-BOOL;*/
 
 // FUNCTIONS
 extern void hq2x_16b(void);
@@ -52,7 +50,6 @@ extern uint8_t En2xSaI;
 extern uint8_t sl_intensity;
 extern uint8_t FilteredGUI;
 extern uint8_t GUIOn2;
-extern uint8_t vidbuffer;
 extern uint8_t curblank;
 extern uint8_t GUIRESIZE[];
 

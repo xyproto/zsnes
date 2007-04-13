@@ -23,6 +23,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #ifndef GL_DRAW_h
 #define GL_DRAW_h 1
 
+#include <GL/gl.h>
 #include <stdint.h>
 
 int gl_start(int width, int height, int req_depth, int FullScreen);
@@ -44,11 +45,13 @@ extern HDC hDC;
 extern HGLRC hRC;
 
 // OPENGL VARIABLES
+/* Any reason for putting static variables in a header file? -Nach
 static unsigned short *glvidbuffer = 0;
 static GLuint gltextures[4];
 static int32_t gltexture256, gltexture512;
 static int32_t glfilters = GL_NEAREST;
 static int32_t glscanready = 0;
+*/
 extern uint8_t En2xSaI;
 extern uint8_t sl_intensity;
 extern uint8_t FilteredGUI;

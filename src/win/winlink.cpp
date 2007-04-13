@@ -174,7 +174,7 @@ DWORD                   NumBTN[]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
 DWORD                   CurrentJoy=0;
 
-DWORD                   BitDepth;
+uint32_t                BitDepth;
 DWORD                   GBitMask;
 BYTE                    BackColor=0;
 DEVMODE                 mode;
@@ -196,8 +196,8 @@ RECT                    BlitArea;
 BYTE                    AltSurface=0;
 extern "C" {
 DWORD                   MouseButton;
-DWORD                   SurfaceX=0;
-DWORD                   SurfaceY=0;
+int32_t                 SurfaceX=0;
+int32_t                 SurfaceY=0;
 }
 
 HANDLE hLock, hThread;
