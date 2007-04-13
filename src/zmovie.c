@@ -2667,8 +2667,6 @@ static void OldMoviePlay(FILE *fp)
   unsigned char RecData[16];
   extern unsigned char NextLineCache, sramsavedis;
   extern size_t Totalbyteloaded;
-  extern unsigned int curexecstate;
-  extern unsigned int nmiprevaddrl, nmiprevaddrh, nmirept, nmiprevline, nmistatus;
   void loadstate2();
 
   memset(&old_movie, 0, sizeof(old_movie));
