@@ -63,12 +63,12 @@ void SA1UpdateDPageC(), unpackfunct(), repackfunct();
 void PrepareOffset(), ResetOffset(), initpitch(), UpdateBanksSDD1();
 void procexecloop(), outofmemory();
 
-extern unsigned char cacheud, ccud, intrset, cycpl, cycphb, xdbt, xpbt, xp;
-extern unsigned char xe, xirqb, debugger, curnmi;
-extern unsigned short curypos, stackand, stackor, xat, xst, xdt, xxt, xyt, xpc;
-extern unsigned int Curtableaddr, cycpblt;
+extern uint8_t cacheud, ccud, intrset, cycpl, cycphb, xdbt, xpbt, xp;
+extern uint8_t xe, xirqb, debugger, curnmi;
+extern uint16_t curypos, stackand, stackor, xat, xst, xdt, xxt, xyt, xpc;
+extern uint32_t Curtableaddr, cycpblt;
 
-static void copy_snes_data(unsigned char **buffer, void (*copy_func)(unsigned char **, void *, size_t))
+static void copy_snes_data(uint8_t **buffer, void (*copy_func)(uint8_t **, void *, size_t))
 {
   //65816 status, etc.
   copy_func(buffer, &curcyc, 1);
@@ -102,7 +102,7 @@ static void copy_snes_data(unsigned char **buffer, void (*copy_func)(unsigned ch
   copy_func(buffer, &sndrot, 3019);
 }
 
-static void copy_spc_data(unsigned char **buffer, void (*copy_func)(unsigned char **, void *, size_t))
+static void copy_spc_data(uint8_t **buffer, void (*copy_func)(uint8_t **, void *, size_t))
 {
   //SPC stuff, DSP stuff
   copy_func(buffer, SPCRAM, PHspcsave);
@@ -110,7 +110,7 @@ static void copy_spc_data(unsigned char **buffer, void (*copy_func)(unsigned cha
   copy_func(buffer, &DSPMem, sizeof(DSPMem));
 }
 
-static void copy_extra_data(unsigned char **buffer, void (*copy_func)(unsigned char **, void *, size_t))
+static void copy_extra_data(uint8_t **buffer, void (*copy_func)(uint8_t **, void *, size_t))
 {
   copy_func(buffer, &soundcycleft, 4);
   copy_func(buffer, &curexecstate, 4);
@@ -140,9 +140,9 @@ enum copy_state_method { csm_save_zst_new,
                          csm_save_rewind,
                          csm_load_rewind };
 
-extern unsigned char *SPC7110PackPtr;
+extern uint8_t *SPC7110PackPtr;
 
-static void copy_state_data(unsigned char *buffer, void (*copy_func)(unsigned char **, void *, size_t), enum copy_state_method method)
+static void copy_state_data(uint8_t *buffer, void (*copy_func)(uint8_t **, void *, size_t), enum copy_state_method method)
 {
   copy_snes_data(&buffer, copy_func);
 
@@ -304,28 +304,28 @@ static void copy_state_data(unsigned char *buffer, void (*copy_func)(unsigned ch
   }
 }
 
-static void memcpyinc(unsigned char **dest, void *src, size_t len)
+static void memcpyinc(uint8_t **dest, void *src, size_t len)
 {
   memcpy(*dest, src, len);
   *dest += len;
 }
 
-static void memcpyrinc(unsigned char **src, void *dest, size_t len)
+static void memcpyrinc(uint8_t **src, void *dest, size_t len)
 {
   memcpy(dest, *src, len);
   *src += len;
 }
 
-extern unsigned int RewindTimer, DblRewTimer;
-extern unsigned char EMUPause;
+extern uint32_t RewindTimer, DblRewTimer;
+extern uint8_t EMUPause;
 
-unsigned char *StateBackup = 0;
-unsigned char AllocatedRewindStates, LatestRewindPos, EarliestRewindPos;
+uint8_t *StateBackup = 0;
+uint8_t AllocatedRewindStates, LatestRewindPos, EarliestRewindPos;
 bool RewindPosPassed;
 
 size_t rewind_state_size, cur_zst_size, old_zst_size;
 
-extern unsigned char romispal;
+extern uint8_t romispal;
 void zmv_rewind_save(size_t, bool);
 void zmv_rewind_load(size_t, bool);
 
@@ -337,7 +337,7 @@ void ClearCacheCheck()
 }
 
 //Code to handle special frames for pausing, and desync checking
-unsigned char *SpecialPauseBackup = 0, PauseFrameMode = 0;
+uint8_t *SpecialPauseBackup = 0, PauseFrameMode = 0;
 /*
 Pause frame modes
 
@@ -371,11 +371,11 @@ void DeallocPauseFrame()
   if (SpecialPauseBackup) { free(SpecialPauseBackup); }
 }
 
-#define ActualRewindFrames (unsigned int)(RewindFrames * (romispal ? 10 : 12))
+#define ActualRewindFrames (uint32_t)(RewindFrames * (romispal ? 10 : 12))
 
 void BackupCVFrame()
 {
-  unsigned char *RewindBufferPos = StateBackup + LatestRewindPos*rewind_state_size;
+  uint8_t *RewindBufferPos = StateBackup + LatestRewindPos*rewind_state_size;
 
   if (MovieProcessing == MOVIE_PLAYBACK) { zmv_rewind_save(LatestRewindPos, true); }
   else if (MovieProcessing == MOVIE_RECORD) { zmv_rewind_save(LatestRewindPos, false); }
@@ -399,7 +399,7 @@ void BackupCVFrame()
 
 void RestoreCVFrame()
 {
-  unsigned char *RewindBufferPos;
+  uint8_t *RewindBufferPos;
 
   if (LatestRewindPos != ((EarliestRewindPos+1)%AllocatedRewindStates))
   {
@@ -455,7 +455,7 @@ void SetupRewindBuffer()
   for (; RewindStates; RewindStates--)
   {
     StateBackup = 0;
-    StateBackup = (unsigned char *)malloc(rewind_state_size*RewindStates);
+    StateBackup = (uint8_t *)malloc(rewind_state_size*RewindStates);
     if (StateBackup) { break; }
   }
   AllocatedRewindStates = RewindStates;
@@ -468,14 +468,14 @@ void DeallocRewindBuffer()
 
 static size_t state_size;
 
-static void state_size_tally(unsigned char **dest, void *src, size_t len)
+static void state_size_tally(uint8_t **dest, void *src, size_t len)
 {
   state_size += len;
 }
 
 void InitRewindVars()
 {
-  unsigned char almost_useless_array[1]; //An array is needed for copy_state_data to give the correct size
+  uint8_t almost_useless_array[1]; //An array is needed for copy_state_data to give the correct size
   state_size = 0;
   copy_state_data(almost_useless_array, state_size_tally, csm_save_rewind);
   rewind_state_size = state_size;
@@ -498,11 +498,11 @@ void InitRewindVarsForMovie()
 }
 
 //This is used to preserve system load state between game loads
-static unsigned char *BackupSystemBuffer = 0;
+static uint8_t *BackupSystemBuffer = 0;
 
 void BackupSystemVars()
 {
-  unsigned char *buffer;
+  uint8_t *buffer;
 
   if (!BackupSystemBuffer)
   {
@@ -510,7 +510,7 @@ void BackupSystemVars()
     copy_snes_data(&buffer, state_size_tally);
     copy_spc_data(&buffer, state_size_tally);
     copy_extra_data(&buffer, state_size_tally);
-    BackupSystemBuffer = (unsigned char *)malloc(state_size);
+    BackupSystemBuffer = (uint8_t *)malloc(state_size);
   }
 
   if (BackupSystemBuffer)
@@ -526,7 +526,7 @@ void RestoreSystemVars()
 {
   if (BackupSystemBuffer)
   {
-    unsigned char *buffer = BackupSystemBuffer;
+    uint8_t *buffer = BackupSystemBuffer;
     InitRewindVars();
     copy_snes_data(&buffer, memcpyrinc);
     copy_spc_data(&buffer, memcpyrinc);
@@ -539,15 +539,15 @@ void DeallocSystemVars()
   if (BackupSystemBuffer) { free(BackupSystemBuffer); }
 }
 
-extern unsigned int spcBuffera;
+extern uint32_t spcBuffera;
 extern unsigned int Voice0BufPtr, Voice1BufPtr, Voice2BufPtr, Voice3BufPtr;
 extern unsigned int Voice4BufPtr, Voice5BufPtr, Voice6BufPtr, Voice7BufPtr;
-extern unsigned int spcPCRam, spcRamDP;
+extern uintptr_t spcPCRam, spcRamDP;
 
 void PrepareSaveState()
 {
-  spcPCRam -= (unsigned int)SPCRAM;
-  spcRamDP -= (unsigned int)SPCRAM;
+  spcPCRam -= (uint32_t)SPCRAM;
+  spcRamDP -= (uint32_t)SPCRAM;
 
   Voice0BufPtr -= spcBuffera;
   Voice1BufPtr -= spcBuffera;
@@ -559,14 +559,15 @@ void PrepareSaveState()
   Voice7BufPtr -= spcBuffera;
 }
 
-extern unsigned int SA1Stat;
-extern unsigned char IRAM[2049], *SA1Ptr, *SA1RegPCS, *CurBWPtr, *SA1BWPtr;
-extern unsigned char *SNSBWPtr;
+extern uint32_t SA1Stat;
+extern uintptr_t IRAM[2049];
+extern uintptr_t *SA1Ptr, *SA1RegPCS, *CurBWPtr, SA1BWPtr;
+extern uintptr_t *SNSBWPtr;
 
 void SaveSA1()
 {
   SA1Stat &= 0xFFFFFF00;
-  SA1Ptr -= (unsigned int)SA1RegPCS;
+  SA1Ptr -= (uint32_t)SA1RegPCS;
 
   if (SA1RegPCS == IRAM)
   {
@@ -578,18 +579,18 @@ void SaveSA1()
     SA1Stat = (SA1Stat & 0xFFFFFF00) + 2;
   }
 
-  SA1RegPCS -= (unsigned int)romdata;
-  CurBWPtr -= (unsigned int)romdata;
-  SA1BWPtr -= (unsigned int)romdata;
-  SNSBWPtr -= (unsigned int)romdata;
+  SA1RegPCS -= (uint32_t)romdata;
+  CurBWPtr  -= (uint32_t)romdata;
+  SA1BWPtr  -= (uint32_t)romdata;
+  SNSBWPtr  -= (uint32_t)romdata;
 }
 
 void RestoreSA1()
 {
-  SA1RegPCS += (unsigned int)romdata;
-  CurBWPtr += (unsigned int)romdata;
-  SA1BWPtr += (unsigned int)romdata;
-  SNSBWPtr += (unsigned int)romdata;
+  SA1RegPCS += (uint32_t)romdata;
+  CurBWPtr  += (uint32_t)romdata;
+  SA1BWPtr  += (uint32_t)romdata;
+  SNSBWPtr  += (uint32_t)romdata;
 
   if ((SA1Stat & 0xFF) == 1)
   {
@@ -601,7 +602,7 @@ void RestoreSA1()
     SA1RegPCS = IRAM-0x3000;
   }
 
-  SA1Ptr += (unsigned int)SA1RegPCS;
+  SA1Ptr += (uint32_t)SA1RegPCS;
   SA1RAMArea = romdata + 4096*1024;
 }
 
@@ -614,8 +615,8 @@ void RestoreSA1()
 
 void ResetState()
 {
-  spcPCRam += (unsigned int)SPCRAM;
-  spcRamDP += (unsigned int)SPCRAM;
+  spcPCRam += (uint32_t)SPCRAM;
+  spcRamDP += (uint32_t)SPCRAM;
 
   ResState(Voice0BufPtr);
   ResState(Voice1BufPtr);
@@ -627,16 +628,16 @@ void ResetState()
   ResState(Voice7BufPtr);
 }
 
-extern unsigned int SfxRomBuffer, SfxCROM;
-extern unsigned int SfxLastRamAdr, SfxRAMMem, MsgCount, MessageOn;
-extern unsigned char AutoIncSaveSlot, cbitmode, NoPictureSave;
+extern uint32_t SfxRomBuffer, SfxCROM;
+extern uint32_t SfxLastRamAdr, SfxRAMMem, MsgCount, MessageOn;
+extern uint8_t AutoIncSaveSlot, cbitmode, NoPictureSave;
 extern char *Msgptr;
-extern unsigned short PrevPicture[64*56];
+extern uint16_t PrevPicture[64*56];
 
 static FILE *fhandle;
 void CapturePicture();
 
-static void write_save_state_data(unsigned char **dest, void *data, size_t len)
+static void write_save_state_data(uint8_t **dest, void *data, size_t len)
 {
   fwrite(data, 1, len, fhandle);
 }
@@ -741,19 +742,19 @@ int zst_exists()
 static bool zst_save_compressed(FILE *fp)
 {
   size_t data_size = cur_zst_size - (sizeof(zst_header_cur)-1);
-  unsigned char *buffer = 0;
+  uint8_t *buffer = 0;
 
   bool worked = false;
 
-  if ((buffer = (unsigned char *)malloc(data_size)))
+  if ((buffer = (uint8_t *)malloc(data_size)))
   {
     //Compressed buffer which must be at least 0.1% larger than source buffer plus 12 bytes
     //We devide by 1000 then add an extra 1 as a quick way to get a buffer large enough when
     //using integer division
-    unsigned long compressed_size = data_size + data_size/1000 + 13;
-    unsigned char *compressed_buffer = 0;
+	unsigned long compressed_size = data_size + data_size/1000 + 13;
+    uint8_t *compressed_buffer = 0;
 
-    if ((compressed_buffer = (unsigned char *)malloc(compressed_size)))
+    if ((compressed_buffer = (uint8_t *)malloc(compressed_size)))
     {
       copy_state_data(buffer, memcpyinc, csm_save_zst_new);
       if (compress2(compressed_buffer, &compressed_size, buffer, data_size, Z_BEST_COMPRESSION) == Z_OK)
@@ -802,7 +803,7 @@ void zst_save(FILE *fp, bool Thumbnail, bool Compress)
     if (Thumbnail)
     {
       CapturePicture();
-      fwrite(PrevPicture, 1, 64*56*sizeof(unsigned short), fp);
+      fwrite(PrevPicture, 1, 64*56*sizeof(uint16_t), fp);
     }
   }
 
@@ -937,12 +938,12 @@ void statesaver()
   stim();
 }
 
-extern unsigned int Totalbyteloaded, SfxMemTable[256], SfxCPB;
-extern unsigned int SfxPBR, SfxROMBR, SfxRAMBR, SCBRrel, SfxSCBR;
-extern unsigned char pressed[256+128+64], multchange, ioportval, SDD1Enable;
-extern unsigned char nexthdma;
+extern uint32_t Totalbyteloaded, SfxMemTable[256], SfxCPB;
+extern uint32_t SfxPBR, SfxROMBR, SfxRAMBR, SCBRrel, SfxSCBR;
+extern uint8_t pressed[256+128+64], multchange, ioportval, SDD1Enable;
+extern uint8_t nexthdma;
 
-static void read_save_state_data(unsigned char **dest, void *data, size_t len)
+static void read_save_state_data(uint8_t **dest, void *data, size_t len)
 {
   load_save_size += fread(data, 1, len, fhandle);
 }
@@ -950,14 +951,14 @@ static void read_save_state_data(unsigned char **dest, void *data, size_t len)
 static bool zst_load_compressed(FILE *fp, size_t compressed_size)
 {
   unsigned long data_size = cur_zst_size - (sizeof(zst_header_cur)-1);
-  unsigned char *buffer = 0;
+  uint8_t *buffer = 0;
   bool worked = false;
 
-  if ((buffer = (unsigned char *)malloc(data_size)))
+  if ((buffer = (uint8_t *)malloc(data_size)))
   {
-    unsigned char *compressed_buffer = 0;
+    uint8_t *compressed_buffer = 0;
 
-    if ((compressed_buffer = (unsigned char *)malloc(compressed_size)))
+    if ((compressed_buffer = (uint8_t *)malloc(compressed_size)))
     {
       fread(compressed_buffer, 1, compressed_size, fp);
       if (uncompress(buffer, &data_size, compressed_buffer, compressed_size) == Z_OK)
@@ -1011,10 +1012,10 @@ bool zst_load(FILE *fp, size_t Compressed)
   {
     SfxCPB = SfxMemTable[(SfxPBR & 0xFF)];
     SfxCROM = SfxMemTable[(SfxROMBR & 0xFF)];
-    SfxRAMMem = (unsigned int)sfxramdata + ((SfxRAMBR & 0xFF) << 16);
+    SfxRAMMem = (uint32_t)sfxramdata + ((SfxRAMBR & 0xFF) << 16);
     SfxRomBuffer += SfxCROM;
     SfxLastRamAdr += SfxRAMMem;
-    SCBRrel = (SfxSCBR << 10) + (unsigned int)sfxramdata;
+    SCBRrel = (SfxSCBR << 10) + (uint32_t)sfxramdata;
   }
 
   if (SA1Enable)
@@ -1091,17 +1092,17 @@ void zst_sram_load_compressed(FILE *fp)
   else
   {
     unsigned long data_size = cur_zst_size - (sizeof(zst_header_cur)-1);
-    unsigned char *buffer = 0;
+    uint8_t *buffer = 0;
 
-    if ((buffer = (unsigned char *)malloc(data_size)))
+    if ((buffer = (uint8_t *)malloc(data_size)))
     {
-      unsigned char *compressed_buffer = 0;
-      if ((compressed_buffer = (unsigned char *)malloc(compressed_size)))
+      uint8_t *compressed_buffer = 0;
+      if ((compressed_buffer = (uint8_t *)malloc(compressed_size)))
       {
         fread(compressed_buffer, 1, compressed_size, fp);
         if (uncompress(buffer, &data_size, compressed_buffer, compressed_size) == Z_OK)
         {
-          unsigned char *data = buffer + PH65816regsize + 199635;
+          uint8_t *data = buffer + PH65816regsize + 199635;
           if (spcon)  { data += PHspcsave + PHdspsave + sizeof(DSPMem); }
           if (C4Enable) { data += 8192; }
           if (SFXEnable)  { data += PHnum2writesfxreg + 131072; }
@@ -1126,12 +1127,12 @@ void zst_sram_load_compressed(FILE *fp)
 }
 
 
-extern unsigned char Voice0Disable, Voice1Disable, Voice2Disable, Voice3Disable;
-extern unsigned char Voice4Disable, Voice5Disable, Voice6Disable, Voice7Disable;
+extern uint8_t Voice0Disable, Voice1Disable, Voice2Disable, Voice3Disable;
+extern uint8_t Voice4Disable, Voice5Disable, Voice6Disable, Voice7Disable;
 
 void stateloader(char *statename, bool keycheck, bool xfercheck)
 {
-  extern unsigned char PauseLoad;
+  extern uint8_t PauseLoad;
 
   if (keycheck)
   {
@@ -1181,7 +1182,7 @@ void stateloader(char *statename, bool keycheck, bool xfercheck)
       return;
     case MOVIE_OLD_PLAY:
     {
-      extern unsigned char CMovieExt;
+      extern char CMovieExt;
       size_t fname_len = strlen(statename);
       setextension(statename, "zmv");
       if (isdigit(CMovieExt)) { statename[fname_len-1] = CMovieExt; }
@@ -1258,18 +1259,18 @@ void SaveSecondState()
   zst_name();
 }
 
-extern unsigned char CHIPBATT, sramsavedis, *sram2, nosaveSRAM;
+extern uint8_t CHIPBATT, sramsavedis, *sram2, nosaveSRAM;
 void SaveCombFile();
 
 // Sram saving
 void SaveSramData()
 {
-  extern unsigned int sramb4save;
+  extern uint32_t sramb4save;
   if (*ZSaveName && (!SRAMSave5Sec || sramb4save))
   {
     FILE *fp = 0;
-    unsigned char special = 0;
-    unsigned int *data_to_save;
+    uint8_t special = 0;
+    uint8_t *data_to_save;
 
     setextension(ZSaveName, "srm");
 
@@ -1277,20 +1278,20 @@ void SaveSramData()
     {
       if (SFXEnable)
       {
-        data_to_save=sfxramdata;
+        data_to_save=(uint8_t *)sfxramdata;
         special = 1;
       }
       else if (SA1Enable)
       {
-        data_to_save = (unsigned int *)SA1RAMArea;
+        data_to_save = (uint8_t *)SA1RAMArea;
         special=1;
       }
       else if (SETAEnable)
       {
-        data_to_save = setaramdata;
+        data_to_save = (uint8_t *)setaramdata;
         special=1;
       }
-      else { data_to_save = sram; }
+      else { data_to_save = (uint8_t *)sram; }
 
       if (!special || CHIPBATT)
       {
@@ -1371,9 +1372,9 @@ Cleaned up by Nach
 10100h-101FFh - DSPRam (256 bytes)
 */
 
-extern unsigned char spcextraram[64];
-extern unsigned char spcP, spcA, spcX, spcY, spcS, spcNZ;
-extern unsigned int infoloc;
+extern uint8_t spcextraram[64];
+extern uint8_t spcP, spcA, spcX, spcY, spcS, spcNZ;
+extern uint32_t infoloc;
 
 char spcsaved[16];
 void savespcdata()
@@ -1401,7 +1402,7 @@ void savespcdata()
     FILE *fp = fopen_dir(ZSpcPath, ZSaveName, "wb");
     if (fp)
     {
-      unsigned char ssdatst[256];
+      uint8_t ssdatst[256];
       time_t t = time(0);
       struct tm *lt = localtime(&t);
 
@@ -1420,7 +1421,7 @@ void savespcdata()
       strcpy((char *)ssdatst, "SNES-SPC700 Sound File Data v0.30"); //00000h - File Header : SNES-SPC700 Sound File Data v0.00
       ssdatst[0x21] = ssdatst[0x22] = ssdatst[0x23] = 0x1a; //00021h - 0x1a,0x1a,0x1a
       ssdatst[0x24] = 10;   //00024h - 10
-      *((unsigned short *)(ssdatst+0x25)) = spcPCRam-(unsigned int)SPCRAM; //00025h - PC Register value (1 Word)
+      *((uint16_t *)(ssdatst+0x25)) = spcPCRam-(uint32_t)SPCRAM; //00025h - PC Register value (1 Word)
       ssdatst[0x27] = spcA; //00027h - A Register Value (1 byte)
       ssdatst[0x28] = spcX; //00028h - X Register Value (1 byte)
       ssdatst[0x29] = spcY; //00029h - Y Register Value (1 byte)
@@ -1434,7 +1435,7 @@ void savespcdata()
 
       memset(ssdatst+0x2E, 0, 32); //0002Eh-0004Dh - SubTitle/Song Name
       memset(ssdatst+0x4E, 0, 32); //0004Eh-0006Dh - Title of Game
-      memcpy(ssdatst+0x4E, ((unsigned char *)romdata)+infoloc, 21);
+      memcpy(ssdatst+0x4E, ((uint8_t *)romdata)+infoloc, 21);
       memset(ssdatst+0x6E, 0, 16); //0006Eh-0007Dh - Name of Dumper
       memset(ssdatst+0x7E, 0, 32); //0007Eh-0009Dh - Comments
 
