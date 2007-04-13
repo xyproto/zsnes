@@ -20,15 +20,16 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define __PORTABLE_H
 
 #include <string.h>
+#include <stdint.h>
 
-typedef signed char INT8;
-typedef unsigned char UINT8;
-typedef short INT16;
-typedef unsigned short UINT16;
-typedef long INT32;
-typedef unsigned long UINT32;
-typedef long long INT64;
-typedef unsigned long long UINT64;
+typedef int8_t INT8;
+typedef uint8_t UINT8;
+typedef int16_t INT16;
+typedef uint16_t UINT16;
+typedef int32_t INT32;
+typedef uint32_t UINT32;
+typedef int64_t INT64;
+typedef uint64_t UINT64;
 
 typedef UINT8 BYTE;
 typedef UINT16 WORD;
