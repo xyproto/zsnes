@@ -34,12 +34,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "../cfg.h"
 #include "../input.h"
 
-typedef unsigned char BYTE;
-typedef unsigned short WORD;
-typedef unsigned long DWORD;
-typedef Uint32 UINT32;
-typedef long long _int64;
-typedef long long LARGE_INTEGER;
+#include <stdint.h>
+
 #define QueryPerformanceCounter(x) asm volatile("rdtsc" : "=a"(((unsigned int *)(x))[0]),"=d"(((unsigned int *)x)[1]))
 
 
@@ -50,31 +46,31 @@ typedef enum vidstate_e { vid_null, vid_none, vid_soft, vid_gl } vidstate_t;
 SDL_Surface *surface;
 int SurfaceLocking = 0;
 int SurfaceX, SurfaceY;
-static DWORD WindowWidth = 256;
-static DWORD WindowHeight = 224;
-static DWORD FullScreen = 0;
+static uint32_t WindowWidth = 256;
+static uint32_t WindowHeight = 224;
+static uint32_t FullScreen = 0;
 static vidstate_t sdl_state = vid_null;
 static int UseOpenGL = 0;
 static const int BitDepth = 16;
-DWORD FirstVid = 1;
+uint32_t FirstVid = 1;
 
-void SwitchFullScreen(void);
-DWORD SMode = 0;
-DWORD DSMode = 0;
-DWORD prevHQMode = -1;
+void SwitchFullScreen();
+uint32_t SMode = 0;
+uint32_t DSMode = 0;
+uint32_t prevHQMode = -1;
 
-extern DWORD converta;
-extern DWORD *BitConv32Ptr;
-extern DWORD *RGBtoYUVPtr;
+extern uint32_t converta;
+extern uint32_t *BitConv32Ptr;
+extern uint32_t *RGBtoYUVPtr;
 
-extern BYTE GUIWFVID[];
-extern BYTE GUISMODE[];
-extern BYTE GUIDSMODE[];
-extern BYTE GUIHQ2X[];
-extern BYTE GUIHQ3X[];
-extern BYTE GUIHQ4X[];
-extern BYTE GUIRESIZE[];
-extern BYTE GUIM7VID[];
+extern uint8_t GUIWFVID[];
+extern uint8_t GUISMODE[];
+extern uint8_t GUIDSMODE[];
+extern uint8_t GUIHQ2X[];
+extern uint8_t GUIHQ3X[];
+extern uint8_t GUIHQ4X[];
+extern uint8_t GUIRESIZE[];
+extern uint8_t GUIM7VID[];
 
 /* JOYSTICK AND KEYBOARD INPUT */
 SDL_Joystick *JoystickInput[5];
@@ -84,7 +80,7 @@ unsigned int HatOffset[5] = { 448 };              // bytes for all joysticks. We
 unsigned int BallOffset[5] = { 448 };             // can control all 5 players.
 int shiftptr = 0;
 int offset;
-DWORD numlockptr;
+uint32_t numlockptr;
 
 extern unsigned char pressed[];
 extern int CurKeyPos;
@@ -101,13 +97,13 @@ static int MouseMove2X, MouseMove2Y;
 unsigned char MouseButton;
 static float MouseXScale = 1.0;
 static float MouseYScale = 1.0;
-DWORD LastUsedPos = 0;
-DWORD CurMode = -1;
+uint32_t LastUsedPos = 0;
+uint32_t CurMode = -1;
 
-extern BYTE GUIOn;
-extern BYTE GUIOn2;
-extern BYTE EMUPause;
-static BYTE IsActivated = 1;
+extern uint8_t GUIOn;
+extern uint8_t GUIOn2;
+extern uint8_t EMUPause;
+static uint8_t IsActivated = 1;
 
 /* TIMER VARIABLES/MACROS */
 // millisecond per world update
@@ -125,35 +121,35 @@ float update_ticks_pc, update_ticks_pc2;
 // Used for semaphore code
 static SDL_sem *sem_frames = NULL;
 static struct timeval sem_start;
-void sem_sleep_rdy(void);
-void sem_sleep_die(void);
-float sem_GetTicks(void);
+void sem_sleep_rdy();
+void sem_sleep_die();
+float sem_GetTicks();
 
 extern unsigned char romispal;
 
 /* FUNCTION DECLARATIONS */
-void clearwin(void);
-void drawscreenwin(void);
+void clearwin();
+void drawscreenwin();
 void initwinvideo();
 unsigned int sdl_keysym_to_pc_scancode(int);
 void ProcessKeyBuf(int);
 void UpdateSound(void *userdata, Uint8 *stream, int len);
 
-void GUI36hzcall(void);
-void Game60hzcall(void);
-_int64 copymaskRB = 0x001FF800001FF800LL;
-_int64 copymaskG = 0x0000FC000000FC00LL;
-_int64 copymagic = 0x0008010000080100LL;
+void GUI36hzcall();
+void Game60hzcall();
+int64_t copymaskRB = UINT64_C(0x001FF800001FF800);
+int64_t copymaskG = UINT64_C(0x0000FC000000FC00);
+int64_t copymagic = UINT64_C(0x0008010000080100);
 #ifdef __OPENGL__
-void gl_clearwin(void);
+void gl_clearwin();
 #endif
 
-static void adjustMouseXScale(void)
+static void adjustMouseXScale()
 {
   MouseXScale = (MouseMaxX - MouseMinX) / ((float)WindowWidth);
 }
 
-static void adjustMouseYScale(void)
+static void adjustMouseYScale()
 {
   MouseYScale = (MouseMaxY - MouseMinY) / ((float)WindowHeight);
 }
@@ -198,7 +194,7 @@ void SetHiresOpt(unsigned int ResX, unsigned int ResY)
 
 void Clear2xSaIBuffer();
 
-int Main_Proc(void)
+int Main_Proc()
 {
   SDL_Event event;
   unsigned int key;
@@ -904,7 +900,7 @@ void ProcessKeyBuf(int scancode)
   }
 }
 
-BOOL InitJoystickInput(void)
+BOOL InitJoystickInput()
 {
   int i, max_num_joysticks;
   int num_axes, num_buttons, num_hats, num_balls;
@@ -1026,7 +1022,7 @@ int startgame()
   return TRUE;
 }
 
-void Start60HZ(void)
+void Start60HZ()
 {
   update_ticks_pc2 = UPDATE_TICKS_UDP;
   if (romispal == 1)
@@ -1045,12 +1041,12 @@ void Start60HZ(void)
   T60HZEnabled = 1;
 }
 
-void Stop60HZ(void)
+void Stop60HZ()
 {
   T60HZEnabled = 0;
 }
 
-void Start36HZ(void)
+void Start36HZ()
 {
   update_ticks_pc2 = UPDATE_TICKS_UDP;
   update_ticks_pc = UPDATE_TICKS_GUI;
@@ -1062,15 +1058,15 @@ void Start36HZ(void)
   T36HZEnabled = 1;
 }
 
-void Stop36HZ(void)
+void Stop36HZ()
 {
   T36HZEnabled = 0;
 }
 
-void init_hqNx(void)
+void init_hqNx()
 {
-  DWORD color32;
-  DWORD *p;
+  uint32_t color32;
+  uint32_t *p;
   int i, j, k, r, g, b, Y, u, v;
 
   for (i = 0, p = BitConv32Ptr; i < 65536; i++, p++)
@@ -1104,9 +1100,9 @@ unsigned char prevKeep4_3Ratio = 0;
 unsigned char prevsync = 0;
 char CheckOGLMode();
 
-void initwinvideo(void)
+void initwinvideo()
 {
-  DWORD newmode = 0;
+  uint32_t newmode = 0;
 
   init_hqNx();
 
@@ -1313,9 +1309,9 @@ void initwinvideo(void)
   }
 }
 
-void CheckTimers(void)
+void CheckTimers()
 {
-  //QueryPerformanceCounter((LARGE_INTEGER*)&end2);
+  //QueryPerformanceCounter((int64_t*)&end2);
   end2 = sem_GetTicks();
 
   while ((end2 - start2) >= update_ticks_pc2)
@@ -1325,7 +1321,7 @@ void CheckTimers(void)
 
   if (T60HZEnabled)
   {
-    //QueryPerformanceCounter((LARGE_INTEGER*)&end);
+    //QueryPerformanceCounter((int64_t*)&end);
     end = sem_GetTicks();
 
     while ((end - start) >= update_ticks_pc)
@@ -1338,7 +1334,7 @@ void CheckTimers(void)
 
   if (T36HZEnabled)
   {
-    //QueryPerformanceCounter((LARGE_INTEGER*)&end);
+    //QueryPerformanceCounter((int64_t*)&end);
     end = sem_GetTicks();
 
     while ((end - start) >= update_ticks_pc)
@@ -1349,7 +1345,7 @@ void CheckTimers(void)
   }
 }
 
-void sem_sleep(void)
+void sem_sleep()
 {
   end = update_ticks_pc - (sem_GetTicks() - start) - .2f;
   if (end > 0.f)
@@ -1378,7 +1374,7 @@ int sem_thread(void *param)
   return(0);
 }
 
-void sem_sleep_rdy(void)
+void sem_sleep_rdy()
 {
   if (sem_frames)
   {
@@ -1389,7 +1385,7 @@ void sem_sleep_rdy(void)
   sem_threadid = SDL_CreateThread(sem_thread, 0);
 }
 
-void sem_sleep_die(void)
+void sem_sleep_die()
 {
   if (sem_threadid)
   {
@@ -1404,7 +1400,7 @@ void sem_sleep_die(void)
   }
 }
 
-void UpdateVFrame(void)
+void UpdateVFrame()
 {
   //Quick fix for GUI CPU usage
   if (GUIOn || GUIOn2 || EMUPause)
@@ -1442,7 +1438,7 @@ void clearwin()
   }
 }
 
-void drawscreenwin(void)
+void drawscreenwin()
 {
 #ifdef __LIBAO__
   extern bool RawDumpInProgress;
@@ -1494,16 +1490,16 @@ void UnloadSDL()
   SDL_Quit();
 }
 
-int GetMouseX(void)
+int GetMouseX()
 {
   return ((int)MouseX);
 }
-int GetMouseY(void)
+int GetMouseY()
 {
   return ((int)MouseY);
 }
 
-int GetMouseMoveX(void)
+int GetMouseMoveX()
 {
   //   InputRead();
   //SDL_GetRelativeMouseState(&MouseMove2X, NULL);
@@ -1511,11 +1507,11 @@ int GetMouseMoveX(void)
   return (MouseMove2X);
 }
 
-int GetMouseMoveY(void)
+int GetMouseMoveY()
 {
   return (MouseMove2Y);
 }
-int GetMouseButton(void)
+int GetMouseButton()
 {
   return ((int)MouseButton);
 }
