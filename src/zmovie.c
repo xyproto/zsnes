@@ -69,16 +69,17 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "numconv.h"
 
 
-extern unsigned int versionNumber, CRC32, cur_zst_size, MsgCount, MessageOn;
-extern unsigned int JoyAOrig, JoyBOrig, JoyCOrig, JoyDOrig, JoyEOrig;
-extern unsigned char GUIReset, ReturnFromSPCStall, GUIQuit;
-extern unsigned char CMovieExt, mencoderExists, lameExists;
+extern uint32_t versionNumber, CRC32, cur_zst_size, MsgCount, MessageOn;
+extern uint32_t JoyAOrig, JoyBOrig, JoyCOrig, JoyDOrig, JoyEOrig;
+extern uint8_t GUIReset, ReturnFromSPCStall, GUIQuit;
+extern uint8_t mencoderExists, lameExists;
+extern char CMovieExt;
 extern char *Msgptr;
 extern bool romispal;
 bool MovieWaiting = false;
 
-extern unsigned char device1, device2;
-extern unsigned short latchx, latchy;
+extern uint8_t device1, device2;
+extern uint16_t latchx, latchy;
 #define IS_MOUSE_1() (device1 == 1)
 #define IS_MOUSE_2() (device2 == 1)
 #define IS_SCOPE()   (device2 == 2)
@@ -105,10 +106,10 @@ bool zst_compressed_loader(FILE *);
                     print_bin(JoyDOrig, &usedd); printf(" "); \
                     print_bin(JoyEOrig, &usede); printf("\n");
 
-static unsigned int useda, usedb, usedc, usedd, usede;
-static void print_bin(unsigned int num, unsigned int *used)
+static uint32_t useda, usedb, usedc, usedd, usede;
+static void print_bin(uint32_t num, uint32_t *used)
 {
-  unsigned int mask = BIT(31);
+  uint_fast32_t mask = BIT(31);
   while (mask)
   {
     *used |= num & mask;
@@ -264,18 +265,18 @@ enum zmv_commands { zmv_command_reset };
 struct zmv_header
 {
   char magic[3];
-  unsigned short zsnes_version;
-  unsigned int rom_crc32;
-  unsigned int frames;
-  unsigned int rerecords;
-  unsigned int removed_frames;
-  unsigned int incr_frames;
-  unsigned char average_fps;
-  unsigned int key_combos;
-  unsigned short internal_chapters;
-  unsigned short author_len;
-  unsigned int zst_size; //We only read/write 3 bytes for this
-  unsigned short initial_input;
+  uint16_t zsnes_version;
+  uint32_t rom_crc32;
+  uint32_t frames;
+  uint32_t rerecords;
+  uint32_t removed_frames;
+  uint32_t incr_frames;
+  uint8_t average_fps;
+  uint32_t key_combos;
+  uint16_t internal_chapters;
+  uint16_t author_len;
+  uint32_t zst_size; //We only read/write 3 bytes for this
+  uint16_t initial_input;
   struct
   {
     enum zmv_start_methods start_method;
@@ -285,7 +286,7 @@ struct zmv_header
 
 static void zmv_header_write(struct zmv_header *zmv_head, FILE *fp)
 {
-  unsigned char flag = 0;
+  uint8_t flag = 0;
 
   fwrite(zmv_head->magic, 3, 1, fp);
   fwrite2(zmv_head->zsnes_version, fp);
@@ -348,7 +349,7 @@ static void zmv_header_write(struct zmv_header *zmv_head, FILE *fp)
 
 static bool zmv_header_read(struct zmv_header *zmv_head, FILE *fp)
 {
-  unsigned char flag;
+  uint8_t flag;
 
   fread(zmv_head->magic, 3, 1, fp);
   zmv_head->zsnes_version = fread2(fp);
@@ -418,7 +419,7 @@ Internal chapter types, vars, and functions
 struct internal_chapter_buf
 {
   size_t offsets[INTERNAL_CHAPTER_BUF_LIM];
-  unsigned char used;
+  uint8_t used;
   struct internal_chapter_buf *next;
 };
 
@@ -454,7 +455,7 @@ static void internal_chapter_free_chain(struct internal_chapter_buf *icb)
 
 static void internal_chapter_write(struct internal_chapter_buf *icb, FILE *fp)
 {
-  unsigned char i;
+  uint_fast8_t i;
   for (i = 0; i < icb->used; i++)
   {
     fwrite4(icb->offsets[i], fp);
@@ -478,7 +479,7 @@ size_t internal_chapter_pos(struct internal_chapter_buf *icb, size_t offset)
   size_t pos = 0;
   do
   {
-    unsigned char i;
+    uint_fast8_t i;
     for (i = 0; i < icb->used; i++, pos++)
     {
       if (icb->offsets[i] == offset)
@@ -495,7 +496,7 @@ static size_t internal_chapter_greater(struct internal_chapter_buf *icb, size_t 
   size_t greater = ~0;
   do
   {
-    unsigned char i;
+    uint_fast8_t i;
     for (i = 0; i < icb->used; i++)
     {
       if ((icb->offsets[i] > offset) && (icb->offsets[i] < greater))
@@ -512,7 +513,7 @@ static size_t internal_chapter_lesser(struct internal_chapter_buf *icb, size_t o
   size_t lesser = 0;
   do
   {
-    unsigned char i;
+    uint_fast8_t i;
     for (i = 0; i < icb->used; i++)
     {
       if ((icb->offsets[i] < offset) && (icb->offsets[i] > lesser))
@@ -571,7 +572,7 @@ static size_t internal_chapter_delete_after(struct internal_chapter_buf *icb, si
 static size_t internal_chapter_count_until(struct internal_chapter_buf *icb, size_t offset)
 {
   size_t chapter_count = 0;
-  unsigned char i;
+  uint_fast8_t i;
 
   do
   {
@@ -593,13 +594,13 @@ Bit Encoder and Decoder
 /*
 When working with bits, you have to find the bits in a byte.
 
-Devide the amount of bits by 8 (bit_count >> 3) to find the proper byte.
+Divide the amount of bits by 8 (bit_count >> 3) to find the proper byte.
 The proper bit number in the byte is the amount of bits modulo 8 (bit_count & 7).
 To get the most signifigant bit, you want the bit which is 7 minus the proper bit number.
 */
-size_t bit_encoder(unsigned int data, unsigned int mask, unsigned char *buffer, size_t skip_bits)
+size_t bit_encoder(uint32_t data, uint32_t mask, uint8_t *buffer, size_t skip_bits)
 {
-  unsigned char bit_loop;
+  uint_fast8_t bit_loop;
 
   for (bit_loop = 31; ; bit_loop--)
   {
@@ -622,9 +623,9 @@ size_t bit_encoder(unsigned int data, unsigned int mask, unsigned char *buffer, 
   return(skip_bits);
 }
 
-size_t bit_decoder(unsigned int *data, unsigned int mask, unsigned char *buffer, size_t skip_bits)
+size_t bit_decoder(uint32_t *data, uint32_t mask, uint8_t *buffer, size_t skip_bits)
 {
-  unsigned char bit_loop;
+  uint_fast8_t bit_loop;
   *data = 0;
 
   for (bit_loop = 31; ; bit_loop--)
@@ -657,16 +658,16 @@ static struct
   FILE *fp;
   struct
   {
-    unsigned int A;
-    unsigned int B;
-    unsigned int C;
-    unsigned int D;
-    unsigned int E;
-    unsigned short latchx;
-    unsigned short latchy;
+    uint32_t A;
+    uint32_t B;
+    uint32_t C;
+    uint32_t D;
+    uint32_t E;
+    uint16_t latchx;
+    uint16_t latchy;
   } last_joy_state;
-  unsigned short inputs_enabled;
-  unsigned char write_buffer[WRITE_BUFFER_SIZE];
+  uint16_t inputs_enabled;
+  uint8_t write_buffer[WRITE_BUFFER_SIZE];
   size_t write_buffer_loc;
   struct internal_chapter_buf internal_chapters;
   size_t last_internal_chapter_offset;
@@ -682,9 +683,9 @@ static struct
 #define MOUSE_ENABLE 0x00010000
 #define SCOPE_ENABLE 0x00FF0000
 
-static size_t pad_bit_encoder(unsigned char pad, unsigned char *buffer, size_t skip_bits)
+static size_t pad_bit_encoder(uint8_t pad, uint8_t *buffer, size_t skip_bits)
 {
-  unsigned int last_state = 0;
+  uint32_t last_state = 0;
 
   switch (pad)
   {
@@ -714,8 +715,8 @@ static size_t pad_bit_encoder(unsigned char pad, unsigned char *buffer, size_t s
     case 2:
       if ((zmv_vars.inputs_enabled & BIT(0x8))) //Super Scope
       {
-        unsigned int xdata = (zmv_vars.last_joy_state.latchx - 40) & 0xFF;
-        unsigned int ydata = zmv_vars.last_joy_state.latchy & 0xFF;
+        uint32_t xdata = (zmv_vars.last_joy_state.latchx - 40) & 0xFF;
+        uint32_t ydata = zmv_vars.last_joy_state.latchy & 0xFF;
 
         skip_bits = bit_encoder(last_state, SCOPE_MASK, buffer, skip_bits);
         skip_bits = bit_encoder(xdata, 0x000000FF, buffer, skip_bits);
@@ -746,10 +747,10 @@ static size_t pad_bit_encoder(unsigned char pad, unsigned char *buffer, size_t s
   return(skip_bits);
 }
 
-static size_t pad_bit_decoder(unsigned char pad, unsigned char *buffer, size_t skip_bits)
+static size_t pad_bit_decoder(uint8_t pad, uint8_t *buffer, size_t skip_bits)
 {
-  unsigned int *last_state = 0;
-  unsigned short input_enable_mask = 0;
+  uint32_t *last_state = 0;
+  uint16_t input_enable_mask = 0;
 
   switch (pad)
   {
@@ -784,15 +785,15 @@ static size_t pad_bit_decoder(unsigned char pad, unsigned char *buffer, size_t s
     case 2:
       if ((zmv_vars.inputs_enabled & BIT(0x8))) //Super Scope
       {
-        unsigned int xdata, ydata;
+        uint32_t xdata, ydata;
 
         skip_bits = bit_decoder(last_state, SCOPE_MASK, buffer, skip_bits);
         skip_bits = bit_decoder(&xdata, 0x000000FF, buffer, skip_bits);
         skip_bits = bit_decoder(&ydata, 0x000000FF, buffer, skip_bits);
         *last_state |= SCOPE_ENABLE;
 
-        zmv_vars.last_joy_state.latchx = (unsigned short)(xdata + 40);
-        zmv_vars.last_joy_state.latchy = (unsigned short)ydata;
+        zmv_vars.last_joy_state.latchx = (uint16_t)(xdata + 40);
+        zmv_vars.last_joy_state.latchy = (uint16_t)ydata;
 
         break;
       }
@@ -826,7 +827,7 @@ static size_t pad_bit_decoder(unsigned char pad, unsigned char *buffer, size_t s
   return(skip_bits);
 }
 
-static void save_last_joy_state(unsigned char *buffer)
+static void save_last_joy_state(uint8_t *buffer)
 {
   size_t skip_bits = 16;
   memcpy(buffer, uint16_to_bytes(zmv_vars.inputs_enabled), 2);
@@ -838,7 +839,7 @@ static void save_last_joy_state(unsigned char *buffer)
   skip_bits = pad_bit_encoder(5, buffer, skip_bits);
 }
 
-static void load_last_joy_state(unsigned char *buffer)
+static void load_last_joy_state(uint8_t *buffer)
 {
   size_t skip_bits = 16;
   zmv_vars.inputs_enabled = bytes_to_uint16(buffer);
@@ -1003,10 +1004,10 @@ static void zmv_record_command(enum zmv_commands command)
   flush_input_if_needed();
 }
 
-static void record_pad(unsigned char pad, unsigned char *flag, unsigned char *buffer, size_t *skip_bits)
+static void record_pad(uint8_t pad, uint8_t *flag, uint8_t *buffer, size_t *skip_bits)
 {
-  unsigned int *last_state = 0, current_state = 0;
-  unsigned char bit_mask = 0;
+  uint32_t *last_state = 0, current_state = 0;
+  uint8_t bit_mask = 0;
 
   switch (pad)
   {
@@ -1054,10 +1055,10 @@ static void record_pad(unsigned char pad, unsigned char *flag, unsigned char *bu
   }
 }
 
-static void zmv_record(bool pause, unsigned char combos_used, unsigned char slow)
+static void zmv_record(bool pause, uint8_t combos_used, uint8_t slow)
 {
-  unsigned char flag = 0;
-  unsigned char press_buf[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+  uint8_t flag = 0;
+  uint8_t press_buf[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
   size_t skip_bits = 0;
 
   static float average = 0.0f;
@@ -1077,7 +1078,7 @@ static void zmv_record(bool pause, unsigned char combos_used, unsigned char slow
 
   if (flag)
   {
-    unsigned char buffer_used = (skip_bits>>3) + ((skip_bits&7) ? 1 : 0);
+    uint8_t buffer_used = (skip_bits>>3) + ((skip_bits&7) ? 1 : 0);
 
     zmv_rle_flush();
 
@@ -1096,7 +1097,7 @@ static void zmv_record(bool pause, unsigned char combos_used, unsigned char slow
   average = (average * (zmv_vars.header.frames + zmv_vars.header.removed_frames) + 1.0f/(float)(slow+1)) /
             (float)(zmv_vars.header.frames + zmv_vars.header.removed_frames + 1);
   // 1/4 precision for NTSC, 1/5 precision for PAL
-  zmv_vars.header.average_fps = (unsigned char)(average * ((romispal) ? 250 : 240));
+  zmv_vars.header.average_fps = (uint8_t)(average * ((romispal) ? 250 : 240));
   zmv_vars.header.frames++;
 }
 
@@ -1106,7 +1107,7 @@ static bool zmv_insert_chapter()
       (zmv_vars.last_internal_chapter_offset != (ftell(zmv_vars.fp) +
        zmv_vars.write_buffer_loc - INT_CHAP_SIZE(zmv_vars.last_internal_chapter_offset))))
   {
-    unsigned char flag = BIT(2);
+    uint8_t flag = BIT(2);
 
     flush_input_buffer();
 
@@ -1188,8 +1189,8 @@ typedef struct internal_chapter_buf external_chapter_buf;
 static struct
 {
   external_chapter_buf external_chapters;
-  unsigned short external_chapter_count;
-  unsigned int frames_replayed;
+  uint16_t external_chapter_count;
+  uint32_t frames_replayed;
   size_t last_chapter_frame;
   size_t first_chapter_pos;
   size_t input_start_pos;
@@ -1204,7 +1205,7 @@ static bool zmv_open(char *filename)
   if (zmv_vars.fp && zmv_header_read(&zmv_vars.header, zmv_vars.fp) &&
       !strncmp(zmv_vars.header.magic, "ZMV", 3))
   {
-    unsigned short i;
+    uint_fast16_t i;
     size_t filename_len = strlen(filename);
 
     MovieStartMethod = (unsigned char)zmv_vars.header.zmv_flag.start_method;
@@ -1249,7 +1250,7 @@ static bool zmv_open(char *filename)
     if (zmv_vars.header.rom_crc32 != CRC32)
     {
       static char buffer[29]; //"ROM MISMATCH. NEED: 01234567"
-      sprintf(buffer, "ROM MISMATCH. NEED: %08X", zmv_vars.header.rom_crc32);
+      sprintf(buffer, "ROM MISMATCH. NEED: %08X", (unsigned int)zmv_vars.header.rom_crc32);
       Msgptr = buffer;
     }
 
@@ -1300,10 +1301,10 @@ static bool zmv_replay_command(enum zmv_commands command)
   return(false);
 }
 
-static void replay_pad(unsigned char pad, unsigned char flag, unsigned char *buffer, size_t *skip_bits)
+static void replay_pad(uint8_t pad, uint8_t flag, uint8_t *buffer, size_t *skip_bits)
 {
-  unsigned int *last_state = 0, *current_state = 0;
-  unsigned char bit_mask = 0;
+  uint32_t *last_state = 0, *current_state = 0;
+  uint8_t bit_mask = 0;
 
   switch (pad)
   {
@@ -1374,14 +1375,14 @@ static bool zmv_replay()
     }
     else
     {
-      unsigned char flag = 0;
+      uint8_t flag = 0;
       zmv_vars.rle_count = 0;
 
       fread(&flag, 1, 1, zmv_vars.fp);
 
       if (flag & BIT(0)) //Command
       {
-        unsigned char command = flag >> 1;
+        uint8_t command = flag >> 1;
         if (command == zmv_command_reset)
         {
           GUIReset = 1;
@@ -1409,7 +1410,7 @@ static bool zmv_replay()
 
       else
       {
-        unsigned char press_buf[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+        uint8_t press_buf[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
         size_t skip_bits = 0;
 
         replay_pad(1, flag, press_buf, &skip_bits);
@@ -1579,7 +1580,7 @@ static void zmv_add_chapter()
     if ((internal_chapter_pos(&zmv_open_vars.external_chapters, current_loc)) == 0xFFFFFFFF)
     {
       //Check if we have internal right here
-      unsigned char flag;
+      uint8_t flag;
       fread(&flag, 1, 1, zmv_vars.fp);
 
       if (!(flag & BIT(2)))
@@ -1703,16 +1704,16 @@ Rewind related functions and vars
 
 struct zmv_rewind
 {
-  unsigned char last_joy_state[10];
+  uint8_t last_joy_state[10];
   size_t file_pos;
-  unsigned int frames;
+  uint32_t frames;
   size_t rle_count;
 };
 
 
 struct zmv_rewind *zmv_rewind_buffer = 0;
 
-static void zmv_alloc_rewind_buffer(unsigned char rewind_states)
+static void zmv_alloc_rewind_buffer(uint8_t rewind_states)
 {
   zmv_rewind_buffer = (struct zmv_rewind *)malloc(sizeof(struct zmv_rewind)*rewind_states);
 }
@@ -2012,14 +2013,14 @@ Code for dumping raw video
 //Used by raw videos for calculating sample rate
 
 
-static const unsigned int freqtab[] = { 8000, 11025, 22050, 44100, 16000, 32000, 48000 };
+static const uint32_t freqtab[] = { 8000, 11025, 22050, 44100, 16000, 32000, 48000 };
 #define RATE freqtab[SoundQuality]
 
 
 //0 = None; 1 Logging, but not now, 2 Log now
-unsigned char AudioLogging;
+uint8_t AudioLogging;
 
-extern unsigned char ZMVRawDump;
+extern uint8_t ZMVRawDump;
 
 
 /*
@@ -2140,7 +2141,7 @@ static char *encode_command(char *p)
   return(command);
 }
 
-static char *encode_command_custom(unsigned char pass)
+static char *encode_command_custom(uint8_t pass)
 {
   char *p;
   if (pass == md_custom_passes) { p = md_custom_last_pass; }
@@ -2174,7 +2175,7 @@ static void raw_embed_logo(bool audio)
   gzFile gzp;
   if ((gzp = gzopen_dir(ZCfgPath, md_logo, "rb")))
   {
-    unsigned char logo_buffer[RAW_FRAME_SIZE];
+    uint8_t logo_buffer[RAW_FRAME_SIZE];
     while (!gzeof(gzp))
     {
       if (RAW_FRAME_SIZE == gzread(gzp, logo_buffer, RAW_FRAME_SIZE))
@@ -2184,7 +2185,7 @@ static void raw_embed_logo(bool audio)
         if (audio)
         {
           //Thanks Bisqwit for this algorithm
-          unsigned int samples = (unsigned int)((raw_vid.sample_balance/raw_vid.sample_lo) << StereoSound);
+          uint32_t samples = (uint32_t)((raw_vid.sample_balance/raw_vid.sample_lo) << StereoSound);
           raw_vid.sample_balance %= raw_vid.sample_lo;
           raw_vid.sample_balance += raw_vid.sample_hi;
           while (samples--)
@@ -2197,7 +2198,7 @@ static void raw_embed_logo(bool audio)
   }
 }
 
-static unsigned char movie_current_pass = 0;
+static uint8_t movie_current_pass = 0;
 
 static void raw_video_close()
 {
@@ -2356,7 +2357,7 @@ static bool raw_video_open()
   return(false);
 }
 
-static void raw_audio_write(unsigned int samples)
+static void raw_audio_write(uint32_t samples)
 {
   void ProcessSoundBuffer();
   extern int DSPBuffer[1280];
@@ -2387,7 +2388,7 @@ static void raw_video_write_frame()
 {
   if (raw_vid.vp)
   {
-    extern unsigned short *vidbuffer;
+    extern uint16_t *vidbuffer;
     size_t x, y;
 
     //Convert 16 bit image to 24 bit image
@@ -2403,7 +2404,7 @@ static void raw_video_write_frame()
   if (raw_vid.ap)
   {
     //Thanks Bisqwit for this algorithm
-    unsigned int samples = (unsigned int)((raw_vid.sample_balance/raw_vid.sample_lo) << StereoSound);
+    uint32_t samples = (uint32_t)((raw_vid.sample_balance/raw_vid.sample_lo) << StereoSound);
     raw_vid.sample_balance %= raw_vid.sample_lo;
     raw_vid.sample_balance += raw_vid.sample_hi;
     //printf("Samples: %u\n", samples);
@@ -2521,12 +2522,12 @@ static size_t MovieSub_GetDuration()
 bool RawDumpInProgress = false;
 bool PrevSRAMState;
 
-extern unsigned char ComboCounter, MovieRecordWinVal, AllocatedRewindStates;
-extern unsigned char SloMo, EMUPause;
+extern uint8_t ComboCounter, MovieRecordWinVal, AllocatedRewindStates;
+extern uint8_t SloMo, EMUPause;
 char MovieFrameStr[10];
 bool MovieForcedLengthEnabled = false;
-unsigned int MovieForcedLength = 0, MovieForcedLengthInternal;
-unsigned char MoviePassWaiting = 0;
+uint32_t MovieForcedLength = 0, MovieForcedLengthInternal;
+uint8_t MoviePassWaiting = 0;
 
 struct
 {
@@ -2534,11 +2535,11 @@ struct
   size_t frames_replayed;
   struct
   {
-    unsigned int A;
-    unsigned int B;
-    unsigned int C;
-    unsigned int D;
-    unsigned int E;
+    uint32_t A;
+    uint32_t B;
+    uint32_t C;
+    uint32_t D;
+    uint32_t E;
   } last_joy_state;
 } old_movie;
 
@@ -2598,7 +2599,7 @@ Code to playback old ZMVs
 
 static void OldMovieReplay()
 {
-  unsigned char byte;
+  uint8_t byte;
 
   if (fread(&byte, 1, 1, old_movie.fp))
   {
@@ -2659,13 +2660,13 @@ static void OldMovieReplay()
   }
 }
 
-static unsigned char oldframeskip = 0;
-static unsigned char oldmaxskip = 0;
+static uint8_t oldframeskip = 0;
+static uint8_t oldmaxskip = 0;
 
 static void OldMoviePlay(FILE *fp)
 {
-  unsigned char RecData[16];
-  extern unsigned char NextLineCache, sramsavedis;
+  uint8_t RecData[16];
+  extern uint8_t NextLineCache, sramsavedis;
   extern size_t Totalbyteloaded;
   void loadstate2();
 
