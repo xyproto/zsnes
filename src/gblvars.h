@@ -20,11 +20,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
 #include <stdbool.h>
-#ifdef __MSVC__
-#include "win/vc_head/stdint.h"
-#else
 #include <stdint.h>
-#endif
 
 extern uint32_t cycpbl;
 extern uint32_t PHspcsave, PHdspsave;
