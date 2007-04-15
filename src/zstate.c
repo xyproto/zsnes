@@ -539,15 +539,15 @@ void DeallocSystemVars()
   if (BackupSystemBuffer) { free(BackupSystemBuffer); }
 }
 
-extern uint32_t spcBuffera;
-extern unsigned int Voice0BufPtr, Voice1BufPtr, Voice2BufPtr, Voice3BufPtr;
-extern unsigned int Voice4BufPtr, Voice5BufPtr, Voice6BufPtr, Voice7BufPtr;
+extern uintptr_t spcBuffera;
+extern uintptr_t Voice0BufPtr, Voice1BufPtr, Voice2BufPtr, Voice3BufPtr;
+extern uintptr_t Voice4BufPtr, Voice5BufPtr, Voice6BufPtr, Voice7BufPtr;
 extern uintptr_t spcPCRam, spcRamDP;
 
 void PrepareSaveState()
 {
-  spcPCRam -= (uint32_t)SPCRAM;
-  spcRamDP -= (uint32_t)SPCRAM;
+  spcPCRam -= (uintptr_t)SPCRAM;
+  spcRamDP -= (uintptr_t)SPCRAM;
 
   Voice0BufPtr -= spcBuffera;
   Voice1BufPtr -= spcBuffera;
@@ -559,15 +559,13 @@ void PrepareSaveState()
   Voice7BufPtr -= spcBuffera;
 }
 
-extern uint32_t SA1Stat;
-extern uintptr_t IRAM[2049];
-extern uintptr_t *SA1Ptr, *SA1RegPCS, *CurBWPtr, SA1BWPtr;
-extern uintptr_t *SNSBWPtr;
+extern uintptr_t SA1Stat;
+extern uint8_t IRAM[2049], *SA1Ptr, *SA1RegPCS, *CurBWPtr, *SA1BWPtr, *SNSBWPtr;
 
 void SaveSA1()
 {
   SA1Stat &= 0xFFFFFF00;
-  SA1Ptr -= (uint32_t)SA1RegPCS;
+  SA1Ptr -= (uintptr_t)SA1RegPCS;
 
   if (SA1RegPCS == IRAM)
   {
@@ -579,18 +577,18 @@ void SaveSA1()
     SA1Stat = (SA1Stat & 0xFFFFFF00) + 2;
   }
 
-  SA1RegPCS -= (uint32_t)romdata;
-  CurBWPtr  -= (uint32_t)romdata;
-  SA1BWPtr  -= (uint32_t)romdata;
-  SNSBWPtr  -= (uint32_t)romdata;
+  SA1RegPCS -= (uintptr_t)romdata;
+  CurBWPtr  -= (uintptr_t)romdata;
+  SA1BWPtr  -= (uintptr_t)romdata;
+  SNSBWPtr  -= (uintptr_t)romdata;
 }
 
 void RestoreSA1()
 {
-  SA1RegPCS += (uint32_t)romdata;
-  CurBWPtr  += (uint32_t)romdata;
-  SA1BWPtr  += (uint32_t)romdata;
-  SNSBWPtr  += (uint32_t)romdata;
+  SA1RegPCS += (uintptr_t)romdata;
+  CurBWPtr  += (uintptr_t)romdata;
+  SA1BWPtr  += (uintptr_t)romdata;
+  SNSBWPtr  += (uintptr_t)romdata;
 
   if ((SA1Stat & 0xFF) == 1)
   {
@@ -602,7 +600,7 @@ void RestoreSA1()
     SA1RegPCS = IRAM-0x3000;
   }
 
-  SA1Ptr += (uint32_t)SA1RegPCS;
+  SA1Ptr += (uintptr_t)SA1RegPCS;
   SA1RAMArea = romdata + 4096*1024;
 }
 
@@ -615,8 +613,8 @@ void RestoreSA1()
 
 void ResetState()
 {
-  spcPCRam += (uint32_t)SPCRAM;
-  spcRamDP += (uint32_t)SPCRAM;
+  spcPCRam += (uintptr_t)SPCRAM;
+  spcRamDP += (uintptr_t)SPCRAM;
 
   ResState(Voice0BufPtr);
   ResState(Voice1BufPtr);
@@ -1012,10 +1010,10 @@ bool zst_load(FILE *fp, size_t Compressed)
   {
     SfxCPB = SfxMemTable[(SfxPBR & 0xFF)];
     SfxCROM = SfxMemTable[(SfxROMBR & 0xFF)];
-    SfxRAMMem = (uint32_t)sfxramdata + ((SfxRAMBR & 0xFF) << 16);
+    SfxRAMMem = (uintptr_t)sfxramdata + ((SfxRAMBR & 0xFF) << 16);
     SfxRomBuffer += SfxCROM;
     SfxLastRamAdr += SfxRAMMem;
-    SCBRrel = (SfxSCBR << 10) + (uint32_t)sfxramdata;
+    SCBRrel = (SfxSCBR << 10) + (uintptr_t)sfxramdata;
   }
 
   if (SA1Enable)
