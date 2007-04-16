@@ -46,6 +46,82 @@ LPDIRECTDRAWCLIPPER lpDDClipper = NULL;
 BYTE *SurfBuf;
 DDSURFACEDESC2 ddsd;
 
+extern "C"
+{
+  void drawscreenwin();
+  DWORD LastUsedPos = 0;
+  DWORD CurMode = ~0;
+  void reInitSound()
+  {
+    ReInitSound();
+  }
+}
+
+void DDrawError()
+{
+  char message1[256];
+
+  strcpy(message1, "Error drawing to the screen\nMake sure the device is not being used by another process");
+  MessageBox(NULL, message1, "DirectDraw Error", MB_ICONERROR);
+}
+
+extern "C" BYTE curblank;
+extern "C" WORD totlines;
+
+void DrawScreen()
+{
+  if (FullScreen == 1)
+  {
+    if (TripleBufferWin == 1 || KitchenSync == 1 || (KitchenSyncPAL == 1 && totlines == 314))
+    {
+      if (DD_BackBuffer->Blt(&rcWindow, DD_CFB, &BlitArea, DDBLT_WAIT, NULL) == DDERR_SURFACELOST)
+      {
+        DD_Primary->Restore();
+      }
+
+      if (DD_Primary->Flip(NULL, DDFLIP_WAIT) == DDERR_SURFACELOST)
+      {
+        DD_Primary->Restore();
+      }
+
+      if (KitchenSync == 1 || (KitchenSyncPAL == 1 && totlines == 314))
+      {
+        if (DD_BackBuffer->Blt(&rcWindow, DD_CFB, &BlitArea, DDBLT_WAIT, NULL) == DDERR_SURFACELOST)
+        {
+          DD_Primary->Restore();
+        }
+
+        if (DD_Primary->Flip(NULL, DDFLIP_WAIT) == DDERR_SURFACELOST)
+        {
+          DD_Primary->Restore();
+        }
+      }
+    }
+    else
+    {
+      if (vsyncon == 1 && curblank != 0x40)
+      {
+        if (lpDD->WaitForVerticalBlank(DDWAITVB_BLOCKBEGIN, NULL) != DD_OK)
+        {
+          DDrawError();
+        }
+      }
+      DD_Primary->Blt(&rcWindow, DD_CFB, &BlitArea, DDBLT_WAIT, NULL);
+      DD_Primary->Restore();
+    }
+  }
+  else
+  {
+    if (vsyncon == 1)
+    {
+      if (lpDD->WaitForVerticalBlank(DDWAITVB_BLOCKBEGIN, NULL) != DD_OK)
+      {
+        DDrawError();
+      }
+    }
+    DD_Primary->Blt(&rcWindow, AltSurface == 0 ? DD_CFB : DD_CFB16, &BlitArea, DDBLT_WAIT, NULL);
+  }
+}
 
 
 DWORD LockSurface()
