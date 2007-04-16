@@ -42,6 +42,92 @@ LPDIRECTDRAWSURFACE7 DD_CFB16 = NULL;
 LPDIRECTDRAWSURFACE7 DD_BackBuffer = NULL;
 LPDIRECTDRAWCLIPPER lpDDClipper = NULL;
 
+
+BYTE *SurfBuf;
+DDSURFACEDESC2 ddsd;
+
+
+
+DWORD LockSurface()
+{
+  HRESULT hRes;
+
+  if (AltSurface == 0)
+  {
+    if (DD_CFB != NULL)
+    {
+      memset(&ddsd, 0, sizeof(ddsd));
+      ddsd.dwSize = sizeof(ddsd);
+      ddsd.dwFlags = DDSD_LPSURFACE | DDSD_PITCH;
+
+      hRes = DD_CFB->Lock(NULL, &ddsd, DDLOCK_WAIT, NULL);
+
+      if (hRes == DD_OK)
+      {
+        SurfBuf = (BYTE *)ddsd.lpSurface;
+        return(ddsd.lPitch);
+      }
+      else
+      {
+        if (hRes == DDERR_SURFACELOST)
+        {
+          DD_Primary->Restore();
+          DD_CFB->Restore();
+          Clear2xSaIBuffer();
+        }
+        return(0);
+      }
+    }
+    else
+    {
+      return(0);
+    }
+  }
+  else
+  {
+    if (DD_CFB16 != NULL)
+    {
+      memset(&ddsd, 0, sizeof(ddsd));
+      ddsd.dwSize = sizeof(ddsd);
+      ddsd.dwFlags = DDSD_LPSURFACE | DDSD_PITCH;
+
+      hRes = DD_CFB16->Lock(NULL, &ddsd, DDLOCK_WAIT, NULL);
+
+      if (hRes == DD_OK)
+      {
+        SurfBuf = (BYTE *)ddsd.lpSurface;
+        return(ddsd.lPitch);
+      }
+      else
+      {
+        if (hRes == DDERR_SURFACELOST)
+        {
+          DD_Primary->Restore();
+          DD_CFB16->Restore();
+          Clear2xSaIBuffer();
+        }
+        return(0);
+      }
+    }
+    else
+    {
+      return(0);
+    }
+  }
+}
+
+void UnlockSurface()
+{
+  if (AltSurface == 0)
+  {
+    DD_CFB->Unlock((struct tagRECT *)ddsd.lpSurface);
+  }
+  else
+  {
+    DD_CFB16->Unlock((struct tagRECT *)ddsd.lpSurface);
+  }
+}
+
 int InitDirectDraw()
 {
   DDSURFACEDESC2 ddsd2;
