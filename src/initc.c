@@ -2039,7 +2039,7 @@ void CheckROMType()
 
   if (SA1Enable)
   {
-    SA1RAMArea = ROM + 4096*1024;
+    SA1RAMArea = (uint8_t *)ROM + 4096*1024;
 
     GenerateBank0TableSA1();
     SetAddressingModesSA1();
