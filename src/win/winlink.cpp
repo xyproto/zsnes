@@ -229,7 +229,11 @@ static lpDirectInput8Create pDirectInput8Create;
 
 typedef HRESULT (WINAPI* lpDirectDrawCreateEx)(GUID FAR *lpGuid, LPVOID *lplpDD, REFIID  iid,
                                                IUnknown FAR *pUnkOuter);
-lpDirectDrawCreateEx pDirectDrawCreateEx;
+
+extern "C"
+{
+  lpDirectDrawCreateEx pDirectDrawCreateEx;
+}
 
 typedef HRESULT (WINAPI* lpDirectSoundCreate8)(LPCGUID pcGuidDevice, LPDIRECTSOUND8 *ppDS8,
                                                LPUNKNOWN pUnkOuter);
@@ -1531,8 +1535,6 @@ void TestJoy()
   }
 }
 
-BYTE changeRes = 1;
-
 extern "C"
 {
   //BYTE changeRes = 1;
@@ -1549,17 +1551,16 @@ extern "C"
   extern BYTE GUIHQ4X[];
   extern BYTE GUINTVID[];
   extern BYTE hqFilterlevel;
+  BYTE changeRes = 1;
 }
 
 DWORD FirstVid = 1;
 DWORD FirstFull = 1;
 DWORD SMode = 0;
-DWORD DSMode = 0;
 DWORD NTSCMode = 0;
 DWORD prevHQMode = ~0;
 DWORD prevNTSCMode = 0;
 DWORD prevScanlines = ~0;
-WORD Refresh = 0;
 
 int InitDirectDraw();
 
@@ -1575,6 +1576,8 @@ extern "C"
   BYTE *SurfBuf;
   DDSURFACEDESC2 ddsd;
   DWORD DMode = 0;
+  DWORD DSMode = 0;
+  WORD Refresh = 0;
 
   short Buffer[1800 * 2];
 
