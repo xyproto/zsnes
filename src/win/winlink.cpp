@@ -104,9 +104,6 @@ _asm popad };
 
 #endif
 
-DWORD WindowWidth = 256;
-DWORD WindowHeight = 224;
-DWORD FullScreen = 0;
 DWORD Moving = 0;
 DWORD SoundBufferSize = 1024 * 18;
 DWORD FirstSound = 1;
@@ -128,6 +125,9 @@ extern "C"
   HINSTANCE hInst;
   HDC hDC;
   HGLRC hRC;
+  DWORD FullScreen = 0;
+  DWORD WindowWidth = 256;
+  DWORD WindowHeight = 224;
 }
 
 LPDIRECTSOUND8 lpDirectSound = NULL;
@@ -139,8 +139,6 @@ LPVOID lpvPtr1;
 DWORD dwBytes1;
 LPVOID lpvPtr2;
 DWORD dwBytes2;
-
-RECT rcWindow;
 
 LPDIRECTINPUT8 DInput = NULL;
 LPDIRECTINPUTDEVICE8 MouseInput = NULL;
@@ -171,7 +169,6 @@ DWORD NumBTN[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 DWORD CurrentJoy = 0;
 
 uint32_t BitDepth;
-DWORD GBitMask;
 BYTE BackColor = 0;
 DEVMODE mode;
 
@@ -188,13 +185,15 @@ BYTE MouseButtonPressed;
 BYTE IsActivated = 1;
 
 WORD PrevRes = 0;
-RECT BlitArea;
-BYTE AltSurface = 0;
 extern "C"
 {
   DWORD MouseButton;
   int32_t SurfaceX = 0;
   int32_t SurfaceY = 0;
+  RECT BlitArea;
+  BYTE AltSurface = 0;
+  RECT rcWindow;
+  DWORD GBitMask;
 }
 
 HANDLE hLock, hThread;
@@ -1554,7 +1553,6 @@ extern "C"
 
 DWORD FirstVid = 1;
 DWORD FirstFull = 1;
-DWORD DMode = 0;
 DWORD SMode = 0;
 DWORD DSMode = 0;
 DWORD NTSCMode = 0;
@@ -1563,10 +1561,7 @@ DWORD prevNTSCMode = 0;
 DWORD prevScanlines = ~0;
 WORD Refresh = 0;
 
-extern int InitDirectDraw();
-
-BYTE *SurfBuf;
-DDSURFACEDESC2 ddsd;
+int InitDirectDraw();
 
 DWORD LockSurface();
 void UnlockSurface();
@@ -1577,6 +1572,9 @@ extern "C"
 {
   void WinUpdateDevices();
   char CheckOGLMode();
+  BYTE *SurfBuf;
+  DDSURFACEDESC2 ddsd;
+  DWORD DMode = 0;
 
   short Buffer[1800 * 2];
 
