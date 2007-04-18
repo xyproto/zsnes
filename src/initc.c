@@ -39,6 +39,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "input.h"
 #include "zpath.h"
 #include "cpu/memtable.h"
+#include <stdint.h>
 
 #define NUMCONV_FR4
 #include "numconv.h"
@@ -80,8 +81,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 
 // Some archaic code from an unfinished Dynarec
-extern unsigned int curexecstate;
-extern unsigned char spcon;
+extern uint32_t curexecstate;
+extern bool spcon;
 
 void procexecloop()
 {
@@ -105,25 +106,25 @@ void Debug_WriteString(char *str)
 //better versions from NSRT. -Nach
 
 //init.asm goodness
-extern unsigned int NumofBanks;
-extern unsigned int NumofBytes;
-extern unsigned int *romdata;
-extern unsigned char romtype;
-extern unsigned char Interleaved;
+extern uint32_t NumofBanks;
+extern uint32_t NumofBytes;
+extern uint8_t *romdata;
+extern uint8_t romtype;
+extern uint8_t Interleaved;
 
-unsigned int maxromspace;
-unsigned int curromspace;
-unsigned int infoloc;
-unsigned int ramsize;
-unsigned int ramsizeand;
+uint32_t maxromspace;
+uint32_t curromspace;
+uint32_t infoloc;
+uint32_t ramsize;
+uint32_t ramsizeand;
 
 bool SplittedROM;
-unsigned int addOnStart;
-unsigned int addOnSize;
+uint32_t addOnStart;
+uint32_t addOnSize;
 
 
 //Deinterleave functions
-bool validChecksum(unsigned char *ROM, int BankLoc)
+bool validChecksum(uint8_t *ROM, int32_t BankLoc)
 {
   if (ROM[BankLoc + InvCSLowOffset] + (ROM[BankLoc + InvCSHiOffset] << 8) +
       ROM[BankLoc + CSLowOffset] + (ROM[BankLoc + CSHiOffset] << 8) == 0xFFFF)
@@ -133,7 +134,7 @@ bool validChecksum(unsigned char *ROM, int BankLoc)
   return(false);
 }
 
-bool valid_normal_bank(unsigned char bankbyte)
+bool valid_normal_bank(uint8_t bankbyte)
 {
   switch (bankbyte)
   {
@@ -144,7 +145,7 @@ bool valid_normal_bank(unsigned char bankbyte)
   return(false);
 }
 
-bool EHiHeader(unsigned char *ROM, int BankLoc)
+bool EHiHeader(uint8_t *ROM, int32_t BankLoc)
 {
   if (validChecksum(ROM, BankLoc) && (ROM[BankLoc+BankOffset] == 53 || ROM[BankLoc+BankOffset] == 37))
   {
@@ -153,9 +154,9 @@ bool EHiHeader(unsigned char *ROM, int BankLoc)
   return(false);
 }
 
-void SwapData(unsigned int *loc1, unsigned int *loc2, unsigned int amount)
+void SwapData(uint32_t *loc1, uint32_t *loc2, uint32_t amount)
 {
-  unsigned int temp;
+  uint32_t temp;
   while (amount--)
   {
     temp = *loc1;
@@ -164,17 +165,17 @@ void SwapData(unsigned int *loc1, unsigned int *loc2, unsigned int amount)
   }
 }
 
-void swapBlocks(char *blocks)
+void swapBlocks(uint8_t *blocks)
 {
-  unsigned int i, j;
+  uint_fast32_t i, j;
   for (i = 0; i < NumofBanks; i++)
   {
     for (j = 0; j < NumofBanks; j++)
     {
-      if (blocks[j] == (char)i)
+      if (blocks[j] == (int8_t)i)
       {
-        char b;
-        SwapData(romdata + blocks[i]*0x2000, romdata + blocks[j]*0x2000, 0x2000);
+        int8_t b;
+        SwapData(((uint32_t *)romdata + blocks[i]*0x2000), ((uint32_t *)romdata + blocks[j]*0x2000), 0x2000);
         b = blocks[j];
         blocks[j] = blocks[i];
         blocks[i] = b;
@@ -186,8 +187,9 @@ void swapBlocks(char *blocks)
 
 void deintlv1()
 {
-  char blocks[256];
-  int i, numblocks = NumofBanks/2;
+  uint8_t blocks[256];
+  int_fast32_t i;
+  int32_t numblocks = NumofBanks/2;
   for (i = 0; i < numblocks; i++)
   {
     blocks[i * 2] = i + numblocks;
@@ -196,9 +198,9 @@ void deintlv1()
   swapBlocks(blocks);
 }
 
-void CheckIntl1(unsigned char *ROM)
+void CheckIntl1(uint8_t *ROM)
 {
-  unsigned int ROMmidPoint = NumofBytes / 2;
+  uint32_t ROMmidPoint = NumofBytes / 2;
   if (validChecksum(ROM, ROMmidPoint + Lo) &&
      !validChecksum(ROM, Lo) &&
       ROM[ROMmidPoint+Lo+CountryOffset] < 14) //Country Code
@@ -222,14 +224,14 @@ void CheckIntl1(unsigned char *ROM)
   }
 }
 
-void CheckIntlEHi(unsigned char *ROM)
+void CheckIntlEHi(uint8_t *ROM)
 {
   if (EHiHeader(ROM, Lo))
   {
-    unsigned int oldNumBanks = NumofBanks;
+    uint32_t oldNumBanks = NumofBanks;
 
     //Swap 4MB ROM with the other one
-    SwapData(romdata, romdata+((NumofBytes-0x400000)/4), 0x100000);
+    SwapData((uint32_t *)romdata, ((uint32_t *)romdata+((NumofBytes-0x400000)/4)), 0x100000);
 
     //Deinterleave the 4MB ROM first
     NumofBanks = 128;
@@ -249,9 +251,9 @@ void CheckIntlEHi(unsigned char *ROM)
 }
 
 //ROM loading functions, which some strangly enough were in guiload.inc
-bool AllASCII(unsigned char *b, int size)
+bool AllASCII(unsigned char *b, int32_t size)
 {
-  int i;
+  int_fast32_t i;
   for (i = 0; i < size; i++)
   {
     if (b[i] && (b[i] < 32 || b[i] > 126))
@@ -264,7 +266,7 @@ bool AllASCII(unsigned char *b, int size)
 
 //Code to detect if opcode sequence is a valid and popular one for an SNES ROM
 //Code by Cowering
-static bool valid_start_sequence(unsigned char opcode1, unsigned char opcode2, unsigned char opcode3)
+static bool valid_start_sequence(uint8_t opcode1, uint8_t opcode2, uint8_t opcode3)
 {
   switch (opcode1)
   {
@@ -335,15 +337,15 @@ static bool valid_start_sequence(unsigned char opcode1, unsigned char opcode2, u
   return(false);
 }
 
-static int valid_reset(unsigned char *Buffer)
+static int16_t valid_reset(uint8_t *Buffer)
 {
-  unsigned char *ROM = (unsigned char *)romdata;
-  unsigned short Reset = Buffer[ResetLoOffset] | ((unsigned short)Buffer[ResetHiOffset] << 8);
+  uint8_t *ROM = romdata;
+  uint16_t Reset = Buffer[ResetLoOffset] | ((uint16_t)Buffer[ResetHiOffset] << 8);
   if ((Reset != 0xFFFF) && (Reset & 0x8000))
   {
-    unsigned char opcode1 = ROM[(Reset+0) & 0x7FFF];
-    unsigned char opcode2 = ROM[(Reset+1) & 0x7FFF];
-    unsigned char opcode3 = ROM[(Reset+2) & 0x7FFF];
+    uint8_t opcode1 = ROM[(Reset+0) & 0x7FFF];
+    uint8_t opcode2 = ROM[(Reset+1) & 0x7FFF];
+    uint8_t opcode3 = ROM[(Reset+2) & 0x7FFF];
 
     if (valid_start_sequence(opcode1, opcode2, opcode3))
     {
@@ -354,9 +356,9 @@ static int valid_reset(unsigned char *Buffer)
   return(-4);
 }
 
-int InfoScore(unsigned char *Buffer)
+int32_t InfoScore(uint8_t *Buffer)
 {
-  int score = valid_reset(Buffer);
+  int32_t score = valid_reset(Buffer);
   if (validChecksum(Buffer, 0))                 { score += 5; }
   if (Buffer[CompanyOffset] == 0x33)            { score += 3; }
   if (!Buffer[ROMSizeOffset])                   { score += 2; }
@@ -368,12 +370,12 @@ int InfoScore(unsigned char *Buffer)
   return(score);
 }
 
-extern unsigned char ForceHiLoROM;
-extern unsigned char forceromtype;
+extern uint8_t ForceHiLoROM;
+extern uint8_t forceromtype;
 
 void BankCheck()
 {
-  unsigned char *ROM = (unsigned char *)romdata;
+  uint8_t *ROM = romdata;
   infoloc = 0;
   Interleaved = false;
 
@@ -404,7 +406,7 @@ void BankCheck()
   if (!infoloc)
   {
     static bool CommandLineForce2 = false;
-    int loscore, hiscore;
+    int32_t loscore, hiscore;
 
     //Deinterleave if neccesary
     CheckIntl1(ROM);
@@ -466,7 +468,7 @@ bool SGBEnable, SPC7110Enable, ST18Enable;
 
 void chip_detect()
 {
-  unsigned char *ROM = (unsigned char *)romdata;
+  uint8_t *ROM = romdata;
 
   C4Enable = RTCEnable = SA1Enable = SDD1Enable = OBCEnable = CHIPBATT = false;
   SGBEnable = ST18Enable = DSP1Enable = DSP2Enable = DSP3Enable = false;
@@ -490,7 +492,7 @@ void chip_detect()
     return;
   }
 
-  switch((unsigned short)ROM[infoloc+BankOffset] | (ROM[infoloc+TypeOffset] << 8))
+  switch((uint16_t)ROM[infoloc+BankOffset] | (ROM[infoloc+TypeOffset] << 8))
   {
     case 0x1320:                             //Mario Chip 1
     case 0x1420:                             //GSU-x
@@ -581,7 +583,7 @@ void chip_detect()
       (!ROM[infoloc+BSYearOffset] || (ROM[infoloc+BSYearOffset] & 131) == 128) &&
       valid_normal_bank(ROM[infoloc+BSBankOffset]))
   {
-    unsigned char m = ROM[infoloc+BSMonthOffset];
+    uint8_t m = ROM[infoloc+BSMonthOffset];
     if (!m && !ROM[infoloc+BSDayOffset])
     {
       //BS Add-on cart
@@ -597,13 +599,13 @@ void chip_detect()
 }
 
 //Checksum functions
-unsigned short sum(unsigned char *array, unsigned int size)
+uint16_t sum(uint8_t *array, size_t size)
 {
-  unsigned short theSum = 0;
-  unsigned int i;
+  uint16_t theSum = 0;
+  uint_fast32_t i;
 
   //Prevent crashing by reading too far (needed for messed up ROMs)
-  if (array + size > (unsigned char *)romdata + maxromspace)
+  if (array + size > romdata + maxromspace)
   {
     return(0xFFFF);
   }
@@ -615,10 +617,10 @@ unsigned short sum(unsigned char *array, unsigned int size)
   return(theSum);
 }
 
-static unsigned short Checksumvalue;
+static uint16_t Checksumvalue;
 void CalcChecksum()
 {
-  unsigned char *ROM = (unsigned char *)romdata;
+  uint8_t *ROM = romdata;
 
   if (SplittedROM)
   {
@@ -643,9 +645,9 @@ void CalcChecksum()
   }
 }
 
-static void rom_memcpy(unsigned char *dest, unsigned char *src, size_t len)
+static void rom_memcpy(uint8_t *dest, uint8_t *src, size_t len)
 {
-  unsigned char *endrom = (unsigned char *)romdata+maxromspace;
+  uint8_t *endrom = romdata+maxromspace;
   while (len-- && (dest < endrom) && (src < endrom))
   {
     *dest++ = *src++;
@@ -653,9 +655,9 @@ static void rom_memcpy(unsigned char *dest, unsigned char *src, size_t len)
 }
 
 //This will mirror up non power of two ROMs to powers of two
-static unsigned int mirror_rom(unsigned char *start, unsigned int length)
+static uint32_t mirror_rom(uint8_t *start, size_t length)
 {
-  unsigned int mask = 0x800000;
+  uint32_t mask = 0x800000;
   while (!(length & mask)) { mask >>= 1; }
 
   length -= mask;
@@ -675,16 +677,16 @@ static unsigned int mirror_rom(unsigned char *start, unsigned int length)
 }
 
 //Misc functions
-void MirrorROM(unsigned char *ROM)
+void MirrorROM(uint8_t *ROM)
 {
-  unsigned int ROMSize, StartMirror = 0;
+  uint32_t ROMSize, StartMirror = 0;
   if (!SPC7110Enable)
   {
-    curromspace = mirror_rom((unsigned char *)romdata, curromspace);
+    curromspace = mirror_rom(romdata, curromspace);
   }
   else if (curromspace == 0x300000)
   {
-    memcpy((unsigned char *)romdata+curromspace, romdata, curromspace);
+    memcpy(romdata+curromspace, romdata, curromspace);
     curromspace += curromspace;
   }
 
@@ -711,7 +713,7 @@ void MirrorROM(unsigned char *ROM)
 
 void SetupSramSize()
 {
-  unsigned char *ROM = (unsigned char *)romdata;
+  uint8_t *ROM = romdata;
   if (BSEnable)
   {
     ramsize = 0;
@@ -720,7 +722,7 @@ void SetupSramSize()
   {
     if (ROM[infoloc+CompanyOffset] == 0x33) //Extended header
     {
-      ramsize = 8 << ((unsigned int)ROM[infoloc-3]);
+      ramsize = 8 << ((uint32_t)ROM[infoloc-3]);
     }
     else
     {
@@ -733,11 +735,11 @@ void SetupSramSize()
   }
   else if (!strncmp((char *)ROM, "BANDAI SFC-ADX", 14))
   {  // For the Sufami Turbo
-    ramsize = 8 << ((unsigned int)ROM[0x100032]);
+    ramsize = 8 << ((uint32_t)ROM[0x100032]);
   }
   else
   {
-    ramsize = ((ROM[infoloc+SRAMSizeOffset]) ? (8 << ((unsigned int)ROM[infoloc+SRAMSizeOffset])) : 0);
+    ramsize = ((ROM[infoloc+SRAMSizeOffset]) ? (8 << ((uint32_t)ROM[infoloc+SRAMSizeOffset])) : 0);
   }
 
   //Fix if some ROM goes nuts on size
@@ -784,7 +786,7 @@ void loadFile(char *filename)
 {
   bool multifile = false;
   char *incrementer = 0;
-  unsigned char *ROM = (unsigned char *)romdata;
+  uint8_t *ROM = romdata;
 
   if (strlen(filename) >= 3) //Char + ".1"
   {
@@ -801,7 +803,7 @@ void loadFile(char *filename)
     struct stat stat_results;
     stat_dir(ZRomPath, filename, &stat_results);
 
-    if ((unsigned int)stat_results.st_size <= maxromspace+512-curromspace)
+    if ((uint32_t)stat_results.st_size <= maxromspace+512-curromspace)
     {
       FILE *fp = 0;
       fp = fopen_dir(ZRomPath, filename, "rb");
@@ -836,7 +838,7 @@ void loadGZipFile(char *filename)
   FILE *fp = fopen_dir(ZRomPath, filename, "rb");
   if (fp)
   {
-    int fsize, gzsize;
+    int32_t fsize, gzsize;
     gzFile GZipFile;
 
     fseek(fp, -4, SEEK_END);
@@ -847,8 +849,8 @@ void loadGZipFile(char *filename)
     //Open GZip file for decompression, use existing file handle
     if ((GZipFile = gzdopen(fileno(fp), "rb")))
     {
-      int len = gzdirect(GZipFile) ? fsize : gzsize;
-      if (len && ((unsigned int)len <= maxromspace+512) && (gzread(GZipFile, romdata, len) == len))
+      uint32_t len = gzdirect(GZipFile) ? fsize : gzsize;
+      if (len && (len <= maxromspace+512) && (gzread(GZipFile, romdata, len) == len))
       {
         curromspace = len; //Success
       }
@@ -861,7 +863,7 @@ void loadGZipFile(char *filename)
 void loadZipFile(char *filename)
 {
   int err, fileSize;
-  unsigned char *ROM = (unsigned char *)romdata;
+  uint8_t *ROM = romdata;
   bool multifile = false, NSS = false;
   char *incrementer = 0;
 
@@ -914,7 +916,7 @@ void loadZipFile(char *filename)
     }
 
     //Check for valid ROM based on size
-    if (((unsigned int)fileSize <= maxromspace+512) &&
+    if (((intmax_t)fileSize <= maxromspace+512) &&
         (fileSize > LargestGoodFile))
     {
       strcpy(ourFile, cFileName);
@@ -1001,7 +1003,7 @@ void loadZipFile(char *filename)
 
 void load_file_fs(char *path)
 {
-  unsigned char *ROM = (unsigned char *)romdata;
+  uint8_t *ROM = romdata;
 
   if (isextension(path, "jma"))
   {
@@ -1032,12 +1034,12 @@ void load_file_fs(char *path)
 }
 
 char *STCart2 = 0;
-unsigned char *sram2;
-extern unsigned char *sram;
+uint8_t *sram2;
+extern uint8_t *sram;
 
-void SplitSetup(char *basepath, char *basefile, unsigned int MirrorSystem)
+void SplitSetup(char *basepath, char *basefile, uint32_t MirrorSystem)
 {
-  unsigned char *ROM = (unsigned char *)romdata;
+  uint8_t *ROM = romdata;
 
   curromspace = 0;
   if (maxromspace < addOnStart+addOnSize) { return; }
@@ -1116,7 +1118,7 @@ void SplitSupport()
       curromspace = 0;
       load_file_fs(STCart2);
       memcpy(ROM+curromspace, ROM, curromspace);
-      SwapData(romdata, romdata+(curromspace>>1), curromspace>>1);
+      SwapData((uint32_t *)romdata, ((uint32_t *)romdata+(curromspace>>1)), curromspace>>1);
       addOnSize = curromspace<<2;
       addOnStart = 0x100000;
       SplitSetup(STPath, "STBIOS.ZIP", 3);
@@ -1126,9 +1128,9 @@ void SplitSupport()
   }
 }
 
-bool NSRTHead(unsigned char *ROM)
+bool NSRTHead(uint8_t *ROM)
 {
-  unsigned char *NSRTHead = ROM + 0x1D0; //NSRT Header Location
+  uint8_t *NSRTHead = ROM + 0x1D0; //NSRT Header Location
 
   if (!strncmp("NSRT", (char*)&NSRTHead[24],4) && NSRTHead[28] == 22)
   {
@@ -1149,9 +1151,9 @@ void calculate_state_sizes(), InitRewindVars(), zst_init();
 bool findZipIPS(char *, char *);
 bool PatchUsingIPS(char *);
 extern bool EMUPause;
-extern unsigned char device1, device2;
-extern unsigned char IPSPatched;
-unsigned char lorommapmode2, curromsize, snesinputdefault1, snesinputdefault2;
+extern uint8_t device1, device2;
+extern bool IPSPatched;
+uint8_t lorommapmode2, curromsize, snesinputdefault1, snesinputdefault2;
 bool input1gp, input1mouse, input2gp, input2mouse, input2scope, input2just;
 
 void loadROM()
@@ -1198,7 +1200,7 @@ void loadROM()
   }
   else
   {
-    int HeadRemain = (curromspace & 0x7FFF);
+    int32_t HeadRemain = (curromspace & 0x7FFF);
     switch(HeadRemain)
     {
       case 0:
@@ -1210,7 +1212,7 @@ void loadROM()
 
       default:
       {
-        unsigned char *ROM = (unsigned char *)romdata;
+        uint8_t *ROM = romdata;
 
         //SMC/SWC header
         if (ROM[8] == 0xAA && ROM[9]==0xBB && ROM[10]== 4)
@@ -1245,7 +1247,7 @@ void loadROM()
 
   if (Header512)
   {
-    unsigned char *ROM = (unsigned char *)romdata;
+    uint8_t *ROM = romdata;
     if (NSRTHead(ROM))
     {
       switch (ROM[0x1ED] & 0xF0) //Port 1
@@ -1342,7 +1344,7 @@ void loadROM()
       }
     }
     curromspace -= 512;
-    memmove((unsigned char *)romdata, ((unsigned char *)romdata)+512, curromspace);
+    memmove(romdata, romdata+512, curromspace);
   }
 
   snesinputdefault1 = device1;
@@ -1352,31 +1354,31 @@ void loadROM()
 
   if (isZip)
   {
-    int i;
+    int_fast32_t i;
     char ext[4];
 
     strcpy(ext, "ips");
     for (i = 0; findZipIPS(ZCartName, ext); i++)
     {
       if (i > 9) { break; }
-      ext[2] = i+'0';
+      ext[2] = (int)i+'0';
     }
   }
 
   if (curromspace)
   {
-    unsigned char *ROM = (unsigned char *)romdata;
+    uint8_t *ROM = romdata;
 
     if (!IPSPatched)
     {
-      int i;
+      int_fast32_t i;
       char ext[4];
 
       strcpy(ext, "ips");
       for (i = 0; PatchUsingIPS(ext); i++)
       {
         if (i > 9) { break; }
-        ext[2] = i+'0';
+        ext[2] = (int)i+'0';
       }
     }
 
@@ -1392,26 +1394,24 @@ void loadROM()
 }
 
 //Memory Setup functions
-extern unsigned char wramdataa[65536];
-extern unsigned char ram7fa[65536];
-extern unsigned char regptra[49152];
-extern unsigned char regptwa[49152];
-extern unsigned char vidmemch2[4096];
-extern unsigned char vidmemch4[4096];
-extern unsigned char vidmemch8[4096];
-extern unsigned char pal16b[1024];
-extern unsigned char pal16bcl[1024];
-extern unsigned char pal16bclha[1024];
-extern unsigned char pal16bxcl[256];
-extern unsigned char SPCRAM[65472];
+extern uint8_t wramdataa[65536];
+extern uint8_t ram7fa[65536];
+extern uint8_t regptra[49152];
+extern uint8_t regptwa[49152];
+extern uint8_t vidmemch2[4096];
+extern uint8_t vidmemch4[4096];
+extern uint8_t vidmemch8[4096];
+extern uint8_t pal16b[1024];
+extern uint8_t pal16bcl[1024];
+extern uint8_t pal16bclha[1024];
+extern uint8_t pal16bxcl[256];
+extern uint8_t SPCRAM[65472];
 
-extern unsigned char *sram;
-extern unsigned char *vidbuffer;
-extern unsigned char *vram;
-extern unsigned char *vcache2b;
-extern unsigned char *vcache4b;
-extern unsigned char *vcache8b;
-extern unsigned char *sram;
+extern uint8_t *vidbuffer;
+extern uint8_t *vram;
+extern uint8_t *vcache2b;
+extern uint8_t *vcache4b;
+extern uint8_t *vcache8b;
 
 void clearSPCRAM()
 {
@@ -1428,7 +1428,7 @@ void clearSPCRAM()
   xxc0 - xxdf: $00
   xxe0 - xxff: $ff
   */
-  unsigned int i;
+  uint_fast32_t i;
   for (i = 0; i < 65472; i += 0x40)
   {
     memset(SPCRAM+i, 0, 0x20);
@@ -1444,7 +1444,7 @@ void clearmem2()
 
 void clearmem()
 {
-  int i;
+  int_fast32_t i;
 
   memset(vidbuffer, 0, 131072);
   memset(wramdataa, 0, 65536);
@@ -1471,13 +1471,13 @@ void clearmem()
   clearmem2();
 }
 
-extern unsigned char BRRBuffer[32];
-extern unsigned char echoon0;
-extern unsigned int PHdspsave;
-extern unsigned int PHdspsave2;
-unsigned char echobuf[90000];
-extern unsigned char *spcBuffera;
-extern unsigned char DSPMem[256];
+extern uint8_t BRRBuffer[32];
+extern uint8_t echoon0;
+extern uint32_t PHdspsave;
+extern uint32_t PHdspsave2;
+uint8_t echobuf[90000];
+extern uint8_t *spcBuffera;
+extern uint8_t DSPMem[256];
 
 void clearvidsound()
 {
@@ -1499,9 +1499,9 @@ void clearvidsound()
 Would be nice to trash this section in the future
 */
 
-extern unsigned char ENVDisable, cycpb268, cycpb358, cycpbl2, cycpblt2, cycpbl;
-extern unsigned char cycpblt, opexec268, opexec358, opexec268b, opexec358b;
-extern unsigned char opexec268cph, opexec358cph, opexec268cphb, opexec358cphb;
+extern uint8_t ENVDisable, cycpb268, cycpb358, cycpbl2, cycpblt2, cycpbl;
+extern uint8_t cycpblt, opexec268, opexec358, opexec268b, opexec358b;
+extern uint8_t opexec268cph, opexec358cph, opexec268cphb, opexec358cphb;
 
 void headerhack()
 {
@@ -1634,11 +1634,11 @@ void Setper2exec()
   }
 }
 
-extern unsigned int SPC7110TempPosition, SPC7110TempLength, SPCDecmPtr;
+extern uint32_t SPC7110TempPosition, SPC7110TempLength, SPCDecmPtr;
 static char *SPC7110path, SPC7110fname[8+1+6+4+1]; //dir / 12345 .bin
 char *SPC7110filep;
-extern unsigned char *SPC7110IndexPtr, *SPC7110PackPtr;
-unsigned int SPC7110IndexSize;
+extern uint8_t *SPC7110IndexPtr, *SPC7110PackPtr;
+uint32_t SPC7110IndexSize;
 
 static void SPC7PathSetup(char *PathVar, const char *Default)
 {
@@ -1656,9 +1656,9 @@ static void SPC7PathSetup(char *PathVar, const char *Default)
   }
 }
 
-extern unsigned int MsgCount, MessageOn, CRC32;
+extern uint32_t MsgCount, MessageOn, CRC32;
 extern char *Msgptr;
-unsigned int SPC7110Entries;
+uint32_t SPC7110Entries;
 
 void SPC7PackIndexLoad()
 {
@@ -1751,10 +1751,10 @@ void SPC7_Data_Load()
   }
 }
 
-unsigned int showinfogui()
+uint32_t showinfogui()
 {
-  unsigned int i;
-  unsigned char *ROM = (unsigned char *)romdata;
+  uint_fast32_t i;
+  uint8_t *ROM = romdata;
 
   strcpy(CSStatus, "                          TYPE:         ");
   strcpy(CSStatus2, "INTERLEAVED:                 CHKSUM:    ");
@@ -1805,7 +1805,7 @@ unsigned int showinfogui()
   // calculate CRC32 for the whole ROM, or Add-on ROM only
   CRC32 = (SplittedROM) ? crc32(0, ROM+addOnStart, addOnSize) : crc32(0, ROM, NumofBytes);
   // place CRC32 on line
-  sprintf(CSStatus3+32, "%08X", CRC32);
+  sprintf(CSStatus3+32, "%08X", (unsigned int)CRC32);
 
   i = (SplittedROM) ? infoloc + 0x1E + addOnStart: infoloc + 0x1E;
 
@@ -1825,14 +1825,14 @@ unsigned int showinfogui()
   return (MsgCount);
 }
 
-extern unsigned int nmiprevaddrl, nmiprevaddrh, nmirept, nmiprevline, nmistatus;
-extern unsigned char spcnumread, yesoutofmemory;
-extern unsigned char NextLineCache, sramsavedis, sndrot, regsbackup[3019];
-extern unsigned int Voice0Freq, Voice1Freq, Voice2Freq, Voice3Freq;
-extern unsigned int Voice4Freq, Voice5Freq, Voice6Freq, Voice7Freq;
-extern unsigned int dspPAdj;
-extern unsigned short Voice0Pitch, Voice1Pitch, Voice2Pitch, Voice3Pitch;
-extern unsigned short Voice4Pitch, Voice5Pitch, Voice6Pitch, Voice7Pitch;
+extern uint32_t nmiprevaddrl, nmiprevaddrh, nmirept, nmiprevline, nmistatus;
+extern uint8_t spcnumread, yesoutofmemory;
+extern uint8_t NextLineCache, sramsavedis, sndrot, regsbackup[3019];
+extern uint32_t Voice0Freq, Voice1Freq, Voice2Freq, Voice3Freq;
+extern uint32_t Voice4Freq, Voice5Freq, Voice6Freq, Voice7Freq;
+extern uint32_t dspPAdj;
+extern uint16_t Voice0Pitch, Voice1Pitch, Voice2Pitch, Voice3Pitch;
+extern uint16_t Voice4Pitch, Voice5Pitch, Voice6Pitch, Voice7Pitch;
 void outofmemfix(), GUIDoReset();
 
 void initpitch()
@@ -1855,11 +1855,11 @@ void initpitch()
   Voice7Freq = ((((Voice7Pitch & 0x3FFF) * dspPAdj) >> 8) & 0xFFFFFFFF);
 }
 
-extern unsigned int SfxR1, SfxR2, SetaCmdEnable, SfxSFR, SfxSCMR;
-extern unsigned char disablespcclr, *sfxramdata, SramExists;
-extern unsigned char *setaramdata, *wramdata, *SA1RAMArea, cbitmode;
-extern unsigned char ForcePal, ForceROMTiming, romispal, MovieWaiting, DSP1Type;
-extern unsigned short totlines;
+extern uint32_t SfxR1, SfxR2, SetaCmdEnable, SfxSFR, SfxSCMR;
+extern uint8_t disablespcclr, *sfxramdata, SramExists;
+extern uint8_t *setaramdata, *wramdata, *SA1RAMArea, cbitmode;
+extern uint8_t ForcePal, ForceROMTiming, romispal, MovieWaiting, DSP1Type;
+extern uint16_t totlines;
 void SetAddressingModes(), GenerateBank0Table();
 void SetAddressingModesSA1(), GenerateBank0TableSA1();
 void InitDSP(), InitDSP2(), InitDSP3(), InitDSP4(), InitOBC1(), InitFxTables();
@@ -1871,17 +1871,17 @@ void dosmakepal();
 
 void CheckROMType()
 {
-  unsigned char *ROM = (unsigned char *)romdata;
+  char *ROM = (char *)romdata;
 
   if (!MovieWaiting)
   {
-    MirrorROM((unsigned char *)romdata);
+    MirrorROM(romdata);
     CalcChecksum();
   }
 
   lorommapmode2 = 0;
-  if (!strncmp((char *)ROM+0x207FC0, "DERBY STALLION 96", 17) ||
-      !strncmp((char *)ROM+Lo, "SOUND NOVEL-TCOOL", 17))
+  if (!strncmp(ROM+0x207FC0, "DERBY STALLION 96", 17) ||
+      !strncmp(ROM+Lo, "SOUND NOVEL-TCOOL", 17))
   { lorommapmode2 = 1; }
 
   // Setup memmapping
@@ -1890,7 +1890,7 @@ void CheckROMType()
 
   disablespcclr = (memcmp(ROM+Hi, "BS Z", 4)) ? 0 : 1;
 
-  if (!strncmp((char *)ROM, "BANDAI SFC-ADX", 14))
+  if (!strncmp(ROM, "BANDAI SFC-ADX", 14))
   {
     map_mem(0x60, &stbanka, 0x08);
     if (STCart2)
@@ -2002,7 +2002,7 @@ void CheckROMType()
 
   if (SETAEnable)
   {
-    if (strncmp((char *)ROM+Lo, "2DAN MORITA SHOUGI", 18))
+    if (strncmp(ROM+Lo, "2DAN MORITA SHOUGI", 18))
     {
       //Setup Seta 10 stuff
 
@@ -2054,12 +2054,12 @@ void CheckROMType()
   wramdata = wramdataa;
 }
 
-extern unsigned short copv, brkv, abortv, nmiv, nmiv2, irqv, irqv2, resetv;
-extern unsigned short copv8, brkv8, abortv8, nmiv8, irqv8;
+extern uint16_t copv, brkv, abortv, nmiv, nmiv2, irqv, irqv2, resetv;
+extern uint16_t copv8, brkv8, abortv8, nmiv8, irqv8;
 
 void SetIRQVectors()
 { // get vectors (NMI & reset)
-  unsigned char *ROM = (unsigned char *)romdata;
+  uint8_t *ROM = romdata;
 
   if (!memcmp(ROM+infoloc+36+24, "\0xFF\0xFF", 2)) // if reset error
   {
@@ -2094,7 +2094,7 @@ void SetIRQVectors()
 void SetupROM()
 {
   static bool CLforce = false;
-  unsigned char *ROM = (unsigned char *)romdata;
+  uint8_t *ROM = romdata;
 
   CheckROMType();
   SetIRQVectors();
@@ -2143,9 +2143,9 @@ void SetupROM()
   }
 }
 
-extern int NumComboLocl;
-extern unsigned char ComboHeader[23];
-extern char CombinDataLocl[3300];
+extern int32_t NumComboLocl;
+extern uint8_t ComboHeader[23];
+extern int8_t CombinDataLocl[3300];
 extern bool romloadskip;
 
 void SaveCombFile()
@@ -2191,11 +2191,12 @@ void OpenCombFile()
   }
 }
 
-unsigned char SFXCounter, SfxAC, ForceNewGfxOff;
+uint8_t SFXCounter, SfxAC, ForceNewGfxOff;
 
 void preparesfx()
 {
-  char *ROM = (char *)romdata, i;
+  char *ROM = (char *)romdata;
+  int_fast8_t i;
 
   SFXCounter = SfxAC = 0;
 
@@ -2211,12 +2212,12 @@ void preparesfx()
 
   for (i=63;i>=0;i--)
   {
-    memcpy(romdata+i*0x4000       ,romdata+i*0x2000,0x8000);
-    memcpy(romdata+i*0x4000+0x2000,romdata+i*0x2000,0x8000);
+    memcpy((int32_t *)romdata+i*0x4000       ,(int32_t *)romdata+i*0x2000,0x8000);
+    memcpy((int32_t *)romdata+i*0x4000+0x2000,(int32_t *)romdata+i*0x2000,0x8000);
   }
 }
 
-void map_set(void **dest, unsigned char *src, size_t count, size_t step)
+void map_set(void **dest, uint8_t *src, size_t count, size_t step)
 {
   while (count--)
   {
@@ -2226,20 +2227,20 @@ void map_set(void **dest, unsigned char *src, size_t count, size_t step)
   }
 }
 
-extern unsigned char MultiType;
+extern uint8_t MultiType;
 extern void *snesmmap[256];
 extern void *snesmap2[256];
 
-unsigned int cromptradd;
-extern unsigned char MultiTap;
-extern unsigned int SfxR0, SfxR1, SfxR2, SfxR3, SfxR4, SfxR5, SfxR6, SfxR7,
-                   SfxR8, SfxR9, SfxR10, SfxR11, SfxR12, SfxR13, SfxR14, SfxR15;
+uint32_t cromptradd;
+extern uint8_t MultiTap;
+extern uint32_t SfxR0, SfxR1, SfxR2, SfxR3, SfxR4, SfxR5, SfxR6, SfxR7,
+                SfxR8, SfxR9, SfxR10, SfxR11, SfxR12, SfxR13, SfxR14, SfxR15;
 extern void *ram7f;
 
 void map_lorom()
 {
-  unsigned char *ROM = (unsigned char *)romdata;
-  int x;
+  uint8_t *ROM = romdata;
+  uint_fast8_t x;
 
   // set addresses 8000-FFFF
   // set banks 00-7F (80h x 32KB ROM banks @ 8000h)
@@ -2279,8 +2280,8 @@ void map_lorom()
 
 void map_hirom()
 {
-  unsigned char *ROM = (unsigned char *)romdata;
-  int x;
+  uint8_t *ROM = romdata;
+  uint_fast8_t x;
 
   // set addresses 8000-FFFF
   // set banks 00-3F (40h x 64KB ROM banks @10000h)
@@ -2318,8 +2319,8 @@ void map_hirom()
 
 void map_ehirom()
 {
-  unsigned char *ROM = (unsigned char *)romdata;
-  int x;
+  uint8_t *ROM = romdata;
+  uint_fast8_t x;
 
   // set addresses 8000-FFFF
   // set banks 00-3F (40h x 32KB ROM banks @ 10000h)
@@ -2361,7 +2362,7 @@ void map_ehirom()
 
 void map_sfx()
 {
-  unsigned char *ROM = (unsigned char *)romdata;
+  uint8_t *ROM = romdata;
 
   // Clear SFX registers
   SfxR0 = SfxR1 = SfxR2 = SfxR3 = SfxR4 = SfxR5 = SfxR6 = SfxR7 = 0;
@@ -2410,8 +2411,8 @@ void map_sfx()
 
 void map_sa1()
 {
-  unsigned char *ROM = (unsigned char *)romdata;
-  unsigned char test[] = { 0xA9, 0x10, 0xCF, 0xAD };
+  uint8_t *ROM = romdata;
+  uint8_t test[] = { 0xA9, 0x10, 0xCF, 0xAD };
 
   if(!memcmp(ROM+0xB95, test, 4)) { ROM[0xB96] = 0; }
 
@@ -2448,8 +2449,8 @@ void map_sa1()
 
 void map_sdd1()
 {
-  unsigned char *ROM = (unsigned char *)romdata;
-  unsigned char test[] = { 0xA9, 0x10, 0xCF, 0xAD };
+  uint8_t *ROM = romdata;
+  uint8_t test[] = { 0xA9, 0x10, 0xCF, 0xAD };
 
   if(!memcmp(ROM+0xB95, test, 4)) { ROM[0xB96] = 0; }
 
@@ -2486,8 +2487,8 @@ void map_sdd1()
 
 void map_bsx()
 {
-  unsigned char *ROM = (unsigned char *)romdata;
-  int x;
+  uint8_t *ROM = romdata;
+  uint_fast8_t x;
 
   // set addresses 8000-FFFF
   // set banks 00-7F (80h x 32KB ROM banks @ 8000h)
@@ -2543,7 +2544,7 @@ void initsnes()
 }
 
 void DosExit(), OpenSramFile(), CheatCodeLoad(), LoadSecondState(), LoadGameSpecificInput();
-extern unsigned char GUIOn, GUIOn2;
+extern uint8_t GUIOn, GUIOn2;
 
 bool loadfileGUI()
 {
@@ -2579,8 +2580,8 @@ bool loadfileGUI()
   return (result);
 }
 
-extern unsigned int CheatOn, NumCheats;
-extern unsigned char CheatWinMode, CheatSearchStatus;
+extern uint32_t CheatOn, NumCheats;
+extern uint8_t CheatWinMode, CheatSearchStatus;
 void GUIQuickLoadUpdate();
 
 void powercycle(bool sramload, bool romload)
@@ -2628,32 +2629,32 @@ void powercycle(bool sramload, bool romload)
   }
 }
 
-extern unsigned char osm2dis, ReturnFromSPCStall, SPCStallSetting, prevoamptr;
-extern unsigned char reg1read, reg2read, reg3read, reg4read, NMIEnab, INTEnab;
-extern unsigned char doirqnext, vidbright, forceblnk, timeron, spcP, JoyAPos, JoyBPos;
-extern unsigned char coladdr, coladdg, coladdb;
-extern unsigned char SDD1BankA,SDD1BankB, SDD1BankC, SDD1BankD;
-extern unsigned char intrset, curcyc, cycpl, GUIReset;
-extern unsigned int numspcvblleft, SPC700read, SPC700write, spc700idle;
-extern unsigned int FIRTAPVal0, FIRTAPVal1, FIRTAPVal2, FIRTAPVal3, FIRTAPVal4, FIRTAPVal5, FIRTAPVal6, FIRTAPVal7;
-extern unsigned int xa, xdb, xpb, xs, xd, xx, xy, scrndis;
-extern unsigned short VIRQLoc, resolutn, xpc;
-extern unsigned char spcextraram[64], SPCROM[64];
-extern unsigned int tableD[256];
-unsigned char SPCSkipXtraROM, bgfixer2 = 0, disableeffects = 0;
+extern uint8_t osm2dis, ReturnFromSPCStall, SPCStallSetting, prevoamptr;
+extern uint8_t reg1read, reg2read, reg3read, reg4read, NMIEnab, INTEnab;
+extern uint8_t doirqnext, vidbright, forceblnk, timeron, spcP, JoyAPos, JoyBPos;
+extern uint8_t coladdr, coladdg, coladdb;
+extern uint8_t SDD1BankA,SDD1BankB, SDD1BankC, SDD1BankD;
+extern uint8_t intrset, curcyc, cycpl, GUIReset;
+extern uint32_t numspcvblleft, SPC700read, SPC700write, spc700idle;
+extern uint32_t FIRTAPVal0, FIRTAPVal1, FIRTAPVal2, FIRTAPVal3, FIRTAPVal4, FIRTAPVal5, FIRTAPVal6, FIRTAPVal7;
+extern uint32_t xa, xdb, xpb, xs, xd, xx, xy, scrndis;
+extern uint16_t VIRQLoc, resolutn, xpc;
+extern uint8_t spcextraram[64], SPCROM[64];
+extern uint32_t tableD[256];
+uint8_t SPCSkipXtraROM, bgfixer2 = 0, disableeffects = 0;
 //This is saved in states
-unsigned char cycpl = 0;   // cycles per scanline
-unsigned char cycphb = 0;    // cycles per hblank
-unsigned char intrset = 0;   // interrupt set
-unsigned short curypos = 0;    // current y position
-unsigned short stackand = 0x01FF; // value to and stack to keep it from going to the wrong area
-unsigned short stackor = 0x0100; // value to or stack to keep it from going to the wrong area
+uint8_t cycpl = 0;          // cycles per scanline
+uint8_t cycphb = 0;         // cycles per hblank
+uint8_t intrset = 0;        // interrupt set
+uint16_t curypos = 0;       // current y position
+uint16_t stackand = 0x01FF; // value to and stack to keep it from going to the wrong area
+uint16_t stackor = 0x0100;  // value to or stack to keep it from going to the wrong area
 
 // 65816 registers
-unsigned char xp = 0;
-unsigned char xe = 0;
-unsigned char xirqb = 0;           // which bank the irqs start at
-unsigned int Curtableaddr = 0;     // Current table address
+uint8_t xp = 0;
+uint8_t xe = 0;
+uint8_t xirqb = 0;           // which bank the irqs start at
+uint32_t Curtableaddr = 0;   // Current table address
 
 void SA1Reset();
 void InitC4();
@@ -2662,7 +2663,7 @@ void SPC7110init();
 
 void init65816()
 {
-    unsigned int i;
+    uint_fast8_t i;
     osm2dis = 0;
     bgfixer2 = 0;
     if(SA1Enable)
@@ -2767,7 +2768,7 @@ void init65816()
     opexec268cph = opexec268cphb;
     opexec358cph = opexec358cphb;
 
-    if (!(((unsigned char *)romdata)[infoloc+BankOffset] & 0xF0)) // if not fastrom
+    if (!romdata[infoloc+BankOffset] & 0xF0) // if not fastrom
     {
       opexec358 = opexec268;
       opexec358cph = opexec268cph;

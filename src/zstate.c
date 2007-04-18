@@ -654,8 +654,8 @@ void calculate_state_sizes()
   old_zst_size = state_size + sizeof(zst_header_old)-1;
 }
 
-unsigned int current_zst = 0;
-unsigned int newest_zst = 0;
+uint32_t current_zst = 0;
+uint32_t newest_zst = 0;
 time_t newestfiledate;
 
 char *zst_name()
@@ -663,7 +663,7 @@ char *zst_name()
   static char buffer[7];
   if ((MovieProcessing == MOVIE_PLAYBACK) || (MovieProcessing == MOVIE_RECORD))
   {
-    sprintf(buffer, "%.2d.zst", current_zst);
+    sprintf(buffer, "%.2d.zst", (unsigned int)current_zst);
     return(buffer);
   }
   strcpy(buffer, "zst");
@@ -856,7 +856,7 @@ static char txtmsg[30];
 void set_state_message(char *prefix, char *suffix)
 {
   char num[3];
-  sprintf(num, "%d", current_zst);
+  sprintf(num, "%d", (unsigned int)current_zst);
   string_merge(txtmsg, sizeof(txtmsg), prefix, isextension(ZStateName, "zss") ? "AUTO" : num, suffix, 0);
 
   Msgptr = txtmsg;
