@@ -23,7 +23,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define WINLINK_H
 extern "C"
 {
-  BYTE changeRes = 1;
+  extern BYTE changeRes;
   extern DWORD converta;
   extern unsigned int BitConv32Ptr;
   extern unsigned int RGBtoYUVPtr;
@@ -37,17 +37,26 @@ extern "C"
   extern BYTE GUIHQ4X[];
   extern BYTE GUINTVID[];
   extern BYTE hqFilterlevel;
+  extern WORD totlines;
+  extern DWORD CurMode;
+  extern DWORD WindowWidth;
+  extern DWORD WindowHeight;
+  extern DWORD SurfaceX;
+  extern DWORD SurfaceY;
+  extern BYTE BitDepth;
+  extern DWORD GBitMask;
+  extern WORD Refresh;
+  extern DWORD FirstVid;
+  extern DWORD FirstFull;
+  extern DWORD DMode;
+  extern DWORD SMode;
+  extern DWORD DSMode;
+  extern DWORD NTSCMode;
+  extern DWORD prevHQMode;
+  extern DWORD prevNTSCMode;
+  extern DWORD prevScanlines;
 }
 
-DWORD FirstVid = 1;
-DWORD FirstFull = 1;
-DWORD DMode = 0;
-DWORD SMode = 0;
-DWORD DSMode = 0;
-DWORD NTSCMode = 0;
-DWORD prevHQMode = ~0;
-DWORD prevNTSCMode = 0;
-DWORD prevScanlines = ~0;
-WORD Refresh = 0;
+void CheckAlwaysOnTop();
 
 #endif

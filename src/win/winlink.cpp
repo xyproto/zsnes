@@ -210,6 +210,8 @@ extern "C"
 
   void Clear2xSaIBuffer();
   void clear_display();
+  DWORD CurMode = ~0;
+  extern WORD totlines;
 }
 static char dinput8_dll[] = { "dinput8.dll\0" };
 static char dinput8_imp[] = { "DirectInput8Create\0" };
@@ -228,7 +230,7 @@ static lpDirectInput8Create pDirectInput8Create;
 
 typedef HRESULT (WINAPI* lpDirectDrawCreateEx)(GUID FAR *lpGuid, LPVOID *lplpDD, REFIID  iid,
                                                IUnknown FAR *pUnkOuter);
-static lpDirectDrawCreateEx pDirectDrawCreateEx;
+lpDirectDrawCreateEx pDirectDrawCreateEx;
 
 typedef HRESULT (WINAPI* lpDirectSoundCreate8)(LPCGUID pcGuidDevice, LPDIRECTSOUND8 *ppDS8,
                                                LPUNKNOWN pUnkOuter);
@@ -335,6 +337,10 @@ extern "C"
   extern BYTE GUIOn;
   extern BYTE GUIOn2;
   DWORD InputEn = 0;
+  void reInitSound()
+  {
+    ReInitSound();
+  }
 }
 
 BOOL InputAcquire()
@@ -1335,39 +1341,6 @@ void ReleaseDirectSound()
   }
 }
 
-void ReleaseDirectDraw()
-{
-  if (DD_CFB)
-  {
-    DD_CFB->Release();
-    DD_CFB = NULL;
-  }
-
-  if (DD_CFB16)
-  {
-    DD_CFB16->Release();
-    DD_CFB16 = NULL;
-  }
-
-  if (lpDDClipper)
-  {
-    lpDDClipper->Release();
-    lpDDClipper = NULL;
-  }
-
-  if (DD_Primary)
-  {
-    DD_Primary->Release();
-    DD_Primary = NULL;
-  }
-
-  if (lpDD)
-  {
-    lpDD->Release();
-    lpDD = NULL;
-  }
-}
-
 void DInputError()
 {
   char message1[256];
@@ -1559,9 +1532,11 @@ void TestJoy()
   }
 }
 
+BYTE changeRes = 1;
+
 extern "C"
 {
-  BYTE changeRes = 1;
+  //BYTE changeRes = 1;
   extern DWORD converta;
   extern unsigned int BitConv32Ptr;
   extern unsigned int RGBtoYUVPtr;
@@ -1593,90 +1568,15 @@ extern int InitDirectDraw();
 BYTE *SurfBuf;
 DDSURFACEDESC2 ddsd;
 
-DWORD LockSurface()
-{
-  HRESULT hRes;
-
-  if (AltSurface == 0)
-  {
-    if (DD_CFB != NULL)
-    {
-      memset(&ddsd, 0, sizeof(ddsd));
-      ddsd.dwSize = sizeof(ddsd);
-      ddsd.dwFlags = DDSD_LPSURFACE | DDSD_PITCH;
-
-      hRes = DD_CFB->Lock(NULL, &ddsd, DDLOCK_WAIT, NULL);
-
-      if (hRes == DD_OK)
-      {
-        SurfBuf = (BYTE *)ddsd.lpSurface;
-        return(ddsd.lPitch);
-      }
-      else
-      {
-        if (hRes == DDERR_SURFACELOST)
-        {
-          DD_Primary->Restore();
-          DD_CFB->Restore();
-          Clear2xSaIBuffer();
-        }
-        return(0);
-      }
-    }
-    else
-    {
-      return(0);
-    }
-  }
-  else
-  {
-    if (DD_CFB16 != NULL)
-    {
-      memset(&ddsd, 0, sizeof(ddsd));
-      ddsd.dwSize = sizeof(ddsd);
-      ddsd.dwFlags = DDSD_LPSURFACE | DDSD_PITCH;
-
-      hRes = DD_CFB16->Lock(NULL, &ddsd, DDLOCK_WAIT, NULL);
-
-      if (hRes == DD_OK)
-      {
-        SurfBuf = (BYTE *)ddsd.lpSurface;
-        return(ddsd.lPitch);
-      }
-      else
-      {
-        if (hRes == DDERR_SURFACELOST)
-        {
-          DD_Primary->Restore();
-          DD_CFB16->Restore();
-          Clear2xSaIBuffer();
-        }
-        return(0);
-      }
-    }
-    else
-    {
-      return(0);
-    }
-  }
-}
-
-void UnlockSurface()
-{
-  if (AltSurface == 0)
-  {
-    DD_CFB->Unlock((struct tagRECT *)ddsd.lpSurface);
-  }
-  else
-  {
-    DD_CFB16->Unlock((struct tagRECT *)ddsd.lpSurface);
-  }
-}
+DWORD LockSurface();
+void UnlockSurface();
+void clear_ddraw();
 
 //The big extern
 extern "C"
 {
   void WinUpdateDevices();
+  char CheckOGLMode();
 
   short Buffer[1800 * 2];
 
@@ -2233,6 +2133,8 @@ extern "C"
       Clear2xSaIBuffer();
       clear_display();
     }
+
+    gl_start(512, 448, 16, 0);
   }
 
   extern unsigned int vidbuffer;
@@ -2502,64 +2404,9 @@ ASM_COMMAND(_top_mmx:)
 
   void clear_display()
   {
-    if (FullScreen == 1)
+    if(!CheckOGLMode())
     {
-      DDBLTFX ddbltfx;
-
-      ddbltfx.dwSize = sizeof(ddbltfx);
-      ddbltfx.dwFillColor = 0;
-
-      if (TripleBufferWin == 1)
-      {
-        if ((DD_Primary != NULL) && (DD_BackBuffer != NULL))
-        {
-          if (DD_BackBuffer->Blt(NULL, NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &ddbltfx) ==
-              DDERR_SURFACELOST)
-          {
-            DD_Primary->Restore();
-          }
-
-          if (DD_Primary->Flip(NULL, DDFLIP_WAIT) == DDERR_SURFACELOST)
-          {
-            DD_Primary->Restore();
-          }
-
-          if (DD_BackBuffer->Blt(NULL, NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &ddbltfx) ==
-              DDERR_SURFACELOST)
-          {
-            DD_Primary->Restore();
-          }
-
-          if (DD_Primary->Flip(NULL, DDFLIP_WAIT) == DDERR_SURFACELOST)
-          {
-            DD_Primary->Restore();
-          }
-
-          if (DD_BackBuffer->Blt(NULL, NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &ddbltfx) ==
-              DDERR_SURFACELOST)
-          {
-            DD_Primary->Restore();
-          }
-        }
-      }
-      else
-      {
-        if (DD_Primary != NULL)
-        {
-          if (vsyncon == 1)
-          {
-            if (lpDD->WaitForVerticalBlank(DDWAITVB_BLOCKBEGIN, NULL) != DD_OK)
-            {
-              DDrawError();
-            }
-          }
-          if (DD_Primary->Blt(NULL, NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &ddbltfx) ==
-              DDERR_SURFACELOST)
-          {
-            DD_Primary->Restore();
-          }
-        }
-      }
+      clear_ddraw();
     }
   }
 

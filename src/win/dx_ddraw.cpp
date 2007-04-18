@@ -31,6 +31,8 @@ extern "C"
 #include <ddraw.h>
 #include <mmsystem.h>
 #include <time.h>
+#include "../cfg.h"
+#include "winlink.h"
 }
 
 
@@ -42,20 +44,29 @@ LPDIRECTDRAWSURFACE7 DD_CFB16 = NULL;
 LPDIRECTDRAWSURFACE7 DD_BackBuffer = NULL;
 LPDIRECTDRAWCLIPPER lpDDClipper = NULL;
 
+typedef HRESULT (WINAPI* lpDirectDrawCreateEx)(GUID FAR *lpGuid, LPVOID *lplpDD, REFIID  iid,
+                                               IUnknown FAR *pUnkOuter);
 
-BYTE *SurfBuf;
-DDSURFACEDESC2 ddsd;
+BOOL ReInitSound();
 
 extern "C"
 {
-  void drawscreenwin();
   DWORD LastUsedPos = 0;
-  DWORD CurMode = ~0;
-  void reInitSound()
-  {
-    ReInitSound();
-  }
+  extern HWND hMainWindow;
+  extern BYTE curblank;
+  extern WORD totlines;
+  extern DWORD FullScreen;
+  extern RECT rcWindow;
+  extern RECT BlitArea;
+  extern BYTE AltSurface;
+  extern lpDirectDrawCreateEx pDirectDrawCreateEx;
+  extern DDSURFACEDESC2 ddsd;
+  extern BYTE *SurfBuf;
+  void Clear2xSaIBuffer();
 }
+
+void drawscreenwin();
+void ReleaseDirectDraw();
 
 void DDrawError()
 {
@@ -64,9 +75,6 @@ void DDrawError()
   strcpy(message1, "Error drawing to the screen\nMake sure the device is not being used by another process");
   MessageBox(NULL, message1, "DirectDraw Error", MB_ICONERROR);
 }
-
-extern "C" BYTE curblank;
-extern "C" WORD totlines;
 
 void DrawScreen()
 {
@@ -236,7 +244,6 @@ int InitDirectDraw()
       }
     }
   }
-  gl_start(512, 448, 16, 0);
 
   if (!hMainWindow)
   {
@@ -473,3 +480,98 @@ int InitDirectDraw()
   return TRUE;
 }
 
+void ReleaseDirectDraw()
+{
+  if (DD_CFB)
+  {
+    DD_CFB->Release();
+    DD_CFB = NULL;
+  }
+
+  if (DD_CFB16)
+  {
+    DD_CFB16->Release();
+    DD_CFB16 = NULL;
+  }
+
+  if (lpDDClipper)
+  {
+    lpDDClipper->Release();
+    lpDDClipper = NULL;
+  }
+
+  if (DD_Primary)
+  {
+    DD_Primary->Release();
+    DD_Primary = NULL;
+  }
+
+  if (lpDD)
+  {
+    lpDD->Release();
+    lpDD = NULL;
+  }
+}
+
+void clear_ddraw()
+{
+    if (FullScreen == 1)
+    {
+      DDBLTFX ddbltfx;
+
+      ddbltfx.dwSize = sizeof(ddbltfx);
+      ddbltfx.dwFillColor = 0;
+
+      if (TripleBufferWin == 1)
+      {
+        if ((DD_Primary != NULL) && (DD_BackBuffer != NULL))
+        {
+          if (DD_BackBuffer->Blt(NULL, NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &ddbltfx) ==
+              DDERR_SURFACELOST)
+          {
+            DD_Primary->Restore();
+          }
+
+          if (DD_Primary->Flip(NULL, DDFLIP_WAIT) == DDERR_SURFACELOST)
+          {
+            DD_Primary->Restore();
+          }
+
+          if (DD_BackBuffer->Blt(NULL, NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &ddbltfx) ==
+              DDERR_SURFACELOST)
+          {
+            DD_Primary->Restore();
+          }
+
+          if (DD_Primary->Flip(NULL, DDFLIP_WAIT) == DDERR_SURFACELOST)
+          {
+            DD_Primary->Restore();
+          }
+
+          if (DD_BackBuffer->Blt(NULL, NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &ddbltfx) ==
+              DDERR_SURFACELOST)
+          {
+            DD_Primary->Restore();
+          }
+        }
+      }
+      else
+      {
+        if (DD_Primary != NULL)
+        {
+          if (vsyncon == 1)
+          {
+            if (lpDD->WaitForVerticalBlank(DDWAITVB_BLOCKBEGIN, NULL) != DD_OK)
+            {
+              DDrawError();
+            }
+          }
+          if (DD_Primary->Blt(NULL, NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &ddbltfx) ==
+              DDERR_SURFACELOST)
+          {
+            DD_Primary->Restore();
+          }
+        }
+      }
+    }
+}
