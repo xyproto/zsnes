@@ -32,41 +32,20 @@ extern "C"
 #include <mmsystem.h>
 #include <time.h>
 #include "../cfg.h"
+}
+
 #include "winlink.h"
-}
 
+static LPDIRECTDRAW BasiclpDD = NULL;
+static LPDIRECTDRAW7 lpDD = NULL;
+static LPDIRECTDRAWSURFACE7 DD_Primary = NULL;
+static LPDIRECTDRAWSURFACE7 DD_CFB = NULL;
+static LPDIRECTDRAWSURFACE7 DD_CFB16 = NULL;
+static LPDIRECTDRAWSURFACE7 DD_BackBuffer = NULL;
+static LPDIRECTDRAWCLIPPER lpDDClipper = NULL;
 
-LPDIRECTDRAW BasiclpDD = NULL;
-LPDIRECTDRAW7 lpDD = NULL;
-LPDIRECTDRAWSURFACE7 DD_Primary = NULL;
-LPDIRECTDRAWSURFACE7 DD_CFB = NULL;
-LPDIRECTDRAWSURFACE7 DD_CFB16 = NULL;
-LPDIRECTDRAWSURFACE7 DD_BackBuffer = NULL;
-LPDIRECTDRAWCLIPPER lpDDClipper = NULL;
-
-typedef HRESULT (WINAPI* lpDirectDrawCreateEx)(GUID FAR *lpGuid, LPVOID *lplpDD, REFIID  iid,
-                                               IUnknown FAR *pUnkOuter);
-
-BOOL ReInitSound();
-
-extern "C"
-{
-  DWORD LastUsedPos = 0;
-  extern HWND hMainWindow;
-  extern BYTE curblank;
-  extern WORD totlines;
-  extern DWORD FullScreen;
-  extern RECT rcWindow;
-  extern RECT BlitArea;
-  extern BYTE AltSurface;
-  extern lpDirectDrawCreateEx pDirectDrawCreateEx;
-  extern DDSURFACEDESC2 ddsd;
-  extern BYTE *SurfBuf;
-  void Clear2xSaIBuffer();
-}
-
-void drawscreenwin();
-void ReleaseDirectDraw();
+DWORD LastUsedPos = 0;
+DDSURFACEDESC2 ddsd;
 
 void DDrawError()
 {

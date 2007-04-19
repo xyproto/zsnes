@@ -21,8 +21,14 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #ifndef WINLINK_H
 #define WINLINK_H
-extern "C"
-{
+
+typedef HRESULT (WINAPI* lpDirectDrawCreateEx)(GUID FAR *lpGuid, LPVOID *lplpDD, REFIID  iid,
+                                               IUnknown FAR *pUnkOuter);
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
   extern BYTE changeRes;
   extern DWORD converta;
   extern unsigned int BitConv32Ptr;
@@ -55,8 +61,26 @@ extern "C"
   extern DWORD prevHQMode;
   extern DWORD prevNTSCMode;
   extern DWORD prevScanlines;
+  extern HWND hMainWindow;
+  extern BYTE curblank;
+  extern WORD totlines;
+  extern DWORD FullScreen;
+  extern RECT rcWindow;
+  extern RECT BlitArea;
+  extern BYTE AltSurface;
+  extern lpDirectDrawCreateEx pDirectDrawCreateEx;
+  extern BYTE *SurfBuf;
+
+  void Clear2xSaIBuffer();
+  void drawscreenwin();
+
+  void CheckAlwaysOnTop();
+
+#ifdef __cplusplus
 }
 
-void CheckAlwaysOnTop();
+BOOL ReInitSound();
+void ReleaseDirectDraw();
+#endif
 
 #endif

@@ -25,6 +25,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <GL/glext.h>
 #include "gl_draw.h"
 #include "../cfg.h"
+#include "win/winlink.h"
 
 
 // FUNCTIONS
@@ -32,9 +33,7 @@ extern void hq2x_16b();
 
 // VIDEO VARIABLES
 extern uint8_t cvidmode;
-extern int32_t SurfaceX, SurfaceY;
 extern int32_t SurfaceLocking;
-extern uint32_t BitDepth;
 
 extern HWND hMainWindow;
 extern HDC hDC;

@@ -47,6 +47,8 @@ extern "C"
 #include "../zmovie.h"
 }
 
+#include "winlink.h"
+
 
 /*
 December 17 2004 -Nach
@@ -113,10 +115,6 @@ int UsePrimaryBuffer = 0;
 
 DWORD FirstActivate = 1;
 
-#define BYTE   unsigned char
-#define WORD   unsigned short
-#define DWORD  unsigned long
-
 HANDLE debugWindow = 0;
 
 extern "C"
@@ -168,7 +166,7 @@ DWORD NumBTN[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 DWORD CurrentJoy = 0;
 
-uint32_t BitDepth;
+BYTE BitDepth;
 BYTE BackColor = 0;
 DEVMODE mode;
 
@@ -188,8 +186,8 @@ WORD PrevRes = 0;
 extern "C"
 {
   DWORD MouseButton;
-  int32_t SurfaceX = 0;
-  int32_t SurfaceY = 0;
+  DWORD SurfaceX = 0;
+  DWORD SurfaceY = 0;
   RECT BlitArea;
   BYTE AltSurface = 0;
   RECT rcWindow;
@@ -1574,7 +1572,6 @@ extern "C"
   void WinUpdateDevices();
   char CheckOGLMode();
   BYTE *SurfBuf;
-  DDSURFACEDESC2 ddsd;
   DWORD DMode = 0;
   DWORD DSMode = 0;
   WORD Refresh = 0;

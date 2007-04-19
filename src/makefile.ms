@@ -490,12 +490,14 @@ ${WIN_D}/lib${OE}: ${WIN_D}/lib.c zpath.h ${JMA_D}/zsnesjma.h \
 	${WIN_D}/lib.h ${ZIP_D}/zunzip.h
 ${WIN_D}/safelib${OE}: ${WIN_D}/safelib.c argv.h ${WIN_D}/safelib.h
 ${WIN_D}/winintrf${OE}: ${WIN_D}/winintrf.asm macros.mac
+${WIN_D}/winlink${OE}: ${WIN_D}/winlink.cpp ${WIN_D}/winlink.h ${WIN_D}/gl_draw.h cfg${OE} input${OE} ${WIN_D}/resource.h
+${WIN_D}/dx_ddraw${OE}: ${WIN_D}/dx_ddraw.cpp ${WIN_D}/winlink.h
+${WIN_D}/gl_draw${OE}: ${WIN_D}/gl_draw.c ${WIN_D}/winlink.h ${WIN_D}/gl_draw.h cfg${OE}
 ifeq (${ENV},msvc)
-${WIN_D}/winlink.obj: ${WIN_D}/winlink.cpp cfg${OE} input${OE} ${WIN_D}/resource.h
 ${WIN_D}/zsnes.res: ${WIN_D}/zsnes.rc ${WIN_D}/resource.h
 	rc ${WIN_D}/zsnes.rc
 else
-${WIN_D}/winlink${OE}: ${WIN_D}/winlink.cpp cfg${OE} input${OE} ${WIN_D}/resource.h
+${WIN_D}/winlink${OE}:
 	${CPPC} ${COPT} ${CFLAGS} -masm=intel -o $@ -c ${WIN_D}/winlink.cpp
 ${WIN_D}/zsnes${OE}: ${WIN_D}/zsnes.rc ${WIN_D}/resource.h
 	${WINDRES} --include-dir ${WIN_D} ${WIN_D}/zsnes.rc -o${WIN_D}/zsnes${OE}

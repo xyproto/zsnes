@@ -36,9 +36,7 @@ extern void hq2x_16b();
 
 // VIDEO VARIABLES
 extern uint8_t cvidmode;
-extern int32_t SurfaceX, SurfaceY;
 extern int32_t SurfaceLocking;
-extern uint32_t BitDepth;
 
 extern HWND hMainWindow;
 extern HDC hDC;
