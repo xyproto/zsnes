@@ -838,7 +838,7 @@ void loadGZipFile(char *filename)
   FILE *fp = fopen_dir(ZRomPath, filename, "rb");
   if (fp)
   {
-    int32_t fsize, gzsize;
+    uint32_t fsize, gzsize;
     gzFile GZipFile;
 
     fseek(fp, -4, SEEK_END);
@@ -850,7 +850,7 @@ void loadGZipFile(char *filename)
     if ((GZipFile = gzdopen(fileno(fp), "rb")))
     {
       uint32_t len = gzdirect(GZipFile) ? fsize : gzsize;
-      if (len && (len <= maxromspace+512) && (gzread(GZipFile, romdata, len) == len))
+      if (len && (len <= maxromspace+512) && ((uint32_t)gzread(GZipFile, romdata, len) == len))
       {
         curromspace = len; //Success
       }
@@ -1354,14 +1354,14 @@ void loadROM()
 
   if (isZip)
   {
-    int_fast32_t i;
+    int_fast8_t i;
     char ext[4];
 
     strcpy(ext, "ips");
     for (i = 0; findZipIPS(ZCartName, ext); i++)
     {
       if (i > 9) { break; }
-      ext[2] = (int)i+'0';
+      ext[2] = i+'0';
     }
   }
 
@@ -1371,14 +1371,14 @@ void loadROM()
 
     if (!IPSPatched)
     {
-      int_fast32_t i;
+      int_fast8_t i;
       char ext[4];
 
       strcpy(ext, "ips");
       for (i = 0; PatchUsingIPS(ext); i++)
       {
         if (i > 9) { break; }
-        ext[2] = (int)i+'0';
+        ext[2] = i+'0';
       }
     }
 
