@@ -99,6 +99,8 @@ dnl - libSDL*, zlib*, libpng, curses, libao, OpenGL, JMAlib
 
 dnl - libsdl stuff
 AM_PATH_SDL(1.2.0,,[AC_MSG_ERROR(SDL >= 1.2.0 is required)])
+CFLAGS+=" $SDL_CFLAGS"
+LDFLAGS+=" $SDL_LIBS"
 
 dnl - zlib stuff
 AM_PATH_ZLIB(1.2.3,,[AC_MSG_ERROR(zlib >= 1.2.3 is required)])
@@ -107,9 +109,6 @@ LDFLAGS+=" $ZLIB_LIBS"
 
 dnl - libpng stuff
 AM_PATH_LIBPNG(1.2.0,,)
-CFLAGS+=" $SDL_CFLAGS"
-LDFLAGS+=" $SDL_LIBS"
-
 if test x$with_libpng != xyes; then
   CFLAGS+=" -DNO_PNG"
   NFLAGS+=" -DNO_PNG"
