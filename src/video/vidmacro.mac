@@ -1625,7 +1625,7 @@
     push edx
     xor edx,edx
     mov dx,[bg3scroly]
-;    and dx,0F8h
+    and dx,1FFh
     shr edx,3
     shl edx,6
     xor eax,eax
