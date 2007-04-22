@@ -28,7 +28,7 @@ EXTSYM Voice6Status,Voice7Disable,Voice7Status,bgcmsung,bgmode
 EXTSYM cgmod,disableeffects,frameskip,frskipper,current_zst
 EXTSYM maxbr,modeused,mousexloc,mouseyloc,newengen,KeyRTRCycle
 EXTSYM pal16b,pal16bxcl,pressed,prevbright,prevpal
-EXTSYM scaddsngb,scaddtngb,scaddtngbx,scfbl,scrndis,t1cc
+EXTSYM scfbl,scrndis,t1cc
 EXTSYM vidbright,vidbuffer,vidbufferofsa,vidmemch2,MZTForceRTR
 EXTSYM GUIRClick,MousePRClick,ngmsdraw,cvidmode,fulladdtab
 EXTSYM KeyDisableSC0,KeyDisableSC1,KeyDisableSC2,KeyDisableSC3,KeyDisableSC4
@@ -158,11 +158,8 @@ NEWSYM cachevideo
     mov dword[bgcmsung],0
     mov dword[modeused],0
     mov dword[modeused+4],0
-    mov dword[scaddsngb],0
-    mov dword[scaddtngb],0
     mov dword[ngmsdraw],0
     mov dword[ngextbg],0
-    mov dword[scaddtngbx],0FFFFFFFFh
     mov byte[hiresstuff],0
     mov byte[Mode7HiRes],0
 

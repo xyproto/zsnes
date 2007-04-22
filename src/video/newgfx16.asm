@@ -1341,21 +1341,7 @@ NEWSYM newengine16b
 
 section .data
 align 32
-NEWSYM ngwinenval,  dd 0
-NEWSYM cdrawbuffer, dd 0
-NEWSYM draw16bnng,  dd 0
-NEWSYM scaddsngb,   dd 0
-NEWSYM scaddtngb,   dd 0
-NEWSYM scaddtngbx,  dd 0
-NEWSYM prevbcolng,  dd 0
-NEWSYM bcolvalng,   dd 0
-NEWSYM cebppos,     dd 0
-NEWSYM subscreenonng, dd 0
-NEWSYM cdrawmeth,   dd 0
-NEWSYM cpalptrng,   dd 0
-NEWSYM prevcoladdrng, dd 0
-NEWSYM prevcolvalng,  dd 0
-NEWSYM subscrng,      dd 0
+NEWSYM cpalptrng,     dd 0
 NEWSYM ngmsdraw,      dd 0
 NEWSYM CMainWinScr,   dd 0
 NEWSYM CSubWinScr,    dd 0
@@ -1426,7 +1412,6 @@ NEWSYM StartDrawNewGfx16b
 
     mov dword[CMainWinScr],winbg1envals
     mov dword[CSubWinScr],winbg1envals
-    mov dword[subscrng],1
 
     ; Draw SubScreens
     test byte[scrndis],8h
@@ -1614,7 +1599,6 @@ NEWSYM StartDrawNewGfx16b
 .skipallsub
     mov dword[CMainWinScr],winbg1envalm
     mov dword[CSubWinScr],winbg1envals
-    mov dword[subscrng],0
 
     ; Draw MainScreens
     test byte[scrndis],8h
