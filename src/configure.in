@@ -54,6 +54,16 @@ AC_ARG_WITH(zconf-path,
   ZCONF="$withval",
   ZCONF="")
 
+case x$target in
+  *86_64-*-*-*)
+    NFLAGS+=" -D__AMD64__"
+    ELF="-f elf64 -DELF"
+    ;;
+  *)
+    ELF="-f elf -DELF"
+    ;;
+esac
+
 CFLAGS+=" -D__UNIXSDL__"
 NFLAGS+=" -w-orphan-labels -D__UNIXSDL__"
 PSRFLAGS+=" -D__UNIXSDL__"
@@ -61,16 +71,16 @@ MMLIB_FILES="\$(MMLIB_D)/mm.o"
 STRIP="-s"
 case x$target in
   *-*-linux*)
-    NFLAGS+=" -f elf -DELF"
+    NFLAGS+=" $ELF"
     MMLIB_FILES+=" \$(MMLIB_D)/linux.o"
     ;;
   *-*-beos*)
     CFLAGS+=" -D__BEOS__"
-    NFLAGS+=" -D__BEOS__ -f elf -DELF"
+    NFLAGS+=" -D__BEOS__ $ELF"
     ;;
   *-*-*bsd*)
     CFLAGS+=" -D__BSDSDL__"
-    NFLAGS+=" -D__BSDSDL__ -f elf -DELF"
+    NFLAGS+=" -D__BSDSDL__ $ELF"
     ;;
   *-*-darwin* )
     CFLAGS+=" -D__MACOSX__ -D__OPENGL__ -arch i386 -mdynamic-no-pic -mstackrealign -fno-unit-at-a-time"
