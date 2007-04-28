@@ -128,13 +128,13 @@ void ClearWin16();
 void DrawWin256x224x16();
 void DrawWin320x240x16();
 uint32_t ScreenPtr;
-uint32_t SurfBufD;
+uintptr_t SurfBufD;
 uint32_t pitch;
 
 void sw_clearwin()
 {
   pitch = surface->pitch;
-  SurfBufD = (uint32_t)surface->pixels;
+  SurfBufD = (uintptr_t)surface->pixels;
 
   LockSurface();
   ClearWin16();
@@ -188,7 +188,7 @@ void sw_drawwin()
   }
 
   pitch = surface->pitch;
-  SurfBufD = (uint32_t)surface->pixels;
+  SurfBufD = (uintptr_t)surface->pixels;
 
   if (SurfBufD == 0)
   {
