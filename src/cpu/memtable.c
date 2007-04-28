@@ -31,6 +31,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <sys/stat.h>
 #define DIR_SLASH "\\"
 #endif
+#include <stdint.h>
 #include "memtable.h"
 #include "../gblvars.h"
 
@@ -54,7 +55,7 @@ void BankSwitchSDD1C (unsigned char bankval, unsigned int offset)
 
   curbankval &= 7;
   curbankval <<= 20;
-  curbankval += (unsigned int)romdata;
+  curbankval += (uintptr_t)romdata;
 
   for (i=0; i<16 ; i++)
   {

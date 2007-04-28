@@ -1362,8 +1362,8 @@ void GetLoadData()
       break;
   }
   selected_names += 2;
-  GUIfileentries = main_names ? ((unsigned int)(*main_names))-2 : 0;
-  GUIdirentries = d_names ? ((unsigned int)(*d_names))-2 : 0;
+  GUIfileentries = main_names ? ((unsigned int)(uintptr_t)(*main_names))-2 : 0;
+  GUIdirentries = d_names ? ((unsigned int)(uintptr_t)(*d_names))-2 : 0;
 }
 
 unsigned int GUIcurrentfilewin;
@@ -1463,7 +1463,7 @@ void GUILoadManualDir()
       GUILoadTextA[GUILoadPos-1] = 0;
     }
 
-    realpath_success = (int)realpath_dir(ZRomPath, GUILoadTextA, path_buff);
+    realpath_success = (intptr_t)realpath_dir(ZRomPath, GUILoadTextA, path_buff);
     if (realpath_success)
     {
       struct stat stat_buffer;
