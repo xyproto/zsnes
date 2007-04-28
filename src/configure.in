@@ -54,15 +54,29 @@ AC_ARG_WITH(zconf-path,
   ZCONF="$withval",
   ZCONF="")
 
-case x$target in
-  *86_64-*-*-*)
-    NFLAGS+=" -D__AMD64__"
-    ELF="-f elf64 -DELF"
-    ;;
-  *)
-    ELF="-f elf -DELF"
-    ;;
-esac
+AC_ARG_ENABLE(32-bit,
+  [  --enable-32-bit         Forces 32-bit mode on 64-bit systems],
+  force_32bit=yes,
+  force_32bit=no)
+
+if test x$force_32bit = xno; then
+  case x$target in
+    *86_64-*-*-*)
+      NFLAGS+=" -D__AMD64__"
+      ELF="-f elf64 -DELF"
+      ;;
+    *)
+      ELF="-f elf -DELF"
+      force_32bit=yes
+      ;;
+  esac
+else
+  ELF="-f elf -DELF"
+fi
+
+AC_MSG_CHECKING(if you want a 32-bit build)
+AC_MSG_RESULT($force_32bit)
+
 
 CFLAGS+=" -D__UNIXSDL__"
 NFLAGS+=" -w-orphan-labels -D__UNIXSDL__"
@@ -387,6 +401,13 @@ if test x$want_ao = xno; then
 else
   echo "${ECHO_T}Yes"
 fi
+echo $ECHO_N "32-bit                        $ECHO_C"
+if test x$force_32bit = xno; then
+  echo "${ECHO_T}No"
+else
+  echo "${ECHO_T}Yes"
+fi
+
 echo
 echo The binary will be installed in ${prefix}/bin
 echo
