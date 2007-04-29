@@ -91,7 +91,7 @@ endif
 
 ifeq (${ENV},msvc)
   CFLAGONLY=
-  CFLAGSORIG=/nologo /c /Ox /GS- /MD /Iwin\vc_head
+  CFLAGSORIG=/nologo /c /Ox /GS- /MD /Iwin\vc_head /arch:SSE
   CXXFLAGSORIG=/Zc:forScope-
   MSVCLIBS=zlib.lib libpng.lib wsock32.lib user32.lib gdi32.lib shfolder.lib shell32.lib winmm.lib dinput8.lib dxguid.lib opengl32.lib glu32.lib
   DRESOBJ=${WIN_D}/zsnes.res
@@ -312,7 +312,7 @@ else
 	 @echo /Fezsnesw.exe *.obj ${CPU_D}\*.obj ${VID_D}\*.obj ${CHIP_D}\*.obj ${EFF_D}\*.obj ${DOS_D}\*.obj ${WIN_D}\*.obj ${GUI_D}\*.obj > link.vc
 	 @echo ${ZIP_D}\*.obj ${JMA_D}\*.obj ${NET_D}\*.obj ${MMLIB_D}\*.obj >> link.vc
 	 @echo ${MSVCLIBS} >> link.vc
-	 cl /nologo @link.vc ${WIN_D}/zsnes.res /link /NODEFAULTLIB:LIBCMTD.LIB /NODEFAULTLIB:LIBC.LIB /NODEFAULTLIB:LIBCMT.LIB
+	 cl /nologo @link.vc ${WIN_D}/zsnes.res /link /SUBSYSTEM:WINDOWS /NODEFAULTLIB:LIBCMTD.LIB /NODEFAULTLIB:LIBC.LIB /NODEFAULTLIB:LIBCMT.LIB
 endif
 
 cfg${OE}: cfg.psr ${PSR}
