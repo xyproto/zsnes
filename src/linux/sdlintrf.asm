@@ -410,6 +410,7 @@ SECTION .text
 ;   convert it back when writing to it back.
 
 NEWSYM UpdateDevices                    ; One-time input device init
+; Stub please fix
         ret
 
 NEWSYM JoyRead
@@ -552,12 +553,15 @@ NEWSYM Get_MouseData         ; Returns both pressed and coordinates
     ret
 
 NEWSYM Set_MouseXMax
+; Stub please fix
     ret
 
 NEWSYM Set_MouseYMax
+; Stub please fix
     ret
 
 NEWSYM Set_MousePosition
+; Stub please fix
     ret
 
 NEWSYM Get_MousePositionDisplacement
@@ -609,6 +613,7 @@ NEWSYM StartSound
     ret
 
 NEWSYM delay
+; Stub please fix
    ret
 
 NEWSYM Check60hz
