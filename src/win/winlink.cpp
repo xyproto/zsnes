@@ -183,7 +183,6 @@ BYTE D_DRAW = 0;
 BYTE OPENGL = 0;	
 BYTE IsActivated = 1;
 
-WORD PrevRes = 0;
 extern "C"
 {
   DWORD MouseButton;
@@ -1950,15 +1949,6 @@ extern "C"
       BlitArea.left = 0;
       BlitArea.right = SurfaceX;
 
-      if ((SurfaceX == 602) || (SurfaceX == 640) || (SurfaceX == 320))
-      {
-        BlitArea.bottom = SurfaceY;
-      }
-      else if (!NTSCFilter)
-      {
-        BlitArea.bottom = (SurfaceY / 240) * resolutn;
-      }
-
       if (PrevRes == 0)
       {
         PrevRes = resolutn;
@@ -2005,43 +1995,6 @@ extern "C"
       GetClientRect(hMainWindow, &rcWindow);
       ClientToScreen(hMainWindow, (LPPOINT)&rcWindow);
       ClientToScreen(hMainWindow, (LPPOINT)&rcWindow + 1);
-
-      if (FullScreen == 1)
-      {
-        if (HQMode && !DSMode)
-        {
-          int marginx = (rcWindow.right - rcWindow.left - BlitArea.right + BlitArea.left) / 2;
-          int marginy = (rcWindow.bottom - rcWindow.top - BlitArea.bottom + BlitArea.top) / 2;
-
-          if (marginx > 0)
-          {
-            rcWindow.left += marginx;
-            rcWindow.right -= marginx;
-          }
-          if (marginy > 0)
-          {
-            rcWindow.top += marginy;
-            rcWindow.bottom -= marginy;
-          }
-        }
-
-        if ((DSMode == 1) && (scanlines != 0))
-        {
-          int OldHeight = rcWindow.bottom - rcWindow.top;
-          if ((OldHeight % 240) == 0)
-          {
-            int NewHeight = (OldHeight / 240) * resolutn;
-            rcWindow.top += (OldHeight - NewHeight) / 2;
-            rcWindow.bottom = rcWindow.top + NewHeight;
-            clear_display();
-          }
-        }
-      }
-
-      if (CheckTVRatioReq())
-      {
-        KeepTVRatio();
-      }
     }
     else
     {

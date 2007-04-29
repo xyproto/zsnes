@@ -256,6 +256,101 @@ int InitDirectDraw()
     }
   }
 
+      BlitArea.top = 0;
+      BlitArea.left = 0;
+      BlitArea.right = SurfaceX;
+
+      if (PrevRes == 0)
+      {
+        PrevRes = resolutn;
+      }
+    }
+
+    if (((PrevStereoSound != StereoSound) || (PrevSoundQuality != SoundQuality)) && FirstSound != 1)
+    {
+      ReInitSound();
+    }
+
+    if (!FirstVid)
+    {
+      /*
+      if (X<0)X=0;
+      if (X>(int)(GetSystemMetrics(SM_CXSCREEN) - WindowWidth)) X=(GetSystemMetrics(SM_CXSCREEN) - WindowWidth);
+      if (Y<0)Y=0;
+      if (Y>(int)(GetSystemMetrics(SM_CYSCREEN) - WindowHeight)) Y=(GetSystemMetrics(SM_CYSCREEN) - WindowHeight);
+      */
+
+      if (FullScreen == 1)
+      {
+        X = 0; Y = 0;
+      }
+
+      if (FullScreen == 0 && newmode == 1)
+      {
+        X = MainWindowX; Y = MainWindowY;
+      }
+      else if (FullScreen == 0)
+      {
+        MainWindowX = X; MainWindowY = Y;
+      }
+
+      MoveWindow(hMainWindow, X, Y, WindowWidth, WindowHeight, TRUE);
+
+      wndpl.length = sizeof(wndpl);
+      GetWindowPlacement(hMainWindow, &wndpl);
+      SetRect(&rc1, 0, 0, WindowWidth, WindowHeight);
+
+      AdjustWindowRectEx(&rc1, GetWindowLong(hMainWindow, GWL_STYLE), GetMenu(hMainWindow) != NULL,
+                         GetWindowLong(hMainWindow, GWL_EXSTYLE));
+
+      GetClientRect(hMainWindow, &rcWindow);
+      ClientToScreen(hMainWindow, (LPPOINT)&rcWindow);
+      ClientToScreen(hMainWindow, (LPPOINT)&rcWindow + 1);
+
+      if (FullScreen == 1)
+      {
+        if (HQMode && !DSMode)
+        {
+          int marginx = (rcWindow.right - rcWindow.left - BlitArea.right + BlitArea.left) / 2;
+          int marginy = (rcWindow.bottom - rcWindow.top - BlitArea.bottom + BlitArea.top) / 2;
+
+          if (marginx > 0)
+          {
+            rcWindow.left += marginx;
+            rcWindow.right -= marginx;
+          }
+          if (marginy > 0)
+          {
+            rcWindow.top += marginy;
+            rcWindow.bottom -= marginy;
+          }
+        }
+
+        if ((DSMode == 1) && (scanlines != 0))
+        {
+          int OldHeight = rcWindow.bottom - rcWindow.top;
+          if ((OldHeight % 240) == 0)
+          {
+            int NewHeight = (OldHeight / 240) * resolutn;
+            rcWindow.top += (OldHeight - NewHeight) / 2;
+            rcWindow.bottom = rcWindow.top + NewHeight;
+            clear_display();
+          }
+        }
+      }
+      if ((SurfaceX == 602) || (SurfaceX == 640) || (SurfaceX == 320))
+      {
+        BlitArea.bottom = SurfaceY;
+      }
+      else if (!NTSCFilter)
+      {
+        BlitArea.bottom = (SurfaceY / 240) * resolutn;
+      }
+
+      if (CheckTVRatioReq())
+      {
+        KeepTVRatio();
+      }
   if (FullScreen == 1)
   {
     if (HQMode && !DSMode)

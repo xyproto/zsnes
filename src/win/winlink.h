@@ -28,12 +28,12 @@ typedef HRESULT (WINAPI* lpDirectDrawCreateEx)(GUID FAR *lpGuid, LPVOID *lplpDD,
 #ifdef __cplusplus
 extern "C" {
 #endif
-
   extern BYTE changeRes;
   extern DWORD converta;
   extern unsigned int BitConv32Ptr;
   extern unsigned int RGBtoYUVPtr;
   extern unsigned short resolutn;
+  extern BYTE PrevRes;
   extern BYTE GUIWFVID[];
   extern BYTE GUIDSIZE[];
   extern BYTE GUISMODE[];
