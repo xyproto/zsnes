@@ -2959,7 +2959,7 @@ ProcessTransparencies:
     inc ebx
     add esi,288*2
     cmp [resolutn],bx
-    jne near .nextline
+    jae near .nextline
     ret
 
 %macro TranspMMX 3
@@ -3394,7 +3394,7 @@ ProcessTransparencies:
     inc ebx
     add esi,288*2
     cmp [resolutn],bx
-    jne near .nextline
+    jae near .nextline
     emms
     ret
 %endmacro
@@ -3605,7 +3605,7 @@ section .text
     inc ebx
     add esi,288*2
     cmp [resolutn],bx
-    jne near .nextline
+    jae near .nextline
 %endmacro
 
 MainScreenClip:

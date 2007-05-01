@@ -46,7 +46,7 @@
     inc ebx
     add esi,288
     cmp [resolutn],bx
-    ja %%nextline
+    jae %%nextline
     jmp %%donextbg
 %%tilecheck
     test dword[bgwinchange+ebx],0FFFFFF00h
@@ -88,7 +88,7 @@
     add ebx,8
     add esi,288*8
     cmp [resolutn],bx
-    ja near %%nextline
+    jae near %%nextline
     jmp %%donextbg
 %%mosaic
     cmp byte[mosszng+ebx],0
@@ -124,7 +124,7 @@
     inc ebx
     add esi,288
     cmp [resolutn],bx
-    ja %%nextline
+    jae %%nextline
     jmp %%donextbg
 %%tilecheck
     test dword[bgwinchange+ebx],0FFFFFF00h
@@ -165,7 +165,7 @@
     add ebx,8
     add esi,288*8
     cmp [resolutn],bx
-    ja near %%nextline
+    jae near %%nextline
     jmp %%donextbg
 %%mosaic
     cmp byte[mosszng+ebx],0
@@ -198,14 +198,14 @@
     inc ebx
     add esi,288
     cmp [resolutn],bx
-    jne %%nextline
+    jae %%nextline
     jmp %%donextbg
 %%tile
     call %3
     add ebx,8
     add esi,288*8
     cmp [resolutn],bx
-    ja %%nextline
+    jae %%nextline
 %%donextbg
 %endmacro
 
@@ -237,14 +237,14 @@
     inc ebx
     add esi,288
     cmp [resolutn],bx
-    ja %%nextline
+    jae %%nextline
     jmp %%donextbg
 %%tile
     call %3
     add ebx,8
     add esi,288*8
     cmp [resolutn],bx
-    ja %%nextline
+    jae %%nextline
 %%donextbg
 %endmacro
 
@@ -275,14 +275,14 @@
     inc ebx
     add esi,288
     cmp [resolutn],bx
-    ja %%nextline
+    jae %%nextline
     jmp %%donextbg
 %%tile
     call %3
     add ebx,8
     add esi,288*8
     cmp [resolutn],bx
-    ja %%nextline
+    jae %%nextline
 %%donextbg
 %endmacro
 
@@ -321,7 +321,7 @@
     inc ebx
     add esi,288
     cmp [resolutn],bx
-    ja near %%nextline
+    jae near %%nextline
 %endmacro
 
 %macro Procsprng01 2
@@ -361,7 +361,7 @@
     inc ebx
     add esi,288
     cmp [resolutn],bx
-    ja near %%nextline
+    jae near %%nextline
 %endmacro
 
 %macro Procsprng234567 2
@@ -401,7 +401,7 @@
     inc ebx
     add esi,288
     cmp [resolutn],bx
-    ja near %%nextline
+    jae near %%nextline
 %endmacro
 
 %macro ProcMode7ng 2
@@ -486,7 +486,7 @@
     inc ebx
     add esi,288
     cmp [resolutn],bx
-    ja near %%nextline
+    jae near %%nextline
     mov ebx,[Mode7BackA]
     mov [mode7A],ebx
     mov ebx,[Mode7BackC]
@@ -572,7 +572,7 @@
     inc ebx
     add esi,288
     cmp [resolutn],bx
-    ja near %%nextline
+    jae near %%nextline
     mov ebx,[Mode7BackA]
     mov [mode7A],ebx
     mov ebx,[Mode7BackC]
@@ -662,7 +662,7 @@
     inc ebx
     add esi,288
     cmp [resolutn],bx
-    ja near %%nextline
+    jae near %%nextline
     mov ebx,[Mode7BackA]
     mov [mode7A],ebx
     mov ebx,[Mode7BackC]
