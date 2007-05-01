@@ -264,12 +264,6 @@ int InitDirectDraw()
       {
         PrevRes = resolutn;
       }
-    }
-
-    if (((PrevStereoSound != StereoSound) || (PrevSoundQuality != SoundQuality)) && FirstSound != 1)
-    {
-      ReInitSound();
-    }
 
     if (!FirstVid)
     {
@@ -351,6 +345,7 @@ int InitDirectDraw()
       {
         KeepTVRatio();
       }
+    }
   if (FullScreen == 1)
   {
     if (HQMode && !DSMode)

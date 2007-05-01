@@ -70,9 +70,16 @@ extern "C" {
   extern BYTE AltSurface;
   extern lpDirectDrawCreateEx pDirectDrawCreateEx;
   extern BYTE *SurfBuf;
+  extern int X;
+  extern DWORD newmode;
+  extern WINDOWPLACEMENT wndpl;
+  extern RECT rc1;
 
   void Clear2xSaIBuffer();
   void drawscreenwin();
+  void clear_display();
+  char CheckTVRatioReq();
+  void KeepTVRatio();
 
   void CheckAlwaysOnTop();
 
