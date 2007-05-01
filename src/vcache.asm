@@ -660,7 +660,7 @@ SECTION .text
     add cx,8
 .reprocessspriteb
     cmp dl,[resolutn]
-    jae .overflow
+    ja .overflow
     xor ebx,ebx
     mov bl,dl
     xor eax,eax
@@ -701,7 +701,7 @@ SECTION .text
     add cx,8
 .reprocessspriteflipyb
     cmp dl,[resolutn]
-    jae .overflow2
+    ja .overflow2
     xor ebx,ebx
     xor eax,eax
     mov bl,dl
@@ -1326,7 +1326,7 @@ SECTION .text
     add cx,8
 .reprocessspriteb
     cmp dl,[resolutn]
-    jae .overflow
+    ja .overflow
     xor ebx,ebx
     xor eax,eax
     mov bl,dl
@@ -1368,7 +1368,7 @@ SECTION .text
     add cx,8
 .reprocessspriteflipyb
     cmp dl,[resolutn]
-    jae .overflow2
+    ja .overflow2
     xor ebx,ebx
     xor eax,eax
     mov bl,dl
