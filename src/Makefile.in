@@ -92,8 +92,6 @@ Z_OBJS=$(Z_AOBJS) $(Z_COBJS)
 .PHONY: default main tools all install clean cclean tclean distclean
 .SUFFIXES: .asm .c .cpp .psr
 
-%: %.cpp
-	@CXX@ @CXXFLAGS@ -o $@ $<
 %.o: %.asm
 	@NASMPATH@ @NFLAGS@ -o $@ $<
 %.o: %.c

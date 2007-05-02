@@ -44,7 +44,7 @@ AC_ARG_WITH(nasm-prefix,
   [  --with-nasm-prefix=PFX  Prefix where nasm is installed (optional)],
   nasm_prefix="$withval",
   nasm_prefix="")
-AC_CHECK_TOOL(NASMPATH,nasm,"no",$nasm_prefix:$PATH)
+AC_CHECK_TOOL(NASMPATH, nasm, "no", $nasm_prefix:$PATH)
 if test x$NASMPATH = xno; then
   AC_MSG_ERROR(You need NASM installed to compile ZSNES)
 fi
@@ -54,29 +54,25 @@ AC_ARG_WITH(zconf-path,
   ZCONF="$withval",
   ZCONF="")
 
-AC_ARG_ENABLE(32-bit,
-  [  --enable-32-bit         Forces 32-bit mode on 64-bit systems],
-  force_32bit=yes,
-  force_32bit=no)
-
-if test x$force_32bit = xno; then
-  case x$target in
-    *86_64-*-*-*)
+AC_ARG_WITH(bin,
+  [  --with-bin=BITS         32/64-bit binaries with NASM (default: native)],
+  binfmt="$withval",
+  binfmt="64")
+case x$target in
+  *86_64-*-*-*)
+    if test x$binfmt = x64; then
       NFLAGS+=" -D__AMD64__"
       ELF="-f elf64 -DELF"
-      ;;
-    *)
+    else
+      binfmt="32"
       ELF="-f elf -DELF"
-      force_32bit=yes
-      ;;
-  esac
-else
-  ELF="-f elf -DELF"
-fi
-
-AC_MSG_CHECKING(if you want a 32-bit build)
-AC_MSG_RESULT($force_32bit)
-
+    fi
+    ;;
+  *)
+    binfmt="32"
+    ELF="-f elf -DELF"
+    ;;
+esac
 
 CFLAGS+=" -D__UNIXSDL__"
 NFLAGS+=" -w-orphan-labels -D__UNIXSDL__"
@@ -122,17 +118,17 @@ dnl - Library checks (requisites marked *, others optionnal):
 dnl - libSDL*, zlib*, libpng, curses, libao, OpenGL, JMAlib
 
 dnl - libsdl stuff
-AM_PATH_SDL(1.2.0,,[AC_MSG_ERROR(SDL >= 1.2.0 is required)])
+AM_PATH_SDL(1.2.0, , [AC_MSG_ERROR(SDL >= 1.2.0 is required)])
 CFLAGS+=" $SDL_CFLAGS"
 LDFLAGS+=" $SDL_LIBS"
 
 dnl - zlib stuff
-AM_PATH_ZLIB(1.2.3,,[AC_MSG_ERROR(zlib >= 1.2.3 is required)])
+AM_PATH_ZLIB(1.2.3, , [AC_MSG_ERROR(zlib >= 1.2.3 is required)])
 CFLAGS+=" $ZLIB_CFLAGS"
 LDFLAGS+=" $ZLIB_LIBS"
 
 dnl - libpng stuff
-AM_PATH_LIBPNG(1.2.0,,)
+AM_PATH_LIBPNG(1.2.0, , )
 if test x$with_libpng != xyes; then
   CFLAGS+=" -DNO_PNG"
   NFLAGS+=" -DNO_PNG"
@@ -159,38 +155,36 @@ else
   DEBUGGER_A="debugasm.o"
   DEBUGGER_C="debugger.o"
 
-  AC_CHECK_LIB(curses, initscr, found_curses=yes,found_curses=no)
-  AC_CHECK_LIB(ncurses, initscr, found_ncurses=yes,found_ncurses=no)
-  AC_CHECK_LIB(pdcurses, initscr, found_pdcurses=yes,found_pdcurses=no)
+  AC_CHECK_LIB(pdcurses, initscr, found_c=pdyes, found_c=no)
+  AC_CHECK_LIB(ncurses, initscr, found_c=nyes, found_c=no)
+  AC_CHECK_LIB(curses, initscr, found_c=yes, found_c=no)
 
-  if test x$found_curses = xyes; then
-    LDFLAGS+=" -lcurses"
-  else
-    if test x$found_ncurses = xyes; then
+  case x$found_c in
+    xyes)
+      LDFLAGS+=" -lcurses"
+      ;;
+    xnyes)
       CFLAGS+=" -DNCURSES"
       LDFLAGS+=" -lncurses"
-    else
-      if test x$found_pdcurses = xyes; then
-        LDFLAGS+=" -lpdcurses"
-      else
-        AC_MSG_ERROR(A curses library is required to use the debugger)
-        DEBUGGER_A=""
-        DEBUGGER_C=""
-      fi
-    fi
-  fi
+      ;;
+    xpdyes)
+      LDFLAGS+=" -lpdcurses"
+      ;;
+    *)
+      AC_MSG_ERROR(A curses library is required to use the debugger)
+      ;;
+  esac
 fi
 
 dnl - libao stuff
 AC_ARG_ENABLE(libao,
   [  --enable-libao          Build with libao support],
-    want_ao=$enableval,
-    want_ao=no)
+  want_ao=$enableval,
+  want_ao=no)
 AC_MSG_CHECKING(if you want libao support)
 AC_MSG_RESULT($want_ao)
 if test x$want_ao = xyes; then
   AC_CHECK_LIB(ao, ao_initialize, got_ao=yes, got_ao=no)
-
   if test x$got_ao = xyes; then
     CFLAGS+=" -D__LIBAO__"
     LDFLAGS+=" -lao"
@@ -205,8 +199,7 @@ if test x$found_opengl != xyes; then
     [  --disable-opengl        Build without OpenGL support],
     ,
     enable_opengl=yes)
-  AC_ARG_WITH(
-    opengl-prefix,
+  AC_ARG_WITH(opengl-prefix,
     [  --with-opengl-prefix=PFX Prefix where OpenGL is installed (optional)],
     opengl_prefix="$withval",
     opengl_prefix="")
@@ -219,7 +212,7 @@ if test x$found_opengl != xyes; then
     if test x$x_libraries != x; then
       LDFLAGS+=" -L$x_libraries"
     fi
-    AC_CHECK_LIB(GL, glGetError, found_opengl=yes,found_opengl=no)
+    AC_CHECK_LIB(GL, glGetError, found_opengl=yes, found_opengl=no)
   fi
 
   AC_MSG_CHECKING(for OpenGL)
@@ -320,7 +313,7 @@ else
     CFLAGS+=" -O3 -fomit-frame-pointer -fprefetch-loop-arrays -fforce-addr $STRIP -D__RELEASE__"
     NFLAGS+=" -O99999999 -D__RELEASE__"
   else
-    CFLAGS+=" -O3 -fomit-frame-pointer $STRIP"
+    CFLAGS+=" -O2 -fomit-frame-pointer $STRIP"
     NFLAGS+=" -O1"
   fi
 fi
@@ -364,7 +357,7 @@ AC_OUTPUT
 dnl - Info output
 echo
 echo
-echo $ECHO_N "ZSNES v$VERSION (with$ECHO_C"
+echo $ECHO_N "ZSNES v$VERSION $binfmt-bits (with$ECHO_C"
 if test x$enable_debugger = xno; then
   echo $ECHO_N "${ECHO_T}out$ECHO_C"
 fi
@@ -401,13 +394,6 @@ if test x$want_ao = xno; then
 else
   echo "${ECHO_T}Yes"
 fi
-echo $ECHO_N "32-bit                        $ECHO_C"
-if test x$force_32bit = xno; then
-  echo "${ECHO_T}No"
-else
-  echo "${ECHO_T}Yes"
-fi
-
 echo
 echo The binary will be installed in ${prefix}/bin
 echo
