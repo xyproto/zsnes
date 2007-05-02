@@ -64,13 +64,13 @@ void handle_file(const char *filename, struct stat& stat_buffer)
 
     bool changed = false;
 
-    for (size_t start_pos = 0;;)
+    for (string::size_type start_pos = 0;;)
     {
-      size_t match_point = ModifyText.find(SearchText, start_pos);
+      string::size_type match_point = ModifyText.find(SearchText, start_pos);
       if (match_point != string::npos)
       {
         ModifyText.replace(match_point, SearchText.size(), ReplaceText);
-        start_pos += ReplaceText.size();
+        start_pos = match_point + ReplaceText.size();
         changed = true;
       }
       else
