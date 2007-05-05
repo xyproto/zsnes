@@ -91,7 +91,7 @@ endif
 
 ifeq (${ENV},msvc)
   CFLAGONLY=
-  CFLAGSORIG=/nologo /c /Ox /GS- /MD /Iwin\vc_head /arch:SSE
+  CFLAGSORIG=/nologo /c /Ox /GS- /MD /Wp64 /Iwin\vc_head
   CXXFLAGSORIG=/Zc:forScope-
   MSVCLIBS=zlib.lib libpng.lib wsock32.lib user32.lib gdi32.lib shfolder.lib shell32.lib winmm.lib dinput8.lib dxguid.lib opengl32.lib glu32.lib
   DRESOBJ=${WIN_D}/zsnes.res
@@ -148,7 +148,7 @@ ifeq (${DEBUG},yes)
   ifneq (${ENV},msvc)
     CFLAGSORIG=-fno-omit-frame-pointer -ggdb3 -DDEBUG
   else
-    CFLAGSORIG=/nologo /c /Od /Oy /GS /Wp64 /Yd /DDEBUG /Iwin\vc_head
+    CFLAGSORIG=/nologo /c /Od /Oy- /GS /Wp64 /Yd /DDEBUG /Iwin\vc_head
   endif
   COPT=-O0
   ASMFLAGSORIG=-DDEBUG -g
