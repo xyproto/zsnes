@@ -760,13 +760,17 @@ char CSStatus[41], CSStatus2[41], CSStatus3[41], CSStatus4[41];
 
 void DumpROMLoadInfo()
 {
+  extern char *ZVERSION, *VERSION_DATE, *VERSION_PORT;
+
   FILE *fp = 0;
 
   if (RomInfo) //rominfo.txt info dumping enabled?
   {
     fp = fopen_dir(ZCfgPath, "rominfo.txt", "w");
     if (!fp) { return; }
-    fputs("This is the info for the last game you ran.\n\nFile: ", fp);
+    fprintf(fp, "This is the info for the last game you ran.\n\nZSNES v%s - %s - %s\n",
+            ZVERSION, VERSION_DATE, VERSION_PORT);
+    fputs("File: ", fp);
     fputs(ZCartName, fp);
     fputs(" Header: ", fp);
     fputs(Header512 ? "Yes\n" : "No\n", fp);
