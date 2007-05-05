@@ -27,10 +27,6 @@ extern "C"
 {
 #include <windows.h>
 #include <stdio.h>
-#include <ctype.h>
-#include <ddraw.h>
-#include <mmsystem.h>
-#include <time.h>
 }
 #include <stdint.h>
 #include <math.h>
