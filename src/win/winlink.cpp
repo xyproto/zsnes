@@ -30,6 +30,7 @@ extern "C"
 }
 #include <stdint.h>
 #include <math.h>
+#include <ctype.h>
 #include <dsound.h>
 #include <dinput.h>
 #include <winuser.h>
