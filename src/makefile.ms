@@ -23,12 +23,17 @@
 #                         Valid options are:
 #                         dos, dos-cross, msvc, win32, win32-cross, win32-unix-shell
 #
-# RELEASEGRADE=yes        for high assembly optimization for releases, will take at least half an hour.
-# clean                   cleans object and executable files.
+# DEBUG=yes               For debugging with GDB or the like.
+#
+# DEBUGGER=no             To build ZSNES without the debugger.
+#
+# RELEASEGRADE=yes        For high assembly optimization for releases, will take at least half an hour.
+#
+# clean                   Cleans object and executable files.
+#
 #
 # --Not for MSVC--
-# DEBUG=yes               for debugging with GDB.
-# CPU=cpu-type            optimize for a particular CPU, find a list of cpu types in the GCC manual.
+# CPU=cpu-type            Optimize for a particular CPU, find a list of cpu types in the GCC manual.
 
 
 ENV=$(PLATFORM)
