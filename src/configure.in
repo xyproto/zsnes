@@ -259,6 +259,7 @@ dnl - It is easier to debug zsnes with no optimization enabled.
   NFLAGS+=" -DDEBUG -g -F stabs -s -O0"
 else
   ZSNESEXE="zsnes"
+  CFLAGS+=" -DNDEBUG"
 
   CFLAGSBAK="$CFLAGS"
   AC_ARG_VAR(force_arch, [Force architecture to optimize GCC/G++ for])
