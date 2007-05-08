@@ -21,6 +21,15 @@
 
 
 
+%ifdef __UNIXSDL__
+%ifdef DEBUG
+;; workaround NASM stabs generation bug 
+;; http://sourceforge.net/tracker/index.php?func=detail&aid=1714701&group_id=6208&atid=106208
+SECTION .text
+        nop
+%endif
+%endif
+
 SECTION .bss
 NEWSYM wramdataa, resb 65536
 NEWSYM ram7fa,    resb 65536
