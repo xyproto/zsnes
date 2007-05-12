@@ -148,7 +148,7 @@ config.status: configure.in
 # set ${prefix} so mandir works.
 prefix=@prefix@
 exec_prefix=@exec_prefix@
-datarootdir = @datarootdir@
+datarootdir=@datarootdir@
 
 install:
 	@INSTALL@ -d -m 0755 $(DESTDIR)/@bindir@
