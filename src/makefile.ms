@@ -406,7 +406,7 @@ ${DOS_D}/gppro${OE}: ${DOS_D}/gppro.asm macros.mac
 ${DOS_D}/initvid${OE}: ${DOS_D}/initvid.asm macros.mac ${DOS_D}/vga.inc
 ${DOS_D}/joy${OE}: ${DOS_D}/joy.asm macros.mac
 ${DOS_D}/lib${OE}: ${DOS_D}/lib.c
-${DOS_D}/sound${OE}: ${DOS_D}/sound.asm macros.mac
+${DOS_D}/sound${OE}: ${DOS_D}/sound.c macros.mac
 ${DOS_D}/sw${OE}: ${DOS_D}/sw.asm macros.mac
 ${DOS_D}/vesa12${OE}: ${DOS_D}/vesa12.asm macros.mac
 ${DOS_D}/vesa2${OE}: ${DOS_D}/vesa2.asm macros.mac
