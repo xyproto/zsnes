@@ -40,19 +40,6 @@ ENV=$(PLATFORM)
 ifneq (${ENV},) #end if is at the bottom of the file
 
 
-CHIP_D=chips
-CPU_D=cpu
-DOS_D=dos
-EFF_D=effects
-GUI_D=gui
-JMA_D=jma
-MMLIB_D=mmlib
-NET_D=net
-VID_D=video
-NTSC_D=video/snes_ntsc
-WIN_D=win
-ZIP_D=zip
-
 DELETECOMMAND=rm -f
 DELPRE=rm -f
 DELSUF=
@@ -190,6 +177,19 @@ else
   endif
 endif
 
+CHIP_D=chips
+CPU_D=cpu
+DOS_D=dos
+EFF_D=effects
+GUI_D=gui
+JMA_D=jma
+MMLIB_D=mmlib
+NET_D=net
+VID_D=video
+NTSC_D=video${SLASH}snes_ntsc
+WIN_D=win
+ZIP_D=zip
+
 CFLAGS=${CFLAGSORIG} -D${OS} ${CFLAGONLY}
 CXXFLAGS=${CFLAGSORIG} -D${OS} ${CXXFLAGSORIG}
 ASMFLAGS=${ASMFLAGSORIG} -f ${FILEFORMAT} -D${OS}
@@ -314,7 +314,7 @@ ifneq (${ENV},msvc)
 	${LINK} ${STRIP} -o ${EXE} ${OBJS} ${LIBS}
 else
 	 @echo /Fezsnesw.exe *.obj ${CPU_D}\*.obj ${VID_D}\*.obj ${CHIP_D}\*.obj ${EFF_D}\*.obj ${DOS_D}\*.obj ${WIN_D}\*.obj ${GUI_D}\*.obj > link.vc
-	 @echo ${ZIP_D}\*.obj ${JMA_D}\*.obj ${NET_D}\*.obj ${MMLIB_D}\*.obj >> link.vc
+	 @echo ${ZIP_D}\*.obj ${JMA_D}\*.obj ${NET_D}\*.obj ${MMLIB_D}\*.obj ${SPC_D}\*.obj >> link.vc
 	 @echo ${MSVCLIBS} >> link.vc
 	 cl /nologo @link.vc ${WIN_D}/zsnes.res /link /SUBSYSTEM:WINDOWS /NODEFAULTLIB:LIBCMTD.LIB /NODEFAULTLIB:LIBC.LIB /NODEFAULTLIB:LIBCMT.LIB
 endif
