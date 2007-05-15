@@ -96,7 +96,7 @@ endif
 
 ifeq (${ENV},msvc)
   CFLAGONLY=
-  CFLAGSORIG=/nologo /c /Ox /GS- /MD /Wp64 /Iwin\vc_head /DNDEBUG
+  CFLAGSORIG=/nologo /c /Ox /GA- /GA /MD /Wp64 /Iwin\vc_head /DNDEBUG
   CXXFLAGSORIG=/Zc:forScope-
   MSVCLIBS=zlib.lib libpng.lib wsock32.lib user32.lib gdi32.lib shfolder.lib shell32.lib winmm.lib dinput8.lib dxguid.lib opengl32.lib glu32.lib
   DRESOBJ=${WIN_D}/zsnes.res
