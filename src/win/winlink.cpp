@@ -176,8 +176,6 @@ float MouseY;
 float MouseMoveX;
 float MouseMoveY;
 BYTE MouseButtonPressed;
-BYTE D_DRAW = 0;
-BYTE OPENGL = 0;	
 BYTE IsActivated = 1;
 BYTE PrevRes=0;
 
@@ -1558,8 +1556,6 @@ DWORD prevHQMode = ~0;
 DWORD prevNTSCMode = 0;
 DWORD prevScanlines = ~0;
 
-int InitDirectDraw();
-
 DWORD LockSurface();
 void UnlockSurface();
 void clear_ddraw();
@@ -1756,6 +1752,7 @@ extern "C"
   void initwinvideo()
   {
     DWORD HQMode = 0;
+    newmode = 0;
 
     if (FirstActivate && NTSCFilter)
     {
@@ -1801,10 +1798,7 @@ extern "C"
       DSMode = GUIDSMODE[cvidmode];
       NTSCMode = GUINTVID[cvidmode];
 
-	  if (cvidmode > 42) { OPENGL = 1; D_DRAW = 0; }
-	  else { D_DRAW = 1; OPENGL = 0; }
-
-	  switch (cvidmode)
+      switch (cvidmode)
       {
         case 0:
           WindowWidth = 256;
@@ -1816,6 +1810,7 @@ extern "C"
           break;
         case 2:
         case 3:
+        case 43:
           WindowWidth = 512;
           WindowHeight = 448;
           break;
@@ -1824,11 +1819,14 @@ extern "C"
         case 6:
         case 7:
         case 8:
+        case 44:
+        case 45:
           WindowWidth = 640;
           WindowHeight = 480;
           break;
         case 9:
         case 10:
+        case 46:
           WindowWidth = 768;
           WindowHeight = 672;
           break;
@@ -1837,6 +1835,8 @@ extern "C"
         case 13:
         case 14:
         case 15:
+        case 47:
+        case 48:
           WindowWidth = 800;
           WindowHeight = 600;
           break;
@@ -1845,11 +1845,14 @@ extern "C"
         case 18:
         case 19:
         case 20:
+        case 49:
+        case 50:
           WindowWidth = 1024;
           WindowHeight = 768;
           break;
         case 21:
         case 22:
+        case 51:
           WindowWidth = 1024;
           WindowHeight = 896;
           break;
@@ -1858,6 +1861,8 @@ extern "C"
         case 25:
         case 26:
         case 27:
+        case 52:
+        case 53:
           WindowWidth = 1280;
           WindowHeight = 960;
           break;
@@ -1866,6 +1871,8 @@ extern "C"
         case 30:
         case 31:
         case 32:
+        case 54:
+        case 55:
           WindowWidth = 1280;
           WindowHeight = 1024;
           break;
@@ -1874,6 +1881,8 @@ extern "C"
         case 35:
         case 36:
         case 37:
+        case 56:
+        case 57:
           WindowWidth = 1600;
           WindowHeight = 1200;
           break;
@@ -1882,13 +1891,10 @@ extern "C"
         case 40:
         case 41:
         case 42:
+        case 58:
+        case 59:
           WindowWidth = CustomResX;
           WindowHeight = CustomResY;
-          break;
-		case 43:
-          WindowWidth = 512;
-          WindowHeight = 448;
-          //     gl_start(100, 100, 16, 0);
           break;
         default:
           WindowWidth = 256;
@@ -2088,7 +2094,7 @@ extern "C"
       clear_display();
     }
 
-    gl_start(512, 448, 16, 0);
+    if (CheckOGLMode()) gl_start(WindowWidth, WindowHeight, 16, 0);
   }
 
   extern unsigned int vidbuffer;
@@ -2730,7 +2736,8 @@ ASM_COMMAND(_top_mmx:)
       }
     }
     UnlockSurface();
-	if (OPENGL) gl_drawwin();
+    if (CheckOGLMode()) gl_drawwin();
+    else DrawScreen();
   }
 
   void SwitchFullScreen();

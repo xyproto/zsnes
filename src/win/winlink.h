@@ -88,6 +88,7 @@ extern "C" {
 
 BOOL ReInitSound();
 void ReleaseDirectDraw();
+void DrawScreen();
 #endif
 
 #endif

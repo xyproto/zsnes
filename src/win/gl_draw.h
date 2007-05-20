@@ -35,7 +35,6 @@ void gl_drawwin();
 extern void hq2x_16b();
 
 // VIDEO VARIABLES
-extern uint8_t cvidmode;
 extern int32_t SurfaceLocking;
 
 extern HWND hMainWindow;
@@ -43,16 +42,6 @@ extern HDC hDC;
 extern HGLRC hRC;
 
 // OPENGL VARIABLES
-/* Any reason for putting static variables in a header file? -Nach
-static unsigned short *glvidbuffer = 0;
-static GLuint gltextures[4];
-static int32_t gltexture256, gltexture512;
-static int32_t glfilters = GL_NEAREST;
-static int32_t glscanready = 0;
-*/
-extern uint8_t En2xSaI;
-extern uint8_t sl_intensity;
-extern uint8_t FilteredGUI;
 extern uint8_t GUIOn2;
 extern uint32_t vidbuffer;
 extern uint8_t curblank;
@@ -61,7 +50,6 @@ extern uint8_t GUIRESIZE[];
 void gl_clearwin();
 void UpdateVFrame();
 void gl_scanlines();
-
 
 #endif
 

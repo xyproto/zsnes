@@ -28,34 +28,12 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "winlink.h"
 
 
-// FUNCTIONS
-extern void hq2x_16b();
-
-// VIDEO VARIABLES
-extern uint8_t cvidmode;
-extern int32_t SurfaceLocking;
-
-extern HWND hMainWindow;
-extern HDC hDC;
-extern HGLRC hRC;
-
 // OPENGL VARIABLES
 static unsigned short *glvidbuffer = 0;
 static GLuint gltextures[4];
 static uint32_t gltexture256, gltexture512;
 static uint32_t glfilters = GL_NEAREST;
 static uint32_t glscanready = 0;
-extern uint8_t En2xSaI;
-extern uint8_t sl_intensity;
-extern uint8_t FilteredGUI;
-extern uint8_t GUIOn2;
-extern uint8_t curblank;
-extern uint8_t GUIRESIZE[];
-
-void gl_clearwin();
-void UpdateVFrame();
-
-void gl_scanlines();
 
 int gl_start(int width, int height, int req_depth, int FullScreen)
 {
@@ -83,6 +61,7 @@ int gl_start(int width, int height, int req_depth, int FullScreen)
   hRC = wglCreateContext(hDC);
   wglMakeCurrent(hDC, hRC);
 
+  SurfaceX = width; SurfaceY = height;
   glvidbuffer = (unsigned short*)malloc(512 * 512 * sizeof(short));
   gl_clearwin();
   if (BilinearFilter)
@@ -147,10 +126,8 @@ void gl_end()
 extern uint32_t AddEndBytes;
 extern uint32_t NumBytesPerLine;
 extern uint8_t *WinVidMemStart;
-extern uint8_t MMXSupport;
 extern uint8_t NGNoTransp;
-extern uint8_t newengen;
-extern void copy640x480x16bwin();
+void copy640x480x16bwin();
 extern uint8_t SpecialLine[224];  /* 0 if lo-res, > 0 if hi-res */
 
 void gl_clearwin()
@@ -265,9 +242,9 @@ static void gl_drawspan(int hires, int start, int end)
 
     glBegin(GL_QUADS);
     glTexCoord2f(0.0f, (224.0 / 256.0) * (start / 224.0));
-    glVertex2f(-1.0f, (98 - start) / 112.0);
+    glVertex2f(-1.0f, (112 - start) / 112.0);
     glTexCoord2f(1.0f, (224.0 / 256.0) * (start / 224.0));
-    glVertex2f(1.0f, (98 - start) / 112.0);
+    glVertex2f(1.0f, (112 - start) / 112.0);
     glTexCoord2f(1.0f, (224.0 / 256.0) * (end / 224.0));
     glVertex2f(1.0f, (112 - end) / 112.0);
     glTexCoord2f(0.0f, (224.0 / 256.0) * (end / 224.0));
