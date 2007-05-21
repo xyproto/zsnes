@@ -47,7 +47,8 @@ void DDrawError()
 {
   char message1[256];
 
-  strcpy(message1, "Error drawing to the screen\nMake sure the device is not being used by another process");
+  strcpy(message1,
+         "Error drawing to the screen\nMake sure the device is not being used by another process");
   MessageBox(NULL, message1, "DirectDraw Error", MB_ICONERROR);
 }
 
@@ -252,96 +253,96 @@ int InitDirectDraw()
     }
   }
 
-      BlitArea.top = 0;
-      BlitArea.left = 0;
-      BlitArea.right = SurfaceX;
+  BlitArea.top = 0;
+  BlitArea.left = 0;
+  BlitArea.right = SurfaceX;
 
-      if (PrevRes == 0)
-      {
-        PrevRes = resolutn;
-      }
+  if (PrevRes == 0)
+  {
+    PrevRes = resolutn;
+  }
 
-    if (!FirstVid)
+  if (!FirstVid)
+  {
+    /*
+    if (X<0)X=0;
+    if (X>(int)(GetSystemMetrics(SM_CXSCREEN) - WindowWidth)) X=(GetSystemMetrics(SM_CXSCREEN) - WindowWidth);
+    if (Y<0)Y=0;
+    if (Y>(int)(GetSystemMetrics(SM_CYSCREEN) - WindowHeight)) Y=(GetSystemMetrics(SM_CYSCREEN) - WindowHeight);
+    */
+
+    if (FullScreen == 1)
     {
-      /*
-      if (X<0)X=0;
-      if (X>(int)(GetSystemMetrics(SM_CXSCREEN) - WindowWidth)) X=(GetSystemMetrics(SM_CXSCREEN) - WindowWidth);
-      if (Y<0)Y=0;
-      if (Y>(int)(GetSystemMetrics(SM_CYSCREEN) - WindowHeight)) Y=(GetSystemMetrics(SM_CYSCREEN) - WindowHeight);
-      */
+      X = 0; Y = 0;
+    }
 
-      if (FullScreen == 1)
+    if (FullScreen == 0 && newmode == 1)
+    {
+      X = MainWindowX; Y = MainWindowY;
+    }
+    else if (FullScreen == 0)
+    {
+      MainWindowX = X; MainWindowY = Y;
+    }
+
+    MoveWindow(hMainWindow, X, Y, WindowWidth, WindowHeight, TRUE);
+
+    wndpl.length = sizeof(wndpl);
+    GetWindowPlacement(hMainWindow, &wndpl);
+    SetRect(&rc1, 0, 0, WindowWidth, WindowHeight);
+
+    AdjustWindowRectEx(&rc1, GetWindowLong(hMainWindow, GWL_STYLE), GetMenu(hMainWindow) != NULL,
+                       GetWindowLong(hMainWindow, GWL_EXSTYLE));
+
+    GetClientRect(hMainWindow, &rcWindow);
+    ClientToScreen(hMainWindow, (LPPOINT)&rcWindow);
+    ClientToScreen(hMainWindow, (LPPOINT)&rcWindow + 1);
+
+    if (FullScreen == 1)
+    {
+      if (HQMode && !DSMode)
       {
-        X = 0; Y = 0;
-      }
+        int marginx = (rcWindow.right - rcWindow.left - BlitArea.right + BlitArea.left) / 2;
+        int marginy = (rcWindow.bottom - rcWindow.top - BlitArea.bottom + BlitArea.top) / 2;
 
-      if (FullScreen == 0 && newmode == 1)
-      {
-        X = MainWindowX; Y = MainWindowY;
-      }
-      else if (FullScreen == 0)
-      {
-        MainWindowX = X; MainWindowY = Y;
-      }
-
-      MoveWindow(hMainWindow, X, Y, WindowWidth, WindowHeight, TRUE);
-
-      wndpl.length = sizeof(wndpl);
-      GetWindowPlacement(hMainWindow, &wndpl);
-      SetRect(&rc1, 0, 0, WindowWidth, WindowHeight);
-
-      AdjustWindowRectEx(&rc1, GetWindowLong(hMainWindow, GWL_STYLE), GetMenu(hMainWindow) != NULL,
-                         GetWindowLong(hMainWindow, GWL_EXSTYLE));
-
-      GetClientRect(hMainWindow, &rcWindow);
-      ClientToScreen(hMainWindow, (LPPOINT)&rcWindow);
-      ClientToScreen(hMainWindow, (LPPOINT)&rcWindow + 1);
-
-      if (FullScreen == 1)
-      {
-        if (HQMode && !DSMode)
+        if (marginx > 0)
         {
-          int marginx = (rcWindow.right - rcWindow.left - BlitArea.right + BlitArea.left) / 2;
-          int marginy = (rcWindow.bottom - rcWindow.top - BlitArea.bottom + BlitArea.top) / 2;
-
-          if (marginx > 0)
-          {
-            rcWindow.left += marginx;
-            rcWindow.right -= marginx;
-          }
-          if (marginy > 0)
-          {
-            rcWindow.top += marginy;
-            rcWindow.bottom -= marginy;
-          }
+          rcWindow.left += marginx;
+          rcWindow.right -= marginx;
         }
-
-        if ((DSMode == 1) && (scanlines != 0))
+        if (marginy > 0)
         {
-          int OldHeight = rcWindow.bottom - rcWindow.top;
-          if ((OldHeight % 240) == 0)
-          {
-            int NewHeight = (OldHeight / 240) * resolutn;
-            rcWindow.top += (OldHeight - NewHeight) / 2;
-            rcWindow.bottom = rcWindow.top + NewHeight;
-            clear_display();
-          }
+          rcWindow.top += marginy;
+          rcWindow.bottom -= marginy;
         }
       }
-      if ((SurfaceX == 602) || (SurfaceX == 640) || (SurfaceX == 320))
-      {
-        BlitArea.bottom = SurfaceY;
-      }
-      else if (!NTSCFilter)
-      {
-        BlitArea.bottom = (SurfaceY / 240) * resolutn;
-      }
 
-      if (CheckTVRatioReq())
+      if ((DSMode == 1) && (scanlines != 0))
       {
-        KeepTVRatio();
+        int OldHeight = rcWindow.bottom - rcWindow.top;
+        if ((OldHeight % 240) == 0)
+        {
+          int NewHeight = (OldHeight / 240) * resolutn;
+          rcWindow.top += (OldHeight - NewHeight) / 2;
+          rcWindow.bottom = rcWindow.top + NewHeight;
+          clear_display();
+        }
       }
     }
+    if ((SurfaceX == 602) || (SurfaceX == 640) || (SurfaceX == 320))
+    {
+      BlitArea.bottom = SurfaceY;
+    }
+    else if (!NTSCFilter)
+    {
+      BlitArea.bottom = (SurfaceY / 240) * resolutn;
+    }
+
+    if (CheckTVRatioReq())
+    {
+      KeepTVRatio();
+    }
+  }
   if (FullScreen == 1)
   {
     if (HQMode && !DSMode)
@@ -391,9 +392,10 @@ int InitDirectDraw()
     {
       if (lpDD->SetDisplayMode(WindowWidth, WindowHeight, 16, 0, 0) != DD_OK)
       {
-        MessageBox(NULL,
-                   "IDirectDraw7::SetDisplayMode failed.\nMake sure your video card supports this mode.",
-                   "DirectDraw Error", MB_ICONERROR);
+        MessageBox(
+        NULL,
+        "IDirectDraw7::SetDisplayMode failed.\nMake sure your video card supports this mode.",
+        "DirectDraw Error", MB_ICONERROR);
         return FALSE;
       }
       else
@@ -490,9 +492,10 @@ int InitDirectDraw()
 
   if (BitDepth == 24)
   {
-    MessageBox(NULL,
-               "ZSNESw does not support 24bit color.\nPlease change your resolution to either 16bit or 32bit color",
-               "Error", MB_OK);
+    MessageBox(
+    NULL,
+    "ZSNESw does not support 24bit color.\nPlease change your resolution to either 16bit or 32bit color",
+    "Error", MB_OK);
     exit(0);
   }
 
@@ -530,9 +533,10 @@ int InitDirectDraw()
 
     if (lpDD->CreateSurface(&ddsd2, &DD_CFB16, NULL) != DD_OK)
     {
-      MessageBox(NULL,
-                 "IDirectDraw7::CreateSurface failed. You should update your video card drivers. Alternatively, you could use a 16-bit desktop or use a non-D mode.",
-                 "DirectDraw Error", MB_ICONERROR);
+      MessageBox(
+      NULL,
+      "IDirectDraw7::CreateSurface failed. You should update your video card drivers. Alternatively, you could use a 16-bit desktop or use a non-D mode.",
+      "DirectDraw Error", MB_ICONERROR);
       return FALSE;
     }
 
@@ -580,63 +584,63 @@ void ReleaseDirectDraw()
 
 void clear_ddraw()
 {
-    if (FullScreen == 1)
+  if (FullScreen == 1)
+  {
+    DDBLTFX ddbltfx;
+
+    ddbltfx.dwSize = sizeof(ddbltfx);
+    ddbltfx.dwFillColor = 0;
+
+    if (TripleBufferWin == 1)
     {
-      DDBLTFX ddbltfx;
-
-      ddbltfx.dwSize = sizeof(ddbltfx);
-      ddbltfx.dwFillColor = 0;
-
-      if (TripleBufferWin == 1)
+      if ((DD_Primary != NULL) && (DD_BackBuffer != NULL))
       {
-        if ((DD_Primary != NULL) && (DD_BackBuffer != NULL))
+        if (DD_BackBuffer->Blt(NULL, NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &ddbltfx) ==
+            DDERR_SURFACELOST)
         {
-          if (DD_BackBuffer->Blt(NULL, NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &ddbltfx) ==
-              DDERR_SURFACELOST)
-          {
-            DD_Primary->Restore();
-          }
-
-          if (DD_Primary->Flip(NULL, DDFLIP_WAIT) == DDERR_SURFACELOST)
-          {
-            DD_Primary->Restore();
-          }
-
-          if (DD_BackBuffer->Blt(NULL, NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &ddbltfx) ==
-              DDERR_SURFACELOST)
-          {
-            DD_Primary->Restore();
-          }
-
-          if (DD_Primary->Flip(NULL, DDFLIP_WAIT) == DDERR_SURFACELOST)
-          {
-            DD_Primary->Restore();
-          }
-
-          if (DD_BackBuffer->Blt(NULL, NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &ddbltfx) ==
-              DDERR_SURFACELOST)
-          {
-            DD_Primary->Restore();
-          }
+          DD_Primary->Restore();
         }
-      }
-      else
-      {
-        if (DD_Primary != NULL)
+
+        if (DD_Primary->Flip(NULL, DDFLIP_WAIT) == DDERR_SURFACELOST)
         {
-          if (vsyncon == 1)
-          {
-            if (lpDD->WaitForVerticalBlank(DDWAITVB_BLOCKBEGIN, NULL) != DD_OK)
-            {
-              DDrawError();
-            }
-          }
-          if (DD_Primary->Blt(NULL, NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &ddbltfx) ==
-              DDERR_SURFACELOST)
-          {
-            DD_Primary->Restore();
-          }
+          DD_Primary->Restore();
+        }
+
+        if (DD_BackBuffer->Blt(NULL, NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &ddbltfx) ==
+            DDERR_SURFACELOST)
+        {
+          DD_Primary->Restore();
+        }
+
+        if (DD_Primary->Flip(NULL, DDFLIP_WAIT) == DDERR_SURFACELOST)
+        {
+          DD_Primary->Restore();
+        }
+
+        if (DD_BackBuffer->Blt(NULL, NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &ddbltfx) ==
+            DDERR_SURFACELOST)
+        {
+          DD_Primary->Restore();
         }
       }
     }
+    else
+    {
+      if (DD_Primary != NULL)
+      {
+        if (vsyncon == 1)
+        {
+          if (lpDD->WaitForVerticalBlank(DDWAITVB_BLOCKBEGIN, NULL) != DD_OK)
+          {
+            DDrawError();
+          }
+        }
+        if (DD_Primary->Blt(NULL, NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &ddbltfx) ==
+            DDERR_SURFACELOST)
+        {
+          DD_Primary->Restore();
+        }
+      }
+    }
+  }
 }
