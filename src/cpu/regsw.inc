@@ -420,12 +420,9 @@ reg2103w:
 .afteroamlow
     cmp word[poamaddrs],200h
     jbe .notinvptr
-    cmp word[oamaddr],200h
-    jne .notinvptr
     mov bx,[poamaddrs]
     mov [oamaddr],bx
     mov byte[nosprincr],1
-.notinvptr
     mov bx,[oamaddr]
     mov [oamaddrs],bx
     test al,80h
