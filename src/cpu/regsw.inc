@@ -418,9 +418,12 @@ reg2103w:
     mov [oamaddr+1],bl
     shl word[oamaddr],1
 .afteroamlow
+    cmp word[oamaddr],200h
+    jne .notinvptr
     mov bx,[poamaddrs]
     mov [oamaddr],bx
     mov byte[nosprincr],1
+.notinvptr
     mov bx,[oamaddr]
     mov [oamaddrs],bx
     test al,80h
