@@ -52,7 +52,7 @@ int gl_start(int width, int height, int req_depth, int FullScreen)
   pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
   pfd.iPixelType = PFD_TYPE_RGBA;
   pfd.cColorBits = 16;
-  pfd.cDepthBits = 16;
+  pfd.cDepthBits = 32;
   pfd.iLayerType = PFD_MAIN_PLANE;
   iFormat = ChoosePixelFormat(hDC, &pfd);
   SetPixelFormat(hDC, iFormat, &pfd);
