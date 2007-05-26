@@ -2094,7 +2094,7 @@ extern "C"
       clear_display();
     }
 
-    if (CheckOGLMode()) gl_start(WindowWidth, WindowHeight, 16, 0);
+    if (CheckOGLMode()) gl_start(WindowWidth, WindowHeight, 16, FullScreen);
   }
 
   extern unsigned int vidbuffer;
