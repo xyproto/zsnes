@@ -3,18 +3,8 @@
 #include "load.h"
 #include "ui.h"
 
-QApplication *app = 0;
-
-extern "C" { void zstart(); }
-
-class ZSNESThread : public QThread
-{
-  public:
-  void run()
-  {
-    zstart();
-  }
-};
+static QApplication *app = 0;
+static QWidget *widget;
 
 void debug_main()
 {
@@ -23,14 +13,18 @@ void debug_main()
     int argc = 1;
     char *argv[] = { "debug" };
     app = new QApplication(argc, argv);
-
-    //DebuggerThread *debuggerThread = new DebuggerThread;
-    //debuggerThread->start();
-
-    ZSNESThread zthread;
-    zthread.start();
-
-    QWidget widget;
-    DebuggerDialog::showDebuggerDialog(&widget);
+    widget = new QWidget();
+    DebuggerDialog::showDebuggerDialog(widget);
+    atexit(debug_exit);
   }
+}
+
+void debug_run()
+{
+  QApplication::processEvents();
+}
+
+void debug_exit()
+{
+  delete widget;
 }

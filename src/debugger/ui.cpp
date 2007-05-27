@@ -18,5 +18,5 @@ void DebuggerDialog::showDebuggerDialog(QWidget *parent)
   {
     singleton = new DebuggerDialog(parent);
   }
-  singleton->exec();
+  singleton->show();
 }

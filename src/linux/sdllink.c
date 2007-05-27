@@ -34,6 +34,10 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "../cfg.h"
 #include "../input.h"
 
+#ifdef QT_DEBUGGER
+#include "../debugger/load.h"
+#endif
+
 #include <stdint.h>
 
 #define QueryPerformanceCounter(x) asm volatile("rdtsc" : "=a"(((unsigned int *)(x))[0]),"=d"(((unsigned int *)x)[1]))
@@ -198,6 +202,15 @@ int Main_Proc()
 {
   SDL_Event event;
   unsigned int key;
+
+#ifdef QT_DEBUGGER
+  extern unsigned char debugger;
+
+  if (debugger)
+  {
+    debug_run();
+  }
+#endif
 
   while (SDL_PollEvent(&event))
   {
