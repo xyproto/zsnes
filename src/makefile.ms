@@ -319,6 +319,7 @@ endif
 ALL: zsnes
 	${DELETECOMMAND} version${OE}
 
+.PHONY: ALL zsnes playspc clean
 zsnes: ${PSR} ${OBJFIX} ${OBJS}
 ifneq (${ENV},msvc)
 	${LINK} ${STRIP} -o ${EXE} ${OBJS} ${LIBS}
@@ -327,6 +328,11 @@ else
 	 @echo ${ZIP_D}\*.obj ${JMA_D}\*.obj ${NET_D}\*.obj ${MMLIB_D}\*.obj ${SPC_D}\*.obj >> link.vc
 	 @echo ${MSVCLIBS} >> link.vc
 	 cl /nologo @link.vc ${WIN_D}/zsnes.res /link /SUBSYSTEM:WINDOWS /NODEFAULTLIB:LIBCMTD.LIB /NODEFAULTLIB:LIBC.LIB /NODEFAULTLIB:LIBCMT.LIB
+endif
+
+ifneq (${ENV},msvc)
+playspc: playspc.c ${SPC_D}/zdsp${OE} ${SPC_D}/zspc${OE}
+	${CPPC} ${COPT} ${CXXFLAGS} -o playspc.exe playspc.c $(SPC_D)/zdsp${OE} $(SPC_D)/zspc${OE} ${LIBS} -ldsound
 endif
 
 cfg${OE}: cfg.psr ${PSR}
@@ -556,9 +562,16 @@ ifneq (${ENV},)
 	${DELPRE} ${EFF_D}${SLASH}*${OE}${SEP} ${ZIP_D}${SLASH}*${OE}${DELSUF}
 	${DELPRE} ${DOS_D}${SLASH}*${OE}${SEP} ${WIN_D}${SLASH}*${OE}${DELSUF}
 	${DELPRE} ${CHIP_D}${SLASH}*${OE}${SEP} ${VID_D}${SLASH}*${OE}${DELSUF}
+	${DELPRE} ${SPC_D}${SLASH}*${OE}${DELSUF}
 ifeq (${QTD},yes)
 	make -C ${DEBUGGER_D} -f makefile.z CROSS=${CROSS} OE=${OE} clean
 endif
 else
 	@echo Please specify which platform to clean for with PLATFORM=platform_name
 endif
+
+
+# Make sure emacs knows this is a Makefile, so it lets you put in real TABs
+# Local Variables:
+# mode: Makefile
+# End:
