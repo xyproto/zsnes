@@ -46,6 +46,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "input.h"
 #include "zpath.h"
 #include "zloader.h"
+#include "debugger/load.h"
 
 #ifdef __WIN32__
 void ImportDirectX();
@@ -613,6 +614,12 @@ static void handle_params(int argc, char *argv[])
             break;
           #endif
 
+          #ifdef QT_DEBUGGER
+          case 'd':
+            debugger = 1;
+            break;
+          #endif
+
           #ifndef NO_DEBUGGER
           case 'd': //Start with debugger enabled
             debugger = 1;
@@ -949,7 +956,19 @@ void zmain(int zargc, char *zargv[])
 
     atexit(ZCleanup);
     srand(time(0));
-    zstart();
+
+#ifdef QT_DEBUGGER
+    if (debugger)
+    {
+      debug_main();
+    }
+    else
+    {
+      zstart();
+    }
+#else
+   zstart();
+#endif
   }
 }
 
