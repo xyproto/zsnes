@@ -1,0 +1,23 @@
+QT_QMAKE=qmake
+QT_MAKE=make
+
+ifeq ($(CROSS),yes)
+  QT_QMAKE=qmake -win32 -spec win32-cross
+  QT_MAKE=make -f Makefile.win32
+endif
+
+load${OE}:
+	${QT_QMAKE}
+	${QT_MAKE} load${OE}
+
+ui${OE}:
+	${QT_QMAKE}
+	${QT_MAKE} ui${OE}
+
+moc_ui${OE}:
+	${QT_QMAKE}
+	${QT_MAKE} moc_ui${OE}
+
+clean:
+	${QT_QMAKE}
+	${QT_MAKE} clean

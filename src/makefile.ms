@@ -61,7 +61,6 @@ DRESOBJ=${WIN_D}/zsnes.obj
 CROSS=no
 STRIP=-Ws -s
 
-
 ifeq (${ENV},dos)
   CC = gcc
   CPPC = gpp
@@ -163,6 +162,10 @@ ifeq (${DEBUGGER},no)
   ASMFLAGSORIG+= -DNO_DEBUGGER
 endif
 
+ifeq (${QTD},yes)
+  CFLAGSORIG+= -DQT_DEBUGGER
+endif
+
 LINK=${CPPC}
 
 ifeq (${JMA},no)
@@ -189,6 +192,7 @@ VID_D=video
 NTSC_D=video${SLASH}snes_ntsc
 WIN_D=win
 ZIP_D=zip
+DEBUGGER_D=debugger
 
 CFLAGS=${CFLAGSORIG} -D${OS} ${CFLAGONLY}
 CXXFLAGS=${CFLAGSORIG} -D${OS} ${CXXFLAGSORIG}
@@ -269,7 +273,13 @@ WINVIDOBJ=${VID_D}/sw_draw${OE} ${VID_D}/hq2x16${OE} ${VID_D}/hq2x32${OE}\
 	${VID_D}/hq4x16${OE} ${VID_D}/hq4x32${OE} ${VID_D}/copyvwin${OE}\
 	${VID_D}/ntsc${OE}
 
-OBJS+=${WINOBJ} ${WINVIDOBJ} ${NETOBJ}
+ifeq (${QTD},yes)
+  DEBUGGEROBJ=${DEBUGGER_D}/load${OE} ${DEBUGGER_D}/ui${OE} ${DEBUGGER_D}/moc_ui${OE}
+  LIBS+= -lQtCore4 -lQtGui4
+  MSVCLIBS+= qtcore4.lib qtgui4.lib
+endif
+
+OBJS+=${WINOBJ} ${WINVIDOBJ} ${NETOBJ} ${DEBUGGEROBJ}
 endif
 
 DELETEOBJS=${OBJS}
@@ -524,6 +534,13 @@ ${ZIP_D}/unzip${OE}: ${ZIP_D}/unzip.c ${ZIP_D}/zunzip.h
 ${ZIP_D}/zpng${OE}: ${ZIP_D}/zpng.c numconv.h zpath.h ${JMA_D}/zsnesjma.h \
 	${ZIP_D}/zunzip.h
 
+${DEBUGGER_D}/load${OE}:
+	make -C ${DEBUGGER_D} -f makefile.z CROSS=${CROSS} OE=${OE} load${OE}
+${DEBUGGER_D}/ui${OE}:
+	make -C ${DEBUGGER_D} -f makefile.z CROSS=${CROSS} OE=${OE} ui${OE}
+${DEBUGGER_D}/moc_ui${OE}:
+	make -C ${DEBUGGER_D} -f makefile.z CROSS=${CROSS} OE=${OE} moc_ui${OE}
+
 else  #else no ENV specified
 	@echo Please specify which platform to compile for with PLATFORM=platform_name
 endif #endif on the ENV being empty
@@ -539,6 +556,9 @@ ifneq (${ENV},)
 	${DELPRE} ${EFF_D}${SLASH}*${OE}${SEP} ${ZIP_D}${SLASH}*${OE}${DELSUF}
 	${DELPRE} ${DOS_D}${SLASH}*${OE}${SEP} ${WIN_D}${SLASH}*${OE}${DELSUF}
 	${DELPRE} ${CHIP_D}${SLASH}*${OE}${SEP} ${VID_D}${SLASH}*${OE}${DELSUF}
+ifeq (${QTD},yes)
+	make -C ${DEBUGGER_D} -f makefile.z CROSS=${CROSS} OE=${OE} clean
+endif
 else
 	@echo Please specify which platform to clean for with PLATFORM=platform_name
 endif
