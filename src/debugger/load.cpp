@@ -4,7 +4,7 @@
 #include "ui.h"
 
 static QApplication *app = 0;
-static QWidget *widget;
+static QWidget *widget = 0;
 
 void debug_main()
 {
@@ -21,10 +21,17 @@ void debug_main()
 
 void debug_run()
 {
-  QApplication::processEvents();
+  if (app)
+  {
+    QApplication::processEvents();
+  }
 }
 
 void debug_exit()
 {
-  delete widget;
+  if (widget)
+  {
+    delete widget;
+    widget = 0;
+  }
 }
