@@ -19,6 +19,7 @@
 
 CHIP_D=chips
 CPU_D=cpu
+DEBUG_D=debugger
 EFF_D=effects
 GUI_D=gui
 JMA_D=jma
@@ -47,21 +48,21 @@ CPU_AO=$(CPU_D)/dma.o $(CPU_D)/dsp.o $(CPU_D)/dspproc.o $(CPU_D)/execute.o\
 	$(CPU_D)/table.o $(CPU_D)/tablec.o
 CPU_CO=$(CPU_D)/executec.o $(CPU_D)/memtable.o
 
-DEBUG_AO=@DEBUGGER_A@
-DEBUG_CO=@DEBUGGER_C@
+DEBUG_CO=@DEBUG_CF@
+DEBUG_QO=@DEBUG_QF@
 
 EFF_CO=$(EFF_D)/burn.o $(EFF_D)/smoke.o $(EFF_D)/water.o
 
 GUI_AO=$(GUI_D)/gui.o $(GUI_D)/menu.o
 GUI_CO=$(GUI_D)/guifuncs.o
 
-JMA_CO=@JMA_FILES@
+JMA_CO=@JMA_F@
 
-MAIN_AO=@DEBUGGER_A@ endmem.o init.o vcache.o ztime.o
-MAIN_CO=cfg.o @DEBUGGER_C@ initc.o input.o md.o patch.o ui.o version.o zdir.o\
+MAIN_AO=endmem.o init.o vcache.o ztime.o
+MAIN_CO=cfg.o initc.o input.o md.o patch.o ui.o version.o zdir.o\
 	zloader.o zmovie.o zpath.o zstate.o ztimec.o
 
-MMLIB_CO=@MMLIB_FILES@
+MMLIB_CO=@MMLIB_F@
 
 NET_CO=
 #$(NET_D)/ztcp.o
@@ -85,8 +86,9 @@ VID_CO=$(VID_D)/procvidc.o $(VID_D)/ntsc.o
 ZIP_CO=$(ZIP_D)/unzip.o $(ZIP_D)/zpng.o
 
 Z_AOBJS=$(MAIN_AO) $(CHIP_AO) $(CPU_AO) $(GUI_AO) $(PORT_AO) $(VID_AO)
-Z_COBJS=$(MAIN_CO) $(CHIP_CO) $(CPU_CO) $(EFF_CO) $(GUI_CO) $(JMA_CO)\
-	$(MMLIB_CO) $(NET_CO) $(PORT_CO) $(VID_CO) $(ZIP_CO)
+Z_COBJS=$(MAIN_CO) $(CHIP_CO) $(CPU_CO) $(DEBUG_CO) $(EFF_CO) $(GUI_CO)\
+	$(JMA_CO) $(MMLIB_CO) $(NET_CO) $(PORT_CO) $(VID_CO) $(ZIP_CO)
+Z_QOBJS=$(DEBUG_QO)
 Z_OBJS=$(Z_AOBJS) $(Z_COBJS)
 
 .PHONY: default main tools all install clean cclean tclean distclean
@@ -103,12 +105,16 @@ Z_OBJS=$(Z_AOBJS) $(Z_COBJS)
 
 default: main
 all: main tools
-main: makefile.dep $(Z_OBJS)
+main: makefile.dep $(Z_QOBJS) $(Z_OBJS)
 	@ZC@ -o @ZSNESEXE@ $(Z_OBJS) @ZCFLAGS@ @LDFLAGS@
 	rm -f version.o
 
 $(PSR): parsegen.cpp
 	@CXX@ @CXXFLAGS@ -o $@ $< -lz
+$(DEBUG_D)/moc_ui.cpp: $(DEBUG_D)/ui.h
+	moc -o $@ $(DEBUG_D)/ui.h
+$(DEBUG_D)/ui_debugger.h: $(DEBUG_D)/debugger.ui
+	uic -o $@ $(DEBUG_D)/debugger.ui
 
 TOOLSEXE=$(TOOL_D)/archopt $(TOOL_D)/cutrtype $(TOOL_D)/extraext\
 	$(TOOL_D)/macroll $(TOOL_D)/minwhite $(TOOL_D)/nreplace\
@@ -136,14 +142,13 @@ $(TOOL_D)/varrep: $(TOOL_D)/varrep.cpp $(TOOL_CO)
 	@CXX@ @CXXFLAGS@ -o $@ $@.cpp $(TOOL_CO)
 
 include makefile.dep
-makefile.dep: $(TOOL_D)/depbuild Makefile
-	$(TOOL_D)/depbuild @CC@ "@CFLAGS@" @NASMPATH@ "@NFLAGS@" $(Z_OBJS) > makefile.dep
-
-Makefile: Makefile.in config.status
-	./config.status
 
 config.status: configure.in
 	./autogen.sh --recheck
+Makefile: config.status Makefile.in
+	./config.status
+makefile.dep: $(TOOL_D)/depbuild Makefile
+	$(TOOL_D)/depbuild @CC@ "@CFLAGS@" @NASMPATH@ "@NFLAGS@" $(Z_AOBJS) $(Z_COBJS) > makefile.dep
 
 # set ${prefix} so mandir works.
 prefix=@prefix@
@@ -159,9 +164,9 @@ uninstall:
 	rm -f @bindir@/$(notdir @ZSNESEXE@) @mandir@/man1/zsnes.1
 
 clean:
-	rm -f makefile.dep $(Z_OBJS) $(PSR) $(PSR_H) @ZSNESEXE@
+	rm -f makefile.dep $(Z_OBJS) $(Z_QOBJS) $(PSR) $(PSR_H) @ZSNESEXE@
 cclean:
-	rm -f $(Z_COBJS) $(PSR) $(PSR_H) @ZSNESEXE@
+	rm -f $(Z_COBJS) $(Z_QOBJS) $(PSR) $(PSR_H) @ZSNESEXE@
 tclean:
 	rm -f $(TOOL_CO) $(TOOLSEXE)
 distclean: clean tclean

@@ -41,8 +41,8 @@ AC_PROG_CC
 AC_PROG_CXX
 
 AC_ARG_WITH(nasm-prefix,
-  [  --with-nasm-prefix=PFX  Prefix where nasm is installed (optional)],
-  nasm_prefix="$withval",
+  AC_HELP_STRING([--with-nasm-prefix=PFX],[Path to nasm (optional)]),
+  nasm_prefix=$withval,
   nasm_prefix="")
 AC_CHECK_TOOL(NASMPATH, nasm, "no", $nasm_prefix:$PATH)
 if test x$NASMPATH = xno; then
@@ -50,16 +50,17 @@ if test x$NASMPATH = xno; then
 fi
 
 AC_ARG_WITH(zconf-path,
-  [  --with-zconf-path=PATH  Path for configuration files (default: ~/.zsnes)],
+  AC_HELP_STRING([--with-zconf-path=PATH],
+    [Path for configuration files [[~/.zsnes]]]),
   ZCONF="$withval",
   ZCONF="")
 
 AC_ARG_WITH(bin,
-  [  --with-bin=BITS         32/64-bit binaries with NASM (default: native)],
+  AC_HELP_STRING([--with-bin=BITS],[32/64-bit binaries with NASM [[native]]]),
   binfmt="$withval",
   binfmt="64")
-case x$target in
-  *86_64-*-*-*)
+case $target in
+  x86_64-*)
     if test x$binfmt = x64; then
       NFLAGS+=" -D__AMD64__"
       ELF="-f elf64 -DELF"
@@ -77,12 +78,12 @@ esac
 CFLAGS+=" -D__UNIXSDL__"
 NFLAGS+=" -w-orphan-labels -D__UNIXSDL__"
 PSRFLAGS+=" -D__UNIXSDL__"
-MMLIB_FILES="\$(MMLIB_D)/mm.o"
+MMLIB_F="\$(MMLIB_D)/mm.o"
 STRIP="-s"
-case x$target in
+case $target in
   *-*-linux*)
     NFLAGS+=" $ELF"
-    MMLIB_FILES+=" \$(MMLIB_D)/linux.o"
+    MMLIB_F+=" \$(MMLIB_D)/linux.o"
     ;;
   *-*-beos*)
     CFLAGS+=" -D__BEOS__"
@@ -96,7 +97,7 @@ case x$target in
     CFLAGS+=" -D__MACOSX__ -D__OPENGL__ -arch i386 -mdynamic-no-pic -mstackrealign -fno-unit-at-a-time"
     NFLAGS+=" -D__MACOSX__ -D__OPENGL__ -f macho -DMACHO"
     PSRFLAGS+=" -D__OPENGL__"
-    MMLIB_FILES+=" \$(MMLIB_D)/osx.o"
+    MMLIB_F+=" \$(MMLIB_D)/osx.o"
     STRIP=""
     LDFLAGS+=" -framework Carbon -framework IOKit -framework Foundation -framework OpenGL -mdynamic-no-pic -read_only_relocs suppress -undefined dynamic_lookup"
     GL_DRAW="\$(PORT_D)/gl_draw.o"
@@ -115,7 +116,7 @@ if test x$ZCONF != x; then
 fi
 
 dnl - Library checks (requisites marked *, others optionnal):
-dnl - libSDL*, zlib*, libpng, curses, libao, OpenGL, JMAlib
+dnl - libSDL*, zlib*, libpng, Qt, libao, OpenGL, JMAlib
 
 dnl - libsdl stuff
 AM_PATH_SDL(1.2.0, , [AC_MSG_ERROR(SDL >= 1.2.0 is required)])
@@ -138,47 +139,9 @@ else
   LDFLAGS+=" $LIBPNG_LIBS"
 fi
 
-dnl - debugger stuff
-AC_ARG_ENABLE(debugger,
-  [  --disable-debugger      Build without the zsnes debugger],
-  ,
-  enable_debugger=yes)
-AC_MSG_CHECKING(if you want the zsnes debugger)
-AC_MSG_RESULT($enable_debugger)
-if test x$enable_debugger != xyes; then
-  CFLAGS+=" -DNO_DEBUGGER"
-  NFLAGS+=" -DNO_DEBUGGER"
-  PSRFLAGS+=" -DNO_DEBUGGER"
-  DEBUGGER_A=""
-  DEBUGGER_C=""
-else
-  DEBUGGER_A="debugasm.o"
-  DEBUGGER_C="debugger.o"
-
-  AC_CHECK_LIB(pdcurses, initscr, found_c=pdyes, found_c=no)
-  AC_CHECK_LIB(ncurses, initscr, found_c=nyes, found_c=no)
-  AC_CHECK_LIB(curses, initscr, found_c=yes, found_c=no)
-
-  case x$found_c in
-    xyes)
-      LDFLAGS+=" -lcurses"
-      ;;
-    xnyes)
-      CFLAGS+=" -DNCURSES"
-      LDFLAGS+=" -lncurses"
-      ;;
-    xpdyes)
-      LDFLAGS+=" -lpdcurses"
-      ;;
-    *)
-      AC_MSG_ERROR(A curses library is required to use the debugger)
-      ;;
-  esac
-fi
-
 dnl - libao stuff
 AC_ARG_ENABLE(libao,
-  [  --enable-libao          Build with libao support],
+  AC_HELP_STRING([--enable-libao],[Build with libao support]),
   want_ao=$enableval,
   want_ao=no)
 AC_MSG_CHECKING(if you want libao support)
@@ -196,11 +159,12 @@ fi
 dnl - opengl stuff
 if test x$found_opengl != xyes; then
   AC_ARG_ENABLE(opengl,
-    [  --disable-opengl        Build without OpenGL support],
+    AC_HELP_STRING([--disable-opengl],[Build without OpenGL support]),
     ,
     enable_opengl=yes)
   AC_ARG_WITH(opengl-prefix,
-    [  --with-opengl-prefix=PFX Prefix where OpenGL is installed (optional)],
+    AC_HELP_STRING([--with-opengl-prefix=PX],
+      [Prefix where OpenGL is installed (optional)]),
     opengl_prefix="$withval",
     opengl_prefix="")
   if test x$enable_opengl != xno; then
@@ -230,9 +194,31 @@ if test x$found_opengl != xyes; then
   fi
 fi
 
+dnl - debugger stuff
+AC_ARG_ENABLE(qtd,
+  AC_HELP_STRING([--enable-qtd],[Build the zsnes Qt debugger]),
+  qtd=$enableval,
+  qtd=no)
+AC_MSG_CHECKING(if you want the zsnes Qt debugger)
+AC_MSG_RESULT($qtd)
+if test x$qtd != xyes; then
+  CFLAGS+=" -DNO_DEBUGGER"
+  NFLAGS+=" -DNO_DEBUGGER"
+  PSRFLAGS+=" -DNO_DEBUGGER"
+  DEBUG_CF=""
+  DEBUG_QF=""
+else
+  CFLAGS+=" -DNO_DEBUGGER -DQT_DEBUGGER"
+  NFLAGS+=" -DNO_DEBUGGER -DQT_DEBUGGER"
+  PSRFLAGS+=" -DNO_DEBUGGER -DQT_DEBUGGER"
+  DEBUG_CF="\$(DEBUG_D)/load.o \$(DEBUG_D)/moc_ui.o \$(DEBUG_D)/ui.o"
+  DEBUG_QF="\$(DEBUG_D)/moc_ui.cpp \$(DEBUG_D)/ui_debugger.h"
+  AM_CHECK_QT()
+fi
+
 dnl - jma stuff
 AC_ARG_ENABLE(jma,
-  [  --disable-jma           Build without JMA support],
+  AC_HELP_STRING([--disable-jma],[Build without JMA support]),
   ,
   enable_jma=yes)
 AC_MSG_CHECKING(for JMA support)
@@ -247,7 +233,7 @@ dnl - Various debug and optimization option checks
 AM_ARCH_DETECT()
 
 AC_ARG_ENABLE(debug,
-  [  --enable-debug          Build GDB friendly binary (zsnesd)],
+  AC_HELP_STRING([--enable-debug],[Build GDB friendly binary (zsnesd)]),
   debug=$enableval,
   debug=no)
 AC_MSG_CHECKING(if you want gdb friendly executable)
@@ -302,7 +288,8 @@ else
   fi
 
   AC_ARG_ENABLE(release,
-    [  --enable-release        Build ultra-optimized release binary (zsnes)],
+    AC_HELP_STRING([--enable-release],
+      [Build ultra-optimized release binary (zsnes)]),
     release=$enableval,
     release=no)
   AC_MSG_CHECKING(if you want crazy optimizations)
@@ -318,18 +305,25 @@ else
     NFLAGS+=" -O1"
   fi
 fi
+CFLAGS+=" $QT_CFLAGS"
 CXXFLAGS="$CFLAGS -fno-rtti"
+LDFLAGS+=" $QT_LDFLAGS"
 
 if test x$enable_jma != xno; then
-  JMA_FILES="\$(JMA_D)/7zlzma.o \$(JMA_D)/crc32.o \$(JMA_D)/iiostrm.o\
+  JMA_F="\$(JMA_D)/7zlzma.o \$(JMA_D)/crc32.o \$(JMA_D)/iiostrm.o\
 	\$(JMA_D)/inbyte.o \$(JMA_D)/jma.o \$(JMA_D)/lzma.o\
 	\$(JMA_D)/lzmadec.o \$(JMA_D)/winout.o \$(JMA_D)/zsnesjma.o"
   ZC="$CXX"
   ZCFLAGS="$CXXFLAGS"
 else
-  JMA_FILES=""
-  ZC="$CC"
-  ZCFLAGS="$CFLAGS"
+  JMA_F=""
+  if test x$qtd != xyes; then
+    ZC="$CC"
+    ZCFLAGS="$CFLAGS"
+  else
+    ZC="$CXX"
+    ZCFLAGS="$CXXFLAGS"
+  fi
 fi
 
 dnl - Check for header files
@@ -345,10 +339,10 @@ AC_SUBST(PSRFLAGS)
 AC_SUBST(NFLAGS)
 AC_SUBST(ZSNESEXE)
 AC_SUBST(GL_DRAW)
-AC_SUBST(JMA_FILES)
-AC_SUBST(MMLIB_FILES)
-AC_SUBST(DEBUGGER_A)
-AC_SUBST(DEBUGGER_C)
+AC_SUBST(JMA_F)
+AC_SUBST(MMLIB_F)
+AC_SUBST(DEBUG_CF)
+AC_SUBST(DEBUG_QF)
 
 AC_CONFIG_FILES(Makefile)
 touch -t 198001010000 makefile.dep
@@ -359,10 +353,10 @@ dnl - Info output
 echo
 echo
 echo $ECHO_N "ZSNES v$VERSION $binfmt-bits (with$ECHO_C"
-if test x$enable_debugger = xno; then
+if test x$qtd != xyes; then
   echo $ECHO_N "${ECHO_T}out$ECHO_C"
 fi
-echo "${ECHO_T} debugger)"
+echo "${ECHO_T} Qt debugger)"
 echo
 echo "SDL support                   Version `$SDL_CONFIG --version`"
 echo "NASM support                  `nasm -v`"

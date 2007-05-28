@@ -6,7 +6,7 @@
 static QApplication *app = 0;
 
 extern "C" { void zstart(); }
-	
+
 class ZSNESThread : public QThread
 {
   public:

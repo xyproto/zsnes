@@ -25,11 +25,10 @@ dnl
 dnl AM_PATH_ZLIB([MINIMUM-VERSION, [ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
 dnl Tests for zlib, outputs ZLIB_VERSION, ZLIB_LIBS, and ZLIB_CFLAGS
 AC_DEFUN([AM_PATH_ZLIB],
-[dnl
-dnl
-dnl
+[
 AC_ARG_WITH(zlib-prefix,
-  [  --with-zlib-prefix=PFX  Prefix where zlib is installed (optional)],
+  AC_HELP_STRING([--with-zlib-prefix=PFX],
+    [Prefix where zlib is installed (optional)]),
   zlib_prefix="$withval",
   zlib_prefix="")
 min_zlib_version=ifelse([$1],,1.1.0,$1)
@@ -68,11 +67,9 @@ char* my_strdup (char *str)
 int main (int argc, char *argv[])
 {
   int major, minor, micro, zlib_major_version, zlib_minor_version, zlib_micro_version;
-
   char *zlibver, *tmp_version;
 
   zlibver = ZLIB_VERSION;
-
   FILE *fp = fopen("conf.zlibtest", "a");
   if ( fp ) {
     fprintf(fp, "%s", zlibver);
@@ -95,13 +92,8 @@ int main (int argc, char *argv[])
   if ((zlib_major_version > major) ||
      ((zlib_major_version == major) && (zlib_minor_version > minor)) ||
      ((zlib_major_version == major) && (zlib_minor_version == minor) && (zlib_micro_version >= micro)))
-  {
-    return 0;
-  }
-  else
-  {
-    return 1;
-  }
+  { return 0; }
+  else { return 1; }
 }
 ]])],
   with_zlib=yes,
@@ -141,10 +133,7 @@ dnl
 dnl AM_PATH_LIBPNG([MINIMUM-VERSION, [ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
 dnl Tests for libpng, outputs LIBPNG_VERSION, LIBPNG_LIBS, and LIBPNG_CFLAGS
 AC_DEFUN([AM_PATH_LIBPNG],
-[dnl
-dnl
-dnl
-
+[
 dnl Comment out this section, and the other labled parts to disable the user
 dnl having a choice about being able to disable libpng or not. Recommended
 dnl you use AC_MSG_ERROR(LIBPNG >= 1.0.0 is required) for the
@@ -152,13 +141,14 @@ dnl ACTION-IF-NOT-FOUND if you plan on disabling user choice.
 
 dnl <--- disable for no user choice part #1
 AC_ARG_ENABLE(libpng,
-  [  --disable-libpng        Build without libpng support ],
+  AC_HELP_STRING([--disable-libpng],[Build without libpng support]),
   ,
   enable_libpng=yes)
 dnl --->
 
 AC_ARG_WITH(libpng-prefix,
-  [  --with-libpng-prefix=PFX Prefix where libpng is installed (optional)],
+  AC_HELP_STRING([--with-libpng-prefix=PX],
+    [Prefix where libpng is installed (optional)]),
   libpng_prefix="$withval",
   libpng_prefix="")
 
@@ -224,16 +214,12 @@ int main (int argc, char *argv[])
     printf("\tdefine their version. Please upgrade if you are running an\n\told libpng... ");
     exit(1);
   }
+
   if ((libpng_major_version > major) ||
      ((libpng_major_version == major) && (libpng_minor_version > minor)) ||
      ((libpng_major_version == major) && (libpng_minor_version == minor) && (libpng_micro_version >= micro)))
-  {
-    return 0;
-  }
-  else
-  {
-    return 1;
-  }
+  { return 0; }
+  else { return 1; }
 }
   ]])],
   with_libpng=yes,
@@ -271,13 +257,102 @@ dnl -- End libpng autoconf macro
 
 dnl ----
 
+dnl -- Begin Qt autoconf macro
+AC_DEFUN([AM_CHECK_QT],
+[
+AC_MSG_CHECKING(for Qt4 libraries >= 4.1.1)
+AC_ARG_WITH(qt-path,
+  AC_HELP_STRING([--with-qt-path=PATH],[Path to Qt4 libraries]),
+  qtpath+="-L$withval",
+  qtpath="`pkg-config --silence-errors --libs-only-L 'QtCore QtGui >= 4.1.1'`")
+case x$qtpath in
+  x)
+    AC_MSG_ERROR(You need Qt libraries >= 4.1.1)
+    ;;
+  x-L)
+    AC_MSG_ERROR(You need Qt libraries >= 4.1.1)
+    ;;
+  *)
+    AC_MSG_RESULT(found)
+    ;;
+esac
+
+QT_CFLAGS="`pkg-config --silence-errors --cflags QtCore QtGui`"
+QT_LDFLAGS="$qtpath `pkg-config --silence-errors --libs-only-l QtCore QtGui`"
+
+AC_MSG_CHECKING(for functionnal Qt setup)
+
+cat > myqt.h << EOF
+#include <QObject>
+class Test : public QObject
+{
+Q_OBJECT
+public:
+  Test() {}
+  ~Test() {}
+public slots:
+  void receive() {}
+signals:
+  void send();
+};
+EOF
+
+cat > myqt.cpp << EOF
+#include "myqt.h"
+#include <QApplication>
+int main( int argc, char **argv )
+{
+  QApplication app( argc, argv );
+  Test t;
+  QObject::connect( &t, SIGNAL(send()), &t, SLOT(receive()) );
+}
+EOF
+
+bnv_try="moc myqt.h -o moc_myqt.cpp"
+AC_TRY_EVAL(bnv_try)
+if test x$ac_status != x0; then
+  rm -f myqt.cpp myqt.h
+  AC_MSG_RESULT(nope)
+  AC_MSG_ERROR(moc doesn't work)
+fi
+bnv_try="$CXX -c $QT_CFLAGS -o moc_myqt.o moc_myqt.cpp"
+AC_TRY_EVAL(bnv_try)
+if test x$ac_status != x0; then
+  rm -f moc_myqt.cpp myqt.cpp myqt.h
+  AC_MSG_RESULT(nope)
+  AC_MSG_ERROR(Couldn't compile moc output)
+fi
+bnv_try="$CXX -c $QT_CFLAGS -o myqt.o myqt.cpp"
+AC_TRY_EVAL(bnv_try)
+if test x$ac_status != x0; then
+  rm -f moc_myqt.cpp moc_myqt.o myqt.cpp myqt.h
+  AC_MSG_RESULT(nope)
+  AC_MSG_ERROR(Couldn't compile test source)
+fi
+bnv_try="$CXX $QT_CFLAGS $QT_LDFLAGS -o myqt myqt.o moc_myqt.o"
+AC_TRY_EVAL(bnv_try)
+if test x$ac_status != x0; then
+  rm -f moc_myqt.cpp moc_myqt.o myqt.cpp myqt.h myqt.o
+  AC_MSG_RESULT(nope)
+  AC_MSG_ERROR(Couldn't link against Qt)
+fi
+AC_MSG_RESULT(all fine)
+rm -f moc_myqt.cpp moc_myqt.o myqt.cpp myqt.h myqt.o myqt
+AC_SUBST(QT_CFLAGS)
+AC_SUBST(QT_LDFLAGS)
+])
+dnl -- End Qt autoconf macro
+
+dnl ----
+
 dnl -- Begin custom tools use
 dnl
 AC_DEFUN([AM_ARCH_DETECT],
 [
 AC_MSG_CHECKING(for cpu info)
 AC_ARG_ENABLE(cpucheck,
-  [  --disable-cpucheck      Do not try to autodetect cpu architecture ],
+  AC_HELP_STRING([--disable-cpucheck],
+    [Do not try to autodetect cpu architecture]),
   ,
   enable_cpucheck=yes)
 
@@ -290,14 +365,14 @@ int main()
   int check;
   system("$CC -O3 -o tools/archopt tools/archopt.c");
   check = system("tools/archopt > conf.archchk");
-  return((check) ? 1:0);
+  return((!!check));
 }
   ]])],
   cpu_test=found,
   cpu_test=failed,
   [AC_MSG_RESULT(cross-compiling)
   cpu_test=""
-  AC_MSG_WARN(You should use --target)])
+  AC_MSG_WARN(You should use --host=HOST)])
 
   if test x$cpu_test != x; then
     AC_MSG_RESULT($cpu_test)
