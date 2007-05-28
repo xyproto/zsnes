@@ -3,14 +3,25 @@
 #include "load.h"
 #include "ui.h"
 
+#include <setjmp.h>
+
 extern "C" { void zstart(); }
 
 class ZSNESThread : public QThread
 {
+  jmp_buf jump;
   public:
   void run()
   {
-    zstart();
+    if (!setjmp(jump))
+    {
+      zstart();
+    }
+  }
+
+  void done()
+  {
+    longjmp(jump, 1);
   }
 };
 
@@ -33,6 +44,7 @@ void debug_main()
     zthread.start();
     app.exec();
     QtDebugger::destroyQtDebugger();
+    zthread.wait();
     exit(app_exit_num);
   }
 }
@@ -44,6 +56,7 @@ void debug_exit(int exit_num)
   {
     app_exit_num = exit_num;
     qApp->quit();
+    zthread.done();
   }
   else
   {
