@@ -730,7 +730,7 @@ LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
       if (LOWORD(wParam) != WA_INACTIVE)
       {
         IsActivated = 1;
-		if (debugger) SetForegroundWindow(DebugWindowHandle);
+		if (debugger) { if (!IsWindowVisible(DebugWindowHandle)) ShowWindow(DebugWindowHandle, SW_SHOW);}
 
         if (FirstActivate == 0)
         {
@@ -752,7 +752,7 @@ LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         }
         CheckPriority();
         CheckScreenSaver();
-		SetForegroundWindow(hMainWindow);
+		SetForegroundWindow(hMainWindow); 
 
       }
       if (LOWORD(wParam) == WA_INACTIVE)
@@ -3309,13 +3309,11 @@ ASM_COMMAND(_top_mmx:)
 
 void DockDebugger()
 {
-   RECT MainWindowXY,DebugWindowXY;
+   RECT MainWindowXY;
    ZeroMemory(&MainWindowXY, sizeof(RECT));
-   ZeroMemory(&DebugWindowXY, sizeof(RECT));
    GetWindowRect(hMainWindow, &MainWindowXY);
    DebugWindowHandle = FindWindow(NULL ,"ZSNES Debugger");
-   GetWindowRect(DebugWindowHandle, &DebugWindowXY);
-   MoveWindow(DebugWindowHandle, MainWindowXY.right, MainWindowXY.top, DebugWindowXY.left, DebugWindowXY.bottom, TRUE);
+   SetWindowPos(DebugWindowHandle, HWND_TOP, MainWindowXY.right, MainWindowXY.top, NULL, NULL, SWP_NOSIZE);
 }
 
 }
