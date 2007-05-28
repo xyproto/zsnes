@@ -2,7 +2,12 @@
 #define UI_H
 
 #include <QDialog>
+
+#ifdef __UNIXSDL__ //I hate this hack -Nach
 #include "debugger/ui_debugger.h"
+#else
+#include "ui_debugger.h"
+#endif
 
 class DebuggerDialog : public QDialog
 {
