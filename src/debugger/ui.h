@@ -2,6 +2,7 @@
 #define UI_H
 
 #include <QMainWindow>
+#include <QCloseEvent>
 
 #ifdef __UNIXSDL__ //I hate this hack -Nach
 #include "debugger/ui_debugger.h"
@@ -20,6 +21,8 @@ class QtDebugger : public QMainWindow
 
   QtDebugger(QWidget *parent);
   ~QtDebugger();
+
+  void closeEvent(QCloseEvent *event);
 
   private slots:
 

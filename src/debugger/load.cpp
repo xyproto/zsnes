@@ -14,28 +14,25 @@ class ZSNESThread : public QThread
   }
 };
 
-static QApplication *app = 0;
+static bool debugger_running = false;
 static int app_exit_num = 0;
 static ZSNESThread zthread;
 
-
-
 void debug_main()
 {
-  if (!app)
+  if (!debugger_running)
   {
+    debugger_running = true;
+
     int argc = 1;
     char *argv[] = { "debug" };
-    app = new QApplication(argc, argv);
+    QApplication app(argc, argv);
 
     QtDebugger::showQtDebugger(0);
 
     zthread.start();
-    app->exec();
-    zthread.exit();
-    zthread.wait();
+    app.exec();
     QtDebugger::destroyQtDebugger();
-    delete app;
     exit(app_exit_num);
   }
 }
@@ -43,10 +40,10 @@ void debug_main()
 
 void debug_exit(int exit_num)
 {
-  if (app)
+  if (debugger_running)
   {
     app_exit_num = exit_num;
-    app->quit();
+    qApp->quit();
   }
   else
   {

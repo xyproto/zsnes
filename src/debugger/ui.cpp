@@ -1,3 +1,5 @@
+#include <QMessageBox>
+
 #include "ui.h"
 
 QtDebugger::QtDebugger(QWidget *parent) : QMainWindow(parent)
@@ -8,6 +10,13 @@ QtDebugger::QtDebugger(QWidget *parent) : QMainWindow(parent)
 QtDebugger::~QtDebugger()
 {
 
+}
+
+void QtDebugger::closeEvent(QCloseEvent *event)
+{
+  QMessageBox::information(this, tr("Wish to exit?"),
+                           tr("If you'd like to exit, exit from within ZSNES itself."));
+  event->ignore();
 }
 
 QtDebugger *QtDebugger::singleton = 0;
