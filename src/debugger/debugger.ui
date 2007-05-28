@@ -23,7 +23,7 @@
     <item>
      <widget class="QTabWidget" name="DebuggerTabs" >
       <property name="currentIndex" >
-       <number>0</number>
+       <number>4</number>
       </property>
       <widget class="QWidget" name="tab" >
        <attribute name="title" >
@@ -169,6 +169,11 @@
          </spacer>
         </item>
        </layout>
+      </widget>
+      <widget class="QWidget" name="tab_2" >
+       <attribute name="title" >
+        <string>System</string>
+       </attribute>
       </widget>
      </widget>
     </item>
