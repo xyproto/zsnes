@@ -61,6 +61,9 @@ DRESOBJ=${WIN_D}/zsnes.obj
 CROSS=no
 STRIP=-Ws -s
 
+QT_BASE=c:\qt
+
+
 ifeq (${ENV},dos)
   CC = gcc
   CPPC = gpp
@@ -145,6 +148,7 @@ ifeq (${DEBUG},yes)
   ASMFLAGSORIG=-DDEBUG -g
   EXE=zsnesd.exe
   STRIP=
+  MSVC=yes
 endif
 
 ifeq (${RELEASE},yes)
@@ -276,7 +280,7 @@ WINVIDOBJ=${VID_D}/sw_draw${OE} ${VID_D}/hq2x16${OE} ${VID_D}/hq2x32${OE}\
 ifeq (${QTD},yes)
   DEBUGGEROBJ=${DEBUGGER_D}/load${OE} ${DEBUGGER_D}/ui${OE} ${DEBUGGER_D}/moc_ui${OE}
   LIBS+= -lQtCore4 -lQtGui4
-  MSVCLIBS+= qtcore4.lib qtgui4.lib
+  MSVCLIBS+= -L${QT_BASE}\lib qtcore.lib qtgui.lib
 endif
 
 OBJS+=${WINOBJ} ${WINVIDOBJ} ${NETOBJ} ${DEBUGGEROBJ}
@@ -541,11 +545,11 @@ ${ZIP_D}/zpng${OE}: ${ZIP_D}/zpng.c numconv.h zpath.h ${JMA_D}/zsnesjma.h \
 	${ZIP_D}/zunzip.h
 
 ${DEBUGGER_D}/load${OE}:
-	make -C ${DEBUGGER_D} -f makefile.z CROSS=${CROSS} OE=${OE} load${OE}
+	make -C ${DEBUGGER_D} -f makefile.z CROSS=${CROSS} OE=${OE} MSVC=${MSVC} QT_BASE=${QT_BASE} load${OE}
 ${DEBUGGER_D}/ui${OE}:
-	make -C ${DEBUGGER_D} -f makefile.z CROSS=${CROSS} OE=${OE} ui${OE}
+	make -C ${DEBUGGER_D} -f makefile.z CROSS=${CROSS} OE=${OE} MSVC=${MSVC} QT_BASE=${QT_BASE} ui${OE}
 ${DEBUGGER_D}/moc_ui${OE}:
-	make -C ${DEBUGGER_D} -f makefile.z CROSS=${CROSS} OE=${OE} moc_ui${OE}
+	make -C ${DEBUGGER_D} -f makefile.z CROSS=${CROSS} OE=${OE} MSVC=${MSVC} QT_BASE=${QT_BASE} moc_ui${OE}
 
 else  #else no ENV specified
 	@echo Please specify which platform to compile for with PLATFORM=platform_name

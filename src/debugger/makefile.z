@@ -1,3 +1,24 @@
+ifeq ($(MSVC),yes)
+
+CFLAGS = -DUNICODE -DQT_LARGEFILE_SUPPORT -DWIN32 -D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_DEPRECATE
+CL = cl -I"$(QT_BASE)" -I"$(QT_BASE)\QtCore" -I"$(QT_BASE)\QtGui" $(CFLAGS)
+
+ui_debugger.h: debugger.ui
+	uic debugger.ui -o ui_debugger.h
+
+moc_ui.cpp: ui.h ui_debugger.h
+	moc $(CFLAGS) ui.h -o moc_ui.cpp
+
+load${OE}: load.cpp load.h ui.h ui_debugger.h
+	$(CL) load.cpp load.obj
+
+ui${OE}: ui.cpp ui.h ui_debugger.h
+	$(CL) ui.cpp ui.obj
+
+moc_ui${OE}: moc_ui.cpp ui.h ui_debugger.h
+	$(CL) moc_ui.cpp moc_ui.obj
+
+else
 QT_QMAKE=qmake
 QT_MAKE=make
 
@@ -21,3 +42,5 @@ moc_ui${OE}:
 clean:
 	${QT_QMAKE}
 	${QT_MAKE} clean
+
+endif
