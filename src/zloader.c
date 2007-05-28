@@ -62,6 +62,7 @@ extern unsigned char autoloadstate, autoloadmovie, MovieForcedLengthEnabled;
 extern char *STCart2;
 extern unsigned int NumInputDevices, MovieForcedLength;
 void zstart();
+void zexit(), zexit_error();
 #ifdef __WIN32__
 void InitDebugger();
 #endif
@@ -267,7 +268,7 @@ static void display_help()
 #endif
 */
 
-  exit(1);
+  zexit_error();
 }
 
 #define ConvertJoyMapHelp(a,b) if (b && (a == b)) { b += 0x81; }
@@ -561,7 +562,7 @@ static void handle_params(int argc, char *argv[])
             if ((pl1contrl = zatoi(argv[i])) >= NumInputDevices)
             {
               printf("Player 1 Input must be a value from 0 to %u!\n", NumInputDevices);
-              exit(1);
+              zexit_error();
             }
 
             ConvertJoyMap1();
@@ -573,7 +574,7 @@ static void handle_params(int argc, char *argv[])
             if ((pl2contrl = zatoi(argv[i])) > NumInputDevices)
             {
               printf("Player 2 Input must be a value from 0 to %u!\n", NumInputDevices);
-              exit(1);
+              zexit_error();
             }
 
             ConvertJoyMap2();
@@ -598,7 +599,7 @@ static void handle_params(int argc, char *argv[])
             {
               ForceRefreshRate = 0;
               puts("Refresh Rate must be a value 50 to 180!");
-              exit(1);
+              zexit_error();
             }
             else
             {
@@ -638,7 +639,7 @@ static void handle_params(int argc, char *argv[])
             if ((frameskip = zatoi(argv[i])+1) > 10)
             {
               puts("Frame Skip must be a value of 0 to 9!");
-              exit(1);
+              zexit_error();
             }
             break;
 
@@ -647,7 +648,7 @@ static void handle_params(int argc, char *argv[])
             if ((gammalevel = zatoi(argv[i])) > 15)
             {
               puts("Gamma Correction Level must be a value of 0 to 15!");
-              exit(1);
+              zexit_error();
             }
             break;
 
@@ -664,7 +665,7 @@ static void handle_params(int argc, char *argv[])
             if ((MusicRelVol = zatoi(argv[i])) > 100)
             {
               puts("Volume must be a value from 0 to 100!");
-              exit(1);
+              zexit_error();
             }
             break;
 
@@ -681,7 +682,7 @@ static void handle_params(int argc, char *argv[])
             if ((scanlines = zatoi(argv[i])) > 3)
             {
               puts("Scanlines must be a value 0 to 3!");
-              exit(1);
+              zexit_error();
             }
             break;
 
@@ -695,7 +696,7 @@ static void handle_params(int argc, char *argv[])
             if (per2exec > 150 || per2exec < 50)
             {
               puts("Percentage of instructions to execute must be a value from 50 to 150!");
-              exit(1);
+              zexit_error();
             }
             break;
 
@@ -704,7 +705,7 @@ static void handle_params(int argc, char *argv[])
             if ((SoundQuality = zatoi(argv[i])) > 6)
             {
               puts("Sound Sampling Rate must be a value of 0 to 6!");
-              exit(1);
+              zexit_error();
             }
             break;
 
@@ -726,7 +727,7 @@ static void handle_params(int argc, char *argv[])
             if ((cvidmode = zatoi(argv[i])) > VIDEO_MODE_COUNT)
             {
               puts("Invalid Video Mode!");
-              exit(1);
+              zexit_error();
             }
             break;
 
@@ -781,7 +782,7 @@ static void handle_params(int argc, char *argv[])
           else
           {
             puts("Audio driver selection invalid.");
-            exit(1);
+            zexit_error();
           }
         }
         #endif
@@ -810,7 +811,7 @@ static void handle_params(int argc, char *argv[])
           if ((joy_sensitivity = zatoi(argv[i])+1) > 32767)
           {
             puts("Joystick sensitivity must be a value of 0 to 32767!");
-            exit(1);
+            zexit_error();
           }
         }
         #endif
@@ -841,7 +842,7 @@ static void handle_params(int argc, char *argv[])
           if ((ZMVRawDump = zatoi(argv[i])) > 5)
           {
             puts("Movie mode must be a number 1 to 5");
-            exit(1);
+            zexit_error();
           }
         }
 
@@ -875,7 +876,7 @@ static void handle_params(int argc, char *argv[])
           if ((autoloadstate = zatoi(argv[i])+1) > 100)
           {
             puts("State load position must be a value of 0 to 99!");
-            exit(1);
+            zexit_error();
           }
         }
 
@@ -885,7 +886,7 @@ static void handle_params(int argc, char *argv[])
           if ((autoloadmovie = zatoi(argv[i])+1) > 10)
           {
             puts("Movie load position must be a value of 0 to 9!");
-            exit(1);
+            zexit_error();
           }
         }
 

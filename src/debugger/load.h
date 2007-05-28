@@ -6,8 +6,7 @@ extern "C" {
 #endif
 
 void debug_main();
-void debug_run();
-void debug_exit();
+void debug_exit(int);
 
 #ifdef __cplusplus
 }

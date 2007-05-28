@@ -29,6 +29,7 @@ extern "C"
 #include <stdio.h>
 #include <ddraw.h>
 #include "../cfg.h"
+  void zexit(), zexit_error();
 }
 
 #include "winlink.h"
@@ -223,7 +224,7 @@ int InitDirectDraw()
 
   if (!hMainWindow)
   {
-    exit(1);
+    zexit_error();
   }
 
   ReleaseDirectDraw();
@@ -496,7 +497,7 @@ int InitDirectDraw()
     NULL,
     "ZSNESw does not support 24bit color.\nPlease change your resolution to either 16bit or 32bit color",
     "Error", MB_OK);
-    exit(0);
+    zexit_error();
   }
 
   converta = (BitDepth == 16 && GBitMask != 0x07E0);

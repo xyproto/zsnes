@@ -34,14 +34,11 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "../cfg.h"
 #include "../input.h"
 
-#ifdef QT_DEBUGGER
-#include "../debugger/load.h"
-#endif
-
 #include <stdint.h>
 
 #define QueryPerformanceCounter(x) asm volatile("rdtsc" : "=a"(((unsigned int *)(x))[0]),"=d"(((unsigned int *)x)[1]))
 
+void zexit(), zexit_error();
 
 typedef enum { FALSE = 0, TRUE = 1 } BOOL;
 typedef enum vidstate_e { vid_null, vid_none, vid_soft, vid_gl } vidstate_t;
@@ -202,15 +199,6 @@ int Main_Proc()
 {
   SDL_Event event;
   unsigned int key;
-
-#ifdef QT_DEBUGGER
-  extern unsigned char debugger;
-
-  if (debugger)
-  {
-    debug_run();
-  }
-#endif
 
   while (SDL_PollEvent(&event))
   {
@@ -467,7 +455,7 @@ int Main_Proc()
         pressed[offset] = 0;
         break;
       case SDL_QUIT:
-        exit(0);
+        zexit();
         break;
 #ifndef __MACOSX__
 #ifdef __OPENGL__
@@ -1236,7 +1224,7 @@ void initwinvideo()
     /* Exit zsnes if SDL could not be initialized */
     if (sdl_state == vid_null)
     {
-      exit(0);
+      zexit_error();
     }
     else
     {

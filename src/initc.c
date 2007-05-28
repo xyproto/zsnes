@@ -41,6 +41,10 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "cpu/memtable.h"
 #include <stdint.h>
 
+#ifdef QT_DEBUGGER
+#include "debugger/load.h"
+#endif
+
 #define NUMCONV_FR4
 #include "numconv.h"
 
@@ -2876,8 +2880,36 @@ void init65816()
     }
 }
 
+extern unsigned char debugger;
+static bool zexit_called = false;
 void zexit()
 {
-  exit(0);
+  if (!zexit_called)
+  {
+    zexit_called = true;
+    if (debugger)
+    {
+      debug_exit(0);
+    }
+    else
+    {
+      exit(0);
+    }
+  }
 }
 
+void zexit_error()
+{
+  if (!zexit_called)
+  {
+    zexit_called = true;
+    if (debugger)
+    {
+      debug_exit(1);
+    }
+    else
+    {
+      exit(1);
+    }
+  }
+}

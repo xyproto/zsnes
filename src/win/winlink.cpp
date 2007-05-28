@@ -42,6 +42,7 @@ extern "C"
 #include "../cfg.h"
 #include "../input.h"
 #include "../zmovie.h"
+  void zexit(), zexit_error();
 }
 
 #include "winlink.h"
@@ -238,7 +239,7 @@ extern "C" void FreeDirectX()
   FreeLibrary(hM_dsound);
   FreeLibrary(hM_ddraw);
   FreeLibrary(hM_dinput8);
-  exit(0);
+  zexit();
 }
 
 extern "C" void DXLoadError()
@@ -2012,7 +2013,7 @@ extern "C"
 
       if (!RegisterWinClass())
       {
-        exit(1);
+        zexit_error();
       }
       X = (GetSystemMetrics(SM_CXSCREEN) - WindowWidth) / 2;
       Y = (GetSystemMetrics(SM_CYSCREEN) - WindowHeight) / 2;
@@ -2764,7 +2765,7 @@ ASM_COMMAND(_top_mmx:)
     }
     if (keys2[0x38] != 0 && keys2[0x3E] != 0)
     {
-      exit(0);
+      zexit();
     }
     if (keys2[0xB8] != 0 && keys2[0x1C] != 0 || keys2[0x38] != 0 && keys2[0x1C] != 0)
     {

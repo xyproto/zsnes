@@ -4,6 +4,7 @@
 #include "ui.h"
 
 static QApplication *app = 0;
+static int app_exit_num = 0;
 
 extern "C" { void zstart(); }
 
@@ -14,7 +15,7 @@ class ZSNESThread : public QThread
   {
     zstart();
   }
-};
+} zthread;
 
 void debug_main()
 {
@@ -26,31 +27,26 @@ void debug_main()
 
     DebuggerDialog::showDebuggerDialog(0);
 
-#ifdef Q_OS_WIN
-    ZSNESThread zthread;
     zthread.start();
     app->exec();
-    zthread.terminate();
-    exit(0);
-#endif
-
-    atexit(debug_exit);
-  }
-}
-
-void debug_run()
-{
-  if (app)
-  {
-    QApplication::processEvents();
-  }
-}
-
-void debug_exit()
-{
-  if (app)
-  {
+    zthread.exit();
+    zthread.wait();
     DebuggerDialog::destroyDebuggerDialog();
-    app->deleteLater();
+    delete app;
+    exit(app_exit_num);
+  }
+}
+
+
+void debug_exit(int exit_num)
+{
+  if (app)
+  {
+    app_exit_num = exit_num;
+    app->quit();
+  }
+  else
+  {
+    exit(exit_num);
   }
 }
