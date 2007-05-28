@@ -3,9 +3,6 @@
 #include "load.h"
 #include "ui.h"
 
-static QApplication *app = 0;
-static int app_exit_num = 0;
-
 extern "C" { void zstart(); }
 
 class ZSNESThread : public QThread
@@ -15,7 +12,13 @@ class ZSNESThread : public QThread
   {
     zstart();
   }
-} zthread;
+};
+
+static QApplication *app = 0;
+static int app_exit_num = 0;
+static ZSNESThread zthread;
+
+
 
 void debug_main()
 {
