@@ -2,7 +2,7 @@
 #define UI_H
 
 #include <QDialog>
-#include "ui_debugger.h"
+#include "debugger/ui_debugger.h"
 
 class DebuggerDialog : public QDialog
 {
