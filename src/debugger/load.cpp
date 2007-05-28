@@ -43,8 +43,8 @@ void debug_main()
 
     zthread.start();
     app.exec();
-    QtDebugger::destroyQtDebugger();
     zthread.wait();
+    QtDebugger::destroyQtDebugger();
     exit(app_exit_num);
   }
 }
