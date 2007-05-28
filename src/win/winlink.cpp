@@ -3315,7 +3315,7 @@ void DockDebugger()
    GetWindowRect(hMainWindow, &MainWindowXY);
    DebugWindowHandle = FindWindow(NULL ,"ZSNES Debugger");
    GetWindowRect(DebugWindowHandle, &DebugWindowXY);
-   MoveWindow(DebugWindowHandle, MainWindowXY.left+WindowWidth, MainWindowXY.top, DebugWindowXY.right, DebugWindowXY.bottom, TRUE);
+   MoveWindow(DebugWindowHandle, MainWindowXY.right, MainWindowXY.top, DebugWindowXY.left, DebugWindowXY.bottom, TRUE);
 }
 
 }
