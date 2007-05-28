@@ -2880,8 +2880,14 @@ void init65816()
     }
 }
 
+
+#ifndef QT_DEBUGGER
+#define debug_exit(n) exit(n)
+#endif
+
 extern unsigned char debugger;
 static bool zexit_called = false;
+
 void zexit()
 {
   if (!zexit_called)
