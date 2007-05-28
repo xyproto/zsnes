@@ -1,9 +1,6 @@
 <ui version="4.0" >
  <class>Debugger</class>
  <widget class="QDialog" name="Debugger" >
-  <property name="windowModality" >
-   <enum>Qt::ApplicationModal</enum>
-  </property>
   <property name="geometry" >
    <rect>
     <x>0</x>
@@ -29,7 +26,7 @@
      </property>
      <widget class="QWidget" name="tab" >
       <attribute name="title" >
-       <string>5A22</string>
+       <string>Combined</string>
       </attribute>
       <layout class="QVBoxLayout" >
        <property name="margin" >
@@ -39,7 +36,7 @@
         <number>6</number>
        </property>
        <item>
-        <widget class="QTextEdit" name="textEdit" />
+        <widget class="QTextEdit" name="combinedTextEdit" />
        </item>
        <item>
         <spacer>
@@ -56,7 +53,36 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab" >
+     <widget class="QWidget" name="tab2" >
+      <attribute name="title" >
+       <string>5A22</string>
+      </attribute>
+      <layout class="QVBoxLayout" >
+       <property name="margin" >
+        <number>8</number>
+       </property>
+       <property name="spacing" >
+        <number>6</number>
+       </property>
+       <item>
+        <widget class="QTextEdit" name="cpuTextEdit" />
+       </item>
+       <item>
+        <spacer>
+         <property name="orientation" >
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" >
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab3" >
       <attribute name="title" >
        <string>SPC700</string>
       </attribute>
@@ -68,7 +94,7 @@
         <number>6</number>
        </property>
        <item>
-        <widget class="QTextEdit" name="textEdit_2" />
+        <widget class="QTextEdit" name="spcTextEdit" />
        </item>
        <item>
         <spacer>
@@ -85,7 +111,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab" >
+     <widget class="QWidget" name="tab4" >
       <attribute name="title" >
        <string>Super FX</string>
       </attribute>
@@ -97,7 +123,7 @@
         <number>6</number>
        </property>
        <item>
-        <widget class="QTextEdit" name="textEdit_3" />
+        <widget class="QTextEdit" name="sfxTextEdit" />
        </item>
        <item>
         <spacer>
@@ -114,7 +140,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab" >
+     <widget class="QWidget" name="tab5" >
       <attribute name="title" >
        <string>SA-1</string>
       </attribute>
@@ -126,36 +152,7 @@
         <number>6</number>
        </property>
        <item>
-        <widget class="QTextEdit" name="textEdit_4" />
-       </item>
-       <item>
-        <spacer>
-         <property name="orientation" >
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" >
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="tab" >
-      <attribute name="title" >
-       <string>Combined</string>
-      </attribute>
-      <layout class="QVBoxLayout" >
-       <property name="margin" >
-        <number>8</number>
-       </property>
-       <property name="spacing" >
-        <number>6</number>
-       </property>
-       <item>
-        <widget class="QTextEdit" name="textEdit" />
+        <widget class="QTextEdit" name="sa1TextEdit" />
        </item>
        <item>
         <spacer>
