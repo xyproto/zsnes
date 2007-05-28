@@ -1749,6 +1749,7 @@ extern "C"
   WINDOWPLACEMENT wndpl;
   RECT rc1;
   DWORD newmode = 0;
+  HWND DebugWindowHandle;
 
   void initwinvideo()
   {
@@ -2059,7 +2060,16 @@ extern "C"
       InitSound();
       TestJoy();
 
-      //if (debugger) InitDebugger(); // Start debugger such that it is at this point
+      if (debugger)
+	  {
+		 RECT MainWindowXY,DebugWindowXY;
+		 ZeroMemory(&MainWindowXY, sizeof(RECT));
+		 ZeroMemory(&DebugWindowXY, sizeof(RECT));
+		 GetWindowRect(hMainWindow, &MainWindowXY);
+		 DebugWindowHandle = FindWindow(NULL ,"ZSNES Debugger");
+		 GetWindowRect(DebugWindowHandle, &DebugWindowXY);
+		 MoveWindow(DebugWindowHandle, MainWindowXY.left+WindowWidth, MainWindowXY.top, DebugWindowXY.right, DebugWindowXY.bottom, TRUE);
+	  }
     }
 
     if (FirstVid == 1)
