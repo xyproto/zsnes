@@ -48,5 +48,9 @@ void debug_run()
 
 void debug_exit()
 {
-  DebuggerDialog::destroyDebuggerDialog();
+  if (app)
+  {
+    DebuggerDialog::destroyDebuggerDialog();
+    app->deleteLater();
+  }
 }
