@@ -61,7 +61,7 @@ DRESOBJ=${WIN_D}/zsnes.obj
 CROSS=no
 STRIP=-Ws -s
 
-QT_BASE=c:\qt
+QT_BASE=c:\qt\4.2.3
 
 
 ifeq (${ENV},dos)
@@ -85,11 +85,12 @@ endif
 
 ifeq (${ENV},msvc)
   CFLAGONLY=
-  CFLAGSORIG=/nologo /c /Ox /GS- /GA /MD /Wp64 /Iwin\vc_head /DNDEBUG
+  CFLAGSORIG=/nologo /c /Ox /GS- /GA /MD /Wp64 /Iwin\vc_head /DNDEBUG /D_CRT_SECURE_NO_DEPRECATE /D_CRT_NONSTDC_NO_DEPRECATE
   CXXFLAGSORIG=/Zc:forScope-
   MSVCLIBS=zlib.lib libpng.lib wsock32.lib user32.lib gdi32.lib shfolder.lib shell32.lib winmm.lib dinput8.lib dxguid.lib opengl32.lib glu32.lib
   DRESOBJ=${WIN_D}/zsnes.res
   OS=__WIN32__
+  QT_BASE=c:\qt
 endif
 
 ifeq (${ENV},dos-cross)
@@ -106,6 +107,7 @@ ifeq (${ENV},win32-cross)
   OS=__WIN32__
   CROSS=yes
   OBJFIX=objfix
+  QT_BASE=/mnt/C/Qt/4.2.3
 endif
 
 ifeq (${CROSS},no)
@@ -148,7 +150,6 @@ ifeq (${DEBUG},yes)
   ASMFLAGSORIG=-DDEBUG -g
   EXE=zsnesd.exe
   STRIP=
-  MSVC=yes
 endif
 
 ifeq (${RELEASE},yes)
@@ -278,6 +279,7 @@ WINVIDOBJ=${VID_D}/sw_draw${OE} ${VID_D}/hq2x16${OE} ${VID_D}/hq2x32${OE}\
 	${VID_D}/ntsc${OE}
 
 ifeq (${QTD},yes)
+  CXXFLAGS+=-I"$(QT_BASE)${SLASH}include" -I"$(QT_BASE)${SLASH}include${SLASH}QtCore" -I"$(QT_BASE)${SLASH}include${SLASH}QtGui" -DWIN32
   DEBUGGEROBJ=${DEBUGGER_D}/load${OE} ${DEBUGGER_D}/ui${OE} ${DEBUGGER_D}/moc_ui${OE}
   LIBS+= -lQtCore4 -lQtGui4
   MSVCLIBS+= ${QT_BASE}${SLASH}lib${SLASH}qtcore.lib ${QT_BASE}${SLASH}lib${SLASH}qtgui.lib advapi32.lib imm32.lib winspool.lib comdlg32.lib
@@ -288,7 +290,7 @@ endif
 
 DELETEOBJS=${OBJS}
 
-.SUFFIXES: .c .cpp .asm .psr
+.SUFFIXES: .c .cpp .asm .psr .ui .h
 
 ifneq (${ENV},msvc)
 %${OE}: %.c
@@ -319,6 +321,11 @@ ifneq (${ENV},msvc)
 else
 	.${SLASH}parsegen -D${OS} -compile -flags "${CFLAGS}" -cheader $(patsubst %${OE},%.h,$@) -fname $(notdir $(patsubst %${OE},%,$@)) $@ $<
 endif
+
+ui_%.h: %.ui
+	uic -o $@ $<
+moc_%.cpp: %.h
+	moc -o $@ $<
 
 ALL: zsnes
 	${DELETECOMMAND} version${OE}
@@ -544,12 +551,11 @@ ${ZIP_D}/unzip${OE}: ${ZIP_D}/unzip.c ${ZIP_D}/zunzip.h
 ${ZIP_D}/zpng${OE}: ${ZIP_D}/zpng.c numconv.h zpath.h ${JMA_D}/zsnesjma.h \
 	${ZIP_D}/zunzip.h
 
-${DEBUGGER_D}/load${OE}:
-	make -C ${DEBUGGER_D} -f makefile.z CROSS=${CROSS} OE=${OE} MSVC=${MSVC} QT_BASE=${QT_BASE} load${OE}
-${DEBUGGER_D}/ui${OE}:
-	make -C ${DEBUGGER_D} -f makefile.z CROSS=${CROSS} OE=${OE} MSVC=${MSVC} QT_BASE=${QT_BASE} ui${OE}
-${DEBUGGER_D}/moc_ui${OE}:
-	make -C ${DEBUGGER_D} -f makefile.z CROSS=${CROSS} OE=${OE} MSVC=${MSVC} QT_BASE=${QT_BASE} moc_ui${OE}
+${DEBUGGER_D}/load${OE}: ${DEBUGGER_D}/load.cpp ${DEBUGGER_D}/load.h \
+	${DEBUGGER_D}/ui.h ${DEBUGGER_D}/ui_debugger.h
+${DEBUGGER_D}/moc_ui${OE}: ${DEBUGGER_D}/moc_ui.cpp ${DEBUGGER_D}/ui.h
+${DEBUGGER_D}/moc_ui.cpp: ${DEBUGGER_D}/ui.h
+${DEBUGGER_D}/ui${OE}: ${DEBUGGER_D}/ui.cpp ${DEBUGGER_D}/ui.h ${DEBUGGER_D}/ui_debugger.h
 
 else  #else no ENV specified
 	@echo Please specify which platform to compile for with PLATFORM=platform_name
@@ -567,9 +573,9 @@ ifneq (${ENV},)
 	${DELPRE} ${DOS_D}${SLASH}*${OE}${SEP} ${WIN_D}${SLASH}*${OE}${DELSUF}
 	${DELPRE} ${CHIP_D}${SLASH}*${OE}${SEP} ${VID_D}${SLASH}*${OE}${DELSUF}
 	${DELPRE} ${SPC_D}${SLASH}*${OE}${DELSUF}
-ifeq (${QTD},yes)
-	make -C ${DEBUGGER_D} -f makefile.z CROSS=${CROSS} OE=${OE} clean
-endif
+	${DELPRE} ${DEBUGGER_D}${SLASH}*${OE}${DELSUF}
+	${DELPRE} ${DEBUGGER_D}${SLASH}ui_*.h${DELSUF}
+	${DELPRE} ${DEBUGGER_D}${SLASH}moc_*.cpp${DELSUF}
 else
 	@echo Please specify which platform to clean for with PLATFORM=platform_name
 endif
