@@ -1,7 +1,7 @@
 #ifndef UI_H
 #define UI_H
 
-#include <QDialog>
+#include <QMainWindow>
 
 #ifdef __UNIXSDL__ //I hate this hack -Nach
 #include "debugger/ui_debugger.h"
@@ -9,23 +9,23 @@
 #include "ui_debugger.h"
 #endif
 
-class DebuggerDialog : public QDialog
+class QtDebugger : public QMainWindow
 {
   Q_OBJECT
 
   private:
   Ui::Debugger ui;
 
-  static DebuggerDialog *singleton;
+  static QtDebugger *singleton;
 
-  DebuggerDialog(QWidget *parent);
-  ~DebuggerDialog();
+  QtDebugger(QWidget *parent);
+  ~QtDebugger();
 
   private slots:
 
   public:
-  static void showDebuggerDialog(QWidget *parent);
-  static void destroyDebuggerDialog();
+  static void showQtDebugger(QWidget *parent);
+  static void destroyQtDebugger();
 };
 
 #endif

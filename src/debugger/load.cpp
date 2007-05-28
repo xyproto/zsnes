@@ -28,13 +28,13 @@ void debug_main()
     char *argv[] = { "debug" };
     app = new QApplication(argc, argv);
 
-    DebuggerDialog::showDebuggerDialog(0);
+    QtDebugger::showQtDebugger(0);
 
     zthread.start();
     app->exec();
     zthread.exit();
     zthread.wait();
-    DebuggerDialog::destroyDebuggerDialog();
+    QtDebugger::destroyQtDebugger();
     delete app;
     exit(app_exit_num);
   }

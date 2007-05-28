@@ -1,27 +1,27 @@
 #include "ui.h"
 
-DebuggerDialog::DebuggerDialog(QWidget *parent) : QDialog(parent)
+QtDebugger::QtDebugger(QWidget *parent) : QMainWindow(parent)
 {
   ui.setupUi(this);
 }
 
-DebuggerDialog::~DebuggerDialog()
+QtDebugger::~QtDebugger()
 {
 
 }
 
-DebuggerDialog *DebuggerDialog::singleton = 0;
+QtDebugger *QtDebugger::singleton = 0;
 
-void DebuggerDialog::showDebuggerDialog(QWidget *parent)
+void QtDebugger::showQtDebugger(QWidget *parent)
 {
   if (!singleton)
   {
-    singleton = new DebuggerDialog(parent);
+    singleton = new QtDebugger(parent);
   }
   singleton->show();
 }
 
-void DebuggerDialog::destroyDebuggerDialog()
+void QtDebugger::destroyQtDebugger()
 {
   if (singleton)
   {
