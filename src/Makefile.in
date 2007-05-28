@@ -92,7 +92,7 @@ Z_QOBJS=$(DEBUG_QO)
 Z_OBJS=$(Z_AOBJS) $(Z_COBJS)
 
 .PHONY: default main tools all install clean cclean tclean distclean
-.SUFFIXES: .asm .c .cpp .psr .ui
+.SUFFIXES: .asm .c .cpp .psr .ui .h
 
 %.o: %.asm
 	@NASMPATH@ @NFLAGS@ -o $@ $<
@@ -104,6 +104,8 @@ Z_OBJS=$(Z_AOBJS) $(Z_COBJS)
 	./$(PSR) @PSRFLAGS@ -gcc @CC@ -compile -flags "@CFLAGS@ -O1" -cheader $*.h -fname $* $*.o $<
 ui_%.h: %.ui
 	uic -o $@ $<
+moc_%.cpp: %.h
+	moc -o $@ $<
 
 default: main
 all: main tools
@@ -113,9 +115,6 @@ main: makefile.dep $(Z_QOBJS) $(Z_OBJS)
 
 $(PSR): parsegen.cpp
 	@CXX@ @CXXFLAGS@ -o $@ $< -lz
-$(DEBUG_D)/moc_ui.cpp: $(DEBUG_D)/ui.h debugger/ui_debugger.h
-	moc -o $@ $(DEBUG_D)/ui.h
-
 
 TOOLSEXE=$(TOOL_D)/archopt $(TOOL_D)/cutrtype $(TOOL_D)/extraext\
 	$(TOOL_D)/macroll $(TOOL_D)/minwhite $(TOOL_D)/nreplace\
