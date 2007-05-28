@@ -29,9 +29,9 @@ void debug_main()
 #ifdef Q_OS_WIN
     ZSNESThread zthread;
     zthread.start();
-	app->exec();
-	zthread.terminate();
-	exit(0);
+    app->exec();
+    zthread.terminate();
+    exit(0);
 #endif
 
     atexit(debug_exit);
@@ -48,4 +48,5 @@ void debug_run()
 
 void debug_exit()
 {
+  DebuggerDialog::destroyDebuggerDialog();
 }

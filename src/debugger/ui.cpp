@@ -20,3 +20,12 @@ void DebuggerDialog::showDebuggerDialog(QWidget *parent)
   }
   singleton->show();
 }
+
+void DebuggerDialog::destroyDebuggerDialog()
+{
+  if (singleton)
+  {
+    delete singleton;
+    singleton = 0;
+  }
+}

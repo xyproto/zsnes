@@ -25,6 +25,7 @@ class DebuggerDialog : public QDialog
 
   public:
   static void showDebuggerDialog(QWidget *parent);
+  static void destroyDebuggerDialog();
 };
 
 #endif
