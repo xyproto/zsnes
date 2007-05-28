@@ -135,6 +135,20 @@ void dependency_calculate_c(const char *filename)
   }
 }
 
+void dependency_calculate_moc(const char *filename)
+{
+  const char *p1 = strstr(filename, "moc_");
+  const char *p2 = strrchr(filename, '.');
+  string moc(filename, p2-filename);
+  string dir(filename, p1-filename);
+  p1 += strlen("moc_");
+  string base(p1, p2-p1);
+  moc += ".cpp";
+
+  cout << filename << ": " << moc << " " << dir << base << ".h\n";
+  cout << moc << ": " << dir << base << ".h\n";
+}
+
 void dependency_calculate_asm(const char *filename)
 {
   string command = nasm + " " + nflags + " -M " + filename;
@@ -152,7 +166,11 @@ void dependency_calculate_psr(const char *filename)
 
 void dependency_calculate(const char *filename, struct stat& stat_buffer)
 {
-  if (extension_match(filename, ".asm"))
+  if (strstr(filename, "moc_"))
+  {
+    dependency_calculate_moc(filename);
+  }
+  else if (extension_match(filename, ".asm"))
   {
     dependency_calculate_asm(filename);
   }

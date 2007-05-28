@@ -111,7 +111,7 @@ main: makefile.dep $(Z_QOBJS) $(Z_OBJS)
 
 $(PSR): parsegen.cpp
 	@CXX@ @CXXFLAGS@ -o $@ $< -lz
-$(DEBUG_D)/moc_ui.cpp: $(DEBUG_D)/ui.h
+$(DEBUG_D)/moc_ui.cpp: $(DEBUG_D)/ui.h debugger/ui_debugger.h
 	moc -o $@ $(DEBUG_D)/ui.h
 $(DEBUG_D)/ui_debugger.h: $(DEBUG_D)/debugger.ui
 	uic -o $@ $(DEBUG_D)/debugger.ui
