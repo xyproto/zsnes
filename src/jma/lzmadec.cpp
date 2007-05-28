@@ -120,7 +120,7 @@ HRESULT CDecoder::Init(ISequentialInStream *anInStream,
 
 HRESULT CDecoder::CodeReal(ISequentialInStream *anInStream,
     ISequentialOutStream *anOutStream,
-    const UINT64 *anInSize, const UINT64 *anOutSize)
+    const UINT64 *, const UINT64 *anOutSize)
 {
   if (anOutSize == NULL)
     return E_INVALIDARG;

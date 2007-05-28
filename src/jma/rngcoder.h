@@ -57,7 +57,7 @@ public:
     return (m_Code) / ( m_Range /= aTotal);
   }
 
-  void Decode(UINT32 aStart, UINT32 aSize, UINT32 aTotal)
+  void Decode(UINT32 aStart, UINT32 aSize, UINT32)
   {
     m_Code -= aStart * m_Range;
     m_Range *= aSize;
