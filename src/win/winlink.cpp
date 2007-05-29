@@ -48,7 +48,7 @@ extern "C"
 #include "winlink.h"
 
 #ifdef QT_DEBUGGER
-#include "debugger/load.h"
+#include "../debugger/load.h"
 #endif
 
 
