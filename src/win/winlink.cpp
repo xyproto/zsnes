@@ -47,6 +47,10 @@ extern "C"
 
 #include "winlink.h"
 
+#ifdef QT_DEBUGGER
+#include "debugger/load.h"
+#endif
+
 
 /*
 December 17 2004 -Nach
@@ -550,6 +554,10 @@ LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
   static bool shiftpr;
   bool accept;
   int vkeyval = 0;
+
+#ifdef QT_DEBUGGER
+  if (debugger_quit) { debug_exit(0); }
+#endif
 
   switch (uMsg)
   {
@@ -3307,14 +3315,14 @@ ASM_COMMAND(_top_mmx:)
     }
   }
 
-void DockDebugger()
-{
-   RECT MainWindowXY;
-   ZeroMemory(&MainWindowXY, sizeof(RECT));
-   GetWindowRect(hMainWindow, &MainWindowXY);
-   DebugWindowHandle = FindWindow(NULL ,"ZSNES Debugger");
-   SetWindowPos(DebugWindowHandle, HWND_TOP, MainWindowXY.right, MainWindowXY.top, NULL, NULL, SWP_NOSIZE);
-}
+  void DockDebugger()
+  {
+    RECT MainWindowXY;
+    ZeroMemory(&MainWindowXY, sizeof(RECT));
+    GetWindowRect(hMainWindow, &MainWindowXY);
+    DebugWindowHandle = FindWindow(NULL ,"ZSNES Debugger");
+    SetWindowPos(DebugWindowHandle, HWND_TOP, MainWindowXY.right, MainWindowXY.top, 0, 0, SWP_NOSIZE);
+  }
 
 }
 

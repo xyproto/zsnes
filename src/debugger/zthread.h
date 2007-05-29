@@ -19,36 +19,27 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include <QMessageBox>
+#ifndef ZTHREAD_H
+#define ZTHREAD_H
 
-#include "ui.h"
+#include <QThread>
+#include <setjmp.h>
 
-QtDebugger::QtDebugger(QWidget *parent) : QMainWindow(parent)
+class ZSNESThread : public QThread
 {
-  ui.setupUi(this);
-}
+  Q_OBJECT
 
-QtDebugger::~QtDebugger()
-{
+  private:
+  bool running;
+  jmp_buf jump;
 
-}
+  public:
+  ZSNESThread();
+  void run();
+  void done();
 
-QtDebugger *QtDebugger::singleton = 0;
+  public slots:
+  void prepare_close();
+};
 
-void QtDebugger::showQtDebugger(QWidget *parent)
-{
-  if (!singleton)
-  {
-    singleton = new QtDebugger(parent);
-  }
-  singleton->show();
-}
-
-void QtDebugger::destroyQtDebugger()
-{
-  if (singleton)
-  {
-    delete singleton;
-    singleton = 0;
-  }
-}
+#endif

@@ -280,7 +280,7 @@ WINVIDOBJ=${VID_D}/sw_draw${OE} ${VID_D}/hq2x16${OE} ${VID_D}/hq2x32${OE}\
 
 ifeq (${QTD},yes)
   CXXFLAGS+=-I"$(QT_BASE)${SLASH}include" -I"$(QT_BASE)${SLASH}include${SLASH}QtCore" -I"$(QT_BASE)${SLASH}include${SLASH}QtGui" -DWIN32
-  DEBUGGEROBJ=${DEBUGGER_D}/load${OE} ${DEBUGGER_D}/ui${OE} ${DEBUGGER_D}/moc_ui${OE}
+  DEBUGGEROBJ=${DEBUGGER_D}/load${OE} ${DEBUGGER_D}/ui${OE} ${DEBUGGER_D}/moc_ui${OE} ${DEBUGGER_D}/moc_zthread${OE} ${DEBUGGER_D}/zthread${OE}
   LIBS+= -lQtCore4 -lQtGui4
   MSVCLIBS+= ${QT_BASE}${SLASH}lib${SLASH}qtcore.lib ${QT_BASE}${SLASH}lib${SLASH}qtgui.lib advapi32.lib imm32.lib winspool.lib comdlg32.lib
 endif
@@ -521,7 +521,8 @@ ${WIN_D}/lib${OE}: ${WIN_D}/lib.c zpath.h ${JMA_D}/zsnesjma.h \
 	${WIN_D}/lib.h ${ZIP_D}/zunzip.h
 ${WIN_D}/safelib${OE}: ${WIN_D}/safelib.c argv.h ${WIN_D}/safelib.h
 ${WIN_D}/winintrf${OE}: ${WIN_D}/winintrf.asm macros.mac
-${WIN_D}/winlink${OE}: ${WIN_D}/winlink.cpp ${WIN_D}/winlink.h ${WIN_D}/gl_draw.h cfg${OE} input${OE} ${WIN_D}/resource.h
+${WIN_D}/winlink${OE}: ${WIN_D}/winlink.cpp ${WIN_D}/winlink.h ${WIN_D}/gl_draw.h cfg${OE} \
+	input${OE} ${WIN_D}/resource.h ${DEBUGGER_D}/load.h
 ${WIN_D}/dx_ddraw${OE}: ${WIN_D}/dx_ddraw.cpp ${WIN_D}/winlink.h
 ${WIN_D}/gl_draw${OE}: ${WIN_D}/gl_draw.c ${WIN_D}/winlink.h ${WIN_D}/gl_draw.h cfg${OE}
 ifeq (${ENV},msvc)
@@ -552,10 +553,13 @@ ${ZIP_D}/zpng${OE}: ${ZIP_D}/zpng.c numconv.h zpath.h ${JMA_D}/zsnesjma.h \
 	${ZIP_D}/zunzip.h
 
 ${DEBUGGER_D}/load${OE}: ${DEBUGGER_D}/load.cpp ${DEBUGGER_D}/load.h \
-	${DEBUGGER_D}/ui.h ${DEBUGGER_D}/ui_debugger.h
+	${DEBUGGER_D}/ui.h ${DEBUGGER_D}/ui_debugger.h ${DEBUGGER_D}/zthread.h
 ${DEBUGGER_D}/moc_ui${OE}: ${DEBUGGER_D}/moc_ui.cpp ${DEBUGGER_D}/ui.h
 ${DEBUGGER_D}/moc_ui.cpp: ${DEBUGGER_D}/ui.h
+${DEBUGGER_D}/moc_zthread${OE}: ${DEBUGGER_D}/moc_zthread.cpp ${DEBUGGER_D}/zthread.h
+${DEBUGGER_D}/moc_zthread.cpp: ${DEBUGGER_D}/zthread.h
 ${DEBUGGER_D}/ui${OE}: ${DEBUGGER_D}/ui.cpp ${DEBUGGER_D}/ui.h ${DEBUGGER_D}/ui_debugger.h
+${DEBUGGER_D}/zthread.cpp${OE}: ${DEBUGGER_D}/load.h ${DEBUGGER_D}/zthread.h
 
 else  #else no ENV specified
 	@echo Please specify which platform to compile for with PLATFORM=platform_name

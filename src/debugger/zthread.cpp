@@ -19,36 +19,40 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include <QMessageBox>
+#include "zthread.h"
+#include "load.h"
 
-#include "ui.h"
+extern "C" { void zstart(); }
 
-QtDebugger::QtDebugger(QWidget *parent) : QMainWindow(parent)
+ZSNESThread::ZSNESThread() : running(false)
 {
-  ui.setupUi(this);
 }
 
-QtDebugger::~QtDebugger()
+void ZSNESThread::run()
 {
-
-}
-
-QtDebugger *QtDebugger::singleton = 0;
-
-void QtDebugger::showQtDebugger(QWidget *parent)
-{
-  if (!singleton)
+  if (!running)
   {
-    singleton = new QtDebugger(parent);
+    if (!setjmp(jump))
+    {
+      running = true;
+      zstart();
+    }
   }
-  singleton->show();
 }
 
-void QtDebugger::destroyQtDebugger()
+void ZSNESThread::done()
 {
-  if (singleton)
+  if (running)
   {
-    delete singleton;
-    singleton = 0;
+    running = false;
+    longjmp(jump, 1);
+  }
+}
+
+void ZSNESThread::prepare_close()
+{
+  if (running)
+  {
+    debugger_quit = true;
   }
 }

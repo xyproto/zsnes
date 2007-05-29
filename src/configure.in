@@ -211,8 +211,8 @@ else
   CFLAGS+=" -DNO_DEBUGGER -DQT_DEBUGGER"
   NFLAGS+=" -DNO_DEBUGGER -DQT_DEBUGGER"
   PSRFLAGS+=" -DNO_DEBUGGER -DQT_DEBUGGER"
-  DEBUG_CF="\$(DEBUG_D)/load.o \$(DEBUG_D)/moc_ui.o \$(DEBUG_D)/ui.o"
-  DEBUG_QF="\$(DEBUG_D)/moc_ui.cpp \$(DEBUG_D)/ui_debugger.h"
+  DEBUG_CF="\$(DEBUG_D)/load.o \$(DEBUG_D)/moc_ui.o \$(DEBUG_D)/moc_zthread.o \$(DEBUG_D)/ui.o \$(DEBUG_D)/zthread.o"
+  DEBUG_QF="\$(DEBUG_D)/moc_ui.cpp \$(DEBUG_D)/moc_zthread.cpp \$(DEBUG_D)/ui_debugger.h"
   AM_CHECK_QT()
 fi
 
