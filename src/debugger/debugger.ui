@@ -199,9 +199,9 @@
        </spacer>
       </item>
       <item>
-       <widget class="QPushButton" name="okButton" >
+       <widget class="QPushButton" name="pauseButton" >
         <property name="text" >
-         <string>OK</string>
+         <string>Toggle Pause</string>
         </property>
         <property name="autoDefault" >
          <bool>false</bool>

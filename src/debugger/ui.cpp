@@ -52,3 +52,11 @@ void QtDebugger::destroyQtDebugger()
     singleton = 0;
   }
 }
+
+extern "C" { extern unsigned char EMUPause; }
+
+void QtDebugger::on_pauseButton_clicked()
+{
+  EMUPause ^= 1;
+}
+

@@ -44,6 +44,7 @@ class QtDebugger : public QMainWindow
   ~QtDebugger();
 
   private slots:
+  void on_pauseButton_clicked();
 
   public:
   static void showQtDebugger(QWidget *parent);
