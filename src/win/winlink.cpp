@@ -760,7 +760,7 @@ LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         }
         CheckPriority();
         CheckScreenSaver();
-		SetForegroundWindow(hMainWindow); 
+		SetForegroundWindow(hMainWindow);
 
       }
       if (LOWORD(wParam) == WA_INACTIVE)
