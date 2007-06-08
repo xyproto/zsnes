@@ -26,7 +26,7 @@ EXTSYM hirestiledat,res512switch,curblank,spritetablea,lineleft,_2xSaILine
 EXTSYM _2xSaISuperEagleLine,_2xSaISuper2xSaILine,newengen,cfield,HalfTrans
 EXTSYM GUIOn2,FilteredGUI,SpecialLine,vidbufferofsb,HalfTransB,HalfTransC
 %ifdef __WIN32__
-EXTSYM cvidmode,GUIDSMODE
+EXTSYM cvidmode,GUIDSMODE,GUIWFVID
 %endif
 
 %macro SelectTile 0
@@ -803,12 +803,12 @@ Process2xSaIwin:
     mov dword[edi+512*2-6],0
     mov word[edi+512*2-2],0
 %ifdef __WIN32__
-    pushad
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUIDSMODE+eax],0
-    popad
     jne near .isdsmode
+    cmp byte[GUIWFVID+eax],0
+    je .isdsmode
     mov dword[edi+576*4-6],0
     mov word[edi+576*4-2],0
     jmp near .notdsmode
