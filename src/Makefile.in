@@ -114,7 +114,7 @@ main: makefile.dep $(Z_QOBJS) $(Z_OBJS)
 	rm -f version.o
 
 $(PSR): parsegen.cpp
-	@CXX@ @CXXFLAGS@ -o $@ $< -lz
+	@CXX@ @CXXFLAGS@ -o $@ $< @LDFLAGS@
 
 TOOLSEXE=$(TOOL_D)/archopt $(TOOL_D)/cutrtype $(TOOL_D)/extraext\
 	$(TOOL_D)/macroll $(TOOL_D)/minwhite $(TOOL_D)/nreplace\
