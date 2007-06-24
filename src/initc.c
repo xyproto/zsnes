@@ -1881,16 +1881,20 @@ void CheckROMType()
 {
   char *ROM = (char *)romdata;
 
+  //Do this before mirroring
+  lorommapmode2 = 0;
+  //24 Mbit ROMs with the following game code have a BS-X slot on board and need
+  //different mapping for them. Known matches are Derby Stallion 96 and Sound Novel Tsukuru.
+  //Note, in 4 character game codes, Z generally means there is a BS-X slot, but some games
+  //abuse this. So we check specifically for B1, as B1 is a non abuser.
+  if ((curromspace == 0x300000) && !strncmp(ROM+Lo-16, "B1Z", 3) && ROM[Lo+CompanyOffset] == 0x33)
+  { lorommapmode2 = 1; }
+
   if (!MovieWaiting)
   {
     MirrorROM(romdata);
     CalcChecksum();
   }
-
-  lorommapmode2 = 0;
-  if (!strncmp(ROM+0x207FC0, "DERBY STALLION 96", 17) ||
-      !strncmp(ROM+Lo, "SOUND NOVEL-TCOOL", 17))
-  { lorommapmode2 = 1; }
 
   // Setup memmapping
   SetAddressingModes();
