@@ -320,6 +320,7 @@ else
   if test x$qtd != xyes; then
     ZC="$CC"
     ZCFLAGS="$CFLAGS"
+    CXXFLAGS+=" -fno-exceptions"
   else
     ZC="$CXX"
     ZCFLAGS="$CXXFLAGS"
