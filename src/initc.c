@@ -1092,7 +1092,7 @@ void SplitSupport()
   SplittedROM = false;
 
   //Same Game add on
-  if (curromspace == 0x80000 && ROM[Hi+CompanyOffset] == 0x33 &&
+  if ((curromspace == 0x60000) || (curromspace == 0x80000) && ROM[Hi+CompanyOffset] == 0x33 &&
       !ROM[Hi+BankOffset] && !ROM[Hi+BSMonthOffset] && !ROM[Hi+BSDayOffset])
   {
     addOnStart = 0x200000;
