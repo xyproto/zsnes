@@ -247,6 +247,13 @@ int main(int argc, const char *const *const argv)
     printf("flags:%s\n", flags);
   }
 
+#if __GNUC__ > 3
+#if __GNUC__ > 4 || __GNUC_MINOR__ > 1
+  cpu = "native";
+  puts(cpu);
+#endif
+#endif
+
   if (!cpu && *cpu_family && *vendor_id)
   {
     #ifdef __GNUC__
@@ -499,16 +506,8 @@ int main(int argc, const char *const *const argv)
     }
     #endif
     #endif
-
-    #if __GNUC__ > 3
-    #if __GNUC__ > 4 || __GNUC_MINOR__ > 1
-    cpu = "native";
-    #endif
-    #endif
-
-    puts(cpu);
   }
-  else
+  else if (!cpu)
   {
     puts("Could not open /proc/cpuinfo, and CPUID instruction not available.");
     return(1);
