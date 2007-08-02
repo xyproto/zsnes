@@ -3072,7 +3072,7 @@ ProcessTransparencies:
     por mm0,mm3
     dec ecx
     jnz near .procfulladdnext
-    movq [esi],mm0
+    movq [esi-8],mm0
     jmp .faddloopdoneh
 .faddlooph
     mov ebx,[esi]
