@@ -22,17 +22,18 @@ This is part of a toolkit used to assist in ZSNES development
 #include "strutil.h"
 using namespace std;
 
-void Tokenize(const string& str, vector<string>& tokens, const string& delimiters)
+template<typename T1, typename T2>
+static inline void Tokenize(const T1& str, T2& tokens, const T1& delimiters)
 {
-  //Skip delimiters at beginning.
+  //Skip delimiters at beginning
   string::size_type lastPos = str.find_first_not_of(delimiters, 0);
 
-  //Find first "non-delimiter".
-  string::size_type pos     = str.find_first_of(delimiters, lastPos);
+  //Find first "non-delimiter"
+  string::size_type pos = str.find_first_of(delimiters, lastPos);
 
   while (string::npos != pos || string::npos != lastPos)
   {
-    //Found a token, add it to the vector.
+    //Found a token, add it to the vector
     tokens.push_back(str.substr(lastPos, pos - lastPos));
 
     //Skip delimiters.  Note the "not_of"
@@ -43,26 +44,14 @@ void Tokenize(const string& str, vector<string>& tokens, const string& delimiter
   }
 }
 
-//Remove this at some point with a template
+void Tokenize(const string& str, vector<string>& tokens, const string& delimiters)
+{
+  Tokenize< string, vector<string> >(str, tokens, delimiters);
+}
+
 void Tokenize(const string_ci& str, vector<string_ci>& tokens, const string_ci& delimiters)
 {
-  //Skip delimiters at beginning.
-  string::size_type lastPos = str.find_first_not_of(delimiters, 0);
-
-  //Find first "non-delimiter".
-  string::size_type pos     = str.find_first_of(delimiters, lastPos);
-
-  while (string::npos != pos || string::npos != lastPos)
-  {
-    //Found a token, add it to the vector.
-    tokens.push_back(str.substr(lastPos, pos - lastPos));
-
-    //Skip delimiters.  Note the "not_of"
-    lastPos = str.find_first_not_of(delimiters, pos);
-
-    //Find next "non-delimiter"
-    pos = str.find_first_of(delimiters, lastPos);
-  }
+  Tokenize< string_ci, vector<string_ci> >(str, tokens, delimiters);
 }
 
 bool all_whitespace(const char *str)
