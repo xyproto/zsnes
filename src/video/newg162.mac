@@ -476,8 +476,8 @@
     and dword[ofsmcptr2],3Fh
     test dword[ofsmcptr2],3Fh
     jnz %%notzeroed
-    mov bx,[bgtxadd2]
-    add word[ofsmcptr],bx
+    mov dx,[bgtxadd2]
+    add word[ofsmcptr],dx
 %%notzeroed
     test dword[ebx-40h],8000h
     jnz near %%noofsmh
@@ -650,8 +650,8 @@
     and dword[ofsmcptr2],3Fh
     test dword[ofsmcptr2],3Fh
     jnz %%notzeroed
-    mov bx,[bgtxadd2]
-    add word[ofsmcptr],bx
+    mov dx,[bgtxadd2]
+    add word[ofsmcptr],dx
 %%notzeroed
     test dword[ebx-40h],ecx
     jz %%noofsmh
@@ -851,8 +851,8 @@
     and dword[ofsmcptr2],3Fh
     test dword[ofsmcptr2],3Fh
     jnz %%notzeroed
-    mov bx,[bgtxadd2]
-    add word[ofsmcptr],bx
+    mov dx,[bgtxadd2]
+    add word[ofsmcptr],dx
 %%notzeroed
 
     add edi,16
