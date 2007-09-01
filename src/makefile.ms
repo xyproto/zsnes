@@ -502,7 +502,7 @@ ${VID_D}/mode716t${OE}: ${VID_D}/mode716t.asm macros.mac ${VID_D}/mode7.mac
 ${VID_D}/mode7ext${OE}: ${VID_D}/mode7ext.asm macros.mac ${VID_D}/mode7.mac
 ${VID_D}/mv16tms${OE}: ${VID_D}/mv16tms.asm macros.mac ${VID_D}/vidmacro.mac
 ${VID_D}/newg162${OE}: ${VID_D}/newg162.asm macros.mac ${VID_D}/newg162.mac \
-	${VID_D}/newg16wn.mac ${VID_D}/newgfx16.mac ${VID_D}/vidmacro.mac
+	${VID_D}/newg16wn.mac ${VID_D}/newgfx16.mac
 ${VID_D}/newgfx${OE}: ${VID_D}/newgfx.asm macros.mac ${VID_D}/newgfx.mac \
 	${VID_D}/newgfx2.mac ${VID_D}/vidmacro.mac
 ${VID_D}/newgfx16${OE}: ${VID_D}/newgfx16.asm macros.mac \

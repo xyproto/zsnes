@@ -27,7 +27,7 @@ EXTSYM winonstype,winspdata,interlval,MMXSupport,bg1scrolx,bg1scroly,curmosaicsz
 EXTSYM curypos,drawmode716t,makewindow,mode7set,mosaicon,mosaicsz,scrnon
 EXTSYM winbg1en,winenabm,drawmode716textbg,drawmode716textbg2,extbgdone
 EXTSYM drawmode716tb,drawmode716b,drawmode716extbg,drawmode716extbg2,cursprloc
-EXTSYM drawsprites16b,scrndis,sprprifix,winonsp,bgfixer,bgfixer2,scaddtype
+EXTSYM drawsprites16b,scrndis,sprprifix,winonsp,bgfixer,scaddtype
 EXTSYM alreadydrawn,bg1cachloc,bg1tdabloc,bg1tdatloc,bg1vbufloc,bg1xposloc
 EXTSYM bg1yaddval,bgcoloradder,bgmode,bgtilesz,colormodeofs,curbgnum
 EXTSYM draw16x1616b,draw8x816b,drawn,winenabs,curbgpr,draw16x1616tms,ngptrdat2
@@ -485,8 +485,6 @@ NEWSYM procmode716tmainextbg2
 NEWSYM procspritessub16t
     cmp byte[bgfixer],1
     je near procspritessub16tfix
-    cmp byte[bgfixer2],1
-    je near procspritessub16tfix
     test byte[scrndis],10h
     jnz .nosprites
     test byte[scrnon+1],10h
@@ -511,8 +509,6 @@ NEWSYM procspritessub16t
 
 NEWSYM procspritesmain16t
     cmp byte[bgfixer],1
-    je near procspritesmain16tfix
-    cmp byte[bgfixer2],1
     je near procspritesmain16tfix
     test byte[scrndis],10h
     jnz .nosprites
@@ -547,8 +543,6 @@ NEWSYM procspritesmain16t
 
 NEWSYM drawbackgrndsub16t
     cmp byte[bgfixer],1
-    je near drawbackgrndsub16tfix
-    cmp byte[bgfixer2],1
     je near drawbackgrndsub16tfix
     mov esi,[colormodeofs]
     mov bl,[esi+ebp]
@@ -619,8 +613,6 @@ NEWSYM drawbackgrndsub16t
 
 NEWSYM drawbackgrndmain16t
     cmp byte[bgfixer],1
-    je near drawbackgrndmain16tfix
-    cmp byte[bgfixer2],1
     je near drawbackgrndmain16tfix
     mov esi,[colormodeofs]
     mov bl,[esi+ebp]
