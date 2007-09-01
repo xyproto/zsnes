@@ -742,7 +742,7 @@ static void cycleinputs(bool input1, bool input2)
 }
 
 #define PRESSED(key) ((pressed[(key)] == 1) && (pressed[(key)]=2))
-#define SCREEN_FLIP(num) adjbglayermsg((num)+'1', ((scrndis ^= BIT(num)) != BIT(num)))
+#define SCREEN_FLIP(num) adjbglayermsg((num)+'1', !((scrndis ^= BIT(num)) & BIT(num)))
 #define STATE_SELECT(num) current_zst = (current_zst/10)*10+num; set_state_message("STATE SLOT ", " SELECTED.");
 #define KEY_HANDLE(key_base, action, num) if (PRESSED(key_base ## num)) { action(num); }
 
@@ -757,7 +757,7 @@ void QuickKeyCheck()
     if (PRESSED(KeySprDisble))
     {
       scrndis ^= 0x10;
-      if(scrndis == 0x10)
+      if(scrndis & 0x10)
         Msgptr = sprlaydis;
       else
         Msgptr = sprlayena;
