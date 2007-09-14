@@ -284,13 +284,10 @@ Mode7Startup16b:
     cmp byte[curmosaicsz],1
     je .nomosaic
     mov esi,xtravbuf+32
+    mov edi,esi
+    mov eax,0FFFFFFFFh
     mov ecx,128
-.clearnext
-    mov dword[esi],0
-    add esi,4
-    dec ecx
-    jnz .clearnext
-    mov esi,xtravbuf+32
+    rep stosd
 .nomosaic
 
     ; esi = pointer to video buffer
