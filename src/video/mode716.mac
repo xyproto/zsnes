@@ -888,7 +888,7 @@ NEWSYM ProcessMode7ngwinD16b
     jmp %%nextposx
 
 %%rposoffy
-    mov edx,[m7yaddof]
+    mov edx,[mm7yaddof]
     add dword[mmode7yrpos],edx
     sub bh,[mm7yaddof2]
     test byte[mmode7yrpos+1],0F8h
