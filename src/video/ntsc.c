@@ -63,7 +63,6 @@ void set_ntsc_preset( int i )
         NTSCCont = 0;
         NTSCBright = 0;
         NTSCGamma = 0;
-        NTSCBleed = 0;
         NTSCWarp = 0;
     }
 }
