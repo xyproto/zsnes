@@ -23,7 +23,7 @@
 
 EXTSYM curmosaicsz,curvidoffset,domosaic16b,winptrref,mode7A,mode7B,mode7C
 EXTSYM mode7D,mode7X0,mode7Y0,mode7set,pal16b,vram,vrama,winon,mode7tab,xtravbuf
-EXTSYM cwinptr
+EXTSYM cwinptr,scrndis
 
 %include "video/mode7.mac"
 
@@ -36,6 +36,10 @@ SECTION .text
 ALIGN16
 
 NEWSYM drawmode716extbg
+    test byte[scrndis],1
+    jz .notdisabled
+    ret
+.notdisabled
 ;    test byte[scaddset],1
 ;    jnz near drawmode7dcolor
     mov esi,[cwinptr]
@@ -1059,6 +1063,10 @@ SECTION .bss
 SECTION .text
 
 NEWSYM drawmode716extbg2
+    test byte[scrndis],1
+    jz .notdisabled
+    ret
+.notdisabled
     mov esi,[cwinptr]
     mov [winptrref],esi
 

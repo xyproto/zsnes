@@ -21,7 +21,7 @@
 
 EXTSYM curmosaicsz,curvidoffset,domosaic16b,winptrref,mode7A,mode7B,mode7C
 EXTSYM mode7D,mode7X0,mode7Y0,mode7set,cwinptr,vram,vrama,winon,mode7tab
-EXTSYM xtravbuf,dcolortab,vidbright
+EXTSYM xtravbuf,dcolortab,vidbright,scrndis
 
 %include "video/mode7.mac"
 
@@ -98,6 +98,10 @@ SECTION .bss
 NEWSYM prevbrightdc, resb 1
 SECTION .text
 NEWSYM drawmode7dcolor
+    test byte[scrndis],1
+    jz .notdisabled
+    ret
+.notdisabled
     mov bl,[vidbright]
     cmp bl,[prevbrightdc]
     je .nodcchange

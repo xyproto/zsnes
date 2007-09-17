@@ -24,7 +24,7 @@ EXTSYM coladdr,curmosaicsz,curvidoffset,domosaic16b,mode7A,drawmode7dcolor
 EXTSYM mode7B,mode7C,mode7D,mode7X0,mode7Y0,mode7set,mode7tab,DoTransp
 EXTSYM pal16b,pal16bcl,pal16bxcl,scaddtype,scrnon,transpbuf,drawmode716b
 EXTSYM vesa2_clbit,vram,vrama,winon,xtravbuf,winptrref,scaddset
-EXTSYM fulladdtab
+EXTSYM fulladdtab,scrndis
 
 %include "video/mode7.mac"
 
@@ -321,6 +321,10 @@ SECTION .text
 SECTION .text
 
 NEWSYM drawmode716t
+    test byte[scrndis],1
+    jz .notdisabled
+    ret
+.notdisabled
     test byte[scaddset],1
     jnz near drawmode7dcolor
     cmp byte[DoTransp],1
@@ -347,7 +351,7 @@ NEWSYM drawmode716t
 ;*******************************************************
 ; Processes & Draws Mode 7 Full Addition
 ;*******************************************************
-NEWSYM drawmode716tfulladd
+drawmode716tfulladd:
     mode716tmacro mode7fulladd,mode7fulladdwinon
 
 ;**********************************************************
@@ -362,6 +366,10 @@ drawmode716tsub:
 ;**********************************************************
 
 NEWSYM drawmode716tb
+    test byte[scrndis],1
+    jz .notdisabled
+    ret
+.notdisabled
     mov esi,[cwinptr]
     mov [winptrref],esi
     mov [cwinptr2],esi
