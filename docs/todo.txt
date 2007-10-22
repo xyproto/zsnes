@@ -19,12 +19,11 @@ Windows Port:
 Compatibility
 - Game not working - Guikuden 1, Cu-On-Pa (and loads more)
 - Graphics Glitches - Killer Instinct (black background), FF3 (Range Time Over
-      and other sprite trouble), Tactic Ogre (Menus),
-      Top Gear 3000 (DSP-4), lots of others...
-- Special Chips - DSP1 (95% done), DSP3 (50% done), DSP4 (95% done)
-      SA-1 (95% done), SPC7110 (Needs some core fixes and decompression)
-      SFX1/2 (done?), Seta 11 (0% done),
-      Seta 18 (0% done), BS-X (50% done).
+      and other sprite trouble), Tactic Ogre (Menus), lots of others...
+- Special Chips - DSP1 (99% done), DSP3 (50% done), DSP4 (99% done)
+      SA-1 (95% done), SPC7110 (Needs decompression)
+      SFX1/2 (95% done), Seta 11 (25% done),
+      Seta 18 (1% done), BS-X (50% done).
 
 Timing engine
 - Convert counter to 32-bit. (assigned to pagefault).
