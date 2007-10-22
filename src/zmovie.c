@@ -2320,6 +2320,8 @@ static bool raw_video_open()
     }
     if (raw_vid.ap)
     {
+      uint16_t ba = (16/8)<<StereoSound;         //block align (SignificantBitsPerSample / 8 * NumChannels)
+
       fputs("RIFF", raw_vid.ap);                 //header
       fwrite4(~0, raw_vid.ap);                   //file size - unknown till file close
       fputs("WAVEfmt ", raw_vid.ap);             //format
@@ -2327,8 +2329,8 @@ static bool raw_video_open()
       fwrite2(1, raw_vid.ap);                    //fmt type (PCM)
       fwrite2(StereoSound+1, raw_vid.ap);        //channels
       fwrite4(RATE, raw_vid.ap);                 //sample rate
-      fwrite4(RATE*4, raw_vid.ap);               //byte rate (sample rate*block align)
-      fwrite2(16/8*StereoSound, raw_vid.ap);     //block align (SignificantBitsPerSample / 8 * NumChannels)
+      fwrite4(RATE*ba, raw_vid.ap);              //byte rate (sample rate*block align)
+      fwrite2(ba, raw_vid.ap);                   //calculated above
       fwrite2(16, raw_vid.ap);                   //Significant bits per sample
       fwrite2(0, raw_vid.ap);                    //Extra format bytes
       fputs("data", raw_vid.ap);                 //data header
