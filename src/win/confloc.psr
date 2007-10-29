@@ -16,6 +16,8 @@
 @ C:\Documents and Settings\<username>\Application Data\ZSNES
 @
 @ On NT 6+ (Vista) the user's directory will be:
+@ C:\Users\<username>\Saved Games\ZSNES
+@ Or if that fails for some reason, it will be:
 @ C:\Users\<username>\AppData\Roaming\ZSNES
 @
 @ Note: all the default locations listed above can be changed

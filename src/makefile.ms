@@ -135,7 +135,7 @@ endif
 ifeq (${OS},__WIN32__)
   EXE=zsnesw.exe
   FILEFORMAT=win32
-  LIBS=${LIBSORIG} -ldxguid -ldinput8 -lwsock32 -luser32 -lgdi32 -lshfolder -lshell32 -lwinmm -mwindows -lopengl32 -lglu32
+  LIBS=${LIBSORIG} -ldxguid -ldinput8 -lwsock32 -luser32 -lgdi32 -lshfolder -lshell32 -lwinmm -mwindows -lopengl32 -lglu32 -lole32
   OE=.obj
   CONFLOC=${WIN_D}/confloc${OE}
 endif

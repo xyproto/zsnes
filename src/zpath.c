@@ -120,6 +120,44 @@ void cfgpath_ensure(const char *launch_command)
 #else
 
 #ifdef __WIN32__
+
+#ifndef KF_FLAG_CREATE
+#define KF_FLAG_CREATE (0x00008000)
+#endif
+
+static bool get_save_path(char *path_buffer)
+{
+  bool found_path = false;
+
+  HMODULE hM_shell32 = LoadLibrary("shell32.dll\0");
+  if (hM_shell32)
+  {
+    typedef HRESULT (WINAPI* lpSHGetKnownFolderPath)(GUID *, DWORD, HANDLE, PWSTR *);
+    lpSHGetKnownFolderPath pSHGetKnownFolderPath = (lpSHGetKnownFolderPath)GetProcAddress(hM_shell32, "SHGetKnownFolderPath\0");
+    if (pSHGetKnownFolderPath)
+    {
+      GUID FOLDERID_SavedGames = { 0x4c5c32ff, 0xbb9d, 0x43b0, { 0xb5, 0xb4, 0x2d, 0x72, 0xe5, 0x4e, 0xaa, 0xa4 } };
+      wchar_t *path;
+      if (SUCCEEDED(pSHGetKnownFolderPath(&FOLDERID_SavedGames, KF_FLAG_CREATE, 0, &path)))
+      {
+        if (wcstombs(path_buffer, path, PATH_SIZE) < ~0)
+        {
+          found_path = true;
+        }
+        CoTaskMemFree(path);
+      }
+    }
+    FreeLibrary(hM_shell32);
+  }
+
+  if (!found_path)
+  {
+    found_path = SUCCEEDED(SHGetFolderPath(0, CSIDL_APPDATA | CSIDL_FLAG_CREATE, 0, 0, path_buffer));
+  }
+
+  return(found_path);
+}
+
 static void user_specifc_path()
 {
   char path_buffer[PATH_SIZE];
@@ -146,7 +184,7 @@ static void user_specifc_path()
     psr_cfg_run(write_confloc_vars, ZCfgPath, "zcfgloc.cfg");
   }
 
-  if (!zsnesw_config_location && SUCCEEDED(SHGetFolderPath(0, CSIDL_APPDATA | CSIDL_FLAG_CREATE, 0, 0, path_buffer)))
+  if (!zsnesw_config_location && get_save_path(path_buffer))
   {
     const char *const zpath = "ZSNES";
 
