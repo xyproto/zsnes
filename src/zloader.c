@@ -86,7 +86,7 @@ static void display_start_message()
   bool tty = isatty(fileno(stdout));
   char line[75];
 
-  sprintf(line, "ZSNES v%s, (c) 1997-2007, ZSNES Team\n", ZVERSION);
+  snprintf(line, sizeof(line), "ZSNES v%s, (c) 1997-2007, ZSNES Team\n", ZVERSION);
 
   put_line(line);
   put_line("Be sure to check http://www.zsnes.com/ for the latest version.\n");
