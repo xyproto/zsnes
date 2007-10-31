@@ -402,4 +402,8 @@ case x$target in
     ;;
 esac
 echo "${ECHO_T}make' and pray."
+if test x$release = xyes; then
+  echo "${ECHO_T}Note that building can take a while on pre-2008 hardware."
+  echo "${ECHO_T}If you think the build process froze, it didn't, let it finish."
+fi
 echo
