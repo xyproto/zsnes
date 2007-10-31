@@ -77,18 +77,16 @@ void InitDebugger();
   puts(x);                                   \
   lines_out++;
 
-const unsigned int versionNumber = 0x00000098; // 1.51
-char *ZVERSION = "1.52";
+#define ZVER "1.52"
+char *ZVERSION = ZVER;
+const unsigned int versionNumber = 0x00000098; // 1.52
 
 static void display_start_message()
 {
   size_t lines_out = 0;
   bool tty = isatty(fileno(stdout));
-  char line[75];
 
-  snprintf(line, sizeof(line), "ZSNES v%s, (c) 1997-2007, ZSNES Team\n", ZVERSION);
-
-  put_line(line);
+  put_line("ZSNES v"ZVER", (c) 1997-2007, ZSNES Team\n");
   put_line("Be sure to check http://www.zsnes.com/ for the latest version.\n");
   put_line("ZSNES is written by the ZSNES Team (See AUTHORS.TXT)");
   put_line("ZSNES comes with ABSOLUTELY NO WARRANTY.  This is free software,");
