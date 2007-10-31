@@ -335,8 +335,6 @@ static void allocmem()
   regptw -= 0x8000;
 }
 
-const unsigned int versionNumber = 0x00000098; // 1.51
-char *ZVERSION = "1.52";
 unsigned char txtfailedalignd[] = "Data Alignment Failure : ";
 unsigned char txtfailedalignc[] = "Code Alignment Failure : ";
 
@@ -347,23 +345,8 @@ void zstart()
   asm_call(MMXCheck);
   asm_call(StartUp);
 
-  // Print welcome message.
-  printf("ZSNES v%s, (c) 1997-2007, ZSNES Team\n", ZVERSION);
-  puts("Be sure to check http://www.zsnes.com/ for the latest version.\n");
-  puts("ZSNES is written by the ZSNES Team (See AUTHORS.TXT)");
-  puts("ZSNES comes with ABSOLUTELY NO WARRANTY.  This is free software,");
-  puts("and you are welcome to redistribute it under certain conditions;");
-  puts("please read 'LICENSE.TXT' thoroughly before doing so.\n");
+  // Print welcome message part 2.
   puts("Use ZSNES -? for command line definitions.\n");
-
-#ifndef __RELEASE__
-  puts("This is a work in progress build. It contains code which");
-  puts("May or may not be complete\n");
-#ifdef __UNIXSDL__
-  puts("If this is supposed to be an official release, you forgot to");
-  puts("run configure with --enable-release, go rebuild.\n");
-#endif
-#endif
 
 #ifdef __UNIXSDL__
   MultiMouseInit();

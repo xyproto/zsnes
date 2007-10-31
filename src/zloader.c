@@ -77,6 +77,34 @@ void InitDebugger();
   puts(x);                                   \
   lines_out++;
 
+const unsigned int versionNumber = 0x00000098; // 1.51
+char *ZVERSION = "1.52";
+
+static void display_start_message()
+{
+  size_t lines_out = 0;
+  bool tty = isatty(fileno(stdout));
+  char line[75];
+
+  sprintf(line, "ZSNES v%s, (c) 1997-2007, ZSNES Team\n", ZVERSION);
+
+  put_line(line);
+  put_line("Be sure to check http://www.zsnes.com/ for the latest version.\n");
+  put_line("ZSNES is written by the ZSNES Team (See AUTHORS.TXT)");
+  put_line("ZSNES comes with ABSOLUTELY NO WARRANTY.  This is free software,");
+  put_line("and you are welcome to redistribute it under certain conditions;");
+  put_line("please read 'LICENSE.TXT' thoroughly before doing so.\n");
+
+#ifndef __RELEASE__
+  put_line("This is a work in progress build. It contains code which");
+  put_line("May or may not be complete\n");
+#ifdef __UNIXSDL__
+  put_line("If this is supposed to be an official release, you forgot to");
+  put_line("run configure with --enable-release, go rebuild.\n");
+#endif
+#endif
+}
+
 static void display_help()
 {
   size_t lines_out = 0;
@@ -960,6 +988,7 @@ void zmain(int zargc, char *zargv[])
     ao_initialize();
     atexit(ao_shutdown);
     #endif
+    display_start_message();
     handle_params(zargc, zargv);
 
     atexit(ZCleanup);
