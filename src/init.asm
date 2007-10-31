@@ -891,7 +891,6 @@ SECTION .data
 SECTION .bss
 NEWSYM IPSPatched, resb 1
 NEWSYM Checksumvalue, resw 1
-NEWSYM CRC32, resd 1
 NEWSYM SramExists,    resb 1
 NEWSYM NumofBanks,    resd 1
 NEWSYM NumofBytes,    resd 1
