@@ -3295,7 +3295,10 @@
     mov dx,[BG3SYl+ebx*2]
 ;    test dx,08h
 ;    jz .overflow
+    cmp dx,0ffeeh
+    jne .noand
     and dx,1FFh
+.noand
 ;.overflow
     shr edx,3
     shl edx,6
@@ -3692,7 +3695,10 @@
 .offsetm
     xor edx,edx
     mov dx,[BG3SYl+ebx*2]
+    cmp dx,0ffeeh
+    jne .noand
     and dx,01ffh
+.noand
     shr edx,3
     shl edx,6
     xor eax,eax
