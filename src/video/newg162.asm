@@ -1297,6 +1297,99 @@ drawlineng4b16bmsntmwom:
 drawlineng4b16bmsntswom:
     drawline16bw2macroom tltype4b,preparet4ba,cachesingle4bng,ngpalcon4b,test4ba,0Fh,procpixelsmsnt,procpixelstmsnt,procpixelstwmsbnt,procpixelsnt,procpixelstnt
 
+%macro WinClipMacroom16x16 1
+    mov byte[tleftn],17
+    mov dword[ngcwinptr],ngwintable
+    mov dword[ngcwinmode],0
+    cmp dword[ngwintable],0
+    jne near .loop
+    add dword[ngcwinptr],4
+    mov dword[ngcwinmode],1
+.winclipped
+    mov ebx,[ngcwinptr]
+    cmp dword[ebx],16
+    jbe near %1
+    sub dword[ebx],16
+
+    mov ebx,[cbgval]
+    add word[ofsmmptr],2
+    inc dword[bg1totng+ebx*4]
+    add word[ofsmtptr],2
+    mov ax,[ofsmmptr]
+    mov ebx,[yposngom]
+    mov edx,[flipyposngom]
+    mov [yposng],ebx
+    mov [flipyposng],edx
+    add edi,32
+    test eax,03Fh
+    jnz .next
+    mov bx,[bgtxadd]
+    add ax,bx
+    add [ofsmmptr],bx
+    add word[ofsmtptr],bx
+.next
+    mov ebx,[ofsmcptr]
+    add ebx,[ofsmcptr2]
+    mov ecx,[ofsmval]
+    add dword[ofshvaladd],8
+    test dword[ebx],ecx
+    jz .noofsm2
+    mov ebx,[ebx]
+    mov ax,[ofsmtptr]
+    and ebx,3FFh
+    add ebx,[ofsmcyps]
+    test ebx,200h
+    jz .noupper2
+    add ax,[ofsmady]
+.noupper2
+    and ebx,1FFh
+    mov edx,ebx
+    shr ebx,3
+    and edx,07h
+    shl ebx,6
+    shl edx,3
+    add ax,bx
+    mov [yposng],edx
+    xor edx,38h
+    mov [flipyposng],edx
+.noofsm2
+    mov ebx,[ofsmcptr]
+    add ebx,[ofsmcptr2]
+    add dword[ofsmcptr2],2
+    mov ecx,[ofsmvalh]
+    and dword[ofsmcptr2],3Fh
+    test dword[ebx-40h],ecx
+    jz .noofsmh
+    mov ebx,[ebx-40h]
+    sub ax,[ofsmtptr]
+    add ax,[ofsmtptrs]
+    add ebx,[ofshvaladd]
+    test ebx,200h
+    jz .noleft
+    add ax,[ofsmadx]
+.noleft
+    and ebx,0F8h
+    shr ebx,2
+    add ax,bx
+.noofsmh
+
+    dec byte[tleftn]
+    jnz near .winclipped
+    pop ebx
+    cmp byte[curmosaicsz],1
+    jne near domosaicng16b
+    ret
+.loop
+    mov ebx,[ngcwinptr]
+    mov cx,[vrama+eax]
+    cmp dword[ebx],16
+    jbe near %1
+    sub dword[ebx],16
+    xor ecx,[ng16bprval]
+    test ecx,2000h
+    jnz near .finline
+%endmacro
+
 %macro drawline16bmacroom16x16 8
     mov byte[tleftn],17
 %%loop
@@ -1309,7 +1402,7 @@ drawlineng4b16bmsntswom:
 %endmacro
 
 %macro drawline16bwmacroom16x16 9
-    WinClipMacro16x16 %%processwinclip2b
+    WinClipMacroom16x16 %%processwinclip2b
     drawlinengom16b16x16 %1,%2,%3,.loop,.finline,%4,%5,%6,%7,%8
 %%processwinclip2b
     mov ebx,[ngcwinptr]
@@ -1382,16 +1475,36 @@ drawlineng4b16bmsntswom:
 NEWSYM drawlinengom16x164b16b
     determinetransp drawlineng4b16btom16x16
 drawlineng4b16bntom16x16
+    CheckWindowing drawlineng4bwinom16x16
     drawline16bmacroom16x16 tltype4b,preparet4ba,cachesingle4bng,ngpalcon4b,test4ba,0Fh,procpixels,procpixelst
+drawlineng4bwinom16x16:
+    drawline16bwmacroom16x16 tltype4b,preparet4ba,cachesingle4bng,ngpalcon4b,test4ba,0Fh,procpixels,procpixelst,procpixelstw
 drawlineng4b16btom16x16
     test byte[BGMS1+ebx*2+1],dl
     jnz near drawlineng4b16bmsom16x16
     test byte[scadtng+ebx],dl
     jz near drawlineng4b16bntom16x16
+    CheckWindowing drawlineng4bwintom16x16
     drawline16bmacroom16x16 tltype4b,preparet4ba,cachesingle4bng,ngpalcon4b,test4ba,0Fh,procpixelstr,procpixelstt
+drawlineng4bwintom16x16:
+    drawline16bwmacroom16x16 tltype4b,preparet4ba,cachesingle4bng,ngpalcon4b,test4ba,0Fh,procpixelstr,procpixelstt,procpixelstwt
 drawlineng4b16bmsom16x16:
     test byte[scadtng+ebx],dl
     jz near drawlineng4b16bmsntom16x16
+    DetermineWindow drawlineng4b16bmstmswom16x16, drawlineng4b16bmstmwom16x16, drawlineng4b16bmstswom16x16
     drawline16bmacroom16x16 tltype4b,preparet4ba,cachesingle4bng,ngpalcon4b,test4ba,0Fh,procpixelsmst,procpixelstmst
+drawlineng4b16bmstmswom16x16:
+    drawline16bwmacroom16x16 tltype4b,preparet4ba,cachesingle4bng,ngpalcon4b,test4ba,0Fh,procpixelsmst,procpixelstmst,procpixelstwmst
+drawlineng4b16bmstmwom16x16:
+    drawline16bw2macroom16x16 tltype4b,preparet4ba,cachesingle4bng,ngpalcon4b,test4ba,0Fh,procpixelsmst,procpixelstmst,procpixelstwsmt,procpixelss,procpixelsts
+drawlineng4b16bmstswom16x16:
+    drawline16bw2macroom16x16 tltype4b,preparet4ba,cachesingle4bng,ngpalcon4b,test4ba,0Fh,procpixelsmst,procpixelstmst,procpixelstwmsbt,procpixelstr,procpixelstt
 drawlineng4b16bmsntom16x16
+    DetermineWindow drawlineng4b16bmsntmswom16x16, drawlineng4b16bmsntmwom16x16, drawlineng4b16bmsntswom16x16
     drawline16bmacroom16x16 tltype4b,preparet4ba,cachesingle4bng,ngpalcon4b,test4ba,0Fh,procpixelsmsnt,procpixelstmsnt
+drawlineng4b16bmsntmswom16x16:
+    drawline16bwmacroom16x16 tltype4b,preparet4ba,cachesingle4bng,ngpalcon4b,test4ba,0Fh,procpixelsmsnt,procpixelstmsnt,procpixelstwmsnt
+drawlineng4b16bmsntmwom16x16:
+    drawline16bw2macroom16x16 tltype4b,preparet4ba,cachesingle4bng,ngpalcon4b,test4ba,0Fh,procpixelsmsnt,procpixelstmsnt,procpixelstwsmnt,procpixelss,procpixelsts
+drawlineng4b16bmsntswom16x16:
+    drawline16bw2macroom16x16 tltype4b,preparet4ba,cachesingle4bng,ngpalcon4b,test4ba,0Fh,procpixelsmsnt,procpixelstmsnt,procpixelstwmsbnt,procpixelsnt,procpixelstnt

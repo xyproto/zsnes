@@ -688,7 +688,7 @@
 %macro drawlinengom16b16x16 10
     ; tile value : bit 15 = flipy, bit 14 = flipx, bit 13 = priority value
     ;              bit 10-12 = palette, 0-9=tile#
-    mov ebx,[ng16bbgval]
+    mov ebx,[cbgval]
     mov dl,ch
     inc dword[bg1drwng+ebx*4]
     and ecx,3FFh
@@ -703,13 +703,6 @@
     jz %%noflipx
     inc cx
 %%noflipx
-    test byte[switch16x16],1
-    jz %%noflipxb
-    inc cx
-    test dword[vrama+eax],4000h
-    jz %%noflipxb
-    sub cx,2
-%%noflipxb
 %%nexttile
     push ecx
     push edx
@@ -798,22 +791,27 @@
 %%done
     pop edx
     pop ecx
-
-    test byte[switch16x16],1
-    jz %%nextb
+    inc cx
+    test dword[vrama+eax],4000h
+    jz %%noflipxb
+    sub cx,2
+%%noflipxb
+    add edi,16
+    xor dword[switch16x16],1
+    jnz near %%nexttile
+%%ntile
     add word[ofsmmptr],2
     add word[ofsmtptr],2
     mov ax,[ofsmmptr]
-    test eax,03Fh
-    jz near %%tileaddb
-%%nextb
-
     mov ebx,[cbgval]
     inc dword[bg1totng+ebx*4]
     mov ebx,[yposngom]
     mov edx,[flipyposngom]
     mov [yposng],ebx
     mov [flipyposng],edx
+    test eax,03Fh
+    jz near %%tileadd
+%%next
     mov ebx,[ofsmcptr]
     add ebx,[ofsmcptr2]
     mov ecx,[ofsmval]
@@ -847,24 +845,30 @@
     xor edx,38h
     mov [flipyposng],edx
 %%noofsm
+    mov ebx,[ofsmcptr]
+    add ebx,[ofsmcptr2]
     add dword[ofsmcptr2],2
+    mov ecx,[ofsmvalh]
     and dword[ofsmcptr2],3Fh
     test dword[ofsmcptr2],3Fh
     jnz %%notzeroed
     mov dx,[bgtxadd2]
     add word[ofsmcptr],dx
 %%notzeroed
-
-    add edi,16
-    xor dword[switch16x16],1
-    jnz near %4
-%%ntile
-    mov ebx,[ng16bbgval]
-;    add ax,2
-    inc dword[bg1totng+ebx*4]
-;    test eax,03Fh
-;    jz %%tileadd
-%%next
+    test dword[ebx-40h],ecx
+    jz %%noofsmh
+    mov ebx,[ebx-40h]
+    sub ax,[ofsmtptr]
+    add ax,[ofsmtptrs]
+    add ebx,[ofshvaladd]
+    test ebx,200h
+    jz %%noleft
+    add ax,[ofsmadx]
+%%noleft
+    and ebx,0F8h
+    shr ebx,2
+    add ax,bx
+%%noofsmh
     dec byte[tleftn]
     jnz near %4
     pop ebx
@@ -878,12 +882,9 @@
     call %3
     jmp %%returnfromcache
 %%tileadd
-    add ax,[bgtxadd]
-    jmp %%next
-%%tileaddb
     mov bx,[bgtxadd]
     add ax,bx
     add [ofsmmptr],bx
     add word[ofsmtptr],bx
-    jmp %%nextb
+    jmp %%next
 %endmacro

@@ -1061,11 +1061,22 @@ Nextwinmode:
     and ecx,3FFh
     and edx,1Fh
     add ecx,[ngptrdat2]
+    add cx,[taddnfy16x16]
+    test dword[vrama+eax],8000h
+    jz %%noflipy
+    add cx,[taddfy16x16]
+%%noflipy
+    test dword[vrama+eax],4000h
+    jz %%noflipx
+    inc cx
+%%noflipx
+%%nexttile
+    push ecx
+    push edx
     mov edx,[%6+edx*4]
     %7
     jnz near %%docache
 %%returnfromcache
-    jmp %%endokay
     %2
     ; start drawing from ecx to edi
     test word[vrama+eax],8000h
@@ -1111,7 +1122,24 @@ Nextwinmode:
     processwinpixel
     processwinpixel
     processwinpixel
+    processwinpixel
+    processwinpixel
+    processwinpixel
+    processwinpixel
+    add edi,32
+    jmp %%ntile
 %%endokay
+    pop edx
+    pop ecx
+    inc cx
+    test dword[vrama+eax],4000h
+    jz %%noflipxb
+    sub cx,2
+%%noflipxb
+    add edi,16
+    xor dword[switch16x16],1
+    jnz near %%nexttile
+%%ntile
     mov ebx,[cbgval]
     add word[ofsmmptr],2
     inc dword[bg1totng+ebx*4]
@@ -1121,7 +1149,7 @@ Nextwinmode:
     mov edx,[flipyposngom]
     mov [yposng],ebx
     mov [flipyposng],edx
-    add edi,16
+;    add edi,32
     test eax,03Fh
     jz near %%tileadd
 %%next
