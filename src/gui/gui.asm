@@ -1700,9 +1700,9 @@ CheckMenuItemHelp:
   cmp byte[GUIcrowpos],%1
   jne %%skip
   pushad
-  push %1
+  push dword %1
   call loadquickfname
-  pop eax
+  add esp,4
   popad
   ret
 %%skip
