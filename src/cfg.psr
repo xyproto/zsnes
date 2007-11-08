@@ -156,7 +156,7 @@ Palette0 db 0
 %endif
 
 @
-#ifdef __WIN32__
+%ifdef __WIN32__
 @ Video Mode [0..42]
 @   0 = 256x224      R WIN     1 = 256x224        R FULL
 @   2 = 512x448      R WIN     3 = 512x448       DR WIN
@@ -189,7 +189,7 @@ cvidmode db 2
 PrevWinMode db 2
 PrevFSMode db 6
 
-#elifdef __UNIXSDL__
+%elifdef __UNIXSDL__
 
 %ifndef __OPENGL__
 @ Video Mode [0..4]
@@ -217,7 +217,7 @@ cvidmode db 2
 PrevWinMode db 2
 PrevFSMode db 3
 
-#elifdef __MSDOS__
+%elifdef __MSDOS__
 @ Video Mode [0..18]
 @   0 = 256x224x8B   MODEQ     1 = 256x240x8B MODEQ
 @   2 = 256x256x8B   MODEQ     3 = 320x224x8B MODEX
@@ -230,7 +230,7 @@ PrevFSMode db 3
 @  16 = 640x480x16B  VESA2    17 = 800x600x8B VESA2
 @  18 = 800x600x16B  VESA2
 cvidmode db 4
-#endif
+%endif
 
 %ifndef __MSDOS__
 @
@@ -347,12 +347,12 @@ Mode7HiRes16b db 0
 @
 @ Sync Frames to Monitor Refresh Rate (0 = NO, 1 = Yes)
 @ It is not recommended to be used if you cannot normally sustain 60fps
-#ifdef __UNIXSDL__
+%ifdef __UNIXSDL__
 %ifdef __OPENGL__
 @ OpenGL only - You need SDL 1.2.10 or later to use this.
 %endif
 @ VSync is automatically enforced in SDL software modes.
-#endif
+%endif
 vsyncon db 0
 
 #ifndef __UNIXSDL__
