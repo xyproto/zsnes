@@ -199,7 +199,7 @@ void process_file(string filename)
   }
 }
 
-void build_macro(const char *filename, struct stat& stat_buffer)
+void build_macro(const char *filename, struct stat&)
 {
   if (extension_match(filename, ".asm"))
   {

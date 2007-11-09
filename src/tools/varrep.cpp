@@ -117,7 +117,7 @@ void handle_c_file(const char *filename)
   }
 }
 
-void variable_replace(const char *filename, struct stat& stat_buffer)
+void variable_replace(const char *filename, struct stat&)
 {
   if (is_c_file(filename) ||
       is_cpp_file(filename))

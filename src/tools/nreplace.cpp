@@ -54,7 +54,7 @@ void readin_file(istream& stream, string& buffer)
   }
 }
 
-void handle_file(const char *filename, struct stat& stat_buffer)
+void handle_file(const char *filename, struct stat&)
 {
   fstream ModifyFile(filename, ios::in | ios::out);
   if (ModifyFile)

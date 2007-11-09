@@ -248,7 +248,7 @@ void handle_file(const char *filename)
   }
 }
 
-void extra_check(const char *filename, struct stat& stat_buffer)
+void extra_check(const char *filename, struct stat&)
 {
   if (extension_match(filename, ".asm"))
   {
@@ -256,9 +256,9 @@ void extra_check(const char *filename, struct stat& stat_buffer)
   }
 }
 
-int main(size_t argc, char **argv)
+int main(int, const char *const *const argv)
 {
-  for (char **i = argv+1; *i; i++)
+  for (const char *const *i = argv+1; *i; i++)
   {
     ignore_include_file.insert(*i);
   }

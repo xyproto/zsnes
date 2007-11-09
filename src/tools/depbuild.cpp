@@ -164,7 +164,7 @@ void dependency_calculate_psr(const char *filename)
   cout << o_suffix << " " << h_suffix << ": " << filename << "\n";
 }
 
-void dependency_calculate(const char *filename, struct stat& stat_buffer)
+void dependency_calculate(const char *filename, struct stat&)
 {
   if (strstr(filename, "moc_"))
   {

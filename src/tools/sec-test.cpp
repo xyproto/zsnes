@@ -150,7 +150,7 @@ void handle_file(const char *filename)
   }
 }
 
-void section_test(const char *filename, struct stat& stat_buffer)
+void section_test(const char *filename, struct stat&)
 {
   if (is_asm_file(filename))
   {
