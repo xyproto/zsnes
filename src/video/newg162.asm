@@ -1307,22 +1307,27 @@ drawlineng4b16bmsntswom:
     mov dword[ngcwinmode],1
 .winclipped
     mov ebx,[ngcwinptr]
-    cmp dword[ebx],16
+    cmp dword[ebx],8
     jbe near %1
-    sub dword[ebx],16
+    sub dword[ebx],8
 
-    mov ebx,[cbgval]
+    test dword[switch16x16],1
+    jz .skip
     add word[ofsmmptr],2
-    inc dword[bg1totng+ebx*4]
     add word[ofsmtptr],2
+.skip
+    mov ebx,[cbgval]
+    inc dword[bg1totng+ebx*4]
     mov ax,[ofsmmptr]
     mov ebx,[yposngom]
     mov edx,[flipyposngom]
     mov [yposng],ebx
     mov [flipyposng],edx
-    add edi,32
+    add edi,16
     test eax,03Fh
     jnz .next
+    test dword[switch16x16],1
+    jz .next
     mov bx,[bgtxadd]
     add ax,bx
     add [ofsmmptr],bx
@@ -1373,6 +1378,8 @@ drawlineng4b16bmsntswom:
     add ax,bx
 .noofsmh
 
+    xor dword[switch16x16],1
+    jnz .winclipped
     dec byte[tleftn]
     jnz near .winclipped
     pop ebx
@@ -1382,9 +1389,9 @@ drawlineng4b16bmsntswom:
 .loop
     mov ebx,[ngcwinptr]
     mov cx,[vrama+eax]
-    cmp dword[ebx],16
+    cmp dword[ebx],8
     jbe near %1
-    sub dword[ebx],16
+    sub dword[ebx],8
     xor ecx,[ng16bprval]
     test ecx,2000h
     jnz near .finline
@@ -1435,9 +1442,9 @@ drawlineng4b16bmsntswom:
 .winclipped
     mov ebx,[ngcwinptr]
     mov cx,[vrama+eax]
-    cmp dword[ebx],16
+    cmp dword[ebx],8
     jbe near %%processwinclip2b
-    sub dword[ebx],16
+    sub dword[ebx],8
     xor ecx,[ng16bprval]
     test ecx,2000h
     jnz near .finlineb
@@ -1445,9 +1452,9 @@ drawlineng4b16bmsntswom:
 .loop
     mov ebx,[ngcwinptr]
     mov cx,[vrama+eax]
-    cmp dword[ebx],16
+    cmp dword[ebx],8
     jbe near %%processwinclip2b
-    sub dword[ebx],16
+    sub dword[ebx],8
     xor ecx,[ng16bprval]
     test ecx,2000h
     jnz near .finline

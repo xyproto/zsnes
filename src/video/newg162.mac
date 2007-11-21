@@ -703,6 +703,13 @@
     jz %%noflipx
     inc cx
 %%noflipx
+    test dword[switch16x16],1
+    jz %%noflipxb
+    inc cx
+    test dword[vrama+eax],4000h
+    jz %%noflipxb
+    sub cx,2
+%%noflipxb
 %%nexttile
     push ecx
     push edx
@@ -791,17 +798,12 @@
 %%done
     pop edx
     pop ecx
-    inc cx
-    test dword[vrama+eax],4000h
-    jz %%noflipxb
-    sub cx,2
-%%noflipxb
-    add edi,16
-    xor dword[switch16x16],1
-    jnz near %%nexttile
-%%ntile
+%5
+    test byte[switch16x16],1
+    jz %%skip
     add word[ofsmmptr],2
     add word[ofsmtptr],2
+%%skip
     mov ax,[ofsmmptr]
     mov ebx,[cbgval]
     inc dword[bg1totng+ebx*4]
@@ -809,6 +811,8 @@
     mov edx,[flipyposngom]
     mov [yposng],ebx
     mov [flipyposng],edx
+    test byte[switch16x16],1
+    jz %%next
     test eax,03Fh
     jz near %%tileadd
 %%next
@@ -869,15 +873,15 @@
     shr ebx,2
     add ax,bx
 %%noofsmh
+    add edi,16
+    xor dword[switch16x16],1
+    jnz near %4
     dec byte[tleftn]
     jnz near %4
     pop ebx
     cmp byte[curmosaicsz],1
     jne near domosaicng16b
     ret
-%5
-    add edi,32
-    jmp %%ntile
 %%docache
     call %3
     jmp %%returnfromcache
