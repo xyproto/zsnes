@@ -235,7 +235,7 @@ bool PatchUsingIPS(const char *ext)
   {
     FILE *fp = 0;
     fp = fopen_dir(ZCfgPath, "zsnes.rom", "wb");
-    if (!fp) { perror("zsnes.rom"); asm volatile("int $3"); }
+    if (!fp) { perror("zsnes.rom"); __asm__ volatile("int $3"); }
     fwrite(ROM, 1, curromspace, fp);
     fclose(fp);
   }
