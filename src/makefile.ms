@@ -80,7 +80,7 @@ ifeq (${ENV},msvc)
   CFLAGONLY=
   CFLAGSORIG=/nologo /Ox /Oy- /GA /c /EHsc "/I${DXSDK_DIR}include" /MD /Iwin\vc_head /DNDEBUG /D_CRT_SECURE_NO_DEPRECATE /D_CRT_NONSTDC_NO_DEPRECATE
   CXXFLAGSORIG=/Zc:forScope-
-  MSVCLIBS=zlib.lib libpng.lib wsock32.lib user32.lib gdi32.lib shfolder.lib shell32.lib winmm.lib "${DXSDK_DIR}lib\x86"\dinput8.lib "${DXSDK_DIR}lib\x86"\dxguid.lib opengl32.lib glu32.lib
+  MSVCLIBS=zlib.lib libpng.lib wsock32.lib ole32.lib user32.lib gdi32.lib shfolder.lib shell32.lib winmm.lib "${DXSDK_DIR}lib\x86"\dinput8.lib "${DXSDK_DIR}lib\x86"\dxguid.lib opengl32.lib glu32.lib
   DRESOBJ=${WIN_D}/zsnes.res
   OS=__WIN32__
   QT_BASE=c:\qt
@@ -280,7 +280,7 @@ endif
 ifneq (${ENV},msvc)
 	.${SLASH}parsegen -D${OS} -gcc ${CC} -compile -flags "${CFLAGS} -O1" -cheader $(patsubst %${OE},%.h,$@) -fname $(notdir $(patsubst %${OE},%,$@)) $@ $<
 else
-	.${SLASH}parsegen -D${OS} -compile -flags "${CFLAGS}" -cheader $(patsubst %${OE},%.h,$@) -fname $(notdir $(patsubst %${OE},%,$@)) $@ $<
+	.${SLASH}parsegen -D${OS} -compile -flags "/c /MD" -cheader $(patsubst %${OE},%.h,$@) -fname $(notdir $(patsubst %${OE},%,$@)) $@ $<
 endif
 
 ui_%.h: %.ui
