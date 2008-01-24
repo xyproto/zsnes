@@ -78,7 +78,7 @@ endif
 
 ifeq (${ENV},msvc)
   CFLAGONLY=
-  CFLAGSORIG=/nologo /c /Ox /GS- /GA /MD /Wp64 /Iwin\vc_head /DNDEBUG /D_CRT_SECURE_NO_DEPRECATE /D_CRT_NONSTDC_NO_DEPRECATE
+  CFLAGSORIG=/nologo /c /Ox /Oy- /GA /c /EHsc /Iwin\vc_head /DNDEBUG /D_CRT_SECURE_NO_DEPRECATE /D_CRT_NONSTDC_NO_DEPRECATE
   CXXFLAGSORIG=/Zc:forScope-
   MSVCLIBS=zlib.lib libpng.lib wsock32.lib user32.lib gdi32.lib shfolder.lib shell32.lib winmm.lib dinput8.lib dxguid.lib opengl32.lib glu32.lib
   DRESOBJ=${WIN_D}/zsnes.res
@@ -499,7 +499,7 @@ ${OBJFIX}: objfix.c
 endif
 ${PSR}: parsegen.cpp
 ifeq (${ENV},msvc)
-	cl /nologo /EHsc /Fe$@ parsegen.cpp zlib.lib
+	cl /nologo /EHsc /MD /Fe$@ parsegen.cpp zlib.lib
 	${DELETECOMMAND} parsegen.obj
 else
 	g++ -O3 -s -o $@ parsegen.cpp -lz
