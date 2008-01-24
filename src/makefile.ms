@@ -122,7 +122,7 @@ ifeq (${DEBUG},yes)
   ifneq (${ENV},msvc)
     CFLAGSORIG=-fno-omit-frame-pointer -ggdb3 -DDEBUG
   else
-    CFLAGSORIG=/nologo /c /Od /Oy- /GS /GA /Yd /DDEBUG /MD "/I${DXSDK_DIR}include"/Iwin\vc_head
+    CFLAGSORIG=/nologo /c /Od /Oy- /GS /GA /Yd /DDEBUG /MD "/I${DXSDK_DIR}include" /Iwin\vc_head
   endif
   COPT=-O0
   ASMFLAGSORIG=-DDEBUG -g
