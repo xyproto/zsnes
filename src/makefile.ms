@@ -78,7 +78,7 @@ endif
 
 ifeq (${ENV},msvc)
   CFLAGONLY=
-  CFLAGSORIG=/nologo /c /Ox /Oy- /GA /c /EHsc /Iwin\vc_head /DNDEBUG /D_CRT_SECURE_NO_DEPRECATE /D_CRT_NONSTDC_NO_DEPRECATE
+  CFLAGSORIG=/nologo /c /Ox /Oy- /GA /c /EHsc   CFLAGSORIG=/nologo /Ox /Oy- /GA /c /EHsc "/I${DXSDK_DIR}include" /MD /Iwin\vc_head /DNDEBUG /D_CRT_SECURE_NO_DEPRECATE /D_CRT_NONSTDC_NO_DEPRECATE
   CXXFLAGSORIG=/Zc:forScope-
   MSVCLIBS=zlib.lib libpng.lib wsock32.lib user32.lib gdi32.lib shfolder.lib shell32.lib winmm.lib dinput8.lib dxguid.lib opengl32.lib glu32.lib
   DRESOBJ=${WIN_D}/zsnes.res
@@ -122,7 +122,7 @@ ifeq (${DEBUG},yes)
   ifneq (${ENV},msvc)
     CFLAGSORIG=-fno-omit-frame-pointer -ggdb3 -DDEBUG
   else
-    CFLAGSORIG=/nologo /c /Od /Oy- /GS /GA /Wp64 /Yd /DDEBUG /Iwin\vc_head
+    CFLAGSORIG=/nologo /c /Od /Oy- /GS /GA /Yd /DDEBUG /MD "/I${DXSDK_DIR}include"/Iwin\vc_head
   endif
   COPT=-O0
   ASMFLAGSORIG=-DDEBUG -g
