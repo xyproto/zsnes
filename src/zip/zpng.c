@@ -94,20 +94,6 @@ int Png_Dump(const char *filename, unsigned short width, unsigned short height, 
   FILE *fp = fopen_dir(ZSnapPath, filename, "wb");
   if (fp)
   {
-/*
-    unsigned int i;
-    for (i = 0; i < width*height*PIXEL_SIZE; i+=3)
-    {
-      unsigned int pixel = 0xFF000000 |
-                           ((unsigned int)image_data[i] << 16) |
-                           ((unsigned int)image_data[i+1] << 8) |
-                           ((unsigned int)image_data[i+2]);
-      fwrite(&pixel, 1, 4, fp);
-    }
-    fclose(fp);
-    return(0);
-*/
-
     //Try to create png write struct, fail if we cannot.
     png_structp png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, 0, 0, 0);
     if (png_ptr)
@@ -132,7 +118,6 @@ int Png_Dump(const char *filename, unsigned short width, unsigned short height, 
       if (info_ptr)
       {
         png_bytep *row_pointers;
-        png_color_8 sig_bit;
 
         //Set scanline width for 32-bit color data
         unsigned int scanline = width*PIXEL_SIZE;
@@ -157,14 +142,6 @@ int Png_Dump(const char *filename, unsigned short width, unsigned short height, 
           row_pointers[i] = image_data + scanline*i;
           #endif
         }
-
-        //Lower bit depth to max needed
-        memset(&sig_bit, 0, sizeof(png_color_8));
-        sig_bit.red=5;
-        sig_bit.green=5;
-        sig_bit.blue=5;
-        png_set_sBIT(png_ptr, info_ptr, &sig_bit);
-        png_set_shift(png_ptr, &sig_bit);
 
         //tell the png library what to encode.
         png_set_rows(png_ptr, info_ptr, row_pointers);
