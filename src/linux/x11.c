@@ -95,7 +95,7 @@ void CircumventXScreenSaver()
   {
     static time_t last_time = 0;
     time_t current_time = time(0);
-    if ((current_time - 60) > last_time)
+    if ((current_time - 50) > last_time) //Screensaver can be as low as every 60 seconds, preempt it at 50
     {
       XTestFakeKeyEvent(SDL_Display, 255, 1, 0);
       XSync(SDL_Display, False);
