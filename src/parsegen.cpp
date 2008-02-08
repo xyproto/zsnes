@@ -968,7 +968,7 @@ void output_write_var(ostream& c_stream)
       }
       else if (i->format == variable::quoted)
       {
-       c_stream << "%s" << config_comment << "\\n\", encode_string(" << i->name << ")";
+        c_stream << "%s" << config_comment << "\\n\", encode_string(" << i->name << ")";
       }
       else if (i->format == variable::mult_packed)
       {
