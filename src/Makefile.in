@@ -69,7 +69,7 @@ NET_CO=
 
 PORT_AO=$(PORT_D)/sdlintrf.o
 PORT_CO=$(PORT_D)/audio.o $(PORT_D)/battery.o @GL_DRAW@ $(PORT_D)/lib.o\
-	$(PORT_D)/safelib.o $(PORT_D)/sdllink.o $(PORT_D)/sw_draw.o
+	$(PORT_D)/safelib.o $(PORT_D)/sdllink.o $(PORT_D)/sw_draw.o $(PORT_D)/x11.o
 
 TOOL_CO=$(TOOL_D)/fileutil.o $(TOOL_D)/strutil.o
 

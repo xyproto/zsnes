@@ -29,6 +29,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <sys/time.h>
 #include <time.h>
 
+#include "x11.h"
 #include "audio.h"
 #include "safelib.h"
 #include "../cfg.h"
@@ -539,6 +540,8 @@ int Main_Proc()
     }
   }
 
+  CircumventXScreenSaver();
+
   return TRUE;
 }
 
@@ -1027,6 +1030,8 @@ int startgame()
     return FALSE;
   }
   sdl_state = (UseOpenGL ? vid_gl : vid_soft);
+
+  X11_Init();
 
   return TRUE;
 }
