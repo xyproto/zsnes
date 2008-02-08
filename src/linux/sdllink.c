@@ -540,7 +540,10 @@ int Main_Proc()
     }
   }
 
-  CircumventXScreenSaver();
+  if (DisableScreenSaver)
+  {
+    CircumventXScreenSaver();
+  }
 
   return TRUE;
 }

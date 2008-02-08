@@ -1783,8 +1783,8 @@ DisplayGUIOption:       ; Emu Options
   GUIDisplayTextY 4,11,156,GUIOptionTextG
   GUIDisplayCheckboxu 4,11,161,PauseFocusChange,GUIOptionTextG1,13
   GUIDisplayCheckboxu 4,11,171,HighPriority,GUIOptionTextG2,13
-  GUIDisplayCheckboxu 4,11,181,DisableScreenSaver,GUIOptionTextG3,0
 %endif
+  GUIDisplayCheckboxu 4,11,181,DisableScreenSaver,GUIOptionTextG3,0
 .notbasic
 
   cmp byte[GUIOptionTabs],2
@@ -1850,8 +1850,8 @@ GUIOptionTextF2 db 'PNG',0
 GUIOptionTextG db 'WINDOWS SPECIFIC:',0
 GUIOptionTextG1 db 'PAUSE EMU IN BACKGROUND',0
 GUIOptionTextG2 db 'INCREASE EMU PRIORITY',0
-GUIOptionTextG3 db 'DISABLE POWER MANAGEMENT',0
 %endif
+GUIOptionTextG3 db 'DISABLE POWER MANAGEMENT',0
 
 SECTION .text
 

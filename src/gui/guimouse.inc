@@ -2248,6 +2248,8 @@ DisplayGUIOptionClick:
   pushad
   call CheckScreenSaver
   popad
+%else
+  GUIClickCButton 11,181,byte[DisableScreenSaver]
 %endif
 .notbasic
 

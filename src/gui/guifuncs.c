@@ -365,8 +365,8 @@ void GUIRestoreVars()
 #ifdef __WIN32__
   CheckValueBounds(&PauseFocusChange, 0, 1, 0, UB);
   CheckValueBounds(&HighPriority, 0, 1, 0, UB);
-  CheckValueBounds(&DisableScreenSaver, 0, 1, 1, UB);
 #endif
+  CheckValueBounds(&DisableScreenSaver, 0, 1, 1, UB);
   CheckValueBounds(&newengen, 0, 1, 1, UB);
   CheckValueBounds(&bgfixer, 0, 1, 0, UB);
 #ifndef NO_PNG
