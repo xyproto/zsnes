@@ -418,6 +418,8 @@ reg2103w:
     mov [oamaddr+1],bl
     shl word[oamaddr],1
 .afteroamlow
+    cmp word[poamaddrs],200h
+    jbe .notinvptr
     cmp word[oamaddr],200h
     jne .notinvptr
     mov bx,[poamaddrs]
