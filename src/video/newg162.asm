@@ -160,6 +160,12 @@ cache8b16b:
     add edi,75036*2
     jmp .main
 .mosaic
+    test byte[BGMS1+ebx*2],dl
+    jz .nosubmainmos
+    test byte[FillSubScr+ebx],1
+    jnz near %1
+    jmp .main
+.nosubmainmos
     test byte[FillSubScr+ebx],1
     jz .main
     sub ecx,[CMainWinScr]
