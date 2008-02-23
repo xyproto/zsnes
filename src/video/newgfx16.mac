@@ -1386,6 +1386,16 @@
     %1 %2, %%nogo
     push ebx
     mov ebp,[cpalval+ebx*4]
+    ; process line by line
+    mov edx,[mode7ab+ebx*4]
+    mov [mode7A],edx
+    mov edx,[mode7cd+ebx*4]
+    mov [mode7C],edx
+
+    mov edx,[mode7xy+ebx*4]
+    mov [mode7X0],edx
+    mov edx,[mode7st+ebx]
+    mov [mode7set],dl
     ; Process mosaic
     mov byte[curmosaicsz],1
     xor ecx,ecx
@@ -1406,16 +1416,6 @@
     jnz %%nomosaic
     inc ebx
 %%nomosaic
-    ; process line by line
-    mov edx,[mode7ab+ebx*4]
-    mov [mode7A],edx
-    mov edx,[mode7cd+ebx*4]
-    mov [mode7C],edx
-
-    mov edx,[mode7xy+ebx*4]
-    mov [mode7X0],edx
-    mov edx,[mode7st+ebx]
-    mov [mode7set],dl
     xor edx,edx
     mov eax,ebx
     test byte[mode7set],02h
@@ -1507,6 +1507,15 @@
     mov byte[esi-1],1
     push ebx
     mov ebp,[cpalval+ebx*4]
+    ; process line by line
+    mov edx,[mode7ab+ebx*4]
+    mov [mode7A],edx
+    mov edx,[mode7cd+ebx*4]
+    mov [mode7C],edx
+    mov edx,[mode7xy+ebx*4]
+    mov [mode7X0],edx
+    mov edx,[mode7st+ebx]
+    mov [mode7set],dl
     ; Process mosaic
     mov byte[curmosaicsz],1
     xor ecx,ecx
@@ -1527,15 +1536,6 @@
     jnz %%nomosaic
     inc ebx
 %%nomosaic
-    ; process line by line
-    mov edx,[mode7ab+ebx*4]
-    mov [mode7A],edx
-    mov edx,[mode7cd+ebx*4]
-    mov [mode7C],edx
-    mov edx,[mode7xy+ebx*4]
-    mov [mode7X0],edx
-    mov edx,[mode7st+ebx]
-    mov [mode7set],dl
     xor edx,edx
     mov eax,ebx
     test byte[mode7set],02h
@@ -1592,6 +1592,15 @@
 
     push ebx
     mov ebp,[cpalval+ebx*4]
+    ; process line by line
+    mov edx,[mode7ab+ebx*4]
+    mov [mode7A],edx
+    mov edx,[mode7cd+ebx*4]
+    mov [mode7C],edx
+    mov edx,[mode7xy+ebx*4]
+    mov [mode7X0],edx
+    mov edx,[mode7st+ebx]
+    mov [mode7set],dl
     ; Process mosaic
     mov byte[curmosaicsz],1
     xor ecx,ecx
@@ -1612,15 +1621,6 @@
     jnz %%nomosaic
     inc ebx
 %%nomosaic
-    ; process line by line
-    mov edx,[mode7ab+ebx*4]
-    mov [mode7A],edx
-    mov edx,[mode7cd+ebx*4]
-    mov [mode7C],edx
-    mov edx,[mode7xy+ebx*4]
-    mov [mode7X0],edx
-    mov edx,[mode7st+ebx]
-    mov [mode7set],dl
     xor edx,edx
     mov eax,ebx
     test byte[mode7set],02h
