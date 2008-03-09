@@ -100,6 +100,11 @@ NEWSYM sprleftpr,   resb 256
 NEWSYM sprleftpr1,  resb 256
 NEWSYM sprleftpr2,  resb 256
 NEWSYM sprleftpr3,  resb 256
+NEWSYM sprcnt,      resb 256
+NEWSYM sprstart,    resb 256
+NEWSYM sprtilecnt,  resb 256
+NEWSYM sprend,      resb 256
+NEWSYM sprendx,     resw 256
 NEWSYM sprpriodata, resb 288
 NEWSYM sprprtabc,   resb 64
 NEWSYM sprprtabu,   resb 64

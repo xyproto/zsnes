@@ -53,6 +53,7 @@ EXTSYM device1,device2,snesinputdefault1,snesinputdefault2
 EXTSYM KeyExtraEnab1,KeyExtraEnab2,cycleinputdevice1,cycleinputdevice2,MouseDis
 EXTSYM KeyIncreaseGamma,KeyDecreaseGamma,gammalevel,gammalevel16b
 EXTSYM RawDumpInProgress,MMXSupport,GUIOn,QuickKeyCheck,ngena,ngdis,vollv
+EXTSYM sprcnt,sprstart,sprtilecnt,sprend,sprendx
 
 %ifndef NO_DEBUGGER
 EXTSYM debuggeron
@@ -434,7 +435,7 @@ NEWSYM docache
     mov es,ax
     ; clear # of sprites & bg cache
     mov edi,cachebg1
-    mov ecx,64*5+16*4
+    mov ecx,64*5+16*4+64*6
     xor eax,eax
     rep stosd
 ;    cmp byte[sprprifix],0
@@ -1178,49 +1179,147 @@ section .text
 ;*******************************************************
 ; Use oamram for object table
 
+%macro do_RTO 1
+    cmp cx,-%1
+    jle .returnfromptr_rto
+    xor ebx,ebx
+    mov bl,dl
+    mov al,%1
+%%loop
+    cmp bx,[resolutn]
+    ja %%no
+    cmp bx,[curypos]
+    jb %%no
+    inc byte[sprcnt+ebx]
+    cmp byte[sprcnt+ebx],32
+    jne %%no
+    mov dl,[.objleft]
+    mov [sprstart+ebx],dl
+%%no
+    inc bl
+    dec al
+    jnz %%loop
+    jmp .returnfromptr_rto
+%endmacro
+
+%macro do_RTO2 1
+    cmp cx,-%1
+    jle .returnfromptr_rto2
+    xor ebx,ebx
+    mov bl,dl
+    mov ax,%1
+%%loopy
+    mov dh,128+1
+    sub dh,[.objleft]
+    cmp [sprstart+ebx],dh
+    ja %%noy
+    cmp bx,[resolutn]
+    ja %%noy
+    cmp bx,[curypos]
+    jb %%noy
+    mov dl,%1>>3
+    push ecx
+%%loopx
+    cmp word[.obj_x],256
+    je %%doit
+    cmp cx,-8
+    jle %%nox
+    cmp cx,256
+    jge %%nox
+%%doit
+    inc byte[sprtilecnt+ebx]
+    cmp byte[sprtilecnt+ebx],34
+    jne %%nox
+    mov [sprend+ebx],dh
+    mov [sprendx+ebx*2],cx
+    add word[sprendx+ebx*2],8
+%%nox
+    add cx,8
+    dec dl
+    jnz %%loopx
+    pop ecx
+%%noy
+    inc bl
+    dec ax
+    jnz %%loopy
+    jmp .returnfromptr_rto2
+%endmacro
+
 NEWSYM processspritesb
     ; set obj pointers
     cmp byte[objsize1],1
     jne .16dot1
     mov ebx,.process8x8sprite
     mov [.size1ptr],ebx
+    mov ebx,.process8x8sprite_rto
+    mov [.size1ptr_rto],ebx
+    mov ebx,.process8x8sprite_rto2
+    mov [.size1ptr_rto2],ebx
     jmp .fin1
 .16dot1
     cmp byte[objsize1],4
     jne .32dot1
     mov ebx,.process16x16sprite
     mov [.size1ptr],ebx
+    mov ebx,.process16x16sprite_rto
+    mov [.size1ptr_rto],ebx
+    mov ebx,.process16x16sprite_rto2
+    mov [.size1ptr_rto2],ebx
     jmp .fin1
 .32dot1
     cmp byte[objsize1],16
     jne .64dot1
     mov ebx,.process32x32sprite
     mov [.size1ptr],ebx
+    mov ebx,.process32x32sprite_rto
+    mov [.size1ptr_rto],ebx
+    mov ebx,.process32x32sprite_rto2
+    mov [.size1ptr_rto2],ebx
     jmp .fin1
 .64dot1
     mov ebx,.process64x64sprite
     mov [.size1ptr],ebx
+    mov ebx,.process64x64sprite_rto
+    mov [.size1ptr_rto],ebx
+    mov ebx,.process64x64sprite_rto2
+    mov [.size1ptr_rto2],ebx
 .fin1
     cmp byte[objsize2],1
     jne .16dot2
     mov ebx,.process8x8sprite
     mov [.size2ptr],ebx
+    mov ebx,.process8x8sprite_rto
+    mov [.size2ptr_rto],ebx
+    mov ebx,.process8x8sprite_rto2
+    mov [.size2ptr_rto2],ebx
     jmp .fin2
 .16dot2
     cmp byte[objsize2],4
     jne .32dot2
     mov ebx,.process16x16sprite
     mov [.size2ptr],ebx
+    mov ebx,.process16x16sprite_rto
+    mov [.size2ptr_rto],ebx
+    mov ebx,.process16x16sprite_rto2
+    mov [.size2ptr_rto2],ebx
     jmp .fin2
 .32dot2
     cmp byte[objsize2],16
     jne .64dot2
     mov ebx,.process32x32sprite
     mov [.size2ptr],ebx
+    mov ebx,.process32x32sprite_rto
+    mov [.size2ptr_rto],ebx
+    mov ebx,.process32x32sprite_rto2
+    mov [.size2ptr_rto2],ebx
     jmp .fin2
 .64dot2
     mov ebx,.process64x64sprite
     mov [.size2ptr],ebx
+    mov ebx,.process64x64sprite_rto
+    mov [.size2ptr_rto],ebx
+    mov ebx,.process64x64sprite_rto2
+    mov [.size2ptr_rto2],ebx
 .fin2
     ; set pointer adder
     xor eax,eax
@@ -1241,6 +1340,95 @@ NEWSYM processspritesb
     push ebp
     mov ebp,[spritetablea]
 .startobject
+    mov byte[.objleft],128
+.objloop_rto
+    ; get object information
+    push ebx
+    mov dl,[oamram+ebx+1]       ; y
+    inc dl
+    ; get x
+    mov al,[oamram+ebx]         ; x
+    ; get double bits
+    mov cl,bl
+    shr ebx,4           ; /16
+    shr cl,1
+    and cl,06h
+    mov ah,[oamram+ebx+512]
+    shr ah,cl
+    and ah,03h
+    mov ch,ah
+    and ch,01h
+    mov cl,al
+    ; process object
+    ; esi = pointer to 8-bit object, dh = stats (1 shifted to right)
+    ; cx = x position, dl = y position
+    cmp cx,384
+    jb .noadder_rto
+    add cx,65535-511
+.noadder_rto
+    cmp cx,256
+    jg .returnfromptr_rto
+    test ah,02h
+    jz .size1_rto
+    jmp dword near [.size2ptr_rto]
+.size1_rto
+    jmp dword near [.size1ptr_rto]
+.returnfromptr_rto
+    pop ebx
+    add bx,4
+    and bx,01FCh
+    dec byte[.objleft]
+    jnz near .objloop_rto
+    sub bx,4
+    and bx,01FCh
+
+    mov byte[.objleft],128
+.objloop_rto2
+    ; get object information
+    push ebx
+    mov dl,[oamram+ebx+1]       ; y
+    inc dl
+    mov dh,[oamram+ebx+3]
+    shr dh,1
+    ; get x
+    mov al,[oamram+ebx]         ; x
+    ; get double bits
+    mov cl,bl
+    shr ebx,4           ; /16
+    shr cl,1
+    and cl,06h
+    mov ah,[oamram+ebx+512]
+    shr ah,cl
+    and ah,03h
+    mov ch,ah
+    and ch,01h
+    mov cl,al
+    ; process object
+    ; esi = pointer to 8-bit object, dh = stats (1 shifted to right)
+    ; cx = x position, dl = y position
+    cmp cx,384
+    jb .noadder_rto2
+    add cx,65535-511
+.noadder_rto2
+    mov [.obj_x],cx
+    cmp cx,256
+    jg .returnfromptr_rto2
+    test ah,02h
+    jz .size1_rto2
+    jmp dword near [.size2ptr_rto2]
+.size1_rto2
+    jmp dword near [.size1ptr_rto2]
+.returnfromptr_rto2
+    pop ebx
+    ; next object
+.nextobj_rto2
+    sub bx,4
+    and bx,01FCh
+    dec byte[.objleft]
+    jnz near .objloop_rto2
+    add bx,4
+    and bx,01FCh
+
     mov byte[.objleft],128
 .objloop
     xor ecx,ecx
@@ -1286,10 +1474,9 @@ NEWSYM processspritesb
     jb .noadder
     add cx,65535-511
 .noadder
+    mov [.obj_x],cx
     cmp cx,256
-    jge .returnfromptr
-    cmp cx,-64
-    jle .returnfromptr
+    jg .returnfromptr
     test ah,02h
     jz .size1
     jmp dword near [.size2ptr]
@@ -1315,7 +1502,12 @@ SECTION .bss
 .prileft resd 1
 .size1ptr resd 1
 .size2ptr resd 1
+.size1ptr_rto resd 1
+.size2ptr_rto resd 1
+.size1ptr_rto2 resd 1
+.size2ptr_rto2 resd 1
 .cpri     resd 1
+.obj_x    resw 1
 SECTION .text
 
 .reprocesssprite
@@ -1323,6 +1515,7 @@ SECTION .text
     jle near .next
     cmp cx,256
     jge .next
+.spec
     add cx,8
 .reprocessspriteb
     cmp dl,[resolutn]
@@ -1332,9 +1525,18 @@ SECTION .text
     mov bl,dl
     cmp bx,[curypos]
     jb .overflow
+    mov al,[.objleft]
+    cmp [sprstart+ebx],al
+    ja .overflow
+    cmp byte[sprtilecnt+ebx],34
+    jbe .okay
+    cmp [sprend+ebx],al
+    jb .overflow
+    ja .okay
+    cmp [sprendx+ebx*2],cx
+    jb .overflow
+.okay
     mov al,[sprlefttot+ebx]
-    cmp al,45
-    ja near .overflow
     inc byte[sprlefttot+ebx]
     mov edi,[.cpri]
     mov byte[sprleftpr+ebx*4+edi],1
@@ -1356,6 +1558,8 @@ SECTION .text
     sub cx,8
     ret
 .next
+    cmp word[.obj_x],256
+    je .spec
     add dl,8
     add esi,64
     ret
@@ -1365,6 +1569,7 @@ SECTION .text
     jle near .nextb
     cmp cx,256
     jge .nextb
+.specb
     add cx,8
 .reprocessspriteflipyb
     cmp dl,[resolutn]
@@ -1374,9 +1579,18 @@ SECTION .text
     mov bl,dl
     cmp bx,[curypos]
     jb .overflow2
+    mov al,[.objleft]
+    cmp [sprstart+ebx],al
+    ja .overflow2
+    cmp byte[sprtilecnt+ebx],34
+    jbe .okayb
+    cmp [sprend+ebx],al
+    jb .overflow2
+    ja .okayb
+    cmp [sprendx+ebx*2],cx
+    jb .overflow2
+.okayb
     mov al,[sprlefttot+ebx]
-    cmp al,45
-    ja near .overflow2
     inc byte[sprlefttot+ebx]
     mov edi,[.cpri]
     mov byte[sprleftpr+ebx*4+edi],1
@@ -1398,6 +1612,8 @@ SECTION .text
     sub cx,8
     ret
 .nextb
+    cmp word[.obj_x],256
+    je .specb
     add dl,8
     sub esi,64
     ret
@@ -1406,10 +1622,18 @@ section .bss
 .statusbit resb 1
 section .text
 
+.process8x8sprite_rto:
+    do_RTO 8
+
+.process8x8sprite_rto2:
+    do_RTO2 8
+
 .process8x8sprite:
+    cmp cx,-8
+    jle .returnfromptr
+    mov [.statusbit],dh
     test dh,40h
     jnz .8x8flipy
-    mov [.statusbit],dh
     and dh,07h
     mov byte[.numleft2do],8
     shl dh,4
@@ -1417,7 +1641,6 @@ section .text
     call .reprocesssprite
     jmp .returnfromptr
 .8x8flipy
-    mov [.statusbit],dh
     and dh,07h
     mov byte[.numleft2do],8
     shl dh,4
@@ -1430,7 +1653,15 @@ section .bss
 .numleft2do resb 1
 section .text
 
+.process16x16sprite_rto:
+    do_RTO 16
+
+.process16x16sprite_rto2:
+    do_RTO2 16
+
 .process16x16sprite:
+    cmp cx,-16
+    jle .returnfromptr
     mov [.statusbit],dh
     test dh,20h
     jnz near .16x16flipx
@@ -1532,7 +1763,15 @@ section .text
 ; 32x32 sprites routines
 ;*******************************************************
 
+.process32x32sprite_rto:
+    do_RTO 32
+
+.process32x32sprite_rto2:
+    do_RTO2 32
+
 .process32x32sprite:
+    cmp cx,-32
+    jle .returnfromptr
     mov [.statusbit],dh
     test dh,20h
     jnz near .32x32flipx
@@ -1605,13 +1844,20 @@ section .text
 ; 64x64 sprites routines
 ;*******************************************************
 
+.process64x64sprite_rto:
+    do_RTO 64
+
+.process64x64sprite_rto2:
+    do_RTO2 64
+
 .process64x64sprite:
+    cmp cx,-64
+    jle .returnfromptr
     mov [.statusbit],dh
     test dh,20h
     jnz near .64x64flipx
     test dh,40h
     jnz near .64x64flipy
-    mov [.statusbit],dh
     and dh,07h
     mov byte[.numleft2do],8
     shl dh,4
