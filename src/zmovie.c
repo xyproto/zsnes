@@ -2398,7 +2398,10 @@ static void raw_video_write_frame()
     {
       for (x = 0; x < RAW_WIDTH; x++)
       {
-        fwrite3(((PIXEL&0xF800) << 8) | ((PIXEL&0x07E0) << 5) | ((PIXEL&0x001F) << 3), raw_vid.vp);
+        uint16_t pixel = vidbuffer[((y+1)*288) + x + 16];
+        fwrite3((((pixel&0xF800) << 8) + ((pixel&0xE000) << 3)) |
+                (((pixel&0x07E0) << 5) + ((pixel&0x0600) >> 1)) |
+                (((pixel&0x001F) << 3) + ((pixel&0x001C) >> 2)), raw_vid.vp);
       }
     }
   }
