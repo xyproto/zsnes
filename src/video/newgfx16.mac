@@ -3297,8 +3297,8 @@
     mov dx,[BG3SYl+ebx*2]
 ;    test dx,08h
 ;    jz .overflow
-    cmp dx,0ffeeh
-    jne .noand
+    cmp dx,0ffffh
+    je .noand
     and dx,1FFh
 .noand
 ;.overflow
@@ -3700,8 +3700,8 @@
     je near .offsetm16x16
     xor edx,edx
     mov dx,[BG3SYl+ebx*2]
-    cmp dx,0ffeeh
-    jne .noand
+    cmp dx,0ffffh
+    je .noand
     and dx,01ffh
 .noand
     shr edx,3
