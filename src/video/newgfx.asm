@@ -639,7 +639,9 @@ NEWSYM BuildWindow
     mov byte[WindowRedraw],0
     push edx
     push ecx
-    jmp .ns
+    mov edx,[winlogicaval+eax*2]
+    shl edx,16
+    mov dl,[winbg1enval+ebx]
 .notsimilar
     mov [pwinen],edx
     mov edx,[winboundary+eax*4]
@@ -699,13 +701,23 @@ NEWSYM BuildWindow
     mov dword[esi+64],0
     mov [esi+4+64],ebx
     add esi,8
+    dec ebx
 .skipclip
+    cmp edx,255
+    jne .clip
+    or ebx,ebx
+    jz .noclip
+    mov dword[esi],0EE00h
+    mov dword[esi+64],0EE00h
+    jmp .finwin
+.clip
     sub edx,ebx
-    add edx,2
+    inc edx
     mov [esi],edx
     mov [esi+64],edx
     mov dword[esi+4],0EE00h
     mov dword[esi+4+64],0EE00h
+.finwin
     mov dword[ngwinen],1
     pop esi
     mov edx,[ngwinen]
