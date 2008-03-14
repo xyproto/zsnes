@@ -672,9 +672,9 @@ Nextwinmode:
 %endmacro
 
 %macro tilenormalwbmsbnt 2
+    mov bx,[ecx+%2]
     cmp bx,0FFFFh
     je %%nodraw
-    mov bx,[ecx+%2]
     mov [edi+%1],bx
     cmp dword[ngcwinmode],1
     je %%nodraw
