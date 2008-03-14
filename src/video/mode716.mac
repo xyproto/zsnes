@@ -25,8 +25,8 @@ EXTSYM pesimpng
 ;Skip transparency if the bg is just a sub-screen or there are no sub-screens
 ;for that line:
 %macro CheckTransparency 2
-    cmp byte[curmosaicsz],1
-    jne %%nosubmain
+;    cmp byte[curmosaicsz],1
+;    jne %%nosubmain
     test byte[BGMS1+ebx*2],%1
     jz %%nosubmain
     test byte[FillSubScr+ebx],1
