@@ -1,5 +1,5 @@
 /*
-Copyright (C) 1997-2007 ZSNES Team ( zsKnight, _Demo_, pagefault, Nach )
+Copyright (C) 1997-2008 ZSNES Team ( zsKnight, _Demo_, pagefault, Nach )
 
 http://www.zsnes.com
 http://sourceforge.net/projects/zsnes
@@ -86,7 +86,7 @@ static void display_start_message()
   size_t lines_out = 0;
   bool tty = isatty(fileno(stdout));
 
-  put_line("ZSNES v"ZVER", (c) 1997-2007, ZSNES Team\n");
+  put_line("ZSNES v"ZVER", (c) 1997-2008, ZSNES Team\n");
   put_line("Be sure to check http://www.zsnes.com/ for the latest version.\n");
   put_line("ZSNES is written by the ZSNES Team (See AUTHORS.TXT)");
   put_line("ZSNES comes with ABSOLUTELY NO WARRANTY.  This is free software,");
