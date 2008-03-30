@@ -27,12 +27,18 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #ifdef SDL_VIDEO_DRIVER_X11
 #include <dlfcn.h>
+#include <unistd.h>
+#include <sys/wait.h>
+#include "safelib.h"
 
 
 static Display *SDL_Display = 0;
+static Window SDL_Window = 0; //unsigned long
 
 static void *libXtst = 0;
 int (*XTestFakeKeyEvent)(Display *, unsigned int, Bool, unsigned long) = 0;
+
+static bool XScreenSaverSwitchedOff = false;
 
 void *dlopen_family(const char *lib, int flag)
 {
@@ -58,9 +64,10 @@ void X11_Init()
   SDL_SysWMinfo info;
   SDL_VERSION(&info.version);
 
-  if ((SDL_GetWMInfo(&info) > 0) && (info.subsystem == SDL_SYSWM_X11))
+  if (!SDL_Display && (SDL_GetWMInfo(&info) > 0) && (info.subsystem == SDL_SYSWM_X11))
   {
     SDL_Display = info.info.x11.display;
+    SDL_Window = info.info.x11.window;
 
     libXtst = dlopen_family("libXtst.so", RTLD_LAZY);
     if (libXtst)
@@ -78,6 +85,7 @@ void X11_Init()
 
 void X11_Deinit()
 {
+  XScreenSaverOn();
   if (libXtst)
   {
     XTestFakeKeyEvent = 0;
@@ -86,6 +94,53 @@ void X11_Deinit()
     libXtst = 0;
   }
   SDL_Display = 0;
+}
+
+
+static bool xdg_screensaver(char *command)
+{
+  bool success = false;
+  if (SDL_Window)
+  {
+    pid_t pid = safe_fork(0, 0);
+    if (pid != -1) //Successful Fork
+    {
+      if (pid) //Parent
+      {
+        int status;
+        waitpid(pid, &status, 0);
+        success = WIFEXITED(status) && !WEXITSTATUS(status);
+      }
+      else //Child
+      {
+        char numbuffer[21];
+        char *const arglist[] = { "xdg-screensaver", command, numbuffer, 0 };
+
+        snprintf(numbuffer, sizeof(numbuffer), "%lu", (unsigned long)SDL_Window); //Cast just in case
+        execvp(arglist[0], arglist);
+        _exit(-1);
+      }
+    }
+  }
+  return(success);
+}
+
+bool XScreenSaverOff()
+{
+  if (!XScreenSaverSwitchedOff)
+  {
+    XScreenSaverSwitchedOff = xdg_screensaver("suspend");
+  }
+  return(XScreenSaverSwitchedOff);
+}
+
+bool XScreenSaverOn()
+{
+  if (XScreenSaverSwitchedOff)
+  {
+    XScreenSaverSwitchedOff = !xdg_screensaver("resume");
+  }
+  return(!XScreenSaverSwitchedOff);
 }
 
 
@@ -107,10 +162,14 @@ void CircumventXScreenSaver()
   }
 }
 
+
 #else
 
 void X11_Init() {}
 void X11_Deinit() {}
+
+bool XScreenSaverOff() { return(false); }
+bool XScreenSaverOn() { return(false); }
 
 void CircumventXScreenSaver() {}
 

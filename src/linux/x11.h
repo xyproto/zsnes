@@ -22,8 +22,13 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #ifndef X11_H
 #define X11_H
 
+#include <stdbool.h>
+
 void X11_Init();
 void X11_Deinit();
+
+bool XScreenSaverOff();
+bool XScreenSaverOn();
 
 void CircumventXScreenSaver();
 

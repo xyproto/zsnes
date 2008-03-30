@@ -58,7 +58,9 @@ static uint32_t FullScreen = 0;
 static vidstate_t sdl_state = vid_null;
 static int UseOpenGL = 0;
 static const int BitDepth = 16;
+static bool ScreenSaverSuspended = false;
 uint32_t FirstVid = 1;
+
 
 void SwitchFullScreen();
 uint32_t SMode = 0;
@@ -540,7 +542,7 @@ int Main_Proc()
     }
   }
 
-  if (DisableScreenSaver)
+  if (DisableScreenSaver && !ScreenSaverSuspended)
   {
     CircumventXScreenSaver();
   }
@@ -1034,8 +1036,6 @@ int startgame()
   }
   sdl_state = (UseOpenGL ? vid_gl : vid_soft);
 
-  X11_Init();
-
   return TRUE;
 }
 
@@ -1318,6 +1318,12 @@ void initwinvideo()
 
     InitSound();
     InitInput();
+
+    X11_Init();
+    if (DisableScreenSaver)
+    {
+      ScreenSaverSuspended = XScreenSaverOff();
+    }
   }
 
   if (((PrevStereoSound != StereoSound) || (PrevSoundQuality != SoundQuality)))
