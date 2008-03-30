@@ -33,4 +33,4 @@ Timing engine
 Graphics Engine
 - Fix some windowing/subscreen sprite problems that are still present in
   the new graphics engine. Probably pagefault will have to do this.
-  Finish JQ's work.
+
