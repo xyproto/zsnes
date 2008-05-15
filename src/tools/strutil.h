@@ -25,6 +25,7 @@ This is part of a toolkit used to assist in ZSNES development
 #include <string>
 #include <vector>
 #include <cctype>
+#include <cstring>
 
 struct ci_char_traits : public std::char_traits<char>
 {

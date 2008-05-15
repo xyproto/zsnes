@@ -24,6 +24,7 @@ This program generates dependencies for all C/C++/Assembly files
 #include <iostream>
 #include <string>
 #include <cstdio>
+#include <cstdlib>
 using namespace std;
 
 #include <unistd.h>
@@ -209,7 +210,7 @@ void dependency_calculate(const char *filename, struct stat&)
   }
 }
 
-int main(size_t argc, const char *const *const argv)
+int main(int argc, const char *const *const argv)
 {
   if (argc < 5)
   {

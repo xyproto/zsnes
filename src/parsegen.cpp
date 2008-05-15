@@ -1822,7 +1822,7 @@ void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_st
   }
 }
 
-int main(size_t argc, const char *const *const argv)
+int main(int argc, const char *const *const argv)
 {
   const char *cheader_file = 0;
   bool compile = false;
