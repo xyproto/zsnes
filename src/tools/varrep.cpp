@@ -145,7 +145,7 @@ bool process_vars(const char *fname)
   return(false);
 }
 
-int main(size_t argc, const char *const *const argv)
+int main(int argc, const char *const *const argv)
 {
   if (argc >= 4)
   {

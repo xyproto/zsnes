@@ -25,6 +25,7 @@ Multiline replace is of course supported.
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <cstdlib>
 using namespace std;
 
 #include "fileutil.h"
@@ -95,10 +96,10 @@ void handle_file(const char *filename, struct stat&)
   }
 }
 
-int main(size_t argc, const char **argv)
+int main(int argc, const char *const *argv)
 {
   bool subdir_scan = false;
-  const char **argp = argv+1;
+  const char *const *argp = argv+1;
 
   if (*argp && !strcmp(*argp, "-r"))
   {

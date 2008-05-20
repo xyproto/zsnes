@@ -26,6 +26,8 @@ This program tells us if an assembly file has extra EXTSYMs.
 #include <set>
 #include <list>
 #include <queue>
+#include <algorithm>
+#include <cstdlib>
 #include "strutil.h"
 using namespace std;
 

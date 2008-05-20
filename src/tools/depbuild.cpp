@@ -236,7 +236,7 @@ int main(int argc, const char *const *const argv)
     else
     {
       struct stat unused;
-      for (size_t i = 5; i < argc; i++)
+      for (int i = 5; i < argc; i++)
       {
         dependency_calculate(argv[i], unused);
       }

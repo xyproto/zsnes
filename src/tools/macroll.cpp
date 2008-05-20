@@ -24,6 +24,7 @@ This program prints out a macro with params passed on command line in expanded/u
 #include <iostream>
 #include <fstream>
 #include <set>
+#include <cstdlib>
 #include "strutil.h"
 using namespace std;
 
@@ -207,7 +208,7 @@ void build_macro(const char *filename, struct stat&)
   }
 }
 
-int main(size_t argc, char **argv)
+int main(int argc, const char *const *argv)
 {
   if (argc > 1)
   {

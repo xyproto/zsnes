@@ -102,11 +102,11 @@ void trim_whitespace(const char *filename, struct stat& stat_buffer)
   }
 }
 
-int main(size_t argc, char **argv)
+int main(int argc, char *const *const argv)
 {
   if (argc > 1)
   {
-    for (char **i = argv+1; *i; i++)
+    for (const char *const *i = argv+1; *i; i++)
     {
       parse_path(*i, force_trim);
     }

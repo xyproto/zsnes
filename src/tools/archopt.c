@@ -78,7 +78,7 @@ char *x86_flags[] =
                0,            0,           0,             0,            0,        0,          0,             0,
                0,            0,           0,             0,            0,        0,          0,             0,
 
-       "lahf_lm", "cmp_legacy",       "svm",     "extapic",  "cr8legacy",    "abm",    "sse4a", "misalignsse",
+       "lahf_lm", "cmp_legacy",       "svm",     "extapic", "cr8_legacy",    "abm",    "sse4a", "misalignsse",
  "3dnowprefetch",       "osvw",       "ibs",        "sse5",     "skinit",    "wdt",          0,             0,
                0,            0,           0,             0,            0,        0,          0,             0,
                0,            0,           0,             0,            0,        0,          0,             0  };
@@ -138,11 +138,11 @@ int have_cpuid()
 
 int main(int argc, const char *const *const argv)
 {
-  char model_name[216];
-  char flags[216];
-  char cpu_family[216];
-  char vendor_id[216];
-  char model[216];
+  char model_name[512];
+  char flags[512];
+  char cpu_family[512];
+  char vendor_id[512];
+  char model[512];
 
   char *cpu = 0;
 
@@ -156,8 +156,8 @@ int main(int argc, const char *const *const argv)
 
   if ((fp = fopen("/proc/cpuinfo", "r")))
   {
-    char line[256], key[40], arg[216];
-    const char *pattern = " %39[^:]: %215[ -~]"; // for sscanf
+    char line[768], key[40], arg[512];
+    const char *pattern = " %39[^:]: %511[ -~]"; // for sscanf
 
     while (fgets(line, sizeof(line), fp) && sscanf(line, pattern, key, arg) == 2)
     {
