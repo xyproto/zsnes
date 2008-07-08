@@ -31,6 +31,7 @@ Config file handler creator by Nach (C) 2005-2007
 #include <sstream>
 #include <set>
 #include <stack>
+#include <cstring>
 using namespace std;
 
 #include <errno.h>
@@ -1827,7 +1828,7 @@ int main(int argc, const char *const *const argv)
   const char *cheader_file = 0;
   bool compile = false;
 
-  size_t param_pos = 1;
+  int param_pos = 1;
   for (; param_pos < argc; param_pos++)
   {
     if (!strncmp(argv[param_pos], "-D", 2))
@@ -1882,8 +1883,8 @@ int main(int argc, const char *const *const argv)
          << "\n"
          << "  -fname     Use the following name for the main functions.\n"
          << "             Example: -fname math\n"
-         << "             Would make init_cfg_vars become init_math_vars the\n"
-         << "             happens to write_cfg_vars and read_cfg_vars.\n"
+         << "             Would make init_cfg_vars become init_math_vars this\n"
+         << "             also happens to write_cfg_vars and read_cfg_vars.\n"
          << "\n"
          << "  -compile   Compiles output instead of outputting C file.\n"
          << "\n"
