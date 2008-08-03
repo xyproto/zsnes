@@ -59,7 +59,7 @@ static inline string COMPILE_OBJ(const string& obj, const string& c)
 }
 #endif
 
-#define LINE_LENGTH 2048*4
+#define LINE_LENGTH 262144
 char line[LINE_LENGTH];
 
 string family_name = "cfg";
@@ -880,7 +880,7 @@ void output_packed_write(ostream& c_stream)
              << "    else\n"
              << "    {\n"
              << "      size_t i = 0;\n"
-             << "      while (!*str && len)\n"
+             << "      while (len && !*str)\n"
              << "      {\n"
              << "        i++;\n"
              << "        str++;\n"
