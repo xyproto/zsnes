@@ -4881,33 +4881,13 @@ DisplayGUIPaths:
   GUIOuttextwin2d 19,10,115,GNextPath,37,GUIPathsTab3Ptr,2
   GUIOuttextwin2d 19,10,150,SGPath,37,GUIPathsTab3Ptr,3
 .notbc
-
-  cmp dword[GUIPathTabs],4
-  jne near .notgfxpack
-
-  GUIDisplayText 19,8,31,GUIPathsTextD1
-  GUIDisplayText 19,8,66,GUIPathsTextD2
-  GUIDisplayText 19,8,101,GUIPathsTextD3
-  GUIDisplayText 19,8,136,GUIPathsTextD4
-
-  GUIDisplayBBox  19,8,41,236,51,167
-  GUIDisplayBBox  19,8,76,236,86,167
-  GUIDisplayBBox  19,8,111,236,121,167
-  GUIDisplayBBox  19,8,146,236,156,167
-
-  GUIOuttextwin2d 19,10,45,FEOEZPath,37,GUIPathsTab4Ptr,0
-  GUIOuttextwin2d 19,10,80,SJNSPath,37,GUIPathsTab4Ptr,1
-  GUIOuttextwin2d 19,10,115,MDHPath,37,GUIPathsTab4Ptr,2
-  GUIOuttextwin2d 19,10,150,SPL4Path,37,GUIPathsTab4Ptr,3
-.notgfxpack
   ret
 
 SECTION .data
-GUIPathTabs dd 1,4
+GUIPathTabs dd 1,3
   db 'GENERAL',0
   db 'MORE',0
   db 'BIOS+CARTS',0
-  db 'GFX PACKS',0
 
 GUIPathsTextA1 db 'SAVES:',0
 GUIPathsTextA2 db 'SAVESTATES:',0
@@ -4928,16 +4908,11 @@ GUIPathsTextC2 db 'SUFAMI TURBO:',0
 GUIPathsTextC3 db 'SD GUNDAM G-NEXT:',0
 GUIPathsTextC4 db 'SAME GAME:',0
 
-GUIPathsTextD1 db 'FEOEZ:',0
-GUIPathsTextD2 db 'FEOEZ - SJNS:',0
-GUIPathsTextD3 db 'MDH:',0
-GUIPathsTextD4 db 'SPL4:',0
 GUIBlinkCursor db 0,0
 GUIBlinkCursorLoop db 0
 GUIPathsTab1Ptr dd SRAMPath,SStatePath,MoviePath,IPSPath
 GUIPathsTab2Ptr dd SnapPath,SPCPath,CHTPath,ComboPath,INPPath
 GUIPathsTab3Ptr dd BSXPath,STPath,GNextPath,SGPath
-GUIPathsTab4Ptr dd FEOEZPath,SJNSPath,MDHPath,SPL4Path
 GUIMovieTextPtr dd GUIMovieForcedText
 %ifndef __MSDOS__
 GUICustomResTextPtr dd GUICustomX,GUICustomY

@@ -1642,122 +1642,9 @@ void Setper2exec()
   }
 }
 
-extern uint32_t SPC7110TempPosition, SPC7110TempLength, SPCDecmPtr;
-static char *SPC7110path, SPC7110fname[8+1+6+4+1]; //dir / 12345 .bin
-char *SPC7110filep;
-extern uint8_t *SPC7110IndexPtr, *SPC7110PackPtr;
-uint32_t SPC7110IndexSize;
-
-static void SPC7PathSetup(char *PathVar, const char *Default)
-{
-  if (*PathVar)
-  {
-    SPC7110path = PathVar;
-    strcatslash(SPC7110path);
-    *SPC7110fname = 0;
-  }
-  else
-  {
-    SPC7110path = ZSramPath;
-    strcpy(SPC7110fname, Default);
-    strcatslash(SPC7110fname);
-  }
-}
-
 extern uint32_t MsgCount, MessageOn;
 extern char *Msgptr;
-uint32_t SPC7110Entries, CRC32;
-
-void SPC7PackIndexLoad()
-{
-  char *ROM = (char *)romdata;
-  FILE *fp = 0;
-  SPC7110IndexSize = 0;
-
-  //Get correct path for the ROM we just loaded
-  if (!strncmp(ROM+infoloc, "HU TENGAI MAKYO ZERO ", 21))
-  { SPC7PathSetup(FEOEZPath, "FEOEZSP7"); }
-  else if (!strncmp(ROM+infoloc, "JUMP TENGAIMAKYO ZERO", 21))
-  { SPC7PathSetup(SJNSPath, "SJNS-SP7"); }
-  else if (!strncmp(ROM+infoloc, "MOMOTETSU HAPPY      ", 21))
-  { SPC7PathSetup(MDHPath, "MDH-SP7"); }
-  else if (!strncmp(ROM+infoloc, "SUPER POWER LEAG 4   ", 21))
-  { SPC7PathSetup(SPL4Path, "SPL4-SP7"); }
-  else
-  {
-    Msgptr = "DECOMPRESSED PACK NOT FOUND";
-    MessageOn = 360;
-    return;
-  }
-
-  //Set the pointer to after the slash - needed for the case converters
-  SPC7110filep = SPC7110fname+strlen(SPC7110fname);
-
-  //Index file;
-  strcat(SPC7110fname, "index.bin");
-
-  //Load the index
-  fp = fopen_dir(SPC7110path, SPC7110fname, "rb");
-  if (fp)
-  {
-    SPC7110IndexSize = fread(SPC7110IndexPtr, 1, 12*4608, fp);
-    fclose(fp);
-
-    //Get file pointer ready for individual pack files
-    strcpy(SPC7110filep, "123456.bin"); //Extension Lower Case
-  }
-
-  SPC7110Entries = 0;
-
-  if (!SPC7110IndexSize)
-  {
-    Msgptr = "DECOMPRESSED PACK NOT FOUND";
-    MessageOn = 360;
-  }
-}
-
-void SPC7_Convert_Upper()
-{
-  char *i = SPC7110filep;
-  while (*i)
-  {
-    *i = toupper(*i); //To make extension Upper case
-    i++;
-  }
-}
-
-void SPC7_Convert_Lower()
-{
-  char *i = SPC7110filep;
-  while (*i)
-  {
-    *i = tolower(*i); //To make everything Lower case
-    i++;
-  }
-}
-
-void SPC7_Data_Load()
-{
-  FILE *fp = fopen_dir(SPC7110path, SPC7110fname, "rb");
-  if (!fp)
-  {
-    SPC7_Convert_Upper();
-    fp = fopen_dir(SPC7110path, SPC7110fname, "rb");
-
-    if (!fp)
-    {
-      SPC7_Convert_Lower();
-      fp = fopen_dir(SPC7110path, SPC7110fname, "rb");
-    }
-  }
-
-  if (fp)
-  {
-    fseek(fp, SPC7110TempPosition, SEEK_SET);
-    fread(SPC7110PackPtr, 1, SPC7110TempLength, fp);
-    fclose(fp);
-  }
-}
+uint32_t CRC32;
 
 uint32_t showinfogui()
 {
@@ -2672,6 +2559,7 @@ void SA1Reset();
 void InitC4();
 void RTCinit();
 void SPC7110init();
+void SPC7110_deinit_decompression_state();
 
 void init65816()
 {
@@ -2691,35 +2579,20 @@ void init65816()
     if(RTCEnable)
       RTCinit();
 
-    if(SPC7110Enable)
+    if (SPC7110Enable)
     {
-      if (!SPC7110IndexPtr) SPC7110IndexPtr = malloc(12*4608);
-      if (!SPC7110PackPtr) SPC7110PackPtr = malloc(65536);
-
-      if (SPC7110IndexPtr && SPC7110PackPtr)
-      {
-        SPC7PackIndexLoad();
-
-        SPC7110init();
-        map_mem(0x50, &SPC7110bank, 1);
-        map_mem(0x00, &SPC7110SRAMBank, 1);
-        map_mem(0x30, &SPC7110SRAMBank, 1);
-        snesmmap[0x50] = SPC7110PackPtr;
-        snesmap2[0x50] = SPC7110PackPtr;
-        memset(SPC7110PackPtr, 0, 0x10000);
-      }
-      else
-      {
-        puts("You don't have enough memory to run SPC7110 games!");
-        Msgptr = "MEMORY ERROR!";
-        MessageOn = 360;
-        return;
-      }
+      SPC7110init();
+      map_mem(0x50, &SPC7110bank, 1);
+      map_mem(0x00, &SPC7110SRAMBank, 1);
+      map_mem(0x30, &SPC7110SRAMBank, 1);
+      //Below should not be needed, since 50 is mapped above
+      //snesmmap[0x50] = SPC7110_buffer;
+      //snesmap2[0x50] = SPC7110_buffer;
+      //memset(SPC7110_buffer, 0, 0x10000);
     }
     else
     {
-      if (SPC7110IndexPtr) free(SPC7110IndexPtr);
-      if (SPC7110PackPtr) free(SPC7110PackPtr);
+      SPC7110_deinit_decompression_state();
     }
 
     cycpb268 = 117;

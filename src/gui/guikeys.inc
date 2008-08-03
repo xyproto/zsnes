@@ -1627,10 +1627,6 @@ GUIPathKeys:
   jne near .notpathtab3
   GUIInputBoxText GUIPathsTab3Ptr,init_save_paths
 .notpathtab3
-  cmp dword[GUIPathTabs],4
-  jne near .notpathtab4
-  GUIInputBoxText GUIPathsTab4Ptr,init_save_paths
-.notpathtab4
 
   cmp dh,9
   jne near .notab

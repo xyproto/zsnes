@@ -1,4 +1,4 @@
-;Copyright (C) 1997-2008 ZSNES Team ( zsKnight, _Demo_, pagefault, Nach )
+;Copyright (C) 1997-2007 ZSNES Team ( zsKnight, _Demo_, pagefault, Nach )
 ;
 ;http://www.zsnes.com
 ;http://sourceforge.net/projects/zsnes
@@ -22,9 +22,9 @@
 EXTSYM memaccessbankr8,memaccessbankr16,memaccessbankw8,memaccessbankw16
 EXTSYM regaccessbankr8,regaccessbankr16,regaccessbankw8,regaccessbankw16
 EXTSYM sramaccessbankr8b,sramaccessbankr16b,sramaccessbankw8b,sramaccessbankw16b
-EXTSYM SPC7110PackPtr,SPC7110IndexPtr,SPC7110IndexSize,SPC7_Data_Load
-EXTSYM SPC7110Entries,SPC7110filep,Get_Time,Get_TimeDate,snesmmap,snesmap2
+EXTSYM Get_Time,Get_TimeDate,snesmmap,snesmap2
 EXTSYM curromsize,regptw,regptr,romdata
+EXTSYM SPC7110_4800,SPC7110_4806w,SPC7110_buffer_primary,SPC7110initC
 
 %include "cpu/regs.mac"
 %include "cpu/regsw.mac"
@@ -34,7 +34,8 @@ EXTSYM debuggeron
 %endif
 
 ; SPC7110 emulation.  Information fully reverse engineered
-;    by Dark Force and John Weidman, ZSNES code by zsKnight
+;   by Dark Force and John Weidman
+;   ZSNES code by zsKnight, Jonas Quinn, and Nach
 
 SECTION .data
 NEWSYM SPCMultA, dd 0
@@ -51,24 +52,18 @@ NEWSYM SPCROMtoI, dd SPCROMPtr
 NEWSYM SPCROMAdj, dd 0
 NEWSYM SPCROMInc, dd 0
 NEWSYM SPCROMCom, dd 0
-NEWSYM SPCCompPtr, dd 0
-NEWSYM SPCDecmPtr, dd 0
-NEWSYM SPCCompCounter, dd 0
-NEWSYM SPCCompCommand, dd 0
 NEWSYM SPCCheckFix, dd 0
 NEWSYM SPCSignedVal, dd 0
+NEWSYM SPCCompressionRegs, db 00,00,00,00,00,00,00,00,00,0x00,0x00,00,00
 num2writespc7110reg equ $-SPCMultA
 NEWSYM PHnum2writespc7110reg, dd num2writespc7110reg
-NEWSYM SPC7110TempPosition, dd 0
-NEWSYM SPC7110TempLength, dd 0
-NEWSYM SPCPrevCompPtr, dd 0
-
-SECTION .bss
-NEWSYM SPCDecompFin, resd 1
 
 SECTION .text
 
 NEWSYM SPC7110init
+    pushad
+    call SPC7110initC
+    popad
     mov dword[SPCMultA],0
     mov dword[SPCMultB],0
     mov dword[SPCDivEnd],0
@@ -82,13 +77,7 @@ NEWSYM SPC7110init
     mov dword[SPCROMAdj],0
     mov dword[SPCROMInc],0
     mov dword[SPCROMCom],0
-    mov dword[SPCDecompFin],0
-    mov dword[SPCCompPtr],0
-    mov dword[SPCDecmPtr],0
-    mov dword[SPCCompCounter],0
-    mov dword[SPCCompCommand],0
     mov dword[SPCCheckFix],0
-    mov dword[SPCPrevCompPtr],0
     ret
 
 NEWSYM SPC7110Reset
@@ -242,384 +231,85 @@ NEWSYM initSPC7110regs
     ret
 %endmacro
 
-%ifndef NO_DEBUGGER
-NEWSYM LastLog
-    pushad
-    cmp byte[CurValUsed],0
-    je near .novalue
-    xor ebx,ebx
-    mov edx,DecompArray
-    mov eax,[CurPtrVal]
-    cmp dword[DecompAPtr],0
-    je .noptr
-.loop
-    mov ecx,[edx]
-    cmp ecx,eax
-    je .match
-    add edx,8
-    inc ebx
-    cmp ebx,[DecompAPtr]
-    jne .loop
-.noptr
-    cmp dword[DecompAPtr],8192
-    je .novalue
-    mov [edx],eax
-    xor eax,eax
-    mov ax,[CurDecompSize]
-    mov [edx+4],ax
-    mov ax,[CurPtrLen]
-    mov [edx+6],ax
-    mov al,[CurPtrLen+2]
-    mov [edx+3],al
-    inc dword[DecompAPtr]
-    jmp .novalue
-.match
-    add edx,4
-    mov bx,[CurDecompSize]
-    xor ebx,ebx
-    cmp [edx],bx
-    jae .novalue
-    mov [edx],bx
-.novalue
-    mov [lastentry],edx
-    mov byte[CurValUsed],1
-    mov eax,[SPCCompPtr]
-    and eax,0FFFFFFh
-    mov [CurPtrVal],eax
-    popad
-    ret
-%endif
-
 SPC4800:
-;    mov byte[debstop3],1
-;    cmp word[SPCCompCounter],0FFFFh
-;    jne .notzero
-;    xor al,al
-;    ret
-;.notzero
-    cmp byte[SPCCompCommand],0
-    je .manual
-    xor al,al
-    dec word[SPCCompCounter]
-    push ebx
-    xor ebx,ebx
-;    mov ebx,[SPCCompPtr]
-;    and ebx,0FFFFFFh
-;    add ebx,[romdata]
-;    add ebx,100000h
-    mov bx,[SPCDecmPtr]
-    add ebx,[SPC7110PackPtr]
-    mov al,[ebx]
-    pop ebx
-;    xor al,al
-;    inc dword[SPCCompPtr]
-
-    push eax
-    inc word[SPCDecmPtr]
-    mov ax,[SPCDecmPtr]
-    mov [CurDecompPtr],ax
-    sub ax,[PrevDecompPtr]
-    mov [CurDecompSize],ax
-    pop eax
-;    cmp word[SPCCompCounter],0FFFFh
-;    jne .exit
-;    mov byte[SPCDecompFin],80h
-;.exit
-    ret
-.manual
-    xor al,al
-    push ebx
-    xor ebx,ebx
-    mov bx,[SPCDecmPtr]
-    add ebx,[SPC7110PackPtr]
-    mov al,[ebx]
-    pop ebx
-
-    dec word[SPCCompCounter]
-;    inc dword[SPCCompPtr]
-    inc word[SPCDecmPtr]
-    inc word[CurDecompSize]
-;    cmp word[SPCCompCounter],0FFFFh
-;    jne .exit2
-;    mov byte[SPCDecompFin],80h
-;.exit2
+    pushad
+    call SPC7110_4800
+    popad
+    mov al,[SPCCompressionRegs+0]
     ret
 SPC4801:
-    mov al,[SPCCompPtr]
+    mov al,[SPCCompressionRegs+1]
     ret
 SPC4802:
-    mov al,[SPCCompPtr+1]
+    mov al,[SPCCompressionRegs+2]
     ret
 SPC4803:
-    mov al,[SPCCompPtr+2]
+    mov al,[SPCCompressionRegs+3]
     ret
 SPC4804:
-    mov al,[SPCCompPtr+3]
+    mov al,[SPCCompressionRegs+4]
     ret
 SPC4805:
-    mov al,[SPCDecmPtr]
+    mov al,[SPCCompressionRegs+5]
     ret
 SPC4806:
-    mov al,[SPCDecmPtr+1]
+    mov al,[SPCCompressionRegs+6]
     ret
 SPC4807:
-    xor al,al
+    mov al,[SPCCompressionRegs+7]
     ret
 SPC4808:
-    xor al,al
+    mov al,[SPCCompressionRegs+8]
     ret
 SPC4809:
-    mov al,[SPCCompCounter]
+    mov al,[SPCCompressionRegs+9]
     ret
 SPC480A:
-    mov al,[SPCCompCounter+1]
+    mov al,[SPCCompressionRegs+0Ah]
     ret
 SPC480B:
-    mov al,[SPCCompCommand]
-    mov dword[SPCDecmPtr],0
+    mov al,[SPCCompressionRegs+0Bh]
     ret
-SPC480C:        ; decompression finished status
-    mov al,[SPCDecompFin]
-    mov byte[SPCDecompFin],0
+SPC480C:
+    mov al,[SPCCompressionRegs+0Ch]
+    mov byte[SPCCompressionRegs+0Ch],0
     ret
 
-SECTION .bss
-NEWSYM CurPtrVal, resd 1
-NEWSYM CurPtrLen, resd 1
-NEWSYM CurValUsed, resb 1
-NEWSYM PrevDecompPtr, resw 1
-NEWSYM CurDecompPtr, resw 1
-NEWSYM CurDecompSize, resw 1
-NEWSYM DecompArray, resb 65536
-NEWSYM DecompAPtr, resd 1
-lastentry resd 1
-
-SECTION .text
 SPC4801w:
-    mov [SPCCompPtr],al
+    mov [SPCCompressionRegs+1],al
     ret
 SPC4802w:
-    mov [SPCCompPtr+1],al
+    mov [SPCCompressionRegs+2],al
     ret
 SPC4803w:
-    mov [SPCCompPtr+2],al
+    mov [SPCCompressionRegs+3],al
     ret
 SPC4804w:
-    mov [SPCCompPtr+3],al
+    mov [SPCCompressionRegs+4],al
     ret
 SPC4805w:
-    mov [SPCDecmPtr],al
+    mov [SPCCompressionRegs+5],al
     ret
 SPC4806w:
-    mov [SPCDecmPtr+1],al
-;    cmp dword[SPCCompPtr],0124AD48h
-;    jne .nodata
-;    mov byte[debstop3],1
-;.nodata
-
-    push ebx
-    mov ebx,[SPCCompPtr]
-    and ebx,0ffffffh
-    push ecx
-    movzx ecx,byte[SPCCompPtr+3]
-    shl ecx,2
-    add ebx,ecx
-    pop ecx
-    add ebx,100000h
-    add ebx,[romdata]
-    cmp byte[ebx],3
-    jne .try2
-    shl word[SPCDecmPtr],3
-.try2
-    cmp byte[ebx],2
-    jne .try1
-    shl word[SPCDecmPtr],2
-.try1
-    cmp byte[ebx],1
-    jne .skip
-    shl word[SPCDecmPtr],1
-.skip
-    pop ebx
-
-
+    mov [SPCCompressionRegs+6],al
     pushad
-    cmp byte[CurValUsed],0
-    je near .novalue
-    xor ebx,ebx
-    mov edx,DecompArray
-    mov eax,[CurPtrVal]
-;    and eax,0FFFFFFh
-
-    cmp dword[DecompAPtr],0
-    je .noptr
-.loop
-    mov ecx,[edx]
-;    and ecx,0FFFFFFh
-    cmp ecx,eax
-    je .match
-    add edx,8
-    inc ebx
-    cmp ebx,[DecompAPtr]
-    jne .loop
-.noptr
-    cmp dword[DecompAPtr],8192
-    je .novalue
-    mov [edx],eax
-    xor eax,eax
-    mov ax,[CurDecompSize]
-    mov [edx+4],ax
-    mov ax,[CurPtrLen]
-    mov [edx+6],ax
-    mov al,[CurPtrLen+2]
-    mov [edx+3],al
-    inc dword[DecompAPtr]
-    jmp .novalue
-.match
-    add edx,4
-    xor ebx,ebx
-    mov bx,[CurDecompSize]
-    cmp [edx],bx
-    jae .novalue
-    mov [edx],bx
-.novalue
-    mov [lastentry],edx
-    mov byte[CurValUsed],1
-    mov eax,[SPCCompPtr]
-    and eax,0FFFFFFh
-    mov [CurPtrVal],eax
+    call SPC7110_4806w
     popad
-    mov word[CurDecompSize],0
-
-    push eax
-    mov al,[SPCCompPtr+3]
-    mov [CurPtrLen+2],al
-    mov ax,[SPCDecmPtr]
-    mov [CurPtrLen],ax
-    mov eax,[SPCCompPtr]
-    mov [CurPtrVal],eax
-
-    mov ax,[SPCDecmPtr]
-    mov [PrevDecompPtr],ax
-    mov [CurDecompPtr],ax
-    mov word[CurDecompSize],0
-    pop eax
-
-    mov byte[SPCDecompFin],0h
-    ; Start Decompression
-
-    pushad
-    mov eax,[SPCCompPtr]
-    cmp [SPCPrevCompPtr],eax
-    je near .previousequal
-    mov [SPCPrevCompPtr],eax
-
-    mov ecx,[SPC7110Entries]
-    mov ebx,[SPCCompPtr]
-    and ebx,0FFFFFFh
-    mov eax,[SPC7110IndexPtr]
-    or ecx,ecx
-    jz .noentries
-.loopc
-    mov edx,[eax]
-    cmp dl,[SPCCompPtr+3]
-    jne .notfound
-    shr edx,8
-    cmp ebx,edx
-    je .found
-.notfound
-    add eax,12
-    dec ecx
-    jnz .loopc
-    jmp .noentries
-.found
-    xor word[CurPtrLen],0FFFFh
-    mov ecx,[eax+8]
-    mov ebx,[eax+4]
-    xor edx,edx
-    mov dx,[SPCDecmPtr]
-    add edx,[SPC7110PackPtr]
-    push eax
-.loopb
-    mov al,[ebx]
-    mov [edx],al
-    inc ebx
-    inc edx
-    dec ecx
-    jnz .loopb
-    pop eax
-    mov ebx,[eax+4]
-    mov edx,[lastentry]
-;    mov [edx+4],ebx
-    mov ebx,[eax]
-;    mov [edx],ebx
-    jmp .foundentry
-.noentries
-
-    mov ecx,[SPC7110IndexSize]
-    ; Address/index, pointer, length, SPC7110nfname
-    mov edx,[SPC7110IndexPtr]
-.sploop
-    mov eax,[SPCCompPtr]
-    shl eax,8
-    mov al,[SPCCompPtr+3]
-    cmp [edx],eax
-    je .foundsp
-    add edx,12
-    sub ecx,12
-    jc .overflow
-    jnz .sploop
-.overflow
-    jmp .notfoundentry
-.foundsp
-    mov eax,[edx+4]
-    mov [SPC7110TempPosition],eax
-    mov eax,[edx+8]
-    mov [SPC7110TempLength],eax
-
-    mov edx,[SPC7110filep]
-    mov eax,[SPCCompPtr]
-    and eax,0FFFFFFh
-    mov ecx,6
-.sploop2
-    mov ebx,eax
-    shr ebx,20
-    and ebx,0Fh
-    cmp bl,9
-    jbe .below9
-    add bl,55-48
-.below9
-    add bl,48
-    mov [edx],bl
-    inc edx
-    shl eax,4
-    dec ecx
-    jnz .sploop2
-
-    pushad
-    call SPC7_Data_Load
-    popad
-.notfoundentry
-.foundentry
-.previousequal
-    popad
-.fin
-.blah
-    ; Finished
-;    mov word[SPCCompCounter],0FFFFh
-    mov byte[SPCDecompFin],80h
     ret
 SPC4807w:
+    mov [SPCCompressionRegs+7],al
     ret
 SPC4808w:
+    mov [SPCCompressionRegs+8],al
     ret
 SPC4809w:
-    mov [SPCCompCounter],al
+    mov [SPCCompressionRegs+9],al
     ret
 SPC480Aw:
-    mov [SPCCompCounter+1],al
+    mov [SPCCompressionRegs+0Ah],al
     ret
 SPC480Bw:
-    mov [SPCCompCommand],al
+    mov [SPCCompressionRegs+0Bh],al
     ret
 
 ; 01,
@@ -1337,39 +1027,24 @@ NEWSYM SPC7110WriteSRAM16b
 
 ;data decompressed from data rom by spc7110 mapped to $50:0000-$50:FFFF
 NEWSYM memaccessspc7110r8
-    push ebx
-    movzx ebx,word[SPCDecmPtr]
-    add ebx,[SPC7110PackPtr]
-    mov al,[ebx]
-    pop ebx
-
-    dec word[SPCCompCounter]
-    inc word[SPCDecmPtr]
-    inc word[CurDecompSize]
-    ret
+    jmp SPC4800
 
 NEWSYM memaccessspc7110r16
-    mov ebx,[SPC7110PackPtr]
-    mov ax,[ebx+ecx]
-    cmp cx,[CurDecompPtr]
-    jb .noptr
-    mov [CurDecompPtr],cx
-    mov bx,cx
-    sub bx,[PrevDecompPtr]
-    add bx,2
-    mov [CurDecompSize],bx
-.noptr
-    xor ebx,ebx
+    pushad
+    call SPC7110_4800
+    popad
+    mov al,[SPCCompressionRegs+0]
+    pushad
+    call SPC7110_4800
+    popad
+    mov ah,[SPCCompressionRegs+0]
     ret
 
+;Should look into these two
 NEWSYM memaccessspc7110w8
-    mov ebx,[SPC7110PackPtr]
-    mov [ebx+ecx],al
-    xor ebx,ebx
+    ;int 3
     ret
 
 NEWSYM memaccessspc7110w16
-    mov ebx,[SPC7110PackPtr]
-    mov [ebx+ecx],ax
-    xor ebx,ebx
+    ;int 3
     ret

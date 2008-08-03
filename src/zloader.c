@@ -952,6 +952,7 @@ static void handle_params(int argc, char *argv[])
 
 static void ZCleanup()
 {
+  void SPC7110_deinit_decompression_state();
   void deinit_paths();
   void deallocmem();
   void DeallocRewindBuffer();
@@ -962,6 +963,7 @@ static void ZCleanup()
   void UnloadSDL();
 #endif
 
+  SPC7110_deinit_decompression_state();
   deinit_paths();
   deallocmem();
   DeallocRewindBuffer();

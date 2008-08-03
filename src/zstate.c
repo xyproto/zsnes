@@ -63,6 +63,8 @@ void SA1UpdateDPageC(), unpackfunct(), repackfunct();
 void PrepareOffset(), ResetOffset(), initpitch(), UpdateBanksSDD1();
 void procexecloop(), outofmemory();
 
+void copy_spc7110_state_data(uint8_t *, void (*)(unsigned char **, void *, size_t), bool);
+
 extern uint8_t cacheud, ccud, intrset, cycpl, cycphb, xdbt, xpbt, xp;
 extern uint8_t xe, xirqb, debugger, curnmi;
 extern uint16_t curypos, stackand, stackor, xat, xst, xdt, xxt, xyt, xpc;
@@ -140,8 +142,6 @@ enum copy_state_method { csm_save_zst_new,
                          csm_save_rewind,
                          csm_load_rewind };
 
-extern uint8_t *SPC7110PackPtr;
-
 static void copy_state_data(uint8_t *buffer, void (*copy_func)(uint8_t **, void *, size_t), enum copy_state_method method)
 {
   copy_snes_data(&buffer, copy_func);
@@ -214,8 +214,8 @@ static void copy_state_data(uint8_t *buffer, void (*copy_func)(uint8_t **, void 
 
   if (SPC7110Enable)
   {
-    copy_func(&buffer, SPC7110PackPtr, 65536);
     copy_func(&buffer, &SPCMultA, PHnum2writespc7110reg);
+    copy_spc7110_state_data(buffer, copy_func, (method == csm_load_zst_new) || (method == csm_load_rewind));
   }
 
   if (DSP4Enable)
@@ -1070,7 +1070,7 @@ void zst_sram_load(FILE *fp)
   }
   if (DSP1Enable) { fseek(fp, 2874, SEEK_CUR); }
   if (SETAEnable) { fread(setaramdata, 1, 4096, fp); } // SETA sram
-  if (SPC7110Enable) { fseek(fp, PHnum2writespc7110reg + 65536, SEEK_CUR); }
+  if (SPC7110Enable) { fseek(fp, PHnum2writespc7110reg + 6, SEEK_CUR); }
   if (DSP4Enable) {fseek(fp, 1294, SEEK_CUR); }
   fseek(fp, 220, SEEK_CUR);
   if (ramsize) { fread(sram, 1, ramsize, fp); } // normal sram
@@ -1109,7 +1109,7 @@ void zst_sram_load_compressed(FILE *fp)
           }
           if (DSP1Enable) { data += 2874; }
           if (SETAEnable) { memcpyrinc(&data, setaramdata, 4096); } // SETA sram
-          if (SPC7110Enable)  { data += PHnum2writespc7110reg + 65536; }
+          if (SPC7110Enable)  { data += PHnum2writespc7110reg + 6; }
           if (DSP4Enable) { data += 1294; }
           data += 220;
           if (ramsize)  { memcpyrinc(&data, sram, ramsize); } // normal sram
