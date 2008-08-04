@@ -148,7 +148,7 @@ config.status: configure.in
 Makefile: config.status Makefile.in
 	./config.status
 makefile.dep: $(TOOL_D)/depbuild Makefile
-	$(TOOL_D)/depbuild @CC@ "@CFLAGS@" @NASMPATH@ "@NFLAGS@" $(Z_OBJS) > makefile.dep
+	$(TOOL_D)/depbuild @CC@ "@CFLAGS@" @NASMPATH@ "@NFLAGS@" $(Z_OBJS) > $@
 
 # set ${prefix} so mandir works.
 prefix=@prefix@
