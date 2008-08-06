@@ -701,7 +701,6 @@ NEWSYM BuildWindow
     mov dword[esi+64],0
     mov [esi+4+64],ebx
     add esi,8
-    dec ebx
 .skipclip
     cmp edx,255
     jne .clip
@@ -712,7 +711,7 @@ NEWSYM BuildWindow
     jmp .finwin
 .clip
     sub edx,ebx
-    inc edx
+    add edx,2
     mov [esi],edx
     mov [esi+64],edx
     mov dword[esi+4],0EE00h
