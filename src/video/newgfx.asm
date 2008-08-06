@@ -612,7 +612,7 @@ NEWSYM BuildWindow
     je .ns2
     push edx
     push ecx
-    mov edx,[winlogicaval+eax*2]
+    mov edx,[nglogicval]
     shl edx,16
     mov dl,[winbg1enval+ebx]
     cmp edx,[pwinen]
@@ -639,7 +639,7 @@ NEWSYM BuildWindow
     mov byte[WindowRedraw],0
     push edx
     push ecx
-    mov edx,[winlogicaval+eax*2]
+    mov edx,[nglogicval]
     shl edx,16
     mov dl,[winbg1enval+ebx]
 .notsimilar
