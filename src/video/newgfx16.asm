@@ -419,12 +419,10 @@ section .text
     jmp %%skip
 %%nodisable
     mov cl,bl
-    or cl,bh
     and cl,0Ah
     cmp cl,0Ah
     je %%skip
     mov ch,bl
-    or ch,bh
     mov edx,[winl1]
     cmp cl,02h
     je %%bg1
