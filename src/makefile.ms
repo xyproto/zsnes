@@ -47,7 +47,7 @@ SLASH=/
 PSR=parsegen
 ASM=nasm
 ASMOPT=-O1
-ASMFLAGSORIG=
+ASMFLAGSORIG=-w-orphan-labels
 COPT=-O3
 CPUOPT=i586
 ifneq ($(CPU),)
@@ -187,7 +187,8 @@ CHIPSOBJ=${CHIP_D}/dsp1emu${OE} ${CHIP_D}/fxemu2${OE} ${CHIP_D}/sfxproc${OE}\
 	${CHIP_D}/sdd1emu${OE} ${CHIP_D}/c4emu${OE} ${CHIP_D}/dsp4proc${OE}\
 	${CHIP_D}/dsp4emu${OE} ${CHIP_D}/dsp3proc${OE} ${CHIP_D}/dsp3emu${OE}\
 	${CHIP_D}/obc1emu${OE} ${CHIP_D}/obc1proc${OE} ${CHIP_D}/c4proc${OE}\
-	${CHIP_D}/7110proc${OE} ${CHIP_D}/st11proc${OE} ${CHIP_D}/seta11${OE}
+	${CHIP_D}/7110proc${OE} ${CHIP_D}/st11proc${OE} ${CHIP_D}/seta11${OE}\
+	${CHIP_D}/7110emu${OE}
 
 CPUOBJ=${CPU_D}/dma${OE} ${CPU_D}/execute${OE} ${CPU_D}/executec${OE}\
 	${CPU_D}/irq${OE} ${CPU_D}/memory${OE} ${CPU_D}/memtable${OE}\
@@ -242,7 +243,7 @@ WINVIDOBJ=${VID_D}/sw_draw${OE} ${VID_D}/copyvwin${OE} ${VID_D}/ntsc${OE}\
 ifeq (${QTD},yes)
   CXXFLAGS+=-I"$(QT_BASE)${SLASH}include" -I"$(QT_BASE)${SLASH}include${SLASH}QtCore" -I"$(QT_BASE)${SLASH}include${SLASH}QtGui" -DWIN32
   DEBUGGEROBJ=${DEBUGGER_D}/load${OE} ${DEBUGGER_D}/ui${OE} ${DEBUGGER_D}/moc_ui${OE} ${DEBUGGER_D}/moc_zthread${OE} ${DEBUGGER_D}/zthread${OE}
-  LIBS+= -lQtCore4 -lQtGui4
+  LIBS+= -L${QT_BASE}${SLASH}lib -lQtCore4 -lQtGui4
   MSVCLIBS+= ${QT_BASE}${SLASH}lib${SLASH}qtcore.lib ${QT_BASE}${SLASH}lib${SLASH}qtgui.lib advapi32.lib imm32.lib winspool.lib comdlg32.lib
 endif
 
@@ -335,6 +336,7 @@ zstate${OE}: zstate.c asm_call.h cfg${OE} gblvars.h input${OE} numconv.h \
 ztime${OE}: ztime.asm macros.mac
 ztimec${OE}: ztimec.c
 
+${CHIP_D}/7110emu${OE}: ${CHIP_D}/7110emu.c cfg${OE} zpath.h
 ${CHIP_D}/7110proc${OE}: ${CHIP_D}/7110proc.asm macros.mac \
 	${CPU_D}/regs.mac ${CPU_D}/regsw.mac
 ${CHIP_D}/c4emu${OE}: ${CHIP_D}/c4emu.c
