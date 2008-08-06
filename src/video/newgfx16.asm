@@ -958,6 +958,26 @@ NEWSYM newengine16b
     je .winnchanged
     mov byte[bgwinchange+eax],1
 .winnchanged
+    mov bl,[winbg1enval+eax]
+    cmp [winbg1enval+eax-1],bl
+    je .winnchanged1
+    mov byte[bgwinchange+eax],1
+.winnchanged1
+    mov bl,[winbg2enval+eax]
+    cmp [winbg2enval+eax-1],bl
+    je .winnchanged2
+    mov byte[bgwinchange+eax],1
+.winnchanged2
+    mov bl,[winbg3enval+eax]
+    cmp [winbg3enval+eax-1],bl
+    je .winnchanged3
+    mov byte[bgwinchange+eax],1
+.winnchanged3
+    mov bl,[winbg4enval+eax]
+    cmp [winbg4enval+eax-1],bl
+    je .winnchanged4
+    mov byte[bgwinchange+eax],1
+.winnchanged4
 
     ; generate sprite window
     cmp byte[winbg1enval+eax+4*256],0
