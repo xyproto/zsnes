@@ -2970,6 +2970,7 @@
     or al,al
     jz %%nomosaic
     inc al
+    push ebx
     mov [curmosaicsz],al
     mov cl,al
     mov al,bl
@@ -2985,9 +2986,11 @@
     jnz %%nozeroline
     inc ebx
 %%nozeroline
+    mov [mosstart],ebx
+    pop ebx
     mov ecx,[BG1SYl+ebx*2+%1*512]
     and ecx,0FFFFh
-    add ecx,ebx
+    add ecx,[mosstart]
 %%nomosaic
     cmp byte[BGMA+ebx],5
     jae near .tiles16x8
@@ -3458,7 +3461,6 @@
     dec ecx
     jnz near .next
     pop esi
-    mov dword[ignor512],0
     ret
 %endmacro
 
@@ -3469,6 +3471,7 @@
     push ebx
     mov byte[curmosaicsz],1
     xor eax,eax
+    push ebx
     test byte[mosenng+ebx],1 << %1
     jz %%nomosaic
     mov al,[mosszng+ebx]
@@ -3490,6 +3493,8 @@
     jnz %%nomosaic
     inc ebx
 %%nomosaic
+    mov [mosstart],ebx
+    pop ebx
     cmp byte[BGMA+ebx],5
     jae near .tiles16x8
     cmp byte[osm2dis],1
@@ -3503,10 +3508,10 @@
     je near .tiles16x16
     mov eax,[BG1SYl+ebx*2+%1*512]
     and eax,0FFFFh
-    add eax,ebx
+    add eax,[mosstart]
     test byte[intrlng+ebx],01h
     jz %%nointerl
-    add eax,ebx
+    add eax,[mosstart]
     add eax,[cfieldad]
 %%nointerl
     lea eax,[eax*8]
@@ -3564,15 +3569,15 @@
 .tiles16x16
     mov ecx,[BG1SYl+ebx*2+%1*512]
     and ecx,0FFFFh
-    mov dword[taddnfy16x16],0
-    add ecx,ebx
+    add ecx,[mosstart]
 
     test byte[intrlng+ebx],01h
     jz %%nointerl7
-    add ecx,ebx
+    add ecx,[mosstart]
     add ecx,[cfieldad]
 %%nointerl7
 
+    mov dword[taddnfy16x16],0
     mov dword[taddfy16x16],16
     test ecx,08h
     jz .nobottomy
@@ -3636,11 +3641,11 @@
 .tiles16x8
     mov ecx,[BG1SYl+ebx*2+%1*512]
     and ecx,0FFFFh
-    add ecx,ebx
+    add ecx,[mosstart]
 
     test byte[intrlng+ebx],01h
     jz %%nointerl8
-    add ecx,ebx
+    add ecx,[mosstart]
     add ecx,[cfieldad]
 %%nointerl8
 
@@ -3763,7 +3768,7 @@
     add [ofsmtptr],ecx
     mov eax,[BG1SYl+ebx*2+%1*512]
     and eax,0FFFFh
-    add eax,ebx
+    add eax,[mosstart]
     lea eax,[eax*8]
     and eax,38h
     mov [yposng],eax

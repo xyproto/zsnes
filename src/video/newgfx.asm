@@ -895,7 +895,6 @@ NEWSYM modeused, resd 2
 NEWSYM reslbyl,  resd 1
 NEWSYM csprival, resd 1
 NEWSYM cfieldad, resd 1
-NEWSYM ignor512, resd 1
 NEWSYM ofsmcptr, resd 1
 NEWSYM ofsmtptr, resd 1
 NEWSYM ofsmmptr, resd 1
@@ -948,7 +947,6 @@ SECTION .text
 
 NEWSYM StartDrawNewGfx
     mov byte[WindowRedraw],1
-    mov dword[ignor512],1
     mov dword[cfieldad],0
     cmp byte[res480],1
     jne .scan2
