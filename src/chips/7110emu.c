@@ -826,11 +826,11 @@ static uint8_t read_non_buffered_decompress(uint8_t byte)
   return(byte);
 }
 
-void copy_spc7110_state_data(uint8_t *buffer, void (*copy_func)(unsigned char **, void *, size_t), bool load)
+void copy_spc7110_state_data(uint8_t **buffer, void (*copy_func)(unsigned char **, void *, size_t), bool load)
 {
-  copy_func(&buffer, &decompression_state.last_address, 3);
-  copy_func(&buffer, &decompression_state.last_entry, sizeof(uint8_t));
-  copy_func(&buffer, &decompression_state.decompression_used_length, sizeof(uint16_t));
+  copy_func(buffer, &decompression_state.last_address, 3);
+  copy_func(buffer, &decompression_state.last_entry, sizeof(uint8_t));
+  copy_func(buffer, &decompression_state.decompression_used_length, sizeof(uint16_t));
 
   if (load && decompression_state.last_address)
   {

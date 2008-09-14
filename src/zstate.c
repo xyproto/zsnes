@@ -63,7 +63,7 @@ void SA1UpdateDPageC(), unpackfunct(), repackfunct();
 void PrepareOffset(), ResetOffset(), initpitch(), UpdateBanksSDD1();
 void procexecloop(), outofmemory();
 
-void copy_spc7110_state_data(uint8_t *, void (*)(unsigned char **, void *, size_t), bool);
+void copy_spc7110_state_data(uint8_t **, void (*)(unsigned char **, void *, size_t), bool);
 
 extern uint8_t cacheud, ccud, intrset, cycpl, cycphb, xdbt, xpbt, xp;
 extern uint8_t xe, xirqb, debugger, curnmi;
@@ -215,7 +215,7 @@ static void copy_state_data(uint8_t *buffer, void (*copy_func)(uint8_t **, void 
   if (SPC7110Enable)
   {
     copy_func(&buffer, &SPCMultA, PHnum2writespc7110reg);
-    copy_spc7110_state_data(buffer, copy_func, (method == csm_load_zst_new) || (method == csm_load_rewind));
+    copy_spc7110_state_data(&buffer, copy_func, (method == csm_load_zst_new) || (method == csm_load_rewind));
   }
 
   if (DSP4Enable)
