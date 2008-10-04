@@ -538,7 +538,86 @@ NEWSYM ProcessMode7ngwinD16b
     mov byte[switchtorep3],1
     jmp .roffyretb
 
-%macro ProcessBuildWindow16b 1
+NEWSYM ProcessMode7ngwinE16b
+    add dword[ngcwinptr],4
+    mov ecx,[ngcwinptr]
+    mov ecx,[ecx]
+    cmp ecx,[ngwleft]
+    jae near .finishmode7
+    sub [ngwleft],ecx
+    or ecx,ecx
+    jz .noclip
+    mov [pixelsleft],ecx
+.nextvalr
+    test byte[mode7xrpos+1],0F8h
+    jnz near .rposoffxr
+.nextposxr
+    test byte[mode7yrpos+1],0F8h
+    jnz near .rposoffyr
+.nextposyr
+    mov eax,[mode7xadder]
+    add [mode7xrpos],eax
+    mov eax,[mode7yadder]
+    sub [mode7yrpos],eax
+    add esi,2
+    dec dword[pixelsleft]
+    jnz near .nextvalr
+.noclip
+    add dword[ngcwinptr],4
+    jmp ProcessMode7ngwin16b
+.finishmode7
+    mov dword[ngwleft],0
+    mov dword[ngwleftb],0
+    ret
+
+.rposoffxr
+    mov al,[mmode7xinc]
+    mov edi,[vram]
+    add [mmode7ptr],al
+    mov cl,[mmode7xincc]
+    cmp byte[mmode7ptr],cl
+    je .roff
+.roffxretb
+    mov ebx,[mmode7ptr]
+    xor ecx,ecx
+    mov cl,[edi+ebx]
+    mov eax,[mmode7xadd2]
+    shl ecx,7
+    sub [mode7xrpos],eax
+    add edi,ecx
+    jmp .nextvalr
+.rposoffyr
+    mov al,[mmode7yinc]
+    mov edi,[vram]
+    sub [mmode7ptr+1],al
+    js .roff
+.roffyretb
+    mov ebx,[mmode7ptr]
+    xor ecx,ecx
+    mov cl,[edi+ebx]
+    mov eax,[mmode7yadd2]
+    shl ecx,7
+    add [mode7yrpos],eax
+    add edi,ecx
+    jmp .nextposxr
+.roff
+    test byte[mode7set],40h
+    jnz .tilerep3
+    jmp .finishmode7
+.tilerep3
+    and byte[mode7yrpos+1],07h
+    and byte[mode7xrpos+1],07h
+    mov eax,[mode7xadder]
+    add [mode7xrpos],eax
+    mov eax,[mode7yadder]
+    sub [mode7yrpos],eax
+    add esi,2
+    dec dword[pixelsleft]
+    jnz near .tilerep3
+    mov [mode7xrpos],eax
+    ret
+
+%macro ProcessBuildWindow 1
     mov dword[ngwinen],0
     test byte[esi+ebx+%1*256],0Ah
     jz %%nowindowing
@@ -1214,7 +1293,7 @@ NEWSYM ProcessMode7ngwinD16b
     jne near %%nextvald
     jmp %%finishmode7
 %%nextvald
-    mov dword[ngwleft],0
+    ;mov dword[ngwleft],0
 
     test byte[mode7set],40h
     jnz near %%tilerep2
@@ -1321,7 +1400,7 @@ NEWSYM ProcessMode7ngwinD16b
 
     cmp dword[ngwleft],0
     je %%notskipvalues4
-    call ProcessMode7ngwinB16b
+    call ProcessMode7ngwinE16b
     cmp byte[switchtorep3],0
     jne near %%tilerep3
     cmp dword[ngwleftb],0
@@ -1865,7 +1944,7 @@ NEWSYM ProcessMode7ngwinD16b
 
 %macro Mode7NonMainSub 1
     WinEnCheck
-    ProcessBuildWindow16b 0
+    ProcessBuildWindow 0
 .nohr
     Mode7NoTranspPreStartUp
     Mode7Startup
@@ -1879,7 +1958,7 @@ NEWSYM ProcessMode7ngwinD16b
 
 %macro Mode7NonMainSube 1
     WinEnCheck
-    ProcessBuildWindow16b 0
+    ProcessBuildWindow 0
 .nohr
     Mode7NoTranspPreStartUp2
     Mode7Startup
@@ -1893,7 +1972,7 @@ NEWSYM ProcessMode7ngwinD16b
 
 %macro Mode7MainSub 2
     WinEnCheckMS
-    ProcessBuildWindow16b 0
+    ProcessBuildWindow 0
 .nohr
     Mode7NoTranspPreStartUp
     call Mode7Startup16b
@@ -1904,7 +1983,7 @@ NEWSYM ProcessMode7ngwinD16b
 
 %macro Mode7MainSube 2
     WinEnCheckMS
-    ProcessBuildWindow16b 0
+    ProcessBuildWindow 0
 .nohr
     Mode7NoTranspPreStartUp2
     call Mode7Startup16b
