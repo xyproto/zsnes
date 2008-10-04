@@ -24,7 +24,7 @@ EXTSYM regaccessbankr8,regaccessbankr16,regaccessbankw8,regaccessbankw16
 EXTSYM sramaccessbankr8b,sramaccessbankr16b,sramaccessbankw8b,sramaccessbankw16b
 EXTSYM Get_Time,Get_TimeDate,snesmmap,snesmap2
 EXTSYM curromsize,regptw,regptr,romdata
-EXTSYM SPC7110_4800,SPC7110_4806w,SPC7110_buffer_primary,SPC7110initC
+EXTSYM SPC7110_4800,SPC7110_4806w,SPC7110initC
 
 %include "cpu/regs.mac"
 %include "cpu/regsw.mac"
