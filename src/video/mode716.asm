@@ -531,6 +531,7 @@ NEWSYM drawmode7ngextbg216b
 ;    je near drawmode7winextbg2hr16b
     ; esi = pointer to video buffer
     CheckTransparency 01h,drawmode7ngextbg216bt
+    CheckTransparency 02h,drawmode7ngextbg216bt
     test byte[FillSubScr+ebx],1
     jz .main
     test byte[BGMS1+ebx*2],01h
