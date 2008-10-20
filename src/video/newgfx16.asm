@@ -3499,10 +3499,11 @@ section .text
 %endmacro
 
 %macro SCMainC 0
+    mov ebx,[UnusedBit]
 %endmacro
 
 %macro SCSubC 0
-    xor ebx,0FFFFFFFFh
+    mov ebx,[UnusedBitXor]
 %endmacro
 
 %macro SCMainD 0
@@ -3528,10 +3529,7 @@ section .text
     and al,0C0h
     cmp al,0C0h
     jne .notentire
-    mov ebx,[UnusedBit]
     %3
-    mov ecx,256
-    mov edx,256
     jmp .startclippingfull
 .notentire
 
@@ -3552,46 +3550,40 @@ section .text
     pop eax
 .nowindowing
 
-    mov ebx,[UnusedBit]
     %3
     mov edx,256
     cmp dword[ngwinen],0
     jne .windowenabled
     cmp al,80h
     je near .finclipping
-    mov ecx,256
     jmp .startclippingfull
 .windowenabled
-    cmp al,80h
-    je near .outsideclipping
     mov edi,ngwintable
     mov ecx,[edi]
+    add edi,4
     cmp ecx,0
     je .nodec
     dec ecx
+    jmp .notzero
 .nodec
-    add edi,4
+    dec dword[edi]
+.notzero
+    cmp al,80h
+    je near .outsideclipping
     or ecx,ecx
     jnz near .startclippingb
-    mov ecx,[edi]
-    add edi,4
-    jmp .noclipping
+    jmp .skipclipping
 .outsideclipping
-    mov edi,ngwintable
-    mov ecx,[edi]
-    add edi,4
     or ecx,ecx
     jnz .noclipping
     mov ecx,[edi]
-    cmp ecx,0
-    je .nodec2
-    dec ecx
-.nodec2
     add edi,4
-    jmp .startclippingb
 .startclippingb
     cmp ecx,256
     jae near .startclippingfull
+.startclippingc
+    or ecx,ecx
+    jz .skipclipping
 .startclipping
     %2
     add esi,2
@@ -3599,6 +3591,7 @@ section .text
     jz .finclipping
     dec ecx
     jnz .startclipping
+.skipclipping
     mov ecx,[edi]
     add edi,4
 .noclipping
@@ -3609,7 +3602,7 @@ section .text
     add esi,ecx
     mov ecx,[edi]
     add edi,4
-    jmp .startclipping
+    jmp .startclippingc
 .startclippingfull
     mov ecx,128
 .loopclipfull
