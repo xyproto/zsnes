@@ -326,14 +326,6 @@ NEWSYM drawline16b
     mov [colormodeofs],ebx
     pop ebx
 
-    cmp word[scrnon],1317h
-    jne .noscrnona
-    cmp byte[scaddtype],0
-    jne .noscrnona
-    mov word[scrnon],1317h
-    mov byte[scaddtype],44h
-    mov byte[scaddset],02h
-.noscrnona
     cmp word[scrnon],0117h
     jne .notransph
     cmp word[scaddset],8202h
