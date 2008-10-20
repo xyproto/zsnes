@@ -161,11 +161,7 @@ cache8b16b:
     jmp .main
 .mosaic
     test byte[BGMS1+ebx*2],dl
-    jz .nosubmainmos
-    test byte[FillSubScr+ebx],1
-    jnz near %1
-    jmp .main
-.nosubmainmos
+    jnz .main
     test byte[FillSubScr+ebx],1
     jz .main
     sub ecx,[CMainWinScr]

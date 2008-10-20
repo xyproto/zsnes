@@ -2097,6 +2097,7 @@
 %endmacro
 
 %macro drawbgtileng16b 2
+    mov byte[curmosaicsz],1
     mov dword[ng16bprval],0
     mov dword[ng16bbgval],%1
     cmp byte[t16x161+ebx+%1*256],1
@@ -2287,6 +2288,7 @@
 %endmacro
 
 %macro drawbgtilengpr116b 2
+    mov byte[curmosaicsz],1
     mov dword[ng16bprval],2000h
     mov dword[ng16bbgval],%1
     cmp byte[t16x161+ebx+%1*256],1
