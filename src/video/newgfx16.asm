@@ -630,6 +630,8 @@ NEWSYM newengine16b
     mov byte[clinemainsub],0
     cmp word[cgram],0
     jne .ngmsdraw0
+    test byte[scaddset],2
+    jnz .ngmsdraw0
     mov bl,[scrnon]
     and bl,1Fh
     or bl,0E0h
