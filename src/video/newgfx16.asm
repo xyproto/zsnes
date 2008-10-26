@@ -446,7 +446,8 @@ section .text
 %endmacro
 
 section .data
-mosstart dd 0
+mosstart times 4 dd 0
+moscountdown db 0
 BackAreaAdd dd 0
 BackAreaUnFillCol dd 0
 BackAreaFillCol dd 0
