@@ -112,8 +112,8 @@ const int ST011_move_table[8*2][9*2] =
 
 void ST011_Reset()
 {
-	RunST011 = &ST011_Command;
-  ST011_SR=0xff;
+  RunST011 = &ST011_Command;
+  ST011_SR = 0xc4;
 }
 
 

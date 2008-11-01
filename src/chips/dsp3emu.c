@@ -586,7 +586,8 @@ void DSP3_Decode()
 }
 
 
-// Opcodes 1E/3E bit-perfect to 'dsp3-intro' log
+// Opcode 3E bit-perfect to 'dsp3-intro' log
+// Opcode 1E is not bit-perfect
 // src: adapted from SD Gundam X/G-Next
 
 int16_t op3e_x;
@@ -760,6 +761,39 @@ void DSP3_OP1E_A3()
 
 void DSP3_OP1E_B()
 {
+	// set some weights to 0xff
+	// this is needed to get the right weights for the cells at op1e_max_radius
+	op1e_x = op3e_x;
+	op1e_y = op3e_y-(op1e_max_radius+1);
+
+	op1e_lcv_turns = 6;
+	op1e_turn = 5;
+
+	while( op1e_lcv_turns ) {
+		op1e_lcv_steps = op1e_max_radius+1;
+
+		while( op1e_lcv_steps ) {
+			DSP3_OP1E_D1( op1e_turn, &op1e_x, &op1e_y );
+
+			if( 0 <= op1e_y && op1e_y < DSP3_WinHi &&
+					0 <= op1e_x && op1e_x < DSP3_WinLo ) {
+				DSP3_DR = (uint8_t)(op1e_x) | ((uint8_t)(op1e_y)<<8);
+				DSP3_OP03();
+
+				op1e_cell = DSP3_DR;
+				op1e_weight[ op1e_cell] = 0xff;
+			}
+
+			op1e_lcv_steps--;
+		} // end search line
+
+		op1e_turn--;
+		if( op1e_turn == 0 ) op1e_turn = 6;
+
+		op1e_lcv_turns--;
+	} // end circle search
+	// end weight correction
+
 	op1e_x = op3e_x;
 	op1e_y = op3e_y;
 	op1e_lcv_radius = 1;
@@ -774,7 +808,7 @@ void DSP3_OP1E_B()
 
 void DSP3_OP1E_B1()
 {
-	while( op1e_lcv_radius < op1e_max_radius ) {
+	while( op1e_lcv_radius <= op1e_max_radius ) {
 		op1e_y--;
 
 		op1e_lcv_turns = 6;
@@ -933,6 +967,10 @@ void DSP3_OP1E_C1()
 
 void DSP3_OP1E_C2()
 {
+	if(op1e_weight[ op1e_cell ]>=0x1f)
+	{ // i'm not sure about this
+		op1e_weight[ op1e_cell ] = 0xff;
+	}
 	DSP3_DR = op1e_weight[ op1e_cell ];
 
 	DSP3_OP1E_D( (int16_t)(op1e_turn+2), &op1e_x, &op1e_y );
@@ -980,15 +1018,15 @@ void DSP3_OP1E_D( int16_t move, int16_t *lo, int16_t *hi )
 void DSP3_OP1E_D1( int16_t move, int16_t *lo, int16_t *hi )
 {
 	//uint32_t dataOfs = ((move << 1) + 0x03b2) & 0x03ff;
-	int16_t Lo;
-	int16_t Hi;
+	//int16_t Lo;
+	//int16_t Hi;
 
 	const unsigned short HiAdd[] = {
-		0x00, 0xFF, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00,
-		0x00, 0xFF, 0xFF, 0x00, 0x01, 0x00, 0xFF, 0x00
+		0x00, 0xFFFF, 0xFFFF, 0x00, 0x01, 0x00, 0xFFFF, 0x00,
+		0x00, 0xFFFF, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00
 	};
 	const unsigned short LoAdd[] = {
-		0x00, 0x00, 0x01, 0x01, 0x00, 0xFF, 0xFF, 0x00
+		0x00, 0x00, 0x01, 0x01, 0x00, 0xFFFF, 0xFFFF, 0x00
 	};
 
 	if( (*lo) & 1 )
@@ -997,16 +1035,16 @@ void DSP3_OP1E_D1( int16_t move, int16_t *lo, int16_t *hi )
 		DSP3_AddHi = HiAdd[ move + 0 ];
 	DSP3_AddLo = LoAdd[ move ];
 
-	Lo = (uint8_t)(*lo);
-	Hi = (uint8_t)(*hi);
+	//Lo = (uint8_t)(*lo);
+	//Hi = (uint8_t)(*hi);
 
-	if (Lo & 1)	Hi += (DSP3_AddLo & 1);
+	//if (Lo & 1)	Hi += (DSP3_AddLo & 1);
 
-	DSP3_AddLo += Lo;
-	DSP3_AddHi += Hi;
+	//DSP3_AddLo += Lo;
+	//DSP3_AddHi += Hi;
 
-	*lo = DSP3_AddLo;
-	*hi = DSP3_AddHi;
+	*lo += DSP3_AddLo;
+	*hi += DSP3_AddHi;
 }
 
 
@@ -1091,6 +1129,7 @@ void DSP3_Command()
     case 0x1c: SetDSP3 = &DSP3_OP1C; break;
     case 0x1e: SetDSP3 = &DSP3_OP1E; break;
     case 0x1f: SetDSP3 = &DSP3_MemoryDump; break;
+    case 0x2f: SetDSP3 = &DSP3_MemorySize; break;
     case 0x38: SetDSP3 = &DSP3_Decode; break;
     case 0x3e: SetDSP3 = &DSP3_OP3E; break;
     default:
