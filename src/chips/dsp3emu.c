@@ -1017,34 +1017,23 @@ void DSP3_OP1E_D( int16_t move, int16_t *lo, int16_t *hi )
 
 void DSP3_OP1E_D1( int16_t move, int16_t *lo, int16_t *hi )
 {
-	//uint32_t dataOfs = ((move << 1) + 0x03b2) & 0x03ff;
-	//int16_t Lo;
-	//int16_t Hi;
+	uint32_t dataOfs = ((move << 1) + 0x03b0) & 0x03ff;
+	int16_t Lo;
+	int16_t Hi;
 
-	const unsigned short HiAdd[] = {
-		0x00, 0xFFFF, 0xFFFF, 0x00, 0x01, 0x00, 0xFFFF, 0x00,
-		0x00, 0xFFFF, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00
-	};
-	const unsigned short LoAdd[] = {
-		0x00, 0x00, 0x01, 0x01, 0x00, 0xFFFF, 0xFFFF, 0x00
-	};
+	DSP3_AddHi = DSP3_DataROM[dataOfs];
+	DSP3_AddLo = DSP3_DataROM[dataOfs + 1];
 
-	if( (*lo) & 1 )
-		DSP3_AddHi = HiAdd[ move + 8 ];
-	else
-		DSP3_AddHi = HiAdd[ move + 0 ];
-	DSP3_AddLo = LoAdd[ move ];
+	Lo = (*lo);
+	Hi = (*hi);
 
-	//Lo = (uint8_t)(*lo);
-	//Hi = (uint8_t)(*hi);
+	if (Lo & 1)	Hi += (DSP3_AddLo & 1);
 
-	//if (Lo & 1)	Hi += (DSP3_AddLo & 1);
+	DSP3_AddLo += Lo;
+	DSP3_AddHi += Hi;
 
-	//DSP3_AddLo += Lo;
-	//DSP3_AddHi += Hi;
-
-	*lo += DSP3_AddLo;
-	*hi += DSP3_AddHi;
+	*lo = DSP3_AddLo;
+	*hi = DSP3_AddHi;
 }
 
 
