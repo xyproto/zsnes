@@ -3029,11 +3029,20 @@ ProcessTransparencies:
 .prochalfadddo
     movq mm0,[esi]
     movq mm1,[esi+75036*2]
-    pand mm0,[HalfTrans]
-    pand mm1,[HalfTrans]
+    pand mm0,[UnusedBitXor]
+    movq mm2,mm0
+    pxor mm2,mm1
+    pand mm2,[HalfTransB]
+    movq mm3,mm0
+    pand mm3,mm1
+    psllw mm3,15
+    psrlw mm3,15
     psrlw mm0,1
     psrlw mm1,1
+    psrlw mm2,1
     paddw mm0,mm1
+    psubw mm0,mm2
+    paddw mm0,mm3
     movq [esi],mm0
     add esi,8
     dec ecx
@@ -3081,15 +3090,14 @@ ProcessTransparencies:
     %if %1>0
     psrlw mm0,%1
     %endif
+    pand mm4,[FullBitAnd]
     paddusw mm2,mm4
     psllw mm3,%3
     pand mm2,[FullBitAnd]
     psllw mm1,%3
     psrlw mm2,%2
-    pand mm1,[FullBitAnd]
     paddusw mm3,mm1
     por mm0,mm2
-    pand mm3,[FullBitAnd]
     psrlw mm3,%3
     por mm0,mm3
     dec ecx
@@ -3153,7 +3161,6 @@ ProcessTransparencies:
     psllw mm3,%3
     psllw mm1,%3
     paddusw mm3,mm1
-    pand mm3,[FullBitAnd]
     psrlw mm3,%3
     por mm0,mm3
     por mm0,mm2
@@ -3166,11 +3173,19 @@ ProcessTransparencies:
     pxor mm6,[UnusedBitXor]
     pand mm5,mm6
     pand mm7,[UnusedBit]
-    pand mm4,[HalfTrans]
-    pand mm1,[HalfTrans]
+    movq mm2,mm1
+    pxor mm2,mm4
+    pand mm2,[HalfTransB]
+    movq mm3,mm1
+    pand mm3,mm4
+    psllw mm3,15
+    psrlw mm3,15
     psrlw mm1,1
     psrlw mm4,1
+    psrlw mm2,1
     paddw mm1,mm4
+    psubw mm1,mm2
+    paddw mm1,mm3
     pcmpeqw mm7,[UnusedBit]
     pand mm0,mm7
     pxor mm7,[UnusedBitXor]
@@ -3228,14 +3243,13 @@ ProcessTransparencies:
     %endif
     psllw mm2,%2
     psllw mm1,%2
+    pand mm1,[FullBitAnd]
     paddusw mm2,mm1
     pand mm2,[FullBitAnd]
     psrlw mm2,%2
     psllw mm3,%3
     psllw mm4,%3
-    pand mm4,[FullBitAnd]
     paddusw mm3,mm4
-    pand mm3,[FullBitAnd]
     psrlw mm3,%3
     por mm0,mm3
     por mm0,mm2
@@ -3247,7 +3261,7 @@ ProcessTransparencies:
     pand mm5,mm6
     pand mm7,[UnusedBit]
     movq mm1,mm0
-    pand mm1,[HalfTrans]
+    pand mm1,[HalfTransC]
     psrlw mm1,1
     pcmpeqw mm7,[UnusedBit]
     pand mm0,mm7
@@ -3308,14 +3322,13 @@ ProcessTransparencies:
     psllw mm2,%2
     movq mm1,mm4
     psllw mm4,%2
+    pand mm4,[FullBitAnd]
     paddusw mm2,mm4
     psllw mm3,%3
     pand mm2,[FullBitAnd]
     psllw mm1,%3
     psrlw mm2,%2
-    pand mm1,[FullBitAnd]
     paddusw mm3,mm1
-    pand mm3,[FullBitAnd]
     %if %1>0
     psrlw mm0,%1
     %endif
@@ -3377,14 +3390,13 @@ ProcessTransparencies:
     %endif
     psllw mm2,%2
     psllw mm1,%2
+    pand mm1,[FullBitAnd]
     paddusw mm2,mm1
     pand mm2,[FullBitAnd]
     psrlw mm2,%2
     psllw mm3,%3
     psllw mm4,%3
-    pand mm4,[FullBitAnd]
     paddusw mm3,mm4
-    pand mm3,[FullBitAnd]
     psrlw mm3,%3
     por mm0,mm3
     por mm0,mm2
