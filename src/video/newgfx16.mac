@@ -2493,8 +2493,8 @@
     mov bx,[eax+ebx*2+512]
     shl ebx,16
     mov bx,[eax+ecx*2+512]
-    and ebx,[UnusedBitXor]
     mov [edi+%3],ebx
+    and ebx,[UnusedBitXor]
     mov [edi+%3+75036*2],ebx
     xor ebx,ebx
 %endmacro
