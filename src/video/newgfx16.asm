@@ -2066,7 +2066,7 @@ NEWSYM domosaicng16b
     je near .nodraw
     or ax,[UnusedBit]
     %2 0
-    and ax,[UnusedBit]
+    and ax,[UnusedBitXor]
     %2 75036*2
     mosender %3
 %endmacro
