@@ -379,15 +379,14 @@ SECTION .text
 
 ; OAM address register
 reg2102w:
-    mov byte[oamlow],1
-    mov word[oamaddr],0
-    shr word[oamaddr],1
-    mov [oamaddr],al
-    shl word[oamaddr],1
-;    or al,al
-;    jz .skipstore
     mov bx,[oamaddrs]
     mov [poamaddrs],bx
+    shr bx,1
+    mov bl,al
+    shl bx,1
+    mov [oamaddr],bx
+;    or al,al
+;    jz .skipstore
     mov bx,[oamaddr]
     mov [oamaddrs],bx
 .skipstore
@@ -398,26 +397,20 @@ reg2102w:
 .priorset
     mov bx,[oamaddr]
     shr bx,2
-    and bl,0x7F
-;    cmp bl,80h
-;    jae .noreset
-;    xor bl,bl
-.noreset
+    and bl,7fh
     mov [objhipr],bl
 .cachespr
+    mov byte[NextLineCache],1
     ret
 
 ; OAM address register
 reg2103w:
-    cmp byte[oamlow],1
-    jne .afteroamlow
-    mov byte[oamlow],0
-    mov bl,al
-    and bl,01h
-    shr word[oamaddr],1
-    mov [oamaddr+1],bl
-    shl word[oamaddr],1
-.afteroamlow
+    mov bx,[oamaddrs]
+    shr bx,1
+    mov bh,al
+    and bh,01h
+    shl bx,1
+    mov [oamaddr],bx
     cmp word[poamaddrs],200h
     jbe .notinvptr
     cmp word[oamaddr],200h
@@ -430,13 +423,14 @@ reg2103w:
     mov [oamaddrs],bx
     test al,80h
     jnz .hipri
-    test bl,0FFh
-    jz .lowpri
     mov byte[nexthprior],0
-.lowpri
     mov byte[NextLineCache],1
     ret
 .hipri
+    mov bx,[oamaddr]
+    shr bx,2
+    and bl,7fh
+    mov [objhipr],bl
     mov byte[nexthprior],1
     mov byte[NextLineCache],1
     ret
@@ -451,12 +445,25 @@ reg2104w:
     cmp ebx,544
     jae .overflow
 .noinc
+    test ebx,200h
+    jz .lowtable
     mov [oamram+ebx],al
+    ret
+.lowtable
+    test ebx,1
+    jz .oamlow
+    mov [oamram+ebx],al
+    dec ebx
+    push eax
+    mov al,[oamlow]
+    mov [oamram+ebx],al
+    pop eax
     ret
 .overflow
     xor ebx,ebx
     mov dword[oamaddr],1
-    mov [oamram+ebx],al
+.oamlow
+    mov [oamlow],al
     ret
 
 ; Screen mode register
