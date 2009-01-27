@@ -2088,6 +2088,11 @@ NEWSYM cachesprites
     dec ch
     cmp cl,ch
     jb near .nocache
+    mov ch,[resolutn]
+    dec ch
+    cmp cl,ch
+    ja near .nocache
+
     test byte[oamram+ebx],01h
     jnz .namebase
     xor ebx,ebx
