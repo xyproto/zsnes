@@ -2054,6 +2054,7 @@ NEWSYM cachesprites
     jz .dosprsize1
     mov al,[objsize2]
     mov [.num2do],al
+    mov [.num2do+1],al
     mov ax,[objadds2]
     mov [.byte2add],ax
     mov al,[objmovs2]
@@ -2063,6 +2064,7 @@ NEWSYM cachesprites
 .dosprsize1
     mov al,[objsize1]
     mov [.num2do],al
+    mov [.num2do+1],al
     mov ax,[objadds1]
     mov [.byte2add],ax
     mov al,[objmovs1]
@@ -2091,7 +2093,18 @@ NEWSYM cachesprites
     mov ch,[resolutn]
     dec ch
     cmp cl,ch
-    ja near .nocache
+    jbe .okayres
+    cmp byte[.num2do+1],16
+    jae .okayres
+    cmp byte[.num2do+1],1
+    jne .not8x8
+    add cl,8
+    jnc near .nocache
+    jmp .okayres
+.not8x8
+    add cl,16
+    jnc near .nocache
+.okayres
 
     test byte[oamram+ebx],01h
     jnz .namebase
