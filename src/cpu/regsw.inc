@@ -366,12 +366,12 @@ reg2101w:
     ret
 
 SECTION .data
-.objsize1 db 1,1,1,4,4,16,1,1
-.objsize2 db 4,16,64,16,64,64,4,4
+.objsize1 db 1,1,1,4,4,16,2*4,2*4
+.objsize2 db 4,16,64,16,64,64,2*16,16
 .objmovs1 db 2,2,2,2,2,4,2,2
-.objmovs2 db 2,4,8,4,8,8,2,2
+.objmovs2 db 2,4,8,4,8,8,4,4
 .objadds1 dw 14,14,14,14,14,12,14,14
-.objadds2 dw 14,12,8,12,8,8,14,14
+.objadds2 dw 14,12,8,12,8,8,12,12
 
 SECTION .bss
 NEWSYM oamlow, resb 1
@@ -1212,7 +1212,7 @@ reg2132w:
 ; Screen mode/video select register
 reg2133w:
     mov [interlval],al
-    and byte[interlval],41h
+    and byte[interlval],43h
     test al,04h
     jnz .line239
     mov word[resolutn],224
