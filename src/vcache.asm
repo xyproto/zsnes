@@ -763,104 +763,6 @@ section .bss
 .numleft2do resb 1
 section .text
 
-.process16x16sprite:
-    mov [.statusbit],dh
-    test dh,20h
-    jnz near .16x16flipx
-    test dh,40h
-    jnz .16x16flipy
-    and dh,07h
-    mov byte[.numleft2do],8
-    shl dh,4
-    add dh,128
-    call .reprocesssprite
-    sub dl,8
-    add cx,8
-    mov byte[.numleft2do],8
-    call .reprocesssprite
-    sub cx,8
-    add esi,64*14
-    mov byte[.numleft2do],8
-    call .reprocesssprite
-    sub dl,8
-    add cx,8
-    mov byte[.numleft2do],8
-    call .reprocesssprite
-    jmp .returnfromptr
-.16x16flipy
-    and dh,07h
-    mov byte[.numleft2do],8
-    shl dh,4
-    add dh,128
-    add dl,8
-    add esi,56
-    call .reprocessspriteflipy
-    add esi,128
-    sub dl,8
-    add cx,8
-    mov byte[.numleft2do],8
-    call .reprocessspriteflipy
-    add esi,128
-    sub dl,16
-    sub cx,8
-    add esi,64*14
-    mov byte[.numleft2do],8
-    call .reprocessspriteflipy
-    add esi,128
-    sub dl,8
-    add cx,8
-    mov byte[.numleft2do],8
-    call .reprocessspriteflipy
-    jmp .returnfromptr
-.16x16flipx
-    test dh,40h
-    jnz .16x16flipyx
-    and dh,07h
-    mov byte[.numleft2do],8
-    shl dh,4
-    add dh,128
-    add cx,8
-    call .reprocesssprite
-    sub dl,8
-    sub cx,8
-    mov byte[.numleft2do],8
-    call .reprocesssprite
-    add esi,64*14
-    add cx,8
-    mov byte[.numleft2do],8
-    call .reprocesssprite
-    sub dl,8
-    sub cx,8
-    mov byte[.numleft2do],8
-    call .reprocesssprite
-    jmp .returnfromptr
-.16x16flipyx
-    and dh,07h
-    mov byte[.numleft2do],8
-    shl dh,4
-    add dh,128
-    add cx,8
-    add dl,8
-    add esi,56
-    call .reprocessspriteflipy
-    add esi,128
-    sub dl,8
-    sub cx,8
-    mov byte[.numleft2do],8
-    call .reprocessspriteflipy
-    add esi,128
-    add esi,64*14
-    sub dl,16
-    add cx,8
-    mov byte[.numleft2do],8
-    call .reprocessspriteflipy
-    add esi,128
-    sub dl,8
-    sub cx,8
-    mov byte[.numleft2do],8
-    call .reprocessspriteflipy
-    jmp .returnfromptr
-
 ;*******************************************************
 ; Sprite increment/draw macros
 ;*******************************************************
@@ -894,6 +796,97 @@ section .text
     mov byte[.numleft2do],8
     call .reprocessspriteflipy
 %endmacro
+
+;*******************************************************
+; 16x16 sprites routines
+;*******************************************************
+
+%macro nextline16x16 0
+    sub cx,8
+    add esi,64*14
+    mov byte[.numleft2do],8
+    call .reprocesssprite
+    nextsprite2right
+%endmacro
+
+.process16x16sprite:
+    mov [.statusbit],dh
+    test dh,20h
+    jnz near .16x16flipx
+    test dh,40h
+    jnz .16x16flipy
+    and dh,07h
+    mov byte[.numleft2do],8
+    shl dh,4
+    add dh,128
+    call .reprocesssprite
+    nextsprite2right
+    nextline16x16
+    jmp .returnfromptr
+
+%macro nextline16x16flipy 0
+    sub cx,8
+    add esi,64*14+128
+    sub dl,16
+    mov byte[.numleft2do],8
+    call .reprocessspriteflipy
+    nextsprite2rightflipy
+%endmacro
+
+.16x16flipy
+    and dh,07h
+    mov byte[.numleft2do],8
+    shl dh,4
+    add dh,128
+    add dl,8
+    add esi,56
+    call .reprocessspriteflipy
+    nextsprite2rightflipy
+    nextline16x16flipy
+    jmp .returnfromptr
+
+%macro nextline16x16flipx 0
+    add cx,8
+    add esi,64*14
+    mov byte[.numleft2do],8
+    call .reprocesssprite
+    nextsprite2rightflipx
+%endmacro
+
+.16x16flipx
+    test dh,40h
+    jnz .16x16flipyx
+    and dh,07h
+    mov byte[.numleft2do],8
+    shl dh,4
+    add dh,128
+    add cx,8
+    call .reprocesssprite
+    nextsprite2rightflipx
+    nextline16x16flipx
+    jmp .returnfromptr
+
+%macro nextline16x16flipyx 0
+    add cx,8
+    add esi,64*14+128
+    sub dl,16
+    mov byte[.numleft2do],8
+    call .reprocessspriteflipy
+    nextsprite2rightflipyx
+%endmacro
+
+.16x16flipyx
+    and dh,07h
+    mov byte[.numleft2do],8
+    shl dh,4
+    add dh,128
+    add cx,8
+    add dl,8
+    add esi,56
+    call .reprocessspriteflipy
+    nextsprite2rightflipyx
+    nextline16x16flipyx
+    jmp .returnfromptr
 
 ;*******************************************************
 ; 32x32 sprites routines
@@ -1034,7 +1027,6 @@ section .text
     jnz near .64x64flipx
     test dh,40h
     jnz near .64x64flipy
-    mov [.statusbit],dh
     and dh,07h
     mov byte[.numleft2do],8
     shl dh,4
@@ -1672,18 +1664,8 @@ section .text
     shl dh,4
     add dh,128
     call .reprocesssprite
-    sub dl,8
-    add cx,8
-    mov byte[.numleft2do],8
-    call .reprocesssprite
-    sub cx,8
-    add esi,64*14
-    mov byte[.numleft2do],8
-    call .reprocesssprite
-    sub dl,8
-    add cx,8
-    mov byte[.numleft2do],8
-    call .reprocesssprite
+    nextsprite2right
+    nextline16x16
     jmp .returnfromptr
 .16x16flipy
     and dh,07h
@@ -1693,22 +1675,8 @@ section .text
     add dl,8
     add esi,56
     call .reprocessspriteflipy
-    add esi,128
-    sub dl,8
-    add cx,8
-    mov byte[.numleft2do],8
-    call .reprocessspriteflipy
-    add esi,128
-    sub dl,16
-    sub cx,8
-    add esi,64*14
-    mov byte[.numleft2do],8
-    call .reprocessspriteflipy
-    add esi,128
-    sub dl,8
-    add cx,8
-    mov byte[.numleft2do],8
-    call .reprocessspriteflipy
+    nextsprite2rightflipy
+    nextline16x16flipy
     jmp .returnfromptr
 .16x16flipx
     test dh,40h
@@ -1719,18 +1687,8 @@ section .text
     add dh,128
     add cx,8
     call .reprocesssprite
-    sub dl,8
-    sub cx,8
-    mov byte[.numleft2do],8
-    call .reprocesssprite
-    add esi,64*14
-    add cx,8
-    mov byte[.numleft2do],8
-    call .reprocesssprite
-    sub dl,8
-    sub cx,8
-    mov byte[.numleft2do],8
-    call .reprocesssprite
+    nextsprite2rightflipx
+    nextline16x16flipx
     jmp .returnfromptr
 .16x16flipyx
     and dh,07h
@@ -1741,22 +1699,8 @@ section .text
     add dl,8
     add esi,56
     call .reprocessspriteflipy
-    add esi,128
-    sub dl,8
-    sub cx,8
-    mov byte[.numleft2do],8
-    call .reprocessspriteflipy
-    add esi,128
-    add esi,64*14
-    sub dl,16
-    add cx,8
-    mov byte[.numleft2do],8
-    call .reprocessspriteflipy
-    add esi,128
-    sub dl,8
-    sub cx,8
-    mov byte[.numleft2do],8
-    call .reprocessspriteflipy
+    nextsprite2rightflipyx
+    nextline16x16flipyx
     jmp .returnfromptr
 
 ;*******************************************************
