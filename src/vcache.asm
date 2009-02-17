@@ -767,6 +767,28 @@ section .text
 ; Sprite increment/draw macros
 ;*******************************************************
 
+%macro add_x 0
+    mov eax,[sprt_char]
+    shr eax,2
+    add al,64>>2
+    shl eax,2
+    mov [sprt_char],eax
+    mov esi,[objloc]
+    add esi,eax
+%endmacro
+
+%macro add_y 1
+    mov eax,[sprt_char]
+    shr eax,2
+    sub al,(64>>2)*%1
+    shl eax,2
+    add eax,64*10h
+    and eax,3FFFh
+    mov [sprt_char],eax
+    mov esi,[objloc]
+    add esi,eax
+%endmacro
+
 %macro nextsprite2right 0
     sub dl,8
     add cx,8
@@ -775,7 +797,7 @@ section .text
 %endmacro
 
 %macro nextsprite2rightflipy 0
-    add esi,128
+    add esi,56
     sub dl,8
     add cx,8
     mov byte[.numleft2do],8
@@ -790,7 +812,7 @@ section .text
 %endmacro
 
 %macro nextsprite2rightflipyx 0
-    add esi,128
+    add esi,56
     sub dl,8
     sub cx,8
     mov byte[.numleft2do],8
@@ -803,7 +825,7 @@ section .text
 
 %macro nextline16x16 0
     sub cx,8
-    add esi,64*14
+    add_y 2
     mov byte[.numleft2do],8
     call .reprocesssprite
     nextsprite2right
@@ -826,7 +848,8 @@ section .text
 
 %macro nextline16x16flipy 0
     sub cx,8
-    add esi,64*14+128
+    add_y 2
+    add esi,56
     sub dl,16
     mov byte[.numleft2do],8
     call .reprocessspriteflipy
@@ -847,7 +870,7 @@ section .text
 
 %macro nextline16x16flipx 0
     add cx,8
-    add esi,64*14
+    add_y 2
     mov byte[.numleft2do],8
     call .reprocesssprite
     nextsprite2rightflipx
@@ -868,7 +891,8 @@ section .text
 
 %macro nextline16x16flipyx 0
     add cx,8
-    add esi,64*14+128
+    add_y 2
+    add esi,56
     sub dl,16
     mov byte[.numleft2do],8
     call .reprocessspriteflipy
@@ -894,7 +918,7 @@ section .text
 
 %macro nextline32x32 0
     sub cx,24
-    add esi,64*12
+    add_y 4
     mov byte[.numleft2do],8
     call .reprocesssprite
     nextsprite2right
@@ -923,7 +947,8 @@ section .text
 
 %macro nextline32x32flipy 0
     sub cx,24
-    add esi,64*12+128
+    add_y 4
+    add esi,56
     sub dl,16
     mov byte[.numleft2do],8
     call .reprocessspriteflipy
@@ -950,7 +975,7 @@ section .text
 
 %macro nextline32x32flipx 0
     add cx,24
-    add esi,64*12
+    add_y 4
     mov byte[.numleft2do],8
     call .reprocesssprite
     nextsprite2rightflipx
@@ -977,7 +1002,8 @@ section .text
 
 %macro nextline32x32flipyx 0
     add cx,24
-    add esi,64*12+128
+    add_y 4
+    add esi,56
     sub dl,16
     mov byte[.numleft2do],8
     call .reprocessspriteflipy
@@ -1009,7 +1035,7 @@ section .text
 
 %macro nextline64x64 0
     sub cx,56
-    add esi,64*8
+    add_y 8
     mov byte[.numleft2do],8
     call .reprocesssprite
     nextsprite2right
@@ -1050,7 +1076,8 @@ section .text
 
 %macro nextline64x64flipy 0
     sub cx,56
-    add esi,64*8+128
+    add_y 8
+    add esi,56
     sub dl,16
     mov byte[.numleft2do],8
     call .reprocessspriteflipy
@@ -1089,7 +1116,7 @@ section .text
 
 %macro nextline64x64flipx 0
     add cx,56
-    add esi,64*8
+    add_y 8
     mov byte[.numleft2do],8
     call .reprocesssprite
     nextsprite2rightflipx
@@ -1128,7 +1155,8 @@ section .text
 
 %macro nextline64x64flipyx 0
     add cx,56
-    add esi,64*8+128
+    add_y 8
+    add esi,56
     sub dl,16
     mov byte[.numleft2do],8
     call .reprocessspriteflipy
@@ -1236,6 +1264,11 @@ section .text
     jnz %%loopy
     jmp .returnfromptr_rto2
 %endmacro
+
+section .bss
+sprt_char resd 1
+objloc resd 1
+section .text
 
 NEWSYM processspritesb
     ; set obj pointers
@@ -1461,6 +1494,8 @@ NEWSYM processspritesb
     and ch,01h
     shr dh,1
     shl ecx,6
+    mov [sprt_char],ecx
+    and dword[sprt_char],3FFFh
     add ecx,[.objvramloc]
     test byte[oamram+ebx+3],01h
     jz .noloc2
@@ -1469,6 +1504,9 @@ NEWSYM processspritesb
     and ecx,01FFFFh
     add ecx,[vcache4b]
     mov esi,ecx
+    mov [objloc],ecx
+    mov ecx,[sprt_char]
+    sub [objloc],ecx
     ; get x
     mov al,[oamram+ebx]         ; x
     ; get double bits
@@ -1570,13 +1608,14 @@ SECTION .text
     add esi,8
     dec byte[.numleft2do]
     jnz .reprocessspriteb
+    add_x
     sub cx,8
     ret
 .next
     cmp word[.obj_x],256
     je .spec
     add dl,8
-    add esi,64
+    add_x
     ret
 
 .reprocessspriteflipy
@@ -1625,12 +1664,13 @@ SECTION .text
     dec byte[.numleft2do]
     jnz .reprocessspriteflipyb
     sub cx,8
+    add_x
     ret
 .nextb
     cmp word[.obj_x],256
     je .specb
     add dl,8
-    sub esi,64
+    add_x
     ret
 
 section .bss
@@ -2310,11 +2350,21 @@ NEWSYM cachesprites
     pop esi
     mov [tltype4b+ebx],al
 .nocache
-    inc word[.curobj]
+    mov bx,[.curobj]
+    shl bx,4
+    add bl,10h
+    shr bx,4
+    mov [.curobj],bx
     dec byte[.byteb4add]
     jnz .skipbyteadd
     mov ax,[.byte2add]
-    add word[.curobj],ax
+    mov bx,[.curobj]
+    shl bx,4
+    shl al,4
+    add bl,al
+    shr bx,4
+    add bl,10h
+    mov [.curobj],bx
     mov al,[.byte2move]
     mov [.byteb4add],al
 .skipbyteadd
