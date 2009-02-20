@@ -562,7 +562,7 @@ static void save_decompression_state()
       if ((fp_gfx = gzopen_dir(ZSramPath, fname, "wb9")))
       {
         struct address_lookup *lookup_ptr = decompression_state.lookup,
-                              *lookup_end = decompression_state.lookup+(decompression_state.lookup_used-1);
+                              *lookup_end = decompression_state.lookup+decompression_state.lookup_used;
         for (; lookup_ptr < lookup_end; ++lookup_ptr)
         {
           unsigned int entry_index;
