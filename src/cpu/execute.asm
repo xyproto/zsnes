@@ -688,6 +688,7 @@ Donextlinecache:
     push edi
     xor ecx,ecx
     mov cl,[curypos]
+    inc cl
     push edx
 .next
     mov byte[sprlefttot+ecx],0
