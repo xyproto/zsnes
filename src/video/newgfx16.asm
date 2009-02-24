@@ -1095,6 +1095,16 @@ NEWSYM newengine16b
     mov byte[winbg3enval+eax],0
     mov byte[winbg4enval+eax],0
     mov byte[winbgobjenval+eax],0
+    mov byte[winbg1envalm+eax],0
+    mov byte[winbg1envalm+eax+256],0
+    mov byte[winbg1envalm+eax+256*2],0
+    mov byte[winbg1envalm+eax+256*3],0
+    mov byte[winbg1envalm+eax+256*4],0
+    mov byte[winbg1envals+eax],0
+    mov byte[winbg1envals+eax+256],0
+    mov byte[winbg1envals+eax+256*2],0
+    mov byte[winbg1envals+eax+256*3],0
+    mov byte[winbg1envals+eax+256*4],0
 .okaywin
     xor ebx,ebx
 
