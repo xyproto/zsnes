@@ -44,7 +44,7 @@ EXTSYM ofshvaladd,ofsmtptrs,ofsmcptr2,ngptrdat2
 %macro cacheloopstuff 1
     mov bl,[esi+%1]
     or bl,bl
-    jnz %%okay
+    jnz short %%okay
     mov ax,0FFFFh
     jmp %%transp
 %%okay
@@ -121,7 +121,7 @@ cache8b16b:
     add edi,16
     inc dword[bg1totng+ebx*4]
     test eax,03Fh
-    jnz .notileadd
+    jnz short .notileadd
     add ax,[bgtxadd]
 .notileadd
     dec byte[tleftn]
@@ -148,7 +148,7 @@ cache8b16b:
     cmp byte[curmosaicsz],1
     jne .mosaic
     test byte[BGMS1+ebx*2],dl
-    jz .nosubmain
+    jz short .nosubmain
     test byte[FillSubScr+ebx],1
     jnz near %1
     jmp .main
@@ -161,9 +161,9 @@ cache8b16b:
     jmp .main
 .mosaic
     test byte[BGMS1+ebx*2],dl
-    jnz .main
+    jnz short .main
     test byte[FillSubScr+ebx],1
-    jz .main
+    jz short .main
     sub ecx,[CMainWinScr]
     add ecx,[CSubWinScr]
 .main
@@ -171,7 +171,7 @@ cache8b16b:
 
 %macro CheckWindowing 1
     cmp byte[ngwinen],0
-    je %%nowindowing
+    je short %%nowindowing
     cmp byte[ecx],0
     jne near %1
 %%nowindowing
@@ -179,7 +179,7 @@ cache8b16b:
 
 %macro DetermineWindow 3        ; both,main,sub
     cmp byte[ngwinen],0
-    je %%nowindow
+    je short %%nowindow
     cmp byte[ecx],0
     jz near %3
     sub ecx,[CMainWinScr]
@@ -410,7 +410,7 @@ drawtileng8b16bmsntsw:
     add edi,32
     inc dword[bg1totng+ebx*4]
     test eax,03Fh
-    jnz .notileadd
+    jnz short .notileadd
     add ax,[bgtxadd]
 .notileadd
     dec byte[tleftn]
@@ -1041,7 +1041,7 @@ drawlineng8b16bmsntsw16x16:
     mov byte[SpecialLine+ebx],0
     inc ebx
     dec cl
-    jnz %%mosloop
+    jnz short %%mosloop
     pop ebx
     mov byte[tleftn],33
 %%loopb
@@ -1112,7 +1112,7 @@ drawlineng2b16bmsnt16x8
     mov [flipyposng],edx
     add edi,16
     test eax,03Fh
-    jnz .next
+    jnz short .next
     mov bx,[bgtxadd]
     add ax,bx
     add [ofsmmptr],bx
@@ -1129,7 +1129,7 @@ drawlineng2b16bmsnt16x8
     and ebx,3FFh
     add ebx,[ofsmcyps]
     test ebx,100h
-    jz .noupper2
+    jz short .noupper2
     add ax,[ofsmady]
 .noupper2
     and ebx,0FFh
@@ -1155,7 +1155,7 @@ drawlineng2b16bmsnt16x8
     add ax,[ofsmtptrs]
     add ebx,[ofshvaladd]
     test ebx,100h
-    jz .noleft
+    jz short .noleft
     add ax,[ofsmadx]
 .noleft
     and ebx,0F8h
@@ -1314,7 +1314,7 @@ drawlineng4b16bmsntswom:
     sub dword[ebx],8
 
     test dword[switch16x16],1
-    jz .skip
+    jz short .skip
     add word[ofsmmptr],2
     add word[ofsmtptr],2
 .skip
@@ -1327,9 +1327,9 @@ drawlineng4b16bmsntswom:
     mov [flipyposng],edx
     add edi,16
     test eax,03Fh
-    jnz .next
+    jnz short .next
     test dword[switch16x16],1
-    jz .next
+    jz short .next
     mov bx,[bgtxadd]
     add ax,bx
     add [ofsmmptr],bx
@@ -1346,7 +1346,7 @@ drawlineng4b16bmsntswom:
     and ebx,3FFh
     add ebx,[ofsmcyps]
     test ebx,200h
-    jz .noupper2
+    jz short .noupper2
     add ax,[ofsmady]
 .noupper2
     and ebx,1FFh
@@ -1372,7 +1372,7 @@ drawlineng4b16bmsntswom:
     add ax,[ofsmtptrs]
     add ebx,[ofshvaladd]
     test ebx,200h
-    jz .noleft
+    jz short .noleft
     add ax,[ofsmadx]
 .noleft
     and ebx,0F8h

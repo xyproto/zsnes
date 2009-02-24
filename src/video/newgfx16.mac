@@ -1736,7 +1736,7 @@
 
 %macro tilenormalb 1
     cmp word[ecx+%1],0FFFFh
-    je %%nott
+    je short %%nott
     mov bx,[ecx+%1]
     mov [edi+%1],bx
 %%nott
@@ -1755,7 +1755,7 @@
 
 %macro tilenormalbs 1
     cmp word[ecx+%1],0FFFFh
-    je %%nott
+    je short %%nott
     mov bx,[ecx+%1]
     mov [edi+%1+75036*2],bx
 %%nott
@@ -1778,7 +1778,7 @@
 
 %macro tilenormalbt 1
     cmp word[ecx+%1],0FFFFh
-    je %%nott
+    je short %%nott
     mov bx,[ecx+%1]
     or bx,[UnusedBit]
     mov [edi+%1],bx
@@ -1802,7 +1802,7 @@
 
 %macro tilenormalbmsnt 1
     cmp word[ecx+%1],0FFFFh
-    je %%nott
+    je short %%nott
     mov bx,[ecx+%1]
     mov [edi+%1],bx
     mov [edi+%1+75036*2],bx
@@ -1830,7 +1830,7 @@
 
 %macro tilenormalbmst 1
     cmp word[ecx+%1],0FFFFh
-    je %%nott
+    je short %%nott
     mov bx,[ecx+%1]
     mov [edi+%1+75036*2],bx
     or bx,[UnusedBit]
@@ -1851,7 +1851,7 @@
     %7
     jnz near %%docache
     cmp byte[%9+ecx],dl
-    je %%returnfromcache
+    je short %%returnfromcache
     mov [%9+ecx],dl
     call %10
 %%returnfromcache
@@ -1862,7 +1862,7 @@
     %2
     ; start drawing from ecx
     test dword[vrama+eax],4000h
-    jz %%noflipxfull
+    jz short %%noflipxfull
     add ecx,128
 %%noflipxfull
     test dword[vrama+eax],8000h
@@ -1890,7 +1890,7 @@
     %2
     ; start drawing from ecx to edi
     test word[vrama+eax],4000h
-    jz %%noflipxpart
+    jz short %%noflipxpart
     add ecx,128
 %%noflipxpart
     test word[vrama+eax],8000h
@@ -1961,11 +1961,11 @@
     add ecx,[ngptrdat2]
     add cx,[taddnfy16x16]
     test dword[vrama+eax],8000h
-    jz %%noflipy
+    jz short %%noflipy
     add cx,[taddfy16x16]
 %%noflipy
     test dword[vrama+eax],4000h
-    jz %%noflipx
+    jz short %%noflipx
     inc cx
 %%noflipx
 %%nexttile
@@ -1975,7 +1975,7 @@
     %7
     jnz near %%docache
     cmp byte[%9+ecx],dl
-    je %%returnfromcache
+    je short %%returnfromcache
     mov [%9+ecx],dl
     call %10
 %%returnfromcache
@@ -1986,7 +1986,7 @@
     %2
     ; start drawing from ecx
     test dword[vrama+eax],4000h
-    jz %%noflipxfull
+    jz short %%noflipxfull
     add ecx,128
 %%noflipxfull
     test dword[vrama+eax],8000h
@@ -2014,7 +2014,7 @@
     %2
     ; start drawing from ecx to edi
     test word[vrama+eax],4000h
-    jz %%noflipxpart
+    jz short %%noflipxpart
     add ecx,128
 %%noflipxpart
     test word[vrama+eax],8000h
@@ -2057,7 +2057,7 @@
     pop ecx
     inc cx
     test dword[vrama+eax],4000h
-    jz %%noflipxb
+    jz short %%noflipxb
     sub cx,2
 %%noflipxb
     add edi,16
@@ -2435,7 +2435,7 @@
     mov bl,[esi+%1]
     add bl,dl
     test bl,%3
-    jz %%nodraw
+    jz short %%nodraw
     mov cx,[eax+ebx*2]
     mov [edi+%2],cx
 %%nodraw
@@ -2457,7 +2457,7 @@
     mov bl,[esi+%1]
     add bl,dl
     test bl,%3
-    jz %%nodraw
+    jz short %%nodraw
     mov cx,[eax+ebx*2+512]
     mov [edi+%2],cx
 %%nodraw
@@ -2479,7 +2479,7 @@
     mov bl,[esi+%1]
     add bl,dl
     test bl,%3
-    jz %%nodraw
+    jz short %%nodraw
     mov cx,[eax+ebx*2]
     mov [edi+%2],cx
 %%nodraw
@@ -2503,7 +2503,7 @@
     mov bl,[esi+%1]
     add bl,dl
     test bl,%3
-    jz %%nodraw
+    jz short %%nodraw
     mov cx,[eax+ebx*2+512]
     mov [edi+%2],cx
     and cx,[UnusedBitXor]
@@ -2528,7 +2528,7 @@
     mov bl,[esi+%1]
     add bl,dl
     test bl,%3
-    jz %%nodraw
+    jz short %%nodraw
     mov cx,[eax+ebx*2]
     mov [edi+%2],cx
     mov [edi+%2+75036*2],cx
@@ -2551,7 +2551,7 @@
     mov bl,[esi+%1]
     add bl,dl
     test bl,%3
-    jz %%nodraw
+    jz short %%nodraw
     mov cx,[eax+ebx*2]
     mov [edi+%2+75036*2],cx
 %%nodraw
@@ -2578,7 +2578,7 @@
     %2
     ; start drawing from ecx
     test dword[vrama+eax],8000h
-    jz %%notflipyfull
+    jz short %%notflipyfull
     add ecx,[flipyposng]
     jmp %%yesflipyfull
 %%notflipyfull
@@ -2613,7 +2613,7 @@
     %2
     ; start drawing from ecx to edi
     test word[vrama+eax],8000h
-    jz %%noflipypart
+    jz short %%noflipypart
     add ecx,[flipyposng]
     jmp %%yesflipypart
 %%noflipypart
@@ -2682,11 +2682,11 @@
     add ecx,[ngptrdat2]
     add cx,[taddnfy16x16]
     test dword[vrama+eax],8000h
-    jz %%noflipy
+    jz short %%noflipy
     add cx,[taddfy16x16]
 %%noflipy
     test dword[vrama+eax],4000h
-    jz %%noflipx
+    jz short %%noflipx
     inc cx
 %%noflipx
 %%nexttile
@@ -2703,7 +2703,7 @@
     %2
     ; start drawing from ecx
     test word[vrama+eax],8000h
-    jz %%noflipyfull
+    jz short %%noflipyfull
     add ecx,[flipyposng]
     jmp %%yesflipyfull
 %%noflipyfull
@@ -2738,7 +2738,7 @@
     %2
     ; start drawing from ecx to edi
     test word[vrama+eax],8000h
-    jz %%noflipypart
+    jz short %%noflipypart
     add ecx,[flipyposng]
     jmp %%yesflipypart
 %%noflipypart
@@ -2779,7 +2779,7 @@
     pop ecx
     inc cx
     test dword[vrama+eax],4000h
-    jz %%noflipxb
+    jz short %%noflipxb
     sub cx,2
 %%noflipxb
     add edi,16

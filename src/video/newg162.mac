@@ -37,7 +37,7 @@
     mov bl,[esi+%1]
     add bl,dl
     test bl,%3
-    jz %%nodraw
+    jz short %%nodraw
     mov cx,[eax+ebx*2]
     mov [edi+%2],cx
 %%nodraw
@@ -59,7 +59,7 @@
     mov bl,[esi+%1]
     add bl,dl
     test bl,%3
-    jz %%nodraw
+    jz short %%nodraw
     mov cx,[eax+ebx*2+512]
     mov [edi+%2],cx
 %%nodraw
@@ -85,7 +85,7 @@
     mov bl,[esi+%1]
     add bl,dl
     test bl,%3
-    jz %%nodraw
+    jz short %%nodraw
     mov cx,[eax+ebx*2+512]
     mov [edi+%2],cx
     and cx,[UnusedBitXor]
@@ -111,7 +111,7 @@
     mov bl,[esi+%1]
     add bl,dl
     test bl,%3
-    jz %%nodraw
+    jz short %%nodraw
     mov cx,[eax+ebx*2]
     mov [edi+%2],cx
     mov [edi+%2+75036*2],cx
@@ -130,7 +130,7 @@
     mov bl,[esi+%1]
     add bl,dl
     test bl,%3
-    jz %%nodraw
+    jz short %%nodraw
     mov cx,[eax+ebx*2]
     mov [edi+%2],cx
 %%nodraw
@@ -149,7 +149,7 @@
     mov bl,[esi+%1]
     add bl,dl
     test bl,%3
-    jz %%nodraw
+    jz short %%nodraw
     mov cx,[eax+ebx*2+512]
     mov [edi+%2],cx
 %%nodraw
@@ -170,7 +170,7 @@
     mov bl,[esi+%1]
     add bl,dl
     test bl,%3
-    jz %%nodraw
+    jz short %%nodraw
     mov cx,[eax+ebx*2+512]
     mov [edi+%2],cx
     and cx,[UnusedBitXor]
@@ -192,7 +192,7 @@
     mov bl,[esi+%1]
     add bl,dl
     test bl,%3
-    jz %%nodraw
+    jz short %%nodraw
     mov cx,[eax+ebx*2]
     mov [edi+%2],cx
     mov [edi+%2+75036*2],cx
@@ -211,11 +211,11 @@
     add ecx,[ngptrdat2]
     add cx,[taddnfy16x16]
     test dword[vrama+eax],8000h
-    jz %%noflipy
+    jz short %%noflipy
     add cx,[taddfy16x16]
 %%noflipy
     test dword[vrama+eax],4000h
-    jz %%noflipx
+    jz short %%noflipx
     inc cx
 %%noflipx
 %%nexttile
@@ -232,7 +232,7 @@
     %2
     ; start drawing from ecx
     test dword[vrama+eax],8000h
-    jz %%notflipyfull
+    jz short %%notflipyfull
     add ecx,[flipyposng]
     jmp %%yesflipyfull
 %%notflipyfull
@@ -267,7 +267,7 @@
     %2
     ; start drawing from ecx to edi
     test dword[vrama+eax],8000h
-    jz %%notflipypart
+    jz short %%notflipypart
     add ecx,[flipyposng]
     jmp %%yesflipypart
 %%notflipypart
@@ -308,7 +308,7 @@
     pop ecx
     inc cx
     test dword[vrama+eax],4000h
-    jz %%noflipxb
+    jz short %%noflipxb
     sub cx,2
 %%noflipxb
     add edi,8
@@ -357,7 +357,7 @@
     %2
     ; start drawing from ecx
     test dword[vrama+eax],8000h
-    jz %%notflipyfull
+    jz short %%notflipyfull
     add ecx,[flipyposng]
     jmp %%yesflipyfull
 %%notflipyfull
@@ -392,7 +392,7 @@
     %2
     ; start drawing from ecx to edi
     test dword[vrama+eax],8000h
-    jz %%notflipypart
+    jz short %%notflipypart
     add ecx,[flipyposng]
     jmp %%yesflipypart
 %%notflipypart
@@ -456,7 +456,7 @@
     and ebx,3FFh
     add ebx,[ofsmcyps]
     test ebx,100h
-    jz %%noupper
+    jz short %%noupper
     add ax,[ofsmady]
 %%noupper
     and ebx,0FFh
@@ -475,7 +475,7 @@
     add dword[ofsmcptr2],2
     and dword[ofsmcptr2],3Fh
     test dword[ofsmcptr2],3Fh
-    jnz %%notzeroed
+    jnz short %%notzeroed
     mov dx,[bgtxadd2]
     add word[ofsmcptr],dx
 %%notzeroed
@@ -488,7 +488,7 @@
     add ax,[ofsmtptrs]
     add ebx,[ofshvaladd]
     test ebx,100h
-    jz %%noleft
+    jz short %%noleft
     add ax,[ofsmadx]
 %%noleft
     and ebx,0F8h
@@ -533,7 +533,7 @@
     %2
     ; start drawing from ecx
     test dword[vrama+eax],8000h
-    jz %%notflipyfull
+    jz short %%notflipyfull
     add ecx,[flipyposng]
     jmp %%yesflipyfull
 %%notflipyfull
@@ -568,7 +568,7 @@
     %2
     ; start drawing from ecx to edi
     test dword[vrama+eax],8000h
-    jz %%notflipypart
+    jz short %%notflipypart
     add ecx,[flipyposng]
     jmp %%yesflipypart
 %%notflipypart
@@ -629,7 +629,7 @@
     and ebx,3FFh
     add ebx,[ofsmcyps]
     test ebx,100h
-    jz %%noupper
+    jz short %%noupper
     add ax,[ofsmady]
 %%noupper
     and ebx,0FFh
@@ -649,7 +649,7 @@
     mov ecx,[ofsmvalh]
     and dword[ofsmcptr2],3Fh
     test dword[ofsmcptr2],3Fh
-    jnz %%notzeroed
+    jnz short %%notzeroed
     mov dx,[bgtxadd2]
     add word[ofsmcptr],dx
 %%notzeroed
@@ -660,7 +660,7 @@
     add ax,[ofsmtptrs]
     add ebx,[ofshvaladd]
     test ebx,100h
-    jz %%noleft
+    jz short %%noleft
     add ax,[ofsmadx]
 %%noleft
     and ebx,0F8h
@@ -696,18 +696,18 @@
     add ecx,[ngptrdat2]
     add cx,[taddnfy16x16]
     test dword[vrama+eax],8000h
-    jz %%noflipy
+    jz short %%noflipy
     add cx,[taddfy16x16]
 %%noflipy
     test dword[vrama+eax],4000h
-    jz %%noflipx
+    jz short %%noflipx
     inc cx
 %%noflipx
     test dword[switch16x16],1
-    jz %%noflipxb
+    jz short %%noflipxb
     inc cx
     test dword[vrama+eax],4000h
-    jz %%noflipxb
+    jz short %%noflipxb
     sub cx,2
 %%noflipxb
 %%nexttile
@@ -724,7 +724,7 @@
     %2
     ; start drawing from ecx
     test word[vrama+eax],8000h
-    jz %%noflipyfull
+    jz short %%noflipyfull
     add ecx,[flipyposng]
     jmp %%yesflipyfull
 %%noflipyfull
@@ -759,7 +759,7 @@
     %2
     ; start drawing from ecx to edi
     test word[vrama+eax],8000h
-    jz %%noflipypart
+    jz short %%noflipypart
     add ecx,[flipyposng]
     jmp %%yesflipypart
 %%noflipypart
@@ -800,7 +800,7 @@
     pop ecx
 %5
     test byte[switch16x16],1
-    jz %%skip
+    jz short %%skip
     add word[ofsmmptr],2
     add word[ofsmtptr],2
 %%skip
@@ -812,7 +812,7 @@
     mov [yposng],ebx
     mov [flipyposng],edx
     test byte[switch16x16],1
-    jz %%next
+    jz short %%next
     test eax,03Fh
     jz near %%tileadd
 %%next
@@ -828,14 +828,14 @@
     and ebx,3FFh
     add ebx,[ofsmcyps]
     test ebx,200h
-    jz %%noupper
+    jz short %%noupper
     add ax,[ofsmady]
 %%noupper
     and ebx,01FFh
     mov dword[taddnfy16x16],0
     mov dword[taddfy16x16],16
     test ebx,8
-    jz %%noflipy16x16
+    jz short %%noflipy16x16
     mov dword[taddnfy16x16],16
     mov dword[taddfy16x16],-16
 %%noflipy16x16
@@ -855,7 +855,7 @@
     mov ecx,[ofsmvalh]
     and dword[ofsmcptr2],3Fh
     test dword[ofsmcptr2],3Fh
-    jnz %%notzeroed
+    jnz short %%notzeroed
     mov dx,[bgtxadd2]
     add word[ofsmcptr],dx
 %%notzeroed
@@ -866,7 +866,7 @@
     add ax,[ofsmtptrs]
     add ebx,[ofshvaladd]
     test ebx,200h
-    jz %%noleft
+    jz short %%noleft
     add ax,[ofsmadx]
 %%noleft
     and ebx,0F8h

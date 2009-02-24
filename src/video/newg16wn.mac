@@ -21,15 +21,15 @@
 
 %macro procpixelstw 3
     dec dword[ngcpixleft]
-    jnz %%notzero
+    jnz short %%notzero
     call Nextwinmode
 %%notzero
     cmp dword[ngcwinmode],1
-    je %%nodraw
+    je short %%nodraw
     mov bl,[esi+%1]
     add bl,dl
     test bl,%3
-    jz %%nodraw
+    jz short %%nodraw
     mov cx,[eax+ebx*2]
     mov [edi+%2],cx
 %%nodraw
@@ -37,15 +37,15 @@
 
 %macro procpixelstwt 3
     dec dword[ngcpixleft]
-    jnz %%notzero
+    jnz short %%notzero
     call Nextwinmode
 %%notzero
     cmp dword[ngcwinmode],1
-    je %%nodraw
+    je short %%nodraw
     mov bl,[esi+%1]
     add bl,dl
     test bl,%3
-    jz %%nodraw
+    jz short %%nodraw
     mov cx,[eax+ebx*2+512]
     mov [edi+%2],cx
 %%nodraw
@@ -53,15 +53,15 @@
 
 %macro procpixelstwnt 3
     dec dword[ngcpixleft]
-    jnz %%notzero
+    jnz short %%notzero
     call Nextwinmode
 %%notzero
     cmp dword[ngcwinmode],1
-    je %%nodraw
+    je short %%nodraw
     mov bl,[esi+%1]
     add bl,dl
     test bl,%3
-    jz %%nodraw
+    jz short %%nodraw
     mov cx,[eax+ebx*2]
     mov [edi+%2],cx
 %%nodraw
@@ -69,15 +69,15 @@
 
 %macro procpixelstwmst 3
     dec dword[ngcpixleft]
-    jnz %%notzero
+    jnz short %%notzero
     call Nextwinmode
 %%notzero
     cmp dword[ngcwinmode],1
-    je %%nodraw
+    je short %%nodraw
     mov bl,[esi+%1]
     add bl,dl
     test bl,%3
-    jz %%nodraw
+    jz short %%nodraw
     mov cx,[eax+ebx*2+512]
     mov [edi+%2],cx
     and cx,[UnusedBitXor]
@@ -87,15 +87,15 @@
 
 %macro procpixelstwmsnt 3
     dec dword[ngcpixleft]
-    jnz %%notzero
+    jnz short %%notzero
     call Nextwinmode
 %%notzero
     cmp dword[ngcwinmode],1
-    je %%nodraw
+    je short %%nodraw
     mov bl,[esi+%1]
     add bl,dl
     test bl,%3
-    jz %%nodraw
+    jz short %%nodraw
     mov cx,[eax+ebx*2]
     mov [edi+%2],cx
     mov [edi+75036*2+%2],cx
@@ -104,17 +104,17 @@
 
 %macro procpixelstwmsbt 3
     dec dword[ngcpixleft]
-    jnz %%notzero
+    jnz short %%notzero
     call Nextwinmode
 %%notzero
     mov bl,[esi+%1]
     add bl,dl
     test bl,%3
-    jz %%nodraw
+    jz short %%nodraw
     mov cx,[eax+ebx*2+512]
     mov [edi+%2],cx
     cmp dword[ngcwinmode],1
-    je %%nodraw
+    je short %%nodraw
     and cx,[UnusedBitXor]
     mov [edi+75036*2+%2],cx
 %%nodraw
@@ -122,34 +122,34 @@
 
 %macro procpixelstwmsbnt 3
     dec dword[ngcpixleft]
-    jnz %%notzero
+    jnz short %%notzero
     call Nextwinmode
 %%notzero
     mov bl,[esi+%1]
     add bl,dl
     test bl,%3
-    jz %%nodraw
+    jz short %%nodraw
     mov cx,[eax+ebx*2]
     mov [edi+%2],cx
     cmp dword[ngcwinmode],1
-    je %%nodraw
+    je short %%nodraw
     mov [edi+75036*2+%2],cx
 %%nodraw
 %endmacro
 
 %macro procpixelstwsmt 3
     dec dword[ngcpixleft]
-    jnz %%notzero
+    jnz short %%notzero
     call Nextwinmode
 %%notzero
     mov bl,[esi+%1]
     add bl,dl
     test bl,%3
-    jz %%nodraw
+    jz short %%nodraw
     mov cx,[eax+ebx*2]
     mov [edi+75036*2+%2],cx
     cmp dword[ngcwinmode],1
-    je %%nodraw
+    je short %%nodraw
     or cx,[UnusedBit]
     mov [edi+%2],cx
 %%nodraw
@@ -157,17 +157,17 @@
 
 %macro procpixelstwsmnt 3
     dec dword[ngcpixleft]
-    jnz %%notzero
+    jnz short %%notzero
     call Nextwinmode
 %%notzero
     mov bl,[esi+%1]
     add bl,dl
     test bl,%3
-    jz %%nodraw
+    jz short %%nodraw
     mov cx,[eax+ebx*2]
     mov [edi+75036*2+%2],cx
     cmp dword[ngcwinmode],1
-    je %%nodraw
+    je short %%nodraw
     mov [edi+%2],cx
 %%nodraw
 %endmacro
@@ -186,24 +186,24 @@ Nextwinmode:
 
 %macro processnextdrawwin 3
     dec dword[ngcpixleft]
-    jnz %%notzero
+    jnz short %%notzero
     call Nextwinmode
 %%notzero
     cmp dword[ngcwinmode],1
-    je %%nodraw
+    je short %%nodraw
     test %1,%3
-    jz %%nodraw
+    jz short %%nodraw
     mov [edi+%2],%1
 %%nodraw
 %endmacro
 
 %macro processwinpixel 0
     dec dword[ngcpixleft]
-    jnz %%notzero
+    jnz short %%notzero
     call Nextwinmode
 %%notzero
     dec dword[ngcpixleft]
-    jnz %%notzero2
+    jnz short %%notzero2
     call Nextwinmode
 %%notzero2
 %endmacro
@@ -224,7 +224,7 @@ Nextwinmode:
     %2
     ; start drawing from ecx to edi
     test word[vrama+eax],8000h
-    jz %%noflipypart
+    jz short %%noflipypart
     add ecx,[flipyposng]
     jmp %%flipypart
 %%noflipypart
@@ -299,11 +299,11 @@ Nextwinmode:
     add ecx,[ngptrdat2]
     add cx,[taddnfy16x16]
     test dword[vrama+eax],8000h
-    jz %%noflipy
+    jz short %%noflipy
     add cx,[taddfy16x16]
 %%noflipy
     test dword[vrama+eax],4000h
-    jz %%noflipx
+    jz short %%noflipx
     inc cx
 %%noflipx
 %%nexttile
@@ -316,7 +316,7 @@ Nextwinmode:
     %2
     ; start drawing from ecx to edi
     test word[vrama+eax],8000h
-    jnz %%flipypart
+    jnz short %%flipypart
     add ecx,[yposng]
     jmp %%noflipypart
 %%flipypart
@@ -357,7 +357,7 @@ Nextwinmode:
     pop ecx
     inc cx
     test dword[vrama+eax],4000h
-    jz %%noflipxb
+    jz short %%noflipxb
     sub cx,2
 %%noflipxb
     add edi,16
@@ -411,7 +411,7 @@ Nextwinmode:
     %2
     ; start drawing from ecx to edi
     test word[vrama+eax],8000h
-    jnz near %%flipypart
+    jnz short %%flipypart
     add ecx,[yposng]
     jmp %%notflipypart
 %%flipypart
@@ -478,7 +478,7 @@ Nextwinmode:
     and ebx,3FFh
     add ebx,[ofsmcyps]
     test ebx,100h
-    jz %%noupper
+    jz short %%noupper
     add ax,[ofsmady]
 %%noupper
     and ebx,0FFh
@@ -504,7 +504,7 @@ Nextwinmode:
     add ax,[ofsmtptrs]
     add ebx,[ofshvaladd]
     test ebx,100h
-    jz %%noleft
+    jz short %%noleft
     add ax,[ofsmadx]
 %%noleft
     and ebx,0F8h
@@ -531,10 +531,10 @@ Nextwinmode:
 
 %macro parttilewin 2
     cmp dword[ngcwinmode],1
-    je %%nodraw
+    je short %%nodraw
     mov bl,[ecx+%1*8]
     or bl,bl
-    jz %%nodraw
+    jz short %%nodraw
     add bl,dl
     mov [edi+%2*288*2],bl
 %%nodraw
@@ -542,7 +542,7 @@ Nextwinmode:
 
 %macro tilenormalw 2
     cmp dword[ngcwinmode],1
-    je %%nodraw
+    je short %%nodraw
     mov bx,[ecx+%2]
     mov [edi+%1],bx
 %%nodraw
@@ -550,17 +550,17 @@ Nextwinmode:
 
 %macro tilenormalwb 2
     cmp dword[ngcwinmode],1
-    je %%nodraw
+    je short %%nodraw
     mov bx,[ecx+%2]
     cmp bx,0FFFFh
-    je %%nodraw
+    je short %%nodraw
     mov [edi+%1],bx
 %%nodraw
 %endmacro
 
 %macro tilenormalwt 2
     cmp dword[ngcwinmode],1
-    je %%nodraw
+    je short %%nodraw
     mov bx,[ecx+%2]
     or bx,[UnusedBit]
     mov [edi+%1],bx
@@ -569,10 +569,10 @@ Nextwinmode:
 
 %macro tilenormalwbt 2
     cmp dword[ngcwinmode],1
-    je %%nodraw
+    je short %%nodraw
     mov bx,[ecx+%2]
     cmp bx,0FFFFh
-    je %%nodraw
+    je short %%nodraw
     or bx,[UnusedBit]
     mov [edi+%1],bx
 %%nodraw
@@ -580,7 +580,7 @@ Nextwinmode:
 
 %macro tilenormalwnt 2
     cmp dword[ngcwinmode],1
-    je %%nodraw
+    je short %%nodraw
     mov bx,[ecx+%2]
     mov [edi+%1],bx
 %%nodraw
@@ -588,17 +588,17 @@ Nextwinmode:
 
 %macro tilenormalwbnt 2
     cmp dword[ngcwinmode],1
-    je %%nodraw
+    je short %%nodraw
     mov bx,[ecx+%2]
     cmp bx,0FFFFh
-    je %%nodraw
+    je short %%nodraw
     mov [edi+%1],bx
 %%nodraw
 %endmacro
 
 %macro tilenormalwmst 2
     cmp dword[ngcwinmode],1
-    je %%nodraw
+    je short %%nodraw
     mov bx,[ecx+%2]
     mov [edi+%1+75036*2],bx
     or bx,[UnusedBit]
@@ -608,10 +608,10 @@ Nextwinmode:
 
 %macro tilenormalwbmst 2
     cmp dword[ngcwinmode],1
-    je %%nodraw
+    je short %%nodraw
     mov bx,[ecx+%2]
     cmp bx,0FFFFh
-    je %%nodraw
+    je short %%nodraw
     mov [edi+%1+75036*2],bx
     or bx,[UnusedBit]
     mov [edi+%1],bx
@@ -620,7 +620,7 @@ Nextwinmode:
 
 %macro tilenormalwmsnt 2
     cmp dword[ngcwinmode],1
-    je %%nodraw
+    je short %%nodraw
     mov bx,[ecx+%2]
     mov [edi+%1+75036*2],bx
     mov [edi+%1],bx
@@ -629,10 +629,10 @@ Nextwinmode:
 
 %macro tilenormalwbmsnt 2
     cmp dword[ngcwinmode],1
-    je %%nodraw
+    je short %%nodraw
     mov bx,[ecx+%2]
     cmp bx,0FFFFh
-    je %%nodraw
+    je short %%nodraw
     mov [edi+%1+75036*2],bx
     mov [edi+%1],bx
 %%nodraw
@@ -643,7 +643,7 @@ Nextwinmode:
     or bx,[UnusedBit]
     mov [edi+%1],bx
     cmp dword[ngcwinmode],1
-    je %%nodraw
+    je short %%nodraw
     and bx,[UnusedBitXor]
     mov [edi+%1+75036*2],bx
 %%nodraw
@@ -652,11 +652,11 @@ Nextwinmode:
 %macro tilenormalwbmsbt 2
     mov bx,[ecx+%2]
     cmp bx,0FFFFh
-    je %%nodraw
+    je short %%nodraw
     or bx,[UnusedBit]
     mov [edi+%1],bx
     cmp dword[ngcwinmode],1
-    je %%nodraw
+    je short %%nodraw
     and bx,[UnusedBitXor]
     mov [edi+%1+75036*2],bx
 %%nodraw
@@ -666,7 +666,7 @@ Nextwinmode:
     mov bx,[ecx+%2]
     mov [edi+%1],bx
     cmp dword[ngcwinmode],1
-    je %%nodraw
+    je short %%nodraw
     mov [edi+%1+75036*2],bx
 %%nodraw
 %endmacro
@@ -674,10 +674,10 @@ Nextwinmode:
 %macro tilenormalwbmsbnt 2
     mov bx,[ecx+%2]
     cmp bx,0FFFFh
-    je %%nodraw
+    je short %%nodraw
     mov [edi+%1],bx
     cmp dword[ngcwinmode],1
-    je %%nodraw
+    je short %%nodraw
     mov [edi+%1+75036*2],bx
 %%nodraw
 %endmacro
@@ -686,7 +686,7 @@ Nextwinmode:
     mov bx,[ecx+%2]
     mov [edi+%1+75036*2],bx
     cmp dword[ngcwinmode],1
-    je %%nodraw
+    je short %%nodraw
     or bx,[UnusedBit]
     mov [edi+%1],bx
 %%nodraw
@@ -695,10 +695,10 @@ Nextwinmode:
 %macro tilenormalwbsmt 2
     mov bx,[ecx+%2]
     cmp bx,0FFFFh
-    je %%nodraw
+    je short %%nodraw
     mov [edi+%1+75036*2],bx
     cmp dword[ngcwinmode],1
-    je %%nodraw
+    je short %%nodraw
     or bx,[UnusedBit]
     mov [edi+%1],bx
 %%nodraw
@@ -708,7 +708,7 @@ Nextwinmode:
     mov bx,[ecx+%2]
     mov [edi+%1+75036*2],bx
     cmp dword[ngcwinmode],1
-    je %%nodraw
+    je short %%nodraw
     mov [edi+%1],bx
 %%nodraw
 %endmacro
@@ -716,10 +716,10 @@ Nextwinmode:
 %macro tilenormalwbsmnt 2
     mov bx,[ecx+%2]
     cmp bx,0FFFFh
-    je %%nodraw
+    je short %%nodraw
     mov [edi+%1+75036*2],bx
     cmp dword[ngcwinmode],1
-    je %%nodraw
+    je short %%nodraw
     mov [edi+%1],bx
 %%nodraw
 %endmacro
@@ -737,7 +737,7 @@ Nextwinmode:
     %7
     jnz near %%docache
     cmp byte[%9+ecx],dl
-    je %%returnfromcache
+    je short %%returnfromcache
     mov [%9+ecx],dl
     call %10
 %%returnfromcache
@@ -748,7 +748,7 @@ Nextwinmode:
     %2
     ; start drawing from ecx
     test dword[vrama+eax],4000h
-    jz %%notflipxfull
+    jz short %%notflipxfull
     add ecx,128
 %%notflipxfull
     test dword[vrama+eax],8000h
@@ -756,7 +756,7 @@ Nextwinmode:
     mov dword[tleftnb],8
 %%loopfa
     dec dword[ngcpixleft]
-    jnz %%notzero
+    jnz short %%notzero
     call Nextwinmode
 %%notzero
     %11 0,0
@@ -777,7 +777,7 @@ Nextwinmode:
     mov dword[tleftnb],8
 %%loopfc
     dec dword[ngcpixleft]
-    jnz %%notzeroc
+    jnz short %%notzeroc
     call Nextwinmode
 %%notzeroc
     %11 0,16*7
@@ -798,7 +798,7 @@ Nextwinmode:
     %2
     ; start drawing from ecx
     test dword[vrama+eax],4000h
-    jz %%notflipxpart
+    jz short %%notflipxpart
     add ecx,128
 %%notflipxpart
     test dword[vrama+eax],8000h
@@ -806,7 +806,7 @@ Nextwinmode:
     mov dword[tleftnb],8
 %%loopfap
     dec dword[ngcpixleft]
-    jnz %%notzerop
+    jnz short %%notzerop
     call Nextwinmode
 %%notzerop
     %12 0,0
@@ -827,7 +827,7 @@ Nextwinmode:
     mov dword[tleftnb],8
 %%loopfcp
     dec dword[ngcpixleft]
-    jnz %%notzerocp
+    jnz short %%notzerocp
     call Nextwinmode
 %%notzerocp
     %12 0,16*7
@@ -882,11 +882,11 @@ Nextwinmode:
     add ecx,[ngptrdat2]
     add cx,[taddnfy16x16]
     test dword[vrama+eax],8000h
-    jz %%noflipy
+    jz short %%noflipy
     add cx,[taddfy16x16]
 %%noflipy
     test dword[vrama+eax],4000h
-    jz %%noflipx
+    jz short %%noflipx
     inc cx
 %%noflipx
 %%nexttile
@@ -896,7 +896,7 @@ Nextwinmode:
     %7
     jnz near %%docache
     cmp byte[%9+ecx],dl
-    je %%returnfromcache
+    je short %%returnfromcache
     mov [%9+ecx],dl
     call %10
 %%returnfromcache
@@ -907,7 +907,7 @@ Nextwinmode:
     %2
     ; start drawing from ecx
     test dword[vrama+eax],4000h
-    jz %%notflipxfull
+    jz short %%notflipxfull
     add ecx,128
 %%notflipxfull
     test dword[vrama+eax],8000h
@@ -915,7 +915,7 @@ Nextwinmode:
     mov dword[tleftnb],8
 %%loopfa
     dec dword[ngcpixleft]
-    jnz %%notzero
+    jnz short %%notzero
     call Nextwinmode
 %%notzero
     %11 0,0
@@ -936,7 +936,7 @@ Nextwinmode:
     mov dword[tleftnb],8
 %%loopfc
     dec dword[ngcpixleft]
-    jnz %%notzeroc
+    jnz short %%notzeroc
     call Nextwinmode
 %%notzeroc
     %11 0,16*7
@@ -957,7 +957,7 @@ Nextwinmode:
     %2
     ; start drawing from ecx
     test dword[vrama+eax],4000h
-    jz %%notflipxpart
+    jz short %%notflipxpart
     add ecx,128
 %%notflipxpart
     test dword[vrama+eax],8000h
@@ -965,7 +965,7 @@ Nextwinmode:
     mov dword[tleftnb],8
 %%loopfap
     dec dword[ngcpixleft]
-    jnz %%notzerop
+    jnz short %%notzerop
     call Nextwinmode
 %%notzerop
     %12 0,0
@@ -986,7 +986,7 @@ Nextwinmode:
     mov dword[tleftnb],8
 %%loopfcp
     dec dword[ngcpixleft]
-    jnz %%notzerocp
+    jnz short %%notzerocp
     call Nextwinmode
 %%notzerocp
     %12 0,16*7
@@ -1013,7 +1013,7 @@ Nextwinmode:
     pop ecx
     inc cx
     test dword[vrama+eax],4000h
-    jz %%noflipxb
+    jz short %%noflipxb
     sub cx,2
 %%noflipxb
     add edi,16
@@ -1063,18 +1063,18 @@ Nextwinmode:
     add ecx,[ngptrdat2]
     add cx,[taddnfy16x16]
     test dword[vrama+eax],8000h
-    jz %%noflipy
+    jz short %%noflipy
     add cx,[taddfy16x16]
 %%noflipy
     test dword[vrama+eax],4000h
-    jz %%noflipx
+    jz short %%noflipx
     inc cx
 %%noflipx
     test dword[switch16x16],1
-    jz %%noflipxb
+    jz short %%noflipxb
     inc cx
     test dword[vrama+eax],4000h
-    jz %%noflipxb
+    jz short %%noflipxb
     sub cx,2
 %%noflipxb
 %%nexttile
@@ -1087,7 +1087,7 @@ Nextwinmode:
     %2
     ; start drawing from ecx to edi
     test word[vrama+eax],8000h
-    jnz near %%flipypart
+    jnz short %%flipypart
     add ecx,[yposng]
     jmp %%notflipypart
 %%flipypart
@@ -1135,7 +1135,7 @@ Nextwinmode:
     pop ecx
 %%ntile
     test dword[switch16x16],1
-    jz %%skip
+    jz short %%skip
     add word[ofsmmptr],2
     add word[ofsmtptr],2
 %%skip
@@ -1147,7 +1147,7 @@ Nextwinmode:
     mov [yposng],ebx
     mov [flipyposng],edx
     test dword[switch16x16],1
-    jz %%next
+    jz short %%next
     test eax,03Fh
     jz near %%tileadd
 %%next
@@ -1162,7 +1162,7 @@ Nextwinmode:
     and ebx,3FFh
     add ebx,[ofsmcyps]
     test ebx,100h
-    jz %%noupper
+    jz short %%noupper
     add ax,[ofsmady]
 %%noupper
     and ebx,0FFh
@@ -1188,7 +1188,7 @@ Nextwinmode:
     add ax,[ofsmtptrs]
     add ebx,[ofshvaladd]
     test ebx,100h
-    jz %%noleft
+    jz short %%noleft
     add ax,[ofsmadx]
 %%noleft
     and ebx,0F8h
