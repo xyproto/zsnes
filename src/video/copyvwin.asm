@@ -175,7 +175,7 @@ NEWSYM copy640x480x16bwin
 .mmx
     mov eax,[spritetablea]
     mov ecx,64
-    add eax,512
+    add eax,512*256
 .mmxr
     movq mm0,[esi]
     movq mm1,mm0
@@ -192,7 +192,7 @@ NEWSYM copy640x480x16bwin
     jnz .mmxr
     mov eax,[spritetablea]
     mov ecx,32
-    add eax,512
+    add eax,512*256
     add edi,[AddEndBytes]
 .mmxr2
     movq mm0,[eax]
@@ -330,7 +330,7 @@ NEWSYM copy640x480x16bwin
 .mmxslh
     mov eax,[spritetablea]
     mov ecx,64
-    add eax,512
+    add eax,512*256
 .mmxrslh
     movq mm0,[esi]
     movq mm1,mm0
@@ -347,7 +347,7 @@ NEWSYM copy640x480x16bwin
     jnz .mmxrslh
     mov eax,[spritetablea]
     mov ecx,32
-    add eax,512
+    add eax,512*256
     add edi,[AddEndBytes]
     movq mm4,[HalfTrans]
 .mmxr2h
@@ -424,7 +424,7 @@ NEWSYM copy640x480x16bwin
 .mmxslh2
     mov eax,[spritetablea]
     mov ecx,64
-    add eax,512
+    add eax,512*256
 .mmxrslh2
     movq mm0,[esi]
     movq mm1,mm0
@@ -441,7 +441,7 @@ NEWSYM copy640x480x16bwin
     jnz .mmxrslh2
     mov eax,[spritetablea]
     mov ecx,64
-    add eax,512
+    add eax,512*256
     add edi,[AddEndBytes]
     movq mm4,[HalfTrans]
 .mmxr2h2
@@ -602,7 +602,7 @@ HighResProc:
 .yeshiresngmmx
     mov eax,[spritetablea]
     mov ecx,64
-    add eax,512
+    add eax,512*256
 .ngal
     movq mm0,[esi]
     movq mm1,[esi+75036*4]
@@ -644,7 +644,7 @@ HighResProc:
     add edi,[AddEndBytes]
     mov eax,[spritetablea]
     mov ecx,32
-    add eax,512
+    add eax,512*256
 .mmxr2
     movq mm0,[eax]
     movq [edi],mm0
@@ -663,7 +663,7 @@ HighResProc:
     add edi,[AddEndBytes]
     mov eax,[spritetablea]
     mov ecx,64
-    add eax,512
+    add eax,512*256
     movq mm4,[HalfTrans]
     sub esi,256*2
 .mmxr2aa
@@ -730,7 +730,7 @@ HighResProc:
 .halfscanlinesmmx
     mov eax,[spritetablea]
     mov ecx,32
-    add eax,512
+    add eax,512*256
     add edi,[AddEndBytes]
     movq mm4,[HalfTrans]
 .mmxr2h
@@ -758,7 +758,7 @@ HighResProc:
 .quartscanlinesmmx
     mov eax,[spritetablea]
     mov ecx,64
-    add eax,512
+    add eax,512*256
     add edi,[AddEndBytes]
     movq mm4,[HalfTransC]
 .mmxr2h2
@@ -911,6 +911,7 @@ NEWSYM interpolate640x480x16bwin
     ; do first line
     mov ecx,255
     mov edx,[spritetablea]
+    add edx,512*256
 .a
     mov ax,[esi]
     mov bx,[esi+2]
@@ -938,6 +939,7 @@ NEWSYM interpolate640x480x16bwin
 .ignorehr
     mov ecx,255
     mov edx,[spritetablea]
+    add edx,512*256
 .c
     mov ax,[esi]
     mov bx,[esi+2]
@@ -962,6 +964,7 @@ NEWSYM interpolate640x480x16bwin
     add edi,4
     add edi,[AddEndBytes]
     mov edx,[spritetablea]
+    add edx,512*256
     mov ecx,255
 .d
     mov eax,[edx]
@@ -1074,7 +1077,7 @@ NEWSYM interpolate640x480x16bwin
 .ignorehrhs
     mov edx,[spritetablea]
     mov ecx,255
-    add edx,512
+    add edx,512*256
 .ab2
     mov ax,[esi]
     mov bx,[esi+2]
@@ -1094,7 +1097,7 @@ NEWSYM interpolate640x480x16bwin
     add edi,[AddEndBytes]
     mov ecx,255
     mov edx,[spritetablea]
-    add edx,512
+    add edx,512*256
 .ab2b
     mov eax,[edx]
     and eax,[HalfTrans]
@@ -1130,7 +1133,7 @@ NEWSYM interpolate640x480x16bwin
 .ignorehrqs
     mov edx,[spritetablea]
     mov ecx,255
-    add edx,512
+    add edx,512*256
 .ab3
     mov ax,[esi]
     mov bx,[esi+2]
@@ -1150,7 +1153,7 @@ NEWSYM interpolate640x480x16bwin
     add edi,4
     mov ecx,255
     mov edx,[spritetablea]
-    add edx,512
+    add edx,512*256
 .ab3b
     mov eax,[edx]
     and eax,[HalfTrans]
@@ -1194,7 +1197,7 @@ MMXInterpolwin:
     mov [esi+512],eax
     mov edx,[spritetablea]
     mov ecx,64
-    add edx,512
+    add edx,512*256
 .a2
     movq mm0,[esi]
     movq mm3,mm0
@@ -1234,7 +1237,7 @@ MMXInterpolwin:
     mov [esi+512],eax
     mov edx,[spritetablea]
     mov ecx,64
-    add edx,512
+    add edx,512*256
     ; Process next line
 .a3
     movq mm0,[esi]
@@ -1284,7 +1287,7 @@ MMXInterpolwin:
     jnz near .a3
     add edi,[AddEndBytes]
     mov edx,[spritetablea]
-    add edx,512
+    add edx,512*256
     mov ecx,64
 .a4
     movq mm0,[edx]
@@ -1367,7 +1370,7 @@ MMXInterpolwin:
     mov [esi+512],eax
     mov edx,[spritetablea]
     mov ecx,64
-    add edx,512
+    add edx,512*256
 .ah
     movq mm0,[esi]
     movq mm4,mm0
@@ -1429,7 +1432,7 @@ MMXInterpolwin:
     mov ecx,64
     mov [esi+512],eax
     mov edx,[spritetablea]
-    add edx,512
+    add edx,512*256
 .ah2
     movq mm0,[esi]
     movq mm3,mm0
