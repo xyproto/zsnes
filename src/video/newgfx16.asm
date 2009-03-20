@@ -1155,12 +1155,12 @@ NEWSYM newengine16b
     or byte[FillSubScr+eax],2
     jmp .notblack
 .black
-    cmp byte[scrnon+1],0
-    jne .notblack
+;    cmp byte[scrnon+1],0
+;    jne .notblack
 ;    mov byte[clinemainsub],1
-    test byte[scadtng+eax],40h
-    jnz .notblack
-    xor byte[scadtng+eax],1
+;    test byte[scadtng+eax],40h
+;    jnz .notblack
+;    xor byte[scadtng+eax],1
 ;    mov byte[FillSubScr+eax],0
 .notblack
 
