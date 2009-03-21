@@ -57,6 +57,7 @@ EXTSYM bg1change,bg2change,bg3change,bg4change,ngwinptr,objwlrpos,objwen
 EXTSYM objclineptr,CSprWinPtr,BuildWindow2,NGNumSpr,fulladdtab,MMXSupport
 EXTSYM bgtxadd2,gammalevel16b,drawmode7ngextbg16b,processmode7hires16b
 EXTSYM processmode7hires16bd,drawmode7ngextbg216b,osm2dis,ofsmtptrs,ofsmcptr2
+EXTSYM drawlineng8b16b_direct,drawlineng16x168b16b_direct
 
 %ifdef __MSDOS__
 EXTSYM smallscreenon,ScreenScale
@@ -919,6 +920,14 @@ NEWSYM newengine16b
     je .noscads
     mov byte[bgallchange+eax],1
 .noscads
+
+    ; Direct Color
+    cmp byte[BGMA+eax],3
+    jne .nomode3
+    test byte[scadsng+eax],1
+    jz .nomode3
+    mov byte[bgallchange+eax],1
+.nomode3
 
 ; Windowing Stuff
 ;NEWSYM winl1,      0             ; window 1 left position

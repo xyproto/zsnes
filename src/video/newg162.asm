@@ -32,6 +32,7 @@ EXTSYM CPalPtrng,BGMS1,scadtng,CMainWinScr,CSubWinScr,UnusedBit,res640
 EXTSYM mosclineval,mostranspval,vcache2bs,vcache4bs,vcache8bs,vidmemch2s
 EXTSYM vidmemch4s,vidmemch8s,cpalval,bgtxadd2,SpecialLine,cachesingle4bng
 EXTSYM ofshvaladd,ofsmtptrs,ofsmcptr2,ngptrdat2
+EXTSYM vidbright,prevbrightdc,Gendcolortable,dcolortab
 
 %include "video/newg162.mac"
 %include "video/newgfx16.mac"
@@ -823,6 +824,49 @@ drawlineng8b16bmsntmw:
 drawlineng8b16bmsntsw:
     drawline16bw2macro tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmsnt,procpixelstmsnt,procpixelstwmsbnt,procpixelsnt,procpixelstnt
 
+NEWSYM drawlineng8b16b_direct
+    mov dh,[vidbright]
+    cmp dh,[prevbrightdc]
+    je .nodcchange
+    mov [prevbrightdc],dh
+    call Gendcolortable
+.nodcchange
+    determinetransp drawlineng8b16bt_direct
+drawlineng8b16bnt_direct
+    CheckWindowing drawlineng8bwin_direct
+    drawline16bmacro tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixels_direct,procpixelst_direct
+drawlineng8bwin_direct:
+    drawline16bwmacro tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixels_direct,procpixelst_direct,procpixelstw_direct
+drawlineng8b16bt_direct
+    test byte[BGMS1+ebx*2+1],dl
+    jnz near drawlineng8b16bms_direct
+    test byte[scadtng+ebx],dl
+    jz near drawlineng8b16bnt_direct
+    CheckWindowing drawlineng8bwint_direct
+    drawline16bmacro tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelstr_direct,procpixelstt_direct
+drawlineng8bwint_direct:
+    drawline16bwmacro tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelstr_direct,procpixelstt_direct,procpixelstwt_direct
+drawlineng8b16bms_direct:
+    test byte[scadtng+ebx],dl
+    jz near drawlineng8b16bmsnt_direct
+    DetermineWindow drawlineng8b16bmstmsw_direct, drawlineng8b16bmstmw_direct, drawlineng8b16bmstsw_direct
+    drawline16bmacro tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmst_direct,procpixelstmst_direct
+drawlineng8b16bmstmsw_direct:
+    drawline16bwmacro tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmst_direct,procpixelstmst_direct,procpixelstwmst_direct
+drawlineng8b16bmstmw_direct:
+    drawline16bw2macro tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmst_direct,procpixelstmst_direct,procpixelstwsmt_direct,procpixelss_direct,procpixelsts_direct
+drawlineng8b16bmstsw_direct:
+    drawline16bw2macro tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmst_direct,procpixelstmst_direct,procpixelstwmsbt_direct,procpixelstr_direct,procpixelstt_direct
+drawlineng8b16bmsnt_direct
+    DetermineWindow drawlineng8b16bmsntmsw_direct, drawlineng8b16bmsntmw_direct, drawlineng8b16bmsntsw_direct
+    drawline16bmacro tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmsnt_direct,procpixelstmsnt_direct
+drawlineng8b16bmsntmsw_direct:
+    drawline16bwmacro tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmsnt_direct,procpixelstmsnt_direct,procpixelstwmsnt_direct
+drawlineng8b16bmsntmw_direct:
+    drawline16bw2macro tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmsnt_direct,procpixelstmsnt_direct,procpixelstwsmnt_direct,procpixelss_direct,procpixelsts_direct
+drawlineng8b16bmsntsw_direct:
+    drawline16bw2macro tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmsnt_direct,procpixelstmsnt_direct,procpixelstwmsbnt_direct,procpixelsnt_direct,procpixelstnt_direct
+
 ;******************************************
 ; 16x16 tiles - line by line engine
 ;******************************************
@@ -1020,6 +1064,49 @@ drawlineng8b16bmsntmw16x16:
     drawline16bw2macro16x16 tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmsnt,procpixelstmsnt,procpixelstwsmnt,procpixelss,procpixelsts
 drawlineng8b16bmsntsw16x16:
     drawline16bw2macro16x16 tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmsnt,procpixelstmsnt,procpixelstwmsbnt,procpixelsnt,procpixelstnt
+
+NEWSYM drawlineng16x168b16b_direct
+    mov dh,[vidbright]
+    cmp dh,[prevbrightdc]
+    je .nodcchange
+    mov [prevbrightdc],dh
+    call Gendcolortable
+.nodcchange
+    determinetransp drawlineng8b16bt16x16_direct
+drawlineng8b16bnt16x16_direct
+    CheckWindowing drawlineng8bwin16x16_direct
+    drawline16bmacro16x16 tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixels_direct,procpixelst_direct
+drawlineng8bwin16x16_direct:
+    drawline16bwmacro16x16 tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixels_direct,procpixelst_direct,procpixelstw_direct
+drawlineng8b16bt16x16_direct
+    test byte[BGMS1+ebx*2+1],dl
+    jnz near drawlineng8b16bms16x16_direct
+    test byte[scadtng+ebx],dl
+    jz near drawlineng8b16bnt16x16_direct
+    CheckWindowing drawlineng8bwint16x16_direct
+    drawline16bmacro16x16 tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelstr_direct,procpixelstt_direct
+drawlineng8bwint16x16_direct:
+    drawline16bwmacro16x16 tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelstr_direct,procpixelstt_direct,procpixelstwt_direct
+drawlineng8b16bms16x16_direct:
+    test byte[scadtng+ebx],dl
+    jz near drawlineng8b16bmsnt16x16_direct
+    DetermineWindow drawlineng8b16bmstmsw16x16_direct, drawlineng8b16bmstmw16x16_direct, drawlineng8b16bmstsw16x16_direct
+    drawline16bmacro16x16 tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmst_direct,procpixelstmst_direct
+drawlineng8b16bmstmsw16x16_direct:
+    drawline16bwmacro16x16 tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmst_direct,procpixelstmst_direct,procpixelstwmst_direct
+drawlineng8b16bmstmw16x16_direct:
+    drawline16bw2macro16x16 tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmst_direct,procpixelstmst_direct,procpixelstwsmt_direct,procpixelss_direct,procpixelsts_direct
+drawlineng8b16bmstsw16x16_direct:
+    drawline16bw2macro16x16 tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmst_direct,procpixelstmst_direct,procpixelstwmsbt_direct,procpixelstr_direct,procpixelstt_direct
+drawlineng8b16bmsnt16x16_direct
+    DetermineWindow drawlineng8b16bmsntmsw16x16_direct, drawlineng8b16bmsntmw16x16_direct, drawlineng8b16bmsntsw16x16_direct
+    drawline16bmacro16x16 tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmsnt_direct,procpixelstmsnt_direct
+drawlineng8b16bmsntmsw16x16_direct:
+    drawline16bwmacro16x16 tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmsnt_direct,procpixelstmsnt_direct,procpixelstwmsnt_direct
+drawlineng8b16bmsntmw16x16_direct:
+    drawline16bw2macro16x16 tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmsnt_direct,procpixelstmsnt_direct,procpixelstwsmnt_direct,procpixelss_direct,procpixelsts_direct
+drawlineng8b16bmsntsw16x16_direct:
+    drawline16bw2macro16x16 tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmsnt_direct,procpixelstmsnt_direct,procpixelstwmsbnt_direct,procpixelsnt_direct,procpixelstnt_direct
 
 %macro drawline16bmacro16x8 10
     cmp byte[curmosaicsz],1
