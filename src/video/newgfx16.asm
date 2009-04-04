@@ -29,17 +29,17 @@ EXTSYM bg1scroly,bg1totng,bg2drwng,bg2objptr,bg2ptr,bg2ptrx,bg2ptry,bg2scrolx
 EXTSYM bg2scroly,bg2totng,bg3drwng,bg3highst,bg3objptr,bg3ptr,bg3ptrx,bg3ptry
 EXTSYM bg3scrolx,bg3scroly,bg3totng,bg4drwng,bg4objptr,bg4ptr,bg4ptrx,bg4ptry
 EXTSYM bg4scrolx,bg4scroly,bg4totng,bgcmsung,bgmode,bgtxad,bgtxadd,ngextbg
-EXTSYM cachesingle2bng,cachesingle8bng,cfieldad,cgmod,cgram,coladdb,coladdg
+EXTSYM cfieldad,cgmod,cgram,coladdb,coladdg
 EXTSYM coladdr,colleft16b,colormodedef,cpalval,csprbit,csprival,curmosaicsz
 EXTSYM curvidoffset,curypos,flipyposng,forceblnk,interlval,intrlng
 EXTSYM mode0add,mode0ads,mode7A,mode7C,mode7X0,mode7ab,mode7cd,mode7set,mode7st
 EXTSYM mode7xy,modeused,mosaicon,mosaicsz,mosenng,mosszng,ngceax,ngcedi
-EXTSYM ngpalcon2b,ngpalcon8b,ngptrdat,pesimpng,prdata,prdatb,prdatc,prevbright
+EXTSYM ngptrdat,pesimpng,prdata,prdatb,prdatc,prevbright
 EXTSYM reslbyl,resolutn,scaddset,scaddtype,scadsng,scadtng,scfbl,scrndis,scrnon
 EXTSYM spritetablea,sprleftpr,sprlefttot,sprpriodata,sprtbng,sprtlng
 EXTSYM t16x161,t16x162,t16x163,t16x164,taddfy16x16,taddnfy16x16,ngptrdat2
-EXTSYM tleftn,tltype2b,tltype8b,vcache2b,vcache8b,vidbright,ofshvaladd
-EXTSYM vidbuffer,vidmemch2,vidmemch8,vrama,winon,xtravbuf,yposng
+EXTSYM vidbright,ofshvaladd
+EXTSYM vidbuffer,winon,xtravbuf,yposng
 EXTSYM vbufdptr,drawtileng2b16b,drawtileng4b16b,drawtileng8b16b,bgwinchange
 EXTSYM drawtileng16x162b16b,drawtileng16x164b16b,drawtileng16x168b16b,winbg1en
 EXTSYM drawlineng2b16b,drawlineng4b16b,drawlineng8b16b,BuildWindow,winenabs
@@ -50,9 +50,10 @@ EXTSYM winbg3enval,winbg4enval,winbgobjenval,Mode7HiRes16b,res640,hiresstuff
 EXTSYM Mode7BackA,Mode7BackC,Mode7BackX0,Mode7BackSet,drawmode7win16b,ngwinen
 EXTSYM drawlineng16x84b16b,drawlineng16x82b16b,ofsmcyps,vram,ofsmcptr,ofsmady
 EXTSYM ofsmadx,ofsmtptr,yposngom,flipyposngom,ofsmmptr,ofsmval,ofsmvalh,V8Mode
-EXTSYM cbgval,drawlinengom4b16b,winbg1envals,m7starty
+EXTSYM cbgval,winbg1envals,m7starty,bgallchange
 EXTSYM FillSubScr,scanlines,SpecialLine,vidmemch2s,dovegrest
-EXTSYM drawlinengom16x164b16b,bgallchange
+EXTSYM drawlinengom2b16b,drawlinengom4b16b,drawlinengom8b16b
+EXTSYM drawlinengom16x162b16b,drawlinengom16x164b16b,drawlinengom16x168b16b
 EXTSYM bg1change,bg2change,bg3change,bg4change,ngwinptr,objwlrpos,objwen
 EXTSYM objclineptr,CSprWinPtr,BuildWindow2,NGNumSpr,fulladdtab,MMXSupport
 EXTSYM bgtxadd2,gammalevel16b,drawmode7ngextbg16b,processmode7hires16b
@@ -65,7 +66,6 @@ EXTSYM smallscreenon,ScreenScale
 
 %include "video/vidmacro.mac"
 %include "video/newgfx16.mac"
-%include "video/newg162.mac"
 
 ; Different routines for:
 ;   Normal (just one screen)
@@ -749,11 +749,8 @@ NEWSYM newengine16b
     mov bl,[bgmode]
     and bl,07h
     mov [BGMA+eax],bl
-    cmp bl,4
-    je .changedmode4
     cmp [BGMA+eax-1],bl
     je .nobgma
-.changedmode4
     mov byte[bgallchange+eax],1
 .nobgma
 

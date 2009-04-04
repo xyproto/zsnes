@@ -395,7 +395,7 @@ Nextwinmode:
     jmp %%next
 %endmacro
 
-%macro drawlinengomwin16b 9
+%macro drawlinengomwin16b 10
     ; tile value : bit 15 = flipy, bit 14 = flipx, bit 13 = priority value
     ;              bit 10-12 = palette, 0-9=tile#
     mov ebx,[cbgval]
@@ -471,9 +471,17 @@ Nextwinmode:
     add ebx,[ofsmcptr2]
     mov ecx,[ofsmval]
     add dword[ofshvaladd],8
+%if %10=4
+    test dword[ebx-40h],8000h
+    jz %%noofsm
+    test dword[ebx-40h],ecx
+    jz %%noofsm
+    mov ebx,[ebx-40h]
+%else
     test dword[ebx],ecx
     jz %%noofsm
     mov ebx,[ebx]
+%endif
     mov ax,[ofsmtptr]
     and ebx,3FFh
     add ebx,[ofsmcyps]
@@ -497,6 +505,10 @@ Nextwinmode:
     add dword[ofsmcptr2],2
     mov ecx,[ofsmval]
     and dword[ofsmcptr2],3Fh
+%if %10=4
+    test dword[ebx-40h],8000h
+    jnz %%noofsm
+%endif
     test dword[ebx-40h],ecx
     jz %%noofsmh
     mov ebx,[ebx-40h]
@@ -1052,7 +1064,7 @@ Nextwinmode:
     jmp %%next
 %endmacro
 
-%macro drawlinengomwin16b16x16 9
+%macro drawlinengomwin16b16x16 10
     ; tile value : bit 15 = flipy, bit 14 = flipx, bit 13 = priority value
     ;              bit 10-12 = palette, 0-9=tile#
     mov ebx,[cbgval]
@@ -1155,9 +1167,17 @@ Nextwinmode:
     add ebx,[ofsmcptr2]
     mov ecx,[ofsmval]
     add dword[ofshvaladd],8
+%if %10=4
+    test dword[ebx-40h],8000h
+    jz near %%noofsm
+    test dword[ebx-40h],ecx
+    jz %%noofsm
+    mov ebx,[ebx-40h]
+%else
     test dword[ebx],ecx
     jz %%noofsm
     mov ebx,[ebx]
+%endif
     mov ax,[ofsmtptr]
     and ebx,3FFh
     add ebx,[ofsmcyps]
@@ -1181,6 +1201,10 @@ Nextwinmode:
     add dword[ofsmcptr2],2
     mov ecx,[ofsmval]
     and dword[ofsmcptr2],3Fh
+%if %10=4
+    test dword[ebx-40h],8000h
+    jnz %%noofsmh
+%endif
     test dword[ebx-40h],ecx
     jz %%noofsmh
     mov ebx,[ebx-40h]

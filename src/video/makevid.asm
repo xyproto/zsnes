@@ -36,6 +36,7 @@ EXTSYM bg3ptr,bg3scrolx,bg3scroly,vidmemch4,ofsmcptr,ofsmady,ofsmadx,yposngom
 EXTSYM flipyposngom,ofsmtptr,ofsmmptr,ofsmcyps,bgtxadd,bg1ptrx,bg1ptry
 EXTSYM bg1scrolx_m7,bg1scroly_m7,OMBGTestVal,Testval,cachesingle4bng,m7starty
 EXTSYM ofsmtptrs,ofsmcptr2
+EXTSYM newengine16b
 
 %ifdef __MSDOS__
 EXTSYM newengine8b,drawmode7,drawmode7extbg,drawmode7extbg2
@@ -1385,18 +1386,9 @@ NEWSYM cwinenabm, resd 1
 SECTION .text
 
 NEWSYM drawline
-    mov al,[winenabs]
-    mov [cwinenabm],al
-
-    mov byte[bg3high2],0
-    cmp byte[bgmode],1
-    jne .nohigh
-    mov al,[bg3highst]
-    mov [bg3high2],al
-.nohigh
 %ifdef __MSDOS__
     cmp byte[cbitmode],1
-    je near drawline16b
+    je near .16b
     mov al,[vidbright]
     cmp al,[maxbr]
     jbe .nochange
@@ -1407,6 +1399,15 @@ NEWSYM drawline
     cmp byte[newengen],1
     je near newengine8b
 .nonewgfx
+    mov al,[winenabs]
+    mov [cwinenabm],al
+
+    mov byte[bg3high2],0
+    cmp byte[bgmode],1
+    jne .nohigh
+    mov al,[bg3highst]
+    mov [bg3high2],al
+.nohigh
     cmp byte[forceblnk],0
     jne near blanker
     mov byte[alreadydrawn],0
@@ -1625,9 +1626,13 @@ NEWSYM drawline
     xor ecx,ecx
 NEWSYM nodrawline
     ret
-%else
-    jmp drawline16b
+.16b
 %endif
+    cmp byte[ForceNewGfxOff],0
+    jne drawline16b
+    cmp byte[newengen],0
+    je drawline16b
+    jmp newengine16b
 
 %ifdef __MSDOS__
 NEWSYM priority2

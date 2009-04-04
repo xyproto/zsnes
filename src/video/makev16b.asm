@@ -26,9 +26,9 @@ EXTSYM drawmode716extbg2,alreadydrawn,bg1cachloc,bg1tdabloc,bg1tdatloc
 EXTSYM bg1vbufloc,bg1xposloc,bg1yaddval,bgcoloradder,bgmode,bgtilesz,curbgnum
 EXTSYM drawn,makewindow,winbg1en,winenabs,mosaicon,winenabm,vidbuffer,bg3high2
 EXTSYM colormodedef,colormodeofs,curbgpr,curblank,currentobjptr,curvidoffset
-EXTSYM cwinenabm,drawline16t,forceblnk,makewindowsp,maxbr,newengen,newengine16b
+EXTSYM cwinenabm,drawline16t,forceblnk,makewindowsp,maxbr
 EXTSYM preparesprpr,procbackgrnd,scaddset,scaddtype,spritetablea,sprleftpr
-EXTSYM ForceNewGfxOff,bg1scrolx,bg1scroly,drawmode716b,mode7set,mosaicsz
+EXTSYM bg1scrolx,bg1scroly,drawmode716b,mode7set,mosaicsz
 EXTSYM sprleftpr1,sprleftpr2,sprleftpr3,sprlefttot,sprprifix,interlval,extbgdone
 EXTSYM coladdb,coladdg,coladdr,pal16b,vesa2_bpos,V8Mode,doveg,pal16bcl,pal16bxcl
 EXTSYM prevbright,prevpal,vesa2_clbit,vesa2_gpos,vesa2_rpos,vidbright,cgmod
@@ -40,7 +40,7 @@ EXTSYM bg1objptr,bg1ptr,bg3ptr,bg3scrolx,bg3scroly,vidmemch4,vram,ofsmcptr
 EXTSYM ofsmady,ofsmadx,yposngom,flipyposngom,ofsmtptr,ofsmmptr,ofsmcyps,bgtxadd
 EXTSYM bg1ptrx,bg1ptry,a16x16xinc,a16x16yinc,bg1scrolx_m7,bg1scroly_m7,ngptrdat2
 EXTSYM OMBGTestVal,Testval,cachesingle4bng,m7starty,ofsmtptrs,ofsmcptr2
-EXTSYM ofshvaladd
+EXTSYM ofshvaladd,bg3highst
 
 %include "video/vidmacro.mac"
 
@@ -303,11 +303,15 @@ NEWSYM blanker16b
     ret
 
 NEWSYM drawline16b
-    cmp byte[ForceNewGfxOff],0
-    jne .nonewgfx
-    cmp byte[newengen],1
-    je near newengine16b
-.nonewgfx
+    mov al,[winenabs]
+    mov [cwinenabm],al
+
+    mov byte[bg3high2],0
+    cmp byte[bgmode],1
+    jne .nohigh
+    mov al,[bg3highst]
+    mov [bg3high2],al
+.nohigh
     cmp byte[curblank],0
     jne near nodrawline16b
     mov al,[vidbright]

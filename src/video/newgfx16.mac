@@ -1028,7 +1028,7 @@
     jnz near %%proclinebyline
     test dword[bg1change+ebx+%1*256+4],0FFFFFFFFh
     jnz near %%proclinebyline
-    cmp byte[BGMA+ebx],5
+    cmp byte[BGMA+ebx],4
     jae near %%proclinebyline
     cmp byte[BGMA+ebx],2
     je near %%proclinebyline
@@ -3225,8 +3225,8 @@
     jbe .nooma16x16
     add ax,780h
 .nooma16x16
-    cmp byte[BGMA+ebx],4
-    je .offsetm416x16
+;    cmp byte[BGMA+ebx],4
+;    je .offsetm416x16
     add eax,40h
 .offsetm416x16
     mov edx,eax
@@ -3324,6 +3324,56 @@
     add ecx,%2*256
     jmp drawlinengom16x164b16b
 .no4bitom16x16
+
+    cmp dl,1
+    jne near .no2bitom16x16
+    shr ecx,4
+    add edi,esi
+    mov [ngptrdat+%2*1024+ebx*4],ecx
+    mov [ngptrdat2],ecx
+    mov [ngceax+%2*1024+ebx*4],eax
+    mov [ngcedi+%2*1024+ebx*4],edi
+    ; eax = pointer to beginning of tile area
+    mov dword[ofsmval],2000h << %1
+    mov dword[ofsmvalh],2000h << %1
+    mov dword[cbgval],%1
+    ProcessBuildWindow %1
+    mov dword[mode0add],0
+    mov ecx,ebx
+    mov dl,1 << %2
+    add ecx,%2*256
+    jmp drawlinengom16x162b16b
+.no2bitom16x16
+
+    cmp dl,3
+    jne near .no8bitom16x16
+    shr ecx,6
+    add edi,esi
+    mov [ngptrdat+%2*1024+ebx*4],ecx
+    mov [ngptrdat2],ecx
+    mov [ngceax+%2*1024+ebx*4],eax
+    mov [ngcedi+%2*1024+ebx*4],edi
+    test byte[scadsng+ebx],1
+    jz .nodirectom16x16
+    mov dl,[vidbright]
+    cmp dl,[prevbrightdc]
+    je .nodcchangeom16x16
+    mov [prevbrightdc],dl
+    call Gendcolortable
+.nodcchangeom16x16
+    mov ecx,dcolortab
+    mov [CPalPtrng],ecx
+.nodirectom16x16
+    ; eax = pointer to beginning of tile area
+    mov dword[ofsmval],2000h << %1
+    mov dword[ofsmvalh],2000h << %1
+    mov dword[cbgval],%1
+    ProcessBuildWindow %1
+    mov ecx,ebx
+    mov dl,1 << %2
+    add ecx,%2*256
+    jmp drawlinengom16x168b16b
+.no8bitom16x16
     pop ebx
     ret
 
@@ -3462,14 +3512,15 @@
     mov [ngceax+%2*1024+ebx*4],eax
     mov [ngcedi+%2*1024+ebx*4],edi
     ; eax = pointer to beginning of tile area
+    mov dword[ofsmval],2000h << %1
+    mov dword[ofsmvalh],2000h << %1
+    mov dword[cbgval],%1
+    ProcessBuildWindow %1
     mov dword[mode0add],0
-    mov byte[tleftn],33
-
-.loopdn
-    mov cx,[vrama+eax]
-    test cx,2000h
-    jnz near .fintiledn
-    drawlinengom216b tltype2b, preparet2ba, cachesingle2bng,.loopdn,.fintiledn,ngpalcon2b,test2ba,03h,%1
+    mov ecx,ebx
+    mov dl,1 << %2
+    add ecx,%2*256
+    jmp drawlinengom2b16b
 .no2bitdn
     cmp dl,3
     jne near .no8bitdn
@@ -3491,13 +3542,14 @@
     mov [CPalPtrng],ecx
 .nodirectdn
     ; eax = pointer to beginning of tile area
-    mov byte[tleftn],33
-
-.loopdn2
-    mov cx,[vrama+eax]
-    test cx,2000h
-    jnz near .fintiledn2
-    drawlinengom216b tltype8b, preparet8ba, cachesingle8bng,.loopdn2,.fintiledn2,ngpalcon8b,test8ba,0FFh,%1
+    mov dword[ofsmval],2000h << %1
+    mov dword[ofsmvalh],2000h << %1
+    mov dword[cbgval],%1
+    ProcessBuildWindow %1
+    mov ecx,ebx
+    mov dl,1 << %2
+    add ecx,%2*256
+    jmp drawlinengom8b16b
 .no8bitdn
     pop ebx
     ret
@@ -3811,8 +3863,8 @@
     jbe .nooma16x16
     add ax,780h
 .nooma16x16
-    cmp byte[BGMA+ebx],4
-    je .offsetm416x16
+;    cmp byte[BGMA+ebx],4
+;    je .offsetm416x16
     add eax,40h
 .offsetm416x16
     mov edx,eax
@@ -3899,6 +3951,44 @@
     add ecx,%2*256
     jmp drawlinengom16x164b16b
 .no4bitom16x16
+
+    cmp dl,1
+    jne near .no2bitom16x16
+    ; eax = pointer to beginning of tile area
+    mov dword[ofsmval],2000h << %1
+    mov dword[ofsmvalh],2000h << %1
+    mov dword[cbgval],%1
+    ProcessBuildWindow %1
+    mov dword[mode0add],0
+    mov ecx,ebx
+    mov dl,1 << %2
+    add ecx,%2*256
+    jmp drawlinengom16x162b16b
+.no2bitom16x16
+
+    cmp dl,3
+    jne near .no8bitom16x16
+    test byte[scadsng+ebx],1
+    jz .nodirectom16x16
+    mov dl,[vidbright]
+    cmp dl,[prevbrightdc]
+    je .nodcchangeom16x16
+    mov [prevbrightdc],dl
+    call Gendcolortable
+.nodcchangeom16x16
+    mov ecx,dcolortab
+    mov [CPalPtrng],ecx
+.nodirectom16x16
+    ; eax = pointer to beginning of tile area
+    mov dword[ofsmval],2000h << %1
+    mov dword[ofsmvalh],2000h << %1
+    mov dword[cbgval],%1
+    ProcessBuildWindow %1
+    mov ecx,ebx
+    mov dl,1 << %2
+    add ecx,%2*256
+    jmp drawlinengom16x168b16b
+.no8bitom16x16
     pop ebx
     ret
 
@@ -4014,13 +4104,15 @@
     cmp dl,1
     jne near .no2bitdn
     ; eax = pointer to beginning of tile area
-    mov byte[tleftn],33
-
-.loopdn
-    mov cx,[vrama+eax]
-    test cx,2000h
-    jz near .fintiledn
-    drawlinengom216b tltype2b, preparet2ba, cachesingle2bng,.loopdn,.fintiledn,ngpalcon2b,test2ba,03h,%1
+    mov dword[ofsmval],2000h << %1
+    mov dword[ofsmvalh],2000h << %1
+    mov dword[cbgval],%1
+    ProcessBuildWindow %1
+    mov dword[mode0add],0
+    mov ecx,ebx
+    mov dl,1 << %2
+    add ecx,%2*256
+    jmp drawlinengom2b16b
 .no2bitdn
     cmp dl,3
     jne near .no8bitdn
@@ -4036,13 +4128,14 @@
     mov [CPalPtrng],ecx
 .nodirectdn
     ; eax = pointer to beginning of tile area
-    mov byte[tleftn],33
-
-.loopdn2
-    mov cx,[vrama+eax]
-    test cx,2000h
-    jz near .fintiledn2
-    drawlinengom216b tltype8b, preparet8ba, cachesingle8bng,.loopdn2,.fintiledn2,ngpalcon8b,test8ba,0FFh,%1
+    mov dword[ofsmval],2000h << %1
+    mov dword[ofsmvalh],2000h << %1
+    mov dword[cbgval],%1
+    ProcessBuildWindow %1
+    mov ecx,ebx
+    mov dl,1 << %2
+    add ecx,%2*256
+    jmp drawlinengom8b16b
 .no8bitdn
     pop ebx
     ret
