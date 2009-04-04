@@ -661,7 +661,7 @@
     test dword[ebx-40h],8000h
     jz near %%noofsm
     test dword[ebx-40h],ecx
-    jz %%noofsm
+    jz near %%noofsm
     mov ebx,[ebx-40h]
 %else
     test dword[ebx],ecx
