@@ -3137,12 +3137,9 @@
     shr edx,3
     shl edx,1
     add ax,dx
-    mov dx,[bg3scrolx]
-    test dx,1000h
-    jz .nooma16x16
-    and dx,0F000h
-    shr dx,5
-    add ax,dx
+    cmp word[BG3SYl+ebx*2],0fff7h
+    jbe .nooma16x16
+    add ax,780h
 .nooma16x16
     cmp byte[BGMA+ebx],4
     je .offsetm416x16
@@ -3305,12 +3302,9 @@
     shr edx,3
     shl edx,1
     add ax,dx
-    mov dx,[bg3scrolx]
-    test dx,1000h
-    jz .nooma
-    and dx,0F000h
-    shr dx,5
-    add ax,dx
+    cmp word[BG3SYl+ebx*2],0fff7h
+    jbe .nooma
+    add ax,780h
 .nooma
 ;    cmp byte[BGMA+ebx],4
 ;    je .offsetm4
@@ -3706,12 +3700,9 @@
     shr edx,3
     shl edx,1
     add ax,dx
-    mov dx,[bg3scrolx]
-    test dx,1000h
-    jz .nooma
-    and dx,0F000h
-    shr dx,5
-    add ax,dx
+    cmp word[BG3SYl+ebx*2],0fff7h
+    jbe .nooma
+    add ax,780h
 .nooma
     mov edx,eax
 ;    cmp byte[BGMA+ebx],4

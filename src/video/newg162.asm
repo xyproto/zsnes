@@ -33,7 +33,6 @@ EXTSYM mosclineval,mostranspval,vcache2bs,vcache4bs,vcache8bs,vidmemch2s
 EXTSYM vidmemch4s,vidmemch8s,cpalval,bgtxadd2,SpecialLine,cachesingle4bng
 EXTSYM ofshvaladd,ofsmtptrs,ofsmcptr2,ngptrdat2
 
-%include "video/vidmacro.mac"
 %include "video/newg162.mac"
 %include "video/newgfx16.mac"
 %include "video/newg16wn.mac"
