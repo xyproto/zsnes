@@ -40,8 +40,6 @@ NEWSYM drawmode716extbg
     jz .notdisabled
     ret
 .notdisabled
-;    test byte[scaddset],1
-;    jnz near drawmode7dcolor
     mov esi,[cwinptr]
     mov [winptrref],esi
     cmp byte[curmosaicsz],1

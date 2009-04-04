@@ -23,8 +23,8 @@
 
 EXTSYM mode7tab,winptrref,nglogicval,winlogicaval,curmosaicsz,curvidoffset
 EXTSYM cwinptr,mode7A,mode7B,mode7C,mode7D,mode7X0,mode7Y0,mode7set,vram,vrama
-EXTSYM xtravbuf,mode7hr,dcolortab,UnusedBitXor,UnusedBit,scrndis
-EXTSYM vidbright,prevbrightdc,Gendcolortable,mode7ab,mode7cd,BGMA,BG1SXl,BG1SYl
+EXTSYM xtravbuf,mode7hr,UnusedBitXor,UnusedBit,scrndis
+EXTSYM mode7ab,mode7cd,BGMA,BG1SXl,BG1SYl
 
 %include "video/mode716.mac"
 
@@ -99,80 +99,6 @@ EXTSYM vidbright,prevbrightdc,Gendcolortable,mode7ab,mode7cd,BGMA,BG1SXl,BG1SYl
     or dl,dl
     jz %%nodrawb
     mov dx,[ebp+edx*2]
-    mov [esi+75036*2],dx
-    xor edx,edx
-%%nodrawb
-    add esi,2
-%endmacro
-
-%macro Mode7Direct 0
-    or dl,dl
-    jz %%nodrawb
-    mov dx,[dcolortab+edx*4]
-    mov [esi],dx
-    xor edx,edx
-%%nodrawb
-    add esi,2
-%endmacro
-
-%macro Mode7Directnt 0
-    or dl,dl
-    jz %%nodrawb
-    mov dx,[dcolortab+edx*4]
-    mov [esi],dx
-    xor edx,edx
-%%nodrawb
-    add esi,2
-%endmacro
-
-%macro Mode7Directt 0
-    or dl,dl
-    jz %%nodrawb
-    mov dx,[dcolortab+edx*4]
-    or dx,[UnusedBit]
-    mov [esi],dx
-    xor edx,edx
-%%nodrawb
-    add esi,2
-%endmacro
-
-%macro Mode7Directmsnt 0
-    or dl,dl
-    jz %%nodrawb
-    mov dx,[dcolortab+edx*4]
-    mov [esi],dx
-    mov [esi+75036*2],dx
-    xor edx,edx
-%%nodrawb
-    add esi,2
-%endmacro
-
-%macro Mode7Directmst 0
-    or dl,dl
-    jz %%nodrawb
-    mov dx,[dcolortab+edx*4]
-    mov [esi+75036*2],dx
-    or dx,[UnusedBit]
-    mov [esi],dx
-    xor edx,edx
-%%nodrawb
-    add esi,2
-%endmacro
-
-%macro Mode7Directsnt 0
-    or dl,dl
-    jz %%nodrawb
-    mov dx,[dcolortab+edx*4]
-    mov [esi+75036*2],dx
-    xor edx,edx
-%%nodrawb
-    add esi,2
-%endmacro
-
-%macro Mode7Directst 0
-    or dl,dl
-    jz %%nodrawb
-    mov dx,[dcolortab+edx*4]
     mov [esi+75036*2],dx
     xor edx,edx
 %%nodrawb
@@ -343,65 +269,6 @@ drawmode7w16bmnt
     Mode7MainSub Mode7Normalmsnt,Mode7Normalsnt
 drawmode7w16bsnt
     Mode7MainSub Mode7Normalmsnt,Mode7Normalnt
-
-NEWSYM drawmode7win16bd
-    test byte[scrndis],1
-    jz .notdisabled
-    ret
-.notdisabled
-    mov bl,[vidbright]
-    cmp bl,[prevbrightdc]
-    je .nodcchange
-    mov [prevbrightdc],bl
-    call Gendcolortable
-.nodcchange
-    CheckTransparency 01h,drawmode7win16btd
-    Mode7NonMainSub Mode7Direct
-drawmode7win16btd
-    test byte[scadtng+ebx],1h
-    jz near drawmode7win16bntd
-    test byte[BGMS1+ebx*2+1],1h
-    jnz near drawmode716bmstd
-    Mode7NonMainSub Mode7Directt
-drawmode716bmstd:
-    mov edi,[CMainWinScr]
-    cmp byte[edi+ebx],0
-    jne near drawmode7w16bmtd
-    mov edi,[CSubWinScr]
-    cmp byte[edi+ebx],0
-    jne near drawmode7w16bstd
-drawmode7w16bmstd
-    Mode7NonMainSub Mode7Directmst
-drawmode7w16bmtd
-    mov edi,[CSubWinScr]
-    cmp byte[edi+ebx],0
-    jne near drawmode7w16bmstd
-    Mode7MainSub Mode7Directmst,Mode7Directst
-drawmode7w16bstd
-    Mode7MainSub Mode7Directmst,Mode7Directt
-drawmode7win16bntd:
-    test byte[BGMS1+ebx*2+1],1h
-    jnz near drawsprngm716bmsntd
-    Mode7NonMainSub Mode7Directnt
-drawsprngm716bmsntd:
-    cmp dword[ngwinen],0
-    je drawmode7w16bmsntd
-    mov edi,[CMainWinScr]
-    cmp byte[edi+ebx],0
-    jne near drawmode7w16bmntd
-    mov edi,[CSubWinScr]
-    cmp byte[edi+ebx],0
-    jne near drawmode7w16bsntd
-drawmode7w16bmsntd
-    Mode7NonMainSub Mode7Directmsnt
-drawmode7w16bmntd
-    mov edi,[CSubWinScr]
-    cmp byte[edi+ebx],0
-    jne near drawmode7w16bmsntd
-    Mode7MainSub Mode7Directmsnt,Mode7Directsnt
-drawmode7w16bsntd
-    Mode7MainSub Mode7Directmsnt,Mode7Directnt
-
 
 NEWSYM drawmode7ngextbg16b
     test byte[scrndis],1
@@ -679,7 +546,6 @@ CalculateNewValues:
     add eax,ecx
     ret
 
-
 NEWSYM processmode7hires16b
     cmp byte[BGMA+ebx+1],7
     jne near .nogo
@@ -690,22 +556,6 @@ NEWSYM processmode7hires16b
     mov [curvidoffset],esi
     mov dword[M7HROn],1
     call drawmode7win16b
-    mov dword[M7HROn],0
-    pop ebx
-    pop esi
-.nogo
-    ret
-
-NEWSYM processmode7hires16bd
-    cmp byte[BGMA+ebx+1],7
-    jne near .nogo
-    push esi
-    push ebx
-    call CalculateNewValues
-    add esi,75036*4
-    mov [curvidoffset],esi
-    mov dword[M7HROn],1
-    call drawmode7win16bd
     mov dword[M7HROn],0
     pop ebx
     pop esi

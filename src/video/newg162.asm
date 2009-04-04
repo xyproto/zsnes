@@ -30,9 +30,8 @@ EXTSYM yposng,flipyposng,ofsmcptr,ofsmtptr,ofsmmptr,ofsmcyps,ofsmady,ofsmadx
 EXTSYM FillSubScr,UnusedBitXor,yposngom,flipyposngom,cbgval,ofsmval,ofsmvalh
 EXTSYM CPalPtrng,BGMS1,scadtng,CMainWinScr,CSubWinScr,UnusedBit,res640
 EXTSYM mosclineval,mostranspval,vcache2bs,vcache4bs,vcache8bs,vidmemch2s
-EXTSYM vidmemch4s,vidmemch8s,cpalval,bgtxadd2,SpecialLine,cachesingle4bng
+EXTSYM vidmemch4s,vidmemch8s,bgtxadd2,SpecialLine,cachesingle4bng
 EXTSYM ofshvaladd,ofsmtptrs,ofsmcptr2,ngptrdat2
-EXTSYM vidbright,prevbrightdc,Gendcolortable,dcolortab
 
 %include "video/newg162.mac"
 %include "video/newgfx16.mac"
@@ -275,7 +274,6 @@ cache8b16b:
 %endmacro
 
 NEWSYM drawtileng2b16b
-    mov ebp,[cpalval+ebx*4]
     determinetransp drawtileng2b16bt
 drawtileng2b16bnt
     CheckWindowing drawtileng2bwin
@@ -313,7 +311,6 @@ drawtileng2b16bmsntsw:
     drawtile16bw2 tltype2b, preparet2batile, cachesingle2bng,ngpalcon2b,test2ba,03h,vidmemch2s,cache2b16b,tilenormalmsnt,tilenormalbmsnt,tilenormalwmsbnt,tilenormalwbmsbnt,tilenormal,tilenormalb
 
 NEWSYM drawtileng4b16b
-    mov ebp,[cpalval+ebx*4]
     determinetransp drawtileng4b16bt
 drawtileng4b16bnt
     CheckWindowing drawtileng4bwin
@@ -351,7 +348,6 @@ drawtileng4b16bmsntsw:
     drawtile16bw2 tltype4b, preparet4batile, cachesingle4bng,ngpalcon4b,test4ba,0Fh,vidmemch4s,cache4b16b,tilenormalmsnt,tilenormalbmsnt,tilenormalwmsbnt,tilenormalwbmsbnt,tilenormal,tilenormalb
 
 NEWSYM drawtileng8b16b
-    mov ebp,[cpalval+ebx*4]
     determinetransp drawtileng8b16bt
 drawtileng8b16bnt
     CheckWindowing drawtileng8bwin
@@ -514,7 +510,6 @@ drawtileng8b16bmsntsw:
 %endmacro
 
 NEWSYM drawtileng16x162b16b
-    mov ebp,[cpalval+ebx*4]
     determinetransp drawtileng2b16bt16x16
 drawtileng2b16bnt16x16
     CheckWindowing drawtileng2bwin16x16
@@ -552,7 +547,6 @@ drawtileng2b16bmsntsw16x16:
     drawtile16bw216x16 tltype2b, preparet2batile, cachesingle2bng,ngpalcon2b,test2ba,03h,vidmemch2s,cache2b16b,tilenormalmsnt,tilenormalbmsnt,tilenormalwmsbnt,tilenormalwbmsbnt,tilenormal,tilenormalb
 
 NEWSYM drawtileng16x164b16b
-    mov ebp,[cpalval+ebx*4]
     determinetransp drawtileng4b16bt16x16
 drawtileng4b16bnt16x16
     CheckWindowing drawtileng4bwin16x16
@@ -590,7 +584,6 @@ drawtileng4b16bmsntsw16x16:
     drawtile16bw216x16 tltype4b, preparet4batile, cachesingle4bng,ngpalcon4b,test4ba,0Fh,vidmemch4s,cache4b16b,tilenormalmsnt,tilenormalbmsnt,tilenormalwmsbnt,tilenormalwbmsbnt,tilenormal,tilenormalb
 
 NEWSYM drawtileng16x168b16b
-    mov ebp,[cpalval+ebx*4]
     determinetransp drawtileng8b16bt16x16
 drawtileng8b16bnt16x16
     CheckWindowing drawtileng8bwin16x16
@@ -824,49 +817,6 @@ drawlineng8b16bmsntmw:
 drawlineng8b16bmsntsw:
     drawline16bw2macro tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmsnt,procpixelstmsnt,procpixelstwmsbnt,procpixelsnt,procpixelstnt
 
-NEWSYM drawlineng8b16b_direct
-    mov dh,[vidbright]
-    cmp dh,[prevbrightdc]
-    je .nodcchange
-    mov [prevbrightdc],dh
-    call Gendcolortable
-.nodcchange
-    determinetransp drawlineng8b16bt_direct
-drawlineng8b16bnt_direct
-    CheckWindowing drawlineng8bwin_direct
-    drawline16bmacro tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixels_direct,procpixelst_direct
-drawlineng8bwin_direct:
-    drawline16bwmacro tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixels_direct,procpixelst_direct,procpixelstw_direct
-drawlineng8b16bt_direct
-    test byte[BGMS1+ebx*2+1],dl
-    jnz near drawlineng8b16bms_direct
-    test byte[scadtng+ebx],dl
-    jz near drawlineng8b16bnt_direct
-    CheckWindowing drawlineng8bwint_direct
-    drawline16bmacro tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelstr_direct,procpixelstt_direct
-drawlineng8bwint_direct:
-    drawline16bwmacro tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelstr_direct,procpixelstt_direct,procpixelstwt_direct
-drawlineng8b16bms_direct:
-    test byte[scadtng+ebx],dl
-    jz near drawlineng8b16bmsnt_direct
-    DetermineWindow drawlineng8b16bmstmsw_direct, drawlineng8b16bmstmw_direct, drawlineng8b16bmstsw_direct
-    drawline16bmacro tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmst_direct,procpixelstmst_direct
-drawlineng8b16bmstmsw_direct:
-    drawline16bwmacro tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmst_direct,procpixelstmst_direct,procpixelstwmst_direct
-drawlineng8b16bmstmw_direct:
-    drawline16bw2macro tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmst_direct,procpixelstmst_direct,procpixelstwsmt_direct,procpixelss_direct,procpixelsts_direct
-drawlineng8b16bmstsw_direct:
-    drawline16bw2macro tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmst_direct,procpixelstmst_direct,procpixelstwmsbt_direct,procpixelstr_direct,procpixelstt_direct
-drawlineng8b16bmsnt_direct
-    DetermineWindow drawlineng8b16bmsntmsw_direct, drawlineng8b16bmsntmw_direct, drawlineng8b16bmsntsw_direct
-    drawline16bmacro tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmsnt_direct,procpixelstmsnt_direct
-drawlineng8b16bmsntmsw_direct:
-    drawline16bwmacro tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmsnt_direct,procpixelstmsnt_direct,procpixelstwmsnt_direct
-drawlineng8b16bmsntmw_direct:
-    drawline16bw2macro tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmsnt_direct,procpixelstmsnt_direct,procpixelstwsmnt_direct,procpixelss_direct,procpixelsts_direct
-drawlineng8b16bmsntsw_direct:
-    drawline16bw2macro tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmsnt_direct,procpixelstmsnt_direct,procpixelstwmsbnt_direct,procpixelsnt_direct,procpixelstnt_direct
-
 ;******************************************
 ; 16x16 tiles - line by line engine
 ;******************************************
@@ -1064,49 +1014,6 @@ drawlineng8b16bmsntmw16x16:
     drawline16bw2macro16x16 tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmsnt,procpixelstmsnt,procpixelstwsmnt,procpixelss,procpixelsts
 drawlineng8b16bmsntsw16x16:
     drawline16bw2macro16x16 tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmsnt,procpixelstmsnt,procpixelstwmsbnt,procpixelsnt,procpixelstnt
-
-NEWSYM drawlineng16x168b16b_direct
-    mov dh,[vidbright]
-    cmp dh,[prevbrightdc]
-    je .nodcchange
-    mov [prevbrightdc],dh
-    call Gendcolortable
-.nodcchange
-    determinetransp drawlineng8b16bt16x16_direct
-drawlineng8b16bnt16x16_direct
-    CheckWindowing drawlineng8bwin16x16_direct
-    drawline16bmacro16x16 tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixels_direct,procpixelst_direct
-drawlineng8bwin16x16_direct:
-    drawline16bwmacro16x16 tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixels_direct,procpixelst_direct,procpixelstw_direct
-drawlineng8b16bt16x16_direct
-    test byte[BGMS1+ebx*2+1],dl
-    jnz near drawlineng8b16bms16x16_direct
-    test byte[scadtng+ebx],dl
-    jz near drawlineng8b16bnt16x16_direct
-    CheckWindowing drawlineng8bwint16x16_direct
-    drawline16bmacro16x16 tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelstr_direct,procpixelstt_direct
-drawlineng8bwint16x16_direct:
-    drawline16bwmacro16x16 tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelstr_direct,procpixelstt_direct,procpixelstwt_direct
-drawlineng8b16bms16x16_direct:
-    test byte[scadtng+ebx],dl
-    jz near drawlineng8b16bmsnt16x16_direct
-    DetermineWindow drawlineng8b16bmstmsw16x16_direct, drawlineng8b16bmstmw16x16_direct, drawlineng8b16bmstsw16x16_direct
-    drawline16bmacro16x16 tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmst_direct,procpixelstmst_direct
-drawlineng8b16bmstmsw16x16_direct:
-    drawline16bwmacro16x16 tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmst_direct,procpixelstmst_direct,procpixelstwmst_direct
-drawlineng8b16bmstmw16x16_direct:
-    drawline16bw2macro16x16 tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmst_direct,procpixelstmst_direct,procpixelstwsmt_direct,procpixelss_direct,procpixelsts_direct
-drawlineng8b16bmstsw16x16_direct:
-    drawline16bw2macro16x16 tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmst_direct,procpixelstmst_direct,procpixelstwmsbt_direct,procpixelstr_direct,procpixelstt_direct
-drawlineng8b16bmsnt16x16_direct
-    DetermineWindow drawlineng8b16bmsntmsw16x16_direct, drawlineng8b16bmsntmw16x16_direct, drawlineng8b16bmsntsw16x16_direct
-    drawline16bmacro16x16 tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmsnt_direct,procpixelstmsnt_direct
-drawlineng8b16bmsntmsw16x16_direct:
-    drawline16bwmacro16x16 tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmsnt_direct,procpixelstmsnt_direct,procpixelstwmsnt_direct
-drawlineng8b16bmsntmw16x16_direct:
-    drawline16bw2macro16x16 tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmsnt_direct,procpixelstmsnt_direct,procpixelstwsmnt_direct,procpixelss_direct,procpixelsts_direct
-drawlineng8b16bmsntsw16x16_direct:
-    drawline16bw2macro16x16 tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmsnt_direct,procpixelstmsnt_direct,procpixelstwmsbnt_direct,procpixelsnt_direct,procpixelstnt_direct
 
 %macro drawline16bmacro16x8 10
     cmp byte[curmosaicsz],1

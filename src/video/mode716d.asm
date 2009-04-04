@@ -21,59 +21,16 @@
 
 EXTSYM curmosaicsz,curvidoffset,domosaic16b,winptrref,mode7A,mode7B,mode7C
 EXTSYM mode7D,mode7X0,mode7Y0,mode7set,cwinptr,vram,vrama,winon,mode7tab
-EXTSYM xtravbuf,dcolortab,vidbright,scrndis
+EXTSYM xtravbuf,dcolortab,vidbright,scrndis,Gendcolortable,prevbrightdc
 
 %include "video/mode7.mac"
 
 SECTION .text
 
-NEWSYM Gendcolortable
-   ; generate Direct Color Table
-   push eax
-   push edx
-   xor ecx,ecx
-.loopdct
-   mov al,cl
-   and eax,00000111b
-    mov bl,[vidbright]
-    mul bl
-    mov bl,15
-    div bl
-    xor ah,ah
-   shl eax,13
-   mov edx,eax
-   mov al,cl
-   and eax,00111000b
-   shr eax,3
-    mov bl,[vidbright]
-    mul bl
-    mov bl,15
-    div bl
-    xor ah,ah
-   shl eax,8
-   or edx,eax
-   mov al,cl
-   and eax,11000000b
-   shr eax,6
-    mov bl,[vidbright]
-    mul bl
-    mov bl,15
-    div bl
-    xor ah,ah
-   shl eax,3
-   or edx,eax
-   and edx,0FFFFh
-   mov [dcolortab+ecx*4],edx
-   inc cl
-   jnz .loopdct
-   pop edx
-   pop eax
-   ret
-
 %macro Mode7Normal 0
     or dl,dl
     jz %%nodrawb
-    mov ecx,[dcolortab+edx*4]
+    mov cx,[dcolortab+edx*2]
     mov [esi],cx
 %%nodrawb
     add esi,2
@@ -84,7 +41,7 @@ NEWSYM Gendcolortable
     jz %%nodrawbw
     test byte[ebp],0FFh
     jnz %%nodrawbw
-    mov ecx,[dcolortab+edx*4]
+    mov cx,[dcolortab+edx*2]
     mov [esi],cx
 %%nodrawbw
     add esi,2
@@ -94,8 +51,6 @@ NEWSYM Gendcolortable
 ;*******************************************************
 ; Processes & Draws Mode 7
 ;*******************************************************
-SECTION .bss
-NEWSYM prevbrightdc, resb 1
 SECTION .text
 NEWSYM drawmode7dcolor
     test byte[scrndis],1

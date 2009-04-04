@@ -51,13 +51,13 @@ EXTSYM Mode7BackA,Mode7BackC,Mode7BackX0,Mode7BackSet,drawmode7win16b,ngwinen
 EXTSYM drawlineng16x84b16b,drawlineng16x82b16b,ofsmcyps,vram,ofsmcptr,ofsmady
 EXTSYM ofsmadx,ofsmtptr,yposngom,flipyposngom,ofsmmptr,ofsmval,ofsmvalh,V8Mode
 EXTSYM cbgval,drawlinengom4b16b,winbg1envals,m7starty
-EXTSYM FillSubScr,scanlines,drawmode7win16bd,SpecialLine,vidmemch2s,dovegrest
+EXTSYM FillSubScr,scanlines,SpecialLine,vidmemch2s,dovegrest
 EXTSYM drawlinengom16x164b16b,bgallchange
 EXTSYM bg1change,bg2change,bg3change,bg4change,ngwinptr,objwlrpos,objwen
 EXTSYM objclineptr,CSprWinPtr,BuildWindow2,NGNumSpr,fulladdtab,MMXSupport
 EXTSYM bgtxadd2,gammalevel16b,drawmode7ngextbg16b,processmode7hires16b
-EXTSYM processmode7hires16bd,drawmode7ngextbg216b,osm2dis,ofsmtptrs,ofsmcptr2
-EXTSYM drawlineng8b16b_direct,drawlineng16x168b16b_direct
+EXTSYM drawmode7ngextbg216b,osm2dis,ofsmtptrs,ofsmcptr2
+EXTSYM dcolortab
 
 %ifdef __MSDOS__
 EXTSYM smallscreenon,ScreenScale
@@ -293,8 +293,57 @@ NEWSYM setpalette16bng
 .noveg2
     ret
 
+NEWSYM Gendcolortable
+    ; generate Direct Color Table
+    push eax
+    push ebx
+    push ecx
+    push edx
+    xor ecx,ecx
+.loopdct
+    mov al,cl
+    and eax,00000111b
+    mov bl,[vidbright]
+    mul bl
+    mov bl,15
+    div bl
+    xor ah,ah
+    shl eax,13
+    mov edx,eax
+    mov al,cl
+    and eax,00111000b
+    shr eax,3
+    mov bl,[vidbright]
+    mul bl
+    mov bl,15
+    div bl
+    xor ah,ah
+    shl eax,8
+    or edx,eax
+    mov al,cl
+    and eax,11000000b
+    shr eax,6
+    mov bl,[vidbright]
+    mul bl
+    mov bl,15
+    div bl
+    xor ah,ah
+    shl eax,3
+    or edx,eax
+    mov [dcolortab+ecx*2],dx
+    or dx,[UnusedBit]
+    mov [dcolortab+ecx*2+512],dx
+    inc cl
+    jnz .loopdct
+    pop edx
+    pop ecx
+    pop ebx
+    pop eax
+    ret
+
 section .data
 prevpal2 times 256 dw 0F00Fh
+NEWSYM prevbrightdc, db 16
 section .text
 
 %macro WinBGCheck 1
@@ -920,14 +969,6 @@ NEWSYM newengine16b
     je .noscads
     mov byte[bgallchange+eax],1
 .noscads
-
-    ; Direct Color
-    cmp byte[BGMA+eax],3
-    jne .nomode3
-    test byte[scadsng+eax],1
-    jz .nomode3
-    mov byte[bgallchange+eax],1
-.nomode3
 
 ; Windowing Stuff
 ;NEWSYM winl1,      0             ; window 1 left position

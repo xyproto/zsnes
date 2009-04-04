@@ -1165,8 +1165,8 @@
     jmp %%donextbg
 %%tile
     push esi
-    mov eax,[cpalval+ebx*4]
-    mov [CPalPtrng],eax
+;    mov eax,[cpalval+ebx*4]
+;    mov [CPalPtrng],eax
     call %3
     pop esi
     add ebx,8
@@ -1210,8 +1210,8 @@
     jmp %%donextbg
 %%tile
     push esi
-    mov eax,[cpalval+ebx*4]
-    mov [CPalPtrng],eax
+;    mov eax,[cpalval+ebx*4]
+;    mov [CPalPtrng],eax
     call %3
     pop esi
     add ebx,8
@@ -1254,8 +1254,8 @@
     jmp %%donextbg
 %%tile
     push esi
-    mov eax,[cpalval+ebx*4]
-    mov [CPalPtrng],eax
+;    mov eax,[cpalval+ebx*4]
+;    mov [CPalPtrng],eax
     call %3
     pop esi
     add ebx,8
@@ -1452,17 +1452,18 @@
     push esi
     push ebx
     test byte[scadsng+ebx],1
-    jnz %%directmode
+    jz %%nodirectmode
+    mov cl,[vidbright]
+    cmp cl,[prevbrightdc]
+    je %%nodcchange
+    mov [prevbrightdc],cl
+    call Gendcolortable
+%%nodcchange
+    mov ebp,dcolortab
+%%nodirectmode
     push esi
     push ebx
     call drawmode7win16b
-    pop ebx
-    pop esi
-    jmp %%donemode7
-%%directmode
-    push esi
-    push ebx
-    call drawmode7win16bd
     pop ebx
     pop esi
 %%donemode7
@@ -1475,12 +1476,7 @@
     je %%nogoc
     cmp byte[scanlines],0
     jne %%nogoc
-    test byte[scadsng+ebx],1
-    jnz %%directmodeb
     call processmode7hires16b
-    jmp %%nogoc
-%%directmodeb
-    call processmode7hires16bd
 %%nogoc
 
 %%nogo
@@ -2153,6 +2149,7 @@
     mov edx,[colormodedef+edx*4+%1]
     neg edi
     add edi,edi
+    mov ebp,[cpalval+ebx*4]
     cmp dl,2
     jne near .no4bit
     shr ecx,5
@@ -2199,6 +2196,16 @@
     mov [ngptrdat2],ecx
     mov [ngceax+%2*1024+ebx*4],eax
     mov [ngcedi+%2*1024+ebx*4],edi
+    test byte[scadsng+ebx],1
+    jz .nodirect
+    mov dl,[vidbright]
+    cmp dl,[prevbrightdc]
+    je .nodcchange
+    mov [prevbrightdc],dl
+    call Gendcolortable
+.nodcchange
+    mov ebp,dcolortab
+.nodirect
     ; eax = pointer to beginning of tile area
     ProcessBuildWindow %1
     mov ecx,ebx
@@ -2249,6 +2256,7 @@
     mov edx,[colormodedef+edx*4+%1]
     neg edi
     add edi,edi
+    mov ebp,[cpalval+ebx*4]
     cmp dl,2
     jne near .no4bit2
     shr ecx,5
@@ -2288,13 +2296,23 @@
     jmp drawtileng16x162b16b
 .no2bit2
     cmp dl,3
-    jne near .no8bit
+    jne near .no8bit2
     shr ecx,6
     add edi,esi
     mov [ngptrdat+%2*1024+ebx*4],ecx
     mov [ngptrdat2],ecx
     mov [ngceax+%2*1024+ebx*4],eax
     mov [ngcedi+%2*1024+ebx*4],edi
+    test byte[scadsng+ebx],1
+    jz .nodirect2
+    mov dl,[vidbright]
+    cmp dl,[prevbrightdc]
+    je .nodcchange2
+    mov [prevbrightdc],dl
+    call Gendcolortable
+.nodcchange2
+    mov ebp,dcolortab
+.nodirect2
     ; eax = pointer to beginning of tile area
     ProcessBuildWindow %1
     mov ecx,ebx
@@ -2322,6 +2340,7 @@
     mov [ngptrdat2],ecx
     mov eax,[ngceax+%2*1024+ebx*4]
     mov edi,[ngcedi+%2*1024+ebx*4]
+    mov ebp,[cpalval+ebx*4]
     cmp dl,2
     jne near .no4bit
     ; eax = pointer to beginning of tile area
@@ -2350,6 +2369,16 @@
 .no2bit
     cmp dl,3
     jne near .no8bit
+    test byte[scadsng+ebx],1
+    jz .nodirect
+    mov dl,[vidbright]
+    cmp dl,[prevbrightdc]
+    je .nodcchange
+    mov [prevbrightdc],dl
+    call Gendcolortable
+.nodcchange
+    mov ebp,dcolortab
+.nodirect
     ; eax = pointer to beginning of tile area
     ProcessBuildWindow %1
     mov ecx,ebx
@@ -2380,6 +2409,7 @@
     mov [ngptrdat2],ecx
     mov eax,[ngceax+%2*1024+ebx*4]
     mov edi,[ngcedi+%2*1024+ebx*4]
+    mov ebp,[cpalval+ebx*4]
     cmp dl,2
     jne near .no4bit2
     ; eax = pointer to beginning of tile area
@@ -2408,6 +2438,16 @@
 .no2bit2
     cmp dl,3
     jne near .no8bit2
+    test byte[scadsng+ebx],1
+    jz .nodirect2
+    mov dl,[vidbright]
+    cmp dl,[prevbrightdc]
+    je .nodcchange2
+    mov [prevbrightdc],dl
+    call Gendcolortable
+.nodcchange2
+    mov ebp,dcolortab
+.nodirect2
     ; eax = pointer to beginning of tile area
     ProcessBuildWindow %1
     mov ecx,ebx
@@ -2553,148 +2593,6 @@
     test bl,%3
     jz short %%nodraw
     mov cx,[eax+ebx*2]
-    mov [edi+%2+75036*2],cx
-%%nodraw
-%endmacro
-
-%macro procpixels_direct 3
-    mov bl,[esi+%2]
-    mov cl,[esi+%1]
-    add bl,dl
-    add cl,dl
-    mov bx,[dcolortab+ebx*4]
-    shl ebx,16
-    mov bx,[dcolortab+ecx*4]
-    mov [edi+%3],ebx
-    xor ebx,ebx
-%endmacro
-
-%macro procpixelst_direct 3
-    mov bl,[esi+%1]
-    add bl,dl
-    test bl,%3
-    jz short %%nodraw
-    mov cx,[dcolortab+ebx*4]
-    mov [edi+%2],cx
-%%nodraw
-%endmacro
-
-%macro procpixelstr_direct 3
-    mov bl,[esi+%2]
-    mov cl,[esi+%1]
-    add bl,dl
-    add cl,dl
-    mov bx,[dcolortab+ebx*4]
-    shl ebx,16
-    mov bx,[dcolortab+ecx*4]
-    or ebx,[UnusedBit]
-    mov [edi+%3],ebx
-    xor ebx,ebx
-%endmacro
-
-%macro procpixelstt_direct 3
-    mov bl,[esi+%1]
-    add bl,dl
-    test bl,%3
-    jz short %%nodraw
-    mov cx,[dcolortab+ebx*4]
-    or cx,[UnusedBit]
-    mov [edi+%2],cx
-%%nodraw
-%endmacro
-
-%macro procpixelsnt_direct 3
-    mov bl,[esi+%2]
-    mov cl,[esi+%1]
-    add bl,dl
-    add cl,dl
-    mov bx,[dcolortab+ebx*4]
-    shl ebx,16
-    mov bx,[dcolortab+ecx*4]
-    mov [edi+%3],ebx
-    xor ebx,ebx
-%endmacro
-
-%macro procpixelstnt_direct 3
-    mov bl,[esi+%1]
-    add bl,dl
-    test bl,%3
-    jz short %%nodraw
-    mov cx,[dcolortab+ebx*4]
-    mov [edi+%2],cx
-%%nodraw
-%endmacro
-
-%macro procpixelsmst_direct 3
-    mov bl,[esi+%2]
-    mov cl,[esi+%1]
-    add bl,dl
-    add cl,dl
-    mov bx,[dcolortab+ebx*4]
-    shl ebx,16
-    mov bx,[dcolortab+ecx*4]
-    or ebx,[UnusedBit]
-    mov [edi+%3],ebx
-    and ebx,[UnusedBitXor]
-    mov [edi+%3+75036*2],ebx
-    xor ebx,ebx
-%endmacro
-
-%macro procpixelstmst_direct 3
-    mov bl,[esi+%1]
-    add bl,dl
-    test bl,%3
-    jz short %%nodraw
-    mov cx,[dcolortab+ebx*4]
-    or cx,[UnusedBit]
-    mov [edi+%2],cx
-    and cx,[UnusedBitXor]
-    mov [edi+%2+75036*2],cx
-%%nodraw
-%endmacro
-
-%macro procpixelsmsnt_direct 3
-    mov bl,[esi+%2]
-    mov cl,[esi+%1]
-    add bl,dl
-    add cl,dl
-    mov bx,[dcolortab+ebx*4]
-    shl ebx,16
-    mov bx,[dcolortab+ecx*4]
-    mov [edi+%3],ebx
-    mov [edi+%3+75036*2],ebx
-    xor ebx,ebx
-%endmacro
-
-%macro procpixelstmsnt_direct 3
-    mov bl,[esi+%1]
-    add bl,dl
-    test bl,%3
-    jz short %%nodraw
-    mov cx,[dcolortab+ebx*4]
-    mov [edi+%2],cx
-    mov [edi+%2+75036*2],cx
-%%nodraw
-%endmacro
-
-%macro procpixelss_direct 3
-    mov bl,[esi+%2]
-    mov cl,[esi+%1]
-    add bl,dl
-    add cl,dl
-    mov bx,[dcolortab+ebx*4]
-    shl ebx,16
-    mov bx,[dcolortab+ecx*4]
-    mov [edi+%3+75036*2],ebx
-    xor ebx,ebx
-%endmacro
-
-%macro procpixelsts_direct 3
-    mov bl,[esi+%1]
-    add bl,dl
-    test bl,%3
-    jz short %%nodraw
-    mov cx,[dcolortab+ebx*4]
     mov [edi+%2+75036*2],cx
 %%nodraw
 %endmacro
@@ -3074,13 +2972,22 @@
     mov [ngptrdat2],ecx
     mov [ngceax+%2*1024+ebx*4],eax
     mov [ngcedi+%2*1024+ebx*4],edi
+    test byte[scadsng+ebx],1
+    jz .nodirect
+    mov dl,[vidbright]
+    cmp dl,[prevbrightdc]
+    je .nodcchange
+    mov [prevbrightdc],dl
+    call Gendcolortable
+.nodcchange
+    mov ecx,dcolortab
+    mov [CPalPtrng],ecx
+.nodirect
     ; eax = pointer to beginning of tile area
     ProcessBuildWindow %1
     mov ecx,ebx
     mov dl,1 << %2
     add ecx,%2*256
-    test byte[scadsng+ebx],1
-    jnz drawlineng8b16b_direct
     jmp drawlineng8b16b
 .no8bit
     pop ebx
@@ -3169,20 +3076,29 @@
     jmp drawlineng16x162b16b
 .no2bit2
     cmp dl,3
-    jne near .no8bit
+    jne near .no8bit2
     shr ecx,6
     add edi,esi
     mov [ngptrdat+%2*1024+ebx*4],ecx
     mov [ngptrdat2],ecx
     mov [ngceax+%2*1024+ebx*4],eax
     mov [ngcedi+%2*1024+ebx*4],edi
+    test byte[scadsng+ebx],1
+    jz .nodirect2
+    mov dl,[vidbright]
+    cmp dl,[prevbrightdc]
+    je .nodcchange2
+    mov [prevbrightdc],dl
+    call Gendcolortable
+.nodcchange2
+    mov ecx,dcolortab
+    mov [CPalPtrng],ecx
+.nodirect2
     ; eax = pointer to beginning of tile area
     ProcessBuildWindow %1
     mov ecx,ebx
     mov dl,1 << %2
     add ecx,%2*256
-    test byte[scadsng+ebx],1
-    jnz drawlineng16x168b16b_direct
     jmp drawlineng16x168b16b
 .no8bit2
     pop ebx
@@ -3539,7 +3455,6 @@
 .no4bitd
     cmp dl,1
     jne near .no2bitdn
-    ; eax = pointer to beginning of tile area
     shr ecx,4
     add edi,esi
     mov [ngptrdat+%2*1024+ebx*4],ecx
@@ -3558,13 +3473,23 @@
 .no2bitdn
     cmp dl,3
     jne near .no8bitdn
-    ; eax = pointer to beginning of tile area
     shr ecx,6
     add edi,esi
     mov [ngptrdat+%2*1024+ebx*4],ecx
     mov [ngptrdat2],ecx
     mov [ngceax+%2*1024+ebx*4],eax
     mov [ngcedi+%2*1024+ebx*4],edi
+    test byte[scadsng+ebx],1
+    jz .nodirectdn
+    mov dl,[vidbright]
+    cmp dl,[prevbrightdc]
+    je .nodcchangedn
+    mov [prevbrightdc],dl
+    call Gendcolortable
+.nodcchangedn
+    mov ecx,dcolortab
+    mov [CPalPtrng],ecx
+.nodirectdn
     ; eax = pointer to beginning of tile area
     mov byte[tleftn],33
 
@@ -3678,13 +3603,22 @@
 .no2bit
     cmp dl,3
     jne near .no8bit
+    test byte[scadsng+ebx],1
+    jz .nodirect
+    mov dl,[vidbright]
+    cmp dl,[prevbrightdc]
+    je .nodcchange
+    mov [prevbrightdc],dl
+    call Gendcolortable
+.nodcchange
+    mov ecx,dcolortab
+    mov [CPalPtrng],ecx
+.nodirect
     ; eax = pointer to beginning of tile area
     ProcessBuildWindow %1
     mov ecx,ebx
     mov dl,1 << %2
     add ecx,%2*256
-    test byte[scadsng+ebx],1
-    jnz drawlineng8b16b_direct
     jmp drawlineng8b16b
 .no8bit
     pop ebx
@@ -3761,13 +3695,22 @@
 .no2bit2
     cmp dl,3
     jne near .no8bit2
+    test byte[scadsng+ebx],1
+    jz .nodirect2
+    mov dl,[vidbright]
+    cmp dl,[prevbrightdc]
+    je .nodcchange2
+    mov [prevbrightdc],dl
+    call Gendcolortable
+.nodcchange2
+    mov ecx,dcolortab
+    mov [CPalPtrng],ecx
+.nodirect2
     ; eax = pointer to beginning of tile area
     ProcessBuildWindow %1
     mov ecx,ebx
     mov dl,1 << %2
     add ecx,%2*256
-    test byte[scadsng+ebx],1
-    jnz drawlineng16x168b16b_direct
     jmp drawlineng16x168b16b
 .no8bit2
     pop ebx
@@ -4081,6 +4024,17 @@
 .no2bitdn
     cmp dl,3
     jne near .no8bitdn
+    test byte[scadsng+ebx],1
+    jz .nodirectdn
+    mov dl,[vidbright]
+    cmp dl,[prevbrightdc]
+    je .nodcchangedn
+    mov [prevbrightdc],dl
+    call Gendcolortable
+.nodcchangedn
+    mov ecx,dcolortab
+    mov [CPalPtrng],ecx
+.nodirectdn
     ; eax = pointer to beginning of tile area
     mov byte[tleftn],33
 
