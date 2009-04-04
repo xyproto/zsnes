@@ -50,7 +50,7 @@ string cflags;
 #ifdef _MSC_VER //MSVC
 static inline string COMPILE_OBJ(const string& obj, const string& c)
 {
-  return(string(string("cl /nologo /Fo")+obj+string(" ")+c));
+  return(string(string("cl /nologo /c /Fo")+obj+string(" ")+c));
 }
 #else
 static inline string COMPILE_OBJ(const string& obj, const string& c)
