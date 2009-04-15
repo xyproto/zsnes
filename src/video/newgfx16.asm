@@ -634,16 +634,12 @@ NEWSYM newengine16b
     mov dword[palchanged],0
 
     ; BG3 Priority
-    test byte[scaddset],2h
-    jz .noscaddset
-    or byte[bgcmsung],0FFh
-.noscaddset
+;    test byte[scaddset],2h
+;    jz .noscaddset
+;    or byte[bgcmsung],0FFh
+;.noscaddset
 
     mov bl,[bg3highst]
-    ;cmp byte[bgmode],7
-    ;mov bl,1
-    ;je .notmode7
-;.notmode7
     mov [BG3PRI+eax],bl
     cmp [BG3PRI+eax-1],bl
     je .nosbg3pr
@@ -1717,7 +1713,7 @@ NEWSYM StartDrawNewGfx16b
 .nodobg4mb
     test byte[scrndis],4h
     jnz near .nodobg3mb
-    test dword[bgcmsung],4h
+    test dword[bgcmsung],404h
     jz near .nodobg3mb
     mov eax,[bg3totng]
     cmp eax,[bg3drwng]
