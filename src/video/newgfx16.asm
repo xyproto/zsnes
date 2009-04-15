@@ -1026,10 +1026,10 @@ NEWSYM newengine16b
 
     ; generate sprite window
     cmp byte[winbg1enval+eax+4*256],0
-    je near .skipobjw
+    je near .windisable
 
     mov ebx,[winl1]
-    mov dl,[winobjen]
+    mov dl,[winbg1enval+eax+4*256]
     mov dh,[winlogicb]
     and dh,03h
     ; Same as previous line?
@@ -1108,10 +1108,10 @@ NEWSYM newengine16b
     jmp .skipobjw
 .usecurrent
     mov ecx,[objclineptr+eax*4]
-    mov [CSprWinPtr],ecx
     cmp ecx,0FFFFFFFFh
-    jnz .skipobjw
-    jmp .disablesprwin
+    je .disablesprwin
+    mov [CSprWinPtr],ecx
+    jmp .skipobjw
     ; copy over if it's the same
 .notchanged
     mov [objwlrpos+eax*4],ebx
@@ -1119,16 +1119,17 @@ NEWSYM newengine16b
     mov ebx,[objclineptr+eax*4-4]
     mov [objclineptr+eax*4],ebx
     cmp ebx,0FFFFFFFFh
-    je .disablesprwin
-.skipobjw
-    pop edx
-    pop ecx
-    jmp .okaywin
+    jne .skipobjw
 .disablesprwin
     mov dword[objclineptr+eax*4],0FFFFFFFFh
     mov byte[winbg1enval+eax+4*256],0
     mov byte[winbg1envals+eax+4*256],0
     mov byte[winbg1envalm+eax+4*256],0
+    jmp .skipobjw
+.windisable
+    ;mov dword[objclineptr+eax*4],0FFFFFFFFh
+    mov dword[objwlrpos+eax*4],0FFFFFFFFh
+.skipobjw
     pop edx
     pop ecx
     jmp .okaywin
@@ -1149,7 +1150,6 @@ NEWSYM newengine16b
     mov byte[winbg1envals+eax+256*3],0
     mov byte[winbg1envals+eax+256*4],0
 .okaywin
-    xor ebx,ebx
 
     mov ebx,[coladdr-1]
     mov bl,[vidbright]
@@ -2649,15 +2649,15 @@ drawsprng16bt:
     xor eax,eax
     test byte[BGMS1+ebx*2+1],10h
     jnz near drawsprng16bmst
-    mov al,[BGMS1+ebx*2]
-    shr al,2
-    test byte[BGMS1+ebx*2],al
-    jnz .transpwin
-    test byte[scaddset],0C0h
-    jz .transpwin
-    cmp byte[BGMS1+ebx*2+1],0
-    jnz .main
-.transpwin
+;    mov al,[BGMS1+ebx*2]
+;    shr al,2
+;    test byte[BGMS1+ebx*2],al
+;    jnz .transpwin
+;    test byte[scaddset],0C0h
+;    jz .transpwin
+;    cmp byte[BGMS1+ebx*2+1],0
+;    jnz .main
+;.transpwin
     mov edi,[CMainWinScr]
     cmp byte[edi+ebx+4*256],0
     jne near drawsprngw16bt
