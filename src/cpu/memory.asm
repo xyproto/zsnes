@@ -28,6 +28,7 @@ EXTSYM ramsize,ramsizeand,sram,sram2,ram7fa
 EXTSYM SA1Status,IRAM,CurBWPtr,SA1RAMArea
 EXTSYM Sdd1Mode,Sdd1Bank,Sdd1Addr,Sdd1NewAddr,memtabler8,AddrNoIncr,SDD1BankA
 EXTSYM SDD1_init,SDD1_get_byte,BWShift,SA1BWPtr
+EXTSYM SA1_in_cc1_dma,SA1_DMA_ADDR,SA1_DMA_VALUE,SA1_DMA_CC1
 
 ;*******************************************************
 ; Register & Memory Access Banks (0 - 3F) / (80 - BF)
@@ -1931,6 +1932,15 @@ NEWSYM regaccessbankw16SA1
     BWCheck2w16
 
 NEWSYM SA1RAMaccessbankr8
+    cmp dword[SA1_in_cc1_dma],0
+    je .nocc1dma
+    mov [SA1_DMA_ADDR],cx
+    pushad
+    call SA1_DMA_CC1
+    popad
+    mov al,[SA1_DMA_VALUE]
+    ret
+.nocc1dma
     and ebx,03h
     shl ebx,16
     add ebx,[SA1RAMArea]
@@ -1939,6 +1949,20 @@ NEWSYM SA1RAMaccessbankr8
     ret
 
 NEWSYM SA1RAMaccessbankr16
+    cmp dword[SA1_in_cc1_dma],0
+    je .nocc1dma
+    mov [SA1_DMA_ADDR],cx
+    pushad
+    call SA1_DMA_CC1
+    popad
+    mov al,[SA1_DMA_VALUE]
+    inc word[SA1_DMA_ADDR]
+    pushad
+    call SA1_DMA_CC1
+    popad
+    mov ah,[SA1_DMA_VALUE]
+    ret
+.nocc1dma
     and ebx,03h
     shl ebx,16
     add ebx,[SA1RAMArea]

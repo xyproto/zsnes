@@ -188,7 +188,7 @@ CHIPSOBJ=${CHIP_D}/dsp1emu${OE} ${CHIP_D}/fxemu2${OE} ${CHIP_D}/sfxproc${OE}\
 	${CHIP_D}/dsp4emu${OE} ${CHIP_D}/dsp3proc${OE} ${CHIP_D}/dsp3emu${OE}\
 	${CHIP_D}/obc1emu${OE} ${CHIP_D}/obc1proc${OE} ${CHIP_D}/c4proc${OE}\
 	${CHIP_D}/7110proc${OE} ${CHIP_D}/st11proc${OE} ${CHIP_D}/seta11${OE}\
-	${CHIP_D}/7110emu${OE}
+	${CHIP_D}/7110emu${OE} ${CHIP_D}/sa1emu${OE}
 
 CPUOBJ=${CPU_D}/dma${OE} ${CPU_D}/execute${OE} ${CPU_D}/executec${OE}\
 	${CPU_D}/irq${OE} ${CPU_D}/memory${OE} ${CPU_D}/memtable${OE}\
@@ -356,6 +356,7 @@ ${CHIP_D}/fxemu2c${OE}: ${CHIP_D}/fxemu2c.asm macros.mac \
 ${CHIP_D}/fxtable${OE}: ${CHIP_D}/fxtable.asm macros.mac
 ${CHIP_D}/obc1emu${OE}: ${CHIP_D}/obc1emu.c
 ${CHIP_D}/obc1proc${OE}: ${CHIP_D}/obc1proc.asm macros.mac
+${CHIP_D}/sa1emu${OE}: ${CHIP_D}/sa1emu.c
 ${CHIP_D}/sa1proc${OE}: ${CHIP_D}/sa1proc.asm macros.mac
 ${CHIP_D}/sa1regs${OE}: ${CHIP_D}/sa1regs.asm macros.mac ${CPU_D}/regs.mac \
 	${CPU_D}/regsw.mac

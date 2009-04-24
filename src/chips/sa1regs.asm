@@ -41,6 +41,7 @@
 EXTSYM regptr,regptw,romdata,SA1Status,SDD1BankA,NumofBanks,BWUsed2
 EXTSYM Get_Time,Get_TimeDate,irqv2,irqv,nmiv2,nmiv,snesmmap,snesmap2
 EXTSYM curypos,CurrentExecSA1,memaccessbankr8sdd1,memtabler8,AddrNoIncr
+EXTSYM SA1_DMA_CC2
 
 %ifndef NO_DEBUGGER
 EXTSYM debuggeron,debstop4
@@ -233,7 +234,11 @@ NEWSYM BWAndAddr, dd 0
 NEWSYM BWAnd, dd 0
 NEWSYM BWRAnd, dd 0
 
-SA1Reserved times 456 db 0
+NEWSYM SA1_in_cc1_dma, dd 0
+NEWSYM SA1_CC2_line, dd 0
+NEWSYM SA1_BRF, times 16 db 0
+
+SA1Reserved times 432 db 0
 
 
 ; SA1 Swap Stuff
@@ -286,6 +291,12 @@ NEWSYM %1
 %endmacro
 
 NEWSYM SA1Reset
+    mov dword[SA1_BRF],0
+    mov dword[SA1_BRF+4],0
+    mov dword[SA1_BRF+8],0
+    mov dword[SA1_BRF+12],0
+    mov dword[SA1_in_cc1_dma],0
+    mov dword[SA1_CC2_line],0
     mov byte[SA1IRQData+1],0
     mov byte[SA1Mode],0
     mov byte[SA1Status],0
@@ -919,10 +930,18 @@ NEWSYM sa12215w
    ret
 
 NEWSYM sa12230w
+    test al,80h
+    jnz .nodmaline
+    mov dword[SA1_CC2_line],0
+.nodmaline
     mov [SA1DMAInfo],al
     ret
 NEWSYM sa12231w
     mov [SA1DMAChar],al
+    test al,80h
+    jz .nodmaend
+    mov dword[SA1_in_cc1_dma],0
+.nodmaend
     ; if b7=1, then end of chdma process
     ret
 SA1QuickF sa12232w, SA1DMASource
@@ -1024,18 +1043,47 @@ tempblah resb 1
 
 SECTION .text
 
-%macro setbit2b 2
+%macro setbit2b 3
     test al,%1
     jz %%nosb
-    or word[ebx],%2
+    or word[ebx+%3],%2
 %%nosb
 %endmacro
 
-%macro setbit2b2 2
-    test al,%1
-    jz %%nosb
-    or word[ebx+16],%2
-%%nosb
+%macro do2bit 1
+    mov al,[edx+%1]
+    setbit2b 01h,0080h>>4*%1,0
+    setbit2b 02h,8000h>>4*%1,0
+    setbit2b 04h,0040h>>4*%1,0
+    setbit2b 08h,4000h>>4*%1,0
+    setbit2b 10h,0020h>>4*%1,0
+    setbit2b 20h,2000h>>4*%1,0
+    setbit2b 40h,0010h>>4*%1,0
+    setbit2b 80h,1000h>>4*%1,0
+%endmacro
+
+%macro do4bit 1
+    mov al,[edx+%1]
+    setbit2b 01h,0080h>>2*%1,0
+    setbit2b 02h,8000h>>2*%1,0
+    setbit2b 04h,0080h>>2*%1,16
+    setbit2b 08h,8000h>>2*%1,16
+    setbit2b 10h,0040h>>2*%1,0
+    setbit2b 20h,4000h>>2*%1,0
+    setbit2b 40h,0040h>>2*%1,16
+    setbit2b 80h,4000h>>2*%1,16
+%endmacro
+
+%macro do8bit 1
+    mov al,[edx+%1]
+    setbit2b 01h,0080h>>1*%1,0
+    setbit2b 02h,8000h>>1*%1,0
+    setbit2b 04h,0080h>>1*%1,16
+    setbit2b 08h,8000h>>1*%1,16
+    setbit2b 10h,0080h>>1*%1,32
+    setbit2b 20h,8000h>>1*%1,32
+    setbit2b 40h,0080h>>1*%1,48
+    setbit2b 80h,8000h>>1*%1,48
 %endmacro
 
 ; Character Conversion DMA
@@ -1044,6 +1092,11 @@ sa1chconv:
     or byte[SA1DoIRQ],8
 ;    mov byte[debstop3],1
 
+;    test byte[SA1DMAChar],3
+;    jnz .no8bit
+    mov dword[SA1_in_cc1_dma],1
+    ret
+.no8bit
 
     mov ebx,[SA1DMADest]
 %ifndef NO_DEBUGGER
@@ -1060,13 +1113,67 @@ sa1chconv:
     ; 4 colors = 32 bytes, 16 colors = 64 bytes, 256 colors = 128 bytes
     ; SA1DMAChar,bit 2-4 = # of 8x8 tiles/horizontal row (0=1,1=2,2=3,..,5=32)
     ; SA1DMAChar,bit 0-1 = Color Mode (0=8b,1=4b,2=2b,3=?)
-    test byte[SA1DMAChar],1
-    jnz .4bit
     test byte[SA1DMAChar],2
     jnz near .2bit
-    mov ebx,[sa1dmaptr]
-    push ecx
-    pop ecx
+    test byte[SA1DMAChar],1
+    jnz near .4bit
+.8bit
+    pushad
+    mov edx,[sa1dmaptrs]
+    mov ebx,[romdata]
+    add ebx,4096*1024+1024*1024
+    mov edi,16*2
+.loop38b
+    push ebx
+    push edx
+    mov ecx,32
+.loop8b
+    mov esi,8
+    push ebx
+    push edx
+.loop28b
+    mov word[ebx],0
+    mov word[ebx+16],0
+    mov word[ebx+32],0
+    mov word[ebx+48],0
+    do8bit 7
+    do8bit 6
+    do8bit 5
+    do8bit 4
+    do8bit 3
+    do8bit 2
+    do8bit 1
+    do8bit 0
+    add ebx,2
+    add edx,128*2
+    dec esi
+    jnz near .loop28b
+    pop edx
+    pop ebx
+    add edx,4*2
+    add ebx,32*2
+    dec ecx
+    jnz near .loop8b
+    pop edx
+    pop ebx
+    add edx,128*8*2
+    add ebx,128*8*2
+    dec edi
+    jnz near .loop38b
+
+    mov ecx,10000h
+    mov edx,[sa1dmaptrs]
+    mov ebx,[romdata]
+    add ebx,4096*1024+1024*1024
+.next8b
+    mov al,[ebx]
+    mov [edx],al
+    inc ebx
+    inc edx
+    dec ecx
+    jnz .next8b
+
+    popad
     ret
 .4bit
     pushad
@@ -1084,42 +1191,11 @@ sa1chconv:
     push edx
 .loop24b
     mov word[ebx],0
-    mov al,[edx+3]
-    setbit2b 10h,0001h
-    setbit2b 20h,0100h
-    setbit2b2 40h,0001h
-    setbit2b2 80h,0100h
-    setbit2b 01h,0002h
-    setbit2b 02h,0200h
-    setbit2b2 04h,0002h
-    setbit2b2 08h,0200h
-    mov al,[edx+2]
-    setbit2b 10h,0004h
-    setbit2b 20h,0400h
-    setbit2b2 40h,0004h
-    setbit2b2 80h,0400h
-    setbit2b 01h,0008h
-    setbit2b 02h,0800h
-    setbit2b2 04h,0008h
-    setbit2b2 08h,0800h
-    mov al,[edx+1]
-    setbit2b 10h,0010h
-    setbit2b 20h,1000h
-    setbit2b2 40h,0010h
-    setbit2b2 80h,1000h
-    setbit2b 01h,0020h
-    setbit2b 02h,2000h
-    setbit2b2 04h,0020h
-    setbit2b2 08h,2000h
-    mov al,[edx]
-    setbit2b 10h,0040h
-    setbit2b 20h,4000h
-    setbit2b2 40h,0040h
-    setbit2b2 80h,4000h
-    setbit2b 01h,0080h
-    setbit2b 02h,8000h
-    setbit2b2 04h,0080h
-    setbit2b2 08h,8000h
+    mov word[ebx+16],0
+    do4bit 3
+    do4bit 2
+    do4bit 1
+    do4bit 0
     add ebx,2
     add edx,128
     dec esi
@@ -1168,24 +1244,8 @@ sa1chconv:
     push edx
 .loop2
     mov word[ebx],0
-    mov al,[edx+1]
-    setbit2b 40h,0001h
-    setbit2b 80h,0100h
-    setbit2b 10h,0002h
-    setbit2b 20h,0200h
-    setbit2b 04h,0004h
-    setbit2b 08h,0400h
-    setbit2b 01h,0008h
-    setbit2b 02h,0800h
-    mov al,[edx]
-    setbit2b 40h,0010h
-    setbit2b 80h,1000h
-    setbit2b 10h,0020h
-    setbit2b 20h,2000h
-    setbit2b 04h,0040h
-    setbit2b 08h,4000h
-    setbit2b 01h,0080h
-    setbit2b 02h,8000h
+    do2bit 1
+    do2bit 0
     add ebx,2
     add edx,64
     dec esi
@@ -1217,6 +1277,7 @@ sa1chconv:
 
     popad
     ret
+
 SECTION .bss
 .numrows resd 1
 
@@ -1283,7 +1344,24 @@ NEWSYM initSA1regsw
     setregw 2224h*4,sa12224w
     setregw 2225h*4,sa12225w
     ; Missing 2226-222A
-    ; Missing 2240-224F (Bitmap register file)
+
+    ; Bitmap register file
+    setregw 2240h*4,sa12240w
+    setregw 2241h*4,sa12241w
+    setregw 2242h*4,sa12242w
+    setregw 2243h*4,sa12243w
+    setregw 2244h*4,sa12244w
+    setregw 2245h*4,sa12245w
+    setregw 2246h*4,sa12246w
+    setregw 2247h*4,sa12247w
+    setregw 2248h*4,sa12248w
+    setregw 2249h*4,sa12249w
+    setregw 224Ah*4,sa1224Aw
+    setregw 224Bh*4,sa1224Bw
+    setregw 224Ch*4,sa1224Cw
+    setregw 224Dh*4,sa1224Dw
+    setregw 224Eh*4,sa1224Ew
+    setregw 224Fh*4,sa1224Fw
 
     setregw 2230h*4,sa12230w
     setregw 2231h*4,sa12231w
@@ -1318,6 +1396,37 @@ NEWSYM initSA1regsw
     jnz .loopw
     setregw 3000h*4,IRamWrite2
     ret
+
+sa12240w:
+sa12241w:
+sa12242w:
+sa12243w:
+sa12244w:
+sa12245w:
+sa12246w:
+sa12248w:
+sa12249w:
+sa1224Aw:
+sa1224Bw:
+sa1224Cw:
+sa1224Dw:
+sa1224Ew:
+  mov ebx,SA1_BRF
+  mov [ebx+ecx-2240h],al
+  ret
+sa12247w:
+sa1224Fw:
+  mov ebx,SA1_BRF
+  mov [ebx+ecx-2240h],al
+  test byte[SA1DMAInfo],0A0h
+  jz .nocc2_dma
+  test byte[SA1DMAInfo],10h
+  jnz .nocc2_dma
+  pushad
+  call SA1_DMA_CC2
+  popad
+.nocc2_dma
+  ret
 
 NEWSYM SDD1Reset
     setregw 4801h*4,sdd14801w
