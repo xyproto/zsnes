@@ -2650,7 +2650,7 @@ void init65816()
     opexec268cph = opexec268cphb;
     opexec358cph = opexec358cphb;
 
-    if (!romdata[infoloc+BankOffset] & 0xF0) // if not fastrom
+    if (!(romdata[infoloc+BankOffset] & 0xF0)) // if not fastrom
     {
       opexec358 = opexec268;
       opexec358cph = opexec268cph;
