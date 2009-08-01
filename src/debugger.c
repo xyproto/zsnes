@@ -706,7 +706,7 @@ void out65816_addrmode (unsigned char *instr) {
 
     case 1:     // #$12,#$1234 (M-flag)
         wprintw(debugwin, "#$");
-        if (xp != 0x20) {
+        if (xp & 0x20) {
             wprintw(debugwin, "%02x", instr[1]);
             wprintw(debugwin, "%15s", padding);
         } else {
