@@ -2412,27 +2412,67 @@ DisplayGUIVideoClick:
 %endif
 .noradiobuttons
 
+  GUIClickCButton 18,115,byte[GrayscaleMode]  ; Grayscale
+
+  xor ebx,ebx                             ; Hires Mode7
+  mov bl,[cvidmode]
+  cmp byte[GUIM7VID+ebx],0
+  je .nocheckboxtm7
+  GUIClickCButton5 128,115,byte[Mode7HiRes16b],1
+.nocheckboxtm7
+
+%ifdef __MSDOS__
+  xor ebx,ebx                             ; Triple buffs/vsyncs
+  mov bl,[cvidmode]
+  cmp byte[GUITBVID+ebx],0
+  je .nocheckboxttb
+  GUIClickCButtonT 128,145,byte[Triplebufen],byte[vsyncon]
+.nocheckboxttb
+  GUIClickCButtonT 18,145,byte[vsyncon],byte[Triplebufen]
+%endif
+%ifdef __WIN32__
+  xor ebx,ebx                             ; Triple buffs/vsyncs
+  mov bl,[cvidmode]
+  cmp byte[GUIWFVID+ebx],0
+  je near .notriplebufferwin
+  GUIClickCButtonf 128,145,byte[TripleBufferWin],initDirectDraw
+.notriplebufferwin
+  GUIClickCButtonf 18,145,byte[vsyncon],initDirectDraw
+%endif
+%ifdef __OPENGL__
+  xor ebx,ebx
+  mov bl,[cvidmode]
+  cmp byte[GUIBIFIL+ebx],0
+  je near .novsync
+  GUIClickCButtonI 18,145,byte[vsyncon]
+.novsync
+%endif
+
+  xor ebx,ebx                             ; Keep 4:3 Ratio
+  mov bl,[cvidmode]
+  cmp byte[GUIKEEP43+ebx],0
+  je near .nocheckboxk43
+  GUIClickCButtonK 18,175,byte[Keep4_3Ratio],initwinvideo
+.nocheckboxk43
+
 %ifndef __MSDOS__
   xor ebx,ebx                             ; GL Scanlines
   mov bl,[cvidmode]
   cmp byte[GUIBIFIL+ebx],0
   je .noglscanlines
 
-  cmp eax,23                     ; X-Range for click-area
-  jl near .nobar
-  cmp eax,23+100
-  jg near .nobar
+  mov eax,[GUImouseposx]    ; update mouse location
+  sub eax,[GUIwinposx+5*4]
+  mov edx,[GUImouseposy]
+  sub edx,[GUIwinposy+5*4]
+
+  GUIClickArea 23,88,23+100,92,.nobar
   sub al,23
-  cmp edx,88                     ; Y-Range for click-area
-  jl near .nobar
-  cmp edx,92
-  jg near .barnotselected
   mov [sl_intensity],al
   mov byte[GUIHold],8            ; Lock mouse to bar when clicked
   mov eax,[GUIwinposy+5*4]
   add eax,90
   mov [GUIHoldYlim],eax
-.barnotselected
   mov eax,[GUIwinposx+5*4]
   add eax,23
   mov [GUIHoldXlimL],eax
@@ -2473,67 +2513,6 @@ DisplayGUIVideoClick:
 .nohsline
 .noswscanlines
 
-  GUIClickCButton 18,115,byte[GrayscaleMode]  ; Grayscale
-
-  xor ebx,ebx                             ; Hires Mode7
-  mov bl,[cvidmode]
-  cmp byte[GUIM7VID+ebx],0
-  je .nocheckboxtm7
-  GUIClickCButton5 128,115,byte[Mode7HiRes16b],1
-.nocheckboxtm7
-
-%ifdef __MSDOS__
-  xor ebx,ebx                             ; Triple buffs/vsyncs
-  mov bl,[cvidmode]
-  cmp byte[GUITBVID+ebx],0
-  je .nocheckboxttb
-  GUIClickCButtonT 128,145,byte[Triplebufen],byte[vsyncon]
-.nocheckboxttb
-  GUIClickCButtonT 18,145,byte[vsyncon],byte[Triplebufen]
-%endif
-%ifdef __WIN32__
-  xor ebx,ebx
-  mov bl,[cvidmode]
-  cmp byte[GUIWFVID+ebx],0
-  je near .notriplebufferwin
-  GUIClickCButtonf 128,145,byte[TripleBufferWin],initDirectDraw
-.notriplebufferwin
-  GUIClickCButtonf 18,145,byte[vsyncon],initDirectDraw
-%endif
-%ifdef __OPENGL__
-  xor ebx,ebx
-  mov bl,[cvidmode]
-  cmp byte[GUIBIFIL+ebx],0
-  je near .novsync
-  GUIClickCButtonI 18,145,byte[vsyncon]
-.novsync
-%endif
-
-%ifndef __MSDOS__
-  xor ebx,ebx                             ; Keep 4:3 Ratio
-  mov bl,[cvidmode]
-  cmp byte[GUIKEEP43+ebx],0
-  je near .nocheckboxk43
-  GUIClickCButtonK 18,175,byte[Keep4_3Ratio],initwinvideo
-.nocheckboxk43
-
-%else
-  xor ebx,ebx                             ; Small Screen
-  mov bl,[cvidmode]
-  cmp byte[GUISSVID+ebx],0
-  je .nocheckbox2b
-  FilterExcl 18,175,ScreenScale,antienab,En2xSaI,scanlines
-  GUIClickCButton3 18,175,byte[smallscreenon]
-.nocheckbox2b
-
-  xor ebx,ebx                             ; Full/Wide Screen
-  mov bl,[cvidmode]
-  cmp byte[GUIWSVID+ebx],0
-  je .nocheckbox3b
-  FilterExcl 128,175,smallscreenon,antienab,En2xSaI
-  GUIClickCButton3 128,175,byte[ScreenScale]
-.nocheckbox3b
-%endif
 .notfilterstab
 
   cmp dword[GUIVntscTab],1  ; NTSC Tab
