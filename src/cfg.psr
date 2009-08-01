@@ -62,7 +62,7 @@ Show224Lines db 1
 newengen db 1
 
 @
-@ Enable Older Graphics Engine Tweak for Mode 2 (0 = NO, 1 = Yes)
+@ Enable Older Graphics Engine Tweak (0 = NO, 1 = Yes)
 @ Enable this to see if it helps with rendering problems
 @ Only works with old graphic engine
 bgfixer db 0

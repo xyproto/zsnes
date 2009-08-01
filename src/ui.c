@@ -41,7 +41,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 extern unsigned int xa, MessageOn, maxromspace;
 extern unsigned char FPSOn, spcon, device1, device2;
-extern char *Msgptr, CSStatus[], CSStatus2[], CSStatus3[];
+extern char *Msgptr, CSStatus[], CSStatus2[], CSStatus3[], CSStatus4[];
 
 unsigned short selc0040, selcA000, selcB800;
 
@@ -434,51 +434,52 @@ static char *seconds_to_asc(unsigned int seconds)
 void DisplayBatteryStatus()
 {
 #ifndef __MSDOS__
-   int CheckBattery();
-   int CheckBatteryTime();
-   int CheckBatteryPercent();
+  int CheckBattery();
+  int CheckBatteryTime();
+  int CheckBatteryPercent();
 
-   *CSStatus2 = 0;
-   *CSStatus3 = 0;
+  *CSStatus2 = 0;
+  *CSStatus3 = 0;
+  *CSStatus4 = 0;
 
-   switch (CheckBattery())
-   {
-     case -1: //No battery
-       strcpy(CSStatus, "No battery present");
-       break;
+  switch (CheckBattery())
+  {
+    case -1: //No battery
+      strcpy(CSStatus, "No battery present");
+    break;
 
-     case 0: //Plugged in
-       {
-         int percent = CheckBatteryPercent();
+    case 0: //Plugged in
+    {
+      int percent = CheckBatteryPercent();
 
-         strcpy(CSStatus, "PC is plugged in");
-         if (percent > 0)
-         {
-           sprintf(CSStatus2, "%d%% charged", percent);
-         }
-       }
-       break;
+      strcpy(CSStatus, "PC is plugged in");
+      if (percent > 0)
+      {
+        sprintf(CSStatus2, "%d%% charged", percent);
+      }
+    }
+    break;
 
-     case 1: //Not plugged in
-       {
-         int percent = CheckBatteryPercent();
-         int battery_time = CheckBatteryTime();
+    case 1: //Not plugged in
+    {
+      int percent = CheckBatteryPercent();
+      int battery_time = CheckBatteryTime();
 
-         strcpy(CSStatus, "PC is running off of battery");
-         if (battery_time > 0)
-         {
-           sprintf(CSStatus2, "Time remaining: %s", seconds_to_asc(battery_time));
-         }
-         if (percent > 0)
-         {
-           sprintf(CSStatus3, "%d%% remaining", percent);
-         }
-       }
-       break;
-   }
+      strcpy(CSStatus, "PC is running off of battery");
+      if (battery_time > 0)
+      {
+        sprintf(CSStatus2, "Time remaining: %s", seconds_to_asc(battery_time));
+      }
+      if (percent > 0)
+      {
+        sprintf(CSStatus3, "%d%% remaining", percent);
+      }
+    }
+    break;
+  }
 
-   Msgptr = CSStatus;
-   MessageOn = 100;
+  Msgptr = CSStatus;
+  MessageOn = 100;
 #endif
 }
 
@@ -545,6 +546,7 @@ void MultiMouseInit()
     strcpy(CSStatus, "Dual mice not detected");
     strcpy(CSStatus2, "");
     strcpy(CSStatus3, "");
+    strcpy(CSStatus4, "");
     Msgptr = CSStatus;
     MessageOn = 100;
 
