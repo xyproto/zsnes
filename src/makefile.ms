@@ -261,10 +261,13 @@ ifneq (${ENV},msvc)
 %${OE}: %.cpp
 	${CPPC} ${COPT} ${CXXFLAGS} -o $@ -c $<
 
+ifeq (${OS},__WIN32__)
+%${OE}: %.asm ${OBJFIX}
+	${ASM} ${ASMOPT} ${ASMFLAGS} -o $@ $<
+	.${SLASH}${OBJFIX} $@
+else
 %${OE}: %.asm
 	${ASM} ${ASMOPT} ${ASMFLAGS} -o $@ $<
-ifeq (${OS},__WIN32__)
-	.${SLASH}objfix $@
 endif
 else
 %.obj : %.c
@@ -487,7 +490,7 @@ ${WIN_D}/safelib${OE}: ${WIN_D}/safelib.c argv.h ${WIN_D}/safelib.h
 ${WIN_D}/winintrf${OE}: ${WIN_D}/winintrf.asm macros.mac
 ${WIN_D}/winlink${OE}: ${WIN_D}/winlink.cpp ${WIN_D}/winlink.h ${WIN_D}/gl_draw.h cfg${OE} \
 	input${OE} ${WIN_D}/resource.h ${DEBUGGER_D}/load.h
-${WIN_D}/dx_ddraw${OE}: ${WIN_D}/dx_ddraw.cpp ${WIN_D}/winlink.h
+${WIN_D}/dx_ddraw${OE}: ${WIN_D}/dx_ddraw.cpp ${WIN_D}/winlink.h cfg${OE}
 ${WIN_D}/gl_draw${OE}: ${WIN_D}/gl_draw.c ${WIN_D}/winlink.h ${WIN_D}/gl_draw.h cfg${OE}
 ifeq (${ENV},msvc)
 ${WIN_D}/zsnes.res: ${WIN_D}/zsnes.rc ${WIN_D}/resource.h
