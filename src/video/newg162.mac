@@ -203,7 +203,7 @@
 %macro drawlineng16x816b 10
     ; tile value : bit 15 = flipy, bit 14 = flipx, bit 13 = priority value
     ;              bit 10-12 = palette, 0-9=tile#
-    mov ebx,[cbgval]
+    mov ebx,[ng16bbgval]
     mov dl,ch
     inc dword[bg1drwng+ebx*4]
     and ecx,3FFh
@@ -315,7 +315,7 @@
     xor dword[switch16x16],1
     jnz near %%nexttile
 %%ntile
-    mov ebx,[cbgval]
+    mov ebx,[ng16bbgval]
     add ax,2
     inc dword[bg1totng+ebx*4]
     test eax,03Fh
@@ -341,7 +341,7 @@
 %macro drawlinengom16b 11
     ; tile value : bit 15 = flipy, bit 14 = flipx, bit 13 = priority value
     ;              bit 10-12 = palette, 0-9=tile#
-    mov ebx,[cbgval]
+    mov ebx,[ng16bbgval]
     mov dl,ch
     inc dword[bg1drwng+ebx*4]
     and ecx,3FFh
@@ -430,7 +430,7 @@
     %10 0,14,%8
     pop eax
 %5
-    mov ebx,[cbgval]
+    mov ebx,[ng16bbgval]
     add word[ofsmmptr],2
     inc dword[bg1totng+ebx*4]
     add word[ofsmtptr],2
@@ -525,7 +525,7 @@
 %macro drawlinengom16b16x16 11
     ; tile value : bit 15 = flipy, bit 14 = flipx, bit 13 = priority value
     ;              bit 10-12 = palette, 0-9=tile#
-    mov ebx,[cbgval]
+    mov ebx,[ng16bbgval]
     mov dl,ch
     inc dword[bg1drwng+ebx*4]
     and ecx,3FFh
@@ -642,7 +642,7 @@
     add word[ofsmtptr],2
 %%skip
     mov ax,[ofsmmptr]
-    mov ebx,[cbgval]
+    mov ebx,[ng16bbgval]
     inc dword[bg1totng+ebx*4]
     mov ebx,[yposngom]
     mov edx,[flipyposngom]

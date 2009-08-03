@@ -27,7 +27,7 @@ EXTSYM switch16x16,curmosaicsz,domosaicng16b,vidmemch2,vidmemch4,vidmemch8
 EXTSYM mode0add,vcache4b,vcache2b,vcache8b,cachesingle2bng,cachesingle8bng
 EXTSYM ngpalcon4b,ngpalcon8b,ngpalcon2b,tleftnb,tltype2b,tltype4b,tltype8b
 EXTSYM yposng,flipyposng,ofsmcptr,ofsmtptr,ofsmmptr,ofsmcyps,ofsmady,ofsmadx
-EXTSYM FillSubScr,UnusedBitXor,yposngom,flipyposngom,cbgval,ofsmval,ofsmvalh
+EXTSYM FillSubScr,UnusedBitXor,yposngom,flipyposngom,ofsmval,ofsmvalh
 EXTSYM CPalPtrng,BGMS1,scadtng,CMainWinScr,CSubWinScr,UnusedBit,res640
 EXTSYM mosclineval,mostranspval,vcache2bs,vcache4bs,vcache8bs,vidmemch2s
 EXTSYM vidmemch4s,vidmemch8s,bgtxadd2,SpecialLine,cachesingle4bng
@@ -1095,7 +1095,7 @@ drawlineng2b16bmsnt16x8
     jbe near %1
     sub dword[ebx],8
 
-    mov ebx,[cbgval]
+    mov ebx,[ng16bbgval]
     add word[ofsmmptr],2
     inc dword[bg1totng+ebx*4]
     add word[ofsmtptr],2
@@ -1398,7 +1398,7 @@ drawlineng8b16bmsntswom:
     add word[ofsmmptr],2
     add word[ofsmtptr],2
 .skip
-    mov ebx,[cbgval]
+    mov ebx,[ng16bbgval]
     inc dword[bg1totng+ebx*4]
     mov ax,[ofsmmptr]
     mov ebx,[yposngom]

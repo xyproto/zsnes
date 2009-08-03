@@ -918,7 +918,6 @@ NEWSYM Mode7BackC, resd 1
 NEWSYM Mode7BackX0, resd 1
 NEWSYM Mode7BackSet, resd 1
 NEWSYM ngextbg, resd 1
-NEWSYM cbgval, resd 1
 NEWSYM ofsmval, resd 1
 NEWSYM ofsmvalh, resd 1
 

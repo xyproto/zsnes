@@ -174,7 +174,7 @@ NTSC_D=video${SLASH}snes_ntsc
 WIN_D=win
 ZIP_D=zip
 SPC_D=cpu${SLASH}zspc
-DEBUGGER_D=debugger
+DEBUG_D=debugger
 
 CFLAGS=${CFLAGSORIG} -D${OS} ${CFLAGONLY}
 CXXFLAGS=${CFLAGSORIG} -D${OS} ${CXXFLAGSORIG}
@@ -243,7 +243,7 @@ WINVIDOBJ=${VID_D}/sw_draw${OE} ${VID_D}/copyvwin${OE} ${VID_D}/ntsc${OE}\
 
 ifeq (${QTD},yes)
   CXXFLAGS+=-I"$(QT_BASE)${SLASH}include" -I"$(QT_BASE)${SLASH}include${SLASH}QtCore" -I"$(QT_BASE)${SLASH}include${SLASH}QtGui" -DWIN32
-  DEBUGGEROBJ=${DEBUGGER_D}/load${OE} ${DEBUGGER_D}/ui${OE} ${DEBUGGER_D}/moc_ui${OE} ${DEBUGGER_D}/moc_zthread${OE} ${DEBUGGER_D}/zthread${OE}
+  DEBUGGEROBJ=${DEBUG_D}/load${OE} ${DEBUG_D}/ui${OE} ${DEBUG_D}/moc_ui${OE} ${DEBUG_D}/moc_zthread${OE} ${DEBUG_D}/zthread${OE}
   LIBS+= -L${QT_BASE}${SLASH}lib -lQtCore4 -lQtGui4
   MSVCLIBS+= ${QT_BASE}${SLASH}lib${SLASH}qtcore.lib ${QT_BASE}${SLASH}lib${SLASH}qtgui.lib advapi32.lib imm32.lib winspool.lib comdlg32.lib
 endif
@@ -302,7 +302,7 @@ ifneq (${ENV},msvc)
 	${LINK} ${STRIP} -o ${EXE} ${OBJS} ${LIBS}
 else
 	 @echo /Fezsnesw.exe *.obj ${CPU_D}\*.obj ${VID_D}\*.obj ${CHIP_D}\*.obj ${EFF_D}\*.obj ${WIN_D}\*.obj ${GUI_D}\*.obj > link.vc
-	 @echo ${ZIP_D}\*.obj ${JMA_D}\*.obj ${NET_D}\*.obj ${MMLIB_D}\*.obj ${SPC_D}\*.obj ${DEBUGGER_D}\*.obj >> link.vc
+	 @echo ${ZIP_D}\*.obj ${JMA_D}\*.obj ${NET_D}\*.obj ${MMLIB_D}\*.obj ${SPC_D}\*.obj ${DEBUG_D}\*.obj >> link.vc
 	 @echo ${MSVCLIBS} >> link.vc
 	 cl /nologo @link.vc ${WIN_D}/zsnes.res /link /SUBSYSTEM:WINDOWS /NODEFAULTLIB:LIBCMTD.LIB /NODEFAULTLIB:LIBC.LIB /NODEFAULTLIB:LIBCMT.LIB
 endif
@@ -319,7 +319,8 @@ debugger${OE}: debugger.c asm_call.h zpath.h ${JMA_D}/zsnesjma.h \
 endmem${OE}: endmem.asm macros.mac
 init${OE}: init.asm macros.mac
 initc${OE}: initc.c asm_call.h cfg${OE} input${OE} numconv.h zpath.h \
-	${CPU_D}/memtable.h ${JMA_D}/zsnesjma.h ${ZIP_D}/zunzip.h
+	${CPU_D}/memtable.h ${DEBUG_D}/load.h ${JMA_D}/zsnesjma.h \
+	${ZIP_D}/zunzip.h
 input${OE}: input.psr ${PSR}
 md${OE}: md.psr ${PSR}
 patch${OE}: patch.c zpath.h ${JMA_D}/zsnesjma.h ${ZIP_D}/zunzip.h
@@ -327,12 +328,12 @@ ui${OE}: ui.c asm_call.h cfg${OE} input${OE} zpath.h ${JMA_D}/zsnesjma.h \
 	${MMLIB_D}/mm.h ${ZIP_D}/zunzip.h
 vcache${OE}: vcache.asm macros.mac
 version${OE}: version.c
-zdir${OE}: zdir.h zpath.h
+zdir${OE}: zdir.c zdir.h zpath.h ${JMA_D}/zsnesjma.h ${ZIP_D}/zunzip.h
 zloader${OE}: zloader.c asm_call.h cfg${OE} input${OE} zloader.h zpath.h \
-	${JMA_D}/zsnesjma.h ${ZIP_D}/zunzip.h
+	${DEBUG_D}/load.h ${JMA_D}/zsnesjma.h ${ZIP_D}/zunzip.h
 zmovie${OE}: zmovie.c asm_call.h cfg${OE} gblvars.h input${OE} md${OE} \
-	numconv.h zmovie.h zpath.h ${JMA_D}/zsnesjma.h \
-	zdir.h ${WIN_D}/safelib.h ${ZIP_D}/zunzip.h
+	numconv.h zdir.h zmovie.h zpath.h ${JMA_D}/zsnesjma.h \
+	${WIN_D}/safelib.h ${ZIP_D}/zunzip.h
 zpath${OE}: zpath.c cfg${OE} zpath.h ${JMA_D}/zsnesjma.h \
 	${WIN_D}/lib.h ${WIN_D}/safelib.h ${ZIP_D}/zunzip.h ${CONFLOC}
 zstate${OE}: zstate.c asm_call.h cfg${OE} gblvars.h input${OE} numconv.h \
@@ -340,7 +341,8 @@ zstate${OE}: zstate.c asm_call.h cfg${OE} gblvars.h input${OE} numconv.h \
 ztime${OE}: ztime.asm macros.mac
 ztimec${OE}: ztimec.c
 
-${CHIP_D}/7110emu${OE}: ${CHIP_D}/7110emu.c cfg${OE} zpath.h
+${CHIP_D}/7110emu${OE}: ${CHIP_D}/7110emu.c cfg${OE} zpath.h ${JMA_D}/zsnesjma.h \
+	${ZIP_D}/zunzip.h
 ${CHIP_D}/7110proc${OE}: ${CHIP_D}/7110proc.asm macros.mac \
 	${CPU_D}/regs.mac ${CPU_D}/regsw.mac
 ${CHIP_D}/c4emu${OE}: ${CHIP_D}/c4emu.c
@@ -395,6 +397,16 @@ ${CPU_D}/table${OE}: ${CPU_D}/table.asm macros.mac ${CPU_D}/65816d.inc \
 	${CPU_D}/regsw.mac
 ${CPU_D}/tablec${OE}: ${CPU_D}/tablec.asm macros.mac ${CPU_D}/65816dc.inc \
 	${CPU_D}/address.inc ${CPU_D}/addrni.inc ${CPU_D}/e65816c.inc
+${SPC_D}/zdsp${OE}: ${SPC_D}/zdsp.cpp ${SPC_D}/b_common.h \
+	${SPC_D}/b_config.h ${SPC_D}/b_endian.h ${SPC_D}/b_source.h \
+	${SPC_D}/spc_dsp.h
+${SPC_D}/zspc${OE}: ${SPC_D}/zspc.cpp ${SPC_D}/b_common.h \
+	${SPC_D}/b_config.h ${SPC_D}/b_endian.h ${SPC_D}/b_source.h \
+	${SPC_D}/disasm.c ${SPC_D}/disasm.h ${SPC_D}/resamp.c ${SPC_D}/resamp.h \
+	${SPC_D}/spc_bootrom.c ${SPC_D}/spc_cpu.h ${SPC_D}/spc_dsp.h \
+	${SPC_D}/spc_filt.cpp ${SPC_D}/spc_filt.h ${SPC_D}/snes_spc.cpp \
+	${SPC_D}/snes_spc.h ${SPC_D}/snes_spm.cpp ${SPC_D}/snes_sps.cpp \
+	${SPC_D}/zspc.h
 
 ${DOS_D}/dosintrf${OE}: ${DOS_D}/dosintrf.asm macros.mac
 ${DOS_D}/gppro${OE}: ${DOS_D}/gppro.asm macros.mac
@@ -413,9 +425,9 @@ ${EFF_D}/water${OE}: ${EFF_D}/water.c ${EFF_D}/fixsin.h
 ${GUI_D}/gui${OE}: ${GUI_D}/gui.asm macros.mac ${GUI_D}/guicheat.inc \
 	${GUI_D}/guicombo.inc ${GUI_D}/guikeys.inc ${GUI_D}/guimisc.inc \
 	${GUI_D}/guimouse.inc ${GUI_D}/guitools.inc ${GUI_D}/guiwindp.inc
-${GUI_D}/guifuncs${OE}: ${GUI_D}/guifuncs.c asm_call.h cfg${OE} input${OE} md${OE} \
-	zloader.h zpath.h ${DOS_D}/lib.h ${JMA_D}/zsnesjma.h ${WIN_D}/lib.h \
-	${ZIP_D}/zunzip.h
+${GUI_D}/guifuncs${OE}: ${GUI_D}/guifuncs.c asm_call.h cfg${OE} input${OE} \
+	md${OE} zdir.h zloader.h zpath.h ${DOS_D}/lib.h ${JMA_D}/zsnesjma.h \
+	${WIN_D}/lib.h ${ZIP_D}/zunzip.h
 ${GUI_D}/menu${OE}: ${GUI_D}/menu.asm macros.mac
 
 ${JMA_D}/7zlzma${OE}: ${JMA_D}/7zlzma.cpp ${JMA_D}/7z.h \
@@ -456,8 +468,7 @@ ${VID_D}/hq3x16${OE}: ${VID_D}/hq3x16.asm macros.mac
 ${VID_D}/hq3x32${OE}: ${VID_D}/hq3x32.asm macros.mac
 ${VID_D}/hq4x16${OE}: ${VID_D}/hq4x16.asm macros.mac
 ${VID_D}/hq4x32${OE}: ${VID_D}/hq4x32.asm macros.mac
-${VID_D}/m716text${OE}: ${VID_D}/m716text.asm macros.mac \
-	${VID_D}/mode7.mac
+${VID_D}/m716text${OE}: ${VID_D}/m716text.asm macros.mac ${VID_D}/mode7.mac
 ${VID_D}/makev16b${OE}: ${VID_D}/makev16b.asm macros.mac ${VID_D}/vidmacro.mac
 ${VID_D}/makev16t${OE}: ${VID_D}/makev16t.asm macros.mac ${VID_D}/vidmacro.mac
 ${VID_D}/makevid${OE}: ${VID_D}/makevid.asm macros.mac ${VID_D}/vidmacro.mac
@@ -485,14 +496,14 @@ ${VID_D}/procvidc${OE}: ${VID_D}/procvidc.c zmovie.h zpath.h \
 ${VID_D}/sw_draw${OE}: ${VID_D}/sw_draw.asm macros.mac
 
 ${WIN_D}/confloc${OE}: ${WIN_D}/confloc.psr ${PSR}
+${WIN_D}/dx_ddraw${OE}: ${WIN_D}/dx_ddraw.cpp cfg${OE} ${WIN_D}/winlink.h
+${WIN_D}/gl_draw${OE}: ${WIN_D}/gl_draw.c cfg${OE} ${WIN_D}/gl_draw.h ${WIN_D}/winlink.h
 ${WIN_D}/lib${OE}: ${WIN_D}/lib.c zpath.h ${JMA_D}/zsnesjma.h \
 	${WIN_D}/lib.h ${ZIP_D}/zunzip.h
 ${WIN_D}/safelib${OE}: ${WIN_D}/safelib.c argv.h ${WIN_D}/safelib.h
 ${WIN_D}/winintrf${OE}: ${WIN_D}/winintrf.asm macros.mac
-${WIN_D}/winlink${OE}: ${WIN_D}/winlink.cpp ${WIN_D}/winlink.h ${WIN_D}/gl_draw.h cfg${OE} \
-	input${OE} ${WIN_D}/resource.h ${DEBUGGER_D}/load.h
-${WIN_D}/dx_ddraw${OE}: ${WIN_D}/dx_ddraw.cpp ${WIN_D}/winlink.h cfg${OE}
-${WIN_D}/gl_draw${OE}: ${WIN_D}/gl_draw.c ${WIN_D}/winlink.h ${WIN_D}/gl_draw.h cfg${OE}
+${WIN_D}/winlink${OE}: ${WIN_D}/winlink.cpp asm_call.h cfg${OE} input${OE} zmovie.h \
+	${DEBUG_D}/load.h ${WIN_D}/gl_draw.h ${WIN_D}/resource.h ${WIN_D}/winlink.h
 ifeq (${ENV},msvc)
 ${WIN_D}/zsnes.res: ${WIN_D}/zsnes.rc ${WIN_D}/resource.h
 	rc ${WIN_D}/zsnes.rc
@@ -516,14 +527,14 @@ ${ZIP_D}/unzip${OE}: ${ZIP_D}/unzip.c ${ZIP_D}/zunzip.h
 ${ZIP_D}/zpng${OE}: ${ZIP_D}/zpng.c numconv.h zpath.h ${JMA_D}/zsnesjma.h \
 	${ZIP_D}/zunzip.h
 
-${DEBUGGER_D}/load${OE}: ${DEBUGGER_D}/load.cpp ${DEBUGGER_D}/load.h \
-	${DEBUGGER_D}/ui.h ${DEBUGGER_D}/ui_debugger.h ${DEBUGGER_D}/zthread.h
-${DEBUGGER_D}/moc_ui${OE}: ${DEBUGGER_D}/moc_ui.cpp ${DEBUGGER_D}/ui.h
-${DEBUGGER_D}/moc_ui.cpp: ${DEBUGGER_D}/ui.h
-${DEBUGGER_D}/moc_zthread${OE}: ${DEBUGGER_D}/moc_zthread.cpp ${DEBUGGER_D}/zthread.h
-${DEBUGGER_D}/moc_zthread.cpp: ${DEBUGGER_D}/zthread.h
-${DEBUGGER_D}/ui${OE}: ${DEBUGGER_D}/ui.cpp ${DEBUGGER_D}/ui.h ${DEBUGGER_D}/ui_debugger.h
-${DEBUGGER_D}/zthread.cpp${OE}: ${DEBUGGER_D}/load.h ${DEBUGGER_D}/zthread.h
+${DEBUG_D}/load${OE}: ${DEBUG_D}/load.cpp ${DEBUG_D}/load.h \
+	${DEBUG_D}/ui.h ${DEBUG_D}/ui_debugger.h ${DEBUG_D}/zthread.h
+${DEBUG_D}/moc_ui${OE}: ${DEBUG_D}/moc_ui.cpp ${DEBUG_D}/ui.h
+${DEBUG_D}/moc_ui.cpp: ${DEBUG_D}/ui.h
+${DEBUG_D}/moc_zthread${OE}: ${DEBUG_D}/moc_zthread.cpp ${DEBUG_D}/zthread.h
+${DEBUG_D}/moc_zthread.cpp: ${DEBUG_D}/zthread.h
+${DEBUG_D}/ui${OE}: ${DEBUG_D}/ui.cpp ${DEBUG_D}/ui.h ${DEBUG_D}/ui_debugger.h
+${DEBUG_D}/zthread.cpp${OE}: ${DEBUG_D}/load.h ${DEBUG_D}/zthread.h
 
 else  #else no ENV specified
 	@echo Please specify which platform to compile for with PLATFORM=platform_name
@@ -540,9 +551,9 @@ ifneq (${ENV},)
 	${DELPRE} ${EFF_D}${SLASH}*${OE}${SEP} ${ZIP_D}${SLASH}*${OE}${DELSUF}
 	${DELPRE} ${SPC_D}${SLASH}*${OE}${SEP} ${WIN_D}${SLASH}*${OE}${DELSUF}
 	${DELPRE} ${CHIP_D}${SLASH}*${OE}${SEP} ${VID_D}${SLASH}*${OE}${DELSUF}
-	${DELPRE} ${DEBUGGER_D}${SLASH}*${OE}${DELSUF}
-	${DELPRE} ${DEBUGGER_D}${SLASH}ui_*.h${DELSUF}
-	${DELPRE} ${DEBUGGER_D}${SLASH}moc_*.cpp${DELSUF}
+	${DELPRE} ${DEBUG_D}${SLASH}*${OE}${DELSUF}
+	${DELPRE} ${DEBUG_D}${SLASH}ui_*.h${DELSUF}
+	${DELPRE} ${DEBUG_D}${SLASH}moc_*.cpp${DELSUF}
 else
 	@echo Please specify which platform to clean for with PLATFORM=platform_name
 endif

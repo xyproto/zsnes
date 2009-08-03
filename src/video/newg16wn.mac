@@ -398,7 +398,7 @@ Nextwinmode:
 %macro drawlinengomwin16b 10
     ; tile value : bit 15 = flipy, bit 14 = flipx, bit 13 = priority value
     ;              bit 10-12 = palette, 0-9=tile#
-    mov ebx,[cbgval]
+    mov ebx,[ng16bbgval]
     mov dl,ch
     inc dword[bg1drwng+ebx*4]
     and ecx,3FFh
@@ -454,7 +454,7 @@ Nextwinmode:
     processwinpixel
     processwinpixel
 %%endokay
-    mov ebx,[cbgval]
+    mov ebx,[ng16bbgval]
     add word[ofsmmptr],2
     inc dword[bg1totng+ebx*4]
     add word[ofsmtptr],2
@@ -507,7 +507,7 @@ Nextwinmode:
     and dword[ofsmcptr2],3Fh
 %if %10=4
     test dword[ebx-40h],8000h
-    jnz %%noofsm
+    jnz %%noofsmh
 %endif
     test dword[ebx-40h],ecx
     jz %%noofsmh
@@ -1067,7 +1067,7 @@ Nextwinmode:
 %macro drawlinengomwin16b16x16 10
     ; tile value : bit 15 = flipy, bit 14 = flipx, bit 13 = priority value
     ;              bit 10-12 = palette, 0-9=tile#
-    mov ebx,[cbgval]
+    mov ebx,[ng16bbgval]
     mov dl,ch
     inc dword[bg1drwng+ebx*4]
     and ecx,3FFh
@@ -1151,7 +1151,7 @@ Nextwinmode:
     add word[ofsmmptr],2
     add word[ofsmtptr],2
 %%skip
-    mov ebx,[cbgval]
+    mov ebx,[ng16bbgval]
     inc dword[bg1totng+ebx*4]
     mov ax,[ofsmmptr]
     mov ebx,[yposngom]

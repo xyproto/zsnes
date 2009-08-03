@@ -3175,7 +3175,6 @@
     mov [ngceax+%2*1024+ebx*4],eax
     mov [ngcedi+%2*1024+ebx*4],edi
     ; eax = pointer to beginning of tile area
-    mov dword[cbgval],%1
     mov ecx,ebx
     mov dl,1 << %2
     add ecx,%2*256
@@ -3191,7 +3190,6 @@
     mov [ngcedi+%2*1024+ebx*4],edi
     ; eax = pointer to beginning of tile area
     mov dword[mode0add],0
-    mov dword[cbgval],%1
     mov ecx,ebx
     mov dl,1 << %2
     add ecx,%2*256
@@ -3317,7 +3315,6 @@
     ; eax = pointer to beginning of tile area
     mov dword[ofsmval],2000h << %1
     mov dword[ofsmvalh],2000h << %1
-    mov dword[cbgval],%1
     ProcessBuildWindow %1
     mov ecx,ebx
     mov dl,1 << %2
@@ -3336,7 +3333,6 @@
     ; eax = pointer to beginning of tile area
     mov dword[ofsmval],2000h << %1
     mov dword[ofsmvalh],2000h << %1
-    mov dword[cbgval],%1
     ProcessBuildWindow %1
     mov dword[mode0add],0
     mov ecx,ebx
@@ -3367,7 +3363,6 @@
     ; eax = pointer to beginning of tile area
     mov dword[ofsmval],2000h << %1
     mov dword[ofsmvalh],2000h << %1
-    mov dword[cbgval],%1
     ProcessBuildWindow %1
     mov ecx,ebx
     mov dl,1 << %2
@@ -3496,7 +3491,6 @@
     ; eax = pointer to beginning of tile area
     mov dword[ofsmval],2000h << %1
     mov dword[ofsmvalh],2000h << %1
-    mov dword[cbgval],%1
     ProcessBuildWindow %1
     mov ecx,ebx
     mov dl,1 << %2
@@ -3514,7 +3508,6 @@
     ; eax = pointer to beginning of tile area
     mov dword[ofsmval],2000h << %1
     mov dword[ofsmvalh],2000h << %1
-    mov dword[cbgval],%1
     ProcessBuildWindow %1
     mov dword[mode0add],0
     mov ecx,ebx
@@ -3544,7 +3537,6 @@
     ; eax = pointer to beginning of tile area
     mov dword[ofsmval],2000h << %1
     mov dword[ofsmvalh],2000h << %1
-    mov dword[cbgval],%1
     ProcessBuildWindow %1
     mov ecx,ebx
     mov dl,1 << %2
@@ -3819,7 +3811,6 @@
     cmp dl,2
     jne near .no4bit2b
     ; eax = pointer to beginning of tile area
-    mov dword[cbgval],%1
     mov ecx,ebx
     mov dl,1 << %2
     add ecx,%2*256
@@ -3829,7 +3820,6 @@
     jne near .no2bit2b
     ; eax = pointer to beginning of tile area
     mov dword[mode0add],0
-    mov dword[cbgval],%1
     mov ecx,ebx
     mov dl,1 << %2
     add ecx,%2*256
@@ -3944,7 +3934,6 @@
     ; eax = pointer to beginning of tile area
     mov dword[ofsmval],2000h << %1
     mov dword[ofsmvalh],2000h << %1
-    mov dword[cbgval],%1
     ProcessBuildWindow %1
     mov ecx,ebx
     mov dl,1 << %2
@@ -3957,7 +3946,6 @@
     ; eax = pointer to beginning of tile area
     mov dword[ofsmval],2000h << %1
     mov dword[ofsmvalh],2000h << %1
-    mov dword[cbgval],%1
     ProcessBuildWindow %1
     mov dword[mode0add],0
     mov ecx,ebx
@@ -3982,7 +3970,6 @@
     ; eax = pointer to beginning of tile area
     mov dword[ofsmval],2000h << %1
     mov dword[ofsmvalh],2000h << %1
-    mov dword[cbgval],%1
     ProcessBuildWindow %1
     mov ecx,ebx
     mov dl,1 << %2
@@ -4094,7 +4081,6 @@
     ; eax = pointer to beginning of tile area
     mov dword[ofsmval],2000h << %1
     mov dword[ofsmvalh],2000h << %1
-    mov dword[cbgval],%1
     ProcessBuildWindow %1
     mov ecx,ebx
     mov dl,1 << %2
@@ -4106,7 +4092,6 @@
     ; eax = pointer to beginning of tile area
     mov dword[ofsmval],2000h << %1
     mov dword[ofsmvalh],2000h << %1
-    mov dword[cbgval],%1
     ProcessBuildWindow %1
     mov dword[mode0add],0
     mov ecx,ebx
@@ -4130,7 +4115,6 @@
     ; eax = pointer to beginning of tile area
     mov dword[ofsmval],2000h << %1
     mov dword[ofsmvalh],2000h << %1
-    mov dword[cbgval],%1
     ProcessBuildWindow %1
     mov ecx,ebx
     mov dl,1 << %2
