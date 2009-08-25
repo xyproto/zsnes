@@ -2087,9 +2087,9 @@ void DSP4SetByte()
       // unknown
       case 0x000A:
       {
-        //int16_t in1a = DSP4_READ_WORD();
+        /*int16_t in1a = */DSP4_READ_WORD();
         int16_t in2a = DSP4_READ_WORD();
-        //int16_t in3a = DSP4_READ_WORD();
+        /*int16_t in3a = */DSP4_READ_WORD();
         int16_t out1a, out2a, out3a, out4a;
 
         DSP4_OP0A(in2a, &out2a, &out1a, &out4a, &out3a);
