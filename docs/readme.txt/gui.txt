@@ -1,0 +1,1494 @@
+ZSNES v1.51 Documentation
+
+================================
+    N a v i g a t i o n
+================================
+
+    * Index    [Index.txt]
+
+    * Readme    [Readme.txt]
+
+    * GUI    [GUI.txt]
+        1. Game Menu
+        2. Quick Menu
+        3. Config Menu
+        4. Cheat Menu
+        5. Netplay Menu
+        6. Misc Menu
+        7. F1 Menu
+        8. Save Slot Chooser
+
+    * Netplay    [Netplay.txt]
+
+    * Advanced Usage    [Advanced.txt]
+
+    * Games    [Games.txt]
+
+    * FAQ    [FAQ.txt]
+
+    - - - - - - - - - - - - - - - - - -
+
+    * Getting Support    [Support.txt]
+
+    * History    [History.txt]
+
+    * About    [About.txt]
+
+    * License    [License.txt]
+
+    - - - - - - - - - - - - - - - - - -
+
+    * NSRT Guide:    [http://zsnes-docs.sf.net/nsrt]
+
+    * ZSNES Home Page:  [ZSNES.com]
+
+
+================================================================================
+~                G.    U.    I.      (Graphical User Interface)
+================================================================================
+
+ --------------------------------------------------------------------------
+| Quick          | Game       | Config   | Cheat    | Netplay  | Misc      |
+|----------------|------------|----------|----------|----------|-----------|
+| 1.             | Load       | Input    | Add Code | Internet | Misc Keys |
+| 2.             | Run        | Devices  | Browse   |----------| GUI Opts  |
+| 3.             | Reset      | Chip CFG | Search   |          | Movie Opt |
+| ...            | Save State | Options  |----------           | Key Comb. |
+| 8.             | Open State | Video    |                     | Save CFG  |
+| 9.             | Pick State | Sound    |                     | About     |
+| 0.             | Quit       | Paths    |                      -----------
+| Freeze Data:   |------------| Saves    |
+| Clear All Data |            | Speed    |
+ ----------------              ----------
+
+ZSNES uses a custom GUI, introduced in v0.600.
+
+You can move the ZSNES window either by clicking and dragging its title bar, or
+right-clicking anywhere in the ZSNES window and dragging. You can move dialogs
+within ZSNES by clicking and dragging their respective title bars.
+
+If any dialog is open within ZSNES, pressing ESC will close the top-most window.
+
+If a game is loaded and running, you can press ESC to pause emulation and show
+the GUI. Pressing ESC again will hide the GUI and resume emulation.
+
+Certain options throughout the GUI have an associated hotkey. Notice that many
+options have a letter in them that is underlined; pressing that letter on your
+keyboard will toggle the option.
+
+
+............................................................
+  1.                     Game Menu
+............................................................
+
+- - - - - - - - - - - - - - - - - - - -
+ .               Load                .
+- - - - - - - - - - - - - - - - - - - -
+
+  This opens the file loading dialog. Use this dialog to browse for a ROM to
+  load and begin emulation.
+
+  Filename box - Displays files in the current directory in alphabetical order.
+    Double-click on a file to load it. Use the Show All Extensions option to
+    change what types of files are displayed in this box.
+  Directory box - Displays all subdirectories in the current directory.
+    Double-click on items in this box to navigate between folders. The first
+    item in this box is always two dots (..); double-click this item to move
+    to the parent directory of the current directory. Displayed below the
+    current subdirectories are all drive letters detected on your system.
+    Use these drive letters to change between drives.
+  Current directory - Below these two boxes, the current directory is displayed.
+    By default, the current directory will be the same directory in which the
+    ZSNES executable is located.
+  Address box - By typing letters into this box, you can go to the first
+    filename or directory that matches the string of letters you typed.
+  Current selection - Below the text box, the current / highlighted
+    selection is displayed. In the DOS port, this line does not display the
+    current selection, but instead says "Display Type:".
+  Display Type: - Choose what type of filename to display in the Filename box.
+      Long Filename (Win/SDL) or Win9x Long Filename (DOS) displays the actual
+        name of the files in the current directory, along with their extensions.
+      SNES Header Name will display the internal SNES header names of the files
+        in the current directory.
+          * ZSNES can display header names using English and Kanji
+            characters. Characters in other languages are not supported and
+            will be displayed as garbled text. Improper or invalid header
+            names will also be garbled text.
+          * The header names of compressed files will not be displayed.
+          * If for some reason the header of a file cannot be displayed, the
+            filename of that file will instead be displayed.
+          * Warning: Using this option can make navigating folders a slow
+            process, since each time you navigate to a new folder, ZSNES
+            must scan all files in the folder for their header names.
+      DOS 8.3 Format (DOS only, default for DOS) will truncate all filenames
+        to be compatible with DOS filename length restrictions (up to eight
+        letters in the filename, plus a three letter extension).
+  Show All Extensions (off by default) - When this option is not checked,
+    only files with common SNES ROM extensions (.smc, .sfc, ...) will be
+    displayed. When this option is checked, all files will be displayed,
+    regardless of extension. When used in combination with the SNES Header Name
+    option above, non-ROM files will be shown as ** Invalid File **.
+  Force - Checking these boxes will force ROMs to be loaded as if they had those
+    settings, rather than having ZSNES automatically detect those settings.
+    Don't check any of these boxes unless you know what you're doing.
+      * NTSC / PAL: Force one of these display types for all ROMs loaded.
+      * HiROM / LoROM: Force one of these memory mapping settings for all ROMs
+          loaded.
+  Load button will load the current selection and begin emulation.
+
+  Keyboard usage with the file load dialog is as follows:
+      Left / Right Arrows - Switch between the file and directory boxes.
+      Up / Down Arrows - Move up and down in the list.
+      PageUp / PageDown - Move up and down the list in larger increments.
+      Home / End - Go to the top or bottom of the list.
+      Typing characters - Go to the first item in the list that matches the
+        typed characters.
+      Enter / Return - Load the currently selected file or open the
+        currently selected folder.
+
+  Address box details:
+      * If you input a single space, ZSNES will *randomly* select a game or
+        folder within the current directory, depending on which box is
+        highlighted. Then hit Load or press Enter to open the selection.
+      * When you press enter with text in the box without any '\' or ':' in
+        the filename, ZSNES will first look for a directory matching the text
+        and will then change its directory if one is found. Otherwise, it will
+        load the current file or directory highlighted by the selection cursor.
+      * You can type in the full filename or directory including path (e.g.
+        "d:\games\mario.smc" or just "d:").
+
+- - - - - - - - - - - - - - - - - - - -
+ .                Run                .
+- - - - - - - - - - - - - - - - - - - -
+
+  Hides the GUI and resumes emulation. Equivalent to pressing ESC.
+
+- - - - - - - - - - - - - - - - - - - -
+ .               Reset               .
+- - - - - - - - - - - - - - - - - - - -
+
+  Resets the game; asks for confirmation.
+
+- - - - - - - - - - - - - - - - - - - -
+ .            Save State             .
+- - - - - - - - - - - - - - - - - - - -
+
+  Creates a save state of the game in the current save state slot; asks for
+  confirmation. See the Save States section for more information [Readme.txt].
+
+- - - - - - - - - - - - - - - - - - - -
+ .            Load State             .
+- - - - - - - - - - - - - - - - - - - -
+
+  Loads a save state from the current save state slot; asks for confirmation.
+  See the Save States section for more information [Readme.txt].
+
+- - - - - - - - - - - - - - - - - - - -
+ .            Pick State             .
+- - - - - - - - - - - - - - - - - - - -
+
+  Opens a dialog that allows you to pick the current save state slot. It's
+  easier to use the F3 Menu.
+
+  * Select Save Slot: - Click on a radio button to use that save slot.
+  * Slot Level: - Use the + and - buttons to choose the slot level.
+
+- - - - - - - - - - - - - - - - - - - -
+ .               Quit                .
+- - - - - - - - - - - - - - - - - - - -
+
+  Exit the emulator. On exit, ZSNES will save any changes to its configuration
+  files. It will also save any changes to the Save RAM file, although you can
+  also configure ZSNES to write changes to the disk whenever Save RAM changes.
+
+
+............................................................
+  2.                     Quick Menu
+............................................................
+
+- - - - - - - - - - - - - - - - - - - -
+ .        The list of numbers        .
+- - - - - - - - - - - - - - - - - - - -
+
+  The ten most recently loaded games are displayed here. By clicking on one
+  of these entries, you can load that game. This is a quicker way to load
+  a recently played game then using the Game->Load function and navigating
+  to the ROM. The most recently played game is #1.
+
+- - - - - - - - - - - - - - - - - - - -
+ .            Freeze Data            .
+- - - - - - - - - - - - - - - - - - - -
+
+  Off - The list will change as normal, reflecting the ten most recently
+    loaded ROMs.
+  On - The list will not change anymore. You can use this feature to create
+    a list of your ten favorite ROMs, for easy access at all times.
+
+- - - - - - - - - - - - - - - - - - - -
+ .          Clear All Data           .
+- - - - - - - - - - - - - - - - - - - -
+
+  Clears the entire list.
+
+
+............................................................
+  3.                    Config Menu
+............................................................
+
+- - - - - - - - - - - - - - - - - - - -
+ .               Input               .
+- - - - - - - - - - - - - - - - - - - -
+
+  This dialog allows you to customize the input options for all five SNES
+  controllers.
+
+  Tabs #1-#5 - Choose the SNES controller to configure. You can use the Tab key
+    to cycle through these tabs.
+  Device: - Use your mouse to choose your desired device, and use the Set button
+    to set your choice.
+        None - Equivalent to unplugging the SNES controller from that port.
+        Keyboard/Gamepad (Win/SDL only) - Equivalent to plugging in the SNES
+          controller to that port. Using this device should allow input from
+          all attached keyboards, gamepads and joysticks.
+        If you are using the DOS port, you must manually choose the appropriate
+          device from the list.
+  Current: - Shows the device that is currently active.
+  Buttons
+      Set - Set your choice made in the Device: box. Using this button will
+        reset key assignments to their defaults.
+      Set Keys - ZSNES will automatically cycle through each of the standard
+        SNES buttons, prompting you to assign a key to each one.
+      Calibrate (DOS only) - This option is here for those older joysticks that
+        need to be calibrated in-game before they can be used properly.
+  Keys: - These are the standard SNES buttons, and the only ones required to
+    be configured. Click inside the black box beside each one of these to
+    configure a key for it. Press ESC to clear the current assignment.
+  Turbo: - You can assign keys to these buttons in the same way you assign
+    them to the standard SNES buttons. Holding down the key assigned to the
+    turbo button is the same as if you were repeatedly pressing the normal
+    button very, very fast. You can control the rate of key presses per second
+    with the "Turbo at 30Hz" option, below.
+  Diagonals: - It may be more convenient to assign a single key to a
+    diagonal direction of the D-Pad, rather than pressing two keys at the
+    same time. Just in case it's not obvious: DL=Down+Left, DR=Down+Right,
+    UL=Up+Left, UR=Up+Right.
+  Game Specific - This option allows for input configurations that are specific
+    to individual games.
+  Sidewinder Fix (DOS port only) - If your Sidewinder doesn't work after
+    disabling the Sidewinder profiler and having pressed the mode button twice,
+    enable this.
+  Allow U+D/L+R - This option allows for the simultaneous pressing of opposing
+    directional keys (up and down; left and right) on the SNES pad. This feature
+    was implemented for those who need it to exploit bugs in certain games for
+    recording "speed-run" ZMVs. Warning: Do not use this for normal gameplay,
+    as the resulting bugs disrupt the "natural" gaming experience.
+  Turbo at 30Hz - Default: Checked. When enabled, turbo keys will equal 30
+    button presses per second in NTSC games or 25 presses per second in PAL
+    games. Otherwise, turbo keys will repeat 60 times per second in NTSC games
+    or 50 times per second in PAL games. This option is enabled by default
+    mainly because some games can't handle excessive key presses.
+  Use Pl3/4 as Pl1/2 - The key assignments for Player 3, in addition to
+    those for Player 1, will be used for SNES controller port #1. The key
+    assignments for Player 4, in addition to those for Player 2, will be
+    used for SNES controller port #2. As a result, MultiTap support will be
+    disabled (which means only two controllers will be active). The primary
+    use of this option is to allow you to assign two different devices for
+    the same SNES controller. For example, you might use a gamepad as input
+    for Player 1, and a keyboard as input for Player 3. Then, with this
+    option enabled, you may use either one of these devices (or both
+    simultaneously) to control Player 1.
+  Use Joystick Port 209H (DOS only) - Use the 209H hardware port; use this
+    if you have moved the port's jumper (or if your joystick does not work
+    when this feature is disabled).
+
+  Note: A keyboard is a poor replacement for a proper gamepad. SNES games are
+    designed to be played with a gamepad, so if you find that you're having
+    trouble with the keyboard, use a gamepad.
+
+  There is another important limitation with keyboards. Many keyboards have
+  a limit on the maximum number of simultaneous key-presses, above which they
+  will not detect input. This means combinations of, for example, three or
+  more keys may not be properly detected. One way to get around this kind
+  of keyboard limitation is to assign multiple SNES buttons to the same
+  keyboard key. There is a slightly longer explanation in the FAQ [FAQ.txt].
+
+- - - - - - - - - - - - - - - - - - - -
+ .              Devices              .
+- - - - - - - - - - - - - - - - - - - -
+
+  This dialog allows you to select special input devices for Ports 1 and 2
+  of the SNES.
+
+  Port 1: - Select a device to be plugged into Port 1. The SNES Mouse is the
+    only special device supported on Port 1.
+        Gamepad - Use the key assignments for Player #1, configured in the
+          Input dialog.
+        Mouse - Use your computer's mouse just like it is a connected SNES
+          Mouse.
+  Port 2: - Select a device to be plugged into Port 2.
+        Gamepad - Use the key assignments for Player #2, configured in the
+          Input dialog.
+        Mouse - Use your computer's mouse just like it is a connected SNES
+          Mouse.
+        Super Scope - Use your mouse as if it were a Super Scope. Default
+          key assignments are in the Default Keys section [Readme.txt].
+        1 Justifier - Simulates the movements for the Konami Justifier;
+          required for only one game, Lethal Enforcers.
+        2 Justifiers -
+  Cycle P1:, Cycle P2: - You can assign a key to each of these functions.
+    Pressing the key will cycle through the list of special controllers
+    available for that port.
+  Left Handed - Check one of these boxes to reverse the mouse buttons for the
+    special controllers on that port.
+  Super Scope Keys: - They can now be customized!
+        Auto-Fire - Default: =. Toggle auto-fire on or off.
+        SS Pause - Default: Backspace. Assign a key for the Super Scope pause
+          button.
+
+  Note: ZSNES will automatically enable the appropriate add-on for special
+    controller games that have NSRT headers [http://nsrt.edgeemu.com] (e.g.
+    The SNES mouse will automatically hook up after loading Mario Paint).
+  Note: ZSNES supports the ManyMouse [http://icculus.org/manymouse/] library
+    by Ryan C. Gordon, which means that ZSNES can emulate two SNES devices
+    (one connected in each port) if you have two mice plugged in. For a list
+    of known affected games (and for other information), please see the
+    ManyMouse section of the Games page [Games.txt].
+
+- - - - - - - - - - - - - - - - - - - -
+ .             Chip CFG              .
+- - - - - - - - - - - - - - - - - - - -
+
+  These are special settings for the Nintendo Super System. Generally, there
+  is no need for a user to change these settings.
+
+  Super System: - Set which DIP switches are enabled.
+        DIP 1/2/3/4/5/6 -
+
+  The Nintendo Super System was an arcade machine that used the SNES hardware.
+  Changing the settings in this window will only affect games
+  designed for the NSS. You can find information at Coin-Op Museum
+  [http://www.klov.com/game_detail.php?letter=N&game_id=8894] and
+  Wikipedia [http://en.wikipedia.org/wiki/Nintendo_Super_System].
+
+- - - - - - - - - - - - - - - - - - - -
+ .              Options              .
+- - - - - - - - - - - - - - - - - - - -
+
+  You can change various options here, some of which affect gameplay,
+  while others merely change GUI behavior.
+
+  System:
+      Enable MMX Support - Enables MMX copying routines for a slight speed
+        increase (MMX processors only). Certain video filters, audio
+        interpolation and low-pass filters require MMX support. These options
+        will not be visible unless the MMX Support option is checked.
+        (See below for the particular options requiring MMX support).
+      Pause Emu in Background (Win only) - If enabled, then game emulation
+        will automatically be paused when the ZSNES window loses focus, and it
+        will unpause when ZSNES regains focus.
+      Increase Emu Priority (Win only) - Enabling this will give ZSNES more
+        processor time, if needed. This may improve the performance of ZSNES on
+        your machine; however, it will reduce the amount of resources given to
+        applications running in the background. Processing priority is set to
+        "High" on a Win9x OS and "Above Normal" on 2k/XP/2003/Vista.
+      Disable Power Management (Win only) - Disables power management while
+        ZSNES is running, so that your gameplay will not be interrupted if
+        you're using a gamepad.
+  Gfx Engines:
+      Use New Gfx Eng - Default: Checked. Check to use the new graphics engine;
+        uncheck to use the old graphics engine. The new graphics engine should
+        be adequate for most games; however, the old one may be necessary for
+        some. You can read about the differences in Current Progress
+        [Readme.txt].
+      Use Alt Old Gfx Eng - Only visible when the new graphics engine is
+        disabled, this will enable the Old Gfx Engine Mode 2, which fixes many
+        transparency bugs that currently plague ZSNES in the current engine.
+        However, it also creates some new ones. This mode can be slower at
+        times, so it's recommended that you only turn it on when you need it.
+  SShots: - Choose what image format to use for snapshots of the game screen.
+    This setting is also configurable via the F1 Menu.
+      * BMP - Snapshots will be saved as bitmap pictures (16-bit color). If you
+          are using an 8-bit video mode in the DOS port, the bitmap will be
+          saved with 8-bit color.
+      * PNG - Snapshots will be saved as PNG ("Portable Network Graphics") files
+          (32-bit ARGB color). This option is not available if you did not
+          compile with PNG support.
+  ROM:
+      Enable IPS Auto-Patching - When checked, ZSNES will automatically
+        soft patch ROMs if a corresponding .ips file is found in your Saves
+        directory. More information about the IPS patching feature can be found
+        in the Readme.
+      Show ROM Info on Load - Briefly displays some internal information about
+        the ROM when loaded. Please refer to this information when submitting
+        bug reports (also see [Support.txt]).
+      Log ROM Info - When checked, ZSNES will create a file named rominfo.txt
+        when you load a ROM; it contains information about the ROM.
+  Overlays:
+      Show FPS Cntr On Emu Load - When checked, the Frames per Second counter
+        will be enabled each time you start ZSNES, even if it has been disabled
+        during a session. The FPS counter can be manually enabled/disabled via
+        the F1 Menu or with the 'Display FPS' quick key, once it has been
+        assigned. This counter is only visible when using Auto Frame Rate.
+      Show Clock - The current system time will be displayed in the lower
+        right-hand corner of the game screen.
+            12 Hour Mode - Used in conjunction with the option above, this will
+              display the system time in 12 hour mode instead of the default 24
+              hour mode.
+            Show Clock Box - Also used in conjunction with "Enable Clock",
+              this option places a black box behind the clock to increase
+              readability.
+  Messages:
+      Use Small Message Text - On-screen messages that pop up when you save a
+        state, disable a background, etc. will be smaller.
+      Use Transparent Text - On-screen messages will be slightly transparent
+        rather than solid. Using the Small Message Text option overrides this
+        choice.
+
+
+- - - - - - - - - - - - - - - - - - - -
+ .               Video               .
+- - - - - - - - - - - - - - - - - - - -
+
+  This dialog allows you to change the numerous video settings available in
+  ZSNES.
+
+  Please note that the internal resolution of the SNES is 256x224. Certain
+  special high-resolution modes can produce up to 512x448 resolution. You
+  may notice that the internal resolution has an 8:7 aspect ratio. SNES
+  video output is not intended to be viewed at this aspect ratio, however.
+  The 8:7 video signal would normally be scaled to a more-typical 4:3
+  aspect ratio when viewed on a television.
+
+ - - - - - -
+  Modes tab
+ - - - - - -
+  Video Mode box - The large box on the left lists all available video modes.
+    You can use your mouse or the Up/Down/PgUp/PgDown/Home/End keys to scroll
+    through this list.
+      Win/SDL port:
+          First column: lists the resolution, in pixels, W x H.
+              W x H - These video modes use a fixed resolution, in pixels,
+                of the width and height shown.
+              Variable (SDL only) - Video output is scaled to the size of the
+                window, and the window can be resized with the mouse; however,
+                aspect ratio is locked, depending on which options are set.
+              Custom - Specify a custom, fixed resolution in the boxes
+                to the right.
+          Second column:
+              O (SDL only) - Indicates whether the video mode uses the
+                OpenGL API.
+              D - The video mode supports graphics-enhancing filters.
+                Non-'D' modes will usually be (automatically) interpolated
+                by your graphics card.
+              R - The video aspect ratio is locked to the internal SNES
+                ratio of 8:7.
+              S - Video output is stretched to fill the entire window.
+          Third column: indicates whether the video mode is Windowed or
+            Fullscreen.
+      DOS port:
+          First column: lists the resolution (in pixels) and color depth
+            (in bits), W x H x B.
+          Second column: shows the mode type
+              ModeQ - A tweaked VGA video mode. Supports 256x256 resolution
+                and 256 colors. Accesses hardware directly.
+              ModeX - A different tweaked VGA video mode, similar to ModeQ,
+                although slower. Accesses hardware directly.
+              Vesa1 - VESA ("Video Electronic Standards Association") VBE
+                ("Video BIOS Extension") 1.2. A standardized method of
+                accessing VGA cards.
+              Vesa2 - VESA VBE 2. Faster and more features than VESA1.
+                Read the Wikipedia article for an overview
+                [http://en.wikipedia.org/wiki/VESA_BIOS_Extensions].
+                The first [http://www.ddj.com/184409592] and third
+                [http://www.faqs.org/faqs/pc-hardware-faq/supervga-programming/]
+                external links from that article provide some more detailed
+                information.
+      Your video card may be compatible with only some of the video modes
+        listed. You should try each video mode to find the right combination
+        of speed, compatibility, and enhancement features (listed below).
+  Set button - use the currently selected/highlighted video mode. ZSNES will now
+    attempt to change to the new video mode. If the new video mode does not
+    work, wait for ten seconds without pressing any keys, and ZSNES will return
+    to the previous mode. Pressing Enter does the same thing as the Set button.
+  Custom: (Win/SDL only) - use in conjunction with one of the custom
+    video modes at the bottom of the list to set a custom resolution.
+        Set button - save the current custom resolution.
+        Type in the custom width and height, respectively, in pixels,
+          in the two black boxes.
+  Current: - shows the current video mode.
+
+  Note: Some video modes may work better / faster than others, depending
+    on your system configuration. Play around to see what's best.
+
+ - - - - - - -
+  Filters tab
+ - - - - - - -
+  Video Filters: - Choose one video filter. You must use a D video mode
+    to use any of these filters. Furthermore, filters marked with a *
+    require MMX Support.
+      Interpolation - Enable interpolation, a simple filter that smooths the
+        image and makes it appear less pixellated. This is software-driven and
+        can be accelerated with MMX support.
+      Bilinear Filter [http://wiki.beyondunreal.com/wiki/Bilinear_Filtering]
+        (OpenGL modes only) - This produces an effect similar to Interpolation.
+        The option replaces Interpolation and, as long as you aren't using Mesa
+        [http://www.mesa3d.org], is hardware-driven. This means that as long as
+        you aren't using Mesa, it requires less CPU overhead. Another advantage
+        of the bilinear filter is that it can also be used alongside the other
+        filters, though this may be slow.
+      NTSC [http://www.slack.net/~ant/libs/ntsc.html] (Win/SDL only) -
+        Written by blargg. It is recommended to use a video mode with at least
+        602x448 resolution. Makes the video output appear to be that of an NTSC
+        CRT [http://en.wikipedia.org/wiki/Cathode_ray_tube] television
+        [http://en.wikipedia.org/wiki/Ntsc]. This filter is not available
+        in the SDL port while using OpenGL modes.
+      2xSaI Engine* [http://elektron.its.tudelft.nl/~dalikifa/] - Written by
+        Kreed. SaI stands for "Scale and Interpolation." This is a "smart"
+        filter that tries to make a lo-res image (like SNES video output)
+        appear to have a higher resolution. The image should look smoother,
+        less blocky, when using this filter.
+      Super Eagle* - Written by Kreed. Similar to the 2XSaI engine, but
+        does more blending.
+      Super 2xSaI* - Written by Kreed. This filter smoothes the graphics,
+        but it blends more than the Super Eagle engine.
+      HQ2X* [http://www.hiend3d.com/hq2x.html] (Win/SDL only) - Written by
+        MaxSt. Applies an advanced algorithm to smooth the appearance of a
+        low-resolution image. It is recommended to use a 2x scaled image with
+        this filter.
+      HQ3X* [http://www.hiend3d.com/hq3x.html] (Win only) - Written by MaxSt.
+        More advanced than HQ2X, and it is recommended to use a 3x scaled image
+        with this filter.
+      HQ4X* [http://www.hiend3d.com/hq4x.html] (Win only) - Written by MaxSt.
+        More advanced than HQ3X, and it is recommended to use a 4x scaled image
+        with this filter.
+      Note: The HQxX filters and the NTSC filter have particularly high
+        system requirements to run smoothly.
+  Scanlines: - Choose one Scanline mode. Requires a 'D' video mode.
+      None - This will disable scanlines.
+      25% - This will enable scanline mode, except that each line is 25% darker
+        than the line above it.
+      50% - This will enable scanline mode, except that each line is 50% darker
+        than the line above it.
+      Full - This mode adds a blank line in between every line to produce
+        a scanline effect similar to a TV.
+  Misc Filters: - Choose miscellaneous filters.
+      Grayscale Mode - Makes the game display in monochrome color, i.e.
+        black and white. This option is just there for fun and is probably not
+        something you want to use continuously.
+      Hi-Res Mode 7 - Requires a 'D' video mode and at least 512x448 resolution.
+        Enabling this will double the vertical resolution used when rendering
+        Mode 7 graphics. Thus, the resolution becomes 256*448 rather than the
+        normal 256*224.
+  Monitor Sync: - Select monitor synchronization options.
+      VSync (Win/DOS only) - Synchronizes frame drawing to the monitor's
+        refresh rate. This may reduce frame rate on your computer, but will
+        reduce screen tearing.
+      Triple Buffering (Win/DOS only) - This setting is only visible while
+        using a fullscreen video mode, and only applies while in fullscreen.
+        Whereas VSync has only two frame buffers: the frame being drawn and
+        the frame waiting to draw, Triple Buffering can write frame data to
+        a third buffer. The primary use is to reduce the impact of VSync on
+        slower systems. This option has precedence over VSync in Fullscreen
+        modes.
+  Display Options: - Select how you want the image to be displayed.
+      Use 4:3 Ratio (Win/SDL only) - This only applies when using a custom mode.
+        Using this option will lock the video output at 4:3 aspect ratio,
+        regardless of the aspect ratio of the custom resolution you've chosen.
+      Small Screen (DOS only) - Video output will be at 256x224 (the native
+        internal resolution of the SNES), instead of whatever resolution
+        you are using.
+      Full Screen / Wide Screen (DOS only) - Horizontally stretches video output
+        to fill the screen.
+  Not all of the video options above are available in every video mode
+    and every port of ZSNES. Also note that you will need a fast computer
+    for some of them if you don't want to see any slow-downs in emulation.
+
+ - - - - - -
+  NTSC tab
+ - - - - - -
+  Only visible when using the NTSC filter.
+
+  Blend Frames - Enable this for smoother transitions between frames when using
+    a non-60Hz refresh rate.
+  Refresh - If this is enabled, changes to the NTSC filter will be applied
+    as you are adjusting the sliders (below), rather than when you release
+    the mouse button.
+  The sliders below are used to adjust various properties of the NTSC output.
+      Hue
+      Saturation
+      Contrast
+      Brightness
+      Sharpness
+  Presets - Press the appropriate button for instant configuration of the
+    filter, instead of manually configuring.
+      Composite
+      S-Video
+      RGB
+      Monochrome
+  Reset button - Reset all settings on this tab only to their defaults.
+  Reset All button - Reset all settings on both NTSC tabs to their defaults.
+
+ - - - - - - - -
+  Adv NTSC tab
+ - - - - - - - -
+  Only visible when using the NTSC filter.
+
+  The sliders below are used to adjust various properties of the NTSC output.
+      Gamma
+      Resolution
+      Artifacts
+      Fringing
+      Bleed
+      Hue Warping
+  Reset button - Reset all settings on this tab only to their defaults.
+  Reset All button - Reset all settings on both NTSC tabs to their defaults.
+
+- - - - - - - - - - - - - - - - - - - -
+ .               Sound               .
+- - - - - - - - - - - - - - - - - - - -
+
+  Configure various sound settings here.
+
+  The default settings are those that are most accurate to a Super Nintendo.
+
+  Sound Switches:
+      Disable SPC Emulation - Disables the emulation of the SPC700 chip.
+        Do not disable this unless you are having severe performance issues
+        (i.e. ZSNES is unacceptably slow and you've tried everything else).
+        Disabling this will likely result in sound errors.
+      Enable Sound - Default: Checked. Unchecking this disables sound output.
+        Do not disable this unless you are having severe performance issues
+        (i.e. ZSNES is unacceptably slow and you've tried everything else).
+        If you wish to mute ZSNES, just move the volume slider down to 0%.
+      Enable Stereo Sound - Default: Checked. Unchecking this will disable
+        *stereo* sound output; thus, sound output will be mono instead.
+        Disabling this is a relatively safe way to improve speed, if necessary.
+      Reverse Stereo Channels - Reverse/swap the left and right stereo channels.
+        This makes no difference if stereo sound is disabled.
+      Simulate Surround Sound - This is a novelty feature that simulates
+        surround sound in games that don't have it natively. Do *not* use this
+        in conjunction with games that have native surround sound. This option
+        is only available when stereo sound is enabled.
+      Force 8-bit Output (DOS only) - Force ZSNES to output sound in 8-bit mode.
+        Using this may work around problems with certain sound cards, but will
+        reduce sound quality. Note that if you use stereo sound in addition to
+        this option, you will not be able to use sampling rates above 22050Hz.
+      Use Primary Buffer (Win only) - Enable this only if your sound card is
+        having problems designating the sound buffer with DirectSound. This will
+        prevent sharing the sound card with other programs. This option is
+        primarily useful for troubleshooting in Win9x. You must restart ZSNES
+        for this feature to take effect.
+  Sampling Rate: - Default: 32000Hz. Click inside the black box to cycle through
+    all available sampling rates. Note that if you use sampling rates that are
+    below the default, the sound will be distorted and inaccurate. Sampling
+    rates higher than 32000Hz can also cause problems; however, sampling rates
+    of 41000Hz and higher may resolve crackling issues that occur with some
+    onboard sound cards.
+  Volume Level - To change, just slide the bar. Sliding this to 0% is a better
+    method of muting sound output than unchecking the Enable Sound box.
+  Interpolation: - This feature smoothes out the wave forms of lower frequency
+    sounds.
+        None - Use no interpolation. This is *not* accurate to the SNES!
+        Gaussian - Default. Based on the Gaussian curve, it smoothes the
+          transition of the sound effects. This method of interpolation is used
+          by a real SNES.
+        Cubic Spline - This method is calculated by a cubic equation rather than
+          being based on a curve like the Gaussian method. This results in
+          better approximation than the Gaussian method.
+        8-point* - Takes 8 points on the sound curve and smoothes them out.
+  LowPass: - Low-pass filters accentuate bass frequencies by reducing higher
+    frequencies. None of these filters are native to the SNES; if you want
+    authentic SNES sound, do not use any of these. Using a filter will probably
+    be most noticeable if you have a subwoofer.
+        None - Use no low-pass filter.
+        Simple - Allows lower frequencies to pass through (e.g. drums and
+          the like). Certain higher ranges are not heard though.
+        Dynamic - Allows greater range of frequencies to pass through;
+          the music will seem more detailed depending on the loudness or
+          softness of the audio.
+        Hi Quality* - It's better than the simple filter, and seems to work well
+          with lower quality speakers that have decent sound cards.
+  *Requires MMX Support.
+
+- - - - - - - - - - - - - - - - - - - -
+ .               Paths               .
+- - - - - - - - - - - - - - - - - - - -
+
+  Set and change paths used for save directories, graphics packs, and base
+  cartridges.
+
+  Saves: - Configure the directory where ZSNES will save and load SRAM, save
+    state, and ZMV files. If you do not specify a path here, ZSNES Win and DOS
+    will save all files to the same directory as the currently loaded ROM.
+    ZSNES SDL will place them in "~/.zsnes". ZSNES SDL under Mac OS X will place
+    them in "~/Library/Application Support/ZSNES".
+  Snapshots: - Configure the directory to which in-game snapshots will be saved.
+    If you do not specify a path here, snapshots will be saved to your Saves
+    directory (above).
+  SPCs: - Configure the directory to which SPC700 sound dumps (.spc; SNES
+    music files) and sound buffer dumps will be saved. If you do not specify
+    a path here, these files will be saved to your Saves directory (above).
+  BIOS/Base Carts - Set the path to BIOS and base cartridges of various
+    special games.
+        BS-X: - Specify the full path and filename to the Broadcast Satellaview
+          BIOS. Currently, the BIOS is *not* required to run BS games.
+        Sufami Turbo - Specify the full path and filename to the Sufami Turbo
+          BIOS, which is required to play ST games.
+        Same Game: - Specify the full path and filename to the Same Game base
+          cartridge ROM.
+        SD Gundam G-Next - Specify the full path and filename to the SD Gundam
+          G-Next base cartridge ROM.
+  SPC7110 Graphic Packs - Enter the directories that contain SPC7110 graphic
+    packs in the appropriate fields here. More information about this chip is
+    in the Games page [Games.txt].
+        FEOEZ: - Far East of Eden Zero
+        FEOEZ-SJNS: - Far East of Eden Zero - Shounen Jump no Shou
+        MDH: - Momotarou Dentetsu Happy
+        SPL4 - Super Power League 4
+
+  Notes:
+    * One limitation of ZSNES is that it only accepts one case of input.
+      Since most UNIX-based systems are case-sensitive, SDL port users should
+      edit their paths in the configuration file instead.
+    * Paths can be absolute (e.g. C:\ZSNES\saves) or relative
+      (e.g. ..\..\saves).
+    * If you are using the Win port, you can paste text from the clipboard
+      into the text boxes by using the key combination Ctrl+V.
+    * Remember to always press Enter or Return after typing in your path,
+      or it may not work!
+
+- - - - - - - - - - - - - - - - - - - -
+ .               Saves               .
+- - - - - - - - - - - - - - - - - - - -
+
+  Configure various options regarding save states and in-game saves.
+
+  # of Rewind States - This sets how many times you can rewind back.
+    Note that you must restart your game for this feature to take effect.
+  1/5 Seconds Per Rewind - This sets how many fifths of a second ZSNES will
+    rewind back each time.
+  Do Not Save SRAM - When enabled, SRAM will never be saved at any given point.
+    This is useful when you want to look into savestates or movies without
+    saving the modified data to disk. This also prevents SRAM Check+Save from
+    working.
+  SRAM Check+Save - Normally, ZSNES will write SRAM data to disk when you exit
+    the emulator or exit to the GUI. When this option is enabled, ZSNES will
+    instead write SRAM data shortly after a game modifies it. If you have
+    problems with in-game saves not working correctly, or if you fear something
+    may prevent ZSNES from exiting normally (i.e. crashing), turn this on.
+    The reason this is not enabled by default is because some games use SRAM as
+    working memory instead of for persistent saved games. Since these games
+    constantly modify SRAM, ZSNES would write to the disk every few seconds
+    (if this option is enabled).
+  Load Save State w/ SRAM - When enabled, the SRAM data from the save states
+    you load will overwrite any other SRAM data for the game that you have.
+    Beware, though: if you are really far in a certain game, loading an old
+    save state from a point earlier in the game will make you lose all of
+    your progress beyond that save state. However, this option may be needed
+    to load complete states in certain games.
+  Start at Latest Save - With this enabled, every time you load a ROM, the
+    save state slot containing the most recent save state for that game will
+    be set as the currently selected slot.
+  Auto Increment Save Slot - When enabled, the save slot will automatically
+    move to the next slot after you save a state. This option is very useful
+    in that it decreases the risk of accidentally saving over a previous
+    save state, if you forget to manually advance the chosen slot.
+  Auto State Save/Load - If this is enabled, ZSNES will automatically create a
+    save state when you quit a game (either by loading another game or by
+    exiting the emulator). When you return to the game at a later time, ZSNES
+    will automatically load the save state it created before.
+  Pause After... - Press the P key to unpause.
+        Loading State - Pauses emulation after you load a save state.
+        Pause After Rewind - Pauses emulation after you press the rewind key.
+  State Shortcuts: - Click in a black box to assign a key to that function.
+    Press ESC to clear the current assignment.
+        ST0 through ST9 - Choose which save state slot to use.
+        ST+ - Increment the selected save state slot by one.
+        ST- - Decrement the selected save state slot by one.
+        Save - Default: F2. Save a state to the current slot.
+        Load - Default: F4. Load a state from the current slot.
+        Pick - Default: F3. Open a dialog to choose the current save state slot.
+          This will show a graphical preview of each save state. Learn more
+          about how to use this dialog in the Save State Slot Chooser section
+          at the bottom of the GUI page [GUI.txt].
+        Rewind - With each use, this key will backtrack the gameplay
+          incrementally, according to the options you have set for
+          '# of Rewind States' and '1/5 Seconds Per Rewind' (see above).
+
+- - - - - - - - - - - - - - - - - - - -
+ .               Speed               .
+- - - - - - - - - - - - - - - - - - - -
+
+  Change speed settings and frame skipping settings here.
+
+  Max Frame Skip - Set the maximum number of frames that may be skipped
+    in direct sequence when rendering, only as needed to keep a constant
+    emulation speed. Applicable only when using Auto Frame Rate (below).
+  Frame Rate - Set a static number of frames to skip rendering between each
+    rendered frame, when *not* using Auto Frame Rate (below).
+  FastFwd Ratio - Set the number by which the default emulation speed will be
+    multiplied while using Fast Forward.
+  SlowDwn Ratio - Set the number by which the default emulation speed will be
+    divided while using Slow Down (e.g. "4" is 1/4 of normal speed).
+  Shortcuts: - Assign keys to various speed options.
+      Fast Forward - Default: ~ key. When used, the speed of emulation will
+        increase (according to the FastFwd Ratio, above). Useful for quickly
+        bypassing game intros or other sequences that you may not want to watch.
+      Slow Down - When used, the speed of emulation will decrease (according to
+        the SlowDwn Ratio, above). This function requires having Auto Frame Rate
+        (below) enabled. You might use this to watch very fast animated
+        sequences, or to give yourself an advantage when you need to react
+        quickly to something in the game.
+      + Emu Speed - Move the Emu Speed slider to the right by one step,
+        increasing emulation speed sequentially (e.g. 1x -> 2x, 2x -> 3x, etc.).
+      + Frame Rate - Increase the static number of frames to skip rendering.
+        Using this key will disable Auto Frame Rate.
+      Reset Speed - Sets the emulation speed back to normal (1x).
+      - Emu Speed - Move the Emu Speed slider to the left by one step,
+        decreasing emulation speed sequentially (e.g. 1x -> 1/2x, 1/2x -> 1/3x,
+        etc.).
+      - Frame Rate - Decrease the static number of frames to skip rendering.
+        If you decrease it enough times, Auto Frame Rate will be enabled.
+      Pause Game - Default: P key. Pauses emulation.
+      Increment Frame - Only usable when emulation is paused, this feature will
+        increment one frame each time the key is pressed.
+  Toggled FFwd/SlwDwn - When unchecked, you must hold down the Fast Forward or
+    Slow Down keys for as long as you want them to operate. When checked, press
+    and release the assigned key once to enable the desired mode, and once again
+    to turn it off.
+  Auto Frame Rate - Default: Checked. When enabled, ZSNES will attempt to
+    maintain emulation at full speed. If necessary to maintain full-speed
+    emulation, ZSNES will skip rendering frames of video. When disabled, ZSNES
+    will skip a static number of frames for each rendered frame. If your
+    priority is full-speed emulation, you should have this enabled, and increase
+    Max Frame Skip (above) to its maximum. If your priority is to have every
+    frame of video rendered, you should either have this enabled and set Max
+    Frame Skip to zero OR disable this and set Frame Rate (above) to zero.
+  Emu Speed: - Default: 1x. Only available when using Auto Frame Rate. This
+    slider sets the number by which normal emulation speed will be multiplied or
+    divided (to speed up or slow down emulation speed, respectively).
+
+
+............................................................
+  4.                     Cheat Menu
+............................................................
+
+The Cheat dialogs are only accessible if a game is loaded.
+
+Read the Cheat Codes section in the Readme [Readme.txt] for general information.
+
+Nach, the creator of NSRT, has a complete list of all official Game Genie codes,
+available at [http://nsrt.edgeemu.com/forum/kb.php?mode=article&k=3].
+
+- - - - - - - - - - - - - - - - - - - -
+ .           Cheat Browser           .
+- - - - - - - - - - - - - - - - - - - -
+
+  Selecting Add Code from the Cheat menu opens this dialog with the cursor in
+  the Enter Code: text box. Selecting Browse from the Cheat menu starts with
+  the cheat list highlighted.
+
+  Use this dialog to add, remove, and browse cheat codes.
+
+  Cheat Browser - This lists all cheats that you have added for the currently
+    loaded game. You can have up to 255 codes per game. Each cheat is
+    represented on a single row (except in the case of multi-line cheats).
+    Each column gives different information about the cheat, as follows:
+      Address - Memory address that the cheat edits.
+      CV - Current value of the selected memory address.
+      PV - Previous value of the selected memory address.
+      Tgl - Shows whether the cheat is toggled (active) or not.
+      Description - The description for the cheat that you typed into
+        the Description: box when adding the cheat.
+  Buttons
+      Remove - Remove the currently highlighted cheat.
+      Toggle - Toggle on or off the currently highlighted cheat. This can also
+        be accomplished by double-clicking on a code.
+      Save - Save all cheats in the list to a .cht file.
+      Load - If a .cht file exists in your saves directory, this will load all
+        cheats from that file into the Cheat Browser.
+      Fix - If you have entered a cheat and it doesn't appear to work, you can
+        try using this button to change the memory address that the cheat edits,
+        which might fix the problem.
+  Enter Code: - Type in the cheat code. Game Genie, Pro Action Replay, and
+    GoldFinger codes are supported. Remember that Game Genie codes require
+    the - (dash).
+  Description: - Type in a description for your code.
+  Add button - Add the code to the Cheat Browser once you have filled in the
+    previous two boxes.
+  Auto-load .cht file at game load - When you load a ROM, ZSNES will look in
+    your saves directory for a matching .cht file, and load it. This prevents
+    you from having to hit the Load button, above.
+
+  Notes on usage:
+    * To use a multi-line cheat code, just enter each line as a separate code!
+    * You can also quickly modify the value of the currently selected cheat code
+      (in the browse window) by typing a 2 digit hex number in the cheat code
+      enter space.
+    * You can allow a value of one cheat code to be mirrored from a value of
+      another cheat code. To do this, type an 'R' at the end of any cheat code
+      as the destination, then type another cheat code (Without the 'R') as the
+      source. For example, if you want address 7E1000 to reflect the value at
+      address 7F2000 (whatever value written to 7F2000 from the game will also
+      be written to 7E1000), enter cheat code 7E1000FFR, then cheat code
+      7F2000FF (where FF can be any value).
+
+  Keyboard usage:
+    * Use the Up and Down arrows to scroll through the Cheat Browser.
+    * Use the R, T, S, L, and F keys to duplicate the functions of the five
+      buttons below the Cheat Browser.
+    * Use Tab to move from the Enter Code: box to the Description: box.
+
+- - - - - - - - - - - - - - - - - - - -
+ .              Search               .
+- - - - - - - - - - - - - - - - - - - -
+
+  Selecting Seach from the Cheat menu opens the Cheat Search dialog. Use this
+  to search for values in memory such as life, score, etc. and change their
+  values as you please.
+
+ - - - - - - - -
+  Setup Search
+ - - - - - - - -
+
+  Select Size and Format:
+      Size: You can choose the data size to use in your search. If you know the
+        numerical values of the data you want to view, select the smallest
+        number range that fits the data values. (For example, if you know the
+        value cannot go higher than 50000, select 2 BYTES [0..65535] instead of
+        3 BYTES [0..16777215]). Sometimes you don't know the numerical value (in
+        the case of life bars), so you have to guess the size.
+            1 Byte [0..255] - Value is stored in 8 bits.
+            2 Bytes [0..65535] - Value is stored in 16 bits.
+            3 Bytes [0..16777215] - Value is stored in 24 bits.
+            4 Bytes [0..4294967295] - Value is stored in 32 bits.
+      Format: In general, it's recommended that you use decimal, although there
+        are some cases that have the values in memory stored as binary-coded
+        decimal. For example, "34 lives" could be stored in a byte as 34h, and
+        if you were searching for it in the decimal mode, it would actually have
+        a value of 52.
+            Dec (Base 10) - The number you search for will be treated as a
+              decimal number.
+            Hex (Base 16) - The number you search for will be treated as a
+              hexadecimal number.
+  Select Search Type:
+      Exact Value Search - In this mode, you have to enter the exact numerical
+        value that you want to find. If you have 3 lives left, then search for
+        the value 3. The cheat search engine also looks for "value - 1" since
+        even if a game tells you that you have 3 lives left, it usually stores
+        the value as 2 in memory.
+      Comparative Search - In this mode, you select whether the value is less
+        than, greater than, equal to, or not equal to the previous value. So if
+        you have a life bar and the life bar suddenly decreases, go back to the
+        cheat search engine and select "less than" to search for any value that
+        has decreased.
+  Start button - Move to the next step of the search, entering a value.
+
+- - - - - - - - - - - - - - - - - - - -
+ .       Exact Value Searches        .
+- - - - - - - - - - - - - - - - - - - -
+
+ - - - - - - -
+  Input Value
+ - - - - - - -
+
+  Enter Value: - Enter the value for which you want to search and press the
+    Search button.
+  Max Value: - This is a reminder of the maximum value for which you can search.
+    Change this on the Setup Page (first step).
+  # of Results: - Displays the number of results for the current search.
+    Before you start a search, this will display the number of searchable
+    memory addresses for the currently loaded game.
+  Buttons
+      Restart - Move back to the Setup Page to change options.
+      View - View the results of the current search. If you have not yet run
+        your own search, this will display all searchable memory addresses for
+        the currently loaded game.
+      Search - Search for the value you entered in the box above. After you
+        press this button, this page will change to reflect the number of
+        results for your search. Press the View button to see those results.
+
+ - - - - - - - -
+  View Results
+ - - - - - - - -
+
+  This page lists all the results of your current search. If you pressed the
+  View button before running a search, this page will list all searchable
+  memory addresses for the currently loaded game.
+
+  This list has two columns, the left column showing the memory Address, the
+  right column showing the Value at that address.
+
+  * Return - Move back to the Input Page.
+  * Add - Use this to select the currently highlighted address for editing.
+
+ - - - - - -
+  Add Cheat
+ - - - - - -
+
+  On this page, you can add the previously selected memory address as a cheat.
+
+  Enter New Value: - Enter a value to insert into the memory address.
+  Enter Cheat Description: - Do just what it says.
+  PAR Code Equivalent: - This box will display the equivalent Pro Action Replay
+    code for the value and memory address you are working with.
+  Max Value: - This is a reminder of the maximum value for which you can search.
+    Change this on the Setup Page (first step).
+  Use Only Upper Byte - Use this option to change how PAR Code Equivalent is
+    calculated.
+  Return button - Return to the Results Page.
+  Add button - Add the new cheat to the Cheat Browser.
+
+- - - - - - - - - - - - - - - - - - - -
+ .        Comparative Searches       .
+- - - - - - - - - - - - - - - - - - - -
+
+  This section isn't finished yet. Hopefully you can figure it out given the
+  description of Comparative searches in the Cheat Setup dialog, above.
+
+
+............................................................
+  5.          Netplay Menu (Win and SDL Only)
+............................................................
+
+Netplay has been disabled for the indefinite future, until the core becomes more
+accurate and/or non-random. We recommend using ZSNES v1.36 or v1.42n
+[http://nsrt.edgeemu.com/forum/viewtopic.php?t=448] until this is resolved.
+
+The Netplay dialog is only accessible if a game is loaded.
+
+- - - - - - - - - - - - - - - - - - - -
+ .             Internet              .
+- - - - - - - - - - - - - - - - - - - -
+
+  Port - Default: 7845. This is the port on which ZSNES will communicate. While
+    the number can range from 0 to 65535, it is recommended that you stay above
+    5000 to avoid conflicts with other services.
+  Nickname - This is the name you will use, displayed in the Chat window (which
+    appears once you connect).
+  Start as Server - Use this button to be the host of the Netplay game. Your
+    opponent will connect to you and be the client.
+  Client Options: - Setup options here if you are going to be the client, not
+    the host.
+        IP: - Enter the IP ("Internet Protocol") address of the host.
+        Connect to Server - Use this button to attempt to connect to the
+          above-entered IP address.
+  Your IP: - Helpfully displays your current IP address. If you are going to be
+    the host, give your opponents this number so they can connect to you.
+  Use UDP instead of TCP - Decide which protocol to use for communication.
+    TCP ("Transmission Control Protocol") guarantees delivery of packets,
+    but has more overhead, and may thus be slower than UDP ("User Datagram
+    Protocol"). Try switching between the two to see which works best.
+
+- - - - - - - - - - - - - - - - - - - -
+Establishing a Connection (Chat Window)
+- - - - - - - - - - - - - - - - - - - -
+
+  Window - This is quite obvious. You and your partner chat to each other
+    through this window. Simply type your message and press Return/Enter on your
+    keyboard, just like on an IRC or IM client.
+  Player Select - This indicates which players will be hosted locally and which
+    will be hosted remotely. A checked box means that your computer will have
+    control of that player. An 'X'ed box means the remote computer will have
+    control of that player. A blank box means that player is not enabled.
+  Latency - Default: 3. ??????????????????
+  Back Buffer - Default: Enabled. ??????????????????
+  Save Data - Determine whether the SRAM from your computer (local) or the other
+    computer (remote) should be used. You can also choose to not load any SRAM
+    at all.
+  Disconnect - Closes the connection and ends the netplay session.
+
+
+............................................................
+  6.                     Misc Menu
+............................................................
+
+- - - - - - - - - - - - - - - - - - - -
+ .     Misc (Miscellaneous) Keys     .
+- - - - - - - - - - - - - - - - - - - -
+
+  Here you can change various function keys that are not configured elsewhere.
+  Clicking inside a black box will bring a box, prompting you to assign a key
+  to that function. Press the key you wish to assign, or press ESC to clear
+  the existing assignment.
+
+  BG Disables:
+      BG1 through BG4 - Toggle the various graphical background layers
+        on or off. Normally, they should be left on.
+      OBJ - Toggle the sprite/background layer on or off.
+  Sound Keys:
+      Ch1 through Ch8 - Toggle the various sound channels on or off.
+      +Vol - Increase the volume.
+      -Vol - Decrease the volume.
+  Quick Keys:
+      Load - Opens the Load dialog (accessed from the Game menu).
+      Reset - Performs a soft reset of the game. Also available under
+        Game->Reset.
+      Exit - Exits ZSNES.
+      Clock - Toggle the clock, displaying system time on-screen during
+        gameplay.
+      Chat - This is available only while using Netplay. After pressing
+        this key, type your message, then press Enter/Return to send it to
+        the other user.
+      Snapshot - Save a snapshot of the game screen and place it in your
+        Snapshots directory. Also accessible through the F1 Menu.
+      Save SPC - Save SPC data to your SPCs directory. Also accessible through
+        the F1 Menu.
+  Misc Toggles:
+      Use PL12/34 - Toggles on or off the Use Pl3/4 as Pl1/2 option under
+        Config->Options.
+      Panic Key - Restores default settings for several toggles. Enables
+        Offset Mode, Windowing, and all Backgrounds, Sprites, and Sound
+        Channels; disables Add-ons; resets Emu Speed throttle.
+      Display FPS - Toggles on or off the Frames per Second counter. Also
+        accessible through the F1 Menu. You can also make this a persistent
+        option under Config->Options.
+      Battery Power (Win/SDL only) - Displays the amount of battery life
+        remaining and, if possible, time remaining, as reported by your
+        operating system. This feature is intended for laptop or notebook PCs.
+  GFX Toggles:
+      New GFX Engine - Switches between the faster, newer graphics engine
+        (default) and an older one. The new one is recommended, but using
+        the older one may fix graphics corruption in some games.
+      BG Window - A graphical feature that toggles windowing effects in
+        certain SNES games.
+      Offset Mode - A graphical feature that toggles using offsets for tiles
+        in certain SNES games.
+      + Gamma - Increase gamma level. This makes the video appear brighter.
+      - Gamma - Decrease gamma level. This makes the video appear darker.
+
+- - - - - - - - - - - - - - - - - - - -
+ .        GUI Opts (Options)         .
+- - - - - - - - - - - - - - - - - - - -
+
+  Configure various GUI settings not set elsewhere (like Config->Options).
+
+  GUI Switches:
+      RClick Opens GUI - When enabled, clicking the right mouse button will
+        switch to and from the GUI when running a game (similar to pressing
+        ESC). However, this can slow down emulation, since ZSNES has to check
+        the mouse button status once in a while. If you are running in a
+        windowed video mode, the right-click button won't return back to
+        the game.
+      Swap L/R MButtons - Enabling this will swap the functions of buttons 0
+        and 1 of your mouse.
+      Show Mouse Shadow - Disables/Enables the mouse shadow.
+      Mice Wrap GUI Win - Allows the mouse pointer to wrap (to the other side of
+        the screen) at the borders of the screen. You should probably only
+        enable this while in Fullscreen; in Windowed mode this behavior
+        can be annoying.
+      Trap Mouse Cursor (Win only) - Prevents the mouse cursor from exiting the
+        ZSNES GUI. You will have to move the mouse with extra speed to make the
+        cursor exit the GUI with this feature enabled.
+      Wheel Mice Scroll (Win only) - This feature allows you to use your mouse
+        wheel to quickly scroll through various lists in the GUI (e.g. game list
+        in load menu, video modes, etc.). In the SDL port, the Wheel should
+        always be enabled.
+      ESC to Game Menu - While running a game, pressing Esc will take you back
+        to the GUI with the Game Menu open, regardless of which menu was open
+        last. It will also make the Game Menu be already open when you start
+        ZSNES. If this is unchecked, you will have difficulty navigating the GUI
+        without a mouse.
+      Ctrl GUI w/GPad1 - When enabled, it allows you to use the device
+        configured for SNES Controller #1 to access the GUI. This way you can
+        use your gamepad or joystick instead of your mouse/keyboard. The
+        equivalent SNES keys to the keyboard keys are:
+            SNES D-Pad = Move mouse cursor
+            SNES A = Enter
+            SNES B = Esc
+            SNES L = PageUp
+            SNES R = PageDown
+      Filtered GUI - Any video filter settings will be applied to the GUI, in
+        addition to the game video output.
+      Use Custom Font - When checked, ZSNES will load font data from zfont.txt.
+      Save GUI Win Pos - When enabled, the GUI doesn't reset the locations of
+        the windows when you exit/enter the GUI.
+  BG Effects: - Only one of the following screen saver-like effects can be
+    enabled at a time. They are visible in the background while the GUI is open.
+      * None - no effect is active.
+      * Snow - Looks like falling snow.
+      * Burning - Looks like fire rising from the bottom of the window.
+      * Smoke -  Looks like smoke rising from the bottom of the window.
+      * Water A - Looks like a water strider skimming across water.
+      * Water B - Looks like rain drops falling on water and creating ripples.
+  Color: - This section allows you to customize the colors used by the GUI.
+      Choose which part of the GUI to configure by selecting one of the
+        following:
+          * Back - Configure the color of the background of the GUI.
+              Defaults: R=10; G=15; B=31.
+          * Title - Configre color of the GUI's title bar.
+              Defaults: R=0; G=10; B=31.
+          * Win - Configure the background color of a dialog window. Dialog
+              title bar colors are not configurable. Defaults: R=8; G=8; B=25.
+      Use the sliders to change the relative quantities of Red, Green, and Blue
+        color for the part of the GUI you have chosen to configure.
+  Main Windows Options:
+      Emu Always on Top (Win only) - ZSNES will stay visible above other
+        windows, even if it loses focus. Minimize ZSNES if you need to access
+        other windows.
+      Save Main Window Position (Win only) - Saves the location of the ZSNES
+        window between sessions.
+      Allow Multiple Instances of Emu (Win only) - Allows you to open more than
+        one instance of ZSNES at a time. In the SDL port, multiple instances are
+        always allowed.
+
+- - - - - - - - - - - - - - - - - - - -
+ .        Movie Opt (Options)        .
+- - - - - - - - - - - - - - - - - - - -
+
+  The Movie Options dialog is only accessible if a game is loaded.
+
+  You can record your gameplay so that you can play it back at a later date
+  either to amuse your friends, torture your friends, or whatever. Also be
+  sure to check out the Movies section of the Readme [Readme.txt], where
+  you can find more information on subtitles, re-recording, and more.
+
+  Warning: Playing back a previously recorded movie will overwrite any SRAM data
+    for the current game with the SRAM data contained in the ZMV file. This
+    means you should back up your SRAM files when playing around with movies!!
+
+  Select Movie: - Choose the movie recording slot to be used for
+    recording/playback. The number of the slot corresponds to the ZMV extension
+    (0 corresponding to .zmv, 1 to .zm1, ... 9 to .zm9).
+  Status: - Simply tells you if a record/playback is currently in progress.
+
+ - - - - - - - -
+  Controls tab
+ - - - - - - - -
+  Record From:
+      Now - Begins recording the movie from the current point in the game.
+      Power - This will perform a hard reset (equivalent to shutting off the
+        SNES, then turning it back on again), then begin recording.
+      Reset - This will perform a soft reset (equivalent to using the Reset
+        button on the SNES), then begin recording.
+      Power+SRAM Clear - Performs a hard reset, then clears SRAM data
+        (in-game save data). Useful if, for example, you don't want to see
+        your saved games in the game menu when making your movie.
+  Main controls:
+      Play - Begins playing the movie that is recorded in the current slot.
+      Record - Begins recording a movie to the current slot. While in playback
+        mode, you can use this to start recording and redo the remainder of the
+        movie.
+      Stop - Stops playing or recording a movie.
+      Append - This is usable only if you already have an existing ZMV using the
+        new ZMV format. It allows you to continue recording a movie from the
+        point where it is stopped. Press this button only when the movie status
+        is inactive.
+  Chapters: - You can assign a key to each of these functions by clicking in
+    the black box next to each button and pressing a key.
+      Insert - During recording or playback, this can create a point (chapter)
+        to which you can seek during playback.
+      Previous - Only usable during playback, this "rewinds" the movie to a
+        previous chapter earlier in the movie.
+      Next - Only usable during playback, this "fast forwards" the movie to a
+        chapter that is found at a later point in the movie.
+      There is currently no method for deleting a chapter.
+  On Movie State Load: - Allow mode status to be changed when you are loading a
+    movie state.
+      Do Not Switch Modes - Don't change the current mode.
+      Switch to Record - Set the current mode to Record on load.
+      Switch to Playback - Set the current mode to Playback on load.
+  Display Frame Counter - Enable this to see the frame counter in the
+    bottom-left corner of the screen during playback/recording. This is useful
+    for determining where you can insert movie subtitles and for deciding where
+    you want to end a movie when dumping it with the Dump # of Frames option.
+
+ - - - - - - -
+  Dumping tab
+ - - - - - - -
+  Video/Audio Dumping is recommended only for advanced users. More information
+  is found in the Movie Dumping section of the Advanced Usage page
+  [Advanced.txt].
+
+  Video Options: - You can only choose one of the following.
+      No Video Dump - Use this option when you want only audio.
+      Raw Video (No compression) - Dump raw 24 bit BGR video. This produces a
+        file that no typical media player can read. Only use this option if you
+        plan on manually encoding it. On UNIX systems, you can use a FIFO file
+        to encode this in real-time, as an alternative to ZSNES's internal use
+        of MEncoder. Caution: Raw movies require a tremendous amount of disk
+        space, so make sure you have plenty of room before you begin!
+      FFV1 (Some compression) - Dump in an AVI container using FFMPEG's lossless
+        video codec. The size of this file will be about 8% of the size of the
+        raw video file.
+      x264 Lossless (Most compression) - Dump in an AVI container using the very
+        advanced x264 codec in practically lossless mode (slow). The size of
+        this file will be about 38% of the size of an XviD file, about 6% of the
+        size of an FFV1 file, and about 0.5% of the size of a raw video file.
+      XviD Lossless (More compression) - Dump in an AVI container using the
+        popular XviD codec in practically lossless mode (fast). The size of this
+        file will be about 15% of the size of an FFV1 file, and about 1% of the
+        size of a raw video file.
+      Custom - Uses alternative, user-defined parameters from the zmovie.cfg
+        file. This option allows the use of multi-pass movie dumping to
+        massively reduce the size of the outputted video file. Caution: This
+        mode dumps lossy video; however, the default settings should look good
+        for most games.
+  Audio Options: - You can choose any combination of the following.
+      Dump Audio - Enable audio dumping.
+      Compress Audio - Audio output will be compressed to MP3 as it is dumped.
+        We recommend that you use this setting. When unchecked, audio output
+        will be in WAV format.
+      Merge With Video - Place the outputted audio in the AVI along with the
+        video.
+  Dumping Length: - Choose the length of the video/audio file(s) to be created.
+      ZMV Length - Simply dump the entire movie.
+      Dump # of Frames - This sets the exact number of frames of the movie to
+        dump, according to what you have typed in the black box at the right.
+      Until Stop - Keep recording until you stop dumping. This is primarily used
+        for recording a movie even after the ZMV has completed playback. You may
+        want to dump the ending of a game, which TAS (Tool-Assisted Speedruns)
+        reach but often don't capture in the ZMV.
+  Dumping:
+      Start - Start dumping the movie in the selected slot, using the current
+        settings.
+      Stop - Use this to stop dumping a movie before the process has finished.
+
+  Saving or loading a state during recording will allow you to undo mistakes,
+  i.e. re-record, while making a movie. These states created during record
+  can also be loaded during playback, like chapters. However, unlike chapters,
+  you're limited to 100 of them.
+
+  Loading another game will halt the play/record process.
+
+  Movie dumping options can be tweaked by advanced users in the zmovie.cfg file
+  [Advanced.txt].
+
+- - - - - - - - - - - - - - - - - - - -
+  Key Comb. (Key Combination Editor) .
+- - - - - - - - - - - - - - - - - - - -
+
+  Allows you to specify certain keyboard combination routines with a single
+  keystroke/joystick button press.
+
+  List of combinations
+  Clear - Clears the current key combination field.
+  Add - Adds the key combination fields below as a new entry.
+  Replace - Copies the contents of the key combination fields below to the
+    current highlighted key combination above.
+  Delete - Deletes the highlighted key combination above.
+  Key - Clicking on this box will allow you to select which key/button to use.
+  Description - Allows you type in the description of the combination key.
+  P# - Selects which player # will use those keys.
+  > = Last </> - Enabling this would mean that the event symbol > will mean the
+    last left or right direction the user presses in the game and the symbol <
+    is the opposite of that direction. When disabled, > means right and < means
+    left.
+  Game Specific - Enabling this will tell ZSNES to use separate key combination
+    files for each individual game.
+  Combination Keys - This window will display the sequence of events selected by
+    the user.
+  Events:
+      Press+Rel - The key will be pressed and held. It will be released once
+        another key is pressed after any amount of frame or second delay.
+      Press Only - The key will be pressed and held.
+      Rel Only - The key will be released if it is pressed by a press only
+        event.
+      Frame Delay - Delays for the specified number of frames.
+      Second Delay - Delays for the specified number of seconds.
+      Del - Deletes the event at the end of the combination keys list if one
+        exists.
+
+  Note: A 1 frame delay exists after the combination key list has finished
+    processing.
+
+  Example Key Combination: (Down / Down+Right / Right / L):
+    Method 1: Press+Rel Down / 2 Frame Delay / Press+Rel Down / Press+Rel Right
+        / 2 Frame Delay / Press+Rel Right / 2 Frame Delay / Press+Rel L
+    Method 2: Press Only Down / 2 Frame Delay / Press Only Right / 2 Frame Delay
+        / Rel Only Down / 2 Frame Delay / Rel Only Right / Press Only L
+
+- - - - - - - - - - - - - - - - - - - -
+ .             Save CFG              .
+- - - - - - - - - - - - - - - - - - - -
+
+  Saves the configuration files. ZSNES normally writes to the configuration
+  files on exit. This function overrides the "cfgdontsave" option in the
+  .cfg file.
+
+- - - - - - - - - - - - - - - - - - - -
+ .               About               .
+- - - - - - - - - - - - - - - - - - - -
+
+  Just shows some information about ZSNES.
+
+  * Version number
+  * Build date
+  * Port name
+  * www.ZSNES.com button (Win/SDL only) - Opens your default web browser
+      and loads the ZSNES.com Home Page [http://www.zsnes.com].
+  * Documentation button (Win/SDL only) - Opens your default web browser
+      and loads the ZSNES Documentation Home Page.
+      [http://zsnes-docs.sourceforge.net]
+  * Coded By: - Main developers are listed. More information in the About
+      page of the documentation [About.txt].
+  * Assistant Coders: - Assistant developers are listed. More information
+      in the About page of the documentation [About.txt].
+  * Disclaimer. Please read the GNU General Public License [License.txt].
+
+
+............................................................
+  7.                      F1 Menu
+............................................................
+
+Use this menu to access oft-used functions. Most of these are related to dumping
+data from the game you are running.
+
+  Save Snapshot - Creates an image of the game screen in your Snapshots
+    directory.
+  Show/Hide FPS - Shows or hides the frames-per-second display which appears
+    on the bottom-left corner of the screen. The value shown on the right side
+    of the display is the rate that the SNES should be maintaining. This
+    counter is available only when in auto frame rate mode. You can have
+    this display enabled by default under Config->Options.
+  Save SPC Data - Using this will search for the beginning of the next song and
+    save the data into an SPC file. To capture a song, it is best/recommended to
+    initiate this feature approximately 2 seconds before the next song starts.
+    This does have potential to fail though, so don't expect it to work all the
+    time. The .spc file will be placed in your SPCs directory.
+  Sound Buffer Dump - This dumps ZSNES' sound buffer and also filters out any
+    unoccupied space. The sound buffer contains decompressed samples which are
+    written to when ZSNES plays/decodes a sample from sound memory. Because of
+    the way ZSNES buffers the sound data, this can produce inaccurate results.
+    The dump will be placed in your SPCs directory.
+  Snapshot/Incr Frame - Same as snapshot, but it returns to the F1 menu after
+    a couple of frames. Useful for making animations.
+  Incr Frame Only - Move forward one frame without taking a snapshot.
+  Move This Window - Moves the F1 menu to a different location.
+  Image Format: - Choose what image format to use for snapshots of the game
+    screen. This setting is also configurable under Config->Options.
+      * BMP - Snapshots will be saved as bitmap pictures (16-bit color). If you
+          are using an 8-bit video mode in the DOS port, the bitmap will be
+          saved with 8-bit color.
+      * PNG - Snapshots will be saved as PNG ("Portable Network Graphics") files
+          (32-bit ARGB color). This is not selectable while using an 8-bit mode
+          or if you did not compile with PNG support.
+
+
+............................................................
+  8.              Save State Slot Chooser
+............................................................
+
+Use this dialog to pick which save state slot to use. A graphical preview of the
+save state will be shown above this dialog (it is not visible in the above
+picture).
+
+How to Use:
+    1. Press F3 to open this dialog.
+    2. Use Up/Down arrow keys to move between save state levels.
+    3. Use Left/Right arrow keys to move between save states on a certain level.
+    4. Use Enter or Return or ESC to use the selected save slot.
+    5. Use either F2 to save a state or F4 to load a state in the slot you just
+       selected.
+
+Color Key:
+    * Slots with blue backgrounds do not have a save state in them.
+    * Slots with red backgrounds have a save state in them.
+    * The slot with the orange background contains the most recent save state
+      within that state level.
+
+
+. . . . . . . . . . . . . . . .
+This documentation is best viewed in a fixed-width font such as "Courier New".
+
+Copyright (C) ZSNES Team & ZSNES Documentation Team [License.txt]

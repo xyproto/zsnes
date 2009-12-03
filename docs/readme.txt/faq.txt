@@ -1,0 +1,748 @@
+ZSNES v1.51 Documentation
+
+================================
+    N a v i g a t i o n
+================================
+
+    * Index    [Index.txt]
+
+    * Readme    [Readme.txt]
+
+    * GUI    [GUI.txt]
+
+    * Netplay    [Netplay.txt]
+
+    * Advanced Usage    [Advanced.txt]
+
+    * Games    [Games.txt]
+
+    * FAQ    [FAQ.txt]
+        1. Universal
+        2. Win Port
+        3. SDL Port
+        4. DOS Port
+
+    - - - - - - - - - - - - - - - - - -
+
+    * Getting Support    [Support.txt]
+
+    * History    [History.txt]
+
+    * About    [About.txt]
+
+    * License    [License.txt]
+
+    - - - - - - - - - - - - - - - - - -
+
+    * NSRT Guide:    [http://zsnes-docs.sf.net/nsrt]
+
+    * ZSNES Home Page:  [ZSNES.com]
+
+
+================================================================================
+~               F.    A.    Q.      (Frequently Asked Questions)
+================================================================================
+
+The FAQ page was first included in version 0.390 of ZSNES, released on
+April 11, 1998.
+
+
+~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+            Question Index
+~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+
+- - - - - - - - - - -
+ UNIVERSAL QUESTIONS
+- - - - - - - - - - -
+
+   General
+       Where do I download games / ROMs?
+       What is the "save directory"?
+       Why are my games not saving?
+       Are the ZSNES data files compatible among the various ZSNES ports
+           (Win/DOS/SDL)?
+       Is there Toaster Support?
+   Games
+       Why don't my games work after applying IPS patches to them?
+       Does ZSNES support Snes9x, GoodSNES, and NSRT ROMs? Or only ZSNES ones?
+   Video
+       Why do my scanlines look awful?
+       Why am I missing some video filter options?
+   Sound
+       Why does ZSNES produce a lot of static?
+       Why am I missing some sound options?
+   Input
+       Why can't I press more than 2 keys at a time?
+       Why is one direction of the d-pad always held down, even when I'm not
+           pressing any keys?
+       How do I use both my keyboard and joystick for the 1st or 2nd player?
+       Why can't I set the keys/buttons for Player 2?
+       Why won't ZSNES accept input when I'm configuring the keys for my
+           gamepad?
+       This game tells me that it is not compatible with the MultiTap
+           (or an external device attached). What should I do?
+   Speed
+       Why is ZSNES slow?
+       Why does the game slow down even though I'm using auto frame rate and
+           the FPS is pretty high?
+       My games are running too quickly! How do I slow them down?
+   Miscellaneous
+       Does ZSNES support loading ROMs which are compressed?
+       Why doesn't ZSNES support the 7z, RAR, or ZIP deflate64 compression
+           formats?
+       Does ZSNES support multiple ROMs in a single ZIP or JMA file?
+       Can you make a Mac/PocketPC/PS2/whatever port?
+
+- - - - - - - - - - - -
+WIN-SPECIFIC QUESTIONS
+- - - - - - - - - - - -
+
+   General
+       Why does ZSNESw crash and give me an error with dinput.dll?
+       I just switched from the DOS port to the Windows port of ZSNES;
+           why don't my savestates work? Are they incompatible?
+   Video
+       Why am I seeing double, with strange colors?
+       Why is the video choppy with an FPS of 60 and VSync on?
+   Sound
+       How come I don't get any sound?
+
+- - - - - - - - - - - -
+SDL-SPECIFIC QUESTIONS
+- - - - - - - - - - - -
+
+   General
+       Can I run ZSNES without X?
+       I got ZSNES from my distro and I found a bug. To whom should I report it?
+       Should I use SVN?
+       I'm getting an error about gzdirect() missing when I try to compile
+           ZSNES. What's up?
+
+- - - - - - - - - - - -
+DOS-SPECIFIC QUESTIONS
+- - - - - - - - - - - -
+
+   Video
+       How do you enable transparencies?
+       Why is there a layer of fog blocking my view?
+       Why am I getting error messages regarding VESA 2 drivers?
+   Sound
+       Why is there no sound?
+       Are there any plans to improve detection for non-SoundBlaster cards
+           (or supporting non-SB cards)?
+       I get a sound initialization error using my SB Live! (or any other
+           PCI card). How do I fix it?
+   Input
+       Why doesn't my Sidewinder pad work?
+       How do I get my daisy-chained Sidewinder to work?
+       Why doesn't my Gamepad Pro work?
+       Why doesn't my joystick work anymore?
+       Why does JB5/JB6 keep getting pressed whenever I try to change a key?
+   Freezing/Crashing Issues
+       Why does ZSNES freeze when I run it under pure DOS?
+       Why does ZSNES crash when I load a ROM?
+       Why does ZSNES freeze when I try to enter the GUI?
+       ZSNES gives me an "out of memory" error and I only have 16MB of RAM.
+           How do I fix this?
+   Miscellaneous
+       I'm using DJGPP 2.03 and I get an error about missing stdint.h.
+           What's wrong?
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  1.                UNIVERSAL QUESTIONS
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+................................
+            General
+................................
+
+Q: Where do I download games / ROMs?
+A: Due to the questionable legality of ROM images of commercial games (see
+   [http://en.wikipedia.org/wiki/Rom_images#Legal_status_of_ROMs]), the ZSNES
+   Team *cannot* and *will not* provide you with any games / ROMs. We must do
+   this in order to keep ZSNES, as an emulator, legal. Please see the disclaimer
+   [Readme.txt].
+
+Q: What is the "save directory"?
+A: Please read more about the types of files ZSNES generates and where they are
+   created in the Files section of [Readme.txt].
+
+   By default, in the Win and DOS ports of ZSNES, these files will go into their
+   corresponding ROM directory (e.g. If your Chrono Trigger ROM is in
+   "C:\SNES Games\RPG", its files will go into that folder; if your Harvest Moon
+   ROM is in "C:\SNES Games\Simulation", its files will go into that folder).
+   In the SDL port of ZSNES, however, saves will go into "~/.zsnes" by default.
+   ZSNES SDL under Mac OS X will place them in
+   "~/Library/Application Support/ZSNES" instead.
+
+   If you dislike the default settings, you can configure a single, universal
+   save path by either going to the Config->Paths menu in the GUI or by editing
+   the ZSNES configuration file [Advanced.txt].
+
+Q: Why are my games not saving?
+A: If your ROM images are stored on a CD-ROM, you need to define a save
+   directory that points to your hard drive. In order to do this, either go to
+   Config-->Paths and enter a directory, or edit the ZSNES configuration file by
+   typing in a directory after "SaveDirectory=". Make sure that this directory
+   is not marked read-only.
+
+   If this still does not solve your problem, enable SRAM Check + Save under the
+   Config-->Saves menu.
+
+Q: Are the ZSNES data files compatible among the various ZSNES ports
+   (Win/DOS/SDL)?
+A: Yes. Unlike certain PC applications and games, ZSNES's various save files
+   and formats are completely port-independent; you can share any of your files
+   with any user using any port of ZSNES (although some things may be
+   version-dependent). Note, however, that ZSNES's configuration file
+   [Advanced.txt] contains port-specific options which don't exist in other
+   ports, so while they can be transfered between ports, some things won't work
+   as expected. Note that when transfering various files, make sure they're
+   named properly and in the proper location (see the Files section [Readme.txt]
+   for details).
+
+Q: Is there Toaster Support?
+A: While we'd love for ZSNES to lace our shoes, feed us, breathe for us, and
+   amass wealth for us, we can't add every crazy feature that comes up.
+   Even though ZSNES does have many, many features that are not necessarily
+   SNES related, they normally don't go beyond features that you'd expect from
+   an advanced gaming system.
+
+   Regarding toaster support itself, rumor has it ZSNES does bread toasting
+   if you happen to be using it after midnight while paying your respects
+   to the master of all controls and considering monetary options.
+
+................................
+             Games
+................................
+
+Q: Why don't my games work after applying IPS patches to them?
+A: If your patched game crashes early or just displays a black screen, you
+   probably need to either add or remove the 512 byte offset from the patch.
+   Use the program IPSEDIT to do this, which is bundled along with NSRT.
+
+   Alternatively, you could either add or remove a header from your ROM before
+   patching. Again, NSRT is capable of doing this. [http://nsrt.edgeemu.com]
+
+Q: Does ZSNES support Snes9x, GoodSNES, and NSRT ROMs? Or only ZSNES ones?
+A: ZSNES, Snes9x, GoodSNES, and NSRT ROMs do not exist. All these programs work
+   with SNES ROMs. As ZSNES is an SNES emulator, it will work with all SNES ROMs
+   (except where ZSNES has a bug or the ROM is in an unsupported interleave
+   format).
+
+................................
+             Video
+................................
+
+Q: Why do my scanlines look awful?
+A: Scanlines can be negatively affected by the method of vertical scaling that
+   your video card uses, depending on the video mode you have selected for
+   ZSNES. This can sometimes result in scanlines that are not of uniform
+   darkness. The effect of this video scaling is most noticeable with Full
+   scanlines, with 50% and 25% scanlines being less noticeable. To display the
+   scanlines effect properly, you should use resolutions based on a multiple of
+   256x224 in windowed modes (e.g. 512x448) and 320x240 for fullscreen modes
+   (e.g. 640x480).
+
+Q: Why am I missing some video filter options?
+A: Please make sure you have MMX Support enabled in the Options dialog. Refer to
+   the Video Config description in [GUI.txt] to see what video options require
+   MMX support.
+
+................................
+             Sound
+................................
+
+Q: Why does ZSNES produce a lot of static?
+A: There could be many reasons why you are hearing static. If you are using the
+   Windows port and you have an ISA sound card, this could be your problem. If
+   you are using the DOS port, and you have a PCI sound card, this could also be
+   your problem. If your sound card is using SoundBlaster emulation, you
+   probably need to use 8-bit sound, but this can make sound output worse. You
+   can also try doing the following things to improve your sound: Reduce your
+   sampling rate or disable lowpass filtering and stereo sound; Win port users
+   can also enable the Primary Sound Buffer.
+
+Q: Why am I missing some sound options?
+A: Please make sure you have MMX Support enabled in the Options dialog. Refer to
+   the Sound Config description in [GUI.txt] to see what sound options require
+   MMX support.
+
+................................
+             Input
+................................
+
+Q: Why can't I press more than two keys at a time?
+A: Many PC ("Personal Computer") keyboards limit the number of key signals that
+   can be transmitted simultaneously. For example, certain combinations of three
+   or more alphanumeric keys may not work. Conversely, there may be some
+   combinations of three or more keys that *do* work. You would just have to
+   test by trial-and-error to find out, since these combinations can vary
+   between keyboards. Joysticks and gamepads generally don't have this
+   limitation.
+
+   If you must use a keyboard, you can set multiple game keys to a single
+   keyboard key. Alternatively, you could set some keys to the right and left
+   Ctrl and Shift keys, since most keyboards do not restrict signals from
+   these keys.
+
+Q: Why is one direction of the d-pad always held down, even when I'm not
+   pressing any keys?
+A: ZSNES auto-calibrates any connected gamepads/joysticks when it first starts.
+   Thus, if one of the buttons or directions is accidentally held down while
+   ZSNES is starting, ZSNES will think this is "normal" or "zero" input, even
+   when you let go of the button. To fix the problem, simply close ZSNES, make
+   sure no buttons are pressed and all axis are centered on your
+   gamepad/joystick, and restart ZSNES. It will then auto-calibrate to the
+   correct "zero" settings.
+
+Q: How do I use both my keyboard and joystick for the 1st or 2nd player?
+A: First, configure the Player 1 pad (Config-->Input--> #1) for your normal
+   set-up (for example, a keyboard). Next, configure the Player 3 pad
+   (Config-->Input--> #3) to use your alternative set-up (for example, a
+   joystick or gamepad). When you want to switch between your regular and
+   alternative set-up, go to the Config-->Options menu and check
+   USE PL3/4 AS PL1/2. Now the Player 3 controls act as the Player 1 pad, and
+   Player 4's controls act as the Player 2 pad. To return to the normal
+   controls, simply uncheck this option. Follow the same procedure to create a
+   similar set-up for Players 2 and 4.
+   Note: Enabling the option USE PL3/4 AS PL1/2 disables MultiTap emulation.
+
+Q: Why can't I set the keys/buttons for Player 2?
+A: You need to set the Current Device before ZSNES will allow you to set the
+   individual keys for Player 2 (or Players 3, 4, or 5). If NONE is shown after
+   CURRENT:, the input cannot be changed (or used, for that matter). See the
+   Input section of the GUI page [GUI.txt] for further instructions.
+
+Q: Why won't ZSNES accept input when I'm configuring the keys for my gamepad?
+A: Exit ZSNES and calibrate your input device. Then restart ZSNES and see if it
+   works.
+
+Q: This game tells me that it is not compatible with the MultiTap (or an
+   external device attached). What should I do?
+A: Set the input devices of player 3, 4, and 5 to "None". You may also need to
+   go to Config-->Options, and enable "Use Player 3/4 as Player 1/2".
+   Additionally, you could add an NSRT header to your ROM if you desire.
+
+................................
+             Speed
+................................
+
+Q: Why is ZSNES slow?
+A: First and foremost, does your computer meet the minimum system requirements
+   to run ZSNES? If not, there is little you can do to improve performance. That
+   being said, you can still try a number of things.
+
+     * Make sure that any major program(s) is/are closed (such as Winamp).
+     * Try the default settings of ZSNES before you do anything else. You can
+       reset ZSNES to the default settings by deleting all three of its
+       configuration files.
+     * Ensure that MMX Support is enabled in the Options dialog; this mode
+       should provide a noticeable speed increase for computers that can use it.
+     * Certain system configurations and video cards work better with certain
+       video modes. Try switching between different video modes until you find
+       one that has good/better performance. Things to remember when doing this
+       are that lower resolutions are faster than higher resolutions, full
+       screen modes are faster than windowed modes, and 'R' modes are faster
+       than 'S' modes (because no scaling is necessary).
+     * Make sure you are using Auto Frame Skipping. If you already are, try
+       increasing the Max Frame Skip.
+     * Do not use VSync; if you must use VSync, try also enabling Triple
+       Buffering.
+     * Disable all video filters.
+     * Compile ZSNES yourself with optimizations for your CPU's architecture.
+     * If you still need more speed, disable sound. If that's not enough,
+       disable SPC emulation (you must restart ZSNES for this option to take
+       effect). Some games will not work without SPC emulation.
+
+   If you have an old computer, such as one with a 486/100 processor, you will
+   probably be better off using older DOS versions of ZSNES, as the minimum
+   system requirements have increased slightly with subsequent releases. To
+   achieve greater speed, you may want to avoid using VESA video modes (although
+   this will disable transparencies). Experiment with the different video modes
+   and try the recommendations above to see which configuration provides the
+   best speed for you.
+
+Q: Why does the game slow down even though I'm using auto frame rate and the FPS
+   is pretty high?
+A: If you have ever played a real SNES, you may notice that some games slow down
+   even on it. To the extent that ZSNES accurately emulates an SNES, a game will
+   slow down in ZSNES in the same places it would slown down on a real SNES.
+
+Q: My games are running too quickly! How do I slow them down?
+A: You may have disabled auto frame skipping. Re-enable it in the
+   Config-->Speed menu.
+
+   If you don't want to use auto frame skipping, and you want to play in
+   windowed mode, you might want to set your monitor's refresh rate to 60hz
+   and enable VSync in ZSNES.
+
+   If you want to use fullscreen mode without using auto frame skipping,
+   you can enable the KitchenSync by using either the -ks (for NTSC/PAL)
+   or -kp (for PAL) command-line parameter (Windows port only) [Advanced.txt].
+   Also be sure to enable triple buffering.
+
+................................
+         Miscellaneous
+................................
+
+Q: Does ZSNES support loading ROMs which are compressed?
+A: Yes, but it depends on what compression format is used. ZSNES can currently
+   load ROMs that are compressed in the ZIP (method 0 - store and method 8 -
+   deflate), GZip, and JMA compression formats.
+
+   Many tools are available to create ZIP files. If you want a fast, commandline
+   based ZIP program that is available on many platforms, get Info-ZIP. Info-ZIP
+   also has a Windows front end called WiZ available if you prefer a GUI.
+
+   For creating GZip files, there are not too many choices. A fast, commandline
+   based compressor for the GZip format, available for several platforms, may be
+   downloaded at the GZip site [http://www.gzip.org]. If you use Windows, there
+   is a program with a GUI called 7-Zip [http://www.7-zip.org] that has support
+   for ZIP, GZip, and others. ZIP and GZip files created by 7-Zip are smaller
+   than those created with other programs, but 7-Zip takes a longer time
+   creating them. For users of Unix based operating systems who would like a GUI
+   front end for both ZIP and GZip, get Ark
+   [http://docs.kde.org/en/3.2/kdeutils/ark/], which is part of the KDE project.
+
+   To create JMA files, a format invented by Nach and the rest of the NSRT team
+   which offers the best compression ratio for SNES ROMs, you must use NSRT
+   [http://nsrt.edgeemu.com]. NSRT is also capable of compressing SNES ROMs into
+   ZIP and GZip formats.
+
+Q: Why doesn't ZSNES support the 7z, RAR, or ZIP deflate64 compression formats?
+A: ZSNES only supports formats which have an open-source, portable, and
+   easy-to-use library. The 7z and RAR formats do not yet have libraries that
+   fill those criteria. If you want the best compression ratio for your SNES
+   ROMs, you should use JMA. Currently, the only publicly available program that
+   can compress and decompress with JMA is NSRT [http://nsrt.edgeemu.com]. ZIP
+   deflate64 lacks a decompression library which ZSNES can use, but rumor has it
+   that Nach is working on one.
+
+Q: Does ZSNES support multiple ROMs in a single ZIP or JMA file?
+A: ZSNES currently does not support more than one ROM in a ZIP or JMA file,
+   although such support will probably be implemented in the future.
+
+Q: Can you make a Mac/PocketPC/PS2/whatever port?
+A: Since ZSNES is written in assembly, ports to any systems that are not 100%
+   x86 compatible are impossible. Try Snes9x [http://www.snes9x.com] for
+   portability.
+
+   Apple Computer, Inc. recently switched the Macintosh computers to use Intel
+   processors [http://www.apple.com/pr/library/2005/jun/06intel.html], and
+   as such ZSNES has already been modified to run on said computers. Just
+   compile the SDL port with an up-to-date NASM and zlib and everything normally
+   required.
+
+   Another third party developer recently ported ZSNES to the Microsoft Xbox as
+   well, and released it under the name "ZsneXbox". Unfortunately, we can not
+   provide a download link as this port is being illegally distributed as a
+   compiled XBE file. As a result, any link or support requests regarding this
+   port will be promptly ignored.
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  2.               WIN-SPECIFIC QUESTIONS
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+................................
+            General
+................................
+
+Q: Why does ZSNESw crash and give me an error with dinput.dll?
+A: If you get this error, download and install the latest version of DirectX.
+   You might also try running the DirectX Diagnostic Tool. You can do this by
+   clicking the Start button, then selecting "Run...". Type "dxdiag" after
+   "Open:", and click "OK". There are lots of options you can play with, so
+   please read everything before you start messing around. Specifically, go to
+   the "Display" tab, and under the "DirectX Features" section, click the
+   "Disable" button beside each feature. After they are all disabled, re-enable
+   them. Exit dxdiag, and try ZSNES again.
+
+   If none of that worked, try re-installing DirectX.
+
+Q: I just switched from the DOS port to the Windows port of ZSNES; why don't my
+   savestates work? Are they incompatible?
+A: The saves and savestates will work just as well with any port of ZSNES. You
+   simply need to rename all files that have .srm and .zst (and .zs1, .zs2,
+   etc.) extensions to match the filenames of your ROMs (or the jma/zip archives
+   that contain them).
+
+   For example, if you have "Super Mario World.zip" and "Super Mario RPG.zip",
+   both games will have saves that are labeled "SUPERM~1.SRM", "SUPERM~1.ZS2",
+   etc., and they will be differentiated only by the number after the "~" in the
+   filename.
+
+   If you need to find out which "~" number a game uses, open a DOS prompt
+   (a.k.a. Command Prompt), change to the ROM directory, and enter "dir /on /p"
+   (On some newer systems like Win2k you need to add the "/x" switch for the DOS
+   filenames to be displayed). Unfortunately, this method may not be accurate if
+   you have moved your ROMs to a different folder or another computer; you may
+   need to guess and hope for the best, trying to swap filenames a few different
+   ways between the saves before it works for all your games. If it comes down
+   to guessing, we recommend that you backup your save files before renaming
+   them.
+
+   Don't forget to put the files into your Save directory. A question concerning
+   the Save directory is under Universal Questions -> General [FAQ.txt].
+
+................................
+             Video
+................................
+
+Q: Why am I seeing double, with strange colors?
+A: Any change of resolution within ZSNES should correct the problem. Fullscreen
+   modes are recommended because they are faster than windowed modes.
+
+   If you still experience problems, see if these suggestions help (each should
+   be done/tried separately):
+     - The issue can be completely resolved with up-to-date video card drivers.
+       Keeping your device drivers fully updated will provide other benefits
+       unrelated to ZSNES.
+     - Set the resolution for ZSNES to the same one used by the Windows desktop.
+     - Try enabling 16-bit color depth in Windows.
+
+Q: Why is the video choppy with an FPS of 60 and VSync on?
+A: If you have VSync on, your monitor needs to be set to a refresh rate that is
+   a multiple of the framerate of the game. NTSC games natively run at ~60 FPS.
+   PAL games natively run at 50 FPS. Thus your monitor would need to be either
+   60Hz or 120Hz for NTSC games, or 50Hz/100Hz for PAL games. If you run ZSNES
+   with the -6 switch, with a sub-argument of '60', ZSNES will try to switch
+   your monitor to 60Hz refresh rate. You can use the -ks switch to make ZSNES
+   try to switch your monitor to 120Hz refresh rate. These two switches only
+   work in fullscreen modes and are for the Windows port only.
+   Please reference [Advanced.txt] for details on command-line switches.
+
+   You can also try enabling Triple Buffering (using the -3 switch or the GUI
+   option), however this currently only works in Full Screen modes. One last
+   thing you can try is to turn off auto frame-skipping, and set manual frame
+   rate to "0".
+
+................................
+             Sound
+................................
+
+Q: How come I don't get any sound?
+A: Either you accidentally disabled sound, you don't have a sound card, the
+   sound drivers aren't properly installed in your system, or your sound card is
+   not compatible with DirectSound (part of Microsoft's DirectX API
+   [Support.txt]). Also make sure that 'Disable SPC Emulation' is NOT checked.
+   See [GUI.txt] for more information about sound settings in ZSNES.
+
+   Try (re-)installing the latest version of DirectX, and make sure you have the
+   latest drivers for your sound card (WHQL Certified, if possible).
+
+   Please also note that ISA sound cards tend not to work with Windows, while
+   they do with DOS.
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  3.               SDL-SPECIFIC QUESTIONS
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+................................
+            General
+................................
+
+Q: Can I run ZSNES without X?
+A: Yes, but you'll need to have SDL compiled to use SVGAlib.
+
+Q: I got ZSNES from my distro and I found a bug. To whom should I report it?
+A: Compile ZSNES yourself and see if the bug still exists. If it does,
+   please tell us, otherwise be happy that ZSNES works now, and give your
+   distro a heads-up if you feel motivated enough.
+
+Q: Should I use SVN?
+A: SVN ("Subversion") is the best way to get the most up-to-date ZSNES source.
+   It is best to double-check with SVN if you have a problem, since we might
+   have already fixed it. If you find a new problem in SVN, please tell us, but
+   be warned that we won't take it too seriously if it involves something that's
+   currently being worked on.
+
+   To check out and install ZSNES from SVN, refer to this thread on the ZSNES
+   board [http://board.zsnes.com/phpBB2/viewtopic.php?t=7371].
+
+Q: I'm getting an error about gzdirect() missing when I try to compile ZSNES.
+   What's up?
+A: Make sure you're using zlib 1.2.3 or higher. Some distributions say you have
+   zlib 1.2.3 but in reality give you an older version. If your distribution is
+   being problematic, compile zlib yourself. Grab the latest version of zlib at
+   the official website. [http://www.zlib.net]
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  4.               DOS-SPECIFIC QUESTIONS
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+................................
+             Video
+................................
+
+Q: How do you enable transparencies?
+A: First, try setting the video mode to a 16-bit color mode in the GUI. (If
+   320x240x16b doesn't work, then try 640x480x16b). If it gives you an error
+   that says that your video card isn't compatible with VESA 2.0, you might want
+   to get Scitech Display Doctor. It provides certain cards with VESA 2.0
+   support. Running with transparencies on is definitely slower because of the
+   extra math equations, memory, and video space involved.
+
+Q: Why is there a layer of fog blocking my view?
+A: You need to either enable transparencies (see above), or you can disable
+   certain backgrounds by pressing the 1, 2, 3, or 4 keys. If you get lost while
+   pressing those keys, press 6 to re-enable all of the backgrounds.
+
+Q: Why am I getting error messages regarding VESA 2 drivers?
+A: Here is a list of the various error codes that you may be coming across,
+   along with descriptions of what they mean:
+     * VBE not detected - ZSNES failed to detect any VBE interrupts (Your video
+         card doesn't support VESA).
+     * VESA not detected - ZSNES failed to detect any VESA extensions (Your
+         video card doesn't support VESA).
+     * VESA 2.0 or greater required - Your video card supports VESA, but it has
+         an older version. You may want to use SciTech Display Doctor
+         [http://www.scitechsoft.com/sdd.html] to upgrade your VESA driver.
+     * VESA 2 mode does not work on your video card/driver - Meaning that the
+         resolution you requested does not exist in the supported resolutions of
+         your video card. Choose a different resolution or upgrade with SDD,
+         which can sometimes help increase the number of resolutions supported.
+     * Unable to initialize video mode - A VESA 2.0 driver is found, but the
+         video mode failed to start. There could possibly be an error on the
+         video card setting, or it may be a defective piece of hardware.
+     * Linear frame buffer not detected - Meaning that your video card does not
+         support linear frame buffering, which is required for the ZSNES VESA 2
+         routines.
+
+................................
+             Sound
+................................
+
+Q: Why is there no sound?
+A: There could be several situations:
+
+   - You haven't enabled sound. You can enable it through the GUI or through
+     zsnes.cfg. Also make sure that 'Disable SPC Emulation' is NOT checked.
+   - You need to make sure that the SET BLASTER variable is set properly. To do
+     this, type SET in DOS and look for a string starting with "BLASTER=". If
+     such a string exists, then this is not your problem.
+   - You don't have a SB2.0 compatible sound card. If this is your case, there
+     is nothing you can do at the moment. ZSNES uses auto-initialization mode
+     for sound which requires SB2.0+.
+   - Your SB IRQ conflicts with another device. If this is the case, you might
+     want to check your sound card settings through Control Panel -> System.
+   - ZSNES doesn't like your sound card.
+   - You can try using VDMSound [http://sourceforge.net/projects/vdmsound/].
+
+Q: Are there any plans to improve detection for non-SoundBlaster cards (or
+   supporting non-SB cards)?
+A: There is little effort put into major changes to the DOS code, since so few
+   people use that port these days. However, we will gladly accept anyone's help
+   in improving the DOS sound code.
+
+Q: I get a sound initialization error using my SB Live! (or any other PCI card).
+   How do I fix it?
+A: Here is a solution: (Thanks CyberGodz for the post on the forums!)
+
+   SB Live! uses what is known as a NMI, or Non Maskable Interrupt, to emulate
+   SB 16 sound. Don't ask us exactly what it does (it's a type of IRQ) but that
+   is pretty much all it is good for.
+
+   The problem is that many sound cards either lack NMI support or don't have it
+   enabled (No NMI = No DOS support).
+
+   To try and solve this problem, do the following:
+
+     - Check your BIOS. If there is an option for RAM parity checking, enable
+       it; it usually turns on NMI support. If there is something that says
+       "NMI", turn it on.
+     - If you don't find anything in your BIOS, then go to your motherboard's
+       website and download the latest BIOS flash. Install it and try your DOS
+       sound (You may still have to enable the stuff in the BIOS afterwards).
+     - Failing the first two things, you could either get a new motherboard or
+       get another compatible sound card alongside the SB Live!. Just attach a
+       cable from the line out of the SB 16 to the line in of the SB Live!.
+       Enable line in on the mixer of your SB Live! and it should route the
+       sound through the old sound card (Don't use the SPDIF to connect the
+       cards if you have one; wave sound doesn't pass through SPDIF--only MIDI).
+
+................................
+             Input
+................................
+
+Q: Why doesn't my Sidewinder pad work?
+A: First, for non-USB Sidewinders, you should disable the Sidewinder profiler
+   from the Win9x icon tray, run ZSNES, set Input #1 as SidewinderPad1, then
+   press the mode button a few times. If that doesn't work, try the following:
+
+   - Try checking or unchecking the Sidewinder Fix option under
+     Config Menu -> Options and repeat the above steps.
+   - Fully disable the Win9x Sidewinder drivers by going to Control Panel/Game
+     Controllers. Then remove the Sidewinder (Thanks Scarlet-Slider for this
+     info!).
+   - Run ZSNES under pure DOS.
+   - Again, try checking or unchecking the Sidewinder Fix in the options menu of
+     the GUI and repeat the above 2 steps.
+   - Make sure your Sidewinder is plugged in and is not broken.
+
+   For USB joysticks, you can either set ZSNES as a 6-button joystick or
+   simulate keyboard keys through the Sidewinder profiler by setting Input #1 as
+   a keyboard with those defined keys.
+
+Q: How do I get my daisy-chained Sidewinder to work?
+A: First, run ZSNES. Temporarily disconnect the second Sidewinder pad from the
+   first one, get the first one to work, then re-connect the second Sidewinder
+   pad.
+
+Q: Why doesn't my Gamepad Pro work?
+A: For the non-USB version, be sure to have your Gamepad Pro set on 'GrIP' mode.
+   Then set the input device as Gamepad Pro P0. For the USB version, you can use
+   a keyboard emulator, which should be included with the software that came
+   with your joystick.
+
+Q: Why doesn't my joystick work anymore?
+A: You might have accidentally clicked the 'Use Joystick Port 209H' check box.
+   Just uncheck it.
+
+Q: Why does JB5/JB6 keep getting pressed whenever I try to change a key?
+A: Try changing your joystick type from 6-button to 4-button.
+
+................................
+    Freezing/Crashing Issues
+................................
+
+Q: Why does ZSNES freeze when I run it under pure DOS?
+A: Try loading your mouse driver or run ZSNES using the -j switch. For the most
+   compatible result, use the Microsoft Mouse driver if possible.
+
+Q: Why does ZSNES crash when I load a ROM?
+A: It could be that ZSNES doesn't recognize your sound configuration. To fix it,
+   disable sound or try changing your sound configuration. Also see this
+   question: (Universal-->Freezing/Crashing Issues) "Why does ZSNES crash
+   as soon as I load a ROM?"
+
+Q: Why does ZSNES freeze when I try to enter the GUI?
+A: Run ZSNES using the commandline -j.
+
+Q: ZSNES gives me an "out of memory" error and I only have 16MB of RAM. How do I
+   fix this?
+A: If you are running the DOS port of ZSNES from within Windows, try restarting
+   the computer in DOS mode; more RAM should then presumably be available for
+   ZSNES to use. To get it running under Win9x, first create a shortcut to the
+   DOS prompt on the desktop (the filename 'target' can be "C:\command.com").
+   Next, right-click on the icon and go to Properties. Then, select the Memory
+   tab and look below for Protected Mode (DPMI) settings and set a high value
+   (like 20000). Last, double-click on that icon and load ZSNES as usual.
+
+................................
+         Miscellaneous
+................................
+
+Q: I'm using DJGPP 2.03 and I get an error about missing stdint.h. What's wrong?
+A: You're probably missing this file. Download the latest version of this file
+   and put it in DJGPP's include directory.
+
+
+. . . . . . . . . . . . . . . .
+This documentation is best viewed in a fixed-width font such as "Courier New".
+
+Copyright (C) ZSNES Team & ZSNES Documentation Team [License.txt]

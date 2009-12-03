@@ -1875,7 +1875,7 @@ int main(int argc, const char *const *const argv)
          << "\n"
          << "Options:\n"
          << "\n"
-         << "  -Ddefine   Define a processor director. Example: -D__MSDOS__\n"
+         << "  -Ddefine   Define a processor director. Example: -D__WIN32__\n"
          << "             Can specify multiple defines.\n"
          << "\n"
          << "  -cheader   Create a C/C++ header with the following name.\n"

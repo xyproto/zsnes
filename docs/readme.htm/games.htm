@@ -1,0 +1,514 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+  <title>Games - ZSNES Documentation</title>
+
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+  <link rel="stylesheet" href="styles/print.css" media="print" type="text/css" />
+  <link rel="stylesheet" href="styles/radio.css" title="Radio's style" media="screen" type="text/css" />
+  <link rel="alternate stylesheet" href="styles/jipcy.css" title="Jipcy's style" media="screen" type="text/css" />
+  <link rel="alternate stylesheet" href="styles/plaintxt.css" title="Plain Text" media="screen" type="text/css" />
+
+  <link rel="contents" href="index.htm" title="Index" />
+  <link rel="start" href="readme.htm" title="Readme" />
+  <link rel="previous" href="advanced.htm" title="Advanced Usage" />
+  <link rel="next" href="faq.htm" title="FAQ" />
+  <link rel="help" href="support.htm" title="Getting Support" />
+  <link rel="copyright" href="license.htm" title="GNU General Public License" />
+</head>
+
+<body>
+
+<div id="header">
+  <a href="readme.htm" title="ZSNES Documentation Home"><img id="logo" src="images/zsneslogo.png" alt="The ZSNES Logo" /></a>
+  <h1>ZSNES v1.51 Documentation</h1>
+</div>
+
+<div id="nav_column">
+
+<div id="navigation">
+  <h2>Navigation</h2>
+
+  <ul class="navigation_list">
+    <li><a href="index.htm" title="ZSNES Documentation Index">Index</a></li>
+    <li><a href="readme.htm" title="General documentation">Readme</a></li>
+    <li><a href="gui.htm" title="Description of the GUI and its options">GUI</a></li>
+    <li><a href="netplay.htm" title="Documentation for Netplay">Netplay</a></li>
+    <li><a href="advanced.htm" title="Advanced Usage">Advanced Usage</a></li>
+    <li><a href="games.htm" title="Information about Games">Games</a>
+      <ul>
+        <li><a href="#roms">ROMs</a></li>
+        <li><a href="#compatibility">Compatibility</a></li>
+        <li><a href="#special_chip">Special-Chip Games</a></li>
+        <li><a href="#special_carts">Special Cartridges</a></li>
+        <li><a href="#satellaview">BS-X (Satellaview)</a></li>
+        <li><a href="#super_gameboy">Super Gameboy</a></li>
+        <li><a href="#individual_games">Individual Game Issues</a></li>
+        <li><a href="#manymouse_games">Games Supported by ManyMouse</a></li>
+        <li><a href="#multiplayer">Multiplayer List</a></li>
+      </ul>
+    </li>
+    <li><a href="faq.htm" title="Frequently Asked Questions">FAQ</a></li>
+  </ul>
+  <hr />
+  <ul>
+    <li><a href="support.htm" title="How to get support">Getting Support</a></li>
+    <li><a href="history.htm" title="The log of changes to ZSNES">History</a></li>
+    <li><a href="about.htm" title="A brief description of the ZSNES emulator and ZSNES documentation projects">About</a></li>
+    <li><a href="license.htm" title="GNU General Public License">License</a></li>
+  </ul>
+  <hr />
+  <ul>
+    <li><a href="http://zsnes-docs.sourceforge.net/nsrt" title="NSRT Guide">NSRT Guide</a></li>
+    <li><a href="http://www.zsnes.com" title="ZSNES Home Page on the Web">ZSNES.com</a></li>
+  </ul>
+</div>
+
+</div>
+
+
+<div id="content_column">
+
+<div id="content">
+  <h2>Games</h2>
+
+  <div class="section" id="roms">
+    <h3>ROMs</h3>
+
+    <p><strong>ROMs are not included with ZSNES!!!</strong>  You must find them on your own.</p>
+    <p>Please read Wikipedia's article on <a href="http://en.wikipedia.org/wiki/ROM_image" title="ROM Image article at Wikipedia">ROM Images</a> for a general overview.</p>
+    <p>In relation to SNES emulation, a "ROM image" is a computer file which is an exact copy of the data that is contained in a <strong>R</strong>ead <strong>O</strong>nly <strong>M</strong>emory chip inside a game cartridge.  This file contains the same data that a real SNES console reads from the game cartridge.  An SNES emulator loads this ROM into its own memory, very much like how a real SNES operates.</p>
+    <p>A problem appears when you have a ROM image that is <em>not</em> an exact copy of the data on a real SNES cartridge.  Many of the ROMs available for download on the Internet are not in fact exact copies of real SNES games.  There are a variety of reasons why a ROM that appears to be a real game is not an exact copy of the cartridge data.  For example, the ROM may have been incorrectly "dumped" from the cartridge, which can introduce errors.  Certain prolific ROM "releasers" will "hack" a ROM to include an introduction that advertises the releaser.  Regardless of the reason for an imperfect ROM image, these "bad" ROMs can display errors when they are played in an emulator.</p>
+    <p>Emulator developers generally try to make their emulators work with "good" ROMs; that is, ROMs that are perfect copies of the data on a real game cartridge.  The developers of ZSNES in particular are unable to provide <em>any</em> help to people who are using "bad" ROMs.  You <em>must</em> use a good ROM if you want any chance of playing an error-free game.</p>
+    <p>We recommend using <a href="support.htm#utilities_nsrt" title="Description of NSRT">NSRT</a> to verify that your ROMs are "good" dumps.  In some cases, NSRT can actually modify a "bad" ROM in such a way that it becomes a "good" ROM.  Please read the documentation included with NSRT for additional information.</p>
+  </div>
+
+  <div class="section" id="compatibility">
+    <h3>Compatibility</h3>
+
+    <p>There are many reasons why a particular ROM may not work correctly with ZSNES.  Here is a list of things you can do to improve your chances of a ROM working with ZSNES:</p>
+    <ul>
+      <li>Make sure your ROM is actually a "good dump."  Often a ROM appears to be from a particular game/cartridge, but it <strong>is not</strong> in fact a perfect copy of the data on that cartridge.  You can use <a href="support.htm#utilities_nsrt" title="Nach's SNES ROM Tools">NSRT</a> to scan your ROM and tell you if it is a good dump.  In some cases, NSRT can actually modify a "bad" ROM in such a way that it becomes a "good" ROM.</li>
+      <li>Your ROM may be a game that uses the <a href="#special_chip_superfx" title="SuperFX Special Chip information">SuperFX special chip</a>.  It may also be "interleaved."  ZSNES cannot detect when a ROM is interleaved with the SuperFX interleave method.  There is more information about this <a href="#special_chip_superfx" title="SuperFX Special Chip information">below</a>. In cases where ZSNES cannot detect a ROM's interleave method, ZSNES will incorrectly report the ROM as <em>not</em> interleaved, and the ROM will fail to load.</li>
+      <li>If you have <a href="gui.htm#config_sound_enable" title="Description of the Enable Sound option">turned off sound</a>, you should re-enable it.  If you wish to mute the sound output, simply move the volume slider to 0%.  Many games require sound emulation to be active in order to work correctly, so disabling sound can "break" a lot of games.</li>
+      <li>If you have changed the percentage of execution in the <a href="advanced.htm#config_files" title="Description of the ZSNES configuration files">ZSNES configuration file</a>, change it back to 100.  However, there are a few particular games that may work better if the percentage to execute is set to either 120% or 80%.</li>
+    </ul>
+    <p>The developers of ZSNES make no guarantee that any particular game will work.  While we wish to play these incompatible games as much as you do, sometimes it is just not possible.  Furthermore, ZSNES is in a constant state of development.  Compatibility with a particular game may change between releases of ZSNES.</p>
+    <p>In the past, ZSNES developers programmed the emulator to "hack" certain games.  These "hacks" would modify in-memory certain incompatible games, to get them to work with ZSNES.  Some hacks were also used make certain games run at full speed if they were too slow.  Sometimes, however, a particular game hack will break other parts of accurate SNES emulation.</p>
+    <p>As the emulation accuracy of ZSNES has improved, these hacks have become less necessary.  In general, game hacks are removed whenever possible.  With the current state of emulation in ZSNES, no new game hacks will be added.</p>
+    <p>In conclusion, if you have tried the steps above, and your game still doesn't work, <em>we're sorry</em>; however there is nothing we can do.  ZSNES is developed for <em>emulation accuracy</em>, with game compatibility as a side effect, <em>not the other way around</em>.  The most you can do is try another emulator or hope that ZSNES will become accurate enough to be able to run your particular game.</p>
+  </div>
+
+  <div class="section" id="special_chip">
+    <h3>Special-Chip Games</h3>
+
+    <p>The approximate percentage of emulation progress for these special chips is listed under <a href="readme.htm#current_progress_special_chips" title="Emulation status of special chips">Current Progress</a>.</p>
+    <p>The NSRT <a href="http://nsrt.edgeemu.com/INFO/chipinfo.htm" title="SNES Add-on Chip information">SNES Add-on Chip information</a> article was frequently referenced for the information assembled on this page.</p>
+    <p>You may find that the section on <a href="http://en.wikipedia.org/wiki/Super_Nintendo_Entertainment_System#Enhancement_chips">Enhancement chips</a> in the <a href="http://en.wikipedia.org/wiki/Super_Nintendo_Entertainment_System">Super Nintendo</a> article at <a href="http://en.wikipedia.org/">Wikipedia</a> contains some interesting historical information, not covered in this FAQ.</p>
+    <p>A number of games developed for the Super Nintendo included additional special-purpose processors on the game cartridge.  A game would use this special processor to accomplish something that wasn't possible using just the standard SNES hardware.  It is impossible to represent these processors with ROM data; in order for these games to work, ZSNES must emulate these special processors, <em>in addition</em> to all the standard SNES hardware (which ZSNES already emulates).</p>
+    <p>Below is a list of all known special processors, followed by a list of the games known to use each processor.</p>
+
+    <div class="section" id="special_chip_c4">
+      <h4>C4</h4>
+
+      <p>The C4 chip is a math co-processor with limited graphical processing capabilities.</p>
+      <ul>
+        <li>Megaman X 2 (USA) / Rockman X 2 (Japan)</li>
+        <li>Megaman X 3 (USA, Europe) / Rockman X 3 (Japan)</li>
+      </ul>
+    </div>
+
+    <div class="section" id="special_chip_dsp">
+      <h4>Nintendo DSP</h4>
+
+      <p>Each of the Nintendo DSP chips have identical hardware, but different software (firmware).</p>
+
+      <div class="section" id="special_chip_dsp1">
+        <h5>DSP-1</h5>
+        <ul>
+          <li>Ace wo Nerae!</li>
+          <li>Armored Trooper Votoms</li>
+          <li>Ballz 3D / 3 Jigen Kakutou Ballz</li>
+          <li>Battle Racers</li>
+          <li>Drift King Shutokou Battle '94</li>
+          <li>Drift King Shutokou Battle 2</li>
+          <li>Final Stretch</li>
+          <li>Hashiriya Kon</li>
+          <li>Korean League</li>
+          <li>Lock On</li>
+          <li>Michael Andretti's Indy Car Challenge</li>
+          <li>Pilotwings</li>
+          <li>Super 3D Baseball</li>
+          <li>Super Air Diver</li>
+          <li>Super Air Diver 2</li>
+          <li>Super Bases Loaded II</li>
+          <li>Super F1 Circus Gaiden</li>
+          <li>Super Mario Kart</li>
+          <li>Suzuka 8 Hours</li>
+        </ul>
+      </div>
+
+      <div class="section" id="special_chip_dsp2">
+        <h5>DSP-2</h5>
+        <ul>
+          <li>Dungeon Master</li>
+        </ul>
+      </div>
+
+      <div class="section" id="special_chip_dsp3">
+        <h5>DSP-3</h5>
+        <ul>
+          <li>SD Gundam GX</li>
+        </ul>
+      </div>
+
+      <div class="section" id="special_chip_dsp4">
+        <h5>DSP-4</h5>
+        <ul>
+          <li>Top Gear 3000 (USA) / Planets Champ TG 3000 (Japan)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="section" id="special_chip_obc1">
+      <h4>OBC-1</h4>
+
+      <ul>
+        <li>Metal Combat</li>
+      </ul>
+    </div>
+
+    <div class="section" id="special_chip_sa1">
+      <h4>SA-1</h4>
+
+      <p><q cite="http://nsrt.edgeemu.com/INFO/chipinfo.htm" title="Quoted from http://nsrt.edgeemu.com/INFO/chipinfo.htm">The SA-1 is a 65816 chip, although at a higher clock then the SNES's internal one.</q></p>
+
+      <ul>
+        <li>Asahi Shinbun Rensai - Katou Ichi-Ni-San Kudan Shougi Shingiru</li>
+        <li>Daisenryaku Expert WWII</li>
+        <li>Derby Jockey 2</li>
+        <li>Dragon Ball Z - Hyper Dimension</li>
+        <li>Hanyuu Meijin no Omoshiro Shougi</li>
+        <li>Harukanaru Augusta 3 - Masters New</li>
+        <li>Hayashi Kaihou Kudan no Igo Taidou</li>
+        <li>Itoi Shigesato no Bass Tsuri No.1</li>
+        <li>J. League '96 Dream Stadium</li>
+        <li>Jikkyou Oshaberi Parodius</li>
+        <li>Jumpin' Derby</li>
+        <li>Kakinoki Shougi</li>
+        <li>Kirby Super Star (USA) / Hoshi no Kirby - Super Deluxe (Japan) / Kirby's Fun Pak (Europe)</li>
+        <li>Kirby's Dream Land 3 (USA) / Hoshi no Kirby 3 (Japan)</li>
+        <li>Marvelous</li>
+        <li>Mini Yonku Shining Scorpion - Let's &amp; Go!!</li>
+        <li>Pebble Beach no Hatou New - Tournament Edition</li>
+        <li>PGA European Tour</li>
+        <li>PGA Tour 96</li>
+        <li>Power Rangers Zeo - Battle Racers</li>
+        <li>Saikousoku Shikou Shougi Mahjong</li>
+        <li>SD F-1 Grand Prix</li>
+        <li>SD Gundam G-NEXT cartridge ROM (G-NEXT.SFC)</li>
+        <li>Shin Shougi Club</li>
+        <li>Shougi no Hanamichi</li>
+        <li>Shougi Saikyou</li>
+        <li>Shougi Saikyou II</li>
+        <li>Super Bomberman - Panic Bomber W</li>
+        <li>Super Mario RPG</li>
+        <li>Super Robot Wars Gaiden</li>
+        <li>Super Shougi 3 - Kitaihei</li>
+        <li>Taikyoku Igo - Idaten</li>
+        <li>Takemiya Masaki Kudan no Igo Daishou</li>
+      </ul>
+
+    </div>
+
+    <div class="section" id="special_chip_sdd1">
+      <h4>S-DD1</h4>
+
+      <ul>
+        <li>Star Ocean</li>
+        <li>Street Fighter Alpha 2 (USA/Europe) / Street Fighter Zero 2 (Japan)</li>
+      </ul>
+    </div>
+
+    <div class="section" id="special_chip_setadsp">
+      <h4>Seta DSP</h4>
+
+      <p>Seta's DSP has 2 major firmwares.</p>
+
+      <div class="section" id="special_chip_setadsp10">
+        <h5>Seta 10 / ST010</h5>
+        <ul>
+          <li>F1 ROC II (USA) / Exhaust Heat II (Japan)</li>
+        </ul>
+      </div>
+
+      <div class="section" id="special_chip_setadsp11">
+        <h5>Seta 11 / ST011</h5>
+        <ul>
+          <li>Hayazashi Nidan Morita Shougi</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="section" id="special_chip_setarisc">
+      <h4>Seta RISC</h4>
+
+      <p>The Seta RISC chip is not emulated.</p>
+
+      <div class="section">
+        <h5>Seta 18 / ST018</h5>
+        <ul>
+          <li>Hayazashi Nidan Morita Shougi 2</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="section" id="special_chip_spc7110">
+      <h4>SPC7110</h4>
+
+      <ul>
+        <li>Far East of Eden Zero</li>
+        <li>Far East of Eden Zero - Shounen Jump no Shou</li>
+        <li>Momotarou Dentetsu Happy</li>
+        <li>Super Power League 4</li>
+      </ul>
+      <p>ZSNES does not fully support the SPC7110 chip yet. However, you may use some third party graphics decompression packs to get the four above games to work.</p>
+      <p>The SPC7110 graphic packs are mirrored on a number of sites on the Internet. Here are a few:</p>
+      <ul>
+        <li>* <a href="http://other.ipherswipsite.com/gpacks/" title="ipher's WIP Page">ipher's WIP Pages</a></li>
+        <li>* <a href="http://nsrt.edgeemu.com" title="Nach's SNES ROM Tools">NSRT Official Site</a></li>
+        <li>* <a href="http://www.caitsith2.com" title="Home Page of Caitsith2">Caitsith2's Personal Web Page</a></li>
+      </ul>
+      <p>After you have downloaded all of the parts, extract them all into a new directory on your disk. Then go to the <a href="gui.htm#config_paths_spc7110" title="Description of the Setup Paths menu">Config-->Paths menu</a> in the <a href="gui.htm" title="Description of the GUI">GUI</a> and enter in the location of the folder in the appropriate field.</p>
+    </div>
+
+    <div class="section" id="special_chip_srtc">
+      <h4>S-RTC</h4>
+
+      <ul>
+        <li>Daikaijuu Monogatari II</li>
+      </ul>
+    </div>
+
+    <div class="section" id="special_chip_superfx">
+      <h4>SuperFX</h4>
+
+      <ul>
+        <li>Dirt Racer</li>
+        <li>Dirt Trax FX</li>
+        <li>Doom</li>
+        <li>Star Fox (USA / Japan) / Starwing (Europe)</li>
+        <li>Stunt Race FX (USA / Europe) / Wild Trax (Japan)</li>
+        <li>Super Mario World 2: Yoshi's Island</li>
+        <li>Vortex</li>
+        <li>Winter Gold</li>
+      </ul>
+
+      <p><strong>ZSNES does not support interleaved SuperFX ROMs!</strong>  An interleaved ROM is one in which the data is arranged differently than in the original, real SNES cartridge.  While ZSNES has the ability to read the most common types of interleaved ROMs, it cannot read interleaved SuperFX ROMs, or even determine that they are interleaved.</p>
+      <p>You can use <a href="support.htm#utilities_nsrt" title="Nach's SNES ROM Tools">NSRT</a> to deinterleave your SuperFX ROMs, or if you prefer, all your ROMs.  Consequently, the creator of NSRT (Nach) has also written a <a href="http://nsrt.edgeemu.com/forum/kb.php?mode=article&amp;k=2" title="The Grand Document on the many SNES Interleave Algorithms">document</a> about the technical details of interleaved SNES ROMs, if you are interested.</p>
+    </div>
+
+  </div>
+
+  <div class="section" id="special_carts">
+    <h3>Special Cartridges</h3>
+
+    <p>The approximate percentage of emulation progress for these special cartridges is listed under <a href="readme.htm#current_progress_add_ons" title="Emulation status of add-on devices">Current Progress</a>.</p>
+    <div class="section" id="special_carts_samegame">
+      <h4>Same Game; SD Gundam G-Next</h4>
+
+      <p>These were special games released only in Japan. They could be played by themselves, standing alone, but they could also be played with special additional cartridges, which plugged into the top of the main cartridge. These extra cartridges used the same form-factor as the BS-X memory cartridges, and they would improve or change the main game in some small way (similar to the <em class="game">Sonic and Knuckles</em> cartridge for Sega Genesis).</p>
+      <p>You can play the original cartridges by themselves by loading them like any normal ROM. In order to play these games as if they had an expansion cartridge plugged in, you must first configure the paths to the base cartridge ROMs under <a href="gui.htm#config_paths" title="Description of the Setup Paths dialog">Config -> Paths</a>. After defining the path to the base ROMs, you can now load the expansion ROM like any normal ROM. ZSNES will virtually "plug in" the expansion ROM to the base ROM, and load both of them at the same time.</p>
+      <p>The <a href="support.htm#utilities_nsrt" title="Nach's SNES ROM Tools">NSRT</a> file names for these ROMs are <code class="file">SAMEGAME.SFC</code> and <code class="file">G-NEXT.SFC</code>, respectively.</p>
+    </div>
+
+    <div class="section" id="special_carts_st">
+      <h4>Sufami Turbo</h4>
+
+      <p><a href="http://www.gamersgraveyard.com/repository/snes/peripherals/sufamiturbo.html" title="Sufami Turbo page at Gamers Graveyard">Gamers Graveyard</a> has some pictures and information on the Sufami Turbo.</p>
+      <p>The Sufami Turbo is a special add-on, manufactured by Bandai, and released only in Japan. The games were sold on small, GameBoy-sized mini-cartridges, two of which could simultaneously be plugged into the Sufami Turbo main cartridge.  Certain combinations of games could interact with each other.</p>
+      <p>To emulate the Sufami Turbo, you will first need the Sufami Turbo BIOS.  You must configure the path to this BIOS under <a href="gui.htm#config_paths" title="Description of the Setup Paths dialog">Config -> Paths</a>.</p>
+      <p>The <a href="support.htm#utilities_nsrt" title="Nach's SNES ROM Tools">NSRT</a> file name for the Sufami Turbo BIOS is <code class="file">STBIOS.BIN</code>.</p>
+      <p>If you use NSRT, your Sufami Turbo ROMs will have <code class="file">.st</code> extensions.  In order to load two ROMs at once (to emulate two simultaneously loaded cartridges), you must use the command line. As an example, you would type in <kbd>zsnesw.exe "C:\Path\To\ROMs\sufami turbo rom 1.st" "C:\Path\To\ROMs\sufami turbo rom 2.st"</kbd>. Note that you must type the FULL path to both ROM images.  The example is specific to the Windows command line and ZSNES port, but you get the idea.</p>
+      <p>You may occasionally come across a Sufami Turbo ROM that is hacked to include the BIOS with it. Use <a href="support.htm#utilities_nsrt" title="Nach's SNES ROM Tools">NSRT</a> with the -split command to separate the BIOS from the ROM.  This will give you at least two separate files: one will be the game, and the other will be the BIOS.  You may even get 3 files: Two games and one BIOS.  After you have separated the BIOS and the game(s), simply follow the directions stated above.</p>
+    </div>
+  </div>
+
+  <div class="section" id="satellaview">
+    <h3>Broadcast Satellaview (BS-X)</h3>
+
+    <p>Please read the <a href="http://en.wikipedia.org/wiki/Satellaview" title="Satellaview article on Wikipedia">Satellaview</a> article on <a href="http://en.wikipedia.org/" title="Wikipedia.org">Wikipedia</a> for additional information.</p>
+    <p>This add-on was released only in Japan. It allowed gamers to connect to a satellite feed at certain times of the day, which would transmit games to the Super Famicom. Downloaded games were optionally stored on a small, eight-megabit mini-cartridge, which plugged into the top of the BS-X main cartridge (which in turn plugged directly into the Super Famicom). Many games, some of which had time limits, were made exclusively for the BS Satellaview.</p>
+    <p><a href="readme.htm#current_progress_add_ons" title="Current emulation progress of special add-on devices">Currently</a>, ZSNES can partially emulate the BS-X; some games will have graphics glitches, some games can be coaxed into running by changing certain settings, but some games won't run at all.</p>
+    <p>Also note that there is a BIOS for the BS-X.  You <em>may</em> configure the path to the BS-X BIOS under <a href="gui.htm#config_paths" title="Description of the Setup Paths dialog">Config -> Paths</a>; however, it's not currently required to run BS games.  It may be required in the future.</p>
+    <p>The <a href="support.htm#utilities_nsrt" title="Nach's SNES ROM Tools">NSRT</a> file name for the BS-X BIOS is <code class="file">BS Satellaview BS-X (BIOS) (J).sfc</code>.</p>
+  </div>
+
+  <div class="section" id="super_gameboy">
+    <h3>Super GameBoy</h3>
+
+    <p><strong>The Super GameBoy is not emulated.  There are currently no plans to support it.</strong>  This is because the Super GameBoy cartridge contains a complete set of GameBoy hardware (without screen and speakers, of course).  Thus, to fully support the Super GameBoy, ZSNES would have to emulate both the SNES and a GameBoy.  In addition, there are some very complex interactions between the Super GameBoy and SNES hardware that are not yet fully understood.</p>
+    <p>"But wait," you say, "I have a Super GameBoy BIOS!  Won't this allow ZSNES to emulate a Super GameBoy?"</p>
+    <p>The answer is "no."  The BIOS you have is only the software for the Super GameBoy, not the hardware, and thus is no help in emulating the Super GameBoy hardware.  In the meantime, there are some GameBoy emulators, such as <a href="http://kigb.emuunlim.com" title="KiGB : The GameBoy Emulator">KiGB</a>, <a href="http://bgb.bircd.org" title="BGB Home Page">BGB</a>, and <a href="http://vba.ngemu.com" title="VisualBoyAdvance Home Page">VisualBoyAdvance</a>, that faithfully support some of the more useful features of the Super GameBoy.</p>
+  </div>
+
+  <div class="section" id="individual_games">
+    <h3>Individual Game Issues</h3>
+
+    <div class="section">
+      <h4>Chrono Trigger</h4>
+
+      <p><strong>How do you get past the part in <em class="game">Chrono Trigger</em> where you have to press the L, R, and A buttons?</strong></p>
+      <p>Assign two or all three of these SNES controller buttons to the same keyboard key.  You can do this under <a href="gui.htm#config_input" title="Description of the Input Device dialog">Config Menu -> Input</a>.  Please read <a href="gui.htm#config_input_keyboard_limitations" title="Limitations of using a keyboard for playing SNES games">this note</a> about keyboard limitations.</p>
+    </div>
+
+    <div class="section">
+      <h4>Star Ocean</h4>
+
+      <p>This game is difficult to emulate correctly, and there are also bugs within the game itself.  The battles in the game are emulated at an incorrect speed, and the game will often freeze or crash randomly.  You may encounter more issues.  You can find detailed information about the bugs in this game at <a href="http://www.rpgclassics.com/shrines/snes/so1/bugs.shtml" title="Star Ocean Bugs at RPG Classics">RPGClassics</a>.</p>
+      <p>For best results, we recommend that you use an emulator that runs the game more accurately, such as <a href="http://www.snes9x.com" title="Snes9X Home Page">Snes9x</a>.</p>
+    </div>
+  </div>
+
+  <div class="section" id="manymouse_games">
+    <h3>Games Supported by ManyMouse</h3>
+
+    <p>ZSNES supports Ryan C. Gordon's <a href="http://icculus.org/manymouse/" title="ManyMouse Home Page">ManyMouse</a> library, which allows you to take advantage of games that support usage of two SNES add-on devices at once. You will need two mice plugged into your computer.</p>
+    <p>Here is a list of known games that support two SNES add-on devices simultaneously:</p>
+    <ul>
+      <li><em class="game">Arkanoid - Doh It Again</em></li>
+      <li><em class="game">Bishoujo Senshi Sailor Moon S - Kondo ha Puzzle de Oshiokiyo!</em></li>
+      <li><em class="game">Fun 'N Games</em></li>
+      <li><em class="game">Koutetsu no Kishi</em> (and its two sequels)</li>
+      <li><em class="game">Lamborghini - American Challenge</em></li>
+      <li><em class="game">Lord Monarch</em></li>
+      <li><em class="game">Motoko-chan no Wonder Kitchen</em></li>
+      <li><em class="game">Operation Thunderbolt</em></li>
+      <li><em class="game">Revolution X</em></li>
+      <li><em class="game">Shien's Revenge</em></li>
+      <li><em class="game">Super Castles</em></li>
+      <li><em class="game">T2 - The Arcade Game</em></li>
+      <li><em class="game">Tin Star</em></li>
+      <li><em class="game">Tokimeki Memorial</em></li>
+    </ul>
+    <p>Linux users should remember to type <code>chmod a+r /dev/input/*</code> at the shell after both mice are plugged in.</p>
+    <p>This feature is not implemented in the DOS port.</p>
+    <p>ManyMouse currently does not support BSD either, so Windows, Linux, or Mac OS X is required.</p>
+  </div>
+
+  <div class="section" id="multiplayer">
+    <h3>List of Multiplayer Games</h3>
+
+    <p>Please note that this list does not include any sports games (since they are easy to recognize and most of them are multiplayer).  It also does not include games with only 2-player alternating modes nor games that require the SNES Mouse/Super Scope.  Also, this list does not generally have sequels or other derivatives listed; if the original is listed here, it's likely its sequels and derivatives support multiplayer, too.</p>
+    <p>This list is not necessarily complete.</p>
+    <ul>
+      <li><em class="game">Aero Fighters</em></li>
+      <li><em class="game">Art of Fighting</em></li>
+      <li><em class="game">Battletoads in Battlemaniacs</em></li>
+      <li><em class="game">Battletoads vs DoubleDragon</em></li>
+      <li><em class="game">Brawl Brothers</em></li>
+      <li><em class="game">Brutal: Paws of Fury</em></li>
+      <li><em class="game">Captain Commando</em></li>
+      <li><em class="game">Clay Fighter</em></li>
+      <li><em class="game">Contra 3</em></li>
+      <li><em class="game">Darius Twin</em></li>
+      <li><em class="game">Double Dragon 5</em></li>
+      <li><em class="game">Dragonball Z Super Butoden</em></li>
+      <li><em class="game">Dragonball Z Hyper Dimension</em></li>
+      <li><em class="game">Faceball</em></li>
+      <li><em class="game">Fatal Fury</em></li>
+      <li><em class="game">Fighter's History</em></li>
+      <li><em class="game">Final Fight 2</em> &amp; <em class="game">3</em></li>
+      <li><em class="game">Ghoul Patrol</em></li>
+      <li><em class="game">Goemon</em></li>
+      <li><em class="game">Goof Troop</em></li>
+      <li><em class="game">Gundam Wing: Endless Duel</em></li>
+      <li><em class="game">Joe &amp; Mac</em></li>
+      <li><em class="game">Jurassic Park 2 - The Chaos Continues</em></li>
+      <li><em class="game">Killer Instinct</em></li>
+      <li><em class="game">King of Dragons</em></li>
+      <li><em class="game">King of the Monsters</em></li>
+      <li><em class="game">Kirby's Avalanche</em></li>
+      <li><em class="game">Kirby's Dreamland 3</em></li>
+      <li><em class="game">Kirby Super Star</em></li>
+      <li><em class="game">Legend of the Mystical Ninja</em></li>
+      <li><em class="game">Lemmings</em></li>
+      <li><em class="game">Megaman 7</em> (Secret Code - password 1415/5585/7823/6251 and press L+R+Start)</li>
+      <li><em class="game">Metal Warriors</em></li>
+      <li><em class="game">Mortal Kombat</em></li>
+      <li><em class="game">Ms. Pac-Man</em></li>
+      <li><em class="game">NP Mario Picross Series</em></li>
+      <li><em class="game">Peace Keapers</em></li>
+      <li><em class="game">Pirates of the Dark Water</em></li>
+      <li><em class="game">Pocky &amp; Rocky</em></li>
+      <li><em class="game">Pop'n Twinbee</em></li>
+      <li><em class="game">Power Instinct</em></li>
+      <li><em class="game">Primal Rage</em></li>
+      <li><em class="game">Puzzle Bobble</em></li>
+      <li><em class="game">Raiden</em></li>
+      <li><em class="game">Rampart</em></li>
+      <li><em class="game">Ranma 1/2</em></li>
+      <li><em class="game">Rise of the Robots</em></li>
+      <li><em class="game">Rival Turf</em></li>
+      <li><em class="game">Rock N' Roll Racing</em></li>
+      <li><em class="game">Run Saber</em></li>
+      <li><em class="game">Sailor Moon</em></li>
+      <li><em class="game">Samurai Shodown</em></li>
+      <li><em class="game">Secret of Mana</em></li>
+      <li><em class="game">Seiken Densetsu 3</em></li>
+      <li><em class="game">Shaq Fu</em></li>
+      <li><em class="game">Star Fox 2</em></li>
+      <li><em class="game">Star Trek Starfleet Academy</em></li>
+      <li><em class="game">Street Fighter 2</em></li>
+      <li><em class="game">Street Fighter 2 Turbo</em></li>
+      <li><em class="game">Street Fighter Alpha 2</em></li>
+      <li><em class="game">Street Racer</em></li>
+      <li><em class="game">Stunt Race FX</em></li>
+      <li><em class="game">Sunset Riders</em></li>
+      <li><em class="game">Super Bomberman</em></li>
+      <li><em class="game">Super Mario All-Stars</em> (SMB3 minigame)</li>
+      <li><em class="game">Super Mario Kart</em></li>
+      <li><em class="game">Super Mario World 2: Yoshi's Island</em> (At map, press X,X,Y,B,A)</li>
+      <li><em class="game">Super Offroad</em></li>
+      <li><em class="game">Super Smash TV</em></li>
+      <li><em class="game">Super Street Fighter 2</em></li>
+      <li><em class="game">Suzuka 8 Hours</em></li>
+      <li><em class="game">Teenage Mutant Ninja Turtles 4 - Turtles in Time</em></li>
+      <li><em class="game">Teenage Mutant Ninja Turtles 5 - Tournament Fighters</em></li>
+      <li><em class="game">Tetris</em></li>
+      <li><em class="game">The Great Circus Mystery</em></li>
+      <li><em class="game">Top Gear 2</em></li>
+      <li><em class="game">Top Gear 3000</em></li>
+      <li><em class="game">Tuff E Nuff</em></li>
+      <li><em class="game">Ultimate Mortal Kombat 3</em></li>
+      <li><em class="game">Uniracers</em></li>
+      <li><em class="game">Wild Guns</em></li>
+      <li><em class="game">World Heroes</em></li>
+      <li><em class="game">Wrecking Crew '98</em></li>
+      <li><em class="game">Zombies Ate My Neighbors</em></li>
+    </ul>
+  </div>
+
+</div>
+
+<div id="footer">
+  <h2>Footer</h2>
+  <p>This documentation is best viewed in a standards-compliant web browser, like <a href="http://www.mozilla.com" title="Mozilla Corporation home page">Firefox</a> or <a href="http://www.opera.com" title="Opera web browser home page">Opera</a>.</p>
+
+  <a href="http://sourceforge.net" title="SourceForge.net"><img style="border:0;width:88px;height:31px" src="http://sflogo.sourceforge.net/sflogo.php?group_id=127354&amp;type=1" alt="SourceForge.net Logo" /></a>
+  <a href="http://sourceforge.net/donate/index.php?group_id=19677" title="Donate to the ZSNES Project"><img style="border:0;width:88px;height:32px" src="http://images.sourceforge.net/images/project-support.jpg" alt="Support This Project" /> </a>
+  <span class="web_only">
+    <a href="http://validator.w3.org/check?uri=referer" title="Validate this page's HTML"><img style="border:0;width:88px;height:31px" src="http://www.w3.org/Icons/valid-xhtml10" alt="Valid XHTML 1.0 Strict" /></a>
+    <a href="http://jigsaw.w3.org/css-validator/check/referer" title="Validate this page's CSS"><img style="border:0;width:88px;height:31px" src="http://jigsaw.w3.org/css-validator/images/vcss" alt="Valid CSS!" /></a>
+  </span>
+
+  <p><a href="license.htm" title="View the General Public License">Copyright (C) ZSNES Team &amp; ZSNES Documentation Team</a></p>
+</div>
+
+</div>
+
+</body>
+
+</html>

@@ -1,0 +1,122 @@
+ZSNES v1.51 Documentation
+
+================================
+    N a v i g a t i o n
+================================
+
+    * Index    [Index.txt]
+
+    * Readme    [Readme.txt]
+
+    * GUI    [GUI.txt]
+
+    * Netplay    [Netplay.txt]
+
+    * Advanced Usage    [Advanced.txt]
+
+    * Games    [Games.txt]
+
+    * FAQ    [FAQ.txt]
+
+    - - - - - - - - - - - - - - - - - -
+
+    * Getting Support    [Support.txt]
+
+    * History    [History.txt]
+
+    * About    [About.txt]
+
+    * License    [License.txt]
+
+    - - - - - - - - - - - - - - - - - -
+
+    * NSRT Guide:    [http://zsnes-docs.sf.net/nsrt]
+
+    * ZSNES Home Page:  [ZSNES.com]
+
+
+================================================================================
+~                                  I n d e x
+================================================================================
+
+    * Index    [Index.txt]
+
+    * Readme    [Readme.txt]
+        1. Disclaimer
+        2. Current Progress
+        3. Extra Features
+        4. System Requirements
+        5. Installation
+        6. Basic Usage
+        7. Default Keys
+        8. Save States
+        9. Movies
+        10. IPS Patching
+        11. Cheat Codes
+        12. Files
+
+    * GUI    [GUI.txt]
+        1. Game Menu
+        2. Quick Menu
+        3. Config Menu
+        4. Cheat Menu
+        5. Netplay Menu
+        6. Misc Menu
+        7. F1 Menu
+        8. Save Slot Chooser
+
+    * Netplay    [Netplay.txt]
+        1. Things To Know
+        2. Recommendations
+        3. Simple Instructions
+        4. Loading a Game
+        5. Configuring
+        6. Troubleshooting
+        7. Links and Utilities
+
+    * Advanced Usage    [Advanced.txt]
+        1. Movie Dumping
+        2. Configuration Files
+        3. Debugger
+        4. KitchenSync
+        5. Command-Line
+
+    * Games    [Games.txt]
+        1. ROMs
+        2. Compatibility
+        3. Special-Chip Games
+        4. Special Cartridges
+            - BS-X (Satellaview)
+            - Super Gameboy
+        5. Individual Game Issues
+        6. Games Supported by ManyMouse
+        7. Multiplayer List
+
+    * FAQ    [FAQ.txt]
+        1. Universal
+        2. Win Port
+        3. SDL Port
+        4. DOS Port
+
+    - - - - - - - - - - - - - - - - - -
+
+    * Getting Support    [Support.txt]
+        1. APIs and Utilities
+        2. Contact Information
+        3. Known Issues
+        4. Filing a Bug Report
+
+    * History    [History.txt]
+
+    * About    [About.txt]
+        1. ZSNES
+        2. Documentation
+        3. Credits
+
+    * License    [License.txt]
+
+
+. . . . . . . . . . . . . . . .
+This documentation is best viewed in a fixed-width font such as "Courier New".
+
+Copyright (C) ZSNES Team & ZSNES Documentation Team [License.txt]
