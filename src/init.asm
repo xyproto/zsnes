@@ -968,6 +968,8 @@ NEWSYM outofmemfix
     mov dword[MessageOn],0FFFFFFFFh
     ret
 
+ALIGN32 ; Hack for broken nasm < 2.08: macho sections are not aligned
+
 SECTION .bss
 NEWSYM yesoutofmemory, resb 1
 NEWSYM MMXSupport, resb 1
