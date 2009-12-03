@@ -1525,7 +1525,11 @@ int GetMouseMoveX()
 {
   //   InputRead();
   //SDL_GetRelativeMouseState(&MouseMove2X, NULL);
+#if SDL_VERSION_ATLEAST(1, 3, 0)
+  SDL_GetRelativeMouseState(0, &MouseMove2X, &MouseMove2Y);
+#else
   SDL_GetRelativeMouseState(&MouseMove2X, &MouseMove2Y);
+#endif
   return (MouseMove2X);
 }
 
