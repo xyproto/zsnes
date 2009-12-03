@@ -61,15 +61,13 @@ char allow_glvsync = 0;
 void SetGLAttributes()
 {
   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-#if (SDL_MAJOR_VERSION > 1) || ((SDL_MINOR_VERSION > 2) || ((SDL_MINOR_VERSION == 2) && (SDL_PATCHLEVEL >= 10)))
-  if (vsyncon)
-  {
-    SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL, 1);
-  }
-  else
-  {
-    SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL, 0);
-  }
+#if SDL_VERSION_ATLEAST(1, 2, 10)
+  int const value = vsyncon ? 1 : 0;
+#	if SDL_VERSION_ATLEAST(1, 3, 0)
+  SDL_GL_SetSwapInterval(value);
+#else
+  SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL, value);
+#	endif
   SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
 #endif
 }
