@@ -43,6 +43,7 @@ else
 endif
 
 SRCS :=
+SRCS += c_init.c
 SRCS += chips/7110emu.c
 SRCS += chips/7110proc.asm
 SRCS += chips/c4emu.c

@@ -282,7 +282,7 @@ NEWSYM initregr
 ; global variables
 SECTION .data
 NEWSYM invreg,    dw 0
-NEWSYM sndrot,    db 0             ; rotates to use A,X or Y for sound skip
+NEWSYM sndrot,    db 0
 NEWSYM sndrot2,   db 0             ; rotates a random value for sound skip
 NEWSYM INTEnab,   db 0             ; enables NMI(7)/VIRQ(5)/HIRQ(4)/JOY(0)
 NEWSYM NMIEnab,   db 1             ; controlled in e65816 loop.  Sets to 81h

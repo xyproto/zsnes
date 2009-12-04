@@ -31,15 +31,17 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <ctype.h>
 #include <string.h>
 #include <sys/stat.h>
-#include <stdbool.h>
 #define DIR_SLASH "\\"
 #endif
 #include "asm_call.h"
 #include "cfg.h"
+#include "cpu/regs.h"
+#include "cpu/regsw.h"
+#include "init.h"
+#include "initc.h"
 #include "input.h"
 #include "zpath.h"
 #include "cpu/memtable.h"
-#include <stdint.h>
 
 #ifdef QT_DEBUGGER
 #include "debugger/load.h"
@@ -88,7 +90,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 extern uint32_t curexecstate;
 extern bool spcon;
 
-void procexecloop()
+void procexecloop(void)
 {
   curexecstate &= 0xFFFFFF00;
 
@@ -1454,7 +1456,7 @@ void clearmem2()
   clearSPCRAM();
 }
 
-void clearmem()
+void clearmem(void)
 {
   int_fast32_t i;
 
@@ -1625,7 +1627,7 @@ void headerhack()
   }
 }
 
-void Setper2exec()
+void Setper2exec(void)
 {
   if (per2exec != 100)
   { // Decrease standard % of execution by 5% to replace branch and 16bit
@@ -1642,7 +1644,7 @@ extern uint32_t MsgCount, MessageOn;
 extern char *Msgptr;
 uint32_t CRC32;
 
-uint32_t showinfogui()
+uint32_t showinfogui(void)
 {
   uint_fast32_t i;
   uint8_t *ROM = romdata;
@@ -1724,7 +1726,7 @@ extern uint32_t Voice4Freq, Voice5Freq, Voice6Freq, Voice7Freq;
 extern uint32_t dspPAdj;
 extern uint16_t Voice0Pitch, Voice1Pitch, Voice2Pitch, Voice3Pitch;
 extern uint16_t Voice4Pitch, Voice5Pitch, Voice6Pitch, Voice7Pitch;
-void outofmemfix(), GUIDoReset();
+void GUIDoReset();
 
 void initpitch()
 {
@@ -1754,7 +1756,6 @@ extern uint16_t totlines;
 void SetAddressingModes(), GenerateBank0Table();
 void SetAddressingModesSA1(), GenerateBank0TableSA1();
 void InitDSP(), InitDSP2(), InitDSP3(), InitDSP4(), InitOBC1(), InitFxTables();
-void initregr(), initregw();
 
 #ifdef __MSDOS__
 void dosmakepal();
@@ -1986,7 +1987,7 @@ void SetIRQVectors()
   }
 }
 
-void SetupROM()
+void SetupROM(void)
 {
   static bool CLforce = false;
   uint8_t *ROM = romdata;
@@ -2413,7 +2414,7 @@ void map_bsx()
   snesmmap[0x7F] = snesmap2[0x7F] = ram7f;
 }
 
-void initsnes()
+void initsnes(void)
 {
   ForceNewGfxOff = 0;
 
@@ -2438,7 +2439,7 @@ void initsnes()
 void DosExit(), OpenSramFile(), CheatCodeLoad(), LoadSecondState(), LoadGameSpecificInput();
 extern uint8_t GUIOn, GUIOn2;
 
-bool loadfileGUI()
+bool loadfileGUI(void)
 {
   bool result = true;
 
@@ -2554,7 +2555,7 @@ void RTCinit();
 void SPC7110init();
 void SPC7110_deinit_decompression_state();
 
-void init65816()
+void init65816(void)
 {
     uint_fast8_t i;
 

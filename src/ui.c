@@ -33,9 +33,11 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #include "asm_call.h"
 #include "cfg.h"
+#include "c_init.h"
 #include "input.h"
 #include "intrf.h"
 #include "mmlib/mm.h"
+#include "ui.h"
 #include "zpath.h"
 
 #define BIT(x) (1 << (x))
@@ -92,7 +94,7 @@ unsigned char fastmemptr    = 0;
 unsigned char ForcePal      = 0;    // 1 = NTSC, 2 = PAL
 unsigned char finterleave   = 0;
 unsigned char DSPDisable    = 0;    // Disable DSP emulation
-unsigned char MusicVol      = 0;
+u1            MusicVol      = 0;
 unsigned char MMXextSupport = 0;
 
 void init(), WaitForKey(), MMXCheck(), InitSPC(), DosExit();
@@ -381,13 +383,6 @@ void zstart()
 
   gammalevel16b = gammalevel >> 1;
 
-  ptr = (unsigned int)&init;
-  if ((ptr & 3))
-  {
-    printf("%s%d", txtfailedalignc, (ptr & 0x1F));
-    asm_call(WaitForKey);
-  }
-
   ptr = (unsigned int)&xa;
   if ((ptr & 3))
   {
@@ -395,7 +390,7 @@ void zstart()
     asm_call(WaitForKey);
   }
 
-  asm_call(init);
+  init();
 }
 
 static char *seconds_to_asc(unsigned int seconds)

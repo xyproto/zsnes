@@ -33,6 +33,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #endif // __MSDOS__
 
 #include "asm_call.h"
+#include "cpu/execute.h"
 
 // All of these should be in headers, people!
 
@@ -70,7 +71,6 @@ extern          void memtablew8_wrapper(unsigned char, unsigned short, unsigned 
 extern void breakops_wrapper();
 
 extern void regaccessbankr8();
-extern void start65816();
 extern void endprog();
 
 // should be in "zstate.h"
@@ -129,7 +129,8 @@ void SPCbreakops(unsigned short addr);
 unsigned char *findop();
 unsigned char *findoppage();
 
-void startdebugger() {
+void startdebugger(void)
+{
     static int firsttime = 1;
 
 #ifdef __MSDOS__
@@ -186,7 +187,8 @@ void startdebugger() {
 
 
     if (execut == 1) {
-        start65816(); return;
+        asm_call(start65816);
+        return;
     }
     endprog(); return;
 }

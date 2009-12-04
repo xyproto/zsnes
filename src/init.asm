@@ -21,12 +21,8 @@
 
 %include "macros.mac"
 
-EXTSYM UpdateDevices,Makemode7Table,MusicRelVol,MusicVol
-EXTSYM romloadskip,start65816,showinfogui,inittable,zexit
-EXTSYM SA1inittable,MessageOn,Msgptr,MsgCount,sndrot,SnowTimer
-EXTSYM inittablec,newgfx16b,DisplayInfo,ssautosw,GUIDelayB,pl12s34
-EXTSYM Output_Text,Turbo30hz,CombinDataLocl,current_zst
-EXTSYM BackupSystemVars,SnowData,SnowVelDist,Setper2exec,ShowMMXSupport
+EXTSYM zexit,MessageOn,Msgptr,MsgCount,newgfx16b,ssautosw,GUIDelayB,pl12s34
+EXTSYM Output_Text,Turbo30hz,CombinDataLocl,ShowMMXSupport
 EXTSYM JoyRead,pressed,mousebuttons,mousexdir,mouseydir,mousexpos,mouseypos
 EXTSYM pl1selk,pl1startk,pl1upk,pl1downk,pl1leftk,pl1rightk,pl1Xk
 EXTSYM pl1Ak,pl1Lk,pl1Yk,pl1Bk,pl1Rk,pl1Xtk,pl1Ytk,pl1Atk,pl1Btk,pl1Ltk,pl1Rtk
@@ -41,23 +37,11 @@ EXTSYM pl4Ltk,pl4Rtk,pl4ULk,pl4URk,pl4DLk,pl4DRk,pl5contrl,pl5selk,pl5startk
 EXTSYM pl5upk,pl5downk,pl5leftk,pl5rightk,pl5Xk,pl5Ak,pl5Lk,pl5Yk,pl5Bk,pl5Rk
 EXTSYM pl5Xtk,pl5Ytk,pl5Atk,pl5Btk,pl5Ltk,pl5Rtk,pl5ULk,pl5URk,pl5DLk,pl5DRk
 EXTSYM CombinDataGlob,NumCombo,GUIComboGameSpec,mousexloc,mouseyloc,extlatch
-EXTSYM AllowMMX,MMXextSupport,romdata,procexecloop,wramdata,LoadSecondState
-EXTSYM romispal,initregr,initregw,loadfileGUI,loadstate2,CMovieExt,AutoState
-EXTSYM MoviePlay,MovieDumpRaw,AllowUDLR,device1,device2,processmouse1,SaveSecondState
-EXTSYM processmouse2,cpalval,init65816,clearmem,SetupROM,ZCartName,initsnes,SSPause
+EXTSYM AllowMMX,MMXextSupport,romdata,wramdata,romispal,AutoState,AllowUDLR
+EXTSYM device1,device2,processmouse1,SaveSecondState,processmouse2,SSPause
 
 %ifdef __MSDOS__
 EXTSYM init18_2hz
-%endif
-
-%ifndef NO_DEBUGGER
-EXTSYM startdebugger
-%ifndef __MSDOS__
-%ifdef __WIN32__
-EXTSYM initwinvideo
-%endif
-EXTSYM Start60HZ
-%endif
 %endif
 
 ; Initiation
@@ -66,166 +50,15 @@ SECTION .data
 NEWSYM regsbackup, times 3019 db 0
 NEWSYM forceromtype, db 0
 ; FIX STATMAT
-NEWSYM autoloadstate, db 0        ; auto load state slot number
+NEWSYM autoloadstate, db 0
 NEWSYM autoloadmovie, db 0
 NEWSYM ZMVRawDump, db 0
-
-SECTION .text
-
-NEWSYM init
-    ; prevents a crash if cpalval gets accessed before initializing
-    mov eax,cpalval
-    mov ecx,256
-.looppal
-    mov dword[eax],cpalval
-    add eax,4
-    dec ecx
-    jnz .looppal
-
-    ; Initialize snow stuff
-    mov ecx,400
-    xor edx,edx
-.snowloop
-    shl word[SnowData+edx*2],8
-    and byte[SnowVelDist+edx],0F7h
-    cmp dword[SnowTimer],0
-    jne .skip
-    or byte[SnowVelDist+edx],08h
-.skip
-    inc edx
-    dec ecx
-    jnz .snowloop
-
-    ccallv BackupSystemVars
-
-    mov al,[romtype]
-    mov [forceromtype],al
-    mov byte[romtype],0
-    mov ax,ds
-    mov es,ax
-    mov eax,regsbackup
-    mov ebx,sndrot
-    mov ecx,3019
-.rbackupl
-    mov dl,[ebx]
-    mov [eax],dl
-    inc ebx
-    inc eax
-    dec ecx
-    jnz .rbackupl
-    ccallv clearmem
-    call inittable
-    call inittablec
-    call SA1inittable
-    ; SPC Init
-    ccallv procexecloop
-    ; SNES Init
-    ccallv Setper2exec
-    call Makemode7Table
-    mov eax,[ZCartName]
-    cmp byte[eax],0
-    jne .found
-    cmp byte[romloadskip],1
-    je .noloadfile
-.found
-    mov byte[romloadskip],0
-    ccallv loadfileGUI
-    ccallv SetupROM
-    cmp byte[DisplayInfo],0
-    je .noloadfile
-    ccallv showinfogui
-.noloadfile
-    call UpdateDevices
-    ccallv init65816
-    call initregr
-    call initregw
-    ccallv initsnes
-
-    ; Initialize volume
-    xor edx,edx
-    movzx eax,byte[MusicRelVol]
-    shl eax,7
-    mov ebx,0A3D70A3Dh
-    mul ebx
-    shr edx,6
-    cmp dl,127
-    jb .noof
-    mov dl,127
-.noof
-    mov [MusicVol],dl
-
-    cmp byte[AutoState],1
-    jne .noloadzss
-    ccallv LoadSecondState
-.noloadzss
-
-; FIX STATMAT
-    ; Here's the auto-load ZST file stuff
-    cmp byte[autoloadstate],1
-    jl .noautoloadstate
-    movzx eax,byte[autoloadstate]
-    dec eax
-    mov [current_zst],eax
-
-    ; Load the specified state file
-    ccallv loadstate2
-.noautoloadstate
-
-    cmp byte[autoloadmovie],1
-    jb .noautloadmovie
-    cmp byte[autoloadmovie],10
-    ja .noautloadmovie
-    mov al,[autoloadmovie]
-    add al,'0'-1
-    cmp al,'0'
-    jne .notzero1
-    mov al,'v'
-.notzero1
-    mov [CMovieExt],al
-
-    cmp byte[ZMVRawDump],0
-    je .norawdump
-    ccallv MovieDumpRaw
-    jmp .aftermovieplay
-.norawdump
-    ccallv MoviePlay
-.aftermovieplay
-.noautloadmovie
-
-    cmp byte[yesoutofmemory],1
-    jne .noout
-    call outofmemfix
-.noout
-%ifndef NO_DEBUGGER
-    cmp byte[debugger],0
-    je near start65816
-    cmp byte[romloadskip],1
-    je near start65816
-%ifndef __MSDOS__
-    ;; Prevent nasty hang in debugger. Likely not a good way...
-    ;; If we don't do this, then on the SDL and win32 ports, update_ticks_pc2
-    ;; won't be set and CheckTimers will hang.
-
-    ;; Most likely it isn't desirable to be checking timers under the
-    ;; debugger anyway, but this is a much simpler fix.
-
-%ifdef __WIN32__
-    ;; need to get "freq" set first
-    ccallv initwinvideo
-%endif
-    ccallv Start60HZ
-%endif
-    ccallv startdebugger
-    ret
-%else
-    jmp start65816
-%endif
 
 ; global variables
 
 SECTION .data
 
-NEWSYM romtype, db 0    ; ROM type in bytes
+NEWSYM romtype, db 0
 NEWSYM resetv,  dw 0    ; reset vector
 NEWSYM abortv,  dw 0    ; abort vector
 NEWSYM nmiv2,   dw 0    ; nmi vector
@@ -261,7 +94,7 @@ NEWSYM xdt,      dw 0
 NEWSYM xxt,      dw 0
 NEWSYM xyt,      dw 0
 NEWSYM xpc,      dw 0
-NEWSYM debugger, db 0              ; Start with debugger (1=yes,0=no)
+NEWSYM debugger, db 0
 NEWSYM curnmi,   db 0           ; if in NMI(1) or not(0)
 
 ALIGN32

@@ -31,7 +31,7 @@ void MovieRecord();
 void MoviePlay();
 void MovieStop();
 void MovieAppend();
-
+void MovieDumpRaw(void);
 bool MovieInProgress();
 
 extern unsigned char MovieProcessing;

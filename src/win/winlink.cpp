@@ -1597,7 +1597,7 @@ extern "C"
   extern unsigned int pressed;
   extern unsigned char romispal;
 
-  void Start60HZ()
+  void Start60HZ(void)
   {
     update_ticks_pc2 = UPDATE_TICKS_UDP * freq / 1000.0;
 

@@ -500,7 +500,7 @@ void InitRewindVarsForMovie()
 //This is used to preserve system load state between game loads
 static uint8_t *BackupSystemBuffer = 0;
 
-void BackupSystemVars()
+void BackupSystemVars(void)
 {
   uint8_t *buffer;
 
@@ -1237,12 +1237,12 @@ void loadstate()
   stateloader(ZStateName, 1, 0);
 }
 
-void loadstate2()
+void loadstate2(void)
 {
   stateloader(ZStateName, 0, 1);
 }
 
-void LoadSecondState()
+void LoadSecondState(void)
 {
   setextension(ZStateName, "zss");
   loadstate2();

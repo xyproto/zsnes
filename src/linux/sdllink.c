@@ -1040,7 +1040,7 @@ int startgame()
   return TRUE;
 }
 
-void Start60HZ()
+void Start60HZ(void)
 {
   update_ticks_pc2 = UPDATE_TICKS_UDP;
   if (romispal == 1)

@@ -3093,7 +3093,7 @@ void GetMovieFrameStr()
   }
 }
 
-void MovieDumpRaw()
+void MovieDumpRaw(void)
 {
   MoviePassWaiting = 0;
   if (!MovieProcessing)
