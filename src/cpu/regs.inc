@@ -19,7 +19,7 @@
 
 
 
-EXTSYM SFXEnable,SA1Enable,SPC7110Enable,RTCEnable,curypos,cycpl
+EXTSYM SPC7110Enable,curypos,cycpl
 EXTSYM pdh,vram,romispal,reg1read,spcnumread,spcon,reg2read,reg3read
 EXTSYM reg4read,JoyEOrig,JoyENow,device2,cycphb,joycontren,totlines
 

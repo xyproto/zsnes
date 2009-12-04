@@ -4,9 +4,9 @@
 #include "c_init.h"
 #include "cfg.h"
 #include "cpu/c_regs.h"
+#include "cpu/c_regsw.h"
 #include "cpu/execute.h"
 #include "cpu/regs.h"
-#include "cpu/regsw.h"
 #include "cpu/stable.h"
 #include "cpu/table.h"
 #include "cpu/tablec.h"
@@ -74,7 +74,7 @@ void init(void)
 	asm_call(UpdateDevices);
 	init65816();
 	initregr();
-	asm_call(initregw);
+	initregw();
 	initsnes();
 
 	u4 const vol = MusicRelVol * 128 * 0xA3D70A3DULL >> 38;

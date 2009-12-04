@@ -19,8 +19,7 @@
 
 
 
-EXTSYM initsfxregsw,reg420Bw,reg420Cw,regptwa,initSA1regsw,SDD1Reset
-EXTSYM SPC7110Reset,RTCReset2,NextLineCache,vidmemch2,vidmemch4
+EXTSYM reg420Bw,reg420Cw,regptwa,NextLineCache,vidmemch2,vidmemch4
 EXTSYM vidmemch8,vrama,nmirept,SPCRAM,HIRQCycNext,HIRQNextExe,tableadc
 EXTSYM cycpb268,cycpb358,cycpbl,cycpblt,opexec268,opexec268cph,opexec358
 EXTSYM opexec358cph
@@ -28,280 +27,6 @@ EXTSYM opexec358cph
 %ifndef NO_DEBUGGER
 EXTSYM sndwrit,debstop
 %endif
-
-SECTION .text
-
-NEWSYM initregw
-    ; Fill register pointer with invalid register accesses
-    mov edi,regptwa
-    mov ecx,3000h
-    mov eax,regINVALIDw
-.loopa
-    mov [edi],eax
-    add edi,4
-    dec ecx
-    jnz .loopa
-    ; Set all valid register accesses
-    setregw 2100h,reg2100w
-    setregw 2101h,reg2101w
-    setregw 2102h,reg2102w
-    setregw 2103h,reg2103w
-    setregw 2104h,reg2104w
-    setregw 2105h,reg2105w
-    setregw 2106h,reg2106w
-    setregw 2107h,reg2107w
-    setregw 2108h,reg2108w
-    setregw 2109h,reg2109w
-    setregw 210Ah,reg210Aw
-    setregw 210Bh,reg210Bw
-    setregw 210Ch,reg210Cw
-    setregw 210Dh,reg210Dw
-    setregw 210Eh,reg210Ew
-    setregw 210Fh,reg210Fw
-    setregw 2110h,reg2110w
-    setregw 2111h,reg2111w
-    setregw 2112h,reg2112w
-    setregw 2113h,reg2113w
-    setregw 2114h,reg2114w
-    setregw 2115h,reg2115w
-    setregw 2116h,reg2116w
-    setregw 2117h,reg2117w
-    setregw 2118h,reg2118
-    setregw 2119h,reg2119inc
-    setregw 211Ah,reg211Aw
-    setregw 211Bh,reg211Bw
-    setregw 211Ch,reg211Cw
-    setregw 211Dh,reg211Dw
-    setregw 211Eh,reg211Ew
-    setregw 211Fh,reg211Fw
-    setregw 2120h,reg2120w
-    setregw 2121h,reg2121w
-    setregw 2122h,reg2122w
-    setregw 2123h,reg2123w
-    setregw 2124h,reg2124w
-    setregw 2125h,reg2125w
-    setregw 2126h,reg2126w
-    setregw 2127h,reg2127w
-    setregw 2128h,reg2128w
-    setregw 2129h,reg2129w
-    setregw 212Ah,reg212Aw
-    setregw 212Bh,reg212Bw
-    setregw 212Ch,reg212Cw
-    setregw 212Dh,reg212Dw
-    setregw 212Eh,reg212Ew
-    setregw 212Fh,reg212Fw
-    setregw 2130h,reg2130w
-    setregw 2131h,reg2131w
-    setregw 2132h,reg2132w
-    setregw 2133h,reg2133w
-    setregw 2140h,reg2140w
-    setregw 2141h,reg2141w
-    setregw 2142h,reg2142w
-    setregw 2143h,reg2143w
-    setregw 2144h,reg2140w
-    setregw 2145h,reg2141w
-    setregw 2146h,reg2142w
-    setregw 2147h,reg2143w
-    setregw 2148h,reg2140w
-    setregw 2149h,reg2141w
-    setregw 214Ah,reg2142w
-    setregw 214Bh,reg2143w
-    setregw 214Ch,reg2140w
-    setregw 214Dh,reg2141w
-    setregw 214Eh,reg2142w
-    setregw 214Fh,reg2143w
-    setregw 2150h,reg2140w
-    setregw 2151h,reg2141w
-    setregw 2152h,reg2142w
-    setregw 2153h,reg2143w
-    setregw 2154h,reg2140w
-    setregw 2155h,reg2141w
-    setregw 2156h,reg2142w
-    setregw 2157h,reg2143w
-    setregw 2158h,reg2140w
-    setregw 2159h,reg2141w
-    setregw 215Ah,reg2142w
-    setregw 215Bh,reg2143w
-    setregw 215Ch,reg2140w
-    setregw 215Dh,reg2141w
-    setregw 215Eh,reg2142w
-    setregw 215Fh,reg2143w
-    setregw 2160h,reg2140w
-    setregw 2161h,reg2141w
-    setregw 2162h,reg2142w
-    setregw 2163h,reg2143w
-    setregw 2164h,reg2140w
-    setregw 2165h,reg2141w
-    setregw 2166h,reg2142w
-    setregw 2167h,reg2143w
-    setregw 2168h,reg2140w
-    setregw 2169h,reg2141w
-    setregw 216Ah,reg2142w
-    setregw 216Bh,reg2143w
-    setregw 216Ch,reg2140w
-    setregw 216Dh,reg2141w
-    setregw 216Eh,reg2142w
-    setregw 216Fh,reg2143w
-    setregw 2170h,reg2140w
-    setregw 2171h,reg2141w
-    setregw 2172h,reg2142w
-    setregw 2173h,reg2143w
-    setregw 2174h,reg2140w
-    setregw 2175h,reg2141w
-    setregw 2176h,reg2142w
-    setregw 2177h,reg2143w
-    setregw 2178h,reg2140w
-    setregw 2179h,reg2141w
-    setregw 217Ah,reg2142w
-    setregw 217Bh,reg2143w
-    setregw 217Ch,reg2140w
-    setregw 217Dh,reg2141w
-    setregw 217Eh,reg2142w
-    setregw 217Fh,reg2143w
-    setregw 2180h,reg2180w
-    setregw 2181h,reg2181w
-    setregw 2182h,reg2182w
-    setregw 2183h,reg2183w
-    setregw 4016h,reg4016w
-    setregw 4200h,reg4200w
-    setregw 4201h,reg4201w
-    setregw 4202h,reg4202w
-    setregw 4203h,reg4203w
-    setregw 4204h,reg4204w
-    setregw 4205h,reg4205w
-    setregw 4206h,reg4206w
-    setregw 4207h,reg4207w
-    setregw 4208h,reg4208w
-    setregw 4209h,reg4209w
-    setregw 420Ah,reg420Aw
-    setregw 420Bh,reg420Bw
-    setregw 420Ch,reg420Cw
-    setregw 420Dh,reg420Dw
-    setregw 4300h,reg43X0w
-    setregw 4301h,reg43X1w
-    setregw 4302h,reg43x2w
-    setregw 4303h,reg43x3w
-    setregw 4304h,reg43x4w
-    setregw 4305h,reg43x5w
-    setregw 4306h,reg43x6w
-    setregw 4307h,reg43x7w
-    setregw 4308h,reg43x8w
-    setregw 4309h,reg43x9w
-    setregw 430Ah,reg43XAw
-    setregw 430Bh,reg43XBw
-    setregw 430Fh,reg43XBw
-    setregw 4310h,reg43X0w
-    setregw 4311h,reg43X1w
-    setregw 4312h,reg43x2w
-    setregw 4313h,reg43x3w
-    setregw 4314h,reg43x4w
-    setregw 4315h,reg43x5w
-    setregw 4316h,reg43x6w
-    setregw 4317h,reg43x7w
-    setregw 4318h,reg43x8w
-    setregw 4319h,reg43x9w
-    setregw 431Ah,reg43XAw
-    setregw 431Bh,reg43XBw
-    setregw 431Fh,reg43XBw
-    setregw 4320h,reg43X0w
-    setregw 4321h,reg43X1w
-    setregw 4322h,reg43x2w
-    setregw 4323h,reg43x3w
-    setregw 4324h,reg43x4w
-    setregw 4325h,reg43x5w
-    setregw 4326h,reg43x6w
-    setregw 4327h,reg43x7w
-    setregw 4328h,reg43x8w
-    setregw 4329h,reg43x9w
-    setregw 432Ah,reg43XAw
-    setregw 432Bh,reg43XBw
-    setregw 432Fh,reg43XBw
-    setregw 4330h,reg43X0w
-    setregw 4331h,reg43X1w
-    setregw 4332h,reg43x2w
-    setregw 4333h,reg43x3w
-    setregw 4334h,reg43x4w
-    setregw 4335h,reg43x5w
-    setregw 4336h,reg43x6w
-    setregw 4337h,reg43x7w
-    setregw 4338h,reg43x8w
-    setregw 4339h,reg43x9w
-    setregw 433Ah,reg43XAw
-    setregw 433Bh,reg43XBw
-    setregw 433Fh,reg43XBw
-    setregw 4340h,reg43X0w
-    setregw 4341h,reg43X1w
-    setregw 4342h,reg43x2w
-    setregw 4343h,reg43x3w
-    setregw 4344h,reg43x4w
-    setregw 4345h,reg43x5w
-    setregw 4346h,reg43x6w
-    setregw 4347h,reg43x7w
-    setregw 4348h,reg43x8w
-    setregw 4349h,reg43x9w
-    setregw 434Ah,reg43XAw
-    setregw 434Bh,reg43XBw
-    setregw 434Fh,reg43XBw
-    setregw 4350h,reg43X0w
-    setregw 4351h,reg43X1w
-    setregw 4352h,reg43x2w
-    setregw 4353h,reg43x3w
-    setregw 4354h,reg43x4w
-    setregw 4355h,reg43x5w
-    setregw 4356h,reg43x6w
-    setregw 4357h,reg43x7w
-    setregw 4358h,reg43x8w
-    setregw 4359h,reg43x9w
-    setregw 435Ah,reg43XAw
-    setregw 435Bh,reg43XBw
-    setregw 435Fh,reg43XBw
-    setregw 4360h,reg43X0w
-    setregw 4361h,reg43X1w
-    setregw 4362h,reg43x2w
-    setregw 4363h,reg43x3w
-    setregw 4364h,reg43x4w
-    setregw 4365h,reg43x5w
-    setregw 4366h,reg43x6w
-    setregw 4367h,reg43x7w
-    setregw 4368h,reg43x8w
-    setregw 4369h,reg43x9w
-    setregw 436Ah,reg43XAw
-    setregw 436Bh,reg43XBw
-    setregw 436Fh,reg43XBw
-    setregw 4370h,reg43X0w
-    setregw 4371h,reg43X1w
-    setregw 4372h,reg43x2w
-    setregw 4373h,reg43x3w
-    setregw 4374h,reg43x4w
-    setregw 4375h,reg43x5w
-    setregw 4376h,reg43x6w
-    setregw 4377h,reg43x7w
-    setregw 4378h,reg43x8w
-    setregw 4379h,reg43x9w
-    setregw 437Ah,reg43XAw
-    setregw 437Bh,reg43XBw
-    setregw 437Fh,reg43XBw
-    cmp byte[SFXEnable],0
-    je .nosfx
-    call initsfxregsw
-.nosfx
-    cmp byte[SA1Enable],0
-    je .nosa1
-    call initSA1regsw
-.nosa1
-    cmp byte[SDD1Enable],0
-    je .nosdd1
-    call SDD1Reset
-.nosdd1
-    cmp byte[SPC7110Enable],0
-    je .nospc7110
-    call SPC7110Reset
-.nospc7110
-    cmp byte[RTCEnable],0
-    je .nortc
-    call RTCReset2
-.nortc
-    ret
 
 ; video memory change buffer for caching (65536/16=4096)
 ;vidmemch2, vidmemch4, vidmemch8. 4096 bytes each
@@ -312,7 +37,7 @@ NEWSYM initregw
 
 
 ; Screen display register
-reg2100w:
+NEWSYM reg2100w
     mov [vidbright],al
     and byte[vidbright],0Fh
     mov [forceblnk],al
@@ -324,7 +49,7 @@ NEWSYM prevoamptr, resb 1
 SECTION .text
 
 ; OAM size register
-reg2101w:
+NEWSYM reg2101w
     cmp byte[prevoamptr],0FFh
     je .noskip
     cmp byte[prevoamptr],al
@@ -377,7 +102,7 @@ NEWSYM oamlow, resb 1
 SECTION .text
 
 ; OAM address register
-reg2102w:
+NEWSYM reg2102w
     mov bx,[oamaddrs]
     mov [poamaddrs],bx
     shr bx,1
@@ -403,7 +128,7 @@ reg2102w:
     ret
 
 ; OAM address register
-reg2103w:
+NEWSYM reg2103w
     mov bx,[oamaddrs]
     shr bx,1
     mov bh,al
@@ -435,7 +160,7 @@ reg2103w:
     ret
 
 ; OAM data register
-reg2104w:
+NEWSYM reg2104w
     mov byte[NextLineCache],1
     mov ebx,[oamaddr]
     cmp byte[nosprincr],1
@@ -466,7 +191,7 @@ reg2104w:
     ret
 
 ; Screen mode register
-reg2105w:
+NEWSYM reg2105w
     mov bl,al
     and bl,00000111b
     mov [bgmode],bl
@@ -490,7 +215,7 @@ reg2105w:
     ret
 
 ; Screen pixelation register
-reg2106w:
+NEWSYM reg2106w
     mov bl,al
     and bl,0Fh
     mov [mosaicon],bl
@@ -500,7 +225,7 @@ reg2106w:
     ret
 
 ; BG1 VRAM location register
-reg2107w:
+NEWSYM reg2107w
     xor ebx,ebx
     mov bl,al
     shr bl,2
@@ -537,7 +262,7 @@ reg2107w:
     ret
 
 ; BG2 VRAM location register
-reg2108w:
+NEWSYM reg2108w
     xor ebx,ebx
     mov bl,al
     shr bl,2
@@ -574,7 +299,7 @@ reg2108w:
     ret
 
 ; BG3 VRAM location register
-reg2109w:
+NEWSYM reg2109w
     xor ebx,ebx
     mov bl,al
     shr bl,2
@@ -611,7 +336,7 @@ reg2109w:
     ret
 
 ; BG4 VRAM location register
-reg210Aw:
+NEWSYM reg210Aw
     xor ebx,ebx
     mov bl,al
     shr bl,2
@@ -648,7 +373,7 @@ reg210Aw:
     ret
 
 ; BG1 & BG2 VRAM location register
-reg210Bw:
+NEWSYM reg210Bw
     xor ebx,ebx
     mov bl,al
     and bl,0Fh
@@ -661,7 +386,7 @@ reg210Bw:
     ret
 
 ; BG3 & BG4 VRAM location register
-reg210Cw:
+NEWSYM reg210Cw
     xor ebx,ebx
     mov bl,al
     and bl,0Fh
@@ -698,7 +423,7 @@ section .text
 %endmacro
 
 ; BG1 horizontal scroll register
-reg210Dw:
+NEWSYM reg210Dw
     UpdateScrollRegX bg1scrolx
 ;    mov bl,[m7byte]
     mov [bg1scrolx_m7],bx
@@ -706,7 +431,7 @@ reg210Dw:
     ret
 
 ; BG1 vertical scroll register
-reg210Ew:
+NEWSYM reg210Ew
     UpdateScrollRegY bg1scroly
 ;    mov bl,[m7byte]
     mov [bg1scroly_m7],bx
@@ -714,37 +439,37 @@ reg210Ew:
     ret
 
 ; BG2 horizontal scroll register
-reg210Fw:
+NEWSYM reg210Fw
     UpdateScrollRegX bg2scrolx
     ret
 
 ; BG2 vertical scroll register
-reg2110w:
+NEWSYM reg2110w
     UpdateScrollRegY bg2scroly
     ret
 
 ; BG3 horizontal scroll register
-reg2111w:
+NEWSYM reg2111w
     UpdateScrollRegX bg3scrolx
     ret
 
 ; BG3 vertical scroll register
-reg2112w:
+NEWSYM reg2112w
     UpdateScrollRegY bg3scroly
     ret
 
 ; BG4 horizontal scroll register
-reg2113w:
+NEWSYM reg2113w
     UpdateScrollRegX bg4scrolx
     ret
 
 ; BG4 vertical scroll register
-reg2114w:
+NEWSYM reg2114w
     UpdateScrollRegY bg4scroly
     ret
 
 ; Video port control
-reg2115w:
+NEWSYM reg2115w
     and al,11111111b
     mov [vraminctype],al
     mov bl,al
@@ -818,7 +543,7 @@ reg2115w:
     ret
 
 ; Video port address (Low)
-reg2116w:
+NEWSYM reg2116w
     shr word[vramaddr],1
     mov [vramaddr],al
     shl word[vramaddr],1
@@ -826,7 +551,7 @@ reg2116w:
     ret
 
 ; Video port address (High)
-reg2117w:
+NEWSYM reg2117w
     shr word[vramaddr],1
     mov [vramaddr+1],al
     shl word[vramaddr],1
@@ -1012,7 +737,7 @@ NEWSYM reg2119inc8inc
     ret
 
 ; MODE7 settings register
-reg211Aw:
+NEWSYM reg211Aw
     mov [mode7set],al
     ret
 
@@ -1030,39 +755,39 @@ SECTION .text
 %endmacro
 
 ; COS (COSINE) rotate angle / X Expansion
-reg211Bw:
+NEWSYM reg211Bw
     Mode7Regs mode7A
     mov byte[multchange],1
     ret
 
 ; SIN (SIN)    rotate angle / X Expansion & Complement Multiplication Start
-reg211Cw:
+NEWSYM reg211Cw
     Mode7Regs mode7B
     mov byte[multchange],1
     ret
 
 ; SIN (SIN)    rotate angle / Y Expansion
-reg211Dw:
+NEWSYM reg211Dw
     Mode7Regs mode7C
     ret
 
 ; COS (COSINE) rotate angle / Y Expansion
-reg211Ew:
+NEWSYM reg211Ew
     Mode7Regs mode7D
     ret
 
 ; Center position X (13-bit data only)
-reg211Fw:
+NEWSYM reg211Fw
     Mode7Regs mode7X0
     ret
 
 ; Center position Y (13-bit data only)
-reg2120w:
+NEWSYM reg2120w
     Mode7Regs mode7Y0
     ret
 
 ; Colour # (or palette) selection register
-reg2121w:
+NEWSYM reg2121w
     xor bh,bh
     mov bl,al
     shl bx,1
@@ -1071,7 +796,7 @@ reg2121w:
     ret
 
 ; Colour data register
-reg2122w:
+NEWSYM reg2122w
     movzx ebx,word[cgaddr]
     cmp [cgram+ebx],al
     je .nomod
@@ -1083,7 +808,7 @@ reg2122w:
     ret
 
 ; Window mask settings register [W12SEL]
-reg2123w:
+NEWSYM reg2123w
     mov bl,al
     and bl,0Fh
     test bl,0Ah
@@ -1101,7 +826,7 @@ reg2123w:
     ret
 
 ; Window mask settings register [W34SEL]
-reg2124w:
+NEWSYM reg2124w
     mov bl,al
     and bl,0Fh
     test bl,0Ah
@@ -1119,7 +844,7 @@ reg2124w:
     ret
 
 ; Window mask settings register [WOBJSEL]
-reg2125w:
+NEWSYM reg2125w
     mov bl,al
     and bl,0Fh
     mov [winobjen],bl
@@ -1129,67 +854,67 @@ reg2125w:
     ret
 
 ; Window 1 left position register
-reg2126w:
+NEWSYM reg2126w
     mov [winl1],al
     ret
 
 ; Window 1 right position register
-reg2127w:
+NEWSYM reg2127w
     mov [winr1],al
     ret
 
 ; Window 2 left position register
-reg2128w:
+NEWSYM reg2128w
     mov [winl2],al
     ret
 
 ; Window 2 right position register
-reg2129w:
+NEWSYM reg2129w
     mov [winr2],al
     ret
 
 ; Mask logic settings for Window 1 & 2 per screen
-reg212Aw:
+NEWSYM reg212Aw
     mov [winlogica],al
     ret
 
 ; Mask logic settings for Colour Windows & OBJ Windows
-reg212Bw:
+NEWSYM reg212Bw
     mov [winlogicb],al
     ret
 
 ; Main screen designation
-reg212Cw:
+NEWSYM reg212Cw
     mov [scrnon],al
     ret
 
 ; Sub-screen designation
-reg212Dw:
+NEWSYM reg212Dw
     mov [scrnon+1],al
     ret
 
 ; Window mask main screen designation register
-reg212Ew:
+NEWSYM reg212Ew
     mov [winenabm],al
     ret
 
 ; Window mask sub screen designation register
-reg212Fw:
+NEWSYM reg212Fw
     mov [winenabs],al
     ret
 
 ; Fixed color addition or screen addition register
-reg2130w:
+NEWSYM reg2130w
     mov [scaddset],al
     ret
 
 ; Addition/subtraction for screens, BGs, & OBJs
-reg2131w:
+NEWSYM reg2131w
     mov [scaddtype],al
     ret
 
 ; Fixed colour data for fixed colour +/-
-reg2132w:
+NEWSYM reg2132w
     mov bl,al
     and bl,1Fh
     test al,20h
@@ -1207,7 +932,7 @@ reg2132w:
     ret
 
 ; Screen mode/video select register
-reg2133w:
+NEWSYM reg2133w
     mov [interlval],al
     and byte[interlval],43h
     test al,04h
@@ -1219,7 +944,7 @@ reg2133w:
     ret
 
 ; Sound Register #1
-reg2140w:
+NEWSYM reg2140w
 %ifndef NO_DEBUGGER
     mov byte[sndwrit],1
 %endif
@@ -1239,7 +964,7 @@ reg2140w:
 ;    ret
 
 ; Sound Register #2
-reg2141w:
+NEWSYM reg2141w
 %ifndef NO_DEBUGGER
     mov byte[sndwrit],1
 %endif
@@ -1255,7 +980,7 @@ reg2141w:
 ;    ret
 
 ; Sound Register #3
-reg2142w:
+NEWSYM reg2142w
 %ifndef NO_DEBUGGER
     mov byte[sndwrit],1
 %endif
@@ -1271,7 +996,7 @@ reg2142w:
 ;    ret
 
 ; Sound Register #4
-reg2143w:
+NEWSYM reg2143w
 %ifndef NO_DEBUGGER
     mov byte[sndwrit],1
 %endif
@@ -1287,7 +1012,7 @@ reg2143w:
 ;    ret
 
 ; Read/write WRAM register
-reg2180w:
+NEWSYM reg2180w
     mov ebx,[wramrwadr]
     add ebx,[wramdata]
     mov [ebx],al
@@ -1296,17 +1021,17 @@ reg2180w:
     ret
 
 ; WRAM data register (low byte)
-reg2181w:
+NEWSYM reg2181w
     mov [wramrwadr],al
     ret
 
 ; WRAM data register (middle byte)
-reg2182w:
+NEWSYM reg2182w
     mov [wramrwadr+1],al
     ret
 
 ; WRAM data register (high byte)
-reg2183w:
+NEWSYM reg2183w
     mov bl,al
     and bl,01h
     mov [wramrwadr+2],bl
@@ -1317,7 +1042,7 @@ SECTION .bss
 NEWSYM MultiTapStat, resb 1
 SECTION .text
 
-reg4016w:
+NEWSYM reg4016w
     test byte[INTEnab],1
     jnz .nointenab
     mov ebx,[JoyAOrig]
@@ -1379,12 +1104,12 @@ reg4016w:
     ret
 
 ; Counter enable
-reg4200w:
+NEWSYM reg4200w
     mov [INTEnab],al
     ret
 
 ; Programmable I/O port (out-port)
-reg4201w:
+NEWSYM reg4201w
     cmp byte[iohvlatch],1
     jne .noiohvlatch
     test al,80h
@@ -1405,12 +1130,12 @@ reg4201w:
     ret
 
 ; Multiplicand 'A'
-reg4202w:
+NEWSYM reg4202w
     mov [multa],al
     ret
 
 ; Multiplier 'B'
-reg4203w:
+NEWSYM reg4203w
     push edx
     push eax
     xor ah,ah
@@ -1423,17 +1148,17 @@ reg4203w:
     ret
 
 ; Dividend C (Low)
-reg4204w:
+NEWSYM reg4204w
     mov [diva],al
     ret
 
 ; Dividend C (High)
-reg4205w:
+NEWSYM reg4205w
     mov [diva+1],al
     ret
 
 ; Divisor B
-reg4206w:
+NEWSYM reg4206w
     cmp al,0
     je .divby0
     push eax
@@ -1488,7 +1213,7 @@ DetermineHIRQExec
     ret
 
 ; Video horizontal IRQ beam position/pointer (Low)
-reg4207w:
+NEWSYM reg4207w
     cmp [HIRQLoc],al
     je .nohirqc
     mov [HIRQLoc],al
@@ -1499,7 +1224,7 @@ reg4207w:
     ret
 
 ; Video horizontal IRQ beam position/pointer (High)
-reg4208w:
+NEWSYM reg4208w
     cmp [HIRQLoc+1],al
     je .nohirqc
     mov [HIRQLoc+1],al
@@ -1510,7 +1235,7 @@ reg4208w:
     ret
 
 ; Video vertical IRQ beam position/pointer (Low)
-reg4209w:
+NEWSYM reg4209w
     mov [VIRQLoc],al
 ;    mov bx,[curypos]
     cmp byte[HIRQNextExe],1
@@ -1527,7 +1252,7 @@ reg4209w:
     ret
 
 ; Video vertical IRQ beam position/pointer (High)
-reg420Aw:
+NEWSYM reg420Aw
     and al,01h
     mov [VIRQLoc+1],al
     mov bx,[totlines]
@@ -1550,7 +1275,7 @@ reg420Aw:
     ret
 
 ; Cycle speed register
-reg420Dw:
+NEWSYM reg420Dw
     test al,01h
     jnz .speed358
     ; 2.68 Mhz
@@ -1574,7 +1299,7 @@ reg420Dw:
     ret
 
 ; DMA Control register
-reg43X0w:
+NEWSYM reg43X0w
     xor ebx,ebx
     mov bx,cx
     sub bx,4300h
@@ -1583,7 +1308,7 @@ reg43X0w:
     ret
 
 ; DMA Destination register
-reg43X1w:
+NEWSYM reg43X1w
     xor ebx,ebx
     mov bx,cx
     sub bx,4300h
@@ -1592,7 +1317,7 @@ reg43X1w:
     ret
 
 ; Source address (Low)
-reg43x2w:
+NEWSYM reg43x2w
     xor ebx,ebx
     mov bx,cx
     sub bx,4300h
@@ -1601,7 +1326,7 @@ reg43x2w:
     ret
 
 ; Source address (High)
-reg43x3w:
+NEWSYM reg43x3w
     xor ebx,ebx
     mov bx,cx
     sub bx,4300h
@@ -1610,7 +1335,7 @@ reg43x3w:
     ret
 
 ; Source bank address
-reg43x4w
+NEWSYM reg43x4w
     xor ebx,ebx
     mov bx,cx
     sub bx,4300h
@@ -1618,7 +1343,7 @@ reg43x4w
     ret
 
 ; DMA transfer size & HDMA address register (Low)
-reg43x5w:
+NEWSYM reg43x5w
     xor ebx,ebx
     mov bx,cx
     sub bx,4300h
@@ -1626,7 +1351,7 @@ reg43x5w:
     ret
 
 ; DMA transfer size & HDMA address register (High)
-reg43x6w:
+NEWSYM reg43x6w
     xor ebx,ebx
     mov bx,cx
     sub bx,4300h
@@ -1634,7 +1359,7 @@ reg43x6w:
     ret
 
 ; DMA transfer size & HDMA address register (Bank)
-reg43x7w:
+NEWSYM reg43x7w
     xor ebx,ebx
     mov bx,cx
     sub bx,4300h
@@ -1642,7 +1367,7 @@ reg43x7w:
     ret
 
 ; Table Address of A-BUS by DMA < A2 Table Address (Low)
-reg43x8w:
+NEWSYM reg43x8w
     xor ebx,ebx
     mov bx,cx
     sub bx,4300h
@@ -1650,7 +1375,7 @@ reg43x8w:
     ret
 
 ; Table Address of A-BUS by DMA < A2 Table Address (High)
-reg43x9w:
+NEWSYM reg43x9w
     xor ebx,ebx
     mov bx,cx
     sub bx,4300h
@@ -1658,7 +1383,7 @@ reg43x9w:
     ret
 
 ; Number of lines for HDMA transfer
-reg43XAw:
+NEWSYM reg43XAw
     mov byte[nohdmaframe],0
     xor ebx,ebx
     mov bx,cx
@@ -1675,12 +1400,12 @@ reg43XAw:
     ret
 
 ; Unknown DMA byte
-reg43XBw:
+NEWSYM reg43XBw
     xor ebx,ebx
     mov bx,cx
     sub bx,4300h
     mov [dmadata+ebx],al
     ret
 
-regINVALIDw:     ; Invalid Register
+NEWSYM regINVALIDw     ; Invalid Register
     ret
