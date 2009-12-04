@@ -13,4 +13,7 @@ void     init65816(void);
 void     initsnes(void);
 void     procexecloop(void);
 
+extern bool RTCEnable;
+extern bool SDD1Enable;
+
 #endif

@@ -35,11 +35,12 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #endif
 #include "asm_call.h"
 #include "cfg.h"
-#include "cpu/regs.h"
+#include "cpu/c_regs.h"
 #include "cpu/regsw.h"
 #include "init.h"
 #include "initc.h"
 #include "input.h"
+#include "ui.h"
 #include "zpath.h"
 #include "cpu/memtable.h"
 
@@ -1406,7 +1407,6 @@ void loadROM()
 //Memory Setup functions
 extern uint8_t wramdataa[65536];
 extern uint8_t ram7fa[65536];
-extern uint8_t regptra[49152];
 extern uint8_t regptwa[49152];
 extern uint8_t vidmemch2[4096];
 extern uint8_t vidmemch4[4096];
@@ -1464,7 +1464,7 @@ void clearmem(void)
   memset(wramdataa, 0, 65536);
   memset(ram7fa, 0, 65536);
   memset(sram, 0, 65536*2);
-  memset(regptra, 0, 49152);
+  memset(regptra, 0, sizeof(regptra));
   memset(regptwa, 0, 49152);
   memset(vcache2b, 0, 262144+256);
   memset(vcache4b, 0, 131072+256);
@@ -1930,7 +1930,7 @@ void CheckROMType()
   // General stuff all mixed together [... wouldn't it be cool to clean that]
   SfxSFR = 0;
   SfxSCMR &= 0xFFFFFF00;
-  asm_call(initregr);
+  initregr();
   asm_call(initregw);
 
   if (SA1Enable)

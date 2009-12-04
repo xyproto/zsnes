@@ -60,7 +60,7 @@ unsigned char *wramdata;            // stack (64K = 65536)
 unsigned char *ram7f;               // ram @ 7f = 65536
 unsigned char *vram;                // vram = 65536
 unsigned char *sram;                // sram = 65536*2 = 131072
-unsigned char regptra[49152];
+eop*          regptra[0x3000];
 unsigned char regptwa[49152];
 unsigned char *regptw = regptwa;
 unsigned char *vcache2b;            // 2-bit video cache

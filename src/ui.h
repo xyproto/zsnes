@@ -3,6 +3,9 @@
 
 #include "types.h"
 
-extern u1 MusicVol;
+#define REGPTR(x) (regptra[(x) - 0x2000])
+
+extern eop* regptra[0x3000];
+extern u1   MusicVol;
 
 #endif

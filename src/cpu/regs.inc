@@ -19,264 +19,13 @@
 
 
 
-EXTSYM SFXEnable,regptra,initsfxregsr,initSA1regs,SA1Enable,initSDD1regs
-EXTSYM SPC7110Enable,initSPC7110regs,RTCEnable,RTCReset,curypos,cycpl
+EXTSYM SFXEnable,SA1Enable,SPC7110Enable,RTCEnable,curypos,cycpl
 EXTSYM pdh,vram,romispal,reg1read,spcnumread,spcon,reg2read,reg3read
 EXTSYM reg4read,JoyEOrig,JoyENow,device2,cycphb,joycontren,totlines
 
 %ifndef NO_DEBUGGER
 EXTSYM debuggeron
 %endif
-
-SECTION .text
-
-NEWSYM initregr
-    ; Fill register pointer with invalid register accesses
-    mov edi,regptra
-    mov ecx,3000h
-    mov eax,regINVALID
-.loopa
-    mov [edi],eax
-    add edi,4
-    dec ecx
-    jnz .loopa
-    ; Set all valid register accesses
-    setreg 2100h,reg2100r
-    setreg 2134h,reg2134r
-    setreg 2135h,reg2135r
-    setreg 2136h,reg2136r
-    setreg 2137h,reg2137r
-    setreg 2138h,reg2138r
-    setreg 2139h,reg2139r
-    setreg 213Ah,reg213Ar
-    setreg 213Bh,reg213Br
-    setreg 213Ch,reg213Cr
-    setreg 213Dh,reg213Dr
-    setreg 213Eh,reg213Er
-    setreg 213Fh,reg213Fr
-    setreg 2140h,reg2140r
-    setreg 2141h,reg2141r
-    setreg 2142h,reg2142r
-    setreg 2143h,reg2143r
-    setreg 2144h,reg2140r
-    setreg 2145h,reg2141r
-    setreg 2146h,reg2142r
-    setreg 2147h,reg2143r
-    setreg 2148h,reg2140r
-    setreg 2149h,reg2141r
-    setreg 214Ah,reg2142r
-    setreg 214Bh,reg2143r
-    setreg 214Ch,reg2140r
-    setreg 214Dh,reg2141r
-    setreg 214Eh,reg2142r
-    setreg 214Fh,reg2143r
-    setreg 2150h,reg2140r
-    setreg 2151h,reg2141r
-    setreg 2152h,reg2142r
-    setreg 2153h,reg2143r
-    setreg 2154h,reg2140r
-    setreg 2155h,reg2141r
-    setreg 2156h,reg2142r
-    setreg 2157h,reg2143r
-    setreg 2158h,reg2140r
-    setreg 2159h,reg2141r
-    setreg 215Ah,reg2142r
-    setreg 215Bh,reg2143r
-    setreg 215Ch,reg2140r
-    setreg 215Dh,reg2141r
-    setreg 215Eh,reg2142r
-    setreg 215Fh,reg2143r
-    setreg 2160h,reg2140r
-    setreg 2161h,reg2141r
-    setreg 2162h,reg2142r
-    setreg 2163h,reg2143r
-    setreg 2164h,reg2140r
-    setreg 2165h,reg2141r
-    setreg 2166h,reg2142r
-    setreg 2167h,reg2143r
-    setreg 2168h,reg2140r
-    setreg 2169h,reg2141r
-    setreg 216Ah,reg2142r
-    setreg 216Bh,reg2143r
-    setreg 216Ch,reg2140r
-    setreg 216Dh,reg2141r
-    setreg 216Eh,reg2142r
-    setreg 216Fh,reg2143r
-    setreg 2170h,reg2140r
-    setreg 2171h,reg2141r
-    setreg 2172h,reg2142r
-    setreg 2173h,reg2143r
-    setreg 2174h,reg2140r
-    setreg 2175h,reg2141r
-    setreg 2176h,reg2142r
-    setreg 2177h,reg2143r
-    setreg 2178h,reg2140r
-    setreg 2179h,reg2141r
-    setreg 217Ah,reg2142r
-    setreg 217Bh,reg2143r
-    setreg 217Ch,reg2140r
-    setreg 217Dh,reg2141r
-    setreg 217Eh,reg2142r
-    setreg 217Fh,reg2143r
-    setreg 2180h,reg2180r
-    setreg 21C2h,reg21C2r
-    setreg 21C3h,reg21C3r
-
-    setreg 4016h,reg4016r
-    setreg 4017h,reg4017r
-
-    setreg 4100h,reg4100r
-
-    setreg 420Ah,reg420Ar
-    setreg 420Bh,reg420Br
-    setreg 420Ch,reg420Cr
-    setreg 420Dh,reg420Dr
-    setreg 420Eh,reg420Er
-    setreg 420Fh,reg420Fr
-
-    setreg 4210h,reg4210r
-    setreg 4211h,reg4211r
-    setreg 4212h,reg4212r
-    setreg 4213h,reg4213r
-    setreg 4214h,reg4214r
-    setreg 4215h,reg4215r
-    setreg 4216h,reg4216r
-    setreg 4217h,reg4217r
-    setreg 4218h,reg4218r
-    setreg 4219h,reg4219r
-    setreg 421Ah,reg421Ar
-    setreg 421Bh,reg421Br
-    setreg 421Ch,reg421Cr
-    setreg 421Dh,reg421Dr
-    setreg 421Eh,reg421Er
-    setreg 421Fh,reg421Fr
-
-    setreg 4300h,reg43XXr
-    setreg 4301h,reg43XXr
-    setreg 4302h,reg43XXr
-    setreg 4303h,reg43XXr
-    setreg 4304h,reg43XXr
-    setreg 4305h,reg43XXr
-    setreg 4306h,reg43XXr
-    setreg 4307h,reg43XXr
-    setreg 4308h,reg43XXr
-    setreg 4309h,reg43XXr
-    setreg 430Ah,reg43XXr
-    setreg 430Bh,reg43XXr
-    setreg 430Fh,reg43XXr
-    setreg 4310h,reg43XXr
-    setreg 4311h,reg43XXr
-    setreg 4312h,reg43XXr
-    setreg 4313h,reg43XXr
-    setreg 4314h,reg43XXr
-    setreg 4315h,reg43XXr
-    setreg 4316h,reg43XXr
-    setreg 4317h,reg43XXr
-    setreg 4318h,reg43XXr
-    setreg 4319h,reg43XXr
-    setreg 431Ah,reg43XXr
-    setreg 431Bh,reg43XXr
-    setreg 431Fh,reg43XXr
-    setreg 4320h,reg43XXr
-    setreg 4321h,reg43XXr
-    setreg 4322h,reg43XXr
-    setreg 4323h,reg43XXr
-    setreg 4324h,reg43XXr
-    setreg 4325h,reg43XXr
-    setreg 4326h,reg43XXr
-    setreg 4327h,reg43XXr
-    setreg 4328h,reg43XXr
-    setreg 4329h,reg43XXr
-    setreg 432Ah,reg43XXr
-    setreg 432Bh,reg43XXr
-    setreg 432Fh,reg43XXr
-    setreg 4330h,reg43XXr
-    setreg 4331h,reg43XXr
-    setreg 4332h,reg43XXr
-    setreg 4333h,reg43XXr
-    setreg 4334h,reg43XXr
-    setreg 4335h,reg43XXr
-    setreg 4336h,reg43XXr
-    setreg 4337h,reg43XXr
-    setreg 4338h,reg43XXr
-    setreg 4339h,reg43XXr
-    setreg 433Ah,reg43XXr
-    setreg 433Bh,reg43XXr
-    setreg 433Fh,reg43XXr
-    setreg 4340h,reg43XXr
-    setreg 4341h,reg43XXr
-    setreg 4342h,reg43XXr
-    setreg 4343h,reg43XXr
-    setreg 4344h,reg43XXr
-    setreg 4345h,reg43XXr
-    setreg 4346h,reg43XXr
-    setreg 4347h,reg43XXr
-    setreg 4348h,reg43XXr
-    setreg 4349h,reg43XXr
-    setreg 434Ah,reg43XXr
-    setreg 434Bh,reg43XXr
-    setreg 434Fh,reg43XXr
-    setreg 4350h,reg43XXr
-    setreg 4351h,reg43XXr
-    setreg 4352h,reg43XXr
-    setreg 4353h,reg43XXr
-    setreg 4354h,reg43XXr
-    setreg 4355h,reg43XXr
-    setreg 4356h,reg43XXr
-    setreg 4357h,reg43XXr
-    setreg 4358h,reg43XXr
-    setreg 4359h,reg43XXr
-    setreg 435Ah,reg43XXr
-    setreg 435Bh,reg43XXr
-    setreg 435Fh,reg43XXr
-    setreg 4360h,reg43XXr
-    setreg 4361h,reg43XXr
-    setreg 4362h,reg43XXr
-    setreg 4363h,reg43XXr
-    setreg 4364h,reg43XXr
-    setreg 4365h,reg43XXr
-    setreg 4366h,reg43XXr
-    setreg 4367h,reg43XXr
-    setreg 4368h,reg43XXr
-    setreg 4369h,reg43XXr
-    setreg 436Ah,reg43XXr
-    setreg 436Bh,reg43XXr
-    setreg 436Fh,reg43XXr
-    setreg 4370h,reg43XXr
-    setreg 4371h,reg43XXr
-    setreg 4372h,reg43XXr
-    setreg 4373h,reg43XXr
-    setreg 4374h,reg43XXr
-    setreg 4375h,reg43XXr
-    setreg 4376h,reg43XXr
-    setreg 4377h,reg43XXr
-    setreg 4378h,reg43XXr
-    setreg 4379h,reg43XXr
-    setreg 437Ah,reg43XXr
-    setreg 437Bh,reg43XXr
-    setreg 437Fh,reg43XXr
-
-    cmp byte[SFXEnable],0
-    je .nosfx
-    call initsfxregsr
-.nosfx
-    cmp byte[SA1Enable],0
-    je .nosa1
-    call initSA1regs
-.nosa1
-    cmp byte[SDD1Enable],0
-    je .nosdd1
-    call initSDD1regs
-.nosdd1
-    cmp byte[SPC7110Enable],0
-    je .nospc7110
-    call initSPC7110regs
-.nospc7110
-    cmp byte[RTCEnable],0
-    je .noRTC
-    call RTCReset
-.noRTC
-    ret
 
 ; global variables
 SECTION .data
@@ -527,32 +276,32 @@ NEWSYM ClearRegs
     mov byte[hdmadelay],0
     ret
 
-reg2100r:
+NEWSYM reg2100r
     ;Should be Openbus
     mov al,[vidbright]
     or al,[forceblnk]
     ret
 
 ; Multiply Result Low
-reg2134r:
+NEWSYM reg2134r
     checkmultchange
     mov al,[compmult]
     ret
 
 ; Multiply Result Middle
-reg2135r:
+NEWSYM reg2135r
     checkmultchange
     mov al,[compmult+1]
     ret
 
 ; Multiply Result High
-reg2136r:
+NEWSYM reg2136r
     checkmultchange
     mov al,[compmult+2]
     ret
 
 ; Software latch for horizontal/vertical counter
-reg2137r:
+NEWSYM reg2137r
 ;    mov byte[debstop3],1
 %ifndef NO_DEBUGGER
     cmp byte[debuggeron],1
@@ -650,7 +399,7 @@ debblah:
     ret
 
 ; Read OAM Data (Low, High)
-reg2138r:
+NEWSYM reg2138r
     xor ebx,ebx
     mov bx,[oamaddr]
     add ebx,oamram
@@ -664,7 +413,7 @@ reg2138r:
     ret
 
 ; Read VRAM Data (Low)
-reg2139r:
+NEWSYM reg2139r
     mov al,[vramread]
 
     xor ebx,ebx
@@ -697,7 +446,7 @@ reg2139r:
     ret
 
 ; Read VRAM Data (High)
-reg213Ar:
+NEWSYM reg213Ar
     mov al,[vramread2]
 
     xor ebx,ebx
@@ -730,7 +479,7 @@ reg213Ar:
     ret
 
 ; Read CGRAM Data
-reg213Br:
+NEWSYM reg213Br
     xor ebx,ebx
     mov bx,[cgaddr]
     mov al,[cgram+ebx]
@@ -739,7 +488,7 @@ reg213Br:
     ret
 
 ; H counter data by external or software latch
-reg213Cr:
+NEWSYM reg213Cr
     cmp byte[latchxr],1
     je .highv
     mov al,[latchx]
@@ -753,7 +502,7 @@ reg213Cr:
     ret
 
 ; V counter data by external or software latch
-reg213Dr:
+NEWSYM reg213Dr
     cmp byte[latchyr],1
     je .highv
     mov al,[latchy]
@@ -767,13 +516,13 @@ reg213Dr:
     ret
 
 ; PPU Status Flag & Version number (OBJ over flags)
-reg213Er:
+NEWSYM reg213Er
     mov al,01h
     or al,[rtoflags]
     ret
 
 ; PPU Status Flag & Version number (NTSC/PAL/EXTRN Latch flag)
-reg213Fr:
+NEWSYM reg213Fr
 ;    mov byte[debstop3],1
     mov al,[romispal]
     shl al,4
@@ -785,7 +534,7 @@ reg213Fr:
     ret
 
 ; Sound Reg #1
-reg2140r:
+NEWSYM reg2140r
     cmp byte[spcon],0
     je .nosound
     inc dword[SPC700read]
@@ -824,7 +573,7 @@ reg2140r:
     ret
 
 ; Sound Reg #2
-reg2141r:
+NEWSYM reg2141r
     cmp byte[spcon],0
     je .nosound
     inc dword[SPC700read]
@@ -855,7 +604,7 @@ reg2141r:
     ret
 
 ; Sound Reg #3
-reg2142r:
+NEWSYM reg2142r
     cmp byte[spcon],0
     je .nosound
     inc dword[SPC700read]
@@ -885,7 +634,7 @@ reg2142r:
     ret
 
 ; Sound Reg #4
-reg2143r:
+NEWSYM reg2143r
     cmp byte[spcon],0
     je .nosound
     inc dword[SPC700read]
@@ -910,12 +659,12 @@ reg2143r:
     mov al,[xa+1]
     ret
 
-reg2144r:
+NEWSYM reg2144r
     xor al,al
     ret
 
 ; WRAM Read
-reg2180r:
+NEWSYM reg2180r
     mov ebx,[wramrwadr]
     add ebx,[wramdata]
     mov al,[ebx]
@@ -925,14 +674,14 @@ reg2180r:
 
 ; Unknown register, used by test cart
 
-reg21C2r:
-reg21C3r:
+NEWSYM reg21C2r
+NEWSYM reg21C3r
     mov al,21h
     ret
 
 ; Joystick Data for controller 1 and 2
 
-reg4016r:
+NEWSYM reg4016r
     xor al,al
     test dword[JoyANow],80000000h
     jz .noal
@@ -946,7 +695,7 @@ NEWSYM MultiTap, resb 1
 SECTION .text
 
 ; Joystick Data for controller 2 and 4
-reg4017r:
+NEWSYM reg4017r
     mov al,28
     cmp byte[device2],0
     jne .nomultitap
@@ -997,7 +746,7 @@ reg4017r:
     rol dword[JoyENow],1
     ret
 
-reg4100r:
+NEWSYM reg4100r
    xor al,al
    cmp byte[nssdip1],1
    jne .nodip1
@@ -1025,18 +774,18 @@ reg4100r:
 .nodip6
    ret
 
-reg420Ar:
-reg420Br:
-reg420Cr:
-reg420Dr:
-reg420Er:
-reg420Fr:
+NEWSYM reg420Ar
+NEWSYM reg420Br
+NEWSYM reg420Cr
+NEWSYM reg420Dr
+NEWSYM reg420Er
+NEWSYM reg420Fr
     ;Should be Openbus
     xor al,al
     ret
 
 ; NMI Check Register
-reg4210r:
+NEWSYM reg4210r
     mov al,[NMIEnab]
     cmp byte[curnmi],0
     jne .nmi
@@ -1046,7 +795,7 @@ reg4210r:
     ret
 
 ; Video IRQ Register
-reg4211r:
+NEWSYM reg4211r
     mov al,[irqon]
     mov byte[irqon],0
     cmp dh,[cycphb]
@@ -1061,7 +810,7 @@ SECTION .text
 
 ; H/V Blank Flag & Joystick Controller Enable Flag
 ; bit 7 = vblank, 0=out,1=in, bit 6 = hblank, 0=out,1=in, bit 0 = joystick on
-reg4212r:
+NEWSYM reg4212r
     xor al,al
     cmp byte[joycontren],25
     jb .nojoyc
@@ -1176,81 +925,81 @@ debblah2:
     ret
 
 ; Programmable I/O port
-reg4213r:
+NEWSYM reg4213r
     mov al,[ioportval]
     ret
 
 ; Quotent of Divide Result (Low)
-reg4214r:
+NEWSYM reg4214r
     mov al,[divres]
     ret
 
 ; Quotent of Divide Result (High)
-reg4215r:
+NEWSYM reg4215r
     mov al,[divres+1]
     ret
 
 ; Product of Multiplication Result or Remainder of Divide Result (Low)
-reg4216r:
+NEWSYM reg4216r
     mov al,[multres]
     ret
 
 ; Product of Multiplication Result or Remainder of Divide Result (High)
-reg4217r:
+NEWSYM reg4217r
     mov al,[multres+1]
     ret
 
 ; Joystick 1 Low
 ; bit7=X,bit6=Y,bit5=L,bit4=R
-reg4218r:
+NEWSYM reg4218r
     mov al,[JoyAOrig+2]
     ret
 
 ; Joystick 1 High
 ; bit7=A,bit6=B,bit5=Sel,bit4=Start,bit3=up,bit2=down,bit1=left,bit0=right
-reg4219r:
+NEWSYM reg4219r
     mov al,[JoyAOrig+3]
     ret
 
 ; Joystick 2 Low
-reg421Ar:
+NEWSYM reg421Ar
     mov al,[JoyBOrig+2]
     ret
 
 ; Joystick 2 High
-reg421Br:
+NEWSYM reg421Br
     mov al,[JoyBOrig+3]
     ret
 
 ; Joystick 3 Low
-reg421Cr:
+NEWSYM reg421Cr
     mov al,[JoyDOrig+2]
     ret
 
 ; Joystick 3 High
-reg421Dr:
+NEWSYM reg421Dr
     mov al,[JoyDOrig+3]
     ret
 
 ; Joystick 4 Low
-reg421Er:
+NEWSYM reg421Er
     mov al,[JoyCOrig+2]
     ret
 
 ; Joystick 4 High
-reg421Fr:
+NEWSYM reg421Fr
     mov al,[JoyCOrig+3]
     ret
 
 ; DMA Reader
-reg43XXr:
+NEWSYM reg43XXr
     xor ebx,ebx
     mov bx,cx
     sub bx,4300h
     mov al,[dmadata+ebx]
     ret
 
-regINVALID:     ; Invalid Register
+NEWSYM regINVALID ; Invalid Register
     cmp cx,2100h
     jb .cleared
     mov al,ch

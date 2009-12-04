@@ -3,6 +3,7 @@
 #include "asm_call.h"
 #include "c_init.h"
 #include "cfg.h"
+#include "cpu/c_regs.h"
 #include "cpu/execute.h"
 #include "cpu/regs.h"
 #include "cpu/regsw.h"
@@ -72,7 +73,7 @@ void init(void)
 
 	asm_call(UpdateDevices);
 	init65816();
-	asm_call(initregr);
+	initregr();
 	asm_call(initregw);
 	initsnes();
 
