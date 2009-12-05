@@ -45,10 +45,8 @@
 EXTSYM curblank,vidpastecopyscr,frameskip,newengen,cvidmode,antienab
 EXTSYM soundon,StereoSound,SoundQuality,MusicRelVol,endprog
 EXTSYM continueprog,spcBuffera,cbitmode,t1cc
-EXTSYM romloadskip,romdata,init65816,current_zst
-EXTSYM procexecloop,SPCRAM,spcPCRam,spcS,spcRamDP,spcA,spcX,spcY,spcP,spcNZ
-EXTSYM Voice0Status,Voice1Status,Voice2Status,Voice3Status,Voice4Status
-EXTSYM Voice5Status,Voice6Status,Voice7Status,statesaver,loadstate2
+EXTSYM romloadskip,romdata,current_zst
+EXTSYM statesaver,loadstate2
 EXTSYM vidbuffer,ASCII2Font,hirestiledat,showallext,scanlines
 EXTSYM sprlefttot,spritetablea,KeyRTRCycle
 EXTSYM cgram,tempco0,prevbright,maxbr,prevpal,coladdr,coladdg
@@ -66,11 +64,12 @@ EXTSYM Clear2xSaIBuffer,MouseWindow,Show224Lines
 EXTSYM newgfx16b,NumVideoModes,MusicVol,DSPMem,NumInputDevices
 EXTSYM GUIInputNames,GUIVideoModeNames,GameSpecificInput,device1,device2,TwelveHourClock
 EXTSYM GUIM7VID,GUINTVID,GUIHQ2X,RawDumpInProgress
-EXTSYM MultiTap,SFXEnable,RestoreSystemVars
+EXTSYM MultiTap,SFXEnable
 EXTSYM nssdip1,nssdip2,nssdip3,nssdip4,nssdip5,nssdip6
 EXTSYM SkipMovie,MovieStop,MoviePlay,MovieRecord
 EXTSYM MovieInsertChapter,MovieSeekAhead,MovieSeekBehind,ResetDuringMovie
 EXTSYM MovieDumpRaw,MovieAppend,AutoLoadCht,GUIQuickLoadUpdate,GUILoadData
+EXTSYM GUIDoReset
 
 EXTSYM GUIwinposx,GUIwinposy,maxskip,GUIEffect,hqFilter,En2xSaI,NTSCFilter
 EXTSYM NTSCBlend,NTSCHue,NTSCSat,NTSCCont,NTSCBright,NTSCSharp,NTSCRef
@@ -2036,7 +2035,7 @@ GUIProcReset:
   ccallv ResetDuringMovie
   jmp .movieendif
 .nomovierecording
-  call GUIDoReset
+  ccallv GUIDoReset
 .movieendif
   popad
 .noreset

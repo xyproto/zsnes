@@ -89,6 +89,7 @@ SRCS += effects/burn.c
 SRCS += effects/smoke.c
 SRCS += effects/water.c
 SRCS += endmem.asm
+SRCS += gui/c_guimisc.c
 SRCS += gui/gui.asm
 SRCS += gui/guifuncs.c
 SRCS += gui/menu.asm

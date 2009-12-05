@@ -443,7 +443,7 @@ reexecuteb2:
     ccallv ResetDuringMovie
     jmp .movieendif
 .nomovierecording
-    call GUIDoReset
+    ccallv GUIDoReset
 .movieendif
     popad
     mov byte[ReturnFromSPCStall],0

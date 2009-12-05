@@ -37,6 +37,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "cfg.h"
 #include "cpu/c_regs.h"
 #include "cpu/c_regsw.h"
+#include "gui/c_guimisc.h"
 #include "init.h"
 #include "initc.h"
 #include "input.h"
@@ -1725,7 +1726,6 @@ extern uint32_t Voice4Freq, Voice5Freq, Voice6Freq, Voice7Freq;
 extern uint32_t dspPAdj;
 extern uint16_t Voice0Pitch, Voice1Pitch, Voice2Pitch, Voice3Pitch;
 extern uint16_t Voice4Pitch, Voice5Pitch, Voice6Pitch, Voice7Pitch;
-void GUIDoReset();
 
 void initpitch()
 {
@@ -2509,7 +2509,7 @@ void powercycle(bool sramload, bool romload)
     memcpy(&sndrot, regsbackup, 3019);
 
     if (yesoutofmemory) { asm_call(outofmemfix); }
-    asm_call(GUIDoReset);
+    GUIDoReset();
 
     if (romload)
     {

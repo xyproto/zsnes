@@ -52,29 +52,29 @@ NEWSYM SPCRAM,   times 65472 db 0FFh  ; Pointer to the SPC's RAM
    db 0AAh,0BBh,0CCh,0DDh,0EEh,0FFh,000h,011h,022h,033h,044h,055h,066h,077h,088h,099h
 
 NEWSYM spcPCRam,
-       dd 0     ; Program Counter (with SPCRAM added)
+       dd 0
 NEWSYM spcA,
-       db 0     ; The A register (general purpose)
+       db 0
        db 0
        db 0
        db 0
 NEWSYM spcX,
-       db 0     ; The X register (general purpose)
+       db 0
        db 0
        db 0
        db 0
 NEWSYM spcY,
-       db 0     ; The Y register (general purpose)
+       db 0
        db 0
        db 0
        db 0
 NEWSYM spcP,
-       db 0     ; The processor status byte (Removed for each flags)
-       db 0     ; NZ are not always processed...
+       db 0
+       db 0
        db 0
        db 0
 NEWSYM spcNZ,
-       db 0     ; The processor NZ flag (little speed up hack :) )
+       db 0
        db 0
        db 0
        db 0
@@ -89,7 +89,7 @@ NEWSYM spcNZ,
 ;spcZF    db 0     ; The Zero Flag      2 or 253
 ;spcCF    db 0     ; The Carry Flag     1 or 254
 
-NEWSYM spcS,     dd 1FFh  ; The stack pointer (always from 100 to 1FF) (added Ram)
+NEWSYM spcS,     dd 1FFh
 NEWSYM spcRamDP, dd 0     ; The direct page pointer
 NEWSYM spcCycle, dd 0     ; The Cycle Counter
 NEWSYM reg1read, db 0     ; read from 65816

@@ -2107,7 +2107,7 @@ NEWSYM Voice5Pitch, resw 1            ; Previous Pitch for Voice 5
 NEWSYM Voice6Pitch, resw 1            ; Previous Pitch for Voice 6
 NEWSYM Voice7Pitch, resw 1            ; Previous Pitch for Voice 7
 
-NEWSYM Voice0Status,   resb 1 ; 0=Not Playing 1=Playing
+NEWSYM Voice0Status,   resb 1
 NEWSYM Voice1Status,   resb 1
 NEWSYM Voice2Status,   resb 1
 NEWSYM Voice3Status,   resb 1

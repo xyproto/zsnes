@@ -522,7 +522,7 @@ void BackupSystemVars(void)
   }
 }
 
-void RestoreSystemVars()
+void RestoreSystemVars(void)
 {
   if (BackupSystemBuffer)
   {

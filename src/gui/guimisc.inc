@@ -461,42 +461,6 @@ SetDevice:
 .mtap
     ret
 
-NEWSYM GUIDoReset
-%ifdef __MSDOS__
-    call DOSClearScreen
-%endif
-    ccallv Clear2xSaIBuffer
-
-    ccallv MovieStop
-    ccallv RestoreSystemVars
-
-    ; reset the snes
-    ccallv init65816
-    ccallv procexecloop
-
-    xor eax,eax
-    mov edx,SPCRAM
-    mov ax,0FFC0h
-    add edx,eax
-    mov [spcPCRam],edx
-    mov dword[spcS],1EFh
-    mov dword[spcRamDP],SPCRAM
-    mov byte[spcA],0
-    mov byte[spcX],0
-    mov byte[spcY],0
-    mov byte[spcP],0
-    mov byte[spcNZ],0
-    mov byte[Voice0Status],0
-    mov byte[Voice1Status],0
-    mov byte[Voice2Status],0
-    mov byte[Voice3Status],0
-    mov byte[Voice4Status],0
-    mov byte[Voice5Status],0
-    mov byte[Voice6Status],0
-    mov byte[Voice7Status],0
-    mov byte[GUIQuit],2
-    ret
-
 SECTION .bss
 NEWSYM JoyX,       resd 1
 NEWSYM JoyY,       resd 1

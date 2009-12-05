@@ -54,6 +54,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "gblvars.h"
 #include "asm_call.h"
 #include "cpu/dspproc.h"
+#include "gui/c_guimisc.h"
 #include "md.h"
 #include "input.h"
 #include "cfg.h"
@@ -89,7 +90,6 @@ extern uint16_t latchx, latchy;
 #define SET_MOUSE_2(x) (device2 = (x) ? 1 : 0)
 #define SET_SCOPE(x)   (device2 = (x) ? 2 : 0)
 
-void GUIDoReset();
 void powercycle(bool, bool);
 void zst_sram_load(FILE *);
 void zst_sram_load_compressed(FILE *);
@@ -957,7 +957,7 @@ static bool zmv_create(char *filename)
       case zmv_sm_reset:
         MovieWaiting = true;
         GUIReset = 1;
-        asm_call(GUIDoReset);
+        GUIDoReset();
         ReturnFromSPCStall = 0;
         break;
       case zmv_sm_clear_all:
@@ -1233,7 +1233,7 @@ static bool zmv_open(char *filename)
           break;
         case zmv_sm_reset:
           GUIReset = 1;
-          asm_call(GUIDoReset);
+          GUIDoReset();
           ReturnFromSPCStall = 0;
           zst_sram_load_compressed(zmv_vars.fp);
           break;
@@ -2859,7 +2859,7 @@ void ResetDuringMovie()
 {
   zmv_record_command(zmv_command_reset);
   SetMovieMode(MOVIE_OFF);
-  asm_call(GUIDoReset);
+  GUIDoReset();
   SetMovieMode(MOVIE_RECORD);
 }
 

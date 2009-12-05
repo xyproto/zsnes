@@ -120,7 +120,7 @@ void LoadPicture()
   if (MovieInProgress()) { mzt_chdir_down(); }
 }
 
-void Clear2xSaIBuffer()
+void Clear2xSaIBuffer(void)
 {
   memset(vidbufferofsb, 0xFF, 576*256);
 }
