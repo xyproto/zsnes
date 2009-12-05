@@ -53,7 +53,7 @@ EXTSYM MovieSeekBehind,BackupCVFrame,RestoreCVFrame,loadstate,xe
 EXTSYM KeyInsrtChap,KeyNextChap,KeyPrevChap,MovieInsertChapter,MovieSeekAhead
 EXTSYM ResetDuringMovie,EMUPauseKey,INCRFrameKey,MovieWaiting,NoInputRead
 EXTSYM AllocatedRewindStates,PauseFrameMode,RestorePauseFrame,BackupPauseFrame
-EXTSYM rtoflags,sprcnt,sprstart,sprtilecnt,sprend,sprendx
+EXTSYM rtoflags,sprcnt,sprstart,sprtilecnt,sprend,sprendx,continueprog
 
 %ifndef NO_DEBUGGER
 EXTSYM debuggeron,startdebugger
@@ -203,26 +203,6 @@ NEWSYM tempdh, db 0
 SECTION .text
 
 
-NEWSYM continueprog
-    ; clear keyboard presses
-    mov esi,pressed
-    mov ecx,256+128+64
-    mov al,0
-.loopa
-    mov [esi],al
-    inc esi
-    dec ecx
-    jnz .loopa
-
-    mov byte[romloadskip],0
-%ifndef NO_DEBUGGER
-    mov byte[debuggeron],0
-%endif
-    mov byte[exiter],0
-
-    call InitPreGame
-    jmp reexecute
-
 NEWSYM continueprognokeys
     mov byte[romloadskip],0
 %ifndef NO_DEBUGGER
@@ -344,7 +324,8 @@ reexecuteb2:
     cmp byte[MoviePassWaiting],1
     jne .nomoviepasswaiting
     ccallv MovieDumpRaw
-    jmp continueprog
+    ccallv continueprog
+    ret
 .nomoviepasswaiting
 
     ; clear all keys
@@ -430,7 +411,8 @@ reexecuteb2:
 .movieendif
     popad
     mov byte[ReturnFromSPCStall],0
-    jmp continueprog
+    ccallv continueprog
+    ret
 .noreset
     cmp byte[guioff],1
     je near endprog
@@ -459,7 +441,7 @@ SECTION .data
 ; global variables
 NEWSYM invalid, db 0
 NEWSYM invopcd, db 0
-NEWSYM pressed, times 256+128+64 db 0          ; keyboard pressed keys in scancode
+NEWSYM pressed, times 256+128+64 db 0
 NEWSYM exiter, db 0
 NEWSYM oldhand9o, dd 0
 NEWSYM oldhand9s, dw 0

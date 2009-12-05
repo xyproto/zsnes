@@ -4,4 +4,6 @@
 // this wonderful mess starts up the CPU and initialized the emulation state
 void start65816(void);
 
+void continueprog(void);
+
 #endif

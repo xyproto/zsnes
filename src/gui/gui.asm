@@ -1163,7 +1163,8 @@ NEWSYM StartGUI
   mov byte[GUIReset],0
   mov dword[StartLL],0
   mov dword[StartLR],0
-  jmp continueprog
+  ccallv continueprog
+  ret
 
 guimencodermsg:
   xor ebx,ebx
