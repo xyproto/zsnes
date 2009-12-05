@@ -71,17 +71,6 @@ SECTION .data
 NEWSYM wfkey, db 0
 
 SECTION .text
-NEWSYM WaitForKey       ; Wait for a key to be pressed
-    push eax
-    ccall getch
-    mov [wfkey],al
-    pop eax
-    mov al,[wfkey]
-    ;mov ah,7
-    ;int 21h
-    ; return key in al
-    ret
-
 RefreshKeybBuffer:
     call JoyRead
     mov ebx,[HoldKey]

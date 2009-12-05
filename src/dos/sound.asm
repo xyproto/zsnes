@@ -1326,7 +1326,7 @@ NEWSYM getblaster
         push edx
         mov edx, vibradetect
         call PrintStr
-        ;call WaitForKey
+        ;ccall WaitForKey
         pop  edx
 
 ; ********** END OF ViBRA16X implementation code **********
@@ -1356,7 +1356,7 @@ NEWSYM getblaster
     mov byte[soundon],0
     mov edx, .blasterstr
     call PrintStr
-    call WaitForKey
+    ccall WaitForKey
 .nosound
     ret
 .displaysoundstuff
@@ -1382,7 +1382,7 @@ NEWSYM getblaster
     call printnum
     mov edx,.blasterstr2b
     call PrintStr
-    call WaitForKey
+    ccall WaitForKey
     ret
 
 SECTION .bss

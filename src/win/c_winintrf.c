@@ -1,3 +1,4 @@
+#include <conio.h>
 #include <string.h>
 
 #include "../c_intrf.h"
@@ -6,6 +7,7 @@
 #include "../cpu/execute.h"
 #include "../link.h"
 #include "../ui.h"
+#include "winintrf.h"
 
 #ifndef __RELEASE__
 #	include "winlink.h"
@@ -22,6 +24,12 @@ void SystemInit(void)
 #endif
 	// Be sure to set SBHDMA to a value other than 0 if 16bit sound exists
 	SBHDMA = 1;
+}
+
+
+char WaitForKey(void)
+{
+	return wfkey = getch();
 }
 
 

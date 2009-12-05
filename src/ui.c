@@ -101,7 +101,7 @@ unsigned char finterleave   = 0;
 u1            DSPDisable    = 0;
 u1            MusicVol      = 0;
 
-void init(), WaitForKey();
+void init();
 void MultiMouseInit();
 
 void zexit(), zexit_error();
@@ -388,7 +388,7 @@ void zstart()
   if ((ptr & 3))
   {
     printf("%s%d", txtfailedalignd, (ptr & 0x1F));
-    asm_call(WaitForKey);
+    WaitForKey();
   }
 
   init();

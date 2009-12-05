@@ -7,6 +7,9 @@ void StartUp(void);
  * commandline data, obtain current directory (One time initialization) */
 void SystemInit(void);
 
+// Wait for a key to be pressed
+char WaitForKey(void);
+
 // Executes before starting/continuing a game
 void InitPreGame(void);
 

@@ -73,12 +73,6 @@ NEWSYM PrintStr          ; Print ASCIIZ string
 .finish
     ret
 
-NEWSYM WaitForKey       ; Wait for a key to be pressed
-    mov ah,7
-    int 21h
-    ; return key in al
-    ret
-
 %macro PressConv 3
     cmp byte[pressed+%1],0
     je %%nopr

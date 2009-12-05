@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <string.h>
 
 #include "../asm_call.h"
@@ -16,6 +17,12 @@ void SystemInit(void)
 {
 	// Be sure to set SBHDMA to a value other than 0 if 16bit sound exists
 	SBHDMA = 1;
+}
+
+
+char WaitForKey(void)
+{
+	return getchar();
 }
 
 

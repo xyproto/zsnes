@@ -71,6 +71,14 @@ void SystemInit(void)
 }
 
 
+char WaitForKey(void)
+{
+	char key;
+	asm volatile("int $0x21" : "=a" (key) : "a" (0x0700) : "cc");
+	return key;
+}
+
+
 static void get_handler(u1 const irq, u2* const segment, IRQHandler** const handler)
 {
 	u4 failed;

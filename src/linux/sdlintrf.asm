@@ -21,7 +21,7 @@
 
 %include "macros.mac"
 
-EXTSYM getchar,PrevFSMode,sem_sleep,putchar,Start60HZ
+EXTSYM PrevFSMode,sem_sleep,putchar,Start60HZ
 EXTSYM pressed,vidbuffer
 EXTSYM Stop60HZ,initwinvideo,vesa2_rpos,vesa2_gpos,vesa2_bpos,vesa2_rposng
 EXTSYM vesa2_gposng,vesa2_bposng,vesa2_usbit,vesa2_clbit,vesa2_clbitng
@@ -66,15 +66,6 @@ NEWSYM PrintStr          ; Print ASCIIZ string
     jmp .next
 .finish
     popad
-    ret
-
-SECTION .text
-NEWSYM WaitForKey       ; Wait for a key to be pressed
-    push eax
-    ccall getchar
-    mov [esp],al
-    pop eax
-    ; return key in al
     ret
 
 SECTION .data
