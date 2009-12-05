@@ -21,6 +21,7 @@
 #include "macros.h"
 #include "ui.h"
 #include "video/mode716.h"
+#include "video/procvid.h"
 #include "zmovie.h"
 #include "zpath.h"
 #include "zstate.h"
@@ -109,7 +110,7 @@ void init(void)
 		}
 	}
 
-	if (yesoutofmemory == 1) asm_call(outofmemfix);
+	if (yesoutofmemory == 1) outofmemfix();
 
 #ifndef NO_DEBUGGER
 	if (debugger != 0 && romloadskip != 1)
@@ -177,4 +178,19 @@ void MMXCheck(void)
 
 	ShowMMXSupport = 1;
 	MMXSupport     = AllowMMX;
+}
+
+
+void outofmemfix(void)
+{
+	u1* rom = romdata;
+	if (romtype == 2) rom += 0x8000; // hirom
+	rom[0] = 0x58;
+	rom[1] = 0x80;
+	rom[2] = 0xFE;
+	resetv = 0x8000;
+	xpc    = 0x8000;
+
+	Msgptr    = newgfx16b != 1 ? "OUT OF MEMORY." : "ROM IS TOO BIG.";
+	MessageOn = 0xFFFFFFFF;
 }

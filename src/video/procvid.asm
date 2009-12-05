@@ -2967,8 +2967,8 @@ SECTION .bss
 NEWSYM lastfps,   resb 1                  ; stores the last fps encountered
 NEWSYM lastfps2,  resb 1                  ; stores the last fps encountered
 NEWSYM curfps2,   resb 1                  ; current video refresh fps
-NEWSYM Msgptr,    resd 1                  ; Pointer to message
-NEWSYM MessageOn, resd 1                  ; Message On Countdown
+NEWSYM Msgptr,    resd 1
+NEWSYM MessageOn, resd 1
 NEWSYM FPSOn,     resb 1
 
 SECTION .data

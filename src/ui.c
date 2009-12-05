@@ -60,7 +60,7 @@ unsigned char *ngwinptr;
 u1*           vidbufferofsa;
 u1*           vidbufferofsb;
 unsigned char *headdata;
-unsigned char *romdata;             // rom data  (4MB = 4194304)
+u1*           romdata;
 unsigned char *sfxramdata;          // SuperFX Ram Data
 unsigned char *setaramdata;         // Seta ST010/ST011 SRam Data
 unsigned char *wramdata;            // stack (64K = 65536)
@@ -73,7 +73,7 @@ unsigned char *vcache2b;            // 2-bit video cache
 unsigned char *vcache4b;            // 4-bit video cache
 unsigned char *vcache8b;            // 8-bit video cache
 unsigned char romispal;             // 0 = NTSC, 1 = PAL
-unsigned char newgfx16b;
+u1            newgfx16b;
 
 unsigned char previdmode;           // previous video mode
 unsigned char cbitmode;             // bit mode, 0=8bit, 1=16bit

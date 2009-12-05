@@ -55,7 +55,7 @@ NEWSYM ZMVRawDump, db 0
 SECTION .data
 
 NEWSYM romtype, db 0
-NEWSYM resetv,  dw 0    ; reset vector
+NEWSYM resetv,  dw 0
 NEWSYM abortv,  dw 0    ; abort vector
 NEWSYM nmiv2,   dw 0    ; nmi vector
 NEWSYM nmiv,    dw 0    ; nmi vector
@@ -691,6 +691,8 @@ NEWSYM printhex
     jnz .loopa
     ret
 
+ALIGN32 ; Hack for broken nasm < 2.08: macho sections are not aligned
+
 SECTION .data
 .hexdat db '0123456789ABCDEF'
 
@@ -717,31 +719,5 @@ NEWSYM NumofBytes,    resd 1
 
 
 NEWSYM DSP1Type, resb 1
-SECTION .text
 
-NEWSYM outofmemfix
-    mov esi,[romdata]
-    cmp byte[romtype],2
-    jne .nhirom
-    add esi,8000h
-.nhirom
-    mov word[resetv],8000h
-    mov word[xpc],8000h
-    mov byte[esi],58h
-    mov byte[esi+1],80h
-    mov byte[esi+2],0FEh
-    mov dword[Msgptr],outofmemoryerror
-    cmp byte[newgfx16b],1
-    jne .notso
-    mov dword[Msgptr],outofmemoryerror2
-.notso
-    mov dword[MessageOn],0FFFFFFFFh
-    ret
-
-ALIGN32 ; Hack for broken nasm < 2.08: macho sections are not aligned
-
-SECTION .bss
 NEWSYM yesoutofmemory, resb 1
-SECTION .data
-NEWSYM outofmemoryerror, db 'OUT OF MEMORY.',0
-NEWSYM outofmemoryerror2, db 'ROM IS TOO BIG.',0

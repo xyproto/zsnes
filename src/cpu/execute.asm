@@ -1115,7 +1115,7 @@ NEWSYM cpuover
     mov byte[doirqnext],0
     cmp byte[yesoutofmemory],1
     jne .noout
-    call outofmemfix
+    ccallv outofmemfix
 .noout
 
     dec word[curypos]

@@ -40,7 +40,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "cpu/c_regs.h"
 #include "cpu/c_regsw.h"
 #include "gui/c_guimisc.h"
-#include "init.h"
 #include "initc.h"
 #include "input.h"
 #include "ui.h"
@@ -2510,7 +2509,7 @@ void powercycle(bool sramload, bool romload)
     sramsavedis = 0;
     memcpy(&sndrot, regsbackup, 3019);
 
-    if (yesoutofmemory) { asm_call(outofmemfix); }
+    if (yesoutofmemory) outofmemfix();
     GUIDoReset();
 
     if (romload)

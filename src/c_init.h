@@ -6,6 +6,7 @@
 void init(void);
 void DosExit(void);
 void MMXCheck(void);
+void outofmemfix(void);
 
 extern u1 MMXSupport;
 

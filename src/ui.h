@@ -13,6 +13,8 @@ extern eop* regptwa[0x3000];
 extern u1   DSPDisable;             // Disable DSP emulation
 extern u1   MusicVol;
 extern u1   V8Mode;                 // Vegetable mode! =) (Greyscale mode)
+extern u1   newgfx16b;
+extern u1*  romdata;                // rom data  (4MB = 4194304)
 extern u1*  vidbufferofsa;          // offset 1
 extern u1*  vidbufferofsb;          // offset 2
 extern u2   VolumeConvTable[32768];
