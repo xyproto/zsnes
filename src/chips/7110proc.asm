@@ -22,7 +22,7 @@
 EXTSYM memaccessbankr8,memaccessbankr16,memaccessbankw8,memaccessbankw16
 EXTSYM regaccessbankr8,regaccessbankr16,regaccessbankw8,regaccessbankw16
 EXTSYM sramaccessbankr8b,sramaccessbankr16b,sramaccessbankw8b,sramaccessbankw16b
-EXTSYM GetTime,Get_TimeDate,snesmmap,snesmap2
+EXTSYM GetTime,GetDate,snesmmap,snesmap2
 EXTSYM curromsize,regptwa,regptra,romdata
 EXTSYM SPC7110_4800,SPC7110_4806w,SPC7110initC
 
@@ -840,7 +840,7 @@ SPC4841:
     and bl,0Fh
     mov [SPC7110RTC+5],bl
 .24hrs
-    call Get_TimeDate
+    ccall GetDate
     mov bl,al
     and bl,0Fh
     mov [SPC7110RTC+6],bl  ; day

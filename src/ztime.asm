@@ -24,10 +24,6 @@ EXTSYM SystemTimewHour,SystemTimewMinute,SystemTimewSecond
 
 SECTION .text
 
-NEWSYM Get_TimeDate
-    ccall GetDate
-    ret
-
 NEWSYM Get_Date
     ; dl = day, dh = month, cx = year
     ccall GetDate
