@@ -299,7 +299,6 @@ NEWSYM CalibYmin209, dd 0
 NEWSYM CalibYmax209, dd 0
 
 EEgg db 0
-RestoreValues db 0
 NEWSYM numdrives, dd 26
 SubPalTable times 256 db 1      ; Corresponding Gray Scale Color
 
