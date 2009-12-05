@@ -19,8 +19,7 @@
 
 %include "macros.mac"
 
-EXTSYM GetDate,GetLocalTime
-EXTSYM SystemTimewHour,SystemTimewMinute,SystemTimewSecond
+EXTSYM GetDate
 
 SECTION .text
 
@@ -41,17 +40,4 @@ NEWSYM Get_Date
     and al,0xF
     add cl,al
     add cx,1900
-    ret
-
-NEWSYM GetTimeInSeconds
-    ccallv GetLocalTime
-    movzx eax,word[SystemTimewHour]
-    mov ebx,60
-    mul ebx
-    movzx ebx,word[SystemTimewMinute]
-    add eax,ebx
-    mov ebx,60
-    mul ebx
-    movzx ebx,word[SystemTimewSecond]
-    add eax,ebx
     ret

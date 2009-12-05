@@ -21,20 +21,17 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #include <time.h>
 
-short SystemTimewHour;
-short SystemTimewMinute;
-short SystemTimewSecond;
+#include "ztimec.h"
 
-void GetLocalTime()
+
+u4 GetTimeInSeconds(void)
 {
   time_t current;
   struct tm *timeptr;
 
   time(&current);
   timeptr = localtime(&current);
-  SystemTimewHour = timeptr->tm_hour;
-  SystemTimewMinute = timeptr->tm_min;
-  SystemTimewSecond = timeptr->tm_sec;
+  return (timeptr->tm_hour * 60 + timeptr->tm_min) * 60 + timeptr->tm_sec;
 }
 
 unsigned int GetTime()

@@ -2578,7 +2578,7 @@ NEWSYM ClockOutput
     dec ebx
     jnz .loop2b
 .do8b
-    call GetTimeInSeconds
+    ccall GetTimeInSeconds
     xor edx,edx
     mov ebx,60
     div ebx
