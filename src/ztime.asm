@@ -19,14 +19,10 @@
 
 %include "macros.mac"
 
-EXTSYM GetTime,GetDate,GetLocalTime
+EXTSYM GetDate,GetLocalTime
 EXTSYM SystemTimewHour,SystemTimewMinute,SystemTimewSecond
 
 SECTION .text
-
-NEWSYM Get_Time
-    ccall GetTime
-    ret
 
 NEWSYM Get_TimeDate
     ccall GetDate

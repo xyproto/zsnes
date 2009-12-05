@@ -39,7 +39,7 @@
 %include "macros.mac"
 
 EXTSYM regptra,regptwa,romdata,SA1Status,SDD1BankA,NumofBanks,BWUsed2
-EXTSYM Get_Time,Get_TimeDate,irqv2,irqv,nmiv2,nmiv,snesmmap,snesmap2
+EXTSYM GetTime,Get_TimeDate,irqv2,irqv,nmiv2,nmiv,snesmmap,snesmap2
 EXTSYM curypos,CurrentExecSA1,memaccessbankr8sdd1,memtabler8,AddrNoIncr
 EXTSYM SA1_DMA_CC2
 
@@ -74,7 +74,7 @@ RTC2800:
     ; fill time/date
     push ebx
     push eax
-    call Get_Time
+    ccall GetTime
     mov bl,al
     and bl,0Fh
     mov [RTCData+1],bl  ; seconds
