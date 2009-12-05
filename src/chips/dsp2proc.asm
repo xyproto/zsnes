@@ -166,20 +166,6 @@ SECTION .text
 ;
 ;*******************************************************
 
-NEWSYM InitDSP2
-.enter
-    mov dword[dsp2state],0
-    mov dword[dsp2enforcerQueue+8*0+0],0
-    mov dword[dsp2enforcerQueue+8*0+4],8000h
-    mov dword[dsp2enforcerReaderCursor],0
-    mov dword[dsp2enforcerWriterCursor],1
-.leave
-    ret
-
-;*******************************************************
-;
-;*******************************************************
-
 NEWSYM DSP2Read8b
 .enter
     test byte[dsp2state],DSP2F_HALT

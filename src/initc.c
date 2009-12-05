@@ -35,6 +35,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #endif
 #include "asm_call.h"
 #include "cfg.h"
+#include "chips/c_dsp2proc.h"
 #include "cpu/c_regs.h"
 #include "cpu/c_regsw.h"
 #include "gui/c_guimisc.h"
@@ -1754,7 +1755,7 @@ extern uint8_t ForcePal, ForceROMTiming, romispal, MovieWaiting, DSP1Type;
 extern uint16_t totlines;
 void SetAddressingModes(), GenerateBank0Table();
 void SetAddressingModesSA1(), GenerateBank0TableSA1();
-void InitDSP(), InitDSP2(), InitDSP3(), InitDSP4(), InitOBC1(), InitFxTables();
+void InitDSP(), InitDSP3(), InitDSP4(), InitOBC1(), InitFxTables();
 
 #ifdef __MSDOS__
 void dosmakepal();
@@ -1830,7 +1831,7 @@ void CheckROMType()
 
   if (DSP2Enable)
   {
-    asm_call(InitDSP2);
+    InitDSP2();
     map_mem(0x3F, &dsp2bank, 1);
   }
 

@@ -48,6 +48,7 @@ SRCS += chips/7110emu.c
 SRCS += chips/7110proc.asm
 SRCS += chips/c4emu.c
 SRCS += chips/c4proc.asm
+SRCS += chips/c_dsp2proc.c
 SRCS += chips/dsp1emu.c
 SRCS += chips/dsp1proc.asm
 SRCS += chips/dsp2proc.asm
