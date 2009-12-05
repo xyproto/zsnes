@@ -120,7 +120,7 @@ extern uint32_t NumofBanks;
 extern uint32_t NumofBytes;
 extern uint8_t *romdata;
 extern uint8_t romtype;
-extern uint8_t Interleaved;
+static uint8_t Interleaved;
 
 uint32_t maxromspace;
 uint32_t curromspace;

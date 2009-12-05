@@ -717,7 +717,6 @@ NEWSYM NumofBytes,    resd 1
 
 
 NEWSYM DSP1Type, resb 1
-NEWSYM Interleaved, resb 1
 SECTION .text
 
 NEWSYM outofmemfix
