@@ -41,6 +41,10 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "ui.h"
 #include "zpath.h"
 
+#ifndef OPENSPC
+#	include "cpu/c_dspproc.h"
+#endif
+
 #define BIT(x) (1 << (x))
 
 extern unsigned int xa, MessageOn, maxromspace;
@@ -97,7 +101,7 @@ unsigned char finterleave   = 0;
 u1            DSPDisable    = 0;
 u1            MusicVol      = 0;
 
-void init(), WaitForKey(), InitSPC(), DosExit();
+void init(), WaitForKey(), DosExit();
 void MultiMouseInit();
 
 void zexit(), zexit_error();
@@ -233,9 +237,9 @@ unsigned char vrama[65536];
 unsigned char mode7tab[65536];
 
 unsigned short fulladdtab[65536];
-unsigned short VolumeConvTable[32768];
-unsigned int dspWptr[256];
-unsigned int dspRptr[256];
+u2            VolumeConvTable[32768];
+eop*          dspWptr[256];
+eop*          dspRptr[256];
 
 #define deallocmemhelp(p) if (p) { free(p); }
 
@@ -365,7 +369,7 @@ void zstart()
   OSPC_Init();
 #else
   setnoise();
-  asm_call(InitSPC);
+  InitSPC();
 #endif
 
   allocmem();

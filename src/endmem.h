@@ -3,6 +3,7 @@
 
 #include "types.h"
 
+extern eop*  opcjmptab[256];
 extern eop*  tableA[256];
 extern eop*  tableB[256];
 extern eop*  tableC[256];
