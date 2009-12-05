@@ -13,5 +13,8 @@ extern u1   MusicVol;
 extern u1   V8Mode;          // Vegetable mode! =) (Greyscale mode)
 extern u1*  vidbufferofsa;   // offset 1
 extern u1*  vidbufferofsb;   // offset 2
+extern u2   selc0040;
+extern u2   selcA000;
+extern u2   selcB800;
 
 #endif

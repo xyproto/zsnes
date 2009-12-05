@@ -55,9 +55,6 @@ EXTSYM Clear2xSaIBuffer
 
 SECTION .text
 
-NEWSYM StartUp
-    ret
-
 ; SystemInit - Initialize all Joystick stuff, load in all configuration data,
 ;   parse commandline data, obtain current directory (One time initialization)
 

@@ -7,6 +7,9 @@
 #include "../ui.h"
 
 
+void StartUp(void) {}
+
+
 void InitPreGame(void)
 {
 	pressed[1] = 2;

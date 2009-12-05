@@ -21,7 +21,7 @@
 
 %include "macros.mac"
 
-EXTSYM selcA000,selcB800,selc0040,previdmode,DosExit,_djstat_flags
+EXTSYM previdmode
 EXTSYM getblaster,Force8b,SBHDMA
 EXTSYM oldhand9s,oldhand9o,interror,oldhand8s,oldhand8o,oldhandSBs,oldhandSBo
 EXTSYM soundon,DSPDisable,SBInt,PICMaskP,SBIrq,SBHandler,InitSB
@@ -51,42 +51,6 @@ SECTION .data
 NEWSYM dssel, dw 0
 SECTION .text
 
-NEWSYM StartUp
-    mov word[_djstat_flags],0FFFFh ;Optimize stat() calls by not calculating data useless for ZSNES
-
-    mov    ax,901h             ;enable interrupts
-    int    31h
-    mov ax,ds
-    mov [dssel],ax
-    mov bx,0A000h
-    call findselec
-    mov [selcA000],ax
-    mov bx,0B800h
-    call findselec
-    mov [selcB800],ax
-    mov bx,0040h
-    call findselec
-    mov [selc0040],ax
-    ; get previous video mode
-    xor ecx,ecx
-    push es
-    mov ax,[selc0040]
-    mov es,ax
-    mov al,[es:49h]
-    mov [previdmode],al
-    pop es
-
-    ; Get base address
-    mov ax,ds
-    mov bx,ax
-    mov eax,0006h
-    int 31h
-    jc .FatalError
-    mov [ZSNESBase+2],cx                ; These variables are used for
-    mov [ZSNESBase],dx                  ; memory allocation so they can be
-.FatalError                             ; ignored for non-DOS ports
-    ret
-
 ; SystemInit - Initialize all Joystick stuff, load in all configuration data,
 ;   parse commandline data, obtain current directory (One time initialization)
 NEWSYM SystemInit
@@ -100,20 +64,6 @@ NEWSYM SystemInit
 .noforce8b
     pop es
     ret
-
-; Find Selector - DOS only
-findselec:
-    mov ax, 2
-    int 31h
-    jnc .proceed
-    mov edx, .noselector
-    call PrintStr
-    jmp DosExit
-.proceed
-    ret
-SECTION .data
-.noselector db 'Cannot find selector!',10,13,0
-SECTION .text
 
 NEWSYM PrintChar
     ; print character at dl, push all modified registers
@@ -812,7 +762,6 @@ NEWSYM ScanCodeListing
 
 SECTION .bss
 
-NEWSYM ZSNESBase, resd 1
 TempVarSeek resd 1
 
 

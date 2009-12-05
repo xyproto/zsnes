@@ -37,6 +37,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "input.h"
 #include "intrf.h"
 #include "mmlib/mm.h"
+#include "c_intrf.h"
 #include "ui.h"
 #include "zpath.h"
 
@@ -46,7 +47,9 @@ extern unsigned int xa, MessageOn, maxromspace;
 extern unsigned char FPSOn, spcon, device1, device2;
 extern char *Msgptr, CSStatus[], CSStatus2[], CSStatus3[], CSStatus4[];
 
-unsigned short selc0040, selcA000, selcB800;
+u2 selc0040;
+u2 selcA000;
+u2 selcB800;
 
 unsigned char *vidbuffer;           //  video buffer (1024x239 = 244736)
 unsigned char *ngwinptr;
@@ -95,7 +98,7 @@ u1            DSPDisable    = 0;
 u1            MusicVol      = 0;
 
 void init(), WaitForKey(), InitSPC(), DosExit();
-void SystemInit(), StartUp(), MultiMouseInit();
+void SystemInit(), MultiMouseInit();
 
 void zexit(), zexit_error();
 
@@ -336,7 +339,7 @@ void zstart()
   unsigned int ptr;
 
   MMXCheck();
-  asm_call(StartUp);
+  StartUp();
 
   // Print welcome message part 2.
   puts("Use ZSNES -? for command line definitions.\n");

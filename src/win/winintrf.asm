@@ -55,9 +55,6 @@ EXTSYM pl5Ak,pl5Bk,pl5Xk,pl5Yk,pl5Lk,pl5Rk
 
 SECTION .text
 
-NEWSYM StartUp
-    ret
-
 ; SystemInit - Initialize all Joystick stuff, load in all configuration data,
 ;   parse commandline data, obtain current directory (One time initialization)
 
