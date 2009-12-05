@@ -5,10 +5,10 @@
 #include "cfg.h"
 #include "cpu/c_regs.h"
 #include "cpu/c_regsw.h"
+#include "cpu/c_table.h"
 #include "cpu/execute.h"
 #include "cpu/regs.h"
 #include "cpu/stable.h"
-#include "cpu/table.h"
 #include "cpu/tablec.h"
 #include "debugger.h"
 #include "gui/gui.h"
@@ -51,7 +51,7 @@ void init(void)
 
 	clearmem();
 
-	asm_call(inittable);
+	inittable();
 	asm_call(inittablec);
 	asm_call(SA1inittable);
 
