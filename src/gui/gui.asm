@@ -54,8 +54,7 @@ EXTSYM coladdb,scaddtype,initvideo,pressed,UpdateDevices,memtabler8
 EXTSYM memtablew8,writeon,JoyRead,SetInputDevice,delay,FPSOn,RevStereo,WDSPReg0C
 EXTSYM WDSPReg1C,pl12s34,resolutn,Makemode7Table,vidbufferofsb,wramdata,bgfixer
 EXTSYM videotroub,CheatCodeSave,CheatCodeLoad,LoadCheatSearchFile
-EXTSYM SaveCheatSearchFile,Get_Date,Check_Key,Get_Key,sram
-EXTSYM ScanCodeListing,RelPathBase
+EXTSYM SaveCheatSearchFile,Check_Key,Get_Key,sram,ScanCodeListing,RelPathBase
 EXTSYM AdjustFrequency,GUISaveVars,Init_Mouse,Get_MouseData,Set_MouseXMax
 EXTSYM Set_MouseYMax,Set_MousePosition,Get_MousePositionDisplacement,GUIInit
 EXTSYM GUIDeInit,SpecialLine,DrawWater,DrawBurn,DrawSmoke
@@ -874,10 +873,8 @@ NEWSYM StartGUI
   jnz .loop
 .nong
   mov byte[ShowTimer],1
-  call Get_Date
-  cmp dh,12
-  jne .noxmas
-  cmp dl,25
+  ccall GetDate
+  cmp ax, 0C25h
   jne .noxmas
   mov byte[OkaySC],1
 .noxmas

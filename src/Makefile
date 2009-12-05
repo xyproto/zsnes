@@ -136,7 +136,6 @@ SRCS += zloader.c
 SRCS += zmovie.c
 SRCS += zpath.c
 SRCS += zstate.c
-SRCS += ztime.asm
 SRCS += ztimec.c
 
 PSRS :=
