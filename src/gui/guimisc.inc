@@ -466,7 +466,6 @@ NEWSYM GUIDoReset
     call DOSClearScreen
 %endif
     ccallv Clear2xSaIBuffer
-;    mov byte[NetPlayNoMore],1
 
     ccallv MovieStop
     ccallv RestoreSystemVars

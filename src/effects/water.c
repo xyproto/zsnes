@@ -44,8 +44,6 @@ static unsigned char vscr[SCRW*SCRH];
 
 static int Height[2][SCRW*SCRH];
 
-extern char NetPlayNoMore;
-
 static void DrawWaterWithLight(int *ptr,int light);
 static void SineBlob(int x, int y, int radius, int height, int page);
 static void CalcWater(int *nptr,int *optr,int density);
