@@ -33,7 +33,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #endif // __MSDOS__
 
 #include "asm_call.h"
-#include "cpu/execute.h"
+#include "cpu/c_execute.h"
 
 // All of these should be in headers, people!
 
@@ -187,7 +187,7 @@ void startdebugger(void)
 
 
     if (execut == 1) {
-        asm_call(start65816);
+        start65816();
         return;
     }
     endprog(); return;

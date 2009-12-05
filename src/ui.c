@@ -50,7 +50,7 @@ unsigned short selc0040, selcA000, selcB800;
 
 unsigned char *vidbuffer;           //  video buffer (1024x239 = 244736)
 unsigned char *ngwinptr;
-unsigned char *vidbufferofsa;       // offset 1
+u1*            vidbufferofsa;
 unsigned char *vidbufferofsb;       // offset 2
 unsigned char *headdata;
 unsigned char *romdata;             // rom data  (4MB = 4194304)

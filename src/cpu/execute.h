@@ -3,7 +3,7 @@
 
 #include "../types.h"
 
-extern void start65816();
+extern void continueprog();
 
 extern u1 romloadskip;
 

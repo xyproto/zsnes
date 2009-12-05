@@ -3,5 +3,6 @@
 
 extern void Get_MousePositionDisplacement();
 extern void UpdateDevices();
+extern void initvideo();
 
 #endif

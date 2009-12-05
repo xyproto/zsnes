@@ -3,6 +3,7 @@
 #include "asm_call.h"
 #include "c_init.h"
 #include "cfg.h"
+#include "cpu/c_execute.h"
 #include "cpu/c_regs.h"
 #include "cpu/c_regsw.h"
 #include "cpu/c_table.h"
@@ -128,6 +129,6 @@ void init(void)
 	else
 #endif
 	{
-		asm_call(start65816);
+		start65816();
 	}
 }

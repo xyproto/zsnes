@@ -20,12 +20,12 @@
 %include "macros.mac"
 
 EXTSYM KeyRewind,statesaver,Voice0Status,UpdateDPage
-EXTSYM StartGUI,romdata,initvideo,DosExit,sfxramdata,deinitvideo
-EXTSYM vidbufferofsa,device2,RawDumpInProgress
+EXTSYM StartGUI,romdata,DosExit,sfxramdata,deinitvideo
+EXTSYM device2,RawDumpInProgress
 EXTSYM KeySaveState,KeyLoadState,KeyQuickExit,KeyQuickLoad,KeyQuickRst
 EXTSYM GUIDoReset,GUIReset,KeyOnStA,KeyOnStB,ProcessKeyOn,C4Enable,KeyQuickClock
 EXTSYM KeyQuickSaveSPC,TimerEnable,splitflags,joinflags
-EXTSYM KeyQuickSnapShot,csounddisable,videotroub
+EXTSYM KeyQuickSnapShot,csounddisable
 EXTSYM InitPreGame,Curtableaddr,curcyc,debugdisble,dmadata,guioff,memtabler8
 EXTSYM SetupPreGame,memtablew8,regaccessbankr8,showmenu,snesmap2,snesmmap
 EXTSYM DeInitPostGame,spcPCRam,xp,xpb,xpc,tablead
@@ -202,23 +202,6 @@ NEWSYM tempdh, db 0
 
 SECTION .text
 
-
-; this wonderful mess starts up the CPU and initialized the emulation state
-NEWSYM start65816
-
-    call initvideo
-
-    cmp byte[videotroub],1
-    jne .notrouble
-    ret
-.notrouble
-
-    mov edi,[vidbufferofsa]
-    mov ecx,37518
-    xor eax,eax
-    rep stosd
-    cmp byte[romloadskip],1
-    je near StartGUI
 
 NEWSYM continueprog
     ; clear keyboard presses
