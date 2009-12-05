@@ -85,13 +85,13 @@ I'd fix that if anyone knows if that parameter defines something I can check
 PUSHAD \
 ASM_CALL(func) \
 POPAD \
-);
+)
 
 #else //MSVC
 
 #define asm_call(func) { _asm pushad \
 _asm call func \
-_asm popad };
+_asm popad }
 
 #endif
 
