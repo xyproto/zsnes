@@ -34,6 +34,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "safelib.h"
 #include "../cfg.h"
 #include "../input.h"
+#include "../link.h"
 
 #ifdef QT_DEBUGGER
 #include "debugger/load.h"
@@ -135,9 +136,7 @@ float sem_GetTicks();
 extern unsigned char romispal;
 
 /* FUNCTION DECLARATIONS */
-void clearwin();
 void drawscreenwin();
-void initwinvideo();
 unsigned int sdl_keysym_to_pc_scancode(int);
 void ProcessKeyBuf(int);
 void UpdateSound(void *userdata, Uint8 *stream, int len);
@@ -1118,7 +1117,7 @@ unsigned char prevKeep4_3Ratio = 0;
 unsigned char prevsync = 0;
 char CheckOGLMode();
 
-void initwinvideo()
+void initwinvideo(void)
 {
   uint32_t newmode = 0;
 
@@ -1441,7 +1440,7 @@ void UpdateVFrame()
   }
 }
 
-void clearwin()
+void clearwin(void)
 {
   /* If we're vid_null and we get here, there's a problem */
   /* elsewhere - DDOI */

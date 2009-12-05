@@ -42,6 +42,7 @@ extern "C"
 #include "../asm_call.h"
 #include "../cfg.h"
 #include "../input.h"
+#include "../link.h"
 #include "../types.h"
 #include "../zmovie.h"
 
@@ -351,7 +352,6 @@ BOOL InputDeAcquire()
 
 extern "C"
 {
-  void initwinvideo();
   void DosExit();
   extern BYTE EMUPause;
   extern int CurKeyPos;
@@ -1659,7 +1659,6 @@ extern "C"
   }
 
   char WinMessage[256];
-  void clearwin();
 
   char WinName[] = { "ZSNESW\0" };
   void NTSCFilterInit();
@@ -1714,7 +1713,7 @@ extern "C"
   RECT rc1;
   DWORD newmode = 0;
 
-  void initwinvideo()
+  void initwinvideo(void)
   {
     DWORD HQMode = 0;
     newmode = 0;
@@ -2254,7 +2253,7 @@ extern "C"
   void ClearWin16();
   void ClearWin32();
 
-  void clearwin()
+  void clearwin(void)
   {
     pitch = LockSurface();
     if (pitch == 0)

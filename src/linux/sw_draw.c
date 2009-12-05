@@ -23,6 +23,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "../gblhdr.h"
 #include "../cfg.h"
 #include "../asm_call.h"
+#include "../link.h"
 #include <stdint.h>
 
 
@@ -42,7 +43,6 @@ void UpdateVFrame();
 void NTSCFilterInit();
 void NTSCFilterDraw(int SurfaceX, int SurfaceY, int pitch, unsigned char *buffer);
 char CheckOGLMode();
-void initwinvideo();
 
 bool sw_start(int width, int height, int req_depth, int FullScreen)
 {

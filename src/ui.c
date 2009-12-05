@@ -50,8 +50,8 @@ unsigned short selc0040, selcA000, selcB800;
 
 unsigned char *vidbuffer;           //  video buffer (1024x239 = 244736)
 unsigned char *ngwinptr;
-u1*            vidbufferofsa;
-unsigned char *vidbufferofsb;       // offset 2
+u1*           vidbufferofsa;
+u1*           vidbufferofsb;
 unsigned char *headdata;
 unsigned char *romdata;             // rom data  (4MB = 4194304)
 unsigned char *sfxramdata;          // SuperFX Ram Data
@@ -87,11 +87,11 @@ unsigned char OldStyle      = 1;    // Old style joystick on
 unsigned char SecondPort    = 0;    // Secondary Joystick Port Enabled (209h) (DOS port only)
 
 unsigned char Doublevbuf    = 1;    // Double video buffer
-unsigned char V8Mode        = 0;    // Vegetable mode! =) (Greyscale mode)
+u1            V8Mode        = 0;
 unsigned char fastmemptr    = 0;
 unsigned char ForcePal      = 0;    // 1 = NTSC, 2 = PAL
 unsigned char finterleave   = 0;
-unsigned char DSPDisable    = 0;    // Disable DSP emulation
+u1            DSPDisable    = 0;
 u1            MusicVol      = 0;
 unsigned char MMXextSupport = 0;
 

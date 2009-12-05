@@ -22,7 +22,7 @@
 %include "macros.mac"
 
 EXTSYM getchar,PrevFSMode,sem_sleep,SBHDMA,putchar,Start60HZ
-EXTSYM pressed,AdjustFrequency,vidbufferofsb,vidbuffer,clearwin
+EXTSYM pressed,vidbuffer
 EXTSYM Stop60HZ,initwinvideo,vesa2_rpos,vesa2_gpos,vesa2_bpos,vesa2_rposng
 EXTSYM vesa2_gposng,vesa2_bposng,vesa2_usbit,vesa2_clbit,vesa2_clbitng
 EXTSYM vesa2_clbitng2,vesa2_clbitng3,vesa2red10,res640,res480,cbitmode,cvidmode
@@ -32,7 +32,7 @@ EXTSYM ngrposng,nggposng,ngbposng,HalfTransB,HalfTransC,UpdateVFrame,GetMouseX
 EXTSYM GetMouseY,GetMouseMoveX,GetMouseMoveY,GetMouseButton,T36HZEnabled
 EXTSYM MouseButton,Start36HZ,Stop36HZ,CheckTimers,vesa2_rfull,vesa2_rtrcl
 EXTSYM vesa2_rtrcla,vesa2_gfull,vesa2_gtrcl,vesa2_gtrcla,vesa2_bfull,vesa2_btrcl
-EXTSYM vesa2_btrcla,Init_2xSaIMMX,V8Mode,GrayscaleMode,PrevWinMode
+EXTSYM vesa2_btrcla,Init_2xSaIMMX,PrevWinMode
 EXTSYM pl1upk,pl1downk,pl1leftk,pl1rightk,pl1startk,pl1selk
 EXTSYM pl1Ak,pl1Bk,pl1Xk,pl1Yk,pl1Lk,pl1Rk
 EXTSYM pl2upk,pl2downk,pl2leftk,pl2rightk,pl2startk,pl2selk
@@ -146,32 +146,6 @@ NEWSYM Output_Text       ; Output character (ah=02h) or string (ah=09h)
     call PrintStr       ; print edx
     popad
     popad
-    ret
-
-NEWSYM InitPreGame   ; Executes before starting/continuing a game
-    mov byte[pressed+1],2
-    ccallv Start60HZ
-    ccallv initwinvideo
-
-    mov al,[GrayscaleMode]
-    cmp al,[V8Mode]
-    je .nochangemode
-    xor byte[V8Mode],1
-    xor al,al
-.nochangemode
-
-    pushad
-    call AdjustFrequency
-    popad
-
-    pushad
-    xor eax,eax
-    mov edi,[vidbufferofsb]
-    mov ecx,288*128
-    rep stosd
-    popad
-
-    ccallv clearwin
     ret
 
 NEWSYM SetupPreGame   ; Executes after pre-game init, can execute multiple

@@ -23,7 +23,7 @@
 
 EXTSYM GUIkeydelay2,SBHDMA
 EXTSYM soundon,DSPDisable,Start60HZ,pressed,putchar,getch
-EXTSYM vidbufferofsb,vidbuffer,clearwin,Stop60HZ,initwinvideo,vesa2_rpos
+EXTSYM vidbuffer,Stop60HZ,initwinvideo,vesa2_rpos
 EXTSYM vesa2_gpos,vesa2_bpos,vesa2_rposng,vesa2_gposng,vesa2_bposng,vesa2_usbit
 EXTSYM vesa2_clbit,vesa2_clbitng,vesa2_clbitng2,vesa2_clbitng3,vesa2red10,res640
 EXTSYM res480,cbitmode,cvidmode,vesa2_bits,vesa2_x,vesa2_y,genfulladdtab,GUICPC
@@ -35,7 +35,7 @@ EXTSYM SetMouseMaxY,SetMouseX,SetMouseY,T36HZEnabled,MouseButton,Start36HZ
 EXTSYM Stop36HZ,BufferSizeW,BufferSizeB,ProcessSoundBuffer,CheckTimers
 EXTSYM vesa2_rfull,vesa2_rtrcl,vesa2_rtrcla,vesa2_gfull,vesa2_gtrcl,vesa2_gtrcla
 EXTSYM vesa2_bfull,vesa2_btrcl,vesa2_btrcla,Init_2xSaIMMX,DoSleep
-EXTSYM V8Mode,GrayscaleMode,PrevWinMode,PrevFSMode,FrameSemaphore
+EXTSYM PrevWinMode,PrevFSMode,FrameSemaphore
 EXTSYM DisplayWIPDisclaimer
 EXTSYM pl1upk,pl1downk,pl1leftk,pl1rightk,pl1startk,pl1selk
 EXTSYM pl1Ak,pl1Bk,pl1Xk,pl1Yk,pl1Lk,pl1Rk
@@ -300,34 +300,6 @@ NEWSYM Output_Text       ; Output character (ah=02h) or string (ah=09h)
     call PrintStr       ; print edx
     popad
     popad
-    ret
-
-NEWSYM InitPreGame   ; Executes before starting/continuing a game
-    mov byte[pressed+1],2
-    ccallv Start60HZ
-
-    ccallv initwinvideo
-
-    mov al,[GrayscaleMode]
-    cmp al,[V8Mode]
-    je .nochangemode
-    xor byte[V8Mode],1
-    xor al,al
-.nochangemode
-
-    pushad
-    xor eax,eax
-    mov edi,[vidbufferofsb]
-    mov ecx,288*128
-    rep stosd
-    popad
-
-    ccallv clearwin
-    ret
-
-    ; set up interrupt handler
-    ; get old handler pmode mode address
-    ; Process stuff such as sound init, interrupt initialization
     ret
 
 NEWSYM SetupPreGame   ; Executes after pre-game init, can execute multiple

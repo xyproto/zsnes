@@ -243,16 +243,6 @@ NEWSYM SB_dsp_read
 ; Sound Blaster Interrupt Stuff
 ;****************************************************
 
-NEWSYM Interror
-    sti
-    mov edx,.nohand         ;use extended
-    mov ah,9                ;DOS- API
-    int 21h                 ;to print a string
-    call DosExit
-
-section .data
-.nohand db 'Cannot process interrupt handler!',13,10,'$'
-
 section .bss
 
 NEWSYM oldhandSBs, resw 1

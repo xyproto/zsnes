@@ -210,7 +210,7 @@ NEWSYM continueprognokeys
 %endif
     mov byte[exiter],0
 
-    call InitPreGame
+    ccallv InitPreGame
     jmp reexecuteb2
 
 ; Incorrect

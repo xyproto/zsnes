@@ -1,6 +1,7 @@
 #include <string.h>
 
 #include "../asm_call.h"
+#include "../c_intrf.h"
 #include "../cfg.h"
 #include "../gblvars.h"
 #include "../gui/gui.h"
@@ -36,6 +37,6 @@ void continueprog(void)
 #endif
 	exiter      = 0;
 
-	asm_call(InitPreGame);
+	InitPreGame();
 	asm_call(reexecute);
 }

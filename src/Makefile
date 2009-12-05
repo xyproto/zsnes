@@ -170,6 +170,7 @@ CFGDEFS += -D__OPENGL__
 endif
 
 ifeq ($(ARCH), DOS)
+SRCS += dos/c_dosintrf.c
 SRCS += dos/dosintrf.asm
 SRCS += dos/gppro.asm
 SRCS += dos/initvid.asm
@@ -185,6 +186,7 @@ endif
 ifneq ($(findstring $(ARCH), LINUX OSX),)
 SRCS += linux/audio.c
 SRCS += linux/battery.c
+SRCS += linux/c_sdlintrf.c
 SRCS += linux/lib.c
 SRCS += linux/safelib.c
 SRCS += linux/sdlintrf.asm
@@ -227,6 +229,7 @@ endif
 
 ifeq ($(ARCH), WIN)
 SRCS += mmlib/windows.c
+SRCS += win/c_winintrf.c
 SRCS += win/dx_ddraw.cpp
 SRCS += win/lib.c
 SRCS += win/safelib.c

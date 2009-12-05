@@ -22,15 +22,15 @@
 %include "macros.mac"
 
 EXTSYM selcA000,selcB800,selc0040,previdmode,DosExit,_djstat_flags
-EXTSYM V8Mode,getblaster,Force8b,SBHDMA
+EXTSYM getblaster,Force8b,SBHDMA
 EXTSYM oldhand9s,oldhand9o,interror,oldhand8s,oldhand8o,oldhandSBs,oldhandSBo
-EXTSYM NoSoundReinit,soundon,DSPDisable,SBInt,PICMaskP,SBIrq,SBHandler,InitSB
-EXTSYM handler8h,handler9h,init60hz,Interror,init18_2hz,DeInitSPC,GUIinit36_4hz
+EXTSYM soundon,DSPDisable,SBInt,PICMaskP,SBIrq,SBHandler,InitSB
+EXTSYM handler8h,handler9h,init60hz,init18_2hz,DeInitSPC,GUIinit36_4hz
 EXTSYM GUIoldhand9s,GUIoldhand9o,GUIoldhand8s,GUIoldhand8o,GUIhandler9h
 EXTSYM GUIhandler8h,GUIinit18_2hz,dosinitvideo
 EXTSYM DosDrawScreen,cvidmode,vidbuffer,GUICPC,DosDrawScreenB
 EXTSYM DosUpdateDevices,DOSJoyRead,pl1contrl,pl2contrl,pl3contrl,pl4contrl
-EXTSYM pl5contrl,GrayscaleMode
+EXTSYM pl5contrl
 EXTSYM pl1upk,pl1downk,pl1leftk,pl1rightk,pl1startk,pl1selk
 EXTSYM pl1Ak,pl1Bk,pl1Xk,pl1Yk,pl1Lk,pl1Rk
 EXTSYM pl2upk,pl2downk,pl2leftk,pl2rightk,pl2startk,pl2selk
@@ -219,48 +219,6 @@ NEWSYM delay
    dec cx
    jnz .loopa
    ret
-
-NEWSYM InitPreGame   ; Executes before starting/continuing a game
-    ; set up interrupt handler
-    ; get old handler pmode mode address
-    ; Process stuff such as sound init, interrupt initialization
-    cli
-    mov ax,204h
-    mov bl,09h
-    int 31h
-    jc near interror
-    mov [oldhand9s],cx
-    mov [oldhand9o],edx
-    mov ax,204h
-    mov bl,08h
-    int 31h
-    jc near interror
-    mov [oldhand8s],cx
-    mov [oldhand8o],edx
-
-    mov al,[GrayscaleMode]
-    cmp al,[V8Mode]
-    je .nochangemode
-    xor byte[V8Mode],1
-    xor al,al
-.nochangemode
-
-.nofs
-    cmp byte[NoSoundReinit],1
-    je .nosound
-    cmp byte[soundon],0
-    je .nosound
-    cmp byte[DSPDisable],1
-    je .nosound
-    mov ax,204h
-    mov bl,[SBInt]
-    int 31h
-    jc near Interror
-    mov [oldhandSBs],cx
-    mov [oldhandSBo],edx
-.nosound
-    sti
-    ret
 
 NEWSYM SetupPreGame   ; Executes after pre-game init, can execute multiple
                       ; times after a single InitPreGame
