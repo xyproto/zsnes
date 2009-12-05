@@ -2,6 +2,7 @@
 #include "../asm_call.h"
 #include "../c_intrf.h"
 #include "../cfg.h"
+#include "../cpu/dspproc.h"
 #include "../cpu/execute.h"
 #include "../ui.h"
 #include "dosintrf.h"
@@ -54,6 +55,19 @@ void StartUp(void)
 	u4 failed;
 	asm("movw %%ds, %%bx;  int $0x31;  sbb %0, %0" : "=r" (failed), "=c" (base_hi), "=d" (base_lo) : "a" (0x0006) : "cc", "ebx");
 	if (!failed) ZSNESBase = base_hi << 16 | base_lo;
+}
+
+
+void SystemInit(void)
+{
+	u2 es;
+	asm volatile("movw %%es, %0" : "=mr" (es)); // XXX necessary?
+
+	// Be sure to set SBHDMA to a value other than 0 if 16bit sound exists
+	asm_call(getblaster); // get set blaster environment
+	if (Force8b == 1) SBHDMA = 0;
+
+	asm volatile("movw %0, %%es" : "mr" (es)); // XXX necessary?
 }
 
 

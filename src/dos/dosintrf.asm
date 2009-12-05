@@ -22,7 +22,6 @@
 %include "macros.mac"
 
 EXTSYM previdmode
-EXTSYM getblaster,Force8b,SBHDMA
 EXTSYM oldhand9s,oldhand9o,interror,oldhand8s,oldhand8o,oldhandSBs,oldhandSBo
 EXTSYM soundon,DSPDisable,SBInt,PICMaskP,SBIrq,SBHandler,InitSB
 EXTSYM handler8h,handler9h,init60hz,init18_2hz,DeInitSPC,GUIinit36_4hz
@@ -50,20 +49,6 @@ EXTSYM pl5Ak,pl5Bk,pl5Xk,pl5Yk,pl5Lk,pl5Rk
 SECTION .data
 NEWSYM dssel, dw 0
 SECTION .text
-
-; SystemInit - Initialize all Joystick stuff, load in all configuration data,
-;   parse commandline data, obtain current directory (One time initialization)
-NEWSYM SystemInit
-    ; Be sure to set SBHDMA to a value other than 0 if 16bit sound exists
-    push es
-
-    call getblaster                     ; get set blaster environment
-    cmp byte[Force8b],1
-    jne .noforce8b
-    mov byte[SBHDMA],0
-.noforce8b
-    pop es
-    ret
 
 NEWSYM PrintChar
     ; print character at dl, push all modified registers

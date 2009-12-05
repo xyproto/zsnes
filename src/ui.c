@@ -98,7 +98,7 @@ u1            DSPDisable    = 0;
 u1            MusicVol      = 0;
 
 void init(), WaitForKey(), InitSPC(), DosExit();
-void SystemInit(), MultiMouseInit();
+void MultiMouseInit();
 
 void zexit(), zexit_error();
 
@@ -348,7 +348,7 @@ void zstart()
   MultiMouseInit();
 #endif
 
-  asm_call(SystemInit);
+  SystemInit();
 
   if (guioff && !*ZCartName)
   {

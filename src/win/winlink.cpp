@@ -25,7 +25,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 extern "C"
 {
-#include <windows.h>
 #include <stdio.h>
 #include "../c_init.h"
 }
@@ -156,7 +155,6 @@ extern "C"
   int SemaphoreMax = 5;
   void InitSemaphore();
   void ShutdownSemaphore();
-  void DisplayWIPDisclaimer();
   void InitDebugger();
   void DockDebugger();
   void Clear2xSaIBuffer();

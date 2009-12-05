@@ -22,6 +22,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #ifndef WINLINK_H
 #define WINLINK_H
 
+#include <windows.h>
+
 typedef HRESULT (WINAPI* lpDirectDrawCreateEx)(GUID FAR *lpGuid, LPVOID *lplpDD, REFIID  iid,
                                                IUnknown FAR *pUnkOuter);
 
@@ -82,6 +84,7 @@ extern "C" {
   void KeepTVRatio();
 
   void CheckAlwaysOnTop();
+  void DisplayWIPDisclaimer(void);
 
 #ifdef __cplusplus
 }

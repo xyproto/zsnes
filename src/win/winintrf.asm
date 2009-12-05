@@ -21,7 +21,7 @@
 
 %include "macros.mac"
 
-EXTSYM GUIkeydelay2,SBHDMA
+EXTSYM GUIkeydelay2
 EXTSYM soundon,DSPDisable,Start60HZ,pressed,putchar,getch
 EXTSYM vidbuffer,Stop60HZ,initwinvideo,vesa2_rpos
 EXTSYM vesa2_gpos,vesa2_bpos,vesa2_rposng,vesa2_gposng,vesa2_bposng,vesa2_usbit
@@ -36,7 +36,6 @@ EXTSYM Stop36HZ,BufferSizeW,BufferSizeB,ProcessSoundBuffer,CheckTimers
 EXTSYM vesa2_rfull,vesa2_rtrcl,vesa2_rtrcla,vesa2_gfull,vesa2_gtrcl,vesa2_gtrcla
 EXTSYM vesa2_bfull,vesa2_btrcl,vesa2_btrcla,Init_2xSaIMMX,DoSleep
 EXTSYM PrevWinMode,PrevFSMode,FrameSemaphore
-EXTSYM DisplayWIPDisclaimer
 EXTSYM pl1upk,pl1downk,pl1leftk,pl1rightk,pl1startk,pl1selk
 EXTSYM pl1Ak,pl1Bk,pl1Xk,pl1Yk,pl1Lk,pl1Rk
 EXTSYM pl2upk,pl2downk,pl2leftk,pl2rightk,pl2startk,pl2selk
@@ -54,17 +53,6 @@ EXTSYM pl5Ak,pl5Bk,pl5Xk,pl5Yk,pl5Lk,pl5Rk
 ;   before GUIDeInit.
 
 SECTION .text
-
-; SystemInit - Initialize all Joystick stuff, load in all configuration data,
-;   parse commandline data, obtain current directory (One time initialization)
-
-NEWSYM SystemInit
-    ; Be sure to set SBHDMA to a value other than 0 if 16bit sound exists
-%ifndef __RELEASE__
-    ccallv DisplayWIPDisclaimer
-%endif
-    mov byte[SBHDMA],1
-    ret
 
 NEWSYM PrintStr          ; Print ASCIIZ string
     pushad

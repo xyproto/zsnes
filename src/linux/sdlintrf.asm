@@ -21,7 +21,7 @@
 
 %include "macros.mac"
 
-EXTSYM getchar,PrevFSMode,sem_sleep,SBHDMA,putchar,Start60HZ
+EXTSYM getchar,PrevFSMode,sem_sleep,putchar,Start60HZ
 EXTSYM pressed,vidbuffer
 EXTSYM Stop60HZ,initwinvideo,vesa2_rpos,vesa2_gpos,vesa2_bpos,vesa2_rposng
 EXTSYM vesa2_gposng,vesa2_bposng,vesa2_usbit,vesa2_clbit,vesa2_clbitng
@@ -54,14 +54,6 @@ EXTSYM Clear2xSaIBuffer
 ;   before GUIDeInit.
 
 SECTION .text
-
-; SystemInit - Initialize all Joystick stuff, load in all configuration data,
-;   parse commandline data, obtain current directory (One time initialization)
-
-NEWSYM SystemInit
-    ; Be sure to set SBHDMA to a value other than 0 if 16bit sound exists
-    mov byte[SBHDMA],1
-    ret
 
 NEWSYM PrintStr          ; Print ASCIIZ string
     pushad

@@ -2,12 +2,27 @@
 
 #include "../c_intrf.h"
 #include "../cfg.h"
+#include "../cpu/dspproc.h"
 #include "../cpu/execute.h"
 #include "../link.h"
 #include "../ui.h"
 
+#ifndef __RELEASE__
+#	include "winlink.h"
+#endif
+
 
 void StartUp(void) {}
+
+
+void SystemInit(void)
+{
+#ifndef __RELEASE__
+	DisplayWIPDisclaimer();
+#endif
+	// Be sure to set SBHDMA to a value other than 0 if 16bit sound exists
+	SBHDMA = 1;
+}
 
 
 void InitPreGame(void)
