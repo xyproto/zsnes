@@ -425,7 +425,8 @@ NEWSYM endprog
     call deinitvideo
     ccallv MovieStop
 
-    jmp DosExit
+    ccallv DosExit
+    ret
 
 NEWSYM interror
     stim
@@ -433,7 +434,8 @@ NEWSYM interror
     mov edx,.nohand         ;use extended
     mov ah,9                ;DOS- API
     call Output_Text                 ;to print a string
-    jmp DosExit
+    ccallv DosExit
+    ret
 
 SECTION .data
 .nohand db 'Cannot process interrupt handler!',13,10,0
@@ -1299,7 +1301,8 @@ NEWSYM cpuover
     jne .noprocmovie
     cmp byte[ZMVZClose],1
     jne .noprocmovie
-    jmp DosExit
+    ccallv DosExit
+    ret
 .noprocmovie
 
     cmp byte[device2],3

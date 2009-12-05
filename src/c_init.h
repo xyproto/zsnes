@@ -4,6 +4,7 @@
 #include "types.h"
 
 void init(void);
+void DosExit(void);
 void MMXCheck(void);
 
 extern u1 MMXSupport;

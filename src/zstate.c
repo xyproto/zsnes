@@ -1249,7 +1249,7 @@ void LoadSecondState(void)
   zst_name();
 }
 
-void SaveSecondState()
+void SaveSecondState(void)
 {
   setextension(ZStateName, "zss");
   statesaver();

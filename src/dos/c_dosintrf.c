@@ -23,7 +23,7 @@ static u2 findselec(u2 const segment)
 	{
 		char const* msg = "Cannot find selector!\n\r";
 		asm volatile("call PrintStr" : "+d" (msg) :: "cc", "eax"); // XXX asm_call
-		asm_call(DosExit);
+		DosExit();
 	}
 	return selector;
 }

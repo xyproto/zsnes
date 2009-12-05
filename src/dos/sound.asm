@@ -99,7 +99,7 @@ NEWSYM SB_alloc_dma
     mov edx,.nohand         ;use extended
     mov ah,9                ;DOS- API
     int 21h                 ;to print a string
-    call DosExit
+    ccallv DosExit
 
 SECTION .data
 .nohand db 'Unable to allocate conventional memory!',13,10,'$'
@@ -205,7 +205,8 @@ NEWSYM SB_dsp_reset
     mov edx,initfailed      ;use extended
     mov ah,9                ;DOS- API
     int 21h                 ;to print a string
-    jmp DosExit
+    ccallv DosExit
+    ret
 
 section .data
 NEWSYM initfailed, db 'Sound card failed to initialize!',13,10,'$'

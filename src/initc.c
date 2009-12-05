@@ -34,6 +34,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define DIR_SLASH "\\"
 #endif
 #include "asm_call.h"
+#include "c_init.h"
 #include "cfg.h"
 #include "chips/c_dsp2proc.h"
 #include "cpu/c_regs.h"
@@ -2436,7 +2437,7 @@ void initsnes(void)
   }
 }
 
-void DosExit(), OpenSramFile(), CheatCodeLoad(), LoadSecondState(), LoadGameSpecificInput();
+void OpenSramFile(), CheatCodeLoad(), LoadSecondState(), LoadGameSpecificInput();
 extern uint8_t GUIOn, GUIOn2;
 
 bool loadfileGUI(void)
@@ -2466,7 +2467,7 @@ bool loadfileGUI(void)
     else
     {
       puts("Error opening file!\n");
-      asm_call(DosExit);
+      DosExit();
     }
   }
 
@@ -2756,7 +2757,7 @@ void init65816(void)
 extern unsigned char debugger;
 static bool zexit_called = false;
 
-void zexit()
+void zexit(void)
 {
   if (!zexit_called)
   {

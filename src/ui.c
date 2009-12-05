@@ -101,7 +101,7 @@ unsigned char finterleave   = 0;
 u1            DSPDisable    = 0;
 u1            MusicVol      = 0;
 
-void init(), WaitForKey(), DosExit();
+void init(), WaitForKey();
 void MultiMouseInit();
 
 void zexit(), zexit_error();
@@ -212,7 +212,7 @@ void setnoise()
 static void outofmemory()
 {
   puts("You don't have enough memory to run this program!");
-  asm_call(DosExit);
+  DosExit();
 }
 
 extern unsigned char wramdataa[65536], ram7fa[65536];

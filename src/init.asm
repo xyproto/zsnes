@@ -21,7 +21,7 @@
 
 %include "macros.mac"
 
-EXTSYM zexit,MessageOn,Msgptr,MsgCount,newgfx16b,ssautosw,GUIDelayB,pl12s34
+EXTSYM MessageOn,Msgptr,MsgCount,newgfx16b,ssautosw,GUIDelayB,pl12s34
 EXTSYM Output_Text,Turbo30hz,CombinDataLocl
 EXTSYM JoyRead,pressed,mousebuttons,mousexdir,mouseydir,mousexpos,mouseypos
 EXTSYM pl1selk,pl1startk,pl1upk,pl1downk,pl1leftk,pl1rightk,pl1Xk
@@ -37,12 +37,8 @@ EXTSYM pl4Ltk,pl4Rtk,pl4ULk,pl4URk,pl4DLk,pl4DRk,pl5contrl,pl5selk,pl5startk
 EXTSYM pl5upk,pl5downk,pl5leftk,pl5rightk,pl5Xk,pl5Ak,pl5Lk,pl5Yk,pl5Bk,pl5Rk
 EXTSYM pl5Xtk,pl5Ytk,pl5Atk,pl5Btk,pl5Ltk,pl5Rtk,pl5ULk,pl5URk,pl5DLk,pl5DRk
 EXTSYM CombinDataGlob,NumCombo,GUIComboGameSpec,mousexloc,mouseyloc,extlatch
-EXTSYM romdata,wramdata,romispal,AutoState,AllowUDLR
-EXTSYM device1,device2,processmouse1,SaveSecondState,processmouse2,SSPause
-
-%ifdef __MSDOS__
-EXTSYM init18_2hz
-%endif
+EXTSYM romdata,wramdata,romispal,AllowUDLR
+EXTSYM device1,device2,processmouse1,processmouse2,SSPause
 
 ; Initiation
 
@@ -705,18 +701,6 @@ NEWSYM SramExists,    resb 1
 NEWSYM NumofBanks,    resd 1
 NEWSYM NumofBytes,    resd 1
 
-SECTION .text
-
-NEWSYM DosExit ; Terminate Program
-  cmp byte[AutoState],1
-  jne .noautostate
-  ccallv SaveSecondState
-.noautostate
-%ifdef __MSDOS__
-  call init18_2hz
-%endif
-  ccallv zexit
-
 ;*******************************************************
 ; Show Information
 ;*******************************************************
@@ -732,7 +716,6 @@ NEWSYM DosExit ; Terminate Program
 ;                   F3=C4
 
 
-SECTION .bss
 NEWSYM DSP1Type, resb 1
 NEWSYM Interleaved, resb 1
 SECTION .text

@@ -12,6 +12,7 @@ void     clearmem(void);
 void     init65816(void);
 void     initsnes(void);
 void     procexecloop(void);
+void     zexit(void);
 
 extern bool RTCEnable;
 extern bool SDD1Enable;

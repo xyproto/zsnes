@@ -50,7 +50,8 @@ NEWSYM VESA12EXITTODOS
     int 21h
 
     mov byte[videotroub],1
-    jmp DosExit
+    ccallv DosExit
+    ret
 
 
 SECTION .data
@@ -274,7 +275,8 @@ NEWSYM InitVesa12
 ;        int 10h
 ;        pop eax
 ;        call printnum
-;        jmp DosExit
+;        ccallv DosExit
+;        ret
 
     mov ax,[fs:10h]
     mov byte[vesa2red10],0

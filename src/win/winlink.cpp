@@ -351,7 +351,6 @@ BOOL InputDeAcquire()
 
 extern "C"
 {
-  void DosExit();
   extern BYTE EMUPause;
   extern int CurKeyPos;
   extern int CurKeyReadPos;

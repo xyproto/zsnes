@@ -137,6 +137,18 @@ void init(void)
 }
 
 
+// Terminate Program
+void DosExit(void)
+{
+	if (AutoState == 1)
+		SaveSecondState();
+#ifdef __MSDOS__
+	asm_call(init18_2hz);
+#endif
+	zexit();
+}
+
+
 void MMXCheck(void)
 { // Check for cpu that doesn't support CPUID
 	ShowMMXSupport = 0;

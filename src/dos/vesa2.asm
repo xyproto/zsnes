@@ -58,7 +58,8 @@ NEWSYM VESA2EXITTODOS
     mov edx,.return
     call PrintStr
 
-    jmp DosExit
+    ccallv DosExit
+    ret
 
 SECTION .data
 .exitfromvesa2 db 'Unable to Initialize VESA2 : ',0
@@ -395,7 +396,8 @@ NEWSYM InitVesa2
 ;        int 10h
 ;        mov ax,[vesa2_rfull]
 ;        call printhex
-;        jmp DosExit
+;        ccallv DosExit
+;        ret
 
     ; Process Green Stuff
     mov al,[fs:22h]
