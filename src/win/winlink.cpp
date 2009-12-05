@@ -27,6 +27,7 @@ extern "C"
 {
 #include <windows.h>
 #include <stdio.h>
+#include "../c_init.h"
 }
 #include <stdint.h>
 #include <math.h>
@@ -2115,7 +2116,6 @@ extern "C"
 
   volatile int SPCSize;
   volatile int buffer_ptr;
-  extern unsigned char MMXSupport;
 
   void UpdateVFrame()
   {

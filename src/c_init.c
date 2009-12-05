@@ -26,6 +26,9 @@
 #include "zstate.h"
 
 
+u1 MMXSupport;
+
+
 void init(void)
 {
 #if 0 // XXX This seems very strange
@@ -131,4 +134,46 @@ void init(void)
 	{
 		start65816();
 	}
+}
+
+
+void MMXCheck(void)
+{ // Check for cpu that doesn't support CPUID
+	ShowMMXSupport = 0;
+	MMXSupport     = 0;
+	MMXextSupport  = 0;
+
+	// Real way to check for presence of CPUID instruction  -kode54
+	u4 eflags_before;
+	u4 eflags_after;
+	asm(
+		"pushf\n\t"
+		"popl  %0\n\t"
+		"movl  %0, %1\n\t"
+		"xorl  $0x00200000, %1\n\t"
+		"pushl %1\n\t"
+		"popf\n\t"
+		"pushf\n\t"
+		"popl  %1\n\t"
+		: "=r" (eflags_before), "=r" (eflags_after) :: "cc"
+	);
+	if (eflags_before == eflags_after) return; // No CPUID, so no MMX either
+
+	u4 eax, ebx, ecx, edx;
+
+	asm("cpuid" : "=a" (eax), "=b" (ebx), "=c" (ecx), "=d" (edx) : "a" (1));
+	if (!(edx & 0x00800000)) return; // No MMX
+
+	ShowMMXSupport = 1;
+	MMXSupport     = AllowMMX;
+
+	// Check if CPU has SSE (also support mmxext)
+	if (!(edx & 0x02000000))
+	{ // Test extended CPU flag
+		asm("cpuid" : "=a" (eax), "=b" (ebx), "=c" (ecx), "=d" (edx) : "a" (0x80000001));
+		if (!(edx & 0x00400000))
+			return;
+	}
+
+	MMXextSupport = 1;
 }

@@ -93,9 +93,9 @@ unsigned char ForcePal      = 0;    // 1 = NTSC, 2 = PAL
 unsigned char finterleave   = 0;
 u1            DSPDisable    = 0;
 u1            MusicVol      = 0;
-unsigned char MMXextSupport = 0;
+u1            MMXextSupport = 0;
 
-void init(), WaitForKey(), MMXCheck(), InitSPC(), DosExit();
+void init(), WaitForKey(), InitSPC(), DosExit();
 void SystemInit(), StartUp(), MultiMouseInit();
 
 void zexit(), zexit_error();
@@ -336,7 +336,7 @@ void zstart()
 {
   unsigned int ptr;
 
-  asm_call(MMXCheck);
+  MMXCheck();
   asm_call(StartUp);
 
   // Print welcome message part 2.

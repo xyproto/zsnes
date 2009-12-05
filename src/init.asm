@@ -22,7 +22,7 @@
 %include "macros.mac"
 
 EXTSYM zexit,MessageOn,Msgptr,MsgCount,newgfx16b,ssautosw,GUIDelayB,pl12s34
-EXTSYM Output_Text,Turbo30hz,CombinDataLocl,ShowMMXSupport
+EXTSYM Output_Text,Turbo30hz,CombinDataLocl
 EXTSYM JoyRead,pressed,mousebuttons,mousexdir,mouseydir,mousexpos,mouseypos
 EXTSYM pl1selk,pl1startk,pl1upk,pl1downk,pl1leftk,pl1rightk,pl1Xk
 EXTSYM pl1Ak,pl1Lk,pl1Yk,pl1Bk,pl1Rk,pl1Xtk,pl1Ytk,pl1Atk,pl1Btk,pl1Ltk,pl1Rtk
@@ -37,7 +37,7 @@ EXTSYM pl4Ltk,pl4Rtk,pl4ULk,pl4URk,pl4DLk,pl4DRk,pl5contrl,pl5selk,pl5startk
 EXTSYM pl5upk,pl5downk,pl5leftk,pl5rightk,pl5Xk,pl5Ak,pl5Lk,pl5Yk,pl5Bk,pl5Rk
 EXTSYM pl5Xtk,pl5Ytk,pl5Atk,pl5Btk,pl5Ltk,pl5Rtk,pl5ULk,pl5URk,pl5DLk,pl5DRk
 EXTSYM CombinDataGlob,NumCombo,GUIComboGameSpec,mousexloc,mouseyloc,extlatch
-EXTSYM AllowMMX,MMXextSupport,romdata,wramdata,romispal,AutoState,AllowUDLR
+EXTSYM romdata,wramdata,romispal,AutoState,AllowUDLR
 EXTSYM device1,device2,processmouse1,SaveSecondState,processmouse2,SSPause
 
 %ifdef __MSDOS__
@@ -717,51 +717,6 @@ NEWSYM DosExit ; Terminate Program
 %endif
   ccallv zexit
 
-NEWSYM MMXCheck
-    ; Check for cpu that doesn't support CPUID
-    mov byte[ShowMMXSupport],0
-    mov byte[MMXSupport],0
-    mov byte[MMXextSupport],0
-
-    ; Real way to check for presence of CPUID instruction  -kode54
-    pushfd
-    pop eax
-    mov edx,eax
-    xor eax,1 << 21
-    push eax
-    popfd
-    pushfd
-    pop eax
-    xor eax,edx
-    jz .nommx
-
-    ; MMX support
-    mov eax,1
-    CPUID
-
-    test edx,1 << 23
-    jz .nommx
-    mov byte[ShowMMXSupport],1
-    mov al,[AllowMMX]
-    mov [MMXSupport],al
-    jz .nommx
-
-    ; Check if CPU has SSE (also support mmxext)
-    test edx,1 << 25
-    jz .tryextmmx
-    mov byte[MMXextSupport],1
-    ret
-
-.tryextmmx
-    ; Test extended CPU flag
-    mov eax,80000001h
-    CPUID
-    test edx,1 << 22
-    jz .nommx
-    mov byte[MMXextSupport],1
-.nommx
-    ret
-
 ;*******************************************************
 ; Show Information
 ;*******************************************************
@@ -805,7 +760,6 @@ ALIGN32 ; Hack for broken nasm < 2.08: macho sections are not aligned
 
 SECTION .bss
 NEWSYM yesoutofmemory, resb 1
-NEWSYM MMXSupport, resb 1
 SECTION .data
 NEWSYM outofmemoryerror, db 'OUT OF MEMORY.',0
 NEWSYM outofmemoryerror2, db 'ROM IS TOO BIG.',0
