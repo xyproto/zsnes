@@ -50,3 +50,9 @@ void InitPreGame(void)
 	// get old handler pmode mode address
 	// Process stuff such as sound init, interrupt initialization
 }
+
+
+void UpdateDevices(void)
+{
+	WinUpdateDevices();
+}

@@ -341,10 +341,6 @@ SECTION .text
 ;   numerical corresponding key format after reading from it. And then
 ;   convert it back when writing to it back.
 
-NEWSYM UpdateDevices                    ; One-time input device init
-; Stub please fix
-        ret
-
 NEWSYM JoyRead
         ccallv UpdateVFrame
         ret

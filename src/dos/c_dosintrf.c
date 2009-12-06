@@ -104,3 +104,9 @@ void InitPreGame(void)
 	}
 	sti();
 }
+
+
+void UpdateDevices(void)
+{
+	asm_call(DosUpdateDevices);
+}

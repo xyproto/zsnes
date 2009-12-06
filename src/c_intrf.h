@@ -13,4 +13,7 @@ char WaitForKey(void);
 // Executes before starting/continuing a game
 void InitPreGame(void);
 
+// One-time input device init
+void UpdateDevices(void);
+
 #endif

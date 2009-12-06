@@ -28,7 +28,7 @@ EXTSYM handler8h,handler9h,init60hz,init18_2hz,DeInitSPC,GUIinit36_4hz
 EXTSYM GUIoldhand9s,GUIoldhand9o,GUIoldhand8s,GUIoldhand8o,GUIhandler9h
 EXTSYM GUIhandler8h,GUIinit18_2hz,dosinitvideo
 EXTSYM DosDrawScreen,cvidmode,vidbuffer,GUICPC,DosDrawScreenB
-EXTSYM DosUpdateDevices,DOSJoyRead,pl1contrl,pl2contrl,pl3contrl,pl4contrl
+EXTSYM DOSJoyRead,pl1contrl,pl2contrl,pl3contrl,pl4contrl
 EXTSYM pl5contrl
 EXTSYM pl1upk,pl1downk,pl1leftk,pl1rightk,pl1startk,pl1selk
 EXTSYM pl1Ak,pl1Bk,pl1Xk,pl1Yk,pl1Lk,pl1Rk
@@ -479,10 +479,6 @@ SECTION .text
 ;   assignments in the configuration file, then convert it to ZSNES'
 ;   numerical corresponding key format after reading from it. And then
 ;   convert it back when writing to it back.
-
-NEWSYM UpdateDevices                    ; One-time input device init
-        call DosUpdateDevices
-        ret
 
 NEWSYM JoyRead
         call DOSJoyRead

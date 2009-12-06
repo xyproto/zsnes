@@ -29,7 +29,7 @@ EXTSYM vesa2_clbit,vesa2_clbitng,vesa2_clbitng2,vesa2_clbitng3,vesa2red10,res640
 EXTSYM res480,cbitmode,cvidmode,vesa2_bits,vesa2_x,vesa2_y,genfulladdtab,GUICPC
 EXTSYM drawscreenwin,ConvertToAFormat,HalfTrans,UnusedBitXor,UnusedBit
 EXTSYM ngrposng,nggposng,ngbposng,HalfTransB,HalfTransC
-EXTSYM WinUpdateDevices,UpdateVFrame,GetMouseX,GetMouseY,GetMouseMoveX
+EXTSYM UpdateVFrame,GetMouseX,GetMouseY,GetMouseMoveX
 EXTSYM GetMouseMoveY,GetMouseButton,SetMouseMinX,SetMouseMaxX,SetMouseMinY
 EXTSYM SetMouseMaxY,SetMouseX,SetMouseY,T36HZEnabled,MouseButton,Start36HZ
 EXTSYM Stop36HZ,BufferSizeW,BufferSizeB,ProcessSoundBuffer,CheckTimers
@@ -509,10 +509,6 @@ SECTION .text
 ;   assignments in the configuration file, then convert it to ZSNES'
 ;   numerical corresponding key format after reading from it. And then
 ;   convert it back when writing to it back.
-
-NEWSYM UpdateDevices                    ; One-time input device init
-        ccallv WinUpdateDevices
-        ret
 
 NEWSYM JoyRead
         ccallv UpdateVFrame

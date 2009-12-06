@@ -2,6 +2,7 @@
 
 #include "asm_call.h"
 #include "c_init.h"
+#include "c_intrf.h"
 #include "cfg.h"
 #include "cpu/c_execute.h"
 #include "cpu/c_regs.h"
@@ -16,7 +17,6 @@
 #include "gui/guiwindp.h"
 #include "init.h"
 #include "initc.h"
-#include "intrf.h"
 #include "link.h"
 #include "macros.h"
 #include "ui.h"
@@ -76,7 +76,7 @@ void init(void)
 		if (DisplayInfo != 0) showinfogui();
 	}
 
-	asm_call(UpdateDevices);
+	UpdateDevices();
 	init65816();
 	initregr();
 	initregw();

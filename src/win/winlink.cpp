@@ -1526,7 +1526,6 @@ void clear_ddraw();
 //The big extern
 extern "C"
 {
-  void WinUpdateDevices();
   char CheckOGLMode();
   BYTE *SurfBuf;
   DWORD DMode = 0;

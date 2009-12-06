@@ -40,3 +40,6 @@ void InitPreGame(void)
 
 	clearwin();
 }
+
+
+void UpdateDevices(void) { /* Stub please fix */ }

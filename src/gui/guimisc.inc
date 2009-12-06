@@ -434,7 +434,7 @@ SetDevice:
     mov [eax],bl
     mov bh,[cplayernum]
     call SetInputDevice
-    call UpdateDevices
+    ccallv UpdateDevices
     jmp .procmtap
 %ifdef __MSDOS__
 .port209
@@ -444,7 +444,7 @@ SetDevice:
     mov [eax],bl
     mov bh,[cplayernum]
     call SetInputDevice209
-    call UpdateDevices
+    ccallv UpdateDevices
 %endif
 .procmtap
     mov byte[MultiTap],1
