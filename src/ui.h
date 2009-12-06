@@ -19,6 +19,7 @@ extern u1*  romdata;                // rom data  (4MB = 4194304)
 extern u1*  vidbufferofsa;          // offset 1
 extern u1*  vidbufferofsb;          // offset 2
 extern u2   VolumeConvTable[32768];
+extern u2   fulladdtab[65536];
 extern u2   selc0040;
 extern u2   selcA000;
 extern u2   selcB800;

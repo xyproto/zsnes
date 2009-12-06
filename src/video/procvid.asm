@@ -2740,7 +2740,7 @@ NEWSYM copyvid
     cmp [prevengval],al
     je .notatud
     mov [prevengval],al
-    call genfulladdtab
+    ccallv genfulladdtab
 .notatud
 %endif
     cmp dword[MessageOn],0

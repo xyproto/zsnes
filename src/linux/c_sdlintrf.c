@@ -3,6 +3,7 @@
 
 #include "../asm_call.h"
 #include "../c_intrf.h"
+#include "../c_vcache.h"
 #include "../cfg.h"
 #include "../cpu/dspproc.h"
 #include "../cpu/execute.h"
@@ -106,7 +107,7 @@ static void InitializeGfxStuff(void)
 	}
 
 	vesa2_clbit ^= 0xFFFF;
-	asm_call(genfulladdtab);
+	genfulladdtab();
 	Init_2xSaIMMX(converta != 1 ? 565 : 555);
 }
 

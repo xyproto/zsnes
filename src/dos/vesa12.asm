@@ -461,7 +461,7 @@ NEWSYM InitVesa12
     div bx
     mov [granadd],ax
 
-    call genfulladdtab
+    ccallv genfulladdtab
 
     xor ecx,ecx
     xor edx,edx

@@ -53,7 +53,7 @@ EXTSYM device1,device2,snesinputdefault1,snesinputdefault2
 EXTSYM KeyExtraEnab1,KeyExtraEnab2,cycleinputdevice1,cycleinputdevice2,MouseDis
 EXTSYM KeyIncreaseGamma,KeyDecreaseGamma,gammalevel,gammalevel16b
 EXTSYM RawDumpInProgress,MMXSupport,GUIOn,QuickKeyCheck,ngena,ngdis,vollv
-EXTSYM sprcnt,sprstart,sprtilecnt,sprend,sprendx,interlval
+EXTSYM sprcnt,sprstart,sprtilecnt,sprend,sprendx,interlval,genfulladdtab
 
 %ifndef NO_DEBUGGER
 EXTSYM debuggeron
@@ -369,9 +369,7 @@ NEWSYM cachevideo
     mov edi,pal16bxcl
     mov ecx,256
     rep stosd
-    pushad
-    call genfulladdtab
-    popad
+    ccallv genfulladdtab
 .yesng
 .disng2
 .nodis8
@@ -3886,39 +3884,6 @@ mmxvalanda dd 11111111110000001111111111000000b,11111111110000001111111111000000
 mmxvalandb dd 00000000000111110000000000011111b,00000000000111110000000000011111b
 
 SECTION .text
-NEWSYM genfulladdtab
-    ; Write to buffer
-%ifdef __MSDOS__
-    cmp byte[newengen],1
-    jne .notneweng
-    cmp byte[vesa2red10],0
-    jne near genfulladdtabred
-.notneweng
-%endif
-    xor ecx,ecx
-.loopers
-    mov ax,cx
-    test [vesa2_rtrcl],cx
-    jz .nor
-    and ax,[vesa2_rtrcla]
-    or ax,[vesa2_rfull]
-.nor
-    test [vesa2_gtrcl],cx
-    jz .nog
-    and ax,[vesa2_gtrcla]
-    or ax,[vesa2_gfull]
-.nog
-    test [vesa2_btrcl],cx
-    jz .nob
-    and ax,[vesa2_btrcla]
-    or ax,[vesa2_bfull]
-.nob
-    shl ax,1
-    mov [fulladdtab+ecx*2],ax
-    dec cx
-    jnz .loopers
-    ret
-
 %ifdef __MSDOS__
 NEWSYM genfulladdtabred
     ; Write to buffer

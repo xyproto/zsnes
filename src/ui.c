@@ -236,7 +236,7 @@ unsigned char vrama[65536];
 
 unsigned char mode7tab[65536];
 
-unsigned short fulladdtab[65536];
+u2            fulladdtab[65536];
 u2            VolumeConvTable[32768];
 eop*          dspWptr[256];
 eop*          dspRptr[256];

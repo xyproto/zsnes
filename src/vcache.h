@@ -3,8 +3,6 @@
 
 #include "types.h"
 
-extern void genfulladdtab();
-
 extern u1 res480;
 extern u1 res640;
 extern u1 videotroub;

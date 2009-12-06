@@ -463,7 +463,7 @@ NEWSYM InitVesa2
 
     xor word[vesa2_clbit],0FFFFh
 
-    call genfulladdtab
+    ccallv genfulladdtab
 
     test word[fs:0h],10000000b  ; Check if linear available
     jnz .linearavailable
