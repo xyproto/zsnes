@@ -5,7 +5,6 @@
 #include "../cfg.h"
 #include "../gblvars.h"
 #include "../gui/gui.h"
-#include "../intrf.h"
 #include "../ui.h"
 #include "../vcache.h"
 #include "c_execute.h"
@@ -14,7 +13,7 @@
 
 void start65816(void)
 {
-	asm_call(initvideo);
+	initvideo();
 	if (videotroub == 1) return;
 
 	memset(vidbufferofsa, 0, 150072);

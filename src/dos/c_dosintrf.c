@@ -106,6 +106,12 @@ void InitPreGame(void)
 }
 
 
+void initvideo(void)
+{
+	asm_call(dosinitvideo);
+}
+
+
 void UpdateDevices(void)
 {
 	asm_call(DosUpdateDevices);

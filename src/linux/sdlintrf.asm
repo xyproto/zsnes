@@ -21,18 +21,15 @@
 
 %include "macros.mac"
 
-EXTSYM PrevFSMode,sem_sleep,putchar,Start60HZ
-EXTSYM pressed,vidbuffer
-EXTSYM Stop60HZ,initwinvideo,vesa2_rpos,vesa2_gpos,vesa2_bpos,vesa2_rposng
-EXTSYM vesa2_gposng,vesa2_bposng,vesa2_usbit,vesa2_clbit,vesa2_clbitng
-EXTSYM vesa2_clbitng2,vesa2_clbitng3,vesa2red10,res640,res480,cbitmode,cvidmode
-EXTSYM vesa2_bits,vesa2_x,vesa2_y,genfulladdtab,GUICPC,drawscreenwin
+EXTSYM sem_sleep,putchar,Start60HZ,pressed,vidbuffer
+EXTSYM Stop60HZ,initwinvideo,vesa2_rpos,vesa2_gpos,vesa2_bpos
+EXTSYM vesa2_usbit,vesa2_clbit,genfulladdtab,GUICPC,drawscreenwin
 EXTSYM ConvertToAFormat,HalfTrans,UnusedBit,UnusedBitXor
 EXTSYM ngrposng,nggposng,ngbposng,HalfTransB,HalfTransC,UpdateVFrame,GetMouseX
 EXTSYM GetMouseY,GetMouseMoveX,GetMouseMoveY,GetMouseButton,T36HZEnabled
 EXTSYM MouseButton,Start36HZ,Stop36HZ,CheckTimers,vesa2_rfull,vesa2_rtrcl
 EXTSYM vesa2_rtrcla,vesa2_gfull,vesa2_gtrcl,vesa2_gtrcla,vesa2_bfull,vesa2_btrcl
-EXTSYM vesa2_btrcla,Init_2xSaIMMX,PrevWinMode
+EXTSYM vesa2_btrcla,Init_2xSaIMMX
 EXTSYM pl1upk,pl1downk,pl1leftk,pl1rightk,pl1startk,pl1selk
 EXTSYM pl1Ak,pl1Bk,pl1Xk,pl1Yk,pl1Lk,pl1Rk
 EXTSYM pl2upk,pl2downk,pl2leftk,pl2rightk,pl2startk,pl2selk
@@ -143,57 +140,6 @@ NEWSYM DeInitPostGame           ; Called after game is ended
 ; ****************************
 
 ; ** init video mode functions **
-SECTION .data
-NEWSYM firstvideo, dd 1
-SECTION .text
-
-NEWSYM initvideo  ; Returns 1 in videotroub if trouble occurs
-   mov byte[res640],1
-   mov byte[res480],1
-   mov byte[cbitmode],1
-   mov word[vesa2_x],512
-   mov word[vesa2_y],480
-   mov byte[vesa2_bits],16
-   mov dword[vesa2_bits],16
-   mov dword[vesa2_rpos],11
-   mov dword[vesa2_gpos],5
-   mov dword[vesa2_bpos],0
-   mov byte[vesa2red10],0
-   mov byte[vesa2_rposng],11
-   mov byte[vesa2_gposng],5
-   mov byte[vesa2_bposng],0
-   mov dword[vesa2_clbitng],1111011111011110b
-   mov dword[vesa2_clbitng2],11110111110111101111011111011110b
-   mov dword[vesa2_clbitng2+4],11110111110111101111011111011110b
-   mov dword[vesa2_clbitng3],0111101111101111b
-
-   ccallv initwinvideo
-
-   movzx eax,byte[cvidmode]
-   cmp byte[GUIWFVID+eax],0
-   je .prevwinmode
-   mov [PrevFSMode],al
-   jmp .doneprevmode
-.prevwinmode
-   mov [PrevWinMode],al
-.doneprevmode
-
-   cmp dword[firstvideo],1
-   je .skipinitgfx
-   pushad
-   call InitializeGfxStuff
-   popad
-
-.skipinitgfx
-   mov dword[firstvideo],0
-
-   pushad
-   call InitializeGfxStuff
-   popad
-
-   ret
-
-
 NEWSYM deinitvideo
     ret
 
@@ -551,7 +497,7 @@ BitSizeG db 6
 BitSizeB db 5
 SECTION .text
 
-InitializeGfxStuff:
+NEWSYM InitializeGfxStuff
         ; Process Red Stuff
         mov al,[BitPosR]
         mov cl,al

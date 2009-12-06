@@ -26,7 +26,7 @@ EXTSYM oldhand9s,oldhand9o,interror,oldhand8s,oldhand8o,oldhandSBs,oldhandSBo
 EXTSYM soundon,DSPDisable,SBInt,PICMaskP,SBIrq,SBHandler,InitSB
 EXTSYM handler8h,handler9h,init60hz,init18_2hz,DeInitSPC,GUIinit36_4hz
 EXTSYM GUIoldhand9s,GUIoldhand9o,GUIoldhand8s,GUIoldhand8o,GUIhandler9h
-EXTSYM GUIhandler8h,GUIinit18_2hz,dosinitvideo
+EXTSYM GUIhandler8h,GUIinit18_2hz
 EXTSYM DosDrawScreen,cvidmode,vidbuffer,GUICPC,DosDrawScreenB
 EXTSYM DOSJoyRead,pl1contrl,pl2contrl,pl3contrl,pl4contrl
 EXTSYM pl5contrl
@@ -369,9 +369,6 @@ NEWSYM saveselectpal
     ret
 
 ; ** init video mode functions **
-NEWSYM initvideo  ; Returns 1 in videotroub if trouble occurs
-    jmp dosinitvideo
-
 NEWSYM deinitvideo
     mov al,[previdmode]
     mov ah,0

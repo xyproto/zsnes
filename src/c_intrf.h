@@ -13,6 +13,9 @@ char WaitForKey(void);
 // Executes before starting/continuing a game
 void InitPreGame(void);
 
+// Returns 1 in videotroub if trouble occurs
+void initvideo(void);
+
 // One-time input device init
 void UpdateDevices(void);
 

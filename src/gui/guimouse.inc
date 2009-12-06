@@ -897,7 +897,7 @@ GUIProcVideo:
 %ifdef __MSDOS__
   mov byte[ExitFromGUI],1
 %endif
-  call initvideo
+  ccallv initvideo
 %ifdef __MSDOS__
   cmp byte[videotroub],1
   je .failed
@@ -918,7 +918,7 @@ GUIProcVideo:
   mov byte[videotroub],0
   mov al,[.prevvid]
   mov [cvidmode],al
-  call initvideo
+  ccallv initvideo
   call GUISetPal
   call guipostvideofail
   mov dword[GUIkeydelay],0
@@ -928,7 +928,7 @@ GUIProcVideo:
   mov byte[videotroub],0
   mov al,[.prevvid]
   mov [cvidmode],al
-  call initvideo
+  ccallv initvideo
   call GUISetPal
   call vidpastecopyscr
   mov dword[GUIkeydelay],0
@@ -1026,7 +1026,7 @@ NEWSYM SwitchFullScreen
   mov al,[PrevWinMode]
   mov [cvidmode],al
 %endif
-  call initvideo
+  ccallv initvideo
   popad
   ret
 .fullsc
@@ -1034,7 +1034,7 @@ NEWSYM SwitchFullScreen
   mov al,[PrevFSMode]
   mov [cvidmode],al
 %endif
-  call initvideo
+  ccallv initvideo
   popad
   ret
 

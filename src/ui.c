@@ -76,7 +76,7 @@ unsigned char romispal;             // 0 = NTSC, 1 = PAL
 u1            newgfx16b;
 
 unsigned char previdmode;           // previous video mode
-unsigned char cbitmode;             // bit mode, 0=8bit, 1=16bit
+u1            cbitmode;
 
 unsigned char opexec268     = 162;  // # of opcodes/scanline in 2.68Mhz mode
 unsigned char opexec358     = 181;  // # of opcodes/scanline in 3.58Mhz mode (228/180)
