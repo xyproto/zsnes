@@ -30,7 +30,7 @@ EXTSYM maxbr,modeused,mousexloc,mouseyloc,newengen,KeyRTRCycle
 EXTSYM pal16b,pal16bxcl,pressed,prevbright,prevpal
 EXTSYM scfbl,scrndis,t1cc
 EXTSYM vidbright,vidbuffer,vidbufferofsa,vidmemch2,MZTForceRTR
-EXTSYM GUIRClick,MousePRClick,ngmsdraw,cvidmode,fulladdtab
+EXTSYM GUIRClick,MousePRClick,ngmsdraw,cvidmode
 EXTSYM KeyDisableSC0,KeyDisableSC1,KeyDisableSC2,KeyDisableSC3,KeyDisableSC4
 EXTSYM KeyDisableSC5,KeyDisableSC6,KeyDisableSC7,KeyFastFrwrd,SRAMSave5Sec
 EXTSYM KeyBGDisble0,KeyBGDisble1,KeyBGDisble2,KeyBGDisble3,KeySprDisble
@@ -3882,35 +3882,6 @@ NEWSYM vesa2_usbit,     dd 0
 vesavaland dd 0,0
 mmxvalanda dd 11111111110000001111111111000000b,11111111110000001111111111000000b
 mmxvalandb dd 00000000000111110000000000011111b,00000000000111110000000000011111b
-
-SECTION .text
-%ifdef __MSDOS__
-NEWSYM genfulladdtabred
-    ; Write to buffer
-    xor ecx,ecx
-.loopers
-    mov ax,cx
-    test cx,0100000000000000b
-    jz .nor
-    and ax,1011111111111111b
-    or ax, 0011110000000000b
-.nor
-    test cx,0000001000000000b
-    jz .nog
-    and ax,1111110111111111b
-    or ax, 0000000111100000b
-.nog
-    test cx,0000000000010000b
-    jz .nob
-    and ax,1111111111101111b
-    or ax, 0000000000001111b
-.nob
-    shl ax,1
-    mov [fulladdtab+ecx*2],ax
-    dec cx
-    jnz .loopers
-    ret
-%endif
 
 NEWSYM ConvertToAFormat
     cmp byte[GUIOn],1
