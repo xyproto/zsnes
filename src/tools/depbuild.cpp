@@ -153,6 +153,7 @@ void dependency_calculate_moc(const char *filename)
 void dependency_calculate_asm(const char *filename)
 {
   string command = nasm + " " + nflags + " -M " + filename;
+  cout << flush;
   system(command.c_str());
 }
 
