@@ -3857,7 +3857,7 @@ NEWSYM lineleft, resd 1
 
 SECTION .data
 NEWSYM videotroub,      dd 0
-NEWSYM vesa2_clbit,     dd 0            ; clear all bit 0's if AND is used
+NEWSYM vesa2_clbit,     dd 0
 NEWSYM vesa2_rpos,      dd 0
 NEWSYM vesa2_gpos,      dd 0
 NEWSYM vesa2_bpos,      dd 0
@@ -3865,22 +3865,22 @@ NEWSYM vesa2_clbitng,   dd 0
 NEWSYM vesa2_clbitng2,  dd 0,0
 NEWSYM vesa2_clbitng3,  dd 0
 NEWSYM vesa2red10,      dd 0
-NEWSYM vesa2_rtrcl,     dd 0            ; red transparency clear     (bit+4)
-NEWSYM vesa2_rtrcla,    dd 0            ; red transparency (AND) clear (not(bit+4))
-NEWSYM vesa2_rfull,     dd 0            ; red max (or bit*1Fh)
-NEWSYM vesa2_gtrcl,     dd 0            ; red transparency clear     (bit+4)
-NEWSYM vesa2_gtrcla,    dd 0            ; red transparency (AND) clear (not(bit+4))
-NEWSYM vesa2_gfull,     dd 0            ; red max (or bit*1Fh)
-NEWSYM vesa2_btrcl,     dd 0            ; red transparency clear     (bit+4)
-NEWSYM vesa2_btrcla,    dd 0            ; red transparency (AND) clear (not(bit+4))
-NEWSYM vesa2_bfull,     dd 0            ; red max (or bit*1Fh)
+NEWSYM vesa2_rtrcl,     dd 0
+NEWSYM vesa2_rtrcla,    dd 0
+NEWSYM vesa2_rfull,     dd 0
+NEWSYM vesa2_gtrcl,     dd 0
+NEWSYM vesa2_gtrcla,    dd 0
+NEWSYM vesa2_gfull,     dd 0
+NEWSYM vesa2_btrcl,     dd 0
+NEWSYM vesa2_btrcla,    dd 0
+NEWSYM vesa2_bfull,     dd 0
 NEWSYM vesa2_x,         dd 320
 NEWSYM vesa2_y,         dd 240
 NEWSYM vesa2_bits,      dd 8
 NEWSYM vesa2_rposng,    dd 0
 NEWSYM vesa2_gposng,    dd 0
 NEWSYM vesa2_bposng,    dd 0
-NEWSYM vesa2_usbit,     dd 0            ; Unused bit in proper bit location
+NEWSYM vesa2_usbit,     dd 0
 vesavaland dd 0,0
 mmxvalanda dd 11111111110000001111111111000000b,11111111110000001111111111000000b
 mmxvalandb dd 00000000000111110000000000011111b,00000000000111110000000000011111b

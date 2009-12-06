@@ -1495,7 +1495,6 @@ void TestJoy()
 extern "C"
 {
   //BYTE changeRes = 1;
-  extern DWORD converta;
   extern unsigned int BitConv32Ptr;
   extern unsigned int RGBtoYUVPtr;
   extern unsigned short resolutn;

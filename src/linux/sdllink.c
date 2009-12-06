@@ -68,7 +68,6 @@ uint32_t SMode = 0;
 uint32_t DSMode = 0;
 uint32_t prevHQMode = -1;
 
-extern uint32_t converta;
 extern uint32_t *BitConv32Ptr;
 extern uint32_t *RGBtoYUVPtr;
 

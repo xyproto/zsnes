@@ -22,14 +22,11 @@
 %include "macros.mac"
 
 EXTSYM sem_sleep,putchar,Start60HZ,pressed,vidbuffer
-EXTSYM Stop60HZ,initwinvideo,vesa2_rpos,vesa2_gpos,vesa2_bpos
-EXTSYM vesa2_usbit,vesa2_clbit,genfulladdtab,GUICPC,drawscreenwin
+EXTSYM Stop60HZ,initwinvideo,GUICPC,drawscreenwin
 EXTSYM ConvertToAFormat,HalfTrans,UnusedBit,UnusedBitXor
 EXTSYM ngrposng,nggposng,ngbposng,HalfTransB,HalfTransC,UpdateVFrame,GetMouseX
 EXTSYM GetMouseY,GetMouseMoveX,GetMouseMoveY,GetMouseButton,T36HZEnabled
-EXTSYM MouseButton,Start36HZ,Stop36HZ,CheckTimers,vesa2_rfull,vesa2_rtrcl
-EXTSYM vesa2_rtrcla,vesa2_gfull,vesa2_gtrcl,vesa2_gtrcla,vesa2_bfull,vesa2_btrcl
-EXTSYM vesa2_btrcla,Init_2xSaIMMX
+EXTSYM MouseButton,Start36HZ,Stop36HZ,CheckTimers
 EXTSYM pl1upk,pl1downk,pl1leftk,pl1rightk,pl1startk,pl1selk
 EXTSYM pl1Ak,pl1Bk,pl1Xk,pl1Yk,pl1Lk,pl1Rk
 EXTSYM pl2upk,pl2downk,pl2leftk,pl2rightk,pl2startk,pl2selk
@@ -487,124 +484,6 @@ NEWSYM Check60hz
     ccallv CheckTimers
     ccallv sem_sleep
     ret
-
-SECTION .data
-BitPosR db 11
-BitPosG db 5
-BitPosB db 0
-BitSizeR db 5
-BitSizeG db 6
-BitSizeB db 5
-SECTION .text
-
-NEWSYM InitializeGfxStuff
-        ; Process Red Stuff
-        mov al,[BitPosR]
-        mov cl,al
-        mov bx,1
-        shl bx,cl
-        cmp byte[BitSizeR],6
-        jne .no6bit
-        mov [vesa2_usbit],bx
-        inc al
-.no6bit
-        or [vesa2_clbit],bx
-        mov [vesa2_rpos],al
-        dec al
-        mov cl,al
-        mov bx,001Fh
-        cmp cl,0FFh
-        je .shrr
-        shl bx,cl
-        jmp .shlr
-.shrr
-        shr bx,1
-.shlr
-        mov [vesa2_rfull],bx
-        add al,5
-        mov bx,1
-        mov cl,al
-        shl bx,cl
-        mov [vesa2_rtrcl],bx
-        xor bx,0FFFFh
-        mov [vesa2_rtrcla],bx
-
-        ; Process Green Stuff
-        mov al,[BitPosG]
-        mov cl,al
-        mov bx,1
-        shl bx,cl
-        cmp byte[BitSizeG],6
-        jne .no6bitb
-        mov [vesa2_usbit],bx
-        inc al
-.no6bitb
-        or [vesa2_clbit],bx
-        mov [vesa2_gpos],al
-        dec al
-        mov cl,al
-        mov bx,001Fh
-        cmp cl,0FFh
-        je .shrg
-        shl bx,cl
-        jmp .shlg
-.shrg
-        shr bx,1
-.shlg
-        mov [vesa2_gfull],bx
-        add al,5
-        mov bx,1
-        mov cl,al
-        shl bx,cl
-        mov [vesa2_gtrcl],bx
-        xor bx,0FFFFh
-        mov [vesa2_gtrcla],bx
-
-        ; Process Blue Stuff
-        mov al,[BitPosB]
-        mov cl,al
-        mov bx,1
-        shl bx,cl
-        cmp byte[BitSizeB],6
-        jne .no6bitc
-        mov [vesa2_usbit],bx
-        inc al
-.no6bitc
-        or [vesa2_clbit],bx
-        mov [vesa2_bpos],al
-        dec al
-        mov cl,al
-        mov bx,001Fh
-        cmp cl,0FFh
-        je .shrb
-        shl bx,cl
-        jmp .shlb
-.shrb
-        shr bx,1
-.shlb
-        mov [vesa2_bfull],bx
-        add al,5
-        mov bx,1
-        mov cl,al
-        shl bx,cl
-        mov [vesa2_btrcl],bx
-        xor bx,0FFFFh
-        mov [vesa2_btrcla],bx
-
-        xor word[vesa2_clbit],0FFFFh
-        call genfulladdtab
-        cmp byte[converta],1
-         je .red10
-         mov eax,565
-         jmp .red11
-.red10
-         mov eax,555
-.red11
-         push eax
-         call Init_2xSaIMMX
-         pop eax
-
-        ret
 
 %macro SetDefaultKey2 13
   mov dword[%1upk],%4    ; Up

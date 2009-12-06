@@ -29,6 +29,7 @@ extern "C"
 #include <stdio.h>
 #include <ddraw.h>
 #include "../cfg.h"
+#include "../intrf.h"
   void zexit(), zexit_error();
 }
 

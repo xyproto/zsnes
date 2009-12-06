@@ -10,6 +10,7 @@
 #include "../link.h"
 #include "../ui.h"
 #include "../vcache.h"
+#include "../video/2xsaiw.h"
 
 
 void StartUp(void) {}
@@ -44,6 +45,72 @@ void InitPreGame(void)
 }
 
 
+static void InitializeGfxStuff(void)
+{
+	static u1 const BitPosR  = 11;
+	static u1 const BitPosG  =  5;
+	static u1 const BitPosB  =  0;
+	static u1 const BitSizeR =  5;
+	static u1 const BitSizeG =  6;
+	static u1 const BitSizeB =  5;
+
+	{ // Process Red Stuff
+		u1 al = BitPosR;
+		u2 bx = 1U << al;
+		if (BitSizeR == 6)
+		{
+			vesa2_usbit = bx;
+			++al;
+		}
+		vesa2_clbit |= bx;
+		vesa2_rpos   = al;
+		--al;
+		vesa2_rfull = al != 0xFF ? 0x1FU << al : 0x1FU >> 1;
+		bx = 1U << (al + 5);
+		vesa2_rtrcl  =  bx;
+		vesa2_rtrcla = ~bx;
+	}
+
+	{ // Process Green Stuff
+		u1 al = BitPosG;
+		u2 bx = 1U << al;
+		if (BitSizeG == 6)
+		{
+			vesa2_usbit = bx;
+			++al;
+		}
+		vesa2_clbit |= bx;
+		vesa2_gpos   = al;
+		--al;
+		vesa2_gfull = al != 0xFF ? 0x1FU << al : 0x1FU >> 1;
+		bx = 1U << (al + 5);
+		vesa2_gtrcl  =  bx;
+		vesa2_gtrcla = ~bx;
+	}
+
+	{ // Process Blue Stuff
+		u1 al = BitPosB;
+		u2 bx = 1U << al;
+		if (BitSizeB == 6)
+		{
+			vesa2_usbit = bx;
+			++al;
+		}
+		vesa2_clbit |= bx;
+		vesa2_bpos   = al;
+		--al;
+		vesa2_bfull = al != 0xFF ? 0x1FU << al : 0x1FU >> 1;
+		bx = 1U << (al + 5);
+		vesa2_btrcl  =  bx;
+		vesa2_btrcla = ~bx;
+	}
+
+	vesa2_clbit ^= 0xFFFF;
+	asm_call(genfulladdtab);
+	Init_2xSaIMMX(converta != 1 ? 565 : 555);
+}
+
+
 void initvideo(void)
 {
 	static u4 firstvideo = 1;
@@ -74,10 +141,10 @@ void initvideo(void)
 		PrevWinMode = cvidmode;
 
 	if (firstvideo != 1)
-		asm_call(InitializeGfxStuff);
+		InitializeGfxStuff();
 	firstvideo = 0;
 
-	asm_call(InitializeGfxStuff);
+	InitializeGfxStuff();
 }
 
 

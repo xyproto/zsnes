@@ -23,6 +23,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "../gblhdr.h"
 #include "../cfg.h"
 #include "../asm_call.h"
+#include "../intrf.h"
 #include "../link.h"
 #include <stdint.h>
 
@@ -34,7 +35,6 @@ extern int SurfaceX, SurfaceY;
 extern int SurfaceLocking;
 
 extern unsigned int vidbuffer;
-extern uint32_t converta;
 extern unsigned char curblank;
 extern int frametot;
 extern uint8_t GUIOn, GUIOn2;
