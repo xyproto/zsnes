@@ -3,6 +3,9 @@
 
 #include "../types.h"
 
-extern u4 Init_2xSaIMMX(u4 format);
+extern u4 colorMask[2];
+extern u4 lowPixelMask[2];
+extern u4 qcolorMask[2];
+extern u4 qlowpixelMask[2];
 
 #endif

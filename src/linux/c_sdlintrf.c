@@ -10,7 +10,7 @@
 #include "../link.h"
 #include "../ui.h"
 #include "../vcache.h"
-#include "../video/2xsaiw.h"
+#include "../video/c_2xsaiw.h"
 
 
 void StartUp(void) {}

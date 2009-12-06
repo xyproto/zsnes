@@ -1945,87 +1945,13 @@ NEWSYM _2xSaILine
 ;-------------------------------------------------------------------------
 ;-------------------------------------------------------------------------
 
-NEWSYM Init_2xSaIMMX
-; Store some stuff
-    push ebp
-    mov ebp, esp
-    push edx
-
-
-;Damn thing doesn't work
-;  mov eax,1
-;  cpuid
-;  test edx, 0x00800000     ;test bit 23
-;  jz end2 ;bit not set => no MMX detected
-
-    mov eax, [ebp+8]         ;PixelFormat
-    cmp eax, 555
-    jz Bits555
-    cmp eax, 565
-    jz Bits565
-end2:
-    mov eax, 1
-    jmp end1
-Bits555:
-    mov edx, 0x7BDE7BDE
-    mov eax, colorMask
-    mov [eax], edx
-    mov [eax+4], edx
-    mov edx, 0x04210421
-    mov eax, lowPixelMask
-    mov [eax], edx
-    mov [eax+4], edx
-    mov edx, 0x739C739C
-    mov eax, qcolorMask
-    mov [eax], edx
-    mov [eax+4], edx
-    mov edx, 0x0C630C63
-    mov eax, qlowpixelMask
-    mov [eax], edx
-    mov [eax+4], edx
-    mov eax, 0
-    jmp end1
-Bits565:
-    mov edx, 0xF7DEF7DE
-    mov eax, colorMask
-    mov [eax], edx
-    mov [eax+4], edx
-    mov edx, 0x08210821
-    mov eax, lowPixelMask
-    mov [eax], edx
-    mov [eax+4], edx
-    mov edx, 0xE79CE79C
-    mov eax, qcolorMask
-    mov [eax], edx
-    mov [eax+4], edx
-    mov edx, 0x18631863
-    mov eax, qlowpixelMask
-    mov [eax], edx
-    mov [eax+4], edx
-    mov eax, 0
-    jmp end1
-end1:
-    pop edx
-    mov esp, ebp
-    pop ebp
-    ret
-
-
-;-------------------------------------------------------------------------
-;-------------------------------------------------------------------------
-;-------------------------------------------------------------------------
-;-------------------------------------------------------------------------
-;-------------------------------------------------------------------------
-;-------------------------------------------------------------------------
-;-------------------------------------------------------------------------
-
 SECTION .data
 ;Some constants
-colorMask     dd 0xF7DEF7DE, 0xF7DEF7DE
-lowPixelMask  dd 0x08210821, 0x08210821
+NEWSYM colorMask,     dd 0xF7DEF7DE, 0xF7DEF7DE
+NEWSYM lowPixelMask,  dd 0x08210821, 0x08210821
 
-qcolorMask    dd 0xE79CE79C, 0xE79CE79C
-qlowpixelMask dd 0x18631863, 0x18631863
+NEWSYM qcolorMask,    dd 0xE79CE79C, 0xE79CE79C
+NEWSYM qlowpixelMask, dd 0x18631863, 0x18631863
 
 FALSE         dd 0x00000000, 0x00000000
 TRUE          dd 0xffffffff, 0xffffffff

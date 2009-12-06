@@ -591,9 +591,7 @@ NEWSYM InitVesa2
 .red10
     mov eax,555
 .red11
-    push eax
-    call Init_2xSaIMMX
-    pop eax
+    ccallv Init_2xSaIMMX, eax
     ret
 
 
