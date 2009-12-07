@@ -419,7 +419,8 @@ reexecuteb2:
     mov eax,[KeyQuickExit]
     test byte[pressed+eax],1
     jnz near endprog
-    jmp StartGUI
+    ccallv StartGUI
+    ret
 
 NEWSYM endprog
     call deinitvideo

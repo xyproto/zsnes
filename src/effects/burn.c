@@ -112,7 +112,7 @@ extern unsigned char *vidbuffer;
 /* damn, this seems like such a waste */
 static unsigned char pt[BUF_WIDTH * BUF_HEIGHT];
 
-void DrawBurn()
+void DrawBurn(void)
 {
   int i,j;
   int x,p;

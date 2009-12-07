@@ -57,6 +57,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "../asm_call.h"
 #include "../zloader.h"
 #include "../zdir.h"
+#include "guifuncs.h"
 
 #define BIT(X) (1 << (X))
 
@@ -595,7 +596,7 @@ void GUIRestoreVars()
   LoadCustomFont();
 }
 
-void GUISaveVars()
+void GUISaveVars(void)
 {
   FILE *cfg_fp;
 
@@ -735,7 +736,7 @@ unsigned int horizon[][4][8] = {{{0x6F746E41, 0x57656E69, 0x61772047, 0x65682073
                                  {0x66666964, 0x6E657265, 0x6F002E74, 0x65622070, 0x00676E69, 0x00000065, 0x00007300, 0x00000011}}};
 #endif
 
-unsigned int *horizon_get(unsigned int distance)
+u4* horizon_get(u4 distance)
 {
   return(horizon[distance%21][0]);
 }
@@ -812,7 +813,7 @@ void CheatCodeLoad()
 
 extern unsigned char *vidbuffer;
 
-void SaveCheatSearchFile()
+void SaveCheatSearchFile(void)
 {
   FILE *fp = 0;
 
@@ -823,7 +824,7 @@ void SaveCheatSearchFile()
   }
 }
 
-void LoadCheatSearchFile()
+void LoadCheatSearchFile(void)
 {
   FILE *fp = 0;
 
@@ -1295,7 +1296,7 @@ void loadquickfname(const unsigned char slot)
   }
 }
 
-void GUIQuickLoadUpdate()
+void GUIQuickLoadUpdate(void)
 {
   size_t entry_size, copy_num, i = 10;
   char *src;
@@ -1341,7 +1342,7 @@ void free_all_file_lists()
   free_list(&et_names);
 }
 
-void GetLoadData()
+void GetLoadData(void)
 {
   GUIcurrentviewloc = GUIcurrentcursloc = GUIcurrentdirviewloc = GUIcurrentdircursloc = 0;
 
@@ -1367,7 +1368,7 @@ void GetLoadData()
   GUIdirentries = d_names ? ((unsigned int)(uintptr_t)(*d_names))-2 : 0;
 }
 
-unsigned int GUIcurrentfilewin;
+u4 GUIcurrentfilewin;
 unsigned int GUIdirStartLoc;
 
 void GUILoadData()

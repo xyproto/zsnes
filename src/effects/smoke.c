@@ -115,7 +115,7 @@ static void init_fire ()
     fire_init_flag = 1;
 }
 
-void DrawSmoke ()
+void DrawSmoke(void)
 {
     int x, y, pixel, pixel2;
 

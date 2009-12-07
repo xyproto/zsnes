@@ -221,7 +221,7 @@ CheatCodeSearchProcess:
     ret
 
 SECTION .bss
-CopyRamToggle resb 1
+NEWSYM CopyRamToggle, resb 1
 FirstSearch   resb 1
 SECTION .text
 

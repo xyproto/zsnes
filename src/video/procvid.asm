@@ -2132,7 +2132,7 @@ NEWSYM dovegrest
 
 SECTION .bss
 NEWSYM tempco0, resw 1
-NEWSYM prevbright, resb 1                 ; previous brightness
+NEWSYM prevbright, resb 1
 SECTION .text
 
 %ifdef __MSDOS__

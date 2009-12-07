@@ -2437,8 +2437,8 @@ GUIVideoTextCD3 db '----%',0
 
 SECTION .bss
 GUIVStA resd 3
-GUIcurrentvideoviewloc resd 1
-GUIcurrentvideocursloc resd 1
+NEWSYM GUIcurrentvideoviewloc, resd 1
+NEWSYM GUIcurrentvideocursloc, resd 1
 
 SECTION .text
 

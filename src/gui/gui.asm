@@ -42,23 +42,22 @@
 
 %include "macros.mac"
 
-EXTSYM curblank,vidpastecopyscr,frameskip,newengen,cvidmode,antienab
-EXTSYM soundon,StereoSound,SoundQuality,MusicRelVol,endprog
-EXTSYM continueprog,spcBuffera,cbitmode,t1cc
+EXTSYM vidpastecopyscr,frameskip,newengen,cvidmode,antienab
+EXTSYM soundon,StereoSound,SoundQuality,MusicRelVol
+EXTSYM cbitmode
 EXTSYM romloadskip,romdata,current_zst
 EXTSYM statesaver,loadstate2
-EXTSYM vidbuffer,ASCII2Font,hirestiledat,showallext,scanlines
+EXTSYM vidbuffer,ASCII2Font,showallext,scanlines
 EXTSYM sprlefttot,spritetablea,KeyRTRCycle
 EXTSYM cgram,tempco0,prevbright,maxbr,prevpal,coladdr,coladdg
 EXTSYM coladdb,scaddtype,initvideo,pressed,UpdateDevices,memtabler8
 EXTSYM memtablew8,writeon,JoyRead,SetInputDevice,delay,FPSOn,RevStereo,WDSPReg0C
-EXTSYM WDSPReg1C,pl12s34,resolutn,Makemode7Table,vidbufferofsb,wramdata,bgfixer
-EXTSYM videotroub,CheatCodeSave,CheatCodeLoad,LoadCheatSearchFile
-EXTSYM SaveCheatSearchFile,Check_Key,Get_Key,sram,ScanCodeListing,RelPathBase
-EXTSYM AdjustFrequency,GUISaveVars,Init_Mouse,Get_MouseData,Set_MouseXMax
-EXTSYM Set_MouseYMax,Set_MousePosition,Get_MousePositionDisplacement,GUIInit
-EXTSYM GUIDeInit,SpecialLine,DrawWater,DrawBurn,DrawSmoke
-EXTSYM GetDate,horizon_get,MessageOn,GetTime
+EXTSYM WDSPReg1C,pl12s34,Makemode7Table,vidbufferofsb,wramdata,bgfixer
+EXTSYM videotroub,CheatCodeSave,CheatCodeLoad
+EXTSYM Check_Key,Get_Key,sram,ScanCodeListing,RelPathBase
+EXTSYM GUISaveVars,Get_MouseData,Set_MouseXMax
+EXTSYM Set_MouseYMax,Set_MousePosition,Get_MousePositionDisplacement
+EXTSYM MessageOn,GetTime
 EXTSYM Clear2xSaIBuffer,MouseWindow,Show224Lines
 EXTSYM newgfx16b,NumVideoModes,MusicVol,DSPMem,NumInputDevices
 EXTSYM GUIInputNames,GUIVideoModeNames,GameSpecificInput,device1,device2,TwelveHourClock
@@ -77,7 +76,7 @@ EXTSYM LowPassFilterType,MovieStartMethod,MovieDisplayFrame,savewinpos
 EXTSYM SnapPath,SPCPath,BSXPath,SGPath,STPath,GNextPath
 EXTSYM SRAMPath,CheatSrcByteSize,prevloadfnamel
 EXTSYM IPSPath,MoviePath,CHTPath,ComboPath,INPPath,SStatePath
-EXTSYM prevloadiname,prevloaddnamel,prevlfreeze,FirstTimeData,MMXSupport
+EXTSYM prevloadiname,prevloaddnamel,prevlfreeze,MMXSupport
 EXTSYM GUIRAdd,GUIGAdd,GUIBAdd,GUITRAdd,GUITGAdd,GUITBAdd,GUIWRAdd
 EXTSYM GUIWGAdd,GUIWBAdd,GUIloadfntype,SoundInterpType
 EXTSYM CheatSrcByteBase,CheatSrcSearchType,CheatUpperByteOnly,GUIComboGameSpec
@@ -107,7 +106,7 @@ EXTSYM KeyIncStateSlot,KeyDecStateSlot,KeySaveState,KeyLoadState,KeyStateSelct
 EXTSYM KeyRewind,KeyEmuSpeedUp,KeyEmuSpeedDown,KeyFRateUp,KeyFRateDown
 EXTSYM KeyFastFrwrd,KeySlowDown,KeyResetSpeed,EMUPauseKey,INCRFrameKey
 EXTSYM KeyWinDisble,KeyOffsetMSw,JoyPad1Move,init_save_paths,loadquickfname
-EXTSYM mousewrap,GUIRClick,SaveSramData,SwapMouseButtons
+EXTSYM mousewrap,GUIRClick,SwapMouseButtons
 EXTSYM FPSAtStart,Turbo30hz,TimerEnable,SmallMsgText,mouse1lh,mouse2lh
 EXTSYM AutoPatch,RomInfo,AllowUDLR,GrayscaleMode,GUIMovieForcedText
 EXTSYM Mode7HiRes16b,FFRatio,SDRatio,EmuSpeed,mouseshad,MovieForcedLengthEnabled
@@ -118,7 +117,7 @@ EXTSYM KeyDisplayBatt,KeyIncreaseGamma,KeyDecreaseGamma,vsyncon
 EXTSYM MovieVideoMode,MovieAudio,MovieVideoAudio,MovieAudioCompress,newfont
 EXTSYM d_names,selected_names,GUIfileentries,GUIdirentries,GUIcurrentdirviewloc
 EXTSYM GUIcurrentfilewin,GUIcurrentcursloc,GUIcurrentviewloc,SetMovieForcedLength,DisableScreenSaver
-EXTSYM GUIcurrentdircursloc,GetLoadData,ZRomPath,SaveSecondState,ClockBox,DisplayInfo
+EXTSYM GUIcurrentdircursloc,GetLoadData,ZRomPath,ClockBox,DisplayInfo
 EXTSYM GUIJT_currentviewloc,GUIJT_currentcursloc,GUIJT_entries,ScreenShotFormat
 EXTSYM GUIJT_offset,GUIJT_viewable,GUIGenericJumpTo,SSAutoFire,SSPause
 
@@ -134,7 +133,7 @@ EXTSYM CBBuffer,CBLength,PasteClipBoard,ctrlptr,PauseFocusChange
 EXTSYM dssel,SetInputDevice209,initvideo2,Force8b,SBHDMA,vibracard,smallscreenon,ExitFromGUI
 EXTSYM pl1p209,pl2p209,pl3p209,pl4p209,pl5p209,SidewinderFix,Triplebufen,ScreenScale,ErrorPointer
 EXTSYM GUIEAVID,GUIWSVID,GUISSVID,GUITBVID,GUISLVID,GUIHSVID,GUI2xVID,TripBufAvail
-EXTSYM JoyMinX209,JoyMaxX209,JoyMinY209,JoyMaxY209,DOSClearScreen,dosmakepal,ResetTripleBuf
+EXTSYM JoyMinX209,JoyMaxX209,JoyMinY209,JoyMaxY209,DOSClearScreen
 %endif
 
 %ifndef __MSDOS__
@@ -148,7 +147,7 @@ EXTSYM GUII2VID
 %endif
 
 %ifdef __OPENGL__
-EXTSYM blinit,allow_glvsync
+EXTSYM allow_glvsync
 %endif
 
 %include "gui/guitools.inc"
@@ -209,7 +208,7 @@ SECTION .data
 
 ;The first byte is the number of fields on the right not including the seperators
 MenuDat1 db 12, 3,1,1,1,1,1,1,1,1,1,0,1,2,0
-MenuDat2 db 8,  3,1,1,0,1,1,1,0,2,0
+NEWSYM MenuDat2, db 8,  3,1,1,0,1,1,1,0,2,0
 MenuDat3 db 10, 3,0,1,1,0,1,1,1,1,1,2,0
 MenuDat4 db 2,  3,1,2,0
 %ifndef __MSDOS__
@@ -278,8 +277,8 @@ GUIMiscMenuData:
 
 ; Window sizes and positions
 ;                LOAD STAT INPT OPT  VID  SND  CHT  NET  GMKEY GUIOP ABT  RSET SRC  STCN MOVE CMBO ADDO CHIP PATH SAVE SPED
-GUIwinposxo dd 0,6   ,65  ,33  ,42  ,5   ,34  ,6   ,64  ,8    ,5    ,33  ,56  ,64  ,56  ,5   ,3   ,28  ,48  ,6    ,28  ,53
-GUIwinposyo dd 0,20  ,70  ,20  ,20  ,20  ,20  ,20  ,30  ,30   ,20   ,20  ,60  ,30  ,60  ,20  ,20  ,60  ,60  ,20   ,30  ,20
+NEWSYM GUIwinposxo, dd 0,6   ,65  ,33  ,42  ,5   ,34  ,6   ,64  ,8    ,5    ,33  ,56  ,64  ,56  ,5   ,3   ,28  ,48  ,6    ,28  ,53
+NEWSYM GUIwinposyo, dd 0,20  ,70  ,20  ,20  ,20  ,20  ,20  ,30  ,30   ,20   ,20  ,60  ,30  ,60  ,20  ,20  ,60  ,60  ,20   ,30  ,20
 GUIwinsizex dd 0,244 ,126 ,205 ,180 ,245 ,188 ,244 ,128 ,240  ,245  ,190 ,144 ,128 ,144 ,246 ,250 ,200 ,160 ,244  ,200 ,150
 GUIwinsizey dd 0,190 ,68  ,192 ,190 ,190 ,188 ,191 ,40  ,170  ,150  ,190 ,42  ,40  ,42  ,190 ,190 ,120 ,100 ,190  ,168 ,180
 NEWSYM GUIwinptr, db 0
@@ -309,22 +308,22 @@ GUIwinpos   resb 22
 NEWSYM GUIwinactiv, resb 22
 ViewBuffer  resb 50*32
 
-GUItextcolor resb 5
-NEWSYM GUIcmenupos, resb 1
-GUIescpress  resb 1
+NEWSYM GUItextcolor, resb 5
+NEWSYM GUIcmenupos,  resb 1
+NEWSYM GUIescpress,  resb 1
 GUIcwinpress resb 1
-NEWSYM GUIpmenupos, resb 1
-GUIcrowpos   resd 1
-GUIpclicked  resb 1
+NEWSYM GUIpmenupos,  resb 1
+NEWSYM GUIcrowpos,   resd 1
+NEWSYM GUIpclicked,  resb 1
 GUImouseposx resd 1
 GUImouseposy resd 1
-GUICYLocPtr  resd 1
+NEWSYM GUICYLocPtr,  resd 1
 GUIMenuL     resd 1
 GUIMenuR     resd 1
 GUIMenuD     resd 1
 GUIOnMenuItm resb 1
-NEWSYM GUIQuit, resb 1
-GUIHold      resb 1
+NEWSYM GUIQuit,      resb 1
+NEWSYM GUIHold,      resb 1
 GUIHoldx     resd 1
 GUIHoldy     resd 1
 GUIHoldxm    resd 1
@@ -358,8 +357,8 @@ GUICResetPos resd 1
 GUICStatePos resd 1
 GUICCFlash   resb 1
 GUILDFlash   resb 1
-GUIPalConv   resd 1
-PrevResoln   resw 1
+NEWSYM GUIPalConv,   resd 1
+NEWSYM PrevResoln,   resw 1
 SnowMover    resd 1
 keycontrolval resd 1
 NEWSYM CheatBDoor,   resb 1
@@ -399,24 +398,6 @@ SECTION .data
 NEWSYM ComboHeader, db 'Key Combination File',26,1,0
 NEWSYM ComboBlHeader, times 23 db 0
 
-SECTION .text
-%macro GUIInitIRQs 0
-  call GUIInit
-  mov esi,pressed
-  mov ecx,256
-  mov al,0
-.loopa
-  mov [esi],al
-  inc esi
-  dec ecx
-  jnz .loopa
-%endmacro
-
-%macro GUIDeInitIRQs 0
-  call GUIDeInit
-%endmacro
-
-SECTION .data
 NEWSYM GUIoldhand9o, dd 0
 NEWSYM GUIoldhand9s, dw 0
 NEWSYM GUIoldhand8o, dd 0
@@ -591,11 +572,9 @@ loadnetopen:
   loadmenuopen 8
   ret
 
-SECTION .bss
-MouseInitOkay resb 1
 SECTION .text
 
-LoadDetermine:
+NEWSYM LoadDetermine
   mov byte[GUIGameMenuData+14],1
   mov byte[GUIGameMenuData+14*2],1
   mov byte[GUIGameMenuData+14*4],1
@@ -641,7 +620,7 @@ NEWSYM SnowTimer, dd 36*30
 MsgGiftLeft dd 0
 SECTION .text
 
-DrawSnow:
+NEWSYM DrawSnow
   cmp byte[OkaySC],0
   je near .nosanta
   cmp dword[MsgGiftLeft],0
@@ -763,7 +742,7 @@ ProcessSnowVelocity:
   ret
 
 SECTION .bss
-OkaySC resb 1
+NEWSYM OkaySC, resb 1
 
 %macro ProcessOneDigit 1
   cmp dl,9
@@ -779,389 +758,6 @@ OkaySC resb 1
 SECTION .data
 .message db 0,0,0,0,' ',0,0,0,0,0,0,0
 SECTION .text
-
-NEWSYM StartGUI
-%ifdef __OPENGL__
-  cmp byte[FilteredGUI],0
-  jne near .skipbl
-  cmp byte[BilinearFilter],1
-  jne near .skipbl
-  mov byte[blinit],1
-.skipbl
-%endif
-  mov byte[GUILoadPos],0
-%ifdef __MSDOS__
-  cmp byte[TripBufAvail],0
-  jne .notexttb
-  mov byte[Triplebufen],0
-.notexttb
-%endif
-  cmp byte[MMXSupport],1
-  jne .2xSaIdis
-  cmp byte[newgfx16b],0
-  je .2xSaIdis
-  jmp .no2xSaIdis
-.2xSaIdis
-  mov byte[En2xSaI],0
-  mov byte[hqFilter],0
-.no2xSaIdis
-  cmp byte[En2xSaI],0
-  je .no2xsaien
-%ifdef __MSDOS__
-  mov byte[Triplebufen],0
-%endif
-  mov byte[hqFilter],0
-  mov byte[scanlines],0
-  mov byte[antienab],0
-.no2xsaien
-  cmp byte[hqFilter],0
-  je .nohqen
-  mov byte[En2xSaI],0
-  mov byte[scanlines],0
-  mov byte[antienab],0
-.nohqen
-
-  mov ecx,64
-  mov eax,SpecialLine
-.slloop
-  mov dword[eax],0
-  add eax,4
-  dec ecx
-  jnz .slloop
-.okayow
-
-  mov byte[GUIOn],1
-  mov byte[GUIOn2],1
-  mov eax,[NumComboLocl]
-  cmp byte[GUIComboGameSpec],0
-  jne .local
-  mov eax,[NumComboGlob]
-.local
-  mov [NumCombo],eax
-%ifdef __MSDOS__
-  call ResetTripleBuf
-%endif
-
-  cmp dword[GUIwinposx+16*4],0
-  jne .notzero
-  mov dword[GUIwinposx+16*4],3
-  mov dword[GUIwinposy+16*4],22
-.notzero
-
-  mov dword[GUICTimer],0
-  ; Initialize volume
-  xor eax,eax
-  xor edx,edx
-  mov al,[MusicRelVol]
-  shl eax,7
-  mov ebx,100
-  div ebx
-  cmp al,127
-  jb .noofb
-  mov al,127
-.noofb
-  mov [MusicVol],al
-  mov byte[CheatSearchStatus],0
-  cmp byte[newgfx16b],0
-  je .nong
-  mov ecx,256*144
-  mov eax,[vidbufferofsb]
-.loop
-  mov dword[eax],0
-  add eax,4
-  dec ecx
-  jnz .loop
-.nong
-  mov byte[ShowTimer],1
-  ccall GetDate
-  cmp ax, 0C25h
-  jne .noxmas
-  mov byte[OkaySC],1
-.noxmas
-  mov byte[lastmouseholded],1
-  cmp dword[GUIwinposx+15*4],0
-  jne .nomoviemenufix
-  mov dword[GUIwinposx+15*4],50
-  mov dword[GUIwinposy+15*4],50
-.nomoviemenufix
-  mov ax,[resolutn]
-  mov [PrevResoln],ax
-  mov word[resolutn],224
-
-  mov byte[GUIPalConv],0
-  mov byte[MousePRClick],1
-
-  pushad
-  cmp byte[MouseInitOkay],1
-  je near .mousedone
-  mov byte[MouseInitOkay],1
-  cmp byte[MouseDis],1
-  je .mousedone
-  call Init_Mouse
-  cmp ax,0
-  jne .mousedone
-  mov byte[MouseDis],1
-.mousedone
-  popad
-
-  mov eax,[KeyQuickLoad]
-  test byte[pressed+eax],1
-  jz near .noquickload
-  mov byte[GUIcmenupos],0
-  loadmenuopen 1
-.noquickload
-  mov esi,pressed
-  mov ecx,64+32+8
-.pclear
-  mov dword[esi],0
-  add esi,4
-  dec ecx
-  jnz .pclear
-  mov byte[pressed+1],2
-  mov byte[GUIescpress],1
-
-  ; set Video cursor location
-  xor eax,eax
-  mov al,[cvidmode]
-  mov [GUIcurrentvideocursloc],eax
-  mov ebx,[NumVideoModes]
-  cmp ebx,20
-  ja .viewloc
-  mov dword[GUIcurrentvideoviewloc],0
-  jmp .skip
-.viewloc
-  sub ebx,20
-  cmp eax,ebx
-  jbe .noof
-  mov eax,ebx
-.noof
-  mov [GUIcurrentvideoviewloc],eax
-.skip
-
-  ccallv SaveSramData
-  ccallv GUIQuickLoadUpdate
-
-  call LoadDetermine
-
-  cmp byte[AutoState],0
-  je .noautostate
-  cmp byte[romloadskip],0
-  jne .noautostate
-  ccallv SaveSecondState
-.noautostate
-
-  GUIInitIRQs
-
-  cmp byte[GUIwinptr],0
-  jne .nomenuopen
-  cmp byte[esctomenu],0
-  je .nomenuchange
-  mov byte[GUIcmenupos],2
-  mov byte[GUIcrowpos],0
-  mov dword[GUICYLocPtr],MenuDat2
-  cmp byte[esctomenu],1
-  je .nomenuchange
-.nomenuopen
-  mov byte[GUIcmenupos],0
-.nomenuchange
-  cmp byte[GUIwinactiv+1],0
-  je .noloadrefresh
-  mov dword[GUIcurrentfilewin],0
-  ccallv GetLoadData
-.noloadrefresh
-  mov byte[GUIHold],0
-  ; clear 256 bytes from hirestiledat
-  mov esi,hirestiledat
-  mov ecx,256
-.loophires
-  mov byte[esi],0
-  inc esi
-  dec ecx
-  jnz .loophires
-  mov byte[curblank],00h
-  call InitGUI
-
-  cmp byte[CheatWinMode],0
-  je near .csskip
-
-  ; Load Cheat Search File
-  ccallv LoadCheatSearchFile
-
-.csskip
-
-  mov byte[GUIQuit],0
-.nokey
-  cmp byte[GUIQuit],2
-  je near .exit
-  cmp byte[GUIQuit],1
-  je near .exitgui
-  mov byte[GUIQuit],0
-  cmp byte[MouseDis],1
-  je .mousedis2
-  call ProcessMouse
-  cmp byte[videotroub],1
-  jne .notrouble
-  ret
-.notrouble
-.mousedis2
-  call GUIUnBuffer
-  cmp byte[GUIEffect],1
-  jne .nosnow
-  call DrawSnow
-.nosnow
-  cmp byte[GUIEffect],2
-  jne .nowater
-  ccallv DrawWater
-.nowater
-  cmp byte[GUIEffect],3
-  jne .nowater2
-  ccallv DrawWater
-.nowater2
-  cmp byte[GUIEffect],4
-  jne .noburn
-  ccallv DrawBurn
-.noburn
-  cmp byte[GUIEffect],5
-  jne .nosmoke
-  ccallv DrawSmoke
-.nosmoke
-
-  cmp dword[GUIEditStringcWin],0
-  je .noblink
-  cmp dword[GUIEditStringcLen],0
-  je .noblink
-  mov eax,[GUIEditStringcLen]
-  cmp dword[GUIEditStringLTxt],8
-  jb .noblinka
-  mov byte[eax],'_'
-  mov byte[eax+1],0
-  mov dword[GUIEditStringLstb],1
-.noblinka
-  cmp dword[GUIEditStringLTxt],0
-  jne .noblink
-  mov dword[GUIEditStringLTxt],16
-.noblink
-
-  call DisplayBoxes
-
-  cmp dword[GUIEditStringLstb],1
-  jne .notblinked
-  mov dword[GUIEditStringLstb],0
-  mov eax,[GUIEditStringcLen]
-  mov byte[eax],0
-.notblinked
-
-  call DisplayMenu
-  cmp byte[MouseDis],1
-  je .mousedis3
-  call DrawMouse
-.mousedis3
-  cmp byte[FirstTimeData],0
-  jne .nofirsttime
-  call guifirsttimemsg
-  mov byte[FirstTimeData],1
-.nofirsttime
-  cmp byte[guimsgptr],0
-  jne .nohorizon
-  ccall GetDate
-  cmp ax,1025
-  jne .nohorizon
-  ccall GetTime
-  ccall horizon_get, eax
-  mov [guimsgptr],eax
-  call horizonfixmsg
-.nohorizon
-  cmp dword[GUICTimer],0
-  je .notimer
-  GUIOuttext 21,211,[GUICMessage],50
-  GUIOuttext 20,210,[GUICMessage],63
-.notimer
-  call vidpastecopyscr
-  call GUIgetcurrentinput
-  jmp .nokey
-.exitgui
-  GUIDeInitIRQs
-
-  mov ax,[PrevResoln]
-  mov [resolutn],ax
-  jmp endprog
-.exit
-  mov edi,[spcBuffera]
-  mov ecx,65536
-  xor eax,eax
-  rep stosd
-  GUIDeInitIRQs
-%ifdef __MSDOS__
-  call DOSClearScreen
-  cmp byte[cbitmode],0
-  jne .nomakepal
-  call dosmakepal
-.nomakepal
-%endif
-  mov word[t1cc],1
-
-  ccallv GUISaveVars
-
-  mov byte[MousePRClick],1
-  mov byte[prevbright],0
-  mov ax,[PrevResoln]
-  mov [resolutn],ax
-
-  mov byte[CheatOn],0
-  cmp dword[NumCheats],0
-  je .nocheats
-  mov byte[CheatOn],1
-.nocheats
-
-  cmp byte[CopyRamToggle],1
-  jne .nocopyram
-  mov byte[CopyRamToggle],0
-  mov eax,[vidbuffer]
-  add eax,129600
-  ; copy 128k ram
-  mov ebx,[wramdata]
-  mov ecx,32768
-.loopcr
-  mov edx,[ebx]
-  mov [eax],edx
-  add ebx,4
-  add eax,4
-  dec ecx
-  jnz .loopcr
-.nocopyram
-
-  cmp byte[CheatWinMode],2
-  jne .notview
-  mov byte[CheatWinMode],1
-.notview
-
-  cmp byte[CheatWinMode],0
-  je .csskip2
-  ;Save Cheat Search File
-  ccallv SaveCheatSearchFile
-  .csskip2
-
-  mov edi,[vidbuffer]
-  mov ecx,288*120
-  xor eax,eax
-  rep stosd
-
-  mov ecx,256*144
-  mov eax,[vidbufferofsb]
-.loopcl
-  mov dword[eax],0
-  add eax,4
-  dec ecx
-  jnz .loopcl
-
-  call AdjustFrequency
-  mov byte[GUIOn],0
-  mov byte[GUIOn2],0
-  mov byte[GUIReset],0
-  mov dword[StartLL],0
-  mov dword[StartLR],0
-  ccallv continueprog
-  ret
 
 guimencodermsg:
   xor ebx,ebx
@@ -1231,7 +827,7 @@ guilamet2 db 'PRESS SPACE TO PROCEED',0
 
 SECTION .text
 
-guifirsttimemsg:
+NEWSYM guifirsttimemsg
   xor ebx,ebx
   mov ecx,256
 .a
@@ -1284,7 +880,7 @@ guiftimemsg7 db '      AND QUESTIONS.',0
 guiftimemsg8 db 'PRESS SPACEBAR TO PROCEED.',0
 SECTION .text
 
-horizonfixmsg:
+NEWSYM horizonfixmsg
   xor ebx,ebx
   mov ecx,256
 .a
@@ -1327,7 +923,7 @@ horizonfixmsg:
   ret
 
 SECTION .data
-guimsgptr dd 0
+NEWSYM guimsgptr, dd 0
 guimsgmsg db '     WELCOME TO ZSNES',0
 SECTION .text
 
@@ -1864,7 +1460,7 @@ SECTION .data
 NEWSYM savecfgforce, db 0
 SECTION .text
 
-DisplayBoxes:                        ; Displays window when item is clicked
+NEWSYM DisplayBoxes                        ; Displays window when item is clicked
   xor esi,esi
 .next2
   mov al,[GUIwinorder+esi]
@@ -2186,7 +1782,7 @@ GUIProcReset:
   mov dword[GUIMenuD],18+%4*10
 %endmacro
 
-DisplayMenu:
+NEWSYM DisplayMenu
   ; Draw Shadow
   GUIShadow 5,7,235,21
   ; Display Top Border
@@ -2351,7 +1947,7 @@ GUIMenuDisplay:
   jnz near .next
   ret
 
-InitGUI:
+NEWSYM InitGUI
 %ifdef __MSDOS__
   call DOSClearScreen
 %endif
@@ -3217,7 +2813,7 @@ GUIBufferData:
   jnz .a
   ret
 
-GUIUnBuffer:
+NEWSYM GUIUnBuffer
   mov ecx,16384
   ; copy from spritetable
   mov edi,[vidbuffer]

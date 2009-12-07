@@ -34,6 +34,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #include "asm_call.h"
 #include "cpu/c_execute.h"
+#include "cpu/execute.h"
 
 // All of these should be in headers, people!
 
@@ -71,7 +72,6 @@ extern          void memtablew8_wrapper(unsigned char, unsigned short, unsigned 
 extern void breakops_wrapper();
 
 extern void regaccessbankr8();
-extern void endprog();
 
 // should be in "zstate.h"
 void debugloadstate();
@@ -190,7 +190,8 @@ void startdebugger(void)
         start65816();
         return;
     }
-    endprog(); return;
+    asm_call(endprog);
+    return;
 }
 
 // Called from ASM

@@ -3,6 +3,8 @@
 
 #include "types.h"
 
+u4 GetDate(void);
+u4 GetTime(void);
 u4 GetTimeInSeconds(void);
 
 #endif

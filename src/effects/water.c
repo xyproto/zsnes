@@ -59,7 +59,7 @@ static int radius=30;
 
 extern char GUIEffect;
 
-void DrawWater()
+void DrawWater(void)
 {
         DrawWaterWithLight(Height[Hpage],1);
 

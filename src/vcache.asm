@@ -467,7 +467,7 @@ NEWSYM osm2dis,      db 0
 NEWSYM colormodedef, db 1,1,1,1, 2,2,1,0, 2,2,0,0, 3,2,0,0,
                db 3,1,0,0, 2,1,0,0, 2,0,0,0, 0,0,0,0
 NEWSYM colormodeofs, dd 0
-NEWSYM curblank,     db 80h             ; current blank state (40h = skip fill)
+NEWSYM curblank,     db 80h
 NEWSYM addr2add,     dd 0
 ;cachebg1    times 64 db 0
 ;cachebg2    times 64 db 0

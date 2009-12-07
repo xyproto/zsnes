@@ -51,6 +51,7 @@ extern void reg421Fr();
 extern void reg43XXr();
 extern void regINVALID();
 
-extern u1 sndrot; // rotates to use A,X or Y for sound skip
+extern u1 sndrot;   // rotates to use A,X or Y for sound skip
+extern u2 resolutn; // screen resolution
 
 #endif

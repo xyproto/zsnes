@@ -34,7 +34,7 @@ u4 GetTimeInSeconds(void)
   return (timeptr->tm_hour * 60 + timeptr->tm_min) * 60 + timeptr->tm_sec;
 }
 
-unsigned int GetTime()
+u4 GetTime(void)
 {
   unsigned int value;
   struct tm *newtime;
@@ -49,7 +49,7 @@ unsigned int GetTime()
   return(value);
 }
 
-unsigned int GetDate()
+u4 GetDate(void)
 {
   unsigned int value;
   struct tm *newtime;

@@ -24,13 +24,13 @@ EXTSYM MinimizeWindow
 %endif
 
 SECTION .bss
-lastmouseholded resb 1
+NEWSYM lastmouseholded, resb 1
 mousebuttonstat resw 1
 MouseMoveOkay   resb 1
 LastHoldEnable  resb 1
 SECTION .text
 
-ProcessMouse:
+NEWSYM ProcessMouse
   ; Process holds
   mov al,[GUIHold]
   cmp al,[LastHoldEnable]
@@ -3507,7 +3507,7 @@ DisplayGUISpeedClick:
 .nomovebar
   ret
 
-DrawMouse:
+NEWSYM DrawMouse
   mov edi,[vidbuffer]
   add edi,16
   add edi,[GUImouseposx]

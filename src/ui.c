@@ -55,7 +55,7 @@ u2 selc0040;
 u2 selcA000;
 u2 selcB800;
 
-unsigned char *vidbuffer;           //  video buffer (1024x239 = 244736)
+u1*           vidbuffer;
 unsigned char *ngwinptr;
 u1*           vidbufferofsa;
 u1*           vidbufferofsb;
@@ -63,7 +63,7 @@ unsigned char *headdata;
 u1*           romdata;
 unsigned char *sfxramdata;          // SuperFX Ram Data
 unsigned char *setaramdata;         // Seta ST010/ST011 SRam Data
-unsigned char *wramdata;            // stack (64K = 65536)
+u1*           wramdata;
 unsigned char *ram7f;               // ram @ 7f = 65536
 unsigned char *vram;                // vram = 65536
 unsigned char *sram;                // sram = 65536*2 = 131072
@@ -221,7 +221,7 @@ extern unsigned char wramdataa[65536], ram7fa[65536];
 unsigned char *BitConv32Ptr = 0;
 unsigned char *RGBtoYUVPtr = 0;
 #endif
-unsigned char *spcBuffera = 0;
+u1*           spcBuffera = 0;
 unsigned char *spritetablea = 0;
 unsigned char *vbufaptr = 0;
 unsigned char *vbufeptr = 0;

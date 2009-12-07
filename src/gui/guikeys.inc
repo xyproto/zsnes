@@ -249,7 +249,7 @@ UseExtKey resb 1
 
 SECTION .text
 
-GUIgetcurrentinput:
+NEWSYM GUIgetcurrentinput
   mov byte[UseExtKey],0
   xor cx,cx
 .getnextkey
@@ -1573,11 +1573,11 @@ GUIGetInputLine:
 
 SECTION .bss
 GUIEditString resd 1              ; Pointer to string
-GUIEditStringcLen resd 1          ; Pointer to end of string (done in function)
+NEWSYM GUIEditStringcLen, resd 1          ; Pointer to end of string (done in function)
 GUIEditStringmLen resd 1          ; Max length of string
-GUIEditStringLTxt resd 1          ; blink value, should be set to 0 when box selected
-GUIEditStringLstb resd 1          ; if cursor is placed (set in main function)
-GUIEditStringcWin resd 1          ; 0 = no text window selected
+NEWSYM GUIEditStringLTxt, resd 1          ; blink value, should be set to 0 when box selected
+NEWSYM GUIEditStringLstb, resd 1          ; if cursor is placed (set in main function)
+NEWSYM GUIEditStringcWin, resd 1          ; 0 = no text window selected
 SECTION .text
 
 GUIPathKeys:

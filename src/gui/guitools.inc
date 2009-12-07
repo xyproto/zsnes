@@ -150,7 +150,7 @@ GUIoutputchar:
   pop edi
   ret
 
-GUIOutputString:
+NEWSYM GUIOutputString
   xor eax,eax
 .more
   mov al,[edi]

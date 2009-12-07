@@ -4,7 +4,7 @@
 #include "../c_intrf.h"
 #include "../cfg.h"
 #include "../gblvars.h"
-#include "../gui/gui.h"
+#include "../gui/c_gui.h"
 #include "../ui.h"
 #include "../vcache.h"
 #include "c_execute.h"
@@ -19,7 +19,7 @@ void start65816(void)
 	memset(vidbufferofsa, 0, 150072);
 
 	if (romloadskip == 1)
-		asm_call(StartGUI);
+		StartGUI();
 	else
 		continueprog();
 }

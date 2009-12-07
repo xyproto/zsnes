@@ -41,6 +41,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <stdarg.h>
 #include "gblvars.h"
 #include "asm_call.h"
+#include "ui.h"
 #include "zpath.h"
 #include "cfg.h"
 #include "zmovie.h"
@@ -539,7 +540,6 @@ void DeallocSystemVars()
   if (BackupSystemBuffer) { free(BackupSystemBuffer); }
 }
 
-extern uintptr_t spcBuffera;
 extern uintptr_t Voice0BufPtr, Voice1BufPtr, Voice2BufPtr, Voice3BufPtr;
 extern uintptr_t Voice4BufPtr, Voice5BufPtr, Voice6BufPtr, Voice7BufPtr;
 extern uintptr_t spcPCRam, spcRamDP;
@@ -549,14 +549,14 @@ void PrepareSaveState()
   spcPCRam -= (uintptr_t)SPCRAM;
   spcRamDP -= (uintptr_t)SPCRAM;
 
-  Voice0BufPtr -= spcBuffera;
-  Voice1BufPtr -= spcBuffera;
-  Voice2BufPtr -= spcBuffera;
-  Voice3BufPtr -= spcBuffera;
-  Voice4BufPtr -= spcBuffera;
-  Voice5BufPtr -= spcBuffera;
-  Voice6BufPtr -= spcBuffera;
-  Voice7BufPtr -= spcBuffera;
+  Voice0BufPtr -= (uintptr_t)spcBuffera;
+  Voice1BufPtr -= (uintptr_t)spcBuffera;
+  Voice2BufPtr -= (uintptr_t)spcBuffera;
+  Voice3BufPtr -= (uintptr_t)spcBuffera;
+  Voice4BufPtr -= (uintptr_t)spcBuffera;
+  Voice5BufPtr -= (uintptr_t)spcBuffera;
+  Voice6BufPtr -= (uintptr_t)spcBuffera;
+  Voice7BufPtr -= (uintptr_t)spcBuffera;
 }
 
 extern uintptr_t SA1Stat;
@@ -605,10 +605,10 @@ void RestoreSA1()
 }
 
 #define ResState(Voice_BufPtr) \
-  Voice_BufPtr += spcBuffera; \
-  if (Voice_BufPtr >= spcBuffera + 65536*4) \
+  Voice_BufPtr += (uintptr_t)spcBuffera; \
+  if (Voice_BufPtr >= (uintptr_t)spcBuffera + 65536*4) \
   { \
-    Voice_BufPtr = spcBuffera; \
+    Voice_BufPtr = (uintptr_t)spcBuffera; \
   }
 
 void ResetState()
@@ -1260,7 +1260,7 @@ extern uint8_t CHIPBATT, sramsavedis, *sram2, nosaveSRAM;
 void SaveCombFile();
 
 // Sram saving
-void SaveSramData()
+void SaveSramData(void)
 {
   extern uint32_t sramb4save;
   if (*ZSaveName && (!SRAMSave5Sec || sramb4save))
