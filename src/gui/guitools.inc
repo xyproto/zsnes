@@ -19,6 +19,8 @@
 
 ; Tools for the GUI (string functions are also used elsewhere)
 
+EXTSYM GUIoutputchar
+
 SECTION .text
 
 NEWSYM CopyString
@@ -105,63 +107,22 @@ NEWSYM ConcatString
   popad
   ret
 
-NEWSYM GUIoutputchar
-  push edi
-  push esi
-  push eax
-  xor ebx,ebx
-  mov bl,al
-
-
-  cmp byte[newfont],0           ; Font Setup (Menus)
-  jne .nozero
-  mov edi,GUIFontData
-  jmp .endfont
-.nozero
-  mov edi,GUIFontData1
-.endfont
-
-;  mov edi,GUIFontData
-  lea ebx,[ebx*5]
-  add edi,ebx
-  mov cl,5
-.loopa
-  mov ah,[edi]
-  mov ch,6
-.loopb
-  test ah,80h
-  jz .nowrite
-  mov al,[GUItextcolor]
-  sub al,cl
-  sub al,ch
-  inc al
-  mov [esi],al
-.nowrite
-  shl ah,1
-  inc esi
-  dec ch
-  jnz .loopb
-  add esi,282
-  inc edi
-  dec cl
-  jnz .loopa
-  pop eax
-  pop esi
-  pop edi
-  ret
-
 GUIOutputString:
-  xor eax,eax
+  push edx
 .more
-  mov al,[edi]
-  or al,al
+  movzx eax,byte [edi]
+  test eax, eax
   jz .nomore
-  mov al,[ASCII2Font+eax]
+  movzx eax,byte [ASCII2Font+eax]
+  push eax
+  push esi
   call GUIoutputchar
+  add esp, 8
   add esi,6
   inc edi
   jmp .more
 .nomore
+  pop edx
   ret
 
 %macro GUIOuttext 4

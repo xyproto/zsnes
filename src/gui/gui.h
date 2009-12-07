@@ -14,6 +14,8 @@ extern void horizonfixmsg();
 
 extern char* GUICMessage;
 extern u1    CheatOn;
+extern u1    GUIFontData1[141][5];
+extern u1    GUIFontData[141][5];
 extern u1    GUIHold;
 extern u1    GUIOn2;
 extern u1    GUIOn;

@@ -1,8 +1,31 @@
+#include "../cfg.h"
 #include "../ui.h"
 #include "../video/procvid.h"
 #include "c_guitools.h"
 #include "gui.h"
-#include "guitools.h"
+
+
+void GUIoutputchar(u1* dst, u1 const glyph)
+{
+	// XXX better variable names
+	// Font Setup (Menus)
+	u1      (*font)[5] = newfont == 0 ? GUIFontData : GUIFontData1;
+	u1 const* edi      = font[glyph];
+	u4        cl       = 5;
+	do
+	{
+		u4 ah = *edi;
+		u4 ch = 6;
+		do
+		{
+			if (ah & 0x80) *dst = GUItextcolor[0] - cl - ch + 1;
+		}
+		while (ah <<= 1, ++dst, --ch != 0);
+		dst += 282;
+		++edi;
+	}
+	while (--cl != 0);
+}
 
 
 static void GUIOutputString(u1* dst, char const* text)
@@ -11,7 +34,7 @@ static void GUIOutputString(u1* dst, char const* text)
 	{
 		u1 const c = *text;
 		if (c == '\0') return;
-		asm volatile("call %P0" :: "X" (GUIoutputchar), "S" (dst), "a" (ASCII2Font[c]): "cc", "memory", "ebx", "ecx");
+		GUIoutputchar(dst, ASCII2Font[c]);
 	}
 }
 
