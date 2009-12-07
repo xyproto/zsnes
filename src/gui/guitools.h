@@ -1,6 +1,6 @@
 #ifndef GUITOOLS_H
 #define GUITOOLS_H
 
-extern void GUIOutputString();
+extern void GUIoutputchar();
 
 #endif

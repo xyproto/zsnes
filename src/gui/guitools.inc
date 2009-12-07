@@ -105,7 +105,7 @@ NEWSYM ConcatString
   popad
   ret
 
-GUIoutputchar:
+NEWSYM GUIoutputchar
   push edi
   push esi
   push eax
@@ -150,7 +150,7 @@ GUIoutputchar:
   pop edi
   ret
 
-NEWSYM GUIOutputString
+GUIOutputString:
   xor eax,eax
 .more
   mov al,[edi]
