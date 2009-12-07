@@ -67,7 +67,7 @@ EXTSYM nssdip1,nssdip2,nssdip3,nssdip4,nssdip5,nssdip6
 EXTSYM SkipMovie,MovieStop,MoviePlay,MovieRecord
 EXTSYM MovieInsertChapter,MovieSeekAhead,MovieSeekBehind,ResetDuringMovie
 EXTSYM MovieDumpRaw,MovieAppend,AutoLoadCht,GUIQuickLoadUpdate,GUILoadData
-EXTSYM GUIDoReset
+EXTSYM GUIDoReset,GUIMenuDisplay
 
 EXTSYM GUIwinposx,GUIwinposy,maxskip,GUIEffect,hqFilter,En2xSaI,NTSCFilter
 EXTSYM NTSCBlend,NTSCHue,NTSCSat,NTSCCont,NTSCBright,NTSCSharp,NTSCRef
@@ -1770,12 +1770,9 @@ GUIProcReset:
   GUIBox %1,%2,%1,%9,45
   GUIBox %1,%9,%1+4+%3*6,%9,39
   GUIBox %1+4+%3*6,1+%2,%1+4+%3*6,%9,41
-  mov edi,%5
   mov esi,[vidbuffer]
   add esi,16+%6+20*288
-  mov ecx,%4
-  mov edx,6*%3
-  call GUIMenuDisplay
+  ccallv GUIMenuDisplay, 6 * %3, %4, esi, %5
 
   mov dword[GUIMenuL],%1+1
   mov dword[GUIMenuR],%1+6*%3+3
@@ -1882,69 +1879,6 @@ NEWSYM DisplayMenu
   GUIDrawMenuM 193,16,9,7,GUIMiscMenuData,195,198,22,89,30 ;19+5*10
   mov dword[GUICYLocPtr],MenuDat6
 .nomenu6
-  ret
-
-GUIMenuDisplay:
-  xor ebx,ebx
-.next
-  mov al,[edi]
-  push ebx
-  push ecx
-  push esi
-  cmp al,0
-  je near .notext
-  cmp al,2
-  je .darktext
-  inc edi
-  mov byte[GUItextcolor],44
-  cmp byte[GUIcrowpos],bl
-  je .nodrawshadow
-  push edi
-  push esi
-  add esi,289
-  call GUIOutputString
-  pop esi
-  pop edi
-.nodrawshadow
-  mov byte[GUItextcolor],63
-  call GUIOutputString
-  inc edi
-  jmp .text
-.darktext
-  inc edi
-  mov byte[GUItextcolor],42
-  cmp byte[GUIcrowpos],bl
-  je .nodrawshadow2
-  push edi
-  push esi
-  add esi,289
-  call GUIOutputString
-  pop esi
-  pop edi
-.nodrawshadow2
-  mov byte[GUItextcolor],57
-  call GUIOutputString
-  inc edi
-  jmp .text
-.notext
-  add esi,4*288
-  mov ecx,edx
-.loop
-  mov byte[esi],45
-  mov byte[esi-289],40
-  mov byte[esi+289],42
-  inc esi
-  dec ecx
-  jnz .loop
-  add edi,14
-.text
-  pop esi
-  pop ecx
-  pop ebx
-  add esi,10*288
-  inc ebx
-  dec ecx
-  jnz near .next
   ret
 
 NEWSYM InitGUI

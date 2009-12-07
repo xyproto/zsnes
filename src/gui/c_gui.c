@@ -308,3 +308,49 @@ void StartGUI(void)
 	StartLR  = 0;
 	continueprog();
 }
+
+
+void GUIMenuDisplay(u4 const n_cols, u4 n_rows, u1* dst, char const* text)
+{
+	u4 row = 0;
+	do
+	{
+		u1 const al = *text;
+		if (al != '\0')
+		{
+			++text;
+			if (al != 2)
+			{
+				GUItextcolor[0] = 44;
+				if (GUIcrowpos != row)
+					GUIOutputString(dst + 289, text);
+				GUItextcolor[0] = 63;
+			}
+			else
+			{
+				GUItextcolor[0] = 42;
+				if (GUIcrowpos != row)
+					GUIOutputString(dst + 289, text);
+				GUItextcolor[0] = 57;
+			}
+			text = GUIOutputString(dst, text) + 1;
+		}
+		else
+		{
+			u1* d    = dst + 4 * 288;
+			u4  cols = n_cols;
+			do
+			{
+				d[   0] = 45;
+				d[-289] = 40;
+				d[ 289] = 42;
+				++d;
+			}
+			while (--cols != 0);
+			text += 14;
+		}
+		dst += 10 * 288;
+		++row;
+	}
+	while (--n_rows != 0);
+}

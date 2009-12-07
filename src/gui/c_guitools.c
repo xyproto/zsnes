@@ -28,12 +28,12 @@ void GUIoutputchar(u1* dst, u1 const glyph)
 }
 
 
-static void GUIOutputString(u1* dst, char const* text)
+char const* GUIOutputString(u1* dst, char const* text)
 {
 	for (;; dst += 6, ++text)
 	{
 		u1 const c = *text;
-		if (c == '\0') return;
+		if (c == '\0') return text;
 		GUIoutputchar(dst, ASCII2Font[c]);
 	}
 }
