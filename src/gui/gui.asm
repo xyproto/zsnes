@@ -67,7 +67,7 @@ EXTSYM nssdip1,nssdip2,nssdip3,nssdip4,nssdip5,nssdip6
 EXTSYM SkipMovie,MovieStop,MoviePlay,MovieRecord
 EXTSYM MovieInsertChapter,MovieSeekAhead,MovieSeekBehind,ResetDuringMovie
 EXTSYM MovieDumpRaw,MovieAppend,AutoLoadCht,GUIQuickLoadUpdate,GUILoadData
-EXTSYM GUIDoReset,GUIMenuDisplay
+EXTSYM GUIDoReset,DisplayMenu
 
 EXTSYM GUIwinposx,GUIwinposy,maxskip,GUIEffect,hqFilter,En2xSaI,NTSCFilter
 EXTSYM NTSCBlend,NTSCHue,NTSCSat,NTSCCont,NTSCBright,NTSCSharp,NTSCRef
@@ -207,16 +207,16 @@ EXTSYM allow_glvsync
 SECTION .data
 
 ;The first byte is the number of fields on the right not including the seperators
-MenuDat1 db 12, 3,1,1,1,1,1,1,1,1,1,0,1,2,0
+NEWSYM MenuDat1, db 12, 3,1,1,1,1,1,1,1,1,1,0,1,2,0
 NEWSYM MenuDat2, db 8,  3,1,1,0,1,1,1,0,2,0
-MenuDat3 db 10, 3,0,1,1,0,1,1,1,1,1,2,0
-MenuDat4 db 2,  3,1,2,0
+NEWSYM MenuDat3, db 10, 3,0,1,1,0,1,1,1,1,1,2,0
+NEWSYM MenuDat4, db 2,  3,1,2,0
 %ifndef __MSDOS__
-MenuDat5 db 0,  2,0,0
+NEWSYM MenuDat5, db 0,  2,0,0
 %else
-MenuDat5 db 1,  3,2,0
+NEWSYM MenuDat5, db 1,  3,2,0
 %endif
-MenuDat6 db 6,  3,1,1,1,1,0,2,0
+NEWSYM MenuDat6, db 6,  3,1,1,1,1,0,2,0
 
 NEWSYM GUIPrevMenuData,
   db 1,'1.                            ',0
@@ -232,7 +232,7 @@ NEWSYM GUIPrevMenuData,
   db 0,'------------',0
   db 1,'FREEZE DATA: OFF   ',0
   db 1,'CLEAR ALL DATA     ',0
-GUIGameMenuData:
+NEWSYM GUIGameMenuData,
   db 1,'LOAD        ',0
   db 1,'RUN  [ESC]  ',0
   db 1,'RESET       ',0
@@ -242,7 +242,7 @@ GUIGameMenuData:
   db 1,'PICK STATE  ',0
   db 0,'------------',0
   db 1,'QUIT        ',0
-GUIConfigMenuData:
+NEWSYM GUIConfigMenuData,
   db 1,'INPUT       ',0
   db 0,'------------',0
   db 1,'DEVICES     ',0
@@ -254,11 +254,11 @@ GUIConfigMenuData:
   db 1,'PATHS       ',0
   db 1,'SAVES       ',0
   db 1,'SPEED       ',0
-GUICheatMenuData:
+NEWSYM GUICheatMenuData,
   db 1,'ADD CODE    ',0
   db 1,'BROWSE      ',0
   db 1,'SEARCH      ',0
-GUINetPlayMenuData:
+NEWSYM GUINetPlayMenuData,
 %ifndef __MSDOS__
   db 1,'INTERNET    ',0
   db 0,'------------',0
@@ -266,7 +266,7 @@ GUINetPlayMenuData:
   db 1,'MODEM       ',0
   db 1,'IPX         ',0
 %endif
-GUIMiscMenuData:
+NEWSYM GUIMiscMenuData,
   db 1,'MISC KEYS   ',0
   db 1,'GUI OPTS    ',0
   db 1,'MOVIE OPT   ',0
@@ -311,16 +311,16 @@ ViewBuffer  resb 50*32
 NEWSYM GUItextcolor, resb 5
 NEWSYM GUIcmenupos,  resb 1
 NEWSYM GUIescpress,  resb 1
-GUIcwinpress resb 1
+NEWSYM GUIcwinpress, resb 1
 NEWSYM GUIpmenupos,  resb 1
 NEWSYM GUIcrowpos,   resd 1
 NEWSYM GUIpclicked,  resb 1
 GUImouseposx resd 1
 GUImouseposy resd 1
 NEWSYM GUICYLocPtr,  resd 1
-GUIMenuL     resd 1
-GUIMenuR     resd 1
-GUIMenuD     resd 1
+NEWSYM GUIMenuL,     resd 1
+NEWSYM GUIMenuR,     resd 1
+NEWSYM GUIMenuD,     resd 1
 GUIOnMenuItm resb 1
 NEWSYM GUIQuit,      resb 1
 NEWSYM GUIHold,      resb 1
@@ -773,7 +773,7 @@ guipostvideo:
 .pressedfail
   call GUIUnBuffer
   call DisplayBoxes
-  call DisplayMenu
+  ccallv DisplayMenu
   GUIBox 43,90,213,163,160
   GUIBox 43,90,213,90,162
   GUIBox 43,90,43,163,161
@@ -868,7 +868,7 @@ guipostvideofail:
   jnz .a
   call GUIUnBuffer
   call DisplayBoxes
-  call DisplayMenu
+  ccallv DisplayMenu
   GUIBox 43,90,213,163,160
   GUIBox 43,90,213,90,162
   GUIBox 43,90,43,163,161
@@ -889,7 +889,7 @@ guipostvideofail:
   call vidpastecopyscr
   call GUIUnBuffer
   call DisplayBoxes
-  call DisplayMenu
+  ccallv DisplayMenu
   mov dword[GUIkeydelay],0FFFFFFFFh
   jmp guipostvideo.pressedfail
 
@@ -1327,245 +1327,6 @@ GUIProcReset:
   mov byte[GUIwinactiv+12],0
   mov byte[GUIwinorder+eax],0
   dec byte[GUIwinptr]
-  ret
-
-%macro GUIDMHelp 4
-  mov byte[GUItextcolor],46
-  mov byte[GUItextcolor+1],42
-  mov byte[GUItextcolor+2],38
-  mov byte[GUItextcolor+3],44
-  mov byte[GUItextcolor+4],40
-  cmp byte[GUIcmenupos],%4
-  jne %%nohighlight
-  mov byte[GUItextcolor],38
-  mov byte[GUItextcolor+1],40
-  mov byte[GUItextcolor+2],46
-  mov byte[GUItextcolor+3],40
-  mov byte[GUItextcolor+4],44
-%%nohighlight
-  GUIBox %1,3,%2,3,[GUItextcolor]
-  GUIBox %1,4,%2,12,[GUItextcolor+1]
-  GUIBox %1,13,%2,13,[GUItextcolor+2]
-  GUIBox %1,3,%1,12,[GUItextcolor+3]
-  GUIBox %2,4,%2,13,[GUItextcolor+4]
-  GUIOuttext %1+5,7,%3,44
-  GUIOuttext %1+4,6,%3,62
-%endmacro
-
-%macro GUIDMHelpB 4
-  mov byte[GUItextcolor],46
-  mov byte[GUItextcolor+1],42
-  mov byte[GUItextcolor+2],38
-  mov byte[GUItextcolor+3],44
-  mov byte[GUItextcolor+4],40
-  cmp byte[GUIcwinpress],%4
-  jne %%nohighlight
-  mov byte[GUItextcolor],38
-  mov byte[GUItextcolor+1],40
-  mov byte[GUItextcolor+2],46
-  mov byte[GUItextcolor+3],40
-  mov byte[GUItextcolor+4],44
-%%nohighlight
-  GUIBox %1,3,%2,3,[GUItextcolor]
-  GUIBox %1,4,%2,13,[GUItextcolor+1]
-  GUIBox %1,14,%2,14,[GUItextcolor+2]
-  GUIBox %1,3,%1,13,[GUItextcolor+3]
-  GUIBox %2,4,%2,14,[GUItextcolor+4]
-  GUIOuttext %1+3,7,%3,44
-  GUIOuttext %1+2,6,%3,62
-%endmacro
-
-%macro GUIDMHelpB2 4
-  mov byte[GUItextcolor],46
-  mov byte[GUItextcolor+1],42
-  mov byte[GUItextcolor+2],38
-  mov byte[GUItextcolor+3],44
-  mov byte[GUItextcolor+4],40
-  cmp byte[GUIcwinpress],%4
-  jne %%nohighlight
-  mov byte[GUItextcolor],38
-  mov byte[GUItextcolor+1],40
-  mov byte[GUItextcolor+2],46
-  mov byte[GUItextcolor+3],40
-  mov byte[GUItextcolor+4],44
-%%nohighlight
-  GUIBox %1,3,%2,3,[GUItextcolor]
-  GUIBox %1,4,%2,6,[GUItextcolor+1]
-  GUIBox %1,7,%2,7,[GUItextcolor+2]
-  GUIBox %1,3,%1,6,[GUItextcolor+3]
-  GUIBox %2,4,%2,7,[GUItextcolor+4]
-  GUIOuttext %1+3,5,%3,44
-  GUIOuttext %1+2,4,%3,62
-%endmacro
-
-%macro GUIDMHelpB3 4
-  mov byte[GUItextcolor],46
-  mov byte[GUItextcolor+1],42
-  mov byte[GUItextcolor+2],38
-  mov byte[GUItextcolor+3],44
-  mov byte[GUItextcolor+4],40
-  cmp byte[GUIcwinpress],%4
-  jne %%nohighlight
-  mov byte[GUItextcolor],38
-  mov byte[GUItextcolor+1],40
-  mov byte[GUItextcolor+2],46
-  mov byte[GUItextcolor+3],40
-  mov byte[GUItextcolor+4],44
-%%nohighlight
-  GUIBox %1,9,%2,9,[GUItextcolor]
-  GUIBox %1,10,%2,12,[GUItextcolor+1]
-  GUIBox %1,13,%2,13,[GUItextcolor+2]
-  GUIBox %1,9,%1,12,[GUItextcolor+3]
-  GUIBox %2,10,%2,13,[GUItextcolor+4]
-  GUIOuttext %1+3,11,%3,44
-  GUIOuttext %1+2,10,%3,62
-%endmacro
-
-%macro GUIDrawMenuM 10
-  GUIShadow %7,%8,%7+4+%3*6,%8+3+%4*10
-  GUIBox %1,%2,%1+4+%3*6,%2+3+%4*10,43
-
-  mov edi,[GUIcrowpos]
-  mov ecx,edi
-  shl edi,8
-  shl ecx,5
-  add edi,ecx
-  lea edi,[edi*5]
-  shl edi,1
-  add edi,[vidbuffer]
-  add edi,%1+17+18*288
-  mov ecx,6*%3+3
-  mov edx,1
-  mov al,73
-  push edi
-  call GUIDrawBox
-  pop edi
-  add edi,288
-  mov ecx,6*%3+3
-  mov edx,7
-  mov al,72
-  push edi
-  call GUIDrawBox
-  pop edi
-  add edi,288*7
-  mov ecx,6*%3+3
-  mov edx,1
-  mov al,73
-  call GUIDrawBox
-
-  GUIBox %1+%10,%2,%1+4+%3*6,%2,47
-  GUIBox %1,%2,%1,%9,45
-  GUIBox %1,%9,%1+4+%3*6,%9,39
-  GUIBox %1+4+%3*6,1+%2,%1+4+%3*6,%9,41
-  mov esi,[vidbuffer]
-  add esi,16+%6+20*288
-  ccallv GUIMenuDisplay, 6 * %3, %4, esi, %5
-
-  mov dword[GUIMenuL],%1+1
-  mov dword[GUIMenuR],%1+6*%3+3
-  mov dword[GUIMenuD],18+%4*10
-%endmacro
-
-NEWSYM DisplayMenu
-  ; Draw Shadow
-  GUIShadow 5,7,235,21
-  ; Display Top Border
-  GUIBox 0,1,229,1,71
-  GUIBox 0,2,229,2,70
-  GUIBox 0,3,229,3,69
-  GUIBox 0,4,229,4,68
-  GUIBox 0,5,229,5,67
-  GUIBox 0,6,229,6,66
-  GUIBox 0,7,229,7,65
-  GUIBox 0,8,229,8,64
-  GUIBox 0,9,229,9,65
-  GUIBox 0,10,229,10,66
-  GUIBox 0,11,229,11,67
-  GUIBox 0,12,229,12,68
-  GUIBox 0,13,229,13,69
-  GUIBox 0,14,229,14,70
-  GUIBox 0,15,229,15,71
-
-%ifdef __UNIXSDL__
-  GUIShadow 238,9,247,20
-  GUIShadow 249,9,257,20
-%endif
-%ifdef __WIN32__
-  GUIShadow 238,9,247,14
-  GUIShadow 238,16,247,20
-  GUIShadow 249,9,257,20
-%endif
-.notwinpressa
-
-%ifdef __UNIXSDL__
-  mov byte[GUIMenuItem+36],247
-  GUIDMHelpB 233,242,GUIMenuItem+36,1
-  mov byte[GUIMenuItem+36],'x'
-  GUIDMHelpB 244,253,GUIMenuItem+36,2
-%endif
-
-%ifdef __WIN32__
-  mov byte[GUIMenuItem+36],249
-  GUIDMHelpB2 233,242,GUIMenuItem+36,1
-  mov byte[GUIMenuItem+36],248
-  GUIDMHelpB3 233,242,GUIMenuItem+36,3
-  mov byte[GUIMenuItem+36],'x'
-  GUIDMHelpB 244,253,GUIMenuItem+36,2
-%endif
-.notwinpressb
-
-  ; Display upper-left box
-  mov byte[GUIMenuItem+36],25
-  GUIDMHelp 4,12,GUIMenuItem+6,1
-  GUIOuttext 4+3,7,GUIMenuItem+36,44
-  GUIOuttext 4+2,6,GUIMenuItem+36,62
-  ; Display boxes
-  GUIDMHelp 17,47,GUIMenuItem,2
-  GUIDMHelp 52,94,GUIMenuItem+7,3
-  GUIDMHelp 99,135,GUIMenuItem+14,4
-  GUIDMHelp 140,188,GUIMenuItem+21,5
-  GUIDMHelp 193,223,GUIMenuItem+29,6
-
-  mov dword[GUIMenuL],0
-  mov dword[GUIMenuR],0
-  mov dword[GUIMenuD],0
-
-  ; format : x pos, y pos, #charx, #chary, name, xpos+2, xpos+5,22,
-  ;          19+#chary*10, length of top menu box
-  cmp byte[GUIcmenupos],1
-  jne near .nomenu1
-  GUIDrawMenuM 4,16,30,13,GUIPrevMenuData,6,9,22,149,8 ;19+13*10
-  mov dword[GUICYLocPtr],MenuDat1
-.nomenu1
-  cmp byte[GUIcmenupos],2
-  jne near .nomenu2
-  GUIDrawMenuM 17,16,10,9,GUIGameMenuData,19,22,22,109,30 ;19+9*10
-  mov dword[GUICYLocPtr],MenuDat2
-.nomenu2
-  cmp byte[GUIcmenupos],3
-  jne near .nomenu3
-  GUIDrawMenuM 52,16,8,11,GUIConfigMenuData,54,57,22,129,42 ;19+11*10
-  mov dword[GUICYLocPtr],MenuDat3
-.nomenu3
-  cmp byte[GUIcmenupos],4
-  jne near .nomenu4
-  GUIDrawMenuM 99,16,8,3,GUICheatMenuData,101,104,22,49,36 ;19+3*10
-  mov dword[GUICYLocPtr],MenuDat4
-.nomenu4
-  cmp byte[GUIcmenupos],5
-  jne near .nomenu5
-%ifdef __MSDOS__
-  GUIDrawMenuM 140,16,10,2,GUINetPlayMenuData,142,145,22,39,48 ;19+2*10
-%else
-  GUIDrawMenuM 140,16,10,1,GUINetPlayMenuData,142,145,22,29,48 ;19+1*10
-%endif
-  mov dword[GUICYLocPtr],MenuDat5
-.nomenu5
-  cmp byte[GUIcmenupos],6
-  jne near .nomenu6
-  GUIDrawMenuM 193,16,9,7,GUIMiscMenuData,195,198,22,89,30 ;19+5*10
-  mov dword[GUICYLocPtr],MenuDat6
-.nomenu6
   ret
 
 NEWSYM InitGUI

@@ -19,7 +19,7 @@ u4 guipresstest(void)
 	memset(pressed, 0, sizeof(pressed));
 	asm_call(GUIUnBuffer);
 	asm_call(DisplayBoxes);
-	asm_call(DisplayMenu);
+	DisplayMenu();
 	GUIBox3D(75, 95, 180, 131);
 	GUIOuttextShadowed(80, 100, guipresstext1);
 	GUIOuttextShadowed(80, 110, guipresstext2);
@@ -39,7 +39,7 @@ void guipresstestb(void)
 {
 	asm_call(GUIUnBuffer);
 	asm_call(DisplayBoxes);
-	asm_call(DisplayMenu);
+	DisplayMenu();
 	GUIBox3D(65, 80, 194, 126);
 	GUIOuttextShadowed(70,  85, guipresstext1);
 	GUIOuttextShadowed(70,  95, guipresstext2);

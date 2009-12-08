@@ -107,7 +107,7 @@ static void guifirsttimemsg(void)
 		asm_call(vidpastecopyscr);
 		asm_call(GUIUnBuffer);
 		asm_call(DisplayBoxes);
-		asm_call(DisplayMenu);
+		DisplayMenu();
 		asm_call(JoyRead);
 	}
 	while (pressed[0x39] == 0);
@@ -135,7 +135,7 @@ static void horizonfixmsg(void)
 		asm_call(vidpastecopyscr);
 		asm_call(GUIUnBuffer);
 		asm_call(DisplayBoxes);
-		asm_call(DisplayMenu);
+		DisplayMenu();
 		asm_call(JoyRead);
 	}
 	while (pressed[0x39] == 0);
@@ -327,7 +327,7 @@ void StartGUI(void)
 			GUIEditStringcLen[0] = '\0';
 		}
 
-		asm_call(DisplayMenu);
+		DisplayMenu();
 		if (MouseDis != 1) asm_call(DrawMouse);
 		if (FirstTimeData == 0)
 		{
@@ -401,7 +401,7 @@ void guimencodermsg(void)
 		asm_call(vidpastecopyscr);
 		asm_call(GUIUnBuffer);
 		asm_call(DisplayBoxes);
-		asm_call(DisplayMenu);
+		DisplayMenu();
 		asm_call(JoyRead);
 	}
 	while (pressed[0x39] == 0);
@@ -421,7 +421,7 @@ void guilamemsg(void)
 		asm_call(vidpastecopyscr);
 		asm_call(GUIUnBuffer);
 		asm_call(DisplayBoxes);
-		asm_call(DisplayMenu);
+		DisplayMenu();
 		asm_call(JoyRead);
 	}
 	while (pressed[0x39] == 0);
@@ -454,7 +454,7 @@ void guiprevideo(void)
 
 	asm_call(GUIUnBuffer);
 	asm_call(DisplayBoxes);
-	asm_call(DisplayMenu);
+	DisplayMenu();
 	GUIBox3D(43, 90, 213, 163);
 	GUIOuttextShadowed(55,  95, "ZSNES WILL NOW ATTEMPT");
 	GUIOuttextShadowed(55, 103, " TO CHANGE YOUR VIDEO");
@@ -488,7 +488,7 @@ void guicheaterror(void)
 	{
 		asm_call(GUIUnBuffer);
 		asm_call(DisplayBoxes);
-		asm_call(DisplayMenu);
+		DisplayMenu();
 		GUIBox3D(75, 95, 192, 143);
 		GUIOuttextShadowed(80, 100, "INVALID CODE!  YOU");
 		GUIOuttextShadowed(80, 108, "MUST ENTER A VALID");
@@ -508,7 +508,109 @@ void guicheaterror(void)
 }
 
 
-void GUIMenuDisplay(u4 const n_cols, u4 n_rows, u1* dst, char const* text)
+static void GUIDMHelp(u4 const x1, u4 const x2, char const* const text, u4 const param4)
+{
+	GUItextcolor[0] = 46;
+	GUItextcolor[1] = 42;
+	GUItextcolor[2] = 38;
+	GUItextcolor[3] = 44;
+	GUItextcolor[4] = 40;
+	if (GUIcmenupos == param4)
+	{
+		GUItextcolor[0] = 38;
+		GUItextcolor[1] = 40;
+		GUItextcolor[2] = 46;
+		GUItextcolor[3] = 40;
+		GUItextcolor[4] = 44;
+	}
+	GUIBox(x1,  3, x2,  3, GUItextcolor[0]);
+	GUIBox(x1,  4, x2, 12, GUItextcolor[1]);
+	GUIBox(x1, 13, x2, 13, GUItextcolor[2]);
+	GUIBox(x1,  3, x1, 12, GUItextcolor[3]);
+	GUIBox(x2,  4, x2, 13, GUItextcolor[4]);
+	GUIOuttext(x1 + 5, 7, text, 44);
+	GUIOuttext(x1 + 4, 6, text, 62);
+}
+
+
+static void GUIDMHelpB(u4 const x1, u4 const x2, char const* const text, u4 const param4)
+{
+	GUItextcolor[0] = 46;
+	GUItextcolor[1] = 42;
+	GUItextcolor[2] = 38;
+	GUItextcolor[3] = 44;
+	GUItextcolor[4] = 40;
+	if (GUIcwinpress == param4)
+	{
+		GUItextcolor[0] = 38;
+		GUItextcolor[1] = 40;
+		GUItextcolor[2] = 46;
+		GUItextcolor[3] = 40;
+		GUItextcolor[4] = 44;
+	}
+	GUIBox(x1,  3, x2,  3, GUItextcolor[0]);
+	GUIBox(x1,  4, x2, 13, GUItextcolor[1]);
+	GUIBox(x1, 14, x2, 14, GUItextcolor[2]);
+	GUIBox(x1,  3, x1, 13, GUItextcolor[3]);
+	GUIBox(x2,  4, x2, 14, GUItextcolor[4]);
+	GUIOuttext(x1 + 3, 7, text, 44);
+	GUIOuttext(x1 + 2, 6, text, 62);
+}
+
+
+#ifdef __WIN32__
+static void GUIDMHelpB2(u4 const x1, u4 const x2, char const* const text, u4 const param4)
+{
+	GUItextcolor[0] = 46;
+	GUItextcolor[1] = 42;
+	GUItextcolor[2] = 38;
+	GUItextcolor[3] = 44;
+	GUItextcolor[4] = 40;
+	if (GUIcwinpress == param4)
+	{
+		GUItextcolor[0] = 38;
+		GUItextcolor[1] = 40;
+		GUItextcolor[2] = 46;
+		GUItextcolor[3] = 40;
+		GUItextcolor[4] = 44;
+	}
+	GUIBox(x1, 3, x2, 3, GUItextcolor[0]);
+	GUIBox(x1, 4, x2, 6, GUItextcolor[1]);
+	GUIBox(x1, 7, x2, 7, GUItextcolor[2]);
+	GUIBox(x1, 3, x1, 6, GUItextcolor[3]);
+	GUIBox(x2, 4, x2, 7, GUItextcolor[4]);
+	GUIOuttext(x1 + 3, 5, text, 44);
+	GUIOuttext(x1 + 2, 4, text, 62);
+}
+
+
+static void GUIDMHelpB3(u4 const x1, u4 const x2, char const* const text, u4 const param4)
+{
+	GUItextcolor[0] = 46;
+	GUItextcolor[1] = 42;
+	GUItextcolor[2] = 38;
+	GUItextcolor[3] = 44;
+	GUItextcolor[4] = 40;
+	if (GUIcwinpress == param4)
+	{
+		GUItextcolor[0] = 38;
+		GUItextcolor[1] = 40;
+		GUItextcolor[2] = 46;
+		GUItextcolor[3] = 40;
+		GUItextcolor[4] = 44;
+	}
+	GUIBox(x1,  9, x2,  9, GUItextcolor[0]);
+	GUIBox(x1, 10, x2, 12, GUItextcolor[1]);
+	GUIBox(x1, 13, x2, 13, GUItextcolor[2]);
+	GUIBox(x1,  9, x1, 12, GUItextcolor[3]);
+	GUIBox(x2, 10, x2, 13, GUItextcolor[4]);
+	GUIOuttext(x1 + 3, 11, text, 44);
+	GUIOuttext(x1 + 2, 10, text, 62);
+}
+#endif
+
+
+static void GUIMenuDisplay(u4 const n_cols, u4 n_rows, u1* dst, char const* text)
 {
 	u4 row = 0;
 	do
@@ -551,4 +653,128 @@ void GUIMenuDisplay(u4 const n_cols, u4 n_rows, u1* dst, char const* text)
 		++row;
 	}
 	while (--n_rows != 0);
+}
+
+
+static void GUIDrawMenuM(u4 const x1, u4 const y1, u4 const p3, u4 const p4, char const* const text, u4 const p6, u4 const p7, u4 const p8, u4 const p9, u4 const p10)
+{
+	GUIShadow(p7, p8, p7 + 4 + p3 * 6, p8 + 3 + p4 * 10);
+	GUIBox(x1, y1, x1 + 4 + p3 * 6, y1 + 3 + p4 * 10, 43);
+
+	u1* dst = vidbuffer + GUIcrowpos * 2880 + x1 + 17 + 18 * 288;
+	GUIDrawBox(dst,           6 * p3 + 3, 1, 73);
+	GUIDrawBox(dst + 288,     6 * p3 + 3, 7, 72);
+	GUIDrawBox(dst + 288 * 8, 6 * p3 + 3, 1, 73);
+
+	GUIBox(x1 + p10,        y1,     x1 + 4 + p3 * 6, y1, 47);
+	GUIBox(x1,              y1,     x1,              p9, 45);
+	GUIBox(x1,              p9,     x1 + 4 + p3 * 6, p9, 39);
+	GUIBox(x1 + 4 + p3 * 6, 1 + y1, x1 + 4 + p3 * 6, p9, 41);
+	GUIMenuDisplay(6 * p3, p4, vidbuffer + 16 + p6 + 20 * 288, text);
+
+	GUIMenuL = x1 + 1;
+	GUIMenuR = x1 + 6 * p3 + 3;
+	GUIMenuD = 18 + p4 * 10;
+}
+
+
+void DisplayMenu(void)
+{
+	// Draw Shadow
+	GUIShadow(5, 7, 235, 21);
+	// Display Top Border
+	GUIBox(0,  1, 229,  1, 71);
+	GUIBox(0,  2, 229,  2, 70);
+	GUIBox(0,  3, 229,  3, 69);
+	GUIBox(0,  4, 229,  4, 68);
+	GUIBox(0,  5, 229,  5, 67);
+	GUIBox(0,  6, 229,  6, 66);
+	GUIBox(0,  7, 229,  7, 65);
+	GUIBox(0,  8, 229,  8, 64);
+	GUIBox(0,  9, 229,  9, 65);
+	GUIBox(0, 10, 229, 10, 66);
+	GUIBox(0, 11, 229, 11, 67);
+	GUIBox(0, 12, 229, 12, 68);
+	GUIBox(0, 13, 229, 13, 69);
+	GUIBox(0, 14, 229, 14, 70);
+	GUIBox(0, 15, 229, 15, 71);
+
+#ifdef __UNIXSDL__
+	GUIShadow(238, 9, 247, 20);
+	GUIShadow(249, 9, 257, 20);
+#endif
+#ifdef __WIN32__
+	GUIShadow(238,  9, 247, 14);
+	GUIShadow(238, 16, 247, 20);
+	GUIShadow(249,  9, 257, 20);
+#endif
+
+#ifdef __UNIXSDL__
+	GUIMenuItem[36] = 247;
+	GUIDMHelpB(233, 242, GUIMenuItem + 36, 1);
+	GUIMenuItem[36] = 'x';
+	GUIDMHelpB(244, 253, GUIMenuItem + 36, 2);
+#endif
+
+#ifdef __WIN32__
+	GUIMenuItem[36] = 249;
+	GUIDMHelpB2(233, 242, GUIMenuItem + 36, 1);
+	GUIMenuItem[36] = 248;
+	GUIDMHelpB3(233, 242, GUIMenuItem + 36, 3);
+	GUIMenuItem[36] = 'x';
+	GUIDMHelpB( 244, 253, GUIMenuItem + 36, 2);
+#endif
+
+	// Display upper-left box
+	GUIMenuItem[36] = 25;
+	GUIDMHelp(4, 12, GUIMenuItem + 6, 1);
+	GUIOuttext(4 + 3, 7, GUIMenuItem + 36, 44);
+	GUIOuttext(4 + 2, 6, GUIMenuItem + 36, 62);
+	// Display boxes
+	GUIDMHelp( 17,  47, GUIMenuItem,      2);
+	GUIDMHelp( 52,  94, GUIMenuItem +  7, 3);
+	GUIDMHelp( 99, 135, GUIMenuItem + 14, 4);
+	GUIDMHelp(140, 188, GUIMenuItem + 21, 5);
+	GUIDMHelp(193, 223, GUIMenuItem + 29, 6);
+
+	GUIMenuL = 0;
+	GUIMenuR = 0;
+	GUIMenuD = 0;
+
+	/* format : x pos, y pos, #charx, #chary, name, xpos+2, xpos+5,22,
+	 *          19+#chary*10, length of top menu box */
+	if (GUIcmenupos == 1)
+	{
+		GUIDrawMenuM(4, 16, 30, 13, GUIPrevMenuData, 6, 9, 22, 149, 8); // 19+13*10
+		GUICYLocPtr = MenuDat1;
+	}
+	if (GUIcmenupos == 2)
+	{
+		GUIDrawMenuM(17, 16, 10, 9, GUIGameMenuData, 19, 22, 22, 109, 30); // 19+9*10
+		GUICYLocPtr = MenuDat2;
+	}
+	if (GUIcmenupos == 3)
+	{
+		GUIDrawMenuM(52, 16, 8, 11, GUIConfigMenuData, 54, 57, 22, 129, 42); // 19+11*10
+		GUICYLocPtr = MenuDat3;
+	}
+	if (GUIcmenupos == 4)
+	{
+		GUIDrawMenuM(99, 16, 8, 3, GUICheatMenuData, 101, 104, 22, 49, 36); // 19+3*10
+		GUICYLocPtr = MenuDat4;
+	}
+	if (GUIcmenupos == 5)
+	{
+#ifdef __MSDOS__
+		GUIDrawMenuM(140, 16, 10, 2, GUINetPlayMenuData, 142, 145, 22, 39, 48); // 19+2*10
+#else
+		GUIDrawMenuM(140, 16, 10, 1, GUINetPlayMenuData, 142, 145, 22, 29, 48); // 19+1*10
+#endif
+		GUICYLocPtr = MenuDat5;
+	}
+	if (GUIcmenupos == 6)
+	{
+		GUIDrawMenuM(193, 16, 9, 7, GUIMiscMenuData, 195, 198, 22, 89, 30); // 19+5*10
+		GUICYLocPtr = MenuDat6;
+	}
 }

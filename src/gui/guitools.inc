@@ -237,53 +237,6 @@ GUIHLine:
   out dx,al
 %endmacro
 
-GUIDrawShadow:
-.loop
-  push edi
-  push ecx
-.loop2
-  mov al,[edi-3*288-3]
-  cmp al,148
-  jb .nomidshad
-  cmp al,167
-  ja .mid2
-  add byte[edi-3*288-3],20
-  jmp .noshadow
-.mid2
-  cmp al,189
-  jb .nomidshad
-  cmp al,220
-  ja .nomidshad
-  sub al,189
-  shr al,1
-  add al,189
-  mov [edi-288*3-3],al
-  jmp .noshadow
-.nomidshad
-  mov al,[edi]
-  cmp al,32
-  jae .noshadow
-  add al,96
-  mov [edi],al
-.noshadow
-  inc edi
-  dec ecx
-  jnz .loop2
-  pop ecx
-  pop edi
-  add edi,288
-  dec edx
-  jnz near .loop
-  ret
-
-%macro GUIShadow 4
-  mov edi,[vidbuffer]
-  add edi,%1+%2*288+16
-  mov ecx,%3-%1+1
-  mov edx,%4-%2+1
-  call GUIDrawShadow
-%endmacro
-
 GUIDrawShadow2:
 .loop
   push edi

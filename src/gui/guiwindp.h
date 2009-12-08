@@ -4,6 +4,7 @@
 #include "../types.h"
 
 extern char CMovieExt;
+extern char GUIMenuItem[];
 extern u1   CheatSearchStatus;
 extern u1   CheatWinMode;
 extern u1   GUILoadPos;

@@ -49,7 +49,7 @@ void GUIOuttext(u4 const x, u4 const y, char const* const text, u1 const colour)
 }
 
 
-static void GUIDrawBox(u1* dst, u4 const w, u4 h, u1 const colour)
+void GUIDrawBox(u1* dst, u4 const w, u4 h, u1 const colour)
 {
 	do
 	{
@@ -66,4 +66,45 @@ void GUIBox(u4 const x1, u4 const y1, u4 const x2, u4 const y2, u1 const colour)
 	u4  const w   = x2 - x1 + 1;
 	u4  const h   = y2 - y1 + 1;
 	GUIDrawBox(dst, w, h, colour);
+}
+
+
+static void GUIDrawShadow(u1* dst, u4 const w, u4 h)
+{
+	do
+	{
+		u1* edi = dst;
+		u4  ecx = w;
+		do
+		{
+			u1 px = edi[-3 * 288 - 3];
+			if (148 <= px && px <= 167)
+			{
+				edi[-3 * 288 - 3] = px + 20;
+			}
+			else if (189 <= px && px <= 220)
+			{
+				edi[-3 * 288 - 3] = 189 + (px - 189) / 2;
+			}
+			else
+			{
+				px = edi[0];
+				if (px < 32)
+					edi[0] = px + 96;
+			}
+			++edi;
+		}
+		while (--ecx != 0);
+		dst += 288;
+	}
+	while (--h != 0);
+}
+
+
+void GUIShadow(u4 const x1, u4 const y1, u4 const x2, u4 const y2)
+{
+	u1* const dst = vidbuffer + x1 + y1 * 288 + 16;
+	u4  const w   = x2 - x1 + 1;
+	u4  const h   = y2 - y1 + 1;
+	GUIDrawShadow(dst, w, h);
 }
