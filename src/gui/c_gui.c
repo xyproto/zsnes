@@ -78,41 +78,32 @@ static void GUIBox3D(u4 const x1, u4 const y1, u4 const x2, u4 const y2)
 }
 
 
+static void GUIOuttextShadowed(u4 const x, u4 const y, char const* const text)
+{
+	GUIOuttext(x + 1, y + 1, text, 220 - 15);
+	GUIOuttext(x,     y,     text, 220);
+}
+
+
 static char const guiftimemsg8[] = "PRESS SPACEBAR TO PROCEED.";
 
 
 static void guifirsttimemsg(void)
 {
-	static char const guiftimemsg1[] = " ONE-TIME USER REMINDER : ";
-	static char const guiftimemsg2[] = "  PLEASE BE SURE TO READ  ";
-	static char const guiftimemsg3[] = "THE DOCUMENTATION INCLUDED";
-	static char const guiftimemsg4[] = " WITH ZSNES FOR IMPORTANT";
-	static char const guiftimemsg5[] = " INFORMATION AND ANSWERS";
-	static char const guiftimemsg6[] = "    TO COMMON PROBLEMS";
-	static char const guiftimemsg7[] = "      AND QUESTIONS.";
-
 	memset(pressed, 0, 256); // XXX maybe should be sizeof(pressed)
 	pressed[0x2C] = 0; // XXX redundant
 
 	do
 	{
 		GUIBox3D(43, 75, 213, 163);
-		GUIOuttext(52,  81, guiftimemsg1, 220 - 15);
-		GUIOuttext(51,  80, guiftimemsg1, 220);
-		GUIOuttext(52,  96, guiftimemsg2, 220 - 15);
-		GUIOuttext(51,  95, guiftimemsg2, 220);
-		GUIOuttext(52, 104, guiftimemsg3, 220 - 15);
-		GUIOuttext(51, 103, guiftimemsg3, 220);
-		GUIOuttext(52, 112, guiftimemsg4, 220 - 15);
-		GUIOuttext(51, 111, guiftimemsg4, 220);
-		GUIOuttext(52, 120, guiftimemsg5, 220 - 15);
-		GUIOuttext(51, 119, guiftimemsg5, 220);
-		GUIOuttext(52, 128, guiftimemsg6, 220 - 15);
-		GUIOuttext(51, 127, guiftimemsg6, 220);
-		GUIOuttext(52, 136, guiftimemsg7, 220 - 15);
-		GUIOuttext(51, 135, guiftimemsg7, 220);
-		GUIOuttext(52, 151, guiftimemsg8, 220 - 15);
-		GUIOuttext(51, 150, guiftimemsg8, 220);
+		GUIOuttextShadowed(51,  80, " ONE-TIME USER REMINDER : ");
+		GUIOuttextShadowed(51,  95, "  PLEASE BE SURE TO READ  ");
+		GUIOuttextShadowed(51, 103, "THE DOCUMENTATION INCLUDED");
+		GUIOuttextShadowed(51, 111, " WITH ZSNES FOR IMPORTANT");
+		GUIOuttextShadowed(51, 119, " INFORMATION AND ANSWERS");
+		GUIOuttextShadowed(51, 127, "    TO COMMON PROBLEMS");
+		GUIOuttextShadowed(51, 135, "      AND QUESTIONS.");
+		GUIOuttextShadowed(51, 150, guiftimemsg8);
 		asm_call(vidpastecopyscr);
 		asm_call(GUIUnBuffer);
 		asm_call(DisplayBoxes);
@@ -125,30 +116,22 @@ static void guifirsttimemsg(void)
 
 static void horizonfixmsg(void)
 {
-	static char const guimsgmsg[] = "     WELCOME TO ZSNES";
-
 	memset(pressed, 0, 256); // XXX maybe should be sizeof(pressed)
 	pressed[0x2C] = 0; // XXX redundant
 
 	do
 	{
 		GUIBox3D(43, 75, 213, 163);
-		GUIOuttext(52, 81, guimsgmsg,   220 - 15);
-		GUIOuttext(51, 80, guimsgmsg,   220);
+		GUIOuttextShadowed(51, 80, "     WELCOME TO ZSNES");
 		char const* msg = guimsgptr;
-		GUIOuttext(52, 96, msg, 220 - 15);
-		GUIOuttext(51, 95, msg, 220);
+		GUIOuttextShadowed(51, 95, msg);
 		msg += 32;
-		GUIOuttext(52, 104, msg, 220 - 15);
-		GUIOuttext(51, 103, msg, 220);
+		GUIOuttextShadowed(51, 103, msg);
 		msg += 32;
-		GUIOuttext(52, 112, msg, 220 - 15);
-		GUIOuttext(51, 111, msg, 220);
+		GUIOuttextShadowed(51, 111, msg);
 		msg += 32;
-		GUIOuttext(52, 120, msg, 220 - 15);
-		GUIOuttext(51, 119, msg, 220);
-		GUIOuttext(52, 151, guiftimemsg8, 220 - 15);
-		GUIOuttext(51, 150, guiftimemsg8, 220);
+		GUIOuttextShadowed(51, 119, msg);
+		GUIOuttextShadowed(51, 150, guiftimemsg8);
 		asm_call(vidpastecopyscr);
 		asm_call(GUIUnBuffer);
 		asm_call(DisplayBoxes);
@@ -407,19 +390,14 @@ void StartGUI(void)
 
 void guimencodermsg(void)
 {
-	static char const guimencodert1[] = " MENCODER IS MISSING: ";
-	static char const guimencodert2[] = "PRESS SPACE TO PROCEED";
-
 	memset(pressed, 0, 256); // XXX maybe should be sizeof(pressed)
 	pressed[0x2C] = 0; // XXX redundant
 
 	do
 	{
 		GUIBox3D(43, 75, 213, 163);
-		GUIOuttext(52, 96, guimencodert1, 220 - 15);
-		GUIOuttext(51, 95, guimencodert1, 220);
-		GUIOuttext(52, 134, guimencodert2, 220 - 15);
-		GUIOuttext(51, 133, guimencodert2, 220);
+		GUIOuttextShadowed(51,  95, " MENCODER IS MISSING: ");
+		GUIOuttextShadowed(51, 133, "PRESS SPACE TO PROCEED");
 		asm_call(vidpastecopyscr);
 		asm_call(GUIUnBuffer);
 		asm_call(DisplayBoxes);
@@ -432,19 +410,14 @@ void guimencodermsg(void)
 
 void guilamemsg(void)
 {
-	static char const guilamet1[] = " LAME IS MISSING: ";
-	static char const guilamet2[] = "PRESS SPACE TO PROCEED";
-
 	memset(pressed, 0, 256); // XXX maybe should be sizeof(pressed)
 	pressed[0x2C] = 0; // XXX redundant
 
 	do
 	{
 		GUIBox3D(43, 75, 213, 163);
-		GUIOuttext(52, 96, guilamet1, 220 - 15);
-		GUIOuttext(51, 95, guilamet1, 220);
-		GUIOuttext(52,134, guilamet2, 220 - 15);
-		GUIOuttext(51,133, guilamet2, 220);
+		GUIOuttextShadowed(51, 95, " LAME IS MISSING: ");
+		GUIOuttextShadowed(51,133, "PRESS SPACE TO PROCEED");
 		asm_call(vidpastecopyscr);
 		asm_call(GUIUnBuffer);
 		asm_call(DisplayBoxes);
@@ -457,34 +430,19 @@ void guilamemsg(void)
 
 void guiprevideo(void)
 {
-	static char const guiprevidmsg1[] = "ZSNES WILL NOW ATTEMPT";
-	static char const guiprevidmsg2[] = " TO CHANGE YOUR VIDEO";
-	static char const guiprevidmsg3[] = " MODE.  IF THE CHANGE";
-	static char const guiprevidmsg4[] = "IS UNSUCCESSFUL,  WAIT";
-	static char const guiprevidmsg5[] = " 10 SECONDS AND VIDEO";
-	static char const guiprevidmsg6[] = "MODE WILL BE RESTORED.";
-	static char const guiprevidmsg7[] = "    PRESS ANY KEY.";
-
 	memset(pressed, 0, 256); // XXX maybe should be sizeof(pressed)
 
 	asm_call(GUIUnBuffer);
 	asm_call(DisplayBoxes);
 	asm_call(DisplayMenu);
 	GUIBox3D(43, 90, 213, 163);
-	GUIOuttext(56,  96, guiprevidmsg1, 220 - 15);
-	GUIOuttext(55,  95, guiprevidmsg1, 220);
-	GUIOuttext(56, 104, guiprevidmsg2, 220 - 15);
-	GUIOuttext(55, 103, guiprevidmsg2, 220);
-	GUIOuttext(56, 112, guiprevidmsg3, 220 - 15);
-	GUIOuttext(55, 111, guiprevidmsg3, 220);
-	GUIOuttext(56, 120, guiprevidmsg4, 220 - 15);
-	GUIOuttext(55, 119, guiprevidmsg4, 220);
-	GUIOuttext(56, 128, guiprevidmsg5, 220 - 15);
-	GUIOuttext(55, 127, guiprevidmsg5, 220);
-	GUIOuttext(56, 136, guiprevidmsg6, 220 - 15);
-	GUIOuttext(55, 135, guiprevidmsg6, 220);
-	GUIOuttext(56, 151, guiprevidmsg7, 220 - 15);
-	GUIOuttext(55, 150, guiprevidmsg7, 220);
+	GUIOuttextShadowed(55,  95, "ZSNES WILL NOW ATTEMPT");
+	GUIOuttextShadowed(55, 103, " TO CHANGE YOUR VIDEO");
+	GUIOuttextShadowed(55, 111, " MODE.  IF THE CHANGE");
+	GUIOuttextShadowed(55, 119, "IS UNSUCCESSFUL,  WAIT");
+	GUIOuttextShadowed(55, 127, " 10 SECONDS AND VIDEO");
+	GUIOuttextShadowed(55, 135, "MODE WILL BE RESTORED.");
+	GUIOuttextShadowed(55, 150, "    PRESS ANY KEY.");
 	asm_call(vidpastecopyscr);
 	pressed[0x2C] = 0; // XXX redundant
 	for (;;)
