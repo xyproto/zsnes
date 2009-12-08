@@ -19,7 +19,7 @@
 
 
 
-EXTSYM guimencodermsg
+EXTSYM guimencodermsg, guilamemsg
 
 %ifdef __WIN32__
 EXTSYM MinimizeWindow
@@ -731,7 +731,7 @@ ProcessMouseButtons:
   je .nolame
   cmp byte[lameExists],0
   jne .nolame
-  call guilamemsg
+  ccallv guilamemsg
 .nolame
   ret
 .noDumpRaw
