@@ -3,6 +3,7 @@
 
 #include "../types.h"
 
-u4 guipresstest(void);
+u4   guipresstest(void);
+void guipresstestb(void);
 
 #endif

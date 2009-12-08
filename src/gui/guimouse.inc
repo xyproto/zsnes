@@ -2798,83 +2798,6 @@ DisplayNetOptnsClick:
   ret
 
 SECTION .data
-NEWSYM guipresstext1, db 'ENTER THE KEY',0
-NEWSYM guipresstext2, db 'OR BUTTON TO USE',0
-NEWSYM guipresstext3, db '(ESC TO CLEAR)',0
-SECTION .text
-
-guipresstestb:
-  call GUIUnBuffer
-  call DisplayBoxes
-  call DisplayMenu
-  GUIBox 65,80,194,126,160
-  GUIBox 65,80,194,80,162
-  GUIBox 65,80,65,126,161
-  GUIBox 194,80,194,126,159
-  GUIBox 65,126,194,126,158
-  GUIOuttext 71,86,guipresstext1,220-15
-  GUIOuttext 70,85,guipresstext1,220
-  GUIOuttext 71,96,guipresstext2,220-15
-  GUIOuttext 70,95,guipresstext2,220
-  GUIOuttext 71,116,guipresstext3b,220-15
-  GUIOuttext 70,115,guipresstext3b,220
-  mov eax,[guipressptr]
-  GUIOuttext 71,106,eax,220-15
-  mov eax,[guipressptr]
-  GUIOuttext 70,105,eax,220
-  call vidpastecopyscr
-  mov ecx,8192
-  call delay
-.tryagain
-  call JoyRead
-  xor ebx,ebx
-  mov ecx,256+128+64
-.b2
-  cmp byte[pressed+ebx],0
-  jne .tryagain
-  inc ebx
-  dec ecx
-  jnz .b2
-
-.again
-  call JoyRead
-;    mov dword[pressed+0CCh],0
-;    mov dword[pressed+0CCh+80h],0
-;    mov dword[pressed+0E8h],0
-;    mov dword[pressed+0E8h+80h],0
-
-  xor ebx,ebx
-  mov ecx,256+128+64
-.b
-  cmp byte[pressed+ebx],0
-  jne .pressedokay
-  inc ebx
-  dec ecx
-  jnz .b
-  jmp .again
-.pressedokay
-.again2
-  call Check_Key
-  or al,al
-  jz .nokey
-  call Get_Key
-  jmp .again2
-.nokey
-  cmp ebx,1
-  je .skip
-  cmp ebx,3Bh
-  je .skip
-  mov eax,[guicpressptr]
-  mov [eax],ebx
-.skip
-;    push ebx
-;    mov eax,0Bh
-;    int 33h
-;    pop ebx
-  ret
-
-SECTION .data
-guipresstext3b db '(ESC TO SKIP)',0
 guipresstext4b db 'FOR UP              ',0
   db 'FOR DOWN            ',0
   db 'FOR LEFT            ',0
@@ -2888,8 +2811,8 @@ guipresstext4b db 'FOR UP              ',0
   db 'FOR THE L BUTTON    ',0
   db 'FOR THE R BUTTON    ',0
 SECTION .bss
-guipressptr resd 1
-guicpressptr resd 1
+NEWSYM guipressptr,  resd 1
+NEWSYM guicpressptr, resd 1
 SECTION .text
 
 DisplayGameOptnsClick:

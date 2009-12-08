@@ -21,7 +21,7 @@
 
 ; Movie, Joystick setting (display) routines, SNES Reset Function
 
-EXTSYM CalibrateDispA, CalibrateDispB
+EXTSYM CalibrateDispA, CalibrateDispB, guipresstestb
 
 SECTION .bss
 NEWSYM MovieRecordWinVal, resb 1
@@ -147,11 +147,7 @@ SetAllKeys:
     mov dword[guipressptr],guipresstext4b
 .loop
     ConfigureKey guicpressptr,cplayernum
-    push ebx
-    push ecx
-    call guipresstestb
-    pop ecx
-    pop ebx
+    ccallv guipresstestb
     add dword[guipressptr],21
     inc ebx
     dec ecx

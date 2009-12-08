@@ -11,6 +11,7 @@ extern void Get_Key();
 extern void Get_MouseData();
 extern void Get_MousePositionDisplacement();
 extern void JoyRead();
+extern void delay();
 extern void vidpastecopyscr();
 
 extern u1 GUIWFVID[];
