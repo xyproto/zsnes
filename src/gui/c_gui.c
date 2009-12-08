@@ -402,6 +402,35 @@ void StartGUI(void)
 }
 
 
+void guimencodermsg(void)
+{
+	static char const guimencodert1[] = " MENCODER IS MISSING: ";
+	static char const guimencodert2[] = "PRESS SPACE TO PROCEED";
+
+	memset(pressed, 0, 256); // XXX maybe should be sizeof(pressed)
+	pressed[0x2C] = 0; // XXX redundant
+
+	do
+	{
+		GUIBox( 43,  75, 213, 163, 160);
+		GUIBox( 43,  75, 213,  75, 162);
+		GUIBox( 43,  75,  43, 163, 161);
+		GUIBox(213,  75, 213, 163, 159);
+		GUIBox( 43, 163, 213, 163, 158);
+		GUIOuttext(52, 96, guimencodert1, 220 - 15);
+		GUIOuttext(51, 95, guimencodert1, 220);
+		GUIOuttext(52, 134, guimencodert2, 220 - 15);
+		GUIOuttext(51, 133, guimencodert2, 220);
+		asm_call(vidpastecopyscr);
+		asm_call(GUIUnBuffer);
+		asm_call(DisplayBoxes);
+		asm_call(DisplayMenu);
+		asm_call(JoyRead);
+	}
+	while (pressed[0x39] == 0);
+}
+
+
 void GUIMenuDisplay(u4 const n_cols, u4 n_rows, u1* dst, char const* text)
 {
 	u4 row = 0;

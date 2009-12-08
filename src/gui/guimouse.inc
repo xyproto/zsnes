@@ -19,6 +19,8 @@
 
 
 
+EXTSYM guimencodermsg
+
 %ifdef __WIN32__
 EXTSYM MinimizeWindow
 %endif
@@ -721,7 +723,7 @@ ProcessMouseButtons:
   jb .nomencoder
   cmp byte[mencoderExists],0
   jne .nomencoder
-  call guimencodermsg
+  ccallv guimencodermsg
 .nomencoder
   cmp byte[MovieAudio],0
   je .nolame

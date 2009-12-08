@@ -759,36 +759,6 @@ SECTION .data
 .message db 0,0,0,0,' ',0,0,0,0,0,0,0
 SECTION .text
 
-guimencodermsg:
-  xor ebx,ebx
-  mov ecx,256
-.a
-  mov byte[pressed+ebx],0
-  inc ebx
-  dec ecx
-  jnz .a
-  mov byte[pressed+2Ch],0
-.again
-  GUIBox 43,75,213,163,160
-  GUIBox 43,75,213,75,162
-  GUIBox 43,75,43,163,161
-  GUIBox 213,75,213,163,159
-  GUIBox 43,163,213,163,158
-  GUIOuttext 52,96,guimencodert1,220-15
-  GUIOuttext 51,95,guimencodert1,220
-  GUIOuttext 52,134,guimencodert2,220-15
-  GUIOuttext 51,133,guimencodert2,220
-  call vidpastecopyscr
-  call GUIUnBuffer
-  call DisplayBoxes
-  call DisplayMenu
-  call JoyRead
-  cmp byte[pressed+39h],0
-  jne .pressedokay
-  jmp .again
-.pressedokay
-  ret
-
 guilamemsg:
   xor ebx,ebx
   mov ecx,256
@@ -820,8 +790,6 @@ guilamemsg:
   ret
 
 SECTION .data
-guimencodert1 db ' MENCODER IS MISSING: ',0
-guimencodert2 db 'PRESS SPACE TO PROCEED',0
 guilamet1 db ' LAME IS MISSING: ',0
 guilamet2 db 'PRESS SPACE TO PROCEED',0
 SECTION .text
