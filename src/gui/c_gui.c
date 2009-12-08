@@ -428,7 +428,7 @@ void guilamemsg(void)
 }
 
 
-static u1* GetAnyPressedKey(void)
+u1* GetAnyPressedKey(void)
 {
 	for (u1* i = pressed; i != endof(pressed); ++i)
 		if (*i != 0) return i;

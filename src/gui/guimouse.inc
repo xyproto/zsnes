@@ -19,7 +19,7 @@
 
 
 
-EXTSYM guimencodermsg, guilamemsg, guiprevideo
+EXTSYM guimencodermsg, guilamemsg, guiprevideo, guipresstest
 
 %ifdef __WIN32__
 EXTSYM MinimizeWindow
@@ -1792,7 +1792,8 @@ SECTION .text
 %macro DGOptnsProcBox 3
   GUIClickArea %1,%2,%1+19,%2+6,%%skip
   push edi
-  call guipresstest
+  ccall guipresstest
+  mov ebx, eax
   pop edi
   cmp ebx,1
   je %%cancelkey
@@ -1819,7 +1820,8 @@ SECTION .text
 %macro DGOptnsProcBoxc 5
   GUIClickArea %1,%2,%3,%4,%%skip
   push edi
-  call guipresstest
+  ccall guipresstest
+  mov ebx, eax
   pop edi
   cmp ebx,1
   je %%cancelkey
@@ -1841,7 +1843,8 @@ SECTION .text
 %macro DGOptnsProcBoxb 3
   GUIClickArea %1,%2,%1+19,%2+6,%%skip
   push edi
-  call guipresstest
+  ccall guipresstest
+  mov ebx, eax
   pop edi
   cmp ebx,1
   je %%cancelkey
@@ -2794,74 +2797,10 @@ DisplayGUICheatClick:
 DisplayNetOptnsClick:
   ret
 
-guipresstest:
-  xor ebx,ebx
-  mov ecx,256+128+64
-.a
-  mov byte[pressed+ebx],0
-  inc ebx
-  dec ecx
-  jnz .a
-  call GUIUnBuffer
-  call DisplayBoxes
-  call DisplayMenu
-  GUIBox 75,95,180,131,160
-  GUIBox 75,95,180,95,162
-  GUIBox 75,95,75,131,161
-  GUIBox 180,95,180,131,159
-  GUIBox 75,131,180,131,158
-  GUIOuttext 81,101,guipresstext1,220-15
-  GUIOuttext 80,100,guipresstext1,220
-  GUIOuttext 81,111,guipresstext2,220-15
-  GUIOuttext 80,110,guipresstext2,220
-  GUIOuttext 81,121,guipresstext3,220-15
-  GUIOuttext 80,120,guipresstext3,220
-  call vidpastecopyscr
-.again
-  call JoyRead
-;    mov dword[pressed+0CCh],0
-;    mov dword[pressed+0CCh+80h],0
-;    mov dword[pressed+0E8h],0
-;    mov dword[pressed+0E8h+80h],0
-  xor ebx,ebx
-  mov ecx,256+128+64
-.b
-  cmp byte[pressed+ebx],0
-  jne .pressedokay
-  inc ebx
-  dec ecx
-  jnz .b
-  jmp .again
-.pressedokay
-  push ebx
-  xor ebx,ebx
-  mov ecx,256+128+64
-.a2
-  cmp byte[pressed+ebx],0
-  je .pressedokayb
-  mov byte[pressed+ebx],2
-.pressedokayb
-  inc ebx
-  dec ecx
-  jnz .a2
-  pop ebx
-.again2
-  call Check_Key
-  or al,al
-  jz .nokey
-  call Get_Key
-  jmp .again2
-.nokey
-;    push ebx
-;    mov eax,0Bh
-;    int 33h
-;    pop ebx
-  ret
-
 SECTION .data
-guipresstext1 db 'ENTER THE KEY',0
-guipresstext2 db 'OR BUTTON TO USE',0
-guipresstext3 db '(ESC TO CLEAR)',0
+NEWSYM guipresstext1, db 'ENTER THE KEY',0
+NEWSYM guipresstext2, db 'OR BUTTON TO USE',0
+NEWSYM guipresstext3, db '(ESC TO CLEAR)',0
 SECTION .text
 
 guipresstestb:
