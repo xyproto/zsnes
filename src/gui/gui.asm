@@ -824,55 +824,6 @@ guimencodert1 db ' MENCODER IS MISSING: ',0
 guimencodert2 db 'PRESS SPACE TO PROCEED',0
 guilamet1 db ' LAME IS MISSING: ',0
 guilamet2 db 'PRESS SPACE TO PROCEED',0
-
-guiftimemsg8 db 'PRESS SPACEBAR TO PROCEED.',0
-SECTION .text
-
-NEWSYM horizonfixmsg
-  xor ebx,ebx
-  mov ecx,256
-.a
-  mov byte[pressed+ebx],0
-  inc ebx
-  dec ecx
-  jnz .a
-  mov byte[pressed+2Ch],0
-.again
-  GUIBox 43,75,213,163,160
-  GUIBox 43,75,213,75,162
-  GUIBox 43,75,43,163,161
-  GUIBox 213,75,213,163,159
-  GUIBox 43,163,213,163,158
-  GUIOuttext 52,81,guimsgmsg,220-15
-  GUIOuttext 51,80,guimsgmsg,220
-  GUIOuttext 52,96,[guimsgptr],220-15
-  GUIOuttext 51,95,[guimsgptr],220
-  add dword[guimsgptr],32
-  GUIOuttext 52,104,[guimsgptr],220-15
-  GUIOuttext 51,103,[guimsgptr],220
-  add dword[guimsgptr],32
-  GUIOuttext 52,112,[guimsgptr],220-15
-  GUIOuttext 51,111,[guimsgptr],220
-  add dword[guimsgptr],32
-  GUIOuttext 52,120,[guimsgptr],220-15
-  GUIOuttext 51,119,[guimsgptr],220
-  sub dword[guimsgptr],96
-  GUIOuttext 52,151,guiftimemsg8,220-15
-  GUIOuttext 51,150,guiftimemsg8,220
-  call vidpastecopyscr
-  call GUIUnBuffer
-  call DisplayBoxes
-  call DisplayMenu
-  call JoyRead
-  cmp byte[pressed+39h],0
-  jne .pressedokay
-  jmp .again
-.pressedokay
-  ret
-
-SECTION .data
-NEWSYM guimsgptr, dd 0
-guimsgmsg db '     WELCOME TO ZSNES',0
 SECTION .text
 
 guiprevideo:

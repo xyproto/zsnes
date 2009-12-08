@@ -36,6 +36,9 @@
 #endif
 
 
+static char const* guimsgptr;
+
+
 static void loadmenuopen(u4 const param1) // XXX better parameter name
 {
 	GUIpmenupos = GUIcmenupos;
@@ -64,6 +67,9 @@ static void loadmenuopen(u4 const param1) // XXX better parameter name
 }
 
 
+static char const guiftimemsg8[] = "PRESS SPACEBAR TO PROCEED.";
+
+
 static void guifirsttimemsg(void)
 {
 	static char const guiftimemsg1[] = " ONE-TIME USER REMINDER : ";
@@ -73,7 +79,6 @@ static void guifirsttimemsg(void)
 	static char const guiftimemsg5[] = " INFORMATION AND ANSWERS";
 	static char const guiftimemsg6[] = "    TO COMMON PROBLEMS";
 	static char const guiftimemsg7[] = "      AND QUESTIONS.";
-	static char const guiftimemsg8[] = "PRESS SPACEBAR TO PROCEED.";
 
 	memset(pressed, 0, 256); // XXX maybe should be sizeof(pressed)
 	pressed[0x2C] = 0; // XXX redundant
@@ -99,6 +104,46 @@ static void guifirsttimemsg(void)
 		GUIOuttext(51, 127, guiftimemsg6, 220);
 		GUIOuttext(52, 136, guiftimemsg7, 220 - 15);
 		GUIOuttext(51, 135, guiftimemsg7, 220);
+		GUIOuttext(52, 151, guiftimemsg8, 220 - 15);
+		GUIOuttext(51, 150, guiftimemsg8, 220);
+		asm_call(vidpastecopyscr);
+		asm_call(GUIUnBuffer);
+		asm_call(DisplayBoxes);
+		asm_call(DisplayMenu);
+		asm_call(JoyRead);
+	}
+	while (pressed[0x39] == 0);
+}
+
+
+static void horizonfixmsg(void)
+{
+	static char const guimsgmsg[] = "     WELCOME TO ZSNES";
+
+	memset(pressed, 0, 256); // XXX maybe should be sizeof(pressed)
+	pressed[0x2C] = 0; // XXX redundant
+
+	do
+	{
+		GUIBox( 43,  75, 213, 163, 160);
+		GUIBox( 43,  75, 213,  75, 162);
+		GUIBox( 43,  75,  43, 163, 161);
+		GUIBox(213,  75, 213, 163, 159);
+		GUIBox( 43, 163, 213, 163, 158);
+		GUIOuttext(52, 81, guimsgmsg,   220 - 15);
+		GUIOuttext(51, 80, guimsgmsg,   220);
+		char const* msg = guimsgptr;
+		GUIOuttext(52, 96, msg, 220 - 15);
+		GUIOuttext(51, 95, msg, 220);
+		msg += 32;
+		GUIOuttext(52, 104, msg, 220 - 15);
+		GUIOuttext(51, 103, msg, 220);
+		msg += 32;
+		GUIOuttext(52, 112, msg, 220 - 15);
+		GUIOuttext(51, 111, msg, 220);
+		msg += 32;
+		GUIOuttext(52, 120, msg, 220 - 15);
+		GUIOuttext(51, 119, msg, 220);
 		GUIOuttext(52, 151, guiftimemsg8, 220 - 15);
 		GUIOuttext(51, 150, guiftimemsg8, 220);
 		asm_call(vidpastecopyscr);
@@ -305,8 +350,8 @@ void StartGUI(void)
 		}
 		if (!guimsgptr && (GetDate() & 0xFFFF) == 0x0401)
 		{
-			guimsgptr = horizon_get(GetTime());
-			asm_call(horizonfixmsg);
+			guimsgptr = (char const*)horizon_get(GetTime());
+			horizonfixmsg();
 		}
 		if (GUICTimer != 0)
 		{

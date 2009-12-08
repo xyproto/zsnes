@@ -9,7 +9,6 @@ extern void DrawSnow();
 extern void GUIUnBuffer();
 extern void InitGUI();
 extern void LoadDetermine();
-extern void horizonfixmsg();
 
 extern char* GUICMessage;
 extern u1    CheatOn;
@@ -46,6 +45,5 @@ extern u4    NumCheats;
 extern u4    SnowTimer;
 extern u4    StartLL;
 extern u4    StartLR;
-extern u4*   guimsgptr;
 
 #endif
