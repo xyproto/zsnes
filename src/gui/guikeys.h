@@ -3,6 +3,7 @@
 
 #include "../types.h"
 
+extern void GUIWaitForKey();
 extern void GUIgetcurrentinput();
 
 extern u1* GUIEditStringcLen;

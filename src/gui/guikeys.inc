@@ -2865,7 +2865,7 @@ GUILoadKeys:
   ccallv GUILoadKeysJumpTo
   ret
 
-GUIWaitForKey:
+NEWSYM GUIWaitForKey
 .again3
   mov edx,10
 .again4

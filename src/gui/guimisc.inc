@@ -21,6 +21,8 @@
 
 ; Movie, Joystick setting (display) routines, SNES Reset Function
 
+EXTSYM CalibrateDispA
+
 SECTION .bss
 NEWSYM MovieRecordWinVal, resb 1
 NEWSYM MovieProcessing, resb 1
@@ -29,32 +31,6 @@ NEWSYM RecData, resb 16
 NEWSYM NoPictureSave, resb 1
 
 SECTION .text
-
-CalibrateDispA:
-    xor ebx,ebx
-    mov ecx,256
-.a
-    mov byte[pressed+ebx],0
-    inc ebx
-    dec ecx
-    jnz .a
-    call GUIUnBuffer
-    call DisplayBoxes
-    call DisplayMenu
-    GUIBox 75,103,192,135,160
-    GUIBox 75,103,192,103,162
-    GUIBox 75,103,75,135,161
-    GUIBox 192,103,192,135,159
-    GUIBox 75,135,192,135,158
-    GUIOuttext 81,109,guicalberror1,220-15
-    GUIOuttext 80,108,guicalberror1,220
-    GUIOuttext 81,117,guicalberror2,220-15
-    GUIOuttext 80,116,guicalberror2,220
-    GUIOuttext 81,125,guicalberror3,220-15
-    GUIOuttext 80,124,guicalberror3,220
-    call vidpastecopyscr
-    call GUIWaitForKey
-    ret
 
 CalibrateDispB:
     xor ebx,ebx
@@ -85,9 +61,6 @@ CalibrateDispB:
     ret
 
 SECTION .data
-guicalberror1 db 'PRESS THE TOP LEFT',0
-guicalberror2 db 'CORNER AND PRESS A',0
-guicalberror3 db 'BUTTON OR KEY',0
 guicalberror4 db 'PRESS THE BOTTOM',0
 guicalberror5 db 'RIGHT CORNER AND',0
 guicalberror6 db 'PRESS A BUTTON OR',0
@@ -268,7 +241,7 @@ CalibrateDev1:
     mov [.joybcx],eax
     mov eax,[JoyY]
     mov [.joybcy],eax
-    call CalibrateDispA
+    ccallv CalibrateDispA
     mov dx,201h
     call GetCoords
     mov eax,[JoyX]
@@ -288,7 +261,7 @@ CalibrateDev1:
     mov [.joybcx],eax
     mov eax,[JoyY]
     mov [.joybcy],eax
-    call CalibrateDispA
+    ccallv CalibrateDispA
     mov dx,201h
     call GetCoords3
     mov eax,[JoyX]
@@ -336,7 +309,7 @@ CalibrateDev1:
     mov [.joybcx],eax
     mov eax,[JoyY]
     mov [.joybcy],eax
-    call CalibrateDispA
+    ccallv CalibrateDispA
     mov dx,209h
     call GetCoords
     mov eax,[JoyX]
@@ -356,7 +329,7 @@ CalibrateDev1:
     mov [.joybcx],eax
     mov eax,[JoyY]
     mov [.joybcy],eax
-    call CalibrateDispA
+    ccallv CalibrateDispA
     mov dx,209h
     call GetCoords3
     mov eax,[JoyX]

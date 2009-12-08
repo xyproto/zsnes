@@ -68,7 +68,7 @@ static void loadmenuopen(u4 const param1) // XXX better parameter name
 }
 
 
-static void GUIBox3D(u4 const x1, u4 const y1, u4 const x2, u4 const y2)
+void GUIBox3D(u4 const x1, u4 const y1, u4 const x2, u4 const y2)
 {
 	GUIBox(x1, y1, x2, y2, 160);
 	GUIBox(x1, y1, x2, y1, 162);
@@ -78,7 +78,7 @@ static void GUIBox3D(u4 const x1, u4 const y1, u4 const x2, u4 const y2)
 }
 
 
-static void GUIOuttextShadowed(u4 const x, u4 const y, char const* const text)
+void GUIOuttextShadowed(u4 const x, u4 const y, char const* const text)
 {
 	GUIOuttext(x + 1, y + 1, text, 220 - 15);
 	GUIOuttext(x,     y,     text, 220);
