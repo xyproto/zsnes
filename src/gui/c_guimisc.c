@@ -31,6 +31,22 @@ void CalibrateDispA(void)
 }
 
 
+void CalibrateDispB(void)
+{
+	memset(pressed, 0, 256); // XXX Probably should be sizeof(pressed)
+	asm_call(GUIUnBuffer);
+	asm_call(DisplayBoxes);
+	asm_call(DisplayMenu);
+	GUIBox3D(75, 103, 192, 143);
+	GUIOuttextShadowed(80, 108, "PRESS THE BOTTOM");
+	GUIOuttextShadowed(80, 116, "RIGHT CORNER AND");
+	GUIOuttextShadowed(80, 124, "PRESS A BUTTON OR");
+	GUIOuttextShadowed(80, 132, "KEY");
+	asm_call(vidpastecopyscr);
+	asm_call(GUIWaitForKey);
+}
+
+
 void GUIDoReset(void)
 {
 #ifdef __MSDOS__

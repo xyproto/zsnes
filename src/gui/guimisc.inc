@@ -21,7 +21,7 @@
 
 ; Movie, Joystick setting (display) routines, SNES Reset Function
 
-EXTSYM CalibrateDispA
+EXTSYM CalibrateDispA, CalibrateDispB
 
 SECTION .bss
 NEWSYM MovieRecordWinVal, resb 1
@@ -30,41 +30,6 @@ NEWSYM MovieFileHand, resw 1
 NEWSYM RecData, resb 16
 NEWSYM NoPictureSave, resb 1
 
-SECTION .text
-
-CalibrateDispB:
-    xor ebx,ebx
-    mov ecx,256
-.a
-    mov byte[pressed+ebx],0
-    inc ebx
-    dec ecx
-    jnz .a
-    call GUIUnBuffer
-    call DisplayBoxes
-    call DisplayMenu
-    GUIBox 75,103,192,143,160
-    GUIBox 75,103,192,103,162
-    GUIBox 75,103,75,143,161
-    GUIBox 192,103,192,143,159
-    GUIBox 75,143,192,143,158
-    GUIOuttext 81,109,guicalberror4,220-15
-    GUIOuttext 80,108,guicalberror4,220
-    GUIOuttext 81,117,guicalberror5,220-15
-    GUIOuttext 80,116,guicalberror5,220
-    GUIOuttext 81,125,guicalberror6,220-15
-    GUIOuttext 80,124,guicalberror6,220
-    GUIOuttext 81,133,guicalberror7,220-15
-    GUIOuttext 80,132,guicalberror7,220
-    call vidpastecopyscr
-    call GUIWaitForKey
-    ret
-
-SECTION .data
-guicalberror4 db 'PRESS THE BOTTOM',0
-guicalberror5 db 'RIGHT CORNER AND',0
-guicalberror6 db 'PRESS A BUTTON OR',0
-guicalberror7 db 'KEY',0
 SECTION .text
 
 %macro ConfigureKey2 2
@@ -248,7 +213,7 @@ CalibrateDev1:
     mov [.joyblx],eax
     mov eax,[JoyY]
     mov [.joybly],eax
-    call CalibrateDispB
+    ccallv CalibrateDispB
     mov dx,201h
     call GetCoords
     jmp .procdir
@@ -268,7 +233,7 @@ CalibrateDev1:
     mov [.joyblx],eax
     mov eax,[JoyY]
     mov [.joybly],eax
-    call CalibrateDispB
+    ccallv CalibrateDispB
     mov dx,201h
     call GetCoords3
 .procdir
@@ -316,7 +281,7 @@ CalibrateDev1:
     mov [.joyblx],eax
     mov eax,[JoyY]
     mov [.joybly],eax
-    call CalibrateDispB
+    ccallv CalibrateDispB
     mov dx,209h
     call GetCoords
     jmp .procdir209
@@ -336,7 +301,7 @@ CalibrateDev1:
     mov [.joyblx],eax
     mov eax,[JoyY]
     mov [.joybly],eax
-    call CalibrateDispB
+    ccallv CalibrateDispB
     mov dx,209h
     call GetCoords3
 .procdir209
