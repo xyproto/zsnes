@@ -3,13 +3,14 @@
 
 #include "types.h"
 
+extern u4   Init_Mouse(void);
 extern void GUIDeInit();
 extern void GUIInit();
+extern void Get_MouseData();
 extern void Get_MousePositionDisplacement();
 extern void JoyRead();
 extern void vidpastecopyscr();
 
-extern u4 Init_Mouse(void);
 extern u1 GUIWFVID[];
 extern u4 NumVideoModes;
 

@@ -19,7 +19,7 @@
 
 
 
-EXTSYM guimencodermsg, guilamemsg
+EXTSYM guimencodermsg, guilamemsg, guiprevideo
 
 %ifdef __WIN32__
 EXTSYM MinimizeWindow
@@ -891,7 +891,7 @@ ProcessMouseButtons:
 GUIProcVideo:
   mov byte[GUICBHold],0
   mov byte[newengen],1
-  call guiprevideo
+  ccallv guiprevideo
   mov al,[cvidmode]
   mov [.prevvid],al
   mov al,[GUIcurrentvideocursloc]

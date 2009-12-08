@@ -12,6 +12,7 @@
 #include "../effects/water.h"
 #include "../endmem.h"
 #include "../intrf.h"
+#include "../macros.h"
 #include "../ui.h"
 #include "../vcache.h"
 #include "../video/makevid.h"
@@ -457,6 +458,66 @@ void guilamemsg(void)
 		asm_call(JoyRead);
 	}
 	while (pressed[0x39] == 0);
+}
+
+
+void guiprevideo(void)
+{
+	static char const guiprevidmsg1[] = "ZSNES WILL NOW ATTEMPT";
+	static char const guiprevidmsg2[] = " TO CHANGE YOUR VIDEO";
+	static char const guiprevidmsg3[] = " MODE.  IF THE CHANGE";
+	static char const guiprevidmsg4[] = "IS UNSUCCESSFUL,  WAIT";
+	static char const guiprevidmsg5[] = " 10 SECONDS AND VIDEO";
+	static char const guiprevidmsg6[] = "MODE WILL BE RESTORED.";
+	static char const guiprevidmsg7[] = "    PRESS ANY KEY.";
+
+	memset(pressed, 0, 256); // XXX maybe should be sizeof(pressed)
+
+	asm_call(GUIUnBuffer);
+	asm_call(DisplayBoxes);
+	asm_call(DisplayMenu);
+	GUIBox( 43,  90, 213, 163, 160);
+	GUIBox( 43,  90, 213,  90, 162);
+	GUIBox( 43,  90,  43, 163, 161);
+	GUIBox(213,  90, 213, 163, 159);
+	GUIBox( 43, 163, 213, 163, 158);
+	GUIOuttext(56,  96, guiprevidmsg1, 220 - 15);
+	GUIOuttext(55,  95, guiprevidmsg1, 220);
+	GUIOuttext(56, 104, guiprevidmsg2, 220 - 15);
+	GUIOuttext(55, 103, guiprevidmsg2, 220);
+	GUIOuttext(56, 112, guiprevidmsg3, 220 - 15);
+	GUIOuttext(55, 111, guiprevidmsg3, 220);
+	GUIOuttext(56, 120, guiprevidmsg4, 220 - 15);
+	GUIOuttext(55, 119, guiprevidmsg4, 220);
+	GUIOuttext(56, 128, guiprevidmsg5, 220 - 15);
+	GUIOuttext(55, 127, guiprevidmsg5, 220);
+	GUIOuttext(56, 136, guiprevidmsg6, 220 - 15);
+	GUIOuttext(55, 135, guiprevidmsg6, 220);
+	GUIOuttext(56, 151, guiprevidmsg7, 220 - 15);
+	GUIOuttext(55, 150, guiprevidmsg7, 220);
+	asm_call(vidpastecopyscr);
+	pressed[0x2C] = 0; // XXX redundant
+	for (;;)
+	{
+		asm_call(JoyRead);
+
+		for (u1* i = pressed; i != endof(pressed); ++i)
+		{
+			if (*i == 0) continue;
+			*i = 0;
+			return;
+		}
+
+		if (MouseDis != 1)
+		{
+			u4 ebx;
+			asm("call *%1" : "=b" (ebx) : "r" (Get_MouseData) : "cc", "memory", "ecx", "edx");
+			if (lhguimouse == 1)
+				asm("call *%1" : "+b" (ebx) : "r" (SwapMouseButtons) : "cc");
+			if (ebx & 0x01)
+				return;
+		}
+	}
 }
 
 
