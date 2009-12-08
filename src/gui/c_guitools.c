@@ -5,7 +5,7 @@
 #include "gui.h"
 
 
-void GUIoutputchar(u1* dst, u1 const glyph)
+static void GUIoutputchar(u1* dst, u1 const glyph)
 {
 	// XXX better variable names
 	// Font Setup (Menus)

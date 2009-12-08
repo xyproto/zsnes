@@ -19,7 +19,7 @@
 
 ; Tools for the GUI (string functions are also used elsewhere)
 
-EXTSYM GUIoutputchar
+EXTSYM GUIOutputString
 
 SECTION .text
 
@@ -107,24 +107,6 @@ NEWSYM ConcatString
   popad
   ret
 
-GUIOutputString:
-  push edx
-.more
-  movzx eax,byte [edi]
-  test eax, eax
-  jz .nomore
-  movzx eax,byte [ASCII2Font+eax]
-  push eax
-  push esi
-  call GUIoutputchar
-  add esp, 8
-  add esi,6
-  inc edi
-  jmp .more
-.nomore
-  pop edx
-  ret
-
 %macro GUIOuttext 4
   mov edi,%2
   mov esi,edi
@@ -134,9 +116,9 @@ GUIOutputString:
   add esi,[vidbuffer]
   add esi,%1
   add esi,16
-  mov edi,%3
   mov byte[GUItextcolor],%4
-  call GUIOutputString
+  ccall GUIOutputString, esi, %3
+  mov edi, eax
 %endmacro
 
 GUIDrawBox:
