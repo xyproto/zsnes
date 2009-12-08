@@ -68,6 +68,16 @@ static void loadmenuopen(u4 const param1) // XXX better parameter name
 }
 
 
+static void GUIBox3D(u4 const x1, u4 const y1, u4 const x2, u4 const y2)
+{
+	GUIBox(x1, y1, x2, y2, 160);
+	GUIBox(x1, y1, x2, y1, 162);
+	GUIBox(x1, y1, x1, y2, 161);
+	GUIBox(x2, y1, x2, y2, 159);
+	GUIBox(x1, y2, x2, y2, 158);
+}
+
+
 static char const guiftimemsg8[] = "PRESS SPACEBAR TO PROCEED.";
 
 
@@ -86,11 +96,7 @@ static void guifirsttimemsg(void)
 
 	do
 	{
-		GUIBox( 43,  75, 213, 163, 160);
-		GUIBox( 43,  75, 213,  75, 162);
-		GUIBox( 43,  75,  43, 163, 161);
-		GUIBox(213,  75, 213, 163, 159);
-		GUIBox( 43, 163, 213, 163, 158);
+		GUIBox3D(43, 75, 213, 163);
 		GUIOuttext(52,  81, guiftimemsg1, 220 - 15);
 		GUIOuttext(51,  80, guiftimemsg1, 220);
 		GUIOuttext(52,  96, guiftimemsg2, 220 - 15);
@@ -126,11 +132,7 @@ static void horizonfixmsg(void)
 
 	do
 	{
-		GUIBox( 43,  75, 213, 163, 160);
-		GUIBox( 43,  75, 213,  75, 162);
-		GUIBox( 43,  75,  43, 163, 161);
-		GUIBox(213,  75, 213, 163, 159);
-		GUIBox( 43, 163, 213, 163, 158);
+		GUIBox3D(43, 75, 213, 163);
 		GUIOuttext(52, 81, guimsgmsg,   220 - 15);
 		GUIOuttext(51, 80, guimsgmsg,   220);
 		char const* msg = guimsgptr;
@@ -413,11 +415,7 @@ void guimencodermsg(void)
 
 	do
 	{
-		GUIBox( 43,  75, 213, 163, 160);
-		GUIBox( 43,  75, 213,  75, 162);
-		GUIBox( 43,  75,  43, 163, 161);
-		GUIBox(213,  75, 213, 163, 159);
-		GUIBox( 43, 163, 213, 163, 158);
+		GUIBox3D(43, 75, 213, 163);
 		GUIOuttext(52, 96, guimencodert1, 220 - 15);
 		GUIOuttext(51, 95, guimencodert1, 220);
 		GUIOuttext(52, 134, guimencodert2, 220 - 15);
@@ -442,11 +440,7 @@ void guilamemsg(void)
 
 	do
 	{
-		GUIBox( 43,  75, 213, 163, 160);
-		GUIBox( 43,  75, 213,  75, 162);
-		GUIBox( 43,  75,  43, 163, 161);
-		GUIBox(213,  75, 213, 163, 159);
-		GUIBox( 43, 163, 213, 163, 158);
+		GUIBox3D(43, 75, 213, 163);
 		GUIOuttext(52, 96, guilamet1, 220 - 15);
 		GUIOuttext(51, 95, guilamet1, 220);
 		GUIOuttext(52,134, guilamet2, 220 - 15);
@@ -476,11 +470,7 @@ void guiprevideo(void)
 	asm_call(GUIUnBuffer);
 	asm_call(DisplayBoxes);
 	asm_call(DisplayMenu);
-	GUIBox( 43,  90, 213, 163, 160);
-	GUIBox( 43,  90, 213,  90, 162);
-	GUIBox( 43,  90,  43, 163, 161);
-	GUIBox(213,  90, 213, 163, 159);
-	GUIBox( 43, 163, 213, 163, 158);
+	GUIBox3D(43, 90, 213, 163);
 	GUIOuttext(56,  96, guiprevidmsg1, 220 - 15);
 	GUIOuttext(55,  95, guiprevidmsg1, 220);
 	GUIOuttext(56, 104, guiprevidmsg2, 220 - 15);
