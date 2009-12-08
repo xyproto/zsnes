@@ -18,6 +18,8 @@
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 
+EXTSYM guicheaterror
+
 SECTION .text
 
 ; GUI Cheat Code Routines
@@ -644,7 +646,8 @@ ProcessCheatCode:
     cmp byte[GUICheatPosA],14
     je near .gf
 .invalidpar
-    jmp guicheaterror
+    ccallv guicheaterror
+    ret
 .par
     ; check if code is valid
     mov eax,GUICheatTextZ1
@@ -665,7 +668,8 @@ ProcessCheatCode:
     jnz .looppar
     jmp decodepar
 .invalidgg
-    jmp guicheaterror
+    ccallv guicheaterror
+    ret
 .gg
     ; check if code is valid
     mov eax,GUICheatTextZ1
@@ -694,7 +698,8 @@ ProcessCheatCode:
     jmp decodegg
     ret
 .invalidgf
-    jmp guicheaterror
+    ccallv guicheaterror
+    ret
 .gf
     ; check if code is valid
     mov eax,GUICheatTextZ1

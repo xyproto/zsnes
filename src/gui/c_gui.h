@@ -7,6 +7,7 @@ void StartGUI(void);
 void guimencodermsg(void);
 void guilamemsg(void);
 void guiprevideo(void);
+void guicheaterror(void);
 void GUIMenuDisplay(u4 n_cols, u4 n_rows, u1* dst, char const* text);
 
 #endif

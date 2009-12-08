@@ -3,9 +3,11 @@
 
 #include "types.h"
 
+extern u4   Check_Key(void);
 extern u4   Init_Mouse(void);
 extern void GUIDeInit();
 extern void GUIInit();
+extern void Get_Key();
 extern void Get_MouseData();
 extern void Get_MousePositionDisplacement();
 extern void JoyRead();

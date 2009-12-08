@@ -428,6 +428,26 @@ void guilamemsg(void)
 }
 
 
+static u1* GetAnyPressedKey(void)
+{
+	for (u1* i = pressed; i != endof(pressed); ++i)
+		if (*i != 0) return i;
+	return 0;
+}
+
+
+static u4 GetMouseButtons(void)
+{
+	if (MouseDis == 1) return 0;
+
+	u4 ebx;
+	asm("call *%1" : "=b" (ebx) : "r" (Get_MouseData) : "cc", "memory", "ecx", "edx");
+	if (lhguimouse == 1)
+		asm("call *%1" : "+b" (ebx) : "r" (SwapMouseButtons) : "cc");
+	return ebx;
+}
+
+
 void guiprevideo(void)
 {
 	memset(pressed, 0, 256); // XXX maybe should be sizeof(pressed)
@@ -449,23 +469,42 @@ void guiprevideo(void)
 	{
 		asm_call(JoyRead);
 
-		for (u1* i = pressed; i != endof(pressed); ++i)
+		u1* const key = GetAnyPressedKey();
+		if (key)
 		{
-			if (*i == 0) continue;
-			*i = 0;
+			*key = 0;
 			return;
 		}
-
-		if (MouseDis != 1)
-		{
-			u4 ebx;
-			asm("call *%1" : "=b" (ebx) : "r" (Get_MouseData) : "cc", "memory", "ecx", "edx");
-			if (lhguimouse == 1)
-				asm("call *%1" : "+b" (ebx) : "r" (SwapMouseButtons) : "cc");
-			if (ebx & 0x01)
-				return;
-		}
+		if (GetMouseButtons() & 0x01) return;
 	}
+}
+
+
+void guicheaterror(void)
+{
+	memset(pressed, 0, sizeof(pressed));
+
+	for (;;)
+	{
+		asm_call(GUIUnBuffer);
+		asm_call(DisplayBoxes);
+		asm_call(DisplayMenu);
+		GUIBox3D(75, 95, 192, 143);
+		GUIOuttextShadowed(80, 100, "INVALID CODE!  YOU");
+		GUIOuttextShadowed(80, 108, "MUST ENTER A VALID");
+		GUIOuttextShadowed(80, 116, "GAME GENIE,PAR, OR");
+		GUIOuttextShadowed(80, 124, "GOLD FINGER CODE.");
+		GUIOuttextShadowed(80, 134, "PRESS ANY KEY.");
+		asm_call(vidpastecopyscr);
+		asm_call(JoyRead);
+
+		if (GetAnyPressedKey())       break;
+		if (GetMouseButtons() & 0x01) break;
+	}
+	while ((u1)Check_Key() != 0) // XXX asm_call
+		asm_call(Get_Key);
+	GUIcurrentcheatwin = 1;
+	GUIpclicked        = 1;
 }
 
 
