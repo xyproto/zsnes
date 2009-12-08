@@ -9,7 +9,6 @@ extern void DrawSnow();
 extern void GUIUnBuffer();
 extern void InitGUI();
 extern void LoadDetermine();
-extern void guifirsttimemsg();
 extern void horizonfixmsg();
 
 extern char* GUICMessage;

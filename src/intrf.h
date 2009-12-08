@@ -6,6 +6,7 @@
 extern void GUIDeInit();
 extern void GUIInit();
 extern void Get_MousePositionDisplacement();
+extern void JoyRead();
 extern void vidpastecopyscr();
 
 extern u4 Init_Mouse(void);

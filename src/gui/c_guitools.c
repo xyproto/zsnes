@@ -1,3 +1,5 @@
+#include <string.h>
+
 #include "../cfg.h"
 #include "../ui.h"
 #include "../video/procvid.h"
@@ -44,4 +46,24 @@ void GUIOuttext(u4 const x, u4 const y, char const* const text, u1 const colour)
 	GUItextcolor[0] = colour;
 	u1* const dst = vidbuffer + y * 288 + x + 16;
 	GUIOutputString(dst, text);
+}
+
+
+static void GUIDrawBox(u1* dst, u4 const w, u4 h, u1 const colour)
+{
+	do
+	{
+		memset(dst, colour, w);
+		dst += 288;
+	}
+	while (--h != 0);
+}
+
+
+void GUIBox(u4 const x1, u4 const y1, u4 const x2, u4 const y2, u1 const colour)
+{
+	u1* const dst = vidbuffer + x1 + y1 * 288 + 16;
+	u4  const w   = x2 - x1 + 1;
+	u4  const h   = y2 - y1 + 1;
+	GUIDrawBox(dst, w, h, colour);
 }

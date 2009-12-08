@@ -64,6 +64,53 @@ static void loadmenuopen(u4 const param1) // XXX better parameter name
 }
 
 
+static void guifirsttimemsg(void)
+{
+	static char const guiftimemsg1[] = " ONE-TIME USER REMINDER : ";
+	static char const guiftimemsg2[] = "  PLEASE BE SURE TO READ  ";
+	static char const guiftimemsg3[] = "THE DOCUMENTATION INCLUDED";
+	static char const guiftimemsg4[] = " WITH ZSNES FOR IMPORTANT";
+	static char const guiftimemsg5[] = " INFORMATION AND ANSWERS";
+	static char const guiftimemsg6[] = "    TO COMMON PROBLEMS";
+	static char const guiftimemsg7[] = "      AND QUESTIONS.";
+	static char const guiftimemsg8[] = "PRESS SPACEBAR TO PROCEED.";
+
+	memset(pressed, 0, 256); // XXX maybe should be sizeof(pressed)
+	pressed[0x2C] = 0; // XXX redundant
+
+	do
+	{
+		GUIBox( 43,  75, 213, 163, 160);
+		GUIBox( 43,  75, 213,  75, 162);
+		GUIBox( 43,  75,  43, 163, 161);
+		GUIBox(213,  75, 213, 163, 159);
+		GUIBox( 43, 163, 213, 163, 158);
+		GUIOuttext(52,  81, guiftimemsg1, 220 - 15);
+		GUIOuttext(51,  80, guiftimemsg1, 220);
+		GUIOuttext(52,  96, guiftimemsg2, 220 - 15);
+		GUIOuttext(51,  95, guiftimemsg2, 220);
+		GUIOuttext(52, 104, guiftimemsg3, 220 - 15);
+		GUIOuttext(51, 103, guiftimemsg3, 220);
+		GUIOuttext(52, 112, guiftimemsg4, 220 - 15);
+		GUIOuttext(51, 111, guiftimemsg4, 220);
+		GUIOuttext(52, 120, guiftimemsg5, 220 - 15);
+		GUIOuttext(51, 119, guiftimemsg5, 220);
+		GUIOuttext(52, 128, guiftimemsg6, 220 - 15);
+		GUIOuttext(51, 127, guiftimemsg6, 220);
+		GUIOuttext(52, 136, guiftimemsg7, 220 - 15);
+		GUIOuttext(51, 135, guiftimemsg7, 220);
+		GUIOuttext(52, 151, guiftimemsg8, 220 - 15);
+		GUIOuttext(51, 150, guiftimemsg8, 220);
+		asm_call(vidpastecopyscr);
+		asm_call(GUIUnBuffer);
+		asm_call(DisplayBoxes);
+		asm_call(DisplayMenu);
+		asm_call(JoyRead);
+	}
+	while (pressed[0x39] == 0);
+}
+
+
 void StartGUI(void)
 {
 	static u1 MouseInitOkay = 0;
@@ -253,7 +300,7 @@ void StartGUI(void)
 		if (MouseDis != 1) asm_call(DrawMouse);
 		if (FirstTimeData == 0)
 		{
-			asm_call(guifirsttimemsg);
+			guifirsttimemsg();
 			FirstTimeData = 1;
 		}
 		if (!guimsgptr && (GetDate() & 0xFFFF) == 0x0401)

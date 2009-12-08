@@ -825,58 +825,6 @@ guimencodert2 db 'PRESS SPACE TO PROCEED',0
 guilamet1 db ' LAME IS MISSING: ',0
 guilamet2 db 'PRESS SPACE TO PROCEED',0
 
-SECTION .text
-
-NEWSYM guifirsttimemsg
-  xor ebx,ebx
-  mov ecx,256
-.a
-  mov byte[pressed+ebx],0
-  inc ebx
-  dec ecx
-  jnz .a
-  mov byte[pressed+2Ch],0
-.again
-  GUIBox 43,75,213,163,160
-  GUIBox 43,75,213,75,162
-  GUIBox 43,75,43,163,161
-  GUIBox 213,75,213,163,159
-  GUIBox 43,163,213,163,158
-  GUIOuttext 52,81,guiftimemsg1,220-15
-  GUIOuttext 51,80,guiftimemsg1,220
-  GUIOuttext 52,96,guiftimemsg2,220-15
-  GUIOuttext 51,95,guiftimemsg2,220
-  GUIOuttext 52,104,guiftimemsg3,220-15
-  GUIOuttext 51,103,guiftimemsg3,220
-  GUIOuttext 52,112,guiftimemsg4,220-15
-  GUIOuttext 51,111,guiftimemsg4,220
-  GUIOuttext 52,120,guiftimemsg5,220-15
-  GUIOuttext 51,119,guiftimemsg5,220
-  GUIOuttext 52,128,guiftimemsg6,220-15
-  GUIOuttext 51,127,guiftimemsg6,220
-  GUIOuttext 52,136,guiftimemsg7,220-15
-  GUIOuttext 51,135,guiftimemsg7,220
-  GUIOuttext 52,151,guiftimemsg8,220-15
-  GUIOuttext 51,150,guiftimemsg8,220
-  call vidpastecopyscr
-  call GUIUnBuffer
-  call DisplayBoxes
-  call DisplayMenu
-  call JoyRead
-  cmp byte[pressed+39h],0
-  jne .pressedokay
-  jmp .again
-.pressedokay
-  ret
-
-SECTION .data
-guiftimemsg1 db ' ONE-TIME USER REMINDER : ',0
-guiftimemsg2 db '  PLEASE BE SURE TO READ  ',0
-guiftimemsg3 db 'THE DOCUMENTATION INCLUDED',0
-guiftimemsg4 db ' WITH ZSNES FOR IMPORTANT',0
-guiftimemsg5 db ' INFORMATION AND ANSWERS',0
-guiftimemsg6 db '    TO COMMON PROBLEMS',0
-guiftimemsg7 db '      AND QUESTIONS.',0
 guiftimemsg8 db 'PRESS SPACEBAR TO PROCEED.',0
 SECTION .text
 
