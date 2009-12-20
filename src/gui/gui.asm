@@ -206,18 +206,6 @@ EXTSYM allow_glvsync
 
 SECTION .data
 
-;The first byte is the number of fields on the right not including the seperators
-NEWSYM MenuDat1, db 12, 3,1,1,1,1,1,1,1,1,1,0,1,2,0
-NEWSYM MenuDat2, db 8,  3,1,1,0,1,1,1,0,2,0
-NEWSYM MenuDat3, db 10, 3,0,1,1,0,1,1,1,1,1,2,0
-NEWSYM MenuDat4, db 2,  3,1,2,0
-%ifndef __MSDOS__
-NEWSYM MenuDat5, db 0,  2,0,0
-%else
-NEWSYM MenuDat5, db 1,  3,2,0
-%endif
-NEWSYM MenuDat6, db 6,  3,1,1,1,1,0,2,0
-
 NEWSYM GUIPrevMenuData,
   db 1,'1.                            ',0
   db 1,'2.                            ',0

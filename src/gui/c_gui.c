@@ -37,6 +37,18 @@
 #endif
 
 
+// The first byte is the number of fields on the right not including the seperators
+static u1 MenuDat1[] = { 12, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 2, 0 };
+static u1 MenuDat2[] = {  8, 3, 1, 1, 0, 1, 1, 1, 0, 2, 0 };
+static u1 MenuDat3[] = { 10, 3, 0, 1, 1, 0, 1, 1, 1, 1, 1, 2, 0 };
+static u1 MenuDat4[] = {  2, 3, 1, 2, 0 };
+#ifndef __MSDOS__
+static u1 MenuDat5[] = {  0, 2, 0, 0 };
+#else
+static u1 MenuDat5[] = {  1, 3, 2, 0 };
+#endif
+static u1 MenuDat6[] = {  6, 3, 1, 1, 1, 1, 0, 2, 0 };
+
 static char const* guimsgptr;
 
 
