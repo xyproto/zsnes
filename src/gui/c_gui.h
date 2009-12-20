@@ -8,6 +8,7 @@ void guimencodermsg(void);
 void guilamemsg(void);
 void guiprevideo(void);
 void guicheaterror(void);
+void DisplayBoxes(void);
 void DisplayMenu(void);
 
 void GUIBox3D(u4 const x1, u4 const y1, u4 const x2, u4 const y2);

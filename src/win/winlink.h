@@ -82,7 +82,7 @@ extern "C" {
   char CheckTVRatioReq();
   void KeepTVRatio();
 
-  void CheckAlwaysOnTop();
+  void CheckAlwaysOnTop(void);
   void DisplayWIPDisclaimer(void);
   void WinUpdateDevices(void);
 

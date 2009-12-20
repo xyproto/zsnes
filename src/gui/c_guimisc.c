@@ -20,7 +20,7 @@ void CalibrateDispA(void)
 {
 	memset(pressed, 0, 256); // XXX Probably should be sizeof(pressed)
 	asm_call(GUIUnBuffer);
-	asm_call(DisplayBoxes);
+	DisplayBoxes();
 	DisplayMenu();
 	GUIBox3D(75, 103, 192, 135);
 	GUIOuttextShadowed(80, 108, "PRESS THE TOP LEFT");
@@ -35,7 +35,7 @@ void CalibrateDispB(void)
 {
 	memset(pressed, 0, 256); // XXX Probably should be sizeof(pressed)
 	asm_call(GUIUnBuffer);
-	asm_call(DisplayBoxes);
+	DisplayBoxes();
 	DisplayMenu();
 	GUIBox3D(75, 103, 192, 143);
 	GUIOuttextShadowed(80, 108, "PRESS THE BOTTOM");

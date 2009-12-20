@@ -967,7 +967,7 @@ GUIOuttextwin2 %1,%2-1,%3-1,%4
 %endmacro
 
 ; DGUIDisplay
-DisplayGUILoad:
+NEWSYM DisplayGUILoad
   GUIDrawWindowBox 1,GUILoadDisp
 
   GUIDisplayText 1,21,166,GUILoadText3
@@ -1225,7 +1225,7 @@ NEWSYM GUILoadPos, resb 1
 
 SECTION .text
 
-DisplayGUIReset:              ; Reset Confirmation
+NEWSYM DisplayGUIReset              ; Reset Confirmation
   GUIDrawWindowBox 12,GUIResetDisp
 
   cmp byte[GUIWincoladd],0         ;Red Box around buttons
@@ -1258,7 +1258,7 @@ GUIResetText3 db 'NO',0
 
 SECTION .text
 
-DisplayGUIStates:                         ; Save/Load State Confirmation
+NEWSYM DisplayGUIStates                         ; Save/Load State Confirmation
   GUIDrawWindowBox 14,GUIStatesDisp
 
   cmp byte[GUIWincoladd],0             ; Red Box around buttons
@@ -1299,7 +1299,7 @@ GUIStatesText5 db 0
 
 SECTION .text
 
-DisplayGUIChoseSave:                    ; Pick Save State
+NEWSYM DisplayGUIChoseSave                    ; Pick Save State
   GUIDrawWindowBox 2,GUIStateSelDisp
 
   GUIDisplayTextY 2,6,16,GUIChoseSaveText1
@@ -1504,7 +1504,7 @@ SECTION .text
   DGOptnsDrawBox2 %1,%2,[GUIInputTextE]
 %endmacro
 
-DisplayGUIInput:    ; Player Select, Joystick/keyboard Type List, Button Assignments
+NEWSYM DisplayGUIInput    ; Player Select, Joystick/keyboard Type List, Button Assignments
 
   GUIDrawWindowBox 3,GUIInputDisp
   mov eax,[GUIInputTabs]
@@ -1753,7 +1753,7 @@ GUIcurrentinputcursloc resd 1
 
 SECTION .text
 
-DisplayGUIOption:       ; Emu Options
+NEWSYM DisplayGUIOption       ; Emu Options
   GUIDrawWindowBox 4,GUIOptionDisp
   GUIDrawTArea 4
   GUIDrawTabs GUIOptionTabs
@@ -1904,7 +1904,7 @@ SECTION .text
   mov esi,%2
 %endmacro
 
-DisplayGUIVideo:
+NEWSYM DisplayGUIVideo
 %ifdef __MSDOS__
   cmp byte[TripBufAvail],0        ; Check features
   jne .notexttb
@@ -2462,7 +2462,7 @@ SECTION .text
   mov esi,%2
 %endmacro
 
-DisplayGUISound:                     ; Sound Related Options
+NEWSYM DisplayGUISound                     ; Sound Related Options
   GUIDrawWindowBox 6,GUISoundDisp
 
   GUIDisplayTextY 6,6,16,GUISoundTextA
@@ -2669,7 +2669,7 @@ DisplayGUICheatConv:
 %%skip
 %endmacro
 
-DisplayGUICheat:       ; Add/Browse Cheats menu
+NEWSYM DisplayGUICheat       ; Add/Browse Cheats menu
   GUIDrawWindowBox 7,GUICheatDisp
 
   GUIDisplayText 7,6,13,GUICheatTextA
@@ -2882,7 +2882,7 @@ CSAddFlash:
 .flash
   ret
 
-DisplayGUISearch:
+NEWSYM DisplayGUISearch
   cmp byte[CheatWinMode],1    ; Determine which CS window we're on
   je near Incheatmode
   cmp byte[CheatWinMode],2
@@ -3417,7 +3417,7 @@ TViewLoc resd 1
 
 SECTION .text
 
-DisplayNetOptns:
+NEWSYM DisplayNetOptns
   ret
 
 SECTION .bss
@@ -3427,7 +3427,7 @@ CurCStringPos resd 1
 
 SECTION .text
 
-DisplayGameOptns:        ; Misc Key Window
+NEWSYM DisplayGameOptns        ; Misc Key Window
   GUIDrawWindowBox 9,GUIGameDisp
 
   GUIDisplayTextY 9,6,16,GUIGameOptnsTextA
@@ -3588,7 +3588,7 @@ SECTION .text
   mov esi,%2
 %endmacro
 
-DisplayGUIOptns:              ; GUI Options
+NEWSYM DisplayGUIOptns              ; GUI Options
 %ifdef __WIN32__              ; If Windows, extend window down
   mov dword[GUIwinsizey+10*4],192
 %endif
@@ -3718,7 +3718,7 @@ GUIGUIOptnsTextE6 db 'SMOKE',0
 
 SECTION .text
 
-DisplayGUIAbout:          ; Displays the About Box
+NEWSYM DisplayGUIAbout          ; Displays the About Box
   ;This will attach compile date onto the end of GUIGUIAboutText1
   mov eax,GUIGUIAboutTextA1
   mov [VERSION_STR],eax
@@ -3799,7 +3799,7 @@ GUIGUIAboutTextFb db 'TO THE ABOUT BOX',0
 
 SECTION .text
 
-DisplayGUIMovies:    ; Movie Record/Playback options
+NEWSYM DisplayGUIMovies    ; Movie Record/Playback options
   GUIDrawWindowBox 15,GUIMovieDisp   ; Display Window
   GUIDrawTArea 15
 
@@ -4081,7 +4081,7 @@ SECTION .text
 ; Key types: Up, Down, Left, Right, A, B, X, Y, L, R (Press/Relase/P+R)
 ; Frame delays: 1 frame, 2, 3, 4, 5, 1 sec., 2, 3 ,4 ,5
 
-DisplayGUICombo:
+NEWSYM DisplayGUICombo
   mov eax,[GUIccombcursloc]
   cmp [GUIccomblcursloc],eax
   je .nolastcurschange
@@ -4623,7 +4623,7 @@ EEMode:
   mov eax,0
   ret
 
-DisplayGUIAddOns:                   ;Select Special Controllers
+NEWSYM DisplayGUIAddOns                   ;Select Special Controllers
   GUIDrawWindowBox 17,GUIAddOnsDisp
 
   call EEMode
@@ -4748,7 +4748,7 @@ GUIAddOnEETopBar db 84,79,65,83,84,69,82,32,79,80,84,73,79,78,83,0
 
 SECTION .text
 
-DisplayGUIChipConfig:
+NEWSYM DisplayGUIChipConfig
   GUIDrawWindowBox 18,GUIChipConfigDisp
 
   call EEMode                     ; You know it!
@@ -4793,7 +4793,7 @@ GUIChipText7Alt db 67,65,84,83,85,80,0
 
 SECTION .text
 
-DisplayGUIPaths:
+NEWSYM DisplayGUIPaths
   GUIDrawWindowBox 19,GUIPathsDisp
   GUIDrawTArea 19
   GUIDrawTabs GUIPathTabs
@@ -4910,7 +4910,7 @@ GUICustomResTextPtr dd GUICustomX,GUICustomY
 
 SECTION .text
 
-DisplayGUISave:                    ;Save & Rewind options/Hotkeys
+NEWSYM DisplayGUISave                    ;Save & Rewind options/Hotkeys
   GUIDrawWindowBox 20,GUISaveDisp
 
   GUIDisplayText 20,8,19,GUISaveTextA1           ; Text
@@ -5075,7 +5075,7 @@ SECTION .text
 %%done
 %endmacro
 
-DisplayGUISpeed:                    ;Speed Options
+NEWSYM DisplayGUISpeed                    ;Speed Options
   GUIDrawWindowBox 21,GUISpeedDisp
 
   cmp byte[frameskip],0

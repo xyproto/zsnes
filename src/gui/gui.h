@@ -3,7 +3,6 @@
 
 #include "../types.h"
 
-extern void DisplayBoxes();
 extern void DrawSnow();
 extern void GUIUnBuffer();
 extern void InitGUI();
@@ -40,6 +39,7 @@ extern u1    MousePRClick;
 extern u1    OkaySC;
 extern u1    ShowTimer;
 extern u1    SnowVelDist[800];
+extern u1    cwindrawn;
 extern u1*   GUICYLocPtr;
 extern u2    PrevResoln;
 extern u2    SnowData[800];

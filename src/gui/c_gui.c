@@ -36,6 +36,10 @@
 #	include "../linux/sdlintrf.h"
 #endif
 
+#ifdef __WIN32__
+#	include "../win/winlink.h"
+#endif
+
 
 // The first byte is the number of fields on the right not including the seperators
 static u1 MenuDat1[] = { 12, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 2, 0 };
@@ -118,7 +122,7 @@ static void guifirsttimemsg(void)
 		GUIOuttextShadowed(51, 150, guiftimemsg8);
 		asm_call(vidpastecopyscr);
 		asm_call(GUIUnBuffer);
-		asm_call(DisplayBoxes);
+		DisplayBoxes();
 		DisplayMenu();
 		asm_call(JoyRead);
 	}
@@ -146,7 +150,7 @@ static void horizonfixmsg(void)
 		GUIOuttextShadowed(51, 150, guiftimemsg8);
 		asm_call(vidpastecopyscr);
 		asm_call(GUIUnBuffer);
-		asm_call(DisplayBoxes);
+		DisplayBoxes();
 		DisplayMenu();
 		asm_call(JoyRead);
 	}
@@ -331,7 +335,7 @@ void StartGUI(void)
 			}
 		}
 
-		asm_call(DisplayBoxes);
+		DisplayBoxes();
 
 		if (GUIEditStringLstb == 1)
 		{
@@ -412,7 +416,7 @@ void guimencodermsg(void)
 		GUIOuttextShadowed(51, 133, "PRESS SPACE TO PROCEED");
 		asm_call(vidpastecopyscr);
 		asm_call(GUIUnBuffer);
-		asm_call(DisplayBoxes);
+		DisplayBoxes();
 		DisplayMenu();
 		asm_call(JoyRead);
 	}
@@ -432,7 +436,7 @@ void guilamemsg(void)
 		GUIOuttextShadowed(51,133, "PRESS SPACE TO PROCEED");
 		asm_call(vidpastecopyscr);
 		asm_call(GUIUnBuffer);
-		asm_call(DisplayBoxes);
+		DisplayBoxes();
 		DisplayMenu();
 		asm_call(JoyRead);
 	}
@@ -465,7 +469,7 @@ void guiprevideo(void)
 	memset(pressed, 0, 256); // XXX maybe should be sizeof(pressed)
 
 	asm_call(GUIUnBuffer);
-	asm_call(DisplayBoxes);
+	DisplayBoxes();
 	DisplayMenu();
 	GUIBox3D(43, 90, 213, 163);
 	GUIOuttextShadowed(55,  95, "ZSNES WILL NOW ATTEMPT");
@@ -499,7 +503,7 @@ void guicheaterror(void)
 	for (;;)
 	{
 		asm_call(GUIUnBuffer);
-		asm_call(DisplayBoxes);
+		DisplayBoxes();
 		DisplayMenu();
 		GUIBox3D(75, 95, 192, 143);
 		GUIOuttextShadowed(80, 100, "INVALID CODE!  YOU");
@@ -517,6 +521,49 @@ void guicheaterror(void)
 		asm_call(Get_Key);
 	GUIcurrentcheatwin = 1;
 	GUIpclicked        = 1;
+}
+
+
+// Displays window when item is clicked
+void DisplayBoxes(void)
+{
+	{ u4 i = 0;
+		while (GUIwinorder[i] != 0) ++i;
+		cwindrawn = i - 1;
+	}
+	for (u1 const* i = GUIwinorder;; --cwindrawn, ++i)
+	{
+		switch (*i)
+		{
+			case  0: return;
+			case  1: if (GUIReset != 1) asm_call(DisplayGUILoad); break;
+			case  2: asm_call(DisplayGUIChoseSave);  break;
+			case  3: asm_call(DisplayGUIInput);      break;
+			case  4: asm_call(DisplayGUIOption);     break;
+			case  5: asm_call(DisplayGUIVideo);      break;
+			case  6: asm_call(DisplayGUISound);      break;
+			case  7: asm_call(DisplayGUICheat);      break;
+			case  8: asm_call(DisplayNetOptns);      break;
+			case  9: asm_call(DisplayGameOptns);     break;
+			case 10:
+				asm_call(DisplayGUIOptns);
+#ifdef __WIN32__
+				CheckAlwaysOnTop();
+#endif
+				break;
+			case 11: asm_call(DisplayGUIAbout);      break;
+			case 12: asm_call(DisplayGUIReset);      break;
+			case 13: asm_call(DisplayGUISearch);     break;
+			case 14: asm_call(DisplayGUIStates);     break;
+			case 15: asm_call(DisplayGUIMovies);     break;
+			case 16: asm_call(DisplayGUICombo);      break;
+			case 17: asm_call(DisplayGUIAddOns);     break;
+			case 18: asm_call(DisplayGUIChipConfig); break;
+			case 19: asm_call(DisplayGUIPaths);      break;
+			case 20: asm_call(DisplayGUISave);       break;
+			case 21: asm_call(DisplayGUISpeed);      break;
+		}
+	}
 }
 
 

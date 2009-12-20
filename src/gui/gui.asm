@@ -67,7 +67,7 @@ EXTSYM nssdip1,nssdip2,nssdip3,nssdip4,nssdip5,nssdip6
 EXTSYM SkipMovie,MovieStop,MoviePlay,MovieRecord
 EXTSYM MovieInsertChapter,MovieSeekAhead,MovieSeekBehind,ResetDuringMovie
 EXTSYM MovieDumpRaw,MovieAppend,AutoLoadCht,GUIQuickLoadUpdate,GUILoadData
-EXTSYM GUIDoReset,DisplayMenu
+EXTSYM GUIDoReset,DisplayMenu,DisplayBoxes
 
 EXTSYM GUIwinposx,GUIwinposy,maxskip,GUIEffect,hqFilter,En2xSaI,NTSCFilter
 EXTSYM NTSCBlend,NTSCHue,NTSCSat,NTSCCont,NTSCBright,NTSCSharp,NTSCRef
@@ -125,7 +125,7 @@ EXTSYM GUIJT_offset,GUIJT_viewable,GUIGenericJumpTo,SSAutoFire,SSPause
 EXTSYM numlockptr
 EXTSYM CheckOpenGL
 %elifdef __WIN32__
-EXTSYM initDirectDraw,reInitSound,CheckAlwaysOnTop,CheckPriority,AlwaysOnTop
+EXTSYM initDirectDraw,reInitSound,CheckPriority,AlwaysOnTop
 EXTSYM CheckScreenSaver,MouseWheel,TrapMouseCursor,AllowMultipleInst,TripleBufferWin
 EXTSYM HighPriority,SaveMainWindowPos,PrimaryBuffer
 EXTSYM CBBuffer,CBLength,PasteClipBoard,ctrlptr,PauseFocusChange
@@ -316,7 +316,7 @@ GUIHoldy     resd 1
 GUIHoldxm    resd 1
 GUIHoldym    resd 1
 GUIcolscaleval resd 1
-cwindrawn    resb 1
+NEWSYM cwindrawn,    resb 1
 GUIWincol    resd 1
 GUIWincoladd resd 1
 GUITemp      resd 1
@@ -759,7 +759,7 @@ guipostvideo:
 
 .pressedfail
   call GUIUnBuffer
-  call DisplayBoxes
+  ccallv DisplayBoxes
   ccallv DisplayMenu
   GUIBox 43,90,213,163,160
   GUIBox 43,90,213,90,162
@@ -854,7 +854,7 @@ guipostvideofail:
   dec ecx
   jnz .a
   call GUIUnBuffer
-  call DisplayBoxes
+  ccallv DisplayBoxes
   ccallv DisplayMenu
   GUIBox 43,90,213,163,160
   GUIBox 43,90,213,90,162
@@ -875,7 +875,7 @@ guipostvideofail:
   GUIOuttext 55,151,guipostvidmsg8b,220
   call vidpastecopyscr
   call GUIUnBuffer
-  call DisplayBoxes
+  ccallv DisplayBoxes
   ccallv DisplayMenu
   mov dword[GUIkeydelay],0FFFFFFFFh
   jmp guipostvideo.pressedfail
@@ -1133,143 +1133,6 @@ SECTION .data
 .message1 db 'CONFIGURATION FILES SAVED.',0
 NEWSYM savecfgforce, db 0
 SECTION .text
-
-NEWSYM DisplayBoxes                        ; Displays window when item is clicked
-  xor esi,esi
-.next2
-  mov al,[GUIwinorder+esi]
-  cmp al,0
-  je .done
-  inc esi
-  jmp .next2
-.done
-  mov eax,esi
-  dec eax
-  mov [cwindrawn],al
-  xor eax,eax
-  xor esi,esi
-.next
-  mov al,[GUIwinorder+esi]
-  cmp al,0
-  je near .nomore
-  push esi
-  cmp al,1
-  jne .noguiconfirm
-  cmp byte[GUIReset],1
-  je near .finstuff
-  call DisplayGUILoad
-  jmp .finstuff
-.noguiconfirm
-  cmp al,2
-  jne .noguichosesave
-  call DisplayGUIChoseSave
-  jmp .finstuff
-.noguichosesave
-  cmp al,3
-  jne .noguiinput
-  call DisplayGUIInput
-  jmp .finstuff
-.noguiinput
-  cmp al,4
-  jne .noguioption
-  call DisplayGUIOption
-  jmp .finstuff
-.noguioption
-  cmp al,5
-  jne .noguivideo
-  call DisplayGUIVideo
-  jmp .finstuff
-.noguivideo
-  cmp al,6
-  jne .noguisound
-  call DisplayGUISound
-  jmp .finstuff
-.noguisound
-  cmp al,7
-  jne .noguicheat
-  call DisplayGUICheat
-  jmp .finstuff
-.noguicheat
-  cmp al,8
-  jne .noguinet
-  call DisplayNetOptns
-  jmp .finstuff
-.noguinet
-  cmp al,9
-  jne .noguigameop
-  call DisplayGameOptns
-  jmp .finstuff
-.noguigameop
-  cmp al,10
-  jne .noguiconf
-  call DisplayGUIOptns
-%ifdef __WIN32__
-  ccallv CheckAlwaysOnTop
-%endif
-  jmp .finstuff
-.noguiconf
-  cmp al,11
-  jne .noguiconf2
-  call DisplayGUIAbout
-  jmp .finstuff
-.noguiconf2
-  cmp al,12
-  jne .noguireset
-  call DisplayGUIReset
-  jmp .finstuff
-.noguireset
-  cmp al,13
-  jne .noguisearch
-  call DisplayGUISearch
-  jmp .finstuff
-.noguisearch
-  cmp al,14
-  jne .noguistates
-  call DisplayGUIStates
-  jmp .finstuff
-.noguistates
-  cmp al,15
-  jne .noguimovies
-  call DisplayGUIMovies
-  jmp .finstuff
-.noguimovies
-  cmp al,16
-  jne .noguicombo
-  call DisplayGUICombo
-  jmp .finstuff
-.noguicombo
-  cmp al,17
-  jne .noaddon
-  call DisplayGUIAddOns
-  jmp .finstuff
-.noaddon
-  cmp al,18
-  jne .nochipconfig
-  call DisplayGUIChipConfig
-  jmp .finstuff
-.nochipconfig
-  cmp al,19
-  jne .nopaths
-  call DisplayGUIPaths
-  jmp .finstuff
-.nopaths
-  cmp al,20
-  jne .nosave
-  call DisplayGUISave
-  jmp .finstuff
-.nosave
-  cmp al,21
-  jne .nospeed
-  call DisplayGUISpeed
-  jmp .finstuff
-.nospeed
-.finstuff
-  pop esi
-  inc esi
-  dec byte[cwindrawn]
-  jmp .next
-.nomore
-  ret
 
 GUIProcStates:
   xor eax,eax
