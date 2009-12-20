@@ -42,6 +42,10 @@
 #endif
 
 
+static u4 SantaNextT = 36 * 15;
+u4        NumSnow;
+u4        SnowTimer  = 36 * 30;
+
 // The first byte is the number of fields on the right not including the seperators
 static u1 MenuDat1[] = { 12, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 2, 0 };
 static u1 MenuDat2[] = {  8, 3, 1, 1, 0, 1, 1, 1, 0, 2, 0 };
@@ -167,6 +171,44 @@ static void LoadDetermine(void)
 }
 
 
+static void ProcessSnowVelocity(void)
+{
+	if (MsgGiftLeft != 0) --MsgGiftLeft;
+
+	if (NumSnow == 200)
+	{
+		if (SantaNextT != 0)
+		{
+			--SantaNextT;
+		}
+		else if (--SantaPos == 0)
+		{
+			SantaPos   = 272;
+			SantaNextT = 36 * 60;
+		}
+	}
+	else
+	{
+		if (--SnowTimer == 0)
+		{
+			++NumSnow;
+			SnowTimer = 18;
+		}
+	}
+
+	u4 i = 0;
+	u4 n = NumSnow;
+	while (n-- != 0)
+	{
+		SnowData[i * 2]     += SnowVelDist[i * 2] + 4 * (u1)(100 - MusicRelVol);
+		SnowData[i * 2 + 1] += SnowVelDist[i * 2 + 1] + 256;
+		if (SnowData[i * 2 + 1] <= 0x200)
+			SnowVelDist[i * 2] |= 8;
+		++i;
+	}
+}
+
+
 static void DrawSnow(void)
 {
 	static u1 const SantaData[] =
@@ -217,7 +259,7 @@ static void DrawSnow(void)
 	while (++i != 200);
 	// Change Snow Displacement Values
 	for (; SnowMover != 0; --SnowMover)
-		asm_call(ProcessSnowVelocity);
+		ProcessSnowVelocity();
 }
 
 

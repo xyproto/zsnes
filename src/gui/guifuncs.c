@@ -57,13 +57,14 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "../asm_call.h"
 #include "../zloader.h"
 #include "../zdir.h"
+#include "c_gui.h"
 #include "guifuncs.h"
 
 #define BIT(X) (1 << (X))
 
 extern unsigned char ComboHeader[23], ComboBlHeader[23], CombinDataGlob[3300];
 extern unsigned char ShowTimer, savecfgforce;
-extern unsigned int SnowTimer, NumSnow, NumComboGlob;
+extern unsigned int NumComboGlob;
 extern unsigned char GUIFontData1[705], GUIFontData[705];
 enum vtype { UB, UW, UD, SB, SW, SD };
 

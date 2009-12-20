@@ -13,6 +13,7 @@
 #include "cpu/stable.h"
 #include "cpu/tablec.h"
 #include "debugger.h"
+#include "gui/c_gui.h"
 #include "gui/gui.h"
 #include "gui/guiwindp.h"
 #include "init.h"

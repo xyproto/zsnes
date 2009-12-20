@@ -19,4 +19,7 @@ void GUIOuttextShadowed(u4 const x, u4 const y, char const* const text);
 
 u1* GetAnyPressedKey(void);
 
+extern u4 NumSnow;
+extern u4 SnowTimer;
+
 #endif

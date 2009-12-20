@@ -425,65 +425,7 @@ NEWSYM GUIhandler9h
 SECTION .data
 
 NEWSYM SantaPos, dd 272
-SantaNextT dd 36*15
-NEWSYM NumSnow, dd 0
-NEWSYM SnowTimer, dd 36*30
 NEWSYM MsgGiftLeft, dd 0
-
-SECTION .text
-
-NEWSYM ProcessSnowVelocity
-  cmp dword[MsgGiftLeft],0
-  je .nodec
-  dec dword[MsgGiftLeft]
-.nodec
-  cmp dword[NumSnow],200
-  jne .snowincr
-  cmp dword[SantaNextT],0
-  je .skip
-  dec dword[SantaNextT]
-  jmp .notsreset
-.skip
-  dec dword[SantaPos]
-  cmp dword[SantaPos],0
-  jne .notsreset
-  mov dword[SantaPos],272
-  mov dword[SantaNextT],36*60
-  jmp .notsreset
-.snowincr
-  dec dword[SnowTimer]
-  jnz .notsreset
-  inc dword[NumSnow]
-  mov dword[SnowTimer],18
-.notsreset
-
-  mov ecx,[NumSnow]
-  cmp ecx,0
-  jne .okay
-  ret
-.okay
-  xor edx,edx
-.loop
-  xor eax,eax
-  mov al,[SnowVelDist+edx*2]
-  mov ebx,100
-  sub bl,[MusicRelVol]
-  add bx,bx
-  add ax,bx
-  add ax,bx
-  add word[SnowData+edx*4],ax
-  xor eax,eax
-  mov al,[SnowVelDist+edx*2+1]
-  add ax,256
-  add word[SnowData+edx*4+2],ax
-  cmp word[SnowData+edx*4+2],200h
-  ja .nosdata
-  or byte[SnowVelDist+edx*2],8
-.nosdata
-  inc edx
-  dec ecx
-  jnz .loop
-  ret
 
 %macro ProcessOneDigit 1
   cmp dl,9
@@ -496,7 +438,6 @@ NEWSYM ProcessSnowVelocity
   div ebx
 %endmacro
 
-SECTION .data
 .message db 0,0,0,0,' ',0,0,0,0,0,0,0
 SECTION .text
 

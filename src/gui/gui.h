@@ -5,7 +5,6 @@
 
 extern void GUIUnBuffer();
 extern void InitGUI();
-extern void ProcessSnowVelocity();
 
 extern char  GUIPrevMenuData[];
 extern char* GUICMessage;
@@ -50,7 +49,6 @@ extern u4    GUIwinposyo[22];
 extern u4    MsgGiftLeft;
 extern u4    NumCheats;
 extern u4    SantaPos;
-extern u4    SnowTimer;
 extern u4    StartLL;
 extern u4    StartLR;
 
