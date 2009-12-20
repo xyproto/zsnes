@@ -6,7 +6,6 @@
 extern void DrawSnow();
 extern void GUIUnBuffer();
 extern void InitGUI();
-extern void LoadDetermine();
 
 extern char  GUICheatMenuData[];
 extern char  GUIConfigMenuData[];

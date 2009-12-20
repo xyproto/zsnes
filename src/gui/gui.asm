@@ -465,34 +465,6 @@ NEWSYM GUIhandler9h
   iretd
 %endif
 
-NEWSYM LoadDetermine
-  mov byte[GUIGameMenuData+14],1
-  mov byte[GUIGameMenuData+14*2],1
-  mov byte[GUIGameMenuData+14*4],1
-  mov byte[GUIGameMenuData+14*5],1
-  mov byte[GUIGameMenuData+14*6],1
-  mov byte[GUICheatMenuData],1
-  mov byte[GUICheatMenuData+14],1
-  mov byte[GUICheatMenuData+14*2],1
-  mov byte[GUIMiscMenuData+14*2],1
-  mov byte[GUINetPlayMenuData],2             ; Gray out Netplay options
-%ifdef __MSDOS__
-  mov byte[GUINetPlayMenuData+14],2
-%endif
-  cmp byte[romloadskip],0
-  je .noromloaded
-  mov byte[GUIGameMenuData+14],2
-  mov byte[GUIGameMenuData+14*2],2
-  mov byte[GUIGameMenuData+14*4],2
-  mov byte[GUIGameMenuData+14*5],2
-  mov byte[GUIGameMenuData+14*6],2
-  mov byte[GUICheatMenuData],2
-  mov byte[GUICheatMenuData+14],2
-  mov byte[GUICheatMenuData+14*2],2
-  mov byte[GUIMiscMenuData+14*2],2
-.noromloaded
-  ret
-
 SECTION .data
 SantaData:
 db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0

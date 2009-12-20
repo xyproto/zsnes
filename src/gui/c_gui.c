@@ -88,6 +88,25 @@ void GUI36hzcall(void)
 }
 
 
+static void LoadDetermine(void)
+{
+	GUINetPlayMenuData[14 * 0] = 2; // Gray out Netplay options
+#ifdef __MSDOS__
+	GUINetPlayMenuData[14 * 1] = 2;
+#endif
+	u1 const v = romloadskip != 0 ? 2 : 1;
+	GUIGameMenuData[   14 * 1] = v;
+	GUIGameMenuData[   14 * 2] = v;
+	GUIGameMenuData[   14 * 4] = v;
+	GUIGameMenuData[   14 * 5] = v;
+	GUIGameMenuData[   14 * 6] = v;
+	GUICheatMenuData[  14 * 0] = v;
+	GUICheatMenuData[  14 * 1] = v;
+	GUICheatMenuData[  14 * 2] = v;
+	GUIMiscMenuData[   14 * 2] = v;
+}
+
+
 static void loadmenuopen(u4 const param1) // XXX better parameter name
 {
 	GUIpmenupos = GUIcmenupos;
@@ -297,7 +316,7 @@ void StartGUI(void)
 	SaveSramData();
 	GUIQuickLoadUpdate();
 
-	asm_call(LoadDetermine);
+	LoadDetermine();
 
 	if (AutoState != 0 && romloadskip == 0) SaveSecondState();
 
