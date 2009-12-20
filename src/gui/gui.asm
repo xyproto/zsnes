@@ -221,48 +221,6 @@ NEWSYM GUIPrevMenuData,
   db 0,'------------',0
   db 1,'FREEZE DATA: OFF   ',0
   db 1,'CLEAR ALL DATA     ',0
-NEWSYM GUIGameMenuData,
-  db 1,'LOAD        ',0
-  db 1,'RUN  [ESC]  ',0
-  db 1,'RESET       ',0
-  db 0,'------------',0
-  db 1,'SAVE STATE  ',0
-  db 1,'OPEN STATE  ',0
-  db 1,'PICK STATE  ',0
-  db 0,'------------',0
-  db 1,'QUIT        ',0
-NEWSYM GUIConfigMenuData,
-  db 1,'INPUT       ',0
-  db 0,'------------',0
-  db 1,'DEVICES     ',0
-  db 1,'CHIP CFG    ',0
-  db 0,'------------',0
-  db 1,'OPTIONS     ',0
-  db 1,'VIDEO       ',0
-  db 1,'SOUND       ',0
-  db 1,'PATHS       ',0
-  db 1,'SAVES       ',0
-  db 1,'SPEED       ',0
-NEWSYM GUICheatMenuData,
-  db 1,'ADD CODE    ',0
-  db 1,'BROWSE      ',0
-  db 1,'SEARCH      ',0
-NEWSYM GUINetPlayMenuData,
-%ifndef __MSDOS__
-  db 1,'INTERNET    ',0
-  db 0,'------------',0
-%else
-  db 1,'MODEM       ',0
-  db 1,'IPX         ',0
-%endif
-NEWSYM GUIMiscMenuData,
-  db 1,'MISC KEYS   ',0
-  db 1,'GUI OPTS    ',0
-  db 1,'MOVIE OPT   ',0
-  db 1,'KEY COMB.   ',0
-  db 1,'SAVE CFG    ',0
-  db 0,'------------',0
-  db 1,'ABOUT       ',0
 
 ; Window sizes and positions
 ;                LOAD STAT INPT OPT  VID  SND  CHT  NET  GMKEY GUIOP ABT  RSET SRC  STCN MOVE CMBO ADDO CHIP PATH SAVE SPED

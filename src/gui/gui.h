@@ -7,11 +7,6 @@ extern void DrawSnow();
 extern void GUIUnBuffer();
 extern void InitGUI();
 
-extern char  GUICheatMenuData[];
-extern char  GUIConfigMenuData[];
-extern char  GUIGameMenuData[];
-extern char  GUIMiscMenuData[];
-extern char  GUINetPlayMenuData[];
 extern char  GUIPrevMenuData[];
 extern char* GUICMessage;
 extern u1    CheatOn;

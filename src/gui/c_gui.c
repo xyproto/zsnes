@@ -57,6 +57,64 @@ static u1 MenuDat6[] = {  6, 3, 1, 1, 1, 1, 0, 2, 0 };
 static char const* guimsgptr;
 
 
+static char GUIGameMenuData[][14] =
+{
+	{ "\x1" "LOAD        " },
+	{ "\x1" "RUN  [ESC]  " },
+	{ "\x1" "RESET       " },
+	{ "\x0" "------------" },
+	{ "\x1" "SAVE STATE  " },
+	{ "\x1" "OPEN STATE  " },
+	{ "\x1" "PICK STATE  " },
+	{ "\x0" "------------" },
+	{ "\x1" "QUIT        " }
+};
+
+static char GUIConfigMenuData[][14] =
+{
+	{ "\x1" "INPUT       " },
+	{ "\x0" "------------" },
+	{ "\x1" "DEVICES     " },
+	{ "\x1" "CHIP CFG    " },
+	{ "\x0" "------------" },
+	{ "\x1" "OPTIONS     " },
+	{ "\x1" "VIDEO       " },
+	{ "\x1" "SOUND       " },
+	{ "\x1" "PATHS       " },
+	{ "\x1" "SAVES       " },
+	{ "\x1" "SPEED       " }
+};
+
+static char GUICheatMenuData[][14] =
+{
+	{ "\x1" "ADD CODE    " },
+	{ "\x1" "BROWSE      " },
+	{ "\x1" "SEARCH      " }
+};
+
+static char GUINetPlayMenuData[][14] =
+{
+#ifndef __MSDOS__
+	{ "\x1" "INTERNET    " },
+	{ "\x0" "------------" }
+#else
+	{ "\x1" "MODEM       " },
+	{ "\x1" "IPX         " }
+#endif
+};
+
+static char GUIMiscMenuData[][14] =
+{
+	{ "\x1" "MISC KEYS   " },
+	{ "\x1" "GUI OPTS    " },
+	{ "\x1" "MOVIE OPT   " },
+	{ "\x1" "KEY COMB.   " },
+	{ "\x1" "SAVE CFG    " },
+	{ "\x0" "------------" },
+	{ "\x1" "ABOUT       " }
+};
+
+
 void GUIinit18_2hz(void)
 {
 	outb(0x43, 0x36);
@@ -90,20 +148,20 @@ void GUI36hzcall(void)
 
 static void LoadDetermine(void)
 {
-	GUINetPlayMenuData[14 * 0] = 2; // Gray out Netplay options
+	GUINetPlayMenuData[0][0] = 2; // Gray out Netplay options
 #ifdef __MSDOS__
-	GUINetPlayMenuData[14 * 1] = 2;
+	GUINetPlayMenuData[1][0] = 2;
 #endif
 	u1 const v = romloadskip != 0 ? 2 : 1;
-	GUIGameMenuData[   14 * 1] = v;
-	GUIGameMenuData[   14 * 2] = v;
-	GUIGameMenuData[   14 * 4] = v;
-	GUIGameMenuData[   14 * 5] = v;
-	GUIGameMenuData[   14 * 6] = v;
-	GUICheatMenuData[  14 * 0] = v;
-	GUICheatMenuData[  14 * 1] = v;
-	GUICheatMenuData[  14 * 2] = v;
-	GUIMiscMenuData[   14 * 2] = v;
+	GUIGameMenuData[   1][0] = v;
+	GUIGameMenuData[   2][0] = v;
+	GUIGameMenuData[   4][0] = v;
+	GUIGameMenuData[   5][0] = v;
+	GUIGameMenuData[   6][0] = v;
+	GUICheatMenuData[  0][0] = v;
+	GUICheatMenuData[  1][0] = v;
+	GUICheatMenuData[  2][0] = v;
+	GUIMiscMenuData[   2][0] = v;
 }
 
 
@@ -860,31 +918,31 @@ void DisplayMenu(void)
 	}
 	if (GUIcmenupos == 2)
 	{
-		GUIDrawMenuM(17, 16, 10, 9, GUIGameMenuData, 19, 22, 22, 109, 30); // 19+9*10
+		GUIDrawMenuM(17, 16, 10, 9, GUIGameMenuData[0], 19, 22, 22, 109, 30); // 19+9*10
 		GUICYLocPtr = MenuDat2;
 	}
 	if (GUIcmenupos == 3)
 	{
-		GUIDrawMenuM(52, 16, 8, 11, GUIConfigMenuData, 54, 57, 22, 129, 42); // 19+11*10
+		GUIDrawMenuM(52, 16, 8, 11, GUIConfigMenuData[0], 54, 57, 22, 129, 42); // 19+11*10
 		GUICYLocPtr = MenuDat3;
 	}
 	if (GUIcmenupos == 4)
 	{
-		GUIDrawMenuM(99, 16, 8, 3, GUICheatMenuData, 101, 104, 22, 49, 36); // 19+3*10
+		GUIDrawMenuM(99, 16, 8, 3, GUICheatMenuData[0], 101, 104, 22, 49, 36); // 19+3*10
 		GUICYLocPtr = MenuDat4;
 	}
 	if (GUIcmenupos == 5)
 	{
 #ifdef __MSDOS__
-		GUIDrawMenuM(140, 16, 10, 2, GUINetPlayMenuData, 142, 145, 22, 39, 48); // 19+2*10
+		GUIDrawMenuM(140, 16, 10, 2, GUINetPlayMenuData[0], 142, 145, 22, 39, 48); // 19+2*10
 #else
-		GUIDrawMenuM(140, 16, 10, 1, GUINetPlayMenuData, 142, 145, 22, 29, 48); // 19+1*10
+		GUIDrawMenuM(140, 16, 10, 1, GUINetPlayMenuData[0], 142, 145, 22, 29, 48); // 19+1*10
 #endif
 		GUICYLocPtr = MenuDat5;
 	}
 	if (GUIcmenupos == 6)
 	{
-		GUIDrawMenuM(193, 16, 9, 7, GUIMiscMenuData, 195, 198, 22, 89, 30); // 19+5*10
+		GUIDrawMenuM(193, 16, 9, 7, GUIMiscMenuData[0], 195, 198, 22, 89, 30); // 19+5*10
 		GUICYLocPtr = MenuDat6;
 	}
 }
