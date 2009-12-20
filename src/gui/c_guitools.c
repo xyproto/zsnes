@@ -5,6 +5,7 @@
 #include "../video/procvid.h"
 #include "c_guitools.h"
 #include "gui.h"
+#include "guitools.h"
 
 
 static void GUIoutputchar(u1* dst, u1 const glyph)
@@ -107,4 +108,15 @@ void GUIShadow(u4 const x1, u4 const y1, u4 const x2, u4 const y2)
 	u4  const w   = x2 - x1 + 1;
 	u4  const h   = y2 - y1 + 1;
 	GUIDrawShadow(dst, w, h);
+}
+
+
+void GUIOuttextwin(u4 x, u4 const y, char const* const text)
+{
+  u1* dst = vidbuffer + y * 288 + 16;
+  u4  eax;
+  u4  ebx;
+  u4  ecx;
+  char const* text_ = text;
+  asm volatile("call *%6" : "=a" (eax), "=b" (ebx), "=c" (ecx), "+d" (x), "+S" (dst), "+D" (text_) : "r" (GUIOutputStringwin) : "cc", "memory");
 }

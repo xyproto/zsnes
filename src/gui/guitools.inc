@@ -309,7 +309,7 @@ GUIoutputcharwin:
   pop edi
   ret
 
-GUIOutputStringwin:
+NEWSYM GUIOutputStringwin
   xor eax,eax
 .more
   mov al,[edi]

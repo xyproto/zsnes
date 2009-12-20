@@ -55,6 +55,8 @@ static u1 MenuDat5[] = {  1, 3, 2, 0 };
 static u1 MenuDat6[] = {  6, 3, 1, 1, 1, 1, 0, 2, 0 };
 
 static char const* guimsgptr;
+static u1          OkaySC;
+static u4          SnowMover;
 
 
 static char GUIGameMenuData[][14] =
@@ -162,6 +164,60 @@ static void LoadDetermine(void)
 	GUICheatMenuData[  1][0] = v;
 	GUICheatMenuData[  2][0] = v;
 	GUIMiscMenuData[   2][0] = v;
+}
+
+
+static void DrawSnow(void)
+{
+	static u1 const SantaData[] =
+	{
+		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+		0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,
+		0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,
+		1,0,0,1,0,0,1,0,0,0,1,1,1,0,1,1,
+		1,1,0,1,1,0,1,1,0,1,0,1,1,1,1,1,
+		1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,
+		1,1,0,1,1,0,1,1,0,0,1,1,1,1,1,1
+	};
+
+	if (OkaySC != 0)
+	{
+		if (MsgGiftLeft != 0)
+		{
+			GUItextcolor[0] = 228;
+			GUIOuttextwin(20, 210, "A GIFT TO YOU IN THE OPTIONS!");
+		}
+		u1*       dst = vidbuffer + SantaPos + 60 * 288;
+		u1 const* src = SantaData;
+		u4        h   = 8;
+		do
+		{
+			u4 w = 16;
+			do
+			{
+				if (*src != 0) *dst = 0;
+				++dst;
+				++src;
+			}
+			while (--w != 0);
+			dst += 288 - 16;
+		}
+		while (--h != 0);
+	}
+
+	u1* const dst = vidbuffer;
+	u4        i   = 0;
+	do
+	{
+		u4 const eax = (SnowData[i * 2 + 1] >> 8) * 288 + (SnowData[i * 2] >> 8) + 16;
+		if ((SnowVelDist[i * 2] & 8) != 0)
+			dst[eax] = 228 + (SnowVelDist[i * 2] & 0x03);
+	}
+	while (++i != 200);
+	// Change Snow Displacement Values
+	for (; SnowMover != 0; --SnowMover)
+		asm_call(ProcessSnowVelocity);
 }
 
 
@@ -423,7 +479,7 @@ void StartGUI(void)
 			if (videotroub == 1) return;
 		}
 		asm_call(GUIUnBuffer);
-		if (GUIEffect == 1) asm_call(DrawSnow);
+		if (GUIEffect == 1) DrawSnow();
 		if (GUIEffect == 2) DrawWater();
 		if (GUIEffect == 3) DrawWater();
 		if (GUIEffect == 4) DrawBurn();

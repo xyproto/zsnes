@@ -3,9 +3,9 @@
 
 #include "../types.h"
 
-extern void DrawSnow();
 extern void GUIUnBuffer();
 extern void InitGUI();
+extern void ProcessSnowVelocity();
 
 extern char  GUIPrevMenuData[];
 extern char* GUICMessage;
@@ -32,7 +32,6 @@ extern u1    GUIwinorder[22];
 extern u1    GUIwinptr;
 extern u1    MouseDis;
 extern u1    MousePRClick;
-extern u1    OkaySC;
 extern u1    ShowTimer;
 extern u1    SnowVelDist[800];
 extern u1    cwindrawn;
@@ -48,8 +47,9 @@ extern u4    GUIScrolTim1;
 extern u4    GUIt1cc;
 extern u4    GUIwinposxo[22];
 extern u4    GUIwinposyo[22];
+extern u4    MsgGiftLeft;
 extern u4    NumCheats;
-extern u4    SnowMover;
+extern u4    SantaPos;
 extern u4    SnowTimer;
 extern u4    StartLL;
 extern u4    StartLR;

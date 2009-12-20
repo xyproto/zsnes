@@ -305,7 +305,6 @@ NEWSYM GUICCFlash,   resb 1
 NEWSYM GUILDFlash,   resb 1
 NEWSYM GUIPalConv,   resd 1
 NEWSYM PrevResoln,   resw 1
-NEWSYM SnowMover,    resd 1
 keycontrolval resd 1
 NEWSYM CheatBDoor,   resb 1
 NEWSYM ShowTimer,    resb 1
@@ -424,92 +423,16 @@ NEWSYM GUIhandler9h
 %endif
 
 SECTION .data
-SantaData:
-db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-db 0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0
-db 0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0
-db 1,0,0,1,0,0,1,0,0,0,1,1,1,0,1,1
-db 1,1,0,1,1,0,1,1,0,1,0,1,1,1,1,1
-db 1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1
-db 1,1,0,1,1,0,1,1,0,0,1,1,1,1,1,1
 
-SantaPos dd 272
+NEWSYM SantaPos, dd 272
 SantaNextT dd 36*15
 NEWSYM NumSnow, dd 0
 NEWSYM SnowTimer, dd 36*30
-MsgGiftLeft dd 0
+NEWSYM MsgGiftLeft, dd 0
+
 SECTION .text
 
-NEWSYM DrawSnow
-  cmp byte[OkaySC],0
-  je near .nosanta
-  cmp dword[MsgGiftLeft],0
-  je .nodec
-  mov edx,20
-  mov ebx,210
-  mov byte[GUItextcolor],228
-  GUIOuttextwin .giftmsg
-.nodec
-  mov esi,[vidbuffer]
-  add esi,[SantaPos]
-  add esi,60*288
-  mov edx,SantaData
-  mov ebx,8
-.sloop2
-  mov ecx,16
-.sloop
-  cmp byte[edx],0
-  je .transp
-  mov byte[esi],0
-.transp
-  inc esi
-  inc edx
-  dec ecx
-  jnz .sloop
-  add esi,272
-  dec ebx
-  jnz .sloop2
-.nosanta
-  mov esi,[vidbuffer]
-  mov ecx,200
-  xor edx,edx
-.loop
-  xor eax,eax
-  mov al,[SnowData+edx*4+3]
-  mov ebx,eax
-  shl eax,8
-  shl ebx,5
-  add eax,ebx
-  xor ebx,ebx
-  mov bl,[SnowData+edx*4+1]
-  add eax,ebx
-  add eax,16
-  mov bl,[SnowVelDist+edx*2]
-  and bl,03h
-  add bl,228
-  test byte[SnowVelDist+edx*2],8
-  jz .nosnow
-  mov [esi+eax],bl
-.nosnow
-  inc edx
-  dec ecx
-  jnz .loop
-  ; Change Snow Displacement Values
-.next
-  cmp dword[SnowMover],0
-  je .nomore
-  call ProcessSnowVelocity
-  dec dword[SnowMover]
-  jmp .next
-.nomore
-  ret
-
-SECTION .data
-.giftmsg db 'A GIFT TO YOU IN THE OPTIONS!',0
-SECTION .text
-
-ProcessSnowVelocity:
+NEWSYM ProcessSnowVelocity
   cmp dword[MsgGiftLeft],0
   je .nodec
   dec dword[MsgGiftLeft]
@@ -561,9 +484,6 @@ ProcessSnowVelocity:
   dec ecx
   jnz .loop
   ret
-
-SECTION .bss
-NEWSYM OkaySC, resb 1
 
 %macro ProcessOneDigit 1
   cmp dl,9
