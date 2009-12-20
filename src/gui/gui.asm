@@ -465,52 +465,6 @@ NEWSYM GUIhandler9h
   iretd
 %endif
 
-%macro loadmenuopen 1
-  mov al,[GUIcmenupos]
-  mov [GUIpmenupos],al
-  mov byte[GUIcmenupos],0
-  cmp byte[GUIwinactiv+%1],1
-  je %%menuontop
-  xor eax,eax
-  mov al,[GUIwinptr]
-  inc byte[GUIwinptr]
-  mov byte[GUIwinorder+eax],%1
-  mov byte[GUIwinactiv+%1],1
-  cmp byte[savewinpos],0
-  jne %%nomenuitem
-  mov eax,[GUIwinposxo+%1*4]
-  mov [GUIwinposx+%1*4],eax
-  mov eax,[GUIwinposyo+%1*4]
-  mov [GUIwinposy+%1*4],eax
-  jmp %%nomenuitem
-%%menuontop
-  xor eax,eax
-  ; look for match
-%%notfoundyet
-  mov bl,[GUIwinorder+eax]
-  cmp bl,%1
-  je %%nextfind
-  inc eax
-  jmp %%notfoundyet
-%%nextfind
-  inc eax
-  cmp al,[GUIwinptr]
-  je %%foundend
-  mov cl,[GUIwinorder+eax]
-  mov [GUIwinorder+eax-1],cl
-  jmp %%nextfind
-%%foundend
-  mov byte[GUIpclicked],0
-  mov [GUIwinorder+eax-1],bl
-%%nomenuitem
-%endmacro
-
-loadnetopen:
-  loadmenuopen 8
-  ret
-
-SECTION .text
-
 NEWSYM LoadDetermine
   mov byte[GUIGameMenuData+14],1
   mov byte[GUIGameMenuData+14*2],1
