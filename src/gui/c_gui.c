@@ -116,14 +116,6 @@ static void loadmenuopen(u4 const param1) // XXX better parameter name
 }
 
 
-#if 0
-static void loadnetopen(void)
-{
-	loadmenuopen(8);
-}
-#endif
-
-
 void GUIBox3D(u4 const x1, u4 const y1, u4 const x2, u4 const y2)
 {
 	GUIBox(x1, y1, x2, y2, 160);
