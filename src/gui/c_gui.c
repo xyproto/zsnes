@@ -1,5 +1,6 @@
 #include <string.h>
 
+#include "../asm.h"
 #include "../asm_call.h"
 #include "../c_init.h"
 #include "../cfg.h"
@@ -54,6 +55,22 @@ static u1 MenuDat5[] = {  1, 3, 2, 0 };
 static u1 MenuDat6[] = {  6, 3, 1, 1, 1, 1, 0, 2, 0 };
 
 static char const* guimsgptr;
+
+
+void GUIinit18_2hz(void)
+{
+	outb(0x43, 0x36);
+	outb(0x40, 0x00);
+	outb(0x40, 0x00);
+}
+
+
+void GUIinit36_4hz(void)
+{
+	outb(0x43, 0x36);
+	outb(0x40, 0x00);
+	outb(0x40, 0x80);
+}
 
 
 static void loadmenuopen(u4 const param1) // XXX better parameter name

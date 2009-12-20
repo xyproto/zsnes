@@ -394,24 +394,6 @@ GUIt1ccSwap db 0
 GUIskipnextkey42 db 0
 
 SECTION .text
-NEWSYM GUIinit18_2hz
-  mov al,00110110b
-  out 43h,al
-  mov ax,0
-  out 40h,al
-  mov al,ah
-  out 40h,al
-  ret
-
-NEWSYM GUIinit36_4hz
-  mov al,00110110b
-  out 43h,al
-  mov ax,32768
-  out 40h,al
-  mov al,ah
-  out 40h,al
-  ret
-
 NEWSYM GUI36hzcall
   inc dword[GUIt1cc]
   inc dword[SnowMover]

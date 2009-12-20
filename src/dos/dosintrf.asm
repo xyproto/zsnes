@@ -268,7 +268,7 @@ NEWSYM GUIInit
     mov cx,cs
     mov edx,GUIhandler8h
     int 31h
-    call GUIinit36_4hz
+    ccallv GUIinit36_4hz
     ret
 
 NEWSYM GUIDeInit
@@ -282,7 +282,7 @@ NEWSYM GUIDeInit
     mov ax,205h
     mov bl,08h
     int 31h
-    call GUIinit18_2hz
+    ccallv GUIinit18_2hz
     ret
 
 ; ****************************

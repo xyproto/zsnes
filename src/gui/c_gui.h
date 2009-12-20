@@ -3,6 +3,8 @@
 
 #include "../types.h"
 
+void GUIinit18_2hz(void);
+void GUIinit36_4hz(void);
 void StartGUI(void);
 void guimencodermsg(void);
 void guilamemsg(void);
