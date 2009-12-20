@@ -10,5 +10,7 @@ extern u1* GUIEditStringcLen;
 extern u4  GUIEditStringLTxt;
 extern u4  GUIEditStringLstb;
 extern u4  GUIEditStringcWin;
+extern u4  GUIkeydelay2;
+extern u4  GUIkeydelay;
 
 #endif

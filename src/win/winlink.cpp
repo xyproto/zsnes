@@ -41,6 +41,7 @@ extern "C"
 {
 #include "../asm_call.h"
 #include "../cfg.h"
+#include "../gui/c_gui.h"
 #include "../input.h"
 #include "../link.h"
 #include "../types.h"
@@ -2068,7 +2069,6 @@ extern "C"
   int *DSPBuffer1;
   DWORD ScreenPtr;
   DWORD ScreenPtr2;
-  void GUI36hzcall();
   void Game60hzcall();
 
   void CheckTimers()

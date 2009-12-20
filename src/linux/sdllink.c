@@ -33,6 +33,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "audio.h"
 #include "safelib.h"
 #include "../cfg.h"
+#include "../gui/c_gui.h"
 #include "../input.h"
 #include "../link.h"
 
@@ -140,7 +141,6 @@ unsigned int sdl_keysym_to_pc_scancode(int);
 void ProcessKeyBuf(int);
 void UpdateSound(void *userdata, Uint8 *stream, int len);
 
-void GUI36hzcall();
 void Game60hzcall();
 int64_t copymaskRB = UINT64_C(0x001FF800001FF800);
 int64_t copymaskG = UINT64_C(0x0000FC000000FC00);

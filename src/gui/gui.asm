@@ -134,6 +134,7 @@ EXTSYM dssel,SetInputDevice209,initvideo2,Force8b,SBHDMA,vibracard,smallscreenon
 EXTSYM pl1p209,pl2p209,pl3p209,pl4p209,pl5p209,SidewinderFix,Triplebufen,ScreenScale,ErrorPointer
 EXTSYM GUIEAVID,GUIWSVID,GUISSVID,GUITBVID,GUISLVID,GUIHSVID,GUI2xVID,TripBufAvail
 EXTSYM JoyMinX209,JoyMaxX209,JoyMinY209,JoyMaxY209,DOSClearScreen
+EXTSYM GUI36hzcall
 %endif
 
 %ifndef __MSDOS__
@@ -331,22 +332,22 @@ cloadnleft   resd 1
 cplayernum   resb 1
 vbuflimtop   resd 1
 vbuflimbot   resd 1
-GUIScrolTim1 resd 1
+NEWSYM GUIScrolTim1, resd 1
 GUIScrolTim2 resd 1
 BlankVar     resb 1
 GUICHold     resd 1
 NEWSYM GUICBHold,    resd 1
 GUICBHold2   resd 1
-GUIDClickTL  resd 1
+NEWSYM GUIDClickTL,  resd 1
 GUIDClCWin   resd 1
 GUIDClCEntry resd 1
 GUICResetPos resd 1
 GUICStatePos resd 1
-GUICCFlash   resb 1
-GUILDFlash   resb 1
+NEWSYM GUICCFlash,   resb 1
+NEWSYM GUILDFlash,   resb 1
 NEWSYM GUIPalConv,   resd 1
 NEWSYM PrevResoln,   resw 1
-SnowMover    resd 1
+NEWSYM SnowMover,    resd 1
 keycontrolval resd 1
 NEWSYM CheatBDoor,   resb 1
 NEWSYM ShowTimer,    resb 1
@@ -389,44 +390,11 @@ NEWSYM GUIoldhand9o, dd 0
 NEWSYM GUIoldhand9s, dw 0
 NEWSYM GUIoldhand8o, dd 0
 NEWSYM GUIoldhand8s, dw 0
-GUIt1cc dd 0
+NEWSYM GUIt1cc,      dd 0
 GUIt1ccSwap db 0
 GUIskipnextkey42 db 0
 
 SECTION .text
-NEWSYM GUI36hzcall
-  inc dword[GUIt1cc]
-  inc dword[SnowMover]
-  cmp dword[GUIEditStringLTxt],0
-  je .nodec
-  dec dword[GUIEditStringLTxt]
-.nodec
-  cmp dword[GUIScrolTim1],0
-  je .nodec4
-  dec dword[GUIScrolTim1]
-.nodec4
-  cmp dword[GUIDClickTL],0
-  je .nodec2
-  dec dword[GUIDClickTL]
-.nodec2
-  cmp dword[GUIkeydelay],0
-  je .nodec3
-  dec dword[GUIkeydelay]
-.nodec3
-  cmp dword[GUIkeydelay2],0
-  je .nodec3b
-  dec dword[GUIkeydelay2]
-.nodec3b
-  cmp dword[GUICTimer],0
-  je .nodec6
-  dec dword[GUICTimer]
-.nodec6
-  inc byte[GUICCFlash]
-  and byte[GUICCFlash],0Fh
-  inc byte[GUILDFlash]
-  and byte[GUILDFlash],0Fh
-  ret
-
 %ifdef __MSDOS__
 NEWSYM GUIhandler8h
   cli
@@ -434,7 +402,7 @@ NEWSYM GUIhandler8h
   push eax
   mov ax,[cs:dssel]
   mov ds,ax
-  call GUI36hzcall
+  ccallv GUI36hzcall
   xor byte[GUIt1ccSwap],1
   cmp byte[GUIt1ccSwap],0
   je .nocall

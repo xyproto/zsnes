@@ -73,6 +73,21 @@ void GUIinit36_4hz(void)
 }
 
 
+void GUI36hzcall(void)
+{
+	++GUIt1cc;
+	++SnowMover;
+	if (GUIEditStringLTxt != 0) --GUIEditStringLTxt;
+	if (GUIScrolTim1      != 0) --GUIScrolTim1;
+	if (GUIDClickTL       != 0) --GUIDClickTL;
+	if (GUIkeydelay       != 0) --GUIkeydelay;
+	if (GUIkeydelay2      != 0) --GUIkeydelay2;
+	if (GUICTimer         != 0) --GUICTimer;
+	GUICCFlash = (GUICCFlash + 1) & 0x0F;
+	GUILDFlash = (GUILDFlash + 1) & 0x0F;
+}
+
+
 static void loadmenuopen(u4 const param1) // XXX better parameter name
 {
 	GUIpmenupos = GUIcmenupos;
