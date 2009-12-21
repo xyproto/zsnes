@@ -427,18 +427,6 @@ SECTION .data
 NEWSYM SantaPos, dd 272
 NEWSYM MsgGiftLeft, dd 0
 
-%macro ProcessOneDigit 1
-  cmp dl,9
-  jbe %%notover
-  add dl,65-48-10
-%%notover
-  add dl,48
-  mov [.message+%1],dl
-  xor edx,edx
-  div ebx
-%endmacro
-
-.message db 0,0,0,0,' ',0,0,0,0,0,0,0
 SECTION .bss
 
 NEWSYM Totalbyteloaded, resd 1
