@@ -23,21 +23,6 @@ EXTSYM GUIOutputString
 
 SECTION .text
 
-NEWSYM ClipString
-  ; clip string eax by bl characters
-.next
-  push eax
-.again
-  mov dl,[eax+1]
-  mov [eax],dl
-  inc eax
-  or dl,dl
-  jnz .again
-  pop eax
-  dec bl
-  jnz .next
-  ret
-
 NEWSYM ConcatString
   ; concat eax in front of ebx, store in ebx
   ; move string forward by length of eax
