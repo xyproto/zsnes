@@ -23,19 +23,6 @@ EXTSYM GUIOutputString
 
 SECTION .text
 
-NEWSYM StringLength
-  xor ecx,ecx
-  push eax
-.loop
-  cmp byte[eax],0
-  je .done
-  inc eax
-  inc ecx
-  jmp .loop
-.done
-  pop eax
-  ret
-
 NEWSYM ClipString
   ; clip string eax by bl characters
 .next
