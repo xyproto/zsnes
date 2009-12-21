@@ -23,38 +23,6 @@ EXTSYM GUIOutputString
 
 SECTION .text
 
-GUIDrawBox:
-.loop
-  push edi
-  push ecx
-  rep stosb
-  pop ecx
-  pop edi
-  add edi,288
-  dec edx
-  jnz .loop
-  ret
-
-%macro GUIBox 5
-  mov edi,[vidbuffer]
-  add edi,%1
-  mov edx,%2
-  mov ecx,edx
-  shl edx,8
-  shl ecx,5
-  add edx,ecx
-  add edi,edx
-  add edi,16
-  mov ecx,%3
-  sub ecx,%1
-  inc ecx
-  mov edx,%4
-  sub edx,%2
-  inc edx
-  mov al,%5
-  call GUIDrawBox
-%endmacro
-
 GUIHLines:
   cmp ecx,0
   jl near .nodraw
