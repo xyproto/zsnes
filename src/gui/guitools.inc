@@ -23,50 +23,6 @@ EXTSYM GUIOutputString
 
 SECTION .text
 
-NEWSYM ConcatString
-  ; concat eax in front of ebx, store in ebx
-  ; move string forward by length of eax
-  pushad
-  mov esi,eax
-  cmp byte[esi],0
-  je near .nomore3
-.next
-  inc esi
-  cmp byte[esi],0
-  jne .next
-  dec esi
-.again
-  mov dl,[esi]
-  push ebx
-  xor ecx,ecx
-.loop
-  cmp byte[ebx],0
-  je .nomore
-  inc ebx
-  inc ecx
-  jmp .loop
-.nomore
-  inc ebx
-  inc ecx
-.loop2
-  or ecx,ecx
-  jz .nomore2
-  mov dh,[ebx-1]
-  mov [ebx],dh
-  dec ebx
-  dec ecx
-  jmp .loop2
-.nomore2
-  pop ebx
-  mov [ebx],dl
-  cmp eax,esi
-  je .nomore3
-  dec esi
-  jmp .again
-.nomore3
-  popad
-  ret
-
 %macro GUIOuttext 4
   mov edi,%2
   mov esi,edi
