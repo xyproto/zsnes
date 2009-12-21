@@ -67,7 +67,7 @@ EXTSYM nssdip1,nssdip2,nssdip3,nssdip4,nssdip5,nssdip6
 EXTSYM SkipMovie,MovieStop,MoviePlay,MovieRecord
 EXTSYM MovieInsertChapter,MovieSeekAhead,MovieSeekBehind,ResetDuringMovie
 EXTSYM MovieDumpRaw,MovieAppend,AutoLoadCht,GUIQuickLoadUpdate,GUILoadData
-EXTSYM GUIDoReset
+EXTSYM GUIDoReset,CheckMenuItemHelp
 
 EXTSYM GUIwinposx,GUIwinposy,maxskip,GUIEffect,hqFilter,En2xSaI,NTSCFilter
 EXTSYM NTSCBlend,NTSCHue,NTSCSat,NTSCCont,NTSCBright,NTSCSharp,NTSCRef
@@ -434,51 +434,10 @@ NEWSYM sramsavedis, resb 1
 
 SECTION .text
 
-CheckMenuItemHelp:
-  mov al,[GUIcmenupos]
-  mov [GUIpmenupos],al
-  mov byte[GUIcmenupos],0
-  cmp byte[GUIwinactiv+edx],1
-  je .menuontop
-  xor eax,eax
-  mov al,[GUIwinptr]
-  inc byte[GUIwinptr]
-  mov [GUIwinorder+eax],dl
-  mov byte[GUIwinactiv+edx],1
-  cmp byte[savewinpos],0
-  jne .nomenuitem
-  mov eax,[GUIwinposxo+edx*4]
-  mov [GUIwinposx+edx*4],eax
-  mov eax,[GUIwinposyo+edx*4]
-  mov [GUIwinposy+edx*4],eax
-  jmp .nomenuitem
-.menuontop
-  xor eax,eax
-  ; look for match
-.notfoundyet
-  mov bl,[GUIwinorder+eax]
-  cmp bl,dl
-  je .nextfind
-  inc eax
-  jmp .notfoundyet
-.nextfind
-  inc eax
-  cmp al,[GUIwinptr]
-  je .foundend
-  mov cl,[GUIwinorder+eax]
-  mov [GUIwinorder+eax-1],cl
-  jmp .nextfind
-.foundend
-  mov byte[GUIpclicked],0
-  mov [GUIwinorder+eax-1],bl
-.nomenuitem
-  ret
-
 %macro GUICheckMenuItem 2
-  mov edx,%1
   cmp byte[GUIcrowpos],%2
   jne near %%nomenuitem
-  call CheckMenuItemHelp
+  ccallv CheckMenuItemHelp, %1
 %%nomenuitem
 %endmacro
 
@@ -603,8 +562,7 @@ GUITryMenuItem:                     ; Defines which menu item calls what window 
 .noof
   mov [GUIcurrentvideoviewloc],eax
 .skip
-  mov edx,5
-  call CheckMenuItemHelp
+  ccallv CheckMenuItemHelp, 5
 .novideo
   GUICheckMenuItem 6,7             ; Sound
   GUICheckMenuItem 19,8            ; Paths

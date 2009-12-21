@@ -351,6 +351,35 @@ notext:
 #endif
 
 
+void CheckMenuItemHelp(u4 const id)
+{
+	GUIpmenupos = GUIcmenupos;
+	GUIcmenupos = 0;
+	if (GUIwinactiv[id] != 1)
+	{
+		GUIwinorder[GUIwinptr++] = id;
+		GUIwinactiv[id] = 1;
+		if (savewinpos == 0)
+		{
+			GUIwinposx[id] = GUIwinposxo[id];
+			GUIwinposy[id] = GUIwinposyo[id];
+		}
+	}
+	else
+	{
+		u4 i = 0;
+		// look for match
+		while (GUIwinorder[i] != id) ++i;
+		for (; ++i != GUIwinptr;)
+		{
+			GUIwinorder[i - 1] = GUIwinorder[i];
+		}
+		GUIpclicked = 0;
+		GUIwinorder[i - 1] = id;
+	}
+}
+
+
 static void loadmenuopen(u4 const param1) // XXX better parameter name
 {
 	GUIpmenupos = GUIcmenupos;

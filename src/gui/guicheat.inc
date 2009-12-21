@@ -571,11 +571,8 @@ AddCheatCode:
     mov [edx+2],eax
     mov [edx+5],bh
     inc dword[NumCheats]
-    mov edx,7
     mov al,[GUIpmenupos]
-    push eax
-    call CheckMenuItemHelp
-    pop eax
+    ccallv CheckMenuItemHelp, 7
     mov [GUIpmenupos],al
     mov byte[CheatOn],1
     ret

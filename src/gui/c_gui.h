@@ -14,6 +14,7 @@ void guipostvideo(void);
 #ifdef __MSDOS__
 void guipostvideofail(void);
 #endif
+void CheckMenuItemHelp(u4 id);
 void guicheaterror(void);
 void DisplayBoxes(void);
 void DisplayMenu(void);
