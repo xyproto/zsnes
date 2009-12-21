@@ -23,20 +23,6 @@ EXTSYM GUIOutputString
 
 SECTION .text
 
-%macro GUIOuttext 4
-  mov edi,%2
-  mov esi,edi
-  shl esi,8
-  shl edi,5
-  add esi,edi
-  add esi,[vidbuffer]
-  add esi,%1
-  add esi,16
-  mov byte[GUItextcolor],%4
-  ccall GUIOutputString, esi, %3
-  mov edi, eax
-%endmacro
-
 GUIDrawBox:
 .loop
   push edi
