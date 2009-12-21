@@ -1295,7 +1295,7 @@ GUIStatesText1 db 'OKAY TO SAVE STATE?',0
 GUIStatesText2 db 'OKAY TO LOAD STATE?',0
 GUIStatesText3 db 'YES',0
 GUIStatesText4 db 'NO',0
-GUIStatesText5 db 0
+NEWSYM GUIStatesText5, db 0
 
 SECTION .text
 

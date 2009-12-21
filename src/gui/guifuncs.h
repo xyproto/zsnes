@@ -9,6 +9,7 @@ void GUISaveVars(void);
 void GetLoadData(void);
 void LoadCheatSearchFile(void);
 void SaveCheatSearchFile(void);
+void loadquickfname(u1 slot);
 
 extern u4 GUIcurrentfilewin;
 

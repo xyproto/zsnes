@@ -63,7 +63,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define BIT(X) (1 << (X))
 
 extern unsigned char ComboHeader[23], ComboBlHeader[23], CombinDataGlob[3300];
-extern unsigned char ShowTimer, savecfgforce;
+extern unsigned char ShowTimer;
 extern unsigned int NumComboGlob;
 extern unsigned char GUIFontData1[705], GUIFontData[705];
 enum vtype { UB, UW, UD, SB, SW, SD };
@@ -1274,7 +1274,7 @@ void GUIloadfilename(char *filename)
   if (GUIwinptr) { GUIcmenupos = GUIpmenupos; }
 }
 
-void loadquickfname(const unsigned char slot)
+void loadquickfname(u1 const slot)
 {
   if (prevloaddnamel[1+slot*512]) // replace with better test
   {

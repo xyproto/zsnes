@@ -15,6 +15,7 @@ void guipostvideo(void);
 void guipostvideofail(void);
 #endif
 void CheckMenuItemHelp(u4 id);
+void GUITryMenuItem(void);
 void guicheaterror(void);
 void DisplayBoxes(void);
 void DisplayMenu(void);
@@ -24,6 +25,7 @@ void GUIOuttextShadowed(u4 const x, u4 const y, char const* const text);
 
 u1* GetAnyPressedKey(void);
 
+extern u1 savecfgforce;
 extern u4 NumSnow;
 extern u4 SnowTimer;
 

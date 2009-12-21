@@ -17,6 +17,7 @@
 #include "../ui.h"
 #include "../vcache.h"
 #include "../video/makevid.h"
+#include "../video/mode716.h"
 #include "../video/procvid.h"
 #include "../zstate.h"
 #include "../ztimec.h"
@@ -26,6 +27,7 @@
 #include "guicheat.h"
 #include "guifuncs.h"
 #include "guikeys.h"
+#include "guimisc.h"
 #include "guimouse.h"
 #include "guiwindp.h"
 
@@ -45,6 +47,8 @@
 static u4 SantaNextT = 36 * 15;
 u4        NumSnow;
 u4        SnowTimer  = 36 * 30;
+
+u1        savecfgforce;
 
 // The first byte is the number of fields on the right not including the seperators
 static u1 MenuDat1[] = { 12, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 2, 0 };
@@ -376,6 +380,131 @@ void CheckMenuItemHelp(u4 const id)
 		}
 		GUIpclicked = 0;
 		GUIwinorder[i - 1] = id;
+	}
+}
+
+
+static void GUICheckMenuItem(u4 const id, u4 const row)
+{
+	if (GUIcrowpos == row) CheckMenuItemHelp(id);
+}
+
+
+// Defines which menu item calls what window number
+void GUITryMenuItem(void)
+{
+	if (GUIcmenupos == 1)
+	{
+		if (GUIcrowpos < 10)
+		{
+			loadquickfname(GUIcrowpos);
+			return;
+		}
+		if (GUIcrowpos == 11)
+		{
+			prevlfreeze ^= 1;
+			memcpy(GUIPrevMenuData + 347, prevlfreeze != 0 ? " ON " : " OFF", 4);
+		}
+		if (GUIcrowpos == 12 && prevlfreeze == 0)
+		{
+			memset(prevloadiname,  ' ',  sizeof(prevloadiname));
+			memset(prevloaddnamel, '\0', sizeof(prevloaddnamel));
+			memset(prevloadfnamel, '\0', sizeof(prevloadfnamel));
+			GUIQuickLoadUpdate();
+			return;
+		}
+	}
+	if (GUIcmenupos == 2)
+	{
+		GUICheckMenuItem(1, 0); // Load
+		if (GUIcrowpos == 0)
+		{
+			GUIcurrentfilewin = 0;
+			GetLoadData();
+			return;
+		}
+		if (romloadskip == 0)
+		{
+			if (GUIcrowpos == 1)
+			{ // Run
+				GUIQuit = 2;
+				return;
+			}
+			GUICheckMenuItem(12, 2); // Reset
+			if (GUIcrowpos == 2)
+			{
+				GUICResetPos = 1;
+			}
+			if (GUIcrowpos == 4)
+			{
+				GUIStatesText5 = 0;
+				GUICStatePos   = 1;
+			}
+			if (GUIcrowpos == 5)
+			{
+				GUIStatesText5 = 1;
+				GUICStatePos   = 1;
+			}
+			GUICheckMenuItem(14, 4); // Save State
+			GUICheckMenuItem(14, 5); // Load State
+			GUICheckMenuItem( 2, 6); // Select State
+		}
+		if (GUIcrowpos == 8) GUIQuit = 1;
+	}
+	if (GUIcmenupos == 3)
+	{
+		// The number on the left is the window to open
+		// the number on the right is where in the drop down box we are
+		GUICheckMenuItem( 3, 0); // Input #1-5
+		GUICheckMenuItem(17, 2); // Devices
+		GUICheckMenuItem(18, 3); // Chip Config
+		GUICheckMenuItem( 4, 5); // Options
+		if (GUIcrowpos == 6) // Video
+		{
+			// set Video cursor location
+			u4 const v = cvidmode;
+			u4 const n = NumVideoModes;
+			GUIcurrentvideocursloc = v;
+			GUIcurrentvideoviewloc =
+				n <= 20    ? 0      :
+				n - 20 < v ? n - 20 :
+				v;
+			CheckMenuItemHelp(5);
+		}
+		GUICheckMenuItem( 6, 7); // Sound
+		GUICheckMenuItem(19, 8); // Paths
+		GUICheckMenuItem(20, 9); // Saves
+		GUICheckMenuItem(21,10); // Speed
+	}
+	if (romloadskip == 0 && GUIcmenupos == 4)
+	{
+		GUICheckMenuItem( 7, 0);
+		GUICheckMenuItem( 7, 1);
+		GUICheckMenuItem(13, 2);
+		if (GUIcrowpos == 0) GUIcurrentcheatwin = 1;
+		if (GUIcrowpos == 1) GUIcurrentcheatwin = 0;
+	}
+	if (GUIcmenupos == 6)
+	{
+		GUICheckMenuItem( 9, 0);
+		GUICheckMenuItem(10, 1);
+		if (romloadskip == 0)
+		{
+			GUICheckMenuItem(15, 2);
+			if (GUIcrowpos == 2) MovieRecordWinVal = 0;
+		}
+		GUICheckMenuItem(16, 3); // Save Config
+		if (GUIcrowpos == 4)
+		{
+			savecfgforce = 1;
+			GUISaveVars();
+			savecfgforce = 0;
+
+			asm_call(Makemode7Table);
+			GUICMessage = "CONFIGURATION FILES SAVED.";
+			GUICTimer   = 50;
+		}
+		GUICheckMenuItem(11, 6);
 	}
 }
 

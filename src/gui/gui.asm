@@ -52,10 +52,10 @@ EXTSYM sprlefttot,spritetablea,KeyRTRCycle
 EXTSYM cgram,tempco0,prevbright,maxbr,prevpal,coladdr,coladdg
 EXTSYM coladdb,scaddtype,initvideo,pressed,UpdateDevices,memtabler8
 EXTSYM memtablew8,writeon,JoyRead,SetInputDevice,delay,FPSOn,RevStereo,WDSPReg0C
-EXTSYM WDSPReg1C,pl12s34,Makemode7Table,vidbufferofsb,wramdata,bgfixer
+EXTSYM WDSPReg1C,pl12s34,vidbufferofsb,wramdata,bgfixer
 EXTSYM videotroub,CheatCodeSave,CheatCodeLoad
 EXTSYM Check_Key,Get_Key,sram,ScanCodeListing,RelPathBase
-EXTSYM GUISaveVars,Get_MouseData,Set_MouseXMax
+EXTSYM Get_MouseData,Set_MouseXMax
 EXTSYM Set_MouseYMax,Set_MousePosition,Get_MousePositionDisplacement
 EXTSYM MessageOn,GetTime
 EXTSYM Clear2xSaIBuffer,MouseWindow,Show224Lines
@@ -66,17 +66,18 @@ EXTSYM MultiTap,SFXEnable
 EXTSYM nssdip1,nssdip2,nssdip3,nssdip4,nssdip5,nssdip6
 EXTSYM SkipMovie,MovieStop,MoviePlay,MovieRecord
 EXTSYM MovieInsertChapter,MovieSeekAhead,MovieSeekBehind,ResetDuringMovie
-EXTSYM MovieDumpRaw,MovieAppend,AutoLoadCht,GUIQuickLoadUpdate,GUILoadData
+EXTSYM MovieDumpRaw,MovieAppend,AutoLoadCht,GUILoadData
 EXTSYM GUIDoReset,CheckMenuItemHelp
+EXTSYM GUITryMenuItem
 
 EXTSYM GUIwinposx,GUIwinposy,maxskip,GUIEffect,hqFilter,En2xSaI,NTSCFilter
 EXTSYM NTSCBlend,NTSCHue,NTSCSat,NTSCCont,NTSCBright,NTSCSharp,NTSCRef
 EXTSYM NTSCGamma,NTSCRes,NTSCArt,NTSCFringe,NTSCBleed,NTSCWarp
 EXTSYM LowPassFilterType,MovieStartMethod,MovieDisplayFrame,savewinpos
 EXTSYM SnapPath,SPCPath,BSXPath,SGPath,STPath,GNextPath
-EXTSYM SRAMPath,CheatSrcByteSize,prevloadfnamel
+EXTSYM SRAMPath,CheatSrcByteSize
 EXTSYM IPSPath,MoviePath,CHTPath,ComboPath,INPPath,SStatePath
-EXTSYM prevloadiname,prevloaddnamel,prevlfreeze,MMXSupport
+EXTSYM MMXSupport
 EXTSYM GUIRAdd,GUIGAdd,GUIBAdd,GUITRAdd,GUITGAdd,GUITBAdd,GUIWRAdd
 EXTSYM GUIWGAdd,GUIWBAdd,GUIloadfntype,SoundInterpType
 EXTSYM CheatSrcByteBase,CheatSrcSearchType,CheatUpperByteOnly,GUIComboGameSpec
@@ -105,7 +106,7 @@ EXTSYM KeyInsrtChap,KeyPrevChap,KeyNextChap,KeyDisplayFPS,KeyNewGfxSwt
 EXTSYM KeyIncStateSlot,KeyDecStateSlot,KeySaveState,KeyLoadState,KeyStateSelct
 EXTSYM KeyRewind,KeyEmuSpeedUp,KeyEmuSpeedDown,KeyFRateUp,KeyFRateDown
 EXTSYM KeyFastFrwrd,KeySlowDown,KeyResetSpeed,EMUPauseKey,INCRFrameKey
-EXTSYM KeyWinDisble,KeyOffsetMSw,JoyPad1Move,init_save_paths,loadquickfname
+EXTSYM KeyWinDisble,KeyOffsetMSw,JoyPad1Move,init_save_paths
 EXTSYM mousewrap,GUIRClick,SwapMouseButtons
 EXTSYM FPSAtStart,Turbo30hz,TimerEnable,SmallMsgText,mouse1lh,mouse2lh
 EXTSYM AutoPatch,RomInfo,AllowUDLR,GrayscaleMode,GUIMovieForcedText
@@ -299,8 +300,8 @@ GUICBHold2   resd 1
 NEWSYM GUIDClickTL,  resd 1
 GUIDClCWin   resd 1
 GUIDClCEntry resd 1
-GUICResetPos resd 1
-GUICStatePos resd 1
+NEWSYM GUICResetPos, resd 1
+NEWSYM GUICStatePos, resd 1
 NEWSYM GUICCFlash,   resb 1
 NEWSYM GUILDFlash,   resb 1
 NEWSYM GUIPalConv,   resd 1
@@ -432,199 +433,6 @@ SECTION .bss
 NEWSYM Totalbyteloaded, resd 1
 NEWSYM sramsavedis, resb 1
 
-SECTION .text
-
-%macro GUICheckMenuItem 2
-  cmp byte[GUIcrowpos],%2
-  jne near %%nomenuitem
-  ccallv CheckMenuItemHelp, %1
-%%nomenuitem
-%endmacro
-
-%macro checkqloadvalue 1
-  cmp byte[GUIcrowpos],%1
-  jne %%skip
-  ccallv loadquickfname, %1
-  ret
-%%skip
-%endmacro
-
-GUITryMenuItem:                     ; Defines which menu item calls what window number
-  cmp byte[GUIcmenupos],1
-  jne near .noquickload
-  checkqloadvalue 0
-  checkqloadvalue 1
-  checkqloadvalue 2
-  checkqloadvalue 3
-  checkqloadvalue 4
-  checkqloadvalue 5
-  checkqloadvalue 6
-  checkqloadvalue 7
-  checkqloadvalue 8
-  checkqloadvalue 9
-  cmp byte[GUIcrowpos],11
-  jne .skipswitch
-  xor byte[prevlfreeze],1
-  cmp byte[prevlfreeze],0
-  je .off
-  mov dword[GUIPrevMenuData+347],' ON '
-  jmp .on
-.off
-  mov dword[GUIPrevMenuData+347],' OFF'
-.on
-.skipswitch
-  cmp byte[GUIcrowpos],12
-  jne .skipclear
-  cmp byte[prevlfreeze],0
-  jne .skipclear
-  mov edi,prevloadiname
-  mov eax,20202020h
-  mov ecx,70
-  rep stosd
-  mov edi,prevloaddnamel
-  xor eax,eax
-  mov ecx,1280
-  rep stosd
-  mov edi,prevloadfnamel
-  mov ecx,1280
-  rep stosd
-  ccallv GUIQuickLoadUpdate
-  ret
-.skipclear
-.noquickload
-  cmp byte[GUIcmenupos],2
-  jne near .nomain
-  GUICheckMenuItem 1, 0               ; Load
-  cmp byte[GUIcrowpos],0
-  jne .noloadrefresh
-  mov dword[GUIcurrentfilewin],0
-  ccallv GetLoadData
-  ret
-.noloadrefresh
-  cmp byte[romloadskip],0
-  jne near .noromloaded
-  cmp byte[GUIcrowpos],1              ; Run
-  jne .norun
-  cmp byte[romloadskip],0
-  jne .dontquit
-  mov byte[GUIQuit],2
-.dontquit
-  ret
-.norun
-  GUICheckMenuItem 12, 2              ; Reset
-  cmp byte[GUIcrowpos],2
-  jne .noreset
-  mov byte[GUICResetPos],1
-.noreset
-  cmp byte[GUIcrowpos],4
-  jne .nosavestate
-  mov byte[GUIStatesText5],0
-  mov byte[GUICStatePos],1
-.nosavestate
-  cmp byte[GUIcrowpos],5
-  jne .noloadstate
-  mov byte[GUIStatesText5],1
-  mov byte[GUICStatePos],1
-.noloadstate
-  GUICheckMenuItem 14, 4              ; Save State
-  GUICheckMenuItem 14, 5              ; Load State
-  GUICheckMenuItem 2, 6               ; Select State
-.noromloaded
-  cmp byte[GUIcrowpos],8
-  jne .noquit
-  mov byte[GUIQuit],1
-.noquit
-.nomain
-  cmp byte[GUIcmenupos],3
-  jne near .noconfig
-  ;The number on the left is the window to open
-  ;the number on the right is where in the drop down box we are
-  GUICheckMenuItem 3,0               ; Input #1-5
-  GUICheckMenuItem 17,2              ; Devices
-  GUICheckMenuItem 18,3              ; Chip Config
-  GUICheckMenuItem 4,5               ; Options
-  cmp byte[GUIcrowpos],6             ; Video
-  jne near .novideo
-  ; set Video cursor location
-  xor eax,eax
-  mov al,[cvidmode]
-  mov [GUIcurrentvideocursloc],eax
-  mov edx,[NumVideoModes]
-  cmp edx,20
-  ja .viewloc
-  mov dword[GUIcurrentvideoviewloc],0
-  jmp .skip
-.viewloc
-  sub edx,20
-  cmp eax,edx
-  jbe .noof
-  mov eax,edx
-.noof
-  mov [GUIcurrentvideoviewloc],eax
-.skip
-  ccallv CheckMenuItemHelp, 5
-.novideo
-  GUICheckMenuItem 6,7             ; Sound
-  GUICheckMenuItem 19,8            ; Paths
-  GUICheckMenuItem 20,9            ; Saves
-  GUICheckMenuItem 21,10           ; Speed
-.noconfig
-  cmp byte[romloadskip],0
-  jne near .nocheat
-  cmp byte[GUIcmenupos],4
-  jne near .nocheat
-  GUICheckMenuItem 7, 0
-  GUICheckMenuItem 7, 1
-  GUICheckMenuItem 13, 2
-  cmp byte[GUIcrowpos],0
-  jne .noaddc
-  mov dword[GUIcurrentcheatwin],1
-.noaddc
-  cmp byte[GUIcrowpos],1
-  jne .nobrowsec
-  mov dword[GUIcurrentcheatwin],0
-.nobrowsec
-.nocheat
-  cmp byte[GUIcmenupos],5
-  jne near .nonet
-%ifdef __MSDOS__
-;    GUICheckMenuItem 8, 0        ; Disable DOS Netplay Options
-;    GUICheckMenuItem 8, 1
-%endif
-;    GUICheckMenuItem 8, 0        ; Disable WIN/SDL Internet Option
-  cmp byte[GUIcrowpos],0
-  jne near .nonet
-.nonet
-  cmp byte[GUIcmenupos],6
-  jne near .nomisc
-  GUICheckMenuItem 9, 0
-  GUICheckMenuItem 10, 1
-  cmp byte[romloadskip],0
-  jne near .nomovie
-  GUICheckMenuItem 15, 2
-  cmp byte[GUIcrowpos],2
-  jne .nomovie
-  mov byte[MovieRecordWinVal],0
-.nomovie
-  GUICheckMenuItem 16, 3        ; Save Config
-  cmp byte[GUIcrowpos],4
-  jne .nosavestuff
-
-  mov byte[savecfgforce],1
-  ccallv GUISaveVars
-  mov byte[savecfgforce],0
-
-  call Makemode7Table
-  mov dword[GUICMessage],.message1
-  mov dword[GUICTimer],50
-.nosavestuff
-  GUICheckMenuItem 11, 6
-.nomisc
-  ret
-
-SECTION .data
-.message1 db 'CONFIGURATION FILES SAVED.',0
-NEWSYM savecfgforce, db 0
 SECTION .text
 
 GUIProcStates:

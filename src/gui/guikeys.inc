@@ -705,7 +705,7 @@ NEWSYM GUIgetcurrentinput
 .dontquit
   cmp al,13
   jne .noenter
-  call GUITryMenuItem
+  ccallv GUITryMenuItem
 .noenter
 %ifdef __UNIXSDL__
   cmp al,92

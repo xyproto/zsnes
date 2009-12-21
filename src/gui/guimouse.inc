@@ -235,7 +235,7 @@ ProcessMouseButtons:
   je near .noclick
   cmp byte[GUIOnMenuItm],1
   jne .nomenuitem
-  call GUITryMenuItem
+  ccallv GUITryMenuItem
   jmp .noclick
 .nomenuitem
 
