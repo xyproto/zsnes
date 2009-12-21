@@ -263,6 +263,94 @@ static void DrawSnow(void)
 }
 
 
+static void guipostvideoloop(void)
+{
+	do
+	{
+		asm_call(GUIUnBuffer);
+		DisplayBoxes();
+		DisplayMenu();
+		GUIBox3D(43, 90, 213, 163);
+		GUIOuttextShadowed(55,  95, "VIDEO MODE CHANGED.");
+		GUIOuttextShadowed(55, 150, "  PRESS SPACEBAR.");
+		asm_call(vidpastecopyscr);
+		// Wait for all mouse and input data to be 0
+
+		if (GUIkeydelay == 0) break;
+
+		// This is to make all ports not register space bar from being pressed earlier
+		pressed[0x2C] = 0;
+
+		asm_call(JoyRead);
+	}
+	while (pressed[0x39] == 0);
+	GUIpclicked = 1;
+}
+
+
+void guipostvideo(void)
+{
+	memset(vidbufferofsb, 0xFF, 256 * 144 * 4);
+	GUIkeydelay = 36 * 10;
+	guipostvideoloop();
+}
+
+
+#ifdef __MSDOS__
+void guipostvideofail(void)
+{
+	char guipostvidmsg3b[3][26];
+	guipostvidmsg3b[0][0] = '\0';
+	guipostvidmsg3b[1][0] = '\0';
+	guipostvidmsg3b[2][0] = '\0';
+
+	char const* src = ErrorPointer;
+	char const* end = src;
+	while (*end != '\0' && *end != '$') ++end;
+	char (*guipostvidptr)[26] = guipostvidmsg3b;
+	for (;; ++src, ++guipostvidptr)
+	{
+		u4 n = end - src;
+		for (;;)
+		{
+			if (n == 0) goto notext;
+			if (n < lengthof(*guipostvidptr)) break;
+			while (src[--n] != ' ') {} // XXX potential buffer underrun
+		}
+		char* dst = *guipostvidptr;
+		do
+		{
+			char c = *src++;
+			if (c == '$') c = '\0';
+			*dst++ = c;
+		}
+		while (--n != 0);
+		*dst = '\0';
+		if (*src == '\0' || *src == '$') break; // XXX buffer overrun if there are more than 3 lines of text
+	}
+notext:
+
+	memset(pressed, 0, 256); // XXX maybe should be sizeof(pressed)
+	asm_call(GUIUnBuffer);
+	DisplayBoxes();
+	DisplayMenu();
+	GUIBox3D(43, 90, 213, 163);
+	GUIOuttextShadowed(55,  95, "VIDEO MODE CHANGE FAILED.");
+	GUIOuttextShadowed(55, 107, "UNABLE TO INIT VESA2:");
+	GUIOuttextShadowed(55, 118, guipostvidmsg3b[0]);
+	GUIOuttextShadowed(55, 128, guipostvidmsg3b[1]);
+	GUIOuttextShadowed(55, 138, guipostvidmsg3b[2]);
+	GUIOuttextShadowed(55, 151, "PRESS ANY KEY");
+	asm_call(vidpastecopyscr);
+	asm_call(GUIUnBuffer);
+	DisplayBoxes();
+	DisplayMenu();
+	GUIkeydelay = 0xFFFFFFFF;
+	guipostvideoloop();
+}
+#endif
+
+
 static void loadmenuopen(u4 const param1) // XXX better parameter name
 {
 	GUIpmenupos = GUIcmenupos;

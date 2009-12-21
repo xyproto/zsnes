@@ -3,6 +3,7 @@
 
 #include "../types.h"
 
-extern u1 TripBufAvail;
+extern char const* ErrorPointer;
+extern u1          TripBufAvail;
 
 #endif

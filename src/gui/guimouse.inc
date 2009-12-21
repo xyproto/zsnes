@@ -19,7 +19,7 @@
 
 
 
-EXTSYM guimencodermsg, guilamemsg, guiprevideo, guipresstest
+EXTSYM guimencodermsg, guilamemsg, guiprevideo, guipresstest, guipostvideo, guipostvideofail
 
 %ifdef __WIN32__
 EXTSYM MinimizeWindow
@@ -905,7 +905,7 @@ GUIProcVideo:
   je .failed
 %endif
   call GUISetPal
-  call guipostvideo
+  ccallv guipostvideo
   cmp dword[GUIkeydelay],0
   je .failed2
   mov dword[GUIkeydelay],0
@@ -922,7 +922,7 @@ GUIProcVideo:
   mov [cvidmode],al
   ccallv initvideo
   call GUISetPal
-  call guipostvideofail
+  ccallv guipostvideofail
   mov dword[GUIkeydelay],0
   ret
 %endif

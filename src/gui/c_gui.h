@@ -10,6 +10,10 @@ void StartGUI(void);
 void guimencodermsg(void);
 void guilamemsg(void);
 void guiprevideo(void);
+void guipostvideo(void);
+#ifdef __MSDOS__
+void guipostvideofail(void);
+#endif
 void guicheaterror(void);
 void DisplayBoxes(void);
 void DisplayMenu(void);

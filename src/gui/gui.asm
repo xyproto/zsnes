@@ -67,7 +67,7 @@ EXTSYM nssdip1,nssdip2,nssdip3,nssdip4,nssdip5,nssdip6
 EXTSYM SkipMovie,MovieStop,MoviePlay,MovieRecord
 EXTSYM MovieInsertChapter,MovieSeekAhead,MovieSeekBehind,ResetDuringMovie
 EXTSYM MovieDumpRaw,MovieAppend,AutoLoadCht,GUIQuickLoadUpdate,GUILoadData
-EXTSYM GUIDoReset,DisplayMenu,DisplayBoxes
+EXTSYM GUIDoReset
 
 EXTSYM GUIwinposx,GUIwinposy,maxskip,GUIEffect,hqFilter,En2xSaI,NTSCFilter
 EXTSYM NTSCBlend,NTSCHue,NTSCSat,NTSCCont,NTSCBright,NTSCSharp,NTSCRef
@@ -131,7 +131,7 @@ EXTSYM HighPriority,SaveMainWindowPos,PrimaryBuffer
 EXTSYM CBBuffer,CBLength,PasteClipBoard,ctrlptr,PauseFocusChange
 %elifdef __MSDOS__
 EXTSYM dssel,SetInputDevice209,initvideo2,Force8b,SBHDMA,vibracard,smallscreenon,ExitFromGUI
-EXTSYM pl1p209,pl2p209,pl3p209,pl4p209,pl5p209,SidewinderFix,Triplebufen,ScreenScale,ErrorPointer
+EXTSYM pl1p209,pl2p209,pl3p209,pl4p209,pl5p209,SidewinderFix,Triplebufen,ScreenScale
 EXTSYM GUIEAVID,GUIWSVID,GUISSVID,GUITBVID,GUISLVID,GUIHSVID,GUI2xVID,TripBufAvail
 EXTSYM JoyMinX209,JoyMaxX209,JoyMinY209,JoyMaxY209,DOSClearScreen
 EXTSYM GUI36hzcall
@@ -439,154 +439,8 @@ NEWSYM MsgGiftLeft, dd 0
 %endmacro
 
 .message db 0,0,0,0,' ',0,0,0,0,0,0,0
-SECTION .text
-
-guipostvideo:
-  mov ecx,256*144
-  mov eax,[vidbufferofsb]
-.loop
-  mov dword[eax],0FFFFFFFFh
-  add eax,4
-  dec ecx
-  jnz .loop
-
-  mov dword[GUIkeydelay],36*10
-
-.pressedfail
-  call GUIUnBuffer
-  ccallv DisplayBoxes
-  ccallv DisplayMenu
-  GUIBox 43,90,213,163,160
-  GUIBox 43,90,213,90,162
-  GUIBox 43,90,43,163,161
-  GUIBox 213,90,213,163,159
-  GUIBox 43,163,213,163,158
-  GUIOuttext 56,96,guipostvidmsg1,220-15
-  GUIOuttext 55,95,guipostvidmsg1,220
-  GUIOuttext 56,151,guipostvidmsg2,220-15
-  GUIOuttext 55,150,guipostvidmsg2,220
-  call vidpastecopyscr
-  ; Wait for all mouse and input data to be 0
-
-  cmp dword[GUIkeydelay],0
-  je .pressedokay
-
-  ;This is to make all ports not register space bar from being pressed earlier
-  mov byte[pressed+2Ch],0
-
-  call JoyRead
-
-  cmp byte[pressed+39h],0
-  jne .pressedokay
-  jmp .pressedfail
-.pressedokay
-  mov byte[GUIpclicked],1
-  ret
-
-SECTION .data
-guipostvidmsg1 db 'VIDEO MODE CHANGED.',0
-guipostvidmsg2 db '  PRESS SPACEBAR.',0
-SECTION .text
-
-%ifdef __MSDOS__
-guipostvideofail:
-  mov dword[guipostvidptr],guipostvidmsg3b
-  mov byte[guipostvidmsg3b],0
-  mov byte[guipostvidmsg4b],0
-  mov byte[guipostvidmsg5b],0
-  mov eax,[ErrorPointer]
-  mov ebx,eax
-.loop
-  cmp byte[ebx],0
-  je .found
-  cmp byte[ebx],'$'
-  je .found
-  inc ebx
-  jmp .loop
-.found
-  mov edx,ebx
-  sub edx,eax
-.detnext
-  or edx,edx
-  jz .notext
-  cmp edx,25
-  jbe .copytext
-.nospace
-  dec edx
-  cmp byte[eax+edx],32
-  jne .nospace
-  jmp .detnext
-.copytext
-  push ebx
-  mov ecx,[guipostvidptr]
-.copytextloop
-  mov bl,[eax]
-  cmp bl,'$'
-  jne .notdol
-  mov bl,0
-.notdol
-  mov [ecx],bl
-  inc eax
-  inc ecx
-  dec edx
-  jnz .copytextloop
-  mov byte[ecx],0
-  pop ebx
-  add dword[guipostvidptr],26
-  cmp byte[eax],0
-  je .notext
-  cmp byte[eax],'$'
-  je .notext
-  inc eax
-  jmp .found
-.notext
-
-  xor ebx,ebx
-  mov ecx,256
-.a
-  mov byte[pressed+ebx],0
-  inc ebx
-  dec ecx
-  jnz .a
-  call GUIUnBuffer
-  ccallv DisplayBoxes
-  ccallv DisplayMenu
-  GUIBox 43,90,213,163,160
-  GUIBox 43,90,213,90,162
-  GUIBox 43,90,43,163,161
-  GUIBox 213,90,213,163,159
-  GUIBox 43,163,213,163,158
-  GUIOuttext 56,96,guipostvidmsg1b,220-15
-  GUIOuttext 55,95,guipostvidmsg1b,220
-  GUIOuttext 56,108,guipostvidmsg2b,220-15
-  GUIOuttext 55,107,guipostvidmsg2b,220
-  GUIOuttext 56,119,guipostvidmsg3b,220-15
-  GUIOuttext 55,118,guipostvidmsg3b,220
-  GUIOuttext 56,129,guipostvidmsg4b,220-15
-  GUIOuttext 55,128,guipostvidmsg4b,220
-  GUIOuttext 56,139,guipostvidmsg5b,220-15
-  GUIOuttext 55,138,guipostvidmsg5b,220
-  GUIOuttext 56,152,guipostvidmsg8b,220-15
-  GUIOuttext 55,151,guipostvidmsg8b,220
-  call vidpastecopyscr
-  call GUIUnBuffer
-  ccallv DisplayBoxes
-  ccallv DisplayMenu
-  mov dword[GUIkeydelay],0FFFFFFFFh
-  jmp guipostvideo.pressedfail
-
-SECTION .data
-guipostvidmsg1b db 'VIDEO MODE CHANGE FAILED.',0
-guipostvidmsg2b db 'UNABLE TO INIT VESA2:',0
-guipostvidmsg3b db 'AAAAAAAAAAAAAAAAAAAAAAAAA',0
-guipostvidmsg4b db 'AAAAAAAAAAAAAAAAAAAAAAAAA',0
-guipostvidmsg5b db 'AAAAAAAAAAAAAAAAAAAAAAAAA',0
-guipostvidmsg8b db 'PRESS ANY KEY',0
 SECTION .bss
-guipostvidptr resd 1
-%endif
 
-SECTION .bss
 ManualCPtr resd 1
 ManualStatus resb 1
 NEWSYM Totalbyteloaded, resd 1
