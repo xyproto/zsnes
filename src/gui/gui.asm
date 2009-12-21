@@ -441,8 +441,6 @@ NEWSYM MsgGiftLeft, dd 0
 .message db 0,0,0,0,' ',0,0,0,0,0,0,0
 SECTION .bss
 
-ManualCPtr resd 1
-ManualStatus resb 1
 NEWSYM Totalbyteloaded, resd 1
 NEWSYM sramsavedis, resb 1
 
