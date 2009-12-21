@@ -23,18 +23,6 @@ EXTSYM GUIOutputString
 
 SECTION .text
 
-NEWSYM CopyString
-  push eax
-.again
-  mov dl,[eax]
-  mov [ebx],dl
-  inc eax
-  inc ebx
-  or dl,dl
-  jnz .again
-  pop eax
-  ret
-
 NEWSYM StringLength
   xor ecx,ecx
   push eax
