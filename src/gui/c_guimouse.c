@@ -6,7 +6,6 @@
 #include "../macros.h"
 #include "c_gui.h"
 #include "c_guimouse.h"
-#include "gui.h"
 #include "guimouse.h"
 
 
@@ -17,7 +16,7 @@ static char const guipresstext2[] = "OR BUTTON TO USE";
 u4 guipresstest(void)
 {
 	memset(pressed, 0, sizeof(pressed));
-	asm_call(GUIUnBuffer);
+	GUIUnBuffer();
 	DisplayBoxes();
 	DisplayMenu();
 	GUIBox3D(75, 95, 180, 131);
@@ -37,7 +36,7 @@ u4 guipresstest(void)
 
 void guipresstestb(void)
 {
-	asm_call(GUIUnBuffer);
+	GUIUnBuffer();
 	DisplayBoxes();
 	DisplayMenu();
 	GUIBox3D(65, 80, 194, 126);

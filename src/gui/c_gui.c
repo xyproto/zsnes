@@ -274,7 +274,7 @@ static void guipostvideoloop(void)
 {
 	do
 	{
-		asm_call(GUIUnBuffer);
+		GUIUnBuffer();
 		DisplayBoxes();
 		DisplayMenu();
 		GUIBox3D(43, 90, 213, 163);
@@ -338,7 +338,7 @@ void guipostvideofail(void)
 notext:
 
 	memset(pressed, 0, 256); // XXX maybe should be sizeof(pressed)
-	asm_call(GUIUnBuffer);
+	GUIUnBuffer();
 	DisplayBoxes();
 	DisplayMenu();
 	GUIBox3D(43, 90, 213, 163);
@@ -349,7 +349,7 @@ notext:
 	GUIOuttextShadowed(55, 138, guipostvidmsg3b[2]);
 	GUIOuttextShadowed(55, 151, "PRESS ANY KEY");
 	asm_call(vidpastecopyscr);
-	asm_call(GUIUnBuffer);
+	GUIUnBuffer();
 	DisplayBoxes();
 	DisplayMenu();
 	GUIkeydelay = 0xFFFFFFFF;
@@ -547,6 +547,15 @@ void GUIProcReset(void)
 	GUICBHold                = 0;
 	GUIwinactiv[12]          = 0;
 	GUIwinorder[--GUIwinptr] = 0;
+}
+
+
+void GUIUnBuffer(void)
+{
+	// copy from spritetable
+	u1* const dst = vidbuffer;
+	memcpy(dst, spritetablea + 288 * 8, 65536);
+	memset(dst + 65536, 0x01, 288 * 8);
 }
 
 
@@ -1196,7 +1205,7 @@ static void guifirsttimemsg(void)
 		GUIOuttextShadowed(51, 135, "      AND QUESTIONS.");
 		GUIOuttextShadowed(51, 150, guiftimemsg8);
 		asm_call(vidpastecopyscr);
-		asm_call(GUIUnBuffer);
+		GUIUnBuffer();
 		DisplayBoxes();
 		DisplayMenu();
 		asm_call(JoyRead);
@@ -1224,7 +1233,7 @@ static void horizonfixmsg(void)
 		GUIOuttextShadowed(51, 119, msg);
 		GUIOuttextShadowed(51, 150, guiftimemsg8);
 		asm_call(vidpastecopyscr);
-		asm_call(GUIUnBuffer);
+		GUIUnBuffer();
 		DisplayBoxes();
 		DisplayMenu();
 		asm_call(JoyRead);
@@ -1388,7 +1397,7 @@ void StartGUI(void)
 			asm_call(ProcessMouse);
 			if (videotroub == 1) return;
 		}
-		asm_call(GUIUnBuffer);
+		GUIUnBuffer();
 		if (GUIEffect == 1) DrawSnow();
 		if (GUIEffect == 2) DrawWater();
 		if (GUIEffect == 3) DrawWater();
@@ -1490,7 +1499,7 @@ void guimencodermsg(void)
 		GUIOuttextShadowed(51,  95, " MENCODER IS MISSING: ");
 		GUIOuttextShadowed(51, 133, "PRESS SPACE TO PROCEED");
 		asm_call(vidpastecopyscr);
-		asm_call(GUIUnBuffer);
+		GUIUnBuffer();
 		DisplayBoxes();
 		DisplayMenu();
 		asm_call(JoyRead);
@@ -1510,7 +1519,7 @@ void guilamemsg(void)
 		GUIOuttextShadowed(51, 95, " LAME IS MISSING: ");
 		GUIOuttextShadowed(51,133, "PRESS SPACE TO PROCEED");
 		asm_call(vidpastecopyscr);
-		asm_call(GUIUnBuffer);
+		GUIUnBuffer();
 		DisplayBoxes();
 		DisplayMenu();
 		asm_call(JoyRead);
@@ -1543,7 +1552,7 @@ void guiprevideo(void)
 {
 	memset(pressed, 0, 256); // XXX maybe should be sizeof(pressed)
 
-	asm_call(GUIUnBuffer);
+	GUIUnBuffer();
 	DisplayBoxes();
 	DisplayMenu();
 	GUIBox3D(43, 90, 213, 163);
@@ -1577,7 +1586,7 @@ void guicheaterror(void)
 
 	for (;;)
 	{
-		asm_call(GUIUnBuffer);
+		GUIUnBuffer();
 		DisplayBoxes();
 		DisplayMenu();
 		GUIBox3D(75, 95, 192, 143);

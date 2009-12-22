@@ -19,7 +19,7 @@
 void CalibrateDispA(void)
 {
 	memset(pressed, 0, 256); // XXX Probably should be sizeof(pressed)
-	asm_call(GUIUnBuffer);
+	GUIUnBuffer();
 	DisplayBoxes();
 	DisplayMenu();
 	GUIBox3D(75, 103, 192, 135);
@@ -34,7 +34,7 @@ void CalibrateDispA(void)
 void CalibrateDispB(void)
 {
 	memset(pressed, 0, 256); // XXX Probably should be sizeof(pressed)
-	asm_call(GUIUnBuffer);
+	GUIUnBuffer();
 	DisplayBoxes();
 	DisplayMenu();
 	GUIBox3D(75, 103, 192, 143);

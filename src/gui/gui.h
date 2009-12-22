@@ -3,8 +3,6 @@
 
 #include "../types.h"
 
-extern void GUIUnBuffer();
-
 extern char  GUIPrevMenuData[];
 extern char* GUICMessage;
 extern u1    CheatOn;

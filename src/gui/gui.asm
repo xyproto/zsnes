@@ -47,7 +47,7 @@ EXTSYM soundon,StereoSound,SoundQuality,MusicRelVol
 EXTSYM cbitmode
 EXTSYM romloadskip,romdata,current_zst
 EXTSYM vidbuffer,ASCII2Font,showallext,scanlines
-EXTSYM spritetablea,KeyRTRCycle
+EXTSYM KeyRTRCycle
 EXTSYM cgram,tempco0,prevbright,maxbr,prevpal,coladdr,coladdg
 EXTSYM coladdb,scaddtype,initvideo,pressed,UpdateDevices,memtabler8
 EXTSYM memtablew8,writeon,JoyRead,SetInputDevice,delay,FPSOn,RevStereo,WDSPReg0C
@@ -434,18 +434,6 @@ NEWSYM sramsavedis, resb 1
 
 NEWSYM GUICPC, resw 256
 SECTION .text
-
-NEWSYM GUIUnBuffer
-  mov ecx,16384
-  ; copy from spritetable
-  mov edi,[vidbuffer]
-  mov esi,[spritetablea]
-  add esi,8*288
-  rep movsd
-  mov eax,01010101h
-  mov ecx,2*288
-  rep stosd
-  ret
 
 NEWSYM GUIconvpal
   mov ax,[cgram]

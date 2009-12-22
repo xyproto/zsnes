@@ -18,6 +18,7 @@ void CheckMenuItemHelp(u4 id);
 void GUITryMenuItem(void);
 void GUIProcStates(void);
 void GUIProcReset(void);
+void GUIUnBuffer(void);
 void GUISetPal(void);
 void guicheaterror(void);
 void DisplayBoxes(void);
