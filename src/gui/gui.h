@@ -3,7 +3,6 @@
 
 #include "../types.h"
 
-extern void GUIBufferData();
 extern void GUIUnBuffer();
 
 extern char  GUIPrevMenuData[];

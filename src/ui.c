@@ -222,7 +222,7 @@ unsigned char *BitConv32Ptr = 0;
 unsigned char *RGBtoYUVPtr = 0;
 #endif
 u1*           spcBuffera = 0;
-unsigned char *spritetablea = 0;
+u1*           spritetablea = 0;
 unsigned char *vbufaptr = 0;
 unsigned char *vbufeptr = 0;
 unsigned char *ngwinptrb = 0;

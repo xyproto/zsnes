@@ -47,7 +47,7 @@ EXTSYM soundon,StereoSound,SoundQuality,MusicRelVol
 EXTSYM cbitmode
 EXTSYM romloadskip,romdata,current_zst
 EXTSYM vidbuffer,ASCII2Font,showallext,scanlines
-EXTSYM sprlefttot,spritetablea,KeyRTRCycle
+EXTSYM spritetablea,KeyRTRCycle
 EXTSYM cgram,tempco0,prevbright,maxbr,prevpal,coladdr,coladdg
 EXTSYM coladdb,scaddtype,initvideo,pressed,UpdateDevices,memtabler8
 EXTSYM memtablew8,writeon,JoyRead,SetInputDevice,delay,FPSOn,RevStereo,WDSPReg0C
@@ -434,40 +434,6 @@ NEWSYM sramsavedis, resb 1
 
 NEWSYM GUICPC, resw 256
 SECTION .text
-
-NEWSYM GUIBufferData
-%ifdef __MSDOS__
-  mov ecx,16384
-  cmp byte[cbitmode],1
-  jne near .16b
-  add ecx,16384
-.16b
-%else
-  mov ecx,32768
-%endif
-  ; copy to spritetable
-  mov esi,[vidbuffer]
-  cmp word[PrevResoln],224
-  je .nobufa
-  add esi,288*8
-.nobufa
-  mov edi,[spritetablea]
-  add edi,8*288
-.loop
-  mov eax,[esi]
-  mov [edi],eax
-  add esi,4
-  add edi,4
-  dec ecx
-  jnz .loop
-  mov edi,sprlefttot
-  mov ecx,64*5
-.a
-  mov dword[edi],0
-  add edi,4
-  dec ecx
-  jnz .a
-  ret
 
 NEWSYM GUIUnBuffer
   mov ecx,16384

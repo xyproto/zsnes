@@ -17,6 +17,7 @@ extern u1   cbitmode;               // bit mode, 0=8bit, 1=16bit
 extern u1   newgfx16b;
 extern u1*  romdata;                // rom data  (4MB = 4194304)
 extern u1*  spcBuffera;
+extern u1*  spritetablea;
 extern u1*  vidbuffer;              // video buffer (1024x239 = 244736)
 extern u1*  vidbufferofsa;          // offset 1
 extern u1*  vidbufferofsb;          // offset 2

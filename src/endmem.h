@@ -14,6 +14,11 @@ extern eop*  tableG[256];
 extern eop*  tableH[256];
 extern eop** tablead[256];
 extern u1    SpecialLine[256];
+extern u1    sprleftpr1[256];
+extern u1    sprleftpr2[256];
+extern u1    sprleftpr3[256];
+extern u1    sprleftpr[256];
+extern u1    sprlefttot[256];
 extern u4    ngpalcon2b[32];
 extern u4    ngpalcon4b[32];
 
