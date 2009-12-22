@@ -19,7 +19,7 @@
 
 
 
-EXTSYM VERSION_STR,placedate,convertnum,converthex
+EXTSYM VERSION_STR,placedate,convertnum,converthex,GUIHLine
 
 SECTION .data
 NEWSYM mencoderExists, db 0
@@ -28,11 +28,7 @@ NEWSYM lameExists, db 0
 SECTION .text
 
 %macro DrawGUILine 0
-  push eax
-  push ecx
-  call GUIHLine
-  pop ecx
-  pop eax
+  ccallv GUIHLine, eax, ecx, ebx, edx
   inc ebx
 %endmacro
 

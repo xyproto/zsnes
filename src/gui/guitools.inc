@@ -23,39 +23,6 @@ EXTSYM GUIOutputString
 
 SECTION .text
 
-GUIHLine:
-  cmp ecx,0
-  jl near .nodraw
-  cmp eax,255
-  jg near .nodraw
-  cmp eax,0
-  jnl .noofx
-  mov eax,0
-.noofx
-  cmp ecx,255
-  jng .noofx2
-  mov ecx,255
-.noofx2
-  cmp ebx,0
-  jl .nodraw
-  cmp ebx,223
-  jg .nodraw
-  sub ecx,eax
-  inc ecx
-  mov edi,[vidbuffer]
-  add edi,eax
-  add edi,16
-  mov eax,ebx
-  shl eax,8
-  add edi,eax
-  mov eax,ebx
-  shl eax,5
-  add edi,eax
-  mov eax,edx
-  rep stosb
-.nodraw
-  ret
-
 GUIDrawShadow2:
 .loop
   push edi

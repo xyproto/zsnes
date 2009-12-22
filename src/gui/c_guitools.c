@@ -70,6 +70,18 @@ void GUIBox(u4 const x1, u4 const y1, u4 const x2, u4 const y2, u1 const colour)
 }
 
 
+void GUIHLine(s4 x1, s4 x2, s4 const y, u1 const colour)
+{
+	if (x2 <   0) return;
+	if (x1 > 255) return;
+	if (x1 <   0) x1 =   0;
+	if (x2 > 255) x2 = 255;
+	if (y  <   0) return;
+	if (y  > 223) return;
+	memset(vidbuffer + x1 + 16 + y * 288, colour, x2 - x1 + 1);
+}
+
+
 static void GUIDrawShadow(u1* dst, u4 const w, u4 h)
 {
 	do
