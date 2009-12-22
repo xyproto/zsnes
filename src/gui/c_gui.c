@@ -628,19 +628,19 @@ void GUISetPal(void)
 		}
 
 		GUIPal(64, TRVal, TGVal, TBVal);
-		asm_call(DecPalVal);
+		DecPalVal();
 		GUIPal(65, TRVal, TGVal, TBVal);
-		asm_call(DecPalVal);
+		DecPalVal();
 		GUIPal(66, TRVal, TGVal, TBVal);
-		asm_call(DecPalVal);
+		DecPalVal();
 		GUIPal(67, TRVal, TGVal, TBVal);
-		asm_call(DecPalVal);
+		DecPalVal();
 		GUIPal(68, TRVal, TGVal, TBVal);
-		asm_call(DecPalVal);
+		DecPalVal();
 		GUIPal(69, TRVal, TGVal, TBVal);
-		asm_call(DecPalVal);
+		DecPalVal();
 		GUIPal(70, TRVal, TGVal, TBVal);
-		asm_call(DecPalVal);
+		DecPalVal();
 		GUIPal(71, TRVal, TGVal, TBVal);
 
 		GUIPal(72, 40,  0, 20);
@@ -672,13 +672,13 @@ void GUISetPal(void)
 		TBVali = 4;
 
 		GUIPal(152, TRVal, TGVal, TBVal);
-		asm_call(DecPalVal);
+		DecPalVal();
 		GUIPal(151, TRVal, TGVal, TBVal);
-		asm_call(DecPalVal);
+		DecPalVal();
 		GUIPal(150, TRVal, TGVal, TBVal);
-		asm_call(DecPalVal);
+		DecPalVal();
 		GUIPal(149, TRVal, TGVal, TBVal);
-		asm_call(DecPalVal);
+		DecPalVal();
 		GUIPal(148, TRVal, TGVal, TBVal);
 
 		TRVal  = GUIWRAdd * 2;
@@ -687,17 +687,17 @@ void GUISetPal(void)
 		TRVali = 4;
 		TGVali = 4;
 		TBVali = 4;
-		asm_call(DecPalVal);
-		asm_call(DecPalVal);
+		DecPalVal();
+		DecPalVal();
 
 		GUIPal(157, TRVal, TGVal, TBVal);
-		asm_call(DecPalVal);
+		DecPalVal();
 		GUIPal(156, TRVal, TGVal, TBVal);
-		asm_call(DecPalVal);
+		DecPalVal();
 		GUIPal(155, TRVal, TGVal, TBVal);
-		asm_call(DecPalVal);
+		DecPalVal();
 		GUIPal(154, TRVal, TGVal, TBVal);
-		asm_call(DecPalVal);
+		DecPalVal();
 		GUIPal(153, TRVal, TGVal, TBVal);
 
 		TRVal  = GUIWRAdd * 2;
@@ -706,19 +706,19 @@ void GUISetPal(void)
 		TRVali = 4;
 		TGVali = 4;
 		TBVali = 4;
-		asm_call(DecPalVal);
-		asm_call(DecPalVal);
-		asm_call(DecPalVal);
-		asm_call(DecPalVal);
+		DecPalVal();
+		DecPalVal();
+		DecPalVal();
+		DecPalVal();
 
 		GUIPal(162, TRVal, TGVal, TBVal);
-		asm_call(DecPalVal);
+		DecPalVal();
 		GUIPal(161, TRVal, TGVal, TBVal);
-		asm_call(DecPalVal);
+		DecPalVal();
 		GUIPal(160, TRVal, TGVal, TBVal);
-		asm_call(DecPalVal);
+		DecPalVal();
 		GUIPal(159, TRVal, TGVal, TBVal);
-		asm_call(DecPalVal);
+		DecPalVal();
 		GUIPal(158, TRVal, TGVal, TBVal);
 
 		GUIPal(163, 40, 40, 0);
@@ -736,13 +736,13 @@ void GUISetPal(void)
 		TBVali = 2;
 
 		GUIPal(172, TRVal, TGVal, TBVal);
-		asm_call(DecPalVal);
+		DecPalVal();
 		GUIPal(171, TRVal, TGVal, TBVal);
-		asm_call(DecPalVal);
+		DecPalVal();
 		GUIPal(170, TRVal, TGVal, TBVal);
-		asm_call(DecPalVal);
+		DecPalVal();
 		GUIPal(169, TRVal, TGVal, TBVal);
-		asm_call(DecPalVal);
+		DecPalVal();
 		GUIPal(168, TRVal, TGVal, TBVal);
 
 		TRVal  = GUIWRAdd;
@@ -751,17 +751,17 @@ void GUISetPal(void)
 		TRVali = 2;
 		TGVali = 2;
 		TBVali = 2;
-		asm_call(DecPalVal);
-		asm_call(DecPalVal);
+		DecPalVal();
+		DecPalVal();
 
 		GUIPal(177, TRVal, TGVal, TBVal);
-		asm_call(DecPalVal);
+		DecPalVal();
 		GUIPal(176, TRVal, TGVal, TBVal);
-		asm_call(DecPalVal);
+		DecPalVal();
 		GUIPal(175, TRVal, TGVal, TBVal);
-		asm_call(DecPalVal);
+		DecPalVal();
 		GUIPal(174, TRVal, TGVal, TBVal);
-		asm_call(DecPalVal);
+		DecPalVal();
 		GUIPal(173, TRVal, TGVal, TBVal);
 
 		TRVal  = GUIWRAdd;
@@ -770,19 +770,19 @@ void GUISetPal(void)
 		TRVali = 2;
 		TGVali = 2;
 		TBVali = 2;
-		asm_call(DecPalVal);
-		asm_call(DecPalVal);
-		asm_call(DecPalVal);
-		asm_call(DecPalVal);
+		DecPalVal();
+		DecPalVal();
+		DecPalVal();
+		DecPalVal();
 
 		GUIPal(182, TRVal, TGVal, TBVal);
-		asm_call(DecPalVal);
+		DecPalVal();
 		GUIPal(181, TRVal, TGVal, TBVal);
-		asm_call(DecPalVal);
+		DecPalVal();
 		GUIPal(180, TRVal, TGVal, TBVal);
-		asm_call(DecPalVal);
+		DecPalVal();
 		GUIPal(179, TRVal, TGVal, TBVal);
-		asm_call(DecPalVal);
+		DecPalVal();
 		GUIPal(178, TRVal, TGVal, TBVal);
 
 		GUIPal(183, 20, 20, 0);
@@ -834,6 +834,17 @@ void GUISetPal(void)
 	{
 		asm_call(GUISetPal16);
 	}
+}
+
+
+void DecPalVal(void)
+{
+	TRVal -= TRVali;
+	TGVal -= TGVali;
+	TBVal -= TBVali;
+	if (TRVal & 0x8000) TRVal = 0;
+	if (TGVal & 0x8000) TGVal = 0;
+	if (TBVal & 0x8000) TBVal = 0;
 }
 
 

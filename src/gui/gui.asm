@@ -67,7 +67,7 @@ EXTSYM SkipMovie,MovieStop,MoviePlay,MovieRecord
 EXTSYM MovieInsertChapter,MovieSeekAhead,MovieSeekBehind
 EXTSYM MovieDumpRaw,MovieAppend,AutoLoadCht,GUILoadData
 EXTSYM CheckMenuItemHelp
-EXTSYM GUITryMenuItem,GUIProcStates,GUIProcReset,GUISetPal
+EXTSYM GUITryMenuItem,GUIProcStates,GUIProcReset,GUISetPal,DecPalVal
 
 EXTSYM GUIwinposx,GUIwinposy,maxskip,GUIEffect,hqFilter,En2xSaI,NTSCFilter
 EXTSYM NTSCBlend,NTSCHue,NTSCSat,NTSCCont,NTSCBright,NTSCSharp,NTSCRef
@@ -448,27 +448,6 @@ SECTION .text
   mov [GUICPC+%1*2],ax
 %endmacro
 
-NEWSYM DecPalVal
-  mov ax,[TRVali]
-  sub word[TRVal],ax
-  mov ax,[TGVali]
-  sub word[TGVal],ax
-  mov ax,[TBVali]
-  sub word[TBVal],ax
-  test word[TRVal],8000h
-  jz .notnegr
-  mov word[TRVal],0
-.notnegr
-  test word[TGVal],8000h
-  jz .notnegg
-  mov word[TGVal],0
-.notnegg
-  test word[TBVal],8000h
-  jz .notnegb
-  mov word[TBVal],0
-.notnegb
-  ret
-
 NEWSYM GUISetPal16
   ; set palette
   ; Fixed Color Scale = 0 .. 31
@@ -581,19 +560,19 @@ NEWSYM GUISetPal16
   add [TBVal],ax
 
   GUIPal16b 64,[TRVal],[TGVal],[TBVal]
-  call DecPalVal
+  ccallv DecPalVal
   GUIPal16b 65,[TRVal],[TGVal],[TBVal]
-  call DecPalVal
+  ccallv DecPalVal
   GUIPal16b 66,[TRVal],[TGVal],[TBVal]
-  call DecPalVal
+  ccallv DecPalVal
   GUIPal16b 67,[TRVal],[TGVal],[TBVal]
-  call DecPalVal
+  ccallv DecPalVal
   GUIPal16b 68,[TRVal],[TGVal],[TBVal]
-  call DecPalVal
+  ccallv DecPalVal
   GUIPal16b 69,[TRVal],[TGVal],[TBVal]
-  call DecPalVal
+  ccallv DecPalVal
   GUIPal16b 70,[TRVal],[TGVal],[TBVal]
-  call DecPalVal
+  ccallv DecPalVal
   GUIPal16b 71,[TRVal],[TGVal],[TBVal]
 
   GUIPal16b 72,40,0,20
@@ -645,13 +624,13 @@ NEWSYM GUISetPal16
   mov byte[TBVali],4
 
   GUIPal16b 152,[TRVal],[TGVal],[TBVal]
-  call DecPalVal
+  ccallv DecPalVal
   GUIPal16b 151,[TRVal],[TGVal],[TBVal]
-  call DecPalVal
+  ccallv DecPalVal
   GUIPal16b 150,[TRVal],[TGVal],[TBVal]
-  call DecPalVal
+  ccallv DecPalVal
   GUIPal16b 149,[TRVal],[TGVal],[TBVal]
-  call DecPalVal
+  ccallv DecPalVal
   GUIPal16b 148,[TRVal],[TGVal],[TBVal]
 
   mov al,[GUIWRAdd]
@@ -677,13 +656,13 @@ NEWSYM GUISetPal16
   sub [TBVal],al
 
   GUIPal16b 157,[TRVal],[TGVal],[TBVal]
-  call DecPalVal
+  ccallv DecPalVal
   GUIPal16b 156,[TRVal],[TGVal],[TBVal]
-  call DecPalVal
+  ccallv DecPalVal
   GUIPal16b 155,[TRVal],[TGVal],[TBVal]
-  call DecPalVal
+  ccallv DecPalVal
   GUIPal16b 154,[TRVal],[TGVal],[TBVal]
-  call DecPalVal
+  ccallv DecPalVal
   GUIPal16b 153,[TRVal],[TGVal],[TBVal]
 
   mov al,[GUIWRAdd]
@@ -709,13 +688,13 @@ NEWSYM GUISetPal16
   sub [TBVal],al
 
   GUIPal16b 162,[TRVal],[TGVal],[TBVal]
-  call DecPalVal
+  ccallv DecPalVal
   GUIPal16b 161,[TRVal],[TGVal],[TBVal]
-  call DecPalVal
+  ccallv DecPalVal
   GUIPal16b 160,[TRVal],[TGVal],[TBVal]
-  call DecPalVal
+  ccallv DecPalVal
   GUIPal16b 159,[TRVal],[TGVal],[TBVal]
-  call DecPalVal
+  ccallv DecPalVal
   GUIPal16b 158,[TRVal],[TGVal],[TBVal]
 
   GUIPal16b 163,40,40,00
@@ -736,13 +715,13 @@ NEWSYM GUISetPal16
   mov byte[TBVali],2
 
   GUIPal16b 172,[TRVal],[TGVal],[TBVal]
-  call DecPalVal
+  ccallv DecPalVal
   GUIPal16b 171,[TRVal],[TGVal],[TBVal]
-  call DecPalVal
+  ccallv DecPalVal
   GUIPal16b 170,[TRVal],[TGVal],[TBVal]
-  call DecPalVal
+  ccallv DecPalVal
   GUIPal16b 169,[TRVal],[TGVal],[TBVal]
-  call DecPalVal
+  ccallv DecPalVal
   GUIPal16b 168,[TRVal],[TGVal],[TBVal]
 
   mov al,[GUIWRAdd]
@@ -754,17 +733,17 @@ NEWSYM GUISetPal16
   mov byte[TRVali],2
   mov byte[TGVali],2
   mov byte[TBVali],2
-  call DecPalVal
-  call DecPalVal
+  ccallv DecPalVal
+  ccallv DecPalVal
 
   GUIPal16b 177,[TRVal],[TGVal],[TBVal]
-  call DecPalVal
+  ccallv DecPalVal
   GUIPal16b 176,[TRVal],[TGVal],[TBVal]
-  call DecPalVal
+  ccallv DecPalVal
   GUIPal16b 175,[TRVal],[TGVal],[TBVal]
-  call DecPalVal
+  ccallv DecPalVal
   GUIPal16b 174,[TRVal],[TGVal],[TBVal]
-  call DecPalVal
+  ccallv DecPalVal
   GUIPal16b 173,[TRVal],[TGVal],[TBVal]
 
   mov al,[GUIWRAdd]
@@ -776,19 +755,19 @@ NEWSYM GUISetPal16
   mov byte[TRVali],2
   mov byte[TGVali],2
   mov byte[TBVali],2
-  call DecPalVal
-  call DecPalVal
-  call DecPalVal
-  call DecPalVal
+  ccallv DecPalVal
+  ccallv DecPalVal
+  ccallv DecPalVal
+  ccallv DecPalVal
 
   GUIPal16b 182,[TRVal],[TGVal],[TBVal]
-  call DecPalVal
+  ccallv DecPalVal
   GUIPal16b 181,[TRVal],[TGVal],[TBVal]
-  call DecPalVal
+  ccallv DecPalVal
   GUIPal16b 180,[TRVal],[TGVal],[TBVal]
-  call DecPalVal
+  ccallv DecPalVal
   GUIPal16b 179,[TRVal],[TGVal],[TBVal]
-  call DecPalVal
+  ccallv DecPalVal
   GUIPal16b 178,[TRVal],[TGVal],[TBVal]
 
   GUIPal16b 183,20,20,00
