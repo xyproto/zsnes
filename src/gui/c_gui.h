@@ -19,7 +19,6 @@ void GUITryMenuItem(void);
 void GUIProcStates(void);
 void GUIProcReset(void);
 void GUISetPal(void);
-void DecPalVal(void);
 void guicheaterror(void);
 void DisplayBoxes(void);
 void DisplayMenu(void);

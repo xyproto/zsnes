@@ -561,6 +561,281 @@ static void InitGUI(void)
 }
 
 
+static void DecPalVal(void)
+{
+	TRVal -= TRVali;
+	TGVal -= TGVali;
+	TBVal -= TBVali;
+	if (TRVal & 0x8000) TRVal = 0;
+	if (TGVal & 0x8000) TGVal = 0;
+	if (TBVal & 0x8000) TBVal = 0;
+}
+
+
+static void GUIPal16b(u4 const idx, u4 const r, u4 const g, u4 const b)
+{
+	GUICPC[idx] = r >> 1 << 11 | g <<  5 | b >> 1;
+}
+
+
+static void GUISetPal16(void)
+{
+	// set palette
+	{ // Fixed Color Scale = 0 .. 31
+		GUIPal16b(0, 0, 0, 0);
+		u4 i = 1;
+		do GUIPal16b(i, i + GUIRAdd, i + GUIGAdd, i + GUIBAdd); while (++i != 32);
+	}
+
+	{ // gray scale = 32 .. 63
+		u4 i = 32;
+		// XXX values too large: 64..126
+		do GUIPal16b(i, i * 2, i * 2, i * 2); while (++i != 64);
+	}
+
+	{ // shadow = 96 .. 127
+		u4 i = 0;
+		do
+		{
+			u1 const r = (i + GUIRAdd) * 3 / 4;
+			u1 const g = (i + GUIGAdd) * 3 / 4;
+			u1 const b = (i + GUIBAdd) * 3 / 4;
+			GUIPal16b(96 + i, r, g, b);
+		}
+		while (++i != 32);
+	}
+
+	// 0,10,31
+	TRVal = GUITRAdd;
+	TGVal = GUITGAdd;
+	TBVal = GUITBAdd;
+	u2 const r = (TRVal + 1) / 8;
+	TRVali  = r;
+	TRVal  += r * 8;
+	u2 const g = (TGVal + 1) / 8;
+	TGVali  = g;
+	TGVal  += g * 8;
+	u2 const b = (TBVal + 1) / 8;
+	TBVali  = b;
+	TBVal  += b * 8;
+
+	GUIPal16b(64, TRVal, TGVal, TBVal);
+	DecPalVal();
+	GUIPal16b(65, TRVal, TGVal, TBVal);
+	DecPalVal();
+	GUIPal16b(66, TRVal, TGVal, TBVal);
+	DecPalVal();
+	GUIPal16b(67, TRVal, TGVal, TBVal);
+	DecPalVal();
+	GUIPal16b(68, TRVal, TGVal, TBVal);
+	DecPalVal();
+	GUIPal16b(69, TRVal, TGVal, TBVal);
+	DecPalVal();
+	GUIPal16b(70, TRVal, TGVal, TBVal);
+	DecPalVal();
+	GUIPal16b(71, TRVal, TGVal, TBVal);
+
+	GUIPal16b(72, 40,  0, 20);
+	GUIPal16b(73, 34,  0, 21);
+
+	GUIPal16b(80,  0, 10, 28);
+	GUIPal16b(81,  0, 10, 27);
+	GUIPal16b(82,  0, 10, 25);
+	GUIPal16b(83,  0,  9, 24);
+	GUIPal16b(84,  0,  8, 22);
+	GUIPal16b(85,  0,  7, 20);
+	GUIPal16b(86,  0,  6, 18);
+	GUIPal16b(87,  0,  5, 15);
+	GUIPal16b(88, 20,  0, 10);
+	GUIPal16b(89, 17,  0, 10);
+
+	{ // Orange Scale
+		u4 i = 0;
+		do { ++i; GUIPal16b(127 + i, 63, i * 2, i); } while (i != 20);
+	}
+
+	// Blue scale = 148 .. 167
+	TRVal  = GUIWRAdd * 2;
+	TGVal  = GUIWGAdd * 2;
+	TBVal  = GUIWBAdd * 2;
+	TRVali = 4;
+	TGVali = 4;
+	TBVali = 4;
+
+	GUIPal16b(152, TRVal, TGVal, TBVal);
+	DecPalVal();
+	GUIPal16b(151, TRVal, TGVal, TBVal);
+	DecPalVal();
+	GUIPal16b(150, TRVal, TGVal, TBVal);
+	DecPalVal();
+	GUIPal16b(149, TRVal, TGVal, TBVal);
+	DecPalVal();
+	GUIPal16b(148, TRVal, TGVal, TBVal);
+
+	TRVal   = GUIWRAdd * 2;
+	TGVal   = GUIWGAdd * 2;
+	TBVal   = GUIWBAdd * 2;
+	TRVali  = 4;
+	TGVali  = 4;
+	TBVali  = 4;
+	TRVal  -= TRVal / 4;
+	TGVal  -= TGVal / 4;
+	TBVal  -= TBVal / 4;
+
+	GUIPal16b(157, TRVal, TGVal, TBVal);
+	DecPalVal();
+	GUIPal16b(156, TRVal, TGVal, TBVal);
+	DecPalVal();
+	GUIPal16b(155, TRVal, TGVal, TBVal);
+	DecPalVal();
+	GUIPal16b(154, TRVal, TGVal, TBVal);
+	DecPalVal();
+	GUIPal16b(153, TRVal, TGVal, TBVal);
+
+	TRVal   = GUIWRAdd * 2;
+	TGVal   = GUIWGAdd * 2;
+	TBVal   = GUIWBAdd * 2;
+	TRVali  = 4;
+	TGVali  = 4;
+	TBVali  = 4;
+	TRVal  -= TRVal / 2;
+	TGVal  -= TGVal / 2;
+	TBVal  -= TBVal / 2;
+
+	GUIPal16b(162, TRVal, TGVal, TBVal);
+	DecPalVal();
+	GUIPal16b(161, TRVal, TGVal, TBVal);
+	DecPalVal();
+	GUIPal16b(160, TRVal, TGVal, TBVal);
+	DecPalVal();
+	GUIPal16b(159, TRVal, TGVal, TBVal);
+	DecPalVal();
+	GUIPal16b(158, TRVal, TGVal, TBVal);
+
+	GUIPal16b(163, 40,  40, 0);
+	GUIPal16b(164, 30,  30, 0);
+	GUIPal16b(165, 50,   0, 0);
+	GUIPal16b(166, 35,   0, 0);
+	GUIPal16b(167,  0,   0, 0);
+
+	// Blue scale shadow
+	TRVal  = GUIWRAdd;
+	TGVal  = GUIWGAdd;
+	TBVal  = GUIWBAdd;
+	TRVali = 2;
+	TGVali = 2;
+	TBVali = 2;
+
+	GUIPal16b(172, TRVal, TGVal, TBVal);
+	DecPalVal();
+	GUIPal16b(171, TRVal, TGVal, TBVal);
+	DecPalVal();
+	GUIPal16b(170, TRVal, TGVal, TBVal);
+	DecPalVal();
+	GUIPal16b(169, TRVal, TGVal, TBVal);
+	DecPalVal();
+	GUIPal16b(168, TRVal, TGVal, TBVal);
+
+	TRVal  = GUIWRAdd;
+	TGVal  = GUIWGAdd;
+	TBVal  = GUIWBAdd;
+	TRVali = 2;
+	TGVali = 2;
+	TBVali = 2;
+	DecPalVal();
+	DecPalVal();
+
+	GUIPal16b(177, TRVal, TGVal, TBVal);
+	DecPalVal();
+	GUIPal16b(176, TRVal, TGVal, TBVal);
+	DecPalVal();
+	GUIPal16b(175, TRVal, TGVal, TBVal);
+	DecPalVal();
+	GUIPal16b(174, TRVal, TGVal, TBVal);
+	DecPalVal();
+	GUIPal16b(173, TRVal, TGVal, TBVal);
+
+	TRVal  = GUIWRAdd;
+	TGVal  = GUIWGAdd;
+	TBVal  = GUIWBAdd;
+	TRVali = 2;
+	TGVali = 2;
+	TBVali = 2;
+	DecPalVal();
+	DecPalVal();
+	DecPalVal();
+	DecPalVal();
+
+	GUIPal16b(182, TRVal, TGVal, TBVal);
+	DecPalVal();
+	GUIPal16b(181, TRVal, TGVal, TBVal);
+	DecPalVal();
+	GUIPal16b(180, TRVal, TGVal, TBVal);
+	DecPalVal();
+	GUIPal16b(179, TRVal, TGVal, TBVal);
+	DecPalVal();
+	GUIPal16b(178, TRVal, TGVal, TBVal);
+
+	GUIPal16b(183, 20, 20, 0);
+	GUIPal16b(184, 15, 15, 0);
+	GUIPal16b(185, 25,  0, 0);
+	GUIPal16b(186, 17,  0, 0);
+	GUIPal16b(187,  0,  0, 0);
+
+	{ // gray scale2 = 189 .. 220
+		u4 i = 0;
+		do GUIPal16b(189 + i, i * 3 / 2, i * 3 / 2, i * 2); while (++i != 64); // XXX comment says till 220, but loop goes to 252
+	}
+
+	GUIPal16b(221,  0, 55,  0);
+	GUIPal16b(222,  0, 45,  0);
+	GUIPal16b(223,  0, 25,  0);
+
+	GUIPal16b(224, 40,  0, 20);
+	GUIPal16b(225, 32,  0, 15);
+
+	GUIPal16b(226, 20,  0, 10);
+	GUIPal16b(227, 16,  0,  7);
+
+	GUIPal16b(228, 45, 45, 50);
+	GUIPal16b(229, 40, 40, 45);
+	GUIPal16b(230, 35, 35, 40);
+	GUIPal16b(231, 30, 30, 35);
+
+	GUIPal16b(232, 35, 15, 15);
+
+	GUIPal16b(233, 50, 12, 60);
+	GUIPal16b(234, 30, 14, 60);
+	GUIPal16b(235, 12, 60, 25);
+	GUIPal16b(236, 14, 42, 25);
+	GUIPal16b(237, 60, 20, 25);
+	GUIPal16b(238, 42, 20, 25);
+
+	if (GUIPalConv == 0)
+	{
+		GUIPalConv = 1;
+		u1* buf = vidbuffer;
+		u4  n   = 288 * 240;
+		u4  i   = 0;
+		do
+		{
+			u2 const c = ((u2 const*)buf)[i];
+			u4 const r = c >> 11 & 0x1F;
+			u4 const g = c >>  6 & 0x1F;
+			u4 const b = c       & 0x1F;
+			static u1 const multab[] =
+			{
+				 1,  1,  1,  2,  2,  3,  4,  4,  5,  6,  6,  7,  8,  8,  9, 10,
+				10, 11, 12, 12, 13, 14, 14, 15, 16, 16, 17, 18, 18, 19, 20, 20,
+				21, 22, 22, 23, 24, 24, 25, 26, 26, 27, 28, 28, 29, 30, 30, 31
+			};
+			buf[i] = multab[(r + g + b) / 2];
+		}
+		while (++i, --n != 0);
+	}
+}
+
+
 #ifdef __MSDOS__
 static void GUIRGB(u1 const r, u1 const g, u1 const b)
 {
@@ -832,19 +1107,8 @@ void GUISetPal(void)
 	else
 #endif
 	{
-		asm_call(GUISetPal16);
+		GUISetPal16();
 	}
-}
-
-
-void DecPalVal(void)
-{
-	TRVal -= TRVali;
-	TGVal -= TGVali;
-	TBVal -= TBVali;
-	if (TRVal & 0x8000) TRVal = 0;
-	if (TGVal & 0x8000) TGVal = 0;
-	if (TBVal & 0x8000) TBVal = 0;
 }
 
 

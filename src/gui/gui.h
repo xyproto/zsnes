@@ -4,7 +4,6 @@
 #include "../types.h"
 
 extern void GUIBufferData();
-extern void GUISetPal16();
 extern void GUIUnBuffer();
 
 extern char  GUIPrevMenuData[];
@@ -40,6 +39,7 @@ extern u1    SnowVelDist[800];
 extern u1    SubPalTable[256];
 extern u1    cwindrawn;
 extern u1*   GUICYLocPtr;
+extern u2    GUICPC[256];
 extern u2    PrevResoln;
 extern u2    SnowData[800];
 extern u2    TBVal;
