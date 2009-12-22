@@ -19,43 +19,12 @@
 
 ; Tools for the GUI (string functions are also used elsewhere)
 
-EXTSYM GUIOutputString,GUIoutputcharwin
+EXTSYM GUIOutputString,GUIOutputStringwinl
 
 SECTION .text
 
-GUIOutputStringwinl:
-  xor eax,eax
-  mov ecx,[cloadmaxlen]
-.more
-  mov al,[edi]
 %ifndef __MSDOS__
-  cmp al,'%'
-  jne .noperc
-  call ConvertPercValue
-.noperc
-%endif
-  or al,al
-  jz .nomore
-  mov al,[ASCII2Font+eax]
-  cmp edx,-8
-  jl .nodraw
-  cmp edx,255
-  jg .nodraw
-  push esi
-  add esi,edx
-  ccallv GUIoutputcharwin, esi, eax
-  pop esi
-.nodraw
-  add edx,6
-  inc edi
-  dec ecx
-  jz .nomore
-  jmp .more
-.nomore
-  ret
-
-%ifndef __MSDOS__
-ConvertPercValue:
+NEWSYM ConvertPercValue
   mov al,[edi+2]
   cmp al,'a'
   jb .notlower
@@ -156,8 +125,7 @@ OutputUnder:
   add esi,eax
   add esi,16
   add esi,[vidbuffer]
-  mov edi,%4
-  call GUIOutputStringwinl
+  ccallv GUIOutputStringwinl, edx, esi, %4
 %endmacro
 
 %macro GUIOuttextwin2u 5

@@ -6,6 +6,10 @@
 #include "c_guitools.h"
 #include "gui.h"
 
+#ifndef __MSDOS__
+#	include "guitools.h"
+#endif
+
 
 static void GUIoutputchar(u1* dst, u1 const glyph)
 {
@@ -141,7 +145,7 @@ void GUIDrawShadow2(u1* buf, u4 const w, u4 h)
 }
 
 
-void GUIoutputcharwin(u1* dst, u1 const glyph)
+static void GUIoutputcharwin(u1* dst, u1 const glyph)
 {
 	// Font Setup (Windows)
 	u1      (*font)[5] = newfont == 0 ? GUIFontData : GUIFontData1;
@@ -180,6 +184,25 @@ void GUIOutputStringwin(s4 x, u1* const dst, char const* text)
 		if (c == '\0') break;
 		if (-8 <= x && x <= 255) GUIoutputcharwin(dst + x, ASCII2Font[c]);
 	}
+}
+
+
+void GUIOutputStringwinl(s4 x, u1* const dst, char const* text)
+{
+	u4 n = cloadmaxlen;
+	do
+	{
+		u1 c = *text;
+#ifndef __MSDOS__
+		if (c == '%')
+			asm volatile("call *%2" : "=a" (c), "+D" (text) : "r" (ConvertPercValue) : "cc");
+#endif
+		if (c == '\0') break;
+		if (-8 <= x && x <= 255) GUIoutputcharwin(dst + x, ASCII2Font[c]);
+		x += 6;
+		++text;
+	}
+	while (--n != 0);
 }
 
 

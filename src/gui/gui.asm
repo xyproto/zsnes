@@ -46,7 +46,7 @@ EXTSYM vidpastecopyscr,frameskip,newengen,cvidmode,antienab
 EXTSYM soundon,StereoSound,SoundQuality,MusicRelVol
 EXTSYM cbitmode
 EXTSYM romloadskip,romdata,current_zst
-EXTSYM vidbuffer,ASCII2Font,showallext,scanlines
+EXTSYM vidbuffer,showallext,scanlines
 EXTSYM KeyRTRCycle
 EXTSYM initvideo,pressed,UpdateDevices,memtabler8
 EXTSYM memtablew8,writeon,JoyRead,SetInputDevice,delay,FPSOn,RevStereo,WDSPReg0C
@@ -282,7 +282,7 @@ GUIHoldYlim  resd 1
 GUIHoldYlimR resd 1
 cloadnpos    resd 1
 cloadnposb   resd 1
-cloadmaxlen  resd 1
+NEWSYM cloadmaxlen,  resd 1
 cloadnleft   resd 1
 cplayernum   resb 1
 vbuflimtop   resd 1
