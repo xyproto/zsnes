@@ -141,12 +141,12 @@ NEWSYM hdmadata, times 8*19 db 0   ; 4 dword register addresses, # of bytes to
                            ; transfer/line, address increment (word)
 ALIGN32
 NEWSYM hdmatype,  db 0             ; if first time executing hdma or not
-NEWSYM coladdr,   db 0             ; red value of color to add
-NEWSYM coladdg,   db 0             ; green value of color to add
-NEWSYM coladdb,   db 0             ; blue value of color to add
+NEWSYM coladdr,   db 0
+NEWSYM coladdg,   db 0
+NEWSYM coladdb,   db 0
 NEWSYM colnull,   db 0             ; keep this 0 (when accessing colors by dword)
 NEWSYM scaddset,  db 0             ; screen/fixed color addition settings
-NEWSYM scaddtype, db 0             ; which screen to add/sub
+NEWSYM scaddtype, db 0
 NEWSYM Voice0Disabl2, db 1         ; Disable Voice 0
 NEWSYM Voice1Disabl2, db 1         ; Disable Voice 1
 NEWSYM Voice2Disabl2, db 1         ; Disable Voice 2
@@ -157,7 +157,7 @@ NEWSYM Voice6Disabl2, db 1         ; Disable Voice 6
 NEWSYM Voice7Disabl2, db 1         ; Disable Voice 7
 
 NEWSYM oamram,  times 1024 db 0    ; OAMRAM (544 bytes)
-NEWSYM cgram,   times 512 db 0     ; CGRAM
+NEWSYM cgram,   times 512 db 0
 NEWSYM pcgram,  times 512 db 0     ; Previous CGRAM
 
 NEWSYM vraminctype,  db 0

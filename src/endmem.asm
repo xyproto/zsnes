@@ -108,7 +108,7 @@ NEWSYM sprendx,     resw 256
 NEWSYM sprpriodata, resb 288
 NEWSYM sprprtabc,   resb 64
 NEWSYM sprprtabu,   resb 64
-NEWSYM prevpal,   resw 256          ; previous palette buffer
+NEWSYM prevpal,   resw 256
 NEWSYM winbgdata, resb 288          ; window buffer for backgrounds
 NEWSYM winspdata, resb 288          ; window buffer for sprites
 NEWSYM FxTable, resd 256

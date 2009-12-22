@@ -48,15 +48,14 @@ EXTSYM cbitmode
 EXTSYM romloadskip,romdata,current_zst
 EXTSYM vidbuffer,ASCII2Font,showallext,scanlines
 EXTSYM KeyRTRCycle
-EXTSYM cgram,tempco0,prevbright,maxbr,prevpal,coladdr,coladdg
-EXTSYM coladdb,scaddtype,initvideo,pressed,UpdateDevices,memtabler8
+EXTSYM initvideo,pressed,UpdateDevices,memtabler8
 EXTSYM memtablew8,writeon,JoyRead,SetInputDevice,delay,FPSOn,RevStereo,WDSPReg0C
 EXTSYM WDSPReg1C,pl12s34,vidbufferofsb,wramdata,bgfixer
 EXTSYM videotroub,CheatCodeSave,CheatCodeLoad
 EXTSYM Check_Key,Get_Key,sram,ScanCodeListing,RelPathBase
 EXTSYM Get_MouseData,Set_MouseXMax
 EXTSYM Set_MouseYMax,Set_MousePosition,Get_MousePositionDisplacement
-EXTSYM MessageOn,GetTime
+EXTSYM GetTime
 EXTSYM Clear2xSaIBuffer,MouseWindow,Show224Lines
 EXTSYM newgfx16b,NumVideoModes,MusicVol,DSPMem,NumInputDevices
 EXTSYM GUIInputNames,GUIVideoModeNames,GameSpecificInput,device1,device2,TwelveHourClock
@@ -316,8 +315,6 @@ NEWSYM NumCheats, resd 1
 NEWSYM cheatdataprev, resb 28 ; leave contents blank
 NEWSYM cheatdata, resb 28*255+56 ; toggle, value, address, pvalue, name(22)
 
-curgsval resb 1
-
 NEWSYM GUICMessage, resd 1
 NEWSYM GUICTimer,   resd 1
 NEWSYM GUIOn,       resb 1
@@ -434,116 +431,6 @@ NEWSYM sramsavedis, resb 1
 
 NEWSYM GUICPC, resw 256
 SECTION .text
-
-NEWSYM GUIconvpal
-  mov ax,[cgram]
-  mov [tempco0],ax
-  test byte[scaddtype],00100000b
-  jz near .noaddition
-  test byte[scaddtype],10000000b
-  jnz near .noaddition
-  mov cx,[cgram]
-  mov ax,cx
-  and ax,001Fh
-  add al,[coladdr]
-  cmp al,01Fh
-  jb .noadd
-  mov al,01Fh
-.noadd
-  mov bx,ax
-  mov ax,cx
-  shr ax,5
-  and ax,001Fh
-  add al,[coladdg]
-  cmp al,01Fh
-  jb .noaddb
-  mov al,01Fh
-.noaddb
-  shl ax,5
-  add bx,ax
-  mov ax,cx
-  shr ax,10
-  and ax,001Fh
-  add al,[coladdb]
-  cmp al,01Fh
-  jb .noaddc
-  mov al,01Fh
-.noaddc
-  shl ax,10
-  add bx,ax
-  mov [cgram],bx
-.noaddition
-  mov edi,cgram
-  mov ebx,prevpal
-  xor ah,ah
-.loopa
-  mov cx,[edi]
-  push eax
-  push ebx
-  mov [ebx],cx
-  mov al,ah
-  mov ax,cx
-  and al,01Fh
-  mov bh,[maxbr]
-  mov bl,bh
-  mul bl
-  mov bl,15
-  div bl
-  mov [curgsval],al
-  mov ax,cx
-  shr ax,5
-  and al,01Fh
-  mov bl,bh
-  mul bl
-  mov bl,15
-  div bl
-  add [curgsval],al
-  mov ax,cx
-  shr ax,10
-  and al,01Fh
-  mov bl,bh
-  mul bl
-  mov bl,15
-  div bl
-  add [curgsval],al
-  pop ebx
-  pop eax
-  add edi,2
-  add ebx,2
-  push eax
-  push ebx
-  mov al,ah
-  and eax,0FFh
-  mov bl,[curgsval]
-  push eax
-  push ebx
-  mov al,bl
-  mov bl,3
-  xor ah,ah
-  div bl
-  pop ebx
-  mov bl,al
-  pop eax
-  cmp byte[MessageOn],0
-  je .nochange128
-  cmp al,128
-  jne .nochange128
-  mov bl,31
-.nochange128
-  or bl,bl
-  jnz .noadder
-  inc bl
-.noadder
-  mov [SubPalTable+eax],bl
-  pop ebx
-  pop eax
-  inc ah
-  jnz near .loopa
-  mov al,[maxbr]
-  mov [prevbright],al
-  mov ax,[tempco0]
-  mov [cgram],ax
-  ret
 
 convertnum:
     ; process through each digit

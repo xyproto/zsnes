@@ -865,6 +865,41 @@ static void GUISetPal16(void)
 
 
 #ifdef __MSDOS__
+static void GUIconvpal(void)
+{
+	tempco0 = cgram[0];
+	if ((scaddtype & 0xA0) == 0x20)
+	{
+		u2 const c = cgram[0];
+		u4       r = (c       & 0x1F) + coladdr;
+		if (r >= 0x1F) r = 0x1F;
+		u4       g = (c >>  5 & 0x1F) + coladdg;
+		if (g >= 0x1F) g = 0x1F;
+		u4       b = (c >> 10 & 0x1F) + coladdb;
+		if (b >= 0x1F) b = 0x1F;
+		cgram[0] = b << 10 | g << 5 | r;
+	}
+	u2 const* src = cgram;
+	u2*       dst = prevpal;
+	u4        i   = 0;
+	do
+	{
+		u2 const c        = *dst++ = *src++;
+		u4 const curgsval =
+			(c       & 0x1F) * maxbr / 15 +
+			(c >> 5  & 0x1F) * maxbr / 15 +
+			(c >> 10 & 0x1F) * maxbr / 15;
+		u4       bl       = curgsval / 3;
+		if (MessageOn != 0 && i == 128) bl = 31;
+		if (bl == 0) bl = 1;
+		SubPalTable[i] = bl;
+	}
+	while (++i != 256);
+	prevbright = maxbr;
+	cgram[0]   = tempco0;
+}
+
+
 static void GUIRGB(u1 const r, u1 const g, u1 const b)
 {
 	outb(0x03C9, r);
@@ -1125,7 +1160,7 @@ void GUISetPal(void)
 			GUIPalConv = 1;
 			// Convert Image data to Gray Scale
 			// Create Palette Table
-			asm_call(GUIconvpal);
+			GUIconvpal();
 			// Convert Current Image in Buffer
 			u1* buf = vidbuffer;
 			u4  n   = 288 * 240;

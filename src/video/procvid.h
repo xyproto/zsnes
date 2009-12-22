@@ -8,6 +8,7 @@ extern void SwapMouseButtons();
 extern char* Msgptr;          // Pointer to message
 extern u1    ASCII2Font[256];
 extern u1    prevbright;      // previous brightness
+extern u2    tempco0;
 extern u4    MessageOn;       // Message On Countdown
 
 #endif

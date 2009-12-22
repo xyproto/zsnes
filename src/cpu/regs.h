@@ -51,7 +51,12 @@ extern void reg421Fr();
 extern void reg43XXr();
 extern void regINVALID();
 
-extern u1 sndrot;   // rotates to use A,X or Y for sound skip
-extern u2 resolutn; // screen resolution
+extern u1 coladdb;    // blue value of color to add
+extern u1 coladdg;    // green value of color to add
+extern u1 coladdr;    // red value of color to add
+extern u1 scaddtype;  // which screen to add/sub
+extern u1 sndrot;     // rotates to use A,X or Y for sound skip
+extern u2 cgram[256]; // CGRAM
+extern u2 resolutn;   // screen resolution
 
 #endif
