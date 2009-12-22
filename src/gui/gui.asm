@@ -272,7 +272,6 @@ GUIHoldx     resd 1
 GUIHoldy     resd 1
 GUIHoldxm    resd 1
 GUIHoldym    resd 1
-GUIcolscaleval resd 1
 NEWSYM cwindrawn,    resb 1
 GUIWincol    resd 1
 GUIWincoladd resd 1

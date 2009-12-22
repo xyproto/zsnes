@@ -27,17 +27,6 @@ NEWSYM lameExists, db 0
 
 SECTION .text
 
-%macro DrawGUILineSc 2
-  mov dword[GUIcolscaleval],%2
-  mov edx,%1
-  push eax
-  push ecx
-  call GUIHLines
-  pop ecx
-  pop eax
-  inc ebx
-%endmacro
-
 %macro DrawGUILine 0
   push eax
   push ecx
