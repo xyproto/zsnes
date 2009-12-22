@@ -31,7 +31,9 @@ void GUIOuttextShadowed(u4 const x, u4 const y, char const* const text);
 
 u1* GetAnyPressedKey(void);
 
+extern u1 SnowVelDist[800];
 extern u1 savecfgforce;
+extern u2 SnowData[800];
 extern u4 NumSnow;
 extern u4 SnowTimer;
 
