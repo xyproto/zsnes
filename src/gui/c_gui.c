@@ -19,9 +19,11 @@
 #include "../video/makevid.h"
 #include "../video/mode716.h"
 #include "../video/procvid.h"
+#include "../zmovie.h"
 #include "../zstate.h"
 #include "../ztimec.h"
 #include "c_gui.h"
+#include "c_guimisc.h"
 #include "c_guitools.h"
 #include "gui.h"
 #include "guicheat.h"
@@ -524,6 +526,26 @@ void GUIProcStates(void)
 	{
 		loadstate2();
 	}
+}
+
+
+void GUIProcReset(void)
+{
+	if (GUICBHold == 2)
+	{
+		GUIReset = 1;
+		if (MovieProcessing == 2) // Recording
+		{
+			ResetDuringMovie();
+		}
+		else
+		{
+			GUIDoReset();
+		}
+	}
+	GUICBHold                = 0;
+	GUIwinactiv[12]          = 0;
+	GUIwinorder[--GUIwinptr] = 0;
 }
 
 

@@ -3,6 +3,7 @@
 
 #include "../types.h"
 
+extern u1 MovieProcessing;
 extern u1 MovieRecordWinVal;
 
 #endif

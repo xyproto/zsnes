@@ -607,9 +607,15 @@ ProcessMouseButtons:
   ccallv GUILoadData
 .noGUILoadData
   cmp byte[GUICBHold],2
-  je near GUIProcReset
+  jne .not2
+  ccallv GUIProcReset
+  ret
+.not2
   cmp byte[GUICBHold],3
-  je near GUIProcReset
+  jne .not3
+  ccallv GUIProcReset
+  ret
+.not3
   cmp byte[GUICBHold],4  ; set video mode
   je near GUIProcVideo
 %ifndef __MSDOS__

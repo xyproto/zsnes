@@ -22,6 +22,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #ifndef ZMOVIE_H
 #define ZMOVIE_H
 
+#include <stdbool.h>
+
 void mzt_chdir_up();
 void mzt_chdir_down();
 bool mzt_save(int, bool, bool);
@@ -33,6 +35,7 @@ void MovieStop();
 void MovieAppend();
 void MovieDumpRaw(void);
 bool MovieInProgress();
+void ResetDuringMovie(void);
 
 extern unsigned char MovieProcessing;
 

@@ -17,6 +17,7 @@ void guipostvideofail(void);
 void CheckMenuItemHelp(u4 id);
 void GUITryMenuItem(void);
 void GUIProcStates(void);
+void GUIProcReset(void);
 void guicheaterror(void);
 void DisplayBoxes(void);
 void DisplayMenu(void);

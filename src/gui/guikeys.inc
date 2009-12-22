@@ -2757,7 +2757,8 @@ GUIResetKeys:
   jne .notyesreset
 .yesreset
   mov byte[GUICBHold],2
-  jmp GUIProcReset
+  ccallv GUIProcReset
+  ret
 .notyesreset
   cmp dh,'N'
   jne .notnoreset

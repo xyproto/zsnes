@@ -64,10 +64,10 @@ EXTSYM GUIM7VID,GUINTVID,GUIHQ2X,RawDumpInProgress
 EXTSYM MultiTap,SFXEnable
 EXTSYM nssdip1,nssdip2,nssdip3,nssdip4,nssdip5,nssdip6
 EXTSYM SkipMovie,MovieStop,MoviePlay,MovieRecord
-EXTSYM MovieInsertChapter,MovieSeekAhead,MovieSeekBehind,ResetDuringMovie
+EXTSYM MovieInsertChapter,MovieSeekAhead,MovieSeekBehind
 EXTSYM MovieDumpRaw,MovieAppend,AutoLoadCht,GUILoadData
-EXTSYM GUIDoReset,CheckMenuItemHelp
-EXTSYM GUITryMenuItem,GUIProcStates
+EXTSYM CheckMenuItemHelp
+EXTSYM GUITryMenuItem,GUIProcStates,GUIProcReset
 
 EXTSYM GUIwinposx,GUIwinposy,maxskip,GUIEffect,hqFilter,En2xSaI,NTSCFilter
 EXTSYM NTSCBlend,NTSCHue,NTSCSat,NTSCCont,NTSCBright,NTSCSharp,NTSCRef
@@ -433,29 +433,6 @@ NEWSYM Totalbyteloaded, resd 1
 NEWSYM sramsavedis, resb 1
 
 SECTION .text
-
-GUIProcReset:
-  cmp byte[GUICBHold],2
-  jne .noreset
-  pushad
-  mov byte[GUIReset],1
-  cmp byte[MovieProcessing],2 ;Recording
-  jne .nomovierecording
-  ccallv ResetDuringMovie
-  jmp .movieendif
-.nomovierecording
-  ccallv GUIDoReset
-.movieendif
-  popad
-.noreset
-  mov byte[GUICBHold],0
-  xor eax,eax
-  mov al,[GUIwinptr]
-  dec eax
-  mov byte[GUIwinactiv+12],0
-  mov byte[GUIwinorder+eax],0
-  dec byte[GUIwinptr]
-  ret
 
 NEWSYM InitGUI
 %ifdef __MSDOS__

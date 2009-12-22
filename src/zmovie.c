@@ -2855,7 +2855,7 @@ void ProcessMovies()
   }
 }
 
-void ResetDuringMovie()
+void ResetDuringMovie(void)
 {
   zmv_record_command(zmv_command_reset);
   SetMovieMode(MOVIE_OFF);
