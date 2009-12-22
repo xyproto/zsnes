@@ -32,7 +32,6 @@ extern u1    GUIwinptr;
 extern u1    MouseDis;
 extern u1    MousePRClick;
 extern u1    ShowTimer;
-extern u1    SubPalTable[256];
 extern u1    cwindrawn;
 extern u1*   GUICYLocPtr;
 extern u2    GUICPC[256];

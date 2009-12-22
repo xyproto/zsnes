@@ -53,6 +53,10 @@ u4        SnowTimer  = 36 * 30;
 
 u1        savecfgforce;
 
+#ifdef __MSDOS__
+static u1 SubPalTable[256]; // Corresponding Gray Scale Color
+#endif
+
 // The first byte is the number of fields on the right not including the seperators
 static u1 MenuDat1[] = { 12, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 2, 0 };
 static u1 MenuDat2[] = {  8, 3, 1, 1, 0, 1, 1, 1, 0, 2, 0 };
