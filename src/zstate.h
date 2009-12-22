@@ -9,6 +9,7 @@ void RestoreSystemVars(void);
 void SaveSecondState(void);
 void SaveSramData(void);
 void loadstate2(void);
+void statesaver(void);
 
 extern uint32_t current_zst;
 

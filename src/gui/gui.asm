@@ -46,7 +46,6 @@ EXTSYM vidpastecopyscr,frameskip,newengen,cvidmode,antienab
 EXTSYM soundon,StereoSound,SoundQuality,MusicRelVol
 EXTSYM cbitmode
 EXTSYM romloadskip,romdata,current_zst
-EXTSYM statesaver,loadstate2
 EXTSYM vidbuffer,ASCII2Font,showallext,scanlines
 EXTSYM sprlefttot,spritetablea,KeyRTRCycle
 EXTSYM cgram,tempco0,prevbright,maxbr,prevpal,coladdr,coladdg
@@ -68,7 +67,7 @@ EXTSYM SkipMovie,MovieStop,MoviePlay,MovieRecord
 EXTSYM MovieInsertChapter,MovieSeekAhead,MovieSeekBehind,ResetDuringMovie
 EXTSYM MovieDumpRaw,MovieAppend,AutoLoadCht,GUILoadData
 EXTSYM GUIDoReset,CheckMenuItemHelp
-EXTSYM GUITryMenuItem
+EXTSYM GUITryMenuItem,GUIProcStates
 
 EXTSYM GUIwinposx,GUIwinposy,maxskip,GUIEffect,hqFilter,En2xSaI,NTSCFilter
 EXTSYM NTSCBlend,NTSCHue,NTSCSat,NTSCCont,NTSCBright,NTSCSharp,NTSCRef
@@ -434,28 +433,6 @@ NEWSYM Totalbyteloaded, resd 1
 NEWSYM sramsavedis, resb 1
 
 SECTION .text
-
-GUIProcStates:
-  xor eax,eax
-  mov al,[GUIwinptr]
-  dec eax
-  mov byte[GUIwinactiv+14],0
-  mov byte[GUIwinorder+eax],0
-  dec byte[GUIwinptr]
-  cmp byte[GUICBHold],10
-  je .yesstate
-  mov byte[GUICBHold],0
-  ret
-.yesstate
-  mov byte[GUICBHold],0
-  cmp byte[GUIStatesText5],1
-  je .loadstate
-  ccallv statesaver
-  jmp .changedir
-.loadstate
-  ccallv loadstate2
-.changedir
-  ret
 
 GUIProcReset:
   cmp byte[GUICBHold],2

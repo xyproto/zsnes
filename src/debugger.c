@@ -35,6 +35,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "asm_call.h"
 #include "cpu/c_execute.h"
 #include "cpu/execute.h"
+#include "zstate.h"
 
 // All of these should be in headers, people!
 
@@ -75,7 +76,6 @@ extern void regaccessbankr8();
 
 // should be in "zstate.h"
 void debugloadstate();
-void statesaver();
 
 char *ocname;
 unsigned char addrmode[];

@@ -631,9 +631,13 @@ ProcessMouseButtons:
   cmp byte[GUICBHold],84 ; ntsc preset
   je near GUINTSCPreset
   cmp byte[GUICBHold],10
-  je near GUIProcStates
+  jne .not10
+  ccallv GUIProcStates
+.not10
   cmp byte[GUICBHold],11
-  je near GUIProcStates
+  jne .not11
+  ccallv GUIProcStates
+.not11
   cmp byte[GUICBHold],5
   je near CheatCodeRemove
   cmp byte[GUICBHold],6

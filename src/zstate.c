@@ -862,7 +862,7 @@ void set_state_message(char *prefix, char *suffix)
   MessageOn = MsgCount;
 }
 
-void statesaver()
+void statesaver(void)
 {
   if (MovieProcessing == MOVIE_RECORD)
   {

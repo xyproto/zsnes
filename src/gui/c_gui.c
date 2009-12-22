@@ -509,6 +509,24 @@ void GUITryMenuItem(void)
 }
 
 
+void GUIProcStates(void)
+{
+	GUIwinactiv[14]          = 0;
+	GUIwinorder[--GUIwinptr] = 0;
+	u1 const h = GUICBHold;
+	GUICBHold = 0;
+	if (h != 10) return;
+	if (GUIStatesText5 != 1)
+	{
+		statesaver();
+	}
+	else
+	{
+		loadstate2();
+	}
+}
+
+
 static void loadmenuopen(u4 const param1) // XXX better parameter name
 {
 	GUIpmenupos = GUIcmenupos;

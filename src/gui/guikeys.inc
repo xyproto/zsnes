@@ -2814,7 +2814,8 @@ GUIStateKeys:
   jne .notyesreset
 .yesreset
   mov byte[GUICBHold],10
-  jmp GUIProcStates
+  ccallv GUIProcStates
+  ret
 .notyesreset
   cmp dh,'N'
   jne .notnoreset
