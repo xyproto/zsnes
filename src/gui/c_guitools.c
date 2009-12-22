@@ -6,10 +6,6 @@
 #include "c_guitools.h"
 #include "gui.h"
 
-#ifndef __MSDOS__
-#	include "guitools.h"
-#endif
-
 
 static void GUIoutputchar(u1* dst, u1 const glyph)
 {
@@ -192,15 +188,30 @@ void GUIOutputStringwinl(s4 x, u1* const dst, char const* text)
 	u4 n = cloadmaxlen;
 	do
 	{
-		u1 c = *text;
+		u1 c = *text++;
 #ifndef __MSDOS__
 		if (c == '%')
-			asm volatile("call *%2" : "=a" (c), "+D" (text) : "r" (ConvertPercValue) : "cc");
+		{
+			u1       v;
+			u1 const c0 = text[0];
+			if      ('0' <= c0 && c0 <= '9') v = c0 - '0';
+			else if ('A' <= c0 && c0 <= 'F') v = c0 - 'A' + 10;
+			else if ('a' <= c0 && c0 <= 'f') v = c0 - 'a' + 10;
+			else goto no_number;
+			v <<= 4;
+			u1 const c1 = text[1];
+			if      ('0' <= c1 && c1 <= '9') v |= c1 - '0';
+			else if ('A' <= c1 && c1 <= 'F') v |= c1 - 'A' + 10;
+			else if ('a' <= c1 && c1 <= 'f') v |= c1 - 'a' + 10;
+			else goto no_number;
+			c     = v;
+			text += 2;
+no_number:;
+		}
 #endif
 		if (c == '\0') break;
 		if (-8 <= x && x <= 255) GUIoutputcharwin(dst + x, ASCII2Font[c]);
 		x += 6;
-		++text;
 	}
 	while (--n != 0);
 }

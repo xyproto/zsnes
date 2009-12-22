@@ -23,60 +23,6 @@ EXTSYM GUIOutputString,GUIOutputStringwinl
 
 SECTION .text
 
-%ifndef __MSDOS__
-NEWSYM ConvertPercValue
-  mov al,[edi+2]
-  cmp al,'a'
-  jb .notlower
-  cmp al,'z'
-  ja .notlower
-  sub al,'a'-'A'
-.notlower
-  mov ah,[edi+1]
-  cmp ah,'a'
-  jb .notlowerb
-  cmp ah,'z'
-  ja .notlowerb
-  sub ah,'a'-'A'
-.notlowerb
-  cmp al,'0'
-  jb .noperc
-  cmp al,'9'
-  jbe .yesperc
-  cmp al,'F'
-  ja .noperc
-  cmp al,'A'
-  jb .noperc
-.yesperc
-  cmp ah,'0'
-  jb .noperc
-  cmp ah,'9'
-  jbe .yesperc2
-  cmp ah,'F'
-  ja .noperc
-  cmp ah,'A'
-  jb .noperc
-.yesperc2
-  sub al,'0'
-  cmp al,9
-  jbe .nodec
-  sub al,'A'-'0'-10
-.nodec
-  sub ah,'0'
-  cmp ah,9
-  jbe .nodecb
-  sub ah,'A'-'0'-10
-.nodecb
-  shl ah,4
-  or al,ah
-  add edi,2
-  and eax,0FFh
-  ret
-.noperc
-  movzx eax,byte[edi]
-  ret
-%endif
-
 OutputUnder:
   cmp edx,-8
   jl .nodraw
