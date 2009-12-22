@@ -66,7 +66,7 @@ EXTSYM SkipMovie,MovieStop,MoviePlay,MovieRecord
 EXTSYM MovieInsertChapter,MovieSeekAhead,MovieSeekBehind
 EXTSYM MovieDumpRaw,MovieAppend,AutoLoadCht,GUILoadData
 EXTSYM CheckMenuItemHelp
-EXTSYM GUITryMenuItem,GUIProcStates,GUIProcReset,GUISetPal
+EXTSYM GUITryMenuItem,GUIProcStates,GUIProcReset,GUISetPal,GUIOutputStringwin
 
 EXTSYM GUIwinposx,GUIwinposy,maxskip,GUIEffect,hqFilter,En2xSaI,NTSCFilter
 EXTSYM NTSCBlend,NTSCHue,NTSCSat,NTSCCont,NTSCBright,NTSCSharp,NTSCRef

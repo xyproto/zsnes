@@ -5,7 +5,6 @@
 #include "../video/procvid.h"
 #include "c_guitools.h"
 #include "gui.h"
-#include "guitools.h"
 
 
 static void GUIoutputchar(u1* dst, u1 const glyph)
@@ -173,12 +172,18 @@ void GUIoutputcharwin(u1* dst, u1 const glyph)
 }
 
 
+void GUIOutputStringwin(s4 x, u1* const dst, char const* text)
+{
+	for (;; x += 6)
+	{
+		u1 const c = *text++;
+		if (c == '\0') break;
+		if (-8 <= x && x <= 255) GUIoutputcharwin(dst + x, ASCII2Font[c]);
+	}
+}
+
+
 void GUIOuttextwin(u4 x, u4 const y, char const* const text)
 {
-  u1* dst = vidbuffer + y * 288 + 16;
-  u4  eax;
-  u4  ebx;
-  u4  ecx;
-  char const* text_ = text;
-  asm volatile("call *%6" : "=a" (eax), "=b" (ebx), "=c" (ecx), "+d" (x), "+S" (dst), "+D" (text_) : "r" (GUIOutputStringwin) : "cc", "memory");
+	GUIOutputStringwin(x, vidbuffer + y * 288 + 16, text);
 }

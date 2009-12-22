@@ -23,28 +23,6 @@ EXTSYM GUIOutputString,GUIoutputcharwin
 
 SECTION .text
 
-NEWSYM GUIOutputStringwin
-  xor eax,eax
-.more
-  mov al,[edi]
-  or al,al
-  jz .nomore
-  mov al,[ASCII2Font+eax]
-  cmp edx,-8
-  jl .nodraw
-  cmp edx,255
-  jg .nodraw
-  push esi
-  add esi,edx
-  ccallv GUIoutputcharwin, esi, eax
-  pop esi
-.nodraw
-  add edx,6
-  inc edi
-  jmp .more
-.nomore
-  ret
-
 GUIOutputStringwinl:
   xor eax,eax
   mov ecx,[cloadmaxlen]
@@ -148,8 +126,7 @@ OutputUnder:
   add esi,eax
   add esi,16
   add esi,[vidbuffer]
-  mov edi,%1
-  call GUIOutputStringwin
+  ccallv GUIOutputStringwin, edx, esi, %1
 %endmacro
 
 %macro GUIOuttextwin2 4
@@ -164,8 +141,7 @@ OutputUnder:
   add esi,eax
   add esi,16
   add esi,[vidbuffer]
-  mov edi,%4
-  call GUIOutputStringwin
+  ccallv GUIOutputStringwin, edx, esi, %4
 %endmacro
 
 %macro GUIOuttextwin2l 4
@@ -200,7 +176,7 @@ OutputUnder:
   add edx,%5*6
   call OutputUnder
   sub edx,%5*6
-  call GUIOutputStringwin
+  ccallv GUIOutputStringwin, edx, esi, edi
 %endmacro
 
 GUIoutputiconwin:

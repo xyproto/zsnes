@@ -589,7 +589,7 @@ GUIOuttextwin2 %1,%2-1,%3-1,%4
   SetVidbufLoc
   mov edi,%1
   add edi,ebp
-  call GUIOutputStringwin
+  ccallv GUIOutputStringwin, edx, esi, edi
   pop edx
   pop ebx
   mov byte[GUItextcolor],163
@@ -602,7 +602,7 @@ GUIOuttextwin2 %1,%2-1,%3-1,%4
   SetVidbufLoc
   mov edi,%1
   add edi,ebp
-  call GUIOutputStringwin
+  ccallv GUIOutputStringwin, edx, esi, edi
   mov byte[GUItextcolor],217 ; restore normal colour
   pop ebx     ; restore Yoff for drawing step
   pop eax
@@ -673,7 +673,7 @@ GUIOuttextwin2 %1,%2-1,%3-1,%4
   SetVidbufLoc
   mov edi,%1
   add edi,ebp
-  call GUIOutputStringwin
+  ccallv GUIOutputStringwin, edx, esi, edi
   pop edx
   pop ebx
   add byte[GUItextcolor],15
@@ -682,7 +682,8 @@ GUIOuttextwin2 %1,%2-1,%3-1,%4
   SetVidbufLoc
   mov edi,%1
   add edi,ebp
-  call GUIOutputStringwin
+  ccall GUIOutputStringwin, edx, esi, edi
+  mov edx, eax
   pop ebx     ; restore Yoff for drawing step
   pop eax
   inc eax     ; restore and set Xoff for drawing step
