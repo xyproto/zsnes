@@ -1185,6 +1185,20 @@ void convertnum(char* dst, u4 val)
 }
 
 
+void converthex(char* dst, u4 val, u4 n)
+{
+	val <<= (4 - n) * 8;
+	n *= 2;
+	do
+	{
+		*dst++ = "0123456789ABCDEF"[val >> 28 & 0xF];
+		val <<= 4;
+	}
+	while (--n != 0);
+	*dst = '\0';
+}
+
+
 static void loadmenuopen(u4 const param1) // XXX better parameter name
 {
 	GUIpmenupos = GUIcmenupos;

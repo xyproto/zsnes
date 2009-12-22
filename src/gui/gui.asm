@@ -430,33 +430,8 @@ NEWSYM Totalbyteloaded, resd 1
 NEWSYM sramsavedis, resb 1
 
 NEWSYM GUICPC, resw 256
-SECTION .text
-
-; eax = value, ecx = # of bytes
-converthex:
-    mov ebx,ecx
-    mov ecx,4
-    sub ecx,ebx
-    shl ecx,3
-    shl eax,cl
-    mov ecx,ebx
-    xor ebx,ebx
-    add ecx,ecx
-.loopb
-    mov ebx,eax
-    and ebx,0F0000000h
-    shr ebx,28
-    mov dl,[.hexdat+ebx]
-    mov [esi],dl
-    inc esi
-    shl eax,4
-    dec ecx
-    jnz .loopb
-    mov byte[esi],0
-    ret
 
 SECTION .data
-.hexdat db '0123456789ABCDEF'
 GUIMousePtr:
   db 50,47,45,43,40,0 ,0 ,0
   db 53,52,46,42,0 ,0 ,0 ,0

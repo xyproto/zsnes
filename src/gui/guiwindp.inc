@@ -19,7 +19,7 @@
 
 
 
-EXTSYM VERSION_STR,placedate,convertnum
+EXTSYM VERSION_STR,placedate,convertnum,converthex
 
 SECTION .data
 NEWSYM mencoderExists, db 0
@@ -2980,7 +2980,7 @@ CheatSearching:                       ; Exact Value Search
   xor ecx,ecx
   mov cl,[CheatSrcByteSize]
   inc ecx
-  call converthex
+  ccallv converthex, esi, eax, ecx
 .dec
   GUIDisplayText 13,71,65,GUICSrcTextG1          ; Max Size Text
   jmp DisplayChtSrcRes
@@ -3093,11 +3093,9 @@ Cheatmodeview:                       ; View ResultsWindow
 .notzero
   dec dword[curentryleft]
 
-  mov esi,GUICSrcTextG1
-  mov ecx,3
   mov eax,[CSCurEntry]
   add eax,7E0000h
-  call converthex
+  ccallv converthex, GUICSrcTextG1, eax, 3
   GUIOuttextwin2 13,[CheatSearchXPos],[CheatSearchYPos],GUICSrcTextG1
 
   mov esi,GUICSrcTextG1
@@ -3109,7 +3107,7 @@ Cheatmodeview:                       ; View ResultsWindow
   xor ecx,ecx
   mov cl,[CheatSrcByteSize]
   inc ecx
-  call converthex
+  ccallv converthex, esi, eax, ecx
   jmp .hex
 .dec
   xor ebx,ebx
@@ -3133,7 +3131,7 @@ Cheatmodeview:                       ; View ResultsWindow
   xor ecx,ecx
   mov cl,[CheatSrcByteSize]
   inc ecx
-  call converthex
+  ccallv converthex, esi, eax, ecx
   jmp .hexb
 .decb
   xor ebx,ebx
@@ -3236,7 +3234,7 @@ Cheatmodeadd:                                 ; Add Window
   xor ecx,ecx
   mov cl,[CheatSrcByteSize]
   inc ecx
-  call converthex
+  ccallv converthex, esi, eax, ecx
 .dec
   GUIDisplayText 13,71,130,GUICSrcTextG1
 
@@ -3302,15 +3300,11 @@ Cheatmodeadd:                                 ; Add Window
   jmp .cspardispagain
 .cspardisploop                               ; Max Value Display?
   push ecx
-  mov esi,GUICSrcTextG1
-  mov ecx,3
   mov eax,[curaddrvalcs]
   add eax,7E0000h
-  call converthex
-  mov esi,GUICSrcTextG1+6
-  mov ecx,1
+  ccallv converthex, GUICSrcTextG1, eax, 3
   mov al,[curvaluecs]
-  call converthex
+  ccallv converthex, GUICSrcTextG1 + 6, eax, 1
   shr dword[curvaluecs],8
   mov byte[GUItextcolor],223
   inc dword[CheatSearchYPos]

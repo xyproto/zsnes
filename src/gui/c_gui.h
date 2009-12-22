@@ -21,6 +21,7 @@ void GUIProcReset(void);
 void GUIUnBuffer(void);
 void GUISetPal(void);
 void convertnum(char* dst, u4 val);
+void converthex(char* dst, u4 val, u4 n /* bytes */);
 void guicheaterror(void);
 void DisplayBoxes(void);
 void DisplayMenu(void);
