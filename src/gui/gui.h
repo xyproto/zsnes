@@ -3,8 +3,9 @@
 
 #include "../types.h"
 
+extern void GUIBufferData();
+extern void GUISetPal();
 extern void GUIUnBuffer();
-extern void InitGUI();
 
 extern char  GUIPrevMenuData[];
 extern char* GUICMessage;

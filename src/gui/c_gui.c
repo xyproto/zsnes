@@ -19,6 +19,7 @@
 #include "../video/makevid.h"
 #include "../video/mode716.h"
 #include "../video/procvid.h"
+#include "../video/procvidc.h"
 #include "../zmovie.h"
 #include "../zstate.h"
 #include "../ztimec.h"
@@ -549,6 +550,17 @@ void GUIProcReset(void)
 }
 
 
+static void InitGUI(void)
+{
+#ifdef __MSDOS__
+	asm_call(DOSClearScreen);
+#endif
+	Clear2xSaIBuffer();
+	asm_call(GUISetPal);
+	asm_call(GUIBufferData);
+}
+
+
 static void loadmenuopen(u4 const param1) // XXX better parameter name
 {
 	GUIpmenupos = GUIcmenupos;
@@ -785,7 +797,7 @@ void StartGUI(void)
 	// clear 256 bytes from hirestiledat
 	memset(hirestiledat, 0, sizeof(hirestiledat));
 	curblank = 0;
-	asm_call(InitGUI);
+	InitGUI();
 
 	if (CheatWinMode != 0) LoadCheatSearchFile();
 

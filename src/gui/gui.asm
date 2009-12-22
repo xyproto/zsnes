@@ -434,16 +434,7 @@ NEWSYM sramsavedis, resb 1
 
 SECTION .text
 
-NEWSYM InitGUI
-%ifdef __MSDOS__
-  call DOSClearScreen
-%endif
-  ccallv Clear2xSaIBuffer
-  call GUISetPal
-  call GUIBufferData
-  ret
-
-GUISetPal:
+NEWSYM GUISetPal
 %ifdef __MSDOS__
   cmp byte[cbitmode],1
   je near GUISetPal16
@@ -1266,7 +1257,7 @@ SECTION .data
   db 17,18,18,19,20,20,21,22,22,23,24,24,25,26,26,27,28,28,29,30,30,31
 SECTION .text
 
-GUIBufferData:
+NEWSYM GUIBufferData
 %ifdef __MSDOS__
   mov ecx,16384
   cmp byte[cbitmode],1
