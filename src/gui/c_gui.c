@@ -1175,6 +1175,16 @@ void GUISetPal(void)
 }
 
 
+void convertnum(char* dst, u4 val)
+{
+	char buf[10];
+	char* b = buf;
+	do *b++ = '0' + val % 10; while ((val /= 10) != 0);
+	do *dst++ = *--b; while (b != buf);
+	*dst = '\0';
+}
+
+
 static void loadmenuopen(u4 const param1) // XXX better parameter name
 {
 	GUIpmenupos = GUIcmenupos;

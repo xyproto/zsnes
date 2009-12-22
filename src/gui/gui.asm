@@ -432,36 +432,6 @@ NEWSYM sramsavedis, resb 1
 NEWSYM GUICPC, resw 256
 SECTION .text
 
-convertnum:
-    ; process through each digit
-    push edx
-    push eax
-    push ebx
-    push cx
-    xor edx,edx           ; clear high byte
-    xor cx,cx             ; clear counter variable
-    mov ebx,10
-.loopa
-    div ebx              ; get quotent and remainder
-    push edx              ; store number to stack
-    inc cl
-    xor edx,edx
-    test eax,0FFFFFFFFh
-    jnz .loopa
-.loopb
-    pop edx              ; get number back from stack
-    add dl,30h          ; adjust to ASCII value
-    mov [esi],dl
-    inc esi
-    dec cl
-    jnz .loopb
-    pop cx
-    pop ebx
-    pop eax
-    pop edx
-    mov byte[esi],0
-    ret
-
 ; eax = value, ecx = # of bytes
 converthex:
     mov ebx,ecx

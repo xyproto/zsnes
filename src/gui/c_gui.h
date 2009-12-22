@@ -20,6 +20,7 @@ void GUIProcStates(void);
 void GUIProcReset(void);
 void GUIUnBuffer(void);
 void GUISetPal(void);
+void convertnum(char* dst, u4 val);
 void guicheaterror(void);
 void DisplayBoxes(void);
 void DisplayMenu(void);

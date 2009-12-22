@@ -19,7 +19,7 @@
 
 
 
-EXTSYM VERSION_STR,placedate
+EXTSYM VERSION_STR,placedate,convertnum
 
 SECTION .data
 NEWSYM mencoderExists, db 0
@@ -2974,7 +2974,7 @@ CheatSearching:                       ; Exact Value Search
   mov esi,GUICSrcTextG1
   cmp byte[CheatSrcByteBase],1
   je .hex
-  call convertnum
+  ccallv convertnum, esi, eax
   jmp .dec
 .hex
   xor ecx,ecx
@@ -3031,8 +3031,7 @@ DisplayChtSrcRes:                    ; Buttons (Restart/View/Search)
 
   xor edi,edi                      ; Call and display # of results
   call FindChtSrcRes
-  mov esi,GUICSrcTextG1
-  call convertnum
+  ccallv convertnum, GUICSrcTextG1, eax
   GUIDisplayText 13,12,125,GUICSrcTextG1b
   GUIDisplayText 13,97,125,GUICSrcTextG1
   mov dword[GUIcurrentchtsrcviewloc],0
@@ -3116,7 +3115,7 @@ Cheatmodeview:                       ; View ResultsWindow
   xor ebx,ebx
   mov bl,[CheatSrcByteSize]
   and eax,[SrcMask+ebx*4]
-  call convertnum
+  ccallv convertnum, esi, eax
 .hex
   add dword[CheatSearchXPos],42
   GUIOuttextwin2 13,[CheatSearchXPos],[CheatSearchYPos],GUICSrcTextG1
@@ -3140,7 +3139,7 @@ Cheatmodeview:                       ; View ResultsWindow
   xor ebx,ebx
   mov bl,[CheatSrcByteSize]
   and eax,[SrcMask+ebx*4]
-  call convertnum
+  ccallv convertnum, esi, eax
 .hexb
   GUIOuttextwin2 13,[CheatSearchXPos],[CheatSearchYPos],GUICSrcTextG1
 .noprevious
@@ -3231,7 +3230,7 @@ Cheatmodeadd:                                 ; Add Window
   mov esi,GUICSrcTextG1
   cmp byte[CheatSrcByteBase],1
   je .hex
-  call convertnum
+  ccallv convertnum, esi, eax
   jmp .dec
 .hex
   xor ecx,ecx
