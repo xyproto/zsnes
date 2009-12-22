@@ -142,6 +142,37 @@ void GUIDrawShadow2(u1* buf, u4 const w, u4 h)
 }
 
 
+void GUIoutputcharwin(u1* dst, u1 const glyph)
+{
+	// Font Setup (Windows)
+	u1      (*font)[5] = newfont == 0 ? GUIFontData : GUIFontData1;
+	u1 const* edi      = font[glyph];
+	u4        y        = 5;
+	do
+	{
+		if (vidbuffer <= dst && dst < vidbuffer + 224 * 288) // XXX possible buffer overflow by 4
+		{
+			u4 ah = *edi;
+			u4 x  = 5;
+			do
+			{
+				if (ah & 0x80) *dst = GUItextcolor[0];
+				ah <<= 1;
+				++dst;
+			}
+			while (--x != 0);
+			dst += 283;
+		}
+		else
+		{
+			dst += 288;
+		}
+		++edi;
+	}
+	while (--y != 0);
+}
+
+
 void GUIOuttextwin(u4 x, u4 const y, char const* const text)
 {
   u1* dst = vidbuffer + y * 288 + 16;

@@ -19,60 +19,9 @@
 
 ; Tools for the GUI (string functions are also used elsewhere)
 
-EXTSYM GUIOutputString
+EXTSYM GUIOutputString,GUIoutputcharwin
 
 SECTION .text
-
-GUIoutputcharwin:
-  push edi
-  push esi
-  push eax
-  xor ebx,ebx
-  mov bl,al
-
-  cmp byte[newfont],0      ; Font Setup (Windows)
-  jne .nozero
-  mov edi,GUIFontData
-  jmp .endfont
-.nozero
-  mov edi,GUIFontData1
-.endfont
-
-;  mov edi,GUIFontData
-  lea ebx,[ebx*5]
-  add edi,ebx
-  mov cl,5
-.loopa
-  mov ah,[edi]
-  mov ch,5
-  cmp esi,[vidbuffer]
-  jb .below
-  mov edx,[vidbuffer]
-  add edx,224*288
-  cmp esi,edx
-  jb .loopb
-.below
-  add esi,5
-  jmp .nowrite2
-.loopb
-  test ah,80h
-  jz .nowrite
-  mov al,[GUItextcolor]
-  mov [esi],al
-.nowrite
-  shl ah,1
-  inc esi
-  dec ch
-  jnz .loopb
-.nowrite2
-  add esi,283
-  inc edi
-  dec cl
-  jnz .loopa
-  pop eax
-  pop esi
-  pop edi
-  ret
 
 NEWSYM GUIOutputStringwin
   xor eax,eax
@@ -86,10 +35,8 @@ NEWSYM GUIOutputStringwin
   cmp edx,255
   jg .nodraw
   push esi
-  push edx
   add esi,edx
-  call GUIoutputcharwin
-  pop edx
+  ccallv GUIoutputcharwin, esi, eax
   pop esi
 .nodraw
   add edx,6
@@ -117,12 +64,8 @@ GUIOutputStringwinl:
   cmp edx,255
   jg .nodraw
   push esi
-  push edx
-  push ecx
   add esi,edx
-  call GUIoutputcharwin
-  pop ecx
-  pop edx
+  ccallv GUIoutputcharwin, esi, eax
   pop esi
 .nodraw
   add edx,6
