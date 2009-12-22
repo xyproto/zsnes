@@ -217,6 +217,15 @@ no_number:;
 }
 
 
+void OutputUnder(s4 const edx, u1* const esi)
+{
+	if (-8 <= edx && edx <= 255)
+	{
+		memset(esi + edx + 5 * 288 - 1, 0xE8, 5);
+	}
+}
+
+
 void GUIOuttextwin(u4 x, u4 const y, char const* const text)
 {
 	GUIOutputStringwin(x, vidbuffer + y * 288 + 16, text);

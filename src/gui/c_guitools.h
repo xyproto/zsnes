@@ -12,6 +12,7 @@ void GUIShadow(u4 x1, u4 y1, u4 x2, u4 y2);
 void GUIDrawShadow2(u1* buf, u4 w, u4 h);
 void GUIOutputStringwin(s4 x, u1* dst, char const* text);
 void GUIOutputStringwinl(s4 x, u1* dst, char const* text);
+void OutputUnder(s4, u1* y);
 void GUIOuttextwin(u4 x, u4 y, char const* text);
 
 #endif

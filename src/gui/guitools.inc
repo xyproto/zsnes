@@ -19,19 +19,9 @@
 
 ; Tools for the GUI (string functions are also used elsewhere)
 
-EXTSYM GUIOutputString,GUIOutputStringwinl
+EXTSYM GUIOutputString,GUIOutputStringwinl,OutputUnder
 
 SECTION .text
-
-OutputUnder:
-  cmp edx,-8
-  jl .nodraw
-  cmp edx,255
-  jg .nodraw
-  mov dword[esi+edx+5*288-1],0E8E8E8E8h
-  mov byte[esi+edx+5*288+3],0E8h
-.nodraw
-  ret
 
 %macro GUIOuttextwin 1
   mov esi,ebx
@@ -88,7 +78,7 @@ OutputUnder:
   add esi,[vidbuffer]
   mov edi,%4
   add edx,%5*6
-  call OutputUnder
+  ccallv OutputUnder, edx, esi
   sub edx,%5*6
   ccallv GUIOutputStringwin, edx, esi, edi
 %endmacro
