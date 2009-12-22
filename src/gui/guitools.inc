@@ -23,27 +23,6 @@ EXTSYM GUIOutputString
 
 SECTION .text
 
-GUIDrawShadow2:
-.loop
-  push edi
-  push ecx
-.loop2
-  mov al,[edi]
-  cmp al,32
-  jae .noshadow
-  add al,96
-  mov [edi],al
-.noshadow
-  inc edi
-  dec ecx
-  jnz .loop2
-  pop ecx
-  pop edi
-  add edi,288
-  dec ebx
-  jnz .loop
-  ret
-
 GUIoutputcharwin:
   push edi
   push esi

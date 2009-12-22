@@ -19,7 +19,7 @@
 
 
 
-EXTSYM VERSION_STR,placedate,convertnum,converthex,GUIHLine
+EXTSYM VERSION_STR,placedate,convertnum,converthex,GUIHLine,GUIDrawShadow2
 
 SECTION .data
 NEWSYM mencoderExists, db 0
@@ -124,7 +124,7 @@ SECTION .text
   add edi,edx
   add edi,[vidbuffer]
   add edi,288*3+3+16
-  call GUIDrawShadow2
+  ccallv GUIDrawShadow2, edi, ecx, ebx
 .noshadow
 %endmacro
 

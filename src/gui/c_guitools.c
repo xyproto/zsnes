@@ -123,6 +123,25 @@ void GUIShadow(u4 const x1, u4 const y1, u4 const x2, u4 const y2)
 }
 
 
+void GUIDrawShadow2(u1* buf, u4 const w, u4 h)
+{
+	do
+	{
+		u1* b = buf;
+		u4  n = w;
+		do
+		{
+			u1 const c = *b;
+			if (c < 32) *b = c + 96;
+			++b;
+		}
+		while (--n != 0);
+		buf += 288;
+	}
+	while (--h != 0);
+}
+
+
 void GUIOuttextwin(u4 x, u4 const y, char const* const text)
 {
   u1* dst = vidbuffer + y * 288 + 16;
