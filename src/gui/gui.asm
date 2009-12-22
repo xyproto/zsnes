@@ -274,7 +274,7 @@ GUIHoldxm    resd 1
 GUIHoldym    resd 1
 NEWSYM cwindrawn,    resb 1
 GUIWincol    resd 1
-GUIWincoladd resd 1
+NEWSYM GUIWincoladd, resd 1
 GUITemp      resd 1
 GUIHoldXlimL resd 1
 GUIHoldXlimR resd 1

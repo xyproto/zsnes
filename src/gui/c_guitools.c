@@ -230,3 +230,43 @@ void GUIOuttextwin(u4 x, u4 const y, char const* const text)
 {
 	GUIOutputStringwin(x, vidbuffer + y * 288 + 16, text);
 }
+
+
+void GUIoutputiconwin(s4 const x, u4 const y, u1 const* src)
+{
+	if (x < -9 || 256 <= x) return;
+	u1* dst = y * 288 + 16 + vidbuffer + x;
+	u4  cl  = 10;
+	do
+	{
+		if (vidbuffer <= dst && dst < vidbuffer + 224 * 288)
+		{
+			u4 ch = 10;
+			do
+			{
+				u1 al = *src;
+				if (al != 0)
+				{
+					if (al <= 189)
+					{
+						if ((GUIWincoladd & 0xFF) != 0) ++al;
+					}
+					else
+					{
+						al -= (GUIWincoladd & 0xFF) + 1;
+					}
+					*dst = al;
+				}
+				++src;
+				++dst;
+			}
+			while (--ch != 0);
+			dst += 278;
+		}
+		else
+		{
+			dst += 288;
+		}
+	}
+	while (--cl != 0);
+}

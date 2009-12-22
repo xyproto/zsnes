@@ -14,5 +14,6 @@ void GUIOutputStringwin(s4 x, u1* dst, char const* text);
 void GUIOutputStringwinl(s4 x, u1* dst, char const* text);
 void OutputUnder(s4, u1* y);
 void GUIOuttextwin(u4 x, u4 y, char const* text);
+void GUIoutputiconwin(s4 x, u4 y, u1 const* src);
 
 #endif

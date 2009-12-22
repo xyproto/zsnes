@@ -20,6 +20,7 @@
 ; Tools for the GUI (string functions are also used elsewhere)
 
 EXTSYM GUIOutputString,GUIOutputStringwinl,OutputUnder
+EXTSYM GUIoutputiconwin
 
 SECTION .text
 
@@ -83,63 +84,8 @@ SECTION .text
   ccallv GUIOutputStringwin, edx, esi, edi
 %endmacro
 
-GUIoutputiconwin:
-  cmp eax,-9
-  jl .nodraw
-  cmp eax,256
-  jl .draw
-.nodraw
-  ret
-.draw
-  mov esi,ebx
-  mov ecx,ebx
-  shl esi,8
-  shl ecx,5
-  add esi,ecx
-  add esi,16
-  add esi,[vidbuffer]
-  add esi,eax
-  mov cl,10
-.loopa
-  mov ch,10
-  cmp esi,[vidbuffer]
-  jb .below
-  mov edx,[vidbuffer]
-  add edx,224*288
-  cmp esi,edx
-  jb .loopb
-.below
-  add esi,10
-  jmp .nowrite2
-.loopb
-  mov al,[edi]
-  or al,al
-  jz .transp
-  cmp al,189
-  ja .col2
-  cmp byte[GUIWincoladd],0
-  je .col3
-  inc al
-  jmp .col3
-.col2
-  sub al,[GUIWincoladd]
-  dec al
-.col3
-  mov [esi],al
-.transp
-  inc edi
-  inc esi
-  dec ch
-  jnz .loopb
-.nowrite2
-  add esi,278
-  dec cl
-  jnz .loopa
-  ret
-
 %macro GUIDisplayIcon 1
-  mov edi,%1
-  call GUIoutputiconwin
+  ccallv GUIoutputiconwin, eax, ebx, %1
 %endmacro
 
 %macro GUIDisplayIconWin 4
@@ -147,8 +93,7 @@ GUIoutputiconwin:
   mov ebx,[GUIwinposy+%1*4]
   add eax,%2
   add ebx,%3
-  mov edi,%4
-  call GUIoutputiconwin
+  ccallv GUIoutputiconwin, eax, ebx, %4
 %endmacro
 
 GUIDrawSlideBar:
