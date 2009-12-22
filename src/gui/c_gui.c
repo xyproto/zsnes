@@ -556,8 +556,284 @@ static void InitGUI(void)
 	asm_call(DOSClearScreen);
 #endif
 	Clear2xSaIBuffer();
-	asm_call(GUISetPal);
+	GUISetPal();
 	asm_call(GUIBufferData);
+}
+
+
+#ifdef __MSDOS__
+static void GUIRGB(u1 const r, u1 const g, u1 const b)
+{
+	outb(0x03C9, r);
+	outb(0x03C9, g);
+	outb(0x03C9, b);
+}
+
+
+static void GUIPal(u1 const idx, u1 const r, u1 const g, u1 const b)
+{
+	outb(0x03C8, idx);
+	GUIRGB(r, g, b);
+}
+#endif
+
+
+void GUISetPal(void)
+{
+#ifdef __MSDOS__
+	if (cbitmode != 1)
+	{
+		// set palette
+		{ // Fixed Color Scale = 0 .. 31
+			GUIPal(0, 0, 0, 0);
+
+			outb(0x03C8, 1);
+			u4 i = 0;
+			do GUIRGB(i + GUIRAdd, i + GUIGAdd, i + GUIBAdd); while (++i != 32);
+		}
+
+		{ // gray scale = 32 .. 63
+			outb(0x03C8, 32);
+			u4 i = 32;
+			// XXX values too large: 64..126
+			do GUIRGB(2 * i, 2 * i, 2 * i); while (++i != 64);
+		}
+
+		{ // shadow = 96 .. 127
+			u4 i = 0;
+			outb(0x03C8, 96);
+			do
+			{
+				u1 const r = (i + GUIRAdd) * 3 / 4;
+				u1 const g = (i + GUIGAdd) * 3 / 4;
+				u1 const b = (i + GUIBAdd) * 3 / 4;
+				GUIRGB(r, g, b);
+			}
+			while (++i != 32);
+		}
+
+		{ // 0, 10, 31
+			TRVal = GUITRAdd;
+			TGVal = GUITGAdd;
+			TBVal = GUITBAdd;
+			u2 const r = (TRVal + 1) / 8;
+			TRVali  = r;
+			TRVal  += r * 8;
+			u2 const g = (TGVal + 1) / 8;
+			TGVali  = g;
+			TGVal  += g * 8;
+			u2 const b = (TBVal + 1) / 8;
+			TBVali  = b;
+			TBVal  += b * 8;
+		}
+
+		GUIPal(64, TRVal, TGVal, TBVal);
+		asm_call(DecPalVal);
+		GUIPal(65, TRVal, TGVal, TBVal);
+		asm_call(DecPalVal);
+		GUIPal(66, TRVal, TGVal, TBVal);
+		asm_call(DecPalVal);
+		GUIPal(67, TRVal, TGVal, TBVal);
+		asm_call(DecPalVal);
+		GUIPal(68, TRVal, TGVal, TBVal);
+		asm_call(DecPalVal);
+		GUIPal(69, TRVal, TGVal, TBVal);
+		asm_call(DecPalVal);
+		GUIPal(70, TRVal, TGVal, TBVal);
+		asm_call(DecPalVal);
+		GUIPal(71, TRVal, TGVal, TBVal);
+
+		GUIPal(72, 40,  0, 20);
+		GUIPal(73, 34,  0, 21);
+
+		GUIPal(80,  0, 10, 28);
+		GUIPal(81,  0, 10, 27);
+		GUIPal(82,  0, 10, 25);
+		GUIPal(83,  0,  9, 24);
+		GUIPal(84,  0,  8, 22);
+		GUIPal(85,  0,  7, 20);
+		GUIPal(86,  0,  6, 18);
+		GUIPal(87,  0,  5, 15);
+		GUIPal(88, 20,  0, 10);
+		GUIPal(89, 17,  0, 10);
+
+		{ // Orange Scale
+			outb(0x03C8, 128);
+			u4 i = 0;
+			do { ++i; GUIRGB(63, i * 2, i); } while (i != 20);
+		}
+
+		// Blue scale = 148 .. 167
+		TRVal  = GUIWRAdd * 2;
+		TGVal  = GUIWGAdd * 2;
+		TBVal  = GUIWBAdd * 2;
+		TRVali = 4;
+		TGVali = 4;
+		TBVali = 4;
+
+		GUIPal(152, TRVal, TGVal, TBVal);
+		asm_call(DecPalVal);
+		GUIPal(151, TRVal, TGVal, TBVal);
+		asm_call(DecPalVal);
+		GUIPal(150, TRVal, TGVal, TBVal);
+		asm_call(DecPalVal);
+		GUIPal(149, TRVal, TGVal, TBVal);
+		asm_call(DecPalVal);
+		GUIPal(148, TRVal, TGVal, TBVal);
+
+		TRVal  = GUIWRAdd * 2;
+		TGVal  = GUIWGAdd * 2;
+		TBVal  = GUIWBAdd * 2;
+		TRVali = 4;
+		TGVali = 4;
+		TBVali = 4;
+		asm_call(DecPalVal);
+		asm_call(DecPalVal);
+
+		GUIPal(157, TRVal, TGVal, TBVal);
+		asm_call(DecPalVal);
+		GUIPal(156, TRVal, TGVal, TBVal);
+		asm_call(DecPalVal);
+		GUIPal(155, TRVal, TGVal, TBVal);
+		asm_call(DecPalVal);
+		GUIPal(154, TRVal, TGVal, TBVal);
+		asm_call(DecPalVal);
+		GUIPal(153, TRVal, TGVal, TBVal);
+
+		TRVal  = GUIWRAdd * 2;
+		TGVal  = GUIWGAdd * 2;
+		TBVal  = GUIWBAdd * 2;
+		TRVali = 4;
+		TGVali = 4;
+		TBVali = 4;
+		asm_call(DecPalVal);
+		asm_call(DecPalVal);
+		asm_call(DecPalVal);
+		asm_call(DecPalVal);
+
+		GUIPal(162, TRVal, TGVal, TBVal);
+		asm_call(DecPalVal);
+		GUIPal(161, TRVal, TGVal, TBVal);
+		asm_call(DecPalVal);
+		GUIPal(160, TRVal, TGVal, TBVal);
+		asm_call(DecPalVal);
+		GUIPal(159, TRVal, TGVal, TBVal);
+		asm_call(DecPalVal);
+		GUIPal(158, TRVal, TGVal, TBVal);
+
+		GUIPal(163, 40, 40, 0);
+		GUIPal(164, 30, 30, 0);
+		GUIPal(165, 50,  0, 0);
+		GUIPal(166, 35,  0, 0);
+		GUIPal(167,  0,  0, 0);
+
+		// Blue scale shadow
+		TRVal  = GUIWRAdd;
+		TGVal  = GUIWGAdd;
+		TBVal  = GUIWBAdd;
+		TRVali = 2;
+		TGVali = 2;
+		TBVali = 2;
+
+		GUIPal(172, TRVal, TGVal, TBVal);
+		asm_call(DecPalVal);
+		GUIPal(171, TRVal, TGVal, TBVal);
+		asm_call(DecPalVal);
+		GUIPal(170, TRVal, TGVal, TBVal);
+		asm_call(DecPalVal);
+		GUIPal(169, TRVal, TGVal, TBVal);
+		asm_call(DecPalVal);
+		GUIPal(168, TRVal, TGVal, TBVal);
+
+		TRVal  = GUIWRAdd;
+		TGVal  = GUIWGAdd;
+		TBVal  = GUIWBAdd;
+		TRVali = 2;
+		TGVali = 2;
+		TBVali = 2;
+		asm_call(DecPalVal);
+		asm_call(DecPalVal);
+
+		GUIPal(177, TRVal, TGVal, TBVal);
+		asm_call(DecPalVal);
+		GUIPal(176, TRVal, TGVal, TBVal);
+		asm_call(DecPalVal);
+		GUIPal(175, TRVal, TGVal, TBVal);
+		asm_call(DecPalVal);
+		GUIPal(174, TRVal, TGVal, TBVal);
+		asm_call(DecPalVal);
+		GUIPal(173, TRVal, TGVal, TBVal);
+
+		TRVal  = GUIWRAdd;
+		TGVal  = GUIWGAdd;
+		TBVal  = GUIWBAdd;
+		TRVali = 2;
+		TGVali = 2;
+		TBVali = 2;
+		asm_call(DecPalVal);
+		asm_call(DecPalVal);
+		asm_call(DecPalVal);
+		asm_call(DecPalVal);
+
+		GUIPal(182, TRVal, TGVal, TBVal);
+		asm_call(DecPalVal);
+		GUIPal(181, TRVal, TGVal, TBVal);
+		asm_call(DecPalVal);
+		GUIPal(180, TRVal, TGVal, TBVal);
+		asm_call(DecPalVal);
+		GUIPal(179, TRVal, TGVal, TBVal);
+		asm_call(DecPalVal);
+		GUIPal(178, TRVal, TGVal, TBVal);
+
+		GUIPal(183, 20, 20, 0);
+		GUIPal(184, 15, 15, 0);
+		GUIPal(185, 25,  0, 0);
+		GUIPal(186, 17,  0, 0);
+		GUIPal(187,  0,  0, 0);
+
+		{ // gray scale2 = 189 .. 220
+			outb(0x03C8, 189);
+			u4 i = 0;
+			do GUIRGB(i * 3 / 2, i * 3 / 2, i / 2); while (++i != 64); // XXX comment says till 220, but loop goes to 252
+		}
+
+		GUIPal(221,  0, 55,  0);
+		GUIPal(222,  0, 45,  0);
+		GUIPal(223,  0, 25,  0);
+
+		GUIPal(224, 40,  0, 20);
+		GUIPal(225, 32,  0, 15);
+
+		GUIPal(226, 20,  0, 10);
+		GUIPal(227, 16,  0,  7);
+
+		GUIPal(228, 45, 45, 50);
+		GUIPal(229, 40, 40, 45);
+		GUIPal(230, 35, 35, 40);
+		GUIPal(231, 30, 30, 35);
+
+		GUIPal(232, 35, 15, 15);
+
+		GUIPal(233, 50, 12, 60);
+		GUIPal(234, 30, 14, 60);
+
+		if (GUIPalConv == 0)
+		{
+			GUIPalConv = 1;
+			// Convert Image data to Gray Scale
+			// Create Palette Table
+			asm_call(GUIconvpal);
+			// Convert Current Image in Buffer
+			u1* buf = vidbuffer;
+			u4  n   = 288 * 240;
+			do *buf = SubPalTable[*buf]; while (++buf, --n != 0);
+		}
+	}
+	else
+#endif
+	{
+		asm_call(GUISetPal16);
+	}
 }
 
 

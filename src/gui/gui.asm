@@ -67,7 +67,7 @@ EXTSYM SkipMovie,MovieStop,MoviePlay,MovieRecord
 EXTSYM MovieInsertChapter,MovieSeekAhead,MovieSeekBehind
 EXTSYM MovieDumpRaw,MovieAppend,AutoLoadCht,GUILoadData
 EXTSYM CheckMenuItemHelp
-EXTSYM GUITryMenuItem,GUIProcStates,GUIProcReset
+EXTSYM GUITryMenuItem,GUIProcStates,GUIProcReset,GUISetPal
 
 EXTSYM GUIwinposx,GUIwinposy,maxskip,GUIEffect,hqFilter,En2xSaI,NTSCFilter
 EXTSYM NTSCBlend,NTSCHue,NTSCSat,NTSCCont,NTSCBright,NTSCSharp,NTSCRef
@@ -243,7 +243,7 @@ NEWSYM CalibYmin209, dd 0
 NEWSYM CalibYmax209, dd 0
 
 EEgg db 0
-SubPalTable times 256 db 1      ; Corresponding Gray Scale Color
+NEWSYM SubPalTable, times 256 db 1      ; Corresponding Gray Scale Color
 
 SECTION .bss
 NEWSYM CombinDataGlob, resb 3300 ; 20-name, 42-combo, 2-key#, 1-P#, 1-ff
@@ -432,385 +432,6 @@ SECTION .bss
 NEWSYM Totalbyteloaded, resd 1
 NEWSYM sramsavedis, resb 1
 
-SECTION .text
-
-NEWSYM GUISetPal
-%ifdef __MSDOS__
-  cmp byte[cbitmode],1
-  je near GUISetPal16
-  ; set palette
-  ; Fixed Color Scale = 0 .. 31
-  mov dx,03C8h
-  mov al,0
-  out dx,al
-  inc dx
-  out dx,al
-  out dx,al
-  out dx,al
-
-  inc al
-  mov dx,03C8h
-  mov bl,1
-  out dx,al
-  inc dx
-.loopd
-  mov al,bl
-  add al,[GUIRAdd]
-  out dx,al
-  mov al,bl
-  add al,[GUIGAdd]
-  out dx,al
-  mov al,bl
-  add al,[GUIBAdd]
-  out dx,al
-  inc bl
-  cmp bl,32
-  jne .loopd
-  ; gray scale = 32 .. 63
-  mov dx,03C8h
-  mov bl,32
-  mov al,32
-  out dx,al
-  inc dx
-.loopc
-  mov al,bl
-  add al,al
-  out dx,al
-  out dx,al
-  out dx,al
-  inc bl
-  cmp bl,64
-  jne .loopc
-  ; shadow = 96 .. 127
-  inc al
-  mov al,96
-  mov dx,03C8h
-  mov bl,0
-  out dx,al
-  inc dx
-.loope
-  mov al,bl
-  add al,[GUIRAdd]
-  mov ah,al
-  add al,al
-  add al,ah
-  shr al,2
-  out dx,al
-  mov al,bl
-  add al,[GUIGAdd]
-  mov ah,al
-  add al,al
-  add al,ah
-  shr al,2
-  out dx,al
-  mov al,bl
-  add al,[GUIBAdd]
-  mov ah,al
-  add al,al
-  add al,ah
-  shr al,2
-  out dx,al
-  inc bl
-  cmp bl,32
-  jne .loope
-
-  ; 0,10,31
-  mov al,[GUITRAdd]
-  mov [TRVal],al
-  mov al,[GUITGAdd]
-  mov [TGVal],al
-  mov al,[GUITBAdd]
-  mov [TBVal],al
-  mov ax,[TRVal]
-  inc ax
-  shr ax,3
-  mov [TRVali],ax
-  shl ax,3
-  add [TRVal],ax
-  mov ax,[TGVal]
-  inc ax
-  shr ax,3
-  mov [TGVali],ax
-  shl ax,3
-  add [TGVal],ax
-  mov ax,[TBVal]
-  inc ax
-  shr ax,3
-  mov [TBVali],ax
-  shl ax,3
-  add [TBVal],ax
-
-  GUIPal 64,[TRVal],[TGVal],[TBVal]
-  call DecPalVal
-  GUIPal 65,[TRVal],[TGVal],[TBVal]
-  call DecPalVal
-  GUIPal 66,[TRVal],[TGVal],[TBVal]
-  call DecPalVal
-  GUIPal 67,[TRVal],[TGVal],[TBVal]
-  call DecPalVal
-  GUIPal 68,[TRVal],[TGVal],[TBVal]
-  call DecPalVal
-  GUIPal 69,[TRVal],[TGVal],[TBVal]
-  call DecPalVal
-  GUIPal 70,[TRVal],[TGVal],[TBVal]
-  call DecPalVal
-  GUIPal 71,[TRVal],[TGVal],[TBVal]
-
-  GUIPal 72,40,0,20
-  GUIPal 73,34,0,21
-
-  GUIPal 80,0,10,28
-  GUIPal 81,0,10,27
-  GUIPal 82,0,10,25
-  GUIPal 83,0,09,24
-  GUIPal 84,0,08,22
-  GUIPal 85,0,07,20
-  GUIPal 86,0,06,18
-  GUIPal 87,0,05,15
-  GUIPal 88,20,0,10
-  GUIPal 89,17,0,10
-
-  ; Orange Scale
-  mov dx,03C8h
-  mov al,128
-  mov cl,20
-  out dx,al
-  mov bh,0
-  mov ah,0
-  inc dx
-.loopf
-  add bh,2
-  inc ah
-  mov al,63
-  out dx,al
-  mov al,bh
-  out dx,al
-  mov al,ah
-  out dx,al
-  dec cl
-  jnz .loopf
-
-  ; Blue scale = 148 .. 167
-  mov al,[GUIWRAdd]
-  add al,al
-  mov [TRVal],al
-  mov al,[GUIWGAdd]
-  add al,al
-  mov [TGVal],al
-  mov al,[GUIWBAdd]
-  add al,al
-  mov [TBVal],al
-  mov byte[TRVali],4
-  mov byte[TGVali],4
-  mov byte[TBVali],4
-
-  GUIPal 152,[TRVal],[TGVal],[TBVal]
-  call DecPalVal
-  GUIPal 151,[TRVal],[TGVal],[TBVal]
-  call DecPalVal
-  GUIPal 150,[TRVal],[TGVal],[TBVal]
-  call DecPalVal
-  GUIPal 149,[TRVal],[TGVal],[TBVal]
-  call DecPalVal
-  GUIPal 148,[TRVal],[TGVal],[TBVal]
-
-  mov al,[GUIWRAdd]
-  add al,al
-  mov [TRVal],al
-  mov al,[GUIWGAdd]
-  add al,al
-  mov [TGVal],al
-  mov al,[GUIWBAdd]
-  add al,al
-  mov [TBVal],al
-  mov byte[TRVali],4
-  mov byte[TGVali],4
-  mov byte[TBVali],4
-  call DecPalVal
-  call DecPalVal
-
-  GUIPal 157,[TRVal],[TGVal],[TBVal]
-  call DecPalVal
-  GUIPal 156,[TRVal],[TGVal],[TBVal]
-  call DecPalVal
-  GUIPal 155,[TRVal],[TGVal],[TBVal]
-  call DecPalVal
-  GUIPal 154,[TRVal],[TGVal],[TBVal]
-  call DecPalVal
-  GUIPal 153,[TRVal],[TGVal],[TBVal]
-
-  mov al,[GUIWRAdd]
-  add al,al
-  mov [TRVal],al
-  mov al,[GUIWGAdd]
-  add al,al
-  mov [TGVal],al
-  mov al,[GUIWBAdd]
-  add al,al
-  mov [TBVal],al
-  mov byte[TRVali],4
-  mov byte[TGVali],4
-  mov byte[TBVali],4
-  call DecPalVal
-  call DecPalVal
-  call DecPalVal
-  call DecPalVal
-
-  GUIPal 162,[TRVal],[TGVal],[TBVal]
-  call DecPalVal
-  GUIPal 161,[TRVal],[TGVal],[TBVal]
-  call DecPalVal
-  GUIPal 160,[TRVal],[TGVal],[TBVal]
-  call DecPalVal
-  GUIPal 159,[TRVal],[TGVal],[TBVal]
-  call DecPalVal
-  GUIPal 158,[TRVal],[TGVal],[TBVal]
-
-  GUIPal 163,40,40,00
-  GUIPal 164,30,30,00
-  GUIPal 165,50,00,00
-  GUIPal 166,35,00,00
-  GUIPal 167,00,00,00
-
-  ; Blue scale shadow
-  mov al,[GUIWRAdd]
-  mov [TRVal],al
-  mov al,[GUIWGAdd]
-  mov [TGVal],al
-  mov al,[GUIWBAdd]
-  mov [TBVal],al
-  mov byte[TRVali],2
-  mov byte[TGVali],2
-  mov byte[TBVali],2
-
-  GUIPal 172,[TRVal],[TGVal],[TBVal]
-  call DecPalVal
-  GUIPal 171,[TRVal],[TGVal],[TBVal]
-  call DecPalVal
-  GUIPal 170,[TRVal],[TGVal],[TBVal]
-  call DecPalVal
-  GUIPal 169,[TRVal],[TGVal],[TBVal]
-  call DecPalVal
-  GUIPal 168,[TRVal],[TGVal],[TBVal]
-
-  mov al,[GUIWRAdd]
-  mov [TRVal],al
-  mov al,[GUIWGAdd]
-  mov [TGVal],al
-  mov al,[GUIWBAdd]
-  mov [TBVal],al
-  mov byte[TRVali],2
-  mov byte[TGVali],2
-  mov byte[TBVali],2
-  call DecPalVal
-  call DecPalVal
-
-  GUIPal 177,[TRVal],[TGVal],[TBVal]
-  call DecPalVal
-  GUIPal 176,[TRVal],[TGVal],[TBVal]
-  call DecPalVal
-  GUIPal 175,[TRVal],[TGVal],[TBVal]
-  call DecPalVal
-  GUIPal 174,[TRVal],[TGVal],[TBVal]
-  call DecPalVal
-  GUIPal 173,[TRVal],[TGVal],[TBVal]
-
-  mov al,[GUIWRAdd]
-  mov [TRVal],al
-  mov al,[GUIWGAdd]
-  mov [TGVal],al
-  mov al,[GUIWBAdd]
-  mov [TBVal],al
-  mov byte[TRVali],2
-  mov byte[TGVali],2
-  mov byte[TBVali],2
-  call DecPalVal
-  call DecPalVal
-  call DecPalVal
-  call DecPalVal
-
-  GUIPal 182,[TRVal],[TGVal],[TBVal]
-  call DecPalVal
-  GUIPal 181,[TRVal],[TGVal],[TBVal]
-  call DecPalVal
-  GUIPal 180,[TRVal],[TGVal],[TBVal]
-  call DecPalVal
-  GUIPal 179,[TRVal],[TGVal],[TBVal]
-  call DecPalVal
-  GUIPal 178,[TRVal],[TGVal],[TBVal]
-
-  GUIPal 183,20,20,00
-  GUIPal 184,15,15,00
-  GUIPal 185,25,00,00
-  GUIPal 186,17,00,00
-  GUIPal 187,00,00,00
-
-  ; gray scale2 = 189 .. 220
-  mov dx,03C8h
-  mov al,189
-  mov bl,0
-  out dx,al
-  inc dx
-.loopi
-  mov al,bl
-  add al,al
-  mov ah,bl
-  shr ah,1
-  sub al,ah
-  out dx,al
-  out dx,al
-  add al,ah
-  out dx,al
-  inc bl
-  cmp bl,64
-  jne .loopi
-
-  GUIPal 221,00,55,00
-  GUIPal 222,00,45,00
-  GUIPal 223,00,25,00
-
-  GUIPal 224,40,0,20
-  GUIPal 225,32,0,15
-
-  GUIPal 226,20,0,10
-  GUIPal 227,16,0,07
-
-  GUIPal 228,45,45,50
-  GUIPal 229,40,40,45
-  GUIPal 230,35,35,40
-  GUIPal 231,30,30,35
-
-  GUIPal 232,35,15,15
-
-  GUIPal 233,50,12,60
-  GUIPal 234,30,14,60
-
-  cmp byte[GUIPalConv],0
-  je .convert
-  ret
-.convert
-  mov byte[GUIPalConv],1
-
-  ; Convert Image data to Gray Scale
-  ; Create Palette Table
-  call GUIconvpal
-  ; Convert Current Image in Buffer
-  mov esi,[vidbuffer]
-  mov ecx,288*240
-  xor eax,eax
-.next
-  mov al,[esi]
-  mov bl,[SubPalTable+eax]
-  mov [esi],bl
-  inc esi
-  dec ecx
-  jnz .next
-%else
-  jmp GUISetPal16
-%endif
-  ret
-
-SECTION .bss
 NEWSYM GUICPC, resw 256
 SECTION .text
 
@@ -827,7 +448,7 @@ SECTION .text
   mov [GUICPC+%1*2],ax
 %endmacro
 
-DecPalVal:
+NEWSYM DecPalVal
   mov ax,[TRVali]
   sub word[TRVal],ax
   mov ax,[TGVali]
@@ -848,7 +469,7 @@ DecPalVal:
 .notnegb
   ret
 
-GUISetPal16:
+NEWSYM GUISetPal16
   ; set palette
   ; Fixed Color Scale = 0 .. 31
   mov word[GUICPC],0
@@ -1303,7 +924,7 @@ NEWSYM GUIUnBuffer
   rep stosd
   ret
 
-GUIconvpal:
+NEWSYM GUIconvpal
   mov ax,[cgram]
   mov [tempco0],ax
   test byte[scaddtype],00100000b

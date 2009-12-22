@@ -4,7 +4,7 @@
 #include "../types.h"
 
 extern void GUIBufferData();
-extern void GUISetPal();
+extern void GUISetPal16();
 extern void GUIUnBuffer();
 
 extern char  GUIPrevMenuData[];
@@ -37,10 +37,17 @@ extern u1    MouseDis;
 extern u1    MousePRClick;
 extern u1    ShowTimer;
 extern u1    SnowVelDist[800];
+extern u1    SubPalTable[256];
 extern u1    cwindrawn;
 extern u1*   GUICYLocPtr;
 extern u2    PrevResoln;
 extern u2    SnowData[800];
+extern u2    TBVal;
+extern u2    TBVali;
+extern u2    TGVal;
+extern u2    TGVali;
+extern u2    TRVal;
+extern u2    TRVali;
 extern u4    GUICTimer;
 extern u4    GUIDClickTL;
 extern u4    GUIMenuD;

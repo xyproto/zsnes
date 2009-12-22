@@ -94,19 +94,6 @@ GUIHLine:
 .nodraw
   ret
 
-%macro GUIPal 4
-  mov dx,03C8h
-  mov al,%1
-  out dx,al
-  inc dx
-  mov al,%2
-  out dx,al
-  mov al,%3
-  out dx,al
-  mov al,%4
-  out dx,al
-%endmacro
-
 GUIDrawShadow2:
 .loop
   push edi

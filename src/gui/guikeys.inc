@@ -1385,7 +1385,7 @@ GUIVideoKeys:
   mov byte[cbitmode],1
   call initvideo2
   mov byte[cbitmode],0
-  call GUISetPal
+  ccallv GUISetPal
 .nomodex
   popad
 %endif

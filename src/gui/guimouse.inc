@@ -914,7 +914,7 @@ GUIProcVideo:
   cmp byte[videotroub],1
   je .failed
 %endif
-  call GUISetPal
+  ccallv GUISetPal
   ccallv guipostvideo
   cmp dword[GUIkeydelay],0
   je .failed2
@@ -931,7 +931,7 @@ GUIProcVideo:
   mov al,[.prevvid]
   mov [cvidmode],al
   ccallv initvideo
-  call GUISetPal
+  ccallv GUISetPal
   ccallv guipostvideofail
   mov dword[GUIkeydelay],0
   ret
@@ -941,7 +941,7 @@ GUIProcVideo:
   mov al,[.prevvid]
   mov [cvidmode],al
   ccallv initvideo
-  call GUISetPal
+  ccallv GUISetPal
   call vidpastecopyscr
   mov dword[GUIkeydelay],0
   ret
@@ -1672,7 +1672,7 @@ SECTION .text
   mov byte[cbitmode],1
   call initvideo2
   mov byte[cbitmode],0
-  call GUISetPal
+  ccallv GUISetPal
 %%nomodex
   popad
 %endif
@@ -3014,7 +3014,7 @@ DisplayGUIOptnsClick:
 
   cmp byte[TRVal2+1],1
   jne .nopalchange
-  call GUISetPal
+  ccallv GUISetPal
   mov byte[TRVal2+1],0
 .nopalchange
 
