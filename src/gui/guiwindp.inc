@@ -200,7 +200,7 @@ SECTION .text
   mov ebx,[GUIwinposy+%1*4]
   add eax,dword[GUIwinsizex+%1*4]
   sub eax,10
-  GUIDisplayIcon GUIIconDataClose
+  ccallv GUIoutputiconwin, eax, ebx, GUIIconDataClose
 %endmacro
 
 %macro DrawGUIWinBox 6
