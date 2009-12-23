@@ -24,7 +24,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "../cfg.h"
 #include "../intrf.h"
 #include "../link.h"
-#include "../video/c_copyvwin.h"
+#include "../video/copyvwin.h"
 #include <stdint.h>
 
 
@@ -114,9 +114,6 @@ static void UnlockSurface()
   SDL_Flip(surface);
 }
 
-extern uint32_t AddEndBytes;
-extern uint32_t NumBytesPerLine;
-extern unsigned char *WinVidMemStart;
 extern unsigned char NGNoTransp;
 extern unsigned short resolutn;
 void hq2x_16b();

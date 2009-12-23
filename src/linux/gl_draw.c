@@ -22,7 +22,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "../cfg.h"
 #include "../gblhdr.h"
 #include "../link.h"
-#include "../video/c_copyvwin.h"
+#include "../video/copyvwin.h"
 #include <stdint.h>
 
 
@@ -156,9 +156,6 @@ void gl_end()
   }
 }
 
-extern uint64_t AddEndBytes;
-extern uint64_t NumBytesPerLine;
-extern unsigned char *WinVidMemStart;
 extern unsigned char NGNoTransp;
 extern unsigned char SpecialLine[224];  /* 0 if lo-res, > 0 if hi-res */
 

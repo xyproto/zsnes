@@ -1,3 +1,24 @@
+/*
+ * Copyright (C) 1997-2008 ZSNES Team ( zsKnight, _Demo_, pagefault, Nach )
+ *
+ * http://www.zsnes.com
+ * http://sourceforge.net/projects/zsnes
+ * https://zsnes.bountysource.com
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ */
+
 #include <string.h>
 
 #include "../c_init.h"
@@ -8,7 +29,6 @@
 #include "../ui.h"
 #include "../vcache.h"
 #include "2xsaiw.h"
-#include "c_copyvwin.h"
 #include "copyvwin.h"
 #include "makevid.h"
 #include "newgfx16.h"
@@ -16,6 +36,12 @@
 #ifdef __WIN32__
 #include "../win/winlink.h"
 #endif
+
+u1* WinVidMemStart;
+u4  AddEndBytes;
+u4  NumBytesPerLine;
+
+static u1* InterPtr = 0;
 
 
 static void HighResProc(u2** psrc, u1** pdst, u1* ebx)

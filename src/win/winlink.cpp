@@ -46,7 +46,7 @@ extern "C"
 #include "../input.h"
 #include "../link.h"
 #include "../types.h"
-#include "../video/c_copyvwin.h"
+#include "../video/copyvwin.h"
 #include "../zmovie.h"
 #include "c_winintrf.h"
 
@@ -2236,9 +2236,6 @@ extern "C"
   }
 
   extern unsigned char curblank;
-  extern DWORD AddEndBytes;
-  extern DWORD NumBytesPerLine;
-  extern unsigned char *WinVidMemStart;
   void hq2x_16b();
   void hq2x_32b();
   void hq3x_16b();
