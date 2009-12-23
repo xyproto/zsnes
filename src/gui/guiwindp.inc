@@ -21,6 +21,7 @@
 
 EXTSYM VERSION_STR,placedate,convertnum,converthex,GUIHLine,GUIDrawShadow2
 EXTSYM GUIDisplayIconWin,GUIOuttextwin2u,GUIOuttextwin2l,GUIOuttextwin2
+EXTSYM GUIoutputiconwin,GUIOuttextwin
 
 SECTION .data
 NEWSYM mencoderExists, db 0
@@ -186,7 +187,7 @@ SECTION .text
   mov edx,[GUIwinposx+%1*4]
   add edx,3
   mov byte[GUItextcolor],184
-  GUIOuttextwin %2
+  ccallv GUIOuttextwin, edx, ebx, %2
   mov ebx,[GUIwinposy+%1*4]
   add ebx,2
   mov edx,[GUIwinposx+%1*4]
@@ -196,7 +197,7 @@ SECTION .text
   je .zero2
   sub byte[GUItextcolor],6
 .zero2
-  GUIOuttextwin %2
+  ccallv GUIOuttextwin, edx, ebx, %2
   mov eax,[GUIwinposx+%1*4]
   mov ebx,[GUIwinposy+%1*4]
   add eax,dword[GUIwinsizex+%1*4]

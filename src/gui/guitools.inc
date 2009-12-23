@@ -18,18 +18,3 @@
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 ; Tools for the GUI (string functions are also used elsewhere)
-
-EXTSYM GUIOutputString,GUIoutputiconwin
-
-SECTION .text
-
-%macro GUIOuttextwin 1
-  mov esi,ebx
-  mov eax,ebx
-  shl esi,8
-  shl eax,5
-  add esi,eax
-  add esi,16
-  add esi,[vidbuffer]
-  ccallv GUIOutputStringwin, edx, esi, %1
-%endmacro
