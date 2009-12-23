@@ -37,6 +37,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "mmlib/mm.h"
 #include "c_intrf.h"
 #include "ui.h"
+#include "video/procvid.h"
 #include "zpath.h"
 
 #ifndef OPENSPC
@@ -45,9 +46,9 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #define BIT(x) (1 << (x))
 
-extern unsigned int xa, MessageOn, maxromspace;
-extern unsigned char FPSOn, spcon, device1, device2;
-extern char *Msgptr, CSStatus[], CSStatus2[], CSStatus3[], CSStatus4[];
+extern unsigned int xa, maxromspace;
+extern unsigned char spcon, device1, device2;
+extern char CSStatus[], CSStatus2[], CSStatus3[], CSStatus4[];
 
 u2 selc0040;
 u2 selcA000;
@@ -624,7 +625,7 @@ char gammamsg[] = "GAMMA LEVEL:   \0";
 extern unsigned int MsgCount, MessageOn;
 extern unsigned char pressed[];
 extern unsigned char scrndis, disableeffects, osm2dis, snesinputdefault1, snesinputdefault2;
-extern unsigned char mousexloc, mouseyloc, t1cc, current_zst;
+extern unsigned char t1cc, current_zst;
 extern unsigned char Voice0Disable, Voice1Disable, Voice2Disable, Voice3Disable;
 extern unsigned char Voice4Disable, Voice5Disable, Voice6Disable, Voice7Disable;
 extern unsigned char Voice0Status, Voice1Status, Voice2Status, Voice3Status;

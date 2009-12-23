@@ -10,7 +10,7 @@
 #include "../macros.h"
 #include "../ui.h"
 #include "../vcache.h"
-#include "../video/c_procvid.h"
+#include "../video/procvid.h"
 #include "../zmovie.h"
 #include "../zpath.h"
 #include "c_gui.h"

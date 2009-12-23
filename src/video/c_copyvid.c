@@ -3,7 +3,7 @@
 #include "../cpu/regs.h"
 #include "../ui.h"
 #include "c_copyvid.h"
-#include "c_procvid.h"
+#include "procvid.h"
 
 
 void hextestoutput(void)

@@ -47,6 +47,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "zmovie.h"
 #include "chips/dsp4emu.h"
 #include "input.h"
+#include "video/procvid.h"
 #include "zstate.h"
 
 #define NUMCONV_FR3
@@ -628,9 +629,8 @@ void ResetState()
 }
 
 extern uint32_t SfxRomBuffer, SfxCROM;
-extern uint32_t SfxLastRamAdr, SfxRAMMem, MsgCount, MessageOn;
+extern uint32_t SfxLastRamAdr, SfxRAMMem;
 extern uint8_t AutoIncSaveSlot, cbitmode;
-extern char *Msgptr;
 extern uint16_t PrevPicture[64*56];
 
 static FILE *fhandle;

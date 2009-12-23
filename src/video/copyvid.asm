@@ -17,6 +17,10 @@
 ;along with this program; if not, write to the Free Software
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+%ifdef __MSDOS__
+
+%include "macros.mac"
+
 EXTSYM res640,lineleft,ConvertToAFormat,Mode7HiRes,ForceNewGfxOff
 EXTSYM _2xSaILine,_2xSaISuperEagleLine,_2xSaISuper2xSaILine,hextestoutput
 
@@ -5474,3 +5478,5 @@ NEWSYM cscopyvesa12640x480x16b
     jnz near .loopa
     pop es
     ret
+
+%endif

@@ -43,7 +43,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "initc.h"
 #include "input.h"
 #include "ui.h"
-#include "video/c_procvid.h"
+#include "video/procvid.h"
 #include "zpath.h"
 #include "cpu/memtable.h"
 
@@ -1642,8 +1642,6 @@ void Setper2exec(void)
   }
 }
 
-extern uint32_t MsgCount, MessageOn;
-extern char *Msgptr;
 uint32_t CRC32;
 
 uint32_t showinfogui(void)

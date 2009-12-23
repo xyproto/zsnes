@@ -56,6 +56,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "md.h"
 #include "input.h"
 #include "cfg.h"
+#include "video/procvid.h"
 #include "zpath.h"
 #include "zmovie.h"
 #include "zdir.h"
@@ -69,12 +70,11 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "numconv.h"
 
 
-extern uint32_t versionNumber, CRC32, cur_zst_size, MsgCount, MessageOn;
+extern uint32_t versionNumber, CRC32, cur_zst_size;
 extern uint32_t JoyAOrig, JoyBOrig, JoyCOrig, JoyDOrig, JoyEOrig;
 extern uint8_t GUIReset, ReturnFromSPCStall, GUIQuit;
 extern uint8_t mencoderExists, lameExists;
 extern char CMovieExt;
-extern char *Msgptr;
 extern bool romispal;
 bool MovieWaiting = false;
 
