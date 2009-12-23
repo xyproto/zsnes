@@ -33,18 +33,3 @@ SECTION .text
   add esi,[vidbuffer]
   ccallv GUIOutputStringwin, edx, esi, %1
 %endmacro
-
-%macro GUIOuttextwin2 4
-  mov edx,[GUIwinposx+%1*4]
-  mov ebx,[GUIwinposy+%1*4]
-  add edx,%2
-  add ebx,%3
-  mov esi,ebx
-  mov eax,ebx
-  shl esi,8
-  shl eax,5
-  add esi,eax
-  add esi,16
-  add esi,[vidbuffer]
-  ccallv GUIOutputStringwin, edx, esi, %4
-%endmacro

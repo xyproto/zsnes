@@ -20,7 +20,7 @@
 
 
 EXTSYM VERSION_STR,placedate,convertnum,converthex,GUIHLine,GUIDrawShadow2
-EXTSYM GUIDisplayIconWin,GUIOuttextwin2u,GUIOuttextwin2l
+EXTSYM GUIDisplayIconWin,GUIOuttextwin2u,GUIOuttextwin2l,GUIOuttextwin2
 
 SECTION .data
 NEWSYM mencoderExists, db 0
@@ -288,15 +288,15 @@ SECTION .text
   cmp byte[GUICBHold],%7
   je near %%no2
   sub byte[GUItextcolor],15
-  GUIOuttextwin2 %1,%2+5+%8,%3+4+%9,%6
+  ccallv GUIOuttextwin2, %1, %2 + 5 + %8, %3 + 4 + %9, %6
   add byte[GUItextcolor],15
-  GUIOuttextwin2 %1,%2+4+%8,%3+3+%9,%6
+  ccallv GUIOuttextwin2, %1, %2 + 4 + %8, %3 + 3 + %9, %6
   jmp %%yes
 %%no2
   sub byte[GUItextcolor],18
-  GUIOuttextwin2 %1,%2+6+%8,%3+5+%9,%6
+  ccallv GUIOuttextwin2, %1, %2 + 6 + %8, %3 + 5 + %9, %6
   add byte[GUItextcolor],15
-  GUIOuttextwin2 %1,%2+5+%8,%3+4+%9,%6
+  ccallv GUIOuttextwin2, %1, %2 + 5 + %8, %3 + 4 + %9, %6
   add byte[GUItextcolor],3
 %%yes
 %endmacro
@@ -369,21 +369,21 @@ SECTION .text
   je %%text
   mov byte[GUItextcolor],196
 %%text
-GUIOuttextwin2 %1,%2,%3,%4
+  ccallv GUIOuttextwin2, %1, %2, %3, %4
   add byte[GUItextcolor],15
-GUIOuttextwin2 %1,%2-1,%3-1,%4
+  ccallv GUIOuttextwin2, %1, %2 - 1, %3 - 1, %4
 %endmacro
 
 %macro GUIDisplayTextY 4                  ; Yellow Text&Shadow
   mov al,[GUIWincol]
   mov [GUItextcolor],al
-  GUIOuttextwin2 %1,%2,%3,%4
+  ccallv GUIOuttextwin2, %1, %2, %3, %4
   mov byte[GUItextcolor],163
   cmp byte[GUIWincoladd],0
   je %%texty
   mov byte[GUItextcolor],164
 %%texty
-  GUIOuttextwin2 %1,%2-1,%3-1,%4
+  ccallv GUIOuttextwin2, %1, %2 - 1, %3 - 1, %4
 %endmacro
 
 %macro GUIDisplayTextu 5                  ; Text&Shadow With Underline
@@ -394,18 +394,18 @@ GUIOuttextwin2 %1,%2-1,%3-1,%4
 %%textu
   ccallv GUIOuttextwin2u, %1,%2,%3,%4,%5
   add byte[GUItextcolor],15
-GUIOuttextwin2 %1,%2-1,%3-1,%4
+  ccallv GUIOuttextwin2, %1, %2 - 1, %3 - 1, %4
 %endmacro
 
 %macro GUIDisplayTextG 4                  ; Green Text&Shadow
   mov byte[GUItextcolor],223
-  GUIOuttextwin2 %1,%2,%3,%4
+  ccallv GUIOuttextwin2, %1, %2, %3, %4
   mov byte[GUItextcolor],221
   cmp byte[GUIWincoladd],0
   je %%zero
   mov byte[GUItextcolor],222
 %%zero
-  GUIOuttextwin2 %1,%2-1,%3-1,%4
+  ccallv GUIOuttextwin2, %1, %2 - 1, %3 - 1, %4
 %endmacro
 
 %macro GUIDisplayCheckboxP 4              ; Toggled Checkbox (Plain, no text)
@@ -787,13 +787,13 @@ GUIOuttextwin2 %1,%2-1,%3-1,%4
   DrawGUIWinBox %1,%2,%3,%4,%5,167
   mov byte[GUIComboText3],%7
   mov byte[GUItextcolor],223
-  GUIOuttextwin2 %1,%2+5,%3+2,GUIComboText3
+  ccallv GUIOuttextwin2, %1, %2 + 5, %3 + 2, GUIComboText3
   mov byte[GUItextcolor],221
   cmp byte[GUIWincoladd],0
   je %%zero
   mov byte[GUItextcolor],222
 %%zero
-  GUIOuttextwin2 %1,%2+4,%3+1,GUIComboText3
+  ccallv GUIOuttextwin2, %1, %2 + 4, %3 + 1, GUIComboText3
 %endmacro
 
 %macro DrawBorderedBoxB2 7       ; Special function for combo displays
@@ -812,13 +812,13 @@ GUIOuttextwin2 %1,%2-1,%3-1,%4
   DrawGUIWinBox %1,%2,%3,%4,%5,167
   mov byte[GUIComboText3b+1],%7
   mov byte[GUItextcolor],223
-  GUIOuttextwin2 %1,%2+2,%3+2,GUIComboText3b
+  ccallv GUIOuttextwin2, %1, %2 + 2, %3 + 2, GUIComboText3b
   mov byte[GUItextcolor],221
   cmp byte[GUIWincoladd],0
   je %%zero
   mov byte[GUItextcolor],222
 %%zero
-  GUIOuttextwin2 %1,%2+1,%3+1,GUIComboText3b
+  ccallv GUIOuttextwin2, %1, %2 + 1, %3 + 1, GUIComboText3b
 %endmacro
 
 %macro InitTextColor 0
@@ -843,17 +843,15 @@ GUIOuttextwin2 %1,%2-1,%3-1,%4
 %macro GUIOuttextwin2b 4        ; Special, yellow text
   mov al,[TextColorSp]
   mov [GUItextcolor],al
-  GUIOuttextwin2 %1,%2,%3,%4
+  ccallv GUIOuttextwin2, %1, %2, %3, %4
   mov al,[TextColorSp+1]
   mov [GUItextcolor],al
-  GUIOuttextwin2 %1,%2-1,%3-1,%4
+  ccallv GUIOuttextwin2, %1, %2 - 1, %3 - 1, %4
 %endmacro
 
 %macro GUIOuttextwin2c 4        ; Boxed, green text
   mov byte[GUItextcolor],223
-  push ecx                    ;Needed for the macro below
-  GUIOuttextwin2 %1,%2,%3,%4
-  pop ecx
+  ccallv GUIOuttextwin2, %1, %2, %3, %4
   mov byte[GUItextcolor],221
   cmp byte[GUIWincoladd],0
   je %%zero
@@ -862,7 +860,7 @@ GUIOuttextwin2 %1,%2-1,%3-1,%4
   push esi
   mov esi,%2
   dec esi
-  GUIOuttextwin2 %1,esi,%3-1,%4
+  ccallv GUIOuttextwin2, %1, esi, %3 - 1, %4
   pop esi
 %endmacro
 
@@ -1065,7 +1063,7 @@ NEWSYM DisplayGUILoad
 .files2
 
   mov byte[GUItextcolor],223             ; Green Shadow
-  GUIOuttextwin2 1,8,148, GUILoadTextA
+  ccallv GUIOuttextwin2, 1, 8, 148, GUILoadTextA
 
   cmp dword[GUIfileentries],0
   jne .yesfiles
@@ -1123,7 +1121,7 @@ NEWSYM DisplayGUILoad
   je .zero4
   mov byte[GUItextcolor],222
 .zero4
-  GUIOuttextwin2 1,7,147, GUILoadTextA
+  ccallv GUIOuttextwin2, 1, 7, 147, GUILoadTextA
 
   xor ebx,ebx
   mov bl,[GUILoadPos]
@@ -1394,13 +1392,13 @@ SECTION .text
   mov [GUIGameDisplayKy],ebx
   mov byte[GUIGameDisplayKy+3],0
   mov byte[GUItextcolor],223
-  GUIOuttextwin2 9,%1+3,%2+2,GUIGameDisplayKy
+  ccallv GUIOuttextwin2, 9, %1 + 3, %2 + 2, GUIGameDisplayKy
   mov byte[GUItextcolor],221
   cmp byte[GUIWincoladd],0
   je %%zero
   mov byte[GUItextcolor],222
 %%zero
-  GUIOuttextwin2 9,%1+2,%2+1,GUIGameDisplayKy
+  ccallv GUIOuttextwin2, 9, %1 + 2, %2 + 1, GUIGameDisplayKy
 %endmacro
 
 %macro DDrawBox 4
@@ -1421,13 +1419,13 @@ SECTION .text
   mov [GUIGameDisplayKy],ebx
   mov byte[GUIGameDisplayKy+3],0
   mov byte[GUItextcolor],223
-  GUIOuttextwin2 %1,%2+4,%3+3,GUIGameDisplayKy
+  ccallv GUIOuttextwin2, %1, %2 + 4, %3 + 3, GUIGameDisplayKy
   mov byte[GUItextcolor],221
   cmp byte[GUIWincoladd],0
   je %%zero
   mov byte[GUItextcolor],222
 %%zero
-  GUIOuttextwin2 %1,%2+3,%3+2,GUIGameDisplayKy
+  ccallv GUIOuttextwin2, %1, %2 + 3, %3 + 2, GUIGameDisplayKy
   DGOptnsBorderBox %1,%2,%3
 %endmacro
 
@@ -1449,13 +1447,13 @@ SECTION .text
   mov [GUIGameDisplayKy],ebx
   mov byte[GUIGameDisplayKy+3],0
   mov byte[GUItextcolor],223
-  GUIOuttextwin2 3,%1+3,%2+2,GUIGameDisplayKy
+  ccallv GUIOuttextwin2, 3, %1 + 3, %2 + 2, GUIGameDisplayKy
   mov byte[GUItextcolor],221
   cmp byte[GUIWincoladd],0
   je %%zero
   mov byte[GUItextcolor],222
 %%zero
-  GUIOuttextwin2 3,%1+2,%2+1,GUIGameDisplayKy
+  ccallv GUIOuttextwin2, 3, %1 + 2, %2 + 1, GUIGameDisplayKy
 %endmacro
 
 %macro GUIInputDispAll 1
@@ -2644,13 +2642,13 @@ DisplayGUICheatConv:
   jnz near %%skip
   call DisplayGUICheatConv
   mov byte[GUItextcolor],223
-  GUIOuttextwin2 7,%1,%2,GUICheatTextZ3
+  ccallv GUIOuttextwin2, 7, %1, %2, GUICheatTextZ3
   mov byte[GUItextcolor],221               ;Text
   cmp byte[GUIWincoladd],0
   je %%zero
   mov byte[GUItextcolor],222
 %%zero
-  GUIOuttextwin2 7,%1-1,%2-1,GUICheatTextZ3
+  ccallv GUIOuttextwin2, 7, %1 - 1, %2 - 1, GUICheatTextZ3
   add dword[ccheatnpos],28
   dec dword[ccheatnleft]
 %%skip
@@ -2939,7 +2937,7 @@ CheatSearching:                       ; Exact Value Search
   jne .notdark
   mov byte[GUItextcolor],202             ; Alt Color
 .notdark
-  GUIOuttextwin2 13,13,42,CSInputDisplay
+  ccallv GUIOuttextwin2, 13, 13, 42, CSInputDisplay
 
   mov byte[GUItextcolor],221            ; Green Text
   cmp byte[GUIWincoladd],0
@@ -2950,7 +2948,7 @@ CheatSearching:                       ; Exact Value Search
   jne .notdark2
   mov byte[GUItextcolor],207             ; Alt Color
 .notdark2
-  GUIOuttextwin2 13,12,41,CSInputDisplay
+  ccallv GUIOuttextwin2, 13, 12, 41, CSInputDisplay
 
   mov esi,CSInputDisplay          ; More flash?
   call CSAddFlash
@@ -3083,7 +3081,7 @@ Cheatmodeview:                       ; View ResultsWindow
   mov eax,[CSCurEntry]
   add eax,7E0000h
   ccallv converthex, GUICSrcTextG1, eax, 3
-  GUIOuttextwin2 13,[CheatSearchXPos],[CheatSearchYPos],GUICSrcTextG1
+  ccallv GUIOuttextwin2, 13, [CheatSearchXPos], [CheatSearchYPos], GUICSrcTextG1
 
   mov esi,GUICSrcTextG1
   mov ebx,[wramdata]
@@ -3103,7 +3101,7 @@ Cheatmodeview:                       ; View ResultsWindow
   ccallv convertnum, esi, eax
 .hex
   add dword[CheatSearchXPos],42
-  GUIOuttextwin2 13,[CheatSearchXPos],[CheatSearchYPos],GUICSrcTextG1
+  ccallv GUIOuttextwin2, 13, [CheatSearchXPos], [CheatSearchYPos], GUICSrcTextG1
 
   add dword[CheatSearchXPos],60
   cmp byte[GUICSrcTextE+12],0
@@ -3126,7 +3124,7 @@ Cheatmodeview:                       ; View ResultsWindow
   and eax,[SrcMask+ebx*4]
   ccallv convertnum, esi, eax
 .hexb
-  GUIOuttextwin2 13,[CheatSearchXPos],[CheatSearchYPos],GUICSrcTextG1
+  ccallv GUIOuttextwin2, 13, [CheatSearchXPos], [CheatSearchYPos], GUICSrcTextG1
 .noprevious
   sub dword[CheatSearchXPos],102
   add dword[CheatSearchYPos],7
@@ -3238,7 +3236,7 @@ Cheatmodeadd:                                 ; Add Window
   jne .notdark
   mov byte[GUItextcolor],202
 .notdark
-  GUIOuttextwin2 13,13,32,CSInputDisplay
+  ccallv GUIOuttextwin2, 13, 13, 32, CSInputDisplay
   mov byte[GUItextcolor],221
   cmp byte[GUIWincoladd],0
   je .zero4
@@ -3248,7 +3246,7 @@ Cheatmodeadd:                                 ; Add Window
   jne .notdark2
   mov byte[GUItextcolor],207
 .notdark2
-  GUIOuttextwin2 13,12,31,CSInputDisplay
+  ccallv GUIOuttextwin2, 13, 12, 31, CSInputDisplay
   mov esi,CSInputDisplay
   call CSAddFlash
 
@@ -3295,14 +3293,14 @@ Cheatmodeadd:                                 ; Add Window
   shr dword[curvaluecs],8
   mov byte[GUItextcolor],223
   inc dword[CheatSearchYPos]
-  GUIOuttextwin2 13,13,[CheatSearchYPos],GUICSrcTextG1
+  ccallv GUIOuttextwin2, 13, 13, [CheatSearchYPos], GUICSrcTextG1
   dec dword[CheatSearchYPos]
   mov byte[GUItextcolor],221
   cmp byte[GUIWincoladd],0
   je .zero4c
   mov byte[GUItextcolor],222
 .zero4c
-  GUIOuttextwin2 13,12,[CheatSearchYPos],GUICSrcTextG1
+  ccallv GUIOuttextwin2, 13, 12, [CheatSearchYPos], GUICSrcTextG1
   add dword[CheatSearchYPos],10
   inc dword[curaddrvalcs]
   pop ecx
@@ -4354,11 +4352,7 @@ NEWSYM DisplayGUICombo
   add eax,5
 
   mov byte[GUItextcolor],223
-  push ecx
-  push eax
-  GUIOuttextwin2 16,ecx,eax,GUIComboText3
-  pop eax
-  pop ecx
+  ccallv GUIOuttextwin2, 16, ecx, eax, GUIComboText3
   mov byte[GUItextcolor],221
   cmp byte[GUIWincoladd],0
   je .zerocol
@@ -4366,7 +4360,7 @@ NEWSYM DisplayGUICombo
 .zerocol
   dec ecx
   dec eax
-  GUIOuttextwin2 16,ecx,eax,GUIComboText3
+  ccallv GUIOuttextwin2, 16, ecx, eax, GUIComboText3
 
   popad
   ccallv GUIDisplayIconWin, 16, ecx, edx, esi
@@ -4447,16 +4441,10 @@ NEWSYM DisplayGUICombo
   pop eax
 
   mov byte[GUItextcolor],223
+  ccallv GUIOuttextwin2, 16, ecx, eax, GUIScrolBufA
   push ecx
-  push eax
-  GUIOuttextwin2 16,ecx,eax,GUIScrolBufA
-  pop eax
-  pop ecx
-  push ecx
-  push eax
   add ecx,128
-  GUIOuttextwin2 16,ecx,eax,GUIScrolBufB
-  pop eax
+  ccallv GUIOuttextwin2, 16, ecx, eax, GUIScrolBufB
   pop ecx
   mov byte[GUItextcolor],221
   cmp byte[GUIWincoladd],0
@@ -4467,13 +4455,9 @@ NEWSYM DisplayGUICombo
   push eax
   dec ecx
   dec eax
-  push ecx
-  push eax
-  GUIOuttextwin2 16,ecx,eax,GUIScrolBufA
-  pop eax
-  pop ecx
+  ccallv GUIOuttextwin2, 16, ecx, eax, GUIScrolBufA
   add ecx,128
-  GUIOuttextwin2 16,ecx,eax,GUIScrolBufB
+  ccallv GUIOuttextwin2, 16, ecx, eax, GUIScrolBufB
   pop eax
   pop ecx
   pop edi

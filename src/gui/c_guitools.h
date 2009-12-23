@@ -11,6 +11,7 @@ void GUIHLine(s4 x1, s4 x2, s4 y, u1 colour);
 void GUIShadow(u4 x1, u4 y1, u4 x2, u4 y2);
 void GUIDrawShadow2(u1* buf, u4 w, u4 h);
 void GUIOutputStringwin(s4 x, u1* dst, char const* text);
+void GUIOuttextwin2(u4 win_id, u4 x, u4 y, char const* text);
 void GUIOuttextwin2l(u4 win_id, u4 x, u4 y, char const* text);
 void GUIOuttextwin(u4 x, u4 y, char const* text);
 void GUIOuttextwin2u(u4 win_id, u4 x, u4 y, char const* text, u4 under_pos);
