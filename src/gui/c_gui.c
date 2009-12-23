@@ -25,13 +25,13 @@
 #include "../ztimec.h"
 #include "c_gui.h"
 #include "c_guimisc.h"
-#include "c_guitools.h"
 #include "gui.h"
 #include "guicheat.h"
 #include "guifuncs.h"
 #include "guikeys.h"
 #include "guimisc.h"
 #include "guimouse.h"
+#include "guitools.h"
 #include "guiwindp.h"
 
 #ifdef __MSDOS__

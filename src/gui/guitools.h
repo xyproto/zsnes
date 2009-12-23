@@ -1,5 +1,5 @@
-#ifndef C_GUITOOLS_H
-#define C_GUITOOLS_H
+#ifndef GUITOOLS_H
+#define GUITOOLS_H
 
 #include "../types.h"
 
