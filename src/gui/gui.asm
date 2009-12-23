@@ -151,7 +151,6 @@ EXTSYM GUII2VID
 EXTSYM allow_glvsync
 %endif
 
-%include "gui/guimisc.inc"
 %include "gui/guimouse.inc"
 %include "gui/guiwindp.inc"
 %include "gui/guikeys.inc"

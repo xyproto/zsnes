@@ -39,7 +39,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "chips/c_dsp2proc.h"
 #include "cpu/c_regs.h"
 #include "cpu/c_regsw.h"
-#include "gui/c_guimisc.h"
+#include "gui/guimisc.h"
 #include "initc.h"
 #include "input.h"
 #include "ui.h"

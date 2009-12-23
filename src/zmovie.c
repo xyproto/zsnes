@@ -52,7 +52,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #endif
 #include "asm_call.h"
 #include "cpu/dspproc.h"
-#include "gui/c_guimisc.h"
+#include "gui/guimisc.h"
 #include "md.h"
 #include "input.h"
 #include "cfg.h"

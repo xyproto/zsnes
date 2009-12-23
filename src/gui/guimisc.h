@@ -1,5 +1,7 @@
-#ifndef C_GUIMISC_H
-#define C_GUIMISC_H
+#ifndef GUIMISC_H
+#define GUIMISC_H
+
+// Joystick setting (display) routines, SNES Reset Function
 
 #include "../types.h"
 
