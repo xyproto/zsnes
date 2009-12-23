@@ -1938,7 +1938,7 @@ DisplayGUIConfirmClick2:
   GUIPostWinBoxMove 160,26,228,27+15*7,GUIcurrentdirviewloc,GUIcurrentdircursloc,GUIdirentries,.scrollupsld,.scrolldownsld,DisplayGUIConfirmClick.skipscrol,15
 .noload3
 DisplayGUIConfirmClick:
-;DrawSlideBarWin 1,133,43,[GUIcurrentviewloc],[GUIfileentries],15,94,[GUILStA]
+;ccallv DrawSlideBarWin, 1, 133, 43, [GUIcurrentviewloc], [GUIfileentries], 15, 94, GUILStA
   ; offset 0 = (ysize-(yend-ystart+1)), offset 1 = starty, offset 2 = endy
   ; SlideBar Implementation
   GUISlidebarImpl 146,33,153,33+93,GUILStA,15,GUIcurrentviewloc,GUIcurrentcursloc,GUIfileentries,1
@@ -3043,7 +3043,7 @@ DisplayGUIAboutClick:
 ;    DrawBorderedBox 16,10,20,190,80,19
 
 ;    DrawGUIWinBox 3,5,34,107,77,167
-;    DrawSlideBarWin 3,109,42,[GUIcurrentinputviewloc],16,5,28,GUIIStA
+;    ccallv DrawSlideBarWin, 3, 109, 42, [GUIcurrentinputviewloc], 16, 5, 28, GUIIStA
 
 DisplayGUIComboClick2:
   mov dword[keycontrolval],0
@@ -3204,7 +3204,7 @@ DisplayGUICheatSearchClick:
   GUIPHoldbutton 140,140,180,152,55
   ret
 
-;    DrawSlideBarWin 13,173,28,[GUIcurrentchtsrcviewloc],[NumCheatSrc],12,73,GUICSStA
+;    ccallv DrawSlideBarWin, 13, 173, 28, [GUIcurrentchtsrcviewloc], [NumCheatSrc], 12, 73, GUICSStA
 ;    DrawGUIWinBox 13,5,20,171,108,167
 
 .add                         ; Add Cheat

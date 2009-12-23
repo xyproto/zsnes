@@ -920,7 +920,7 @@ GUIOuttextwin2 %1,%2-1,%3-1,%4
 %endmacro
 
 %macro DrawSlideBar 10
-  DrawSlideBarWin %1,%2,%3+8,%4,%5,%6,%7-16,%8
+  ccallv DrawSlideBarWin, %1, %2, %3 + 8, %4, %5, %6, %7 - 16, %8
   mov al,[TextColorSp+2]
   mov [GUItextcolor],al
   cmp byte[GUICHold],%9
@@ -1142,7 +1142,7 @@ NEWSYM DisplayGUILoad
 
   ; Slidebar for Files
   ; win#,X,Y start, %4-List Loc, %5-List size, %6-Screen size, %7-Bar Size
-  DrawSlideBarWin 1,146,33,[GUIcurrentviewloc],[GUIfileentries],15,94,GUILStA
+  ccallv DrawSlideBarWin, 1, 146, 33, [GUIcurrentviewloc], [GUIfileentries], 15, 94, GUILStA
   cmp byte[GUICHold],1
   jne .noholda
   add byte[GUIWincoladd],3
@@ -1163,7 +1163,7 @@ NEWSYM DisplayGUILoad
 .noholdb2
 
   ; Slidebar for DIR
-  DrawSlideBarWin 1,230,33,[GUIcurrentdirviewloc],[GUIdirentries],15,94,GUILStB
+  ccallv DrawSlideBarWin, 1, 230, 33, [GUIcurrentdirviewloc], [GUIdirentries], 15, 94, GUILStB
   cmp byte[GUICHold],3
   jne .noholdc
   add byte[GUIWincoladd],3
@@ -1616,7 +1616,7 @@ NEWSYM DisplayGUIInput    ; Player Select, Joystick/keyboard Type List, Button A
   GUIDisplayTextG 3,11,38+8*4,[GUITemp]
 
   ; Sidebar
-  DrawSlideBarWin 3,109,42,[GUIcurrentinputviewloc],[NumInputDevices],5,28,GUIIStA
+  ccallv DrawSlideBarWin, 3, 109, 42, [GUIcurrentinputviewloc], [NumInputDevices], 5, 28, GUIIStA
   cmp byte[GUICHold],9
   jne .noholda
   add byte[GUIWincoladd],3
@@ -1970,7 +1970,7 @@ NEWSYM DisplayGUIVideo
 %endif
 
   GUIDisplayBBoxS 5,5,26,115,189,167           ; Video Modes Box
-  DrawSlideBarWin 5,117,34,[GUIcurrentvideoviewloc],[NumVideoModes],20,148,GUIVStA
+  ccallv DrawSlideBarWin, 5, 117, 34, [GUIcurrentvideoviewloc], [NumVideoModes], 20, 148, GUIVStA
   cmp byte[GUICHold],5                        ; Scrollbar
   jne .noholda
   add byte[GUIWincoladd],3
@@ -2718,7 +2718,7 @@ NEWSYM DisplayGUICheat       ; Add/Browse Cheats menu
   GUIOuttextwin2cheat 12,24+7*11
 
 ;Scrollbar
-  DrawSlideBarWin 7,231,28,[GUIcurrentcheatviewloc],[NumCheats],12,73,GUICStA
+  ccallv DrawSlideBarWin, 7, 231, 28, [GUIcurrentcheatviewloc], [NumCheats], 12, 73, GUICStA
   cmp byte[GUICHold],7
   jne .noholda
   add byte[GUIWincoladd],3
@@ -3161,7 +3161,7 @@ Cheatmodeview:                       ; View ResultsWindow
 .noentry
 ; Slidebar
   ; win#,X,Y start, %4-List Loc, %5-List size, %6-Screen size, %7-Bar Size
-  DrawSlideBarWin 13,173,28,[GUIcurrentchtsrcviewloc],[NumCheatSrc],12,73,GUICSStA
+  ccallv DrawSlideBarWin, 13, 173, 28, [GUIcurrentchtsrcviewloc], [NumCheatSrc], 12, 73, GUICSStA
   cmp byte[GUICHold],11
   jne .noholda
   add byte[GUIWincoladd],3

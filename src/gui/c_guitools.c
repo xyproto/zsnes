@@ -272,7 +272,7 @@ void GUIoutputiconwin(s4 const x, u4 const y, u1 const* src)
 }
 
 
-void GUIDrawSlideBar(s4 const x, u4 const y, u4 h, u4 starty, u4 endy)
+static void GUIDrawSlideBar(s4 const x, u4 const y, u4 h, u4 starty, u4 endy)
 {
 	if (x < -10 || 256 < x) return;
 	u1* const vbuflimtop  = vidbuffer;
@@ -339,4 +339,20 @@ void GUIDrawSlideBar(s4 const x, u4 const y, u4 h, u4 starty, u4 endy)
 		--starty;
 	}
 	while (--h != 0);
+}
+
+
+void DrawSlideBarWin(u4 const win_id, u4 const x, u4 const y, u4 list_loc, u4 list_size, u4 const screen_size, u4 const bar_size, u4* const bar_dims)
+{
+	if (list_size <             screen_size) list_size = screen_size;
+	if (list_loc  > list_size - screen_size) list_loc  = list_size - screen_size;
+	u4 scrollbar_size = screen_size * bar_size / list_size;
+	if (scrollbar_size < 5) scrollbar_size = 5;
+	u4 const gap    = list_size - screen_size;
+	u4 const starty = gap != 0 ? (bar_size - scrollbar_size) * list_loc / gap : 0;
+	u4 const endy   = scrollbar_size + starty;
+	bar_dims[0] = bar_size - scrollbar_size - 1;
+	bar_dims[1] = starty;
+	bar_dims[2] = endy;
+	GUIDrawSlideBar(GUIwinposx[win_id] + x, GUIwinposy[win_id] + y, bar_size, starty, endy);
 }
