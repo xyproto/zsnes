@@ -19,8 +19,7 @@
 
 ; Tools for the GUI (string functions are also used elsewhere)
 
-EXTSYM GUIOutputString,GUIOutputStringwinl
-EXTSYM GUIoutputiconwin
+EXTSYM GUIOutputString,GUIoutputiconwin
 
 SECTION .text
 
@@ -48,19 +47,4 @@ SECTION .text
   add esi,16
   add esi,[vidbuffer]
   ccallv GUIOutputStringwin, edx, esi, %4
-%endmacro
-
-%macro GUIOuttextwin2l 4
-  mov edx,[GUIwinposx+%1*4]
-  mov ebx,[GUIwinposy+%1*4]
-  add edx,%2
-  add ebx,%3
-  mov esi,ebx
-  mov eax,ebx
-  shl esi,8
-  shl eax,5
-  add esi,eax
-  add esi,16
-  add esi,[vidbuffer]
-  ccallv GUIOutputStringwinl, edx, esi, %4
 %endmacro

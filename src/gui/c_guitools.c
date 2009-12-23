@@ -183,7 +183,7 @@ void GUIOutputStringwin(s4 x, u1* const dst, char const* text)
 }
 
 
-void GUIOutputStringwinl(s4 x, u1* const dst, char const* text)
+static void GUIOutputStringwinl(s4 x, u1* const dst, char const* text)
 {
 	u4 n = cloadmaxlen;
 	do
@@ -214,6 +214,15 @@ no_number:;
 		x += 6;
 	}
 	while (--n != 0);
+}
+
+
+void GUIOuttextwin2l(u4 const win_id, u4 x, u4 y, char const* const text)
+{
+	x += GUIwinposx[win_id];
+	y += GUIwinposy[win_id];
+	u1* const dst = vidbuffer + y * 288 + 16;
+	GUIOutputStringwinl(x, dst, text);
 }
 
 

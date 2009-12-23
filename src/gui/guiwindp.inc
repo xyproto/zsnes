@@ -20,7 +20,7 @@
 
 
 EXTSYM VERSION_STR,placedate,convertnum,converthex,GUIHLine,GUIDrawShadow2
-EXTSYM GUIDisplayIconWin,GUIOuttextwin2u
+EXTSYM GUIDisplayIconWin,GUIOuttextwin2u,GUIOuttextwin2l
 
 SECTION .data
 NEWSYM mencoderExists, db 0
@@ -306,13 +306,13 @@ SECTION .text
   mov [cloadnpos],eax
   inc dword[cloadnposb]
   mov byte[GUItextcolor],223
-  GUIOuttextwin2l %1,%2,%3,[cloadnpos]
+  ccallv GUIOuttextwin2l, %1, %2, %3, [cloadnpos]
   mov byte[GUItextcolor],221
   cmp byte[GUIWincoladd],0
   je %%zero
   mov byte[GUItextcolor],222
 %%zero
-  GUIOuttextwin2l %1,%2-1,%3-1,[cloadnpos]
+  ccallv GUIOuttextwin2l, %1, %2 - 1, %3 - 1, [cloadnpos]
   add dword[cloadnpos],32
   dec dword[cloadnleft]
 %endmacro
@@ -1002,9 +1002,9 @@ NEWSYM DisplayGUILoad
   add eax,[d_names]
   mov eax,[eax]
   mov [GUITemp],eax
-  GUIOuttextwin2l 1,6,158,[GUITemp]
+  ccallv GUIOuttextwin2l, 1, 6, 158, [GUITemp]
   add byte[GUItextcolor],15
-  GUIOuttextwin2l 1,5,157,[GUITemp]
+  ccallv GUIOuttextwin2l, 1, 5, 157, [GUITemp]
   jmp .nofiles
 .nodir
   cmp dword[GUIfileentries],0
@@ -1016,9 +1016,9 @@ NEWSYM DisplayGUILoad
   add eax,[selected_names]
   mov eax,[eax]
   mov [cloadnpos],eax
-  GUIOuttextwin2l 1,6,158,[cloadnpos]
+  ccallv GUIOuttextwin2l, 1, 6, 158, [cloadnpos]
   add byte[GUItextcolor],15
-  GUIOuttextwin2l 1,5,157,[cloadnpos]
+  ccallv GUIOuttextwin2l, 1, 5, 157, [cloadnpos]
 .nofiles                           ; Button
 %endif
   mov byte[GUItextcolor],217
