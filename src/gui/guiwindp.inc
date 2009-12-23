@@ -20,7 +20,7 @@
 
 
 EXTSYM VERSION_STR,placedate,convertnum,converthex,GUIHLine,GUIDrawShadow2
-EXTSYM GUIDisplayIconWin
+EXTSYM GUIDisplayIconWin,GUIOuttextwin2u
 
 SECTION .data
 NEWSYM mencoderExists, db 0
@@ -392,7 +392,7 @@ GUIOuttextwin2 %1,%2-1,%3-1,%4
   je %%textu
   mov byte[GUItextcolor],196
 %%textu
-GUIOuttextwin2u %1,%2,%3,%4,%5
+  ccallv GUIOuttextwin2u, %1,%2,%3,%4,%5
   add byte[GUItextcolor],15
 GUIOuttextwin2 %1,%2-1,%3-1,%4
 %endmacro
