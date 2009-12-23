@@ -1323,11 +1323,8 @@ NEWSYM getblaster
         mov byte[SBHDMA],0
         cmp byte[vibracard], 1
         jne .hdma
-        push edx
-        mov edx, vibradetect
-        call PrintStr
+        callv PrintStr, vibradetect
         ;ccall WaitForKey
-        pop  edx
 
 ; ********** END OF ViBRA16X implementation code **********
 .hdma
@@ -1354,34 +1351,28 @@ NEWSYM getblaster
     cmp byte[soundon],0
     je .nosound
     mov byte[soundon],0
-    mov edx, .blasterstr
-    call PrintStr
+    ccallv PrintStr, .blasterstr
     ccall WaitForKey
 .nosound
     ret
 .displaysoundstuff
-    mov edx,.blasterinfo
-    call PrintStr
+    ccallv PrintStr, .blasterinfo
     xor eax,eax
     mov ax,[SBPort]
     call printhex
-    mov edx,.blinfob
-    call PrintStr
+    ccallv PrintStr, .blinfob
     xor eax,eax
     mov al,[SBIrq]
     call printnum
-    mov edx,.blinfoc
-    call PrintStr
+    ccallv PrintStr, .blinfoc
     xor eax,eax
     mov al,[SBDMA]
     call printnum
-    mov edx,.blinfod
-    call PrintStr
+    ccallv PrintStr, .blinfod
     xor eax,eax
     mov al,[SBHDMA]
     call printnum
-    mov edx,.blasterstr2b
-    call PrintStr
+    ccallv PrintStr, .blasterstr2b
     ccall WaitForKey
     ret
 

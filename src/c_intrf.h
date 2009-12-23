@@ -7,6 +7,9 @@ void StartUp(void);
  * commandline data, obtain current directory (One time initialization) */
 void SystemInit(void);
 
+// Print ASCIIZ string
+void PrintStr(char const*);
+
 // Wait for a key to be pressed
 char WaitForKey(void);
 

@@ -1,4 +1,5 @@
 #include <conio.h>
+#include <stdio.h>
 #include <string.h>
 
 #include "../c_intrf.h"
@@ -28,6 +29,12 @@ void SystemInit(void)
 #endif
 	// Be sure to set SBHDMA to a value other than 0 if 16bit sound exists
 	SBHDMA = 1;
+}
+
+
+void PrintStr(char const* const s)
+{
+	fputs(s, stdout);
 }
 
 

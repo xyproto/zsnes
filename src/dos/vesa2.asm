@@ -50,13 +50,9 @@ NEWSYM VESA2EXITTODOS
 .nogui
     mov ax,0003h
     int 10h
-    push edx
-    mov edx,.exitfromvesa2
-    call PrintStr
-    pop edx
-    call PrintStr
-    mov edx,.return
-    call PrintStr
+    ccallv PrintStr, .exitfromvesa2
+    ccallv PrintStr, edx
+    ccallv PrintStr, .return
 
     ccallv DosExit
     ret

@@ -58,21 +58,6 @@ NEWSYM PrintChar
     pop eax
     ret
 
-NEWSYM PrintStr          ; Print ASCIIZ string
-.next
-    mov al,[edx]
-    or al,al
-    jz .finish
-    push edx
-    mov dl,al
-    mov ah,02h
-    int 21h
-    pop edx
-    inc edx
-    jmp .next
-.finish
-    ret
-
 %macro PressConv 3
     cmp byte[pressed+%1],0
     je %%nopr
@@ -128,9 +113,7 @@ NEWSYM Output_Text       ; Output character (ah=02h) or string (ah=09h)
     int 21h     ; print dl
     ret
 .string
-    pushad
-    call PrintStr       ; print edx
-    popad
+    callv PrintStr, edx       ; print edx
     ret
 
 ; Delay for CX/65536 of a second

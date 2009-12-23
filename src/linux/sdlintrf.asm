@@ -21,7 +21,7 @@
 
 %include "macros.mac"
 
-EXTSYM sem_sleep,putchar,Start60HZ,pressed,vidbuffer
+EXTSYM sem_sleep,putchar,Start60HZ,pressed,vidbuffer,PrintStr
 EXTSYM Stop60HZ,initwinvideo,GUICPC,drawscreenwin
 EXTSYM ConvertToAFormat,HalfTrans,UnusedBit,UnusedBitXor
 EXTSYM ngrposng,nggposng,ngbposng,HalfTransB,HalfTransC,UpdateVFrame,GetMouseX
@@ -46,21 +46,6 @@ EXTSYM Clear2xSaIBuffer
 ;   on romispal) after a call to InitPreGame and before DeInitPostGame are
 ;   made.  GUI36hzcall should be called at 36hz after a call GUIInit and
 ;   before GUIDeInit.
-
-SECTION .text
-
-NEWSYM PrintStr          ; Print ASCIIZ string
-    pushad
-.next
-    mov al,[edx]
-    or al,al
-    jz .finish
-    ccallv putchar, eax
-    inc edx
-    jmp .next
-.finish
-    popad
-    ret
 
 SECTION .data
 NEWSYM CurKeyPos, dd 0
@@ -116,9 +101,7 @@ NEWSYM Output_Text       ; Output character (ah=02h) or string (ah=09h)
     popad
     ret
 .string
-    pushad
-    call PrintStr       ; print edx
-    popad
+    ccallv PrintStr, edx       ; print edx
     popad
     ret
 

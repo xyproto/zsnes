@@ -24,6 +24,12 @@ void SystemInit(void)
 }
 
 
+void PrintStr(char const* const s)
+{
+	fputs(s, stdout);
+}
+
+
 char WaitForKey(void)
 {
 	return getchar();

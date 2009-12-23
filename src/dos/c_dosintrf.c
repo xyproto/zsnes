@@ -21,8 +21,7 @@ static u2 findselec(u2 const segment)
 	asm("int $0x31;  sbb %0, %0" : "=r" (failed), "=a" (selector) : "a" (2), "b" (segment) : "cc");
 	if (failed)
 	{
-		char const* msg = "Cannot find selector!\n\r";
-		asm volatile("call PrintStr" : "+d" (msg) :: "cc", "eax"); // XXX asm_call
+		PrintStr("Cannot find selector!\n\r");
 		DosExit();
 	}
 	return selector;
@@ -68,6 +67,19 @@ void SystemInit(void)
 	if (Force8b == 1) SBHDMA = 0;
 
 	asm volatile("movw %0, %%es" : "mr" (es)); // XXX necessary?
+}
+
+
+void PrintStr(char const* s)
+{
+	for (;;)
+	{
+		char const c = *s++;
+		if (c == '\0') break;
+		u4 res;
+		asm volatile("int $0x21" : "=a" (res) : "a" (0x0200), "d" (c) : "cc");
+		(void)res;
+	}
 }
 
 

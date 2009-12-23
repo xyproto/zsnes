@@ -43,26 +43,12 @@ EXTSYM pl4upk,pl4downk,pl4leftk,pl4rightk,pl4startk,pl4selk
 EXTSYM pl4Ak,pl4Bk,pl4Xk,pl4Yk,pl4Lk,pl4Rk
 EXTSYM pl5upk,pl5downk,pl5leftk,pl5rightk,pl5startk,pl5selk
 EXTSYM pl5Ak,pl5Bk,pl5Xk,pl5Yk,pl5Lk,pl5Rk
+EXTSYM PrintStr
 
 ; NOTE: For timing, Game60hzcall should be called at 50hz or 60hz (depending
 ;   on romispal) after a call to InitPreGame and before DeInitPostGame are
 ;   made.  GUI36hzcall should be called at 36hz after a call GUIInit and
 ;   before GUIDeInit.
-
-SECTION .text
-
-NEWSYM PrintStr          ; Print ASCIIZ string
-    pushad
-.next
-    mov al,[edx]
-    or al,al
-    jz .finish
-    ccallv putchar, eax
-    inc edx
-    jmp .next
-.finish
-    popad
-    ret
 
 SECTION .data
 NEWSYM wfkey, db 0
@@ -267,9 +253,7 @@ NEWSYM Output_Text       ; Output character (ah=02h) or string (ah=09h)
     popad
     ret
 .string
-    pushad
-    call PrintStr       ; print edx
-    popad
+    ccallv PrintStr, edx       ; print edx
     popad
     ret
 
