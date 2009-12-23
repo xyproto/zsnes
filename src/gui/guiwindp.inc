@@ -20,6 +20,7 @@
 
 
 EXTSYM VERSION_STR,placedate,convertnum,converthex,GUIHLine,GUIDrawShadow2
+EXTSYM GUIDisplayIconWin
 
 SECTION .data
 NEWSYM mencoderExists, db 0
@@ -349,7 +350,7 @@ SECTION .text
   jne %%nofill
   mov dword[GUITemp],GUIIconDataButtonFill
 %%nofill
-  GUIDisplayIconWin %1,%2,%3,[GUITemp]
+  ccallv GUIDisplayIconWin, %1, %2, %3, [GUITemp]
   GUIDisplayTextu %1,%2+15,%3+3,%6,%7
 %endmacro
 
@@ -359,7 +360,7 @@ SECTION .text
   jne %%nofill
   mov dword[GUITemp],GUIIconDataButtonFill
 %%nofill
-  GUIDisplayIconWin %1,%2,%3,[GUITemp]
+  ccallv GUIDisplayIconWin, %1, %2, %3, [GUITemp]
 %endmacro
 
 %macro GUIDisplayText 4                   ; Text&Shadow
@@ -413,7 +414,7 @@ GUIOuttextwin2 %1,%2-1,%3-1,%4
   je %%nocheckbox
   mov dword[GUITemp],GUIIconDataCheckBoxC
 %%nocheckbox
-  GUIDisplayIconWin %1,%2,%3,[GUITemp]
+  ccallv GUIDisplayIconWin, %1, %2, %3, [GUITemp]
 %endmacro
 
 %macro GUIDisplayCheckbox 5               ; Toggled Checkbox (Text)
@@ -422,7 +423,7 @@ GUIOuttextwin2 %1,%2-1,%3-1,%4
   je %%nocheckbox
   mov dword[GUITemp],GUIIconDataCheckBoxC
 %%nocheckbox
-  GUIDisplayIconWin %1,%2,%3,[GUITemp]
+  ccallv GUIDisplayIconWin, %1, %2, %3, [GUITemp]
   GUIDisplayText %1,%2+15,%3+5,%5
 %endmacro
 
@@ -432,7 +433,7 @@ GUIOuttextwin2 %1,%2-1,%3-1,%4
   jne %%nocheckbox
   mov dword[GUITemp],GUIIconDataCheckBoxC
 %%nocheckbox
-  GUIDisplayIconWin %1,%2,%3,[GUITemp]
+  ccallv GUIDisplayIconWin, %1, %2, %3, [GUITemp]
   GUIDisplayText %1,%2+15,%3+5,%6
 %endmacro
 
@@ -442,7 +443,7 @@ GUIOuttextwin2 %1,%2-1,%3-1,%4
   je %%nocheckbox
   mov dword[GUITemp],GUIIconDataCheckBoxC
 %%nocheckbox
-  GUIDisplayIconWin %1,%2,%3,[GUITemp]
+  ccallv GUIDisplayIconWin, %1, %2, %3, [GUITemp]
   GUIDisplayTextu %1,%2+15,%3+5,%5,%6
 %endmacro
 
@@ -452,7 +453,7 @@ GUIOuttextwin2 %1,%2-1,%3-1,%4
   jne %%nocheckbox
   mov dword[GUITemp],GUIIconDataCheckBoxC
 %%nocheckbox
-  GUIDisplayIconWin %1,%2,%3,[GUITemp]
+  ccallv GUIDisplayIconWin, %1, %2, %3, [GUITemp]
   GUIDisplayTextu %1,%2+15,%3+5,%6,%7
 %endmacro
 
@@ -462,7 +463,7 @@ GUIOuttextwin2 %1,%2-1,%3-1,%4
   jne %%nocheckbox
   mov dword[GUITemp],GUIIconDataCheckBoxC
 %%nocheckbox
-  GUIDisplayIconWin %1,%2,%3,[GUITemp]
+  ccallv GUIDisplayIconWin, %1, %2, %3, [GUITemp]
 %endmacro
 
 %macro GUIDisplayBBoxS 6                   ; Black Box W/Border
@@ -748,7 +749,7 @@ GUIOuttextwin2 %1,%2-1,%3-1,%4
   %7 %5       ; proc1 == alters var correctly and puts result in al
   mov dword[GUITemp],%2-4
   add [GUITemp],eax
-  GUIDisplayIconWin %1,[GUITemp],%4-4,GUIIconDataSlideBar
+  ccallv GUIDisplayIconWin, %1, [GUITemp], %4 - 4, GUIIconDataSlideBar
   %8 %5,%6    ; proc2 == alters text correctly and puts pointer in esi
   mov [GUITemp],esi  ; Display Value (Green)
   GUIDisplayTextG %1,%2+%3+6,%4-1,[GUITemp]
@@ -927,7 +928,7 @@ GUIOuttextwin2 %1,%2-1,%3-1,%4
   jne .noholda
   add byte[GUIWincoladd],3
 .noholda
-  GUIDisplayIconWin %1,%2,%3,GUIIconDataUpArrow
+  ccallv GUIDisplayIconWin, %1, %2, %3, GUIIconDataUpArrow
   cmp byte[GUICHold],%9
   jne .noholda2
   sub byte[GUIWincoladd],3
@@ -938,7 +939,7 @@ GUIOuttextwin2 %1,%2-1,%3-1,%4
   jne .noholdb
   add byte[GUIWincoladd],3
 .noholdb
-  GUIDisplayIconWin %1,%2,%3+%7-8,GUIIconDataDownArrow
+  ccallv GUIDisplayIconWin, %1, %2, %3 + %7 - 8, GUIIconDataDownArrow
   cmp byte[GUICHold],%10
   jne .noholdb2
   sub byte[GUIWincoladd],3
@@ -1147,7 +1148,7 @@ NEWSYM DisplayGUILoad
   jne .noholda
   add byte[GUIWincoladd],3
 .noholda
-  GUIDisplayIconWin 1,146,25,GUIIconDataUpArrow
+  ccallv GUIDisplayIconWin, 1, 146, 25, GUIIconDataUpArrow
   cmp byte[GUICHold],1
   jne .noholda2
   sub byte[GUIWincoladd],3
@@ -1156,7 +1157,7 @@ NEWSYM DisplayGUILoad
   jne .noholdb
   add byte[GUIWincoladd],3
 .noholdb
-  GUIDisplayIconWin 1,146,127,GUIIconDataDownArrow
+  ccallv GUIDisplayIconWin, 1, 146, 127, GUIIconDataDownArrow
   cmp byte[GUICHold],2
   jne .noholdb2
   sub byte[GUIWincoladd],3
@@ -1168,7 +1169,7 @@ NEWSYM DisplayGUILoad
   jne .noholdc
   add byte[GUIWincoladd],3
 .noholdc
-  GUIDisplayIconWin 1,230,25,GUIIconDataUpArrow
+  ccallv GUIDisplayIconWin, 1, 230, 25, GUIIconDataUpArrow
   cmp byte[GUICHold],3
   jne .noholdc2
   sub byte[GUIWincoladd],3
@@ -1177,7 +1178,7 @@ NEWSYM DisplayGUILoad
   jne .noholdd
   add byte[GUIWincoladd],3
 .noholdd
-  GUIDisplayIconWin 1,230,127,GUIIconDataDownArrow
+  ccallv GUIDisplayIconWin, 1, 230, 127, GUIIconDataDownArrow
   cmp byte[GUICHold],4
   jne .noholdd2
   sub byte[GUIWincoladd],3
@@ -1621,7 +1622,7 @@ NEWSYM DisplayGUIInput    ; Player Select, Joystick/keyboard Type List, Button A
   jne .noholda
   add byte[GUIWincoladd],3
 .noholda
-  GUIDisplayIconWin 3,109,34,GUIIconDataUpArrow
+  ccallv GUIDisplayIconWin, 3, 109, 34, GUIIconDataUpArrow
   cmp byte[GUICHold],9
   jne .noholda2
   sub byte[GUIWincoladd],3
@@ -1630,7 +1631,7 @@ NEWSYM DisplayGUIInput    ; Player Select, Joystick/keyboard Type List, Button A
   jne .noholdb
   add byte[GUIWincoladd],3
 .noholdb
-  GUIDisplayIconWin 3,109,70,GUIIconDataDownArrow
+  ccallv GUIDisplayIconWin, 3, 109, 70, GUIIconDataDownArrow
   cmp byte[GUICHold],10
   jne .noholdb2
   sub byte[GUIWincoladd],3
@@ -1975,7 +1976,7 @@ NEWSYM DisplayGUIVideo
   jne .noholda
   add byte[GUIWincoladd],3
 .noholda
-  GUIDisplayIconWin 5,117,26,GUIIconDataUpArrow
+  ccallv GUIDisplayIconWin, 5, 117, 26, GUIIconDataUpArrow
   cmp byte[GUICHold],5
   jne .noholdb
   sub byte[GUIWincoladd],3
@@ -1984,7 +1985,7 @@ NEWSYM DisplayGUIVideo
   jne .noholdc
   add byte[GUIWincoladd],3
 .noholdc
-  GUIDisplayIconWin 5,117,182,GUIIconDataDownArrow
+  ccallv GUIDisplayIconWin, 5, 117, 182, GUIIconDataDownArrow
   cmp byte[GUICHold],6
   jne .noholdd
   sub byte[GUIWincoladd],3
@@ -2723,7 +2724,7 @@ NEWSYM DisplayGUICheat       ; Add/Browse Cheats menu
   jne .noholda
   add byte[GUIWincoladd],3
 .noholda
-  GUIDisplayIconWin 7,231,20,GUIIconDataUpArrow
+  ccallv GUIDisplayIconWin, 7, 231, 20, GUIIconDataUpArrow
   cmp byte[GUICHold],7
   jne .noholda2
   sub byte[GUIWincoladd],3
@@ -2732,7 +2733,7 @@ NEWSYM DisplayGUICheat       ; Add/Browse Cheats menu
   jne .noholdb
   add byte[GUIWincoladd],3
 .noholdb
-  GUIDisplayIconWin 7,231,101,GUIIconDataDownArrow
+  ccallv GUIDisplayIconWin, 7, 231, 101, GUIIconDataDownArrow
   cmp byte[GUICHold],8
   jne .noholdb2
   sub byte[GUIWincoladd],3
@@ -3166,7 +3167,7 @@ Cheatmodeview:                       ; View ResultsWindow
   jne .noholda
   add byte[GUIWincoladd],3
 .noholda
-  GUIDisplayIconWin 13,173,20,GUIIconDataUpArrow
+  ccallv GUIDisplayIconWin, 13, 173, 20, GUIIconDataUpArrow
   cmp byte[GUICHold],11
   jne .noholda2
   sub byte[GUIWincoladd],3
@@ -3175,7 +3176,7 @@ Cheatmodeview:                       ; View ResultsWindow
   jne .noholdb
   add byte[GUIWincoladd],3
 .noholdb
-  GUIDisplayIconWin 13,173,101,GUIIconDataDownArrow
+  ccallv GUIDisplayIconWin, 13, 173, 101, GUIIconDataDownArrow
   cmp byte[GUICHold],12
   jne .noholdb2
   sub byte[GUIWincoladd],3
@@ -4368,13 +4369,7 @@ NEWSYM DisplayGUICombo
   GUIOuttextwin2 16,ecx,eax,GUIComboText3
 
   popad
-  push ecx
-  push edx
-  push ebx
-  GUIDisplayIconWin 16,ecx,edx,esi
-  pop ebx
-  pop edx
-  pop ecx
+  ccallv GUIDisplayIconWin, 16, ecx, edx, esi
   pop eax
   add ecx,15
   cmp ecx,11+15*14

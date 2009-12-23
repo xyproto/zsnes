@@ -272,6 +272,12 @@ void GUIoutputiconwin(s4 const x, u4 const y, u1 const* src)
 }
 
 
+void GUIDisplayIconWin(u4 const win_id, u4 const x, u4 const y, u1 const* icon)
+{
+	GUIoutputiconwin(GUIwinposx[win_id] + x, GUIwinposy[win_id] + y, icon);
+}
+
+
 static void GUIDrawSlideBar(s4 const x, u4 const y, u4 h, u4 starty, u4 endy)
 {
 	if (x < -10 || 256 < x) return;

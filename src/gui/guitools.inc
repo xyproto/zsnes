@@ -83,11 +83,3 @@ SECTION .text
   sub edx,%5*6
   ccallv GUIOutputStringwin, edx, esi, edi
 %endmacro
-
-%macro GUIDisplayIconWin 4
-  mov eax,[GUIwinposx+%1*4]
-  mov ebx,[GUIwinposy+%1*4]
-  add eax,%2
-  add ebx,%3
-  ccallv GUIoutputiconwin, eax, ebx, %4
-%endmacro

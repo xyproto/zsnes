@@ -15,6 +15,7 @@ void GUIOutputStringwinl(s4 x, u1* dst, char const* text);
 void OutputUnder(s4, u1* y);
 void GUIOuttextwin(u4 x, u4 y, char const* text);
 void GUIoutputiconwin(s4 x, u4 y, u1 const* src);
+void GUIDisplayIconWin(u4 win_id, u4 x, u4 y, u1 const* icon);
 void DrawSlideBarWin(u4 win_id, u4 x, u4 y, u4 list_loc, u4 list_size, u4 screen_size, u4 bar_size, u4* bar_dims);
 
 #endif
