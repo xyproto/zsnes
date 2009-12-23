@@ -285,8 +285,6 @@ cloadnposb   resd 1
 NEWSYM cloadmaxlen,  resd 1
 cloadnleft   resd 1
 cplayernum   resb 1
-vbuflimtop   resd 1
-vbuflimbot   resd 1
 NEWSYM GUIScrolTim1, resd 1
 GUIScrolTim2 resd 1
 BlankVar     resb 1

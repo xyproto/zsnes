@@ -270,3 +270,73 @@ void GUIoutputiconwin(s4 const x, u4 const y, u1 const* src)
 	}
 	while (--cl != 0);
 }
+
+
+void GUIDrawSlideBar(s4 const x, u4 const y, u4 h, u4 starty, u4 endy)
+{
+	if (x < -10 || 256 < x) return;
+	u1* const vbuflimtop  = vidbuffer;
+	u1* const vbuflimbot  = vidbuffer + 288 * 224 - 26;
+	u1*       dst         = vidbuffer + y * 288 + x + 16;
+	u4        draw_slider = 0;
+	do
+	{
+		--endy;
+		if (vbuflimtop <= dst && dst <= vbuflimbot)
+		{
+			if (starty == 0)
+			{
+				u1 const al = 202 - (GUIWincoladd & 0xFF);
+				dst[0] = al;
+				dst[1] = al + 2;
+				dst[2] = al + 2;
+				dst[3] = al + 2;
+				dst[4] = al + 2;
+				dst[5] = al + 2;
+				dst[6] = al + 2;
+				dst[7] = al + 2;
+				draw_slider = 1;
+			}
+			else if (endy == 0)
+			{
+				u1 const al = 196 - (GUIWincoladd & 0xFF);
+				dst[0] = al;
+				dst[1] = al;
+				dst[2] = al;
+				dst[3] = al;
+				dst[4] = al;
+				dst[5] = al;
+				dst[6] = al;
+				dst[7] = al + 2;
+				draw_slider = 0;
+			}
+			else if (draw_slider != 1)
+			{
+				u1 const al = 197 - (GUIWincoladd & 0xFF);
+				dst[0] = al;
+				dst[1] = al - 2;
+				dst[2] = al - 3;
+				dst[3] = al - 4;
+				dst[4] = al - 4;
+				dst[5] = al - 3;
+				dst[6] = al - 2;
+				dst[7] = al;
+			}
+			else
+			{
+				u1 const al = 202 - (GUIWincoladd & 0xFF);
+				dst[0] = al;
+				dst[1] = al - 2;
+				dst[2] = al - 2;
+				dst[3] = al - 2;
+				dst[4] = al - 2;
+				dst[5] = al - 2;
+				dst[6] = al - 2;
+				dst[7] = al;
+			}
+		}
+		dst += 288;
+		--starty;
+	}
+	while (--h != 0);
+}

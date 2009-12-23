@@ -20,7 +20,7 @@
 ; Tools for the GUI (string functions are also used elsewhere)
 
 EXTSYM GUIOutputString,GUIOutputStringwinl,OutputUnder
-EXTSYM GUIoutputiconwin
+EXTSYM GUIoutputiconwin,GUIDrawSlideBar
 
 SECTION .text
 
@@ -96,122 +96,6 @@ SECTION .text
   ccallv GUIoutputiconwin, eax, ebx, %4
 %endmacro
 
-GUIDrawSlideBar:
-  cmp eax,-10
-  jl .ret
-  cmp eax,256
-  jg .ret
-  jmp .noret
-.ret
-  ret
-.noret
-  mov edi,[vidbuffer]
-  mov [vbuflimtop],edi
-  mov edi,[vidbuffer]
-  add edi,288*224
-  sub edi,16
-  mov [vbuflimbot],edi
-  mov edi,eax
-  mov eax,ebx
-  shl ebx,8
-  shl eax,5
-  add edi,ebx
-  add edi,eax
-  add edi,[vidbuffer]
-  add edi,16
-  xor eax,eax
-  dec ecx
-.loop
-  cmp edx,0
-  je near .toparea
-  cmp ecx,0
-  je near .bottomarea
-  cmp ah,1
-  je .filleddisp
-  cmp edi,[vbuflimtop]
-  jb near .nodraw
-  cmp edi,[vbuflimbot]
-  ja near .nodraw
-  mov al,197
-  sub al,byte[GUIWincoladd]
-  mov [edi],al
-  sub al,2
-  mov [edi+1],al
-  dec al
-  mov [edi+2],al
-  dec al
-  mov [edi+3],al
-  mov [edi+4],al
-  inc al
-  mov [edi+5],al
-  inc al
-  mov [edi+6],al
-  add al,2
-  mov [edi+7],al
-  jmp .fin
-.filleddisp
-  cmp edi,[vbuflimtop]
-  jb near .nodraw
-  cmp edi,[vbuflimbot]
-  ja near .nodraw
-  mov al,202
-  sub al,byte[GUIWincoladd]
-  mov [edi],al
-  sub al,2
-  mov [edi+1],al
-  mov [edi+2],al
-  mov [edi+3],al
-  mov [edi+4],al
-  mov [edi+5],al
-  mov [edi+6],al
-  sub al,2
-  mov [edi+7],al
-  jmp .fin
-.toparea
-  cmp edi,[vbuflimtop]
-  jb near .nodraw
-  cmp edi,[vbuflimbot]
-  ja near .nodraw
-  mov al,202
-  sub al,byte[GUIWincoladd]
-  mov [edi],al
-  add al,2
-  mov [edi+1],al
-  mov [edi+2],al
-  mov [edi+3],al
-  mov [edi+4],al
-  mov [edi+5],al
-  mov [edi+6],al
-  mov [edi+7],al
-  mov ah,1
-  jmp .fin
-.bottomarea
-  cmp edi,[vbuflimtop]
-  jb near .nodraw
-  cmp edi,[vbuflimbot]
-  ja near .nodraw
-  mov al,6
-  mov al,196
-  sub al,byte[GUIWincoladd]
-  mov [edi],al
-  mov [edi+1],al
-  mov [edi+2],al
-  mov [edi+3],al
-  mov [edi+4],al
-  mov [edi+5],al
-  mov [edi+6],al
-  add al,2
-  mov [edi+7],al
-  mov ah,0
-.fin
-.nodraw
-  add edi,288
-  dec ecx
-  dec edx
-  dec esi
-  jnz near .loop
-  ret
-
 %macro DrawSlideBarWin 8
   ; win#,X,Y start, %4-List Loc, %5-List size, %6-Screen size, %7-Bar Size
   mov ebx,%5
@@ -270,6 +154,5 @@ GUIDrawSlideBar:
   mov ebx,[GUIwinposy+%1*4]
   add eax,%2
   add ebx,%3
-  mov esi,%7
-  call GUIDrawSlideBar
+  ccallv GUIDrawSlideBar, eax, ebx, %7, edx, ecx
 %endmacro
