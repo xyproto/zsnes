@@ -44,6 +44,12 @@ char WaitForKey(void)
 }
 
 
+u1 Check_Key(void)
+{
+	return CurKeyPos != CurKeyReadPos ? 0xFF : 0;
+}
+
+
 void InitPreGame(void)
 {
 	pressed[1] = 2;

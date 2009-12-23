@@ -134,30 +134,6 @@ NEWSYM KeyBuffer, times 16 dd 0
 
 SECTION .text
 
-NEWSYM Check_Key
-    mov al,[CurKeyPos]
-    cmp al,[CurKeyReadPos]
-    jne .yeskey
-    xor al,al
-    ret
-.yeskey
-    mov al,0FFh
-    ret
-    ; returns 0 if there are no keys in the keyboard buffer, 0xFF otherwise
-    pushad
-    call RefreshKeybBuffer
-    mov byte[wfkey],0
-    mov al,[Keybhead]
-    cmp al,[Keybtail]
-    je .nokeys
-    mov byte[wfkey],0FFh
-.nokeys
-    popad
-    mov al,[wfkey]
-;    mov ah,0Bh
-;    int 21h
-    ret
-
 NEWSYM Get_Key
     ; wait if there are no keys in buffer, then return key in al
     ; for extended keys, return a 0, then the extended key afterwards

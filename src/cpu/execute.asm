@@ -329,12 +329,12 @@ reexecuteb2:
 .nomoviepasswaiting
 
     ; clear all keys
-    call Check_Key
+    ccall Check_Key
     cmp al,0
     je .nokeys
 .yeskeys
     call Get_Key
-    call Check_Key
+    ccall Check_Key
     cmp al,0
     jne .yeskeys
 .nokeys

@@ -3,6 +3,7 @@
 #include "../asm.h"
 #include "../asm_call.h"
 #include "../c_init.h"
+#include "../c_intrf.h"
 #include "../cfg.h"
 #include "../cpu/c_execute.h"
 #include "../cpu/dspproc.h"
@@ -1753,7 +1754,7 @@ void guicheaterror(void)
 		if (GetAnyPressedKey())       break;
 		if (GetMouseButtons() & 0x01) break;
 	}
-	while ((u1)Check_Key() != 0) // XXX asm_call
+	while (Check_Key() != 0)
 		asm_call(Get_Key);
 	GUIcurrentcheatwin = 1;
 	GUIpclicked        = 1;

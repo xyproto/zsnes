@@ -91,6 +91,14 @@ char WaitForKey(void)
 }
 
 
+u1 Check_Key(void)
+{
+	u1 res;
+	asm("int $0x21" : "=a" (res) : "a" (0x0B00) : "cc");
+	return res;
+}
+
+
 static void get_handler(u1 const irq, u2* const segment, IRQHandler** const handler)
 {
 	u4 failed;

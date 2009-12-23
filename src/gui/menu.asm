@@ -238,7 +238,7 @@ NEWSYM showmenu
     pop eax
 
     call JoyRead
-    call Check_Key
+    ccall Check_Key
     or al,al
     jz .nextkey
     call Get_Key
@@ -876,7 +876,7 @@ breakatsignb:
     inc dword[numinst]
     cmp byte[numinst],0
     jne .skipa
-    call Check_Key
+    ccall Check_Key
     test al,0FFh
     jz .skipa
     call Get_Key

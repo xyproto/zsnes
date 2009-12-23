@@ -1,6 +1,7 @@
 #include <string.h>
 
 #include "../asm_call.h"
+#include "../c_intrf.h"
 #include "../cpu/execute.h"
 #include "../intrf.h"
 #include "../macros.h"
@@ -28,7 +29,7 @@ u4 guipresstest(void)
 	do asm_call(JoyRead); while (!(key = GetAnyPressedKey()));
 	for (u1* i = pressed; i != endof(pressed); ++i)
 		if (*i != 0) *i = 2;
-	while ((u1)Check_Key() != 0) // XXX asm_call
+	while (Check_Key() != 0)
 		asm_call(Get_Key);
 	return key - pressed;
 }
@@ -51,7 +52,7 @@ void guipresstestb(void)
 	u1* key;
 	do asm_call(JoyRead); while (!(key = GetAnyPressedKey()));
 	u4 const key_id = key - pressed;
-	while ((u1)Check_Key() != 0) // XXX asm_call
+	while (Check_Key() != 0)
 		asm_call(Get_Key);
 	if (key_id != 1 && key_id != 0x3B)
 		*guicpressptr = key_id;

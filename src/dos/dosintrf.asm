@@ -58,35 +58,6 @@ NEWSYM PrintChar
     pop eax
     ret
 
-%macro PressConv 3
-    cmp byte[pressed+%1],0
-    je %%nopr
-    test byte[prval],%2
-    jnz %%prskip
-    or byte[prval],%2
-    mov byte[prres],%3
-;    mov al,0FFh
-    jmp .done
-    jmp %%prskip
-%%nopr
-    and byte[prval],%2^0FFh
-%%prskip
-%endmacro
-
-NEWSYM Check_Key
-;    xor al,al
-;    PressConv 75,01h,75
-;    PressConv 77,02h,77
-;    PressConv 80,04h,80
-;    PressConv 72,08h,72
-;    PressConv 1,80h,27
-;.done
-;    ret
-    ; returns 0 if there are no keys in the keyboard buffer, 0xFF otherwise
-    mov ah,0Bh
-    int 21h
-    ret
-
 NEWSYM Get_Key
 ;    mov al,[prres]
 ;    ret

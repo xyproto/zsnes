@@ -253,7 +253,7 @@ NEWSYM GUIgetcurrentinput
   mov byte[UseExtKey],0
   xor cx,cx
 .getnextkey
-  call Check_Key
+  ccall Check_Key
   or al,al
   jz .nokeyd
   call Get_Key
@@ -2899,7 +2899,7 @@ NEWSYM GUIWaitForKey
   jmp .again
 .pressedokay
 .again2
-  call Check_Key
+  ccall Check_Key
   or al,al
   jz .nokey
   call Get_Key
