@@ -26,7 +26,7 @@ EXTSYM initwinvideo,GUICPC,drawscreenwin
 EXTSYM ConvertToAFormat,HalfTrans,UnusedBit,UnusedBitXor
 EXTSYM ngrposng,nggposng,ngbposng,HalfTransB,HalfTransC,UpdateVFrame,GetMouseX
 EXTSYM GetMouseY,GetMouseMoveX,GetMouseMoveY,GetMouseButton,T36HZEnabled
-EXTSYM MouseButton,Start36HZ,Stop36HZ,CheckTimers
+EXTSYM MouseButton,Start36HZ,CheckTimers
 EXTSYM pl1upk,pl1downk,pl1leftk,pl1rightk,pl1startk,pl1selk
 EXTSYM pl1Ak,pl1Bk,pl1Xk,pl1Yk,pl1Lk,pl1Rk
 EXTSYM pl2upk,pl2downk,pl2leftk,pl2rightk,pl2startk,pl2selk
@@ -372,10 +372,6 @@ NEWSYM MouseWindow
     mov byte[T36HZEnabled],1
     ccallv GetMouseButton
     and byte[MouseButton],0FDh
-    ret
-
-NEWSYM GUIDeInit
-    ccallv Stop36HZ
     ret
 
 ; ****************************

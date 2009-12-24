@@ -1537,7 +1537,7 @@ void StartGUI(void)
 	{
 		if (GUIQuit == 1)
 		{
-			asm_call(GUIDeInit);
+			GUIDeInit();
 
 			resolutn = PrevResoln;
 			asm_call(endprog);
@@ -1600,7 +1600,7 @@ void StartGUI(void)
 		asm_call(GUIgetcurrentinput);
 	}
 	memset(spcBuffera, 0, 256 * 1024);
-	asm_call(GUIDeInit);
+	GUIDeInit();
 #ifdef __MSDOS__
 	asm_call(DOSClearScreen);
 	if (cbitmode == 0) asm_call(dosmakepal);

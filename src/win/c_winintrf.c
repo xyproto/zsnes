@@ -120,6 +120,12 @@ void GUIInit(void)
 }
 
 
+void GUIDeInit(void)
+{
+	Stop36HZ();
+}
+
+
 static void InitializeGfxStuff(void)
 {
 	static u1 const BitPosR  = 11;

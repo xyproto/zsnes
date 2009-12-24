@@ -40,6 +40,8 @@ void DeInitPostGame(void);
 
 void GUIInit(void);
 
+void GUIDeInit(void);
+
 // Returns 1 in videotroub if trouble occurs
 void initvideo(void);
 

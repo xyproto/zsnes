@@ -223,6 +223,14 @@ void GUIInit(void)
 }
 
 
+void GUIDeInit(void)
+{
+	set_handler(0x09, GUIoldhand9s, GUIoldhand9o);
+	set_handler(0x08, GUIoldhand8s, GUIoldhand8o);
+	GUIinit18_2hz();
+}
+
+
 void initvideo(void)
 {
 	asm_call(dosinitvideo);

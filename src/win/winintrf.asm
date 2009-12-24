@@ -29,7 +29,7 @@ EXTSYM ngrposng,nggposng,ngbposng,HalfTransB,HalfTransC
 EXTSYM UpdateVFrame,GetMouseX,GetMouseY,GetMouseMoveX
 EXTSYM GetMouseMoveY,GetMouseButton,SetMouseMinX,SetMouseMaxX,SetMouseMinY
 EXTSYM SetMouseMaxY,SetMouseX,SetMouseY,T36HZEnabled,MouseButton,Start36HZ
-EXTSYM Stop36HZ,BufferSizeW,BufferSizeB,ProcessSoundBuffer,CheckTimers
+EXTSYM BufferSizeW,BufferSizeB,ProcessSoundBuffer,CheckTimers
 EXTSYM FrameSemaphore
 EXTSYM pl1upk,pl1downk,pl1leftk,pl1rightk,pl1startk,pl1selk
 EXTSYM pl1Ak,pl1Bk,pl1Xk,pl1Yk,pl1Lk,pl1Rk
@@ -386,10 +386,6 @@ NEWSYM MouseWindow
     mov byte[T36HZEnabled],1
     ccallv GetMouseButton
     and byte[MouseButton],0FDh
-    ret
-
-NEWSYM GUIDeInit
-    ccallv Stop36HZ
     ret
 
 ; ****************************
