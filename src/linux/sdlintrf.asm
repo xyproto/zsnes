@@ -251,10 +251,6 @@ NEWSYM WMouseMoveX, dd 0
 NEWSYM WMouseMoveY, dd 0
 
 SECTION .text
-NEWSYM Set_MousePosition
-; Stub please fix
-    ret
-
 NEWSYM Get_MousePositionDisplacement
     ; returns x,y displacement in pixel in cx,dx
     push eax

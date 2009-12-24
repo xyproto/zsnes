@@ -294,3 +294,5 @@ u4 Get_MouseData(void)
 
 void Set_MouseXMax(u4 const min, u4 const max) { (void)min; (void)max; /* Stub please fix */ }
 void Set_MouseYMax(u4 const min, u4 const max) { (void)min; (void)max; /* Stub please fix */ }
+
+void Set_MousePosition(u4 const x, u4 const y) { (void)x; (void)y; /* Stub please fix */ }

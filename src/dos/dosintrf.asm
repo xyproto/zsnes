@@ -464,11 +464,6 @@ SECTION .text
 ; Mouse Stuff
 ; ****************************
 
-NEWSYM Set_MousePosition        ; Sets Mouse Position (x:cx,y:dx)
-    mov eax,04h
-    int 33h
-    ret
-
 NEWSYM Get_MousePositionDisplacement
     ; returns x,y displacement in pixel in cx,dx
     mov eax,0Bh

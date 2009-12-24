@@ -103,9 +103,9 @@ NEWSYM ProcessMouse
   test bx,01h
   jnz .noprevhold
   mov byte[lastmouseholded],0
-  mov cx,[GUImouseposx]
-  mov dx,[GUImouseposy]
-  call Set_MousePosition
+  movzx ecx, word [GUImouseposx]
+  movzx edx, word [GUImouseposy]
+  ccallv Set_MousePosition, ecx, edx
 .noprevhold
   cmp byte[mousewrap],1
   je near ProcessMouseWrap
@@ -387,9 +387,9 @@ ProcessMouseButtons:
   mov [GUImouseposy],eax
   mov eax,[GUIHoldXlimL]
   mov [GUImouseposx],eax
-  mov cx,[GUIHoldXlimL]
-  mov dx,[GUIHoldYlim]
-  call Set_MousePosition
+  movzx ecx, word [GUIHoldXlimL]
+  movzx edx, word [GUIHoldYlim]
+  ccallv Set_MousePosition, ecx, edx
   ret
 .hold2
   ; Colour Slide Bar Hold

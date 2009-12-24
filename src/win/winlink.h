@@ -88,6 +88,8 @@ extern "C" {
   void SetMouseMaxY(int MaxY);
   void SetMouseMinX(int MinX);
   void SetMouseMinY(int MinY);
+  void SetMouseX(int X);
+  void SetMouseY(int Y);
   void WinUpdateDevices(void);
 
 #ifdef __cplusplus

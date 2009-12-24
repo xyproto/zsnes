@@ -25,7 +25,7 @@ EXTSYM JoyRead
 EXTSYM soundon,DSPDisable,Start60HZ
 EXTSYM GetMouseMoveX
 EXTSYM GetMouseMoveY,GetMouseButton
-EXTSYM SetMouseX,SetMouseY,T36HZEnabled,MouseButton,Start36HZ
+EXTSYM T36HZEnabled,MouseButton,Start36HZ
 EXTSYM BufferSizeW,BufferSizeB,ProcessSoundBuffer,CheckTimers
 EXTSYM FrameSemaphore
 EXTSYM pl1upk,pl1downk,pl1leftk,pl1rightk,pl1startk,pl1selk
@@ -272,11 +272,6 @@ NEWSYM WMouseMoveX, dd 0
 NEWSYM WMouseMoveY, dd 0
 
 SECTION .text
-
-NEWSYM Set_MousePosition        ; Sets Mouse Position (x:cx,y:dx)
-    ccallv SetMouseX, ecx
-    ccallv SetMouseY, edx
-    ret
 
 NEWSYM Get_MousePositionDisplacement
     ; returns x,y displacement in pixel in cx,dx

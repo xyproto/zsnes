@@ -70,4 +70,7 @@ void Set_MouseXMax(u4 min, u4 max);
 // Sets the Y boundaries
 void Set_MouseYMax(u4 min, u4 max);
 
+// Sets Mouse Position
+void Set_MousePosition(u4 x, u4 y);
+
 #endif

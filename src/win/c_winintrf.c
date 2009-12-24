@@ -312,3 +312,10 @@ void Set_MouseYMax(u4 const min, u4 const max)
 	SetMouseMinY(min);
 	SetMouseMaxY(max);
 }
+
+
+void Set_MousePosition(u4 const x, u4 const y)
+{
+	SetMouseX(x);
+	SetMouseY(y);
+}

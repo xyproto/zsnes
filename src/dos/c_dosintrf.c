@@ -291,7 +291,7 @@ u4 Init_Mouse(void)
 	Set_MouseXMax(0, 255);
 	Set_MouseYMax(0, 223);
 	asm volatile("int $0x33" :: "a" (0x0F), "c" (8), "d" (8));
-	asm volatile("int $0x33" :: "a" (0x04), "c" (0), "d" (0));
+	Set_MousePosition(0, 0);
 	return 1;
 }
 
@@ -317,4 +317,10 @@ void Set_MouseXMax(u4 const min, u4 const max)
 void Set_MouseYMax(u4 const min, u4 const max)
 {
 	asm volatile("int $0x33" :: "a" (0x08), "c" (min), "d" (max));
+}
+
+
+void Set_MousePosition(u4 const x, u4 const y)
+{
+	asm volatile("int $0x33" :: "a" (0x04), "c" (x), "d" (y));
 }
