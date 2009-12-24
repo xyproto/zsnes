@@ -58,12 +58,6 @@ NEWSYM PrintChar
     pop eax
     ret
 
-NEWSYM Get_Memfree
-    mov ax,0500h
-    mov edi,edx
-    int 31h
-    ret
-
 NEWSYM Output_Text       ; Output character (ah=02h) or string (ah=09h)
     ; This function usually displays an error message on-screen
     cmp ah,02h

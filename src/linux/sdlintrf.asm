@@ -51,11 +51,7 @@ SECTION .data
 NEWSYM CurKeyPos, dd 0
 NEWSYM CurKeyReadPos, dd 0
 NEWSYM KeyBuffer, times 16 dd 0
-
 SECTION .text
-NEWSYM Get_Memfree
-    mov eax,02000000h
-    ret
 
 NEWSYM Output_Text       ; Output character (ah=02h) or string (ah=09h)
     pushad
