@@ -103,7 +103,7 @@ static float MouseMinY = 0;
 static float MouseMaxY = 223;
 static int MouseX, MouseY;
 static int MouseMove2X, MouseMove2Y;
-unsigned char MouseButton;
+u1 MouseButton;
 static float MouseXScale = 1.0;
 static float MouseYScale = 1.0;
 uint32_t CurMode = -1;
@@ -121,7 +121,7 @@ static uint8_t IsActivated = 1;
 #define UPDATE_TICKS_UDP (1000.0/60.0)
 
 int T60HZEnabled = 0;
-int T36HZEnabled = 0;
+u1 T36HZEnabled = 0;
 float end, end2;
 float start, start2;
 float update_ticks_pc, update_ticks_pc2;

@@ -140,7 +140,7 @@ BYTE PrevRes=0;
 
 extern "C"
 {
-  DWORD MouseButton;
+  u1 MouseButton;
   DWORD SurfaceX = 0;
   DWORD SurfaceY = 0;
   RECT BlitArea;
@@ -1546,7 +1546,7 @@ extern "C"
   DWORD CurrentPos;
   DWORD WritePos;
   DWORD T60HZEnabled = 0;
-  DWORD T36HZEnabled = 0;
+  u1 T36HZEnabled = 0;
 
   DWORD WINAPI SemaphoreThread(LPVOID lpParam)
   {

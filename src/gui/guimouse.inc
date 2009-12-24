@@ -351,7 +351,7 @@ ProcessMouseButtons:
   mov [GUIHoldYlim],eax
   mov eax,[GUImouseposx]
   mov [GUIHoldXlimL],eax
-  call MouseWindow
+  ccallv MouseWindow
   jmp .noclick
 %endif
 .nomenu

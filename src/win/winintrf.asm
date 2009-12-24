@@ -23,8 +23,7 @@
 
 EXTSYM JoyRead
 EXTSYM soundon,DSPDisable,Start60HZ
-EXTSYM GetMouseButton
-EXTSYM T36HZEnabled,MouseButton,Start36HZ
+EXTSYM Start36HZ
 EXTSYM BufferSizeW,BufferSizeB,ProcessSoundBuffer,CheckTimers
 EXTSYM FrameSemaphore
 EXTSYM pl1upk,pl1downk,pl1leftk,pl1rightk,pl1startk,pl1selk
@@ -261,22 +260,10 @@ NEWSYM ScanCodeListing
         db 'P2A','P2X','P2L','P2R','   ','   ','   ','   '
 
 ; ****************************
-; Mouse Stuff
-; ****************************
-
-SECTION .text
-
-NEWSYM MouseWindow
-    or byte[MouseButton],2
-    mov byte[T36HZEnabled],1
-    ccallv GetMouseButton
-    and byte[MouseButton],0FDh
-    ret
-
-; ****************************
 ; Sound Stuff
 ; ****************************
 
+SECTION .text
 NEWSYM StopSound
     ccallv Start36HZ
     ccallv JoyRead

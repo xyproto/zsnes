@@ -31,6 +31,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "../asm_call.h"
 #include "../cfg.h"
 #include "../cpu/dspproc.h"
+#include "../link.h"
 
 #ifdef __LIBAO__
 static pthread_t audio_thread;
@@ -207,7 +208,7 @@ void SoundWrite_sdl()
 {
   extern int DSPBuffer[];
   extern unsigned char DSPDisable;
-  extern unsigned int BufferSizeB, BufferSizeW, T36HZEnabled;
+  extern unsigned int BufferSizeB, BufferSizeW;
 
   // Process sound
   BufferSizeB = 256;

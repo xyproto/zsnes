@@ -22,8 +22,7 @@
 %include "macros.mac"
 
 EXTSYM sem_sleep,Start60HZ,JoyRead
-EXTSYM GetMouseButton,T36HZEnabled
-EXTSYM MouseButton,Start36HZ,CheckTimers
+EXTSYM Start36HZ,CheckTimers
 EXTSYM pl1upk,pl1downk,pl1leftk,pl1rightk,pl1startk,pl1selk
 EXTSYM pl1Ak,pl1Bk,pl1Xk,pl1Yk,pl1Lk,pl1Rk
 EXTSYM pl2upk,pl2downk,pl2leftk,pl2rightk,pl2startk,pl2selk
@@ -241,21 +240,10 @@ NEWSYM ScanCodeListing
 %endif
 
 ; ****************************
-; Mouse Stuff
-; ****************************
-
-SECTION .text
-NEWSYM MouseWindow
-    or byte[MouseButton],2
-    mov byte[T36HZEnabled],1
-    ccallv GetMouseButton
-    and byte[MouseButton],0FDh
-    ret
-
-; ****************************
 ; Sound Stuff
 ; ****************************
 
+SECTION .text
 NEWSYM StopSound
     ccallv Start36HZ
     ccallv JoyRead

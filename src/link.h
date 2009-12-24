@@ -17,6 +17,9 @@ void UpdateVFrame(void);
 void clearwin(void);
 void drawscreenwin(void);
 void initwinvideo(void);
+
+extern u1 MouseButton;
+extern u1 T36HZEnabled;
 #endif
 
 #endif

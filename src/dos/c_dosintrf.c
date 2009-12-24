@@ -333,3 +333,6 @@ u4 Get_MousePositionDisplacement(void)
 	asm volatile("int $0x33" : "=c" (x), "=d" (y) : "a" (0x0B));
 	return y << 16 | x;
 }
+
+
+void MouseWindow(void) {}

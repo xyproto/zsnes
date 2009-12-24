@@ -327,3 +327,12 @@ u4 Get_MousePositionDisplacement(void)
 	u4 const y = GetMouseMoveY();
 	return y << 16 | x;
 }
+
+
+void MouseWindow(void)
+{
+	MouseButton  |= 0x02;
+	T36HZEnabled  = 1;
+	GetMouseButton();
+	MouseButton  &= 0xFD;
+}

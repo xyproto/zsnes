@@ -457,20 +457,11 @@ SECTION .bss
 
 TempVarSeek resd 1
 
-
-SECTION .text
-
-; ****************************
-; Mouse Stuff
-; ****************************
-
-NEWSYM MouseWindow
-    ret
-
 ; ****************************
 ; Sound Stuff
 ; ****************************
 
+SECTION .text
 NEWSYM StopSound
     ret
 
