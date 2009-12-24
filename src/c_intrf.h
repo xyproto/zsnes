@@ -35,6 +35,9 @@ void InitPreGame(void);
  * InitPreGame */
 void SetupPreGame(void);
 
+// Called after game is ended
+void DeInitPostGame(void);
+
 // Returns 1 in videotroub if trouble occurs
 void initvideo(void);
 

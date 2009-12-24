@@ -22,9 +22,7 @@
 %include "macros.mac"
 
 EXTSYM previdmode
-EXTSYM oldhand9s,oldhand9o,interror,oldhand8s,oldhand8o,oldhandSBs,oldhandSBo
-EXTSYM soundon,DSPDisable,SBInt
-EXTSYM init18_2hz,DeInitSPC,GUIinit36_4hz
+EXTSYM GUIinit36_4hz
 EXTSYM GUIoldhand9s,GUIoldhand9o,GUIoldhand8s,GUIoldhand8o,GUIhandler9h
 EXTSYM GUIhandler8h,GUIinit18_2hz
 EXTSYM DosDrawScreen,cvidmode,vidbuffer,GUICPC,DosDrawScreenB
@@ -49,41 +47,6 @@ EXTSYM pl5Ak,pl5Bk,pl5Xk,pl5Yk,pl5Lk,pl5Rk
 SECTION .data
 NEWSYM dssel, dw 0
 SECTION .text
-
-NEWSYM DeInitPostGame           ; Called after game is ended
-    ; de-init interrupt handler
-    cli
-    mov cx,[oldhand9s]
-    mov edx,[oldhand9o]
-    mov ax,205h
-    mov bl,09h
-    int 31h
-    jc near interror
-
-    mov cx,[oldhand8s]
-    mov edx,[oldhand8o]
-    mov ax,205h
-    mov bl,08h
-    int 31h
-    jc near interror
-    call init18_2hz               ; Set timer to 18.2Hz
-.nofs3
-    sti
-
-    ; DeINITSPC
-    cmp byte[soundon],0
-    je .nosoundb
-    cmp byte[DSPDisable],1
-    je .nosoundb
-    call DeInitSPC
-    mov cx,[oldhandSBs]
-    mov edx,[oldhandSBo]
-    mov ax,205h
-    mov bl,[SBInt]
-    int 31h
-    jc near interror
-.nosoundb
-    ret
 
 NEWSYM GUIInit
     mov ax,204h

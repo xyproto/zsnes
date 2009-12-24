@@ -22,7 +22,7 @@
 %include "macros.mac"
 
 EXTSYM sem_sleep,Start60HZ,vidbuffer
-EXTSYM Stop60HZ,initwinvideo,GUICPC,drawscreenwin
+EXTSYM initwinvideo,GUICPC,drawscreenwin
 EXTSYM ConvertToAFormat,HalfTrans,UnusedBit,UnusedBitXor
 EXTSYM ngrposng,nggposng,ngbposng,HalfTransB,HalfTransC,UpdateVFrame,GetMouseX
 EXTSYM GetMouseY,GetMouseMoveX,GetMouseMoveY,GetMouseButton,T36HZEnabled
@@ -52,11 +52,6 @@ NEWSYM CurKeyPos, dd 0
 NEWSYM CurKeyReadPos, dd 0
 NEWSYM KeyBuffer, times 16 dd 0
 SECTION .text
-
-
-NEWSYM DeInitPostGame           ; Called after game is ended
-    ccallv Stop60HZ
-    ret
 
 ; ****************************
 ; Video Stuff

@@ -108,6 +108,12 @@ void SetupPreGame(void)
 }
 
 
+void DeInitPostGame(void)
+{
+	Stop60HZ();
+}
+
+
 static void InitializeGfxStuff(void)
 {
 	static u1 const BitPosR  = 11;

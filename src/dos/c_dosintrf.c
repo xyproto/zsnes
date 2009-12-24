@@ -186,6 +186,24 @@ void SetupPreGame(void)
 }
 
 
+void DeInitPostGame(void)
+{
+	// de-init interrupt handler
+	cli();
+	set_handler(0x09, oldhand9s, oldhand9o);
+	set_handler(0x08, oldhand8s, oldhand8o);
+	asm_call(init18_2hz); // Set timer to 18.2Hz
+	sti();
+
+	// DeINITSPC
+	if (soundon != 0 && DSPDisable != 1)
+	{
+		asm_call(DeInitSPC);
+		set_handler(SBInt, oldhandSBs, oldhandSBo);
+	}
+}
+
+
 void initvideo(void)
 {
 	asm_call(dosinitvideo);

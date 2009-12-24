@@ -3,6 +3,7 @@
 
 #ifndef __MSDOS__
 void Start60HZ(void);
+void Stop60HZ(void);
 void clearwin(void);
 void initwinvideo(void);
 #endif

@@ -317,7 +317,7 @@ reexecuteb2:
 
     cmp byte[NoSoundReinit],1
     je .skippostgame
-    call DeInitPostGame
+    ccallv DeInitPostGame
 .skippostgame
 
     ;Multipass Movies

@@ -1625,7 +1625,7 @@ extern "C"
     //if (!device1 && !device2) MouseInput->Unacquire();
   }
 
-  void Stop60HZ()
+  void Stop60HZ(void)
   {
     T60HZEnabled = 0;
 

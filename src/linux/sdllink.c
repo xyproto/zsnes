@@ -1057,7 +1057,7 @@ void Start60HZ(void)
   T60HZEnabled = 1;
 }
 
-void Stop60HZ()
+void Stop60HZ(void)
 {
   T60HZEnabled = 0;
 }
