@@ -313,3 +313,17 @@ void MouseWindow(void)
 	GetMouseButton();
 	MouseButton  &= 0xFD;
 }
+
+
+void StopSound(void)
+{
+	Start36HZ();
+	JoyRead();
+}
+
+
+void StartSound(void)
+{
+	Start60HZ();
+	JoyRead();
+}

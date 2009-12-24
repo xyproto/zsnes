@@ -229,7 +229,7 @@ NEWSYM showmenu
     pushad
     call copyvid
     popad
-    call StopSound
+    ccallv StopSound
 .nextkey
     ;call GUIUnBuffer
     call menudrawbox8b
@@ -447,7 +447,7 @@ NEWSYM showmenu
 ;    jne .not28
 ;    mov byte[pressed+28],2
 ;.not28
-    call StartSound
+    ccallv StartSound
     mov byte[ForceNonTransp],0
     mov byte[GUIOn],0
     ccallv Clear2xSaIBuffer

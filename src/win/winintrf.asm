@@ -21,9 +21,7 @@
 
 %include "macros.mac"
 
-EXTSYM JoyRead
-EXTSYM soundon,DSPDisable,Start60HZ
-EXTSYM Start36HZ
+EXTSYM soundon,DSPDisable
 EXTSYM BufferSizeW,BufferSizeB,ProcessSoundBuffer,CheckTimers
 EXTSYM FrameSemaphore
 EXTSYM pl1upk,pl1downk,pl1leftk,pl1rightk,pl1startk,pl1selk
@@ -264,17 +262,6 @@ NEWSYM ScanCodeListing
 ; ****************************
 
 SECTION .text
-NEWSYM StopSound
-    ccallv Start36HZ
-    ccallv JoyRead
-    ret
-
-NEWSYM StartSound
-    ccallv Start60HZ
-    ccallv JoyRead
-    ret
-
-
 NEWSYM SoundProcess     ; This function is called ~60 times/s at full speed
     cmp byte[soundon],0
     je .nosound

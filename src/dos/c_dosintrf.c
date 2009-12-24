@@ -336,3 +336,7 @@ u4 Get_MousePositionDisplacement(void)
 
 
 void MouseWindow(void) {}
+
+
+void StopSound(void) {}
+void StartSound(void) {}

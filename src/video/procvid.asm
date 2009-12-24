@@ -1576,7 +1576,7 @@ NEWSYM saveselect
     call copyvid
     pop eax
     mov [newengen],al
-    call StopSound
+    ccallv StopSound
     cmp byte[soundon],0
     je .nosound
     mov byte[csounddisable],1
@@ -1767,7 +1767,7 @@ NEWSYM saveselect
 
     mov word[t1cc],0
     mov byte[csounddisable],0
-    call StartSound
+    ccallv StartSound
 
     call dosmakepal
     mov byte[f3menuen],0
@@ -2043,7 +2043,7 @@ NEWSYM saveselect
 %endif
     mov word[t1cc],0
     mov byte[csounddisable],0
-    call StartSound
+    ccallv StartSound
     mov byte[f3menuen],0
     mov byte[ForceNonTransp],0
     mov byte[GUIOn],0
