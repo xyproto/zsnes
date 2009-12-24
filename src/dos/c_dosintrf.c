@@ -153,6 +153,39 @@ void InitPreGame(void)
 }
 
 
+static void set_handler(u1 const irq, u2 const segment, IRQHandler* const handler)
+{
+	u4 failed;
+	asm volatile("int $0x31;  sbb %0, %0" : "=a" (failed) : "a" (0x205), "b" (irq), "c" (segment), "d" (handler) : "cc");
+	if (failed) asm_call(interror);
+}
+
+
+void SetupPreGame(void)
+{
+	u2 cs;
+	asm("movw %%cs, %0" : "=mr" (cs));
+
+	// set new handler
+	if (soundon != 0 && DSPDisable != 1)
+	{
+		cli();
+		u2 const PIC_port = PICMaskP;
+		u1 const irq_bit  = 1 << (SBIrq & 0x07);
+		outb(PIC_port, inb(PIC_port) |  irq_bit); // Turn off IRQ through controller
+		set_handler(SBInt, cs, SBHandler);
+		outb(PIC_port, inb(PIC_port) & ~irq_bit); // Turn on IRQ through controller
+		asm_call(InitSB);
+		sti();
+	}
+	cli();
+	set_handler(0x09, cs, handler9h);
+	set_handler(0x08, cs, handler8h);
+	asm_call(init60hz); // Set timer to 60/50Hz
+	sti();
+}
+
+
 void initvideo(void)
 {
 	asm_call(dosinitvideo);

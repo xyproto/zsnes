@@ -21,7 +21,7 @@
 
 %include "macros.mac"
 
-EXTSYM soundon,DSPDisable,Start60HZ,pressed
+EXTSYM soundon,DSPDisable,Start60HZ
 EXTSYM vidbuffer,Stop60HZ
 EXTSYM GUICPC
 EXTSYM drawscreenwin,ConvertToAFormat,HalfTrans,UnusedBitXor,UnusedBit
@@ -52,11 +52,6 @@ NEWSYM CurKeyPos, dd 0
 NEWSYM CurKeyReadPos, dd 0
 NEWSYM KeyBuffer, times 16 dd 0
 SECTION .text
-
-NEWSYM SetupPreGame   ; Executes after pre-game init, can execute multiple
-                      ; times after a single InitPreGame
-    mov byte[pressed+1],2
-    ret
 
 
 NEWSYM DeInitPostGame           ; Called after game is ended

@@ -31,6 +31,10 @@ void delay(u4 n);
 // Executes before starting/continuing a game
 void InitPreGame(void);
 
+/* Executes after pre-game init, can execute multiple times after a single
+ * InitPreGame */
+void SetupPreGame(void);
+
 // Returns 1 in videotroub if trouble occurs
 void initvideo(void);
 

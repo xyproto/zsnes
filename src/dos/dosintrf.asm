@@ -23,8 +23,8 @@
 
 EXTSYM previdmode
 EXTSYM oldhand9s,oldhand9o,interror,oldhand8s,oldhand8o,oldhandSBs,oldhandSBo
-EXTSYM soundon,DSPDisable,SBInt,PICMaskP,SBIrq,SBHandler,InitSB
-EXTSYM handler8h,handler9h,init60hz,init18_2hz,DeInitSPC,GUIinit36_4hz
+EXTSYM soundon,DSPDisable,SBInt
+EXTSYM init18_2hz,DeInitSPC,GUIinit36_4hz
 EXTSYM GUIoldhand9s,GUIoldhand9o,GUIoldhand8s,GUIoldhand8o,GUIhandler9h
 EXTSYM GUIhandler8h,GUIinit18_2hz
 EXTSYM DosDrawScreen,cvidmode,vidbuffer,GUICPC,DosDrawScreenB
@@ -49,69 +49,6 @@ EXTSYM pl5Ak,pl5Bk,pl5Xk,pl5Yk,pl5Lk,pl5Rk
 SECTION .data
 NEWSYM dssel, dw 0
 SECTION .text
-
-NEWSYM SetupPreGame   ; Executes after pre-game init, can execute multiple
-                      ; times after a single InitPreGame
-    ; set new handler
-    cmp byte[soundon],0
-    je near .nosound2
-    cmp byte[DSPDisable],1
-    je near .nosound2
-
-    ; Turn off IRQ through controller
-    cli
-    xor dh,dh
-    mov dl,[PICMaskP]
-    mov cl,[SBIrq]
-    and cl,07h
-    mov al,01h
-    shl al,cl
-    mov bl,al
-    in al,dx
-    or al,bl
-    out dx,al
-
-    mov ax,205h
-    mov bl,[SBInt]
-    mov cx,cs
-    mov edx,SBHandler
-    int 31h
-    jc near interror
-
-    ; Turn on IRQ through controller
-    xor dh,dh
-    mov dl,[PICMaskP]
-    mov cl,[SBIrq]
-    and cl,07h
-    mov al,01h
-    shl al,cl
-    not al
-    mov bl,al
-    in al,dx
-    and al,bl
-    out dx,al
-
-    call InitSB
-    sti
-.nosound2
-    cli
-    mov ax,205h
-    mov bl,09h
-    mov cx,cs           ; Requires CS rather than DS
-    mov edx,handler9h
-    int 31h
-    jc near interror
-
-    mov ax,205h
-    mov bl,08h
-    mov cx,cs           ; Requires CS rather than DS
-    mov edx,handler8h
-    int 31h
-    jc near interror
-    call init60hz               ; Set timer to 60/50Hz
-.nofs2
-    sti
-    ret
 
 NEWSYM DeInitPostGame           ; Called after game is ended
     ; de-init interrupt handler

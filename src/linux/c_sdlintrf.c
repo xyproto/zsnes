@@ -85,6 +85,12 @@ void InitPreGame(void)
 }
 
 
+void SetupPreGame(void)
+{
+	pressed[1] = 2;
+}
+
+
 static void InitializeGfxStuff(void)
 {
 	static u1 const BitPosR  = 11;

@@ -15,6 +15,9 @@ extern u2 t1cc;
 #ifdef __MSDOS__
 typedef void IRQHandler(void);
 
+extern void handler8h(void);
+extern void handler9h(void);
+
 extern IRQHandler* oldhand8o;
 extern IRQHandler* oldhand9o;
 extern IRQHandler* oldhandSBo;

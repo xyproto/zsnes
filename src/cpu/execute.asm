@@ -236,7 +236,7 @@ NEWSYM reexecute
 reexecuteb2:
     cmp byte[NoSoundReinit],1
     je .skippregame
-    call SetupPreGame
+    ccallv SetupPreGame
 .skippregame
 
     ; initialize variables (Copy from variables)
