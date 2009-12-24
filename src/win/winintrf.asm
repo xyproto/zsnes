@@ -30,7 +30,6 @@ EXTSYM UpdateVFrame,GetMouseX,GetMouseY,GetMouseMoveX
 EXTSYM GetMouseMoveY,GetMouseButton,SetMouseMinX,SetMouseMaxX,SetMouseMinY
 EXTSYM SetMouseMaxY,SetMouseX,SetMouseY,T36HZEnabled,MouseButton,Start36HZ
 EXTSYM Stop36HZ,BufferSizeW,BufferSizeB,ProcessSoundBuffer,CheckTimers
-EXTSYM DoSleep
 EXTSYM FrameSemaphore
 EXTSYM pl1upk,pl1downk,pl1leftk,pl1rightk,pl1startk,pl1selk
 EXTSYM pl1Ak,pl1Bk,pl1Xk,pl1Yk,pl1Lk,pl1Rk
@@ -438,16 +437,6 @@ NEWSYM SoundProcess     ; This function is called ~60 times/s at full speed
     ; You will have to convert/clip it to 16-bit for actual sound process
 .nosound
     ret
-
-section .data
-NEWSYM delayvalue, dd 0
-
-section .text
-
-NEWSYM delay
-   mov [delayvalue],ecx
-   ccallv DoSleep
-   ret
 
 NEWSYM Check60hz
     ; Call the timer update function here

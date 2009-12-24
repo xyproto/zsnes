@@ -19,6 +19,9 @@
 #endif
 
 
+u4 delayvalue;
+
+
 void StartUp(void) {}
 
 
@@ -70,6 +73,13 @@ char Get_Key(void)
 		CurKeyReadPos = (pos + 1) % lengthof(KeyBuffer);
 		return KeyBuffer[pos];
 	}
+}
+
+
+void delay(u4 const n)
+{
+	delayvalue = n;
+	DoSleep();
 }
 
 

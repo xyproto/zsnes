@@ -1690,15 +1690,13 @@ NEWSYM saveselect
 .noesc
     mov dl,128
     call drawbox
-    mov ecx,2500
-    call delay
+    ccallv delay, 2500
     testpressed 8b
     test byte[pressed+1],1
     jnz near .esc
     test byte[pressed+28],1
     jnz near .enter
-    mov ecx,2500
-    call delay
+    ccallv delay, 2500
     testpressed 8b
     test byte[pressed+1],1
     jnz near .esc
@@ -1707,15 +1705,13 @@ NEWSYM saveselect
     push ebx
     call copyvid
     pop ebx
-    mov ecx,2500
-    call delay
+    ccallv delay, 2500
     testpressed 8b
     test byte[pressed+1],1
     jnz near .esc
     test byte[pressed+28],1
     jnz near .enter
-    mov ecx,2500
-    call delay
+    ccallv delay, 2500
     testpressed 8b
     test byte[pressed+1],1
     jnz near .esc
@@ -1959,15 +1955,13 @@ NEWSYM saveselect
 
     mov dx,0FFFFh
     call drawbox16b
-    mov ecx,2500
-    call delay
+    ccallv delay, 2500
     testpressed 16b
     test byte[pressed+1],1
     jnz near .esc16b
     test byte[pressed+28],1
     jnz near .enter16b
-    mov ecx,2500
-    call delay
+    ccallv delay, 2500
     testpressed 16b
     test byte[pressed+1],1
     jnz near .esc16b
@@ -1981,15 +1975,13 @@ NEWSYM saveselect
     pop eax
     mov [newengen],al
     pop ebx
-    mov ecx,2500
-    call delay
+    ccallv delay, 2500
     testpressed 16b
     test byte[pressed+1],1
     jnz near .esc16b
     test byte[pressed+28],1
     jnz near .enter16b
-    mov ecx,2500
-    call delay
+    ccallv delay, 2500
     testpressed 16b
     test byte[pressed+1],1
     jnz near .esc16b

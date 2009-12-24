@@ -2870,9 +2870,8 @@ NEWSYM GUIWaitForKey
 .again3
   mov edx,10
 .again4
-  mov cx,1000
   push edx
-  call delay
+  ccallv delay, 1000
   call JoyRead
   pop edx
   xor ebx,ebx

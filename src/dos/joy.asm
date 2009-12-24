@@ -123,8 +123,7 @@ NEWSYM DosUpdateDevices
     mov dx,201h
     mov byte[JoyExists2],1
     call GetCoords3
-    mov ecx,1000
-    call delay
+    ccallv delay, 1000
     cmp byte[JoyExists2],0
     jne .no2joyst
     mov byte[JoyQuant],1
@@ -134,8 +133,7 @@ NEWSYM DosUpdateDevices
     mov dx,201h
     mov byte[JoyExists],1
     call GetCoords
-    mov ecx,1000
-    call delay
+    ccallv delay, 1000
     cmp byte[JoyExists],0
     jne .no1joyst
     mov byte[JoyQuant],0
@@ -184,8 +182,7 @@ NEWSYM DosUpdateDevices
     mov dx,209h
     mov byte[JoyExists2],1
     call GetCoords3
-    mov ecx,1000
-    call delay
+    ccallv delay, 1000
     cmp byte[JoyExists2],0
     jne .no2joyst2
     mov byte[JoyQuant209],1
@@ -195,8 +192,7 @@ NEWSYM DosUpdateDevices
     mov dx,209h
     mov byte[JoyExists],1
     call GetCoords
-    mov ecx,1000
-    call delay
+    ccallv delay, 1000
     cmp byte[JoyExists],0
     jne .no1joyst2
     mov byte[JoyQuant209],0

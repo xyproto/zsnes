@@ -46,6 +46,7 @@ extern "C"
 #include "../link.h"
 #include "../types.h"
 #include "../zmovie.h"
+#include "c_winintrf.h"
 
 #ifdef __OPENGL__
 #	include "gl_draw.h"
@@ -3210,8 +3211,6 @@ extern "C"
     GetSystemPowerStatus(&SysPowerStat);
     return((SysPowerStat.BatteryLifePercent == 255) ? -1 : SysPowerStat.BatteryLifePercent);
   }
-
-  extern unsigned int delayvalue;
 
   // Delay function for GUI
   void DoSleep()

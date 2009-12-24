@@ -113,6 +113,19 @@ char Get_Key(void)
 }
 
 
+void delay(u4 n)
+{
+	u1 prev = inb(0x61) & 0x10;
+	do
+	{
+		u1 cur;
+		do cur = inb(0x61) & 0x10; while (prev == cur); // XXX busy waiting
+		prev = cur;
+	}
+	while (--n != 0);
+}
+
+
 static void get_handler(u1 const irq, u2* const segment, IRQHandler** const handler)
 {
 	u4 failed;

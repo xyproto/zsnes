@@ -45,7 +45,7 @@ void guipresstestb(void)
 	GUIOuttextShadowed(70, 105, guipressptr);
 	GUIOuttextShadowed(70, 115, "(ESC TO SKIP)");
 	asm_call(vidpastecopyscr);
-	asm volatile("call *%0" :: "r" (delay), "c" (8192) : "eax");
+	delay(8192);
 	do asm_call(JoyRead); while (GetAnyPressedKey());
 
 	u1* key;

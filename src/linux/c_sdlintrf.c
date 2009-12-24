@@ -66,6 +66,9 @@ char Get_Key(void)
 }
 
 
+void delay(u4 const n) { (void)n; /* Stub please fix */ }
+
+
 void InitPreGame(void)
 {
 	pressed[1] = 2;

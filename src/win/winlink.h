@@ -84,6 +84,7 @@ extern "C" {
 
   void CheckAlwaysOnTop(void);
   void DisplayWIPDisclaimer(void);
+  void DoSleep(void);
   void WinUpdateDevices(void);
 
 #ifdef __cplusplus

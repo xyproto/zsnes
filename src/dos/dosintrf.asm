@@ -50,22 +50,6 @@ SECTION .data
 NEWSYM dssel, dw 0
 SECTION .text
 
-; Delay for CX/65536 of a second
-
-NEWSYM delay
-   in al,61h
-   and al,10h
-   mov ah,al
-.loopa
-   in al,61h
-   and al,10h
-   cmp al,ah
-   jz .loopa
-   mov ah,al
-   dec cx
-   jnz .loopa
-   ret
-
 NEWSYM SetupPreGame   ; Executes after pre-game init, can execute multiple
                       ; times after a single InitPreGame
     ; set new handler

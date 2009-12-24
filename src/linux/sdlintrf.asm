@@ -406,10 +406,6 @@ NEWSYM StartSound
     call JoyRead
     ret
 
-NEWSYM delay
-; Stub please fix
-   ret
-
 NEWSYM Check60hz
     ; Call the timer update function here
     ccallv CheckTimers

@@ -25,6 +25,9 @@ u1 Check_Key(void);
  * return a 0, then the extended key afterwards. */
 char Get_Key(void);
 
+// Delay for n / 65536 of a second
+void delay(u4 n);
+
 // Executes before starting/continuing a game
 void InitPreGame(void);
 
