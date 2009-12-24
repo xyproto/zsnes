@@ -453,10 +453,6 @@ NEWSYM ScanCodeListing
         db 'P5B','P5Y','P5S','P5T','P5U','P5D','P5L','P5R'
         db 'P5A','P5X','P5L','P5R','   ','   ','   ','   '
 
-SECTION .bss
-
-TempVarSeek resd 1
-
 ; ****************************
 ; Sound Stuff
 ; ****************************
