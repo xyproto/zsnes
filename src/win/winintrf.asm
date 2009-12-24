@@ -21,11 +21,10 @@
 
 %include "macros.mac"
 
+EXTSYM DrawScreen
 EXTSYM soundon,DSPDisable,Start60HZ
 EXTSYM vidbuffer
 EXTSYM GUICPC
-EXTSYM drawscreenwin,ConvertToAFormat,HalfTrans,UnusedBitXor,UnusedBit
-EXTSYM ngrposng,nggposng,ngbposng,HalfTransB,HalfTransC
 EXTSYM UpdateVFrame,GetMouseX,GetMouseY,GetMouseMoveX
 EXTSYM GetMouseMoveY,GetMouseButton,SetMouseMinX,SetMouseMaxX,SetMouseMinY
 EXTSYM SetMouseMaxY,SetMouseX,SetMouseY,T36HZEnabled,MouseButton,Start36HZ
@@ -62,34 +61,6 @@ SECTION .data
 NEWSYM converta, dd 0
 
 SECTION .text
-NEWSYM DrawScreen               ; In-game screen render w/ triple buffer check
-    cmp dword[converta],1
-    jne near .skipconv
-    pushad
-        mov dword[UnusedBit],     10000000000000001000000000000000b
-        mov dword[HalfTrans],     01111011110111100111101111011110b
-        mov dword[UnusedBitXor],  01111111111111110111111111111111b
-        mov dword[UnusedBit+4],   10000000000000001000000000000000b
-        mov dword[HalfTrans+4],   01111011110111100111101111011110b
-        mov dword[UnusedBitXor+4],01111111111111110111111111111111b
-        mov dword[HalfTransB],    00000100001000010000010000100001b
-        mov dword[HalfTransB+4],  00000100001000010000010000100001b
-        mov dword[HalfTransC],    01111011110111100111101111011110b
-        mov dword[HalfTransC+4],  01111011110111100111101111011110b
-        mov dword[ngrposng],10
-        mov dword[nggposng],5
-        mov dword[ngbposng],0
-
-    call ConvertToAFormat
-
-    popad
-
-.skipconv
-    ccallv drawscreenwin
-
-    ret
-;   jmp DosDrawScreen
-
 NEWSYM vidpastecopyscr       ; GUI screen render
    pushad
    mov eax,[vidbuffer]
@@ -105,7 +76,8 @@ NEWSYM vidpastecopyscr       ; GUI screen render
    dec ecx
    jnz .loop
    popad
-   jmp DrawScreen
+   ccallv DrawScreen
+   ret
 
 ; ** Video Mode Variables **
 SECTION .data

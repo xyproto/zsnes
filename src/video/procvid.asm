@@ -2871,7 +2871,8 @@ NEWSYM vidpaste
     call DOSClearScreen
 %endif
 .noclear
-    jmp DrawScreen
+    ccallv DrawScreen
+    ret
 
 .drawss
 %ifdef __MSDOS__

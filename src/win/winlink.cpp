@@ -2307,7 +2307,7 @@ extern "C"
   volatile uint64_t copymaskG = UINT64_C(0x0000FC000000FC00);
   volatile uint64_t copymagic = UINT64_C(0x0008010000080100);
 
-  void drawscreenwin()
+  void drawscreenwin(void)
   {
     DWORD i, j, color32;
     DWORD *SURFDW;

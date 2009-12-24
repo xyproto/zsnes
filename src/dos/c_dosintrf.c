@@ -246,6 +246,12 @@ void deinitvideo(void)
 }
 
 
+void DrawScreen(void)
+{
+	asm_call(DosDrawScreen);
+}
+
+
 void UpdateDevices(void)
 {
 	asm_call(DosUpdateDevices);

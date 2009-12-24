@@ -21,7 +21,7 @@
 
 %include "macros.mac"
 
-EXTSYM DosDrawScreen,cvidmode,vidbuffer,GUICPC,DosDrawScreenB
+EXTSYM cvidmode,vidbuffer,GUICPC,DosDrawScreenB
 EXTSYM DOSJoyRead,pl1contrl,pl2contrl,pl3contrl,pl4contrl
 EXTSYM pl5contrl
 EXTSYM pl1upk,pl1downk,pl1leftk,pl1rightk,pl1startk,pl1selk
@@ -128,9 +128,6 @@ NEWSYM saveselectpal
     ret
 
 ; ** copy video mode functions **
-NEWSYM DrawScreen               ; In-game screen render w/ triple buffer check
-   jmp DosDrawScreen
-
 NEWSYM vidpastecopyscr       ; GUI screen render
 ;   jmp dosvidpastecopyscr
    pushad

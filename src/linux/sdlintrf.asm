@@ -21,10 +21,9 @@
 
 %include "macros.mac"
 
-EXTSYM sem_sleep,Start60HZ,vidbuffer
-EXTSYM initwinvideo,GUICPC,drawscreenwin
-EXTSYM ConvertToAFormat,HalfTrans,UnusedBit,UnusedBitXor
-EXTSYM ngrposng,nggposng,ngbposng,HalfTransB,HalfTransC,UpdateVFrame,GetMouseX
+EXTSYM sem_sleep,Start60HZ,vidbuffer,DrawScreen
+EXTSYM GUICPC
+EXTSYM UpdateVFrame,GetMouseX
 EXTSYM GetMouseY,GetMouseMoveX,GetMouseMoveY,GetMouseButton,T36HZEnabled
 EXTSYM MouseButton,Start36HZ,CheckTimers
 EXTSYM pl1upk,pl1downk,pl1leftk,pl1rightk,pl1startk,pl1selk
@@ -37,10 +36,6 @@ EXTSYM pl4upk,pl4downk,pl4leftk,pl4rightk,pl4startk,pl4selk
 EXTSYM pl4Ak,pl4Bk,pl4Xk,pl4Yk,pl4Lk,pl4Rk
 EXTSYM pl5upk,pl5downk,pl5leftk,pl5rightk,pl5startk,pl5selk
 EXTSYM pl5Ak,pl5Bk,pl5Xk,pl5Yk,pl5Lk,pl5Rk
-
-%ifdef __OPENGL__
-EXTSYM Clear2xSaIBuffer
-%endif
 
 ; NOTE: For timing, Game60hzcall should be called at 50hz or 60hz (depending
 ;   on romispal) after a call to InitPreGame and before DeInitPostGame are
@@ -65,40 +60,6 @@ NEWSYM blinit, db 0
 %endif
 
 SECTION .text
-NEWSYM DrawScreen               ; In-game screen render w/ triple buffer check
-    cmp dword[converta],1
-    jne near .skipconv
-    pushad
-        mov dword[UnusedBit],     10000000000000001000000000000000b
-        mov dword[HalfTrans],     01111011110111100111101111011110b
-        mov dword[UnusedBitXor],  01111111111111110111111111111111b
-        mov dword[UnusedBit+4],   10000000000000001000000000000000b
-        mov dword[HalfTrans+4],   01111011110111100111101111011110b
-        mov dword[UnusedBitXor+4],01111111111111110111111111111111b
-        mov dword[HalfTransB],    00000100001000010000010000100001b
-        mov dword[HalfTransB+4],  00000100001000010000010000100001b
-        mov dword[HalfTransC],    01111011110111100111101111011110b
-        mov dword[HalfTransC+4],  01111011110111100111101111011110b
-        mov dword[ngrposng],10
-        mov dword[nggposng],5
-        mov dword[ngbposng],0
-
-    call ConvertToAFormat
-
-    popad
-
-.skipconv
-    ccallv drawscreenwin
-%ifdef __OPENGL__
-    cmp byte[blinit],1
-    jne .noreinit
-    ccallv initwinvideo
-    ccallv Clear2xSaIBuffer
-    mov byte[blinit],0
-.noreinit
-%endif
-    ret
-
 NEWSYM vidpastecopyscr       ; GUI screen render
    pushad
    mov eax,[vidbuffer]
@@ -114,7 +75,8 @@ NEWSYM vidpastecopyscr       ; GUI screen render
    dec ecx
    jnz .loop
    popad
-   jmp DrawScreen
+   ccallv DrawScreen
+   ret
 
 ; ** Video Mode Variables **
 SECTION .data

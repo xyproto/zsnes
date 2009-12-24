@@ -136,7 +136,6 @@ float sem_GetTicks();
 extern unsigned char romispal;
 
 /* FUNCTION DECLARATIONS */
-void drawscreenwin();
 unsigned int sdl_keysym_to_pc_scancode(int);
 void ProcessKeyBuf(int);
 void UpdateSound(void *userdata, Uint8 *stream, int len);
@@ -1460,7 +1459,7 @@ void clearwin(void)
   }
 }
 
-void drawscreenwin()
+void drawscreenwin(void)
 {
 #ifdef __LIBAO__
   extern bool RawDumpInProgress;

@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "../asm_call.h"
 #include "../c_intrf.h"
 #include "../c_vcache.h"
 #include "../cfg.h"
@@ -13,6 +14,7 @@
 #include "../ui.h"
 #include "../vcache.h"
 #include "../video/c_2xsaiw.h"
+#include "../video/newgfx16.h"
 
 #ifndef __RELEASE__
 #	include "winlink.h"
@@ -230,6 +232,29 @@ void initvideo(void)
 
 
 void deinitvideo(void) {}
+
+
+void DrawScreen(void)
+{
+	if (converta == 1)
+	{
+		UnusedBit[0]    = 0x80008000;
+		HalfTrans[0]    = 0x7BDE7BDE;
+		UnusedBitXor[0] = 0x7FFF7FFF;
+		UnusedBit[1]    = 0x80008000;
+		HalfTrans[1]    = 0x7BDE7BDE;
+		UnusedBitXor[1] = 0x7FFF7FFF;
+		HalfTransB[0]   = 0x04210421;
+		HalfTransB[1]   = 0x04210421;
+		HalfTransC[0]   = 0x7BDE7BDE;
+		HalfTransC[1]   = 0x7BDE7BDE;
+		ngrposng        = 10;
+		nggposng        =  5;
+		ngbposng        =  0;
+		asm_call(ConvertToAFormat);
+	}
+	drawscreenwin();
+}
 
 
 void UpdateDevices(void)
