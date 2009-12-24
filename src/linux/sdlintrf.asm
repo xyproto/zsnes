@@ -251,14 +251,6 @@ NEWSYM WMouseMoveX, dd 0
 NEWSYM WMouseMoveY, dd 0
 
 SECTION .text
-NEWSYM Set_MouseXMax
-; Stub please fix
-    ret
-
-NEWSYM Set_MouseYMax
-; Stub please fix
-    ret
-
 NEWSYM Set_MousePosition
 ; Stub please fix
     ret

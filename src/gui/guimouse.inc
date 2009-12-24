@@ -51,21 +51,13 @@ NEWSYM ProcessMouse
 %endif
   mov [ntscLastVar+edx],cl
 .norelease1
-  mov ecx,0
-  mov edx,255
-  call Set_MouseXMax
-  mov ecx,0
-  mov edx,223
-  call Set_MouseYMax
+  ccallv Set_MouseXMax, 0, 255
+  ccallv Set_MouseYMax, 0, 223
 .noholda
   cmp byte[GUIHold],1 ; GUI Windows
   jne .nohold1
-  mov ecx,0
-  mov edx,255
-  call Set_MouseXMax
-  mov ecx,16
-  mov edx,223
-  call Set_MouseYMax
+  ccallv Set_MouseXMax,  0, 255
+  ccallv Set_MouseYMax, 16, 223
 .nohold1
   cmp byte[GUIHold],5 ; Sound Slider
   je .holdslider
@@ -78,21 +70,15 @@ NEWSYM ProcessMouse
   cmp byte[GUIHold],7 ; Video Slider
   jne .nohold2m
 .holdslider
-  mov ecx,[GUIHoldXlimL] ; Sets min/max move range for mouse
-  mov edx,[GUIHoldXlimR] ; once holding slider
-  call Set_MouseXMax
-  mov ecx,[GUIHoldYlim]  ; Locks pointer on slider
-  mov edx,[GUIHoldYlim]
-  call Set_MouseYMax
+  ; Sets min/max move range for mouse once holding slider
+  ccallv Set_MouseXMax, [GUIHoldXlimL], [GUIHoldXlimR]
+  ; Locks pointer on slider
+  ccallv Set_MouseYMax, [GUIHoldYlim], [GUIHoldYlim]
 .nohold2m
   cmp byte[GUIHold],3    ; Scrollbars
   jne .nohold3m
-  mov ecx,[GUIHoldXlimL]
-  mov edx,[GUIHoldXlimR]
-  call Set_MouseXMax
-  mov ecx,[GUIHoldYlim]
-  mov edx,[GUIHoldYlimR]
-  call Set_MouseYMax
+  ccallv Set_MouseXMax, [GUIHoldXlimL], [GUIHoldXlimR]
+  ccallv Set_MouseYMax, [GUIHoldYlim], [GUIHoldYlimR]
 .nohold3m
   mov al,[GUIHold]
   mov [LastHoldEnable],al

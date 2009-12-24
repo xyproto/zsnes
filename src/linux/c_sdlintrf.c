@@ -290,3 +290,7 @@ u4 Get_MouseData(void)
 	u4 const buttons = GetMouseButton();
 	return y << 24 | x << 16 | buttons;
 }
+
+
+void Set_MouseXMax(u4 const min, u4 const max) { (void)min; (void)max; /* Stub please fix */ }
+void Set_MouseYMax(u4 const min, u4 const max) { (void)min; (void)max; /* Stub please fix */ }

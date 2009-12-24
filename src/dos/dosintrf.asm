@@ -464,16 +464,6 @@ SECTION .text
 ; Mouse Stuff
 ; ****************************
 
-NEWSYM Set_MouseXMax    ; Sets the X boundaries (ecx = left, edx = right)
-    mov eax,07h
-    int 33h
-    ret
-
-NEWSYM Set_MouseYMax    ; Sets the Y boundaries (ecx = left, edx = right)
-    mov eax,08h
-    int 33h
-    ret
-
 NEWSYM Set_MousePosition        ; Sets Mouse Position (x:cx,y:dx)
     mov eax,04h
     int 33h

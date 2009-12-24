@@ -64,4 +64,10 @@ u4 Init_Mouse(void);
 // Returns both pressed and coordinates: YYYYYYYYXXXXXXXXBBBBBBBBBBBBBBBB
 u4 Get_MouseData(void);
 
+// Sets the X boundaries
+void Set_MouseXMax(u4 min, u4 max);
+
+// Sets the Y boundaries
+void Set_MouseYMax(u4 min, u4 max);
+
 #endif

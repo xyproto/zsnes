@@ -84,6 +84,10 @@ extern "C" {
   void CheckAlwaysOnTop(void);
   void DisplayWIPDisclaimer(void);
   void DoSleep(void);
+  void SetMouseMaxX(int MaxX);
+  void SetMouseMaxY(int MaxY);
+  void SetMouseMinX(int MinX);
+  void SetMouseMinY(int MinY);
   void WinUpdateDevices(void);
 
 #ifdef __cplusplus
