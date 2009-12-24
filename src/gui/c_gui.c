@@ -373,7 +373,7 @@ static void guipostvideoloop(void)
 		GUIBox3D(43, 90, 213, 163);
 		GUIOuttextShadowed(55,  95, "VIDEO MODE CHANGED.");
 		GUIOuttextShadowed(55, 150, "  PRESS SPACEBAR.");
-		asm_call(vidpastecopyscr);
+		vidpastecopyscr();
 		// Wait for all mouse and input data to be 0
 
 		if (GUIkeydelay == 0) break;
@@ -441,7 +441,7 @@ notext:
 	GUIOuttextShadowed(55, 128, guipostvidmsg3b[1]);
 	GUIOuttextShadowed(55, 138, guipostvidmsg3b[2]);
 	GUIOuttextShadowed(55, 151, "PRESS ANY KEY");
-	asm_call(vidpastecopyscr);
+	vidpastecopyscr();
 	GUIUnBuffer();
 	DisplayBoxes();
 	DisplayMenu();
@@ -1356,7 +1356,7 @@ static void guifirsttimemsg(void)
 		GUIOuttextShadowed(51, 127, "    TO COMMON PROBLEMS");
 		GUIOuttextShadowed(51, 135, "      AND QUESTIONS.");
 		GUIOuttextShadowed(51, 150, guiftimemsg8);
-		asm_call(vidpastecopyscr);
+		vidpastecopyscr();
 		GUIUnBuffer();
 		DisplayBoxes();
 		DisplayMenu();
@@ -1384,7 +1384,7 @@ static void horizonfixmsg(void)
 		msg += 32;
 		GUIOuttextShadowed(51, 119, msg);
 		GUIOuttextShadowed(51, 150, guiftimemsg8);
-		asm_call(vidpastecopyscr);
+		vidpastecopyscr();
 		GUIUnBuffer();
 		DisplayBoxes();
 		DisplayMenu();
@@ -1596,7 +1596,7 @@ void StartGUI(void)
 			GUIOuttext(21, 211, GUICMessage, 50);
 			GUIOuttext(20, 210, GUICMessage, 63);
 		}
-		asm_call(vidpastecopyscr);
+		vidpastecopyscr();
 		asm_call(GUIgetcurrentinput);
 	}
 	memset(spcBuffera, 0, 256 * 1024);
@@ -1650,7 +1650,7 @@ void guimencodermsg(void)
 		GUIBox3D(43, 75, 213, 163);
 		GUIOuttextShadowed(51,  95, " MENCODER IS MISSING: ");
 		GUIOuttextShadowed(51, 133, "PRESS SPACE TO PROCEED");
-		asm_call(vidpastecopyscr);
+		vidpastecopyscr();
 		GUIUnBuffer();
 		DisplayBoxes();
 		DisplayMenu();
@@ -1670,7 +1670,7 @@ void guilamemsg(void)
 		GUIBox3D(43, 75, 213, 163);
 		GUIOuttextShadowed(51, 95, " LAME IS MISSING: ");
 		GUIOuttextShadowed(51,133, "PRESS SPACE TO PROCEED");
-		asm_call(vidpastecopyscr);
+		vidpastecopyscr();
 		GUIUnBuffer();
 		DisplayBoxes();
 		DisplayMenu();
@@ -1715,7 +1715,7 @@ void guiprevideo(void)
 	GUIOuttextShadowed(55, 127, " 10 SECONDS AND VIDEO");
 	GUIOuttextShadowed(55, 135, "MODE WILL BE RESTORED.");
 	GUIOuttextShadowed(55, 150, "    PRESS ANY KEY.");
-	asm_call(vidpastecopyscr);
+	vidpastecopyscr();
 	pressed[0x2C] = 0; // XXX redundant
 	for (;;)
 	{
@@ -1747,7 +1747,7 @@ void guicheaterror(void)
 		GUIOuttextShadowed(80, 116, "GAME GENIE,PAR, OR");
 		GUIOuttextShadowed(80, 124, "GOLD FINGER CODE.");
 		GUIOuttextShadowed(80, 134, "PRESS ANY KEY.");
-		asm_call(vidpastecopyscr);
+		vidpastecopyscr();
 		asm_call(JoyRead);
 
 		if (GetAnyPressedKey())       break;

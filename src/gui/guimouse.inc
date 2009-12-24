@@ -942,7 +942,7 @@ GUIProcVideo:
   mov [cvidmode],al
   ccallv initvideo
   ccallv GUISetPal
-  call vidpastecopyscr
+  ccallv vidpastecopyscr
   mov dword[GUIkeydelay],0
   ret
 SECTION .bss

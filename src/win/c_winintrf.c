@@ -8,6 +8,7 @@
 #include "../cfg.h"
 #include "../cpu/dspproc.h"
 #include "../cpu/execute.h"
+#include "../gui/gui.h"
 #include "../intrf.h"
 #include "../link.h"
 #include "../macros.h"
@@ -254,6 +255,16 @@ void DrawScreen(void)
 		asm_call(ConvertToAFormat);
 	}
 	drawscreenwin();
+}
+
+
+void vidpastecopyscr(void)
+{
+	u1* const buf = vidbuffer;
+	u4        n   = 224 * 288 - 288;
+	u4        i   = 224 * 288 -   1;
+	do ((u2*)buf)[i] = GUICPC[buf[i]]; while (--i, --n != 0);
+	DrawScreen();
 }
 
 

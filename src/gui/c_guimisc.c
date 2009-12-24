@@ -1,12 +1,12 @@
 #include <string.h>
 
 #include "../asm_call.h"
+#include "../c_intrf.h"
 #include "../cpu/dspproc.h"
 #include "../cpu/execute.h"
 #include "../cpu/spc700.h"
 #include "../gblvars.h"
 #include "../initc.h"
-#include "../intrf.h"
 #include "../video/procvidc.h"
 #include "../zmovie.h"
 #include "../zstate.h"
@@ -26,7 +26,7 @@ void CalibrateDispA(void)
 	GUIOuttextShadowed(80, 108, "PRESS THE TOP LEFT");
 	GUIOuttextShadowed(80, 116, "CORNER AND PRESS A");
 	GUIOuttextShadowed(80, 124, "BUTTON OR KEY");
-	asm_call(vidpastecopyscr);
+	vidpastecopyscr();
 	asm_call(GUIWaitForKey);
 }
 
@@ -42,7 +42,7 @@ void CalibrateDispB(void)
 	GUIOuttextShadowed(80, 116, "RIGHT CORNER AND");
 	GUIOuttextShadowed(80, 124, "PRESS A BUTTON OR");
 	GUIOuttextShadowed(80, 132, "KEY");
-	asm_call(vidpastecopyscr);
+	vidpastecopyscr();
 	asm_call(GUIWaitForKey);
 }
 

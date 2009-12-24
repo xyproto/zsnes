@@ -21,7 +21,6 @@
 
 %include "macros.mac"
 
-EXTSYM cvidmode,vidbuffer,GUICPC,DosDrawScreenB
 EXTSYM DOSJoyRead,pl1contrl,pl2contrl,pl3contrl,pl4contrl
 EXTSYM pl5contrl
 EXTSYM pl1upk,pl1downk,pl1leftk,pl1rightk,pl1startk,pl1selk
@@ -126,29 +125,6 @@ NEWSYM saveselectpal
     xor al,al
     out dx,al
     ret
-
-; ** copy video mode functions **
-NEWSYM vidpastecopyscr       ; GUI screen render
-;   jmp dosvidpastecopyscr
-   pushad
-   movzx eax,byte[cvidmode]
-   cmp byte[GUI16VID+eax],1
-   jne .no16bconv
-   mov eax,[vidbuffer]
-   mov ecx,224*288
-   mov edx,ecx
-   sub ecx,288
-   dec edx
-.loop
-   movzx ebx,byte[eax+edx]
-   mov bx,[GUICPC+ebx*2]
-   mov [eax+edx*2],bx
-   dec edx
-   dec ecx
-   jnz .loop
-.no16bconv
-   popad
-   jmp DosDrawScreenB
 
 ; ** Video Mode Variables **
 SECTION .data

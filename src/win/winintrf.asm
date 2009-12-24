@@ -21,10 +21,7 @@
 
 %include "macros.mac"
 
-EXTSYM DrawScreen
 EXTSYM soundon,DSPDisable,Start60HZ
-EXTSYM vidbuffer
-EXTSYM GUICPC
 EXTSYM UpdateVFrame,GetMouseX,GetMouseY,GetMouseMoveX
 EXTSYM GetMouseMoveY,GetMouseButton,SetMouseMinX,SetMouseMaxX,SetMouseMinY
 EXTSYM SetMouseMaxY,SetMouseX,SetMouseY,T36HZEnabled,MouseButton,Start36HZ
@@ -59,25 +56,6 @@ SECTION .text
 ; ** copy video mode functions **
 SECTION .data
 NEWSYM converta, dd 0
-
-SECTION .text
-NEWSYM vidpastecopyscr       ; GUI screen render
-   pushad
-   mov eax,[vidbuffer]
-   mov ecx,224*288
-   mov edx,ecx
-   add ecx,-288
-   dec edx
-.loop
-   movzx ebx,byte[eax+edx]
-   mov bx,[GUICPC+ebx*2]
-   mov [eax+edx*2],bx
-   dec edx
-   dec ecx
-   jnz .loop
-   popad
-   ccallv DrawScreen
-   ret
 
 ; ** Video Mode Variables **
 SECTION .data

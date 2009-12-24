@@ -21,8 +21,7 @@
 
 %include "macros.mac"
 
-EXTSYM sem_sleep,Start60HZ,vidbuffer,DrawScreen
-EXTSYM GUICPC
+EXTSYM sem_sleep,Start60HZ
 EXTSYM UpdateVFrame,GetMouseX
 EXTSYM GetMouseY,GetMouseMoveX,GetMouseMoveY,GetMouseButton,T36HZEnabled
 EXTSYM MouseButton,Start36HZ,CheckTimers
@@ -58,25 +57,6 @@ NEWSYM converta, dd 0
 %ifdef __OPENGL__
 NEWSYM blinit, db 0
 %endif
-
-SECTION .text
-NEWSYM vidpastecopyscr       ; GUI screen render
-   pushad
-   mov eax,[vidbuffer]
-   mov ecx,224*288
-   mov edx,ecx
-   sub ecx,288
-   dec edx
-.loop
-   movzx ebx,byte[eax+edx]
-   mov bx,[GUICPC+ebx*2]
-   mov [eax+edx*2],bx
-   dec edx
-   dec ecx
-   jnz .loop
-   popad
-   ccallv DrawScreen
-   ret
 
 ; ** Video Mode Variables **
 SECTION .data

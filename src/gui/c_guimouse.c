@@ -24,7 +24,7 @@ u4 guipresstest(void)
 	GUIOuttextShadowed(80, 100, guipresstext1);
 	GUIOuttextShadowed(80, 110, guipresstext2);
 	GUIOuttextShadowed(80, 120, "(ESC TO CLEAR)");
-	asm_call(vidpastecopyscr);
+	vidpastecopyscr();
 	u1* key;
 	do asm_call(JoyRead); while (!(key = GetAnyPressedKey()));
 	for (u1* i = pressed; i != endof(pressed); ++i)
@@ -44,7 +44,7 @@ void guipresstestb(void)
 	GUIOuttextShadowed(70,  95, guipresstext2);
 	GUIOuttextShadowed(70, 105, guipressptr);
 	GUIOuttextShadowed(70, 115, "(ESC TO SKIP)");
-	asm_call(vidpastecopyscr);
+	vidpastecopyscr();
 	delay(8192);
 	do asm_call(JoyRead); while (GetAnyPressedKey());
 

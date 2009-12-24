@@ -50,6 +50,9 @@ void deinitvideo(void);
 // In-game screen render w/ triple buffer check
 void DrawScreen(void);
 
+// GUI screen render
+void vidpastecopyscr(void);
+
 // One-time input device init
 void UpdateDevices(void);
 

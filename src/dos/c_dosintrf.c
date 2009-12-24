@@ -5,6 +5,7 @@
 #include "../cpu/dspproc.h"
 #include "../cpu/execute.h"
 #include "../gui/c_gui.h"
+#include "../gui/gui.h"
 #include "../ui.h"
 #include "dosintrf.h"
 #include "sound.h"
@@ -249,6 +250,19 @@ void deinitvideo(void)
 void DrawScreen(void)
 {
 	asm_call(DosDrawScreen);
+}
+
+
+void vidpastecopyscr(void)
+{
+	if (GUI16VID[cvidmode] == 1)
+	{
+		u1* const buf = vidbuffer;
+		u4        n   = 224 * 288 - 288;
+		u4        i   = 224 * 288 -   1;
+		do ((u2*)buf)[i] = GUICPC[buf[i]]; while (--i, --n != 0);
+	}
+	asm_call(DosDrawScreenB);
 }
 
 
