@@ -246,7 +246,6 @@ void GUI36hzcall(void)
 	if (GUIScrolTim1      != 0) --GUIScrolTim1;
 	if (GUIDClickTL       != 0) --GUIDClickTL;
 	if (GUIkeydelay       != 0) --GUIkeydelay;
-	if (GUIkeydelay2      != 0) --GUIkeydelay2;
 	if (GUICTimer         != 0) --GUICTimer;
 	GUICCFlash = (GUICCFlash + 1) & 0x0F;
 	GUILDFlash = (GUILDFlash + 1) & 0x0F;

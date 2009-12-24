@@ -241,7 +241,6 @@ SECTION .bss
 GUIfirstkey resd 1
 GUIlastkey resd 1
 NEWSYM GUIkeydelay, resd 1
-NEWSYM GUIkeydelay2, resd 1
 GUInextkeydelay resd 1
 GUIJoyPadnk resb 8
 NEWSYM GUIDelayB, resb 1
