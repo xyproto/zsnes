@@ -272,3 +272,9 @@ void UpdateDevices(void)
 {
 	WinUpdateDevices();
 }
+
+
+void JoyRead(void)
+{
+	UpdateVFrame();
+}

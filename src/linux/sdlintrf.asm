@@ -21,8 +21,8 @@
 
 %include "macros.mac"
 
-EXTSYM sem_sleep,Start60HZ
-EXTSYM UpdateVFrame,GetMouseX
+EXTSYM sem_sleep,Start60HZ,JoyRead
+EXTSYM GetMouseX
 EXTSYM GetMouseY,GetMouseMoveX,GetMouseMoveY,GetMouseButton,T36HZEnabled
 EXTSYM MouseButton,Start36HZ,CheckTimers
 EXTSYM pl1upk,pl1downk,pl1leftk,pl1rightk,pl1startk,pl1selk
@@ -142,10 +142,6 @@ SECTION .text
 ;   assignments in the configuration file, then convert it to ZSNES'
 ;   numerical corresponding key format after reading from it. And then
 ;   convert it back when writing to it back.
-
-NEWSYM JoyRead
-        ccallv UpdateVFrame
-        ret
 
 SECTION .data
 
@@ -318,12 +314,12 @@ NEWSYM MouseWindow
 
 NEWSYM StopSound
     ccallv Start36HZ
-    call JoyRead
+    ccallv JoyRead
     ret
 
 NEWSYM StartSound
     ccallv Start60HZ
-    call JoyRead
+    ccallv JoyRead
     ret
 
 NEWSYM Check60hz

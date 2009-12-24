@@ -48,7 +48,6 @@ extern uint8_t curblank;
 extern uint8_t GUIRESIZE[];
 
 void gl_clearwin();
-void UpdateVFrame();
 void gl_scanlines();
 
 #endif

@@ -39,7 +39,6 @@ extern unsigned char curblank;
 extern int frametot;
 extern uint8_t GUIOn, GUIOn2;
 
-void UpdateVFrame();
 void NTSCFilterInit();
 void NTSCFilterDraw(int SurfaceX, int SurfaceY, int pitch, unsigned char *buffer);
 char CheckOGLMode();

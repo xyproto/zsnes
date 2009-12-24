@@ -22,6 +22,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "../cfg.h"
 #include "../gblhdr.h"
 #include "../asm_call.h"
+#include "../link.h"
 #include <stdint.h>
 
 // FUNCTIONS
@@ -46,7 +47,6 @@ extern unsigned char curblank;
 extern uint8_t GUIRESIZE[];
 
 void gl_clearwin();
-void UpdateVFrame();
 
 void gl_scanlines();
 

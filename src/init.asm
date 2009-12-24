@@ -362,7 +362,7 @@ NEWSYM ReadInputDevice
     mov byte[TurboCB],02h
 .noturbo30
     ; Read External Devices (Joystick, PPort, etc.)
-    call JoyRead
+    ccallv JoyRead
     ; Process Data
     mov dword[JoyAOrig],0
     mov dword[JoyBOrig],0

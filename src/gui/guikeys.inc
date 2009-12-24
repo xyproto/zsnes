@@ -311,9 +311,7 @@ NEWSYM GUIgetcurrentinput
 
   cmp byte[JoyPad1Move],0
   je near .nopad1
-  push edx
-  call JoyRead
-  pop edx
+  ccallv JoyRead
   GUIqcheckkeys2 [pl1upk],0
   GUIqcheckkeys2 [pl1downk],1
   GUIqcheckkeys2 [pl1leftk],2
@@ -2870,10 +2868,8 @@ NEWSYM GUIWaitForKey
 .again3
   mov edx,10
 .again4
-  push edx
   ccallv delay, 1000
-  call JoyRead
-  pop edx
+  ccallv JoyRead
   xor ebx,ebx
   mov ecx,256+128+64
 .b2
@@ -2885,7 +2881,7 @@ NEWSYM GUIWaitForKey
   dec edx
   jnz near .again4
 .again
-  call JoyRead
+  ccallv JoyRead
   xor ebx,ebx
   mov ecx,256+128+64
 .b

@@ -270,3 +270,9 @@ void UpdateDevices(void)
 {
 	asm_call(DosUpdateDevices);
 }
+
+
+void JoyRead(void)
+{
+	asm_call(DOSJoyRead);
+}

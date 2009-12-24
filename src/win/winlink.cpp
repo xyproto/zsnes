@@ -2113,7 +2113,7 @@ extern "C"
   volatile int SPCSize;
   volatile int buffer_ptr;
 
-  void UpdateVFrame()
+  void UpdateVFrame(void)
   {
     static uint32_t LastUsedPos = 0;
 

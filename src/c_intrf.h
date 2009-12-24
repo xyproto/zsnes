@@ -56,4 +56,6 @@ void vidpastecopyscr(void);
 // One-time input device init
 void UpdateDevices(void);
 
+void JoyRead(void);
+
 #endif

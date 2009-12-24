@@ -264,3 +264,9 @@ void vidpastecopyscr(void)
 
 
 void UpdateDevices(void) { /* Stub please fix */ }
+
+
+void JoyRead(void)
+{
+	UpdateVFrame();
+}

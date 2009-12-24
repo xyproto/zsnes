@@ -1421,7 +1421,7 @@ void sem_sleep_die()
   }
 }
 
-void UpdateVFrame()
+void UpdateVFrame(void)
 {
   //Quick fix for GUI CPU usage
   if (GUIOn || GUIOn2 || EMUPause)

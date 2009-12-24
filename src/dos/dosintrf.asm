@@ -21,7 +21,7 @@
 
 %include "macros.mac"
 
-EXTSYM DOSJoyRead,pl1contrl,pl2contrl,pl3contrl,pl4contrl
+EXTSYM pl1contrl,pl2contrl,pl3contrl,pl4contrl
 EXTSYM pl5contrl
 EXTSYM pl1upk,pl1downk,pl1leftk,pl1rightk,pl1startk,pl1selk
 EXTSYM pl1Ak,pl1Bk,pl1Xk,pl1Yk,pl1Lk,pl1Rk
@@ -201,10 +201,6 @@ SECTION .text
 ;   assignments in the configuration file, then convert it to ZSNES'
 ;   numerical corresponding key format after reading from it. And then
 ;   convert it back when writing to it back.
-
-NEWSYM JoyRead
-        call DOSJoyRead
-        ret
 
 %macro SetDefaultKey2 13
   mov dword[%1upk],%4    ; Up

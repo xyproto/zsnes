@@ -85,6 +85,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 //     only be done if the requested packet is within the past 64 packets.
 //   In-game chat will be moved to a separate packet in TCP/IP
 
+#include "../link.h"
+
 #ifdef __UNIXSDL__
 #include "gblhdr.h"
 #define closesocket(A) close(A)
@@ -864,7 +866,6 @@ void PacketResend()
    }
 }
 
-extern void UpdateVFrame();
 
 int SendData(int dsize,unsigned char *dptr)
 {

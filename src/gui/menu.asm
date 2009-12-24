@@ -237,7 +237,7 @@ NEWSYM showmenu
     call copyvid
     pop eax
 
-    call JoyRead
+    ccallv JoyRead
     ccall Check_Key
     or al,al
     jz .nextkey

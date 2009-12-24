@@ -26,7 +26,7 @@ u4 guipresstest(void)
 	GUIOuttextShadowed(80, 120, "(ESC TO CLEAR)");
 	vidpastecopyscr();
 	u1* key;
-	do asm_call(JoyRead); while (!(key = GetAnyPressedKey()));
+	do JoyRead(); while (!(key = GetAnyPressedKey()));
 	for (u1* i = pressed; i != endof(pressed); ++i)
 		if (*i != 0) *i = 2;
 	while (Check_Key() != 0) Get_Key();
@@ -46,10 +46,10 @@ void guipresstestb(void)
 	GUIOuttextShadowed(70, 115, "(ESC TO SKIP)");
 	vidpastecopyscr();
 	delay(8192);
-	do asm_call(JoyRead); while (GetAnyPressedKey());
+	do JoyRead(); while (GetAnyPressedKey());
 
 	u1* key;
-	do asm_call(JoyRead); while (!(key = GetAnyPressedKey()));
+	do JoyRead(); while (!(key = GetAnyPressedKey()));
 	u4 const key_id = key - pressed;
 	while (Check_Key() != 0) Get_Key();
 	if (key_id != 1 && key_id != 0x3B)

@@ -381,7 +381,7 @@ static void guipostvideoloop(void)
 		// This is to make all ports not register space bar from being pressed earlier
 		pressed[0x2C] = 0;
 
-		asm_call(JoyRead);
+		JoyRead();
 	}
 	while (pressed[0x39] == 0);
 	GUIpclicked = 1;
@@ -1360,7 +1360,7 @@ static void guifirsttimemsg(void)
 		GUIUnBuffer();
 		DisplayBoxes();
 		DisplayMenu();
-		asm_call(JoyRead);
+		JoyRead();
 	}
 	while (pressed[0x39] == 0);
 }
@@ -1388,7 +1388,7 @@ static void horizonfixmsg(void)
 		GUIUnBuffer();
 		DisplayBoxes();
 		DisplayMenu();
-		asm_call(JoyRead);
+		JoyRead();
 	}
 	while (pressed[0x39] == 0);
 }
@@ -1654,7 +1654,7 @@ void guimencodermsg(void)
 		GUIUnBuffer();
 		DisplayBoxes();
 		DisplayMenu();
-		asm_call(JoyRead);
+		JoyRead();
 	}
 	while (pressed[0x39] == 0);
 }
@@ -1674,7 +1674,7 @@ void guilamemsg(void)
 		GUIUnBuffer();
 		DisplayBoxes();
 		DisplayMenu();
-		asm_call(JoyRead);
+		JoyRead();
 	}
 	while (pressed[0x39] == 0);
 }
@@ -1719,7 +1719,7 @@ void guiprevideo(void)
 	pressed[0x2C] = 0; // XXX redundant
 	for (;;)
 	{
-		asm_call(JoyRead);
+		JoyRead();
 
 		u1* const key = GetAnyPressedKey();
 		if (key)
@@ -1748,7 +1748,7 @@ void guicheaterror(void)
 		GUIOuttextShadowed(80, 124, "GOLD FINGER CODE.");
 		GUIOuttextShadowed(80, 134, "PRESS ANY KEY.");
 		vidpastecopyscr();
-		asm_call(JoyRead);
+		JoyRead();
 
 		if (GetAnyPressedKey())       break;
 		if (GetMouseButtons() & 0x01) break;
