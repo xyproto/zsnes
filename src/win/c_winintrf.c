@@ -289,3 +289,12 @@ u4 Init_Mouse(void)
 {
 	return 1;
 }
+
+
+u4 Get_MouseData(void)
+{
+	u4 const x       = GetMouseX();
+	u4 const y       = GetMouseY();
+	u4 const buttons = GetMouseButton();
+	return y << 24 | x << 16 | buttons;
+}

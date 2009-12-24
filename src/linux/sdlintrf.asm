@@ -22,8 +22,7 @@
 %include "macros.mac"
 
 EXTSYM sem_sleep,Start60HZ,JoyRead
-EXTSYM GetMouseX
-EXTSYM GetMouseY,GetMouseMoveX,GetMouseMoveY,GetMouseButton,T36HZEnabled
+EXTSYM GetMouseMoveX,GetMouseMoveY,GetMouseButton,T36HZEnabled
 EXTSYM MouseButton,Start36HZ,CheckTimers
 EXTSYM pl1upk,pl1downk,pl1leftk,pl1rightk,pl1startk,pl1selk
 EXTSYM pl1Ak,pl1Bk,pl1Xk,pl1Yk,pl1Lk,pl1Rk
@@ -248,29 +247,10 @@ SECTION .text
 ; ****************************
 
 SECTION .data
-NEWSYM WMouseX, dd 0
-NEWSYM WMouseY, dd 0
 NEWSYM WMouseMoveX, dd 0
 NEWSYM WMouseMoveY, dd 0
-NEWSYM WMouseButton, dd 0
 
 SECTION .text
-NEWSYM Get_MouseData         ; Returns both pressed and coordinates
-    ; bx : bit 0 = left button, bit 1 = right button
-    ; cx = Mouse X Position, dx = Mouse Y Position
-    push eax
-    ccall GetMouseX
-    mov [WMouseX],eax
-    ccall GetMouseY
-    mov [WMouseY],eax
-    ccall GetMouseButton
-    mov [WMouseButton],eax
-    pop eax
-    mov cx,[WMouseX]
-    mov dx,[WMouseY]
-    mov bx,[WMouseButton]
-    ret
-
 NEWSYM Set_MouseXMax
 ; Stub please fix
     ret

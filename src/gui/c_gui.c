@@ -1687,11 +1687,10 @@ static u4 GetMouseButtons(void)
 {
 	if (MouseDis == 1) return 0;
 
-	u4 ebx;
-	asm("call *%1" : "=b" (ebx) : "r" (Get_MouseData) : "cc", "memory", "ecx", "edx");
+	u4 buttons = Get_MouseData() & 0x0000FFFFU;
 	if (lhguimouse == 1)
-		asm("call *%1" : "+b" (ebx) : "r" (SwapMouseButtons) : "cc");
-	return ebx;
+		asm("call *%1" : "+b" (buttons) : "r" (SwapMouseButtons) : "cc");
+	return buttons;
 }
 
 

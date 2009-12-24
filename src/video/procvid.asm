@@ -116,7 +116,15 @@ NEWSYM processmouse1
     jmp .mousestuff
 .nomultimouse
 %endif
-    call Get_MouseData
+    push  eax
+    ccall Get_MouseData
+    movzx ebx, ax
+    mov   ecx, eax
+    mov   edx, eax
+    shr   ecx, 16
+    shr   edx, 24
+    movzx ecx, cl
+    pop   eax
     cmp byte[mouse1lh],1
     jne .notlefthanded2
     call SwapMouseButtons
@@ -167,7 +175,15 @@ NEWSYM processmouse2
     jmp .mousestuff
 .nomultimouse
 %endif
-    call Get_MouseData
+    push  eax
+    ccall Get_MouseData
+    movzx ebx, ax
+    mov   ecx, eax
+    mov   edx, eax
+    shr   ecx, 16
+    shr   edx, 24
+    movzx ecx, cl
+    pop   eax
 .mousestuff
     cmp byte[mouse2lh],1
     jne .notlefthanded

@@ -98,7 +98,15 @@ NEWSYM ProcessMouse
   mov [LastHoldEnable],al
 .noholdnecessary
   mov byte[MouseMoveOkay],0
-  call Get_MouseData
+  push  eax
+  ccall Get_MouseData
+  movzx ebx, ax
+  mov   ecx, eax
+  mov   edx, eax
+  shr   ecx, 16
+  shr   edx, 24
+  movzx ecx, cl
+  pop   eax
   cmp byte[lhguimouse],1
   jne .notlefthanded
   call SwapMouseButtons
@@ -115,7 +123,15 @@ NEWSYM ProcessMouse
 .noprevhold
   cmp byte[mousewrap],1
   je near ProcessMouseWrap
-  call Get_MouseData
+  push  eax
+  ccall Get_MouseData
+  movzx ebx, ax
+  mov   ecx, eax
+  mov   edx, eax
+  shr   ecx, 16
+  shr   edx, 24
+  movzx ecx, cl
+  pop   eax
   cmp byte[lhguimouse],1
   jne .notlefthanded2
   call SwapMouseButtons

@@ -23,7 +23,7 @@
 
 EXTSYM JoyRead
 EXTSYM soundon,DSPDisable,Start60HZ
-EXTSYM GetMouseX,GetMouseY,GetMouseMoveX
+EXTSYM GetMouseMoveX
 EXTSYM GetMouseMoveY,GetMouseButton,SetMouseMinX,SetMouseMaxX,SetMouseMinY
 EXTSYM SetMouseMaxY,SetMouseX,SetMouseY,T36HZEnabled,MouseButton,Start36HZ
 EXTSYM BufferSizeW,BufferSizeB,ProcessSoundBuffer,CheckTimers
@@ -268,29 +268,10 @@ SECTION .text
 ; ****************************
 
 SECTION .data
-NEWSYM WMouseX, dd 0
-NEWSYM WMouseY, dd 0
 NEWSYM WMouseMoveX, dd 0
 NEWSYM WMouseMoveY, dd 0
-NEWSYM WMouseButton, dd 0
 
 SECTION .text
-
-NEWSYM Get_MouseData         ; Returns both pressed and coordinates
-    ; bx : bit 0 = left button, bit 1 = right button
-    ; cx = Mouse X Position, dx = Mouse Y Position
-    push eax
-    ccall GetMouseX
-    mov [WMouseX],eax
-    ccall GetMouseY
-    mov [WMouseY],eax
-    ccall GetMouseButton
-    mov [WMouseButton],eax
-    pop eax
-    mov cx,[WMouseX]
-    mov dx,[WMouseY]
-    mov bx,[WMouseButton]
-    ret
 
 NEWSYM Set_MouseXMax    ; Sets the X boundaries (ecx = left, edx = right)
     ccallv SetMouseMinX, ecx

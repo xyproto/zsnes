@@ -294,3 +294,15 @@ u4 Init_Mouse(void)
 	asm volatile("int $0x33" :: "a" (0x04), "c" (0), "d" (0));
 	return 1;
 }
+
+
+u4 Get_MouseData(void)
+{
+	// bx: bit 0 = left button, bit 1 = right button
+	// cx = Mouse X Position, dx = Mouse Y Position
+	u2 buttons;
+	u2 x;
+	u2 y;
+	asm volatile("int $0x33" : "=b" (buttons), "=c" (x), "=d" (y) : "a" (0x03) : "cc");
+	return y << 24 | x << 16 | buttons;
+}

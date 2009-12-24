@@ -61,4 +61,7 @@ void JoyRead(void);
 // return non-zero if successful
 u4 Init_Mouse(void);
 
+// Returns both pressed and coordinates: YYYYYYYYXXXXXXXXBBBBBBBBBBBBBBBB
+u4 Get_MouseData(void);
+
 #endif

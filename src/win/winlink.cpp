@@ -2920,7 +2920,7 @@ extern "C"
     }
   }
 
-  int GetMouseX()
+  s4 GetMouseX(void)
   {
     InputRead();
     MouseX += WinMouseMoveX / MouseSensitivity;
@@ -2969,7 +2969,7 @@ extern "C"
     return((int)MouseX);
   }
 
-  int GetMouseY()
+  s4 GetMouseY(void)
   {
     MouseY += WinMouseMoveY / MouseSensitivity;
 
@@ -3028,7 +3028,7 @@ extern "C"
     return((int)WinMouseMoveY / MouseSensitivity);
   }
 
-  int GetMouseButton()
+  s4 GetMouseButton(void)
   {
     if (MouseButton == (lhguimouse ? 2 : 1))
     {

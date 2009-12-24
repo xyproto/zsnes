@@ -3,7 +3,6 @@
 
 #include "types.h"
 
-extern void Get_MouseData();
 extern void Get_MousePositionDisplacement();
 
 extern u1 GUIWFVID[];

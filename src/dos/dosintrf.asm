@@ -464,13 +464,6 @@ SECTION .text
 ; Mouse Stuff
 ; ****************************
 
-NEWSYM Get_MouseData         ; Returns both pressed and coordinates
-    mov eax,03h
-    int 33h
-    ; bx : bit 0 = left button, bit 1 = right button
-    ; cx = Mouse X Position, dx = Mouse Y Position
-    ret
-
 NEWSYM Set_MouseXMax    ; Sets the X boundaries (ecx = left, edx = right)
     mov eax,07h
     int 33h

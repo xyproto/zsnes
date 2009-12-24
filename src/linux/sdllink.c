@@ -1511,11 +1511,11 @@ void UnloadSDL()
   SDL_Quit();
 }
 
-int GetMouseX()
+s4 GetMouseX(void)
 {
   return ((int)MouseX);
 }
-int GetMouseY()
+s4 GetMouseY(void)
 {
   return ((int)MouseY);
 }
@@ -1536,7 +1536,8 @@ int GetMouseMoveY()
 {
   return (MouseMove2Y);
 }
-int GetMouseButton()
+
+s4 GetMouseButton(void)
 {
   return ((int)MouseButton);
 }

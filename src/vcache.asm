@@ -321,7 +321,15 @@ NEWSYM cachevideo
     jne .noclick
     cmp byte[device2],0
     jne .noclick
-    call Get_MouseData
+    push  eax
+    ccall Get_MouseData
+    movzx ebx, ax
+    mov   ecx, eax
+    mov   edx, eax
+    shr   ecx, 16
+    shr   edx, 24
+    movzx ecx, cl
+    pop   eax
     cmp byte[lhguimouse],1
     jne .notlefthanded
     call SwapMouseButtons
