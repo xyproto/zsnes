@@ -130,7 +130,12 @@ NEWSYM processmouse1
     call SwapMouseButtons
 .notlefthanded2
     mov [mousebuttons],bx
-    call Get_MousePositionDisplacement
+    push  eax
+    ccall Get_MousePositionDisplacement
+    mov   edx, eax
+    movsx ecx, ax
+    sar   edx, 16
+    pop   eax
 .mousestuff
     mov word[mousexpos],0
     cmp cx,0
@@ -220,7 +225,12 @@ NEWSYM processmouse2
     jmp .mousestuff2
 .nomultimouse2
 %endif
-    call Get_MousePositionDisplacement
+    push  eax
+    ccall Get_MousePositionDisplacement
+    mov   edx, eax
+    movsx ecx, ax
+    sar   edx, 16
+    pop   eax
 .mousestuff2
     cmp byte[device2],3
     je .le

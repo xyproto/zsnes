@@ -464,12 +464,6 @@ SECTION .text
 ; Mouse Stuff
 ; ****************************
 
-NEWSYM Get_MousePositionDisplacement
-    ; returns x,y displacement in pixel in cx,dx
-    mov eax,0Bh
-    int 33h
-    ret
-
 NEWSYM MouseWindow
     ret
 

@@ -23,8 +23,7 @@
 
 EXTSYM JoyRead
 EXTSYM soundon,DSPDisable,Start60HZ
-EXTSYM GetMouseMoveX
-EXTSYM GetMouseMoveY,GetMouseButton
+EXTSYM GetMouseButton
 EXTSYM T36HZEnabled,MouseButton,Start36HZ
 EXTSYM BufferSizeW,BufferSizeB,ProcessSoundBuffer,CheckTimers
 EXTSYM FrameSemaphore
@@ -261,29 +260,11 @@ NEWSYM ScanCodeListing
         db 'P2B','P2Y','P2S','P2T','P2U','P2D','P2L','P2R'
         db 'P2A','P2X','P2L','P2R','   ','   ','   ','   '
 
-SECTION .text
-
 ; ****************************
 ; Mouse Stuff
 ; ****************************
 
-SECTION .data
-NEWSYM WMouseMoveX, dd 0
-NEWSYM WMouseMoveY, dd 0
-
 SECTION .text
-
-NEWSYM Get_MousePositionDisplacement
-    ; returns x,y displacement in pixel in cx,dx
-    push eax
-    ccall GetMouseMoveX
-    mov [WMouseMoveX],eax
-    ccall GetMouseMoveY
-    mov [WMouseMoveY],eax
-    pop eax
-    mov cx,[WMouseMoveX]
-    mov dx,[WMouseMoveY]
-    ret
 
 NEWSYM MouseWindow
     or byte[MouseButton],2

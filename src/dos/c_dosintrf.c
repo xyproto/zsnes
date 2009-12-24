@@ -324,3 +324,12 @@ void Set_MousePosition(u4 const x, u4 const y)
 {
 	asm volatile("int $0x33" :: "a" (0x04), "c" (x), "d" (y));
 }
+
+
+u4 Get_MousePositionDisplacement(void)
+{
+	u2 x;
+	u2 y;
+	asm volatile("int $0x33" : "=c" (x), "=d" (y) : "a" (0x0B));
+	return y << 16 | x;
+}

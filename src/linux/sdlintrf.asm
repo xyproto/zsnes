@@ -22,7 +22,7 @@
 %include "macros.mac"
 
 EXTSYM sem_sleep,Start60HZ,JoyRead
-EXTSYM GetMouseMoveX,GetMouseMoveY,GetMouseButton,T36HZEnabled
+EXTSYM GetMouseButton,T36HZEnabled
 EXTSYM MouseButton,Start36HZ,CheckTimers
 EXTSYM pl1upk,pl1downk,pl1leftk,pl1rightk,pl1startk,pl1selk
 EXTSYM pl1Ak,pl1Bk,pl1Xk,pl1Yk,pl1Lk,pl1Rk
@@ -240,30 +240,11 @@ NEWSYM ScanCodeListing
         db 'P2A','P2X','P2L','P2R','   ','   ','   ','   '
 %endif
 
-SECTION .text
-
 ; ****************************
 ; Mouse Stuff
 ; ****************************
 
-SECTION .data
-NEWSYM WMouseMoveX, dd 0
-NEWSYM WMouseMoveY, dd 0
-
 SECTION .text
-NEWSYM Get_MousePositionDisplacement
-    ; returns x,y displacement in pixel in cx,dx
-    push eax
-    ccall GetMouseMoveX
-    mov [WMouseMoveX],eax
-    ccall GetMouseMoveY
-    mov [WMouseMoveY],eax
-    pop eax
-    mov cx,[WMouseMoveX]
-    mov dx,[WMouseMoveY]
-    ret
-
-
 NEWSYM MouseWindow
     or byte[MouseButton],2
     mov byte[T36HZEnabled],1

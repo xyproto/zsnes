@@ -31,11 +31,9 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <stdbool.h>
 #endif
 
-#include "asm_call.h"
 #include "cfg.h"
 #include "c_init.h"
 #include "input.h"
-#include "intrf.h"
 #include "mmlib/mm.h"
 #include "c_intrf.h"
 #include "ui.h"
@@ -715,7 +713,7 @@ static void cycleinputs(bool input1, bool input2)
   cycleinputdevicemsg();
   Msgptr = snesdevicemsg;
   MessageOn = MsgCount;
-  asm_call(Get_MousePositionDisplacement);
+  Get_MousePositionDisplacement();
 }
 
 #define PRESSED(key) ((pressed[(key)] == 1) && (pressed[(key)]=2))

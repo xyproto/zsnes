@@ -3,8 +3,6 @@
 
 #include "types.h"
 
-extern void Get_MousePositionDisplacement();
-
 extern u1 GUIWFVID[];
 extern u4 NumVideoModes;
 

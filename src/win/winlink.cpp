@@ -3018,12 +3018,12 @@ extern "C"
     return((int)MouseY);
   }
 
-  int GetMouseMoveX()
+  s4 GetMouseMoveX(void)
   {
     return((int)WinMouseMoveX / MouseSensitivity);
   }
 
-  int GetMouseMoveY()
+  s4 GetMouseMoveY(void)
   {
     return((int)WinMouseMoveY / MouseSensitivity);
   }

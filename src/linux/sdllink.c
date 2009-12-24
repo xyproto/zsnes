@@ -1520,7 +1520,7 @@ s4 GetMouseY(void)
   return ((int)MouseY);
 }
 
-int GetMouseMoveX()
+s4 GetMouseMoveX(void)
 {
   //   InputRead();
   //SDL_GetRelativeMouseState(&MouseMove2X, NULL);
@@ -1532,7 +1532,7 @@ int GetMouseMoveX()
   return (MouseMove2X);
 }
 
-int GetMouseMoveY()
+s4 GetMouseMoveY(void)
 {
   return (MouseMove2Y);
 }

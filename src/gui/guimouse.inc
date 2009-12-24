@@ -151,7 +151,12 @@ NEWSYM ProcessMouse
   jmp ProcessMouseButtons
 
 ProcessMouseWrap:
-  call Get_MousePositionDisplacement
+  push  eax
+  ccall Get_MousePositionDisplacement
+  mov   edx, eax
+  movsx ecx, ax
+  sar   edx, 16
+  pop   eax
   add word[GUImouseposx],cx
 .again
   test word[GUImouseposx],8000h

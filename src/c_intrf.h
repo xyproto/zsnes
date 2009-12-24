@@ -73,4 +73,7 @@ void Set_MouseYMax(u4 min, u4 max);
 // Sets Mouse Position
 void Set_MousePosition(u4 x, u4 y);
 
+// returns x,y displacement in pixel: YYYYYYYYYYYYYYYYXXXXXXXXXXXXXXXX
+u4 Get_MousePositionDisplacement(void);
+
 #endif

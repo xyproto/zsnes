@@ -296,3 +296,11 @@ void Set_MouseXMax(u4 const min, u4 const max) { (void)min; (void)max; /* Stub p
 void Set_MouseYMax(u4 const min, u4 const max) { (void)min; (void)max; /* Stub please fix */ }
 
 void Set_MousePosition(u4 const x, u4 const y) { (void)x; (void)y; /* Stub please fix */ }
+
+
+u4 Get_MousePositionDisplacement(void)
+{
+	u4 const x = GetMouseMoveX();
+	u4 const y = GetMouseMoveY();
+	return y << 16 | x;
+}
