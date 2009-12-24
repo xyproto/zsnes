@@ -45,6 +45,8 @@ void GUIDeInit(void);
 // Returns 1 in videotroub if trouble occurs
 void initvideo(void);
 
+void deinitvideo(void);
+
 // One-time input device init
 void UpdateDevices(void);
 

@@ -423,7 +423,7 @@ reexecuteb2:
     ret
 
 NEWSYM endprog
-    call deinitvideo
+    ccallv deinitvideo
     ccallv MovieStop
 
     ccallv DosExit
@@ -431,7 +431,7 @@ NEWSYM endprog
 
 NEWSYM interror
     stim
-    call deinitvideo
+    ccallv deinitvideo
     ccallv PrintStr, .nohand
     ccallv DosExit
     ret

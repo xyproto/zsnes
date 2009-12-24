@@ -75,7 +75,6 @@ unsigned char *vcache8b;            // 8-bit video cache
 unsigned char romispal;             // 0 = NTSC, 1 = PAL
 u1            newgfx16b;
 
-unsigned char previdmode;           // previous video mode
 u1            cbitmode;
 
 unsigned char opexec268     = 162;  // # of opcodes/scanline in 2.68Mhz mode

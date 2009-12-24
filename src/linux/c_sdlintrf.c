@@ -212,4 +212,7 @@ void initvideo(void)
 }
 
 
+void deinitvideo(void) {}
+
+
 void UpdateDevices(void) { /* Stub please fix */ }

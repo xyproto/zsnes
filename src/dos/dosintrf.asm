@@ -21,7 +21,6 @@
 
 %include "macros.mac"
 
-EXTSYM previdmode
 EXTSYM DosDrawScreen,cvidmode,vidbuffer,GUICPC,DosDrawScreenB
 EXTSYM DOSJoyRead,pl1contrl,pl2contrl,pl3contrl,pl4contrl
 EXTSYM pl5contrl
@@ -126,13 +125,6 @@ NEWSYM saveselectpal
     out dx,al
     xor al,al
     out dx,al
-    ret
-
-; ** init video mode functions **
-NEWSYM deinitvideo
-    mov al,[previdmode]
-    mov ah,0
-    int 10h
     ret
 
 ; ** copy video mode functions **

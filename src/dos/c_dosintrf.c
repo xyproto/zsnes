@@ -13,6 +13,8 @@ extern unsigned short _djstat_flags;
 
 u4 ZSNESBase;
 
+static u1 previdmode; // previous video mode
+
 
 // Find Selector - DOS only
 static u2 findselec(u2 const segment)
@@ -234,6 +236,13 @@ void GUIDeInit(void)
 void initvideo(void)
 {
 	asm_call(dosinitvideo);
+}
+
+
+void deinitvideo(void)
+{
+	u4 const eax = 0x00U << 8 | previdmode;
+	asm volatile("int $0x10" :: "a" (eax));
 }
 
 

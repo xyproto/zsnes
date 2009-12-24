@@ -57,10 +57,6 @@ SECTION .text
 ; Video Stuff
 ; ****************************
 
-; ** init video mode functions **
-NEWSYM deinitvideo
-    ret
-
 ; ** copy video mode functions **
 SECTION .data
 NEWSYM converta, dd 0
