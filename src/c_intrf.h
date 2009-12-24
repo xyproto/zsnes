@@ -58,6 +58,9 @@ void UpdateDevices(void);
 
 void JoyRead(void);
 
+// Sets keys according to input device selected
+void SetInputDevice(u1 device, u1 player);
+
 // return non-zero if successful
 u4 Init_Mouse(void);
 

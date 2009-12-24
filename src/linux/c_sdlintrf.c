@@ -8,6 +8,7 @@
 #include "../cpu/dspproc.h"
 #include "../cpu/execute.h"
 #include "../gui/gui.h"
+#include "../input.h"
 #include "../intrf.h"
 #include "../link.h"
 #include "../macros.h"
@@ -271,6 +272,53 @@ void JoyRead(void)
 {
 	UpdateVFrame();
 }
+
+
+#define SetDefaultKey2(player, k) \
+  player##upk    = k[ 2], /* Up     */ \
+  player##downk  = k[ 3], /* Down   */ \
+  player##leftk  = k[ 4], /* Left   */ \
+  player##rightk = k[ 5], /* Right  */ \
+  player##startk = k[ 1], /* Start  */ \
+  player##selk   = k[ 0], /* Select */ \
+  player##Ak     = k[ 7], /* A      */ \
+  player##Bk     = k[10], /* B      */ \
+  player##Xk     = k[ 6], /* X      */ \
+  player##Yk     = k[ 9], /* Y      */ \
+  player##Lk     = k[ 8], /* L      */ \
+  player##Rk     = k[11]  /* R      */
+
+void SetInputDevice(u1 const device, u1 const player)
+{
+	// Sets keys according to input device selected
+	static u1 const keys[][12] =
+	{
+		{  0,  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0 },
+#ifdef __UNIXSDL__
+		{ 54, 28,  90,  96,  92,  94,  31,  45,  32,  30,  44,  46 },
+		{ 56, 29,  36,  50,  49,  51,  98,  89,  91,  99,  95,  97 }
+#else
+		{ 54, 28, 200, 208, 203, 205,  31,  45,  32,  30,  44,  46 },
+		{ 56, 29,  36,  50,  49,  51, 210, 199, 201, 211, 207, 209 }
+#endif
+	};
+
+	u1 const* const k =
+		device == 0 ? keys[0] :
+		player != 1 ? keys[1] :
+		keys[2];
+
+	switch (player)
+	{
+		case 0: SetDefaultKey2(pl1, k); break;
+		case 1: SetDefaultKey2(pl2, k); break;
+		case 2: SetDefaultKey2(pl3, k); break;
+		case 3: SetDefaultKey2(pl4, k); break;
+		case 4: SetDefaultKey2(pl5, k); break;
+	}
+}
+
+#undef SetDefaultKey2
 
 
 /*****************************

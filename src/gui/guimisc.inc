@@ -364,10 +364,10 @@ SetDevice:
 ;.notdos
     mov dword[CalibXmin],0
     mov eax,[GUIInputRefP+eax*4]
-    mov bl,[GUIcurrentinputcursloc]
+    movzx ebx, byte [GUIcurrentinputcursloc]
     mov [eax],bl
-    mov bh,[cplayernum]
-    call SetInputDevice
+    movzx eax, byte [cplayernum]
+    ccallv SetInputDevice, ebx, eax
     ccallv UpdateDevices
     jmp .procmtap
 %ifdef __MSDOS__

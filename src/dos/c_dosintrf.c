@@ -6,6 +6,7 @@
 #include "../cpu/execute.h"
 #include "../gui/c_gui.h"
 #include "../gui/gui.h"
+#include "../input.h"
 #include "../ui.h"
 #include "dosintrf.h"
 #include "sound.h"
@@ -276,6 +277,92 @@ void JoyRead(void)
 {
 	asm_call(DOSJoyRead);
 }
+
+
+#define SetDefaultKey2(player, k) \
+  player##upk    = k[ 2], /* Up     */ \
+  player##downk  = k[ 3], /* Down   */ \
+  player##leftk  = k[ 4], /* Left   */ \
+  player##rightk = k[ 5], /* Right  */ \
+  player##startk = k[ 1], /* Start  */ \
+  player##selk   = k[ 0], /* Select */ \
+  player##Ak     = k[ 7], /* A      */ \
+  player##Bk     = k[10], /* B      */ \
+  player##Xk     = k[ 6], /* X      */ \
+  player##Yk     = k[ 9], /* Y      */ \
+  player##Lk     = k[ 8], /* L      */ \
+  player##Rk     = k[11]  /* R      */
+
+void SetInputDevice(u1 const device, u1 const player)
+{
+	static u2 const keys[][12] =
+	{
+		{     0,             0,             0,             0,             0,             0,             0,             0,             0,             0,             0,             0         },
+		{    54,            28,            72,            80,            75,            77,            31,            45,            32,            30,            44,            46         },
+		{    56,            29,            36,            50,            49,            51,            82,            71,            73,            83,            79,            81         },
+		{     0,             0,         0x0CC,         0x0CD,         0x0CE,         0x0CF,             0,             0,             0,         0x082,         0x083,             0         },
+		{     0,             0,         0x0E8,         0x0E9,         0x0EA,         0x0EB,             0,             0,             0,         0x084,         0x085,             0         },
+		{     0,             0,         0x0CC,         0x0CD,         0x0CE,         0x0CF,         0x084,         0x085,             0,         0x082,         0x083,             0         },
+		{     0,             0,         0x0CC,         0x0CD,         0x0CE,         0x0CF,         0x084,         0x085,         0x086,         0x082,         0x083,         0x087         },
+		{ 0x081,         0x080,         0x0CC,         0x0CD,         0x0CE,         0x0CF,         0x084,         0x085,         0x087,         0x082,         0x083,         0x086         },
+		{ 0x0C9,         0x0C8,         0x0D4,         0x0D5,         0x0D6,         0x0D7,         0x08C,         0x089,         0x08E,         0x08B,         0x088,         0x08F         },
+		{ 0x0C9 + 8,     0x0C8 + 8,     0x0D4 + 8,     0x0D5 + 8,     0x0D6 + 8,     0x0D7 + 8,     0x08C + 8,     0x089 + 8,     0x08E + 8,     0x08B + 8,     0x088 + 8,     0x08F + 8     },
+		{ 0x0C9 + 8 * 2, 0x0C8 + 8 * 2, 0x0D4 + 8 * 2, 0x0D5 + 8 * 2, 0x0D6 + 8 * 2, 0x0D7 + 8 * 2, 0x08C + 8 * 2, 0x089 + 8 * 2, 0x08E + 8 * 2, 0x08B + 8 * 2, 0x088 + 8 * 2, 0x08F + 8 * 2 },
+		{ 0x0C9 + 8 * 3, 0x0C8 + 8 * 3, 0x0D4 + 8 * 3, 0x0D5 + 8 * 3, 0x0D6 + 8 * 3, 0x0D7 + 8 * 3, 0x08C + 8 * 3, 0x089 + 8 * 3, 0x08E + 8 * 3, 0x08B + 8 * 3, 0x088 + 8 * 3, 0x08F + 8 * 3 },
+		{ 0x0CA,         0x0CB,         0x0F0,         0x0F1,         0x0F2,         0x0F3,         0x0A9,         0x0AB,         0x0AC,         0x0A8,         0x0AA,         0x0AE         },
+		{ 0x0CA + 8,     0x0CB + 8,     0x0F0 + 4,     0x0F1 + 4,     0x0F2 + 4,     0x0F3 + 4,     0x0A9 + 8,     0x0AB + 8,     0x0AC + 8,     0x0A8 + 8,     0x0AA + 8,     0x0AE + 8     },
+		{ 0x182,         0x183,         0x184,         0x185,         0x186,         0x187,         0x189,         0x188,         0x18A,         0x181,         0x180,         0x18B         },
+		{ 0x192,         0x193,         0x194,         0x195,         0x196,         0x197,         0x199,         0x198,         0x19A,         0x191,         0x190,         0x19B         },
+		{ 0x1A2,         0x1A3,         0x1A4,         0x1A5,         0x1A6,         0x1A7,         0x1A9,         0x1A8,         0x1AA,         0x1A1,         0x1A0,         0x1AB         },
+		{ 0x1B2,         0x1B3,         0x1B4,         0x1B5,         0x1B6,         0x1B7,         0x1B9,         0x1B8,         0x1BA,         0x1B1,         0x1B0,         0x1BB         },
+		{ 0x1C2,         0x1C3,         0x1C4,         0x1C5,         0x1C6,         0x1C7,         0x1C9,         0x1C8,         0x1CA,         0x1C1,         0x1C0,         0x1CB         }
+	};
+
+	// Sets keys according to input device selected
+	u2 const* k;
+	if (device == 0)
+	{
+		k = keys[0];
+	}
+	else if (device == 1)
+	{
+		switch (player)
+		{
+			case 0:  k = keys[1]; break;
+			case 1:  k = keys[2]; break;
+			default: return;
+		}
+	}
+	else if (device == 2)
+	{
+		u4 n = 0;
+		if (pl1contrl == 2) ++n;
+		if (pl2contrl == 2) ++n;
+		if (pl3contrl == 2) ++n;
+		if (pl4contrl == 2) ++n;
+		if (pl5contrl == 2) ++n;
+		k = n < 2 ? keys[3] : keys[4];
+	}
+	else if (device < 17)
+	{
+		k = keys[device - 3 + 5];
+	}
+	else
+	{
+		return;
+	}
+
+	switch (player)
+	{
+		case 0: SetDefaultKey2(pl1, k); break;
+		case 1: SetDefaultKey2(pl2, k); break;
+		case 2: SetDefaultKey2(pl3, k); break;
+		case 3: SetDefaultKey2(pl4, k); break;
+		case 4: SetDefaultKey2(pl5, k); break;
+	}
+}
+
+#undef SetDefaultKey2
 
 
 /*****************************
