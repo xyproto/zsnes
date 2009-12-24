@@ -58,18 +58,12 @@ NEWSYM PrintChar
     pop eax
     ret
 
-NEWSYM Output_Text       ; Output character (ah=02h) or string (ah=09h)
-    ; This function usually displays an error message on-screen
+NEWSYM Output_Text       ; Output character (ah=02h)
     cmp ah,02h
     je .char
-    cmp ah,09h
-    je .string
     ret
 .char
     int 21h     ; print dl
-    ret
-.string
-    callv PrintStr, edx       ; print edx
     ret
 
 ; Delay for CX/65536 of a second

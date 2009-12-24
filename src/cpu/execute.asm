@@ -32,7 +32,7 @@ EXTSYM DeInitPostGame,spcPCRam,xp,xpb,xpc,tablead
 EXTSYM tableadc,SA1UpdateDPage,Makemode7Table,nextmenupopup,MovieProcessing
 EXTSYM SFXEnable,wramdata,cycpbl,cycpblt,irqon,spcon
 EXTSYM multchange,romispal,scrndis,sprlefttot,sprleftpr,processsprites
-EXTSYM cachesprites,opcjmptab,CheatOn,Output_Text,Check_Key,Get_Key,
+EXTSYM cachesprites,opcjmptab,CheatOn,PrintStr,Check_Key,Get_Key,
 EXTSYM INTEnab,JoyCRead,NMIEnab,NumCheats,CurrentExecSA1,ReadInputDevice
 EXTSYM StartDrawNewGfx,VIRQLoc,cachevideo,cfield,cheatdata,curblank,curnmi
 EXTSYM curypos,cycpl,doirqnext,drawline,exechdma,hdmadelay,intrset,newengen
@@ -432,9 +432,7 @@ NEWSYM endprog
 NEWSYM interror
     stim
     call deinitvideo
-    mov edx,.nohand         ;use extended
-    mov ah,9                ;DOS- API
-    call Output_Text                 ;to print a string
+    ccallv PrintStr, .nohand
     ccallv DosExit
     ret
 

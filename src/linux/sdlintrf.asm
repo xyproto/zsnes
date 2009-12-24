@@ -21,7 +21,7 @@
 
 %include "macros.mac"
 
-EXTSYM sem_sleep,putchar,Start60HZ,pressed,vidbuffer,PrintStr
+EXTSYM sem_sleep,putchar,Start60HZ,pressed,vidbuffer
 EXTSYM Stop60HZ,initwinvideo,GUICPC,drawscreenwin
 EXTSYM ConvertToAFormat,HalfTrans,UnusedBit,UnusedBitXor
 EXTSYM ngrposng,nggposng,ngbposng,HalfTransB,HalfTransC,UpdateVFrame,GetMouseX
@@ -53,21 +53,13 @@ NEWSYM CurKeyReadPos, dd 0
 NEWSYM KeyBuffer, times 16 dd 0
 SECTION .text
 
-NEWSYM Output_Text       ; Output character (ah=02h) or string (ah=09h)
+NEWSYM Output_Text       ; Output character (ah=02h)
     pushad
-
-    ; This function usually displays an error message on-screen
     cmp ah,02h
     je .char
-    cmp ah,09h
-    je .string
     ret
 .char
     ccallv putchar, edx
-    popad
-    ret
-.string
-    ccallv PrintStr, edx       ; print edx
     popad
     ret
 

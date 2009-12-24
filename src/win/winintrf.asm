@@ -42,7 +42,6 @@ EXTSYM pl4upk,pl4downk,pl4leftk,pl4rightk,pl4startk,pl4selk
 EXTSYM pl4Ak,pl4Bk,pl4Xk,pl4Yk,pl4Lk,pl4Rk
 EXTSYM pl5upk,pl5downk,pl5leftk,pl5rightk,pl5startk,pl5selk
 EXTSYM pl5Ak,pl5Bk,pl5Xk,pl5Yk,pl5Lk,pl5Rk
-EXTSYM PrintStr
 
 ; NOTE: For timing, Game60hzcall should be called at 50hz or 60hz (depending
 ;   on romispal) after a call to InitPreGame and before DeInitPostGame are
@@ -55,22 +54,13 @@ NEWSYM CurKeyReadPos, dd 0
 NEWSYM KeyBuffer, times 16 dd 0
 SECTION .text
 
-NEWSYM Output_Text       ; Output character (ah=02h) or string (ah=09h)
+NEWSYM Output_Text       ; Output character (ah=02h)
     pushad
-
-    ; This function usually displays an error message on-screen
     cmp ah,02h
     je .char
-    cmp ah,09h
-    je .string
-    ret
 .char
     ccallv putchar, edx
 ;    int 21h     ; print dl
-    popad
-    ret
-.string
-    ccallv PrintStr, edx       ; print edx
     popad
     ret
 
