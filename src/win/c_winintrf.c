@@ -16,6 +16,7 @@
 #include "../vcache.h"
 #include "../video/c_2xsaiw.h"
 #include "../video/newgfx16.h"
+#include "c_winintrf.h"
 
 #ifndef __RELEASE__
 #	include "winlink.h"
@@ -349,6 +350,19 @@ void StartSound(void)
 {
 	Start60HZ();
 	JoyRead();
+}
+
+
+void SoundProcess(void)
+{
+	if (soundon != 0 && DSPDisable != 1)
+	{
+		BufferSizeB = 256; // Size
+		BufferSizeW = 512;
+		asm_call(ProcessSoundBuffer);
+		// DSPBuffer should contain the processed buffer in the specified size
+		// You will have to convert/clip it to 16-bit for actual sound process
+	}
 }
 
 

@@ -21,8 +21,6 @@
 
 %include "macros.mac"
 
-EXTSYM soundon,DSPDisable
-EXTSYM BufferSizeW,BufferSizeB,ProcessSoundBuffer
 EXTSYM pl1upk,pl1downk,pl1leftk,pl1rightk,pl1startk,pl1selk
 EXTSYM pl1Ak,pl1Bk,pl1Xk,pl1Yk,pl1Lk,pl1Rk
 EXTSYM pl2upk,pl2downk,pl2leftk,pl2rightk,pl2startk,pl2selk
@@ -255,28 +253,6 @@ NEWSYM ScanCodeListing
         db 'PPA','PPX','PPL','PPR','   ','   ','   ','   '
         db 'P2B','P2Y','P2S','P2T','P2U','P2D','P2L','P2R'
         db 'P2A','P2X','P2L','P2R','   ','   ','   ','   '
-
-; ****************************
-; Sound Stuff
-; ****************************
-
-SECTION .text
-NEWSYM SoundProcess     ; This function is called ~60 times/s at full speed
-    cmp byte[soundon],0
-    je .nosound
-    cmp byte[DSPDisable],1
-    je .nosound
-    mov eax,256         ; Size
-    mov [BufferSizeB],eax
-    add eax,eax
-    mov [BufferSizeW],eax
-    pushad
-    call ProcessSoundBuffer
-    popad
-    ; DSPBuffer should contain the processed buffer in the specified size
-    ; You will have to convert/clip it to 16-bit for actual sound process
-.nosound
-    ret
 
 %macro SetDefaultKey2 13
   mov dword[%1upk],%4    ; Up

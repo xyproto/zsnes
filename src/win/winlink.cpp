@@ -2065,7 +2065,6 @@ extern "C"
   }
 
   extern unsigned int vidbuffer;
-  extern void SoundProcess();
   extern int DSPBuffer;
   int *DSPBuffer1;
   DWORD ScreenPtr;
@@ -2159,7 +2158,7 @@ extern "C"
 
     while (DataNeeded > 0)
     {
-      asm_call(SoundProcess);
+      SoundProcess();
 
       DSPBuffer1 = (int*)&DSPBuffer;
       buffer_ptr = (int)&Buffer[0];
