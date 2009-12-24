@@ -32,6 +32,12 @@ void SystemInit(void)
 }
 
 
+void PrintChar(char const c)
+{
+	putchar(c);
+}
+
+
 void PrintStr(char const* const s)
 {
 	fputs(s, stdout);

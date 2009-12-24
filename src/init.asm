@@ -22,7 +22,7 @@
 %include "macros.mac"
 
 EXTSYM MessageOn,Msgptr,MsgCount,newgfx16b,ssautosw,GUIDelayB,pl12s34
-EXTSYM Output_Text,Turbo30hz,CombinDataLocl
+EXTSYM PrintChar,Turbo30hz,CombinDataLocl
 EXTSYM JoyRead,pressed,mousebuttons,mousexdir,mouseydir,mousexpos,mouseypos
 EXTSYM pl1selk,pl1startk,pl1upk,pl1downk,pl1leftk,pl1rightk,pl1Xk
 EXTSYM pl1Ak,pl1Lk,pl1Yk,pl1Bk,pl1Rk,pl1Xtk,pl1Ytk,pl1Atk,pl1Btk,pl1Ltk,pl1Rtk
@@ -682,10 +682,7 @@ NEWSYM printhex
     and bx,0F000h
     shr bx,12
     mov dl,[.hexdat+ebx]
-    push ax
-    mov ah,02h
-    call Output_Text
-    pop ax
+    ccallv PrintChar, edx
     shl ax,4
     dec ecx
     jnz .loopa

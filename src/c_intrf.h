@@ -9,6 +9,9 @@ void StartUp(void);
  * commandline data, obtain current directory (One time initialization) */
 void SystemInit(void);
 
+// print character
+void PrintChar(char);
+
 // Print ASCIIZ string
 void PrintStr(char const*);
 

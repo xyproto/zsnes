@@ -70,15 +70,21 @@ void SystemInit(void)
 }
 
 
+void PrintChar(char const c)
+{
+	u4 res;
+	asm volatile("int $0x21" : "=a" (res) : "a" (0x0200), "d" (c) : "cc");
+	(void)res;
+}
+
+
 void PrintStr(char const* s)
 {
 	for (;;)
 	{
 		char const c = *s++;
 		if (c == '\0') break;
-		u4 res;
-		asm volatile("int $0x21" : "=a" (res) : "a" (0x0200), "d" (c) : "cc");
-		(void)res;
+		PrintChar(c);
 	}
 }
 

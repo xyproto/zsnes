@@ -50,22 +50,6 @@ SECTION .data
 NEWSYM dssel, dw 0
 SECTION .text
 
-NEWSYM PrintChar
-    ; print character at dl, push all modified registers
-    push eax
-    mov ah,02h
-    int 21h
-    pop eax
-    ret
-
-NEWSYM Output_Text       ; Output character (ah=02h)
-    cmp ah,02h
-    je .char
-    ret
-.char
-    int 21h     ; print dl
-    ret
-
 ; Delay for CX/65536 of a second
 
 NEWSYM delay

@@ -47,7 +47,7 @@ printnum:
 .loopb
     pop edx              ; get number back from stack
     add dl,30h          ; adjust to ASCII value
-    call PrintChar
+    ccallv PrintChar, edx
     dec cl
     jnz .loopb
     pop cx
