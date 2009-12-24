@@ -452,8 +452,3 @@ NEWSYM ScanCodeListing
         db 'P4A','P4X','P4L','P4R','   ','   ','   ','   '
         db 'P5B','P5Y','P5S','P5T','P5U','P5D','P5L','P5R'
         db 'P5A','P5X','P5L','P5R','   ','   ','   ','   '
-
-SECTION .text
-NEWSYM Check60hz
-    ; Call the timer update function here
-    ret

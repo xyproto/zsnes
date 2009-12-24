@@ -16,6 +16,7 @@
 #include "../video/c_2xsaiw.h"
 #include "../video/newgfx16.h"
 #include "sdlintrf.h"
+#include "sdllink.h"
 
 #ifdef __OPENGL__
 #	include "../video/procvidc.h"
@@ -326,4 +327,11 @@ void StartSound(void)
 {
 	Start60HZ();
 	JoyRead();
+}
+
+
+void Check60hz(void)
+{
+	CheckTimers();
+	sem_sleep();
 }

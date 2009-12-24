@@ -1330,7 +1330,7 @@ void initwinvideo(void)
   }
 }
 
-void CheckTimers()
+void CheckTimers(void)
 {
   //QueryPerformanceCounter((int64_t*)&end2);
   end2 = sem_GetTicks();
@@ -1366,7 +1366,7 @@ void CheckTimers()
   }
 }
 
-void sem_sleep()
+void sem_sleep(void)
 {
   end = update_ticks_pc - (sem_GetTicks() - start) - .2f;
   if (end > 0.f)

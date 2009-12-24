@@ -270,9 +270,7 @@ NEWSYM cachevideo
     cmp word[t1cc],ax
     jae .skipt1ccc
 .noskip
-    push eax
-    call Check60hz
-    pop eax
+    ccallv Check60hz
     cmp word[t1cc],ax
     jb .noskip
 .skipt1ccc

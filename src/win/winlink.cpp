@@ -2072,7 +2072,7 @@ extern "C"
   DWORD ScreenPtr2;
   void Game60hzcall();
 
-  void CheckTimers()
+  void CheckTimers(void)
   {
     // Lame fix for GUI using 100% CPU
     if (GUIOn || GUIOn2 || EMUPause)
@@ -3088,7 +3088,7 @@ extern "C"
     MouseY = (float)Y;
   }
 
-  void FrameSemaphore()
+  void FrameSemaphore(void)
   {
     if (T60HZEnabled)
     {

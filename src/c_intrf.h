@@ -82,4 +82,7 @@ void StopSound(void);
 
 void StartSound(void);
 
+// Call the timer update function here
+void Check60hz(void);
+
 #endif

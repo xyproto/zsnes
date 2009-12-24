@@ -350,3 +350,10 @@ void StartSound(void)
 	Start60HZ();
 	JoyRead();
 }
+
+
+void Check60hz(void)
+{
+	CheckTimers();
+	FrameSemaphore();
+}

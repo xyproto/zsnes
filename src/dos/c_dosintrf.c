@@ -340,3 +340,6 @@ void MouseWindow(void) {}
 
 void StopSound(void) {}
 void StartSound(void) {}
+
+
+void Check60hz(void) {}

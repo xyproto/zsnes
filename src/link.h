@@ -9,6 +9,7 @@ s4   GetMouseMoveX(void);
 s4   GetMouseMoveY(void);
 s4   GetMouseX(void);
 s4   GetMouseY(void);
+void CheckTimers(void);
 void Start36HZ(void);
 void Start60HZ(void);
 void Stop36HZ(void);

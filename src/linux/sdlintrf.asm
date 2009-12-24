@@ -21,8 +21,6 @@
 
 %include "macros.mac"
 
-EXTSYM sem_sleep
-EXTSYM CheckTimers
 EXTSYM pl1upk,pl1downk,pl1leftk,pl1rightk,pl1startk,pl1selk
 EXTSYM pl1Ak,pl1Bk,pl1Xk,pl1Yk,pl1Lk,pl1Rk
 EXTSYM pl2upk,pl2downk,pl2leftk,pl2rightk,pl2startk,pl2selk
@@ -238,13 +236,6 @@ NEWSYM ScanCodeListing
         db 'P2B','P2Y','P2S','P2T','P2U','P2D','P2L','P2R'  ; 2B0h
         db 'P2A','P2X','P2L','P2R','   ','   ','   ','   '
 %endif
-
-SECTION .text
-NEWSYM Check60hz
-    ; Call the timer update function here
-    ccallv CheckTimers
-    ccallv sem_sleep
-    ret
 
 %macro SetDefaultKey2 13
   mov dword[%1upk],%4    ; Up

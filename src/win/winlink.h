@@ -77,6 +77,7 @@ extern "C" {
   extern RECT rc1;
 
   void Clear2xSaIBuffer();
+  void FrameSemaphore(void);
   void clear_display();
   char CheckTVRatioReq();
   void KeepTVRatio();

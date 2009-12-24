@@ -22,8 +22,7 @@
 %include "macros.mac"
 
 EXTSYM soundon,DSPDisable
-EXTSYM BufferSizeW,BufferSizeB,ProcessSoundBuffer,CheckTimers
-EXTSYM FrameSemaphore
+EXTSYM BufferSizeW,BufferSizeB,ProcessSoundBuffer
 EXTSYM pl1upk,pl1downk,pl1leftk,pl1rightk,pl1startk,pl1selk
 EXTSYM pl1Ak,pl1Bk,pl1Xk,pl1Yk,pl1Lk,pl1Rk
 EXTSYM pl2upk,pl2downk,pl2leftk,pl2rightk,pl2startk,pl2selk
@@ -277,12 +276,6 @@ NEWSYM SoundProcess     ; This function is called ~60 times/s at full speed
     ; DSPBuffer should contain the processed buffer in the specified size
     ; You will have to convert/clip it to 16-bit for actual sound process
 .nosound
-    ret
-
-NEWSYM Check60hz
-    ; Call the timer update function here
-    ccallv CheckTimers
-    ccallv FrameSemaphore
     ret
 
 %macro SetDefaultKey2 13
