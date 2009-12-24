@@ -374,10 +374,6 @@ NEWSYM MouseWindow
     and byte[MouseButton],0FDh
     ret
 
-NEWSYM GUIInit
-    ccallv Start36HZ
-    ret
-
 NEWSYM GUIDeInit
     ccallv Stop36HZ
     ret

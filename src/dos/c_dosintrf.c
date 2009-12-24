@@ -4,6 +4,7 @@
 #include "../cfg.h"
 #include "../cpu/dspproc.h"
 #include "../cpu/execute.h"
+#include "../gui/c_gui.h"
 #include "../ui.h"
 #include "dosintrf.h"
 #include "sound.h"
@@ -161,10 +162,17 @@ static void set_handler(u1 const irq, u2 const segment, IRQHandler* const handle
 }
 
 
-void SetupPreGame(void)
+static u2 get_cs(void)
 {
 	u2 cs;
 	asm("movw %%cs, %0" : "=mr" (cs));
+	return cs;
+}
+
+
+void SetupPreGame(void)
+{
+	u2 const cs = get_cs();
 
 	// set new handler
 	if (soundon != 0 && DSPDisable != 1)
@@ -201,6 +209,17 @@ void DeInitPostGame(void)
 		asm_call(DeInitSPC);
 		set_handler(SBInt, oldhandSBs, oldhandSBo);
 	}
+}
+
+
+void GUIInit(void)
+{
+	get_handler(0x09, &GUIoldhand9s, &GUIoldhand9o);
+	get_handler(0x08, &GUIoldhand8s, &GUIoldhand8o);
+	u2 const cs = get_cs();
+	set_handler(0x09,  cs,            GUIhandler9h);
+	set_handler(0x08,  cs,            GUIhandler8h);
+	GUIinit36_4hz();
 }
 
 

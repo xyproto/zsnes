@@ -22,9 +22,8 @@
 %include "macros.mac"
 
 EXTSYM previdmode
-EXTSYM GUIinit36_4hz
-EXTSYM GUIoldhand9s,GUIoldhand9o,GUIoldhand8s,GUIoldhand8o,GUIhandler9h
-EXTSYM GUIhandler8h,GUIinit18_2hz
+EXTSYM GUIoldhand9s,GUIoldhand9o,GUIoldhand8s,GUIoldhand8o
+EXTSYM GUIinit18_2hz
 EXTSYM DosDrawScreen,cvidmode,vidbuffer,GUICPC,DosDrawScreenB
 EXTSYM DOSJoyRead,pl1contrl,pl2contrl,pl3contrl,pl4contrl
 EXTSYM pl5contrl
@@ -47,30 +46,6 @@ EXTSYM pl5Ak,pl5Bk,pl5Xk,pl5Yk,pl5Lk,pl5Rk
 SECTION .data
 NEWSYM dssel, dw 0
 SECTION .text
-
-NEWSYM GUIInit
-    mov ax,204h
-    mov bl,09h
-    int 31h
-    mov [GUIoldhand9s],cx
-    mov [GUIoldhand9o],edx
-    mov ax,204h
-    mov bl,08h
-    int 31h
-    mov [GUIoldhand8s],cx
-    mov [GUIoldhand8o],edx
-    mov ax,205h
-    mov bl,09h
-    mov cx,cs
-    mov edx,GUIhandler9h
-    int 31h
-    mov ax,205h
-    mov bl,08h
-    mov cx,cs
-    mov edx,GUIhandler8h
-    int 31h
-    ccallv GUIinit36_4hz
-    ret
 
 NEWSYM GUIDeInit
     mov cx,[GUIoldhand9s]

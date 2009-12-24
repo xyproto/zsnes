@@ -1505,7 +1505,7 @@ void StartGUI(void)
 
 	if (AutoState != 0 && romloadskip == 0) SaveSecondState();
 
-	asm_call(GUIInit);
+	GUIInit();
 	memset(pressed, 0, 256); // XXX probably + 128 + 64 missing, maybe even completely redundant (has been zeroed above)
 
 	if (GUIwinptr != 0)

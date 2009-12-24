@@ -38,6 +38,8 @@ void SetupPreGame(void);
 // Called after game is ended
 void DeInitPostGame(void);
 
+void GUIInit(void);
+
 // Returns 1 in videotroub if trouble occurs
 void initvideo(void);
 

@@ -1062,7 +1062,7 @@ void Stop60HZ(void)
   T60HZEnabled = 0;
 }
 
-void Start36HZ()
+void Start36HZ(void)
 {
   update_ticks_pc2 = UPDATE_TICKS_UDP;
   update_ticks_pc = UPDATE_TICKS_GUI;

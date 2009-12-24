@@ -1639,7 +1639,7 @@ extern "C"
     ShutdownSemaphore();
   }
 
-  void Start36HZ()
+  void Start36HZ(void)
   {
     update_ticks_pc2 = UPDATE_TICKS_UDP * freq / 1000.0;
     update_ticks_pc = UPDATE_TICKS_GUI * freq / 1000.0;

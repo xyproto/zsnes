@@ -97,6 +97,12 @@ void DeInitPostGame(void)
 }
 
 
+void GUIInit(void)
+{
+	Start36HZ();
+}
+
+
 static void InitializeGfxStuff(void)
 {
 	static u1 const BitPosR  = 11;
