@@ -241,11 +241,11 @@ NEWSYM showmenu
     ccall Check_Key
     or al,al
     jz .nextkey
-    call Get_Key
+    ccall Get_Key
     cmp al,0
     jne near .processextend
 
-    call Get_Key
+    ccall Get_Key
     cmp al,72
     jne .noup
     cmp dword[menucloc],0
@@ -879,7 +879,7 @@ breakatsignb:
     ccall Check_Key
     test al,0FFh
     jz .skipa
-    call Get_Key
+    ccall Get_Key
     cmp al,27
     je .skipc
 .skipa

@@ -9,10 +9,10 @@
 #include "../cpu/execute.h"
 #include "../intrf.h"
 #include "../link.h"
+#include "../macros.h"
 #include "../ui.h"
 #include "../vcache.h"
 #include "../video/c_2xsaiw.h"
-#include "winintrf.h"
 
 #ifndef __RELEASE__
 #	include "winlink.h"
@@ -40,13 +40,30 @@ void PrintStr(char const* const s)
 
 char WaitForKey(void)
 {
-	return wfkey = getch();
+	return getch();
 }
 
 
 u1 Check_Key(void)
 {
 	return CurKeyPos != CurKeyReadPos ? 0xFF : 0;
+}
+
+
+char Get_Key(void)
+{
+	u4 const pos = CurKeyReadPos;
+	while (CurKeyPos == pos) {} // XXX busy waiting
+	if (KeyBuffer[pos] & 0x100)
+	{
+		KeyBuffer[pos] -= 0x100;
+		return 0;
+	}
+	else
+	{
+		CurKeyReadPos = (pos + 1) % lengthof(KeyBuffer);
+		return KeyBuffer[pos];
+	}
 }
 
 

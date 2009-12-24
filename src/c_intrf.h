@@ -18,6 +18,10 @@ char WaitForKey(void);
 // returns 0 if there are no keys in the keyboard buffer, 0xFF otherwise
 u1 Check_Key(void);
 
+/* Wait if there are no keys in buffer, then return key.  For extended keys,
+ * return a 0, then the extended key afterwards. */
+char Get_Key(void);
+
 // Executes before starting/continuing a game
 void InitPreGame(void);
 

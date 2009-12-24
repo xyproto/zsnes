@@ -1754,8 +1754,7 @@ void guicheaterror(void)
 		if (GetAnyPressedKey())       break;
 		if (GetMouseButtons() & 0x01) break;
 	}
-	while (Check_Key() != 0)
-		asm_call(Get_Key);
+	while (Check_Key() != 0) Get_Key();
 	GUIcurrentcheatwin = 1;
 	GUIpclicked        = 1;
 }

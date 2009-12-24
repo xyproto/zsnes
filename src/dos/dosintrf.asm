@@ -58,15 +58,6 @@ NEWSYM PrintChar
     pop eax
     ret
 
-NEWSYM Get_Key
-;    mov al,[prres]
-;    ret
-    ; wait if there are no keys in buffer, then return key in al
-    ; for extended keys, return a 0, then the extended key afterwards
-    mov ah,07h
-    int 21h
-    ret
-
 NEWSYM Get_Memfree
     mov ax,0500h
     mov edi,edx

@@ -53,26 +53,6 @@ NEWSYM CurKeyReadPos, dd 0
 NEWSYM KeyBuffer, times 16 dd 0
 
 SECTION .text
-NEWSYM Get_Key
-    ; wait if there are no keys in buffer, then return key in al
-    ; for extended keys, return a 0, then the extended key afterwards
-    xor eax,eax
-.nokey
-;    call JoyRead
-    mov al,[CurKeyReadPos]
-    cmp al,[CurKeyPos]
-    je .nokey
-    test word[KeyBuffer+eax*4],100h
-    jnz .upper
-    mov al,[KeyBuffer+eax*4]
-    inc dword[CurKeyReadPos]
-    and dword[CurKeyReadPos],0Fh
-    ret
-.upper
-    sub word[KeyBuffer+eax*4],100h
-    xor al,al
-    ret
-
 NEWSYM Get_Memfree
     mov eax,02000000h
     ret

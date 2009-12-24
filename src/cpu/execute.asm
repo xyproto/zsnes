@@ -333,7 +333,7 @@ reexecuteb2:
     cmp al,0
     je .nokeys
 .yeskeys
-    call Get_Key
+    ccall Get_Key
     ccall Check_Key
     cmp al,0
     jne .yeskeys

@@ -99,6 +99,14 @@ u1 Check_Key(void)
 }
 
 
+char Get_Key(void)
+{
+	char c;
+	asm volatile("int $0x21" : "=a" (c) : "a" (0x0700) : "cc");
+	return c;
+}
+
+
 static void get_handler(u1 const irq, u2* const segment, IRQHandler** const handler)
 {
 	u4 failed;

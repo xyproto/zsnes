@@ -21,8 +21,7 @@
 
 %include "macros.mac"
 
-EXTSYM GUIkeydelay2
-EXTSYM soundon,DSPDisable,Start60HZ,pressed,putchar,getch
+EXTSYM soundon,DSPDisable,Start60HZ,pressed,putchar
 EXTSYM vidbuffer,Stop60HZ
 EXTSYM GUICPC
 EXTSYM drawscreenwin,ConvertToAFormat,HalfTrans,UnusedBitXor,UnusedBit
@@ -51,160 +50,9 @@ EXTSYM PrintStr
 ;   before GUIDeInit.
 
 SECTION .data
-NEWSYM wfkey, db 0
-
-SECTION .text
-RefreshKeybBuffer:
-    call JoyRead
-    mov ebx,[HoldKey]
-    cmp byte[pressed+ebx],0
-    jne .holding
-    mov dword[HoldKey],0
-.holding
-    xor eax,eax
-    xor ebx,ebx
-.loop
-    cmp byte[PKeyBuf+eax],0
-    jne .not1
-    cmp byte[pressed+eax],0
-    je .not1
-    mov byte[PKeyBuf+eax],1
-    mov ebx,eax
-.not1
-    cmp byte[pressed+eax],0
-    jne .not0
-    mov byte[PKeyBuf+eax],0
-.not0
-    inc eax
-    cmp eax,100h
-    jne .loop
-    or ebx,ebx
-    jz .notpressed
-    mov [HoldKey],ebx
-    mov byte[GUIkeydelay2],14
-    call .processkey
-.notpressed
-    ; Execute the following at 36hz
-    cmp dword[HoldKey],0
-    je .noholder
-    cmp byte[GUIkeydelay2],0
-    jne .noholder
-    mov byte[GUIkeydelay2],3
-    call .processkey
-.noholder
-    ret
-.processkey
-    mov ebx,[HoldKey]
-    cmp ebx,0A8h
-    jb .skipdecval
-    add ebx,-80h
-.skipdecval
-    cmp ebx,58h
-    jae .none
-    movzx eax,byte[Keybtail]
-    inc al
-    and al,0Fh
-    cmp al,[Keybhead]
-    je .none
-    mov al,[Keybtail]
-    mov cl,[KeyConvTable+ebx]
-    cmp byte[pressed+2Ah],0
-    jne .shift
-    cmp byte[pressed+36h],0
-    je .noshift
-.shift
-    mov cl,[KeyConvTableS+ebx]
-.noshift
-    mov [HoldKeyBuf+eax],cl
-    inc al
-    and al,0Fh
-    mov [Keybtail],al
-.none
-    ret
-
-SECTION .data
-Keybhead db 0
-Keybtail db 0
-HoldKey dd 0
-HoldKeyBuf times 16 db 0
-PKeyBuf times 100h db 0
 NEWSYM CurKeyPos, dd 0
 NEWSYM CurKeyReadPos, dd 0
 NEWSYM KeyBuffer, times 16 dd 0
-
-SECTION .text
-
-NEWSYM Get_Key
-    ; wait if there are no keys in buffer, then return key in al
-    ; for extended keys, return a 0, then the extended key afterwards
-    xor eax,eax
-.nokey
-;    call JoyRead
-    mov al,[CurKeyReadPos]
-    cmp al,[CurKeyPos]
-    je .nokey
-    test word[KeyBuffer+eax*4],100h
-    jnz .upper
-    mov al,[KeyBuffer+eax*4]
-    inc dword[CurKeyReadPos]
-    and dword[CurKeyReadPos],0Fh
-    ret
-.upper
-    add word[KeyBuffer+eax*4],-100h
-    xor al,al
-    ret
-
-    pushad
-.nonewkey
-    call RefreshKeybBuffer
-    movzx eax,byte[Keybhead]
-    cmp al,[Keybtail]
-    je .nonewkey
-    mov bl,[HoldKeyBuf+eax]
-    test bl,80h
-    jz .notupperkey
-    xor bl,bl
-    add byte[HoldKeyBuf+eax],-80h
-    jmp .yesupperkey
-.notupperkey
-    inc al
-    and al,0Fh
-    mov [Keybhead],al
-.yesupperkey
-;    call getch
-    mov [wfkey],bl
-    popad
-    mov al,[wfkey]
-    ;mov ah,7
-    ;int 21h
-    ; return key in al
-    ret
-
-SECTION .data
-KeyConvTable:
-   db 255,27 ,'1','2','3','4','5','6'  ; 00h
-   db '7','8','9','0','-','=',8  ,9
-   db 'Q','W','E','R','T','Y','U','I'  ; 10h
-   db 'O','P','[',']',13 ,255,'A','S'
-   db 'D','F','G','H','J','K','L',';'  ; 20h
-   db 39 ,'`',255,'\','Z','X','C','V'
-   db 'B','N','M',',','.','/',255,'*'  ; 30h
-   db 255,32 ,255,255,255,255,255,255
-   db 255,255,255,255,255,255,255,255  ; 40h
-   db 200,201,202,203,204,205,206,207
-   db 208,209,210,211,255,255,255,255  ; 50h
-KeyConvTableS:
-   db 255,27 ,'!','@','#','$','%','^'  ; 00h
-   db '&','*','(',')','_','+',8  ,9
-   db 'Q','W','E','R','T','Y','U','I'  ; 10h
-   db 'O','P','{','}',13 ,255,'A','S'
-   db 'D','F','G','H','J','K','L',':'  ; 20h
-   db '"','~',255,'|','Z','X','C','V'
-   db 'B','N','M','<','>','?',255,'*'  ; 30h
-   db 255,32 ,255,255,255,255,255,255
-   db 255,255,255,255,255,255,255,255  ; 40h
-   db 200,201,202,203,204,205,206,207
-   db 208,209,210,211,255,255,255,255  ; 50h
 SECTION .text
 
 NEWSYM Get_Memfree

@@ -256,7 +256,7 @@ NEWSYM GUIgetcurrentinput
   ccall Check_Key
   or al,al
   jz .nokeyd
-  call Get_Key
+  ccall Get_Key
   cmp cl,0
   jne .nostorekey
   mov ch,al
@@ -264,7 +264,7 @@ NEWSYM GUIgetcurrentinput
   xor cl,cl
   cmp al,0
   jne .noextkey
-  call Get_Key
+  ccall Get_Key
   mov [UseExtKey],al
   xor al,al
   mov ch,al
@@ -2902,7 +2902,7 @@ NEWSYM GUIWaitForKey
   ccall Check_Key
   or al,al
   jz .nokey
-  call Get_Key
+  ccall Get_Key
   jmp .again2
 .nokey
   cmp byte[MouseDis],1
