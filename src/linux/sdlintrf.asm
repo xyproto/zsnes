@@ -247,11 +247,6 @@ SECTION .text
 ; Mouse Stuff
 ; ****************************
 
-NEWSYM Init_Mouse
-    ; return non-zero if successful
-    mov eax,01h
-    ret
-
 SECTION .data
 NEWSYM WMouseX, dd 0
 NEWSYM WMouseY, dd 0

@@ -278,3 +278,14 @@ void JoyRead(void)
 {
 	UpdateVFrame();
 }
+
+
+/*****************************
+ * Mouse Stuff
+ *****************************/
+
+
+u4 Init_Mouse(void)
+{
+	return 1;
+}

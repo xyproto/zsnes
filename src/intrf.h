@@ -3,7 +3,6 @@
 
 #include "types.h"
 
-extern u4   Init_Mouse(void);
 extern void Get_MouseData();
 extern void Get_MousePositionDisplacement();
 

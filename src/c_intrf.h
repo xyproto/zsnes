@@ -58,4 +58,7 @@ void UpdateDevices(void);
 
 void JoyRead(void);
 
+// return non-zero if successful
+u4 Init_Mouse(void);
+
 #endif

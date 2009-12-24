@@ -1466,12 +1466,7 @@ void StartGUI(void)
 	if (MouseInitOkay != 1)
 	{
 		MouseInitOkay = 1;
-		if (MouseDis != 1)
-		{
-			u4 res;
-			asm volatile("call %P1" : "=a" (res) : "X" (Init_Mouse) : "cc", "memory", "edx", "ecx");
-			if (res == 0) MouseDis = 1;
-		}
+		if (MouseDis != 1 && Init_Mouse() == 0) MouseDis = 1;
 	}
 
 	if (pressed[KeyQuickLoad] & 1)

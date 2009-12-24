@@ -464,32 +464,6 @@ SECTION .text
 ; Mouse Stuff
 ; ****************************
 
-NEWSYM Init_Mouse
-    ; return non-zero if successful
-    mov eax,00h
-    int 33h
-    cmp ax,0
-    je .nomouse
-    mov eax,07h
-    mov ecx,0
-    mov edx,255
-    int 33h
-    mov eax,08h
-    mov ecx,0
-    mov edx,223
-    int 33h
-    mov eax,0Fh
-    mov ecx,8
-    mov edx,8
-    int 33h
-    mov eax,04h
-    mov ecx,0
-    mov edx,0
-    int 33h
-    mov ax,1
-.nomouse
-    ret
-
 NEWSYM Get_MouseData         ; Returns both pressed and coordinates
     mov eax,03h
     int 33h
