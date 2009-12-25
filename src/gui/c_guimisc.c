@@ -17,10 +17,16 @@
 #include "c_guimouse.h"
 #include "gui.h"
 #include "guikeys.h"
+#include "guimisc.h"
 #include "guimouse.h"
+#include "guiwindp.h"
+
+#ifdef __MSDOS__
+#	include "../dos/joy.h"
+#endif
 
 
-void CalibrateDispA(void)
+static void CalibrateDispA(void)
 {
 	memset(pressed, 0, 256); // XXX Probably should be sizeof(pressed)
 	GUIUnBuffer();
@@ -35,7 +41,7 @@ void CalibrateDispA(void)
 }
 
 
-void CalibrateDispB(void)
+static void CalibrateDispB(void)
 {
 	memset(pressed, 0, 256); // XXX Probably should be sizeof(pressed)
 	GUIUnBuffer();
@@ -125,6 +131,57 @@ void SetAllKeys(void)
 }
 
 #undef ConfigureKey2
+
+
+void CalibrateDev1(void)
+{
+	u4 const player = cplayernum;
+	u1 const contrl = *GUIInputRefP[player];
+	GUICBHold = 0;
+
+	u4 port = 0x201;
+#ifdef __MSDOS__
+	switch (player)
+	{
+		case 0: if (pl1p209 != 0) goto port209; break;
+		case 1: if (pl2p209 != 0) goto port209; break;
+		case 2: if (pl3p209 != 0) goto port209; break;
+		case 3: if (pl4p209 != 0) goto port209; break;
+		case 4: if (pl5p209 != 0) goto port209; break;
+port209:
+			port = 0x209;
+			break;
+	}
+#endif
+
+	if (contrl <= 1 || 6 <= contrl) return;
+	void (* const f)() = contrl != 18 && contrl != 5 ? GetCoords : GetCoords3;
+	asm volatile("call *%0" :: "r" (f), "d" (port) : "cc", "memory", "eax", "ecx"); // XXX asm_call
+	u4 joybcx = JoyX;
+	u4 joybcy = JoyY;
+	CalibrateDispA();
+	asm volatile("call *%0" :: "r" (f), "d" (port) : "cc", "memory", "eax", "ecx"); // XXX asm_call
+	u4 joyblx = JoyX;
+	u4 joybly = JoyY;
+	CalibrateDispB();
+	asm volatile("call *%0" :: "r" (f), "d" (port) : "cc", "memory", "eax", "ecx"); // XXX asm_call
+#ifdef __MSDOS__
+	if (port == 0x209)
+	{
+		CalibXmin209 = JoyMinX209 = (joybcx + joyblx) / 2;
+		CalibYmin209 = JoyMinY209 = (joybcy + joybly) / 2;
+		CalibXmax209 = JoyMaxX209 = (joybcx + JoyX)   / 2;
+		CalibYmax209 = JoyMaxY209 = (joybcy + JoyY)   / 2;
+	}
+	else
+#endif
+	{
+		CalibXmin    = JoyMinX    = (joybcx + joyblx) / 2;
+		CalibYmin    = JoyMinY    = (joybcy + joybly) / 2;
+		CalibXmax    = JoyMaxX    = (joybcx + JoyX)   / 2;
+		CalibYmax    = JoyMaxY    = (joybcy + JoyY)   / 2;
+	}
+}
 
 
 void GUIDoReset(void)

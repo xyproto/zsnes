@@ -133,7 +133,7 @@ EXTSYM CBBuffer,CBLength,PasteClipBoard,ctrlptr,PauseFocusChange
 EXTSYM dssel,SetInputDevice209,initvideo2,Force8b,SBHDMA,vibracard,smallscreenon,ExitFromGUI
 EXTSYM pl1p209,pl2p209,pl3p209,pl4p209,pl5p209,SidewinderFix,Triplebufen,ScreenScale
 EXTSYM GUIEAVID,GUIWSVID,GUISSVID,GUITBVID,GUISLVID,GUIHSVID,GUI2xVID,TripBufAvail
-EXTSYM JoyMinX209,JoyMaxX209,JoyMinY209,JoyMaxY209,DOSClearScreen
+EXTSYM DOSClearScreen
 EXTSYM GUI36hzcall
 %endif
 

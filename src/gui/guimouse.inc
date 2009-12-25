@@ -20,7 +20,7 @@
 
 
 EXTSYM guimencodermsg, guilamemsg, guiprevideo, guipresstest, guipostvideo, guipostvideofail
-EXTSYM SetAllKeys
+EXTSYM SetAllKeys, CalibrateDev1
 
 %ifdef __WIN32__
 EXTSYM MinimizeWindow
@@ -673,7 +673,10 @@ ProcessMouseButtons:
   cmp byte[GUICBHold],14
   je near SetDevice
   cmp byte[GUICBHold],15
-  je near CalibrateDev1
+  jne .not15
+  ccallv CalibrateDev1
+  ret
+.not15
   cmp byte[GUICBHold],16  ; movie replay
   jne .notMoviePlay
   mov byte[GUICBHold],0
