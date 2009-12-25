@@ -20,6 +20,7 @@
 
 
 EXTSYM guimencodermsg, guilamemsg, guiprevideo, guipresstest, guipostvideo, guipostvideofail
+EXTSYM SetAllKeys
 
 %ifdef __WIN32__
 EXTSYM MinimizeWindow
@@ -760,7 +761,10 @@ ProcessMouseButtons:
   ret
 .noStopDumping
   cmp byte[GUICBHold],40
-  je near SetAllKeys
+  jne .not40
+  ccallv SetAllKeys
+  ret
+.not40
   cmp byte[GUICBHold],50
   jne .notstartcheat
   call CheatCodeSearchInit
@@ -2814,19 +2818,6 @@ DisplayGUICheatClick:
 DisplayNetOptnsClick:
   ret
 
-SECTION .data
-guipresstext4b db 'FOR UP              ',0
-  db 'FOR DOWN            ',0
-  db 'FOR LEFT            ',0
-  db 'FOR RIGHT           ',0
-  db 'FOR START           ',0
-  db 'FOR SELECT          ',0
-  db 'FOR A (RIGHT BUTTON)',0
-  db 'FOR B (DOWN BUTTON) ',0
-  db 'FOR X (TOP BUTTON)  ',0
-  db 'FOR Y (LEFT BUTTON) ',0
-  db 'FOR THE L BUTTON    ',0
-  db 'FOR THE R BUTTON    ',0
 SECTION .bss
 NEWSYM guipressptr,  resd 1
 NEWSYM guicpressptr, resd 1

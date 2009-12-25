@@ -6,8 +6,8 @@
 extern void DrawMouse();
 extern void ProcessMouse();
 
-extern char* guipressptr;
-extern u1    lastmouseholded;
-extern u4*   guicpressptr;
+extern char const* guipressptr;
+extern u1          lastmouseholded;
+extern u4*         guicpressptr;
 
 #endif

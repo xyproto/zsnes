@@ -3,6 +3,7 @@
 
 void CalibrateDispA(void);
 void CalibrateDispB(void);
+void SetAllKeys(void);
 void GUIDoReset(void);
 
 #endif

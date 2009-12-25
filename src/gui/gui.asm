@@ -284,7 +284,7 @@ cloadnpos    resd 1
 cloadnposb   resd 1
 NEWSYM cloadmaxlen,  resd 1
 cloadnleft   resd 1
-cplayernum   resb 1
+NEWSYM cplayernum,   resb 1
 NEWSYM GUIScrolTim1, resd 1
 GUIScrolTim2 resd 1
 BlankVar     resb 1
@@ -300,7 +300,7 @@ NEWSYM GUICCFlash,   resb 1
 NEWSYM GUILDFlash,   resb 1
 NEWSYM GUIPalConv,   resd 1
 NEWSYM PrevResoln,   resw 1
-keycontrolval resd 1
+NEWSYM keycontrolval, resd 1
 NEWSYM CheatBDoor,   resb 1
 NEWSYM ShowTimer,    resb 1
 NEWSYM MousePRClick, resb 1
