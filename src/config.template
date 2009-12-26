@@ -1,0 +1,28 @@
+# Uncomment exactly ONE of these
+#ARCH := DOS
+#ARCH := LINUX
+#ARCH := OSX
+#ARCH := WIN
+
+#WITH_DEBUGGER := yes
+#WITH_JMA      := yes
+#WITH_OPENGL   := yes
+#WITH_PNG      := yes
+#WITH_SDL      := yes # Automatically selected for LINUX and OSX
+
+#CXX_HOST   := $(CXX)
+#CC_TARGET  := $(CC)
+#CXX_TARGET := $(CXX)
+
+#CFLAGS += -g
+
+# Alter only if necessary. The default values are shown.
+#SDL_CONFIG  := sdl-config
+#CFLAGS_SDL  := $(shell $(SDL_CONFIG) --cflags)
+#LDFLAGS_SDL := $(shell $(SDL_CONFIG) --libs)
+
+#PNG_CONFIG  := pkg-config libpng
+#CFLAGS_PNG  := $(shell $(PNG_CONFIG) --cflags)
+#LDFLAGS_PNG := $(shell $(PNG_CONFIG) --libs)
+
+#CLEAN_MORE := yes # make clean deletes all *.[do], not just used ones
