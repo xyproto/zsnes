@@ -1735,7 +1735,7 @@ GUIFreshInputSelect db 1
 SECTION .bss
 GUIIStA resd 3
 GUIcurrentinputviewloc resd 1
-GUIcurrentinputcursloc resd 1
+NEWSYM GUIcurrentinputcursloc, resd 1
 
 SECTION .text
 

@@ -4,6 +4,7 @@
 #include "../c_intrf.h"
 #include "../cpu/dspproc.h"
 #include "../cpu/execute.h"
+#include "../cpu/regs.h"
 #include "../cpu/spc700.h"
 #include "../gblvars.h"
 #include "../initc.h"
@@ -181,6 +182,38 @@ port209:
 		CalibXmax    = JoyMaxX    = (joybcx + JoyX)   / 2;
 		CalibYmax    = JoyMaxY    = (joybcy + JoyY)   / 2;
 	}
+}
+
+
+void SetDevice(void)
+{
+	GUICBHold = 0;
+	u4 const player = cplayernum;
+	u4 const contrl = GUIcurrentinputcursloc;
+	*GUIInputRefP[player] = contrl;
+#ifdef __MSDOS__
+	u1 p209 = 0;
+	switch (player)
+	{
+		case 0: p209 = pl1p209; break;
+		case 1: p209 = pl2p209; break;
+		case 2: p209 = pl3p209; break;
+		case 3: p209 = pl4p209; break;
+		case 4: p209 = pl5p209; break;
+	}
+	if (p209 != 0)
+	{
+		CalibXmin209 = 0;
+		asm volatile("call %P0" :: "X" (SetInputDevice209), "b" (player << 8 | contrl) : "cc", "memory"); // XXX asm_call
+	}
+	else
+#endif
+	{
+		CalibXmin = 0;
+		SetInputDevice(contrl, player);
+	}
+	UpdateDevices();
+	MultiTap = SFXEnable != 1 && (pl3contrl != 0 || pl4contrl != 0 || pl5contrl != 0);
 }
 
 

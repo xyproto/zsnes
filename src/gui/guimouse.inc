@@ -20,7 +20,7 @@
 
 
 EXTSYM guimencodermsg, guilamemsg, guiprevideo, guipresstest, guipostvideo, guipostvideofail
-EXTSYM SetAllKeys, CalibrateDev1
+EXTSYM SetAllKeys, CalibrateDev1, SetDevice
 
 %ifdef __WIN32__
 EXTSYM MinimizeWindow
@@ -671,7 +671,10 @@ ProcessMouseButtons:
   cmp byte[GUICBHold],33
   je near CheatCodeFix
   cmp byte[GUICBHold],14
-  je near SetDevice
+  jne .not14
+  ccallv SetDevice
+  ret
+.not14
   cmp byte[GUICBHold],15
   jne .not15
   ccallv CalibrateDev1
@@ -1255,7 +1258,7 @@ GUIWinClicked:
 %macro GUIClickCButtonID 3
   GUIClickArea %1+1,%2+3,%1+6,%2+8,%%noclick
   xor %3,1
-  call SetDevice
+  ccallv SetDevice
 %%noclick
 %endmacro
 

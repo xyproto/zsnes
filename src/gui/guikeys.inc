@@ -879,7 +879,7 @@ GUIInputKeys:
   jne .nopl5
   GUIKeyCheckbox pl5p209,'J'
 .nopl5
-  call SetDevice
+  ccallv SetDevice
 .nop209
 %endif
   ret

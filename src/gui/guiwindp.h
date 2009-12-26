@@ -34,6 +34,7 @@ extern u1   GUIStatesText5;
 extern u1   ShowMMXSupport;
 extern u1*  GUIInputRefP[5];
 extern u4   GUIcurrentcheatwin;
+extern u4   GUIcurrentinputcursloc;
 extern u4   GUIcurrentvideocursloc;
 extern u4   GUIcurrentvideoviewloc;
 extern u4   NumCombo;

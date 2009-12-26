@@ -48,8 +48,8 @@ EXTSYM cbitmode
 EXTSYM romloadskip,romdata,current_zst
 EXTSYM vidbuffer,showallext,scanlines
 EXTSYM KeyRTRCycle
-EXTSYM initvideo,pressed,UpdateDevices,memtabler8
-EXTSYM memtablew8,writeon,JoyRead,SetInputDevice,delay,FPSOn,RevStereo,WDSPReg0C
+EXTSYM initvideo,pressed,memtabler8
+EXTSYM memtablew8,writeon,JoyRead,delay,FPSOn,RevStereo,WDSPReg0C
 EXTSYM WDSPReg1C,pl12s34,vidbufferofsb,wramdata,bgfixer
 EXTSYM videotroub,CheatCodeSave,CheatCodeLoad
 EXTSYM Check_Key,Get_Key,sram,ScanCodeListing,RelPathBase
@@ -60,7 +60,7 @@ EXTSYM Clear2xSaIBuffer,MouseWindow,Show224Lines
 EXTSYM newgfx16b,NumVideoModes,MusicVol,DSPMem,NumInputDevices
 EXTSYM GUIInputNames,GUIVideoModeNames,GameSpecificInput,device1,device2,TwelveHourClock
 EXTSYM GUIM7VID,GUINTVID,GUIHQ2X,RawDumpInProgress
-EXTSYM MultiTap,SFXEnable
+EXTSYM MultiTap
 EXTSYM nssdip1,nssdip2,nssdip3,nssdip4,nssdip5,nssdip6
 EXTSYM SkipMovie,MovieStop,MoviePlay,MovieRecord
 EXTSYM MovieInsertChapter,MovieSeekAhead,MovieSeekBehind
@@ -130,7 +130,7 @@ EXTSYM CheckScreenSaver,MouseWheel,TrapMouseCursor,AllowMultipleInst,TripleBuffe
 EXTSYM HighPriority,SaveMainWindowPos,PrimaryBuffer
 EXTSYM CBBuffer,CBLength,PasteClipBoard,ctrlptr,PauseFocusChange
 %elifdef __MSDOS__
-EXTSYM dssel,SetInputDevice209,initvideo2,Force8b,SBHDMA,vibracard,smallscreenon,ExitFromGUI
+EXTSYM dssel,initvideo2,Force8b,SBHDMA,vibracard,smallscreenon,ExitFromGUI
 EXTSYM pl1p209,pl2p209,pl3p209,pl4p209,pl5p209,SidewinderFix,Triplebufen,ScreenScale
 EXTSYM GUIEAVID,GUIWSVID,GUISSVID,GUITBVID,GUISLVID,GUIHSVID,GUI2xVID,TripBufAvail
 EXTSYM DOSClearScreen
