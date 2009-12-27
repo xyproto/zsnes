@@ -84,7 +84,19 @@ void ProcessMouse(void)
 	}
 	if (mousewrap == 1)
 	{
-		asm_call(ProcessMouseWrap);
+		u4 const delta = Get_MousePositionDisplacement();
+
+		u2 x = GUImouseposx + delta;
+		while (x & 0x8000) x += 256;
+		while (x > 255)    x -= 256;
+		GUImouseposx = x;
+
+		u2 y = GUImouseposy + (delta >> 16);
+		while (y & 0x8000) y += 224;
+		while (y >    223) y -= GUIHold == 1 ? 224 - 16 : 224;
+		GUImouseposy = y;
+
+		if (delta != 0) MouseMoveOkay = 1;
 	}
 	else
 	{
@@ -98,8 +110,8 @@ void ProcessMouse(void)
 		if (y & 0x8000) y =   0;
 		if (y >    223) y = 100;
 		GUImouseposy = y;
-		asm_call(ProcessMouseButtons);
 	}
+	asm_call(ProcessMouseButtons);
 }
 
 

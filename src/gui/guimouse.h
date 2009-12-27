@@ -5,7 +5,6 @@
 
 extern void DrawMouse();
 extern void ProcessMouseButtons();
-extern void ProcessMouseWrap();
 
 extern char const* guipressptr;
 extern u1          MouseMoveOkay;

@@ -53,7 +53,7 @@ EXTSYM memtablew8,writeon,JoyRead,delay,FPSOn,RevStereo,WDSPReg0C
 EXTSYM WDSPReg1C,pl12s34,vidbufferofsb,wramdata,bgfixer
 EXTSYM videotroub,CheatCodeSave,CheatCodeLoad
 EXTSYM Check_Key,Get_Key,sram,ScanCodeListing,RelPathBase
-EXTSYM Set_MousePosition,Get_MousePositionDisplacement
+EXTSYM Set_MousePosition
 EXTSYM GetTime
 EXTSYM Clear2xSaIBuffer,MouseWindow,Show224Lines
 EXTSYM newgfx16b,NumVideoModes,MusicVol,DSPMem,NumInputDevices

@@ -32,49 +32,6 @@ NEWSYM mousebuttonstat, resw 1
 NEWSYM MouseMoveOkay,   resb 1
 SECTION .text
 
-NEWSYM ProcessMouseWrap
-  push  eax
-  ccall Get_MousePositionDisplacement
-  mov   edx, eax
-  movsx ecx, ax
-  sar   edx, 16
-  pop   eax
-  add word[GUImouseposx],cx
-.again
-  test word[GUImouseposx],8000h
-  jz .nowrapleft
-  add word[GUImouseposx],256
-  jmp .again
-.nowrapleft
-  cmp word[GUImouseposx],255
-  jbe .nowrapright
-  sub word[GUImouseposx],256
-  jmp .again
-.nowrapright
-  add word[GUImouseposy],dx
-.again2
-  test word[GUImouseposy],8000h
-  jz .nowrapup
-  add word[GUImouseposy],224
-  jmp .again2
-.nowrapup
-  cmp word[GUImouseposy],223
-  jbe .nowrapdown
-  cmp byte[GUIHold],1
-  jne .nohold
-  sub word[GUImouseposy],224-16
-  jmp .again2
-.nohold
-  sub word[GUImouseposy],224
-  jmp .again2
-.nowrapdown
-  cmp dx,0
-  jne .nozero
-  cmp cx,0
-  je .zero
-.nozero
-  mov byte[MouseMoveOkay],1
-.zero
 NEWSYM ProcessMouseButtons
   cmp byte[MouseMoveOkay],1
   jne .zero
