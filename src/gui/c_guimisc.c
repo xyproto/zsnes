@@ -19,13 +19,23 @@
 #include "c_guimouse.h"
 #include "gui.h"
 #include "guikeys.h"
-#include "guimisc.h"
 #include "guimouse.h"
 #include "guiwindp.h"
 
 #ifdef __MSDOS__
 #	include "../dos/joy.h"
 #endif
+
+u1 JoyExists2;
+u1 JoyExists;
+u4 JoyMaxX;
+u4 JoyMaxY;
+u4 JoyMinX;
+u4 JoyMinY;
+u4 JoyX2;
+u4 JoyX;
+u4 JoyY2;
+u4 JoyY;
 
 
 static void CalibrateDispA(void)

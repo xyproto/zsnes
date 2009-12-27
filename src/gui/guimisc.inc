@@ -20,15 +20,3 @@
 
 
 ; Joystick setting (display) routines, SNES Reset Function
-
-SECTION .bss
-NEWSYM JoyX,       resd 1
-NEWSYM JoyY,       resd 1
-NEWSYM JoyX2,      resd 1
-NEWSYM JoyY2,      resd 1
-NEWSYM JoyMaxX,    resd 1
-NEWSYM JoyMaxY,    resd 1
-NEWSYM JoyMinX,    resd 1
-NEWSYM JoyMinY,    resd 1
-NEWSYM JoyExists,  resb 1
-NEWSYM JoyExists2, resb 1
