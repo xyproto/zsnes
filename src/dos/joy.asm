@@ -120,9 +120,8 @@ NEWSYM DosUpdateDevices
     ; Auto-Calibrate the joysticks
     cmp byte[JoyQuant],2
     jne .no2joyst
-    mov dx,201h
     mov byte[JoyExists2],1
-    call GetCoords3
+    ccallv GetCoords3, 0x0201
     ccallv delay, 1000
     cmp byte[JoyExists2],0
     jne .no2joyst
@@ -130,9 +129,8 @@ NEWSYM DosUpdateDevices
 .no2joyst
     cmp byte[JoyQuant],1
     jne .no1joyst
-    mov dx,201h
     mov byte[JoyExists],1
-    call GetCoords
+    ccallv GetCoords, 0x0201
     ccallv delay, 1000
     cmp byte[JoyExists],0
     jne .no1joyst
@@ -179,9 +177,8 @@ NEWSYM DosUpdateDevices
     ; Auto-Calibrate the joysticks
     cmp byte[JoyQuant209],2
     jne .no2joyst2
-    mov dx,209h
     mov byte[JoyExists2],1
-    call GetCoords3
+    ccallv GetCoords3, 0x0209
     ccallv delay, 1000
     cmp byte[JoyExists2],0
     jne .no2joyst2
@@ -189,9 +186,8 @@ NEWSYM DosUpdateDevices
 .no2joyst2
     cmp byte[JoyQuant209],1
     jne .no1joyst2
-    mov dx,209h
     mov byte[JoyExists],1
-    call GetCoords
+    ccallv GetCoords, 0x0209
     ccallv delay, 1000
     cmp byte[JoyExists],0
     jne .no1joyst2
@@ -398,8 +394,7 @@ JoyRead209:
    ; Process Joystick(s)
    cmp byte[JoyQuant209],2
    jne near .no2joyst
-   mov dx,209h
-   call GetCoords3
+   ccallv GetCoords3, 0x0209
 
    ; Set button 5-6 + 2player Control
    cmp byte[Buttons6209],0
@@ -455,8 +450,7 @@ JoyRead209:
    ; Set 1 player control
    cmp byte[JoyQuant209],1
    jne near .no1joyst
-   mov dx,209h
-   call GetCoords
+   ccallv GetCoords, 0x0209
 .1pcoord
    mov eax,[JoyX]
    cmp eax,[JoyMinX209]
@@ -532,8 +526,7 @@ NEWSYM DOSJoyRead
    ; Process Joystick(s)
    cmp byte[JoyQuant],2
    jne near .no2joyst
-   mov dx,201h
-   call GetCoords3
+   ccallv GetCoords3, 0x0201
 
    ; Set button 5-6 + 2player Control
    cmp byte[Buttons6],0
@@ -589,8 +582,7 @@ NEWSYM DOSJoyRead
    ; Set 1 player control
    cmp byte[JoyQuant],1
    jne near .no1joyst
-   mov dx,201h
-   call GetCoords
+   ccallv GetCoords, 0x0201
 .1pcoord
    mov eax,[JoyX]
    cmp eax,[JoyMinX]

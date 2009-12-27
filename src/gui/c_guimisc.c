@@ -1,5 +1,6 @@
 #include <string.h>
 
+#include "../asm.h"
 #include "../asm_call.h"
 #include "../c_intrf.h"
 #include "../cpu/dspproc.h"
@@ -156,16 +157,16 @@ port209:
 #endif
 
 	if (contrl <= 1 || 6 <= contrl) return;
-	void (* const f)() = contrl != 18 && contrl != 5 ? GetCoords : GetCoords3;
-	asm volatile("call *%0" :: "r" (f), "d" (port) : "cc", "memory", "eax", "ecx"); // XXX asm_call
-	u4 joybcx = JoyX;
-	u4 joybcy = JoyY;
+	void (* const get)(u2) = contrl != 18 && contrl != 5 ? GetCoords : GetCoords3;
+	get(port);
+	u4 const joybcx = JoyX;
+	u4 const joybcy = JoyY;
 	CalibrateDispA();
-	asm volatile("call *%0" :: "r" (f), "d" (port) : "cc", "memory", "eax", "ecx"); // XXX asm_call
-	u4 joyblx = JoyX;
-	u4 joybly = JoyY;
+	get(port);
+	u4 const joyblx = JoyX;
+	u4 const joybly = JoyY;
 	CalibrateDispB();
-	asm volatile("call *%0" :: "r" (f), "d" (port) : "cc", "memory", "eax", "ecx"); // XXX asm_call
+	get(port);
 #ifdef __MSDOS__
 	if (port == 0x209)
 	{
@@ -241,4 +242,63 @@ void GUIDoReset(void)
 	spcNZ    = 0;
 	GUIQuit  = 2;
 	memset(&Voice0Status, 0, sizeof(Voice0Status));
+}
+
+
+void GetCoords(u2 const port)
+{
+	JoyX = 0;
+	JoyY = 0;
+	cli();
+	outb(port, 0);
+	u4 n   = 0xFFFF;
+	u4 val = 0x03;
+	for (;;)
+	{
+		val &= inb(port);
+		if (val == 0) break;
+		if (val & 0x01) ++JoyX;
+		if (val & 0x02) ++JoyY;
+		if (--n == 0)
+		{
+			JoyExists = 0;
+			JoyX      = 0;
+			JoyY      = 0;
+			break;
+		}
+	}
+	sti();
+}
+
+
+// Dual Joysticks
+void GetCoords3(u2 const port)
+{
+	JoyX  = 0;
+	JoyY  = 0;
+	JoyX2 = 0;
+	JoyY2 = 0;
+  cli();
+  outb(port, 0);
+  u4 n = 0x1FFFF;
+	for (;;)
+	{
+		u1 const val = inb(port);
+		if (val & 0x01) ++JoyX;
+		if (val & 0x02) ++JoyY;
+		if (val & 0x04) ++JoyX2;
+		if (val & 0x08) ++JoyY2;
+		if ((val & 0x0F) == 0) break;
+		if (--n == 0)
+		{
+			JoyExists  = 0;
+			JoyX       = 0;
+			JoyY       = 0;
+			JoyExists2 = 0;
+			JoyX2      = 0;
+			JoyY2      = 0;
+			break;
+		}
+	}
+  sti();
 }
