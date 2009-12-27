@@ -628,7 +628,7 @@ void ResetState()
 
 extern uint32_t SfxRomBuffer, SfxCROM;
 extern uint32_t SfxLastRamAdr, SfxRAMMem, MsgCount, MessageOn;
-extern uint8_t AutoIncSaveSlot, cbitmode, NoPictureSave;
+extern uint8_t AutoIncSaveSlot, cbitmode;
 extern char *Msgptr;
 extern uint16_t PrevPicture[64*56];
 
@@ -870,7 +870,7 @@ void statesaver(void)
     current_zst += AutoIncSaveSlot;
     current_zst %= 100;
 
-    if (mzt_save(current_zst, (cbitmode && !NoPictureSave) ? true : false, false))
+    if (mzt_save(current_zst, !!cbitmode, false))
     {
       set_state_message("RR STATE ", " SAVED.");
     }
@@ -888,7 +888,7 @@ void statesaver(void)
     current_zst += AutoIncSaveSlot;
     current_zst %= 100;
 
-    if (mzt_save(current_zst, (cbitmode && !NoPictureSave) ? true : false, true))
+    if (mzt_save(current_zst, !!cbitmode, true))
     {
       set_state_message("RR STATE ", " SAVED.");
     }
@@ -912,7 +912,7 @@ void statesaver(void)
 
   if ((fhandle = fopen_dir(ZSStatePath, ZStateName, "wb")))
   {
-    zst_save(fhandle, (bool)(cbitmode && !NoPictureSave), false);
+    zst_save(fhandle, !!cbitmode, false);
     fclose(fhandle);
 
     //Display message onscreen, 'STATE XX SAVED.'

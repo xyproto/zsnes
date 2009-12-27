@@ -25,7 +25,6 @@ SECTION .bss
 NEWSYM MovieRecordWinVal, resb 1
 NEWSYM MovieProcessing, resb 1
 NEWSYM RecData, resb 16
-NEWSYM NoPictureSave, resb 1
 
 NEWSYM JoyX,       resd 1
 NEWSYM JoyY,       resd 1
