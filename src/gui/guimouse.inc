@@ -28,130 +28,11 @@ EXTSYM MinimizeWindow
 
 SECTION .bss
 NEWSYM lastmouseholded, resb 1
-mousebuttonstat resw 1
-MouseMoveOkay   resb 1
-LastHoldEnable  resb 1
+NEWSYM mousebuttonstat, resw 1
+NEWSYM MouseMoveOkay,   resb 1
 SECTION .text
 
-NEWSYM ProcessMouse
-  ; Process holds
-  mov al,[GUIHold]
-  cmp al,[LastHoldEnable]
-  je near .noholdnecessary
-  cmp byte[GUIHold],0
-  jne .noholda
-  cmp byte[LastHoldEnable],7 ; ntsc sliders
-  jne .norelease1
-  xor edx,edx
-  mov dl,[ntscWhVar]
-  mov cl,[ntscCurVar]
-  cmp cl,[ntscLastVar+edx]
-  je .norelease1
-%ifndef __MSDOS__
-  ccallv NTSCFilterInit
-%endif
-  mov [ntscLastVar+edx],cl
-.norelease1
-  ccallv Set_MouseXMax, 0, 255
-  ccallv Set_MouseYMax, 0, 223
-.noholda
-  cmp byte[GUIHold],1 ; GUI Windows
-  jne .nohold1
-  ccallv Set_MouseXMax,  0, 255
-  ccallv Set_MouseYMax, 16, 223
-.nohold1
-  cmp byte[GUIHold],5 ; Sound Slider
-  je .holdslider
-  cmp byte[GUIHold],6 ; Speed Slider
-  je .holdslider
-  cmp byte[GUIHold],2 ; Colour Slider
-  je .holdslider
-  cmp byte[GUIHold],8 ; Scanline Slider
-  je .holdslider
-  cmp byte[GUIHold],7 ; Video Slider
-  jne .nohold2m
-.holdslider
-  ; Sets min/max move range for mouse once holding slider
-  ccallv Set_MouseXMax, [GUIHoldXlimL], [GUIHoldXlimR]
-  ; Locks pointer on slider
-  ccallv Set_MouseYMax, [GUIHoldYlim], [GUIHoldYlim]
-.nohold2m
-  cmp byte[GUIHold],3    ; Scrollbars
-  jne .nohold3m
-  ccallv Set_MouseXMax, [GUIHoldXlimL], [GUIHoldXlimR]
-  ccallv Set_MouseYMax, [GUIHoldYlim], [GUIHoldYlimR]
-.nohold3m
-  mov al,[GUIHold]
-  mov [LastHoldEnable],al
-.noholdnecessary
-  mov byte[MouseMoveOkay],0
-  push  eax
-  ccall Get_MouseData
-  movzx ebx, ax
-  mov   ecx, eax
-  mov   edx, eax
-  shr   ecx, 16
-  shr   edx, 24
-  movzx ecx, cl
-  pop   eax
-  cmp byte[lhguimouse],1
-  jne .notlefthanded
-  call SwapMouseButtons
-.notlefthanded
-  mov [mousebuttonstat],bx
-  cmp byte[lastmouseholded],0
-  je .noprevhold
-  test bx,01h
-  jnz .noprevhold
-  mov byte[lastmouseholded],0
-  movzx ecx, word [GUImouseposx]
-  movzx edx, word [GUImouseposy]
-  ccallv Set_MousePosition, ecx, edx
-.noprevhold
-  cmp byte[mousewrap],1
-  je near ProcessMouseWrap
-  push  eax
-  ccall Get_MouseData
-  movzx ebx, ax
-  mov   ecx, eax
-  mov   edx, eax
-  shr   ecx, 16
-  shr   edx, 24
-  movzx ecx, cl
-  pop   eax
-  cmp byte[lhguimouse],1
-  jne .notlefthanded2
-  call SwapMouseButtons
-.notlefthanded2
-  cmp word[GUImouseposx],cx
-  je .zero2
-  mov byte[MouseMoveOkay],1
-.zero2
-  cmp word[GUImouseposy],dx
-  je .zero3
-  mov byte[MouseMoveOkay],1
-.zero3
-  mov [GUImouseposx],cx
-  test word[GUImouseposx],8000h
-  jz .nowrapleft
-  mov word[GUImouseposx],0
-.nowrapleft
-  cmp word[GUImouseposx],255
-  jbe .nowrapright
-  mov word[GUImouseposx],255
-.nowrapright
-  mov [GUImouseposy],dx
-  test word[GUImouseposy],8000h
-  jz .nowrapup
-  mov word[GUImouseposy],0
-.nowrapup
-  cmp word[GUImouseposy],223
-  jbe .nowrapdown
-  mov word[GUImouseposy],100
-.nowrapdown
-  jmp ProcessMouseButtons
-
-ProcessMouseWrap:
+NEWSYM ProcessMouseWrap
   push  eax
   ccall Get_MousePositionDisplacement
   mov   edx, eax
@@ -194,7 +75,7 @@ ProcessMouseWrap:
 .nozero
   mov byte[MouseMoveOkay],1
 .zero
-ProcessMouseButtons:
+NEWSYM ProcessMouseButtons
   cmp byte[MouseMoveOkay],1
   jne .zero
   mov byte[GUIOnMenuItm],0
@@ -2714,9 +2595,8 @@ DisplayGUIVideoClick:
 SECTION .bss
 GUINumValue resd 1
 GUIBlankVar resd 1
-ntscLastVar resb 6
-ntscCurVar resb 1
-ntscWhVar resb 1
+NEWSYM ntscCurVar, resb 1
+NEWSYM ntscWhVar, resb 1
 SECTION .data
 NEWSYM NTSCPresetVar, dd 4
 NEWSYM OGLCheckVar, db 0

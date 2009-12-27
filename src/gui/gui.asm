@@ -53,8 +53,7 @@ EXTSYM memtablew8,writeon,JoyRead,delay,FPSOn,RevStereo,WDSPReg0C
 EXTSYM WDSPReg1C,pl12s34,vidbufferofsb,wramdata,bgfixer
 EXTSYM videotroub,CheatCodeSave,CheatCodeLoad
 EXTSYM Check_Key,Get_Key,sram,ScanCodeListing,RelPathBase
-EXTSYM Get_MouseData,Set_MouseXMax
-EXTSYM Set_MouseYMax,Set_MousePosition,Get_MousePositionDisplacement
+EXTSYM Set_MousePosition,Get_MousePositionDisplacement
 EXTSYM GetTime
 EXTSYM Clear2xSaIBuffer,MouseWindow,Show224Lines
 EXTSYM newgfx16b,NumVideoModes,MusicVol,DSPMem,NumInputDevices
@@ -106,7 +105,7 @@ EXTSYM KeyIncStateSlot,KeyDecStateSlot,KeySaveState,KeyLoadState,KeyStateSelct
 EXTSYM KeyRewind,KeyEmuSpeedUp,KeyEmuSpeedDown,KeyFRateUp,KeyFRateDown
 EXTSYM KeyFastFrwrd,KeySlowDown,KeyResetSpeed,EMUPauseKey,INCRFrameKey
 EXTSYM KeyWinDisble,KeyOffsetMSw,JoyPad1Move,init_save_paths
-EXTSYM mousewrap,GUIRClick,SwapMouseButtons
+EXTSYM mousewrap,GUIRClick
 EXTSYM FPSAtStart,Turbo30hz,TimerEnable,SmallMsgText,mouse1lh,mouse2lh
 EXTSYM AutoPatch,RomInfo,AllowUDLR,GrayscaleMode,GUIMovieForcedText
 EXTSYM Mode7HiRes16b,FFRatio,SDRatio,EmuSpeed,mouseshad,MovieForcedLengthEnabled
@@ -258,8 +257,8 @@ NEWSYM GUIcwinpress, resb 1
 NEWSYM GUIpmenupos,  resb 1
 NEWSYM GUIcrowpos,   resd 1
 NEWSYM GUIpclicked,  resb 1
-GUImouseposx resd 1
-GUImouseposy resd 1
+NEWSYM GUImouseposx, resd 1
+NEWSYM GUImouseposy, resd 1
 NEWSYM GUICYLocPtr,  resd 1
 NEWSYM GUIMenuL,     resd 1
 NEWSYM GUIMenuR,     resd 1
@@ -275,10 +274,10 @@ NEWSYM cwindrawn,    resb 1
 GUIWincol    resd 1
 NEWSYM GUIWincoladd, resd 1
 GUITemp      resd 1
-GUIHoldXlimL resd 1
-GUIHoldXlimR resd 1
-GUIHoldYlim  resd 1
-GUIHoldYlimR resd 1
+NEWSYM GUIHoldXlimL, resd 1
+NEWSYM GUIHoldXlimR, resd 1
+NEWSYM GUIHoldYlim,  resd 1
+NEWSYM GUIHoldYlimR, resd 1
 cloadnpos    resd 1
 cloadnposb   resd 1
 NEWSYM cloadmaxlen,  resd 1

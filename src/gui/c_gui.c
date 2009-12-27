@@ -25,6 +25,7 @@
 #include "../zstate.h"
 #include "../ztimec.h"
 #include "c_gui.h"
+#include "c_guimouse.h"
 #include "gui.h"
 #include "guicheat.h"
 #include "guifuncs.h"
@@ -1540,7 +1541,7 @@ void StartGUI(void)
 		GUIQuit = 0;
 		if (MouseDis != 1)
 		{
-			asm_call(ProcessMouse);
+			ProcessMouse();
 			if (videotroub == 1) return;
 		}
 		GUIUnBuffer();

@@ -3,6 +3,7 @@
 
 #include "../types.h"
 
+void ProcessMouse(void);
 u4   guipresstest(void);
 void guipresstestb(void);
 
