@@ -38,6 +38,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define DIR_SLASH "\\"
 #endif
 #include <stdarg.h>
+#include "chips/c4proc.h"
 #include "gblvars.h"
 #include "asm_call.h"
 #include "ui.h"

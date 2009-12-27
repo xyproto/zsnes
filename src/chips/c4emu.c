@@ -26,6 +26,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <stdlib.h>
 #endif
 
+#include "c4proc.h"
+
 #ifdef PI
 #undef PI
 #endif
@@ -291,7 +293,6 @@ void C4Op0D()
 #define READ_WORD(s) (*(unsigned short *) (s))
 void C4Op22()
 {
-  extern unsigned char *C4Ram;
   short angle1 = READ_WORD(C4Ram+0x1f8c) & 0x1ff;
   short angle2 = READ_WORD(C4Ram+0x1f8f) & 0x1ff;
   int tan1 = Tan(angle1);
