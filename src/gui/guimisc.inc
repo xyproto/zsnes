@@ -19,12 +19,9 @@
 
 
 
-; Movie, Joystick setting (display) routines, SNES Reset Function
+; Joystick setting (display) routines, SNES Reset Function
 
 SECTION .bss
-NEWSYM MovieRecordWinVal, resb 1
-NEWSYM MovieProcessing, resb 1
-
 NEWSYM JoyX,       resd 1
 NEWSYM JoyY,       resd 1
 NEWSYM JoyX2,      resd 1

@@ -30,7 +30,6 @@
 #include "guicheat.h"
 #include "guifuncs.h"
 #include "guikeys.h"
-#include "guimisc.h"
 #include "guimouse.h"
 #include "guitools.h"
 #include "guiwindp.h"

@@ -50,8 +50,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #ifndef _MSC_VER
 #include <unistd.h>
 #endif
-#include <stdint.h>
-#include "gblvars.h"
 #include "asm_call.h"
 #include "cpu/dspproc.h"
 #include "gui/c_guimisc.h"
@@ -2527,12 +2525,14 @@ static size_t MovieSub_GetDuration()
 bool RawDumpInProgress = false;
 bool PrevSRAMState;
 
-extern uint8_t ComboCounter, MovieRecordWinVal, AllocatedRewindStates;
+extern uint8_t ComboCounter, AllocatedRewindStates;
 extern uint8_t SloMo, EMUPause;
 char MovieFrameStr[10];
 bool MovieForcedLengthEnabled = false;
 uint32_t MovieForcedLength = 0, MovieForcedLengthInternal;
 uint8_t MoviePassWaiting = 0;
+unsigned char MovieProcessing;
+uint8_t       MovieRecordWinVal;
 
 struct
 {

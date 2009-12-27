@@ -23,6 +23,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define ZMOVIE_H
 
 #include <stdbool.h>
+#include <stdint.h>
+#include "gblvars.h"
 
 void mzt_chdir_up();
 void mzt_chdir_down();
@@ -38,6 +40,7 @@ bool MovieInProgress();
 void ResetDuringMovie(void);
 
 extern unsigned char MovieProcessing;
+extern uint8_t       MovieRecordWinVal;
 
 enum MovieStatus { MOVIE_OFF = 0, MOVIE_PLAYBACK, MOVIE_RECORD, MOVIE_OLD_PLAY, MOVIE_ENDING_DUMPING, MOVIE_DUMPING_NEW, MOVIE_DUMPING_OLD };
 #define SetMovieMode(mode) (MovieProcessing = (unsigned char)mode)
