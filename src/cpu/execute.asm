@@ -20,7 +20,7 @@
 %include "macros.mac"
 
 EXTSYM KeyRewind,statesaver,Voice0Status,UpdateDPage
-EXTSYM StartGUI,romdata,DosExit,sfxramdata,deinitvideo
+EXTSYM StartGUI,romdata,DosExit,sfxramdata
 EXTSYM device2,RawDumpInProgress
 EXTSYM KeySaveState,KeyLoadState,KeyQuickExit,KeyQuickLoad,KeyQuickRst
 EXTSYM GUIDoReset,GUIReset,KeyOnStA,KeyOnStB,ProcessKeyOn,C4Enable,KeyQuickClock
@@ -42,7 +42,7 @@ EXTSYM JoyBOrig,JoyBNow,JoyCOrig,JoyCNow,JoyDOrig,JoyDNow,JoyEOrig,JoyENow
 EXTSYM SA1Message,MultiTapStat,idledetectspc,SA1Control,SA1Enable,SA1IRQEnable
 EXTSYM SPC700read,SPC700write,numspcvblleft,spc700idle,SA1IRQExec,ForceNewGfxOff
 EXTSYM LethEnData,GUIQuit,IRAM,SA1Ptr,SA1BWPtr,outofmemfix
-EXTSYM yesoutofmemory,ProcessMovies,MovieStop,ppustatus,C4VBlank
+EXTSYM yesoutofmemory,ProcessMovies,ppustatus,C4VBlank
 EXTSYM ReturnFromSPCStall,scanlines,MainLoop,MoviePassWaiting,MovieDumpRaw
 EXTSYM NumberOfOpcodes,SfxCLSR,SfxSCMR,SfxPOR,sfx128lineloc,sfx160lineloc
 EXTSYM sfx192lineloc,sfxobjlineloc,sfxclineloc,PLOTJmpa,PLOTJmpb,FxTable
@@ -53,7 +53,7 @@ EXTSYM MovieSeekBehind,BackupCVFrame,RestoreCVFrame,loadstate,xe
 EXTSYM KeyInsrtChap,KeyNextChap,KeyPrevChap,MovieInsertChapter,MovieSeekAhead
 EXTSYM ResetDuringMovie,EMUPauseKey,INCRFrameKey,MovieWaiting,NoInputRead
 EXTSYM AllocatedRewindStates,PauseFrameMode,RestorePauseFrame,BackupPauseFrame
-EXTSYM rtoflags,sprcnt,sprstart,sprtilecnt,sprend,sprendx,continueprog
+EXTSYM rtoflags,sprcnt,sprstart,sprtilecnt,sprend,sprendx,continueprog,endprog
 
 %ifndef NO_DEBUGGER
 EXTSYM debuggeron,startdebugger
@@ -409,18 +409,15 @@ reexecuteb2:
     ret
 .noreset
     cmp byte[guioff],1
-    je near endprog
+    jne .notguioff
+    ccallv endprog
+.notguioff
     mov eax,[KeyQuickExit]
     test byte[pressed+eax],1
-    jnz near endprog
+    jz .notpressed
+    ccallv endprog
+.notpressed
     ccallv StartGUI
-    ret
-
-NEWSYM endprog
-    ccallv deinitvideo
-    ccallv MovieStop
-
-    ccallv DosExit
     ret
 
 SECTION .data
@@ -1124,7 +1121,9 @@ NEWSYM cpuover
     call StartDrawNewGfx
 .nonewgfx
     cmp byte[GUIQuit],1
-    je near endprog
+    jne .notGUIQuit
+    ccallv endprog
+.notGUIQuit
     mov eax,[KeyQuickSnapShot]
     or eax,eax
     jz .nosskey

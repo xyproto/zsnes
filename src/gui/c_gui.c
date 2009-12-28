@@ -1534,7 +1534,7 @@ void StartGUI(void)
 			GUIDeInit();
 
 			resolutn = PrevResoln;
-			asm_call(endprog);
+			endprog();
 			return;
 		}
 		GUIQuit = 0;

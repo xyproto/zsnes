@@ -8,6 +8,7 @@
 #include "../gui/c_gui.h"
 #include "../ui.h"
 #include "../vcache.h"
+#include "../zmovie.h"
 #include "c_execute.h"
 #include "execute.h"
 
@@ -43,6 +44,14 @@ void continueprog(void)
 
 	InitPreGame();
 	asm_call(reexecute);
+}
+
+
+void endprog(void)
+{
+	deinitvideo();
+	MovieStop();
+	DosExit();
 }
 
 

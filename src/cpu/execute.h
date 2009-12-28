@@ -3,7 +3,6 @@
 
 #include "../types.h"
 
-extern void endprog();
 extern void reexecute();
 
 extern u1 NoSoundReinit;

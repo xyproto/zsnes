@@ -34,7 +34,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #include "asm_call.h"
 #include "cpu/c_execute.h"
-#include "cpu/execute.h"
 #include "zstate.h"
 
 // All of these should be in headers, people!
@@ -190,7 +189,7 @@ void startdebugger(void)
         start65816();
         return;
     }
-    asm_call(endprog);
+    endprog();
     return;
 }
 
