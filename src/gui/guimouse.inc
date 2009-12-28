@@ -23,33 +23,6 @@ EXTSYM guipresstest, SetDevice
 
 SECTION .text
 
-NEWSYM GUINTSCPreset
-  cmp byte[GUICBHold],81
-  jne near .nextpreset
-  mov byte[NTSCPresetVar],0
-  jmp .lastpreset
-.nextpreset
-  cmp byte[GUICBHold],82
-  jne near .nextpreset2
-  mov byte[NTSCPresetVar],1
-  jmp .lastpreset
-.nextpreset2
-  cmp byte[GUICBHold],83
-  jne near .nextpreset3
-  mov byte[NTSCPresetVar],2
-  jmp .lastpreset
-.nextpreset3
-  cmp byte[GUICBHold],84
-  jne near .lastpreset
-  mov byte[NTSCPresetVar],3
-.lastpreset
-%ifndef __MSDOS__
-  ccallv NTSCFilterInit
-%endif
-  mov byte[NTSCPresetVar],4
-  mov byte[GUICBHold],0
-  ret
-
 %ifndef __MSDOS__
 NEWSYM GUIProcCustomVideo
   ccallv SetCustomXY

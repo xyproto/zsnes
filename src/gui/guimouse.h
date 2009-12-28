@@ -8,7 +8,6 @@ extern void DisplayGUISoundClick();
 extern void DisplayGUISpeedClick();
 extern void DisplayGUIVideoClick();
 extern void DrawMouse();
-extern void GUINTSCPreset();
 extern void GUIProcCustomVideo();
 extern void GUIWinClicked();
 extern void GUIWindowMove();

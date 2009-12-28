@@ -109,6 +109,23 @@ static void GUINTSCReset(void)
 }
 
 
+static void GUINTSCPreset(void)
+{
+	switch (GUICBHold)
+	{
+		case 81: NTSCPresetVar = 0; break;
+		case 82: NTSCPresetVar = 1; break;
+		case 83: NTSCPresetVar = 2; break;
+		case 84: NTSCPresetVar = 3; break;
+	}
+#ifndef __MSDOS__
+	NTSCFilterInit();
+#endif
+	NTSCPresetVar = 4;
+	GUICBHold     = 0;
+}
+
+
 static void ProcessMouseButtons(void)
 {
 	static u1 GUIOnMenuItm;
@@ -445,7 +462,7 @@ hold:
 		case 81:
 		case 82:
 		case 83:
-		case 84: asm_call(GUINTSCPreset);      return; // ntsc preset
+		case 84: GUINTSCPreset();              return; // ntsc preset
 		case 10:
 		case 11: GUIProcStates();              return;
 		case  5: asm_call(CheatCodeRemove);    return;
