@@ -421,16 +421,6 @@ NEWSYM sramsavedis, resb 1
 NEWSYM GUICPC, resw 256
 
 SECTION .data
-GUIMousePtr:
-  db 50,47,45,43,40,0 ,0 ,0
-  db 53,52,46,42,0 ,0 ,0 ,0
-  db 55,54,54,44,0 ,0 ,0 ,0
-  db 57,57,56,52,45,0 ,0 ,0
-  db 59,0 ,0 ,55,50,45,0 ,0
-  db 0 ,0 ,0 ,0 ,55,50,45,0
-  db 0 ,0 ,0 ,0 ,0 ,55,50,47
-  db 0 ,0 ,0 ,0 ,0 ,0 ,52,0
-
 NEWSYM GUIFontData
 ; bitmap 5x5 font; char - offset for ASCII2Font
   db 0,0,0,0,0; empty space 0x0

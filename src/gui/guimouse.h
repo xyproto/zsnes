@@ -30,7 +30,6 @@ extern void DisplayGUIVideoClick();
 extern void DisplayGUIVideoClick2();
 extern void DisplayGameOptnsClick();
 extern void DisplayNetOptnsClick();
-extern void DrawMouse();
 
 extern char const* guipressptr;
 extern u1          ntscCurVar;

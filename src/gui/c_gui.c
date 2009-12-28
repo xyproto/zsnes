@@ -31,7 +31,6 @@
 #include "guifuncs.h"
 #include "guikeys.h"
 #include "guimisc.h"
-#include "guimouse.h"
 #include "guitools.h"
 #include "guiwindp.h"
 
@@ -1575,7 +1574,7 @@ void StartGUI(void)
 		}
 
 		DisplayMenu();
-		if (MouseDis != 1) asm_call(DrawMouse);
+		if (MouseDis != 1) DrawMouse();
 		if (FirstTimeData == 0)
 		{
 			guifirsttimemsg();

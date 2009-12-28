@@ -8,6 +8,7 @@
 #include "../intrf.h"
 #include "../link.h"
 #include "../macros.h"
+#include "../ui.h"
 #include "../vcache.h"
 #include "../video/procvid.h"
 #include "../zmovie.h"
@@ -793,4 +794,72 @@ void guipresstestb(void)
 	while (Check_Key() != 0) Get_Key();
 	if (key_id != 1 && key_id != 0x3B)
 		*guicpressptr = key_id;
+}
+
+
+void DrawMouse(void)
+{
+	static u1 const GUIMousePtr[] =
+	{
+		50,47,45,43,40, 0, 0, 0,
+		53,52,46,42, 0, 0, 0, 0,
+		55,54,54,44, 0, 0, 0, 0,
+		57,57,56,52,45, 0, 0, 0,
+		59, 0, 0,55,50,45, 0, 0,
+		 0, 0, 0, 0,55,50,45, 0,
+		 0, 0, 0, 0, 0,55,50,47,
+		 0, 0, 0, 0, 0, 0,52, 0
+	};
+
+	u1*       dst = vidbuffer + 16 + GUImouseposx + GUImouseposy * 288;
+	u1 const* src = GUIMousePtr;
+	u4        y   = 8;
+	do
+	{
+		u4 x = 8;
+		do
+		{
+			u1 const al = *src++;
+			if (al == 0) continue;
+
+			if (mouseshad & 1)
+			{
+				u1* const px = &dst[288 * 10 + 8];
+				if (*px < 32)
+				{
+					*px = 96;
+				}
+				else
+				{
+					u1* const px = &dst[288 * 4 + 3];
+					u1  const c  = *px;
+					if (32 <= c && c <= 63)
+					{
+						*px = (c - 32U) / 2 + 32U;
+					}
+					else if ((c & 0xF0) == 64)
+					{
+						*px = c + 16;
+					}
+					else
+					{
+						u1* const px = &dst[288 * 7 + 5];
+						u1  const c  = *px;
+						if (148 <= c && c <= 167)
+						{
+							*px = c + 20;
+						}
+						else if (189 <= c && c <= 220)
+						{
+							*px = (c - 189U) / 2 + 189U;
+						}
+					}
+				}
+			}
+			*dst = al + 88;
+		}
+		while (++dst, --x != 0);
+		dst += 288 - 8;
+	}
+	while (--y != 0);
 }
