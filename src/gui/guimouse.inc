@@ -19,59 +19,8 @@
 
 
 
-EXTSYM guiprevideo, guipresstest, guipostvideo, guipostvideofail,SetDevice
+EXTSYM guipresstest, SetDevice
 
-SECTION .text
-
-NEWSYM GUIProcVideo
-  mov byte[GUICBHold],0
-  mov byte[newengen],1
-  ccallv guiprevideo
-  mov al,[cvidmode]
-  mov [.prevvid],al
-  mov al,[GUIcurrentvideocursloc]
-  mov [cvidmode],al
-%ifdef __MSDOS__
-  mov byte[ExitFromGUI],1
-%endif
-  ccallv initvideo
-%ifdef __MSDOS__
-  cmp byte[videotroub],1
-  je .failed
-%endif
-  ccallv GUISetPal
-  ccallv guipostvideo
-  cmp dword[GUIkeydelay],0
-  je .failed2
-  mov dword[GUIkeydelay],0
-  ret
-.fullsc
-%ifndef __MSDOS__
-  mov [PrevFSMode],al
-%endif
-  ret
-%ifdef __MSDOS__
-.failed
-  mov byte[videotroub],0
-  mov al,[.prevvid]
-  mov [cvidmode],al
-  ccallv initvideo
-  ccallv GUISetPal
-  ccallv guipostvideofail
-  mov dword[GUIkeydelay],0
-  ret
-%endif
-.failed2
-  mov byte[videotroub],0
-  mov al,[.prevvid]
-  mov [cvidmode],al
-  ccallv initvideo
-  ccallv GUISetPal
-  ccallv vidpastecopyscr
-  mov dword[GUIkeydelay],0
-  ret
-SECTION .bss
-.prevvid resb 1
 SECTION .text
 
 NEWSYM GUINTSCReset

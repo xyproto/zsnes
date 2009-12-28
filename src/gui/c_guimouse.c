@@ -8,6 +8,7 @@
 #include "../intrf.h"
 #include "../link.h"
 #include "../macros.h"
+#include "../vcache.h"
 #include "../video/procvid.h"
 #include "../zmovie.h"
 #include "c_gui.h"
@@ -16,6 +17,7 @@
 #include "guicheat.h"
 #include "guicombo.h"
 #include "guifuncs.h"
+#include "guikeys.h"
 #include "guimisc.h"
 #include "guimouse.h"
 #include "guiwindp.h"
@@ -39,6 +41,44 @@ static u2 mousebuttonstat;
 
 static char const guipresstext1[] = "ENTER THE KEY";
 static char const guipresstext2[] = "OR BUTTON TO USE";
+
+
+static void GUIProcVideo(void)
+{
+	GUICBHold = 0;
+	newengen  = 1;
+	guiprevideo();
+	u1 const prevvid = cvidmode;
+	cvidmode = GUIcurrentvideocursloc;
+#ifdef __MSDOS__
+	ExitFromGUI = 1;
+#endif
+	initvideo();
+#ifdef __MSDOS__
+	if (videotroub == 1)
+	{
+		videotroub = 0;
+		cvidmode   = prevvid;
+		initvideo();
+		GUISetPal();
+		guipostvideofail();
+	}
+	else
+#endif
+	{
+		GUISetPal();
+		guipostvideo();
+		if (GUIkeydelay == 0)
+		{
+			videotroub = 0;
+			cvidmode   = prevvid;
+			initvideo();
+			GUISetPal();
+			vidpastecopyscr();
+		}
+	}
+	GUIkeydelay = 0;
+}
 
 
 static void ProcessMouseButtons(void)
@@ -367,7 +407,7 @@ hold:
 		case  1: GUILoadData();                return;
 		case  2: GUIProcReset();               return;
 		case  3: GUIProcReset();               return;
-		case  4: asm_call(GUIProcVideo);       return; // set video mode
+		case  4: GUIProcVideo();               return; // set video mode
 #ifndef __MSDOS__
 		case 12: asm_call(GUIProcCustomVideo); return; // set custom video mode
 #endif

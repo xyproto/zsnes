@@ -42,7 +42,7 @@
 
 %include "macros.mac"
 
-EXTSYM vidpastecopyscr,frameskip,newengen,cvidmode,antienab
+EXTSYM frameskip,newengen,cvidmode,antienab
 EXTSYM soundon,StereoSound,SoundQuality,MusicRelVol
 EXTSYM cbitmode
 EXTSYM romloadskip,romdata,current_zst
@@ -51,7 +51,7 @@ EXTSYM KeyRTRCycle
 EXTSYM initvideo,pressed,memtabler8
 EXTSYM memtablew8,writeon,JoyRead,delay,FPSOn,RevStereo,WDSPReg0C
 EXTSYM WDSPReg1C,pl12s34,vidbufferofsb,wramdata,bgfixer
-EXTSYM videotroub,CheatCodeSave,CheatCodeLoad
+EXTSYM CheatCodeSave,CheatCodeLoad
 EXTSYM Check_Key,Get_Key,sram,ScanCodeListing,RelPathBase
 EXTSYM GetTime
 EXTSYM Clear2xSaIBuffer,Show224Lines
@@ -126,7 +126,7 @@ EXTSYM CheckScreenSaver,MouseWheel,TrapMouseCursor,AllowMultipleInst,TripleBuffe
 EXTSYM HighPriority,SaveMainWindowPos,PrimaryBuffer
 EXTSYM CBBuffer,CBLength,PasteClipBoard,ctrlptr,PauseFocusChange
 %elifdef __MSDOS__
-EXTSYM dssel,initvideo2,Force8b,SBHDMA,vibracard,smallscreenon,ExitFromGUI
+EXTSYM dssel,initvideo2,Force8b,SBHDMA,vibracard,smallscreenon
 EXTSYM pl1p209,pl2p209,pl3p209,pl4p209,pl5p209,SidewinderFix,Triplebufen,ScreenScale
 EXTSYM GUIEAVID,GUIWSVID,GUISSVID,GUITBVID,GUISLVID,GUIHSVID,GUI2xVID,TripBufAvail
 EXTSYM DOSClearScreen
