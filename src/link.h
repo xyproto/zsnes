@@ -23,6 +23,7 @@ void initwinvideo(void);
 
 extern u1 MouseButton;
 extern u1 T36HZEnabled;
+extern u1 changeRes;
 #endif
 
 #endif

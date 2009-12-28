@@ -23,24 +23,6 @@ EXTSYM guipresstest, SetDevice
 
 SECTION .text
 
-%ifndef __MSDOS__
-NEWSYM GUIProcCustomVideo
-  ccallv SetCustomXY
-  mov byte[GUICBHold],0
-  mov dword[GUIInputBox],0
-%ifdef __WIN32__
-  cmp byte[cvidmode],37
-%else
-  cmp byte[cvidmode],20
-%endif
-  jl .notcustomres
-  mov byte[changeRes],1
-  ccallv initwinvideo
-  ccallv Clear2xSaIBuffer
-.notcustomres
-  ret
-%endif
-
 NEWSYM SwitchFullScreen
   pushad
   ccallv Clear2xSaIBuffer

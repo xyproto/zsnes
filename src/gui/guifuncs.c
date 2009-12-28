@@ -1814,7 +1814,7 @@ void GetCustomXY()
   }
 }
 
-void SetCustomXY()
+void SetCustomXY(void)
 {
   if(!((atoi(GUICustomX) < 256) || (atoi(GUICustomX) > 2048) || (atoi(GUICustomY) < 224) || (atoi(GUICustomY) > 1536)))
   {

@@ -1604,7 +1604,7 @@ GUIPathKeys:
   ret
 
 SECTION .bss
-GUIInputBox resd 1
+NEWSYM GUIInputBox, resd 1
 GUIInputLimit resd 1
 SECTION .text
 

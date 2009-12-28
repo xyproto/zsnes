@@ -15,6 +15,10 @@ void SaveCheatSearchFile(void);
 void SetMovieForcedLength(void);
 void loadquickfname(u1 slot);
 
+#ifndef __MSDOS__
+void SetCustomXY(void);
+#endif
+
 extern u4 GUIcurrentfilewin;
 
 #endif

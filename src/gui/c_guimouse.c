@@ -24,6 +24,7 @@
 
 #ifndef __MSDOS__
 #include "../video/ntsc.h"
+#include "../video/procvidc.h"
 #endif
 
 #ifdef __WIN32__
@@ -124,6 +125,26 @@ static void GUINTSCPreset(void)
 	NTSCPresetVar = 4;
 	GUICBHold     = 0;
 }
+
+
+#ifndef __MSDOS__
+static void GUIProcCustomVideo(void)
+{
+	SetCustomXY();
+	GUICBHold   = 0;
+	GUIInputBox = 0;
+#ifdef __WIN32__
+	if (cvidmode >= 37)
+#else
+	if (cvidmode >= 20)
+#endif
+	{
+		changeRes = 1;
+		initwinvideo();
+		Clear2xSaIBuffer();
+	}
+}
+#endif
 
 
 static void ProcessMouseButtons(void)
@@ -449,30 +470,30 @@ hold:
 	// ButtonProcess
 	switch (GUICBHold)
 	{
-		case  1: GUILoadData();                return;
-		case  2: GUIProcReset();               return;
-		case  3: GUIProcReset();               return;
-		case  4: GUIProcVideo();               return; // set video mode
+		case  1: GUILoadData();              return;
+		case  2: GUIProcReset();             return;
+		case  3: GUIProcReset();             return;
+		case  4: GUIProcVideo();             return; // set video mode
 #ifndef __MSDOS__
-		case 12: asm_call(GUIProcCustomVideo); return; // set custom video mode
+		case 12: GUIProcCustomVideo();       return; // set custom video mode
 #endif
 		case 37:
 		case 38:
-		case 39: GUINTSCReset();               return; // reset ntsc options
+		case 39: GUINTSCReset();             return; // reset ntsc options
 		case 81:
 		case 82:
 		case 83:
-		case 84: GUINTSCPreset();              return; // ntsc preset
+		case 84: GUINTSCPreset();            return; // ntsc preset
 		case 10:
-		case 11: GUIProcStates();              return;
-		case  5: asm_call(CheatCodeRemove);    return;
-		case  6: asm_call(CheatCodeToggle);    return;
-		case  7: CheatCodeSave();              return;
-		case  8: CheatCodeLoad();              return;
-		case  9: asm_call(ProcessCheatCode);   return;
-		case 33: asm_call(CheatCodeFix);       return;
-		case 14: SetDevice();                  return;
-		case 15: CalibrateDev1();              return;
+		case 11: GUIProcStates();            return;
+		case  5: asm_call(CheatCodeRemove);  return;
+		case  6: asm_call(CheatCodeToggle);  return;
+		case  7: CheatCodeSave();            return;
+		case  8: CheatCodeLoad();            return;
+		case  9: asm_call(ProcessCheatCode); return;
+		case 33: asm_call(CheatCodeFix);     return;
+		case 14: SetDevice();                return;
+		case 15: CalibrateDev1();            return;
 
 		case 16: GUICBHold = 0; MoviePlay();          return; // movie replay
 		case 17: GUICBHold = 0; MovieRecord();        return; // movie record
