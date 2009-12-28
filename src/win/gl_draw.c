@@ -26,6 +26,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "gl_draw.h"
 #include "../cfg.h"
 #include "../link.h"
+#include "../video/c_copyvwin.h"
 #include "winlink.h"
 
 
@@ -128,7 +129,6 @@ extern uint32_t AddEndBytes;
 extern uint32_t NumBytesPerLine;
 extern uint8_t *WinVidMemStart;
 extern uint8_t NGNoTransp;
-void copy640x480x16bwin();
 extern uint8_t SpecialLine[224];  /* 0 if lo-res, > 0 if hi-res */
 
 void gl_clearwin()

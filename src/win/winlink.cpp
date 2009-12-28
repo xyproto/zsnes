@@ -46,6 +46,7 @@ extern "C"
 #include "../input.h"
 #include "../link.h"
 #include "../types.h"
+#include "../video/c_copyvwin.h"
 #include "../zmovie.h"
 #include "c_winintrf.h"
 
@@ -2238,7 +2239,6 @@ extern "C"
   extern DWORD AddEndBytes;
   extern DWORD NumBytesPerLine;
   extern unsigned char *WinVidMemStart;
-  void copy640x480x16bwin();
   void hq2x_16b();
   void hq2x_32b();
   void hq3x_16b();
@@ -2560,7 +2560,7 @@ extern "C"
             AddEndBytes = pitch - 1024;
             NumBytesPerLine = pitch;
             WinVidMemStart = &SurfBuf[0];
-            asm_call(copy640x480x16bwin);
+            copy640x480x16bwin();
             break;
           default:
             UnlockSurface();
@@ -2583,7 +2583,7 @@ extern "C"
             AddEndBytes = pitch - 1024;
             NumBytesPerLine = pitch;
             WinVidMemStart = &SurfBuf[(240 - resolutn) * pitch + 64 * 2];
-            asm_call(copy640x480x16bwin);
+            copy640x480x16bwin();
             break;
           default:
             UnlockSurface();

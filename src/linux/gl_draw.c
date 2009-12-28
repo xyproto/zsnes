@@ -21,9 +21,10 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #include "../cfg.h"
 #include "../gblhdr.h"
-#include "../asm_call.h"
 #include "../link.h"
+#include "../video/c_copyvwin.h"
 #include <stdint.h>
+
 
 // FUNCTIONS
 void hq2x_16b();
@@ -159,7 +160,6 @@ extern uint64_t AddEndBytes;
 extern uint64_t NumBytesPerLine;
 extern unsigned char *WinVidMemStart;
 extern unsigned char NGNoTransp;
-void copy640x480x16bwin();
 extern unsigned char SpecialLine[224];  /* 0 if lo-res, > 0 if hi-res */
 
 void gl_clearwin()
@@ -311,7 +311,7 @@ void gl_drawwin()
     }
     else
     {
-      asm_call(copy640x480x16bwin);
+      copy640x480x16bwin();
     }
 
     /* Display 1 512x448 quad for the 512x448 buffer */

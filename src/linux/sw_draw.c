@@ -22,9 +22,9 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #include "../gblhdr.h"
 #include "../cfg.h"
-#include "../asm_call.h"
 #include "../intrf.h"
 #include "../link.h"
+#include "../video/c_copyvwin.h"
 #include <stdint.h>
 
 
@@ -119,7 +119,6 @@ extern uint32_t NumBytesPerLine;
 extern unsigned char *WinVidMemStart;
 extern unsigned char NGNoTransp;
 extern unsigned short resolutn;
-void copy640x480x16bwin();
 void hq2x_16b();
 void hq3x_16b();
 void hq4x_16b();
@@ -228,7 +227,7 @@ void sw_drawwin()
     }
     else
     {
-      asm_call(copy640x480x16bwin);
+      copy640x480x16bwin();
     }
   }
   else if ((SurfaceX == 602) && NTSCFilter)
@@ -267,7 +266,7 @@ void sw_drawwin()
     }
     else
     {
-      asm_call(copy640x480x16bwin);
+      copy640x480x16bwin();
     }
   }
 
