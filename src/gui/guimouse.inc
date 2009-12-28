@@ -23,98 +23,6 @@ EXTSYM guipresstest, SetDevice
 
 SECTION .text
 
-NEWSYM GUIWinClicked
-  mov ecx,[GUImouseposx]
-  sub ecx,[GUIwinposx+ebx*4]
-  mov edx,[GUImouseposy]
-  sub edx,[GUIwinposy+ebx*4]
-  mov esi,ecx
-  sub esi,[GUIwinsizex+ebx*4]
-  add esi,10
-  cmp esi,-1
-  jle .noclose
-  cmp esi,10
-  jge .noclose
-  cmp edx,0
-  jle .noclose
-  cmp edx,10
-  jge .noclose
-  mov byte[GUIwinorder+eax],0
-  mov byte[GUIwinactiv+ebx],0
-  dec byte[GUIwinptr]
-  mov dword[GUIInputBox],0
-  ccallv init_save_paths
-  ccallv SetMovieForcedLength
-%ifndef __MSDOS__
-  ccallv SetCustomXY
-%endif
-  ret
-.noclose
-  cmp edx,10
-  jge .nomove
-  mov byte[GUIHold],1
-  mov ax,[GUIwinposx+ebx*4]
-  movsx eax,ax
-  mov [GUIHoldxm],eax
-  mov ax,[GUIwinposy+ebx*4]
-  movsx eax,ax
-  mov [GUIHoldym],eax
-  xor eax,eax
-  mov ax,[GUImouseposx]
-  mov [GUIHoldx],eax
-  mov ax,[GUImouseposy]
-  mov [GUIHoldy],eax
-  ret
-.nomove
-  mov eax,[GUImouseposx]
-  sub eax,[GUIwinposx+ebx*4]
-  mov edx,[GUImouseposy]
-  sub edx,[GUIwinposy+ebx*4]
-  mov dword[GUIInputBox],0
-  cmp ebx,1
-  je near DisplayGUIConfirmClick
-  cmp ebx,2
-  je near DisplayGUIChoseSaveClick
-  cmp ebx,3
-  je near DisplayGUIInputClick
-  cmp ebx,4
-  je near DisplayGUIOptionClick
-  cmp ebx,5
-  je near DisplayGUIVideoClick
-  cmp ebx,6
-  je near DisplayGUISoundClick
-  cmp ebx,7
-  je near DisplayGUICheatClick
-  cmp ebx,8
-  je near DisplayNetOptnsClick
-  cmp ebx,9
-  je near DisplayGameOptnsClick
-  cmp ebx,10
-  je near DisplayGUIOptnsClick
-  cmp ebx,11
-  je near DisplayGUIAboutClick
-  cmp ebx,12
-  je near DisplayGUIResetClick
-  cmp ebx,13
-  je near DisplayGUICheatSearchClick
-  cmp ebx,14
-  je near DisplayGUIStatesClick
-  cmp ebx,15
-  je near DisplayGUIMovieClick
-  cmp ebx,16
-  je near DisplayGUIComboClick
-  cmp ebx,17
-  je near DisplayGUIAddOnClick
-  cmp ebx,18
-  je near DisplayGUIChipClick
-  cmp ebx,19
-  je near DisplayGUIPathsClick
-  cmp ebx,20
-  je near DisplayGUISaveClick
-  cmp ebx,21
-  je near DisplayGUISpeedClick
-  ret
-
 %macro GUIClickArea 5
   cmp eax,%1
   jl %5
@@ -888,7 +796,7 @@ NEWSYM DisplayGUIConfirmClick2
   GUISlidebarPostImpl 230,33,237,33+93,.scrollupsld,.scrolldownsld,3,15,GUIcurrentdirviewloc,GUIcurrentdircursloc,GUIdirentries,GUIcurrentfilewin,1
   GUIPostWinBoxMove 160,26,228,27+15*7,GUIcurrentdirviewloc,GUIcurrentdircursloc,GUIdirentries,.scrollupsld,.scrolldownsld,DisplayGUIConfirmClick.skipscrol,15
 .noload3
-DisplayGUIConfirmClick:
+NEWSYM DisplayGUIConfirmClick
 ;ccallv DrawSlideBarWin, 1, 133, 43, [GUIcurrentviewloc], [GUIfileentries], 15, 94, GUILStA
   ; offset 0 = (ysize-(yend-ystart+1)), offset 1 = starty, offset 2 = endy
   ; SlideBar Implementation
@@ -912,7 +820,7 @@ DisplayGUIConfirmClick:
   GUIClickCButton5 184,187,byte[ForceHiLoROM],2
   ret
 
-DisplayGUIChoseSaveClick:
+NEWSYM DisplayGUIChoseSaveClick
   GUIPHoldbutton2 94,59,102,67,80,byte[GUIChoseSlotTextX],1,'9'
   GUIPHoldbutton2 105,59,113,67,81,byte[GUIChoseSlotTextX],-1,'0'
   GUIPButtonHole 10,28,byte[GUIChoseSaveText2],0
@@ -933,7 +841,7 @@ DisplayGUIChoseSaveClick:
   mov [current_zst],eax
   ret
 
-DisplayGUIMovieClick:
+NEWSYM DisplayGUIMovieClick
   cmp byte[MovieProcessing],4
   je near .cannotzmv
   cmp byte[MovieProcessing],5
@@ -1067,7 +975,7 @@ NEWSYM DisplayGUIInputClick2
   pop eax
   GUISlidebarPostImpl 109,42,116,69,.scrollup,.scrolldown,9,5,GUIcurrentinputviewloc,GUIcurrentinputcursloc,GUINumValue,GUIBlankVar,1
   GUIPostWinBoxMove 5,35,107,35+5*8,GUIcurrentinputviewloc,GUIcurrentinputcursloc,GUINumValue,.scrollup,.scrolldown,DisplayGUIInputClick.skipscrol,5
-DisplayGUIInputClick:
+NEWSYM DisplayGUIInputClick
   ; SlideBar Implementation
   push eax
   mov eax,[NumInputDevices]
@@ -1147,7 +1055,7 @@ DisplayGUIInputClick:
   GUIClickCButtonM 5,180,byte[pl12s34]
   ret
 
-DisplayGUIOptionClick:
+NEWSYM DisplayGUIOptionClick
   GUIPTabClick 0,39,1,GUIOptionTabs
   GUIPTabClick 40,74,2,GUIOptionTabs
   cmp dword[GUIOptionTabs],1
@@ -1734,7 +1642,7 @@ NEWSYM DisplayGUICheatClick2
   GUISlidebarPostImpl 231,28,238,100,.scrollup,.scrolldown,7,12,GUIcurrentcheatviewloc,GUIcurrentcheatcursloc,NumCheats,GUIBlankVar,1
   GUIPostWinBoxMove 5,22,229,22+12*7,GUIcurrentcheatviewloc,GUIcurrentcheatcursloc,NumCheats,.scrollup,.scrolldown,DisplayGUICheatClick.skipscrol,12
 
-DisplayGUICheatClick:
+NEWSYM DisplayGUICheatClick
   GUIBoxVar 5,20,181,110,GUIcurrentcheatwin,0      ; Main Box
   GUIBoxVar 82,129,173,136,GUIcurrentcheatwin,1    ; Enter Code Box
   GUIBoxVar 82,140,196,147,GUIcurrentcheatwin,2    ; Description Box
@@ -1754,7 +1662,7 @@ DisplayGUICheatClick:
   GUIClickCButton5 11,186,byte[AutoLoadCht],1    ; Checkbox
   ret
 
-DisplayNetOptnsClick:
+NEWSYM DisplayNetOptnsClick
   ret
 
 SECTION .bss
@@ -1762,7 +1670,7 @@ NEWSYM guipressptr,  resd 1
 NEWSYM guicpressptr, resd 1
 SECTION .text
 
-DisplayGameOptnsClick:
+NEWSYM DisplayGameOptnsClick
   mov dword[keycontrolval],0                  ; Shortcut Boxes
   DGOptnsProcBox 27,23,[KeyBGDisble0]
   DGOptnsProcBox 27+45,23,[KeyBGDisble1]
@@ -1966,7 +1874,7 @@ NEWSYM DisplayGUIOptnsClick
 .nohold
   ret
 
-DisplayGUIAboutClick:
+NEWSYM DisplayGUIAboutClick
 %ifndef __MSDOS__
   cmp byte[EEgg],1
   je near .eegg
@@ -1988,7 +1896,7 @@ NEWSYM DisplayGUIComboClick2
   GUISlidebarPostImpl 192,28,199,72,.scrollup,.scrolldown,13,8,GUIccombviewloc,GUIccombcursloc,NumCombo,GUIBlankVar,1
   ;x1,y1,x2,y2,view,curs,num,.scru,.scrd,jumpto,sizeofscreen
   GUIPostWinBoxMove 10,22,190,23+8*7,GUIccombviewloc,GUIccombcursloc,NumCombo,.scrollup,.scrolldown,DisplayGUIComboClick.skipscrol,8
-DisplayGUIComboClick:
+NEWSYM DisplayGUIComboClick
   ; SlideBar Implementation
   ; x1,y1,x2,y2,GUI?StA,ScrnSize,ViewLoc,CursLoc,Entries,win#
   GUISlidebarImpl 192,28,199,72,GUICSStC,8,GUIccombviewloc,GUIccombviewloc,NumCombo,16
@@ -2068,12 +1976,12 @@ DisplayGUIComboClick:
   xor ebx,ebx
   ret
 
-DisplayGUIResetClick:
+NEWSYM DisplayGUIResetClick
   GUIPHoldbutton 20,30,56,41,2
   GUIPHoldbutton 80,30,116,41,3
   ret
 
-DisplayGUIStatesClick:
+NEWSYM DisplayGUIStatesClick
   GUIPHoldbutton 20,30,56,41,10
   GUIPHoldbutton 80,30,116,41,11
   ret
@@ -2081,7 +1989,7 @@ DisplayGUIStatesClick:
 NEWSYM DisplayGUICheatSearchClick2
   cmp byte[CheatWinMode],2
   je near DisplayGUICheatSearchClick.preview
-DisplayGUICheatSearchClick:
+NEWSYM DisplayGUICheatSearchClick
   cmp byte[CheatWinMode],1
   je near .incheatmode
   cmp byte[CheatWinMode],2
@@ -2152,7 +2060,7 @@ DisplayGUICheatSearchClick:
   GUIBoxVar 10,55,126,62,CurCStextpos,1
   ret
 
-DisplayGUIAddOnClick:
+NEWSYM DisplayGUIAddOnClick
   GUIPButtonHole 9,23,byte[device1],0
   GUIPButtonHole 9,33,byte[device1],1
 
@@ -2172,7 +2080,7 @@ DisplayGUIAddOnClick:
   DGOptnsProcBox 165,108,[SSPause]
   ret
 
-DisplayGUIChipClick:
+NEWSYM DisplayGUIChipClick
   GUIClickCButton 9,43,byte[nssdip1]
   GUIClickCButton 59,43,byte[nssdip2]
   GUIClickCButton 109,43,byte[nssdip3]
@@ -2187,7 +2095,7 @@ DisplayGUIChipClick:
 %define path_length 1024
 %endif
 
-DisplayGUIPathsClick:
+NEWSYM DisplayGUIPathsClick
   GUIPTabClick 0,51,1,GUIPathTabs
   GUIPTabClick 52,86,2,GUIPathTabs
   GUIPTabClick 87,157,3,GUIPathTabs
@@ -2224,7 +2132,7 @@ DisplayGUIPathsClick:
 .notbc
   ret
 
-DisplayGUISaveClick:
+NEWSYM DisplayGUISaveClick
   GUIClickCButton 11,38,byte[nosaveSRAM]
   GUIClickCButton 11,48,byte[SRAMSave5Sec]
   GUIClickCButton 11,58,byte[SRAMState]

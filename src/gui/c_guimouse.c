@@ -11,6 +11,7 @@
 #include "../vcache.h"
 #include "../video/procvid.h"
 #include "../zmovie.h"
+#include "../zpath.h"
 #include "c_gui.h"
 #include "c_guimouse.h"
 #include "gui.h"
@@ -186,6 +187,65 @@ static void GUIWindowMove(void)
 }
 
 
+static void GUIWinClicked(u4 const i, u4 const id)
+{
+	u4 const rx  = GUImouseposx - GUIwinposx[id];
+	u4 const ry  = GUImouseposy - GUIwinposy[id];
+	s4 const esi = rx - GUIwinsizex[id] + 10;
+	if (0 <= esi && esi < 10 && 0 < ry && ry < 10)
+	{
+		GUIwinorder[i]  = 0;
+		GUIwinactiv[id] = 0;
+		GUIInputBox     = 0;
+		--GUIwinptr;
+		init_save_paths();
+		SetMovieForcedLength();
+#ifndef __MSDOS__
+		SetCustomXY();
+#endif
+	}
+	else if (ry < 10)
+	{
+		GUIHold   = 1;
+		GUIHoldxm = (short)GUIwinposx[id];
+		GUIHoldym = (short)GUIwinposy[id];
+		GUIHoldx  = GUImouseposx;
+		GUIHoldy  = GUImouseposy;
+	}
+	else
+	{
+		GUIInputBox = 0;
+		void (* f)();
+		switch (id)
+		{
+			case  1: f = DisplayGUIConfirmClick;     break;
+			case  2: f = DisplayGUIChoseSaveClick;   break;
+			case  3: f = DisplayGUIInputClick;       break;
+			case  4: f = DisplayGUIOptionClick;      break;
+			case  5: f = DisplayGUIVideoClick;       break;
+			case  6: f = DisplayGUISoundClick;       break;
+			case  7: f = DisplayGUICheatClick;       break;
+			case  8: f = DisplayNetOptnsClick;       break;
+			case  9: f = DisplayGameOptnsClick;      break;
+			case 10: f = DisplayGUIOptnsClick;       break;
+			case 11: f = DisplayGUIAboutClick;       break;
+			case 12: f = DisplayGUIResetClick;       break;
+			case 13: f = DisplayGUICheatSearchClick; break;
+			case 14: f = DisplayGUIStatesClick;      break;
+			case 15: f = DisplayGUIMovieClick;       break;
+			case 16: f = DisplayGUIComboClick;       break;
+			case 17: f = DisplayGUIAddOnClick;       break;
+			case 18: f = DisplayGUIChipClick;        break;
+			case 19: f = DisplayGUIPathsClick;       break;
+			case 20: f = DisplayGUISaveClick;        break;
+			case 21: f = DisplayGUISpeedClick;       break;
+			default: return;
+		}
+		asm volatile("call *%0" :: "r" (f), "a" (rx), "d" (ry) : "cc", "memory"); // XXX asm_call
+	}
+}
+
+
 static void ProcessMouseButtons(void)
 {
 	static u1 GUIOnMenuItm;
@@ -311,15 +371,7 @@ norclick2:;
 					if (GUIwinposx[id] < x && x < GUIwinposx[id] + GUIwinsizex[id] &&
 							GUIwinposy[id] < y && y < GUIwinposy[id] + GUIwinsizey[id] + 10)
 					{
-						u4 eax;
-						u4 ecx;
-						u4 edx;
-						u4 esi;
-						asm volatile("call *%4" : "=a" (eax), "=c" (ecx), "=d" (edx), "=S" (esi) : "r" (GUIWinClicked), "a" (i), "b" (id) : "cc", "memory"); // XXX asm_call
-						(void)eax;
-						(void)ecx;
-						(void)edx;
-						(void)esi;
+						GUIWinClicked(i, id);
 						return;
 					}
 					while (i != 0)
