@@ -167,6 +167,25 @@ void SwitchFullScreen(void)
 }
 
 
+static void GUIWindowMove(void)
+{
+	u1 const id = GUIwinorder[GUIwinptr - 1];
+	u4 const rx = GUImouseposx - GUIwinposx[id];
+	u4 const ry = GUImouseposy - GUIwinposy[id];
+	void (* f)();
+	switch (id)
+	{
+		case  3: f = DisplayGUIInputClick2;       break;
+		case  5: f = DisplayGUIVideoClick2;       break;
+		case  7: f = DisplayGUICheatClick2;       break;
+		case 13: f = DisplayGUICheatSearchClick2; break;
+		case 16: f = DisplayGUIComboClick2;       break;
+		default: f = DisplayGUIConfirmClick2;     break;
+	}
+	asm volatile("call *%0" :: "r" (f), "a" (rx), "d" (ry) : "cc", "memory"); // XXX asm_call
+}
+
+
 static void ProcessMouseButtons(void)
 {
 	static u1 GUIOnMenuItm;
@@ -356,7 +375,7 @@ noclick:;
 				u4 const maxx = GUIHoldXlimR;
 				if (x >= maxx) GUImouseposx = maxx;
 				lastmouseholded = 1;
-				asm_call(GUIWindowMove);
+				GUIWindowMove();
 				return;
 			}
 

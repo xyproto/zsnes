@@ -23,28 +23,6 @@ EXTSYM guipresstest, SetDevice
 
 SECTION .text
 
-NEWSYM GUIWindowMove
-  xor eax,eax
-  mov al,[GUIwinptr]
-  dec eax
-  xor ebx,ebx
-  mov bl,[GUIwinorder+eax]
-  mov eax,[GUImouseposx]
-  sub eax,[GUIwinposx+ebx*4]
-  mov edx,[GUImouseposy]
-  sub edx,[GUIwinposy+ebx*4]
-  cmp ebx,13
-  je near DisplayGUICheatSearchClick2
-  cmp ebx,7
-  je near DisplayGUICheatClick2
-  cmp ebx,5
-  je near DisplayGUIVideoClick2
-  cmp ebx,3
-  je near DisplayGUIInputClick2
-  cmp ebx,16
-  je near DisplayGUIComboClick2
-  jmp DisplayGUIConfirmClick2
-
 NEWSYM GUIWinClicked
   mov ecx,[GUImouseposx]
   sub ecx,[GUIwinposx+ebx*4]
@@ -899,7 +877,7 @@ SECTION .text
 
 ; Mouse implementation
 
-DisplayGUIConfirmClick2:
+NEWSYM DisplayGUIConfirmClick2
   cmp dword[GUIfileentries],1
   jbe near .noload2
   GUISlidebarPostImpl 146,33,153,33+93,.scrollupsl,.scrolldownsl,1,15,GUIcurrentviewloc,GUIcurrentcursloc,GUIfileentries,GUIcurrentfilewin,0
@@ -1082,7 +1060,7 @@ DisplayGUIMovieClick:
 %%lockInputChange
 %endmacro
 
-DisplayGUIInputClick2:
+NEWSYM DisplayGUIInputClick2
   push eax
   mov eax,[NumInputDevices]
   mov [GUINumValue],eax
@@ -1210,7 +1188,7 @@ DisplayGUIOptionClick:
 .notmore
   ret
 
-DisplayGUIVideoClick2:
+NEWSYM DisplayGUIVideoClick2
   cmp dword[GUIVideoTabs],1  ; modes
   jne near .notmodestab2
   push eax
@@ -1752,7 +1730,7 @@ SECTION .data
 sampratenext db 1,4,5,6,2,3,0,0
 SECTION .text
 
-DisplayGUICheatClick2:
+NEWSYM DisplayGUICheatClick2
   GUISlidebarPostImpl 231,28,238,100,.scrollup,.scrolldown,7,12,GUIcurrentcheatviewloc,GUIcurrentcheatcursloc,NumCheats,GUIBlankVar,1
   GUIPostWinBoxMove 5,22,229,22+12*7,GUIcurrentcheatviewloc,GUIcurrentcheatcursloc,NumCheats,.scrollup,.scrolldown,DisplayGUICheatClick.skipscrol,12
 
@@ -2004,7 +1982,7 @@ DisplayGUIAboutClick:
 ;    DrawGUIWinBox 3,5,34,107,77,167
 ;    ccallv DrawSlideBarWin, 3, 109, 42, [GUIcurrentinputviewloc], 16, 5, 28, GUIIStA
 
-DisplayGUIComboClick2:
+NEWSYM DisplayGUIComboClick2
   mov dword[keycontrolval],0
   ; x1,y1,x2,y2,upjump,downjump,holdpos,scsize,view,cur,listsize
   GUISlidebarPostImpl 192,28,199,72,.scrollup,.scrolldown,13,8,GUIccombviewloc,GUIccombcursloc,NumCombo,GUIBlankVar,1
@@ -2100,7 +2078,7 @@ DisplayGUIStatesClick:
   GUIPHoldbutton 80,30,116,41,11
   ret
 
-DisplayGUICheatSearchClick2:
+NEWSYM DisplayGUICheatSearchClick2
   cmp byte[CheatWinMode],2
   je near DisplayGUICheatSearchClick.preview
 DisplayGUICheatSearchClick:

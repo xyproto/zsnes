@@ -3,13 +3,18 @@
 
 #include "../types.h"
 
+extern void DisplayGUICheatClick2();
+extern void DisplayGUICheatSearchClick2();
+extern void DisplayGUIComboClick2();
+extern void DisplayGUIConfirmClick2();
+extern void DisplayGUIInputClick2();
 extern void DisplayGUIOptnsClick();
 extern void DisplayGUISoundClick();
 extern void DisplayGUISpeedClick();
 extern void DisplayGUIVideoClick();
+extern void DisplayGUIVideoClick2();
 extern void DrawMouse();
 extern void GUIWinClicked();
-extern void GUIWindowMove();
 
 extern char const* guipressptr;
 extern u1          ntscCurVar;
