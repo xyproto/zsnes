@@ -6,4 +6,6 @@ void start65816(void);
 
 void continueprog(void);
 
+void interror(void);
+
 #endif

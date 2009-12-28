@@ -1,6 +1,7 @@
 #include <string.h>
 
 #include "../asm_call.h"
+#include "../c_init.h"
 #include "../c_intrf.h"
 #include "../cfg.h"
 #include "../gblvars.h"
@@ -9,6 +10,10 @@
 #include "../vcache.h"
 #include "c_execute.h"
 #include "execute.h"
+
+#ifdef __MSDOS__
+#	include "../asm.h"
+#endif
 
 
 void start65816(void)
@@ -38,4 +43,15 @@ void continueprog(void)
 
 	InitPreGame();
 	asm_call(reexecute);
+}
+
+
+void interror(void)
+{
+#ifdef __MSDOS__
+	sti();
+#endif
+	deinitvideo();
+	PrintStr("Cannot process interrupt handler!\r\n");
+	DosExit();
 }

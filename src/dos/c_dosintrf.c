@@ -2,6 +2,7 @@
 #include "../asm_call.h"
 #include "../c_intrf.h"
 #include "../cfg.h"
+#include "../cpu/c_execute.h"
 #include "../cpu/dspproc.h"
 #include "../cpu/execute.h"
 #include "../gui/c_gui.h"
@@ -135,7 +136,7 @@ static void get_handler(u1 const irq, u2* const segment, IRQHandler** const hand
 {
 	u4 failed;
 	asm("int $0x31;  sbb %0, %0" : "=a" (failed), "=c" (*segment), "=d" (*handler) : "a" (0x204), "b" (irq) : "cc");
-	if (failed) asm_call(interror);
+	if (failed) interror();
 }
 
 
@@ -162,7 +163,7 @@ static void set_handler(u1 const irq, u2 const segment, IRQHandler* const handle
 {
 	u4 failed;
 	asm volatile("int $0x31;  sbb %0, %0" : "=a" (failed) : "a" (0x205), "b" (irq), "c" (segment), "d" (handler) : "cc");
-	if (failed) asm_call(interror);
+	if (failed) interror();
 }
 
 

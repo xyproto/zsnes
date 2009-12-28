@@ -32,7 +32,7 @@ EXTSYM DeInitPostGame,spcPCRam,xp,xpb,xpc,tablead
 EXTSYM tableadc,SA1UpdateDPage,Makemode7Table,nextmenupopup,MovieProcessing
 EXTSYM SFXEnable,wramdata,cycpbl,cycpblt,irqon,spcon
 EXTSYM multchange,romispal,scrndis,sprlefttot,sprleftpr,processsprites
-EXTSYM cachesprites,opcjmptab,CheatOn,PrintStr,Check_Key,Get_Key,
+EXTSYM cachesprites,opcjmptab,CheatOn,Check_Key,Get_Key,
 EXTSYM INTEnab,JoyCRead,NMIEnab,NumCheats,CurrentExecSA1,ReadInputDevice
 EXTSYM StartDrawNewGfx,VIRQLoc,cachevideo,cfield,cheatdata,curblank,curnmi
 EXTSYM curypos,cycpl,doirqnext,drawline,exechdma,hdmadelay,intrset,newengen
@@ -119,12 +119,6 @@ NEWSYM UpdateRewind
     call UpdateDPage
 .norewinds
     ret
-
-%macro stim 0
-%ifdef __MSDOS__
-    sti
-%endif
-%endmacro
 
 %macro ProcessIRQStuff 0
     ; check for VIRQ/HIRQ
@@ -429,16 +423,7 @@ NEWSYM endprog
     ccallv DosExit
     ret
 
-NEWSYM interror
-    stim
-    ccallv deinitvideo
-    ccallv PrintStr, .nohand
-    ccallv DosExit
-    ret
-
 SECTION .data
-.nohand db 'Cannot process interrupt handler!',13,10,0
-
 ; global variables
 NEWSYM invalid, db 0
 NEWSYM invopcd, db 0
