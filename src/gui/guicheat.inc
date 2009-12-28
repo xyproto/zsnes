@@ -24,7 +24,7 @@ SECTION .text
 
 ; GUI Cheat Code Routines
 
-AddCSCheatCode:
+NEWSYM AddCSCheatCode
     cmp byte[CSInputDisplay],'_'
     je .nodisplay
     jmp .okay
@@ -132,7 +132,7 @@ AddCSCheatCode:
     jmp .end
 %endmacro
 
-CheatCodeSearchProcess:
+NEWSYM CheatCodeSearchProcess
     cmp byte[CheatSrcSearchType],1
     je near .comparative
     cmp byte[CSInputDisplay],0
@@ -227,7 +227,7 @@ NEWSYM CopyRamToggle, resb 1
 FirstSearch   resb 1
 SECTION .text
 
-CheatCodeSearchInit:
+NEWSYM CheatCodeSearchInit
     mov byte[CSInputDisplay],'_'
     mov byte[CSInputDisplay+1],0
     mov byte[CheatWinMode],1
@@ -320,7 +320,7 @@ NEWSYM EnableCheatsOnLoad
 .skip2
     ret
 
-CheatCodeRemove:
+NEWSYM CheatCodeRemove
     mov byte[GUICBHold],0
     cmp dword[NumCheats],0
     jne .nonone
@@ -369,7 +369,7 @@ CheatCodeRemove:
 .cheatexists
     ret
 
-CheatCodeFix:
+NEWSYM CheatCodeFix
     mov byte[GUICBHold],0
     cmp dword[NumCheats],0
     jne .nonone
@@ -389,7 +389,7 @@ CheatCodeFix:
     call EnableCheatCodeNoPrevMod
     ret
 
-CheatCodeToggle:
+NEWSYM CheatCodeToggle
     mov byte[GUICBHold],0
     cmp dword[NumCheats],0
     jne .nonone
@@ -577,7 +577,7 @@ AddCheatCode:
     mov byte[CheatOn],1
     ret
 
-ProcessCheatCode:
+NEWSYM ProcessCheatCode
     mov byte[GUICBHold],0
     cmp dword[NumCheats],255
     je .fail

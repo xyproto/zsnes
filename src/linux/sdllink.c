@@ -1614,12 +1614,12 @@ void LaunchURL(char *url)
   _exit(0); //All browser launches failed, oh well
 }
 
-void ZsnesPage()
+void ZsnesPage(void)
 {
   LaunchURL("http://www.zsnes.com/");
 }
 
-void DocsPage()
+void DocsPage(void)
 {
   LaunchURL("http://zsnes-docs.sourceforge.net/");
 }

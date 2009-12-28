@@ -3,15 +3,22 @@
 
 #include "../types.h"
 
+extern void DisplayGUIOptnsClick();
+extern void DisplayGUISoundClick();
+extern void DisplayGUISpeedClick();
+extern void DisplayGUIVideoClick();
 extern void DrawMouse();
-extern void ProcessMouseButtons();
+extern void GUINTSCPreset();
+extern void GUINTSCReset();
+extern void GUIProcCustomVideo();
+extern void GUIProcVideo();
+extern void GUIWinClicked();
+extern void GUIWindowMove();
+extern void SwitchFullScreen();
 
 extern char const* guipressptr;
-extern u1          MouseMoveOkay;
-extern u1          lastmouseholded;
 extern u1          ntscCurVar;
 extern u1          ntscWhVar;
-extern u2          mousebuttonstat;
 extern u4*         guicpressptr;
 
 #endif

@@ -53,17 +53,14 @@ EXTSYM memtablew8,writeon,JoyRead,delay,FPSOn,RevStereo,WDSPReg0C
 EXTSYM WDSPReg1C,pl12s34,vidbufferofsb,wramdata,bgfixer
 EXTSYM videotroub,CheatCodeSave,CheatCodeLoad
 EXTSYM Check_Key,Get_Key,sram,ScanCodeListing,RelPathBase
-EXTSYM Set_MousePosition
 EXTSYM GetTime
-EXTSYM Clear2xSaIBuffer,MouseWindow,Show224Lines
+EXTSYM Clear2xSaIBuffer,Show224Lines
 EXTSYM newgfx16b,NumVideoModes,MusicVol,DSPMem,NumInputDevices
 EXTSYM GUIInputNames,GUIVideoModeNames,GameSpecificInput,device1,device2,TwelveHourClock
 EXTSYM GUIM7VID,GUINTVID,GUIHQ2X,RawDumpInProgress
 EXTSYM MultiTap
 EXTSYM nssdip1,nssdip2,nssdip3,nssdip4,nssdip5,nssdip6
-EXTSYM SkipMovie,MovieStop,MoviePlay,MovieRecord
-EXTSYM MovieInsertChapter,MovieSeekAhead,MovieSeekBehind
-EXTSYM MovieDumpRaw,MovieAppend,AutoLoadCht,GUILoadData
+EXTSYM AutoLoadCht,GUILoadData
 EXTSYM CheckMenuItemHelp
 EXTSYM GUITryMenuItem,GUIProcStates,GUIProcReset,GUISetPal,GUIOutputStringwin
 EXTSYM DrawSlideBarWin,MovieProcessing,MovieRecordWinVal
@@ -137,7 +134,7 @@ EXTSYM GUI36hzcall
 %endif
 
 %ifndef __MSDOS__
-EXTSYM ZsnesPage,DocsPage,GUICustomX,GUICustomY,GetCustomXY,SetCustomXY,initwinvideo
+EXTSYM GUICustomX,GUICustomY,GetCustomXY,SetCustomXY,initwinvideo
 EXTSYM Keep4_3Ratio,PrevFSMode,PrevWinMode,NTSCFilterInit,hqFilterlevel,BilinearFilter,GUIBIFIL
 EXTSYM GUIWFVID,GUIDSIZE,GUIHQ3X,GUIHQ4X,GUIKEEP43,Keep43Check,changeRes,sl_intensity
 %endif
@@ -223,8 +220,8 @@ NEWSYM GUIPrevMenuData,
 ;                LOAD STAT INPT OPT  VID  SND  CHT  NET  GMKEY GUIOP ABT  RSET SRC  STCN MOVE CMBO ADDO CHIP PATH SAVE SPED
 NEWSYM GUIwinposxo, dd 0,6   ,65  ,33  ,42  ,5   ,34  ,6   ,64  ,8    ,5    ,33  ,56  ,64  ,56  ,5   ,3   ,28  ,48  ,6    ,28  ,53
 NEWSYM GUIwinposyo, dd 0,20  ,70  ,20  ,20  ,20  ,20  ,20  ,30  ,30   ,20   ,20  ,60  ,30  ,60  ,20  ,20  ,60  ,60  ,20   ,30  ,20
-GUIwinsizex dd 0,244 ,126 ,205 ,180 ,245 ,188 ,244 ,128 ,240  ,245  ,190 ,144 ,128 ,144 ,246 ,250 ,200 ,160 ,244  ,200 ,150
-GUIwinsizey dd 0,190 ,68  ,192 ,190 ,190 ,188 ,191 ,40  ,170  ,150  ,190 ,42  ,40  ,42  ,190 ,190 ,120 ,100 ,190  ,168 ,180
+NEWSYM GUIwinsizex, dd 0,244 ,126 ,205 ,180 ,245 ,188 ,244 ,128 ,240  ,245  ,190 ,144 ,128 ,144 ,246 ,250 ,200 ,160 ,244  ,200 ,150
+NEWSYM GUIwinsizey, dd 0,190 ,68  ,192 ,190 ,190 ,188 ,191 ,40  ,170  ,150  ,190 ,42  ,40  ,42  ,190 ,190 ,120 ,100 ,190  ,168 ,180
 NEWSYM GUIwinptr, db 0
 
 NEWSYM WaterOn,  db 1
@@ -253,7 +250,6 @@ ViewBuffer  resb 50*32
 NEWSYM GUItextcolor, resb 5
 NEWSYM GUIcmenupos,  resb 1
 NEWSYM GUIescpress,  resb 1
-NEWSYM GUIcwinpress, resb 1
 NEWSYM GUIpmenupos,  resb 1
 NEWSYM GUIcrowpos,   resd 1
 NEWSYM GUIpclicked,  resb 1
@@ -263,13 +259,12 @@ NEWSYM GUICYLocPtr,  resd 1
 NEWSYM GUIMenuL,     resd 1
 NEWSYM GUIMenuR,     resd 1
 NEWSYM GUIMenuD,     resd 1
-GUIOnMenuItm resb 1
 NEWSYM GUIQuit,      resb 1
 NEWSYM GUIHold,      resb 1
-GUIHoldx     resd 1
-GUIHoldy     resd 1
-GUIHoldxm    resd 1
-GUIHoldym    resd 1
+NEWSYM GUIHoldx,     resd 1
+NEWSYM GUIHoldy,     resd 1
+NEWSYM GUIHoldxm,    resd 1
+NEWSYM GUIHoldym,    resd 1
 NEWSYM cwindrawn,    resb 1
 GUIWincol    resd 1
 NEWSYM GUIWincoladd, resd 1
@@ -286,9 +281,9 @@ NEWSYM cplayernum,   resb 1
 NEWSYM GUIScrolTim1, resd 1
 GUIScrolTim2 resd 1
 BlankVar     resb 1
-GUICHold     resd 1
+NEWSYM GUICHold,     resd 1
 NEWSYM GUICBHold,    resd 1
-GUICBHold2   resd 1
+NEWSYM GUICBHold2,   resd 1
 NEWSYM GUIDClickTL,  resd 1
 GUIDClCWin   resd 1
 GUIDClCEntry resd 1

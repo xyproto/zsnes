@@ -3103,14 +3103,14 @@ extern "C"
     }
   }
 
-  void ZsnesPage()
+  void ZsnesPage(void)
   {
     ShellExecute(NULL, NULL, "http://www.zsnes.com/", NULL, NULL, 0);
     MouseX = 0;
     MouseY = 0;
   }
 
-  void DocsPage()
+  void DocsPage(void)
   {
     ShellExecute(NULL, NULL, "http://zsnes-docs.sourceforge.net/", NULL, NULL, 0);
     MouseX = 0;

@@ -4,23 +4,464 @@
 #include "../c_intrf.h"
 #include "../cfg.h"
 #include "../cpu/execute.h"
+#include "../gblvars.h"
 #include "../intrf.h"
+#include "../link.h"
 #include "../macros.h"
 #include "../video/procvid.h"
+#include "../zmovie.h"
 #include "c_gui.h"
 #include "c_guimouse.h"
 #include "gui.h"
+#include "guicheat.h"
+#include "guicombo.h"
+#include "guifuncs.h"
+#include "guimisc.h"
 #include "guimouse.h"
+#include "guiwindp.h"
 
 #ifndef __MSDOS__
 #include "../video/ntsc.h"
 #endif
 
+#ifdef __WIN32__
+#	include "../win/winlink.h"
+#endif
+
+
+u1 GUIcwinpress;
+u1 lastmouseholded;
+
 static u1 LastHoldEnable;
+static u1 MouseMoveOkay;
 static u1 ntscLastVar[6];
+static u2 mousebuttonstat;
 
 static char const guipresstext1[] = "ENTER THE KEY";
 static char const guipresstext2[] = "OR BUTTON TO USE";
+
+
+static void ProcessMouseButtons(void)
+{
+	static u1 GUIOnMenuItm;
+
+	u2 const x = GUImouseposx;
+	u2 const y = GUImouseposy;
+
+	if (MouseMoveOkay == 1)
+	{
+		GUIOnMenuItm = 0;
+		if (GUIMenuL < x && x < GUIMenuR && 18 < y && y < GUIMenuD)
+		{
+			// Mouse Menu
+			GUIOnMenuItm = 2;
+			u4 const row = (y - 18) / 10;
+			if (GUICYLocPtr[row + 1] != 0)
+			{
+				GUIcrowpos   = row;
+				GUIOnMenuItm = 1;
+			}
+		}
+	}
+
+	// Check if mouse is clicked on menu
+	u2 const buttons = mousebuttonstat;
+	if (GUIRClick == 1)
+	{
+		if (buttons & 0x02)
+		{
+			if (romloadskip != 0 || MousePRClick != 0) goto norclick2;
+			GUIQuit = 2;
+		}
+		MousePRClick = 0;
+norclick2:;
+	}
+	if (buttons & 0x01)
+	{
+		if (GUIpclicked != 1 && GUIOnMenuItm != 2)
+		{
+			if (GUIOnMenuItm == 1)
+			{
+				GUITryMenuItem();
+			}
+			else if (y <= 15)
+			{
+				if (3 <= y && y <= 14)
+				{
+					if (233 <= x && x <= 242)
+					{
+						GUIcwinpress =
+#ifndef __UNIXSDL__
+							y > 8 ? 3 :
+#endif
+							1;
+						goto noclick;
+					}
+					else if (244 <= x && x <= 253)
+					{
+						GUIcwinpress = 2;
+						goto noclick;
+					}
+				}
+
+				if (3 <= y && y <= 13)
+				{
+					if (4 <= x && x <= 12)
+					{
+						GUIcmenupos = 1;
+						GUIcrowpos  = 0;
+						goto noclick;
+					}
+					else if (17 <= x && x <= 47)
+					{
+						GUIcmenupos = 2;
+						GUIcrowpos  = 0;
+						goto noclick;
+					}
+					else if (52 <= x  && x <= 94)
+					{
+						GUIcmenupos = 3;
+						GUIcrowpos  = 0;
+						goto noclick;
+					}
+					else if (99 <= x  && x <= 135)
+					{
+						GUIcmenupos = 4;
+						GUIcrowpos  = 0;
+						goto noclick;
+					}
+					else if (140 <= x  && x <= 188)
+					{
+						GUIcmenupos = 5;
+						GUIcrowpos  = 0;
+						goto noclick;
+					}
+					else if (193 <= x && x <= 223)
+					{
+						GUIcmenupos = 6;
+						GUIcrowpos  = 0;
+						goto noclick;
+					}
+					else if (224 <= x)
+					{
+						goto noclick;
+					}
+				}
+
+#ifndef __MSDOS__
+				GUIpclicked  =   1;
+				GUIHold      = 255;
+				GUIHoldYlim  =   y;
+				GUIHoldXlimL =   x;
+				MouseWindow();
+#endif
+			}
+			else if (GUIcmenupos == 0)
+			{
+				GUIpclicked = 1;
+				u4 i = GUIwinptr;
+				if (i != 0)
+				{
+					u1 const id = GUIwinorder[--i];
+					if (GUIwinposx[id] < x && x < GUIwinposx[id] + GUIwinsizex[id] &&
+							GUIwinposy[id] < y && y < GUIwinposy[id] + GUIwinsizey[id] + 10)
+					{
+						u4 eax;
+						u4 ecx;
+						u4 edx;
+						u4 esi;
+						asm volatile("call *%4" : "=a" (eax), "=c" (ecx), "=d" (edx), "=S" (esi) : "r" (GUIWinClicked), "a" (i), "b" (id) : "cc", "memory"); // XXX asm_call
+						(void)eax;
+						(void)ecx;
+						(void)edx;
+						(void)esi;
+						return;
+					}
+					while (i != 0)
+					{
+						u1 const id = GUIwinorder[--i];
+						if (x <= GUIwinposx[id] || GUIwinposx[id] + GUIwinsizex[id]      <= x) continue;
+						if (y <= GUIwinposy[id] || GUIwinposy[id] + GUIwinsizey[id] + 10 <= y) continue;
+						// Shift all following windows downwards by 1
+						while (++i != GUIwinptr) GUIwinorder[i - 1] = GUIwinorder[i];
+						GUIwinorder[i - 1] = id;
+						GUIpclicked        = 0;
+						return;
+					}
+				}
+				if (SantaPos != 272 && ShowTimer == 0)
+				{
+					MsgGiftLeft = 36 * 4;
+					ShowTimer   = 1;
+				}
+				return;
+			}
+			else
+			{
+				GUIpmenupos = GUIcmenupos;
+				GUIcmenupos = 0;
+			}
+		}
+
+noclick:;
+		GUIpclicked = 1;
+		switch (GUIHold)
+		{
+			case 2:
+			{ // Colour Slide Bar Hold
+				GUImouseposy = GUIHoldYlim;
+				u4 const minx = GUIHoldXlimL;
+				if (x < minx) GUImouseposx = minx;
+				u4 const maxx = GUIHoldXlimR;
+				if (x > maxx) GUImouseposx = maxx;
+				lastmouseholded = 1;
+				asm_call(DisplayGUIOptnsClick);
+				return;
+			}
+
+			case 3:
+			{ // Box Hold
+				u4 const miny = GUIHoldYlim;
+				if (y <= miny) GUImouseposy = miny;
+				u4 const minx = GUIHoldXlimL;
+				if (x <= minx) GUImouseposx = minx;
+				u4 const maxy = GUIHoldYlimR;
+				if (y >= maxy) GUImouseposy = maxy;
+				u4 const maxx = GUIHoldXlimR;
+				if (x >= maxx) GUImouseposx = maxx;
+				lastmouseholded = 1;
+				asm_call(GUIWindowMove);
+				return;
+			}
+
+			case 4:
+			{
+				u1 const id = GUIwinorder[GUIwinptr - 1];
+				u4 const rx = x - GUIwinposx[id];
+				u4 const ry = y - GUIwinposy[id];
+				GUICBHold =
+					GUIHoldXlimL <= rx && rx <= GUIHoldXlimR &&
+					GUIHoldYlim  <= ry && ry <= GUIHoldYlimR ? GUICBHold2 :
+					0;
+				return;
+			}
+
+			case 5:
+			{ // Sound Slide Bar Hold
+				GUImouseposy = GUIHoldYlim;
+				u4 const minx = GUIHoldXlimL;
+				if (x < minx) GUImouseposx = minx;
+				u4 const maxx = GUIHoldXlimR;
+				if (x > maxx) GUImouseposx = maxx;
+				lastmouseholded = 1;
+				asm_call(DisplayGUISoundClick);
+				return;
+			}
+
+			case 6:
+			{ // Speed Slide Bar Hold
+				GUImouseposy = GUIHoldYlim;
+				u4 const minx = GUIHoldXlimL;
+				if (x < minx) GUImouseposx = minx;
+				u4 const maxx = GUIHoldXlimR;
+				if (x > maxx) GUImouseposx = maxx;
+				lastmouseholded = 1;
+				asm_call(DisplayGUISpeedClick);
+				return;
+			}
+
+			case 7:
+			case 8:
+			{ // Video Slide Bar Hold
+				GUImouseposy = GUIHoldYlim;
+				u4 const minx = GUIHoldXlimL;
+				if (x < minx) GUImouseposx = minx;
+				u4 const maxx = GUIHoldXlimR;
+				if (x > maxx) GUImouseposx = maxx;
+				lastmouseholded = 1;
+				asm_call(DisplayGUIVideoClick);
+				return;
+			}
+
+			case 1:
+			{
+hold:
+				if (GUImouseposy < 16)
+				{
+					if (mousewrap & 1)
+					{
+						GUImouseposy += 224 - 16;
+						goto hold;
+					}
+					GUImouseposy = 16;
+				}
+				u1 const id = GUIwinorder[GUIwinptr - 1];
+				GUIwinposy[id] = (s2)(GUImouseposy - GUIHoldy + GUIHoldym);
+				GUIwinposx[id] = (s2)(GUImouseposx - GUIHoldx + GUIHoldxm);
+				return;
+			}
+
+			case 255:
+			{
+				GUImouseposy = GUIHoldYlim;
+				GUImouseposx = GUIHoldXlimL;
+				Set_MousePosition(GUIHoldXlimL, GUIHoldYlim);
+				return;
+			}
+
+			default:
+				GUICHold = 0;
+				return;
+		}
+	}
+	GUICHold    = 0;
+	GUIpclicked = 0;
+	GUIHold     = 0;
+
+#if defined __UNIXSDL__ || defined __WIN32__
+	if (GUIcwinpress == 1)
+	{
+		GUIcwinpress = 0;
+#ifdef __UNIXSDL__
+		if (3 <= y && y <= 13)
+#else
+		if (3 <= y && y <=  7)
+#endif
+		{
+			if (233 <= x && x <= 242)
+			{
+				asm_call(SwitchFullScreen);
+				return;
+			}
+		}
+	}
+#endif
+
+#ifndef __MSDOS__
+	if (GUIcwinpress == 2)
+	{
+		GUIcwinpress = 0;
+		if (3 <= y && y <= 13 && 44 <= x && x <= 253)
+		{
+			GUIQuit = 1;
+			return;
+		}
+	}
+
+	if (GUIcwinpress == 3)
+	{
+		GUIcwinpress = 0;
+		if (9 <= y && y <= 13 && 233 <= x && x <= 242)
+		{
+#ifdef __WIN32__
+			MinimizeWindow();
+#endif
+			return;
+		}
+	}
+#endif
+
+	// ButtonProcess
+	switch (GUICBHold)
+	{
+		case  1: GUILoadData();                return;
+		case  2: GUIProcReset();               return;
+		case  3: GUIProcReset();               return;
+		case  4: asm_call(GUIProcVideo);       return; // set video mode
+#ifndef __MSDOS__
+		case 12: asm_call(GUIProcCustomVideo); return; // set custom video mode
+#endif
+		case 37:
+		case 38:
+		case 39: asm_call(GUINTSCReset);       return; // reset ntsc options
+		case 81:
+		case 82:
+		case 83:
+		case 84: asm_call(GUINTSCPreset);      return; // ntsc preset
+		case 10:
+		case 11: GUIProcStates();              return;
+		case  5: asm_call(CheatCodeRemove);    return;
+		case  6: asm_call(CheatCodeToggle);    return;
+		case  7: CheatCodeSave();              return;
+		case  8: CheatCodeLoad();              return;
+		case  9: asm_call(ProcessCheatCode);   return;
+		case 33: asm_call(CheatCodeFix);       return;
+		case 14: SetDevice();                  return;
+		case 15: CalibrateDev1();              return;
+
+		case 16: GUICBHold = 0; MoviePlay();          return; // movie replay
+		case 17: GUICBHold = 0; MovieRecord();        return; // movie record
+		case 18: GUICBHold = 0; MovieStop();          return; // movie stop
+		case 19: GUICBHold = 0; MovieRecord();        return; // overwrite zmv ? yes
+		case 20: GUICBHold = 0; SkipMovie();          return; // overwrite zmv ? no
+		case 29: GUICBHold = 0; MovieInsertChapter(); return; // insert chapter
+
+		case 30: GUICBHold = 0; GUIQuit = 2; MovieSeekBehind(); return; // back to previous chapter
+		case 31: GUICBHold = 0; GUIQuit = 2; MovieSeekAhead();  return; // jump to next chapter
+		case 32: GUICBHold = 0; GUIQuit = 2; MovieAppend();     return; // append movie
+
+		case 34: // dump raw
+		{
+			GUICBHold = 0;
+			GUIQuit   = 2;
+			SetMovieForcedLength();
+			MovieDumpRaw();
+			if (MovieVideoMode >= 2 && mencoderExists == 0)
+			{
+				guimencodermsg();
+			}
+			if (MovieAudio != 0 && MovieAudioCompress != 0 && lameExists == 0)
+			{
+				guilamemsg();
+			}
+			return;
+		}
+
+		case 35: GUICBHold = 0; GUIQuit = 2; MovieStop(); return; // stop dump
+		case 40: SetAllKeys();                            return;
+
+		case 50: asm_call(CheatCodeSearchInit); break;
+
+		case 60:
+			GUIComboTextH[0] = '\0';
+			GUINumCombo      = 0;
+			GUIComboKey      = 0;
+			break;
+
+		case 61: if (NumCombo != 50) asm_call(ComboAdder);   break;
+		case 62: if (NumCombo !=  0) asm_call(ComboReplace); break;
+		case 63: if (NumCombo !=  0) asm_call(ComboRemoval); break;
+
+		case 51:
+			CheatWinMode      = 0;
+			CheatSearchStatus = 0;
+			break;
+
+		case 52: CheatWinMode = 2;                 break;
+		case 53: asm_call(CheatCodeSearchProcess); break;
+		case 54: CheatWinMode = 1;                 break;
+
+		case 55:
+			if (NumCheatSrc != 0)
+			{
+				CheatWinMode      = 3;
+				CurCStextpos      = 0;
+				CSInputDisplay[0] = '_';
+				CSInputDisplay[1] = '\0';
+				CSDescDisplay[0]  = '\0';
+			}
+			break;
+
+		case 56: CheatWinMode = 2;         break;
+		case 57: asm_call(AddCSCheatCode); break;
+
+#ifndef __MSDOS__
+		case 65: ZsnesPage(); break;
+		case 66: DocsPage();  break;
+#endif
+	}
+	GUICBHold = 0;
+}
 
 
 void ProcessMouse(void)
@@ -111,7 +552,7 @@ void ProcessMouse(void)
 		if (y >    223) y = 100;
 		GUImouseposy = y;
 	}
-	asm_call(ProcessMouseButtons);
+	ProcessMouseButtons();
 }
 
 

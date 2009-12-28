@@ -3314,7 +3314,7 @@ SECTION .bss
 NEWSYM CheatWinMode, resb 1
 NEWSYM CheatSearchStatus, resb 1
 CheatCompareValue resd 1
-NumCheatSrc       resd 1
+NEWSYM NumCheatSrc,       resd 1
 GUIcurrentchtsrcviewloc resd 1
 GUIcurrentchtsrccursloc resd 1
 CSStartEntry      resd 1
@@ -3323,12 +3323,12 @@ CheatSearchXPos   resd 1
 CheatSearchYPos   resd 1
 CheatLooped       resd 1
 ccheatnleftb      resd 1
-CurCStextpos      resd 1
+NEWSYM CurCStextpos,      resd 1
 
 SECTION .data
 SrcMask dd 0FFh,0FFFFh,0FFFFFFh,0FFFFFFFFh
-CSInputDisplay db '_',0,'         ',0
-CSDescDisplay  db '                  ',0,0
+NEWSYM CSInputDisplay, db '_',0,'         ',0
+NEWSYM CSDescDisplay,  db '                  ',0,0
 
 SECTION .bss
 curentryval resd 1
@@ -4478,7 +4478,7 @@ NEWSYM NumCombo, resd 1
 NEWSYM NumComboGlob, resd 1
 NEWSYM NumComboLocl, resd 1
 GUICSStC resd 3
-GUIComboKey resd 1
+NEWSYM GUIComboKey, resd 1
 GUIComboPos resb 1
 GUIComboPNum resb 1
 GUIComboLHorz resb 1
@@ -4505,7 +4505,7 @@ GUIComboTextD db 'DELETE',0
 GUIComboTextE db 'DESCRIPTION:',0
 GUIComboTextF db 'KEY:',0
 GUIComboTextG db 'DEL',0
-GUIComboTextH db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+NEWSYM GUIComboTextH, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 GUIComboTextI db 'P#  1  2  3  4  5',0
 GUIComboTextJ db 254,' = LAST ',253,'/',254,0
 GUIComboTextK db 'GAME SPECFIC',0

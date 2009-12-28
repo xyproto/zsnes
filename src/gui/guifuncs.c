@@ -745,7 +745,7 @@ u4* horizon_get(u4 distance)
 extern unsigned int GUICBHold, NumCheats;
 extern unsigned char cheatdata[28*255+56];
 
-void CheatCodeSave()
+void CheatCodeSave(void)
 {
   FILE *fp = 0;
 
@@ -770,7 +770,7 @@ extern unsigned char CheatOn;
 void DisableCheatsOnLoad(), EnableCheatsOnLoad();
 extern unsigned int GUIcurrentcheatcursloc;
 
-void CheatCodeLoad()
+void CheatCodeLoad(void)
 {
   FILE *fp = 0;
   unsigned int cheat_file_size, i, j;
@@ -1372,7 +1372,7 @@ void GetLoadData(void)
 u4 GUIcurrentfilewin;
 unsigned int GUIdirStartLoc;
 
-void GUILoadData()
+void GUILoadData(void)
 {
   char *nameptr;
 
@@ -1857,7 +1857,7 @@ void GetMovieForcedLength()
   }
 }
 
-void SetMovieForcedLength()
+void SetMovieForcedLength(void)
 {
   MovieForcedLength = atoi(GUIMovieForcedText);
 }

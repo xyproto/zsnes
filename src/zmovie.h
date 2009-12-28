@@ -37,7 +37,11 @@ void MovieStop();
 void MovieAppend();
 void MovieDumpRaw(void);
 bool MovieInProgress();
+void MovieInsertChapter(void);
+void MovieSeekAhead(void);
+void MovieSeekBehind(void);
 void ResetDuringMovie(void);
+void SkipMovie(void);
 
 extern unsigned char MovieProcessing;
 extern uint8_t       MovieRecordWinVal;

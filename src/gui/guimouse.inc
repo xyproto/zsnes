@@ -19,741 +19,11 @@
 
 
 
-EXTSYM guimencodermsg, guilamemsg, guiprevideo, guipresstest, guipostvideo, guipostvideofail
-EXTSYM SetAllKeys, CalibrateDev1, SetDevice
+EXTSYM guiprevideo, guipresstest, guipostvideo, guipostvideofail,SetDevice
 
-%ifdef __WIN32__
-EXTSYM MinimizeWindow
-%endif
-
-SECTION .bss
-NEWSYM lastmouseholded, resb 1
-NEWSYM mousebuttonstat, resw 1
-NEWSYM MouseMoveOkay,   resb 1
 SECTION .text
 
-NEWSYM ProcessMouseButtons
-  cmp byte[MouseMoveOkay],1
-  jne .zero
-  mov byte[GUIOnMenuItm],0
-  mov ax,[GUImouseposx]
-  cmp ax,[GUIMenuL]
-  jbe .zero
-  cmp ax,[GUIMenuR]
-  jae .zero
-  mov ax,[GUImouseposy]
-  cmp ax,18
-  jbe .zero
-  cmp ax,[GUIMenuD]
-  jae .zero
-  ; Mouse Menu
-  xor dx,dx
-  sub ax,18
-  mov bx,10
-  div bx
-  and eax,0FFh
-  mov ebx,[GUICYLocPtr]
-  mov byte[GUIOnMenuItm],2
-  cmp byte[eax+ebx+1],0
-  je .zero
-  mov [GUIcrowpos],al
-  mov byte[GUIOnMenuItm],1
-.zero
-  ; Check if mouse is clicked on menu
-  mov bx,[mousebuttonstat]
-  cmp byte[GUIRClick],1
-  jne .norclick2
-  test bx,02h
-  jz .norclick
-  cmp byte[romloadskip],0
-  jne .norclick2
-  cmp byte[MousePRClick],0
-  jne .norclick2
-  mov byte[GUIQuit],2
-.norclick
-  mov byte[MousePRClick],0
-.norclick2
-  test bx,01h
-  jz near .notclicked
-  cmp byte[GUIpclicked],1
-  je near .noclick
-  cmp byte[GUIOnMenuItm],2
-  je near .noclick
-  cmp byte[GUIOnMenuItm],1
-  jne .nomenuitem
-  ccallv GUITryMenuItem
-  jmp .noclick
-.nomenuitem
-
-  cmp word[GUImouseposy],3
-  jb near .noclickedw
-  cmp word[GUImouseposy],14
-  ja near .noclickedw
-  cmp word[GUImouseposx],230
-  jb near .noclickedw
-  cmp word[GUImouseposx],233
-  jb near .noclickedw
-  cmp word[GUImouseposx],242
-  ja .notfound7
-%ifdef __UNIXSDL__
-  jmp .clickawn
-%endif
-  cmp word[GUImouseposy],8
-  jb .clickawn
-  cmp word[GUImouseposy],8
-  ja .clickawn2
-.clickawn
-  mov byte[GUIcwinpress],1
-  jmp .noclick
-.clickawn2
-  mov byte[GUIcwinpress],3
-  jmp .noclick
-.notfound7
-  cmp word[GUImouseposx],244
-  jb near .noclickedw
-  cmp word[GUImouseposx],253
-  ja .notfound8
-  mov byte[GUIcwinpress],2
-  jmp .noclick
-.notfound8
-.noclickedw
-
-  cmp word[GUImouseposy],15
-  ja near .nomenu
-  cmp word[GUImouseposy],3
-  jb near .noclicked
-  cmp word[GUImouseposy],13
-  ja near .noclicked
-;    GUIDMHelp 4,12,GUIMenuItem+6,1
-  cmp word[GUImouseposx],4
-  jb near .noclicked
-  cmp word[GUImouseposx],12
-  ja .notfound
-  mov byte[GUIcmenupos],1
-  mov byte[GUIcrowpos],0
-  jmp .noclick
-.notfound
-;    GUIDMHelp 17,47,GUIMenuItem,2
-  cmp word[GUImouseposx],17
-  jb near .noclicked
-  cmp word[GUImouseposx],47
-  ja .notfound2
-  mov byte[GUIcmenupos],2
-  mov byte[GUIcrowpos],0
-  jmp .noclick
-.notfound2
-;    GUIDMHelp 52,94,GUIMenuItem+7,3
-  cmp word[GUImouseposx],52
-  jb near .noclicked
-  cmp word[GUImouseposx],94
-  ja .notfound3
-  mov byte[GUIcmenupos],3
-  mov byte[GUIcrowpos],0
-  jmp .noclick
-.notfound3
-;    GUIDMHelp 99,135,GUIMenuItem+14,4
-  cmp word[GUImouseposx],99
-  jb near .noclicked
-  cmp word[GUImouseposx],135
-  ja .notfound4
-  mov byte[GUIcmenupos],4
-  mov byte[GUIcrowpos],0
-  jmp .noclick
-.notfound4
-;    GUIDMHelp 140,188,GUIMenuItem+21,5
-  cmp word[GUImouseposx],140
-  jb near .noclicked
-  cmp word[GUImouseposx],188
-  ja .notfound5
-  mov byte[GUIcmenupos],5
-  mov byte[GUIcrowpos],0
-  jmp .noclick
-.notfound5
-;    GUIDMHelp 193,223,GUIMenuItem+29,6
-  cmp word[GUImouseposx],193
-  jb near .noclicked
-  cmp word[GUImouseposx],223
-  ja .notfound6
-  mov byte[GUIcmenupos],6
-  mov byte[GUIcrowpos],0
-  jmp .noclick
-.notfound6
-  jmp .noclick
-.noclicked
-
-%ifdef __MSDOS__
-  jmp .noclick
-%else
-  mov byte[GUIpclicked],1
-  mov byte[GUIHold],255
-  mov eax,[GUImouseposy]
-  mov [GUIHoldYlim],eax
-  mov eax,[GUImouseposx]
-  mov [GUIHoldXlimL],eax
-  ccallv MouseWindow
-  jmp .noclick
-%endif
-.nomenu
-  cmp byte[GUIcmenupos],0
-  je near .checkmenuboxclick
-  mov al,[GUIcmenupos]
-  mov [GUIpmenupos],al
-  mov byte[GUIcmenupos],0
-.noclick
-  mov byte[GUIpclicked],1
-  xor eax,eax
-  mov al,[GUIwinptr]
-  dec eax
-  xor ebx,ebx
-  mov bl,[GUIwinorder+eax]
-  cmp byte[GUIHold],2
-  je near .hold2
-  cmp byte[GUIHold],3
-  je near .hold3
-  cmp byte[GUIHold],4
-  je near .hold4
-  cmp byte[GUIHold],5
-  je near .hold5
-  cmp byte[GUIHold],6
-  je near .hold6
-  cmp byte[GUIHold],7
-  je near .hold7
-  cmp byte[GUIHold],8
-  je near .hold7
-  cmp byte[GUIHold],1
-  je near .hold
-  cmp byte[GUIHold],255
-  je .holded
-  mov byte[GUICHold],0
-  ret
-.holded
-  mov eax,[GUIHoldYlim]
-  mov [GUImouseposy],eax
-  mov eax,[GUIHoldXlimL]
-  mov [GUImouseposx],eax
-  movzx ecx, word [GUIHoldXlimL]
-  movzx edx, word [GUIHoldYlim]
-  ccallv Set_MousePosition, ecx, edx
-  ret
-.hold2
-  ; Colour Slide Bar Hold
-  mov eax,[GUIHoldYlim]
-  mov [GUImouseposy],eax
-  mov ebx,[GUImouseposx]
-  mov eax,[GUIHoldXlimL]
-  cmp ebx,eax
-  jnl .noless2
-  mov [GUImouseposx],eax
-.noless2
-  mov eax,[GUIHoldXlimR]
-  cmp ebx,eax
-  jng .nogreat2
-  mov [GUImouseposx],eax
-.nogreat2
-  mov byte[lastmouseholded],1
-  jmp DisplayGUIOptnsClick
-.hold3
-  ; Box Hold
-  mov ebx,[GUIHoldYlim]
-  cmp ebx,[GUImouseposy]
-  jl .boxhold1
-  mov [GUImouseposy],ebx
-.boxhold1
-  mov ebx,[GUIHoldXlimL]
-  cmp ebx,[GUImouseposx]
-  jl .boxhold2
-  mov [GUImouseposx],ebx
-.boxhold2
-  mov ebx,[GUIHoldYlimR]
-  cmp ebx,[GUImouseposy]
-  jg .boxhold3
-  mov [GUImouseposy],ebx
-.boxhold3
-  mov ebx,[GUIHoldXlimR]
-  cmp ebx,[GUImouseposx]
-  jg .boxhold4
-  mov [GUImouseposx],ebx
-.boxhold4
-  mov byte[lastmouseholded],1
-  jmp GUIWindowMove
-.hold4
-  mov eax,[GUImouseposx]
-  sub eax,[GUIwinposx+ebx*4]
-  mov edx,[GUImouseposy]
-  sub edx,[GUIwinposy+ebx*4]
-  cmp eax,[GUIHoldXlimL]
-  jl near .nobhold4
-  cmp edx,[GUIHoldYlim]
-  jl near .nobhold4
-  cmp eax,[GUIHoldXlimR]
-  jg near .nobhold4
-  cmp edx,[GUIHoldYlimR]
-  jg near .nobhold4
-  mov al,[GUICBHold2]
-  mov [GUICBHold],al
-  ret
-.nobhold4
-  mov byte[GUICBHold],0
-  ret
-.hold5
-  ; Sound Slide Bar Hold
-  mov eax,[GUIHoldYlim]
-  mov [GUImouseposy],eax
-  mov ebx,[GUImouseposx]
-  mov eax,[GUIHoldXlimL]
-  cmp ebx,eax
-  jnl .noless5
-  mov [GUImouseposx],eax
-.noless5
-  mov eax,[GUIHoldXlimR]
-  cmp ebx,eax
-  jng .nogreat5
-  mov [GUImouseposx],eax
-.nogreat5
-  mov byte[lastmouseholded],1
-  jmp DisplayGUISoundClick
-.hold6
-  ; Speed Slide Bar Hold
-  mov eax,[GUIHoldYlim]
-  mov [GUImouseposy],eax
-  mov ebx,[GUImouseposx]
-  mov eax,[GUIHoldXlimL]
-  cmp ebx,eax
-  jnl .noless6
-  mov [GUImouseposx],eax
-.noless6
-  mov eax,[GUIHoldXlimR]
-  cmp ebx,eax
-  jng .nogreat6
-  mov [GUImouseposx],eax
-.nogreat6
-  mov byte[lastmouseholded],1
-  jmp DisplayGUISpeedClick
-.hold7
-  ; Video Slide Bar Hold
-  mov eax,[GUIHoldYlim]
-  mov [GUImouseposy],eax
-  mov ebx,[GUImouseposx]
-  mov eax,[GUIHoldXlimL]
-  cmp ebx,eax
-  jnl .noless7
-  mov [GUImouseposx],eax
-.noless7
-  mov eax,[GUIHoldXlimR]
-  cmp ebx,eax
-  jng .nogreat7
-  mov [GUImouseposx],eax
-.nogreat7
-  mov byte[lastmouseholded],1
-  jmp DisplayGUIVideoClick
-.hold
-  cmp word[GUImouseposy],16
-  jge .noover
-  test byte[mousewrap],1
-  jz .nomwrap
-  add word[GUImouseposy],224-16
-  jmp .hold
-.nomwrap
-  mov word[GUImouseposy],16
-.noover
-  mov cx,[GUImouseposy]
-  sub cx,[GUIHoldy]
-  add cx,[GUIHoldym]
-  movsx ecx,cx
-  xor eax,eax
-  mov al,[GUIwinptr]
-  dec eax
-  xor ebx,ebx
-  mov bl,[GUIwinorder+eax]
-  mov [GUIwinposy+ebx*4],ecx
-  mov cx,[GUImouseposx]
-  sub cx,[GUIHoldx]
-  add cx,[GUIHoldxm]
-  movsx ecx,cx
-  mov [GUIwinposx+ebx*4],ecx
-  ret
-.notclicked
-  mov byte[GUICHold],0
-  mov byte[GUIpclicked],0
-  mov byte[GUIHold],0
-
-%ifdef __UNIXSDL__
-  cmp byte[GUIcwinpress],1
-  jne .notwinpressa
-  mov byte[GUIcwinpress],0
-  cmp word[GUImouseposy],3
-  jb .notwinpressa
-  cmp word[GUImouseposy],13
-  ja .notwinpressa
-  cmp word[GUImouseposx],233
-  jb .notwinpressa
-  cmp word[GUImouseposx],242
-  ja .notwinpressa
-  call SwitchFullScreen
-  ret
-%endif
-
-%ifdef __WIN32__
-  cmp byte[GUIcwinpress],1
-  jne .notwinpressa
-  mov byte[GUIcwinpress],0
-  cmp word[GUImouseposy],3
-  jb .notwinpressa
-  cmp word[GUImouseposy],7
-  ja .notwinpressa
-  cmp word[GUImouseposx],233
-  jb .notwinpressa
-  cmp word[GUImouseposx],242
-  ja .notwinpressa
-  call SwitchFullScreen
-  ret
-%endif
-
-.notwinpressa
-
-%ifndef __MSDOS__
-  cmp byte[GUIcwinpress],2
-  jne .notwinpressb
-  mov byte[GUIcwinpress],0
-  cmp word[GUImouseposy],3
-  jb .notwinpressb
-  cmp word[GUImouseposy],13
-  ja .notwinpressb
-  cmp word[GUImouseposx],244
-  jb .notwinpressb
-  cmp word[GUImouseposx],253
-  ja .notwinpressb
-  mov byte[GUIQuit],1
-  ret
-.notwinpressb
-
-  cmp byte[GUIcwinpress],3
-  jne .notwinpressc
-  mov byte[GUIcwinpress],0
-  cmp word[GUImouseposy],9
-  jb .notwinpressc
-  cmp word[GUImouseposy],13
-  ja .notwinpressc
-  cmp word[GUImouseposx],233
-  jb .notwinpressc
-  cmp word[GUImouseposx],242
-  ja .notwinpressc
-%endif
-%ifdef __WIN32__
-  ccallv MinimizeWindow
-%endif
-%ifndef __MSDOS__
-  ret
-%endif
-.notwinpressc
-
-  ; ButtonProcess
-  cmp byte[GUICBHold],1
-  jne .noGUILoadData
-  ccallv GUILoadData
-.noGUILoadData
-  cmp byte[GUICBHold],2
-  jne .not2
-  ccallv GUIProcReset
-  ret
-.not2
-  cmp byte[GUICBHold],3
-  jne .not3
-  ccallv GUIProcReset
-  ret
-.not3
-  cmp byte[GUICBHold],4  ; set video mode
-  je near GUIProcVideo
-%ifndef __MSDOS__
-  cmp byte[GUICBHold],12  ; set custom video mode
-  je near GUIProcCustomVideo
-%endif
-  cmp byte[GUICBHold],37 ; reset ntsc options
-  je near GUINTSCReset
-  cmp byte[GUICBHold],38 ; reset ntsc options
-  je near GUINTSCReset
-  cmp byte[GUICBHold],39 ; reset ntsc options
-  je near GUINTSCReset
-  cmp byte[GUICBHold],81 ; ntsc preset
-  je near GUINTSCPreset
-  cmp byte[GUICBHold],82 ; ntsc preset
-  je near GUINTSCPreset
-  cmp byte[GUICBHold],83 ; ntsc preset
-  je near GUINTSCPreset
-  cmp byte[GUICBHold],84 ; ntsc preset
-  je near GUINTSCPreset
-  cmp byte[GUICBHold],10
-  jne .not10
-  ccallv GUIProcStates
-.not10
-  cmp byte[GUICBHold],11
-  jne .not11
-  ccallv GUIProcStates
-.not11
-  cmp byte[GUICBHold],5
-  je near CheatCodeRemove
-  cmp byte[GUICBHold],6
-  je near CheatCodeToggle
-  cmp byte[GUICBHold],7
-  jne .noCheatCodeSave
-  ccallv CheatCodeSave
-  ret
-.noCheatCodeSave
-  cmp byte[GUICBHold],8
-  jne .noCheatCodeLoad
-  ccallv CheatCodeLoad
-  ret
-.noCheatCodeLoad
-  cmp byte[GUICBHold],9
-  je near ProcessCheatCode
-  cmp byte[GUICBHold],33
-  je near CheatCodeFix
-  cmp byte[GUICBHold],14
-  jne .not14
-  ccallv SetDevice
-  ret
-.not14
-  cmp byte[GUICBHold],15
-  jne .not15
-  ccallv CalibrateDev1
-  ret
-.not15
-  cmp byte[GUICBHold],16  ; movie replay
-  jne .notMoviePlay
-  mov byte[GUICBHold],0
-  ccallv MoviePlay
-  ret
-.notMoviePlay
-  cmp byte[GUICBHold],17
-  jne .notMovieRecord0    ; movie record
-  mov byte[GUICBHold],0
-  ccallv MovieRecord
-  ret
-.notMovieRecord0
-  cmp byte[GUICBHold],18  ; movie stop
-  jne .notMovieStop
-  mov byte[GUICBHold],0
-  ccallv MovieStop
-  ret
-.notMovieStop
-  cmp byte[GUICBHold],19  ; overwrite zmv ? yes
-  jne .notMovieRecord1
-  mov byte[GUICBHold],0
-  ccallv MovieRecord
-  ret
-.notMovieRecord1
-  cmp byte[GUICBHold],20  ; overwrite zmv ? no
-  jne .notSkipMovie
-  mov byte[GUICBHold],0
-  ccallv SkipMovie
-  ret
-.notSkipMovie
-  cmp byte[GUICBHold],29  ; insert chapter
-  jne .noInsertChap
-  mov byte[GUICBHold],0
-  ccallv MovieInsertChapter
-  ret
-.noInsertChap
-  cmp byte[GUICBHold],30  ; back to previous chapter
-  jne .noPrevChap
-  mov byte[GUICBHold],0
-  mov byte[GUIQuit],2
-  ccallv MovieSeekBehind
-  ret
-.noPrevChap
-  cmp byte[GUICBHold],31  ; jump to next chapter
-  jne .noNextChap
-  mov byte[GUICBHold],0
-  mov byte[GUIQuit],2
-  ccallv MovieSeekAhead
-  ret
-.noNextChap
-  cmp byte[GUICBHold],32  ; append movie
-  jne .noAppend
-  mov byte[GUICBHold],0
-  mov byte[GUIQuit],2
-  ccallv MovieAppend
-  ret
-.noAppend
-  cmp byte[GUICBHold],34  ; dump raw
-  jne .noDumpRaw
-  mov byte[GUICBHold],0
-  mov byte[GUIQuit],2
-  ccallv SetMovieForcedLength
-  ccallv MovieDumpRaw
-  cmp byte[MovieVideoMode],2
-  jb .nomencoder
-  cmp byte[mencoderExists],0
-  jne .nomencoder
-  ccallv guimencodermsg
-.nomencoder
-  cmp byte[MovieAudio],0
-  je .nolame
-  cmp byte[MovieAudioCompress],0
-  je .nolame
-  cmp byte[lameExists],0
-  jne .nolame
-  ccallv guilamemsg
-.nolame
-  ret
-.noDumpRaw
-  cmp byte[GUICBHold],35  ; stop dump
-  jne .noStopDumping
-  mov byte[GUICBHold],0
-  mov byte[GUIQuit],2
-  ccallv MovieStop
-  ret
-.noStopDumping
-  cmp byte[GUICBHold],40
-  jne .not40
-  ccallv SetAllKeys
-  ret
-.not40
-  cmp byte[GUICBHold],50
-  jne .notstartcheat
-  call CheatCodeSearchInit
-.notstartcheat
-  cmp byte[GUICBHold],60
-  jne .nocombclear
-  mov byte[GUIComboTextH],0
-  mov byte[GUINumCombo],0
-  mov dword[GUIComboKey],0
-.nocombclear
-  cmp byte[GUICBHold],61
-  jne .nocomboadd
-  cmp byte[NumCombo],50
-  je .nocomboadd
-  call ComboAdder
-.nocomboadd
-  cmp byte[GUICBHold],62
-  jne .nocomboreplace
-  cmp byte[NumCombo],0
-  je .nocomboreplace
-  call ComboReplace
-.nocomboreplace
-  cmp byte[GUICBHold],63
-  jne .nocomboremove
-  cmp byte[NumCombo],0
-  je .nocomboremove
-  call ComboRemoval
-.nocomboremove
-  cmp byte[GUICBHold],51
-  jne .notrestartcheat
-  mov byte[CheatWinMode],0
-  mov byte[CheatSearchStatus],0
-.notrestartcheat
-  cmp byte[GUICBHold],52
-  jne .notviewcheat
-  mov byte[CheatWinMode],2
-.notviewcheat
-  cmp byte[GUICBHold],53
-  jne .notsearchprocess
-  call CheatCodeSearchProcess
-.notsearchprocess
-  cmp byte[GUICBHold],54
-  jne .notreturnview
-  mov byte[CheatWinMode],1
-.notreturnview
-  cmp byte[GUICBHold],55
-  jne .notadd
-  cmp dword[NumCheatSrc],0
-  je .notadd
-  mov byte[CheatWinMode],3
-  mov byte[CurCStextpos],0
-  mov byte[CSInputDisplay],'_'
-  mov byte[CSInputDisplay+1],0
-  mov byte[CSDescDisplay],0
-.notadd
-  cmp byte[GUICBHold],56
-  jne .notreturnadd
-  mov byte[CheatWinMode],2
-.notreturnadd
-  cmp byte[GUICBHold],57
-  jne .noinsertscc
-  call AddCSCheatCode
-;    call InsertSearchDescription
-.noinsertscc
-%ifndef __MSDOS__
-  cmp byte[GUICBHold],65
-  jne .nozsnespage
-  ccallv ZsnesPage
-.nozsnespage
-  cmp byte[GUICBHold],66
-  jne .nodocspage
-  ccallv DocsPage
-.nodocspage
-%endif
-  mov byte[GUICBHold],0
-  ret
-.checkmenuboxclick
-  mov byte[GUIpclicked],1
-  xor eax,eax
-  mov al,[GUIwinptr]
-  or eax,eax
-  jz near .nomore
-  dec eax
-  xor ebx,ebx
-  mov bl,[GUIwinorder+eax]
-  mov ecx,[GUIwinposx+ebx*4]
-  cmp ecx,[GUImouseposx]
-  jge .noinsdwin
-  mov ecx,[GUIwinposy+ebx*4]
-  cmp ecx,[GUImouseposy]
-  jge .noinsdwin
-  mov ecx,[GUIwinposx+ebx*4]
-  add ecx,[GUIwinsizex+ebx*4]
-  cmp ecx,[GUImouseposx]
-  jle .noinsdwin
-  mov ecx,[GUIwinposy+ebx*4]
-  add ecx,[GUIwinsizey+ebx*4]
-  add ecx,10
-  cmp ecx,[GUImouseposy]
-  jle .noinsdwin
-  jmp GUIWinClicked
-.noinsdwin
-.nextwindowfind
-  or eax,eax
-  jz near .nomore
-  dec eax
-  mov bl,[GUIwinorder+eax]
-  mov ecx,[GUIwinposx+ebx*4]
-  cmp ecx,[GUImouseposx]
-  jge .nextwindowfind
-  mov ecx,[GUIwinposy+ebx*4]
-  cmp ecx,[GUImouseposy]
-  jge .nextwindowfind
-  mov ecx,[GUIwinposx+ebx*4]
-  add ecx,[GUIwinsizex+ebx*4]
-  cmp ecx,[GUImouseposx]
-  jle .nextwindowfind
-  mov ecx,[GUIwinposy+ebx*4]
-  add ecx,[GUIwinsizey+ebx*4]
-  add ecx,10
-  cmp ecx,[GUImouseposy]
-  jle .nextwindowfind
-  ; Shift all following windows downwards by 1
-.nextfind
-  inc eax
-  cmp al,[GUIwinptr]
-  je .foundend
-  mov cl,[GUIwinorder+eax]
-  mov [GUIwinorder+eax-1],cl
-  jmp .nextfind
-.foundend
-  mov byte[GUIpclicked],0
-  mov [GUIwinorder+eax-1],bl
-  ret
-.nomore
-  cmp dword[SantaPos],272
-  je .nosanta
-  cmp byte[ShowTimer],0
-  jne .nosanta
-  mov dword[MsgGiftLeft],36*4
-  mov byte[ShowTimer],1
-.nosanta
-  ret
-
-GUIProcVideo:
+NEWSYM GUIProcVideo
   mov byte[GUICBHold],0
   mov byte[newengen],1
   ccallv guiprevideo
@@ -804,7 +74,7 @@ SECTION .bss
 .prevvid resb 1
 SECTION .text
 
-GUINTSCReset:
+NEWSYM GUINTSCReset
   cmp byte[GUICBHold],38
   je .reset2
   cmp byte[GUICBHold],39
@@ -833,7 +103,7 @@ GUINTSCReset:
 %endif
   ret
 
-GUINTSCPreset:
+NEWSYM GUINTSCPreset
   cmp byte[GUICBHold],81
   jne near .nextpreset
   mov byte[NTSCPresetVar],0
@@ -861,7 +131,7 @@ GUINTSCPreset:
   ret
 
 %ifndef __MSDOS__
-GUIProcCustomVideo:
+NEWSYM GUIProcCustomVideo
   ccallv SetCustomXY
   mov byte[GUICBHold],0
   mov dword[GUIInputBox],0
@@ -905,7 +175,7 @@ NEWSYM SwitchFullScreen
   popad
   ret
 
-GUIWindowMove:
+NEWSYM GUIWindowMove
   xor eax,eax
   mov al,[GUIwinptr]
   dec eax
@@ -927,7 +197,7 @@ GUIWindowMove:
   je near DisplayGUIComboClick2
   jmp DisplayGUIConfirmClick2
 
-GUIWinClicked:
+NEWSYM GUIWinClicked
   mov ecx,[GUImouseposx]
   sub ecx,[GUIwinposx+ebx*4]
   mov edx,[GUImouseposy]
@@ -2102,7 +1372,7 @@ DisplayGUIVideoClick2:
   GUISlidebarPostImpl 117,33,124,182,.scrollup,.scrolldown,5,20,GUIcurrentvideoviewloc,GUIcurrentvideocursloc,GUINumValue,GUIBlankVar,1
   GUIPostWinBoxMove 5,27,115,27+20*8,GUIcurrentvideoviewloc,GUIcurrentvideocursloc,GUINumValue,.scrollup,.scrolldown,DisplayGUIVideoClick.skipscrol,20
 .notmodestab2
-DisplayGUIVideoClick:
+NEWSYM DisplayGUIVideoClick
   GUIPTabClick 0,39,1,GUIVideoTabs,GUIVntscTab
   GUIPTabClick 40,91,2,GUIVideoTabs,GUIVntscTab
   cmp byte[NTSCFilter],1
@@ -2560,7 +1830,7 @@ NEWSYM OGLCheckVar, db 0
 
 SECTION .text
 
-DisplayGUISoundClick:
+NEWSYM DisplayGUISoundClick
   mov eax,[GUImouseposx]
   sub eax,[GUIwinposx+6*4]
   mov edx,[GUImouseposy]
@@ -2706,7 +1976,7 @@ DisplayGameOptnsClick:
   DGOptnsProcBox 191,140,[KeyDecreaseGamma]
   ret
 
-DisplayGUIOptnsClick:
+NEWSYM DisplayGUIOptnsClick
   mov eax,[GUImouseposx]
   sub eax,[GUIwinposx+10*4]
   mov edx,[GUImouseposy]
@@ -3159,7 +2429,7 @@ DisplayGUISaveClick:
   DGOptnsProcBox 8+38,166,[KeyRewind]
   ret
 
-DisplayGUISpeedClick:
+NEWSYM DisplayGUISpeedClick
   mov eax,[GUImouseposx]    ; this updates the mouse location
   sub eax,[GUIwinposx+21*4] ; effectively 'grabbing' the cursor !
   mov edx,[GUImouseposy]

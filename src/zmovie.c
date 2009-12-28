@@ -2729,7 +2729,7 @@ static void OldMoviePlay(FILE *fp)
   MessageOn = MsgCount;
 }
 
-void MovieInsertChapter()
+void MovieInsertChapter(void)
 {
   switch (MovieProcessing)
   {
@@ -2757,7 +2757,7 @@ void MovieInsertChapter()
   MessageOn = MsgCount;
 }
 
-void MovieSeekAhead()
+void MovieSeekAhead(void)
 {
   switch (MovieProcessing)
   {
@@ -2778,7 +2778,7 @@ void MovieSeekAhead()
   MessageOn = MsgCount;
 }
 
-void MovieSeekBehind()
+void MovieSeekBehind(void)
 {
   switch (MovieProcessing)
   {
@@ -2863,7 +2863,7 @@ void ResetDuringMovie(void)
   SetMovieMode(MOVIE_RECORD);
 }
 
-void SkipMovie()
+void SkipMovie(void)
 {
   MovieRecordWinVal = 0;
 }

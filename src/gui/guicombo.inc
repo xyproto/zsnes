@@ -32,7 +32,7 @@ ComboClip:
 .excess
     ret
 
-ComboAdder:
+NEWSYM ComboAdder
     cmp byte[romloadskip],0
     je .romloaded
     cmp byte[GUIComboGameSpec],0
@@ -98,7 +98,7 @@ ComboAdder:
 .skipall
     ret
 
-ComboReplace:
+NEWSYM ComboReplace
     pushad
     call ComboClip
     mov eax,[GUIccombcursloc]
@@ -139,7 +139,7 @@ ComboReplace:
     popad
     ret
 
-ComboRemoval:
+NEWSYM ComboRemoval
     pushad
     mov eax,[GUIccombcursloc]
     shl eax,6

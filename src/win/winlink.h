@@ -85,6 +85,7 @@ extern "C" {
   void CheckAlwaysOnTop(void);
   void DisplayWIPDisclaimer(void);
   void DoSleep(void);
+  void MinimizeWindow(void);
   void SetMouseMaxX(int MaxX);
   void SetMouseMaxY(int MaxY);
   void SetMouseMinX(int MinX);
