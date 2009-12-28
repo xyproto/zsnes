@@ -42,6 +42,7 @@ extern "C"
 #include "../asm_call.h"
 #include "../cfg.h"
 #include "../gui/c_gui.h"
+#include "../gui/c_guimouse.h"
 #include "../input.h"
 #include "../link.h"
 #include "../types.h"
@@ -2672,8 +2673,6 @@ extern "C"
       DrawScreen();
   }
 
-  void SwitchFullScreen();
-
   void WinUpdateDevices()
   {
     int i, j;
@@ -2707,7 +2706,7 @@ extern "C"
     }
     if (keys2[0xB8] != 0 && keys2[0x1C] != 0 || keys2[0x38] != 0 && keys2[0x1C] != 0)
     {
-      asm_call(SwitchFullScreen);
+      SwitchFullScreen();
       return;
     }
 

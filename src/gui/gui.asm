@@ -48,7 +48,7 @@ EXTSYM cbitmode
 EXTSYM romloadskip,romdata,current_zst
 EXTSYM vidbuffer,showallext,scanlines
 EXTSYM KeyRTRCycle
-EXTSYM initvideo,pressed,memtabler8
+EXTSYM pressed,memtabler8
 EXTSYM memtablew8,writeon,JoyRead,delay,FPSOn,RevStereo,WDSPReg0C
 EXTSYM WDSPReg1C,pl12s34,vidbufferofsb,wramdata,bgfixer
 EXTSYM CheatCodeSave,CheatCodeLoad
@@ -135,7 +135,7 @@ EXTSYM GUI36hzcall
 
 %ifndef __MSDOS__
 EXTSYM GUICustomX,GUICustomY,GetCustomXY,SetCustomXY,initwinvideo
-EXTSYM Keep4_3Ratio,PrevFSMode,PrevWinMode,NTSCFilterInit,hqFilterlevel,BilinearFilter,GUIBIFIL
+EXTSYM Keep4_3Ratio,NTSCFilterInit,hqFilterlevel,BilinearFilter,GUIBIFIL
 EXTSYM GUIWFVID,GUIDSIZE,GUIHQ3X,GUIHQ4X,GUIKEEP43,Keep43Check,sl_intensity
 %endif
 

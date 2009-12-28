@@ -34,6 +34,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "safelib.h"
 #include "../cfg.h"
 #include "../gui/c_gui.h"
+#include "../gui/c_guimouse.h"
 #include "../input.h"
 #include "../link.h"
 
@@ -64,7 +65,6 @@ static bool ScreenSaverSuspended = false;
 uint32_t FirstVid = 1;
 
 
-void SwitchFullScreen();
 uint32_t SMode = 0;
 uint32_t DSMode = 0;
 uint32_t prevHQMode = -1;

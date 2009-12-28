@@ -10,7 +10,6 @@ extern void DisplayGUIVideoClick();
 extern void DrawMouse();
 extern void GUIWinClicked();
 extern void GUIWindowMove();
-extern void SwitchFullScreen();
 
 extern char const* guipressptr;
 extern u1          ntscCurVar;

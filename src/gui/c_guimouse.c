@@ -147,6 +147,26 @@ static void GUIProcCustomVideo(void)
 #endif
 
 
+void SwitchFullScreen(void)
+{
+	Clear2xSaIBuffer();
+#ifndef __MSDOS__
+	if (GUIWFVID[cvidmode] != 0)
+	{
+		cvidmode = PrevWinMode;
+		initvideo();
+	}
+	else
+#endif
+	{
+#ifndef __MSDOS__
+		cvidmode = PrevFSMode;
+#endif
+		initvideo();
+	}
+}
+
+
 static void ProcessMouseButtons(void)
 {
 	static u1 GUIOnMenuItm;
@@ -436,7 +456,7 @@ hold:
 		{
 			if (233 <= x && x <= 242)
 			{
-				asm_call(SwitchFullScreen);
+				SwitchFullScreen();
 				return;
 			}
 		}

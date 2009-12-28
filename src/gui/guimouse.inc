@@ -23,33 +23,6 @@ EXTSYM guipresstest, SetDevice
 
 SECTION .text
 
-NEWSYM SwitchFullScreen
-  pushad
-  ccallv Clear2xSaIBuffer
-  xor eax,eax
-  mov al,[cvidmode]
-%ifndef __MSDOS__
-  cmp byte[GUIWFVID+eax],0
-  je .fullsc
-%else
-  jmp .fullsc
-%endif
-%ifndef __MSDOS__
-  mov al,[PrevWinMode]
-  mov [cvidmode],al
-%endif
-  ccallv initvideo
-  popad
-  ret
-.fullsc
-%ifndef __MSDOS__
-  mov al,[PrevFSMode]
-  mov [cvidmode],al
-%endif
-  ccallv initvideo
-  popad
-  ret
-
 NEWSYM GUIWindowMove
   xor eax,eax
   mov al,[GUIwinptr]
