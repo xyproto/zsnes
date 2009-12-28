@@ -241,7 +241,7 @@ void DrawScreen(void)
 		ngrposng        = 10;
 		nggposng        =  5;
 		ngbposng        =  0;
-		asm_call(ConvertToAFormat);
+		ConvertToAFormat();
 	}
 	drawscreenwin();
 #ifdef __OPENGL__

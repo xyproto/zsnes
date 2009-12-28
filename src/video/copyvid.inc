@@ -2911,7 +2911,7 @@ VESA12Bankswitch:
 NEWSYM copyvesa2640x480x16b
     cmp byte[vesa2red10],1
     jne .notbr
-    call ConvertToAFormat
+    ccallv ConvertToAFormat
 .notbr
     cmp byte[smallscreenon],1
     je near smallscreen640x480x16b
@@ -4696,7 +4696,7 @@ SECTION .text
 NEWSYM copyvesa2512x384x16b
     cmp byte[vesa2red10],1
     jne .noconvertr
-    call ConvertToAFormat
+    ccallv ConvertToAFormat
 .noconvertr
     cmp byte[curblank],40h
     jne .startcopy
@@ -5104,7 +5104,7 @@ NEWSYM copyvesa12640x480x16b
 .startcopy
     cmp byte[vesa2red10],1
     jne .nocopyvesa2r
-    call ConvertToAFormat
+    ccallv ConvertToAFormat
 .nocopyvesa2r
     push es
     mov word[bankpos],0

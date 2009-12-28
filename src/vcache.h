@@ -3,8 +3,6 @@
 
 #include "types.h"
 
-extern void ConvertToAFormat();
-
 extern u1 curblank;          // current blank state (40h = skip fill)
 extern u1 res480;
 extern u1 res640;
