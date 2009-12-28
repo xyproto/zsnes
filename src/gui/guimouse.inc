@@ -23,35 +23,6 @@ EXTSYM guipresstest, SetDevice
 
 SECTION .text
 
-NEWSYM GUINTSCReset
-  cmp byte[GUICBHold],38
-  je .reset2
-  cmp byte[GUICBHold],39
-  jne .reset1
-.reset1
-  mov byte[NTSCBlend],0
-  mov byte[NTSCRef],0
-  mov byte[NTSCHue],0
-  mov byte[NTSCSat],0
-  mov byte[NTSCCont],0
-  mov byte[NTSCBright],0
-  mov byte[NTSCSharp],0
-  cmp byte[GUICBHold],37
-  je .reset2done
-.reset2
-  mov byte[NTSCGamma],0
-  mov byte[NTSCRes],0
-  mov byte[NTSCArt],0
-  mov byte[NTSCFringe],0
-  mov byte[NTSCBleed],0
-  mov byte[NTSCWarp],0
-.reset2done
-  mov byte[GUICBHold],0
-%ifndef __MSDOS__
-  ccallv NTSCFilterInit
-%endif
-  ret
-
 NEWSYM GUINTSCPreset
   cmp byte[GUICBHold],81
   jne near .nextpreset

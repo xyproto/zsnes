@@ -81,6 +81,34 @@ static void GUIProcVideo(void)
 }
 
 
+static void GUINTSCReset(void)
+{
+	if (GUICBHold != 38)
+	{
+		NTSCBlend  = 0;
+		NTSCRef    = 0;
+		NTSCHue    = 0;
+		NTSCSat    = 0;
+		NTSCCont   = 0;
+		NTSCBright = 0;
+		NTSCSharp  = 0;
+	}
+	if (GUICBHold != 37)
+	{
+		NTSCGamma  = 0;
+		NTSCRes    = 0;
+		NTSCArt    = 0;
+		NTSCFringe = 0;
+		NTSCBleed  = 0;
+		NTSCWarp   = 0;
+	}
+	GUICBHold = 0;
+#ifndef __MSDOS__
+	NTSCFilterInit();
+#endif
+}
+
+
 static void ProcessMouseButtons(void)
 {
 	static u1 GUIOnMenuItm;
@@ -413,7 +441,7 @@ hold:
 #endif
 		case 37:
 		case 38:
-		case 39: asm_call(GUINTSCReset);       return; // reset ntsc options
+		case 39: GUINTSCReset();               return; // reset ntsc options
 		case 81:
 		case 82:
 		case 83:
