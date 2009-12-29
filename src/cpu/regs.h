@@ -52,6 +52,7 @@ extern void reg43XXr();
 extern void regINVALID();
 
 extern u1 MultiTap;
+extern u1 cfield;
 extern u1 coladdb;    // blue value of color to add
 extern u1 coladdg;    // green value of color to add
 extern u1 coladdr;    // red value of color to add

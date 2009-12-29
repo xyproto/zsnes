@@ -25,6 +25,7 @@ EXTSYM vidbuffer,GUIOn,MMXSupport,resolutn,En2xSaI,antienab,scanlines
 EXTSYM hirestiledat,res512switch,curblank,spritetablea,lineleft,_2xSaILine
 EXTSYM _2xSaISuperEagleLine,_2xSaISuper2xSaILine,newengen,cfield,HalfTrans
 EXTSYM GUIOn2,FilteredGUI,SpecialLine,vidbufferofsb,HalfTransB,HalfTransC
+EXTSYM HighResProc
 %ifdef __WIN32__
 EXTSYM cvidmode,GUIDSMODE,GUIWFVID
 %endif
@@ -41,327 +42,10 @@ EXTSYM cvidmode,GUIDSMODE,GUIWFVID
 
 ALIGN32
 SECTION .bss
-NEWSYM AddEndBytes, resd 1         ; Number of bytes between each line
-NEWSYM NumBytesPerLine, resd 1     ; Total number of bytes per line (1024+AddEndBytes)
+NEWSYM AddEndBytes, resd 1
+NEWSYM NumBytesPerLine, resd 1
 NEWSYM WinVidMemStart, resd 1
 SECTION .text
-
-NEWSYM HighResProc
-    mov ecx,256
-    cmp byte[ebx],3
-    je near .hiresmode7
-    cmp byte[ebx],7
-    je near .hiresmode7
-    test byte[ebx],4
-    jz .nofield
-    cmp byte[scanlines],0
-    jne .nofield
-    test byte[cfield],1
-    jz .nofield
-    add edi,[NumBytesPerLine]
-.nofield
-    test byte[ebx],3
-    jnz near .hires
-.a
-    mov ax,[esi]
-    shl eax,16
-    mov ax,[esi]
-    mov [edi],eax
-    add esi,2
-    add edi,4
-    dec ecx
-    jnz .a
-    cmp byte[scanlines],0
-    jne .nofield
-    test byte[cfield],1
-    jnz .nofielde
-    add edi,[NumBytesPerLine]
-.nofielde
-    ret
-.hiresmode7
-    cmp byte[MMXSupport],1
-    je .yeshiresngmmxmode7
-.a2
-    mov ax,[esi]
-    shl eax,16
-    mov ax,[esi]
-    mov [edi],eax
-    add esi,2
-    add edi,4
-    dec ecx
-    jnz .a2
-    add edi,[AddEndBytes]
-    sub esi,512
-    mov ecx,256
-    add esi,75036*4
-.a2b
-    mov ax,[esi]
-    shl eax,16
-    mov ax,[esi]
-    mov [edi],eax
-    add esi,2
-    add edi,4
-    dec ecx
-    jnz .a2b
-    sub esi,75036*4
-    ret
-.yeshiresngmmxmode7
-    mov ecx,64
-.mmxr
-    movq mm0,[esi]
-    movq mm1,mm0
-    punpcklwd mm0,mm1
-    movq [edi],mm0
-    punpckhwd mm1,mm1
-    movq [edi+8],mm1
-    add esi,8
-    add edi,16
-    add eax,16
-    dec ecx
-    jnz .mmxr
-    add edi,[AddEndBytes]
-    sub esi,512
-    add esi,75036*4
-    mov ecx,64
-.mmxrb
-    movq mm0,[esi]
-    movq mm1,mm0
-    punpcklwd mm0,mm1
-    movq [edi],mm0
-    punpckhwd mm1,mm1
-    movq [edi+8],mm1
-    add esi,8
-    add edi,16
-    add eax,16
-    dec ecx
-    jnz .mmxrb
-    sub esi,75036*4
-    ret
-.hires
-    cmp byte[MMXSupport],1
-    je near .yeshiresngmmx
-.bng
-    mov eax,[esi+75036*4-2]
-    mov ax,[esi]
-    mov [edi],eax
-    add esi,2
-    add edi,4
-    dec ecx
-    jnz .bng
-    test byte[ebx],4
-    jz .nofieldb
-    cmp byte[scanlines],0
-    jne .nofieldb
-    test byte[cfield],1
-    jnz .lowerfield
-    add edi,[NumBytesPerLine]
-.lowerfield
-    ret
-.nofieldb
-    cmp byte[scanlines],1
-    je near .scanlines
-    cmp byte[scanlines],3
-    je near .halfscanlines
-    cmp byte[scanlines],2
-    je near .quartscanlines
-    add edi,[AddEndBytes]
-    sub esi,256*2
-    mov ecx,256
-.bngb
-    mov eax,[esi+75036*4-2]
-    mov ax,[esi]
-    mov [edi],eax
-    add esi,2
-    add edi,4
-    dec ecx
-    jnz .bngb
-    ret
-.scanlines
-    ret
-.yeshiresngmmx
-    mov eax,[spritetablea]
-    mov ecx,64
-    add eax,512*256
-.ngal
-    movq mm0,[esi]
-    movq mm1,[esi+75036*4]
-    movq mm2,mm0
-    punpcklwd mm0,mm1
-    movq [edi],mm0
-    punpckhwd mm2,mm1
-    movq [edi+8],mm2
-    movq [eax],mm0
-    movq [eax+8],mm2
-    add esi,8
-    add edi,16
-    add eax,16
-    dec ecx
-    jnz .ngal
-    test byte[ebx],4
-    jz .nofieldc
-    cmp byte[scanlines],0
-    jne .nofieldc
-    test byte[cfield],1
-    jnz .lowerfieldb
-    add edi,[NumBytesPerLine]
-.lowerfieldb
-    ret
-.nofieldc
-    cmp byte[scanlines],1
-    je near .scanlines
-    cmp byte[scanlines],3
-    je near .halfscanlinesmmx
-    cmp byte[scanlines],2
-    je near .quartscanlinesmmx
-    test byte[ebx+1],3
-    jz .noaa
-    cmp byte[En2xSaI],0
-    jne near .antialias
-    cmp byte[antienab],0
-    jne near .antialias
-.noaa
-    add edi,[AddEndBytes]
-    mov eax,[spritetablea]
-    mov ecx,32
-    add eax,512*256
-.mmxr2
-    movq mm0,[eax]
-    movq [edi],mm0
-    movq mm1,[eax+8]
-    movq [edi+8],mm1
-    movq mm2,[eax+16]
-    movq [edi+16],mm2
-    movq mm3,[eax+24]
-    movq [edi+24],mm3
-    add eax,32
-    add edi,32
-    dec ecx
-    jnz .mmxr2
-    ret
-.antialias
-    add edi,[AddEndBytes]
-    mov eax,[spritetablea]
-    mov ecx,64
-    add eax,512*256
-    movq mm4,[HalfTrans]
-    sub esi,256*2
-.mmxr2aa
-    movq mm0,[esi+288*2]
-    movq mm1,[esi+288*2+75036*4]
-    movq mm2,mm0
-    punpcklwd mm0,mm1
-    punpckhwd mm2,mm1
-    movq mm1,[eax]
-    movq mm3,[eax+8]
-    pand mm0,mm4
-    pand mm1,mm4
-    pand mm2,mm4
-    pand mm3,mm4
-    psrlw mm0,1
-    psrlw mm1,1
-    psrlw mm2,1
-    psrlw mm3,1
-    paddd mm0,mm1
-    paddd mm2,mm3
-    movq [edi],mm0
-    movq [edi+8],mm2
-    add eax,16
-    add edi,16
-    add esi,8
-    dec ecx
-    jnz .mmxr2aa
-    ret
-.halfscanlines
-    add edi,[AddEndBytes]
-    sub esi,256*2
-    mov ecx,256
-.abhs
-    mov eax,[esi+75036*4-2]
-    mov ax,[esi]
-    and eax,[HalfTrans]
-    shr eax,1
-    mov edx,eax
-    mov [edi],eax
-    add esi,2
-    add edi,4
-    dec ecx
-    jnz .abhs
-    ret
-.quartscanlines
-    add edi,[AddEndBytes]
-    sub esi,256*2
-    mov ecx,256
-.abhs2
-    mov eax,[esi+75036*4-2]
-    mov ax,[esi]
-    and eax,[HalfTrans]
-    shr eax,1
-    mov edx,eax
-    and edx,[HalfTrans]
-    shr edx,1
-    add eax,edx
-    mov [edi],eax
-    add esi,2
-    add edi,4
-    dec ecx
-    jnz .abhs2
-    ret
-.halfscanlinesmmx
-    mov eax,[spritetablea]
-    mov ecx,32
-    add eax,512*256
-    add edi,[AddEndBytes]
-    movq mm4,[HalfTrans]
-.mmxr2h
-    movq mm0,[eax]
-    movq mm1,[eax+8]
-    movq mm2,[eax+16]
-    movq mm3,[eax+24]
-    pand mm0,mm4
-    pand mm1,mm4
-    pand mm2,mm4
-    pand mm3,mm4
-    psrlw mm0,1
-    psrlw mm1,1
-    psrlw mm2,1
-    psrlw mm3,1
-    movq [edi],mm0
-    movq [edi+8],mm1
-    movq [edi+16],mm2
-    movq [edi+24],mm3
-    add eax,32
-    add edi,32
-    dec ecx
-    jnz .mmxr2h
-    ret
-.quartscanlinesmmx
-    mov eax,[spritetablea]
-    mov ecx,64
-    add eax,512*256
-    add edi,[AddEndBytes]
-    movq mm4,[HalfTransC]
-.mmxr2h2
-    movq mm0,[eax]
-    movq mm1,[eax+8]
-    pand mm0,mm4
-    pand mm1,mm4
-    psrlw mm0,1
-    psrlw mm1,1
-    movq mm2,mm0
-    movq mm3,mm1
-    pand mm2,mm4
-    pand mm3,mm4
-    psrlw mm2,1
-    psrlw mm3,1
-    paddd mm0,mm2
-    paddd mm1,mm3
-    movq [edi],mm0
-    movq [edi+8],mm1
-    add eax,16
-    add edi,16
-    dec ecx
-    jnz .mmxr2h2
-    ret
 
 NEWSYM Process2xSaIwin
     SelectTile
@@ -401,7 +85,15 @@ NEWSYM Process2xSaIwin
     jbe .ignorehr
     push ebx
     mov ebx,[InterPtr]
-    call HighResProc
+
+    push esi
+    mov esi, esp
+    push edi
+    mov edi, esp
+    ccallv HighResProc, esi, edi, ebx
+    pop edi
+    pop esi
+
     pop ebx
     push ebx
     mov ecx,144
@@ -513,7 +205,15 @@ NEWSYM interpolate640x480x16bwin
     mov ebx,[InterPtr]
     cmp byte[ebx],1
     jbe .ignorehr
-    call HighResProc
+
+    push esi
+    mov esi, esp
+    push edi
+    mov edi, esp
+    ccallv HighResProc, esi, edi, ebx
+    pop edi
+    pop esi
+
     jmp .returninterp
 .ignorehr
     mov ecx,255
@@ -572,7 +272,15 @@ NEWSYM interpolate640x480x16bwin
     mov ecx,255
     cmp byte[ebx],1
     jbe .ignorehrs
-    call HighResProc
+
+    push esi
+    mov esi, esp
+    push edi
+    mov edi, esp
+    ccallv HighResProc, esi, edi, ebx
+    pop edi
+    pop esi
+
     jmp .returninterps
 .ignorehrs
     cmp byte[ebx],1
@@ -651,7 +359,15 @@ NEWSYM interpolate640x480x16bwin
     mov ebx,[InterPtr]
     cmp byte[ebx],1
     jbe .ignorehrhs
-    call HighResProc
+
+    push esi
+    mov esi, esp
+    push edi
+    mov edi, esp
+    ccallv HighResProc, esi, edi, ebx
+    pop edi
+    pop esi
+
     jmp .returninterphs
 .ignorehrhs
     mov edx,[spritetablea]
@@ -707,7 +423,15 @@ NEWSYM interpolate640x480x16bwin
     mov ebx,[InterPtr]
     cmp byte[ebx],1
     jbe .ignorehrqs
-    call HighResProc
+
+    push esi
+    mov esi, esp
+    push edi
+    mov edi, esp
+    ccallv HighResProc, esi, edi, ebx
+    pop edi
+    pop esi
+
     jmp .returninterpqs
 .ignorehrqs
     mov edx,[spritetablea]
@@ -808,7 +532,15 @@ MMXInterpolwin:
 .a5
     cmp byte[ebx],1
     jbe .ignorehr
-    call HighResProc
+
+    push esi
+    mov esi, esp
+    push edi
+    mov edi, esp
+    ccallv HighResProc, esi, edi, ebx
+    pop edi
+    pop esi
+
     movq mm2,[HalfTransC]
     jmp .returninterp
 .ignorehr
@@ -895,7 +627,15 @@ MMXInterpolwin:
 .asl
     cmp byte[ebx],1
     jbe .ignorehrs
-    call HighResProc
+
+    push esi
+    mov esi, esp
+    push edi
+    mov edi, esp
+    ccallv HighResProc, esi, edi, ebx
+    pop edi
+    pop esi
+
     movq mm2,[HalfTrans]
     jmp .returninterps
 .ignorehrs
@@ -941,7 +681,15 @@ MMXInterpolwin:
 .ahb
     cmp byte[ebx],1
     jbe .ignorehrhs
-    call HighResProc
+
+    push esi
+    mov esi, esp
+    push edi
+    mov edi, esp
+    ccallv HighResProc, esi, edi, ebx
+    pop edi
+    pop esi
+
     movq mm2,[HalfTrans]
     jmp .returninterphs
 .ignorehrhs
@@ -1003,7 +751,15 @@ MMXInterpolwin:
 .ahb2
     cmp byte[ebx],1
     jbe .ignorehrqs
-    call HighResProc
+
+    push esi
+    mov esi, esp
+    push edi
+    mov edi, esp
+    ccallv HighResProc, esi, edi, ebx
+    pop edi
+    pop esi
+
     movq mm2,[HalfTransC]
     jmp .returninterpqs
 .ignorehrqs
