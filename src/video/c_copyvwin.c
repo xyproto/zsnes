@@ -1,3 +1,5 @@
+#include <string.h>
+
 #include "../c_init.h"
 #include "../cfg.h"
 #include "../cpu/regs.h"
@@ -5,10 +7,15 @@
 #include "../gui/gui.h"
 #include "../ui.h"
 #include "../vcache.h"
+#include "2xsaiw.h"
 #include "c_copyvwin.h"
 #include "copyvwin.h"
 #include "makevid.h"
 #include "newgfx16.h"
+
+#ifdef __WIN32__
+#include "../win/winlink.h"
+#endif
 
 
 void HighResProc(u2** psrc, u1** pdst, u1* ebx)
@@ -361,6 +368,78 @@ static u1* SelectTile(void)
 }
 
 
+static void Process2xSaIwin(u2* src, u1* dst)
+{
+	InterPtr = SelectTile();
+#ifdef __UNIXSDL__
+	u1 dl = 224;
+#else
+	u1 dl = resolutn;
+#endif
+	lineleft = dl;
+	src[256] = 0;
+
+	u1* ebx = vidbufferofsb + 288 * 2;
+	for (;;)
+	{
+		src[256 + 288] = 0;
+
+		*(u4*)(dst + 512 * 2 - 6) = 0;
+		*(u2*)(dst + 512 * 2 - 2) = 0;
+#ifdef __WIN32__
+		if (GUIDSMODE[cvidmode] == 0 && GUIWFVID[cvidmode] != 0)
+		{
+			*(u4*)(dst + 576 * 4 - 6) = 0;
+			*(u2*)(dst + 576 * 4 - 2) = 0;
+		}
+		else
+#endif
+		{
+			*(u4*)(dst + 512 * 4 - 6) = 0;
+			*(u2*)(dst + 512 * 4 - 2) = 0;
+		}
+
+		u1* eax = InterPtr;
+		if (*eax > 1)
+		{
+			u2* esi_ = src;
+			u1* edi_ = dst;
+			HighResProc(&esi_, &edi_, InterPtr);
+			src = esi_;
+			dst = edi_;
+			memset(ebx, 0xFF, 576);
+			src += 32;
+			++InterPtr;
+			dst += AddEndBytes;
+			ebx += 576;
+			if (--lineleft == 0) break;
+		}
+		else
+		{
+			LineFilter* f;
+			switch (En2xSaI)
+			{
+				case 2:  f = _2xSaISuperEagleLine; break;
+				case 3:  f = _2xSaISuper2xSaILine; break;
+				default: f = _2xSaILine;           break;
+			}
+			f(src /* source pointer */, ebx, 576 /* source pitch */, 256 /* width */, dst /* destination offset */, NumBytesPerLine);
+			src += 288;
+			dst += NumBytesPerLine * 2;
+			ebx += 576;
+			++InterPtr;
+			if (--lineleft == 0)
+			{
+				dst -= NumBytesPerLine;
+				memset(dst, 0, 1024);
+				break;
+			}
+		}
+	}
+	asm volatile("emms"); // XXX necessary?
+}
+
+
 void copy640x480x16bwin(void)
 {
 	if (curblank == 0x40) return;
@@ -384,7 +463,7 @@ void copy640x480x16bwin(void)
 	{
 		if (MMXSupport == 1 && En2xSaI != 0)
 		{
-			asm volatile("call %P2" : "+S" (src), "+D" (dst) : "X" (Process2xSaIwin) : "cc", "memory", "eax", "ecx", "edx", "ebx"); // asm_call
+			Process2xSaIwin(src, dst);
 			return;
 		}
 		if (antienab == 1)

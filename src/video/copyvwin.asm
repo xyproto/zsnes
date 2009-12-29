@@ -26,9 +26,6 @@ EXTSYM hirestiledat,res512switch,curblank,spritetablea,lineleft,_2xSaILine
 EXTSYM _2xSaISuperEagleLine,_2xSaISuper2xSaILine,newengen,cfield,HalfTrans
 EXTSYM GUIOn2,FilteredGUI,SpecialLine,vidbufferofsb,HalfTransB,HalfTransC
 EXTSYM HighResProc
-%ifdef __WIN32__
-EXTSYM cvidmode,GUIDSMODE,GUIWFVID
-%endif
 
 %macro SelectTile 0
     mov ebx,hirestiledat+1
@@ -46,126 +43,6 @@ NEWSYM AddEndBytes, resd 1
 NEWSYM NumBytesPerLine, resd 1
 NEWSYM WinVidMemStart, resd 1
 SECTION .text
-
-NEWSYM Process2xSaIwin
-    SelectTile
-    mov [InterPtr],ebx
-%ifdef __UNIXSDL__
-    mov dl,224
-%else
-    mov dl,[resolutn]
-%endif
-    mov [lineleft],dl
-    mov word[esi+512],0
-
-    mov ebx,[vidbufferofsb]
-    add ebx,288*2
-
-.next
-    mov word[esi+512+576],0
-    mov dword[edi+512*2-6],0
-    mov word[edi+512*2-2],0
-%ifdef __WIN32__
-    xor eax,eax
-    mov al,[cvidmode]
-    cmp byte[GUIDSMODE+eax],0
-    jne near .isdsmode
-    cmp byte[GUIWFVID+eax],0
-    je .isdsmode
-    mov dword[edi+576*4-6],0
-    mov word[edi+576*4-2],0
-    jmp near .notdsmode
-%endif
-.isdsmode
-    mov dword[edi+512*4-6],0
-    mov word[edi+512*4-2],0
-.notdsmode
-    mov eax,[InterPtr]
-    cmp byte[eax],1
-    jbe .ignorehr
-    push ebx
-    mov ebx,[InterPtr]
-
-    push esi
-    mov esi, esp
-    push edi
-    mov edi, esp
-    ccallv HighResProc, esi, edi, ebx
-    pop edi
-    pop esi
-
-    pop ebx
-    push ebx
-    mov ecx,144
-.nextb
-    mov dword[ebx],0FFFFFFFFh
-    add ebx,4
-    dec ecx
-    jnz .nextb
-    pop ebx
-    jmp .returninterp
-.ignorehr
-
-;srcPtr        equ 8
-;deltaPtr      equ 12
-;srcPitch      equ 16
-;width         equ 20
-;dstOffset     equ 24
-;dstPitch      equ 28
-;dstSegment    equ 32
-
-
-    push ebx
-    mov eax,[NumBytesPerLine]
-    push eax
-    mov eax,edi         ; destination offset
-    push eax
-    mov eax,256         ; width
-    push eax
-    mov eax,576         ; source pitch
-    push eax
-    push ebx
-    mov eax,esi         ; source pointer
-    push eax
-    cmp byte[En2xSaI],2
-    je .supereagle
-    cmp byte[En2xSaI],3
-    je .super2xSaI
-    call _2xSaILine
-    jmp .normal
-.supereagle
-    call _2xSaISuperEagleLine
-    jmp .normal
-.super2xSaI
-    call _2xSaISuper2xSaILine
-.normal
-    add esp,24
-    pop ebx
-    add esi,576
-    add edi,[NumBytesPerLine]
-    add edi,[NumBytesPerLine]
-    add ebx,576
-    inc dword[InterPtr]
-    dec dword[lineleft]
-    jnz near .next
-    mov ecx,256
-    sub edi,[NumBytesPerLine]
-.loop
-    mov dword[es:edi],0
-    add edi,4
-    dec ecx
-    jnz .loop
-    emms
-    ret
-.returninterp
-    add esi,64
-    inc dword[InterPtr]
-    add edi,[AddEndBytes]
-    add ebx,576
-    dec byte[lineleft]
-    jnz near .next
-    emms
-    ret
 
 NEWSYM interpolate640x480x16bwin
     SelectTile
@@ -829,5 +706,5 @@ MMXInterpolwin:
     ret
 
 SECTION .data
-InterPtr dd 0
+NEWSYM InterPtr, dd 0
 SECTION .text

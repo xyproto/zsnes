@@ -3,9 +3,9 @@
 
 #include "../types.h"
 
-extern void Process2xSaIwin();
 extern void interpolate640x480x16bwin();
 
+extern u1* InterPtr;
 extern u1* WinVidMemStart;
 extern u4  AddEndBytes;     // Number of bytes between each line
 extern u4  NumBytesPerLine; // Total number of bytes per line (1024+AddEndBytes)
