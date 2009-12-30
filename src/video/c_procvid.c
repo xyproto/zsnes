@@ -246,3 +246,30 @@ void outputhex16(u2* const buf, u1 const val)
 	OutputText16b(buf,     FontData[(val >> 4)   + 1], edx);
 	OutputText16b(buf + 8, FontData[(val & 0x0F) + 1], edx);
 }
+
+
+#ifdef __MSDOS__
+void outputchar(u1* buf, u1 const glyph)
+{
+	u1 const* src = FontData[glyph];
+	u4        y   = 8;
+	do
+	{
+		u1 ah = *src++;
+		u4 x  = 8;
+		do
+		{
+			if (ah & 0x80)
+			{
+				buf[0]   = textcolor;
+				buf[289] = 192;
+			}
+			ah <<= 1;
+			++buf;
+		}
+		while (--x != 0);
+		buf += 280;
+	}
+	while (--y != 0);
+}
+#endif
