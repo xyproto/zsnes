@@ -40,7 +40,7 @@ EXTSYM CSStatus2,CSStatus3,CSStatus4,SpecialLine,Clear2xSaIBuffer,vidbufferofsb,
 EXTSYM MovieProcessing,MovieFrameStr,GetMovieFrameStr,mouse1lh,mouse2lh
 EXTSYM MovieDisplayFrame,SloMo,MouseCount,device2,LoadPicture
 EXTSYM zst_determine_newest,newestfiledate,zst_exists,ClockBox,SSAutoFire
-EXTSYM outputhex
+EXTSYM outputhex,OutputText16b
 
 %ifndef __MSDOS__
 EXTSYM MouseMoveX,MouseMoveY,MouseButtons,MultiMouseProcess,mouse
@@ -72,63 +72,7 @@ NEWSYM mouseydir,    resb 1
 NEWSYM mousechan,    resb 1
 SECTION .text
 
-OutputText16b:
-    cmp byte[ForceNonTransp],1
-    je near OutText16bnt
-    cmp byte[GUIEnableTransp],0
-    je near OutText16bnt
-    ; output text in edi to esi
-    push ebx
-    push eax
-    mov cl,9
-.loopa
-    mov ch,9
-    xor eax,eax
-    cmp cl,1
-    je .not1
-    mov al,[edi]
-    shl eax,1
-.not1
-    xor ebx,ebx
-    cmp cl,9
-    je .loopb
-    mov bl,[edi-1]
-.loopb
-    test ax,100h
-    jz .nowrite
-    push eax
-    and word[esi],dx
-    shr word[esi],1
-    and word[esi+75036*4],dx
-    shr word[esi+75036*4],1
-    ror edx,16
-    add word[esi],dx
-    add word[esi+75036*4],dx
-    ror edx,16
-    pop eax
-    jmp .nowrite2
-.nowrite
-    test bx,100h
-    jz .nowrite2
-    and word[esi],dx
-    shr word[esi],1
-    and word[esi+75036*4],dx
-    shr word[esi+75036*4],1
-.nowrite2
-    shl ax,1
-    shl bx,1
-    add esi,2
-    dec ch
-    jnz .loopb
-    add esi,279*2
-    inc edi
-    dec cl
-    jnz .loopa
-    pop eax
-    pop ebx
-    ret
-
-OutText16bnt:
+NEWSYM OutText16bnt
     ; output text in edi to esi
     push ebx
     push eax
@@ -193,7 +137,7 @@ NEWSYM outputhex16
     shl ebx,3
     add edi,ebx
     add edi,8
-    call OutputText16b
+    ccallv OutputText16b, esi, edi, edx
     pop esi
     add esi,16
     mov edi,FontData
@@ -203,7 +147,7 @@ NEWSYM outputhex16
     shl ebx,3
     add edi,ebx
     add edi,8
-    call OutputText16b
+    ccallv OutputText16b, esi, edi, edx
     pop edx
     pop ecx
     pop ebx
@@ -397,7 +341,7 @@ NEWSYM outputchar16b
     mov bl,al
     shl ebx,3
     add edi,ebx
-    call OutputText16b
+    ccallv OutputText16b, esi, edi, edx
     pop ecx
     pop edx
     pop eax

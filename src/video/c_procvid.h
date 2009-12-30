@@ -16,4 +16,6 @@ void processmouse2(void);
 void outputhex(u1* buf, u1 val);
 #endif
 
+void OutputText16b(u2* dst, u1 const* src, u4 edx);
+
 #endif
