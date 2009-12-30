@@ -11,4 +11,9 @@ u4 SwapMouseButtons(u4 buttons);
 void processmouse1(void);
 void processmouse2(void);
 
+#ifdef __MSDOS__
+// Outputs val at buf
+void outputhex(u1* buf, u1 val);
+#endif
+
 #endif

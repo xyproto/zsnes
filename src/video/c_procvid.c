@@ -130,3 +130,35 @@ void processmouse2(void)
 	if (dy != 0) mouseydir = dy < 0 ? dy = -dy, 1 : 0;
 	mouseypos = dy;
 }
+
+
+#ifdef __MSDOS__
+void outputhex(u1* buf, u1 const val)
+{
+	for (u4 i = 0; i != 2; buf += 8, ++i)
+	{
+		u4 const  digit = val >> (i * 4) & 0x0F;
+		u1 const* src   = FontData[digit + 1];
+		u1*       dst   = buf;
+		u4        y     = 8;
+		do
+		{
+			u1 ah = *src++;
+			u4 x  = 8;
+			do
+			{
+				if (ah & 0x80)
+				{
+					dst[0]   = 128;
+					dst[289] = 192;
+				}
+				ah <<= 1;
+				++dst;
+			}
+			while (--x != 0);
+			dst += 280;
+		}
+		while (--y != 0);
+	}
+}
+#endif

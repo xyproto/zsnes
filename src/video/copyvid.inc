@@ -221,51 +221,51 @@ NEWSYM hextestoutput
     mov ebx,[C4Ram]
     mov ebx,[vram]
     mov al,[DecompAPtr+1h]
-    call outputhex
+    ccallv outputhex, esi, eax
     mov esi,216*288+32+16
     add esi,[vidbuffer]
     xor eax,eax
     mov ebx,[C4Ram]
     mov ebx,[vram]
     mov al,[DecompAPtr]
-    call outputhex
+    ccallv outputhex, esi, eax
     mov esi,216*288+70
     add esi,[vidbuffer]
     xor eax,eax
     mov ebx,[C4Ram]
     mov al,[bg1objptr+1]
-    call outputhex
+    ccallv outputhex, esi, eax
     mov esi,216*288+70+16
     add esi,[vidbuffer]
     xor eax,eax
     mov ebx,[C4Ram]
     mov al,[bg1objptr]
-    call outputhex
+    ccallv outputhex, esi, eax
     mov esi,216*288+108
     add esi,[vidbuffer]
     xor eax,eax
     mov ebx,[C4Ram]
     mov al,[ebx+4]
-    call outputhex
+    ccallv outputhex, esi, eax
     mov esi,216*288+108+16
     add esi,[vidbuffer]
     xor eax,eax
     mov ebx,[C4Ram]
     mov al,[ebx+9]
-    call outputhex
+    ccallv outputhex, esi, eax
     mov esi,216*288+146
     add esi,[vidbuffer]
     xor eax,eax
     mov ebx,[C4Ram]
     mov al,[ebx+10]
-    call outputhex
+    ccallv outputhex, esi, eax
     xor eax,eax
     mov esi,216*288+146+16
     add esi,[vidbuffer]
     or al,[bg1scroly]
     mov ebx,[C4Ram]
     mov al,[ebx+11]
-    call outputhex
+    ccallv outputhex, esi, eax
     ret
 
 NEWSYM ResetTripleBuf

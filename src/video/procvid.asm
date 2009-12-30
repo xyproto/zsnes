@@ -40,6 +40,7 @@ EXTSYM CSStatus2,CSStatus3,CSStatus4,SpecialLine,Clear2xSaIBuffer,vidbufferofsb,
 EXTSYM MovieProcessing,MovieFrameStr,GetMovieFrameStr,mouse1lh,mouse2lh
 EXTSYM MovieDisplayFrame,SloMo,MouseCount,device2,LoadPicture
 EXTSYM zst_determine_newest,newestfiledate,zst_exists,ClockBox,SSAutoFire
+EXTSYM outputhex
 
 %ifndef __MSDOS__
 EXTSYM MouseMoveX,MouseMoveY,MouseButtons,MultiMouseProcess,mouse
@@ -70,78 +71,6 @@ NEWSYM mouseypos,    resw 1
 NEWSYM mouseydir,    resb 1
 NEWSYM mousechan,    resb 1
 SECTION .text
-
-;*******************************************************
-; Output Hex                 Outputs the hex in al @ esi
-;*******************************************************
-
-%ifdef __MSDOS__
-NEWSYM outputhex
-    push edi
-    push esi
-    push eax
-    push ebx
-    push ecx
-    push esi
-    mov edi,FontData
-    xor ebx,ebx
-    mov bl,al
-    shr bl,4
-    shl ebx,3
-    add edi,ebx
-    add edi,8
-    mov cl,8
-.loopa
-    mov ah,[edi]
-    mov ch,8
-.loopb
-    test ah,80h
-    jz .nowrite
-    mov byte[esi],128
-    mov byte[esi+289],192
-.nowrite
-    shl ah,1
-    inc esi
-    dec ch
-    jnz .loopb
-    add esi,280
-    inc edi
-    dec cl
-    jnz .loopa
-    pop esi
-    add esi,8
-    mov edi,FontData
-    xor ebx,ebx
-    mov bl,al
-    and bl,0Fh
-    shl ebx,3
-    add edi,ebx
-    add edi,8
-    mov cl,8
-.loopa2
-    mov ah,[edi]
-    mov ch,8
-.loopb2
-    test ah,80h
-    jz .nowrite2
-    mov byte[esi],128
-    mov byte[esi+289],192
-.nowrite2
-    shl ah,1
-    inc esi
-    dec ch
-    jnz .loopb2
-    add esi,280
-    inc edi
-    dec cl
-    jnz .loopa2
-    pop ecx
-    pop ebx
-    pop eax
-    pop esi
-    pop edi
-    ret
-%endif
 
 OutputText16b:
     cmp byte[ForceNonTransp],1
@@ -2225,7 +2154,7 @@ NEWSYM showfps
     mov esi,208*288+32
     add esi,[vidbuffer]
     push ecx
-    call outputhex
+    ccallv outputhex, esi, eax
 
     mov esi,208*288+48
     add esi,[vidbuffer]
@@ -2242,7 +2171,7 @@ NEWSYM showfps
     mov al,ah
     mov esi,208*288+56
     add esi,[vidbuffer]
-    call outputhex
+    ccallv outputhex, esi, eax
     ret
 
 .do16b
