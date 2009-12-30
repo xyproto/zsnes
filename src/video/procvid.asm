@@ -40,7 +40,7 @@ EXTSYM CSStatus2,CSStatus3,CSStatus4,SpecialLine,Clear2xSaIBuffer,vidbufferofsb,
 EXTSYM MovieProcessing,MovieFrameStr,GetMovieFrameStr,mouse1lh,mouse2lh
 EXTSYM MovieDisplayFrame,SloMo,MouseCount,device2,LoadPicture
 EXTSYM zst_determine_newest,newestfiledate,zst_exists,ClockBox,SSAutoFire
-EXTSYM outputhex,outputhex16,outputchar,outputchar16b
+EXTSYM outputhex,outputhex16,outputchar,outputchar16b,outputchar5x5
 
 %ifndef __MSDOS__
 EXTSYM MouseMoveX,MouseMoveY,MouseButtons,MultiMouseProcess,mouse
@@ -202,43 +202,6 @@ NEWSYM textcolor, db 128
 NEWSYM textcolor16b, dw 0FFFFh
 SECTION .text
 
-%ifdef __MSDOS__
-NEWSYM outputchar5x5
-    push edi
-    push esi
-    push eax
-    mov edi,GUIFontData
-    xor ebx,ebx
-    mov bl,al
-    shl ebx,2
-    add edi,ebx
-    xor ebx,ebx
-    mov bl,al
-    add edi,ebx
-    mov cl,5
-.loopa
-    mov ah,[edi]
-    mov ch,5
-.loopb
-    test ah,80h
-    jz .nowrite
-    mov al,[textcolor]
-    mov [esi],al
-.nowrite
-    shl ah,1
-    inc esi
-    dec ch
-    jnz .loopb
-    add esi,283
-    inc edi
-    dec cl
-    jnz .loopa
-    pop eax
-    pop esi
-    pop edi
-    ret
-%endif
-
 NEWSYM outputchar16b5x5
     push edi
     push esi
@@ -375,7 +338,7 @@ NEWSYM OutputGraphicString5x5
     cmp al,0
     je .nomore
     mov al,[ASCII2Font+eax]
-    call outputchar5x5
+    ccallv outputchar5x5, esi, eax
     add esi,6
     inc edi
     jmp .nextstr
@@ -2117,17 +2080,13 @@ NEWSYM ClockOutput
     xor eax,eax
     add al,':'
     mov al,[ASCII2Font+eax]
-    pushad
-    call outputchar5x5
-    popad
+    ccallv outputchar5x5, esi, eax
     mov esi,216*288+32+204
     add esi,[vidbuffer]
     xor eax,eax
     add al,':'
     mov al,[ASCII2Font+eax]
-    pushad
-    call outputchar5x5
-    popad
+    ccallv outputchar5x5, esi, eax
     ret
 
 .do16b2
@@ -2159,17 +2118,13 @@ NEWSYM ClockOutput
     and eax,0FFh
     add al,48
     mov al,[ASCII2Font+eax]
-    pushad
-    call outputchar5x5
-    popad
+    ccallv outputchar5x5, esi, eax
     xor eax,eax
     mov al,dl
     add al,48
     mov al,[ASCII2Font+eax]
     add esi,6
-    pushad
-    call outputchar5x5
-    popad
+    ccallv outputchar5x5, esi, eax
     ret
 .do16b
 %endif

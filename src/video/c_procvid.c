@@ -10,6 +10,9 @@
 #include "c_procvid.h"
 #include "procvid.h"
 
+#ifdef __MSDOS__
+#	include "../gui/gui.h"
+#endif
 
 void showvideo(void)
 {
@@ -280,3 +283,26 @@ void outputchar16b(u2* const buf, u1 const glyph)
 	u4 const edx = (u2)vesa2_clbitng >> 1 << 16 | (u2)vesa2_clbitng;
 	OutputText16b(buf, FontData[glyph], edx);
 }
+
+
+#ifdef __MSDOS__
+void outputchar5x5(u1* buf, u1 const glyph)
+{
+	u1 const* src = GUIFontData[glyph];
+	u4        y   = 5;
+	do
+	{
+		u1 ah = *src++;
+		u4 x  = 5;
+		do
+		{
+			if (ah & 0x80) *buf = textcolor;
+			ah <<= 1;
+			++buf;
+		}
+		while (--x != 0);
+		buf += 283;
+	}
+	while (--y != 0);
+}
+#endif
