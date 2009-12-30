@@ -440,6 +440,377 @@ static void Process2xSaIwin(u2* src, u1* dst)
 }
 
 
+void MMXInterpolwin(u2* esi, u1* edi, u1 const dl)
+{
+	u1* ebx = SelectTile();
+	u8  mm2 = *(u8*)HalfTransC;
+	switch (scanlines)
+	{
+		case 1: // scanlines
+		{
+			lineleft = dl;
+			// do scanlines
+			u4 eax = *(u4*)(esi + 255); // XXX unaligned?
+			u4 ecx = 64;
+			*(u4*)(esi + 256) = eax;
+			do
+			{
+				if (*ebx > 1)
+				{
+					u2* esi_ = esi;
+					u1* edi_ = edi;
+					HighResProc(&esi_, &edi_, ebx);
+					esi = esi_;
+					edi = edi_;
+					mm2 = *(u8*)HalfTrans;
+				}
+				else
+				{
+					do
+					{
+						asm volatile(
+							"movq  (%0), %%mm0\n\t"
+							"movq %%mm0, %%mm4\n\t"
+							"movq 2(%0), %%mm1\n\t"
+							"pand %2, %%mm0\n\t"
+							"pand %2, %%mm1\n\t"
+							"psrlw $1, %%mm0\n\t"
+							"psrlw $1, %%mm1\n\t"
+							"paddd %%mm1, %%mm0\n\t"
+							"movq %%mm4, %%mm5\n\t"
+							/* mm4/mm5 contains original values, mm0 contains mixed values */
+							"punpcklwd %%mm0, %%mm4\n\t"
+							"punpckhwd %%mm0, %%mm5\n\t"
+							"movq %%mm4,  (%1)\n\t"
+							"movq %%mm5, 8(%1)"
+							:: "r" (esi), "r" (edi), "y" (mm2) : "memory", "mm0", "mm1", "mm4", "mm5"
+						);
+						esi +=  4;
+						edi += 16;
+					}
+					while (--ecx != 0);
+				}
+				esi += 32;
+				edi += AddEndBytes;
+				memset(edi, 0, 1024);
+				edi += 1024;
+				edi += AddEndBytes;
+				++ebx;
+				ecx = 64;
+			}
+			while (--lineleft != 0);
+			break;
+		}
+
+		case 2: // quartscanlines
+		{
+			lineleft = dl;
+			// do scanlines
+			do
+			{
+				if (*ebx > 1)
+				{
+					u2* esi_ = esi;
+					u1* edi_ = edi;
+					HighResProc(&esi_, &edi_, ebx);
+					esi = esi_;
+					edi = edi_;
+					mm2 = *(u8*)HalfTransC;
+				}
+				else
+				{
+					u4  eax = *(u4*)(esi + 255); // XXX unaligned?
+					*(u4*)(esi + 256) = eax;
+					u1* edx = spritetablea + 512 * 256;
+					{ u4 ecx = 64;
+						do
+						{
+							asm volatile(
+								"movq  (%1), %%mm0\n\t"
+								"movq %%mm0, %%mm3\n\t"
+								"movq %%mm0, %%mm4\n\t"
+								"movq 2(%1), %%mm1\n\t"
+								"por %%mm1, %%mm3\n\t"
+								"pand %3, %%mm0\n\t"
+								"pand %3, %%mm1\n\t"
+								"psrlw $1, %%mm0\n\t"
+								"psrlw $1, %%mm1\n\t"
+								"paddd %%mm1, %%mm0\n\t"
+								"pand %4, %%mm3\n\t"
+								"paddw %%mm3, %%mm0\n\t"
+								"movq %%mm4, %%mm5\n\t"
+								/* mm4/mm5 contains original values, mm0 contains mixed values */
+								"punpcklwd %%mm0, %%mm4\n\t"
+								"punpckhwd %%mm0, %%mm5\n\t"
+								"movq %%mm4,  (%0)\n\t"
+								"movq %%mm5, 8(%0)\n\t"
+								"movq %%mm4,  (%2)\n\t"
+								"movq %%mm5, 8(%2)"
+								:: "r" (edx), "r" (esi), "r" (edi), "y" (mm2), "m" (*(u8*)HalfTransB) : "memory", "mm0", "mm1", "mm3", "mm4", "mm5"
+							);
+							esi +=  4;
+							edi += 16;
+							edx += 16;
+						}
+						while (--ecx != 0);
+					}
+					edi += AddEndBytes;
+					edx -= 16 * 64;
+					{ u4 ecx = 64;
+						do
+						{
+							asm volatile(
+								"movq  (%0), %%mm0\n\t"
+								"movq 8(%0), %%mm1\n\t"
+								"pand %2, %%mm0\n\t"
+								"pand %2, %%mm1\n\t"
+								"psrlw $1, %%mm0\n\t"
+								"psrlw $1, %%mm1\n\t"
+								"movq %%mm0, %%mm4\n\t"
+								"movq %%mm1, %%mm5\n\t"
+								"pand %2, %%mm4\n\t"
+								"pand %2, %%mm5\n\t"
+								"psrlw $1, %%mm4\n\t"
+								"psrlw $1, %%mm5\n\t"
+								"paddd %%mm4, %%mm0\n\t"
+								"paddd %%mm5, %%mm1\n\t"
+								"movq %%mm0,  (%1)\n\t"
+								"movq %%mm1, 8(%1)"
+								:: "r" (edx), "r" (edi), "y" (mm2) : "memory", "mm0", "mm1", "mm4", "mm5"
+							);
+							edi += 16;
+							edx += 16;
+						}
+						while (--ecx != 0);
+					}
+				}
+				esi += 32;
+				edi += AddEndBytes;
+				++ebx;
+			}
+			while (--lineleft != 0);
+			break;
+		}
+
+		case 3: // halfscanlines
+		{
+			lineleft = dl;
+			// do scanlines
+			do
+			{
+				if (*ebx > 1)
+				{
+					u2* esi_ = esi;
+					u1* edi_ = edi;
+					HighResProc(&esi_, &edi_, ebx);
+					esi = esi_;
+					edi = edi_;
+					mm2 = *(u8*)HalfTrans;
+				}
+				else
+				{
+					u4  eax = *(u4*)(esi + 255); // XXX unaligned?
+					*(u4*)(esi + 256) = eax;
+					u1* edx = spritetablea + 512 * 256;
+					{ u4 ecx = 64;
+						do
+						{
+							asm volatile(
+								"movq  (%1), %%mm0\n\t"
+								"movq %%mm0, %%mm4\n\t"
+								"movq 2(%1), %%mm1\n\t"
+								"pand %3, %%mm0\n\t"
+								"pand %3, %%mm1\n\t"
+								"psrlw $1, %%mm0\n\t"
+								"psrlw $1, %%mm1\n\t"
+								"paddd %%mm1, %%mm0\n\t"
+								"movq %%mm4, %%mm5\n\t"
+								/* mm4/mm5 contains original values, mm0 contains mixed values */
+								"punpcklwd %%mm0, %%mm4\n\t"
+								"punpckhwd %%mm0, %%mm5\n\t"
+								"movq %%mm4,  (%0)\n\t"
+								"movq %%mm5, 8(%0)\n\t"
+								"movq %%mm4,  (%2)\n\t"
+								"movq %%mm5, 8(%2)"
+								:: "r" (edx), "r" (esi), "r" (edi), "y" (mm2) : "memory", "mm0", "mm1", "mm4", "mm5"
+							);
+							esi +=  4;
+							edi += 16;
+							edx += 16;
+						}
+						while (--ecx != 0);
+					}
+					edi += AddEndBytes;
+					edx -= 16 * 64;
+					{ u4 ecx = 64;
+						do
+						{
+							asm volatile(
+								"movq  (%0), %%mm0\n\t"
+								"movq 8(%0), %%mm1\n\t"
+								"pand %2, %%mm0\n\t"
+								"pand %2, %%mm1\n\t"
+								"psrlw $1, %%mm0\n\t"
+								"psrlw $1, %%mm1\n\t"
+								"movq %%mm0,  (%1)\n\t"
+								"movq %%mm1, 8(%1)"
+								:: "r" (edx), "r" (edi), "y" (mm2) : "memory", "mm0", "mm1"
+							);
+							edi += 16;
+							edx += 16;
+						}
+						while (--ecx != 0);
+					}
+				}
+				edi += AddEndBytes;
+				esi += 32;
+				++ebx;
+			}
+			while (--lineleft != 0);
+			break;
+		}
+
+		default:
+		{
+			lineleft = dl;
+			// do scanlines
+			u4  eax = *(u4*)(esi + 255); // XXX unaligned?
+			*(u4*)(esi + 256) = eax;
+			u1* edx = spritetablea + 512 * 256;
+			u4  ecx = 64;
+			do
+			{
+				asm volatile(
+					"movq  (%1), %%mm0\n\t"
+					"movq %%mm0, %%mm3\n\t"
+					"movq %%mm0, %%mm4\n\t"
+					"movq 2(%1), %%mm1\n\t"
+					"por %%mm1, %%mm3\n\t"
+					"pand %3, %%mm0\n\t"
+					"pand %3, %%mm1\n\t"
+					"psrlw $1, %%mm0\n\t"
+					"psrlw $1, %%mm1\n\t"
+					"paddd %%mm1, %%mm0\n\t"
+					"pand %4, %%mm3\n\t"
+					"paddw %%mm3, %%mm0\n\t"
+					"movq %%mm4, %%mm5\n\t"
+					/* mm4/mm5 contains original values, mm0 contains mixed values */
+					"punpcklwd %%mm0, %%mm4\n\t"
+					"punpckhwd %%mm0, %%mm5\n\t"
+					"movq %%mm4,  (%2)\n\t"
+					"movq %%mm5, 8(%2)\n\t"
+					"movq %%mm4,  (%0)\n\t"
+					"movq %%mm5, 8(%0)"
+					:: "r" (edx), "r" (esi), "r" (edi), "y" (mm2), "m" (*(u8*)HalfTransB) : "memory", "mm0", "mm1", "mm3", "mm4", "mm5"
+				);
+				esi +=  4;
+				edi += 16;
+				edx += 16;
+			}
+			while (--ecx != 0);
+			esi += 32;
+			edi += AddEndBytes;
+
+			do
+			{
+				if (*ebx > 1)
+				{
+					u2* esi_ = esi;
+					u1* edi_ = edi;
+					HighResProc(&esi_, &edi_, ebx);
+					esi = esi_;
+					edi = edi_;
+					mm2 = *(u8*)HalfTransC;
+				}
+				else
+				{
+					u4 eax = *(u4*)(esi + 255); // XXX unaligned?
+					*(u4*)(esi + 256) = eax;
+					{ u1* edx = spritetablea + 512 * 256;
+						u4  ecx = 64;
+						// Process next line
+						do
+						{
+							asm volatile(
+								"movq  (%1), %%mm0\n\t"
+								"movq %%mm0, %%mm3\n\t"
+								"movq %%mm0, %%mm4\n\t"
+								"movq 2(%1), %%mm1\n\t"
+								"por %%mm1, %%mm3\n\t"
+								"pand %3, %%mm0\n\t"
+								"pand %3, %%mm1\n\t"
+								"psrlw $1, %%mm0\n\t"
+								"psrlw $1, %%mm1\n\t"
+								"paddd %%mm1, %%mm0\n\t"
+								"pand %4, %%mm3\n\t" // HalfTransB
+								"paddw %%mm3, %%mm0\n\t"
+								"movq %%mm4, %%mm5\n\t"
+								/* mm4/mm5 contains original values, mm0 contains mixed values */
+								"movq  (%0), %%mm6\n\t"
+								"movq 8(%0), %%mm7\n\t"
+								"punpcklwd %%mm0, %%mm4\n\t"
+								"punpckhwd %%mm0, %%mm5\n\t"
+								"movq %%mm4,  (%0)\n\t"
+								"movq %%mm5, 8(%0)\n\t"
+								"movq %%mm6, %%mm0\n\t"
+								"por %%mm4, %%mm0\n\t"
+								"pand %3, %%mm4\n\t"
+								"pand %3, %%mm6\n\t"
+								"psrlw $1, %%mm4\n\t"
+								"psrlw $1, %%mm6\n\t"
+								"pand %4, %%mm0\n\t" // HalfTransB
+								"paddd %%mm6, %%mm4\n\t"
+								"paddw %%mm0, %%mm4\n\t"
+								"movq %%mm5, %%mm0\n\t"
+								"por %%mm7, %%mm0\n\t"
+								"pand %3, %%mm5\n\t"
+								"pand %3, %%mm7\n\t"
+								"psrlw $1, %%mm5\n\t"
+								"pand %4, %%mm0\n\t" // HalfTransB
+								"psrlw $1, %%mm7\n\t"
+								"paddd %%mm7, %%mm5\n\t"
+								"paddw %%mm0, %%mm5\n\t"
+								"movq %%mm4,  (%2)\n\t"
+								"movq %%mm5, 8(%2)"
+								:: "r" (edx), "r" (esi), "r" (edi), "y" (mm2), "m" (*(u8*)HalfTransB) : "memory", "mm0", "mm1", "mm3", "mm4", "mm5", "mm6", "mm7"
+							);
+							esi +=  4;
+							edi += 16;
+							edx += 16;
+						}
+						while (--ecx != 0);
+					}
+					edi += AddEndBytes;
+					{ u1* edx = spritetablea + 512 * 256;
+						u4  ecx = 64;
+						do
+						{
+							// XXX memcpy()?
+							asm volatile(
+								"movq  (%0), %%mm0\n\t"
+								"movq 8(%0), %%mm1\n\t"
+								"movq %%mm0,  (%1)\n\t"
+								"movq %%mm1, 8(%1)"
+								:: "r" (edx), "r" (edi) : "memory", "mm0", "mm1"
+							);
+							edi += 16;
+							edx += 16;
+						}
+						while (--ecx != 0);
+					}
+				}
+				esi += 32;
+				edi += AddEndBytes;
+				++ebx;
+			}
+			while (--lineleft != 0);
+			break;
+		}
+	}
+	asm volatile("emms");
+}
+
+
 void copy640x480x16bwin(void)
 {
 	if (curblank == 0x40) return;
@@ -468,7 +839,8 @@ void copy640x480x16bwin(void)
 		}
 		if (antienab == 1)
 		{
-			asm volatile("call %P2" : "+S" (src), "+D" (dst) : "X" (interpolate640x480x16bwin) : "cc", "memory", "eax", "ecx", "edx", "ebx"); // asm_call
+			u4 edx = dl;
+			asm volatile("call %P3" : "+d" (edx), "+S" (src), "+D" (dst) : "X" (interpolate640x480x16bwin) : "cc", "memory", "eax", "ecx", "ebx"); // asm_call
 			return;
 		}
 	}
