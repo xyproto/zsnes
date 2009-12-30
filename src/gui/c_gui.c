@@ -17,6 +17,7 @@
 #include "../macros.h"
 #include "../ui.h"
 #include "../vcache.h"
+#include "../video/c_procvid.h"
 #include "../video/makevid.h"
 #include "../video/mode716.h"
 #include "../video/procvid.h"
@@ -1687,8 +1688,7 @@ static u4 GetMouseButtons(void)
 	if (MouseDis == 1) return 0;
 
 	u4 buttons = Get_MouseData() & 0x0000FFFFU;
-	if (lhguimouse == 1)
-		asm("call *%1" : "+b" (buttons) : "r" (SwapMouseButtons) : "cc");
+	if (lhguimouse == 1) buttons = SwapMouseButtons(buttons);
 	return buttons;
 }
 

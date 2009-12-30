@@ -330,7 +330,10 @@ NEWSYM cachevideo
     pop   eax
     cmp byte[lhguimouse],1
     jne .notlefthanded
-    call SwapMouseButtons
+    push eax
+    ccall SwapMouseButtons, ebx
+    mov ebx, eax
+    pop eax
 .notlefthanded
     test bx,02h
     jz .norclick

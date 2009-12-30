@@ -109,6 +109,7 @@ SRCS += vcache.asm
 SRCS += version.c
 SRCS += video/2xsaiw.asm
 SRCS += video/c_2xsaiw.c
+SRCS += video/c_procvid.c
 SRCS += video/copyvwin.c
 SRCS += video/hq2x16.asm
 SRCS += video/hq2x32.asm

@@ -10,7 +10,7 @@
 #include "../macros.h"
 #include "../ui.h"
 #include "../vcache.h"
-#include "../video/procvid.h"
+#include "../video/c_procvid.h"
 #include "../zmovie.h"
 #include "../zpath.h"
 #include "c_gui.h"
@@ -711,10 +711,7 @@ void ProcessMouse(void)
 	}
 	MouseMoveOkay = 0;
 	u4 buttons = Get_MouseData() & 0xFFFF;
-	if (lhguimouse == 1)
-	{
-		asm("call *%1" : "+b" (buttons) : "r" (SwapMouseButtons) : "cc"); // asm_call
-	}
+	if (lhguimouse == 1) buttons = SwapMouseButtons(buttons);
 	mousebuttonstat = buttons;
 	if (lastmouseholded != 0 && !(buttons & 0x01))
 	{

@@ -29,7 +29,7 @@ EXTSYM romispal,scaddtype,scanlines,selcA000,t1cc,vcache4b,vesa2_bpos
 EXTSYM spritetablea,vesa2_clbit,vesa2_gpos,vesa2_rpos,vesa2red10
 EXTSYM vidbuffer,vram,KeyStateSelct,soundon
 EXTSYM bg1objptr,DecompAPtr,HalfTransB,HalfTransC
-EXTSYM DrawScreen,MMXSupport
+EXTSYM DrawScreen,MMXSupport,SwapMouseButtons
 EXTSYM Get_MouseData,Get_MousePositionDisplacement,GUIEnableTransp,GUIFontData
 EXTSYM StopSound,StartSound,PrevPicture,nggposng,current_zst,newest_zst
 EXTSYM GetTimeInSeconds,bg3ptr,bg3scroly,bg3scrolx,C4Ram
@@ -88,13 +88,6 @@ NEWSYM showvideo
     pop esi
     ret
 
-NEWSYM SwapMouseButtons
-    test bl,3
-    jpe .noswap
-    xor bl,3
-.noswap
-    ret
-
 NEWSYM processmouse1
     push esi
     push edi
@@ -108,7 +101,10 @@ NEWSYM processmouse1
     mov bx,[MouseButtons]
     cmp byte[mouse1lh],1
     jne .notlefthanded1
-    call SwapMouseButtons
+    push eax
+    ccall SwapMouseButtons, ebx
+    mov ebx, eax
+    pop eax
 .notlefthanded1
     mov [mousebuttons],bx
     mov cx,[MouseMoveX]
@@ -127,7 +123,10 @@ NEWSYM processmouse1
     pop   eax
     cmp byte[mouse1lh],1
     jne .notlefthanded2
-    call SwapMouseButtons
+    push eax
+    ccall SwapMouseButtons, ebx
+    mov ebx, eax
+    pop eax
 .notlefthanded2
     mov [mousebuttons],bx
     push  eax
@@ -192,7 +191,10 @@ NEWSYM processmouse2
 .mousestuff
     cmp byte[mouse2lh],1
     jne .notlefthanded
-    call SwapMouseButtons
+    push eax
+    ccall SwapMouseButtons, ebx
+    mov ebx, eax
+    pop eax
 .notlefthanded
     mov [mousebuttons],bx
     cmp byte[device2],2
