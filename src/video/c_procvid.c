@@ -164,11 +164,44 @@ void outputhex(u1* buf, u1 const val)
 #endif
 
 
+static void OutText16bnt(u2* dst, u1 const* src, u4 const edx)
+{
+	// output text in src to dst
+	u1 cl = 9;
+	do
+	{
+		u1 ch  = 9;
+		u4 eax = cl != 1 ? src[ 0] << 1 : 0;
+		u4 ebx = cl != 9 ? src[-1]      : 0;
+		do
+		{
+			if (eax & 0x100)
+			{
+				dst[0]         = 0xFFFF;
+				dst[75036 * 2] = 0xFFFF;
+			}
+			else if (ebx & 0x100)
+			{
+				dst[0]        = (dst[0]        & edx) >> 1;
+				dst[75036 *2] = (dst[75036 *2] & edx) >> 1;
+			}
+			eax <<= 1;
+			ebx <<= 1;
+			++dst;
+		}
+		while (--ch != 0);
+		dst += 279;
+		++src;
+	}
+	while (--cl != 0);
+}
+
+
 void OutputText16b(u2* dst, u1 const* src, u4 const edx)
 {
 	if (ForceNonTransp == 1 || GUIEnableTransp == 0)
 	{
-		asm volatile("call *%2" : "+S" (dst), "+D" (src) : "r" (OutText16bnt), "d" (edx) : "cc", "memory", "ecx");
+		OutText16bnt(dst, src, edx);
 	}
 	else
 	{

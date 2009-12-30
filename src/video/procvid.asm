@@ -72,50 +72,6 @@ NEWSYM mouseydir,    resb 1
 NEWSYM mousechan,    resb 1
 SECTION .text
 
-NEWSYM OutText16bnt
-    ; output text in edi to esi
-    push ebx
-    push eax
-    mov cl,9
-.loopa
-    mov ch,9
-    xor eax,eax
-    cmp cl,1
-    je .not1
-    mov al,[edi]
-    shl eax,1
-.not1
-    xor ebx,ebx
-    cmp cl,9
-    je .loopb
-    mov bl,[edi-1]
-.loopb
-    test ax,100h
-    jz .nowrite
-    mov word[esi],0FFFFh
-    mov word[esi+75036*4],0FFFFh
-    jmp .nowrite2
-.nowrite
-    test bx,100h
-    jz .nowrite2
-    and word[esi],dx
-    and word[esi+75036*4],dx
-    shr word[esi],1
-    shr word[esi+75036*4],1
-.nowrite2
-    shl ax,1
-    shl bx,1
-    add esi,2
-    dec ch
-    jnz .loopb
-    add esi,279*2
-    inc edi
-    dec cl
-    jnz .loopa
-    pop eax
-    pop ebx
-    ret
-
 NEWSYM outputhex16
     push edi
     push esi

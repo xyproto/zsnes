@@ -3,7 +3,6 @@
 
 #include "../types.h"
 
-extern void OutText16bnt();
 extern void copyvid();
 extern void saveselect();
 
