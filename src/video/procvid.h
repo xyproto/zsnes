@@ -3,6 +3,9 @@
 
 #include "../types.h"
 
+extern void copyvid();
+extern void saveselect();
+
 extern char* Msgptr;          // Pointer to message
 extern u1    ASCII2Font[256];
 extern u1    prevbright;      // previous brightness

@@ -1259,7 +1259,7 @@ NEWSYM cpuover
 
     pushad
     call StartDrawNewGfx
-    call showvideo
+    ccallv showvideo
     call cachevideo
     popad
 
@@ -1341,7 +1341,7 @@ NEWSYM cpuover
     mov ax,[oamaddrs]
     mov [oamaddr],ax
     mov byte[nosprincr],0
-    call showvideo
+    ccallv showvideo
     xor ebx,ebx
     mov byte[NMIEnab],81h
     test byte[INTEnab],80h

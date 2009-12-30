@@ -6,6 +6,8 @@
 extern u1 ZMVRawDump;
 extern u1 autoloadmovie;
 extern u1 autoloadstate;    // auto load state slot number
+extern u1 cacheud;          // update cache every ? frames
+extern u1 ccud;             // current cache increment
 extern u1 debugger;         // Start with debugger (1=yes,0=no)
 extern u1 forceromtype;
 extern u1 regsbackup[3019];

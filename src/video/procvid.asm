@@ -58,36 +58,6 @@ EXTSYM numlockptr
 
 SECTION .text
 
-;*******************************************************
-; ShowVideo                   Processes & displays video
-;*******************************************************
-
-NEWSYM showvideo
-    push esi
-    push edi
-    push edx
-    push ebx
-    push ebp
-    inc byte[ccud]
-    mov bl,[ccud]
-    cmp byte[cacheud],bl
-    je .noinc
-    mov byte[ccud],0
-.noinc
-    call copyvid
-    mov eax,[KeyStateSelct]
-    test byte[pressed+eax],1
-    jz .nosavesel
-    call saveselect
-.nosavesel
-    xor ecx,ecx
-    pop ebp
-    pop ebx
-    pop edx
-    pop edi
-    pop esi
-    ret
-
 NEWSYM processmouse1
     push esi
     push edi

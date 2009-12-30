@@ -77,8 +77,8 @@ NEWSYM totlines, dw 263 ; total # of lines
 
 ;This is saved in states
 NEWSYM curcyc,  db 0    ; cycles left in scanline
-NEWSYM cacheud, db 1    ; update cache every ? frames
-NEWSYM ccud,    db 0    ; current cache increment
+NEWSYM cacheud, db 1
+NEWSYM ccud,    db 0
 NEWSYM spcon,   db 0    ; SPC Enable (1=enabled)
 
 ; 65816 registers
