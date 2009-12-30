@@ -370,7 +370,7 @@ NEWSYM ReadInputDevice
     ; Get Player1 input device
     cmp byte[device1],1
     jne .nomouse1
-    call processmouse1
+    ccallv processmouse1
     ProcSNESMouse JoyAOrig
     jmp .noinput1
 .nomouse1

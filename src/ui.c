@@ -481,11 +481,11 @@ void DisplayBatteryStatus()
 
 #ifndef __MSDOS__
 
-int MouseCount = 0;
+s4 MouseCount = 0;
 
-unsigned short MouseMoveX[2];
-unsigned short MouseMoveY[2];
-unsigned short MouseButtons[2];
+u2 MouseMoveX[2];
+u2 MouseMoveY[2];
+u2 MouseButtons[2];
 
 static bool MouseWaiting[2];
 
@@ -552,8 +552,9 @@ void MultiMouseInit()
   if (value) { mouse |= BIT(bit); } \
   else { mouse &= ~BIT(bit); }
 
-unsigned char mouse;
-void MultiMouseProcess()
+u1 mouse;
+
+void MultiMouseProcess(void)
 {
   ManyMouseEvent event;
   if (MouseWaiting[mouse])

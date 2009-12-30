@@ -28,4 +28,14 @@ extern u2   selc0040;
 extern u2   selcA000;
 extern u2   selcB800;
 
+#ifndef __MSDOS__
+void MultiMouseProcess(void);
+
+extern s4   MouseCount;
+extern u1   mouse;
+extern u2   MouseButtons[2];
+extern u2   MouseMoveX[2];
+extern u2   MouseMoveY[2];
+#endif
+
 #endif
