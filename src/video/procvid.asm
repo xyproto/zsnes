@@ -40,7 +40,7 @@ EXTSYM CSStatus2,CSStatus3,CSStatus4,SpecialLine,Clear2xSaIBuffer,vidbufferofsb,
 EXTSYM MovieProcessing,MovieFrameStr,GetMovieFrameStr,mouse1lh,mouse2lh
 EXTSYM MovieDisplayFrame,SloMo,MouseCount,device2,LoadPicture
 EXTSYM zst_determine_newest,newestfiledate,zst_exists,ClockBox,SSAutoFire
-EXTSYM outputhex,OutputText16b,outputhex16,outputchar
+EXTSYM outputhex,outputhex16,outputchar,outputchar16b
 
 %ifndef __MSDOS__
 EXTSYM MouseMoveX,MouseMoveY,MouseButtons,MultiMouseProcess,mouse
@@ -198,34 +198,6 @@ NEWSYM FontData
          ; +, 38  `, 41  .5,4A
          ; ,, 39  ^, 42
 
-SECTION .text
-
-NEWSYM outputchar16b
-    push edi
-    push esi
-    push eax
-    push edx
-    push ecx
-    mov dx,[vesa2_clbitng]
-    ror edx,16
-    mov dx,[vesa2_clbitng]
-    shr dx,1
-    ror edx,16
-
-    mov edi,FontData
-    xor ebx,ebx
-    mov bl,al
-    shl ebx,3
-    add edi,ebx
-    ccallv OutputText16b, esi, edi, edx
-    pop ecx
-    pop edx
-    pop eax
-    pop esi
-    pop edi
-    ret
-
-SECTION .data
 NEWSYM textcolor, db 128
 NEWSYM textcolor16b, dw 0FFFFh
 SECTION .text
@@ -385,7 +357,7 @@ NEWSYM OutputGraphicString16b
     cmp al,0
     je .nomore
     mov al,[ASCII2Font+eax]
-    call outputchar16b
+    ccallv outputchar16b, esi, eax
     add esi,16
     inc edi
     jmp .nextstr
@@ -1445,13 +1417,13 @@ NEWSYM saveselect
     mov esi,78*2+106*288*2
     add esi,[vidbuffer]
     mov al,1
-    call outputchar16b
+    ccallv outputchar16b, esi, eax
     mov bl,9
 .nextnumchar16b
     add esi,22
     inc al
     push ebx
-    call outputchar16b
+    ccallv outputchar16b, esi, eax
     pop ebx
     dec bl
     jnz .nextnumchar16b
@@ -2013,15 +1985,14 @@ NEWSYM showfps
 .h2adone16b
   mov cl,al
   mov al,[ASCII2Font+ecx]
-  call outputchar16b
+  ccallv outputchar16b, esi, eax
   mov al,ah
   or al,al
   jnz .strloop
 
   mov esi,208*288*2+48*2
   add esi,[vidbuffer]
-  mov al,41 ; '/'
-  call outputchar16b
+  ccallv outputchar16b, esi, 41 ; '/'
   pop ecx
 
   mov al,cl

@@ -16,13 +16,13 @@ void processmouse2(void);
 void outputhex(u1* buf, u1 val);
 #endif
 
-void OutputText16b(u2* dst, u1 const* src, u4 edx);
-
 void outputhex16(u2* buf, u1 val);
 
 #ifdef __MSDOS__
 // Outputs char glyph at buf
 void outputchar(u1* buf, u1 glyph);
 #endif
+
+void outputchar16b(u2* buf, u1 glyph);
 
 #endif

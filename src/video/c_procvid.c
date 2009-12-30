@@ -198,7 +198,7 @@ static void OutText16bnt(u2* dst, u1 const* src, u4 const edx)
 }
 
 
-void OutputText16b(u2* dst, u1 const* src, u4 const edx)
+static void OutputText16b(u2* dst, u1 const* src, u4 const edx)
 {
 	if (ForceNonTransp == 1 || GUIEnableTransp == 0)
 	{
@@ -273,3 +273,10 @@ void outputchar(u1* buf, u1 const glyph)
 	while (--y != 0);
 }
 #endif
+
+
+void outputchar16b(u2* const buf, u1 const glyph)
+{
+	u4 const edx = (u2)vesa2_clbitng >> 1 << 16 | (u2)vesa2_clbitng;
+	OutputText16b(buf, FontData[glyph], edx);
+}
