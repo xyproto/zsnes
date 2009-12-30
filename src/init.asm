@@ -419,13 +419,13 @@ NEWSYM ReadInputDevice
 .noinput1
     cmp byte[device2],1
     jne .nomouse2
-    call processmouse2
+    ccallv processmouse2
     ProcSNESMouse JoyBOrig
     jmp .noinput2
 .nomouse2
     cmp byte[device2],2
     jne .nosuperscope
-    call processmouse2
+    ccallv processmouse2
     mov byte[JoyBOrig+2],0FFh
     mov al,[ssautosw]
     test byte[mousebuttons],01h
@@ -448,7 +448,7 @@ NEWSYM ReadInputDevice
 .nosuperscope
     cmp byte[device2],3
     jne .nolethalen
-    call processmouse2
+    ccallv processmouse2
     mov eax,[romdata]
     cmp dword[eax+1000h],0AD20C203h
     jne .not

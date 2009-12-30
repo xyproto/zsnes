@@ -2,6 +2,7 @@
 #include "../c_intrf.h"
 #include "../cfg.h"
 #include "../cpu/execute.h"
+#include "../cpu/regs.h"
 #include "../init.h"
 #include "../input.h"
 #include "../ui.h"
@@ -50,6 +51,82 @@ void processmouse1(void)
 	}
 	if (dx != 0) mousexdir = dx < 0 ? dx = -dx, 1 : 0;
 	mousexpos = dx;
+	if (dy != 0) mouseydir = dy < 0 ? dy = -dy, 1 : 0;
+	mouseypos = dy;
+}
+
+
+void processmouse2(void)
+{
+	static u1 ssautoswb;
+
+	u4 buttons;
+#ifndef __MSDOS__
+	if (MouseCount > 1)
+	{
+		mouse = 1;
+		MultiMouseProcess();
+		buttons = MouseButtons[1];
+	}
+	else
+#endif
+	{
+		buttons = Get_MouseData() & 0xFFFF;
+	}
+	if (mouse2lh == 1) buttons = SwapMouseButtons(buttons);
+	mousebuttons = buttons;
+
+	if (device2 == 2)
+	{
+		if (pressed[SSAutoFire] == 0)
+		{
+			ssautoswb = 0;
+		}
+		else if (ssautoswb != 1)
+		{
+			ssautosw  ^= 0x20;
+			ssautoswb  = 1;
+			Msgptr     = ssautosw != 0 ? "AUTOFIRE ENABLED." : "AUTOFIRE DISABLED.";
+			MessageOn  = MsgCount;
+		}
+	}
+
+#ifndef __MSDOS__
+	s2 dx;
+	s2 dy;
+	if (MouseCount > 1)
+	{
+		dx = MouseMoveX[1];
+		dy = MouseMoveY[1];
+	}
+	else
+#endif
+	{
+		u4 const eax = Get_MousePositionDisplacement();
+		dy = eax >> 16;
+		dx = eax;
+	}
+
+	if (2 <= device2 && device2 <= 4)
+	{
+		s4 x = mousexloc + dx;
+		if (x <   0) x =   0;
+		if (x > 255) x = 255;
+		mousexloc = x;
+		latchx    = x + 40;
+		extlatch  = 0x40;
+	}
+	if (dx != 0) mousexdir = dx < 0 ? dx = -dx, 1 : 0;
+	mousexpos = dx;
+
+	if (2 <= device2 && device2 <= 4)
+	{
+		s4 y = mouseyloc + dy;
+		if (y <   0) y =   0;
+		if (y > 223) y = 223;
+		mouseyloc = y;
+		latchy    = y;
+	}
 	if (dy != 0) mouseydir = dy < 0 ? dy = -dy, 1 : 0;
 	mouseypos = dy;
 }

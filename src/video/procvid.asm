@@ -56,157 +56,13 @@ EXTSYM numlockptr
 %include "video/copyvid.inc"
 %endif
 
-SECTION .text
-
-NEWSYM processmouse2
-    push esi
-    push edi
-    push edx
-    push ebx
-%ifndef __MSDOS__
-    cmp byte[MouseCount],1
-    jle .nomultimouse
-    mov byte[mouse],1
-    ccallv MultiMouseProcess
-    mov bx,[MouseButtons+2]
-    jmp .mousestuff
-.nomultimouse
-%endif
-    push  eax
-    ccall Get_MouseData
-    movzx ebx, ax
-    mov   ecx, eax
-    mov   edx, eax
-    shr   ecx, 16
-    shr   edx, 24
-    movzx ecx, cl
-    pop   eax
-.mousestuff
-    cmp byte[mouse2lh],1
-    jne .notlefthanded
-    push eax
-    ccall SwapMouseButtons, ebx
-    mov ebx, eax
-    pop eax
-.notlefthanded
-    mov [mousebuttons],bx
-    cmp byte[device2],2
-    jne .ss
-    push eax
-    mov eax,[SSAutoFire]
-    cmp byte[pressed+eax],0
-    pop eax
-    je .noautosw
-    cmp byte[ssautoswb],1
-    je .ss
-    xor byte[ssautosw],20h
-    mov byte[ssautoswb],1
-    mov dword[Msgptr],.ssautoen
-    cmp byte[ssautosw],0
-    jne .nononauto
-    mov dword[Msgptr],.ssautodi
-.nononauto
-    mov eax,[MsgCount]
-    mov [MessageOn],eax
-    jmp .ss
-.noautosw
-    mov byte[ssautoswb],0
-.ss
-%ifndef __MSDOS__
-    cmp byte[MouseCount],1
-    jle .nomultimouse2
-    mov cx,[MouseMoveX+2]
-    mov dx,[MouseMoveY+2]
-    jmp .mousestuff2
-.nomultimouse2
-%endif
-    push  eax
-    ccall Get_MousePositionDisplacement
-    mov   edx, eax
-    movsx ecx, ax
-    sar   edx, 16
-    pop   eax
-.mousestuff2
-    cmp byte[device2],3
-    je .le
-    cmp byte[device2],4
-    je .le
-    cmp byte[device2],2
-    jne .ss2
-.le
-    add word[mousexloc],cx
-    test word[mousexloc],8000h
-    jz .nowrapleft
-    mov word[mousexloc],0
-.nowrapleft
-    cmp word[mousexloc],255
-    jbe .nowrapright
-    mov word[mousexloc],255
-.nowrapright
-    mov ax,[mousexloc]
-    add ax,40
-    mov [latchx],ax
-    mov byte[extlatch],40h
-.ss2
-    mov word[mousexpos],0
-    cmp cx,0
-    je .noxchange
-    mov byte[mousexdir],0
-    cmp cx,0
-    jge .noneg
-    mov byte[mousexdir],1
-    neg cx
-.noneg
-    mov [mousexpos],cx
-.noxchange
-    cmp byte[device2],3
-    je .le2
-    cmp byte[device2],4
-    je .le2
-    cmp byte[device2],2
-    jne .ss3
-.le2
-    add word[mouseyloc],dx
-    test word[mouseyloc],8000h
-    jz .nowrapup
-    mov word[mouseyloc],0
-.nowrapup
-    cmp word[mouseyloc],223
-    jbe .nowrapdown
-    mov word[mouseyloc],223
-.nowrapdown
-    mov ax,[mouseyloc]
-    mov [latchy],ax
-.ss3
-    mov word[mouseypos],0
-    cmp dx,0
-    je .noychange
-    mov byte[mouseydir],0
-    cmp dx,0
-    jge .noneg2
-    mov byte[mouseydir],1
-    neg dx
-.noneg2
-    mov [mouseypos],dx
-.noychange
-    xor ecx,ecx
-    pop ebx
-    pop edx
-    pop edi
-    pop esi
-    ret
-
 SECTION .data
-.ssautoen db 'AUTOFIRE ENABLED.',0
-.ssautodi db 'AUTOFIRE DISABLED.',0
-
 NEWSYM ssautosw,     db 20h
 
 NEWSYM mousexloc,    dw 128
 NEWSYM mouseyloc,    dw 112
 
 SECTION .bss
-NEWSYM ssautoswb,    resb 1
 NEWSYM mousebuttons, resw 1
 NEWSYM mousexpos,    resw 1
 NEWSYM mousexdir,    resb 1
@@ -2875,7 +2731,7 @@ SECTION .bss
 .SSRedCo resw 1
 
 SECTION .data
-NEWSYM MsgCount,  dd 120                ; How long message will stay (PAL = 100)
+NEWSYM MsgCount,  dd 120
 
 SECTION .bss
 NEWSYM lastfps,   resb 1                  ; stores the last fps encountered

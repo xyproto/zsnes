@@ -9,5 +9,6 @@ void showvideo(void);
 u4 SwapMouseButtons(u4 buttons);
 
 void processmouse1(void);
+void processmouse2(void);
 
 #endif

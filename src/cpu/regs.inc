@@ -100,8 +100,8 @@ NEWSYM multa,     db 0             ; multiplier A
 NEWSYM diva,      dw 0             ; divisor C
 NEWSYM divres,    dw 0             ; quotent of divc/divb
 NEWSYM multres,   dw 0             ; result of multa * multb/remainder of divc/divb
-NEWSYM latchx,    dw 0             ; latched x value
-NEWSYM latchy,    dw 0             ; latched y value
+NEWSYM latchx,    dw 0
+NEWSYM latchy,    dw 0
 NEWSYM latchxr,   db 0             ; low or high byte read for x value
 NEWSYM latchyr,   db 0             ; low or high byte read for y value
 NEWSYM frskipper, db 0             ; used to control frame skipping

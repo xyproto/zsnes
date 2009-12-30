@@ -56,9 +56,12 @@ extern u1 cfield;
 extern u1 coladdb;    // blue value of color to add
 extern u1 coladdg;    // green value of color to add
 extern u1 coladdr;    // red value of color to add
+extern u1 extlatch;
 extern u1 scaddtype;  // which screen to add/sub
 extern u1 sndrot;     // rotates to use A,X or Y for sound skip
 extern u2 cgram[256]; // CGRAM
+extern u2 latchx;     // latched x value
+extern u2 latchy;     // latched y value
 extern u2 resolutn;   // screen resolution
 
 #endif
