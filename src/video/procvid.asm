@@ -40,7 +40,7 @@ EXTSYM CSStatus2,CSStatus3,CSStatus4,SpecialLine,Clear2xSaIBuffer,vidbufferofsb,
 EXTSYM MovieProcessing,MovieFrameStr,GetMovieFrameStr,mouse1lh,mouse2lh
 EXTSYM MovieDisplayFrame,SloMo,MouseCount,device2,LoadPicture
 EXTSYM zst_determine_newest,newestfiledate,zst_exists,ClockBox,SSAutoFire
-EXTSYM outputhex,OutputText16b
+EXTSYM outputhex,OutputText16b,outputhex16
 
 %ifndef __MSDOS__
 EXTSYM MouseMoveX,MouseMoveY,MouseButtons,MultiMouseProcess,mouse
@@ -70,47 +70,6 @@ NEWSYM mousexdir,    resb 1
 NEWSYM mouseypos,    resw 1
 NEWSYM mouseydir,    resb 1
 NEWSYM mousechan,    resb 1
-SECTION .text
-
-NEWSYM outputhex16
-    push edi
-    push esi
-    push eax
-    push ebx
-    push ecx
-    push edx
-    push esi
-    mov dx,[vesa2_clbitng]
-    ror edx,16
-    mov dx,[vesa2_clbitng]
-    shr dx,1
-    ror edx,16
-
-    mov edi,FontData
-    xor ebx,ebx
-    mov bl,al
-    shr bl,4
-    shl ebx,3
-    add edi,ebx
-    add edi,8
-    ccallv OutputText16b, esi, edi, edx
-    pop esi
-    add esi,16
-    mov edi,FontData
-    xor ebx,ebx
-    mov bl,al
-    and bl,0Fh
-    shl ebx,3
-    add edi,ebx
-    add edi,8
-    ccallv OutputText16b, esi, edi, edx
-    pop edx
-    pop ecx
-    pop ebx
-    pop eax
-    pop esi
-    pop edi
-    ret
 
 SECTION .data
 NEWSYM ASCII2Font
@@ -2114,7 +2073,7 @@ NEWSYM showfps
   mov al,ah
   mov esi,208*288*2+56*2
   add esi,[vidbuffer]
-  call outputhex16
+  ccallv outputhex16, esi, eax
   ret
 
 SECTION .bss

@@ -6,6 +6,7 @@
 #include "../init.h"
 #include "../input.h"
 #include "../ui.h"
+#include "../vcache.h"
 #include "c_procvid.h"
 #include "procvid.h"
 
@@ -236,4 +237,12 @@ void OutputText16b(u2* dst, u1 const* src, u4 const edx)
 		}
 		while (--y != 0);
 	}
+}
+
+
+void outputhex16(u2* const buf, u1 const val)
+{
+	u4 const edx = (u2)vesa2_clbitng >> 1 << 16 | (u2)vesa2_clbitng;
+	OutputText16b(buf,     FontData[(val >> 4)   + 1], edx);
+	OutputText16b(buf + 8, FontData[(val & 0x0F) + 1], edx);
 }
