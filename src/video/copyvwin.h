@@ -3,8 +3,6 @@
 
 #include "../types.h"
 
-extern void interpolate640x480x16bwin();
-
 extern u1* InterPtr;
 extern u1* WinVidMemStart;
 extern u4  AddEndBytes;     // Number of bytes between each line

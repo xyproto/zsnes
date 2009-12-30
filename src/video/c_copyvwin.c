@@ -18,7 +18,7 @@
 #endif
 
 
-void HighResProc(u2** psrc, u1** pdst, u1* ebx)
+static void HighResProc(u2** psrc, u1** pdst, u1* ebx)
 {
 	u2* src = *psrc;
 	u1* dst = *pdst;
@@ -440,7 +440,7 @@ static void Process2xSaIwin(u2* src, u1* dst)
 }
 
 
-void MMXInterpolwin(u2* esi, u1* edi, u1 const dl)
+static void MMXInterpolwin(u2* esi, u1* edi, u1 const dl)
 {
 	u1* ebx = SelectTile();
 	u8  mm2 = *(u8*)HalfTransC;
@@ -811,6 +811,300 @@ void MMXInterpolwin(u2* esi, u1* edi, u1 const dl)
 }
 
 
+static void interpolate640x480x16bwin(u2* src, u1* dst, u1 dl)
+{
+	if (MMXSupport == 1)
+	{
+		MMXInterpolwin(src, dst, dl);
+		return;
+	}
+
+	u1* ebx = SelectTile();
+	InterPtr = ebx;
+
+	switch (scanlines)
+	{
+		case 1:
+		{
+			for (;;)
+			{
+				u4 ecx = 255;
+				if (*ebx > 1)
+				{
+					u2* esi_ = src;
+					u1* edi_ = dst;
+					HighResProc(&esi_, &edi_, ebx);
+					src = esi_;
+					dst = edi_;
+
+					src += 32;
+					++InterPtr;
+					dst += AddEndBytes;
+					u4 ecx = 256;
+					do
+					{ // XXX memset()?
+						*(u4*)dst = 0;
+						dst += 4;
+					}
+					while (--ecx != 0);
+					dst += AddEndBytes;
+					if (--lineleft != 0) continue;
+				}
+				else
+				{
+					if (*ebx != 1)
+					{
+						do
+						{
+							u4 eax = src[0];
+							u4 ebx = src[1];
+							ebx &= *(u4*)((u1*)HalfTrans + 6); // XXX unaligned?
+							eax &= *(u4*)((u1*)HalfTrans + 6); // XXX unaligned?
+							ebx = (ebx + eax) << 15 & 0xFFFF0000 | *src;
+							*(u4*)dst = ebx;
+							src += 1;
+							dst += 4;
+						}
+						while (--ecx != 0);
+					}
+					else
+					{
+						*ebx = 0;
+						if (!(res512switch & 1))
+						{
+							do
+							{
+								*(u2*)dst = *src;
+								src += 1;
+								dst += 4;
+							}
+							while (--ecx != 0);
+						}
+						else
+						{
+							do
+							{
+								*(u2*)(dst + 2) = *src;
+								src += 1;
+								dst += 4;
+							}
+							while (--ecx != 0);
+						}
+					}
+					src += 33;
+					dst += 4 + AddEndBytes;
+					u4 ecx = 256;
+					do
+					{ // XXX memset()?
+						*(u4*)dst = 0;
+						dst += 4;
+					}
+					while (--ecx != 0);
+					dst += AddEndBytes;
+					++ebx;
+					if (--dl != 0) continue;
+					res512switch ^= 1;
+				}
+				return;
+			}
+		}
+
+		case 2:
+		{
+			lineleft = dl;
+			for (;;)
+			{
+				u1* ebx = InterPtr;
+				if (*ebx > 1)
+				{
+					u2* esi_ = src;
+					u1* edi_ = dst;
+					HighResProc(&esi_, &edi_, ebx);
+					src = esi_;
+					dst = edi_;
+
+					src += 32;
+					++InterPtr;
+					dst += AddEndBytes;
+				}
+				else
+				{
+					{ u4  ecx = 255;
+						u1* edx = spritetablea + 512 * 256;
+						do
+						{
+							u4 eax = src[0];
+							u4 ebx = src[1];
+							ebx &= *(u4*)((u1*)HalfTrans + 6); // XXX unaligned?
+							eax &= *(u4*)((u1*)HalfTrans + 6); // XXX unaligned?
+							ebx = (ebx + eax) << 15 & 0xFFFF0000 | *src;
+							*(u4*)edx = ebx;
+							*(u4*)dst = ebx;
+							src += 1;
+							dst += 4;
+							edx += 4;
+						}
+						while (--ecx != 0);
+					}
+					dst += AddEndBytes + 4;
+					{ u4  ecx = 255;
+						u1* edx = spritetablea + 512 * 256;
+						do
+						{
+							u4 eax = (*(u4*)edx & HalfTrans[0]) >> 1;
+							u4 ebx = (eax       & HalfTrans[0]) >> 1;
+							*(u4*)dst = eax + ebx;
+							dst += 4;
+							edx += 4;
+						}
+						while (--ecx != 0);
+					}
+					++InterPtr;
+					src += 33;
+					dst += 4 + AddEndBytes;
+				}
+				if (--lineleft != 0) continue;
+				return;
+			}
+		}
+
+		case 3:
+		{
+			lineleft = dl;
+			do
+			{
+				u1* ebx = InterPtr;
+				if (*ebx > 1)
+				{
+					u2* esi_ = src;
+					u1* edi_ = dst;
+					HighResProc(&esi_, &edi_, ebx);
+					src = esi_;
+					dst = edi_;
+					src += 32;
+					++InterPtr;
+					dst += AddEndBytes;
+				}
+				else
+				{
+					{ u4  ecx = 255;
+						u1* edx = spritetablea + 512 * 256;
+						do
+						{
+							u4 eax = src[0];
+							u4 ebx = src[1];
+							ebx &= *(u4*)((u1*)HalfTrans + 6); // XXX unaligned?
+							eax &= *(u4*)((u1*)HalfTrans + 6); // XXX unaligned?
+							ebx = (ebx + eax) << 15 & 0xFFFF0000 | *src;
+							*(u4*)edx = ebx;
+							*(u4*)dst = ebx;
+							src += 1;
+							dst += 4;
+							edx += 4;
+						}
+						while (--ecx != 0);
+					}
+					dst += 4 + AddEndBytes;
+					{ u4  ecx = 255;
+						u1* edx = spritetablea + 512 * 256;
+						do
+						{
+							*(u4*)dst = (*(u4*)edx & HalfTrans[0]) >> 1;
+							dst += 4;
+							edx += 4;
+						}
+						while (--ecx != 0);
+					}
+					++InterPtr;
+					src += 33;
+					dst += 4 + AddEndBytes;
+				}
+			}
+			while (--lineleft != 0);
+			return;
+		}
+
+		default:
+		{
+			lineleft = dl;
+			// do first line
+			u4  ecx = 255;
+			u1* edx = spritetablea + 512 * 256;
+			do
+			{
+				u4 eax = src[0];
+				u4 ebx = src[1];
+				ebx &= *(u4*)((u1*)HalfTrans + 6); // XXX unaligned?
+				eax &= *(u4*)((u1*)HalfTrans + 6); // XXX unaligned?
+				ebx = (ebx + eax) << 15 & 0xFFFF0000 | *src;
+				*(u4*)dst = ebx;
+				*(u4*)edx = ebx;
+				src += 1;
+				dst += 4;
+				edx += 4;
+			}
+			while (--ecx != 0);
+			src += 33;
+			dst += AddEndBytes + 4;
+			do
+			{
+				u1* ebx = InterPtr;
+				if (*ebx > 1)
+				{
+					u2* esi_ = src;
+					u1* edi_ = dst;
+					HighResProc(&esi_, &edi_, ebx);
+					src = esi_;
+					dst = edi_;
+					src += 32;
+					++InterPtr;
+					dst += AddEndBytes;
+				}
+				else
+				{
+					{	u4  ecx = 255;
+						u1* edx = spritetablea + 512 * 256;
+						do
+						{
+							u4 eax = src[0];
+							u4 ebx = src[1];
+							ebx &= *(u4*)((u1*)HalfTrans + 6); // XXX unaligned?
+							eax &= *(u4*)((u1*)HalfTrans + 6); // XXX unaligned?
+							ebx += eax;
+							ebx <<= 15;
+							u4 eax_ = *(u4*)edx;
+							ebx = ebx & 0xFFFF0000 | *src;
+							*(u4*)edx = ebx;
+							*(u4*)dst = ((eax_ & HalfTrans[0]) >> 1) + ((ebx & HalfTrans[0]) >> 1);
+							src += 1;
+							dst += 4;
+							edx += 4;
+						}
+						while (--ecx != 0);
+						dst += 4 + AddEndBytes;
+					}
+					{ u1* edx = spritetablea + 512 * 256;
+						u4  ecx = 255;
+						do
+						{ // XXX memcpy()?
+							*(u4*)dst = *(u4*)edx;
+							edx += 4;
+							dst += 4;
+						}
+						while (--ecx != 0);
+					}
+					src += 33;
+					++InterPtr;
+					dst += AddEndBytes + 4;
+				}
+			}
+			while (--lineleft != 0);
+			return;
+		}
+	}
+}
+
+
 void copy640x480x16bwin(void)
 {
 	if (curblank == 0x40) return;
@@ -839,8 +1133,7 @@ void copy640x480x16bwin(void)
 		}
 		if (antienab == 1)
 		{
-			u4 edx = dl;
-			asm volatile("call %P3" : "+d" (edx), "+S" (src), "+D" (dst) : "X" (interpolate640x480x16bwin) : "cc", "memory", "eax", "ecx", "ebx"); // asm_call
+			interpolate640x480x16bwin(src, dst, dl);
 			return;
 		}
 	}
