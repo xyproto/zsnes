@@ -11,6 +11,9 @@
 #include "c_procvid.h"
 #include "procvid.h"
 
+static u1 textcolor    = 128;
+static u2 textcolor16b = 0xFFFF;
+
 
 void showvideo(void)
 {
@@ -370,3 +373,32 @@ void OutputGraphicString16b(u2* buf, char const* text)
 		outputchar16b(buf, ASCII2Font[al]);
 	}
 }
+
+
+#ifdef __MSDOS__
+void OutputGraphicString5x5(u1* buf, char const* text)
+{
+	if (cbitmode != 1)
+	{
+		for (;; buf += 6)
+		{
+			u1 const al = *text++;
+			if (al == '\0') break;
+			outputchar5x5(buf, ASCII2Font[al]);
+		}
+	}
+	else
+	{ // XXX probably never reached, callers seem to test cbitmode beforehand
+		u2* const buf16 = (u2*)vidbuffer + (buf - vidbuffer);
+		switch (textcolor)
+		{
+			case 128: textcolor16b = 0xFFFF;                                                       break;
+			case 129: textcolor16b = 0x0000;                                                       break;
+			case 130: textcolor16b = (20 << vesa2_rpos) + (20 << vesa2_gpos) + (20 << vesa2_bpos); break;
+			// Color #131, Red
+			case 131: textcolor16b = (22 << vesa2_rpos) + ( 5 << vesa2_gpos) + ( 5 << vesa2_bpos); break;
+		}
+		asm volatile("call *%2" : "+S" (buf16), "+D" (text) : "r" (OutputGraphicString16b5x5) : "cc", "memory", "eax"); // asm_call
+	}
+}
+#endif

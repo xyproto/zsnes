@@ -36,4 +36,8 @@ void OutputGraphicString(u1* buf, char const* text);
 
 void OutputGraphicString16b(u2* buf, char const* text);
 
+#ifdef __MSDOS__
+void OutputGraphicString5x5(u1* buf, char const* text);
+#endif
+
 #endif
