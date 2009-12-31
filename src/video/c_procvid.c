@@ -435,3 +435,9 @@ void drawvline(u1* buf, u4 n, u1 const colour)
 	do { *buf = colour; buf += 288; } while (--n != 0);
 }
 #endif
+
+
+void drawvline16b(u2* buf, u4 n, u2 const colour)
+{
+	do { *buf = colour; buf += 288; } while (--n != 0);
+}
