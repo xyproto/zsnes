@@ -29,4 +29,6 @@ void outputchar16b(u2* buf, u1 glyph);
 void outputchar5x5(u1* buf, u1 glyph);
 #endif
 
+void outputchar16b5x5(u2* buf, u1 glyph);
+
 #endif

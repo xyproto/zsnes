@@ -21,6 +21,7 @@ extern u2    mousexpos;
 extern u2    mouseyloc;
 extern u2    mouseypos;
 extern u2    tempco0;
+extern u2    textcolor16b;
 extern u4    MessageOn;       // Message On Countdown
 extern u4    MsgCount;        // How long message will stay (PAL = 100)
 

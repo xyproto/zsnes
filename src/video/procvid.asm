@@ -41,6 +41,7 @@ EXTSYM MovieProcessing,MovieFrameStr,GetMovieFrameStr,mouse1lh,mouse2lh
 EXTSYM MovieDisplayFrame,SloMo,MouseCount,device2,LoadPicture
 EXTSYM zst_determine_newest,newestfiledate,zst_exists,ClockBox,SSAutoFire
 EXTSYM outputhex,outputhex16,outputchar,outputchar16b,outputchar5x5
+EXTSYM outputchar16b5x5
 
 %ifndef __MSDOS__
 EXTSYM MouseMoveX,MouseMoveY,MouseButtons,MultiMouseProcess,mouse
@@ -201,44 +202,6 @@ NEWSYM FontData
 NEWSYM textcolor, db 128
 NEWSYM textcolor16b, dw 0FFFFh
 SECTION .text
-
-NEWSYM outputchar16b5x5
-    push edi
-    push esi
-    push eax
-    mov edi,GUIFontData
-    xor ebx,ebx
-    mov bl,al
-    shl ebx,2
-    add edi,ebx
-    xor ebx,ebx
-    mov bl,al
-    add edi,ebx
-    mov cl,5
-.loopa
-    mov ah,[edi]
-    mov ch,5
-.loopb
-    test ah,80h
-    jz .nowrite
-    push eax
-    mov ax,[textcolor16b]
-    mov [esi],ax
-    mov [esi+75036*4],ax
-    pop eax
-.nowrite
-    shl ah,1
-    add esi,2
-    dec ch
-    jnz .loopb
-    add esi,283*2
-    inc edi
-    dec cl
-    jnz .loopa
-    pop eax
-    pop esi
-    pop edi
-    ret
 
 ;*******************************************************
 ; Output Graphic String   Outputs String from edi to esi
@@ -403,7 +366,7 @@ NEWSYM OutputGraphicString16b5x5
     cmp al,0
     je .nomore
     mov al,[ASCII2Font+eax]
-    call outputchar16b5x5
+    ccallv outputchar16b5x5, esi, eax
     add esi,12
     inc edi
     jmp .nextstr
@@ -2096,17 +2059,13 @@ NEWSYM ClockOutput
     xor eax,eax
     add al,':'
     mov al,[ASCII2Font+eax]
-    pushad
-    call outputchar16b5x5
-    popad
+    ccallv outputchar16b5x5, esi, eax
     mov esi,216*288*2+32*2+204*2
     add esi,[vidbuffer]
     xor eax,eax
     add al,':'
     mov al,[ASCII2Font+eax]
-    pushad
-    call outputchar16b5x5
-    popad
+    ccallv outputchar16b5x5, esi, eax
     ret
 .output
     ; output char value at al and dl
@@ -2133,17 +2092,13 @@ NEWSYM ClockOutput
     and eax,0FFh
     add al,48
     mov al,[ASCII2Font+eax]
-    pushad
-    call outputchar16b5x5
-    popad
+    ccallv outputchar16b5x5, esi, eax
     xor eax,eax
     mov al,dl
     add al,48
     mov al,[ASCII2Font+eax]
     add esi,12
-    pushad
-    call outputchar16b5x5
-    popad
+    ccallv outputchar16b5x5, esi, eax
     ret
 
 SECTION .bss

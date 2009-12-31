@@ -3,6 +3,7 @@
 #include "../cfg.h"
 #include "../cpu/execute.h"
 #include "../cpu/regs.h"
+#include "../gui/gui.h"
 #include "../init.h"
 #include "../input.h"
 #include "../ui.h"
@@ -10,9 +11,6 @@
 #include "c_procvid.h"
 #include "procvid.h"
 
-#ifdef __MSDOS__
-#	include "../gui/gui.h"
-#endif
 
 void showvideo(void)
 {
@@ -306,3 +304,29 @@ void outputchar5x5(u1* buf, u1 const glyph)
 	while (--y != 0);
 }
 #endif
+
+
+void outputchar16b5x5(u2* buf, u1 const glyph)
+{
+	u2 const  c   = textcolor16b;
+	u1 const* src = GUIFontData[glyph];
+	u4        y   = 5;
+	do
+	{
+		u1 ah = *src++;
+		u1 x  = 5;
+		do
+		{
+			if (ah & 0x80)
+			{
+				buf[0]         = c;
+				buf[75036 * 2] = c;
+			}
+			ah <<= 1;
+			++buf;
+		}
+		while (--x != 0);
+		buf += 283;
+	}
+	while (--y != 0);
+}
