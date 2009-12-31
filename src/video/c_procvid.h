@@ -54,4 +54,6 @@ void drawvline(u1* buf, u4 n, u1 colour);
 
 void drawvline16b(u2* buf, u4 n, u2 colour);
 
+void DetermineNewest(void);
+
 #endif

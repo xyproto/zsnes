@@ -8,6 +8,7 @@
 #include "../input.h"
 #include "../ui.h"
 #include "../vcache.h"
+#include "../zstate.h"
 #include "c_procvid.h"
 #include "procvid.h"
 
@@ -440,4 +441,22 @@ void drawvline(u1* buf, u4 n, u1 const colour)
 void drawvline16b(u2* buf, u4 n, u2 const colour)
 {
 	do { *buf = colour; buf += 288; } while (--n != 0);
+}
+
+
+void DetermineNewest(void)
+{
+	newestfiledate = 0;
+	u4 const n     = 10;
+	u4 const cur   = current_zst;
+	u4 const start = cur / n * n;
+	u4       i     = start;
+	u4       end   = start + n;
+	do
+	{
+		current_zst = i;
+		zst_determine_newest();
+	}
+	while (++i != end);
+	current_zst = cur;
 }

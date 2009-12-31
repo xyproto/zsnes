@@ -39,11 +39,11 @@ EXTSYM intrlng,mode7hr,newgfx16b,vesa2_clbitng,vesa2_clbitng2,CSStatus
 EXTSYM CSStatus2,CSStatus3,CSStatus4,SpecialLine,Clear2xSaIBuffer,vidbufferofsb,bg1scroly
 EXTSYM MovieProcessing,MovieFrameStr,GetMovieFrameStr,mouse1lh,mouse2lh
 EXTSYM MovieDisplayFrame,SloMo,MouseCount,device2,LoadPicture
-EXTSYM zst_determine_newest,newestfiledate,zst_exists,ClockBox,SSAutoFire
+EXTSYM zst_determine_newest,zst_exists,ClockBox,SSAutoFire
 EXTSYM outputhex,outputhex16,outputchar,outputchar16b,outputchar5x5
 EXTSYM outputchar16b5x5,OutputGraphicString,OutputGraphicString16b
 EXTSYM OutputGraphicString5x5,OutputGraphicString16b5x5,drawhline,drawhline16b
-EXTSYM drawvline,drawvline16b
+EXTSYM drawvline,drawvline16b,DetermineNewest
 
 %ifndef __MSDOS__
 EXTSYM MouseMoveX,MouseMoveY,MouseButtons,MultiMouseProcess,mouse
@@ -212,27 +212,6 @@ f3menuen resb 1
 PrevPictureVal resb 1
 CurPictureVal resb 1
 SECTION .text
-
-DetermineNewest:
-    pushad
-    mov dword[newestfiledate],0
-    mov eax,[current_zst]
-    push eax
-    mov bl,10
-    div bl
-    mul bl
-    movzx ecx,al
-    add al,bl
-.again
-    mov [current_zst],ecx
-    ccallv zst_determine_newest
-    inc cl
-    cmp cl,al
-    jne .again
-    pop eax
-    mov [current_zst],eax
-    popad
-    ret
 
 GetPicture:
     mov cl,[CurPictureVal]
@@ -764,7 +743,7 @@ NEWSYM saveselect
     mov ecx,150
     jnz .loop
     ; draw filled boxes for existing files
-    call DetermineNewest
+    ccallv DetermineNewest
     push ebx
     mov eax,[current_zst]
     push eax
@@ -996,7 +975,7 @@ NEWSYM saveselect
     jnz .loop16b
 
     ; draw filled boxes for existing files
-    call DetermineNewest
+    ccallv DetermineNewest
     push ebx
     mov eax,[current_zst]
     push eax

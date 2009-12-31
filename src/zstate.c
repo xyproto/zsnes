@@ -30,7 +30,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <string.h>
 #include <ctype.h>
 #include <zlib.h>
-#include <time.h>
 #ifdef __WIN32__
 #include <io.h>
 #else
@@ -47,6 +46,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "zmovie.h"
 #include "chips/dsp4emu.h"
 #include "input.h"
+#include "zstate.h"
 
 #define NUMCONV_FR3
 #define NUMCONV_FW3
@@ -679,7 +679,7 @@ char *zst_name()
   return(ZStateName);
 }
 
-void zst_determine_newest()
+void zst_determine_newest(void)
 {
   struct stat filestat;
   char *zst_path;
