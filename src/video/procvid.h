@@ -3,7 +3,6 @@
 
 #include "../types.h"
 
-extern void OutputGraphicString16b5x5();
 extern void copyvid();
 extern void saveselect();
 

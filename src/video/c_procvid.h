@@ -40,4 +40,6 @@ void OutputGraphicString16b(u2* buf, char const* text);
 void OutputGraphicString5x5(u1* buf, char const* text);
 #endif
 
+void OutputGraphicString16b5x5(u2* buf, char const* text);
+
 #endif

@@ -42,7 +42,7 @@ EXTSYM MovieDisplayFrame,SloMo,MouseCount,device2,LoadPicture
 EXTSYM zst_determine_newest,newestfiledate,zst_exists,ClockBox,SSAutoFire
 EXTSYM outputhex,outputhex16,outputchar,outputchar16b,outputchar5x5
 EXTSYM outputchar16b5x5,OutputGraphicString,OutputGraphicString16b
-EXTSYM OutputGraphicString5x5
+EXTSYM OutputGraphicString5x5,OutputGraphicString16b5x5
 
 %ifndef __MSDOS__
 EXTSYM MouseMoveX,MouseMoveY,MouseButtons,MultiMouseProcess,mouse
@@ -199,21 +199,6 @@ NEWSYM FontData
          ; %, 37  ;, 40  Bk,49
          ; +, 38  `, 41  .5,4A
          ; ,, 39  ^, 42
-SECTION .text
-
-NEWSYM OutputGraphicString16b5x5
-    xor eax,eax
-.nextstr
-    mov al,[edi]
-    cmp al,0
-    je .nomore
-    mov al,[ASCII2Font+eax]
-    ccallv outputchar16b5x5, esi, eax
-    add esi,12
-    inc edi
-    jmp .nextstr
-.nomore
-    ret
 
 ;*******************************************************
 ; Save Select      Allows user to select save state slot
@@ -2017,22 +2002,19 @@ NEWSYM copyvid
     ccallv OutputGraphicString16b, esi, edi
     jmp .nfivex5
 .fivex5
-    call OutputGraphicString16b5x5
-    mov edi,CSStatus2
+    ccallv OutputGraphicString16b5x5, esi, edi
     mov esi,200*288*2+32*2
     add esi,[vidbuffer]
-    call OutputGraphicString16b5x5
-    mov edi,CSStatus3
+    ccallv OutputGraphicString16b5x5, esi, CSStatus2
     mov esi,208*288*2+32*2
     add esi,[vidbuffer]
-    call OutputGraphicString16b5x5
-    mov edi,CSStatus4
+    ccallv OutputGraphicString16b5x5, esi, CSStatus3
     mov esi,216*288*2+32*2
     add esi,[vidbuffer]
-    call OutputGraphicString16b5x5
+    ccallv OutputGraphicString16b5x5, esi, CSStatus4
     jmp .nfivex5
 .smallmsgtext2
-    call OutputGraphicString16b5x5
+    ccallv OutputGraphicString16b5x5, esi, edi
 .nfivex5
     dec dword[MessageOn]
 .nomsg
@@ -2048,7 +2030,7 @@ NEWSYM copyvid
 %endif
     mov esi,216*288*2+32*2
     add esi,[vidbuffer]
-    call OutputGraphicString16b5x5
+    ccallv OutputGraphicString16b5x5, esi, edi
 %ifdef __MSDOS__
     jmp .nomovie4
 .not16bframe

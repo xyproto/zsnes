@@ -398,7 +398,18 @@ void OutputGraphicString5x5(u1* buf, char const* text)
 			// Color #131, Red
 			case 131: textcolor16b = (22 << vesa2_rpos) + ( 5 << vesa2_gpos) + ( 5 << vesa2_bpos); break;
 		}
-		asm volatile("call *%2" : "+S" (buf16), "+D" (text) : "r" (OutputGraphicString16b5x5) : "cc", "memory", "eax"); // asm_call
+		OutputGraphicString16b5x5(buf16, text);
 	}
 }
 #endif
+
+
+void OutputGraphicString16b5x5(u2* buf, char const* text)
+{
+	for (;; buf += 6)
+	{
+		u1 const al = *text++;
+		if (al == '\0') break;
+		outputchar16b5x5(buf, ASCII2Font[al]);
+	}
+}
