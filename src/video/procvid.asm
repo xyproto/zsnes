@@ -44,6 +44,7 @@ EXTSYM outputhex,outputhex16,outputchar,outputchar16b,outputchar5x5
 EXTSYM outputchar16b5x5,OutputGraphicString,OutputGraphicString16b
 EXTSYM OutputGraphicString5x5,OutputGraphicString16b5x5,drawhline,drawhline16b
 EXTSYM drawvline,drawvline16b,DetermineNewest,GetPicture,drawfillboxsc,drawfillboxsc16b
+EXTSYM drawbox
 
 %ifndef __MSDOS__
 EXTSYM MouseMoveX,MouseMoveY,MouseButtons,MultiMouseProcess,mouse
@@ -212,25 +213,6 @@ f3menuen resb 1
 NEWSYM PrevPictureVal, resb 1
 NEWSYM CurPictureVal, resb 1
 SECTION .text
-
-%ifdef __MSDOS__
-NEWSYM drawbox
-    ; draws a box according to position bl and color dl
-    xor eax,eax
-    mov al,11
-    mul bl
-    mov esi,75+103*288
-    add esi,[vidbuffer]
-    add esi,eax
-    mov al,dl
-    ccallv drawhline, esi, 12, eax
-    ccallv drawvline, esi, 12, eax
-    add esi,11
-    ccallv drawvline, esi, 12, eax
-    add esi,-11+11*288
-    ccallv drawhline, esi, 12, eax
-    ret
-%endif
 
 NEWSYM drawbox16b
     ; draws a box according to position bl and color dx
@@ -694,15 +676,13 @@ NEWSYM saveselect
     jnz .nextnumchar
     mov byte[curblank],0h
 
-    mov dl,160
-    call drawbox
+    ccallv drawbox, ebx, 160
     push ebx
     call copyvid
     pop ebx
     ; wait until esc/enter is pressed
 .noesc
-    mov dl,128
-    call drawbox
+    ccallv drawbox, ebx, 128
     ccallv delay, 2500
     testpressed 8b
     test byte[pressed+1],1
@@ -730,8 +710,7 @@ NEWSYM saveselect
     jnz near .esc
     test byte[pressed+28],1
     jnz near .enter
-    mov dl,160
-    call drawbox
+    ccallv drawbox, ebx, 160
     push ebx
     call copyvid
     pop ebx

@@ -544,3 +544,15 @@ void drawfillboxsc16b(u4 x)
 	}
 	while (--n != 0);
 }
+
+
+#ifdef __MSDOS__
+void drawbox(u1 const x, u1 const colour)
+{
+	u1* const buf = vidbuffer + 75 + 103 * 288 + 11 * x;
+	drawhline(buf,            12, colour);
+	drawvline(buf,            12, colour);
+	drawvline(buf + 11,       12, colour);
+	drawhline(buf + 11 * 288, 12, colour);
+}
+#endif
