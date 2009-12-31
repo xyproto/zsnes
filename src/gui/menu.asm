@@ -677,8 +677,7 @@ NEWSYM menudrawbox16b
     mov esi,40*2+20*288*2
     add esi,[vidbuffer]
     add esi,[MenuDisplace16]
-    mov ecx,150
-    call drawhline16b
+    ccallv drawhline16b, esi, 150, eax
     mov esi,40*2+20*288*2
     add esi,[vidbuffer]
     add esi,[MenuDisplace16]
@@ -687,13 +686,11 @@ NEWSYM menudrawbox16b
     mov esi,40*2+114*288*2
     add esi,[vidbuffer]
     add esi,[MenuDisplace16]
-    mov ecx,150
-    call drawhline16b
+    ccallv drawhline16b, esi, 150, eax
     mov esi,40*2+32*288*2
     add esi,[vidbuffer]
     add esi,[MenuDisplace16]
-    mov ecx,150
-    call drawhline16b
+    ccallv drawhline16b, esi, 150, eax
     mov esi,189*2+20*288*2
     add esi,[vidbuffer]
     add esi,[MenuDisplace16]

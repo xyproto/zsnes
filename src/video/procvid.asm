@@ -42,7 +42,7 @@ EXTSYM MovieDisplayFrame,SloMo,MouseCount,device2,LoadPicture
 EXTSYM zst_determine_newest,newestfiledate,zst_exists,ClockBox,SSAutoFire
 EXTSYM outputhex,outputhex16,outputchar,outputchar16b,outputchar5x5
 EXTSYM outputchar16b5x5,OutputGraphicString,OutputGraphicString16b
-EXTSYM OutputGraphicString5x5,OutputGraphicString16b5x5,drawhline
+EXTSYM OutputGraphicString5x5,OutputGraphicString16b5x5,drawhline,drawhline16b
 
 %ifndef __MSDOS__
 EXTSYM MouseMoveX,MouseMoveY,MouseButtons,MultiMouseProcess,mouse
@@ -212,14 +212,6 @@ PrevPictureVal resb 1
 CurPictureVal resb 1
 SECTION .text
 
-NEWSYM drawhline16b
-.loop
-    mov [esi],ax
-    add esi,2
-    dec ecx
-    jnz .loop
-    ret
-
 %ifdef __MSDOS__
 NEWSYM drawvline
 .loop
@@ -384,12 +376,7 @@ NEWSYM drawfillboxsc16b
     jne .next
     mov ax,[saveselect.allgrnb]
 .next
-    push esi
-    push ecx
-    mov ecx,10
-    call drawhline16b
-    pop ecx
-    pop esi
+    ccallv drawhline16b, esi, 10, eax
     add esi,288*2
     dec ecx
     jnz .next
@@ -432,10 +419,7 @@ NEWSYM drawbox16b
     add esi,eax
     add esi,eax
     mov ax,dx
-    push esi
-    mov ecx,12
-    call drawhline16b
-    pop esi
+    ccallv drawhline16b, esi, 12, eax
     push esi
     mov ecx,12
     call drawvline16b
@@ -446,8 +430,7 @@ NEWSYM drawbox16b
     call drawvline16b
     pop esi
     add esi,11*288*2
-    mov ecx,12
-    call drawhline16b
+    ccallv drawhline16b, esi, 12, eax
     ret
 
 %macro drawfillboxbase 2
@@ -1095,28 +1078,24 @@ NEWSYM saveselect
     mov ax,0FFFFh
     mov esi,70*2+70*288*2
     add esi,[vidbuffer]
-    mov ecx,150
-    call drawhline16b
+    ccallv drawhline16b, esi, 150, eax
     mov esi,70*2+70*288*2
     add esi,[vidbuffer]
     mov ecx,80
     call drawvline16b
     mov esi,70*2+149*288*2
     add esi,[vidbuffer]
-    mov ecx,150
-    call drawhline16b
+    ccallv drawhline16b, esi, 150, eax
     mov esi,219*2+70*288*2
     add esi,[vidbuffer]
     mov ecx,80
     call drawvline16b
     mov esi,75*2+103*288*2
     add esi,[vidbuffer]
-    mov ecx,111
-    call drawhline16b
+    ccallv drawhline16b, esi, 111, eax
     mov esi,75*2+114*288*2
     add esi,[vidbuffer]
-    mov ecx,111
-    call drawhline16b
+    ccallv drawhline16b, esi, 111, eax
     mov esi,75*2+104*288*2
     add esi,[vidbuffer]
     mov bl,11

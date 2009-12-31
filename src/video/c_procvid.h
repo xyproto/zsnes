@@ -46,4 +46,6 @@ void OutputGraphicString16b5x5(u2* buf, char const* text);
 void drawhline(u1* buf, u4 n, u1 colour);
 #endif
 
+void drawhline16b(u2* buf, u4 n, u2 colour);
+
 #endif
