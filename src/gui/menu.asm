@@ -491,8 +491,7 @@ NEWSYM menudrawbox8b
     mov esi,40+20*288
     add esi,[vidbuffer]
     add esi,[MenuDisplace]
-    mov ecx,150
-    call drawhline
+    ccallv drawhline, esi, 150, eax
     mov esi,40+20*288
     add esi,[vidbuffer]
     add esi,[MenuDisplace]
@@ -501,13 +500,11 @@ NEWSYM menudrawbox8b
     mov esi,40+114*288
     add esi,[vidbuffer]
     add esi,[MenuDisplace]
-    mov ecx,150
-    call drawhline
+    ccallv drawhline, esi, 150, eax
     mov esi,40+32*288
     add esi,[vidbuffer]
     add esi,[MenuDisplace]
-    mov ecx,150
-    call drawhline
+    ccallv drawhline, esi, 150, eax
     mov esi,189+20*288
     add esi,[vidbuffer]
     add esi,[MenuDisplace]

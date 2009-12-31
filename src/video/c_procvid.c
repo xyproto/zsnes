@@ -413,3 +413,11 @@ void OutputGraphicString16b5x5(u2* buf, char const* text)
 		outputchar16b5x5(buf, ASCII2Font[al]);
 	}
 }
+
+
+#ifdef __MSDOS__
+void drawhline(u1* buf, u4 n, u1 const colour)
+{
+	do *buf++ = colour; while (--n != 0);
+}
+#endif

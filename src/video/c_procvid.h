@@ -42,4 +42,8 @@ void OutputGraphicString5x5(u1* buf, char const* text);
 
 void OutputGraphicString16b5x5(u2* buf, char const* text);
 
+#ifdef __MSDOS__
+void drawhline(u1* buf, u4 n, u1 colour);
+#endif
+
 #endif
