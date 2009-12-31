@@ -41,7 +41,7 @@ EXTSYM MovieProcessing,MovieFrameStr,GetMovieFrameStr,mouse1lh,mouse2lh
 EXTSYM MovieDisplayFrame,SloMo,MouseCount,device2,LoadPicture
 EXTSYM zst_determine_newest,newestfiledate,zst_exists,ClockBox,SSAutoFire
 EXTSYM outputhex,outputhex16,outputchar,outputchar16b,outputchar5x5
-EXTSYM outputchar16b5x5
+EXTSYM outputchar16b5x5,OutputGraphicString
 
 %ifndef __MSDOS__
 EXTSYM MouseMoveX,MouseMoveY,MouseButtons,MultiMouseProcess,mouse
@@ -202,79 +202,6 @@ NEWSYM FontData
 NEWSYM textcolor, db 128
 NEWSYM textcolor16b, dw 0FFFFh
 SECTION .text
-
-;*******************************************************
-; Output Graphic String   Outputs String from edi to esi
-;*******************************************************
-
-NEWSYM OutputGraphicString
-%ifdef __MSDOS__
-    cmp byte[cbitmode],1
-    je .do16b
-.no16bit
-    xor eax,eax
-.nextstr
-    mov al,[edi]
-    cmp al,0
-    je .nomore
-    mov al,[ASCII2Font+eax]
-    ccallv outputchar, esi, eax
-    add esi,8
-    inc edi
-    jmp .nextstr
-.nomore
-    ret
-
-.do16b
-%endif
-    sub esi,[vidbuffer]
-    shl esi,1
-    add esi,[vidbuffer]
-    cmp byte[textcolor],128
-    jne .no128
-    mov word[textcolor16b],0FFFFh
-.no128
-    cmp byte[textcolor],129
-    jne .no129
-    mov word[textcolor16b],0
-.no129
-    cmp byte[textcolor],130
-    jne .no130
-    xor ax,ax
-    xor bx,bx
-    mov cl,[vesa2_rpos]
-    mov bx,20
-    shl bx,cl
-    add ax,bx
-    mov cl,[vesa2_gpos]
-    mov bx,20
-    shl bx,cl
-    add ax,bx
-    mov cl,[vesa2_bpos]
-    mov bx,20
-    shl bx,cl
-    add ax,bx
-    mov [textcolor16b],ax
-.no130
-    ; Color #131, Red
-    cmp byte[textcolor],131
-    jne .no131
-    xor ax,ax
-    xor bx,bx
-    mov cl,[vesa2_rpos]
-    mov bx,22
-    shl bx,cl
-    add ax,bx
-    mov cl,[vesa2_gpos]
-    mov bx,5
-    shl bx,cl
-    add ax,bx
-    mov cl,[vesa2_bpos]
-    mov bx,5
-    shl bx,cl
-    add ax,bx
-    mov [textcolor16b],ax
-.no131
 
 NEWSYM OutputGraphicString16b
     xor eax,eax
@@ -1026,32 +953,25 @@ NEWSYM saveselect
 
     mov esi,75+73*288
     add esi,[vidbuffer]
-    mov edi,.stringa
-    call OutputGraphicString
+    ccallv OutputGraphicString, esi, .stringa
     mov esi,75+83*288
     add esi,[vidbuffer]
-    mov edi,.stringb
-    call OutputGraphicString
+    ccallv OutputGraphicString, esi, .stringb
     mov esi,75+93*288
     add esi,[vidbuffer]
-    mov edi,.stringb2
-    call OutputGraphicString
+    ccallv OutputGraphicString, esi, .stringb2
     mov esi,171+93*288
     add esi,[vidbuffer]
-    mov edi,slotlevelnum
-    call OutputGraphicString
+    ccallv OutputGraphicString, esi, slotlevelnum
     mov esi,75+118*288
     add esi,[vidbuffer]
-    mov edi,.stringc
-    call OutputGraphicString
+    ccallv OutputGraphicString, esi, .stringc
     mov esi,75+128*288
     add esi,[vidbuffer]
-    mov edi,.stringd
-    call OutputGraphicString
+    ccallv OutputGraphicString, esi, .stringd
     mov esi,75+138*288
     add esi,[vidbuffer]
-    mov edi,.stringe
-    call OutputGraphicString
+    ccallv OutputGraphicString, esi, .stringe
     mov al,128
     mov esi,70+70*288
     add esi,[vidbuffer]
@@ -2154,7 +2074,7 @@ NEWSYM copyvid
     je .fivex5b
     cmp byte[SmallMsgText],1
     je .smallmsgtext
-    call OutputGraphicString.no16bit
+    ccallv OutputGraphicString, esi, edi
     jmp .nfivex5b
 .fivex5b
     call OutputGraphicString5x5

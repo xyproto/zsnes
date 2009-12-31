@@ -518,13 +518,11 @@ NEWSYM menudrawbox8b
     mov esi,45+23*288
     add esi,[vidbuffer]
     add esi,[MenuDisplace]
-    mov edi,.string
-    call OutputGraphicString
+    ccall OutputGraphicString, esi, .string
     mov esi,45+35*288
     add esi,[vidbuffer]
     add esi,[MenuDisplace]
-    mov edi,.stringa
-    call OutputGraphicString
+    ccall OutputGraphicString, esi, .stringa
     mov esi,45+45*288
     add esi,[vidbuffer]
     add esi,[MenuDisplace]
@@ -533,37 +531,31 @@ NEWSYM menudrawbox8b
     jz .nofps
     mov edi,.stringc
 .nofps
-    call OutputGraphicString
+    ccall OutputGraphicString, esi, edi
     mov esi,45+55*288
     add esi,[vidbuffer]
     add esi,[MenuDisplace]
-    mov edi,.stringd
-    call OutputGraphicString
+    ccall OutputGraphicString, esi, .stringd
     mov esi,45+65*288
     add esi,[vidbuffer]
     add esi,[MenuDisplace]
-    mov edi,.stringe
-    call OutputGraphicString
+    ccall OutputGraphicString, esi, .stringe
     mov esi,45+75*288
     add esi,[vidbuffer]
     add esi,[MenuDisplace]
-    mov edi,.stringf
-    call OutputGraphicString
+    ccall OutputGraphicString, esi, .stringf
     mov esi,45+85*288
     add esi,[vidbuffer]
     add esi,[MenuDisplace]
-    mov edi,.stringg
-    call OutputGraphicString
+    ccall OutputGraphicString, esi, .stringg
     mov esi,45+95*288
     add esi,[vidbuffer]
     add esi,[MenuDisplace]
-    mov edi,.stringh
-    call OutputGraphicString
+    ccall OutputGraphicString, esi, .stringh
     mov esi,45+105*288
     add esi,[vidbuffer]
     add esi,[MenuDisplace]
-    mov edi,.stringi
-    call OutputGraphicString
+    ccall OutputGraphicString, esi, .stringi
 ;    mov al,[newengen]
 ;    mov byte[newengen],0
 ;    push eax

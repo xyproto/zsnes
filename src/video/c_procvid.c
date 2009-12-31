@@ -330,3 +330,33 @@ void outputchar16b5x5(u2* buf, u1 const glyph)
 	}
 	while (--y != 0);
 }
+
+
+void OutputGraphicString(u1* buf, char const* text)
+{
+#ifdef __MSDOS__
+	if (cbitmode != 1)
+	{
+		for (;; buf += 8)
+		{
+			u1 const al = *text++;
+			if (al == '\0') break;
+			outputchar(buf, ASCII2Font[al]);
+		}
+	}
+	else
+#endif
+	{ // XXX probably never reached, callers seem to test cbitmode beforehand
+		u2* const buf16 = (u2*)vidbuffer + (buf - vidbuffer);
+		switch (textcolor)
+		{
+			case 128: textcolor16b = 0xFFFF;                                                       break;
+			case 129: textcolor16b = 0x0000;                                                       break;
+			case 130: textcolor16b = (20 << vesa2_rpos) + (20 << vesa2_gpos) + (20 << vesa2_bpos); break;
+			// Color #131, Red
+			case 131: textcolor16b = (22 << vesa2_rpos) + ( 5 << vesa2_gpos) + ( 5 << vesa2_bpos); break;
+		}
+    u2* buf16_ = buf16;
+    asm volatile("call *%2" : "+S" (buf16_), "+D" (text) : "r" (OutputGraphicString16b) : "cc", "memory", "eax"); // asm_call
+	}
+}
