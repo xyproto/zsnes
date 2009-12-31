@@ -43,7 +43,7 @@ EXTSYM zst_determine_newest,zst_exists,ClockBox,SSAutoFire
 EXTSYM outputhex,outputhex16,outputchar,outputchar16b,outputchar5x5
 EXTSYM outputchar16b5x5,OutputGraphicString,OutputGraphicString16b
 EXTSYM OutputGraphicString5x5,OutputGraphicString16b5x5,drawhline,drawhline16b
-EXTSYM drawvline,drawvline16b,DetermineNewest
+EXTSYM drawvline,drawvline16b,DetermineNewest,GetPicture
 
 %ifndef __MSDOS__
 EXTSYM MouseMoveX,MouseMoveY,MouseButtons,MultiMouseProcess,mouse
@@ -209,75 +209,9 @@ NEWSYM FontData
 SECTION .bss
 NEWSYM csounddisable, resb 1
 f3menuen resb 1
-PrevPictureVal resb 1
-CurPictureVal resb 1
+NEWSYM PrevPictureVal, resb 1
+NEWSYM CurPictureVal, resb 1
 SECTION .text
-
-GetPicture:
-    mov cl,[CurPictureVal]
-    cmp [PrevPictureVal],cl
-    jne .notskip
-    ret
-.notskip
-    mov [PrevPictureVal],cl
-
-    ccallv LoadPicture
-
-    ; convert to 1:5:5:5
-    cmp byte[newengen],0
-    je .noneweng
-    cmp byte[nggposng],5
-    jne .noneweng
-    mov edx,PrevPicture
-    mov ecx,64*56
-.loop2
-    mov ax,[edx]
-    mov bx,ax
-    and ax,1111111111000000b
-    and bx,0000000000011111b
-    shr ax,1
-    or bx,ax
-    mov [edx],bx
-    add edx,2
-    dec ecx
-    jnz .loop2
-.noneweng
-    ; draw border
-    mov esi,75*2+9*288*2
-    add esi,[vidbuffer]
-    mov edx,58
-.ploopa
-    mov ecx,66
-    push esi
-.ploopb
-    mov word[esi],0FFFFh
-    add esi,2
-    dec ecx
-    jnz .ploopb
-    pop esi
-    add esi,288*2
-    dec edx
-    jnz .ploopa
-    ; draw picture
-    mov esi,76*2+10*288*2
-    add esi,[vidbuffer]
-    mov edx,56
-    mov edi,PrevPicture
-.ploopa2
-    mov ecx,64
-    push esi
-.ploopb2
-    mov ax,[edi]
-    mov [esi],ax
-    add esi,2
-    add edi,2
-    dec ecx
-    jnz .ploopb2
-    pop esi
-    add esi,288*2
-    dec edx
-    jnz .ploopa2
-    ret
 
 %ifdef __MSDOS__
 NEWSYM drawfillboxsc
@@ -1078,9 +1012,7 @@ NEWSYM saveselect
     mov eax,[current_zst]
     mov [CurPictureVal],al
     pop eax
-    pushad
-    call GetPicture
-    popad
+    ccallv GetPicture
 
     mov dx,0FFFFh
     call drawbox16b

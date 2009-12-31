@@ -37,6 +37,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #endif
 #include "../zpath.h"
 #include "../zmovie.h"
+#include "procvidc.h"
 
 extern unsigned char newengen;
 extern unsigned int nggposng[];
@@ -83,7 +84,7 @@ extern unsigned int cur_zst_size, old_zst_size;
 
 char *zst_name();
 
-void LoadPicture()
+void LoadPicture(void)
 {
   const unsigned int pic_size = 64*56*2;
   FILE *fp;

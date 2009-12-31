@@ -3,6 +3,7 @@
 #include "../cfg.h"
 #include "../cpu/execute.h"
 #include "../cpu/regs.h"
+#include "../endmem.h"
 #include "../gui/gui.h"
 #include "../init.h"
 #include "../input.h"
@@ -10,7 +11,9 @@
 #include "../vcache.h"
 #include "../zstate.h"
 #include "c_procvid.h"
+#include "newgfx16.h"
 #include "procvid.h"
+#include "procvidc.h"
 
 static u1 textcolor    = 128;
 static u2 textcolor16b = 0xFFFF;
@@ -459,4 +462,51 @@ void DetermineNewest(void)
 	}
 	while (++i != end);
 	current_zst = cur;
+}
+
+
+void GetPicture(void)
+{
+	u1 const cur = CurPictureVal;
+	if (PrevPictureVal == cur) return;
+	PrevPictureVal = cur;
+
+	LoadPicture();
+
+	if (newengen != 0 && nggposng == 5)
+	{ // convert to 1:5:5:5
+		u2* buf = PrevPicture;
+		u4  n   = 64 * 56;
+		do
+		{
+			u2 const px = *buf;
+			*buf++ = (px & 0x001F) | (px & 0xFFC0) >> 1;
+		}
+		while (--n != 0);
+	}
+
+	{ // draw border
+		u2* dst = (u2*)vidbuffer + 75 + 9 * 288;
+		u4  y   = 58;
+		do
+		{
+			u4 x = 66;
+			do *dst++ = 0xFFFF; while (--x != 0); // XXX memset?
+			dst += -66 + 288;
+		}
+		while (--y != 0);
+	}
+
+	{ // draw picture
+		u2*       dst = (u2*)vidbuffer + 76 + 10 * 288;
+		u2 const* src = PrevPicture;
+		u4        y   = 56;
+		do
+		{
+			u4 x = 64;
+			do *dst++ = *src++; while (--x != 0); // XXX memcpy?
+			dst += -64 + 288;
+		}
+		while (--y != 0);
+	}
 }
