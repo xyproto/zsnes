@@ -43,6 +43,7 @@ EXTSYM zst_determine_newest,newestfiledate,zst_exists,ClockBox,SSAutoFire
 EXTSYM outputhex,outputhex16,outputchar,outputchar16b,outputchar5x5
 EXTSYM outputchar16b5x5,OutputGraphicString,OutputGraphicString16b
 EXTSYM OutputGraphicString5x5,OutputGraphicString16b5x5,drawhline,drawhline16b
+EXTSYM drawvline
 
 %ifndef __MSDOS__
 EXTSYM MouseMoveX,MouseMoveY,MouseButtons,MultiMouseProcess,mouse
@@ -211,16 +212,6 @@ f3menuen resb 1
 PrevPictureVal resb 1
 CurPictureVal resb 1
 SECTION .text
-
-%ifdef __MSDOS__
-NEWSYM drawvline
-.loop
-    mov [esi],al
-    add esi,288
-    dec ecx
-    jnz .loop
-    ret
-%endif
 
 NEWSYM drawvline16b
 .loop
@@ -395,16 +386,10 @@ NEWSYM drawbox
     add esi,eax
     mov al,dl
     ccallv drawhline, esi, 12, eax
-    push esi
-    mov ecx,12
-    call drawvline
-    pop esi
-    push esi
+    ccallv drawvline, esi, 12, eax
     add esi,11
-    mov ecx,12
-    call drawvline
-    pop esi
-    add esi,11*288
+    ccallv drawvline, esi, 12, eax
+    add esi,-11+11*288
     ccallv drawhline, esi, 12, eax
     ret
 %endif
@@ -842,15 +827,13 @@ NEWSYM saveselect
     ccallv drawhline, esi, 150, eax
     mov esi,70+70*288
     add esi,[vidbuffer]
-    mov ecx,80
-    call drawvline
+    ccallv drawvline, esi, 80, eax
     mov esi,70+149*288
     add esi,[vidbuffer]
     ccallv drawhline, esi, 150, eax
     mov esi,219+70*288
     add esi,[vidbuffer]
-    mov ecx,80
-    call drawvline
+    ccallv drawvline, esi, 80, eax
     mov esi,75+103*288
     add esi,[vidbuffer]
     ccallv drawhline, esi, 111, eax
@@ -861,12 +844,7 @@ NEWSYM saveselect
     add esi,[vidbuffer]
     mov bl,11
 .nextvline
-    mov ecx,10
-    push esi
-    push ebx
-    call drawvline
-    pop ebx
-    pop esi
+    ccallv drawvline, esi, 10, eax
     add esi,11
     dec bl
     jnz .nextvline

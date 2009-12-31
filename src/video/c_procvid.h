@@ -48,4 +48,8 @@ void drawhline(u1* buf, u4 n, u1 colour);
 
 void drawhline16b(u2* buf, u4 n, u2 colour);
 
+#ifdef __MSDOS__
+void drawvline(u1* buf, u4 n, u1 colour);
+#endif
+
 #endif

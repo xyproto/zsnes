@@ -427,3 +427,11 @@ void drawhline16b(u2* buf, u4 n, u2 const colour)
 {
 	do *buf++ = colour; while (--n != 0);
 }
+
+
+#ifdef __MSDOS__
+void drawvline(u1* buf, u4 n, u1 const colour)
+{
+	do { *buf = colour; buf += 288; } while (--n != 0);
+}
+#endif
