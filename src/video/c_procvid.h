@@ -64,9 +64,10 @@ void drawfillboxsc(u4 x);
 #endif
 void drawfillboxsc16b(u4 x);
 
-#ifdef __MSDOS__
 // draws a box according to position x and color colour
+#ifdef __MSDOS__
 void drawbox(u1 x, u1 colour);
 #endif
+void drawbox16b(u1 x, u2 colour);
 
 #endif

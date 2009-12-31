@@ -556,3 +556,13 @@ void drawbox(u1 const x, u1 const colour)
 	drawhline(buf + 11 * 288, 12, colour);
 }
 #endif
+
+
+void drawbox16b(u1 const x, u2 const colour)
+{
+	u2* const buf = (u2*)vidbuffer + 75 + 103 * 288 + 11 * x;
+	drawhline16b(buf,            12, colour);
+	drawvline16b(buf,            12, colour);
+	drawvline16b(buf + 11,       12, colour);
+	drawhline16b(buf + 11 * 288, 12, colour);
+}
