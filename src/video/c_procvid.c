@@ -510,3 +510,37 @@ void GetPicture(void)
 		while (--y != 0);
 	}
 }
+
+
+#ifdef __MSDOS__
+void drawfillboxsc(u4 const x)
+{
+	if (zst_exists() != 1) return;
+
+	u1*      buf    = vidbuffer + 76 + 104 * 288 + 11 * x;
+	u1 const colour = current_zst == newest_zst ? 208 : 176;
+	u4       n      = 10;
+	do
+	{
+		drawhline(buf, 10, colour);
+		buf += 288;
+	}
+	while (--n != 0);
+}
+#endif
+
+
+void drawfillboxsc16b(u4 x)
+{
+	if (zst_exists() != 1) return;
+
+	u2*      buf    = (u2*)vidbuffer + 76 + 104 * 288 + 11 * x;
+	u2 const colour = current_zst == newest_zst ? allgrnb : allgrn;
+	u4       n      = 10;
+	do
+	{
+		drawhline16b(buf, 10, colour);
+		buf += 288;
+	}
+	while (--n != 0);
+}

@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <time.h>
 
+int  zst_exists(void);
 void BackupSystemVars(void);
 void LoadSecondState(void);
 void RestoreSystemVars(void);
@@ -15,5 +16,6 @@ void zst_determine_newest(void);
 
 extern time_t   newestfiledate;
 extern uint32_t current_zst;
+extern uint32_t newest_zst;
 
 #endif

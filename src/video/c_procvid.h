@@ -58,4 +58,10 @@ void DetermineNewest(void);
 
 void GetPicture(void);
 
+// draws a 10x10 filled box according to position x
+#ifdef __MSDOS__
+void drawfillboxsc(u4 x);
+#endif
+void drawfillboxsc16b(u4 x);
+
 #endif

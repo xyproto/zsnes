@@ -717,7 +717,7 @@ void zst_init()
   }
 }
 
-int zst_exists()
+int zst_exists(void)
 {
   int ret;
   char *zst_path;

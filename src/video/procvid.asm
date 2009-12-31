@@ -43,7 +43,7 @@ EXTSYM zst_determine_newest,zst_exists,ClockBox,SSAutoFire
 EXTSYM outputhex,outputhex16,outputchar,outputchar16b,outputchar5x5
 EXTSYM outputchar16b5x5,OutputGraphicString,OutputGraphicString16b
 EXTSYM OutputGraphicString5x5,OutputGraphicString16b5x5,drawhline,drawhline16b
-EXTSYM drawvline,drawvline16b,DetermineNewest,GetPicture
+EXTSYM drawvline,drawvline16b,DetermineNewest,GetPicture,drawfillboxsc,drawfillboxsc16b
 
 %ifndef __MSDOS__
 EXTSYM MouseMoveX,MouseMoveY,MouseButtons,MultiMouseProcess,mouse
@@ -214,73 +214,6 @@ NEWSYM CurPictureVal, resb 1
 SECTION .text
 
 %ifdef __MSDOS__
-NEWSYM drawfillboxsc
-    push eax
-    ccall zst_exists
-    cmp eax,1
-    pop eax
-    jne .nodraw
-
-    push eax
-    ; draws a 10x10 filled box according to position bl and color dl
-    xor eax,eax
-    mov al,11
-    mul bl
-    mov esi,76+104*288
-    add esi,[vidbuffer]
-    add esi,eax
-    mov ecx,10
-    mov al,176
-    push eax
-    mov eax,[current_zst]
-    cmp eax,[newest_zst]
-    pop eax
-    jne .next
-    mov al,208
-.next
-    ccallv drawhline, esi, 10, eax
-    add esi,288
-    dec ecx
-    jnz .next
-    pop eax
-.nodraw
-    ret
-%endif
-
-NEWSYM drawfillboxsc16b
-    push eax
-    ccall zst_exists
-    cmp eax,1
-    pop eax
-    jne .nodraw
-
-    push eax
-    ; draws a 10x10 filled box according to position bl and color dl
-    xor eax,eax
-    mov al,11
-    mul bl
-    mov esi,76*2+104*288*2
-    add esi,[vidbuffer]
-    add esi,eax
-    add esi,eax
-    mov ecx,10
-    mov ax,[saveselect.allgrn]
-    push eax
-    mov eax,[current_zst]
-    cmp eax,[newest_zst]
-    pop eax
-    jne .next
-    mov ax,[saveselect.allgrnb]
-.next
-    ccallv drawhline16b, esi, 10, eax
-    add esi,288*2
-    dec ecx
-    jnz .next
-    pop eax
-.nodraw
-    ret
-
-%ifdef __MSDOS__
 NEWSYM drawbox
     ; draws a box according to position bl and color dl
     xor eax,eax
@@ -323,11 +256,10 @@ NEWSYM drawbox16b
     mov bl,10
     div bl
     mul bl
-    mov bl,%1
-    add al,bl
+    add al,%1
     mov [current_zst],eax
     pop eax
-    call %2
+    ccallv %2, %1
 %endmacro
 
 %macro drawfillboxhelp 1
@@ -859,16 +791,16 @@ NEWSYM saveselect
     mov ax,018h
     mov cl,[vesa2_rpos]
     shl ax,cl
-    mov [.allgrn],ax
+    mov [allgrn],ax
 
     mov ax,25
     mov cl,[vesa2_rpos]
     shl ax,cl
-    mov [.allgrnb],ax
+    mov [allgrnb],ax
     mov ax,12
     mov cl,[vesa2_gpos]
     shl ax,cl
-    or [.allgrnb],ax
+    or [allgrnb],ax
 
     mov ax,01Fh
     mov cl,[vesa2_rpos]
@@ -1087,8 +1019,6 @@ NEWSYM saveselect
 
 SECTION .bss
 .allred resw 1
-.allgrn resw 1
-.allgrnb resw 1
 .blue   resw 1
 .stepb  resw 1
 SECTION .text
@@ -1103,6 +1033,9 @@ SECTION .data
 slotlevelnum db '-',0
 
 SECTION .bss
+NEWSYM allgrn,  resw 1
+NEWSYM allgrnb, resw 1
+
 NEWSYM ForceNonTransp, resb 1
 
 ;*******************************************************
