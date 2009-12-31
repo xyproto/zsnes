@@ -34,4 +34,6 @@ void outputchar16b5x5(u2* buf, u1 glyph);
 // Outputs String from text to buf
 void OutputGraphicString(u1* buf, char const* text);
 
+void OutputGraphicString16b(u2* buf, char const* text);
+
 #endif

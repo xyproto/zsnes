@@ -41,7 +41,7 @@ EXTSYM MovieProcessing,MovieFrameStr,GetMovieFrameStr,mouse1lh,mouse2lh
 EXTSYM MovieDisplayFrame,SloMo,MouseCount,device2,LoadPicture
 EXTSYM zst_determine_newest,newestfiledate,zst_exists,ClockBox,SSAutoFire
 EXTSYM outputhex,outputhex16,outputchar,outputchar16b,outputchar5x5
-EXTSYM outputchar16b5x5,OutputGraphicString
+EXTSYM outputchar16b5x5,OutputGraphicString,OutputGraphicString16b
 
 %ifndef __MSDOS__
 EXTSYM MouseMoveX,MouseMoveY,MouseButtons,MultiMouseProcess,mouse
@@ -202,20 +202,6 @@ NEWSYM FontData
 NEWSYM textcolor, db 128
 NEWSYM textcolor16b, dw 0FFFFh
 SECTION .text
-
-NEWSYM OutputGraphicString16b
-    xor eax,eax
-.nextstr
-    mov al,[edi]
-    cmp al,0
-    je .nomore
-    mov al,[ASCII2Font+eax]
-    ccallv outputchar16b, esi, eax
-    add esi,16
-    inc edi
-    jmp .nextstr
-.nomore
-    ret
 
 %ifdef __MSDOS__
 NEWSYM OutputGraphicString5x5
@@ -1196,32 +1182,25 @@ NEWSYM saveselect
 
     mov esi,75*2+73*288*2
     add esi,[vidbuffer]
-    mov edi,.stringa
-    call OutputGraphicString16b
+    ccallv OutputGraphicString16b, esi, .stringa
     mov esi,75*2+83*288*2
     add esi,[vidbuffer]
-    mov edi,.stringb
-    call OutputGraphicString16b
+    ccallv OutputGraphicString16b, esi, .stringb
     mov esi,75*2+93*288*2
     add esi,[vidbuffer]
-    mov edi,.stringb2
-    call OutputGraphicString16b
+    ccallv OutputGraphicString16b, esi, .stringb2
     mov esi,171*2+93*288*2
     add esi,[vidbuffer]
-    mov edi,slotlevelnum
-    call OutputGraphicString16b
+    ccallv OutputGraphicString16b, esi, slotlevelnum
     mov esi,75*2+118*288*2
     add esi,[vidbuffer]
-    mov edi,.stringc
-    call OutputGraphicString16b
+    ccallv OutputGraphicString16b, esi, .stringc
     mov esi,75*2+128*288*2
     add esi,[vidbuffer]
-    mov edi,.stringd
-    call OutputGraphicString16b
+    ccallv OutputGraphicString16b, esi, .stringd
     mov esi,75*2+138*288*2
     add esi,[vidbuffer]
-    mov edi,.stringe
-    call OutputGraphicString16b
+    ccallv OutputGraphicString16b, esi, .stringe
     mov ax,0FFFFh
     mov esi,70*2+70*288*2
     add esi,[vidbuffer]
@@ -2109,7 +2088,7 @@ NEWSYM copyvid
     je .fivex5
     cmp byte[SmallMsgText],1
     je .smallmsgtext2
-    call OutputGraphicString16b
+    ccallv OutputGraphicString16b, esi, edi
     jmp .nfivex5
 .fivex5
     call OutputGraphicString16b5x5

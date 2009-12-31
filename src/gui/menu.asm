@@ -707,13 +707,11 @@ NEWSYM menudrawbox16b
     mov esi,45*2+23*288*2
     add esi,[vidbuffer]
     add esi,[MenuDisplace16]
-    mov edi,menudrawbox8b.string
-    call OutputGraphicString16b
+    ccallv OutputGraphicString16b, esi, menudrawbox8b.string
     mov esi,45*2+35*288*2
     add esi,[vidbuffer]
     add esi,[MenuDisplace16]
-    mov edi,menudrawbox8b.stringa
-    call OutputGraphicString16b
+    ccallv OutputGraphicString16b, esi, menudrawbox8b.stringa
     mov esi,45*2+45*288*2
     add esi,[vidbuffer]
     add esi,[MenuDisplace16]
@@ -722,37 +720,31 @@ NEWSYM menudrawbox16b
     jz .nofps
     mov edi,menudrawbox8b.stringc
 .nofps
-    call OutputGraphicString16b
+    ccallv OutputGraphicString16b, esi, edi
     mov esi,45*2+55*288*2
     add esi,[vidbuffer]
     add esi,[MenuDisplace16]
-    mov edi,menudrawbox8b.stringd
-    call OutputGraphicString16b
+    ccallv OutputGraphicString16b, esi, menudrawbox8b.stringd
     mov esi,45*2+65*288*2
     add esi,[vidbuffer]
     add esi,[MenuDisplace16]
-    mov edi,menudrawbox8b.stringe
-    call OutputGraphicString16b
+    ccallv OutputGraphicString16b, esi, menudrawbox8b.stringe
     mov esi,45*2+75*288*2
     add esi,[vidbuffer]
     add esi,[MenuDisplace16]
-    mov edi,menudrawbox8b.stringf
-    call OutputGraphicString16b
+    ccallv OutputGraphicString16b, esi, menudrawbox8b.stringf
     mov esi,45*2+85*288*2
     add esi,[vidbuffer]
     add esi,[MenuDisplace16]
-    mov edi,menudrawbox8b.stringg
-    call OutputGraphicString16b
+    ccallv OutputGraphicString16b, esi, menudrawbox8b.stringg
     mov esi,45*2+95*288*2
     add esi,[vidbuffer]
     add esi,[MenuDisplace16]
-    mov edi,menudrawbox8b.stringh
-    call OutputGraphicString16b
+    ccallv OutputGraphicString16b, esi, menudrawbox8b.stringh
     mov esi,45*2+105*288*2
     add esi,[vidbuffer]
     add esi,[MenuDisplace16]
-    mov edi,menudrawbox8b.stringi
-    call OutputGraphicString16b
+    ccallv OutputGraphicString16b, esi, menudrawbox8b.stringi
 ;    mov al,[newengen]
 ;    mov byte[newengen],0
 ;    push eax
