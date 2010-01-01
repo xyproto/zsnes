@@ -19,9 +19,6 @@
 #	include "../linux/sdllink.h"
 #endif
 
-static u1 PrevPictureVal;
-static u1 CurPictureVal;
-
 static u2 allgrnb;
 static u2 allgrn;
 
@@ -469,10 +466,6 @@ static void DetermineNewest(void)
 
 static void GetPicture(void)
 {
-	u1 const cur = CurPictureVal;
-	if (PrevPictureVal == cur) return;
-	PrevPictureVal = cur;
-
 	LoadPicture();
 
 	if (newengen != 0 && nggposng == 5)
@@ -933,12 +926,15 @@ updatescreen16b:
 		}
 		// wait until esc/enter is pressed
 
-		PrevPictureVal = 0xFF;
-		u4 ebx = 0;
+		u4 PrevPictureVal = 0xFF;
+		u4 ebx            = 0;
 		for (;;)
 		{
-			CurPictureVal = current_zst;
-			GetPicture();
+			if (PrevPictureVal != current_zst)
+			{
+				PrevPictureVal = current_zst;
+				GetPicture();
+			}
 
 			drawbox16b(ebx, 0xFFFF);
 			delay(2500);
