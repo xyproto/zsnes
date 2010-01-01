@@ -865,7 +865,7 @@ NEWSYM setpalall
     mov [prevbright],al
     cmp byte[V8Mode],1
     jne .noveg2
-    call dovegrest
+    ccallv dovegrest
 .noveg2
     ret
 
@@ -946,7 +946,7 @@ NEWSYM setpalette16b
 .skipall
     cmp byte[V8Mode],1
     jne .noveg2
-    call dovegrest
+    ccallv dovegrest
 .noveg2
     ret
 

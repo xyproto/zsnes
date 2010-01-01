@@ -28,6 +28,8 @@ static u2 allgrn;
 static u1 textcolor    = 128;
 static u2 textcolor16b = 0xFFFF;
 
+static u2 cgramback[256];
+
 
 u4 SwapMouseButtons(u4 const buttons)
 {
@@ -1018,4 +1020,11 @@ void doveg(void)
 		*i = grey << 10 | grey << 5 | grey;
 	}
 	while (++i != endof(cgram));
+}
+
+
+void dovegrest(void)
+{
+	// backup cgram
+	memcpy(cgram, cgramback, sizeof(cgram));
 }

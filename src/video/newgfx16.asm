@@ -172,7 +172,7 @@ NEWSYM setpalallng
     xor ecx,ecx
     cmp byte[V8Mode],1
     jne .noveg2
-    call dovegrest
+    ccallv dovegrest
 .noveg2
     ret
 
@@ -289,7 +289,7 @@ NEWSYM setpalette16bng
 .skipall
     cmp byte[V8Mode],1
     jne .noveg2
-    call dovegrest
+    ccallv dovegrest
 .noveg2
     ret
 

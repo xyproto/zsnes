@@ -211,24 +211,6 @@ NEWSYM ForceNonTransp, resb 1
 ;*******************************************************
 ; set the brightness with [maxbr]
 SECTION .bss
-NEWSYM cgramback, resw 256
-SECTION .text
-
-NEWSYM dovegrest
-    pushad
-    ; backup cgram
-    mov ecx,128
-    xor ebx,ebx
-.loop
-    mov eax,[cgramback+ebx]
-    mov [cgram+ebx],eax
-    add ebx,4
-    dec ecx
-    jnz .loop
-    popad
-    ret
-
-SECTION .bss
 NEWSYM tempco0, resw 1
 NEWSYM prevbright, resb 1
 SECTION .text
@@ -366,7 +348,7 @@ NEWSYM makepalb
 .nochange128
     cmp byte[V8Mode],1
     jne .noveg2
-    call dovegrest
+    ccallv dovegrest
 .noveg2
     ret
 
@@ -505,7 +487,7 @@ NEWSYM doschangepal
 .nochange128
     cmp byte[V8Mode],1
     jne .noveg2
-    call dovegrest
+    ccallv dovegrest
 .noveg2
     ret
 %endif

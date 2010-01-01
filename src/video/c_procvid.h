@@ -56,4 +56,6 @@ void drawvline16b(u2* buf, u4 n, u2 colour);
 
 void doveg(void);
 
+void dovegrest(void);
+
 #endif
