@@ -212,96 +212,6 @@ NEWSYM prevbright, resb 1
 SECTION .text
 
 %ifdef __MSDOS__
-NEWSYM makepalb
-    mov edi,cgram
-    mov ebx,prevpal
-    xor ah,ah
-.loopa
-    mov cx,[edi]
-    push eax
-    push ebx
-    mov [ebx],cx
-    mov al,ah
-    mov dx,03C8h
-    out dx,al
-    mov ax,cx
-    and al,01Fh
-    mov bh,[maxbr]
-    mov bl,bh
-    mul bl
-    mov bl,15
-    div bl
-    shl al,1
-    mov dx,03C9h
-    add al,[gammalevel]
-    cmp al,63
-    jbe .nor
-    mov al,63
-.nor
-    out dx,al
-    mov ax,cx
-    shr ax,5
-    and al,01Fh
-    mov bl,bh
-    mul bl
-    mov bl,15
-    div bl
-    shl al,1
-    add al,[gammalevel]
-    cmp al,63
-    jbe .nog
-    mov al,63
-.nog
-    out dx,al
-    mov ax,cx
-    shr ax,10
-    and al,01Fh
-    mov bl,bh
-    mul bl
-    mov bl,15
-    div bl
-    shl al,1
-    add al,[gammalevel]
-    cmp al,63
-    jbe .nob
-    mov al,63
-.nob
-    out dx,al
-    pop ebx
-    pop eax
-    add edi,2
-    add ebx,2
-    inc ah
-    jnz near .loopa
-    mov al,[maxbr]
-    mov [prevbright],al
-    mov ax,[tempco0]
-    mov [cgram],ax
-    cmp byte[MessageOn],0
-    je .nochange128
-    mov dx,03C8h
-    mov al,128
-    out dx,al
-    mov al,63
-    inc dx
-    out dx,al
-    out dx,al
-    out dx,al
-    mov dx,03C8h
-    mov al,128+64
-    out dx,al
-    mov al,0
-    inc dx
-    out dx,al
-    out dx,al
-    out dx,al
-.nochange128
-    cmp byte[V8Mode],1
-    jne .noveg2
-    ccallv dovegrest
-.noveg2
-    ret
-
 ;*******************************************************
 ; ChangePal                          Sets up the palette
 ;*******************************************************
@@ -355,7 +265,10 @@ NEWSYM doschangepal
     ; check if brightness differs
     mov al,[maxbr]
     cmp al,[prevbright]
-    jne near makepalb
+    je .nobrightchange
+    ccallv makepalb
+    ret
+.nobrightchange
     ; check for duplicate palette (Compare prevpal with cgram)
     mov ebx,prevpal
     mov edi,cgram

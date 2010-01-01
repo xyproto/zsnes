@@ -1,5 +1,6 @@
 #include <string.h>
 
+#include "../asm.h"
 #include "../asm_call.h"
 #include "../c_intrf.h"
 #include "../cfg.h"
@@ -17,6 +18,10 @@
 #include "newgfx16.h"
 #include "procvid.h"
 #include "procvidc.h"
+
+#ifdef __MSDOS__
+#	include "makevid.h"
+#endif
 
 #ifdef __UNIXSDL__
 #	include "../linux/sdllink.h"
@@ -1031,6 +1036,49 @@ void dovegrest(void)
 
 
 #ifdef __MSDOS__
+static inline void SetPal(u1 const i, u1 const r, u1 const g, u1 const b)
+{
+	outb(0x03C8, i);
+	outb(0x03C9, r);
+	outb(0x03C9, g);
+	outb(0x03C9, b);
+}
+
+
+void makepalb(void)
+{
+	u2 const* src    = cgram;
+	u2*       dst    = prevpal;
+	u1 const  bright = maxbr;
+	u1 const  gamma  = gammalevel;
+	u4        i      = 0;
+	do
+	{
+		u2 const c = *src++;
+		*dst++ = c;
+		u4 r = (c       & 0x1F) * bright / 15 * 2 + gamma;
+		if (r > 63) r = 63;
+		u4 g = (c >>  5 & 0x1F) * bright / 15 * 2 + gamma;
+		if (g > 63) g = 63;
+		u4 b = (c >> 10 & 0x1F) * bright / 15 * 2 + gamma;
+		if (b > 63) b = 63;
+		SetPal(i, r, g, b);
+	}
+	while (++i != 256);
+
+	prevbright = maxbr;
+	cgram[0]   = tempco0;
+
+	if (MessageOn != 0)
+	{
+		SetPal(128,      63, 63, 63);
+		SetPal(128 + 64,  0,  0,  0);
+	}
+
+	if (V8Mode == 1) dovegrest();
+}
+
+
 void dosmakepal(void)
 {
 	if (V8Mode == 1) doveg();
@@ -1048,6 +1096,6 @@ void dosmakepal(void)
 		cgram[0] = b << 10 | g << 5 | r;
 	}
 	if (Palette0 != 0) cgram[0] = 0;
-	asm_call(makepalb);
+	makepalb();
 }
 #endif
