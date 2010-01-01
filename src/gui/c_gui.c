@@ -1598,7 +1598,7 @@ void StartGUI(void)
 	GUIDeInit();
 #ifdef __MSDOS__
 	asm_call(DOSClearScreen);
-	if (cbitmode == 0) asm_call(dosmakepal);
+	if (cbitmode == 0) dosmakepal();
 #endif
 	t1cc = 1;
 

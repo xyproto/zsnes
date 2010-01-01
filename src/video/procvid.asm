@@ -48,7 +48,7 @@ EXTSYM OutputGraphicString5x5,OutputGraphicString16b5x5
 EXTSYM MouseMoveX,MouseMoveY,MouseButtons,MultiMouseProcess,mouse
 %else
 EXTSYM SB_blank,vsyncon,Triplebufen,granadd,Palette0,smallscreenon,ScreenScale,vesa2selec
-EXTSYM displayfpspal,superscopepal,saveselectpal
+EXTSYM displayfpspal,superscopepal,saveselectpal,dosmakepal
 %endif
 
 %ifdef __UNIXSDL__
@@ -206,62 +206,12 @@ NEWSYM f3menuen, resb 1
 
 NEWSYM ForceNonTransp, resb 1
 
-;*******************************************************
-; MakePal                     Changes the entire palette
-;*******************************************************
-; set the brightness with [maxbr]
 SECTION .bss
 NEWSYM tempco0, resw 1
 NEWSYM prevbright, resb 1
 SECTION .text
 
 %ifdef __MSDOS__
-NEWSYM dosmakepal
-    cmp byte[V8Mode],1
-    jne .noveg
-    ccallv doveg
-.noveg
-    mov ax,[cgram]
-    mov [tempco0],ax
-    test byte[scaddtype],00100000b
-    jz near .noaddition
-    test byte[scaddtype],10000000b
-    jnz near .noaddition
-    mov cx,[cgram]
-    mov ax,cx
-    and ax,001Fh
-    add al,[coladdr]
-    cmp al,01Fh
-    jb .noadd
-    mov al,01Fh
-.noadd
-    mov bx,ax
-    mov ax,cx
-    shr ax,5
-    and ax,001Fh
-    add al,[coladdg]
-    cmp al,01Fh
-    jb .noaddb
-    mov al,01Fh
-.noaddb
-    shl ax,5
-    add bx,ax
-    mov ax,cx
-    shr ax,10
-    and ax,001Fh
-    add al,[coladdb]
-    cmp al,01Fh
-    jb .noaddc
-    mov al,01Fh
-.noaddc
-    shl ax,10
-    add bx,ax
-    mov [cgram],bx
-.noaddition
-    cmp byte[Palette0],0
-    je .nocol0mod
-    mov word[cgram],0
-.nocol0mod
 NEWSYM makepalb
     mov edi,cgram
     mov ebx,prevpal
@@ -839,7 +789,7 @@ NEWSYM copyvid
     jnz near .nomsg
     cmp byte[cbitmode],1
     je near .nomsg
-    call dosmakepal
+    ccallv dosmakepal
     jmp .nomsg
 .do16b
 %endif

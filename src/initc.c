@@ -43,6 +43,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "initc.h"
 #include "input.h"
 #include "ui.h"
+#include "video/c_procvid.h"
 #include "zpath.h"
 #include "cpu/memtable.h"
 
@@ -1757,10 +1758,6 @@ void SetAddressingModes(), GenerateBank0Table();
 void SetAddressingModesSA1(), GenerateBank0TableSA1();
 void InitDSP(), InitDSP3(), InitDSP4(), InitOBC1(), InitFxTables();
 
-#ifdef __MSDOS__
-void dosmakepal();
-#endif
-
 void CheckROMType()
 {
   char *ROM = (char *)romdata;
@@ -1998,7 +1995,7 @@ void SetupROM(void)
   #ifdef __MSDOS__
   if (!cbitmode) // 8-bit mode uses a palette
   {
-    asm_call(dosmakepal);
+    dosmakepal();
   }
   #endif
 

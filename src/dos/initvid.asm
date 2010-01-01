@@ -94,7 +94,7 @@ NEWSYM dosinitvideo
 .initmodeq224
     SetVGAMode .Mode256x224c
     call cscopymodeq
-    call dosmakepal
+    ccallv dosmakepal
     ret
 
 ;*******************************************************
@@ -104,7 +104,7 @@ NEWSYM dosinitvideo
 .initmodeq240
     SetVGAMode .Mode256x240c
     call cscopymodeq
-    call dosmakepal
+    ccallv dosmakepal
     ret
 
 ;*******************************************************
@@ -121,7 +121,7 @@ NEWSYM dosinitvideo
     jmp .done
 .done
     call cscopymodeq
-    call dosmakepal
+    ccallv dosmakepal
     ret
 
 
@@ -132,7 +132,7 @@ NEWSYM dosinitvideo
 .initmodex224
     SetVGAMode .Mode320x224
     call cscopymodex
-    call dosmakepal
+    ccallv dosmakepal
     ret
 
 ;*******************************************************
@@ -142,7 +142,7 @@ NEWSYM dosinitvideo
 .initmodex240
     SetVGAMode .Mode320x240
     call cscopymodex
-    call dosmakepal
+    ccallv dosmakepal
     ret
 
 ;*******************************************************
@@ -159,7 +159,7 @@ NEWSYM dosinitvideo
     jmp .done2
 .done2
     call cscopymodex
-    call dosmakepal
+    ccallv dosmakepal
     ret
 
 
@@ -177,7 +177,7 @@ NEWSYM dosinitvideo
     jne .notrouble
     ret
 .notrouble
-    call dosmakepal
+    ccallv dosmakepal
     ; clear screen (320*240 bytes)
     push es
     mov ax,[vesa2selec]
@@ -235,7 +235,7 @@ NEWSYM dosinitvideo
     jne .notrouble3
     ret
 .notrouble3
-    call dosmakepal
+    ccallv dosmakepal
     ; clear screen (640*480 bytes)
     push es
     mov ax,[vesa2selec]
@@ -295,7 +295,7 @@ NEWSYM dosinitvideo
     jne .notrouble11
     ret
 .notrouble11
-    call dosmakepal
+    ccallv dosmakepal
     ; clear screen (800*600 bytes)
     push es
     mov ax,[vesa2selec]
@@ -354,7 +354,7 @@ NEWSYM dosinitvideo
     jne .notrouble5
     ret
 .notrouble5
-    call dosmakepal
+    ccallv dosmakepal
     ; clear screen (320*480 bytes)
     push es
     mov ax,[vesa2selec]
@@ -413,7 +413,7 @@ NEWSYM dosinitvideo
     jne .notrouble7
     ret
 .notrouble7
-    call dosmakepal
+    ccallv dosmakepal
     ; clear screen (512*384 bytes)
     push es
     mov ax,[vesa2selec]
@@ -471,7 +471,7 @@ NEWSYM dosinitvideo
     jne .notrouble9
     ret
 .notrouble9
-    call dosmakepal
+    ccallv dosmakepal
     ; clear screen (640*400 bytes)
     push es
     mov ax,[vesa2selec]

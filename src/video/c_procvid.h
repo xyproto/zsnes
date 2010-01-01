@@ -58,4 +58,9 @@ void doveg(void);
 
 void dovegrest(void);
 
+#ifdef __MSDOS__
+// Changes the entire palette.  Set the brightness with maxbr
+void dosmakepal(void);
+#endif
+
 #endif

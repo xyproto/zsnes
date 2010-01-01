@@ -825,7 +825,7 @@ esc:;
 		csounddisable = 0;
 		StartSound();
 
-		asm_call(dosmakepal);
+		dosmakepal();
 		f3menuen       = 0;
 		ForceNonTransp = 0;
 	}
@@ -1028,3 +1028,26 @@ void dovegrest(void)
 	// backup cgram
 	memcpy(cgram, cgramback, sizeof(cgram));
 }
+
+
+#ifdef __MSDOS__
+void dosmakepal(void)
+{
+	if (V8Mode == 1) doveg();
+
+	tempco0 = cgram[0];
+	if ((scaddtype & 0xA0) == 0x20)
+	{
+		u2 const c = cgram[0];
+		u2       r = (c       & 0x1F) + coladdr;
+		if (r > 0x1F) r = 0x1F;
+		u2       g = (c >>  5 & 0x1F) + coladdg;
+		if (g > 0x1F) g = 0x1F;
+		u2       b = (c >> 10 & 0x1F) + coladdb;
+		if (b > 0x1F) b = 0x1F;
+		cgram[0] = b << 10 | g << 5 | r;
+	}
+	if (Palette0 != 0) cgram[0] = 0;
+	asm_call(makepalb);
+}
+#endif
