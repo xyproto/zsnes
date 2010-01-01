@@ -1,3 +1,5 @@
+#include <string.h>
+
 #include "../asm_call.h"
 #include "../c_intrf.h"
 #include "../cfg.h"
@@ -7,6 +9,7 @@
 #include "../gui/gui.h"
 #include "../init.h"
 #include "../input.h"
+#include "../macros.h"
 #include "../ui.h"
 #include "../vcache.h"
 #include "../zstate.h"
@@ -995,4 +998,24 @@ void showvideo(void)
 	if (++ccud != cacheud) ccud = 0;
 	asm_call(copyvid);
 	if (pressed[KeyStateSelct] & 1) saveselect();
+}
+
+
+void doveg(void)
+{
+	// backup cgram
+	memcpy(cgramback, cgram, sizeof(cgramback));
+	{ u1 const grey = (coladdr + coladdg + coladdb) / 3 & 0x1F;
+		coladdr = grey;
+		coladdg = grey;
+		coladdb = grey;
+	}
+	u2* i = cgram;
+	do
+	{
+		u4 const px   = *i;
+		u4 const grey = ((px >> 10 & 0x1F) + (px >> 5 & 0x1F) + (px & 0x1F)) / 3;
+		*i = grey << 10 | grey << 5 | grey;
+	}
+	while (++i != endof(cgram));
 }

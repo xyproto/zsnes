@@ -214,62 +214,6 @@ SECTION .bss
 NEWSYM cgramback, resw 256
 SECTION .text
 
-NEWSYM doveg
-    pushad
-    ; backup cgram
-    mov ecx,128
-    xor ebx,ebx
-.loop
-    mov eax,[cgram+ebx]
-    mov [cgramback+ebx],eax
-    add ebx,4
-    dec ecx
-    jnz .loop
-    xor eax,eax
-    mov al,[coladdr]
-    add al,[coladdg]
-    add al,[coladdb]
-    xor dx,dx
-    mov bx,3
-    div bx
-    and ax,011111b
-    mov [coladdr],al
-    mov [coladdg],al
-    mov [coladdb],al
-    xor eax,eax
-.next
-    push eax
-    mov ax,[cgram+eax]
-    mov bx,ax
-    mov cx,ax
-    and bx,011111b
-    and cx,1111100000b
-    shr cx,5
-    add bx,cx
-    mov cx,ax
-    and cx,111110000000000b
-    shr cx,10
-    add bx,cx
-    mov ax,bx
-    xor dx,dx
-    mov bx,3
-    div bx
-    and ax,011111b
-    mov cx,ax
-    mov bx,ax
-    shl bx,5
-    or ax,bx
-    shl cx,10
-    or ax,cx
-    mov bx,ax
-    pop eax
-    mov [cgram+eax],bx
-    add eax,2
-    cmp eax,200h
-    jne .next
-    popad
-    ret
-
 NEWSYM dovegrest
     pushad
     ; backup cgram
@@ -293,7 +237,7 @@ SECTION .text
 NEWSYM dosmakepal
     cmp byte[V8Mode],1
     jne .noveg
-    call doveg
+    ccallv doveg
 .noveg
     mov ax,[cgram]
     mov [tempco0],ax
@@ -433,7 +377,7 @@ NEWSYM makepalb
 NEWSYM doschangepal
     cmp byte[V8Mode],1
     jne .noveg
-    call doveg
+    ccallv doveg
 .noveg
     mov ax,[cgram]
     mov [tempco0],ax

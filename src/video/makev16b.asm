@@ -805,7 +805,7 @@ NEWSYM clearback16b
 NEWSYM setpalall
     cmp byte[V8Mode],1
     jne .noveg
-    call doveg
+    ccallv doveg
 .noveg
     xor esi,esi
     mov byte[colleft16b],0
@@ -878,7 +878,7 @@ NEWSYM setpalette16b
     jne near setpalette16bgamma
     cmp byte[V8Mode],1
     jne .noveg
-    call doveg
+    ccallv doveg
 .noveg
     mov al,[vidbright]
     cmp al,[prevbright]

@@ -15,6 +15,7 @@ extern u1    mousexdir;
 extern u1    mouseydir;
 extern u1    prevbright;      // previous brightness
 extern u1    ssautosw;
+extern u2    cgramback[256];
 extern u2    mousebuttons;
 extern u2    mousexloc;
 extern u2    mousexpos;

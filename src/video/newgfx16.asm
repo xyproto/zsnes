@@ -179,7 +179,7 @@ NEWSYM setpalallng
 NEWSYM setpalette16bng
     cmp byte[V8Mode],1
     jne .noveg
-    call doveg
+    ccallv doveg
 .noveg
     mov bl,[vidbright]
     cmp bl,[prevbright]
