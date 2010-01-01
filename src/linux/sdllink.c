@@ -37,12 +37,11 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "../gui/c_guimouse.h"
 #include "../input.h"
 #include "../link.h"
+#include "sdllink.h"
 
 #ifdef QT_DEBUGGER
 #include "debugger/load.h"
 #endif
-
-#include <stdint.h>
 
 #define QueryPerformanceCounter(x) asm volatile("rdtsc" : "=a"(((unsigned int *)(x))[0]),"=d"(((unsigned int *)x)[1]))
 

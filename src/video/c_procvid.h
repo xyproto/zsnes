@@ -54,20 +54,4 @@ void drawvline(u1* buf, u4 n, u1 colour);
 
 void drawvline16b(u2* buf, u4 n, u2 colour);
 
-void DetermineNewest(void);
-
-void GetPicture(void);
-
-// draws a 10x10 filled box according to position x
-#ifdef __MSDOS__
-void drawfillboxsc(u4 x);
-#endif
-void drawfillboxsc16b(u4 x);
-
-// draws a box according to position x and color colour
-#ifdef __MSDOS__
-void drawbox(u1 x, u1 colour);
-#endif
-void drawbox16b(u1 x, u2 colour);
-
 #endif

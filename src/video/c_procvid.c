@@ -15,16 +15,18 @@
 #include "procvid.h"
 #include "procvidc.h"
 
+#ifdef __UNIXSDL__
+#	include "../linux/sdllink.h"
+#endif
+
+static u1 PrevPictureVal;
+static u1 CurPictureVal;
+
+static u2 allgrnb;
+static u2 allgrn;
+
 static u1 textcolor    = 128;
 static u2 textcolor16b = 0xFFFF;
-
-
-void showvideo(void)
-{
-	if (++ccud != cacheud) ccud = 0;
-	asm_call(copyvid);
-	if (pressed[KeyStateSelct] & 1) asm_call(saveselect);
-}
 
 
 u4 SwapMouseButtons(u4 const buttons)
@@ -447,7 +449,7 @@ void drawvline16b(u2* buf, u4 n, u2 const colour)
 }
 
 
-void DetermineNewest(void)
+static void DetermineNewest(void)
 {
 	newestfiledate = 0;
 	u4 const n     = 10;
@@ -465,7 +467,7 @@ void DetermineNewest(void)
 }
 
 
-void GetPicture(void)
+static void GetPicture(void)
 {
 	u1 const cur = CurPictureVal;
 	if (PrevPictureVal == cur) return;
@@ -513,7 +515,8 @@ void GetPicture(void)
 
 
 #ifdef __MSDOS__
-void drawfillboxsc(u4 const x)
+// draws a 10x10 filled box according to position x
+static void drawfillboxsc(u4 const x)
 {
 	if (zst_exists() != 1) return;
 
@@ -530,7 +533,8 @@ void drawfillboxsc(u4 const x)
 #endif
 
 
-void drawfillboxsc16b(u4 x)
+// draws a 10x10 filled box according to position x
+static void drawfillboxsc16b(u4 const x)
 {
 	if (zst_exists() != 1) return;
 
@@ -547,7 +551,8 @@ void drawfillboxsc16b(u4 x)
 
 
 #ifdef __MSDOS__
-void drawbox(u1 const x, u1 const colour)
+// draws a box according to position x and color colour
+static void drawbox(u1 const x, u1 const colour)
 {
 	u1* const buf = vidbuffer + 75 + 103 * 288 + 11 * x;
 	drawhline(buf,            12, colour);
@@ -558,11 +563,440 @@ void drawbox(u1 const x, u1 const colour)
 #endif
 
 
-void drawbox16b(u1 const x, u2 const colour)
+// draws a box according to position x and color colour
+static void drawbox16b(u1 const x, u2 const colour)
 {
 	u2* const buf = (u2*)vidbuffer + 75 + 103 * 288 + 11 * x;
 	drawhline16b(buf,            12, colour);
 	drawvline16b(buf,            12, colour);
 	drawvline16b(buf + 11,       12, colour);
 	drawhline16b(buf + 11 * 288, 12, colour);
+}
+
+
+static u4 testpressed(u4* ebx)
+{
+	u4 eax = current_zst;
+	u4 ten = eax / 10 * 10;
+	u4 one = eax % 10;
+	u4 res = 1;
+
+#ifdef __UNIXSDL__
+	// if numlock on, let's try this first
+#	define IFKEY(a, b) if ((numlockptr != 0 && pressed[(a)] & 1) || pressed[(b)] & 1)
+#else
+#	define IFKEY(a, b) if (pressed[(b)] & 1)
+#endif
+
+	IFKEY(0x51,  4) one = 3;
+	IFKEY(0x4B,  5) one = 4;
+	IFKEY(0x4C,  6) one = 5;
+	IFKEY(0x4D,  7) one = 6;
+	IFKEY(0x47,  8) one = 7;
+	IFKEY(0x48,  9) one = 8;
+	IFKEY(0x49, 10) one = 9;
+	IFKEY(0x52, 11) one = 0;
+
+#ifdef __UNIXSDL__
+	if (numlockptr != 1) // if numlock on, disregard numpad
+#endif
+	{
+		if (pressed[75] & 1)
+		{
+			one = one == 0 ? one + 9 : one - 1;
+			pressed[75] = 2;
+		}
+		if (pressed[77] & 1)
+		{
+			one = one == 9 ? one - 9 : one + 1;
+			pressed[77] = 2;
+		}
+		if (pressed[72] & 1)
+		{
+			ten = ten == 0 ? ten + 90 : ten - 10;
+			pressed[72] = 2;
+			goto out;
+		}
+		if (pressed[80] & 1)
+		{
+			ten = ten == 90 ? ten - 90 : ten + 10;
+			pressed[80] = 2;
+			goto out;
+		}
+	}
+
+#ifndef __MSDOS__
+#ifdef __UNIXSDL__
+	if (pressed[92] & 1)
+#else
+	if (pressed[0xCB] & 1)
+#endif
+	{
+		one = one == 0 ? one + 9 : one - 1;
+#ifdef __UNIXSDL__
+		pressed[92] = 2;
+#else
+		pressed[0xCB] = 2;
+#endif
+	}
+#ifdef __UNIXSDL__
+	if (pressed[94] & 1)
+#else
+	if (pressed[0xCD] & 1)
+#endif
+	{
+		one = one == 9 ? one - 9 : one + 1;
+#ifdef __UNIXSDL__
+		pressed[94] = 2;
+#else
+		pressed[0xCD] = 2;
+#endif
+	}
+#ifdef __UNIXSDL__
+	if (pressed[90] & 1)
+#else
+	if (pressed[0xC8] & 1)
+#endif
+	{
+		ten = ten == 0 ? ten + 90 : ten - 10;
+#ifdef __UNIXSDL__
+		pressed[90] = 2;
+#else
+		pressed[0xC8] = 2;
+#endif
+		goto out;
+	}
+#ifdef __UNIXSDL__
+	if (pressed[96] & 1)
+#else
+	if (pressed[0xD0] & 1)
+#endif
+	{
+		ten = ten == 90 ? ten - 90 : ten + 10;
+#ifdef __UNIXSDL__
+		pressed[96] = 2;
+#else
+		pressed[0xD0] = 2;
+#endif
+		goto out;
+	}
+#endif
+	res         = 0;
+out:
+	current_zst = ten + one;
+	*ebx        = one;
+	return res;
+}
+
+
+// Allows user to select save state slot
+static void saveselect(void)
+{
+	static char const stringa[]      = "PLEASE SELECT";
+	static char const stringb[]      = "SAVE STATE SLOT";
+	static char const stringb2[]     = "SLOT LEVEL:";
+	static char const stringc[]      = "USE CURSOR KEYS";
+	static char const stringd[]      = "TO MOVE AND";
+	static char const stringe[]      = "ENTER TO SELECT";
+	static char       slotlevelnum[] = "-";
+
+	f3menuen       = 1;
+	ForceNonTransp = 1;
+	if (MessageOn != 0) MessageOn = 1;
+	u1 const al = newengen;
+	newengen = 0;
+	asm_call(copyvid);
+	newengen = al;
+	StopSound();
+	if (soundon != 0)
+	{
+		csounddisable = 1;
+#ifdef __MSDOS__
+		asm_call(SB_blank);
+#endif
+	}
+#ifdef __MSDOS__
+	if (cbitmode != 1)
+	{
+updatescreen8b:
+		asm_call(saveselectpal);
+		{ // draw a small blue box with a white border
+			u1* esi = vidbuffer + 70 + 70 * 288;
+			u1  al  = 80;
+			do
+			{
+				u4 ecx = 150;
+				do *esi++ = 144; while (--ecx != 0);
+				esi += 288 - 150;
+			}
+			while (--al != 0);
+		}
+
+		{ // draw filled boxes for existing files
+			DetermineNewest();
+			u4 const eax = current_zst;
+			slotlevelnum[0] = '0' + eax / 10;
+			for (u4 i = 0; i != 10; ++i)
+			{
+				current_zst = current_zst / 10 * 10 + i;
+				drawfillboxsc(i);
+			}
+			current_zst = eax;
+		}
+
+		OutputGraphicString(vidbuffer +  75 +  73 * 288, stringa);
+		OutputGraphicString(vidbuffer +  75 +  83 * 288, stringb);
+		OutputGraphicString(vidbuffer +  75 +  93 * 288, stringb2);
+		OutputGraphicString(vidbuffer + 171 +  93 * 288, slotlevelnum);
+		OutputGraphicString(vidbuffer +  75 + 118 * 288, stringc);
+		OutputGraphicString(vidbuffer +  75 + 128 * 288, stringd);
+		OutputGraphicString(vidbuffer +  75 + 138 * 288, stringe);
+		{ u1 const al = 128;
+			drawhline(vidbuffer +  70 +  70 * 288, 150, al);
+			drawvline(vidbuffer +  70 +  70 * 288,  80, al);
+			drawhline(vidbuffer +  70 + 149 * 288, 150, al);
+			drawvline(vidbuffer + 219 +  70 * 288,  80, al);
+			drawhline(vidbuffer +  75 + 103 * 288, 111, al);
+			drawhline(vidbuffer +  75 + 114 * 288, 111, al);
+			u1* esi = vidbuffer + 75 + 104 * 288;
+			u1 bl = 11;
+			do
+			{
+				drawvline(esi, 10, al);
+				esi += 11;
+			}
+			while (--bl != 0);
+		}
+		{ u1* esi = vidbuffer + 78 + 106 * 288;
+			u4  al  = 1;
+			outputchar(esi, al);
+			u4  bl  = 9;
+			do
+			{
+				esi += 11;
+				outputchar(esi, ++al);
+			}
+			while (--bl != 0);
+		}
+		curblank = 0;
+
+		{ u4 ebx = 0;
+			drawbox(ebx, 160);
+			asm_call(copyvid);
+			// wait until esc/enter is pressed
+			for (;;)
+			{
+				drawbox(ebx, 128);
+				delay(2500);
+				if (testpressed(&ebx)) goto updatescreen8b;
+				if (pressed[ 1] & 1)   goto esc;
+				if (pressed[28] & 1)   goto enter;
+				delay(2500);
+				if (testpressed(&ebx)) goto updatescreen8b;
+				if (pressed[ 1] & 1)   goto esc;
+				if (pressed[28] & 1)   goto enter;
+				asm_call(copyvid);
+				delay(2500);
+				if (testpressed(&ebx)) goto updatescreen8b;
+				if (pressed[ 1] & 1)   goto esc;
+				if (pressed[28] & 1)   goto enter;
+				delay(2500);
+				if (testpressed(&ebx)) goto updatescreen8b;
+				if (pressed[ 1] & 1)   goto esc;
+				if (pressed[28] & 1)   goto enter;
+				drawbox(ebx, 160);
+				asm_call(copyvid);
+			}
+enter:;
+			pressed[28] = 2;
+esc:;
+		}
+
+		{ u1* eax = pressed;
+			u4  ecx = 256;
+			do
+			{
+				if (*eax == 1) *eax = 2;
+				++eax;
+			}
+			while (--ecx != 0);
+		}
+		pressed[1] = 0;
+
+		t1cc          = 0;
+		csounddisable = 0;
+		StartSound();
+
+		asm_call(dosmakepal);
+		f3menuen       = 0;
+		ForceNonTransp = 0;
+	}
+	else
+#endif
+	{
+		// Start 16-bit stuff here
+		if (newengen != 0) GUIOn = 1;
+		{ // draw shadow behind box
+			u2* esi = (u2*)vidbuffer + 80 + 90 * 288;
+			u1  al  = 70;
+			do
+			{
+				u4 ecx = 150;
+				do
+				{
+					*esi = (*esi & vesa2_clbit) >> 1;
+					++esi;
+				}
+				while (--ecx != 0);
+				esi += 288 - 150;
+			}
+			while (--al != 0);
+		}
+
+updatescreen16b:
+		allgrn  = 0x18 << vesa2_rpos;
+		allgrnb =   25 << vesa2_rpos | 12 << vesa2_gpos;
+		u2 const allred  = 0x1F << vesa2_rpos;
+		u2       dx      = 0x12 << vesa2_bpos;
+		u2 const bx      = 0x01 << vesa2_gpos | 0x01 << vesa2_rpos;
+
+		{ // draw a small blue box with a white border
+			u2* esi = (u2*)vidbuffer + 70 + 70 * 288;
+			u1  al  = 80;
+			u1  ah  =  5;
+			do
+			{
+				u4 ecx = 150;
+				do *esi++ = dx; while (--ecx != 0);
+				esi += 288 - 150;
+				if (--ah == 0)
+				{
+					dx += bx;
+					ah  = 5;
+				}
+			}
+			while (--al != 0);
+		}
+
+		{ // draw filled boxes for existing files
+			DetermineNewest();
+			u4 const eax = current_zst;
+			slotlevelnum[0] = '0' + eax / 10;
+			for (u4 i = 0; i != 10; ++i)
+			{
+				current_zst = current_zst / 10 * 10 + i;
+				drawfillboxsc16b(i);
+			}
+			current_zst = eax;
+		}
+
+		OutputGraphicString16b((u2*)vidbuffer +  75 +  73 * 288, stringa);
+		OutputGraphicString16b((u2*)vidbuffer +  75 +  83 * 288, stringb);
+		OutputGraphicString16b((u2*)vidbuffer +  75 +  93 * 288, stringb2);
+		OutputGraphicString16b((u2*)vidbuffer + 171 +  93 * 288, slotlevelnum);
+		OutputGraphicString16b((u2*)vidbuffer +  75 + 118 * 288, stringc);
+		OutputGraphicString16b((u2*)vidbuffer +  75 + 128 * 288, stringd);
+		OutputGraphicString16b((u2*)vidbuffer +  75 + 138 * 288, stringe);
+		{ u2 const ax = 0xFFFF;
+			drawhline16b((u2*)vidbuffer +  70 +  70 * 288, 150, ax);
+			drawvline16b((u2*)vidbuffer +  70 +  70 * 288,  80, ax);
+			drawhline16b((u2*)vidbuffer +  70 + 149 * 288, 150, ax);
+			drawvline16b((u2*)vidbuffer + 219 +  70 * 288,  80, ax);
+			drawhline16b((u2*)vidbuffer +  75 + 103 * 288, 111, ax);
+			drawhline16b((u2*)vidbuffer +  75 + 114 * 288, 111, ax);
+			u2* esi = (u2*)vidbuffer + 75 + 104 * 288;
+			u2   bl  = 11;
+			do
+			{
+				drawvline16b(esi, 10, ax);
+				esi += 11;
+			}
+			while (--bl != 0);
+		}
+		{ u2* esi = (u2*)vidbuffer + 78 + 106 * 288;
+			u4  al  = 1;
+			outputchar16b(esi, al);
+			u4  bl  = 9;
+			do
+			{
+				esi += 11;
+				outputchar16b(esi, ++al);
+			}
+			while (--bl != 0);
+		}
+
+		curblank = 0;
+		{ u1 const al = newengen;
+			newengen = 0;
+			asm_call(copyvid);
+			newengen = al;
+		}
+		// wait until esc/enter is pressed
+
+		PrevPictureVal = 0xFF;
+		u4 ebx = 0;
+		for (;;)
+		{
+			CurPictureVal = current_zst;
+			GetPicture();
+
+			drawbox16b(ebx, 0xFFFF);
+			delay(2500);
+			if (testpressed(&ebx)) goto updatescreen16b;
+			if (pressed[ 1] & 1)   goto esc16b;
+			if (pressed[28] & 1)   goto enter16b;
+			delay(2500);
+			if (testpressed(&ebx)) goto updatescreen16b;
+			if (pressed[ 1] & 1)   goto esc16b;
+			if (pressed[28] & 1)   goto enter16b;
+			{ u1 const al = newengen;
+				newengen = 0;
+				asm_call(copyvid);
+				newengen = al;
+			}
+			delay(2500);
+			if (testpressed(&ebx)) goto updatescreen16b;
+			if (pressed[ 1] & 1)   goto esc16b;
+			if (pressed[28] & 1)   goto enter16b;
+			delay(2500);
+			if (testpressed(&ebx)) goto updatescreen16b;
+			if (pressed[ 1] & 1)   goto esc16b;
+			if (pressed[28] & 1)   goto enter16b;
+			drawbox16b(ebx, allred);
+			{ u1 const al = newengen;
+				newengen = 0;
+				asm_call(copyvid);
+				newengen = al;
+			}
+		}
+enter16b:
+		pressed[28] = 2;
+esc16b:;
+		u1* eax = pressed;
+		u4  ecx = 256;
+		do
+		{
+			if (*eax == 1) *eax = 2;
+			++eax;
+		}
+		while (--ecx != 0);
+#ifdef __MSDOS__
+		pressed[1] = 0;
+#endif
+		t1cc           = 0;
+		csounddisable  = 0;
+		StartSound();
+		f3menuen       = 0;
+		ForceNonTransp = 0;
+		GUIOn          = 0;
+		Clear2xSaIBuffer();
+	}
+}
+
+
+void showvideo(void)
+{
+	if (++ccud != cacheud) ccud = 0;
+	asm_call(copyvid);
+	if (pressed[KeyStateSelct] & 1) saveselect();
 }
