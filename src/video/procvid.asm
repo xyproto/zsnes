@@ -316,8 +316,6 @@ NEWSYM showfps
   ccallv outputhex16, esi, eax
   ret
 
-SECTION .bss
-NEWSYM Testval, resd 1
 SECTION .text
 
 EXTSYM TwelveHourClock

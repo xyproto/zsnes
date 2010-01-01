@@ -42,7 +42,7 @@ EXTSYM yrevadder,vcache2b,vcache4b,vcache8b,draw8x816boffset,osm2dis
 EXTSYM hirestiledat,res512switch,bg1objptr,bg1ptr,bg3ptr,bg3scrolx,bg3scroly
 EXTSYM vidmemch4,vram,ofsmcptr,ofsmady,ofsmadx,yposngom,flipyposngom,ofsmtptr
 EXTSYM ofsmmptr,ofsmcyps,bgtxadd,bg1ptrx,bg1ptry,a16x16xinc,a16x16yinc
-EXTSYM bg1scrolx_m7,bg1scroly_m7,OMBGTestVal,Testval,cachesingle4bng,m7starty
+EXTSYM bg1scrolx_m7,bg1scroly_m7,OMBGTestVal,cachesingle4bng,m7starty
 EXTSYM ofsmtptrs,ofsmcptr2,ofshvaladd
 
 %include "video/vidmacro.mac"

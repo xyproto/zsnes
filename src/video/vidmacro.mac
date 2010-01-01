@@ -1649,7 +1649,6 @@
 .nooma
     add eax,40h
     mov edx,eax
-    mov [Testval],edx
     and edx,0FFFFFFC0h
     add edx,[vram]
     mov [ofsmcptr],edx

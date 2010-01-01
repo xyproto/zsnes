@@ -202,7 +202,6 @@ NEWSYM hextestoutput
 .nooma
     add eax,40h
     mov edx,eax
-    mov [Testval],edx
     call displayfpspal
 
     mov esi,[vram]
