@@ -1045,7 +1045,7 @@ static inline void SetPal(u1 const i, u1 const r, u1 const g, u1 const b)
 }
 
 
-void makepalb(void)
+static void makepalb(void)
 {
 	u2 const* src    = cgram;
 	u2*       dst    = prevpal;
@@ -1097,5 +1097,61 @@ void dosmakepal(void)
 	}
 	if (Palette0 != 0) cgram[0] = 0;
 	makepalb();
+}
+
+
+void doschangepal(void)
+{
+	if (V8Mode == 1) doveg();
+
+	tempco0 = cgram[0];
+
+	if ((scaddtype & 0xA0) == 0x20)
+	{
+		u2 const c = cgram[0];
+		u2 r = (c       & 0x1F) + coladdr;
+		if (r > 0x1F) r = 0x1F;
+		u2 g = (c >>  5 & 0x1F) + coladdg;
+		if (g > 0x1F) g = 0x1F;
+		u2 b = (c >> 10 & 0x1F) + coladdb;
+		if (b > 0x1F) b = 0x1F;
+		cgram[0] = b << 10 | g << 5 | r;
+	}
+
+	if (Palette0 != 0) cgram[0] = 0;
+
+	// check if brightness differs
+	if (prevbright != maxbr)
+	{
+		makepalb();
+	}
+	else
+	{
+		// check for duplicate palette (Compare prevpal with cgram)
+		u2*       dst    = prevpal;
+		u2 const* src    = cgram;
+		u1 const  bright = maxbr;
+		u1 const  gamma  = gammalevel;
+		u4        i     = 0;
+		do
+		{
+			u2 const c = *src++;
+			if (*dst == c) continue;
+			*dst = c;
+			u2 r = (c       & 0x1F) * bright / 15 * 2 + gamma;
+			if (r > 63) r = 63;
+			u2 g = (c >>  5 & 0x1F) * bright / 15 * 2 + gamma;
+			if (g > 63) g = 63;
+			u2 b = (c >> 10 & 0x1F) * bright / 15 * 2 + gamma;
+			if (b > 63) b = 63;
+			SetPal(i, r, g, b);
+		}
+		while (++dst, ++i != 256);
+
+		cgram[0] = tempco0;
+
+		if (MessageOn != 0) SetPal(128, 63, 63, 63);
+		if (V8Mode    == 1) dovegrest();
+	}
 }
 #endif

@@ -62,7 +62,8 @@ void dovegrest(void);
 // Changes the entire palette.  Set the brightness with maxbr
 void dosmakepal(void);
 
-void makepalb(void);
+// Sets up the palette
+void doschangepal(void);
 #endif
 
 #endif
