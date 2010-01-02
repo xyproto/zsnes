@@ -74,10 +74,10 @@ NEWSYM bg1scsize, db 0             ; bg #1 screen size (0=1x1,1=1x2,2=2x1,3=2x2)
 NEWSYM bg2scsize, db 0             ; bg #2 screen size (0=1x1,1=1x2,2=2x1,3=2x2)
 NEWSYM bg3scsize, db 0             ; bg #3 screen size (0=1x1,1=1x2,2=2x1,3=2x2)
 NEWSYM bg4scsize, db 0             ; bg #4 screen size (0=1x1,1=1x2,2=2x1,3=2x2)
-NEWSYM bg1objptr, dw 0             ; pointer to tiles in background1
-NEWSYM bg2objptr, dw 0             ; pointer to tiles in background2
-NEWSYM bg3objptr, dw 0             ; pointer to tiles in background3
-NEWSYM bg4objptr, dw 0             ; pointer to tiles in background4
+NEWSYM bg1objptr, dw 0
+NEWSYM bg2objptr, dw 0
+NEWSYM bg3objptr, dw 0
+NEWSYM bg4objptr, dw 0
 NEWSYM bg1scrolx, dw 0             ; background 1 x position
 NEWSYM bg2scrolx, dw 0             ; background 2 x position
 NEWSYM bg3scrolx, dw 0             ; background 3 x position
