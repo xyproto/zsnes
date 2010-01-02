@@ -37,7 +37,6 @@ static u2 cgramback[256];
 
 static u1 curfps = 0; // frame/sec for current screen
 static u1 lastfps;    // stores the last fps encountered
-static u1 lastfps2;   // stores the last fps encountered
 
 
 u4 SwapMouseButtons(u4 const buttons)
@@ -1168,7 +1167,6 @@ void showfps(void)
 	if (nextframe >= limit)
 	{
 		lastfps    = curfps;
-		lastfps2   = curfps2;
 		curfps     = 0;
 		curfps2    = 0;
 		nextframe -= limit;
