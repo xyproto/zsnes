@@ -3,7 +3,7 @@
 
 #include "../types.h"
 
-extern void copyvid();
+extern void vidpaste();
 
 extern char* Msgptr;          // Pointer to message
 extern u1    ASCII2Font[256];

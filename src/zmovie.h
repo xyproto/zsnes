@@ -31,6 +31,7 @@ void mzt_chdir_down();
 bool mzt_save(int, bool, bool);
 bool mzt_load(int, bool);
 
+void GetMovieFrameStr(void);
 void MovieRecord();
 void MoviePlay();
 void MovieStop();
@@ -50,5 +51,7 @@ enum MovieStatus { MOVIE_OFF = 0, MOVIE_PLAYBACK, MOVIE_RECORD, MOVIE_OLD_PLAY, 
 #define SetMovieMode(mode) (MovieProcessing = (unsigned char)mode)
 
 enum MZT_FORCE_MODE_SWITCH { RTR_OFF = 0, RTR_REPLAY_TO_RECORD, RTR_RECORD_TO_REPLAY };
+
+extern char MovieFrameStr[10];
 
 #endif

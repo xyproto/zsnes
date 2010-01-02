@@ -68,4 +68,7 @@ void ClockOutput(void);
 void waitvsync(void);
 #endif
 
+// Copies buffer into video
+void copyvid(void);
+
 #endif

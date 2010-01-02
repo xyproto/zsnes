@@ -16,5 +16,9 @@ void     zexit(void);
 
 extern bool RTCEnable;
 extern bool SDD1Enable;
+extern char CSStatus[41];
+extern char CSStatus2[41];
+extern char CSStatus3[41];
+extern char CSStatus4[41];
 
 #endif

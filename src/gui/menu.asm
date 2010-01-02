@@ -226,16 +226,12 @@ NEWSYM showmenu
     je .notng
     mov byte[GUIOn],1
 .notng
-    pushad
-    call copyvid
-    popad
+    ccallv copyvid
     ccallv StopSound
 .nextkey
     ;call GUIUnBuffer
     call menudrawbox8b
-    push eax
-    call copyvid
-    pop eax
+    ccallv copyvid
 
     ccallv JoyRead
     ccall Check_Key
@@ -270,9 +266,7 @@ NEWSYM showmenu
     call menudrawbox8b
 ;    mov al,[newengen]
 ;    mov byte[newengen],0
-;    push eax
-    call copyvid
-;    pop eax
+    ccallv copyvid
 ;    mov [newengen],al
     jmp .nextkey
 .nodown
@@ -287,9 +281,7 @@ NEWSYM showmenu
     call GUIUnBuffer
 ;    mov al,[newengen]
 ;    mov byte[newengen],0
-;    push eax
-    call copyvid
-;    pop eax
+    ccallv copyvid
 ;    mov [newengen],al
     cmp dword[menucloc],0
     jne .nosaveimg
@@ -363,7 +355,7 @@ NEWSYM showmenu
     mov dword[Msgptr],.search
     mov eax,[MsgCount]
     mov [MessageOn],eax
-    call copyvid
+    ccallv copyvid
     mov byte[SPCSave],1
     call breakatsignb
     mov byte[SPCSave],0
@@ -404,9 +396,7 @@ NEWSYM showmenu
     call GUIUnBuffer
 ;    mov al,[newengen]
 ;    mov byte[newengen],0
-;    push eax
-    call copyvid
-;    pop eax
+    ccallv copyvid
 ;    mov [newengen],al
 %ifdef __MSDOS__
     cmp byte[cbitmode],1
@@ -553,9 +543,7 @@ NEWSYM menudrawbox8b
     ccall OutputGraphicString, esi, .stringi
 ;    mov al,[newengen]
 ;    mov byte[newengen],0
-;    push eax
-    call copyvid
-;    pop eax
+    ccallv copyvid
 ;    mov [newengen],al
 %else
     jmp menudrawbox16b
@@ -737,9 +725,7 @@ NEWSYM menudrawbox16b
     ccallv OutputGraphicString16b, esi, menudrawbox8b.stringi
 ;    mov al,[newengen]
 ;    mov byte[newengen],0
-;    push eax
-    call copyvid
-;    pop eax
+    ccallv copyvid
 ;    mov [newengen],al
     ret
 

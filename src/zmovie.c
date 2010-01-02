@@ -3076,7 +3076,7 @@ void MovieAppend()
   }
 }
 
-void GetMovieFrameStr()
+void GetMovieFrameStr(void)
 {
   *MovieFrameStr = 0;
   switch (MovieProcessing)

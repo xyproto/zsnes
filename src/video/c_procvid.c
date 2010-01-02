@@ -3,16 +3,19 @@
 #include "../asm.h"
 #include "../asm_call.h"
 #include "../c_intrf.h"
+#include "../c_vcache.h"
 #include "../cfg.h"
 #include "../cpu/execute.h"
 #include "../cpu/regs.h"
 #include "../endmem.h"
 #include "../gui/gui.h"
 #include "../init.h"
+#include "../initc.h"
 #include "../input.h"
 #include "../macros.h"
 #include "../ui.h"
 #include "../vcache.h"
+#include "../zmovie.h"
 #include "../zstate.h"
 #include "../ztimec.h"
 #include "c_procvid.h"
@@ -712,7 +715,7 @@ static void saveselect(void)
 	if (MessageOn != 0) MessageOn = 1;
 	u1 const al = newengen;
 	newengen = 0;
-	asm_call(copyvid);
+	copyvid();
 	newengen = al;
 	StopSound();
 	if (soundon != 0)
@@ -789,7 +792,7 @@ updatescreen8b:
 
 		{ u4 ebx = 0;
 			drawbox(ebx, 160);
-			asm_call(copyvid);
+			copyvid();
 			// wait until esc/enter is pressed
 			for (;;)
 			{
@@ -802,7 +805,7 @@ updatescreen8b:
 				if (testpressed(&ebx)) goto updatescreen8b;
 				if (pressed[ 1] & 1)   goto esc;
 				if (pressed[28] & 1)   goto enter;
-				asm_call(copyvid);
+				copyvid();
 				delay(2500);
 				if (testpressed(&ebx)) goto updatescreen8b;
 				if (pressed[ 1] & 1)   goto esc;
@@ -812,7 +815,7 @@ updatescreen8b:
 				if (pressed[ 1] & 1)   goto esc;
 				if (pressed[28] & 1)   goto enter;
 				drawbox(ebx, 160);
-				asm_call(copyvid);
+				copyvid();
 			}
 enter:;
 			pressed[28] = 2;
@@ -935,7 +938,7 @@ updatescreen16b:
 		curblank = 0;
 		{ u1 const al = newengen;
 			newengen = 0;
-			asm_call(copyvid);
+			copyvid();
 			newengen = al;
 		}
 		// wait until esc/enter is pressed
@@ -961,7 +964,7 @@ updatescreen16b:
 			if (pressed[28] & 1)   goto enter16b;
 			{ u1 const al = newengen;
 				newengen = 0;
-				asm_call(copyvid);
+				copyvid();
 				newengen = al;
 			}
 			delay(2500);
@@ -975,7 +978,7 @@ updatescreen16b:
 			drawbox16b(ebx, allred);
 			{ u1 const al = newengen;
 				newengen = 0;
-				asm_call(copyvid);
+				copyvid();
 				newengen = al;
 			}
 		}
@@ -1007,7 +1010,7 @@ esc16b:;
 void showvideo(void)
 {
 	if (++ccud != cacheud) ccud = 0;
-	asm_call(copyvid);
+	copyvid();
 	if (pressed[KeyStateSelct] & 1) saveselect();
 }
 
@@ -1293,3 +1296,82 @@ void waitvsync(void)
 	while (!(inb(port) & vr)) {} // updating the screen
 }
 #endif
+
+
+void copyvid(void)
+{
+#ifdef __MSDOS__
+	// Test if add table needs updating
+	static u1 prevengval = 10;
+	if (cbitmode != 0 && vesa2red10 != 0 && prevengval != newengen)
+	{
+		prevengval = newengen;
+		genfulladdtab();
+	}
+#endif
+
+	if (MessageOn != 0)
+	{
+		char const* const msg = Msgptr;
+#ifdef __MSDOS__
+		if (cbitmode != 1)
+		{
+			u1* const buf = vidbuffer + 192 * 288 + 32;
+			if (msg == CSStatus)
+			{
+				OutputGraphicString5x5(buf, msg);
+				OutputGraphicString5x5(vidbuffer + 200 * 288 + 32, CSStatus2);
+				OutputGraphicString5x5(vidbuffer + 208 * 288 + 32, CSStatus3);
+				OutputGraphicString5x5(vidbuffer + 216 * 288 + 32, CSStatus4);
+			}
+			else if (SmallMsgText == 1)
+			{
+				OutputGraphicString5x5(buf, msg);
+			}
+			else
+			{
+				OutputGraphicString(buf, msg);
+			}
+			--MessageOn;
+			if (MessageOn == 0) dosmakepal();
+		}
+		else
+#endif
+		{
+			u2* const buf = (u2*)vidbuffer + 192 * 288 + 32;
+			if (msg == CSStatus)
+			{
+				OutputGraphicString16b5x5(buf, msg);
+				OutputGraphicString16b5x5((u2*)vidbuffer + 200 * 288 + 32, CSStatus2);
+				OutputGraphicString16b5x5((u2*)vidbuffer + 208 * 288 + 32, CSStatus3);
+				OutputGraphicString16b5x5((u2*)vidbuffer + 216 * 288 + 32, CSStatus4);
+			}
+			else if (SmallMsgText == 1)
+			{
+				OutputGraphicString16b5x5(buf, msg);
+			}
+			else
+			{
+				OutputGraphicString16b(buf, msg);
+			}
+			--MessageOn;
+		}
+	}
+
+	if (MovieProcessing != 0 && MovieDisplayFrame != 0)
+	{
+		GetMovieFrameStr();
+		char const* const msg = MovieFrameStr;
+#ifdef __MSDOS__
+		if (cbitmode != 1)
+		{
+			OutputGraphicString5x5(vidbuffer + 216 * 288 + 32, msg);
+		}
+		else
+#endif
+		{
+			OutputGraphicString16b5x5((u2*)vidbuffer + 216 * 288 + 32, msg);
+		}
+	}
+	asm_call(vidpaste);
+}
