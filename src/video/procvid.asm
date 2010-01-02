@@ -222,7 +222,6 @@ NEWSYM prevengval, db 10
 SECTION .text
 
 NEWSYM copyvid
-    mov dword[.sdrawptr],0
     ; Test if add table needs updating
 %ifdef __MSDOS__
     cmp byte[cbitmode],0
@@ -322,8 +321,6 @@ NEWSYM copyvid
 %endif
 .nomovie4
     jmp vidpaste
-SECTION .bss
-.sdrawptr resd 1
 SECTION .text
 
 NEWSYM vidpaste
