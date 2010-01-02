@@ -25,12 +25,6 @@ void outputchar(u1* buf, u1 glyph);
 
 void outputchar16b(u2* buf, u1 glyph);
 
-#ifdef __MSDOS__
-void outputchar5x5(u1* buf, u1 glyph);
-#endif
-
-void outputchar16b5x5(u2* buf, u1 glyph);
-
 // Outputs String from text to buf
 void OutputGraphicString(u1* buf, char const* text);
 
@@ -67,5 +61,7 @@ void doschangepal(void);
 #endif
 
 void showfps(void);
+
+void ClockOutput(void);
 
 #endif

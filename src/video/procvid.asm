@@ -32,17 +32,17 @@ EXTSYM bg1objptr,DecompAPtr,HalfTransB,HalfTransC
 EXTSYM DrawScreen,MMXSupport,SwapMouseButtons
 EXTSYM Get_MouseData,Get_MousePositionDisplacement,GUIEnableTransp,GUIFontData
 EXTSYM StopSound,StartSound,PrevPicture,nggposng,current_zst,newest_zst
-EXTSYM GetTimeInSeconds,bg3ptr,bg3scroly,bg3scrolx,C4Ram
+EXTSYM bg3ptr,bg3scroly,bg3scrolx,C4Ram
 EXTSYM genfulladdtab,TimerEnable,ShowTimer,debugdisble,GUIOn
 EXTSYM FilteredGUI,HalfTrans,SmallMsgText,mosenng,mosszng
 EXTSYM intrlng,mode7hr,newgfx16b,vesa2_clbitng,vesa2_clbitng2,CSStatus
 EXTSYM CSStatus2,CSStatus3,CSStatus4,SpecialLine,Clear2xSaIBuffer,vidbufferofsb,bg1scroly
 EXTSYM MovieProcessing,MovieFrameStr,GetMovieFrameStr,mouse1lh,mouse2lh
 EXTSYM MovieDisplayFrame,SloMo,MouseCount,device2,LoadPicture
-EXTSYM zst_determine_newest,zst_exists,ClockBox,SSAutoFire
-EXTSYM outputhex,outputhex16,outputchar,outputchar16b,outputchar5x5
-EXTSYM outputchar16b5x5,OutputGraphicString,OutputGraphicString16b
-EXTSYM OutputGraphicString5x5,OutputGraphicString16b5x5,showfps
+EXTSYM zst_determine_newest,zst_exists,SSAutoFire
+EXTSYM outputhex,outputhex16,outputchar,outputchar16b
+EXTSYM OutputGraphicString,OutputGraphicString16b
+EXTSYM OutputGraphicString5x5,OutputGraphicString16b5x5,showfps,ClockOutput
 
 %ifndef __MSDOS__
 EXTSYM MouseMoveX,MouseMoveY,MouseButtons,MultiMouseProcess,mouse
@@ -215,169 +215,6 @@ SECTION .text
 ; CopyVid                       Copies buffer into video
 ;*******************************************************
 
-EXTSYM TwelveHourClock
-
-NEWSYM ClockOutput
-%ifdef __MSDOS__
-    cmp byte[cbitmode],1
-    je near .do16b3
-.no16b3
-    call displayfpspal
-    mov esi,215*288+32+192
-    add esi,[vidbuffer]
-    cmp byte[ForceNonTransp],1
-    je .menuon8
-    cmp byte[ClockBox],1
-    jne near .do8b
-.menuon8
-    mov ebx,7
-.loop2
-    mov ecx,12
-    mov byte[esi-1],0C0h
-.loop
-    mov dword[esi],0C0C0C0C0h
-    add esi,4
-.nobox8
-    dec ecx
-    jnz .loop
-    add esi,288-48
-    dec ebx
-    jnz .loop2
-    jmp .do8b
-.do16b3
-%endif
-    mov esi,215*288*2+32*2+192*2
-    add esi,[vidbuffer]
-    cmp byte[ForceNonTransp],1
-    je .menuon16
-    cmp byte[ClockBox],1
-    jne .do8b
-.menuon16
-    mov ebx,7
-.loop2b
-    mov ecx,24
-    mov word[esi-2],0
-    mov word[esi-2+75036*4],0
-.loopb
-    mov dword[esi],0
-    mov dword[esi+75036*4],0
-    add esi,4
-.nobox16
-    dec ecx
-    jnz .loopb
-    add esi,288*2-48*2
-    dec ebx
-    jnz .loop2b
-.do8b
-    ccall GetTimeInSeconds
-    xor edx,edx
-    mov ebx,60
-    div ebx
-    push eax
-    ; edx = seconds
-    mov eax,edx
-    xor edx,edx
-    mov ebx,10
-    div ebx
-    mov esi,216*288+32+228
-    call .output
-    pop eax
-    mov ebx,60
-    xor edx,edx
-    div ebx
-    push eax
-    ; edx = minutes
-    mov eax,edx
-    xor edx,edx
-    mov ebx,10
-    div ebx
-    mov esi,216*288+32+210
-    call .output
-    pop eax
-    ; eax = hours
-    cmp byte[TwelveHourClock],1
-    jne .no12hour
-    ; check to see if it's 12 PM
-    cmp eax,12
-    jbe .not12pm
-    sub eax,12
-.not12pm
-    cmp eax,0
-    jne .no12hour
-    add eax,12
-.no12hour
-    xor edx,edx
-    mov ebx,10
-    div ebx
-    mov esi,216*288+32+192
-    call .output
-%ifdef __MSDOS__
-    cmp byte[cbitmode],1
-    je .do16b2
-.no16b4
-    mov esi,216*288+32+222
-    add esi,[vidbuffer]
-    xor eax,eax
-    add al,':'
-    mov al,[ASCII2Font+eax]
-    ccallv outputchar5x5, esi, eax
-    mov esi,216*288+32+204
-    add esi,[vidbuffer]
-    xor eax,eax
-    add al,':'
-    mov al,[ASCII2Font+eax]
-    ccallv outputchar5x5, esi, eax
-    ret
-
-.do16b2
-%endif
-    mov esi,216*288*2+32*2+222*2
-    add esi,[vidbuffer]
-    xor eax,eax
-    add al,':'
-    mov al,[ASCII2Font+eax]
-    ccallv outputchar16b5x5, esi, eax
-    mov esi,216*288*2+32*2+204*2
-    add esi,[vidbuffer]
-    xor eax,eax
-    add al,':'
-    mov al,[ASCII2Font+eax]
-    ccallv outputchar16b5x5, esi, eax
-    ret
-.output
-    ; output char value at al and dl
-%ifdef __MSDOS__
-    cmp byte[cbitmode],1
-    je .do16b
-.no16b5
-    add esi,[vidbuffer]
-    and eax,0FFh
-    add al,48
-    mov al,[ASCII2Font+eax]
-    ccallv outputchar5x5, esi, eax
-    xor eax,eax
-    mov al,dl
-    add al,48
-    mov al,[ASCII2Font+eax]
-    add esi,6
-    ccallv outputchar5x5, esi, eax
-    ret
-.do16b
-%endif
-    add esi,esi
-    add esi,[vidbuffer]
-    and eax,0FFh
-    add al,48
-    mov al,[ASCII2Font+eax]
-    ccallv outputchar16b5x5, esi, eax
-    xor eax,eax
-    mov al,dl
-    add al,48
-    mov al,[ASCII2Font+eax]
-    add esi,12
-    ccallv outputchar16b5x5, esi, eax
-    ret
-
 %ifdef __MSDOS__
 NEWSYM waitvsync
     mov dx,3DAh             ;VGA status port
@@ -529,7 +366,7 @@ NEWSYM vidpaste
     je .noclock
     cmp byte[ShowTimer],0
     je .noclock
-    call ClockOutput
+    ccallv ClockOutput
 .noclock
     cmp byte[device2],2
     je near .drawss

@@ -14,6 +14,7 @@
 #include "../ui.h"
 #include "../vcache.h"
 #include "../zstate.h"
+#include "../ztimec.h"
 #include "c_procvid.h"
 #include "newgfx16.h"
 #include "procvid.h"
@@ -303,7 +304,7 @@ void outputchar16b(u2* const buf, u1 const glyph)
 
 
 #ifdef __MSDOS__
-void outputchar5x5(u1* buf, u1 const glyph)
+static void outputchar5x5(u1* buf, u1 const glyph)
 {
 	u1 const* src = GUIFontData[glyph];
 	u4        y   = 5;
@@ -325,7 +326,7 @@ void outputchar5x5(u1* buf, u1 const glyph)
 #endif
 
 
-void outputchar16b5x5(u2* buf, u1 const glyph)
+static void outputchar16b5x5(u2* buf, u1 const glyph)
 {
 	u2 const  c   = textcolor16b;
 	u1 const* src = GUIFontData[glyph];
@@ -1196,5 +1197,88 @@ void showfps(void)
 
 		outputchar16b((u2*)vidbuffer + 208 * 288 + 48, 41); // '/'
 		outputhex16(  (u2*)vidbuffer + 208 * 288 + 56, limit / 10 << 4 | limit % 10);
+	}
+}
+
+
+static void ClockOutput_output(u4 const pos, u4 const n)
+{ // output value n
+#ifdef __MSDOS__
+	if (cbitmode != 1)
+	{
+		u1* const buf = vidbuffer + pos;
+		outputchar5x5(buf,     ASCII2Font['0' + n / 10]);
+		outputchar5x5(buf + 6, ASCII2Font['0' + n % 10]);
+	}
+	else
+#endif
+	{
+		u2* const buf = (u2*)vidbuffer + pos;
+		outputchar16b5x5(buf,     ASCII2Font['0' + n / 10]);
+		outputchar16b5x5(buf + 6, ASCII2Font['0' + n % 10]);
+	}
+}
+
+
+void ClockOutput(void)
+{
+#ifdef __MSDOS__
+	if (cbitmode != 1)
+	{
+		asm_call(displayfpspal);
+		u1* buf = vidbuffer + 215 * 288 + 32 + 192;
+		if (ForceNonTransp == 1 || ClockBox == 1)
+		{
+			u4 y = 7;
+			do
+			{
+				memset(buf - 1, 0xC0, 49);
+				buf += 288;
+			}
+			while (--y != 0);
+		}
+	}
+	else
+#endif
+	{
+		u2* buf = (u2*)vidbuffer + 215 * 288 + 32 + 192;
+		if (ForceNonTransp == 1 || ClockBox == 1)
+		{
+			u4 y = 7;
+			do
+			{
+				memset(buf - 1,             0, sizeof(*buf) * 49);
+				memset(buf - 1 + 75036 * 2, 0, sizeof(*buf) * 49);
+				buf += 288;
+			}
+			while (--y != 0);
+		}
+	}
+
+	u4       t = GetTimeInSeconds();
+	u4 const s = t % 60;
+	t /= 60;
+	u4 const m = t % 60;
+	u4       h = t / 60;
+	ClockOutput_output(216 * 288 + 32 + 228, s); // seconds
+	ClockOutput_output(216 * 288 + 32 + 210, m); // minutes
+	if (TwelveHourClock == 1)
+	{ // check to see if it's 12 PM
+		if (h >  12) h -= 12;
+		if (h ==  0) h += 12;
+	}
+	ClockOutput_output(216 * 288 + 32 + 192, h); // hours
+
+#ifdef __MSDOS__
+	if (cbitmode != 1)
+	{
+		outputchar5x5(vidbuffer + 216 * 288 + 32 + 222, ASCII2Font[':']);
+		outputchar5x5(vidbuffer + 216 * 288 + 32 + 204, ASCII2Font[':']);
+	}
+	else
+#endif
+	{
+		outputchar16b5x5((u2*)vidbuffer + 216 * 288 + 32 + 222, ASCII2Font[':']);
+		outputchar16b5x5((u2*)vidbuffer + 216 * 288 + 32 + 204, ASCII2Font[':']);
 	}
 }
