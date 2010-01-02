@@ -378,11 +378,6 @@ NEWSYM ClockOutput
     ccallv outputchar16b5x5, esi, eax
     ret
 
-SECTION .bss
-NEWSYM SoundTest, resb 1
-
-SECTION .text
-
 %ifdef __MSDOS__
 NEWSYM waitvsync
     mov dx,3DAh             ;VGA status port

@@ -34,7 +34,7 @@ EXTSYM Voice4Status,Voice5Status,Voice6Status,Voice7Status
 EXTSYM GainDecBendDataPos,GainDecBendDataTime,GainDecBendDataDat
 EXTSYM AdsrSustLevLoc,AdsrBlocksLeft,AdsrNextTimeDepth
 EXTSYM VoiceStarter,DecayRate,SustainRate
-EXTSYM KeyOnStA,KeyOnStB,SoundTest,keyonsn
+EXTSYM KeyOnStA,KeyOnStB,keyonsn
 
 SECTION .data
 identcode db 255,1,78,78
@@ -1937,10 +1937,6 @@ NEWSYM WDSPReg4C       ; Key On
 
       or byte[KeyOnStA],al
       pop eax
-      test al,80h
-      jz .nokon
-      inc byte[SoundTest]
-.nokon
       mov [DSPMem+04Ch],al
       push eax
       xor al,0FFh
