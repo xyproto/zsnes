@@ -70,7 +70,7 @@ eop*          regptwa[0x3000];
 unsigned char *vcache2b;            // 2-bit video cache
 unsigned char *vcache4b;            // 4-bit video cache
 unsigned char *vcache8b;            // 8-bit video cache
-unsigned char romispal;             // 0 = NTSC, 1 = PAL
+u1            romispal;
 u1            newgfx16b;
 
 u1            cbitmode;

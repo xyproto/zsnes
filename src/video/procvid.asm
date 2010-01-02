@@ -22,7 +22,7 @@
 %include "macros.mac"
 
 EXTSYM BGMA,V8Mode,antienab,cacheud,cbitmode,ccud,cfield,cgram,coladdb,coladdg
-EXTSYM coladdr,curblank,curfps,cvidmode,delay,extlatch,En2xSaI
+EXTSYM coladdr,curblank,cvidmode,delay,extlatch,En2xSaI
 EXTSYM gammalevel,hirestiledat,ignor512,latchx,latchy,maxbr
 EXTSYM newengen,nextframe,objptr,pressed,prevpal,res512switch,resolutn
 EXTSYM romispal,scaddtype,scanlines,selcA000,t1cc,vcache4b,vesa2_bpos
@@ -42,7 +42,7 @@ EXTSYM MovieDisplayFrame,SloMo,MouseCount,device2,LoadPicture
 EXTSYM zst_determine_newest,zst_exists,ClockBox,SSAutoFire
 EXTSYM outputhex,outputhex16,outputchar,outputchar16b,outputchar5x5
 EXTSYM outputchar16b5x5,OutputGraphicString,OutputGraphicString16b
-EXTSYM OutputGraphicString5x5,OutputGraphicString16b5x5
+EXTSYM OutputGraphicString5x5,OutputGraphicString16b5x5,showfps
 
 %ifndef __MSDOS__
 EXTSYM MouseMoveX,MouseMoveY,MouseButtons,MultiMouseProcess,mouse
@@ -214,109 +214,6 @@ SECTION .text
 ;*******************************************************
 ; CopyVid                       Copies buffer into video
 ;*******************************************************
-
-NEWSYM showfps
-    mov ax,60
-    cmp byte[romispal],0
-    je .ntsc
-    mov ax,50
-.ntsc
-    inc byte[curfps]
-    cmp byte[nextframe],al
-    jb .nofrc
-    mov cl,[curfps]
-    mov [lastfps],cl
-    mov cl,[curfps2]
-    mov [lastfps2],cl
-    mov byte[curfps],0
-    mov byte[curfps2],0
-    sub byte[nextframe],al
-.nofrc
-    mov cl,[SloMo]
-    or cl,cl
-    jz .noslw
-    inc cl
-    div cl
-.noslw
-    mov cl,al
-
-%ifdef __MSDOS__
-    cmp byte[cbitmode],1
-    je near .do16b
-
-    call displayfpspal
-
-    movzx ax,byte[lastfps]
-    mov bl,10
-    div bl
-    shl al,4
-    add ah,al
-    mov al,ah
-    mov esi,208*288+32
-    add esi,[vidbuffer]
-    push ecx
-    ccallv outputhex, esi, eax
-
-    mov esi,208*288+48
-    add esi,[vidbuffer]
-    ccallv outputchar, esi, 29h
-    pop ecx
-
-    mov al,cl
-    mov bl,10
-    xor ah,ah
-    div bl
-    shl al,4
-    add ah,al
-    mov al,ah
-    mov esi,208*288+56
-    add esi,[vidbuffer]
-    ccallv outputhex, esi, eax
-    ret
-
-.do16b
-%endif
-  mov esi,208*288*2+48*2
-  add esi,[vidbuffer]
-  mov al,[lastfps]
-  push ecx
-  xor ecx,ecx
-.strloop
-  xor ah,ah
-  add al,48
-  sub esi,8*2
-.asciiloop16b
-  cmp al,58
-  jb .h2adone16b
-  inc ah
-  sub al,10
-  jmp .asciiloop16b
-.h2adone16b
-  mov cl,al
-  mov al,[ASCII2Font+ecx]
-  ccallv outputchar16b, esi, eax
-  mov al,ah
-  or al,al
-  jnz .strloop
-
-  mov esi,208*288*2+48*2
-  add esi,[vidbuffer]
-  ccallv outputchar16b, esi, 41 ; '/'
-  pop ecx
-
-  mov al,cl
-  mov bl,10
-  xor ah,ah
-  div bl
-  shl al,4
-  add ah,al
-  mov al,ah
-  mov esi,208*288*2+56*2
-  add esi,[vidbuffer]
-  ccallv outputhex16, esi, eax
-  ret
-
-SECTION .text
 
 EXTSYM TwelveHourClock
 
@@ -632,7 +529,7 @@ NEWSYM vidpaste
     je .nofps
     cmp byte[curblank],0
     jne .nofps
-    call showfps
+    ccallv showfps
 .nofps
     cmp byte[TimerEnable],0
     je .noclock
@@ -737,9 +634,7 @@ SECTION .data
 NEWSYM MsgCount,  dd 120
 
 SECTION .bss
-NEWSYM lastfps,   resb 1                  ; stores the last fps encountered
-NEWSYM lastfps2,  resb 1                  ; stores the last fps encountered
-NEWSYM curfps2,   resb 1                  ; current video refresh fps
+NEWSYM curfps2,   resb 1
 NEWSYM Msgptr,    resd 1
 NEWSYM MessageOn, resd 1
 NEWSYM FPSOn,     resb 1

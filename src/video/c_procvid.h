@@ -66,4 +66,6 @@ void dosmakepal(void);
 void doschangepal(void);
 #endif
 
+void showfps(void);
+
 #endif

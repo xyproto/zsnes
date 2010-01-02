@@ -35,6 +35,10 @@ static u2 textcolor16b = 0xFFFF;
 
 static u2 cgramback[256];
 
+static u1 curfps = 0; // frame/sec for current screen
+static u1 lastfps;    // stores the last fps encountered
+static u1 lastfps2;   // stores the last fps encountered
+
 
 u4 SwapMouseButtons(u4 const buttons)
 {
@@ -1155,3 +1159,45 @@ void doschangepal(void)
 	}
 }
 #endif
+
+
+void showfps(void)
+{
+	u4 limit = romispal != 0 ? 50 : 60;
+	++curfps;
+	if (nextframe >= limit)
+	{
+		lastfps    = curfps;
+		lastfps2   = curfps2;
+		curfps     = 0;
+		curfps2    = 0;
+		nextframe -= limit;
+	}
+	if (SloMo != 0) limit /= SloMo + 1;
+
+#ifdef __MSDOS__
+	if (cbitmode != 1)
+	{
+		asm_call(displayfpspal);
+		u4 const fps = lastfps;
+		outputhex( vidbuffer + 208 * 288 + 32, fps   / 10 << 4 | fps   % 10);
+		outputchar(vidbuffer + 208 * 288 + 48, 0x29);
+		outputhex( vidbuffer + 208 * 288 + 56, limit / 10 << 4 | limit % 10);
+	}
+	else
+#endif
+	{
+		u2* buf = (u2*)vidbuffer + 208 * 288 + 48;
+		u4  fps = lastfps;
+		do
+		{
+			buf -= 8;
+			outputchar16b(buf, ASCII2Font['0' + (fps % 10)]);
+			fps /= 10;
+		}
+		while (fps != 0);
+
+		outputchar16b((u2*)vidbuffer + 208 * 288 + 48, 41); // '/'
+		outputhex16(  (u2*)vidbuffer + 208 * 288 + 56, limit / 10 << 4 | limit % 10);
+	}
+}

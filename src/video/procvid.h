@@ -10,6 +10,7 @@ extern u1    ASCII2Font[256];
 extern u1    FontData[][8];
 extern u1    ForceNonTransp;
 extern u1    csounddisable;
+extern u1    curfps2;         // current video refresh fps
 extern u1    f3menuen;
 extern u1    mousexdir;
 extern u1    mouseydir;

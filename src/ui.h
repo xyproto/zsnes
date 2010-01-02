@@ -15,6 +15,7 @@ extern u1   MusicVol;
 extern u1   V8Mode;                 // Vegetable mode! =) (Greyscale mode)
 extern u1   cbitmode;               // bit mode, 0=8bit, 1=16bit
 extern u1   newgfx16b;
+extern u1   romispal;               // 0 = NTSC, 1 = PAL
 extern u1*  romdata;                // rom data  (4MB = 4194304)
 extern u1*  spcBuffera;
 extern u1*  spritetablea;

@@ -436,8 +436,7 @@ NEWSYM pcury,     dd 0
 NEWSYM timercount, dd 0
 NEWSYM initaddrl, dd 0                  ; initial address location
 NEWSYM NetSent, dd 0
-NEWSYM nextframe, dd 0                  ; tick count for timer
-NEWSYM curfps,    db 0                  ; frame/sec for current screen
+NEWSYM nextframe, dd 0
 ;NEWSYM newgfxerror, db 'NEED MEMORY FOR GFX ENGINE',0
 ;NEWSYM newgfxerror2, db 'NEED 320x240 FOR NEW GFX 16B',0
 ;newgfxerror db 'NEW GFX IN 16BIT IS N/A',0

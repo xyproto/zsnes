@@ -148,7 +148,7 @@ SECTION .bss
 NEWSYM FastForwardLock, resb 1
 NEWSYM SlowDownLock, resb 1
 NEWSYM CSprWinPtr, resd 1
-NEWSYM SloMo, resb 1  ; number of extra times to draw a frame
+NEWSYM SloMo, resb 1
 section .text
 
 NEWSYM cachevideo

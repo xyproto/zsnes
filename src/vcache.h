@@ -3,6 +3,7 @@
 
 #include "types.h"
 
+extern u1 SloMo;             // number of extra times to draw a frame
 extern u1 curblank;          // current blank state (40h = skip fill)
 extern u1 lineleft;
 extern u1 res480;
