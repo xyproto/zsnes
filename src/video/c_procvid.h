@@ -64,4 +64,8 @@ void showfps(void);
 
 void ClockOutput(void);
 
+#ifdef __MSDOS__
+void waitvsync(void);
+#endif
+
 #endif

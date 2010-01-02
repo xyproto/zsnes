@@ -209,25 +209,12 @@ NEWSYM ForceNonTransp, resb 1
 SECTION .bss
 NEWSYM tempco0, resw 1
 NEWSYM prevbright, resb 1
-SECTION .text
 
 ;*******************************************************
 ; CopyVid                       Copies buffer into video
 ;*******************************************************
 
 %ifdef __MSDOS__
-NEWSYM waitvsync
-    mov dx,3DAh             ;VGA status port
-;.loop
-;    in al,dx
-;    test al,8               ;check VR bit
-;    jnz .loop               ;in middle of VR, better wait for next one
-.loop2
-    in al,dx
-    test al,8
-    jz .loop2               ;updating the screen
-    ret
-
 SECTION .data
 NEWSYM prevengval, db 10
 %endif
@@ -347,7 +334,7 @@ NEWSYM vidpaste
     jne .novsync
     cmp byte[curblank],0h
     jne .novsync
-    call waitvsync
+    ccallv waitvsync
 .novsync
     cmp byte[cbitmode],1
     je .nopal
