@@ -71,7 +71,6 @@ NEWSYM mousexpos,    resw 1
 NEWSYM mousexdir,    resb 1
 NEWSYM mouseypos,    resw 1
 NEWSYM mouseydir,    resb 1
-NEWSYM mousechan,    resb 1
 
 SECTION .data
 NEWSYM ASCII2Font
