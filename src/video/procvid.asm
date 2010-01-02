@@ -380,7 +380,6 @@ NEWSYM ClockOutput
 
 SECTION .bss
 NEWSYM SoundTest, resb 1
-blahrnr resw 1
 
 SECTION .text
 

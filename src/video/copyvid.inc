@@ -212,7 +212,6 @@ NEWSYM hextestoutput
     add esi,2
     dec ecx
     jnz .loop
-    inc word[blahrnr]
     mov esi,216*288+32
     add esi,[vidbuffer]
     xor eax,eax
