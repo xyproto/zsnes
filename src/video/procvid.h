@@ -3,10 +3,9 @@
 
 #include "../types.h"
 
-extern void vidpaste();
-
 extern char* Msgptr;          // Pointer to message
 extern u1    ASCII2Font[256];
+extern u1    FPSOn;
 extern u1    FontData[][8];
 extern u1    ForceNonTransp;
 extern u1    csounddisable;

@@ -42,13 +42,13 @@ EXTSYM MovieDisplayFrame,SloMo,MouseCount,device2,LoadPicture
 EXTSYM zst_determine_newest,zst_exists,SSAutoFire
 EXTSYM outputhex,outputhex16,outputchar,outputchar16b
 EXTSYM OutputGraphicString,OutputGraphicString16b
-EXTSYM OutputGraphicString5x5,OutputGraphicString16b5x5,showfps,ClockOutput
+EXTSYM OutputGraphicString5x5,OutputGraphicString16b5x5
 
 %ifndef __MSDOS__
 EXTSYM MouseMoveX,MouseMoveY,MouseButtons,MultiMouseProcess,mouse
 %else
 EXTSYM SB_blank,vsyncon,Triplebufen,granadd,Palette0,smallscreenon,ScreenScale,vesa2selec
-EXTSYM displayfpspal,superscopepal,saveselectpal,dosmakepal,doschangepal
+EXTSYM displayfpspal,superscopepal,saveselectpal,dosmakepal
 %endif
 
 %ifdef __UNIXSDL__
@@ -210,130 +210,6 @@ SECTION .bss
 NEWSYM tempco0, resw 1
 NEWSYM prevbright, resb 1
 
-SECTION .text
-
-NEWSYM vidpaste
-%ifdef __MSDOS__
-    cmp byte[vsyncon],0
-    je .novsync
-    cmp byte[Triplebufen],0
-    jne .novsync
-    cmp byte[curblank],0h
-    jne .novsync
-    ccallv waitvsync
-.novsync
-    cmp byte[cbitmode],1
-    je .nopal
-    cmp byte[curblank],0
-    jne .nopal
-    ccallv doschangepal
-.nopal
-%endif
-    cmp byte[FPSOn],0
-    je .nofps
-    cmp byte[curblank],0
-    jne .nofps
-    ccallv showfps
-.nofps
-    cmp byte[TimerEnable],0
-    je .noclock
-    cmp byte[ShowTimer],0
-    je .noclock
-    ccallv ClockOutput
-.noclock
-    cmp byte[device2],2
-    je near .drawss
-.returnfromdraw
-    mov ax,[resolutn]
-    cmp [prevresolutn],ax
-    je .noclear
-    mov [prevresolutn],ax
-%ifdef __MSDOS__
-    call DOSClearScreen
-%endif
-.noclear
-    ccallv DrawScreen
-    ret
-
-.drawss
-%ifdef __MSDOS__
-    cmp byte[cbitmode],1
-    je .noss8b
-    call superscopepal
-.noss8b
-%endif
-    xor eax,eax
-    mov al,[mouseyloc]
-    mov ebx,288
-    mul ebx
-    mov esi,[vidbuffer]
-    mov edi,SScopeCursor
-    xor ebx,ebx
-    mov bl,[mousexloc]
-    add ebx,6
-%ifdef __MSDOS__
-    cmp byte[cbitmode],1
-    je near .ss16b
-    mov cl,20
-.ssloop
-    mov ch,20
-.ssloop2
-    cmp byte[edi],0
-    je .nodraw
-    mov edx,eax
-    add edx,ebx
-    sub edx,288*10
-    jb .nodraw
-    mov byte[esi+edx],128+16
-.nodraw
-    inc ebx
-    inc edi
-    dec ch
-    jnz .ssloop2
-    sub ebx,20
-    add eax,288
-    dec cl
-    jnz .ssloop
-    jmp .returnfromdraw
-
-.ss16b
-%endif
-    push ebx
-    mov cl,[vesa2_rpos]
-    mov bx,31
-    shl bx,cl
-    mov [.SSRedCo],bx
-    pop ebx
-    shl eax,1
-    shl ebx,1
-    mov cl,20
-.ssloopb
-    mov ch,20
-.ssloopb2
-    cmp byte[edi],0
-    je .nodrawb
-    mov edx,eax
-    add edx,ebx
-    sub edx,288*10*2
-    jb .nodrawb
-    push eax
-    mov ax,[.SSRedCo]
-    mov [esi+edx],ax
-    pop eax
-.nodrawb
-    add ebx,2
-    inc edi
-    dec ch
-    jnz .ssloopb2
-    sub ebx,40
-    add eax,288*2
-    dec cl
-    jnz .ssloopb
-    jmp .returnfromdraw
-
-SECTION .bss
-.SSRedCo resw 1
-
 SECTION .data
 NEWSYM MsgCount,  dd 120
 
@@ -341,28 +217,3 @@ SECTION .bss
 NEWSYM Msgptr,    resd 1
 NEWSYM MessageOn, resd 1
 NEWSYM FPSOn,     resb 1
-
-SECTION .data
-prevresolutn dd 224
-
-NEWSYM SScopeCursor
-db 0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0
-db 0,0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0
-db 0,0,0,0,0,1,1,0,0,1,0,0,1,1,0,0,0,0,0,0
-db 0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0
-db 0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0
-db 0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0
-db 0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0
-db 0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0
-db 0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0
-db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
-db 0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0
-db 0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0
-db 0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0
-db 0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0
-db 0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0
-db 0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0
-db 0,0,0,0,0,1,1,0,0,1,0,0,1,1,0,0,0,0,0,0
-db 0,0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0
-db 0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0
-db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0

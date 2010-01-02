@@ -55,17 +55,6 @@ void dovegrest(void);
 #ifdef __MSDOS__
 // Changes the entire palette.  Set the brightness with maxbr
 void dosmakepal(void);
-
-// Sets up the palette
-void doschangepal(void);
-#endif
-
-void showfps(void);
-
-void ClockOutput(void);
-
-#ifdef __MSDOS__
-void waitvsync(void);
 #endif
 
 // Copies buffer into video

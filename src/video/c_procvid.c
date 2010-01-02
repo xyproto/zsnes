@@ -1107,7 +1107,8 @@ void dosmakepal(void)
 }
 
 
-void doschangepal(void)
+// Sets up the palette
+static void doschangepal(void)
 {
 	if (V8Mode == 1) doveg();
 
@@ -1164,7 +1165,7 @@ void doschangepal(void)
 #endif
 
 
-void showfps(void)
+static void showfps(void)
 {
 	u4 limit = romispal != 0 ? 50 : 60;
 	++curfps;
@@ -1223,7 +1224,7 @@ static void ClockOutput_output(u4 const pos, u4 const n)
 }
 
 
-void ClockOutput(void)
+static void ClockOutput(void)
 {
 #ifdef __MSDOS__
 	if (cbitmode != 1)
@@ -1288,7 +1289,7 @@ void ClockOutput(void)
 
 
 #ifdef __MSDOS__
-void waitvsync(void)
+static void waitvsync(void)
 {
 	u2 const port = 0x03DA; // VGA status port
 	u1 const vr   = 0x08;   // check VR bit
@@ -1296,6 +1297,100 @@ void waitvsync(void)
 	while (!(inb(port) & vr)) {} // updating the screen
 }
 #endif
+
+
+static void vidpaste(void)
+{
+#ifdef __MSDOS__
+	if (vsyncon != 0 && Triplebufen == 0 && curblank == 0) waitvsync();
+	if (cbitmode != 1 && curblank == 0) doschangepal();
+#endif
+	if (FPSOn != 0 && curblank == 0) showfps();
+	if (TimerEnable != 0 && ShowTimer != 0) ClockOutput();
+
+	if (device2 == 2)
+	{
+		static u1 const SScopeCursor[] =
+		{
+			0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,
+			0,0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,
+			0,0,0,0,0,1,1,0,0,1,0,0,1,1,0,0,0,0,0,0,
+			0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,
+			0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,
+			0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,
+			0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,
+			0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,
+			0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,
+			1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,
+			0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,
+			0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,
+			0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,
+			0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,
+			0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,
+			0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,
+			0,0,0,0,0,1,1,0,0,1,0,0,1,1,0,0,0,0,0,0,
+			0,0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,
+			0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,
+			0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+		};
+
+#ifdef __MSDOS__
+		if (cbitmode != 1) asm_call(superscopepal);
+#endif
+		u1 const* src = SScopeCursor;
+		u4        pos = mouseyloc * 288 + mousexloc + 6;
+#ifdef __MSDOS__
+		if (cbitmode != 1)
+		{
+			u1* const dst = vidbuffer;
+			u4        y   = 20;
+			do
+			{
+				u4 x = 20;
+				do
+				{
+					if (*src++ == 0)    continue;
+					if (pos < 288 * 10) continue;
+					dst[pos - 288 * 10] = 128 + 16;
+				}
+				while (++pos, --x != 0);
+				pos += 288 - 20;
+			}
+			while (--y != 0);
+		}
+		else
+#endif
+		{
+			u2  const SSRedCo = 31 << vesa2_rpos;
+			u2* const dst     = (u2*)vidbuffer;
+			u4        y       = 20;
+			do
+			{
+				u4 x = 20;
+				do
+				{
+					if (*src++ == 0)    continue;
+					if (pos < 288 * 10) continue;
+					dst[pos - 288 * 10] = SSRedCo;
+				}
+				while (++pos, --x != 0);
+				pos -= 288 - 20;
+			}
+			while (--y != 0);
+		}
+	}
+
+#ifdef __MSDOS__
+	static u2 prevresolutn = 224;
+	if (prevresolutn != resolutn)
+	{
+		prevresolutn = resolutn;
+		asm_call(DOSClearScreen);
+	}
+#endif
+
+	DrawScreen();
+}
 
 
 void copyvid(void)
@@ -1373,5 +1468,5 @@ void copyvid(void)
 			OutputGraphicString16b5x5((u2*)vidbuffer + 216 * 288 + 32, msg);
 		}
 	}
-	asm_call(vidpaste);
+	vidpaste();
 }
