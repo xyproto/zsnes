@@ -17,8 +17,8 @@
 #include "../macros.h"
 #include "../ui.h"
 #include "../vcache.h"
+#include "../video/c_mode716.h"
 #include "../video/makevid.h"
-#include "../video/mode716.h"
 #include "../video/procvid.h"
 #include "../video/procvidc.h"
 #include "../zmovie.h"
@@ -595,7 +595,7 @@ void GUITryMenuItem(void)
 			GUISaveVars();
 			savecfgforce = 0;
 
-			asm_call(Makemode7Table);
+			Makemode7Table();
 			GUICMessage = "CONFIGURATION FILES SAVED.";
 			GUICTimer   = 50;
 		}

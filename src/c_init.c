@@ -20,7 +20,7 @@
 #include "link.h"
 #include "macros.h"
 #include "ui.h"
-#include "video/mode716.h"
+#include "video/c_mode716.h"
 #include "video/procvid.h"
 #include "zmovie.h"
 #include "zpath.h"
@@ -66,7 +66,7 @@ void init(void)
 	// SNES Init
 	Setper2exec();
 
-	asm_call(Makemode7Table);
+	Makemode7Table();
 
 	if (ZCartName[0] != '\0' || romloadskip != 1)
 	{

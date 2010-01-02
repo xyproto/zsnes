@@ -201,22 +201,6 @@ EXTSYM mode7ab,mode7cd,BGMA,BG1SXl,BG1SYl
 
 SECTION .text
 
-NEWSYM Makemode7Table
-    xor eax,eax
-.nextentry
-    mov cl,al
-    mov dl,ah
-    and cl,07h
-    and dl,07h
-    shl cl,4
-    shl dl,1
-    inc dl
-    add dl,cl
-    mov [mode7tab+eax],dl
-    dec ax
-    jnz .nextentry
-    ret
-
 NEWSYM drawmode7win16b
     test byte[scrndis],1
     jz .notdisabled

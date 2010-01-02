@@ -236,7 +236,7 @@ reexecuteb2:
     ; initialize variables (Copy from variables)
     call UpdateDPage
     call SA1UpdateDPage
-    call Makemode7Table
+    ccallv Makemode7Table
     cmp byte[SFXEnable],0
     je .nosfxud
     call UpdateSFX
