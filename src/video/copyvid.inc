@@ -531,7 +531,6 @@ ScreenShow:
     je near copyvesa2800x600x16b
     cmp byte[curblank],40h
     jne .startcopy
-    inc byte[curfps2]
     call hextestoutput
 .startcopy
     jmp copymodeq256

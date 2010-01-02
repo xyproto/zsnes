@@ -634,7 +634,6 @@ SECTION .data
 NEWSYM MsgCount,  dd 120
 
 SECTION .bss
-NEWSYM curfps2,   resb 1
 NEWSYM Msgptr,    resd 1
 NEWSYM MessageOn, resd 1
 NEWSYM FPSOn,     resb 1

@@ -1168,7 +1168,6 @@ void showfps(void)
 	{
 		lastfps    = curfps;
 		curfps     = 0;
-		curfps2    = 0;
 		nextframe -= limit;
 	}
 	if (SloMo != 0) limit /= SloMo + 1;
