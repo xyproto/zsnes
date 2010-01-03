@@ -31,145 +31,7 @@ EXTSYM tableFc,tableGc,tableHc,tableadc
 
 ; global variables
 
-;*******************************************************
-; Generate OpCode Table
-;*******************************************************
-
 SECTION .text
-
-NEWSYM inittablec
-    ; set tablead  (NVMXDIZC) (  MXD   )
-    push es
-    xor ecx,ecx
-    xor al,al
-    mov cx,256
-    mov edi,tableadc
-.loopa
-    test al,08h ; D flag
-    jnz .decon
-    test al,10h ; X flag
-    jnz .xon
-    test al,20h ; M flag
-    jnz .mon
-    mov esi,tableAc
-    jmp .done
-.mon
-    mov esi,tableBc
-    jmp .done
-
-.xon
-    test al,20h ; M flag
-    jnz .mon2
-    mov esi,tableCc
-    jmp .done
-.mon2
-    mov esi,tableDc
-    jmp .done
-
-.decon
-    test al,10h ; X flag
-    jnz .xon3
-    test al,20h ; M flag
-    jnz .mon3
-    mov esi,tableEc
-    jmp .done
-.mon3
-    mov esi,tableFc
-    jmp .done
-
-.xon3
-    test al,20h
-    jnz .mon4
-    mov esi,tableGc
-    jmp .done
-.mon4
-    mov esi,tableHc
-.done
-    inc al
-    push eax
-    mov eax,esi
-    stosd
-    pop eax
-    dec ecx
-    jnz .loopa
-
-    ; Set CPU addresses
-    ; First, set all addresses to invalid
-    mov eax,eopINVALID
-    mov edi,tableAc
-    mov ecx,256
-    rep stosd
-    mov edi,tableBc
-    mov ecx,256
-    rep stosd
-    mov edi,tableCc
-    mov ecx,256
-    rep stosd
-    mov edi,tableDc
-    mov ecx,256
-    rep stosd
-    mov edi,tableEc
-    mov ecx,256
-    rep stosd
-    mov edi,tableFc
-    mov ecx,256
-    rep stosd
-    mov edi,tableGc
-    mov ecx,256
-    rep stosd
-    mov edi,tableHc
-    mov ecx,256
-    rep stosd
-    mov edi,tableAc
-    call settables
-    mov edi,tableBc
-    call settables
-    mov edi,tableCc
-    call settables
-    mov edi,tableDc
-    call settables
-    mov edi,tableEc
-    call settables
-    mov edi,tableFc
-    call settables
-    mov edi,tableGc
-    call settables
-    mov edi,tableHc
-    call settables
-
-    ; set proper functions
-    mov edi,tableAc              ; Table addresses (M:0,X:0,D:0)
-    call settablem16
-    mov edi,tableAc
-    call settablex16
-
-    mov edi,tableBc              ; Table addresses (M:1,X:0,D:0)
-    call settablex16
-
-    mov edi,tableCc              ; Table addresses (M:0,X:1,D:0)
-    call settablem16
-
-    mov edi,tableEc              ; Table addresses (M:0,X:0,D:1)
-    call settablem16
-    mov edi,tableEc
-    call settableDm16
-    mov edi,tableEc
-    call settablex16
-
-    mov edi,tableFc              ; Table addresses (M:1,X:0,D:1)
-    call settablex16
-    mov edi,tableFc
-    call settableDm8
-
-    mov edi,tableGc              ; Table addresses (M:0,X:1,D:1)
-    call settablem16
-    mov edi,tableGc
-    call settableDm16
-
-    mov edi,tableHc              ; Table addresses (M:1,X:1,D:1)
-    call settableDm8
-    pop es
-    ret
 
 eopINVALID
     ret
@@ -178,7 +40,7 @@ eopINVALID
 ; Set Tables     Sets the opcode tables according to EDI
 ;*******************************************************
 ; This function sets all the non-multiple entries
-settables:
+NEWSYM settables
     ;row 0
     mov dword[edi+00h*4],COp00
     mov dword[edi+01h*4],COp01m8
@@ -438,7 +300,7 @@ settables:
     mov dword[edi+0FFh*4],COpFFm8nd
     ret
 
-settablem16:
+NEWSYM settablem16
     mov dword[edi+01h*4],COp01m16
     mov dword[edi+03h*4],COp03m16
     mov dword[edi+04h*4],COp04m16
@@ -607,7 +469,7 @@ settablem16:
     mov dword[edi+0FFh*4],COpFFm16nd
     ret
 
-settablex16:
+NEWSYM settablex16
     mov dword[edi+5Ah*4],COp5Ax16
     mov dword[edi+7Ah*4],COp7Ax16
     mov dword[edi+84h*4],COp84x16
@@ -645,7 +507,7 @@ settablex16:
     mov dword[edi+0FAh*4],COpFAx16
     ret
 
-settableDm8:
+NEWSYM settableDm8
     mov dword[edi+61h*4],COp61m8d
     mov dword[edi+63h*4],COp63m8d
     mov dword[edi+65h*4],COp65m8d
@@ -678,7 +540,7 @@ settableDm8:
     mov dword[edi+0FFh*4],COpFFm8d
     ret
 
-settableDm16:
+NEWSYM settableDm16
     mov dword[edi+61h*4],COp61m16d
     mov dword[edi+63h*4],COp63m16d
     mov dword[edi+65h*4],COp65m16d

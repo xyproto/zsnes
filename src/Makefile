@@ -77,6 +77,7 @@ SRCS += cpu/c_execute.c
 SRCS += cpu/c_regs.c
 SRCS += cpu/c_regsw.c
 SRCS += cpu/c_table.c
+SRCS += cpu/c_tablec.c
 SRCS += cpu/dma.asm
 SRCS += cpu/dsp.asm
 SRCS += cpu/dspproc.asm

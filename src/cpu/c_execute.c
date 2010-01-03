@@ -68,12 +68,12 @@ static void reexecuteb2(void)
 	initaddrl = addr;
 
 	// initialize variables (Copy from variables)
-	u4  ecx = 0;
-	u4  edx = curcyc /* cycles */ << 8 | xp /* flags */;
-	u4  ebx = 0;
-	u1* ebp = spcPCRam;
-	u1* esi = addr + pc; // add program counter to address
-	u4  edi = tableadc[xp];
+	u4    ecx = 0;
+	u4    edx = curcyc /* cycles */ << 8 | xp /* flags */;
+	u4    ebx = 0;
+	u1*   ebp = spcPCRam;
+	u1*   esi = addr + pc; // add program counter to address
+	eop** edi = tableadc[xp];
 
 	asm volatile("call %P0" :: "X" (splitflags), "d" (edx) : "cc", "memory");
 	// XXX hack: GCC cannot handle ebp as input/output, so take the detour over eax
@@ -82,7 +82,7 @@ static void reexecuteb2(void)
 
 	// de-init variables (copy to variables)
 	spcPCRam     = ebp;
-	Curtableaddr = edi;
+	Curtableaddr = (u4)edi; // XXX TODO type
 	xp           = edx;
 	curcyc       = edx >> 8;
 	xpc          = esi - initaddrl; // subtract program counter by address

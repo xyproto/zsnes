@@ -8,10 +8,10 @@
 #include "cpu/c_regs.h"
 #include "cpu/c_regsw.h"
 #include "cpu/c_table.h"
+#include "cpu/c_tablec.h"
 #include "cpu/execute.h"
 #include "cpu/regs.h"
 #include "cpu/stable.h"
-#include "cpu/tablec.h"
 #include "debugger.h"
 #include "gui/c_gui.h"
 #include "gui/guiwindp.h"
@@ -57,7 +57,7 @@ void init(void)
 	clearmem();
 
 	inittable();
-	asm_call(inittablec);
+	inittablec();
 	asm_call(SA1inittable);
 
 	// SPC Init
