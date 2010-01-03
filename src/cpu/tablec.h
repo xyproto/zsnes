@@ -3,7 +3,6 @@
 
 extern void settableDm16();
 extern void settableDm8();
-extern void settablem16();
 extern void settablex16();
 
 #endif
