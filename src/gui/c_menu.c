@@ -20,3 +20,15 @@ void GUIBufferData(void)
 	memset(sprleftpr2, 0, sizeof(sprleftpr2));
 	memset(sprleftpr3, 0, sizeof(sprleftpr3));
 }
+
+
+void menu_GUIUnBuffer(void)
+{
+	// copy from spritetable
+	u4 const n =
+#ifdef __MSDOS__
+		cbitmode != 1 ? 64000 :
+#endif
+		129536;
+	memcpy(vidbuffer + 4 * 384, spritetablea + 4 * 384, n);
+}

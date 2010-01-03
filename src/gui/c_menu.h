@@ -3,4 +3,6 @@
 
 void GUIBufferData(void);
 
+void menu_GUIUnBuffer(void);
+
 #endif

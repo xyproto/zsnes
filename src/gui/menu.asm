@@ -32,7 +32,7 @@ EXTSYM SPCKeyPressed,StopSound,StartSound,ExecExitOkay,t1cc,Clear2xSaIBuffer
 EXTSYM ScreenShotFormat,spcsaved,savespcdata
 EXTSYM exiter,xpb,xpc,snesmmap,memtabler8,snesmap2,regaccessbankr8,dmadata,initaddrl
 EXTSYM spcPCRam,xp,curcyc,Curtableaddr,UpdateDPage,splitflags,execsingle,joinflags
-EXTSYM pdh,SPCRAM,cvidmode,GUIBufferData
+EXTSYM pdh,SPCRAM,cvidmode,GUIBufferData,menu_GUIUnBuffer
 
 %ifdef __MSDOS__
 EXTSYM GUI16VID,drawhline,drawvline
@@ -45,32 +45,6 @@ EXTSYM numinst,debuggeron
 %ifndef NO_PNG
 EXTSYM Grab_PNG_Data
 %endif
-
-SECTION .text
-
-GUIUnBuffer:
-%ifdef __MSDOS__
-    mov ecx,16000
-    cmp byte[cbitmode],1
-    jne near .16b
-    add ecx,16384
-.16b
-%else
-    mov ecx,32384
-%endif
-    ; copy from spritetable
-    mov esi,[vidbuffer]
-    mov edi,[spritetablea]
-    add esi,4*384
-    add edi,4*384
-.loop
-    mov eax,[edi]
-    mov [esi],eax
-    add esi,4
-    add edi,4
-    dec ecx
-    jnz .loop
-    ret
 
 SECTION .bss
 NEWSYM nextmenupopup, resb 1
@@ -198,7 +172,7 @@ NEWSYM showmenu
     ccallv copyvid
     ccallv StopSound
 .nextkey
-    ;call GUIUnBuffer
+    ;ccallv menu_GUIUnBuffer
     call menudrawbox8b
     ccallv copyvid
 
@@ -247,7 +221,7 @@ NEWSYM showmenu
     je .done
     jmp .nextkey
 .done
-    call GUIUnBuffer
+    ccallv menu_GUIUnBuffer
 ;    mov al,[newengen]
 ;    mov byte[newengen],0
     ccallv copyvid
@@ -362,7 +336,7 @@ NEWSYM showmenu
     mov byte[SPCKeyPressed],0
     jmp .nopalwrite
 .exitloop
-    call GUIUnBuffer
+    ccallv menu_GUIUnBuffer
 ;    mov al,[newengen]
 ;    mov byte[newengen],0
     ccallv copyvid
