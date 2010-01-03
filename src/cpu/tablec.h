@@ -2,6 +2,5 @@
 #define TABLEC_H
 
 extern void settableDm16();
-extern void settableDm8();
 
 #endif

@@ -36,39 +36,6 @@ SECTION .text
 eopINVALID
     ret
 
-NEWSYM settableDm8
-    mov dword[edi+61h*4],COp61m8d
-    mov dword[edi+63h*4],COp63m8d
-    mov dword[edi+65h*4],COp65m8d
-    mov dword[edi+67h*4],COp67m8d
-    mov dword[edi+69h*4],COp69m8d
-    mov dword[edi+6Dh*4],COp6Dm8d
-    mov dword[edi+6Fh*4],COp6Fm8d
-    mov dword[edi+71h*4],COp71m8d
-    mov dword[edi+72h*4],COp72m8d
-    mov dword[edi+73h*4],COp73m8d
-    mov dword[edi+75h*4],COp75m8d
-    mov dword[edi+77h*4],COp77m8d
-    mov dword[edi+79h*4],COp79m8d
-    mov dword[edi+7Dh*4],COp7Dm8d
-    mov dword[edi+7Fh*4],COp7Fm8d
-    mov dword[edi+0E1h*4],COpE1m8d
-    mov dword[edi+0E3h*4],COpE3m8d
-    mov dword[edi+0E5h*4],COpE5m8d
-    mov dword[edi+0E7h*4],COpE7m8d
-    mov dword[edi+0E9h*4],COpE9m8d
-    mov dword[edi+0EDh*4],COpEDm8d
-    mov dword[edi+0EFh*4],COpEFm8d
-    mov dword[edi+0F1h*4],COpF1m8d
-    mov dword[edi+0F2h*4],COpF2m8d
-    mov dword[edi+0F3h*4],COpF3m8d
-    mov dword[edi+0F5h*4],COpF5m8d
-    mov dword[edi+0F7h*4],COpF7m8d
-    mov dword[edi+0F9h*4],COpF9m8d
-    mov dword[edi+0FDh*4],COpFDm8d
-    mov dword[edi+0FFh*4],COpFFm8d
-    ret
-
 NEWSYM settableDm16
     mov dword[edi+61h*4],COp61m16d
     mov dword[edi+63h*4],COp63m16d

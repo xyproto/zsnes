@@ -39,7 +39,7 @@ NEWSYM cCOp61m8nd  ; ADC(d,x)
 NEWSYM cCOp61m16nd ; ADC(d,x)
    addr_BdCxB_16br
    ADCMacro16bnd
-COp61m8d:   ; ADC(d,x)
+NEWSYM cCOp61m8d   ; ADC(d,x)
    addr_BdCxB_8br
    ADCMacro8bd
 COp61m16d:  ; ADC(d,x)
@@ -51,7 +51,7 @@ NEWSYM cCOp63m8nd  ; ADC d,s
 NEWSYM cCOp63m16nd ; ADC d,s
    addr_dCs_16br
    ADCMacro16bnd
-COp63m8d:   ; ADC d,s
+NEWSYM cCOp63m8d   ; ADC d,s
    addr_dCs_8br
    ADCMacro8bd
 COp63m16d:  ; ADC d,s
@@ -63,7 +63,7 @@ NEWSYM cCOp65m8nd  ; ADC d
 NEWSYM cCOp65m16nd ; ADC d
    addr_d_16br
    ADCMacro16bnd
-COp65m8d:   ; ADC d
+NEWSYM cCOp65m8d   ; ADC d
    addr_d_8br
    ADCMacro8bd
 COp65m16d:  ; ADC d
@@ -75,7 +75,7 @@ NEWSYM cCOp67m8nd  ; ADC [d]
 NEWSYM cCOp67m16nd ; ADC [d]
    addr_LdL_16br
    ADCMacro16bnd
-COp67m8d:   ; ADC [d]
+NEWSYM cCOp67m8d   ; ADC [d]
    addr_LdL_8br
    ADCMacro8bd
 COp67m16d:  ; ADC [d]
@@ -87,7 +87,7 @@ NEWSYM cCOp69m8nd  ; ADC #
 NEWSYM cCOp69m16nd ; ADC #
    addr_I_16br
    ADCMacro16bnd
-COp69m8d:   ; ADC #
+NEWSYM cCOp69m8d   ; ADC #
    addr_I_8br
    ADCMacro8bd
 COp69m16d:  ; ADC #
@@ -99,7 +99,7 @@ NEWSYM cCOp6Dm8nd  ; ADC a
 NEWSYM cCOp6Dm16nd ; ADC a
    addr_a_16br
    ADCMacro16bnd
-COp6Dm8d:   ; ADC a
+NEWSYM cCOp6Dm8d   ; ADC a
    addr_a_8br
    ADCMacro8bd
 COp6Dm16d:  ; ADC a
@@ -111,7 +111,7 @@ NEWSYM cCOp6Fm8nd  ; ADC al
 NEWSYM cCOp6Fm16nd ; ADC al
    addr_al_16br
    ADCMacro16bnd
-COp6Fm8d:   ; ADC al
+NEWSYM cCOp6Fm8d   ; ADC al
    addr_al_8br
    ADCMacro8bd
 COp6Fm16d:  ; ADC al
@@ -123,7 +123,7 @@ NEWSYM cCOp71m8nd  ; ADC(d),y
 NEWSYM cCOp71m16nd ; ADC(d),y
    addr_BdBCy_16br
    ADCMacro16bnd
-COp71m8d:   ; ADC(d),y
+NEWSYM cCOp71m8d   ; ADC(d),y
    addr_BdBCy_8br
    ADCMacro8bd
 COp71m16d:  ; ADC(d),y
@@ -135,7 +135,7 @@ NEWSYM cCOp72m8nd  ; ADC (d)
 NEWSYM cCOp72m16nd ; ADC (d)
    addr_BdB_16br
    ADCMacro16bnd
-COp72m8d:   ; ADC (d)
+NEWSYM cCOp72m8d   ; ADC (d)
    addr_BdB_8br
    ADCMacro8bd
 COp72m16d:  ; ADC (d)
@@ -147,7 +147,7 @@ NEWSYM cCOp73m8nd  ; ADC(d,s),y
 NEWSYM cCOp73m16nd ; ADC(d,s),y
    addr_BdCsBCy_16br
    ADCMacro16bnd
-COp73m8d:   ; ADC(d,s),y
+NEWSYM cCOp73m8d   ; ADC(d,s),y
    addr_BdCsBCy_8br
    ADCMacro8bd
 COp73m16d:  ; ADC(d,s),y
@@ -159,7 +159,7 @@ NEWSYM cCOp75m8nd  ; ADC d,x
 NEWSYM cCOp75m16nd ; ADC d,x
    addr_dCx_16br
    ADCMacro16bnd
-COp75m8d:   ; ADC d,x
+NEWSYM cCOp75m8d   ; ADC d,x
    addr_dCx_8br
    ADCMacro8bd
 COp75m16d:  ; ADC d,x
@@ -171,7 +171,7 @@ NEWSYM cCOp77m8nd  ; ADC [d],y
 NEWSYM cCOp77m16nd ; ADC [d],y
    addr_LdLCy_16br
    ADCMacro16bnd
-COp77m8d:   ; ADC [d],y
+NEWSYM cCOp77m8d   ; ADC [d],y
    addr_LdLCy_8br
    ADCMacro8bd
 COp77m16d:  ; ADC [d],y
@@ -183,7 +183,7 @@ NEWSYM cCOp79m8nd  ; ADC a,y
 NEWSYM cCOp79m16nd ; ADC a,y
    addr_aCy_16br
    ADCMacro16bnd
-COp79m8d:   ; ADC a,y
+NEWSYM cCOp79m8d   ; ADC a,y
    addr_aCy_8br
    ADCMacro8bd
 COp79m16d:  ; ADC a,y
@@ -195,7 +195,7 @@ NEWSYM cCOp7Dm8nd  ; ADC a,x
 NEWSYM cCOp7Dm16nd ; ADC a,x
    addr_aCx_16br
    ADCMacro16bnd
-COp7Dm8d:   ; ADC a,x
+NEWSYM cCOp7Dm8d   ; ADC a,x
    addr_aCx_8br
    ADCMacro8bd
 COp7Dm16d:  ; ADC a,x
@@ -207,7 +207,7 @@ NEWSYM cCOp7Fm8nd  ; ADC al,x
 NEWSYM cCOp7Fm16nd ; ADC al,x
    addr_alCx_16br
    ADCMacro16bnd
-COp7Fm8d:   ; ADC al,x
+NEWSYM cCOp7Fm8d   ; ADC al,x
    addr_alCx_8br
    ADCMacro8bd
 COp7Fm16d:  ; ADC al,x
@@ -1323,7 +1323,7 @@ NEWSYM cCOpE1m8nd  ; SBC(d,x)
 NEWSYM cCOpE1m16nd ; SBC(d,x)
    addr_BdCxB_16br
    SBCMacro16bnd
-COpE1m8d:   ; SBC(d,x)
+NEWSYM cCOpE1m8d   ; SBC(d,x)
    addr_BdCxB_8br
    SBCMacro8bd
 COpE1m16d:  ; SBC(d,x)
@@ -1335,7 +1335,7 @@ NEWSYM cCOpE3m8nd  ; SBC d,s
 NEWSYM cCOpE3m16nd ; SBC d,s
    addr_dCs_16br
    SBCMacro16bnd
-COpE3m8d:   ; SBC d,s
+NEWSYM cCOpE3m8d   ; SBC d,s
    addr_dCs_8br
    SBCMacro8bd
 COpE3m16d:  ; SBC d,s
@@ -1347,7 +1347,7 @@ NEWSYM cCOpE5m8nd  ; SBC d
 NEWSYM cCOpE5m16nd ; SBC d
    addr_d_16br
    SBCMacro16bnd
-COpE5m8d:   ; SBC d
+NEWSYM cCOpE5m8d   ; SBC d
    addr_d_8br
    SBCMacro8bd
 COpE5m16d:  ; SBC d
@@ -1359,7 +1359,7 @@ NEWSYM cCOpE7m8nd  ; SBC [d]
 NEWSYM cCOpE7m16nd ; SBC [d]
    addr_LdL_16br
    SBCMacro16bnd
-COpE7m8d:   ; SBC [d]
+NEWSYM cCOpE7m8d   ; SBC [d]
    addr_LdL_8br
    SBCMacro8bd
 COpE7m16d:  ; SBC [d]
@@ -1371,7 +1371,7 @@ NEWSYM cCOpE9m8nd  ; SBC #
 NEWSYM cCOpE9m16nd ; SBC #
    addr_I_16br
    SBCMacro16bnd
-COpE9m8d:   ; SBC #
+NEWSYM cCOpE9m8d   ; SBC #
    addr_I_8br
    SBCMacro8bd
 COpE9m16d:  ; SBC #
@@ -1383,7 +1383,7 @@ NEWSYM cCOpEDm8nd  ; SBC a
 NEWSYM cCOpEDm16nd ; SBC a
    addr_a_16br
    SBCMacro16bnd
-COpEDm8d:   ; SBC a
+NEWSYM cCOpEDm8d   ; SBC a
    addr_a_8br
    SBCMacro8bd
 COpEDm16d:  ; SBC a
@@ -1395,7 +1395,7 @@ NEWSYM cCOpEFm8nd  ; SBC al
 NEWSYM cCOpEFm16nd ; SBC al
    addr_al_16br
    SBCMacro16bnd
-COpEFm8d:   ; SBC al
+NEWSYM cCOpEFm8d   ; SBC al
    addr_al_8br
    SBCMacro8bd
 COpEFm16d:  ; SBC al
@@ -1407,7 +1407,7 @@ NEWSYM cCOpF1m8nd  ; SBC(d),y
 NEWSYM cCOpF1m16nd ; SBC(d),y
    addr_BdBCy_16br
    SBCMacro16bnd
-COpF1m8d:   ; SBC(d),y
+NEWSYM cCOpF1m8d   ; SBC(d),y
    addr_BdBCy_8br
    SBCMacro8bd
 COpF1m16d:  ; SBC(d),y
@@ -1419,7 +1419,7 @@ NEWSYM cCOpF2m8nd  ; SBC (d)
 NEWSYM cCOpF2m16nd ; SBC (d)
    addr_BdB_16br
    SBCMacro16bnd
-COpF2m8d:   ; SBC (d)
+NEWSYM cCOpF2m8d   ; SBC (d)
    addr_BdB_8br
    SBCMacro8bd
 COpF2m16d:  ; SBC (d)
@@ -1431,7 +1431,7 @@ NEWSYM cCOpF3m8nd  ; SBC(d,s),y
 NEWSYM cCOpF3m16nd ; SBC(d,s),y
    addr_BdCsBCy_16br
    SBCMacro16bnd
-COpF3m8d:   ; SBC(d,s),y
+NEWSYM cCOpF3m8d   ; SBC(d,s),y
    addr_BdCsBCy_8br
    SBCMacro8bd
 COpF3m16d:  ; SBC(d,s),y
@@ -1443,7 +1443,7 @@ NEWSYM cCOpF5m8nd  ; SBC d,x
 NEWSYM cCOpF5m16nd ; SBC d,x
    addr_dCx_16br
    SBCMacro16bnd
-COpF5m8d:   ; SBC d,x
+NEWSYM cCOpF5m8d   ; SBC d,x
    addr_dCx_8br
    SBCMacro8bd
 COpF5m16d:  ; SBC d,x
@@ -1455,7 +1455,7 @@ NEWSYM cCOpF7m8nd  ; SBC [d],y
 NEWSYM cCOpF7m16nd ; SBC [d],y
    addr_LdLCy_16br
    SBCMacro16bnd
-COpF7m8d:   ; SBC [d],y
+NEWSYM cCOpF7m8d   ; SBC [d],y
    addr_LdLCy_8br
    SBCMacro8bd
 COpF7m16d:  ; SBC [d],y
@@ -1467,7 +1467,7 @@ NEWSYM cCOpF9m8nd  ; SBC a,y
 NEWSYM cCOpF9m16nd ; SBC a,y
    addr_aCy_16br
    SBCMacro16bnd
-COpF9m8d:   ; SBC a,y
+NEWSYM cCOpF9m8d   ; SBC a,y
    addr_aCy_8br
    SBCMacro8bd
 COpF9m16d:  ; SBC a,y
@@ -1479,7 +1479,7 @@ NEWSYM cCOpFDm8nd  ; SBC a,x
 NEWSYM cCOpFDm16nd ; SBC a,x
    addr_aCx_16br
    SBCMacro16bnd
-COpFDm8d:   ; SBC a,x
+NEWSYM cCOpFDm8d   ; SBC a,x
    addr_aCx_8br
    SBCMacro8bd
 COpFDm16d:  ; SBC a,x
@@ -1491,7 +1491,7 @@ NEWSYM cCOpFFm8nd  ; SBC al,x
 NEWSYM cCOpFFm16nd ; SBC al,x
    addr_alCx_16br
    SBCMacro16bnd
-COpFFm8d:   ; SBC al,x
+NEWSYM cCOpFFm8d   ; SBC al,x
    addr_alCx_8br
    SBCMacro8bd
 COpFFm16d:  ; SBC al,x

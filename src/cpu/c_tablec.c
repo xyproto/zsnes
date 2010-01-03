@@ -481,6 +481,41 @@ static void settablex16(eop** const table)
 }
 
 
+static void settableDm8(eop** const table)
+{
+	table[0x61] = cCOp61m8d;
+	table[0x63] = cCOp63m8d;
+	table[0x65] = cCOp65m8d;
+	table[0x67] = cCOp67m8d;
+	table[0x69] = cCOp69m8d;
+	table[0x6D] = cCOp6Dm8d;
+	table[0x6F] = cCOp6Fm8d;
+	table[0x71] = cCOp71m8d;
+	table[0x72] = cCOp72m8d;
+	table[0x73] = cCOp73m8d;
+	table[0x75] = cCOp75m8d;
+	table[0x77] = cCOp77m8d;
+	table[0x79] = cCOp79m8d;
+	table[0x7D] = cCOp7Dm8d;
+	table[0x7F] = cCOp7Fm8d;
+	table[0xE1] = cCOpE1m8d;
+	table[0xE3] = cCOpE3m8d;
+	table[0xE5] = cCOpE5m8d;
+	table[0xE7] = cCOpE7m8d;
+	table[0xE9] = cCOpE9m8d;
+	table[0xED] = cCOpEDm8d;
+	table[0xEF] = cCOpEFm8d;
+	table[0xF1] = cCOpF1m8d;
+	table[0xF2] = cCOpF2m8d;
+	table[0xF3] = cCOpF3m8d;
+	table[0xF5] = cCOpF5m8d;
+	table[0xF7] = cCOpF7m8d;
+	table[0xF9] = cCOpF9m8d;
+	table[0xFD] = cCOpFDm8d;
+	table[0xFF] = cCOpFFm8d;
+}
+
+
 void inittablec(void)
 {
 	// set tablead  (NVMXDIZC) (  MXD   )
@@ -534,10 +569,10 @@ void inittablec(void)
 	settablex16(tableEc);
 
 	settablex16(tableFc); // Table addresses (M:1,X:0,D:1)
-	asm volatile("call %P0" :: "X" (settableDm8),  "D" (tableFc) : "memory");
+	settableDm8(tableFc);
 
 	settablem16(tableGc); // Table addresses (M:0,X:1,D:1)
 	asm volatile("call %P0" :: "X" (settableDm16), "D" (tableGc) : "memory");
 
-	asm volatile("call %P0" :: "X" (settableDm8),  "D" (tableHc) : "memory"); // Table addresses (M:1,X:1,D:1)
+	settableDm8(tableHc); // Table addresses (M:1,X:1,D:1)
 }

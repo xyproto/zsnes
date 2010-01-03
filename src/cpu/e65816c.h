@@ -461,4 +461,35 @@ extern void cCOpE8x16();
 extern void cCOpECx16();
 extern void cCOpFAx16();
 
+extern void cCOp61m8d();
+extern void cCOp63m8d();
+extern void cCOp65m8d();
+extern void cCOp67m8d();
+extern void cCOp69m8d();
+extern void cCOp6Dm8d();
+extern void cCOp6Fm8d();
+extern void cCOp71m8d();
+extern void cCOp72m8d();
+extern void cCOp73m8d();
+extern void cCOp75m8d();
+extern void cCOp77m8d();
+extern void cCOp79m8d();
+extern void cCOp7Dm8d();
+extern void cCOp7Fm8d();
+extern void cCOpE1m8d();
+extern void cCOpE3m8d();
+extern void cCOpE5m8d();
+extern void cCOpE7m8d();
+extern void cCOpE9m8d();
+extern void cCOpEDm8d();
+extern void cCOpEFm8d();
+extern void cCOpF1m8d();
+extern void cCOpF2m8d();
+extern void cCOpF3m8d();
+extern void cCOpF5m8d();
+extern void cCOpF7m8d();
+extern void cCOpF9m8d();
+extern void cCOpFDm8d();
+extern void cCOpFFm8d();
+
 #endif
