@@ -1927,16 +1927,10 @@ NEWSYM WDSPReg4B       ; Voice  4
       ret
 
 NEWSYM WDSPReg4C       ; Key On
-      push eax
-
-      xor byte[DSPMem+05Ch],0FFh
-      jnz .notzero
-      and al,[DSPMem+05Ch]
-.notzero
-      xor byte[DSPMem+05Ch],0FFh
-
+      cmp byte[DSPMem+05Ch],0FFh
+      je .zero
       or byte[KeyOnStA],al
-      pop eax
+.zero
       mov [DSPMem+04Ch],al
       push eax
       xor al,0FFh
