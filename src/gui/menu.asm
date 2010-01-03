@@ -443,7 +443,8 @@ NEWSYM showmenu
     ccallv Clear2xSaIBuffer
     cmp byte[MenuNoExit],1
     je .noexitmenu
-    jmp continueprognokeys
+    ccallv continueprognokeys
+    ret
 .noexitmenu
     mov byte[MenuNoExit],0
     jmp showmenu

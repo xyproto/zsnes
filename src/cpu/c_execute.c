@@ -44,6 +44,19 @@ void continueprog(void)
 }
 
 
+void continueprognokeys(void)
+{
+	romloadskip = 0;
+#ifndef NO_DEBUGGER
+	debuggeron  = 0;
+#endif
+	exiter      = 0;
+
+	InitPreGame();
+	asm_call(reexecuteb2);
+}
+
+
 void endprog(void)
 {
 	deinitvideo();

@@ -26,7 +26,7 @@ EXTSYM KeySaveState,KeyLoadState,KeyQuickExit,KeyQuickLoad,KeyQuickRst
 EXTSYM GUIDoReset,GUIReset,KeyOnStA,KeyOnStB,ProcessKeyOn,C4Enable,KeyQuickClock
 EXTSYM KeyQuickSaveSPC,TimerEnable,splitflags,joinflags
 EXTSYM KeyQuickSnapShot,csounddisable
-EXTSYM InitPreGame,Curtableaddr,curcyc,debugdisble,dmadata,guioff,memtabler8
+EXTSYM Curtableaddr,curcyc,debugdisble,dmadata,guioff,memtabler8
 EXTSYM SetupPreGame,memtablew8,regaccessbankr8,showmenu,snesmap2,snesmmap
 EXTSYM DeInitPostGame,spcPCRam,xp,xpb,xpc,tablead
 EXTSYM tableadc,SA1UpdateDPage,Makemode7Table,nextmenupopup,MovieProcessing
@@ -54,9 +54,10 @@ EXTSYM KeyInsrtChap,KeyNextChap,KeyPrevChap,MovieInsertChapter,MovieSeekAhead
 EXTSYM ResetDuringMovie,EMUPauseKey,INCRFrameKey,MovieWaiting,NoInputRead
 EXTSYM AllocatedRewindStates,PauseFrameMode,RestorePauseFrame,BackupPauseFrame
 EXTSYM rtoflags,sprcnt,sprstart,sprtilecnt,sprend,sprendx,continueprog,endprog
+EXTSYM continueprognokeys
 
 %ifndef NO_DEBUGGER
-EXTSYM debuggeron,startdebugger
+EXTSYM startdebugger
 %endif
 
 %ifdef __MSDOS__
@@ -196,17 +197,6 @@ NEWSYM tempdh, db 0
 
 SECTION .text
 
-
-NEWSYM continueprognokeys
-    mov byte[romloadskip],0
-%ifndef NO_DEBUGGER
-    mov byte[debuggeron],0
-%endif
-    mov byte[exiter],0
-
-    ccallv InitPreGame
-    jmp reexecuteb2
-
 ; Incorrect
 
 NEWSYM reexecuteb
@@ -227,7 +217,7 @@ NEWSYM reexecute
     inc esi
     dec ecx
     jnz .loopa
-reexecuteb2:
+NEWSYM reexecuteb2
     cmp byte[NoSoundReinit],1
     je .skippregame
     ccallv SetupPreGame
@@ -356,7 +346,8 @@ reexecuteb2:
     jz .noinsertchapter
     mov byte[pressed+eax],0
     ccallv MovieInsertChapter
-    jmp continueprognokeys
+    ccallv continueprognokeys
+    ret
 .noinsertchapter
     mov eax,[KeyNextChap]
     test byte[pressed+eax],1
@@ -364,7 +355,8 @@ reexecuteb2:
     mov byte[pressed+eax],0
     mov byte[multchange],1
     ccallv MovieSeekAhead
-    jmp continueprognokeys
+    ccallv continueprognokeys
+    ret
 .nonextchapter
     mov eax,[KeyPrevChap]
     test byte[pressed+eax],1
@@ -372,7 +364,8 @@ reexecuteb2:
     mov byte[pressed+eax],0
     mov byte[multchange],1
     ccallv MovieSeekBehind
-    jmp continueprognokeys
+    ccallv continueprognokeys
+    ret
 .noprevchapter
     cmp byte[SSKeyPressed],1
     je near showmenu
