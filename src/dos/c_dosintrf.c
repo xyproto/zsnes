@@ -194,7 +194,7 @@ void SetupPreGame(void)
 	cli();
 	set_handler(0x09, cs, handler9h);
 	set_handler(0x08, cs, handler8h);
-	asm_call(init60hz); // Set timer to 60/50Hz
+	init60hz(); // Set timer to 60/50Hz
 	sti();
 }
 

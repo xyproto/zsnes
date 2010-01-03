@@ -10,4 +10,7 @@ void endprog(void);
 
 void interror(void);
 
+// sets to either 60Hz or 50Hz depending on PAL/NTSC
+void init60hz(void);
+
 #endif

@@ -31,7 +31,7 @@ EXTSYM SetupPreGame,memtablew8,regaccessbankr8,showmenu,snesmap2,snesmmap
 EXTSYM DeInitPostGame,spcPCRam,xp,xpb,xpc,tablead
 EXTSYM tableadc,SA1UpdateDPage,Makemode7Table,nextmenupopup,MovieProcessing
 EXTSYM SFXEnable,wramdata,cycpbl,cycpblt,irqon,spcon
-EXTSYM multchange,romispal,scrndis,sprlefttot,sprleftpr,processsprites
+EXTSYM multchange,scrndis,sprlefttot,sprleftpr,processsprites
 EXTSYM cachesprites,opcjmptab,CheatOn,Check_Key,Get_Key,
 EXTSYM INTEnab,JoyCRead,NMIEnab,NumCheats,CurrentExecSA1,ReadInputDevice
 EXTSYM StartDrawNewGfx,VIRQLoc,cachevideo,cfield,cheatdata,curblank,curnmi
@@ -449,28 +449,6 @@ SECTION .text
 ;*******************************************************
 ; Int 08h vector
 ;*******************************************************
-
-; sets to either 60Hz or 50Hz depending on PAL/NTSC
-NEWSYM init60hz
-    cmp byte[romispal],0
-    jne .dopal
-    mov al,00110110b
-    out 43h,al
-    mov ax,19900        ; 65536/(60/((65536*24+175)/(60*60*24)))
-    mov dword[timercount],19900
-    out 40h,al
-    mov al,ah
-    out 40h,al
-    ret
-.dopal
-    mov al,00110110b
-    out 43h,al
-    mov ax,23863        ; 65536/(50/((65536*24+175)/(60*60*24)))
-    mov dword[timercount],23863
-    out 40h,al
-    mov al,ah
-    out 40h,al
-    ret
 
 NEWSYM init18_2hz
     mov al,00110110b

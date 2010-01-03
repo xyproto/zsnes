@@ -1,5 +1,6 @@
 #include <string.h>
 
+#include "../asm.h"
 #include "../asm_call.h"
 #include "../c_init.h"
 #include "../c_intrf.h"
@@ -11,10 +12,6 @@
 #include "../zmovie.h"
 #include "c_execute.h"
 #include "execute.h"
-
-#ifdef __MSDOS__
-#	include "../asm.h"
-#endif
 
 
 void start65816(void)
@@ -63,4 +60,16 @@ void interror(void)
 	deinitvideo();
 	PrintStr("Cannot process interrupt handler!\r\n");
 	DosExit();
+}
+
+
+void init60hz(void)
+{
+	u4 const ticks = romispal != 0 ?
+		23863 : // 65536/(50/((65536*24+175)/(60*60*24)))
+		19900;  // 65536/(60/((65536*24+175)/(60*60*24))) // XXX off, should be 19886
+	timercount = ticks;
+	outb(0x43, 0x36);
+	outb(0x40, ticks);
+	outb(0x40, ticks >> 8);
 }
