@@ -3,7 +3,6 @@
 #include "c_tablec.h"
 #include "e65816c.h"
 #include "table.h"
-#include "tablec.h"
 
 
 /* Sets the opcode tables
@@ -516,6 +515,41 @@ static void settableDm8(eop** const table)
 }
 
 
+static void settableDm16(eop** const table)
+{
+	table[0x61] = cCOp61m16d;
+	table[0x63] = cCOp63m16d;
+	table[0x65] = cCOp65m16d;
+	table[0x67] = cCOp67m16d;
+	table[0x69] = cCOp69m16d;
+	table[0x6D] = cCOp6Dm16d;
+	table[0x6F] = cCOp6Fm16d;
+	table[0x71] = cCOp71m16d;
+	table[0x72] = cCOp72m16d;
+	table[0x73] = cCOp73m16d;
+	table[0x75] = cCOp75m16d;
+	table[0x77] = cCOp77m16d;
+	table[0x79] = cCOp79m16d;
+	table[0x7D] = cCOp7Dm16d;
+	table[0x7F] = cCOp7Fm16d;
+	table[0xE1] = cCOpE1m16d;
+	table[0xE3] = cCOpE3m16d;
+	table[0xE5] = cCOpE5m16d;
+	table[0xE7] = cCOpE7m16d;
+	table[0xE9] = cCOpE9m16d;
+	table[0xED] = cCOpEDm16d;
+	table[0xEF] = cCOpEFm16d;
+	table[0xF1] = cCOpF1m16d;
+	table[0xF2] = cCOpF2m16d;
+	table[0xF3] = cCOpF3m16d;
+	table[0xF5] = cCOpF5m16d;
+	table[0xF7] = cCOpF7m16d;
+	table[0xF9] = cCOpF9m16d;
+	table[0xFD] = cCOpFDm16d;
+	table[0xFF] = cCOpFFm16d;
+}
+
+
 void inittablec(void)
 {
 	// set tablead  (NVMXDIZC) (  MXD   )
@@ -565,14 +599,14 @@ void inittablec(void)
 	settablem16(tableCc); // Table addresses (M:0,X:1,D:0)
 
 	settablem16(tableEc); // Table addresses (M:0,X:0,D:1)
-	asm volatile("call %P0" :: "X" (settableDm16), "D" (tableEc) : "memory");
+	settableDm16(tableEc);
 	settablex16(tableEc);
 
 	settablex16(tableFc); // Table addresses (M:1,X:0,D:1)
 	settableDm8(tableFc);
 
 	settablem16(tableGc); // Table addresses (M:0,X:1,D:1)
-	asm volatile("call %P0" :: "X" (settableDm16), "D" (tableGc) : "memory");
+	settableDm16(tableGc);
 
 	settableDm8(tableHc); // Table addresses (M:1,X:1,D:1)
 }
