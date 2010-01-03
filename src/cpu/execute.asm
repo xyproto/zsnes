@@ -450,16 +450,6 @@ SECTION .text
 ; Int 08h vector
 ;*******************************************************
 
-NEWSYM init18_2hz
-    mov al,00110110b
-    out 43h,al
-    mov ax,0
-    mov dword[timercount],65536
-    out 40h,al
-    mov al,ah
-    out 40h,al
-    ret
-
 %ifdef __MSDOS__
 NEWSYM handler8h
     cli

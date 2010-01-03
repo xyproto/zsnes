@@ -63,12 +63,24 @@ void interror(void)
 }
 
 
-void init60hz(void)
+static void set_timer_interval(u4 const ticks)
 {
-	u4 const hz    = romispal != 0 ? 50 : 60;
-	u4 const ticks = 1193182 /* frequency of the 8253/8254 */ / hz;
 	timercount = ticks;
 	outb(0x43, 0x36);
 	outb(0x40, ticks);
 	outb(0x40, ticks >> 8);
+}
+
+
+void init60hz(void)
+{
+	u4 const hz    = romispal != 0 ? 50 : 60;
+	u4 const ticks = 1193182 /* frequency of the 8253/8254 */ / hz;
+	set_timer_interval(ticks);
+}
+
+
+void init18_2hz(void)
+{
+	set_timer_interval(65536);
 }

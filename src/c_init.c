@@ -144,7 +144,7 @@ void DosExit(void)
 	if (AutoState == 1)
 		SaveSecondState();
 #ifdef __MSDOS__
-	asm_call(init18_2hz);
+	init18_2hz();
 #endif
 	zexit();
 }

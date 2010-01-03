@@ -205,7 +205,7 @@ void DeInitPostGame(void)
 	cli();
 	set_handler(0x09, oldhand9s, oldhand9o);
 	set_handler(0x08, oldhand8s, oldhand8o);
-	asm_call(init18_2hz); // Set timer to 18.2Hz
+	init18_2hz(); // Set timer to 18.2Hz
 	sti();
 
 	// DeINITSPC
