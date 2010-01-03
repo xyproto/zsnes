@@ -3,7 +3,6 @@
 
 #include "../types.h"
 
-extern void reexecute();
 extern void reexecuteb2();
 
 extern u1 NoSoundReinit;

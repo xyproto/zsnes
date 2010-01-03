@@ -7,6 +7,7 @@
 #include "../cfg.h"
 #include "../gblvars.h"
 #include "../gui/c_gui.h"
+#include "../macros.h"
 #include "../ui.h"
 #include "../vcache.h"
 #include "../zmovie.h"
@@ -28,6 +29,19 @@ void start65816(void)
 }
 
 
+static void reexecute(void)
+{
+	// clear keyboard presses
+	u1* i = pressed;
+	do
+	{
+		if (*i == 2) *i = 0;
+	}
+	while (++i != endof(pressed));
+	asm_call(reexecuteb2);
+}
+
+
 void continueprog(void)
 {
 	// clear keyboard presses
@@ -40,7 +54,7 @@ void continueprog(void)
 	exiter      = 0;
 
 	InitPreGame();
-	asm_call(reexecute);
+	reexecute();
 }
 
 
@@ -63,7 +77,7 @@ void reexecuteb(void)
 #ifndef __MSDOS__
 	asm_call(reexecuteb2);
 #else
-	asm_call(reexecute);
+	reexecute();
 #endif
 }
 

@@ -197,20 +197,6 @@ NEWSYM tempdh, db 0
 
 SECTION .text
 
-NEWSYM reexecute
-
-    ; clear keyboard presses
-    mov esi,pressed
-    mov ecx,256+128+64
-    mov al,0
-.loopa
-    cmp byte[esi],2
-    jne .notclear
-    mov [esi],al
-.notclear
-    inc esi
-    dec ecx
-    jnz .loopa
 NEWSYM reexecuteb2
     cmp byte[NoSoundReinit],1
     je .skippregame
