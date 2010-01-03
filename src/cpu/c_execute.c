@@ -65,9 +65,8 @@ void interror(void)
 
 void init60hz(void)
 {
-	u4 const ticks = romispal != 0 ?
-		23863 : // 65536/(50/((65536*24+175)/(60*60*24)))
-		19900;  // 65536/(60/((65536*24+175)/(60*60*24))) // XXX off, should be 19886
+	u4 const hz    = romispal != 0 ? 50 : 60;
+	u4 const ticks = 1193182 /* frequency of the 8253/8254 */ / hz;
 	timercount = ticks;
 	outb(0x43, 0x36);
 	outb(0x40, ticks);
