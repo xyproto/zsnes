@@ -14,6 +14,10 @@ void loadstate2(void);
 void statesaver(void);
 void zst_determine_newest(void);
 
+void statesaver(void);
+
+void loadstate(void);
+
 extern time_t   newestfiledate;
 extern uint32_t current_zst;
 extern uint32_t newest_zst;

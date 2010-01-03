@@ -2542,7 +2542,7 @@ uint16_t stackor = 0x0100;  // value to or stack to keep it from going to the wr
 uint8_t xp = 0;
 uint8_t xe = 0;
 uint8_t xirqb = 0;           // which bank the irqs start at
-uint32_t Curtableaddr = 0;   // Current table address
+uint32_t Curtableaddr = 0;
 
 void SA1Reset();
 void InitC4();

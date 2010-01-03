@@ -50,12 +50,12 @@ instruction rep stosd, which is able to do that (and much more).
 Since ZSNES is just full of func pointer arrays, it'll probably come in handy.
 */
 
-static void rep_stosd(void (**dest)(), void (*func_ptr), size_t num)
+static inline void rep_stosd(void (**dest)(), void (*func_ptr), size_t num)
 {
   while (num--) { dest[num] = func_ptr; }
 }
 
-static void map_mem(size_t dest, mrwp *src, size_t num)
+static inline void map_mem(size_t dest, mrwp *src, size_t num)
 {
   rep_stosd(memtabler8+dest, src->memr8, num);
   rep_stosd(memtablew8+dest, src->memw8, num);

@@ -52,6 +52,17 @@ enum MovieStatus { MOVIE_OFF = 0, MOVIE_PLAYBACK, MOVIE_RECORD, MOVIE_OLD_PLAY, 
 
 enum MZT_FORCE_MODE_SWITCH { RTR_OFF = 0, RTR_REPLAY_TO_RECORD, RTR_RECORD_TO_REPLAY };
 
-extern char MovieFrameStr[10];
+void MovieInsertChapter(void);
+
+void MovieSeekAhead(void);
+
+void MovieSeekBehind(void);
+
+void ResetDuringMovie(void);
+
+void MovieDumpRaw(void);
+
+extern char          MovieFrameStr[10];
+extern unsigned char MoviePassWaiting;
 
 #endif

@@ -1,6 +1,8 @@
 #ifndef REGSW_H
 #define REGSW_H
 
+#include "../types.h"
+
 extern void reg2100w();
 extern void reg2101w();
 extern void reg2102w();
@@ -89,5 +91,7 @@ extern void reg43x7w();
 extern void reg43x8w();
 extern void reg43x9w();
 extern void regINVALIDw();
+
+extern u1 multchange;
 
 #endif

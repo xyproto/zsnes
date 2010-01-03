@@ -76,7 +76,7 @@ NEWSYM writeon, db 0    ; Write enable/disable on snes rom memory
 NEWSYM totlines, dw 263 ; total # of lines
 
 ;This is saved in states
-NEWSYM curcyc,  db 0    ; cycles left in scanline
+NEWSYM curcyc,  db 0
 NEWSYM cacheud, db 1
 NEWSYM ccud,    db 0
 NEWSYM spcon,   db 0    ; SPC Enable (1=enabled)

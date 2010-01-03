@@ -1233,7 +1233,7 @@ void debugloadstate()
   stateloader(ZStateName, 0, 0);
 }
 
-void loadstate()
+void loadstate(void)
 {
   stateloader(ZStateName, 1, 0);
 }

@@ -19,9 +19,12 @@ extern u1    sprleftpr2[256];
 extern u1    sprleftpr3[256];
 extern u1    sprleftpr[256];
 extern u1    sprlefttot[256];
+extern u1*   snesmap2[256];
+extern u1*   snesmmap[256];
 extern u2    PrevPicture[56 * 64];
 extern u2    prevpal[256];         // previous palette buffer
 extern u4    ngpalcon2b[32];
 extern u4    ngpalcon4b[32];
+extern u4    tableadc[256];
 
 #endif

@@ -19,20 +19,20 @@
 
 %include "macros.mac"
 
-EXTSYM KeyRewind,statesaver,Voice0Status,UpdateDPage
-EXTSYM StartGUI,romdata,DosExit,sfxramdata
+EXTSYM KeyRewind,Voice0Status,UpdateDPage
+EXTSYM romdata,DosExit,sfxramdata
 EXTSYM device2,RawDumpInProgress
 EXTSYM KeySaveState,KeyLoadState,KeyQuickExit,KeyQuickLoad,KeyQuickRst
-EXTSYM GUIDoReset,GUIReset,KeyOnStA,KeyOnStB,ProcessKeyOn,C4Enable,KeyQuickClock
-EXTSYM KeyQuickSaveSPC,TimerEnable,splitflags,joinflags
-EXTSYM KeyQuickSnapShot,csounddisable
-EXTSYM Curtableaddr,curcyc,debugdisble,dmadata,guioff,memtabler8
-EXTSYM SetupPreGame,memtablew8,regaccessbankr8,showmenu,snesmap2,snesmmap
-EXTSYM DeInitPostGame,spcPCRam,xp,xpb,xpc,tablead
-EXTSYM tableadc,SA1UpdateDPage,Makemode7Table,nextmenupopup,MovieProcessing
-EXTSYM SFXEnable,wramdata,cycpbl,cycpblt,irqon,spcon
-EXTSYM multchange,scrndis,sprlefttot,sprleftpr,processsprites
-EXTSYM cachesprites,opcjmptab,CheatOn,Check_Key,Get_Key,
+EXTSYM GUIReset,KeyOnStA,KeyOnStB,ProcessKeyOn,C4Enable,KeyQuickClock
+EXTSYM KeyQuickSaveSPC,TimerEnable
+EXTSYM KeyQuickSnapShot
+EXTSYM memtabler8
+EXTSYM memtablew8
+EXTSYM tablead
+EXTSYM tableadc,nextmenupopup,MovieProcessing
+EXTSYM wramdata,cycpbl,cycpblt,irqon,spcon
+EXTSYM scrndis,sprlefttot,sprleftpr,processsprites
+EXTSYM cachesprites,opcjmptab,CheatOn
 EXTSYM INTEnab,JoyCRead,NMIEnab,NumCheats,CurrentExecSA1,ReadInputDevice
 EXTSYM StartDrawNewGfx,VIRQLoc,cachevideo,cfield,cheatdata,curblank,curnmi
 EXTSYM curypos,cycpl,doirqnext,drawline,exechdma,hdmadelay,intrset,newengen
@@ -43,26 +43,21 @@ EXTSYM SA1Message,MultiTapStat,idledetectspc,SA1Control,SA1Enable,SA1IRQEnable
 EXTSYM SPC700read,SPC700write,numspcvblleft,spc700idle,SA1IRQExec,ForceNewGfxOff
 EXTSYM LethEnData,GUIQuit,IRAM,SA1Ptr,SA1BWPtr,outofmemfix
 EXTSYM yesoutofmemory,ProcessMovies,ppustatus,C4VBlank
-EXTSYM ReturnFromSPCStall,scanlines,MainLoop,MoviePassWaiting,MovieDumpRaw
+EXTSYM ReturnFromSPCStall,scanlines,MainLoop,MoviePassWaiting
 EXTSYM NumberOfOpcodes,SfxCLSR,SfxSCMR,SfxPOR,sfx128lineloc,sfx160lineloc
 EXTSYM sfx192lineloc,sfxobjlineloc,sfxclineloc,PLOTJmpa,PLOTJmpb,FxTable
 EXTSYM FxTableb,FxTablec,FxTabled,SfxPBR,SCBRrel,SfxSCBR,SfxCOLR,SFXCounter
 EXTSYM fxbit01,fxbit01pcal,fxbit23,fxbit23pcal,fxbit45,fxbit45pcal,fxbit67
 EXTSYM fxbit67pcal,SfxSFR,nosprincr,cpucycle,switchtovirqdeb,switchtonmideb
-EXTSYM MovieSeekBehind,BackupCVFrame,RestoreCVFrame,loadstate,xe
-EXTSYM KeyInsrtChap,KeyNextChap,KeyPrevChap,MovieInsertChapter,MovieSeekAhead
-EXTSYM ResetDuringMovie,EMUPauseKey,INCRFrameKey,MovieWaiting,NoInputRead
+EXTSYM BackupCVFrame,RestoreCVFrame,xe
+EXTSYM KeyInsrtChap,KeyNextChap,KeyPrevChap
+EXTSYM EMUPauseKey,INCRFrameKey,MovieWaiting,NoInputRead
 EXTSYM AllocatedRewindStates,PauseFrameMode,RestorePauseFrame,BackupPauseFrame
-EXTSYM rtoflags,sprcnt,sprstart,sprtilecnt,sprend,sprendx,continueprog,endprog
-EXTSYM continueprognokeys,reexecuteb
-
-%ifndef NO_DEBUGGER
-EXTSYM startdebugger
-%endif
+EXTSYM rtoflags,sprcnt,sprstart,sprtilecnt,sprend,sprendx,endprog
 
 %ifdef __MSDOS__
 EXTSYM dssel,Game60hzcall,NextLineStart,FlipWait,LastLineStart,smallscreenon,ScreenScale
-EXTSYM cvidmode,GUI16VID,ScreenShotFormat,ResetTripleBuf
+EXTSYM cvidmode,GUI16VID,ScreenShotFormat
 %endif
 
 SECTION .data
@@ -195,205 +190,6 @@ NEWSYM NextNGDisplay, db 0
 NEWSYM TempVidInfo, dd 0
 NEWSYM tempdh, db 0
 
-SECTION .text
-
-NEWSYM reexecuteb2
-    cmp byte[NoSoundReinit],1
-    je .skippregame
-    ccallv SetupPreGame
-.skippregame
-
-    ; initialize variables (Copy from variables)
-    call UpdateDPage
-    call SA1UpdateDPage
-    ccallv Makemode7Table
-    cmp byte[SFXEnable],0
-    je .nosfxud
-    call UpdateSFX
-.nosfxud
-    xor eax,eax
-    xor ebx,ebx
-    xor ecx,ecx
-    xor edx,edx
-    mov bl,[xpb]
-    mov ax,[xpc]
-    test ax,8000h
-    jz .loweraddr
-    mov esi,[snesmmap+ebx*4]
-    jmp .skiplower
-.loweraddr
-    cmp ax,4300h
-    jb .lower
-    cmp dword[memtabler8+ebx*4],regaccessbankr8
-    je .dma
-.lower
-    mov esi,[snesmap2+ebx*4]
-    jmp .skiplower
-.dma
-    mov esi,dmadata-4300h
-.skiplower
-    mov [initaddrl],esi
-    add esi,eax                 ; add program counter to address
-    mov dl,[xp]                 ; set flags
-    mov dh,[curcyc]             ; set cycles
-
-    mov bl,dl
-
-    mov edi,[tableadc+ebx*4]
-    or byte[curexecstate],2
-
-    mov ebp,[spcPCRam]
-
-    mov byte[NoSoundReinit],0
-    mov byte[csounddisable],0
-    mov byte[NextNGDisplay],0
-
-    call splitflags
-
-    call execute
-
-    call joinflags
-
-    ; de-init variables (copy to variables)
-
-    mov [spcPCRam],ebp
-    mov [Curtableaddr],edi
-    mov [xp],dl
-    mov [curcyc],dh
-
-    mov eax,[initaddrl]
-    sub esi,eax                 ; subtract program counter by address
-    mov [xpc],si
-%ifdef __MSDOS__
-    call ResetTripleBuf
-%endif
-
-    mov eax,[KeySaveState]
-    test byte[pressed+eax],1
-    jnz .soundreinit
-    mov eax,[KeyLoadState]
-    test byte[pressed+eax],1
-    jz .skipsoundreinit
-.soundreinit
-    mov byte[NoSoundReinit],1
-    mov byte[csounddisable],1
-.skipsoundreinit
-
-    cmp byte[NoSoundReinit],1
-    je .skippostgame
-    ccallv DeInitPostGame
-.skippostgame
-
-    ;Multipass Movies
-    cmp byte[MoviePassWaiting],1
-    jne .nomoviepasswaiting
-    ccallv MovieDumpRaw
-    ccallv continueprog
-    ret
-.nomoviepasswaiting
-
-    ; clear all keys
-    ccall Check_Key
-    cmp al,0
-    je .nokeys
-.yeskeys
-    ccall Get_Key
-    ccall Check_Key
-    cmp al,0
-    jne .yeskeys
-.nokeys
-
-    cmp byte[nextmenupopup],1
-    je near showmenu
-    cmp byte[ReturnFromSPCStall],1
-    je near .activatereset
-    mov eax,[KeySaveState]
-    test byte[pressed+eax],1
-    jz .nosavestt
-    mov byte[pressed+1],0
-    mov byte[pressed+eax],2
-    ccallv statesaver
-    jmp reexecuteb
-.nosavestt
-    mov eax,[KeyLoadState]
-    test byte[pressed+eax],1
-    jz .noloadstt0
-    ccallv loadstate
-    jmp reexecuteb
-.noloadstt0
-    mov eax,[KeyInsrtChap]
-    test byte[pressed+eax],1
-    jz .noinsertchapter
-    mov byte[pressed+eax],0
-    ccallv MovieInsertChapter
-    ccallv continueprognokeys
-    ret
-.noinsertchapter
-    mov eax,[KeyNextChap]
-    test byte[pressed+eax],1
-    jz .nonextchapter
-    mov byte[pressed+eax],0
-    mov byte[multchange],1
-    ccallv MovieSeekAhead
-    ccallv continueprognokeys
-    ret
-.nonextchapter
-    mov eax,[KeyPrevChap]
-    test byte[pressed+eax],1
-    jz .noprevchapter
-    mov byte[pressed+eax],0
-    mov byte[multchange],1
-    ccallv MovieSeekBehind
-    ccallv continueprognokeys
-    ret
-.noprevchapter
-    cmp byte[SSKeyPressed],1
-    je near showmenu
-    cmp byte[SPCKeyPressed],1
-    je near showmenu
-%ifndef NO_DEBUGGER
-   cmp byte[debugdisble],0
-    jne .nodebugger
-    test byte[pressed+59],1
-    je .nostartdebugger
-    ccallv startdebugger
-    ret
-.nostartdebugger
-.nodebugger
-%endif
-    test byte[pressed+59],1
-    jne near showmenu
-    mov eax,[KeyQuickRst]
-    test byte[pressed+eax],1
-    jz .noreset
-.activatereset
-    pushad
-    mov byte[GUIReset],1
-    cmp byte[MovieProcessing],2 ;Recording
-    jne .nomovierecording
-    ccallv ResetDuringMovie
-    jmp .movieendif
-.nomovierecording
-    ccallv GUIDoReset
-.movieendif
-    popad
-    mov byte[ReturnFromSPCStall],0
-    ccallv continueprog
-    ret
-.noreset
-    cmp byte[guioff],1
-    jne .notguioff
-    ccallv endprog
-.notguioff
-    mov eax,[KeyQuickExit]
-    test byte[pressed+eax],1
-    jz .notpressed
-    ccallv endprog
-.notpressed
-    ccallv StartGUI
-    ret
-
-SECTION .data
 ; global variables
 NEWSYM invalid, db 0
 NEWSYM invopcd, db 0
@@ -407,7 +203,7 @@ NEWSYM opcd,      dd 0
 NEWSYM pdh,       dd 0
 NEWSYM pcury,     dd 0
 NEWSYM timercount, dd 0
-NEWSYM initaddrl, dd 0                  ; initial address location
+NEWSYM initaddrl, dd 0
 NEWSYM NetSent, dd 0
 NEWSYM nextframe, dd 0
 ;NEWSYM newgfxerror, db 'NEED MEMORY FOR GFX ENGINE',0
