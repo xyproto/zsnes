@@ -36,44 +36,6 @@ SECTION .text
 eopINVALID
     ret
 
-NEWSYM settablex16
-    mov dword[edi+5Ah*4],COp5Ax16
-    mov dword[edi+7Ah*4],COp7Ax16
-    mov dword[edi+84h*4],COp84x16
-    mov dword[edi+86h*4],COp86x16
-    mov dword[edi+88h*4],COp88x16
-    mov dword[edi+8Ch*4],COp8Cx16
-    mov dword[edi+8Eh*4],COp8Ex16
-    mov dword[edi+94h*4],COp94x16
-    mov dword[edi+96h*4],COp96x16
-    mov dword[edi+9Bh*4],COp9Bx16
-    mov dword[edi+0A0h*4],COpA0x16
-    mov dword[edi+0A2h*4],COpA2x16
-    mov dword[edi+0A4h*4],COpA4x16
-    mov dword[edi+0A6h*4],COpA6x16
-    mov dword[edi+0A8h*4],COpA8x16
-    mov dword[edi+0AAh*4],COpAAx16
-    mov dword[edi+0ACh*4],COpACx16
-    mov dword[edi+0AEh*4],COpAEx16
-    mov dword[edi+0B4h*4],COpB4x16
-    mov dword[edi+0B6h*4],COpB6x16
-    mov dword[edi+0BAh*4],COpBAx16
-    mov dword[edi+0BBh*4],COpBBx16
-    mov dword[edi+0BCh*4],COpBCx16
-    mov dword[edi+0BEh*4],COpBEx16
-    mov dword[edi+0C0h*4],COpC0x16
-    mov dword[edi+0C4h*4],COpC4x16
-    mov dword[edi+0C8h*4],COpC8x16
-    mov dword[edi+0CAh*4],COpCAx16
-    mov dword[edi+0CCh*4],COpCCx16
-    mov dword[edi+0DAh*4],COpDAx16
-    mov dword[edi+0E0h*4],COpE0x16
-    mov dword[edi+0E4h*4],COpE4x16
-    mov dword[edi+0E8h*4],COpE8x16
-    mov dword[edi+0ECh*4],COpECx16
-    mov dword[edi+0FAh*4],COpFAx16
-    ret
-
 NEWSYM settableDm8
     mov dword[edi+61h*4],COp61m8d
     mov dword[edi+63h*4],COp63m8d

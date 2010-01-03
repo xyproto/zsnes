@@ -441,6 +441,46 @@ static void settablem16(eop** const table)
 }
 
 
+static void settablex16(eop** const table)
+{
+	table[0x5A] = cCOp5Ax16;
+	table[0x7A] = cCOp7Ax16;
+	table[0x84] = cCOp84x16;
+	table[0x86] = cCOp86x16;
+	table[0x88] = cCOp88x16;
+	table[0x8C] = cCOp8Cx16;
+	table[0x8E] = cCOp8Ex16;
+	table[0x94] = cCOp94x16;
+	table[0x96] = cCOp96x16;
+	table[0x9B] = cCOp9Bx16;
+	table[0xA0] = cCOpA0x16;
+	table[0xA2] = cCOpA2x16;
+	table[0xA4] = cCOpA4x16;
+	table[0xA6] = cCOpA6x16;
+	table[0xA8] = cCOpA8x16;
+	table[0xAA] = cCOpAAx16;
+	table[0xAC] = cCOpACx16;
+	table[0xAE] = cCOpAEx16;
+	table[0xB4] = cCOpB4x16;
+	table[0xB6] = cCOpB6x16;
+	table[0xBA] = cCOpBAx16;
+	table[0xBB] = cCOpBBx16;
+	table[0xBC] = cCOpBCx16;
+	table[0xBE] = cCOpBEx16;
+	table[0xC0] = cCOpC0x16;
+	table[0xC4] = cCOpC4x16;
+	table[0xC8] = cCOpC8x16;
+	table[0xCA] = cCOpCAx16;
+	table[0xCC] = cCOpCCx16;
+	table[0xDA] = cCOpDAx16;
+	table[0xE0] = cCOpE0x16;
+	table[0xE4] = cCOpE4x16;
+	table[0xE8] = cCOpE8x16;
+	table[0xEC] = cCOpECx16;
+	table[0xFA] = cCOpFAx16;
+}
+
+
 void inittablec(void)
 {
 	// set tablead  (NVMXDIZC) (  MXD   )
@@ -483,17 +523,17 @@ void inittablec(void)
 
 	// set proper functions
 	settablem16(tableAc); // Table addresses (M:0,X:0,D:0)
-	asm volatile("call %P0" :: "X" (settablex16),  "D" (tableAc) : "memory");
+	settablex16(tableAc);
 
-	asm volatile("call %P0" :: "X" (settablex16),  "D" (tableBc) : "memory"); // Table addresses (M:1,X:0,D:0)
+	settablex16(tableBc); // Table addresses (M:1,X:0,D:0)
 
 	settablem16(tableCc); // Table addresses (M:0,X:1,D:0)
 
 	settablem16(tableEc); // Table addresses (M:0,X:0,D:1)
 	asm volatile("call %P0" :: "X" (settableDm16), "D" (tableEc) : "memory");
-	asm volatile("call %P0" :: "X" (settablex16),  "D" (tableEc) : "memory");
+	settablex16(tableEc);
 
-	asm volatile("call %P0" :: "X" (settablex16),  "D" (tableFc) : "memory"); // Table addresses (M:1,X:0,D:1)
+	settablex16(tableFc); // Table addresses (M:1,X:0,D:1)
 	asm volatile("call %P0" :: "X" (settableDm8),  "D" (tableFc) : "memory");
 
 	settablem16(tableGc); // Table addresses (M:0,X:1,D:1)

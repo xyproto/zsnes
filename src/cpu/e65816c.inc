@@ -545,38 +545,38 @@ NEWSYM cCOp02   ; COP s
 NEWSYM cCOpE0x8 ; CPX #
    addr_I_8br
    CPXMacro8b
-COpE0x16:; CPX #
+NEWSYM cCOpE0x16; CPX #
    addr_I_16br
    CPXMacro16b
 NEWSYM cCOpE4x8 ; CPX d
    addr_d_8br
    CPXMacro8b
-COpE4x16:; CPX d
+NEWSYM cCOpE4x16; CPX d
    addr_d_16br
    CPXMacro16b
 NEWSYM cCOpECx8 ; CPX a
    addr_a_8br
    CPXMacro8b
-COpECx16:; CPX a
+NEWSYM cCOpECx16; CPX a
    addr_a_16br
    CPXMacro16b
 
 NEWSYM cCOpC0x8 ; CPY #
    addr_I_8br
    CPYMacro8b
-COpC0x16:; CPY #
+NEWSYM cCOpC0x16; CPY #
    addr_I_16br
    CPYMacro16b
 NEWSYM cCOpC4x8 ; CPY d
    addr_d_8br
    CPYMacro8b
-COpC4x16:; CPY d
+NEWSYM cCOpC4x16; CPY d
    addr_d_16br
    CPYMacro16b
 NEWSYM cCOpCCx8 ; CPY a
    addr_a_8br
    CPYMacro8b
-COpCCx16:; CPY a
+NEWSYM cCOpCCx16; CPY a
    addr_a_16br
    CPYMacro16b
 
@@ -646,7 +646,7 @@ NEWSYM cCOpCAx8 ; DEX i
     mov al,[xx]
     flagsetnz8b
     endloop
-COpCAx16:; DEX i
+NEWSYM cCOpCAx16; DEX i
     dec word[xx]
     mov ax,[xx]
     flagsetnz16b
@@ -656,7 +656,7 @@ NEWSYM cCOp88x8 ; DEY i
     mov al,[xy]
     flagsetnz8b
     endloop
-COp88x16:; DEY i
+NEWSYM cCOp88x16; DEY i
     dec word[xy]
     mov ax,[xy]
     flagsetnz16b
@@ -821,7 +821,7 @@ NEWSYM cCOpE8x8 ; INX i
     mov al,[xx]
     flagsetnz8b
     endloop
-COpE8x16:; INX i
+NEWSYM cCOpE8x16; INX i
     inc word[xx]
     mov ax,[xx]
     flagsetnz16b
@@ -831,7 +831,7 @@ NEWSYM cCOpC8x8 ; INY i
     mov al,[xy]
     flagsetnz8b
     endloop
-COpC8x16:; INY i
+NEWSYM cCOpC8x16; INY i
     inc word[xy]
     mov ax,[xy]
     flagsetnz16b
@@ -949,62 +949,62 @@ NEWSYM cCOpBFm16; LDA al,x
 NEWSYM cCOpA2x8 ; LDX #
    addr_I_8br
    LDXMacro8b
-COpA2x16:; LDX #
+NEWSYM cCOpA2x16; LDX #
    addr_I_16br
    LDXMacro16b
 NEWSYM cCOpA6x8 ; LDX d
    addr_d_8br
    LDXMacro8b
-COpA6x16:; LDX d
+NEWSYM cCOpA6x16; LDX d
    addr_d_16br
    LDXMacro16b
 NEWSYM cCOpAEx8 ; LDX a
    addr_a_8br
    LDXMacro8b
-COpAEx16:; LDX a
+NEWSYM cCOpAEx16; LDX a
    addr_a_16br
    LDXMacro16b
 NEWSYM cCOpB6x8 ; LDX d,y
    addr_dCy_8br
    LDXMacro8b
-COpB6x16:; LDX d,y
+NEWSYM cCOpB6x16; LDX d,y
    addr_dCy_16br
    LDXMacro16b
 NEWSYM cCOpBEx8 ; LDX a,y
    addr_aCy_8br
    LDXMacro8b
-COpBEx16:; LDX a,y
+NEWSYM cCOpBEx16; LDX a,y
    addr_aCy_16br
    LDXMacro16b
 
 NEWSYM cCOpA0x8 ; LDY #
    addr_I_8br
    LDYMacro8b
-COpA0x16:; LDY #
+NEWSYM cCOpA0x16; LDY #
    addr_I_16br
    LDYMacro16b
 NEWSYM cCOpA4x8 ; LDY d
    addr_d_8br
    LDYMacro8b
-COpA4x16:; LDY d
+NEWSYM cCOpA4x16; LDY d
    addr_d_16br
    LDYMacro16b
 NEWSYM cCOpACx8 ; LDY a
    addr_a_8br
    LDYMacro8b
-COpACx16:; LDY a
+NEWSYM cCOpACx16; LDY a
    addr_a_16br
    LDYMacro16b
 NEWSYM cCOpB4x8 ; LDY d,x
    addr_dCx_8br
    LDYMacro8b
-COpB4x16:; LDY d,x
+NEWSYM cCOpB4x16; LDY d,x
    addr_dCx_16br
    LDYMacro16b
 NEWSYM cCOpBCx8 ; LDY a,x
    addr_aCx_8br
    LDYMacro8b
-COpBCx16:; LDY a,x
+NEWSYM cCOpBCx16; LDY a,x
    addr_aCx_16br
    LDYMacro16b
 
@@ -1179,11 +1179,11 @@ NEWSYM cCOp08   ; PHP s
    PUSHMacro8bp
 NEWSYM cCOpDAx8 ; PHX s
    PUSHMacro8b [xx]
-COpDAx16:; PHX s
+NEWSYM cCOpDAx16; PHX s
    PUSHMacro16b [xx], [xx+1]
 NEWSYM cCOp5Ax8 ; PHY s
    PUSHMacro8b [xy]
-COp5Ax16:; PHY s
+NEWSYM cCOp5Ax16; PHY s
    PUSHMacro16b [xy], [xy+1]
 
 NEWSYM cCOp68m8 ; PLA s
@@ -1198,11 +1198,11 @@ NEWSYM cCOp28   ; PLP s
    POPMacroP
 NEWSYM cCOpFAx8 ; PLX s
    POPMacro8b [xx]
-COpFAx16:; PLX s
+NEWSYM cCOpFAx16; PLX s
    POPMacro16b [xx], [xx+1]
 NEWSYM cCOp7Ax8 ; PLY s
    POPMacro8b [xy]
-COp7Ax16:; PLY s
+NEWSYM cCOp7Ax16; PLY s
    POPMacro16b [xy], [xy+1]
 
 NEWSYM cCOpC2   ; REP #
@@ -1630,7 +1630,7 @@ NEWSYM cCOp86x8 ; STX d
    STXMacro8b
    addr_d_8bw
    endloop
-COp86x16:; STX d
+NEWSYM cCOp86x16; STX d
    STXMacro16b
    addr_d_16bw
    endloop
@@ -1638,7 +1638,7 @@ NEWSYM cCOp8Ex8 ; STX a
    STXMacro8b
    addr_a_8bw
    endloop
-COp8Ex16:; STX a
+NEWSYM cCOp8Ex16; STX a
    STXMacro16b
    addr_a_16bw
    endloop
@@ -1646,7 +1646,7 @@ NEWSYM cCOp96x8 ; STX d,y
    STXMacro8b
    addr_dCy_8bw
    endloop
-COp96x16:; STX d,y
+NEWSYM cCOp96x16; STX d,y
    STXMacro16b
    addr_dCy_16bw
    endloop
@@ -1655,7 +1655,7 @@ NEWSYM cCOp84x8 ; STY d
    STYMacro8b
    addr_d_8bw
    endloop
-COp84x16:; STY d
+NEWSYM cCOp84x16; STY d
    STYMacro16b
    addr_d_16bw
    endloop
@@ -1663,7 +1663,7 @@ NEWSYM cCOp8Cx8 ; STY a
    STYMacro8b
    addr_a_8bw
    endloop
-COp8Cx16:; STY a
+NEWSYM cCOp8Cx16; STY a
    STYMacro16b
    addr_a_16bw
    endloop
@@ -1671,7 +1671,7 @@ NEWSYM cCOp94x8 ; STYd,x
    STYMacro8b
    addr_dCx_8bw
    endloop
-COp94x16:; STYd,x
+NEWSYM cCOp94x16; STYd,x
    STYMacro16b
    addr_dCx_16bw
    endloop
@@ -1872,7 +1872,7 @@ NEWSYM cCOpAAx8 ; TAX i
     mov [xx],al
     flagsetnz8b
     endloop
-COpAAx16:; TAX i
+NEWSYM cCOpAAx16; TAX i
     mov ax,[xa]
     mov [xx],ax
     flagsetnz16b
@@ -1882,7 +1882,7 @@ NEWSYM cCOpA8x8 ; TAY i
     mov [xy],al
     flagsetnz8b
     endloop
-COpA8x16:; TAY i
+NEWSYM cCOpA8x16; TAY i
     mov ax,[xa]
     mov [xy],ax
     flagsetnz16b
@@ -1917,7 +1917,7 @@ NEWSYM cCOpBAx8 ; TSX i
     mov [xx],al
     flagsetnz8b
     endloop
-COpBAx16:; TSX i
+NEWSYM cCOpBAx16; TSX i
     mov ax,[xs]
     mov [xx],ax
     flagsetnz16b
@@ -1946,7 +1946,7 @@ NEWSYM cCOp9Bx8 ; TXY i
     mov [xy],al
     flagsetnz8b
     endloop
-COp9Bx16:; TXY i
+NEWSYM cCOp9Bx16; TXY i
     mov ax,[xx]
     mov [xy],ax
     flagsetnz16b
@@ -1966,7 +1966,7 @@ NEWSYM cCOpBBx8 ; TYX i
     mov [xx],al
     flagsetnz8b
     endloop
-COpBBx16:; TYX i
+NEWSYM cCOpBBx16; TYX i
     mov ax,[xy]
     mov [xx],ax
     flagsetnz16b
