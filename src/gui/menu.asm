@@ -32,7 +32,7 @@ EXTSYM SPCKeyPressed,StopSound,StartSound,ExecExitOkay,t1cc,Clear2xSaIBuffer
 EXTSYM ScreenShotFormat,spcsaved,savespcdata
 EXTSYM exiter,xpb,xpc,snesmmap,memtabler8,snesmap2,regaccessbankr8,dmadata,initaddrl
 EXTSYM spcPCRam,xp,curcyc,Curtableaddr,UpdateDPage,splitflags,execsingle,joinflags
-EXTSYM pdh,SPCRAM,cvidmode
+EXTSYM pdh,SPCRAM,cvidmode,GUIBufferData
 
 %ifdef __MSDOS__
 EXTSYM GUI16VID,drawhline,drawvline
@@ -47,37 +47,6 @@ EXTSYM Grab_PNG_Data
 %endif
 
 SECTION .text
-
-GUIBufferData:
-%ifdef __MSDOS__
-    mov ecx,16000
-    cmp byte[cbitmode],1
-    jne near .16b
-    add ecx,16384
-.16b
-%else
-    mov ecx,32384
-%endif
-    ; copy to spritetable
-    mov esi,[vidbuffer]
-    mov edi,[spritetablea]
-    add esi,4*384
-    add edi,4*384
-.loop
-    mov eax,[esi]
-    mov [edi],eax
-    add esi,4
-    add edi,4
-    dec ecx
-    jnz .loop
-    mov edi,sprlefttot
-    mov ecx,64*5
-.a
-    mov dword[edi],0
-    add edi,4
-    dec ecx
-    jnz .a
-    ret
 
 GUIUnBuffer:
 %ifdef __MSDOS__
@@ -218,7 +187,7 @@ NEWSYM showmenu
     mov byte[pressed+1],0
     mov byte[pressed+59],0
     mov byte[curblank],00h
-    call GUIBufferData
+    ccallv GUIBufferData
     ; Draw box
     call menudrawbox8b
     call menudrawbox8b
