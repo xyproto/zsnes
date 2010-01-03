@@ -57,6 +57,17 @@ void continueprognokeys(void)
 }
 
 
+// Incorrect
+void reexecuteb(void)
+{
+#ifndef __MSDOS__
+	asm_call(reexecuteb2);
+#else
+	asm_call(reexecute);
+#endif
+}
+
+
 void endprog(void)
 {
 	deinitvideo();

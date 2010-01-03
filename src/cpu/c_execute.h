@@ -8,6 +8,8 @@ void continueprog(void);
 
 void continueprognokeys(void);
 
+void reexecuteb(void);
+
 void endprog(void);
 
 void interror(void);

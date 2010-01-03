@@ -54,7 +54,7 @@ EXTSYM KeyInsrtChap,KeyNextChap,KeyPrevChap,MovieInsertChapter,MovieSeekAhead
 EXTSYM ResetDuringMovie,EMUPauseKey,INCRFrameKey,MovieWaiting,NoInputRead
 EXTSYM AllocatedRewindStates,PauseFrameMode,RestorePauseFrame,BackupPauseFrame
 EXTSYM rtoflags,sprcnt,sprstart,sprtilecnt,sprend,sprendx,continueprog,endprog
-EXTSYM continueprognokeys
+EXTSYM continueprognokeys,reexecuteb
 
 %ifndef NO_DEBUGGER
 EXTSYM startdebugger
@@ -197,12 +197,6 @@ NEWSYM tempdh, db 0
 
 SECTION .text
 
-; Incorrect
-
-NEWSYM reexecuteb
-%ifndef __MSDOS__
-    jmp reexecuteb2
-%endif
 NEWSYM reexecute
 
     ; clear keyboard presses
