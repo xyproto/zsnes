@@ -314,15 +314,6 @@ NEWSYM showmenu
     mov eax,[MsgCount]
     mov [MessageOn],eax
     jmp .nospcsave
-.unablespc
-    mov dword[Msgptr],.unable
-    mov eax,[MsgCount]
-    mov [MessageOn],eax
-    jmp .nospcsave
-.yesesc
-    mov dword[Msgptr],.escpress
-    mov eax,[MsgCount]
-    mov [MessageOn],eax
 .nospcsave
     cmp dword[menucloc],30*288
     jne .nosnddmp
@@ -397,8 +388,6 @@ SECTION .data
 .sndbufsav db 'BUFFER SAVED AS SOUNDDMP.RAW',0
 .search    db 'SEARCHING FOR SONG START.',0
 .nosound   db 'SOUND MUST BE ENABLED.',0
-.unable    db 'CANNOT USE IN NEW GFX ENGINE.',0
-.escpress  db 'ESC TERMINATED SEARCH.',0
 SECTION .text
 
 NEWSYM menudrawbox8b
