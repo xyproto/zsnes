@@ -122,7 +122,6 @@ NEWSYM Sflagc,   dd 0
 SECTION .bss
 NEWSYM WhichSW, resb 1
 NEWSYM WhichGR, resb 1
-NEWSYM autofr,  resb 1
 TurboCB resb 1
 
 NEWSYM JoyAOrig, resd 1
