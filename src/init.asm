@@ -36,7 +36,7 @@ EXTSYM pl4rightk,pl4Xk,pl4Ak,pl4Lk,pl4Yk,pl4Bk,pl4Rk,pl4Xtk,pl4Ytk,pl4Atk,pl4Btk
 EXTSYM pl4Ltk,pl4Rtk,pl4ULk,pl4URk,pl4DLk,pl4DRk,pl5contrl,pl5selk,pl5startk
 EXTSYM pl5upk,pl5downk,pl5leftk,pl5rightk,pl5Xk,pl5Ak,pl5Lk,pl5Yk,pl5Bk,pl5Rk
 EXTSYM pl5Xtk,pl5Ytk,pl5Atk,pl5Btk,pl5Ltk,pl5Rtk,pl5ULk,pl5URk,pl5DLk,pl5DRk
-EXTSYM CombinDataGlob,NumCombo,GUIComboGameSpec,mousexloc,mouseyloc,extlatch
+EXTSYM CombinDataGlob,NumCombo,GUIComboGameSpec,mousexloc,mouseyloc
 EXTSYM romdata,wramdata,romispal,AllowUDLR
 EXTSYM device1,device2,processmouse1,processmouse2,SSPause,ProcessCombo
 
@@ -133,7 +133,6 @@ NEWSYM JoyBNow, resd 1
 NEWSYM JoyCNow, resd 1
 NEWSYM JoyDNow, resd 1
 NEWSYM JoyENow, resd 1
-NEWSYM LethEnData, resd 1
 NEWSYM ComboCounter, resb 1
 SECTION .text
 
@@ -380,17 +379,8 @@ NEWSYM ReadInputDevice
     mov [eax+40Eh],bl
 .not
 ;    mov word[JoyBOrig+2],000Eh
-;    and dword[LethEnData],0000000FFh
-;    or dword[LethEnData],055010000h
-;    inc byte[LethEnData]
-    test byte[LethEnData],1
-    jz .n1
-;    mov byte[LethEnData+2],8
-    mov byte[extlatch],0
-.n1
     test byte[mousebuttons],01h
     jz .nobutton1b
-;    or dword[LethEnData+2],10h
     or byte[JoyAOrig+3],80h
 .nobutton1b
     push eax
@@ -398,11 +388,9 @@ NEWSYM ReadInputDevice
     cmp byte[pressed+eax],0
     pop eax
     jz .nobutton3b
-;    or byte[LethEnData+2],40h
 .nobutton3b
     test byte[mousebuttons],02h
     jz .nobutton4b
-;    or byte[LethEnData+2],40h
     or byte[JoyAOrig+2],80h
 .nobutton4b
     jmp .noinput2
