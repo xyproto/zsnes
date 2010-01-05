@@ -21,16 +21,12 @@
 
 %include "macros.mac"
 
-EXTSYM FPSOn,cbitmode,copyvid,OutputGraphicString,OutputGraphicString16b
-EXTSYM vidbuffer,drawhline16b,drawvline16b,pressed,Grab_BMP_Data,Grab_BMP_Data_8
-EXTSYM vesa2_bpos,vesa2_clbit,vesa2_gpos,vesa2_rpos,Get_Key,Check_Key
-EXTSYM ScreenShotFormat,exiter,xpb,xpc,snesmmap,memtabler8,snesmap2
-EXTSYM regaccessbankr8,dmadata,initaddrl,spcPCRam,xp,curcyc,Curtableaddr
-EXTSYM UpdateDPage,splitflags,execsingle,joinflags,pdh,SPCRAM
-
-%ifdef __MSDOS__
-EXTSYM drawhline,drawvline
-%endif
+EXTSYM FPSOn,cbitmode,copyvid,OutputGraphicString16b,vidbuffer,drawhline16b
+EXTSYM drawvline16b,pressed,Grab_BMP_Data,Grab_BMP_Data_8,vesa2_bpos,vesa2_clbit
+EXTSYM vesa2_gpos,vesa2_rpos,Get_Key,Check_Key,ScreenShotFormat,exiter,xpb,xpc
+EXTSYM snesmmap,memtabler8,snesmap2,regaccessbankr8,dmadata,initaddrl,spcPCRam
+EXTSYM xp,curcyc,Curtableaddr,UpdateDPage,splitflags,execsingle,joinflags,pdh
+EXTSYM SPCRAM
 
 %ifndef NO_DEBUGGER
 EXTSYM numinst,debuggeron
@@ -45,111 +41,16 @@ NEWSYM MenuDisplace, resd 1
 NEWSYM MenuDisplace16, resd 1
 NEWSYM SPCSave, resb 1
 
-SECTION .text
-
-NEWSYM menudrawbox8b
-%ifdef __MSDOS__
-    cmp byte[cbitmode],1
-    je near menudrawbox16b
-    ; draw a small blue box with a white border
-    mov esi,40+20*288
-    add esi,[vidbuffer]
-    add esi,[MenuDisplace]
-    mov ecx,150
-    mov al,95
-.loop
-    mov byte[esi],144
-    inc esi
-    dec ecx
-    jnz .loop
-    add esi,288-150
-    dec al
-    mov ecx,150
-    jnz .loop
-    mov al,128
-    ; Draw lines
-    mov esi,40+20*288
-    add esi,[vidbuffer]
-    add esi,[MenuDisplace]
-    ccallv drawhline, esi, 150, eax
-    mov esi,40+20*288
-    add esi,[vidbuffer]
-    add esi,[MenuDisplace]
-    ccallv drawvline, esi, 95, eax
-    mov esi,40+114*288
-    add esi,[vidbuffer]
-    add esi,[MenuDisplace]
-    ccallv drawhline, esi, 150, eax
-    mov esi,40+32*288
-    add esi,[vidbuffer]
-    add esi,[MenuDisplace]
-    ccallv drawhline, esi, 150, eax
-    mov esi,189+20*288
-    add esi,[vidbuffer]
-    add esi,[MenuDisplace]
-    ccallv drawvline, esi, 95, eax
-    call menudrawcursor8b
-
-    mov esi,45+23*288
-    add esi,[vidbuffer]
-    add esi,[MenuDisplace]
-    ccall OutputGraphicString, esi, .string
-    mov esi,45+35*288
-    add esi,[vidbuffer]
-    add esi,[MenuDisplace]
-    ccall OutputGraphicString, esi, .stringa
-    mov esi,45+45*288
-    add esi,[vidbuffer]
-    add esi,[MenuDisplace]
-    mov edi,.stringb
-    test byte[FPSOn],1
-    jz .nofps
-    mov edi,.stringc
-.nofps
-    ccall OutputGraphicString, esi, edi
-    mov esi,45+55*288
-    add esi,[vidbuffer]
-    add esi,[MenuDisplace]
-    ccall OutputGraphicString, esi, .stringd
-    mov esi,45+65*288
-    add esi,[vidbuffer]
-    add esi,[MenuDisplace]
-    ccall OutputGraphicString, esi, .stringe
-    mov esi,45+75*288
-    add esi,[vidbuffer]
-    add esi,[MenuDisplace]
-    ccall OutputGraphicString, esi, .stringf
-    mov esi,45+85*288
-    add esi,[vidbuffer]
-    add esi,[MenuDisplace]
-    ccall OutputGraphicString, esi, .stringg
-    mov esi,45+95*288
-    add esi,[vidbuffer]
-    add esi,[MenuDisplace]
-    ccall OutputGraphicString, esi, .stringh
-    mov esi,45+105*288
-    add esi,[vidbuffer]
-    add esi,[MenuDisplace]
-    ccall OutputGraphicString, esi, menudrawbox_stringi
-;    mov al,[newengen]
-;    mov byte[newengen],0
-    ccallv copyvid
-;    mov [newengen],al
-%else
-    jmp menudrawbox16b
-%endif
-    ret
-
 SECTION .data
-.string db 'MISC OPTIONS',0
-.stringa db 'SAVE SNAPSHOT',0
-.stringb db 'SHOW FPS',0
-.stringc db 'HIDE FPS',0
-.stringd db 'SAVE SPC DATA',0
-.stringe db 'SOUND BUFFER DUMP',0
-.stringf db 'SNAPSHOT/INCR FRM',0
-.stringg db 'INCR FRAME ONLY',0
-.stringh db 'MOVE THIS WINDOW',0
+NEWSYM menudrawbox_string,  db 'MISC OPTIONS',0
+NEWSYM menudrawbox_stringa, db 'SAVE SNAPSHOT',0
+NEWSYM menudrawbox_stringb, db 'SHOW FPS',0
+NEWSYM menudrawbox_stringc, db 'HIDE FPS',0
+NEWSYM menudrawbox_stringd, db 'SAVE SPC DATA',0
+NEWSYM menudrawbox_stringe, db 'SOUND BUFFER DUMP',0
+NEWSYM menudrawbox_stringf, db 'SNAPSHOT/INCR FRM',0
+NEWSYM menudrawbox_stringg, db 'INCR FRAME ONLY',0
+NEWSYM menudrawbox_stringh, db 'MOVE THIS WINDOW',0
 NEWSYM menudrawbox_stringi, db 'IMAGE FORMAT: ---',0
 SECTION .text
 
@@ -275,40 +176,40 @@ NEWSYM menudrawbox16b
     mov esi,45*2+23*288*2
     add esi,[vidbuffer]
     add esi,[MenuDisplace16]
-    ccallv OutputGraphicString16b, esi, menudrawbox8b.string
+    ccallv OutputGraphicString16b, esi, menudrawbox_string
     mov esi,45*2+35*288*2
     add esi,[vidbuffer]
     add esi,[MenuDisplace16]
-    ccallv OutputGraphicString16b, esi, menudrawbox8b.stringa
+    ccallv OutputGraphicString16b, esi, menudrawbox_stringa
     mov esi,45*2+45*288*2
     add esi,[vidbuffer]
     add esi,[MenuDisplace16]
-    mov edi,menudrawbox8b.stringb
+    mov edi,menudrawbox_stringb
     test byte[FPSOn],1
     jz .nofps
-    mov edi,menudrawbox8b.stringc
+    mov edi,menudrawbox_stringc
 .nofps
     ccallv OutputGraphicString16b, esi, edi
     mov esi,45*2+55*288*2
     add esi,[vidbuffer]
     add esi,[MenuDisplace16]
-    ccallv OutputGraphicString16b, esi, menudrawbox8b.stringd
+    ccallv OutputGraphicString16b, esi, menudrawbox_stringd
     mov esi,45*2+65*288*2
     add esi,[vidbuffer]
     add esi,[MenuDisplace16]
-    ccallv OutputGraphicString16b, esi, menudrawbox8b.stringe
+    ccallv OutputGraphicString16b, esi, menudrawbox_stringe
     mov esi,45*2+75*288*2
     add esi,[vidbuffer]
     add esi,[MenuDisplace16]
-    ccallv OutputGraphicString16b, esi, menudrawbox8b.stringf
+    ccallv OutputGraphicString16b, esi, menudrawbox_stringf
     mov esi,45*2+85*288*2
     add esi,[vidbuffer]
     add esi,[MenuDisplace16]
-    ccallv OutputGraphicString16b, esi, menudrawbox8b.stringg
+    ccallv OutputGraphicString16b, esi, menudrawbox_stringg
     mov esi,45*2+95*288*2
     add esi,[vidbuffer]
     add esi,[MenuDisplace16]
-    ccallv OutputGraphicString16b, esi, menudrawbox8b.stringh
+    ccallv OutputGraphicString16b, esi, menudrawbox_stringh
     mov esi,45*2+105*288*2
     add esi,[vidbuffer]
     add esi,[MenuDisplace16]

@@ -58,6 +58,48 @@ static void GUIUnBuffer(void)
 }
 
 
+static void menudrawbox8b(void)
+{
+#ifdef __MSDOS__
+	if (cbitmode != 1)
+	{
+		// draw a small blue box with a white border
+		u1* buf = vidbuffer + MenuDisplace + 40 + 20 * 288;
+		u4  h   = 95;
+		do
+		{
+			memset(buf, 144, 150);
+			buf += 288;
+		}
+		while (--h != 0);
+
+		// Draw lines
+		drawhline(vidbuffer + MenuDisplace +  40 +  20 * 288, 150, 128);
+		drawvline(vidbuffer + MenuDisplace +  40 +  20 * 288,  95, 128);
+		drawhline(vidbuffer + MenuDisplace +  40 + 114 * 288, 150, 128);
+		drawhline(vidbuffer + MenuDisplace +  40 +  32 * 288, 150, 128);
+		drawvline(vidbuffer + MenuDisplace + 189 +  20 * 288,  95, 128);
+		asm_call(menudrawcursor8b);
+
+		OutputGraphicString(vidbuffer + MenuDisplace + 45 +  23 * 288, menudrawbox_string);
+		OutputGraphicString(vidbuffer + MenuDisplace + 45 +  35 * 288, menudrawbox_stringa);
+		OutputGraphicString(vidbuffer + MenuDisplace + 45 +  45 * 288, FPSOn & 1 ? menudrawbox_stringc : menudrawbox_stringb);
+		OutputGraphicString(vidbuffer + MenuDisplace + 45 +  55 * 288, menudrawbox_stringd);
+		OutputGraphicString(vidbuffer + MenuDisplace + 45 +  65 * 288, menudrawbox_stringe);
+		OutputGraphicString(vidbuffer + MenuDisplace + 45 +  75 * 288, menudrawbox_stringf);
+		OutputGraphicString(vidbuffer + MenuDisplace + 45 +  85 * 288, menudrawbox_stringg);
+		OutputGraphicString(vidbuffer + MenuDisplace + 45 +  95 * 288, menudrawbox_stringh);
+		OutputGraphicString(vidbuffer + MenuDisplace + 45 + 105 * 288, menudrawbox_stringi);
+		copyvid();
+	}
+	else
+#endif
+	{
+		asm_call(menudrawbox16b);
+	}
+}
+
+
 #ifdef __MSDOS__
 static inline void SetPal(u1 const i, u1 const r, u1 const g, u1 const b)
 {
@@ -144,15 +186,15 @@ void showmenu(void)
 			curblank      = 0;
 			GUIBufferData();
 			// Draw box
-			asm_call(menudrawbox8b);
-			asm_call(menudrawbox8b); // XXX twice?
+			menudrawbox8b();
+			menudrawbox8b(); // XXX twice?
 			if (newengen != 0) GUIOn = 1;
 			copyvid();
 			StopSound();
 			for (;;)
 			{
 				//GUIUnBuffer();
-				asm_call(menudrawbox8b);
+				menudrawbox8b();
 				copyvid();
 
 				JoyRead();
@@ -165,13 +207,13 @@ void showmenu(void)
 					{
 						if (menucloc == 0) menucloc += 80 * 288;
 						menucloc -= 10 * 288;
-						asm_call(menudrawbox8b);
+						menudrawbox8b();
 					}
 					else if (ext == 80)
 					{
 						if (menucloc == 70 * 288) menucloc -= 80 * 288;
 						menucloc += 10 * 288;
-						asm_call(menudrawbox8b);
+						menudrawbox8b();
 						copyvid();
 					}
 				}
