@@ -21,12 +21,10 @@
 
 %include "macros.mac"
 
-EXTSYM FPSOn,cbitmode,copyvid,OutputGraphicString16b,vidbuffer,drawhline16b
-EXTSYM drawvline16b,pressed,Grab_BMP_Data,Grab_BMP_Data_8,vesa2_bpos,vesa2_clbit
-EXTSYM vesa2_gpos,vesa2_rpos,Get_Key,Check_Key,ScreenShotFormat,exiter,xpb,xpc
-EXTSYM snesmmap,memtabler8,snesmap2,regaccessbankr8,dmadata,initaddrl,spcPCRam
-EXTSYM xp,curcyc,Curtableaddr,UpdateDPage,splitflags,execsingle,joinflags,pdh
-EXTSYM SPCRAM
+EXTSYM cbitmode,vidbuffer,pressed,Grab_BMP_Data,Grab_BMP_Data_8,Get_Key
+EXTSYM Check_Key,ScreenShotFormat,exiter,xpb,xpc,snesmmap,memtabler8,snesmap2
+EXTSYM regaccessbankr8,dmadata,initaddrl,spcPCRam,xp,curcyc,Curtableaddr
+EXTSYM UpdateDPage,splitflags,execsingle,joinflags,pdh,SPCRAM
 
 %ifndef NO_DEBUGGER
 EXTSYM numinst,debuggeron
@@ -40,161 +38,9 @@ SECTION .bss
 NEWSYM MenuDisplace16, resd 1
 NEWSYM SPCSave, resb 1
 
-SECTION .data
-NEWSYM menudrawbox_string,  db 'MISC OPTIONS',0
-NEWSYM menudrawbox_stringa, db 'SAVE SNAPSHOT',0
-NEWSYM menudrawbox_stringb, db 'SHOW FPS',0
-NEWSYM menudrawbox_stringc, db 'HIDE FPS',0
-NEWSYM menudrawbox_stringd, db 'SAVE SPC DATA',0
-NEWSYM menudrawbox_stringe, db 'SOUND BUFFER DUMP',0
-NEWSYM menudrawbox_stringf, db 'SNAPSHOT/INCR FRM',0
-NEWSYM menudrawbox_stringg, db 'INCR FRAME ONLY',0
-NEWSYM menudrawbox_stringh, db 'MOVE THIS WINDOW',0
-NEWSYM menudrawbox_stringi, db 'IMAGE FORMAT: ---',0
-
-SECTION .bss
 NEWSYM menucloc, resd 1
-SECTION .text
 
-NEWSYM menudrawbox16b
-    ; draw shadow behind box
-    cmp byte[menu16btrans],0
-    jne .noshadow
-    mov byte[menu16btrans],1
-    mov esi,50*2+30*288*2
-    add esi,[vidbuffer]
-    add esi,[MenuDisplace16]
-    mov ecx,150
-    mov al,95
-    mov ah,5
-.loop16b2
-    mov dx,[esi]
-    and dx,[vesa2_clbit]
-    shr dx,1
-    mov [esi],dx
-    add esi,2
-    dec ecx
-    jnz .loop16b2
-    add esi,288*2-150*2
-    dec al
-    mov ecx,150
-    jnz .loop16b2
-.noshadow
-
-    mov ax,01Fh
-    mov cl,[vesa2_rpos]
-    shl ax,cl
-    mov [.allred],ax
-    mov ax,012h
-    mov cl,[vesa2_bpos]
-    shl ax,cl
-    mov dx,ax
-    mov ax,01h
-    mov cl,[vesa2_gpos]
-    shl ax,cl
-    mov bx,ax
-    mov ax,01h
-    mov cl,[vesa2_rpos]
-    shl ax,cl
-    or bx,ax
-
-    ; draw a small blue box with a white border
-    mov esi,40*2+20*288*2
-    add esi,[vidbuffer]
-    add esi,[MenuDisplace16]
-    mov ecx,150
-    mov al,95
-    mov ah,5
-.loop16b
-    mov [esi],dx
-    add esi,2
-    dec ecx
-    jnz .loop16b
-    add esi,288*2-150*2
-    dec ah
-    jnz .nocolinc16b
-    add dx,bx
-    mov ah,5
-.nocolinc16b
-    dec al
-    mov ecx,150
-    jnz .loop16b
-
-    ; Draw lines
-    mov ax,0FFFFh
-    mov esi,40*2+20*288*2
-    add esi,[vidbuffer]
-    add esi,[MenuDisplace16]
-    ccallv drawhline16b, esi, 150, eax
-    mov esi,40*2+20*288*2
-    add esi,[vidbuffer]
-    add esi,[MenuDisplace16]
-    ccallv drawvline16b, esi, 95, eax
-    mov esi,40*2+114*288*2
-    add esi,[vidbuffer]
-    add esi,[MenuDisplace16]
-    ccallv drawhline16b, esi, 150, eax
-    mov esi,40*2+32*288*2
-    add esi,[vidbuffer]
-    add esi,[MenuDisplace16]
-    ccallv drawhline16b, esi, 150, eax
-    mov esi,189*2+20*288*2
-    add esi,[vidbuffer]
-    add esi,[MenuDisplace16]
-    ccallv drawvline16b, esi, 95, eax
-    call menudrawcursor16b
-
-    mov esi,45*2+23*288*2
-    add esi,[vidbuffer]
-    add esi,[MenuDisplace16]
-    ccallv OutputGraphicString16b, esi, menudrawbox_string
-    mov esi,45*2+35*288*2
-    add esi,[vidbuffer]
-    add esi,[MenuDisplace16]
-    ccallv OutputGraphicString16b, esi, menudrawbox_stringa
-    mov esi,45*2+45*288*2
-    add esi,[vidbuffer]
-    add esi,[MenuDisplace16]
-    mov edi,menudrawbox_stringb
-    test byte[FPSOn],1
-    jz .nofps
-    mov edi,menudrawbox_stringc
-.nofps
-    ccallv OutputGraphicString16b, esi, edi
-    mov esi,45*2+55*288*2
-    add esi,[vidbuffer]
-    add esi,[MenuDisplace16]
-    ccallv OutputGraphicString16b, esi, menudrawbox_stringd
-    mov esi,45*2+65*288*2
-    add esi,[vidbuffer]
-    add esi,[MenuDisplace16]
-    ccallv OutputGraphicString16b, esi, menudrawbox_stringe
-    mov esi,45*2+75*288*2
-    add esi,[vidbuffer]
-    add esi,[MenuDisplace16]
-    ccallv OutputGraphicString16b, esi, menudrawbox_stringf
-    mov esi,45*2+85*288*2
-    add esi,[vidbuffer]
-    add esi,[MenuDisplace16]
-    ccallv OutputGraphicString16b, esi, menudrawbox_stringg
-    mov esi,45*2+95*288*2
-    add esi,[vidbuffer]
-    add esi,[MenuDisplace16]
-    ccallv OutputGraphicString16b, esi, menudrawbox_stringh
-    mov esi,45*2+105*288*2
-    add esi,[vidbuffer]
-    add esi,[MenuDisplace16]
-    ccallv OutputGraphicString16b, esi, menudrawbox_stringi
-;    mov al,[newengen]
-;    mov byte[newengen],0
-    ccallv copyvid
-;    mov [newengen],al
-    ret
-
-SECTION .bss
-.allred resw 1
-
-NEWSYM menu16btrans, resb 1
+NEWSYM menudrawbox16b_allred, resw 1
 
 SECTION .text
 
@@ -207,7 +53,7 @@ NEWSYM menudrawcursor16b
     add esi,[MenuDisplace16]
     mov ecx,148
     mov al,9
-    mov bx,[menudrawbox16b.allred]
+    mov bx,[menudrawbox16b_allred]
 .loop
     mov [esi],bx
     add esi,2

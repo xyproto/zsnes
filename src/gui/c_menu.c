@@ -27,7 +27,19 @@ u1 nextmenupopup;
 
 static u1 MenuNoExit;
 static u1 PrevMenuPos;
+static u1 menu16btrans;
 static u4 MenuDisplace;
+
+static char const menudrawbox_string[]  = "MISC OPTIONS";
+static char const menudrawbox_stringa[] = "SAVE SNAPSHOT";
+static char const menudrawbox_stringb[] = "SHOW FPS";
+static char const menudrawbox_stringc[] = "HIDE FPS";
+static char const menudrawbox_stringd[] = "SAVE SPC DATA";
+static char const menudrawbox_stringe[] = "SOUND BUFFER DUMP";
+static char const menudrawbox_stringf[] = "SNAPSHOT/INCR FRM";
+static char const menudrawbox_stringg[] = "INCR FRAME ONLY";
+static char const menudrawbox_stringh[] = "MOVE THIS WINDOW";
+static char       menudrawbox_stringi[] = "IMAGE FORMAT: ---";
 
 
 static void GUIBufferData(void)
@@ -56,6 +68,69 @@ static void GUIUnBuffer(void)
 #endif
 		129536;
 	memcpy(vidbuffer + 4 * 384, spritetablea + 4 * 384, n);
+}
+
+
+static void menudrawbox16b(void)
+{
+	if (menu16btrans == 0)
+	{ // draw shadow behind box
+		menu16btrans = 1;
+		u2* buf = (u2*)vidbuffer + MenuDisplace16 / 2 + 50 + 30 * 288;
+		u4  h   = 95;
+		do
+		{
+			u4 w = 150;
+			do
+			{
+				*buf = (*buf & vesa2_clbit) >> 1;
+				++buf;
+			}
+			while (--w != 0);
+			buf += 288 - 150;
+		}
+		while (--h != 0);
+	}
+
+	menudrawbox16b_allred = 0x1F << vesa2_rpos;
+
+	// draw a small blue box with a white border
+	u2*      buf  = (u2*)vidbuffer + MenuDisplace16 / 2 + 40 + 20 * 288;
+	u2       c    = 0x12 << vesa2_bpos;
+	u2 const dc   = 0x01 << vesa2_gpos | 0x01 << vesa2_rpos;
+	u4       step =  5;
+	u4       h    = 95;
+	do
+	{
+		u4 w = 150;
+		do *buf++ = c; while (--w != 0);
+		buf += 288 - 150;
+		if (--step == 0)
+		{
+			c    += dc;
+			step  = 5;
+		}
+	}
+	while (--h != 0);
+
+	// Draw lines
+	drawhline16b((u2*)vidbuffer + MenuDisplace16 / 2 +  40 +  20 * 288, 150, 0xFFFF);
+	drawvline16b((u2*)vidbuffer + MenuDisplace16 / 2 +  40 +  20 * 288,  95, 0xFFFF);
+	drawhline16b((u2*)vidbuffer + MenuDisplace16 / 2 +  40 + 114 * 288, 150, 0xFFFF);
+	drawhline16b((u2*)vidbuffer + MenuDisplace16 / 2 +  40 +  32 * 288, 150, 0xFFFF);
+	drawvline16b((u2*)vidbuffer + MenuDisplace16 / 2 + 189 +  20 * 288,  95, 0xFFFF);
+	asm_call(menudrawcursor16b);
+
+	OutputGraphicString16b((u2*)vidbuffer + MenuDisplace16 / 2 + 45 +  23 * 288, menudrawbox_string);
+	OutputGraphicString16b((u2*)vidbuffer + MenuDisplace16 / 2 + 45 +  35 * 288, menudrawbox_stringa);
+	OutputGraphicString16b((u2*)vidbuffer + MenuDisplace16 / 2 + 45 +  45 * 288, FPSOn & 1 ? menudrawbox_stringc : menudrawbox_stringb);
+	OutputGraphicString16b((u2*)vidbuffer + MenuDisplace16 / 2 + 45 +  55 * 288, menudrawbox_stringd);
+	OutputGraphicString16b((u2*)vidbuffer + MenuDisplace16 / 2 + 45 +  65 * 288, menudrawbox_stringe);
+	OutputGraphicString16b((u2*)vidbuffer + MenuDisplace16 / 2 + 45 +  75 * 288, menudrawbox_stringf);
+	OutputGraphicString16b((u2*)vidbuffer + MenuDisplace16 / 2 + 45 +  85 * 288, menudrawbox_stringg);
+	OutputGraphicString16b((u2*)vidbuffer + MenuDisplace16 / 2 + 45 +  95 * 288, menudrawbox_stringh);
+	OutputGraphicString16b((u2*)vidbuffer + MenuDisplace16 / 2 + 45 + 105 * 288, menudrawbox_stringi);
+	copyvid();
 }
 
 
@@ -119,7 +194,7 @@ static void menudrawbox8b(void)
 	else
 #endif
 	{
-		asm_call(menudrawbox16b);
+		menudrawbox16b();
 	}
 }
 
