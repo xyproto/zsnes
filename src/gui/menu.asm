@@ -193,8 +193,6 @@ NEWSYM menudrawbox16b
 
 SECTION .bss
 .allred resw 1
-.blue   resw 1
-.stepb  resw 1
 
 NEWSYM menu16btrans, resb 1
 
