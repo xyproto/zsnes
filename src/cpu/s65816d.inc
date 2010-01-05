@@ -1193,7 +1193,7 @@ COPemulmode
     and cx,word[stackand]
     call membank0r8
     mov %2,al
-    call SA1UpdateDPage
+    ccallv SA1UpdateDPage
     mov [SA1xs],cx
     mov ah,al
     mov al,%1

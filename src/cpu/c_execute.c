@@ -51,7 +51,7 @@ static void reexecuteb2(void)
 	if (NoSoundReinit != 1) SetupPreGame();
 
 	UpdateDPage();
-	asm_call(SA1UpdateDPage);
+	SA1UpdateDPage();
 	Makemode7Table();
 	if (SFXEnable != 0) asm_call(UpdateSFX);
 

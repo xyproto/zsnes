@@ -1930,7 +1930,7 @@ SA1COpA8x16:; TAY i
 SA1COp5B:   ; TCD i
     mov ax,[SA1xa]
     mov [SA1xd],ax
-    call SA1UpdateDPage
+    ccallv SA1UpdateDPage
     flagsetnz16b
     endloop
 SA1COp1B:   ; TCS i

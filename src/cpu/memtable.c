@@ -95,7 +95,6 @@ void UpdateDPageC()
 }
 
 extern unsigned int SA1xd;
-extern void *SA1DPageR8, *SA1DPageR16, *SA1DPageW8, *SA1DPageW16;
 
 void SA1UpdateDPageC()
 {
