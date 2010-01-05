@@ -4,10 +4,17 @@
 #include "../asm_call.h"
 #include "../c_intrf.h"
 #include "../cfg.h"
+#include "../cpu/65816d.h"
 #include "../cpu/c_execute.h"
 #include "../cpu/execute.h"
+#include "../cpu/memory.h"
+#include "../cpu/memtable.h"
+#include "../cpu/regs.h"
+#include "../cpu/spc700.h"
+#include "../debugger.h"
 #include "../endmem.h"
 #include "../init.h"
+#include "../initc.h"
 #include "../ui.h"
 #include "../vcache.h"
 #include "../video/procvid.h"
@@ -17,13 +24,14 @@
 #include "c_menu.h"
 #include "gui.h"
 #include "guifuncs.h"
-#include "menu.h"
 
 #if !defined NO_PNG && defined __MSDOS__
 #	include "../dos/dosintrf.h"
 #endif
 
 u1 NoInputRead;
+u1 SPCSave;
+u1 keyonsn;
 u1 nextmenupopup;
 
 static u1 PrevMenuPos;
@@ -244,6 +252,57 @@ static void saveimage(void)
 }
 
 
+static void breakatsignb(void)
+{
+	keyonsn = 0;
+#ifndef NO_DEBUGGER
+	if (SPCSave == 1) debuggeron = 1;
+#endif
+
+	exiter = 1;
+	u4  eax = xpc;
+	u4  ebx = xpb;
+	u4  ecx = 0;
+	u1* esi =
+		eax & 0x8000                                       ? snesmmap[ebx] :
+		eax < 0x4300 || memtabler8[ebx] != regaccessbankr8 ? snesmap2[ebx] :
+		dmadata - 0x4300;
+	initaddrl = esi;
+	esi += eax; // add program counter to address
+	u1* ebp = spcPCRam;
+	u4  edx = curcyc /* cycles */ << 8 | xp /* flags */;
+	u4  edi = Curtableaddr;
+	asm_call(UpdateDPage);
+	// execute
+	do
+	{
+		asm volatile("call %P0" :: "X" (splitflags), "d" (edx) : "cc", "memory");
+		// XXX hack: GCC cannot handle ebp as input/output, so take the detour over eax
+		asm volatile("push %%ebp;  mov %0, %%ebp;  call %P6;  mov %%ebp, %0;  pop %%ebp" : "+a" (ebp), "+c" (ecx), "+d" (edx), "+b" (ebx), "+S" (esi), "+D" (edi) : "X" (execute) : "cc", "memory");
+		asm volatile("call %P1" : "+d" (edx) : "X" (joinflags) : "cc", "memory");
+		edx = edx & 0xFFFF00FF | pdh << 8;
+
+#ifndef NO_DEBUGGER
+		if ((++numinst & 0xFF) == 0 && Check_Key() != 0 && Get_Key() == 27) break;
+#endif
+		if (SPCRAM[6] == 0x40) break;
+	}
+	while (keyonsn != 1);
+
+	// copy back data
+	spcPCRam     = ebp;
+	Curtableaddr = edi;
+	xp           = edx;
+	curcyc       = edx >> 8;
+	xpc          = esi - initaddrl; // subtract program counter by address
+	exiter       = 0;
+
+#ifndef NO_DEBUGGER
+	if (SPCSave == 1) debuggeron = 0;
+#endif
+}
+
+
 #ifdef __MSDOS__
 static inline void SetPal(u1 const i, u1 const r, u1 const g, u1 const b)
 {
@@ -439,7 +498,7 @@ savespckey:
 					MessageOn = MsgCount;
 					copyvid();
 					SPCSave = 1;
-					asm_call(breakatsignb);
+					breakatsignb();
 					SPCSave = 0;
 					savespcdata();
 

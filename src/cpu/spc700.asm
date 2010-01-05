@@ -42,7 +42,7 @@ ALIGN32
 
 ;spcBuffer times 65536*4 db 0    ; The buffer of brr blocks... 4 bits -> 16 bits
 ;spcPrevbf times 65536   db 0    ; SPC PrevX compare buffer
-NEWSYM SPCRAM,   times 65472 db 0FFh  ; Pointer to the SPC's RAM
+NEWSYM SPCRAM,   times 65472 db 0FFh
 ; copy #1
 ; THE SPC ROM :)
    db 0CDh,0EFh,0BDh,0E8h,000h,0C6h,01Dh,0D0h,0FCh,08Fh,0AAh,0F4h,08Fh,0BBh,0F5h,078h

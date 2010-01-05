@@ -89,7 +89,7 @@ unsigned short debugt  = 0; // debug tail
 unsigned short debugv  = 0; // debug view
 */
 unsigned char  debugds = 0; // debug disable (bit 0 = 65816, bit 1 = SPC)
-unsigned int   numinst = 0; // # of instructions
+unsigned int   numinst = 0;
 
 unsigned char wx = 0, wy = 0, wx2 = 0, wy2 = 0;
 unsigned char execut = 0;

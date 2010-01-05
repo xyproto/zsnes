@@ -3,4 +3,6 @@
 
 void startdebugger(void);
 
+extern unsigned int numinst; // # of instructions
+
 #endif
