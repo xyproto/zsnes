@@ -27,6 +27,7 @@ u1 nextmenupopup;
 
 static u1 MenuNoExit;
 static u1 PrevMenuPos;
+static u4 MenuDisplace;
 
 
 static void GUIBufferData(void)
@@ -58,6 +59,29 @@ static void GUIUnBuffer(void)
 }
 
 
+#ifdef __MSDOS__
+static void menudrawcursor8b(void)
+{
+	if (cbitmode != 1) // XXX always true due to caller
+	{
+		// draw a small red box
+		u1* buf = vidbuffer + MenuDisplace + menucloc + 41 + 34 * 288;
+		u4  h   = 9;
+		do
+		{
+			memset(buf, 160, 148);
+			buf += 288;
+		}
+		while (--h != 0);
+	}
+	else
+	{
+		asm_call(menudrawcursor16b);
+	}
+}
+#endif
+
+
 static void menudrawbox8b(void)
 {
 #ifdef __MSDOS__
@@ -79,7 +103,7 @@ static void menudrawbox8b(void)
 		drawhline(vidbuffer + MenuDisplace +  40 + 114 * 288, 150, 128);
 		drawhline(vidbuffer + MenuDisplace +  40 +  32 * 288, 150, 128);
 		drawvline(vidbuffer + MenuDisplace + 189 +  20 * 288,  95, 128);
-		asm_call(menudrawcursor8b);
+		menudrawcursor8b();
 
 		OutputGraphicString(vidbuffer + MenuDisplace + 45 +  23 * 288, menudrawbox_string);
 		OutputGraphicString(vidbuffer + MenuDisplace + 45 +  35 * 288, menudrawbox_stringa);

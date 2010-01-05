@@ -37,7 +37,6 @@ EXTSYM Grab_PNG_Data
 %endif
 
 SECTION .bss
-NEWSYM MenuDisplace, resd 1
 NEWSYM MenuDisplace16, resd 1
 NEWSYM SPCSave, resb 1
 
@@ -52,34 +51,6 @@ NEWSYM menudrawbox_stringf, db 'SNAPSHOT/INCR FRM',0
 NEWSYM menudrawbox_stringg, db 'INCR FRAME ONLY',0
 NEWSYM menudrawbox_stringh, db 'MOVE THIS WINDOW',0
 NEWSYM menudrawbox_stringi, db 'IMAGE FORMAT: ---',0
-SECTION .text
-
-NEWSYM menudrawcursor8b
-%ifdef __MSDOS__
-    cmp byte[cbitmode],1
-    je near menudrawcursor16b
-    ; draw a small red box
-    mov esi,41+34*288
-    add esi,[menucloc]
-    add esi,[vidbuffer]
-    add esi,[MenuDisplace]
-    mov ecx,148
-    mov al,9
-.loop
-    mov byte[esi],160
-    inc esi
-    dec ecx
-    jnz .loop
-    add esi,288-148
-    dec al
-    mov ecx,148
-    jnz .loop
-
-    mov al,128
-%else
-    jmp menudrawcursor16b
-%endif
-    ret
 
 SECTION .bss
 NEWSYM menucloc, resd 1
