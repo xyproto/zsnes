@@ -21,21 +21,15 @@
 
 %include "macros.mac"
 
-EXTSYM FPSOn,MessageOn,cbitmode,copyvid
-EXTSYM MsgCount,Msgptr,OutputGraphicString,OutputGraphicString16b,vidbuffer
-EXTSYM curblank,drawhline16b,drawvline16b,frameskip
-EXTSYM pressed,dumpsound,Grab_BMP_Data,Grab_BMP_Data_8
-EXTSYM spcon,vesa2_bpos,vesa2_clbit,vesa2_gpos,vesa2_rpos,
-EXTSYM spritetablea,sprlefttot,newengen,Get_Key,continueprognokeys
-EXTSYM ForceNonTransp,GUIOn,Check_Key,JoyRead,SSKeyPressed
-EXTSYM SPCKeyPressed,StopSound,StartSound,ExecExitOkay,t1cc,Clear2xSaIBuffer
-EXTSYM ScreenShotFormat,spcsaved,savespcdata
-EXTSYM exiter,xpb,xpc,snesmmap,memtabler8,snesmap2,regaccessbankr8,dmadata,initaddrl
-EXTSYM spcPCRam,xp,curcyc,Curtableaddr,UpdateDPage,splitflags,execsingle,joinflags
-EXTSYM pdh,SPCRAM,cvidmode,GUIBufferData,menu_GUIUnBuffer
+EXTSYM FPSOn,cbitmode,copyvid,OutputGraphicString,OutputGraphicString16b
+EXTSYM vidbuffer,drawhline16b,drawvline16b,pressed,Grab_BMP_Data,Grab_BMP_Data_8
+EXTSYM vesa2_bpos,vesa2_clbit,vesa2_gpos,vesa2_rpos,Get_Key,Check_Key
+EXTSYM ScreenShotFormat,exiter,xpb,xpc,snesmmap,memtabler8,snesmap2
+EXTSYM regaccessbankr8,dmadata,initaddrl,spcPCRam,xp,curcyc,Curtableaddr
+EXTSYM UpdateDPage,splitflags,execsingle,joinflags,pdh,SPCRAM
 
 %ifdef __MSDOS__
-EXTSYM GUI16VID,drawhline,drawvline
+EXTSYM drawhline,drawvline
 %endif
 
 %ifndef NO_DEBUGGER
@@ -47,347 +41,10 @@ EXTSYM Grab_PNG_Data
 %endif
 
 SECTION .bss
-NEWSYM nextmenupopup, resb 1
-NEWSYM NoInputRead, resb 1
-NEWSYM PrevMenuPos, resb 1
 NEWSYM MenuDisplace, resd 1
 NEWSYM MenuDisplace16, resd 1
-NEWSYM MenuNoExit, resb 1
 NEWSYM SPCSave, resb 1
 
-SECTION .text
-
-NEWSYM showmenu
-%ifdef __MSDOS__
-    cmp byte[cbitmode],1
-    je near .nopal16b
-    mov edi,[vidbuffer]
-    add edi,100000
-    mov dx,03C7h
-    mov al,0
-    out dx,al
-    mov dx,03C9h
-    mov ecx,768
-    mov byte[edi],12
-    inc edi
-.b
-    in al,dx
-    shl al,2
-    mov [edi],al
-    inc edi
-    dec ecx
-    jnz .b
-
-    ; set palette of colors 128,144, and 160 to white, blue, and red
-    mov al,128
-    mov dx,03C8h
-    out dx,al
-    inc dx
-    mov al,63
-    out dx,al
-    out dx,al
-    out dx,al
-    mov al,144
-    mov dx,03C8h
-    out dx,al
-    inc dx
-    xor al,al
-    out dx,al
-    out dx,al
-    mov al,50
-    out dx,al
-    mov al,160
-    mov dx,03C8h
-    out dx,al
-    inc dx
-    mov al,45
-    out dx,al
-    xor al,al
-    out dx,al
-    out dx,al
-.nopal16b
-
-%endif
-    mov byte[ForceNonTransp],1
-    mov byte[NoInputRead],0
-    cmp byte[SSKeyPressed],1
-    jne .nosskey
-    mov byte[SSKeyPressed],0
-    call saveimage
-    jmp .nopalwrite
-.nosskey
-    cmp byte[SPCKeyPressed],1
-    je near .savespckey
-    test byte[pressed+14],1
-    jz .nof12
-    call saveimage
-    jmp .nopalwrite
-.nof12
-    mov dword[menucloc],0
-    cmp byte[nextmenupopup],0
-    je .nomenuinc2
-    mov byte[pressed+1Ch],0
-    mov dword[menucloc],40*288
-    cmp byte[PrevMenuPos],1
-    jne .nomenuinc
-    mov dword[menucloc],50*288
-.nomenuinc
-    cmp byte[PrevMenuPos],2
-    jne .nomenuinc2
-    mov dword[menucloc],60*288
-.nomenuinc2
-    cmp byte[PrevMenuPos],3
-    jne .nomenuinc3
-    mov dword[menucloc],70*288
-.nomenuinc3
-
-    mov dword[menudrawbox8b.stringi+13],' BMP'
-%ifndef NO_PNG
-    cmp byte[ScreenShotFormat],0
-    je .normalscrn
-%ifdef __MSDOS__
-    movzx eax,byte[cvidmode]
-    cmp byte[GUI16VID+eax],1
-    je .pngok
-    mov byte[ScreenShotFormat],0
-    jmp .normalscrn
-%endif
-.pngok
-    mov dword[menudrawbox8b.stringi+13],' PNG'
-%endif
-.normalscrn
-    mov byte[nextmenupopup],0
-    mov byte[menu16btrans],0
-    mov byte[pressed+1],0
-    mov byte[pressed+59],0
-    mov byte[curblank],00h
-    ccallv GUIBufferData
-    ; Draw box
-    call menudrawbox8b
-    call menudrawbox8b
-    cmp byte[newengen],0
-    je .notng
-    mov byte[GUIOn],1
-.notng
-    ccallv copyvid
-    ccallv StopSound
-.nextkey
-    ;ccallv menu_GUIUnBuffer
-    call menudrawbox8b
-    ccallv copyvid
-
-    ccallv JoyRead
-    ccall Check_Key
-    or al,al
-    jz .nextkey
-    ccall Get_Key
-    cmp al,0
-    jne near .processextend
-
-    ccall Get_Key
-    cmp al,72
-    jne .noup
-    cmp dword[menucloc],0
-    jne .nogoup
-    add dword[menucloc],80*288
-.nogoup
-    sub dword[menucloc],10*288
-    call menudrawbox8b
-;    mov al,[newengen]                  ; WTF?
-;    mov byte[newengen],0
-
-;    mov [newengen],al
-    jmp .nextkey
-.noup
-    cmp al,80
-    jne .nodown
-    cmp dword[menucloc],70*288
-    jne .nogodown
-    sub dword[menucloc],80*288
-.nogodown
-    add dword[menucloc],10*288
-    call menudrawbox8b
-;    mov al,[newengen]
-;    mov byte[newengen],0
-    ccallv copyvid
-;    mov [newengen],al
-    jmp .nextkey
-.nodown
-    jmp .nextkey
-.processextend
-    cmp al,27
-    je near .exitloop
-    cmp al,13
-    je .done
-    jmp .nextkey
-.done
-    ccallv menu_GUIUnBuffer
-;    mov al,[newengen]
-;    mov byte[newengen],0
-    ccallv copyvid
-;    mov [newengen],al
-    cmp dword[menucloc],0
-    jne .nosaveimg
-    call saveimage
-.nosaveimg
-    cmp dword[menucloc],40*288
-    jne .nosaveimg2
-    call saveimage
-    mov byte[ExecExitOkay],0
-    mov byte[nextmenupopup],3
-    mov byte[NoInputRead],1
-    mov byte[t1cc],0
-    mov byte[PrevMenuPos],0
-.nosaveimg2
-    cmp dword[menucloc],50*288
-    jne .noskipframe
-    mov byte[ExecExitOkay],0
-    mov byte[nextmenupopup],3
-    mov byte[NoInputRead],1
-    mov byte[t1cc],0
-    mov byte[PrevMenuPos],1
-.noskipframe
-    cmp dword[menucloc],70*288
-    jne .noimagechange
-%ifdef __MSDOS__
-    cmp byte[cbitmode],0
-    je .noimagechange
-%endif
-    xor byte[ScreenShotFormat],1
-    mov byte[MenuNoExit],1
-    mov byte[ExecExitOkay],0
-    mov byte[nextmenupopup],1
-    mov byte[NoInputRead],1
-    mov byte[t1cc],0
-    mov byte[PrevMenuPos],3
-.noimagechange
-    cmp dword[menucloc],60*288
-    jne .nomovewin
-    mov byte[MenuNoExit],1
-    mov byte[ExecExitOkay],0
-    mov byte[nextmenupopup],1
-    mov byte[NoInputRead],1
-    mov byte[t1cc],0
-    mov byte[PrevMenuPos],2
-    cmp dword[MenuDisplace],0
-    je .movewin
-    mov dword[MenuDisplace],0
-    mov dword[MenuDisplace16],0
-    jmp .nomovewin
-.movewin
-    mov dword[MenuDisplace],90*288
-    mov dword[MenuDisplace16],90*288*2
-.nomovewin
-    cmp dword[menucloc],10*288
-    jne .nofps
-    cmp byte[frameskip],0
-    je .yesfs
-    mov dword[Msgptr],.unablefps
-    mov eax,[MsgCount]
-    mov [MessageOn],eax
-    jmp .nofps
-.yesfs
-    xor byte[FPSOn],1
-.nofps
-    cmp dword[menucloc],20*288
-    jne near .nospcsave
-.savespckey
-    cmp byte[spcon],0
-    je .nospc
-
-    mov dword[Msgptr],.search
-    mov eax,[MsgCount]
-    mov [MessageOn],eax
-    ccallv copyvid
-    mov byte[SPCSave],1
-    call breakatsignb
-    mov byte[SPCSave],0
-    ccallv savespcdata
-
-    mov byte[curblank],40h
-    mov dword[Msgptr],spcsaved
-    mov eax,[MsgCount]
-    mov [MessageOn],eax
-    jmp .nospcsave
-.nospc
-    mov dword[Msgptr],.nosound
-    mov eax,[MsgCount]
-    mov [MessageOn],eax
-    jmp .nospcsave
-.nospcsave
-    cmp dword[menucloc],30*288
-    jne .nosnddmp
-    ccallv dumpsound
-    mov dword[Msgptr],.sndbufsav
-    mov eax,[MsgCount]
-    mov [MessageOn],eax
-.nosnddmp
-    cmp byte[SPCKeyPressed],1
-    jne .exitloop
-    mov byte[SPCKeyPressed],0
-    jmp .nopalwrite
-.exitloop
-    ccallv menu_GUIUnBuffer
-;    mov al,[newengen]
-;    mov byte[newengen],0
-    ccallv copyvid
-;    mov [newengen],al
-%ifdef __MSDOS__
-    cmp byte[cbitmode],1
-    je near .nopalwrite
-    mov edi,[vidbuffer]
-    add edi,100000
-    mov dx,03C8h
-    mov al,0
-    out dx,al
-    mov dx,03C9h
-    mov ecx,768
-    inc edi
-.c
-    mov al,[edi]
-    shr al,2
-    out dx,al
-    inc edi
-    dec ecx
-    jnz .c
-%endif
-.nopalwrite
-    mov eax,pressed
-    mov ecx,256
-.looppr
-    cmp byte[eax],1
-    jne .notpr
-    mov byte[eax],2
-.notpr
-    inc eax
-    dec ecx
-    jnz .looppr
-;    mov byte[pressed+1],2
-;    cmp byte[pressed+59],1
-;    jne .not59
-;    mov byte[pressed+59],2
-;.not59
-;    cmp byte[pressed+28],1
-;    jne .not28
-;    mov byte[pressed+28],2
-;.not28
-    ccallv StartSound
-    mov byte[ForceNonTransp],0
-    mov byte[GUIOn],0
-    ccallv Clear2xSaIBuffer
-    cmp byte[MenuNoExit],1
-    je .noexitmenu
-    ccallv continueprognokeys
-    ret
-.noexitmenu
-    mov byte[MenuNoExit],0
-    jmp showmenu
-
-SECTION .data
-.unablefps db 'NEED AUTO FRAMERATE ON',0
-.sndbufsav db 'BUFFER SAVED AS SOUNDDMP.RAW',0
-.search    db 'SEARCHING FOR SONG START.',0
-.nosound   db 'SOUND MUST BE ENABLED.',0
 SECTION .text
 
 NEWSYM menudrawbox8b
@@ -473,7 +130,7 @@ NEWSYM menudrawbox8b
     mov esi,45+105*288
     add esi,[vidbuffer]
     add esi,[MenuDisplace]
-    ccall OutputGraphicString, esi, .stringi
+    ccall OutputGraphicString, esi, menudrawbox_stringi
 ;    mov al,[newengen]
 ;    mov byte[newengen],0
     ccallv copyvid
@@ -493,7 +150,7 @@ SECTION .data
 .stringf db 'SNAPSHOT/INCR FRM',0
 .stringg db 'INCR FRAME ONLY',0
 .stringh db 'MOVE THIS WINDOW',0
-.stringi db 'IMAGE FORMAT: ---',0
+NEWSYM menudrawbox_stringi, db 'IMAGE FORMAT: ---',0
 SECTION .text
 
 NEWSYM menudrawcursor8b
@@ -655,7 +312,7 @@ NEWSYM menudrawbox16b
     mov esi,45*2+105*288*2
     add esi,[vidbuffer]
     add esi,[MenuDisplace16]
-    ccallv OutputGraphicString16b, esi, menudrawbox8b.stringi
+    ccallv OutputGraphicString16b, esi, menudrawbox_stringi
 ;    mov al,[newengen]
 ;    mov byte[newengen],0
     ccallv copyvid
@@ -693,7 +350,7 @@ NEWSYM menudrawcursor16b
     mov al,128
     ret
 
-saveimage:
+NEWSYM saveimage
     mov byte[pressed+1],0
     mov byte[pressed+59],0
 
@@ -720,7 +377,7 @@ NEWSYM keyonsn, db 0
 NEWSYM prbreak, db 0
 SECTION .text
 
-breakatsignb:
+NEWSYM breakatsignb
     mov byte[keyonsn],0
     mov byte[prbreak],0
 %ifndef NO_DEBUGGER

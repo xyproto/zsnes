@@ -13,6 +13,7 @@ void GetLoadData(void);
 void LoadCheatSearchFile(void);
 void SaveCheatSearchFile(void);
 void SetMovieForcedLength(void);
+void dumpsound(void);
 void loadquickfname(u1 slot);
 
 #ifndef __MSDOS__

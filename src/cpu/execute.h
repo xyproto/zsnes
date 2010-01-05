@@ -6,6 +6,7 @@
 extern void UpdateSFX();
 extern void execute();
 
+extern u1  ExecExitOkay;
 extern u1  NextNGDisplay;
 extern u1  NoSoundReinit;
 extern u1  SPCKeyPressed;

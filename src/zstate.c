@@ -41,6 +41,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "chips/c4proc.h"
 #include "gblvars.h"
 #include "asm_call.h"
+#include "init.h"
 #include "ui.h"
 #include "zpath.h"
 #include "cfg.h"
@@ -1375,7 +1376,7 @@ extern uint8_t spcP, spcA, spcX, spcY, spcS, spcNZ;
 extern uint32_t infoloc;
 
 char spcsaved[16];
-void savespcdata()
+void savespcdata(void)
 {
   size_t fname_len;
   unsigned int i = 0;

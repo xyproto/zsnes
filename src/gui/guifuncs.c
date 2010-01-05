@@ -838,7 +838,7 @@ void LoadCheatSearchFile(void)
 
 extern unsigned char *spcBuffera;
 
-void dumpsound()
+void dumpsound(void)
 {
   FILE *fp = fopen_dir(ZSpcPath, "sounddmp.raw", "wb");
   if (fp)

@@ -9,9 +9,9 @@
 #include "../endmem.h"
 #include "../gblvars.h"
 #include "../gui/c_gui.h"
+#include "../gui/c_menu.h"
 #include "../gui/gui.h"
 #include "../gui/guimisc.h"
-#include "../gui/menu.h"
 #include "../init.h"
 #include "../initc.h"
 #include "../macros.h"
@@ -112,7 +112,7 @@ static void reexecuteb2(void)
 
 	if (nextmenupopup == 1)
 	{
-		asm_call(showmenu);
+		showmenu();
 	}
 	else if (ReturnFromSPCStall == 1)
 	{
@@ -152,7 +152,7 @@ static void reexecuteb2(void)
 	}
 	else if (SSKeyPressed == 1 || SPCKeyPressed == 1)
 	{
-		asm_call(showmenu);
+		showmenu();
 	}
 #ifndef NO_DEBUGGER
 	else if (debugdisble == 0 && pressed[59] & 1)
@@ -162,7 +162,7 @@ static void reexecuteb2(void)
 #endif
 	else if (pressed[59] & 1)
 	{
-		asm_call(showmenu);
+		showmenu();
 	}
 	else if (pressed[KeyQuickRst] & 1)
 	{

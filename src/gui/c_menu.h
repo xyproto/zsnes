@@ -1,8 +1,11 @@
 #ifndef C_MENU_H
 #define C_MENU_H
 
-void GUIBufferData(void);
+#include "../types.h"
 
-void menu_GUIUnBuffer(void);
+void showmenu(void);
+
+extern u1 nextmenupopup;
+extern u1 NoInputRead;
 
 #endif

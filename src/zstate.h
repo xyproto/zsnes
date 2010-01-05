@@ -18,8 +18,12 @@ void statesaver(void);
 
 void loadstate(void);
 
+void savespcdata(void);
+
 extern time_t   newestfiledate;
 extern uint32_t current_zst;
 extern uint32_t newest_zst;
+
+extern char     spcsaved[16];
 
 #endif
