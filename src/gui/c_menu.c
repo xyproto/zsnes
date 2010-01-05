@@ -25,10 +25,13 @@
 u1 NoInputRead;
 u1 nextmenupopup;
 
-static u1 MenuNoExit;
 static u1 PrevMenuPos;
-static u1 menu16btrans;
+static u1 MenuNoExit;
 static u4 MenuDisplace;
+static u4 MenuDisplace16;
+static u1 menu16btrans;
+static u4 menucloc;
+static u2 allred;
 
 static char const menudrawbox_string[]  = "MISC OPTIONS";
 static char const menudrawbox_stringa[] = "SAVE SNAPSHOT";
@@ -71,6 +74,22 @@ static void GUIUnBuffer(void)
 }
 
 
+static void menudrawcursor16b(void)
+{
+	// draw a small red box
+	u2*       buf = (u2*)vidbuffer + MenuDisplace16 / 2 + menucloc + 41 + 34 * 288;
+	u2  const c   = allred;
+	u4        h   = 9;
+	do
+	{
+		u4 w = 148;
+		do *buf++ = c; while (--w != 0);
+		buf += 288 - 148;
+	}
+	while (--h != 0);
+}
+
+
 static void menudrawbox16b(void)
 {
 	if (menu16btrans == 0)
@@ -92,7 +111,7 @@ static void menudrawbox16b(void)
 		while (--h != 0);
 	}
 
-	menudrawbox16b_allred = 0x1F << vesa2_rpos;
+	allred = 0x1F << vesa2_rpos;
 
 	// draw a small blue box with a white border
 	u2*      buf  = (u2*)vidbuffer + MenuDisplace16 / 2 + 40 + 20 * 288;
@@ -119,7 +138,7 @@ static void menudrawbox16b(void)
 	drawhline16b((u2*)vidbuffer + MenuDisplace16 / 2 +  40 + 114 * 288, 150, 0xFFFF);
 	drawhline16b((u2*)vidbuffer + MenuDisplace16 / 2 +  40 +  32 * 288, 150, 0xFFFF);
 	drawvline16b((u2*)vidbuffer + MenuDisplace16 / 2 + 189 +  20 * 288,  95, 0xFFFF);
-	asm_call(menudrawcursor16b);
+	menudrawcursor16b();
 
 	OutputGraphicString16b((u2*)vidbuffer + MenuDisplace16 / 2 + 45 +  23 * 288, menudrawbox_string);
 	OutputGraphicString16b((u2*)vidbuffer + MenuDisplace16 / 2 + 45 +  35 * 288, menudrawbox_stringa);
@@ -151,7 +170,7 @@ static void menudrawcursor8b(void)
 	}
 	else
 	{
-		asm_call(menudrawcursor16b);
+		menudrawcursor16b();
 	}
 }
 #endif

@@ -21,8 +21,8 @@
 
 %include "macros.mac"
 
-EXTSYM cbitmode,vidbuffer,pressed,Grab_BMP_Data,Grab_BMP_Data_8,Get_Key
-EXTSYM Check_Key,ScreenShotFormat,exiter,xpb,xpc,snesmmap,memtabler8,snesmap2
+EXTSYM cbitmode,pressed,Grab_BMP_Data,Grab_BMP_Data_8,Get_Key,Check_Key
+EXTSYM ScreenShotFormat,exiter,xpb,xpc,snesmmap,memtabler8,snesmap2
 EXTSYM regaccessbankr8,dmadata,initaddrl,spcPCRam,xp,curcyc,Curtableaddr
 EXTSYM UpdateDPage,splitflags,execsingle,joinflags,pdh,SPCRAM
 
@@ -35,36 +35,9 @@ EXTSYM Grab_PNG_Data
 %endif
 
 SECTION .bss
-NEWSYM MenuDisplace16, resd 1
 NEWSYM SPCSave, resb 1
 
-NEWSYM menucloc, resd 1
-
-NEWSYM menudrawbox16b_allred, resw 1
-
 SECTION .text
-
-NEWSYM menudrawcursor16b
-    ; draw a small red box
-    mov esi,41*2+34*288*2
-    add esi,[menucloc]
-    add esi,[menucloc]
-    add esi,[vidbuffer]
-    add esi,[MenuDisplace16]
-    mov ecx,148
-    mov al,9
-    mov bx,[menudrawbox16b_allred]
-.loop
-    mov [esi],bx
-    add esi,2
-    dec ecx
-    jnz .loop
-    add esi,288*2-148*2
-    dec al
-    mov ecx,148
-    jnz .loop
-    mov al,128
-    ret
 
 NEWSYM saveimage
     mov byte[pressed+1],0
