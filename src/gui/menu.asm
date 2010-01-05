@@ -34,12 +34,10 @@ NEWSYM SPCSave, resb 1
 
 SECTION .data
 NEWSYM keyonsn, db 0
-NEWSYM prbreak, db 0
 SECTION .text
 
 NEWSYM breakatsignb
     mov byte[keyonsn],0
-    mov byte[prbreak],0
 %ifndef NO_DEBUGGER
     cmp byte[SPCSave],1
     jne .nospcsave
@@ -100,7 +98,6 @@ NEWSYM breakatsignb
     jne .loopa
     jmp .noesc
 .skipc
-    mov byte[prbreak],1
 .noesc
     ; copy back data
     mov [spcPCRam],ebp
