@@ -1,5 +1,5 @@
-#ifndef C_MENU_H
-#define C_MENU_H
+#ifndef MENU_H
+#define MENU_H
 
 #include "../types.h"
 
