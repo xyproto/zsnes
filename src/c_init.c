@@ -29,6 +29,10 @@
 
 u1 MMXSupport;
 
+static u4       CombDelay[5];
+static u4 const CombTDelN[] = { 1, 2, 3, 4, 5, 9, 30, 60, 120, 180, 240, 300 };
+static u4 const CombTDelP[] = { 1, 2, 3, 4, 5, 9, 25, 50, 100, 150, 200, 250 };
+
 
 void init(void)
 {
@@ -135,6 +139,60 @@ void init(void)
 	{
 		start65816();
 	}
+}
+
+
+u4 ProcessCombo(u4 const i)
+{
+	u4  res = 1;
+	u1* eax = StartComb[i];
+	if (CombDelay[i] == 0)
+	{
+		u4 KeyLPress = 0;
+		for (;;)
+		{
+			u4 ebx = *eax;
+			if (ebx ==  0) goto finish;
+			if (ebx <  37)
+			{
+				if (KeyLPress == 0)
+				{
+					PressComb[i] = 0;
+					KeyLPress    = 1;
+				}
+				if (--ebx < 12)
+				{
+					PressComb[i] |= CombCont[i][ebx];
+				}
+				else if ((ebx -= 12) < 12)
+				{
+					HoldComb[i] |= CombCont[i][ebx];
+				}
+				else
+				{
+					ebx -= 12; // <- bugfix from Maxim
+					u4 const x = ~CombCont[i][ebx];
+					HoldComb[i]  &= x;
+					PressComb[i] &= x; // <- buxfix from Maxim
+				}
+				++eax;
+				if (++ComboPtr[i] == 42) goto finish;
+			}
+			else
+			{
+				if (ebx > 48) goto finish;
+				CombDelay[i] = (romispal != 0 ? CombTDelP : CombTDelN)[ebx - 37];
+				++eax;
+				if (++ComboPtr[i] == 42) goto finish;
+				break;
+			}
+		}
+	}
+	--CombDelay[i];
+	res = 0;
+finish:
+	StartComb[i] = eax;
+	return res;
 }
 
 

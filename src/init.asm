@@ -38,7 +38,7 @@ EXTSYM pl5upk,pl5downk,pl5leftk,pl5rightk,pl5Xk,pl5Ak,pl5Lk,pl5Yk,pl5Bk,pl5Rk
 EXTSYM pl5Xtk,pl5Ytk,pl5Atk,pl5Btk,pl5Ltk,pl5Rtk,pl5ULk,pl5URk,pl5DLk,pl5DRk
 EXTSYM CombinDataGlob,NumCombo,GUIComboGameSpec,mousexloc,mouseyloc,extlatch
 EXTSYM romdata,wramdata,romispal,AllowUDLR
-EXTSYM device1,device2,processmouse1,processmouse2,SSPause
+EXTSYM device1,device2,processmouse1,processmouse2,SSPause,ProcessCombo
 
 ; Initiation
 
@@ -225,10 +225,8 @@ SECTION .text
     mov [StartComb+%1*4],eax
 %%progressing
     mov ecx,%1
-    mov eax,[StartComb+%1*4]
-    call ProcessCombo
-    mov [StartComb+%1*4],eax
-    or ebx,ebx
+    ccall ProcessCombo, ecx
+    or eax,eax
     jz %%proccomb
     mov byte[ComboProg+%1],0
 %%proccomb
@@ -243,91 +241,15 @@ SECTION .text
 %%nocomb
 %endmacro
 
-ProcessCombo:
-    mov dword[KeyLPress],0
-    cmp dword[CombDelay+ecx*4],0
-    jne .delay
-.nextsession
-    xor ebx,ebx
-    cmp byte[eax],0
-    je .finish
-    mov bl,[eax]
-    cmp bl,37
-    jb .keypress
-    cmp bl,48
-    ja .finish
-    sub ebx,37
-    shl ebx,2
-    add ebx,CombTDelN
-    cmp byte[romispal],0
-    je .ntsc
-    sub ebx,CombTDelN
-    add ebx,CombTDelP
-.ntsc
-    mov ebx,[ebx]
-    mov [CombDelay+ecx*4],ebx
-    inc eax
-    inc byte[ComboPtr+ecx]
-    cmp byte[ComboPtr+ecx],42
-    je .finish
-.delay
-    dec dword[CombDelay+ecx*4]
-    xor ebx,ebx
-    ret
-.finish
-    mov ebx,1
-    ret
-.keypress
-    cmp dword[KeyLPress],0
-    jne .alreadyproc
-    mov dword[PressComb+ecx*4],0
-    mov dword[KeyLPress],1
-.alreadyproc
-    dec ebx
-    cmp ebx,12
-    jae .pressonly
-    shl ebx,2
-    add ebx,[CombCont+ecx*4]
-    mov ebx,[ebx]
-    or [PressComb+ecx*4],ebx
-    jmp .finkeyproc
-.pressonly
-    sub ebx,12
-    cmp ebx,12
-    jae .releaseonly
-    shl ebx,2
-    add ebx,[CombCont+ecx*4]
-    mov ebx,[ebx]
-    or [HoldComb+ecx*4],ebx
-    jmp .finkeyproc
-.releaseonly
-    sub ebx,12                ; <- bugfix from Maxim
-    shl ebx,2
-    add ebx,[CombCont+ecx*4]
-    mov ebx,[ebx]
-    xor ebx,0FFFFFFFFh
-    and [HoldComb+ecx*4],ebx
-    and [PressComb+ecx*4],ebx  ; <- buxfix from Maxim
-.finkeyproc
-    inc eax
-    inc byte[ComboPtr+ecx]
-    cmp byte[ComboPtr+ecx],42
-    je near .finish
-    jmp .nextsession
-
 SECTION .data
 TurboSw db 0
 ComboProg times 5 db 0
-ComboPtr  times 5 db 0
-KeyLPress dd 0
+NEWSYM ComboPtr,  times 5 db 0
 CombDirSwap dd 0
-CombDelay times 5 dd 0
-StartComb times 5 dd 0
-HoldComb times 5 dd 0
-PressComb times 5 dd 0
-CombCont times 5 dd 0
-CombTDelN dd 1,2,3,4,5,9,30,60,120,180,240,300
-CombTDelP dd 1,2,3,4,5,9,25,50,100,150,200,250
+NEWSYM StartComb, times 5 dd 0
+NEWSYM HoldComb,  times 5 dd 0
+NEWSYM PressComb, times 5 dd 0
+NEWSYM CombCont,  times 5 dd 0
 CombContDatN dd 08000000h,04000000h,02000000h,01000000h,00800000h,80000000h
              dd 00400000h,40000000h,00200000h,00100000h,10000000h,20000000h
 CombContDatR dd 08000000h,04000000h,01000000h,02000000h,00800000h,80000000h

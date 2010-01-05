@@ -4,6 +4,9 @@
 #include "types.h"
 
 void init(void);
+
+u4 ProcessCombo(u4 i);
+
 void DosExit(void);
 void MMXCheck(void);
 void outofmemfix(void);
