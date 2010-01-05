@@ -21,8 +21,7 @@
 
 %include "macros.mac"
 
-EXTSYM cbitmode,pressed,Grab_BMP_Data,Grab_BMP_Data_8,Get_Key,Check_Key
-EXTSYM ScreenShotFormat,exiter,xpb,xpc,snesmmap,memtabler8,snesmap2
+EXTSYM pressed,Get_Key,Check_Key,exiter,xpb,xpc,snesmmap,memtabler8,snesmap2
 EXTSYM regaccessbankr8,dmadata,initaddrl,spcPCRam,xp,curcyc,Curtableaddr
 EXTSYM UpdateDPage,splitflags,execsingle,joinflags,pdh,SPCRAM
 
@@ -30,36 +29,8 @@ EXTSYM UpdateDPage,splitflags,execsingle,joinflags,pdh,SPCRAM
 EXTSYM numinst,debuggeron
 %endif
 
-%ifndef NO_PNG
-EXTSYM Grab_PNG_Data
-%endif
-
 SECTION .bss
 NEWSYM SPCSave, resb 1
-
-SECTION .text
-
-NEWSYM saveimage
-    mov byte[pressed+1],0
-    mov byte[pressed+59],0
-
-%ifndef NO_PNG
-    cmp byte[ScreenShotFormat],1
-    jne .notpng
-    ccallv Grab_PNG_Data
-    ret
-.notpng
-%endif
-
-%ifdef __MSDOS__
-    cmp byte[cbitmode],1
-    je near .save16b
-    ccallv Grab_BMP_Data_8
-    ret
-.save16b
-%endif
-    ccallv Grab_BMP_Data
-    ret
 
 SECTION .data
 NEWSYM keyonsn, db 0

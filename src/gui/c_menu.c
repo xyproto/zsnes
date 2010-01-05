@@ -12,6 +12,7 @@
 #include "../vcache.h"
 #include "../video/procvid.h"
 #include "../video/procvidc.h"
+#include "../zip/zpng.h"
 #include "../zstate.h"
 #include "c_menu.h"
 #include "gui.h"
@@ -218,6 +219,31 @@ static void menudrawbox8b(void)
 }
 
 
+static void saveimage(void)
+{
+	pressed[ 1] = 0;
+	pressed[59] = 0;
+
+#ifndef NO_PNG
+	if (ScreenShotFormat == 1)
+	{
+		Grab_PNG_Data();
+		return;
+	}
+#endif
+#ifdef __MSDOS__
+	if (cbitmode != 1)
+	{
+		Grab_BMP_Data_8();
+	}
+	else
+#endif
+	{
+		Grab_BMP_Data();
+	}
+}
+
+
 #ifdef __MSDOS__
 static inline void SetPal(u1 const i, u1 const r, u1 const g, u1 const b)
 {
@@ -254,7 +280,7 @@ void showmenu(void)
 		if (SSKeyPressed == 1)
 		{
 			SSKeyPressed = 0;
-			asm_call(saveimage);
+			saveimage();
 		}
 		else if (SPCKeyPressed == 1)
 		{
@@ -262,7 +288,7 @@ void showmenu(void)
 		}
 		else if (pressed[14] & 1)
 		{
-			asm_call(saveimage);
+			saveimage();
 		}
 		else
 		{
@@ -340,10 +366,10 @@ void showmenu(void)
 			}
 			GUIUnBuffer();
 			copyvid();
-			if (menucloc == 0) asm_call(saveimage);
+			if (menucloc == 0) saveimage();
 			if (menucloc == 40 * 288)
 			{
-				asm_call(saveimage);
+				saveimage();
 				ExecExitOkay  = 0;
 				nextmenupopup = 3;
 				NoInputRead   = 1;

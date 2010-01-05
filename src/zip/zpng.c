@@ -167,7 +167,7 @@ int Png_Dump(const char *filename, unsigned short width, unsigned short height, 
   return(-1);
 }
 
-void Grab_PNG_Data()
+void Grab_PNG_Data(void)
 {
   char *filename = generate_image_filename("png");
   if (filename)
@@ -197,7 +197,7 @@ void Grab_PNG_Data()
 
 #endif
 
-void Grab_BMP_Data()
+void Grab_BMP_Data(void)
 {
   char *filename = generate_image_filename("bmp");
   if (filename)
@@ -233,7 +233,7 @@ void Grab_BMP_Data()
   }
 }
 
-void Grab_BMP_Data_8()
+void Grab_BMP_Data_8(void)
 {
   char *filename = generate_image_filename("bmp");
   if (filename)
