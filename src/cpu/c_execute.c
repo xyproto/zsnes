@@ -23,6 +23,7 @@
 #include "../zstate.h"
 #include "65816d.h"
 #include "c_execute.h"
+#include "c_memory.h"
 #include "execute.h"
 #include "memory.h"
 #include "memtable.h"
@@ -49,7 +50,7 @@ static void reexecuteb2(void)
 {
 	if (NoSoundReinit != 1) SetupPreGame();
 
-	asm_call(UpdateDPage);
+	UpdateDPage();
 	asm_call(SA1UpdateDPage);
 	Makemode7Table();
 	if (SFXEnable != 0) asm_call(UpdateSFX);

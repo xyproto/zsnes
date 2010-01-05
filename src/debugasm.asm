@@ -164,7 +164,7 @@ NEWSYM breakops
     mov dl,[xp]                 ; set flags
     mov dh,[curcyc]             ; set cycles
     mov edi,[Curtableaddr]
-    call UpdateDPage
+    ccallv UpdateDPage
     ; execute
 .loopa
     call splitflags
@@ -244,7 +244,7 @@ NEWSYM execnextop
     call splitflags
     call execsingle
     call joinflags
-    call UpdateDPage
+    ccallv UpdateDPage
     ; execute
     ; copy back data
     mov [spcPCRam],ebp

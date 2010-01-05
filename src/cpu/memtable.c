@@ -35,6 +35,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "memtable.h"
 #include "../gblvars.h"
 #include "../ui.h"
+#include "c_memory.h"
 
 extern unsigned int Curtableaddr, tableA[256];
 
@@ -80,7 +81,6 @@ void UpdateBanksSDD1()
 }
 
 extern void (*Bank0datr8[256])(), (*Bank0datr16[256])(), (*Bank0datw8[256])(), (*Bank0datw16[256])();
-extern void *DPageR8, *DPageR16, *DPageW8, *DPageW16;
 
 extern unsigned int xdb, xpb, xs, xx, xy, xd;
 extern unsigned short oamaddrt, xat, xst, xdt, xxt, xyt;

@@ -24,7 +24,7 @@
 EXTSYM romdata,sramb4save,curromspace,SA1Overflow
 EXTSYM SFXEnable,regptra,sfxramdata,snesmmap,wramdataa
 EXTSYM DSP1Write8b,regptwa,writeon,DSP1Read16b
-EXTSYM Bank0datr8,Bank0datw8,Bank0datr16,Bank0datw16,xd,SA1xd
+EXTSYM Bank0datr8,Bank0datw8,Bank0datr16,Bank0datw16,SA1xd
 EXTSYM DSP1Read8b,DSP1Type,SA1Enable,DSP1Write16b
 EXTSYM ramsize,ramsizeand,sram,sram2,ram7fa
 EXTSYM SA1Status,IRAM,CurBWPtr,SA1RAMArea
@@ -649,31 +649,11 @@ section .text
 %endmacro
 
 section .bss
-NEWSYM DPageR8, resd 1
-NEWSYM DPageR16, resd 1
-NEWSYM DPageW8, resd 1
-NEWSYM DPageW16, resd 1
 NEWSYM SA1DPageR8, resd 1
 NEWSYM SA1DPageR16, resd 1
 NEWSYM SA1DPageW8, resd 1
 NEWSYM SA1DPageW16, resd 1
 section .text
-
-NEWSYM UpdateDPage
-    push eax
-    movzx eax,byte[xd+1]
-    push ecx
-    mov ecx,[Bank0datr8+eax*4]
-    mov [DPageR8],ecx
-    mov ecx,[Bank0datr16+eax*4]
-    mov [DPageR16],ecx
-    mov ecx,[Bank0datw8+eax*4]
-    mov [DPageW8],ecx
-    mov ecx,[Bank0datw16+eax*4]
-    mov [DPageW16],ecx
-    pop ecx
-    pop eax
-    ret
 
 NEWSYM SA1UpdateDPage
     push eax

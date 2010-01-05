@@ -1890,7 +1890,7 @@ NEWSYM cCOpA8x16; TAY i
 NEWSYM cCOp5B   ; TCD i
     mov ax,[xa]
     mov [xd],ax
-    call UpdateDPage
+    ccallv UpdateDPage
     flagsetnz16b
     endloop
 NEWSYM cCOp1B   ; TCS i

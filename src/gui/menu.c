@@ -27,6 +27,7 @@
 #include "../cfg.h"
 #include "../cpu/65816d.h"
 #include "../cpu/c_execute.h"
+#include "../cpu/c_memory.h"
 #include "../cpu/execute.h"
 #include "../cpu/memory.h"
 #include "../cpu/memtable.h"
@@ -293,7 +294,7 @@ static void breakatsignb(void)
 	u1* ebp = spcPCRam;
 	u4  edx = curcyc /* cycles */ << 8 | xp /* flags */;
 	u4  edi = Curtableaddr;
-	asm_call(UpdateDPage);
+	UpdateDPage();
 	// execute
 	do
 	{

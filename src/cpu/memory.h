@@ -2,7 +2,6 @@
 #define MEMORY_H
 
 extern void SA1UpdateDPage();
-extern void UpdateDPage();
 extern void regaccessbankr8();
 
 #endif

@@ -84,7 +84,7 @@ NEWSYM ProcessRewind
     ccallv BackupPauseFrame
 .notpauserewind
 
-    call UpdateDPage
+    ccallv UpdateDPage
     mov esi,[tempesi]
     mov edi,[tempedi]
     mov ebp,[tempebp]
@@ -112,7 +112,7 @@ NEWSYM UpdateRewind
 
 .checkrewind
     call ProcessRewind
-    call UpdateDPage
+    ccallv UpdateDPage
 .norewinds
     ret
 
