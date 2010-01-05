@@ -121,7 +121,6 @@ NEWSYM Sflagc,   dd 0
 
 SECTION .bss
 NEWSYM WhichSW, resb 1
-NEWSYM WhichGR, resb 1
 TurboCB resb 1
 
 NEWSYM JoyAOrig, resd 1
@@ -275,7 +274,6 @@ SECTION .text
 
 NEWSYM ReadInputDevice
     mov byte[WhichSW],1
-    mov byte[WhichGR],0
     inc byte[TurboSw]
     mov byte[TurboCB],01h
     cmp byte[Turbo30hz],0
