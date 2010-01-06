@@ -2517,13 +2517,13 @@ void powercycle(bool sramload, bool romload)
   }
 }
 
-extern uint8_t osm2dis, ReturnFromSPCStall, SPCStallSetting, prevoamptr;
+extern uint8_t osm2dis, prevoamptr;
 extern uint8_t reg1read, reg2read, reg3read, reg4read, NMIEnab, INTEnab;
 extern uint8_t doirqnext, vidbright, forceblnk, timeron, spcP, JoyAPos, JoyBPos;
 extern uint8_t coladdr, coladdg, coladdb;
 extern uint8_t SDD1BankA,SDD1BankB, SDD1BankC, SDD1BankD;
 extern uint8_t intrset, curcyc, cycpl, GUIReset;
-extern uint32_t numspcvblleft, SPC700read, SPC700write, spc700idle;
+extern uint32_t SPC700read, SPC700write;
 extern uint32_t FIRTAPVal0, FIRTAPVal1, FIRTAPVal2, FIRTAPVal3, FIRTAPVal4, FIRTAPVal5, FIRTAPVal6, FIRTAPVal7;
 extern uint32_t xa, xdb, xpb, xs, xd, xx, xy, scrndis;
 extern uint16_t VIRQLoc, resolutn, xpc;

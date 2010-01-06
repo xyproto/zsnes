@@ -32,6 +32,8 @@
 
 u1 ComboCounter;
 u1 MMXSupport;
+u1 ReturnFromSPCStall;
+u1 SPCStallSetting;
 u1 WhichSW;
 u4 JoyANow;
 u4 JoyAOrig;
@@ -43,6 +45,8 @@ u4 JoyDNow;
 u4 JoyDOrig;
 u4 JoyENow;
 u4 JoyEOrig;
+u4 numspcvblleft;
+u4 spc700idle;
 
 static u1        ComboProg[5];
 static u1        ComboPtr[5];
@@ -567,4 +571,21 @@ void outofmemfix(void)
 
 	Msgptr    = newgfx16b != 1 ? "OUT OF MEMORY." : "ROM IS TOO BIG.";
 	MessageOn = 0xFFFFFFFF;
+}
+
+
+void idledetectspc(void)
+{
+	++numspcvblleft;
+	if (SPCStallSetting < 2)
+	{
+		++SPCStallSetting;
+		ReturnFromSPCStall = 1;
+	}
+	else
+	{
+		spc700idle = 29;
+		Msgptr     = "SPC700 STALL DETECTED.";
+		MessageOn  = MsgCount;
+	}
 }

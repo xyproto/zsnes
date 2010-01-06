@@ -8,9 +8,12 @@ void ReadInputDevice(void);
 void DosExit(void);
 void MMXCheck(void);
 void outofmemfix(void);
+void idledetectspc(void);
 
 extern u1 ComboCounter;
 extern u1 MMXSupport;
+extern u1 ReturnFromSPCStall;
+extern u1 SPCStallSetting;
 extern u1 WhichSW;
 extern u4 JoyANow;
 extern u4 JoyAOrig;
@@ -22,5 +25,7 @@ extern u4 JoyDNow;
 extern u4 JoyDOrig;
 extern u4 JoyENow;
 extern u4 JoyEOrig;
+extern u4 numspcvblleft;
+extern u4 spc700idle;
 
 #endif

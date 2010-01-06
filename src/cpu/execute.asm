@@ -1184,7 +1184,7 @@ NEWSYM cpuover
     inc dword[spc700idle]
     cmp dword[spc700idle],30
     jne .noidleend
-    call idledetectspc
+    ccallv idledetectspc
     cmp byte[ReturnFromSPCStall],1
     jne .noidleend
     mov byte[ExecExitOkay],0

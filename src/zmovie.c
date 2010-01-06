@@ -72,7 +72,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 
 extern uint32_t versionNumber, CRC32, cur_zst_size;
-extern uint8_t GUIReset, ReturnFromSPCStall, GUIQuit;
+extern uint8_t GUIReset, GUIQuit;
 extern uint8_t mencoderExists, lameExists;
 extern char CMovieExt;
 extern bool romispal;

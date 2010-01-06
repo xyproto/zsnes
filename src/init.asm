@@ -21,7 +21,7 @@
 
 %include "macros.mac"
 
-EXTSYM MessageOn,Msgptr,MsgCount,PrintChar
+EXTSYM PrintChar
 
 ; Initiation
 
@@ -105,31 +105,8 @@ NEWSYM Sflagc,   dd 0
 SECTION .data
 
 NEWSYM disablespcclr,  db 0
-NEWSYM numspcvblleft,  dd 0
-NEWSYM spc700idle,     dd 0
 NEWSYM ENVDisable, db 0
-SECTION .text
 
-NEWSYM idledetectspc
-    inc dword[numspcvblleft]
-    cmp byte[SPCStallSetting],2
-    jae .fullstall
-    inc byte[SPCStallSetting]
-    mov byte[ReturnFromSPCStall],1
-    ret
-.fullstall
-    mov dword[spc700idle],29
-    mov dword[Msgptr],.unableskip
-    mov eax,[MsgCount]
-    mov [MessageOn],eax
-    ret
-
-SECTION .data
-.unableskip db 'SPC700 STALL DETECTED.',0
-
-SECTION .bss
-NEWSYM ReturnFromSPCStall, resb 1
-NEWSYM SPCStallSetting, resb 1
 SECTION .text
 
 ;*******************************************************
