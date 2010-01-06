@@ -107,7 +107,6 @@ NEWSYM ENVDisable, db 0
 
 SECTION .bss
 NEWSYM IPSPatched, resb 1
-NEWSYM Checksumvalue, resw 1
 NEWSYM SramExists,    resb 1
 NEWSYM NumofBanks,    resd 1
 NEWSYM NumofBytes,    resd 1
