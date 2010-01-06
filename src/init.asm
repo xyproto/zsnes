@@ -78,8 +78,6 @@ ALIGN32
 NEWSYM cycpbl,  dd 110  ; percentage left of CPU/SPC to run  (3.58 = 175)
 NEWSYM cycpblt, dd 110  ; percentage of CPU/SPC to run
 
-NEWSYM cpuoverptr, dd 0                 ; pointer to cpuover
-
 ALIGN32
 NEWSYM xa,       dd 0
 NEWSYM xdb,      dd 0
