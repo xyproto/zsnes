@@ -388,13 +388,6 @@ NEWSYM InitVesa2
     xor bx,0FFFFh
     mov [vesa2_rtrcla],bx
 
-;        mov ax,03h
-;        int 10h
-;        mov ax,[vesa2_rfull]
-;        call printhex
-;        ccallv DosExit
-;        ret
-
     ; Process Green Stuff
     mov al,[fs:22h]
     mov cl,al

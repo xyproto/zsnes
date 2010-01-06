@@ -21,8 +21,6 @@
 
 %include "macros.mac"
 
-EXTSYM PrintChar
-
 ; Initiation
 
 SECTION .data
@@ -106,30 +104,6 @@ SECTION .data
 
 NEWSYM disablespcclr,  db 0
 NEWSYM ENVDisable, db 0
-
-SECTION .text
-
-;*******************************************************
-; Print Hexadecimal (16-bit/8-bit)
-;*******************************************************
-NEWSYM printhex
-    mov ecx,4
-    xor ebx,ebx
-.loopa
-    mov bx,ax
-    and bx,0F000h
-    shr bx,12
-    mov dl,[.hexdat+ebx]
-    ccallv PrintChar, edx
-    shl ax,4
-    dec ecx
-    jnz .loopa
-    ret
-
-ALIGN32 ; Hack for broken nasm < 2.08: macho sections are not aligned
-
-SECTION .data
-.hexdat db '0123456789ABCDEF'
 
 SECTION .bss
 NEWSYM IPSPatched, resb 1

@@ -589,3 +589,10 @@ void idledetectspc(void)
 		MessageOn  = MsgCount;
 	}
 }
+
+
+void printhex(u2 ax)
+{
+	u4 n = 4;
+	do PrintChar("0123456789ABCDEF"[ax >> 12]); while (ax <<= 4, --n != 0);
+}

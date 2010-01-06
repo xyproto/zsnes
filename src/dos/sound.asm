@@ -1359,7 +1359,7 @@ NEWSYM getblaster
     ccallv PrintStr, .blasterinfo
     xor eax,eax
     mov ax,[SBPort]
-    call printhex
+    ccallv printhex, eax
     ccallv PrintStr, .blinfob
     xor eax,eax
     mov al,[SBIrq]
