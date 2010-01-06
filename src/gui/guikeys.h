@@ -6,6 +6,7 @@
 extern void GUIWaitForKey();
 extern void GUIgetcurrentinput();
 
+extern u1  GUIDelayB;
 extern u1* GUIEditStringcLen;
 extern u4  GUIEditStringLTxt;
 extern u4  GUIEditStringLstb;

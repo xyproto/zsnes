@@ -6,6 +6,8 @@
 extern char  GUIPrevMenuData[];
 extern char* GUICMessage;
 extern u1    CheatOn;
+extern u1    CombinDataGlob[3300];
+extern u1    CombinDataLocl[3300];
 extern u1    GUICBHold2;
 extern u1    GUICBHold;
 extern u1    GUICCFlash;

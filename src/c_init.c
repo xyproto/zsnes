@@ -14,9 +14,12 @@
 #include "cpu/stable.h"
 #include "debugger.h"
 #include "gui/c_gui.h"
+#include "gui/gui.h"
+#include "gui/guikeys.h"
 #include "gui/guiwindp.h"
 #include "init.h"
 #include "initc.h"
+#include "input.h"
 #include "link.h"
 #include "macros.h"
 #include "ui.h"
@@ -27,11 +30,33 @@
 #include "zstate.h"
 
 
+u1 ComboCounter;
 u1 MMXSupport;
+u1 WhichSW;
+u4 JoyANow;
+u4 JoyAOrig;
+u4 JoyBNow;
+u4 JoyBOrig;
+u4 JoyCNow;
+u4 JoyCOrig;
+u4 JoyDNow;
+u4 JoyDOrig;
+u4 JoyENow;
+u4 JoyEOrig;
 
-static u4       CombDelay[5];
-static u4 const CombTDelN[] = { 1, 2, 3, 4, 5, 9, 30, 60, 120, 180, 240, 300 };
-static u4 const CombTDelP[] = { 1, 2, 3, 4, 5, 9, 25, 50, 100, 150, 200, 250 };
+static u1        ComboProg[5];
+static u1        ComboPtr[5];
+static u1        TurboSw;
+static u1*       StartComb[5];
+static u4        CombDelay[5];
+static u4        CombDirSwap;
+static u4        HoldComb[5];
+static u4        PressComb[5];
+static u4 const  CombContDatN[] = { 0x08000000, 0x04000000, 0x02000000, 0x01000000, 0x00800000, 0x80000000, 0x00400000, 0x40000000, 0x00200000, 0x00100000, 0x10000000, 0x20000000 };
+static u4 const  CombContDatR[] = { 0x08000000, 0x04000000, 0x01000000, 0x02000000, 0x00800000, 0x80000000, 0x00400000, 0x40000000, 0x00200000, 0x00100000, 0x10000000, 0x20000000 };
+static u4 const  CombTDelN[]    = { 1, 2, 3, 4, 5, 9, 30, 60, 120, 180, 240, 300 };
+static u4 const  CombTDelP[]    = { 1, 2, 3, 4, 5, 9, 25, 50, 100, 150, 200, 250 };
+static u4 const* CombCont[5];
 
 
 void init(void)
@@ -142,7 +167,25 @@ void init(void)
 }
 
 
-u4 ProcessCombo(u4 const i)
+static inline void PlayerDeviceHelp(u4 const key, u4* const device, u4 const bits)
+{
+	if (pressed[key] == 1) *device |= bits;
+}
+
+
+static void ProcSNESMouse(u4* const device)
+{
+	u4 d = *device;
+	if (mousebuttons & 0x02) d |= 0x00100000;
+	if (mousebuttons & 0x01) d |= 0x00400000;
+	d = d & 0xFFFF0000 | 0x00010000 | (mouseypos & 0x7F) << 8 | (mousexpos & 0x7F);
+	if (mouseydir & 0x01) d |= 0x00008000;
+	if (mousexdir & 0x01) d |= 0x00000080;
+	*device = d;
+}
+
+
+static u4 ProcessCombo(u4 const i)
 {
 	u4  res = 1;
 	u1* eax = StartComb[i];
@@ -193,6 +236,279 @@ u4 ProcessCombo(u4 const i)
 finish:
 	StartComb[i] = eax;
 	return res;
+}
+
+
+static void ProcessKeyComb(u4 const id, u4* const device)
+{
+	if (NumCombo == 0) return;
+	if (ComboProg[id] == 0)
+	{
+		if (*device & 0x01000000) CombDirSwap = 0;
+		if (*device & 0x02000000) CombDirSwap = 1;
+		u1* eax = GUIComboGameSpec != 0 ? CombinDataLocl : CombinDataGlob;
+		u4  n   = NumCombo;
+		for (;; eax += 66)
+		{
+			u4 const key = *(u2*)(eax + 62);
+			if (pressed[key] == 1 && eax[64] == id)
+			{
+				pressed[key]  = 2;
+				++ComboCounter;
+				ComboProg[id] = 1;
+				ComboPtr[id]  = 0;
+				PressComb[id] = 0;
+				HoldComb[id]  = 0;
+				CombCont[id]  = CombDirSwap != 0 && eax[65] != 0 ? CombContDatR : CombContDatN;
+				StartComb[id] = eax + 20;
+				break;
+			}
+			if (--n == 0) return;
+		}
+	}
+	if (ProcessCombo(id) != 0) ComboProg[id] = 0;
+	*device = HoldComb[id] | PressComb[id];
+}
+
+
+static void PlayerDeviceFix(u4* const device)
+{
+	if (AllowUDLR == 1) return;
+	u4 d = *device;
+	if (d & 0x0C000000 == 0x0C000000) d &= 0xF3FFFFFF;
+	if (d & 0x03000000 == 0x03000000) d &= 0xFCFFFFFF;
+	*device = d;
+}
+
+
+// Reads from Keyboard, etc.
+void ReadInputDevice(void)
+{
+	WhichSW = 1;
+	++TurboSw;
+	u1 const TurboCB = Turbo30hz != 0 ? 0x02 : 0x01;
+	// Read External Devices (Joystick, PPort, etc.)
+	JoyRead();
+	// Process Data
+	JoyAOrig = 0;
+	JoyBOrig = 0;
+
+	// Get Player1 input device
+	if (device1 == 1)
+	{
+		processmouse1();
+		ProcSNESMouse(&JoyAOrig);
+	}
+	else
+	{
+		PlayerDeviceHelp(pl1Bk,     &JoyAOrig, 0x80000000);
+		PlayerDeviceHelp(pl1Yk,     &JoyAOrig, 0x40000000);
+		PlayerDeviceHelp(pl1selk,   &JoyAOrig, 0x20000000);
+		PlayerDeviceHelp(pl1startk, &JoyAOrig, 0x10000000);
+		PlayerDeviceHelp(pl1upk,    &JoyAOrig, 0x08000000);
+		PlayerDeviceHelp(pl1downk,  &JoyAOrig, 0x04000000);
+		PlayerDeviceHelp(pl1leftk,  &JoyAOrig, 0x02000000);
+		PlayerDeviceHelp(pl1rightk, &JoyAOrig, 0x01000000);
+		PlayerDeviceHelp(pl1Ak,     &JoyAOrig, 0x00800000);
+		PlayerDeviceHelp(pl1Xk,     &JoyAOrig, 0x00400000);
+		PlayerDeviceHelp(pl1Lk,     &JoyAOrig, 0x00200000);
+		PlayerDeviceHelp(pl1Rk,     &JoyAOrig, 0x00100000);
+		PlayerDeviceHelp(pl1ULk,    &JoyAOrig, 0x0A000000);
+		PlayerDeviceHelp(pl1URk,    &JoyAOrig, 0x09000000);
+		PlayerDeviceHelp(pl1DLk,    &JoyAOrig, 0x06000000);
+		PlayerDeviceHelp(pl1DRk,    &JoyAOrig, 0x05000000);
+		PlayerDeviceFix(&JoyAOrig);
+		if (!(TurboSw & TurboCB))
+		{
+			PlayerDeviceHelp(pl1Xtk, &JoyAOrig, 0x00400000);
+			PlayerDeviceHelp(pl1Ytk, &JoyAOrig, 0x40000000);
+			PlayerDeviceHelp(pl1Atk, &JoyAOrig, 0x00800000);
+			PlayerDeviceHelp(pl1Btk, &JoyAOrig, 0x80000000);
+			PlayerDeviceHelp(pl1Ltk, &JoyAOrig, 0x00200000);
+			PlayerDeviceHelp(pl1Rtk, &JoyAOrig, 0x00100000);
+		}
+		ComboCounter = 0;
+		ProcessKeyComb(0, &JoyAOrig);
+		JoyAOrig |= 0x00008000; // Joystick Enable
+		if (GUIDelayB == 1)
+		{
+			if (JoyAOrig & 0x80000000) goto inputbdcb;
+			--GUIDelayB;
+		}
+		else if (GUIDelayB != 0)
+		{
+			--GUIDelayB;
+inputbdcb:
+			JoyAOrig &= 0x7FFFFFFF;
+		}
+	}
+
+	if (device2 == 1)
+	{
+		processmouse2();
+		ProcSNESMouse(&JoyBOrig);
+	}
+	else if (device2 == 2)
+	{
+		processmouse2();
+		u4 j = JoyBOrig & 0x0000FFFF | 0x00FF0000 | ssautosw << 24;
+		if (mousebuttons & 0x01)   j |= 0x80000000;
+		if (pressed[SSPause] != 0) j |= 0x10000000;
+		if (mousebuttons & 0x02)   j |= 0x40000000;
+		JoyBOrig = j;
+	}
+	else if (device2 == 3)
+	{
+		processmouse2();
+		if (*(u4*)(romdata + 0x1000) == 0xAD20C203)
+		{
+			u1* eax = wramdata;
+			if (eax[0] != 26)
+			{
+				eax[0x040A] = mousexloc;
+				eax[0x040E] = mouseyloc;
+			}
+		}
+		//JoyBOrig = JoyBOrig & 0x0000FFFF | 0x000E0000;
+		if (mousebuttons & 0x01) JoyAOrig |= 0x80000000;
+		if (mousebuttons & 0x02) JoyAOrig |= 0x00800000;
+	}
+	else if (pl2contrl != 0)
+	{ // Get Player2 input device
+		PlayerDeviceHelp(pl2Bk,     &JoyBOrig, 0x80000000);
+		PlayerDeviceHelp(pl2Yk,     &JoyBOrig, 0x40000000);
+		PlayerDeviceHelp(pl2selk,   &JoyBOrig, 0x20000000);
+		PlayerDeviceHelp(pl2startk, &JoyBOrig, 0x10000000);
+		PlayerDeviceHelp(pl2upk,    &JoyBOrig, 0x08000000);
+		PlayerDeviceHelp(pl2downk,  &JoyBOrig, 0x04000000);
+		PlayerDeviceHelp(pl2leftk,  &JoyBOrig, 0x02000000);
+		PlayerDeviceHelp(pl2rightk, &JoyBOrig, 0x01000000);
+		PlayerDeviceHelp(pl2Ak,     &JoyBOrig, 0x00800000);
+		PlayerDeviceHelp(pl2Xk,     &JoyBOrig, 0x00400000);
+		PlayerDeviceHelp(pl2Lk,     &JoyBOrig, 0x00200000);
+		PlayerDeviceHelp(pl2Rk,     &JoyBOrig, 0x00100000);
+		PlayerDeviceHelp(pl2ULk,    &JoyBOrig, 0x0A000000);
+		PlayerDeviceHelp(pl2URk,    &JoyBOrig, 0x09000000);
+		PlayerDeviceHelp(pl2DLk,    &JoyBOrig, 0x06000000);
+		PlayerDeviceHelp(pl2DRk,    &JoyBOrig, 0x05000000);
+		PlayerDeviceFix(&JoyBOrig);
+		if (!(TurboSw & TurboCB))
+		{
+			PlayerDeviceHelp(pl2Xtk, &JoyBOrig, 0x00400000);
+			PlayerDeviceHelp(pl2Ytk, &JoyBOrig, 0x40000000);
+			PlayerDeviceHelp(pl2Atk, &JoyBOrig, 0x00800000);
+			PlayerDeviceHelp(pl2Btk, &JoyBOrig, 0x80000000);
+			PlayerDeviceHelp(pl2Ltk, &JoyBOrig, 0x00200000);
+			PlayerDeviceHelp(pl2Rtk, &JoyBOrig, 0x00100000);
+		}
+		ProcessKeyComb(1, &JoyBOrig);
+		JoyBOrig |= 0x00008000; // Joystick Enable
+	}
+
+	JoyCOrig = 0;
+	if (pl3contrl != 0)
+	{ // Get Player3 input device
+		PlayerDeviceHelp(pl3Bk,     &JoyCOrig, 0x80000000);
+		PlayerDeviceHelp(pl3Yk,     &JoyCOrig, 0x40000000);
+		PlayerDeviceHelp(pl3selk,   &JoyCOrig, 0x20000000);
+		PlayerDeviceHelp(pl3startk, &JoyCOrig, 0x10000000);
+		PlayerDeviceHelp(pl3upk,    &JoyCOrig, 0x08000000);
+		PlayerDeviceHelp(pl3downk,  &JoyCOrig, 0x04000000);
+		PlayerDeviceHelp(pl3leftk,  &JoyCOrig, 0x02000000);
+		PlayerDeviceHelp(pl3rightk, &JoyCOrig, 0x01000000);
+		PlayerDeviceHelp(pl3Ak,     &JoyCOrig, 0x00800000);
+		PlayerDeviceHelp(pl3Xk,     &JoyCOrig, 0x00400000);
+		PlayerDeviceHelp(pl3Lk,     &JoyCOrig, 0x00200000);
+		PlayerDeviceHelp(pl3Rk,     &JoyCOrig, 0x00100000);
+		PlayerDeviceHelp(pl3ULk,    &JoyCOrig, 0x0A000000);
+		PlayerDeviceHelp(pl3URk,    &JoyCOrig, 0x09000000);
+		PlayerDeviceHelp(pl3DLk,    &JoyCOrig, 0x06000000);
+		PlayerDeviceHelp(pl3DRk,    &JoyCOrig, 0x05000000);
+		PlayerDeviceFix(&JoyCOrig);
+		if (!(TurboSw & TurboCB))
+		{
+			PlayerDeviceHelp(pl3Xtk, &JoyCOrig, 0x00400000);
+			PlayerDeviceHelp(pl3Ytk, &JoyCOrig, 0x40000000);
+			PlayerDeviceHelp(pl3Atk, &JoyCOrig, 0x00800000);
+			PlayerDeviceHelp(pl3Btk, &JoyCOrig, 0x80000000);
+			PlayerDeviceHelp(pl3Ltk, &JoyCOrig, 0x00200000);
+			PlayerDeviceHelp(pl3Rtk, &JoyCOrig, 0x00100000);
+		}
+		ProcessKeyComb(2, &JoyCOrig);
+		JoyCOrig |= 0x00008000; // Joystick Enable
+	}
+
+	JoyDOrig = 0;
+	if (pl4contrl != 0)
+	{ // Get Player4 input device
+		PlayerDeviceHelp(pl4Bk,     &JoyDOrig, 0x80000000);
+		PlayerDeviceHelp(pl4Yk,     &JoyDOrig, 0x40000000);
+		PlayerDeviceHelp(pl4selk,   &JoyDOrig, 0x20000000);
+		PlayerDeviceHelp(pl4startk, &JoyDOrig, 0x10000000);
+		PlayerDeviceHelp(pl4upk,    &JoyDOrig, 0x08000000);
+		PlayerDeviceHelp(pl4downk,  &JoyDOrig, 0x04000000);
+		PlayerDeviceHelp(pl4leftk,  &JoyDOrig, 0x02000000);
+		PlayerDeviceHelp(pl4rightk, &JoyDOrig, 0x01000000);
+		PlayerDeviceHelp(pl4Ak,     &JoyDOrig, 0x00800000);
+		PlayerDeviceHelp(pl4Xk,     &JoyDOrig, 0x00400000);
+		PlayerDeviceHelp(pl4Lk,     &JoyDOrig, 0x00200000);
+		PlayerDeviceHelp(pl4Rk,     &JoyDOrig, 0x00100000);
+		PlayerDeviceHelp(pl4ULk,    &JoyDOrig, 0x0A000000);
+		PlayerDeviceHelp(pl4URk,    &JoyDOrig, 0x09000000);
+		PlayerDeviceHelp(pl4DLk,    &JoyDOrig, 0x06000000);
+		PlayerDeviceHelp(pl4DRk,    &JoyDOrig, 0x05000000);
+		PlayerDeviceFix(&JoyDOrig);
+		if (!(TurboSw & TurboCB))
+		{
+			PlayerDeviceHelp(pl4Xtk, &JoyDOrig, 0x00400000);
+			PlayerDeviceHelp(pl4Ytk, &JoyDOrig, 0x40000000);
+			PlayerDeviceHelp(pl4Atk, &JoyDOrig, 0x00800000);
+			PlayerDeviceHelp(pl4Btk, &JoyDOrig, 0x80000000);
+			PlayerDeviceHelp(pl4Ltk, &JoyDOrig, 0x00200000);
+			PlayerDeviceHelp(pl4Rtk, &JoyDOrig, 0x00100000);
+		}
+		ProcessKeyComb(3, &JoyDOrig);
+		JoyDOrig |= 0x00008000; // Joystick Enable
+	}
+
+	JoyEOrig = 0;
+	if (pl5contrl != 0)
+	{ // Get Player5 input device
+		PlayerDeviceHelp(pl5Bk,     &JoyEOrig, 0x80000000);
+		PlayerDeviceHelp(pl5Yk,     &JoyEOrig, 0x40000000);
+		PlayerDeviceHelp(pl5selk,   &JoyEOrig, 0x20000000);
+		PlayerDeviceHelp(pl5startk, &JoyEOrig, 0x10000000);
+		PlayerDeviceHelp(pl5upk,    &JoyEOrig, 0x08000000);
+		PlayerDeviceHelp(pl5downk,  &JoyEOrig, 0x04000000);
+		PlayerDeviceHelp(pl5leftk,  &JoyEOrig, 0x02000000);
+		PlayerDeviceHelp(pl5rightk, &JoyEOrig, 0x01000000);
+		PlayerDeviceHelp(pl5Ak,     &JoyEOrig, 0x00800000);
+		PlayerDeviceHelp(pl5Xk,     &JoyEOrig, 0x00400000);
+		PlayerDeviceHelp(pl5Lk,     &JoyEOrig, 0x00200000);
+		PlayerDeviceHelp(pl5Rk,     &JoyEOrig, 0x00100000);
+		PlayerDeviceHelp(pl5ULk,    &JoyEOrig, 0x0A000000);
+		PlayerDeviceHelp(pl5URk,    &JoyEOrig, 0x09000000);
+		PlayerDeviceHelp(pl5DLk,    &JoyEOrig, 0x06000000);
+		PlayerDeviceHelp(pl5DRk,    &JoyEOrig, 0x05000000);
+		PlayerDeviceFix(&JoyEOrig);
+		if (!(TurboSw & TurboCB))
+		{
+			PlayerDeviceHelp(pl5Xtk, &JoyEOrig, 0x00400000);
+			PlayerDeviceHelp(pl5Ytk, &JoyEOrig, 0x40000000);
+			PlayerDeviceHelp(pl5Atk, &JoyEOrig, 0x00800000);
+			PlayerDeviceHelp(pl5Btk, &JoyEOrig, 0x80000000);
+			PlayerDeviceHelp(pl5Ltk, &JoyEOrig, 0x00200000);
+			PlayerDeviceHelp(pl5Rtk, &JoyEOrig, 0x00100000);
+		}
+		ProcessKeyComb(4, &JoyEOrig);
+		JoyEOrig |= 0x00008000; // Joystick Enable
+	}
+
+	if (pl12s34 == 1)
+	{
+		if (device1 == 0) JoyAOrig = JoyCOrig;
+		if (device2 == 0) JoyBOrig = JoyDOrig;
+	}
 }
 
 

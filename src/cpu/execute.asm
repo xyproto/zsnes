@@ -952,7 +952,7 @@ NEWSYM cpuover
     inc word[curypos]
     cmp byte[NoInputRead],1
     je .noinputread
-    call ReadInputDevice
+    ccallv ReadInputDevice
 .noinputread
 
     ;Pause and Frame increment
@@ -1777,7 +1777,7 @@ NEWSYM execsingle
     inc word[VIRQLoc]
 .novirqz
 
-    call ReadInputDevice
+    ccallv ReadInputDevice
 
     test byte[INTEnab],1
     jz .noresetjoy

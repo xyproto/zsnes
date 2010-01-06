@@ -51,6 +51,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <unistd.h>
 #endif
 #include "asm_call.h"
+#include "c_init.h"
 #include "cpu/dspproc.h"
 #include "gui/guimisc.h"
 #include "md.h"
@@ -71,7 +72,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 
 extern uint32_t versionNumber, CRC32, cur_zst_size;
-extern uint32_t JoyAOrig, JoyBOrig, JoyCOrig, JoyDOrig, JoyEOrig;
 extern uint8_t GUIReset, ReturnFromSPCStall, GUIQuit;
 extern uint8_t mencoderExists, lameExists;
 extern char CMovieExt;
@@ -2525,7 +2525,7 @@ static size_t MovieSub_GetDuration()
 bool RawDumpInProgress = false;
 bool PrevSRAMState;
 
-extern uint8_t ComboCounter, AllocatedRewindStates;
+extern uint8_t AllocatedRewindStates;
 extern uint8_t SloMo, EMUPause;
 char MovieFrameStr[10];
 bool MovieForcedLengthEnabled = false;
