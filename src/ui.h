@@ -9,7 +9,6 @@
 extern eop* regptra[0x3000];
 extern eop* regptwa[0x3000];
 extern u1   DSPDisable;      // Disable DSP emulation
-extern u1   MMXextSupport;
 extern u1   MusicVol;
 extern u1   V8Mode;          // Vegetable mode! =) (Greyscale mode)
 extern u1*  vidbufferofsa;   // offset 1

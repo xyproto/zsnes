@@ -141,7 +141,6 @@ void MMXCheck(void)
 { // Check for cpu that doesn't support CPUID
 	ShowMMXSupport = 0;
 	MMXSupport     = 0;
-	MMXextSupport  = 0;
 
 	// Real way to check for presence of CPUID instruction  -kode54
 	u4 eflags_before;
@@ -166,14 +165,4 @@ void MMXCheck(void)
 
 	ShowMMXSupport = 1;
 	MMXSupport     = AllowMMX;
-
-	// Check if CPU has SSE (also support mmxext)
-	if (!(edx & 0x02000000))
-	{ // Test extended CPU flag
-		asm("cpuid" : "=a" (eax), "=b" (ebx), "=c" (ecx), "=d" (edx) : "a" (0x80000001));
-		if (!(edx & 0x00400000))
-			return;
-	}
-
-	MMXextSupport = 1;
 }

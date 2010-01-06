@@ -93,7 +93,6 @@ unsigned char ForcePal      = 0;    // 1 = NTSC, 2 = PAL
 unsigned char finterleave   = 0;
 u1            DSPDisable    = 0;
 u1            MusicVol      = 0;
-u1            MMXextSupport = 0;
 
 void init(), WaitForKey(), InitSPC(), DosExit();
 void SystemInit(), StartUp(), MultiMouseInit();
