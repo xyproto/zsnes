@@ -22,6 +22,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #ifndef MEMTABLE_H
 #define MEMTABLE_H
 
+#include <stddef.h>
+
 #include "../types.h"
 
 extern void (*memtabler8[256])();

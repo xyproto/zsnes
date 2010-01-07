@@ -34,6 +34,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #include "asm_call.h"
 #include "cpu/c_execute.h"
+#include "cpu/memtable.h"
 #include "zstate.h"
 
 // All of these should be in headers, people!
@@ -67,7 +68,6 @@ extern unsigned char spcA, spcX, spcY, spcS, spcNZ, spcP;
 
 
 // these really shouldn't be written in ASM... (they are in debugasm.asm)
-extern unsigned char memtabler8_wrapper(unsigned char, unsigned short);
 extern          void memtablew8_wrapper(unsigned char, unsigned short, unsigned char);
 extern void breakops_wrapper();
 
@@ -289,7 +289,7 @@ void debugloop() {
        noecho();
 
        if (n == 1) {
-       mvwprintw(w, 3, 21, "%02x", memtabler8_wrapper(addr >> 16, addr));
+       mvwprintw(w, 3, 21, "%02x", memr8(addr >> 16, addr));
        wrefresh(w);
 
        echo();
@@ -677,7 +677,7 @@ void addtail() {
 // For next time, http://www.zophar.net/tech/files/65c816.txt seems
 // like a good reference for effective address calculation; also, use
 // 24-bit addresses for all calculations (so completely rip out
-// memtabler8_wrapper, too). Also, preferably read memory in a
+// memr8, too). Also, preferably read memory in a
 // non-destructive way.
 
 // This whole instr[1] thing probably isn't quite right either, but it
@@ -752,9 +752,9 @@ void out65816_addrmode (unsigned char *instr) {
         wprintw(debugwin, "[$%02x],Y   ", instr[1]);
 
         addr = instr[1] + xd;
-        t = memtabler8_wrapper(0, addr);
-        t |= memtabler8_wrapper(0, addr+1) << 8;
-        t |= memtabler8_wrapper(0, addr+2) << 16;
+        t  = memr8(0, addr);
+        t |= memr8(0, addr + 1) <<  8;
+        t |= memr8(0, addr + 2) << 16;
         t = INDEX_RIGHT(t, xy);
         wprintw(debugwin, "[%06x] ", t);
 
@@ -846,8 +846,8 @@ void out65816_addrmode (unsigned char *instr) {
 
         addr1 = instr[1] + xd;
 
-        addr2  = memtabler8_wrapper(00, addr1);
-        addr2 |= memtabler8_wrapper(00, addr1+1) << 8;
+        addr2  = memr8(00, addr1);
+        addr2 |= memr8(00, addr1 + 1) << 8;
 
         wprintw(debugwin, "[%02x%04x] ", xdb, addr2);
 
@@ -864,8 +864,8 @@ void out65816_addrmode (unsigned char *instr) {
         /*
         addr1 = instr[1] + xd;
 
-        addr2  = memtabler8_wrapper(0, addr1);
-        addr2 |= memtabler8_wrapper(
+        addr2  = memr8(0, addr1);
+        addr2 |= memr8(
         */
 
         wprintw(debugwin, "[nnnnnn] ");
@@ -884,8 +884,8 @@ void out65816_addrmode (unsigned char *instr) {
         else
             cx += xx;
         // .out20n
-        x = memtabler8_wrapper(xpb, cx);
-        x += memtabler8_wrapper(xpb, cx+1) << 8;
+        x  = memr8(xpb, cx);
+        x += memr8(xpb, cx + 1) << 8;
         wprintw(debugwin, "%04x] ", x);
 
         break;

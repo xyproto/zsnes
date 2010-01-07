@@ -32,30 +32,6 @@ EXTSYM PrevBreakPt_page, PrevBreakPt_offset, my_getch_ret, my_getch
 
 SECTION .text
 
-;; Wrapper for calls to routines in memtabler8
-
-NEWSYM memtabler8_wrapper
-        push    ebp
-        mov     ebp, esp
-
-        push    ebx
-        push    edi
-        push    esi
-
-        movzx   ebx, BYTE [ebp+8]
-        movzx   ecx, WORD [ebp+12]
-        xor     eax, eax
-        mov     al, bl
-        call    DWORD [memtabler8+eax*4]
-        and     eax, 255
-
-        pop     esi
-        pop     edi
-        pop     ebx
-
-        pop     ebp
-        ret
-
 NEWSYM memtablew8_wrapper
         push    ebp
         mov     ebp, esp
