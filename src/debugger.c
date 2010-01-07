@@ -32,7 +32,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <dpmi.h>
 #endif // __MSDOS__
 
-#include "asm_call.h"
 #include "c_debugasm.h"
 #include "cpu/c_execute.h"
 #include "cpu/memtable.h"
@@ -117,7 +116,6 @@ void nextspcopcode();
 void SaveOAMRamLog();
 void debugdump();
 void out65816();
-void execnextop();
 
 void traceops(unsigned count);
 void SPCbreakops(unsigned short addr);
@@ -420,7 +418,7 @@ void debugloop() {
        debstop3 = 0;
        nodelay(w, TRUE);
        do {
-          asm_call(execnextop);
+          execnextop();
        } while ( (! ((++numinst % 256) && (wgetch(w) == 27)))
                && (debstop3 != 1) );
        debstop3 = 0;
@@ -459,7 +457,7 @@ void debugloop() {
           fprintf(fp, "%s\n", buf);
           fflush(fp);
 
-          asm_call(execnextop);
+          execnextop();
        } while ( (! ((++numinst % 256) && (wgetch(w) == 27)))
                 && (debstop3 != 1) );
        debstop3 = 0;
@@ -489,7 +487,7 @@ void debugloop() {
 
   e:
    skipdebugsa1 = 0;
-   asm_call(execnextop);
+   execnextop();
    skipdebugsa1 = 1;
    if (soundon && (debugds & 2) && (cycpbl >= 55))
        goto e;
@@ -513,7 +511,7 @@ void traceops(unsigned count) {
 
     nodelay(w, TRUE);
     while (count-- && (wgetch(w) != 27)) {
-        asm_call(execnextop);
+        execnextop();
     }
 
     closewindow(w);
@@ -530,7 +528,7 @@ void SPCbreakops(unsigned short addr) {
 
     nodelay(w, TRUE);
     do {
-        asm_call(execnextop);
+        execnextop();
     } while ((!((++numinst % 256)
          && (wgetch(w) == 27)))
          && (spcPCRam != breakarea));
@@ -555,13 +553,6 @@ void printinfo(char *s) {
     }
   }
 }
-
-/* Won't port too well - stuck it in debugasm.asm for now */
-/* void execnextop() { */
-/*     char *page = findoppage(); */
-/*     initaddrl = page; */
-/*     char *address = page+xpc; */
-/* } */
 
 //*******************************************************
 // Start Display
