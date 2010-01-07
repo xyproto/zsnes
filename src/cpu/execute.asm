@@ -1418,12 +1418,6 @@ NEWSYM UpdateCLSR
 .noyi
    ret
 
-NEWSYM UpdateSFX
-   call UpdatePORSCMR
-   call UpdatePORSCMR
-   call UpdateCLSR
-   ret
-
 NEWSYM StartSFX
     push edx
     push esi

@@ -48,6 +48,14 @@ void start65816(void)
 }
 
 
+static void UpdateSFX(void)
+{
+	asm_call(UpdatePORSCMR);
+	asm_call(UpdatePORSCMR);
+	asm_call(UpdateCLSR);
+}
+
+
 static void reexecuteb2(void)
 {
 	if (NoSoundReinit != 1) SetupPreGame();
@@ -55,7 +63,7 @@ static void reexecuteb2(void)
 	UpdateDPage();
 	SA1UpdateDPage();
 	Makemode7Table();
-	if (SFXEnable != 0) asm_call(UpdateSFX);
+	if (SFXEnable != 0) UpdateSFX();
 
 	curexecstate  |= 2;
 	NoSoundReinit  = 0;
