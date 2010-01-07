@@ -33,6 +33,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #endif // __MSDOS__
 
 #include "asm_call.h"
+#include "c_debugasm.h"
 #include "cpu/c_execute.h"
 #include "cpu/memtable.h"
 #include "zstate.h"
@@ -66,9 +67,6 @@ extern void (*memtabler8[256])();
 extern unsigned char *spcPCRam;
 extern unsigned char spcA, spcX, spcY, spcS, spcNZ, spcP;
 
-
-// these really shouldn't be written in ASM... (they are in debugasm.asm)
-extern void breakops_wrapper();
 
 extern void regaccessbankr8();
 

@@ -33,18 +33,6 @@ EXTSYM PrevBreakPt_page, PrevBreakPt_offset, my_getch_ret, my_getch
 SECTION .text
 
 
-NEWSYM breakops_wrapper
-        push    ebp
-        mov     ebp, esp
-        pushad
-        movzx   ebx, BYTE [PrevBreakPt_page]
-        movzx   ecx, WORD [PrevBreakPt_offset]
-        call    breakops
-        popad
-        pop     ebp
-        ret
-
-
 ;*******************************************************
 ; BreakOps                          Breaks at Breakpoint
 ;*******************************************************
