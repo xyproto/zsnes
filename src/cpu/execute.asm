@@ -1261,27 +1261,6 @@ NEWSYM cpuover
 .irqd
     mov byte[doirqnext],1
 .hirqnotokay
-    jmp .nodrawlineh
-
-.returnfromhirq
-    mov ax,[resolutn]
-    cmp word[curypos],ax
-    jnb .nodrawlineh
-    cmp byte[hdmadelay],0
-    je .dohdma2h
-    dec byte[hdmadelay]
-    jmp .nodohdma2h
-.dohdma2h
-    call exechdma
-.nodohdma2h
-    cmp word[curypos],1
-    jne .nocache2h
-    call cachevideo
-.nocache2h
-    cmp byte[curblank],0
-    jne .nodrawlineh
-    call drawline
-.nodrawlineh
     xor ebx,ebx
     mov bl,[esi]
     inc esi
