@@ -32,9 +32,9 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <dpmi.h>
 #endif // __MSDOS__
 
-#include "c_debugasm.h"
 #include "cpu/c_execute.h"
 #include "cpu/memtable.h"
+#include "debugasm.h"
 #include "zstate.h"
 
 // All of these should be in headers, people!

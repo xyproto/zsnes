@@ -156,8 +156,7 @@ PSRS += input.psr
 PSRS += md.psr
 
 ifdef WITH_DEBUGGER
-SRCS += c_debugasm.c
-SRCS += debugasm.asm
+SRCS += debugasm.c
 SRCS += debugger.c
 else
 CFGDEFS += -DNO_DEBUGGER

@@ -1,5 +1,5 @@
-#ifndef C_DEBUGASM_H
-#define C_DEBUGASM_H
+#ifndef DEBUGASM_H
+#define DEBUGASM_H
 
 // Breaks at Breakpoint
 void breakops(void);
