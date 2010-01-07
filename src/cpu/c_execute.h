@@ -1,6 +1,8 @@
 #ifndef C_EXECUTE_H
 #define C_EXECUTE_H
 
+#include "../types.h"
+
 // this wonderful mess starts up the CPU and initialized the emulation state
 void start65816(void);
 
@@ -18,5 +20,7 @@ void interror(void);
 void init60hz(void);
 
 void init18_2hz(void);
+
+void execute(u4* pedx, u1** pebp, u1** pesi, eop*** pedi);
 
 #endif

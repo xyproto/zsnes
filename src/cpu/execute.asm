@@ -419,7 +419,6 @@ ALIGN16
 %%noflip
 %endif
 %endmacro
-NEWSYM execute
 NEWSYM execloop
    mov bl,dl
    test byte[curexecstate],2

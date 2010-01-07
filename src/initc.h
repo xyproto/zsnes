@@ -22,6 +22,7 @@ extern char CSStatus3[41];
 extern char CSStatus4[41];
 
 extern uint8_t  xp;
+extern uint8_t  xe;
 extern uint32_t Curtableaddr; // Current table address
 
 #endif

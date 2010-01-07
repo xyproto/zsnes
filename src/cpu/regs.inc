@@ -32,7 +32,7 @@ SECTION .data
 NEWSYM invreg,    dw 0
 NEWSYM sndrot,    db 0
 NEWSYM sndrot2,   db 0             ; rotates a random value for sound skip
-NEWSYM INTEnab,   db 0             ; enables NMI(7)/VIRQ(5)/HIRQ(4)/JOY(0)
+NEWSYM INTEnab,   db 0
 NEWSYM NMIEnab,   db 1             ; controlled in e65816 loop.  Sets to 81h
 NEWSYM VIRQLoc,   dw 0             ; VIRQ Y location
 NEWSYM vidbright, db 0             ; screen brightness (0 .. 15)
@@ -134,7 +134,7 @@ NEWSYM joyalt,    db 0             ; temporary joystick alternation
 NEWSYM wramrwadr, dd 0             ; continuous read/write to wram address
 NEWSYM dmadata, times 129 db 0FFh
 ALIGN32
-NEWSYM irqon,     db 0             ; if IRQ has been called (80h) or not (0)
+NEWSYM irqon,     db 0
 NEWSYM nexthdma,  db 0             ; HDMA data to execute once vblank ends
 NEWSYM curhdma,   db 0             ; Currently executed hdma
 NEWSYM hdmadata, times 8*19 db 0   ; 4 dword register addresses, # of bytes to

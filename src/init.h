@@ -20,6 +20,7 @@ extern u1 yesoutofmemory;
 extern u2 resetv;           // reset vector
 extern u2 xd;
 extern u2 xpc;
+extern u4 cycpblt;          // percentage of CPU/SPC to run
 extern u4 flagc;
 extern u4 flagnz;
 extern u4 flago;

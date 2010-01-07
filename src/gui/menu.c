@@ -284,23 +284,21 @@ static void breakatsignb(void)
 	exiter = 1;
 	u4  eax = xpc;
 	u4  ebx = xpb;
-	u4  ecx = 0;
 	u1* esi =
 		eax & 0x8000                                       ? snesmmap[ebx] :
 		eax < 0x4300 || memtabler8[ebx] != regaccessbankr8 ? snesmap2[ebx] :
 		dmadata - 0x4300;
 	initaddrl = esi;
 	esi += eax; // add program counter to address
-	u1* ebp = spcPCRam;
-	u4  edx = curcyc /* cycles */ << 8 | xp /* flags */;
-	u4  edi = Curtableaddr;
+	u1*   ebp = spcPCRam;
+	u4    edx = curcyc /* cycles */ << 8 | xp /* flags */;
+	eop** edi = (eop**)Curtableaddr; // XXX TODO type
 	UpdateDPage();
 	// execute
 	do
 	{
 		splitflags(edx);
-		// XXX hack: GCC cannot handle ebp as input/output, so take the detour over eax
-		asm volatile("push %%ebp;  mov %0, %%ebp;  call %P6;  mov %%ebp, %0;  pop %%ebp" : "+a" (ebp), "+c" (ecx), "+d" (edx), "+b" (ebx), "+S" (esi), "+D" (edi) : "X" (execute) : "cc", "memory");
+		execute(&edx, &ebp, &esi, &edi);
 		edx = joinflags(edx);
 		edx = edx & 0xFFFF00FF | pdh << 8;
 
@@ -313,7 +311,7 @@ static void breakatsignb(void)
 
 	// copy back data
 	spcPCRam     = ebp;
-	Curtableaddr = edi;
+	Curtableaddr = (u4)edi; // XXX TODO type
 	xp           = edx;
 	curcyc       = edx >> 8;
 	xpc          = esi - initaddrl; // subtract program counter by address

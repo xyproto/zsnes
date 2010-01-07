@@ -1507,7 +1507,7 @@ Would be nice to trash this section in the future
 */
 
 extern uint8_t ENVDisable, cycpb268, cycpb358, cycpbl2, cycpblt2, cycpbl;
-extern uint8_t cycpblt, opexec268, opexec358, opexec268b, opexec358b;
+extern uint8_t opexec268, opexec358, opexec268b, opexec358b;
 extern uint8_t opexec268cph, opexec358cph, opexec268cphb, opexec358cphb;
 
 void headerhack()

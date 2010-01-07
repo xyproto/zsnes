@@ -51,13 +51,16 @@ extern void reg421Fr();
 extern void reg43XXr();
 extern void regINVALID();
 
+extern u1 INTEnab;      // enables NMI(7)/VIRQ(5)/HIRQ(4)/JOY(0)
 extern u1 MultiTap;
 extern u1 cfield;
 extern u1 coladdb;      // blue value of color to add
 extern u1 coladdg;      // green value of color to add
 extern u1 coladdr;      // red value of color to add
 extern u1 dmadata[129]; // dma data (written from ports 43xx)
+extern u1 doirqnext;
 extern u1 extlatch;
+extern u1 irqon;        // if IRQ has been called (80h) or not (0)
 extern u1 scaddtype;    // which screen to add/sub
 extern u1 sndrot;       // rotates to use A,X or Y for sound skip
 extern u2 bg1objptr[4]; // pointer to tiles in background1/2/3/4

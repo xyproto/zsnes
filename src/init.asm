@@ -76,7 +76,7 @@ NEWSYM curnmi,   db 0           ; if in NMI(1) or not(0)
 
 ALIGN32
 NEWSYM cycpbl,  dd 110  ; percentage left of CPU/SPC to run  (3.58 = 175)
-NEWSYM cycpblt, dd 110  ; percentage of CPU/SPC to run
+NEWSYM cycpblt, dd 110
 
 ALIGN32
 NEWSYM xa,       dd 0

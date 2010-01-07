@@ -5,6 +5,7 @@
 #include "../c_init.h"
 #include "../c_intrf.h"
 #include "../cfg.h"
+#include "../chips/sa1regs.h"
 #include "../debugger.h"
 #include "../endmem.h"
 #include "../gblvars.h"
@@ -30,6 +31,7 @@
 #include "regs.h"
 #include "regsw.h"
 #include "spc700.h"
+#include "table.h"
 
 
 void start65816(void)
@@ -69,16 +71,13 @@ static void reexecuteb2(void)
 	initaddrl = addr;
 
 	// initialize variables (Copy from variables)
-	u4    ecx = 0;
 	u4    edx = curcyc /* cycles */ << 8 | xp /* flags */;
-	u4    ebx = 0;
 	u1*   ebp = spcPCRam;
 	u1*   esi = addr + pc; // add program counter to address
 	eop** edi = tableadc[xp];
 
 	splitflags(edx);
-	// XXX hack: GCC cannot handle ebp as input/output, so take the detour over eax
-	asm volatile("push %%ebp;  mov %0, %%ebp;  call %P6;  mov %%ebp, %0;  pop %%ebp" : "+a" (ebp), "+c" (ecx), "+d" (edx), "+b" (ebx), "+S" (esi), "+D" (edi) : "X" (execute) : "cc", "memory");
+	execute(&edx, &ebp, &esi, &edi);
 	edx = joinflags(edx);
 
 	// de-init variables (copy to variables)
@@ -283,4 +282,77 @@ void init60hz(void)
 void init18_2hz(void)
 {
 	set_timer_interval(65536);
+}
+
+
+void execute(u4* const pedx, u1** const pebp, u1** const pesi, eop*** const pedi)
+{
+	u4    edx = *pedx;
+	u1*   ebp = *pebp;
+	u1*   esi = *pesi;
+	eop** edi = *pedi;
+
+	u1 p = edx;
+	if (!(curexecstate & 0x02))
+	{
+// startagain: // XXX from asm
+		if (xe != 1 && edx & 0x01 && !(INTEnab & 0xC0))
+		{
+			edx = edx & 0xFFFF00FF | (edx - (0x50 << 8)) & 0x0000FF00;
+		}
+		if (doirqnext != 1 && SA1IRQEnable != 0 && irqon != 0)
+		{
+			edx = edx & 0xFFFF00FF | (edx - (12 << 8)) & 0x0000FF00;
+		}
+	}
+	else
+	{
+		edi = tableadc[p];
+
+#ifdef OPENSPC
+		pushad
+		u8 edxeax = cpucycle[*esi] * 0xC3A13DE6ULL + ((u8)SPC_Cycles << 32 | ospc_cycle_frac);
+		ospc_cycle_frac = edxeax;
+		SPC_Cycles      = edxeax >> 32;
+		asm volatile("call %P0" :: "X" (OSPC_Run) : "cc", "memory"); // XXX what is this?
+		popad
+#else
+		u4 const dspcyc = cycpbl;
+		cycpbl = dspcyc - 55;
+		if (dspcyc < 55)
+		{
+			cycpbl += cycpblt;
+			// 1260, 10000/12625
+			// XXX hack: GCC cannot handle ebp as input/output, so take the detour over eax
+			u4       ecx;
+			u4       ebx = 0;
+			u4 const op  = *ebp++;
+			asm volatile("push %%ebp;  mov %0, %%ebp;  call *%5;  mov %%ebp, %0;  pop %%ebp" : "+a" (ebp), "=c" (ecx), "+b" (ebx), "+S" (esi), "+D" (edi) : "c" (opcjmptab[op]) : "cc", "memory");
+		}
+#endif
+
+		p = *esi++;
+		u1 const c      = cpucycle[p];
+		u1 const cpucyc = edx >> 8;
+		edx = edx & 0xFFFF00FF | (cpucyc - c) << 8 & 0x0000FF00;
+		if (cpucyc < c) goto cpuover;
+	}
+
+	{ u4 ecx = 0;
+		u4 ebx = p; // XXX HACK: We run out of registers.  p is guaranteed to have only the lower 8 bits set, which is sufficient
+		// XXX hack: GCC cannot handle ebp as input/output, so take the detour over eax
+		asm volatile("push %%ebp;  mov %0, %%ebp;  call *(%5, %3, %c6);  mov %%ebp, %0;  pop %%ebp" : "+a" (ebp), "+c" (ecx), "+d" (edx), "+b" (ebx), "+S" (esi), "+D" (edi) : "n" (sizeof(*edi)): "cc", "memory");
+	}
+cpuover:
+
+	{ u4 ecx = 0;
+		u4 ebx = 0;
+		// XXX hack: GCC cannot handle ebp as input/output, so take the detour over eax
+		asm volatile("push %%ebp;  mov %0, %%ebp;  call %P6;  mov %%ebp, %0;  pop %%ebp" : "+a" (ebp), "+c" (ecx), "+d" (edx), "+b" (ebx), "+S" (esi), "+D" (edi) : "X" (cpuover) : "cc", "memory");
+	}
+
+	*pedx = edx;
+	*pebp = ebp;
+	*pesi = esi;
+	*pedi = edi;
 }

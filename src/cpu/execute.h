@@ -4,8 +4,8 @@
 #include "../types.h"
 
 extern void UpdateSFX();
+extern void cpuover();
 extern void execsingle();
-extern void execute();
 
 extern u1  ExecExitOkay;
 extern u1  NextNGDisplay;
