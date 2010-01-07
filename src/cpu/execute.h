@@ -4,6 +4,7 @@
 #include "../types.h"
 
 extern void UpdateSFX();
+extern void execsingle();
 extern void execute();
 
 extern u1  ExecExitOkay;
