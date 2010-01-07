@@ -616,8 +616,6 @@ C4SprFlip resb 1
 
 section .text
 
-NEWSYM C4VBlank
-    ret
 NEWSYM C4ProcessSprites
     push ecx
     push esi

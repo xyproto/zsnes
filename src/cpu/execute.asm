@@ -23,7 +23,7 @@ EXTSYM KeyRewind,Voice0Status,UpdateDPage
 EXTSYM romdata,DosExit,sfxramdata
 EXTSYM device2,RawDumpInProgress
 EXTSYM KeySaveState,KeyLoadState,KeyQuickExit,KeyQuickLoad,KeyQuickRst
-EXTSYM GUIReset,KeyOnStA,KeyOnStB,ProcessKeyOn,C4Enable,KeyQuickClock
+EXTSYM GUIReset,KeyOnStA,KeyOnStB,ProcessKeyOn,KeyQuickClock
 EXTSYM KeyQuickSaveSPC,TimerEnable
 EXTSYM KeyQuickSnapShot
 EXTSYM memtabler8
@@ -42,7 +42,7 @@ EXTSYM JoyBOrig,JoyBNow,JoyCOrig,JoyCNow,JoyDOrig,JoyDNow,JoyEOrig,JoyENow
 EXTSYM SA1Message,MultiTapStat,idledetectspc,SA1Control,SA1Enable,SA1IRQEnable
 EXTSYM SPC700read,SPC700write,numspcvblleft,spc700idle,SA1IRQExec,ForceNewGfxOff
 EXTSYM GUIQuit,IRAM,SA1Ptr,SA1BWPtr,outofmemfix
-EXTSYM yesoutofmemory,ProcessMovies,ppustatus,C4VBlank
+EXTSYM yesoutofmemory,ProcessMovies,ppustatus
 EXTSYM ReturnFromSPCStall,scanlines,MainLoop,MoviePassWaiting
 EXTSYM NumberOfOpcodes,SfxCLSR,SfxSCMR,SfxPOR,sfx128lineloc,sfx160lineloc
 EXTSYM sfx192lineloc,sfxobjlineloc,sfxclineloc,PLOTJmpa,PLOTJmpb,FxTable
@@ -1053,10 +1053,6 @@ NEWSYM cpuover
 .noresetjoy
     mov byte[MultiTapStat],80h
 
-    cmp byte[C4Enable],0
-    je .noC4
-    call C4VBlank
-.noC4
 ;    mov byte[hdmastartsc],0
     mov byte[joycontren],0
     test byte[curexecstate],01h
@@ -1743,10 +1739,6 @@ NEWSYM execsingle
 
 .nmi
     mov byte[irqon],80h
-    cmp byte[C4Enable],0
-    je .noC4
-    call C4VBlank
-.noC4
 ;    mov byte[hdmastartsc],0
     mov byte[joycontren],0
     mov ax,[VIRQLoc]
