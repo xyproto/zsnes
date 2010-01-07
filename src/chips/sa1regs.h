@@ -10,6 +10,7 @@ extern void initSA1regs();
 extern void initSA1regsw();
 extern void initSDD1regs();
 
+extern u1 SA1RegP;
 extern u2 SA1xd;
 
 #endif

@@ -72,6 +72,7 @@ SRCS += chips/seta11.c
 SRCS += chips/sfxproc.asm
 SRCS += chips/st10proc.asm
 SRCS += chips/st11proc.asm
+SRCS += cpu/c_65816d.c
 SRCS += cpu/c_dspproc.c
 SRCS += cpu/c_execute.c
 SRCS += cpu/c_memory.c

@@ -19,7 +19,7 @@
 
 
 
-EXTSYM flagnz,flago,flagc,execloopdeb,Sjoinflags,Ssplitflags,SA1RegP
+EXTSYM flagnz,flago,flagc,execloopdeb,Sjoinflags,SA1RegP
 
 ;*******************************************************
 ; Flag Setting Macros
@@ -73,14 +73,6 @@ EXTSYM flagnz,flago,flagc,execloopdeb,Sjoinflags,Ssplitflags,SA1RegP
 %endmacro
 
 SECTION .text
-
-NEWSYM splitflags
-   push edx
-   mov dl,[SA1RegP]
-   call Ssplitflags
-   pop edx
-   restoredl
-   ret
 
 NEWSYM joinflags
    makedl

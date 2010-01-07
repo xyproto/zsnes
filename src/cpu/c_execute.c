@@ -22,6 +22,7 @@
 #include "../zmovie.h"
 #include "../zstate.h"
 #include "65816d.h"
+#include "c_65816d.h"
 #include "c_execute.h"
 #include "c_memory.h"
 #include "execute.h"
@@ -76,7 +77,7 @@ static void reexecuteb2(void)
 	u1*   esi = addr + pc; // add program counter to address
 	eop** edi = tableadc[xp];
 
-	asm volatile("call %P0" :: "X" (splitflags), "d" (edx) : "cc", "memory");
+	splitflags(edx);
 	// XXX hack: GCC cannot handle ebp as input/output, so take the detour over eax
 	asm volatile("push %%ebp;  mov %0, %%ebp;  call %P6;  mov %%ebp, %0;  pop %%ebp" : "+a" (ebp), "+c" (ecx), "+d" (edx), "+b" (ebx), "+S" (esi), "+D" (edi) : "X" (execute) : "cc", "memory");
 	asm volatile("call %P1" : "+d" (edx) : "X" (joinflags) : "cc", "memory");
