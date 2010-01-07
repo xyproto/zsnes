@@ -23,38 +23,14 @@
 
 %include "macros.mac"
 
-EXTSYM snesmmap, snesmap2, memtabler8, memtablew8, regaccessbankr8, dmadata
-EXTSYM initaddrl, spcPCRam, UpdateDPage, pdh, numinst, writeon
+EXTSYM snesmmap, snesmap2, memtabler8, regaccessbankr8, dmadata
+EXTSYM initaddrl, spcPCRam, UpdateDPage, pdh, numinst
 EXTSYM xp, xpb, xpc, curcyc, Curtableaddr, splitflags, execsingle, joinflags
 
 ;;; from debugger.c
 EXTSYM PrevBreakPt_page, PrevBreakPt_offset, my_getch_ret, my_getch
 
 SECTION .text
-
-NEWSYM memtablew8_wrapper
-        push    ebp
-        mov     ebp, esp
-
-        push    ebx
-        push    edi
-        push    esi
-
-        movzx   ebx, BYTE [ebp+8]
-        movzx   ecx, WORD [ebp+12]
-        movzx   eax, BYTE [ebp+16]
-        mov     byte[writeon],1
-        call    DWORD [memtablew8+ebx*4]
-        mov     byte[writeon],0
-        and     eax, 255
-
-        pop     esi
-        pop     edi
-        pop     ebx
-
-        pop     ebp
-        ret
-
 
 
 NEWSYM breakops_wrapper

@@ -68,7 +68,6 @@ extern unsigned char spcA, spcX, spcY, spcS, spcNZ, spcP;
 
 
 // these really shouldn't be written in ASM... (they are in debugasm.asm)
-extern          void memtablew8_wrapper(unsigned char, unsigned short, unsigned char);
 extern void breakops_wrapper();
 
 extern void regaccessbankr8();
@@ -297,7 +296,7 @@ void debugloop() {
        noecho();
 
        if (n == 1) {
-          memtablew8_wrapper(addr >> 16, addr, value);
+          memw8(addr >> 16, addr, value);
        }}
 
        closewindow(w);
