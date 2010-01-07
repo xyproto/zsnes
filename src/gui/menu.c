@@ -25,7 +25,6 @@
 #include "../asm_call.h"
 #include "../c_intrf.h"
 #include "../cfg.h"
-#include "../cpu/65816d.h"
 #include "../cpu/c_65816d.h"
 #include "../cpu/c_execute.h"
 #include "../cpu/c_memory.h"
@@ -302,7 +301,7 @@ static void breakatsignb(void)
 		splitflags(edx);
 		// XXX hack: GCC cannot handle ebp as input/output, so take the detour over eax
 		asm volatile("push %%ebp;  mov %0, %%ebp;  call %P6;  mov %%ebp, %0;  pop %%ebp" : "+a" (ebp), "+c" (ecx), "+d" (edx), "+b" (ebx), "+S" (esi), "+D" (edi) : "X" (execute) : "cc", "memory");
-		asm volatile("call %P1" : "+d" (edx) : "X" (joinflags) : "cc", "memory");
+		edx = joinflags(edx);
 		edx = edx & 0xFFFF00FF | pdh << 8;
 
 #ifndef NO_DEBUGGER

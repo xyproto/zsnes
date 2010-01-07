@@ -5,4 +5,6 @@
 
 void splitflags(u4 edx);
 
+u4 joinflags(u4 edx);
+
 #endif

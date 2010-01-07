@@ -25,7 +25,6 @@
 #include <ncurses.h>
 #endif
 
-#include "cpu/65816d.h"
 #include "cpu/c_65816d.h"
 #include "cpu/c_memory.h"
 #include "cpu/execute.h"
@@ -69,7 +68,7 @@ void breakops(void)
 		u4 ebx;
 		// XXX hack: GCC cannot handle ebp as input/output, so take the detour over eax
 		asm volatile("push %%ebp;  mov %0, %%ebp;  call %P6;  mov %%ebp, %0;  pop %%ebp" : "+a" (ebp), "+c" (ecx), "+d" (edx), "=b" (ebx), "+S" (esi), "+D" (edi) : "X" (execsingle) : "cc", "memory");
-		asm volatile("call %P1" : "+d" (edx) : "X" (joinflags) : "cc", "memory");
+		edx = joinflags(edx);
     edx = edx & 0xFFFF00FF | pdh << 8;
 		if ((++numinst & 0xFF) == 0 && getch() == 27) break;
 	}
@@ -104,7 +103,7 @@ void execnextop(void)
 	u4 ebx;
 	// XXX hack: GCC cannot handle ebp as input/output, so take the detour over eax
 	asm volatile("push %%ebp;  mov %0, %%ebp;  call %P6;  mov %%ebp, %0;  pop %%ebp" : "+a" (ebp), "+c" (ecx), "+d" (edx), "=b" (ebx), "+S" (esi), "+D" (edi) : "X" (execsingle) : "cc", "memory");
-	asm volatile("call %P1" : "+d" (edx) : "X" (joinflags) : "cc", "memory");
+	edx = joinflags(edx);
 	UpdateDPage();
 
 	// copy back data

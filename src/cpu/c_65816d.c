@@ -20,3 +20,22 @@ void splitflags(u4 const edx)
 	asm volatile("call %P0" :: "X" (Ssplitflags), "d" (SA1RegP) : "cc", "memory");
 	restoredl(edx);
 }
+
+
+static u4 makedl(u4 edx)
+{
+	edx &= 0xFFFFFF3C;
+	if ((flagnz & 0x00018000) != 0) edx |= 0x80; // neg
+	if ((flagnz & 0x0000FFFF) == 0) edx |= 0x02; // zero
+	if ((flagc  & 0x000000FF) != 0) edx |= 0x01; // carry
+	if ((flago  & 0x000000FF) != 0) edx |= 0x40; // v
+	return edx;
+}
+
+
+u4 joinflags(u4 edx)
+{
+	edx = makedl(edx);
+	asm volatile("call %P1" : "+d" (SA1RegP) : "X" (Sjoinflags) : "cc", "memory");
+	return edx;
+}
