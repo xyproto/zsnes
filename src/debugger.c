@@ -190,13 +190,6 @@ void startdebugger(void)
     return;
 }
 
-// Called from ASM
-
-int my_getch_ret;
-void my_getch() {
-    my_getch_ret = getch();
-}
-
 
 WINDOW *openwindow(int nlines, int ncols, int begin_y, int begin_x,
            char *message) {

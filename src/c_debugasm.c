@@ -1,3 +1,9 @@
+#ifndef NCURSES
+#include <curses.h>
+#else
+#include <ncurses.h>
+#endif
+
 #include "c_debugasm.h"
 #include "cpu/65816d.h"
 #include "cpu/c_memory.h"
@@ -45,11 +51,7 @@ static void breakops(u4 const offset, u4 const page)
 		asm volatile("push %%ebp;  mov %0, %%ebp;  call %P6;  mov %%ebp, %0;  pop %%ebp" : "+a" (ebp), "+c" (ecx), "+d" (edx), "=b" (ebx), "+S" (esi), "+D" (edi) : "X" (execsingle) : "cc", "memory");
 		asm volatile("call %P1" : "+d" (edx) : "X" (joinflags) : "cc", "memory");
     edx = edx & 0xFFFF00FF | pdh << 8;
-		if ((++numinst & 0xFF) == 0)
-		{
-			my_getch();
-			if (my_getch_ret == 27) break;
-		}
+		if ((++numinst & 0xFF) == 0 && getch() == 27) break;
 	}
 	while (esi != breakarea);
 	// copy back data
