@@ -19,12 +19,10 @@
 #include "types.h"
 
 
-// Breaks at Breakpoint
-static void breakops(u4 const offset, u4 const page)
+void breakops(void)
 {
-	PrevBreakPt_offset = offset;
-	PrevBreakPt_page   = page;
-
+	u4        const page      = PrevBreakPt_page;
+	u4        const offset    = PrevBreakPt_offset;
 	u1 const* const map       = offset & 0x8000 ? snesmmap[page] : snesmap2[page];
 	u1 const* const breakarea = map + offset; // add program counter to address
 
@@ -60,12 +58,4 @@ static void breakops(u4 const offset, u4 const page)
 	xp           = edx;
 	curcyc       = edx >> 8;
 	xpc          = esi - initaddrl; // subtract program counter by address
-}
-
-
-void breakops_wrapper(void)
-{
-	u4 ecx = PrevBreakPt_offset;
-	u4 ebx = PrevBreakPt_page;
-	breakops(ecx, ebx);
 }

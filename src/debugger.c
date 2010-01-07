@@ -315,7 +315,7 @@ void debugloop() {
 
           PrevBreakPt_page = addr >> 16;
           PrevBreakPt_offset = addr;
-          breakops_wrapper();
+          breakops();
 
           nodelay(stdscr, 0);
           closewindow(w);
@@ -327,7 +327,7 @@ void debugloop() {
    }
 
    case 'R': // repeat breakpoint
-       breakops_wrapper();
+       breakops();
        goto a;
 
    case 'S': // SPC breakpoint
@@ -504,17 +504,6 @@ void debugloop() {
 unsigned char sndwrit;
 
 /* void breakatsignc() {} */
-
-
-//*******************************************************
-// BreakOps                          Breaks at Breakpoint
-//*******************************************************
-
-/* in ASM still, but not identical to other version
-void breakops(unsigned char page, unsigned short offset) {
-
-}
-*/
 
 void traceops(unsigned count) {
     WINDOW *w;
