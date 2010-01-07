@@ -1454,41 +1454,6 @@ NEWSYM StartSFX
     xor ecx,ecx
     jmp cpuover.returnfromsfx
 
-NEWSYM StartSFXdebug
-    push edx
-    push esi
-    push edi
-    push ebx
-    mov bl,[SfxPBR]
-    mov al,[SfxSCMR]
-    and bl,7Fh
-    cmp bl,70h
-    jae .ram
-    test al,10h
-    jz .noaccess
-    jmp .noram
-.ram
-    test al,08h
-    jz .noaccess
-.noram
-    mov dword[NumberOfOpcodes],350 ; 0FFFFFFFh;350
-    test byte[SfxCLSR],01h
-    jz .nohighsfx
-    mov dword[NumberOfOpcodes],700 ;700
-.nohighsfx
-    cmp byte[SFXCounter],1
-    jne .noyi
-    mov dword[NumberOfOpcodes],0FFFFFFFFh
-.noyi
-;    call SFXDebugLoop
-.noaccess
-    pop ebx
-    pop edi
-    pop esi
-    pop edx
-    xor ecx,ecx
-    jmp execsingle.returnfromsfx
-
 NEWSYM StartSFXdebugb
     push edx
     push esi
