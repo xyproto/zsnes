@@ -40,7 +40,7 @@ EXTSYM KeyStateSlc5,KeyStateSlc6,KeyStateSlc7,KeyStateSlc8,KeyStateSlc9
 EXTSYM KeyIncStateSlot,KeyDecStateSlot,KeyUsePlayer1234,maxskip
 EXTSYM FastFwdToggle,SaveSramData,ngextbg,Mode7HiRes,Check60hz
 EXTSYM Get_MouseData,Get_MousePositionDisplacement
-EXTSYM romispal,MusicRelVol,KeySlowDown
+EXTSYM MusicRelVol,KeySlowDown
 EXTSYM KeyFRateDown,KeyFRateUp,KeyVolUp,KeyVolDown,KeyDisplayFPS
 EXTSYM FPSOn,pl12s34,bg1ptr,bg2ptr,bg3ptr,bg4ptr,cachebg1,resolutn,curypos
 EXTSYM oamram,objhipr,objptr,objptrn,objsize1,objsize2,spritetablea,sprleftpr
@@ -76,28 +76,6 @@ NEWSYM ofsmtptrs, dd 0
 NEWSYM ofsmcptr2, dd 0
 NEWSYM sramb4save, dd 0
 NEWSYM hiresstuff, dd 0
-NEWSYM overalltimer, dd 0
-
-SECTION .text
-
-ClockCounter:
-    inc dword[overalltimer]
-    cmp byte[romispal],0
-    jne .dopal
-    cmp dword[overalltimer],60
-    jne .notimer
-    sub dword[overalltimer],60
-    jmp .notimer
-.dopal
-    cmp dword[overalltimer],50
-    jne .notimer
-    sub dword[overalltimer],50
-.notimer
-    test byte[pressed+2Eh],1
-    jz .noclear
-    mov dword[overalltimer],0
-.noclear
-    ret
 
 SECTION .bss
 NEWSYM FastForwardLock, resb 1
@@ -118,8 +96,6 @@ NEWSYM cachevideo
     mov dword[ngextbg],0
     mov byte[hiresstuff],0
     mov byte[Mode7HiRes],0
-
-    call ClockCounter
 
     mov dword[scfbl],1
     mov al,[vidbright]
