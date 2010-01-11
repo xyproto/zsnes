@@ -610,7 +610,6 @@ char ofsdissw[] = "OFFSET MODE DISABLED\0";
 char ofsenasw[] = "OFFSET MODE ENABLED\0";
 char ngena[] = "NEW GFX ENGINE ENABLED\0";
 char ngdis[] = "NEW GFX ENGINE DISABLED\0";
-char vollv[] = "VOLUME LEVEL :    \0";
 char frlev[] = "FRAME SKIP SET TO  \0";
 char frlv0[] = "AUTO FRAMERATE ENABLED\0";
 char pluse1234en[] = "USE PLAYER 1/2 with 3/4 ON\0";

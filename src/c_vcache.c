@@ -1,11 +1,31 @@
+#include <stdio.h>
+
 #include "c_init.h"
 #include "c_vcache.h"
 #include "cfg.h"
+#include "cpu/dsp.h"
 #include "cpu/regs.h"
+#include "gblvars.h"
 #include "gui/gui.h"
 #include "macros.h"
 #include "ui.h"
 #include "vcache.h"
+#include "video/procvid.h"
+
+
+void UpdateVolume(void)
+{
+	u4 const vol = MusicRelVol * 128 * 0xA3D70A3DULL >> 38;
+	MusicVol = vol < 127 ? vol : 127;
+
+	asm volatile("call %P0" :: "X" (WDSPReg0C), "a" (DSPMem[0x0C]) : "cc", "memory");
+	asm volatile("call %P0" :: "X" (WDSPReg1C), "a" (DSPMem[0x1C]) : "cc", "memory");
+
+	static char vollv[] = "VOLUME LEVEL :    ";
+	sprintf(vollv + 15, "%-3d", MusicRelVol);
+	Msgptr    = vollv;
+	MessageOn = MsgCount;
+}
 
 
 #ifdef __MSDOS__

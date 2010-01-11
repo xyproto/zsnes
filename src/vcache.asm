@@ -37,10 +37,10 @@ EXTSYM KeyBGDisble0,KeyBGDisble1,KeyBGDisble2,KeyBGDisble3,KeySprDisble
 EXTSYM KeyResetAll,KeyWinDisble,KeyNewGfxSwt,KeyOffsetMSw
 EXTSYM KeyStateSlc0,KeyStateSlc1,KeyStateSlc2,KeyStateSlc3,KeyStateSlc4
 EXTSYM KeyStateSlc5,KeyStateSlc6,KeyStateSlc7,KeyStateSlc8,KeyStateSlc9
-EXTSYM KeyIncStateSlot,KeyDecStateSlot,KeyUsePlayer1234,maxskip,DSPMem
+EXTSYM KeyIncStateSlot,KeyDecStateSlot,KeyUsePlayer1234,maxskip
 EXTSYM FastFwdToggle,SaveSramData,ngextbg,Mode7HiRes,Check60hz
-EXTSYM Get_MouseData,Get_MousePositionDisplacement,scanlines
-EXTSYM romispal,MusicRelVol,MusicVol,WDSPReg0C,WDSPReg1C,KeySlowDown
+EXTSYM Get_MouseData,Get_MousePositionDisplacement
+EXTSYM romispal,MusicRelVol,KeySlowDown
 EXTSYM KeyFRateDown,KeyFRateUp,KeyVolUp,KeyVolDown,KeyDisplayFPS
 EXTSYM FPSOn,pl12s34,bg1ptr,bg2ptr,bg3ptr,bg4ptr,cachebg1,resolutn,curypos
 EXTSYM oamram,objhipr,objptr,objptrn,objsize1,objsize2,spritetablea,sprleftpr
@@ -54,6 +54,7 @@ EXTSYM KeyExtraEnab1,KeyExtraEnab2,cycleinputdevice1,cycleinputdevice2,MouseDis
 EXTSYM KeyIncreaseGamma,KeyDecreaseGamma,gammalevel,gammalevel16b
 EXTSYM RawDumpInProgress,QuickKeyCheck,ngena,ngdis,vollv
 EXTSYM sprcnt,sprstart,sprtilecnt,sprend,sprendx,interlval,genfulladdtab
+EXTSYM UpdateVolume
 
 %ifndef NO_DEBUGGER
 EXTSYM debuggeron
@@ -96,52 +97,6 @@ ClockCounter:
     jz .noclear
     mov dword[overalltimer],0
 .noclear
-    ret
-
-UpdateVolume:
-    pushad
-    xor eax,eax
-    mov al,[MusicRelVol]
-    shl eax,7
-    mov ebx,0A3D70A3Dh
-    mul ebx
-    shr edx,6
-    cmp dl,127
-    jb .noof
-    mov dl,127
-.noof
-    mov [MusicVol],dl
-
-    mov al,[DSPMem+0Ch]
-    call WDSPReg0C
-    mov al,[DSPMem+1Ch]
-    call WDSPReg1C
-
-    mov dword[vollv+14],20202020h
-    mov edx,vollv+15
-    mov al,[MusicRelVol]
-    cmp al,100
-    jne .no100
-    mov byte[edx],49
-    mov byte[edx+1],48
-    sub al,100
-    add edx,2
-.no100
-    xor ah,ah
-    mov bl,10
-    div bl
-    cmp al,0
-    je .no10
-    add al,48
-    mov [edx],al
-    inc edx
-.no10
-    add ah,48
-    mov [edx],ah
-    mov dword[Msgptr],vollv
-    mov eax,[MsgCount]
-    mov [MessageOn],eax
-    popad
     ret
 
 SECTION .bss
@@ -389,7 +344,7 @@ NEWSYM cachevideo
     cmp byte[MusicRelVol],100
     jae .novolup
     inc byte[MusicRelVol]
-    call UpdateVolume
+    ccallv UpdateVolume
 .novolup
     mov eax,[KeyVolDown]
     test byte[pressed+eax],1
@@ -397,7 +352,7 @@ NEWSYM cachevideo
     cmp byte[MusicRelVol],0
     je .novoldown
     dec byte[MusicRelVol]
-    call UpdateVolume
+    ccallv UpdateVolume
 .novoldown
 
     cmp byte[curblank],0h
