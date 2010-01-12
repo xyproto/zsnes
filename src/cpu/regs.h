@@ -54,6 +54,7 @@ extern void regINVALID();
 extern u1 INTEnab;          // enables NMI(7)/VIRQ(5)/HIRQ(4)/JOY(0)
 extern u1 MultiTap;
 extern u1 Voice0Disable[8]; // Disable Voice
+extern u1 bgmode;           // graphics mode (0 .. 7)
 extern u1 cfield;
 extern u1 cgmod;            // if cgram is modified or not
 extern u1 coladdb;          // blue value of color to add
@@ -69,6 +70,7 @@ extern u1 scrndis;          // which background is disabled
 extern u1 sndrot;           // rotates to use A,X or Y for sound skip
 extern u1 vidbright;        // screen brightness (0 .. 15)
 extern u2 bg1objptr[4];     // pointer to tiles in background1/2/3/4
+extern u2 bg1ptr[4];        // pointer to background1/2/3/4
 extern u2 cgram[256];       // CGRAM
 extern u2 latchx;           // latched x value
 extern u2 latchy;           // latched y value

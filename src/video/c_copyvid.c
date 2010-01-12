@@ -10,7 +10,7 @@ void hextestoutput(void)
 {
 #if 0
 	u2 ax =
-		bg3ptr +
+		bg1ptr[0] +
 		(/*(*/bg3scroly/* & 0xF8)*/ >> 3 << 6) +
 		((bg3scrolx & 0xF8) >> 3 << 1);
 	u2 dx = bg3scrolx;

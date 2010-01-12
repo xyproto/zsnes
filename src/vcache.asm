@@ -21,8 +21,8 @@
 
 %include "macros.mac"
 
-EXTSYM bgmode,scrndis,vidmemch2
-EXTSYM bg1ptr,bg2ptr,bg3ptr,bg4ptr,cachebg1,resolutn,curypos
+EXTSYM vidmemch2
+EXTSYM resolutn,curypos
 EXTSYM oamram,objhipr,objptr,objptrn,objsize1,objsize2,spritetablea,sprleftpr
 EXTSYM sprlefttot,vcache4b,objadds1,objadds2,objmovs1,objmovs2,tltype4b
 EXTSYM vidmemch4,vram,bgptr,bgptrc,bgptrd,curtileptr,vcache2b,vcache8b,vidmemch8
@@ -41,88 +41,7 @@ NEWSYM ofshvaladd, dd 0
 NEWSYM ofsmtptrs, dd 0
 NEWSYM ofsmcptr2, dd 0
 
-SECTION .text
-
-NEWSYM docache
-    xor ebx,ebx
-    mov bl,[bgmode]
-    shl bl,2
-    add ebx,colormodedef
-    mov [colormodeofs],ebx
-    xor ebx,ebx
-    mov bl,[bgmode]
-    mov al,[colormodedef+ebx*4]
-    mov [curcolbg1],al
-    mov ah,[colormodedef+ebx*4+1]
-    mov [curcolbg2],ah
-    mov al,[colormodedef+ebx*4]
-    mov [curcolbg3],al
-    mov ah,[colormodedef+ebx*4+1]
-    mov [curcolbg4],ah
-    mov ax,[bg1ptr]
-    mov [curbgofs1],ax
-    mov ax,[bg2ptr]
-    mov [curbgofs2],ax
-    mov ax,[bg3ptr]
-    mov [curbgofs3],ax
-    mov ax,[bg4ptr]
-    mov [curbgofs4],ax
-    push es
-    mov ax,ds
-    mov es,ax
-    ; clear # of sprites & bg cache
-    mov edi,cachebg1
-    mov ecx,64*5+16*4+64*6
-    xor eax,eax
-    rep stosd
-;    cmp byte[sprprifix],0
-;    je .nosprfix
-;    mov edi,sprlefttotb
-;    mov ecx,64*3
-;    xor eax,eax
-;    rep stosd
-;.nosprfix
-    ; do sprites
-;    test word[scrnon],1010h
-;    jz .nosprites
-    test byte[scrndis],10h
-    jnz .nosprites
-    call cachesprites
-    call processsprites
-;    mov byte[sprprncache],0
-;    cmp byte[sprprifix],0
-;    je .nosprites
-;    call processspritesb
-
-.nosprites
-    ; fill background with 0's unless 16-bit/new graphics engine mode is on
-    xor ecx,ecx
-    pop es
-    ret
-
-SECTION .data
-NEWSYM colormodedef, db 1,1,1,1, 2,2,1,0, 2,2,0,0, 3,2,0,0,
-               db 3,1,0,0, 2,1,0,0, 2,0,0,0, 0,0,0,0
-NEWSYM colormodeofs, dd 0
 NEWSYM addr2add,     dd 0
-;cachebg1    times 64 db 0
-;cachebg2    times 64 db 0
-;cachebg3    times 64 db 0
-;cachebg4    times 64 db 0
-;sprlefttot  times 256 db 0     ; total sprites left
-;sprleftpr   times 256 db 0     ; sprites left for priority 0
-;sprleftpr1  times 256 db 0     ; sprites left for priority 1
-;sprleftpr2  times 256 db 0     ; sprites left for priority 2
-;sprleftpr3  times 256 db 0     ; sprites left for priority 3
-;spritetable times 256*512 db 0  ; sprite table (flip/pal/xloc/vbufptr)38*7
-NEWSYM curbgofs1,   dw 0
-NEWSYM curbgofs2,   dw 0
-NEWSYM curbgofs3,   dw 0
-NEWSYM curbgofs4,   dw 0
-NEWSYM curcolbg1,   db 0
-NEWSYM curcolbg2,   db 0
-NEWSYM curcolbg3,   db 0
-NEWSYM curcolbg4,   db 0
 section .text
 
 ;*******************************************************

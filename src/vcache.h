@@ -3,7 +3,8 @@
 
 #include "types.h"
 
-extern void docache();
+extern void cachesprites();
+extern void processsprites();
 
 extern u1 lineleft;
 extern u1 res480;

@@ -24,7 +24,7 @@
 EXTSYM disableeffects,winl1,winl2,winbgdata,winr1,winr2,winspdata,winlogica
 EXTSYM winenabm,winobjen,winlogicb,scrndis,scrnon,bgmode,bgtilesz,winbg1en
 EXTSYM winenabs,bg1objptr,bg1ptr,bg1ptrb,bg1ptrc,bg1ptrd,bg1scrolx,bg1scroly
-EXTSYM cachebg1,curbgofs1,curcolbg1,vcache2b,vcache4b,vcache8b
+EXTSYM cachebg1,curbgofs,curcolbg,vcache2b,vcache4b,vcache8b
 EXTSYM vidbuffer,bg3highst,cbitmode,colormodedef,ngptrdat2
 EXTSYM colormodeofs,drawline16b,forceblnk,preparesprpr,scaddset
 EXTSYM spritetablea,sprleftpr,vidbright,ForceNewGfxOff,curypos
@@ -1227,11 +1227,11 @@ NEWSYM procbackgrnd
     mov edi,cachebg1
     add edi,ebp
     pop ebp
-    cmp bl,[curcolbg1+ebp]
+    cmp bl,[curcolbg+ebp]
     je .skipclearcache
-    mov [curcolbg1+ebp],bl
+    mov [curcolbg+ebp],bl
     mov ax,[bg1ptr+ebp*2]
-    mov [curbgofs1+ebp*2],ax
+    mov [curbgofs+ebp*2],ax
     call fillwithnothing
 .skipclearcache
     xor eax,eax
@@ -1246,9 +1246,9 @@ NEWSYM procbackgrnd
     mov [curtileptr],ax
     mov ax,[bg1ptr+ebp*2]
     mov [bgptr],ax
-    cmp ax,[curbgofs1+ebp*2]
+    cmp ax,[curbgofs+ebp*2]
     je .skipclearcacheb
-    mov [curbgofs1+ebp*2],ax
+    mov [curbgofs+ebp*2],ax
     call fillwithnothing
 .skipclearcacheb
     mov ax,[bg1ptrb+ebp*2]

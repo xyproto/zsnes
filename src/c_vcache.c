@@ -28,12 +28,27 @@
 #include "zstate.h"
 
 
-u1 SloMo;
-u1 curblank = 0x80;
-u1 hiresstuff;
-u1 osm2dis;
-u4 CSprWinPtr;
-u4 sramb4save;
+u1  SloMo;
+u1  curblank = 0x80;
+u1  curcolbg[4];
+u1  hiresstuff;
+u1  osm2dis;
+u1* colormodeofs;
+u2  curbgofs[4];
+u4  CSprWinPtr;
+u4  sramb4save;
+
+u1 colormodedef[][4] =
+{
+	{ 1, 1, 1, 1 },
+	{ 2, 2, 1, 0 },
+	{ 2, 2, 0, 0 },
+	{ 3, 2, 0, 0 },
+	{ 3, 1, 0, 0 },
+	{ 2, 1, 0, 0 },
+	{ 2, 0, 0, 0 },
+	{ 0, 0, 0, 0 }
+};
 
 static u1 FastForwardLock;
 static u1 SlowDownLock;
@@ -150,6 +165,44 @@ static void cycleinputs(bool const input1, bool const input2)
 
 	cycleinputdevicemsg();
 	Get_MousePositionDisplacement();
+}
+
+
+static void docache(void)
+{
+	u1 const bg = bgmode;
+	colormodeofs = colormodedef[bg];
+	curcolbg[0]  = colormodedef[bg][0];
+	curcolbg[1]  = colormodedef[bg][1];
+	curcolbg[2]  = colormodedef[bg][0];
+	curcolbg[3]  = colormodedef[bg][1];
+	curbgofs[0]  = bg1ptr[0];
+	curbgofs[1]  = bg1ptr[1];
+	curbgofs[2]  = bg1ptr[2];
+	curbgofs[3]  = bg1ptr[3];
+
+	// clear # of sprites & bg cache
+	memset(cachebg1,   0, sizeof(cachebg1));
+	memset(cachebg2,   0, sizeof(cachebg2));
+	memset(cachebg3,   0, sizeof(cachebg3));
+	memset(cachebg4,   0, sizeof(cachebg4));
+	memset(sprlefttot, 0, sizeof(sprlefttot));
+	memset(sprleftpr,  0, sizeof(sprleftpr));
+	memset(sprleftpr1, 0, sizeof(sprleftpr1));
+	memset(sprleftpr2, 0, sizeof(sprleftpr2));
+	memset(sprleftpr3, 0, sizeof(sprleftpr3));
+	memset(sprcnt,     0, sizeof(sprcnt));
+	memset(sprstart,   0, sizeof(sprstart));
+	memset(sprtilecnt, 0, sizeof(sprtilecnt));
+	memset(sprend,     0, sizeof(sprend));
+	memset(sprendx,    0, sizeof(sprendx));
+
+	// do sprites
+	if (!(scrndis & 0x10))
+	{
+		asm_call(cachesprites);
+		asm_call(processsprites);
+	}
 }
 
 
@@ -470,7 +523,7 @@ show_gamma:;
 	if (curblank == 0x00)
 	{
 		vidbuffer = vidbufferofsa;
-		asm_call(docache);
+		docache();
 	}
 }
 

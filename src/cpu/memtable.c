@@ -36,6 +36,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "../gblvars.h"
 #include "../ui.h"
 #include "c_memory.h"
+#include "regs.h"
 
 extern unsigned int Curtableaddr, tableA[256];
 
@@ -124,9 +125,9 @@ extern unsigned int bg1ptry, bg2ptrx, bg2ptry, bg3ptrx, bg3ptry, bg4ptrx;
 extern unsigned int bg4ptry;
 extern int FIRTAPVal0, FIRTAPVal1, FIRTAPVal2, FIRTAPVal3, FIRTAPVal4;
 extern int FIRTAPVal5, FIRTAPVal6, FIRTAPVal7;
-extern unsigned short VolumeConvTable[32768], bg1ptr, bg1ptrb, bg1ptrc;
-extern unsigned short bg2ptr, bg2ptrb, bg2ptrc, bg3ptr, bg3ptrb, bg3ptrc;
-extern unsigned short bg4ptr, bg4ptrb, bg4ptrc;
+extern unsigned short VolumeConvTable[32768], bg1ptrb, bg1ptrc;
+extern unsigned short bg2ptrb, bg2ptrc, bg3ptrb, bg3ptrc;
+extern unsigned short bg4ptrb, bg4ptrc;
 extern unsigned char VolumeTableb[256], MusicVol, Voice0Status;
 extern unsigned char Voice1Status, Voice2Status, Voice3Status, Voice4Status;
 extern unsigned char Voice5Status, Voice6Status, Voice7Status, Voice0Noise;
@@ -189,14 +190,14 @@ void repackfunct()
   Voice6Noise = bit_test(DSPMem[0x3D], 6);
   Voice7Noise = bit_test(DSPMem[0x3D], 7);
 
-  bg1ptrx = bg1ptrb - bg1ptr;
-  bg1ptry = bg1ptrc - bg1ptr;
-  bg2ptrx = bg2ptrb - bg2ptr;
-  bg2ptry = bg2ptrc - bg2ptr;
-  bg3ptrx = bg3ptrb - bg3ptr;
-  bg3ptry = bg3ptrc - bg3ptr;
-  bg4ptrx = bg4ptrb - bg4ptr;
-  bg4ptry = bg4ptrc - bg4ptr;
+  bg1ptrx = bg1ptrb - bg1ptr[0];
+  bg1ptry = bg1ptrc - bg1ptr[0];
+  bg2ptrx = bg2ptrb - bg1ptr[1];
+  bg2ptry = bg2ptrc - bg1ptr[1];
+  bg3ptrx = bg3ptrb - bg1ptr[2];
+  bg3ptry = bg3ptrc - bg1ptr[2];
+  bg4ptrx = bg4ptrb - bg1ptr[3];
+  bg4ptry = bg4ptrc - bg1ptr[3];
 
   // 16x16 tiles
   BG116x16t = bit_test(bgtilesz, 0);

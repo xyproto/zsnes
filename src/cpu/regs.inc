@@ -49,15 +49,15 @@ NEWSYM objadds2,  dw 14            ; number of bytes to add/paragraph
 NEWSYM oamaddrt,  dw 0             ; oam address
 NEWSYM oamaddrs,  dw 0             ; oam address at beginning of vblank
 NEWSYM objhipr,   db 0             ; highest priority object #
-NEWSYM bgmode,    db 0             ; graphics mode ( 0 .. 7 )
+NEWSYM bgmode,    db 0
 NEWSYM bg3highst, db 0             ; is 1 if background 3 has the highest priority
 NEWSYM bgtilesz,  db 0             ; 0 = 8x8, 1 = 16x16, bit 0=bg1,bit1=bg2,etc
 NEWSYM mosaicon,  db 0             ; mosaic on, bit 0=bg1,bit1=bg2, etc
 NEWSYM mosaicsz,  db 0             ; mosaic size in pixels
-NEWSYM bg1ptr,    dw 0             ; pointer to background1
-NEWSYM bg2ptr,    dw 0             ; pointer to background2
-NEWSYM bg3ptr,    dw 0             ; pointer to background3
-NEWSYM bg4ptr,    dw 0             ; pointer to background4
+NEWSYM bg1ptr,    dw 0
+NEWSYM bg2ptr,    dw 0
+NEWSYM bg3ptr,    dw 0
+NEWSYM bg4ptr,    dw 0
 NEWSYM bg1ptrb,   dw 0             ; pointer to background1
 NEWSYM bg2ptrb,   dw 0             ; pointer to background2
 NEWSYM bg3ptrb,   dw 0             ; pointer to background3
