@@ -22,6 +22,7 @@
 #include <string.h>
 
 #include "../c_init.h"
+#include "../c_vcache.h"
 #include "../cfg.h"
 #include "../cpu/regs.h"
 #include "../endmem.h"

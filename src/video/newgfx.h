@@ -1,9 +1,15 @@
 #ifndef NEWGFX_H
 #define NEWGFX_H
 
-#ifdef __MSDOS__
 #include "../types.h"
 
+extern u1 Mode7HiRes;  // XXX always 0
+extern u4 bgcmsung;
+extern u4 modeused[2];
+extern u4 ngextbg;
+extern u4 scfbl;
+
+#ifdef __MSDOS__
 extern eop* mosjmptab[15];
 
 extern void mosdraw2();

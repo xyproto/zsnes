@@ -62,6 +62,7 @@ void ResetDuringMovie(void);
 
 void MovieDumpRaw(void);
 
+extern bool          RawDumpInProgress;
 extern char          MovieFrameStr[10];
 extern unsigned char MoviePassWaiting;
 

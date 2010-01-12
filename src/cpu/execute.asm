@@ -809,7 +809,7 @@ NEWSYM cpuover
 .nodohdma
     cmp word[curypos],1
     jne .nocache
-    call cachevideo
+    ccallv cachevideo
 .nocache
     cmp byte[curblank],0
     jne .nodrawlineb2
@@ -995,7 +995,7 @@ NEWSYM cpuover
     pushad
     call StartDrawNewGfx
     ccallv showvideo
-    call cachevideo
+    ccallv cachevideo
     popad
 
     jmp .nonewgfx
@@ -1225,7 +1225,7 @@ NEWSYM cpuover
 .nodohdma2
     cmp word[curypos],1
     jne .nocache2
-    call cachevideo
+    ccallv cachevideo
 .nocache2
     cmp byte[curblank],0
     jne .nodrawline
@@ -1761,7 +1761,7 @@ NEWSYM execsingle
     xor byte[ppustatus],80h
     mov byte[NMIEnab],01h
     add dword[opcd],170*262
-    call cachevideo
+    ccallv cachevideo
     call starthdma
 
     ProcessIRQStuff

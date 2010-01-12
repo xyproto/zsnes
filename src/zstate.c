@@ -39,6 +39,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #endif
 #include <stdarg.h>
 #include "chips/c4proc.h"
+#include "cpu/regs.h"
 #include "gblvars.h"
 #include "asm_call.h"
 #include "init.h"
@@ -1126,9 +1127,6 @@ void zst_sram_load_compressed(FILE *fp)
 }
 
 
-extern uint8_t Voice0Disable, Voice1Disable, Voice2Disable, Voice3Disable;
-extern uint8_t Voice4Disable, Voice5Disable, Voice6Disable, Voice7Disable;
-
 void stateloader(char *statename, bool keycheck, bool xfercheck)
 {
   extern uint8_t PauseLoad;
@@ -1223,8 +1221,7 @@ void stateloader(char *statename, bool keycheck, bool xfercheck)
     set_state_message("UNABLE TO LOAD STATE ", "."); // 'UNABLE TO LOAD STATE XX.'
   }
 
-  Voice0Disable = Voice1Disable = Voice2Disable = Voice3Disable = 1;
-  Voice4Disable = Voice5Disable = Voice6Disable = Voice7Disable = 1;
+	memset(&Voice0Disable, 1, sizeof(Voice0Disable));
 
   stim();
 }
@@ -1451,14 +1448,14 @@ void savespcdata(void)
 
       //Set Channel Disables
       ssdatst[0xD0] = 0; //000D0h - Default Channel Disables (0 = enable, 1 = disable)
-      if (Voice0Disable) { ssdatst[0xD0] |= BIT(0); }
-      if (Voice1Disable) { ssdatst[0xD0] |= BIT(1); }
-      if (Voice2Disable) { ssdatst[0xD0] |= BIT(2); }
-      if (Voice3Disable) { ssdatst[0xD0] |= BIT(3); }
-      if (Voice4Disable) { ssdatst[0xD0] |= BIT(4); }
-      if (Voice5Disable) { ssdatst[0xD0] |= BIT(5); }
-      if (Voice6Disable) { ssdatst[0xD0] |= BIT(6); }
-      if (Voice7Disable) { ssdatst[0xD0] |= BIT(7); }
+      if (Voice0Disable[0]) { ssdatst[0xD0] |= BIT(0); }
+      if (Voice0Disable[1]) { ssdatst[0xD0] |= BIT(1); }
+      if (Voice0Disable[2]) { ssdatst[0xD0] |= BIT(2); }
+      if (Voice0Disable[3]) { ssdatst[0xD0] |= BIT(3); }
+      if (Voice0Disable[4]) { ssdatst[0xD0] |= BIT(4); }
+      if (Voice0Disable[5]) { ssdatst[0xD0] |= BIT(5); }
+      if (Voice0Disable[6]) { ssdatst[0xD0] |= BIT(6); }
+      if (Voice0Disable[7]) { ssdatst[0xD0] |= BIT(7); }
 
       ssdatst[0xD1] = 1; //000D1h - Emulator used to dump .spc file
       memset(ssdatst+0xD2, 0, 46); //000D2h-000FFh - Reserved

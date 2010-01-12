@@ -35,7 +35,7 @@ NEWSYM sndrot2,   db 0             ; rotates a random value for sound skip
 NEWSYM INTEnab,   db 0
 NEWSYM NMIEnab,   db 1             ; controlled in e65816 loop.  Sets to 81h
 NEWSYM VIRQLoc,   dw 0             ; VIRQ Y location
-NEWSYM vidbright, db 0             ; screen brightness (0 .. 15)
+NEWSYM vidbright, db 0
 NEWSYM previdbr,  db 0             ; previous screen brightness
 NEWSYM forceblnk, db 80h           ; force blanking on/off ($80=on)
 NEWSYM objptr,    dd 0             ; pointer to object data in VRAM
@@ -92,7 +92,7 @@ NEWSYM vramincr,  db 0             ; 0 = inrement at 2118/2139, 1 = 2119,213A
 NEWSYM vramread,  db 0             ; previous character for vram read
 NEWSYM vramaddr,  dd 0             ; vram address
 NEWSYM cgaddr,    dw 0             ; cg (palette) address
-NEWSYM cgmod,     db 0             ; if cgram is modified or not
+NEWSYM cgmod,     db 0
 NEWSYM scrnon,    dw 0             ; main & sub screen on
 NEWSYM scrndist,  db 0             ; which background is disabled
 NEWSYM resolutn,  dw 224           ; screen resolution
@@ -104,7 +104,7 @@ NEWSYM latchx,    dw 0
 NEWSYM latchy,    dw 0
 NEWSYM latchxr,   db 0             ; low or high byte read for x value
 NEWSYM latchyr,   db 0             ; low or high byte read for y value
-NEWSYM frskipper, db 0             ; used to control frame skipping
+NEWSYM frskipper, db 0
 NEWSYM winl1,     db 0             ; window 1 left position
 NEWSYM winr1,     db 0             ; window 1 right position
 NEWSYM winl2,     db 0             ; window 2 left position
@@ -205,7 +205,7 @@ num2writeppureg equ $-sndrot
 ; pharos equ hack *sigh*
 NEWSYM PHnum2writeppureg, dd num2writeppureg
 
-NEWSYM scrndis,   db 0             ; which background is disabled
+NEWSYM scrndis,   db 0
 
 ALIGN32
 NEWSYM oamaddr,   dd 0             ; oam address
@@ -220,14 +220,14 @@ NEWSYM bg2ptry,   dd 0             ; pointer to background2
 NEWSYM bg3ptry,   dd 0             ; pointer to background3
 NEWSYM bg4ptry,   dd 0             ; pointer to background4
 
-NEWSYM Voice0Disable, db 1         ; Disable Voice 0
-NEWSYM Voice1Disable, db 1         ; Disable Voice 1
-NEWSYM Voice2Disable, db 1         ; Disable Voice 2
-NEWSYM Voice3Disable, db 1         ; Disable Voice 3
-NEWSYM Voice4Disable, db 1         ; Disable Voice 4
-NEWSYM Voice5Disable, db 1         ; Disable Voice 5
-NEWSYM Voice6Disable, db 1         ; Disable Voice 6
-NEWSYM Voice7Disable, db 1         ; Disable Voice 7
+NEWSYM Voice0Disable, db 1
+NEWSYM Voice1Disable, db 1
+NEWSYM Voice2Disable, db 1
+NEWSYM Voice3Disable, db 1
+NEWSYM Voice4Disable, db 1
+NEWSYM Voice5Disable, db 1
+NEWSYM Voice6Disable, db 1
+NEWSYM Voice7Disable, db 1
 
 NEWSYM BG116x16t, db 0
 NEWSYM BG216x16t, db 0

@@ -28,7 +28,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <stdbool.h>
 #endif
 
 #include "cfg.h"
@@ -85,7 +84,7 @@ unsigned char opexec358b    = 181;  // # of opcodes/scanline in 3.58Mhz mode (22
 unsigned char opexec268cphb = 42;   // # of opcodes/hblank in 2.68Mhz mode
 unsigned char opexec358cphb = 45;   // # of opcodes/hblank in 3.58Mhz mode (56/50)
 u1            debugdisble   = 1;
-unsigned char gammalevel16b = 0;    // gamma level (16-bit engine)
+u1            gammalevel16b = 0;
 unsigned char AddSub256     = 0;    // screen add/sub in 256 colors
 unsigned char dmadeddis     = 0;    // DMA deduction
 unsigned char OldStyle      = 1;    // Old style joystick on
@@ -119,7 +118,7 @@ extern bool input2mouse;
 extern bool input2scope;
 extern bool input2just;
 
-void cycleinputdevice1()
+void cycleinputdevice1(void)
 {
   for (;;)
   {
@@ -140,43 +139,43 @@ void cycleinputdevice1()
   }
 }
 
-static bool device2_wrap = false;
-
-void cycleinputdevice2()
+bool cycleinputdevice2(void)
 {
+  bool wrap = false;
   for (;;)
   {
     device2++;
     if (device2 >= 5)
     {
-      device2_wrap = true;
+      wrap    = true;
       device2 = 0;
     }
     if (device2 == 0)
     {
-      if (input2gp) { return; }
+      if (input2gp) break;
       device2++;
     }
     if (device2 == 1)
     {
-      if (input2mouse) { return; }
+      if (input2mouse) break;
       device2++;
     }
     if (device2 == 2)
     {
-      if (input2scope) { return; }
+      if (input2scope) break;
       device2++;
     }
     if (device2 == 3)
     {
-      if (input2just) { return; }
+      if (input2just) break;
       device2++;
     }
     if (device2 == 4)
     {
-      if (input2just) { return; }
+      if (input2just) break;
     }
   }
+  return wrap;
 }
 
 unsigned char NoiseData[32768];
@@ -426,7 +425,7 @@ static char *seconds_to_asc(unsigned int seconds)
   return(buffer);
 }
 
-void DisplayBatteryStatus()
+void DisplayBatteryStatus(void)
 {
 #ifndef __MSDOS__
   int CheckBattery();
@@ -598,368 +597,3 @@ void MultiMouseProcess(void)
 }
 
 #endif
-
-char panickeyp[] = "ALL SWITCHES NORMAL\0";
-char mztrtr0[] = "LOAD MZT MODE - OFF\0";
-char mztrtr1[] = "LOAD MZT MODE - RECORD\0";
-char mztrtr2[] = "LOAD MZT MODE - REPLAY\0";
-char snesdevicemsg[] = "P1:          P2:               \0";
-char windissw[] = "WINDOWING DISABLED\0";
-char winenasw[] = "WINDOWING ENABLED\0";
-char ofsdissw[] = "OFFSET MODE DISABLED\0";
-char ofsenasw[] = "OFFSET MODE ENABLED\0";
-char ngena[] = "NEW GFX ENGINE ENABLED\0";
-char ngdis[] = "NEW GFX ENGINE DISABLED\0";
-char frlev[] = "FRAME SKIP SET TO  \0";
-char frlv0[] = "AUTO FRAMERATE ENABLED\0";
-char pluse1234en[] = "USE PLAYER 1/2 with 3/4 ON\0";
-char pluse1234dis[] = "USE PLAYER 1/2 with 3/4 OFF\0";
-char sndchena[] = "SOUND CH   ENABLED\0";
-char sndchdis[] = "SOUND CH   DISABLED\0";
-char sprlayena[] = "SPRITE LAYER ENABLED\0";
-char sprlaydis[] = "SPRITE LAYER DISABLED\0";
-char bglayermsg[] = "BG  LAYER DISABLED\0";
-char gammamsg[] = "GAMMA LEVEL:   \0";
-
-extern unsigned int MsgCount, MessageOn;
-extern unsigned char pressed[];
-extern unsigned char scrndis, disableeffects, osm2dis, snesinputdefault1, snesinputdefault2;
-extern unsigned char t1cc, current_zst;
-extern unsigned char Voice0Disable, Voice1Disable, Voice2Disable, Voice3Disable;
-extern unsigned char Voice4Disable, Voice5Disable, Voice6Disable, Voice7Disable;
-extern unsigned char Voice0Status, Voice1Status, Voice2Status, Voice3Status;
-extern unsigned char Voice4Status, Voice5Status, Voice6Status, Voice7Status;
-void set_state_message(char *, char *);
-
-void adjbglayermsg(char num, char toggleon)
-{
-    if(toggleon)
-      memcpy(&bglayermsg[10], "ENABLED ",8);
-    else
-      memcpy(&bglayermsg[10], "DISABLED",8);
-
-    memcpy(&bglayermsg[2], &num, 1);
-    Msgptr = bglayermsg;
-    MessageOn = MsgCount;
-}
-
-void adjgammamsg()
-{
-    gammalevel16b = gammalevel >> 1;
-    if(gammalevel < 10)
-      gammamsg[13] = ' ';
-    else
-      gammamsg[13] = '1';
-    gammamsg[14] = gammalevel%10+48;
-    Msgptr = gammamsg;
-    MessageOn = MsgCount;
-}
-
-void adjsoundchmsg(unsigned char *soundch, unsigned char *soundstatus, char num)
-{
-    *soundch ^= 0x01;
-    *soundstatus = 0;
-    sndchena[9] = num;
-    sndchdis[9] = num;
-    if(*soundch == 0x01)
-      Msgptr = sndchena;
-    else
-      Msgptr = sndchdis;
-    MessageOn = MsgCount;
-}
-
-static void cycleinputdevicemsg()
-{
-  if(!device1)
-  {
-    memcpy(&snesdevicemsg[4],"GAMEPAD",7);
-  }
-  else
-  {
-    memcpy(&snesdevicemsg[4],"MOUSE  ",7);
-  }
-
-  switch(device2)
-  {
-    case 1:   memcpy(&snesdevicemsg[17], "MOUSE         ",14);
-              break;
-    case 2:   memcpy(&snesdevicemsg[17], "SUPER SCOPE   ",14);
-              break;
-    case 3:   memcpy(&snesdevicemsg[17], "1 JUSTIFIER ",14);
-              break;
-    case 4:   memcpy(&snesdevicemsg[17], "2 JUSTIFIERS",14);
-              break;
-    default:  memcpy(&snesdevicemsg[17], "GAMEPAD       ",14);
-  }
-}
-
-static void cycleinputs(bool input1, bool input2)
-{
-  if (input2)
-  {
-    cycleinputdevice2();
-    if (input1 && device2_wrap) { cycleinputdevice1(); }
-    if(device2 == 2)
-    {
-      mousexloc = 128;
-      mouseyloc = 112;
-    }
-    device2_wrap = false;
-  }
-  else if (input1)
-  {
-    cycleinputdevice1();
-  }
-
-  cycleinputdevicemsg();
-  Msgptr = snesdevicemsg;
-  MessageOn = MsgCount;
-  Get_MousePositionDisplacement();
-}
-
-#define PRESSED(key) ((pressed[(key)] == 1) && (pressed[(key)]=2))
-#define SCREEN_FLIP(num) adjbglayermsg((num)+'1', !((scrndis ^= BIT(num)) & BIT(num)))
-#define STATE_SELECT(num) current_zst = (current_zst/10)*10+num; set_state_message("STATE SLOT ", " SELECTED.");
-#define KEY_HANDLE(key_base, action, num) if (PRESSED(key_base ## num)) { action(num); }
-
-void QuickKeyCheck()
-{
-    // disable all necessary backgrounds
-
-    KEY_HANDLE(KeyBGDisble, SCREEN_FLIP, 0)
-    KEY_HANDLE(KeyBGDisble, SCREEN_FLIP, 1)
-    KEY_HANDLE(KeyBGDisble, SCREEN_FLIP, 2)
-    KEY_HANDLE(KeyBGDisble, SCREEN_FLIP, 3)
-    if (PRESSED(KeySprDisble))
-    {
-      scrndis ^= 0x10;
-      if(scrndis & 0x10)
-        Msgptr = sprlaydis;
-      else
-        Msgptr = sprlayena;
-      MessageOn = MsgCount;
-    }
-
-    if (PRESSED(KeyEmuSpeedDown))
-    {
-      if(EmuSpeed)
-        EmuSpeed--;
-    }
-
-    if (PRESSED(KeyEmuSpeedUp))
-    {
-      if(EmuSpeed < 58)
-        EmuSpeed++;
-    }
-
-    if (PRESSED(KeyResetSpeed))
-    {
-      EmuSpeed = 29;
-    }
-
-    if (PRESSED(KeyResetAll))
-    {
-      Voice0Disable = 1;
-      Voice1Disable = 1;
-      Voice2Disable = 1;
-      Voice3Disable = 1;
-      Voice4Disable = 1;
-      Voice5Disable = 1;
-      Voice6Disable = 1;
-      Voice7Disable = 1;
-      scrndis = 0;
-      disableeffects = 0;
-      osm2dis = 0;
-      EmuSpeed = 29;
-      device1 = snesinputdefault1;
-      device2 = snesinputdefault2;
-      Msgptr = panickeyp;
-      MessageOn = MsgCount;
-    }
-
-    if (PRESSED(KeyRTRCycle))
-    {
-      MZTForceRTR++;
-      switch(MZTForceRTR)
-      {
-        case 1:   Msgptr = mztrtr1;
-                  break;
-        case 2:   Msgptr = mztrtr2;
-                  break;
-        default:  Msgptr = mztrtr0;
-                  MZTForceRTR = 0;                 
-      }
-
-      MessageOn = MsgCount;
-    }
-
-    if (PRESSED(KeyExtraEnab1))
-    {
-      cycleinputs(true, false);
-    }
-
-    if (PRESSED(KeyExtraEnab2))
-    {
-      cycleinputs(false, true);
-    }
-
-    if (PRESSED(KeyExtraRotate))
-    {
-      cycleinputs(true, true);
-    }
-
-    if (PRESSED(KeyWinDisble))
-    {
-      disableeffects ^= 1;
-      if(disableeffects)
-        Msgptr = windissw;
-      else
-        Msgptr = winenasw;
-      MessageOn = MsgCount;
-    }
-
-    if (PRESSED(KeyOffsetMSw))
-    {
-      osm2dis ^= 1;
-      if(osm2dis)
-        Msgptr = ofsdissw;
-      else
-        Msgptr = ofsenasw;
-      MessageOn = MsgCount;
-    }
-
-    if (PRESSED(KeyFRateUp))
-    {
-      if(frameskip < 10)
-      {
-        FPSOn = 0;
-        frameskip++;
-        frlev[18] = frameskip+47;
-        Msgptr = frlev;
-        MessageOn = MsgCount;
-      }
-    }
-
-    if (PRESSED(KeyFRateDown))
-    {
-      if(frameskip)
-      {
-        frameskip--;
-        if(frameskip)
-        {
-          frlev[18] = frameskip+47;
-          Msgptr = frlev;
-        }
-        else
-        {
-          Msgptr = frlv0;
-          t1cc = 0;
-        }
-
-        MessageOn = MsgCount;
-      }
-    }
-
-    if (PRESSED(KeyDisplayBatt))
-    {
-      DisplayBatteryStatus();
-    }
-
-    if (PRESSED(KeyIncreaseGamma))
-    {
-      if(gammalevel < 15)
-      {
-        gammalevel++;
-        adjgammamsg();
-      }
-    }
-
-    if (PRESSED(KeyDecreaseGamma))
-    {
-      if(gammalevel)
-      {
-        gammalevel--;
-        adjgammamsg();
-      }
-    }
-
-    if (PRESSED(KeyDisplayFPS))
-    {
-      if(!frameskip)
-        FPSOn ^= 1;
-    }
-
-    // do state selects
-    KEY_HANDLE(KeyStateSlc, STATE_SELECT, 0)
-    KEY_HANDLE(KeyStateSlc, STATE_SELECT, 1)
-    KEY_HANDLE(KeyStateSlc, STATE_SELECT, 2)
-    KEY_HANDLE(KeyStateSlc, STATE_SELECT, 3)
-    KEY_HANDLE(KeyStateSlc, STATE_SELECT, 4)
-    KEY_HANDLE(KeyStateSlc, STATE_SELECT, 5)
-    KEY_HANDLE(KeyStateSlc, STATE_SELECT, 6)
-    KEY_HANDLE(KeyStateSlc, STATE_SELECT, 7)
-    KEY_HANDLE(KeyStateSlc, STATE_SELECT, 8)
-    KEY_HANDLE(KeyStateSlc, STATE_SELECT, 9)
-
-    if (PRESSED(KeyIncStateSlot))
-    {
-      current_zst = (current_zst+1)%100;
-      set_state_message("STATE SLOT ", " SELECTED.");
-    }
-
-    if (PRESSED(KeyDecStateSlot))
-    {
-      current_zst = (current_zst+99)%100;
-      set_state_message("STATE SLOT ", " SELECTED.");
-    }
-
-    if (PRESSED(KeyUsePlayer1234))
-    {
-      pl12s34 ^= 1;
-      if(pl12s34)
-        Msgptr = pluse1234en;
-      else
-        Msgptr = pluse1234dis;
-      MessageOn = MsgCount;
-    }
-
-    if (PRESSED(KeyDisableSC0))
-    {
-      adjsoundchmsg(&Voice0Disable, &Voice0Status, '1');
-    }
-
-    if (PRESSED(KeyDisableSC1))
-    {
-      adjsoundchmsg(&Voice1Disable, &Voice1Status, '2');
-    }
-
-    if (PRESSED(KeyDisableSC2))
-    {
-      adjsoundchmsg(&Voice2Disable, &Voice2Status, '3');
-    }
-
-    if (PRESSED(KeyDisableSC3))
-    {
-      adjsoundchmsg(&Voice3Disable, &Voice3Status, '4');
-    }
-
-    if (PRESSED(KeyDisableSC4))
-    {
-      adjsoundchmsg(&Voice4Disable, &Voice4Status, '5');
-    }
-
-    if (PRESSED(KeyDisableSC5))
-    {
-      adjsoundchmsg(&Voice5Disable, &Voice5Status, '6');
-    }
-
-    if (PRESSED(KeyDisableSC6))
-    {
-      adjsoundchmsg(&Voice6Disable, &Voice6Status, '7');
-    }
-
-    if (PRESSED(KeyDisableSC7))
-    {
-      adjsoundchmsg(&Voice7Disable, &Voice7Status, '8');
-    }
-}

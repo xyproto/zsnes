@@ -21,324 +21,27 @@
 
 %include "macros.mac"
 
-EXTSYM MessageOn,MsgCount,Msgptr,Voice0Disable,Voice0Status,Voice1Disable
-EXTSYM Voice1Status,Voice2Disable,Voice2Status,Voice3Disable,Voice3Status
-EXTSYM Voice4Disable,Voice4Status,Voice5Disable,Voice5Status,Voice6Disable
-EXTSYM Voice6Status,Voice7Disable,Voice7Status,bgcmsung,bgmode
-EXTSYM cgmod,disableeffects,frameskip,frskipper,current_zst
-EXTSYM maxbr,modeused,mousexloc,mouseyloc,newengen,KeyRTRCycle
-EXTSYM pal16b,pal16bxcl,pressed,prevbright,prevpal
-EXTSYM scfbl,scrndis,t1cc
-EXTSYM vidbright,vidbuffer,vidbufferofsa,vidmemch2,MZTForceRTR
-EXTSYM GUIRClick,MousePRClick,ngmsdraw,cvidmode
-EXTSYM KeyDisableSC0,KeyDisableSC1,KeyDisableSC2,KeyDisableSC3,KeyDisableSC4
-EXTSYM KeyDisableSC5,KeyDisableSC6,KeyDisableSC7,KeyFastFrwrd,SRAMSave5Sec
-EXTSYM KeyBGDisble0,KeyBGDisble1,KeyBGDisble2,KeyBGDisble3,KeySprDisble
-EXTSYM KeyResetAll,KeyWinDisble,KeyNewGfxSwt,KeyOffsetMSw
-EXTSYM KeyStateSlc0,KeyStateSlc1,KeyStateSlc2,KeyStateSlc3,KeyStateSlc4
-EXTSYM KeyStateSlc5,KeyStateSlc6,KeyStateSlc7,KeyStateSlc8,KeyStateSlc9
-EXTSYM KeyIncStateSlot,KeyDecStateSlot,KeyUsePlayer1234,maxskip
-EXTSYM FastFwdToggle,SaveSramData,ngextbg,Mode7HiRes,Check60hz
-EXTSYM Get_MouseData,Get_MousePositionDisplacement
-EXTSYM MusicRelVol,KeySlowDown
-EXTSYM KeyFRateDown,KeyFRateUp,KeyVolUp,KeyVolDown,KeyDisplayFPS
-EXTSYM FPSOn,pl12s34,bg1ptr,bg2ptr,bg3ptr,bg4ptr,cachebg1,resolutn,curypos
+EXTSYM bgmode,scrndis,vidmemch2
+EXTSYM bg1ptr,bg2ptr,bg3ptr,bg4ptr,cachebg1,resolutn,curypos
 EXTSYM oamram,objhipr,objptr,objptrn,objsize1,objsize2,spritetablea,sprleftpr
 EXTSYM sprlefttot,vcache4b,objadds1,objadds2,objmovs1,objmovs2,tltype4b
 EXTSYM vidmemch4,vram,bgptr,bgptrc,bgptrd,curtileptr,vcache2b,vcache8b,vidmemch8
-EXTSYM NextLineCache,tltype2b,tltype8b,objwlrpos
-EXTSYM EmuSpeed,SDRatio,FFRatio,DisplayBatteryStatus,lhguimouse,SwapMouseButtons
-EXTSYM KeyResetSpeed,KeyEmuSpeedUp,KeyEmuSpeedDown,KeyDisplayBatt,EMUPause
-EXTSYM device1,device2,snesinputdefault1,snesinputdefault2
-EXTSYM KeyExtraEnab1,KeyExtraEnab2,cycleinputdevice1,cycleinputdevice2,MouseDis
-EXTSYM KeyIncreaseGamma,KeyDecreaseGamma,gammalevel,gammalevel16b
-EXTSYM RawDumpInProgress,QuickKeyCheck,ngena,ngdis,vollv
-EXTSYM sprcnt,sprstart,sprtilecnt,sprend,sprendx,interlval,genfulladdtab
-EXTSYM UpdateVolume
-
-%ifndef NO_DEBUGGER
-EXTSYM debuggeron
-%else
-EXTSYM SPCSave
-%endif
+EXTSYM sprcnt,sprstart,sprtilecnt,sprend,sprendx,interlval,offsetmshl,tltype2b
+EXTSYM tltype8b
 
 ; Process stuff & Cache sprites
 
 SECTION .data
 ALIGN32
 
-NEWSYM fskipped,     db 0
 NEWSYM sprprifix,    db 1
 NEWSYM OMBGTestVal, dd 0
 NEWSYM ngptrdat2, dd 0
 NEWSYM ofshvaladd, dd 0
 NEWSYM ofsmtptrs, dd 0
 NEWSYM ofsmcptr2, dd 0
-NEWSYM sramb4save, dd 0
-NEWSYM hiresstuff, dd 0
 
-SECTION .bss
-NEWSYM FastForwardLock, resb 1
-NEWSYM SlowDownLock, resb 1
-NEWSYM CSprWinPtr, resd 1
-NEWSYM SloMo, resb 1
-section .text
-
-NEWSYM cachevideo
-    mov byte[NextLineCache],0
-    mov dword[objwlrpos],0FFFFFFFFh
-    mov dword[CSprWinPtr],0
-    mov byte[pressed],0
-    mov dword[bgcmsung],0
-    mov dword[modeused],0
-    mov dword[modeused+4],0
-    mov dword[ngmsdraw],0
-    mov dword[ngextbg],0
-    mov byte[hiresstuff],0
-    mov byte[Mode7HiRes],0
-
-    mov dword[scfbl],1
-    mov al,[vidbright]
-    mov [maxbr],al
-    mov byte[cgmod],1
-    xor al,al
-    mov [curblank],al
-%ifndef NO_DEBUGGER
-    cmp byte[debuggeron],0
-    je .nodebugger
-    mov byte[curblank],40h
-    mov al,40h
-    jmp .nofrskip
-.nodebugger
-%else
-    cmp byte[SPCSave],1
-    jne .nospcsave
-    mov byte[curblank],40h
-    mov al,40h
-    jmp .nofrskip
-.nospcsave
-%endif
-
-    cmp dword[sramb4save],0
-    je .nofocussave
-    cmp byte[SRAMSave5Sec],0
-    je .nofocussaveb
-    dec dword[sramb4save]
-    cmp dword[sramb4save],1
-    jne .nofocussave
-    ccallv SaveSramData
-    jmp .nofocussave
-.nofocussaveb
-    mov dword[sramb4save],0
-.nofocussave
-
-    ; if emulation paused, don't alter timing
-    mov ax,1
-    cmp byte[EMUPause],1
-    je near .ttldone
-    ; fast forward goes over all other throttles
-    ; don't fast forward while dumping a movie
-    cmp byte[RawDumpInProgress],1
-    je .ffskip
-    cmp byte[FastFwdToggle],0
-    jne .ffmode2
-    mov eax,[KeyFastFrwrd]
-    test byte[pressed+eax],1
-    jnz near .fastfor
-    jmp .ffskip
-.ffmode2
-    mov eax,[KeyFastFrwrd]
-    test byte[pressed+eax],1
-    jz .nofastfor
-    mov byte[pressed+eax],2
-    xor byte[FastForwardLock],1
-.nofastfor
-    cmp byte[FastForwardLock],1
-    je near .fastfor
-.ffskip
-    ; next up, check for slowdown
-    cmp byte[FastFwdToggle],0
-    jne .sdmode2
-    mov eax,[KeySlowDown]
-    test byte[pressed+eax],1
-    jnz near .slowdwn
-    jmp .sdskip
-.sdmode2
-    mov eax,[KeySlowDown]
-    test byte[pressed+eax],1
-    jz .noslowdwn
-    mov byte[pressed+eax],2
-    xor byte[SlowDownLock],1
-.noslowdwn
-    cmp byte[SlowDownLock],1
-    je near .slowdwn
-    jmp .sdskip
-.slowdwn
-    mov al,[SDRatio]          ; 0-28
-    inc al                    ; 1-29
-    mov [SloMo],al            ; /2-/30 slowmotion
-    jmp .throttleskip
-.sdskip
-    ; now we can look at emuspeed
-    cmp byte[EmuSpeed],30     ; 0-28 slow, 29 normal, 30-58 skip
-    jb .noskipping
-    inc byte[frskipper]
-    push ebx
-    mov bl,[EmuSpeed]
-    sub bl,29                 ; 30-58 -> 1-29 frames to skip, 2x-30x speed
-    jmp .fastforb
-.noskipping
-    mov byte[SloMo],29
-    mov al,[EmuSpeed]
-    sub byte[SloMo],al        ; 0-29 -> repeat 29-0 times, /30-1x speed
-.throttleskip
-    mov ax,[SloMo]
-    inc ax                    ; total times frame is drawn
-.ttldone
-
-    cmp byte[frameskip],0
-    jne near .frameskip
-    cmp word[t1cc],ax
-    jae .skipt1ccc
-.noskip
-    ccallv Check60hz
-    cmp word[t1cc],ax
-    jb .noskip
-.skipt1ccc
-    sub word[t1cc],ax
-    cmp word[t1cc],ax
-    jb .noskip2
-    mov byte[curblank],40h
-    inc byte[fskipped]
-    mov cl,[maxskip]
-    cmp byte[fskipped],cl
-    jbe near .nofrskip
-    mov word[t1cc],0
-    mov byte[curblank],0
-.noskip2
-    mov byte[fskipped],0
-    jmp .nofrskip
-.fastfor
-    inc byte[frskipper]
-    push ebx
-    mov bl,[FFRatio]      ; 0-28
-    inc bl                    ; 1-29, 2x-30x fastmotion
-    jmp .fastforb
-.frameskip
-    inc byte[frskipper]
-    push ebx
-    mov bl,[frameskip]
-.fastforb
-    cmp byte[frskipper],bl
-    pop ebx
-    jae .nofrskip
-    mov byte[curblank],40h
-    jmp .frskip
-.nofrskip
-    mov byte[frskipper],0
-.frskip
-    push ebx
-    push esi
-    push edi
-    push edx
-
-    cmp byte[MouseDis],1
-    je .noclick
-    cmp byte[GUIRClick],0
-    je .noclick
-    cmp byte[device1],0
-    jne .noclick
-    cmp byte[device2],0
-    jne .noclick
-    push  eax
-    ccall Get_MouseData
-    movzx ebx, ax
-    mov   ecx, eax
-    mov   edx, eax
-    shr   ecx, 16
-    shr   edx, 24
-    movzx ecx, cl
-    pop   eax
-    cmp byte[lhguimouse],1
-    jne .notlefthanded
-    push eax
-    ccall SwapMouseButtons, ebx
-    mov ebx, eax
-    pop eax
-.notlefthanded
-    test bx,02h
-    jz .norclick
-    cmp byte[MousePRClick],0
-    jne .noclick
-    mov byte[pressed+1],1
-.norclick
-    mov byte[MousePRClick],0
-.noclick
-
-    ccallv QuickKeyCheck
-
-    mov eax,[KeyNewGfxSwt]
-    test byte[pressed+eax],1
-    je near .nodis8
-    mov byte[pressed+eax],2
-    mov byte[prevbright],16
-    xor byte[newengen],1
-    mov dword[Msgptr],ngena
-    cmp byte[newengen],1
-    je .disng
-    mov dword[Msgptr],ngdis
-.disng
-    mov eax,[MsgCount]
-    mov [MessageOn],eax
-    mov edi,vidmemch2
-    mov ecx,1024*3
-    mov eax,01010101h
-    rep stosd
-    mov edi,pal16b
-    mov ecx,256
-    xor eax,eax
-    rep stosd
-    mov edi,prevpal
-    mov ecx,128
-    rep stosd
-    mov eax,0FFFFh
-    cmp byte[newengen],1
-    jne .noneweng
-    mov eax,0FFFFFFFFh
-.noneweng
-    mov edi,pal16bxcl
-    mov ecx,256
-    rep stosd
-    ccallv genfulladdtab
-.yesng
-.disng2
-.nodis8
-
-    mov eax,[KeyVolUp]
-    test byte[pressed+eax],1
-    je .novolup
-    cmp byte[MusicRelVol],100
-    jae .novolup
-    inc byte[MusicRelVol]
-    ccallv UpdateVolume
-.novolup
-    mov eax,[KeyVolDown]
-    test byte[pressed+eax],1
-    je .novoldown
-    cmp byte[MusicRelVol],0
-    je .novoldown
-    dec byte[MusicRelVol]
-    ccallv UpdateVolume
-.novoldown
-
-    cmp byte[curblank],0h
-    jne near yesblank
-    ; Swap video addresses
-;    mov ebx,[vidbuffer]
-;    cmp ebx,[vidbufferofsa]
-;    je .useb
-    mov ebx,[vidbufferofsa]
-    mov [vidbuffer],ebx
+SECTION .text
 
 NEWSYM docache
     xor ebx,ebx
@@ -395,19 +98,12 @@ NEWSYM docache
     ; fill background with 0's unless 16-bit/new graphics engine mode is on
     xor ecx,ecx
     pop es
-NEWSYM yesblank
-    pop edx
-    pop edi
-    pop esi
-    pop ebx
     ret
 
 SECTION .data
-NEWSYM osm2dis,      db 0
 NEWSYM colormodedef, db 1,1,1,1, 2,2,1,0, 2,2,0,0, 3,2,0,0,
                db 3,1,0,0, 2,1,0,0, 2,0,0,0, 0,0,0,0
 NEWSYM colormodeofs, dd 0
-NEWSYM curblank,     db 80h
 NEWSYM addr2add,     dd 0
 ;cachebg1    times 64 db 0
 ;cachebg2    times 64 db 0

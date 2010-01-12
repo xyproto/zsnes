@@ -8,6 +8,7 @@ extern void UpdatePORSCMR();
 extern void cpuover();
 extern void execsingle();
 
+extern u1  EMUPause;
 extern u1  ExecExitOkay;
 extern u1  NextNGDisplay;
 extern u1  NoSoundReinit;

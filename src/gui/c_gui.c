@@ -4,6 +4,7 @@
 #include "../asm_call.h"
 #include "../c_init.h"
 #include "../c_intrf.h"
+#include "../c_vcache.h"
 #include "../cfg.h"
 #include "../cpu/c_execute.h"
 #include "../cpu/dspproc.h"

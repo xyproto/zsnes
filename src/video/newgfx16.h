@@ -78,6 +78,7 @@ extern u4   UnusedBitXor[2];
 extern u4   UnusedBit[2];
 extern u4   ngbposng;
 extern u4   nggposng;
+extern u4   ngmsdraw;
 extern u4   ngrposng;
 
 #endif

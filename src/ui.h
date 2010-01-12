@@ -1,10 +1,17 @@
 #ifndef UI_H
 #define UI_H
 
+#include <stdbool.h>
+
 #include "types.h"
 
 #define REGPTR(x) (regptra[(x) - 0x2000])
 #define REGPTW(x) (regptwa[(x) - 0x2000])
+
+void cycleinputdevice1(void);
+bool cycleinputdevice2(void);
+
+void DisplayBatteryStatus(void);
 
 extern eop* dspRptr[256];
 extern eop* dspWptr[256];
@@ -15,6 +22,7 @@ extern u1   MusicVol;
 extern u1   V8Mode;                 // Vegetable mode! =) (Greyscale mode)
 extern u1   cbitmode;               // bit mode, 0=8bit, 1=16bit
 extern u1   debugdisble;            // debugger disable.  0 = no, 1 = yes
+extern u1   gammalevel16b;          // gamma level (16-bit engine)
 extern u1   mode7tab[65536];
 extern u1   newgfx16b;
 extern u1   romispal;               // 0 = NTSC, 1 = PAL

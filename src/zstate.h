@@ -18,6 +18,8 @@ void statesaver(void);
 
 void loadstate(void);
 
+void SaveSramData(void);
+
 void savespcdata(void);
 
 extern time_t   newestfiledate;

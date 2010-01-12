@@ -38,5 +38,8 @@ extern u2    PrevPicture[56 * 64];
 extern u2    prevpal[256];         // previous palette buffer
 extern u4    ngpalcon2b[32];
 extern u4    ngpalcon4b[32];
+extern u4    objwlrpos[256];
+extern u4    pal16b[256];
+extern u4    pal16bxcl[256];
 
 #endif
