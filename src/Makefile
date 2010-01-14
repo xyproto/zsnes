@@ -114,6 +114,7 @@ SRCS += video/2xsaiw.asm
 SRCS += video/c_2xsaiw.c
 SRCS += video/c_copyvid.c
 SRCS += video/c_mode716.c
+SRCS += video/c_newgfx16.c
 SRCS += video/copyvid.asm
 SRCS += video/copyvwin.c
 SRCS += video/hq2x16.asm

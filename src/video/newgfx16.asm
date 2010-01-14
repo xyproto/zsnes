@@ -58,7 +58,7 @@ EXTSYM bg1change,bg2change,bg3change,bg4change,ngwinptr,objwlrpos,objwen
 EXTSYM objclineptr,CSprWinPtr,BuildWindow2,NGNumSpr,fulladdtab,MMXSupport
 EXTSYM bgtxadd2,gammalevel16b,drawmode7ngextbg16b,processmode7hires16b
 EXTSYM drawmode7ngextbg216b,osm2dis,ofsmtptrs,ofsmcptr2
-EXTSYM dcolortab
+EXTSYM dcolortab,setpalallng
 
 %ifdef __MSDOS__
 EXTSYM smallscreenon,ScreenScale
@@ -87,95 +87,6 @@ EXTSYM smallscreenon,ScreenScale
 
 SECTION .text
 
-NEWSYM setpalallng
-
-    mov dword[palchanged],1
-    mov byte[cgmod],0
-    push esi
-    push eax
-    push edx
-    push ebp
-    mov esi,[cpalptrng]
-    mov byte[colleft16b],0
-    add esi,1024
-    xor ebp,ebp
-    and esi,255*1024
-    mov [cpalptrng],esi
-
-    add esi,[vbufdptr]
-
-.loopa
-    mov dx,[cgram+ebp]
-    mov [prevpal2+ebp],dx
-    mov ax,dx
-    and al,01Fh
-    add al,[gammalevel16b]
-    cmp al,31
-    jbe .nogr
-    mov al,31
-.nogr
-    mov cl,[vidbright]
-    mul cl
-    mov cl,15
-    div cl
-    xor ah,ah
-    mov cl,[ngrposng]
-    xor ebx,ebx
-    shl ax,cl
-    add bx,ax
-    mov ax,dx
-    shr ax,5
-    and al,01Fh
-    add al,[gammalevel16b]
-    cmp al,31
-    jbe .nogg
-    mov al,31
-.nogg
-    mov cl,[vidbright]
-    mul cl
-    mov cl,15
-    div cl
-    xor ah,ah
-    mov cl,[nggposng]
-    shl ax,cl
-    add bx,ax
-    mov ax,dx
-    shr ax,10
-    and al,01Fh
-    add al,[gammalevel16b]
-    cmp al,31
-    jbe .nogb
-    mov al,31
-.nogb
-    mov cl,[vidbright]
-    mul cl
-    mov cl,15
-    div cl
-    xor ah,ah
-    mov cl,[ngbposng]
-    shl ax,cl
-    add bx,ax
-    mov ax,bx
-    mov [esi],bx     ; standard
-    or bx,[UnusedBit]
-    mov [esi+512],bx     ; standard
-    add esi,2
-    add ebp,2
-    inc byte[colleft16b]
-    jnz near .loopa
-    mov al,[vidbright]
-    mov [prevbright],al
-    pop ebp
-    pop edx
-    pop eax
-    pop esi
-    xor ecx,ecx
-    cmp byte[V8Mode],1
-    jne .noveg2
-    ccallv dovegrest
-.noveg2
-    ret
-
 NEWSYM setpalette16bng
     cmp byte[V8Mode],1
     jne .noveg
@@ -183,7 +94,10 @@ NEWSYM setpalette16bng
 .noveg
     mov bl,[vidbright]
     cmp bl,[prevbright]
-    jne near setpalallng
+    je .nosetpalallng
+    ccallv setpalallng
+    ret
+.nosetpalallng
     cmp byte[cgmod],0
     je near .skipall
     push esi
@@ -342,7 +256,7 @@ NEWSYM Gendcolortable
     ret
 
 section .data
-prevpal2 times 256 dw 0F00Fh
+NEWSYM prevpal2, times 256 dw 0F00Fh
 NEWSYM prevbrightdc, db 16
 section .text
 
