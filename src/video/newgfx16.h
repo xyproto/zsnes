@@ -71,7 +71,6 @@ extern eop* mosjmptab16b[15];
 extern eop* mosjmptab16bntms[15];
 extern eop* mosjmptab16bt[15];
 extern eop* mosjmptab16btms[15];
-extern u2   prevpal2[256];
 extern u4   HalfTransB[2];
 extern u4   HalfTransC[2];
 extern u4   HalfTrans[2];
