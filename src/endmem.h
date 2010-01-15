@@ -40,6 +40,7 @@ extern u1    sprleftpr[256];       // sprites left for priority 0
 extern u1    sprlefttot[256];      // total sprites left
 extern u1    sprstart[256];
 extern u1    sprtilecnt[256];
+extern u1    winbgbackenval[256];
 extern u1*   snesmap2[256];
 extern u1*   snesmmap[256];
 extern u2    PrevPicture[56 * 64];

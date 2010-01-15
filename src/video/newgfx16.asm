@@ -58,7 +58,7 @@ EXTSYM bg1change,bg2change,bg3change,bg4change,ngwinptr,objwlrpos,objwen
 EXTSYM objclineptr,CSprWinPtr,BuildWindow2,NGNumSpr,fulladdtab,MMXSupport
 EXTSYM bgtxadd2,drawmode7ngextbg16b,processmode7hires16b
 EXTSYM drawmode7ngextbg216b,osm2dis,ofsmtptrs,ofsmcptr2
-EXTSYM dcolortab,setpalallng,setpalette16bng
+EXTSYM dcolortab,setpalallng,setpalette16bng,BackAreaFill
 
 %ifdef __MSDOS__
 EXTSYM smallscreenon,ScreenScale
@@ -291,107 +291,11 @@ section .text
 section .data
 mosstart times 4 dd 0
 moscountdown db 0
-BackAreaAdd dd 0
-BackAreaUnFillCol dd 0
-BackAreaFillCol dd 0
+NEWSYM BackAreaAdd, dd 0
+NEWSYM BackAreaUnFillCol, dd 0
+NEWSYM BackAreaFillCol, dd 0
 clinemainsub    dd 0
 section .text
-
-BackAreaFill:
-    cmp byte[winbg1enval+eax+5*256],0
-    je near .nowindowb
-    mov ebx,[BackAreaFillCol]
-    cmp ebx,[BackAreaUnFillCol]
-    je near .nowindowb
-    push ecx
-    push edx
-    push eax
-    push edi
-
-    mov ebx,eax
-    mov ecx,[vidbuffer]
-    add ecx,16*2
-    shl eax,9
-    add ecx,eax
-    mov eax,ebx
-    shl eax,6
-    add ecx,eax
-    add ecx,[BackAreaAdd]
-
-    ; Construct Window in ecx
-    mov edi,ngwintable
-    sub ecx,2
-    mov eax,256
-.procnotemptyb
-    mov edx,[edi]
-    add edi,4
-    or edx,edx
-    jz .procemptyb
-    dec edx
-    mov ebx,[BackAreaUnFillCol]
-.swloopb
-    mov [ecx],ebx
-    mov [ecx+4],ebx
-    add ecx,8
-    sub eax,4
-    jc .doneb
-    sub edx,4
-    jnc .swloopb
-    sub eax,edx
-    add ecx,edx
-    add ecx,edx
-    dec eax
-    add ecx,2
-.procemptyb
-    mov edx,[edi]
-    dec edx
-    add edi,4
-    mov ebx,[BackAreaFillCol]
-.swloop2b
-    mov [ecx],ebx
-    mov [ecx+4],ebx
-    add ecx,8
-    sub eax,4
-    jc .doneb
-    sub edx,4
-    jnc .swloop2b
-    sub eax,edx
-    add ecx,edx
-    add ecx,edx
-    dec eax
-    add ecx,2
-    jmp .procnotemptyb
-.doneb
-    pop edi
-    pop eax
-    pop edx
-    pop ecx
-    jmp .yeswindowb
-.nowindowb
-    push eax
-    push ecx
-    mov ebx,eax
-    mov ecx,[vidbuffer]
-    mov eax,ebx
-    add ecx,16*2
-    shl eax,9
-    add ecx,eax
-    mov eax,ebx
-    shl eax,6
-    add ecx,eax
-    add ecx,[BackAreaAdd]
-    mov ebx,[BackAreaUnFillCol]
-    mov eax,64
-.nowinloop
-    mov [ecx],ebx
-    mov [ecx+4],ebx
-    add ecx,8
-    dec eax
-    jnz .nowinloop
-    pop ecx
-    pop eax
-.yeswindowb
-    ret
 
 NEWSYM newengine16b
     ; store line by line data
@@ -1071,7 +975,7 @@ NEWSYM newengine16b
     mov dword[BackAreaUnFillCol],0
     mov dword[BackAreaFillCol],0
 .notforceblanked
-    call BackAreaFill
+    ccallv BackAreaFill, eax
     test byte[FillSubScr+eax],1
     jz near .nosubscreen2
     mov dword[BackAreaAdd],75036*2
@@ -1111,7 +1015,7 @@ NEWSYM newengine16b
     mov edx,[BackAreaUnFillCol]
     mov [BackAreaFillCol],edx
 .nowinsc
-    call BackAreaFill
+    ccallv BackAreaFill, eax
 .nosubscreen2
     pop edx
     pop ecx

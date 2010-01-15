@@ -1,7 +1,9 @@
 #include "../cpu/regs.h"
+#include "../endmem.h"
 #include "../ui.h"
 #include "c_newgfx16.h"
 #include "makev16b.h"
+#include "newgfx.h"
 #include "newgfx16.h"
 #include "procvid.h"
 
@@ -128,4 +130,69 @@ void setpalette16bng(void)
 		while (++edi, ++pal, ++i, ++colleft16b != 0);
 	}
 	if (V8Mode == 1) dovegrest();
+}
+
+
+void BackAreaFill(u4 const eax)
+{
+	u1* buf = vidbuffer + 16 * 2 + eax * 576 + BackAreaAdd;
+
+	if (winbgbackenval[eax] != 0 && BackAreaFillCol != BackAreaUnFillCol)
+	{ // Construct Window in buf
+		buf -= 2;
+		u4* edi = ngwintable;
+		u4  eax = 256;
+		for (;;)
+		{
+			{ u4 edx = *edi++;
+				if (edx != 0)
+				{
+					--edx;
+					u4 const ebx = BackAreaUnFillCol;
+					for (;;)
+					{
+						*(u4*)buf       = ebx;
+						*(u4*)(buf + 4) = ebx;
+						buf += 8;
+						if (eax < 4) return;
+						eax -= 4;
+						if (edx < 4) break;
+						edx -= 4;
+					}
+					edx -= 4;
+					eax -= edx + 1;
+					buf += edx * 2 + 2;
+				}
+			}
+
+			{ u4       edx = *edi++ - 1;
+				u4 const ebx = BackAreaFillCol;
+				for (;;)
+				{
+					*(u4*)buf       = ebx;
+					*(u4*)(buf + 4) = ebx;
+					buf += 8;
+					if (eax < 4) return;
+					eax -= 4;
+					if (edx < 4) break;
+					edx -= 4;
+				}
+				edx -= 4;
+				eax -= edx + 1;
+				buf += edx * 2 + 2;
+			}
+		}
+	}
+	else
+	{
+		u4 const ebx = BackAreaUnFillCol;
+		u4       eax = 64;
+		do
+		{
+			*(u4*)buf       = ebx;
+			*(u4*)(buf + 4) = ebx;
+			buf += 8;
+		}
+		while (--eax != 0);
+	}
 }

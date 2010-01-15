@@ -3,10 +3,11 @@
 
 #include "../types.h"
 
-extern u1 Mode7HiRes;  // XXX always 0
+extern u1 Mode7HiRes;     // XXX always 0
 extern u4 bgcmsung;
 extern u4 modeused[2];
 extern u4 ngextbg;
+extern u4 ngwintable[32];
 extern u4 scfbl;
 
 #ifdef __MSDOS__
