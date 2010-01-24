@@ -24,14 +24,12 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #ifdef __UNIXSDL__
 #include "gblhdr.h"
 #include "linux/audio.h"
-#define DIR_SLASH "/"
 #else
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
 #include <sys/stat.h>
-#define DIR_SLASH "\\"
 #endif
 #include "asm_call.h"
 #include "c_init.h"

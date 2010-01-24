@@ -22,7 +22,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #ifdef __UNIXSDL__
 #include "gblhdr.h"
 #include <signal.h>
-#define DIR_SLASH "/"
 #define WRITE_BINARY "w"
 #define NULL_FILE "/dev/null"
 #include "linux/safelib.h"
@@ -43,7 +42,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define ftruncate chsize
 #include "win/safelib.h"
 #endif
-#define DIR_SLASH "\\"
 #define WRITE_BINARY "wb"
 #define NULL_FILE "nul"
 #endif

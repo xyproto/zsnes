@@ -23,7 +23,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #ifdef __UNIXSDL__
 #include "gblhdr.h"
-#define DIR_SLASH "/"
 #else
 #include <stdio.h>
 #include <stdlib.h>
@@ -35,7 +34,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #else
 #include <unistd.h>
 #endif
-#define DIR_SLASH "\\"
 #endif
 #include <stdarg.h>
 #include "chips/c4proc.h"
