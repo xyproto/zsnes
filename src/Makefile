@@ -276,7 +276,6 @@ ASMFLAGS += -w-orphan-labels
 
 CFLAGS += -m32 -mmmx
 CFLAGS += $(CFGDEFS)
-CFLAGS += -I .
 
 CCFLAGS += -std=gnu99
 CCFLAGS += $(CFLAGS)
