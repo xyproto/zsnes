@@ -30,6 +30,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
   #endif
 #endif
 
+#include "../cfg.h"
 #include "ntsc.h"
 
 	/* Source image */
