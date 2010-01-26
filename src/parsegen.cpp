@@ -413,7 +413,7 @@ namespace variable
               { "unsigned char", "unsigned_char", 'u', false },
               { "unsigned short", "unsigned_short", 'u', false },
               { "unsigned int", "unsigned_int", 'u', false },
-              { "char", "char", 'd', true },
+              { "signed char", "signed_char", 'd', true },
               { "short", "short", 'd', true },
               { "int", "int", 'd', true }
              };
@@ -635,7 +635,7 @@ const char *convert_asm_type(const char *str, bool unsigned_var = true)
   }
   else if (!strcasecmp(str, "sb"))
   {
-    var_type = "char";
+    var_type = "signed char";
   }
   else
   {
@@ -1668,6 +1668,7 @@ void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_st
               if ((init_value_num < 0) && !strncmp(var_type, "unsigned ", strlen("unsigned ")))
               {
                 var_type += strlen("unsigned ");
+                if (strcmp(var_type, "char") == 0) var_type -= sizeof("signed ") - 1;
               }
 
               var_init << var_type << " " << varname;
