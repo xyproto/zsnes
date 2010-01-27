@@ -1,3 +1,5 @@
+#include <string.h>
+
 #include "../asm_call.h"
 #include "../c_vcache.h"
 #include "../cpu/regs.h"
@@ -12,6 +14,13 @@
 #include "newgfx.h"
 
 
+static void blanker16b(void)
+{
+	// calculate current video offset
+	memset(vidbuffer + curypos * 576 + 32, 0, 512);
+}
+
+
 void drawline16b(void)
 {
 	cwinenabm = winenabs;
@@ -21,7 +30,7 @@ void drawline16b(void)
 	if (maxbr < vidbright) maxbr = vidbright;
 	if (forceblnk != 0)
 	{
-		asm_call(blanker16b);
+		blanker16b();
 		return;
 	}
 	alreadydrawn = 0;

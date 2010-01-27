@@ -279,27 +279,6 @@ NEWSYM drawbackgrndmain16b
 .notalldrawnb
 .noback
     ret
-NEWSYM blanker16b
-    ; calculate current video offset
-    push ebx
-    push esi
-    xor ebx,ebx
-    mov bx,[curypos]
-    mov esi,ebx
-    shl esi,9
-    shl ebx,6
-    add esi,ebx
-    add esi,32
-    add esi,[vidbuffer]
-    mov bl,128
-.next
-    mov dword[esi],0
-    add esi,4
-    dec bl
-    jnz .next
-    pop esi
-    pop ebx
-    ret
 
 NEWSYM priority216b
     mov al,[winenabm]

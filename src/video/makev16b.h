@@ -3,7 +3,6 @@
 
 #include "../types.h"
 
-extern void blanker16b();
 extern void clearback16b();
 extern void drawbackgrndmain16b();
 extern void priority216b();
