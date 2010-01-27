@@ -24,10 +24,10 @@
 EXTSYM cursprloc,curypos,scrndis,scrnon,winon,winonsp,drawmode716extbg
 EXTSYM drawmode716extbg2,alreadydrawn,bg1cachloc,bg1tdabloc,bg1tdatloc
 EXTSYM bg1vbufloc,bg1xposloc,bg1yaddval,bgcoloradder,bgmode,bgtilesz,curbgnum
-EXTSYM drawn,makewindow,winbg1en,winenabs,mosaicon,winenabm,vidbuffer,bg3high2
-EXTSYM colormodedef,colormodeofs,curbgpr,curblank,currentobjptr,curvidoffset
-EXTSYM cwinenabm,drawline16t,forceblnk,makewindowsp,maxbr
-EXTSYM preparesprpr,procbackgrnd,scaddset,scaddtype,spritetablea,sprleftpr
+EXTSYM drawn,makewindow,winbg1en,winenabs,mosaicon,winenabm,vidbuffer
+EXTSYM colormodeofs,curbgpr,currentobjptr,curvidoffset
+EXTSYM cwinenabm,makewindowsp
+EXTSYM preparesprpr,scaddtype,spritetablea,sprleftpr
 EXTSYM bg1scrolx,bg1scroly,drawmode716b,mode7set,mosaicsz
 EXTSYM sprleftpr1,sprleftpr2,sprleftpr3,sprlefttot,sprprifix,interlval,extbgdone
 EXTSYM coladdb,coladdg,coladdr,pal16b,vesa2_bpos,V8Mode,doveg,pal16bcl,pal16bxcl
@@ -40,7 +40,6 @@ EXTSYM bg1objptr,bg1ptr,bg3ptr,bg3scrolx,bg3scroly,vidmemch4,vram,ofsmcptr
 EXTSYM ofsmady,ofsmadx,yposngom,flipyposngom,ofsmtptr,ofsmmptr,ofsmcyps,bgtxadd
 EXTSYM bg1ptrx,bg1ptry,a16x16xinc,a16x16yinc,bg1scrolx_m7,bg1scroly_m7,ngptrdat2
 EXTSYM OMBGTestVal,cachesingle4bng,m7starty,ofsmtptrs,ofsmcptr2,ofshvaladd
-EXTSYM bg3highst
 
 %include "video/vidmacro.mac"
 
@@ -302,174 +301,6 @@ NEWSYM blanker16b
     pop ebx
     ret
 
-NEWSYM drawline16b
-    mov al,[winenabs]
-    mov [cwinenabm],al
-
-    mov byte[bg3high2],0
-    cmp byte[bgmode],1
-    jne .nohigh
-    mov al,[bg3highst]
-    mov [bg3high2],al
-.nohigh
-    cmp byte[curblank],0
-    jne near nodrawline16b
-    mov al,[vidbright]
-    cmp al,[maxbr]
-    jbe .nochange
-    mov [maxbr],al
-.nochange
-    cmp byte[forceblnk],0
-    jne blanker16b
-    mov byte[alreadydrawn],0
-    push ebx
-    xor ebx,ebx
-    mov bl,[bgmode]
-    shl bl,2
-    add ebx,colormodedef
-    mov [colormodeofs],ebx
-    pop ebx
-
-    cmp word[scrnon],0117h
-    jne .notransph
-    cmp word[scaddset],8202h
-    jne .notransph
-    mov word[scrnon],0116h
-.notransph
-
-    test byte[scaddset],02h
-    jnz near drawline16t
-    cmp dword[coladdr],0
-    je .nocoladd
-    test byte[scaddtype],3Fh
-    jnz near drawline16t
-.nocoladd
-    cmp byte[bgmode],7
-    je near processmode716b
-    push esi
-    push edi
-    push ebx
-    push edx
-    push ebp
-    ; calculate current video offset
-    xor ebx,ebx
-    mov bx,[curypos]
-    mov esi,ebx
-    shl esi,9
-    shl ebx,6
-    add esi,ebx
-    add esi,32
-    add esi,[vidbuffer]
-    mov [curvidoffset],esi
-    ; do sprite windowing
-    call makewindowsp
-    ; set palette
-    call setpalette16b
-    ; clear back area w/ back color
-    call clearback16b
-    ; clear registers
-    xor eax,eax
-    xor ecx,ecx
-    ; get current sprite table
-    xor ebx,ebx
-    mov bl,[curypos]
-    shl ebx,9
-    add ebx,[spritetablea]
-    mov [currentobjptr],ebx
-    mov dword[cursprloc],sprleftpr
-    ; setup priorities
-    cmp byte[sprprifix],0
-    je .nosprprio
-    mov dword[cursprloc],sprlefttot
-    call preparesprpr
-.nosprprio
-; process backgrounds
-; do background 2
-    mov byte[curbgnum],02h
-    mov ebp,01h
-    call procbackgrnd
-; do background 1
-    mov byte[curbgnum],01h
-    mov ebp,00h
-    call procbackgrnd
-; do background 4
-    mov byte[curbgnum],08h
-    mov ebp,03h
-    call procbackgrnd
-; do background 3
-    mov byte[curbgnum],04h
-    mov ebp,02h
-    call procbackgrnd
-
-    cmp byte[bgmode],1
-    ja near priority216b
-    mov al,[winenabm]
-    mov [cwinenabm],al
-    mov byte[curbgpr],0h
-; do background 4
-    mov byte[curbgnum],08h
-    mov ebp,03h
-    call drawbackgrndmain16b
-; do background 3
-    mov byte[curbgnum],04h
-    mov ebp,02h
-    call drawbackgrndmain16b
-    mov ebp,0
-    call procspritesmain16b
-    mov byte[curbgpr],20h
-; do background 4
-    mov byte[curbgnum],08h
-    mov ebp,03h
-    call drawbackgrndmain16b
-; do background 3
-    cmp byte[bg3high2],1
-    je .bg3nothighb
-    mov byte[curbgnum],04h
-    mov ebp,02h
-    call drawbackgrndmain16b
-.bg3nothighb
-    mov ebp,1
-    call procspritesmain16b
-; do background 2
-    mov byte[curbgpr],0h
-    mov byte[curbgnum],02h
-    mov ebp,01h
-    call drawbackgrndmain16b
-; do background 1
-    mov byte[curbgnum],01h
-    mov ebp,00h
-    call drawbackgrndmain16b
-    mov ebp,2
-    call procspritesmain16b
-; do background 2
-    mov byte[curbgpr],20h
-    mov byte[curbgnum],02h
-    mov ebp,01h
-    call drawbackgrndmain16b
-; do background 1
-    mov byte[curbgnum],01h
-    mov ebp,00h
-    call drawbackgrndmain16b
-    mov ebp,3
-    call procspritesmain16b
-    cmp byte[bg3high2],1
-    jne .bg3highb
-; do background 3
-    mov byte[curbgpr],20h
-    mov byte[curbgnum],04h
-    mov ebp,02h
-    call drawbackgrndmain16b
-.bg3highb
-    pop ebp
-    pop edx
-    pop ebx
-    pop edi
-    pop esi
-    xor eax,eax
-    xor ecx,ecx
-NEWSYM nodrawline16b
-    ret
-
 NEWSYM priority216b
     mov al,[winenabm]
     mov [cwinenabm],al
@@ -499,14 +330,6 @@ NEWSYM priority216b
     call drawbackgrndmain16b
     mov ebp,3
     call procspritesmain16b
-    cmp byte[bg3high2],1
-    pop ebp
-    pop edx
-    pop ebx
-    pop edi
-    pop esi
-    xor eax,eax
-    xor ecx,ecx
     ret
 
 

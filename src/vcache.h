@@ -9,6 +9,7 @@ extern void processsprites();
 extern u1 lineleft;
 extern u1 res480;
 extern u1 res640;
+extern u1 sprprifix;
 extern u1 videotroub;
 extern u2 vesa2_bfull;       // red max (or bit*1Fh)
 extern u2 vesa2_btrcl;       // red transparency clear     (bit+4)

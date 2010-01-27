@@ -2531,7 +2531,7 @@ uint8_t SPCSkipXtraROM, disableeffects = 0;
 uint8_t cycpl = 0;          // cycles per scanline
 uint8_t cycphb = 0;         // cycles per hblank
 uint8_t intrset = 0;        // interrupt set
-uint16_t curypos = 0;       // current y position
+uint16_t curypos = 0;
 uint16_t stackand = 0x01FF; // value to and stack to keep it from going to the wrong area
 uint16_t stackor = 0x0100;  // value to or stack to keep it from going to the wrong area
 

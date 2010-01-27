@@ -37,7 +37,7 @@ NEWSYM NMIEnab,   db 1             ; controlled in e65816 loop.  Sets to 81h
 NEWSYM VIRQLoc,   dw 0             ; VIRQ Y location
 NEWSYM vidbright, db 0
 NEWSYM previdbr,  db 0             ; previous screen brightness
-NEWSYM forceblnk, db 80h           ; force blanking on/off ($80=on)
+NEWSYM forceblnk, db 80h
 NEWSYM objptr,    dd 0             ; pointer to object data in VRAM
 NEWSYM objptrn,   dd 0             ; pointer2 to object data in VRAM
 NEWSYM objsize1,  db 1             ; 1 = 8dot, 4=16 dot, 16=32 dot, 64=64dot
@@ -50,7 +50,7 @@ NEWSYM oamaddrt,  dw 0             ; oam address
 NEWSYM oamaddrs,  dw 0             ; oam address at beginning of vblank
 NEWSYM objhipr,   db 0             ; highest priority object #
 NEWSYM bgmode,    db 0
-NEWSYM bg3highst, db 0             ; is 1 if background 3 has the highest priority
+NEWSYM bg3highst, db 0
 NEWSYM bgtilesz,  db 0             ; 0 = 8x8, 1 = 16x16, bit 0=bg1,bit1=bg2,etc
 NEWSYM mosaicon,  db 0             ; mosaic on, bit 0=bg1,bit1=bg2, etc
 NEWSYM mosaicsz,  db 0             ; mosaic size in pixels
@@ -93,7 +93,7 @@ NEWSYM vramread,  db 0             ; previous character for vram read
 NEWSYM vramaddr,  dd 0             ; vram address
 NEWSYM cgaddr,    dw 0             ; cg (palette) address
 NEWSYM cgmod,     db 0
-NEWSYM scrnon,    dw 0             ; main & sub screen on
+NEWSYM scrnon,    dw 0
 NEWSYM scrndist,  db 0             ; which background is disabled
 NEWSYM resolutn,  dw 224           ; screen resolution
 NEWSYM multa,     db 0             ; multiplier A
@@ -117,8 +117,8 @@ NEWSYM winobjen,  db 0             ; Win1 on (IN/OUT) or Win2 on (IN/OUT) on spr
 NEWSYM wincolen,  db 0             ; Win1 on (IN/OUT) or Win2 on (IN/OUT) on backarea
 NEWSYM winlogica, db 0             ; Window logic type for BG1 to 4
 NEWSYM winlogicb, db 0             ; Window logic type for Sprites and Backarea
-NEWSYM winenabm,  db 0             ; Window logic enable for main screen
-NEWSYM winenabs,  db 0             ; Window logic enable for sub screen
+NEWSYM winenabm,  db 0
+NEWSYM winenabs,  db 0
 NEWSYM mode7set,  db 0             ; mode 7 settings
 NEWSYM mode7A,    dw 0             ; A value for Mode 7
 NEWSYM mode7B,    dw 0             ; B value for Mode 7
@@ -144,8 +144,8 @@ NEWSYM hdmatype,  db 0             ; if first time executing hdma or not
 NEWSYM coladdr,   db 0
 NEWSYM coladdg,   db 0
 NEWSYM coladdb,   db 0
-NEWSYM colnull,   db 0             ; keep this 0 (when accessing colors by dword)
-NEWSYM scaddset,  db 0             ; screen/fixed color addition settings
+NEWSYM colnull,   db 0
+NEWSYM scaddset,  db 0
 NEWSYM scaddtype, db 0
 NEWSYM Voice0Disabl2, db 1         ; Disable Voice 0
 NEWSYM Voice1Disabl2, db 1         ; Disable Voice 1

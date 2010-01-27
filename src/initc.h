@@ -24,6 +24,7 @@ extern char CSStatus4[41];
 extern uint8_t  snesinputdefault1;
 extern uint8_t  snesinputdefault2;
 extern uint8_t  disableeffects;
+extern uint16_t curypos;      // current y position
 extern uint8_t  xp;
 extern uint8_t  xe;
 extern uint32_t Curtableaddr; // Current table address

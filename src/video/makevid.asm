@@ -1629,10 +1629,13 @@ NEWSYM nodrawline
 .16b
 %endif
     cmp byte[ForceNewGfxOff],0
-    jne drawline16b
+    jne .drawline16b
     cmp byte[newengen],0
-    je drawline16b
+    je .drawline16b
     jmp newengine16b
+.drawline16b
+		ccallv drawline16b
+		ret
 
 %ifdef __MSDOS__
 NEWSYM priority2
@@ -2655,7 +2658,7 @@ NEWSYM proc16x8
 
 SECTION .bss
 NEWSYM drawn, resb 1
-NEWSYM curbgpr, resb 1    ; 00h = low priority, 20h = high priority
+NEWSYM curbgpr, resb 1
 SECTION .text
 
 %macro drawpixel8b8x8 3

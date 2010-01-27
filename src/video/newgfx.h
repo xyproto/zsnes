@@ -3,6 +3,8 @@
 
 #include "../types.h"
 
+extern void preparesprpr();
+
 extern u1 Mode7HiRes;     // XXX always 0
 extern u4 bgcmsung;
 extern u4 modeused[2];
