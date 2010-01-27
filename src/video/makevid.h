@@ -14,6 +14,7 @@ extern u1  cwinenabm;
 extern u1  hirestiledat[256];
 extern u1  maxbr;
 extern u1  res512switch;
+extern u1  winonsp;
 extern u1* currentobjptr;
 extern u1* cursprloc;
 extern u1* curvidoffset;

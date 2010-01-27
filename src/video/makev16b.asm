@@ -40,6 +40,7 @@ EXTSYM bg1objptr,bg1ptr,bg3ptr,bg3scrolx,bg3scroly,vidmemch4,vram,ofsmcptr
 EXTSYM ofsmady,ofsmadx,yposngom,flipyposngom,ofsmtptr,ofsmmptr,ofsmcyps,bgtxadd
 EXTSYM bg1ptrx,bg1ptry,a16x16xinc,a16x16yinc,bg1scrolx_m7,bg1scroly_m7,ngptrdat2
 EXTSYM OMBGTestVal,cachesingle4bng,m7starty,ofsmtptrs,ofsmcptr2,ofshvaladd
+EXTSYM procspritesmain16b
 
 %include "video/vidmacro.mac"
 
@@ -109,27 +110,6 @@ NEWSYM procspritessub16b
     jz .nosprites
     test byte[scrnon],10h
     jnz .nosprites
-    cmp byte[winonsp],0FFh
-    je .nosprites
-    xor ebx,ebx
-    mov bl,[curypos]
-    add ebx,[cursprloc]
-    mov cl,[ebx]
-    cmp byte[sprprifix],0
-    jne .sprprio
-    add dword[cursprloc],256
-.sprprio
-    cmp cl,0
-    je .nosprites
-    call drawsprites16b
-.nosprites
-    ret
-
-NEWSYM procspritesmain16b
-    test byte[scrndis],10h
-    jnz .nosprites
-    test byte[scrnon],10h
-    jz .nosprites
     cmp byte[winonsp],0FFh
     je .nosprites
     xor ebx,ebx
@@ -288,27 +268,23 @@ NEWSYM priority216b
     mov byte[curbgnum],02h
     mov ebp,01h
     call drawbackgrndmain16b
-    mov ebp,0
-    call procspritesmain16b
+    ccallv procspritesmain16b, 0
 ; do background 1
     mov byte[curbgnum],01h
     mov ebp,00h
     call drawbackgrndmain16b
-    mov ebp,1
-    call procspritesmain16b
+    ccallv procspritesmain16b, 1
 ; do background 2
     mov byte[curbgpr],20h
     mov byte[curbgnum],02h
     mov ebp,01h
     call drawbackgrndmain16b
-    mov ebp,2
-    call procspritesmain16b
+    ccallv procspritesmain16b, 2
 ; do background 1
     mov byte[curbgnum],01h
     mov ebp,00h
     call drawbackgrndmain16b
-    mov ebp,3
-    call procspritesmain16b
+    ccallv procspritesmain16b, 3
     ret
 
 

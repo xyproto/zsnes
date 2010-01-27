@@ -21,6 +21,24 @@ static void blanker16b(void)
 }
 
 
+void procspritesmain16b(u4 const ebp)
+{
+	if (scrndis  & 0x10)  return;
+	if (!(scrnon & 0x10)) return;
+	if (winonsp == 0xFF)  return;
+	u1 const cl = cursprloc[curypos & 0x00FF];
+	if (sprprifix == 0) cursprloc += 256;
+	if (cl == 0) return;
+	u4 eax;
+	u4 edx;
+	u4 ebx;
+	u4 esi;
+	u4 edi;
+	u1 cl_ = cl;
+	asm volatile("push %%ebp;  mov %7, %%ebp;  call %P6;  pop %%ebp" : "=a" (eax), "+c" (cl_), "=d" (edx), "=b" (ebx), "=S" (esi), "=D" (edi) : "X" (drawsprites16b), "nr" (ebp) : "cc", "memory");
+}
+
+
 void drawline16b(void)
 {
 	cwinenabm = winenabs;
@@ -96,7 +114,7 @@ void drawline16b(void)
 	// do background 3
 	curbgnum = 0x04;
 	asm volatile("push %%ebp;  mov %1, %%ebp;  call %P0;  pop %%ebp" :: "X" (drawbackgrndmain16b), "n" (0x02) : "cc", "memory", "eax", "ecx", "edx", "ebx", "esi", "edi");
-	asm volatile("push %%ebp;  mov %1, %%ebp;  call %P0;  pop %%ebp" :: "X" (procspritesmain16b),  "n" (0x00) : "cc", "memory", "eax", "ecx", "edx", "ebx", "esi", "edi");
+	procspritesmain16b(0);
 	curbgpr = 0x20;
 	// do background 4
 	curbgnum = 0x08;
@@ -107,7 +125,7 @@ void drawline16b(void)
 		curbgnum = 0x04;
 		asm volatile("push %%ebp;  mov %1, %%ebp;  call %P0;  pop %%ebp" :: "X" (drawbackgrndmain16b), "n" (0x02) : "cc", "memory", "eax", "ecx", "edx", "ebx", "esi", "edi");
 	}
-	asm volatile("push %%ebp;  mov %1, %%ebp;  call %P0;  pop %%ebp" :: "X" (procspritesmain16b),  "n" (0x01) : "cc", "memory", "eax", "ecx", "edx", "ebx", "esi", "edi");
+	procspritesmain16b(1);
 	// do background 2
 	curbgpr  = 0x00;
 	curbgnum = 0x02;
@@ -115,7 +133,7 @@ void drawline16b(void)
 	// do background 1
 	curbgnum = 0x01;
 	asm volatile("push %%ebp;  mov %1, %%ebp;  call %P0;  pop %%ebp" :: "X" (drawbackgrndmain16b), "n" (0x00) : "cc", "memory", "eax", "ecx", "edx", "ebx", "esi", "edi");
-	asm volatile("push %%ebp;  mov %1, %%ebp;  call %P0;  pop %%ebp" :: "X" (procspritesmain16b),  "n" (0x02) : "cc", "memory", "eax", "ecx", "edx", "ebx", "esi", "edi");
+	procspritesmain16b(2);
 	// do background 2
 	curbgpr  = 0x20;
 	curbgnum = 0x02;
@@ -123,7 +141,7 @@ void drawline16b(void)
 	// do background 1
 	curbgnum = 0x01;
 	asm volatile("push %%ebp;  mov %1, %%ebp;  call %P0;  pop %%ebp" :: "X" (drawbackgrndmain16b), "n" (0x00) : "cc", "memory", "eax", "ecx", "edx", "ebx", "esi", "edi");
-	asm volatile("push %%ebp;  mov %1, %%ebp;  call %P0;  pop %%ebp" :: "X" (procspritesmain16b),  "n" (0x03) : "cc", "memory", "eax", "ecx", "edx", "ebx", "esi", "edi");
+	procspritesmain16b(3);
 	if (bg3high2 == 1)
 	{ // do background 3
 		curbgpr  = 0x20;
