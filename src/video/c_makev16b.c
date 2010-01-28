@@ -205,26 +205,65 @@ void procspritesmain16b(u4 const ebp)
 }
 
 
+static void drawbackgrndmain16b(Layer const layer)
+{
+	if (colormodeofs[layer] == 0) return;
+	if (!(scrnon     & curbgnum)) return;
+	if (alreadydrawn & curbgnum)  return;
+	if (scrndis      & curbgnum)  return;
+	winon = 0;
+	if (winenabm & curbgnum)
+	{
+		u1 al = winen[layer];
+		u4 ecx;
+		u4 edx;
+		u4 ebx;
+		u4 edi;
+		asm volatile("push %%ebp;  mov %6, %%ebp;  call %P5;  pop %%ebp" : "+a" (al), "=c" (ecx), "=d" (edx), "=b" (ebx), "=D" (edi) : "X" (makewindow), "r" (layer) : "cc", "memory");
+		if (winon == 0xFF) return;
+	}
+	curmosaicsz  = mosaicon & curbgnum ? mosaicsz + 1 : 1;
+	bgcoloradder = bgmode == 0 ? layer * 0x20 : 0;
+	u4 esi = bg1vbufloc[layer];
+	u4 edi = bg1tdatloc[layer];
+	u4 edx = bg1tdabloc[layer];
+	u4 ebx = bg1cachloc[layer];
+	u4 eax = bg1xposloc[layer];
+	u4 ecx = bg1yaddval[layer];
+	if (bgtilesz & curbgnum)
+	{
+		asm volatile("push %%ebp;  call %P6;  pop %%ebp" : "+a" (eax), "+c" (ecx), "+d" (edx), "+b" (ebx), "+S" (esi), "+D" (edi) : "X" (draw16x1616b) : "cc", "memory");
+	}
+	else
+	{
+		static u4 ebp; // XXX HACK: We are out of registers
+		ebp = layer;
+		asm volatile("push %%ebp;  mov %7, %%ebp;  call %P6;  pop %%ebp" : "+a" (eax), "+c" (ecx), "+d" (edx), "+b" (ebx), "+S" (esi), "+D" (edi) : "X" (draw8x816b), "m" (ebp) : "cc", "memory");
+	}
+	if (drawn == 33) alreadydrawn |= curbgnum;
+}
+
+
 static void priority216b(void)
 {
 	cwinenabm = winenabm;
 	// do background 2
 	curbgpr  = 0x00;
 	curbgnum = 0x02;
-	asm volatile("push %%ebp;  mov %1, %%ebp;  call %P0;  pop %%ebp" :: "X" (drawbackgrndmain16b), "n" (0x01) : "cc", "memory", "eax", "ecx", "edx", "ebx", "esi", "edi");
+	drawbackgrndmain16b(LAYER_BG2);
 	procspritesmain16b(0);
 	// do background 1
 	curbgnum = 0x01;
-	asm volatile("push %%ebp;  mov %1, %%ebp;  call %P0;  pop %%ebp" :: "X" (drawbackgrndmain16b), "n" (0x00) : "cc", "memory", "eax", "ecx", "edx", "ebx", "esi", "edi");
+	drawbackgrndmain16b(LAYER_BG1);
 	procspritesmain16b(1);
 	// do background 2
 	curbgpr  = 0x20;
 	curbgnum = 0x02;
-	asm volatile("push %%ebp;  mov %1, %%ebp;  call %P0;  pop %%ebp" :: "X" (drawbackgrndmain16b), "n" (0x01) : "cc", "memory", "eax", "ecx", "edx", "ebx", "esi", "edi");
+	drawbackgrndmain16b(LAYER_BG2);
 	procspritesmain16b(2);
 	// do background 1
 	curbgnum = 0x01;
-	asm volatile("push %%ebp;  mov %1, %%ebp;  call %P0;  pop %%ebp" :: "X" (drawbackgrndmain16b), "n" (0x00) : "cc", "memory", "eax", "ecx", "edx", "ebx", "esi", "edi");
+	drawbackgrndmain16b(LAYER_BG1);
 	procspritesmain16b(3);
 }
 
@@ -300,42 +339,42 @@ void drawline16b(void)
 	curbgpr   = 0x00;
 	// do background 4
 	curbgnum = 0x08;
-	asm volatile("push %%ebp;  mov %1, %%ebp;  call %P0;  pop %%ebp" :: "X" (drawbackgrndmain16b), "n" (0x03) : "cc", "memory", "eax", "ecx", "edx", "ebx", "esi", "edi");
+	drawbackgrndmain16b(LAYER_BG4);
 	// do background 3
 	curbgnum = 0x04;
-	asm volatile("push %%ebp;  mov %1, %%ebp;  call %P0;  pop %%ebp" :: "X" (drawbackgrndmain16b), "n" (0x02) : "cc", "memory", "eax", "ecx", "edx", "ebx", "esi", "edi");
+	drawbackgrndmain16b(LAYER_BG3);
 	procspritesmain16b(0);
 	curbgpr = 0x20;
 	// do background 4
 	curbgnum = 0x08;
-	asm volatile("push %%ebp;  mov %1, %%ebp;  call %P0;  pop %%ebp" :: "X" (drawbackgrndmain16b), "n" (0x03) : "cc", "memory", "eax", "ecx", "edx", "ebx", "esi", "edi");
+	drawbackgrndmain16b(LAYER_BG4);
 	// do background 3
 	if (bg3high2 != 1)
 	{
 		curbgnum = 0x04;
-		asm volatile("push %%ebp;  mov %1, %%ebp;  call %P0;  pop %%ebp" :: "X" (drawbackgrndmain16b), "n" (0x02) : "cc", "memory", "eax", "ecx", "edx", "ebx", "esi", "edi");
+		drawbackgrndmain16b(LAYER_BG3);
 	}
 	procspritesmain16b(1);
 	// do background 2
 	curbgpr  = 0x00;
 	curbgnum = 0x02;
-	asm volatile("push %%ebp;  mov %1, %%ebp;  call %P0;  pop %%ebp" :: "X" (drawbackgrndmain16b), "n" (0x01) : "cc", "memory", "eax", "ecx", "edx", "ebx", "esi", "edi");
+	drawbackgrndmain16b(LAYER_BG2);
 	// do background 1
 	curbgnum = 0x01;
-	asm volatile("push %%ebp;  mov %1, %%ebp;  call %P0;  pop %%ebp" :: "X" (drawbackgrndmain16b), "n" (0x00) : "cc", "memory", "eax", "ecx", "edx", "ebx", "esi", "edi");
+	drawbackgrndmain16b(LAYER_BG1);
 	procspritesmain16b(2);
 	// do background 2
 	curbgpr  = 0x20;
 	curbgnum = 0x02;
-	asm volatile("push %%ebp;  mov %1, %%ebp;  call %P0;  pop %%ebp" :: "X" (drawbackgrndmain16b), "n" (0x01) : "cc", "memory", "eax", "ecx", "edx", "ebx", "esi", "edi");
+	drawbackgrndmain16b(LAYER_BG2);
 	// do background 1
 	curbgnum = 0x01;
-	asm volatile("push %%ebp;  mov %1, %%ebp;  call %P0;  pop %%ebp" :: "X" (drawbackgrndmain16b), "n" (0x00) : "cc", "memory", "eax", "ecx", "edx", "ebx", "esi", "edi");
+	drawbackgrndmain16b(LAYER_BG1);
 	procspritesmain16b(3);
 	if (bg3high2 == 1)
 	{ // do background 3
 		curbgpr  = 0x20;
 		curbgnum = 0x04;
-		asm volatile("push %%ebp;  mov %1, %%ebp;  call %P0;  pop %%ebp" :: "X" (drawbackgrndmain16b), "n" (0x02) : "cc", "memory", "eax", "ecx", "edx", "ebx", "esi", "edi");
+		drawbackgrndmain16b(LAYER_BG3);
 	}
 }

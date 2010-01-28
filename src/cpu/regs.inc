@@ -51,9 +51,9 @@ NEWSYM oamaddrs,  dw 0             ; oam address at beginning of vblank
 NEWSYM objhipr,   db 0             ; highest priority object #
 NEWSYM bgmode,    db 0
 NEWSYM bg3highst, db 0
-NEWSYM bgtilesz,  db 0             ; 0 = 8x8, 1 = 16x16, bit 0=bg1,bit1=bg2,etc
-NEWSYM mosaicon,  db 0             ; mosaic on, bit 0=bg1,bit1=bg2, etc
-NEWSYM mosaicsz,  db 0             ; mosaic size in pixels
+NEWSYM bgtilesz,  db 0
+NEWSYM mosaicon,  db 0
+NEWSYM mosaicsz,  db 0
 NEWSYM bg1ptr,    dw 0
 NEWSYM bg2ptr,    dw 0
 NEWSYM bg3ptr,    dw 0
@@ -109,12 +109,13 @@ NEWSYM winl1,     db 0             ; window 1 left position
 NEWSYM winr1,     db 0             ; window 1 right position
 NEWSYM winl2,     db 0             ; window 2 left position
 NEWSYM winr2,     db 0             ; window 2 right position
-NEWSYM winbg1en,  db 0             ; Win1 on (IN/OUT) or Win2 on (IN/OUT) on BG1
-NEWSYM winbg2en,  db 0             ; Win1 on (IN/OUT) or Win2 on (IN/OUT) on BG2
-NEWSYM winbg3en,  db 0             ; Win1 on (IN/OUT) or Win2 on (IN/OUT) on BG3
-NEWSYM winbg4en,  db 0             ; Win1 on (IN/OUT) or Win2 on (IN/OUT) on BG4
-NEWSYM winobjen,  db 0             ; Win1 on (IN/OUT) or Win2 on (IN/OUT) on sprites
-NEWSYM wincolen,  db 0             ; Win1 on (IN/OUT) or Win2 on (IN/OUT) on backarea
+NEWSYM winen
+NEWSYM winbg1en,  db 0
+NEWSYM winbg2en,  db 0
+NEWSYM winbg3en,  db 0
+NEWSYM winbg4en,  db 0
+NEWSYM winobjen,  db 0
+NEWSYM wincolen,  db 0
 NEWSYM winlogica, db 0             ; Window logic type for BG1 to 4
 NEWSYM winlogicb, db 0             ; Window logic type for Sprites and Backarea
 NEWSYM winenabm,  db 0
