@@ -22,6 +22,31 @@ static void blanker16b(void)
 }
 
 
+// Set palette 16bit
+static void setpalall(void)
+{
+	if (V8Mode == 1) doveg();
+	colleft16b = 0;
+	u4 i = 0;
+	do
+	{
+		u2 const dx = cgram[i];
+		prevpal[i] = dx;
+		u2 const r = (dx       & 0x1F) * vidbright / 15 << vesa2_rpos;
+		u2 const g = (dx >>  5 & 0x1F) * vidbright / 15 << vesa2_gpos;
+		u2 const b = (dx >> 10 & 0x1F) * vidbright / 15 << vesa2_bpos;
+		u2       c = r + g + b;
+		if (c == 0 && vidbright != 0) c |= 0x0020;
+		pal16b[i]    = pal16b[i]    & 0xFFFF0000 | c;
+		pal16bcl[i]  = pal16bcl[i]  & 0xFFFF0000 | c            & vesa2_clbit;
+		pal16bxcl[i] = pal16bxcl[i] & 0xFFFF0000 | (c ^ 0xFFFF) & vesa2_clbit;
+	}
+	while (++i, ++colleft16b != 0);
+	prevbright = vidbright;
+	if (V8Mode == 1) dovegrest();
+}
+
+
 void setpalette16b(void)
 {
 	if (gammalevel16b != 0)
@@ -32,7 +57,7 @@ void setpalette16b(void)
 	if (V8Mode == 1) doveg();
 	if (vidbright != prevbright)
 	{
-		asm_call(setpalall);
+		setpalall();
 		return;
 	}
 	if (cgmod != 0)

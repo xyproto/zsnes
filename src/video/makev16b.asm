@@ -30,9 +30,9 @@ EXTSYM cwinenabm,makewindowsp
 EXTSYM preparesprpr,spritetablea,sprleftpr
 EXTSYM bg1scrolx,bg1scroly,drawmode716b,mode7set,mosaicsz
 EXTSYM sprleftpr1,sprleftpr2,sprleftpr3,sprlefttot,sprprifix,interlval,extbgdone
-EXTSYM pal16b,vesa2_bpos,V8Mode,doveg,pal16bcl,pal16bxcl
+EXTSYM pal16b,vesa2_bpos,pal16bcl,pal16bxcl
 EXTSYM prevbright,prevpal,vesa2_clbit,vesa2_gpos,vesa2_rpos,vidbright,cgmod
-EXTSYM cgram,gammalevel16b,dovegrest,winspdata,csprbit,csprprlft,sprclprio
+EXTSYM cgram,gammalevel16b,winspdata,csprbit,csprprlft,sprclprio
 EXTSYM sprsingle,sprpriodata,bgofwptr,bgsubby,bshifter,curmosaicsz,cwinptr
 EXTSYM osm2dis,temp,tempcach,temptile,winptrref,xtravbuf,yadder,yrevadder
 EXTSYM vcache2b,vcache4b,vcache8b,hirestiledat,res512switch,numwin,windowdata
@@ -501,76 +501,6 @@ NEWSYM processmode716b
     pop esi
     xor eax,eax
     xor ecx,ecx
-    ret
-
-;*******************************************************
-; Set palette 16bit
-;*******************************************************
-NEWSYM setpalall
-    cmp byte[V8Mode],1
-    jne .noveg
-    ccallv doveg
-.noveg
-    xor esi,esi
-    mov byte[colleft16b],0
-.loopa
-    mov dx,[cgram+esi]
-    mov [prevpal+esi],dx
-    mov ax,dx
-    and al,01Fh
-    mov cl,[vidbright]
-    mul cl
-    mov cl,15
-    div cl
-    xor ah,ah
-    mov cl,[vesa2_rpos]
-    xor bx,bx
-    shl ax,cl
-    add bx,ax
-    mov ax,dx
-    shr ax,5
-    and al,01Fh
-    mov cl,[vidbright]
-    mul cl
-    mov cl,15
-    div cl
-    xor ah,ah
-    mov cl,[vesa2_gpos]
-    shl ax,cl
-    add bx,ax
-    mov ax,dx
-    shr ax,10
-    and al,01Fh
-    mov cl,[vidbright]
-    mul cl
-    mov cl,15
-    div cl
-    xor ah,ah
-    mov cl,[vesa2_bpos]
-    shl ax,cl
-    add bx,ax
-    cmp bx,0
-    jne .col0
-    cmp byte[vidbright],0
-    je .col0
-    or bx,0000000000100000b
-.col0
-    mov ax,bx
-    mov [pal16b+esi*2],bx
-    and bx,[vesa2_clbit]
-    mov [pal16bcl+esi*2],bx
-    xor ax,0FFFFh
-    and ax,[vesa2_clbit]
-    mov [pal16bxcl+esi*2],ax
-    add esi,2
-    inc byte[colleft16b]
-    jnz near .loopa
-    mov al,[vidbright]
-    mov [prevbright],al
-    cmp byte[V8Mode],1
-    jne .noveg2
-    ccallv dovegrest
-.noveg2
     ret
 
 SECTION .bss
