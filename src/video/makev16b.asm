@@ -31,7 +31,7 @@ EXTSYM preparesprpr,spritetablea,sprleftpr
 EXTSYM bg1scrolx,bg1scroly,drawmode716b,mode7set,mosaicsz
 EXTSYM sprleftpr1,sprleftpr2,sprleftpr3,sprlefttot,sprprifix,interlval,extbgdone
 EXTSYM pal16b,vesa2_bpos,pal16bcl,pal16bxcl
-EXTSYM prevbright,prevpal,vesa2_clbit,vesa2_gpos,vesa2_rpos,vidbright,cgmod
+EXTSYM prevbright,prevpal,vesa2_clbit,vesa2_gpos,vesa2_rpos,vidbright
 EXTSYM cgram,gammalevel16b,winspdata,csprbit,csprprlft,sprclprio
 EXTSYM sprsingle,sprpriodata,bgofwptr,bgsubby,bshifter,curmosaicsz,cwinptr
 EXTSYM osm2dis,temp,tempcach,temptile,winptrref,xtravbuf,yadder,yrevadder
@@ -579,88 +579,6 @@ NEWSYM setpalallgamma
     jnz near .loopa
     mov al,[vidbright]
     mov [prevbright],al
-    ret
-
-NEWSYM setpalette16bgamma
-    mov al,[vidbright]
-    cmp al,[prevbright]
-    jne near setpalallgamma
-    cmp byte[cgmod],0
-    je near .skipall
-    mov byte[cgmod],0
-    xor esi,esi
-    mov byte[colleft16b],0
-.loopa
-    mov dx,[cgram+esi]
-    cmp [prevpal+esi],dx
-    je near .skipa
-    mov [prevpal+esi],dx
-    mov ax,dx
-    and al,01Fh
-    add al,[gammalevel16b]
-    cmp al,31
-    jbe .norb
-    mov al,31
-.norb
-    mov cl,[vidbright]
-    mul cl
-    mov cl,15
-    div cl
-    xor ah,ah
-    mov cl,[vesa2_rpos]
-    xor bx,bx
-    shl ax,cl
-    add bx,ax
-    mov ax,dx
-    shr ax,5
-    and al,01Fh
-    add al,[gammalevel16b]
-    cmp al,31
-    jbe .norr
-    mov al,31
-.norr
-    mov cl,[vidbright]
-    mul cl
-    mov cl,15
-    div cl
-    xor ah,ah
-    mov cl,[vesa2_gpos]
-    shl ax,cl
-    add bx,ax
-    mov ax,dx
-    shr ax,10
-    and al,01Fh
-    add al,[gammalevel16b]
-    cmp al,31
-    jbe .norg
-    mov al,31
-.norg
-    mov cl,[vidbright]
-    mul cl
-    mov cl,15
-    div cl
-    xor ah,ah
-    mov cl,[vesa2_bpos]
-    shl ax,cl
-    add bx,ax
-    cmp bx,0
-    jne .col0
-    cmp byte[vidbright],0
-    je .col0
-    or bx,0000000000100000b
-.col0
-    mov [pal16b+esi*2],bx
-    mov ax,bx
-    and bx,[vesa2_clbit]
-    mov [pal16bcl+esi*2],bx
-    xor ax,0FFFFh
-    and ax,[vesa2_clbit]
-    mov [pal16bxcl+esi*2],ax
-.skipa
-    add esi,2
-    inc byte[colleft16b]
-    jnz near .loopa
-.skipall
     ret
 
 ;*******************************************************
