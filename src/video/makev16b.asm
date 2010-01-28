@@ -39,7 +39,7 @@ EXTSYM bg1objptr,bg1ptr,bg3ptr,bg3scrolx,bg3scroly,vidmemch4,vram,ofsmcptr
 EXTSYM ofsmady,ofsmadx,yposngom,flipyposngom,ofsmtptr,ofsmmptr,ofsmcyps,bgtxadd
 EXTSYM bg1ptrx,bg1ptry,a16x16xinc,a16x16yinc,bg1scrolx_m7,bg1scroly_m7,ngptrdat2
 EXTSYM OMBGTestVal,cachesingle4bng,m7starty,ofsmtptrs,ofsmcptr2,ofshvaladd
-EXTSYM procspritesmain16b,clearback16b,setpalette16b
+EXTSYM clearback16b,setpalette16b
 
 %include "video/vidmacro.mac"
 
@@ -257,33 +257,6 @@ NEWSYM drawbackgrndmain16b
     or [alreadydrawn],al
 .notalldrawnb
 .noback
-    ret
-
-NEWSYM priority216b
-    mov al,[winenabm]
-    mov [cwinenabm],al
-; do background 2
-    mov byte[curbgpr],0h
-    mov byte[curbgnum],02h
-    mov ebp,01h
-    call drawbackgrndmain16b
-    ccallv procspritesmain16b, 0
-; do background 1
-    mov byte[curbgnum],01h
-    mov ebp,00h
-    call drawbackgrndmain16b
-    ccallv procspritesmain16b, 1
-; do background 2
-    mov byte[curbgpr],20h
-    mov byte[curbgnum],02h
-    mov ebp,01h
-    call drawbackgrndmain16b
-    ccallv procspritesmain16b, 2
-; do background 1
-    mov byte[curbgnum],01h
-    mov ebp,00h
-    call drawbackgrndmain16b
-    ccallv procspritesmain16b, 3
     ret
 
 

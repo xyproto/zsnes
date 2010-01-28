@@ -205,6 +205,30 @@ void procspritesmain16b(u4 const ebp)
 }
 
 
+static void priority216b(void)
+{
+	cwinenabm = winenabm;
+	// do background 2
+	curbgpr  = 0x00;
+	curbgnum = 0x02;
+	asm volatile("push %%ebp;  mov %1, %%ebp;  call %P0;  pop %%ebp" :: "X" (drawbackgrndmain16b), "n" (0x01) : "cc", "memory", "eax", "ecx", "edx", "ebx", "esi", "edi");
+	procspritesmain16b(0);
+	// do background 1
+	curbgnum = 0x01;
+	asm volatile("push %%ebp;  mov %1, %%ebp;  call %P0;  pop %%ebp" :: "X" (drawbackgrndmain16b), "n" (0x00) : "cc", "memory", "eax", "ecx", "edx", "ebx", "esi", "edi");
+	procspritesmain16b(1);
+	// do background 2
+	curbgpr  = 0x20;
+	curbgnum = 0x02;
+	asm volatile("push %%ebp;  mov %1, %%ebp;  call %P0;  pop %%ebp" :: "X" (drawbackgrndmain16b), "n" (0x01) : "cc", "memory", "eax", "ecx", "edx", "ebx", "esi", "edi");
+	procspritesmain16b(2);
+	// do background 1
+	curbgnum = 0x01;
+	asm volatile("push %%ebp;  mov %1, %%ebp;  call %P0;  pop %%ebp" :: "X" (drawbackgrndmain16b), "n" (0x00) : "cc", "memory", "eax", "ecx", "edx", "ebx", "esi", "edi");
+	procspritesmain16b(3);
+}
+
+
 void drawline16b(void)
 {
 	cwinenabm = winenabs;
@@ -269,7 +293,7 @@ void drawline16b(void)
 
 	if (bgmode > 1)
 	{
-		asm_call(priority216b);
+		priority216b();
 		return;
 	}
 	cwinenabm = winenabm;
