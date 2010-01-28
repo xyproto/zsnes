@@ -187,6 +187,65 @@ void clearback16b(void)
 }
 
 
+// Processes & Draws 4-bit sprites
+void drawsprites16b(u1 cl, u4 const ebp)
+{
+	if (sprprifix == 1)
+	{
+		u4 eax;
+		u4 edx;
+		u4 ebx;
+		u4 esi;
+		u4 edi;
+		asm volatile("push %%ebp;  mov %7, %%ebp;  call %P6;  pop %%ebp" : "=a" (eax), "+c" (cl), "=d" (edx), "=b" (ebx), "=S" (esi), "=D" (edi) : "X" (drawsprites16bprio), "nr" (ebp) : "cc", "memory");
+	}
+	else if (cwinenabm & 0x10 && winonsp != 0)
+	{
+		u4 eax;
+		u4 edx;
+		u4 ebx;
+		u4 esi;
+		u4 edi;
+		asm volatile("call %P6" : "=a" (eax), "+c" (cl), "=d" (edx), "=b" (ebx), "=S" (esi), "=D" (edi) : "X" (drawsprites16bwinon) : "cc", "memory");
+	}
+	else
+	{
+		u1*       esi = currentobjptr; // XXX struct?
+		u2* const dst = (u2*)curvidoffset;
+		do
+		{
+			u2  const ebx = *(u2*)esi & 0x00007FFF;
+			u1  const ch  = esi[6];
+			u1* const src = *(u1**)(esi + 2); // XXX unaligned?
+			if (esi[7] & 0x20)
+			{ // flip x
+				if (src[7] & 0x0F) dst[ebx - 8] = pal16b[(src[7] + ch) & 0xFF];
+				if (src[6] & 0x0F) dst[ebx - 7] = pal16b[(src[6] + ch) & 0xFF];
+				if (src[5] & 0x0F) dst[ebx - 6] = pal16b[(src[5] + ch) & 0xFF];
+				if (src[4] & 0x0F) dst[ebx - 5] = pal16b[(src[4] + ch) & 0xFF];
+				if (src[3] & 0x0F) dst[ebx - 4] = pal16b[(src[3] + ch) & 0xFF];
+				if (src[2] & 0x0F) dst[ebx - 3] = pal16b[(src[2] + ch) & 0xFF];
+				if (src[1] & 0x0F) dst[ebx - 2] = pal16b[(src[1] + ch) & 0xFF];
+				if (src[0] & 0x0F) dst[ebx - 1] = pal16b[(src[0] + ch) & 0xFF];
+			}
+			else
+			{
+				if (src[0] & 0x0F) dst[ebx - 8] = pal16b[(src[0] + ch) & 0xFF];
+				if (src[1] & 0x0F) dst[ebx - 7] = pal16b[(src[1] + ch) & 0xFF];
+				if (src[2] & 0x0F) dst[ebx - 6] = pal16b[(src[2] + ch) & 0xFF];
+				if (src[3] & 0x0F) dst[ebx - 5] = pal16b[(src[3] + ch) & 0xFF];
+				if (src[4] & 0x0F) dst[ebx - 4] = pal16b[(src[4] + ch) & 0xFF];
+				if (src[5] & 0x0F) dst[ebx - 3] = pal16b[(src[5] + ch) & 0xFF];
+				if (src[6] & 0x0F) dst[ebx - 2] = pal16b[(src[6] + ch) & 0xFF];
+				if (src[7] & 0x0F) dst[ebx - 1] = pal16b[(src[7] + ch) & 0xFF];
+			}
+		}
+		while (esi += 8, --cl != 0);
+		currentobjptr = esi;
+	}
+}
+
+
 void procspritesmain16b(u4 const ebp)
 {
 	if (scrndis  & 0x10)  return;
@@ -195,13 +254,7 @@ void procspritesmain16b(u4 const ebp)
 	u1 const cl = cursprloc[curypos & 0x00FF];
 	if (sprprifix == 0) cursprloc += 256;
 	if (cl == 0) return;
-	u4 eax;
-	u4 edx;
-	u4 ebx;
-	u4 esi;
-	u4 edi;
-	u1 cl_ = cl;
-	asm volatile("push %%ebp;  mov %7, %%ebp;  call %P6;  pop %%ebp" : "=a" (eax), "+c" (cl_), "=d" (edx), "=b" (ebx), "=S" (esi), "=D" (edi) : "X" (drawsprites16b), "nr" (ebp) : "cc", "memory");
+	drawsprites16b(cl, ebp);
 }
 
 

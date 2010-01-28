@@ -39,7 +39,7 @@ EXTSYM bg1objptr,bg1ptr,bg3ptr,bg3scrolx,bg3scroly,vidmemch4,vram,ofsmcptr
 EXTSYM ofsmady,ofsmadx,yposngom,flipyposngom,ofsmtptr,ofsmmptr,ofsmcyps,bgtxadd
 EXTSYM bg1ptrx,bg1ptry,a16x16xinc,a16x16yinc,bg1scrolx_m7,bg1scroly_m7,ngptrdat2
 EXTSYM OMBGTestVal,cachesingle4bng,m7starty,ofsmtptrs,ofsmcptr2,ofshvaladd
-EXTSYM clearback16b,setpalette16b
+EXTSYM clearback16b,setpalette16b,drawsprites16b
 
 %include "video/vidmacro.mac"
 
@@ -121,7 +121,7 @@ NEWSYM procspritessub16b
 .sprprio
     cmp cl,0
     je .nosprites
-    call drawsprites16b
+    ccallv drawsprites16b, ecx, ebp
 .nosprites
     ret
 
@@ -274,7 +274,7 @@ NEWSYM processmode716b
     cmp cl,0
     je .nosprites1
     mov ebp,0
-    call drawsprites16b
+    ccallv drawsprites16b, ecx, ebp
 .nosprites1
 
     ; display mode7
@@ -315,7 +315,7 @@ NEWSYM processmode716b
     cmp cl,0
     je .nosprites2
     mov ebp,1
-    call drawsprites16b
+    ccallv drawsprites16b, ecx, ebp
 .nosprites2
 
     test byte[interlval],40h
@@ -379,7 +379,7 @@ NEWSYM processmode716b
     cmp cl,0
     je .nosprites3
     mov ebp,2
-    call drawsprites16b
+    ccallv drawsprites16b, ecx, ebp
 .nosprites3
     ; do objects
     test byte[scrndis],10h
@@ -398,7 +398,7 @@ NEWSYM processmode716b
     cmp cl,0
     je .nosprites4
     mov ebp,3
-    call drawsprites16b
+    ccallv drawsprites16b, ecx, ebp
 .nosprites4
     pop ebp
     pop edx
@@ -407,162 +407,6 @@ NEWSYM processmode716b
     pop esi
     xor eax,eax
     xor ecx,ecx
-    ret
-
-;*******************************************************
-; Processes & Draws 4-bit sprites
-;*******************************************************
-
-NEWSYM drawsprites16b
-    cmp byte[sprprifix],1
-    je near drawsprites16bprio
-    test byte[cwinenabm],10h
-    jz .drawnowin
-    cmp byte[winonsp],0
-    jne near drawsprites16bwinon
-.drawnowin
-    mov esi,[currentobjptr]
-    mov edi,[curvidoffset]
-    xor ebx,ebx
-    xor eax,eax
-.loopobj
-    test byte[esi+7],20h
-    jnz near .drawspriteflipx
-    push esi
-    mov bx,[esi]
-    mov ch,[esi+6]
-    mov esi,[esi+2]
-    shl bx,1
-    mov al,[esi]
-    test al,0Fh
-    jz .skipa
-    add al,ch
-    mov edx,[pal16b+eax*4]
-    mov [edi+ebx-16],dx
-.skipa
-    mov al,[esi+1]
-    test al,0Fh
-    jz .skipb
-    add al,ch
-    mov edx,[pal16b+eax*4]
-    mov [edi+ebx-14],dx
-.skipb
-    mov al,[esi+2]
-    test al,0Fh
-    jz .skipc
-    add al,ch
-    mov edx,[pal16b+eax*4]
-    mov [edi+ebx-12],dx
-.skipc
-    mov al,[esi+3]
-    test al,0Fh
-    jz .skipd
-    add al,ch
-    mov edx,[pal16b+eax*4]
-    mov [edi+ebx-10],dx
-.skipd
-    mov al,[esi+4]
-    test al,0Fh
-    jz .skipe
-    add al,ch
-    mov edx,[pal16b+eax*4]
-    mov [edi+ebx-8],dx
-.skipe
-    mov al,[esi+5]
-    test al,0Fh
-    jz .skipf
-    add al,ch
-    mov edx,[pal16b+eax*4]
-    mov [edi+ebx-6],dx
-.skipf
-    mov al,[esi+6]
-    test al,0Fh
-    jz .skipg
-    add al,ch
-    mov edx,[pal16b+eax*4]
-    mov [edi+ebx-4],dx
-.skipg
-    mov al,[esi+7]
-    test al,0Fh
-    jz .skiph
-    add al,ch
-    mov edx,[pal16b+eax*4]
-    mov [edi+ebx-2],dx
-.skiph
-    pop esi
-    add esi,8
-    dec cl
-    jnz near .loopobj
-    mov [currentobjptr],esi
-    ret
-
-.drawspriteflipx
-    push esi
-    mov bx,[esi]
-    mov ch,[esi+6]
-    mov esi,[esi+2]
-    shl bx,1
-    mov al,[esi+7]
-    test al,0Fh
-    jz .skipa2
-    add al,ch
-    mov edx,[pal16b+eax*4]
-    mov [edi+ebx-16],dx
-.skipa2
-    mov al,[esi+6]
-    test al,0Fh
-    jz .skipb2
-    add al,ch
-    mov edx,[pal16b+eax*4]
-    mov [edi+ebx-14],dx
-.skipb2
-    mov al,[esi+5]
-    test al,0Fh
-    jz .skipc2
-    add al,ch
-    mov edx,[pal16b+eax*4]
-    mov [edi+ebx-12],dx
-.skipc2
-    mov al,[esi+4]
-    test al,0Fh
-    jz .skipd2
-    add al,ch
-    mov edx,[pal16b+eax*4]
-    mov [edi+ebx-10],dx
-.skipd2
-    mov al,[esi+3]
-    test al,0Fh
-    jz .skipe2
-    add al,ch
-    mov edx,[pal16b+eax*4]
-    mov [edi+ebx-8],dx
-.skipe2
-    mov al,[esi+2]
-    test al,0Fh
-    jz .skipf2
-    add al,ch
-    mov edx,[pal16b+eax*4]
-    mov [edi+ebx-6],dx
-.skipf2
-    mov al,[esi+1]
-    test al,0Fh
-    jz .skipg2
-    add al,ch
-    mov edx,[pal16b+eax*4]
-    mov [edi+ebx-4],dx
-.skipg2
-    mov al,[esi]
-    test al,0Fh
-    jz .skiph2
-    add al,ch
-    mov edx,[pal16b+eax*4]
-    mov [edi+ebx-2],dx
-.skiph2
-    pop esi
-    add esi,8
-    dec cl
-    jnz near .loopobj
-    mov [currentobjptr],esi
     ret
 
 NEWSYM drawsprites16bwinon

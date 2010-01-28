@@ -503,7 +503,7 @@ NEWSYM procspritessub16t
 .sprprio
     cmp cl,0
     je .nosprites
-    call drawsprites16b
+    ccallv drawsprites16b, ecx, ebp
 .nosprites
     ret
 
@@ -534,7 +534,7 @@ NEWSYM procspritesmain16t
 .nosprites
     ret
 .nospriteadd
-    call drawsprites16b
+    ccallv drawsprites16b, ecx, ebp
     xor eax,eax
     ret
 .spritesubmain
@@ -772,7 +772,7 @@ NEWSYM procspritessub16tfix
 .sprprio
     cmp cl,0
     je .nosprites
-    call drawsprites16b
+    ccallv drawsprites16b, ecx, ebp
 .nosprites
     ret
 
@@ -799,7 +799,7 @@ NEWSYM procspritesmain16tfix
 .nosprites
     ret
 .nospriteadd
-    call drawsprites16b
+    ccallv drawsprites16b, ecx, ebp
     xor eax,eax
     ret
 
