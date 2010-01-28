@@ -50,6 +50,7 @@ extern u4    ngpalcon2b[32];
 extern u4    ngpalcon4b[32];
 extern u4    objwlrpos[256];
 extern u4    pal16b[256];
+extern u4    pal16bcl[256];
 extern u4    pal16bxcl[256];
 
 #endif

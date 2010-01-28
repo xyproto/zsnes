@@ -6,5 +6,6 @@
 void clearback16b(void);
 void drawline16b(void);
 void procspritesmain16b(u4 ebp);
+void setpalette16b(void);
 
 #endif

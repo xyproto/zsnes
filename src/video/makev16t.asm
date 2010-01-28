@@ -989,7 +989,7 @@ NEWSYM drawline16t
     ; current video offset
     mov dword[curvidoffset],transpbuf+32
     ; set palette
-    call setpalette16b
+    ccallv setpalette16b
     ; clear back area w/ back color
     procwindowback
     call clearback16bts
@@ -1258,7 +1258,7 @@ NEWSYM processmode716t
     ; current video offset
     mov dword[curvidoffset],transpbuf+32
     ; set palette
-    call setpalette16b
+    ccallv setpalette16b
     ; clear back area w/ back color
     procwindowback
     call clearback16bts

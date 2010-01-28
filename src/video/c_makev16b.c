@@ -12,12 +12,52 @@
 #include "makev16t.h"
 #include "makevid.h"
 #include "newgfx.h"
+#include "procvid.h"
 
 
 static void blanker16b(void)
 {
 	// calculate current video offset
 	memset(vidbuffer + curypos * 576 + 32, 0, 512);
+}
+
+
+void setpalette16b(void)
+{
+	if (gammalevel16b != 0)
+	{
+		asm_call(setpalette16bgamma);
+		return;
+	}
+	if (V8Mode == 1) doveg();
+	if (vidbright != prevbright)
+	{
+		asm_call(setpalall);
+		return;
+	}
+	if (cgmod != 0)
+	{
+		cgmod      = 0;
+		colleft16b = 0;
+		u4 i = 0;
+		do
+		{
+			u2 const dx = cgram[i];
+			if (prevpal[i] == dx) continue;
+			prevpal[i] = dx;
+
+			u2 const r = (dx       & 0x1F) * vidbright / 15 << vesa2_rpos;
+			u2 const g = (dx >>  5 & 0x1F) * vidbright / 15 << vesa2_gpos;
+			u2 const b = (dx >> 10 & 0x1F) * vidbright / 15 << vesa2_bpos;
+			u2       c = r + g + b;
+			if (c == 0 && vidbright != 0) c |= 0x0020;
+			pal16b[i]    = pal16b[i]    & 0xFFFF0000 | c;
+			pal16bcl[i]  = pal16bcl[i]  & 0xFFFF0000 | c            & vesa2_clbit;
+			pal16bxcl[i] = pal16bxcl[i] & 0xFFFF0000 | (c ^ 0xFFFF) & vesa2_clbit;
+		}
+		while (++i, ++colleft16b != 0);
+	}
+	if (V8Mode == 1) dovegrest();
 }
 
 
@@ -104,7 +144,7 @@ void drawline16b(void)
 	// do sprite windowing
 	asm_call(makewindowsp);
 	// set palette
-	asm_call(setpalette16b);
+	setpalette16b();
 	// clear back area w/ back color
 	clearback16b();
 	// get current sprite table

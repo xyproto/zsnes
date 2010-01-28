@@ -40,7 +40,7 @@ EXTSYM bg1objptr,bg1ptr,bg3ptr,bg3scrolx,bg3scroly,vidmemch4,vram,ofsmcptr
 EXTSYM ofsmady,ofsmadx,yposngom,flipyposngom,ofsmtptr,ofsmmptr,ofsmcyps,bgtxadd
 EXTSYM bg1ptrx,bg1ptry,a16x16xinc,a16x16yinc,bg1scrolx_m7,bg1scroly_m7,ngptrdat2
 EXTSYM OMBGTestVal,cachesingle4bng,m7starty,ofsmtptrs,ofsmcptr2,ofshvaladd
-EXTSYM procspritesmain16b,clearback16b
+EXTSYM procspritesmain16b,clearback16b,setpalette16b
 
 %include "video/vidmacro.mac"
 
@@ -321,7 +321,7 @@ NEWSYM processmode716b
     ; do sprite windowing
     call makewindowsp
     ; set palette
-    call setpalette16b
+    ccallv setpalette16b
     ; clear back area w/ back color
     ccallv clearback16b
     ; clear registers
@@ -576,83 +576,6 @@ NEWSYM setpalall
 SECTION .bss
 NEWSYM colleft16b, resb 1
 SECTION .text
-
-NEWSYM setpalette16b
-    cmp byte[gammalevel16b],0
-    jne near setpalette16bgamma
-    cmp byte[V8Mode],1
-    jne .noveg
-    ccallv doveg
-.noveg
-    mov al,[vidbright]
-    cmp al,[prevbright]
-    jne near setpalall
-    cmp byte[cgmod],0
-    je near .skipall
-    mov byte[cgmod],0
-    xor esi,esi
-    mov byte[colleft16b],0
-.loopa
-    mov dx,[cgram+esi]
-    cmp [prevpal+esi],dx
-    je near .skipa
-    mov [prevpal+esi],dx
-    mov ax,dx
-    and al,01Fh
-    mov cl,[vidbright]
-    mul cl
-    mov cl,15
-    div cl
-    xor ah,ah
-    mov cl,[vesa2_rpos]
-    xor bx,bx
-    shl ax,cl
-    add bx,ax
-    mov ax,dx
-    shr ax,5
-    and al,01Fh
-    mov cl,[vidbright]
-    mul cl
-    mov cl,15
-    div cl
-    xor ah,ah
-    mov cl,[vesa2_gpos]
-    shl ax,cl
-    add bx,ax
-    mov ax,dx
-    shr ax,10
-    and al,01Fh
-    mov cl,[vidbright]
-    mul cl
-    mov cl,15
-    div cl
-    xor ah,ah
-    mov cl,[vesa2_bpos]
-    shl ax,cl
-    add bx,ax
-    cmp bx,0
-    jne .col0
-    cmp byte[vidbright],0
-    je .col0
-    or bx,0000000000100000b
-.col0
-    mov [pal16b+esi*2],bx
-    mov ax,bx
-    and bx,[vesa2_clbit]
-    mov [pal16bcl+esi*2],bx
-    xor ax,0FFFFh
-    and ax,[vesa2_clbit]
-    mov [pal16bxcl+esi*2],ax
-.skipa
-    add esi,2
-    inc byte[colleft16b]
-    jnz near .loopa
-.skipall
-    cmp byte[V8Mode],1
-    jne .noveg2
-    ccallv dovegrest
-.noveg2
-    ret
 
 NEWSYM setpalallgamma
     xor esi,esi
