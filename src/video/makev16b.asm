@@ -502,10 +502,6 @@ NEWSYM processmode716b
     xor ecx,ecx
     ret
 
-SECTION .bss
-NEWSYM colleft16b, resb 1
-SECTION .text
-
 ;*******************************************************
 ; Processes & Draws 4-bit sprites
 ;*******************************************************

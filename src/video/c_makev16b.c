@@ -24,7 +24,6 @@ static void blanker16b(void)
 
 static void setpalallgamma(void)
 {
-	colleft16b = 0;
 	u4 i = 0;
 	do
 	{
@@ -49,7 +48,7 @@ static void setpalallgamma(void)
 		pal16bcl[i]  = pal16bcl[i]  & 0xFFFF0000 | c            & vesa2_clbit;
 		pal16bxcl[i] = pal16bxcl[i] & 0xFFFF0000 | (c ^ 0xFFFF) & vesa2_clbit;
 	}
-	while (++i, ++colleft16b != 0);
+	while (++i != 256);
 	prevbright = vidbright;
 }
 
@@ -65,7 +64,6 @@ static void setpalette16bgamma(void)
 	if (cgmod == 0) return;
 	cgmod = 0;
 
-	colleft16b = 0;
 	u4 i = 0;
 	do
 	{
@@ -91,7 +89,7 @@ static void setpalette16bgamma(void)
 		pal16bcl[i]  = pal16bcl[i]  & 0xFFFF0000 | c            & vesa2_clbit;
 		pal16bxcl[i] = pal16bxcl[i] & 0xFFFF0000 | (c ^ 0xFFFF) & vesa2_clbit;
 	}
-	while (++i, ++colleft16b != 0);
+	while (++i != 256);
 }
 
 
@@ -99,7 +97,6 @@ static void setpalette16bgamma(void)
 static void setpalall(void)
 {
 	if (V8Mode == 1) doveg();
-	colleft16b = 0;
 	u4 i = 0;
 	do
 	{
@@ -114,7 +111,7 @@ static void setpalall(void)
 		pal16bcl[i]  = pal16bcl[i]  & 0xFFFF0000 | c            & vesa2_clbit;
 		pal16bxcl[i] = pal16bxcl[i] & 0xFFFF0000 | (c ^ 0xFFFF) & vesa2_clbit;
 	}
-	while (++i, ++colleft16b != 0);
+	while (++i != 256);
 	prevbright = vidbright;
 	if (V8Mode == 1) dovegrest();
 }
@@ -135,8 +132,7 @@ void setpalette16b(void)
 	}
 	if (cgmod != 0)
 	{
-		cgmod      = 0;
-		colleft16b = 0;
+		cgmod = 0;
 		u4 i = 0;
 		do
 		{
@@ -153,7 +149,7 @@ void setpalette16b(void)
 			pal16bcl[i]  = pal16bcl[i]  & 0xFFFF0000 | c            & vesa2_clbit;
 			pal16bxcl[i] = pal16bxcl[i] & 0xFFFF0000 | (c ^ 0xFFFF) & vesa2_clbit;
 		}
-		while (++i, ++colleft16b != 0);
+		while (++i != 256);
 	}
 	if (V8Mode == 1) dovegrest();
 }

@@ -52,7 +52,6 @@ static void setpalallng(void)
 	cpalptrng  = (cpalptrng + 1024) & (255 * 1024);
 	u2* pal = (u2*)(vbufdptr + cpalptrng);
 	u4  i   = 0;
-	colleft16b = 0;
 	do
 	{
 		u2 const dx = cgram[i];
@@ -75,7 +74,7 @@ static void setpalallng(void)
 		pal[  0] = c;                // standard
 		pal[256] = c | UnusedBit[0]; // standard
 	}
-	while (++pal, ++i, ++colleft16b != 0);
+	while (++pal, ++i != 256);
 	prevbright = vidbright;
 }
 
@@ -94,7 +93,6 @@ void setpalette16bng(void)
 		cpalptrng = (cpalptrng + 1024) & (255 * 1024);
 		u2* pal = (u2*)(vbufdptr + cpalptrng);
 		u4  i   = 0;
-		colleft16b = 0;
 		do
 		{
 			u2 const dx = cgram[i];
@@ -107,7 +105,7 @@ void setpalette16bng(void)
 			{
 				prevpal2[i] = dx;
 
-				if (colleft16b != 0) palchanged = 1;
+				if (i != 0) palchanged = 1;
 
 				u2 c = 0;
 
@@ -127,7 +125,7 @@ void setpalette16bng(void)
 				pal[256] = c | UnusedBit[0]; // standard
 			}
 		}
-		while (++edi, ++pal, ++i, ++colleft16b != 0);
+		while (++edi, ++pal, ++i != 256);
 	}
 	if (V8Mode == 1) dovegrest();
 }
