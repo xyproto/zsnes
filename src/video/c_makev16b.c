@@ -21,6 +21,38 @@ static void blanker16b(void)
 }
 
 
+// Clear Backarea, 16-bit mode
+void clearback16b(void)
+{
+	u2 c;
+	if (scaddtype & 0x20 && !(scaddtype & 0x80))
+	{
+		u2 const dx = cgram[0];
+		c = 0;
+
+		u2 r = (dx & 0x1F) + coladdr;
+		if (r > 31) r = 31;
+		c += r * vidbright << vesa2_rpos;
+
+		u2 g = (dx >> 5 & 0x1F) + coladdg;
+		if (g > 31) g = 31;
+		c += g * vidbright << vesa2_gpos;
+
+		u2 b = (dx >> 10 & 0x1F) + coladdb;
+		if (b > 31) b = 31;
+		c += b * vidbright << vesa2_bpos;
+	}
+	else
+	{
+		c = pal16b[0];
+	}
+	u4  eax = c * 0x00010001;
+	u1* buf = curvidoffset;
+	u4  n   = 128;
+	do *(u4*)buf = eax; while (buf += 4, --n != 0);
+}
+
+
 void procspritesmain16b(u4 const ebp)
 {
 	if (scrndis  & 0x10)  return;
@@ -74,7 +106,7 @@ void drawline16b(void)
 	// set palette
 	asm_call(setpalette16b);
 	// clear back area w/ back color
-	asm_call(clearback16b);
+	clearback16b();
 	// get current sprite table
 	currentobjptr = spritetablea + (curypos & 0x00FF) * 512;
 	// setup priorities

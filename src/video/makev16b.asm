@@ -27,10 +27,10 @@ EXTSYM bg1vbufloc,bg1xposloc,bg1yaddval,bgcoloradder,bgmode,bgtilesz,curbgnum
 EXTSYM drawn,makewindow,winbg1en,winenabs,mosaicon,winenabm,vidbuffer
 EXTSYM colormodeofs,curbgpr,currentobjptr,curvidoffset
 EXTSYM cwinenabm,makewindowsp
-EXTSYM preparesprpr,scaddtype,spritetablea,sprleftpr
+EXTSYM preparesprpr,spritetablea,sprleftpr
 EXTSYM bg1scrolx,bg1scroly,drawmode716b,mode7set,mosaicsz
 EXTSYM sprleftpr1,sprleftpr2,sprleftpr3,sprlefttot,sprprifix,interlval,extbgdone
-EXTSYM coladdb,coladdg,coladdr,pal16b,vesa2_bpos,V8Mode,doveg,pal16bcl,pal16bxcl
+EXTSYM pal16b,vesa2_bpos,V8Mode,doveg,pal16bcl,pal16bxcl
 EXTSYM prevbright,prevpal,vesa2_clbit,vesa2_gpos,vesa2_rpos,vidbright,cgmod
 EXTSYM cgram,gammalevel16b,dovegrest,winspdata,csprbit,csprprlft,sprclprio
 EXTSYM sprsingle,sprpriodata,bgofwptr,bgsubby,bshifter,curmosaicsz,cwinptr
@@ -40,7 +40,7 @@ EXTSYM bg1objptr,bg1ptr,bg3ptr,bg3scrolx,bg3scroly,vidmemch4,vram,ofsmcptr
 EXTSYM ofsmady,ofsmadx,yposngom,flipyposngom,ofsmtptr,ofsmmptr,ofsmcyps,bgtxadd
 EXTSYM bg1ptrx,bg1ptry,a16x16xinc,a16x16yinc,bg1scrolx_m7,bg1scroly_m7,ngptrdat2
 EXTSYM OMBGTestVal,cachesingle4bng,m7starty,ofsmtptrs,ofsmcptr2,ofshvaladd
-EXTSYM procspritesmain16b
+EXTSYM procspritesmain16b,clearback16b
 
 %include "video/vidmacro.mac"
 
@@ -323,7 +323,7 @@ NEWSYM processmode716b
     ; set palette
     call setpalette16b
     ; clear back area w/ back color
-    call clearback16b
+    ccallv clearback16b
     ; clear registers
     xor eax,eax
     xor ecx,ecx
@@ -501,80 +501,6 @@ NEWSYM processmode716b
     pop esi
     xor eax,eax
     xor ecx,ecx
-    ret
-
-;*******************************************************
-; Clear Backarea, 16-bit mode
-;*******************************************************
-NEWSYM clearback16b
-    test byte[scaddtype],00100000b
-    jz near .noaddition
-    test byte[scaddtype],10000000b
-    jnz near .noaddition
-    mov dx,[cgram]
-    mov ax,dx
-    and ax,001Fh
-    add al,[coladdr]
-    cmp al,01Fh
-    jb .noadd
-    mov al,01Fh
-.noadd
-    mov cl,[vidbright]
-    mul cl
-    mov cl,15
-    div cl
-    xor ah,ah
-    mov cl,[vesa2_rpos]
-    shl ax,cl
-    mov bx,ax
-    mov ax,dx
-    shr ax,5
-    and ax,001Fh
-    add al,[coladdg]
-    cmp al,01Fh
-    jb .noaddb
-    mov al,01Fh
-.noaddb
-    mov cl,[vidbright]
-    mul cl
-    mov cl,15
-    div cl
-    xor ah,ah
-    mov cl,[vesa2_gpos]
-    shl ax,cl
-    add bx,ax
-    mov ax,dx
-    shr ax,10
-    and ax,001Fh
-    add al,[coladdb]
-    cmp al,01Fh
-    jb .noaddc
-    mov al,01Fh
-.noaddc
-    mov cl,[vidbright]
-    mul cl
-    mov cl,15
-    div cl
-    xor ah,ah
-    mov cl,[vesa2_bpos]
-    shl ax,cl
-    add bx,ax
-    mov ax,bx
-    shl eax,16
-    mov ax,bx
-    mov edi,[curvidoffset]
-    mov ecx,128
-    rep stosd
-    xor eax,eax
-    ret
-.noaddition
-    mov edi,[curvidoffset]
-    mov ax,[pal16b]
-    shl eax,16
-    mov ax,[pal16b]
-    mov ecx,128
-    rep stosd
-    xor eax,eax
     ret
 
 ;*******************************************************
