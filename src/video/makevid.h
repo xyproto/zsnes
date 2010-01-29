@@ -10,6 +10,8 @@ extern void procbackgrnd();
 extern u1  alreadydrawn;
 extern u1  bg3high2;
 extern u1  bgcoloradder;
+extern u1  csprbit;
+extern u1  csprprlft;
 extern u1  curbgnum;
 extern u1  curbgpr; // 00h = low priority, 20h = high priority
 extern u1  curmosaicsz;

@@ -38,6 +38,7 @@ extern u1    sprleftpr2[256];      // sprites left for priority 2
 extern u1    sprleftpr3[256];      // sprites left for priority 3
 extern u1    sprleftpr[256];       // sprites left for priority 0
 extern u1    sprlefttot[256];      // total sprites left
+extern u1    sprpriodata[288];
 extern u1    sprstart[256];
 extern u1    sprtilecnt[256];
 extern u1    winbgbackenval[256];

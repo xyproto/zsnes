@@ -5,6 +5,7 @@
 #include "../cpu/regs.h"
 #include "../endmem.h"
 #include "../initc.h"
+#include "../macros.h"
 #include "../ui.h"
 #include "../vcache.h"
 #include "c_makev16b.h"
@@ -187,17 +188,163 @@ void clearback16b(void)
 }
 
 
+static void sprdrawpra16b(u4 const eax, u1 const cl, u1 const ch, u4 const ebx, u2* const edi, u4 const p1)
+{
+	if (eax == 0) return;
+	if (sprpriodata[ebx - p1 + 16] & cl) return;
+	edi[ebx - p1] = pal16b[(eax + ch) & 0xFF];
+	sprpriodata[ebx - p1 + 16] |= cl;
+}
+
+
+static void sprdrawprb16b(u4 const eax, u1 const cl, u1 const ch, u4 const ebx, u2* const edi, u4 const p1)
+{
+	if (eax == 0) return;
+	edi[ebx - p1] = pal16b[(eax + ch) & 0xFF];
+}
+
+
+static void sprdrawa16b(u1 const cl, u1 const ch, u4 const ebx, u1* const esi, u2* const edi, void (* const f)(u4 eax, u1 cl, u1 ch, u4 ebx, u2* edi, u4 p1))
+{
+	f(esi[0], cl, ch, ebx, edi, 8);
+	f(esi[1], cl, ch, ebx, edi, 7);
+	f(esi[2], cl, ch, ebx, edi, 6);
+	f(esi[3], cl, ch, ebx, edi, 5);
+	f(esi[4], cl, ch, ebx, edi, 4);
+	f(esi[5], cl, ch, ebx, edi, 3);
+	f(esi[6], cl, ch, ebx, edi, 2);
+	f(esi[7], cl, ch, ebx, edi, 1);
+}
+
+
+static void sprdrawaf16b(u1 const cl, u1 const ch, u4 const ebx, u1* const esi, u2* const edi, void (* const f)(u4 eax, u1 cl, u1 ch, u4 ebx, u2* edi, u4 p1))
+{
+	f(esi[0], cl, ch, ebx, edi, 1);
+	f(esi[1], cl, ch, ebx, edi, 2);
+	f(esi[2], cl, ch, ebx, edi, 3);
+	f(esi[3], cl, ch, ebx, edi, 4);
+	f(esi[4], cl, ch, ebx, edi, 5);
+	f(esi[5], cl, ch, ebx, edi, 6);
+	f(esi[6], cl, ch, ebx, edi, 7);
+	f(esi[7], cl, ch, ebx, edi, 8);
+}
+
+
+static void sprdrawpra2(u1 const dl, u4 const ebx, u4 const p1, u1 const p2)
+{
+	if (p2 == 0) return;
+	sprpriodata[ebx - p1 + 16] |= dl;
+}
+
+
+static void sprdrawaf(u1 const dl, u4 const ebx, u1* const esi, void (* const f)(u1 dl, u4 ebx, u4 p1, u1 p2))
+{
+	f(dl, ebx, 1, esi[0]);
+	f(dl, ebx, 2, esi[1]);
+	f(dl, ebx, 3, esi[2]);
+	f(dl, ebx, 4, esi[3]);
+	f(dl, ebx, 5, esi[4]);
+	f(dl, ebx, 6, esi[5]);
+	f(dl, ebx, 7, esi[6]);
+	f(dl, ebx, 8, esi[7]);
+}
+
+
+static void sprdrawa(u1 const dl, u4 const ebx, u1* const esi, void (* const f)(u1 dl, u4 ebx, u4 p1, u1 p2))
+{
+	f(dl, ebx, 8, esi[0]);
+	f(dl, ebx, 7, esi[1]);
+	f(dl, ebx, 6, esi[2]);
+	f(dl, ebx, 5, esi[3]);
+	f(dl, ebx, 4, esi[4]);
+	f(dl, ebx, 3, esi[5]);
+	f(dl, ebx, 2, esi[6]);
+	f(dl, ebx, 1, esi[7]);
+}
+
+
+static void drawsprites16bprio(u1 cl, u4 const ebp)
+{
+	if (sprclprio[ebp] == 0) return;
+	if (cwinenabm & 0x10 && winonsp != 0)
+	{
+		u4 eax;
+		u4 ecx = cl;
+		u4 edx;
+		u4 ebx;
+		u4 esi;
+		u4 edi;
+		asm volatile("push %%ebp;  mov %7, %%ebp;  call %P6;  pop %%ebp" : "=a" (eax), "+c" (ecx), "=d" (edx), "=b" (ebx), "=S" (esi), "=D" (edi) : "X" (drawspritesprio16bwinon), "r" (ebp) : "cc", "memory");
+	}
+	else
+	{
+		u1*       esi = currentobjptr; // XXX struct?
+		u2* const edi = (u2*)curvidoffset;
+		if (sprsingle == 1)
+		{
+			esi += (cl - 1) * 8;
+			do
+			{
+				u2  const ebx  = *(u2*)esi;
+				u1  const ch   = esi[6];
+				u1* const esi_ = *(u1**)(esi + 2); // XXX unaligned?
+				if (esi[7] & 0x20)
+				{ // flip x
+					sprdrawaf16b(cl, ch, ebx, esi_, edi, sprdrawprb16b);
+				}
+				else
+				{
+					sprdrawa16b(cl, ch, ebx, esi_, edi, sprdrawprb16b);
+				}
+			}
+			while (esi -= 8, --cl != 0);
+		}
+		else
+		{
+			csprprlft = cl;
+			do
+			{
+				u2  const ebx  = *(u2*)esi;
+				u1  const ch   = esi[6];
+				u4  const edx  = esi[7] & 0x03;
+				u1* const esi_ = *(u1**)(esi + 2); // XXX unaligned?
+				if (esi[7] & 0x20)
+				{ // flip x
+					if (edx == ebp)
+					{
+						sprdrawaf16b(csprbit, ch, ebx, esi_, edi, sprdrawpra16b);
+					}
+					else
+					{
+						sprdrawaf(csprbit, ebx, esi_, sprdrawpra2);
+					}
+				}
+				else
+				{
+					if (edx == ebp)
+					{
+						sprdrawa16b(csprbit, ch, ebx, esi_, edi, sprdrawpra16b);
+					}
+					else
+					{
+						sprdrawa(csprbit, ebx, esi_, sprdrawpra2);
+					}
+				}
+			}
+			while (esi += 8, --csprprlft != 0);
+			csprbit = ROL(csprbit, 1);
+			if (csprbit == 1) memset(sprpriodata + 16, 0, 256);
+		}
+	}
+}
+
+
 // Processes & Draws 4-bit sprites
 void drawsprites16b(u1 cl, u4 const ebp)
 {
 	if (sprprifix == 1)
 	{
-		u4 eax;
-		u4 edx;
-		u4 ebx;
-		u4 esi;
-		u4 edi;
-		asm volatile("push %%ebp;  mov %7, %%ebp;  call %P6;  pop %%ebp" : "=a" (eax), "+c" (cl), "=d" (edx), "=b" (ebx), "=S" (esi), "=D" (edi) : "X" (drawsprites16bprio), "nr" (ebp) : "cc", "memory");
+		drawsprites16bprio(cl, ebp);
 	}
 	else if (cwinenabm & 0x10 && winonsp != 0)
 	{
