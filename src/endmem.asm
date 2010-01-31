@@ -110,7 +110,7 @@ NEWSYM sprprtabc,   resb 64
 NEWSYM sprprtabu,   resb 64
 NEWSYM prevpal,   resw 256
 NEWSYM winbgdata, resb 288          ; window buffer for backgrounds
-NEWSYM winspdata, resb 288          ; window buffer for sprites
+NEWSYM winspdata, resb 288
 NEWSYM FxTable, resd 256
 NEWSYM FxTableA1, resd 256
 NEWSYM FxTableA2, resd 256

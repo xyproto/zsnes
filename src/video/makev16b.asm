@@ -31,8 +31,8 @@ EXTSYM preparesprpr,spritetablea,sprleftpr
 EXTSYM bg1scrolx,bg1scroly,drawmode716b,mode7set,mosaicsz
 EXTSYM sprleftpr1,sprleftpr2,sprleftpr3,sprlefttot,sprprifix,interlval,extbgdone
 EXTSYM pal16b
-EXTSYM winspdata,csprbit,csprprlft
-EXTSYM sprsingle,sprpriodata,bgofwptr,bgsubby,bshifter,curmosaicsz,cwinptr
+EXTSYM winspdata
+EXTSYM bgofwptr,bgsubby,bshifter,curmosaicsz,cwinptr
 EXTSYM osm2dis,temp,tempcach,temptile,winptrref,xtravbuf,yadder,yrevadder
 EXTSYM vcache2b,vcache4b,vcache8b,hirestiledat,res512switch,numwin,windowdata
 EXTSYM bg1objptr,bg1ptr,bg3ptr,bg3scrolx,bg3scroly,vidmemch4,vram,ofsmcptr
@@ -582,123 +582,6 @@ NEWSYM drawsprites16bwinon
     dec cl
     jnz near .loopobj
     mov [currentobjptr],esi
-    ret
-
-NEWSYM drawspritesprio16bwinon
-    cmp dword[sprsingle],1
-    je near .drawsingle
-    mov [csprprlft],cl
-    mov esi,[currentobjptr]
-    mov edi,[curvidoffset]
-    mov edx,esi
-    xor ebx,ebx
-.loopobj
-    test byte[esi+7],20h
-    jnz near .drawspriteflipx
-    mov bx,[esi]
-    push esi
-    mov ch,[esi+6]
-    mov dl,[esi+7]
-    xor eax,eax
-    and edx,03h
-    cmp edx,ebp
-    jne near .notprio
-    mov esi,[esi+2]
-    mov cl,[csprbit]
-    sprdrawa16b sprdrawpraw16b
-    pop esi
-    add esi,8
-    dec byte[csprprlft]
-    jnz near .loopobj
-    rol byte[csprbit],1
-    cmp byte[csprbit],1
-    je near .clearcsprmem
-    ret
-.notprio
-    mov esi,[esi+2]
-    mov dl,[csprbit]
-    sprdrawa sprdrawpra2
-    pop esi
-    add esi,8
-    dec byte[csprprlft]
-    jnz near .loopobj
-    rol byte[csprbit],1
-    cmp byte[csprbit],1
-    je near .clearcsprmem
-    ret
-.drawspriteflipx
-    mov bx,[esi]
-    push esi
-    mov ch,[esi+6]
-    mov dl,[esi+7]
-    xor eax,eax
-    and edx,03h
-    cmp edx,ebp
-    jne near .notpriof
-    mov esi,[esi+2]
-    mov cl,[csprbit]
-    sprdrawaf16b sprdrawpraw16b
-    pop esi
-    add esi,8
-    dec byte[csprprlft]
-    jnz near .loopobj
-    rol byte[csprbit],1
-    cmp byte[csprbit],1
-    je near .clearcsprmem
-.endobj
-    ret
-.notpriof
-    mov esi,[esi+2]
-    mov dl,[csprbit]
-    sprdrawaf sprdrawpra2
-    pop esi
-    add esi,8
-    dec byte[csprprlft]
-    jnz near .loopobj
-    rol byte[csprbit],1
-    cmp byte[csprbit],1
-    je near .clearcsprmem
-    ret
-.clearcsprmem
-    xor eax,eax
-    mov ecx,64
-    mov edi,sprpriodata+16
-    rep stosd
-    ret
-.drawsingle
-    mov esi,[currentobjptr]
-    mov edi,[curvidoffset]
-    mov edx,ecx
-    and edx,0FFh
-    xor eax,eax
-    shl edx,3
-    sub edx,8
-    add edx,esi
-    mov esi,edx
-    xor ebx,ebx
-.loopobj2
-    test byte[esi+7],20h
-    jnz near .drawspriteflipx2
-    mov bx,[esi]
-    push esi
-    mov ch,[esi+6]
-    mov esi,[esi+2]
-    sprdrawa16b sprdrawprbw16b
-    pop esi
-    sub esi,8
-    dec cl
-    jnz near .loopobj2
-    ret
-.drawspriteflipx2
-    mov bx,[esi]
-    push esi
-    mov ch,[esi+6]
-    mov esi,[esi+2]
-    sprdrawaf16b sprdrawprbw16b
-    pop esi
-    sub esi,8
-    dec cl
-    jnz near .loopobj2
     ret
 
 

@@ -263,18 +263,92 @@ static void sprdrawa(u1 const dl, u4 const ebx, u1* const esi, void (* const f)(
 }
 
 
+static void sprdrawpraw16b(u4 const eax, u1 const cl, u1 const ch, u4 const ebx, u2* const edi, u4 const p1)
+{
+	if (eax == 0) return;
+	if (sprpriodata[ebx - p1 + 16] & cl) return;
+	if (winspdata[ebx - p1 + 16] != 0) return;
+	edi[ebx - p1] = pal16b[(eax + ch) & 0xFF];
+	sprpriodata[ebx - p1 + 16] |= cl;
+}
+
+
+static void sprdrawprbw16b(u4 const eax, u1 const cl, u1 const ch, u4 const ebx, u2* const edi, u4 const p1)
+{
+	if (eax == 0) return;
+	if (winspdata[ebx - p1 + 16] != 0) return;
+	edi[ebx - p1] = pal16b[(eax + ch) & 0xFF];
+}
+
+
+static void drawspritesprio16bwinon(u1 cl, u4 const ebp)
+{
+	u1*       esi = currentobjptr; // XXX struct?
+	u2* const edi = (u2*)curvidoffset;
+	if (sprsingle == 1)
+	{
+		esi += (cl - 1) * 8;
+		do
+		{
+			u2  const ebx  = *(u2*)esi;
+			u1  const ch   = esi[6];
+			u1* const esi_ = *(u1**)(esi + 2); // XXX unaligned?
+			if (esi[7] & 0x20)
+			{ // flip x
+				sprdrawaf16b(cl, ch, ebx, esi_, edi, sprdrawprbw16b);
+			}
+			else
+			{
+				sprdrawa16b(cl, ch, ebx, esi_, edi, sprdrawprbw16b);
+			}
+		}
+		while (esi -= 8, --cl != 0);
+	}
+	else
+	{
+		csprprlft = cl;
+		do
+		{
+			u2  const ebx  = *(u2*)esi;
+			u1  const ch   = esi[6];
+			u4  const edx  = esi[7] & 0x03;
+			u1* const esi_ = *(u1**)(esi + 2); // XXX unaligned?
+			if (esi[7] & 0x20)
+			{ // flip x
+				if (edx == ebp)
+				{
+					sprdrawaf16b(csprbit, ch, ebx, esi_, edi, sprdrawpraw16b);
+				}
+				else
+				{
+					sprdrawaf(csprbit, ebx, esi_, sprdrawpra2);
+				}
+			}
+			else
+			{
+				if (edx == ebp)
+				{
+					sprdrawa16b(csprbit, ch, ebx, esi_, edi, sprdrawpraw16b);
+				}
+				else
+				{
+					sprdrawa(csprbit, ebx, esi_, sprdrawpra2);
+				}
+			}
+		}
+		while (esi += 8, --csprprlft != 0);
+		csprbit = ROL(csprbit, 1);
+		if (csprbit == 1) memset(sprpriodata + 16, 0, 256);
+	}
+}
+
+
 static void drawsprites16bprio(u1 cl, u4 const ebp)
 {
 	if (sprclprio[ebp] == 0) return;
 	if (cwinenabm & 0x10 && winonsp != 0)
 	{
-		u4 eax;
-		u4 ecx = cl;
-		u4 edx;
-		u4 ebx;
-		u4 esi;
-		u4 edi;
-		asm volatile("push %%ebp;  mov %7, %%ebp;  call %P6;  pop %%ebp" : "=a" (eax), "+c" (ecx), "=d" (edx), "=b" (ebx), "=S" (esi), "=D" (edi) : "X" (drawspritesprio16bwinon), "r" (ebp) : "cc", "memory");
+		drawspritesprio16bwinon(cl, ebp);
 	}
 	else
 	{
