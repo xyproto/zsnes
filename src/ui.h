@@ -30,6 +30,9 @@ extern u1*  romdata;                // rom data  (4MB = 4194304)
 extern u1*  spcBuffera;
 extern u1*  spritetablea;
 extern u1*  vbufdptr;
+extern u1*  vcache2b;               // 2-bit video cache
+extern u1*  vcache4b;               // 4-bit video cache
+extern u1*  vcache8b;               // 8-bit video cache
 extern u1*  vidbuffer;              // video buffer (1024x239 = 244736)
 extern u1*  vidbufferofsa;          // offset 1
 extern u1*  vidbufferofsb;          // offset 2

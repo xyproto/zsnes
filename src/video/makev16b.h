@@ -1,8 +1,13 @@
 #ifndef MAKEV16B_H
 #define MAKEV16B_H
 
-extern void draw16x1616b();
+#include "../types.h"
+
+extern void domosaic16b();
+extern void draw16x1616bwinon();
 extern void draw8x816b();
 extern void processmode716b();
+
+extern u1 tileleft16b;
 
 #endif

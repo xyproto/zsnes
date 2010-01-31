@@ -67,9 +67,9 @@ unsigned char *vram;                // vram = 65536
 unsigned char *sram;                // sram = 65536*2 = 131072
 eop*          regptra[0x3000];
 eop*          regptwa[0x3000];
-unsigned char *vcache2b;            // 2-bit video cache
-unsigned char *vcache4b;            // 4-bit video cache
-unsigned char *vcache8b;            // 8-bit video cache
+u1*           vcache2b;
+u1*           vcache4b;
+u1*           vcache8b;
 u1            romispal;
 u1            newgfx16b;
 

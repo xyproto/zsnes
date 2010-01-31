@@ -1226,19 +1226,6 @@
 %%loop
 %endmacro
 
-;*******************************************************
-; Processes & Draws 16x16 tiles in 2, 4, & 8 bit mode
-;*******************************************************
-%macro Draw16x1616b 2
-    mov al,[ebx+%1]
-    test al,0FFh
-    jz %%loop
-    add al,dh
-    mov ecx,[pal16b+eax*4]
-    mov [esi+%2],cx
-%%loop
-%endmacro
-
 %macro drawpixel16b8x8winon 4
     mov al,[ebx+%1]
     test al,0FFh

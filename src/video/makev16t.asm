@@ -603,7 +603,7 @@ NEWSYM drawbackgrndsub16t
     ret
 .16x16
     mov ecx,[bg1yaddval+ebp*4]
-    call draw16x1616b
+    ccallv draw16x1616b, eax, ecx, edx, ebx, esi, edi
     cmp byte[drawn],33
     jne .notalldrawnb
     mov al,[curbgnum]
@@ -682,7 +682,7 @@ NEWSYM drawbackgrndmain16t
     ret
 .16x16
     mov ecx,[bg1yaddval+ebp*4]
-    call draw16x1616b
+    ccallv draw16x1616b, eax, ecx, edx, ebx, esi, edi
     cmp byte[drawn],33
     jne .notalldrawnb
     mov al,[curbgnum]
@@ -861,7 +861,7 @@ NEWSYM drawbackgrndsub16tfix
     ret
 .16x16
     mov ecx,[bg1yaddval+ebp*4]
-    call draw16x1616b
+    ccallv draw16x1616b, eax, ecx, edx, ebx, esi, edi
     cmp byte[drawn],33
     jne .notalldrawnb
     mov al,[curbgnum]
@@ -933,7 +933,7 @@ NEWSYM drawbackgrndmain16tfix
     ret
 .16x16
     mov ecx,[bg1yaddval+ebp*4]
-    call draw16x1616b
+    ccallv draw16x1616b, eax, ecx, edx, ebx, esi, edi
     cmp byte[drawn],33
     jne .notalldrawnb
     mov al,[curbgnum]
