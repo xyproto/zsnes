@@ -22,10 +22,10 @@
 %include "macros.mac"
 
 EXTSYM cursprloc,curypos,scrndis,scrnon,winon,winonsp,drawmode716extbg
-EXTSYM drawmode716extbg2,alreadydrawn,bg1cachloc,bg1tdabloc,bg1tdatloc
-EXTSYM bg1vbufloc,bg1xposloc,bg1yaddval,bgcoloradder,bgmode,bgtilesz,curbgnum
-EXTSYM drawn,makewindow,winbg1en,winenabs,mosaicon,winenabm,vidbuffer
-EXTSYM colormodeofs,curbgpr,currentobjptr,curvidoffset
+EXTSYM drawmode716extbg2
+EXTSYM bgcoloradder,bgmode
+EXTSYM drawn,makewindow,winbg1en,mosaicon,winenabm,vidbuffer
+EXTSYM curbgpr,currentobjptr,curvidoffset
 EXTSYM cwinenabm,makewindowsp
 EXTSYM preparesprpr,spritetablea,sprleftpr
 EXTSYM bg1scrolx,bg1scroly,drawmode716b,mode7set,mosaicsz
@@ -38,7 +38,7 @@ EXTSYM bg1objptr,bg1ptr,bg3ptr,bg3scrolx,bg3scroly,vidmemch4,vram,ofsmcptr
 EXTSYM ofsmady,ofsmadx,yposngom,flipyposngom,ofsmtptr,ofsmmptr,ofsmcyps,bgtxadd
 EXTSYM bg1ptrx,bg1ptry,a16x16xinc,bg1scrolx_m7,bg1scroly_m7,ngptrdat2
 EXTSYM OMBGTestVal,cachesingle4bng,m7starty,ofsmtptrs,ofsmcptr2,ofshvaladd
-EXTSYM clearback16b,setpalette16b,drawsprites16b,draw16x1616b,draw16x1616b_yadd
+EXTSYM clearback16b,setpalette16b,drawsprites16b,draw16x1616b_yadd
 EXTSYM draw16x1616b_yflipadd
 
 %include "video/vidmacro.mac"
@@ -123,74 +123,6 @@ NEWSYM procspritessub16b
     je .nosprites
     ccallv drawsprites16b, ecx, ebp
 .nosprites
-    ret
-
-NEWSYM drawbackgrndsub16b
-    mov esi,[colormodeofs]
-    mov bl,[esi+ebp]
-    cmp bl,0
-    je near .noback
-    mov al,[curbgnum]
-    test byte[scrnon+1],al
-    jz near .noback
-    test byte[scrnon],al
-    jnz near .noback
-    test byte[alreadydrawn],al
-    jnz near .noback
-    test byte[scrndis],al
-    jnz near .noback
-    mov byte[winon],0
-    test byte[winenabs],al
-    jz near .nobackwin
-;    procwindow [winbg1en+ebp]
-    mov al,[winbg1en+ebp]
-    call makewindow
-    cmp byte[winon],0FFh
-    je near .noback
-.nobackwin
-    mov bl,[curbgnum]
-    mov byte[curmosaicsz],1
-    test byte[mosaicon],bl
-    jz .nomos
-    mov bl,[mosaicsz]
-    cmp bl,0
-    je .nomos
-    inc bl
-    mov [curmosaicsz],bl
-.nomos
-    mov byte[bgcoloradder],0
-    cmp byte[bgmode],0
-    jne .nomode0
-    mov eax,ebp
-    mov bl,20h
-    mul bl
-    mov [bgcoloradder],al
-.nomode0
-    mov esi,[bg1vbufloc+ebp*4]
-    mov edi,[bg1tdatloc+ebp*4]
-    mov edx,[bg1tdabloc+ebp*4]
-    mov ebx,[bg1cachloc+ebp*4]
-    mov eax,[bg1xposloc+ebp*4]
-    mov cl,[curbgnum]
-    test byte[bgtilesz],cl
-    jnz .16x16
-    mov ecx,[bg1yaddval+ebp*4]
-    call draw8x816b
-    cmp byte[drawn],33
-    jne .notalldrawn
-    mov al,[curbgnum]
-    or [alreadydrawn],al
-.notalldrawn
-    jmp .noback
-.16x16
-    mov ecx,[bg1yaddval+ebp*4]
-    ccallv draw16x1616b, eax, ecx, edx, ebx, esi, edi
-    cmp byte[drawn],33
-    jne .notalldrawnb
-    mov al,[curbgnum]
-    or [alreadydrawn],al
-.notalldrawnb
-.noback
     ret
 
 
