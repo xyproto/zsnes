@@ -4,7 +4,6 @@
 #include "../types.h"
 
 extern void domosaic16b();
-extern void draw16x1616bwinon();
 extern void draw8x816b();
 extern void processmode716b();
 

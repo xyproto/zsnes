@@ -36,10 +36,9 @@ EXTSYM osm2dis,temp,tempcach,temptile,winptrref,xtravbuf,yadder,yrevadder
 EXTSYM vcache2b,vcache4b,vcache8b,hirestiledat,res512switch,numwin,windowdata
 EXTSYM bg1objptr,bg1ptr,bg3ptr,bg3scrolx,bg3scroly,vidmemch4,vram,ofsmcptr
 EXTSYM ofsmady,ofsmadx,yposngom,flipyposngom,ofsmtptr,ofsmmptr,ofsmcyps,bgtxadd
-EXTSYM bg1ptrx,bg1ptry,a16x16xinc,bg1scrolx_m7,bg1scroly_m7,ngptrdat2
+EXTSYM bg1ptrx,bg1ptry,bg1scrolx_m7,bg1scroly_m7,ngptrdat2
 EXTSYM OMBGTestVal,cachesingle4bng,m7starty,ofsmtptrs,ofsmcptr2,ofshvaladd
-EXTSYM clearback16b,setpalette16b,drawsprites16b,draw16x1616b_yadd
-EXTSYM draw16x1616b_yflipadd
+EXTSYM clearback16b,setpalette16b,drawsprites16b
 
 %include "video/vidmacro.mac"
 
@@ -1444,128 +1443,4 @@ NEWSYM draw8x816bwinonoffset
     dec byte[tileleft16b]
     jnz near .loopa
     xor eax,eax
-    ret
-
-NEWSYM draw16x1616bwinon
-    mov byte[tileleft16b],33
-    mov dl,[temp]
-    mov ebp,[winptrref]
-.loopa
-    mov ax,[edi]
-    mov dh,ah
-    xor byte[a16x16xinc],1
-
-    test dh,40h
-    jnz .noxflip
-    test byte[a16x16xinc],01h
-    jnz .noincr2
-    inc ax
-    add edi,2
-.noincr2
-    jmp .yesxflip
-.noxflip
-    test byte[a16x16xinc],01h
-    jnz .noincr
-    add edi,2
-    jmp .yesincr
-.noincr
-    inc ax
-.yesincr
-.yesxflip
-    xor dh,[curbgpr]
-    test dh,20h
-    jnz near .hprior
-    inc byte[drawn]
-
-    test dh,80h
-    jnz .noyflip
-    add ax,word[draw16x1616b_yadd]
-    jmp .yesyflip
-.noyflip
-    add ax,word[draw16x1616b_yflipadd]
-.yesyflip
-
-    and ax,03FFh                ; filter out tile #
-    mov ebx,[tempcach]
-    shl ax,6
-    add ebx,eax
-    cmp ebx,[bgofwptr]
-    jb .noclip
-    sub ebx,[bgsubby]
-.noclip
-    test dh,80h
-    jz .normadd
-    add ebx,[yrevadder]
-    jmp .skipadd
-.normadd
-    add ebx,[yadder]
-.skipadd
-    test dh,40h
-    jnz near .rloop
-    mov cl,[bshifter]
-    and dh,1Ch
-    shl dh,cl                    ; process palette # (bits 10-12)
-    add dh,[bgcoloradder]
-    xor eax,eax
-
-    ; Start loop
-    Draw16x1616bwin 0, 0, 0
-    Draw16x1616bwin 1, 2, 1
-    Draw16x1616bwin 2, 4, 2
-    Draw16x1616bwin 3, 6, 3
-    Draw16x1616bwin 4, 8, 4
-    Draw16x1616bwin 5, 10, 5
-    Draw16x1616bwin 6, 12, 6
-    Draw16x1616bwin 7, 14, 7
-.hprior
-    add esi,16
-    add ebp,8
-    test byte[a16x16xinc],01h
-    jnz .noincrb2
-    inc dl
-.noincrb2
-    cmp dl,20h
-    jne .loopc2
-    xor dl,dl
-    mov edi,[temptile]
-.loopc2
-    dec byte[tileleft16b]
-    jnz near .loopa
-    mov dh,[curmosaicsz]
-    cmp dh,1
-    jne near domosaic16b
-    ret
-
-    ; reversed loop
-.rloop
-    mov cl,[bshifter]
-    and dh,1Ch
-    shl dh,cl                    ; process palette # (bits 10-12)
-    add dh,[bgcoloradder]
-    xor eax,eax
-    Draw16x1616bwin 7, 0, 0
-    Draw16x1616bwin 6, 2, 1
-    Draw16x1616bwin 5, 4, 2
-    Draw16x1616bwin 4, 6, 3
-    Draw16x1616bwin 3, 8, 4
-    Draw16x1616bwin 2, 10, 5
-    Draw16x1616bwin 1, 12, 6
-    Draw16x1616bwin 0, 14, 7
-.skiploop2b
-    add esi,16
-    add ebp,8
-    test byte[a16x16xinc],01h
-    jnz .noincrb
-    inc dl
-.noincrb
-    cmp dl,20h
-    jne .loopc
-    xor dl,dl
-    mov edi,[temptile]
-.loopc
-    dec byte[tileleft16b]
-    jnz near .loopa
-    mov dh,[curmosaicsz]
-    cmp dh,1
-    jne near domosaic16b
     ret

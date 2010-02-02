@@ -16,8 +16,8 @@
 #include "procvid.h"
 
 
-u2 draw16x1616b_yadd;
-u2 draw16x1616b_yflipadd;
+static u2 draw16x1616b_yadd;
+static u2 draw16x1616b_yflipadd;
 
 
 static void blanker16b(void)
@@ -515,6 +515,84 @@ void procspritesmain16b(u4 const ebp)
 }
 
 
+static void Draw16x1616bwin(u1 const dh, u1 const* const ebx, u1 const* const ebp, u2* const esi, u4 const p1, u4 const p2)
+{
+	u1 const al = ebx[p1];
+	if (al == 0 || ebp[p2] != 0) return;
+	esi[p2] = pal16b[(al + dh) & 0xFF];
+}
+
+
+static void draw16x1616bwinon(u2* esi, u2 const* edi)
+{
+	tileleft16b = 33;
+	u1        dl  = temp;
+	u1 const* ebp = winptrref;
+	do
+	{
+		u2 ax = *edi;
+		u1 dh = ax >> 8;
+		a16x16xinc ^= 1;
+		if (a16x16xinc & 0x01)
+		{
+			if (dh & 0x40) ++ax;
+		}
+		else
+		{
+			if (!(dh & 0x40)) ++ax;
+			++edi;
+		}
+		dh ^= curbgpr;
+		if (!(dh & 0x20))
+		{
+			++drawn;
+			ax += dh & 0x80 ? draw16x1616b_yflipadd : draw16x1616b_yadd;
+			ax &= 0x03FF; // filter out tile #
+			u1 const* ebx = tempcach + ax * 64;
+			if (ebx >= bgofwptr) ebx -= bgsubby;
+			ebx += dh & 0x80 ? yrevadder : yadder;
+			u1 const dh_ = ((dh & 0x1C) << bshifter) + bgcoloradder; // process palette # (bits 10-12)
+			if (dh & 0x40)
+			{ // reversed loop
+				Draw16x1616bwin(dh_, ebx, ebp, esi, 7, 0);
+				Draw16x1616bwin(dh_, ebx, ebp, esi, 6, 1);
+				Draw16x1616bwin(dh_, ebx, ebp, esi, 5, 2);
+				Draw16x1616bwin(dh_, ebx, ebp, esi, 4, 3);
+				Draw16x1616bwin(dh_, ebx, ebp, esi, 3, 4);
+				Draw16x1616bwin(dh_, ebx, ebp, esi, 2, 5);
+				Draw16x1616bwin(dh_, ebx, ebp, esi, 1, 6);
+				Draw16x1616bwin(dh_, ebx, ebp, esi, 0, 7);
+			}
+			else
+			{ // Start loop
+				Draw16x1616bwin(dh_, ebx, ebp, esi, 0, 0);
+				Draw16x1616bwin(dh_, ebx, ebp, esi, 1, 1);
+				Draw16x1616bwin(dh_, ebx, ebp, esi, 2, 2);
+				Draw16x1616bwin(dh_, ebx, ebp, esi, 3, 3);
+				Draw16x1616bwin(dh_, ebx, ebp, esi, 4, 4);
+				Draw16x1616bwin(dh_, ebx, ebp, esi, 5, 5);
+				Draw16x1616bwin(dh_, ebx, ebp, esi, 6, 6);
+				Draw16x1616bwin(dh_, ebx, ebp, esi, 7, 7);
+			}
+		}
+		esi += 8;
+		ebp += 8;
+		if (!(a16x16xinc & 0x01)) ++dl;
+		if (dl == 0x20)
+		{
+			dl  = 0;
+			edi = temptile;
+		}
+	}
+	while (--tileleft16b != 0);
+	if (curmosaicsz != 1)
+	{
+		u4 edx = curmosaicsz << 8;
+		asm volatile("push %%ebp;  call %P1;  pop %%ebp" : "+d" (edx) : "X" (domosaic16b) : "cc", "memory", "eax", "ecx", "esi", "edi");
+	}
+}
+
+
 // Processes & Draws 16x16 tiles in 2, 4, & 8 bit mode
 static void Draw16x1616b(u1 const dh, u1 const* const ebx, u2* const esi, u4 const p1, u4 const p2)
 {
@@ -579,8 +657,7 @@ void draw16x1616b(u4 const eax, u4 const ecx, u2* const edx, u1* const ebx, u4 c
 
 	if (curmosaicsz == 1 && winon != 0)
 	{
-		u4 eax = 0;
-		asm volatile("push %%ebp;  call %P3;  pop %%ebp" : "+a" (eax), "+S" (esi), "+D" (edi) : "X" (draw16x1616bwinon) : "cc", "memory", "ecx", "edx", "ebx");
+		draw16x1616bwinon(esi, edi);
 	}
 	else
 	{
