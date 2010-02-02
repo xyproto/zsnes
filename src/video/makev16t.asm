@@ -593,7 +593,7 @@ NEWSYM drawbackgrndsub16t
     test byte[bgtilesz],cl
     jnz .16x16
     mov ecx,[bg1yaddval+ebp*4]
-    call draw8x816b
+    ccallv draw8x816b, eax, ecx, edx, ebx, ebp, esi, edi
     cmp byte[drawn],33
     jne .notalldrawn
     mov al,[curbgnum]
@@ -672,7 +672,7 @@ NEWSYM drawbackgrndmain16t
     test byte[bgtilesz],cl
     jnz .16x16
     mov ecx,[bg1yaddval+ebp*4]
-    call draw8x816b
+    ccallv draw8x816b, eax, ecx, edx, ebx, ebp, esi, edi
     cmp byte[drawn],33
     jne .notalldrawn
     mov al,[curbgnum]
@@ -851,7 +851,7 @@ NEWSYM drawbackgrndsub16tfix
     test byte[bgtilesz],cl
     jnz .16x16
     mov ecx,[bg1yaddval+ebp*4]
-    call draw8x816b
+    ccallv draw8x816b, eax, ecx, edx, ebx, ebp, esi, edi
     cmp byte[drawn],33
     jne .notalldrawn
     mov al,[curbgnum]
@@ -923,7 +923,7 @@ NEWSYM drawbackgrndmain16tfix
     test byte[bgtilesz],cl
     jnz .16x16
     mov ecx,[bg1yaddval+ebp*4]
-    call draw8x816b
+    ccallv draw8x816b, eax, ecx, edx, ebx, ebp, esi, edi
     cmp byte[drawn],33
     jne .notalldrawn
     mov al,[curbgnum]

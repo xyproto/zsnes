@@ -728,6 +728,134 @@ void draw16x1616b(u4 const eax, u4 const ecx, u2* const edx, u1* const ebx, u4 c
 }
 
 
+static void Draw8x816bmacro(u1 const dh, u1 const* const ebx, u2* const esi, u4 const p1)
+{
+	u1 const al = ebx[p1];
+	if (al == 0) return;
+	esi[p1] = pal16b[(al + dh) & 0xFF];
+}
+
+
+static void Draw8x816bflipmacro(u1 const dh, u1 const* const ebx, u2* const esi, u4 const p1)
+{
+	u1 const al = ebx[7 - p1];
+	if (al == 0) return;
+	esi[p1] = pal16b[(al + dh) & 0xFF];
+}
+
+
+void draw8x816b(u4 eax, u4 ecx, u2* edx, u1* ebx, u4 const layer, u4 eax_, u2 const* edi)
+{
+	if (osm2dis != 1 && bgmode == 2)
+	{
+		static u4 ebp; // XXX HACK: We are out of registers
+		ebp = layer;
+		asm volatile("push %%ebp;  mov %7, %%ebp;  call %P6;  pop %%ebp" : "+a" (eax), "+c" (ecx), "+d" (edx), "+b" (ebx), "+S" (eax_), "+D" (edi) : "X" (draw8x816boffset), "m" (ebp) : "cc", "memory");
+		return;
+	}
+	if (bgmode == 5)
+	{
+		asm volatile("push %%ebp;  call %P6;  pop %%ebp" : "+a" (eax), "+c" (ecx), "+d" (edx), "+b" (ebx), "+S" (eax_), "+D" (edi) : "X" (draw16x816) : "cc", "memory");
+		return;
+	}
+	temp      = eax;
+	bshifter  = eax >> 8;
+	yadder    = ecx;
+	tempcach  = ebx;
+	yrevadder = 56 - ecx;
+	// esi = pointer to video buffer
+	winptrref = cwinptr - eax_;
+	u2* esi = (u2*)curvidoffset - eax_; // esi = [vidbuffer] + curypos * 288 + 16 - HOfs
+	if (curmosaicsz != 1)
+	{
+		memset(xtravbuf + 16, 0, 256 * sizeof(*xtravbuf));
+		esi = xtravbuf + 16 - eax_;
+	}
+	temptile = edx;
+	bgsubby  = 262144;
+	u1* ecx_ = vcache2b + 262144;
+	bgofwptr = ecx_;
+	if (tempcach >= ecx_)
+	{
+		bgsubby  = 131072;
+		ecx_     = vcache4b + 131072;
+		bgofwptr = ecx_;
+		if (tempcach >= ecx_)
+		{
+			ecx_     = vcache8b + 65536;
+			bgofwptr = ecx_;
+			bgsubby  = 65536;
+		}
+	}
+	/* tile value : bit 15 = flipy, bit 14 = flipx, bit 13 = priority value
+	 *              bit 10-12 = palette, 0-9=tile# */
+	if (curmosaicsz == 1 && winon != 0)
+	{
+		asm volatile("push %%ebp;  call %P2;  pop %%ebp" : "+S" (esi), "+D" (edi) : "X" (draw8x816bwinon) : "cc", "memory", "eax", "ecx", "edx", "ebx");
+		return;
+	}
+	tileleft16b = 33;
+	drawn       =  0;
+	u1 dl = temp;
+	do
+	{
+		u2       ax = *edi++;
+		u1 const dh = ax >> 8 ^ curbgpr;
+		if (!(dh & 0x20))
+		{
+			++drawn;
+			ax &= 0x03FF; // filter out tile #
+			u1 const* ebx = tempcach + ax * 64;
+			if (ebx >= bgofwptr) ebx -= bgsubby;
+			ebx += dh & 0x80 ? yrevadder : yadder;
+			u1 const dh_ = ((dh & 0x1C) << bshifter) + bgcoloradder; // process palette # (bits 10-12)
+			if (dh & 0x40)
+			{ // reversed loop
+				if (*(u4 const*)(ebx + 4) != 0)
+				{
+					Draw8x816bflipmacro(dh_, ebx, esi, 0);
+					Draw8x816bflipmacro(dh_, ebx, esi, 1);
+					Draw8x816bflipmacro(dh_, ebx, esi, 2);
+					Draw8x816bflipmacro(dh_, ebx, esi, 3);
+				}
+				if (*(u4 const*)ebx != 0)
+				{
+					Draw8x816bflipmacro(dh_, ebx, esi, 4);
+					Draw8x816bflipmacro(dh_, ebx, esi, 5);
+					Draw8x816bflipmacro(dh_, ebx, esi, 6);
+					Draw8x816bflipmacro(dh_, ebx, esi, 7);
+				}
+			}
+			else
+			{ // Begin Normal Loop
+				// Start loop
+				if (*(u4 const*)ebx != 0)
+				{
+					Draw8x816bmacro(dh_, ebx, esi, 0);
+					Draw8x816bmacro(dh_, ebx, esi, 1);
+					Draw8x816bmacro(dh_, ebx, esi, 2);
+					Draw8x816bmacro(dh_, ebx, esi, 3);
+				}
+				if (*(u4 const*)(ebx + 4) != 0)
+				{
+					Draw8x816bmacro(dh_, ebx, esi, 4);
+					Draw8x816bmacro(dh_, ebx, esi, 5);
+					Draw8x816bmacro(dh_, ebx, esi, 6);
+					Draw8x816bmacro(dh_, ebx, esi, 7);
+				}
+			}
+		}
+		if (++dl == 0x20) edi = temptile;
+	}
+	while (esi += 8, --tileleft16b != 0);
+	if (drawn != 0 && curmosaicsz != 1)
+	{
+		u4 edx = curmosaicsz << 8;
+		asm volatile("push %%ebp;  call %P1;  pop %%ebp" : "+d" (edx) : "X" (domosaic16b) : "cc", "memory", "eax", "ecx", "esi", "edi");
+	}
+}
+
+
 static void drawbackgrndmain16b(Layer const layer)
 {
 	if (colormodeofs[layer] == 0) return;
@@ -759,9 +887,7 @@ static void drawbackgrndmain16b(Layer const layer)
 	}
 	else
 	{
-		static u4 ebp; // XXX HACK: We are out of registers
-		ebp = layer;
-		asm volatile("push %%ebp;  mov %7, %%ebp;  call %P6;  pop %%ebp" : "+a" (eax), "+c" (ecx), "+d" (edx), "+b" (ebx), "+S" (esi), "+D" (edi) : "X" (draw8x816b), "m" (ebp) : "cc", "memory");
+		draw8x816b(eax, ecx, edx, ebx, layer, esi, edi);
 	}
 	if (drawn == 33) alreadydrawn |= curbgnum;
 }
