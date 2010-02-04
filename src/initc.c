@@ -1447,6 +1447,10 @@ void clearSPCRAM()
 void clearmem2()
 {
   memset(sram, 0xFF, 65536);
+  memset(vram, 0, 65536);
+  memset(vidmemch2, 1, 4096);
+  memset(vidmemch4, 1, 4096);
+  memset(vidmemch8, 1, 4096);
   clearSPCRAM();
 }
 
@@ -1457,16 +1461,12 @@ void clearmem()
   memset(vidbuffer, 0, 131072);
   memset(wramdataa, 0, 65536);
   memset(ram7fa, 0, 65536);
-  memset(vram, 0, 65536);
   memset(sram, 0, 65536*2);
   memset(regptra, 0, 49152);
   memset(regptwa, 0, 49152);
   memset(vcache2b, 0, 262144+256);
   memset(vcache4b, 0, 131072+256);
   memset(vcache8b, 0, 65536+256);
-  memset(vidmemch2, 0, 4096);
-  memset(vidmemch4, 0, 4096);
-  memset(vidmemch8, 0, 4096);
   memset(pal16b, 0, 1024);
   memset(pal16bcl, 0, 1024);
   memset(pal16bclha, 0, 1024);
@@ -1489,10 +1489,6 @@ extern uint8_t DSPMem[256];
 
 void clearvidsound()
 {
-  memset(vram, 0, 65536);
-  memset(vidmemch2, 0, 4096);
-  memset(vidmemch4, 0, 4096);
-  memset(vidmemch8, 0, 4096);
   memset(BRRBuffer, 0, PHdspsave);
   memset(&echoon0, 0, PHdspsave2);
   memset(echobuf, 0, 90000);
