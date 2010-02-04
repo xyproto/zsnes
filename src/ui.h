@@ -36,6 +36,7 @@ extern u1*  vcache8b;               // 8-bit video cache
 extern u1*  vidbuffer;              // video buffer (1024x239 = 244736)
 extern u1*  vidbufferofsa;          // offset 1
 extern u1*  vidbufferofsb;          // offset 2
+extern u1*  vram;                   // vram = 65536
 extern u1*  wramdata;               // stack (64K = 65536)
 extern u2   VolumeConvTable[32768];
 extern u2   fulladdtab[65536];

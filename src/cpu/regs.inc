@@ -78,15 +78,15 @@ NEWSYM bg1objptr, dw 0
 NEWSYM bg2objptr, dw 0
 NEWSYM bg3objptr, dw 0
 NEWSYM bg4objptr, dw 0
-NEWSYM bg1scrolx, dw 0             ; background 1 x position
-NEWSYM bg2scrolx, dw 0             ; background 2 x position
-NEWSYM bg3scrolx, dw 0             ; background 3 x position
-NEWSYM bg4scrolx, dw 0             ; background 4 x position
+NEWSYM bg1scrolx, dw 0
+NEWSYM bg2scrolx, dw 0
+NEWSYM bg3scrolx, dw 0
+NEWSYM bg4scrolx, dw 0
 NEWSYM bg1sx,     dw 0             ; Temporary Variable for Debugging purposes
-NEWSYM bg1scroly, dw 0             ; background 1 y position
-NEWSYM bg2scroly, dw 0             ; background 2 y position
-NEWSYM bg3scroly, dw 0             ; background 3 y position
-NEWSYM bg4scroly, dw 0             ; background 4 y position
+NEWSYM bg1scroly, dw 0
+NEWSYM bg2scroly, dw 0
+NEWSYM bg3scroly, dw 0
+NEWSYM bg4scroly, dw 0
 NEWSYM addrincr,  dw 2             ; vram increment (2,64,128,256)
 NEWSYM vramincr,  db 0             ; 0 = inrement at 2118/2139, 1 = 2119,213A
 NEWSYM vramread,  db 0             ; previous character for vram read
@@ -211,15 +211,15 @@ NEWSYM scrndis,   db 0
 ALIGN32
 NEWSYM oamaddr,   dd 0             ; oam address
 
-NEWSYM bg1ptrx,   dd 0             ; pointer to background1
-NEWSYM bg2ptrx,   dd 0             ; pointer to background2
-NEWSYM bg3ptrx,   dd 0             ; pointer to background3
-NEWSYM bg4ptrx,   dd 0             ; pointer to background4
+NEWSYM bg1ptrx,   dd 0
+NEWSYM bg2ptrx,   dd 0
+NEWSYM bg3ptrx,   dd 0
+NEWSYM bg4ptrx,   dd 0
 
-NEWSYM bg1ptry,   dd 0             ; pointer to background1
-NEWSYM bg2ptry,   dd 0             ; pointer to background2
-NEWSYM bg3ptry,   dd 0             ; pointer to background3
-NEWSYM bg4ptry,   dd 0             ; pointer to background4
+NEWSYM bg1ptry,   dd 0
+NEWSYM bg2ptry,   dd 0
+NEWSYM bg3ptry,   dd 0
+NEWSYM bg4ptry,   dd 0
 
 NEWSYM Voice0Disable, db 1
 NEWSYM Voice1Disable, db 1

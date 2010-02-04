@@ -63,7 +63,7 @@ unsigned char *sfxramdata;          // SuperFX Ram Data
 unsigned char *setaramdata;         // Seta ST010/ST011 SRam Data
 u1*           wramdata;
 unsigned char *ram7f;               // ram @ 7f = 65536
-unsigned char *vram;                // vram = 65536
+u1*           vram;
 unsigned char *sram;                // sram = 65536*2 = 131072
 eop*          regptra[0x3000];
 eop*          regptwa[0x3000];

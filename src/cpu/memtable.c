@@ -118,9 +118,7 @@ void unpackfunct()
 #define bit_test(byte, checkbit) (byte & (1 << checkbit)) ? 1 : 0
 
 extern unsigned int GlobalVL, GlobalVR, EchoVL, EchoVR, EchoRate[16], MaxEcho;
-extern unsigned int EchoFB, NoiseSpeeds[32], dspPAdj, NoiseInc, bg1ptrx;
-extern unsigned int bg1ptry, bg2ptrx, bg2ptry, bg3ptrx, bg3ptry, bg4ptrx;
-extern unsigned int bg4ptry;
+extern unsigned int EchoFB, NoiseSpeeds[32], dspPAdj, NoiseInc;
 extern int FIRTAPVal0, FIRTAPVal1, FIRTAPVal2, FIRTAPVal3, FIRTAPVal4;
 extern int FIRTAPVal5, FIRTAPVal6, FIRTAPVal7;
 extern unsigned short VolumeConvTable[32768], bg1ptrb, bg1ptrc;
@@ -188,14 +186,14 @@ void repackfunct()
   Voice6Noise = bit_test(DSPMem[0x3D], 6);
   Voice7Noise = bit_test(DSPMem[0x3D], 7);
 
-  bg1ptrx = bg1ptrb - bg1ptr[0];
-  bg1ptry = bg1ptrc - bg1ptr[0];
-  bg2ptrx = bg2ptrb - bg1ptr[1];
-  bg2ptry = bg2ptrc - bg1ptr[1];
-  bg3ptrx = bg3ptrb - bg1ptr[2];
-  bg3ptry = bg3ptrc - bg1ptr[2];
-  bg4ptrx = bg4ptrb - bg1ptr[3];
-  bg4ptry = bg4ptrc - bg1ptr[3];
+  bg1ptrx[0] = bg1ptrb - bg1ptr[0];
+  bg1ptry[0] = bg1ptrc - bg1ptr[0];
+  bg1ptrx[1] = bg2ptrb - bg1ptr[1];
+  bg1ptry[1] = bg2ptrc - bg1ptr[1];
+  bg1ptrx[2] = bg3ptrb - bg1ptr[2];
+  bg1ptry[2] = bg3ptrc - bg1ptr[2];
+  bg1ptrx[3] = bg4ptrb - bg1ptr[3];
+  bg1ptry[3] = bg4ptrc - bg1ptr[3];
 
   // 16x16 tiles
   BG116x16t = bit_test(bgtilesz, 0);

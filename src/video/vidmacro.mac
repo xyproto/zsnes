@@ -1342,30 +1342,6 @@
 %%skip
 %endmacro
 
-;*******************************************************
-; Processes & Draws 8x8 tiles in 2, 4, & 8 bit mode
-;*******************************************************
-
-%macro Draw8x816bmacro 1
-    mov al,[ebx+%1]
-    or al,al
-    jz %%loop
-    add al,dh
-    mov ecx,[pal16b+eax*4]
-    mov [esi+%1*2],cx
-%%loop
-%endmacro
-
-%macro Draw8x816bflipmacro 1
-    mov al,[ebx+7-%1]
-    or al,al
-    jz %%loop
-    add al,dh
-    mov ecx,[pal16b+eax*4]
-    mov [esi+%1*2],cx
-%%loop
-%endmacro
-
 %macro sprdrawa16b 1
     xor eax,eax
     mov al,[esi]

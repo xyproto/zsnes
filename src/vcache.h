@@ -3,6 +3,7 @@
 
 #include "types.h"
 
+extern void cachesingle4bng();
 extern void cachesprites();
 extern void processsprites();
 
@@ -24,6 +25,11 @@ extern u2 vesa2_rtrcla;      // red transparency (AND) clear (not(bit+4))
 extern u2 vesa2_usbit;       // Unused bit in proper bit location
 extern u2 vesa2_x;           // Desired screen width
 extern u2 vesa2_y;           // Height
+extern u4 OMBGTestVal;
+extern u4 ngptrdat2;
+extern u4 ofshvaladd;
+extern u4 ofsmcptr2;
+extern u4 ofsmtptrs;
 extern u4 vesa2_bits;        // Bits per pixel
 extern u4 vesa2_bpos;        // Blue bit position
 extern u4 vesa2_bposng;      // Blue bit position

@@ -728,6 +728,7 @@ void draw16x1616b(u4 const eax, u4 const ecx, u2* const edx, u1* const ebx, u4 c
 }
 
 
+// Processes & Draws 8x8 tiles in 2, 4, & 8 bit mode
 static void Draw8x816bmacro(u1 const dh, u1 const* const ebx, u2* const esi, u4 const p1)
 {
 	u1 const al = ebx[p1];
@@ -744,13 +745,213 @@ static void Draw8x816bflipmacro(u1 const dh, u1 const* const ebx, u2* const esi,
 }
 
 
+// Processes & Draws 8x8 offset mode in Mode 2/4
+static void initoffsetmode(u4 const ebp, u2 const* const edi)
+{
+	u4 ebx = 0x2000 << ebp;
+	OMBGTestVal = ebx;
+	u4 ecx = bg1scroly[ebp] + ebx;
+	u4 edx = bg1scroly[2];
+	if (edx != 0xFFFF) edx &= 0x01FF;
+	u4 eax = (bg1ptr[2] + (edx >> 3 << 6)) & 0x0000FFFF;
+	ebx = 0;
+	ebx = *(u4*)&curypos; // XXX cast makes no sense, variable defined in .c
+	ofsmcyps = ebx;
+	eax = (eax + ((bg1scrolx[2] & 0x00F8) >> 3 << 1)) & 0x0000FFFF;
+	if (bg1scroly[2] > 0xFFF7) eax = (eax + 0x0780) & 0x0000FFFF;
+	eax += 0x40;
+	ofsmcptr  = vram + (eax & 0xFFFFFFC0);
+	ofsmcptr2 = eax & 0x3F;
+	ofsmady   = bg1ptry[ebp];
+	ofsmadx   = bg1ptrx[ebp];
+	eax = *(u4*)&bg1ptr[ebp]; // XXX strange cast
+	ofsmtptr  = eax;
+	ofsmtptrs = eax;
+	if (ecx & 0x0100) eax += bg1ptry[ebp];
+	eax += (ecx * 8) & 0x07C0; // 0x1F * 0x40
+	yposngom     = yadder;
+	flipyposngom = yrevadder;
+	ecx = *(u4*)&bg1scrolx[ebp]; // XXX strange cast
+	edx = bg1ptrx[ebp];
+	if (ecx & 0x0100)
+	{
+		eax      += edx;
+		ofsmtptr += edx;
+		edx = edx & 0xFFFF0000 | -edx & 0x0000FFFF;
+	}
+	edx = edx & 0xFFFF0000 | (edx - 64) & 0x0000FFFF;
+	ecx = (ecx & 0x00F8) >> 2;
+	bgtxadd   = edx;
+	ofsmtptr += ecx;
+	ofsmmptr  = ecx + (eax & 0xFFFF);
+	bgsubby   = bg1objptr[ebp] >> 5;
+	ofsmmptr  = (u1 const*)edi - vram;
+	ofshvaladd = 0;
+}
+
+
+static void offsetmcachechk(u4 const eax)
+{ // Cache check
+	u4 const ecx = (eax + ngptrdat2) & 0x07FF;
+	if (vidmemch4[ecx] == 0) return;
+	asm volatile("call %P0" :: "X" (cachesingle4bng), "c" (ecx) : "cc", "memory");
+}
+
+
+static u2* procoffsetmode(void)
+{
+	// TODO most/all of the upper halfword preservation probably is pointless
+	ofsmmptr = ofsmmptr & 0xFFFF0000 | (ofsmmptr + 2) & 0x0000FFFF;
+	ofsmtptr = ofsmtptr & 0xFFFF0000 | (ofsmtptr + 2) & 0x0000FFFF;
+	u4 eax = flipyposngom;
+	yadder    = yposngom;
+	yrevadder = eax;
+	eax = eax & 0xFFFF0000 | ofsmmptr & 0x0000FFFF;
+	if ((eax & 0x3F) == 0)
+	{
+		u4 const ebx = bgtxadd;
+		eax      = eax      & 0xFFFF0000 | (eax      + ebx) & 0x0000FFFF;
+		ofsmmptr = ofsmmptr & 0xFFFF0000 | (ofsmmptr + ebx) & 0x0000FFFF;
+		ofsmtptr = ofsmtptr & 0xFFFF0000 | (ofsmtptr + ebx) & 0x0000FFFF;
+	}
+	u1*  edi  = vram + eax;
+	u4* const ebx_ = (u4*)(ofsmcptr + ofsmcptr2);
+	eax = OMBGTestVal;
+	if (*ebx_ & eax)
+	{
+		u4 const ebx = *ebx_ & 0x003FF + ofsmcyps;
+		eax = eax & 0xFFFF0000 | ofsmtptr & 0x0000FFFF;
+		if (ebx & 0x100) eax = eax & 0xFFFF0000 | (eax + ofsmady) & 0x0000FFFF;
+		u4 const edx = (ebx & 0x07) << 3;
+		eax       = eax & 0xFFFF0000 | (eax + ((ebx & 0xF8) << 3)) & 0x0000FFFF;
+		yadder    = edx;
+		yrevadder = edx ^ 0x38;
+		edi       = vram + eax;
+	}
+	ofshvaladd += 8;
+	ofsmcptr2   = (ofsmcptr2 + 2) & 0x3F;
+	if (ebx_[-16] & OMBGTestVal)
+	{
+		u4       eax = edi - vram;
+		u4 const ebx = ebx_[-16] + ofshvaladd;
+		eax = eax & 0xFFFF0000 | (eax + ofsmtptr - ofsmtptrs) & 0x0000FFFF;
+		if (ebx & 0x100) eax = eax & 0xFFFF0000 | (eax + ofsmadx) & 0x0000FFFF;
+		eax = eax & 0xFFFF0000 | (eax + ((ebx & 0xF8) >> 2)) & 0x0000FFFF;
+		edi = vram + eax;
+	}
+	return (u2*)edi;
+}
+
+
+// Processes & Draws 8x8 tiles, offset mode
+void draw8x816boffset(u4 const eax, u4 const ecx, u2* const edx, u1* const ebx, u4 const ebp, u4 const eax_, u2 const* edi)
+{
+	temp      = eax;
+	bshifter  = eax >> 8;
+	yadder    = ecx;
+	tempcach  = ebx;
+	yrevadder = 56 - ecx;
+	initoffsetmode(ebp, edi);
+	// esi = pointer to video buffer
+	winptrref = cwinptr - eax_;
+	u2* esi = (u2*)curvidoffset - eax_; // esi = [vidbuffer] + curypos * 288 + 16 - HOfs
+	if (curmosaicsz != 1)
+	{
+		memset(xtravbuf + 16, 0, 256 * sizeof(*xtravbuf));
+		esi = xtravbuf + 16 - eax_;
+	}
+	temptile = edx;
+	bgsubby  = 262144;
+	u1* ecx_ = vcache2b + 262144;
+	bgofwptr = ecx_;
+	if (tempcach >= ecx_)
+	{
+		bgsubby  = 131072;
+		ecx_     = vcache4b + 131072;
+		bgofwptr = ecx_;
+		if (tempcach >= ecx_)
+		{
+			ecx_     = vcache8b + 65536;
+			bgofwptr = ecx_;
+			bgsubby  = 65536;
+		}
+	}
+	/* tile value : bit 15 = flipy, bit 14 = flipx, bit 13 = priority value
+	 *              bit 10-12 = palette, 0-9=tile# */
+	if (curmosaicsz == 1 && winon != 0)
+	{
+		asm volatile("push %%ebp;  call %P2;  pop %%ebp" : "+S" (esi), "+D" (edi) : "X" (draw8x816bwinonoffset) : "cc", "memory", "eax", "ecx", "edx", "ebx");
+	}
+	else
+	{
+		tileleft16b = 33;
+		drawn       =  0;
+		do
+		{
+			u2       ax = *edi++;
+			u1 const dh = ax >> 8 ^ curbgpr;
+			if (!(dh & 0x20))
+			{
+				++drawn;
+				ax &= 0x03FF; // filter out tile #
+				offsetmcachechk(ax);
+				u1 const* ebx = tempcach + ax * 64;
+				if (ebx >= bgofwptr) ebx -= bgsubby;
+				ebx += dh & 0x80 ? yrevadder : yadder;
+				u2 const dh_ = ((dh & 0x1C) << bshifter) + bgcoloradder; // process palette # (bits 10-12)
+				if (dh & 0x40)
+				{ // reversed loop
+					if (*(u4 const*)(ebx + 4) != 0)
+					{
+						Draw8x816bflipmacro(dh_, ebx, esi, 0);
+						Draw8x816bflipmacro(dh_, ebx, esi, 1);
+						Draw8x816bflipmacro(dh_, ebx, esi, 2);
+						Draw8x816bflipmacro(dh_, ebx, esi, 3);
+					}
+					if (*(u4 const*)ebx != 0)
+					{
+						Draw8x816bflipmacro(dh_, ebx, esi, 4);
+						Draw8x816bflipmacro(dh_, ebx, esi, 5);
+						Draw8x816bflipmacro(dh_, ebx, esi, 6);
+						Draw8x816bflipmacro(dh_, ebx, esi, 7);
+					}
+				}
+				else
+				{ // Begin Normal Loop
+					// Start loop
+					if (*(u4 const*)ebx != 0)
+					{
+						Draw8x816bmacro(dh_, ebx, esi, 0);
+						Draw8x816bmacro(dh_, ebx, esi, 1);
+						Draw8x816bmacro(dh_, ebx, esi, 2);
+						Draw8x816bmacro(dh_, ebx, esi, 3);
+					}
+					if (*(u4 const*)(ebx + 4) != 0)
+					{
+						Draw8x816bmacro(dh_, ebx, esi, 4);
+						Draw8x816bmacro(dh_, ebx, esi, 5);
+						Draw8x816bmacro(dh_, ebx, esi, 6);
+						Draw8x816bmacro(dh_, ebx, esi, 7);
+					}
+				}
+			}
+			edi = procoffsetmode();
+		}
+		while (esi += 8, --tileleft16b != 0);
+		if (drawn != 0 && curmosaicsz != 1)
+		{
+			u4 edx = curmosaicsz << 8;
+			asm volatile("push %%ebp;  call %P1;  pop %%ebp" : "+d" (edx) : "X" (domosaic16b) : "cc", "memory", "eax", "ecx", "esi", "edi");
+		}
+	}
+}
+
+
 void draw8x816b(u4 eax, u4 ecx, u2* edx, u1* ebx, u4 const layer, u4 eax_, u2 const* edi)
 {
 	if (osm2dis != 1 && bgmode == 2)
 	{
-		static u4 ebp; // XXX HACK: We are out of registers
-		ebp = layer;
-		asm volatile("push %%ebp;  mov %7, %%ebp;  call %P6;  pop %%ebp" : "+a" (eax), "+c" (ecx), "+d" (edx), "+b" (ebx), "+S" (eax_), "+D" (edi) : "X" (draw8x816boffset), "m" (ebp) : "cc", "memory");
+		draw8x816boffset(eax, ecx, edx, ebx, layer, eax_, edi);
 		return;
 	}
 	if (bgmode == 5)

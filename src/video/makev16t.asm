@@ -2645,7 +2645,9 @@ NEWSYM drawspritesfullsubpriow
 
 NEWSYM draw8x816bt
     cmp byte[bgmode],2
-    je near draw8x816boffset
+    jne .nodraw8x816boffset
+    ccallv draw8x816boffset, eax, ecx, edx, ebx, ebp, esi, edi
+.nodraw8x816boffset
     cmp byte[bgmode],5
     je near draw16x816t
     mov [temp],al
