@@ -26,19 +26,24 @@ AC_CONFIG_HEADER(config.h)
 
 VERSION=1.52
 
-CFLAGS+=" -pipe -I. -I/usr/local/include -I/usr/include"
-dnl - You might wanna change -I/usr/include if you're trying to do this with
-dnl Mingw, because it doesnt have a standard file tree. Maybe if ming do this
-dnl else do -I/usr/include. Or some shit. You figure it out.
-
-LDFLAGS+=" -L/usr/local/lib -L/usr/lib"
-dnl - Same thing here.
-
 dnl - Where are our compilers, and who are we compiling for?
 AC_CANONICAL_TARGET
 AC_PROG_INSTALL
 AC_PROG_CC
 AC_PROG_CXX
+
+CFLAGS+=" -pipe -I. -I/usr/local/include -I/usr/include"
+dnl - You might wanna change -I/usr/include if you're trying to do this with
+dnl Mingw, because it doesnt have a standard file tree. Maybe if ming do this
+dnl else do -I/usr/include. Or some shit. You figure it out.
+
+case $target in
+  x86_64-*)
+    LDFLAGS+=" -L/usr/local/lib32 -L/usr/lib32"
+    ;;
+esac
+LDFLAGS+=" -L/usr/local/lib -L/usr/lib"
+dnl - Same thing here.
 
 AC_ARG_WITH(nasm-prefix,
   AC_HELP_STRING([--with-nasm-prefix=PFX],[Path to nasm (optional)]),
@@ -55,23 +60,11 @@ AC_ARG_WITH(zconf-path,
   ZCONF="$withval",
   ZCONF="")
 
-AC_ARG_WITH(bin,
-  AC_HELP_STRING([--with-bin=BITS],[32/64-bit binaries with NASM [[native]]]),
-  binfmt="$withval",
-  binfmt="64")
+ELF="-f elf -DELF"
+
 case $target in
   x86_64-*)
-    if test x$binfmt = x64; then
-      NFLAGS+=" -D__AMD64__"
-      ELF="-f elf64 -DELF"
-    else
-      binfmt="32"
-      ELF="-f elf -DELF"
-    fi
-    ;;
-  *)
-    binfmt="32"
-    ELF="-f elf -DELF"
+    CFLAGS+=" -m32"
     ;;
 esac
 
@@ -93,7 +86,7 @@ case $target in
     CFLAGS+=" -D__BSDSDL__"
     NFLAGS+=" -D__BSDSDL__ $ELF"
     ;;
-  *-*-darwin* )
+  *-*-darwin*)
     CFLAGS+=" -D__MACOSX__ -D__OPENGL__ -arch i386 -mdynamic-no-pic -mstackrealign -fno-unit-at-a-time"
     NFLAGS+=" -D__MACOSX__ -D__OPENGL__ -f macho -DMACHO"
     PSRFLAGS+=" -D__OPENGL__"
@@ -298,7 +291,7 @@ else
     if test x$force_arch = x; then
       AC_MSG_WARN([If you intend to distribute this binary, make sure you use force_arch and set to i586 (or whichever CPU arch you intend for)])
     fi
-    CFLAGS+=" -O3 -fomit-frame-pointer -fprefetch-loop-arrays -fforce-addr $STRIP -D__RELEASE__"
+    CFLAGS+=" -O3 -fomit-frame-pointer -fprefetch-loop-arrays $STRIP -D__RELEASE__"
     NFLAGS+=" -O99999999 -D__RELEASE__"
   else
     CFLAGS+=" -O2 -fomit-frame-pointer $STRIP"
@@ -353,7 +346,7 @@ AC_OUTPUT
 dnl - Info output
 echo
 echo
-echo $ECHO_N "ZSNES v$VERSION $binfmt-bits (with$ECHO_C"
+echo $ECHO_N "ZSNES v$VERSION (with$ECHO_C"
 if test x$qtd != xyes; then
   echo $ECHO_N "${ECHO_T}out$ECHO_C"
 fi
@@ -402,8 +395,5 @@ case x$target in
     ;;
 esac
 echo "${ECHO_T}make' and pray."
-if test x$release = xyes; then
-  echo "${ECHO_T}Note that building can take a while on pre-2008 hardware."
-  echo "${ECHO_T}If you think the build process froze, it didn't, let it finish."
-fi
 echo
+

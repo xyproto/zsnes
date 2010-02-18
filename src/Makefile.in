@@ -70,7 +70,8 @@ NET_CO=
 
 PORT_AO=$(PORT_D)/sdlintrf.o
 PORT_CO=$(PORT_D)/audio.o $(PORT_D)/battery.o @GL_DRAW@ $(PORT_D)/lib.o\
-	$(PORT_D)/safelib.o $(PORT_D)/sdllink.o $(PORT_D)/sw_draw.o $(PORT_D)/x11.o
+	$(PORT_D)/safelib.o $(PORT_D)/sdllink.o $(PORT_D)/sw_draw.o\
+	$(PORT_D)/x11.o
 
 TOOL_CO=$(TOOL_D)/fileutil.o $(TOOL_D)/strutil.o
 
@@ -144,7 +145,7 @@ $(TOOL_D)/varrep: $(TOOL_D)/varrep.cpp $(TOOL_CO)
 
 include makefile.dep
 
-config.status: configure.in
+config.status: config.guess config.sub configure.in
 	./autogen.sh --recheck
 Makefile: config.status Makefile.in
 	./config.status
@@ -173,3 +174,4 @@ tclean:
 distclean: clean tclean
 	rm -f Makefile aclocal.m4 configure config.log \
 	config.status config.h $(TOOL_D)/depbuild
+

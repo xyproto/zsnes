@@ -315,21 +315,21 @@ if test x$ac_status != x0; then
   AC_MSG_RESULT(nope)
   AC_MSG_ERROR(moc doesn't work)
 fi
-bnv_try="$CXX -c $QT_CFLAGS -o moc_myqt.o moc_myqt.cpp"
+bnv_try="$CXX $CFLAGS -c $QT_CFLAGS -o moc_myqt.o moc_myqt.cpp"
 AC_TRY_EVAL(bnv_try)
 if test x$ac_status != x0; then
   rm -f moc_myqt.cpp myqt.cpp myqt.h
   AC_MSG_RESULT(nope)
   AC_MSG_ERROR(Couldn't compile moc output)
 fi
-bnv_try="$CXX -c $QT_CFLAGS -o myqt.o myqt.cpp"
+bnv_try="$CXX $CFLAGS -c $QT_CFLAGS -o myqt.o myqt.cpp"
 AC_TRY_EVAL(bnv_try)
 if test x$ac_status != x0; then
   rm -f moc_myqt.cpp moc_myqt.o myqt.cpp myqt.h
   AC_MSG_RESULT(nope)
   AC_MSG_ERROR(Couldn't compile test source)
 fi
-bnv_try="$CXX $QT_CFLAGS $QT_LDFLAGS -o myqt myqt.o moc_myqt.o"
+bnv_try="$CXX $CFLAGS $QT_CFLAGS $QT_LDFLAGS -o myqt myqt.o moc_myqt.o"
 AC_TRY_EVAL(bnv_try)
 if test x$ac_status != x0; then
   rm -f moc_myqt.cpp moc_myqt.o myqt.cpp myqt.h myqt.o
