@@ -335,7 +335,6 @@ static void update_battery_info()
   unsigned int count = CFArrayGetCount(powerSourcesList);
   unsigned int i;
   unsigned int tmp;
-  char         ret;
 
   int totalCurrentCapacity = 0, totalMaxCapacity = 0;
 
@@ -362,7 +361,6 @@ static void update_battery_info()
       int currentCapacity, maxCapacity;
 
       CFStringRef currentState = CFDictionaryGetValue(description, CFSTR(kIOPSPowerSourceStateKey));
-      CFNumberRef timeToEmptyNum = CFDictionaryGetValue(description, CFSTR(kIOPSTimeToEmptyKey));
 
       if (CFEqual(currentState, CFSTR(kIOPSACPowerValue)) && (HasBattery != 1))
       {

@@ -660,7 +660,7 @@ void adjgammamsg()
     MessageOn = MsgCount;
 }
 
-void adjsoundchmsg(char *soundch, char *soundstatus, char num)
+void adjsoundchmsg(unsigned char *soundch, unsigned char *soundstatus, char num)
 {
     *soundch ^= 0x01;
     *soundstatus = 0;

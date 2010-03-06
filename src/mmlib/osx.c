@@ -1475,7 +1475,7 @@ static unsigned long  HIDQueueDevice (pRecDevice pDevice)
 /* -- END HID UTILITIES -- */
 
 
-static int available_mice = 0;
+static unsigned int available_mice = 0;
 static pRecDevice *devices = NULL;
 
 
@@ -1590,7 +1590,7 @@ static int macosx_hidmanager_init(void)
     available_mice = HIDCountDevices();
     if (available_mice > 0)
     {
-        int i;
+        unsigned int i;
         pRecDevice dev = NULL;
 
         dev = HIDGetFirstDevice();
