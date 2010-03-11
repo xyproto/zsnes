@@ -23,7 +23,7 @@ EXTSYM memaccessbankr8,memaccessbankr16,memaccessbankw8,memaccessbankw16
 EXTSYM regaccessbankr8,regaccessbankr16,regaccessbankw8,regaccessbankw16
 EXTSYM sramaccessbankr8b,sramaccessbankr16b,sramaccessbankw8b,sramaccessbankw16b
 EXTSYM Get_Time,Get_TimeDate,snesmmap,snesmap2
-EXTSYM curromsize,regptw,regptr,romdata
+EXTSYM curromsize,regptw,regptra,romdata
 EXTSYM SPC7110_4800,SPC7110_4806w,SPC7110initC
 
 %include "cpu/regs.mac"
@@ -120,74 +120,74 @@ NEWSYM SPC7110Reset
     ret
 
 NEWSYM initSPC7110regs
-    setreg 4800h*4,SPC4800
-    setreg 4801h*4,SPC4801
-    setreg 4802h*4,SPC4802
-    setreg 4803h*4,SPC4803
-    setreg 4804h*4,SPC4804
-    setreg 4805h*4,SPC4805
-    setreg 4806h*4,SPC4806
-    setreg 4807h*4,SPC4807
-    setreg 4808h*4,SPC4808
-    setreg 4809h*4,SPC4809
-    setreg 480Ah*4,SPC480A
-    setreg 480Bh*4,SPC480B
-    setreg 480Ch*4,SPC480C
+    setreg 4800h,SPC4800
+    setreg 4801h,SPC4801
+    setreg 4802h,SPC4802
+    setreg 4803h,SPC4803
+    setreg 4804h,SPC4804
+    setreg 4805h,SPC4805
+    setreg 4806h,SPC4806
+    setreg 4807h,SPC4807
+    setreg 4808h,SPC4808
+    setreg 4809h,SPC4809
+    setreg 480Ah,SPC480A
+    setreg 480Bh,SPC480B
+    setreg 480Ch,SPC480C
 
-    setreg 4810h*4,SPC4810
-    setreg 4811h*4,SPC4811
-    setreg 4812h*4,SPC4812
-    setreg 4813h*4,SPC4813
-    setreg 4814h*4,SPC4814
-    setreg 4815h*4,SPC4815
-    setreg 4816h*4,SPC4816
-    setreg 4817h*4,SPC4817
-    setreg 4818h*4,SPC4818
-    setreg 481Ah*4,SPC481A
+    setreg 4810h,SPC4810
+    setreg 4811h,SPC4811
+    setreg 4812h,SPC4812
+    setreg 4813h,SPC4813
+    setreg 4814h,SPC4814
+    setreg 4815h,SPC4815
+    setreg 4816h,SPC4816
+    setreg 4817h,SPC4817
+    setreg 4818h,SPC4818
+    setreg 481Ah,SPC481A
 
-    setreg 4820h*4,SPC4820
-    setreg 4821h*4,SPC4821
-    setreg 4822h*4,SPC4822
-    setreg 4823h*4,SPC4823
-    setreg 4824h*4,SPC4824
-    setreg 4825h*4,SPC4825
-    setreg 4826h*4,SPC4826
-    setreg 4827h*4,SPC4827
-    setreg 4828h*4,SPC4828
-    setreg 4829h*4,SPC4829
-    setreg 482Ah*4,SPC482A
-    setreg 482Bh*4,SPC482B
-    setreg 482Ch*4,SPC482C
-    setreg 482Dh*4,SPC482D
-    setreg 482Eh*4,SPC482E
-    setreg 482Fh*4,SPC482F
+    setreg 4820h,SPC4820
+    setreg 4821h,SPC4821
+    setreg 4822h,SPC4822
+    setreg 4823h,SPC4823
+    setreg 4824h,SPC4824
+    setreg 4825h,SPC4825
+    setreg 4826h,SPC4826
+    setreg 4827h,SPC4827
+    setreg 4828h,SPC4828
+    setreg 4829h,SPC4829
+    setreg 482Ah,SPC482A
+    setreg 482Bh,SPC482B
+    setreg 482Ch,SPC482C
+    setreg 482Dh,SPC482D
+    setreg 482Eh,SPC482E
+    setreg 482Fh,SPC482F
 
-    setreg 4831h*4,SPC4831
-    setreg 4832h*4,SPC4832
-    setreg 4833h*4,SPC4833
-    setreg 4834h*4,SPC4834
+    setreg 4831h,SPC4831
+    setreg 4832h,SPC4832
+    setreg 4833h,SPC4833
+    setreg 4834h,SPC4834
 
-    setreg 4840h*4,SPC4840
-    setreg 4841h*4,SPC4841
-    setreg 4842h*4,SPC4842
+    setreg 4840h,SPC4840
+    setreg 4841h,SPC4841
+    setreg 4842h,SPC4842
 
 
-    setreg 4850h*4,SPC4850
-    setreg 4851h*4,SPC4851
-    setreg 4852h*4,SPC4852
-    setreg 4853h*4,SPC4853
-    setreg 4854h*4,SPC4854
-    setreg 4855h*4,SPC4855
-    setreg 4856h*4,SPC4856
-    setreg 4857h*4,SPC4857
-    setreg 4858h*4,SPC4858
-    setreg 4859h*4,SPC4859
-    setreg 485Ah*4,SPC485A
-    setreg 485Bh*4,SPC485B
-    setreg 485Ch*4,SPC485C
-    setreg 485Dh*4,SPC485D
-    setreg 485Eh*4,SPC485E
-    setreg 485Fh*4,SPC485F
+    setreg 4850h,SPC4850
+    setreg 4851h,SPC4851
+    setreg 4852h,SPC4852
+    setreg 4853h,SPC4853
+    setreg 4854h,SPC4854
+    setreg 4855h,SPC4855
+    setreg 4856h,SPC4856
+    setreg 4857h,SPC4857
+    setreg 4858h,SPC4858
+    setreg 4859h,SPC4859
+    setreg 485Ah,SPC485A
+    setreg 485Bh,SPC485B
+    setreg 485Ch,SPC485C
+    setreg 485Dh,SPC485D
+    setreg 485Eh,SPC485E
+    setreg 485Fh,SPC485F
     ret
 
 %macro BankSwitchSPC7110 2

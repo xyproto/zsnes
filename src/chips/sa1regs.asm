@@ -38,7 +38,7 @@
 
 %include "macros.mac"
 
-EXTSYM regptr,regptw,romdata,SA1Status,SDD1BankA,NumofBanks,BWUsed2
+EXTSYM regptra,regptw,romdata,SA1Status,SDD1BankA,NumofBanks,BWUsed2
 EXTSYM Get_Time,Get_TimeDate,irqv2,irqv,nmiv2,nmiv,snesmmap,snesmap2
 EXTSYM curypos,CurrentExecSA1,memaccessbankr8sdd1,memtabler8,AddrNoIncr
 EXTSYM SA1_DMA_CC2
@@ -183,7 +183,7 @@ NEWSYM RTCinit
     mov dword[RTCPtr],0
     ret
 NEWSYM RTCReset
-    setreg 2800h*4,RTC2800
+    setreg 2800h,RTC2800
     ret
 NEWSYM RTCReset2
     setregw 2801h*4,RTC2801w
@@ -1284,25 +1284,24 @@ SECTION .bss
 SECTION .text
 
 NEWSYM initSA1regs
-    setreg 2300h*4,sa12300r
-    setreg 2301h*4,sa12301r
-    setreg 2302h*4,sa12302r
-    setreg 2303h*4,sa12303r
-    setreg 2304h*4,sa12304r
-    setreg 2305h*4,sa12305r
-    setreg 2306h*4,sa12306r
-    setreg 2307h*4,sa12307r
-    setreg 2308h*4,sa12308r
-    setreg 2309h*4,sa12309r
-    setreg 230Ah*4,sa1230Ar
-    setreg 230Bh*4,sa1230Br
-    setreg 230Ch*4,sa1230Cr
-    setreg 230Dh*4,sa1230Dr
-    setreg 230Eh*4,sa1230Er
+    setreg 2300h,sa12300r
+    setreg 2301h,sa12301r
+    setreg 2302h,sa12302r
+    setreg 2303h,sa12303r
+    setreg 2304h,sa12304r
+    setreg 2305h,sa12305r
+    setreg 2306h,sa12306r
+    setreg 2307h,sa12307r
+    setreg 2308h,sa12308r
+    setreg 2309h,sa12309r
+    setreg 230Ah,sa1230Ar
+    setreg 230Bh,sa1230Br
+    setreg 230Ch,sa1230Cr
+    setreg 230Dh,sa1230Dr
+    setreg 230Eh,sa1230Er
     ; Set IRam, memory address 3000-37FF
 
-    mov edi,3000h*4
-    add edi,[regptr]
+    lea edi,regptr(0x3000)
     mov eax,IRamRead
     mov ecx,800h
 .loopr
@@ -1445,10 +1444,10 @@ NEWSYM SDD1Reset
     ret
 
 NEWSYM initSDD1regs
-    setreg 4804h*4,sdd14804
-    setreg 4805h*4,sdd14805
-    setreg 4806h*4,sdd14806
-    setreg 4807h*4,sdd14807
+    setreg 4804h,sdd14804
+    setreg 4805h,sdd14805
+    setreg 4806h,sdd14806
+    setreg 4807h,sdd14807
     ret
 
 dbstop:

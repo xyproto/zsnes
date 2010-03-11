@@ -23,7 +23,7 @@ EXTSYM SfxB,SfxBRAMR,SfxCBR,SfxCFGR,SfxCLSR,SfxCPB,SfxCROM
 EXTSYM SfxCarry,SfxMemTable,SfxOverflow,SfxPBR,SfxPIPE,SfxR0,SfxR1,SfxR10
 EXTSYM SfxR11,SfxR12,SfxR13,SfxR14,SfxR15,SfxR2,SfxR3,SfxR4,SfxR5,SfxR6
 EXTSYM SfxR7,SfxR8,SfxR9,SfxRAMBR,SfxRAMMem,SfxROMBR,SfxSCBR,SfxSCMR,SfxSFR
-EXTSYM SfxSignZero,SfxnRamBanks,regptr,regptw,sfxramdata,ChangeOps
+EXTSYM SfxSignZero,SfxnRamBanks,regptra,regptw,sfxramdata,ChangeOps
 EXTSYM SfxPOR,sfxclineloc,UpdatePORSCMR,UpdateCLSR,UpdateSCBRCOLR,SfxAC
 EXTSYM sfx128lineloc,sfx160lineloc,sfx192lineloc,sfxobjlineloc,SFXProc
 
@@ -57,57 +57,56 @@ EXTSYM sfx128lineloc,sfx160lineloc,sfx192lineloc,sfxobjlineloc,SFXProc
 SECTION .text
 
 NEWSYM initsfxregsr
-    setreg 3000h*4,reg3000r
-    setreg 3001h*4,reg3001r
-    setreg 3002h*4,reg3002r
-    setreg 3003h*4,reg3003r
-    setreg 3004h*4,reg3004r
-    setreg 3005h*4,reg3005r
-    setreg 3006h*4,reg3006r
-    setreg 3007h*4,reg3007r
-    setreg 3008h*4,reg3008r
-    setreg 3009h*4,reg3009r
-    setreg 300Ah*4,reg300Ar
-    setreg 300Bh*4,reg300Br
-    setreg 300Ch*4,reg300Cr
-    setreg 300Dh*4,reg300Dr
-    setreg 300Eh*4,reg300Er
-    setreg 300Fh*4,reg300Fr
-    setreg 3010h*4,reg3010r
-    setreg 3011h*4,reg3011r
-    setreg 3012h*4,reg3012r
-    setreg 3013h*4,reg3013r
-    setreg 3014h*4,reg3014r
-    setreg 3015h*4,reg3015r
-    setreg 3016h*4,reg3016r
-    setreg 3017h*4,reg3017r
-    setreg 3018h*4,reg3018r
-    setreg 3019h*4,reg3019r
-    setreg 301Ah*4,reg301Ar
-    setreg 301Bh*4,reg301Br
-    setreg 301Ch*4,reg301Cr
-    setreg 301Dh*4,reg301Dr
-    setreg 301Eh*4,reg301Er
-    setreg 301Fh*4,reg301Fr
-    setreg 3030h*4,reg3030r
-    setreg 3031h*4,reg3031r
-    setreg 3032h*4,reg3032r
-    setreg 3033h*4,reg3033r
-    setreg 3034h*4,reg3034r
-    setreg 3035h*4,reg3035r
-    setreg 3036h*4,reg3036r
-    setreg 3037h*4,reg3037r
-    setreg 3038h*4,reg3038r
-    setreg 3039h*4,reg3039r
-    setreg 303Ah*4,reg303Ar
-    setreg 303Bh*4,reg303Br
-    setreg 303Ch*4,reg303Cr
-    setreg 303Dh*4,reg303Dr
-    setreg 303Eh*4,reg303Er
-    setreg 303Fh*4,reg303Fr
+    setreg 3000h,reg3000r
+    setreg 3001h,reg3001r
+    setreg 3002h,reg3002r
+    setreg 3003h,reg3003r
+    setreg 3004h,reg3004r
+    setreg 3005h,reg3005r
+    setreg 3006h,reg3006r
+    setreg 3007h,reg3007r
+    setreg 3008h,reg3008r
+    setreg 3009h,reg3009r
+    setreg 300Ah,reg300Ar
+    setreg 300Bh,reg300Br
+    setreg 300Ch,reg300Cr
+    setreg 300Dh,reg300Dr
+    setreg 300Eh,reg300Er
+    setreg 300Fh,reg300Fr
+    setreg 3010h,reg3010r
+    setreg 3011h,reg3011r
+    setreg 3012h,reg3012r
+    setreg 3013h,reg3013r
+    setreg 3014h,reg3014r
+    setreg 3015h,reg3015r
+    setreg 3016h,reg3016r
+    setreg 3017h,reg3017r
+    setreg 3018h,reg3018r
+    setreg 3019h,reg3019r
+    setreg 301Ah,reg301Ar
+    setreg 301Bh,reg301Br
+    setreg 301Ch,reg301Cr
+    setreg 301Dh,reg301Dr
+    setreg 301Eh,reg301Er
+    setreg 301Fh,reg301Fr
+    setreg 3030h,reg3030r
+    setreg 3031h,reg3031r
+    setreg 3032h,reg3032r
+    setreg 3033h,reg3033r
+    setreg 3034h,reg3034r
+    setreg 3035h,reg3035r
+    setreg 3036h,reg3036r
+    setreg 3037h,reg3037r
+    setreg 3038h,reg3038r
+    setreg 3039h,reg3039r
+    setreg 303Ah,reg303Ar
+    setreg 303Bh,reg303Br
+    setreg 303Ch,reg303Cr
+    setreg 303Dh,reg303Dr
+    setreg 303Eh,reg303Er
+    setreg 303Fh,reg303Fr
     ; set 3100-31FF to cacheregr
-    mov edi,3100h*4
-    add edi,[regptr]
+    lea edi,regptr(0x3100)
     mov eax,cacheregr
     mov ecx,200h
 .loop

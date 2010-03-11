@@ -62,7 +62,6 @@ unsigned char *vram;                // vram = 65536
 unsigned char *sram;                // sram = 65536*2 = 131072
 unsigned char regptra[49152];
 unsigned char regptwa[49152];
-unsigned char *regptr = regptra;
 unsigned char *regptw = regptwa;
 unsigned char *vcache2b;            // 2-bit video cache
 unsigned char *vcache4b;            // 4-bit video cache
@@ -330,7 +329,6 @@ static void allocmem()
   ram7f = ram7fa;
   vram = vrama;
 
-  regptr -= 0x8000;
   regptw -= 0x8000;
 }
 

@@ -17,6 +17,7 @@
 ;along with this program; if not, write to the Free Software
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+%include "cpu/regs.mac"
 %include "macros.mac"
 
 EXTSYM romdata,sramb4save,curromspace,SA1Overflow
@@ -53,7 +54,7 @@ NEWSYM regaccessbankr8
 .regs
     cmp ecx,48FFh
     ja .invaccess
-    call dword near [regptra+ecx*4-8000h]
+    call dword near regptr(ecx)
     xor ebx,ebx
     ret
 .invaccess
@@ -120,18 +121,10 @@ NEWSYM regaccessbankr16
 .regs
     cmp ecx,48FFh
     ja .invaccess
-;    mov ebx,ecx
-;    shl ebx,2
-;    add ebx,[regptr]
-;    call dword near [ebx]
-    call dword near [regptra+ecx*4-8000h]
+    call dword near regptr(ecx)
     inc ecx
     mov ah,al
-;    mov ebx,ecx
-;    shl ebx,2
-;    add ebx,[regptr]
-;    call dword near [ebx]
-    call dword near [regptra+ecx*4-8000h]
+    call dword near regptr(ecx)
     mov bl,al
     dec ecx
     mov al,ah
@@ -765,7 +758,7 @@ NEWSYM membank0r8ram             ; 0000-1FFF
     ret
 NEWSYM membank0r8reg             ; 2000-48FF
     add ecx,ebx
-    call dword near [regptra+ecx*4-8000h]
+    call dword near regptr(ecx)
     xor ebx,ebx
     ret
 NEWSYM membank0r8inv             ; 4800-5FFF
@@ -834,10 +827,10 @@ NEWSYM membank0r16ramh            ; 1F00-1FFF
     ret
 NEWSYM membank0r16reg             ; 2000-48FF
     add ecx,ebx
-    call dword near [regptra+ecx*4-8000h]
+    call dword near regptr(ecx)
     inc ecx
     mov ah,al
-    call dword near [regptra+ecx*4-8000h]
+    call dword near regptr(ecx)
     mov bl,al
     dec ecx
     mov al,ah
@@ -1023,11 +1016,7 @@ NEWSYM membank0r8
 .regacc
     cmp ecx,48FFh
     ja .invaccess
-;    mov ebx,ecx
-;    shl ebx,2
-;    add ebx,[regptr]
-;    call dword near [ebx]
-    call dword near [regptra+ecx*4-8000h]
+    call dword near regptr(ecx)
     xor ebx,ebx
     ret
 .invaccess
@@ -1072,18 +1061,10 @@ NEWSYM membank0r16
 .regacc
     cmp ecx,48FFh
     ja .invaccess
-;    mov ebx,ecx
-;    shl ebx,2
-;    add ebx,[regptr]
-;    call dword near [ebx]
-    call dword near [regptra+ecx*4-8000h]
+    call dword near regptr(ecx)
     inc ecx
     mov ah,al
-;    mov ebx,ecx
-;    shl ebx,2
-;    add ebx,[regptr]
-;    call dword near [ebx]
-    call dword near [regptra+ecx*4-8000h]
+    call dword near regptr(ecx)
     mov bl,al
     dec ecx
     mov al,ah
@@ -1245,7 +1226,7 @@ NEWSYM membank0r8SA1
 .regs
     cmp ecx,48FFh
     ja .invaccess
-    call dword near [regptra+ecx*4-8000h]
+    call dword near regptr(ecx)
     xor ebx,ebx
     ret
 .invaccess
@@ -1283,10 +1264,10 @@ NEWSYM membank0r16SA1
 .regs
     cmp ecx,48FFh
     ja .invaccess
-    call dword near [regptra+ecx*4-8000h]
+    call dword near regptr(ecx)
     inc ecx
     mov ah,al
-    call dword near [regptra+ecx*4-8000h]
+    call dword near regptr(ecx)
     mov bl,al
     dec ecx
     mov al,ah
@@ -1784,7 +1765,7 @@ NEWSYM regaccessbankr8SA1
 .regs
     cmp ecx,48FFh
     ja .invaccess
-    call dword near [regptra+ecx*4-8000h]
+    call dword near regptr(ecx)
     xor ebx,ebx
     ret
 .invaccess
@@ -1822,10 +1803,10 @@ NEWSYM regaccessbankr16SA1
 .regs
     cmp ecx,48FFh
     ja .invaccess
-    call dword near [regptra+ecx*4-8000h]
+    call dword near regptr(ecx)
     inc ecx
     mov ah,al
-    call dword near [regptra+ecx*4-8000h]
+    call dword near regptr(ecx)
     mov bl,al
     dec ecx
     mov al,ah

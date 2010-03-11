@@ -17,9 +17,10 @@
 ;along with this program; if not, write to the Free Software
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+%include "cpu/regs.mac"
 %include "macros.mac"
 
-EXTSYM memtabler8,regptw,snesmap2,snesmmap,memtablew8,regptr,memtabler16
+EXTSYM memtabler8,regptw,snesmap2,snesmmap,memtablew8,regptra,memtabler16
 EXTSYM dmadata,hdmatype,nexthdma,resolutn,curhdma,curypos,hdmadata
 EXTSYM hdmadelay,hdmarestart,nohdmaframe,INTEnab,HIRQLoc
 
@@ -242,36 +243,28 @@ NEWSYM transdmappu2cpu
     movzx ebx,byte[esi+1]      ; PPU memory - 21xx
     mov bh,21h
     add bx,[edi]
-    shl ebx,2
-    add ebx,[regptr]
-    mov eax,[ebx]
+    mov eax,regptr(ebx)
     mov [.regptra],eax
 
     ; get pointer #2
     movzx ebx,byte[esi+1]      ; PPU memory - 21xx
     mov bh,21h
     add bx,[edi+2]
-    shl ebx,2
-    add ebx,[regptr]
-    mov eax,[ebx]
+    mov eax,regptr(ebx)
     mov [.regptrb],eax
 
     ; get pointer #3
     movzx ebx,byte[esi+1]      ; PPU memory - 21xx
     mov bh,21h
     add bx,[edi+4]
-    shl ebx,2
-    add ebx,[regptr]
-    mov eax,[ebx]
+    mov eax,regptr(ebx)
     mov [.regptrc],eax
 
     ; get pointer #4
     movzx ebx,byte[esi+1]      ; PPU memory - 21xx
     mov bh,21h
     add bx,[edi+6]
-    shl ebx,2
-    add ebx,[regptr]
-    mov eax,[ebx]
+    mov eax,regptr(ebx)
     mov [.regptrd],eax
 
     mov dx,[esi+5]        ; Number of bytes to transfer
