@@ -1407,7 +1407,6 @@ void loadROM()
 //Memory Setup functions
 extern uint8_t wramdataa[65536];
 extern uint8_t ram7fa[65536];
-extern uint8_t regptwa[49152];
 extern uint8_t vidmemch2[4096];
 extern uint8_t vidmemch4[4096];
 extern uint8_t vidmemch8[4096];
@@ -1465,7 +1464,7 @@ void clearmem(void)
   memset(ram7fa, 0, 65536);
   memset(sram, 0, 65536*2);
   memset(regptra, 0, sizeof(regptra));
-  memset(regptwa, 0, 49152);
+  memset(regptwa, 0, sizeof(regptwa));
   memset(vcache2b, 0, 262144+256);
   memset(vcache4b, 0, 131072+256);
   memset(vcache8b, 0, 65536+256);

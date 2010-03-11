@@ -38,7 +38,7 @@
 
 %include "macros.mac"
 
-EXTSYM regptra,regptw,romdata,SA1Status,SDD1BankA,NumofBanks,BWUsed2
+EXTSYM regptra,regptwa,romdata,SA1Status,SDD1BankA,NumofBanks,BWUsed2
 EXTSYM Get_Time,Get_TimeDate,irqv2,irqv,nmiv2,nmiv,snesmmap,snesmap2
 EXTSYM curypos,CurrentExecSA1,memaccessbankr8sdd1,memtabler8,AddrNoIncr
 EXTSYM SA1_DMA_CC2
@@ -186,7 +186,7 @@ NEWSYM RTCReset
     setreg 2800h,RTC2800
     ret
 NEWSYM RTCReset2
-    setregw 2801h*4,RTC2801w
+    setregw 2801h,RTC2801w
     ret
 
 ; SA-1 Start
@@ -1312,80 +1312,79 @@ NEWSYM initSA1regs
     ret
 
 NEWSYM initSA1regsw
-    setregw 2200h*4,sa12200w
-    setregw 2201h*4,sa12201w
-    setregw 2202h*4,sa12202w
-    setregw 2203h*4,sa12203w
-    setregw 2204h*4,sa12204w
-    setregw 2205h*4,sa12205w
-    setregw 2206h*4,sa12206w
-    setregw 2207h*4,sa12207w
-    setregw 2208h*4,sa12208w
-    setregw 2209h*4,sa12209w
-    setregw 220Ah*4,sa1220Aw
-    setregw 220Bh*4,sa1220Bw
-    setregw 220Ch*4,sa1220Cw
-    setregw 220Dh*4,sa1220Dw
-    setregw 220Eh*4,sa1220Ew
-    setregw 220Fh*4,sa1220Fw
-    setregw 2210h*4,sa12210w
-    setregw 2211h*4,sa12211w
-    setregw 2212h*4,sa12212w
-    setregw 2213h*4,sa12213w
-    setregw 2214h*4,sa12214w
-    setregw 2215h*4,sa12215w
+    setregw 2200h,sa12200w
+    setregw 2201h,sa12201w
+    setregw 2202h,sa12202w
+    setregw 2203h,sa12203w
+    setregw 2204h,sa12204w
+    setregw 2205h,sa12205w
+    setregw 2206h,sa12206w
+    setregw 2207h,sa12207w
+    setregw 2208h,sa12208w
+    setregw 2209h,sa12209w
+    setregw 220Ah,sa1220Aw
+    setregw 220Bh,sa1220Bw
+    setregw 220Ch,sa1220Cw
+    setregw 220Dh,sa1220Dw
+    setregw 220Eh,sa1220Ew
+    setregw 220Fh,sa1220Fw
+    setregw 2210h,sa12210w
+    setregw 2211h,sa12211w
+    setregw 2212h,sa12212w
+    setregw 2213h,sa12213w
+    setregw 2214h,sa12214w
+    setregw 2215h,sa12215w
 
-    setregw 2220h*4,sa12220w
-    setregw 2221h*4,sa12221w
-    setregw 2222h*4,sa12222w
-    setregw 2223h*4,sa12223w
+    setregw 2220h,sa12220w
+    setregw 2221h,sa12221w
+    setregw 2222h,sa12222w
+    setregw 2223h,sa12223w
 
-    setregw 2224h*4,sa12224w
-    setregw 2225h*4,sa12225w
+    setregw 2224h,sa12224w
+    setregw 2225h,sa12225w
     ; Missing 2226-222A
 
     ; Bitmap register file
-    setregw 2240h*4,sa12240w
-    setregw 2241h*4,sa12241w
-    setregw 2242h*4,sa12242w
-    setregw 2243h*4,sa12243w
-    setregw 2244h*4,sa12244w
-    setregw 2245h*4,sa12245w
-    setregw 2246h*4,sa12246w
-    setregw 2247h*4,sa12247w
-    setregw 2248h*4,sa12248w
-    setregw 2249h*4,sa12249w
-    setregw 224Ah*4,sa1224Aw
-    setregw 224Bh*4,sa1224Bw
-    setregw 224Ch*4,sa1224Cw
-    setregw 224Dh*4,sa1224Dw
-    setregw 224Eh*4,sa1224Ew
-    setregw 224Fh*4,sa1224Fw
+    setregw 2240h,sa12240w
+    setregw 2241h,sa12241w
+    setregw 2242h,sa12242w
+    setregw 2243h,sa12243w
+    setregw 2244h,sa12244w
+    setregw 2245h,sa12245w
+    setregw 2246h,sa12246w
+    setregw 2247h,sa12247w
+    setregw 2248h,sa12248w
+    setregw 2249h,sa12249w
+    setregw 224Ah,sa1224Aw
+    setregw 224Bh,sa1224Bw
+    setregw 224Ch,sa1224Cw
+    setregw 224Dh,sa1224Dw
+    setregw 224Eh,sa1224Ew
+    setregw 224Fh,sa1224Fw
 
-    setregw 2230h*4,sa12230w
-    setregw 2231h*4,sa12231w
-    setregw 2232h*4,sa12232w
-    setregw 2233h*4,sa12233w
-    setregw 2234h*4,sa12234w
-    setregw 2235h*4,sa12235w
-    setregw 2236h*4,sa12236w
-    setregw 2237h*4,sa12237w
-    setregw 2238h*4,sa12238w
-    setregw 2239h*4,sa12239w
-    setregw 223Fh*4,sa1223Fw
+    setregw 2230h,sa12230w
+    setregw 2231h,sa12231w
+    setregw 2232h,sa12232w
+    setregw 2233h,sa12233w
+    setregw 2234h,sa12234w
+    setregw 2235h,sa12235w
+    setregw 2236h,sa12236w
+    setregw 2237h,sa12237w
+    setregw 2238h,sa12238w
+    setregw 2239h,sa12239w
+    setregw 223Fh,sa1223Fw
 
-    setregw 2250h*4,sa12250w
-    setregw 2251h*4,sa12251w
-    setregw 2252h*4,sa12252w
-    setregw 2253h*4,sa12253w
-    setregw 2254h*4,sa12254w
+    setregw 2250h,sa12250w
+    setregw 2251h,sa12251w
+    setregw 2252h,sa12252w
+    setregw 2253h,sa12253w
+    setregw 2254h,sa12254w
 
-    setregw 2259h*4,sa12259w
-    setregw 225Ah*4,sa1225Aw
-    setregw 225Bh*4,sa1225Bw
+    setregw 2259h,sa12259w
+    setregw 225Ah,sa1225Aw
+    setregw 225Bh,sa1225Bw
 
-    mov edi,3000h*4
-    add edi,[regptw]
+    lea edi,regptw(0x3000)
     mov eax,IRamWrite
     mov ecx,800h
 .loopw
@@ -1393,7 +1392,7 @@ NEWSYM initSA1regsw
     add edi,4
     dec ecx
     jnz .loopw
-    setregw 3000h*4,IRamWrite2
+    setregw 3000h,IRamWrite2
     ret
 
 sa12240w:
@@ -1426,21 +1425,21 @@ sa1224Fw:
   ret
 
 NEWSYM SDD1Reset
-    setregw 4801h*4,sdd14801w
-    setregw 4802h*4,dbstop
-    setregw 4803h*4,dbstop
-    setregw 4804h*4,sdd14804w
-    setregw 4805h*4,sdd14805w
-    setregw 4806h*4,sdd14806w
-    setregw 4807h*4,sdd14807w
-    setregw 4808h*4,dbstop
-    setregw 4809h*4,dbstop
-    setregw 480Ah*4,dbstop
-    setregw 480Bh*4,dbstop
-    setregw 480Ch*4,dbstop
-    setregw 480Dh*4,dbstop
-    setregw 480Eh*4,dbstop
-    setregw 480Fh*4,dbstop
+    setregw 4801h,sdd14801w
+    setregw 4802h,dbstop
+    setregw 4803h,dbstop
+    setregw 4804h,sdd14804w
+    setregw 4805h,sdd14805w
+    setregw 4806h,sdd14806w
+    setregw 4807h,sdd14807w
+    setregw 4808h,dbstop
+    setregw 4809h,dbstop
+    setregw 480Ah,dbstop
+    setregw 480Bh,dbstop
+    setregw 480Ch,dbstop
+    setregw 480Dh,dbstop
+    setregw 480Eh,dbstop
+    setregw 480Fh,dbstop
     ret
 
 NEWSYM initSDD1regs

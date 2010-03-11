@@ -18,6 +18,7 @@
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 
+%define regptw(x) [regptwa - 0x2000 * 4 + x * 4]
 
 ;*******************************************************
 ; InitRegW                   Initializes Write Registers
@@ -39,8 +40,5 @@
 %endmacro
 
 %macro setregw 2
-    mov edi,%1
-    add edi,[regptw]
-    mov eax,%2
-    mov [edi],eax
+    mov regptw(%1), dword %2
 %endmacro

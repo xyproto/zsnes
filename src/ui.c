@@ -61,8 +61,7 @@ unsigned char *ram7f;               // ram @ 7f = 65536
 unsigned char *vram;                // vram = 65536
 unsigned char *sram;                // sram = 65536*2 = 131072
 eop*          regptra[0x3000];
-unsigned char regptwa[49152];
-unsigned char *regptw = regptwa;
+eop*          regptwa[0x3000];
 unsigned char *vcache2b;            // 2-bit video cache
 unsigned char *vcache4b;            // 4-bit video cache
 unsigned char *vcache8b;            // 8-bit video cache
@@ -328,8 +327,6 @@ static void allocmem()
   wramdata = wramdataa;
   ram7f = ram7fa;
   vram = vrama;
-
-  regptw -= 0x8000;
 }
 
 unsigned char txtfailedalignd[] = "Data Alignment Failure : ";

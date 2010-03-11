@@ -18,9 +18,10 @@
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 %include "cpu/regs.mac"
+%include "cpu/regsw.mac"
 %include "macros.mac"
 
-EXTSYM memtabler8,regptw,snesmap2,snesmmap,memtablew8,regptra,memtabler16
+EXTSYM memtabler8,regptwa,snesmap2,snesmmap,memtablew8,regptra,memtabler16
 EXTSYM dmadata,hdmatype,nexthdma,resolutn,curhdma,curypos,hdmadata
 EXTSYM hdmadelay,hdmarestart,nohdmaframe,INTEnab,HIRQLoc
 
@@ -92,36 +93,28 @@ NEWSYM transdma
     movzx ebx,byte[esi+1]      ; PPU memory - 21xx
     mov bh,21h
     add bx,[edi]
-    shl ebx,2
-    add ebx,[regptw]
-    mov eax,[ebx]
+    mov eax,regptw(ebx)
     mov [.regptra],eax
 
     ; get pointer #2
     movzx ebx,byte[esi+1]      ; PPU memory - 21xx
     mov bh,21h
     add bx,[edi+2]
-    shl ebx,2
-    add ebx,[regptw]
-    mov eax,[ebx]
+    mov eax,regptw(ebx)
     mov [.regptrb],eax
 
     ; get pointer #3
     movzx ebx,byte[esi+1]      ; PPU memory - 21xx
     mov bh,21h
     add bx,[edi+4]
-    shl ebx,2
-    add ebx,[regptw]
-    mov eax,[ebx]
+    mov eax,regptw(ebx)
     mov [.regptrc],eax
 
     ; get pointer #4
     movzx ebx,byte[esi+1]      ; PPU memory - 21xx
     mov bh,21h
     add bx,[edi+6]
-    shl ebx,2
-    add ebx,[regptw]
-    mov eax,[ebx]
+    mov eax,regptw(ebx)
     mov [.regptrd],eax
 
     mov dx,[esi+5]        ; Number of bytes to transfer
@@ -465,9 +458,7 @@ NEWSYM setuphdma
 .notnormalhdma1
     mov bx,2200h        ; bad hack _Demo_
 .normalhdma1
-    shl ebx,2
-    add ebx,[regptw]
-    mov eax,[ebx]
+    mov eax,regptw(ebx)
     mov [edx],eax
 
     ; get pointer #2
@@ -482,9 +473,7 @@ NEWSYM setuphdma
 .notnormalhdma2
     mov bx,2200h        ; bad hack _Demo_
 .normalhdma2
-    shl ebx,2
-    add ebx,[regptw]
-    mov eax,[ebx]
+    mov eax,regptw(ebx)
     mov [edx+4],eax
 
     ; get pointer #3
@@ -499,9 +488,7 @@ NEWSYM setuphdma
 .notnormalhdma3
     mov bx,2200h        ; bad hack _Demo_
 .normalhdma3
-    shl ebx,2
-    add ebx,[regptw]
-    mov eax,[ebx]
+    mov eax,regptw(ebx)
     mov [edx+8],eax
 
     ; get pointer #4
@@ -516,9 +503,7 @@ NEWSYM setuphdma
 .notnormalhdma4
     mov bx,2200h        ; bad hack _Demo_
 .normalhdma4
-    shl ebx,2
-    add ebx,[regptw]
-    mov eax,[ebx]
+    mov eax,regptw(ebx)
     mov [edx+12],eax
 
     xor ebx,ebx
@@ -564,9 +549,7 @@ NEWSYM setuphdmars
 .notnormalhdma1
     mov bx,2200h        ; bad hack _Demo_
 .normalhdma1
-    shl ebx,2
-    add ebx,[regptw]
-    mov eax,[ebx]
+    mov eax,regptw(ebx)
     mov [edx],eax
 
     ; get pointer #2
@@ -581,9 +564,7 @@ NEWSYM setuphdmars
 .notnormalhdma2
     mov bx,2200h        ; bad hack _Demo_
 .normalhdma2
-    shl ebx,2
-    add ebx,[regptw]
-    mov eax,[ebx]
+    mov eax,regptw(ebx)
     mov [edx+4],eax
 
     ; get pointer #3
@@ -598,9 +579,7 @@ NEWSYM setuphdmars
 .notnormalhdma3
     mov bx,2200h        ; bad hack _Demo_
 .normalhdma3
-    shl ebx,2
-    add ebx,[regptw]
-    mov eax,[ebx]
+    mov eax,regptw(ebx)
     mov [edx+8],eax
 
     ; get pointer #4
@@ -615,9 +594,7 @@ NEWSYM setuphdmars
 .notnormalhdma4
     mov bx,2200h        ; bad hack _Demo_
 .normalhdma4
-    shl ebx,2
-    add ebx,[regptw]
-    mov eax,[ebx]
+    mov eax,regptw(ebx)
     mov [edx+12],eax
 
     xor ebx,ebx
@@ -667,9 +644,7 @@ NEWSYM setuphdma2
 .notnormalhdma1
     mov bx,2200h        ; bad hack _Demo_
 .normalhdma1
-    shl ebx,2
-    add ebx,[regptw]
-    mov eax,[ebx]
+    mov eax,regptw(ebx)
     mov [edx],eax
 
     ; get pointer #2
@@ -684,9 +659,7 @@ NEWSYM setuphdma2
 .notnormalhdma2
     mov bx,2200h        ; bad hack _Demo_
 .normalhdma2
-    shl ebx,2
-    add ebx,[regptw]
-    mov eax,[ebx]
+    mov eax,regptw(ebx)
     mov [edx+4],eax
 
     ; get pointer #3
@@ -701,9 +674,7 @@ NEWSYM setuphdma2
 .notnormalhdma3
     mov bx,2200h        ; bad hack _Demo_
 .normalhdma3
-    shl ebx,2
-    add ebx,[regptw]
-    mov eax,[ebx]
+    mov eax,regptw(ebx)
     mov [edx+8],eax
 
     ; get pointer #4
@@ -718,9 +689,7 @@ NEWSYM setuphdma2
 .notnormalhdma4
     mov bx,2200h        ; bad hack _Demo_
 .normalhdma4
-    shl ebx,2
-    add ebx,[regptw]
-    mov eax,[ebx]
+    mov eax,regptw(ebx)
     mov [edx+12],eax
 
     xor ebx,ebx

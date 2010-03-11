@@ -23,7 +23,7 @@ EXTSYM memaccessbankr8,memaccessbankr16,memaccessbankw8,memaccessbankw16
 EXTSYM regaccessbankr8,regaccessbankr16,regaccessbankw8,regaccessbankw16
 EXTSYM sramaccessbankr8b,sramaccessbankr16b,sramaccessbankw8b,sramaccessbankw16b
 EXTSYM Get_Time,Get_TimeDate,snesmmap,snesmap2
-EXTSYM curromsize,regptw,regptra,romdata
+EXTSYM curromsize,regptwa,regptra,romdata
 EXTSYM SPC7110_4800,SPC7110_4806w,SPC7110initC
 
 %include "cpu/regs.mac"
@@ -79,44 +79,44 @@ NEWSYM SPC7110init
     ret
 
 NEWSYM SPC7110Reset
-    setregw 4801h*4,SPC4801w
-    setregw 4802h*4,SPC4802w
-    setregw 4803h*4,SPC4803w
-    setregw 4804h*4,SPC4804w
-    setregw 4805h*4,SPC4805w
-    setregw 4806h*4,SPC4806w
-    setregw 4807h*4,SPC4807w
-    setregw 4808h*4,SPC4808w
-    setregw 4809h*4,SPC4809w
-    setregw 480Ah*4,SPC480Aw
-    setregw 480Bh*4,SPC480Bw
+    setregw 4801h,SPC4801w
+    setregw 4802h,SPC4802w
+    setregw 4803h,SPC4803w
+    setregw 4804h,SPC4804w
+    setregw 4805h,SPC4805w
+    setregw 4806h,SPC4806w
+    setregw 4807h,SPC4807w
+    setregw 4808h,SPC4808w
+    setregw 4809h,SPC4809w
+    setregw 480Ah,SPC480Aw
+    setregw 480Bh,SPC480Bw
 
-    setregw 4811h*4,SPC4811w
-    setregw 4812h*4,SPC4812w
-    setregw 4813h*4,SPC4813w
-    setregw 4814h*4,SPC4814w
-    setregw 4815h*4,SPC4815w
-    setregw 4816h*4,SPC4816w
-    setregw 4817h*4,SPC4817w
-    setregw 4818h*4,SPC4818w
+    setregw 4811h,SPC4811w
+    setregw 4812h,SPC4812w
+    setregw 4813h,SPC4813w
+    setregw 4814h,SPC4814w
+    setregw 4815h,SPC4815w
+    setregw 4816h,SPC4816w
+    setregw 4817h,SPC4817w
+    setregw 4818h,SPC4818w
 
-    setregw 4820h*4,SPC4820w
-    setregw 4821h*4,SPC4821w
-    setregw 4822h*4,SPC4822w
-    setregw 4823h*4,SPC4823w
-    setregw 4824h*4,SPC4824w
-    setregw 4825h*4,SPC4825w
-    setregw 4826h*4,SPC4826w
-    setregw 4827h*4,SPC4827w
-    setregw 482Eh*4,SPC482Ew
+    setregw 4820h,SPC4820w
+    setregw 4821h,SPC4821w
+    setregw 4822h,SPC4822w
+    setregw 4823h,SPC4823w
+    setregw 4824h,SPC4824w
+    setregw 4825h,SPC4825w
+    setregw 4826h,SPC4826w
+    setregw 4827h,SPC4827w
+    setregw 482Eh,SPC482Ew
 
-    setregw 4831h*4,SPC4831w
-    setregw 4832h*4,SPC4832w
-    setregw 4833h*4,SPC4833w
+    setregw 4831h,SPC4831w
+    setregw 4832h,SPC4832w
+    setregw 4833h,SPC4833w
 
-    setregw 4840h*4,SPC4840w
-    setregw 4841h*4,SPC4841w
-    setregw 4842h*4,SPC4842w
+    setregw 4840h,SPC4840w
+    setregw 4841h,SPC4841w
+    setregw 4842h,SPC4842w
     ret
 
 NEWSYM initSPC7110regs

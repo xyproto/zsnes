@@ -34,6 +34,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <stdint.h>
 #include "memtable.h"
 #include "../gblvars.h"
+#include "../ui.h"
 
 extern unsigned int Curtableaddr, tableA[256];
 
@@ -135,7 +136,6 @@ extern unsigned char Voice5Noise, Voice6Noise, Voice7Noise, bgtilesz;
 extern unsigned char BG116x16t, BG216x16t, BG316x16t, BG416x16t, vramincby8on;
 extern unsigned char vramincr;
 
-extern void (**regptw)();
 void reg2118();
 void reg2118inc();
 void reg2118inc8();
@@ -218,26 +218,26 @@ void repackfunct()
   {
     if (vramincr == 1)
     {
-      regptw[0x2118] = reg2118inc8inc;
-      regptw[0x2119] = reg2119inc8;
+      REGPTW(0x2118) = reg2118inc8inc;
+      REGPTW(0x2119) = reg2119inc8;
     }
     else
     {
-      regptw[0x2118] = reg2118inc8;
-      regptw[0x2119] = reg2119inc8inc;
+      REGPTW(0x2118) = reg2118inc8;
+      REGPTW(0x2119) = reg2119inc8inc;
     }
   }
   else
   {
     if (vramincr == 1)
     {
-      regptw[0x2118] = reg2118inc;
-      regptw[0x2119] = reg2119;
+      REGPTW(0x2118) = reg2118inc;
+      REGPTW(0x2119) = reg2119;
     }
     else
     {
-      regptw[0x2118] = reg2118;
-      regptw[0x2119] = reg2119inc;
+      REGPTW(0x2118) = reg2118;
+      REGPTW(0x2119) = reg2119inc;
     }
   }
 }
