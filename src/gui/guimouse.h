@@ -31,9 +31,8 @@ extern void DisplayGUIVideoClick2();
 extern void DisplayGameOptnsClick();
 extern void DisplayNetOptnsClick();
 
-extern char const* guipressptr;
-extern u1          ntscCurVar;
-extern u1          ntscWhVar;
-extern u4*         guicpressptr;
+extern u1  ntscCurVar;
+extern u1  ntscWhVar;
+extern u4* guicpressptr;
 
 #endif

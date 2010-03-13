@@ -144,8 +144,6 @@ void SetAllKeys(void)
 	// Check if controller is set
 	if (*keycontrolval == 0) return; // XXX original compares dword instead of byte, former makes no sense
 	u4 i = 0;
-	u4 n = lengthof(guipresstext4b);
-	guipressptr = guipresstext4b[0];
 	do
 	{
 		switch (cplayernum)
@@ -156,11 +154,9 @@ void SetAllKeys(void)
 			case 3: ConfigureKey2(i, pl4); break;
 			case 4: ConfigureKey2(i, pl5); break;
 		}
-		guipresstestb();
-		guipressptr += lengthof(*guipresstext4b); // XXX ugly, crosses lines of the array
-		++i;
+		guipresstestb(guipresstext4b[i]);
 	}
-	while (--n != 0);
+	while (++i != lengthof(guipresstext4b));
 }
 
 #undef ConfigureKey2

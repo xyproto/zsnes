@@ -1666,7 +1666,6 @@ NEWSYM DisplayNetOptnsClick
   ret
 
 SECTION .bss
-NEWSYM guipressptr,  resd 1
 NEWSYM guicpressptr, resd 1
 SECTION .text
 

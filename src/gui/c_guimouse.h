@@ -6,7 +6,7 @@
 void SwitchFullScreen(void);
 void ProcessMouse(void);
 u4   guipresstest(void);
-void guipresstestb(void);
+void guipresstestb(char const* guipressptr);
 void DrawMouse(void);
 
 extern u1 GUIcwinpress;

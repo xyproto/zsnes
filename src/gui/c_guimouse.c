@@ -771,7 +771,7 @@ u4 guipresstest(void)
 }
 
 
-void guipresstestb(void)
+void guipresstestb(char const* const guipressptr)
 {
 	GUIUnBuffer();
 	DisplayBoxes();
