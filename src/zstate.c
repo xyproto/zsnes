@@ -36,12 +36,18 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #endif
 #endif
 #include <stdarg.h>
+#include "c_vcache.h"
 #include "chips/c4proc.h"
+#include "cpu/execute.h"
 #include "cpu/regs.h"
+#include "cpu/regsw.h"
+#include "cpu/spc700.h"
 #include "endmem.h"
 #include "gblvars.h"
+#include "gui/guiwindp.h"
 #include "asm_call.h"
 #include "init.h"
+#include "initc.h"
 #include "ui.h"
 #include "zpath.h"
 #include "cfg.h"
@@ -65,14 +71,13 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 void SA1UpdateDPageC(), unpackfunct(), repackfunct();
 void PrepareOffset(), ResetOffset(), initpitch(), UpdateBanksSDD1();
-void procexecloop(), outofmemory();
+void procexecloop();
 
 void copy_spc7110_state_data(uint8_t **, void (*)(unsigned char **, void *, size_t), bool);
 
-extern uint8_t cacheud, ccud, intrset, cycpl, cycphb, xdbt, xpbt, xp;
-extern uint8_t xe, xirqb, debugger, curnmi;
-extern uint16_t curypos, stackand, stackor, xat, xst, xdt, xxt, xyt, xpc;
-extern uint32_t Curtableaddr, cycpblt;
+extern uint8_t intrset, cycpl, cycphb, xdbt, xpbt;
+extern uint8_t xirqb, curnmi;
+extern uint16_t stackand, stackor, xat, xst, xdt, xxt, xyt;
 
 static void copy_snes_data(uint8_t **buffer, void (*copy_func)(uint8_t **, void *, size_t))
 {
@@ -321,7 +326,6 @@ static void memcpyrinc(uint8_t **src, void *dest, size_t len)
 }
 
 extern uint32_t RewindTimer, DblRewTimer;
-extern uint8_t EMUPause;
 
 uint8_t *StateBackup = 0;
 uint8_t AllocatedRewindStates, LatestRewindPos, EarliestRewindPos;
@@ -329,7 +333,6 @@ bool RewindPosPassed;
 
 size_t rewind_state_size, cur_zst_size, old_zst_size;
 
-extern uint8_t romispal;
 void zmv_rewind_save(size_t, bool);
 void zmv_rewind_load(size_t, bool);
 
@@ -545,7 +548,6 @@ void DeallocSystemVars()
 
 extern uintptr_t Voice0BufPtr, Voice1BufPtr, Voice2BufPtr, Voice3BufPtr;
 extern uintptr_t Voice4BufPtr, Voice5BufPtr, Voice6BufPtr, Voice7BufPtr;
-extern uintptr_t spcPCRam, spcRamDP;
 
 void PrepareSaveState()
 {
@@ -631,8 +633,6 @@ void ResetState()
 
 extern uint32_t SfxRomBuffer, SfxCROM;
 extern uint32_t SfxLastRamAdr, SfxRAMMem;
-extern uint8_t AutoIncSaveSlot, cbitmode;
-extern uint16_t PrevPicture[64*56];
 
 static FILE *fhandle;
 void CapturePicture();
@@ -802,7 +802,7 @@ void zst_save(FILE *fp, bool Thumbnail, bool Compress)
     if (Thumbnail)
     {
       CapturePicture();
-      fwrite(PrevPicture, 1, 64*56*sizeof(uint16_t), fp);
+      fwrite(PrevPicture, 1, sizeof(PrevPicture), fp);
     }
   }
 
@@ -939,7 +939,7 @@ void statesaver(void)
 
 extern uint32_t Totalbyteloaded, SfxMemTable[256], SfxCPB;
 extern uint32_t SfxPBR, SfxROMBR, SfxRAMBR, SCBRrel, SfxSCBR;
-extern uint8_t pressed[256+128+64], multchange, ioportval, SDD1Enable;
+extern uint8_t ioportval;
 extern uint8_t nexthdma;
 
 static void read_save_state_data(uint8_t **dest, void *data, size_t len)
@@ -1128,8 +1128,6 @@ void zst_sram_load_compressed(FILE *fp)
 
 void stateloader(char *statename, bool keycheck, bool xfercheck)
 {
-  extern uint8_t PauseLoad;
-
   if (keycheck)
   {
     pressed[1] = 0;
@@ -1178,7 +1176,6 @@ void stateloader(char *statename, bool keycheck, bool xfercheck)
       return;
     case MOVIE_OLD_PLAY:
     {
-      extern char CMovieExt;
       size_t fname_len = strlen(statename);
       setextension(statename, "zmv");
       if (isdigit(CMovieExt)) { statename[fname_len-1] = CMovieExt; }
@@ -1254,13 +1251,12 @@ void SaveSecondState(void)
   zst_name();
 }
 
-extern uint8_t CHIPBATT, sramsavedis, *sram2, nosaveSRAM;
+extern uint8_t CHIPBATT, sramsavedis, *sram2;
 void SaveCombFile();
 
 // Sram saving
 void SaveSramData(void)
 {
-  extern uint32_t sramb4save;
   if (*ZSaveName && (!SRAMSave5Sec || sramb4save))
   {
     FILE *fp = 0;
@@ -1368,7 +1364,6 @@ Cleaned up by Nach
 */
 
 extern uint8_t spcextraram[64];
-extern uint8_t spcP, spcA, spcX, spcY, spcS, spcNZ;
 extern uint32_t infoloc;
 
 char spcsaved[16];
@@ -1416,7 +1411,7 @@ void savespcdata(void)
       strcpy((char *)ssdatst, "SNES-SPC700 Sound File Data v0.30"); //00000h - File Header : SNES-SPC700 Sound File Data v0.00
       ssdatst[0x21] = ssdatst[0x22] = ssdatst[0x23] = 0x1a; //00021h - 0x1a,0x1a,0x1a
       ssdatst[0x24] = 10;   //00024h - 10
-      *((uint16_t *)(ssdatst+0x25)) = spcPCRam-(uint32_t)SPCRAM; //00025h - PC Register value (1 Word)
+      *(uint16_t*)(ssdatst + 0x25) = spcPCRam - SPCRAM; //00025h - PC Register value (1 Word)
       ssdatst[0x27] = spcA; //00027h - A Register Value (1 byte)
       ssdatst[0x28] = spcX; //00028h - X Register Value (1 byte)
       ssdatst[0x29] = spcY; //00029h - Y Register Value (1 byte)
