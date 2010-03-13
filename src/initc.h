@@ -4,6 +4,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#include "types.h"
+
 bool     loadfileGUI(void);
 uint32_t showinfogui(void);
 void     Setper2exec(void);
@@ -27,6 +29,6 @@ extern uint8_t  disableeffects;
 extern uint16_t curypos;      // current y position
 extern uint8_t  xp;
 extern uint8_t  xe;
-extern uint32_t Curtableaddr; // Current table address
+extern eop**    Curtableaddr; // Current table address
 
 #endif

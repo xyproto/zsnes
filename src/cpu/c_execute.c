@@ -90,7 +90,7 @@ static void reexecuteb2(void)
 
 	// de-init variables (copy to variables)
 	spcPCRam     = ebp;
-	Curtableaddr = (u4)edi; // XXX TODO type
+	Curtableaddr = edi;
 	xp           = edx;
 	curcyc       = edx >> 8;
 	xpc          = esi - initaddrl; // subtract program counter by address

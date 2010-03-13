@@ -55,11 +55,11 @@ void breakops(void)
 		dmadata - 0x4300;
 	initaddrl = addr;
 
-	u4  ecx = 0;
-	u4  edx = curcyc /* cycles */ << 8 | xp /* flags */;
-	u1* ebp = spcPCRam;
-	u1* esi = addr + pc; // add program counter to address
-	u4  edi = Curtableaddr;
+	u4    ecx = 0;
+	u4    edx = curcyc /* cycles */ << 8 | xp /* flags */;
+	u1*   ebp = spcPCRam;
+	u1*   esi = addr + pc; // add program counter to address
+	eop** edi = Curtableaddr;
 	UpdateDPage();
 	// execute
 	do
@@ -92,11 +92,11 @@ void execnextop(void)
 		dmadata - 0x4300;
 	initaddrl = addr;
 
-	u4  ecx = 0;
-	u4  edx = curcyc /* cycles */ << 8 | xp /* flags */;
-	u1* ebp = spcPCRam;
-	u1* esi = addr + pc; // add program counter to address
-	u4  edi = Curtableaddr;
+	u4    ecx = 0;
+	u4    edx = curcyc /* cycles */ << 8 | xp /* flags */;
+	u1*   ebp = spcPCRam;
+	u1*   esi = addr + pc; // add program counter to address
+	eop** edi = Curtableaddr;
 
 	// execute
 	splitflags(edx);

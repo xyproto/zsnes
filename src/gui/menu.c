@@ -293,7 +293,7 @@ static void breakatsignb(void)
 	esi += eax; // add program counter to address
 	u1*   ebp = spcPCRam;
 	u4    edx = curcyc /* cycles */ << 8 | xp /* flags */;
-	eop** edi = (eop**)Curtableaddr; // XXX TODO type
+	eop** edi = Curtableaddr;
 	UpdateDPage();
 	// execute
 	do
@@ -312,7 +312,7 @@ static void breakatsignb(void)
 
 	// copy back data
 	spcPCRam     = ebp;
-	Curtableaddr = (u4)edi; // XXX TODO type
+	Curtableaddr = edi;
 	xp           = edx;
 	curcyc       = edx >> 8;
 	xpc          = esi - initaddrl; // subtract program counter by address
