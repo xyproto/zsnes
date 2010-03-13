@@ -2709,7 +2709,7 @@ void init65816(void)
     cycpbl = 110;              // 3.58Mhz = 175
     cycpblt = 110;
     curypos = 0;
-    Curtableaddr = *tableD;
+    Curtableaddr = (uintptr_t)tableD;
     scrndis = 0;
     stackand = 0x01FF;
     stackor = 0x0100;
