@@ -146,6 +146,7 @@ void SetAllKeys(void)
 	u4 i = 0;
 	do
 	{
+		u4* guicpressptr;
 		switch (cplayernum)
 		{
 			case 0: ConfigureKey2(i, pl1); break;
@@ -154,7 +155,7 @@ void SetAllKeys(void)
 			case 3: ConfigureKey2(i, pl4); break;
 			case 4: ConfigureKey2(i, pl5); break;
 		}
-		guipresstestb(guipresstext4b[i]);
+		guipresstestb(guicpressptr, guipresstext4b[i]);
 	}
 	while (++i != lengthof(guipresstext4b));
 }

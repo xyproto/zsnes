@@ -1665,10 +1665,6 @@ NEWSYM DisplayGUICheatClick
 NEWSYM DisplayNetOptnsClick
   ret
 
-SECTION .bss
-NEWSYM guicpressptr, resd 1
-SECTION .text
-
 NEWSYM DisplayGameOptnsClick
   mov dword[keycontrolval],0                  ; Shortcut Boxes
   DGOptnsProcBox 27,23,[KeyBGDisble0]
