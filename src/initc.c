@@ -33,13 +33,22 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #endif
 #include "asm_call.h"
 #include "c_init.h"
+#include "c_vcache.h"
 #include "cfg.h"
 #include "chips/c_dsp2proc.h"
 #include "cpu/c_regs.h"
 #include "cpu/c_regsw.h"
+#include "cpu/execute.h"
+#include "cpu/regs.h"
+#include "cpu/spc700.h"
+#include "endmem.h"
+#include "gui/gui.h"
 #include "gui/guimisc.h"
+#include "gui/guiwindp.h"
+#include "init.h"
 #include "initc.h"
 #include "input.h"
+#include "macros.h"
 #include "ui.h"
 #include "video/procvid.h"
 #include "zpath.h"
@@ -115,8 +124,6 @@ void Debug_WriteString(char *str)
 //init.asm goodness
 extern uint32_t NumofBanks;
 extern uint32_t NumofBytes;
-extern uint8_t *romdata;
-extern uint8_t romtype;
 static uint8_t Interleaved;
 
 uint32_t maxromspace;
@@ -378,7 +385,6 @@ int32_t InfoScore(uint8_t *Buffer)
 }
 
 extern uint8_t ForceHiLoROM;
-extern uint8_t forceromtype;
 
 void BankCheck()
 {
@@ -1161,8 +1167,6 @@ bool NSRTHead(uint8_t *ROM)
 void calculate_state_sizes(), InitRewindVars(), zst_init();
 bool findZipIPS(char *, char *);
 bool PatchUsingIPS(char *);
-extern bool EMUPause;
-extern uint8_t device1, device2;
 extern bool IPSPatched;
 uint8_t lorommapmode2, curromsize, snesinputdefault1, snesinputdefault2;
 bool input1gp, input1mouse, input2gp, input2mouse, input2scope, input2just;
@@ -1408,19 +1412,8 @@ void loadROM()
 extern uint8_t wramdataa[65536];
 extern uint8_t ram7fa[65536];
 extern uint8_t vidmemch2[4096];
-extern uint8_t vidmemch4[4096];
 extern uint8_t vidmemch8[4096];
-extern uint8_t pal16b[1024];
-extern uint8_t pal16bcl[1024];
 extern uint8_t pal16bclha[1024];
-extern uint8_t pal16bxcl[256];
-extern uint8_t SPCRAM[65472];
-
-extern uint8_t *vidbuffer;
-extern uint8_t *vram;
-extern uint8_t *vcache2b;
-extern uint8_t *vcache4b;
-extern uint8_t *vcache8b;
 
 void clearSPCRAM()
 {
@@ -1450,15 +1443,13 @@ void clearmem2()
   memset(sram, 0xFF, 65536);
   memset(vram, 0, 65536);
   memset(vidmemch2, 1, 4096);
-  memset(vidmemch4, 1, 4096);
+  memset(vidmemch4, 1, sizeof(vidmemch4));
   memset(vidmemch8, 1, 4096);
   clearSPCRAM();
 }
 
 void clearmem(void)
 {
-  int_fast32_t i;
-
   memset(vidbuffer, 0, 131072);
   memset(wramdataa, 0, 65536);
   memset(ram7fa, 0, 65536);
@@ -1468,14 +1459,10 @@ void clearmem(void)
   memset(vcache2b, 0, 262144+256);
   memset(vcache4b, 0, 131072+256);
   memset(vcache8b, 0, 65536+256);
-  memset(pal16b, 0, 1024);
-  memset(pal16bcl, 0, 1024);
+  memset(pal16b, 0, sizeof(pal16b));
+  memset(pal16bcl, 0, sizeof(pal16bcl));
   memset(pal16bclha, 0, 1024);
-  for (i=0 ; i<1024 ; i+=4)
-  {
-    memset(pal16bxcl+i, 255, 2);
-    memset(pal16bxcl+i+2, 0, 2);
-  }
+  for (u4* i = pal16bxcl; i != endof(pal16bxcl); ++i) *i = 0x0000FFFF;
   memset(romdata, 0xFF, maxromspace+32768);
   clearmem2();
 }
@@ -1485,7 +1472,6 @@ extern uint8_t echoon0;
 extern uint32_t PHdspsave;
 extern uint32_t PHdspsave2;
 uint8_t echobuf[90000];
-extern uint8_t *spcBuffera;
 extern uint8_t DSPMem[256];
 
 void clearvidsound()
@@ -1716,8 +1702,8 @@ uint32_t showinfogui(void)
 }
 
 extern uint32_t nmiprevaddrl, nmiprevaddrh, nmirept, nmiprevline, nmistatus;
-extern uint8_t spcnumread, yesoutofmemory;
-extern uint8_t NextLineCache, sramsavedis, sndrot, regsbackup[3019];
+extern uint8_t spcnumread;
+extern uint8_t NextLineCache, sramsavedis;
 extern uint32_t Voice0Freq, Voice1Freq, Voice2Freq, Voice3Freq;
 extern uint32_t Voice4Freq, Voice5Freq, Voice6Freq, Voice7Freq;
 extern uint32_t dspPAdj;
@@ -1746,8 +1732,8 @@ void initpitch()
 
 extern uint32_t SfxR1, SfxR2, SetaCmdEnable, SfxSFR, SfxSCMR;
 extern uint8_t disablespcclr, *sfxramdata, SramExists;
-extern uint8_t *setaramdata, *wramdata, *SA1RAMArea, cbitmode;
-extern uint8_t ForcePal, ForceROMTiming, romispal, MovieWaiting, DSP1Type;
+extern uint8_t *setaramdata, *SA1RAMArea;
+extern uint8_t ForcePal, ForceROMTiming, MovieWaiting, DSP1Type;
 extern uint16_t totlines;
 void SetAddressingModes(), GenerateBank0Table();
 void SetAddressingModesSA1(), GenerateBank0TableSA1();
@@ -1942,7 +1928,7 @@ void CheckROMType()
   wramdata = wramdataa;
 }
 
-extern uint16_t copv, brkv, abortv, nmiv, nmiv2, irqv, irqv2, resetv;
+extern uint16_t copv, brkv, abortv, nmiv, nmiv2, irqv, irqv2;
 extern uint16_t copv8, brkv8, abortv8, nmiv8, irqv8;
 
 void SetIRQVectors()
@@ -2031,10 +2017,7 @@ void SetupROM(void)
   }
 }
 
-extern int32_t NumComboLocl;
 extern uint8_t ComboHeader[23];
-extern int8_t CombinDataLocl[3300];
-extern bool romloadskip;
 
 void SaveCombFile()
 {
@@ -2105,7 +2088,7 @@ void preparesfx()
   }
 }
 
-void map_set(void **dest, uint8_t *src, size_t count, size_t step)
+static void map_set(u1 **dest, uint8_t *src, size_t count, size_t step)
 {
   while (count--)
   {
@@ -2115,12 +2098,7 @@ void map_set(void **dest, uint8_t *src, size_t count, size_t step)
   }
 }
 
-extern uint8_t MultiType;
-extern void *snesmmap[256];
-extern void *snesmap2[256];
-
 uint32_t cromptradd;
-extern uint8_t MultiTap;
 extern uint32_t SfxR0, SfxR1, SfxR2, SfxR3, SfxR4, SfxR5, SfxR6, SfxR7,
                 SfxR8, SfxR9, SfxR10, SfxR11, SfxR12, SfxR13, SfxR14, SfxR15;
 extern void *ram7f;
@@ -2429,7 +2407,6 @@ void initsnes(void)
 }
 
 void OpenSramFile(), CheatCodeLoad(), LoadSecondState(), LoadGameSpecificInput();
-extern uint8_t GUIOn, GUIOn2;
 
 bool loadfileGUI(void)
 {
@@ -2465,8 +2442,6 @@ bool loadfileGUI(void)
   return (result);
 }
 
-extern uint32_t CheatOn, NumCheats;
-extern uint8_t CheatWinMode, CheatSearchStatus;
 void GUIQuickLoadUpdate();
 
 void powercycle(bool sramload, bool romload)
@@ -2514,18 +2489,16 @@ void powercycle(bool sramload, bool romload)
   }
 }
 
-extern uint8_t osm2dis, prevoamptr;
-extern uint8_t reg1read, reg2read, reg3read, reg4read, NMIEnab, INTEnab;
-extern uint8_t doirqnext, vidbright, forceblnk, timeron, spcP, JoyAPos, JoyBPos;
-extern uint8_t coladdr, coladdg, coladdb;
+extern uint8_t prevoamptr;
+extern uint8_t reg1read, reg2read, reg3read, reg4read, NMIEnab;
+extern uint8_t timeron, JoyAPos, JoyBPos;
 extern uint8_t SDD1BankA,SDD1BankB, SDD1BankC, SDD1BankD;
-extern uint8_t intrset, curcyc, cycpl, GUIReset;
+extern uint8_t intrset, cycpl;
 extern uint32_t SPC700read, SPC700write;
 extern uint32_t FIRTAPVal0, FIRTAPVal1, FIRTAPVal2, FIRTAPVal3, FIRTAPVal4, FIRTAPVal5, FIRTAPVal6, FIRTAPVal7;
-extern uint32_t xa, xdb, xs, xx, xy, scrndis;
-extern uint16_t VIRQLoc, resolutn, xpc;
+extern uint32_t xa, xdb, xs, xx, xy;
+extern uint16_t VIRQLoc;
 extern uint8_t spcextraram[64], SPCROM[64];
-extern uint32_t tableD[256];
 uint8_t SPCSkipXtraROM, disableeffects = 0;
 //This is saved in states
 uint8_t cycpl = 0;          // cycles per scanline
@@ -2745,7 +2718,6 @@ void init65816(void)
 #define debug_exit(n) exit(n)
 #endif
 
-extern unsigned char debugger;
 static bool zexit_called = false;
 
 void zexit(void)
