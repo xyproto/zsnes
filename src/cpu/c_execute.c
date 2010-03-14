@@ -317,14 +317,6 @@ void execute(u4* const pedx, u1** const pebp, u1** const pesi, eop*** const pedi
 	{
 		edi = tableadc[p];
 
-#ifdef OPENSPC
-		pushad
-		u8 edxeax = cpucycle[*esi] * 0xC3A13DE6ULL + ((u8)SPC_Cycles << 32 | ospc_cycle_frac);
-		ospc_cycle_frac = edxeax;
-		SPC_Cycles      = edxeax >> 32;
-		asm volatile("call %P0" :: "X" (OSPC_Run) : "cc", "memory"); // XXX what is this?
-		popad
-#else
 		u4 const dspcyc = cycpbl;
 		cycpbl = dspcyc - 55;
 		if (dspcyc < 55)
@@ -337,7 +329,6 @@ void execute(u4* const pedx, u1** const pebp, u1** const pesi, eop*** const pedi
 			u4 const op  = *ebp++;
 			asm volatile("push %%ebp;  mov %0, %%ebp;  call *%5;  mov %%ebp, %0;  pop %%ebp" : "+a" (ebp), "=c" (ecx), "+b" (ebx), "+S" (esi), "+D" (edi) : "c" (opcjmptab[op]) : "cc", "memory");
 		}
-#endif
 
 		p = *esi++;
 		u1 const c      = cpucycle[p];

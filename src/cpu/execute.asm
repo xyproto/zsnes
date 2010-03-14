@@ -445,17 +445,6 @@ NEWSYM execloop
    jmp cpuover
 .sound
    mov edi,[tableadc+ebx*4]
-%ifdef OPENSPC
-   pushad
-   mov bl,[esi]
-   movzx eax,byte[cpucycle+ebx]
-   mov ebx,0xC3A13DE6
-   mul ebx
-   add [ospc_cycle_frac],eax
-   adc [SPC_Cycles],edx
-   call OSPC_Run
-   popad
-%else
    sub dword[cycpbl],55
    jnc .skipallspc
    mov eax,[cycpblt]
@@ -466,7 +455,6 @@ NEWSYM execloop
    call dword near [opcjmptab+ebx*4]
    xor ebx,ebx
 .skipallspc
-%endif
    mov bl,[esi]
    inc esi
    sub dh,[cpucycle+ebx]

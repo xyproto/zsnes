@@ -32,16 +32,13 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #include "cfg.h"
 #include "c_init.h"
+#include "cpu/c_dspproc.h"
 #include "input.h"
 #include "mmlib/mm.h"
 #include "c_intrf.h"
 #include "ui.h"
 #include "video/procvid.h"
 #include "zpath.h"
-
-#ifndef OPENSPC
-#	include "cpu/c_dspproc.h"
-#endif
 
 #define BIT(x) (1 << (x))
 
@@ -362,12 +359,8 @@ void zstart()
     romloadskip = true;
   }
 
-#ifdef OPENSPC
-  OSPC_Init();
-#else
   setnoise();
   InitSPC();
-#endif
 
   allocmem();
 
