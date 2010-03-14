@@ -287,17 +287,17 @@ static void sprdrawprbw16b(u4 const eax, u1 const cl, u1 const ch, u4 const ebx,
 
 static void drawspritesprio16bwinon(u1 cl, u4 const ebp)
 {
-	u1*       esi = currentobjptr; // XXX struct?
-	u2* const edi = (u2*)curvidoffset;
+	SpriteInfo const* esi = currentobjptr;
+	u2*        const  edi = (u2*)curvidoffset;
 	if (sprsingle == 1)
 	{
-		esi += (cl - 1) * 8;
+		esi += cl - 1;
 		do
 		{
-			u2  const ebx  = *(u2*)esi;
-			u1  const ch   = esi[6];
-			u1* const esi_ = *(u1**)(esi + 2); // XXX unaligned?
-			if (esi[7] & 0x20)
+			u2  const ebx  = esi->x;
+			u1  const ch   = esi->pal;
+			u1* const esi_ = esi->obj;
+			if (esi->status & 0x20)
 			{ // flip x
 				sprdrawaf16b(cl, ch, ebx, esi_, edi, sprdrawprbw16b);
 			}
@@ -306,18 +306,18 @@ static void drawspritesprio16bwinon(u1 cl, u4 const ebp)
 				sprdrawa16b(cl, ch, ebx, esi_, edi, sprdrawprbw16b);
 			}
 		}
-		while (esi -= 8, --cl != 0);
+		while (--esi, --cl != 0);
 	}
 	else
 	{
 		csprprlft = cl;
 		do
 		{
-			u2  const ebx  = *(u2*)esi;
-			u1  const ch   = esi[6];
-			u4  const edx  = esi[7] & 0x03;
-			u1* const esi_ = *(u1**)(esi + 2); // XXX unaligned?
-			if (esi[7] & 0x20)
+			u2  const ebx  = esi->x;
+			u1  const ch   = esi->pal;
+			u4  const edx  = esi->status & 0x03;
+			u1* const esi_ = esi->obj;
+			if (esi->status & 0x20)
 			{ // flip x
 				if (edx == ebp)
 				{
@@ -340,7 +340,7 @@ static void drawspritesprio16bwinon(u1 cl, u4 const ebp)
 				}
 			}
 		}
-		while (esi += 8, --csprprlft != 0);
+		while (++esi, --csprprlft != 0);
 		csprbit = ROL(csprbit, 1);
 		if (csprbit == 1) memset(sprpriodata + 16, 0, 256);
 	}
@@ -356,17 +356,17 @@ static void drawsprites16bprio(u1 cl, u4 const ebp)
 	}
 	else
 	{
-		u1*       esi = currentobjptr; // XXX struct?
-		u2* const edi = (u2*)curvidoffset;
+		SpriteInfo const* esi = currentobjptr;
+		u2*        const  edi = (u2*)curvidoffset;
 		if (sprsingle == 1)
 		{
-			esi += (cl - 1) * 8;
+			esi += cl - 1;
 			do
 			{
-				u2  const ebx  = *(u2*)esi;
-				u1  const ch   = esi[6];
-				u1* const esi_ = *(u1**)(esi + 2); // XXX unaligned?
-				if (esi[7] & 0x20)
+				u2  const ebx  = esi->x;
+				u1  const ch   = esi->pal;
+				u1* const esi_ = esi->obj;
+				if (esi->status & 0x20)
 				{ // flip x
 					sprdrawaf16b(cl, ch, ebx, esi_, edi, sprdrawprb16b);
 				}
@@ -375,18 +375,18 @@ static void drawsprites16bprio(u1 cl, u4 const ebp)
 					sprdrawa16b(cl, ch, ebx, esi_, edi, sprdrawprb16b);
 				}
 			}
-			while (esi -= 8, --cl != 0);
+			while (--esi, --cl != 0);
 		}
 		else
 		{
 			csprprlft = cl;
 			do
 			{
-				u2  const ebx  = *(u2*)esi;
-				u1  const ch   = esi[6];
-				u4  const edx  = esi[7] & 0x03;
-				u1* const esi_ = *(u1**)(esi + 2); // XXX unaligned?
-				if (esi[7] & 0x20)
+				u2  const ebx  = esi->x;
+				u1  const ch   = esi->pal;
+				u4  const edx  = esi->status & 0x03;
+				u1* const esi_ = esi->obj;
+				if (esi->status & 0x20)
 				{ // flip x
 					if (edx == ebp)
 					{
@@ -409,7 +409,7 @@ static void drawsprites16bprio(u1 cl, u4 const ebp)
 					}
 				}
 			}
-			while (esi += 8, --csprprlft != 0);
+			while (++esi, --csprprlft != 0);
 			csprbit = ROL(csprbit, 1);
 			if (csprbit == 1) memset(sprpriodata + 16, 0, 256);
 		}
@@ -419,14 +419,14 @@ static void drawsprites16bprio(u1 cl, u4 const ebp)
 
 static void drawsprites16bwinon(u1 cl)
 {
-	u1*       esi = currentobjptr; // XXX struct?
-	u2* const edi = (u2*)curvidoffset;
+	SpriteInfo* esi = currentobjptr;
+	u2* const   edi = (u2*)curvidoffset;
 	do
 	{
-		u2  const ebx  = *(u2*)esi;
-		u1  const ch   = esi[6];
-		u1* const esi_ = *(u1**)(esi + 2); // XXX unaligned?
-		if (esi[7] & 0x20)
+		u2  const ebx  = esi->x;
+		u1  const ch   = esi->pal;
+		u1* const esi_ = esi->obj;
+		if (esi->status & 0x20)
 		{ // flip x
 			if (esi_[7] & 0x0F && winspdata[ebx - 8 - 16] == 0) edi[ebx - 8] = pal16b[(esi_[7] + ch) & 0xFF];
 			if (esi_[6] & 0x0F && winspdata[ebx - 7 - 16] == 0) edi[ebx - 7] = pal16b[(esi_[6] + ch) & 0xFF];
@@ -449,7 +449,7 @@ static void drawsprites16bwinon(u1 cl)
 			if (esi_[7] & 0x0F && winspdata[ebx - 1 + 16] == 0) edi[ebx - 1] = pal16b[(esi_[7] + ch) & 0xFF];
 		}
 	}
-	while (esi += 8, --cl != 0);
+	while (++esi, --cl != 0);
 	currentobjptr = esi;
 }
 
@@ -467,14 +467,14 @@ void drawsprites16b(u1 cl, u4 const ebp)
 	}
 	else
 	{
-		u1*       esi = currentobjptr; // XXX struct?
-		u2* const dst = (u2*)curvidoffset;
+		SpriteInfo* esi = currentobjptr;
+		u2* const   dst = (u2*)curvidoffset;
 		do
 		{
-			u2  const ebx = *(u2*)esi & 0x00007FFF;
-			u1  const ch  = esi[6];
-			u1* const src = *(u1**)(esi + 2); // XXX unaligned?
-			if (esi[7] & 0x20)
+			u2  const ebx = esi->x & 0x00007FFF;
+			u1  const ch  = esi->pal;
+			u1* const src = esi->obj;
+			if (esi->status & 0x20)
 			{ // flip x
 				if (src[7] & 0x0F) dst[ebx - 8] = pal16b[(src[7] + ch) & 0xFF];
 				if (src[6] & 0x0F) dst[ebx - 7] = pal16b[(src[6] + ch) & 0xFF];
@@ -497,7 +497,7 @@ void drawsprites16b(u1 cl, u4 const ebp)
 				if (src[7] & 0x0F) dst[ebx - 1] = pal16b[(src[7] + ch) & 0xFF];
 			}
 		}
-		while (esi += 8, --cl != 0);
+		while (++esi, --cl != 0);
 		currentobjptr = esi;
 	}
 }
@@ -1155,7 +1155,7 @@ void drawline16b(void)
 	// clear back area w/ back color
 	clearback16b();
 	// get current sprite table
-	currentobjptr = spritetablea + (curypos & 0x00FF) * 512;
+	currentobjptr = (SpriteInfo*)spritetablea + (curypos & 0x00FF) * 64; // XXX ugly cast
 	// setup priorities
 	if (sprprifix != 0)
 	{

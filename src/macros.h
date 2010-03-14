@@ -1,6 +1,8 @@
 #ifndef MACROS_H
 #define MACROS_H
 
+#define STATIC_ASSERT(x) extern int STATIC_ASSERT[((x) != 0) * 2 - 1]
+
 #define lengthof(x) (sizeof(x) / sizeof *(x))
 #define endof(x)    ((x) + lengthof(x))
 
