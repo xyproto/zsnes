@@ -190,14 +190,6 @@ NEWSYM dualwinsp,  resb 1
 NEWSYM dwinptrproc, resd 1
 SECTION .text
 
-; is this macro even used?
-%macro ClearWindowData 0
-    mov edi,winbgdata+16
-    xor eax,eax
-    mov ecx,64
-    rep stosd
-%endmacro
-
 NEWSYM makewindow
     ; upon entry, al = win enable bits
     cmp byte[disableeffects],1
