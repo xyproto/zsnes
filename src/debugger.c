@@ -32,42 +32,32 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <dpmi.h>
 #endif // __MSDOS__
 
+#include "c_vcache.h"
 #include "cpu/c_execute.h"
+#include "cpu/memory.h"
 #include "cpu/memtable.h"
+#include "cpu/regs.h"
+#include "cpu/spc700.h"
 #include "debugasm.h"
+#include "endmem.h"
+#include "init.h"
+#include "initc.h"
 #include "zstate.h"
 
 // All of these should be in headers, people!
 
-extern unsigned char oamram[1024], SPCRAM[65472], DSPMem[256];
+extern unsigned char oamram[1024], DSPMem[256];
 
-extern unsigned char curblank;
-extern unsigned char curcyc;
-extern unsigned char curypos;
 extern unsigned char CurrentCPU;
 
 extern unsigned char soundon;
 extern unsigned int  cycpbl;
 
-extern unsigned short xpc, xa, xx, xy, xs, xd;
-extern unsigned char  xpb, xdb, xp, xe;
-
-extern void *snesmmap[256];
-extern void *snesmap2[256];
-extern char dmadata[];
+extern unsigned short xa, xx, xy, xs;
+extern unsigned char  xdb;
 
 extern unsigned char debuggeron;
 
-extern void (*memtabler8[256])();
-
-
-// SPC stuff
-
-extern unsigned char *spcPCRam;
-extern unsigned char spcA, spcX, spcY, spcS, spcNZ, spcP;
-
-
-extern void regaccessbankr8();
 
 // should be in "zstate.h"
 void debugloadstate();
@@ -907,7 +897,7 @@ unsigned char *findoppage() {
             return snesmap2[xpb];
         } else {
             // dma
-            return (unsigned char*)(dmadata-0x4300);
+            return dmadata - 0x4300;
         }
     }
 }
