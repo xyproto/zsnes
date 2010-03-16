@@ -13,6 +13,7 @@ typedef struct SpriteInfo
 } SpriteInfo;
 STATIC_ASSERT(sizeof(SpriteInfo) == 8);
 
+extern void dualstartprocess();
 extern void makewindow();
 extern void makewindowsp();
 extern void procbackgrnd();
@@ -31,17 +32,24 @@ extern u1          curbgpr; // 00h = low priority, 20h = high priority
 extern u1          curmosaicsz;
 extern u1          cwinenabm;
 extern u1          drawn;
+extern u1          dualwinbg;
+extern u1          dualwinsp;
 extern u1          hirestiledat[256];
 extern u1          maxbr;
+extern u1          pwinbgenab;
+extern u1          pwinspenab;
 extern u1          res512switch;
 extern u1          temp;
 extern u1          winon;
+extern u1          winonbtype;
 extern u1          winonsp;
+extern u1          winonstype;
 extern u1*         bg1cachloc[4];
 extern u1*         bgofwptr;
 extern u1*         cursprloc;
 extern u1*         curvidoffset;
 extern u1*         cwinptr;
+extern u1*         dwinptrproc;
 extern u1*         tempcach; // points to cached memory
 extern u1*         winptrref;
 extern u2*         bg1tdabloc[4];
@@ -51,6 +59,8 @@ extern u4          bg1vbufloc[4];
 extern u4          bg1xposloc[4];
 extern u4          bg1yaddval[4];
 extern u4          bgsubby;
+extern u4          pwinbgtype;
+extern u4          pwinsptype;
 extern u4          yadder;
 extern u4          yrevadder;
 

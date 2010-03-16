@@ -105,10 +105,10 @@ NEWSYM latchy,    dw 0
 NEWSYM latchxr,   db 0             ; low or high byte read for x value
 NEWSYM latchyr,   db 0             ; low or high byte read for y value
 NEWSYM frskipper, db 0
-NEWSYM winl1,     db 0             ; window 1 left position
-NEWSYM winr1,     db 0             ; window 1 right position
-NEWSYM winl2,     db 0             ; window 2 left position
-NEWSYM winr2,     db 0             ; window 2 right position
+NEWSYM winl1,     db 0
+NEWSYM winr1,     db 0
+NEWSYM winl2,     db 0
+NEWSYM winr2,     db 0
 NEWSYM winen
 NEWSYM winbg1en,  db 0
 NEWSYM winbg2en,  db 0
@@ -116,7 +116,7 @@ NEWSYM winbg3en,  db 0
 NEWSYM winbg4en,  db 0
 NEWSYM winobjen,  db 0
 NEWSYM wincolen,  db 0
-NEWSYM winlogica, db 0             ; Window logic type for BG1 to 4
+NEWSYM winlogica, db 0
 NEWSYM winlogicb, db 0             ; Window logic type for Sprites and Backarea
 NEWSYM winenabm,  db 0
 NEWSYM winenabs,  db 0

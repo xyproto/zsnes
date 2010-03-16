@@ -37,6 +37,7 @@ EXTSYM flipyposngom,ofsmtptr,ofsmmptr,ofsmcyps,bgtxadd,bg1ptrx,bg1ptry
 EXTSYM bg1scrolx_m7,bg1scroly_m7,OMBGTestVal,cachesingle4bng,m7starty
 EXTSYM ofsmtptrs,ofsmcptr2
 EXTSYM newengine16b
+EXTSYM makedualwin
 
 %ifdef __MSDOS__
 EXTSYM newengine8b,drawmode7,drawmode7extbg,drawmode7extbg2
@@ -197,7 +198,10 @@ NEWSYM makewindow
     mov bl,al
     and bl,00001010b
     cmp bl,00001010b
-    je near makedualwin
+    jne .nomakedualwin
+    ccallv makedualwin, eax, ebp
+    ret
+.nomakedualwin:
     cmp bl,0
     je near .finishwin
     mov byte[winon],1
@@ -315,50 +319,6 @@ NEWSYM makewindow
     ret
 .finishwin
     ret
-
-NEWSYM makedualwin
-    mov ecx,ebp
-    shl cl,1
-    mov dl,[winlogica]
-    shr dl,cl
-    and dl,03h
-    mov cl,dl
-    mov byte[winon],1
-    mov ebx,[winl1]
-    ; check if data matches previous sprite data
-    cmp cl,[dualwinsp]
-    jne .skipsprcheck
-    cmp al,[pwinspenab]
-    jne .skipsprcheck
-    cmp ebx,[pwinsptype]
-    jne .skipsprcheck
-    mov dword[cwinptr],winspdata+16
-    mov al,[winonstype]
-    mov [winon],al
-    ret
-.skipsprcheck
-    ; check if data matches previous data
-    cmp cl,[dualwinbg]
-    jne .skipenab3
-    cmp al,[pwinbgenab]
-    jne .skipenab
-    cmp ebx,[pwinbgtype]
-    jne .skipenab2
-    mov dword[cwinptr],winbgdata+16
-    mov al,[winonbtype]
-    mov [winon],al
-    ret
-.skipenab3
-    mov [dualwinbg],cl
-.skipenab
-    mov [pwinbgenab],al
-    mov ebx,[winl1]
-.skipenab2
-    mov [pwinbgtype],ebx
-    mov dword[dwinptrproc],winbgdata+16
-    mov dword[cwinptr],winbgdata+16
-    mov byte[winon],1
-    mov byte[winonbtype],1
 
 NEWSYM dualstartprocess
 

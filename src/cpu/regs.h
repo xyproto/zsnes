@@ -89,6 +89,7 @@ extern u1 vidbright;        // screen brightness (0 .. 15)
 extern u1 winen[6];         // Win1 on (IN/OUT) or Win2 on (IN/OUT) on BG1/BG2/BG3/BG4/sprites/backarea
 extern u1 winenabm;         // Window logic enable for main screen
 extern u1 winenabs;         // Window logic enable for sub screen
+extern u1 winlogica;        // Window logic type for BG1 to 4
 extern u2 bg1objptr[4];     // pointer to tiles in background1/2/3/4
 extern u2 bg1ptr[4];        // pointer to background1/2/3/4
 extern u2 bg1scrolx[4];     // background 1/2/3/4 x position
@@ -100,5 +101,6 @@ extern u2 resolutn;         // screen resolution
 extern u2 scrnon;           // main & sub screen on
 extern u4 bg1ptrx[4];       // pointer to background1/2/3/4
 extern u4 bg1ptry[4];       // pointer to background1/2/3/4
+extern u4 winl1;            // window 1/2 left/right position
 
 #endif
