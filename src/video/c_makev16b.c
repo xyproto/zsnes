@@ -9,6 +9,7 @@
 #include "../ui.h"
 #include "../vcache.h"
 #include "c_makev16b.h"
+#include "c_makevid.h"
 #include "makev16b.h"
 #include "makev16t.h"
 #include "makevid.h"
@@ -1066,12 +1067,7 @@ static void drawbackgrndmain16b(Layer const layer)
 	winon = 0;
 	if (winenabm & curbgnum)
 	{
-		u1 al = winen[layer];
-		u4 ecx;
-		u4 edx;
-		u4 ebx;
-		u4 edi;
-		asm volatile("push %%ebp;  mov %6, %%ebp;  call %P5;  pop %%ebp" : "+a" (al), "=c" (ecx), "=d" (edx), "=b" (ebx), "=D" (edi) : "X" (makewindow), "r" (layer) : "cc", "memory");
+		makewindow(winen[layer], layer);
 		if (winon == 0xFF) return;
 	}
 	curmosaicsz  = mosaicon & curbgnum ? mosaicsz + 1 : 1;

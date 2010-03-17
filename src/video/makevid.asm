@@ -37,7 +37,7 @@ EXTSYM flipyposngom,ofsmtptr,ofsmmptr,ofsmcyps,bgtxadd,bg1ptrx,bg1ptry
 EXTSYM bg1scrolx_m7,bg1scroly_m7,OMBGTestVal,cachesingle4bng,m7starty
 EXTSYM ofsmtptrs,ofsmcptr2
 EXTSYM newengine16b
-EXTSYM makedualwin
+EXTSYM makewindow
 
 %ifdef __MSDOS__
 EXTSYM newengine8b,drawmode7,drawmode7extbg,drawmode7extbg2
@@ -190,135 +190,6 @@ NEWSYM winonstype, resb 1
 NEWSYM dualwinsp,  resb 1
 NEWSYM dwinptrproc, resd 1
 SECTION .text
-
-NEWSYM makewindow
-    ; upon entry, al = win enable bits
-    cmp byte[disableeffects],1
-    je near .finishwin
-    mov bl,al
-    and bl,00001010b
-    cmp bl,00001010b
-    jne .nomakedualwin
-    ccallv makedualwin, eax, ebp
-    ret
-.nomakedualwin:
-    cmp bl,0
-    je near .finishwin
-    mov byte[winon],1
-    mov ebx,[winl1]
-    ; check if data matches previous sprite data
-    cmp al,[pwinspenab]
-    jne .skipsprcheck
-    cmp ebx,[pwinsptype]
-    jne .skipsprcheck
-    mov dword[cwinptr],winspdata+16
-    mov al,[winonstype]
-    mov [winon],al
-    ret
-.skipsprcheck
-    ; check if data matches previous data
-    cmp al,[pwinbgenab]
-    jne .skipenab
-    cmp ebx,[pwinbgtype]
-    jne .skipenab2
-    mov dword[cwinptr],winbgdata+16
-    mov al,[winonbtype]
-    mov [winon],al
-    ret
-.skipenab
-    mov [pwinbgenab],al
-    mov ebx,[winl1]
-.skipenab2
-    mov [pwinbgtype],ebx
-    mov dl,[winl1]
-    mov dh,[winr1]
-    test al,00000010b
-    jnz .win1
-    mov dl,[winl2]
-    mov dh,[winr2]
-    shr al,2
-.win1
-    test al,01h
-    jnz near .outside
-    cmp dl,254
-    je .clipped
-    cmp dl,dh
-    jb .clip
-.clipped
-    mov byte[winon],0
-    mov byte[winonbtype],0
-    ret
-.clip
-    mov edi,winbgdata+16
-    xor eax,eax
-    ; start drawing 1's from 0 to left
-    cmp dl,0
-    je .nextdot2
-.nextdot
-    mov byte[edi+eax],0
-    inc al
-    cmp al,dl
-    jb .nextdot         ; blah
-.nextdot2
-    mov byte[edi+eax],1
-    inc al
-    cmp al,dh
-    jb .nextdot2
-    mov byte[edi+eax],1
-    cmp dh,255
-    je .nextdot4
-    ; start drawing 1's from right to 255
-.nextdot3
-    mov byte[edi+eax],0
-    inc al
-    jnz .nextdot3
-.nextdot4
-    mov byte[winon],1
-    mov byte[winonbtype],1
-    mov dword[cwinptr],winbgdata+16
-    ret
-.outside
-    cmp dl,dh
-    jb .clip2
-    mov byte[winon],0FFh
-    mov byte[winonbtype],0FFh
-    mov dword[cwinptr],winbgdata+16
-    ret
-.clip2
-    cmp dl,1
-    ja .nooutclip
-    cmp dh,254
-    jae near .clipped
-.nooutclip
-    mov edi,winbgdata+16
-    xor eax,eax
-    ; start drawing 1's from 0 to left
-.nextdoti
-    mov byte[edi+eax],1
-    inc al
-    cmp al,dl
-    jb .nextdoti
-.nextdot2i
-    mov byte[edi+eax],0
-    inc al
-    cmp al,dh
-    jb .nextdot2i
-    mov byte[edi+eax],0
-    cmp al,255
-    je .nextdot4i
-    inc al
-    ; start drawing 1's from right to 255
-.nextdot3i
-    mov byte[edi+eax],1
-    inc al
-    jnz .nextdot3i
-.nextdot4i
-    mov byte[winon],1
-    mov byte[winonbtype],1
-    mov dword[cwinptr],winbgdata+16
-    ret
-.finishwin
-    ret
 
 NEWSYM dualstartprocess
 
@@ -1049,7 +920,7 @@ NEWSYM drawbackgrndsub
     jz near .nobackwin
 ;    procwindow [winbg1en+ebp]
     mov al,[winbg1en+ebp]
-    call makewindow
+    ccallv makewindow, eax, ebp
     cmp byte[winon],0FFh
     je near .noback
 .nobackwin
@@ -1114,7 +985,7 @@ NEWSYM drawbackgrndmain
     jz near .nobackwin
 ;    procwindow [winbg1en+ebp]
     mov al,[winbg1en+ebp]
-    call makewindow
+    ccallv makewindow, eax, ebp
     cmp byte[winon],0FFh
     je near .noback
 .nobackwin
@@ -1724,7 +1595,7 @@ NEWSYM processmode7
     jnz near .nobackwin0
     mov ebp,0
     mov al,[winbg1en]
-    call makewindow
+    ccallv makewindow, eax, ebp
     cmp byte[winon],0FFh
     je near .noback0
 .nobackwin0
@@ -1767,7 +1638,7 @@ NEWSYM processmode7
     jnz near .nobackwin1
     mov ebp,0
     mov al,[winbg1en]
-    call makewindow
+    ccallv makewindow, eax, ebp
     cmp byte[winon],0FFh
     je near .noback1
 .nobackwin1
@@ -1810,7 +1681,7 @@ NEWSYM processmode7
     jnz near .nobackwin0b
     mov ebp,0
     mov al,[winbg1en]
-    call makewindow
+    ccallv makewindow, eax, ebp
     cmp byte[winon],0FFh
     je near .noback0b
 .nobackwin0b
@@ -1829,7 +1700,7 @@ NEWSYM processmode7
     jnz near .nobackwin2
     mov ebp,0
     mov al,[winbg1en]
-    call makewindow
+    ccallv makewindow, eax, ebp
     cmp byte[winon],0FFh
     je near .noback2
 .nobackwin2

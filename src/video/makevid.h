@@ -14,7 +14,6 @@ typedef struct SpriteInfo
 STATIC_ASSERT(sizeof(SpriteInfo) == 8);
 
 extern void dualstartprocess();
-extern void makewindow();
 extern void makewindowsp();
 extern void procbackgrnd();
 

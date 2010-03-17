@@ -180,7 +180,7 @@ NEWSYM processmode716b
     test word[winenabm],0100h
     jnz near .nobackwin0
     mov al,[winbg1en]
-    call makewindow
+    ccallv makewindow, eax, ebp
     cmp byte[winon],0FFh
     je near .noback0
 .nobackwin0
@@ -222,7 +222,7 @@ NEWSYM processmode716b
     test word[winenabm],0100h
     jnz near .nobackwin1
     mov al,[winbg1en]
-    call makewindow
+    ccallv makewindow, eax, ebp
     cmp byte[winon],0FFh
     je near .noback1
 .nobackwin1
@@ -264,7 +264,7 @@ NEWSYM processmode716b
     test word[winenabm],0200h
     jnz near .nobackwin0b
     mov al,[winbg1en]
-    call makewindow
+    ccallv makewindow, eax, ebp
     cmp byte[winon],0FFh
     je near .noback0b
 .nobackwin0b
@@ -286,7 +286,7 @@ NEWSYM processmode716b
     test word[winenabm],0100h
     jnz near .nobackwin2
     mov al,[winbg1en]
-    call makewindow
+    ccallv makewindow, eax, ebp
     cmp byte[winon],0FFh
     je near .noback2
 .nobackwin2

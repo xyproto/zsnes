@@ -114,7 +114,7 @@ NEWSYM procmode716tsub
 ;    procwindow [winbg1en]
     mov al,[winbg1en]
     mov ebp,0
-    call makewindow
+    ccallv makewindow, eax, ebp
     cmp byte[winon],0FFh
     je near .noback1
 .nobackwin1
@@ -161,7 +161,7 @@ NEWSYM procmode716tsubextbg
 ;    procwindow [winbg1en]
     mov al,[winbg1en]
     mov ebp,0
-    call makewindow
+    ccallv makewindow, eax, ebp
     cmp byte[winon],0FFh
     je near .noback1
 .nobackwin1
@@ -209,7 +209,7 @@ NEWSYM procmode716tsubextbgb
 ;    procwindow [winbg1en]
     mov al,[winbg1en]
     mov ebp,0
-    call makewindow
+    ccallv makewindow, eax, ebp
     cmp byte[winon],0FFh
     je near .noback1
 .nobackwin1
@@ -252,7 +252,7 @@ NEWSYM procmode716tsubextbg2
     jnz near .nobackwin1
     mov al,[winbg1en]
     mov ebp,0
-    call makewindow
+    ccallv makewindow, eax, ebp
     cmp byte[winon],0FFh
     je near .noback1
 .nobackwin1
@@ -287,7 +287,7 @@ NEWSYM procmode716tmain
 ;    procwindow [winbg1en]
     mov al,[winbg1en]
     mov ebp,0
-    call makewindow
+    ccallv makewindow, eax, ebp
     cmp byte[winon],0FFh
     je near .noback1
 .nobackwin1
@@ -343,7 +343,7 @@ NEWSYM procmode716tmainextbg
 ;    procwindow [winbg1en]
     mov al,[winbg1en]
     mov ebp,0
-    call makewindow
+    ccallv makewindow, eax, ebp
     cmp byte[winon],0FFh
     je near .noback1
 .nobackwin1
@@ -395,7 +395,7 @@ NEWSYM procmode716tmainextbgb
 ;    procwindow [winbg1en]
     mov al,[winbg1en]
     mov ebp,0
-    call makewindow
+    ccallv makewindow, eax, ebp
     cmp byte[winon],0FFh
     je near .noback1
 .nobackwin1
@@ -445,7 +445,7 @@ NEWSYM procmode716tmainextbg2
 ;    procwindow [winbg1en]
     mov al,[winbg1en]
     mov ebp,0
-    call makewindow
+    ccallv makewindow, eax, ebp
     cmp byte[winon],0FFh
     je near .noback1
 .nobackwin1
@@ -562,7 +562,7 @@ NEWSYM drawbackgrndsub16t
     jz near .nobackwin
 ;    procwindow [winbg1en+ebp]
     mov al,[winbg1en+ebp]
-    call makewindow
+    ccallv makewindow, eax, ebp
     cmp byte[winon],0FFh
     je near .noback
 .nobackwin
@@ -630,7 +630,7 @@ NEWSYM drawbackgrndmain16t
     jz near .nobackwin
 ;    procwindow [winbg1en+ebp]
     mov al,[winbg1en+ebp]
-    call makewindow
+    ccallv makewindow, eax, ebp
     cmp byte[winon],0FFh
     je near .noback
 .nobackwin
@@ -820,7 +820,7 @@ NEWSYM drawbackgrndsub16tfix
     jz near .nobackwin
 ;    procwindow [winbg1en+ebp]
     mov al,[winbg1en+ebp]
-    call makewindow
+    ccallv makewindow, eax, ebp
     cmp byte[winon],0FFh
     je near .noback
 .nobackwin
@@ -886,7 +886,7 @@ NEWSYM drawbackgrndmain16tfix
     jz near .nobackwin
 ;    procwindow [winbg1en+ebp]
     mov al,[winbg1en+ebp]
-    call makewindow
+    ccallv makewindow, eax, ebp
     cmp byte[winon],0FFh
     je near .noback
 .nobackwin
