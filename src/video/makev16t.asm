@@ -994,7 +994,7 @@ NEWSYM drawline16t
     procwindowback
     call clearback16bts
     ; do sprite windowing
-    call makewindowsp
+    ccallv makewindowsp
     ; clear registers
     xor eax,eax
     xor ecx,ecx
@@ -1263,7 +1263,7 @@ NEWSYM processmode716t
     procwindowback
     call clearback16bts
     ; do sprite windowing
-    call makewindowsp
+    ccallv makewindowsp
     ; clear registers
     xor eax,eax
     xor ecx,ecx

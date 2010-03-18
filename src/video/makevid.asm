@@ -22,7 +22,7 @@
 %include "macros.mac"
 
 EXTSYM disableeffects,winl1,winl2,winbgdata,winr1,winr2,winspdata,winlogica
-EXTSYM winenabm,winobjen,winlogicb,scrndis,scrnon,bgmode,bgtilesz,winbg1en
+EXTSYM winenabm,winlogicb,scrndis,scrnon,bgmode,bgtilesz,winbg1en
 EXTSYM winenabs,bg1objptr,bg1ptr,bg1ptrb,bg1ptrc,bg1ptrd,bg1scrolx,bg1scroly
 EXTSYM cachebg1,curbgofs,curcolbg,vcache2b,vcache4b,vcache8b
 EXTSYM vidbuffer,bg3highst,cbitmode,colormodedef,ngptrdat2
@@ -559,126 +559,6 @@ NEWSYM dualwinxnor
 SECTION .bss
 NEWSYM winonsp, resb 1
 SECTION .text
-
-NEWSYM makewindowsp
-    mov al,[winobjen]
-    mov byte[winonsp],0
-    test dword[winenabm],1010h
-    jz near .finishwin
-    ; upon entry, al = win enable bits
-    cmp byte[disableeffects],1
-    je near .finishwin
-    mov bl,al
-    and bl,00001010b
-    cmp bl,00001010b
-    je near makedualwinsp
-    cmp bl,0
-    je near .finishwin
-    mov byte[winonsp],1
-    ; check if data matches previous data
-    cmp al,[pwinspenab]
-    jne .skipenab
-    mov ebx,[winl1]
-    cmp ebx,[pwinsptype]
-    jne .skipenab2
-    mov dword[cwinptr],winspdata+16
-    mov al,[winonstype]
-    mov [winonsp],al
-    ret
-.skipenab
-    mov [pwinspenab],al
-    mov ebx,[winl1]
-.skipenab2
-    mov [pwinsptype],ebx
-    mov dl,[winl1]
-    mov dh,[winr1]
-    test al,00000010b
-    jnz .win1
-    mov dl,[winl2]
-    mov dh,[winr2]
-    shr al,2
-.win1
-    test al,01h
-    jnz near .outside
-    cmp dl,254
-    je .clipped
-    cmp dl,dh
-    jb .clip
-.clipped
-    mov byte[winonsp],0
-    mov byte[winonstype],0
-    ret
-.clip
-    mov edi,winspdata+16
-    xor eax,eax
-    ; start drawing 1's from 0 to left
-    cmp dl,0
-    je .nextdot2
-.nextdot
-    mov byte[edi+eax],0
-    inc al
-    cmp al,dl
-    jbe .nextdot
-.nextdot2
-    mov byte[edi+eax],1
-    inc al
-    cmp al,dh
-    jb .nextdot2
-    mov byte[edi+eax],1
-    cmp dh,255
-    je .nextdot4
-    ; start drawing 1's from right to 255
-.nextdot3
-    mov byte[edi+eax],0
-    inc al
-    jnz .nextdot3
-.nextdot4
-    mov byte[winonsp],1
-    mov byte[winonstype],1
-    mov dword[cwinptr],winspdata+16
-    ret
-.outside
-    cmp dl,dh
-    jb .clip2
-    mov byte[winonsp],0FFh
-    mov byte[winonstype],0FFh
-    mov dword[cwinptr],winspdata+16
-    ret
-.clip2
-    cmp dl,1
-    ja .nooutclip
-    cmp dh,254
-    jae near .clipped
-.nooutclip
-    mov edi,winspdata+16
-    xor eax,eax
-    ; start drawing 1's from 0 to left
-.nextdoti
-    mov byte[edi+eax],1
-    inc al
-    cmp al,dl
-    jb .nextdoti
-.nextdot2i
-    mov byte[edi+eax],0
-    inc al
-    cmp al,dh
-    jb .nextdot2i
-    mov byte[edi+eax],0
-    cmp al,255
-    je .nextdot4i
-    inc al
-    ; start drawing 1's from right to 255
-.nextdot3i
-    mov byte[edi+eax],1
-    inc al
-    jnz .nextdot3i
-.nextdot4i
-    mov byte[winonsp],1
-    mov byte[winonstype],1
-    mov dword[cwinptr],winspdata+16
-    ret
-.finishwin
-    ret
 
 NEWSYM makedualwinsp
     mov ecx,ebp
@@ -1285,7 +1165,7 @@ NEWSYM drawline
     xor eax,eax
     rep stosd
     ; do sprite windowing
-    call makewindowsp
+    ccallv makewindowsp
     ; get current sprite table
     xor ebx,ebx
     mov bl,[curypos]
@@ -1574,7 +1454,7 @@ NEWSYM processmode7
     xor eax,eax
     rep stosd
     ; do sprite windowing
-    call makewindowsp
+    ccallv makewindowsp
     ; clear registers
     xor eax,eax
     xor ecx,ecx

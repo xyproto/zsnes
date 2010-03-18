@@ -1188,7 +1188,7 @@ static void processmode716b(void)
 	// calculate current video offset
 	curvidoffset = vidbuffer + curypos * 576 + 32;
 	// do sprite windowing
-	asm_call(makewindowsp);
+	makewindowsp();
 	// set palette
 	setpalette16b();
 	// clear back area w/ back color
@@ -1301,7 +1301,7 @@ void drawline16b(void)
 	// calculate current video offset
 	curvidoffset = vidbuffer + curypos * 576 + 32;
 	// do sprite windowing
-	asm_call(makewindowsp);
+	makewindowsp();
 	// set palette
 	setpalette16b();
 	// clear back area w/ back color

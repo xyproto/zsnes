@@ -2,5 +2,6 @@
 #define C_MAKEVID_H
 
 void makewindow(u1 al, Layer);
+void makewindowsp(void);
 
 #endif
