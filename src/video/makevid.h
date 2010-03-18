@@ -33,6 +33,7 @@ extern u1          cwinenabm;
 extern u1          drawn;
 extern u1          dualwinbg;
 extern u1          dualwinsp;
+extern u1          extbgdone;
 extern u1          hirestiledat[256];
 extern u1          maxbr;
 extern u1          pwinbgenab;

@@ -120,7 +120,7 @@ NEWSYM winlogica, db 0
 NEWSYM winlogicb, db 0             ; Window logic type for Sprites and Backarea
 NEWSYM winenabm,  db 0
 NEWSYM winenabs,  db 0
-NEWSYM mode7set,  db 0             ; mode 7 settings
+NEWSYM mode7set,  db 0
 NEWSYM mode7A,    dw 0             ; A value for Mode 7
 NEWSYM mode7B,    dw 0             ; B value for Mode 7
 NEWSYM mode7C,    dw 0             ; C value for Mode 7

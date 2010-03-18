@@ -21,24 +21,20 @@
 
 %include "macros.mac"
 
-EXTSYM cursprloc,curypos,scrndis,scrnon,winon,winonsp,drawmode716extbg
-EXTSYM drawmode716extbg2
+EXTSYM cursprloc,curypos,scrndis,scrnon,winon,winonsp
 EXTSYM bgcoloradder
-EXTSYM drawn,makewindow,winbg1en,mosaicon,winenabm,vidbuffer
-EXTSYM curbgpr,currentobjptr,curvidoffset
-EXTSYM cwinenabm,makewindowsp
-EXTSYM preparesprpr,spritetablea,sprleftpr
-EXTSYM bg1scrolx,bg1scroly,drawmode716b,mode7set,mosaicsz
-EXTSYM sprleftpr1,sprleftpr2,sprleftpr3,sprlefttot,sprprifix,interlval,extbgdone
+EXTSYM drawn
+EXTSYM curbgpr,curvidoffset
+EXTSYM sprprifix
 EXTSYM pal16b
 EXTSYM bgofwptr,bgsubby,bshifter,curmosaicsz,cwinptr
 EXTSYM temp,tempcach,temptile,winptrref,xtravbuf,yadder,yrevadder
 EXTSYM vcache2b,vcache4b,vcache8b,hirestiledat,res512switch,numwin,windowdata
 EXTSYM vidmemch4,vram,ofsmcptr
 EXTSYM ofsmady,ofsmadx,yposngom,flipyposngom,ofsmtptr,ofsmmptr,ofsmcyps,bgtxadd
-EXTSYM bg1scrolx_m7,bg1scroly_m7,ngptrdat2
-EXTSYM OMBGTestVal,cachesingle4bng,m7starty,ofsmtptrs,ofsmcptr2,ofshvaladd
-EXTSYM clearback16b,setpalette16b,drawsprites16b
+EXTSYM ngptrdat2
+EXTSYM OMBGTestVal,cachesingle4bng,ofsmtptrs,ofsmcptr2,ofshvaladd
+EXTSYM drawsprites16b
 
 %include "video/vidmacro.mac"
 
@@ -52,54 +48,6 @@ NEWSYM tempstuff, resd 1
 .stuff2 resb 2
 
 SECTION .text
-
-%macro procmode716bextbg 3
-    xor eax,eax
-    xor edx,edx
-    mov ax,[curypos]
-    test byte[mode7set],02h
-    jz %%noflip
-    neg ax
-    add ax,255
-%%noflip
-    mov byte[curmosaicsz],1
-    test byte[mosaicon],%3
-    jz %%nomos
-    mov bl,[mosaicsz]
-    cmp bl,0
-    je %%nomos
-    inc bl
-    mov [curmosaicsz],bl
-    xor bh,bh
-    div bx
-    xor edx,edx
-    mul bx
-%%nomos
-    mov [m7starty],ax
-    mov ax,%1
-    mov dx,%2
-    call drawmode716extbg
-%endmacro
-
-%macro procmode716bextbg2 3
-    xor eax,eax
-    xor edx,edx
-    mov ax,[curypos]
-    mov byte[curmosaicsz],1
-    test byte[mosaicon],%3
-    jz %%nomos
-    mov bl,[mosaicsz]
-    cmp bl,0
-    je %%nomos
-    inc bl
-    mov [curmosaicsz],bl
-    xor bh,bh
-    div bx
-    xor edx,edx
-    mul bx
-%%nomos
-    call drawmode716extbg2
-%endmacro
 
 NEWSYM procspritessub16b
     test byte[scrndis],10h
@@ -122,222 +70,6 @@ NEWSYM procspritessub16b
     je .nosprites
     ccallv drawsprites16b, ecx, ebp
 .nosprites
-    ret
-
-
-NEWSYM processmode716b
-    mov al,[winenabm]
-    mov [cwinenabm],al
-    push esi
-    push edi
-    push ebx
-    push edx
-    push ebp
-    ; get current sprite table
-    xor ebx,ebx
-    mov bl,[curypos]
-    shl ebx,9
-    add ebx,[spritetablea]
-    mov [currentobjptr],ebx
-    ; setup priorities
-    cmp byte[sprprifix],0
-    je .nosprprio
-    mov dword[cursprloc],sprlefttot
-    call preparesprpr
-.nosprprio
-    ; calculate current video offset
-    xor ebx,ebx
-    mov bx,[curypos]
-    mov esi,ebx
-    shl esi,9
-    shl ebx,6
-    add esi,ebx
-    add esi,32
-    add esi,[vidbuffer]
-    mov [curvidoffset],esi
-    ; do sprite windowing
-    call makewindowsp
-    ; set palette
-    ccallv setpalette16b
-    ; clear back area w/ back color
-    ccallv clearback16b
-    ; clear registers
-    xor eax,eax
-    xor ecx,ecx
-
-    mov byte[extbgdone],0
-    ; mode 7 extbg
-    test byte[interlval],40h
-    jz near .noback0
-    test byte[scrndis],02h
-    jnz near .noback0
-    ; do background 1
-    test word[scrnon],0202h
-    jz near .noback0
-    mov byte[winon],0
-    test word[winenabm],0001h
-    jz near .nobackwin0
-    test word[winenabm],0100h
-    jnz near .nobackwin0
-    mov al,[winbg1en]
-    ccallv makewindow, eax, ebp
-    cmp byte[winon],0FFh
-    je near .noback0
-.nobackwin0
-    mov byte[extbgdone],1
-    procmode716bextbg [bg1scroly_m7],[bg1scrolx_m7],1
-.noback0
-
-    ; do objects
-    test byte[scrndis],10h
-    jnz near .nosprites1
-    test word[scrnon],1010h
-    jz near .nosprites1
-    cmp byte[winonsp],0FFh
-    je .nosprites1
-    xor ebx,ebx
-    mov bl,[curypos]
-    mov cl,[sprleftpr+ebx]
-    cmp byte[sprprifix],0
-    je .nosprprio2
-    mov cl,[sprlefttot+ebx]
-.nosprprio2
-    cmp cl,0
-    je .nosprites1
-    mov ebp,0
-    ccallv drawsprites16b, ecx, ebp
-.nosprites1
-
-    ; display mode7
-    test byte[interlval],40h
-    jnz near .noback1
-    test byte[scrndis],01h
-    jnz near .noback1
-    ; do background 1
-    test word[scrnon],0101h
-    jz near .noback1
-    mov byte[winon],0
-    test word[winenabm],0001h
-    jz near .nobackwin1
-    test word[winenabm],0100h
-    jnz near .nobackwin1
-    mov al,[winbg1en]
-    ccallv makewindow, eax, ebp
-    cmp byte[winon],0FFh
-    je near .noback1
-.nobackwin1
-    procmode716b [bg1scroly_m7],[bg1scrolx_m7],1
-.noback1
-
-    ; do objects
-    test byte[scrndis],10h
-    jnz near .nosprites2
-    test word[scrnon],1010h
-    jz near .nosprites2
-    cmp byte[winonsp],0FFh
-    je .nosprites2
-    xor ebx,ebx
-    mov bl,[curypos]
-    mov cl,[sprleftpr1+ebx]
-    cmp byte[sprprifix],0
-    je .nosprprio3
-    mov cl,[sprlefttot+ebx]
-.nosprprio3
-    cmp cl,0
-    je .nosprites2
-    mov ebp,1
-    ccallv drawsprites16b, ecx, ebp
-.nosprites2
-
-    test byte[interlval],40h
-    jz near .noback0b
-    test byte[scrndis],01h
-    jnz near .noback0b
-    cmp byte[extbgdone],0
-    jne near .noback0b
-    ; do background 1
-    test word[scrnon],0101h
-    jz near .noback0b
-    mov byte[winon],0
-    test word[winenabm],0002h
-    jz near .nobackwin0b
-    test word[winenabm],0200h
-    jnz near .nobackwin0b
-    mov al,[winbg1en]
-    ccallv makewindow, eax, ebp
-    cmp byte[winon],0FFh
-    je near .noback0b
-.nobackwin0b
-    mov byte[extbgdone],1
-    procmode716bextbg [bg1scroly_m7],[bg1scrolx_m7],1
-.noback0b
-
-    ; mode 7 extbg
-    test byte[interlval],40h
-    jz near .noback2
-    cmp byte[extbgdone],0
-    je near .noback2
-    test byte[scrndis],01h
-    jnz near .noback2
-    ; do background 1
-    mov byte[winon],0
-    test word[winenabm],0001h
-    jz near .nobackwin2
-    test word[winenabm],0100h
-    jnz near .nobackwin2
-    mov al,[winbg1en]
-    ccallv makewindow, eax, ebp
-    cmp byte[winon],0FFh
-    je near .noback2
-.nobackwin2
-    procmode716bextbg2 [bg1scroly_m7],[bg1scrolx_m7],1
-.noback2
-
-    ; do objects
-    test byte[scrndis],10h
-    jnz near .nosprites3
-    test word[scrnon],1010h
-    jz near .nosprites3
-    cmp byte[winonsp],0FFh
-    je .nosprites3
-    xor ebx,ebx
-    mov bl,[curypos]
-    mov cl,[sprleftpr2+ebx]
-    cmp byte[sprprifix],0
-    je .nosprprio4
-    mov cl,[sprlefttot+ebx]
-.nosprprio4
-    cmp cl,0
-    je .nosprites3
-    mov ebp,2
-    ccallv drawsprites16b, ecx, ebp
-.nosprites3
-    ; do objects
-    test byte[scrndis],10h
-    jnz near .nosprites4
-    test word[scrnon],1010h
-    jz near .nosprites4
-    cmp byte[winonsp],0FFh
-    je .nosprites4
-    xor ebx,ebx
-    mov bl,[curypos]
-    mov cl,[sprleftpr3+ebx]
-    cmp byte[sprprifix],0
-    je .nosprprio5
-    mov cl,[sprlefttot+ebx]
-.nosprprio5
-    cmp cl,0
-    je .nosprites4
-    mov ebp,3
-    ccallv drawsprites16b, ecx, ebp
-.nosprites4
-    pop ebp
-    pop edx
-    pop ebx
-    pop edi
-    pop esi
-    xor eax,eax
-    xor ecx,ecx
     ret
 
 

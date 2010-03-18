@@ -1267,34 +1267,6 @@
 ; use bg1ptr(b,c,d) for the pointer to the tile number contents
 ; use bg1objptr for the pointer to the object tile contents
 
-%macro procmode716b 3
-    xor eax,eax
-    xor edx,edx
-    mov ax,[curypos]
-    test byte[mode7set],02h
-    jz .noflip
-    neg ax
-    add ax,255
-.noflip
-    mov byte[curmosaicsz],1
-    test byte[mosaicon],%3
-    jz .nomos
-    mov bl,[mosaicsz]
-    cmp bl,0
-    je .nomos
-    inc bl
-    mov [curmosaicsz],bl
-    xor bh,bh
-    div bx
-    xor edx,edx
-    mul bx
-.nomos
-    mov [m7starty],ax
-    mov ax,%1
-    mov dx,%2
-    call drawmode716b
-%endmacro
-
 
 %macro sprdrawpra16b 1
     or eax,eax

@@ -93,5 +93,7 @@ extern void reg43x9w();
 extern void regINVALIDw();
 
 extern u1 multchange;
+extern u2 bg1scrolx_m7;
+extern u2 bg1scroly_m7;
 
 #endif

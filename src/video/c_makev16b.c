@@ -3,6 +3,7 @@
 #include "../asm_call.h"
 #include "../c_vcache.h"
 #include "../cpu/regs.h"
+#include "../cpu/regsw.h"
 #include "../endmem.h"
 #include "../initc.h"
 #include "../macros.h"
@@ -13,6 +14,9 @@
 #include "makev16b.h"
 #include "makev16t.h"
 #include "makevid.h"
+#include "mode716.h"
+#include "mode716b.h"
+#include "mode716e.h"
 #include "newgfx.h"
 #include "procvid.h"
 
@@ -1114,6 +1118,158 @@ static void priority216b(void)
 }
 
 
+static void procmode716bextbg(u2 const* const p1, u2 const* const p2, u1 const p3)
+{
+	u2 ax = curypos;
+	if (mode7set & 0x02) ax = 255 - ax; // flip
+	curmosaicsz = 1;
+	if (mosaicon & p3)
+	{
+		u1 bl = mosaicsz;
+		if (bl != 0)
+		{
+			++bl;
+			curmosaicsz = bl;
+			ax = ax / bl * bl;
+		}
+	}
+	m7starty = ax;
+	u4 eax;
+	u4 edx;
+	asm volatile("push %%ebp;  call %P2;  pop %%ebp" : "=a" (eax), "=d" (edx) : "X" (drawmode716extbg), "a" (*p1), "d" (*p2) : "cc", "memory", "ecx", "ebx", "esi", "edi");
+}
+
+
+static void procmode716bextbg2(u1 const p3)
+{
+	curmosaicsz = 1;
+	if (mosaicon & p3)
+	{
+		u1 const bl = mosaicsz;
+		if (bl != 0) curmosaicsz = bl + 1;
+	}
+	asm volatile("push %%ebp;  call %P0;  pop %%ebp" :: "X" (drawmode716extbg2) : "cc", "memory", "eax", "ecx", "edx", "ebx", "esi", "edi");
+}
+
+
+static void procmode716b(u2 const* const p1, u2 const* const p2, u1 const p3)
+{
+	u2 ax = curypos;
+	if (mode7set & 0x02) ax = 255 - ax; // flip
+	curmosaicsz = 1;
+	if (mosaicon & p3)
+	{
+		u1 bl = mosaicsz;
+		if (bl != 0)
+		{
+			++bl;
+			curmosaicsz = bl;
+			ax = ax / bl * bl;
+		}
+	}
+	m7starty = ax;
+	u4 eax;
+	u4 edx;
+	asm volatile("call %P2" : "=a" (eax), "=d" (edx) : "X" (drawmode716b), "a" (*p1), "d" (*p2) : "cc", "memory", "ecx", "ebx", "esi", "edi");
+}
+
+
+static void processmode716b(void)
+{
+	cwinenabm = winenabm;
+	// get current sprite table
+	currentobjptr = (SpriteInfo*)spritetablea + (curypos & 0x00FF) * 64;
+	// setup priorities
+	if (sprprifix != 0)
+	{
+		cursprloc = sprlefttot;
+		asm_call(preparesprpr);
+	}
+	// calculate current video offset
+	curvidoffset = vidbuffer + curypos * 576 + 32;
+	// do sprite windowing
+	asm_call(makewindowsp);
+	// set palette
+	setpalette16b();
+	// clear back area w/ back color
+	clearback16b();
+
+	extbgdone = 0;
+	// mode 7 extbg
+	if (interlval & 0x40 && !(scrndis & 0x02) && scrnon & 0x0202)
+	{ // do background 1
+		winon = 0;
+		if (!(winenabm & 0x01) || winenabs & 0x01 || (makewindow(winen[LAYER_BG1], LAYER_BG1 /* XXX not in original, but seems consistent, because winen[LAYER_BG1] is used */), winon != 0xFF))
+		{
+			extbgdone = 1;
+			procmode716bextbg(&bg1scroly_m7, &bg1scrolx_m7, 1);
+		}
+	}
+
+	// do objects
+	if (!(scrndis & 0x10) && scrnon & 0x1010 && winonsp != 0xFF)
+	{
+		u4 const ebx = curypos & 0x00FF;
+		u1 const cl  = sprprifix == 0 ? sprleftpr[ebx] : sprlefttot[ebx];
+		if (cl != 0) drawsprites16b(cl, 0);
+	}
+
+	// display mode7
+	if (!(interlval & 0x40) && !(scrndis & 0x01) && scrnon & 0x0101)
+	{ // do background 1
+		winon = 0;
+		if (!(winenabm & 0x01) || winenabs & 0x01 || (makewindow(winen[LAYER_BG1], LAYER_BG1 /* XXX not in original, but seems consistent, because winen[LAYER_BG1] is used */), winon != 0xFF))
+		{
+			procmode716b(&bg1scroly_m7, &bg1scrolx_m7, 1);
+		}
+	}
+
+	// do objects
+	if (!(scrndis & 0x10) && scrnon & 0x1010 && winonsp != 0xFF)
+	{
+		u4 const ebx = curypos & 0x00FF;
+		u1 const cl  = sprprifix == 0 ? sprleftpr1[ebx] : sprlefttot[ebx];
+		if (cl != 0) drawsprites16b(cl, 1);
+	}
+
+	if (interlval & 0x40 && !(scrndis & 0x01) && extbgdone == 0 && scrnon & 0x0101)
+	{ // do background 1
+		winon = 0;
+		if (!(winenabm & 0x02) || winenabs & 0x02 || (makewindow(winen[LAYER_BG1], LAYER_BG1 /* XXX not in original, but seems consistent, because winen[LAYER_BG1] is used */), winon != 0xFF))
+		{
+			extbgdone = 1;
+			procmode716bextbg(&bg1scroly_m7, &bg1scrolx_m7, 1);
+		}
+	}
+
+	// mode 7 extbg
+	if (interlval & 0x40 && extbgdone != 0 && !(scrndis & 0x01))
+	{ // do background 1
+		winon = 0;
+		if (!(winenabm & 0x01) || winenabs & 0x01 || (makewindow(winen[LAYER_BG1], LAYER_BG1 /* XXX not in original, but seems consistent, because winen[LAYER_BG1] is used */), winon != 0xFF))
+		{
+			procmode716bextbg2(1);
+		}
+	}
+
+	// do objects
+	if (!(scrndis & 0x10) && scrnon & 0x1010 && winonsp != 0xFF)
+	{
+		u4 const ebx = curypos & 0x00FF;
+		u1 const cl  = sprprifix == 0 ? sprleftpr2[ebx] : sprlefttot[ebx];
+		if (cl != 0) drawsprites16b(cl, 2);
+	}
+
+	// do objects
+	if (!(scrndis & 0x10) && scrnon & 0x1010 && winonsp != 0xFF)
+	{
+		u4 const ebx = curypos & 0x00FF;
+		u1 const cl  = sprprifix == 0 ? sprleftpr3[ebx] : sprlefttot[ebx];
+		if (cl != 0) drawsprites16b(cl, 3);
+	}
+}
+
+
 void drawline16b(void)
 {
 	cwinenabm = winenabs;
@@ -1139,7 +1295,7 @@ void drawline16b(void)
 	}
 	if (bgmode == 7)
 	{
-		asm_call(processmode716b);
+		processmode716b();
 		return;
 	}
 	// calculate current video offset
