@@ -30,6 +30,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #include "../asm_call.h"
 #include "../cfg.h"
+#include "../cpu/dspproc.h"
 
 #ifdef __LIBAO__
 static pthread_t audio_thread;
@@ -84,7 +85,6 @@ static void SoundWriteSamples_ao(unsigned int samples)
 {
   extern unsigned int BufferSizeB, BufferSizeW;
   extern int DSPBuffer[1280];
-  void ProcessSoundBuffer();
   short stemp[1280];
 
   int *d = DSPBuffer, *end_d = 0;

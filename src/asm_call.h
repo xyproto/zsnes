@@ -73,13 +73,7 @@ I'd fix that if anyone knows if that parameter defines something I can check
 #		error unknown architecture
 #	endif
 
-#ifdef __ELF__
-#define ASM_CALL(func) ASM_COMMAND(call func)
-#else
-#define ASM_CALL(func) ASM_COMMAND(call _ ## func)
-#endif
-
-#define asm_call(func) __asm__ __volatile__(PUSHAD ASM_CALL(func) POPAD ::: "cc", "memory")
+#define asm_call(func) __asm__ __volatile__(PUSHAD "call %P0;" POPAD :: "X" (func) : "cc", "memory")
 
 #elif defined _MSC_VER
 #	define asm_call(func) __asm { __asm pushad  __asm call func  __asm popad }

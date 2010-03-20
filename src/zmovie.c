@@ -53,6 +53,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <stdint.h>
 #include "gblvars.h"
 #include "asm_call.h"
+#include "cpu/dspproc.h"
 #include "md.h"
 #include "input.h"
 #include "cfg.h"
@@ -2361,7 +2362,6 @@ static bool raw_video_open()
 
 static void raw_audio_write(uint32_t samples)
 {
-  void ProcessSoundBuffer();
   extern int DSPBuffer[1280];
   extern unsigned int BufferSizeB, BufferSizeW;
   int *d = DSPBuffer, *d_end;
