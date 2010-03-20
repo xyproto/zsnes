@@ -38,7 +38,6 @@ I'd fix that if anyone knows if that parameter defines something I can check
 
 #ifndef ASM_CALL_H
 #define ASM_CALL_H
-////////////////////////////////////////////////////////
 
 #ifdef __GNUC__
 #	if defined __x86_64__
@@ -54,5 +53,4 @@ I'd fix that if anyone knows if that parameter defines something I can check
 #	error unknown compiler
 #endif
 
-////////////////////////////////////////////////////////
 #endif
