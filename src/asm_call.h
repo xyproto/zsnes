@@ -48,7 +48,7 @@ I'd fix that if anyone knows if that parameter defines something I can check
 
 #define ASM_COMMAND(line) #line"\n\t"
 
-#ifdef __x86_64__
+#	if defined __x86_64__
 #define PUSHAD ASM_COMMAND(pushq %rax) \
                ASM_COMMAND(pushq %rcx) \
                ASM_COMMAND(pushq %rdx) \
@@ -66,10 +66,12 @@ I'd fix that if anyone knows if that parameter defines something I can check
               ASM_COMMAND(popq %rdx) \
               ASM_COMMAND(popq %rcx) \
               ASM_COMMAND(popq %rax)
-#else
+#	elif defined __i386__
 #define PUSHAD ASM_COMMAND(pushal)
 #define POPAD ASM_COMMAND(popal)
-#endif
+#	else
+#		error unknown architecture
+#	endif
 
 #ifdef __ELF__
 #define ASM_CALL(func) ASM_COMMAND(call func)
