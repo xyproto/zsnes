@@ -45,36 +45,13 @@ I'd fix that if anyone knows if that parameter defines something I can check
 #endif
 
 #ifdef __GNUC__
-
-#define ASM_COMMAND(line) #line"\n\t"
-
 #	if defined __x86_64__
-#define PUSHAD ASM_COMMAND(pushq %%rax) \
-               ASM_COMMAND(pushq %%rcx) \
-               ASM_COMMAND(pushq %%rdx) \
-               ASM_COMMAND(pushq %%rbx) \
-               ASM_COMMAND(pushq %%rsp) \
-               ASM_COMMAND(pushq %%rbp) \
-               ASM_COMMAND(pushq %%rsi) \
-               ASM_COMMAND(pushq %%rdi)
-
-#define POPAD ASM_COMMAND(popq %%rdi) \
-              ASM_COMMAND(popq %%rsi) \
-              ASM_COMMAND(popq %%rbp) \
-              ASM_COMMAND(popq %%rsp) \
-              ASM_COMMAND(popq %%rbx) \
-              ASM_COMMAND(popq %%rdx) \
-              ASM_COMMAND(popq %%rcx) \
-              ASM_COMMAND(popq %%rax)
+#		define asm_call(func) asm volatile("push %%rbx; call %P0; pop %%rbx" :: "X" (func) : "cc", "memory", "rax", "rcx", "rdx", "rbp", "rsi", "rdi")
 #	elif defined __i386__
-#define PUSHAD ASM_COMMAND(pushal)
-#define POPAD ASM_COMMAND(popal)
+#		define asm_call(func) asm volatile("push %%ebp; call %P0; pop %%ebp" :: "X" (func) : "cc", "memory", "eax", "ecx", "edx", "ebx", "esi", "edi")
 #	else
 #		error unknown architecture
 #	endif
-
-#define asm_call(func) __asm__ __volatile__(PUSHAD "call %P0;" POPAD :: "X" (func) : "cc", "memory")
-
 #elif defined _MSC_VER
 #	define asm_call(func) __asm { __asm pushad  __asm call func  __asm popad }
 #else
