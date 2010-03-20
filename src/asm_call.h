@@ -87,12 +87,14 @@ ASM_CALL(func) \
 POPAD \
 )
 
-#else //MSVC
+#elif defined _MSC_VER
 
 #define asm_call(func) { _asm pushad \
 _asm call func \
 _asm popad }
 
+#else
+#	error unknown compiler
 #endif
 
 ////////////////////////////////////////////////////////
