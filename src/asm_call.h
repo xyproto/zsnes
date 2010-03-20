@@ -40,10 +40,6 @@ I'd fix that if anyone knows if that parameter defines something I can check
 #define ASM_CALL_H
 ////////////////////////////////////////////////////////
 
-#ifdef _M_X64
-#define __x86_64__
-#endif
-
 #ifdef __GNUC__
 #	if defined __x86_64__
 #		define asm_call(func) asm volatile("push %%rbx; call %P0; pop %%rbx" :: "X" (func) : "cc", "memory", "rax", "rcx", "rdx", "rbp", "rsi", "rdi")
