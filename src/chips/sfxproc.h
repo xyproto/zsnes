@@ -1,8 +1,6 @@
 #ifndef SFXPROC_H
 #define SFXPROC_H
 
-extern void initsfxregsw();
-
 extern void cacheregr();
 extern void reg3000r();
 extern void reg3001r();
@@ -52,5 +50,55 @@ extern void reg303Cr();
 extern void reg303Dr();
 extern void reg303Er();
 extern void reg303Fr();
+
+extern void cacheregw();
+extern void reg3000w();
+extern void reg3001w();
+extern void reg3002w();
+extern void reg3003w();
+extern void reg3004w();
+extern void reg3005w();
+extern void reg3006w();
+extern void reg3007w();
+extern void reg3008w();
+extern void reg3009w();
+extern void reg300Aw();
+extern void reg300Bw();
+extern void reg300Cw();
+extern void reg300Dw();
+extern void reg300Ew();
+extern void reg300Fw();
+extern void reg3010w();
+extern void reg3011w();
+extern void reg3012w();
+extern void reg3013w();
+extern void reg3014w();
+extern void reg3015w();
+extern void reg3016w();
+extern void reg3017w();
+extern void reg3018w();
+extern void reg3019w();
+extern void reg301Aw();
+extern void reg301Bw();
+extern void reg301Cw();
+extern void reg301Dw();
+extern void reg301Ew();
+extern void reg301Fw();
+extern void reg3030w();
+extern void reg3031w();
+extern void reg3032w();
+extern void reg3033w();
+extern void reg3034w();
+extern void reg3035w();
+extern void reg3036w();
+extern void reg3037w();
+extern void reg3038w();
+extern void reg3039w();
+extern void reg303Aw();
+extern void reg303Bw();
+extern void reg303Cw();
+extern void reg303Dw();
+extern void reg303Ew();
+extern void reg303Fw();
 
 #endif

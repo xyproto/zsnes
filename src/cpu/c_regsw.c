@@ -1,7 +1,7 @@
 #include "../asm_call.h"
 #include "../chips/7110proc.h"
+#include "../chips/c_sfxproc.h"
 #include "../chips/sa1regs.h"
-#include "../chips/sfxproc.h"
 #include "../gblvars.h"
 #include "../initc.h"
 #include "../macros.h"
@@ -255,7 +255,7 @@ void initregw(void)
 	REGPTW(0x437B) = reg43XBw;
 	REGPTW(0x437F) = reg43XBw;
 
-	if (SFXEnable)     asm_call(initsfxregsw);
+	if (SFXEnable)     initsfxregsw();
 	if (SA1Enable)     asm_call(initSA1regsw);
 	if (SDD1Enable)    asm_call(SDD1Reset);
 	if (SPC7110Enable) asm_call(SPC7110Reset);
