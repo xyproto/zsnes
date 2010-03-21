@@ -1,7 +1,7 @@
 #include "../asm_call.h"
 #include "../chips/7110proc.h"
+#include "../chips/c_sfxproc.h"
 #include "../chips/sa1regs.h"
-#include "../chips/sfxproc.h"
 #include "../gblvars.h"
 #include "../initc.h"
 #include "../macros.h"
@@ -128,7 +128,7 @@ void initregr(void)
 
 	for (u4 i = 0x4300; i != 0x4380; ++i) REGPTR(i) = reg43XXr;
 
-	if (SFXEnable)     asm_call(initsfxregsr);
+	if (SFXEnable)     initsfxregsr();
 	if (SA1Enable)     asm_call(initSA1regs);
 	if (SDD1Enable)    asm_call(initSDD1regs);
 	if (SPC7110Enable) asm_call(initSPC7110regs);

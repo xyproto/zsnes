@@ -23,11 +23,10 @@ EXTSYM SfxB,SfxBRAMR,SfxCBR,SfxCFGR,SfxCLSR,SfxCPB,SfxCROM
 EXTSYM SfxCarry,SfxMemTable,SfxOverflow,SfxPBR,SfxPIPE,SfxR0,SfxR1,SfxR10
 EXTSYM SfxR11,SfxR12,SfxR13,SfxR14,SfxR15,SfxR2,SfxR3,SfxR4,SfxR5,SfxR6
 EXTSYM SfxR7,SfxR8,SfxR9,SfxRAMBR,SfxRAMMem,SfxROMBR,SfxSCBR,SfxSCMR,SfxSFR
-EXTSYM SfxSignZero,SfxnRamBanks,regptra,regptwa,sfxramdata,ChangeOps
+EXTSYM SfxSignZero,SfxnRamBanks,regptwa,sfxramdata,ChangeOps
 EXTSYM SfxPOR,sfxclineloc,UpdatePORSCMR,UpdateCLSR,UpdateSCBRCOLR,SfxAC
 EXTSYM sfx128lineloc,sfx160lineloc,sfx192lineloc,sfxobjlineloc,SFXProc
 
-%include "cpu/regs.mac"
 %include "cpu/regsw.mac"
 
 %macro AssembleSFXFlags 0
@@ -55,66 +54,6 @@ EXTSYM sfx128lineloc,sfx160lineloc,sfx192lineloc,sfxobjlineloc,SFXProc
 %endmacro
 
 SECTION .text
-
-NEWSYM initsfxregsr
-    setreg 3000h,reg3000r
-    setreg 3001h,reg3001r
-    setreg 3002h,reg3002r
-    setreg 3003h,reg3003r
-    setreg 3004h,reg3004r
-    setreg 3005h,reg3005r
-    setreg 3006h,reg3006r
-    setreg 3007h,reg3007r
-    setreg 3008h,reg3008r
-    setreg 3009h,reg3009r
-    setreg 300Ah,reg300Ar
-    setreg 300Bh,reg300Br
-    setreg 300Ch,reg300Cr
-    setreg 300Dh,reg300Dr
-    setreg 300Eh,reg300Er
-    setreg 300Fh,reg300Fr
-    setreg 3010h,reg3010r
-    setreg 3011h,reg3011r
-    setreg 3012h,reg3012r
-    setreg 3013h,reg3013r
-    setreg 3014h,reg3014r
-    setreg 3015h,reg3015r
-    setreg 3016h,reg3016r
-    setreg 3017h,reg3017r
-    setreg 3018h,reg3018r
-    setreg 3019h,reg3019r
-    setreg 301Ah,reg301Ar
-    setreg 301Bh,reg301Br
-    setreg 301Ch,reg301Cr
-    setreg 301Dh,reg301Dr
-    setreg 301Eh,reg301Er
-    setreg 301Fh,reg301Fr
-    setreg 3030h,reg3030r
-    setreg 3031h,reg3031r
-    setreg 3032h,reg3032r
-    setreg 3033h,reg3033r
-    setreg 3034h,reg3034r
-    setreg 3035h,reg3035r
-    setreg 3036h,reg3036r
-    setreg 3037h,reg3037r
-    setreg 3038h,reg3038r
-    setreg 3039h,reg3039r
-    setreg 303Ah,reg303Ar
-    setreg 303Bh,reg303Br
-    setreg 303Ch,reg303Cr
-    setreg 303Dh,reg303Dr
-    setreg 303Eh,reg303Er
-    setreg 303Fh,reg303Fr
-    ; set 3100-31FF to cacheregr
-    lea edi,regptr(0x3100)
-    mov eax,cacheregr
-    mov ecx,200h
-.loop
-    mov [edi],eax
-    add edi,4
-    dec ecx
-    jnz .loop
-    ret
 
 NEWSYM initsfxregsw
     setregw 3000h,reg3000w
