@@ -1321,16 +1321,16 @@ void drawline16b(void)
 	// process backgrounds
 	// do background 2
 	curbgnum = 0x02;
-	asm volatile("push %%ebp;  mov %1, %%ebp;  call %P0;  pop %%ebp" :: "X" (procbackgrnd), "n" (0x01) : "cc", "memory", "eax", "ecx", "edx", "ebx", "esi", "edi");
+	procbackgrnd(0x01);
 	// do background 1
 	curbgnum = 0x01;
-	asm volatile("push %%ebp;  mov %1, %%ebp;  call %P0;  pop %%ebp" :: "X" (procbackgrnd), "n" (0x00) : "cc", "memory", "eax", "ecx", "edx", "ebx", "esi", "edi");
+	procbackgrnd(0x00);
 	// do background 4
 	curbgnum = 0x08;
-	asm volatile("push %%ebp;  mov %1, %%ebp;  call %P0;  pop %%ebp" :: "X" (procbackgrnd), "n" (0x03) : "cc", "memory", "eax", "ecx", "edx", "ebx", "esi", "edi");
+	procbackgrnd(0x03);
 	// do background 3
 	curbgnum = 0x04;
-	asm volatile("push %%ebp;  mov %1, %%ebp;  call %P0;  pop %%ebp" :: "X" (procbackgrnd), "n" (0x02) : "cc", "memory", "eax", "ecx", "edx", "ebx", "esi", "edi");
+	procbackgrnd(0x02);
 
 	if (bgmode > 1)
 	{

@@ -94,6 +94,9 @@ extern u1 winenabs;         // Window logic enable for sub screen
 extern u1 winlogica;        // Window logic type for BG1 to 4
 extern u2 bg1objptr[4];     // pointer to tiles in background1/2/3/4
 extern u2 bg1ptr[4];        // pointer to background1/2/3/4
+extern u2 bg1ptrb[4];       // pointer to background1/2/3/4
+extern u2 bg1ptrc[4];       // pointer to background1/2/3/4
+extern u2 bg1ptrd[4];       // pointer to background1/2/3/4
 extern u2 bg1scrolx[4];     // background 1/2/3/4 x position
 extern u2 bg1scroly[4];     // background 1/2/3/4 y position
 extern u2 cgram[256];       // CGRAM

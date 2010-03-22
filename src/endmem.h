@@ -27,10 +27,7 @@ extern eop*  tableHc[256];
 extern eop** tablead[256];
 extern eop** tableadc[256];
 extern u1    SpecialLine[256];
-extern u1    cachebg1[64];
-extern u1    cachebg2[64];
-extern u1    cachebg3[64];
-extern u1    cachebg4[64];
+extern u1    cachebg[4][64];
 extern u1    sprcnt[256];
 extern u1    sprend[256];
 extern u1    sprleftpr1[256];      // sprites left for priority 1

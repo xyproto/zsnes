@@ -3,5 +3,6 @@
 
 void makewindow(u1 al, Layer);
 void makewindowsp(void);
+void procbackgrnd(u4 layer);
 
 #endif

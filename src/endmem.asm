@@ -91,6 +91,7 @@ NEWSYM vidmemch4, resb 4096
 NEWSYM vidmemch8, resb 4096
 NEWSYM snesmmap, resd 256
 NEWSYM snesmap2, resd 256
+NEWSYM cachebg
 NEWSYM cachebg1,    resb 64
 NEWSYM cachebg2,    resb 64
 NEWSYM cachebg3,    resb 64

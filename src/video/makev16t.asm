@@ -1014,20 +1014,16 @@ NEWSYM drawline16t
 ; process backgrounds
 ; do background 2
     mov byte[curbgnum],02h
-    mov ebp,01h
-    call procbackgrnd
+    ccallv procbackgrnd, 0x01
 ; do background 1
     mov byte[curbgnum],01h
-    mov ebp,00h
-    call procbackgrnd
+    ccallv procbackgrnd, 0x00
 ; do background 4
     mov byte[curbgnum],08h
-    mov ebp,03h
-    call procbackgrnd
+    ccallv procbackgrnd, 0x03
 ; do background 3
     mov byte[curbgnum],04h
-    mov ebp,02h
-    call procbackgrnd
+    ccallv procbackgrnd, 0x02
 
     cmp byte[bgmode],1
     ja near priority216t

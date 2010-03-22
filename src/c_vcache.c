@@ -182,10 +182,7 @@ static void docache(void)
 	curbgofs[3]  = bg1ptr[3];
 
 	// clear # of sprites & bg cache
-	memset(cachebg1,   0, sizeof(cachebg1));
-	memset(cachebg2,   0, sizeof(cachebg2));
-	memset(cachebg3,   0, sizeof(cachebg3));
-	memset(cachebg4,   0, sizeof(cachebg4));
+	memset(cachebg,    0, sizeof(cachebg));
 	memset(sprlefttot, 0, sizeof(sprlefttot));
 	memset(sprleftpr,  0, sizeof(sprleftpr));
 	memset(sprleftpr1, 0, sizeof(sprleftpr1));

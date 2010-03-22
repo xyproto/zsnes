@@ -23,8 +23,8 @@
 
 EXTSYM disableeffects,winl1,winl2,winbgdata,winr1,winr2,winspdata,winlogica
 EXTSYM winenabm,winlogicb,scrndis,scrnon,bgmode,bgtilesz,winbg1en
-EXTSYM winenabs,bg1objptr,bg1ptr,bg1ptrb,bg1ptrc,bg1ptrd,bg1scrolx,bg1scroly
-EXTSYM cachebg1,curbgofs,curcolbg,vcache2b,vcache4b,vcache8b
+EXTSYM winenabs
+EXTSYM vcache2b,vcache4b,vcache8b
 EXTSYM vidbuffer,bg3highst,cbitmode,colormodedef,ngptrdat2
 EXTSYM colormodeofs,drawline16b,forceblnk,preparesprpr,scaddset
 EXTSYM spritetablea,sprleftpr,vidbright,ForceNewGfxOff,curypos
@@ -57,26 +57,6 @@ SECTION .text
 ; use curypos+bg1scroly for y location and bg1scrolx for x location
 ; use bg1ptr(b,c,d) for the pointer to the tile number contents
 ; use bg1objptr for the pointer to the object tile contents
-
-%macro decideonmode 0
-    cmp bl,2
-    je .yes4bit
-    cmp bl,1
-    je .yes2bit
-    mov byte[bshifter],6
-    mov edx,[vcache8b]
-    jmp .skipbits
-.yes4bit
-    mov byte[bshifter],2
-    mov edx,[vcache4b]
-    shl eax,1
-    jmp .skipbits
-.yes2bit
-    mov byte[bshifter],0
-    shl eax,2
-    mov edx,[vcache2b]
-.skipbits
-%endmacro
 
 %macro procmode7 3
     xor eax,eax
@@ -914,97 +894,6 @@ NEWSYM drawbackgrndmain
     ret
 %endif
 
-NEWSYM procbackgrnd
-    mov esi,[colormodeofs]
-    mov bl,[esi+ebp]
-    cmp bl,0
-    je near .noback
-    mov al,[curbgnum]
-    mov ah,al
-    test byte[scrndis],al
-    jnz near .noback
-    test [scrnon],ax
-    jz near .noback
-    push ebp
-    shl ebp,6
-    mov edi,cachebg1
-    add edi,ebp
-    pop ebp
-    cmp bl,[curcolbg+ebp]
-    je .skipclearcache
-    mov [curcolbg+ebp],bl
-    mov ax,[bg1ptr+ebp*2]
-    mov [curbgofs+ebp*2],ax
-    call fillwithnothing
-.skipclearcache
-    xor eax,eax
-    mov [curcolor],bl
-    mov ax,[bg1objptr+ebp*2]
-    decideonmode
-    add edx,eax
-    xor eax,eax
-    mov [tempcach],edx
-    xor edx,edx
-    mov ax,[bg1objptr+ebp*2]
-    mov [curtileptr],ax
-    mov ax,[bg1ptr+ebp*2]
-    mov [bgptr],ax
-    cmp ax,[curbgofs+ebp*2]
-    je .skipclearcacheb
-    mov [curbgofs+ebp*2],ax
-    call fillwithnothing
-.skipclearcacheb
-    mov ax,[bg1ptrb+ebp*2]
-    mov [bgptrb],ax
-    mov ax,[bg1ptrc+ebp*2]
-    mov [bgptrc],ax
-    mov ax,[bg1ptrd+ebp*2]
-    mov [bgptrd],ax
-    mov bl,[curbgnum]
-    mov ax,[curypos]
-
-    mov byte[curmosaicsz],1
-    test byte[mosaicon],bl
-    jz .nomos
-    mov bl,[mosaicsz]
-    cmp bl,0
-    je .nomos
-    inc bl
-    mov [curmosaicsz],bl
-    xor edx,edx
-    xor bh,bh
-    div bx
-    xor edx,edx
-    mul bx
-    xor edx,edx
-    mov dl,[mosaicsz]
-    add ax,[MosaicYAdder+edx*2]
-.nomos
-
-    add ax,[bg1scroly+ebp*2]
-    mov dx,[bg1scrolx+ebp*2]
-    mov cl,[curbgnum]
-    test byte[bgtilesz],cl
-    jnz .16x16
-    call proc8x8
-    mov [bg1vbufloc+ebp*4],esi
-    mov [bg1tdatloc+ebp*4],edi
-    mov [bg1tdabloc+ebp*4],edx
-    mov [bg1cachloc+ebp*4],ebx
-    mov [bg1yaddval+ebp*4],ecx
-    mov [bg1xposloc+ebp*4],eax
-    ret
-.16x16
-    call proc16x16
-    mov [bg1vbufloc+ebp*4],esi
-    mov [bg1tdatloc+ebp*4],edi
-    mov [bg1tdabloc+ebp*4],edx
-    mov [bg1cachloc+ebp*4],ebx
-    mov [bg1yaddval+ebp*4],ecx
-    mov [bg1xposloc+ebp*4],eax
-.noback
-    ret
-
 SECTION .bss
 NEWSYM nextprimode, resb 1
 NEWSYM cursprloc,   resd 1
@@ -1185,20 +1074,16 @@ NEWSYM drawline
 ; process backgrounds
 ; do background 2
     mov byte[curbgnum],02h
-    mov ebp,01h
-    call procbackgrnd
+    ccallv procbackgrnd, 0x01
 ; do background 1
     mov byte[curbgnum],01h
-    mov ebp,00h
-    call procbackgrnd
+    ccallv procbackgrnd, 0x00
 ; do background 4
     mov byte[curbgnum],08h
-    mov ebp,03h
-    call procbackgrnd
+    ccallv procbackgrnd, 0x03
 ; do background 3
     mov byte[curbgnum],04h
-    mov ebp,02h
-    call procbackgrnd
+    ccallv procbackgrnd, 0x02
 
     cmp byte[bgmode],1
     ja near priority2

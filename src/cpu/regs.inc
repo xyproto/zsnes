@@ -58,18 +58,18 @@ NEWSYM bg1ptr,    dw 0
 NEWSYM bg2ptr,    dw 0
 NEWSYM bg3ptr,    dw 0
 NEWSYM bg4ptr,    dw 0
-NEWSYM bg1ptrb,   dw 0             ; pointer to background1
-NEWSYM bg2ptrb,   dw 0             ; pointer to background2
-NEWSYM bg3ptrb,   dw 0             ; pointer to background3
-NEWSYM bg4ptrb,   dw 0             ; pointer to background4
-NEWSYM bg1ptrc,   dw 0             ; pointer to background1
-NEWSYM bg2ptrc,   dw 0             ; pointer to background2
-NEWSYM bg3ptrc,   dw 0             ; pointer to background3
-NEWSYM bg4ptrc,   dw 0             ; pointer to background4
-NEWSYM bg1ptrd,   dw 0             ; pointer to background1
-NEWSYM bg2ptrd,   dw 0             ; pointer to background2
-NEWSYM bg3ptrd,   dw 0             ; pointer to background3
-NEWSYM bg4ptrd,   dw 0             ; pointer to background4
+NEWSYM bg1ptrb,   dw 0
+NEWSYM bg2ptrb,   dw 0
+NEWSYM bg3ptrb,   dw 0
+NEWSYM bg4ptrb,   dw 0
+NEWSYM bg1ptrc,   dw 0
+NEWSYM bg2ptrc,   dw 0
+NEWSYM bg3ptrc,   dw 0
+NEWSYM bg4ptrc,   dw 0
+NEWSYM bg1ptrd,   dw 0
+NEWSYM bg2ptrd,   dw 0
+NEWSYM bg3ptrd,   dw 0
+NEWSYM bg4ptrd,   dw 0
 NEWSYM bg1scsize, db 0             ; bg #1 screen size (0=1x1,1=1x2,2=2x1,3=2x2)
 NEWSYM bg2scsize, db 0             ; bg #2 screen size (0=1x1,1=1x2,2=2x1,3=2x2)
 NEWSYM bg3scsize, db 0             ; bg #3 screen size (0=1x1,1=1x2,2=2x1,3=2x2)

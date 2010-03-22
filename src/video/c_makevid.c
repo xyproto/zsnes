@@ -1,7 +1,9 @@
 #include "../asm_call.h"
+#include "../c_vcache.h"
 #include "../cpu/regs.h"
 #include "../endmem.h"
 #include "../initc.h"
+#include "../ui.h"
 #include "c_makevid.h"
 #include "makevid.h"
 
@@ -214,4 +216,94 @@ clipped:
 		winonstype = 0;
 		return;
 	}
+}
+
+
+void procbackgrnd(u4 const layer)
+{
+	u1 const mode = colormodeofs[layer];
+	if (mode == 0) return;
+	u1 const al = curbgnum;
+	if (scrndis & al) return;
+	if (!(scrnon & (al * 0x0101))) return;
+	u1* const edi = cachebg[layer];
+	if (mode != curcolbg[layer])
+	{ // clear cache
+		curcolbg[layer] = mode;
+		curbgofs[layer] = bg1ptr[layer];
+		asm volatile("call %P0" :: "X" (fillwithnothing), "D" (edi) : "cc", "memory", "eax", "ecx");
+	}
+	curcolor = mode;
+
+	u4  eax = bg1objptr[layer];
+	u1* edx;
+	switch (mode) // decide on mode
+	{
+		case 1: // 2 bit
+			bshifter = 0;
+			edx      = vcache2b;
+			eax     *= 4;
+			break;
+
+		case 2: // 4 bit
+			bshifter = 2;
+			edx      = vcache4b;
+			eax     *= 2;
+			break;
+
+		default:
+			bshifter = 6;
+			edx      = vcache8b;
+			break;
+	}
+	tempcach = edx + eax;
+
+	curtileptr = bg1objptr[layer];
+	u2 const ax = bg1ptr[layer];
+	bgptr = bgptr & 0xFFFF0000 | ax;
+	if (ax != curbgofs[layer])
+	{ // clear cache
+		curbgofs[layer] = ax;
+		asm volatile("call %P0" :: "X" (fillwithnothing), "D" (edi) : "cc", "memory", "eax", "ecx");
+	}
+	bgptrb = bgptrb & 0xFFFF0000 | bg1ptrb[layer];
+	bgptrc = bgptrc & 0xFFFF0000 | bg1ptrc[layer];
+	bgptrd = bgptrd & 0xFFFF0000 | bg1ptrd[layer];
+
+	u2 y = curypos;
+	curmosaicsz = 1;
+	if (mosaicon & curbgnum)
+	{
+		u1 bl = mosaicsz;
+		if (bl != 0)
+		{
+			++bl;
+			curmosaicsz = bl;
+			y = y / bl * bl;
+			y += MosaicYAdder[mosaicsz];
+		}
+	}
+
+	y += bg1scroly[layer];
+	u2 const x = bg1scrolx[layer];
+	u4  eax_;
+	u4  ecx_;
+	u2* edx_;
+	u1* ebx_;
+	u4  esi_;
+	u2* edi_;
+	if (bgtilesz & curbgnum)
+	{
+		asm volatile("call %P6" : "=a" (eax_), "=c" (ecx_), "=d" (edx_), "=b" (ebx_), "=S" (esi_), "=D" (edi_) : "X" (proc16x16), "a" (y), "d" (x), "D" (edi) : "cc", "memory");
+	}
+	else
+	{
+		asm volatile("call %P6" : "=a" (eax_), "=c" (ecx_), "=d" (edx_), "=b" (ebx_), "=S" (esi_), "=D" (edi_) : "X" (proc8x8), "a" (y), "d" (x), "D" (edi) : "cc", "memory");
+	}
+	bg1vbufloc[layer] = esi_;
+	bg1tdatloc[layer] = edi_;
+	bg1tdabloc[layer] = edx_;
+	bg1cachloc[layer] = ebx_;
+	bg1yaddval[layer] = ecx_;
+	bg1xposloc[layer] = eax_;
 }

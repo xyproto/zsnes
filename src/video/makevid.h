@@ -14,8 +14,10 @@ typedef struct SpriteInfo
 STATIC_ASSERT(sizeof(SpriteInfo) == 8);
 
 extern void dualstartprocess();
+extern void fillwithnothing();
 extern void makedualwinsp();
-extern void procbackgrnd();
+extern void proc16x16();
+extern void proc8x8();
 
 extern SpriteInfo* currentobjptr;
 extern u1          a16x16xinc;
@@ -28,6 +30,7 @@ extern u1          csprbit;
 extern u1          csprprlft;
 extern u1          curbgnum;
 extern u1          curbgpr; // 00h = low priority, 20h = high priority
+extern u1          curcolor;
 extern u1          curmosaicsz;
 extern u1          cwinenabm;
 extern u1          drawn;
@@ -52,12 +55,18 @@ extern u1*         cwinptr;
 extern u1*         dwinptrproc;
 extern u1*         tempcach; // points to cached memory
 extern u1*         winptrref;
+extern u2          MosaicYAdder[16];
+extern u2          curtileptr;
 extern u2*         bg1tdabloc[4];
 extern u2*         bg1tdatloc[4];
 extern u2*         temptile; // points to the secondary video pointer
 extern u4          bg1vbufloc[4];
 extern u4          bg1xposloc[4];
 extern u4          bg1yaddval[4];
+extern u4          bgptr;
+extern u4          bgptrb;
+extern u4          bgptrc;
+extern u4          bgptrd;
 extern u4          bgsubby;
 extern u4          pwinbgtype;
 extern u4          pwinsptype;

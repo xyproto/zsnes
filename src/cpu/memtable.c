@@ -121,9 +121,7 @@ extern unsigned int GlobalVL, GlobalVR, EchoVL, EchoVR, EchoRate[16], MaxEcho;
 extern unsigned int EchoFB, NoiseSpeeds[32], dspPAdj, NoiseInc;
 extern int FIRTAPVal0, FIRTAPVal1, FIRTAPVal2, FIRTAPVal3, FIRTAPVal4;
 extern int FIRTAPVal5, FIRTAPVal6, FIRTAPVal7;
-extern unsigned short VolumeConvTable[32768], bg1ptrb, bg1ptrc;
-extern unsigned short bg2ptrb, bg2ptrc, bg3ptrb, bg3ptrc;
-extern unsigned short bg4ptrb, bg4ptrc;
+extern unsigned short VolumeConvTable[32768];
 extern unsigned char VolumeTableb[256], MusicVol, Voice0Status;
 extern unsigned char Voice1Status, Voice2Status, Voice3Status, Voice4Status;
 extern unsigned char Voice5Status, Voice6Status, Voice7Status, Voice0Noise;
@@ -186,14 +184,14 @@ void repackfunct()
   Voice6Noise = bit_test(DSPMem[0x3D], 6);
   Voice7Noise = bit_test(DSPMem[0x3D], 7);
 
-  bg1ptrx[0] = bg1ptrb - bg1ptr[0];
-  bg1ptry[0] = bg1ptrc - bg1ptr[0];
-  bg1ptrx[1] = bg2ptrb - bg1ptr[1];
-  bg1ptry[1] = bg2ptrc - bg1ptr[1];
-  bg1ptrx[2] = bg3ptrb - bg1ptr[2];
-  bg1ptry[2] = bg3ptrc - bg1ptr[2];
-  bg1ptrx[3] = bg4ptrb - bg1ptr[3];
-  bg1ptry[3] = bg4ptrc - bg1ptr[3];
+  bg1ptrx[0] = bg1ptrb[0] - bg1ptr[0];
+  bg1ptry[0] = bg1ptrc[0] - bg1ptr[0];
+  bg1ptrx[1] = bg1ptrb[1] - bg1ptr[1];
+  bg1ptry[1] = bg1ptrc[1] - bg1ptr[1];
+  bg1ptrx[2] = bg1ptrb[2] - bg1ptr[2];
+  bg1ptry[2] = bg1ptrc[2] - bg1ptr[2];
+  bg1ptrx[3] = bg1ptrb[3] - bg1ptr[3];
+  bg1ptry[3] = bg1ptrc[3] - bg1ptr[3];
 
   // 16x16 tiles
   BG116x16t = bit_test(bgtilesz, 0);
