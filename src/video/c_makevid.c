@@ -1,3 +1,5 @@
+#include <string.h>
+
 #include "../asm_call.h"
 #include "../c_vcache.h"
 #include "../cpu/regs.h"
@@ -219,6 +221,12 @@ clipped:
 }
 
 
+static void fillwithnothing(u1* const edi)
+{
+	memset(edi, 0, sizeof(*cachebg));
+}
+
+
 void procbackgrnd(u4 const layer)
 {
 	u1 const mode = colormodeofs[layer];
@@ -231,7 +239,7 @@ void procbackgrnd(u4 const layer)
 	{ // clear cache
 		curcolbg[layer] = mode;
 		curbgofs[layer] = bg1ptr[layer];
-		asm volatile("call %P0" :: "X" (fillwithnothing), "D" (edi) : "cc", "memory", "eax", "ecx");
+		fillwithnothing(edi);
 	}
 	curcolor = mode;
 
@@ -264,7 +272,7 @@ void procbackgrnd(u4 const layer)
 	if (ax != curbgofs[layer])
 	{ // clear cache
 		curbgofs[layer] = ax;
-		asm volatile("call %P0" :: "X" (fillwithnothing), "D" (edi) : "cc", "memory", "eax", "ecx");
+		fillwithnothing(edi);
 	}
 	bgptrb = bgptrb & 0xFFFF0000 | bg1ptrb[layer];
 	bgptrc = bgptrc & 0xFFFF0000 | bg1ptrc[layer];

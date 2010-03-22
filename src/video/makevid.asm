@@ -928,21 +928,7 @@ NEWSYM bg2xposloc,  resd 1
 NEWSYM bg3xposloc,  resd 1
 NEWSYM bg4xposloc,  resd 1
 NEWSYM alreadydrawn, resb 1
-SECTION .text
 
-NEWSYM fillwithnothing
-    push edi
-    xor eax,eax
-    mov ecx,16
-.loop
-    mov [edi],eax
-    add edi,4
-    dec ecx
-    jnz .loop
-    pop edi
-    ret
-
-SECTION .bss
 NEWSYM bg3draw, resb 1
 NEWSYM maxbr,   resb 1
 SECTION .text
