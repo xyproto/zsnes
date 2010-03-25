@@ -6,8 +6,11 @@
 extern void cachesingle4bng();
 extern void cachesprites();
 extern void cachetile2b();
+extern void cachetile2b16x16();
 extern void cachetile4b();
+extern void cachetile4b16x16();
 extern void cachetile8b();
+extern void cachetile8b16x16();
 extern void processsprites();
 
 extern u1 lineleft;

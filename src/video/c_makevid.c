@@ -228,6 +228,79 @@ static void fillwithnothing(u1* const edi)
 }
 
 
+// Processes & Draws 16x16 tiles in 2, 4, & 8 bit mode
+static void proc16x16(u2 const ax, u2 const dx, u1* const edi, u4 const layer)
+{
+	a16x16yinc = (ax & 0x08) != 0;
+
+	u4 const eax = ax >> 4 & 0x3F;
+	if (edi[eax] == 0)
+	{
+		edi[eax] = 1;
+		switch (curcolor)
+		{
+			case 1:  asm volatile("call %P0" :: "X" (cachetile2b16x16), "a" (eax) : "cc", "memory", "ecx", "esi", "edi"); break;
+			case 2:  asm volatile("call %P0" :: "X" (cachetile4b16x16), "a" (eax) : "cc", "memory", "ecx", "esi", "edi"); break;
+			default: asm volatile("call %P0" :: "X" (cachetile8b16x16), "a" (eax) : "cc", "memory", "ecx", "esi", "edi"); break;
+		}
+	}
+
+	if (dx & 0x0200) // tilexa
+	{
+		if (eax & 0x20) // tileya
+		{ // bgptrd/bgptrc
+			bgptrx1 = bgptrd;
+			bgptrx2 = bgptrc;
+		}
+		else
+		{ // bgptrb/bgptra
+			bgptrx1 = bgptrb;
+			bgptrx2 = bgptr;
+		}
+	}
+	else
+	{
+		if (eax & 0x20) // tileya
+		{ // bgptrc/bgptrd
+			bgptrx1 = bgptrc;
+			bgptrx2 = bgptrd;
+		}
+		else
+		{ // bgptra/bgptrb
+			bgptrx1 = bgptr;
+			bgptrx2 = bgptrb;
+		}
+	}
+
+	// ax = # of rows down
+	yadder = (ax & 0x07) * 8;
+	// set up edi to point to tile data
+	u2* edi_ = (u2*)vram + (eax & 0x1F) * 32;
+	temptile = edi_; // XXX cast
+	edi_ = (u2*)((u1*)edi_ + (bgptrx1 & 0x0000FFFF));
+	// dx = # of columns right
+	// cx = bgxlim
+	a16x16xinc = (dx & 0x08) != 0;
+	u4 const edx = dx >> 4 & 0x1F;
+	temp = edx;
+	edi_ += edx;
+
+	u4  const esi_ = dx & 0x07;
+	u1* const ebx_ = tempcach;
+	u2* const edx_ = (u2*)((u1*)temptile + (bgptrx2 & 0x0000FFFF)); // XXX casts
+	u4  const ecx_ = yadder;
+	u4  const eax_ = a16x16yinc << 24 | a16x16xinc << 16 | bshifter << 8 | temp;
+	// fill up tempbuffer with pointer #s that point to cached video mem
+	// to calculate pointer, get first byte
+	bg1vbufloc[layer] = esi_; // esi = pointer to video buffer
+	bg1tdatloc[layer] = edi_; // edi = pointer to tile data
+	bg1tdabloc[layer] = edx_; // edx = secondary tile pointer
+	bg1cachloc[layer] = ebx_; // ebx = cached memory
+	bg1yaddval[layer] = ecx_; // ecx = y adder
+	bg1xposloc[layer] = eax_; // al  = current x position
+}
+
+
 // Processes & Draws 8x8 tiles in 2, 4, & 8 bit mode
 static void proc8x8(u2 const ax, u2 const dx, u1* const edi, u4 const layer)
 {
@@ -373,7 +446,8 @@ void procbackgrnd(u4 const layer)
 	u2* edi_;
 	if (bgtilesz & curbgnum)
 	{
-		asm volatile("call %P6" : "=a" (eax_), "=c" (ecx_), "=d" (edx_), "=b" (ebx_), "=S" (esi_), "=D" (edi_) : "X" (proc16x16), "a" (y), "d" (x), "D" (edi) : "cc", "memory");
+		proc16x16(y, x, edi, layer);
+		return;
 	}
 	else if (bgmode == 5)
 	{

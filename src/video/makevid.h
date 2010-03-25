@@ -15,7 +15,6 @@ STATIC_ASSERT(sizeof(SpriteInfo) == 8);
 
 extern void dualstartprocess();
 extern void makedualwinsp();
-extern void proc16x16();
 extern void proc16x8();
 
 extern SpriteInfo* currentobjptr;
