@@ -229,7 +229,7 @@ static void fillwithnothing(u1* const edi)
 
 
 // Processes & Draws 16x16 tiles in 2, 4, & 8 bit mode
-static void proc16x16(u2 const ax, u2 const dx, u1* const edi, u4 const layer)
+static void proc16x16(u2 const ax, u2 const dx, u1* const edi, u4 const layer, u1 const curcolor)
 {
 	a16x16yinc = (ax & 0x08) != 0;
 
@@ -301,7 +301,7 @@ static void proc16x16(u2 const ax, u2 const dx, u1* const edi, u4 const layer)
 }
 
 
-static void proc16x8(u2 const ax, u2 const dx, u1* const edi, u4 const layer)
+static void proc16x8(u2 const ax, u2 const dx, u1* const edi, u4 const layer, u1 const curcolor)
 {
 	// ax = # of rows down
 	u4 const eax = ax >> 3 & 0x3F;
@@ -371,7 +371,7 @@ static void proc16x8(u2 const ax, u2 const dx, u1* const edi, u4 const layer)
 
 
 // Processes & Draws 8x8 tiles in 2, 4, & 8 bit mode
-static void proc8x8(u2 const ax, u2 const dx, u1* const edi, u4 const layer)
+static void proc8x8(u2 const ax, u2 const dx, u1* const edi, u4 const layer, u1 const curcolor)
 {
 	// ax = # of rows down
 	u4 const eax = ax >> 3 & 0x3F;
@@ -454,7 +454,6 @@ void procbackgrnd(u4 const layer)
 		curbgofs[layer] = bg1ptr[layer];
 		fillwithnothing(edi);
 	}
-	curcolor = mode;
 
 	u4  eax = bg1objptr[layer];
 	u1* edx;
@@ -507,7 +506,7 @@ void procbackgrnd(u4 const layer)
 
 	y += bg1scroly[layer];
 	u2 const x = bg1scrolx[layer];
-	if      (bgtilesz & curbgnum) proc16x16(y, x, edi, layer);
-	else if (bgmode == 5)         proc16x8( y, x, edi, layer);
-	else                          proc8x8(  y, x, edi, layer);
+	if      (bgtilesz & curbgnum) proc16x16(y, x, edi, layer, mode);
+	else if (bgmode == 5)         proc16x8( y, x, edi, layer, mode);
+	else                          proc8x8(  y, x, edi, layer, mode);
 }

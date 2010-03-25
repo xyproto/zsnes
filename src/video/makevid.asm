@@ -897,7 +897,6 @@ NEWSYM drawbackgrndmain
 SECTION .bss
 NEWSYM nextprimode, resb 1
 NEWSYM cursprloc,   resd 1
-NEWSYM curcolor,    resb 1
 NEWSYM curtileptr,  resw 1
 ; esi = pointer to video buffer
 ; edi = pointer to tile data

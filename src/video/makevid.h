@@ -27,7 +27,6 @@ extern u1          csprbit;
 extern u1          csprprlft;
 extern u1          curbgnum;
 extern u1          curbgpr; // 00h = low priority, 20h = high priority
-extern u1          curcolor;
 extern u1          curmosaicsz;
 extern u1          cwinenabm;
 extern u1          drawn;
