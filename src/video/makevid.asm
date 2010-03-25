@@ -3070,7 +3070,6 @@ NEWSYM yrevadder,  resd 1
 NEWSYM tempcach,   resd 1
 NEWSYM temptile,   resd 1
 NEWSYM bgptr,      resd 1
-NEWSYM bgptrb,     resd 1
 NEWSYM bgptrc,     resd 1
 NEWSYM bgptrd,     resd 1
 NEWSYM bgptrx1,    resd 1

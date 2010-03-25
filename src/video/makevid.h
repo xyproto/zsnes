@@ -60,7 +60,6 @@ extern u4          bg1vbufloc[4];
 extern u4          bg1xposloc[4];
 extern u4          bg1yaddval[4];
 extern u4          bgptr;
-extern u4          bgptrb;
 extern u4          bgptrc;
 extern u4          bgptrd;
 extern u4          bgptrx1;
