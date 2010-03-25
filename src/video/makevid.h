@@ -16,7 +16,7 @@ STATIC_ASSERT(sizeof(SpriteInfo) == 8);
 extern void dualstartprocess();
 extern void makedualwinsp();
 extern void proc16x16();
-extern void proc8x8();
+extern void proc16x8();
 
 extern SpriteInfo* currentobjptr;
 extern u1          a16x16xinc;
@@ -66,6 +66,8 @@ extern u4          bgptr;
 extern u4          bgptrb;
 extern u4          bgptrc;
 extern u4          bgptrd;
+extern u4          bgptrx1;
+extern u4          bgptrx2;
 extern u4          bgsubby;
 extern u4          pwinbgtype;
 extern u4          pwinsptype;

@@ -6,6 +6,7 @@
 #include "../endmem.h"
 #include "../initc.h"
 #include "../ui.h"
+#include "../vcache.h"
 #include "c_makevid.h"
 #include "makevid.h"
 
@@ -227,6 +228,76 @@ static void fillwithnothing(u1* const edi)
 }
 
 
+// Processes & Draws 8x8 tiles in 2, 4, & 8 bit mode
+static void proc8x8(u2 const ax, u2 const dx, u1* const edi, u4 const layer)
+{
+	// ax = # of rows down
+	u4 const eax = ax >> 3 & 0x3F;
+	if (edi[eax] == 0)
+	{
+		edi[eax] = 1;
+		switch (curcolor)
+		{
+			case 1:  asm volatile("call %P0" :: "X" (cachetile2b), "a" (eax) : "cc", "memory", "ecx", "esi", "edi"); break;
+			case 2:  asm volatile("call %P0" :: "X" (cachetile4b), "a" (eax) : "cc", "memory", "ecx", "esi", "edi"); break;
+			default: asm volatile("call %P0" :: "X" (cachetile8b), "a" (eax) : "cc", "memory", "ecx", "esi", "edi"); break;
+		}
+	}
+
+	if (dx & 0x0100) // tilexa
+	{
+		if (eax & 0x20) // tileya
+		{ // bgptrd/bgptrc
+			bgptrx1 = bgptrd;
+			bgptrx2 = bgptrc;
+		}
+		else
+		{ // bgptrb/bgptra
+			bgptrx1 = bgptrb;
+			bgptrx2 = bgptr;
+		}
+	}
+	else
+	{
+		if (eax & 0x20) // tileya
+		{ // bgptrc/bgptrd
+			bgptrx1 = bgptrc;
+			bgptrx2 = bgptrd;
+		}
+		else
+		{ // bgptra/bgptrb
+			bgptrx1 = bgptr;
+			bgptrx2 = bgptrb;
+		}
+	}
+
+	// set up edi & yadder to point to tile data
+	yadder = (ax & 0x07) * 8;
+	u2* edi_ = (u2*)vram + (eax & 0x1F) * 32;
+	temptile = edi_;
+	edi_ = (u2*)((u1*)edi_ + bgptrx1);
+	// dx = # of columns right
+	// cx = bgxlim
+	u4 const edx = dx >> 3 & 0x1F;
+	temp  = edx;
+	edi_ += edx;
+
+	u4  const esi_ = dx & 0x07;
+	u1* const ebx_ = tempcach;
+	u2* const edx_ = (u2*)((u1*)temptile + (bgptrx2 & 0x0000FFFF));
+	u4  const ecx_ = yadder;
+	u4  const eax_ = bshifter << 8 | temp;
+	// fill up tempbuffer with pointer #s that point to cached video mem
+	// to calculate pointer, get first byte
+	bg1vbufloc[layer] = esi_; // esi = pointer to video buffer
+	bg1tdatloc[layer] = edi_; // edi = pointer to tile data
+	bg1tdabloc[layer] = edx_; // edx = secondary tile pointer
+	bg1cachloc[layer] = ebx_; // ebx = cached memory
+	bg1yaddval[layer] = ecx_; // ecx = y adder
+	bg1xposloc[layer] = eax_; // al  = current x position
+}
+
+
 void procbackgrnd(u4 const layer)
 {
 	u1 const mode = colormodeofs[layer];
@@ -304,9 +375,14 @@ void procbackgrnd(u4 const layer)
 	{
 		asm volatile("call %P6" : "=a" (eax_), "=c" (ecx_), "=d" (edx_), "=b" (ebx_), "=S" (esi_), "=D" (edi_) : "X" (proc16x16), "a" (y), "d" (x), "D" (edi) : "cc", "memory");
 	}
+	else if (bgmode == 5)
+	{
+		asm volatile("call %P6" : "=a" (eax_), "=c" (ecx_), "=d" (edx_), "=b" (ebx_), "=S" (esi_), "=D" (edi_) : "X" (proc16x8), "a" (y), "d" (x), "D" (edi) : "cc", "memory");
+	}
 	else
 	{
-		asm volatile("call %P6" : "=a" (eax_), "=c" (ecx_), "=d" (edx_), "=b" (ebx_), "=S" (esi_), "=D" (edi_) : "X" (proc8x8), "a" (y), "d" (x), "D" (edi) : "cc", "memory");
+		proc8x8(y, x, edi, layer);
+		return;
 	}
 	bg1vbufloc[layer] = esi_;
 	bg1tdatloc[layer] = edi_;

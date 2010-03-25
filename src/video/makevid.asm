@@ -30,7 +30,7 @@ EXTSYM colormodeofs,drawline16b,forceblnk,preparesprpr,scaddset
 EXTSYM spritetablea,sprleftpr,vidbright,ForceNewGfxOff,curypos
 EXTSYM mode7set,mosaicon,mosaicsz,sprleftpr1,sprleftpr2,sprleftpr3,sprlefttot
 EXTSYM sprprifix,interlval,sprclprio,sprpriodata
-EXTSYM sprsingle,cachetile2b,cachetile4b,cachetile8b,vram,newengen,ofshvaladd
+EXTSYM sprsingle,vram,newengen,ofshvaladd
 EXTSYM cachetile2b16x16,cachetile4b16x16,cachetile8b16x16,osm2dis,xtravbuf
 EXTSYM bg3ptr,bg3scrolx,bg3scroly,vidmemch4,ofsmcptr,ofsmady,ofsmadx,yposngom
 EXTSYM flipyposngom,ofsmtptr,ofsmmptr,ofsmcyps,bgtxadd,bg1ptrx,bg1ptry
@@ -2024,111 +2024,6 @@ SECTION .data
 NEWSYM csprbit, db 1
 NEWSYM csprprlft, db 0
 SECTION .text
-;*******************************************************
-; Processes & Draws 8x8 tiles in 2, 4, & 8 bit mode
-;*******************************************************
-NEWSYM proc8x8
-    cmp byte[bgmode],5
-    je near proc16x8
-    ; ax = # of rows down
-    mov ebx,eax
-    shr eax,3
-    and eax,63
-    and ebx,07h
-    cmp byte[edi+eax],0
-    jne .nocachereq
-;.docache
-;    cmp byte[ccud],0
-;    jne .nocachereq
-    mov byte[edi+eax],1
-    cmp byte[curcolor],2
-    jne .no4b
-    ; cache 4-bit
-    call cachetile4b
-    jmp .nocachereq
-.no4b
-    cmp byte[curcolor],1
-    je .2b
-    ; cache 8-bit
-    call cachetile8b
-    jmp .nocachereq
-.2b
-    ; cache 2-bit
-    call cachetile2b
-.nocachereq
-    test edx,0100h
-    jz .tilexa
-    test al,20h
-    jz .tileya
-    ; bgptrd/bgptrc
-    mov ecx,[bgptrd]
-    mov [bgptrx1],ecx
-    mov ecx,[bgptrc]
-    mov [bgptrx2],ecx
-    jmp .skiptile
-.tileya
-    ; bgptrb/bgptra
-    mov ecx,[bgptrb]
-    mov [bgptrx1],ecx
-    mov ecx,[bgptr]
-    mov [bgptrx2],ecx
-    jmp .skiptile
-.tilexa
-    test al,20h
-    jz .tileya2
-    ; bgptrc/bgptrd
-    mov ecx,[bgptrc]
-    mov [bgptrx1],ecx
-    mov ecx,[bgptrd]
-    mov [bgptrx2],ecx
-    jmp .skiptile
-.tileya2
-    ; bgptra/bgptrb
-    mov ecx,[bgptr]
-    mov [bgptrx1],ecx
-    mov ecx,[bgptrb]
-    mov [bgptrx2],ecx
-.skiptile
-    ; set up edi & yadder to point to tile data
-    shl ebx,3
-    mov [yadder],ebx
-    and al,1Fh
-    mov edi,[vram]
-    mov ebx,eax
-    shl ebx,6
-    mov eax,[bgptrx1]
-    add edi,ebx
-    mov [temptile],edi
-    add edi,eax
-    ; dx = # of columns right
-    ; cx = bgxlim
-    mov eax,edx
-    shr edx,3
-    mov bl,[curypos]
-    and edx,1Fh
-    mov [temp],dl
-    and eax,07h
-    add dl,dl
-    add edi,edx
-
-    mov esi,eax
-    mov ebx,[tempcach]
-    mov edx,[temptile]
-    mov eax,[bgptrx2]
-    and eax,0FFFFh
-    add edx,eax
-    mov al,[temp]
-    mov ecx,[yadder]
-    mov ah,[bshifter]
-    ; fill up tempbuffer with pointer #s that point to cached video mem
-    ; to calculate pointer, get first byte
-    ; esi = pointer to video buffer
-    ; edi = pointer to tile data
-    ; ebx = cached memory
-    ; ecx = y adder
-    ; edx = secondary tile pointer
-    ; al = current x position
-    ret
 
 NEWSYM proc16x8
     ; ax = # of rows down
