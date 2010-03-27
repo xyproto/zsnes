@@ -1504,8 +1504,6 @@ void UnloadSDL()
   {
     SDL_WM_GrabInput(SDL_GRAB_OFF); // probably redundant
   }
-  SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
-  SDL_QuitSubSystem(SDL_INIT_VIDEO);
   SDL_Quit();
 }
 
