@@ -2114,6 +2114,8 @@ extern "C"
 
   void UpdateVFrame()
   {
+    static uint32_t LastUsedPos = 0;
+
     int DataNeeded;
     SPCSize = 256;
 

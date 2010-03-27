@@ -105,7 +105,6 @@ static int MouseMove2X, MouseMove2Y;
 unsigned char MouseButton;
 static float MouseXScale = 1.0;
 static float MouseYScale = 1.0;
-uint32_t LastUsedPos = 0;
 uint32_t CurMode = -1;
 
 extern uint8_t GUIOn;
