@@ -1503,7 +1503,6 @@ void UnloadSDL()
   if (sdl_state != vid_null)
   {
     SDL_WM_GrabInput(SDL_GRAB_OFF); // probably redundant
-    SDL_FreeSurface(surface);
   }
   SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
   SDL_QuitSubSystem(SDL_INIT_VIDEO);
