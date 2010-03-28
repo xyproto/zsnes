@@ -46,7 +46,6 @@ void StartUp(void)
 	asm("movw %ds, %0" : "=mr" (dssel));
 
 	selcA000 = findselec(0xA000);
-	selcB800 = findselec(0xB800);
 	selc0040 = findselec(0x0040);
 
 	// get previous video mode

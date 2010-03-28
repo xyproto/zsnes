@@ -48,7 +48,6 @@ extern char CSStatus[], CSStatus2[], CSStatus3[], CSStatus4[];
 
 u2 selc0040;
 u2 selcA000;
-u2 selcB800;
 
 u1*           vidbuffer;
 unsigned char *ngwinptr;
