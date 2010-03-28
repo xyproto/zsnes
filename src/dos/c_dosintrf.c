@@ -46,9 +46,9 @@ void StartUp(void)
 	asm("movw %ds, %0" : "=mr" (dssel));
 
 	selcA000 = findselec(0xA000);
-	selc0040 = findselec(0x0040);
 
 	// get previous video mode
+	u2 const selc0040 = findselec(0x0040);
 	asm("pushl %%es;  movw %1, %%es;  movb %%es:0x49, %0;  popl %%es" : "=r" (previdmode) : "mr" (selc0040));
 
 	// Get base address

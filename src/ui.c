@@ -46,7 +46,6 @@ extern unsigned int xa, maxromspace;
 extern unsigned char spcon, device1, device2;
 extern char CSStatus[], CSStatus2[], CSStatus3[], CSStatus4[];
 
-u2 selc0040;
 u2 selcA000;
 
 u1*           vidbuffer;
