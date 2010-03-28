@@ -100,14 +100,6 @@ void MultiMouseInit();
 
 void zexit(), zexit_error();
 
-void *alloc_ptr;
-unsigned int alloc_size;
-
-void alloc_help()
-{
-  alloc_ptr=malloc(alloc_size);
-}
-
 extern bool input1gp;
 extern bool input1mouse;
 extern bool input2gp;
