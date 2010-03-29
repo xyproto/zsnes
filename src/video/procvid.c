@@ -851,7 +851,7 @@ static void saveselect(void)
 	if (cbitmode != 1)
 	{
 updatescreen8b:
-		asm_call(saveselectpal);
+		saveselectpal();
 		{ // draw a small blue box with a white border
 			u1* esi = vidbuffer + 70 + 70 * 288;
 			u1  al  = 80;

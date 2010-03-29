@@ -28,64 +28,8 @@
 
 SECTION .data
 NEWSYM dssel, dw 0
-SECTION .text
-
-; ****************************
-; Video Stuff
-; ****************************
-
-; ** Palette Functions **
-NEWSYM saveselectpal
-    ; set palette of colors 128,144, and 160 to white, blue, and red
-    mov al,128
-    mov dx,03C8h
-    out dx,al
-    inc dx
-    mov al,63
-    out dx,al
-    out dx,al
-    out dx,al
-    mov al,144
-    mov dx,03C8h
-    out dx,al
-    inc dx
-    xor al,al
-    out dx,al
-    out dx,al
-    mov al,50
-    out dx,al
-    mov al,160
-    mov dx,03C8h
-    out dx,al
-    inc dx
-    mov al,45
-    out dx,al
-    xor al,al
-    out dx,al
-    out dx,al
-    mov al,176
-    mov dx,03C8h
-    out dx,al
-    inc dx
-    mov al,47
-    out dx,al
-    xor al,al
-    out dx,al
-    out dx,al
-    mov al,208
-    mov dx,03C8h
-    out dx,al
-    inc dx
-    mov al,50
-    out dx,al
-    mov al,25
-    out dx,al
-    xor al,al
-    out dx,al
-    ret
 
 ; ** Video Mode Variables **
-SECTION .data
 
 ; Total Number of Video Modes
 NEWSYM NumVideoModes, dd 19

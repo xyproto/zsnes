@@ -258,6 +258,16 @@ void superscopepal(void)
 }
 
 
+void saveselectpal(void)
+{ // set palette of colors 128,144, and 160 to white, blue, and red
+	SetPal(128, 63, 63, 63);
+	SetPal(144,  0,  0, 50);
+	SetPal(160, 45,  0,  0);
+	SetPal(176, 47,  0,  0);
+	SetPal(208, 50, 25,  0);
+}
+
+
 void initvideo(void)
 {
 	asm_call(dosinitvideo);
