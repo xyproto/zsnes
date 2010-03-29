@@ -35,17 +35,6 @@ SECTION .text
 ; ****************************
 
 ; ** Palette Functions **
-NEWSYM superscopepal
-    mov al,128+16
-    mov dx,03C8h
-    out dx,al
-    inc dx
-    mov al,63
-    out dx,al
-    xor al,al
-    out dx,al
-    out dx,al
-    ret
 NEWSYM saveselectpal
     ; set palette of colors 128,144, and 160 to white, blue, and red
     mov al,128

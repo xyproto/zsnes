@@ -252,6 +252,12 @@ void displayfpspal(void)
 }
 
 
+void superscopepal(void)
+{
+	SetPal(144, 63, 0, 0);
+}
+
+
 void initvideo(void)
 {
 	asm_call(dosinitvideo);

@@ -1457,7 +1457,7 @@ static void vidpaste(void)
 		};
 
 #ifdef __MSDOS__
-		if (cbitmode != 1) asm_call(superscopepal);
+		if (cbitmode != 1) superscopepal();
 #endif
 		u1 const* src = SScopeCursor;
 		u4        pos = mouseyloc * 288 + mousexloc + 6;
