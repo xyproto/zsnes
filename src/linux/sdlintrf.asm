@@ -53,35 +53,6 @@ NEWSYM NumVideoModes, dd 23
 NEWSYM NumVideoModes, dd 5
 %endif
 
-; GUI Video Mode Names - Make sure that all names are of the same length
-; and end with a NULL terminator
-NEWSYM GUIVideoModeNames
-db '256x224       R W',0  ;0
-db '256x224       R F',0  ;1
-db '512x448      DR W',0  ;2
-db '512x448      DR F',0  ;3
-db '640x480      DR F',0  ;4
-%ifdef __OPENGL__
-db '256x224     O R W',0  ;5
-db '512x448     ODR W',0  ;6
-db '640x480     ODS F',0  ;7
-db '640x480     ODS W',0  ;8
-db '640x560     ODR W',0  ;9
-db '768x672     ODR W',0  ;10
-db '800x600     ODS F',0  ;11
-db '800x600     ODS W',0  ;12
-db '896x784     ODR W',0  ;13
-db '1024x768    ODS F',0  ;14
-db '1024x768    ODS W',0  ;15
-db '1024x896    ODR W',0  ;16
-db '1280x960    ODS F',0  ;17
-db '1280x1024   ODS F',0  ;18
-db '1600x1200   ODS F',0  ;19
-db 'VARIABLE    ODR W',0  ;20
-db 'VARIABLE    ODS W',0  ;21
-db 'CUSTOM      OD  F',0  ;22
-%endif
-
 ; Video Mode Feature Availability (1 = Available, 0 = Not Available)
 ; Left side starts with Video Mode 0
 ; vid mode column =  0,1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9,0,1,2

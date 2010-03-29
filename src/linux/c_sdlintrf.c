@@ -383,3 +383,33 @@ void Check60hz(void)
 	CheckTimers();
 	sem_sleep();
 }
+
+
+char const GUIVideoModeNames[][18] =
+{
+	"256x224       R W", //  0
+	"256x224       R F", //  1
+	"512x448      DR W", //  2
+	"512x448      DR F", //  3
+	"640x480      DR F", //  4
+#ifdef __OPENGL__
+	"256x224     O R W", //  5
+	"512x448     ODR W", //  6
+	"640x480     ODS F", //  7
+	"640x480     ODS W", //  8
+	"640x560     ODR W", //  9
+	"768x672     ODR W", // 10
+	"800x600     ODS F", // 11
+	"800x600     ODS W", // 12
+	"896x784     ODR W", // 13
+	"1024x768    ODS F", // 14
+	"1024x768    ODS W", // 15
+	"1024x896    ODR W", // 16
+	"1280x960    ODS F", // 17
+	"1280x1024   ODS F", // 18
+	"1600x1200   ODS F", // 19
+	"VARIABLE    ODR W", // 20
+	"VARIABLE    ODS W", // 21
+	"CUSTOM      OD  F"  // 22
+#endif
+};

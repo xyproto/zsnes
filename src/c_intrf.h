@@ -88,4 +88,8 @@ void StartSound(void);
 // Call the timer update function here
 void Check60hz(void);
 
+/* GUI Video Mode Names - Make sure that all names are of the same length and
+ * end with a NULL terminator */
+extern char const GUIVideoModeNames[][18];
+
 #endif

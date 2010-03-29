@@ -463,3 +463,27 @@ void StartSound(void) {}
 
 
 void Check60hz(void) {}
+
+
+char const GUIVideoModeNames[][18] =
+{
+	"256x224x8B  MODEQ", //  0
+	"256x240x8B  MODEQ", //  1
+	"256x256x8B  MODEQ", //  2
+	"320x224x8B  MODEX", //  3
+	"320x240x8B  MODEX", //  4
+	"320x256x8B  MODEX", //  5
+	"640x480x16B VESA1", //  6
+	"320x240x8B  VESA2", //  7
+	"320x240x16B VESA2", //  8
+	"320x480x8B  VESA2", //  9
+	"320x480x16B VESA2", // 10
+	"512x384x8B  VESA2", // 11
+	"512x384x16B VESA2", // 12
+	"640x400x8B  VESA2", // 13
+	"640x400x16B VESA2", // 14
+	"640x480x8B  VESA2", // 15
+	"640x480x16B VESA2", // 16
+	"800x600x8B  VESA2", // 17
+	"800x600x16B VESA2"  // 18
+};
