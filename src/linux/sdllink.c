@@ -32,6 +32,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "x11.h"
 #include "audio.h"
 #include "safelib.h"
+#include "../c_intrf.h"
 #include "../cfg.h"
 #include "../gui/c_gui.h"
 #include "../gui/c_guimouse.h"
@@ -70,15 +71,6 @@ uint32_t prevHQMode = -1;
 
 extern uint32_t *BitConv32Ptr;
 extern uint32_t *RGBtoYUVPtr;
-
-extern uint8_t GUIWFVID[];
-extern uint8_t GUISMODE[];
-extern uint8_t GUIDSMODE[];
-extern uint8_t GUIHQ2X[];
-extern uint8_t GUIHQ3X[];
-extern uint8_t GUIHQ4X[];
-extern uint8_t GUIRESIZE[];
-extern uint8_t GUIM7VID[];
 
 /* JOYSTICK AND KEYBOARD INPUT */
 SDL_Joystick *JoystickInput[5];

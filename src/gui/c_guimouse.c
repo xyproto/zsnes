@@ -5,7 +5,6 @@
 #include "../cfg.h"
 #include "../cpu/execute.h"
 #include "../gblvars.h"
-#include "../intrf.h"
 #include "../link.h"
 #include "../macros.h"
 #include "../ui.h"

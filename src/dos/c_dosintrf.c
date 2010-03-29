@@ -489,3 +489,24 @@ char const GUIVideoModeNames[][18] =
 };
 
 u4 const NumVideoModes = lengthof(GUIVideoModeNames);
+
+#define _ 0
+#define X 1
+/* Video Mode Feature Availability (X = Available, _ = Not Available)
+ * Left side starts with Video Mode 0
+ *                0                   1
+ *                0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 */
+u1 GUI16VID[] = { _,_,_,_,_,_,X,_,X,_,X,_,X,_,X,_,X,_,X };
+u1 GUI2xVID[] = { _,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,X,_,_ };
+u1 GUIEAVID[] = { _,_,_,_,_,_,_,_,_,_,_,_,_,_,_,X,_,_,_ };
+u1 GUIHQ2X[]  = { _,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_ };
+u1 GUIHSVID[] = { _,_,_,_,_,_,_,_,_,_,X,_,_,_,_,_,X,_,_ };
+u1 GUII2VID[] = { _,_,_,_,_,_,_,_,X,_,X,_,_,_,_,_,X,_,X };
+u1 GUIM7VID[] = { _,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,X,_,_ };
+u1 GUINTVID[] = { _,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_ };
+u1 GUISLVID[] = { _,_,X,_,_,X,X,_,_,X,X,_,_,_,_,X,X,X,X };
+u1 GUISSVID[] = { _,_,_,_,_,_,X,_,_,_,_,X,X,X,X,X,X,X,X };
+u1 GUITBVID[] = { _,_,_,_,_,_,_,X,X,X,X,X,X,X,X,X,X,X,X };
+u1 GUIWSVID[] = { _,_,_,_,_,_,_,X,X,X,X,_,_,X,X,X,X,_,_ };
+#undef X
+#undef _

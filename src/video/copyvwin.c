@@ -35,6 +35,7 @@
 #include "newgfx16.h"
 
 #ifdef __WIN32__
+#include "../c_intrf.h"
 #include "../win/winlink.h"
 #endif
 

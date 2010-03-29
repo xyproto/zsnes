@@ -3,8 +3,6 @@
 
 #include "types.h"
 
-extern u1 GUIWFVID[];
-
 #ifndef __MSDOS__
 extern u4          CurKeyReadPos;
 extern u4          KeyBuffer[16];

@@ -35,14 +35,6 @@ extern "C" {
   extern unsigned int RGBtoYUVPtr;
   extern unsigned short resolutn;
   extern BYTE PrevRes;
-  extern BYTE GUIWFVID[];
-  extern BYTE GUIDSIZE[];
-  extern BYTE GUISMODE[];
-  extern BYTE GUIDSMODE[];
-  extern BYTE GUIHQ2X[];
-  extern BYTE GUIHQ3X[];
-  extern BYTE GUIHQ4X[];
-  extern BYTE GUINTVID[];
   extern BYTE hqFilterlevel;
   extern WORD totlines;
   extern DWORD CurMode;

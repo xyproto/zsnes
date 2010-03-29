@@ -29,26 +29,6 @@
 SECTION .data
 NEWSYM dssel, dw 0
 
-; ** Video Mode Variables **
-
-; Video Mode Feature Availability (1 = Available, 0 = Not Available)
-; Left side starts with Video Mode 0
-;                    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8
-NEWSYM GUI16VID,  db 0,0,0,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,1 ; 16-bit mode
-NEWSYM GUISLVID,  db 0,0,1,0,0,1,1,0,0,1,1,0,0,0,0,1,1,1,1 ; Scanlines
-NEWSYM GUIHSVID,  db 0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0 ; Half/Quarter Scanlines
-NEWSYM GUII2VID,  db 0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,1,0,1 ; DOS Interpolation
-NEWSYM GUIEAVID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0 ; DOS Eagle
-NEWSYM GUITBVID,  db 0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1 ; DOS Triple Buffering
-NEWSYM GUIWSVID,  db 0,0,0,0,0,0,0,1,1,1,1,0,0,1,1,1,1,0,0 ; DOS Widescreen
-NEWSYM GUISSVID,  db 0,0,0,0,0,0,1,0,0,0,0,1,1,1,1,1,1,1,1 ; DOS Smallscreen
-NEWSYM GUI2xVID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0 ; 2xSaI/Super Engines
-NEWSYM GUIM7VID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0 ; Hires Mode 7
-NEWSYM GUIHQ2X,   db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (Hq2x Filter)
-NEWSYM GUINTVID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (NTSC Filter)
-
-SECTION .text
-
 ; ****************************
 ; Input Device Stuff
 ; ****************************
@@ -77,8 +57,6 @@ SECTION .text
 ;   assignments in the configuration file, then convert it to ZSNES'
 ;   numerical corresponding key format after reading from it. And then
 ;   convert it back when writing to it back.
-
-SECTION .data
 
 ; Total Number of Input Devices
 NEWSYM NumInputDevices, dd 17

@@ -28,6 +28,7 @@ extern "C"
 #include <windows.h>
 #include <stdio.h>
 #include <ddraw.h>
+#include "../c_intrf.h"
 #include "../cfg.h"
 #include "../intrf.h"
   void zexit(), zexit_error();

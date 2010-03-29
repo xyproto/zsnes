@@ -40,6 +40,7 @@ extern "C"
 extern "C"
 {
 #include "../asm_call.h"
+#include "../c_intrf.h"
 #include "../cfg.h"
 #include "../gui/c_gui.h"
 #include "../gui/c_guimouse.h"
@@ -1502,14 +1503,6 @@ extern "C"
   extern unsigned int BitConv32Ptr;
   extern unsigned int RGBtoYUVPtr;
   extern unsigned short resolutn;
-  extern BYTE GUIWFVID[];
-  extern BYTE GUIDSIZE[];
-  extern BYTE GUISMODE[];
-  extern BYTE GUIDSMODE[];
-  extern BYTE GUIHQ2X[];
-  extern BYTE GUIHQ3X[];
-  extern BYTE GUIHQ4X[];
-  extern BYTE GUINTVID[];
   extern BYTE hqFilterlevel;
   BYTE changeRes = 1;
 }
@@ -1664,8 +1657,6 @@ extern "C"
   void NTSCFilterInit();
   void NTSCFilterDraw(int SurfaceX, int SurfaceY, int pitch, unsigned char *buffer);
 
-  extern "C" char GUIM7VID[];
-
   void SetHiresOpt()
   {
     if (CustomResX >= 512 && CustomResY >= 448)
@@ -1701,8 +1692,6 @@ extern "C"
       rcWindow.right -= (marginchange + marginmod);
     }
   }
-
-  extern char GUIKEEP43[];
 
   char CheckTVRatioReq()
   {
