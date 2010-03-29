@@ -31,9 +31,6 @@ NEWSYM dssel, dw 0
 
 ; ** Video Mode Variables **
 
-; Total Number of Video Modes
-NEWSYM NumVideoModes, dd 19
-
 ; Video Mode Feature Availability (1 = Available, 0 = Not Available)
 ; Left side starts with Video Mode 0
 ;                    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8

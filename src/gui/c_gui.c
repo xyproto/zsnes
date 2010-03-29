@@ -14,7 +14,6 @@
 #include "../effects/smoke.h"
 #include "../effects/water.h"
 #include "../endmem.h"
-#include "../intrf.h"
 #include "../macros.h"
 #include "../ui.h"
 #include "../vcache.h"

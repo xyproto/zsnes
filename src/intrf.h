@@ -4,7 +4,6 @@
 #include "types.h"
 
 extern u1 GUIWFVID[];
-extern u4 NumVideoModes;
 
 #ifndef __MSDOS__
 extern u4          CurKeyReadPos;

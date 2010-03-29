@@ -92,4 +92,7 @@ void Check60hz(void);
  * end with a NULL terminator */
 extern char const GUIVideoModeNames[][18];
 
+// Total Number of Video Modes
+extern u4 const NumVideoModes;
+
 #endif

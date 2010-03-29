@@ -487,3 +487,5 @@ char const GUIVideoModeNames[][18] =
 	"800x600x8B  VESA2", // 17
 	"800x600x16B VESA2"  // 18
 };
+
+u4 const NumVideoModes = lengthof(GUIVideoModeNames);

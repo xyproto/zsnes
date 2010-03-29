@@ -44,14 +44,6 @@ NEWSYM blinit, db 0
 %endif
 
 ; ** Video Mode Variables **
-SECTION .data
-
-; Total Number of Video Modes
-%ifdef __OPENGL__
-NEWSYM NumVideoModes, dd 23
-%else
-NEWSYM NumVideoModes, dd 5
-%endif
 
 ; Video Mode Feature Availability (1 = Available, 0 = Not Available)
 ; Left side starts with Video Mode 0

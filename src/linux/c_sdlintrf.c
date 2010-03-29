@@ -413,3 +413,5 @@ char const GUIVideoModeNames[][18] =
 	"CUSTOM      OD  F"  // 22
 #endif
 };
+
+u4 const NumVideoModes = lengthof(GUIVideoModeNames);
