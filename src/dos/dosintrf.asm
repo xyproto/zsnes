@@ -35,24 +35,6 @@ SECTION .text
 ; ****************************
 
 ; ** Palette Functions **
-NEWSYM displayfpspal
-    mov al,128
-    mov dx,03C8h
-    out dx,al
-    inc dx
-    mov al,63
-    out dx,al
-    out dx,al
-    out dx,al
-    mov al,128+64
-    mov dx,03C8h
-    out dx,al
-    inc dx
-    mov al,0
-    out dx,al
-    out dx,al
-    out dx,al
-    ret
 NEWSYM superscopepal
     mov al,128+16
     mov dx,03C8h

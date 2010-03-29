@@ -1,6 +1,7 @@
 #ifdef __MSDOS__
 #include "../chips/c4proc.h"
 #include "../cpu/regs.h"
+#include "../dos/c_dosintrf.h"
 #include "../ui.h"
 #include "c_copyvid.h"
 #include "procvid.h"
@@ -17,7 +18,7 @@ void hextestoutput(void)
 	if (dx & 0x8000) ax += (dx & 0xF000) >> 5;
 	u4 edx = ax + 0x40;
 #endif
-	asm_call(displayfpspal);
+	displayfpspal();
 
 #if 0
 	memset(vram, 0, 0x800);

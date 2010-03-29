@@ -9,6 +9,7 @@
 #include "../gui/gui.h"
 #include "../input.h"
 #include "../ui.h"
+#include "c_dosintrf.h"
 #include "dosintrf.h"
 #include "sound.h"
 
@@ -232,6 +233,22 @@ void GUIDeInit(void)
 	set_handler(0x09, GUIoldhand9s, GUIoldhand9o);
 	set_handler(0x08, GUIoldhand8s, GUIoldhand8o);
 	GUIinit18_2hz();
+}
+
+
+static inline void SetPal(u1 const i, u1 const r, u1 const g, u1 const b)
+{
+	outb(0x03C8, i);
+	outb(0x03C9, r);
+	outb(0x03C9, g);
+	outb(0x03C9, b);
+}
+
+
+void displayfpspal(void)
+{
+	SetPal(128, 63, 63, 63);
+	SetPal(192,  0,  0,  0);
 }
 
 

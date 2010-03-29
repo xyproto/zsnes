@@ -44,6 +44,7 @@
 #include "procvidc.h"
 
 #ifdef __MSDOS__
+#	include "../dos/c_dosintrf.h"
 #	include "makevid.h"
 #endif
 
@@ -1301,7 +1302,7 @@ static void showfps(void)
 #ifdef __MSDOS__
 	if (cbitmode != 1)
 	{
-		asm_call(displayfpspal);
+		displayfpspal();
 		u4 const fps = lastfps;
 		outputhex( vidbuffer + 208 * 288 + 32, fps   / 10 << 4 | fps   % 10);
 		outputchar(vidbuffer + 208 * 288 + 48, 0x29);
@@ -1350,7 +1351,7 @@ static void ClockOutput(void)
 #ifdef __MSDOS__
 	if (cbitmode != 1)
 	{
-		asm_call(displayfpspal);
+		displayfpspal();
 		u1* buf = vidbuffer + 215 * 288 + 32 + 192;
 		if (ForceNonTransp == 1 || ClockBox == 1)
 		{
