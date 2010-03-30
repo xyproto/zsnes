@@ -16,11 +16,13 @@
 #include "../vcache.h"
 #include "../video/c_2xsaiw.h"
 #include "../video/newgfx16.h"
-#include "sdlintrf.h"
+#include "c_sdlintrf.h"
 #include "sdllink.h"
 
 #ifdef __OPENGL__
 #	include "../video/procvidc.h"
+
+u1 blinit;
 #endif
 
 

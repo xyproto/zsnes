@@ -39,9 +39,6 @@ SECTION .text
 ; ** copy video mode functions **
 SECTION .data
 NEWSYM converta, dd 0
-%ifdef __OPENGL__
-NEWSYM blinit, db 0
-%endif
 
 ; ****************************
 ; Input Device Stuff

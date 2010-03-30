@@ -39,7 +39,7 @@
 #endif
 
 #ifdef __OPENGL__
-#	include "../linux/sdlintrf.h"
+#	include "../linux/c_sdlintrf.h"
 #endif
 
 #ifdef __WIN32__
