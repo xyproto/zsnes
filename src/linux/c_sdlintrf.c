@@ -458,3 +458,79 @@ char const GUIInputNames[][17] =
 };
 
 u4 const NumInputDevices;
+
+
+char const ScanCodeListing[] =
+{
+	"---" "ESC" " 1 " " 2 " " 3 " " 4 " " 5 " " 6 " // 0x000
+	" 7 " " 8 " " 9 " " 0 " " - " " = " "BKS" "TAB"
+	" Q " " W " " E " " R " " T " " Y " " U " " I " // 0x010
+	" O " " P " " [ " " ] " "RET" "LCT" " A " " S "
+	" D " " F " " G " " H " " J " " K " " L " " : " // 0x020
+	" \" "" ~ " "LSH" " \\ "" Z " " X " " C " " V "
+	" B " " N " " M " " , " " . " " / " "RSH" " * " // 0x030
+	"LAL" "SPC" "CAP" "F1 " "F2 " "F3 " "F4 " "F5 "
+	"F6 " "F7 " "F8 " "F9 " "F10" "NUM" "SCR" "KP7" // 0x040
+	"KP8" "KP9" "KP-" "KP4" "KP5" "KP6" "KP+" "KP1"
+	"KP2" "KP3" "KP0" "KP." "   " "   " "OEM" "F11" // 0x050
+	"F12" "HOM" "UP " "PGU" "LFT" "5DH" "RGT" "END"
+	"DWN" "PGD" "INS" "DEL" "64H" "65H" "66H" "67H" // 0x060
+	"68H" "69H" "6AH" "6BH" "6CH" "6DH" "6EH" "6FH"
+	"70H" "71H" "72H" "73H" "74H" "75H" "76H" "77H" // 0x070
+	"78H" "79H" "7AH" "7BH" "7CH" "7DH" "7EH" "7FH"
+	// Keyboard continued (Direct Input)
+	"80H" "81H" "82H" "83H" "84H" "85H" "86H" "87H" // 0x080
+	"88H" "89H" "8AH" "8BH" "8CH" "8DH" "8EH" "8FH"
+	"90H" "91H" "92H" "93H" "94H" "95H" "96H" "97H" // 0x090
+	"98H" "99H" "9AH" "9BH" "9CH" "9DH" "9EH" "9FH"
+	"A0H" "A1H" "A2H" "A3H" "A4H" "A5H" "A6H" "A7H" // 0x0A0
+	"A8H" "A9H" "AAH" "ABH" "ACH" "ADH" "AEH" "AFH"
+	"B0H" "B1H" "B2H" "B3H" "B4H" "B5H" "B6H" "B7H" // 0x0B0
+	"B8H" "B9H" "BAH" "BBH" "BCH" "BDH" "BEH" "BFH"
+	"C0H" "C1H" "C2H" "C3H" "C4H" "C5H" "C6H" "C7H" // 0x0C0
+	"C8H" "C9H" "CAH" "CBH" "CCH" "CDH" "CEH" "CFH"
+	"D0H" "D1H" "D2H" "D3H" "D4H" "D5H" "D6H" "D7H" // 0x0D0
+	"D8H" "D9H" "DAH" "DBH" "DCH" "DDH" "DEH" "DFH"
+	"E0H" "E1H" "E2H" "E3H" "E4H" "E5H" "E6H" "E7H" // 0x0E0
+	"E8H" "E9H" "EAH" "EBH" "ECH" "EDH" "EEH" "EFH"
+	"F0H" "F1H" "F2H" "F3H" "F4H" "F5H" "F6H" "F7H" // 0x0F0
+	"F8H" "F9H" "FAH" "FBH" "FCH" "FDH" "FEH" "FFH"
+	// Joystick Stuff
+	"J00" "J01" "J02" "J03" "J04" "J05" "J06" "J07" // 0x100
+	"J08" "J09" "J0A" "J0B" "J0C" "J0D" "J0E" "J0F"
+	"J10" "J11" "J12" "J13" "J14" "J15" "J16" "J17" // 0x110
+	"J18" "J19" "J1A" "J1B" "J1C" "J1D" "J1E" "J1F"
+	"J20" "J21" "J22" "J23" "J24" "J25" "J26" "J27" // 0x120
+	"J28" "J29" "J2A" "J2B" "J2C" "J2D" "J2E" "J2F"
+	"J30" "J31" "J32" "J33" "J34" "J35" "J36" "J37" // 0x130
+	"J38" "J39" "J3A" "J3B" "J3C" "J3D" "J3E" "J3F"
+	"J40" "J41" "J42" "J43" "J44" "J45" "J46" "J47" // 0x140
+	"J48" "J49" "J4A" "J4B" "J4C" "J4D" "J4E" "J4F"
+	"J50" "J51" "J52" "J53" "J54" "J55" "J56" "J57" // 0x150
+	"J58" "J59" "J5A" "J5B" "J5C" "J5D" "J5E" "J5F"
+	"J60" "J61" "J62" "J63" "J64" "J65" "J66" "J67" // 0x160
+	"J68" "J69" "J6A" "J6B" "J6C" "J6D" "J6E" "J6F"
+	"J70" "J71" "J72" "J73" "J74" "J75" "J76" "J77" // 0x170
+	"J78" "J79" "J7A" "J7B" "J7C" "J7D" "J7E" "J7F"
+#ifdef __UNIXSDL__
+	// Extra Joystick Stuff
+	"J80" "J81" "J82" "J83" "J84" "J85" "J86" "J87" // 0x180
+	"J88" "J89" "J8A" "J8B" "J8C" "J8D" "J8E" "J8F"
+	"J90" "J91" "J92" "J93" "J94" "J95" "J96" "J97" // 0x190
+	"J98" "J99" "J9A" "J9B" "J9C" "J9D" "J9E" "J9F"
+	"JA0" "JA1" "JA2" "JA3" "JA4" "JA5" "JA6" "JA7" // 0x2A0
+	"JA8" "JA9" "JAA" "JAB" "JAC" "JAD" "JAE" "JAF"
+	"JB0" "JB1" "JB2" "JB3" "JB4" "JB5" "JB6" "JB7" // 0x2B0
+	"JB8" "JB9" "JBA" "JBB" "JBC" "JBD" "JBE" "JBF"
+#else
+	// Extra Stuff (180h) (Parallel Port)
+	"PPB" "PPY" "PSL" "PST" "PUP" "PDN" "PLT" "PRT" // 0x180
+	"PPA" "PPX" "PPL" "PPR" "   " "   " "   " "   "
+	"P2B" "P2Y" "P2S" "P2T" "P2U" "P2D" "P2L" "P2R" // 0x190
+	"P2A" "P2X" "P2L" "P2R" "   " "   " "   " "   "
+	"PPB" "PPY" "PSL" "PST" "PUP" "PDN" "PLT" "PRT" // 0x2A0
+	"PPA" "PPX" "PPL" "PPR" "   " "   " "   " "   "
+	"P2B" "P2Y" "P2S" "P2T" "P2U" "P2D" "P2L" "P2R" // 0x2B0
+	"P2A" "P2X" "P2L" "P2R" "   " "   " "   " "   "
+#endif
+};

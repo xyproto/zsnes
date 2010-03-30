@@ -134,4 +134,7 @@ extern char const GUIInputNames[][17];
 // Total Number of Input Devices
 extern u4 const NumInputDevices;
 
+// GUI Description codes for each corresponding key pressed value
+extern char const ScanCodeListing[];
+
 #endif
