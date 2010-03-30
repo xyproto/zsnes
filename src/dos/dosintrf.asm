@@ -58,29 +58,6 @@ NEWSYM dssel, dw 0
 ;   numerical corresponding key format after reading from it. And then
 ;   convert it back when writing to it back.
 
-; Total Number of Input Devices
-NEWSYM NumInputDevices, dd 17
-
-; Input Device Names
-NEWSYM GUIInputNames
-db 'NONE            ',0
-db 'KEYBOARD        ',0
-db '2BUTTONJOYSTICK ',0
-db '4BUTTONJOYSTICK ',0
-db '6BUTTONJOYSTICK ',0
-db '8BUTTONJOYSTICK ',0
-db 'SIDEWINDERPAD1  ',0
-db 'SIDEWINDERPAD2  ',0
-db 'SIDEWINDERPAD3  ',0
-db 'SIDEWINDERPAD4  ',0
-db 'GAMEPAD PRO P0  ',0
-db 'GAMEPAD PRO P1  ',0
-db 'PARALLEL LPT1 P1',0
-db 'PARALLEL LPT1 P2',0
-db 'PARALLEL LPT1 P3',0
-db 'PARALLEL LPT1 P4',0
-db 'PARALLEL LPT1 P5',0
-
 ; GUI Description codes for each corresponding key pressed value
 NEWSYM ScanCodeListing
         db '---','ESC',' 1 ',' 2 ',' 3 ',' 4 ',' 5 ',' 6 '

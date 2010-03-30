@@ -510,3 +510,27 @@ u1 GUITBVID[] = { _,_,_,_,_,_,_,X,X,X,X,X,X,X,X,X,X,X,X };
 u1 GUIWSVID[] = { _,_,_,_,_,_,_,X,X,X,X,_,_,X,X,X,X,_,_ };
 #undef X
 #undef _
+
+
+char const GUIInputNames[][17] =
+{
+	"NONE            ",
+	"KEYBOARD        ",
+	"2BUTTONJOYSTICK ",
+	"4BUTTONJOYSTICK ",
+	"6BUTTONJOYSTICK ",
+	"8BUTTONJOYSTICK ",
+	"SIDEWINDERPAD1  ",
+	"SIDEWINDERPAD2  ",
+	"SIDEWINDERPAD3  ",
+	"SIDEWINDERPAD4  ",
+	"GAMEPAD PRO P0  ",
+	"GAMEPAD PRO P1  ",
+	"PARALLEL LPT1 P1",
+	"PARALLEL LPT1 P2",
+	"PARALLEL LPT1 P3",
+	"PARALLEL LPT1 P4",
+	"PARALLEL LPT1 P5"
+};
+
+u4 const NumInputDevices = lengthof(GUIInputNames);

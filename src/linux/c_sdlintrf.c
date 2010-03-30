@@ -435,3 +435,26 @@ u1 GUIRESIZE[] = { _,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,X,X,_ };
 u1 GUIWFVID[]  = { _,X,_,X,X,_,_,X,_,_,_,X,_,_,X,_,_,X,X,X,_,_,X };
 #undef X
 #undef _
+
+
+char const GUIInputNames[][17] =
+{
+	"NONE            ",
+	"KEYBOARD/GAMEPAD",
+	"                ",
+	"                ",
+	"                ",
+	"                ",
+	"                ",
+	"                ",
+	"                ",
+	"                ",
+	"                ",
+	"                ",
+	"                ",
+	"                ",
+	"                ",
+	"                "
+};
+
+u4 const NumInputDevices;

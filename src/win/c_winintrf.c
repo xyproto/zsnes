@@ -501,3 +501,26 @@ u1 GUISMODE[]  = { _,_,_,_,X,_,_,_,X,_,_,X,_,X,_,_,X,_,X,_,_,_,_,X,_,X,_,_,X,_,X
 u1 GUIWFVID[]  = { _,X,_,_,_,_,X,X,X,_,_,_,_,X,X,X,_,_,X,X,X,_,_,_,_,X,X,X,_,_,X,X,X,_,_,X,X,X,_,X,_,X,X,_,X,_,_,X,_,X,_,_,X,_,X,_,X,_,X,_ };
 #undef X
 #undef _
+
+
+char const GUIInputNames[][17] =
+{
+	"NONE            ",
+	"KEYBOARD/GAMEPAD",
+	"                ",
+	"                ",
+	"                ",
+	"                ",
+	"                ",
+	"                ",
+	"                ",
+	"                ",
+	"                ",
+	"                ",
+	"                ",
+	"                ",
+	"                ",
+	"                "
+};
+
+u4 const NumInputDevices = 2;

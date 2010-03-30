@@ -69,28 +69,6 @@ NEWSYM converta, dd 0
 ;   numerical corresponding key format after reading from it. And then
 ;   convert it back when writing to it back.
 
-; Total Number of Input Devices
-NEWSYM NumInputDevices, dd 2
-
-; Input Device Names
-NEWSYM GUIInputNames
-db 'NONE            ',0
-db 'KEYBOARD/GAMEPAD',0
-db '                ',0
-db '                ',0
-db '                ',0
-db '                ',0
-db '                ',0
-db '                ',0
-db '                ',0
-db '                ',0
-db '                ',0
-db '                ',0
-db '                ',0
-db '                ',0
-db '                ',0
-db '                ',0
-
 ; GUI Description codes for each corresponding key pressed value
 NEWSYM ScanCodeListing
         db '---','ESC',' 1 ',' 2 ',' 3 ',' 4 ',' 5 ',' 6 '  ; 00h

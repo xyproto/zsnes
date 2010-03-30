@@ -128,4 +128,10 @@ extern u1 GUISMODE[];  // Win Stretched Modes
 extern u1 GUII2VID[];  // Interpolation
 #endif
 
+// Input Device Names
+extern char const GUIInputNames[][17];
+
+// Total Number of Input Devices
+extern u4 const NumInputDevices;
+
 #endif
