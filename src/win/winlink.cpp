@@ -2667,7 +2667,7 @@ extern "C"
       gl_drawwin();
     else
 #endif
-      DrawScreen();
+      DDDrawScreen();
   }
 
   void WinUpdateDevices()

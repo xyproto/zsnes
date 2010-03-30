@@ -54,7 +54,7 @@ void DDrawError()
   MessageBox(NULL, message1, "DirectDraw Error", MB_ICONERROR);
 }
 
-void DrawScreen()
+void DDDrawScreen()
 {
   if (FullScreen == 1)
   {

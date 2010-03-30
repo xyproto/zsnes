@@ -99,7 +99,7 @@ extern "C" {
 
 BOOL ReInitSound();
 void ReleaseDirectDraw();
-void DrawScreen();
+void DDDrawScreen();
 #endif
 
 #endif
