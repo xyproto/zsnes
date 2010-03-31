@@ -42,8 +42,13 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #endif
 #endif
 #include "asm_call.h"
+#include "c_intrf.h"
 #include "cfg.h"
+#include "gui/gui.h"
+#include "init.h"
+#include "initc.h"
 #include "input.h"
+#include "ui.h"
 #include "zpath.h"
 #include "zloader.h"
 
@@ -56,13 +61,13 @@ void ImportDirectX();
 #endif
 
 
-extern unsigned char romtype, MouseDis, ZMVZClose, ZMVRawDump, debugger, debugdisble;
-extern unsigned char gammalevel, spcon, ForcePal, DSPDisable, V8Mode;
-extern unsigned char autoloadstate, autoloadmovie, MovieForcedLengthEnabled;
+extern unsigned char ZMVZClose, ZMVRawDump;
+extern unsigned char ForcePal;
+extern unsigned char MovieForcedLengthEnabled;
 extern char *STCart2;
-extern unsigned int NumInputDevices, MovieForcedLength;
+extern unsigned int MovieForcedLength;
 void zstart();
-void zexit(), zexit_error();
+void zexit_error();
 #ifdef __WIN32__
 void InitDebugger();
 #endif
