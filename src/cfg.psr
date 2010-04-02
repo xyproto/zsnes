@@ -313,7 +313,7 @@ hqFilter db 0
 @ HQ2x = 512x448
 @ HQ3x = 768x672
 @ HQ4x = 1024x896
-%ifdef __OPENGL_
+%ifdef __OPENGL__
 @ HQ2x is only available for OpenGL.
 %endif
 hqFilterlevel db 2
