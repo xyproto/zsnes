@@ -40,11 +40,15 @@ extern "C"
 extern "C"
 {
 #include "../asm_call.h"
-#include "gl_draw.h"
 #include "../cfg.h"
 #include "../input.h"
 #include "../types.h"
 #include "../zmovie.h"
+
+#ifdef __OPENGL__
+#	include "gl_draw.h"
+#endif
+
   void zexit(), zexit_error();
 }
 
@@ -2058,7 +2062,9 @@ extern "C"
       clear_display();
     }
 
+#ifdef __OPENGL__
     if (CheckOGLMode()) gl_start(WindowWidth, WindowHeight, 16, FullScreen);
+#endif
   }
 
   extern unsigned int vidbuffer;
@@ -2664,8 +2670,12 @@ extern "C"
       }
     }
     UnlockSurface();
-    if (CheckOGLMode()) gl_drawwin();
-    else DrawScreen();
+#ifdef __OPENGL__
+    if (CheckOGLMode())
+      gl_drawwin();
+    else
+#endif
+      DrawScreen();
   }
 
   void SwitchFullScreen();
