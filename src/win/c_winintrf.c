@@ -461,6 +461,7 @@ char const GUIVideoModeNames[][18] =
 	"CUSTOM          W", // 40
 	"CUSTOM        S F", // 41
 	"CUSTOM       DR F", // 42
+#ifdef __OPENGL__
 	"512x448     ODR W", // 43
 	"640x480     ODS F", // 44
 	"640x480     ODS W", // 45
@@ -478,6 +479,7 @@ char const GUIVideoModeNames[][18] =
 	"1600x1200   ODS W", // 57
 	"CUSTOM      OD  F", // 58
 	"VARIABLE    OD  W"  // 59
+#endif
 };
 
 u4 const NumVideoModes = lengthof(GUIVideoModeNames);
