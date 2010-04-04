@@ -817,25 +817,6 @@ hq_x:;
 }
 
 
-static u1 VolslidSet(void const* const p1) // slider variable
-{
-	return *(u1 const*)p1;
-}
-
-
-static char const* VolslidText(void const* const p1) // slider var, text
-{
-	static char GUISoundTextC1[] = "---%";
-	GUISoundTextC1[0] = ' ';
-	GUISoundTextC1[1] = ' ';
-	char* esi = GUISoundTextC1 + 3;
-	u1 al = *(u1 const*)p1;
-	// turn decimal into ASCII
-	do *--esi = '0' + al % 10; while ((al /= 10) != 0);
-	return GUISoundTextC1;
-}
-
-
 void DisplayGUISound(void)
 {
 	GUIDrawWindowBox(6, "SOUND CONFIG");
@@ -909,5 +890,5 @@ void DisplayGUISound(void)
 	}
 
 	GUIDisplayTextY(6, 6, 116, "VOLUME LEVEL:");
-	GUIDrawSlider(6, 15, 100, 131, &MusicRelVol, VolslidSet, VolslidText);
+	GUIDrawSlider(6, 15, 100, 131, &MusicRelVol, glscslidSet, glscslidText);
 }
