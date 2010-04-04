@@ -454,6 +454,69 @@ static void GUIDrawSlider(u4 const p1, u4 const p2, u4 const p3, u4 const p4, vo
 }
 
 
+void DisplayGUIOption(void)
+{
+	GUIDrawWindowBox(4, "OPTIONS");
+
+	{ u4 eax;
+		u4 ebx;
+		GUIDrawTArea(4, &eax, &ebx);
+		GUIDrawTabs(GUIOptionTabs, &eax, ebx);
+	}
+
+	if (GUIOptionTabs[0] == 1)
+	{ // Basic
+		GUIDisplayTextY(4, 11, 26, "SYSTEM:");
+		if (ShowMMXSupport == 1)
+		{
+			GUIDisplayCheckboxu(4, 11, 31, &MMXSupport, "ENABLE MMX SUPPORT", 7);
+		}
+		GUIDisplayCheckboxu(4, 11, 41, &Show224Lines, "SHOW 224 LINES", 9);
+
+		GUIDisplayTextY(4, 11, 66, "GFX ENGINES:");
+		GUIDisplayCheckboxu(4, 11, 71, &newengen, "USE NEW GFX ENG", 4);
+		if (newengen == 0)
+		{
+			GUIDisplayCheckboxu(4, 11, 81, &bgfixer, "USE ALT OLD GFX ENG", 4);
+		}
+
+		GUIDisplayTextY(4, 11, 106, "ROM:");
+		GUIDisplayCheckboxu(4, 11, 111, &AutoPatch,   "ENABLE IPS AUTO-PATCHING", 7);
+		GUIDisplayCheckboxu(4, 11, 121, &DisplayInfo, "SHOW ROM INFO ON LOAD",    5);
+		GUIDisplayCheckboxu(4, 11, 131, &RomInfo,     "LOG ROM INFO",             2);
+
+#ifdef __WIN32__
+		GUIDisplayTextY(4, 11, 156, "WINDOWS SPECIFIC:");
+		GUIDisplayCheckboxu(4, 11, 161, &PauseFocusChange,   "PAUSE EMU IN BACKGROUND",  13);
+		GUIDisplayCheckboxu(4, 11, 171, &HighPriority,       "INCREASE EMU PRIORITY",    13);
+#endif
+		GUIDisplayCheckboxu(4, 11, 181, &DisableScreenSaver, "DISABLE POWER MANAGEMENT",  0);
+	}
+
+	if (GUIOptionTabs[0] == 2)
+	{
+		GUIDisplayTextY(4, 11, 26, "OVERLAYS:");
+		GUIDisplayCheckboxu(4, 11, 31, &FPSAtStart,  "SHOW FPS CNTR ON EMU LOAD", 5);
+		GUIDisplayCheckboxu(4, 11, 41, &TimerEnable, "SHOW CLOCK",                5);
+		if (TimerEnable == 1)
+		{
+			GUIDisplayCheckboxu(4, 89, 41, &TwelveHourClock, "12 HOUR MODE",    3);
+			GUIDisplayCheckboxu(4, 11, 51, &ClockBox,        "SHOW CLOCK BOX", 13);
+		}
+
+		GUIDisplayTextY(4, 11, 76, "MESSAGES:");
+		GUIDisplayCheckboxu(4, 11, 81, &SmallMsgText,    "USE SMALL MESSAGE TEXT", 4);
+		GUIDisplayCheckboxu(4, 11, 91, &GUIEnableTransp, "USE TRANSPARENT TEXT",   4);
+
+		GUIDisplayTextY(4, 11, 116, "SCREENSHOT FORMAT:");
+		GUIDisplayButtonHoleTu(4, 11, 121, &ScreenShotFormat, 0, "BMP", 0);
+#ifndef NO_PNG
+		GUIDisplayButtonHoleTu(4, 11, 131, &ScreenShotFormat, 1, "PNG", 0);
+#endif
+	}
+}
+
+
 static u1 glscslidSet(void const* const p1) // slider variable
 {
 	return *(u1 const*)p1;

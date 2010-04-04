@@ -1737,107 +1737,12 @@ GUIIStA resd 3
 GUIcurrentinputviewloc resd 1
 NEWSYM GUIcurrentinputcursloc, resd 1
 
-SECTION .text
-
-NEWSYM DisplayGUIOption       ; Emu Options
-  GUIDrawWindowBox 4,GUIOptionDisp
-  GUIDrawTArea 4
-  GUIDrawTabs GUIOptionTabs
-
-  cmp dword[GUIOptionTabs],1
-  jne near .notbasic
-  GUIDisplayTextY 4,11,26,GUIOptionTextA
-  cmp byte[ShowMMXSupport],1
-  jne near .nommx
-  GUIDisplayCheckboxu 4,11,31,MMXSupport,GUIOptionTextA1,7
-.nommx
-  GUIDisplayCheckboxu 4,11,41,Show224Lines,GUIOptionTextA2,9
-
-  GUIDisplayTextY 4,11,66,GUIOptionTextB
-  GUIDisplayCheckboxu 4,11,71,newengen,GUIOptionTextB1,4
-  cmp byte[newengen],0
-  jne near .newengen
-  GUIDisplayCheckboxu 4,11,81,bgfixer,GUIOptionTextB2,4
-.newengen
-
-  GUIDisplayTextY 4,11,106,GUIOptionTextC
-  GUIDisplayCheckboxu 4,11,111,AutoPatch,GUIOptionTextC1,7
-  GUIDisplayCheckboxu 4,11,121,DisplayInfo,GUIOptionTextC2,5
-  GUIDisplayCheckboxu 4,11,131,RomInfo,GUIOptionTextC3,2
-
-%ifdef __WIN32__
-  GUIDisplayTextY 4,11,156,GUIOptionTextG
-  GUIDisplayCheckboxu 4,11,161,PauseFocusChange,GUIOptionTextG1,13
-  GUIDisplayCheckboxu 4,11,171,HighPriority,GUIOptionTextG2,13
-%endif
-  GUIDisplayCheckboxu 4,11,181,DisableScreenSaver,GUIOptionTextG3,0
-.notbasic
-
-  cmp byte[GUIOptionTabs],2
-  jne near .notmore
-  GUIDisplayTextY 4,11,26,GUIOptionTextD
-  GUIDisplayCheckboxu 4,11,31,FPSAtStart,GUIOptionTextD1,5
-  GUIDisplayCheckboxu 4,11,41,TimerEnable,GUIOptionTextD2,5
-  cmp byte[TimerEnable],1
-  jne near .noclock
-  GUIDisplayCheckboxu 4,89,41,TwelveHourClock,GUIOptionTextD3,3
-  GUIDisplayCheckboxu 4,11,51,ClockBox,GUIOptionTextD4,13
-.noclock
-
-  GUIDisplayTextY 4,11,76,GUIOptionTextE
-  GUIDisplayCheckboxu 4,11,81,SmallMsgText,GUIOptionTextE1,4
-  GUIDisplayCheckboxu 4,11,91,GUIEnableTransp,GUIOptionTextE2,4
-
-  GUIDisplayTextY 4,11,116,GUIOptionTextF
-  GUIDisplayButtonHoleTu 4,11,121,byte[ScreenShotFormat],0,GUIOptionTextF1,0
-%ifndef NO_PNG
-  GUIDisplayButtonHoleTu 4,11,131,byte[ScreenShotFormat],1,GUIOptionTextF2,0
-%endif
-.notmore
-  ret
-
 SECTION .data
-GUIOptionTabs dd 1,2
+NEWSYM GUIOptionTabs, dd 1,2
   db 'BASIC',0
   db 'MORE',0
 
 NEWSYM ShowMMXSupport, db 2
-
-GUIOptionTextA db 'SYSTEM:',0
-GUIOptionTextA1 db 'ENABLE MMX SUPPORT',0
-GUIOptionTextA2 db 'SHOW 224 LINES',0
-
-GUIOptionTextB db 'GFX ENGINES:',0
-GUIOptionTextB1 db 'USE NEW GFX ENG',0
-GUIOptionTextB2 db 'USE ALT OLD GFX ENG',0
-
-GUIOptionTextC db 'ROM:',0
-GUIOptionTextC1 db 'ENABLE IPS AUTO-PATCHING',0
-GUIOptionTextC2 db 'SHOW ROM INFO ON LOAD',0
-GUIOptionTextC3 db 'LOG ROM INFO',0
-
-GUIOptionTextD db 'OVERLAYS:',0
-GUIOptionTextD1 db 'SHOW FPS CNTR ON EMU LOAD',0
-GUIOptionTextD2 db 'SHOW CLOCK',0
-GUIOptionTextD3 db '12 HOUR MODE',0
-GUIOptionTextD4 db 'SHOW CLOCK BOX',0
-
-GUIOptionTextE db 'MESSAGES:',0
-GUIOptionTextE1 db 'USE SMALL MESSAGE TEXT',0
-GUIOptionTextE2 db 'USE TRANSPARENT TEXT',0
-
-GUIOptionTextF db 'SCREENSHOT FORMAT:',0
-GUIOptionTextF1 db 'BMP',0
-%ifndef NO_PNG
-GUIOptionTextF2 db 'PNG',0
-%endif
-
-%ifdef __WIN32__
-GUIOptionTextG db 'WINDOWS SPECIFIC:',0
-GUIOptionTextG1 db 'PAUSE EMU IN BACKGROUND',0
-GUIOptionTextG2 db 'INCREASE EMU PRIORITY',0
-%endif
-GUIOptionTextG3 db 'DISABLE POWER MANAGEMENT',0
 
 NEWSYM GUIVideoTabs, dd 1,2
   db 'MODES',0
@@ -4494,7 +4399,6 @@ GUILoadDisp db 'LOAD GAME',0
 GUIResetDisp db 'RESET GAME',0
 GUIStateSelDisp db 'STATE SELECT',0
 GUIInputDisp db 'INPUT DEVICE',0
-GUIOptionDisp db 'OPTIONS',0
 GUICheatDisp db 'CHEAT',0
 GUISearchDisp db 'CHEAT SEARCH',0
 GUINetDisp db 'REMOTE',0,0,0,0,0,0,0,0,0
