@@ -1370,7 +1370,6 @@ void GetLoadData(void)
 }
 
 u4 GUIcurrentfilewin;
-unsigned int GUIdirStartLoc;
 
 void GUILoadData(void)
 {
