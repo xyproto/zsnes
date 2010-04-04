@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 #include "../c_init.h"
 #include "../c_intrf.h"
 #include "../cfg.h"
@@ -458,12 +460,7 @@ static u1 glscslidSet(void const* const p1) // slider variable
 
 static char const* glscslidText(void const* const p1, char* const p2) // slider var, text
 {
-	p2[0] = ' ';
-	p2[1] = ' ';
-	char* esi = p2 + 3;
-	u1    al  = *(u1 const*)p1;
-	// turn decimal into ASCII
-	do *--esi = '0' + al % 10; while ((al /= 10) != 0);
+	sprintf(p2, "%3d%%", *(u1 const*)p1);
 	return p2;
 }
 
@@ -476,15 +473,7 @@ static u1 NTSCslidSet(void const* const p1) // slider variable
 
 static char const* NTSCslidText(void const* const p1, char* const p2) // slider var, text
 {
-	p2[0] = ' ';
-	p2[1] = ' ';
-	p2[2] = ' ';
-	char* esi = p2 + 3;
-	s1    al  = *(s1 const*)p1;
-	if (al < 0) al = -al;
-	// turn decimal into ASCII
-	do *esi-- = '0' + al % 10; while ((al /= 10) != 0);
-	if (*(s1 const*)p1 < 0) *esi = '-';
+	sprintf(p2, "%4d%%", *(s1 const*)p1);
 	return p2;
 }
 
