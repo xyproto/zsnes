@@ -17,7 +17,6 @@ extern void DisplayGUIPaths();
 extern void DisplayGUISave();
 extern void DisplayGUISearch();
 extern void DisplayGUISpeed();
-extern void DisplayGUIStates();
 extern void DisplayGameOptns();
 extern void DisplayNetOptns();
 
@@ -34,7 +33,6 @@ extern u1    CurCStextpos;
 extern u1    GUIBlinkCursorLoop;
 extern u1    GUILoadPos;
 extern u1    GUINumCombo;
-extern u1    GUIStatesText5;
 extern u1    ShowMMXSupport;
 extern u1    lameExists;
 extern u1    mencoderExists;

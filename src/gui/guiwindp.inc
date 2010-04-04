@@ -1211,47 +1211,6 @@ NEWSYM GUILoadPos, resb 1
 
 SECTION .text
 
-NEWSYM DisplayGUIStates                         ; Save/Load State Confirmation
-  GUIDrawWindowBox 14,GUIStatesDisp
-
-  cmp byte[GUIWincoladd],0             ; Red Box around buttons
-  je .zero
-  mov byte[GUItextcolor],211
-.zero
-  mov dl,224
-  cmp byte[GUIWincoladd],0
-  je .zero4
-  inc dl
-.zero4
-  cmp byte[GUICStatePos],0
-  je near .resetboxa
-  DrawGUIWinBox 14,79,29,117,42,dl
-  jmp .resetboxb
-.resetboxa
-  DrawGUIWinBox 14,19,29,57,42,dl
-.resetboxb
-
-  DrawGUIButton 14,20,30,56,41,GUIStatesText3,10,0,0    ; Buttons
-  DrawGUIButton 14,80,30,116,41,GUIStatesText4,11,0,0
-
-  cmp byte[GUIStatesText5],1              ; Determines Load or Save box
-  je near .load
-  GUIDisplayTextY 14,6,16,GUIStatesText1
-  jmp .save
-.load
-  GUIDisplayTextY 14,6,16,GUIStatesText2
-.save
-  ret
-
-SECTION .data
-GUIStatesText1 db 'OKAY TO SAVE STATE?',0
-GUIStatesText2 db 'OKAY TO LOAD STATE?',0
-GUIStatesText3 db 'YES',0
-GUIStatesText4 db 'NO',0
-NEWSYM GUIStatesText5, db 0
-
-SECTION .text
-
 NEWSYM DisplayGUIChoseSave                    ; Pick Save State
   GUIDrawWindowBox 2,GUIStateSelDisp
 
@@ -4372,7 +4331,6 @@ GUIGameDisp db 'MISC KEYS',0
 GUIGUIDisp db 'GUI OPTIONS',0
 GUIAboutDisp db 'ABOUT',0
 GUIMovieDisp db 'MOVIE OPTIONS',0
-GUIStatesDisp db 'STATE CONFIRM',0
 GUIComboDisp db 'KEY COMBINATION EDITOR',0
 GUIAddOnsDisp db 'DEVICES SELECTOR',0
 GUIAddOnsDispEE db 'DEVICES SELECTOR',0

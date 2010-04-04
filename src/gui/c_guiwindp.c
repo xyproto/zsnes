@@ -22,6 +22,9 @@
 #endif
 
 
+u1 GUIStatesText5 = 0;
+
+
 static void drawshadow2(u4 const p1, s4 const p2, s4 const p3)
 {
 	s4 y = GUIwinposy[p1];
@@ -472,6 +475,29 @@ void DisplayGUIReset(void)
 	DrawGUIButton(12, 80, 30, 116, 41, "NO",  3, 0, 0);
 
 	GUIDisplayTextY(12, 6, 16, "RESET: ARE YOU SURE ?");
+}
+
+
+void DisplayGUIStates(void)
+{
+	GUIDrawWindowBox(14, "STATE CONFIRM");
+
+	// Red Box around buttons
+	u1 dl = 224;
+	if ((GUIWincoladd & 0xFF) != 0)
+	{
+		GUItextcolor[0] = 211;
+		++dl;
+	}
+	u4 const x = GUICStatePos == 0 ? 19 : 79;
+	DrawGUIWinBox(12, x, 29, x + 38, 42, dl);
+
+	DrawGUIButton(14, 20, 30,  56, 41, "YES", 10, 0, 0);
+	DrawGUIButton(14, 80, 30, 116, 41, "NO",  11, 0, 0);
+
+	// Determine Load or Save box
+	char const* const msg = GUIStatesText5 == 1 ? "OKAY TO LOAD STATE?" : "OKAY TO SAVE STATE?";
+	GUIDisplayTextY(14, 6, 16, msg);
 }
 
 
