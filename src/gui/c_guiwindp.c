@@ -12,6 +12,8 @@
 #include "guiwindp.h"
 
 #ifdef __MSDOS__
+#	include "../cpu/dspproc.h"
+#	include "../dos/sound.h"
 #	include "../dos/vesa2.h"
 #endif
 
@@ -812,4 +814,100 @@ hq_x:;
 		GUIDrawSlider(5, 8, 200, 126, &NTSCBleed,  NTSCslidSet, NTSCslidText);
 		GUIDrawSlider(5, 8, 200, 146, &NTSCWarp,   NTSCslidSet, NTSCslidText);
 	}
+}
+
+
+static u1 VolslidSet(void const* const p1) // slider variable
+{
+	return *(u1 const*)p1;
+}
+
+
+static char const* VolslidText(void const* const p1) // slider var, text
+{
+	static char GUISoundTextC1[] = "---%";
+	GUISoundTextC1[0] = ' ';
+	GUISoundTextC1[1] = ' ';
+	char* esi = GUISoundTextC1 + 3;
+	u1 al = *(u1 const*)p1;
+	// turn decimal into ASCII
+	do *--esi = '0' + al % 10; while ((al /= 10) != 0);
+	return GUISoundTextC1;
+}
+
+
+void DisplayGUISound(void)
+{
+	GUIDrawWindowBox(6, "SOUND CONFIG");
+
+	GUIDisplayTextY(6, 6, 16, "SOUND SWITCHES:");
+	GUIDisplayCheckboxu(6, 11, 21, &SPCDisable, "DISABLE SPC EMULATION", 0);
+	if (SPCDisable == 0)
+	{
+		GUIDisplayCheckboxu(6, 11, 31, &soundon, "ENABLE SOUND", 0);
+		if (soundon == 1)
+		{
+			GUIDisplayCheckboxu(6, 11, 41, &StereoSound, "ENABLE STEREO SOUND", 7);
+			if (StereoSound == 1)
+			{
+				GUIDisplayCheckboxu(6, 11, 51, &RevStereo, "REVERSE STEREO CHANNELS", 2);
+				GUIDisplayCheckboxu(6, 11, 61, &Surround,  "SIMULATE SURROUND SOUND", 2);
+			}
+#ifdef __MSDOS__
+			GUIDisplayCheckboxu(6, 11, 71, &Force8b, "FORCE 8-BIT OUTPUT", 0);
+#endif
+#ifdef __WIN32__
+			GUIDisplayCheckboxu(6, 11, 71, &PrimaryBuffer, "USE PRIMARY BUFFER", 4);
+#endif
+		}
+	}
+
+	char const* const GUISoundTextF = "NONE";
+
+	GUIDisplayTextY(6, 6, 152, "INTERPOLATION:");
+	GUIDisplayButtonHoleTu(6, 11, 157, &SoundInterpType, 0, GUISoundTextF,  0);
+	GUIDisplayButtonHoleTu(6, 11, 167, &SoundInterpType, 1, "GAUSSIAN", 0);
+	GUIDisplayButtonHoleTu(6, 11, 177, &SoundInterpType, 2, "CUBIC SPLINE", 0);
+	if (MMXSupport != 0)
+	{
+		GUIDisplayButtonHoleTu(6, 11, 187, &SoundInterpType, 3, "8-POINT", 0);
+	}
+
+	GUIDisplayTextY(6, 106, 152, "LOWPASS:");
+	GUIDisplayButtonHoleTu(6, 111, 157, &LowPassFilterType, 0, GUISoundTextF, 1);
+	GUIDisplayButtonHoleTu(6, 111, 167, &LowPassFilterType, 1, "SIMPLE",      1);
+	GUIDisplayButtonHoleTu(6, 111, 177, &LowPassFilterType, 2, "DYNAMIC",     1);
+	if (MMXSupport != 0)
+	{
+		GUIDisplayButtonHoleTu(6, 111, 187, &LowPassFilterType, 3, "HI QUALITY", 0);
+	}
+
+	GUIDisplayTextY(6, 6, 93, "SAMPLING RATE:");
+#ifdef __MSDOS__
+	if ((SoundQuality & 0xFF) > 2 && (SoundQuality & 0xFF) != 4 && StereoSound == 1 && SBHDMA == 0 && vibracard != 1)
+	{
+		GUIDisplayBBox(6, 15, 101, 69, 109, 167);
+		GUIDisplayTextG(6, 23, 104, "N/A");
+	}
+	else
+#endif
+	{
+		GUIDisplayBBox(6, 15, 101, 69, 109, 167); // Sampling Rate Box
+		static char const GUISoundTextB1[][8] =
+		{
+			" 8000HZ",
+			"11025HZ",
+			"22050HZ",
+			"44100HZ",
+			"16000HZ",
+			"32000HZ",
+			"48000HZ"
+		};
+		char const* const eax = GUISoundTextB1[SoundQuality];
+		GUITemp = (u4)eax; // XXX ugly cast
+		GUIDisplayTextG(6, 23, 104, (char const*)GUITemp); // XXX ugly cast
+	}
+
+	GUIDisplayTextY(6, 6, 116, "VOLUME LEVEL:");
+	GUIDrawSlider(6, 15, 100, 131, &MusicRelVol, VolslidSet, VolslidText);
 }

@@ -18,7 +18,6 @@ extern void DisplayGUIPaths();
 extern void DisplayGUIReset();
 extern void DisplayGUISave();
 extern void DisplayGUISearch();
-extern void DisplayGUISound();
 extern void DisplayGUISpeed();
 extern void DisplayGUIStates();
 extern void DisplayGameOptns();

@@ -1769,7 +1769,7 @@ void DisplayBoxes(void)
 			case  3: asm_call(DisplayGUIInput);      break;
 			case  4: asm_call(DisplayGUIOption);     break;
 			case  5: DisplayGUIVideo();              break;
-			case  6: asm_call(DisplayGUISound);      break;
+			case  6: DisplayGUISound();              break;
 			case  7: asm_call(DisplayGUICheat);      break;
 			case  8: asm_call(DisplayNetOptns);      break;
 			case  9: asm_call(DisplayGameOptns);     break;
