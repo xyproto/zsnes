@@ -436,7 +436,7 @@ static void GUIDisplayButtonHoleTu(u4 const p1, u4 const p2, u4 const p3, u1 con
 }
 
 
-static void GUIDrawSlider(u4 const p1, u4 const p2, u4 const p3, u4 const p4, void const* const p5, char* const p6, u1 (*p7)(void const*), char const* (*p8)(void const*, char*)) // win #id, minX, width, Ypos, var, text, proc1, proc2
+static void GUIDrawSlider(u4 const p1, u4 const p2, u4 const p3, u4 const p4, void const* const p5, u1 (*p7)(void const*), char const* (*p8)(void const*)) // win #id, minX, width, Ypos, var, text, proc1, proc2
 {
 	s4 const eax = GUIwinposx[p1] + p2;
 	s4 const ebx = GUIwinposy[p1] + p4;
@@ -446,7 +446,7 @@ static void GUIDrawSlider(u4 const p1, u4 const p2, u4 const p3, u4 const p4, vo
 	GUIHLine(eax + 1, ecx + 1, ebx + 1, edx - 13);
 	GUITemp = p2 - 4 + p7(p5); // proc1 == alters var correctly and puts result in al
 	GUIDisplayIconWin(p1, GUITemp, p4 - 4, GUIIconDataSlideBar);
-	char const* const esi = p8(p5, p6); // proc2 == alters text correctly and puts pointer in esi
+	char const* const esi = p8(p5); // proc2 == alters text correctly and puts pointer in esi
 	GUITemp = (u4)esi; // Display Value (Green) // XXX ugly cast
 	GUIDisplayTextG(p1, p2 + p3 + 6, p4 - 1, (char const*)GUITemp); // XXX ugly cast
 }
@@ -458,10 +458,11 @@ static u1 glscslidSet(void const* const p1) // slider variable
 }
 
 
-static char const* glscslidText(void const* const p1, char* const p2) // slider var, text
+static char const* glscslidText(void const* const p1) // slider var, text
 {
-	sprintf(p2, "%3d%%", *(u1 const*)p1);
-	return p2;
+	static char GUIVideoTextB2z[] = "---%";
+	sprintf(GUIVideoTextB2z, "%3d", *(u1 const*)p1);
+	return GUIVideoTextB2z;
 }
 
 
@@ -471,10 +472,11 @@ static u1 NTSCslidSet(void const* const p1) // slider variable
 }
 
 
-static char const* NTSCslidText(void const* const p1, char* const p2) // slider var, text
+static char const* NTSCslidText(void const* const p1) // slider var, text
 {
-	sprintf(p2, "%4d%%", *(s1 const*)p1);
-	return p2;
+	static char GUIVideoTextCD3[] = "----%";
+	sprintf(GUIVideoTextCD3, "%4d", *(s1 const*)p1);
+	return GUIVideoTextCD3;
 }
 
 
@@ -671,8 +673,7 @@ hq_x:;
 			if (GUIBIFIL[cvidmode] != 0)
 			{
 				GUIDisplayTextY(5, 13, 80, GUIVideoTextB2); // Scanlines text
-				static char GUIVideoTextB2z[] = "---%";
-				GUIDrawSlider(5, 23, 100, 90, &sl_intensity, GUIVideoTextB2z, glscslidSet, glscslidText);
+				GUIDrawSlider(5, 23, 100, 90, &sl_intensity, glscslidSet, glscslidText);
 			}
 			else
 #endif
@@ -766,8 +767,6 @@ hq_x:;
 	char const* const GUIVideoTextCD1 = "RESET"; // NTSC buttons + counter
 	char const* const GUIVideoTextCD2 = "RESET ALL";
 
-	static char GUIVideoTextCD3[] = "----%";
-
 	if (GUIVntscTab[0] == 1) // NTSC Tab
 	{
 		GUIDisplayCheckboxu(5,   5, 25, &NTSCBlend, "BLEND FRAMES", 0); // NTSC Tab
@@ -787,11 +786,11 @@ hq_x:;
 		GUIDisplayTextY(5, 7, 126, "SHARPNESS:");
 		GUIDisplayTextY(5, 7, 156, "PRESETS:"); // NTSC Presets
 
-		GUIDrawSlider(5, 8, 200,  56, &NTSCHue,    GUIVideoTextCD3, NTSCslidSet, NTSCslidText);
-		GUIDrawSlider(5, 8, 200,  76, &NTSCSat,    GUIVideoTextCD3, NTSCslidSet, NTSCslidText);
-		GUIDrawSlider(5, 8, 200,  96, &NTSCCont,   GUIVideoTextCD3, NTSCslidSet, NTSCslidText);
-		GUIDrawSlider(5, 8, 200, 116, &NTSCBright, GUIVideoTextCD3, NTSCslidSet, NTSCslidText);
-		GUIDrawSlider(5, 8, 200, 136, &NTSCSharp,  GUIVideoTextCD3, NTSCslidSet, NTSCslidText);
+		GUIDrawSlider(5, 8, 200,  56, &NTSCHue,    NTSCslidSet, NTSCslidText);
+		GUIDrawSlider(5, 8, 200,  76, &NTSCSat,    NTSCslidSet, NTSCslidText);
+		GUIDrawSlider(5, 8, 200,  96, &NTSCCont,   NTSCslidSet, NTSCslidText);
+		GUIDrawSlider(5, 8, 200, 116, &NTSCBright, NTSCslidSet, NTSCslidText);
+		GUIDrawSlider(5, 8, 200, 136, &NTSCSharp,  NTSCslidSet, NTSCslidText);
 	}
 
 	if (GUIVntscTab[0] == 2) // Advanced NTSC Options Tab
@@ -806,11 +805,11 @@ hq_x:;
 		GUIDisplayTextY(5, 7, 116, "BLEED:");
 		GUIDisplayTextY(5, 7, 136, "HUE WARPING:");
 
-		GUIDrawSlider(5, 8, 200,  46, &NTSCGamma,  GUIVideoTextCD3, NTSCslidSet, NTSCslidText);
-		GUIDrawSlider(5, 8, 200,  66, &NTSCRes,    GUIVideoTextCD3, NTSCslidSet, NTSCslidText);
-		GUIDrawSlider(5, 8, 200,  86, &NTSCArt,    GUIVideoTextCD3, NTSCslidSet, NTSCslidText);
-		GUIDrawSlider(5, 8, 200, 106, &NTSCFringe, GUIVideoTextCD3, NTSCslidSet, NTSCslidText);
-		GUIDrawSlider(5, 8, 200, 126, &NTSCBleed,  GUIVideoTextCD3, NTSCslidSet, NTSCslidText);
-		GUIDrawSlider(5, 8, 200, 146, &NTSCWarp,   GUIVideoTextCD3, NTSCslidSet, NTSCslidText);
+		GUIDrawSlider(5, 8, 200,  46, &NTSCGamma,  NTSCslidSet, NTSCslidText);
+		GUIDrawSlider(5, 8, 200,  66, &NTSCRes,    NTSCslidSet, NTSCslidText);
+		GUIDrawSlider(5, 8, 200,  86, &NTSCArt,    NTSCslidSet, NTSCslidText);
+		GUIDrawSlider(5, 8, 200, 106, &NTSCFringe, NTSCslidSet, NTSCslidText);
+		GUIDrawSlider(5, 8, 200, 126, &NTSCBleed,  NTSCslidSet, NTSCslidText);
+		GUIDrawSlider(5, 8, 200, 146, &NTSCWarp,   NTSCslidSet, NTSCslidText);
 	}
 }
