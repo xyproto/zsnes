@@ -454,6 +454,27 @@ static void GUIDrawSlider(u4 const p1, u4 const p2, u4 const p3, u4 const p4, vo
 }
 
 
+void DisplayGUIReset(void)
+{
+	GUIDrawWindowBox(12, "RESET GAME");
+
+	// Red Box around buttons
+	u1 dl = 224;
+	if ((GUIWincoladd & 0xFF) != 0)
+	{
+		GUItextcolor[0] = 211;
+		++dl;
+	}
+	u4 const x = GUICResetPos == 0 ? 19 : 79;
+	DrawGUIWinBox(12, x, 29, x + 38, 42, dl);
+
+	DrawGUIButton(12, 20, 30,  56, 41, "YES", 2, 0, 0);
+	DrawGUIButton(12, 80, 30, 116, 41, "NO",  3, 0, 0);
+
+	GUIDisplayTextY(12, 6, 16, "RESET: ARE YOU SURE ?");
+}
+
+
 void DisplayGUIOption(void)
 {
 	GUIDrawWindowBox(4, "OPTIONS");

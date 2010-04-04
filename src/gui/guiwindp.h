@@ -14,7 +14,6 @@ extern void DisplayGUILoad();
 extern void DisplayGUIMovies();
 extern void DisplayGUIOptns();
 extern void DisplayGUIPaths();
-extern void DisplayGUIReset();
 extern void DisplayGUISave();
 extern void DisplayGUISearch();
 extern void DisplayGUISpeed();

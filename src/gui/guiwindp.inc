@@ -1211,39 +1211,6 @@ NEWSYM GUILoadPos, resb 1
 
 SECTION .text
 
-NEWSYM DisplayGUIReset              ; Reset Confirmation
-  GUIDrawWindowBox 12,GUIResetDisp
-
-  cmp byte[GUIWincoladd],0         ;Red Box around buttons
-  je .zero
-  mov byte[GUItextcolor],211
-.zero
-  mov dl,224
-  cmp byte[GUIWincoladd],0
-  je .zero4
-  inc dl
-.zero4
-  cmp byte[GUICResetPos],0
-  je near .resetboxa
-  DrawGUIWinBox 12,79,29,117,42,dl
-  jmp .resetboxb
-.resetboxa
-  DrawGUIWinBox 12,19,29,57,42,dl
-.resetboxb
-
-  DrawGUIButton 12,20,30,56,41,GUIResetText2,2,0,0   ; Buttons
-  DrawGUIButton 12,80,30,116,41,GUIResetText3,3,0,0
-
-  GUIDisplayTextY 12,6,16,GUIResetText1
-  ret
-
-SECTION .data
-GUIResetText1 db 'RESET: ARE YOU SURE ?',0
-GUIResetText2 db 'YES',0
-GUIResetText3 db 'NO',0
-
-SECTION .text
-
 NEWSYM DisplayGUIStates                         ; Save/Load State Confirmation
   GUIDrawWindowBox 14,GUIStatesDisp
 
@@ -4396,7 +4363,6 @@ GUISpeedTextZ db '-',0
 
 ;General data
 GUILoadDisp db 'LOAD GAME',0
-GUIResetDisp db 'RESET GAME',0
 GUIStateSelDisp db 'STATE SELECT',0
 GUIInputDisp db 'INPUT DEVICE',0
 GUICheatDisp db 'CHEAT',0
