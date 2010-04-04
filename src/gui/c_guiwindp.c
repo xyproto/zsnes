@@ -578,7 +578,8 @@ void DisplayGUIVideo(void)
 
 		GUItextcolor[0] = 224; // Text in Box
 		GUITemp = (u4)GUIVideoModeNames[GUIcurrentvideoviewloc]; // XXX ugly cast
-		for (u4 i = 0; i != 20; ++i)
+		u4 const n = NumVideoModes < 20 ? NumVideoModes : 20;
+		for (u4 i = 0; i != n; ++i)
 		{
 			GUIDisplayTextG(5, 11, 30 + 8 * i, (char const*)GUITemp); // XXX ugly cast
 			GUITemp += 18;
