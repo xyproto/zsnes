@@ -900,7 +900,6 @@ SECTION .text
 %endmacro
 
 SECTION .data
-GUILoadText1 db 'SELECT FILE TO LOAD:',0
 NEWSYM GUILoadTextA, times 38 db 0
 SECTION .bss
 NEWSYM GUILStA, resd 3
