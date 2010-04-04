@@ -19,6 +19,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+#include <stdio.h>
 #include <string.h>
 
 #include "../asm.h"
@@ -1327,25 +1328,6 @@ static void showfps(void)
 }
 
 
-static void ClockOutput_output(u4 const pos, u4 const n)
-{ // output value n
-#ifdef __MSDOS__
-	if (cbitmode != 1)
-	{
-		u1* const buf = vidbuffer + pos;
-		outputchar5x5(buf,     ASCII2Font['0' + n / 10]);
-		outputchar5x5(buf + 6, ASCII2Font['0' + n % 10]);
-	}
-	else
-#endif
-	{
-		u2* const buf = (u2*)vidbuffer + pos;
-		outputchar16b5x5(buf,     ASCII2Font['0' + n / 10]);
-		outputchar16b5x5(buf + 6, ASCII2Font['0' + n % 10]);
-	}
-}
-
-
 static void ClockOutput(void)
 {
 #ifdef __MSDOS__
@@ -1386,26 +1368,23 @@ static void ClockOutput(void)
 	t /= 60;
 	u4 const m = t % 60;
 	u4       h = t / 60;
-	ClockOutput_output(216 * 288 + 32 + 228, s); // seconds
-	ClockOutput_output(216 * 288 + 32 + 210, m); // minutes
 	if (TwelveHourClock == 1)
 	{ // check to see if it's 12 PM
 		if (h >  12) h -= 12;
 		if (h ==  0) h += 12;
 	}
-	ClockOutput_output(216 * 288 + 32 + 192, h); // hours
 
+	char buf[9];
+	sprintf(buf, "%02d:%02d:%02d", h, m, s);
 #ifdef __MSDOS__
 	if (cbitmode != 1)
 	{
-		outputchar5x5(vidbuffer + 216 * 288 + 32 + 222, ASCII2Font[':']);
-		outputchar5x5(vidbuffer + 216 * 288 + 32 + 204, ASCII2Font[':']);
+		OutputGraphicString5x5(vidbuffer + 216 * 288 + 32 + 192, buf);
 	}
 	else
 #endif
 	{
-		outputchar16b5x5((u2*)vidbuffer + 216 * 288 + 32 + 222, ASCII2Font[':']);
-		outputchar16b5x5((u2*)vidbuffer + 216 * 288 + 32 + 204, ASCII2Font[':']);
+		OutputGraphicString16b5x5((u2*)vidbuffer + 216 * 288 + 32 + 192, buf);
 	}
 }
 
