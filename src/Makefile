@@ -99,6 +99,7 @@ SRCS += effects/water.c
 SRCS += endmem.asm
 SRCS += gui/c_gui.c
 SRCS += gui/c_guimouse.c
+SRCS += gui/c_guiwindp.c
 SRCS += gui/gui.asm
 SRCS += gui/guifuncs.c
 SRCS += gui/guimisc.c

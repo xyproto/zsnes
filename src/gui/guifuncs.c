@@ -1803,7 +1803,7 @@ static void int_to_str(char *dest, unsigned int len, unsigned int num)
 #ifndef __MSDOS__
 
 char GUICustomX[5], GUICustomY[5];
-void GetCustomXY()
+void GetCustomXY(void)
 {
   static bool first_time = true;
   if (first_time)
@@ -1827,7 +1827,7 @@ void SetCustomXY(void)
 
 extern char ShowKeep43;
 
-void Keep43Check()
+void Keep43Check(void)
 {
   if((CustomResX*3) == (CustomResY*4))
     ShowKeep43 = 0;

@@ -26,6 +26,7 @@
 #include "../ztimec.h"
 #include "c_gui.h"
 #include "c_guimouse.h"
+#include "c_guiwindp.h"
 #include "gui.h"
 #include "guicheat.h"
 #include "guifuncs.h"
@@ -1767,7 +1768,7 @@ void DisplayBoxes(void)
 			case  2: asm_call(DisplayGUIChoseSave);  break;
 			case  3: asm_call(DisplayGUIInput);      break;
 			case  4: asm_call(DisplayGUIOption);     break;
-			case  5: asm_call(DisplayGUIVideo);      break;
+			case  5: DisplayGUIVideo();              break;
 			case  6: asm_call(DisplayGUISound);      break;
 			case  7: asm_call(DisplayGUICheat);      break;
 			case  8: asm_call(DisplayNetOptns);      break;

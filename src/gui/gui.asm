@@ -55,8 +55,8 @@ EXTSYM CheatCodeSave,CheatCodeLoad
 EXTSYM Check_Key,Get_Key,sram,ScanCodeListing,RelPathBase
 EXTSYM GetTime
 EXTSYM Clear2xSaIBuffer,Show224Lines
-EXTSYM newgfx16b,NumVideoModes,MusicVol,DSPMem,NumInputDevices
-EXTSYM GUIInputNames,GUIVideoModeNames,GameSpecificInput,device1,device2,TwelveHourClock
+EXTSYM NumVideoModes,MusicVol,DSPMem,NumInputDevices
+EXTSYM GUIInputNames,GameSpecificInput,device1,device2,TwelveHourClock
 EXTSYM GUIM7VID,GUINTVID,GUIHQ2X,RawDumpInProgress
 EXTSYM MultiTap
 EXTSYM nssdip1,nssdip2,nssdip3,nssdip4,nssdip5,nssdip6
@@ -128,15 +128,15 @@ EXTSYM CBBuffer,CBLength,PasteClipBoard,ctrlptr,PauseFocusChange
 %elifdef __MSDOS__
 EXTSYM dssel,initvideo2,Force8b,SBHDMA,vibracard,smallscreenon
 EXTSYM pl1p209,pl2p209,pl3p209,pl4p209,pl5p209,SidewinderFix,Triplebufen,ScreenScale
-EXTSYM GUIEAVID,GUIWSVID,GUISSVID,GUITBVID,GUISLVID,GUIHSVID,GUI2xVID,TripBufAvail
+EXTSYM GUIEAVID,GUIWSVID,GUISSVID,GUITBVID,GUISLVID,GUIHSVID,GUI2xVID
 EXTSYM DOSClearScreen
 EXTSYM GUI36hzcall
 %endif
 
 %ifndef __MSDOS__
-EXTSYM GUICustomX,GUICustomY,GetCustomXY,SetCustomXY,initwinvideo
+EXTSYM GUICustomX,GUICustomY,SetCustomXY,initwinvideo
 EXTSYM Keep4_3Ratio,NTSCFilterInit,hqFilterlevel,BilinearFilter,GUIBIFIL
-EXTSYM GUIWFVID,GUIDSIZE,GUIHQ3X,GUIHQ4X,GUIKEEP43,Keep43Check,sl_intensity
+EXTSYM GUIWFVID,GUIDSIZE,GUIHQ3X,GUIHQ4X,GUIKEEP43,sl_intensity
 %endif
 
 %ifndef __WIN32__
@@ -266,9 +266,9 @@ NEWSYM GUIHoldy,     resd 1
 NEWSYM GUIHoldxm,    resd 1
 NEWSYM GUIHoldym,    resd 1
 NEWSYM cwindrawn,    resb 1
-GUIWincol    resd 1
+NEWSYM GUIWincol,    resd 1
 NEWSYM GUIWincoladd, resd 1
-GUITemp      resd 1
+NEWSYM GUITemp,      resd 1
 NEWSYM GUIHoldXlimL, resd 1
 NEWSYM GUIHoldXlimR, resd 1
 NEWSYM GUIHoldYlim,  resd 1
@@ -568,7 +568,7 @@ NEWSYM GUIFontData
 NEWSYM GUIFontData1, times 705 db 0
 
 ; 189 .. 220
-GUIIconDataClose:
+NEWSYM GUIIconDataClose
   db 0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0
   db 0  ,216,216,216,216,216,216,216,0  ,0
   db 214,212,202,212,212,212,202,212,210,0
@@ -580,7 +580,7 @@ GUIIconDataClose:
   db 0  ,0  ,198,198,198,198,198,198,198,0
   db 0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0
 
-GUIIconDataButtonHole:
+NEWSYM GUIIconDataButtonHole
   db 0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0
   db 0  ,0  ,0  ,207,205,207,0  ,0  ,0  ,0
   db 0  ,0  ,207,203,202,203,207,0  ,0  ,0
@@ -592,7 +592,7 @@ GUIIconDataButtonHole:
   db 0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0
   db 0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0
 
-GUIIconDataButtonFill:
+NEWSYM GUIIconDataButtonFill
   db 0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0
   db 0  ,0  ,0  ,207,209,207,0  ,0  ,0  ,0
   db 0  ,0  ,207,211,212,211,207,0  ,0  ,0
@@ -604,7 +604,7 @@ GUIIconDataButtonFill:
   db 0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0
   db 0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0
 
-GUIIconDataSlideBar:
+NEWSYM GUIIconDataSlideBar
   db 0  ,0  ,0  ,0  ,216,0  ,0  ,0  ,0  ,0
   db 0  ,0  ,0  ,212,216,220,0  ,0  ,0  ,0
   db 0  ,0  ,0  ,212,216,220,202,0  ,0  ,0
@@ -616,7 +616,7 @@ GUIIconDataSlideBar:
   db 0  ,0  ,0  ,0  ,216,202,202,0  ,0  ,0
   db 0  ,0  ,0  ,0  ,0  ,202,0  ,0  ,0  ,0
 
-GUIIconDataCheckBoxUC:
+NEWSYM GUIIconDataCheckBoxUC
   db 0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0
   db 0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0
   db 0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0
@@ -628,7 +628,7 @@ GUIIconDataCheckBoxUC:
   db 0  ,215,214,213,212,211,210,202,0  ,0
   db 0  ,0  ,202,202,202,202,202,202,0  ,0
 
-GUIIconDataCheckBoxC:
+NEWSYM GUIIconDataCheckBoxC
   db 0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,165,0
   db 0  ,0  ,0  ,0  ,0  ,0  ,0  ,165,0  ,0
   db 0  ,0  ,0  ,0  ,0  ,0  ,165,0  ,0  ,0
@@ -640,7 +640,7 @@ GUIIconDataCheckBoxC:
   db 0  ,215,214,165,212,211,210,202,0  ,0
   db 0  ,0  ,202,202,202,202,202,202,0  ,0
 
-GUIIconDataUpArrow:
+NEWSYM GUIIconDataUpArrow
   db 201,209,209,209,209,209,209,200,0  ,0
   db 207,205,205,202,203,205,205,203,0  ,0
   db 207,205,201,202,203,202,205,203,0  ,0
@@ -652,7 +652,7 @@ GUIIconDataUpArrow:
   db 0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0
   db 0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0
 
-GUIIconDataDownArrow:
+NEWSYM GUIIconDataDownArrow
   db 201,209,209,209,209,209,209,200,0  ,0
   db 207,205,205,202,203,205,205,203,0  ,0
   db 207,205,205,202,203,205,205,203,0  ,0
