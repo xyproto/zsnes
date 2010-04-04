@@ -1,6 +1,8 @@
 #ifndef GUIFUNCS_H
 #define GUIFUNCS_H
 
+#include <stdbool.h>
+
 #include "../types.h"
 
 u4*  horizon_get(u4 distance);
@@ -10,7 +12,7 @@ void GUILoadData(void);
 void GUIQuickLoadUpdate(void);
 void GUISaveVars(void);
 void GetLoadData(void);
-void Keep43Check(void);
+bool Keep43Check(void);
 void LoadCheatSearchFile(void);
 void SaveCheatSearchFile(void);
 void SetMovieForcedLength(void);

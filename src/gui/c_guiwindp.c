@@ -752,7 +752,7 @@ hq_x:;
 		char const* const GUIVideoTextB5 = "DISPLAY OPTIONS:"; // Video.Display
 #ifndef __MSDOS__
 		// Keep 4:3 Ratio
-		if (GUIKEEP43[cvidmode] != 0 && (Keep43Check(), ShowKeep43 != 0))
+		if (GUIKEEP43[cvidmode] != 0 && Keep43Check())
 		{
 			GUIDisplayTextY(5, 13, 170, GUIVideoTextB5);
 			GUIDisplayCheckboxu(5, 18, 175, &Keep4_3Ratio, "USE 4:3 RATIO", 8);

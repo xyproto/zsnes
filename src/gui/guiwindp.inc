@@ -1846,10 +1846,6 @@ NEWSYM GUIVntscTab, dd 0,2
   db 'NTSC',0
   db 'ADV NTSC',0
 
-%ifndef __MSDOS__
-NEWSYM ShowKeep43, db 0
-%endif
-
 SECTION .bss
 NEWSYM GUIVStA, resd 3
 NEWSYM GUIcurrentvideoviewloc, resd 1

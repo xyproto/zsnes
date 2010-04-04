@@ -1824,14 +1824,9 @@ void SetCustomXY(void)
   }
 }
 
-extern char ShowKeep43;
-
-void Keep43Check(void)
+bool Keep43Check(void)
 {
-  if((CustomResX*3) == (CustomResY*4))
-    ShowKeep43 = 0;
-  else
-    ShowKeep43 = 1;
+	return CustomResX * 3 != CustomResY * 4;
 }
 
 extern char GUIBIFIL[];

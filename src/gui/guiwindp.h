@@ -38,7 +38,6 @@ extern u1    GUIBlinkCursorLoop;
 extern u1    GUILoadPos;
 extern u1    GUINumCombo;
 extern u1    GUIStatesText5;
-extern u1    ShowKeep43;
 extern u1    ShowMMXSupport;
 extern u1    lameExists;
 extern u1    mencoderExists;
