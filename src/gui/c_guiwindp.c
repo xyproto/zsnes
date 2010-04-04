@@ -27,9 +27,8 @@
 u1 GUIStatesText5 = 0;
 
 
-static char* cloadnpos;
-static s4    cloadnleft;
-static s4    cloadnposb;
+static s4 cloadnleft;
+static s4 cloadnposb;
 
 
 static void drawshadow2(u4 const p1, s4 const p2, s4 const p3)
@@ -481,13 +480,12 @@ static void GUIDrawSlider(u4 const p1, u4 const p2, u4 const p3, u4 const p4, vo
 
 static void GUIOuttextwin2load(u4 const p1, u4 const p2, u4 const p3, char* const* const eax)
 {
-	cloadnpos = *eax;
+	char const* const name = *eax;
 	++cloadnposb;
 	GUItextcolor[0] = 223;
-	GUIOuttextwin2l(p1, p2, p3, cloadnpos);
+	GUIOuttextwin2l(p1, p2, p3, name);
 	GUItextcolor[0] = (GUIWincoladd & 0xFF) == 0 ? 221 : 222;
-	GUIOuttextwin2l(p1, p2 - 1, p3 - 1, cloadnpos);
-	cloadnpos += 32;
+	GUIOuttextwin2l(p1, p2 - 1, p3 - 1, name);
 	--cloadnleft;
 }
 
@@ -552,10 +550,10 @@ void DisplayGUILoad(void)
 		s4 const eax = GUIcurrentcursloc;
 		if ((u4)eax < (u4)GUIfileentries)
 		{
-			cloadnpos = selected_names[eax];
-			GUIOuttextwin2l(1, 6, 158, cloadnpos);
+			char const* const name = selected_names[eax];
+			GUIOuttextwin2l(1, 6, 158, name);
 			GUItextcolor[0] += 15;
-			GUIOuttextwin2l(1, 5, 157, cloadnpos);
+			GUIOuttextwin2l(1, 5, 157, name);
 		}
 	}
 #endif
