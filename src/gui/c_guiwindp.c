@@ -4,6 +4,7 @@
 #include "../c_intrf.h"
 #include "../cfg.h"
 #include "../ui.h"
+#include "../zpath.h"
 #include "../zstate.h"
 #include "c_guiwindp.h"
 #include "gui.h"
@@ -24,6 +25,11 @@
 
 
 u1 GUIStatesText5 = 0;
+
+
+static char* cloadnpos;
+static s4    cloadnleft;
+static s4    cloadnposb;
 
 
 static void drawshadow2(u4 const p1, s4 const p2, s4 const p3)
@@ -418,6 +424,14 @@ static void GUIDisplayTextu(u4 const p1, u4 const p2, u4 const p3, char const* c
 }
 
 
+static void GUIDisplayCheckboxTn(u4 const p1, u4 const p2, u4 const p3, u1 const* const p4, u4 const p5, char const* const p6) // Variable Checkbox (Text)
+{
+	GUITemp = (u4)(*p4 == p5 ? GUIIconDataCheckBoxC : GUIIconDataCheckBoxUC); // XXX ugly cast
+	GUIDisplayIconWin(p1, p2, p3, (u1 const*)GUITemp); // XXX ugly cast
+	GUIDisplayText(p1, p2 + 15, p3 + 5, p6);
+}
+
+
 static void GUIDisplayCheckboxu(u4 const p1, u4 const p2, u4 const p3, u1 const* const p4, char const* const p5, u4 const p6) // Toggled Checkbox (Text Underline)
 {
 	GUITemp = (u4)(*p4 != 0 ? GUIIconDataCheckBoxC : GUIIconDataCheckBoxUC); // XXX ugly cast
@@ -462,6 +476,186 @@ static void GUIDrawSlider(u4 const p1, u4 const p2, u4 const p3, u4 const p4, vo
 	char const* const esi = p8(p5); // proc2 == alters text correctly and puts pointer in esi
 	GUITemp = (u4)esi; // Display Value (Green) // XXX ugly cast
 	GUIDisplayTextG(p1, p2 + p3 + 6, p4 - 1, (char const*)GUITemp); // XXX ugly cast
+}
+
+
+static void GUIOuttextwin2load(u4 const p1, u4 const p2, u4 const p3, char* const* const eax)
+{
+	cloadnpos = *eax;
+	++cloadnposb;
+	GUItextcolor[0] = 223;
+	GUIOuttextwin2l(p1, p2, p3, cloadnpos);
+	GUItextcolor[0] = (GUIWincoladd & 0xFF) == 0 ? 221 : 222;
+	GUIOuttextwin2l(p1, p2 - 1, p3 - 1, cloadnpos);
+	cloadnpos += 32;
+	--cloadnleft;
+}
+
+
+static void GUIOuttextwinloadfile(u4 const p1, u4 const p2, u4 const p3)
+{
+	if (cloadnleft & 0x80000000) return;
+	if ((u4)cloadnposb >= (u4)GUIfileentries) return;
+	char* const* const eax = &selected_names[cloadnposb];
+	GUIOuttextwin2load(p1, p2, p3, eax);
+}
+
+
+static void GUIOuttextwinloaddir(u4 const p1, u4 const p2, u4 const p3)
+{
+	if (cloadnleft & 0x80000000) return;
+	if ((u4)cloadnposb >= (u4)GUIdirentries) return;
+	char* const* const eax = &d_names[cloadnposb + 2];
+	GUIOuttextwin2load(p1, p2, p3, eax);
+}
+
+
+void DisplayGUILoad(void)
+{
+	GUIDrawWindowBox(1, "LOAD GAME");
+
+#ifndef __MSDOS__
+	char const* const GUILoadText3 = "LONG FILENAME";
+#else
+	char const* const GUILoadText3 = "WIN9X LONG FILENAME";
+#endif
+	GUIDisplayText(1, 21, 166, GUILoadText3);
+#ifdef __MSDOS__
+	GUIDisplayTextY(1,  6, 157, "DISPLAY TYPE:");
+	GUIDisplayText( 1, 21, 182, "DOS 8.3 FORMAT");
+#endif
+	GUIDisplayText(1,  21, 174, "SNES HEADER NAME");
+	GUIDisplayText(1,   6,  16, "FILENAME");
+	GUIDisplayText(1, 161,  16, "DIRECTORY");
+	GUIDisplayText(1, 146, 172, "FORCE");
+
+	u4          ecx = 0;
+	char const* esi = ZRomPath;
+	while (esi[ecx] != '\0') ++ecx;
+	if (ecx > 39) esi += ecx - 39;
+	GUITemp = (u4)esi; // XXX ugly cast
+	GUIDisplayText(1, 6, 138, (char const*)GUITemp); // XXX ugly cast
+
+	GUItextcolor[0] = (GUIWincoladd & 0xFF) == 0 ? 202 : 196;
+	cloadmaxlen = 39;
+#ifndef __MSDOS__
+	if (GUIcurrentfilewin != 0)
+	{
+		char const* const eax = d_names[GUIcurrentdircursloc + 2];
+		GUITemp = (u4)eax; // XXX ugly cast
+		GUIOuttextwin2l(1, 6, 158, (char const*)GUITemp); // XXX ugly cast
+		GUItextcolor[0] += 15;
+		GUIOuttextwin2l(1, 5, 157, (char const*)GUITemp); // XXX ugly cast
+	}
+	else if (GUIfileentries != 0)
+	{
+		s4 const eax = GUIcurrentcursloc;
+		if ((u4)eax < (u4)GUIfileentries)
+		{
+			cloadnpos = selected_names[eax];
+			GUIOuttextwin2l(1, 6, 158, cloadnpos);
+			GUItextcolor[0] += 15;
+			GUIOuttextwin2l(1, 5, 157, cloadnpos);
+		}
+	}
+#endif
+
+	GUItextcolor[0] = (GUIWincoladd & 0xFF) == 0 ? 217 : 111;
+	DrawGUIButton(1, 186, 165, 228, 176, "LOAD", 1, 0, 0);
+
+	// The Three Boxes
+	GUIDisplayBBoxS(1,   5,  25, 144, 134, 167); // 126 = 6 * 21,  112 = 7 * 16
+	GUIDisplayBBoxS(1, 160,  25, 228, 134, 167); // 78 =  6 * 13
+	GUIDisplayBBox( 1,   5, 145, 228, 152, 167); // 126 = 6 * 21,  112 = 7 * 16
+
+	{ u1 const ebx = GUILoadPos; // Flash Code?
+		if (GUILDFlash & 8)
+		{
+			GUILoadTextA[ebx] = '\0';
+		}
+		else
+		{
+			GUILoadTextA[ebx]     = '_';
+			GUILoadTextA[ebx + 1] = '\0';
+		}
+	}
+
+	// Check if it's in the Files box
+	s4 const ebx = GUIcurrentfilewin == 0 ?
+		GUIcurrentcursloc    - GUIcurrentviewloc :
+		GUIcurrentdircursloc - GUIcurrentdirviewloc;
+
+	// Draw 2 more boxes?
+	s4 const y = 27 + ebx * 7;
+	if (GUIcurrentfilewin == 0)
+	{
+		DrawGUIWinBox2(1, 5, 144, 7, 224, y);
+	}
+	else
+	{
+		DrawGUIWinBox2(1, 160, 228, 7, 224, y);
+	}
+
+	GUItextcolor[0] = 223; // Green Shadow
+	GUIOuttextwin2(1, 8, 148, GUILoadTextA);
+
+	if (GUIfileentries == 0) GUIcurrentfilewin = 1;
+
+	cloadnleft  = GUIfileentries - GUIcurrentviewloc;
+	cloadnposb  = GUIcurrentviewloc;
+	cloadmaxlen = 23;
+
+	// Text/Shadow for Filename Box
+	for (u4 i = 0; i != 15; ++i)
+	{
+		GUIOuttextwinloadfile(1, 8, 29 + 7 * i);
+	}
+
+	cloadnleft  = GUIdirentries - GUIcurrentdirviewloc;
+	cloadnposb  = GUIcurrentdirviewloc;
+	cloadmaxlen = 11;
+
+	// Text/Shadow for DIR Box
+	for (u4 i = 0; i != 15; ++i)
+	{
+		GUIOuttextwinloaddir(1, 164, 29 + 7 * i);
+	}
+
+	GUItextcolor[0] = (GUIWincoladd & 0xFF) == 0 ? 221 : 222; // Green Text
+	GUIOuttextwin2(1, 7, 147, GUILoadTextA);
+
+	GUILoadTextA[GUILoadPos] = '\0';
+
+	GUIDisplayButtonHole(1, 9, 163, &GUIloadfntype, 0); // Radio Buttons
+	GUIDisplayButtonHole(1, 9, 171, &GUIloadfntype, 1);
+#ifdef __MSDOS__
+	GUIDisplayButtonHole(1, 9, 179, &GUIloadfntype, 2);
+#endif
+
+	GUIDisplayCheckboxTn(1,  10, 187, &showallext,     1, "SHOW ALL EXTENSIONS"); // Checkboxes
+	GUIDisplayCheckboxTn(1, 144, 177, &ForceROMTiming, 1, "NTSC");
+	GUIDisplayCheckboxTn(1, 144, 187, &ForceROMTiming, 2, "PAL");
+	GUIDisplayCheckboxTn(1, 184, 177, &ForceHiLoROM,   1, "LOROM");
+	GUIDisplayCheckboxTn(1, 184, 187, &ForceHiLoROM,   2, "HIROM");
+
+	// Slidebar for Files
+	// win#,X,Y start, %4-List Loc, %5-List size, %6-Screen size, %7-Bar Size
+	DrawSlideBarWin(1, 146, 33, GUIcurrentviewloc, GUIfileentries, 15, 94, GUILStA);
+	if ((GUICHold & 0xFF) == 1) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd + 3) & 0x000000FF;
+	GUIDisplayIconWin(1, 146, 25, GUIIconDataUpArrow);
+	if ((GUICHold & 0xFF) == 1) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd - 3) & 0x000000FF;
+	if ((GUICHold & 0xFF) == 2) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd + 3) & 0x000000FF;
+	GUIDisplayIconWin(1, 146, 127, GUIIconDataDownArrow);
+	if ((GUICHold & 0xFF) == 2) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd - 3) & 0x000000FF;
+
+	// Slidebar for DIR
+	DrawSlideBarWin(1, 230, 33, GUIcurrentdirviewloc, GUIdirentries, 15, 94, GUILStB);
+	if ((GUICHold & 0xFF) == 3) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd + 3) & 0x000000FF;
+	GUIDisplayIconWin(1, 230, 25, GUIIconDataUpArrow);
+	if ((GUICHold & 0xFF) == 3) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd - 3) & 0x000000FF;
+	if ((GUICHold & 0xFF) == 4) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd + 3) & 0x000000FF;
+	GUIDisplayIconWin(1, 230, 127, GUIIconDataDownArrow);
+	if ((GUICHold & 0xFF) == 4) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd - 3) & 0x000000FF;
 }
 
 

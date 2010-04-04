@@ -1018,9 +1018,9 @@ static const char *get_rom_name(struct dirent_info *entry, char *namebuffer)
 char **lf_names = 0; //Long File Names
 char **et_names = 0; //Eight Three Names
 char **i_names = 0; //Internal Names
-char **d_names = 0; //Directory Names
+char** d_names = 0;
 
-char **selected_names = 0; //Used to point to requested one
+char** selected_names = 0;
 
 #define LIST_LFN BIT(0)
 #define LIST_ETN BIT(1)
@@ -1328,12 +1328,12 @@ void GUIQuickLoadUpdate(void)
 }
 
 
-int GUIcurrentviewloc; //current file position
-int GUIcurrentcursloc; //current cursor position (GUI)
-int GUIcurrentdirviewloc; //current directory position
-int GUIcurrentdircursloc; //current dir position (GUI)
-int GUIdirentries;
-int GUIfileentries;
+s4 GUIcurrentviewloc;
+s4 GUIcurrentcursloc;
+s4 GUIcurrentdirviewloc;
+s4 GUIcurrentdircursloc;
+s4 GUIdirentries;
+s4 GUIfileentries;
 
 void free_all_file_lists()
 {

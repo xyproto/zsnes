@@ -2,6 +2,7 @@
 #define C_GUIWINDP_H
 
 void DisplayGUIChoseSave(void); // Pick Save State
+void DisplayGUILoad(void);
 void DisplayGUIOption(void);    // Emu Options
 void DisplayGUIReset(void);     // Reset Confirmation
 void DisplayGUISound(void);     // Sound Related Options

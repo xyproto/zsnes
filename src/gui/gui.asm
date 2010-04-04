@@ -111,9 +111,9 @@ EXTSYM GUIEnableTransp,FilteredGUI,Surround,SPCDisable,nosaveSRAM
 EXTSYM FastFwdToggle,gui_key,gui_key_extended,GUILoadKeysNavigate
 EXTSYM KeyDisplayBatt,KeyIncreaseGamma,KeyDecreaseGamma,vsyncon
 EXTSYM MovieVideoMode,MovieAudio,MovieVideoAudio,MovieAudioCompress,newfont
-EXTSYM d_names,selected_names,GUIfileentries,GUIdirentries,GUIcurrentdirviewloc
+EXTSYM GUIfileentries,GUIdirentries,GUIcurrentdirviewloc
 EXTSYM GUIcurrentfilewin,GUIcurrentcursloc,GUIcurrentviewloc,SetMovieForcedLength,DisableScreenSaver
-EXTSYM GUIcurrentdircursloc,GetLoadData,ZRomPath,ClockBox,DisplayInfo
+EXTSYM GUIcurrentdircursloc,GetLoadData,ClockBox,DisplayInfo
 EXTSYM GUIJT_currentviewloc,GUIJT_currentcursloc,GUIJT_entries,ScreenShotFormat
 EXTSYM GUIJT_offset,GUIJT_viewable,GUIGenericJumpTo,SSAutoFire,SSPause
 
@@ -273,10 +273,7 @@ NEWSYM GUIHoldXlimL, resd 1
 NEWSYM GUIHoldXlimR, resd 1
 NEWSYM GUIHoldYlim,  resd 1
 NEWSYM GUIHoldYlimR, resd 1
-cloadnpos    resd 1
-cloadnposb   resd 1
 NEWSYM cloadmaxlen,  resd 1
-cloadnleft   resd 1
 NEWSYM cplayernum,   resb 1
 NEWSYM GUIScrolTim1, resd 1
 GUIScrolTim2 resd 1

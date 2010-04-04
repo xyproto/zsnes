@@ -20,7 +20,7 @@
 
 
 EXTSYM VERSION_STR,placedate,convertnum,converthex,GUIHLine,GUIDrawShadow2
-EXTSYM GUIDisplayIconWin,GUIOuttextwin2u,GUIOuttextwin2l,GUIOuttextwin2
+EXTSYM GUIDisplayIconWin,GUIOuttextwin2u,GUIOuttextwin2
 EXTSYM GUIoutputiconwin,GUIOuttextwin
 
 SECTION .data
@@ -302,49 +302,6 @@ SECTION .text
 %%yes
 %endmacro
 
-%macro GUIOuttextwin2load 3
-  mov eax,[eax]
-  mov [cloadnpos],eax
-  inc dword[cloadnposb]
-  mov byte[GUItextcolor],223
-  ccallv GUIOuttextwin2l, %1, %2, %3, [cloadnpos]
-  mov byte[GUItextcolor],221
-  cmp byte[GUIWincoladd],0
-  je %%zero
-  mov byte[GUItextcolor],222
-%%zero
-  ccallv GUIOuttextwin2l, %1, %2 - 1, %3 - 1, [cloadnpos]
-  add dword[cloadnpos],32
-  dec dword[cloadnleft]
-%endmacro
-
-%macro GUIOuttextwinloadfile 3
-  test dword[cloadnleft],80000000h
-  jnz near %%skip
-  mov eax,[cloadnposb]
-  cmp eax,[GUIfileentries]
-  jae near %%skip
-  mov eax,[cloadnposb]
-  shl eax,2
-  add eax,[selected_names]
-  GUIOuttextwin2load  %1,%2,%3
-%%skip
-%endmacro
-
-%macro GUIOuttextwinloaddir 3
-  test dword[cloadnleft],80000000h
-  jnz near %%skip
-  mov eax,[cloadnposb]
-  cmp eax,[GUIdirentries]
-  jae near %%skip
-  mov eax,[cloadnposb]
-  shl eax,2
-  add eax,[d_names]
-  add eax,8
-  GUIOuttextwin2load  %1,%2,%3
-%%skip
-%endmacro
-
 %macro GUIDisplayButtonHoleTu 7
   mov dword[GUITemp],GUIIconDataButtonHole
   cmp %4,%5
@@ -426,16 +383,6 @@ SECTION .text
 %%nocheckbox
   ccallv GUIDisplayIconWin, %1, %2, %3, [GUITemp]
   GUIDisplayText %1,%2+15,%3+5,%5
-%endmacro
-
-%macro GUIDisplayCheckboxTn 6             ; Variable Checkbox (Text)
-  mov dword[GUITemp],GUIIconDataCheckBoxUC
-  cmp byte[%4],%5
-  jne %%nocheckbox
-  mov dword[GUITemp],GUIIconDataCheckBoxC
-%%nocheckbox
-  ccallv GUIDisplayIconWin, %1, %2, %3, [GUITemp]
-  GUIDisplayText %1,%2+15,%3+5,%6
 %endmacro
 
 %macro GUIDisplayCheckboxu 6              ; Toggled Checkbox (Text Underline)
@@ -952,261 +899,12 @@ SECTION .text
 %%control
 %endmacro
 
-; DGUIDisplay
-NEWSYM DisplayGUILoad
-  GUIDrawWindowBox 1,GUILoadDisp
-
-  GUIDisplayText 1,21,166,GUILoadText3
-%ifdef __MSDOS__
-  GUIDisplayTextY 1,6,157,GUILoadText2
-  GUIDisplayText 1,21,182,GUILoadText4
-%endif
-  GUIDisplayText 1,21,174,GUILoadText5
-  GUIDisplayText 1,6,16,GUILoadText7
-  GUIDisplayText 1,161,16,GUILoadText8
-  GUIDisplayText 1,146,172,GUILoadTextB
-
-  push ecx
-  push esi
-  xor ecx,ecx
-  mov esi,[ZRomPath]
-.strlenloop
-  cmp byte[esi+ecx],0
-  je .foundend
-  inc ecx
-  jmp .strlenloop
-.foundend
-  cmp ecx,39
-  jb .notoverflow
-  add esi,ecx
-  sub esi,39
-.notoverflow
-  mov [GUITemp],esi
-  pop esi
-  pop ecx
-  GUIDisplayText 1,6,138,[GUITemp]
-
-  mov byte[GUItextcolor],202
-  cmp byte[GUIWincoladd],0
-  je .text
-  mov byte[GUItextcolor],196
-.text
-  mov dword[cloadmaxlen],39
-%ifndef __MSDOS__
-  cmp dword[GUIcurrentfilewin],0
-  je near .nodir
-  mov eax,[GUIcurrentdircursloc]
-  add eax,2
-  shl eax,2
-  add eax,[d_names]
-  mov eax,[eax]
-  mov [GUITemp],eax
-  ccallv GUIOuttextwin2l, 1, 6, 158, [GUITemp]
-  add byte[GUItextcolor],15
-  ccallv GUIOuttextwin2l, 1, 5, 157, [GUITemp]
-  jmp .nofiles
-.nodir
-  cmp dword[GUIfileentries],0
-  je near .nofiles
-  mov eax,[GUIcurrentcursloc]
-  cmp eax,[GUIfileentries]
-  jae near .nofiles
-  shl eax,2
-  add eax,[selected_names]
-  mov eax,[eax]
-  mov [cloadnpos],eax
-  ccallv GUIOuttextwin2l, 1, 6, 158, [cloadnpos]
-  add byte[GUItextcolor],15
-  ccallv GUIOuttextwin2l, 1, 5, 157, [cloadnpos]
-.nofiles                           ; Button
-%endif
-  mov byte[GUItextcolor],217
-  cmp byte[GUIWincoladd],0
-  je .text2
-  mov byte[GUItextcolor],111
-.text2
-  DrawGUIButton 1,186,165,228,176,GUILoadText9,1,0,0
-
-  ; The Three Boxes
-  GUIDisplayBBoxS 1,5,25,144,134,167    ; 126 = 6 * 21, 112 = 7 * 16
-  GUIDisplayBBoxS 1,160,25,228,134,167  ; 78 =  6 * 13
-  GUIDisplayBBox 1,5,145,228,152,167    ; 126 = 6 * 21, 112 = 7 * 16
-
-  xor ebx,ebx                        ; Flash Code?
-  mov bl,[GUILoadPos]
-  mov byte[GUILoadTextA+ebx],0
-  test byte[GUILDFlash],8
-  jnz .nound
-  mov byte[GUILoadTextA+ebx],'_'
-  mov byte[GUILoadTextA+ebx+1],0
-.nound
-
-  mov ebx,[GUIcurrentcursloc]           ; check if its in the Files box?
-  sub ebx,[GUIcurrentviewloc]
-  cmp dword[GUIcurrentfilewin],0
-  je .files
-  mov ebx,[GUIcurrentdircursloc]
-  sub ebx,[GUIcurrentdirviewloc]
-.files
-
-  mov eax,ebx                         ; Draw 2 more boxes?
-  lea ebx,[ebx*4]
-  add ebx,eax
-  add ebx,eax
-  add ebx,eax
-  add ebx,27
-  cmp dword[GUIcurrentfilewin],0
-  jne .dir
-  DrawGUIWinBox2 1,5,144,7,224
-  jmp .files2
-.dir
-  DrawGUIWinBox2 1,160,228,7,224
-.files2
-
-  mov byte[GUItextcolor],223             ; Green Shadow
-  ccallv GUIOuttextwin2, 1, 8, 148, GUILoadTextA
-
-  cmp dword[GUIfileentries],0
-  jne .yesfiles
-  mov dword[GUIcurrentfilewin],1
-.yesfiles
-
-  mov eax,[GUIfileentries]
-  sub eax,[GUIcurrentviewloc]
-  mov [cloadnleft],eax
-  mov eax,[GUIcurrentviewloc]
-  mov [cloadnposb],eax
-  mov dword[cloadmaxlen],23
-
-  GUIOuttextwinloadfile 1,8,29              ; Text/Shadow for Filename Box
-  GUIOuttextwinloadfile 1,8,29+7
-  GUIOuttextwinloadfile 1,8,29+7*2
-  GUIOuttextwinloadfile 1,8,29+7*3
-  GUIOuttextwinloadfile 1,8,29+7*4
-  GUIOuttextwinloadfile 1,8,29+7*5
-  GUIOuttextwinloadfile 1,8,29+7*6
-  GUIOuttextwinloadfile 1,8,29+7*7
-  GUIOuttextwinloadfile 1,8,29+7*8
-  GUIOuttextwinloadfile 1,8,29+7*9
-  GUIOuttextwinloadfile 1,8,29+7*10
-  GUIOuttextwinloadfile 1,8,29+7*11
-  GUIOuttextwinloadfile 1,8,29+7*12
-  GUIOuttextwinloadfile 1,8,29+7*13
-  GUIOuttextwinloadfile 1,8,29+7*14
-
-  mov eax,[GUIdirentries]
-  sub eax,[GUIcurrentdirviewloc]
-  mov [cloadnleft],eax
-  mov eax,[GUIcurrentdirviewloc]
-  mov [cloadnposb],eax
-  mov dword[cloadmaxlen],11
-
-  GUIOuttextwinloaddir 1,164,29              ; Text/Shadow for DIR Box
-  GUIOuttextwinloaddir 1,164,29+7
-  GUIOuttextwinloaddir 1,164,29+7*2
-  GUIOuttextwinloaddir 1,164,29+7*3
-  GUIOuttextwinloaddir 1,164,29+7*4
-  GUIOuttextwinloaddir 1,164,29+7*5
-  GUIOuttextwinloaddir 1,164,29+7*6
-  GUIOuttextwinloaddir 1,164,29+7*7
-  GUIOuttextwinloaddir 1,164,29+7*8
-  GUIOuttextwinloaddir 1,164,29+7*9
-  GUIOuttextwinloaddir 1,164,29+7*10
-  GUIOuttextwinloaddir 1,164,29+7*11
-  GUIOuttextwinloaddir 1,164,29+7*12
-  GUIOuttextwinloaddir 1,164,29+7*13
-  GUIOuttextwinloaddir 1,164,29+7*14
-
-  mov byte[GUItextcolor],221              ; Green Text
-  cmp byte[GUIWincoladd],0
-  je .zero4
-  mov byte[GUItextcolor],222
-.zero4
-  ccallv GUIOuttextwin2, 1, 7, 147, GUILoadTextA
-
-  xor ebx,ebx
-  mov bl,[GUILoadPos]
-  mov byte[GUILoadTextA+ebx],0
-
-  GUIDisplayButtonHole 1,9,163,byte[GUIloadfntype],0 ; Radio Buttons
-  GUIDisplayButtonHole 1,9,171,byte[GUIloadfntype],1
-%ifdef __MSDOS__
-  GUIDisplayButtonHole 1,9,179,byte[GUIloadfntype],2
-%endif
-
-  GUIDisplayCheckboxTn 1,10,187,showallext,1,GUILoadText6         ; Checkboxes
-  GUIDisplayCheckboxTn 1,144,177,ForceROMTiming,1,GUILoadTextC
-  GUIDisplayCheckboxTn 1,144,187,ForceROMTiming,2,GUILoadTextD
-  GUIDisplayCheckboxTn 1,184,177,ForceHiLoROM,1,GUILoadTextE
-  GUIDisplayCheckboxTn 1,184,187,ForceHiLoROM,2,GUILoadTextF
-
-  ; Slidebar for Files
-  ; win#,X,Y start, %4-List Loc, %5-List size, %6-Screen size, %7-Bar Size
-  ccallv DrawSlideBarWin, 1, 146, 33, [GUIcurrentviewloc], [GUIfileentries], 15, 94, GUILStA
-  cmp byte[GUICHold],1
-  jne .noholda
-  add byte[GUIWincoladd],3
-.noholda
-  ccallv GUIDisplayIconWin, 1, 146, 25, GUIIconDataUpArrow
-  cmp byte[GUICHold],1
-  jne .noholda2
-  sub byte[GUIWincoladd],3
-.noholda2
-  cmp byte[GUICHold],2
-  jne .noholdb
-  add byte[GUIWincoladd],3
-.noholdb
-  ccallv GUIDisplayIconWin, 1, 146, 127, GUIIconDataDownArrow
-  cmp byte[GUICHold],2
-  jne .noholdb2
-  sub byte[GUIWincoladd],3
-.noholdb2
-
-  ; Slidebar for DIR
-  ccallv DrawSlideBarWin, 1, 230, 33, [GUIcurrentdirviewloc], [GUIdirentries], 15, 94, GUILStB
-  cmp byte[GUICHold],3
-  jne .noholdc
-  add byte[GUIWincoladd],3
-.noholdc
-  ccallv GUIDisplayIconWin, 1, 230, 25, GUIIconDataUpArrow
-  cmp byte[GUICHold],3
-  jne .noholdc2
-  sub byte[GUIWincoladd],3
-.noholdc2
-  cmp byte[GUICHold],4
-  jne .noholdd
-  add byte[GUIWincoladd],3
-.noholdd
-  ccallv GUIDisplayIconWin, 1, 230, 127, GUIIconDataDownArrow
-  cmp byte[GUICHold],4
-  jne .noholdd2
-  sub byte[GUIWincoladd],3
-.noholdd2
-  ret
-
 SECTION .data
 GUILoadText1 db 'SELECT FILE TO LOAD:',0
-%ifndef __MSDOS__
-GUILoadText3 db 'LONG FILENAME',0
-%else
-GUILoadText2 db 'DISPLAY TYPE:',0
-GUILoadText3 db 'WIN9X LONG FILENAME',0
-GUILoadText4 db 'DOS 8.3 FORMAT',0
-%endif
-GUILoadText5 db 'SNES HEADER NAME',0
-GUILoadText6 db 'SHOW ALL EXTENSIONS',0
-GUILoadText7 db 'FILENAME',0
-GUILoadText8 db 'DIRECTORY',0
-GUILoadText9 db 'LOAD',0
 NEWSYM GUILoadTextA, times 38 db 0
-GUILoadTextB db 'FORCE',0
-GUILoadTextC db 'NTSC',0
-GUILoadTextD db 'PAL',0
-GUILoadTextE db 'LOROM',0
-GUILoadTextF db 'HIROM',0
 SECTION .bss
-GUILStA resd 3
-GUILStB resd 3
+NEWSYM GUILStA, resd 3
+NEWSYM GUILStB, resd 3
 NEWSYM GUILoadPos, resb 1
 
 SECTION .data
@@ -4258,7 +3956,6 @@ GUISpeedTextY db '+',0
 GUISpeedTextZ db '-',0
 
 ;General data
-GUILoadDisp db 'LOAD GAME',0
 GUIInputDisp db 'INPUT DEVICE',0
 GUICheatDisp db 'CHEAT',0
 GUISearchDisp db 'CHEAT SEARCH',0

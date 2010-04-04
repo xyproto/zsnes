@@ -27,6 +27,14 @@ extern char GUICustomX[5];
 extern char GUICustomY[5];
 #endif
 
-extern u4 GUIcurrentfilewin;
+extern char** d_names;              // Directory Names
+extern char** selected_names;       // Used to point to requested one
+extern s4     GUIcurrentcursloc;    // current cursor position (GUI)
+extern s4     GUIcurrentdircursloc; // current dir position (GUI)
+extern s4     GUIcurrentdirviewloc; // current directory position
+extern s4     GUIcurrentviewloc;    // current file position
+extern s4     GUIdirentries;
+extern s4     GUIfileentries;
+extern u4     GUIcurrentfilewin;
 
 #endif
