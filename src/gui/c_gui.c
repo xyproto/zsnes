@@ -1765,7 +1765,7 @@ void DisplayBoxes(void)
 		{
 			case  0: return;
 			case  1: if (GUIReset != 1) asm_call(DisplayGUILoad); break;
-			case  2: asm_call(DisplayGUIChoseSave);  break;
+			case  2: DisplayGUIChoseSave();          break;
 			case  3: asm_call(DisplayGUIInput);      break;
 			case  4: DisplayGUIOption();             break;
 			case  5: DisplayGUIVideo();              break;

@@ -1209,72 +1209,9 @@ GUILStA resd 3
 GUILStB resd 3
 NEWSYM GUILoadPos, resb 1
 
-SECTION .text
-
-NEWSYM DisplayGUIChoseSave                    ; Pick Save State
-  GUIDrawWindowBox 2,GUIStateSelDisp
-
-  GUIDisplayTextY 2,6,16,GUIChoseSaveText1
-  mov byte[GUIChoseSaveText2],'0'
-  GUIDisplayText 2,21,31,GUIChoseSaveText2
-  mov byte[GUIChoseSaveText2],'1'
-  GUIDisplayText 2,41,31,GUIChoseSaveText2
-  mov byte[GUIChoseSaveText2],'2'
-  GUIDisplayText 2,61,31,GUIChoseSaveText2
-  mov byte[GUIChoseSaveText2],'3'
-  GUIDisplayText 2,81,31,GUIChoseSaveText2
-  mov byte[GUIChoseSaveText2],'4'
-  GUIDisplayText 2,101,31,GUIChoseSaveText2
-  mov byte[GUIChoseSaveText2],'5'
-  GUIDisplayText 2,21,46,GUIChoseSaveText2
-  mov byte[GUIChoseSaveText2],'6'
-  GUIDisplayText 2,41,46,GUIChoseSaveText2
-  mov byte[GUIChoseSaveText2],'7'
-  GUIDisplayText 2,61,46,GUIChoseSaveText2
-  mov byte[GUIChoseSaveText2],'8'
-  GUIDisplayText 2,81,46,GUIChoseSaveText2
-  mov byte[GUIChoseSaveText2],'9'
-  GUIDisplayText 2,101,46,GUIChoseSaveText2
-  GUIDisplayTextY 2,6,61,GUIChoseSlotText1
-
-  mov eax,[current_zst]
-  mov dl,10
-  div dl
-  add al,'0'
-
-  mov [GUIChoseSaveText2],ah
-  mov [GUIChoseSlotTextX],al
-
-  mov dword[GUITemp],GUIIconDataButtonHole           ; Radio Buttons
-  GUIDisplayButtonHole 2,10,28,byte[GUIChoseSaveText2],0
-  GUIDisplayButtonHole 2,30,28,byte[GUIChoseSaveText2],1
-  GUIDisplayButtonHole 2,50,28,byte[GUIChoseSaveText2],2
-  GUIDisplayButtonHole 2,70,28,byte[GUIChoseSaveText2],3
-  GUIDisplayButtonHole 2,90,28,byte[GUIChoseSaveText2],4
-  GUIDisplayButtonHole 2,10,43,byte[GUIChoseSaveText2],5
-  GUIDisplayButtonHole 2,30,43,byte[GUIChoseSaveText2],6
-  GUIDisplayButtonHole 2,50,43,byte[GUIChoseSaveText2],7
-  GUIDisplayButtonHole 2,70,43,byte[GUIChoseSaveText2],8
-  GUIDisplayButtonHole 2,90,43,byte[GUIChoseSaveText2],9
-
-  GUIDisplayBBox 2,72,59,90,66,167                  ; Save Slot Frameskip +/- Box
-  GUIDisplayTextG 2,83,61,GUIChoseSlotTextX
-  mov byte[GUItextcolor],217
-  cmp byte[GUIWincoladd],0
-  je .slotzero5
-  mov byte[GUItextcolor],211
-.slotzero5
-  DrawGUIButton 2,94,59,102,67,GUIChoseSlotTextY,80,-2,-1
-  DrawGUIButton 2,105,59,113,67,GUIChoseSlotTextZ,81,-2,-1
-  ret
-
 SECTION .data
-GUIChoseSaveText1 db 'SELECT SAVE SLOT:',0
-GUIChoseSaveText2 db '-',0
-GUIChoseSlotText1 db 'SLOT LEVEL:',0
-GUIChoseSlotTextX db '-',0
-GUIChoseSlotTextY db '+',0
-GUIChoseSlotTextZ db '-',0
+NEWSYM GUIChoseSaveText2, db '-',0
+NEWSYM GUIChoseSlotTextX, db '-',0
 
 SECTION .text
 
@@ -4322,7 +4259,6 @@ GUISpeedTextZ db '-',0
 
 ;General data
 GUILoadDisp db 'LOAD GAME',0
-GUIStateSelDisp db 'STATE SELECT',0
 GUIInputDisp db 'INPUT DEVICE',0
 GUICheatDisp db 'CHEAT',0
 GUISearchDisp db 'CHEAT SEARCH',0

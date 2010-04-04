@@ -4,6 +4,7 @@
 #include "../c_intrf.h"
 #include "../cfg.h"
 #include "../ui.h"
+#include "../zstate.h"
 #include "c_guiwindp.h"
 #include "gui.h"
 #include "guifuncs.h"
@@ -433,6 +434,13 @@ static void GUIDisplayCheckboxun(u4 const p1, u4 const p2, u4 const p3, u1 const
 }
 
 
+static void GUIDisplayButtonHole(u4 const p1, u4 const p2, u4 const p3, u1 const* const p4, u4 const p5)
+{
+	GUITemp = (u4)(*p4 == p5 ? GUIIconDataButtonFill : GUIIconDataButtonHole); // XXX ugly cast
+	GUIDisplayIconWin(p1, p2, p3, (u1 const*)GUITemp); // XXX ugly cast
+}
+
+
 static void GUIDisplayButtonHoleTu(u4 const p1, u4 const p2, u4 const p3, u1 const* const p4, u4 const p5, char const* const p6, u4 const p7)
 {
 	GUITemp = (u4)(*p4 == p5 ? GUIIconDataButtonFill : GUIIconDataButtonHole); // XXX ugly cast
@@ -498,6 +506,40 @@ void DisplayGUIStates(void)
 	// Determine Load or Save box
 	char const* const msg = GUIStatesText5 == 1 ? "OKAY TO LOAD STATE?" : "OKAY TO SAVE STATE?";
 	GUIDisplayTextY(14, 6, 16, msg);
+}
+
+
+void DisplayGUIChoseSave(void)
+{
+	GUIDrawWindowBox(2, "STATE SELECT");
+
+	u1 const ah = current_zst % 10;
+	u1 const al = current_zst / 10 + '0';
+
+	GUIDisplayTextY(2, 6, 16, "SELECT SAVE SLOT:");
+	u4 x = 0;
+	u4 y = 0;
+	for (u4 i = 0; i != 10; x += 20, ++i)
+	{
+		if (i == 5)
+		{
+			x =  0;
+			y = 15;
+		}
+		GUIChoseSaveText2[0] = '0' + i;
+		GUIDisplayText(      2, 21 + x, 31 + y, GUIChoseSaveText2);
+		GUIDisplayButtonHole(2, 10 + x, 28 + y, &ah, i);
+	}
+	GUIDisplayTextY(2, 6, 61, "SLOT LEVEL:");
+
+	GUIChoseSaveText2[0] = ah;
+	GUIChoseSlotTextX[0] = al;
+
+	GUIDisplayBBox(2, 72, 59, 90, 66, 167); // Save Slot Frameskip +/- Box
+	GUIDisplayTextG(2, 83, 61, GUIChoseSlotTextX);
+	GUItextcolor[0] = (GUIWincoladd & 0xFF) == 0 ? 217 : 211;
+	DrawGUIButton(2,  94, 59, 102, 67, "+", 80, -2, -1);
+	DrawGUIButton(2, 105, 59, 113, 67, "-", 81, -2, -1);
 }
 
 
