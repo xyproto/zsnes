@@ -7,6 +7,7 @@ void DisplayGUIInput(void);     // Player Select, Joystick/keyboard Type List, B
 void DisplayGUILoad(void);
 void DisplayGUIOption(void);    // Emu Options
 void DisplayGUIReset(void);     // Reset Confirmation
+void DisplayGUISearch(void);
 void DisplayGUISound(void);     // Sound Related Options
 void DisplayGUIStates(void);    // Save/Load State Confirmation
 void DisplayGUIVideo(void);

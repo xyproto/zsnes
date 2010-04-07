@@ -1043,7 +1043,7 @@ NEWSYM ccheatnleft,            resd 1
 
 SECTION .text
 
-DrawWindowSearch:
+NEWSYM DrawWindowSearch
   GUIDrawWindowBox 13,GUISearchDisp
   ret
 
@@ -1074,39 +1074,7 @@ CSAddFlash:
 .flash
   ret
 
-NEWSYM DisplayGUISearch
-  cmp byte[CheatWinMode],1    ; Determine which CS window we're on
-  je near Incheatmode
-  cmp byte[CheatWinMode],2
-  je near Cheatmodeview
-  cmp byte[CheatWinMode],3
-  je near Cheatmodeadd
-  mov dword[GUIwinsizex+13*4],170
-  mov dword[GUIwinsizey+13*4],150
-  call DrawWindowSearch
-
-  GUIDisplayTextY 13,6,16,GUICSrcTextA1
-  ; Radio Buttons
-  GUIDisplayButtonHoleTu 13,11,28,byte[CheatSrcByteSize],0,GUICSrcTextA1a,0
-  GUIDisplayButtonHoleTu 13,11,38,byte[CheatSrcByteSize],1,GUICSrcTextA1b,0
-  GUIDisplayButtonHoleTu 13,11,48,byte[CheatSrcByteSize],2,GUICSrcTextA1c,0
-  GUIDisplayButtonHoleTu 13,11,58,byte[CheatSrcByteSize],3,GUICSrcTextA1d,0
-  GUIDisplayButtonHoleTu 13,11,73,byte[CheatSrcByteBase],0,GUICSrcTextA1e,0
-  GUIDisplayButtonHoleTu 13,11,83,byte[CheatSrcByteBase],1,GUICSrcTextA1f,0
-
-  GUIDisplayTextY 13,6,101,GUICSrcTextA2
-  GUIDisplayButtonHoleTu 13,11,113,byte[CheatSrcSearchType],0,GUICSrcTextA2a,0
-  GUIDisplayButtonHoleTu 13,11,123,byte[CheatSrcSearchType],1,GUICSrcTextA2b,0
-
-  mov byte[GUItextcolor],217          ; Button
-  cmp byte[GUIWincoladd],0
-  je .zero2
-  mov byte[GUItextcolor],211
-.zero2
-  DrawGUIButton 13,95,140,140,152,GUICSrcTextA3,50,0,1
-  ret
-
-Incheatmode:                              ; Return and Re-search Window
+NEWSYM Incheatmode                              ; Return and Re-search Window
   mov dword[GUIwinsizex+13*4],180
   mov dword[GUIwinsizey+13*4],150
   call DrawWindowSearch
@@ -1230,7 +1198,7 @@ DisplayChtSrcRes:                    ; Buttons (Restart/View/Search)
   mov dword[GUIcurrentchtsrccursloc],0
   ret
 
-Cheatmodeview:                       ; View ResultsWindow
+NEWSYM Cheatmodeview                       ; View ResultsWindow
   mov byte[GUICSrcTextE+12],32
   cmp byte[CheatSrcByteSize],3
   jne .yesprev
@@ -1395,7 +1363,7 @@ Cheatmodeview:                       ; View ResultsWindow
   DrawGUIButton 13,140,140,180,152,GUICSrcTextG2e,55,0,1
   ret
 
-Cheatmodeadd:                                 ; Add Window
+NEWSYM Cheatmodeadd                                 ; Add Window
   mov dword[GUIwinsizex+13*4],170
   mov dword[GUIwinsizey+13*4],165
   call DrawWindowSearch
@@ -1545,25 +1513,12 @@ GUICSStA resd 3
 
 SECTION .data
 
-; A = Opening Screen
 ; B = Exact Value Search
 ; C = Comparison Search Message
 ; D = Comparison Search Method
 ; E = View Results
 ; F = Add Cheat
 ; G = General Use
-
-GUICSrcTextA1 db 'SELECT SIZE AND FORMAT:',0
-GUICSrcTextA1a db '1 BYTE  [0..255]',0
-GUICSrcTextA1b db '2 BYTES [0..65535]',0
-GUICSrcTextA1c db '3 BYTES [0..16777215]',0
-GUICSrcTextA1d db '4 BYTES [0..4294967295]',0
-GUICSrcTextA1e db 'DEC (BASE 10)',0
-GUICSrcTextA1f db 'HEX (BASE 16)',0
-GUICSrcTextA2 db 'SELECT SEARCH TYPE:',0
-GUICSrcTextA2a db 'EXACT VALUE SEARCH',0
-GUICSrcTextA2b db 'COMPARATIVE SEARCH',0
-GUICSrcTextA3 db 'START',0                    ; Button
 
 GUICSrcTextB1 db 'ENTER VALUE:',0             ; Make Yellow
 

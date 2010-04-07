@@ -3,6 +3,8 @@
 
 #include "../types.h"
 
+extern void Cheatmodeadd();
+extern void Cheatmodeview();
 extern void DisplayGUIAbout();
 extern void DisplayGUIAddOns();
 extern void DisplayGUIChipConfig();
@@ -11,10 +13,11 @@ extern void DisplayGUIMovies();
 extern void DisplayGUIOptns();
 extern void DisplayGUIPaths();
 extern void DisplayGUISave();
-extern void DisplayGUISearch();
 extern void DisplayGUISpeed();
 extern void DisplayGameOptns();
 extern void DisplayNetOptns();
+extern void DrawWindowSearch();
+extern void Incheatmode();
 
 extern char  CMovieExt;
 extern char  CSDescDisplay[20];

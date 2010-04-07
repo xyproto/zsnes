@@ -1781,7 +1781,7 @@ void DisplayBoxes(void)
 				break;
 			case 11: asm_call(DisplayGUIAbout);      break;
 			case 12: DisplayGUIReset();              break;
-			case 13: asm_call(DisplayGUISearch);     break;
+			case 13: DisplayGUISearch();             break;
 			case 14: DisplayGUIStates();             break;
 			case 15: asm_call(DisplayGUIMovies);     break;
 			case 16: asm_call(DisplayGUICombo);      break;

@@ -1,5 +1,6 @@
 #include <stdio.h>
 
+#include "../asm_call.h"
 #include "../c_init.h"
 #include "../c_intrf.h"
 #include "../cfg.h"
@@ -1558,4 +1559,36 @@ void DisplayGUICheat(void)
 	{
 		GUIDisplayCheckbox(7, 11, 186, &AutoLoadCht, GUICheatTextE1);
 	}
+}
+
+
+void DisplayGUISearch(void)
+{
+	switch (CheatWinMode) // Determine which CS window we're on
+	{
+		case 1: asm_call(Incheatmode);   return;
+		case 2: asm_call(Cheatmodeview); return;
+		case 3: asm_call(Cheatmodeadd);  return;
+	}
+
+	// Opening Screen
+	GUIwinsizex[13] = 170;
+	GUIwinsizey[13] = 150;
+	asm_call(DrawWindowSearch);
+
+	// Radio Buttons
+	GUIDisplayTextY(       13,  6, 16,                       "SELECT SIZE AND FORMAT:");
+	GUIDisplayButtonHoleTu(13, 11, 28, &CheatSrcByteSize, 0, "1 BYTE  [0..255]",        0);
+	GUIDisplayButtonHoleTu(13, 11, 38, &CheatSrcByteSize, 1, "2 BYTES [0..65535]",      0);
+	GUIDisplayButtonHoleTu(13, 11, 48, &CheatSrcByteSize, 2, "3 BYTES [0..16777215]",   0);
+	GUIDisplayButtonHoleTu(13, 11, 58, &CheatSrcByteSize, 3, "4 BYTES [0..4294967295]", 0);
+	GUIDisplayButtonHoleTu(13, 11, 73, &CheatSrcByteBase, 0, "DEC (BASE 10)",           0);
+	GUIDisplayButtonHoleTu(13, 11, 83, &CheatSrcByteBase, 1, "HEX (BASE 16)",           0);
+
+	GUIDisplayTextY(       13,  6, 101,                         "SELECT SEARCH TYPE:");
+	GUIDisplayButtonHoleTu(13, 11, 113, &CheatSrcSearchType, 0, "EXACT VALUE SEARCH", 0);
+	GUIDisplayButtonHoleTu(13, 11, 123, &CheatSrcSearchType, 1, "COMPARATIVE SEARCH", 0);
+
+	GUItextcolor[0] = (GUIWincoladd & 0xFF) == 0 ? 217 : 211; // Button
+	DrawGUIButton(13, 95, 140, 140, 152, "START", 50, 0, 1);
 }
