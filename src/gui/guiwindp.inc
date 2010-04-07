@@ -1047,7 +1047,7 @@ NEWSYM DrawWindowSearch
   GUIDrawWindowBox 13,GUISearchDisp
   ret
 
-CSRemoveFlash:
+NEWSYM CSRemoveFlash
 .loop
   cmp byte[esi],'_'
   je .flash
@@ -1060,7 +1060,7 @@ CSRemoveFlash:
 .notflash
   ret
 
-CSAddFlash:
+NEWSYM CSAddFlash
 .loop
   cmp byte[esi],'_'
   je .flash
@@ -1363,127 +1363,6 @@ NEWSYM Cheatmodeview                       ; View ResultsWindow
   DrawGUIButton 13,140,140,180,152,GUICSrcTextG2e,55,0,1
   ret
 
-NEWSYM Cheatmodeadd                                 ; Add Window
-  mov dword[GUIwinsizex+13*4],170
-  mov dword[GUIwinsizey+13*4],165
-  call DrawWindowSearch
-
-  GUIDisplayText 13,5,20,GUICSrcTextF1      ; Text
-  GUIDisplayText 13,5,45,GUICSrcTextF2
-  GUIDisplayText 13,5,70,GUICSrcTextF3
-
-  GUIDisplayCheckbox 13,8,139,CheatUpperByteOnly,GUICSrcTextF4   ; Checkbox
-
-  GUIDisplayBBox 13,10,30,80,37,167             ; Boxes
-  GUIDisplayBBox 13,10,55,126,62,167
-  GUIDisplayBBox 13,10,80,80,120,167
-
-  DrawGUIButton 13,60,155,120,167,GUICSrcTextG2d,56,0,1        ; Buttons
-  DrawGUIButton 13,130,155,160,167,GUICSrcTextG2e,57,0,1
-
-  GUIDisplayText 13,5,130,GUICSrcTextG1a              ; Max Value Text
-  xor eax,eax
-  mov al,[CheatSrcByteSize]
-  mov eax,[SrcMask+eax*4]
-  mov esi,GUICSrcTextG1
-  cmp byte[CheatSrcByteBase],1
-  je .hex
-  ccallv convertnum, esi, eax
-  jmp .dec
-.hex
-  xor ecx,ecx
-  mov cl,[CheatSrcByteSize]
-  inc ecx
-  ccallv converthex, esi, eax, ecx
-.dec
-  GUIDisplayText 13,71,130,GUICSrcTextG1
-
-  cmp byte[CurCStextpos],0               ; Cheat Input
-  jne near .nofirstbox
-  test byte[GUICCFlash],8
-  jnz .nound
-.nofirstbox
-  mov esi,CSInputDisplay
-  call CSRemoveFlash
-.nound
-  mov byte[GUItextcolor],223
-  cmp byte[CSOverValue],1
-  jne .notdark
-  mov byte[GUItextcolor],202
-.notdark
-  ccallv GUIOuttextwin2, 13, 13, 32, CSInputDisplay
-  mov byte[GUItextcolor],221
-  cmp byte[GUIWincoladd],0
-  je .zero4
-  mov byte[GUItextcolor],222
-.zero4
-  cmp byte[CSOverValue],1
-  jne .notdark2
-  mov byte[GUItextcolor],207
-.notdark2
-  ccallv GUIOuttextwin2, 13, 12, 31, CSInputDisplay
-  mov esi,CSInputDisplay
-  call CSAddFlash
-
-  cmp byte[CurCStextpos],1               ; Cheat Desc. Input
-  jne .noundb
-  test byte[GUICCFlash],8
-  jnz .noundb
-  mov esi,CSDescDisplay
-  call CSAddFlash
-.noundb
-  GUIDisplayTextG 13,13,57,CSDescDisplay
-  mov esi,CSDescDisplay
-  call CSRemoveFlash
-
-  cmp byte[CSOverValue],1
-  je near .nodisplay
-  cmp byte[CSInputDisplay],'_'
-  je near .nodisplay
-
-  mov dword[CheatSearchYPos],83           ; PAR Code?
-  mov eax,[curentryval]
-  mov [curaddrvalcs],eax
-  mov eax,[CSCurValue]
-  mov [curvaluecs],eax
-  xor ecx,ecx
-  mov cl,[CheatSrcByteSize]
-  inc cl
-  cmp byte[CheatUpperByteOnly],0
-  je .cspardisploop
-  mov cl,1
-.cspardispagain
-  cmp dword[curvaluecs],0FFh
-  jbe .cspardisploop
-  shr dword[curvaluecs],8
-  inc dword[curaddrvalcs]
-  jmp .cspardispagain
-.cspardisploop                               ; Max Value Display?
-  push ecx
-  mov eax,[curaddrvalcs]
-  add eax,7E0000h
-  ccallv converthex, GUICSrcTextG1, eax, 3
-  mov al,[curvaluecs]
-  ccallv converthex, GUICSrcTextG1 + 6, eax, 1
-  shr dword[curvaluecs],8
-  mov byte[GUItextcolor],223
-  inc dword[CheatSearchYPos]
-  ccallv GUIOuttextwin2, 13, 13, [CheatSearchYPos], GUICSrcTextG1
-  dec dword[CheatSearchYPos]
-  mov byte[GUItextcolor],221
-  cmp byte[GUIWincoladd],0
-  je .zero4c
-  mov byte[GUItextcolor],222
-.zero4c
-  ccallv GUIOuttextwin2, 13, 12, [CheatSearchYPos], GUICSrcTextG1
-  add dword[CheatSearchYPos],10
-  inc dword[curaddrvalcs]
-  pop ecx
-  dec ecx
-  jnz near .cspardisploop
-.nodisplay
-  ret
-
 SECTION .bss
 NEWSYM CheatWinMode, resb 1
 NEWSYM CheatSearchStatus, resb 1
@@ -1494,21 +1373,21 @@ GUIcurrentchtsrccursloc resd 1
 CSStartEntry      resd 1
 CSCurEntry      resd 1
 CheatSearchXPos   resd 1
-CheatSearchYPos   resd 1
+NEWSYM CheatSearchYPos,   resd 1
 CheatLooped       resd 1
 ccheatnleftb      resd 1
 NEWSYM CurCStextpos,      resd 1
 
 SECTION .data
-SrcMask dd 0FFh,0FFFFh,0FFFFFFh,0FFFFFFFFh
+NEWSYM SrcMask, dd 0FFh,0FFFFh,0FFFFFFh,0FFFFFFFFh
 NEWSYM CSInputDisplay, db '_',0,'         ',0
 NEWSYM CSDescDisplay,  db '                  ',0,0
 
 SECTION .bss
-curentryval resd 1
+NEWSYM curentryval, resd 1
 curentryleft resd 1
-curaddrvalcs resd 1
-curvaluecs resd 1
+NEWSYM curaddrvalcs, resd 1
+NEWSYM curvaluecs, resd 1
 GUICSStA resd 3
 
 SECTION .data
@@ -1517,7 +1396,6 @@ SECTION .data
 ; C = Comparison Search Message
 ; D = Comparison Search Method
 ; E = View Results
-; F = Add Cheat
 ; G = General Use
 
 GUICSrcTextB1 db 'ENTER VALUE:',0             ; Make Yellow
@@ -1535,19 +1413,14 @@ GUICSrcTextD4 db 'NEW VALUE IS != OLD VALUE',0
 
 GUICSrcTextE db 'ADDR   VALUE     PVALUE',0
 
-GUICSrcTextF1 db 'ENTER NEW VALUE:',0
-GUICSrcTextF2 db 'ENTER CHEAT DESCRIPTION:',0
-GUICSrcTextF3 db 'PAR CODE EQUIVALENT:',0
-GUICSrcTextF4 db 'USE ONLY UPPER BYTE',0
-
-GUICSrcTextG1 db '          ',0       ; All variables
-GUICSrcTextG1a db 'MAX VALUE:',0
+NEWSYM GUICSrcTextG1, db '          ',0       ; All variables
+NEWSYM GUICSrcTextG1a, db 'MAX VALUE:',0
 GUICSrcTextG1b db '# OF RESULTS:',0
 GUICSrcTextG2a db 'SEARCH',0          ; Buttons
 GUICSrcTextG2b db 'RESTART',0
 GUICSrcTextG2c db 'VIEW',0
-GUICSrcTextG2d db 'RETURN',0
-GUICSrcTextG2e db 'ADD',0
+NEWSYM GUICSrcTextG2d, db 'RETURN',0
+NEWSYM GUICSrcTextG2e, db 'ADD',0
 
 SECTION .bss
 CCursLoc resd 1

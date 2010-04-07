@@ -8,6 +8,7 @@
 #include "../ui.h"
 #include "../zpath.h"
 #include "../zstate.h"
+#include "c_gui.h"
 #include "c_guiwindp.h"
 #include "gui.h"
 #include "guifuncs.h"
@@ -1562,13 +1563,109 @@ void DisplayGUICheat(void)
 }
 
 
+static void Cheatmodeadd(void) // Add Window
+{
+	GUIwinsizex[13] = 170;
+	GUIwinsizey[13] = 165;
+	asm_call(DrawWindowSearch);
+
+	GUIDisplayText(13, 5, 20, "ENTER NEW VALUE:"); // Text
+	GUIDisplayText(13, 5, 45, "ENTER CHEAT DESCRIPTION:");
+	GUIDisplayText(13, 5, 70, "PAR CODE EQUIVALENT:");
+
+	GUIDisplayCheckbox(13, 8, 139, &CheatUpperByteOnly, "USE ONLY UPPER BYTE"); // Checkbox
+
+	GUIDisplayBBox(13, 10, 30,  80,  37, 167); // Boxes
+	GUIDisplayBBox(13, 10, 55, 126,  62, 167);
+	GUIDisplayBBox(13, 10, 80,  80, 120, 167);
+
+	DrawGUIButton(13,  60, 155, 120, 167, GUICSrcTextG2d, 56, 0, 1); // Buttons
+	DrawGUIButton(13, 130, 155, 160, 167, GUICSrcTextG2e, 57, 0, 1);
+
+	GUIDisplayText(13, 5, 130, GUICSrcTextG1a); // Max Value Text
+	u4    const eax = SrcMask[CheatSrcByteSize];
+	char* const esi = GUICSrcTextG1;
+	if (CheatSrcByteBase != 1)
+	{ // dec
+		convertnum(esi, eax);
+	}
+	else
+	{ // hex
+		converthex(esi, eax, CheatSrcByteSize + 1);
+	}
+	GUIDisplayText(13, 71, 130, GUICSrcTextG1);
+
+	// Cheat Input
+	if (CurCStextpos != 0 || !(GUICCFlash & 8))
+	{
+		char* esi = CSInputDisplay;
+		asm volatile("call %P1" : "+S" (esi) : "X" (CSRemoveFlash) : "cc", "memory");
+	}
+	GUItextcolor[0] = CSOverValue == 1 ? 202 : 223;
+	GUIOuttextwin2(13, 13, 32, CSInputDisplay);
+	GUItextcolor[0] =
+		CSOverValue           == 1 ? 207 :
+		(GUIWincoladd & 0xFF) == 0 ? 221 :
+		222;
+	GUIOuttextwin2(13, 12, 31, CSInputDisplay);
+	{ char* esi = CSInputDisplay;
+		asm volatile("call %P1" : "+S" (esi) : "X" (CSAddFlash) : "cc", "memory");
+	}
+
+	// Cheat Desc. Input
+	if (CurCStextpos == 1 && !(GUICCFlash & 8))
+	{
+		char* esi = CSDescDisplay;
+		asm volatile("call %P1" : "+S" (esi) : "X" (CSAddFlash) : "cc", "memory");
+	}
+	GUIDisplayTextG(13, 13, 57, CSDescDisplay);
+	{
+		char* esi = CSDescDisplay;
+		asm volatile("call %P1" : "+S" (esi) : "X" (CSRemoveFlash) : "cc", "memory");
+	}
+
+	if (CSOverValue != 1 && CSInputDisplay[0] != '_')
+	{
+		CheatSearchYPos = 83; // PAR Code?
+		curaddrvalcs = curentryval;
+		u4 const eax = CSCurValue;
+		curvaluecs = eax;
+		u1 ecx = CheatSrcByteSize + 1;
+		if (CheatUpperByteOnly != 0)
+		{
+			ecx = 1;
+			while (curvaluecs > 0xFF)
+			{
+				curvaluecs >>= 8;
+				++curaddrvalcs;
+			}
+		}
+		do
+		{ // Max Value Display?
+			converthex(GUICSrcTextG1,     curaddrvalcs + 0x7E0000, 3);
+			converthex(GUICSrcTextG1 + 6, curvaluecs,              1);
+			curvaluecs >>= 8;
+			GUItextcolor[0] = 223;
+			++CheatSearchYPos;
+			GUIOuttextwin2(13, 13, CheatSearchYPos, GUICSrcTextG1);
+			--CheatSearchYPos;
+			GUItextcolor[0] = (GUIWincoladd & 0xFF) == 0 ? 221 : 222;
+			GUIOuttextwin2(13, 12, CheatSearchYPos, GUICSrcTextG1);
+			CheatSearchYPos += 10;
+			++curaddrvalcs;
+		}
+		while (--ecx != 0);
+	}
+}
+
+
 void DisplayGUISearch(void)
 {
 	switch (CheatWinMode) // Determine which CS window we're on
 	{
 		case 1: asm_call(Incheatmode);   return;
 		case 2: asm_call(Cheatmodeview); return;
-		case 3: asm_call(Cheatmodeadd);  return;
+		case 3: Cheatmodeadd();          return;
 	}
 
 	// Opening Screen

@@ -2096,8 +2096,8 @@ InsertSearchCharacter:
   ret
 
 SECTION .bss
-CSOverValue resb 1
-CSCurValue  resd 1
+NEWSYM CSOverValue, resb 1
+NEWSYM CSCurValue,  resd 1
 SECTION .text
 
 InsertSearchDescription:

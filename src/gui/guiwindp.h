@@ -3,7 +3,8 @@
 
 #include "../types.h"
 
-extern void Cheatmodeadd();
+extern void CSAddFlash();
+extern void CSRemoveFlash();
 extern void Cheatmodeview();
 extern void DisplayGUIAbout();
 extern void DisplayGUIAddOns();
@@ -23,6 +24,10 @@ extern char  CMovieExt;
 extern char  CSDescDisplay[20];
 extern char  CSInputDisplay[12];
 extern char  GUIBlinkCursor[2];
+extern char  GUICSrcTextG1[11];
+extern char  GUICSrcTextG1a[];
+extern char  GUICSrcTextG2d[];
+extern char  GUICSrcTextG2e[];
 extern char  GUICheatTextZ1[16];
 extern char  GUICheatTextZ2[23];
 extern char  GUIChoseSaveText2[2];
@@ -46,6 +51,7 @@ extern u1    lameExists;
 extern u1    mencoderExists;
 extern u1*   GUIInputRefP[5];
 extern u1*   ccheatnpos;
+extern u4    CheatSearchYPos;
 extern u4    GUICStA[3];
 extern u4    GUIComboKey;
 extern u4    GUIIStA[3];
@@ -67,6 +73,10 @@ extern u4    NumCheatSrc;
 extern u4    NumCombo;
 extern u4    NumComboGlob;
 extern u4    NumComboLocl;
+extern u4    SrcMask[4];
 extern u4    ccheatnleft;
+extern u4    curaddrvalcs;
+extern u4    curentryval;
+extern u4    curvaluecs;
 
 #endif
