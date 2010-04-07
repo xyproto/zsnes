@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 
 #include "../c_init.h"
 #include "../c_intrf.h"
@@ -28,8 +29,9 @@
 u1 GUIStatesText5 = 0;
 
 
-static s4 cloadnleft;
-static s4 cloadnposb;
+static char GUICheatTextZ3[] = "000000 00 00 OFF BLAHBLAH---\0\0\0\0\0\0\0\0\0\0\0";
+static s4   cloadnleft;
+static s4   cloadnposb;
 
 
 static void drawshadow2(u4 const p1, s4 const p2, s4 const p3)
@@ -429,6 +431,14 @@ static void GUIDisplayCheckboxTn(u4 const p1, u4 const p2, u4 const p3, u1 const
 	GUITemp = (u4)(*p4 == p5 ? GUIIconDataCheckBoxC : GUIIconDataCheckBoxUC); // XXX ugly cast
 	GUIDisplayIconWin(p1, p2, p3, (u1 const*)GUITemp); // XXX ugly cast
 	GUIDisplayText(p1, p2 + 15, p3 + 5, p6);
+}
+
+
+static void GUIDisplayCheckbox(u4 const p1, u4 const p2, u4 const p3, u1 const* const p4, char const* const p5) // Toggled Checkbox (Text)
+{
+	GUITemp = (u4)(*p4 != 0 ? GUIIconDataCheckBoxC : GUIIconDataCheckBoxUC); // XXX ugly cast
+	GUIDisplayIconWin(p1, p2, p3, (u1 const*)GUITemp); // XXX ugly cast
+	GUIDisplayText(p1, p2 + 15, p3 + 5, p5);
 }
 
 
@@ -1432,4 +1442,148 @@ void DisplayGUISound(void)
 
 	GUIDisplayTextY(6, 6, 116, "VOLUME LEVEL:");
 	GUIDrawSlider(6, 15, 100, 131, &MusicRelVol, glscslidSet, glscslidText);
+}
+
+
+static void DisplayGUICheatConv(void)
+{
+	char const* const GUICheatTextZ4 = "0123456789ABCDEF";
+
+	{ u1 const* eax = ccheatnpos + 4;
+		char*     edx = GUICheatTextZ3;
+		u4        ecx = 3;
+		do
+		{
+			u1 const d = *eax;
+			*edx++ = GUICheatTextZ4[d >> 4];
+			*edx++ = GUICheatTextZ4[d & 0x0F];
+		}
+		while (--eax, --ecx != 0);
+	}
+
+	{ u1 const* const eax = ccheatnpos + 1;
+		char*     const edx = GUICheatTextZ3 + 7;
+		edx[1] = GUICheatTextZ4[*eax & 0x0F];
+		edx[0] = GUICheatTextZ4[*eax >> 4];
+	}
+
+	{ u1 const* const eax = ccheatnpos + 5;
+		char*     const edx = GUICheatTextZ3 + 10;
+		edx[1] = GUICheatTextZ4[*eax & 0x0F];
+		edx[0] = GUICheatTextZ4[*eax >> 4];
+	}
+
+	u1   const* const eax = ccheatnpos;
+	char const* const msg =
+		eax[-28] & 0x80 ? "SRC" :
+		eax[0]   & 0x04 ? "OFF" :
+		eax[0]   & 0x80 ? "RPL" :
+		"ON ";
+	GUICheatTextZ3[13] = msg[0];
+	GUICheatTextZ3[14] = msg[1];
+	GUICheatTextZ3[15] = msg[2];
+
+	memcpy(GUICheatTextZ3 + 17, eax + 8, 20);
+}
+
+
+static void GUIOuttextwin2cheat(u4 const p1, u4 const p2)
+{
+	if (ccheatnleft & 0x80000000) return;
+	DisplayGUICheatConv();
+	GUItextcolor[0] = 223;
+	GUIOuttextwin2(7, p1, p2, GUICheatTextZ3);
+	GUItextcolor[0] = (GUIWincoladd & 0xFF) == 0 ? 221 : 222; // Text
+	GUIOuttextwin2(7, p1 - 1, p2 - 1, GUICheatTextZ3);
+	ccheatnpos += 28;
+	--ccheatnleft;
+}
+
+
+void DisplayGUICheat(void)
+{
+	GUIDrawWindowBox(7, "CHEAT");
+
+	GUIDisplayText(7,  6,  13, "ADDRESS CV PV TGL DESCRIPTION"); // Top
+	GUIDisplayText(7,  6, 132, "ENTER CODE:"); // Text by input boxes
+	GUIDisplayText(7,  6, 143, "DESCRIPTION:");
+	GUIDisplayText(7, 11, 154, "VALID CODES: GAME GENIE, PAR, AND GF"); // Info for User
+	GUIDisplayText(7, 11, 164, "NOTE: YOU MAY HAVE TO RESET THE GAME");
+	GUIDisplayText(7, 11, 172, "AFTER ENTERING THE CODE. REMEMBER TO");
+	GUIDisplayText(7, 11, 180, "INSERT THE \"-\" FOR GAME GENIE CODES.");
+
+	GUItextcolor[0] = (GUIWincoladd & 0xFF) == 0 ? 217 : 211;
+	DrawGUIButton(7,   5, 113,  47, 124, "REMOVE",   5, 0, 0); // Draw Buttons
+	DrawGUIButton(7,  52, 113,  94, 124, "TOGGLE",   6, 0, 0);
+	DrawGUIButton(7,  99, 113, 141, 124, "SAVE",     7, 0, 0);
+	DrawGUIButton(7, 146, 113, 188, 124, "LOAD",     8, 0, 0);
+	DrawGUIButton(7, 193, 113, 235, 124, "FIX",     33, 0, 0);
+	DrawGUIButton(7, 212, 134, 236, 145, "ADD",      9, 0, 0);
+
+	GUIDisplayBBoxS(7, 5, 20, 229, 108, 167); // Draw Cheat Box
+
+	if (GUIcurrentcheatwin == 0) // Red Highlight for Cheats box
+	{
+		u4 const ebx = 22 + (GUIcurrentcheatcursloc - GUIcurrentcheatviewloc) * 7;
+		DrawGUIWinBox2(7, 5, 229, 7, 224, ebx);
+	}
+
+	ccheatnpos  = cheatdata + GUIcurrentcheatviewloc * 28; // Green Text
+	ccheatnleft = NumCheats - GUIcurrentcheatviewloc - 1;
+	for (u4 i = 0; i != 12; ++i)
+	{
+		GUIOuttextwin2cheat(12, 24 + 7 * i);
+	}
+
+	// Scrollbar
+	DrawSlideBarWin(7, 231, 28, GUIcurrentcheatviewloc, NumCheats, 12, 73, GUICStA);
+	if ((GUICHold & 0xFF) == 7) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd + 3) & 0x000000FF;
+	GUIDisplayIconWin(7, 231, 20, GUIIconDataUpArrow);
+	if ((GUICHold & 0xFF) == 7) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd - 3) & 0x000000FF;
+	if ((GUICHold & 0xFF) == 8) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd + 3) & 0x000000FF;
+	GUIDisplayIconWin(7, 231, 101, GUIIconDataDownArrow);
+	if ((GUICHold & 0xFF) == 8) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd - 3) & 0x000000FF;
+
+	{ // Code Box
+		u1 const dl =
+			GUIcurrentcheatwin    != 1 ? 167 :
+			(GUIWincoladd & 0xFF) == 0 ? 226 :
+			227;
+		GUIDisplayBBox(7, 82, 129, 172, 136, dl);
+	}
+
+	{ // Description Box
+		u1 const dl =
+			GUIcurrentcheatwin    != 2 ? 167 :
+			(GUIWincoladd & 0xFF) == 0 ? 226 :
+			227;
+		GUIDisplayBBox(7, 82, 140, 196, 147, dl);
+	}
+
+	GUIDisplayTextG(7, 84, 132, GUICheatTextZ1); // Green Text&Shadow
+	GUIDisplayTextG(7, 84, 143, GUICheatTextZ2);
+
+	// Code for movement of cursor
+	u1 const eax = GUICheatPosA;
+	GUICheatTextZ1[eax] = '\0';
+	u1 const ebx = GUICheatPosB;
+	GUICheatTextZ2[ebx] = '\0';
+	if (!(GUICCFlash & 8))
+	{
+		switch (GUIcurrentcheatwin)
+		{
+			case 1: GUICheatTextZ1[eax] = '_'; break;
+			case 2: GUICheatTextZ2[ebx] = '_'; break;
+		}
+	}
+
+	char const* const GUICheatTextE1 = "AUTO-LOAD .CHT FILE AT GAME LOAD";
+	if (GUIcurrentcheatwin == 0)
+	{ // Draw underline only if you don't have an input box selected
+		GUIDisplayCheckboxu(7, 11, 186, &AutoLoadCht, GUICheatTextE1, 0);
+	}
+	else
+	{
+		GUIDisplayCheckbox(7, 11, 186, &AutoLoadCht, GUICheatTextE1);
+	}
 }
