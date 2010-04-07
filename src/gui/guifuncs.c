@@ -1677,9 +1677,13 @@ static unsigned int DriveCount()
 }
 #endif
 
-int *GUIJT_currentviewloc, *GUIJT_currentcursloc, GUIJT_entries, GUIJT_offset, GUIJT_viewable;
+s4  GUIJT_entries;
+s4  GUIJT_offset;
+s4  GUIJT_viewable;
+s4* GUIJT_currentcursloc;
+s4* GUIJT_currentviewloc;
 
-void GUIGenericJumpTo()
+void GUIGenericJumpTo(void)
 {
   int mid = GUIJT_viewable>>1;
   *GUIJT_currentviewloc = (GUIJT_offset < GUIJT_entries-mid) ? GUIJT_offset-mid : GUIJT_entries-GUIJT_viewable;

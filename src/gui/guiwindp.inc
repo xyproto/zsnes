@@ -990,260 +990,8 @@ SECTION .text
   DGOptnsBorderBox %1,%2,%3
 %endmacro
 
-%macro DGOptnsDrawBox2 3
-  mov eax,[GUIwinposx+3*4]
-  mov ebx,[GUIwinposy+3*4]
-  add eax,%1
-  add ebx,%2
-  mov ecx,eax
-  add ecx,20
-  mov dl,167
-  mov esi,7
-%%loop
-  DrawGUILine
-  dec esi
-  jnz %%loop
-  mov eax,%3
-  mov ebx,[ScanCodeListing+eax*3]
-  mov [GUIGameDisplayKy],ebx
-  mov byte[GUIGameDisplayKy+3],0
-  mov byte[GUItextcolor],223
-  ccallv GUIOuttextwin2, 3, %1 + 3, %2 + 2, GUIGameDisplayKy
-  mov byte[GUItextcolor],221
-  cmp byte[GUIWincoladd],0
-  je %%zero
-  mov byte[GUItextcolor],222
-%%zero
-  ccallv GUIOuttextwin2, 3, %1 + 2, %2 + 1, GUIGameDisplayKy
-%endmacro
-
-%macro GUIInputDispAll 1
-  GUIInputDispKey 45,102,%1upk    ; Up
-  GUIInputDispKey 45,112,%1downk  ; Down
-  GUIInputDispKey 45,122,%1leftk  ; Left
-  GUIInputDispKey 45,132,%1rightk ; Right
-  GUIInputDispKey 45,142,%1startk ; Start
-  GUIInputDispKey 45,152,%1selk   ; Select
-  GUIInputDispKey 85,102,%1Ak     ; A
-  GUIInputDispKey 85,112,%1Bk     ; B
-  GUIInputDispKey 85,122,%1Xk     ; X
-  GUIInputDispKey 85,132,%1Yk     ; Y
-  GUIInputDispKey 85,142,%1Lk     ; L
-  GUIInputDispKey 85,152,%1Rk     ; R
-
-  GUIInputDispKey 125,102,%1Xtk   ; X Turbo
-  GUIInputDispKey 125,112,%1Ytk   ; Y Turbo
-  GUIInputDispKey 125,122,%1Ltk   ; L Turbo
-  GUIInputDispKey 165,102,%1Atk   ; A Turbo
-  GUIInputDispKey 165,112,%1Btk   ; B Turbo
-  GUIInputDispKey 165,122,%1Rtk   ; R Turbo
-
-  GUIInputDispKey 125,142,%1ULk   ; Up-Left
-  GUIInputDispKey 125,152,%1DLk   ; Down-Left
-  GUIInputDispKey 165,142,%1URk   ; Up-Right
-  GUIInputDispKey 165,152,%1DRk   ; Down-Right
-%endmacro
-
-%macro GUIInputDispKey 3
-  mov eax,[%3]
-  mov [GUIInputTextE],eax
-  DGOptnsDrawBox2 %1,%2,[GUIInputTextE]
-%endmacro
-
-NEWSYM DisplayGUIInput    ; Player Select, Joystick/keyboard Type List, Button Assignments
-
-  GUIDrawWindowBox 3,GUIInputDisp
-  mov eax,[GUIInputTabs]
-  dec al
-  mov [cplayernum],al
-  GUIDrawTArea 3
-  GUIDrawTabs GUIInputTabs
-
-  GUIDisplayTextY 3,6,26,GUIInputTextA
-  movzx eax,byte[cplayernum]
-  mov ebx,[GUIInputRefP+eax*4]
-  movzx ebx,byte[ebx]
-  cmp byte[GUIFreshInputSelect],0
-  je .notfreshinput
-  pushad
-  mov byte[GUIFreshInputSelect],0
-  mov dword[GUIJT_viewable],5
-  mov eax,[NumInputDevices]
-  mov [GUIJT_entries],eax
-  mov [GUIJT_offset],ebx
-  mov eax,GUIcurrentinputviewloc
-  mov [GUIJT_currentviewloc],eax
-  mov eax,GUIcurrentinputcursloc
-  mov [GUIJT_currentcursloc],eax
-  ccallv GUIGenericJumpTo
-  popad
-.notfreshinput
-  mov al,bl
-  mov ebx,eax
-  shl eax,4
-  add eax,ebx
-  add eax,GUIInputNames
-  mov [GUITemp],eax
-  GUIDisplayTextY 3,6+54,83,[GUITemp]   ; CDV
-  GUIDisplayTextY 3,6,83,GUIInputTextA1
-
-  GUIDisplayTextY 3,6,94,GUIInputTextB
-  GUIDisplayText 3,6,104,GUIInputTextB1
-  GUIDisplayText 3,6,114,GUIInputTextB2
-  GUIDisplayText 3,6,124,GUIInputTextB3
-  GUIDisplayText 3,6,134,GUIInputTextB4
-  GUIDisplayText 3,6,144,GUIInputTextB5
-  GUIDisplayText 3,6,154,GUIInputTextB6
-
-  GUIDisplayText 3,76,104,GUIInputTextC1
-  GUIDisplayText 3,76,114,GUIInputTextC2
-  GUIDisplayText 3,76,124,GUIInputTextC3
-  GUIDisplayText 3,76,134,GUIInputTextC4
-  GUIDisplayText 3,76,144,GUIInputTextC5
-  GUIDisplayText 3,76,154,GUIInputTextC6
-
-  GUIDisplayTextY 3,116,94,GUIInputTextC
-  GUIDisplayText 3,156,104,GUIInputTextC1
-  GUIDisplayText 3,156,114,GUIInputTextC2
-  GUIDisplayText 3,156,124,GUIInputTextC6
-  GUIDisplayText 3,116,104,GUIInputTextC3
-  GUIDisplayText 3,116,114,GUIInputTextC4
-  GUIDisplayText 3,116,124,GUIInputTextC5
-
-  GUIDisplayTextY 3,113,134,GUIInputTextD
-  GUIDisplayText 3,113,144,GUIInputTextD1
-  GUIDisplayText 3,153,144,GUIInputTextD2
-  GUIDisplayText 3,113,154,GUIInputTextD3
-  GUIDisplayText 3,153,154,GUIInputTextD4
-
-%ifdef __MSDOS__
-  GUIDisplayCheckboxu 3,105,160,SidewinderFix,GUIInputTextE4,0
-
-  cmp byte[cplayernum],0
-  jne .notp1
-  GUIDisplayCheckboxu 3,5,190,pl1p209,GUIInputTextE5,4
-.notp1
-  cmp byte[cplayernum],1
-  jne .notp2
-  GUIDisplayCheckboxu 3,5,190,pl2p209,GUIInputTextE5,4
-.notp2
-  cmp byte[cplayernum],2
-  jne .notp3
-  GUIDisplayCheckboxu 3,5,190,pl3p209,GUIInputTextE5,4
-.notp3
-  cmp byte[cplayernum],3
-  jne .notp4
-  GUIDisplayCheckboxu 3,5,190,pl4p209,GUIInputTextE5,4
-.notp4
-  cmp byte[cplayernum],4
-  jne .notp5
-  GUIDisplayCheckboxu 3,5,190,pl5p209,GUIInputTextE5,4
-.notp5
-%endif
-
-  GUIDisplayCheckboxu 3,5,160,GameSpecificInput,GUIInputTextE6,0
-  GUIDisplayCheckboxu 3,5,170,AllowUDLR,GUIInputTextE7,0
-  GUIDisplayCheckboxu 3,105,170,Turbo30hz,GUIInputTextE8,0
-  GUIDisplayCheckboxu 3,5,180,pl12s34,GUIInputTextE9,0
-
-  DrawGUIButton 3,123,34,153,45,GUIInputTextE1,14,0,0   ; Buttons
-  DrawGUIButton 3,123,50,177,61,GUIInputTextE2,40,0,0
-%ifdef __MSDOS__
-  DrawGUIButton 3,123,66,183,77,GUIInputTextE3,15,0,0
-%endif
-
-  GUIDisplayBBoxS 3,5,34,107,77,167        ; Main Box
-  mov ebx,[GUIcurrentinputcursloc]
-  sub ebx,[GUIcurrentinputviewloc]
-  mov eax,ebx
-  lea ebx,[ebx*8]
-  add ebx,36
-  DrawGUIWinBox2 3,5,107,7,224
-
-  mov eax,[GUIcurrentinputviewloc]         ; Text&Shadow inside Main Box
-  shl eax,4
-  add eax,[GUIcurrentinputviewloc]
-  add eax,GUIInputNames
-  mov [GUITemp],eax
-  GUIDisplayTextG 3,11,38,[GUITemp]
-  add dword[GUITemp],17
-  GUIDisplayTextG 3,11,38+8,[GUITemp]
-  add dword[GUITemp],17
-  GUIDisplayTextG 3,11,38+8*2,[GUITemp]
-  add dword[GUITemp],17
-  GUIDisplayTextG 3,11,38+8*3,[GUITemp]
-  add dword[GUITemp],17
-  GUIDisplayTextG 3,11,38+8*4,[GUITemp]
-
-  ; Sidebar
-  ccallv DrawSlideBarWin, 3, 109, 42, [GUIcurrentinputviewloc], [NumInputDevices], 5, 28, GUIIStA
-  cmp byte[GUICHold],9
-  jne .noholda
-  add byte[GUIWincoladd],3
-.noholda
-  ccallv GUIDisplayIconWin, 3, 109, 34, GUIIconDataUpArrow
-  cmp byte[GUICHold],9
-  jne .noholda2
-  sub byte[GUIWincoladd],3
-.noholda2
-  cmp byte[GUICHold],10
-  jne .noholdb
-  add byte[GUIWincoladd],3
-.noholdb
-  ccallv GUIDisplayIconWin, 3, 109, 70, GUIIconDataDownArrow
-  cmp byte[GUICHold],10
-  jne .noholdb2
-  sub byte[GUIWincoladd],3
-.noholdb2
-
- ; Hotkey Boxes
-  cmp byte[cplayernum],0
-  jne near .notpl1
-  GUIInputDispAll pl1
-.notpl1
-  cmp byte[cplayernum],1
-  jne near .notpl2
-  GUIInputDispAll pl2
-.notpl2
-  cmp byte[cplayernum],2
-  jne near .notpl3
-  GUIInputDispAll pl3
-.notpl3
-  cmp byte[cplayernum],3
-  jne near .notpl4
-  GUIInputDispAll pl4
-.notpl4
-  cmp byte[cplayernum],4
-  jne near .notpl5
-  GUIInputDispAll pl5
-.notpl5
-
-  DGOptnsBorderBox 3,44,101    ; Box borders, keep them at bottom
-  DGOptnsBorderBox 3,44,111
-  DGOptnsBorderBox 3,44,121
-  DGOptnsBorderBox 3,44,131
-  DGOptnsBorderBox 3,44,141
-  DGOptnsBorderBox 3,44,151
-  DGOptnsBorderBox 3,84,101
-  DGOptnsBorderBox 3,84,111
-  DGOptnsBorderBox 3,84,121
-  DGOptnsBorderBox 3,84,131
-  DGOptnsBorderBox 3,84,141
-  DGOptnsBorderBox 3,84,151
-  DGOptnsBorderBox 3,124,101
-  DGOptnsBorderBox 3,124,111
-  DGOptnsBorderBox 3,124,121
-  DGOptnsBorderBox 3,124,141
-  DGOptnsBorderBox 3,124,151
-  DGOptnsBorderBox 3,164,101
-  DGOptnsBorderBox 3,164,111
-  DGOptnsBorderBox 3,164,121
-  DGOptnsBorderBox 3,164,141
-  DGOptnsBorderBox 3,164,151
-  ret
-
 SECTION .data
-GUIInputTabs dd 1,5
+NEWSYM GUIInputTabs, dd 1,5
   db '#1',0
   db '#2',0
   db '#3',0
@@ -1252,49 +1000,11 @@ GUIInputTabs dd 1,5
 
 NEWSYM GUIInputRefP, dd pl1contrl,pl2contrl,pl3contrl,pl4contrl,pl5contrl
 
-GUIInputTextA db 'DEVICE:',0
-GUIInputTextA1 db 'CURRENT:',0
-
-GUIInputTextB db 'KEYS:',0
-GUIInputTextB1 db '    UP',0
-GUIInputTextB2 db '  DOWN',0
-GUIInputTextB3 db '  LEFT',0
-GUIInputTextB4 db ' RIGHT',0
-GUIInputTextB5 db ' START',0
-GUIInputTextB6 db 'SELECT',0
-
-GUIInputTextC db 'TURBO:',0
-GUIInputTextC1 db 'A',0
-GUIInputTextC2 db 'B',0
-GUIInputTextC3 db 'X',0
-GUIInputTextC4 db 'Y',0
-GUIInputTextC5 db 'L',0
-GUIInputTextC6 db 'R',0
-
-GUIInputTextD db 'DIAGONALS:',0
-GUIInputTextD1 db 'UL',0
-GUIInputTextD2 db 'UR',0
-GUIInputTextD3 db 'DL',0
-GUIInputTextD4 db 'DR',0
-
-GUIInputTextE dd 0
-GUIInputTextE1 db 'SET',0
-GUIInputTextE2 db 'SET KEYS',0
-%ifdef __MSDOS__
-GUIInputTextE3 db 'CALIBRATE',0
-GUIInputTextE4 db 'SIDEWINDER FIX',0
-GUIInputTextE5 db 'USE JOYSTICK PORT 209H',0
-%endif
-GUIInputTextE6 db 'GAME SPECIFIC',0
-GUIInputTextE7 db 'ALLOW U+D/L+R',0
-GUIInputTextE8 db 'TURBO AT 30HZ',0
-GUIInputTextE9 db 'USE PL3/4 AS PL1/2',0
-
-GUIFreshInputSelect db 1
+NEWSYM GUIFreshInputSelect, db 1
 
 SECTION .bss
-GUIIStA resd 3
-GUIcurrentinputviewloc resd 1
+NEWSYM GUIIStA, resd 3
+NEWSYM GUIcurrentinputviewloc, resd 1
 NEWSYM GUIcurrentinputcursloc, resd 1
 
 SECTION .data
@@ -2269,7 +1979,7 @@ NEWSYM DisplayGameOptns        ; Misc Key Window
 SECTION .bss
 GUIGameOptnsColA resb 1
 GUIGameOptnsColB resb 1
-GUIGameDisplayKy resd 1
+NEWSYM GUIGameDisplayKy, resd 1
 
 SECTION .data
 
@@ -3955,7 +3665,6 @@ GUISpeedTextY db '+',0
 GUISpeedTextZ db '-',0
 
 ;General data
-GUIInputDisp db 'INPUT DEVICE',0
 GUICheatDisp db 'CHEAT',0
 GUISearchDisp db 'CHEAT SEARCH',0
 GUINetDisp db 'REMOTE',0,0,0,0,0,0,0,0,0

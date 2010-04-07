@@ -3,6 +3,7 @@
 #include "../c_init.h"
 #include "../c_intrf.h"
 #include "../cfg.h"
+#include "../input.h"
 #include "../ui.h"
 #include "../zpath.h"
 #include "../zstate.h"
@@ -732,6 +733,202 @@ void DisplayGUIChoseSave(void)
 	GUItextcolor[0] = (GUIWincoladd & 0xFF) == 0 ? 217 : 211;
 	DrawGUIButton(2,  94, 59, 102, 67, "+", 80, -2, -1);
 	DrawGUIButton(2, 105, 59, 113, 67, "-", 81, -2, -1);
+}
+
+
+static void DGOptnsDrawBox2(s4 const p1, s4 const p2, u4 const p3)
+{
+	s4 const eax = GUIwinposx[3] + p1;
+	s4       ebx = GUIwinposy[3] + p2;
+	u4       esi = 7;
+	do GUIHLine(eax, eax + 20, ebx++, 167); while (--esi != 0);
+
+	sprintf(GUIGameDisplayKy, "%.3s", ScanCodeListing + p3 * 3);
+	GUItextcolor[0] = 223;
+	GUIOuttextwin2(3, p1 + 3, p2 + 2, GUIGameDisplayKy);
+	GUItextcolor[0] = (GUIWincoladd & 0xFF) == 0 ? 221 : 222;
+	GUIOuttextwin2(3, p1 + 2, p2 + 1, GUIGameDisplayKy);
+}
+
+
+#define GUIInputDispAll(p1) \
+do \
+{ \
+	DGOptnsDrawBox2( 45, 102, p1##upk);    /* Up         */ \
+	DGOptnsDrawBox2( 45, 112, p1##downk);  /* Down       */ \
+	DGOptnsDrawBox2( 45, 122, p1##leftk);  /* Left       */ \
+	DGOptnsDrawBox2( 45, 132, p1##rightk); /* Right      */ \
+	DGOptnsDrawBox2( 45, 142, p1##startk); /* Start      */ \
+	DGOptnsDrawBox2( 45, 152, p1##selk);   /* Select     */ \
+	DGOptnsDrawBox2( 85, 102, p1##Ak);     /* A          */ \
+	DGOptnsDrawBox2( 85, 112, p1##Bk);     /* B          */ \
+	DGOptnsDrawBox2( 85, 122, p1##Xk);     /* X          */ \
+	DGOptnsDrawBox2( 85, 132, p1##Yk);     /* Y          */ \
+	DGOptnsDrawBox2( 85, 142, p1##Lk);     /* L          */ \
+	DGOptnsDrawBox2( 85, 152, p1##Rk);     /* R          */ \
+ \
+	DGOptnsDrawBox2(125, 102, p1##Xtk);    /* X Turbo    */ \
+	DGOptnsDrawBox2(125, 112, p1##Ytk);    /* Y Turbo    */ \
+	DGOptnsDrawBox2(125, 122, p1##Ltk);    /* L Turbo    */ \
+	DGOptnsDrawBox2(165, 102, p1##Atk);    /* A Turbo    */ \
+	DGOptnsDrawBox2(165, 112, p1##Btk);    /* B Turbo    */ \
+	DGOptnsDrawBox2(165, 122, p1##Rtk);    /* R Turbo    */ \
+ \
+	DGOptnsDrawBox2(125, 142, p1##ULk);    /* Up-Left    */ \
+	DGOptnsDrawBox2(125, 152, p1##DLk);    /* Down-Left  */ \
+	DGOptnsDrawBox2(165, 142, p1##URk);    /* Up-Right   */ \
+	DGOptnsDrawBox2(165, 152, p1##DRk);    /* Down-Right */ \
+} \
+while (0)
+
+
+static void DGOptnsBorderBox(u4 const p1, u4 const p2, u4 const p3)
+{
+	GUIWincol =
+		cwindrawn == 0 ? 148     :
+		cwindrawn == 1 ? 148 + 5 :
+		148 + 10;
+	DrawGUIWinBox(p1, p2  + 1, p3,     p2 + 20, p3,     GUIWincol);
+	DrawGUIWinBox(p1, p2,      p3 + 1, p2 -  1, p3 + 7, GUIWincol + 1);
+	DrawGUIWinBox(p1, p2 +  1, p3 + 8, p2 + 20, p3 + 8, GUIWincol + 4);
+	DrawGUIWinBox(p1, p2 + 22, p3 + 1, p2 + 21, p3 + 7, GUIWincol + 3);
+}
+
+
+void DisplayGUIInput(void)
+{
+	GUIDrawWindowBox(3, "INPUT DEVICE");
+	cplayernum = GUIInputTabs[0] - 1;
+
+	{ u4 eax;
+		u4 ebx;
+		GUIDrawTArea(3, &eax, &ebx);
+		GUIDrawTabs(GUIInputTabs, &eax, ebx);
+	}
+
+	GUIDisplayTextY(3, 6, 26, "DEVICE:");
+	u1 const ebx = *GUIInputRefP[cplayernum];
+	if (GUIFreshInputSelect != 0)
+	{
+		GUIFreshInputSelect  = 0;
+		GUIJT_viewable       = 5;
+		GUIJT_entries        = NumInputDevices;
+		GUIJT_offset         = ebx;
+		GUIJT_currentviewloc = (s4*)&GUIcurrentinputviewloc; // XXX ugly cast
+		GUIJT_currentcursloc = (s4*)&GUIcurrentinputcursloc; // XXX ugly cast
+		GUIGenericJumpTo();
+	}
+	GUITemp = (u4)&GUIInputNames[ebx]; // XXX ugly cast
+	GUIDisplayTextY(3, 6 + 54, 83, (char const*)GUITemp); // CDV // XXX ugly cast
+	GUIDisplayTextY(3, 6,      83, "CURRENT:");
+
+	GUIDisplayTextY(3,   6,  94, "KEYS:");
+	GUIDisplayText( 3,   6, 104, "    UP");
+	GUIDisplayText( 3,   6, 114, "  DOWN");
+	GUIDisplayText( 3,   6, 124, "  LEFT");
+	GUIDisplayText( 3,   6, 134, " RIGHT");
+	GUIDisplayText( 3,   6, 144, " START");
+	GUIDisplayText( 3,   6, 154, "SELECT");
+
+	GUIDisplayText( 3,  76, 104, "A");
+	GUIDisplayText( 3,  76, 114, "B");
+	GUIDisplayText( 3,  76, 124, "X");
+	GUIDisplayText( 3,  76, 134, "Y");
+	GUIDisplayText( 3,  76, 144, "L");
+	GUIDisplayText( 3,  76, 154, "R");
+
+	GUIDisplayTextY(3, 116,  94, "TURBO:");
+	GUIDisplayText( 3, 156, 104, "A");
+	GUIDisplayText( 3, 156, 114, "B");
+	GUIDisplayText( 3, 156, 124, "R");
+	GUIDisplayText( 3, 116, 104, "X");
+	GUIDisplayText( 3, 116, 114, "Y");
+	GUIDisplayText( 3, 116, 124, "L");
+
+	GUIDisplayTextY(3, 113, 134, "DIAGONALS:");
+	GUIDisplayText( 3, 113, 144, "UL");
+	GUIDisplayText( 3, 153, 144, "UR");
+	GUIDisplayText( 3, 113, 154, "DL");
+	GUIDisplayText( 3, 153, 154, "DR");
+
+#ifdef __MSDOS__
+	GUIDisplayCheckboxu(3, 105, 160, &SidewinderFix, "SIDEWINDER FIX", 0);
+
+	char const* const GUIInputTextE5 = "USE JOYSTICK PORT 209H";
+	switch (cplayernum)
+	{
+		case 0: GUIDisplayCheckboxu(3, 5, 190, &pl1p209, GUIInputTextE5, 4); break;
+		case 1: GUIDisplayCheckboxu(3, 5, 190, &pl2p209, GUIInputTextE5, 4); break;
+		case 2: GUIDisplayCheckboxu(3, 5, 190, &pl3p209, GUIInputTextE5, 4); break;
+		case 3: GUIDisplayCheckboxu(3, 5, 190, &pl4p209, GUIInputTextE5, 4); break;
+		case 4: GUIDisplayCheckboxu(3, 5, 190, &pl5p209, GUIInputTextE5, 4); break;
+	}
+#endif
+
+	GUIDisplayCheckboxu(3,   5, 160, &GameSpecificInput, "GAME SPECIFIC",      0);
+	GUIDisplayCheckboxu(3,   5, 170, &AllowUDLR,         "ALLOW U+D/L+R",      0);
+	GUIDisplayCheckboxu(3, 105, 170, &Turbo30hz,         "TURBO AT 30HZ",      0);
+	GUIDisplayCheckboxu(3,   5, 180, &pl12s34,           "USE PL3/4 AS PL1/2", 0);
+
+	DrawGUIButton(3, 123, 34, 153, 45, "SET",      14, 0, 0); // Buttons
+	DrawGUIButton(3, 123, 50, 177, 61, "SET KEYS", 40, 0, 0);
+#ifdef __MSDOS__
+	DrawGUIButton(3, 123, 66, 183, 77, "CALIBRATE", 15, 0, 0);
+#endif
+
+	GUIDisplayBBoxS(3, 5, 34, 107, 77, 167); // Main Box
+	u4 const eax = GUIcurrentinputcursloc - GUIcurrentinputviewloc;
+	DrawGUIWinBox2(3, 5, 107, 7, 224, 36 + eax * 8);
+
+	GUITemp = (u4)&GUIInputNames[GUIcurrentinputviewloc]; // Text&Shadow inside Main Box // XXX ugly cast
+	for (u4 i = 0; i != 5; ++i)
+	{
+		GUIDisplayTextG(3, 11, 38 + 8 * i, (char const*)GUITemp); // XXX ugly cast
+		GUITemp += 17;
+	}
+	GUITemp -= 17;
+
+	// Sidebar
+	DrawSlideBarWin(3, 109, 42, GUIcurrentinputviewloc, NumInputDevices, 5, 28, GUIIStA);
+	if (GUICHold ==  9) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd + 3) & 0x000000FF;
+	GUIDisplayIconWin(3, 109, 34, GUIIconDataUpArrow);
+	if (GUICHold ==  9) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd - 3) & 0x000000FF;
+	if (GUICHold == 10) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd + 3) & 0x000000FF;
+	GUIDisplayIconWin(3, 109, 70, GUIIconDataDownArrow);
+	if (GUICHold == 10) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd - 3) & 0x000000FF;
+
+	// Hotkey Boxes
+	switch (cplayernum)
+	{
+		case 0: GUIInputDispAll(pl1); break;
+		case 1: GUIInputDispAll(pl2); break;
+		case 2: GUIInputDispAll(pl3); break;
+		case 3: GUIInputDispAll(pl4); break;
+		case 4: GUIInputDispAll(pl5); break;
+	}
+
+	DGOptnsBorderBox(3,  44, 101); // Box borders,  keep them at bottom
+	DGOptnsBorderBox(3,  44, 111);
+	DGOptnsBorderBox(3,  44, 121);
+	DGOptnsBorderBox(3,  44, 131);
+	DGOptnsBorderBox(3,  44, 141);
+	DGOptnsBorderBox(3,  44, 151);
+	DGOptnsBorderBox(3,  84, 101);
+	DGOptnsBorderBox(3,  84, 111);
+	DGOptnsBorderBox(3,  84, 121);
+	DGOptnsBorderBox(3,  84, 131);
+	DGOptnsBorderBox(3,  84, 141);
+	DGOptnsBorderBox(3,  84, 151);
+	DGOptnsBorderBox(3, 124, 101);
+	DGOptnsBorderBox(3, 124, 111);
+	DGOptnsBorderBox(3, 124, 121);
+	DGOptnsBorderBox(3, 124, 141);
+	DGOptnsBorderBox(3, 124, 151);
+	DGOptnsBorderBox(3, 164, 101);
+	DGOptnsBorderBox(3, 164, 111);
+	DGOptnsBorderBox(3, 164, 121);
+	DGOptnsBorderBox(3, 164, 141);
+	DGOptnsBorderBox(3, 164, 151);
 }
 
 

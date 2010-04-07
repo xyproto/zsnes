@@ -2,6 +2,7 @@
 #define C_GUIWINDP_H
 
 void DisplayGUIChoseSave(void); // Pick Save State
+void DisplayGUIInput(void);     // Player Select, Joystick/keyboard Type List, Button Assignments
 void DisplayGUILoad(void);
 void DisplayGUIOption(void);    // Emu Options
 void DisplayGUIReset(void);     // Reset Confirmation

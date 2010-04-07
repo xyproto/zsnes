@@ -56,7 +56,7 @@ EXTSYM Check_Key,Get_Key,sram,ScanCodeListing,RelPathBase
 EXTSYM GetTime
 EXTSYM Clear2xSaIBuffer,Show224Lines
 EXTSYM NumVideoModes,MusicVol,DSPMem,NumInputDevices
-EXTSYM GUIInputNames,GameSpecificInput,device1,device2,TwelveHourClock
+EXTSYM GameSpecificInput,device1,device2,TwelveHourClock
 EXTSYM GUIM7VID,GUINTVID,GUIHQ2X,RawDumpInProgress
 EXTSYM MultiTap
 EXTSYM nssdip1,nssdip2,nssdip3,nssdip4,nssdip5,nssdip6
@@ -114,8 +114,8 @@ EXTSYM MovieVideoMode,MovieAudio,MovieVideoAudio,MovieAudioCompress,newfont
 EXTSYM GUIfileentries,GUIdirentries,GUIcurrentdirviewloc
 EXTSYM GUIcurrentfilewin,GUIcurrentcursloc,GUIcurrentviewloc,SetMovieForcedLength,DisableScreenSaver
 EXTSYM GUIcurrentdircursloc,GetLoadData,ClockBox,DisplayInfo
-EXTSYM GUIJT_currentviewloc,GUIJT_currentcursloc,GUIJT_entries,ScreenShotFormat
-EXTSYM GUIJT_offset,GUIJT_viewable,GUIGenericJumpTo,SSAutoFire,SSPause
+EXTSYM ScreenShotFormat
+EXTSYM SSAutoFire,SSPause
 
 %ifdef __UNIXSDL__
 EXTSYM numlockptr
