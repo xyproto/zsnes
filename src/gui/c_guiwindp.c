@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <string.h>
 
 #include "../c_init.h"
 #include "../c_intrf.h"
@@ -29,9 +28,8 @@
 u1 GUIStatesText5 = 0;
 
 
-static char GUICheatTextZ3[] = "000000 00 00 OFF BLAHBLAH---\0\0\0\0\0\0\0\0\0\0\0";
-static s4   cloadnleft;
-static s4   cloadnposb;
+static s4 cloadnleft;
+static s4 cloadnposb;
 
 
 static void drawshadow2(u4 const p1, s4 const p2, s4 const p3)
@@ -1445,52 +1443,26 @@ void DisplayGUISound(void)
 }
 
 
-static void DisplayGUICheatConv(void)
+static char const* DisplayGUICheatConv(void)
 {
-	char const* const GUICheatTextZ4 = "0123456789ABCDEF";
-
-	{ u1 const* eax = ccheatnpos + 4;
-		char*     edx = GUICheatTextZ3;
-		u4        ecx = 3;
-		do
-		{
-			u1 const d = *eax;
-			*edx++ = GUICheatTextZ4[d >> 4];
-			*edx++ = GUICheatTextZ4[d & 0x0F];
-		}
-		while (--eax, --ecx != 0);
-	}
-
-	{ u1 const* const eax = ccheatnpos + 1;
-		char*     const edx = GUICheatTextZ3 + 7;
-		edx[1] = GUICheatTextZ4[*eax & 0x0F];
-		edx[0] = GUICheatTextZ4[*eax >> 4];
-	}
-
-	{ u1 const* const eax = ccheatnpos + 5;
-		char*     const edx = GUICheatTextZ3 + 10;
-		edx[1] = GUICheatTextZ4[*eax & 0x0F];
-		edx[0] = GUICheatTextZ4[*eax >> 4];
-	}
-
-	u1   const* const eax = ccheatnpos;
-	char const* const msg =
-		eax[-28] & 0x80 ? "SRC" :
-		eax[0]   & 0x04 ? "OFF" :
-		eax[0]   & 0x80 ? "RPL" :
+	u1   const* const c    = ccheatnpos;
+	char const* const tgl  =
+		c[-28] & 0x80 ? "SRC" :
+		c[0]   & 0x04 ? "OFF" :
+		c[0]   & 0x80 ? "RPL" :
 		"ON ";
-	GUICheatTextZ3[13] = msg[0];
-	GUICheatTextZ3[14] = msg[1];
-	GUICheatTextZ3[15] = msg[2];
+	char const* const desc = (char const*)(c + 8);
 
-	memcpy(GUICheatTextZ3 + 17, eax + 8, 20);
+	static char GUICheatTextZ3[6 + 1 + 2 + 1 + 2 + 1 + 3 + 1 + 20 + 1];
+	sprintf(GUICheatTextZ3, "%06X %02X %02X %s %.20s", c[4] << 16 | c[3] << 8 | c[2], c[1], c[5], tgl, desc);
+	return GUICheatTextZ3;
 }
 
 
 static void GUIOuttextwin2cheat(u4 const p1, u4 const p2)
 {
 	if (ccheatnleft & 0x80000000) return;
-	DisplayGUICheatConv();
+	char const* const GUICheatTextZ3 = DisplayGUICheatConv();
 	GUItextcolor[0] = 223;
 	GUIOuttextwin2(7, p1, p2, GUICheatTextZ3);
 	GUItextcolor[0] = (GUIWincoladd & 0xFF) == 0 ? 221 : 222; // Text
