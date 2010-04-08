@@ -1,6 +1,7 @@
 #ifndef C_GUIWINDP_H
 #define C_GUIWINDP_H
 
+void DisplayGUIAbout(void);     // Displays the About Box
 void DisplayGUICheat(void);     // Add/Browse Cheats menu
 void DisplayGUIChoseSave(void); // Pick Save State
 void DisplayGUIInput(void);     // Player Select, Joystick/keyboard Type List, Button Assignments

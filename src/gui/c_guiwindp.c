@@ -5,7 +5,9 @@
 #include "../c_intrf.h"
 #include "../cfg.h"
 #include "../input.h"
+#include "../macros.h"
 #include "../ui.h"
+#include "../version.h"
 #include "../zpath.h"
 #include "../zstate.h"
 #include "c_gui.h"
@@ -2110,4 +2112,55 @@ void DisplayGUIOptns(void)
 	GUIDisplayButtonHole(10,  48, 108, &CurPalSelect, 0);
 	GUIDisplayButtonHole(10,  88, 108, &CurPalSelect, 1);
 	GUIDisplayButtonHole(10, 133, 108, &CurPalSelect, 2);
+}
+
+
+void DisplayGUIAbout(void)
+{
+	// This will attach compile date onto the end of GUIGUIAboutText1
+	static char GUIGUIAboutTextA1[] = "ZSNES V" ZVER "             "; // Need room for date
+	VERSION_STR = GUIGUIAboutTextA1;
+	placedate();
+
+#if defined __MSDOS__
+	char const* const GUIGUIAboutTextA2 = "DOS VERSION";
+#elif defined __WIN32__
+	char const* const GUIGUIAboutTextA2 = "WIN VERSION";
+#elif defined __UNIXSDL__
+	char const* const GUIGUIAboutTextA2 = "SDL VERSION";
+#endif
+
+	GUIDrawWindowBox(11, "ABOUT");
+	if (EEgg != 1)
+	{
+		GUIDisplayText( 11, 6,  16, GUIGUIAboutTextA1); // Text
+		GUIDisplayText( 11, 6,  26, GUIGUIAboutTextA2);
+		GUIDisplayTextY(11, 6,  36, "CODED BY:");
+		GUIDisplayText( 11, 6,  46, "    ZSKNIGHT      _DEMO_");
+		GUIDisplayText( 11, 6,  56, "    PAGEFAULT     NACH");
+		GUIDisplayTextY(11, 6,  66, "ASSISTANT CODERS:");
+		GUIDisplayText( 11, 6,  76, "    PHAROS        STATMAT");
+		GUIDisplayText( 11, 6,  86, "    TEUF          HPSOLO");
+		GUIDisplayText( 11, 6,  96, "    THEODDONE33   SILOH");
+		GUIDisplayText( 11, 6, 106, "    IPHER         GRINVADER");
+		GUIDisplayText( 11, 6, 116, "    JONAS QUINN   DEATHLIKE");
+		GUIDisplayText( 11, 6, 131, "ZSNES comes with ABSOLUTELY");
+		GUIDisplayText( 11, 6, 141, "NO WARRANTY.  This is free");
+		GUIDisplayText( 11, 6, 151, "software, and you are welcome");
+		GUIDisplayText( 11, 6, 161, "to redistribute it under");
+		GUIDisplayText( 11, 6, 171, "certain conditions; please");
+		GUIDisplayText( 11, 6, 181, "read 'LICENSE.TXT'");
+		GUIDisplayText( 11, 6, 191, "thoroughly before doing so.");
+
+		GUItextcolor[0] = (GUIWincoladd & 0xFF) == 0 ? 217 : 211; // Buttons
+
+		DrawGUIButton(11, 90, 22, 175, 32, "WWW.ZSNES.COM", 65, 0, 0);
+		DrawGUIButton(11, 90, 33, 175, 43, "DOCUMENTATION", 66, 0, 0);
+	}
+	else
+	{ // Playground
+		GUIDisplayText(11, 42, 36, "HIDDEN MESSAGE!");
+		GUIDisplayText(11, 30, 96, "PRESS 'E' TO RETURN");
+		GUIDisplayText(11, 39, 106, "TO THE ABOUT BOX");
+	}
 }

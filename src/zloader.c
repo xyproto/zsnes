@@ -49,6 +49,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "initc.h"
 #include "input.h"
 #include "ui.h"
+#include "version.h"
 #include "zpath.h"
 #include "zloader.h"
 
@@ -82,7 +83,6 @@ void InitDebugger();
   puts(x);                                   \
   lines_out++;
 
-#define ZVER "1.52"
 char *ZVERSION = ZVER;
 const unsigned int versionNumber = 0x00000098; // 1.52
 

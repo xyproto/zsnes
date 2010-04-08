@@ -19,7 +19,7 @@
 
 
 
-EXTSYM VERSION_STR,placedate,GUIHLine,GUIDrawShadow2
+EXTSYM GUIHLine,GUIDrawShadow2
 EXTSYM GUIDisplayIconWin,GUIOuttextwin2u,GUIOuttextwin2
 EXTSYM GUIoutputiconwin,GUIOuttextwin
 
@@ -1060,87 +1060,6 @@ CurCStringPos resd 1
 GUIGameOptnsColA resb 1
 GUIGameOptnsColB resb 1
 NEWSYM GUIGameDisplayKy, resd 1
-
-SECTION .text
-
-NEWSYM DisplayGUIAbout          ; Displays the About Box
-  ;This will attach compile date onto the end of GUIGUIAboutText1
-  mov eax,GUIGUIAboutTextA1
-  mov [VERSION_STR],eax
-  ccallv placedate
-
-  GUIDrawWindowBox 11,GUIAboutDisp
-  cmp byte[EEgg],1
-  je near .eegg
-  GUIDisplayText 11,6,16,GUIGUIAboutTextA1       ; Text
-  GUIDisplayText 11,6,26,GUIGUIAboutTextA2
-  GUIDisplayTextY 11,6,36,GUIGUIAboutTextB
-  GUIDisplayText 11,6,46,GUIGUIAboutTextB1
-  GUIDisplayText 11,6,56,GUIGUIAboutTextB2
-  GUIDisplayTextY 11,6,66,GUIGUIAboutTextC
-  GUIDisplayText 11,6,76,GUIGUIAboutTextC1
-  GUIDisplayText 11,6,86,GUIGUIAboutTextC2
-  GUIDisplayText 11,6,96,GUIGUIAboutTextC3
-  GUIDisplayText 11,6,106,GUIGUIAboutTextC4
-  GUIDisplayText 11,6,116,GUIGUIAboutTextC5
-  GUIDisplayText 11,6,131,GUIGUIAboutTextD1
-  GUIDisplayText 11,6,141,GUIGUIAboutTextD2
-  GUIDisplayText 11,6,151,GUIGUIAboutTextD3
-  GUIDisplayText 11,6,161,GUIGUIAboutTextD4
-  GUIDisplayText 11,6,171,GUIGUIAboutTextD5
-  GUIDisplayText 11,6,181,GUIGUIAboutTextD6
-  GUIDisplayText 11,6,191,GUIGUIAboutTextD7
-
-  mov byte[GUItextcolor],217                       ; Buttons
-  cmp byte[GUIWincoladd],0
-  je .zero3
-  mov byte[GUItextcolor],211
-.zero3
-  DrawGUIButton 11,90,22,175,32,GUIGUIAboutTextE1,65,0,0
-  DrawGUIButton 11,90,33,175,43,GUIGUIAboutTextE2,66,0,0
-  ret
-
-.eegg                                ;Playground
-  GUIDisplayText 11,42,36,GUIGUIAboutTextF
-  GUIDisplayText 11,30,96,GUIGUIAboutTextFa
-  GUIDisplayText 11,39,106,GUIGUIAboutTextFb
-  ret
-
-SECTION .data
-GUIGUIAboutTextA1 db 'ZSNES V',ZVERSION,'             ',0 ;Need room for date
-%ifdef __MSDOS__
-GUIGUIAboutTextA2 db 'DOS VERSION',0
-%elifdef __WIN32__
-GUIGUIAboutTextA2 db 'WIN VERSION',0
-%elifdef __UNIXSDL__
-GUIGUIAboutTextA2 db 'SDL VERSION',0
-%endif
-
-GUIGUIAboutTextB  db 'CODED BY:  ',0
-GUIGUIAboutTextB1 db '    ZSKNIGHT      _DEMO_',0
-GUIGUIAboutTextB2 db '    PAGEFAULT     NACH',0
-
-GUIGUIAboutTextC  db 'ASSISTANT CODERS:',0
-GUIGUIAboutTextC1 db '    PHAROS        STATMAT',0
-GUIGUIAboutTextC2 db '    TEUF          HPSOLO',0
-GUIGUIAboutTextC3 db '    THEODDONE33   SILOH',0
-GUIGUIAboutTextC4 db '    IPHER         GRINVADER',0
-GUIGUIAboutTextC5 db '    JONAS QUINN   DEATHLIKE',0
-
-GUIGUIAboutTextD1 db 'ZSNES comes with ABSOLUTELY',0
-GUIGUIAboutTextD2 db 'NO WARRANTY.  This is free',0
-GUIGUIAboutTextD3 db 'software, and you are welcome',0
-GUIGUIAboutTextD4 db 'to redistribute it under',0
-GUIGUIAboutTextD5 db 'certain conditions; please',0
-GUIGUIAboutTextD6 db 'read ',39,'LICENSE.TXT',39,0
-GUIGUIAboutTextD7 db 'thoroughly before doing so.',0
-
-GUIGUIAboutTextE1 db 'WWW.ZSNES.COM',0
-GUIGUIAboutTextE2 db 'DOCUMENTATION',0
-
-GUIGUIAboutTextF db 'HIDDEN MESSAGE!',0
-GUIGUIAboutTextFa db 'PRESS ',39,'E',39,' TO RETURN ',0
-GUIGUIAboutTextFb db 'TO THE ABOUT BOX',0
 
 SECTION .text
 
@@ -2560,7 +2479,6 @@ GUISpeedTextZ db '-',0
 
 ;General data
 GUINetDisp db 'REMOTE',0,0,0,0,0,0,0,0,0
-GUIAboutDisp db 'ABOUT',0
 GUIMovieDisp db 'MOVIE OPTIONS',0
 GUIComboDisp db 'KEY COMBINATION EDITOR',0
 GUIAddOnsDisp db 'DEVICES SELECTOR',0

@@ -1779,7 +1779,7 @@ void DisplayBoxes(void)
 				CheckAlwaysOnTop();
 #endif
 				break;
-			case 11: asm_call(DisplayGUIAbout);      break;
+			case 11: DisplayGUIAbout();              break;
 			case 12: DisplayGUIReset();              break;
 			case 13: DisplayGUISearch();             break;
 			case 14: DisplayGUIStates();             break;

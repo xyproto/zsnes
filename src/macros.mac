@@ -27,9 +27,6 @@ bits 32
 section .text
 ; Zsnes required macros
 
-%define ZVERSION '1.52'
-
-
 %ifdef MACHO
 section .text align=16
 section .data align=4

@@ -9,6 +9,7 @@ extern u1    CheatOn;
 extern u1    CombinDataGlob[3300];
 extern u1    CombinDataLocl[3300];
 extern u1    CurPalSelect;
+extern u1    EEgg;
 extern u1    ForceHiLoROM;
 extern u1    ForceROMTiming;
 extern u1    GUICBHold2;

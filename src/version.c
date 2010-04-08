@@ -42,7 +42,7 @@ char *VERSION_PORT = "SDL - Unknown";
 #endif
 
 //Place compilation date at the end of VERSION_STR
-void placedate()
+void placedate(void)
 {
   strcpy(VERSION_STR +
          strlen(VERSION_STR) -
