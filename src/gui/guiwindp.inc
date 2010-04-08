@@ -1028,7 +1028,6 @@ NEWSYM CSStartEntry,      resd 1
 NEWSYM CSCurEntry,      resd 1
 NEWSYM CheatSearchXPos,   resd 1
 NEWSYM CheatSearchYPos,   resd 1
-NEWSYM ccheatnleftb,      resd 1
 NEWSYM CurCStextpos,      resd 1
 
 SECTION .data

@@ -1725,8 +1725,8 @@ static void Cheatmodeview(void) // View ResultsWindow
 	GUItextcolor[0] = 223; // Display Window Contents
 	u4 eax = NumCheatSrc - GUIcurrentchtsrcviewloc;
 	if (eax > 12) eax = 12;
-	u4 ccheatnleft  = eax;
-	ccheatnleftb = eax;
+	u4       ccheatnleft  = eax;
+	u4 const ccheatnleftb = eax;
 
 	CheatSearchYPos = 24;
 	CheatSearchXPos = 10;
