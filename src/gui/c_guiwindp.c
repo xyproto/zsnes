@@ -1461,19 +1461,6 @@ static char const* DisplayGUICheatConv(void)
 }
 
 
-static void GUIOuttextwin2cheat(u4 const p1, u4 const p2)
-{
-	if (ccheatnleft & 0x80000000) return;
-	char const* const GUICheatTextZ3 = DisplayGUICheatConv();
-	GUItextcolor[0] = 223;
-	GUIOuttextwin2(7, p1, p2, GUICheatTextZ3);
-	GUItextcolor[0] = (GUIWincoladd & 0xFF) == 0 ? 221 : 222; // Text
-	GUIOuttextwin2(7, p1 - 1, p2 - 1, GUICheatTextZ3);
-	ccheatnpos += 28;
-	--ccheatnleft;
-}
-
-
 void DisplayGUICheat(void)
 {
 	GUIDrawWindowBox(7, "CHEAT");
@@ -1506,7 +1493,18 @@ void DisplayGUICheat(void)
 	ccheatnleft = NumCheats - GUIcurrentcheatviewloc - 1;
 	for (u4 i = 0; i != 12; ++i)
 	{
-		GUIOuttextwin2cheat(12, 24 + 7 * i);
+		if (!(ccheatnleft & 0x80000000))
+		{
+			u4          const p1             = 12;
+			u4          const p2             = 24 + 7 * i;
+			char const* const GUICheatTextZ3 = DisplayGUICheatConv();
+			GUItextcolor[0] = 223;
+			GUIOuttextwin2(7, p1, p2, GUICheatTextZ3);
+			GUItextcolor[0] = (GUIWincoladd & 0xFF) == 0 ? 221 : 222; // Text
+			GUIOuttextwin2(7, p1 - 1, p2 - 1, GUICheatTextZ3);
+			ccheatnpos += 28;
+			--ccheatnleft;
+		}
 	}
 
 	// Scrollbar
