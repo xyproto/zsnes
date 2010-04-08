@@ -5,7 +5,6 @@
 
 extern void CSAddFlash();
 extern void CSRemoveFlash();
-extern void CheatSearchingComp();
 extern void DisplayChtSrcRes();
 extern void DisplayChtSrcRes_nosearch();
 extern void DisplayGUIAbout();
@@ -35,6 +34,7 @@ extern char  GUIGameDisplayKy[4];
 extern char  GUILoadTextA[38];
 extern char  GUIMenuItem[];
 extern char* GUICustomResTextPtr[2];
+extern u1    CheatCompareValue;
 extern u1    CheatSearchStatus;
 extern u1    CheatWinMode;
 extern u1    CurCStextpos;

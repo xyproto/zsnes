@@ -1569,11 +1569,22 @@ static void DrawWindowSearch(void)
 }
 
 
+static void CheatSearchingComp(void) // Comparative search
+{
+	GUIDisplayTextY(13, 6, 16, "SELECT COMPARISON:");
+	GUIDisplayButtonHoleTu(13, 11, 33, &CheatCompareValue, 0, "NEW VALUE IS > OLD VALUE",  0);
+	GUIDisplayButtonHoleTu(13, 11, 43, &CheatCompareValue, 1, "NEW VALUE IS < OLD VALUE",  1);
+	GUIDisplayButtonHoleTu(13, 11, 53, &CheatCompareValue, 2, "NEW VALUE IS = OLD VALUE",  2);
+	GUIDisplayButtonHoleTu(13, 11, 63, &CheatCompareValue, 3, "NEW VALUE IS != OLD VALUE", 5);
+	asm_call(DisplayChtSrcRes);
+}
+
+
 static void CheatSearching(void) // Exact Value Search
 {
 	if (CheatSrcSearchType == 1)
 	{
-		asm_call(CheatSearchingComp);
+		CheatSearchingComp();
 		return;
 	}
 

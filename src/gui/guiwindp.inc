@@ -1049,14 +1049,6 @@ NEWSYM CSAddFlash
 .flash
   ret
 
-NEWSYM CheatSearchingComp           ; Comparative search
-  GUIDisplayTextY 13,6,16,GUICSrcTextD
-  GUIDisplayButtonHoleTu 13,11,33,byte[CheatCompareValue],0,GUICSrcTextD1,0
-  GUIDisplayButtonHoleTu 13,11,43,byte[CheatCompareValue],1,GUICSrcTextD2,1
-  GUIDisplayButtonHoleTu 13,11,53,byte[CheatCompareValue],2,GUICSrcTextD3,2
-  GUIDisplayButtonHoleTu 13,11,63,byte[CheatCompareValue],3,GUICSrcTextD4,5
-  jmp DisplayChtSrcRes
-
 NEWSYM FindChtSrcRes                        ; Calculate search results
   inc edi
   mov eax,[vidbuffer]
@@ -1105,7 +1097,7 @@ NEWSYM DisplayChtSrcRes_nosearch
 SECTION .bss
 NEWSYM CheatWinMode, resb 1
 NEWSYM CheatSearchStatus, resb 1
-CheatCompareValue resd 1
+NEWSYM CheatCompareValue, resd 1
 NEWSYM NumCheatSrc,       resd 1
 NEWSYM GUIcurrentchtsrcviewloc, resd 1
 NEWSYM GUIcurrentchtsrccursloc, resd 1
@@ -1129,14 +1121,7 @@ NEWSYM GUICSStA, resd 3
 
 SECTION .data
 
-; D = Comparison Search Method
 ; G = General Use
-
-GUICSrcTextD db 'SELECT COMPARISON:',0
-GUICSrcTextD1 db 'NEW VALUE IS > OLD VALUE',0
-GUICSrcTextD2 db 'NEW VALUE IS < OLD VALUE',0
-GUICSrcTextD3 db 'NEW VALUE IS = OLD VALUE',0
-GUICSrcTextD4 db 'NEW VALUE IS != OLD VALUE',0
 
 NEWSYM GUICSrcTextG1, db '          ',0       ; All variables
 GUICSrcTextG1b db '# OF RESULTS:',0
