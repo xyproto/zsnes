@@ -4,7 +4,6 @@
 #include "../types.h"
 
 extern void CSAddFlash();
-extern void CSRemoveFlash();
 extern void DisplayGUIAbout();
 extern void DisplayGUIAddOns();
 extern void DisplayGUIChipConfig();

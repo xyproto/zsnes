@@ -1022,19 +1022,6 @@ NEWSYM ccheatnleft,            resd 1
 
 SECTION .text
 
-NEWSYM CSRemoveFlash
-.loop
-  cmp byte[esi],'_'
-  je .flash
-  cmp byte[esi],0
-  je .notflash
-  inc esi
-  jmp .loop
-.flash
-  mov byte[esi],0
-.notflash
-  ret
-
 NEWSYM CSAddFlash
 .loop
   cmp byte[esi],'_'

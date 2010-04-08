@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 
 #include "../c_init.h"
 #include "../c_intrf.h"
@@ -1603,6 +1604,13 @@ static void CheatSearchingComp(void) // Comparative search
 }
 
 
+static void CSRemoveFlash(char* const str)
+{
+	char* const i = strchr(str, '_');
+	if (i) *i = '\0';
+}
+
+
 static void CheatSearching(void) // Exact Value Search
 {
 	if (CheatSrcSearchType == 1)
@@ -1616,11 +1624,7 @@ static void CheatSearching(void) // Exact Value Search
 
 	GUIDisplayBBox(13, 10, 40, 80, 47, 167); // Input Box
 
-	if (!(GUICCFlash & 8)) // Flash Cursor Code?
-	{
-		char* esi = CSInputDisplay;
-		asm volatile("call %P1" : "+S" (esi) : "X" (CSRemoveFlash) : "cc", "memory");
-	}
+	if (!(GUICCFlash & 8)) CSRemoveFlash(CSInputDisplay); // Flash Cursor Code?
 
 	GUItextcolor[0] = CSOverValue == 1 ? 202 /* Alt Color */ : 223 /* Green Shadow */;
 	GUIOuttextwin2(13, 13, 42, CSInputDisplay);
@@ -1807,11 +1811,7 @@ static void Cheatmodeadd(void) // Add Window
 	GUIDisplayText(13, 71, 130, GUICSrcTextG1);
 
 	// Cheat Input
-	if (CurCStextpos != 0 || !(GUICCFlash & 8))
-	{
-		char* esi = CSInputDisplay;
-		asm volatile("call %P1" : "+S" (esi) : "X" (CSRemoveFlash) : "cc", "memory");
-	}
+	if (CurCStextpos != 0 || !(GUICCFlash & 8)) CSRemoveFlash(CSInputDisplay);
 	GUItextcolor[0] = CSOverValue == 1 ? 202 : 223;
 	GUIOuttextwin2(13, 13, 32, CSInputDisplay);
 	GUItextcolor[0] =
@@ -1830,10 +1830,7 @@ static void Cheatmodeadd(void) // Add Window
 		asm volatile("call %P1" : "+S" (esi) : "X" (CSAddFlash) : "cc", "memory");
 	}
 	GUIDisplayTextG(13, 13, 57, CSDescDisplay);
-	{
-		char* esi = CSDescDisplay;
-		asm volatile("call %P1" : "+S" (esi) : "X" (CSRemoveFlash) : "cc", "memory");
-	}
+	CSRemoveFlash(CSDescDisplay);
 
 	if (CSOverValue != 1 && CSInputDisplay[0] != '_')
 	{
