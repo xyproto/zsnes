@@ -2026,3 +2026,88 @@ void DisplayGameOptns(void)
 	DDrawBox(9, 190, 129, &KeyIncreaseGamma);
 	DDrawBox(9, 190, 139, &KeyDecreaseGamma);
 }
+
+
+static u1 GUICslidSet(void const* const p1) // slider var
+{
+	return 2 + *(u1 const*)p1 * 4;
+}
+
+
+static char const* GUICslidText(void const* p1) // slider var, text
+{
+	static char GUIGUIOptnsTextD2[] = "  ";
+	GUIGUIOptnsTextD2[0] = ' ';
+	char* esi = GUIGUIOptnsTextD2 + 2;
+	u1    al  = *(u1 const*)p1;
+	// turns decimal into ASCII
+	do *--esi = '0' + al % 10; while ((al /= 10) != 0);
+	return GUIGUIOptnsTextD2;
+}
+
+
+void DisplayGUIOptns(void)
+{
+#ifdef __WIN32__ // If Windows, extend window down
+	GUIwinsizey[10] = 192;
+#endif
+	GUIDrawWindowBox(10, "GUI OPTIONS");
+
+	// Setup Colors
+	switch (CurPalSelect)
+	{
+		default: TRVal2[0] = GUIRAdd;  TGVal2[0] = GUIGAdd;  TBVal2[0] = GUIBAdd;  break;
+		case 1:  TRVal2[0] = GUITRAdd; TGVal2[0] = GUITGAdd; TBVal2[0] = GUITBAdd; break;
+		case 2:  TRVal2[0] = GUIWRAdd; TGVal2[0] = GUIWGAdd; TBVal2[0] = GUIWBAdd; break;
+	}
+
+	GUIDrawSlider(10, 25, 127, 124, &TRVal2[0], GUICslidSet, GUICslidText);
+	GUIDrawSlider(10, 25, 127, 136, &TGVal2[0], GUICslidSet, GUICslidText);
+	GUIDrawSlider(10, 25, 127, 148, &TBVal2[0], GUICslidSet, GUICslidText);
+
+	GUIDisplayTextY(10, 6, 16, "GUI SWITCHES:");
+
+	// Checkboxes
+	GUIDisplayCheckboxu(10, 12, 23, &GUIRClick,       "RCLICK OPENS GUI",  1);
+	GUIDisplayCheckboxu(10, 12, 33, &lhguimouse,      "SWAP L/R MBUTTONS", 6);
+	GUIDisplayCheckboxu(10, 12, 43, &mouseshad,       "SHOW MOUSE SHADOW", 0);
+	GUIDisplayCheckboxu(10, 12, 53, &mousewrap,       "MICE WRAP GUI WIN", 0);
+#ifdef __WIN32__
+	GUIDisplayCheckboxu(10, 12, 63, &TrapMouseCursor, "TRAP MOUSE CURSOR", 3);
+	GUIDisplayCheckboxu(10, 12, 73, &MouseWheel,      "WHEEL MICE SCROLL", 1);
+#endif
+
+	GUIDisplayCheckboxu(10, 129, 23, &esctomenu,   "ESC TO GAME MENU",  7);
+	GUIDisplayCheckboxu(10, 129, 33, &JoyPad1Move, "CTRL GUI W/GPAD1",  6);
+	GUIDisplayCheckboxu(10, 129, 43, &FilteredGUI, "FILTERED GUI",      0);
+	GUIDisplayCheckboxu(10, 129, 53, &newfont,     "USE CUSTOM FONT",  12);
+	GUIDisplayCheckboxu(10, 129, 63, &savewinpos,  "SAVE GUI WIN POS",  9);
+
+	GUIDisplayTextY(       10,   6, 91,                "BG EFFECTS:");
+	GUIDisplayButtonHoleTu(10,  72, 88, &GUIEffect, 0, "NONE",    3);
+	GUIDisplayButtonHoleTu(10, 122, 88, &GUIEffect, 1, "SNOW",    1);
+	GUIDisplayButtonHoleTu(10, 182, 88, &GUIEffect, 4, "BURNING", 2);
+	GUIDisplayButtonHoleTu(10,  72, 98, &GUIEffect, 5, "SMOKE",   3);
+	GUIDisplayButtonHoleTu(10, 122, 98, &GUIEffect, 2, "WATER A", 6);
+	GUIDisplayButtonHoleTu(10, 182, 98, &GUIEffect, 3, "WATER B", 6);
+
+	GUIDisplayTextY(10,   6, 111, "COLOR:");
+	GUIDisplayText( 10,  60, 111, "BACK");
+	GUIDisplayText( 10, 100, 111, "TITLE");
+	GUIDisplayText( 10, 145, 111, "WIN");
+
+#ifdef __WIN32__
+	GUIDisplayTextY(    10,  6, 161,                     "MAIN WINDOW OPTIONS:");
+	GUIDisplayCheckboxu(10, 12, 168, &AlwaysOnTop,       "EMU ALWAYS ON TOP",               14);
+	GUIDisplayCheckboxu(10, 12, 178, &SaveMainWindowPos, "SAVE MAIN WINDOW POSITION",        2);
+	GUIDisplayCheckboxu(10, 12, 188, &AllowMultipleInst, "ALLOW MULTIPLE INSTANCES OF EMU",  1);
+#endif
+
+	GUIDisplayText(10, 16, 123, "R");
+	GUIDisplayText(10, 16, 135, "G");
+	GUIDisplayText(10, 16, 147, "B");
+	// Radio Buttons
+	GUIDisplayButtonHole(10,  48, 108, &CurPalSelect, 0);
+	GUIDisplayButtonHole(10,  88, 108, &CurPalSelect, 1);
+	GUIDisplayButtonHole(10, 133, 108, &CurPalSelect, 2);
+}

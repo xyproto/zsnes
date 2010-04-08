@@ -1774,7 +1774,7 @@ void DisplayBoxes(void)
 			case  8: DisplayNetOptns();              break;
 			case  9: DisplayGameOptns();             break;
 			case 10:
-				asm_call(DisplayGUIOptns);
+				DisplayGUIOptns();
 #ifdef __WIN32__
 				CheckAlwaysOnTop();
 #endif

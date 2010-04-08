@@ -8,7 +8,6 @@ extern void DisplayGUIAddOns();
 extern void DisplayGUIChipConfig();
 extern void DisplayGUICombo();
 extern void DisplayGUIMovies();
-extern void DisplayGUIOptns();
 extern void DisplayGUIPaths();
 extern void DisplayGUISave();
 extern void DisplayGUISpeed();
