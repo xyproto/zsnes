@@ -1057,144 +1057,9 @@ NEWSYM GUINCStA, resd 3
 FileNameMod resb 512
 CurCStringPos resd 1
 
-SECTION .text
-
-NEWSYM DisplayGameOptns        ; Misc Key Window
-  GUIDrawWindowBox 9,GUIGameDisp
-
-  GUIDisplayTextY 9,6,16,GUIGameOptnsTextA
-  mov byte[GUIGameOptnsTextA1+2],'1'
-  GUIDisplayText 9,9,25,GUIGameOptnsTextA1
-  mov byte[GUIGameOptnsTextA1+2],'2'
-  GUIDisplayText 9,9+45,25,GUIGameOptnsTextA1
-  mov byte[GUIGameOptnsTextA1+2],'3'
-  GUIDisplayText 9,9+90,25,GUIGameOptnsTextA1
-  mov byte[GUIGameOptnsTextA1+2],'4'
-  GUIDisplayText 9,9+135,25,GUIGameOptnsTextA1
-  GUIDisplayText 9,9+180,25,GUIGameOptnsTextA2
-
-  GUIDisplayTextY 9,6,34,GUIGameOptnsTextB
-  mov byte[GUIGameOptnsTextB1+2],'1'
-  GUIDisplayText 9,9,43,GUIGameOptnsTextB1
-  mov byte[GUIGameOptnsTextB1+2],'2'
-  GUIDisplayText 9,9+45,43,GUIGameOptnsTextB1
-  mov byte[GUIGameOptnsTextB1+2],'3'
-  GUIDisplayText 9,9+45*2,43,GUIGameOptnsTextB1
-  mov byte[GUIGameOptnsTextB1+2],'4'
-  GUIDisplayText 9,9+45*3,43,GUIGameOptnsTextB1
-  GUIDisplayText 9,9+45*4,43,GUIGameOptnsTextB2
-  mov byte[GUIGameOptnsTextB1+2],'5'
-  GUIDisplayText 9,9,52,GUIGameOptnsTextB1
-  mov byte[GUIGameOptnsTextB1+2],'6'
-  GUIDisplayText 9,9+45,52,GUIGameOptnsTextB1
-  mov byte[GUIGameOptnsTextB1+2],'7'
-  GUIDisplayText 9,9+45*2,52,GUIGameOptnsTextB1
-  mov byte[GUIGameOptnsTextB1+2],'8'
-  GUIDisplayText 9,9+45*3,52,GUIGameOptnsTextB1
-  GUIDisplayText 9,9+45*4,52,GUIGameOptnsTextB3
-
-  GUIDisplayTextY 9,6,61,GUIGameOptnsTextC
-  GUIDisplayText 9,9,72,GUIGameOptnsTextC1
-  GUIDisplayText 9,9+52,72,GUIGameOptnsTextC2
-  GUIDisplayText 9,9+109,72,GUIGameOptnsTextC3
-  GUIDisplayText 9,9+160,72,GUIGameOptnsTextC4
-  GUIDisplayText 9,9,82,GUIGameOptnsTextC5
-  GUIDisplayText 9,9+52,82,GUIGameOptnsTextC6
-  GUIDisplayText 9,137,82,GUIGameOptnsTextC7
-
-  GUIDisplayTextY 9,6,93,GUIGameOptnsTextD1
-  GUIDisplayText 9,9,102,GUIGameOptnsTextD1a
-  GUIDisplayText 9,9,112,GUIGameOptnsTextD1b
-  GUIDisplayText 9,9,122,GUIGameOptnsTextD1c
-%ifndef __MSDOS__
-  GUIDisplayText 9,9,132,GUIGameOptnsTextD1d
-%endif
-
-  GUIDisplayTextY 9,119,93,GUIGameOptnsTextD2
-  GUIDisplayText 9,122,102,GUIGameOptnsTextD2a
-  GUIDisplayText 9,122,112,GUIGameOptnsTextD2b
-  GUIDisplayText 9,122,122,GUIGameOptnsTextD2c
-  GUIDisplayText 9,122,132,GUIGameOptnsTextD2d
-  GUIDisplayText 9,122,142,GUIGameOptnsTextD2e
-
-  ; Draw black boxes
-  DDrawBox 9,26,22,[KeyBGDisble0]
-  DDrawBox 9,71,22,[KeyBGDisble1]
-  DDrawBox 9,116,22,[KeyBGDisble2]
-  DDrawBox 9,161,22,[KeyBGDisble3]
-  DDrawBox 9,206,22,[KeySprDisble]
-
-  DDrawBox 9,26,40,[KeyDisableSC0]
-  DDrawBox 9,71,40,[KeyDisableSC1]
-  DDrawBox 9,116,40,[KeyDisableSC2]
-  DDrawBox 9,161,40,[KeyDisableSC3]
-  DDrawBox 9,213,40,[KeyVolUp]
-  DDrawBox 9,26,49,[KeyDisableSC4]
-  DDrawBox 9,71,49,[KeyDisableSC5]
-  DDrawBox 9,116,49,[KeyDisableSC6]
-  DDrawBox 9,161,49,[KeyDisableSC7]
-  DDrawBox 9,213,49,[KeyVolDown]
-
-  DDrawBox 9,32,69,[KeyQuickLoad]
-  DDrawBox 9,90,69,[KeyQuickRst]
-  DDrawBox 9,141,69,[KeyQuickExit]
-  DDrawBox 9,199,69,[KeyQuickClock]
-  DDrawBox 9,32,79,[KeyQuickChat]
-  DDrawBox 9,109,79,[KeyQuickSnapShot]
-  DDrawBox 9,185,79,[KeyQuickSaveSPC]
-
-  DDrawBox 9,77,99,[KeyUsePlayer1234]
-  DDrawBox 9,77,109,[KeyResetAll]
-  DDrawBox 9,77,119,[KeyDisplayFPS]
-%ifndef __MSDOS__
-  DDrawBox 9,77,129,[KeyDisplayBatt]
-%endif
-
-  DDrawBox 9,190,99,[KeyNewGfxSwt]
-  DDrawBox 9,190,109,[KeyWinDisble]
-  DDrawBox 9,190,119,[KeyOffsetMSw]
-  DDrawBox 9,190,129,[KeyIncreaseGamma]
-  DDrawBox 9,190,139,[KeyDecreaseGamma]
-  ret
-
-SECTION .bss
 GUIGameOptnsColA resb 1
 GUIGameOptnsColB resb 1
 NEWSYM GUIGameDisplayKy, resd 1
-
-SECTION .data
-
-GUIGameOptnsTextA db 'BG DISABLES:',0
-GUIGameOptnsTextA1 db 'BG#',0
-GUIGameOptnsTextA2 db 'OBJ',0
-
-GUIGameOptnsTextB db 'SOUND KEYS:',0
-GUIGameOptnsTextB1 db 'CH#',0
-GUIGameOptnsTextB2 db '+VOL',0
-GUIGameOptnsTextB3 db '-VOL',0
-
-GUIGameOptnsTextC db 'QUICK KEYS:',0
-GUIGameOptnsTextC1 db 'LOAD',0
-GUIGameOptnsTextC2 db 'RESET',0
-GUIGameOptnsTextC3 db 'EXIT',0
-GUIGameOptnsTextC4 db 'CLOCK',0
-GUIGameOptnsTextC5 db 'CHAT',0
-GUIGameOptnsTextC6 db 'SNAPSHOT',0
-GUIGameOptnsTextC7 db 'SAVE SPC',0
-
-GUIGameOptnsTextD1 db 'MISC TOGGLES:',0
-GUIGameOptnsTextD1a db 'USE PL12/34',0
-GUIGameOptnsTextD1b db 'PANIC KEY',0
-GUIGameOptnsTextD1c db 'DISPLAY FPS',0
-GUIGameOptnsTextD1d db 'BATT POWER',0
-
-GUIGameOptnsTextD2 db 'GFX TOGGLES:',0
-GUIGameOptnsTextD2a db 'NEW GFX ENG',0
-GUIGameOptnsTextD2b db 'BG WINDOW',0
-GUIGameOptnsTextD2c db 'OFFSET MODE',0
-GUIGameOptnsTextD2d db '+ GAMMA',0
-GUIGameOptnsTextD2e db '- GAMMA',0
-
 
 SECTION .text
 
@@ -2847,7 +2712,6 @@ GUISpeedTextZ db '-',0
 
 ;General data
 GUINetDisp db 'REMOTE',0,0,0,0,0,0,0,0,0
-GUIGameDisp db 'MISC KEYS',0
 GUIGUIDisp db 'GUI OPTIONS',0
 GUIAboutDisp db 'ABOUT',0
 GUIMovieDisp db 'MOVIE OPTIONS',0

@@ -805,6 +805,21 @@ static void DGOptnsBorderBox(u4 const p1, u4 const p2, u4 const p3)
 }
 
 
+static void DDrawBox(u4 const p1, s4 const p2, s4 const p3, u4 const* const p4)
+{
+	s4 const eax = GUIwinposx[p1] + p2 + 1;
+	s4       ebx = GUIwinposy[p1] + p3 + 1;
+	u4       esi = 7;
+	do GUIHLine(eax, eax + 20, ebx++, 167); while (--esi != 0);
+	sprintf(GUIGameDisplayKy, "%.3s", ScanCodeListing + *p4 * 3);
+	GUItextcolor[0] = 223;
+	GUIOuttextwin2(p1, p2 + 4, p3 + 3, GUIGameDisplayKy);
+	GUItextcolor[0] = (GUIWincoladd & 0xFF) == 0 ? 221 : 222;
+	GUIOuttextwin2(p1, p2 + 3, p3 + 2, GUIGameDisplayKy);
+	DGOptnsBorderBox(p1, p2, p3);
+}
+
+
 void DisplayGUIInput(void)
 {
 	GUIDrawWindowBox(3, "INPUT DEVICE");
@@ -1923,3 +1938,91 @@ void DisplayGUISearch(void)
 
 
 void DisplayNetOptns(void) {}
+
+
+void DisplayGameOptns(void)
+{
+	GUIDrawWindowBox(9, "MISC KEYS");
+
+	GUIDisplayTextY(9, 6,       16, "BG DISABLES:");
+	GUIDisplayText( 9, 9,       25, "BG1");
+	GUIDisplayText( 9, 9 +  45, 25, "BG2");
+	GUIDisplayText( 9, 9 +  90, 25, "BG3");
+	GUIDisplayText( 9, 9 + 135, 25, "BG4");
+	GUIDisplayText( 9, 9 + 180, 25, "OBJ");
+
+	GUIDisplayTextY(9, 6,          34, "SOUND KEYS:");
+	GUIDisplayText( 9, 9,          43, "CH1");
+	GUIDisplayText( 9, 9 + 45,     43, "CH2");
+	GUIDisplayText( 9, 9 + 45 * 2, 43, "CH3");
+	GUIDisplayText( 9, 9 + 45 * 3, 43, "CH4");
+	GUIDisplayText( 9, 9 + 45 * 4, 43, "+VOL");
+	GUIDisplayText( 9, 9,          52, "CH5");
+	GUIDisplayText( 9, 9 + 45,     52, "CH6");
+	GUIDisplayText( 9, 9 + 45 * 2, 52, "CH7");
+	GUIDisplayText( 9, 9 + 45 * 3, 52, "CH8");
+	GUIDisplayText( 9, 9 + 45 * 4, 52, "-VOL");
+
+	GUIDisplayTextY(9, 6,       61, "QUICK KEYS:");
+	GUIDisplayText( 9, 9,       72, "LOAD");
+	GUIDisplayText( 9, 9 +  52, 72, "RESET");
+	GUIDisplayText( 9, 9 + 109, 72, "EXIT");
+	GUIDisplayText( 9, 9 + 160, 72, "CLOCK");
+	GUIDisplayText( 9, 9,       82, "CHAT");
+	GUIDisplayText( 9, 9 +  52, 82, "SNAPSHOT");
+	GUIDisplayText( 9, 137,     82, "SAVE SPC");
+
+	GUIDisplayTextY(9, 6,  93, "MISC TOGGLES:");
+	GUIDisplayText( 9, 9, 102, "USE PL12/34");
+	GUIDisplayText( 9, 9, 112, "PANIC KEY");
+	GUIDisplayText( 9, 9, 122, "DISPLAY FPS");
+#ifndef __MSDOS__
+	GUIDisplayText( 9, 9, 132, "BATT POWER");
+#endif
+
+	GUIDisplayTextY(9, 119,  93, "GFX TOGGLES:");
+	GUIDisplayText( 9, 122, 102, "NEW GFX ENG");
+	GUIDisplayText( 9, 122, 112, "BG WINDOW");
+	GUIDisplayText( 9, 122, 122, "OFFSET MODE");
+	GUIDisplayText( 9, 122, 132, "+ GAMMA");
+	GUIDisplayText( 9, 122, 142, "- GAMMA");
+
+	// Draw black boxes
+	DDrawBox(9,  26,  22, &KeyBGDisble0);
+	DDrawBox(9,  71,  22, &KeyBGDisble1);
+	DDrawBox(9, 116,  22, &KeyBGDisble2);
+	DDrawBox(9, 161,  22, &KeyBGDisble3);
+	DDrawBox(9, 206,  22, &KeySprDisble);
+
+	DDrawBox(9,  26,  40, &KeyDisableSC0);
+	DDrawBox(9,  71,  40, &KeyDisableSC1);
+	DDrawBox(9, 116,  40, &KeyDisableSC2);
+	DDrawBox(9, 161,  40, &KeyDisableSC3);
+	DDrawBox(9, 213,  40, &KeyVolUp);
+	DDrawBox(9,  26,  49, &KeyDisableSC4);
+	DDrawBox(9,  71,  49, &KeyDisableSC5);
+	DDrawBox(9, 116,  49, &KeyDisableSC6);
+	DDrawBox(9, 161,  49, &KeyDisableSC7);
+	DDrawBox(9, 213,  49, &KeyVolDown);
+
+	DDrawBox(9,  32,  69, &KeyQuickLoad);
+	DDrawBox(9,  90,  69, &KeyQuickRst);
+	DDrawBox(9, 141,  69, &KeyQuickExit);
+	DDrawBox(9, 199,  69, &KeyQuickClock);
+	DDrawBox(9,  32,  79, &KeyQuickChat);
+	DDrawBox(9, 109,  79, &KeyQuickSnapShot);
+	DDrawBox(9, 185,  79, &KeyQuickSaveSPC);
+
+	DDrawBox(9,  77,  99, &KeyUsePlayer1234);
+	DDrawBox(9,  77, 109, &KeyResetAll);
+	DDrawBox(9,  77, 119, &KeyDisplayFPS);
+#ifndef __MSDOS__
+	DDrawBox(9,  77, 129, &KeyDisplayBatt);
+#endif
+
+	DDrawBox(9, 190,  99, &KeyNewGfxSwt);
+	DDrawBox(9, 190, 109, &KeyWinDisble);
+	DDrawBox(9, 190, 119, &KeyOffsetMSw);
+	DDrawBox(9, 190, 129, &KeyIncreaseGamma);
+	DDrawBox(9, 190, 139, &KeyDecreaseGamma);
+}

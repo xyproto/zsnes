@@ -11,6 +11,7 @@ void DisplayGUISearch(void);
 void DisplayGUISound(void);     // Sound Related Options
 void DisplayGUIStates(void);    // Save/Load State Confirmation
 void DisplayGUIVideo(void);
+void DisplayGameOptns(void);    // Misc Key Window
 void DisplayNetOptns(void);
 
 extern u1 GUIStatesText5;

@@ -1772,7 +1772,7 @@ void DisplayBoxes(void)
 			case  6: DisplayGUISound();              break;
 			case  7: DisplayGUICheat();              break;
 			case  8: DisplayNetOptns();              break;
-			case  9: asm_call(DisplayGameOptns);     break;
+			case  9: DisplayGameOptns();             break;
 			case 10:
 				asm_call(DisplayGUIOptns);
 #ifdef __WIN32__
