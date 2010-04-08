@@ -1563,6 +1563,108 @@ void DisplayGUICheat(void)
 }
 
 
+static void Cheatmodeview(void) // View ResultsWindow
+{
+	static char GUICSrcTextE[] = "ADDR   VALUE     PVALUE";
+	GUICSrcTextE[12] = CheatSrcByteSize == 3 || CheatSrcByteBase != 0 ? ' ' : '\0';
+
+	GUIwinsizex[13] = 185;
+	GUIwinsizey[13] = 150;
+	asm_call(DrawWindowSearch);
+
+	GUIDisplayText(13, 10, 12, GUICSrcTextE); // Text
+
+	GUIDisplayBBoxS(13, 5, 20, 171, 108, 167); // Box
+
+	{ u4 edi = GUIcurrentchtsrcviewloc;
+		asm volatile("call %P3" : "=a" (NumCheatSrc), "=S" (ccheatnpos), "+D" (edi) : "X" (FindChtSrcRes) : "cc", "memory", "edx", "ebx");
+	}
+
+	GUItextcolor[0] = 223; // Display Window Contents
+	u4 eax = NumCheatSrc - GUIcurrentchtsrcviewloc;
+	if (eax > 12) eax = 12;
+	ccheatnleft  = eax;
+	ccheatnleftb = eax;
+
+	CheatSearchYPos = 24;
+	CheatSearchXPos = 10;
+	CSCurEntry      = CSStartEntry;
+
+	if (ccheatnleft != 0)
+	{
+		u1 CheatLooped  = 0;
+		u4 curentryleft = GUIcurrentchtsrccursloc - GUIcurrentchtsrcviewloc;
+		DrawGUIWinBox2(13, 5, 171, 7, 224, 22 + curentryleft * 7);
+		do
+		{
+			do
+			{
+				if (curentryleft-- == 0) curentryval = CSCurEntry;
+
+				converthex(GUICSrcTextG1, CSCurEntry + 0x7E0000, 3);
+				GUIOuttextwin2(13, CheatSearchXPos, CheatSearchYPos, GUICSrcTextG1);
+
+				char* const esi = GUICSrcTextG1;
+				u4    const eax = *(u4 const*)(wramdata + CSCurEntry); // XXX ugly cast
+				if (CheatSrcByteBase != 0)
+				{
+					converthex(esi, eax, CheatSrcByteSize + 1);
+				}
+				else
+				{
+					convertnum(esi, eax & SrcMask[CheatSrcByteSize]);
+				}
+				CheatSearchXPos += 42;
+				GUIOuttextwin2(13, CheatSearchXPos, CheatSearchYPos, GUICSrcTextG1);
+
+				CheatSearchXPos += 60;
+				if (GUICSrcTextE[12] != '\0')
+				{
+					char* const esi = GUICSrcTextG1;
+					u4    const eax = *(u4 const*)(vidbuffer + 129600 + CSCurEntry); // XXX ugly cast
+					if (CheatSrcByteBase != 0)
+					{
+						converthex(esi, eax, CheatSrcByteSize + 1);
+					}
+					else
+					{
+						convertnum(esi, eax & SrcMask[CheatSrcByteSize]);
+					}
+					GUIOuttextwin2(13, CheatSearchXPos, CheatSearchYPos, GUICSrcTextG1);
+				}
+				CheatSearchXPos -= 102;
+				CheatSearchYPos +=   7;
+
+				do // Search for next entry
+				{
+					++CSCurEntry;
+				}
+				while (!(vidbuffer[129600 + 65536 * 2 + (CSCurEntry >> 3)] & (1 << (CSCurEntry & 7))));
+			}
+			while (--ccheatnleft != 0);
+			GUItextcolor[0] = (GUIWincoladd & 0xFF) == 0 ? 221 : 222;
+			CheatSearchYPos = 23;
+			CheatSearchXPos = 11;
+			CSCurEntry      = CSStartEntry;
+			ccheatnleft     = ccheatnleftb;
+		}
+		while (++CheatLooped != 2);
+	}
+	// Slidebar
+	// win#,X,Y start, %4-List Loc, %5-List size, %6-Screen size, %7-Bar Size
+	DrawSlideBarWin(13, 173, 28, GUIcurrentchtsrcviewloc, NumCheatSrc, 12, 73, GUICSStA);
+	if ((GUICHold & 0xFF) == 11) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd + 3) & 0x000000FF;
+	GUIDisplayIconWin(13, 173, 20, GUIIconDataUpArrow);
+	if ((GUICHold & 0xFF) == 11) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd - 3) & 0x000000FF;
+	if ((GUICHold & 0xFF) == 12) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd + 3) & 0x000000FF;
+	GUIDisplayIconWin(13, 173, 101, GUIIconDataDownArrow);
+	if ((GUICHold & 0xFF) == 12) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd - 3) & 0x000000FF;
+	GUItextcolor[0] = (GUIWincoladd & 0xFF) == 0 ? 217 : 211;
+	DrawGUIButton(13,  70, 140, 130, 152, "RETURN", 54, 0, 1);
+	DrawGUIButton(13, 140, 140, 180, 152, "ADD",    55, 0, 1);
+}
+
+
 static void Cheatmodeadd(void) // Add Window
 {
 	GUIwinsizex[13] = 170;
@@ -1579,8 +1681,8 @@ static void Cheatmodeadd(void) // Add Window
 	GUIDisplayBBox(13, 10, 55, 126,  62, 167);
 	GUIDisplayBBox(13, 10, 80,  80, 120, 167);
 
-	DrawGUIButton(13,  60, 155, 120, 167, GUICSrcTextG2d, 56, 0, 1); // Buttons
-	DrawGUIButton(13, 130, 155, 160, 167, GUICSrcTextG2e, 57, 0, 1);
+	DrawGUIButton(13,  60, 155, 120, 167, "RETURN", 56, 0, 1); // Buttons
+	DrawGUIButton(13, 130, 155, 160, 167, "ADD",    57, 0, 1);
 
 	GUIDisplayText(13, 5, 130, GUICSrcTextG1a); // Max Value Text
 	u4    const eax = SrcMask[CheatSrcByteSize];
@@ -1663,9 +1765,9 @@ void DisplayGUISearch(void)
 {
 	switch (CheatWinMode) // Determine which CS window we're on
 	{
-		case 1: asm_call(Incheatmode);   return;
-		case 2: asm_call(Cheatmodeview); return;
-		case 3: Cheatmodeadd();          return;
+		case 1: asm_call(Incheatmode); return;
+		case 2: Cheatmodeview();       return;
+		case 3: Cheatmodeadd();        return;
 	}
 
 	// Opening Screen

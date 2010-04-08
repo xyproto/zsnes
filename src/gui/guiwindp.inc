@@ -414,27 +414,6 @@ SECTION .text
   ccallv GUIDisplayIconWin, %1, %2, %3, [GUITemp]
 %endmacro
 
-%macro GUIDisplayBBoxS 6                   ; Black Box W/Border
-  mov dword[GUIWincol],148+10              ; Minus right side
-  cmp byte[cwindrawn],1
-  jne %%noone
-  mov dword[GUIWincol],148+5
-%%noone
-  cmp byte[cwindrawn],0
-  jne %%nozero
-  mov dword[GUIWincol],148
-%%nozero
-  DrawGUIWinBox %1,%2,%3,%4,%5,%6
-  mov dl,[GUIWincol]
-  DrawGUIWinBox %1,%2,%3-3+2,%4,%3+1,dl
-  mov dl,[GUIWincol]
-  inc dl
-  DrawGUIWinBox %1,%2-1,%3,%2,%5,dl
-  mov dl,[GUIWincol]
-  add dl,4
-  DrawGUIWinBox %1,%2,%5+1,%4,%5-1,dl
-%endmacro
-
 %macro GUIDisplayBBox 6                     ; Black Box W/Border
   mov dword[GUIWincol],148+10
   cmp byte[cwindrawn],1
@@ -1153,7 +1132,7 @@ CheatSearchingComp:           ; Comparative search
   GUIDisplayButtonHoleTu 13,11,63,byte[CheatCompareValue],3,GUICSrcTextD4,5
   jmp DisplayChtSrcRes
 
-FindChtSrcRes:                        ; Calculate search results
+NEWSYM FindChtSrcRes                        ; Calculate search results
   inc edi
   mov eax,[vidbuffer]
   add eax,129600+65536*2
@@ -1198,184 +1177,18 @@ DisplayChtSrcRes:                    ; Buttons (Restart/View/Search)
   mov dword[GUIcurrentchtsrccursloc],0
   ret
 
-NEWSYM Cheatmodeview                       ; View ResultsWindow
-  mov byte[GUICSrcTextE+12],32
-  cmp byte[CheatSrcByteSize],3
-  jne .yesprev
-  cmp byte[CheatSrcByteBase],0
-  jne .yesprev
-  mov byte[GUICSrcTextE+12],0
-.yesprev
-  mov dword[GUIwinsizex+13*4],185
-  mov dword[GUIwinsizey+13*4],150
-  call DrawWindowSearch
-
-  GUIDisplayText 13,10,12,GUICSrcTextE   ; Text
-
-  GUIDisplayBBoxS 13,5,20,171,108,167      ; Box
-
-  mov edi,[GUIcurrentchtsrcviewloc]
-  call FindChtSrcRes
-  mov [NumCheatSrc],eax
-  mov [ccheatnpos],esi
-
-  mov byte[GUItextcolor],223              ; Display Window Contents
-  mov eax,[NumCheatSrc]
-  sub eax,[GUIcurrentchtsrcviewloc]
-  cmp eax,12
-  jbe .notof
-  mov eax,12
-.notof
-  mov [ccheatnleft],eax
-  mov [ccheatnleftb],eax
-
-  mov dword[CheatSearchYPos],24
-  mov dword[CheatSearchXPos],10
-  mov eax,[CSStartEntry]
-  mov [CSCurEntry],eax
-
-  cmp dword[ccheatnleft],0
-  je near .noentry
-  mov byte[CheatLooped],0
-  mov ebx,[GUIcurrentchtsrccursloc]
-  sub ebx,[GUIcurrentchtsrcviewloc]
-  mov [curentryleft],ebx
-  mov eax,ebx
-  lea ebx,[ebx*8]
-  sub ebx,eax
-  add ebx,22
-  DrawGUIWinBox2 13,5,171,7,224
-.nextdisplay
-  cmp dword[curentryleft],0
-  jne .notzero
-  mov eax,[CSCurEntry]
-  mov [curentryval],eax
-.notzero
-  dec dword[curentryleft]
-
-  mov eax,[CSCurEntry]
-  add eax,7E0000h
-  ccallv converthex, GUICSrcTextG1, eax, 3
-  ccallv GUIOuttextwin2, 13, [CheatSearchXPos], [CheatSearchYPos], GUICSrcTextG1
-
-  mov esi,GUICSrcTextG1
-  mov ebx,[wramdata]
-  add ebx,[CSCurEntry]
-  mov eax,[ebx]
-  cmp byte[CheatSrcByteBase],0
-  je .dec
-  xor ecx,ecx
-  mov cl,[CheatSrcByteSize]
-  inc ecx
-  ccallv converthex, esi, eax, ecx
-  jmp .hex
-.dec
-  xor ebx,ebx
-  mov bl,[CheatSrcByteSize]
-  and eax,[SrcMask+ebx*4]
-  ccallv convertnum, esi, eax
-.hex
-  add dword[CheatSearchXPos],42
-  ccallv GUIOuttextwin2, 13, [CheatSearchXPos], [CheatSearchYPos], GUICSrcTextG1
-
-  add dword[CheatSearchXPos],60
-  cmp byte[GUICSrcTextE+12],0
-  je near .noprevious
-  mov esi,GUICSrcTextG1
-  mov ebx,[vidbuffer]
-  add ebx,129600
-  add ebx,[CSCurEntry]
-  mov eax,[ebx]
-  cmp byte[CheatSrcByteBase],0
-  je .decb
-  xor ecx,ecx
-  mov cl,[CheatSrcByteSize]
-  inc ecx
-  ccallv converthex, esi, eax, ecx
-  jmp .hexb
-.decb
-  xor ebx,ebx
-  mov bl,[CheatSrcByteSize]
-  and eax,[SrcMask+ebx*4]
-  ccallv convertnum, esi, eax
-.hexb
-  ccallv GUIOuttextwin2, 13, [CheatSearchXPos], [CheatSearchYPos], GUICSrcTextG1
-.noprevious
-  sub dword[CheatSearchXPos],102
-  add dword[CheatSearchYPos],7
-
-.nextentry                                      ; Search for next entry
-  inc dword[CSCurEntry]
-  mov eax,[CSCurEntry]
-  mov ecx,eax
-  and ecx,7
-  mov edx,1
-  shr eax,3
-  shl edx,cl
-  add eax,dword[vidbuffer]
-  add eax,129600+65536*2
-  test byte[eax],dl
-  jz .nextentry
-  dec dword[ccheatnleft]
-  jnz near .nextdisplay
-  mov byte[GUItextcolor],221
-  cmp byte[GUIWincoladd],0
-  je .zero4
-  mov byte[GUItextcolor],222
-.zero4
-  mov dword[CheatSearchYPos],23
-  mov dword[CheatSearchXPos],11
-  mov eax,[CSStartEntry]
-  mov [CSCurEntry],eax
-  mov eax,[ccheatnleftb]
-  mov [ccheatnleft],eax
-  inc byte[CheatLooped]
-  cmp byte[CheatLooped],2
-  jne near .nextdisplay
-.noentry
-; Slidebar
-  ; win#,X,Y start, %4-List Loc, %5-List size, %6-Screen size, %7-Bar Size
-  ccallv DrawSlideBarWin, 13, 173, 28, [GUIcurrentchtsrcviewloc], [NumCheatSrc], 12, 73, GUICSStA
-  cmp byte[GUICHold],11
-  jne .noholda
-  add byte[GUIWincoladd],3
-.noholda
-  ccallv GUIDisplayIconWin, 13, 173, 20, GUIIconDataUpArrow
-  cmp byte[GUICHold],11
-  jne .noholda2
-  sub byte[GUIWincoladd],3
-.noholda2
-  cmp byte[GUICHold],12
-  jne .noholdb
-  add byte[GUIWincoladd],3
-.noholdb
-  ccallv GUIDisplayIconWin, 13, 173, 101, GUIIconDataDownArrow
-  cmp byte[GUICHold],12
-  jne .noholdb2
-  sub byte[GUIWincoladd],3
-.noholdb2
-  mov byte[GUItextcolor],217
-  cmp byte[GUIWincoladd],0
-  je .zero3
-  mov byte[GUItextcolor],211
-.zero3
-  DrawGUIButton 13,70,140,130,152,GUICSrcTextG2d,54,0,1
-  DrawGUIButton 13,140,140,180,152,GUICSrcTextG2e,55,0,1
-  ret
-
 SECTION .bss
 NEWSYM CheatWinMode, resb 1
 NEWSYM CheatSearchStatus, resb 1
 CheatCompareValue resd 1
 NEWSYM NumCheatSrc,       resd 1
-GUIcurrentchtsrcviewloc resd 1
-GUIcurrentchtsrccursloc resd 1
-CSStartEntry      resd 1
-CSCurEntry      resd 1
-CheatSearchXPos   resd 1
+NEWSYM GUIcurrentchtsrcviewloc, resd 1
+NEWSYM GUIcurrentchtsrccursloc, resd 1
+NEWSYM CSStartEntry,      resd 1
+NEWSYM CSCurEntry,      resd 1
+NEWSYM CheatSearchXPos,   resd 1
 NEWSYM CheatSearchYPos,   resd 1
-CheatLooped       resd 1
-ccheatnleftb      resd 1
+NEWSYM ccheatnleftb,      resd 1
 NEWSYM CurCStextpos,      resd 1
 
 SECTION .data
@@ -1385,17 +1198,15 @@ NEWSYM CSDescDisplay,  db '                  ',0,0
 
 SECTION .bss
 NEWSYM curentryval, resd 1
-curentryleft resd 1
 NEWSYM curaddrvalcs, resd 1
 NEWSYM curvaluecs, resd 1
-GUICSStA resd 3
+NEWSYM GUICSStA, resd 3
 
 SECTION .data
 
 ; B = Exact Value Search
 ; C = Comparison Search Message
 ; D = Comparison Search Method
-; E = View Results
 ; G = General Use
 
 GUICSrcTextB1 db 'ENTER VALUE:',0             ; Make Yellow
@@ -1411,16 +1222,12 @@ GUICSrcTextD2 db 'NEW VALUE IS < OLD VALUE',0
 GUICSrcTextD3 db 'NEW VALUE IS = OLD VALUE',0
 GUICSrcTextD4 db 'NEW VALUE IS != OLD VALUE',0
 
-GUICSrcTextE db 'ADDR   VALUE     PVALUE',0
-
 NEWSYM GUICSrcTextG1, db '          ',0       ; All variables
 NEWSYM GUICSrcTextG1a, db 'MAX VALUE:',0
 GUICSrcTextG1b db '# OF RESULTS:',0
 GUICSrcTextG2a db 'SEARCH',0          ; Buttons
 GUICSrcTextG2b db 'RESTART',0
 GUICSrcTextG2c db 'VIEW',0
-NEWSYM GUICSrcTextG2d, db 'RETURN',0
-NEWSYM GUICSrcTextG2e, db 'ADD',0
 
 SECTION .bss
 CCursLoc resd 1
