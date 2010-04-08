@@ -1920,3 +1920,6 @@ void DisplayGUISearch(void)
 	GUItextcolor[0] = (GUIWincoladd & 0xFF) == 0 ? 217 : 211; // Button
 	DrawGUIButton(13, 95, 140, 140, 152, "START", 50, 0, 1);
 }
+
+
+void DisplayNetOptns(void) {}

@@ -13,7 +13,6 @@ extern void DisplayGUIPaths();
 extern void DisplayGUISave();
 extern void DisplayGUISpeed();
 extern void DisplayGameOptns();
-extern void DisplayNetOptns();
 
 extern char  CMovieExt;
 extern char  CSDescDisplay[20];

@@ -1053,12 +1053,6 @@ CViewLoc resd 1
 NViewLoc resd 1
 TViewLoc resd 1
 
-SECTION .text
-
-NEWSYM DisplayNetOptns
-  ret
-
-SECTION .bss
 NEWSYM GUINCStA, resd 3
 FileNameMod resb 512
 CurCStringPos resd 1
