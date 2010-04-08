@@ -1489,7 +1489,7 @@ void DisplayGUICheat(void)
 	}
 
 	u1 const* ccheatnpos  = cheatdata + GUIcurrentcheatviewloc * 28; // Green Text
-	ccheatnleft = NumCheats - GUIcurrentcheatviewloc - 1;
+	u4        ccheatnleft = NumCheats - GUIcurrentcheatviewloc - 1;
 	for (u4 i = 0; i != 12; ++i)
 	{
 		if (!(ccheatnleft & 0x80000000))
@@ -1725,7 +1725,7 @@ static void Cheatmodeview(void) // View ResultsWindow
 	GUItextcolor[0] = 223; // Display Window Contents
 	u4 eax = NumCheatSrc - GUIcurrentchtsrcviewloc;
 	if (eax > 12) eax = 12;
-	ccheatnleft  = eax;
+	u4 ccheatnleft  = eax;
 	ccheatnleftb = eax;
 
 	CheatSearchYPos = 24;

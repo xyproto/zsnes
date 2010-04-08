@@ -72,7 +72,6 @@ extern u4    NumCombo;
 extern u4    NumComboGlob;
 extern u4    NumComboLocl;
 extern u4    SrcMask[4];
-extern u4    ccheatnleft;
 extern u4    ccheatnleftb;
 extern u4    curaddrvalcs;
 extern u4    curentryval;
