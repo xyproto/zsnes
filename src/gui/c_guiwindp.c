@@ -1445,9 +1445,8 @@ void DisplayGUISound(void)
 }
 
 
-static char const* DisplayGUICheatConv(void)
+static char const* DisplayGUICheatConv(u1 const* const c)
 {
-	u1   const* const c    = ccheatnpos;
 	char const* const tgl  =
 		c[-28] & 0x80 ? "SRC" :
 		c[0]   & 0x04 ? "OFF" :
@@ -1489,7 +1488,7 @@ void DisplayGUICheat(void)
 		DrawGUIWinBox2(7, 5, 229, 7, 224, ebx);
 	}
 
-	ccheatnpos  = cheatdata + GUIcurrentcheatviewloc * 28; // Green Text
+	u1 const* ccheatnpos  = cheatdata + GUIcurrentcheatviewloc * 28; // Green Text
 	ccheatnleft = NumCheats - GUIcurrentcheatviewloc - 1;
 	for (u4 i = 0; i != 12; ++i)
 	{
@@ -1497,7 +1496,7 @@ void DisplayGUICheat(void)
 		{
 			u4          const p1             = 12;
 			u4          const p2             = 24 + 7 * i;
-			char const* const GUICheatTextZ3 = DisplayGUICheatConv();
+			char const* const GUICheatTextZ3 = DisplayGUICheatConv(ccheatnpos);
 			GUItextcolor[0] = 223;
 			GUIOuttextwin2(7, p1, p2, GUICheatTextZ3);
 			GUItextcolor[0] = (GUIWincoladd & 0xFF) == 0 ? 221 : 222; // Text

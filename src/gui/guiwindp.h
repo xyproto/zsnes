@@ -43,7 +43,6 @@ extern u1    ShowMMXSupport;
 extern u1    lameExists;
 extern u1    mencoderExists;
 extern u1*   GUIInputRefP[5];
-extern u1*   ccheatnpos;
 extern u4    CSCurEntry;
 extern u4    CSStartEntry;
 extern u4    CheatSearchXPos;

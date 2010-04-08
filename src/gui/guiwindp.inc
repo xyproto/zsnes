@@ -1017,7 +1017,6 @@ NEWSYM GUICStA, resd 3
 NEWSYM GUIcurrentcheatviewloc, resd 1
 NEWSYM GUIcurrentcheatcursloc, resd 1
 NEWSYM GUIcurrentcheatwin,     resd 1
-NEWSYM ccheatnpos,             resd 1
 NEWSYM ccheatnleft,            resd 1
 
 NEWSYM CheatWinMode, resb 1
