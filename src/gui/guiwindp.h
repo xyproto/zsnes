@@ -5,8 +5,6 @@
 
 extern void CSAddFlash();
 extern void CSRemoveFlash();
-extern void DisplayChtSrcRes();
-extern void DisplayChtSrcRes_nosearch();
 extern void DisplayGUIAbout();
 extern void DisplayGUIAddOns();
 extern void DisplayGUIChipConfig();

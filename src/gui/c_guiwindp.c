@@ -1,6 +1,5 @@
 #include <stdio.h>
 
-#include "../asm_call.h"
 #include "../c_init.h"
 #include "../c_intrf.h"
 #include "../cfg.h"
@@ -1569,6 +1568,30 @@ static void DrawWindowSearch(void)
 }
 
 
+static void DisplayChtSrcResNoSearch(void)
+{
+	DrawGUIButton(13, 10, 140,  60, 152, "RESTART", 51, 0, 1);
+	DrawGUIButton(13, 70, 140, 110, 152, "VIEW",    52, 0, 1);
+
+	// Call and display # of results
+	u4 eax;
+	u4 edi = 0;
+	asm volatile("call %P2" : "=a" (eax), "+D" (edi) : "X" (FindChtSrcRes) : "cc", "memory", "edx", "ebx", "esi");
+	convertnum(GUICSrcTextG1, eax);
+	GUIDisplayText(13, 12, 125, "# OF RESULTS:");
+	GUIDisplayText(13, 97, 125, GUICSrcTextG1);
+	GUIcurrentchtsrcviewloc = 0;
+	GUIcurrentchtsrccursloc = 0;
+}
+
+
+static void DisplayChtSrcRes(void) // Buttons (Restart/View/Search)
+{
+	DrawGUIButton(13, 120, 140, 170, 152, "SEARCH", 53, 0, 1);
+	DisplayChtSrcResNoSearch();
+}
+
+
 static void CheatSearchingComp(void) // Comparative search
 {
 	GUIDisplayTextY(13, 6, 16, "SELECT COMPARISON:");
@@ -1576,7 +1599,7 @@ static void CheatSearchingComp(void) // Comparative search
 	GUIDisplayButtonHoleTu(13, 11, 43, &CheatCompareValue, 1, "NEW VALUE IS < OLD VALUE",  1);
 	GUIDisplayButtonHoleTu(13, 11, 53, &CheatCompareValue, 2, "NEW VALUE IS = OLD VALUE",  2);
 	GUIDisplayButtonHoleTu(13, 11, 63, &CheatCompareValue, 3, "NEW VALUE IS != OLD VALUE", 5);
-	asm_call(DisplayChtSrcRes);
+	DisplayChtSrcRes();
 }
 
 
@@ -1623,7 +1646,7 @@ static void CheatSearching(void) // Exact Value Search
 		converthex(esi, eax, CheatSrcByteSize + 1);
 	}
 	GUIDisplayText(13, 71, 65, GUICSrcTextG1); // Max Size Text
-	asm_call(DisplayChtSrcRes);
+	DisplayChtSrcRes();
 }
 
 
@@ -1644,7 +1667,7 @@ static void Incheatmode(void) // Return and Re-search Window
 		GUIDisplayText(13, 5, 30, "AND COME BACK WHEN");
 		GUIDisplayText(13, 5, 40, "THE NEXT SEARCH");
 		GUIDisplayText(13, 5, 50, "SHOULD BE PROCESSED");
-		asm_call(DisplayChtSrcRes_nosearch);
+		DisplayChtSrcResNoSearch();
 	}
 }
 

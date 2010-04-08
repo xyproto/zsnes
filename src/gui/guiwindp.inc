@@ -19,7 +19,7 @@
 
 
 
-EXTSYM VERSION_STR,placedate,convertnum,GUIHLine,GUIDrawShadow2
+EXTSYM VERSION_STR,placedate,GUIHLine,GUIDrawShadow2
 EXTSYM GUIDisplayIconWin,GUIOuttextwin2u,GUIOuttextwin2
 EXTSYM GUIoutputiconwin,GUIOuttextwin
 
@@ -1079,21 +1079,6 @@ NEWSYM FindChtSrcRes                        ; Calculate search results
   mov [CSStartEntry],esi
   jmp .notset
 
-NEWSYM DisplayChtSrcRes                    ; Buttons (Restart/View/Search)
-  DrawGUIButton 13,120,140,170,152,GUICSrcTextG2a,53,0,1
-NEWSYM DisplayChtSrcRes_nosearch
-  DrawGUIButton 13,10,140,60,152,GUICSrcTextG2b,51,0,1
-  DrawGUIButton 13,70,140,110,152,GUICSrcTextG2c,52,0,1
-
-  xor edi,edi                      ; Call and display # of results
-  call FindChtSrcRes
-  ccallv convertnum, GUICSrcTextG1, eax
-  GUIDisplayText 13,12,125,GUICSrcTextG1b
-  GUIDisplayText 13,97,125,GUICSrcTextG1
-  mov dword[GUIcurrentchtsrcviewloc],0
-  mov dword[GUIcurrentchtsrccursloc],0
-  ret
-
 SECTION .bss
 NEWSYM CheatWinMode, resb 1
 NEWSYM CheatSearchStatus, resb 1
@@ -1124,10 +1109,6 @@ SECTION .data
 ; G = General Use
 
 NEWSYM GUICSrcTextG1, db '          ',0       ; All variables
-GUICSrcTextG1b db '# OF RESULTS:',0
-GUICSrcTextG2a db 'SEARCH',0          ; Buttons
-GUICSrcTextG2b db 'RESTART',0
-GUICSrcTextG2c db 'VIEW',0
 
 SECTION .bss
 CCursLoc resd 1
