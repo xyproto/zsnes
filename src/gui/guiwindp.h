@@ -5,7 +5,8 @@
 
 extern void CSAddFlash();
 extern void CSRemoveFlash();
-extern void CheatSearching();
+extern void CheatSearchingComp();
+extern void DisplayChtSrcRes();
 extern void DisplayChtSrcRes_nosearch();
 extern void DisplayGUIAbout();
 extern void DisplayGUIAddOns();
@@ -25,7 +26,6 @@ extern char  CSDescDisplay[20];
 extern char  CSInputDisplay[12];
 extern char  GUIBlinkCursor[2];
 extern char  GUICSrcTextG1[11];
-extern char  GUICSrcTextG1a[];
 extern char  GUICheatTextZ1[16];
 extern char  GUICheatTextZ2[23];
 extern char  GUIChoseSaveText2[2];

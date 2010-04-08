@@ -1569,6 +1569,53 @@ static void DrawWindowSearch(void)
 }
 
 
+static void CheatSearching(void) // Exact Value Search
+{
+	if (CheatSrcSearchType == 1)
+	{
+		asm_call(CheatSearchingComp);
+		return;
+	}
+
+	GUIDisplayText(13, 5, 20, "ENTER VALUE:"); // Make Yellow
+	GUIDisplayText(13, 5, 65, "MAX VALUE:");
+
+	GUIDisplayBBox(13, 10, 40, 80, 47, 167); // Input Box
+
+	if (!(GUICCFlash & 8)) // Flash Cursor Code?
+	{
+		char* esi = CSInputDisplay;
+		asm volatile("call %P1" : "+S" (esi) : "X" (CSRemoveFlash) : "cc", "memory");
+	}
+
+	GUItextcolor[0] = CSOverValue == 1 ? 202 /* Alt Color */ : 223 /* Green Shadow */;
+	GUIOuttextwin2(13, 13, 42, CSInputDisplay);
+
+	GUItextcolor[0] =
+		CSOverValue           == 1 ? 207 : // Alt Color
+		(GUIWincoladd & 0xFF) == 0 ? 221 : // Green Text
+		222;
+	GUIOuttextwin2(13, 12, 41, CSInputDisplay);
+
+	{ char* esi = CSInputDisplay; // More flash?
+		asm volatile("call %P1" : "+S" (esi) : "X" (CSAddFlash) : "cc", "memory");
+	}
+
+	u4    const eax = SrcMask[CheatSrcByteSize]; // Find Max Size
+	char* const esi = GUICSrcTextG1;
+	if (CheatSrcByteBase != 1)
+	{
+		convertnum(esi, eax);
+	}
+	else
+	{
+		converthex(esi, eax, CheatSrcByteSize + 1);
+	}
+	GUIDisplayText(13, 71, 65, GUICSrcTextG1); // Max Size Text
+	asm_call(DisplayChtSrcRes);
+}
+
+
 static void Incheatmode(void) // Return and Re-search Window
 {
 	GUIwinsizex[13] = 180;
@@ -1578,7 +1625,7 @@ static void Incheatmode(void) // Return and Re-search Window
 	GUItextcolor[0] = (GUIWincoladd & 0xFF) == 0 ? 217 : 211; // Text And Shadow
 	if (CheatSearchStatus != 1)
 	{
-		asm_call(CheatSearching);
+		CheatSearching();
 	}
 	else
 	{
@@ -1712,7 +1759,7 @@ static void Cheatmodeadd(void) // Add Window
 	DrawGUIButton(13,  60, 155, 120, 167, "RETURN", 56, 0, 1); // Buttons
 	DrawGUIButton(13, 130, 155, 160, 167, "ADD",    57, 0, 1);
 
-	GUIDisplayText(13, 5, 130, GUICSrcTextG1a); // Max Value Text
+	GUIDisplayText(13, 5, 130, "MAX VALUE:"); // Max Value Text
 	u4    const eax = SrcMask[CheatSrcByteSize];
 	char* const esi = GUICSrcTextG1;
 	if (CheatSrcByteBase != 1)

@@ -19,7 +19,7 @@
 
 
 
-EXTSYM VERSION_STR,placedate,convertnum,converthex,GUIHLine,GUIDrawShadow2
+EXTSYM VERSION_STR,placedate,convertnum,GUIHLine,GUIDrawShadow2
 EXTSYM GUIDisplayIconWin,GUIOuttextwin2u,GUIOuttextwin2
 EXTSYM GUIoutputiconwin,GUIOuttextwin
 
@@ -1049,60 +1049,7 @@ NEWSYM CSAddFlash
 .flash
   ret
 
-NEWSYM CheatSearching                       ; Exact Value Search
-  cmp byte[CheatSrcSearchType],1
-  je near CheatSearchingComp
-
-  GUIDisplayText 13,5,20,GUICSrcTextB1
-  GUIDisplayText 13,5,65,GUICSrcTextG1a
-
-  GUIDisplayBBox 13,10,40,80,47,167           ; Input Box
-
-  test byte[GUICCFlash],8            ; Flash Cursor Code?
-  jnz .nound
-  mov esi,CSInputDisplay
-  call CSRemoveFlash
-.nound
-
-  mov byte[GUItextcolor],223             ; Green Shadow
-  cmp byte[CSOverValue],1
-  jne .notdark
-  mov byte[GUItextcolor],202             ; Alt Color
-.notdark
-  ccallv GUIOuttextwin2, 13, 13, 42, CSInputDisplay
-
-  mov byte[GUItextcolor],221            ; Green Text
-  cmp byte[GUIWincoladd],0
-  je .zero4
-  mov byte[GUItextcolor],222
-.zero4
-  cmp byte[CSOverValue],1
-  jne .notdark2
-  mov byte[GUItextcolor],207             ; Alt Color
-.notdark2
-  ccallv GUIOuttextwin2, 13, 12, 41, CSInputDisplay
-
-  mov esi,CSInputDisplay          ; More flash?
-  call CSAddFlash
-
-  xor eax,eax                 ; Find Max Size
-  mov al,[CheatSrcByteSize]
-  mov eax,[SrcMask+eax*4]
-  mov esi,GUICSrcTextG1
-  cmp byte[CheatSrcByteBase],1
-  je .hex
-  ccallv convertnum, esi, eax
-  jmp .dec
-.hex
-  xor ecx,ecx
-  mov cl,[CheatSrcByteSize]
-  inc ecx
-  ccallv converthex, esi, eax, ecx
-.dec
-  GUIDisplayText 13,71,65,GUICSrcTextG1          ; Max Size Text
-  jmp DisplayChtSrcRes
-
-CheatSearchingComp:           ; Comparative search
+NEWSYM CheatSearchingComp           ; Comparative search
   GUIDisplayTextY 13,6,16,GUICSrcTextD
   GUIDisplayButtonHoleTu 13,11,33,byte[CheatCompareValue],0,GUICSrcTextD1,0
   GUIDisplayButtonHoleTu 13,11,43,byte[CheatCompareValue],1,GUICSrcTextD2,1
@@ -1140,7 +1087,7 @@ NEWSYM FindChtSrcRes                        ; Calculate search results
   mov [CSStartEntry],esi
   jmp .notset
 
-DisplayChtSrcRes:                    ; Buttons (Restart/View/Search)
+NEWSYM DisplayChtSrcRes                    ; Buttons (Restart/View/Search)
   DrawGUIButton 13,120,140,170,152,GUICSrcTextG2a,53,0,1
 NEWSYM DisplayChtSrcRes_nosearch
   DrawGUIButton 13,10,140,60,152,GUICSrcTextG2b,51,0,1
@@ -1182,11 +1129,8 @@ NEWSYM GUICSStA, resd 3
 
 SECTION .data
 
-; B = Exact Value Search
 ; D = Comparison Search Method
 ; G = General Use
-
-GUICSrcTextB1 db 'ENTER VALUE:',0             ; Make Yellow
 
 GUICSrcTextD db 'SELECT COMPARISON:',0
 GUICSrcTextD1 db 'NEW VALUE IS > OLD VALUE',0
@@ -1195,7 +1139,6 @@ GUICSrcTextD3 db 'NEW VALUE IS = OLD VALUE',0
 GUICSrcTextD4 db 'NEW VALUE IS != OLD VALUE',0
 
 NEWSYM GUICSrcTextG1, db '          ',0       ; All variables
-NEWSYM GUICSrcTextG1a, db 'MAX VALUE:',0
 GUICSrcTextG1b db '# OF RESULTS:',0
 GUICSrcTextG2a db 'SEARCH',0          ; Buttons
 GUICSrcTextG2b db 'RESTART',0
