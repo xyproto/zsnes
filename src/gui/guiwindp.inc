@@ -1020,39 +1020,6 @@ NEWSYM GUIcurrentcheatwin,     resd 1
 NEWSYM ccheatnpos,             resd 1
 NEWSYM ccheatnleft,            resd 1
 
-SECTION .text
-
-NEWSYM FindChtSrcRes                        ; Calculate search results
-  inc edi
-  mov eax,[vidbuffer]
-  add eax,129600+65536*2
-  mov ecx,16384
-  xor esi,esi
-  xor ebx,ebx
-.searchloop
-  mov dl,[eax]
-  mov dh,8
-.sloop2
-  test dl,1
-  jz .notset
-  inc ebx
-  dec edi
-  jz .found
-.notset
-  inc esi
-  shr dl,1
-  dec dh
-  jnz .sloop2
-  inc eax
-  dec ecx
-  jnz .searchloop
-  mov eax,ebx
-  ret
-.found
-  mov [CSStartEntry],esi
-  jmp .notset
-
-SECTION .bss
 NEWSYM CheatWinMode, resb 1
 NEWSYM CheatSearchStatus, resb 1
 NEWSYM CheatCompareValue, resd 1

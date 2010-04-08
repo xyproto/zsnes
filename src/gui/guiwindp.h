@@ -14,7 +14,6 @@ extern void DisplayGUISave();
 extern void DisplayGUISpeed();
 extern void DisplayGameOptns();
 extern void DisplayNetOptns();
-extern void FindChtSrcRes();
 
 extern char  CMovieExt;
 extern char  CSDescDisplay[20];

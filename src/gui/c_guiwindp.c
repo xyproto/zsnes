@@ -1569,16 +1569,41 @@ static void DrawWindowSearch(void)
 }
 
 
+static u4 FindChtSrcRes(u4 edi) // Calculate search results
+{
+	++edi;
+	u1 const* eax = vidbuffer + 129600 + 65536 * 2;
+	u4        ecx = 16384;
+	u4        esi = 0;
+	u4        ebx = 0;
+	do
+	{
+		u1 dl = *eax++;
+		u1 dh = 8;
+		do
+		{
+			if (dl & 1)
+			{
+				++ebx;
+				if (--edi == 0) CSStartEntry = esi;
+			}
+			++esi;
+			dl >>= 1;
+		}
+		while (--dh != 0);
+	}
+	while (--ecx != 0);
+	return ebx;
+}
+
+
 static void DisplayChtSrcResNoSearch(void)
 {
 	DrawGUIButton(13, 10, 140,  60, 152, "RESTART", 51, 0, 1);
 	DrawGUIButton(13, 70, 140, 110, 152, "VIEW",    52, 0, 1);
 
 	// Call and display # of results
-	u4 eax;
-	u4 edi = 0;
-	asm volatile("call %P2" : "=a" (eax), "+D" (edi) : "X" (FindChtSrcRes) : "cc", "memory", "edx", "ebx", "esi");
-	convertnum(GUICSrcTextG1, eax);
+	convertnum(GUICSrcTextG1, FindChtSrcRes(0));
 	GUIDisplayText(13, 12, 125, "# OF RESULTS:");
 	GUIDisplayText(13, 97, 125, GUICSrcTextG1);
 	GUIcurrentchtsrcviewloc = 0;
@@ -1698,9 +1723,7 @@ static void Cheatmodeview(void) // View ResultsWindow
 
 	GUIDisplayBBoxS(13, 5, 20, 171, 108, 167); // Box
 
-	{ u4 edi = GUIcurrentchtsrcviewloc;
-		asm volatile("call %P3" : "=a" (NumCheatSrc), "=S" (ccheatnpos), "+D" (edi) : "X" (FindChtSrcRes) : "cc", "memory", "edx", "ebx");
-	}
+	NumCheatSrc = FindChtSrcRes(GUIcurrentchtsrcviewloc);
 
 	GUItextcolor[0] = 223; // Display Window Contents
 	u4 eax = NumCheatSrc - GUIcurrentchtsrcviewloc;
