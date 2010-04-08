@@ -1022,10 +1022,6 @@ NEWSYM ccheatnleft,            resd 1
 
 SECTION .text
 
-NEWSYM DrawWindowSearch
-  GUIDrawWindowBox 13,GUISearchDisp
-  ret
-
 NEWSYM CSRemoveFlash
 .loop
   cmp byte[esi],'_'
@@ -3010,7 +3006,6 @@ GUISpeedTextY db '+',0
 GUISpeedTextZ db '-',0
 
 ;General data
-GUISearchDisp db 'CHEAT SEARCH',0
 GUINetDisp db 'REMOTE',0,0,0,0,0,0,0,0,0
 GUIGameDisp db 'MISC KEYS',0
 GUIGUIDisp db 'GUI OPTIONS',0

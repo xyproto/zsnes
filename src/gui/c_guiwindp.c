@@ -1563,11 +1563,17 @@ void DisplayGUICheat(void)
 }
 
 
+static void DrawWindowSearch(void)
+{
+	GUIDrawWindowBox(13, "CHEAT SEARCH");
+}
+
+
 static void Incheatmode(void) // Return and Re-search Window
 {
 	GUIwinsizex[13] = 180;
 	GUIwinsizey[13] = 150;
-	asm_call(DrawWindowSearch);
+	DrawWindowSearch();
 
 	GUItextcolor[0] = (GUIWincoladd & 0xFF) == 0 ? 217 : 211; // Text And Shadow
 	if (CheatSearchStatus != 1)
@@ -1592,7 +1598,7 @@ static void Cheatmodeview(void) // View ResultsWindow
 
 	GUIwinsizex[13] = 185;
 	GUIwinsizey[13] = 150;
-	asm_call(DrawWindowSearch);
+	DrawWindowSearch();
 
 	GUIDisplayText(13, 10, 12, GUICSrcTextE); // Text
 
@@ -1691,7 +1697,7 @@ static void Cheatmodeadd(void) // Add Window
 {
 	GUIwinsizex[13] = 170;
 	GUIwinsizey[13] = 165;
-	asm_call(DrawWindowSearch);
+	DrawWindowSearch();
 
 	GUIDisplayText(13, 5, 20, "ENTER NEW VALUE:"); // Text
 	GUIDisplayText(13, 5, 45, "ENTER CHEAT DESCRIPTION:");
@@ -1795,7 +1801,7 @@ void DisplayGUISearch(void)
 	// Opening Screen
 	GUIwinsizex[13] = 170;
 	GUIwinsizey[13] = 150;
-	asm_call(DrawWindowSearch);
+	DrawWindowSearch();
 
 	// Radio Buttons
 	GUIDisplayTextY(       13,  6, 16,                       "SELECT SIZE AND FORMAT:");
