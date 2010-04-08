@@ -3,7 +3,6 @@
 
 #include "../types.h"
 
-extern void CSAddFlash();
 extern void DisplayGUIAbout();
 extern void DisplayGUIAddOns();
 extern void DisplayGUIChipConfig();

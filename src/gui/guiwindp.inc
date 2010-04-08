@@ -1022,20 +1022,6 @@ NEWSYM ccheatnleft,            resd 1
 
 SECTION .text
 
-NEWSYM CSAddFlash
-.loop
-  cmp byte[esi],'_'
-  je .flash
-  cmp byte[esi],0
-  je .notflash
-  inc esi
-  jmp .loop
-.notflash
-  mov byte[esi],'_'
-  mov byte[esi+1],0
-.flash
-  ret
-
 NEWSYM FindChtSrcRes                        ; Calculate search results
   inc edi
   mov eax,[vidbuffer]

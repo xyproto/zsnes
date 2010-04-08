@@ -1611,6 +1611,17 @@ static void CSRemoveFlash(char* const str)
 }
 
 
+static void CSAddFlash(char* i)
+{
+	for (; *i != '\0'; ++i)
+	{
+		if (*i == '_') return;
+	}
+	i[0] = '_';
+	i[1] = '\0';
+}
+
+
 static void CheatSearching(void) // Exact Value Search
 {
 	if (CheatSrcSearchType == 1)
@@ -1635,9 +1646,7 @@ static void CheatSearching(void) // Exact Value Search
 		222;
 	GUIOuttextwin2(13, 12, 41, CSInputDisplay);
 
-	{ char* esi = CSInputDisplay; // More flash?
-		asm volatile("call %P1" : "+S" (esi) : "X" (CSAddFlash) : "cc", "memory");
-	}
+	CSAddFlash(CSInputDisplay); // More flash?
 
 	u4    const eax = SrcMask[CheatSrcByteSize]; // Find Max Size
 	char* const esi = GUICSrcTextG1;
@@ -1819,16 +1828,10 @@ static void Cheatmodeadd(void) // Add Window
 		(GUIWincoladd & 0xFF) == 0 ? 221 :
 		222;
 	GUIOuttextwin2(13, 12, 31, CSInputDisplay);
-	{ char* esi = CSInputDisplay;
-		asm volatile("call %P1" : "+S" (esi) : "X" (CSAddFlash) : "cc", "memory");
-	}
+	CSAddFlash(CSInputDisplay);
 
 	// Cheat Desc. Input
-	if (CurCStextpos == 1 && !(GUICCFlash & 8))
-	{
-		char* esi = CSDescDisplay;
-		asm volatile("call %P1" : "+S" (esi) : "X" (CSAddFlash) : "cc", "memory");
-	}
+	if (CurCStextpos == 1 && !(GUICCFlash & 8)) CSAddFlash(CSDescDisplay);
 	GUIDisplayTextG(13, 13, 57, CSDescDisplay);
 	CSRemoveFlash(CSDescDisplay);
 
