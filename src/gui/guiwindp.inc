@@ -1053,25 +1053,7 @@ NEWSYM CSAddFlash
 .flash
   ret
 
-NEWSYM Incheatmode                              ; Return and Re-search Window
-  mov dword[GUIwinsizex+13*4],180
-  mov dword[GUIwinsizey+13*4],150
-  call DrawWindowSearch
-
-  mov byte[GUItextcolor],217            ; Text And Shadow
-  cmp byte[GUIWincoladd],0
-  je .zero2
-  mov byte[GUItextcolor],211
-.zero2
-  cmp byte[CheatSearchStatus],1
-  jne near CheatSearching
-  GUIDisplayText 13,5,20,GUICSrcTextC1
-  GUIDisplayText 13,5,30,GUICSrcTextC2
-  GUIDisplayText 13,5,40,GUICSrcTextC3
-  GUIDisplayText 13,5,50,GUICSrcTextC4
-  jmp DisplayChtSrcRes.nosearch
-
-CheatSearching:                       ; Exact Value Search
+NEWSYM CheatSearching                       ; Exact Value Search
   cmp byte[CheatSrcSearchType],1
   je near CheatSearchingComp
 
@@ -1164,7 +1146,7 @@ NEWSYM FindChtSrcRes                        ; Calculate search results
 
 DisplayChtSrcRes:                    ; Buttons (Restart/View/Search)
   DrawGUIButton 13,120,140,170,152,GUICSrcTextG2a,53,0,1
-.nosearch
+NEWSYM DisplayChtSrcRes_nosearch
   DrawGUIButton 13,10,140,60,152,GUICSrcTextG2b,51,0,1
   DrawGUIButton 13,70,140,110,152,GUICSrcTextG2c,52,0,1
 
@@ -1205,16 +1187,10 @@ NEWSYM GUICSStA, resd 3
 SECTION .data
 
 ; B = Exact Value Search
-; C = Comparison Search Message
 ; D = Comparison Search Method
 ; G = General Use
 
 GUICSrcTextB1 db 'ENTER VALUE:',0             ; Make Yellow
-
-GUICSrcTextC1 db 'NOW RETURN TO YOUR GAME',0
-GUICSrcTextC2 db 'AND COME BACK WHEN ',0
-GUICSrcTextC3 db 'THE NEXT SEARCH',0
-GUICSrcTextC4 db 'SHOULD BE PROCESSED',0
 
 GUICSrcTextD db 'SELECT COMPARISON:',0
 GUICSrcTextD1 db 'NEW VALUE IS > OLD VALUE',0

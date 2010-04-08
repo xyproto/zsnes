@@ -1563,6 +1563,28 @@ void DisplayGUICheat(void)
 }
 
 
+static void Incheatmode(void) // Return and Re-search Window
+{
+	GUIwinsizex[13] = 180;
+	GUIwinsizey[13] = 150;
+	asm_call(DrawWindowSearch);
+
+	GUItextcolor[0] = (GUIWincoladd & 0xFF) == 0 ? 217 : 211; // Text And Shadow
+	if (CheatSearchStatus != 1)
+	{
+		asm_call(CheatSearching);
+	}
+	else
+	{
+		GUIDisplayText(13, 5, 20, "NOW RETURN TO YOUR GAME");
+		GUIDisplayText(13, 5, 30, "AND COME BACK WHEN");
+		GUIDisplayText(13, 5, 40, "THE NEXT SEARCH");
+		GUIDisplayText(13, 5, 50, "SHOULD BE PROCESSED");
+		asm_call(DisplayChtSrcRes_nosearch);
+	}
+}
+
+
 static void Cheatmodeview(void) // View ResultsWindow
 {
 	static char GUICSrcTextE[] = "ADDR   VALUE     PVALUE";
@@ -1765,9 +1787,9 @@ void DisplayGUISearch(void)
 {
 	switch (CheatWinMode) // Determine which CS window we're on
 	{
-		case 1: asm_call(Incheatmode); return;
-		case 2: Cheatmodeview();       return;
-		case 3: Cheatmodeadd();        return;
+		case 1: Incheatmode();   return;
+		case 2: Cheatmodeview(); return;
+		case 3: Cheatmodeadd();  return;
 	}
 
 	// Opening Screen

@@ -5,6 +5,8 @@
 
 extern void CSAddFlash();
 extern void CSRemoveFlash();
+extern void CheatSearching();
+extern void DisplayChtSrcRes_nosearch();
 extern void DisplayGUIAbout();
 extern void DisplayGUIAddOns();
 extern void DisplayGUIChipConfig();
@@ -18,7 +20,6 @@ extern void DisplayGameOptns();
 extern void DisplayNetOptns();
 extern void DrawWindowSearch();
 extern void FindChtSrcRes();
-extern void Incheatmode();
 
 extern char  CMovieExt;
 extern char  CSDescDisplay[20];
