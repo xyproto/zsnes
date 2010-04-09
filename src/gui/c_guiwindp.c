@@ -2387,3 +2387,117 @@ void DisplayGUISave(void)
 	DrawGUIButton(20, 173, 29, 181, 37, "+", 72, -2, -1); // + Second/Rewind
 	DrawGUIButton(20, 184, 29, 192, 37, "-", 73, -2, -1); // - Second/Rewind
 }
+
+
+static u1 SpdslidSet(void const* const p1) // slider var
+{
+	return *(u1 const*)p1 * 2;
+}
+
+static char const* SpdslidText(void const* const p1) // slider var, text
+{
+	static char GUISpeedTextD1[] = "---";
+
+	memset(GUISpeedTextD1, 0, sizeof(GUISpeedTextD1));
+	char* esi = GUISpeedTextD1 + 2;
+	u1    al  = *(u1 const*)p1; // currently emuspeed ranges from 0 to 58
+	if (al >= 29) // this will turn it into '/30' to '30x'
+	{
+		*esi = 'x'; // add 'x' after the ff value
+		al -= 28;
+	}
+	else
+	{
+		++esi;
+		*GUISpeedTextD1 = 1; // slomo indicator
+		al = 30 - al;
+	}
+	// turn decimal into ASCII
+	do *--esi = '0' + al % 10; while ((al /= 10) != 0);
+	if (*GUISpeedTextD1 == 1) *--esi = '/'; // add '/' before the slomo value
+	return esi;
+}
+
+
+void DisplayGUISpeed(void)
+{
+	GUIDrawWindowBox(21,"SPEED OPTIONS");
+
+	if (frameskip == 0)
+	{
+		GUIDisplayText( 21,  6,  15, "MAX FRAME SKIP");
+		GUIDisplayText( 21, 40,  79, "+ EMU SPEED");
+		GUIDisplayText( 21, 40,  99, "- EMU SPEED");
+		GUIDisplayTextY(21,  8, 164, "EMU SPEED:");
+	}
+	else
+	{
+		GUIDisplayText(21,  6, 15, "FRAME RATE");
+		GUIDisplayText(21, 40, 79, "+ FRAME RATE");
+		GUIDisplayText(21, 40, 99, "- FRAME RATE");
+	}
+	GUIDisplayText(21, 6, 26, "FASTFWD RATIO x");
+	GUIDisplayText(21, 6, 37, "SLOWDWN RATIO /");
+
+	GUIDisplayTextY(21,  8,  49, "SHORTCUTS:");
+	GUIDisplayText( 21, 40,  59, "FAST FORWARD");
+	GUIDisplayText( 21, 40,  69, "SLOW DOWN");
+	GUIDisplayText( 21, 40,  89, "RESET SPEED");
+	GUIDisplayText( 21, 40, 109, "PAUSE GAME");
+	GUIDisplayText( 21, 40, 119, "INCR FRAME");
+
+	if (frameskip == 0) // Shortcut Boxes
+	{
+		DDrawBox(21, 10, 76, &KeyEmuSpeedUp);
+		DDrawBox(21, 10, 96, &KeyEmuSpeedDown);
+	}
+	else
+	{
+		DDrawBox(21, 10, 76, &KeyFRateUp);
+		DDrawBox(21, 10, 96, &KeyFRateDown);
+	}
+	DDrawBox(21, 10,  56, &KeyFastFrwrd);
+	DDrawBox(21, 10,  66, &KeySlowDown);
+	DDrawBox(21, 10,  86, &KeyResetSpeed);
+	DDrawBox(21, 10, 106, &EMUPauseKey);
+	DDrawBox(21, 10, 116, &INCRFrameKey);
+
+	GUIDisplayCheckboxu( 21, 11, 135, &FastFwdToggle, "TOGGLED FFWD/SLWDWN", 0);
+	GUIDisplayCheckboxun(21, 11, 145, &frameskip, 0,  "AUTO FRAME RATE",     0);
+
+	char GUISpeedTextZ3[3];
+
+	GUIDisplayBBox(21, 96, 24, 114, 31, 167); // FF Ratio Box
+	sprintf(GUISpeedTextZ3, "%2u", FFRatio + 2);
+	GUIDisplayTextG(21, 101, 26, GUISpeedTextZ3);
+
+	GUIDisplayBBox(21, 96, 35, 114, 42, 167); // SD Ratio Box
+	sprintf(GUISpeedTextZ3, "%2u", SDRatio + 2);
+	GUIDisplayTextG(21, 101, 37, GUISpeedTextZ3);
+
+	GUItextcolor[0] = (GUIWincoladd & 0xFF) == 0 ? 217 : 211; // Buttons
+	DrawGUIButton(21, 118, 24, 126, 32, "+", 74, -2, -1); // + Rewind States
+	DrawGUIButton(21, 129, 24, 137, 32, "-", 75, -2, -1); // - Rewind States
+	DrawGUIButton(21, 118, 35, 126, 43, "+", 76, -2, -1); // + Second/Rewind
+	DrawGUIButton(21, 129, 35, 137, 43, "-", 77, -2, -1); // - Second/Rewind
+
+	if (frameskip == 0)
+	{
+		GUIDrawSlider(21, 7, 116, 175, &EmuSpeed, SpdslidSet, SpdslidText);
+	}
+
+	GUIDisplayBBox(21, 96, 13, 114, 20, 167);
+	static char GUISpeedTextX[] = "-";
+	if (frameskip != 0) // Determine if AutoFR is enabled
+	{ // Non AFR FrameRate +/- Box
+		GUISpeedTextX[0] = '0' + (frameskip - 1);
+	}
+	else
+	{ // AFR Max Frameskip +/- Box
+		GUISpeedTextX[0] = '0' + maxskip;
+	}
+	GUIDisplayTextG(21, 107, 15, GUISpeedTextX);
+	GUItextcolor[0] = (GUIWincoladd & 0xFF) == 0 ? 217 : 211;
+	DrawGUIButton(21, 118, 13, 126, 21, "+", 78, -2, -1);
+	DrawGUIButton(21, 129, 13, 137, 21, "-", 79, -2, -1);
+}

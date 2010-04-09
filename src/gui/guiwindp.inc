@@ -355,17 +355,6 @@ SECTION .text
   ccallv GUIOuttextwin2, %1, %2 - 1, %3 - 1, %4
 %endmacro
 
-%macro GUIDisplayTextG 4                  ; Green Text&Shadow
-  mov byte[GUItextcolor],223
-  ccallv GUIOuttextwin2, %1, %2, %3, %4
-  mov byte[GUItextcolor],221
-  cmp byte[GUIWincoladd],0
-  je %%zero
-  mov byte[GUItextcolor],222
-%%zero
-  ccallv GUIOuttextwin2, %1, %2 - 1, %3 - 1, %4
-%endmacro
-
 %macro GUIDisplayCheckboxP 4              ; Toggled Checkbox (Plain, no text)
   mov dword[GUITemp],GUIIconDataCheckBoxUC
   cmp byte[%4],0
@@ -393,16 +382,6 @@ SECTION .text
 %%nocheckbox
   ccallv GUIDisplayIconWin, %1, %2, %3, [GUITemp]
   GUIDisplayTextu %1,%2+15,%3+5,%5,%6
-%endmacro
-
-%macro GUIDisplayCheckboxun 7             ; Set Var. Checkbox (Text Underline)
-  mov dword[GUITemp],GUIIconDataCheckBoxUC
-  cmp byte[%4],%5
-  jne %%nocheckbox
-  mov dword[GUITemp],GUIIconDataCheckBoxC
-%%nocheckbox
-  ccallv GUIDisplayIconWin, %1, %2, %3, [GUITemp]
-  GUIDisplayTextu %1,%2+15,%3+5,%6,%7
 %endmacro
 
 %macro GUIDisplayCheckboxPn 5             ; Set Var. Checkbox
@@ -655,31 +634,6 @@ SECTION .text
   dec ecx
   jnz %%loop2
 %%nodraw
-%endmacro
-
-%macro GUIDrawSlider 8 ; win #id, minX, width, Ypos, var, text, proc1, proc2
-  mov eax,[GUIwinposx+%1*4]
-  mov ebx,[GUIwinposy+%1*4]
-  add eax,%2
-  add ebx,%4
-  mov ecx,eax
-  add ecx,%3
-  xor edx,edx
-  mov dl,215
-  sub dl,[GUIWincoladd]
-  DrawGUILine
-  inc ecx
-  inc eax
-  sub dl,13
-  DrawGUILine
-  xor eax,eax
-  %7 %5       ; proc1 == alters var correctly and puts result in al
-  mov dword[GUITemp],%2-4
-  add [GUITemp],eax
-  ccallv GUIDisplayIconWin, %1, [GUITemp], %4 - 4, GUIIconDataSlideBar
-  %8 %5,%6    ; proc2 == alters text correctly and puts pointer in esi
-  mov [GUITemp],esi  ; Display Value (Green)
-  GUIDisplayTextG %1,%2+%3+6,%4-1,[GUITemp]
 %endmacro
 
 %macro DrawBorderedBox 6;
@@ -1882,204 +1836,6 @@ NEWSYM GUIMovieTextPtr, dd GUIMovieForcedText
 NEWSYM GUICustomResTextPtr, dd GUICustomX,GUICustomY
 %endif
 
-GUISaveTextZ1 db '+',0
-GUISaveTextZ2 db '-',0
-
-SECTION .text
-
-%macro SpdslidSet 1 ; slider var
-  mov al,[%1]
-  shl eax,1
-%endmacro
-
-%macro SpdslidText 2 ; slider var, text
-  mov dword[%2],0
-  mov esi,%2+2
-  mov al,[%1]   ; currently emuspeed ranges from 0 to 58
-  mov bl,10
-  cmp al,29     ; this will turn it into '/30' to '30x'
-  jb %%slowmo
-  mov byte[esi],'x' ; adds 'x' after the ff value
-  sub al,28
-  jmp %%asciilp
-%%slowmo
-  inc esi
-  mov byte[%2],1    ; slomo indicator
-  mov al,30
-  sub al,[%1]
-%%asciilp           ; turns decimal into ascii
-  dec esi
-  xor ah,ah
-  div bl
-  add ah,48
-  mov [esi],ah
-  cmp al,0
-  jne %%asciilp
-  cmp byte[%2],1
-  jne %%done
-  dec esi
-  mov byte[esi],'/' ; adds '/' before the slomo value
-%%done
-%endmacro
-
-NEWSYM DisplayGUISpeed                    ;Speed Options
-  GUIDrawWindowBox 21,GUISpeedDisp
-
-  cmp byte[frameskip],0
-  jne near .noautoshad
-  GUIDisplayText 21,6,15,GUISpeedTextA1
-  GUIDisplayText 21,40,79,GUISpeedTextB3
-  GUIDisplayText 21,40,99,GUISpeedTextB5
-  GUIDisplayTextY 21,8,164,GUISpeedTextD
-  jmp near .endautoshad
-.noautoshad
-  GUIDisplayText 21,6,15,GUISpeedTextA1b
-  GUIDisplayText 21,40,79,GUISpeedTextB3b
-  GUIDisplayText 21,40,99,GUISpeedTextB5b
-.endautoshad
-  GUIDisplayText 21,6,26,GUISpeedTextA2
-  GUIDisplayText 21,6,37,GUISpeedTextA3
-
-  GUIDisplayTextY 21,8,49,GUISpeedTextB
-  GUIDisplayText 21,40,59,GUISpeedTextB1
-  GUIDisplayText 21,40,69,GUISpeedTextB2
-  GUIDisplayText 21,40,89,GUISpeedTextB4
-  GUIDisplayText 21,40,109,GUISpeedTextB6
-  GUIDisplayText 21,40,119,GUISpeedTextB7
-
-  cmp byte[frameskip],0                             ; Shortcut Boxes
-  jne near .frate
-  DDrawBox 21,10,76,[KeyEmuSpeedUp]
-  DDrawBox 21,10,96,[KeyEmuSpeedDown]
-  jmp near .endsc
-.frate
-  DDrawBox 21,10,76,[KeyFRateUp]
-  DDrawBox 21,10,96,[KeyFRateDown]
-.endsc
-  DDrawBox 21,10,56,[KeyFastFrwrd]
-  DDrawBox 21,10,66,[KeySlowDown]
-  DDrawBox 21,10,86,[KeyResetSpeed]
-  DDrawBox 21,10,106,[EMUPauseKey]
-  DDrawBox 21,10,116,[INCRFrameKey]
-
-  GUIDisplayCheckboxu 21,11,135,FastFwdToggle,GUISpeedTextC1,0
-  GUIDisplayCheckboxun 21,11,145,frameskip,0,GUISpeedTextC2,0
-
-  GUIDisplayBBox 21,96,24,114,31,167      ; FF Ratio Box
-  mov ah,[FFRatio]
-  add ah,2
-  mov al,48
-  add ah,48
-.asciiloop
-  cmp ah,58
-  jb .hex2asciidone
-  inc al
-  sub ah,10
-  jmp .asciiloop
-.hex2asciidone
-  cmp al,48
-  jne .yestens
-  mov al,32
-.yestens
-  mov [GUISpeedTextZ3],ax
-  GUIDisplayTextG 21,101,26,GUISpeedTextZ3
-
-  GUIDisplayBBox 21,96,35,114,42,167      ; SD Ratio Box
-  mov ah,[SDRatio]
-  add ah,2
-  mov al,48
-  add ah,48
-.asciiloop2
-  cmp ah,58
-  jb .hex2asciidone2
-  inc al
-  sub ah,10
-  jmp .asciiloop2
-.hex2asciidone2
-  cmp al,48
-  jne .yestens2
-  mov al,32
-.yestens2
-  mov [GUISpeedTextZ3],ax
-  GUIDisplayTextG 21,101,37,GUISpeedTextZ3
-
-  mov byte[GUItextcolor],217               ;Buttons
-  cmp byte[GUIWincoladd],0
-  je .zero88
-  mov byte[GUItextcolor],211
-.zero88
-  DrawGUIButton 21,118,24,126,32,GUISaveTextZ1,74,-2,-1  ; + Rewind States
-  DrawGUIButton 21,129,24,137,32,GUISaveTextZ2,75,-2,-1  ; - Rewind States
-  DrawGUIButton 21,118,35,126,43,GUISaveTextZ1,76,-2,-1  ; + Second/Rewind
-  DrawGUIButton 21,129,35,137,43,GUISaveTextZ2,77,-2,-1  ; - Second/Rewind
-
-  cmp byte[frameskip],0
-  jne near .noslider
-  GUIDrawSlider 21,7,116,175,EmuSpeed,GUISpeedTextD1,SpdslidSet,SpdslidText
-.noslider
-  cmp byte[frameskip],0                    ; Determine if AutoFR is enabled
-  je near .auto
-
-  GUIDisplayBBox 21,96,13,114,20,167           ; Non AFR FrameRate +/- Box
-  mov al,[frameskip]
-  add al,47
-  mov [GUISpeedTextX],al
-  GUIDisplayTextG 21,107,15,GUISpeedTextX
-
-  mov byte[GUItextcolor],217
-  cmp byte[GUIWincoladd],0
-  je .zero6
-  mov byte[GUItextcolor],211
-.zero6
-  DrawGUIButton 21,118,13,126,21,GUISpeedTextY,78,-2,-1
-  DrawGUIButton 21,129,13,137,21,GUISpeedTextZ,79,-2,-1
-  jmp .ratioborders
-
-.auto                                          ; AFR Max Frameskip +/- Box
-  GUIDisplayBBox 21,96,13,114,20,167
-  mov al,[maxskip]
-  add al,48
-  mov [GUISpeedTextX],al
-  GUIDisplayTextG 21,107,15,GUISpeedTextX
-
-  mov byte[GUItextcolor],217
-  cmp byte[GUIWincoladd],0
-  je .zero5
-  mov byte[GUItextcolor],211
-.zero5
-  DrawGUIButton 21,118,13,126,21,GUISpeedTextY,78,-2,-1
-  DrawGUIButton 21,129,13,137,21,GUISpeedTextZ,79,-2,-1
-.ratioborders
-  ret
-
-SECTION .data
-GUISpeedTextA1 db 'MAX FRAME SKIP',0
-GUISpeedTextA1b db 'FRAME RATE',0
-GUISpeedTextA2 db 'FASTFWD RATIO x',0
-GUISpeedTextA3 db 'SLOWDWN RATIO /',0
-
-GUISpeedTextB db 'SHORTCUTS:',0
-GUISpeedTextB1 db 'FAST FORWARD',0
-GUISpeedTextB2 db 'SLOW DOWN',0
-GUISpeedTextB3 db '+ EMU SPEED',0
-GUISpeedTextB3b db '+ FRAME RATE',0
-GUISpeedTextB4 db 'RESET SPEED',0
-GUISpeedTextB5 db '- EMU SPEED',0
-GUISpeedTextB5b db '- FRAME RATE',0
-GUISpeedTextB6 db 'PAUSE GAME',0
-GUISpeedTextB7 db 'INCR FRAME',0
-
-GUISpeedTextC1 db 'TOGGLED FFWD/SLWDWN',0
-GUISpeedTextC2 db 'AUTO FRAME RATE',0
-
-GUISpeedTextD db 'EMU SPEED:',0
-GUISpeedTextD1 db '---',0
-
-GUISpeedTextZ3 db '--',0
-GUISpeedTextX db '-',0
-GUISpeedTextY db '+',0
-GUISpeedTextZ db '-',0
-
 ;General data
 GUINetDisp db 'REMOTE',0,0,0,0,0,0,0,0,0
 GUIComboDisp db 'KEY COMBINATION EDITOR',0
@@ -2087,7 +1843,6 @@ GUIAddOnsDisp db 'DEVICES SELECTOR',0
 GUIAddOnsDispEE db 'DEVICES SELECTOR',0
 GUIChipConfigDisp db 'CONFIGURE CHIPS',0
 GUIPathsDisp db 'SETUP PATHS',0
-GUISpeedDisp db 'SPEED OPTIONS',0
 
 SECTION .bss
 GUIItemBoxColor resd 1

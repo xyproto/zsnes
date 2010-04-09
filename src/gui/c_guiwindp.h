@@ -13,6 +13,7 @@ void DisplayGUIReset(void);     // Reset Confirmation
 void DisplayGUISave(void);      // Save & Rewind options/Hotkeys
 void DisplayGUISearch(void);
 void DisplayGUISound(void);     // Sound Related Options
+void DisplayGUISpeed(void);     // Speed Options
 void DisplayGUIStates(void);    // Save/Load State Confirmation
 void DisplayGUIVideo(void);
 void DisplayGameOptns(void);    // Misc Key Window
