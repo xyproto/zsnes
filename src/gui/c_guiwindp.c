@@ -2396,26 +2396,17 @@ static u1 SpdslidSet(void const* const p1) // slider var
 
 static char const* SpdslidText(void const* const p1) // slider var, text
 {
-	static char GUISpeedTextD1[] = "---";
-
-	memset(GUISpeedTextD1, 0, sizeof(GUISpeedTextD1));
-	char* esi = GUISpeedTextD1 + 2;
-	u1    al  = *(u1 const*)p1; // currently emuspeed ranges from 0 to 58
+	static char GUISpeedTextD1[4];
+	u4 const al = *(u1 const*)p1; // currently emuspeed ranges from 0 to 58
 	if (al >= 29) // this will turn it into '/30' to '30x'
-	{
-		*esi = 'x'; // add 'x' after the ff value
-		al -= 28;
+	{ // ff
+		sprintf(GUISpeedTextD1, "%ux", al - 28);
 	}
 	else
-	{
-		++esi;
-		*GUISpeedTextD1 = 1; // slomo indicator
-		al = 30 - al;
+	{ // slomo
+		sprintf(GUISpeedTextD1, "/%u", 30 - al);
 	}
-	// turn decimal into ASCII
-	do *--esi = '0' + al % 10; while ((al /= 10) != 0);
-	if (*GUISpeedTextD1 == 1) *--esi = '/'; // add '/' before the slomo value
-	return esi;
+	return GUISpeedTextD1;
 }
 
 
