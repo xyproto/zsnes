@@ -25,6 +25,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <stdbool.h>
 #include <stdint.h>
 #include "gblvars.h"
+#include "types.h"
 
 void mzt_chdir_up();
 void mzt_chdir_down();
@@ -62,6 +63,7 @@ void ResetDuringMovie(void);
 
 void MovieDumpRaw(void);
 
+extern u1            MovieForcedLengthEnabled;
 extern bool          RawDumpInProgress;
 extern char          MovieFrameStr[10];
 extern unsigned char MoviePassWaiting;

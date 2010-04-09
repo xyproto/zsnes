@@ -8,6 +8,7 @@
 #include "../macros.h"
 #include "../ui.h"
 #include "../version.h"
+#include "../zmovie.h"
 #include "../zpath.h"
 #include "../zstate.h"
 #include "c_gui.h"
@@ -2162,5 +2163,155 @@ void DisplayGUIAbout(void)
 		GUIDisplayText(11, 42, 36, "HIDDEN MESSAGE!");
 		GUIDisplayText(11, 30, 96, "PRESS 'E' TO RETURN");
 		GUIDisplayText(11, 39, 106, "TO THE ABOUT BOX");
+	}
+}
+
+
+void DisplayGUIMovies(void)
+{
+	GUIDrawWindowBox(15, "MOVIE OPTIONS"); // Display Window
+
+	u4 eax;
+	u4 ebx;
+	GUIDrawTArea(15, &eax, &ebx);
+	if (MovieProcessing < 4 || 6 < MovieProcessing) GUIDrawTabs(GUIMovieTabs,  &eax, ebx);
+	if (MovieProcessing < 1 || 3 < MovieProcessing) GUIDrawTabs(GUIDumpingTab, &eax, ebx);
+
+	if (RawDumpInProgress)
+	{
+		GUIMovieTabs[0]  = 0;
+		GUIDumpingTab[0] = 1;
+	}
+
+	if (MovieRecordWinVal != 0)
+	{
+		GUIDisplayText(15, 9, 26, "WARNING: THIS MOVIE"); // Overwrite Message Box
+		GUIDisplayText(15, 9, 36, "FILE ALREADY EXISTS");
+		GUIDisplayText(15, 9, 51, "OKAY TO OVERWRITE ?");
+
+		GUItextcolor[0] = (GUIWincoladd & 0xFF) == 0 ? 217 : 211;
+		DrawGUIButton(15, 17, 65,  59, 76, "YES", 19, 0, 0); // Yes/No Buttons
+		DrawGUIButton(15, 70, 65, 112, 76, "NO",  20, 0, 0);
+	}
+	else
+	{
+		// Main Window
+		GUItextcolor[0] = (GUIWincoladd & 0xFF) == 0 ? 217 : 211;
+
+		GUIDisplayTextY(15,   8, 31, "SELECT MOVIE:"); // Slot text
+		GUIDisplayText( 15,  20, 42, "0");
+		GUIDisplayText( 15,  40, 42, "1");
+		GUIDisplayText( 15,  60, 42, "2");
+		GUIDisplayText( 15,  80, 42, "3");
+		GUIDisplayText( 15, 100, 42, "4");
+		GUIDisplayText( 15, 120, 42, "5");
+		GUIDisplayText( 15, 140, 42, "6");
+		GUIDisplayText( 15, 160, 42, "7");
+		GUIDisplayText( 15, 180, 42, "8");
+		GUIDisplayText( 15, 200, 42, "9");
+
+		// Display Radio buttons
+		GUIDisplayButtonHole(15,   8, 39, (u1 const*)&CMovieExt, 'v'); // XXX ugly cast
+		GUIDisplayButtonHole(15,  28, 39, (u1 const*)&CMovieExt, '1'); // XXX ugly cast
+		GUIDisplayButtonHole(15,  48, 39, (u1 const*)&CMovieExt, '2'); // XXX ugly cast
+		GUIDisplayButtonHole(15,  68, 39, (u1 const*)&CMovieExt, '3'); // XXX ugly cast
+		GUIDisplayButtonHole(15,  88, 39, (u1 const*)&CMovieExt, '4'); // XXX ugly cast
+		GUIDisplayButtonHole(15, 108, 39, (u1 const*)&CMovieExt, '5'); // XXX ugly cast
+		GUIDisplayButtonHole(15, 128, 39, (u1 const*)&CMovieExt, '6'); // XXX ugly cast
+		GUIDisplayButtonHole(15, 148, 39, (u1 const*)&CMovieExt, '7'); // XXX ugly cast
+		GUIDisplayButtonHole(15, 168, 39, (u1 const*)&CMovieExt, '8'); // XXX ugly cast
+		GUIDisplayButtonHole(15, 188, 39, (u1 const*)&CMovieExt, '9'); // XXX ugly cast
+
+		// Determine and Display Status
+		char const* status;
+		switch (MovieProcessing)
+		{
+			default: status = "INACTIVE        "; break;
+			case 1:  status = "PLAYING         "; break;
+			case 2:  status = "RECORDING       "; break;
+			case 3:  status = "OLD PLAYING     "; break;
+			case 4:  status = "DUMPING ENDING  "; break;
+			case 5:  status = "DUMPING         "; break;
+			case 6:  status = "DUMPING OLD     "; break;
+		}
+		static char GUIMovieTextZ[] = "STATUS:                  ";
+		strcpy(GUIMovieTextZ + 8, status);
+		GUIDisplayTextY(15, 6, 192, GUIMovieTextZ);
+
+		if (GUIMovieTabs[0] == 1)
+		{
+			GUIDisplayTextY(15, 8,  56, "RECORD FROM:"); // "Start From" Section
+			GUIDisplayTextY(15, 8, 100, "CHAPTERS:");    // Chapters
+
+			GUIDisplayButtonHoleTu(15,   8, 64, &MovieStartMethod, 0, "NOW",              0);
+			GUIDisplayButtonHoleTu(15,  43, 64, &MovieStartMethod, 1, "POWER",            0);
+			GUIDisplayButtonHoleTu(15,  89, 64, &MovieStartMethod, 2, "RESET",            0);
+			GUIDisplayButtonHoleTu(15, 135, 64, &MovieStartMethod, 3, "POWER+SRAM CLEAR", 6);
+
+			DrawGUIButton(15,   7,  80,  49,  91, "PLAY",     16, 0, 0); // Draw Buttons
+			DrawGUIButton(15,  55,  80,  97,  91, "RECORD",   17, 0, 0);
+			DrawGUIButton(15, 103,  80, 145,  91, "STOP",     18, 0, 0);
+			DrawGUIButton(15, 151,  80, 193,  91, "APPEND",   32, 0, 0);
+			DrawGUIButton(15,   7, 108,  50, 119, "INSERT",   29, 0, 0);
+			DrawGUIButton(15,  85, 108, 138, 119, "PREVIOUS", 30, 0, 0);
+			DrawGUIButton(15, 173, 108, 203, 119, "NEXT",     31, 0, 0);
+
+			DDrawBox(15,  57, 109, &KeyInsrtChap); // Chapter Keyboard Shortcut Boxes
+			DDrawBox(15, 145, 109, &KeyPrevChap);
+			DDrawBox(15, 210, 109, &KeyNextChap);
+
+			GUIDisplayTextY(15, 8, 125, "ON MOVIE STATE LOAD:"); // Movie State Load
+
+			GUIDisplayButtonHoleTu(15, 8, 133, &MZTForceRTR, 0, "DO NOT SWITCH MODES", 14);
+			GUIDisplayButtonHoleTu(15, 8, 143, &MZTForceRTR, 1, "SWITCH TO RECORD",    12);
+			GUIDisplayButtonHoleTu(15, 8, 153, &MZTForceRTR, 2, "SWITCH TO PLAYBACK",  14);
+
+			DDrawBox(15, 134, 123, &KeyRTRCycle); // MZT Load Shortcut Box
+
+			GUIDisplayCheckboxu(15, 8, 163, &MovieDisplayFrame, "DISPLAY FRAME COUNTER", 0); // Checkbox
+		}
+
+		if (GUIDumpingTab[0] == 1)
+		{
+			GUIDisplayTextY(       15, 8,  56,                     "VIDEO OPTIONS:"); // Video Section
+			GUIDisplayButtonHoleTu(15, 8,  64, &MovieVideoMode, 0, "NO VIDEO DUMP",  1);
+			GUIDisplayButtonHoleTu(15, 8,  74, &MovieVideoMode, 1, "RAW VIDEO",      2);
+			GUIDisplayButtonHoleTu(15, 8,  84, &MovieVideoMode, 2, "FFV1",           0);
+			GUIDisplayButtonHoleTu(15, 8,  94, &MovieVideoMode, 3, "X264 LOSSLESS",  9);
+			GUIDisplayButtonHoleTu(15, 8, 104, &MovieVideoMode, 4, "XVID LOSSLESS",  0);
+			GUIDisplayButtonHoleTu(15, 8, 114, &MovieVideoMode, 5, "CUSTOM",         0);
+
+			GUIDisplayTextY(15, 129,  56, "AUDIO OPTIONS:"); // Audio Section
+			GUIDisplayTextY(15, 162, 171, "DUMPING:");
+
+			if (MovieVideoMode != 5)
+			{
+				GUIDisplayCheckboxu(15, 130, 62, &MovieAudio, "DUMP AUDIO", 5);
+				if (MovieAudio == 1) goto mux;
+			}
+			else
+			{
+mux:
+				GUIDisplayCheckboxu(15, 130, 72, &MovieAudioCompress, "COMPRESS AUDIO", 2);
+				if ((s1)MovieVideoMode >= 2 && MovieVideoMode != 5) // XXX ugly cast
+				{
+					GUIDisplayCheckboxu(15, 130, 82, &MovieVideoAudio, "MERGE WITH VIDEO", 11);
+				}
+			}
+
+			DrawGUIButton(15, 165, 178, 200, 189, "START", 34, 0, 0);
+			DrawGUIButton(15, 206, 178, 235, 189, "STOP",  35, 0, 0);
+
+			GUIDisplayTextY(       15, 8, 127,                               "DUMPING LENGTH:"); // Video Section
+			GUIDisplayButtonHoleTu(15, 8, 135, &MovieForcedLengthEnabled, 0, "ZMV LENGTH",  0);
+			GUIDisplayButtonHoleTu(15, 8, 145, &MovieForcedLengthEnabled, 1, "DUMP # OF FRAMES", 11);
+			GUIDisplayButtonHoleTu(15, 8, 155, &MovieForcedLengthEnabled, 2, "UNTIL STOP",  0);
+
+			GUIDisplayBBox(15, 136, 144, 205, 154, 167);
+
+			GetMovieForcedLength();
+
+			GUIOuttextwin2d(15, 139, 148, GUIMovieForcedText, 10, GUIMovieTextPtr, 0);
+		}
 	}
 }

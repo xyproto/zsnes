@@ -2526,7 +2526,7 @@ bool PrevSRAMState;
 extern uint8_t AllocatedRewindStates;
 extern uint8_t SloMo, EMUPause;
 char MovieFrameStr[10];
-bool MovieForcedLengthEnabled = false;
+u1 MovieForcedLengthEnabled = 0;
 uint32_t MovieForcedLength = 0, MovieForcedLengthInternal;
 uint8_t MoviePassWaiting = 0;
 unsigned char MovieProcessing;

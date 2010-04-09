@@ -1845,7 +1845,7 @@ char CheckOGLMode()
 extern unsigned int MovieForcedLength;
 char GUIMovieForcedText[11];
 
-void GetMovieForcedLength()
+void GetMovieForcedLength(void)
 {
   static bool first_time = true;
   if (first_time)

@@ -57,7 +57,7 @@ EXTSYM GetTime
 EXTSYM Clear2xSaIBuffer,Show224Lines
 EXTSYM NumVideoModes,MusicVol,DSPMem,NumInputDevices
 EXTSYM GameSpecificInput,device1,device2,TwelveHourClock
-EXTSYM GUIM7VID,GUINTVID,GUIHQ2X,RawDumpInProgress
+EXTSYM GUIM7VID,GUINTVID,GUIHQ2X
 EXTSYM MultiTap
 EXTSYM nssdip1,nssdip2,nssdip3,nssdip4,nssdip5,nssdip6
 EXTSYM AutoLoadCht,GUILoadData
@@ -106,7 +106,7 @@ EXTSYM mousewrap,GUIRClick
 EXTSYM FPSAtStart,Turbo30hz,TimerEnable,SmallMsgText,mouse1lh,mouse2lh
 EXTSYM AutoPatch,RomInfo,AllowUDLR,GrayscaleMode,GUIMovieForcedText
 EXTSYM Mode7HiRes16b,FFRatio,SDRatio,EmuSpeed,mouseshad,MovieForcedLengthEnabled
-EXTSYM esctomenu,GUILoadKeysJumpTo,lhguimouse,MZTForceRTR,GetMovieForcedLength
+EXTSYM esctomenu,GUILoadKeysJumpTo,lhguimouse,MZTForceRTR
 EXTSYM GUIEnableTransp,FilteredGUI,Surround,SPCDisable,nosaveSRAM
 EXTSYM FastFwdToggle,gui_key,gui_key_extended,GUILoadKeysNavigate
 EXTSYM KeyDisplayBatt,KeyIncreaseGamma,KeyDecreaseGamma,vsyncon
