@@ -1788,7 +1788,7 @@ void DisplayBoxes(void)
 			case 17: asm_call(DisplayGUIAddOns);     break;
 			case 18: asm_call(DisplayGUIChipConfig); break;
 			case 19: asm_call(DisplayGUIPaths);      break;
-			case 20: asm_call(DisplayGUISave);       break;
+			case 20: DisplayGUISave();               break;
 			case 21: asm_call(DisplayGUISpeed);      break;
 		}
 	}

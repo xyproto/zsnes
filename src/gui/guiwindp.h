@@ -7,7 +7,6 @@ extern void DisplayGUIAddOns();
 extern void DisplayGUIChipConfig();
 extern void DisplayGUICombo();
 extern void DisplayGUIPaths();
-extern void DisplayGUISave();
 extern void DisplayGUISpeed();
 
 extern char   CMovieExt;

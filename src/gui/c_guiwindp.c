@@ -2315,3 +2315,75 @@ mux:
 		}
 	}
 }
+
+
+void DisplayGUISave(void)
+{
+	GUIDrawWindowBox(20, "SAVE OPTIONS");
+
+	GUIDisplayText(20, 8,        19, "# OF REWIND STATES"); // Text
+	GUIDisplayText(20, 8,        31, "1/5 SECONDS PER REWIND");
+	GUIDisplayText(20, 9,       159, "SAVE");
+	GUIDisplayText(20, 9 +  57, 159, "LOAD");
+	GUIDisplayText(20, 9 + 114, 159, "PICK");
+	GUIDisplayText(20, 9,       168, "REWIND");
+
+	GUIDisplayTextY(20, 6,          123, "STATE SHORTCUTS:");
+	GUIDisplayText( 20, 9,          132, "ST0");
+	GUIDisplayText( 20, 9 + 45,     132, "ST1");
+	GUIDisplayText( 20, 9 + 45 * 2, 132, "ST2");
+	GUIDisplayText( 20, 9 + 45 * 3, 132, "ST3");
+	GUIDisplayText( 20, 9,          141, "ST4");
+	GUIDisplayText( 20, 9 + 45,     141, "ST5");
+	GUIDisplayText( 20, 9 + 45 * 2, 141, "ST6");
+	GUIDisplayText( 20, 9 + 45 * 3, 141, "ST7");
+	GUIDisplayText( 20, 9,          150, "ST8");
+	GUIDisplayText( 20, 9 + 45,     150, "ST9");
+	GUIDisplayText( 20, 9 + 45 * 2, 150, "ST+");
+	GUIDisplayText( 20, 9 + 45 * 3, 150, "ST-");
+
+	GUIDisplayCheckboxu(20, 11, 38, &nosaveSRAM, "DO NOT SAVE SRAM", 0);
+	if (nosaveSRAM == 0)
+	{
+		GUIDisplayCheckboxu(20, 11, 48, &SRAMSave5Sec, "SRAM CHECK+SAVE", 5); // Checkboxes
+	}
+	GUIDisplayCheckboxu(20, 11,  58, &SRAMState,       "LOAD SAVESTATE W/SRAM",      0);
+	GUIDisplayCheckboxu(20, 11,  68, &LatestSave,      "START AT LATEST SAVE",       0);
+	GUIDisplayCheckboxu(20, 11,  78, &AutoIncSaveSlot, "AUTO INCREMENT SAVE SLOT",   5);
+	GUIDisplayCheckboxu(20, 11,  88, &AutoState,       "AUTO STATE SAVE/LOAD",       0);
+	GUIDisplayCheckboxu(20, 11,  98, &PauseLoad,       "PAUSE AFTER LOADING STATE",  0);
+	GUIDisplayCheckboxu(20, 11, 108, &PauseRewind,     "PAUSE AFTER REWIND",        12);
+
+	char GUISaveTextZ3[3];
+
+	GUIDisplayBBox(20, 150, 17, 165, 24, 167); // Rewind States Box
+	sprintf(GUISaveTextZ3, "%02u", RewindStates);
+	GUIDisplayTextG(20, 154, 19, GUISaveTextZ3);
+
+	GUIDisplayBBox(20, 150, 29, 165, 36, 167); // Second/Rewind Box
+	sprintf(GUISaveTextZ3, "%02u", RewindFrames);
+	GUIDisplayTextG(20, 154, 31, GUISaveTextZ3);
+
+	DDrawBox(20,  26, 129, &KeyStateSlc0); // Boxes for State section
+	DDrawBox(20,  71, 129, &KeyStateSlc1);
+	DDrawBox(20, 116, 129, &KeyStateSlc2);
+	DDrawBox(20, 161, 129, &KeyStateSlc3);
+	DDrawBox(20,  26, 138, &KeyStateSlc4);
+	DDrawBox(20,  71, 138, &KeyStateSlc5);
+	DDrawBox(20, 116, 138, &KeyStateSlc6);
+	DDrawBox(20, 161, 138, &KeyStateSlc7);
+	DDrawBox(20,  26, 147, &KeyStateSlc8);
+	DDrawBox(20,  71, 147, &KeyStateSlc9);
+	DDrawBox(20, 116, 147, &KeyIncStateSlot);
+	DDrawBox(20, 161, 147, &KeyDecStateSlot);
+	DDrawBox(20,  32, 156, &KeySaveState);
+	DDrawBox(20,  89, 156, &KeyLoadState);
+	DDrawBox(20, 146, 156, &KeyStateSelct);
+	DDrawBox(20,  45, 165, &KeyRewind);
+
+	GUItextcolor[0] = (GUIWincoladd & 0xFF) == 0 ? 217 : 211; // Buttons
+	DrawGUIButton(20, 173, 17, 181, 25, "+", 70, -2, -1); // + Rewind States
+	DrawGUIButton(20, 184, 17, 192, 25, "-", 71, -2, -1); // - Rewind States
+	DrawGUIButton(20, 173, 29, 181, 37, "+", 72, -2, -1); // + Second/Rewind
+	DrawGUIButton(20, 184, 29, 192, 37, "-", 73, -2, -1); // - Second/Rewind
+}

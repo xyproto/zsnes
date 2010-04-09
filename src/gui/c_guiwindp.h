@@ -10,6 +10,7 @@ void DisplayGUIMovies(void);    // Movie Record/Playback options
 void DisplayGUIOption(void);    // Emu Options
 void DisplayGUIOptns(void);     // GUI Options
 void DisplayGUIReset(void);     // Reset Confirmation
+void DisplayGUISave(void);      // Save & Rewind options/Hotkeys
 void DisplayGUISearch(void);
 void DisplayGUISound(void);     // Sound Related Options
 void DisplayGUIStates(void);    // Save/Load State Confirmation
