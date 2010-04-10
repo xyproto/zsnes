@@ -21,7 +21,7 @@
 
 SECTION .text
 
-ComboClip:
+NEWSYM ComboClip
     movzx eax,byte[GUINumCombo]
 .next
     cmp al,42

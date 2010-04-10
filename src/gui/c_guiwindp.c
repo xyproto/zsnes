@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "../asm_call.h"
 #include "../c_init.h"
 #include "../c_intrf.h"
 #include "../cfg.h"
@@ -14,6 +15,7 @@
 #include "c_gui.h"
 #include "c_guiwindp.h"
 #include "gui.h"
+#include "guicombo.h"
 #include "guifuncs.h"
 #include "guikeys.h"
 #include "guitools.h"
@@ -2313,6 +2315,343 @@ mux:
 
 			GUIOuttextwin2d(15, 139, 148, GUIMovieForcedText, 10, GUIMovieTextPtr, 0);
 		}
+	}
+}
+
+
+static void InitTextColor(void)
+{
+	TextColorSp[2] = ((GUIWincoladd & 0xFF) == 0 ? 217 : 211) - 15;
+	TextColorSp[0] = GUIWincol;
+	u1 al = 163;
+	if ((GUIWincoladd & 0xFF) != 0)
+	{
+		al = 164;
+		GUItextcolor[0] = 164;
+	}
+	TextColorSp[1] = al;
+}
+
+
+static void DrawBorderedBoxB(u4 const p1, u4 const p2, u4 const p3, u4 const p4, u4 const p5, u4 const p6, char const* const p7) // Special function for combo displays
+{
+	// draw borders
+	DrawGUIWinBox(p1, p2,     p6, p4,     p3,     GUIWincol);
+	DrawGUIWinBox(p1, p2 - 1, p3, p2 - 2, p5,     GUIWincol + 1);
+	DrawGUIWinBox(p1, p2,     p5, p4,     p5 + 1, GUIWincol + 4);
+	DrawGUIWinBox(p1, p4,     p3, p4 + 1, p5,     GUIWincol + 3);
+	DrawGUIWinBox(p1, p2,     p3, p4,     p5,     167);
+	GUItextcolor[0]  = 223;
+	GUIOuttextwin2(p1, p2 + 5, p3 + 2, p7);
+	GUItextcolor[0]  = (GUIWincoladd & 0xFF) == 0 ? 221 : 222;
+	GUIOuttextwin2(p1, p2 + 4, p3 + 1, p7);
+}
+
+
+static void DrawBorderedBoxB2(u4 const p1, u4 const p2, u4 const p3, u4 const p4, u4 const p5, u4 const p6, char const* const p7) // Special function for combo displays
+{
+	// draw borders
+	DrawGUIWinBox(p1, p2,     p6, p4,     p3,     GUIWincol);
+	DrawGUIWinBox(p1, p2 - 1, p3, p2 - 2, p5,     GUIWincol + 1);
+	DrawGUIWinBox(p1, p2,     p5, p4,     p5 + 1, GUIWincol + 4);
+	DrawGUIWinBox(p1, p4,     p3, p4 + 1, p5,     GUIWincol + 3);
+	DrawGUIWinBox(p1, p2,     p3, p4,     p5,     167);
+	GUItextcolor[0]   = 223;
+	GUIOuttextwin2(p1, p2 + 2, p3 + 2, p7);
+	GUItextcolor[0]   = (GUIWincoladd & 0xFF) == 0 ? 221 : 222;
+	GUIOuttextwin2(p1, p2 + 1, p3 + 1, p7);
+}
+
+
+static void DrawBorderedBox(u4 const p1, u4 const p2, u4 const p3, u4 const p4, u4 const p5, u4 const p6)
+{
+	// draw borders
+	DrawGUIWinBox(p1, p2,     p6, p4,     p3,     GUIWincol); // freezes if you replace p6 with p3 - 1
+	DrawGUIWinBox(p1, p2 - 1, p3, p2 - 2, p5,     GUIWincol + 1);
+	DrawGUIWinBox(p1, p2,     p5, p4,     p5 + 1, GUIWincol + 4);
+	DrawGUIWinBox(p1, p4,     p3, p4 + 1, p5,     GUIWincol + 3);
+	DrawGUIWinBox(p1, p2,     p3, p4,     p5,     167);
+}
+
+
+static void DrawSlideBar(u4 const p1, u4 const p2, u4 const p3, u4 const p4, u4 const p5, u4 const p6, u4 const p7, u4* const p8, u4 const p9, u4 const p10)
+{
+	DrawSlideBarWin(p1, p2, p3 + 8, p4, p5, p6, p7 - 16, p8);
+	GUItextcolor[0] = TextColorSp[2];
+	if ((GUICHold & 0xFF) == p9) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd + 3) & 0x000000FF;
+	GUIDisplayIconWin(p1, p2, p3, GUIIconDataUpArrow);
+	if ((GUICHold & 0xFF) == p9) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd - 3) & 0x000000FF;
+	GUItextcolor[0] = TextColorSp[2];
+	if ((GUICHold & 0xFF) == p10) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd + 3) & 0x000000FF;
+	GUIDisplayIconWin(p1, p2, p3 + p7 - 8, GUIIconDataDownArrow);
+	if ((GUICHold & 0xFF) == p10) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd - 3) & 0x000000FF;
+}
+
+
+// Key types: Up, Down, Left, Right, A, B, X, Y, L, R (Press/Relase/P+R)
+// Frame delays: 1 frame, 2, 3, 4, 5, 1 sec., 2, 3, 4, 5
+void DisplayGUICombo(void)
+{
+	if (GUIccomblcursloc != GUIccombcursloc)
+	{
+		GUIccomblcursloc = GUIccombcursloc;
+		// copy contents into temporary variables
+		u1 const* const esi = (GUIComboGameSpec == 0 ? CombinDataGlob : CombinDataLocl) + GUIccombcursloc * 66;
+		memcpy(GUIComboTextH, esi,      20);
+		memcpy(GUIComboData,  esi + 20, 42);
+		GUIComboKey   = GUIComboKey & 0xFFFF0000 | *(u2 const*)(esi + 62); // XXX ugly cast
+		GUIComboPNum  = esi[64];
+		GUIComboLHorz = esi[65];
+		// determine length of combo data
+		u1 const* eax = GUIComboData;
+		u4        ecx = 0;
+		while (*eax++ != 0) ++ecx;
+		GUINumCombo = ecx;
+	}
+
+	// copy into data if description equal
+	{ u1* const edi = (GUIComboGameSpec == 0 ? CombinDataGlob : CombinDataLocl) + GUIccombcursloc * 66;
+		if (strncmp((char const*)edi, GUIComboTextH, 20) == 0) // XXX ugly cast
+		{
+			asm_call(ComboClip);
+			memcpy(edi,      GUIComboTextH, 20);
+			memcpy(edi + 20, GUIComboData,  42);
+			*(u2*)(edi + 62) = GUIComboKey; // XXX ugly cast
+			edi[64]          = GUIComboPNum;
+			edi[65]          = GUIComboLHorz;
+		}
+	}
+
+	InitTextColor();
+	if ((GUIWincoladd & 0xFF) != 0) GUItextcolor[0] = 211;
+
+	GUIDrawWindowBox(16, "KEY COMBINATION EDITOR");
+
+	DrawBorderedBox(16, 10,  20, 190,  80,  19);
+	DrawBorderedBox(16, 37,  91, 157,  99,  90);
+	DrawBorderedBox(16, 10,  91,  32,  99,  90);
+	DrawBorderedBox(16, 10, 110, 220, 146, 109);
+
+	// Draw SlideBar
+	// win#,X,Y start,List Loc,List size,# Lines,Bar Size(Y),UpArrowResource#,DownArrowRes#
+	DrawSlideBar(16, 192, 20, GUIccombviewloc, NumCombo, 8, 61, GUICSStC, 13, 14);
+
+	// Draw control boxes
+	DrawBorderedBoxB( 16,  75, 150,  85, 157, 149, "\xFB");
+	DrawBorderedBoxB( 16,  89, 150,  99, 157, 149, "\xFC");
+	DrawBorderedBoxB( 16, 103, 150, 113, 157, 149, "\xFD");
+	DrawBorderedBoxB( 16, 117, 150, 127, 157, 149, "\xFE");
+	DrawBorderedBoxB( 16, 131, 150, 141, 157, 149, "A");
+	DrawBorderedBoxB( 16, 145, 150, 155, 157, 149, "B");
+	DrawBorderedBoxB( 16, 159, 150, 169, 157, 149, "X");
+	DrawBorderedBoxB( 16, 173, 150, 183, 157, 149, "Y");
+	DrawBorderedBoxB( 16, 187, 150, 197, 157, 149, "L");
+	DrawBorderedBoxB( 16, 201, 150, 211, 157, 149, "R");
+	DrawBorderedBoxB2(16, 215, 150, 227, 157, 149, "ST");
+	DrawBorderedBoxB2(16, 231, 150, 243, 157, 149, "SL");
+
+	DrawBorderedBoxB( 16,  75, 160,  85, 167, 159, "\xFB");
+	DrawBorderedBoxB( 16,  89, 160,  99, 167, 159, "\xFC");
+	DrawBorderedBoxB( 16, 103, 160, 113, 167, 159, "\xFD");
+	DrawBorderedBoxB( 16, 117, 160, 127, 167, 159, "\xFE");
+	DrawBorderedBoxB( 16, 131, 160, 141, 167, 159, "A");
+	DrawBorderedBoxB( 16, 145, 160, 155, 167, 159, "B");
+	DrawBorderedBoxB( 16, 159, 160, 169, 167, 159, "X");
+	DrawBorderedBoxB( 16, 173, 160, 183, 167, 159, "Y");
+	DrawBorderedBoxB( 16, 187, 160, 197, 167, 159, "L");
+	DrawBorderedBoxB( 16, 201, 160, 211, 167, 159, "R");
+	DrawBorderedBoxB2(16, 215, 160, 227, 167, 159, "ST");
+	DrawBorderedBoxB2(16, 231, 160, 243, 167, 159, "SL");
+
+	DrawBorderedBoxB( 16,  75, 170,  85, 177, 169, "\xFB");
+	DrawBorderedBoxB( 16,  89, 170,  99, 177, 169, "\xFC");
+	DrawBorderedBoxB( 16, 103, 170, 113, 177, 169, "\xFD");
+	DrawBorderedBoxB( 16, 117, 170, 127, 177, 169, "\xFE");
+	DrawBorderedBoxB( 16, 131, 170, 141, 177, 169, "A");
+	DrawBorderedBoxB( 16, 145, 170, 155, 177, 169, "B");
+	DrawBorderedBoxB( 16, 159, 170, 169, 177, 169, "X");
+	DrawBorderedBoxB( 16, 173, 170, 183, 177, 169, "Y");
+	DrawBorderedBoxB( 16, 187, 170, 197, 177, 169, "L");
+	DrawBorderedBoxB( 16, 201, 170, 211, 177, 169, "R");
+	DrawBorderedBoxB2(16, 215, 170, 227, 177, 169, "ST");
+	DrawBorderedBoxB2(16, 231, 170, 243, 177, 169, "SL");
+
+	DrawBorderedBoxB(16, 10, 189, 20, 196, 188, "1");
+	DrawBorderedBoxB(16, 24, 189, 34, 196, 188, "2");
+	DrawBorderedBoxB(16, 38, 189, 48, 196, 188, "3");
+	DrawBorderedBoxB(16, 52, 189, 62, 196, 188, "4");
+	DrawBorderedBoxB(16, 66, 189, 76, 196, 188, "5");
+	DrawBorderedBoxB(16, 80, 189, 90, 196, 188, "9");
+
+	DrawBorderedBoxB(16, 107, 189, 117, 196, 188, "\xFA");
+	DrawBorderedBoxB(16, 121, 189, 131, 196, 188, "1");
+	DrawBorderedBoxB(16, 135, 189, 145, 196, 188, "2");
+	DrawBorderedBoxB(16, 149, 189, 159, 196, 188, "3");
+	DrawBorderedBoxB(16, 163, 189, 173, 196, 188, "4");
+	DrawBorderedBoxB(16, 177, 189, 187, 196, 188, "5");
+
+	DrawBorderedBoxB(16, 204, 189, 218, 196, 188, "\xFF");
+
+	GUIDisplayText(16,  10,  13, "DESCRIPTION"); // Text
+	GUIDisplayText(16, 138,  13, "KEY P# LH");
+	GUIDisplayText(16,  38,  84, "DESCRIPTION:");
+	GUIDisplayText(16,  10,  84, "KEY:");
+	GUIDisplayText(16,  10, 103, "COMBINATION KEYS:");
+	GUIDisplayText(16,  10, 152, "PRESS+REL");
+	GUIDisplayText(16,  10, 162, "PRESS ONLY");
+	GUIDisplayText(16,  10, 172, "REL ONLY");
+	GUIDisplayText(16,  10, 182, "FRAME DELAY");
+	GUIDisplayText(16, 114, 182, "SECOND DELAY");
+	GUIDisplayText(16, 204, 182, "DEL");
+	GUIDisplayText(16, 145,  85, "P#  1  2  3  4  5");
+
+	char const* const GUIComboTextA = "CLEAR";
+	char const* const GUIComboTextB = "ADD";
+	char const* const GUIComboTextC = "REPLACE";
+	char const* const GUIComboTextD = "DELETE";
+
+	// XXX twice? see below
+	DrawGUIButton(16, 202, 20, 246, 31, GUIComboTextA, 60, -1, 0); // Buttons
+	DrawGUIButton(16, 202, 35, 246, 46, GUIComboTextB, 61, -1, 0);
+	DrawGUIButton(16, 202, 50, 246, 61, GUIComboTextC, 62, -1, 0);
+	DrawGUIButton(16, 202, 65, 246, 76, GUIComboTextD, 63, -1, 0);
+
+	// Calculate Text Cursor Position / Draw Box Text
+	{ u4 const eax = strlen(GUIComboTextH);
+		GUIComboPos = eax;
+		if (!(GUICCFlash & 8))
+		{
+			GUIComboTextH[eax]     = '_';
+			GUIComboTextH[eax + 1] = '\0';
+		}
+		GUIOuttextwin2c(16, 39, 94, GUIComboTextH);
+		GUIComboTextH[GUIComboPos] = '\0';
+	}
+
+	// Display Current Combo Key
+	sprintf(GUIGameDisplayKy, "%.3s", ScanCodeListing + GUIComboKey * 3);
+	GUIOuttextwin2c(16, 14, 94, GUIGameDisplayKy);
+
+	// Buttons
+	GUItextcolor[0] = (GUIWincoladd & 0xFF) == 0 ? 217 : 211;
+	DrawGUIButton(16, 202, 20, 246, 31, GUIComboTextA, 60, -1, 0);
+	DrawGUIButton(16, 202, 35, 246, 46, GUIComboTextB, 61, -1, 0);
+	DrawGUIButton(16, 202, 50, 246, 61, GUIComboTextC, 62, -1, 0);
+	DrawGUIButton(16, 202, 65, 246, 76, GUIComboTextD, 63, -1, 0);
+
+	// Radio Switches
+	GUIDisplayButtonHole(16, 158, 82, &GUIComboPNum, 0);
+	GUIDisplayButtonHole(16, 176, 82, &GUIComboPNum, 1);
+	GUIDisplayButtonHole(16, 194, 82, &GUIComboPNum, 2);
+	GUIDisplayButtonHole(16, 212, 82, &GUIComboPNum, 3);
+	GUIDisplayButtonHole(16, 230, 82, &GUIComboPNum, 4);
+	// Checkboxes
+	GUIDisplayCheckbox(16, 163, 88, &GUIComboLHorz,    "\xFE = LAST \xFD/\xFE");
+	GUIDisplayCheckbox(16, 163, 96, &GUIComboGameSpec, "GAME SPECFIC");
+
+	// Draw Combination Keys (Each 15x11 -> 210x36)
+	u1 eax = GUINumCombo;
+	if (eax != 0)
+	{
+		u4 ebx =   0;
+		u4 ecx =  11;
+		u4 edx = 112;
+		do
+		{
+			u1        al  = GUIComboData[ebx++] - 1;
+			u1 const* esi;
+			if (al < 12)
+			{
+				esi = GUIIconDataComboPressRelease;
+			}
+			else if ((al -= 12) < 12)
+			{
+				esi = GUIIconDataComboPress;
+			}
+			else if ((al -= 12) < 12)
+			{
+				esi = GUIIconDataComboRelease;
+			}
+			else
+			{
+				esi = GUIIconDataComboFrame;
+				if (al == 17)
+				{
+					al = 20;
+				}
+				else if (al >= 18)
+				{
+					al -= 7;
+					esi = GUIIconDataComboSecond;
+					if (al == 11) al = 250 - 37;
+				}
+			}
+			if (al > 11) al += 37;
+			switch (al)
+			{
+				case  0: al = '\xFB'; break;
+				case  1: al = '\xFC'; break;
+				case  2: al = '\xFD'; break;
+				case  3: al = '\xFE'; break;
+				case  4: al = 'A';    break;
+				case  5: al = 'B';    break;
+				case  6: al = 'X';    break;
+				case  7: al = 'Y';    break;
+				case  8: al = 'L';    break;
+				case  9: al = 'R';    break;
+				case 10: al = 'T';    break;
+				case 11: al = 'E';    break;
+			}
+			static char GUIComboText3[] = " ";
+			GUIComboText3[0] = al;
+
+			GUItextcolor[0] = 223;
+			GUIOuttextwin2(16, ecx + 8, edx + 5, GUIComboText3);
+			GUItextcolor[0] = (GUIWincoladd & 0xFF) == 0 ? 221 : 222;
+			GUIOuttextwin2(16, ecx + 7, edx + 4, GUIComboText3);
+
+			GUIDisplayIconWin(16, ecx, edx, esi);
+			ecx += 15;
+			if (ecx == 11 + 15 * 14)
+			{
+				ecx -= 15 * 14;
+				edx += 11;
+			}
+		}
+		while (--eax != 0);
+	}
+
+	// Display Bordered Box
+	if (NumCombo != 0)
+	{
+		DrawGUIWinBox2(16, 10, 190, 7, 224, 23 + (GUIccombcursloc - GUIccombviewloc) * 7);
+	}
+
+	// Display Scroll Lines
+	// Copy Description to GUIScrolBufA, Others to GUIScrolBufB
+	s4 ebx = NumCombo - GUIccombviewloc;
+	if (ebx > 0)
+	{
+		if (ebx > 8) ebx = 8;
+		u1 const* edi = (GUIComboGameSpec == 0 ? CombinDataGlob : CombinDataLocl) + GUIccombviewloc * 66;
+		u4        ecx = 12;
+		u4        eax = 25;
+		do
+		{
+			u2 const ax = *(u2 const*)(edi + 62);
+			static char GUIScrolBufB[9];
+			sprintf(GUIScrolBufB, "%.3s %c  %c", ScanCodeListing + ax * 3, '1' + edi[64], edi[65] != 0 ? 'Y' : 'N');
+			static char GUIScrolBufA[21];
+			memcpy(GUIScrolBufA, edi, 20);
+
+			GUItextcolor[0] = 223;
+			GUIOuttextwin2(16, ecx,       eax,     GUIScrolBufA);
+			GUIOuttextwin2(16, ecx + 128, eax,     GUIScrolBufB);
+			GUItextcolor[0] = (GUIWincoladd & 0xFF) == 0 ? 221 : 222;
+			GUIOuttextwin2(16, ecx -   1, eax - 1, GUIScrolBufA);
+			GUIOuttextwin2(16, ecx + 127, eax - 1, GUIScrolBufB);
+		}
+		while (eax += 7, edi += 66, --ebx != 0);
 	}
 }
 

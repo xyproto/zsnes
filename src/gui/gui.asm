@@ -63,7 +63,7 @@ EXTSYM nssdip1,nssdip2,nssdip3,nssdip4,nssdip5,nssdip6
 EXTSYM AutoLoadCht,GUILoadData
 EXTSYM CheckMenuItemHelp
 EXTSYM GUITryMenuItem,GUIProcStates,GUIProcReset,GUISetPal,GUIOutputStringwin
-EXTSYM DrawSlideBarWin,MovieProcessing,MovieRecordWinVal
+EXTSYM MovieProcessing,MovieRecordWinVal
 
 EXTSYM GUIwinposx,GUIwinposy,maxskip,GUIEffect,hqFilter,En2xSaI,NTSCFilter
 EXTSYM NTSCBlend,NTSCHue,NTSCSat,NTSCCont,NTSCBright,NTSCSharp,NTSCRef

@@ -220,24 +220,6 @@ SECTION .text
   jnz %%loop
 %endmacro
 
-%macro DrawGUIWinBox2 5
-  mov eax,[GUIwinposx+%1*4]
-  mov ecx,eax
-  add eax,%2
-  add ecx,%3+1
-  mov dl,%5
-  cmp byte[GUIWincoladd],0
-  je %%zero
-  inc dl
-%%zero
-  mov esi,%4
-  add ebx,dword[GUIwinposy+%1*4]
-%%loop
-  DrawGUILine
-  dec esi
-  jnz %%loop
-%endmacro
-
 %macro DrawGUIWinBox3 6
   mov ecx,%4
   mov eax,[GUIwinposx+%1*4]
@@ -252,54 +234,6 @@ SECTION .text
   DrawGUILine
   dec esi
   jnz %%loop
-%endmacro
-
-%macro DrawGUIButton 9
-  mov dl,[GUItextcolor]
-  sub dl,5
-  cmp byte[GUICBHold],%7
-  jne %%noa
-  sub dl,13
-%%noa
-  DrawGUIWinBox %1,%2,%3,%4,%3,dl
-  sub dl,3
-  cmp byte[GUICBHold],%7
-  jne %%nob
-  add dl,5
-%%nob
-  DrawGUIWinBox %1,%2,%3,%2,%5,dl
-  sub dl,3
-  cmp byte[GUICBHold],%7
-  jne %%noc
-  add dl,5
-%%noc
-  DrawGUIWinBox %1,%2+1,%3+1,%4-2,%5-2,dl
-  sub dl,3
-  cmp byte[GUICBHold],%7
-  jne %%nod
-  add dl,5
-%%nod
-  DrawGUIWinBox %1,%4+1,%3+1,%4-2,%5-2,dl
-  sub dl,3
-  cmp byte[GUICBHold],%7
-  jne %%noe
-  add dl,5
-%%noe
-  DrawGUIWinBox %1,%2,%5,%4-1,%5,dl
-  cmp byte[GUICBHold],%7
-  je near %%no2
-  sub byte[GUItextcolor],15
-  ccallv GUIOuttextwin2, %1, %2 + 5 + %8, %3 + 4 + %9, %6
-  add byte[GUItextcolor],15
-  ccallv GUIOuttextwin2, %1, %2 + 4 + %8, %3 + 3 + %9, %6
-  jmp %%yes
-%%no2
-  sub byte[GUItextcolor],18
-  ccallv GUIOuttextwin2, %1, %2 + 6 + %8, %3 + 5 + %9, %6
-  add byte[GUItextcolor],15
-  ccallv GUIOuttextwin2, %1, %2 + 5 + %8, %3 + 4 + %9, %6
-  add byte[GUItextcolor],3
-%%yes
 %endmacro
 
 %macro GUIDisplayButtonHoleTu 7
@@ -636,91 +570,6 @@ SECTION .text
 %%nodraw
 %endmacro
 
-%macro DrawBorderedBox 6;
-  ; draw borders
-  mov dl,[GUIWincol]
-  DrawGUIWinBox %1,%2,%6,%4,%3,dl   ; freezes if you replace %6 with %3-1
-  mov dl,[GUIWincol]
-  inc dl
-  DrawGUIWinBox %1,%2-1,%3,%2,%5,dl
-  mov dl,[GUIWincol]
-  add dl,4
-  DrawGUIWinBox %1,%2,%5,%4,%5+1,dl
-  mov dl,[GUIWincol]
-  add dl,3
-  DrawGUIWinBox %1,%4,%3,%4+1,%5,dl
-  DrawGUIWinBox %1,%2,%3,%4,%5,167
-%endmacro
-
-%macro DrawBorderedBoxB 7       ; Special function for combo displays
-  ; draw borders
-  mov dl,[GUIWincol]
-  DrawGUIWinBox %1,%2,%6,%4,%3,dl
-  mov dl,[GUIWincol]
-  inc dl
-  DrawGUIWinBox %1,%2-1,%3,%2,%5,dl
-  mov dl,[GUIWincol]
-  add dl,4
-  DrawGUIWinBox %1,%2,%5,%4,%5+1,dl
-  mov dl,[GUIWincol]
-  add dl,3
-  DrawGUIWinBox %1,%4,%3,%4+1,%5,dl
-  DrawGUIWinBox %1,%2,%3,%4,%5,167
-  mov byte[GUIComboText3],%7
-  mov byte[GUItextcolor],223
-  ccallv GUIOuttextwin2, %1, %2 + 5, %3 + 2, GUIComboText3
-  mov byte[GUItextcolor],221
-  cmp byte[GUIWincoladd],0
-  je %%zero
-  mov byte[GUItextcolor],222
-%%zero
-  ccallv GUIOuttextwin2, %1, %2 + 4, %3 + 1, GUIComboText3
-%endmacro
-
-%macro DrawBorderedBoxB2 7       ; Special function for combo displays
-  ; draw borders
-  mov dl,[GUIWincol]
-  DrawGUIWinBox %1,%2,%6,%4,%3,dl
-  mov dl,[GUIWincol]
-  inc dl
-  DrawGUIWinBox %1,%2-1,%3,%2,%5,dl
-  mov dl,[GUIWincol]
-  add dl,4
-  DrawGUIWinBox %1,%2,%5,%4,%5+1,dl
-  mov dl,[GUIWincol]
-  add dl,3
-  DrawGUIWinBox %1,%4,%3,%4+1,%5,dl
-  DrawGUIWinBox %1,%2,%3,%4,%5,167
-  mov byte[GUIComboText3b+1],%7
-  mov byte[GUItextcolor],223
-  ccallv GUIOuttextwin2, %1, %2 + 2, %3 + 2, GUIComboText3b
-  mov byte[GUItextcolor],221
-  cmp byte[GUIWincoladd],0
-  je %%zero
-  mov byte[GUItextcolor],222
-%%zero
-  ccallv GUIOuttextwin2, %1, %2 + 1, %3 + 1, GUIComboText3b
-%endmacro
-
-%macro InitTextColor 0
-  mov al,217
-  cmp byte[GUIWincoladd],0
-  je .zero3
-  mov al,211
-.zero3
-  sub al,15
-  mov [TextColorSp+2],al
-  mov al,[GUIWincol]
-  mov [TextColorSp],al
-  mov al,163
-  cmp byte[GUIWincoladd],0
-  je .zero
-  mov al,164
-  mov byte[GUItextcolor],164
-.zero
-  mov [TextColorSp+1],al
-%endmacro
-
 %macro GUIOuttextwin2b 4        ; Special, yellow text
   mov al,[TextColorSp]
   mov [GUItextcolor],al
@@ -797,39 +646,6 @@ SECTION .text
   pop ecx
 %%fixreg
   pop eax
-%endmacro
-
-%macro DrawSlideBar 10
-  ccallv DrawSlideBarWin, %1, %2, %3 + 8, %4, %5, %6, %7 - 16, %8
-  mov al,[TextColorSp+2]
-  mov [GUItextcolor],al
-  cmp byte[GUICHold],%9
-  jne .noholda
-  add byte[GUIWincoladd],3
-.noholda
-  ccallv GUIDisplayIconWin, %1, %2, %3, GUIIconDataUpArrow
-  cmp byte[GUICHold],%9
-  jne .noholda2
-  sub byte[GUIWincoladd],3
-.noholda2
-  mov al,[TextColorSp+2]
-  mov [GUItextcolor],al
-  cmp byte[GUICHold],%10
-  jne .noholdb
-  add byte[GUIWincoladd],3
-.noholdb
-  ccallv GUIDisplayIconWin, %1, %2, %3 + %7 - 8, GUIIconDataDownArrow
-  cmp byte[GUICHold],%10
-  jne .noholdb2
-  sub byte[GUIWincoladd],3
-.noholdb2
-%endmacro
-
-%macro DetermineChar 2
-  cmp al,%1
-  jne %%control
-  mov al,%2
-%%control
 %endmacro
 
 SECTION .data
@@ -1024,462 +840,25 @@ NEWSYM GUIDumpingTab, dd 0,1
 
 NEWSYM CMovieExt, db 'v'
 
-SECTION .text
-
-; Key types: Up, Down, Left, Right, A, B, X, Y, L, R (Press/Relase/P+R)
-; Frame delays: 1 frame, 2, 3, 4, 5, 1 sec., 2, 3 ,4 ,5
-
-NEWSYM DisplayGUICombo
-  mov eax,[GUIccombcursloc]
-  cmp [GUIccomblcursloc],eax
-  je .nolastcurschange
-  mov [GUIccomblcursloc],eax
-  ; copy contents into temporary variables
-  mov esi,[GUIccombcursloc]
-  shl esi,6
-  add esi,[GUIccombcursloc]
-  add esi,[GUIccombcursloc]
-  add esi,CombinDataGlob
-  cmp byte[GUIComboGameSpec],0
-  je .nogamespecb
-  sub esi,CombinDataGlob
-  add esi,CombinDataLocl
-.nogamespecb
-  ; copy 20 bytes to GUIComboTextH
-  mov ecx,20
-  mov edi,GUIComboTextH
-  rep movsb
-  ; copy 42 bytes to GUIComboData
-  mov ecx,42
-  mov edi,GUIComboData
-  rep movsb
-  mov ax,[esi]
-  mov [GUIComboKey],ax
-  mov al,[esi+2]
-  mov [GUIComboPNum],al
-  mov al,[esi+3]
-  mov [GUIComboLHorz],al
-  ; determine length of combo data
-  mov eax,GUIComboData
-  xor ecx,ecx
-.notfin
-  cmp byte[eax],0
-  je .fin
-  inc eax
-  inc ecx
-  jmp .notfin
-.fin
-  mov [GUINumCombo],cl
-.nolastcurschange
-
-  ; copy into data if description equal
-  mov esi,[GUIccombcursloc]
-  shl esi,6
-  add esi,[GUIccombcursloc]
-  add esi,[GUIccombcursloc]
-  add esi,CombinDataGlob
-  cmp byte[GUIComboGameSpec],0
-  je .nogamespecc
-  sub esi,CombinDataGlob
-  add esi,CombinDataLocl
-.nogamespecc
-  mov ecx,20
-  mov edi,GUIComboTextH
-.comploop
-  mov al,[esi]
-  cmp al,[edi]
-  jne near .notequal
-  or al,al
-  jz .donecomp
-  inc esi
-  inc edi
-  dec ecx
-  jnz .comploop
-.donecomp
-  call ComboClip
-  mov edi,[GUIccombcursloc]
-  shl edi,6
-  add edi,[GUIccombcursloc]
-  add edi,[GUIccombcursloc]
-  add edi,CombinDataGlob
-  cmp byte[GUIComboGameSpec],0
-  je .nogamespecd
-  sub edi,CombinDataGlob
-  add edi,CombinDataLocl
-.nogamespecd
-  mov ecx,20
-  mov esi,GUIComboTextH
-  rep movsb
-  ; copy 42 bytes to GUIComboData
-  mov ecx,42
-  mov esi,GUIComboData
-  rep movsb
-  mov ax,[GUIComboKey]
-  mov [edi],ax
-  mov al,[GUIComboPNum]
-  mov [edi+2],al
-  mov al,[GUIComboLHorz]
-  mov [edi+3],al
-.notequal
-  InitTextColor
-
-  cmp byte[GUIWincoladd],0
-  je .zero4
-  mov byte[GUItextcolor],211
-.zero4
-
-  GUIDrawWindowBox 16,GUIComboDisp
-
-  DrawBorderedBox 16,10,20,190,80,19
-  DrawBorderedBox 16,37,91,157,99,90
-  DrawBorderedBox 16,10,91,32,99,90
-  DrawBorderedBox 16,10,110,220,146,109
-
-  ; Draw SlideBar
-  ; win#,X,Y start,List Loc,List size,# Lines,Bar Size(Y),UpArrowResource#,DownArrowRes#
-  DrawSlideBar 16,192,20,[GUIccombviewloc],[NumCombo],8,61,GUICSStC,13,14
-
-  ; Draw control boxes
-  DrawBorderedBoxB 16,75,150,85,157,149,251
-  DrawBorderedBoxB 16,89,150,99,157,149,252
-  DrawBorderedBoxB 16,103,150,113,157,149,253
-  DrawBorderedBoxB 16,117,150,127,157,149,254
-  DrawBorderedBoxB 16,131,150,141,157,149,'A'
-  DrawBorderedBoxB 16,145,150,155,157,149,'B'
-  DrawBorderedBoxB 16,159,150,169,157,149,'X'
-  DrawBorderedBoxB 16,173,150,183,157,149,'Y'
-  DrawBorderedBoxB 16,187,150,197,157,149,'L'
-  DrawBorderedBoxB 16,201,150,211,157,149,'R'
-  DrawBorderedBoxB2 16,215,150,227,157,149,'T'
-  DrawBorderedBoxB2 16,231,150,243,157,149,'L'
-
-  DrawBorderedBoxB 16,75,160,85,167,159,251
-  DrawBorderedBoxB 16,89,160,99,167,159,252
-  DrawBorderedBoxB 16,103,160,113,167,159,253
-  DrawBorderedBoxB 16,117,160,127,167,159,254
-  DrawBorderedBoxB 16,131,160,141,167,159,'A'
-  DrawBorderedBoxB 16,145,160,155,167,159,'B'
-  DrawBorderedBoxB 16,159,160,169,167,159,'X'
-  DrawBorderedBoxB 16,173,160,183,167,159,'Y'
-  DrawBorderedBoxB 16,187,160,197,167,159,'L'
-  DrawBorderedBoxB 16,201,160,211,167,159,'R'
-  DrawBorderedBoxB2 16,215,160,227,167,159,'T'
-  DrawBorderedBoxB2 16,231,160,243,167,159,'L'
-
-  DrawBorderedBoxB 16,75,170,85,177,169,251
-  DrawBorderedBoxB 16,89,170,99,177,169,252
-  DrawBorderedBoxB 16,103,170,113,177,169,253
-  DrawBorderedBoxB 16,117,170,127,177,169,254
-  DrawBorderedBoxB 16,131,170,141,177,169,'A'
-  DrawBorderedBoxB 16,145,170,155,177,169,'B'
-  DrawBorderedBoxB 16,159,170,169,177,169,'X'
-  DrawBorderedBoxB 16,173,170,183,177,169,'Y'
-  DrawBorderedBoxB 16,187,170,197,177,169,'L'
-  DrawBorderedBoxB 16,201,170,211,177,169,'R'
-  DrawBorderedBoxB2 16,215,170,227,177,169,'T'
-  DrawBorderedBoxB2 16,231,170,243,177,169,'L'
-
-  DrawBorderedBoxB 16,10,189,20,196,188,'1'
-  DrawBorderedBoxB 16,24,189,34,196,188,'2'
-  DrawBorderedBoxB 16,38,189,48,196,188,'3'
-  DrawBorderedBoxB 16,52,189,62,196,188,'4'
-  DrawBorderedBoxB 16,66,189,76,196,188,'5'
-  DrawBorderedBoxB 16,80,189,90,196,188,'9'
-
-  DrawBorderedBoxB 16,107,189,117,196,188,250
-  DrawBorderedBoxB 16,121,189,131,196,188,'1'
-  DrawBorderedBoxB 16,135,189,145,196,188,'2'
-  DrawBorderedBoxB 16,149,189,159,196,188,'3'
-  DrawBorderedBoxB 16,163,189,173,196,188,'4'
-  DrawBorderedBoxB 16,177,189,187,196,188,'5'
-
-  DrawBorderedBoxB 16,204,189,218,196,188,255
-
-  GUIDisplayText 16,10,13,GUIComboText1        ; Text
-  GUIDisplayText 16,138,13,GUIComboText2
-  GUIDisplayText 16,38,84,GUIComboTextE
-  GUIDisplayText 16,10,84,GUIComboTextF
-  GUIDisplayText 16,10,103,GUIComboText4
-  GUIDisplayText 16,10,152,GUIComboText5
-  GUIDisplayText 16,10,162,GUIComboText6
-  GUIDisplayText 16,10,172,GUIComboText7
-  GUIDisplayText 16,10,182,GUIComboText8
-  GUIDisplayText 16,114,182,GUIComboText9
-  GUIDisplayText 16,204,182,GUIComboTextG
-  GUIDisplayText 16,145,85,GUIComboTextI
-
-  DrawGUIButton 16,202,20,246,31,GUIComboTextA,60,-1,0    ; Buttons
-  DrawGUIButton 16,202,35,246,46,GUIComboTextB,61,-1,0
-  DrawGUIButton 16,202,50,246,61,GUIComboTextC,62,-1,0
-  DrawGUIButton 16,202,65,246,76,GUIComboTextD,63,-1,0
-
-  ; Calculate Text Cursor Position / Draw Box Text
-  xor eax,eax
-.nozerocp
-  cmp byte[GUIComboTextH+eax],0
-  je .zerocp
-  inc eax
-  jmp .nozerocp
-.zerocp
-  mov [GUIComboPos],al
-  test byte[GUICCFlash],8
-  jnz .nound
-  mov byte[GUIComboTextH+eax],'_'
-  mov byte[GUIComboTextH+eax+1],0
-.nound
-  GUIOuttextwin2c 16,39,94,GUIComboTextH
-  xor eax,eax
-  mov al,[GUIComboPos]
-  mov byte[GUIComboTextH+eax],0
-
-  ; Display Current Combo Key
-  mov eax,[GUIComboKey]
-  mov ebx,[ScanCodeListing+eax*3]
-  mov [GUIGameDisplayKy],ebx
-  mov byte[GUIGameDisplayKy+3],0
-  GUIOuttextwin2c 16,14,94,GUIGameDisplayKy
-
-  ; Buttons
-  mov byte[GUItextcolor],217
-  cmp byte[GUIWincoladd],0
-  je .zero20
-  mov byte[GUItextcolor],211
-.zero20
-  DrawGUIButton 16,202,20,246,31,GUIComboTextA,60,-1,0
-  DrawGUIButton 16,202,35,246,46,GUIComboTextB,61,-1,0
-  DrawGUIButton 16,202,50,246,61,GUIComboTextC,62,-1,0
-  DrawGUIButton 16,202,65,246,76,GUIComboTextD,63,-1,0
-
-  ; Radio Switches
-  GUIDisplayButtonHole 16,158,82,byte[GUIComboPNum],0
-  GUIDisplayButtonHole 16,176,82,byte[GUIComboPNum],1
-  GUIDisplayButtonHole 16,194,82,byte[GUIComboPNum],2
-  GUIDisplayButtonHole 16,212,82,byte[GUIComboPNum],3
-  GUIDisplayButtonHole 16,230,82,byte[GUIComboPNum],4
-  ; Checkboxes
-  GUIDisplayCheckbox 16,163,88,GUIComboLHorz,GUIComboTextJ
-  GUIDisplayCheckbox 16,163,96,GUIComboGameSpec,GUIComboTextK
-
-  ; Draw Combination Keys (Each 15x11 -> 210x36)
-  xor eax,eax
-  mov al,[GUINumCombo]
-  or eax,eax
-  jz near .comboend
-  xor ebx,ebx
-  mov ecx,11
-  mov edx,112
-.comboiconloop
-  push eax
-  mov al,[GUIComboData+ebx]
-  dec al
-  mov esi,GUIIconDataComboPressRelease
-  cmp al,12
-  jb .doneicon
-  mov esi,GUIIconDataComboPress
-  sub al,12
-  cmp al,12
-  jb .doneicon
-  mov esi,GUIIconDataComboRelease
-  sub al,12
-  cmp al,12
-  jb .doneicon
-  mov esi,GUIIconDataComboFrame
-  cmp al,17
-  jne .not9
-  mov al,20
-  jmp .doneicon
-.not9
-  cmp al,18
-  jb .doneicon
-  sub al,7
-  mov esi,GUIIconDataComboSecond
-  cmp al,11
-  jne .notback
-  mov al,250-37
-  jmp .doneicon
-.notback
-.doneicon
-  cmp al,11
-  jbe .control
-  add al,37
-.control
-  DetermineChar 0,251
-  DetermineChar 1,252
-  DetermineChar 2,253
-  DetermineChar 3,254
-  DetermineChar 4,'A'
-  DetermineChar 5,'B'
-  DetermineChar 6,'X'
-  DetermineChar 7,'Y'
-  DetermineChar 8,'L'
-  DetermineChar 9,'R'
-  DetermineChar 10,'T'
-  DetermineChar 11,'E'
-  mov [GUIComboText3],al
-  pushad
-  mov eax,edx
-  add ecx,8
-  add eax,5
-
-  mov byte[GUItextcolor],223
-  ccallv GUIOuttextwin2, 16, ecx, eax, GUIComboText3
-  mov byte[GUItextcolor],221
-  cmp byte[GUIWincoladd],0
-  je .zerocol
-  mov byte[GUItextcolor],222
-.zerocol
-  dec ecx
-  dec eax
-  ccallv GUIOuttextwin2, 16, ecx, eax, GUIComboText3
-
-  popad
-  ccallv GUIDisplayIconWin, 16, ecx, edx, esi
-  pop eax
-  add ecx,15
-  cmp ecx,11+15*14
-  jne .notoverflowx
-  sub ecx,15*14
-  add edx,11
-.notoverflowx
-  inc ebx
-  dec eax
-  jnz near .comboiconloop
-.comboend
-
-  ; Display Bordered Box
-  cmp dword[NumCombo],0
-  je near .nowinbox
-  mov ebx,[GUIccombcursloc]
-  sub ebx,[GUIccombviewloc]
-  mov eax,ebx
-  lea ebx,[ebx*8]
-  sub ebx,eax
-  add ebx,23
-  DrawGUIWinBox2 16,10,190,7,224
-.nowinbox
-
-  ; Display Scroll Lines
-  ; Copy Description to GUIScrolBufA, Others to GUIScrolBufB
-  mov edi,[GUIccombviewloc]
-  shl edi,6
-  add edi,[GUIccombviewloc]
-  add edi,[GUIccombviewloc]
-  add edi,CombinDataGlob
-  cmp byte[GUIComboGameSpec],0
-  je .nogamespec
-  sub edi,CombinDataGlob
-  add edi,CombinDataLocl
-.nogamespec
-
-  mov ecx,12
-  mov eax,25
-  mov ebx,[NumCombo]
-  sub ebx,[GUIccombviewloc]
-  cmp ebx,0
-  jle near .noscrolldisplay
-  cmp ebx,8
-  jbe .scrolloop
-  mov ebx,8
-.scrolloop
-  push ebx
-  push edi
-  push eax
-
-  xor eax,eax
-  mov ax,[edi+62]
-  mov eax,[ScanCodeListing+eax*3]
-  mov [GUIScrolBufB],eax
-  mov byte[GUIScrolBufB+3],32
-  mov dword[GUIScrolBufB+4],20202020h
-  mov al,[edi+64]
-  add al,49
-  mov [GUIScrolBufB+4],al
-  mov byte[GUIScrolBufB+7],'N'
-  cmp byte[edi+65],0
-  je .yesnoff
-  mov byte[GUIScrolBufB+7],'Y'
-.yesnoff
-  mov bl,20
-  mov eax,GUIScrolBufA
-.scloopb
-  mov bh,[edi]
-  mov [eax],bh
-  inc edi
-  inc eax
-  dec bl
-  jnz .scloopb
-  pop eax
-
-  mov byte[GUItextcolor],223
-  ccallv GUIOuttextwin2, 16, ecx, eax, GUIScrolBufA
-  push ecx
-  add ecx,128
-  ccallv GUIOuttextwin2, 16, ecx, eax, GUIScrolBufB
-  pop ecx
-  mov byte[GUItextcolor],221
-  cmp byte[GUIWincoladd],0
-  je .zerocolb
-  mov byte[GUItextcolor],222
-.zerocolb
-  push ecx
-  push eax
-  dec ecx
-  dec eax
-  ccallv GUIOuttextwin2, 16, ecx, eax, GUIScrolBufA
-  add ecx,128
-  ccallv GUIOuttextwin2, 16, ecx, eax, GUIScrolBufB
-  pop eax
-  pop ecx
-  pop edi
-  pop ebx
-  add eax,7
-  add edi,66
-  dec ebx
-  jnz near .scrolloop
-.noscrolldisplay
-  ret
-
 SECTION .bss
-GUIccombviewloc resd 1
-GUIccombcursloc resd 1
-GUIccomblcursloc resd 1
+NEWSYM GUIccombviewloc, resd 1
+NEWSYM GUIccombcursloc, resd 1
+NEWSYM GUIccomblcursloc, resd 1
 NEWSYM NumCombo, resd 1
 NEWSYM NumComboGlob, resd 1
 NEWSYM NumComboLocl, resd 1
-GUICSStC resd 3
+NEWSYM GUICSStC, resd 3
 NEWSYM GUIComboKey, resd 1
-GUIComboPos resb 1
-GUIComboPNum resb 1
-GUIComboLHorz resb 1
+NEWSYM GUIComboPos, resb 1
+NEWSYM GUIComboPNum, resb 1
+NEWSYM GUIComboLHorz, resb 1
 NEWSYM GUINumCombo, resb 1
-GUIComboData resb 50
-GUIScrolBufA resb 21
-GUIScrolBufB resb 10
+NEWSYM GUIComboData, resb 50
 
 SECTION .data
-GUIComboText1 db 'DESCRIPTION',0
-GUIComboText2 db 'KEY P# LH',0
-GUIComboText3 db ' ',0
-GUIComboText3b db 'S ',0
-GUIComboText4 db 'COMBINATION KEYS:',0
-GUIComboText5 db 'PRESS+REL',0
-GUIComboText6 db 'PRESS ONLY',0
-GUIComboText7 db 'REL ONLY',0
-GUIComboText8 db 'FRAME DELAY',0
-GUIComboText9 db 'SECOND DELAY',0
-GUIComboTextA db 'CLEAR',0
-GUIComboTextB db 'ADD',0
-GUIComboTextC db 'REPLACE',0
-GUIComboTextD db 'DELETE',0
-GUIComboTextE db 'DESCRIPTION:',0
-GUIComboTextF db 'KEY:',0
-GUIComboTextG db 'DEL',0
 NEWSYM GUIComboTextH, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-GUIComboTextI db 'P#  1  2  3  4  5',0
-GUIComboTextJ db 254,' = LAST ',253,'/',254,0
-GUIComboTextK db 'GAME SPECFIC',0
 
-GUIIconDataComboPressRelease:
+NEWSYM GUIIconDataComboPressRelease
   db 0  ,166,0  ,0  ,166,0  ,0  ,0  ,0  ,0
   db 0  ,166,0  ,166,166,166,0  ,0  ,0  ,0
   db 0  ,166,0  ,0  ,166,0  ,0  ,0  ,0  ,0
@@ -1491,7 +870,7 @@ GUIIconDataComboPressRelease:
   db 235,234,234,234,234,235,0  ,0  ,0  ,0
   db 0  ,235,235,235,235,0  ,0  ,0  ,0  ,0
 
-GUIIconDataComboPress:
+NEWSYM GUIIconDataComboPress
   db 0  ,0  ,166,0  ,0  ,0  ,0  ,0  ,0  ,0
   db 0  ,0  ,166,0  ,0  ,0  ,0  ,0  ,0  ,0
   db 0  ,0  ,166,0  ,0  ,0  ,0  ,0  ,0  ,0
@@ -1503,7 +882,7 @@ GUIIconDataComboPress:
   db 237,236,236,236,236,237,0  ,0  ,0  ,0
   db 0  ,237,237,237,237,0  ,0  ,0  ,0  ,0
 
-GUIIconDataComboRelease:
+NEWSYM GUIIconDataComboRelease
   db 0  ,0  ,0  ,166,0  ,0  ,0  ,0  ,0  ,0
   db 0  ,0  ,166,166,166,0  ,0  ,0  ,0  ,0
   db 0  ,0  ,0  ,166,0  ,0  ,0  ,0  ,0  ,0
@@ -1515,7 +894,7 @@ GUIIconDataComboRelease:
   db 239,238,238,238,238,239,0  ,0  ,0  ,0
   db 0  ,239,239,239,239,0  ,0  ,0  ,0  ,0
 
-GUIIconDataComboFrame:
+NEWSYM GUIIconDataComboFrame
   db 0  ,0  ,0  ,0  ,58 ,0  ,0  ,0  ,0  ,0
   db 0  ,0  ,0  ,0  ,56 ,46 ,0  ,0  ,0  ,0
   db 0  ,0  ,0  ,0  ,54 ,44 ,0  ,0  ,0  ,0
@@ -1527,7 +906,7 @@ GUIIconDataComboFrame:
   db 0  ,0  ,42 ,32 ,0  ,0  ,0  ,0  ,0  ,0
   db 0  ,0  ,40 ,32 ,0  ,0  ,0  ,0  ,0  ,0
 
-GUIIconDataComboSecond:
+NEWSYM GUIIconDataComboSecond
   db 0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0
   db 0  ,0  ,51 ,45 ,0  ,0  ,0  ,0  ,0  ,0
   db 0  ,0  ,51 ,45 ,0  ,0  ,0  ,0  ,0  ,0
@@ -1838,7 +1217,6 @@ NEWSYM GUICustomResTextPtr, dd GUICustomX,GUICustomY
 
 ;General data
 GUINetDisp db 'REMOTE',0,0,0,0,0,0,0,0,0
-GUIComboDisp db 'KEY COMBINATION EDITOR',0
 GUIAddOnsDisp db 'DEVICES SELECTOR',0
 GUIAddOnsDispEE db 'DEVICES SELECTOR',0
 GUIChipConfigDisp db 'CONFIGURE CHIPS',0
@@ -1846,7 +1224,7 @@ GUIPathsDisp db 'SETUP PATHS',0
 
 SECTION .bss
 GUIItemBoxColor resd 1
-TextColorSp resd 1
+NEWSYM TextColorSp, resd 1
 
 SECTION .data
 NEWSYM GUIMenuItem

@@ -4,6 +4,7 @@
 void DisplayGUIAbout(void);     // Displays the About Box
 void DisplayGUICheat(void);     // Add/Browse Cheats menu
 void DisplayGUIChoseSave(void); // Pick Save State
+void DisplayGUICombo(void);
 void DisplayGUIInput(void);     // Player Select, Joystick/keyboard Type List, Button Assignments
 void DisplayGUILoad(void);
 void DisplayGUIMovies(void);    // Movie Record/Playback options
