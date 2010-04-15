@@ -83,6 +83,12 @@ extern u1 irqon;            // if IRQ has been called (80h) or not (0)
 extern u1 mode7set;         // mode 7 settings
 extern u1 mosaicon;         // mosaic on, bit 0=bg1,bit1=bg2, etc
 extern u1 mosaicsz;         // mosaic size in pixels
+extern u1 nssdip1;
+extern u1 nssdip2;
+extern u1 nssdip3;
+extern u1 nssdip4;
+extern u1 nssdip5;
+extern u1 nssdip6;
 extern u1 scaddset;         // screen/fixed color addition settings
 extern u1 scaddtype;        // which screen to add/sub
 extern u1 scrndis;          // which background is disabled

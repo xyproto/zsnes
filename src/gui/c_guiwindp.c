@@ -5,6 +5,7 @@
 #include "../c_init.h"
 #include "../c_intrf.h"
 #include "../cfg.h"
+#include "../cpu/regs.h"
 #include "../input.h"
 #include "../macros.h"
 #include "../ui.h"
@@ -2724,6 +2725,35 @@ void DisplayGUIAddOns(void)
 
 	DDrawBox(17,  73, 107, &SSAutoFire);
 	DDrawBox(17, 164, 107, &SSPause);
+}
+
+
+void DisplayGUIChipConfig(void)
+{
+	GUIDrawWindowBox(18, "CONFIGURE CHIPS");
+
+	u4 eax;
+	asm volatile("call %P1" : "=a" (eax) : "X" (EEMode) : "cc");
+	if (eax != 0)
+	{ // You know it!
+		GUIDisplayText(    18,  10, 38,           "EXTRAS");
+		GUIDisplayCheckbox(18,   9, 43, &nssdip1, "SALT");
+		GUIDisplayCheckbox(18,  59, 43, &nssdip2, "GARLIC");
+		GUIDisplayCheckbox(18, 109, 43, &nssdip3, "PEPPER");
+		GUIDisplayCheckbox(18,   9, 53, &nssdip4, "CHEESE");
+		GUIDisplayCheckbox(18,  59, 53, &nssdip5, "BUTTER");
+		GUIDisplayCheckbox(18, 109, 53, &nssdip6, "CATSUP");
+	}
+	else
+	{ // Regular Shadow
+		GUIDisplayTextY(    18,  10, 38,           "SUPER SYSTEM:");
+		GUIDisplayCheckboxu(18,   9, 43, &nssdip1, "DIP 1", 4); // Checkboxes
+		GUIDisplayCheckboxu(18,  59, 43, &nssdip2, "DIP 2", 4);
+		GUIDisplayCheckboxu(18, 109, 43, &nssdip3, "DIP 3", 4);
+		GUIDisplayCheckboxu(18,   9, 53, &nssdip4, "DIP 4", 4);
+		GUIDisplayCheckboxu(18,  59, 53, &nssdip5, "DIP 5", 4);
+		GUIDisplayCheckboxu(18, 109, 53, &nssdip6, "DIP 6", 4);
+	}
 }
 
 

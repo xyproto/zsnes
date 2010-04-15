@@ -19,9 +19,8 @@
 
 
 
-EXTSYM GUIHLine,GUIDrawShadow2
-EXTSYM GUIDisplayIconWin,GUIOuttextwin2u,GUIOuttextwin2
-EXTSYM GUIoutputiconwin,GUIOuttextwin
+EXTSYM GUIHLine
+EXTSYM GUIDisplayIconWin,GUIOuttextwin2
 
 SECTION .data
 NEWSYM mencoderExists, db 0
@@ -32,177 +31,6 @@ SECTION .text
 %macro DrawGUILine 0
   ccallv GUIHLine, eax, ecx, ebx, edx
   inc ebx
-%endmacro
-
-%macro DrawTitleBar 0
-  mov edx,46+157+6
-  sub edx,[GUIWincoladd]
-  DrawGUILine
-  mov edx,42+157+4+4
-  sub edx,[GUIWincoladd]
-  DrawGUILine
-  dec edx
-  DrawGUILine
-  dec edx
-  DrawGUILine
-  dec edx
-  DrawGUILine
-  dec edx
-  DrawGUILine
-  dec edx
-  DrawGUILine
-  dec edx
-  DrawGUILine
-  dec edx
-  DrawGUILine
-  mov edx,38+157+4
-  sub edx,[GUIWincoladd]
-  DrawGUILine
-  sub ebx,10
-  mov edx,44+157+4
-  sub edx,[GUIWincoladd]
-  mov esi,9
-  push ecx
-  mov ecx,eax
-%%loop2
-  DrawGUILine
-  dec esi
-  jnz %%loop2
-  pop ecx
-  sub ebx,8
-  mov edx,40+157+4
-  sub edx,[GUIWincoladd]
-  mov esi,9
-  push eax
-  mov eax,ecx
-%%loop3
-  DrawGUILine
-  dec esi
-  jnz %%loop3
-  pop eax
-%endmacro
-
-%macro drawshadow2 3
-  mov edx,[GUIwinposy+%1*4]
-  cmp edx,223
-  jg near .noshadow
-  cmp edx,0
-  jge .noshadclip
-  mov edx,0
-.noshadclip
-  mov ebx,edx
-  add ebx,%3
-  add ebx,9
-  cmp ebx,0
-  jl near .noshadow
-  cmp ebx,223
-  jng .noshadclip2
-  mov ebx,223
-.noshadclip2
-  sub ebx,edx
-  inc ebx
-  mov edi,edx
-  shl edi,8
-  mov eax,edx
-  shl eax,5
-  add edi,eax
-  mov edx,[GUIwinposx+%1*4]
-  mov ecx,edx
-  cmp edx,255
-  jg .noshadow
-  cmp edx,-3
-  jnl .noshadclip3
-  mov edx,-3
-.noshadclip3
-  add ecx,%2
-  cmp ecx,0
-  jl .noshadow
-  cmp ecx,255
-  jng .noshadclip4
-  mov ecx,255
-.noshadclip4
-  sub ecx,edx
-  inc ecx
-  add edi,edx
-  add edi,[vidbuffer]
-  add edi,288*3+3+16
-  ccallv GUIDrawShadow2, edi, ecx, ebx
-.noshadow
-%endmacro
-
-%macro GUIDrawWindowBox 2
-  mov dword[GUIWincoladd],4
-  mov dword[GUIWincol],148+10
-  cmp byte[cwindrawn],1
-  jne .noone
-  mov dword[GUIWincol],148+5
-.noone
-  cmp byte[cwindrawn],0
-  jne .nozero
-  mov dword[GUIWincoladd],0
-  mov dword[GUIWincol],148
-.nozero
-  drawshadow2 %1,dword[GUIwinsizex+%1*4],dword[GUIwinsizey+%1*4]
-  mov eax,[GUIwinposx+%1*4]
-  mov ebx,[GUIwinposy+%1*4]
-  mov ecx,eax
-  add ecx,dword[GUIwinsizex+%1*4]
-  DrawTitleBar
-  mov esi,[GUIwinsizey+%1*4]
-  dec esi
-  mov edx,[GUIWincol]
-  add edx,2
-.loop
-  DrawGUILine
-  dec esi
-  jnz .loop
-  mov edx,[GUIWincol]
-  DrawGUILine
-  mov eax,[GUIwinposx+%1*4]
-  mov ebx,[GUIwinposy+%1*4]
-  add ebx,10
-  mov ecx,eax
-  mov esi,[GUIwinsizey+%1*4]
-  mov edx,[GUIWincol]
-  add edx,3
-  dec esi
-.loop2
-  DrawGUILine
-  dec esi
-  jnz .loop2
-  mov eax,[GUIwinposx+%1*4]
-  mov ebx,[GUIwinposy+%1*4]
-  add ebx,10
-  add eax,dword[GUIwinsizex+%1*4]
-  mov ecx,eax
-  mov esi,[GUIwinsizey+%1*4]
-  mov dl,[GUIWincol]
-  inc dl
-.loop3
-  DrawGUILine
-  dec esi
-  jnz .loop3
-  mov ebx,[GUIwinposy+%1*4]
-  add ebx,3
-  mov edx,[GUIwinposx+%1*4]
-  add edx,3
-  mov byte[GUItextcolor],184
-  ccallv GUIOuttextwin, edx, ebx, %2
-  mov ebx,[GUIwinposy+%1*4]
-  add ebx,2
-  mov edx,[GUIwinposx+%1*4]
-  add edx,2
-  mov byte[GUItextcolor],220
-  cmp byte[GUIWincoladd],0
-  je .zero2
-  sub byte[GUItextcolor],6
-.zero2
-  ccallv GUIOuttextwin, edx, ebx, %2
-  mov eax,[GUIwinposx+%1*4]
-  mov ebx,[GUIwinposy+%1*4]
-  add eax,dword[GUIwinsizex+%1*4]
-  sub eax,10
-  ccallv GUIoutputiconwin, eax, ebx, GUIIconDataClose
 %endmacro
 
 %macro DrawGUIWinBox3 6
@@ -221,40 +49,6 @@ SECTION .text
   jnz %%loop
 %endmacro
 
-%macro GUIDisplayText 4                   ; Text&Shadow
-  mov byte[GUItextcolor],202
-  cmp byte[GUIWincoladd],0
-  je %%text
-  mov byte[GUItextcolor],196
-%%text
-  ccallv GUIOuttextwin2, %1, %2, %3, %4
-  add byte[GUItextcolor],15
-  ccallv GUIOuttextwin2, %1, %2 - 1, %3 - 1, %4
-%endmacro
-
-%macro GUIDisplayTextY 4                  ; Yellow Text&Shadow
-  mov al,[GUIWincol]
-  mov [GUItextcolor],al
-  ccallv GUIOuttextwin2, %1, %2, %3, %4
-  mov byte[GUItextcolor],163
-  cmp byte[GUIWincoladd],0
-  je %%texty
-  mov byte[GUItextcolor],164
-%%texty
-  ccallv GUIOuttextwin2, %1, %2 - 1, %3 - 1, %4
-%endmacro
-
-%macro GUIDisplayTextu 5                  ; Text&Shadow With Underline
-  mov byte[GUItextcolor],202
-  cmp byte[GUIWincoladd],0
-  je %%textu
-  mov byte[GUItextcolor],196
-%%textu
-  ccallv GUIOuttextwin2u, %1,%2,%3,%4,%5
-  add byte[GUItextcolor],15
-  ccallv GUIOuttextwin2, %1, %2 - 1, %3 - 1, %4
-%endmacro
-
 %macro GUIDisplayCheckboxP 4              ; Toggled Checkbox (Plain, no text)
   mov dword[GUITemp],GUIIconDataCheckBoxUC
   cmp byte[%4],0
@@ -262,26 +56,6 @@ SECTION .text
   mov dword[GUITemp],GUIIconDataCheckBoxC
 %%nocheckbox
   ccallv GUIDisplayIconWin, %1, %2, %3, [GUITemp]
-%endmacro
-
-%macro GUIDisplayCheckbox 5               ; Toggled Checkbox (Text)
-  mov dword[GUITemp],GUIIconDataCheckBoxUC
-  cmp byte[%4],0
-  je %%nocheckbox
-  mov dword[GUITemp],GUIIconDataCheckBoxC
-%%nocheckbox
-  ccallv GUIDisplayIconWin, %1, %2, %3, [GUITemp]
-  GUIDisplayText %1,%2+15,%3+5,%5
-%endmacro
-
-%macro GUIDisplayCheckboxu 6              ; Toggled Checkbox (Text Underline)
-  mov dword[GUITemp],GUIIconDataCheckBoxUC
-  cmp byte[%4],0
-  je %%nocheckbox
-  mov dword[GUITemp],GUIIconDataCheckBoxC
-%%nocheckbox
-  ccallv GUIDisplayIconWin, %1, %2, %3, [GUITemp]
-  GUIDisplayTextu %1,%2+15,%3+5,%5,%6
 %endmacro
 
 %macro GUIDisplayCheckboxPn 5             ; Set Var. Checkbox
@@ -533,49 +307,7 @@ NEWSYM EEMode
   mov eax,0
   ret
 
-NEWSYM DisplayGUIChipConfig
-  GUIDrawWindowBox 18,GUIChipConfigDisp
-
-  call EEMode                     ; You know it!
-  cmp eax,0
-  je near .noEE
-  GUIDisplayText 18,10,38,GUIChipText1Alt
-  GUIDisplayCheckbox 18,9,43,nssdip1,GUIChipText2Alt
-  GUIDisplayCheckbox 18,59,43,nssdip2,GUIChipText3Alt
-  GUIDisplayCheckbox 18,109,43,nssdip3,GUIChipText4Alt
-  GUIDisplayCheckbox 18,9,53,nssdip4,GUIChipText5Alt
-  GUIDisplayCheckbox 18,59,53,nssdip5,GUIChipText6Alt
-  GUIDisplayCheckbox 18,109,53,nssdip6,GUIChipText7Alt
-  jmp .endEE
-.noEE                                ; Regular Shadow
-  GUIDisplayTextY 18,10,38,GUIChipTextA
-  GUIDisplayCheckboxu 18,9,43,nssdip1,GUIChipTextA1,4   ;Checkboxes
-  GUIDisplayCheckboxu 18,59,43,nssdip2,GUIChipTextA2,4
-  GUIDisplayCheckboxu 18,109,43,nssdip3,GUIChipTextA3,4
-  GUIDisplayCheckboxu 18,9,53,nssdip4,GUIChipTextA4,4
-  GUIDisplayCheckboxu 18,59,53,nssdip5,GUIChipTextA5,4
-  GUIDisplayCheckboxu 18,109,53,nssdip6,GUIChipTextA6,4
-.endEE
-  ret
-
 SECTION .data
-GUIChipTextA db 'SUPER SYSTEM:',0
-GUIChipTextA1 db 'DIP 1',0
-GUIChipTextA2 db 'DIP 2',0
-GUIChipTextA3 db 'DIP 3',0
-GUIChipTextA4 db 'DIP 4',0
-GUIChipTextA5 db 'DIP 5',0
-GUIChipTextA6 db 'DIP 6',0
-
-;EE
-GUIChipText1Alt db 69,88,84,82,65,83,0
-GUIChipText2Alt db 83,65,76,84,0
-GUIChipText3Alt db 71,65,82,76,73,67,0
-GUIChipText4Alt db 80,69,80,80,69,82,0
-GUIChipText5Alt db 67,72,69,69,83,69,0
-GUIChipText6Alt db 66,85,84,84,69,82,0
-GUIChipText7Alt db 67,65,84,83,85,80,0
-
 NEWSYM GUIPathTabs, dd 1,3
   db 'GENERAL',0
   db 'MORE',0
@@ -593,7 +325,6 @@ NEWSYM GUICustomResTextPtr, dd GUICustomX,GUICustomY
 
 ;General data
 GUINetDisp db 'REMOTE',0,0,0,0,0,0,0,0,0
-GUIChipConfigDisp db 'CONFIGURE CHIPS',0
 
 SECTION .bss
 GUIItemBoxColor resd 1

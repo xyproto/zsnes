@@ -3,8 +3,7 @@
 
 #include "../types.h"
 
-extern u4   EEMode();
-extern void DisplayGUIChipConfig();
+extern u4 EEMode();
 
 extern char   CMovieExt;
 extern char   CSDescDisplay[20];

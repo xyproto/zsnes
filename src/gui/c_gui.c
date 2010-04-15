@@ -1765,31 +1765,31 @@ void DisplayBoxes(void)
 		{
 			case  0: return;
 			case  1: if (GUIReset != 1) DisplayGUILoad(); break;
-			case  2: DisplayGUIChoseSave();          break;
-			case  3: DisplayGUIInput();              break;
-			case  4: DisplayGUIOption();             break;
-			case  5: DisplayGUIVideo();              break;
-			case  6: DisplayGUISound();              break;
-			case  7: DisplayGUICheat();              break;
-			case  8: DisplayNetOptns();              break;
-			case  9: DisplayGameOptns();             break;
+			case  2: DisplayGUIChoseSave();  break;
+			case  3: DisplayGUIInput();      break;
+			case  4: DisplayGUIOption();     break;
+			case  5: DisplayGUIVideo();      break;
+			case  6: DisplayGUISound();      break;
+			case  7: DisplayGUICheat();      break;
+			case  8: DisplayNetOptns();      break;
+			case  9: DisplayGameOptns();     break;
 			case 10:
 				DisplayGUIOptns();
 #ifdef __WIN32__
 				CheckAlwaysOnTop();
 #endif
 				break;
-			case 11: DisplayGUIAbout();              break;
-			case 12: DisplayGUIReset();              break;
-			case 13: DisplayGUISearch();             break;
-			case 14: DisplayGUIStates();             break;
-			case 15: DisplayGUIMovies();             break;
-			case 16: DisplayGUICombo();              break;
-			case 17: DisplayGUIAddOns();             break;
-			case 18: asm_call(DisplayGUIChipConfig); break;
-			case 19: DisplayGUIPaths();              break;
-			case 20: DisplayGUISave();               break;
-			case 21: DisplayGUISpeed();              break;
+			case 11: DisplayGUIAbout();      break;
+			case 12: DisplayGUIReset();      break;
+			case 13: DisplayGUISearch();     break;
+			case 14: DisplayGUIStates();     break;
+			case 15: DisplayGUIMovies();     break;
+			case 16: DisplayGUICombo();      break;
+			case 17: DisplayGUIAddOns();     break;
+			case 18: DisplayGUIChipConfig(); break;
+			case 19: DisplayGUIPaths();      break;
+			case 20: DisplayGUISave();       break;
+			case 21: DisplayGUISpeed();      break;
 		}
 	}
 }
