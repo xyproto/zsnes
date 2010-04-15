@@ -5,7 +5,6 @@
 
 extern u4   EEMode();
 extern void DisplayGUIChipConfig();
-extern void DisplayGUIPaths();
 
 extern char   CMovieExt;
 extern char   CSDescDisplay[20];
@@ -21,6 +20,9 @@ extern char   GUIGameDisplayKy[4];
 extern char   GUILoadTextA[38];
 extern char   GUIMenuItem[];
 extern char*  GUICustomResTextPtr[2];
+extern char*  GUIPathsTab1Ptr[4];
+extern char*  GUIPathsTab2Ptr[5];
+extern char*  GUIPathsTab3Ptr[4];
 extern char** GUIMovieTextPtr;
 extern u1     CheatCompareValue;
 extern u1     CheatSearchStatus;
@@ -61,6 +63,7 @@ extern u4     GUILStA[3];
 extern u4     GUILStB[3];
 extern u4     GUIMovieTabs[];
 extern u4     GUIOptionTabs[];
+extern u4     GUIPathTabs[];
 extern u4     GUIVStA[3];
 extern u4     GUIVideoTabs[];
 extern u4     GUIVntscTab[];

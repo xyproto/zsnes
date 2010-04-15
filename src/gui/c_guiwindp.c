@@ -2727,6 +2727,89 @@ void DisplayGUIAddOns(void)
 }
 
 
+void DisplayGUIPaths(void)
+{
+	GUIDrawWindowBox(19, "SETUP PATHS");
+	u4 eax;
+	u4 ebx;
+	GUIDrawTArea(19, &eax, &ebx);
+	GUIDrawTabs(GUIPathTabs, &eax, ebx);
+
+	if (GUIPathTabs[0] == 1)
+	{ // General
+		GUIDisplayText(19, 8,  31, "SAVES:"); // Text
+		GUIDisplayText(19, 8,  66, "SAVESTATES:");
+		GUIDisplayText(19, 8, 101, "MOVIES:");
+		GUIDisplayText(19, 8, 136, "IPS:");
+		GUIDisplayText(19, 8, 171, "RELATIVE PATH BASE:");
+
+		GUIDisplayBBox(19, 8,  41, 236,  51, 167); // Input boxes
+		GUIDisplayBBox(19, 8,  76, 236,  86, 167);
+		GUIDisplayBBox(19, 8, 111, 236, 121, 167);
+		GUIDisplayBBox(19, 8, 146, 236, 156, 167);
+		// Green Text
+		GUIOuttextwin2d(19, 10,  45, SRAMPath,   37, GUIPathsTab1Ptr, 0);
+		GUIOuttextwin2d(19, 10,  80, SStatePath, 37, GUIPathsTab1Ptr, 1);
+		GUIOuttextwin2d(19, 10, 115, MoviePath,  37, GUIPathsTab1Ptr, 2);
+		GUIOuttextwin2d(19, 10, 150, IPSPath,    37, GUIPathsTab1Ptr, 3);
+
+		// Display Radio buttons
+		char const* const GUIPathsTextA5A = "CONFIG DIR";
+		char const* const GUIPathsTextA5B = "ROM DIR";
+		GUIDisplayText(19,  23, 181, GUIPathsTextA5A);
+		GUIDisplayText(19, 103, 181, GUIPathsTextA5B);
+
+		GUIDisplayButtonHole(19,  8, 178, &RelPathBase, 0);
+		GUIDisplayButtonHole(19, 88, 178, &RelPathBase, 1);
+
+		if (GUIInputBox == 0)
+		{
+			GUIDisplayButtonHoleTu(19,  8, 178, &RelPathBase, 0, GUIPathsTextA5A, 0);
+			GUIDisplayButtonHoleTu(19, 88, 178, &RelPathBase, 1, GUIPathsTextA5B, 0);
+		}
+	}
+
+	if (GUIPathTabs[0] == 2)
+	{ // More paths
+		GUIDisplayText(19, 8,  31, "SNAPSHOTS:");
+		GUIDisplayText(19, 8,  66, "SPCS:");
+		GUIDisplayText(19, 8, 101, "CHEATS:");
+		GUIDisplayText(19, 8, 136, "COMBOS:");
+		GUIDisplayText(19, 8, 171, "GAME SPECIFIC INPUT:");
+
+		GUIDisplayBBox(19, 8,  41, 236,  51, 167);
+		GUIDisplayBBox(19, 8,  76, 236,  86, 167);
+		GUIDisplayBBox(19, 8, 111, 236, 121, 167);
+		GUIDisplayBBox(19, 8, 146, 236, 156, 167);
+		GUIDisplayBBox(19, 8, 181, 236, 191, 167);
+
+		GUIOuttextwin2d(19, 10,  45, SnapPath,  37, GUIPathsTab2Ptr, 0);
+		GUIOuttextwin2d(19, 10,  80, SPCPath,   37, GUIPathsTab2Ptr, 1);
+		GUIOuttextwin2d(19, 10, 115, CHTPath,   37, GUIPathsTab2Ptr, 2);
+		GUIOuttextwin2d(19, 10, 150, ComboPath, 37, GUIPathsTab2Ptr, 3);
+		GUIOuttextwin2d(19, 10, 185, INPPath,   37, GUIPathsTab2Ptr, 4);
+	}
+
+	if (GUIPathTabs[0] == 3)
+	{ // bc
+		GUIDisplayText(19, 8,  31, "BS-X:");
+		GUIDisplayText(19, 8,  66, "SUFAMI TURBO:");
+		GUIDisplayText(19, 8, 101, "SD GUNDAM G-NEXT:");
+		GUIDisplayText(19, 8, 136, "SAME GAME:");
+
+		GUIDisplayBBox(19, 8,  41, 236,  51, 167);
+		GUIDisplayBBox(19, 8,  76, 236,  86, 167);
+		GUIDisplayBBox(19, 8, 111, 236, 121, 167);
+		GUIDisplayBBox(19, 8, 146, 236, 156, 167);
+
+		GUIOuttextwin2d(19, 10,  45, BSXPath,   37, GUIPathsTab3Ptr, 0);
+		GUIOuttextwin2d(19, 10,  80, STPath,    37, GUIPathsTab3Ptr, 1);
+		GUIOuttextwin2d(19, 10, 115, GNextPath, 37, GUIPathsTab3Ptr, 2);
+		GUIOuttextwin2d(19, 10, 150, SGPath,    37, GUIPathsTab3Ptr, 3);
+	}
+}
+
+
 void DisplayGUISave(void)
 {
 	GUIDrawWindowBox(20, "SAVE OPTIONS");

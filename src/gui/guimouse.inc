@@ -1882,7 +1882,6 @@ NEWSYM DisplayGUIAboutClick
 ; DrawSlideBar 16,192,20,[GUIccombviewloc],[NumCombo],8,61,GUICSStC,13,14
 ;    DrawBorderedBox 16,10,20,190,80,19
 
-;    DrawGUIWinBox 3,5,34,107,77,167
 ;    ccallv DrawSlideBarWin, 3, 109, 42, [GUIcurrentinputviewloc], 16, 5, 28, GUIIStA
 
 NEWSYM DisplayGUIComboClick2
@@ -2045,7 +2044,6 @@ NEWSYM DisplayGUICheatSearchClick
   ret
 
 ;    ccallv DrawSlideBarWin, 13, 173, 28, [GUIcurrentchtsrcviewloc], [NumCheatSrc], 12, 73, GUICSStA
-;    DrawGUIWinBox 13,5,20,171,108,167
 
 .add                         ; Add Cheat
   GUIPHoldbutton 60,155,120,167,56                 ; Return/Add Buttons

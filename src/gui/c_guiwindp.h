@@ -1,8 +1,8 @@
 #ifndef C_GUIWINDP_H
 #define C_GUIWINDP_H
 
-void DisplayGUIAddOns(void);    // Select Special Controllers
 void DisplayGUIAbout(void);     // Displays the About Box
+void DisplayGUIAddOns(void);    // Select Special Controllers
 void DisplayGUICheat(void);     // Add/Browse Cheats menu
 void DisplayGUIChoseSave(void); // Pick Save State
 void DisplayGUICombo(void);
@@ -11,6 +11,7 @@ void DisplayGUILoad(void);
 void DisplayGUIMovies(void);    // Movie Record/Playback options
 void DisplayGUIOption(void);    // Emu Options
 void DisplayGUIOptns(void);     // GUI Options
+void DisplayGUIPaths(void);
 void DisplayGUIReset(void);     // Reset Confirmation
 void DisplayGUISave(void);      // Save & Rewind options/Hotkeys
 void DisplayGUISearch(void);

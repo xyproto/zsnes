@@ -205,21 +205,6 @@ SECTION .text
   ccallv GUIoutputiconwin, eax, ebx, GUIIconDataClose
 %endmacro
 
-%macro DrawGUIWinBox 6
-  mov eax,[GUIwinposx+%1*4]
-  mov ebx,[GUIwinposy+%1*4]
-  add eax,%2
-  add ebx,%3
-  mov ecx,eax
-  add ecx,%4-%2+1
-  mov dl,%6
-  mov esi,%5-%3+1
-%%loop
-  DrawGUILine
-  dec esi
-  jnz %%loop
-%endmacro
-
 %macro DrawGUIWinBox3 6
   mov ecx,%4
   mov eax,[GUIwinposx+%1*4]
@@ -234,25 +219,6 @@ SECTION .text
   DrawGUILine
   dec esi
   jnz %%loop
-%endmacro
-
-%macro GUIDisplayButtonHoleTu 7
-  mov dword[GUITemp],GUIIconDataButtonHole
-  cmp %4,%5
-  jne %%nofill
-  mov dword[GUITemp],GUIIconDataButtonFill
-%%nofill
-  ccallv GUIDisplayIconWin, %1, %2, %3, [GUITemp]
-  GUIDisplayTextu %1,%2+15,%3+3,%6,%7
-%endmacro
-
-%macro GUIDisplayButtonHole 5
-  mov dword[GUITemp],GUIIconDataButtonHole
-  cmp %4,%5
-  jne %%nofill
-  mov dword[GUITemp],GUIIconDataButtonFill
-%%nofill
-  ccallv GUIDisplayIconWin, %1, %2, %3, [GUITemp]
 %endmacro
 
 %macro GUIDisplayText 4                   ; Text&Shadow
@@ -327,249 +293,6 @@ SECTION .text
   ccallv GUIDisplayIconWin, %1, %2, %3, [GUITemp]
 %endmacro
 
-%macro GUIDisplayBBox 6                     ; Black Box W/Border
-  mov dword[GUIWincol],148+10
-  cmp byte[cwindrawn],1
-  jne %%noone
-  mov dword[GUIWincol],148+5
-%%noone
-  cmp byte[cwindrawn],0
-  jne %%nozero
-  mov dword[GUIWincol],148
-%%nozero
-  DrawGUIWinBox %1,%2,%3,%4,%5,%6
-  mov dl,[GUIWincol]
-  DrawGUIWinBox %1,%2,%3-3+2,%4,%3+1,dl
-  mov dl,[GUIWincol]
-  inc dl
-  DrawGUIWinBox %1,%2-1,%3,%2,%5,dl
-  mov dl,[GUIWincol]
-  add dl,4
-  DrawGUIWinBox %1,%2,%5+1,%4,%5-1,dl
-  mov dl,[GUIWincol]
-  add dl,3
-  DrawGUIWinBox %1,%4+2,%3,%4-3,%5,dl
-%endmacro
-
-%macro SetVidbufLoc 0
-  mov esi,ebx
-  mov eax,ebx
-  shl esi,8
-  shl eax,5
-  add esi,eax
-  add esi,16
-  add esi,[vidbuffer]
-%endmacro
-
-%macro GUIDrawTArea 1 ; win #id
-  mov dl,[GUIWincol]
-  inc dl
-  mov eax,[GUIwinposx+%1*4]
-  mov ebx,[GUIwinposy+%1*4]
-  add ebx,10
-  mov ecx,eax
-  add ecx,[GUIwinsizex+%1*4]
-  mov esi,12
-%%loop1
-  DrawGUILine
-  dec esi
-  jnz %%loop1
-  add dl,3
-  inc eax
-  DrawGUILine
-  sub ebx,13 ; set ebx to minY
-  dec eax    ; set eax to minX
-%endmacro
-
-%macro DrawTabOn 1 ; %1 = array, ebp = offset, eax = minX, ebx = minY
-  push edi
-  mov esi,%1
-  mov ecx,8
-  add ecx,eax
-%%skip
-  cmp byte[esi+ebp],0
-  jne %%read1
-  inc ebp
-  jmp %%skip
-%%read1
-  cmp byte[esi+ebp],0
-  je %%ok1
-  inc esi
-  add ecx,6
-  jmp %%read1
-%%ok1
-  mov dl,[GUIWincol]
-  add dl,4
-  inc eax
-  DrawGUILine
-  sub dl,2
-  mov esi,12
-%%draw1
-  DrawGUILine
-  dec esi
-  jnz %%draw1
-  sub ebx,12
-  push ecx    ; save X offset for next drawing step
-  dec eax
-  mov ecx,eax
-  mov esi,11
-  inc dl
-%%draw2
-  DrawGUILine
-  dec esi
-  jnz %%draw2
-  sub ebx,11
-  push ebx    ; save Y offset for next drawing step
-  mov cl,[GUIWincol]
-  mov [GUItextcolor],cl
-  add ebx,4
-  push ebx    ; save label Yoff
-  mov edx,eax
-  add edx,6
-  push edx    ; save label Xoff
-  SetVidbufLoc
-  mov edi,%1
-  add edi,ebp
-  ccallv GUIOutputStringwin, edx, esi, edi
-  pop edx
-  pop ebx
-  mov byte[GUItextcolor],163
-  cmp byte[GUIWincoladd],0
-  je %%nochange
-  mov byte[GUItextcolor],164
-%%nochange
-  dec edx
-  dec ebx
-  SetVidbufLoc
-  mov edi,%1
-  add edi,ebp
-  ccallv GUIOutputStringwin, edx, esi, edi
-  mov byte[GUItextcolor],217 ; restore normal colour
-  pop ebx     ; restore Yoff for drawing step
-  pop eax
-  inc eax     ; restore and set Xoff for drawing step
-  mov ecx,eax
-  mov dl,[GUIWincol]
-  add dl,3
-  mov esi,12
-%%draw3
-  DrawGUILine
-  dec esi
-  jnz %%draw3
-  sub ebx,13
-  inc eax
-%%read2
-  mov esi,%1
-  cmp byte[esi+ebp],0
-  je %%ok2
-  inc ebp
-  jmp %%read2
-%%ok2
-  pop edi
-%endmacro
-
-%macro DrawTabOff 1 ; %1 = array, ebp = offset, eax = minX, ebx = minY
-  push edi
-  mov esi,%1
-  mov ecx,8
-  add ecx,eax
-%%skip
-  cmp byte[esi+ebp],0
-  jne %%read1
-  inc ebp
-  jmp %%skip
-%%read1
-  cmp byte[esi+ebp],0
-  je %%ok1
-  inc esi
-  add ecx,6
-  jmp %%read1
-%%ok1
-  mov dl,[GUIWincol]
-  add dl,3
-  inc eax
-  inc ebx
-  DrawGUILine
-  dec dl
-  push ecx    ; save Xoff for next drawing step
-  dec eax
-  mov ecx,eax
-  mov esi,10
-%%draw1
-  DrawGUILine
-  dec esi
-  jnz %%draw1
-  sub ebx,10
-  push ebx    ; save Yoff for next drawing step
-  mov byte[GUItextcolor],202
-  cmp byte[GUIWincoladd],0
-  je %%nochange
-  mov byte[GUItextcolor],196
-%%nochange
-  add ebx,4
-  push ebx    ; save label Yoff
-  mov edx,eax
-  add edx,6
-  push edx    ; save label Xoff
-  SetVidbufLoc
-  mov edi,%1
-  add edi,ebp
-  ccallv GUIOutputStringwin, edx, esi, edi
-  pop edx
-  pop ebx
-  add byte[GUItextcolor],15
-  dec edx
-  dec ebx
-  SetVidbufLoc
-  mov edi,%1
-  add edi,ebp
-  ccall GUIOutputStringwin, edx, esi, edi
-  mov edx, eax
-  pop ebx     ; restore Yoff for drawing step
-  pop eax
-  inc eax     ; restore and set Xoff for drawing step
-  mov ecx,eax
-  mov dl,[GUIWincol]
-  mov esi,10
-%%draw2
-  DrawGUILine
-  dec esi
-  jnz %%draw2
-  sub ebx,12
-  inc eax
-%%read2
-  mov esi,%1
-  cmp byte[esi+ebp],0
-  je %%ok2
-  inc ebp
-  jmp %%read2
-%%ok2
-  pop edi
-%endmacro
-
-%macro GUIDrawTabs 1 ; tabs/label array
-  mov ecx,[%1+4] ; total #
-  cmp ecx,0
-  je near %%nodraw
-  mov esi,[%1]   ; active tab
-  mov ebp,8  ; set array offset at top of labels
-%%loop2
-  dec esi    ; check if tab is the current one
-  push ecx
-  push esi
-  jnz near %%disabled
-  DrawTabOn %1  ; draws tab, updates eax, ebx & ebp for next tab...
-  jmp near %%done
-%%disabled
-  DrawTabOff %1 ; ... and autosizes the tab for its label
-%%done
-  pop esi
-  pop ecx
-  dec ecx
-  jnz %%loop2
-%%nodraw
-%endmacro
-
 %macro GUIOuttextwin2b 4        ; Special, yellow text
   mov al,[TextColorSp]
   mov [GUItextcolor],al
@@ -577,75 +300,6 @@ SECTION .text
   mov al,[TextColorSp+1]
   mov [GUItextcolor],al
   ccallv GUIOuttextwin2, %1, %2 - 1, %3 - 1, %4
-%endmacro
-
-%macro GUIOuttextwin2c 4        ; Boxed, green text
-  mov byte[GUItextcolor],223
-  ccallv GUIOuttextwin2, %1, %2, %3, %4
-  mov byte[GUItextcolor],221
-  cmp byte[GUIWincoladd],0
-  je %%zero
-  mov byte[GUItextcolor],222
-%%zero
-  push esi
-  mov esi,%2
-  dec esi
-  ccallv GUIOuttextwin2, %1, esi, %3 - 1, %4
-  pop esi
-%endmacro
-
-%macro BlinkCursorCheck 2
-  cmp dword[GUIInputBox],%2+1
-  jne %%notselected
-  mov ebx,[%1+%2*4] 
-%%notselected
-%endmacro
-
-%macro GUIOuttextwin2d 7        ; Boxed, green text, limited to 5th param
-  push ecx
-  mov ecx,%4                  ;Move pointer to text into ecx
-%%zero
-  cmp byte[ecx],0 ; Check for null in string
-  je %%one
-  inc ecx
-  jmp %%zero
-%%one
-  push eax
-  mov eax,ecx ; Move pointer to null into eax
-  sub ecx,%5  ; Move ecx pointer back by length to display
-  cmp ecx,%4
-  jae %%two
-  mov ecx,%4  ; If pointer is before beginning, reset pointer to beginning
-%%two
-  sub eax,ecx ; Subtract pointer from \0 pointer gives us string length
-  push eax
-  GUIOuttextwin2c %1,%2,%3,ecx
-  pop eax
-  push ebx
-  pop ecx
-  BlinkCursorCheck %6,%7
-  cmp ebx,%4
-  pop ebx
-  jne near %%fixreg
-  inc byte[GUIBlinkCursorLoop]
-  cmp byte[GUIBlinkCursorLoop],30
-  jne %%four
-  mov byte[GUIBlinkCursorLoop],0
-  cmp byte[GUIBlinkCursor],' '
-  je %%three
-  mov byte[GUIBlinkCursor],' '
-  jmp %%four
-%%three
-  mov byte[GUIBlinkCursor],'_'
-%%four
-  imul eax,6 ; 6 pixels
-  add eax,%2
-  push ecx
-  mov ecx,eax
-  GUIOuttextwin2c %1,ecx,%3,GUIBlinkCursor
-  pop ecx
-%%fixreg
-  pop eax
 %endmacro
 
 SECTION .data
@@ -922,118 +576,16 @@ GUIChipText5Alt db 67,72,69,69,83,69,0
 GUIChipText6Alt db 66,85,84,84,69,82,0
 GUIChipText7Alt db 67,65,84,83,85,80,0
 
-SECTION .text
-
-NEWSYM DisplayGUIPaths
-  GUIDrawWindowBox 19,GUIPathsDisp
-  GUIDrawTArea 19
-  GUIDrawTabs GUIPathTabs
-
-  cmp dword[GUIPathTabs],1
-  jne near .notgeneral
-
-  GUIDisplayText 19,8,31,GUIPathsTextA1           ; Text
-  GUIDisplayText 19,8,66,GUIPathsTextA2
-  GUIDisplayText 19,8,101,GUIPathsTextA3
-  GUIDisplayText 19,8,136,GUIPathsTextA4
-  GUIDisplayText 19,8,171,GUIPathsTextA5
-
-  GUIDisplayBBox  19,8,41,236,51,167              ; Input boxes
-  GUIDisplayBBox  19,8,76,236,86,167
-  GUIDisplayBBox  19,8,111,236,121,167
-  GUIDisplayBBox  19,8,146,236,156,167
-                                                  ; Green Text
-  GUIOuttextwin2d 19,10,45,SRAMPath,37,GUIPathsTab1Ptr,0
-  GUIOuttextwin2d 19,10,80,SStatePath,37,GUIPathsTab1Ptr,1
-  GUIOuttextwin2d 19,10,115,MoviePath,37,GUIPathsTab1Ptr,2
-  GUIOuttextwin2d 19,10,150,IPSPath,37,GUIPathsTab1Ptr,3
-
-  ; Display Radio buttons
-  GUIDisplayText 19,23,181,GUIPathsTextA5A
-  GUIDisplayText 19,103,181,GUIPathsTextA5B
-
-  GUIDisplayButtonHole 19,8,178,byte[RelPathBase],0
-  GUIDisplayButtonHole 19,88,178,byte[RelPathBase],1
-
-  cmp dword[GUIInputBox],0
-  jne near .noinputboxselected
-  GUIDisplayButtonHoleTu 19,8,178,byte[RelPathBase],0,GUIPathsTextA5A,0
-  GUIDisplayButtonHoleTu 19,88,178,byte[RelPathBase],1,GUIPathsTextA5B,0
-.noinputboxselected
-.notgeneral
-
-  cmp dword[GUIPathTabs],2
-  jne near .notmorepaths
-
-  GUIDisplayText 19,8,31,GUIPathsTextB1
-  GUIDisplayText 19,8,66,GUIPathsTextB2
-  GUIDisplayText 19,8,101,GUIPathsTextB3
-  GUIDisplayText 19,8,136,GUIPathsTextB4
-  GUIDisplayText 19,8,171,GUIPathsTextB5
-
-  GUIDisplayBBox  19,8,41,236,51,167
-  GUIDisplayBBox  19,8,76,236,86,167
-  GUIDisplayBBox  19,8,111,236,121,167
-  GUIDisplayBBox  19,8,146,236,156,167
-  GUIDisplayBBox  19,8,181,236,191,167
-
-  GUIOuttextwin2d 19,10,45,SnapPath,37,GUIPathsTab2Ptr,0
-  GUIOuttextwin2d 19,10,80,SPCPath,37,GUIPathsTab2Ptr,1
-  GUIOuttextwin2d 19,10,115,CHTPath,37,GUIPathsTab2Ptr,2
-  GUIOuttextwin2d 19,10,150,ComboPath,37,GUIPathsTab2Ptr,3
-  GUIOuttextwin2d 19,10,185,INPPath,37,GUIPathsTab2Ptr,4
-.notmorepaths
-
-  cmp dword[GUIPathTabs],3
-  jne near .notbc
-
-  GUIDisplayText 19,8,31,GUIPathsTextC1
-  GUIDisplayText 19,8,66,GUIPathsTextC2
-  GUIDisplayText 19,8,101,GUIPathsTextC3
-  GUIDisplayText 19,8,136,GUIPathsTextC4
-
-  GUIDisplayBBox  19,8,41,236,51,167
-  GUIDisplayBBox  19,8,76,236,86,167
-  GUIDisplayBBox  19,8,111,236,121,167
-  GUIDisplayBBox  19,8,146,236,156,167
-
-  GUIOuttextwin2d 19,10,45,BSXPath,37,GUIPathsTab3Ptr,0
-  GUIOuttextwin2d 19,10,80,STPath,37,GUIPathsTab3Ptr,1
-  GUIOuttextwin2d 19,10,115,GNextPath,37,GUIPathsTab3Ptr,2
-  GUIOuttextwin2d 19,10,150,SGPath,37,GUIPathsTab3Ptr,3
-.notbc
-  ret
-
-SECTION .data
-GUIPathTabs dd 1,3
+NEWSYM GUIPathTabs, dd 1,3
   db 'GENERAL',0
   db 'MORE',0
   db 'BIOS+CARTS',0
 
-GUIPathsTextA1 db 'SAVES:',0
-GUIPathsTextA2 db 'SAVESTATES:',0
-GUIPathsTextA3 db 'MOVIES:',0
-GUIPathsTextA4 db 'IPS:',0
-GUIPathsTextA5 db 'RELATIVE PATH BASE:',0
-GUIPathsTextA5A db 'CONFIG DIR',0
-GUIPathsTextA5B db 'ROM DIR',0
-
-GUIPathsTextB1 db 'SNAPSHOTS:',0
-GUIPathsTextB2 db 'SPCS:',0
-GUIPathsTextB3 db 'CHEATS:',0
-GUIPathsTextB4 db 'COMBOS:',0
-GUIPathsTextB5 db 'GAME SPECIFIC INPUT:',0
-
-GUIPathsTextC1 db 'BS-X:',0
-GUIPathsTextC2 db 'SUFAMI TURBO:',0
-GUIPathsTextC3 db 'SD GUNDAM G-NEXT:',0
-GUIPathsTextC4 db 'SAME GAME:',0
-
 NEWSYM GUIBlinkCursor, db 0,0
 NEWSYM GUIBlinkCursorLoop, db 0
-GUIPathsTab1Ptr dd SRAMPath,SStatePath,MoviePath,IPSPath
-GUIPathsTab2Ptr dd SnapPath,SPCPath,CHTPath,ComboPath,INPPath
-GUIPathsTab3Ptr dd BSXPath,STPath,GNextPath,SGPath
+NEWSYM GUIPathsTab1Ptr, dd SRAMPath,SStatePath,MoviePath,IPSPath
+NEWSYM GUIPathsTab2Ptr, dd SnapPath,SPCPath,CHTPath,ComboPath,INPPath
+NEWSYM GUIPathsTab3Ptr, dd BSXPath,STPath,GNextPath,SGPath
 NEWSYM GUIMovieTextPtr, dd GUIMovieForcedText
 %ifndef __MSDOS__
 NEWSYM GUICustomResTextPtr, dd GUICustomX,GUICustomY
@@ -1042,7 +594,6 @@ NEWSYM GUICustomResTextPtr, dd GUICustomX,GUICustomY
 ;General data
 GUINetDisp db 'REMOTE',0,0,0,0,0,0,0,0,0
 GUIChipConfigDisp db 'CONFIGURE CHIPS',0
-GUIPathsDisp db 'SETUP PATHS',0
 
 SECTION .bss
 GUIItemBoxColor resd 1
