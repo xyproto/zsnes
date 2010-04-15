@@ -1785,7 +1785,7 @@ void DisplayBoxes(void)
 			case 14: DisplayGUIStates();             break;
 			case 15: DisplayGUIMovies();             break;
 			case 16: DisplayGUICombo();              break;
-			case 17: asm_call(DisplayGUIAddOns);     break;
+			case 17: DisplayGUIAddOns();             break;
 			case 18: asm_call(DisplayGUIChipConfig); break;
 			case 19: asm_call(DisplayGUIPaths);      break;
 			case 20: DisplayGUISave();               break;

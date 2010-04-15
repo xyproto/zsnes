@@ -2656,6 +2656,81 @@ void DisplayGUICombo(void)
 }
 
 
+void DisplayGUIAddOns(void)
+{
+	static char GUIAddOnsDisp[] = "DEVICES SELECTOR";
+
+	GUIDrawWindowBox(17, GUIAddOnsDisp);
+
+	u4 eax;
+	asm volatile("call %P1" : "=a" (eax) : "X" (EEMode) : "cc");
+	if (eax != 0)
+	{ // You know it!
+		strcpy(GUIAddOnsDisp, "TOASTER OPTIONS");
+
+		GUIDisplayText(17,  20, 15, "SLOT 1:");
+		GUIDisplayText(17, 112, 15, "SLOT 2:");
+
+		char const* const GUIAddOnText3Alt = "OFF";
+		char const* const GUIAddOnText4Alt = "WHITE BREAD";
+		GUIDisplayButtonHoleTu(17,   9, 23, &device1, 0, GUIAddOnText3Alt, 0);
+		GUIDisplayButtonHoleTu(17,   9, 33, &device1, 1, GUIAddOnText4Alt, 0);
+
+		GUIDisplayButtonHoleTu(17, 100, 23, &device2, 0, GUIAddOnText3Alt, 1);
+		GUIDisplayButtonHoleTu(17, 100, 33, &device2, 1, GUIAddOnText4Alt, 1);
+		GUIDisplayButtonHoleTu(17, 100, 43, &device2, 2, "RYE BREAD",      0);
+		GUIDisplayButtonHoleTu(17, 100, 53, &device2, 3, "WHEAT BREAD",    0);
+		GUIDisplayButtonHoleTu(17, 100, 63, &device2, 4, "ENGLISH MUFFIN", 0);
+
+		GUIDisplayText(17,  12, 78, "POP TART");
+		GUIDisplayText(17, 103, 78, "WAFFLE");
+
+		char const* const GUIAddOnTextDAlt = "QUICK TOAST";
+		GUIDisplayCheckboxu(17,   9, 83, &mouse1lh, GUIAddOnTextDAlt, 0);
+		GUIDisplayCheckboxu(17, 100, 83, &mouse2lh, GUIAddOnTextDAlt, 1);
+
+		GUIDisplayTextY(17,  12, 100, "COFFEE?");
+		GUIDisplayText( 17,  12, 110, "CREAM");
+		GUIDisplayText( 17, 103, 110, "SUGAR");
+	}
+	else
+	{ // Regular
+		strcpy(GUIAddOnsDisp, "DEVICES SELECTOR");
+
+		GUIDisplayTextY(17,  20, 15, "PORT 1:");
+		GUIDisplayTextY(17, 112, 15, "PORT 2:");
+
+		char const* const GUIAddOnText3 = "GAMEPAD";
+		char const* const GUIAddOnText4 = "MOUSE";
+		GUIDisplayButtonHoleTu(17,   9, 23, &device1, 0, GUIAddOnText3,  0);
+		GUIDisplayButtonHoleTu(17,   9, 33, &device1, 1, GUIAddOnText4,  0);
+
+		GUIDisplayButtonHoleTu(17, 100, 23, &device2, 0, GUIAddOnText3,  1);
+		GUIDisplayButtonHoleTu(17, 100, 33, &device2, 1, GUIAddOnText4,  1);
+		GUIDisplayButtonHoleTu(17, 100, 43, &device2, 2, "SUPER SCOPE",  0);
+		GUIDisplayButtonHoleTu(17, 100, 53, &device2, 3, "1 JUSTIFIER",  0);
+		GUIDisplayButtonHoleTu(17, 100, 63, &device2, 4, "2 JUSTIFIERS", 0);
+
+		GUIDisplayText(17,  12, 78, "CYCLE P1:");
+		GUIDisplayText(17, 103, 78, "CYCLE P2:");
+
+		char const* const GUIAddOnTextD = "LEFT HANDED";
+		GUIDisplayCheckboxu(17,   9, 83, &mouse1lh, GUIAddOnTextD, 0);
+		GUIDisplayCheckboxu(17, 100, 83, &mouse2lh, GUIAddOnTextD, 1);
+
+		GUIDisplayTextY(17,  12, 100, "SUPER SCOPE KEYS:");
+		GUIDisplayText( 17,  12, 110, "AUTO-FIRE");
+		GUIDisplayText( 17, 103, 110, "SS PAUSE");
+	}
+
+	DDrawBox(17,  73, 75, &KeyExtraEnab1);
+	DDrawBox(17, 164, 75, &KeyExtraEnab2);
+
+	DDrawBox(17,  73, 107, &SSAutoFire);
+	DDrawBox(17, 164, 107, &SSPause);
+}
+
+
 void DisplayGUISave(void)
 {
 	GUIDrawWindowBox(20, "SAVE OPTIONS");

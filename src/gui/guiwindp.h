@@ -3,7 +3,7 @@
 
 #include "../types.h"
 
-extern void DisplayGUIAddOns();
+extern u4   EEMode();
 extern void DisplayGUIChipConfig();
 extern void DisplayGUIPaths();
 

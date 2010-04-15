@@ -661,29 +661,6 @@ NEWSYM GUIChoseSlotTextX, db '-',0
 
 SECTION .text
 
-%macro DGOptnsBorderBox 3
-  mov dword[GUIWincol],148+10
-  cmp byte[cwindrawn],1
-  jne %%noone
-  mov dword[GUIWincol],148+5
-%%noone
-  cmp byte[cwindrawn],0
-  jne %%nozero
-  mov dword[GUIWincol],148
-%%nozero
-  mov dl,[GUIWincol]
-  DrawGUIWinBox %1,%2+1,%3,%2+18,%3,dl
-  mov dl,[GUIWincol]
-  inc dl
-  DrawGUIWinBox %1,%2,%3+1,%2-1,%3+5,dl
-  mov dl,[GUIWincol]
-  add dl,4
-  DrawGUIWinBox %1,%2+1,%3+8,%2+18,%3-8,dl
-  mov dl,[GUIWincol]
-  add dl,3
-  DrawGUIWinBox %1,%2+22,%3+1,%2-23,%3+5,dl
-%endmacro
-
 %macro DGOptnsDrawBox 3
   mov eax,[GUIwinposx+9*4]
   mov ebx,[GUIwinposy+9*4]
@@ -709,34 +686,6 @@ SECTION .text
   mov byte[GUItextcolor],222
 %%zero
   ccallv GUIOuttextwin2, 9, %1 + 2, %2 + 1, GUIGameDisplayKy
-%endmacro
-
-%macro DDrawBox 4
-  mov eax,[GUIwinposx+%1*4]
-  mov ebx,[GUIwinposy+%1*4]
-  add eax,%2+1
-  add ebx,%3+1
-  mov ecx,eax
-  add ecx,20
-  mov dl,167
-  mov esi,7
-%%loop
-  DrawGUILine
-  dec esi
-  jnz %%loop
-  mov eax,%4
-  mov ebx,[ScanCodeListing+eax*3]
-  mov [GUIGameDisplayKy],ebx
-  mov byte[GUIGameDisplayKy+3],0
-  mov byte[GUItextcolor],223
-  ccallv GUIOuttextwin2, %1, %2 + 4, %3 + 3, GUIGameDisplayKy
-  mov byte[GUItextcolor],221
-  cmp byte[GUIWincoladd],0
-  je %%zero
-  mov byte[GUItextcolor],222
-%%zero
-  ccallv GUIOuttextwin2, %1, %2 + 3, %3 + 2, GUIGameDisplayKy
-  DGOptnsBorderBox %1,%2,%3
 %endmacro
 
 SECTION .data
@@ -920,7 +869,7 @@ NEWSYM GUIIconDataComboSecond
 
 SECTION .text
 
-EEMode:
+NEWSYM EEMode
   ccall GetTime
   cmp eax,360
   ja .noEE
@@ -929,131 +878,6 @@ EEMode:
 .noEE
   mov eax,0
   ret
-
-NEWSYM DisplayGUIAddOns                   ;Select Special Controllers
-  GUIDrawWindowBox 17,GUIAddOnsDisp
-
-  call EEMode
-  cmp eax,0
-  je near .noEE                    ;You know it!
-
-  push eax
-  push ebx
-  push ecx
-  mov eax,GUIAddOnEETopBar
-  mov ebx,GUIAddOnsDisp
-.loopA
-  mov cl,[eax]
-  mov [ebx],cl
-  inc eax
-  inc ebx
-  cmp cl,0
-  jne .loopA
-  pop ecx
-  pop ebx
-  pop eax
-
-  GUIDisplayText 17,20,15,GUIAddOnText1Alt
-  GUIDisplayText 17,112,15,GUIAddOnText2Alt
-
-  GUIDisplayButtonHoleTu 17,9,23,byte[device1],0,GUIAddOnText3Alt,0
-  GUIDisplayButtonHoleTu 17,9,33,byte[device1],1,GUIAddOnText4Alt,0
-
-  GUIDisplayButtonHoleTu 17,100,23,byte[device2],0,GUIAddOnText3Alt,1
-  GUIDisplayButtonHoleTu 17,100,33,byte[device2],1,GUIAddOnText4Alt,1
-  GUIDisplayButtonHoleTu 17,100,43,byte[device2],2,GUIAddOnText5Alt,0
-  GUIDisplayButtonHoleTu 17,100,53,byte[device2],3,GUIAddOnText6Alt,0
-  GUIDisplayButtonHoleTu 17,100,63,byte[device2],4,GUIAddOnText7Alt,0
-
-  GUIDisplayText 17,12,78,GUIAddOnText8Alt
-  GUIDisplayText 17,103,78,GUIAddOnText9Alt
-
-  GUIDisplayCheckboxu 17,9,83,mouse1lh,GUIAddOnTextDAlt,0
-  GUIDisplayCheckboxu 17,100,83,mouse2lh,GUIAddOnTextDAlt,1
-
-  GUIDisplayTextY 17,12,100,GUIAddOnTextAAlt
-  GUIDisplayText 17,12,110,GUIAddOnTextBAlt
-  GUIDisplayText 17,103,110,GUIAddOnTextCAlt
-  jmp .endEE
-.noEE                                ;Regular
-
-  push eax
-  push ebx
-  push ecx
-  mov eax,GUIAddOnsDispEE
-  mov ebx,GUIAddOnsDisp
-.loopB
-  mov cl,[eax]
-  mov [ebx],cl
-  inc eax
-  inc ebx
-  cmp cl,0
-  jne .loopB
-  pop ecx
-  pop ebx
-  pop eax
-
-  GUIDisplayTextY 17,20,15,GUIAddOnText1
-  GUIDisplayTextY 17,112,15,GUIAddOnText2
-
-  GUIDisplayButtonHoleTu 17,9,23,byte[device1],0,GUIAddOnText3,0
-  GUIDisplayButtonHoleTu 17,9,33,byte[device1],1,GUIAddOnText4,0
-
-  GUIDisplayButtonHoleTu 17,100,23,byte[device2],0,GUIAddOnText3,1
-  GUIDisplayButtonHoleTu 17,100,33,byte[device2],1,GUIAddOnText4,1
-  GUIDisplayButtonHoleTu 17,100,43,byte[device2],2,GUIAddOnText5,0
-  GUIDisplayButtonHoleTu 17,100,53,byte[device2],3,GUIAddOnText6,0
-  GUIDisplayButtonHoleTu 17,100,63,byte[device2],4,GUIAddOnText7,0
-
-  GUIDisplayText 17,12,78,GUIAddOnText8
-  GUIDisplayText 17,103,78,GUIAddOnText9
-
-  GUIDisplayCheckboxu 17,9,83,mouse1lh,GUIAddOnTextD,0
-  GUIDisplayCheckboxu 17,100,83,mouse2lh,GUIAddOnTextD,1
-
-  GUIDisplayTextY 17,12,100,GUIAddOnTextA
-  GUIDisplayText 17,12,110,GUIAddOnTextB
-  GUIDisplayText 17,103,110,GUIAddOnTextC
-.endEE
-  DDrawBox 17,73,75,[KeyExtraEnab1]
-  DDrawBox 17,164,75,[KeyExtraEnab2]
-
-  DDrawBox 17,73,107,[SSAutoFire]
-  DDrawBox 17,164,107,[SSPause]
-  ret
-
-SECTION .data
-GUIAddOnText1 db 'PORT 1:',0
-GUIAddOnText2 db 'PORT 2:',0
-GUIAddOnText3 db 'GAMEPAD',0
-GUIAddOnText4 db 'MOUSE',0
-GUIAddOnText5 db 'SUPER SCOPE',0
-GUIAddOnText6 db '1 JUSTIFIER',0
-GUIAddOnText7 db '2 JUSTIFIERS',0
-GUIAddOnText8 db 'CYCLE P1:',0
-GUIAddOnText9 db 'CYCLE P2:',0
-GUIAddOnTextA db 'SUPER SCOPE KEYS:',0
-GUIAddOnTextB db 'AUTO-FIRE',0
-GUIAddOnTextC db 'SS PAUSE',0
-GUIAddOnTextD db 'LEFT HANDED',0
-
-;EE
-GUIAddOnText1Alt db 83,76,79,84,32,49,58,0
-GUIAddOnText2Alt db 83,76,79,84,32,50,58,0
-GUIAddOnText3Alt db 79,70,70,0
-GUIAddOnText4Alt db 87,72,73,84,69,32,66,82,69,65,68,0
-GUIAddOnText5Alt db 82,89,69,32,66,82,69,65,68,0
-GUIAddOnText6Alt db 87,72,69,65,84,32,66,82,69,65,68,0
-GUIAddOnText7Alt db 69,78,71,76,73,83,72,32,77,85,70,70,73,78,0
-GUIAddOnText8Alt db 80,79,80,32,84,65,82,84,0
-GUIAddOnText9Alt db 87,65,70,70,76,69,0
-GUIAddOnTextAAlt db 67,79,70,70,69,69,63,0
-GUIAddOnTextBAlt db 67,82,69,65,77,0
-GUIAddOnTextCAlt db 83,85,71,65,82,0
-GUIAddOnTextDAlt db 81,85,73,67,75,32,84,79,65,83,84,0
-GUIAddOnEETopBar db 84,79,65,83,84,69,82,32,79,80,84,73,79,78,83,0
-
-SECTION .text
 
 NEWSYM DisplayGUIChipConfig
   GUIDrawWindowBox 18,GUIChipConfigDisp
@@ -1217,8 +1041,6 @@ NEWSYM GUICustomResTextPtr, dd GUICustomX,GUICustomY
 
 ;General data
 GUINetDisp db 'REMOTE',0,0,0,0,0,0,0,0,0
-GUIAddOnsDisp db 'DEVICES SELECTOR',0
-GUIAddOnsDispEE db 'DEVICES SELECTOR',0
 GUIChipConfigDisp db 'CONFIGURE CHIPS',0
 GUIPathsDisp db 'SETUP PATHS',0
 
