@@ -295,19 +295,6 @@ NEWSYM GUIIconDataComboSecond
   db 0  ,48 ,46 ,44 ,42 ,0  ,0  ,0  ,0  ,0
   db 0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0
 
-SECTION .text
-
-NEWSYM EEMode
-  ccall GetTime
-  cmp eax,360
-  ja .noEE
-  mov eax,1
-  ret
-.noEE
-  mov eax,0
-  ret
-
-SECTION .data
 NEWSYM GUIPathTabs, dd 1,3
   db 'GENERAL',0
   db 'MORE',0

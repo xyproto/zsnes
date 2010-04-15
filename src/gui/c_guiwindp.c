@@ -13,6 +13,7 @@
 #include "../zmovie.h"
 #include "../zpath.h"
 #include "../zstate.h"
+#include "../ztimec.h"
 #include "c_gui.h"
 #include "c_guiwindp.h"
 #include "gui.h"
@@ -2657,11 +2658,15 @@ void DisplayGUICombo(void)
 }
 
 
+static bool EEMode(void)
+{
+	return GetTime() <= 360;
+}
+
+
 void DisplayGUIAddOns(void)
 {
-	u4 eax;
-	asm volatile("call %P1" : "=a" (eax) : "X" (EEMode) : "cc");
-	if (eax != 0)
+	if (EEMode())
 	{ // You know it!
 		GUIDrawWindowBox(17, "TOASTER OPTIONS");
 
@@ -2732,9 +2737,7 @@ void DisplayGUIChipConfig(void)
 {
 	GUIDrawWindowBox(18, "CONFIGURE CHIPS");
 
-	u4 eax;
-	asm volatile("call %P1" : "=a" (eax) : "X" (EEMode) : "cc");
-	if (eax != 0)
+	if (EEMode())
 	{ // You know it!
 		GUIDisplayText(    18,  10, 38,           "EXTRAS");
 		GUIDisplayCheckbox(18,   9, 43, &nssdip1, "SALT");

@@ -3,8 +3,6 @@
 
 #include "../types.h"
 
-extern u4 EEMode();
-
 extern char   CMovieExt;
 extern char   CSDescDisplay[20];
 extern char   CSInputDisplay[12];
