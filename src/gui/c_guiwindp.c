@@ -2658,15 +2658,11 @@ void DisplayGUICombo(void)
 
 void DisplayGUIAddOns(void)
 {
-	static char GUIAddOnsDisp[] = "DEVICES SELECTOR";
-
-	GUIDrawWindowBox(17, GUIAddOnsDisp);
-
 	u4 eax;
 	asm volatile("call %P1" : "=a" (eax) : "X" (EEMode) : "cc");
 	if (eax != 0)
 	{ // You know it!
-		strcpy(GUIAddOnsDisp, "TOASTER OPTIONS");
+		GUIDrawWindowBox(17, "TOASTER OPTIONS");
 
 		GUIDisplayText(17,  20, 15, "SLOT 1:");
 		GUIDisplayText(17, 112, 15, "SLOT 2:");
@@ -2695,7 +2691,7 @@ void DisplayGUIAddOns(void)
 	}
 	else
 	{ // Regular
-		strcpy(GUIAddOnsDisp, "DEVICES SELECTOR");
+		GUIDrawWindowBox(17, "DEVICES SELECTOR");
 
 		GUIDisplayTextY(17,  20, 15, "PORT 1:");
 		GUIDisplayTextY(17, 112, 15, "PORT 2:");
