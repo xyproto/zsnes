@@ -70,9 +70,8 @@ static u1 MenuDat5[] = {  1, 3, 2, 0 };
 #endif
 static u1 MenuDat6[] = {  6, 3, 1, 1, 1, 1, 0, 2, 0 };
 
-static char const* guimsgptr;
-static u1          OkaySC;
-static u4          SnowMover;
+static u1 OkaySC;
+static u4 SnowMover;
 
 
 static char GUIGameMenuData[][14] =
@@ -1371,18 +1370,15 @@ static void horizonfixmsg(void)
 	memset(pressed, 0, 256); // XXX maybe should be sizeof(pressed)
 	pressed[0x2C] = 0; // XXX redundant
 
+	char const* const msg = horizon_get(GetTime());
 	do
 	{
 		GUIBox3D(43, 75, 213, 163);
-		GUIOuttextShadowed(51, 80, "     WELCOME TO ZSNES");
-		char const* msg = guimsgptr;
-		GUIOuttextShadowed(51, 95, msg);
-		msg += 32;
-		GUIOuttextShadowed(51, 103, msg);
-		msg += 32;
-		GUIOuttextShadowed(51, 111, msg);
-		msg += 32;
-		GUIOuttextShadowed(51, 119, msg);
+		GUIOuttextShadowed(51,  80, "     WELCOME TO ZSNES");
+		GUIOuttextShadowed(51,  95, msg);
+		GUIOuttextShadowed(51, 103, msg + 32);
+		GUIOuttextShadowed(51, 111, msg + 64);
+		GUIOuttextShadowed(51, 119, msg + 96);
 		GUIOuttextShadowed(51, 150, guiftimemsg8);
 		vidpastecopyscr();
 		GUIUnBuffer();
@@ -1581,11 +1577,14 @@ void StartGUI(void)
 			guifirsttimemsg();
 			FirstTimeData = 1;
 		}
-		if (!guimsgptr && (GetDate() & 0xFFFF) == 0x0401)
+
+		static bool showed_msg = false;
+		if (!showed_msg && (GetDate() & 0xFFFF) == 0x0401)
 		{
-			guimsgptr = horizon_get(GetTime());
+			showed_msg = true;
 			horizonfixmsg();
 		}
+
 		if (GUICTimer != 0)
 		{
 			GUIOuttext(21, 211, GUICMessage, 50);
