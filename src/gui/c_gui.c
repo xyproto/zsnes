@@ -1583,7 +1583,7 @@ void StartGUI(void)
 		}
 		if (!guimsgptr && (GetDate() & 0xFFFF) == 0x0401)
 		{
-			guimsgptr = (char const*)horizon_get(GetTime());
+			guimsgptr = horizon_get(GetTime());
 			horizonfixmsg();
 		}
 		if (GUICTimer != 0)

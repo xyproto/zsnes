@@ -6,7 +6,6 @@
 #include "../types.h"
 
 bool Keep43Check(void);
-u4*  horizon_get(u4 distance);
 void CheatCodeLoad(void);
 void CheatCodeSave(void);
 void GUIGenericJumpTo(void);
@@ -20,6 +19,8 @@ void SaveCheatSearchFile(void);
 void SetMovieForcedLength(void);
 void dumpsound(void);
 void loadquickfname(u1 slot);
+
+char const* horizon_get(u4 distance);
 
 #ifndef __MSDOS__
 void GetCustomXY(void);
