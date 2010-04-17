@@ -15,7 +15,6 @@ extern char   GUIChoseSlotTextX[2];
 extern char   GUIComboTextH[21];
 extern char   GUIGameDisplayKy[4];
 extern char   GUILoadTextA[38];
-extern char   GUIMenuItem[];
 extern char*  GUICustomResTextPtr[2];
 extern char*  GUIPathsTab1Ptr[4];
 extern char*  GUIPathsTab2Ptr[5];

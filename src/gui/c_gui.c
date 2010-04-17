@@ -1995,33 +1995,28 @@ void DisplayMenu(void)
 	GUIShadow(249,  9, 257, 20);
 #endif
 
-#ifdef __UNIXSDL__
-	GUIMenuItem[36] = 247;
-	GUIDMHelpB(233, 242, GUIMenuItem + 36, 1);
-	GUIMenuItem[36] = 'x';
-	GUIDMHelpB(244, 253, GUIMenuItem + 36, 2);
-#endif
-
-#ifdef __WIN32__
-	GUIMenuItem[36] = 249;
-	GUIDMHelpB2(233, 242, GUIMenuItem + 36, 1);
-	GUIMenuItem[36] = 248;
-	GUIDMHelpB3(233, 242, GUIMenuItem + 36, 3);
-	GUIMenuItem[36] = 'x';
-	GUIDMHelpB( 244, 253, GUIMenuItem + 36, 2);
+#if defined __UNIXSDL__ || defined __WIN32__
+#	ifdef __UNIXSDL__
+	GUIDMHelpB( 233, 242, "\xF7", 1);
+#	endif
+#	ifdef __WIN32__
+	GUIDMHelpB2(233, 242, "\xF9", 1);
+	GUIDMHelpB3(233, 242, "\xF8", 3);
+#	endif
+	GUIDMHelpB( 244, 253, "x",    2);
 #endif
 
 	// Display upper-left box
-	GUIMenuItem[36] = 25;
-	GUIDMHelp(4, 12, GUIMenuItem + 6, 1);
-	GUIOuttext(4 + 3, 7, GUIMenuItem + 36, 44);
-	GUIOuttext(4 + 2, 6, GUIMenuItem + 36, 62);
+	GUIDMHelp(4, 12, "", 1);
+	char const* const down_arrow = "\x19";
+	GUIOuttext(4 + 3, 7, down_arrow, 44);
+	GUIOuttext(4 + 2, 6, down_arrow, 62);
 	// Display boxes
-	GUIDMHelp( 17,  47, GUIMenuItem,      2);
-	GUIDMHelp( 52,  94, GUIMenuItem +  7, 3);
-	GUIDMHelp( 99, 135, GUIMenuItem + 14, 4);
-	GUIDMHelp(140, 188, GUIMenuItem + 21, 5);
-	GUIDMHelp(193, 223, GUIMenuItem + 29, 6);
+	GUIDMHelp( 17,  47, "GAME",    2);
+	GUIDMHelp( 52,  94, "CONFIG",  3);
+	GUIDMHelp( 99, 135, "CHEAT",   4);
+	GUIDMHelp(140, 188, "NETPLAY", 5);
+	GUIDMHelp(193, 223, "MISC",    6);
 
 	GUIMenuL = 0;
 	GUIMenuR = 0;

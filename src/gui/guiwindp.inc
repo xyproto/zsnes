@@ -168,11 +168,3 @@ NEWSYM GUICustomResTextPtr, dd GUICustomX,GUICustomY
 
 ;General data
 GUINetDisp db 'REMOTE',0,0,0,0,0,0,0,0,0
-
-NEWSYM GUIMenuItem
-  db 'GAME  ',0
-  db 'CONFIG',0
-  db 'CHEAT ',0
-  db 'NETPLAY',0
-  db 'MISC  ',0
-  db 25,0
