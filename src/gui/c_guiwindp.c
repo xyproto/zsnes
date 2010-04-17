@@ -2313,20 +2313,6 @@ mux:
 }
 
 
-static void InitTextColor(void)
-{
-	if ((GUIWincoladd & 0xFF) != 0)
-	{
-		GUItextcolor[0] = 164;
-		TextColorSp = 211 - 15;
-	}
-	else
-	{
-		TextColorSp = 217 - 15;
-	}
-}
-
-
 static void DrawBorderedBoxB(u4 const p1, u4 const p2, u4 const p3, u4 const p4, u4 const p5, u4 const p6, char const* const p7) // Special function for combo displays
 {
 	// draw borders
@@ -2416,8 +2402,15 @@ void DisplayGUICombo(void)
 		}
 	}
 
-	InitTextColor();
-	if ((GUIWincoladd & 0xFF) != 0) GUItextcolor[0] = 211;
+	if ((GUIWincoladd & 0xFF) != 0)
+	{
+		GUItextcolor[0] = 211;
+		TextColorSp = 211 - 15;
+	}
+	else
+	{
+		TextColorSp = 217 - 15;
+	}
 
 	GUIDrawWindowBox(16, "KEY COMBINATION EDITOR");
 
