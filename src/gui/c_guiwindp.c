@@ -2305,14 +2305,12 @@ static void DrawBorderedBoxB2(u4 const p1, u4 const p2, u4 const p3, u4 const p4
 }
 
 
-static void DrawSlideBar(u4 const p1, u4 const p2, u4 const p3, u4 const p4, u4 const p5, u4 const p6, u4 const p7, u4* const p8, u4 const p9, u4 const p10, u1 const TextColorSp)
+static void DrawSlideBar(u4 const p1, u4 const p2, u4 const p3, u4 const p4, u4 const p5, u4 const p6, u4 const p7, u4* const p8, u4 const p9, u4 const p10)
 {
 	DrawSlideBarWin(p1, p2, p3 + 8, p4, p5, p6, p7 - 16, p8);
-	GUItextcolor[0] = TextColorSp;
 	if ((GUICHold & 0xFF) == p9) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd + 3) & 0x000000FF;
 	GUIDisplayIconWin(p1, p2, p3, GUIIconDataUpArrow);
 	if ((GUICHold & 0xFF) == p9) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd - 3) & 0x000000FF;
-	GUItextcolor[0] = TextColorSp;
 	if ((GUICHold & 0xFF) == p10) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd + 3) & 0x000000FF;
 	GUIDisplayIconWin(p1, p2, p3 + p7 - 8, GUIIconDataDownArrow);
 	if ((GUICHold & 0xFF) == p10) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd - 3) & 0x000000FF;
@@ -2353,16 +2351,7 @@ void DisplayGUICombo(void)
 		}
 	}
 
-	u1 TextColorSp;
-	if ((GUIWincoladd & 0xFF) != 0)
-	{
-		GUItextcolor[0] = 211;
-		TextColorSp = 211 - 15;
-	}
-	else
-	{
-		TextColorSp = 217 - 15;
-	}
+	if ((GUIWincoladd & 0xFF) != 0) GUItextcolor[0] = 211;
 
 	GUIDrawWindowBox(16, "KEY COMBINATION EDITOR");
 
@@ -2373,7 +2362,7 @@ void DisplayGUICombo(void)
 
 	// Draw SlideBar
 	// win#,X,Y start,List Loc,List size,# Lines,Bar Size(Y),UpArrowResource#,DownArrowRes#
-	DrawSlideBar(16, 192, 20, GUIccombviewloc, NumCombo, 8, 61, GUICSStC, 13, 14, TextColorSp);
+	DrawSlideBar(16, 192, 20, GUIccombviewloc, NumCombo, 8, 61, GUICSStC, 13, 14);
 
 	// Draw control boxes
 	DrawBorderedBoxB( 16,  75, 150,  85, 157, "\xFB");
