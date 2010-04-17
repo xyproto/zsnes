@@ -2034,7 +2034,7 @@ void SaveCombFile()
       if ((fp = fopen_dir(ZComboPath, ZSaveName, "wb")))
       {
         fwrite(ComboHeader, 1, 23, fp);
-        fwrite(CombinDataLocl, 1, NumComboLocl*66, fp);
+        fwrite(CombinDataLocl, sizeof(*CombinDataLocl), NumComboLocl, fp);
         fclose(fp);
       }
     }
@@ -2055,7 +2055,7 @@ void OpenCombFile()
 
     if (NumComboLocl)
     {
-      fread(CombinDataLocl, 1, NumComboLocl*66, fp);
+      fread(CombinDataLocl, sizeof(*CombinDataLocl), NumComboLocl, fp);
     }
 
     fclose(fp);

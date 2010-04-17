@@ -2375,12 +2375,12 @@ void DisplayGUICombo(void)
 	{
 		GUIccomblcursloc = GUIccombcursloc;
 		// copy contents into temporary variables
-		u1 const* const esi = (GUIComboGameSpec == 0 ? CombinDataGlob : CombinDataLocl) + GUIccombcursloc * 66;
-		memcpy(GUIComboTextH, esi,      20);
-		memcpy(GUIComboData,  esi + 20, 42);
-		GUIComboKey   = GUIComboKey & 0xFFFF0000 | *(u2 const*)(esi + 62); // XXX ugly cast
-		GUIComboPNum  = esi[64];
-		GUIComboLHorz = esi[65];
+		ComboData const* const esi = &(GUIComboGameSpec == 0 ? CombinDataGlob : CombinDataLocl)[GUIccombcursloc];
+		memcpy(GUIComboTextH, esi->name,  sizeof(esi->name));
+		memcpy(GUIComboData,  esi->combo, sizeof(esi->combo));
+		GUIComboKey   = GUIComboKey & 0xFFFF0000 | esi->key;
+		GUIComboPNum  = esi->player;
+		GUIComboLHorz = esi->ff;
 		// determine length of combo data
 		u1 const* eax = GUIComboData;
 		u4        ecx = 0;
@@ -2389,15 +2389,15 @@ void DisplayGUICombo(void)
 	}
 
 	// copy into data if description equal
-	{ u1* const edi = (GUIComboGameSpec == 0 ? CombinDataGlob : CombinDataLocl) + GUIccombcursloc * 66;
-		if (strncmp((char const*)edi, GUIComboTextH, 20) == 0) // XXX ugly cast
+	{ ComboData* const edi = &(GUIComboGameSpec == 0 ? CombinDataGlob : CombinDataLocl)[GUIccombcursloc];
+		if (strncmp(edi->name, GUIComboTextH, 20) == 0)
 		{
 			asm_call(ComboClip);
-			memcpy(edi,      GUIComboTextH, 20);
-			memcpy(edi + 20, GUIComboData,  42);
-			*(u2*)(edi + 62) = GUIComboKey; // XXX ugly cast
-			edi[64]          = GUIComboPNum;
-			edi[65]          = GUIComboLHorz;
+			memcpy(edi->name,  GUIComboTextH, sizeof(edi->name));
+			memcpy(edi->combo, GUIComboData,  sizeof(edi->combo));
+			edi->key    = GUIComboKey;
+			edi->player = GUIComboPNum;
+			edi->ff     = GUIComboLHorz;
 		}
 	}
 
@@ -2620,16 +2620,15 @@ void DisplayGUICombo(void)
 	if (ebx > 0)
 	{
 		if (ebx > 8) ebx = 8;
-		u1 const* edi = (GUIComboGameSpec == 0 ? CombinDataGlob : CombinDataLocl) + GUIccombviewloc * 66;
-		u4        ecx = 12;
-		u4        eax = 25;
+		ComboData const* edi = (GUIComboGameSpec == 0 ? CombinDataGlob : CombinDataLocl) + GUIccombviewloc;
+		u4               ecx = 12;
+		u4               eax = 25;
 		do
 		{
-			u2 const ax = *(u2 const*)(edi + 62);
 			static char GUIScrolBufB[9];
-			sprintf(GUIScrolBufB, "%.3s %c  %c", ScanCodeListing + ax * 3, '1' + edi[64], edi[65] != 0 ? 'Y' : 'N');
+			sprintf(GUIScrolBufB, "%.3s %c  %c", ScanCodeListing + edi->key * 3, '1' + edi->player, edi->ff != 0 ? 'Y' : 'N');
 			static char GUIScrolBufA[21];
-			memcpy(GUIScrolBufA, edi, 20);
+			memcpy(GUIScrolBufA, edi->name, sizeof(edi->name));
 
 			GUItextcolor[0] = 223;
 			GUIOuttextwin2(16, ecx,       eax,     GUIScrolBufA);
@@ -2638,7 +2637,7 @@ void DisplayGUICombo(void)
 			GUIOuttextwin2(16, ecx -   1, eax - 1, GUIScrolBufA);
 			GUIOuttextwin2(16, ecx + 127, eax - 1, GUIScrolBufB);
 		}
-		while (eax += 7, edi += 66, --ebx != 0);
+		while (eax += 7, ++edi, --ebx != 0);
 	}
 }
 

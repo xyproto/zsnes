@@ -250,12 +250,12 @@ static void ProcessKeyComb(u4 const id, u4* const device)
 	{
 		if (*device & 0x01000000) CombDirSwap = 0;
 		if (*device & 0x02000000) CombDirSwap = 1;
-		u1* eax = GUIComboGameSpec != 0 ? CombinDataLocl : CombinDataGlob;
-		u4  n   = NumCombo;
-		for (;; eax += 66)
+		ComboData* eax = GUIComboGameSpec != 0 ? CombinDataLocl : CombinDataGlob;
+		u4         n   = NumCombo;
+		for (;; ++eax)
 		{
-			u4 const key = *(u2*)(eax + 62);
-			if (pressed[key] == 1 && eax[64] == id)
+			u2 const key = eax->key;
+			if (pressed[key] == 1 && eax->player == id)
 			{
 				pressed[key]  = 2;
 				++ComboCounter;
@@ -263,8 +263,8 @@ static void ProcessKeyComb(u4 const id, u4* const device)
 				ComboPtr[id]  = 0;
 				PressComb[id] = 0;
 				HoldComb[id]  = 0;
-				CombCont[id]  = CombDirSwap != 0 && eax[65] != 0 ? CombContDatR : CombContDatN;
-				StartComb[id] = eax + 20;
+				CombCont[id]  = CombDirSwap != 0 && eax->ff != 0 ? CombContDatR : CombContDatN;
+				StartComb[id] = eax->combo;
 				break;
 			}
 			if (--n == 0) return;

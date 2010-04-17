@@ -1,13 +1,25 @@
 #ifndef GUI_H
 #define GUI_H
 
+#include "../macros.h"
 #include "../types.h"
+
+typedef struct ComboData
+{
+	char name[20];
+	u1   combo[42];
+	u2   key;
+	u1   player;
+	u1   ff;
+} ComboData;
+STATIC_ASSERT(sizeof(ComboData) == 66);
+
+extern ComboData CombinDataGlob[50];
+extern ComboData CombinDataLocl[50];
 
 extern char  GUIPrevMenuData[];
 extern char* GUICMessage;
 extern u1    CheatOn;
-extern u1    CombinDataGlob[3300];
-extern u1    CombinDataLocl[3300];
 extern u1    CurPalSelect;
 extern u1    EEgg;
 extern u1    ForceHiLoROM;

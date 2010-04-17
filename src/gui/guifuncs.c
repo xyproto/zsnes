@@ -594,7 +594,7 @@ void GUIRestoreVars()
     if (ComboBlHeader[22])
     {
       NumComboGlob = ComboBlHeader[22];
-      fread(CombinDataGlob, 1, 66*NumComboGlob, cfg_fp);
+      fread(CombinDataGlob, sizeof(*CombinDataGlob), NumComboGlob, cfg_fp);
     }
 
     fclose(cfg_fp);
@@ -624,7 +624,7 @@ void GUISaveVars(void)
   {
     ComboHeader[22] = NumComboGlob;
     fwrite(ComboHeader, 1, 23, cfg_fp);
-    fwrite(CombinDataGlob, 1, 66*NumComboGlob, cfg_fp);
+    fwrite(CombinDataGlob, sizeof(*CombinDataGlob), NumComboGlob, cfg_fp);
     fclose(cfg_fp);
   }
 }

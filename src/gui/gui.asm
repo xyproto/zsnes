@@ -238,7 +238,7 @@ NEWSYM CalibYmax209, dd 0
 NEWSYM EEgg, db 0
 
 SECTION .bss
-NEWSYM CombinDataGlob, resb 3300 ; 20-name, 42-combo, 2-key#, 1-P#, 1-ff
+NEWSYM CombinDataGlob, resb 3300
 NEWSYM CombinDataLocl, resb 3300
 
 NEWSYM GUIwinorder, resb 22
