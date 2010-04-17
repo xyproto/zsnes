@@ -600,8 +600,7 @@ void DisplayGUILoad(void)
 		DrawGUIWinBox2(1, 160, 228, 7, 224, y);
 	}
 
-	GUItextcolor[0] = 223; // Green Shadow
-	GUIOuttextwin2(1, 8, 148, GUILoadTextA);
+	GUIDisplayTextG(1, 8, 148, GUILoadTextA);
 
 	if (GUIfileentries == 0) GUIcurrentfilewin = 1;
 
@@ -624,9 +623,6 @@ void DisplayGUILoad(void)
 	{
 		GUIOuttextwinloaddir(1, 164, 29 + 7 * i);
 	}
-
-	GUItextcolor[0] = (GUIWincoladd & 0xFF) == 0 ? 221 : 222; // Green Text
-	GUIOuttextwin2(1, 7, 147, GUILoadTextA);
 
 	GUILoadTextA[GUILoadPos] = '\0';
 
@@ -1501,10 +1497,7 @@ void DisplayGUICheat(void)
 			u4          const p1             = 12;
 			u4          const p2             = 24 + 7 * i;
 			char const* const GUICheatTextZ3 = DisplayGUICheatConv(ccheatnpos);
-			GUItextcolor[0] = 223;
-			GUIOuttextwin2(7, p1, p2, GUICheatTextZ3);
-			GUItextcolor[0] = (GUIWincoladd & 0xFF) == 0 ? 221 : 222; // Text
-			GUIOuttextwin2(7, p1 - 1, p2 - 1, GUICheatTextZ3);
+			GUIDisplayTextG(7, p1, p2, GUICheatTextZ3);
 			ccheatnpos += 28;
 			--ccheatnleft;
 		}
@@ -1880,12 +1873,7 @@ static void Cheatmodeadd(void) // Add Window
 			converthex(GUICSrcTextG1,     curaddrvalcs + 0x7E0000, 3);
 			converthex(GUICSrcTextG1 + 6, curvaluecs,              1);
 			curvaluecs >>= 8;
-			GUItextcolor[0] = 223;
-			++CheatSearchYPos;
-			GUIOuttextwin2(13, 13, CheatSearchYPos, GUICSrcTextG1);
-			--CheatSearchYPos;
-			GUItextcolor[0] = (GUIWincoladd & 0xFF) == 0 ? 221 : 222;
-			GUIOuttextwin2(13, 12, CheatSearchYPos, GUICSrcTextG1);
+			GUIDisplayTextG(13, 13, CheatSearchYPos + 1, GUICSrcTextG1);
 			CheatSearchYPos += 10;
 			++curaddrvalcs;
 		}
@@ -2311,10 +2299,7 @@ static void DrawBorderedBoxB(u4 const p1, u4 const p2, u4 const p3, u4 const p4,
 	DrawGUIWinBox(p1, p2,     p5, p4,     p5 + 1, GUIWincol + 4);
 	DrawGUIWinBox(p1, p4,     p3, p4 + 1, p5,     GUIWincol + 3);
 	DrawGUIWinBox(p1, p2,     p3, p4,     p5,     167);
-	GUItextcolor[0]  = 223;
-	GUIOuttextwin2(p1, p2 + 5, p3 + 2, p7);
-	GUItextcolor[0]  = (GUIWincoladd & 0xFF) == 0 ? 221 : 222;
-	GUIOuttextwin2(p1, p2 + 4, p3 + 1, p7);
+	GUIDisplayTextG(p1, p2 + 5, p3 + 2, p7);
 }
 
 
@@ -2326,10 +2311,7 @@ static void DrawBorderedBoxB2(u4 const p1, u4 const p2, u4 const p3, u4 const p4
 	DrawGUIWinBox(p1, p2,     p5, p4,     p5 + 1, GUIWincol + 4);
 	DrawGUIWinBox(p1, p4,     p3, p4 + 1, p5,     GUIWincol + 3);
 	DrawGUIWinBox(p1, p2,     p3, p4,     p5,     167);
-	GUItextcolor[0]   = 223;
-	GUIOuttextwin2(p1, p2 + 2, p3 + 2, p7);
-	GUItextcolor[0]   = (GUIWincoladd & 0xFF) == 0 ? 221 : 222;
-	GUIOuttextwin2(p1, p2 + 1, p3 + 1, p7);
+	GUIDisplayTextG(p1, p2 + 2, p3 + 2, p7);
 }
 
 
@@ -2647,10 +2629,7 @@ void DisplayGUICombo(void)
 			static char GUIComboText3[] = " ";
 			GUIComboText3[0] = al;
 
-			GUItextcolor[0] = 223;
-			GUIOuttextwin2(16, ecx + 8, edx + 5, GUIComboText3);
-			GUItextcolor[0] = (GUIWincoladd & 0xFF) == 0 ? 221 : 222;
-			GUIOuttextwin2(16, ecx + 7, edx + 4, GUIComboText3);
+			GUIDisplayTextG(16, ecx + 8, edx + 5, GUIComboText3);
 
 			GUIDisplayIconWin(16, ecx, edx, esi);
 			ecx += 15;
@@ -2685,12 +2664,8 @@ void DisplayGUICombo(void)
 			static char GUIScrolBufA[21];
 			memcpy(GUIScrolBufA, edi->name, sizeof(edi->name));
 
-			GUItextcolor[0] = 223;
-			GUIOuttextwin2(16, ecx,       eax,     GUIScrolBufA);
-			GUIOuttextwin2(16, ecx + 128, eax,     GUIScrolBufB);
-			GUItextcolor[0] = (GUIWincoladd & 0xFF) == 0 ? 221 : 222;
-			GUIOuttextwin2(16, ecx -   1, eax - 1, GUIScrolBufA);
-			GUIOuttextwin2(16, ecx + 127, eax - 1, GUIScrolBufB);
+			GUIDisplayTextG(16, ecx,       eax, GUIScrolBufA);
+			GUIDisplayTextG(16, ecx + 128, eax, GUIScrolBufB);
 		}
 		while (eax += 7, ++edi, --ebx != 0);
 	}
