@@ -230,7 +230,6 @@ NEWSYM GUICustomResTextPtr, dd GUICustomX,GUICustomY
 GUINetDisp db 'REMOTE',0,0,0,0,0,0,0,0,0
 
 SECTION .bss
-GUIItemBoxColor resd 1
 NEWSYM TextColorSp, resd 1
 
 SECTION .data
