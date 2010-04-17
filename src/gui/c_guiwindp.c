@@ -380,14 +380,12 @@ static void GUIOuttextwin2d(u4 const p1, u4 const p2, u4 const p3, char const* c
 	GUIOuttextwin2c(p1, p2, p3, ecx - eax);
 	if (GUIInputBox == p7 + 1 && p6[p7] == p4)
 	{
-		static char GUIBlinkCursor[]   = "\0";
-		static u1   GUIBlinkCursorLoop = 0;
-		if (++GUIBlinkCursorLoop == 30)
+		static u1 GUIBlinkCursorLoop = 0;
+		if (++GUIBlinkCursorLoop == 60) GUIBlinkCursorLoop = 0;
+		if (GUIBlinkCursorLoop < 30)
 		{
-			GUIBlinkCursorLoop = 0;
-			GUIBlinkCursor[0] = GUIBlinkCursor[0] == ' ' ? '_' : ' ';
+			GUIOuttextwin2c(p1, eax * 6 /* 6 pixels */ + p2, p3, "_");
 		}
-		GUIOuttextwin2c(p1, eax * 6 /* 6 pixels */ + p2, p3, GUIBlinkCursor);
 	}
 }
 
