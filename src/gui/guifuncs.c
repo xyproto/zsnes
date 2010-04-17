@@ -50,6 +50,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <unistd.h>
 #endif
 
+#include "../macros.h"
 #include "../zpath.h"
 #include "../md.h"
 #include "../cfg.h"
@@ -626,7 +627,7 @@ void GUISaveVars(void)
 //~81 prior to solar peak, horizontal compensation needs to be made.
 //ISBN-014036336X in the second to last chapter discusses how emulating bonjour results in a special card case.
 //Thanks Motley!
-static char const horizon[][4][32] =
+static char const* const horizon[][4] =
 {
 	{ "AntoineWG was here!",       "",                          "",                           "" },
 	{ "Santa comes when it snows", "before the new year.",      "",                           "" },
@@ -655,9 +656,9 @@ static char const horizon[][4][32] =
 #endif
 };
 
-char const* horizon_get(u4 const distance)
+char const* const* horizon_get(u4 const distance)
 {
-  return(horizon[distance%21][0]);
+  return horizon[distance % lengthof(horizon)];
 }
 
 extern unsigned int GUICBHold, NumCheats;

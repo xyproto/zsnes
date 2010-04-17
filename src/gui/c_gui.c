@@ -1370,15 +1370,15 @@ static void horizonfixmsg(void)
 	memset(pressed, 0, 256); // XXX maybe should be sizeof(pressed)
 	pressed[0x2C] = 0; // XXX redundant
 
-	char const* const msg = horizon_get(GetTime());
+	char const* const* const msg = horizon_get(GetTime());
 	do
 	{
 		GUIBox3D(43, 75, 213, 163);
 		GUIOuttextShadowed(51,  80, "     WELCOME TO ZSNES");
-		GUIOuttextShadowed(51,  95, msg);
-		GUIOuttextShadowed(51, 103, msg + 32);
-		GUIOuttextShadowed(51, 111, msg + 64);
-		GUIOuttextShadowed(51, 119, msg + 96);
+		GUIOuttextShadowed(51,  95, msg[0]);
+		GUIOuttextShadowed(51, 103, msg[1]);
+		GUIOuttextShadowed(51, 111, msg[2]);
+		GUIOuttextShadowed(51, 119, msg[3]);
 		GUIOuttextShadowed(51, 150, guiftimemsg8);
 		vidpastecopyscr();
 		GUIUnBuffer();

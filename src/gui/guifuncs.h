@@ -20,7 +20,7 @@ void SetMovieForcedLength(void);
 void dumpsound(void);
 void loadquickfname(u1 slot);
 
-char const* horizon_get(u4 distance);
+char const* const* horizon_get(u4 distance);
 
 #ifndef __MSDOS__
 void GetCustomXY(void);
