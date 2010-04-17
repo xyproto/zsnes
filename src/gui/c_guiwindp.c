@@ -39,7 +39,6 @@ u1 GUIStatesText5 = 0;
 
 static s4 cloadnleft;
 static s4 cloadnposb;
-static u1 TextColorSp;
 
 
 static void drawshadow2(u4 const p1, s4 const p2, s4 const p3)
@@ -2354,7 +2353,7 @@ static void DrawBorderedBox(u4 const p1, u4 const p2, u4 const p3, u4 const p4, 
 }
 
 
-static void DrawSlideBar(u4 const p1, u4 const p2, u4 const p3, u4 const p4, u4 const p5, u4 const p6, u4 const p7, u4* const p8, u4 const p9, u4 const p10)
+static void DrawSlideBar(u4 const p1, u4 const p2, u4 const p3, u4 const p4, u4 const p5, u4 const p6, u4 const p7, u4* const p8, u4 const p9, u4 const p10, u1 const TextColorSp)
 {
 	DrawSlideBarWin(p1, p2, p3 + 8, p4, p5, p6, p7 - 16, p8);
 	GUItextcolor[0] = TextColorSp;
@@ -2402,6 +2401,7 @@ void DisplayGUICombo(void)
 		}
 	}
 
+	u1 TextColorSp;
 	if ((GUIWincoladd & 0xFF) != 0)
 	{
 		GUItextcolor[0] = 211;
@@ -2421,7 +2421,7 @@ void DisplayGUICombo(void)
 
 	// Draw SlideBar
 	// win#,X,Y start,List Loc,List size,# Lines,Bar Size(Y),UpArrowResource#,DownArrowRes#
-	DrawSlideBar(16, 192, 20, GUIccombviewloc, NumCombo, 8, 61, GUICSStC, 13, 14);
+	DrawSlideBar(16, 192, 20, GUIccombviewloc, NumCombo, 8, 61, GUICSStC, 13, 14, TextColorSp);
 
 	// Draw control boxes
 	DrawBorderedBoxB( 16,  75, 150,  85, 157, 149, "\xFB");
