@@ -2298,9 +2298,9 @@ static void DrawBorderedBoxB(u4 const p1, u4 const p2, u4 const p3, u4 const p4,
 }
 
 
-static void DrawBorderedBoxB2(u4 const p1, u4 const p2, u4 const p3, u4 const p4, u4 const p5, u4 const p6, char const* const p7) // Special function for combo displays
+static void DrawBorderedBoxB2(u4 const p1, u4 const p2, u4 const p3, u4 const p4, u4 const p5, char const* const p7) // Special function for combo displays
 {
-	DrawBorderedBox(p1, p2,     p3,     p4, p5, p6);
+	DrawBorderedBox(p1, p2,     p3,     p4, p5, p3 - 1);
 	GUIDisplayTextG(p1, p2 + 2, p3 + 2, p7);
 }
 
@@ -2386,8 +2386,8 @@ void DisplayGUICombo(void)
 	DrawBorderedBoxB( 16, 173, 150, 183, 157, "Y");
 	DrawBorderedBoxB( 16, 187, 150, 197, 157, "L");
 	DrawBorderedBoxB( 16, 201, 150, 211, 157, "R");
-	DrawBorderedBoxB2(16, 215, 150, 227, 157, 149, "ST");
-	DrawBorderedBoxB2(16, 231, 150, 243, 157, 149, "SL");
+	DrawBorderedBoxB2(16, 215, 150, 227, 157, "ST");
+	DrawBorderedBoxB2(16, 231, 150, 243, 157, "SL");
 
 	DrawBorderedBoxB( 16,  75, 160,  85, 167, "\xFB");
 	DrawBorderedBoxB( 16,  89, 160,  99, 167, "\xFC");
@@ -2399,8 +2399,8 @@ void DisplayGUICombo(void)
 	DrawBorderedBoxB( 16, 173, 160, 183, 167, "Y");
 	DrawBorderedBoxB( 16, 187, 160, 197, 167, "L");
 	DrawBorderedBoxB( 16, 201, 160, 211, 167, "R");
-	DrawBorderedBoxB2(16, 215, 160, 227, 167, 159, "ST");
-	DrawBorderedBoxB2(16, 231, 160, 243, 167, 159, "SL");
+	DrawBorderedBoxB2(16, 215, 160, 227, 167, "ST");
+	DrawBorderedBoxB2(16, 231, 160, 243, 167, "SL");
 
 	DrawBorderedBoxB( 16,  75, 170,  85, 177, "\xFB");
 	DrawBorderedBoxB( 16,  89, 170,  99, 177, "\xFC");
@@ -2412,8 +2412,8 @@ void DisplayGUICombo(void)
 	DrawBorderedBoxB( 16, 173, 170, 183, 177, "Y");
 	DrawBorderedBoxB( 16, 187, 170, 197, 177, "L");
 	DrawBorderedBoxB( 16, 201, 170, 211, 177, "R");
-	DrawBorderedBoxB2(16, 215, 170, 227, 177, 169, "ST");
-	DrawBorderedBoxB2(16, 231, 170, 243, 177, 169, "SL");
+	DrawBorderedBoxB2(16, 215, 170, 227, 177, "ST");
+	DrawBorderedBoxB2(16, 231, 170, 243, 177, "SL");
 
 	DrawBorderedBoxB(16, 10, 189, 20, 196, "1");
 	DrawBorderedBoxB(16, 24, 189, 34, 196, "2");
