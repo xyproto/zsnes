@@ -6,7 +6,6 @@
 extern char   CMovieExt;
 extern char   CSDescDisplay[20];
 extern char   CSInputDisplay[12];
-extern char   GUIBlinkCursor[2];
 extern char   GUICSrcTextG1[11];
 extern char   GUICheatTextZ1[16];
 extern char   GUICheatTextZ2[23];
@@ -24,7 +23,6 @@ extern u1     CheatCompareValue;
 extern u1     CheatSearchStatus;
 extern u1     CheatWinMode;
 extern u1     CurCStextpos;
-extern u1     GUIBlinkCursorLoop;
 extern u1     GUICheatPosA;
 extern u1     GUICheatPosB;
 extern u1     GUIComboData[50];

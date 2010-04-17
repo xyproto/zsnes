@@ -156,8 +156,6 @@ NEWSYM GUIPathTabs, dd 1,3
   db 'MORE',0
   db 'BIOS+CARTS',0
 
-NEWSYM GUIBlinkCursor, db 0,0
-NEWSYM GUIBlinkCursorLoop, db 0
 NEWSYM GUIPathsTab1Ptr, dd SRAMPath,SStatePath,MoviePath,IPSPath
 NEWSYM GUIPathsTab2Ptr, dd SnapPath,SPCPath,CHTPath,ComboPath,INPPath
 NEWSYM GUIPathsTab3Ptr, dd BSXPath,STPath,GNextPath,SGPath
