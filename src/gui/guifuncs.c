@@ -23,6 +23,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #ifdef __UNIXSDL__
 #include "../gblhdr.h"
+#include "../linux/sdllink.h"
 #define fnamecmp strcmp
 #define fnamencmp strncmp
 #else
@@ -45,6 +46,10 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define fnamecmp strcasecmp
 #endif
 
+#ifndef __MSDOS__
+#	include "../c_intrf.h"
+#endif
+
 #ifndef _MSC_VER
 #include <stdint.h>
 #include <unistd.h>
@@ -56,17 +61,17 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "../cfg.h"
 #include "../input.h"
 #include "../asm_call.h"
+#include "../ui.h"
 #include "../zloader.h"
 #include "../zdir.h"
 #include "c_gui.h"
+#include "gui.h"
 #include "guifuncs.h"
+#include "guiwindp.h"
 
 #define BIT(X) (1 << (X))
 
-extern unsigned char ComboHeader[23], ComboBlHeader[23], CombinDataGlob[3300];
-extern unsigned char ShowTimer;
-extern unsigned int NumComboGlob;
-extern unsigned char GUIFontData1[705], GUIFontData[705];
+extern unsigned char ComboHeader[23], ComboBlHeader[23];
 enum vtype { UB, UW, UD, SB, SW, SD };
 
 unsigned int ConvertBinaryToInt(char data[])
@@ -79,9 +84,9 @@ unsigned int ConvertBinaryToInt(char data[])
   return(num);
 }
 
-void InsertFontChar(char data[], int pos)
+static void InsertFontChar(char data[], u4 const glyph, u4 const y)
 {
-  GUIFontData1[pos] = ConvertBinaryToInt(data);
+  GUIFontData1[glyph][y] = ConvertBinaryToInt(data);
 }
 
 void LoadCustomFont()
@@ -93,27 +98,27 @@ void LoadCustomFont()
   fp = fopen_dir(ZCfgPath, "zfont.txt", "r");
   if (fp)
   {
-    while (fgets(data,100,fp) && strcmp(data,"EOF\n") && x < 705)
+    while (fgets(data,100,fp) && strcmp(data,"EOF\n") && x < 141)
     {
       fgets(data,10,fp);        //get first line
-      InsertFontChar(data,x++);
+      InsertFontChar(data, x, 0);
 
       fgets(data,10,fp);        //get second line
-      InsertFontChar(data,x++);
+      InsertFontChar(data, x, 1);
 
       fgets(data,10,fp);        //get third line
-      InsertFontChar(data,x++);
+      InsertFontChar(data, x, 2);
 
       fgets(data,10,fp);        //get fourth line
-      InsertFontChar(data,x++);
+      InsertFontChar(data, x, 3);
 
       fgets(data,10,fp);        //get fifth line
-      InsertFontChar(data,x++);
+      InsertFontChar(data, x, 4);
     }
   }
   else
   {
-    memcpy(GUIFontData1,GUIFontData,705);
+    memcpy(GUIFontData1, GUIFontData, sizeof(GUIFontData1));
     fp = fopen_dir(ZCfgPath, "zfont.txt", "w");
     fputs("; empty space 0x00\n00000000\n00000000\n00000000\n00000000\n00000000\n",fp);
     fputs("; 0 0x01\n01110000\n10011000\n10101000\n11001000\n01110000\n",fp);
@@ -661,9 +666,6 @@ char const* const* horizon_get(u4 const distance)
   return horizon[distance % lengthof(horizon)];
 }
 
-extern unsigned int GUICBHold, NumCheats;
-extern unsigned char cheatdata[28*255+56];
-
 void CheatCodeSave(void)
 {
   FILE *fp = 0;
@@ -685,9 +687,7 @@ void CheatCodeSave(void)
   }
 }
 
-extern unsigned char CheatOn;
 void DisableCheatsOnLoad(), EnableCheatsOnLoad();
-extern unsigned int GUIcurrentcheatcursloc;
 
 void CheatCodeLoad(void)
 {
@@ -731,8 +731,6 @@ void CheatCodeLoad(void)
   }
 }
 
-extern unsigned char *vidbuffer;
-
 void SaveCheatSearchFile(void)
 {
   FILE *fp = 0;
@@ -754,8 +752,6 @@ void LoadCheatSearchFile(void)
     fclose(fp);
   }
 }
-
-extern unsigned char *spcBuffera;
 
 void dumpsound(void)
 {
@@ -1175,11 +1171,6 @@ static void memswap(void *p1, void *p2, size_t p2len)
   }
 }
 
-extern unsigned char GUIwinptr, GUIcmenupos, GUIpmenupos;
-extern unsigned char GUIwinorder[], GUIwinactiv[], pressed[];
-
-extern char GUIPrevMenuData[];
-
 void powercycle(bool, bool);
 
 void GUIloadfilename(char *filename)
@@ -1368,9 +1359,6 @@ void GUILoadData(void)
   }
 }
 
-extern char GUILoadTextA[];
-extern unsigned char GUILoadPos;
-
 void GUILoadManualDir()
 {
 
@@ -1413,10 +1401,6 @@ unsigned char gui_key;
 unsigned char gui_key_extended;
 int GUILoadKeysNavigate()
 {
-#ifdef __UNIXSDL__
-  extern unsigned int numlockptr;
-#endif
-
   int *currentviewloc, *currentcursloc, *entries;
   if (GUIcurrentfilewin == 1)
   {
@@ -1751,8 +1735,6 @@ bool Keep43Check(void)
 {
 	return CustomResX * 3 != CustomResY * 4;
 }
-
-extern char GUIBIFIL[];
 
 char CheckOGLMode()
 {
