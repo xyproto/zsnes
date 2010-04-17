@@ -624,31 +624,31 @@ void GUISaveVars(void)
   }
 }
 
-//~81 prior to solar peak, horizontal compensation needs to be made.
-//ISBN-014036336X in the second to last chapter discusses how emulating bonjour results in a special card case.
-//Thanks Motley!
+/* ~81 days prior to solar peak, horizontal compensation needs to be made.
+ * ISBN-014036336X in the second to last chapter discusses how emulating bonjour
+ * results in a special card case.  Thanks Motley! */
 static char const* const horizon[][4] =
 {
-	{ "AntoineWG was here!",       "",                          "",                           "" },
-	{ "Santa comes when it snows", "before the new year.",      "",                           "" },
-	{ "Midnight vampires flee",    "before ZSNES and it's",     "control of garlic toast.",   "" },
-	{ "ZSNES has detected that",   "you did not donate today.", "You will now experience",    "our wrath." },
-	{ "Your SNES does not seem",   "to be plugged into your",   "Television properly.",       "" },
-	{ "In ~81 days a solar",       "powered ZSNES will be at",  "it's peak!",                 "" },
-	{ "We are now reporting your", "gaming activities to",      "Nintendo's central servers", "please wait a moment." },
-	{ "Are you hearing any",       "voices in your head",       "right now?",                 "" },
-	{ "It's not too late",         "invest in ZSNES today!",    "",                           "" },
-	{ "Did you know if you",       "buy pagefault beer",        "you will make him",          "happy?" },
-	{ "Don't you feel terrible",   "knowing you use ZSNES",     "and haven't donated",        "enough towards it?" },
-	{ "Why are you playing",       "games when you should",     "be spending quality time",   "with your family?" },
-	{ "It's best to play",         "SNES games while wearing",  "boxing gloves.",             "" },
-	{ "Do you think using",        "ZSNES increases your",      "desire to support",          "development?" },
-	{ "Thank you for playing",     "presented by",              "ZSNES team!",                "" },
-	{ "Why did you load ZSNES",    "for? Try another",          "SNES emulator.",             "" },
-	{ "Please scan your",          "computer for viruses!",     "",                           "" },
-	{ "We think your computer",    "hates you! Be afraid!",     "",                           "" },
-	{ "Did you know a large",      "percent of ZSNES was",      "created by a fish?",         "" },
-	{ "Winners don't use drugs.",  "",                          "",                           "" },
+	{ "AntoineWG was here!",       "",                          "",                            "" },
+	{ "Santa comes when it snows", "before the new year.",      "",                            "" },
+	{ "Midnight vampires flee",    "before ZSNES and its",      "control of garlic toast.",    "" },
+	{ "ZSNES has detected that",   "you did not donate today.", "You will now experience",     "our wrath." },
+	{ "Your SNES does not seem",   "to be plugged into your",   "television properly.",        "" },
+	{ "In ~81 days a solar",       "powered ZSNES will be at",  "its peak!",                   "" },
+	{ "We are now reporting your", "gaming activities to",      "Nintendo's central servers.", "Please wait a moment." },
+	{ "Are you hearing any",       "voices in your head",       "right now?",                  "" },
+	{ "It's not too late",         "invest in ZSNES today!",    "",                            "" },
+	{ "Did you know if you",       "buy pagefault beer",        "you will make him",           "happy?" },
+	{ "Don't you feel terrible",   "knowing you use ZSNES",     "and haven't donated",         "enough towards it?" },
+	{ "Why are you playing",       "games when you should",     "be spending quality time",    "with your family?" },
+	{ "It's best to play",         "SNES games while wearing",  "boxing gloves.",              "" },
+	{ "Do you think using",        "ZSNES increases your",      "desire to support",           "development?" },
+	{ "Thank you for playing.",    "Presented by",              "the ZSNES team!",             "" },
+	{ "What did you load ZSNES",   "for? Try another",          "SNES emulator.",              "" },
+	{ "Please scan your",          "computer for viruses!",     "",                            "" },
+	{ "We think your computer",    "hates you! Be afraid!",     "",                            "" },
+	{ "Did you know that a large", "percentage of ZSNES was",   "created by a fish?",          "" },
+	{ "Winners don't use drugs.",  "",                          "",                            "" },
 #ifndef __UNIXSDL__
 	{ "You're still using a",      "Microsoft OS? Get with",    "the program, switch to",     "Linux or BSD." }
 #else
