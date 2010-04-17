@@ -435,47 +435,47 @@ static void GUIDisplayTextu(u4 const p1, u4 const p2, u4 const p3, char const* c
 
 static void GUIDisplayCheckboxTn(u4 const p1, u4 const p2, u4 const p3, u1 const* const p4, u4 const p5, char const* const p6) // Variable Checkbox (Text)
 {
-	GUITemp = (u4)(*p4 == p5 ? GUIIconDataCheckBoxC : GUIIconDataCheckBoxUC); // XXX ugly cast
-	GUIDisplayIconWin(p1, p2, p3, (u1 const*)GUITemp); // XXX ugly cast
+	u1 const* const icon = *p4 == p5 ? GUIIconDataCheckBoxC : GUIIconDataCheckBoxUC;
+	GUIDisplayIconWin(p1, p2, p3, icon);
 	GUIDisplayText(p1, p2 + 15, p3 + 5, p6);
 }
 
 
 static void GUIDisplayCheckbox(u4 const p1, u4 const p2, u4 const p3, u1 const* const p4, char const* const p5) // Toggled Checkbox (Text)
 {
-	GUITemp = (u4)(*p4 != 0 ? GUIIconDataCheckBoxC : GUIIconDataCheckBoxUC); // XXX ugly cast
-	GUIDisplayIconWin(p1, p2, p3, (u1 const*)GUITemp); // XXX ugly cast
+	u1 const* const icon = *p4 != 0 ? GUIIconDataCheckBoxC : GUIIconDataCheckBoxUC;
+	GUIDisplayIconWin(p1, p2, p3, icon);
 	GUIDisplayText(p1, p2 + 15, p3 + 5, p5);
 }
 
 
 static void GUIDisplayCheckboxu(u4 const p1, u4 const p2, u4 const p3, u1 const* const p4, char const* const p5, u4 const p6) // Toggled Checkbox (Text Underline)
 {
-	GUITemp = (u4)(*p4 != 0 ? GUIIconDataCheckBoxC : GUIIconDataCheckBoxUC); // XXX ugly cast
-	GUIDisplayIconWin(p1, p2, p3, (u1 const*)GUITemp); // XXX ugly cast
+	u1 const* const icon = *p4 != 0 ? GUIIconDataCheckBoxC : GUIIconDataCheckBoxUC;
+	GUIDisplayIconWin(p1, p2, p3, icon);
 	GUIDisplayTextu(p1, p2 + 15, p3 + 5, p5, p6);
 }
 
 
 static void GUIDisplayCheckboxun(u4 const p1, u4 const p2, u4 const p3, u1 const* const p4, u4 const p5, char const* const p6, u4 const p7) // Set Var. Checkbox (Text Underline)
 {
-	GUITemp = (u4)(*p4 == p5 ? GUIIconDataCheckBoxC : GUIIconDataCheckBoxUC); // XXX ugly cast
-	GUIDisplayIconWin(p1, p2, p3, (u1 const*)GUITemp); // XXX ugly cast
+	u1 const* const icon = *p4 == p5 ? GUIIconDataCheckBoxC : GUIIconDataCheckBoxUC;
+	GUIDisplayIconWin(p1, p2, p3, icon);
 	GUIDisplayTextu(p1, p2 + 15, p3 + 5, p6, p7);
 }
 
 
 static void GUIDisplayButtonHole(u4 const p1, u4 const p2, u4 const p3, u1 const* const p4, u4 const p5)
 {
-	GUITemp = (u4)(*p4 == p5 ? GUIIconDataButtonFill : GUIIconDataButtonHole); // XXX ugly cast
-	GUIDisplayIconWin(p1, p2, p3, (u1 const*)GUITemp); // XXX ugly cast
+	u1 const* const icon = *p4 == p5 ? GUIIconDataButtonFill : GUIIconDataButtonHole;
+	GUIDisplayIconWin(p1, p2, p3, icon);
 }
 
 
 static void GUIDisplayButtonHoleTu(u4 const p1, u4 const p2, u4 const p3, u1 const* const p4, u4 const p5, char const* const p6, u4 const p7)
 {
-	GUITemp = (u4)(*p4 == p5 ? GUIIconDataButtonFill : GUIIconDataButtonHole); // XXX ugly cast
-	GUIDisplayIconWin(p1, p2, p3, (u1 const*)GUITemp);
+	u1 const* const icon = *p4 == p5 ? GUIIconDataButtonFill : GUIIconDataButtonHole;
+	GUIDisplayIconWin(p1, p2, p3, icon);
 	GUIDisplayTextu(p1, p2 + 15, p3 + 3, p6, p7);
 }
 
@@ -488,11 +488,10 @@ static void GUIDrawSlider(u4 const p1, u4 const p2, u4 const p3, u4 const p4, vo
 	u4 const edx = 215 - (GUIWincoladd & 0xFF);
 	GUIHLine(eax,     ecx,     ebx,     edx);
 	GUIHLine(eax + 1, ecx + 1, ebx + 1, edx - 13);
-	GUITemp = p2 - 4 + p7(p5); // proc1 == alters var correctly and puts result in al
-	GUIDisplayIconWin(p1, GUITemp, p4 - 4, GUIIconDataSlideBar);
+	u4 const x = p2 - 4 + p7(p5); // proc1 == alters var correctly and puts result in al
+	GUIDisplayIconWin(p1, x, p4 - 4, GUIIconDataSlideBar);
 	char const* const esi = p8(p5); // proc2 == alters text correctly and puts pointer in esi
-	GUITemp = (u4)esi; // Display Value (Green) // XXX ugly cast
-	GUIDisplayTextG(p1, p2 + p3 + 6, p4 - 1, (char const*)GUITemp); // XXX ugly cast
+	GUIDisplayTextG(p1, p2 + p3 + 6, p4 - 1, esi); // Display Value (Green)
 }
 
 
@@ -549,8 +548,7 @@ void DisplayGUILoad(void)
 	char const* esi = ZRomPath;
 	while (esi[ecx] != '\0') ++ecx;
 	if (ecx > 39) esi += ecx - 39;
-	GUITemp = (u4)esi; // XXX ugly cast
-	GUIDisplayText(1, 6, 138, (char const*)GUITemp); // XXX ugly cast
+	GUIDisplayText(1, 6, 138, esi);
 
 	GUItextcolor[0] = (GUIWincoladd & 0xFF) == 0 ? 202 : 196;
 	cloadmaxlen = 39;
@@ -558,10 +556,9 @@ void DisplayGUILoad(void)
 	if (GUIcurrentfilewin != 0)
 	{
 		char const* const eax = d_names[GUIcurrentdircursloc + 2];
-		GUITemp = (u4)eax; // XXX ugly cast
-		GUIOuttextwin2l(1, 6, 158, (char const*)GUITemp); // XXX ugly cast
+		GUIOuttextwin2l(1, 6, 158, eax);
 		GUItextcolor[0] += 15;
-		GUIOuttextwin2l(1, 5, 157, (char const*)GUITemp); // XXX ugly cast
+		GUIOuttextwin2l(1, 5, 157, eax);
 	}
 	else if (GUIfileentries != 0)
 	{
@@ -850,8 +847,7 @@ void DisplayGUIInput(void)
 		GUIJT_currentcursloc = (s4*)&GUIcurrentinputcursloc; // XXX ugly cast
 		GUIGenericJumpTo();
 	}
-	GUITemp = (u4)&GUIInputNames[ebx]; // XXX ugly cast
-	GUIDisplayTextY(3, 6 + 54, 83, (char const*)GUITemp); // CDV // XXX ugly cast
+	GUIDisplayTextY(3, 6 + 54, 83, GUIInputNames[ebx]); // CDV
 	GUIDisplayTextY(3, 6,      83, "CURRENT:");
 
 	GUIDisplayTextY(3,   6,  94, "KEYS:");
@@ -912,13 +908,12 @@ void DisplayGUIInput(void)
 	u4 const eax = GUIcurrentinputcursloc - GUIcurrentinputviewloc;
 	DrawGUIWinBox2(3, 5, 107, 7, 224, 36 + eax * 8);
 
-	GUITemp = (u4)&GUIInputNames[GUIcurrentinputviewloc]; // Text&Shadow inside Main Box // XXX ugly cast
+	// Text&Shadow inside Main Box
+	char const (*name)[17] = GUIInputNames + GUIcurrentinputviewloc;
 	for (u4 i = 0; i != 5; ++i)
 	{
-		GUIDisplayTextG(3, 11, 38 + 8 * i, (char const*)GUITemp); // XXX ugly cast
-		GUITemp += 17;
+		GUIDisplayTextG(3, 11, 38 + 8 * i, *name++);
 	}
-	GUITemp -= 17;
 
 	// Sidebar
 	DrawSlideBarWin(3, 109, 42, GUIcurrentinputviewloc, NumInputDevices, 5, 28, GUIIStA);
@@ -1143,17 +1138,15 @@ void DisplayGUIVideo(void)
 		DrawGUIWinBox2(5, 5, 115, 7, 224, ebx);
 
 		GUItextcolor[0] = 224; // Text in Box
-		GUITemp = (u4)GUIVideoModeNames[GUIcurrentvideoviewloc]; // XXX ugly cast
-		u4 const n = NumVideoModes < 20 ? NumVideoModes : 20;
+		char const (*name)[18] = GUIVideoModeNames + GUIcurrentvideoviewloc;
+		u4   const   n         = NumVideoModes < 20 ? NumVideoModes : 20;
 		for (u4 i = 0; i != n; ++i)
 		{
-			GUIDisplayTextG(5, 11, 30 + 8 * i, (char const*)GUITemp); // XXX ugly cast
-			GUITemp += 18;
+			GUIDisplayTextG(5, 11, 30 + 8 * i, *name++);
 		}
 
-		GUITemp = (u4)GUIVideoModeNames[cvidmode]; // Mode Value // XXX ugly cast
 		GUIDisplayTextY(5,  7, 194, "CURRENT:");
-		GUIDisplayTextY(5, 91, 194, (char const*)GUITemp); // (5,61,194) // XXX ugly cast
+		GUIDisplayTextY(5, 91, 194, GUIVideoModeNames[cvidmode]); // (5,61,194) // Mode Value
 	}
 
 	// Filters tab
@@ -1457,9 +1450,7 @@ void DisplayGUISound(void)
 			"32000HZ",
 			"48000HZ"
 		};
-		char const* const eax = GUISoundTextB1[SoundQuality];
-		GUITemp = (u4)eax; // XXX ugly cast
-		GUIDisplayTextG(6, 23, 104, (char const*)GUITemp); // XXX ugly cast
+		GUIDisplayTextG(6, 23, 104, GUISoundTextB1[SoundQuality]);
 	}
 
 	GUIDisplayTextY(6, 6, 116, "VOLUME LEVEL:");
