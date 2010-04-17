@@ -2280,30 +2280,6 @@ mux:
 }
 
 
-static void DrawBorderedBoxB(u4 const p1, u4 const p2, u4 const p3, u4 const p4, u4 const p5, u4 const p6, char const* const p7) // Special function for combo displays
-{
-	// draw borders
-	DrawGUIWinBox(p1, p2,     p6, p4,     p3,     GUIWincol);
-	DrawGUIWinBox(p1, p2 - 1, p3, p2 - 2, p5,     GUIWincol + 1);
-	DrawGUIWinBox(p1, p2,     p5, p4,     p5 + 1, GUIWincol + 4);
-	DrawGUIWinBox(p1, p4,     p3, p4 + 1, p5,     GUIWincol + 3);
-	DrawGUIWinBox(p1, p2,     p3, p4,     p5,     167);
-	GUIDisplayTextG(p1, p2 + 5, p3 + 2, p7);
-}
-
-
-static void DrawBorderedBoxB2(u4 const p1, u4 const p2, u4 const p3, u4 const p4, u4 const p5, u4 const p6, char const* const p7) // Special function for combo displays
-{
-	// draw borders
-	DrawGUIWinBox(p1, p2,     p6, p4,     p3,     GUIWincol);
-	DrawGUIWinBox(p1, p2 - 1, p3, p2 - 2, p5,     GUIWincol + 1);
-	DrawGUIWinBox(p1, p2,     p5, p4,     p5 + 1, GUIWincol + 4);
-	DrawGUIWinBox(p1, p4,     p3, p4 + 1, p5,     GUIWincol + 3);
-	DrawGUIWinBox(p1, p2,     p3, p4,     p5,     167);
-	GUIDisplayTextG(p1, p2 + 2, p3 + 2, p7);
-}
-
-
 static void DrawBorderedBox(u4 const p1, u4 const p2, u4 const p3, u4 const p4, u4 const p5, u4 const p6)
 {
 	// draw borders
@@ -2312,6 +2288,20 @@ static void DrawBorderedBox(u4 const p1, u4 const p2, u4 const p3, u4 const p4, 
 	DrawGUIWinBox(p1, p2,     p5, p4,     p5 + 1, GUIWincol + 4);
 	DrawGUIWinBox(p1, p4,     p3, p4 + 1, p5,     GUIWincol + 3);
 	DrawGUIWinBox(p1, p2,     p3, p4,     p5,     167);
+}
+
+
+static void DrawBorderedBoxB(u4 const p1, u4 const p2, u4 const p3, u4 const p4, u4 const p5, u4 const p6, char const* const p7) // Special function for combo displays
+{
+	DrawBorderedBox(p1, p2,     p3,     p4, p5, p6);
+	GUIDisplayTextG(p1, p2 + 5, p3 + 2, p7);
+}
+
+
+static void DrawBorderedBoxB2(u4 const p1, u4 const p2, u4 const p3, u4 const p4, u4 const p5, u4 const p6, char const* const p7) // Special function for combo displays
+{
+	DrawBorderedBox(p1, p2,     p3,     p4, p5, p6);
+	GUIDisplayTextG(p1, p2 + 2, p3 + 2, p7);
 }
 
 
