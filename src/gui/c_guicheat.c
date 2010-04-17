@@ -66,8 +66,6 @@ void AddCSCheatCode(void)
 		AddCheatCode(eax, bl);
 
 		curvaluecs >>= 8;
-		GUItextcolor[0] = 223;
-
 		++curaddrvalcs;
 	}
 	while (--ecx != 0);
