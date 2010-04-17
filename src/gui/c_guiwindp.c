@@ -521,9 +521,36 @@ static void DrawSlideBar(u4 const p1, u4 const p2, u4 const p3, u4 const p4, u4 
 {
 	DrawSlideBarWin(p1, p2, p3 + 8, p4, p5, p6, p7 - 16, p8);
 	if ((GUICHold & 0xFF) == p9) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd + 3) & 0x000000FF;
+	static u1 const GUIIconDataUpArrow[] =
+	{
+		201, 209, 209, 209, 209, 209, 209, 200,   0,   0,
+		207, 205, 205, 202, 203, 205, 205, 203,   0,   0,
+		207, 205, 201, 202, 203, 202, 205, 203,   0,   0,
+		207, 200, 205, 202, 203, 205, 201, 203,   0,   0,
+		207, 205, 205, 202, 203, 205, 205, 203,   0,   0,
+		207, 205, 205, 202, 203, 205, 205, 203,   0,   0,
+		207, 205, 205, 202, 203, 205, 205, 203,   0,   0,
+		199, 201, 201, 201, 201, 201, 201, 198,   0,   0,
+		  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+		  0,   0,   0,   0,   0,   0,   0,   0,   0,   0
+	};
 	GUIDisplayIconWin(p1, p2, p3, GUIIconDataUpArrow);
 	if ((GUICHold & 0xFF) == p9) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd - 3) & 0x000000FF;
+
 	if ((GUICHold & 0xFF) == p10) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd + 3) & 0x000000FF;
+	static u1 const GUIIconDataDownArrow[] =
+	{
+		201, 209, 209, 209, 209, 209, 209, 200,   0,   0,
+		207, 205, 205, 202, 203, 205, 205, 203,   0,   0,
+		207, 205, 205, 202, 203, 205, 205, 203,   0,   0,
+		207, 205, 205, 202, 203, 205, 205, 203,   0,   0,
+		207, 200, 205, 202, 203, 205, 201, 203,   0,   0,
+		207, 205, 201, 202, 203, 202, 205, 203,   0,   0,
+		207, 205, 205, 202, 203, 205, 205, 203,   0,   0,
+		199, 201, 201, 201, 201, 201, 201, 198,   0,   0,
+		  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+		  0,   0,   0,   0,   0,   0,   0,   0,   0,   0
+	};
 	GUIDisplayIconWin(p1, p2, p3 + p7 - 8, GUIIconDataDownArrow);
 	if ((GUICHold & 0xFF) == p10) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd - 3) & 0x000000FF;
 }
