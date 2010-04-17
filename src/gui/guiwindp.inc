@@ -71,7 +71,6 @@ NEWSYM GUIcurrentvideocursloc, resd 1
 SECTION .data
 NEWSYM GUICheatTextZ1, db '_',0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; 14 characters
 NEWSYM GUICheatTextZ2, db '_',0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; 18 characters
-GUICheatTextZ5 db '      ',0
 
 SECTION .bss
 NEWSYM GUICheatPosA, resb 1
