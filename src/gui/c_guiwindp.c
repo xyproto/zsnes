@@ -1726,9 +1726,9 @@ static void Cheatmodeview(void) // View ResultsWindow
 	u4       ccheatnleft  = eax;
 	u4 const ccheatnleftb = eax;
 
-	CheatSearchYPos = 24;
-	CheatSearchXPos = 10;
-	u4 CSCurEntry   = CSStartEntry;
+	CheatSearchYPos    = 24;
+	u4 CheatSearchXPos = 10;
+	u4 CSCurEntry      = CSStartEntry;
 
 	if (ccheatnleft != 0)
 	{
