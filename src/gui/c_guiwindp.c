@@ -2291,9 +2291,9 @@ static void DrawBorderedBox(u4 const p1, u4 const p2, u4 const p3, u4 const p4, 
 }
 
 
-static void DrawBorderedBoxB(u4 const p1, u4 const p2, u4 const p3, u4 const p4, u4 const p5, u4 const p6, char const* const p7) // Special function for combo displays
+static void DrawBorderedBoxB(u4 const p1, u4 const p2, u4 const p3, u4 const p4, u4 const p5, char const* const p7) // Special function for combo displays
 {
-	DrawBorderedBox(p1, p2,     p3,     p4, p5, p6);
+	DrawBorderedBox(p1, p2,     p3,     p4, p5, p3 - 1);
 	GUIDisplayTextG(p1, p2 + 5, p3 + 2, p7);
 }
 
@@ -2376,60 +2376,60 @@ void DisplayGUICombo(void)
 	DrawSlideBar(16, 192, 20, GUIccombviewloc, NumCombo, 8, 61, GUICSStC, 13, 14, TextColorSp);
 
 	// Draw control boxes
-	DrawBorderedBoxB( 16,  75, 150,  85, 157, 149, "\xFB");
-	DrawBorderedBoxB( 16,  89, 150,  99, 157, 149, "\xFC");
-	DrawBorderedBoxB( 16, 103, 150, 113, 157, 149, "\xFD");
-	DrawBorderedBoxB( 16, 117, 150, 127, 157, 149, "\xFE");
-	DrawBorderedBoxB( 16, 131, 150, 141, 157, 149, "A");
-	DrawBorderedBoxB( 16, 145, 150, 155, 157, 149, "B");
-	DrawBorderedBoxB( 16, 159, 150, 169, 157, 149, "X");
-	DrawBorderedBoxB( 16, 173, 150, 183, 157, 149, "Y");
-	DrawBorderedBoxB( 16, 187, 150, 197, 157, 149, "L");
-	DrawBorderedBoxB( 16, 201, 150, 211, 157, 149, "R");
+	DrawBorderedBoxB( 16,  75, 150,  85, 157, "\xFB");
+	DrawBorderedBoxB( 16,  89, 150,  99, 157, "\xFC");
+	DrawBorderedBoxB( 16, 103, 150, 113, 157, "\xFD");
+	DrawBorderedBoxB( 16, 117, 150, 127, 157, "\xFE");
+	DrawBorderedBoxB( 16, 131, 150, 141, 157, "A");
+	DrawBorderedBoxB( 16, 145, 150, 155, 157, "B");
+	DrawBorderedBoxB( 16, 159, 150, 169, 157, "X");
+	DrawBorderedBoxB( 16, 173, 150, 183, 157, "Y");
+	DrawBorderedBoxB( 16, 187, 150, 197, 157, "L");
+	DrawBorderedBoxB( 16, 201, 150, 211, 157, "R");
 	DrawBorderedBoxB2(16, 215, 150, 227, 157, 149, "ST");
 	DrawBorderedBoxB2(16, 231, 150, 243, 157, 149, "SL");
 
-	DrawBorderedBoxB( 16,  75, 160,  85, 167, 159, "\xFB");
-	DrawBorderedBoxB( 16,  89, 160,  99, 167, 159, "\xFC");
-	DrawBorderedBoxB( 16, 103, 160, 113, 167, 159, "\xFD");
-	DrawBorderedBoxB( 16, 117, 160, 127, 167, 159, "\xFE");
-	DrawBorderedBoxB( 16, 131, 160, 141, 167, 159, "A");
-	DrawBorderedBoxB( 16, 145, 160, 155, 167, 159, "B");
-	DrawBorderedBoxB( 16, 159, 160, 169, 167, 159, "X");
-	DrawBorderedBoxB( 16, 173, 160, 183, 167, 159, "Y");
-	DrawBorderedBoxB( 16, 187, 160, 197, 167, 159, "L");
-	DrawBorderedBoxB( 16, 201, 160, 211, 167, 159, "R");
+	DrawBorderedBoxB( 16,  75, 160,  85, 167, "\xFB");
+	DrawBorderedBoxB( 16,  89, 160,  99, 167, "\xFC");
+	DrawBorderedBoxB( 16, 103, 160, 113, 167, "\xFD");
+	DrawBorderedBoxB( 16, 117, 160, 127, 167, "\xFE");
+	DrawBorderedBoxB( 16, 131, 160, 141, 167, "A");
+	DrawBorderedBoxB( 16, 145, 160, 155, 167, "B");
+	DrawBorderedBoxB( 16, 159, 160, 169, 167, "X");
+	DrawBorderedBoxB( 16, 173, 160, 183, 167, "Y");
+	DrawBorderedBoxB( 16, 187, 160, 197, 167, "L");
+	DrawBorderedBoxB( 16, 201, 160, 211, 167, "R");
 	DrawBorderedBoxB2(16, 215, 160, 227, 167, 159, "ST");
 	DrawBorderedBoxB2(16, 231, 160, 243, 167, 159, "SL");
 
-	DrawBorderedBoxB( 16,  75, 170,  85, 177, 169, "\xFB");
-	DrawBorderedBoxB( 16,  89, 170,  99, 177, 169, "\xFC");
-	DrawBorderedBoxB( 16, 103, 170, 113, 177, 169, "\xFD");
-	DrawBorderedBoxB( 16, 117, 170, 127, 177, 169, "\xFE");
-	DrawBorderedBoxB( 16, 131, 170, 141, 177, 169, "A");
-	DrawBorderedBoxB( 16, 145, 170, 155, 177, 169, "B");
-	DrawBorderedBoxB( 16, 159, 170, 169, 177, 169, "X");
-	DrawBorderedBoxB( 16, 173, 170, 183, 177, 169, "Y");
-	DrawBorderedBoxB( 16, 187, 170, 197, 177, 169, "L");
-	DrawBorderedBoxB( 16, 201, 170, 211, 177, 169, "R");
+	DrawBorderedBoxB( 16,  75, 170,  85, 177, "\xFB");
+	DrawBorderedBoxB( 16,  89, 170,  99, 177, "\xFC");
+	DrawBorderedBoxB( 16, 103, 170, 113, 177, "\xFD");
+	DrawBorderedBoxB( 16, 117, 170, 127, 177, "\xFE");
+	DrawBorderedBoxB( 16, 131, 170, 141, 177, "A");
+	DrawBorderedBoxB( 16, 145, 170, 155, 177, "B");
+	DrawBorderedBoxB( 16, 159, 170, 169, 177, "X");
+	DrawBorderedBoxB( 16, 173, 170, 183, 177, "Y");
+	DrawBorderedBoxB( 16, 187, 170, 197, 177, "L");
+	DrawBorderedBoxB( 16, 201, 170, 211, 177, "R");
 	DrawBorderedBoxB2(16, 215, 170, 227, 177, 169, "ST");
 	DrawBorderedBoxB2(16, 231, 170, 243, 177, 169, "SL");
 
-	DrawBorderedBoxB(16, 10, 189, 20, 196, 188, "1");
-	DrawBorderedBoxB(16, 24, 189, 34, 196, 188, "2");
-	DrawBorderedBoxB(16, 38, 189, 48, 196, 188, "3");
-	DrawBorderedBoxB(16, 52, 189, 62, 196, 188, "4");
-	DrawBorderedBoxB(16, 66, 189, 76, 196, 188, "5");
-	DrawBorderedBoxB(16, 80, 189, 90, 196, 188, "9");
+	DrawBorderedBoxB(16, 10, 189, 20, 196, "1");
+	DrawBorderedBoxB(16, 24, 189, 34, 196, "2");
+	DrawBorderedBoxB(16, 38, 189, 48, 196, "3");
+	DrawBorderedBoxB(16, 52, 189, 62, 196, "4");
+	DrawBorderedBoxB(16, 66, 189, 76, 196, "5");
+	DrawBorderedBoxB(16, 80, 189, 90, 196, "9");
 
-	DrawBorderedBoxB(16, 107, 189, 117, 196, 188, "\xFA");
-	DrawBorderedBoxB(16, 121, 189, 131, 196, 188, "1");
-	DrawBorderedBoxB(16, 135, 189, 145, 196, 188, "2");
-	DrawBorderedBoxB(16, 149, 189, 159, 196, 188, "3");
-	DrawBorderedBoxB(16, 163, 189, 173, 196, 188, "4");
-	DrawBorderedBoxB(16, 177, 189, 187, 196, 188, "5");
+	DrawBorderedBoxB(16, 107, 189, 117, 196, "\xFA");
+	DrawBorderedBoxB(16, 121, 189, 131, 196, "1");
+	DrawBorderedBoxB(16, 135, 189, 145, 196, "2");
+	DrawBorderedBoxB(16, 149, 189, 159, 196, "3");
+	DrawBorderedBoxB(16, 163, 189, 173, 196, "4");
+	DrawBorderedBoxB(16, 177, 189, 187, 196, "5");
 
-	DrawBorderedBoxB(16, 204, 189, 218, 196, 188, "\xFF");
+	DrawBorderedBoxB(16, 204, 189, 218, 196, "\xFF");
 
 	GUIDisplayText(16,  10,  13, "DESCRIPTION"); // Text
 	GUIDisplayText(16, 138,  13, "KEY P# LH");
