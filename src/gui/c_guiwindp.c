@@ -2280,27 +2280,27 @@ mux:
 }
 
 
-static void DrawBorderedBox(u4 const p1, u4 const p2, u4 const p3, u4 const p4, u4 const p5, u4 const p6)
+static void DrawBorderedBox(u4 const p1, u4 const p2, u4 const p3, u4 const p4, u4 const p5)
 {
 	// draw borders
-	DrawGUIWinBox(p1, p2,     p6, p4,     p3,     GUIWincol); // freezes if you replace p6 with p3 - 1
-	DrawGUIWinBox(p1, p2 - 1, p3, p2 - 2, p5,     GUIWincol + 1);
-	DrawGUIWinBox(p1, p2,     p5, p4,     p5 + 1, GUIWincol + 4);
-	DrawGUIWinBox(p1, p4,     p3, p4 + 1, p5,     GUIWincol + 3);
-	DrawGUIWinBox(p1, p2,     p3, p4,     p5,     167);
+	DrawGUIWinBox(p1, p2,     p3 - 1, p4,     p3,     GUIWincol);
+	DrawGUIWinBox(p1, p2 - 1, p3,     p2 - 2, p5,     GUIWincol + 1);
+	DrawGUIWinBox(p1, p2,     p5,     p4,     p5 + 1, GUIWincol + 4);
+	DrawGUIWinBox(p1, p4,     p3,     p4 + 1, p5,     GUIWincol + 3);
+	DrawGUIWinBox(p1, p2,     p3,     p4,     p5,     167);
 }
 
 
 static void DrawBorderedBoxB(u4 const p1, u4 const p2, u4 const p3, u4 const p4, u4 const p5, char const* const p7) // Special function for combo displays
 {
-	DrawBorderedBox(p1, p2,     p3,     p4, p5, p3 - 1);
+	DrawBorderedBox(p1, p2,     p3,     p4, p5);
 	GUIDisplayTextG(p1, p2 + 5, p3 + 2, p7);
 }
 
 
 static void DrawBorderedBoxB2(u4 const p1, u4 const p2, u4 const p3, u4 const p4, u4 const p5, char const* const p7) // Special function for combo displays
 {
-	DrawBorderedBox(p1, p2,     p3,     p4, p5, p3 - 1);
+	DrawBorderedBox(p1, p2,     p3,     p4, p5);
 	GUIDisplayTextG(p1, p2 + 2, p3 + 2, p7);
 }
 
@@ -2366,10 +2366,10 @@ void DisplayGUICombo(void)
 
 	GUIDrawWindowBox(16, "KEY COMBINATION EDITOR");
 
-	DrawBorderedBox(16, 10,  20, 190,  80,  19);
-	DrawBorderedBox(16, 37,  91, 157,  99,  90);
-	DrawBorderedBox(16, 10,  91,  32,  99,  90);
-	DrawBorderedBox(16, 10, 110, 220, 146, 109);
+	DrawBorderedBox(16, 10,  20, 190,  80);
+	DrawBorderedBox(16, 37,  91, 157,  99);
+	DrawBorderedBox(16, 10,  91,  32,  99);
+	DrawBorderedBox(16, 10, 110, 220, 146);
 
 	// Draw SlideBar
 	// win#,X,Y start,List Loc,List size,# Lines,Bar Size(Y),UpArrowResource#,DownArrowRes#
