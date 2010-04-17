@@ -741,6 +741,13 @@ void DisplayGUIChoseSave(void)
 }
 
 
+static void PrintKey(u4 const id, u4 const x, u4 const y, u4 const key)
+{
+	sprintf(GUIGameDisplayKy, "%.3s", ScanCodeListing + key * 3);
+	GUIDisplayTextG(id, x, y, GUIGameDisplayKy);
+}
+
+
 static void DGOptnsDrawBox2(s4 const p1, s4 const p2, u4 const p3)
 {
 	s4 const eax = GUIwinposx[3] + p1;
@@ -748,11 +755,7 @@ static void DGOptnsDrawBox2(s4 const p1, s4 const p2, u4 const p3)
 	u4       esi = 7;
 	do GUIHLine(eax, eax + 20, ebx++, 167); while (--esi != 0);
 
-	sprintf(GUIGameDisplayKy, "%.3s", ScanCodeListing + p3 * 3);
-	GUItextcolor[0] = 223;
-	GUIOuttextwin2(3, p1 + 3, p2 + 2, GUIGameDisplayKy);
-	GUItextcolor[0] = (GUIWincoladd & 0xFF) == 0 ? 221 : 222;
-	GUIOuttextwin2(3, p1 + 2, p2 + 1, GUIGameDisplayKy);
+	PrintKey(3, p1 + 3, p2 + 2, p3);
 }
 
 
@@ -806,11 +809,7 @@ static void DDrawBox(u4 const p1, s4 const p2, s4 const p3, u4 const* const p4)
 	s4       ebx = GUIwinposy[p1] + p3 + 1;
 	u4       esi = 7;
 	do GUIHLine(eax, eax + 20, ebx++, 167); while (--esi != 0);
-	sprintf(GUIGameDisplayKy, "%.3s", ScanCodeListing + *p4 * 3);
-	GUItextcolor[0] = 223;
-	GUIOuttextwin2(p1, p2 + 4, p3 + 3, GUIGameDisplayKy);
-	GUItextcolor[0] = (GUIWincoladd & 0xFF) == 0 ? 221 : 222;
-	GUIOuttextwin2(p1, p2 + 3, p3 + 2, GUIGameDisplayKy);
+	PrintKey(p1, p2 + 4, p3 + 3, *p4);
 	DGOptnsBorderBox(p1, p2, p3);
 }
 
@@ -2507,8 +2506,7 @@ void DisplayGUICombo(void)
 	}
 
 	// Display Current Combo Key
-	sprintf(GUIGameDisplayKy, "%.3s", ScanCodeListing + GUIComboKey * 3);
-	GUIDisplayTextG(16, 14, 94, GUIGameDisplayKy);
+	PrintKey(16, 14, 94, GUIComboKey);
 
 	// Buttons
 	GUItextcolor[0] = (GUIWincoladd & 0xFF) == 0 ? 217 : 211;
