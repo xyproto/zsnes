@@ -2001,12 +2001,8 @@ static u1 GUICslidSet(void const* const p1) // slider var
 
 static char const* GUICslidText(void const* p1) // slider var, text
 {
-	static char GUIGUIOptnsTextD2[] = "  ";
-	GUIGUIOptnsTextD2[0] = ' ';
-	char* esi = GUIGUIOptnsTextD2 + 2;
-	u1    al  = *(u1 const*)p1;
-	// turns decimal into ASCII
-	do *--esi = '0' + al % 10; while ((al /= 10) != 0);
+	static char GUIGUIOptnsTextD2[3];
+	sprintf(GUIGUIOptnsTextD2, "%2u", *(u1 const*)p1);
 	return GUIGUIOptnsTextD2;
 }
 
