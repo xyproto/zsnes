@@ -482,57 +482,6 @@ EnableCheatCodeNoPrevMod:
     mov [esi+5],bl
     ret
 
-NEWSYM AddCheatCode
-    mov byte[GUICBHold],0
-    cmp dword[NumCheats],255
-    jne .okay
-    ret
-.okay
-    push eax
-    push ebx
-    ; transfer description
-    mov eax,[NumCheats]
-    shl eax,5
-    sub eax,[NumCheats]
-    sub eax,[NumCheats]
-    sub eax,[NumCheats]
-    sub eax,[NumCheats]
-    add eax,cheatdata
-    mov edx,eax
-    push edx
-    add eax,6
-    mov ebx,CSDescDisplay
-    mov ecx,20
-.dloop
-    mov dl,[ebx]
-    mov [eax+2],dl
-    mov [eax+18+2],dl
-    mov [eax+18*2+2],dl
-    inc ebx
-    inc eax
-    dec ecx
-    jnz .dloop
-    pop edx
-    pop ebx
-    pop eax
-    ; toggle, value, address, pvalue, name(12)
-    mov byte[edx],0
-    mov [edx+1],bl
-    push eax
-    sub eax,7E0000h
-    add eax,[wramdata]
-    mov bh,[eax]
-    mov [eax],bl
-    pop eax
-    mov [edx+2],eax
-    mov [edx+5],bh
-    inc dword[NumCheats]
-    mov al,[GUIpmenupos]
-    ccallv CheckMenuItemHelp, 7
-    mov [GUIpmenupos],al
-    mov byte[CheatOn],1
-    ret
-
 NEWSYM ProcessCheatCode
     mov byte[GUICBHold],0
     cmp dword[NumCheats],255

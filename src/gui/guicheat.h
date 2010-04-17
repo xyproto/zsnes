@@ -3,7 +3,6 @@
 
 #include "../types.h"
 
-extern void AddCheatCode();
 extern void CheatCodeFix();
 extern void CheatCodeRemove();
 extern void CheatCodeSearchInit();
