@@ -87,7 +87,6 @@ NEWSYM NumCheatSrc,       resd 1
 NEWSYM GUIcurrentchtsrcviewloc, resd 1
 NEWSYM GUIcurrentchtsrccursloc, resd 1
 NEWSYM CSStartEntry,      resd 1
-NEWSYM CSCurEntry,      resd 1
 NEWSYM CheatSearchXPos,   resd 1
 NEWSYM CheatSearchYPos,   resd 1
 NEWSYM CurCStextpos,      resd 1

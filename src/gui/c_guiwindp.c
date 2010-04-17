@@ -1727,7 +1727,7 @@ static void Cheatmodeview(void) // View ResultsWindow
 
 	CheatSearchYPos = 24;
 	CheatSearchXPos = 10;
-	CSCurEntry      = CSStartEntry;
+	u4 CSCurEntry   = CSStartEntry;
 
 	if (ccheatnleft != 0)
 	{
