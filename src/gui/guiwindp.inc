@@ -121,7 +121,6 @@ CurCStringPos resd 1
 
 GUIGameOptnsColA resb 1
 GUIGameOptnsColB resb 1
-NEWSYM GUIGameDisplayKy, resd 1
 
 SECTION .data
 

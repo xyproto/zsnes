@@ -743,6 +743,7 @@ void DisplayGUIChoseSave(void)
 
 static void PrintKey(u4 const id, u4 const x, u4 const y, u4 const key)
 {
+	char GUIGameDisplayKy[4];
 	sprintf(GUIGameDisplayKy, "%.3s", ScanCodeListing + key * 3);
 	GUIDisplayTextG(id, x, y, GUIGameDisplayKy);
 }
