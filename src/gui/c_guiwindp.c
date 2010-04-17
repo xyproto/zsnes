@@ -361,7 +361,7 @@ static void GUIDisplayBBox(u4 const p1, u4 const p2, u4 const p3, u4 const p4, u
 }
 
 
-static void GUIOuttextwin2c(u4 const p1, u4 const p2, u4 const p3, char const* const p4) // Boxed, green text
+static void GUIDisplayTextG(u4 const p1, u4 const p2, u4 const p3, char const* const p4) // Green Text&Shadow
 {
 	GUItextcolor[0] = 223;
 	GUIOuttextwin2(p1, p2, p3, p4);
@@ -377,14 +377,14 @@ static void GUIOuttextwin2d(u4 const p1, u4 const p2, u4 const p3, char const* c
 	u4 eax = ecx - p4;      // Subtract pointer from \0 pointer gives us string length
 	if (eax > p5) eax = p5; // Restrict to length to display
 
-	GUIOuttextwin2c(p1, p2, p3, ecx - eax);
+	GUIDisplayTextG(p1, p2, p3, ecx - eax);
 	if (GUIInputBox == p7 + 1 && p6[p7] == p4)
 	{
 		static u1 GUIBlinkCursorLoop = 0;
 		if (++GUIBlinkCursorLoop == 60) GUIBlinkCursorLoop = 0;
 		if (GUIBlinkCursorLoop < 30)
 		{
-			GUIOuttextwin2c(p1, eax * 6 /* 6 pixels */ + p2, p3, "_");
+			GUIDisplayTextG(p1, eax * 6 /* 6 pixels */ + p2, p3, "_");
 		}
 	}
 }
@@ -412,15 +412,6 @@ static void DrawGUIWinBox2(u4 const p1, u4 const p2, u4 const p3, u4 const p4, u
 	ebx += GUIwinposy[p1];
 	u4 esi = p4;
 	do GUIHLine(eax, ecx, ebx++, edx); while (--esi != 0);
-}
-
-
-static void GUIDisplayTextG(u4 const p1, u4 const p2, u4 const p3, char const* const p4) // Green Text&Shadow
-{
-	GUItextcolor[0] = 223;
-	GUIOuttextwin2(p1, p2, p3, p4);
-	GUItextcolor[0] = (GUIWincoladd & 0xFF) == 0 ? 221 : 222;
-	GUIOuttextwin2(p1, p2 - 1, p3 - 1, p4);
 }
 
 
@@ -2511,13 +2502,13 @@ void DisplayGUICombo(void)
 			GUIComboTextH[eax]     = '_';
 			GUIComboTextH[eax + 1] = '\0';
 		}
-		GUIOuttextwin2c(16, 39, 94, GUIComboTextH);
+		GUIDisplayTextG(16, 39, 94, GUIComboTextH);
 		GUIComboTextH[GUIComboPos] = '\0';
 	}
 
 	// Display Current Combo Key
 	sprintf(GUIGameDisplayKy, "%.3s", ScanCodeListing + GUIComboKey * 3);
-	GUIOuttextwin2c(16, 14, 94, GUIGameDisplayKy);
+	GUIDisplayTextG(16, 14, 94, GUIGameDisplayKy);
 
 	// Buttons
 	GUItextcolor[0] = (GUIWincoladd & 0xFF) == 0 ? 217 : 211;
