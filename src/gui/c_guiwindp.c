@@ -1720,11 +1720,9 @@ static void Cheatmodeview(void) // View ResultsWindow
 
 	NumCheatSrc = FindChtSrcRes(GUIcurrentchtsrcviewloc);
 
-	GUItextcolor[0] = 223; // Display Window Contents
-	u4 eax = NumCheatSrc - GUIcurrentchtsrcviewloc;
-	if (eax > 12) eax = 12;
-	u4       ccheatnleft  = eax;
-	u4 const ccheatnleftb = eax;
+	// Display Window Contents
+	u4 ccheatnleft = NumCheatSrc - GUIcurrentchtsrcviewloc;
+	if (ccheatnleft > 12) ccheatnleft = 12;
 
 	u4 CheatSearchXPos = 10;
 	u4 CheatSearchYPos = 24;
@@ -1732,20 +1730,33 @@ static void Cheatmodeview(void) // View ResultsWindow
 
 	if (ccheatnleft != 0)
 	{
-		u1 CheatLooped  = 0;
 		u4 curentryleft = GUIcurrentchtsrccursloc - GUIcurrentchtsrcviewloc;
 		DrawGUIWinBox2(13, 5, 171, 7, 224, 22 + curentryleft * 7);
 		do
 		{
-			do
+			if (curentryleft-- == 0) curentryval = CSCurEntry;
+
+			converthex(GUICSrcTextG1, CSCurEntry + 0x7E0000, 3);
+			GUIDisplayTextG(13, CheatSearchXPos, CheatSearchYPos, GUICSrcTextG1);
+
+			char* const esi = GUICSrcTextG1;
+			u4    const eax = *(u4 const*)(wramdata + CSCurEntry); // XXX ugly cast
+			if (CheatSrcByteBase != 0)
 			{
-				if (curentryleft-- == 0) curentryval = CSCurEntry;
+				converthex(esi, eax, CheatSrcByteSize + 1);
+			}
+			else
+			{
+				convertnum(esi, eax & SrcMask[CheatSrcByteSize]);
+			}
+			CheatSearchXPos += 42;
+			GUIDisplayTextG(13, CheatSearchXPos, CheatSearchYPos, GUICSrcTextG1);
 
-				converthex(GUICSrcTextG1, CSCurEntry + 0x7E0000, 3);
-				GUIOuttextwin2(13, CheatSearchXPos, CheatSearchYPos, GUICSrcTextG1);
-
+			CheatSearchXPos += 60;
+			if (GUICSrcTextE[12] != '\0')
+			{
 				char* const esi = GUICSrcTextG1;
-				u4    const eax = *(u4 const*)(wramdata + CSCurEntry); // XXX ugly cast
+				u4    const eax = *(u4 const*)(vidbuffer + 129600 + CSCurEntry); // XXX ugly cast
 				if (CheatSrcByteBase != 0)
 				{
 					converthex(esi, eax, CheatSrcByteSize + 1);
@@ -1754,41 +1765,18 @@ static void Cheatmodeview(void) // View ResultsWindow
 				{
 					convertnum(esi, eax & SrcMask[CheatSrcByteSize]);
 				}
-				CheatSearchXPos += 42;
-				GUIOuttextwin2(13, CheatSearchXPos, CheatSearchYPos, GUICSrcTextG1);
-
-				CheatSearchXPos += 60;
-				if (GUICSrcTextE[12] != '\0')
-				{
-					char* const esi = GUICSrcTextG1;
-					u4    const eax = *(u4 const*)(vidbuffer + 129600 + CSCurEntry); // XXX ugly cast
-					if (CheatSrcByteBase != 0)
-					{
-						converthex(esi, eax, CheatSrcByteSize + 1);
-					}
-					else
-					{
-						convertnum(esi, eax & SrcMask[CheatSrcByteSize]);
-					}
-					GUIOuttextwin2(13, CheatSearchXPos, CheatSearchYPos, GUICSrcTextG1);
-				}
-				CheatSearchXPos -= 102;
-				CheatSearchYPos +=   7;
-
-				do // Search for next entry
-				{
-					++CSCurEntry;
-				}
-				while (!(vidbuffer[129600 + 65536 * 2 + (CSCurEntry >> 3)] & (1 << (CSCurEntry & 7))));
+				GUIDisplayTextG(13, CheatSearchXPos, CheatSearchYPos, GUICSrcTextG1);
 			}
-			while (--ccheatnleft != 0);
-			GUItextcolor[0] = (GUIWincoladd & 0xFF) == 0 ? 221 : 222;
-			CheatSearchYPos = 23;
-			CheatSearchXPos = 11;
-			CSCurEntry      = CSStartEntry;
-			ccheatnleft     = ccheatnleftb;
+			CheatSearchXPos -= 102;
+			CheatSearchYPos +=   7;
+
+			do // Search for next entry
+			{
+				++CSCurEntry;
+			}
+			while (!(vidbuffer[129600 + 65536 * 2 + (CSCurEntry >> 3)] & (1 << (CSCurEntry & 7))));
 		}
-		while (++CheatLooped != 2);
+		while (--ccheatnleft != 0);
 	}
 	// Slidebar
 	// win#,X,Y start, %4-List Loc, %5-List size, %6-Screen size, %7-Bar Size
