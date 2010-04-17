@@ -2351,8 +2351,6 @@ void DisplayGUICombo(void)
 		}
 	}
 
-	if ((GUIWincoladd & 0xFF) != 0) GUItextcolor[0] = 211;
-
 	GUIDrawWindowBox(16, "KEY COMBINATION EDITOR");
 
 	DrawBorderedBox(16, 10,  20, 190,  80);
