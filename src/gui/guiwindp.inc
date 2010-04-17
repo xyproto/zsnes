@@ -19,64 +19,10 @@
 
 
 
-EXTSYM GUIHLine
-EXTSYM GUIDisplayIconWin,GUIOuttextwin2
-
 SECTION .data
 NEWSYM mencoderExists, db 0
 NEWSYM lameExists, db 0
 
-SECTION .text
-
-%macro DrawGUILine 0
-  ccallv GUIHLine, eax, ecx, ebx, edx
-  inc ebx
-%endmacro
-
-%macro DrawGUIWinBox3 6
-  mov ecx,%4
-  mov eax,[GUIwinposx+%1*4]
-  mov ebx,[GUIwinposy+%1*4]
-  add ecx,eax
-  add eax,%2
-  add ebx,%3
-  inc ecx
-  mov dl,%6
-  mov esi,%5-%3+1
-%%loop
-  DrawGUILine
-  dec esi
-  jnz %%loop
-%endmacro
-
-%macro GUIDisplayCheckboxP 4              ; Toggled Checkbox (Plain, no text)
-  mov dword[GUITemp],GUIIconDataCheckBoxUC
-  cmp byte[%4],0
-  je %%nocheckbox
-  mov dword[GUITemp],GUIIconDataCheckBoxC
-%%nocheckbox
-  ccallv GUIDisplayIconWin, %1, %2, %3, [GUITemp]
-%endmacro
-
-%macro GUIDisplayCheckboxPn 5             ; Set Var. Checkbox
-  mov dword[GUITemp],GUIIconDataCheckBoxUC
-  cmp byte[%4],%5
-  jne %%nocheckbox
-  mov dword[GUITemp],GUIIconDataCheckBoxC
-%%nocheckbox
-  ccallv GUIDisplayIconWin, %1, %2, %3, [GUITemp]
-%endmacro
-
-%macro GUIOuttextwin2b 4        ; Special, yellow text
-  mov al,[TextColorSp]
-  mov [GUItextcolor],al
-  ccallv GUIOuttextwin2, %1, %2, %3, %4
-  mov al,[TextColorSp+1]
-  mov [GUItextcolor],al
-  ccallv GUIOuttextwin2, %1, %2 - 1, %3 - 1, %4
-%endmacro
-
-SECTION .data
 NEWSYM GUILoadTextA, times 38 db 0
 SECTION .bss
 NEWSYM GUILStA, resd 3
