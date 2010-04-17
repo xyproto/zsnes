@@ -24,50 +24,6 @@ SECTION .text
 
 ; GUI Cheat Code Routines
 
-NEWSYM AddCSCheatCode
-    cmp byte[CSInputDisplay],'_'
-    je .nodisplay
-    jmp .okay
-.nodisplay
-    ret
-.okay
-    mov eax,[curentryval]
-    mov [curaddrvalcs],eax
-    mov eax,[CSCurValue]
-    mov [curvaluecs],eax
-    xor ecx,ecx
-    mov cl,[CheatSrcByteSize]
-    inc cl
-    cmp byte[CheatUpperByteOnly],0
-    je .cspardisploop
-    mov cl,1
-.cspardispagain
-    cmp dword[curvaluecs],0FFh
-    jbe .cspardisploop
-    shr dword[curvaluecs],8
-    inc dword[curaddrvalcs]
-    jmp .cspardispagain
-.cspardisploop
-    push ecx
-    mov esi,GUICSrcTextG1
-    mov ecx,3
-    mov eax,[curaddrvalcs]
-    add eax,7E0000h
-    mov bl,[curvaluecs]
-    ; write bl at address eax
-    call AddCheatCode
-
-    shr dword[curvaluecs],8
-    mov byte[GUItextcolor],223
-
-    add dword[CheatSearchYPos],10
-    inc dword[curaddrvalcs]
-    pop ecx
-    dec ecx
-    jnz near .cspardisploop
-    mov byte[CheatWinMode],2
-    ret
-
 %macro SearchCMPByte 0
     mov bl,[edi]
     cmp bl,[esi]
@@ -526,7 +482,7 @@ EnableCheatCodeNoPrevMod:
     mov [esi+5],bl
     ret
 
-AddCheatCode:
+NEWSYM AddCheatCode
     mov byte[GUICBHold],0
     cmp dword[NumCheats],255
     jne .okay

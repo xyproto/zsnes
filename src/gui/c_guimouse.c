@@ -13,6 +13,7 @@
 #include "../zmovie.h"
 #include "../zpath.h"
 #include "c_gui.h"
+#include "c_guicheat.h"
 #include "c_guimouse.h"
 #include "gui.h"
 #include "guicheat.h"
@@ -649,8 +650,8 @@ hold:
 			}
 			break;
 
-		case 56: CheatWinMode = 2;         break;
-		case 57: asm_call(AddCSCheatCode); break;
+		case 56: CheatWinMode = 2; break;
+		case 57: AddCSCheatCode(); break;
 
 #ifndef __MSDOS__
 		case 65: ZsnesPage(); break;

@@ -19,6 +19,8 @@
 
 
 
+EXTSYM AddCSCheatCode
+
 ; GUI Keyboard Routines
 
 %macro GUIqcheckkeys 1
@@ -2447,7 +2449,8 @@ GUICheatSearchKeys:
 .notab
   cmp dh,13
   jne .noenter
-  jmp AddCSCheatCode
+  ccallv AddCSCheatCode
+  ret
 .noenter
   call InsertSearchDescription
   ret
