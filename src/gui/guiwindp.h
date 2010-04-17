@@ -41,7 +41,6 @@ extern u1     GUIIconDataComboSecond[];
 extern u1     GUILoadPos;
 extern u1     GUINumCombo;
 extern u1     ShowMMXSupport;
-extern u1     TextColorSp[4];
 extern u1     lameExists;
 extern u1     mencoderExists;
 extern u1*    GUIInputRefP[5];

@@ -39,6 +39,7 @@ u1 GUIStatesText5 = 0;
 
 static s4 cloadnleft;
 static s4 cloadnposb;
+static u1 TextColorSp;
 
 
 static void drawshadow2(u4 const p1, s4 const p2, s4 const p3)
@@ -2314,15 +2315,15 @@ mux:
 
 static void InitTextColor(void)
 {
-	TextColorSp[2] = ((GUIWincoladd & 0xFF) == 0 ? 217 : 211) - 15;
-	TextColorSp[0] = GUIWincol;
-	u1 al = 163;
 	if ((GUIWincoladd & 0xFF) != 0)
 	{
-		al = 164;
 		GUItextcolor[0] = 164;
+		TextColorSp = 211 - 15;
 	}
-	TextColorSp[1] = al;
+	else
+	{
+		TextColorSp = 217 - 15;
+	}
 }
 
 
@@ -2370,11 +2371,11 @@ static void DrawBorderedBox(u4 const p1, u4 const p2, u4 const p3, u4 const p4, 
 static void DrawSlideBar(u4 const p1, u4 const p2, u4 const p3, u4 const p4, u4 const p5, u4 const p6, u4 const p7, u4* const p8, u4 const p9, u4 const p10)
 {
 	DrawSlideBarWin(p1, p2, p3 + 8, p4, p5, p6, p7 - 16, p8);
-	GUItextcolor[0] = TextColorSp[2];
+	GUItextcolor[0] = TextColorSp;
 	if ((GUICHold & 0xFF) == p9) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd + 3) & 0x000000FF;
 	GUIDisplayIconWin(p1, p2, p3, GUIIconDataUpArrow);
 	if ((GUICHold & 0xFF) == p9) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd - 3) & 0x000000FF;
-	GUItextcolor[0] = TextColorSp[2];
+	GUItextcolor[0] = TextColorSp;
 	if ((GUICHold & 0xFF) == p10) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd + 3) & 0x000000FF;
 	GUIDisplayIconWin(p1, p2, p3 + p7 - 8, GUIIconDataDownArrow);
 	if ((GUICHold & 0xFF) == p10) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd - 3) & 0x000000FF;
