@@ -1726,8 +1726,8 @@ static void Cheatmodeview(void) // View ResultsWindow
 	u4       ccheatnleft  = eax;
 	u4 const ccheatnleftb = eax;
 
-	CheatSearchYPos    = 24;
 	u4 CheatSearchXPos = 10;
+	u4 CheatSearchYPos = 24;
 	u4 CSCurEntry      = CSStartEntry;
 
 	if (ccheatnleft != 0)
@@ -1855,7 +1855,7 @@ static void Cheatmodeadd(void) // Add Window
 
 	if (CSOverValue != 1 && CSInputDisplay[0] != '_')
 	{
-		CheatSearchYPos = 83; // PAR Code?
+		u4 CheatSearchYPos = 83; // PAR Code?
 		curaddrvalcs = curentryval;
 		u4 const eax = CSCurValue;
 		curvaluecs = eax;

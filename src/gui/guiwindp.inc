@@ -86,7 +86,6 @@ NEWSYM CheatCompareValue, resd 1
 NEWSYM NumCheatSrc,       resd 1
 NEWSYM GUIcurrentchtsrcviewloc, resd 1
 NEWSYM GUIcurrentchtsrccursloc, resd 1
-NEWSYM CheatSearchYPos,   resd 1
 NEWSYM CurCStextpos,      resd 1
 
 SECTION .data
