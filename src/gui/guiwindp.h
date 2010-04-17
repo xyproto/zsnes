@@ -35,7 +35,6 @@ extern u1     ShowMMXSupport;
 extern u1     lameExists;
 extern u1     mencoderExists;
 extern u1*    GUIInputRefP[5];
-extern u4     CSStartEntry;
 extern u4     CheatSearchXPos;
 extern u4     CheatSearchYPos;
 extern u4     GUICSStA[3];

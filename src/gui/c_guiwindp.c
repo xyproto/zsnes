@@ -39,6 +39,7 @@ u1 GUIStatesText5 = 0;
 
 static s4 cloadnleft;
 static s4 cloadnposb;
+static u4 CSStartEntry;
 
 
 static void drawshadow2(u4 const p1, s4 const p2, s4 const p3)
