@@ -517,6 +517,18 @@ static void GUIOuttextwinloaddir(u4 const p1, u4 const p2, u4 const p3)
 }
 
 
+static void DrawSlideBar(u4 const p1, u4 const p2, u4 const p3, u4 const p4, u4 const p5, u4 const p6, u4 const p7, u4* const p8, u4 const p9, u4 const p10)
+{
+	DrawSlideBarWin(p1, p2, p3 + 8, p4, p5, p6, p7 - 16, p8);
+	if ((GUICHold & 0xFF) == p9) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd + 3) & 0x000000FF;
+	GUIDisplayIconWin(p1, p2, p3, GUIIconDataUpArrow);
+	if ((GUICHold & 0xFF) == p9) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd - 3) & 0x000000FF;
+	if ((GUICHold & 0xFF) == p10) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd + 3) & 0x000000FF;
+	GUIDisplayIconWin(p1, p2, p3 + p7 - 8, GUIIconDataDownArrow);
+	if ((GUICHold & 0xFF) == p10) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd - 3) & 0x000000FF;
+}
+
+
 void DisplayGUILoad(void)
 {
 	GUIDrawWindowBox(1, "LOAD GAME");
@@ -641,22 +653,10 @@ void DisplayGUILoad(void)
 
 	// Slidebar for Files
 	// win#,X,Y start, %4-List Loc, %5-List size, %6-Screen size, %7-Bar Size
-	DrawSlideBarWin(1, 146, 33, GUIcurrentviewloc, GUIfileentries, 15, 94, GUILStA);
-	if ((GUICHold & 0xFF) == 1) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd + 3) & 0x000000FF;
-	GUIDisplayIconWin(1, 146, 25, GUIIconDataUpArrow);
-	if ((GUICHold & 0xFF) == 1) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd - 3) & 0x000000FF;
-	if ((GUICHold & 0xFF) == 2) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd + 3) & 0x000000FF;
-	GUIDisplayIconWin(1, 146, 127, GUIIconDataDownArrow);
-	if ((GUICHold & 0xFF) == 2) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd - 3) & 0x000000FF;
+	DrawSlideBar(1, 146, 25, GUIcurrentviewloc, GUIfileentries, 15, 110, GUILStA, 1, 2);
 
 	// Slidebar for DIR
-	DrawSlideBarWin(1, 230, 33, GUIcurrentdirviewloc, GUIdirentries, 15, 94, GUILStB);
-	if ((GUICHold & 0xFF) == 3) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd + 3) & 0x000000FF;
-	GUIDisplayIconWin(1, 230, 25, GUIIconDataUpArrow);
-	if ((GUICHold & 0xFF) == 3) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd - 3) & 0x000000FF;
-	if ((GUICHold & 0xFF) == 4) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd + 3) & 0x000000FF;
-	GUIDisplayIconWin(1, 230, 127, GUIIconDataDownArrow);
-	if ((GUICHold & 0xFF) == 4) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd - 3) & 0x000000FF;
+	DrawSlideBar(1, 230, 25, GUIcurrentdirviewloc, GUIdirentries, 15, 110, GUILStB, 3, 4);
 }
 
 
@@ -903,14 +903,7 @@ void DisplayGUIInput(void)
 		GUIDisplayTextG(3, 11, 38 + 8 * i, *name++);
 	}
 
-	// Sidebar
-	DrawSlideBarWin(3, 109, 42, GUIcurrentinputviewloc, NumInputDevices, 5, 28, GUIIStA);
-	if (GUICHold ==  9) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd + 3) & 0x000000FF;
-	GUIDisplayIconWin(3, 109, 34, GUIIconDataUpArrow);
-	if (GUICHold ==  9) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd - 3) & 0x000000FF;
-	if (GUICHold == 10) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd + 3) & 0x000000FF;
-	GUIDisplayIconWin(3, 109, 70, GUIIconDataDownArrow);
-	if (GUICHold == 10) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd - 3) & 0x000000FF;
+	DrawSlideBar(3, 109, 34, GUIcurrentinputviewloc, NumInputDevices, 5, 44, GUIIStA, 9, 10);
 
 	// Hotkey Boxes
 	switch (cplayernum)
@@ -1113,14 +1106,7 @@ void DisplayGUIVideo(void)
 #endif
 
 		GUIDisplayBBoxS(5, 5, 26, 115, 189, 167); // Video Modes Box
-		DrawSlideBarWin(5, 117, 34, GUIcurrentvideoviewloc, NumVideoModes, 20, 148, GUIVStA);
-		// Scrollbar
-		if ((GUICHold & 0xFF) == 5) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd + 3) & 0x000000FF;
-		GUIDisplayIconWin(5, 117, 26, GUIIconDataUpArrow);
-		if ((GUICHold & 0xFF) == 5) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd - 3) & 0x000000FF;
-		if ((GUICHold & 0xFF) == 6) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd + 3) & 0x000000FF;
-		GUIDisplayIconWin(5, 117, 182, GUIIconDataDownArrow);
-		if ((GUICHold & 0xFF) == 6) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd - 3) & 0x000000FF;
+		DrawSlideBar(5, 117, 26, GUIcurrentvideoviewloc, NumVideoModes, 20, 164, GUIVStA, 5, 6);
 
 		u4 const ebx = (GUIcurrentvideocursloc - GUIcurrentvideoviewloc) * 8 + 28; // Box
 		DrawGUIWinBox2(5, 5, 115, 7, 224, ebx);
@@ -1504,14 +1490,7 @@ void DisplayGUICheat(void)
 		}
 	}
 
-	// Scrollbar
-	DrawSlideBarWin(7, 231, 28, GUIcurrentcheatviewloc, NumCheats, 12, 73, GUICStA);
-	if ((GUICHold & 0xFF) == 7) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd + 3) & 0x000000FF;
-	GUIDisplayIconWin(7, 231, 20, GUIIconDataUpArrow);
-	if ((GUICHold & 0xFF) == 7) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd - 3) & 0x000000FF;
-	if ((GUICHold & 0xFF) == 8) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd + 3) & 0x000000FF;
-	GUIDisplayIconWin(7, 231, 101, GUIIconDataDownArrow);
-	if ((GUICHold & 0xFF) == 8) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd - 3) & 0x000000FF;
+	DrawSlideBar(7, 231, 20, GUIcurrentcheatviewloc, NumCheats, 12, 89, GUICStA, 7, 8);
 
 	{ // Code Box
 		u1 const dl =
@@ -1778,15 +1757,8 @@ static void Cheatmodeview(void) // View ResultsWindow
 		}
 		while (--ccheatnleft != 0);
 	}
-	// Slidebar
 	// win#,X,Y start, %4-List Loc, %5-List size, %6-Screen size, %7-Bar Size
-	DrawSlideBarWin(13, 173, 28, GUIcurrentchtsrcviewloc, NumCheatSrc, 12, 73, GUICSStA);
-	if ((GUICHold & 0xFF) == 11) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd + 3) & 0x000000FF;
-	GUIDisplayIconWin(13, 173, 20, GUIIconDataUpArrow);
-	if ((GUICHold & 0xFF) == 11) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd - 3) & 0x000000FF;
-	if ((GUICHold & 0xFF) == 12) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd + 3) & 0x000000FF;
-	GUIDisplayIconWin(13, 173, 101, GUIIconDataDownArrow);
-	if ((GUICHold & 0xFF) == 12) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd - 3) & 0x000000FF;
+	DrawSlideBar(13, 173, 20, GUIcurrentchtsrcviewloc, NumCheatSrc, 12, 89, GUICSStA, 11, 12);
 	GUItextcolor[0] = (GUIWincoladd & 0xFF) == 0 ? 217 : 211;
 	DrawGUIButton(13,  70, 140, 130, 152, "RETURN", 54, 0, 1);
 	DrawGUIButton(13, 140, 140, 180, 152, "ADD",    55, 0, 1);
@@ -2305,18 +2277,6 @@ static void DrawBorderedBoxB2(u4 const p1, u4 const p2, u4 const p3, u4 const p4
 }
 
 
-static void DrawSlideBar(u4 const p1, u4 const p2, u4 const p3, u4 const p4, u4 const p5, u4 const p6, u4 const p7, u4* const p8, u4 const p9, u4 const p10)
-{
-	DrawSlideBarWin(p1, p2, p3 + 8, p4, p5, p6, p7 - 16, p8);
-	if ((GUICHold & 0xFF) == p9) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd + 3) & 0x000000FF;
-	GUIDisplayIconWin(p1, p2, p3, GUIIconDataUpArrow);
-	if ((GUICHold & 0xFF) == p9) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd - 3) & 0x000000FF;
-	if ((GUICHold & 0xFF) == p10) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd + 3) & 0x000000FF;
-	GUIDisplayIconWin(p1, p2, p3 + p7 - 8, GUIIconDataDownArrow);
-	if ((GUICHold & 0xFF) == p10) GUIWincoladd = GUIWincoladd & 0xFFFFFF00 | (GUIWincoladd - 3) & 0x000000FF;
-}
-
-
 // Key types: Up, Down, Left, Right, A, B, X, Y, L, R (Press/Relase/P+R)
 // Frame delays: 1 frame, 2, 3, 4, 5, 1 sec., 2, 3, 4, 5
 void DisplayGUICombo(void)
@@ -2358,7 +2318,6 @@ void DisplayGUICombo(void)
 	DrawBorderedBox(16, 10,  91,  32,  99);
 	DrawBorderedBox(16, 10, 110, 220, 146);
 
-	// Draw SlideBar
 	// win#,X,Y start,List Loc,List size,# Lines,Bar Size(Y),UpArrowResource#,DownArrowRes#
 	DrawSlideBar(16, 192, 20, GUIccombviewloc, NumCombo, 8, 61, GUICSStC, 13, 14);
 
