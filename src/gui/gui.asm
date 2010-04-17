@@ -52,7 +52,7 @@ EXTSYM pressed,memtabler8
 EXTSYM memtablew8,writeon,JoyRead,delay,FPSOn,RevStereo,WDSPReg0C
 EXTSYM WDSPReg1C,pl12s34,vidbufferofsb,wramdata,bgfixer
 EXTSYM CheatCodeSave,CheatCodeLoad
-EXTSYM Check_Key,Get_Key,sram,ScanCodeListing,RelPathBase
+EXTSYM Check_Key,Get_Key,sram,RelPathBase
 EXTSYM Clear2xSaIBuffer,Show224Lines
 EXTSYM NumVideoModes,MusicVol,DSPMem,NumInputDevices
 EXTSYM GameSpecificInput,device1,device2,TwelveHourClock

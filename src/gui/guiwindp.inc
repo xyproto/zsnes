@@ -87,36 +87,6 @@ SECTION .data
 NEWSYM GUIChoseSaveText2, db '-',0
 NEWSYM GUIChoseSlotTextX, db '-',0
 
-SECTION .text
-
-%macro DGOptnsDrawBox 3
-  mov eax,[GUIwinposx+9*4]
-  mov ebx,[GUIwinposy+9*4]
-  add eax,%1
-  add ebx,%2
-  mov ecx,eax
-  add ecx,20
-  mov dl,167
-  mov esi,7
-%%loop
-  DrawGUILine
-  dec esi
-  jnz %%loop
-  mov eax,%3
-  mov ebx,[ScanCodeListing+eax*3]
-  mov [GUIGameDisplayKy],ebx
-  mov byte[GUIGameDisplayKy+3],0
-  mov byte[GUItextcolor],223
-  ccallv GUIOuttextwin2, 9, %1 + 3, %2 + 2, GUIGameDisplayKy
-  mov byte[GUItextcolor],221
-  cmp byte[GUIWincoladd],0
-  je %%zero
-  mov byte[GUItextcolor],222
-%%zero
-  ccallv GUIOuttextwin2, 9, %1 + 2, %2 + 1, GUIGameDisplayKy
-%endmacro
-
-SECTION .data
 NEWSYM GUIInputTabs, dd 1,5
   db '#1',0
   db '#2',0
