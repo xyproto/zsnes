@@ -66,6 +66,12 @@ static void drawshadow2(u4 const p1, s4 const p2, s4 const p3)
 }
 
 
+static void GUIRect(s4 const x1, s4 const x2, s4 y, u4 h, u1 const colour)
+{
+	do GUIHLine(x1, x2, y++, colour); while (--h != 0);
+}
+
+
 static s4 DrawTitleBar(s4 const x1, s4 const x2, s4 ebx)
 {
 	GUIHLine(x1, x2, ebx++, 46 + 157 + 6 - GUIWincoladd);
@@ -77,17 +83,8 @@ static s4 DrawTitleBar(s4 const x1, s4 const x2, s4 ebx)
 
 	GUIHLine(x1, x2, ebx++, 38 + 157 + 4 - GUIWincoladd);
 
-	ebx -= 10;
-	{ u4 const edx = 44 + 157 + 4 - GUIWincoladd;
-		u4       esi = 9;
-		do GUIHLine(x1, x1, ebx++, edx); while (--esi != 0);
-	}
-
-	ebx -= 8;
-	{ u4 const edx = 40 + 157 + 4 - GUIWincoladd;
-		u4       esi = 9;
-		do GUIHLine(x2, x2, ebx++, edx); while (--esi != 0);
-	}
+	GUIRect(x1, x1, ebx - 10, 9, 44 + 157 + 4 - GUIWincoladd);
+	GUIRect(x2, x2, ebx -  9, 9, 40 + 157 + 4 - GUIWincoladd);
 
 	return ebx;
 }
@@ -96,14 +93,13 @@ static s4 DrawTitleBar(s4 const x1, s4 const x2, s4 ebx)
 static void GUIDrawTArea(u4 const id, u4* const peax, u4* const pebx) // win #id
 {
 	u4 const edx = GUIWincol + 1;
-	s4       eax = GUIwinposx[id];
-	s4       ebx = GUIwinposy[id] + 10;
+	s4 const eax = GUIwinposx[id];
+	s4 const ebx = GUIwinposy[id] + 10;
 	s4 const ecx = eax + GUIwinsizex[id];
-	u4       esi = 12;
-	do GUIHLine(eax, ecx, ebx++, edx); while (--esi != 0);
-	GUIHLine(eax + 1, ecx, ebx, edx + 3);
-	*peax = eax;      // set eax to minX
-	*pebx = ebx - 12; // set ebx to minY
+	GUIRect(eax, ecx, ebx, 12, edx);
+	GUIHLine(eax + 1, ecx, ebx + 12, edx + 3);
+	*peax = eax; // set eax to minX
+	*pebx = ebx; // set ebx to minY
 }
 
 
@@ -123,25 +119,22 @@ static void GUIDrawWindowBox(u4 const p1, char const* const p2)
 		s4 const ecx = eax + GUIwinsizex[p1];
 		ebx = DrawTitleBar(eax, ecx, ebx);
 
-		u4       esi = GUIwinsizey[p1] - 1;
-		u4 const edx = GUIWincol + 2;
-		do GUIHLine(eax, ecx, ebx++, edx); while (--esi != 0);
+		u4 const esi = GUIwinsizey[p1] - 1;
+		GUIRect(eax, ecx, ebx, esi, GUIWincol + 2);
 
-		GUIHLine(eax, ecx, ebx++, GUIWincol);
+		GUIHLine(eax, ecx, ebx + esi, GUIWincol);
 	}
 
 	{ s4 const eax = GUIwinposx[p1];
-		s4       ebx = GUIwinposy[p1] + 10;
-		u4       esi = GUIwinsizey[p1] - 1;
-		u4 const edx = GUIWincol + 3;
-		do GUIHLine(eax, eax, ebx++, edx); while (--esi != 0);
+		s4 const ebx = GUIwinposy[p1] + 10;
+		u4 const esi = GUIwinsizey[p1] - 1;
+		GUIRect(eax, eax, ebx, esi, GUIWincol + 3);
 	}
 
 	{ s4 const eax = GUIwinposx[p1] + GUIwinsizex[p1];
-		s4       ebx = GUIwinposy[p1] + 10;
-		u4       esi = GUIwinsizey[p1];
-		u4 const edx = GUIWincol + 1;
-		do GUIHLine(eax, eax, ebx++, edx); while (--esi != 0);
+		s4 const ebx = GUIwinposy[p1] + 10;
+		u4 const esi = GUIwinsizey[p1];
+		GUIRect(eax, eax, ebx, esi, GUIWincol + 1);
 	}
 
 	{ s4 const ebx = GUIwinposy[p1] + 3;
@@ -182,15 +175,8 @@ static void DrawTabOn(u4 const* const p1, u4* const peax, u4 ebx, u4* const pebp
 	u4 const edx = GUIWincol;
 	GUIHLine(eax + 1, ecx, ebx++, edx + 4);
 
-	{ u4 esi = 12;
-		do GUIHLine(eax + 1, ecx, ebx++, edx + 2); while (--esi != 0);
-		ebx -= 12;
-	}
-
-	{ u4 esi = 11;
-		do GUIHLine(eax, eax, ebx++, edx + 3); while (--esi != 0);
-		ebx -= 11;
-	}
+	GUIRect(eax + 1, ecx, ebx, 12, edx + 2);
+	GUIRect(eax,     eax, ebx, 11, edx + 3);
 
 	GUItextcolor[0] = GUIWincol;
 	{ u1*         const esi = SetVidbufLoc(ebx + 4);
@@ -206,9 +192,7 @@ static void DrawTabOn(u4 const* const p1, u4* const peax, u4 ebx, u4* const pebp
 
 	GUItextcolor[0] = 217; // restore normal colour
 	eax = ecx + 1; // restore and set Xoff for drawing step
-	{ u4       esi = 12;
-		do GUIHLine(eax, eax, ebx++, edx + 3); while (--esi != 0);
-	}
+	GUIRect(eax, eax, ebx, 12, edx + 3);
 
 	{ char const* const esi = (char const*)p1; // XXX ugly cast
 		while (esi[ebp] != '\0') ++ebp;
@@ -233,10 +217,7 @@ static void DrawTabOff(u4 const* const p1, u4* const peax, u4 ebx, u4* const peb
 	++ebx;
 	GUIHLine(eax + 1, ecx, ebx++, edx + 3);
 
-	{ u4 esi = 10;
-		do GUIHLine(eax, eax, ebx++, edx + 2); while (--esi != 0);
-		ebx -= 10;
-	}
+	GUIRect(eax, eax, ebx, 10, edx + 2);
 
 	GUItextcolor[0] = (GUIWincoladd & 0xFF) == 0 ? 202 : 196;
 	{ u1*         const esi = SetVidbufLoc(ebx + 4);
@@ -251,9 +232,7 @@ static void DrawTabOff(u4 const* const p1, u4* const peax, u4 ebx, u4* const peb
 	}
 
 	eax = ecx + 1;
-	{ u4 esi = 10;
-		do GUIHLine(eax, eax, ebx++, edx); while (--esi != 0);
-	}
+	GUIRect(eax, eax, ebx, 10, edx);
 
 	{ char const* const esi = (char const*)p1;
 		while (esi[ebp] != '\0') ++ebp;
@@ -292,10 +271,10 @@ static void GUIDrawTabs(u4 const* const p1, u4* const peax, u4 const ebx) // tab
 static void DrawGUIWinBox(u4 const p1, u4 const p2, u4 const p3, u4 const p4, u4 const p5, u4 const p6)
 {
 	s4 const eax = GUIwinposx[p1] + p2;
-	s4       ebx = GUIwinposy[p1] + p3;
+	s4 const ebx = GUIwinposy[p1] + p3;
 	s4 const ecx = eax + p4 - p2 + 1;
-	u4       esi = p5 - p3 + 1;
-	do GUIHLine(eax, ecx, ebx++, p6); while (--esi != 0);
+	u4 const esi = p5 - p3 + 1;
+	GUIRect(eax, ecx, ebx, esi, p6);
 }
 
 
@@ -405,14 +384,12 @@ static void GUIDisplayBBoxS(u4 const p1, u4 const p2, u4 const p3, u4 const p4, 
 }
 
 
-static void DrawGUIWinBox2(u4 const p1, u4 const p2, u4 const p3, u4 const p4, u4 const p5, s4 ebx)
+static void DrawGUIWinBox2(u4 const p1, u4 const p2, u4 const p3, u4 const p4, u4 const p5, s4 const ebx)
 {
 	s4 const eax = GUIwinposx[p1] + p2;
 	s4 const ecx = GUIwinposx[p1] + p3 + 1;
 	u1 const edx = (GUIWincoladd & 0xFF) == 0 ? p5 : p5 + 1;
-	ebx += GUIwinposy[p1];
-	u4 esi = p4;
-	do GUIHLine(eax, ecx, ebx++, edx); while (--esi != 0);
+	GUIRect(eax, ecx, ebx + GUIwinposy[p1], p4, edx);
 }
 
 
@@ -776,9 +753,8 @@ static void PrintKey(u4 const id, u4 const x, u4 const y, u4 const key)
 static void DGOptnsDrawBox2(s4 const p1, s4 const p2, u4 const p3)
 {
 	s4 const eax = GUIwinposx[3] + p1;
-	s4       ebx = GUIwinposy[3] + p2;
-	u4       esi = 7;
-	do GUIHLine(eax, eax + 20, ebx++, 167); while (--esi != 0);
+	s4 const ebx = GUIwinposy[3] + p2;
+	GUIRect(eax, eax + 20, ebx, 7, 167);
 
 	PrintKey(3, p1 + 3, p2 + 2, p3);
 }
@@ -831,9 +807,8 @@ static void DGOptnsBorderBox(u4 const p1, u4 const p2, u4 const p3)
 static void DDrawBox(u4 const p1, s4 const p2, s4 const p3, u4 const* const p4)
 {
 	s4 const eax = GUIwinposx[p1] + p2 + 1;
-	s4       ebx = GUIwinposy[p1] + p3 + 1;
-	u4       esi = 7;
-	do GUIHLine(eax, eax + 20, ebx++, 167); while (--esi != 0);
+	s4 const ebx = GUIwinposy[p1] + p3 + 1;
+	GUIRect(eax, eax + 20, ebx, 7, 167);
 	PrintKey(p1, p2 + 4, p3 + 3, *p4);
 	DGOptnsBorderBox(p1, p2, p3);
 }
