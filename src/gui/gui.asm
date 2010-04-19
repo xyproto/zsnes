@@ -264,7 +264,6 @@ NEWSYM GUIHoldy,     resd 1
 NEWSYM GUIHoldxm,    resd 1
 NEWSYM GUIHoldym,    resd 1
 NEWSYM cwindrawn,    resb 1
-NEWSYM GUIWincol,    resd 1
 NEWSYM GUIWincoladd, resd 1
 NEWSYM GUIHoldXlimL, resd 1
 NEWSYM GUIHoldXlimR, resd 1
