@@ -24,5 +24,6 @@ void DisplayGameOptns(void);     // Misc Key Window
 void DisplayNetOptns(void);
 
 extern u1 GUIStatesText5;
+extern u4 GUIWincoladd;
 
 #endif

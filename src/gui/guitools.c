@@ -26,6 +26,7 @@
 #include "../cfg.h"
 #include "../ui.h"
 #include "../video/procvid.h"
+#include "c_guiwindp.h"
 #include "gui.h"
 #include "guitools.h"
 

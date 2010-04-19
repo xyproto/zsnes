@@ -35,6 +35,7 @@
 
 
 u1 GUIStatesText5 = 0;
+u4 GUIWincoladd;
 
 
 static s4 cloadnleft;
