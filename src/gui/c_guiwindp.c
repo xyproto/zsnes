@@ -750,47 +750,6 @@ static void PrintKey(u4 const id, u4 const x, u4 const y, u4 const key)
 }
 
 
-static void DGOptnsDrawBox2(s4 const p1, s4 const p2, u4 const p3)
-{
-	s4 const eax = GUIwinposx[3] + p1;
-	s4 const ebx = GUIwinposy[3] + p2;
-	GUIRect(eax, eax + 20, ebx, 7, 167);
-
-	PrintKey(3, p1 + 3, p2 + 2, p3);
-}
-
-
-#define GUIInputDispAll(p1) \
-do \
-{ \
-	DGOptnsDrawBox2( 45, 102, p1##upk);    /* Up         */ \
-	DGOptnsDrawBox2( 45, 112, p1##downk);  /* Down       */ \
-	DGOptnsDrawBox2( 45, 122, p1##leftk);  /* Left       */ \
-	DGOptnsDrawBox2( 45, 132, p1##rightk); /* Right      */ \
-	DGOptnsDrawBox2( 45, 142, p1##startk); /* Start      */ \
-	DGOptnsDrawBox2( 45, 152, p1##selk);   /* Select     */ \
-	DGOptnsDrawBox2( 85, 102, p1##Ak);     /* A          */ \
-	DGOptnsDrawBox2( 85, 112, p1##Bk);     /* B          */ \
-	DGOptnsDrawBox2( 85, 122, p1##Xk);     /* X          */ \
-	DGOptnsDrawBox2( 85, 132, p1##Yk);     /* Y          */ \
-	DGOptnsDrawBox2( 85, 142, p1##Lk);     /* L          */ \
-	DGOptnsDrawBox2( 85, 152, p1##Rk);     /* R          */ \
- \
-	DGOptnsDrawBox2(125, 102, p1##Xtk);    /* X Turbo    */ \
-	DGOptnsDrawBox2(125, 112, p1##Ytk);    /* Y Turbo    */ \
-	DGOptnsDrawBox2(125, 122, p1##Ltk);    /* L Turbo    */ \
-	DGOptnsDrawBox2(165, 102, p1##Atk);    /* A Turbo    */ \
-	DGOptnsDrawBox2(165, 112, p1##Btk);    /* B Turbo    */ \
-	DGOptnsDrawBox2(165, 122, p1##Rtk);    /* R Turbo    */ \
- \
-	DGOptnsDrawBox2(125, 142, p1##ULk);    /* Up-Left    */ \
-	DGOptnsDrawBox2(125, 152, p1##DLk);    /* Down-Left  */ \
-	DGOptnsDrawBox2(165, 142, p1##URk);    /* Up-Right   */ \
-	DGOptnsDrawBox2(165, 152, p1##DRk);    /* Down-Right */ \
-} \
-while (0)
-
-
 static void DGOptnsBorderBox(u4 const p1, u4 const p2, u4 const p3)
 {
 	GUIWincol =
@@ -812,6 +771,37 @@ static void DDrawBox(u4 const p1, s4 const p2, s4 const p3, u4 const* const p4)
 	PrintKey(p1, p2 + 4, p3 + 3, *p4);
 	DGOptnsBorderBox(p1, p2, p3);
 }
+
+
+#define GUIInputDispAll(p1) \
+do \
+{ \
+	DDrawBox(3,  44, 101, &p1##upk);    /* Up         */ \
+	DDrawBox(3,  44, 111, &p1##downk);  /* Down       */ \
+	DDrawBox(3,  44, 121, &p1##leftk);  /* Left       */ \
+	DDrawBox(3,  44, 131, &p1##rightk); /* Right      */ \
+	DDrawBox(3,  44, 141, &p1##startk); /* Start      */ \
+	DDrawBox(3,  44, 151, &p1##selk);   /* Select     */ \
+	DDrawBox(3,  84, 101, &p1##Ak);     /* A          */ \
+	DDrawBox(3,  84, 111, &p1##Bk);     /* B          */ \
+	DDrawBox(3,  84, 121, &p1##Xk);     /* X          */ \
+	DDrawBox(3,  84, 131, &p1##Yk);     /* Y          */ \
+	DDrawBox(3,  84, 141, &p1##Lk);     /* L          */ \
+	DDrawBox(3,  84, 151, &p1##Rk);     /* R          */ \
+ \
+	DDrawBox(3, 124, 101, &p1##Xtk);    /* X Turbo    */ \
+	DDrawBox(3, 124, 111, &p1##Ytk);    /* Y Turbo    */ \
+	DDrawBox(3, 124, 121, &p1##Ltk);    /* L Turbo    */ \
+	DDrawBox(3, 164, 101, &p1##Atk);    /* A Turbo    */ \
+	DDrawBox(3, 164, 111, &p1##Btk);    /* B Turbo    */ \
+	DDrawBox(3, 164, 121, &p1##Rtk);    /* R Turbo    */ \
+ \
+	DDrawBox(3, 124, 141, &p1##ULk);    /* Up-Left    */ \
+	DDrawBox(3, 124, 151, &p1##DLk);    /* Down-Left  */ \
+	DDrawBox(3, 164, 141, &p1##URk);    /* Up-Right   */ \
+	DDrawBox(3, 164, 151, &p1##DRk);    /* Down-Right */ \
+} \
+while (0)
 
 
 void DisplayGUIInput(void)
@@ -916,29 +906,6 @@ void DisplayGUIInput(void)
 		case 3: GUIInputDispAll(pl4); break;
 		case 4: GUIInputDispAll(pl5); break;
 	}
-
-	DGOptnsBorderBox(3,  44, 101); // Box borders,  keep them at bottom
-	DGOptnsBorderBox(3,  44, 111);
-	DGOptnsBorderBox(3,  44, 121);
-	DGOptnsBorderBox(3,  44, 131);
-	DGOptnsBorderBox(3,  44, 141);
-	DGOptnsBorderBox(3,  44, 151);
-	DGOptnsBorderBox(3,  84, 101);
-	DGOptnsBorderBox(3,  84, 111);
-	DGOptnsBorderBox(3,  84, 121);
-	DGOptnsBorderBox(3,  84, 131);
-	DGOptnsBorderBox(3,  84, 141);
-	DGOptnsBorderBox(3,  84, 151);
-	DGOptnsBorderBox(3, 124, 101);
-	DGOptnsBorderBox(3, 124, 111);
-	DGOptnsBorderBox(3, 124, 121);
-	DGOptnsBorderBox(3, 124, 141);
-	DGOptnsBorderBox(3, 124, 151);
-	DGOptnsBorderBox(3, 164, 101);
-	DGOptnsBorderBox(3, 164, 111);
-	DGOptnsBorderBox(3, 164, 121);
-	DGOptnsBorderBox(3, 164, 141);
-	DGOptnsBorderBox(3, 164, 151);
 }
 
 
