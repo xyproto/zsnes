@@ -270,39 +270,33 @@ static void DrawGUIButton(u4 const p1, u4 const p2, u4 const p3, u4 const p4, u4
 	DrawGUIWinBox(p1, p4 + 1, p3 + 1, p4,     p5, dl);
 	dl += GUICBHold == p7 ? +2 : -3;
 	DrawGUIWinBox(p1, p2,     p5,     p4 - 1, p5, dl);
+	u1 const colour = GUItextcolor[0];
 	if (GUICBHold != p7)
 	{
-		GUItextcolor[0] -= 15;
-		GUIOuttextwin2(p1, p2 + 5 + p8, p3 + 4 + p9, p6);
-		GUItextcolor[0] += 15;
-		GUIOuttextwin2(p1, p2 + 4 + p8, p3 + 3 + p9, p6);
+		GUIOuttextwin2(p1, p2 + 5 + p8, p3 + 4 + p9, p6, colour - 15);
+		GUIOuttextwin2(p1, p2 + 4 + p8, p3 + 3 + p9, p6, colour);
 	}
 	else
 	{
-		GUItextcolor[0] -= 18;
-		GUIOuttextwin2(p1, p2 + 6 + p8, p3 + 5 + p9, p6);
-		GUItextcolor[0] += 15;
-		GUIOuttextwin2(p1, p2 + 5 + p8, p3 + 4 + p9, p6);
-		GUItextcolor[0] += 3;
+		GUIOuttextwin2(p1, p2 + 6 + p8, p3 + 5 + p9, p6, colour - 18);
+		GUIOuttextwin2(p1, p2 + 5 + p8, p3 + 4 + p9, p6, colour -  3);
 	}
+	GUItextcolor[0] = colour;
 }
 
 
 static void GUIDisplayTextY(u4 const p1, u4 const p2, u4 const p3, char const* const p4) // Yellow Text&Shadow
 {
-	GUItextcolor[0] = GUIWincol;
-	GUIOuttextwin2(p1, p2, p3, p4);
-	GUItextcolor[0] = GUIWincoladd == 0 ? 163 : 164;
-	GUIOuttextwin2(p1, p2 - 1, p3 - 1, p4);
+	GUIOuttextwin2(p1, p2,     p3,     p4, GUIWincol);
+	GUIOuttextwin2(p1, p2 - 1, p3 - 1, p4, GUIWincoladd == 0 ? 163 : 164);
 }
 
 
 static void GUIDisplayText(u4 const p1, u4 const p2, u4 const p3, char const* const p4) // Text&Shadow
 {
-	GUItextcolor[0] = GUIWincoladd == 0 ? 202 : 196;
-	GUIOuttextwin2(p1, p2, p3, p4);
-	GUItextcolor[0] += 15;
-	GUIOuttextwin2(p1, p2 - 1, p3 - 1, p4);
+	u1 const colour = GUIWincoladd == 0 ? 202 : 196;
+	GUIOuttextwin2(p1, p2,     p3,     p4, colour);
+	GUIOuttextwin2(p1, p2 - 1, p3 - 1, p4, colour + 15);
 }
 
 
@@ -322,10 +316,8 @@ static void GUIDisplayBBox(u4 const p1, u4 const p2, u4 const p3, u4 const p4, u
 
 static void GUIDisplayTextG(u4 const p1, u4 const p2, u4 const p3, char const* const p4) // Green Text&Shadow
 {
-	GUItextcolor[0] = 223;
-	GUIOuttextwin2(p1, p2, p3, p4);
-	GUItextcolor[0] = GUIWincoladd == 0 ? 221 : 222;
-	GUIOuttextwin2(p1, p2 - 1, p3 - 1, p4);
+	GUIOuttextwin2(p1, p2,     p3,     p4, 223);
+	GUIOuttextwin2(p1, p2 - 1, p3 - 1, p4, GUIWincoladd == 0 ? 221 : 222);
 }
 
 
@@ -375,9 +367,8 @@ static void DrawGUIWinBox2(u4 const p1, u4 const p2, u4 const p3, u4 const p4, u
 static void GUIDisplayTextu(u4 const p1, u4 const p2, u4 const p3, char const* const p4, u4 const p5) // Text&Shadow With Underline
 {
 	u1 const colour = GUIWincoladd == 0 ? 202 : 196;
-	GUIOuttextwin2u(p1, p2, p3, p4, colour, p5);
-	GUItextcolor[0] += 15;
-	GUIOuttextwin2(p1, p2 - 1, p3 - 1, p4);
+	GUIOuttextwin2u(p1, p2,     p3,     p4, colour, p5);
+	GUIOuttextwin2( p1, p2 - 1, p3 - 1, p4, colour + 15);
 }
 
 
@@ -1580,14 +1571,13 @@ static void CheatSearching(void) // Exact Value Search
 
 	if (!(GUICCFlash & 8)) CSRemoveFlash(CSInputDisplay); // Flash Cursor Code?
 
-	GUItextcolor[0] = CSOverValue == 1 ? 202 /* Alt Color */ : 223 /* Green Shadow */;
-	GUIOuttextwin2(13, 13, 42, CSInputDisplay);
-
-	GUItextcolor[0] =
+	u1 const col_shadow = CSOverValue == 1 ? 202 /* Alt Color */ : 223 /* Green Shadow */;
+	u1 const col_text   =
 		CSOverValue  == 1 ? 207 : // Alt Color
 		GUIWincoladd == 0 ? 221 : // Green Text
 		222;
-	GUIOuttextwin2(13, 12, 41, CSInputDisplay);
+	GUIOuttextwin2(13, 13, 42, CSInputDisplay, col_shadow);
+	GUIOuttextwin2(13, 12, 41, CSInputDisplay, col_text);
 
 	CSAddFlash(CSInputDisplay); // More flash?
 
@@ -1743,13 +1733,13 @@ static void Cheatmodeadd(void) // Add Window
 
 	// Cheat Input
 	if (CurCStextpos != 0 || !(GUICCFlash & 8)) CSRemoveFlash(CSInputDisplay);
-	GUItextcolor[0] = CSOverValue == 1 ? 202 : 223;
-	GUIOuttextwin2(13, 13, 32, CSInputDisplay);
-	GUItextcolor[0] =
+	u1 const col_shadow = CSOverValue == 1 ? 202 : 223;
+	u1 const col_text   =
 		CSOverValue  == 1 ? 207 :
 		GUIWincoladd == 0 ? 221 :
 		222;
-	GUIOuttextwin2(13, 12, 31, CSInputDisplay);
+	GUIOuttextwin2(13, 13, 32, CSInputDisplay, col_shadow);
+	GUIOuttextwin2(13, 12, 31, CSInputDisplay, col_text);
 	CSAddFlash(CSInputDisplay);
 
 	// Cheat Desc. Input
