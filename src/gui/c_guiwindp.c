@@ -452,10 +452,8 @@ static void GUIOuttextwin2load(u4 const p1, u4 const p2, u4 const p3, char* cons
 {
 	char const* const name = *eax;
 	++cloadnposb;
-	GUItextcolor[0] = 223;
-	GUIOuttextwin2l(p1, p2, p3, name);
-	GUItextcolor[0] = GUIWincoladd == 0 ? 221 : 222;
-	GUIOuttextwin2l(p1, p2 - 1, p3 - 1, name);
+	GUIOuttextwin2l(p1, p2,     p3,     name, 223);
+	GUIOuttextwin2l(p1, p2 - 1, p3 - 1, name, GUIWincoladd == 0 ? 221 : 222);
 	--cloadnleft;
 }
 
@@ -542,15 +540,14 @@ void DisplayGUILoad(void)
 	if (ecx > 39) esi += ecx - 39;
 	GUIDisplayText(1, 6, 138, esi);
 
-	GUItextcolor[0] = GUIWincoladd == 0 ? 202 : 196;
 	cloadmaxlen = 39;
 #ifndef __MSDOS__
+	u1 const colour = GUIWincoladd == 0 ? 202 : 196;
 	if (GUIcurrentfilewin != 0)
 	{
 		char const* const eax = d_names[GUIcurrentdircursloc + 2];
-		GUIOuttextwin2l(1, 6, 158, eax);
-		GUItextcolor[0] += 15;
-		GUIOuttextwin2l(1, 5, 157, eax);
+		GUIOuttextwin2l(1, 6, 158, eax, colour);
+		GUIOuttextwin2l(1, 5, 157, eax, colour + 15);
 	}
 	else if (GUIfileentries != 0)
 	{
@@ -558,9 +555,8 @@ void DisplayGUILoad(void)
 		if ((u4)eax < (u4)GUIfileentries)
 		{
 			char const* const name = selected_names[eax];
-			GUIOuttextwin2l(1, 6, 158, name);
-			GUItextcolor[0] += 15;
-			GUIOuttextwin2l(1, 5, 157, name);
+			GUIOuttextwin2l(1, 6, 158, name, colour);
+			GUIOuttextwin2l(1, 5, 157, name, colour + 15);
 		}
 	}
 #endif
