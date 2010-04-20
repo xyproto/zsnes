@@ -54,8 +54,9 @@ static void GUIoutputchar(u1* dst, u1 const glyph)
 }
 
 
-char const* GUIOutputString(u1* dst, char const* text)
+char const* GUIOutputString(u1* dst, char const* text, u1 const colour)
 {
+	GUItextcolor[0] = colour;
 	for (;; dst += 6, ++text)
 	{
 		u1 const c = *text;
@@ -67,9 +68,8 @@ char const* GUIOutputString(u1* dst, char const* text)
 
 void GUIOuttext(u4 const x, u4 const y, char const* const text, u1 const colour)
 {
-	GUItextcolor[0] = colour;
 	u1* const dst = vidbuffer + y * 288 + x + 16;
-	GUIOutputString(dst, text);
+	GUIOutputString(dst, text, colour);
 }
 
 
