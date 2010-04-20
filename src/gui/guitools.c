@@ -301,11 +301,11 @@ void GUIoutputiconwin(s4 const x, u4 const y, u1 const* src)
 				{
 					if (al <= 189)
 					{
-						if ((GUIWincoladd & 0xFF) != 0) ++al;
+						if (GUIWincoladd != 0) ++al;
 					}
 					else
 					{
-						al -= (GUIWincoladd & 0xFF) + 1;
+						al -= GUIWincoladd + 1;
 					}
 					*dst = al;
 				}
@@ -344,7 +344,7 @@ static void GUIDrawSlideBar(s4 const x, u4 const y, u4 h, u4 starty, u4 endy)
 		{
 			if (starty == 0)
 			{
-				u1 const al = 202 - (GUIWincoladd & 0xFF);
+				u1 const al = 202 - GUIWincoladd;
 				dst[0] = al;
 				dst[1] = al + 2;
 				dst[2] = al + 2;
@@ -357,7 +357,7 @@ static void GUIDrawSlideBar(s4 const x, u4 const y, u4 h, u4 starty, u4 endy)
 			}
 			else if (endy == 0)
 			{
-				u1 const al = 196 - (GUIWincoladd & 0xFF);
+				u1 const al = 196 - GUIWincoladd;
 				dst[0] = al;
 				dst[1] = al;
 				dst[2] = al;
@@ -370,7 +370,7 @@ static void GUIDrawSlideBar(s4 const x, u4 const y, u4 h, u4 starty, u4 endy)
 			}
 			else if (draw_slider != 1)
 			{
-				u1 const al = 197 - (GUIWincoladd & 0xFF);
+				u1 const al = 197 - GUIWincoladd;
 				dst[0] = al;
 				dst[1] = al - 2;
 				dst[2] = al - 3;
@@ -382,7 +382,7 @@ static void GUIDrawSlideBar(s4 const x, u4 const y, u4 h, u4 starty, u4 endy)
 			}
 			else
 			{
-				u1 const al = 202 - (GUIWincoladd & 0xFF);
+				u1 const al = 202 - GUIWincoladd;
 				dst[0] = al;
 				dst[1] = al - 2;
 				dst[2] = al - 2;
