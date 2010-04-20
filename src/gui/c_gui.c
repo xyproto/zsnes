@@ -1905,20 +1905,12 @@ static void GUIMenuDisplay(u4 const n_cols, u4 n_rows, u1* dst, char const* text
 		if (al != '\0')
 		{
 			++text;
-			if (al != 2)
+			if (GUIcrowpos != row)
 			{
-				GUItextcolor[0] = 44;
-				if (GUIcrowpos != row)
-					GUIOutputString(dst + 289, text);
-				GUItextcolor[0] = 63;
+				GUItextcolor[0] = al == 2 ? 42 : 44;
+				GUIOutputString(dst + 289, text);
 			}
-			else
-			{
-				GUItextcolor[0] = 42;
-				if (GUIcrowpos != row)
-					GUIOutputString(dst + 289, text);
-				GUItextcolor[0] = 57;
-			}
+			GUItextcolor[0] = al == 2 ? 57 : 63;
 			text = GUIOutputString(dst, text) + 1;
 		}
 		else
