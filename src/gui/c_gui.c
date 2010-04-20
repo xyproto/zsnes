@@ -326,8 +326,7 @@ static void DrawSnow(void)
 	{
 		if (MsgGiftLeft != 0)
 		{
-			GUItextcolor[0] = 228;
-			GUIOuttextwin(20, 210, "A GIFT TO YOU IN THE OPTIONS!");
+			GUIOuttextwin(20, 210, "A GIFT TO YOU IN THE OPTIONS!", 228);
 		}
 		u1*       dst = vidbuffer + SantaPos + 60 * 288;
 		u1 const* src = SantaData;

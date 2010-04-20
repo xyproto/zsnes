@@ -269,8 +269,9 @@ static void OutputUnder(s4 const edx, u1* const esi)
 }
 
 
-void GUIOuttextwin(u4 x, u4 const y, char const* const text)
+void GUIOuttextwin(u4 x, u4 const y, char const* const text, u1 const colour)
 {
+	GUItextcolor[0] = colour;
 	GUIOutputStringwin(x, vidbuffer + y * 288 + 16, text);
 }
 
