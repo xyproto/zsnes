@@ -196,7 +196,7 @@ static void GUIoutputcharwin(u1* dst, u1 const glyph)
 }
 
 
-void GUIOutputStringwin(s4 x, u1* const dst, char const* text)
+static void GUIOutputStringwin(s4 x, u1* const dst, char const* text)
 {
 	for (;; x += 6)
 	{

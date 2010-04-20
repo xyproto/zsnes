@@ -158,12 +158,6 @@ static void GUIDrawWindowBox(u4 const p1, char const* const p2)
 }
 
 
-static inline u1* SetVidbufLoc(u4 const ebx)
-{
-	return vidbuffer + ebx * 288 + 16;
-}
-
-
 static void DrawTabOn(u4 const* const p1, u4* const peax, u4 ebx, u4* const pebp) // p1 = array, ebp = offset, eax = minX, ebx = minY
 {
 	u4 eax = *peax;
@@ -180,17 +174,11 @@ static void DrawTabOn(u4 const* const p1, u4* const peax, u4 ebx, u4* const pebp
 	GUIRect(eax + 1, ecx, ebx, 12, edx + 2);
 	GUIRect(eax,     eax, ebx, 11, edx + 3);
 
+	char const* const label = (char const*)p1 + ebp; // XXX ugly cast
 	GUItextcolor[0] = GUIWincol;
-	{ u1*         const esi = SetVidbufLoc(ebx + 4);
-		char const* const edi = (char const*)p1 + ebp; // XXX ugly cast
-		GUIOutputStringwin(eax + 6, esi, edi);
-	}
-
+	GUIOuttextwin(eax + 6, ebx + 4, label);
 	GUItextcolor[0] = GUIWincoladd == 0 ? 163 : 164;
-	{ u1*         const esi = SetVidbufLoc(ebx + 3);
-		char const* const edi = (char const*)p1 + ebp; // XXX ugly cast
-		GUIOutputStringwin(eax + 5, esi, edi);
-	}
+	GUIOuttextwin(eax + 5, ebx + 3, label);
 
 	GUItextcolor[0] = 217; // restore normal colour
 	eax = ecx + 1; // restore and set Xoff for drawing step
@@ -221,17 +209,11 @@ static void DrawTabOff(u4 const* const p1, u4* const peax, u4 ebx, u4* const peb
 
 	GUIRect(eax, eax, ebx, 10, edx + 2);
 
+	char const* const label = (char const*)p1 + ebp; // XXX ugly cast
 	GUItextcolor[0] = GUIWincoladd == 0 ? 202 : 196;
-	{ u1*         const esi = SetVidbufLoc(ebx + 4);
-		char const* const edi = (char const*)p1 + ebp;
-		GUIOutputStringwin(eax + 6, esi, edi);
-	}
-
+	GUIOuttextwin(eax + 6, ebx + 4, label);
 	GUItextcolor[0] += 15;
-	{ u1*         const esi = SetVidbufLoc(ebx + 3);
-		char const* const edi = (char const*)p1 + ebp;
-		GUIOutputStringwin(eax + 5, esi, edi);
-	}
+	GUIOuttextwin(eax + 5, ebx + 3, label);
 
 	eax = ecx + 1;
 	GUIRect(eax, eax, ebx, 10, edx);
