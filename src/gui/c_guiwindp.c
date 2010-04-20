@@ -379,8 +379,8 @@ static void DrawGUIWinBox2(u4 const p1, u4 const p2, u4 const p3, u4 const p4, u
 
 static void GUIDisplayTextu(u4 const p1, u4 const p2, u4 const p3, char const* const p4, u4 const p5) // Text&Shadow With Underline
 {
-	GUItextcolor[0] = GUIWincoladd == 0 ? 202 : 196;
-	GUIOuttextwin2u(p1, p2, p3, p4, p5);
+	u1 const colour = GUIWincoladd == 0 ? 202 : 196;
+	GUIOuttextwin2u(p1, p2, p3, p4, colour, p5);
 	GUItextcolor[0] += 15;
 	GUIOuttextwin2(p1, p2 - 1, p3 - 1, p4);
 }

@@ -275,8 +275,9 @@ void GUIOuttextwin(u4 x, u4 const y, char const* const text)
 }
 
 
-void GUIOuttextwin2u(u4 const win_id, u4 x, u4 y, char const* const text, u4 const under_pos)
+void GUIOuttextwin2u(u4 const win_id, u4 x, u4 y, char const* const text, u1 const colour, u4 const under_pos)
 {
+	GUItextcolor[0] = colour;
 	x += GUIwinposx[win_id];
 	y += GUIwinposy[win_id];
 	u1* const dst = vidbuffer + y * 288 + 16;
