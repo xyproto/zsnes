@@ -259,19 +259,14 @@ static void DrawGUIWinBox(u4 const p1, u4 const p2, u4 const p3, u4 const p4, u4
 
 static void DrawGUIButton(u4 const p1, u4 const p2, u4 const p3, u4 const p4, u4 const p5, char const* const p6, u4 const p7, u4 const p8, u4 const p9)
 {
-	u1 dl = GUItextcolor[0];
-	dl += GUICBHold == p7 ? -18 : -5;
-	DrawGUIWinBox(p1, p2,     p3,     p4,     p3, dl);
-	dl += GUICBHold == p7 ? +2 : -3;
-	DrawGUIWinBox(p1, p2,     p3,     p2,     p5, dl);
-	dl += GUICBHold == p7 ? +2 : -3;
-	DrawGUIWinBox(p1, p2 + 1, p3 + 1, p4,     p5, dl);
-	dl += GUICBHold == p7 ? +2 : -3;
-	DrawGUIWinBox(p1, p4 + 1, p3 + 1, p4,     p5, dl);
-	dl += GUICBHold == p7 ? +2 : -3;
-	DrawGUIWinBox(p1, p2,     p5,     p4 - 1, p5, dl);
-	u1 const colour = GUItextcolor[0];
-	if (GUICBHold != p7)
+	u1   const colour = GUItextcolor[0];
+	bool const held   = GUICBHold == p7;
+	DrawGUIWinBox(p1, p2,     p3,     p4,     p3, colour + (held ? -18 :  -5));
+	DrawGUIWinBox(p1, p2,     p3,     p2,     p5, colour + (held ? -16 :  -8));
+	DrawGUIWinBox(p1, p2 + 1, p3 + 1, p4,     p5, colour + (held ? -14 : -11));
+	DrawGUIWinBox(p1, p4 + 1, p3 + 1, p4,     p5, colour + (held ? -12 : -14));
+	DrawGUIWinBox(p1, p2,     p5,     p4 - 1, p5, colour + (held ? -10 : -17));
+	if (!held)
 	{
 		GUIOuttextwin2(p1, p2 + 5 + p8, p3 + 4 + p9, p6, colour - 15);
 		GUIOuttextwin2(p1, p2 + 4 + p8, p3 + 3 + p9, p6, colour);
