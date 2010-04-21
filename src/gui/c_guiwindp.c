@@ -408,8 +408,7 @@ static void GUIDisplayButtonHole(u4 const p1, u4 const p2, u4 const p3, u1 const
 
 static void GUIDisplayButtonHoleTu(u4 const p1, u4 const p2, u4 const p3, u1 const* const p4, u4 const p5, char const* const p6, u4 const p7)
 {
-	u1 const* const icon = *p4 == p5 ? GUIIconDataButtonFill : GUIIconDataButtonHole;
-	GUIDisplayIconWin(p1, p2, p3, icon);
+	GUIDisplayButtonHole(p1, p2, p3, p4, p5);
 	GUIDisplayTextu(p1, p2 + 15, p3 + 3, p6, p7);
 }
 
