@@ -306,12 +306,6 @@ NEWSYM MotionBlur, resb 1
 NEWSYM StartLL, resd 1
 NEWSYM StartLR, resd 1
 
-NEWSYM TRVal, resw 1
-NEWSYM TGVal, resw 1
-NEWSYM TBVal, resw 1
-NEWSYM TRVali, resw 1
-NEWSYM TGVali, resw 1
-NEWSYM TBVali, resw 1
 NEWSYM TRVal2, resw 1
 NEWSYM TGVal2, resw 1
 NEWSYM TBVal2, resw 1

@@ -72,6 +72,12 @@ static u1 MenuDat6[] = {  6, 3, 1, 1, 1, 1, 0, 2, 0 };
 
 static bool GUIPalConv;
 static u1   OkaySC;
+static u2   TBVal;
+static u2   TBVali;
+static u2   TGVal;
+static u2   TGVali;
+static u2   TRVal;
+static u2   TRVali;
 static u4   SnowMover;
 
 
