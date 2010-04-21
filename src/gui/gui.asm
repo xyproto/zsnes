@@ -241,7 +241,6 @@ NEWSYM CombinDataGlob, resb 3300
 NEWSYM CombinDataLocl, resb 3300
 
 NEWSYM GUIwinorder, resb 22
-GUIwinpos   resb 22
 NEWSYM GUIwinactiv, resb 22
 ViewBuffer  resb 50*32
 
