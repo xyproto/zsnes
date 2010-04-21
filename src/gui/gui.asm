@@ -315,7 +315,6 @@ NEWSYM GUIoldhand9o, dd 0
 NEWSYM GUIoldhand9s, dw 0
 NEWSYM GUIoldhand8o, dd 0
 NEWSYM GUIoldhand8s, dw 0
-NEWSYM GUIt1cc,      dd 0
 GUIt1ccSwap db 0
 GUIskipnextkey42 db 0
 

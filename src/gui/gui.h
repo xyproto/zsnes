@@ -90,7 +90,6 @@ extern u4    GUIMenuD;
 extern u4    GUIMenuL;
 extern u4    GUIMenuR;
 extern u4    GUIScrolTim1;
-extern u4    GUIt1cc;
 extern u4    GUIwinposxo[22];
 extern u4    GUIwinposyo[22];
 extern u4    GUIwinsizex[22];

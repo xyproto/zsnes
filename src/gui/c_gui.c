@@ -246,7 +246,6 @@ void GUIinit36_4hz(void)
 
 void GUI36hzcall(void)
 {
-	++GUIt1cc;
 	++SnowMover;
 	if (GUIEditStringLTxt != 0) --GUIEditStringLTxt;
 	if (GUIScrolTim1      != 0) --GUIScrolTim1;
