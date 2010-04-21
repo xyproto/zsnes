@@ -271,7 +271,6 @@ NEWSYM cloadmaxlen,  resd 1
 NEWSYM cplayernum,   resb 1
 NEWSYM GUIScrolTim1, resd 1
 GUIScrolTim2 resd 1
-BlankVar     resb 1
 NEWSYM GUICHold,     resd 1
 NEWSYM GUICBHold,    resd 1
 NEWSYM GUICBHold2,   resd 1
