@@ -463,6 +463,19 @@ static void GUIDrawSlider(u4 const p1, u4 const p2, u4 const p3, u4 const p4, vo
 	GUIHLine(eax,     ecx,     ebx,     edx);
 	GUIHLine(eax + 1, ecx + 1, ebx + 1, edx - 13);
 	u4 const x = p2 - 4 + p7(p5); // proc1 == alters var correctly and puts result in al
+	static u1 const GUIIconDataSlideBar[] =
+	{
+		0,   0,   0,   0, 216,   0,   0,   0,   0,   0,
+		0,   0,   0, 212, 216, 220,   0,   0,   0,   0,
+		0,   0,   0, 212, 216, 220, 202,   0,   0,   0,
+		0,   0, 212, 212, 216, 218, 220,   0,   0,   0,
+		0,   0, 212, 214, 216, 218, 220, 202,   0,   0,
+		0,   0, 212, 214, 216, 218, 220, 202,   0,   0,
+		0,   0,   0, 212, 216, 220, 202, 202,   0,   0,
+		0,   0,   0, 212, 216, 220, 202,   0,   0,   0,
+		0,   0,   0,   0, 216, 202, 202,   0,   0,   0,
+		0,   0,   0,   0,   0, 202,   0,   0,   0,   0
+	};
 	GUIDisplayIconWin(p1, x, p4 - 4, GUIIconDataSlideBar);
 	char const* const esi = p8(p5); // proc2 == alters text correctly and puts pointer in esi
 	GUIDisplayTextG(p1, p2 + p3 + 6, p4 - 1, esi); // Display Value (Green)
