@@ -70,8 +70,9 @@ static u1 MenuDat5[] = {  1, 3, 2, 0 };
 #endif
 static u1 MenuDat6[] = {  6, 3, 1, 1, 1, 1, 0, 2, 0 };
 
-static u1 OkaySC;
-static u4 SnowMover;
+static bool GUIPalConv;
+static u1   OkaySC;
+static u4   SnowMover;
 
 
 static char GUIGameMenuData[][14] =
@@ -930,9 +931,9 @@ static void GUISetPal16(void)
 	GUIPal16b(237, 60, 20, 25);
 	GUIPal16b(238, 42, 20, 25);
 
-	if (GUIPalConv == 0)
+	if (!GUIPalConv)
 	{
-		GUIPalConv = 1;
+		GUIPalConv = true;
 		u1* buf = vidbuffer;
 		u4  n   = 288 * 240;
 		u4  i   = 0;
@@ -1246,9 +1247,9 @@ void GUISetPal(void)
 		GUIPal(233, 50, 12, 60);
 		GUIPal(234, 30, 14, 60);
 
-		if (GUIPalConv == 0)
+		if (!GUIPalConv)
 		{
-			GUIPalConv = 1;
+			GUIPalConv = true;
 			// Convert Image data to Gray Scale
 			// Create Palette Table
 			GUIconvpal();
@@ -1455,7 +1456,7 @@ void StartGUI(void)
 	PrevResoln = resolutn;
 	resolutn   = 224;
 
-	GUIPalConv   = 0;
+	GUIPalConv   = false;
 	MousePRClick = 1;
 
 	if (MouseInitOkay != 1)

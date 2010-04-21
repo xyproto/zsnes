@@ -41,7 +41,6 @@ extern u1    GUIIconDataSlideBar[];
 extern u1    GUILDFlash;
 extern u1    GUIOn2;
 extern u1    GUIOn;
-extern u1    GUIPalConv;
 extern u1    GUIQuit;
 extern u1    GUIReset;
 extern u1    GUIcmenupos;

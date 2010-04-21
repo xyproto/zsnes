@@ -283,7 +283,6 @@ NEWSYM GUICResetPos, resd 1
 NEWSYM GUICStatePos, resd 1
 NEWSYM GUICCFlash,   resb 1
 NEWSYM GUILDFlash,   resb 1
-NEWSYM GUIPalConv,   resd 1
 NEWSYM PrevResoln,   resw 1
 NEWSYM keycontrolval, resd 1
 NEWSYM CheatBDoor,   resb 1
