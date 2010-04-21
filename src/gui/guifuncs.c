@@ -71,7 +71,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #define BIT(X) (1 << (X))
 
-extern unsigned char ComboHeader[23], ComboBlHeader[23];
+extern unsigned char ComboHeader[23];
 enum vtype { UB, UW, UD, SB, SW, SD };
 
 unsigned int ConvertBinaryToInt(char data[])
@@ -589,6 +589,7 @@ void GUIRestoreVars()
 
   if ((cfg_fp = fopen_dir(ZCfgPath, "data.cmb", "rb")))
   {
+    u1 ComboBlHeader[23];
     fread(ComboBlHeader, 1, 23, cfg_fp);
 
     if (ComboBlHeader[22])
