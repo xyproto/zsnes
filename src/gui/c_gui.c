@@ -1634,8 +1634,6 @@ void StartGUI(void)
 	GUIOn    = 0;
 	GUIOn2   = 0;
 	GUIReset = 0;
-	StartLL  = 0;
-	StartLR  = 0;
 	continueprog();
 }
 

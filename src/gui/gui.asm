@@ -303,9 +303,6 @@ NEWSYM GUIReset,    resb 1
 NEWSYM CurPalSelect, resb 1
 NEWSYM MotionBlur, resb 1
 
-NEWSYM StartLL, resd 1
-NEWSYM StartLR, resd 1
-
 NEWSYM TRVal2, resw 1
 NEWSYM TGVal2, resw 1
 NEWSYM TBVal2, resw 1

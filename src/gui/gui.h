@@ -98,8 +98,6 @@ extern u4    GUIwinsizey[22];
 extern u4    MsgGiftLeft;
 extern u4    NumCheats;
 extern u4    SantaPos;
-extern u4    StartLL;
-extern u4    StartLR;
 extern u4    cloadmaxlen;
 
 #endif
