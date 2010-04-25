@@ -1484,34 +1484,6 @@ NEWSYM StartSFXdebugb
     xor ecx,ecx
     jmp execsingle.returnfromsfx
 
-NEWSYM StartSFXret
-    test byte[SfxSFR],20h
-    jz .endfx
-    pushad
-    mov bl,[SfxPBR]
-    mov al,[SfxSCMR]
-    and bl,7Fh
-    cmp bl,70h
-    jae .ram
-    test al,10h
-    jz .noaccess
-    jmp .noram
-.ram
-    test al,08h
-    jz .noaccess
-.noram
-    mov dword[NumberOfOpcodes],420 ;678
-    test byte[SfxCLSR],01h
-    jz .nohighsfx
-    mov dword[NumberOfOpcodes],800 ;678*2
-.nohighsfx
-    mov dword[NumberOfOpcodes],0FFFFFFFFh
-    call MainLoop
-.noaccess
-    popad
-.endfx
-    ret
-
 ;*******************************************************
 ; Execute a Single 65816 instruction (debugging purpose)
 ;*******************************************************

@@ -367,7 +367,6 @@ NEWSYM reg301Fw
     or byte[SfxSFR],20h
     or dword[SfxSFR],08000h         ; Set IRQ Flag
     mov dword[SFXProc],1
-;    call StartSFXret
     ret
 
 ; Other SFX stuff
