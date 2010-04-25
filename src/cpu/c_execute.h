@@ -25,4 +25,6 @@ void Donextlinecache(void);
 
 void execute(u4* pedx, u1** pebp, u1** pesi, eop*** pedi);
 
+void StartSFX(void);
+
 #endif

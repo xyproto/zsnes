@@ -54,6 +54,7 @@ EXTSYM EMUPauseKey,INCRFrameKey,MovieWaiting,NoInputRead
 EXTSYM AllocatedRewindStates,PauseFrameMode,RestorePauseFrame,BackupPauseFrame
 EXTSYM rtoflags,sprcnt,sprtilecnt,endprog
 EXTSYM Donextlinecache
+EXTSYM StartSFX
 
 %ifdef __MSDOS__
 EXTSYM dssel,Game60hzcall,NextLineStart,FlipWait,LastLineStart,smallscreenon,ScreenScale
@@ -641,8 +642,11 @@ NEWSYM cpuover
 
 
     test byte[SfxSFR],20h
-    jnz near StartSFX
-.returnfromsfx
+    jz .noStartSFX
+    ccallv StartSFX
+    xor ebx,ebx
+    xor ecx,ecx
+.noStartSFX
 ;    inc dword[numinst]          ;Temporary
     inc word[curypos]
     xor eax,eax
@@ -1363,36 +1367,6 @@ NEWSYM UpdateCLSR
     mov dword[NumberOfOpcodes2],0FFFFFFFh
 .noyi
    ret
-
-NEWSYM StartSFX
-    push edx
-    push esi
-    push edi
-    push ebp
-    xor ebx,ebx
-    mov bl,[SfxPBR]
-    mov al,[SfxSCMR]
-    and bl,7Fh
-    cmp bl,70h
-    jae .ram
-    test al,10h
-    jz .noaccess
-    jmp .noram
-.ram
-    test al,08h
-    jz .noaccess
-.noram
-    mov eax,[NumberOfOpcodes2]
-    mov [NumberOfOpcodes],eax
-    call MainLoop
-.noaccess
-    pop ebp
-    pop edi
-    pop esi
-    pop edx
-    xor ebx,ebx
-    xor ecx,ecx
-    jmp cpuover.returnfromsfx
 
 NEWSYM StartSFXdebugb
     push edx

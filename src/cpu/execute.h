@@ -22,6 +22,7 @@ extern u1  pressed[256 + 128 + 64]; // keyboard pressed keys in scancode
 extern u1  romloadskip;
 extern u1* initaddrl;               // initial address location
 extern u2  t1cc;
+extern u4  NumberOfOpcodes2;
 extern u4  timercount;
 
 #ifdef __MSDOS__

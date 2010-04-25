@@ -78,12 +78,12 @@ NEWSYM SfxSFR,   dd 0     ; status flag register (16bit)
 ;                Set to 0 when read by 658c16
 
 NEWSYM SfxBRAMR,    dd 0  ; backup ram read only on/off (8bit)
-NEWSYM SfxPBR,      dd 0  ; program bank register (8bit)
+NEWSYM SfxPBR,      dd 0
 NEWSYM SfxROMBR,    dd 0  ; rom bank register (8bit)
 NEWSYM SfxCFGR,     dd 0  ; control flags register (8bit)
 NEWSYM SfxSCBR,     dd 0  ; screen bank register (8bit)
 NEWSYM SfxCLSR,     dd 0  ; clock speed register (8bit)
-NEWSYM SfxSCMR,     dd 0  ; screen mode register (8bit)
+NEWSYM SfxSCMR,     dd 0
 NEWSYM SfxVCR,      dd 0  ; version code register (8bit)
 NEWSYM SfxRAMBR,    dd 0  ; ram bank register (8bit)
 NEWSYM SfxCBR,      dd 0  ; cache base register (16bit)

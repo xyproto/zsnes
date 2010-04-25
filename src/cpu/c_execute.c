@@ -6,6 +6,7 @@
 #include "../c_intrf.h"
 #include "../c_vcache.h"
 #include "../cfg.h"
+#include "../chips/fxemu2.h"
 #include "../chips/sa1regs.h"
 #include "../debugger.h"
 #include "../endmem.h"
@@ -381,4 +382,14 @@ cpuover:
 	*pebp = ebp;
 	*pesi = esi;
 	*pedi = edi;
+}
+
+
+void StartSFX(void)
+{
+	if (SfxSCMR & ((SfxPBR & 0x7F) < 0x70 ? /* noram */ 0x10 : /* ram */ 0x08))
+	{
+		NumberOfOpcodes = NumberOfOpcodes2;
+		asm_call(MainLoop);
+	}
 }
