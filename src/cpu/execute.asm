@@ -20,7 +20,7 @@
 %include "macros.mac"
 
 EXTSYM KeyRewind,Voice0Status,UpdateDPage
-EXTSYM romdata,DosExit,sfxramdata
+EXTSYM romdata,DosExit
 EXTSYM device2,RawDumpInProgress
 EXTSYM KeySaveState,KeyLoadState,KeyQuickExit,KeyQuickLoad,KeyQuickRst
 EXTSYM GUIReset,KeyOnStA,KeyOnStB,ProcessKeyOn,KeyQuickClock
@@ -42,12 +42,8 @@ EXTSYM SA1Message,MultiTapStat,idledetectspc,SA1Control,SA1Enable,SA1IRQEnable
 EXTSYM SPC700read,SPC700write,numspcvblleft,spc700idle,SA1IRQExec,ForceNewGfxOff
 EXTSYM GUIQuit,IRAM,SA1Ptr,SA1BWPtr,outofmemfix
 EXTSYM yesoutofmemory,ProcessMovies,ppustatus
-EXTSYM ReturnFromSPCStall,scanlines,MainLoop,MoviePassWaiting
-EXTSYM NumberOfOpcodes,SfxCLSR,SfxSCMR,SfxPOR,sfx128lineloc,sfx160lineloc
-EXTSYM sfx192lineloc,sfxobjlineloc,sfxclineloc,PLOTJmpa,PLOTJmpb,FxTable
-EXTSYM FxTableb,FxTablec,FxTabled,SfxPBR,SCBRrel,SfxSCBR,SfxCOLR,SFXCounter
-EXTSYM fxbit01,fxbit01pcal,fxbit23,fxbit23pcal,fxbit45,fxbit45pcal,fxbit67
-EXTSYM fxbit67pcal,SfxSFR,nosprincr,cpucycle,switchtovirqdeb,switchtonmideb
+EXTSYM ReturnFromSPCStall,scanlines,MoviePassWaiting
+EXTSYM SfxSFR,nosprincr,cpucycle,switchtovirqdeb,switchtonmideb
 EXTSYM BackupCVFrame,RestoreCVFrame,xe
 EXTSYM KeyInsrtChap,KeyNextChap,KeyPrevChap
 EXTSYM EMUPauseKey,INCRFrameKey,MovieWaiting,NoInputRead
@@ -55,6 +51,7 @@ EXTSYM AllocatedRewindStates,PauseFrameMode,RestorePauseFrame,BackupPauseFrame
 EXTSYM rtoflags,sprcnt,sprtilecnt,endprog
 EXTSYM Donextlinecache
 EXTSYM StartSFX
+EXTSYM StartSFXdebugb
 
 %ifdef __MSDOS__
 EXTSYM dssel,Game60hzcall,NextLineStart,FlipWait,LastLineStart,smallscreenon,ScreenScale
@@ -1294,96 +1291,6 @@ NEWSYM pexecs2
    jnz .sloop
    ret
 
-NEWSYM StartSFXdebugb
-    push edx
-    push esi
-    push edi
-    push ebp
-    push ebx
-
-   test byte[SfxPOR],10h
-   jnz .objmode
-   mov al,[SfxSCMR]
-   and al,00100100b     ; 4 + 32
-   cmp al,4
-   je .lines160
-   cmp al,32
-   je .lines192
-   cmp al,36
-   je .objmode
-   mov eax,[sfx128lineloc]
-   jmp .donelines
-.lines160
-   mov eax,[sfx160lineloc]
-   jmp .donelines
-.lines192
-   mov eax,[sfx192lineloc]
-   jmp .donelines
-.objmode
-   mov eax,[sfxobjlineloc]
-.donelines
-   mov [sfxclineloc],eax
-
-   mov al,[SfxSCMR]
-   and eax,00000011b
-   mov bl,[SfxPOR]
-   and bl,0Fh
-   shl bl,2
-   or al,bl
-   mov ebx,[PLOTJmpb+eax*4]
-   mov eax,[PLOTJmpa+eax*4]
-   mov [FxTable+4Ch*4],eax
-   mov [FxTableb+4Ch*4],eax
-   mov [FxTablec+4Ch*4],eax
-   mov [FxTabled+4Ch*4],ebx
-
-   mov ebx,[SfxSCBR]
-   shl ebx,10
-   add ebx,[sfxramdata]
-   mov [SCBRrel],ebx
-
-   mov eax,[SfxCOLR]
-   mov ebx,[fxbit01+eax*4]
-   mov [fxbit01pcal],ebx
-   mov ebx,[fxbit23+eax*4]
-   mov [fxbit23pcal],ebx
-   mov ebx,[fxbit45+eax*4]
-   mov [fxbit45pcal],ebx
-   mov ebx,[fxbit67+eax*4]
-   mov [fxbit67pcal],ebx
-   xor ebx,ebx
-
-    mov bl,[SfxPBR]
-    mov al,[SfxSCMR]
-    and bl,7Fh
-    cmp bl,70h
-    jae .ram
-    test al,10h
-    jz .noaccess
-    jmp .noram
-.ram
-    test al,08h
-    jz .noaccess
-.noram
-    mov dword[NumberOfOpcodes],420 ;678
-    test byte[SfxCLSR],01h
-    jz .nohighsfx
-    mov dword[NumberOfOpcodes],800 ;678*2
-.nohighsfx
-    cmp byte[SFXCounter],1
-    jne .noyi
-    mov dword[NumberOfOpcodes],0FFFFFFFh
-.noyi
-    call MainLoop
-.noaccess
-    pop ebx
-    pop ebp
-    pop edi
-    pop esi
-    pop edx
-    xor ecx,ecx
-    jmp execsingle.returnfromsfx
-
 ;*******************************************************
 ; Execute a Single 65816 instruction (debugging purpose)
 ;*******************************************************
@@ -1447,8 +1354,10 @@ NEWSYM execsingle
     mov [KeyOnStB],al
     mov byte[KeyOnStA],0
     test byte[SfxSFR],20h
-    jnz near StartSFXdebugb
-.returnfromsfx
+    jz .noStartSFXdebugb
+    ccallv StartSFXdebugb
+    xor ecx,ecx
+.noStartSFXdebugb
     add dh,[cycpl]
     mov [pdh],dh
 
