@@ -388,36 +388,8 @@ cpuover:
 
 void StartSFXdebugb(void)
 {
-	{ u4 eax;
-		if (SfxPOR & 0x10) goto objmode;
-		switch (SfxSCMR & 0x24) // 4 + 32
-		{
-			default:   eax = sfx128lineloc; break;
-			case 0x04: eax = sfx160lineloc; break;
-			case 0x20: eax = sfx192lineloc; break;
-objmode:
-			case 0x24: eax = sfxobjlineloc; break;
-		}
-		sfxclineloc = eax;
-	}
-
-	{ u4 const eax_ = (SfxSCMR & 0x0F) << 2 | SfxSCMR & 0x03;
-		u4 const ebx = PLOTJmpb[eax_];
-		u4 const eax = PLOTJmpa[eax_];
-		FxTable[0x4C]  = eax;
-		FxTableb[0x4C] = eax;
-		FxTablec[0x4C] = eax;
-		FxTabled[0x4C] = ebx;
-	}
-
-	SCBRrel = sfxramdata + SfxSCBR * 1024;
-
-	{ u4 const eax = SfxCOLR;
-		fxbit01pcal = fxbit01[eax];
-		fxbit23pcal = fxbit23[eax];
-		fxbit45pcal = fxbit45[eax];
-		fxbit67pcal = fxbit67[eax];
-	}
+	UpdatePORSCMR();
+	UpdateSCBRCOLR();
 
 	if (SfxSCMR & ((SfxPBR & 0x7F) < 0x70 ? /* noram */ 0x10 : /* ram */ 0x08))
 	{
