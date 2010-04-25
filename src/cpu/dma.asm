@@ -34,27 +34,12 @@ section .bss
 NEWSYM AddrNoIncr, resb 1
 section .text
 
-%macro ExecSPCCycles 0
-    movzx ebx,word[esi+5]
-    inc bx
-    inc ebx
-    shr ebx,2
-    mov [soundcycleft],ebx
-    or ebx,ebx
-    jz .nocycles
-    xor ebx,ebx
-    xor ecx,ecx
-    call pexecs2
-.nocycles
-%endmacro
-
 NEWSYM transdma
     push eax
     cmp word[esi+5],480h
     jne .no
 ;    mov byte[debstop3],1
 .no
-;   ExecSPCCycles
 
     mov al,[esi]
     test al,80h

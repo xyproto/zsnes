@@ -1280,17 +1280,6 @@ NEWSYM pexecs
    inc esi
    jmp execloop.startagain
 
-NEWSYM pexecs2
-.sloop
-   mov bl,[ebp]
-   ; 1260, 10000/12625
-   inc ebp
-   call dword near [opcjmptab+ebx*4]
-   xor ebx,ebx
-   dec dword[soundcycleft]
-   jnz .sloop
-   ret
-
 ;*******************************************************
 ; Execute a Single 65816 instruction (debugging purpose)
 ;*******************************************************
