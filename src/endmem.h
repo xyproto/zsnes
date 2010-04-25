@@ -48,6 +48,10 @@ extern u2    prevpal[256];         // previous palette buffer
 extern u2    sprendx[256];
 extern u2    vidmemch4[2048];
 extern u2    xtravbuf[288];
+extern u4    fxbit01[256];
+extern u4    fxbit23[256];
+extern u4    fxbit45[256];
+extern u4    fxbit67[256];
 extern u4    ngpalcon2b[32];
 extern u4    ngpalcon4b[32];
 extern u4    objwlrpos[256];

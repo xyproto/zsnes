@@ -81,14 +81,14 @@ NEWSYM SfxBRAMR,    dd 0  ; backup ram read only on/off (8bit)
 NEWSYM SfxPBR,      dd 0
 NEWSYM SfxROMBR,    dd 0  ; rom bank register (8bit)
 NEWSYM SfxCFGR,     dd 0  ; control flags register (8bit)
-NEWSYM SfxSCBR,     dd 0  ; screen bank register (8bit)
+NEWSYM SfxSCBR,     dd 0
 NEWSYM SfxCLSR,     dd 0
 NEWSYM SfxSCMR,     dd 0
 NEWSYM SfxVCR,      dd 0  ; version code register (8bit)
 NEWSYM SfxRAMBR,    dd 0  ; ram bank register (8bit)
 NEWSYM SfxCBR,      dd 0  ; cache base register (16bit)
 
-NEWSYM SfxCOLR,     dd 0  ; Internal color register
+NEWSYM SfxCOLR,     dd 0
 NEWSYM SfxPOR,      dd 0  ; Plot option register
 
 NEWSYM SfxCacheFlags,  dd 0  ; Saying what parts of the cache was written to

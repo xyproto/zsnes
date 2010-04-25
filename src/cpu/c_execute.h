@@ -25,6 +25,8 @@ void Donextlinecache(void);
 
 void execute(u4* pedx, u1** pebp, u1** pesi, eop*** pedi);
 
+void UpdateSCBRCOLR(void);
+
 void UpdateCLSR(void);
 
 void StartSFX(void);

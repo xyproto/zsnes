@@ -1336,26 +1336,6 @@ NEWSYM UpdatePORSCMR
    pop ebx
    ret
 
-NEWSYM UpdateSCBRCOLR
-   push eax
-   push ebx
-   mov ebx,[SfxSCBR]
-   shl ebx,10
-   add ebx,[sfxramdata]
-   mov [SCBRrel],ebx
-   mov eax,[SfxCOLR]
-   mov ebx,[fxbit01+eax*4]
-   mov [fxbit01pcal],ebx
-   mov ebx,[fxbit23+eax*4]
-   mov [fxbit23pcal],ebx
-   mov ebx,[fxbit45+eax*4]
-   mov [fxbit45pcal],ebx
-   mov ebx,[fxbit67+eax*4]
-   mov [fxbit67pcal],ebx
-   pop ebx
-   pop eax
-   ret
-
 NEWSYM StartSFXdebugb
     push edx
     push esi

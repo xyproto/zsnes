@@ -54,7 +54,7 @@ u1*           vidbufferofsa;
 u1*           vidbufferofsb;
 unsigned char *headdata;
 u1*           romdata;
-unsigned char *sfxramdata;          // SuperFX Ram Data
+u1*           sfxramdata;
 unsigned char *setaramdata;         // Seta ST010/ST011 SRam Data
 u1*           wramdata;
 unsigned char *ram7f;               // ram @ 7f = 65536

@@ -406,7 +406,7 @@ NEWSYM reg3037w       ; CFGR (Control Flags Register)
     ret
 NEWSYM reg3038w       ; SCBR (Screen Bank Register)
     mov [SfxSCBR],al
-    call UpdateSCBRCOLR
+    ccallv UpdateSCBRCOLR
     ret
 NEWSYM reg3039w       ; CLSR (Clock Speed Register)
     and al,0FEh

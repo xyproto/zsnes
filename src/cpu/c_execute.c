@@ -385,6 +385,17 @@ cpuover:
 }
 
 
+void UpdateSCBRCOLR(void)
+{
+	SCBRrel = sfxramdata + SfxSCBR * 1024;
+	u4 const eax = SfxCOLR;
+	fxbit01pcal = fxbit01[eax];
+	fxbit23pcal = fxbit23[eax];
+	fxbit45pcal = fxbit45[eax];
+	fxbit67pcal = fxbit67[eax];
+}
+
+
 void UpdateCLSR(void)
 {
 	NumberOfOpcodes2 =
