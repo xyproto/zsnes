@@ -89,7 +89,7 @@ NEWSYM SfxRAMBR,    dd 0  ; ram bank register (8bit)
 NEWSYM SfxCBR,      dd 0  ; cache base register (16bit)
 
 NEWSYM SfxCOLR,     dd 0
-NEWSYM SfxPOR,      dd 0  ; Plot option register
+NEWSYM SfxPOR,      dd 0
 
 NEWSYM SfxCacheFlags,  dd 0  ; Saying what parts of the cache was written to
 NEWSYM SfxLastRamAdr,  dd 0  ; Last RAM address accessed

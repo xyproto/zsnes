@@ -415,7 +415,7 @@ NEWSYM reg3039w       ; CLSR (Clock Speed Register)
     ret
 NEWSYM reg303Aw       ; SCMR (Screen Mode Register)
     mov [SfxSCMR],al
-    call UpdatePORSCMR
+    ccallv UpdatePORSCMR
     ret
 NEWSYM reg303Bw       ; VCR (Version Code Register)
     ret

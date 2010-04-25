@@ -1294,48 +1294,6 @@ NEWSYM pexecs2
    jnz .sloop
    ret
 
-NEWSYM UpdatePORSCMR
-   push ebx
-   push eax
-   test byte[SfxPOR],10h
-   jnz .objmode
-   mov al,[SfxSCMR]
-   and al,00100100b     ; 4 + 32
-   cmp al,4
-   je .lines160
-   cmp al,32
-   je .lines192
-   cmp al,36
-   je .objmode
-   mov eax,[sfx128lineloc]
-   jmp .donelines
-.lines160
-   mov eax,[sfx160lineloc]
-   jmp .donelines
-.lines192
-   mov eax,[sfx192lineloc]
-   jmp .donelines
-.objmode
-   mov eax,[sfxobjlineloc]
-.donelines
-   mov [sfxclineloc],eax
-
-   mov al,[SfxSCMR]
-   and eax,00000011b
-   mov bl,[SfxPOR]
-   and bl,0Fh
-   shl bl,2
-   or al,bl
-   mov ebx,[PLOTJmpb+eax*4]
-   mov eax,[PLOTJmpa+eax*4]
-   mov [FxTable+4Ch*4],eax
-   mov [FxTableb+4Ch*4],eax
-   mov [FxTablec+4Ch*4],eax
-   mov [FxTabled+4Ch*4],ebx
-   pop eax
-   pop ebx
-   ret
-
 NEWSYM StartSFXdebugb
     push edx
     push esi

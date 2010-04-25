@@ -48,6 +48,12 @@ extern u2    prevpal[256];         // previous palette buffer
 extern u2    sprendx[256];
 extern u2    vidmemch4[2048];
 extern u2    xtravbuf[288];
+extern u4    FxTable[256];
+extern u4    FxTableb[256];
+extern u4    FxTablec[256];
+extern u4    FxTabled[256];
+extern u4    PLOTJmpa[64];
+extern u4    PLOTJmpb[64];
 extern u4    fxbit01[256];
 extern u4    fxbit23[256];
 extern u4    fxbit45[256];
