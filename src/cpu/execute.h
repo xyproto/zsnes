@@ -3,7 +3,6 @@
 
 #include "../types.h"
 
-extern void UpdateCLSR();
 extern void UpdatePORSCMR();
 extern void cpuover();
 extern void execsingle();

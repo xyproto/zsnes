@@ -1356,18 +1356,6 @@ NEWSYM UpdateSCBRCOLR
    pop eax
    ret
 
-NEWSYM UpdateCLSR
-   mov dword[NumberOfOpcodes2],350 ; 0FFFFFFFh;350
-   test byte[SfxCLSR],01h
-   jz .nohighsfx
-   mov dword[NumberOfOpcodes2],700 ;700
-.nohighsfx
-    cmp byte[SFXCounter],1
-    je .noyi
-    mov dword[NumberOfOpcodes2],0FFFFFFFh
-.noyi
-   ret
-
 NEWSYM StartSFXdebugb
     push edx
     push esi

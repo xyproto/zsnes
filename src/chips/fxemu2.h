@@ -6,6 +6,7 @@
 extern void MainLoop();
 
 extern u4 NumberOfOpcodes; // Number of opcodes to execute
+extern u4 SfxCLSR;         // clock speed register (8bit)
 extern u4 SfxPBR;          // program bank register (8bit)
 extern u4 SfxSCMR;         // screen mode register (8bit)
 

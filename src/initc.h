@@ -31,4 +31,6 @@ extern uint8_t  xp;
 extern uint8_t  xe;
 extern eop**    Curtableaddr; // Current table address
 
+extern u1 SFXCounter;
+
 #endif

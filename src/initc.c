@@ -2062,7 +2062,8 @@ void OpenCombFile()
   }
 }
 
-uint8_t SFXCounter, SfxAC, ForceNewGfxOff;
+u1 SFXCounter;
+uint8_t SfxAC, ForceNewGfxOff;
 
 void preparesfx()
 {

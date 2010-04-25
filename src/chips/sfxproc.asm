@@ -411,7 +411,7 @@ NEWSYM reg3038w       ; SCBR (Screen Bank Register)
 NEWSYM reg3039w       ; CLSR (Clock Speed Register)
     and al,0FEh
     mov [SfxCLSR],al
-    call UpdateCLSR
+    ccallv UpdateCLSR
     ret
 NEWSYM reg303Aw       ; SCMR (Screen Mode Register)
     mov [SfxSCMR],al

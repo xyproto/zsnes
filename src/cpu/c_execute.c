@@ -54,7 +54,7 @@ static void UpdateSFX(void)
 {
 	asm_call(UpdatePORSCMR);
 	asm_call(UpdatePORSCMR);
-	asm_call(UpdateCLSR);
+	UpdateCLSR();
 }
 
 
@@ -382,6 +382,15 @@ cpuover:
 	*pebp = ebp;
 	*pesi = esi;
 	*pedi = edi;
+}
+
+
+void UpdateCLSR(void)
+{
+	NumberOfOpcodes2 =
+		SFXCounter != 1 ? 0x0FFFFFFF :
+		SfxCLSR & 0x01  ? 700        :
+		350;
 }
 
 
