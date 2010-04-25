@@ -4,6 +4,7 @@
 #include "../asm_call.h"
 #include "../c_init.h"
 #include "../c_intrf.h"
+#include "../c_vcache.h"
 #include "../cfg.h"
 #include "../chips/sa1regs.h"
 #include "../debugger.h"
@@ -290,6 +291,32 @@ void init60hz(void)
 void init18_2hz(void)
 {
 	set_timer_interval(65536);
+}
+
+
+void Donextlinecache(void)
+{
+	if (curypos != 0           &&
+			curypos < resolutn - 1 &&
+			!(scrndis & 0x10)      &&
+			curblank == 0)
+	{
+		u1 ecx = curypos + 1;
+		do
+		{
+			sprlefttot[ecx] = 0;
+			((u4*)sprleftpr)[ecx] = 0; // XXX ugly cast
+			sprcnt[ecx]     = 0;
+			sprstart[ecx]   = 0;
+			sprtilecnt[ecx] = 0;
+			sprend[ecx]     = 0;
+			sprendx[ecx]    = 0;
+		}
+		while (++ecx != 0);
+		asm_call(processsprites);
+		asm_call(cachesprites);
+	}
+	NextLineCache = 0;
 }
 
 

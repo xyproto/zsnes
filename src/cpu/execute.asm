@@ -31,8 +31,7 @@ EXTSYM memtablew8
 EXTSYM tablead
 EXTSYM tableadc,nextmenupopup,MovieProcessing
 EXTSYM wramdata,cycpbl,cycpblt,irqon,spcon
-EXTSYM scrndis,sprlefttot,sprleftpr,processsprites
-EXTSYM cachesprites,opcjmptab,CheatOn
+EXTSYM opcjmptab,CheatOn
 EXTSYM INTEnab,JoyCRead,NMIEnab,NumCheats,CurrentExecSA1,ReadInputDevice
 EXTSYM StartDrawNewGfx,VIRQLoc,cachevideo,cfield,cheatdata,curblank,curnmi
 EXTSYM curypos,cycpl,doirqnext,drawline,exechdma,hdmadelay,intrset,newengen
@@ -53,7 +52,8 @@ EXTSYM BackupCVFrame,RestoreCVFrame,xe
 EXTSYM KeyInsrtChap,KeyNextChap,KeyPrevChap
 EXTSYM EMUPauseKey,INCRFrameKey,MovieWaiting,NoInputRead
 EXTSYM AllocatedRewindStates,PauseFrameMode,RestorePauseFrame,BackupPauseFrame
-EXTSYM rtoflags,sprcnt,sprstart,sprtilecnt,sprend,sprendx,endprog
+EXTSYM rtoflags,sprcnt,sprtilecnt,endprog
+EXTSYM Donextlinecache
 
 %ifdef __MSDOS__
 EXTSYM dssel,Game60hzcall,NextLineStart,FlipWait,LastLineStart,smallscreenon,ScreenScale
@@ -335,48 +335,6 @@ NEWSYM nmistatus,    dd 0       ; 0 = none, 1 = waiting for nmi location,
 NEWSYM joycontren,   dd 0       ; joystick read control check
 NEWSYM NextLineCache, db 0
 NEWSYM ZMVZClose, db 0
-
-SECTION .text
-
-Donextlinecache:
-    cmp word[curypos],0
-    je .nocache
-    mov ax,[resolutn]
-    dec ax
-    cmp word[curypos],ax
-    jae .nocache
-    test byte[scrndis],10h
-    jnz .nocache
-    cmp byte[curblank],0h
-    jne .nocache
-    push ecx
-    push ebx
-    push esi
-    push edi
-    xor ecx,ecx
-    mov cl,[curypos]
-    inc cl
-    push edx
-.next
-    mov byte[sprlefttot+ecx],0
-    mov dword[sprleftpr+ecx*4],0
-    mov byte[sprcnt+ecx],0
-    mov byte[sprstart+ecx],0
-    mov byte[sprtilecnt+ecx],0
-    mov byte[sprend+ecx],0
-    mov word[sprendx+ecx*2],0
-    inc cl
-    jnz .next
-    call processsprites
-    call cachesprites
-    pop edx
-    pop edi
-    pop esi
-    pop ebx
-    pop ecx
-.nocache
-    mov byte[NextLineCache],0
-    ret
 
 ;*******************************************************
 ; 65816 execution
@@ -663,7 +621,7 @@ NEWSYM cpuover
     FlipCheck
     cmp byte[NextLineCache],0
     je .nosprcache
-    call Donextlinecache
+    ccallv Donextlinecache
 .nosprcache
     cmp byte[KeyOnStB],0
     je .nokeyon

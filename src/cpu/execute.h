@@ -10,6 +10,7 @@ extern void execsingle();
 
 extern u1  EMUPause;
 extern u1  ExecExitOkay;
+extern u1  NextLineCache;
 extern u1  NextNGDisplay;
 extern u1  NoSoundReinit;
 extern u1  SPCKeyPressed;
