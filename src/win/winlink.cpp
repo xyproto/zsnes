@@ -33,14 +33,17 @@ extern "C"
 #include <ctype.h>
 #include <dsound.h>
 #include <dinput.h>
+#include <mmintrin.h>
 #include <winuser.h>
 #include "resource.h"
 
 extern "C"
 {
+#include "../asm_call.h"
 #include "gl_draw.h"
 #include "../cfg.h"
 #include "../input.h"
+#include "../types.h"
 #include "../zmovie.h"
   void zexit(), zexit_error();
 }
@@ -49,63 +52,6 @@ extern "C"
 
 #ifdef QT_DEBUGGER
 #include "../debugger/load.h"
-#endif
-
-
-/*
-December 17 2004 -Nach
-
-I added some macros for inline assembly to keep compatibility between GCC and MSVC
-
-ASM_BEGIN is to start an assembly section
-ASM_END is to end it
-
-ASM_COMMAND is for any simple command without a , in it example: dec eax
-ASM_COMMAND2 is when a command has a , for example: add ebx, 5
-ASM_COMMAND3 is when the parameter after the , is a variable example: mov eax, my_variable
-
-ASM_CALL is for calling another function inside assembly section
-
-asm_call() can be treated like any C function, use it to call an assembly function
-           from any normal C code.
-*/
-
-#ifdef __GNUC__ //MinGW
-
-//Simple start and end structure, set as volatile so perhaps we can use -O1+ later
-#define ASM_BEGIN asm volatile ( \
-ASM_COMMAND(pushad)
-#define ASM_END ASM_COMMAND(popad) \
-);
-//All commands need quotes and a newline and tab. C vars are _ prefixed
-#define ASM_COMMAND(line) #line"\n\t"
-#define ASM_COMMAND2(line, part2) #line", "#part2"\n\t"
-#define ASM_COMMAND3(line, var) #line", _"#var"\n\t"
-//Just for the prefix
-#define ASM_CALL(func) ASM_COMMAND(call _ ## func)
-//A function call is a simple register backup, call, restore
-#define asm_call(func) ASM_BEGIN \
-ASM_COMMAND(pushad) \
-ASM_CALL(func) \
-ASM_COMMAND(popad) \
-ASM_END
-
-#else //MSVC
-
-#define ASM_BEGIN _asm {
-#define ASM_END };
-
-//MSVC is all straight foward about these
-#define ASM_COMMAND(line) line
-#define ASM_COMMAND2(line, part2) line, part2
-#define ASM_COMMAND3(line, var) ASM_COMMAND2(line, var)
-//Next is not really special either
-#define ASM_CALL(func) ASM_COMMAND(call func)
-//Using this weird style because of MSVCs bad parsing
-#define asm_call(func) { _asm pushad \
-_asm call func \
-_asm popad };
-
 #endif
 
 DWORD Moving = 0;
@@ -2217,55 +2163,17 @@ extern "C"
 
       if (T36HZEnabled == 1)
       {
-        if (MMXSupport == 1)
-        {
-          ASM_BEGIN
-          ASM_COMMAND3(mov edi, buffer_ptr)
-          ASM_COMMAND3(mov ecx, SPCSize)
-          ASM_COMMAND2(shr ecx, 2)
-          ASM_COMMAND2(pxor mm0, mm0)
-ASM_COMMAND(_blank_top_fpu:)
-          ASM_COMMAND2(movq [edi], mm0)
-          ASM_COMMAND2(add edi, 8)
-          ASM_COMMAND(dec ecx)
-          ASM_COMMAND(jne _blank_top_fpu)
-          ASM_COMMAND(emms)
-          ASM_END
-        }
-        else
-        {
-          ASM_BEGIN
-          ASM_COMMAND3(mov edi, buffer_ptr)
-          ASM_COMMAND3(mov ecx, SPCSize)
-          ASM_COMMAND2(shr ecx, 1)
-          ASM_COMMAND2(xor eax, eax)
-ASM_COMMAND(_blank_top:)
-          ASM_COMMAND2(mov [edi], eax)
-          ASM_COMMAND2(add edi, 4)
-          ASM_COMMAND(dec ecx)
-          ASM_COMMAND(jne _blank_top)
-          ASM_END
-        }
+        memset((void*)buffer_ptr, 0, SPCSize * 2);
       }
       else
       {
         if (MMXSupport == 1)
         {
-          ASM_BEGIN
-          ASM_COMMAND3(mov esi, DSPBuffer1)
-          ASM_COMMAND3(mov edi, buffer_ptr)
-          ASM_COMMAND3(mov ecx, SPCSize)
-          ASM_COMMAND2(shr ecx, 2)
-ASM_COMMAND(_top_mmx:)
-          ASM_COMMAND2(movq mm0, [esi])
-          ASM_COMMAND2(packssdw mm0, [esi+8])
-          ASM_COMMAND2(movq [edi], mm0)
-          ASM_COMMAND2(add esi, 16)
-          ASM_COMMAND2(add edi, 8)
-          ASM_COMMAND(dec ecx)
-          ASM_COMMAND(jne _top_mmx)
-          ASM_COMMAND(emms)
-          ASM_END
+					u4           n   = (u4)SPCSize / 4;
+					__m64 const* src = (__m64 const*)DSPBuffer1;
+					__m64*       dst = (__m64*)buffer_ptr;
+					do *dst++ = _m_packssdw(src[0], src[1]); while (src += 2, --n != 0);
+					_mm_empty();
         }
         else
         {
