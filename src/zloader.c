@@ -1008,10 +1008,8 @@ void zmain(int zargc, char *zargv[])
 }
 
 #ifdef __WIN32__
-extern HINSTANCE hInst;
 int PASCAL WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow)
 {
-  hInst=hInstance;
   ImportDirectX();
   zmain(__argc, __argv);
   return(0);

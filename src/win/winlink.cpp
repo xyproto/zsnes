@@ -78,7 +78,6 @@ HANDLE debugWindow = 0;
 extern "C"
 {
   HWND hMainWindow;
-  HINSTANCE hInst;
   HDC hDC;
   HGLRC hRC;
   DWORD FullScreen = 0;
@@ -757,7 +756,7 @@ LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
   return DefWindowProc(hWnd, uMsg, wParam, lParam);;
 }
 
-int RegisterWinClass()
+static int RegisterWinClass(HINSTANCE const hInst)
 {
   if (AllowMultipleInst == 0)
   {
@@ -1316,7 +1315,7 @@ void DInputError()
   MessageBox(NULL, message1, "DirectInput Error", MB_ICONERROR);
 }
 
-bool InitInput()
+static bool InitInput(HINSTANCE const hInst)
 {
   char message1[256];
   HRESULT hr;
@@ -1966,7 +1965,8 @@ extern "C"
         return;
       }
 
-      if (!RegisterWinClass())
+      HINSTANCE const hInst = GetModuleHandle(0);
+      if (!RegisterWinClass(hInst))
       {
         zexit_error();
       }
@@ -2010,7 +2010,7 @@ extern "C"
       CheckScreenSaver();
 
       // Init various DirectX subsystems
-      InitInput();
+      InitInput(hInst);
       InitSound();
       TestJoy();
 
