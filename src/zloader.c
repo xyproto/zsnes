@@ -981,43 +981,35 @@ static void ZCleanup()
 
 }
 
-#ifndef QT_DEBUGGER
-#define debug_main()
-#endif
-
-void zmain(int zargc, char *zargv[])
-{
-  if (init_paths(*zargv))
-  {
-    #ifdef __LIBAO__
-    ao_initialize();
-    atexit(ao_shutdown);
-    #endif
-    display_start_message();
-    handle_params(zargc, zargv);
-
-    atexit(ZCleanup);
-    srand(time(0));
-
-    if (debugger)
-    {
-      debug_main();
-    }
-    zstart();
-  }
-}
-
 #ifdef __WIN32__
-int PASCAL WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow)
-{
-  ImportDirectX();
-  zmain(__argc, __argv);
-  return(0);
-}
+int PASCAL WinMain(HINSTANCE const hInstance, HINSTANCE const hPrevInstance, PSTR const szCmdLine, int const iCmdShow)
 #else
-int main(int zargc, char *zargv[])
-{
-  zmain(zargc, zargv);
-  return(0);
-}
+int main(int const argc, char** const argv)
 #endif
+{
+#ifdef __WIN32__
+	ImportDirectX();
+	int    const argc = __argc;
+	char** const argv = __argv;
+#endif
+
+	if (init_paths(*argv))
+	{
+#ifdef __LIBAO__
+		ao_initialize();
+		atexit(ao_shutdown);
+#endif
+		display_start_message();
+		handle_params(argc, argv);
+
+		atexit(ZCleanup);
+		srand(time(0));
+
+#ifdef QT_DEBUGGER
+		if (debugger) debug_main();
+#endif
+		zstart();
+	}
+
+	return 0;
+}
