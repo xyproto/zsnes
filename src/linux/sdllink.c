@@ -34,11 +34,21 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "safelib.h"
 #include "../c_intrf.h"
 #include "../cfg.h"
+#include "../cpu/execute.h"
 #include "../gui/c_gui.h"
 #include "../gui/c_guimouse.h"
+#include "../gui/gui.h"
+#include "../initc.h"
 #include "../input.h"
+#include "../intrf.h"
 #include "../link.h"
+#include "../ui.h"
+#include "../video/procvidc.h"
 #include "sdllink.h"
+
+#ifdef __OPENGL__
+#	include "gl_draw.h"
+#endif
 
 #ifdef QT_DEBUGGER
 #include "debugger/load.h"
@@ -46,7 +56,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #define QueryPerformanceCounter(x) asm volatile("rdtsc" : "=a"(((unsigned int *)(x))[0]),"=d"(((unsigned int *)x)[1]))
 
-void zexit(), zexit_error();
+void zexit_error();
 
 typedef enum { FALSE = 0, TRUE = 1 } BOOL;
 typedef enum vidstate_e { vid_null, vid_none, vid_soft, vid_gl } vidstate_t;
@@ -62,30 +72,21 @@ static vidstate_t sdl_state = vid_null;
 static int UseOpenGL = 0;
 static const int BitDepth = 16;
 static bool ScreenSaverSuspended = false;
-uint32_t FirstVid = 1;
+static uint32_t FirstVid = 1;
 
-
-uint32_t SMode = 0;
-uint32_t DSMode = 0;
-uint32_t prevHQMode = -1;
 
 extern uint32_t *BitConv32Ptr;
 extern uint32_t *RGBtoYUVPtr;
 
 /* JOYSTICK AND KEYBOARD INPUT */
-SDL_Joystick *JoystickInput[5];
-unsigned int AxisOffset[5] = { 256 + 128 + 64 };  // per joystick offsets in
-unsigned int ButtonOffset[5] = { 448 };           // pressed. We have 128 + 64
-unsigned int HatOffset[5] = { 448 };              // bytes for all joysticks. We
-unsigned int BallOffset[5] = { 448 };             // can control all 5 players.
-int shiftptr = 0;
-int offset;
+static SDL_Joystick* JoystickInput[5];
+static unsigned int AxisOffset[5] = { 256 + 128 + 64 };  // per joystick offsets in
+static unsigned int ButtonOffset[5] = { 448 };           // pressed. We have 128 + 64
+static unsigned int HatOffset[5] = { 448 };              // bytes for all joysticks. We
+static unsigned int BallOffset[5] = { 448 };             // can control all 5 players.
+static int shiftptr = 0;
+static int offset;
 uint32_t numlockptr;
-
-extern unsigned char pressed[];
-extern int CurKeyPos;
-extern int CurKeyReadPos;
-extern int KeyBuffer[16];
 
 /* MOUSE INPUT */
 static float MouseMinX = 0;
@@ -97,11 +98,8 @@ static int MouseMove2X, MouseMove2Y;
 u1 MouseButton;
 static float MouseXScale = 1.0;
 static float MouseYScale = 1.0;
-uint32_t CurMode = -1;
+static uint32_t CurMode = -1;
 
-extern uint8_t GUIOn;
-extern uint8_t GUIOn2;
-extern uint8_t EMUPause;
 static uint8_t IsActivated = 1;
 
 /* TIMER VARIABLES/MACROS */
@@ -111,33 +109,23 @@ static uint8_t IsActivated = 1;
 #define UPDATE_TICKS_GUI (1000.0/36.0)
 #define UPDATE_TICKS_UDP (1000.0/60.0)
 
-int T60HZEnabled = 0;
+static int T60HZEnabled = 0;
 u1 T36HZEnabled = 0;
-float end, end2;
-float start, start2;
-float update_ticks_pc, update_ticks_pc2;
+static float end;
+static float end2;
+static float start;
+static float start2;
+static float update_ticks_pc;
+static float update_ticks_pc2;
 
 // Used for semaphore code
 static SDL_sem *sem_frames = NULL;
 static struct timeval sem_start;
-void sem_sleep_rdy();
-void sem_sleep_die();
-float sem_GetTicks();
-
-extern unsigned char romispal;
-
-/* FUNCTION DECLARATIONS */
-unsigned int sdl_keysym_to_pc_scancode(int);
-void ProcessKeyBuf(int);
-void UpdateSound(void *userdata, Uint8 *stream, int len);
 
 void Game60hzcall();
 int64_t copymaskRB = UINT64_C(0x001FF800001FF800);
 int64_t copymaskG = UINT64_C(0x0000FC000000FC00);
 int64_t copymagic = UINT64_C(0x0008010000080100);
-#ifdef __OPENGL__
-void gl_clearwin();
-#endif
 
 static void adjustMouseXScale()
 {
@@ -187,7 +175,8 @@ void SetHiresOpt(unsigned int ResX, unsigned int ResY)
   }
 }
 
-void Clear2xSaIBuffer();
+static unsigned int sdl_keysym_to_pc_scancode(int sym);
+static void ProcessKeyBuf(int scancode);
 
 int Main_Proc()
 {
@@ -537,7 +526,7 @@ int Main_Proc()
   return TRUE;
 }
 
-unsigned int sdl_keysym_to_pc_scancode(int sym)
+static unsigned int sdl_keysym_to_pc_scancode(int sym)
 {
   switch (sym)
   {
@@ -736,7 +725,7 @@ unsigned int sdl_keysym_to_pc_scancode(int sym)
   return(0x64 + sym);
 }
 
-void ProcessKeyBuf(int scancode)
+static void ProcessKeyBuf(int scancode)
 {
   int accept = 0;
   int vkeyval = 0;
@@ -972,6 +961,8 @@ BOOL InitInput()
   return TRUE;
 }
 
+static void sem_sleep_rdy(void);
+
 int startgame()
 {
   static bool ranonce = false;
@@ -1027,6 +1018,8 @@ int startgame()
 
   return TRUE;
 }
+
+static float sem_GetTicks(void);
 
 void Start60HZ(void)
 {
@@ -1103,7 +1096,7 @@ void init_hqNx()
 unsigned char prevNTSCMode = 0;
 unsigned char changeRes = 1;
 unsigned char prevKeep4_3Ratio = 0;
-unsigned char prevsync = 0;
+static unsigned char prevsync = 0;
 char CheckOGLMode();
 
 void initwinvideo(void)
@@ -1386,7 +1379,7 @@ int sem_thread(void *param)
   return(0);
 }
 
-void sem_sleep_rdy()
+static void sem_sleep_rdy(void)
 {
   if (sem_frames)
   {
@@ -1397,7 +1390,7 @@ void sem_sleep_rdy()
   sem_threadid = SDL_CreateThread(sem_thread, 0);
 }
 
-void sem_sleep_die()
+static void sem_sleep_die()
 {
   if (sem_threadid)
   {
@@ -1560,7 +1553,7 @@ void SetMouseY(int Y)
 }
 
 
-float sem_GetTicks()
+static float sem_GetTicks(void)
 {
   struct timeval now;
   float ticks;
