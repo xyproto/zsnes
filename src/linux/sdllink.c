@@ -54,8 +54,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "debugger/load.h"
 #endif
 
-#define QueryPerformanceCounter(x) asm volatile("rdtsc" : "=a"(((unsigned int *)(x))[0]),"=d"(((unsigned int *)x)[1]))
-
 void zexit_error();
 
 typedef enum { FALSE = 0, TRUE = 1 } BOOL;
@@ -1316,7 +1314,6 @@ void initwinvideo(void)
 
 void CheckTimers(void)
 {
-  //QueryPerformanceCounter((int64_t*)&end2);
   end2 = sem_GetTicks();
 
   while ((end2 - start2) >= update_ticks_pc2)
@@ -1326,7 +1323,6 @@ void CheckTimers(void)
 
   if (T60HZEnabled)
   {
-    //QueryPerformanceCounter((int64_t*)&end);
     end = sem_GetTicks();
 
     while ((end - start) >= update_ticks_pc)
@@ -1339,7 +1335,6 @@ void CheckTimers(void)
 
   if (T36HZEnabled)
   {
-    //QueryPerformanceCounter((int64_t*)&end);
     end = sem_GetTicks();
 
     while ((end - start) >= update_ticks_pc)
