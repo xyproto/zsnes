@@ -75,6 +75,8 @@ extern "C" {
   void KeepTVRatio();
 
   void CheckAlwaysOnTop(void);
+  void CheckPriority(void);
+  void CheckScreenSaver(void);
   void DisplayWIPDisclaimer(void);
   void DoSleep(void);
   void MinimizeWindow(void);

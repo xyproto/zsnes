@@ -1,6 +1,7 @@
 #include <stdarg.h>
 #include <stdbool.h>
 
+#include "../c_init.h"
 #include "../c_intrf.h"
 #include "../cfg.h"
 #include "../cpu/execute.h"
@@ -19,6 +20,10 @@
 
 #ifdef __UNIXSDL__
 #	include "../linux/sdllink.h"
+#endif
+
+#ifdef __WIN32__
+#	include "../win/winlink.h"
 #endif
 
 
@@ -152,6 +157,12 @@ static void GUIKeyCheckbox(u1* const p1, char const p2, char const dh)
 }
 
 
+static void GUIKeyButtonHole(u1* const p1, u1 const p2, char const p3, char const dh)
+{
+	if (dh == p3) *p1 = p2;
+}
+
+
 static void GUIInputKeys(char dh)
 {
 	dh = ToUpperASM(dh);
@@ -183,6 +194,49 @@ static void GUIInputKeys(char dh)
 		SetDevice();
 	}
 #endif
+}
+
+
+static void GUIOptionKeys(char dh)
+{
+	if (dh == 9)
+	{
+		KeyTabInc(GUIOptionTabs, (u4*)0);
+	}
+	dh = ToUpperASM(dh);
+	if (GUIOptionTabs[0] == 1)
+	{ // Basic
+		if (ShowMMXSupport == 1) GUIKeyCheckbox(&MMXSupport, 'M', dh);
+		GUIKeyCheckbox(&Show224Lines,       'L', dh);
+		GUIKeyCheckbox(&newengen,           'N', dh);
+		GUIKeyCheckbox(&bgfixer,            'A', dh);
+		GUIKeyCheckbox(&AutoPatch,          'I', dh);
+		GUIKeyCheckbox(&DisplayInfo,        'R', dh);
+		GUIKeyCheckbox(&RomInfo,            'G', dh);
+#ifdef __WIN32__
+		GUIKeyCheckbox(&PauseFocusChange,   'B', dh);
+		GUIKeyCheckbox(&HighPriority,       'P', dh);
+		CheckPriority();
+#endif
+		GUIKeyCheckbox(&DisableScreenSaver, 'D', dh);
+#ifdef __WIN32__
+		CheckScreenSaver();
+#endif
+	}
+
+	if (GUIOptionTabs[0] == 2)
+	{ // More
+		GUIKeyCheckbox(&FPSAtStart,            'F', dh);
+		GUIKeyCheckbox(&TimerEnable,           'C', dh);
+		GUIKeyCheckbox(&TwelveHourClock,       'H', dh);
+		GUIKeyCheckbox(&ClockBox,              'X', dh);
+		GUIKeyCheckbox(&SmallMsgText,          'S', dh);
+		GUIKeyCheckbox(&GUIEnableTransp,       'T', dh);
+		GUIKeyButtonHole(&ScreenShotFormat, 0, 'B', dh);
+#ifndef NO_PNG
+		GUIKeyButtonHole(&ScreenShotFormat, 1, 'P', dh);
+#endif
+	}
 }
 
 
@@ -360,7 +414,7 @@ done:
 					case  1: f = GUILoadKeys;        break;
 					case  2: f = GUIStateSelKeys;    break;
 					case  3: GUIInputKeys(dh);       return;
-					case  4: f = GUIOptionKeys;      break;
+					case  4: GUIOptionKeys(dh);      return;
 					case  5: f = GUIVideoKeys;       break;
 					case  6: f = GUISoundKeys;       break;
 					case  7: f = GUICheatKeys;       break;

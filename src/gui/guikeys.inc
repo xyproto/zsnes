@@ -175,50 +175,6 @@ SECTION .text
 GUITCPIPKeys:
   ret
 
-NEWSYM GUIOptionKeys
-  cmp dh,9
-  jne near .notab
-  KeyTabInc GUIOptionTabs
-.notab
-  ToUpperASM
-  cmp dword[GUIOptionTabs],1
-  jne near .notbasic
-  cmp byte[ShowMMXSupport],1
-  jne .nommxcopy
-  GUIKeyCheckbox MMXSupport,'M'          ; Checkboxes
-.nommxcopy
-  GUIKeyCheckbox Show224Lines,'L'
-  GUIKeyCheckbox newengen, 'N'
-  GUIKeyCheckbox bgfixer,'A'
-  GUIKeyCheckbox AutoPatch,'I'
-  GUIKeyCheckbox DisplayInfo,'R'
-  GUIKeyCheckbox RomInfo,'G'
-%ifdef __WIN32__
-  GUIKeyCheckbox PauseFocusChange,'B'
-  GUIKeyCheckbox HighPriority,'P'
-  ccallv CheckPriority
-  GUIKeyCheckbox DisableScreenSaver,'D'
-  ccallv CheckScreenSaver
-%else
-  GUIKeyCheckbox DisableScreenSaver,'D'
-%endif
-.notbasic
-
-  cmp byte[GUIOptionTabs],2
-  jne near .notmore
-  GUIKeyCheckbox FPSAtStart,'F'
-  GUIKeyCheckbox TimerEnable,'C'
-  GUIKeyCheckbox TwelveHourClock,'H'
-  GUIKeyCheckbox ClockBox,'X'
-  GUIKeyCheckbox SmallMsgText,'S'
-  GUIKeyCheckbox GUIEnableTransp,'T'
-  GUIKeyButtonHole ScreenShotFormat,0,'B'
-%ifndef NO_PNG
-  GUIKeyButtonHole ScreenShotFormat,1,'P'
-%endif
-.notmore
-  ret
-
 NEWSYM GUIAboutKeys
   ToUpperASM
   cmp dh,'E'

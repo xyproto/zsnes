@@ -13,7 +13,6 @@ extern void GUIGUIOptnsKeys();
 extern void GUIGetInputLine();
 extern void GUILoadKeys();
 extern void GUIMovieKeys();
-extern void GUIOptionKeys();
 extern void GUIPathKeys();
 extern void GUIResetKeys();
 extern void GUISaveKeys();
