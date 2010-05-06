@@ -1,8 +1,10 @@
+#include <stdarg.h>
 #include <stdbool.h>
 
 #include "../c_intrf.h"
 #include "../cfg.h"
 #include "../cpu/execute.h"
+#include "../cpu/regs.h"
 #include "../input.h"
 #include "../types.h"
 #include "c_gui.h"
@@ -10,6 +12,10 @@
 #include "gui.h"
 #include "guikeys.h"
 #include "guiwindp.h"
+
+#ifdef __MSDOS__
+#	include "guimisc.h"
+#endif
 
 #ifdef __UNIXSDL__
 #	include "../linux/sdllink.h"
@@ -114,6 +120,69 @@ static u1 ToUpperASM(u1 dh)
 {
 	if ('a' <= dh && dh <= 'z') dh -= 'a' - 'A';
 	return dh;
+}
+
+
+static void KeyTabInc(u4* const first, ...) // tab arrays
+{
+	va_list ap;
+	va_start(ap, first);
+
+	u4* a = first;
+	for (;;)
+	{
+		u4 const eax = a[0] / a[1];
+		a[0] = a[0] % a[1];
+		u4* const b = va_arg(ap, u4*);
+		(b ? b : first)[0] |= eax;
+		if (eax == 1) break;
+		if (eax < a[0]) ++a[0];
+		if (a[0] != 0) break;
+		if (!b) break;
+		a = b;
+	}
+
+	va_end(ap);
+}
+
+
+static void GUIKeyCheckbox(u1* const p1, char const p2, char const dh)
+{
+	if (dh == p2) *p1 ^= 1;
+}
+
+
+static void GUIInputKeys(char dh)
+{
+	dh = ToUpperASM(dh);
+	if (dh == 9)
+	{
+		KeyTabInc(GUIInputTabs, (u4*)0);
+		GUIFreshInputSelect = 1;
+	}
+	GUIKeyCheckbox(&GameSpecificInput, 'G', dh);
+	GUIKeyCheckbox(&AllowUDLR,         'A', dh);
+	GUIKeyCheckbox(&Turbo30hz,         'T', dh);
+	if (dh == 'U')
+	{
+		pl12s34 ^= 1;
+		MultiTap = pl12s34 != 1 && (pl3contrl != 0 || pl4contrl != 0 || pl5contrl != 0);
+	}
+#ifdef __MSDOS__
+	GUIKeyCheckbox(&SidewinderFix, 'S', dh);
+	if (dh == 'J')
+	{
+		switch (cplayernum)
+		{
+			case 0: pl1p209 ^= 1; break;
+			case 1: pl2p209 ^= 1; break;
+			case 2: pl3p209 ^= 1; break;
+			case 3: pl4p209 ^= 1; break;
+			case 4: pl5p209 ^= 1; break;
+		}
+		SetDevice();
+	}
+#endif
 }
 
 
@@ -290,7 +359,7 @@ done:
 				{
 					case  1: f = GUILoadKeys;        break;
 					case  2: f = GUIStateSelKeys;    break;
-					case  3: f = GUIInputKeys;       break;
+					case  3: GUIInputKeys(dh);       return;
 					case  4: f = GUIOptionKeys;      break;
 					case  5: f = GUIVideoKeys;       break;
 					case  6: f = GUISoundKeys;       break;

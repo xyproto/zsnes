@@ -11,7 +11,6 @@ extern void GUIChipKeys();
 extern void GUIComboKeys();
 extern void GUIGUIOptnsKeys();
 extern void GUIGetInputLine();
-extern void GUIInputKeys();
 extern void GUILoadKeys();
 extern void GUIMovieKeys();
 extern void GUIOptionKeys();
