@@ -25,6 +25,7 @@
 #include "../zstate.h"
 #include "../ztimec.h"
 #include "c_gui.h"
+#include "c_guikeys.h"
 #include "c_guimouse.h"
 #include "c_guiwindp.h"
 #include "gui.h"
@@ -1596,7 +1597,7 @@ void StartGUI(void)
 			GUIOuttext(20, 210, GUICMessage, 63);
 		}
 		vidpastecopyscr();
-		asm_call(GUIgetcurrentinput);
+		GUIgetcurrentinput();
 	}
 	memset(spcBuffera, 0, 256 * 1024);
 	GUIDeInit();

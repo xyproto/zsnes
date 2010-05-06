@@ -14,6 +14,7 @@
 #include "../zpath.h"
 #include "c_gui.h"
 #include "c_guicheat.h"
+#include "c_guikeys.h"
 #include "c_guimouse.h"
 #include "gui.h"
 #include "guicheat.h"

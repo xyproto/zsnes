@@ -3,17 +3,34 @@
 
 #include "../types.h"
 
+extern void GUIAboutKeys();
+extern void GUIAddonKeys();
+extern void GUICheatKeys();
+extern void GUICheatSearchKeys();
+extern void GUIChipKeys();
+extern void GUIComboKeys();
+extern void GUIGUIOptnsKeys();
+extern void GUIGetInputLine();
+extern void GUIInputKeys();
+extern void GUILoadKeys();
+extern void GUIMovieKeys();
+extern void GUIOptionKeys();
+extern void GUIPathKeys();
+extern void GUIResetKeys();
+extern void GUISaveKeys();
+extern void GUISoundKeys();
+extern void GUISpeedKeys();
+extern void GUIStateKeys();
+extern void GUIStateSelKeys();
+extern void GUIVideoKeys();
 extern void GUIWaitForKey();
-extern void GUIgetcurrentinput();
 
 extern u1  CSOverValue;
-extern u1  GUIDelayB;
 extern u1* GUIEditStringcLen;
 extern u4  CSCurValue;
 extern u4  GUIEditStringLTxt;
 extern u4  GUIEditStringLstb;
 extern u4  GUIEditStringcWin;
 extern u4  GUIInputBox;
-extern u4  GUIkeydelay;
 
 #endif

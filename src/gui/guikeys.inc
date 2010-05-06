@@ -23,96 +23,6 @@ EXTSYM AddCSCheatCode
 
 ; GUI Keyboard Routines
 
-%macro GUIqcheckkeys 1
-  cmp byte[pressed+%1],1
-  jne %%skip
-  mov dword[GUIfirstkey],1
-%%skip
-%endmacro
-
-%macro GUIqcheckkeys2 2
-  mov eax,%1
-  cmp byte[pressed+eax],1
-  jne %%skip
-  cmp byte[GUIJoyPadnk+%2],2
-  je %%skip
-  mov dword[GUIfirstkey],1
-%%skip
-%endmacro
-
-%macro GUIgetprkeys 2
-  cmp byte[pressed+%1],1
-  je %%okay
-  cmp byte[pressed+%1],2
-  jne %%nopr
-  cmp dword[GUIfirstkey],1
-  je %%nopr
-  cmp dword[GUIlastkey],%1
-  jne %%nopr
-  jmp %%skipnext
-%%okay
-  mov dword[GUInextkeydelay],10
-%%skipnext
-  mov dword[GUIlastkey],%1
-  mov byte[pressed+%1],2
-  cmp dword[GUIkeydelay],0
-  jne near .done
-  mov eax,[GUInextkeydelay]
-  mov [GUIkeydelay],eax
-  mov dword[GUInextkeydelay],2
-  mov eax,%2
-  jmp .done
-%%nopr
-%endmacro
-
-%macro GUIgetprkeysb 2
-  cmp byte[pressed+%1],1
-  jne %%nopr
-  cmp byte[GUIescpress],1
-  je %%nopr2
-  mov byte[pressed+%1],2
-  mov eax,%2
-  jmp .done
-%%nopr
-  cmp byte[pressed+%1],0
-  jne %%nopr2
-  mov byte[GUIescpress],0
-%%nopr2
-%endmacro
-
-%macro GUIgetprkeys2 3
-  mov ebx,%1
-  cmp byte[pressed+ebx],0
-  jne %%pressed
-  mov byte[GUIJoyPadnk+%3],0
-  jmp %%nopr
-%%pressed
-  cmp byte[GUIJoyPadnk+%3],2
-  je %%secondpress
-  cmp byte[pressed+ebx],1
-  je %%okay
-%%secondpress
-  cmp dword[GUIfirstkey],1
-  je %%nopr
-  cmp dword[GUIlastkey],ebx
-  jne %%nopr
-  jmp %%skipnext
-%%okay
-  mov dword[GUInextkeydelay],10
-%%skipnext
-  mov [GUIlastkey],ebx
-  mov byte[GUIJoyPadnk+%3],2
-  cmp dword[GUIkeydelay],0
-  jne near .done
-  mov eax,[GUInextkeydelay]
-  mov [GUIkeydelay],eax
-  mov byte[GUIDelayB],5
-  mov dword[GUInextkeydelay],2
-  mov eax,%2
-  jmp .done
-%%nopr
-%endmacro
-
 %macro GUIkeystoggleoptn 2
   cmp %1,%2
   jne %%set
@@ -239,572 +149,7 @@ EXTSYM AddCSCheatCode
 %%nokeypressed
 %endmacro
 
-SECTION .bss
-GUIfirstkey resd 1
-GUIlastkey resd 1
-NEWSYM GUIkeydelay, resd 1
-GUInextkeydelay resd 1
-GUIJoyPadnk resb 8
-NEWSYM GUIDelayB, resb 1
-UseExtKey resb 1
-
 SECTION .text
-
-NEWSYM GUIgetcurrentinput
-  mov byte[UseExtKey],0
-  xor cx,cx
-.getnextkey
-  ccall Check_Key
-  or al,al
-  jz .nokeyd
-  ccall Get_Key
-  cmp cl,0
-  jne .nostorekey
-  mov ch,al
-.nostorekey
-  xor cl,cl
-  cmp al,0
-  jne .noextkey
-  ccall Get_Key
-  mov [UseExtKey],al
-  xor al,al
-  mov ch,al
-  mov cl,1
-.noextkey
-;    jmp .getnextkey
-.nokeyd
-  mov dh,ch
-  mov byte[GUIDelayB],0
-  ; Convert pressed to keys
-  mov dword[GUIfirstkey],0
-%ifdef __UNIXSDL___
-  GUIqcheckkeys 90 ; UP
-  GUIqcheckkeys 96 ; DOWN
-  GUIqcheckkeys 92 ; LEFT
-  GUIqcheckkeys 94 ; RIGHT
-  GUIqcheckkeys 89 ; HOME
-  GUIqcheckkeys 91 ; PGUP
-  GUIqcheckkeys 95 ; END
-  GUIqcheckkeys 97 ; PGDOWN
-%endif
-  GUIqcheckkeys 72 ; NUMPAD STUFF
-  GUIqcheckkeys 80
-  GUIqcheckkeys 75
-  GUIqcheckkeys 77
-  GUIqcheckkeys 73
-  GUIqcheckkeys 81
-  GUIqcheckkeys 71
-  GUIqcheckkeys 79
-  GUIqcheckkeys 1
-  GUIqcheckkeys 1Ch
-
-%ifndef __MSDOS__
-  GUIqcheckkeys 0C8h
-  GUIqcheckkeys 0D0h
-  GUIqcheckkeys 0CBh
-  GUIqcheckkeys 0CDh
-  GUIqcheckkeys 0C9h
-  GUIqcheckkeys 0D1h
-  GUIqcheckkeys 0C7h
-  GUIqcheckkeys 0CFh
-  GUIqcheckkeys 09Ch
-%endif
-.notwinport
-
-  cmp byte[JoyPad1Move],0
-  je near .nopad1
-  ccallv JoyRead
-  GUIqcheckkeys2 [pl1upk],0
-  GUIqcheckkeys2 [pl1downk],1
-  GUIqcheckkeys2 [pl1leftk],2
-  GUIqcheckkeys2 [pl1rightk],3
-  GUIqcheckkeys2 [pl1Lk],4
-  GUIqcheckkeys2 [pl1Rk],5
-  GUIqcheckkeys2 [pl1Bk],6
-  GUIqcheckkeys2 [pl1Ak],7
-.nopad1
-  xor al,al
-%ifdef __UNIXSDL__
-  GUIgetprkeys 90,90 ; UP
-  GUIgetprkeys 96,96 ; DOWN
-  GUIgetprkeys 92,92 ; LEFT
-  GUIgetprkeys 94,94 ; RIGHT
-  GUIgetprkeys 89,89 ; HOME
-  GUIgetprkeys 91,91 ; PGUP
-  GUIgetprkeys 95,95 ; END
-  GUIgetprkeys 97,97 ; PGDOWN
-
-  GUIgetprkeys 72,72 ; KP8
-  GUIgetprkeys 80,80 ; KP2
-  GUIgetprkeys 75,75 ; KP4
-  GUIgetprkeys 77,77 ; KP6
-  GUIgetprkeys 71,71 ; KP7
-  GUIgetprkeys 79,79 ; KP9
-  GUIgetprkeys 81,81 ; KP1
-  GUIgetprkeys 73,73 ; KP3
-%else
-  GUIgetprkeys 72,72
-  GUIgetprkeys 80,80
-  GUIgetprkeys 75,75
-  GUIgetprkeys 77,77
-  GUIgetprkeys 71,71
-  GUIgetprkeys 79,79
-  GUIgetprkeys 81,81
-  GUIgetprkeys 73,73
-%endif
-  GUIgetprkeysb 1,27
-  GUIgetprkeys 1Ch,13
-
-  mov cl,[UseExtKey]
-  cmp cl,72
-  je .okayextk
-  cmp cl,80
-  jne .notextkb
-.okayextk
-  mov al,cl
-.notextkb
-
-%ifdef __UNIXSDL__
-  GUIgetprkeys 90,90 ; UP
-  GUIgetprkeys 96,96 ; DOWN
-  GUIgetprkeys 92,92 ; LEFT
-  GUIgetprkeys 94,94 ; RIGHT
-  GUIgetprkeys 89,89 ; HOME
-  GUIgetprkeys 91,91 ; PGUP
-  GUIgetprkeys 95,95 ; END
-  GUIgetprkeys 97,97 ; PGDOWN
-
-  GUIgetprkeys 72,72 ; KP8
-  GUIgetprkeys 80,80 ; KP2
-  GUIgetprkeys 75,75 ; KP4
-  GUIgetprkeys 77,77 ; KP6
-  GUIgetprkeys 71,71 ; KP7
-  GUIgetprkeys 79,79 ; KP9
-  GUIgetprkeys 81,81 ; KP1
-  GUIgetprkeys 73,73 ; KP3
-
-  GUIgetprkeys 09Ch,13 ; ENTER
-%endif
-%ifdef __WIN32__
-  ;GUIgetprkeys 0C8h,72
-  ;GUIgetprkeys 0D0h,80
-  GUIgetprkeys 0CBh,75
-  GUIgetprkeys 0CDh,77
-  GUIgetprkeys 0C7h,71
-  GUIgetprkeys 0CFh,79
-  GUIgetprkeys 0D1h,81
-  GUIgetprkeys 0C9h,73
-  GUIgetprkeys 09Ch,13
-%endif
-;.notwinport2
-
-  cmp byte[JoyPad1Move],0
-  je near .nopad1b
-%ifndef __WIN32__
-  GUIgetprkeys2 [pl1upk],72,0
-  GUIgetprkeys2 [pl1downk],80,1
-%endif
-  GUIgetprkeys2 [pl1leftk],75,2
-  GUIgetprkeys2 [pl1rightk],77,3
-  GUIgetprkeys2 [pl1Lk],73,4
-  GUIgetprkeys2 [pl1Rk],81,5
-  GUIgetprkeys2 [pl1Bk],27,6
-  GUIgetprkeys2 [pl1Ak],13,7
-.nopad1b
-  cmp dh,' '
-  jne .notspace
-  mov al,' '
-.notspace
-  mov dword[GUInextkeydelay],10
-  mov dword[GUIkeydelay],0
-.done
-  cmp byte[GUIcmenupos],0
-  jne near .processmenu
-  mov dl,al
-  xor eax,eax
-  mov al,[GUIwinptr]
-  cmp dl,27
-  jne .noclosewin
-  or eax,eax
-  jz near .runprog
-.noclosewin
-  dec eax
-  xor ebx,ebx
-  mov bl,[GUIwinorder+eax]
-  cmp ebx,13
-  jne .notcskeys
-  cmp byte[CheatWinMode],1
-  ja .avoidesc
-.notcskeys
-  cmp dl,27
-  je near .closewin
-.avoidesc
-  mov al,dl
-  cmp ebx,1
-  je near GUILoadKeys
-  cmp ebx,2
-  je near GUIStateSelKeys
-  cmp ebx,3
-  je near GUIInputKeys
-  cmp ebx,4
-  je near GUIOptionKeys
-  cmp ebx,5
-  je near GUIVideoKeys
-  cmp ebx,6
-  je near GUISoundKeys
-  cmp ebx,7
-  je near GUICheatKeys
-  cmp ebx,10
-  je near GUIGUIOptnsKeys
-  cmp ebx,11
-  je near GUIAboutKeys
-  cmp ebx,12
-  je near GUIResetKeys
-  cmp ebx,13
-  je near GUICheatSearchKeys
-  cmp ebx,14
-  je near GUIStateKeys
-  cmp ebx,15
-  je near GUIMovieKeys
-  cmp ebx,16
-  je near GUIComboKeys
-  cmp ebx,17
-  je near GUIAddonKeys
-  cmp ebx,18
-  je near GUIChipKeys
-  cmp ebx,19
-  je near GUIPathKeys
-  cmp ebx,20
-  je near GUISaveKeys
-  cmp ebx,21
-  je near GUISpeedKeys
-  cmp ebx,8
-  je near GUIGetInputLine
-  ret
-.runprog
-  cmp byte[romloadskip],0
-  jne .noquit
-  mov byte[GUIQuit],2
-.noquit
-  ret
-.closewin
-  ; close window
-  mov byte[GUIwinorder+eax],0
-  mov byte[GUIwinactiv+ebx],0
-  dec byte[GUIwinptr]
-  cmp byte[GUIwinptr],0
-  jne .nowinopen
-  mov al,[GUIpmenupos]
-  mov [GUIcmenupos],al
-.nowinopen
-  ret
-.processmenu
-  ToUpperASM
-  cmp dh,'X'                 ; Main Menu Hotkeys
-  jne .noclose
-  mov byte[GUIcmenupos],0
-  mov byte[GUIcrowpos],0
-.noclose
-  cmp dh,'R'
-  jne .norecent
-  mov byte[GUIcmenupos],1
-  mov byte[GUIcrowpos],0
-.norecent
-  cmp dh,'G'
-  jne .nogame
-  mov byte[GUIcmenupos],2
-  mov byte[GUIcrowpos],0
-.nogame
-  cmp dh,'C'
-  jne .noconfig
-  mov byte[GUIcmenupos],3
-  mov byte[GUIcrowpos],0
-.noconfig
-  cmp dh,'H'
-  jne .nocheat
-  mov byte[GUIcmenupos],4
-  mov byte[GUIcrowpos],0
-.nocheat
-  cmp dh,'N'
-  jne .nonetplay
-  mov byte[GUIcmenupos],5
-  mov byte[GUIcrowpos],0
-.nonetplay
-  cmp dh,'M'
-  jne .nomisc
-  mov byte[GUIcmenupos],6
-  mov byte[GUIcrowpos],0
-.nomisc
-  cmp byte[GUIcmenupos],1       ; Recently Played Hotkeys
-  jne near .noquickmenu
-  cmp dh,'1'
-  jne .no1
-  mov byte[GUIcrowpos],0
-.no1
-  cmp dh,'2'
-  jne .no2
-  mov byte[GUIcrowpos],1
-.no2
-  cmp dh,'3'
-  jne .no3
-  mov byte[GUIcrowpos],2
-.no3
-  cmp dh,'4'
-  jne .no4
-  mov byte[GUIcrowpos],3
-.no4
-  cmp dh,'5'
-  jne .no5
-  mov byte[GUIcrowpos],4
-.no5
-  cmp dh,'6'
-  jne .no6
-  mov byte[GUIcrowpos],5
-.no6
-  cmp dh,'7'
-  jne .no7
-  mov byte[GUIcrowpos],6
-.no7
-  cmp dh,'8'
-  jne .no8
-  mov byte[GUIcrowpos],7
-.no8
-  cmp dh,'9'
-  jne .no9
-  mov byte[GUIcrowpos],8
-.no9
-  cmp dh,'0'
-  jne .no0
-  mov byte[GUIcrowpos],9
-.no0
-  cmp dh,'F'
-  jne .nof
-  mov byte[GUIcrowpos],11
-.nof
-  cmp dh,'L'
-  jne .nol
-  mov byte[GUIcrowpos],12
-.nol
-.noquickmenu                        ; Game Hotkeys
-  cmp byte[GUIcmenupos],2
-  jne near .noloadmenu
-  cmp dh,'L'
-  jne .noll
-  mov byte[GUIcrowpos],0
-.noll
-  cmp dh,'E'
-  jne .nor
-  mov byte[GUIcrowpos],2
-.nor
-  cmp dh,'S'
-  jne .nos
-  mov byte[GUIcrowpos],4
-.nos
-  cmp dh,'O'
-  jne .noo
-  mov byte[GUIcrowpos],5
-.noo
-  cmp dh,'P'
-  jne .nop
-  mov byte[GUIcrowpos],6
-.nop
-  cmp dh,'Q'
-  jne .noq
-  mov byte[GUIcrowpos],8
-.noq
-.noloadmenu                            ; Config Hotkeys
-  cmp byte[GUIcmenupos],3
-  jne near .noconfigmenu
-  cmp dh,'I'
-  jne .noin
-  mov byte[GUIcrowpos],0
-.noin
-  cmp dh,'D'
-  jne .noind
-  mov byte[GUIcrowpos],2
-.noind
-  cmp dh,'F'
-  jne .noinc
-  mov byte[GUIcrowpos],3
-.noinc
-  cmp dh,'O'
-  jne .noino
-  mov byte[GUIcrowpos],5
-.noino
-  cmp dh,'V'
-  jne .noinv
-  mov byte[GUIcrowpos],6
-.noinv
-  cmp dh,'S'
-  jne .noins
-  mov byte[GUIcrowpos],7
-.noins
-  cmp dh,'P'
-  jne .noinp
-  mov byte[GUIcrowpos],8
-.noinp
-  cmp dh,'A'
-  jne .noina
-  mov byte[GUIcrowpos],9
-.noina
-  cmp dh,'E'
-  jne .noine
-  mov byte[GUIcrowpos],10
-.noine
-.noconfigmenu                          ; Cheat Hotkeys
-  cmp byte[GUIcmenupos],4
-  jne near .nocheatmenu
-  cmp dh,'A'
-  jne .noa
-  mov byte[GUIcrowpos],0
-.noa
-  cmp dh,'B'
-  jne .nob
-  mov byte[GUIcrowpos],1
-.nob
-  cmp dh,'S'
-  jne .nos2
-  mov byte[GUIcrowpos],2
-.nos2
-.nocheatmenu                           ; Misc Hotkeys
-  cmp byte[GUIcmenupos],6
-  jne near .nomiscmenu
-  cmp dh,'K'
-  jne .nomk
-  mov byte[GUIcrowpos],0
-.nomk
-  cmp dh,'U'
-  jne .nomu
-  mov byte[GUIcrowpos],1
-.nomu
-  cmp dh,'O'
-  jne .nomo
-  mov byte[GUIcrowpos],2
-.nomo
-  cmp dh,'E'
-  jne .nome
-  mov byte[GUIcrowpos],3
-.nome
-  cmp dh,'S'
-  jne .noms
-  mov byte[GUIcrowpos],4
-.noms
-  cmp dh,'A'
-  jne .noma
-  mov byte[GUIcrowpos],6
-.noma
-.nomiscmenu
-
-  cmp byte[romloadskip],0
-  jne .dontquit
-  cmp al,27
-  jne .noexit
-  mov byte[GUIQuit],2
-.noexit
-.dontquit
-  cmp al,13
-  jne .noenter
-  ccallv GUITryMenuItem
-.noenter
-%ifdef __UNIXSDL__
-  cmp al,92
-  je .leftpressed
-  cmp dword[numlockptr],1
-  je .noleft
-  cmp al,75
-  jne .noleft
-.leftpressed
-%else
-  cmp al,75
-  jne .noleft
-%endif
-  mov byte[GUIcrowpos],0
-  cmp byte[GUIcmenupos],1
-  jbe .left
-  dec byte[GUIcmenupos]
-  jmp .noleft
-.left
-  mov byte[GUIcmenupos],6
-.noleft
-%ifdef __UNIXSDL__
-  cmp al,94
-  je .rightpressed
-  cmp dword[numlockptr],1
-  je .noright
-  cmp al,77
-  jne .noright
-.rightpressed
-%else
-  cmp al,77
-  jne .noright
-%endif
-  mov byte[GUIcrowpos],0
-  inc byte[GUIcmenupos]
-  cmp byte[GUIcmenupos],7
-  jne .noright
-  mov byte[GUIcmenupos],1
-.noright
-  cmp byte[GUIcmenupos],0
-  je near .noupdown
-%ifdef __UNIXSDL__
-  cmp al,96
-  je .downpressed
-  cmp dword[numlockptr],1
-  je .nodown
-  cmp al,80
-  jne .nodown
-.downpressed
-%else
-  cmp al,80
-  jne .nodown
-%endif
-  xor eax,eax
-  mov al,[GUIcrowpos]
-  mov ebx,[GUICYLocPtr]
-  cmp byte[eax+ebx+1],2
-  jne .nobottom
-  mov byte[GUIcrowpos],0
-  jmp .nokey
-.nobottom
-  inc eax
-  cmp byte[eax+ebx+1],0
-  je .nobottom
-  mov [GUIcrowpos],al
-  jmp .nokey
-.nodown
-%ifdef __UNIXSDL__
-  cmp al, 90
-  je .uppressed
-  cmp dword[numlockptr],1
-  je .noup
-  cmp al,72
-  jne .noup
-.uppressed
-%else
-  cmp al,72
-  jne .noup
-%endif
-  xor eax,eax
-  mov al,[GUIcrowpos]
-  mov ebx,[GUICYLocPtr]
-  or al,al
-  jz .top
-  cmp byte[eax+ebx+1],3
-  jne .notop
-.top
-  mov al,[ebx]
-  mov [GUIcrowpos],al
-  jmp .nokey
-.notop
-  dec eax
-  cmp byte[eax+ebx+1],0
-  je .notop
-  mov [GUIcrowpos],al
-  jmp .nokey
-.noup
-.noupdown
-.nokey
-  ret
 
 %macro KeyTabInc 1-* ; tab arrays
   push edx
@@ -827,7 +172,7 @@ NEWSYM GUIgetcurrentinput
   pop edx
 %endmacro
 
-GUIInputKeys:
+NEWSYM GUIInputKeys
   ToUpperASM
   cmp dh,9
   jne .notab
@@ -889,7 +234,7 @@ GUIInputKeys:
 GUITCPIPKeys:
   ret
 
-GUIOptionKeys:
+NEWSYM GUIOptionKeys
   cmp dh,9
   jne near .notab
   KeyTabInc GUIOptionTabs
@@ -933,7 +278,7 @@ GUIOptionKeys:
 .notmore
   ret
 
-GUIAboutKeys:
+NEWSYM GUIAboutKeys
   ToUpperASM
   cmp dh,'E'
   jne .noeegg
@@ -941,7 +286,7 @@ GUIAboutKeys:
 .noeegg
   ret
 
-GUISaveKeys:
+NEWSYM GUISaveKeys
   ToUpperASM
   GUIKeyCheckbox AutoIncSaveSlot,'I' ; Checkboxes
   GUIKeyCheckbox nosaveSRAM,'D'
@@ -953,7 +298,7 @@ GUISaveKeys:
   GUIKeyCheckbox PauseRewind,'R'
   ret
 
-GUISpeedKeys:
+NEWSYM GUISpeedKeys
   ToUpperASM
   GUIKeyCheckbox FastFwdToggle,'T'   ; Checkbox
 
@@ -970,7 +315,7 @@ GUISpeedKeys:
 .noautofr
   ret
 
-GUIAddonKeys:
+NEWSYM GUIAddonKeys
   ToUpperASM
   GUIKeyButtonHole device1,0,'G'             ;Radio Buttons
   GUIKeyButtonHole device1,1,'M'
@@ -984,7 +329,7 @@ GUIAddonKeys:
   GUIKeyCheckbox mouse2lh,'E'
   ret
 
-GUIChipKeys:
+NEWSYM GUIChipKeys
   ToUpperASM
   GUIKeyCheckbox nssdip1,'1'             ; Checkboxes
   GUIKeyCheckbox nssdip2,'2'
@@ -994,7 +339,7 @@ GUIChipKeys:
   GUIKeyCheckbox nssdip6,'6'
   ret
 
-GUIGUIOptnsKeys:
+NEWSYM GUIGUIOptnsKeys
   ToUpperASM
   GUIKeyCheckbox mousewrap,'M'            ; Checkboxes
   GUIKeyCheckbox mouseshad,'S'
@@ -1046,7 +391,7 @@ GUIGUIOptnsKeys:
 %endif
 ret
 
-GUIVideoKeys:
+NEWSYM GUIVideoKeys
 %ifndef __MSDOS__
   GUIInputBoxText GUICustomResTextPtr,SetCustomXY
 %endif
@@ -1515,7 +860,7 @@ GUIVideoKeys:
 .notntsctab
   ret
 
-GUISoundKeys:
+NEWSYM GUISoundKeys
   ToUpperASM
   cmp dh,'E'
   jne .notenablesound
@@ -1567,7 +912,7 @@ SECTION .text
 GUINetMenuKeys1:
   ret
 
-GUIGetInputLine:
+NEWSYM GUIGetInputLine
   ret
 
 SECTION .bss
@@ -1579,7 +924,7 @@ NEWSYM GUIEditStringLstb, resd 1          ; if cursor is placed (set in main fun
 NEWSYM GUIEditStringcWin, resd 1          ; 0 = no text window selected
 SECTION .text
 
-GUIPathKeys:
+NEWSYM GUIPathKeys
   cmp dword[GUIPathTabs],1
   jne near .notpathtab1
   GUIInputBoxText GUIPathsTab1Ptr,init_save_paths
@@ -1610,7 +955,7 @@ NEWSYM GUIInputBox, resd 1
 GUIInputLimit resd 1
 SECTION .text
 
-GUIMovieKeys:
+NEWSYM GUIMovieKeys
   ToUpperASM
   GUIInputBoxText GUIMovieTextPtr,SetMovieForcedLength
   cmp dh,9
@@ -1667,7 +1012,7 @@ GUIMovieKeys:
 
   ret
 
-GUIComboKeys:
+NEWSYM GUIComboKeys
   ; Calculate Position
   xor eax,eax
 .nozero
@@ -1701,7 +1046,7 @@ GUIComboKeys:
 .nochar
   ret
 
-GUICheatKeys:
+NEWSYM GUICheatKeys
   cmp dword[GUIcurrentcheatwin],1
   je near .textboxa
   cmp dword[GUIcurrentcheatwin],2
@@ -2132,7 +1477,7 @@ InsertSearchDescription:
 .nocharb
   ret
 
-GUICheatSearchKeys:
+NEWSYM GUICheatSearchKeys
   ToUpperASM
   cmp byte[CheatWinMode],3
   je near .add
@@ -2458,7 +1803,7 @@ GUICheatSearchKeys:
   ret
 
 ; Allows you to use the arrow keys to select a state number, and Enter to pick
-GUIStateSelKeys:
+NEWSYM GUIStateSelKeys
   cmp al,13
   jne .noenter
   xor eax,eax
@@ -2717,7 +2062,7 @@ GUIStateSelKeys:
   ret
 
 ; Allows you to select boxes with the arrow keys, Enter to choose
-GUIResetKeys:
+NEWSYM GUIResetKeys
 %ifdef __UNIXSDL__
   cmp al,92
   je .yesleft
@@ -2775,7 +2120,7 @@ GUIResetKeys:
   ret
 
 ; Allows you to select boxes with the arrow keys, Enter to choose
-GUIStateKeys:
+NEWSYM GUIStateKeys
 %ifdef __UNIXSDL__
   cmp al,92
   je .yesleft
@@ -2832,7 +2177,7 @@ GUIStateKeys:
 .notnoreset
   ret
 
-GUILoadKeys:
+NEWSYM GUILoadKeys
   cmp dx,0
   jne near .keypressed
 .nokeypressed
