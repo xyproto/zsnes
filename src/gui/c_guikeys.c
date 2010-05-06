@@ -8,6 +8,7 @@
 #include "../cpu/regs.h"
 #include "../input.h"
 #include "../types.h"
+#include "../video/procvid.h"
 #include "c_gui.h"
 #include "c_guikeys.h"
 #include "gui.h"
@@ -261,6 +262,26 @@ static void GUISaveKeys(char dh)
 }
 
 
+static void GUISpeedKeys(char dh)
+{
+	dh = ToUpperASM(dh);
+	GUIKeyCheckbox(&FastFwdToggle, 'T', dh);
+
+	if (dh == 'A') // Framerate Checkboxes
+	{
+		if (frameskip != 0) // 0 = autoframerate / 1-10 = frameskip 0-9
+		{
+			frameskip = 0;
+		}
+		else
+		{
+			FPSOn     = 0;
+			frameskip = 1;
+		}
+	}
+}
+
+
 void GUIgetcurrentinput(void)
 {
 	char UseExtKey = '\0';
@@ -450,7 +471,7 @@ done:
 					case 18: f = GUIChipKeys;        break;
 					case 19: f = GUIPathKeys;        break;
 					case 20: GUISaveKeys(dh);        return;
-					case 21: f = GUISpeedKeys;       break;
+					case 21: GUISpeedKeys(dh);       return;
 					case  8: f = GUIGetInputLine;    break;
 					default: return;
 				}

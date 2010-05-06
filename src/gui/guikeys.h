@@ -15,7 +15,6 @@ extern void GUIMovieKeys();
 extern void GUIPathKeys();
 extern void GUIResetKeys();
 extern void GUISoundKeys();
-extern void GUISpeedKeys();
 extern void GUIStateKeys();
 extern void GUIStateSelKeys();
 extern void GUIVideoKeys();

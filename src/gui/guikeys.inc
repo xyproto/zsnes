@@ -175,23 +175,6 @@ SECTION .text
 GUITCPIPKeys:
   ret
 
-NEWSYM GUISpeedKeys
-  ToUpperASM
-  GUIKeyCheckbox FastFwdToggle,'T'   ; Checkbox
-
-  cmp dh,'A'                 ; Framerate Checkboxes
-  jne .noautofr
-  cmp byte[frameskip],0  ; 0 = autoframerate / 1-10 = frameskip 0-9
-  je .zero
-  mov byte[frameskip],0
-  jmp .notzero
-.zero
-  mov byte[FPSOn],0
-  mov byte[frameskip],1
-.notzero
-.noautofr
-  ret
-
 NEWSYM GUIAddonKeys
   ToUpperASM
   GUIKeyButtonHole device1,0,'G'             ;Radio Buttons
