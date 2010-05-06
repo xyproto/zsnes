@@ -7,8 +7,10 @@
 #include "../cpu/execute.h"
 #include "../cpu/regs.h"
 #include "../input.h"
+#include "../link.h"
 #include "../types.h"
 #include "../video/procvid.h"
+#include "../video/procvidc.h"
 #include "c_gui.h"
 #include "c_guikeys.h"
 #include "gui.h"
@@ -16,6 +18,8 @@
 #include "guiwindp.h"
 
 #ifdef __MSDOS__
+#	include "../asm_call.h"
+#	include "../video/copyvid.h"
 #	include "guimisc.h"
 #endif
 
@@ -238,6 +242,53 @@ static void GUIOptionKeys(char dh)
 		GUIKeyButtonHole(&ScreenShotFormat, 1, 'P', dh);
 #endif
 	}
+}
+
+
+static void GUIGUIOptnsKeys(char dh)
+{
+	dh = ToUpperASM(dh);
+	GUIKeyCheckbox(&mousewrap,   'M', dh);
+	GUIKeyCheckbox(&mouseshad,   'S', dh);
+	GUIKeyCheckbox(&esctomenu,   'G', dh);
+	GUIKeyCheckbox(&savewinpos,  'W', dh);
+	GUIKeyCheckbox(&GUIRClick,   'C', dh);
+	GUIKeyCheckbox(&JoyPad1Move, 'U', dh);
+	GUIKeyCheckbox(&newfont,     'O', dh);
+	GUIKeyCheckbox(&lhguimouse,  '/', dh);
+
+	if (dh == 'F')
+	{
+		FilteredGUI ^= 1;
+#ifdef __MSDOS__
+		asm_call(DOSClearScreen);
+#else
+		if (GUIBIFIL[cvidmode] != 0)
+		{
+#	ifdef __WIN32__
+			initDirectDraw();
+#	elif defined __OPENGL__
+			initwinvideo();
+#	endif
+		}
+#endif
+		Clear2xSaIBuffer();
+	}
+
+	GUIKeyButtonHole(&GUIEffect, 0, 'E', dh);
+	GUIKeyButtonHole(&GUIEffect, 1, 'N', dh);
+	GUIKeyButtonHole(&GUIEffect, 2, 'A', dh);
+	GUIKeyButtonHole(&GUIEffect, 3, 'B', dh);
+	GUIKeyButtonHole(&GUIEffect, 4, 'R', dh);
+	GUIKeyButtonHole(&GUIEffect, 5, 'K', dh);
+
+#ifdef __WIN32__
+	GUIKeyCheckbox(&MouseWheel,        'H', dh);
+	GUIKeyCheckbox(&TrapMouseCursor,   'P', dh);
+	GUIKeyCheckbox(&AlwaysOnTop,       'T', dh);
+	GUIKeyCheckbox(&SaveMainWindowPos, 'V', dh);
+	GUIKeyCheckbox(&AllowMultipleInst, 'L', dh);
+#endif
 }
 
 
@@ -488,7 +539,7 @@ done:
 					case  5: f = GUIVideoKeys;       break;
 					case  6: f = GUISoundKeys;       break;
 					case  7: f = GUICheatKeys;       break;
-					case 10: f = GUIGUIOptnsKeys;    break;
+					case 10: GUIGUIOptnsKeys(dh);    return;
 					case 11: GUIAboutKeys(dh);       return;
 					case 12: f = GUIResetKeys;       break;
 					case 13: f = GUICheatSearchKeys; break;

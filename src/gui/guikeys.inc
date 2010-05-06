@@ -175,58 +175,6 @@ SECTION .text
 GUITCPIPKeys:
   ret
 
-NEWSYM GUIGUIOptnsKeys
-  ToUpperASM
-  GUIKeyCheckbox mousewrap,'M'            ; Checkboxes
-  GUIKeyCheckbox mouseshad,'S'
-  GUIKeyCheckbox esctomenu,'G'
-  GUIKeyCheckbox savewinpos,'W'
-  GUIKeyCheckbox GUIRClick,'C'
-  GUIKeyCheckbox JoyPad1Move,'U'
-  GUIKeyCheckbox newfont,'O'
-  GUIKeyCheckbox lhguimouse,'/'
-
-  cmp dh,'F'
-  jne .guioptn8
-  xor byte[FilteredGUI],1
-%ifdef __MSDOS__
-  call DOSClearScreen
-%endif
-%ifndef __MSDOS__
-  push ebx
-  xor ebx,ebx
-  mov bl,[cvidmode]
-  cmp byte[GUIBIFIL+ebx],0
-  pop ebx
-  je .skipinit
-%ifdef __WIN32__
-  ccallv initDirectDraw
-%elifdef __OPENGL__
-  ccallv initwinvideo
-%else
-
-%endif
-.skipinit
-%endif
-  ccallv Clear2xSaIBuffer
-.guioptn8
-
-  GUIKeyButtonHole GUIEffect,0,'E'   ; Start From Radio Buttons
-  GUIKeyButtonHole GUIEffect,1,'N'
-  GUIKeyButtonHole GUIEffect,2,'A'
-  GUIKeyButtonHole GUIEffect,3,'B'
-  GUIKeyButtonHole GUIEffect,4,'R'
-  GUIKeyButtonHole GUIEffect,5,'K'
-
-%ifdef __WIN32__
-  GUIKeyCheckbox MouseWheel,'H'
-  GUIKeyCheckbox TrapMouseCursor,'P'
-  GUIKeyCheckbox AlwaysOnTop,'T'
-  GUIKeyCheckbox SaveMainWindowPos,'V'
-  GUIKeyCheckbox AllowMultipleInst,'L'
-%endif
-ret
-
 NEWSYM GUIVideoKeys
 %ifndef __MSDOS__
   GUIInputBoxText GUICustomResTextPtr,SetCustomXY

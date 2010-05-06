@@ -87,6 +87,7 @@ extern "C" {
   void SetMouseX(int X);
   void SetMouseY(int Y);
   void WinUpdateDevices(void);
+  void initDirectDraw(void);
 
 #ifdef __cplusplus
 }
