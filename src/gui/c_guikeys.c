@@ -247,6 +247,20 @@ static void GUIAboutKeys(char dh)
 }
 
 
+static void GUISaveKeys(char dh)
+{
+	dh = ToUpperASM(dh);
+	GUIKeyCheckbox(&AutoIncSaveSlot, 'I', dh);
+	GUIKeyCheckbox(&nosaveSRAM,      'D', dh);
+	GUIKeyCheckbox(&SRAMSave5Sec,    'C', dh);
+	GUIKeyCheckbox(&LatestSave,      'S', dh);
+	GUIKeyCheckbox(&AutoState,       'A', dh);
+	GUIKeyCheckbox(&SRAMState,       'L', dh);
+	GUIKeyCheckbox(&PauseLoad,       'P', dh);
+	GUIKeyCheckbox(&PauseRewind,     'R', dh);
+}
+
+
 void GUIgetcurrentinput(void)
 {
 	char UseExtKey = '\0';
@@ -435,7 +449,7 @@ done:
 					case 17: f = GUIAddonKeys;       break;
 					case 18: f = GUIChipKeys;        break;
 					case 19: f = GUIPathKeys;        break;
-					case 20: f = GUISaveKeys;        break;
+					case 20: GUISaveKeys(dh);        return;
 					case 21: f = GUISpeedKeys;       break;
 					case  8: f = GUIGetInputLine;    break;
 					default: return;

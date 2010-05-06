@@ -175,18 +175,6 @@ SECTION .text
 GUITCPIPKeys:
   ret
 
-NEWSYM GUISaveKeys
-  ToUpperASM
-  GUIKeyCheckbox AutoIncSaveSlot,'I' ; Checkboxes
-  GUIKeyCheckbox nosaveSRAM,'D'
-  GUIKeyCheckbox SRAMSave5Sec,'C'
-  GUIKeyCheckbox LatestSave,'S'
-  GUIKeyCheckbox AutoState,'A'
-  GUIKeyCheckbox SRAMState,'L'
-  GUIKeyCheckbox PauseLoad,'P'
-  GUIKeyCheckbox PauseRewind,'R'
-  ret
-
 NEWSYM GUISpeedKeys
   ToUpperASM
   GUIKeyCheckbox FastFwdToggle,'T'   ; Checkbox
