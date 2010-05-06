@@ -5,7 +5,6 @@
 
 extern void GUICheatKeys();
 extern void GUICheatSearchKeys();
-extern void GUIChipKeys();
 extern void GUIComboKeys();
 extern void GUIGUIOptnsKeys();
 extern void GUIGetInputLine();

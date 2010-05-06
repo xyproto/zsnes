@@ -175,16 +175,6 @@ SECTION .text
 GUITCPIPKeys:
   ret
 
-NEWSYM GUIChipKeys
-  ToUpperASM
-  GUIKeyCheckbox nssdip1,'1'             ; Checkboxes
-  GUIKeyCheckbox nssdip2,'2'
-  GUIKeyCheckbox nssdip3,'3'
-  GUIKeyCheckbox nssdip4,'4'
-  GUIKeyCheckbox nssdip5,'5'
-  GUIKeyCheckbox nssdip6,'6'
-  ret
-
 NEWSYM GUIGUIOptnsKeys
   ToUpperASM
   GUIKeyCheckbox mousewrap,'M'            ; Checkboxes

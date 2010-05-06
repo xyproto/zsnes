@@ -264,6 +264,18 @@ static void GUIAddonKeys(char dh)
 }
 
 
+static void GUIChipKeys(char dh)
+{
+	dh = ToUpperASM(dh);
+	GUIKeyCheckbox(&nssdip1, '1', dh);
+	GUIKeyCheckbox(&nssdip2, '2', dh);
+	GUIKeyCheckbox(&nssdip3, '3', dh);
+	GUIKeyCheckbox(&nssdip4, '4', dh);
+	GUIKeyCheckbox(&nssdip5, '5', dh);
+	GUIKeyCheckbox(&nssdip6, '6', dh);
+}
+
+
 static void GUISaveKeys(char dh)
 {
 	dh = ToUpperASM(dh);
@@ -484,7 +496,7 @@ done:
 					case 15: f = GUIMovieKeys;       break;
 					case 16: f = GUIComboKeys;       break;
 					case 17: GUIAddonKeys(dh);       return;
-					case 18: f = GUIChipKeys;        break;
+					case 18: GUIChipKeys(dh);        return;
 					case 19: f = GUIPathKeys;        break;
 					case 20: GUISaveKeys(dh);        return;
 					case 21: GUISpeedKeys(dh);       return;
