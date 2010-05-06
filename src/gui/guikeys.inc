@@ -175,14 +175,6 @@ SECTION .text
 GUITCPIPKeys:
   ret
 
-NEWSYM GUIAboutKeys
-  ToUpperASM
-  cmp dh,'E'
-  jne .noeegg
-  xor byte[EEgg],1
-.noeegg
-  ret
-
 NEWSYM GUISaveKeys
   ToUpperASM
   GUIKeyCheckbox AutoIncSaveSlot,'I' ; Checkboxes

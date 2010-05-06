@@ -3,7 +3,6 @@
 
 #include "../types.h"
 
-extern void GUIAboutKeys();
 extern void GUIAddonKeys();
 extern void GUICheatKeys();
 extern void GUICheatSearchKeys();

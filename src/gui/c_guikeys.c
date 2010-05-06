@@ -240,6 +240,13 @@ static void GUIOptionKeys(char dh)
 }
 
 
+static void GUIAboutKeys(char dh)
+{
+	dh = ToUpperASM(dh);
+	GUIKeyCheckbox(&EEgg, 'E', dh);
+}
+
+
 void GUIgetcurrentinput(void)
 {
 	char UseExtKey = '\0';
@@ -419,7 +426,7 @@ done:
 					case  6: f = GUISoundKeys;       break;
 					case  7: f = GUICheatKeys;       break;
 					case 10: f = GUIGUIOptnsKeys;    break;
-					case 11: f = GUIAboutKeys;       break;
+					case 11: GUIAboutKeys(dh);       return;
 					case 12: f = GUIResetKeys;       break;
 					case 13: f = GUICheatSearchKeys; break;
 					case 14: f = GUIStateKeys;       break;
