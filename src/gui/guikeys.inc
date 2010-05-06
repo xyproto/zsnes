@@ -175,20 +175,6 @@ SECTION .text
 GUITCPIPKeys:
   ret
 
-NEWSYM GUIAddonKeys
-  ToUpperASM
-  GUIKeyButtonHole device1,0,'G'             ;Radio Buttons
-  GUIKeyButtonHole device1,1,'M'
-  GUIKeyButtonHole device2,0,'A'
-  GUIKeyButtonHole device2,1,'O'
-  GUIKeyButtonHole device2,2,'S'
-  GUIKeyButtonHole device2,3,'1'
-  GUIKeyButtonHole device2,4,'2'
-
-  GUIKeyCheckbox mouse1lh,'L'             ; Checkboxes
-  GUIKeyCheckbox mouse2lh,'E'
-  ret
-
 NEWSYM GUIChipKeys
   ToUpperASM
   GUIKeyCheckbox nssdip1,'1'             ; Checkboxes

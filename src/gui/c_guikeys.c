@@ -248,6 +248,22 @@ static void GUIAboutKeys(char dh)
 }
 
 
+static void GUIAddonKeys(char dh)
+{
+	dh = ToUpperASM(dh);
+	GUIKeyButtonHole(&device1, 0, 'G', dh);
+	GUIKeyButtonHole(&device1, 1, 'M', dh);
+	GUIKeyButtonHole(&device2, 0, 'A', dh);
+	GUIKeyButtonHole(&device2, 1, 'O', dh);
+	GUIKeyButtonHole(&device2, 2, 'S', dh);
+	GUIKeyButtonHole(&device2, 3, '1', dh);
+	GUIKeyButtonHole(&device2, 4, '2', dh);
+
+	GUIKeyCheckbox(&mouse1lh, 'L', dh);
+	GUIKeyCheckbox(&mouse2lh, 'E', dh);
+}
+
+
 static void GUISaveKeys(char dh)
 {
 	dh = ToUpperASM(dh);
@@ -467,7 +483,7 @@ done:
 					case 14: f = GUIStateKeys;       break;
 					case 15: f = GUIMovieKeys;       break;
 					case 16: f = GUIComboKeys;       break;
-					case 17: f = GUIAddonKeys;       break;
+					case 17: GUIAddonKeys(dh);       return;
 					case 18: f = GUIChipKeys;        break;
 					case 19: f = GUIPathKeys;        break;
 					case 20: GUISaveKeys(dh);        return;
