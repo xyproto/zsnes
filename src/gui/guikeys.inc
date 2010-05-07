@@ -140,55 +140,6 @@ SECTION .text
 GUITCPIPKeys:
   ret
 
-NEWSYM GUISoundKeys
-  ToUpperASM
-  cmp dh,'E'
-  jne .notenablesound
-  xor byte[soundon],1
-%ifdef __WIN32__
-  ccallv reInitSound
-%endif
-.notenablesound
-
-  GUIKeyCheckbox StereoSound,'S'
-  GUIKeyCheckbox RevStereo,'V'
-  GUIKeyCheckbox Surround,'M'
-  GUIKeyCheckbox SPCDisable,'D'
-%ifdef __MSDOS__
-  GUIKeyCheckbox Force8b,'F'
-%endif
-%ifdef __WIN32__
-  GUIKeyCheckbox PrimaryBuffer,'P'
-%endif
-
-  cmp dh,'R'                 ; Sampling Rate
-  jne .notsrate
-  mov eax,[SoundQuality]
-  mov al,[.sampratenext+eax]
-  mov [SoundQuality],al
-.notsrate
-
-  GUIKeyButtonHole SoundInterpType,0,'N'
-  GUIKeyButtonHole SoundInterpType,1,'G'
-  GUIKeyButtonHole SoundInterpType,2,'C'
-  cmp byte[MMXSupport],0
-  je .no8ptinterp
-  GUIKeyButtonHole SoundInterpType,3,'8'
-.no8ptinterp
-
-  GUIKeyButtonHole LowPassFilterType,0,'O'
-  GUIKeyButtonHole LowPassFilterType,1,'I'
-  GUIKeyButtonHole LowPassFilterType,2,'Y'
-  cmp byte[MMXSupport],0
-  je .nohiqualityfilter
-  GUIKeyButtonHole LowPassFilterType,3,'H'
-.nohiqualityfilter
-  ret
-
-SECTION .data
-.sampratenext db 1,4,5,6,2,3,0,0
-SECTION .text
-
 GUINetMenuKeys1:
   ret
 

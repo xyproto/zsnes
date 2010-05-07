@@ -89,6 +89,7 @@ extern "C" {
   void SetMouseY(int Y);
   void WinUpdateDevices(void);
   void initDirectDraw(void);
+  void reInitSound(void);
 
   extern bool  ctrlptr;
   extern char* CBBuffer;

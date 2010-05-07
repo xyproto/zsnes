@@ -694,6 +694,46 @@ needupdate:
 }
 
 
+static void GUISoundKeys(char dh)
+{
+	dh = ToUpperASM(dh);
+	if (dh == 'E')
+	{ // Enable sound
+		soundon ^= 1;
+#ifdef __WIN32__
+		reInitSound();
+#endif
+	}
+
+	GUIKeyCheckbox(&StereoSound,   'S', dh);
+	GUIKeyCheckbox(&RevStereo,     'V', dh);
+	GUIKeyCheckbox(&Surround,      'M', dh);
+	GUIKeyCheckbox(&SPCDisable,    'D', dh);
+#ifdef __MSDOS__
+	GUIKeyCheckbox(&Force8b,       'F', dh);
+#endif
+#ifdef __WIN32__
+	GUIKeyCheckbox(&PrimaryBuffer, 'P', dh);
+#endif
+
+	if (dh == 'R')
+	{ // Sampling Rate
+		static u1 const sampratenext[] = { 1, 4, 5, 6, 2, 3, 0, 0 };
+		SoundQuality = SoundQuality & 0xFFFFFF00 | sampratenext[SoundQuality & 0xFF];
+	}
+
+	GUIKeyButtonHole(&SoundInterpType, 0, 'N', dh);
+	GUIKeyButtonHole(&SoundInterpType, 1, 'G', dh);
+	GUIKeyButtonHole(&SoundInterpType, 2, 'C', dh);
+	if (MMXSupport != 0) GUIKeyButtonHole(&SoundInterpType, 3, '8', dh);
+
+	GUIKeyButtonHole(&LowPassFilterType, 0, 'O', dh);
+	GUIKeyButtonHole(&LowPassFilterType, 1, 'I', dh);
+	GUIKeyButtonHole(&LowPassFilterType, 2, 'Y', dh);
+	if (MMXSupport != 0) GUIKeyButtonHole(&LowPassFilterType, 3, 'H', dh);
+}
+
+
 static void GUIGUIOptnsKeys(char dh)
 {
 	dh = ToUpperASM(dh);
@@ -986,7 +1026,7 @@ done:
 					case  3: GUIInputKeys(dh);       return;
 					case  4: GUIOptionKeys(dh);      return;
 					case  5: GUIVideoKeys(dh, al);   return;
-					case  6: f = GUISoundKeys;       break;
+					case  6: GUISoundKeys(dh);       return;
 					case  7: f = GUICheatKeys;       break;
 					case 10: GUIGUIOptnsKeys(dh);    return;
 					case 11: GUIAboutKeys(dh);       return;
