@@ -18,13 +18,24 @@
 #include "guiwindp.h"
 
 #ifdef __MSDOS__
+#	include <string.h>
+
 #	include "../asm_call.h"
+#	include "../dos/initvid.h"
+#	include "../ui.h"
 #	include "../video/copyvid.h"
 #	include "guimisc.h"
+#else
+#	include "../video/ntsc.h"
+#	include "guifuncs.h"
 #endif
 
 #ifdef __UNIXSDL__
 #	include "../linux/sdllink.h"
+
+#	ifdef __OPENGL__
+#		include "../linux/gl_draw.h"
+#	endif
 #endif
 
 #ifdef __WIN32__
@@ -168,6 +179,48 @@ static void GUIKeyButtonHole(u1* const p1, u1 const p2, char const p3, char cons
 }
 
 
+static char GUIInputBoxText(char* const* const p1, void (* const p2)(void), char const dh)
+{
+	if (dh == '\0') return dh;
+
+	if (GUIInputBox == 0) return dh;
+
+	char* const ecx = p1[GUIInputBox - 1];
+	char*       eax = ecx;
+
+#ifdef __WIN32__
+	// Look for paste request
+	if (ctrlptr && dh == 'V')
+	{
+		CBBuffer = ecx;
+		CBLength = GUIInputLimit;
+		PasteClipBoard();
+		return '\0';
+	}
+#endif
+
+	// Find end of string
+	while (*eax != '\0') ++eax;
+
+	if (dh == 8) // Backspace
+	{
+		if (eax != ecx) eax[-1] = '\0';
+		return '\0';
+	}
+
+	if (dh == 13) // Enter
+	{
+		GUIInputBox = 0;
+		p2();
+		return '\0';
+	}
+
+	// check if we're at the end
+	if (eax != ecx + GUIInputLimit) *eax = dh;
+	return '\0';
+}
+
+
 static void GUIInputKeys(char dh)
 {
 	dh = ToUpperASM(dh);
@@ -241,6 +294,402 @@ static void GUIOptionKeys(char dh)
 #ifndef NO_PNG
 		GUIKeyButtonHole(&ScreenShotFormat, 1, 'P', dh);
 #endif
+	}
+}
+
+
+#ifdef __MSDOS__
+static void DOSClearScreenKey(void)
+{
+	asm_call(DOSClearScreen);
+	memset(vidbufferofsb, 0, 288 * 128 * 4);
+}
+#endif
+
+
+static void GUIVideoKeys(char dh, char const dl)
+{
+#ifndef __MSDOS__
+	dh = GUIInputBoxText(GUICustomResTextPtr, SetCustomXY, dh);
+#endif
+
+	if (dh == 9)
+	{
+		if (NTSCFilter != 0 && GUINTVID[cvidmode] != 0)
+		{
+			KeyTabInc(GUIVideoTabs, GUIVntscTab, (u4*)0);
+		}
+		else
+		{
+			KeyTabInc(GUIVideoTabs, (u4*)0);
+		}
+	}
+
+	dh = ToUpperASM(dh);
+	if (GUIVideoTabs[0] == 1)
+	{
+		IFKEY(dl, 89, 71) // "Home"
+		{
+			GUIcurrentvideocursloc = 0;
+			GUIcurrentvideoviewloc = 0;
+		}
+
+		IFKEY(dl, 95, 79) // "End"
+		{
+			u4 const eax = NumVideoModes - 1;
+			GUIcurrentvideocursloc = eax;
+			GUIcurrentvideoviewloc = eax - 19;
+			// XXX probably should be 0x80000000 (below, too)
+			if (GUIcurrentvideoviewloc & 0x8000000) GUIcurrentvideoviewloc = 0;
+		}
+
+		IFKEY(dl, 90, 72) // "Up"
+		{
+			if (GUIcurrentvideocursloc != 0)
+			{
+				if (GUIcurrentvideoviewloc == GUIcurrentvideocursloc) --GUIcurrentvideoviewloc;
+				--GUIcurrentvideocursloc;
+			}
+		}
+
+		IFKEY(dl, 80, 96) // "Down"
+		{
+			u4 const ebx = GUIcurrentvideocursloc + 1;
+			if (ebx != NumVideoModes)
+			{
+				++GUIcurrentvideocursloc;
+				if (ebx - 20 == GUIcurrentvideoviewloc) ++GUIcurrentvideoviewloc;
+			}
+		}
+
+		IFKEY(dl, 73, 91) // "PageUp"
+		{
+			GUIcurrentvideoviewloc -= 20;
+			GUIcurrentvideocursloc -= 20;
+			if (GUIcurrentvideoviewloc & 0x8000000) GUIcurrentvideoviewloc = 0;
+			if (GUIcurrentvideocursloc & 0x8000000) GUIcurrentvideocursloc = 0;
+		}
+
+		IFKEY(dl, 97, 81) // "PageDown"
+		{
+			GUIcurrentvideoviewloc += 20;
+			GUIcurrentvideocursloc += 20;
+			u4 ebx = NumVideoModes - 1;
+			if (GUIcurrentvideocursloc >= ebx) GUIcurrentvideocursloc = ebx;
+			ebx -= 19;
+			if ((s4)GUIcurrentvideoviewloc >= (s4)ebx)
+			{
+				if (ebx & 0x8000000) ebx = 0;
+				GUIcurrentvideoviewloc = ebx;
+			}
+		}
+
+		if (dl == 13) GUICBHold = 4; // "Return"
+	}
+
+	if (GUIVideoTabs[0] == 2)
+	{
+#ifdef __MSDOS__
+		if ((smallscreenon & 0xFF) != 1)
+#endif
+		{
+#ifdef __MSDOS__
+			if (ScreenScale != 1)
+#endif
+			{
+				if (dh == 'I')
+				{
+					u4 const ebx = cvidmode;
+#ifndef __MSDOS__
+					if (GUIBIFIL[ebx] != 0)
+					{
+						BilinearFilter ^= 1;
+						NTSCFilter      = 0;
+#ifdef __WIN32__
+						initDirectDraw();
+#elif defined __OPENGL__
+						initwinvideo();
+#endif
+						Clear2xSaIBuffer();
+					}
+					else
+					{
+#else
+						if (GUIEAVID[ebx] != 0) goto interpolation;
+#endif
+#ifdef __WIN32__
+						if (GUIDSIZE[ebx] != 0)
+#else
+						if (GUII2VID[ebx] != 0)
+#endif
+						{
+#ifdef __MSDOS__
+interpolation:
+#endif
+							antienab ^= 1;
+							if (antienab != 0)
+							{
+								En2xSaI    = 0;
+								hqFilter   = 0;
+								NTSCFilter = 0;
+							}
+						}
+#ifndef __MSDOS__
+					}
+#endif
+				}
+
+				if (dh == 'N')
+				{
+					if (GUINTVID[cvidmode] != 0)
+					{
+						NTSCFilter ^= 1;
+						if (NTSCFilter != 0)
+						{
+							En2xSaI        = 0;
+							hqFilter       = 0;
+							scanlines      = 0;
+							antienab       = 0;
+#ifdef __OPENGL__
+							BilinearFilter = 0;
+#endif
+#ifdef __WIN32__
+							if (NTSCFilter != 0) Keep4_3Ratio = 1;
+#endif
+#ifndef __MSDOS__
+							NTSCFilterInit();
+#endif
+						}
+					}
+				}
+
+#ifdef __MSDOS__
+				if (GUI2xVID[cvidmode] != 0)
+#else
+				if (GUIDSIZE[cvidmode] != 0)
+#endif
+				{
+					switch (dh)
+					{
+						u1 al;
+						case 'S': al = 1; goto yesfilter;
+						case 'E': al = 2; goto yesfilter;
+						case 'P': al = 3; goto yesfilter;
+yesfilter:
+						Clear2xSaIBuffer();
+						hqFilter   = 0;
+						scanlines  = 0;
+						antienab   = 0;
+						NTSCFilter = 0;
+						En2xSaI = En2xSaI != al ? al : 0;
+						return;
+					}
+				}
+
+				if (dh == 'Q')
+				{
+#ifndef __MSDOS__
+					if (GUIHQ2X[cvidmode] != 0 || GUIHQ3X[cvidmode] != 0 || GUIHQ4X[cvidmode] != 0)
+#else
+					if (GUIHQ2X[cvidmode] != 0)
+#endif
+					{
+						Clear2xSaIBuffer();
+						hqFilter ^= 1;
+						if (hqFilter != 0)
+						{
+							scanlines  = 0;
+							En2xSaI    = 0;
+							antienab   = 0;
+							NTSCFilter = 0;
+						}
+					}
+				}
+
+#ifndef __MSDOS__
+				if (dh == 'X')
+				{
+					if (hqFilter != 0 && GUIHQ2X[cvidmode] != 0)
+					{
+						Clear2xSaIBuffer();
+						GUIKeyButtonHole(&hqFilterlevel, 2, 'X', dh);
+					}
+				}
+
+				if (dh == '3')
+				{
+					if (hqFilter != 0 && GUIHQ3X[cvidmode] != 0)
+					{
+						Clear2xSaIBuffer();
+						GUIKeyButtonHole(&hqFilterlevel, 3, '3', dh);
+					}
+				}
+
+				if (dh == '4')
+				{
+					if (hqFilter != 0 && GUIHQ4X[cvidmode] != 0)
+					{
+						Clear2xSaIBuffer();
+						GUIKeyButtonHole(&hqFilterlevel, 4, '4', dh);
+					}
+				}
+#endif
+			}
+
+#ifdef __MSDOS__
+			if (GUISLVID[cvidmode] != 0)
+#else
+			if (GUIDSIZE[cvidmode] != 0)
+#endif
+			{
+				GUIKeyButtonHole(&scanlines, 0, 'O', dh);
+#ifdef __MSDOS__
+				if (dh == 'O') goto needupdate;
+#endif
+				if (dh == 'F')
+				{
+					En2xSaI    = 0;
+					hqFilter   = 0;
+					NTSCFilter = 0;
+					GUIKeyButtonHole(&scanlines, 1, 'F', dh);
+#ifdef __MSDOS__
+needupdate:
+					asm_call(DOSClearScreen);
+					if (cvidmode == 2 || cvidmode == 5) // modeQ
+					{
+						cbitmode = 1;
+						asm_call(initvideo2);
+						cbitmode = 0;
+						GUISetPal();
+					}
+#endif
+				}
+			}
+
+#ifdef __MSDOS__
+			if (ScreenScale != 1)
+#endif
+			{
+#ifdef __MSDOS__
+				if (GUIHSVID[cvidmode] != 0)
+#else
+				if (GUIDSIZE[cvidmode] != 0)
+#endif
+				{
+					if (dh == '5')
+					{
+						En2xSaI    = 0;
+						hqFilter   = 0;
+						NTSCFilter = 0;
+#ifdef __MSDOS__
+						asm_call(DOSClearScreen);
+#endif
+						GUIKeyButtonHole(&scanlines, 3, '5', dh);
+					}
+
+					if (dh == '5')
+					{
+						En2xSaI    = 0;
+						hqFilter   = 0;
+						NTSCFilter = 0;
+#ifdef __MSDOS__
+						asm_call(DOSClearScreen);
+#endif
+						GUIKeyButtonHole(&scanlines, 2, '2', dh);
+					}
+				}
+			}
+		}
+		GUIKeyCheckbox(&GrayscaleMode, 'G', dh);
+
+		if (dh == 'H')
+		{
+			if (GUIM7VID[cvidmode] != 0) Mode7HiRes16b ^= 1;
+		}
+
+#if !defined __UNIXSDL__ || defined __OPENGL__
+		if (dh == 'V')
+		{
+#ifdef __UNIXSDL__
+			if (allow_glvsync == 1 && GUIBIFIL[cvidmode] != 0)
+#endif
+			{
+				vsyncon ^= 1;
+#ifdef __WIN32__
+				initDirectDraw();
+				Clear2xSaIBuffer();
+#elif defined __MSDOS__
+				if (vsyncon != 0) Triplebufen = 0;
+#elif defined __OPENGL__
+				initwinvideo();
+				Clear2xSaIBuffer();
+#endif
+			}
+		}
+#endif
+
+#ifndef __UNIXSDL__
+		if (dh == 'T')
+		{
+#ifdef __WIN32__
+			if (GUIWFVID[cvidmode] != 0)
+			{
+				TripleBufferWin ^= 1;
+				initDirectDraw();
+				Clear2xSaIBuffer();
+			}
+#else
+			if (GUITBVID[cvidmode] != 0)
+			{
+				Triplebufen ^= 1;
+				if (Triplebufen != 0) vsyncon = 0;
+			}
+#endif
+		}
+#endif
+
+#ifndef __MSDOS__
+		if (dh == 'R')
+		{
+			if (GUIKEEP43[cvidmode] != 0)
+			{
+				Keep4_3Ratio ^= 1;
+				initwinvideo();
+				Clear2xSaIBuffer();
+			}
+		}
+#else
+		if (dh == 'M')
+		{
+			if (GUISSVID[cvidmode] != 0)
+			{
+				smallscreenon ^= 1;
+				ScreenScale    = 0;
+				antienab       = 0;
+				En2xSaI        = 0;
+				scanlines      = 0;
+				DOSClearScreenKey();
+			}
+		}
+
+		if (dh == 'C')
+		{
+			if (GUIWSVID[cvidmode] != 0)
+			{
+				ScreenScale  ^= 1;
+				smallscreenon = 0;
+				antienab      = 0;
+				En2xSaI       = 0;
+				DOSClearScreenKey();
+			}
+		}
+#endif
+	}
+
+	if ((s4)GUIVntscTab >= 1)
+	{
+		GUIKeyCheckbox(&NTSCBlend, 'B', dh);
+		GUIKeyCheckbox(&NTSCRef,   'R', dh);
 	}
 }
 
@@ -536,7 +985,7 @@ done:
 					case  2: f = GUIStateSelKeys;    break;
 					case  3: GUIInputKeys(dh);       return;
 					case  4: GUIOptionKeys(dh);      return;
-					case  5: f = GUIVideoKeys;       break;
+					case  5: GUIVideoKeys(dh, al);   return;
 					case  6: f = GUISoundKeys;       break;
 					case  7: f = GUICheatKeys;       break;
 					case 10: GUIGUIOptnsKeys(dh);    return;

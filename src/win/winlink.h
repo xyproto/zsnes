@@ -80,6 +80,7 @@ extern "C" {
   void DisplayWIPDisclaimer(void);
   void DoSleep(void);
   void MinimizeWindow(void);
+  void PasteClipBoard(void);
   void SetMouseMaxX(int MaxX);
   void SetMouseMaxY(int MaxY);
   void SetMouseMinX(int MinX);
@@ -88,6 +89,10 @@ extern "C" {
   void SetMouseY(int Y);
   void WinUpdateDevices(void);
   void initDirectDraw(void);
+
+  extern bool  ctrlptr;
+  extern char* CBBuffer;
+  extern u4    CBLength;
 
 #ifdef __cplusplus
 }

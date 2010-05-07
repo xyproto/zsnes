@@ -3103,7 +3103,8 @@ extern "C"
   }
 
   char *CBBuffer;
-  unsigned int CBLength;
+  u4    CBLength;
+
   void PasteClipBoard()
   {
     if (OpenClipboard(0))

@@ -126,7 +126,7 @@ EXTSYM CBBuffer,CBLength,PasteClipBoard,ctrlptr,PauseFocusChange
 %elifdef __MSDOS__
 EXTSYM dssel,initvideo2,Force8b,smallscreenon
 EXTSYM pl1p209,pl2p209,pl3p209,pl4p209,pl5p209,SidewinderFix,Triplebufen,ScreenScale
-EXTSYM GUIEAVID,GUIWSVID,GUISSVID,GUITBVID,GUISLVID,GUIHSVID,GUI2xVID
+EXTSYM GUIEAVID,GUITBVID,GUISLVID,GUIHSVID,GUI2xVID
 EXTSYM DOSClearScreen
 EXTSYM GUI36hzcall
 %endif
@@ -139,10 +139,6 @@ EXTSYM GUIWFVID,GUIDSIZE,GUIHQ3X,GUIHQ4X,GUIKEEP43,sl_intensity
 
 %ifndef __WIN32__
 EXTSYM GUII2VID
-%endif
-
-%ifdef __OPENGL__
-EXTSYM allow_glvsync
 %endif
 
 %include "gui/guimouse.inc"

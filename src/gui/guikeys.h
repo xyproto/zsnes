@@ -14,7 +14,6 @@ extern void GUIResetKeys();
 extern void GUISoundKeys();
 extern void GUIStateKeys();
 extern void GUIStateSelKeys();
-extern void GUIVideoKeys();
 extern void GUIWaitForKey();
 
 extern u1  CSOverValue;
@@ -24,5 +23,6 @@ extern u4  GUIEditStringLTxt;
 extern u4  GUIEditStringLstb;
 extern u4  GUIEditStringcWin;
 extern u4  GUIInputBox;
+extern u4  GUIInputLimit;
 
 #endif
