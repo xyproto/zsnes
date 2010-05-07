@@ -1,5 +1,6 @@
 #include <stdarg.h>
 #include <stdbool.h>
+#include <string.h>
 
 #include "../c_init.h"
 #include "../c_intrf.h"
@@ -844,6 +845,36 @@ static void GUIMovieKeys(char dh)
 }
 
 
+static void GUIComboKeys(char dh)
+{
+	// Calculate Position
+	GUIComboPos = strlen(GUIComboTextH);
+
+	switch (dh)
+	{
+		case '\b': // Backspace
+			if (GUIComboPos != 0)
+			{
+				GUICCFlash                     = 0;
+				GUIComboTextH[GUIComboPos - 1] = '\0';
+			}
+			break;
+
+		case '\0':
+		case '\r':
+			break;
+
+		default:
+			if (GUIComboPos != 19)
+			{
+				GUICCFlash                 = 0;
+				GUIComboTextH[GUIComboPos] = dh;
+			}
+			break;
+	}
+}
+
+
 static void GUIAddonKeys(char dh)
 {
 	dh = ToUpperASM(dh);
@@ -1106,7 +1137,7 @@ done:
 					case 13: f = GUICheatSearchKeys; break;
 					case 14: f = GUIStateKeys;       break;
 					case 15: GUIMovieKeys(dh);       return;
-					case 16: f = GUIComboKeys;       break;
+					case 16: GUIComboKeys(dh);       return;
 					case 17: GUIAddonKeys(dh);       return;
 					case 18: GUIChipKeys(dh);        return;
 					case 19: GUIPathKeys(dh);        return;

@@ -55,40 +55,6 @@ NEWSYM GUIInputBox, resd 1
 NEWSYM GUIInputLimit, resd 1
 SECTION .text
 
-NEWSYM GUIComboKeys
-  ; Calculate Position
-  xor eax,eax
-.nozero
-  cmp byte[GUIComboTextH+eax],0
-  je .zero
-  inc eax
-  jmp .nozero
-.zero
-  mov [GUIComboPos],al
-  cmp dh,8
-  jne .nobacksp
-  cmp byte[GUIComboPos],0
-  je .nochar
-  mov byte[GUICCFlash],0
-  xor eax,eax
-  mov al,[GUIComboPos]
-  dec eax
-  mov byte[GUIComboTextH+eax],0
-  ret
-.nobacksp
-  cmp dh,0
-  je .nochar
-  cmp dh,13
-  je .nochar
-  cmp byte[GUIComboPos],19
-  je .nochar
-  xor eax,eax
-  mov byte[GUICCFlash],0
-  mov al,[GUIComboPos]
-  mov [GUIComboTextH+eax],dh
-.nochar
-  ret
-
 NEWSYM GUICheatKeys
   cmp dword[GUIcurrentcheatwin],1
   je near .textboxa
