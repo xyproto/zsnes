@@ -153,35 +153,7 @@ GUIEditStringmLen resd 1          ; Max length of string
 NEWSYM GUIEditStringLTxt, resd 1          ; blink value, should be set to 0 when box selected
 NEWSYM GUIEditStringLstb, resd 1          ; if cursor is placed (set in main function)
 NEWSYM GUIEditStringcWin, resd 1          ; 0 = no text window selected
-SECTION .text
 
-NEWSYM GUIPathKeys
-  cmp dword[GUIPathTabs],1
-  jne near .notpathtab1
-  GUIInputBoxText GUIPathsTab1Ptr,init_save_paths
-.notpathtab1
-  cmp dword[GUIPathTabs],2
-  jne near .notpathtab2
-  GUIInputBoxText GUIPathsTab2Ptr,init_save_paths
-.notpathtab2
-  cmp dword[GUIPathTabs],3
-  jne near .notpathtab3
-  GUIInputBoxText GUIPathsTab3Ptr,init_save_paths
-.notpathtab3
-
-  cmp dh,9
-  jne near .notab
-  KeyTabInc GUIPathTabs
-.notab
-
-  cmp dword[GUIPathTabs],1
-  jne near .notgeneral
-  GUIKeyButtonHole RelPathBase,0,'C'
-  GUIKeyButtonHole RelPathBase,1,'R'
-.notgeneral
-  ret
-
-SECTION .bss
 NEWSYM GUIInputBox, resd 1
 NEWSYM GUIInputLimit, resd 1
 SECTION .text

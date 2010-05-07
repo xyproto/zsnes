@@ -11,6 +11,7 @@
 #include "../types.h"
 #include "../video/procvid.h"
 #include "../video/procvidc.h"
+#include "../zpath.h"
 #include "c_gui.h"
 #include "c_guikeys.h"
 #include "gui.h"
@@ -816,6 +817,22 @@ static void GUIChipKeys(char dh)
 }
 
 
+static void GUIPathKeys(char dh)
+{
+	if (GUIPathTabs[0] == 1) dh = GUIInputBoxText(GUIPathsTab1Ptr, init_save_paths, dh);
+	if (GUIPathTabs[0] == 2) dh = GUIInputBoxText(GUIPathsTab2Ptr, init_save_paths, dh);
+	if (GUIPathTabs[0] == 3) dh = GUIInputBoxText(GUIPathsTab3Ptr, init_save_paths, dh);
+
+	if (dh == 9) KeyTabInc(GUIPathTabs, (u4*)0);
+
+	if (GUIPathTabs[0] == 1)
+	{ // General
+		GUIKeyButtonHole(&RelPathBase, 0, 'C', dh);
+		GUIKeyButtonHole(&RelPathBase, 1, 'R', dh);
+	}
+}
+
+
 static void GUISaveKeys(char dh)
 {
 	dh = ToUpperASM(dh);
@@ -1037,7 +1054,7 @@ done:
 					case 16: f = GUIComboKeys;       break;
 					case 17: GUIAddonKeys(dh);       return;
 					case 18: GUIChipKeys(dh);        return;
-					case 19: f = GUIPathKeys;        break;
+					case 19: GUIPathKeys(dh);        return;
 					case 20: GUISaveKeys(dh);        return;
 					case 21: GUISpeedKeys(dh);       return;
 					case  8: f = GUIGetInputLine;    break;

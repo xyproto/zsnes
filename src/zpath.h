@@ -82,7 +82,7 @@ extern char *ZChtPath, *ZComboPath, *ZInpPath, *ZSStatePath;
 extern char *ZCartName, *ZSaveName, *ZStateName, *ZSaveST2Name;
 
 bool init_paths(char *launch_command);
-void init_save_paths();
+void init_save_paths(void);
 bool init_rom_path(char *path);
 
 char *strdupcat(const char *str1, const char *str2);

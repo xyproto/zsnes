@@ -347,7 +347,7 @@ static void set_save_path(char **path, char *primary, char *secondary)
   }
 }
 
-void init_save_paths()
+void init_save_paths(void)
 {
   if (*SRAMPath)
   {

@@ -9,7 +9,6 @@ extern void GUIComboKeys();
 extern void GUIGetInputLine();
 extern void GUILoadKeys();
 extern void GUIMovieKeys();
-extern void GUIPathKeys();
 extern void GUIResetKeys();
 extern void GUIStateKeys();
 extern void GUIStateSelKeys();
