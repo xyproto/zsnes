@@ -122,7 +122,7 @@ EXTSYM CheckOpenGL
 EXTSYM initDirectDraw,reInitSound,CheckPriority,AlwaysOnTop
 EXTSYM CheckScreenSaver,MouseWheel,TrapMouseCursor,AllowMultipleInst,TripleBufferWin
 EXTSYM HighPriority,SaveMainWindowPos,PrimaryBuffer
-EXTSYM CBBuffer,CBLength,PasteClipBoard,ctrlptr,PauseFocusChange
+EXTSYM PauseFocusChange
 %elifdef __MSDOS__
 EXTSYM dssel,initvideo2,Force8b,smallscreenon
 EXTSYM pl1p209,pl2p209,pl3p209,pl4p209,pl5p209,SidewinderFix,Triplebufen,ScreenScale

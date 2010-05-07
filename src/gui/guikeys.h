@@ -8,7 +8,6 @@ extern void GUICheatSearchKeys();
 extern void GUIComboKeys();
 extern void GUIGetInputLine();
 extern void GUILoadKeys();
-extern void GUIMovieKeys();
 extern void GUIResetKeys();
 extern void GUIStateKeys();
 extern void GUIStateSelKeys();

@@ -11,6 +11,7 @@
 #include "../types.h"
 #include "../video/procvid.h"
 #include "../video/procvidc.h"
+#include "../zmovie.h"
 #include "../zpath.h"
 #include "c_gui.h"
 #include "c_guikeys.h"
@@ -789,6 +790,60 @@ static void GUIAboutKeys(char dh)
 }
 
 
+static void GUIMovieKeys(char dh)
+{
+	dh = ToUpperASM(dh);
+	dh = GUIInputBoxText(GUIMovieTextPtr, SetMovieForcedLength, dh);
+	if (dh == 9)
+	{
+		if (MovieProcessing == 0) KeyTabInc(GUIMovieTabs, GUIDumpingTab, (u4*)0);
+	}
+
+	GUIKeyButtonHole((u1*)&CMovieExt, 'v', '0', dh); // XXX ugly cast
+	GUIKeyButtonHole((u1*)&CMovieExt, '1', '1', dh); // XXX ugly cast
+	GUIKeyButtonHole((u1*)&CMovieExt, '2', '2', dh); // XXX ugly cast
+	GUIKeyButtonHole((u1*)&CMovieExt, '3', '3', dh); // XXX ugly cast
+	GUIKeyButtonHole((u1*)&CMovieExt, '4', '4', dh); // XXX ugly cast
+	GUIKeyButtonHole((u1*)&CMovieExt, '5', '5', dh); // XXX ugly cast
+	GUIKeyButtonHole((u1*)&CMovieExt, '6', '6', dh); // XXX ugly cast
+	GUIKeyButtonHole((u1*)&CMovieExt, '7', '7', dh); // XXX ugly cast
+	GUIKeyButtonHole((u1*)&CMovieExt, '8', '8', dh); // XXX ugly cast
+	GUIKeyButtonHole((u1*)&CMovieExt, '9', '9', dh); // XXX ugly cast
+
+	if (GUIMovieTabs[0] == 1)
+	{
+		GUIKeyButtonHole(&MovieStartMethod, 0, 'N', dh);
+		GUIKeyButtonHole(&MovieStartMethod, 1, 'P', dh);
+		GUIKeyButtonHole(&MovieStartMethod, 2, 'R', dh);
+		GUIKeyButtonHole(&MovieStartMethod, 3, 'S', dh);
+
+		GUIKeyButtonHole(&MZTForceRTR, 0, 'M', dh);
+		GUIKeyButtonHole(&MZTForceRTR, 1, 'C', dh);
+		GUIKeyButtonHole(&MZTForceRTR, 2, 'B', dh);
+
+		GUIKeyCheckbox(&MovieDisplayFrame, 'D', dh);
+	}
+
+	if (GUIDumpingTab[0] == 1)
+	{
+		GUIKeyButtonHole(&MovieVideoMode, 0, 'O', dh);
+		GUIKeyButtonHole(&MovieVideoMode, 1, 'W', dh);
+		GUIKeyButtonHole(&MovieVideoMode, 2, 'F', dh);
+		GUIKeyButtonHole(&MovieVideoMode, 3, 'L', dh);
+		GUIKeyButtonHole(&MovieVideoMode, 4, 'X', dh);
+		GUIKeyButtonHole(&MovieVideoMode, 5, 'C', dh);
+
+		GUIKeyCheckbox(&MovieAudio,         'A', dh);
+		GUIKeyCheckbox(&MovieVideoAudio,    'V', dh);
+		GUIKeyCheckbox(&MovieAudioCompress, 'M', dh);
+
+		GUIKeyButtonHole(&MovieForcedLengthEnabled, 0, 'Z', dh);
+		GUIKeyButtonHole(&MovieForcedLengthEnabled, 1, 'R', dh);
+		GUIKeyButtonHole(&MovieForcedLengthEnabled, 2, 'U', dh);
+	}
+}
+
+
 static void GUIAddonKeys(char dh)
 {
 	dh = ToUpperASM(dh);
@@ -1050,7 +1105,7 @@ done:
 					case 12: f = GUIResetKeys;       break;
 					case 13: f = GUICheatSearchKeys; break;
 					case 14: f = GUIStateKeys;       break;
-					case 15: f = GUIMovieKeys;       break;
+					case 15: GUIMovieKeys(dh);       return;
 					case 16: f = GUIComboKeys;       break;
 					case 17: GUIAddonKeys(dh);       return;
 					case 18: GUIChipKeys(dh);        return;

@@ -23,20 +23,6 @@ EXTSYM AddCSCheatCode
 
 ; GUI Keyboard Routines
 
-%macro GUIKeyCheckbox 2
-  cmp dh,%2
-  jne %%nohotkey
-  xor byte[%1],1
-%%nohotkey
-%endmacro
-
-%macro GUIKeyButtonHole 3
-  cmp dh,%3
-  jne %%nohotkey
-  mov byte[%1],%2
-%%nohotkey
-%endmacro
-
 %macro ToUpperASM 0
   cmp dh,'a'
   jb %%notlcase
@@ -46,96 +32,7 @@ EXTSYM AddCSCheatCode
 %%notlcase
 %endmacro
 
-%macro GUIInputBoxText 2
-  cmp dh,0
-  je near %%nokeypressed
-
-  cmp dword[GUIInputBox],0
-  je near %%nokeypressed
-
-  push ebx
-  mov ebx,[GUIInputBox]
-  mov eax,[%1+ebx*4-4]
-  pop ebx
-
-  mov ecx,eax
-
-%ifdef __WIN32__
-  ;Look for paste request
-  cmp byte[ctrlptr],0
-  je %%nopaste
-  cmp dh,56h ;V
-  jne %%nopaste
-  mov [CBBuffer],ecx
-  mov eax,[GUIInputLimit]
-  mov [CBLength],eax
-  ccallv PasteClipBoard
-  xor dx,dx
-  ret
-%%nopaste
-%endif
-
-  ;Find end of string
-%%findend
-  cmp byte[eax],0
-  je %%foundend
-  inc eax
-  jmp %%findend
-%%foundend
-
-  cmp dh,8    ;Backspace
-  jne %%notbackspace
-  cmp eax,ecx
-  je %%cantback
-  mov byte[eax-1],0
-%%cantback
-  xor dx,dx
-  ret
-%%notbackspace
-
-  cmp dh,13    ;Enter
-  jne %%notenter
-  mov dword[GUIInputBox],0
-  ccallv %2
-  xor dx,dx
-  ret
-%%notenter
-
-  ;check if we're at the end
-  add ecx,dword[GUIInputLimit]
-  cmp eax,ecx
-  jne %%stillroom
-  xor dx,dx
-  ret
-%%stillroom
-  mov [eax],dh
-
-  xor dx,dx
-%%nokeypressed
-%endmacro
-
 SECTION .text
-
-%macro KeyTabInc 1-* ; tab arrays
-  push edx
-%rep %0
-  xor edx,edx
-  mov eax,[%1]
-  div dword[%1+4]
-  mov [%1],edx
-  %rotate 1
-  or [%1],eax
-  cmp eax,1
-  je %%exit
-  %rotate -1
-  sub eax,[%1]
-  adc dword[%1],0
-  jnz %%exit
-  %rotate 1
-%endrep
-%%exit
-  pop edx
-%endmacro
 
 GUITCPIPKeys:
   ret
@@ -157,63 +54,6 @@ NEWSYM GUIEditStringcWin, resd 1          ; 0 = no text window selected
 NEWSYM GUIInputBox, resd 1
 NEWSYM GUIInputLimit, resd 1
 SECTION .text
-
-NEWSYM GUIMovieKeys
-  ToUpperASM
-  GUIInputBoxText GUIMovieTextPtr,SetMovieForcedLength
-  cmp dh,9
-  jne near .notab
-  cmp byte[MovieProcessing],1
-  jae .notab
-  KeyTabInc GUIMovieTabs,GUIDumpingTab
-.notab
-
-  GUIKeyButtonHole CMovieExt,'v','0'         ; Select Radio Buttons
-  GUIKeyButtonHole CMovieExt,'1','1'
-  GUIKeyButtonHole CMovieExt,'2','2'
-  GUIKeyButtonHole CMovieExt,'3','3'
-  GUIKeyButtonHole CMovieExt,'4','4'
-  GUIKeyButtonHole CMovieExt,'5','5'
-  GUIKeyButtonHole CMovieExt,'6','6'
-  GUIKeyButtonHole CMovieExt,'7','7'
-  GUIKeyButtonHole CMovieExt,'8','8'
-  GUIKeyButtonHole CMovieExt,'9','9'
-
-  cmp dword[GUIMovieTabs],1
-  jne near .nocontrols
-
-  GUIKeyButtonHole MovieStartMethod,0,'N'   ; Start From Radio Buttons
-  GUIKeyButtonHole MovieStartMethod,1,'P'
-  GUIKeyButtonHole MovieStartMethod,2,'R'
-  GUIKeyButtonHole MovieStartMethod,3,'S'
-
-  GUIKeyButtonHole MZTForceRTR,0,'M'   ; Start From Radio Buttons
-  GUIKeyButtonHole MZTForceRTR,1,'C'
-  GUIKeyButtonHole MZTForceRTR,2,'B'
-
-  GUIKeyCheckbox MovieDisplayFrame,'D'      ; Checkbox
-.nocontrols
-
-  cmp dword[GUIDumpingTab],1
-  jne near .nodumping
-
-  GUIKeyButtonHole MovieVideoMode,0,'O'
-  GUIKeyButtonHole MovieVideoMode,1,'W'
-  GUIKeyButtonHole MovieVideoMode,2,'F'
-  GUIKeyButtonHole MovieVideoMode,3,'L'
-  GUIKeyButtonHole MovieVideoMode,4,'X'
-  GUIKeyButtonHole MovieVideoMode,5,'C'
-
-  GUIKeyCheckbox MovieAudio,'A'
-  GUIKeyCheckbox MovieVideoAudio,'V'
-  GUIKeyCheckbox MovieAudioCompress,'M'
-
-  GUIKeyButtonHole MovieForcedLengthEnabled,0,'Z'
-  GUIKeyButtonHole MovieForcedLengthEnabled,1,'R'
-  GUIKeyButtonHole MovieForcedLengthEnabled,2,'U'
-.nodumping
-
-  ret
 
 NEWSYM GUIComboKeys
   ; Calculate Position
