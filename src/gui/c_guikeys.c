@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include <string.h>
 
+#include "../asm_call.h"
 #include "../c_init.h"
 #include "../c_intrf.h"
 #include "../cfg.h"
@@ -17,13 +18,13 @@
 #include "c_gui.h"
 #include "c_guikeys.h"
 #include "gui.h"
+#include "guicheat.h"
 #include "guikeys.h"
 #include "guiwindp.h"
 
 #ifdef __MSDOS__
 #	include <string.h>
 
-#	include "../asm_call.h"
 #	include "../dos/initvid.h"
 #	include "../ui.h"
 #	include "../video/copyvid.h"
@@ -737,6 +738,197 @@ static void GUISoundKeys(char dh)
 }
 
 
+static u1 digit2num(char const d)
+{
+	return
+		d >= 'a' ? d - 'a' + 10 :
+		d >= 'A' ? d - 'A' + 10 :
+		d - '0';
+}
+
+
+static void GUICheatKeys(char dh, char al)
+{
+	switch (GUIcurrentcheatwin)
+	{
+		case 1: // Enter Code Input Box
+		{
+			if (GUICheatPosA != 0)
+			{
+				if (dh == 9 || dh == 13)
+				{
+					if (GUICheatPosA == 2)
+					{
+						GUICheatPosA = 0;
+						u1  const al  = digit2num(GUICheatTextZ1[0]);
+						u1  const ah  = digit2num(GUICheatTextZ1[1]);
+						u1*       esi = cheatdata + GUIcurrentcheatcursloc * 28;
+						esi[1] = al << 4 | ah & 0x0F;
+						GUICheatTextZ1[0] = '\0';
+						asm volatile("call %P1" : "+S" (esi) : "X" (EnableCheatCodeNoPrevMod) : "cc", "memory", "eax", "ecx", "ebx");
+					}
+					else
+					{
+						++GUIcurrentcheatwin;
+						GUICCFlash = 0;
+					}
+				}
+
+				if (dh == 8) // Backspace
+				{
+					GUICCFlash = 0;
+					--GUICheatPosA;
+					u4 const eax = GUICheatPosA;
+					GUICheatTextZ1[eax]     = '_';
+					GUICheatTextZ1[eax + 1] = '\0';
+					return;
+				}
+			}
+
+			switch (dh)
+			{
+				case '\0':
+				case  8:
+				case  9:
+				case 13:
+					break;
+
+				default:
+					if (GUICheatPosA != 14)
+					{
+						GUICCFlash = 9;
+						u1 const al = GUICheatPosA++;
+						GUICheatTextZ1[al]     = dh;
+						GUICheatTextZ1[al + 1] = '_';
+						GUICheatTextZ1[al + 2] = '\0';
+					}
+					break;
+			}
+			break;
+		}
+
+		case 2: // Description Input Box
+		{
+			if (dh == 13)
+			{
+				GUICCFlash = 0;
+				asm_call(ProcessCheatCode);
+				return;
+			}
+
+			if (GUICheatPosB != 0)
+			{
+				if (dh == 8)
+				{
+					GUICCFlash = 0;
+					--GUICheatPosB;
+					u1 const al = GUICheatPosB;
+					GUICheatTextZ2[al]     = '_';
+					GUICheatTextZ2[al + 1] = '\0';
+					return;
+				}
+			}
+
+			switch (dh)
+			{
+				case '\0':
+				case  8:
+				case 13:
+					break;
+
+				default:
+					if (GUICheatPosB != 18)
+					{
+						GUICCFlash = 0;
+						u1 const al = GUICheatPosB++;
+						GUICheatTextZ2[al]     = dh;
+						GUICheatTextZ2[al + 1] = '_';
+						GUICheatTextZ2[al + 2] = '\0';
+					}
+					break;
+			}
+			break;
+		}
+
+		default:
+		{
+			dh = ToUpperASM(dh);
+			switch (dh)
+			{
+				case 'R': asm_call(CheatCodeRemove); return;
+				case 'T': asm_call(CheatCodeToggle); return;
+				case 'S': asm_call(CheatCodeSave);   return;
+				case 'L': asm_call(CheatCodeLoad);   return;
+				case 'F': asm_call(CheatCodeFix);    return;
+				case 'A': AutoLoadCht ^= 1;          break;
+			}
+
+			// Main Cheat Box
+			if (NumCheats == 0) return;
+
+			IFKEY(al, 89, 71) // Home
+			{
+				GUIcurrentcheatcursloc = 0;
+				GUIcurrentcheatviewloc = 0;
+				return;
+			}
+
+			IFKEY(al, 89, 79) // End // XXX same first code as above makes no sense
+			{
+				u4 const eax = NumCheats - 1;
+				GUIcurrentcheatcursloc = eax;
+				GUIcurrentcheatviewloc = eax - 11;
+				// XXX probably should be 0x80000000 (below, too)
+				if (GUIcurrentcheatviewloc & 0x8000000) GUIcurrentcheatviewloc = 0;
+				return;
+			}
+
+			IFKEY(al, 90, 72) // Up
+			{
+				if (GUIcurrentcheatcursloc != 0)
+				{
+					if (GUIcurrentcheatviewloc == GUIcurrentcheatcursloc) --GUIcurrentcheatviewloc;
+					--GUIcurrentcheatcursloc;
+				}
+			}
+
+			IFKEY(al, 96, 80) // Down
+			{
+				u4 const ebx = GUIcurrentcheatcursloc + 1;
+				if (ebx < NumCheats)
+				{
+					++GUIcurrentcheatcursloc;
+					if (ebx - 12 == GUIcurrentcheatviewloc) ++GUIcurrentcheatviewloc;
+				}
+			}
+
+			IFKEY(al, 91, 73) // Page up
+			{
+				GUIcurrentcheatviewloc -= 12;
+				GUIcurrentcheatcursloc -= 12;
+				if (GUIcurrentcheatviewloc & 0x8000000) GUIcurrentcheatviewloc = 0;
+				if (GUIcurrentcheatcursloc & 0x8000000) GUIcurrentcheatcursloc = 0;
+			}
+
+			IFKEY(al, 97, 81) // Page down
+			{
+				GUIcurrentcheatviewloc += 12;
+				GUIcurrentcheatcursloc += 12;
+				u4 ebx = NumCheats - 1;
+				if (GUIcurrentcheatcursloc >= ebx) GUIcurrentcheatcursloc = ebx;
+				ebx -= 12;
+				if ((s4)GUIcurrentcheatviewloc >= (s4)ebx)
+				{
+					if (ebx & 0x8000000) ebx = 0;
+					GUIcurrentcheatviewloc = ebx;
+				}
+			}
+			break;
+		}
+	}
+}
+
+
 static void GUIGUIOptnsKeys(char dh)
 {
 	dh = ToUpperASM(dh);
@@ -1130,7 +1322,7 @@ done:
 					case  4: GUIOptionKeys(dh);      return;
 					case  5: GUIVideoKeys(dh, al);   return;
 					case  6: GUISoundKeys(dh);       return;
-					case  7: f = GUICheatKeys;       break;
+					case  7: GUICheatKeys(dh, al);   return;
 					case 10: GUIGUIOptnsKeys(dh);    return;
 					case 11: GUIAboutKeys(dh);       return;
 					case 12: f = GUIResetKeys;       break;

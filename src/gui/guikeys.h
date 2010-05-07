@@ -3,7 +3,6 @@
 
 #include "../types.h"
 
-extern void GUICheatKeys();
 extern void GUICheatSearchKeys();
 extern void GUIGetInputLine();
 extern void GUILoadKeys();

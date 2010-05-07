@@ -444,7 +444,7 @@ EnableCheatCode:
     mov [esi+5],bl
     ret
 
-EnableCheatCodeNoPrevMod:
+NEWSYM EnableCheatCodeNoPrevMod
     ; code is at esi
     xor ecx,ecx
     xor ebx,ebx
