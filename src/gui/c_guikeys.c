@@ -16,6 +16,7 @@
 #include "../zmovie.h"
 #include "../zpath.h"
 #include "c_gui.h"
+#include "c_guicheat.h"
 #include "c_guikeys.h"
 #include "gui.h"
 #include "guicheat.h"
@@ -983,6 +984,202 @@ static void GUIAboutKeys(char dh)
 }
 
 
+static void CompareKeyMacro(char const p1, u1* const p2, u1 const p3, char const dh)
+{
+	if (dh == p1) *p2 = p3;
+}
+
+
+static void GUICheatSearchKeys(char dh, char const al)
+{
+	dh = ToUpperASM(dh);
+	switch (CheatWinMode)
+	{
+		case 3: // Add Cheat Window
+			if (dh == 27 || (CurCStextpos != 1 && dh == 'R')) // Button Hotkey
+			{
+				CheatWinMode = 2;
+			}
+
+			if (CurCStextpos == 0)
+			{
+				if (dh == 9 || (CSOverValue == 1 && dh == 13)) CurCStextpos = 1;
+				u4 const edx = dh << 8;
+				asm volatile("call %P0" :: "X" (InsertSearchCharacter), "d" (edx) : "cc", "memory", "ecx", "ebx");
+				return;
+			}
+
+			if (CurCStextpos == 1)
+			{
+				if (dh == 9) CurCStextpos = 0;
+				if (dh == 13)
+				{
+					AddCSCheatCode();
+				}
+				else
+				{
+					u4 edx = dh << 8;
+					asm volatile("call %P1" : "+d" (edx) : "X" (InsertSearchDescription) : "cc", "memory", "eax");
+				}
+			}
+			break;
+
+		case 2: // View
+			if (NumCheatSrc != 0) // Return Hotkey
+			{
+				// Select Codes with arrow keys
+				IFKEY(al, 89, 71) // Home
+				{
+					GUIcurrentchtsrccursloc = 0;
+					GUIcurrentchtsrcviewloc = 0;
+					return;
+				}
+
+				IFKEY(al, 95, 79) // End
+				{
+					u4 const eax = NumCheatSrc - 1;
+					GUIcurrentchtsrccursloc = eax;
+					GUIcurrentchtsrcviewloc = eax - 11;
+					// XXX probably should be 0x80000000 (below, too)
+					if (GUIcurrentchtsrcviewloc & 0x8000000) GUIcurrentchtsrcviewloc = 0;
+					return;
+				}
+
+				IFKEY(al, 90, 72) // Up
+				{
+					if (GUIcurrentchtsrccursloc != 0)
+					{
+						if (GUIcurrentchtsrcviewloc == GUIcurrentchtsrccursloc) --GUIcurrentchtsrcviewloc;
+						--GUIcurrentchtsrccursloc;
+					}
+				}
+
+				IFKEY(al, 96, 80) // Down
+				{
+					u4 const ebx = GUIcurrentchtsrccursloc + 1;
+					if (ebx < NumCheatSrc)
+					{
+						++GUIcurrentchtsrccursloc;
+						if (ebx - 12 == GUIcurrentchtsrcviewloc) ++GUIcurrentchtsrcviewloc;
+					}
+				}
+
+				// Pageup/Down to select Cheats
+				IFKEY(al, 91, 73) // Page up
+				{
+					GUIcurrentchtsrcviewloc -= 12;
+					GUIcurrentchtsrccursloc -= 12;
+					if (GUIcurrentchtsrcviewloc & 0x8000000) GUIcurrentchtsrcviewloc = 0;
+					if (GUIcurrentchtsrccursloc & 0x8000000) GUIcurrentchtsrccursloc = 0;
+				}
+
+				IFKEY(al, 97, 81) // Page down
+				{
+					GUIcurrentchtsrcviewloc += 12;
+					GUIcurrentchtsrccursloc += 12;
+					u4 ebx = NumCheatSrc - 1;
+					if (GUIcurrentchtsrccursloc >= ebx) GUIcurrentchtsrccursloc = ebx;
+					ebx -= 11;
+					if ((s4)GUIcurrentchtsrcviewloc >= (s4)ebx)
+					{
+						if (ebx & 0x8000000) ebx = 0;
+						GUIcurrentchtsrcviewloc = ebx;
+					}
+				}
+
+				// Return/Add Buttons
+				switch (dh)
+				{
+					case 27:
+					case 'R':
+						CheatWinMode = 1;
+						break;
+
+					case 13:
+					case 'A':
+						CheatWinMode      = 3;
+						CurCStextpos      = 0;
+						CSInputDisplay[0] = '_';
+						CSInputDisplay[1] = '\0';
+						CSDescDisplay[0]  = '\0';
+						break;
+				}
+				return;
+			}
+			else
+			{
+				if (dh == 27 || dh == 'R') CheatWinMode = 1;
+			}
+			break;
+
+		case 1: // Shortcuts for Select Comparison
+			if (CheatSrcSearchType != 1)
+			{
+				u4 const edx = dh << 8;
+				asm volatile("call %P0" :: "X" (InsertSearchCharacter), "d" (edx) : "cc", "memory", "ecx", "ebx");
+			}
+			else
+			{ // Compare
+				switch (dh)
+				{
+					case ',':
+					case 'N': CheatCompareValue = 0; break; // Less
+					case '.':
+					case 'E': CheatCompareValue = 1; break; // Greater
+					case 'W':
+					case '+': CheatCompareValue = 2; break; // Equal
+					case 'A': CheatCompareValue = 3; break; // Not equal
+				}
+
+				// Select with Arrow Keys
+				IFKEY(al, 90, 72) // Up
+				{
+					if (CheatCompareValue != 0) --CheatCompareValue;
+				}
+
+				IFKEY(al, 96, 80) // Down
+				{
+					if (CheatCompareValue != 3) ++CheatCompareValue;
+				}
+			}
+
+			// Restart/View/Search Buttons
+			switch (dh)
+			{
+				case 'R':
+					CheatWinMode      = 0;
+					CheatSearchStatus = 0;
+					break;
+
+				case 'V':
+					CheatWinMode = 2;
+					break;
+
+				case 13:
+				case 'S':
+					if (CheatSearchStatus != 1) asm_call(CheatCodeSearchProcess);
+					break;
+			}
+			break;
+
+		default:
+			// Main Menu
+			CompareKeyMacro('1', &CheatSrcByteSize,   0, dh);
+			CompareKeyMacro('2', &CheatSrcByteSize,   1, dh);
+			CompareKeyMacro('3', &CheatSrcByteSize,   2, dh);
+			CompareKeyMacro('4', &CheatSrcByteSize,   3, dh);
+			CompareKeyMacro('D', &CheatSrcByteBase,   0, dh);
+			CompareKeyMacro('H', &CheatSrcByteBase,   1, dh);
+			CompareKeyMacro('E', &CheatSrcSearchType, 0, dh);
+			CompareKeyMacro('C', &CheatSrcSearchType, 1, dh);
+
+			// Start Button
+			if (dh == 13 || dh == 'S') asm_call(CheatCodeSearchInit);
+			break;
+	}
+}
+
+
 static void GUIMovieKeys(char dh)
 {
 	dh = ToUpperASM(dh);
@@ -1316,26 +1513,26 @@ done:
 				eop* f;
 				switch (ebx)
 				{
-					case  1: f = GUILoadKeys;        break;
-					case  2: f = GUIStateSelKeys;    break;
-					case  3: GUIInputKeys(dh);       return;
-					case  4: GUIOptionKeys(dh);      return;
-					case  5: GUIVideoKeys(dh, al);   return;
-					case  6: GUISoundKeys(dh);       return;
-					case  7: GUICheatKeys(dh, al);   return;
-					case 10: GUIGUIOptnsKeys(dh);    return;
-					case 11: GUIAboutKeys(dh);       return;
-					case 12: f = GUIResetKeys;       break;
-					case 13: f = GUICheatSearchKeys; break;
-					case 14: f = GUIStateKeys;       break;
-					case 15: GUIMovieKeys(dh);       return;
-					case 16: GUIComboKeys(dh);       return;
-					case 17: GUIAddonKeys(dh);       return;
-					case 18: GUIChipKeys(dh);        return;
-					case 19: GUIPathKeys(dh);        return;
-					case 20: GUISaveKeys(dh);        return;
-					case 21: GUISpeedKeys(dh);       return;
-					case  8: f = GUIGetInputLine;    break;
+					case  1: f = GUILoadKeys;            break;
+					case  2: f = GUIStateSelKeys;        break;
+					case  3: GUIInputKeys(dh);           return;
+					case  4: GUIOptionKeys(dh);          return;
+					case  5: GUIVideoKeys(dh, al);       return;
+					case  6: GUISoundKeys(dh);           return;
+					case  7: GUICheatKeys(dh, al);       return;
+					case 10: GUIGUIOptnsKeys(dh);        return;
+					case 11: GUIAboutKeys(dh);           return;
+					case 12: f = GUIResetKeys;           break;
+					case 13: GUICheatSearchKeys(dh, al); return;
+					case 14: f = GUIStateKeys;           break;
+					case 15: GUIMovieKeys(dh);           return;
+					case 16: GUIComboKeys(dh);           return;
+					case 17: GUIAddonKeys(dh);           return;
+					case 18: GUIChipKeys(dh);            return;
+					case 19: GUIPathKeys(dh);            return;
+					case 20: GUISaveKeys(dh);            return;
+					case 21: GUISpeedKeys(dh);           return;
+					case  8: f = GUIGetInputLine;        break;
 					default: return;
 				}
 				u4 eax = al;

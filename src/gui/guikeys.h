@@ -3,13 +3,14 @@
 
 #include "../types.h"
 
-extern void GUICheatSearchKeys();
 extern void GUIGetInputLine();
 extern void GUILoadKeys();
 extern void GUIResetKeys();
 extern void GUIStateKeys();
 extern void GUIStateSelKeys();
 extern void GUIWaitForKey();
+extern void InsertSearchCharacter();
+extern void InsertSearchDescription();
 
 extern u1  CSOverValue;
 extern u1* GUIEditStringcLen;
