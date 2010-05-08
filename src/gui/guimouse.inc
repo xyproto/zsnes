@@ -481,15 +481,6 @@ SECTION .text
 %%nohold
 %endmacro
 
-%macro GUITextBoxInput 6
-  GUIClickArea %1,%2,%3,%4,%%noclick
-  mov dword[GUIEditString],%5
-  mov dword[GUIEditStringmLen],%6
-  mov dword[GUIEditStringLTxt],0
-  mov dword[GUIEditStringcWin],1
-%%noclick
-%endmacro
-
 %macro GUITextBoxInputB 5
   GUIClickArea %1,%2,%3,%4,%%noclick
   mov byte[GUINetTextm2],%5

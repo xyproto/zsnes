@@ -248,11 +248,10 @@ void GUIinit36_4hz(void)
 void GUI36hzcall(void)
 {
 	++SnowMover;
-	if (GUIEditStringLTxt != 0) --GUIEditStringLTxt;
-	if (GUIScrolTim1      != 0) --GUIScrolTim1;
-	if (GUIDClickTL       != 0) --GUIDClickTL;
-	if (GUIkeydelay       != 0) --GUIkeydelay;
-	if (GUICTimer         != 0) --GUICTimer;
+	if (GUIScrolTim1 != 0) --GUIScrolTim1;
+	if (GUIDClickTL  != 0) --GUIDClickTL;
+	if (GUIkeydelay  != 0) --GUIkeydelay;
+	if (GUICTimer    != 0) --GUICTimer;
 	GUICCFlash = (GUICCFlash + 1) & 0x0F;
 	GUILDFlash = (GUILDFlash + 1) & 0x0F;
 }
@@ -1553,28 +1552,7 @@ void StartGUI(void)
 		if (GUIEffect == 4) DrawBurn();
 		if (GUIEffect == 5) DrawSmoke();
 
-		if (GUIEditStringcWin != 0)
-		{
-			u1* eax = GUIEditStringcLen;
-			if (eax)
-			{
-				if (GUIEditStringLTxt >= 8)
-				{
-					eax[0]            = '_';
-					eax[1]            = '\0';
-					GUIEditStringLstb = 1;
-				}
-				if (GUIEditStringLTxt == 0) GUIEditStringLTxt = 16;
-			}
-		}
-
 		DisplayBoxes();
-
-		if (GUIEditStringLstb == 1)
-		{
-			GUIEditStringLstb    = 0;
-			GUIEditStringcLen[0] = '\0';
-		}
 
 		DisplayMenu();
 		if (MouseDis != 1) DrawMouse();

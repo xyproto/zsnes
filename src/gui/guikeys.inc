@@ -22,13 +22,6 @@
 ; GUI Keyboard Routines
 
 SECTION .bss
-GUIEditString resd 1              ; Pointer to string
-NEWSYM GUIEditStringcLen, resd 1          ; Pointer to end of string (done in function)
-GUIEditStringmLen resd 1          ; Max length of string
-NEWSYM GUIEditStringLTxt, resd 1          ; blink value, should be set to 0 when box selected
-NEWSYM GUIEditStringLstb, resd 1          ; if cursor is placed (set in main function)
-NEWSYM GUIEditStringcWin, resd 1          ; 0 = no text window selected
-
 NEWSYM GUIInputBox, resd 1
 NEWSYM GUIInputLimit, resd 1
 
