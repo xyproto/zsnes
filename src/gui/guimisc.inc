@@ -53,7 +53,7 @@ CalibrateDispA:
     GUIOuttext 81,125,guicalberror3,220-15
     GUIOuttext 80,124,guicalberror3,220
     call vidpastecopyscr
-    call WaitForKey
+    call GUIWaitForKey
     ret
 
 CalibrateDispB:
@@ -81,7 +81,7 @@ CalibrateDispB:
     GUIOuttext 81,133,guicalberror7,220-15
     GUIOuttext 80,132,guicalberror7,220
     call vidpastecopyscr
-    call WaitForKey
+    call GUIWaitForKey
     ret
 
 SECTION .data
