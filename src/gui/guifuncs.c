@@ -1398,7 +1398,6 @@ void GUILoadManualDir()
 }
 
 
-u1 gui_key;
 u1 gui_key_extended;
 
 

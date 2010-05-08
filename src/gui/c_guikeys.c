@@ -233,7 +233,6 @@ static void GUILoadKeys(char const dh, char const dl)
 {
 	if (dh == 0 && dl == 0) return;
 
-	gui_key          = dh;
 	gui_key_extended = dl;
 	if (GUILoadKeysNavigate() == 1) return;
 

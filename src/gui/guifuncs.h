@@ -46,7 +46,6 @@ extern s4     GUIdirentries;
 extern s4     GUIfileentries;
 extern s4*    GUIJT_currentcursloc;
 extern s4*    GUIJT_currentviewloc;
-extern u1     gui_key;
 extern u1     gui_key_extended;
 extern u4     GUIcurrentfilewin;
 
