@@ -59,7 +59,7 @@ EXTSYM GUIM7VID,GUINTVID,GUIHQ2X
 EXTSYM MultiTap
 EXTSYM nssdip1,nssdip2,nssdip3,nssdip4,nssdip5,nssdip6
 EXTSYM AutoLoadCht,GUILoadData
-EXTSYM GUIProcStates,GUISetPal
+EXTSYM GUISetPal
 EXTSYM MovieProcessing,MovieRecordWinVal
 
 EXTSYM GUIwinposx,GUIwinposy,maxskip,GUIEffect,hqFilter,En2xSaI,NTSCFilter
@@ -115,7 +115,6 @@ EXTSYM ScreenShotFormat
 EXTSYM SSAutoFire,SSPause
 
 %ifdef __UNIXSDL__
-EXTSYM numlockptr
 EXTSYM CheckOpenGL
 %elifdef __WIN32__
 EXTSYM initDirectDraw,reInitSound,CheckPriority,AlwaysOnTop

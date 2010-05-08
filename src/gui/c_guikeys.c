@@ -1351,6 +1351,35 @@ static void GUICheatSearchKeys(char dh, char const al)
 }
 
 
+// Allows you to select boxes with the arrow keys, Enter to choose
+static void GUIStateKeys(char const dh, char const al)
+{
+	IFKEY(al, 92, 75) GUICStatePos = 0;
+	IFKEY(al, 94, 77) GUICStatePos = 1;
+
+	if (al == 13)
+	{ // Confirm
+		if (GUICStatePos == 0) goto yespick; else goto nopick;
+	}
+
+	switch (ToUpperASM(dh))
+	{
+		case 'Y':
+yespick:
+			GUICBHold = 10;
+			GUIProcStates();
+			break;
+
+		case 'N':
+nopick:
+			GUIwinactiv[14]          = 0;
+			GUIwinorder[--GUIwinptr] = 0;
+			GUIcmenupos              = GUIpmenupos;
+			break;
+	}
+}
+
+
 static void GUIMovieKeys(char dh)
 {
 	dh = ToUpperASM(dh);
@@ -1695,7 +1724,7 @@ done:
 					case 11: GUIAboutKeys(dh);           return;
 					case 12: GUIResetKeys(dh, al);       return;
 					case 13: GUICheatSearchKeys(dh, al); return;
-					case 14: f = GUIStateKeys;           break;
+					case 14: GUIStateKeys(dh, al);       return;
 					case 15: GUIMovieKeys(dh);           return;
 					case 16: GUIComboKeys(dh);           return;
 					case 17: GUIAddonKeys(dh);           return;

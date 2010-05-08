@@ -21,15 +21,6 @@
 
 ; GUI Keyboard Routines
 
-%macro ToUpperASM 0
-  cmp dh,'a'
-  jb %%notlcase
-  cmp dh,'z'
-  ja %%notlcase
-  sub dh,'a'-'A'
-%%notlcase
-%endmacro
-
 SECTION .text
 
 GUITCPIPKeys:
@@ -55,64 +46,6 @@ NEWSYM GUIInputLimit, resd 1
 NEWSYM CSOverValue, resb 1
 NEWSYM CSCurValue,  resd 1
 SECTION .text
-
-; Allows you to select boxes with the arrow keys, Enter to choose
-NEWSYM GUIStateKeys
-%ifdef __UNIXSDL__
-  cmp al,92
-  je .yesleft
-  cmp dword[numlockptr],1
-  je .noleft
-  cmp al,75
-  jne .noleft
-.yesleft
-%else
-  cmp al,75
-  jne .noleft
-%endif
-  mov byte[GUICStatePos],0
-.noleft
-%ifdef __UNIXSDL__
-  cmp al,94
-  je .yesright
-  cmp dword[numlockptr],1
-  je .noright
-  cmp al,77
-  jne .noright
-.yesright
-%else
-  cmp al,77
-  jne .noright
-%endif
-  mov byte[GUICStatePos],1
-.noright
-  cmp al,13
-  jne .noconf
-  cmp byte[GUICStatePos],0
-  je .yesreset
-  jmp .noreset
-.noconf
-  ToUpperASM
-  cmp dh,'Y'
-  jne .notyesreset
-.yesreset
-  mov byte[GUICBHold],10
-  ccallv GUIProcStates
-  ret
-.notyesreset
-  cmp dh,'N'
-  jne .notnoreset
-.noreset
-  xor eax,eax
-  mov al,[GUIwinptr]
-  dec eax
-  mov byte[GUIwinactiv+14],0
-  mov byte[GUIwinorder+eax],0
-  dec byte[GUIwinptr]
-  mov al,[GUIpmenupos]
-  mov [GUIcmenupos],al
-.notnoreset
-  ret
 
 NEWSYM GUILoadKeys
   cmp dx,0

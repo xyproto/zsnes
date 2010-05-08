@@ -5,7 +5,6 @@
 
 extern void GUIGetInputLine();
 extern void GUILoadKeys();
-extern void GUIStateKeys();
 extern void GUIWaitForKey();
 
 extern u1  CSOverValue;
