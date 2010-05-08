@@ -1028,6 +1028,33 @@ static void InsertSearchCharacter(char const dh)
 }
 
 
+static void InsertSearchDescription(char const dh)
+{
+	char* eax = CSDescDisplay;
+	u1    dl  = 0;
+	while (*eax != '\0') ++eax, ++dl;
+
+	switch (dh)
+	{
+		case '\0':
+		case 13:
+			break;
+
+		case 8:
+			if (dl != 0) eax[-1] = '\0';
+			break;
+
+		default:
+			if (dl != 18)
+			{
+				eax[0] = dh;
+				eax[1] = '\0';
+			}
+			break;
+	}
+}
+
+
 static void CompareKeyMacro(char const p1, u1* const p2, u1 const p3, char const dh)
 {
 	if (dh == p1) *p2 = p3;
@@ -1061,8 +1088,7 @@ static void GUICheatSearchKeys(char dh, char const al)
 				}
 				else
 				{
-					u4 edx = dh << 8;
-					asm volatile("call %P1" : "+d" (edx) : "X" (InsertSearchDescription) : "cc", "memory", "eax");
+					InsertSearchDescription(dh);
 				}
 			}
 			break;

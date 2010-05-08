@@ -9,7 +9,6 @@ extern void GUIResetKeys();
 extern void GUIStateKeys();
 extern void GUIStateSelKeys();
 extern void GUIWaitForKey();
-extern void InsertSearchDescription();
 
 extern u1  CSOverValue;
 extern u1* GUIEditStringcLen;

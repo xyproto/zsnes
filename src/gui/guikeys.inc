@@ -56,36 +56,6 @@ NEWSYM CSOverValue, resb 1
 NEWSYM CSCurValue,  resd 1
 SECTION .text
 
-NEWSYM InsertSearchDescription
-  mov eax,CSDescDisplay
-  xor dl,dl
-.next
-  cmp byte[eax],0
-  je .fin
-  inc eax
-  inc dl
-  jmp .next
-.fin
-  or dl,dl
-  jz .nobackspb
-  cmp dh,8
-  jne .nobackspb
-  mov byte[eax-1],0
-  ret
-.nobackspb
-  cmp dh,0
-  je .nocharb
-  cmp dh,13
-  je .nocharb
-  cmp dh,8
-  je .nocharb
-  cmp dl,18
-  je .nocharb
-  mov [eax],dh
-  mov byte[eax+1],0
-.nocharb
-  ret
-
 ; Allows you to use the arrow keys to select a state number, and Enter to pick
 NEWSYM GUIStateSelKeys
   cmp al,13
