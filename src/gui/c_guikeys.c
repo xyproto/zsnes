@@ -984,6 +984,50 @@ static void GUIAboutKeys(char dh)
 }
 
 
+static void InsertSearchCharacter(char const dh)
+{
+	// Send character into CSInputDisplay
+	// Find location
+	char* ecx = CSInputDisplay;
+	while (*ecx != '\0' && *ecx != '_') ++ecx;
+
+	if (dh == 8)
+	{ // Delete if necessary
+		if (ecx == CSInputDisplay) return;
+		--ecx;
+	}
+	else
+	{
+		if (ecx == CSInputDisplay + 10) return;
+		// Add character if necessary
+		if ('0' <= dh && dh <= '9' || (CheatSrcByteBase != 0 && 'A' <= dh && dh <= 'F'))
+		{
+			*ecx++ = dh;
+		}
+		else
+		{
+			return;
+		}
+	}
+	// Process cursor if over the window
+	ecx[0] = '_';
+	ecx[1] = '\0';
+
+	CSOverValue = 0;
+	// Find overall value and delete if over
+	u4 const ebx = CheatSrcByteBase == 0 ? 10 : 16;
+	u4       eax = 0;
+	for (char const* ecx = CSInputDisplay; *ecx != '\0' && *ecx != '_'; ++ecx)
+	{
+		u8 const edxeax = (u8)eax * ebx + (*ecx < 'A' ? *ecx - '0' : *ecx - 'A' + 10);
+		if (edxeax > 0xFFFFFFFF) CSOverValue = 1;
+		eax = edxeax;
+	}
+	CSCurValue = eax;
+	if (eax > SrcMask[CheatSrcByteSize]) CSOverValue = 1;
+}
+
+
 static void CompareKeyMacro(char const p1, u1* const p2, u1 const p3, char const dh)
 {
 	if (dh == p1) *p2 = p3;
@@ -1004,8 +1048,7 @@ static void GUICheatSearchKeys(char dh, char const al)
 			if (CurCStextpos == 0)
 			{
 				if (dh == 9 || (CSOverValue == 1 && dh == 13)) CurCStextpos = 1;
-				u4 const edx = dh << 8;
-				asm volatile("call %P0" :: "X" (InsertSearchCharacter), "d" (edx) : "cc", "memory", "ecx", "ebx");
+				InsertSearchCharacter(dh);
 				return;
 			}
 
@@ -1115,8 +1158,7 @@ static void GUICheatSearchKeys(char dh, char const al)
 		case 1: // Shortcuts for Select Comparison
 			if (CheatSrcSearchType != 1)
 			{
-				u4 const edx = dh << 8;
-				asm volatile("call %P0" :: "X" (InsertSearchCharacter), "d" (edx) : "cc", "memory", "ecx", "ebx");
+				InsertSearchCharacter(dh);
 			}
 			else
 			{ // Compare
