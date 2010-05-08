@@ -21,14 +21,6 @@
 
 ; GUI Keyboard Routines
 
-SECTION .text
-
-GUITCPIPKeys:
-  ret
-
-GUINetMenuKeys1:
-  ret
-
 SECTION .bss
 GUIEditString resd 1              ; Pointer to string
 NEWSYM GUIEditStringcLen, resd 1          ; Pointer to end of string (done in function)
