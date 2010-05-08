@@ -1398,10 +1398,7 @@ void GUILoadManualDir()
 }
 
 
-u1 gui_key_extended;
-
-
-u4 GUILoadKeysNavigate(void)
+u4 GUILoadKeysNavigate(u1 const gui_key_extended)
 {
   int *currentviewloc, *currentcursloc, *entries;
   if (GUIcurrentfilewin == 1)

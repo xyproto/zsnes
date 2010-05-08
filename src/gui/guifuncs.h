@@ -6,7 +6,7 @@
 #include "../types.h"
 
 bool Keep43Check(void);
-u4   GUILoadKeysNavigate(void);
+u4   GUILoadKeysNavigate(u1 gui_key_extended);
 void CheatCodeLoad(void);
 void CheatCodeSave(void);
 void GUIGenericJumpTo(void);
@@ -46,7 +46,6 @@ extern s4     GUIdirentries;
 extern s4     GUIfileentries;
 extern s4*    GUIJT_currentcursloc;
 extern s4*    GUIJT_currentviewloc;
-extern u1     gui_key_extended;
 extern u4     GUIcurrentfilewin;
 
 #endif
