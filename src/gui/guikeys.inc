@@ -57,64 +57,6 @@ NEWSYM CSCurValue,  resd 1
 SECTION .text
 
 ; Allows you to select boxes with the arrow keys, Enter to choose
-NEWSYM GUIResetKeys
-%ifdef __UNIXSDL__
-  cmp al,92
-  je .yesleft
-  cmp dword[numlockptr],1
-  je .noleft
-  cmp al,75
-  jne .noleft
-.yesleft
-%else
-  cmp al,75
-  jne .noleft
-%endif
-  mov byte[GUICResetPos],0
-.noleft
-%ifdef __UNIXSDL__
-  cmp al,94
-  je .yesright
-  cmp dword[numlockptr],1
-  je .noright
-  cmp al,77
-  jne .noright
-.yesright
-%else
-  cmp al,77
-  jne .noright
-%endif
-  mov byte[GUICResetPos],1
-.noright
-  cmp al,13
-  jne .noconf
-  cmp byte[GUICResetPos],0
-  je .yesreset
-  jmp .noreset
-.noconf
-  ToUpperASM
-  cmp dh,'Y'
-  jne .notyesreset
-.yesreset
-  mov byte[GUICBHold],2
-  ccallv GUIProcReset
-  ret
-.notyesreset
-  cmp dh,'N'
-  jne .notnoreset
-.noreset
-  xor eax,eax
-  mov al,[GUIwinptr]
-  dec eax
-  mov byte[GUIwinactiv+12],0
-  mov byte[GUIwinorder+eax],0
-  dec byte[GUIwinptr]
-  mov al,[GUIpmenupos]
-  mov [GUIcmenupos],al
-.notnoreset
-  ret
-
-; Allows you to select boxes with the arrow keys, Enter to choose
 NEWSYM GUIStateKeys
 %ifdef __UNIXSDL__
   cmp al,92

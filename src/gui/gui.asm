@@ -59,7 +59,7 @@ EXTSYM GUIM7VID,GUINTVID,GUIHQ2X
 EXTSYM MultiTap
 EXTSYM nssdip1,nssdip2,nssdip3,nssdip4,nssdip5,nssdip6
 EXTSYM AutoLoadCht,GUILoadData
-EXTSYM GUIProcStates,GUIProcReset,GUISetPal
+EXTSYM GUIProcStates,GUISetPal
 EXTSYM MovieProcessing,MovieRecordWinVal
 
 EXTSYM GUIwinposx,GUIwinposy,maxskip,GUIEffect,hqFilter,En2xSaI,NTSCFilter

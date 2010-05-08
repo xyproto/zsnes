@@ -1058,6 +1058,35 @@ static void GUIAboutKeys(char dh)
 }
 
 
+// Allows you to select boxes with the arrow keys, Enter to choose
+static void GUIResetKeys(char const dh, char const al)
+{
+	IFKEY(al, 92, 75) GUICResetPos = 0;
+	IFKEY(al, 94, 77) GUICResetPos = 1;
+
+	if (al == 13)
+	{ // Confirm
+		if (GUICResetPos == 0) goto yesreset; else goto noreset;
+	}
+
+	switch (ToUpperASM(dh))
+	{
+		case 'Y':
+yesreset:
+			GUICBHold = 2;
+			GUIProcReset();
+			break;
+
+		case 'N':
+noreset:
+			GUIwinactiv[12]          = 0;
+			GUIwinorder[--GUIwinptr] = 0;
+			GUIcmenupos              = GUIpmenupos;
+			break;
+	}
+}
+
+
 static void InsertSearchCharacter(char const dh)
 {
 	// Send character into CSInputDisplay
@@ -1664,7 +1693,7 @@ done:
 					case  7: GUICheatKeys(dh, al);       return;
 					case 10: GUIGUIOptnsKeys(dh);        return;
 					case 11: GUIAboutKeys(dh);           return;
-					case 12: f = GUIResetKeys;           break;
+					case 12: GUIResetKeys(dh, al);       return;
 					case 13: GUICheatSearchKeys(dh, al); return;
 					case 14: f = GUIStateKeys;           break;
 					case 15: GUIMovieKeys(dh);           return;
