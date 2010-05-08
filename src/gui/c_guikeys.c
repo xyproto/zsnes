@@ -15,6 +15,7 @@
 #include "../video/procvidc.h"
 #include "../zmovie.h"
 #include "../zpath.h"
+#include "../zstate.h"
 #include "c_gui.h"
 #include "c_guicheat.h"
 #include "c_guikeys.h"
@@ -49,10 +50,12 @@
 
 
 #ifdef __UNIXSDL__
-#	define IFKEY(key, a, b) if ((key) == (a) || (numlockptr != 1 && (key) == (b)))
+#	define KEY(key, a, b) ((key) == (a) || (numlockptr != 1 && (key) == (b)))
 #else
-#	define IFKEY(key, a, b) if ((key) == (b))
+#	define KEY(key, a, b) ((key) == (b))
 #endif
+
+#define IFKEY(key, a, b) if KEY(key, a, b)
 
 
 u1 GUIDelayB;
@@ -223,6 +226,77 @@ static char GUIInputBoxText(char* const* const p1, void (* const p2)(void), char
 	// check if we're at the end
 	if (eax != ecx + GUIInputLimit) *eax = dh;
 	return '\0';
+}
+
+
+// Allows you to use the arrow keys to select a state number, and Enter to pick
+static void GUIStateSelKeys(char const al)
+{
+	if (al == 13)
+	{
+		GUIwinactiv[2]           = 0;
+		GUIwinorder[--GUIwinptr] = 0;
+		GUIcmenupos              = GUIpmenupos;
+		return;
+	}
+
+  u1 const ten = current_zst / 10;
+  u1       one = current_zst % 10;
+
+#ifdef __UNIXSDL__
+// if numlock on, let's try this first
+#	define IFKEYNUM(a, b) if ((numlockptr != 0 && al == (a)) || pressed[(b)] & 1)
+#else
+#	define IFKEYNUM(a, b) if (pressed[(b)] & 1)
+#endif
+
+	IFKEY(al, 92, 75) // Left
+	{
+		switch (one)
+		{
+			case 0:
+			case 5:  one += 4; break;
+			default: one -= 1; break;
+		}
+	}
+	else IFKEY(al, 94, 77) // Right
+	{
+		switch (one)
+		{
+			case 4:
+			case 9:  one -= 4; break;
+			default: one += 1; break;
+		}
+	}
+	else if (KEY(al, 90, 72) || KEY(al, 96, 80)) // Up or Down
+	{
+		one += one >= 5 ? -5 : +5;
+	}
+	else IFKEYNUM(0x4F,  2) one = 1;
+	else IFKEYNUM(0x50,  3) one = 2;
+	else IFKEYNUM(0x51,  4) one = 3;
+	else IFKEYNUM(0x4B,  5) one = 4;
+	else IFKEYNUM(0x4C,  6) one = 5;
+	else IFKEYNUM(0x4D,  7) one = 6;
+	else IFKEYNUM(0x47,  8) one = 7;
+	else IFKEYNUM(0x48,  9) one = 8;
+	else IFKEYNUM(0x49, 10) one = 9;
+	else IFKEYNUM(0x52, 11) one = 0;
+	else IFKEYNUM(91, 73)
+	{
+		if (current_zst < 90) current_zst += 10;
+		return;
+	}
+	else IFKEYNUM(97, 81)
+	{
+		if (current_zst >= 10) current_zst -= 10;
+		return;
+	}
+	else return;
+
+#undef IFKEYNUM
+
+	current_zst = ten * 10 + one;
 }
 
 
@@ -1582,7 +1656,7 @@ done:
 				switch (ebx)
 				{
 					case  1: f = GUILoadKeys;            break;
-					case  2: f = GUIStateSelKeys;        break;
+					case  2: GUIStateSelKeys(al);        return;
 					case  3: GUIInputKeys(dh);           return;
 					case  4: GUIOptionKeys(dh);          return;
 					case  5: GUIVideoKeys(dh, al);       return;
