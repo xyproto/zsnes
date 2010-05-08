@@ -29,9 +29,6 @@ GUITCPIPKeys:
 GUINetMenuKeys1:
   ret
 
-NEWSYM GUIGetInputLine
-  ret
-
 SECTION .bss
 GUIEditString resd 1              ; Pointer to string
 NEWSYM GUIEditStringcLen, resd 1          ; Pointer to end of string (done in function)

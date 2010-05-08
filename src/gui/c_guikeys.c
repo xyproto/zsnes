@@ -1732,34 +1732,28 @@ done:
 			}
 			else
 			{
-				eop* f;
 				switch (ebx)
 				{
-					case  1: GUILoadKeys(dh, al);        return;
-					case  2: GUIStateSelKeys(al);        return;
-					case  3: GUIInputKeys(dh);           return;
-					case  4: GUIOptionKeys(dh);          return;
-					case  5: GUIVideoKeys(dh, al);       return;
-					case  6: GUISoundKeys(dh);           return;
-					case  7: GUICheatKeys(dh, al);       return;
-					case 10: GUIGUIOptnsKeys(dh);        return;
-					case 11: GUIAboutKeys(dh);           return;
-					case 12: GUIResetKeys(dh, al);       return;
-					case 13: GUICheatSearchKeys(dh, al); return;
-					case 14: GUIStateKeys(dh, al);       return;
-					case 15: GUIMovieKeys(dh);           return;
-					case 16: GUIComboKeys(dh);           return;
-					case 17: GUIAddonKeys(dh);           return;
-					case 18: GUIChipKeys(dh);            return;
-					case 19: GUIPathKeys(dh);            return;
-					case 20: GUISaveKeys(dh);            return;
-					case 21: GUISpeedKeys(dh);           return;
-					case  8: f = GUIGetInputLine;        break;
-					default: return;
+					case  1: GUILoadKeys(dh, al);        break;
+					case  2: GUIStateSelKeys(al);        break;
+					case  3: GUIInputKeys(dh);           break;
+					case  4: GUIOptionKeys(dh);          break;
+					case  5: GUIVideoKeys(dh, al);       break;
+					case  6: GUISoundKeys(dh);           break;
+					case  7: GUICheatKeys(dh, al);       break;
+					case 10: GUIGUIOptnsKeys(dh);        break;
+					case 11: GUIAboutKeys(dh);           break;
+					case 12: GUIResetKeys(dh, al);       break;
+					case 13: GUICheatSearchKeys(dh, al); break;
+					case 14: GUIStateKeys(dh, al);       break;
+					case 15: GUIMovieKeys(dh);           break;
+					case 16: GUIComboKeys(dh);           break;
+					case 17: GUIAddonKeys(dh);           break;
+					case 18: GUIChipKeys(dh);            break;
+					case 19: GUIPathKeys(dh);            break;
+					case 20: GUISaveKeys(dh);            break;
+					case 21: GUISpeedKeys(dh);           break;
 				}
-				u4 eax = al;
-				u4 edx = dh << 8 | al;
-				asm volatile("call %A2" : "+a" (eax), "+d" (edx) : "g" (f) : "cc", "memory", "ecx", "ebx", "esi", "edi");
 			}
 		}
 	}

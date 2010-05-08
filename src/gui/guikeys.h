@@ -3,7 +3,6 @@
 
 #include "../types.h"
 
-extern void GUIGetInputLine();
 extern void GUIWaitForKey();
 
 extern u1  CSOverValue;
