@@ -47,41 +47,6 @@ NEWSYM CSOverValue, resb 1
 NEWSYM CSCurValue,  resd 1
 SECTION .text
 
-NEWSYM GUILoadKeys
-  cmp dx,0
-  jne near .keypressed
-.nokeypressed
-  ret
-.keypressed
-  mov [gui_key],dh
-  mov [gui_key_extended],dl
-  push eax
-  ccall GUILoadKeysNavigate
-  cmp eax,1
-  pop eax
-  je .nokeypressed
-  cmp byte[GUILoadPos],0
-  je near .nobacksp
-  cmp dh,8
-  jne .nobacksp
-  mov byte[GUILDFlash],0
-  dec byte[GUILoadPos]
-  xor eax,eax
-  mov al,[GUILoadPos]
-  ret
-.nobacksp
-  cmp dh,8
-  je near .nokeypressed
-  cmp byte[GUILoadPos],36
-  je near .nokeypressed
-  mov byte[GUILDFlash],0
-  xor eax,eax
-  mov al,[GUILoadPos]
-  mov [GUILoadTextA+eax],dh
-  inc byte[GUILoadPos]
-  ccallv GUILoadKeysJumpTo
-  ret
-
 NEWSYM GUIWaitForKey
 .again3
   mov edx,10

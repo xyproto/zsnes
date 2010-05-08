@@ -1398,9 +1398,11 @@ void GUILoadManualDir()
 }
 
 
-unsigned char gui_key;
-unsigned char gui_key_extended;
-int GUILoadKeysNavigate()
+u1 gui_key;
+u1 gui_key_extended;
+
+
+u4 GUILoadKeysNavigate(void)
 {
   int *currentviewloc, *currentcursloc, *entries;
   if (GUIcurrentfilewin == 1)
@@ -1595,7 +1597,7 @@ void GUIGenericJumpTo(void)
   *GUIJT_currentcursloc = GUIJT_offset;
 }
 
-void GUILoadKeysJumpTo()
+void GUILoadKeysJumpTo(void)
 {
   char **base;
   int start, end;

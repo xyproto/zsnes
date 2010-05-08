@@ -4,7 +4,6 @@
 #include "../types.h"
 
 extern void GUIGetInputLine();
-extern void GUILoadKeys();
 extern void GUIWaitForKey();
 
 extern u1  CSOverValue;

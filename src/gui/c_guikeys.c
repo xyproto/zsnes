@@ -229,6 +229,30 @@ static char GUIInputBoxText(char* const* const p1, void (* const p2)(void), char
 }
 
 
+static void GUILoadKeys(char const dh, char const dl)
+{
+	if (dh == 0 && dl == 0) return;
+
+	gui_key          = dh;
+	gui_key_extended = dl;
+	if (GUILoadKeysNavigate() == 1) return;
+
+	if (dh == 8)
+	{
+		if (GUILoadPos == 0) return;
+		GUILDFlash = 0;
+		--GUILoadPos;
+	}
+	else
+	{
+		if (GUILoadPos == 36) return;
+		GUILDFlash = 0;
+		GUILoadTextA[GUILoadPos++] = dh;
+		GUILoadKeysJumpTo();
+	}
+}
+
+
 // Allows you to use the arrow keys to select a state number, and Enter to pick
 static void GUIStateSelKeys(char const al)
 {
@@ -1713,7 +1737,7 @@ done:
 				eop* f;
 				switch (ebx)
 				{
-					case  1: f = GUILoadKeys;            break;
+					case  1: GUILoadKeys(dh, al);        return;
 					case  2: GUIStateSelKeys(al);        return;
 					case  3: GUIInputKeys(dh);           return;
 					case  4: GUIOptionKeys(dh);          return;

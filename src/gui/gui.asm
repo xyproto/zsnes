@@ -103,9 +103,9 @@ EXTSYM mousewrap,GUIRClick
 EXTSYM FPSAtStart,Turbo30hz,TimerEnable,SmallMsgText,mouse1lh,mouse2lh
 EXTSYM AutoPatch,RomInfo,AllowUDLR,GrayscaleMode,GUIMovieForcedText
 EXTSYM Mode7HiRes16b,FFRatio,SDRatio,EmuSpeed,mouseshad,MovieForcedLengthEnabled
-EXTSYM esctomenu,GUILoadKeysJumpTo,lhguimouse,MZTForceRTR
+EXTSYM esctomenu,lhguimouse,MZTForceRTR
 EXTSYM GUIEnableTransp,FilteredGUI,Surround,SPCDisable,nosaveSRAM
-EXTSYM FastFwdToggle,gui_key,gui_key_extended,GUILoadKeysNavigate
+EXTSYM FastFwdToggle
 EXTSYM KeyDisplayBatt,KeyIncreaseGamma,KeyDecreaseGamma,vsyncon
 EXTSYM MovieVideoMode,MovieAudio,MovieVideoAudio,MovieAudioCompress,newfont
 EXTSYM GUIfileentries,GUIdirentries,GUIcurrentdirviewloc
