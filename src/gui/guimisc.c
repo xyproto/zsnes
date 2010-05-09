@@ -36,9 +36,9 @@
 #include "../zmovie.h"
 #include "../zstate.h"
 #include "c_gui.h"
+#include "c_guikeys.h"
 #include "c_guimouse.h"
 #include "gui.h"
-#include "guikeys.h"
 #include "guimisc.h"
 #include "guimouse.h"
 #include "guiwindp.h"
@@ -70,7 +70,7 @@ static void CalibrateDispA(void)
 	GUIOuttextShadowed(80, 116, "CORNER AND PRESS A");
 	GUIOuttextShadowed(80, 124, "BUTTON OR KEY");
 	vidpastecopyscr();
-	asm_call(GUIWaitForKey);
+	GUIWaitForKey();
 }
 
 
@@ -86,7 +86,7 @@ static void CalibrateDispB(void)
 	GUIOuttextShadowed(80, 124, "PRESS A BUTTON OR");
 	GUIOuttextShadowed(80, 132, "KEY");
 	vidpastecopyscr();
-	asm_call(GUIWaitForKey);
+	GUIWaitForKey();
 }
 
 

@@ -1896,3 +1896,32 @@ done:
 		}
 	}
 }
+
+
+void GUIWaitForKey(void)
+{
+again3:
+	for (u4 edx = 10; edx != 0; --edx)
+	{
+		delay(1000);
+		JoyRead();
+		for (u1 const* i = pressed; i != endof(pressed); ++i)
+		{
+			if (*i != 0) goto again3;
+		}
+	}
+
+	for (;;)
+	{
+		JoyRead();
+		for (u1 const* i = pressed; i != endof(pressed); ++i)
+		{
+			if (*i != 0) goto pressedokay;
+		}
+	}
+pressedokay:
+
+	while (Check_Key() != 0) Get_Key();
+
+	GUIpclicked = 1;
+}
