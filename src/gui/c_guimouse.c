@@ -636,9 +636,9 @@ hold:
 			CheatSearchStatus = 0;
 			break;
 
-		case 52: CheatWinMode = 2;                 break;
-		case 53: asm_call(CheatCodeSearchProcess); break;
-		case 54: CheatWinMode = 1;                 break;
+		case 52: CheatWinMode = 2;         break;
+		case 53: CheatCodeSearchProcess(); break;
+		case 54: CheatWinMode = 1;         break;
 
 		case 55:
 			if (NumCheatSrc != 0)

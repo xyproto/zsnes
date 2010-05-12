@@ -1350,7 +1350,7 @@ static void GUICheatSearchKeys(char dh, char const al)
 
 				case 13:
 				case 'S':
-					if (CheatSearchStatus != 1) asm_call(CheatCodeSearchProcess);
+					if (CheatSearchStatus != 1) CheatCodeSearchProcess();
 					break;
 			}
 			break;
