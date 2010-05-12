@@ -4,7 +4,9 @@
 void GUIWaitForKey(void);
 void GUIgetcurrentinput(void);
 
+extern u1 CSOverValue;
 extern u1 GUIDelayB;
+extern u4 CSCurValue;
 extern u4 GUIkeydelay;
 
 #endif

@@ -24,6 +24,3 @@
 SECTION .bss
 NEWSYM GUIInputBox, resd 1
 NEWSYM GUIInputLimit, resd 1
-
-NEWSYM CSOverValue, resb 1
-NEWSYM CSCurValue,  resd 1

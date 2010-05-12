@@ -58,7 +58,9 @@
 #define IFKEY(key, a, b) if KEY(key, a, b)
 
 
+u1 CSOverValue;
 u1 GUIDelayB;
+u4 CSCurValue;
 u4 GUIkeydelay;
 
 static u1 GUIJoyPadnk[8];
