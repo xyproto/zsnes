@@ -44,7 +44,7 @@ extern u1    GUIcrowpos;
 extern u1    GUIescpress;
 extern u1    GUIpclicked;
 extern u1    GUIpmenupos;
-extern u1    GUItextcolor[5];
+extern u1    GUItextcolor[1];
 extern u1    GUIwinactiv[];
 extern u1    GUIwinorder[22];
 extern u1    GUIwinptr;

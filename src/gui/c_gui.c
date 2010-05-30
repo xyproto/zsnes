@@ -1777,24 +1777,12 @@ void DisplayBoxes(void)
 
 static void GUIDMHelp(u4 const x1, u4 const x2, char const* const text, u4 const param4)
 {
-	GUItextcolor[0] = 46;
-	GUItextcolor[1] = 42;
-	GUItextcolor[2] = 38;
-	GUItextcolor[3] = 44;
-	GUItextcolor[4] = 40;
-	if (GUIcmenupos == param4)
-	{
-		GUItextcolor[0] = 38;
-		GUItextcolor[1] = 40;
-		GUItextcolor[2] = 46;
-		GUItextcolor[3] = 40;
-		GUItextcolor[4] = 44;
-	}
-	GUIBox(x1,  3, x2,  3, GUItextcolor[0]);
-	GUIBox(x1,  4, x2, 12, GUItextcolor[1]);
-	GUIBox(x1, 13, x2, 13, GUItextcolor[2]);
-	GUIBox(x1,  3, x1, 12, GUItextcolor[3]);
-	GUIBox(x2,  4, x2, 13, GUItextcolor[4]);
+	bool const sel = GUIcmenupos == param4;
+	GUIBox(x1,  3, x2,  3, sel ? 38 : 46);
+	GUIBox(x1,  4, x2, 12, sel ? 40 : 42);
+	GUIBox(x1, 13, x2, 13, sel ? 46 : 38);
+	GUIBox(x1,  3, x1, 12, sel ? 40 : 44);
+	GUIBox(x2,  4, x2, 13, sel ? 44 : 40);
 	GUIOuttext(x1 + 5, 7, text, 44);
 	GUIOuttext(x1 + 4, 6, text, 62);
 }
@@ -1802,24 +1790,12 @@ static void GUIDMHelp(u4 const x1, u4 const x2, char const* const text, u4 const
 
 static void GUIDMHelpB(u4 const x1, u4 const x2, char const* const text, u4 const param4)
 {
-	GUItextcolor[0] = 46;
-	GUItextcolor[1] = 42;
-	GUItextcolor[2] = 38;
-	GUItextcolor[3] = 44;
-	GUItextcolor[4] = 40;
-	if (GUIcwinpress == param4)
-	{
-		GUItextcolor[0] = 38;
-		GUItextcolor[1] = 40;
-		GUItextcolor[2] = 46;
-		GUItextcolor[3] = 40;
-		GUItextcolor[4] = 44;
-	}
-	GUIBox(x1,  3, x2,  3, GUItextcolor[0]);
-	GUIBox(x1,  4, x2, 13, GUItextcolor[1]);
-	GUIBox(x1, 14, x2, 14, GUItextcolor[2]);
-	GUIBox(x1,  3, x1, 13, GUItextcolor[3]);
-	GUIBox(x2,  4, x2, 14, GUItextcolor[4]);
+	bool const sel = GUIcwinpress == param4;
+	GUIBox(x1,  3, x2,  3, sel ? 38 : 46);
+	GUIBox(x1,  4, x2, 13, sel ? 40 : 42);
+	GUIBox(x1, 14, x2, 14, sel ? 46 : 38);
+	GUIBox(x1,  3, x1, 13, sel ? 40 : 44);
+	GUIBox(x2,  4, x2, 14, sel ? 44 : 40);
 	GUIOuttext(x1 + 3, 7, text, 44);
 	GUIOuttext(x1 + 2, 6, text, 62);
 }
@@ -1828,24 +1804,12 @@ static void GUIDMHelpB(u4 const x1, u4 const x2, char const* const text, u4 cons
 #ifdef __WIN32__
 static void GUIDMHelpB2(u4 const x1, u4 const x2, char const* const text, u4 const param4)
 {
-	GUItextcolor[0] = 46;
-	GUItextcolor[1] = 42;
-	GUItextcolor[2] = 38;
-	GUItextcolor[3] = 44;
-	GUItextcolor[4] = 40;
-	if (GUIcwinpress == param4)
-	{
-		GUItextcolor[0] = 38;
-		GUItextcolor[1] = 40;
-		GUItextcolor[2] = 46;
-		GUItextcolor[3] = 40;
-		GUItextcolor[4] = 44;
-	}
-	GUIBox(x1, 3, x2, 3, GUItextcolor[0]);
-	GUIBox(x1, 4, x2, 6, GUItextcolor[1]);
-	GUIBox(x1, 7, x2, 7, GUItextcolor[2]);
-	GUIBox(x1, 3, x1, 6, GUItextcolor[3]);
-	GUIBox(x2, 4, x2, 7, GUItextcolor[4]);
+	bool const sel = GUIcwinpress == param4;
+	GUIBox(x1, 3, x2, 3, sel ? 38 : 46);
+	GUIBox(x1, 4, x2, 6, sel ? 40 : 42);
+	GUIBox(x1, 7, x2, 7, sel ? 46 : 38);
+	GUIBox(x1, 3, x1, 6, sel ? 40 : 44);
+	GUIBox(x2, 4, x2, 7, sel ? 44 : 40);
 	GUIOuttext(x1 + 3, 5, text, 44);
 	GUIOuttext(x1 + 2, 4, text, 62);
 }
@@ -1853,24 +1817,12 @@ static void GUIDMHelpB2(u4 const x1, u4 const x2, char const* const text, u4 con
 
 static void GUIDMHelpB3(u4 const x1, u4 const x2, char const* const text, u4 const param4)
 {
-	GUItextcolor[0] = 46;
-	GUItextcolor[1] = 42;
-	GUItextcolor[2] = 38;
-	GUItextcolor[3] = 44;
-	GUItextcolor[4] = 40;
-	if (GUIcwinpress == param4)
-	{
-		GUItextcolor[0] = 38;
-		GUItextcolor[1] = 40;
-		GUItextcolor[2] = 46;
-		GUItextcolor[3] = 40;
-		GUItextcolor[4] = 44;
-	}
-	GUIBox(x1,  9, x2,  9, GUItextcolor[0]);
-	GUIBox(x1, 10, x2, 12, GUItextcolor[1]);
-	GUIBox(x1, 13, x2, 13, GUItextcolor[2]);
-	GUIBox(x1,  9, x1, 12, GUItextcolor[3]);
-	GUIBox(x2, 10, x2, 13, GUItextcolor[4]);
+	bool const sel = GUIcwinpress == param4;
+	GUIBox(x1,  9, x2,  9, sel ? 38 : 46);
+	GUIBox(x1, 10, x2, 12, sel ? 40 : 42);
+	GUIBox(x1, 13, x2, 13, sel ? 46 : 38);
+	GUIBox(x1,  9, x1, 12, sel ? 40 : 44);
+	GUIBox(x2, 10, x2, 13, sel ? 44 : 40);
 	GUIOuttext(x1 + 3, 11, text, 44);
 	GUIOuttext(x1 + 2, 10, text, 62);
 }
