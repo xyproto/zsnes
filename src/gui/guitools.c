@@ -31,7 +31,7 @@
 #include "guitools.h"
 
 
-static void GUIoutputchar(u1* dst, u1 const glyph)
+static void GUIoutputchar(u1* dst, u1 const glyph, u1 const colour)
 {
 	// XXX better variable names
 	// Font Setup (Menus)
@@ -44,7 +44,7 @@ static void GUIoutputchar(u1* dst, u1 const glyph)
 		u4 ch = 6;
 		do
 		{
-			if (ah & 0x80) *dst = GUItextcolor[0] - cl - ch + 1;
+			if (ah & 0x80) *dst = colour - cl - ch + 1;
 		}
 		while (ah <<= 1, ++dst, --ch != 0);
 		dst += 282;
@@ -61,7 +61,7 @@ char const* GUIOutputString(u1* dst, char const* text, u1 const colour)
 	{
 		u1 const c = *text;
 		if (c == '\0') return text;
-		GUIoutputchar(dst, ASCII2Font[c]);
+		GUIoutputchar(dst, ASCII2Font[c], colour);
 	}
 }
 
