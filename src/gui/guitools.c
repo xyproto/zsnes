@@ -208,8 +208,9 @@ static void GUIOutputStringwin(s4 x, u1* const dst, char const* text, u1 const c
 }
 
 
-static void GUIOutputStringwinl(s4 x, u1* const dst, char const* text)
+static void GUIOutputStringwinl(s4 x, u1* const dst, char const* text, u1 const colour)
 {
+	GUItextcolor[0] = colour;
 	u4 n = cloadmaxlen;
 	do
 	{
@@ -253,11 +254,10 @@ void GUIOuttextwin2(u4 const win_id, u4 x, u4 y, char const* const text, u1 cons
 
 void GUIOuttextwin2l(u4 const win_id, u4 x, u4 y, char const* const text, u1 const colour)
 {
-	GUItextcolor[0] = colour;
 	x += GUIwinposx[win_id];
 	y += GUIwinposy[win_id];
 	u1* const dst = vidbuffer + y * 288 + 16;
-	GUIOutputStringwinl(x, dst, text);
+	GUIOutputStringwinl(x, dst, text, colour);
 }
 
 
