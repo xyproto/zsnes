@@ -196,8 +196,9 @@ static void GUIoutputcharwin(u1* dst, u1 const glyph)
 }
 
 
-static void GUIOutputStringwin(s4 x, u1* const dst, char const* text)
+static void GUIOutputStringwin(s4 x, u1* const dst, char const* text, u1 const colour)
 {
+	GUItextcolor[0] = colour;
 	for (;; x += 6)
 	{
 		u1 const c = *text++;
@@ -243,11 +244,10 @@ no_number:;
 
 void GUIOuttextwin2(u4 const win_id, u4 x, u4 y, char const* const text, u1 const colour)
 {
-	GUItextcolor[0] = colour;
 	x += GUIwinposx[win_id];
 	y += GUIwinposy[win_id];
 	u1* const dst = vidbuffer + y * 288 + 16;
-	GUIOutputStringwin(x, dst, text);
+	GUIOutputStringwin(x, dst, text, colour);
 }
 
 
@@ -272,19 +272,17 @@ static void OutputUnder(s4 const edx, u1* const esi)
 
 void GUIOuttextwin(u4 x, u4 const y, char const* const text, u1 const colour)
 {
-	GUItextcolor[0] = colour;
-	GUIOutputStringwin(x, vidbuffer + y * 288 + 16, text);
+	GUIOutputStringwin(x, vidbuffer + y * 288 + 16, text, colour);
 }
 
 
 void GUIOuttextwin2u(u4 const win_id, u4 x, u4 y, char const* const text, u1 const colour, u4 const under_pos)
 {
-	GUItextcolor[0] = colour;
 	x += GUIwinposx[win_id];
 	y += GUIwinposy[win_id];
 	u1* const dst = vidbuffer + y * 288 + 16;
 	OutputUnder(       x + under_pos * 6, dst);
-	GUIOutputStringwin(x,                 dst, text);
+	GUIOutputStringwin(x,                 dst, text, colour);
 }
 
 
