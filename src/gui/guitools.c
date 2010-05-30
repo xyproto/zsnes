@@ -165,7 +165,7 @@ void GUIDrawShadow2(u1* buf, u4 const w, u4 h)
 }
 
 
-static void GUIoutputcharwin(u1* dst, u1 const glyph)
+static void GUIoutputcharwin(u1* dst, u1 const glyph, u1 const colour)
 {
 	// Font Setup (Windows)
 	u1      (*font)[5] = newfont == 0 ? GUIFontData : GUIFontData1;
@@ -179,7 +179,7 @@ static void GUIoutputcharwin(u1* dst, u1 const glyph)
 			u4 x  = 5;
 			do
 			{
-				if (ah & 0x80) *dst = GUItextcolor[0];
+				if (ah & 0x80) *dst = colour;
 				ah <<= 1;
 				++dst;
 			}
@@ -203,7 +203,7 @@ static void GUIOutputStringwin(s4 x, u1* const dst, char const* text, u1 const c
 	{
 		u1 const c = *text++;
 		if (c == '\0') break;
-		if (-8 <= x && x <= 255) GUIoutputcharwin(dst + x, ASCII2Font[c]);
+		if (-8 <= x && x <= 255) GUIoutputcharwin(dst + x, ASCII2Font[c], colour);
 	}
 }
 
@@ -236,7 +236,7 @@ no_number:;
 		}
 #endif
 		if (c == '\0') break;
-		if (-8 <= x && x <= 255) GUIoutputcharwin(dst + x, ASCII2Font[c]);
+		if (-8 <= x && x <= 255) GUIoutputcharwin(dst + x, ASCII2Font[c], colour);
 		x += 6;
 	}
 	while (--n != 0);
