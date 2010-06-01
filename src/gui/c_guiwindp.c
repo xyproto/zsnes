@@ -190,7 +190,6 @@ static void DrawTabOn(u4 const* const p1, u4* const peax, u4 ebx, u4* const pebp
 	GUIOuttextwin(eax + 6, ebx + 4, label, GUIWincol);
 	GUIOuttextwin(eax + 5, ebx + 3, label, GUIWincoladd == 0 ? 163 : 164);
 
-	GUItextcolor[0] = 217; // restore normal colour
 	eax = ecx + 1; // restore and set Xoff for drawing step
 	GUIRect(eax, eax, ebx, 12, edx + 3);
 
@@ -273,7 +272,7 @@ static void DrawGUIWinBox(u4 const p1, u4 const p2, u4 const p3, u4 const p4, u4
 
 static void DrawGUIButton(u4 const p1, u4 const p2, u4 const p3, u4 const p4, u4 const p5, char const* const p6, u4 const p7, u4 const p8, u4 const p9)
 {
-	u1   const colour = GUItextcolor[0];
+	u1   const colour = GUIWincoladd == 0 ? 217 : 211;
 	bool const held   = GUICBHold == p7;
 	DrawGUIWinBox(p1, p2,     p3,     p4,     p3, colour + (held ? -18 :  -5));
 	DrawGUIWinBox(p1, p2,     p3,     p2,     p5, colour + (held ? -16 :  -8));
@@ -290,7 +289,6 @@ static void DrawGUIButton(u4 const p1, u4 const p2, u4 const p3, u4 const p4, u4
 		GUIOuttextwin2(p1, p2 + 6 + p8, p3 + 5 + p9, p6, colour - 18);
 		GUIOuttextwin2(p1, p2 + 5 + p8, p3 + 4 + p9, p6, colour -  3);
 	}
-	GUItextcolor[0] = colour;
 }
 
 
@@ -596,7 +594,6 @@ void DisplayGUILoad(void)
 	}
 #endif
 
-	GUItextcolor[0] = GUIWincoladd == 0 ? 217 : 111;
 	DrawGUIButton(1, 186, 165, 228, 176, "LOAD", 1, 0, 0);
 
 	// The Three Boxes
@@ -684,13 +681,8 @@ void DisplayGUIReset(void)
 	GUIDrawWindowBox(12, "RESET GAME");
 
 	// Red Box around buttons
-	u1 dl = 224;
-	if (GUIWincoladd != 0)
-	{
-		GUItextcolor[0] = 211;
-		++dl;
-	}
-	u4 const x = GUICResetPos == 0 ? 19 : 79;
+	u1 const dl = GUIWincoladd == 0 ? 225 : 224;
+	u4 const x  = GUICResetPos == 0 ?  19 :  79;
 	DrawGUIWinBox(12, x, 29, x + 38, 42, dl);
 
 	DrawGUIButton(12, 20, 30,  56, 41, "YES", 2, 0, 0);
@@ -705,13 +697,8 @@ void DisplayGUIStates(void)
 	GUIDrawWindowBox(14, "STATE CONFIRM");
 
 	// Red Box around buttons
-	u1 dl = 224;
-	if (GUIWincoladd != 0)
-	{
-		GUItextcolor[0] = 211;
-		++dl;
-	}
-	u4 const x = GUICStatePos == 0 ? 19 : 79;
+	u1 const dl = GUIWincoladd == 0 ? 225 : 224;
+	u4 const x  = GUICStatePos == 0 ?  19 :  79;
 	DrawGUIWinBox(12, x, 29, x + 38, 42, dl);
 
 	DrawGUIButton(14, 20, 30,  56, 41, "YES", 10, 0, 0);
@@ -751,7 +738,6 @@ void DisplayGUIChoseSave(void)
 
 	GUIDisplayBBox(2, 72, 59, 90, 66, 167); // Save Slot Frameskip +/- Box
 	GUIDisplayTextG(2, 83, 61, GUIChoseSlotTextX);
-	GUItextcolor[0] = GUIWincoladd == 0 ? 217 : 211;
 	DrawGUIButton(2,  94, 59, 102, 67, "+", 80, -2, -1);
 	DrawGUIButton(2, 105, 59, 113, 67, "-", 81, -2, -1);
 }
@@ -1095,7 +1081,6 @@ void DisplayGUIVideo(void)
 		u4 const ebx = (GUIcurrentvideocursloc - GUIcurrentvideoviewloc) * 8 + 28; // Box
 		DrawGUIWinBox2(5, 5, 115, 7, 224, ebx);
 
-		GUItextcolor[0] = 224; // Text in Box
 		char const (*name)[18] = GUIVideoModeNames + GUIcurrentvideoviewloc;
 		u4   const   n         = NumVideoModes < 20 ? NumVideoModes : 20;
 		for (u4 i = 0; i != n; ++i)
@@ -1443,7 +1428,6 @@ void DisplayGUICheat(void)
 	GUIDisplayText(7, 11, 172, "AFTER ENTERING THE CODE. REMEMBER TO");
 	GUIDisplayText(7, 11, 180, "INSERT THE \"-\" FOR GAME GENIE CODES.");
 
-	GUItextcolor[0] = GUIWincoladd == 0 ? 217 : 211;
 	DrawGUIButton(7,   5, 113,  47, 124, "REMOVE",   5, 0, 0); // Draw Buttons
 	DrawGUIButton(7,  52, 113,  94, 124, "TOGGLE",   6, 0, 0);
 	DrawGUIButton(7,  99, 113, 141, 124, "SAVE",     7, 0, 0);
@@ -1651,7 +1635,6 @@ static void Incheatmode(void) // Return and Re-search Window
 	GUIwinsizey[13] = 150;
 	DrawWindowSearch();
 
-	GUItextcolor[0] = GUIWincoladd == 0 ? 217 : 211; // Text And Shadow
 	if (CheatSearchStatus != 1)
 	{
 		CheatSearching();
@@ -1742,7 +1725,6 @@ static void Cheatmodeview(void) // View ResultsWindow
 	}
 	// win#,X,Y start, %4-List Loc, %5-List size, %6-Screen size, %7-Bar Size
 	DrawSlideBar(13, 173, 20, GUIcurrentchtsrcviewloc, NumCheatSrc, 12, 89, GUICSStA, 11, 12);
-	GUItextcolor[0] = GUIWincoladd == 0 ? 217 : 211;
 	DrawGUIButton(13,  70, 140, 130, 152, "RETURN", 54, 0, 1);
 	DrawGUIButton(13, 140, 140, 180, 152, "ADD",    55, 0, 1);
 }
@@ -1853,7 +1835,6 @@ void DisplayGUISearch(void)
 	GUIDisplayButtonHoleTu(13, 11, 113, &CheatSrcSearchType, 0, "EXACT VALUE SEARCH", 0);
 	GUIDisplayButtonHoleTu(13, 11, 123, &CheatSrcSearchType, 1, "COMPARATIVE SEARCH", 0);
 
-	GUItextcolor[0] = GUIWincoladd == 0 ? 217 : 211; // Button
 	DrawGUIButton(13, 95, 140, 140, 152, "START", 50, 0, 1);
 }
 
@@ -2067,8 +2048,6 @@ void DisplayGUIAbout(void)
 		GUIDisplayText( 11, 6, 181, "read 'LICENSE.TXT'");
 		GUIDisplayText( 11, 6, 191, "thoroughly before doing so.");
 
-		GUItextcolor[0] = GUIWincoladd == 0 ? 217 : 211; // Buttons
-
 		DrawGUIButton(11, 90, 22, 175, 32, "WWW.ZSNES.COM", 65, 0, 0);
 		DrawGUIButton(11, 90, 33, 175, 43, "DOCUMENTATION", 66, 0, 0);
 	}
@@ -2103,15 +2082,12 @@ void DisplayGUIMovies(void)
 		GUIDisplayText(15, 9, 36, "FILE ALREADY EXISTS");
 		GUIDisplayText(15, 9, 51, "OKAY TO OVERWRITE ?");
 
-		GUItextcolor[0] = GUIWincoladd == 0 ? 217 : 211;
 		DrawGUIButton(15, 17, 65,  59, 76, "YES", 19, 0, 0); // Yes/No Buttons
 		DrawGUIButton(15, 70, 65, 112, 76, "NO",  20, 0, 0);
 	}
 	else
 	{
 		// Main Window
-		GUItextcolor[0] = GUIWincoladd == 0 ? 217 : 211;
-
 		GUIDisplayTextY(15,   8, 31, "SELECT MOVIE:"); // Slot text
 		GUIDisplayText( 15,  20, 42, "0");
 		GUIDisplayText( 15,  40, 42, "1");
@@ -2396,7 +2372,6 @@ void DisplayGUICombo(void)
 	PrintKey(16, 14, 94, GUIComboKey);
 
 	// Buttons
-	GUItextcolor[0] = GUIWincoladd == 0 ? 217 : 211;
 	DrawGUIButton(16, 202, 20, 246, 31, GUIComboTextA, 60, -1, 0);
 	DrawGUIButton(16, 202, 35, 246, 46, GUIComboTextB, 61, -1, 0);
 	DrawGUIButton(16, 202, 50, 246, 61, GUIComboTextC, 62, -1, 0);
@@ -2825,7 +2800,6 @@ void DisplayGUISave(void)
 	DDrawBox(20, 146, 156, &KeyStateSelct);
 	DDrawBox(20,  45, 165, &KeyRewind);
 
-	GUItextcolor[0] = GUIWincoladd == 0 ? 217 : 211; // Buttons
 	DrawGUIButton(20, 173, 17, 181, 25, "+", 70, -2, -1); // + Rewind States
 	DrawGUIButton(20, 184, 17, 192, 25, "-", 71, -2, -1); // - Rewind States
 	DrawGUIButton(20, 173, 29, 181, 37, "+", 72, -2, -1); // + Second/Rewind
@@ -2910,7 +2884,6 @@ void DisplayGUISpeed(void)
 	sprintf(GUISpeedTextZ3, "%2u", SDRatio + 2);
 	GUIDisplayTextG(21, 101, 37, GUISpeedTextZ3);
 
-	GUItextcolor[0] = GUIWincoladd == 0 ? 217 : 211; // Buttons
 	DrawGUIButton(21, 118, 24, 126, 32, "+", 74, -2, -1); // + Rewind States
 	DrawGUIButton(21, 129, 24, 137, 32, "-", 75, -2, -1); // - Rewind States
 	DrawGUIButton(21, 118, 35, 126, 43, "+", 76, -2, -1); // + Second/Rewind
@@ -2932,7 +2905,6 @@ void DisplayGUISpeed(void)
 		GUISpeedTextX[0] = '0' + maxskip;
 	}
 	GUIDisplayTextG(21, 107, 15, GUISpeedTextX);
-	GUItextcolor[0] = GUIWincoladd == 0 ? 217 : 211;
 	DrawGUIButton(21, 118, 13, 126, 21, "+", 78, -2, -1);
 	DrawGUIButton(21, 129, 13, 137, 21, "-", 79, -2, -1);
 }

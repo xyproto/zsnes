@@ -56,7 +56,6 @@ static void GUIoutputchar(u1* dst, u1 const glyph, u1 const colour)
 
 char const* GUIOutputString(u1* dst, char const* text, u1 const colour)
 {
-	GUItextcolor[0] = colour;
 	for (;; dst += 6, ++text)
 	{
 		u1 const c = *text;
@@ -198,7 +197,6 @@ static void GUIoutputcharwin(u1* dst, u1 const glyph, u1 const colour)
 
 static void GUIOutputStringwin(s4 x, u1* const dst, char const* text, u1 const colour)
 {
-	GUItextcolor[0] = colour;
 	for (;; x += 6)
 	{
 		u1 const c = *text++;
@@ -210,7 +208,6 @@ static void GUIOutputStringwin(s4 x, u1* const dst, char const* text, u1 const c
 
 static void GUIOutputStringwinl(s4 x, u1* const dst, char const* text, u1 const colour)
 {
-	GUItextcolor[0] = colour;
 	u4 n = cloadmaxlen;
 	do
 	{

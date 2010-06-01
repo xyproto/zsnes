@@ -238,7 +238,6 @@ NEWSYM GUIwinorder, resb 22
 NEWSYM GUIwinactiv, resb 22
 ViewBuffer  resb 50*32
 
-NEWSYM GUItextcolor, resb 1
 NEWSYM GUIcmenupos,  resb 1
 NEWSYM GUIescpress,  resb 1
 NEWSYM GUIpmenupos,  resb 1
