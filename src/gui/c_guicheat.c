@@ -196,3 +196,16 @@ void CheatCodeSearchInit(void)
 	}
 	vidbuffer[129600 + 65536 * 2 + 16383] &= val;
 }
+
+
+void DisableCheatsOnLoad(void)
+{
+	// Disable all codes
+	u1* esi = cheatdata;
+	for (u4 ecx = NumCheats; ecx != 0; esi += 28, --ecx)
+	{
+		if (esi[0] & 0x04) continue;
+		u1* esi_ = esi;
+		asm volatile("call %P1" : "+S" (esi_) : "X" (DisableCheatCode) : "cc", "memory", "eax", "ecx", "ebx");
+	}
+}

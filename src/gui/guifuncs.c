@@ -65,6 +65,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "../zloader.h"
 #include "../zdir.h"
 #include "c_gui.h"
+#include "c_guicheat.h"
 #include "gui.h"
 #include "guifuncs.h"
 #include "guiwindp.h"
@@ -688,7 +689,7 @@ void CheatCodeSave(void)
   }
 }
 
-void DisableCheatsOnLoad(), EnableCheatsOnLoad();
+void EnableCheatsOnLoad();
 
 void CheatCodeLoad(void)
 {
@@ -700,7 +701,7 @@ void CheatCodeLoad(void)
 
   if ((fp = fopen_dir(ZChtPath,ZSaveName,"rb")))
   {
-    asm_call(DisableCheatsOnLoad);
+    DisableCheatsOnLoad();
 
     cheat_file_size = fread(cheatdata, 1, 255*28, fp);
     fclose(fp);
