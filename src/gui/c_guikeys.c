@@ -954,12 +954,12 @@ static void GUICheatKeys(char dh, char al)
 			dh = ToUpperASM(dh);
 			switch (dh)
 			{
-				case 'R': CheatCodeRemove();         return;
-				case 'T': asm_call(CheatCodeToggle); return;
-				case 'S': asm_call(CheatCodeSave);   return;
-				case 'L': asm_call(CheatCodeLoad);   return;
-				case 'F': CheatCodeFix();            return;
-				case 'A': AutoLoadCht ^= 1;          break;
+				case 'R': CheatCodeRemove();       return;
+				case 'T': CheatCodeToggle();       return;
+				case 'S': asm_call(CheatCodeSave); return;
+				case 'L': asm_call(CheatCodeLoad); return;
+				case 'F': CheatCodeFix();          return;
+				case 'A': AutoLoadCht ^= 1;        break;
 			}
 
 			// Main Cheat Box

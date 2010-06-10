@@ -19,7 +19,7 @@
 
 
 
-EXTSYM guipresstest, SetDevice
+EXTSYM guipresstest, SetDevice, CheatCodeToggle
 
 SECTION .text
 
@@ -568,7 +568,7 @@ SECTION .text
   ccallv GUILoadData
   ret
 %%cheat
-  call CheatCodeToggle
+  ccallv CheatCodeToggle
   ret
 %%noprevhold
   mov dword[GUIDClickTL],%13
@@ -625,7 +625,7 @@ SECTION .text
   ccallv GUILoadData
   ret
 %%cheat
-  call CheatCodeToggle
+  ccallv CheatCodeToggle
   ret
 %%noprevhold
   mov dword[GUIDClickTL],%13

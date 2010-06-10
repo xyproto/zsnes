@@ -260,3 +260,20 @@ void CheatCodeFix(void)
 		asm volatile("call %P1" : "+S" (esi_) : "X" (EnableCheatCodeNoPrevMod) : "cc", "memory", "eax", "ecx", "ebx");
 	}
 }
+
+
+void CheatCodeToggle(void)
+{
+	GUICBHold = 0;
+	if (NumCheats == 0) return;
+
+	u1* esi = cheatdata + GUIcurrentcheatcursloc * 28;
+	if (esi[0] & 0x04)
+	{
+		asm volatile("call %P1" : "+S" (esi) : "X" (EnableCheatCodeNoPrevMod) : "cc", "memory", "eax", "ecx", "ebx");
+	}
+	else
+	{
+		asm volatile("call %P1" : "+S" (esi) : "X" (DisableCheatCode) : "cc", "memory", "eax", "ecx", "ebx");
+	}
+}

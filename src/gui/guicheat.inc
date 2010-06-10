@@ -26,23 +26,6 @@ SECTION .bss
 NEWSYM FirstSearch,   resb 1
 SECTION .text
 
-NEWSYM CheatCodeToggle
-    mov byte[GUICBHold],0
-    cmp dword[NumCheats],0
-    jne .nonone
-    ret
-.nonone
-    mov esi,[GUIcurrentcheatcursloc]
-    shl esi,5
-    sub esi,[GUIcurrentcheatcursloc]
-    sub esi,[GUIcurrentcheatcursloc]
-    sub esi,[GUIcurrentcheatcursloc]
-    sub esi,[GUIcurrentcheatcursloc]
-    add esi,cheatdata
-    test byte[esi],4
-    jz DisableCheatCode
-    jmp EnableCheatCodeNoPrevMod
-
 NEWSYM DisableCheatCode
     ; code is at esi
     xor ecx,ecx

@@ -6,6 +6,7 @@ void CheatCodeFix(void);
 void CheatCodeRemove(void);
 void CheatCodeSearchInit(void);
 void CheatCodeSearchProcess(void);
+void CheatCodeToggle(void);
 void DisableCheatsOnLoad(void);
 void EnableCheatsOnLoad(void);
 

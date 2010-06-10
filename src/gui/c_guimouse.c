@@ -580,7 +580,7 @@ hold:
 		case 10:
 		case 11: GUIProcStates();            return;
 		case  5: CheatCodeRemove();          return;
-		case  6: asm_call(CheatCodeToggle);  return;
+		case  6: CheatCodeToggle();          return;
 		case  7: CheatCodeSave();            return;
 		case  8: CheatCodeLoad();            return;
 		case  9: asm_call(ProcessCheatCode); return;
