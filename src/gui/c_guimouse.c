@@ -584,7 +584,7 @@ hold:
 		case  7: CheatCodeSave();            return;
 		case  8: CheatCodeLoad();            return;
 		case  9: asm_call(ProcessCheatCode); return;
-		case 33: asm_call(CheatCodeFix);     return;
+		case 33: CheatCodeFix();             return;
 		case 14: SetDevice();                return;
 		case 15: CalibrateDev1();            return;
 

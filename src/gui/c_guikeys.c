@@ -958,7 +958,7 @@ static void GUICheatKeys(char dh, char al)
 				case 'T': asm_call(CheatCodeToggle); return;
 				case 'S': asm_call(CheatCodeSave);   return;
 				case 'L': asm_call(CheatCodeLoad);   return;
-				case 'F': asm_call(CheatCodeFix);    return;
+				case 'F': CheatCodeFix();            return;
 				case 'A': AutoLoadCht ^= 1;          break;
 			}
 

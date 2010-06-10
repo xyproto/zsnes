@@ -244,3 +244,19 @@ void CheatCodeRemove(void)
 
 	if (NumCheats == 0) CheatOn = 0;
 }
+
+
+void CheatCodeFix(void)
+{
+	GUICBHold = 0;
+	if (NumCheats == 0) return;
+
+	u1* const esi = cheatdata + GUIcurrentcheatcursloc * 28;
+	{ u1*       esi_ = esi;
+		asm volatile("call %P1" : "+S" (esi_) : "X" (DisableCheatCode) : "cc", "memory", "eax", "ecx", "ebx");
+	}
+	esi[3] ^= 0x80;
+	{ u1*       esi_ = esi;
+		asm volatile("call %P1" : "+S" (esi_) : "X" (EnableCheatCodeNoPrevMod) : "cc", "memory", "eax", "ecx", "ebx");
+	}
+}
