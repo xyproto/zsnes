@@ -26,27 +26,6 @@ SECTION .bss
 NEWSYM FirstSearch,   resb 1
 SECTION .text
 
-NEWSYM EnableCheatsOnLoad
-    ; Enable all ON toggled cheat codes
-    mov esi,cheatdata
-    mov ecx,[NumCheats]
-    cmp ecx,0
-    je .skip2
-.loop
-    test byte[esi],4
-    jnz .disabled
-    push esi
-    push ecx
-    call EnableCheatCode
-    pop ecx
-    pop esi
-.disabled
-    add esi,28
-    dec ecx
-    jnz .loop
-.skip2
-    ret
-
 NEWSYM CheatCodeRemove
     mov byte[GUICBHold],0
     cmp dword[NumCheats],0
@@ -167,7 +146,7 @@ NEWSYM DisableCheatCode
     mov [esi+ecx],al
     ret
 
-EnableCheatCode:
+NEWSYM EnableCheatCode
     ; code is at esi
     xor ecx,ecx
     xor ebx,ebx

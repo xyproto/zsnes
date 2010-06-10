@@ -689,7 +689,6 @@ void CheatCodeSave(void)
   }
 }
 
-void EnableCheatsOnLoad();
 
 void CheatCodeLoad(void)
 {
@@ -725,7 +724,7 @@ void CheatCodeLoad(void)
       } while(i>0);
     }
 
-    asm_call(EnableCheatsOnLoad);
+    EnableCheatsOnLoad();
 
     if (NumCheats <= GUIcurrentcheatcursloc) GUIcurrentcheatcursloc=NumCheats-1;
     if (NumCheats) CheatOn=1;
