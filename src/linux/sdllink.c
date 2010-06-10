@@ -993,6 +993,8 @@ int startgame()
   {
     ranonce = true;
 
+		gettimeofday(&sem_start, NULL);
+
     // Start semaphore code so ZSNES multitasks nicely :)
     sem_sleep_rdy();
   }
@@ -1571,11 +1573,6 @@ void SetMouseY(int Y)
   MouseY = Y;
 }
 
-/* evul, maybe should use something other than constructor method */
-void __attribute__((stdcall, constructor)) sem_StartTicks()
-{
-  gettimeofday(&sem_start, NULL);
-}
 
 float sem_GetTicks()
 {
