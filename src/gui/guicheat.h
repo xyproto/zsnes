@@ -5,7 +5,6 @@
 
 extern void CheatCodeFix();
 extern void CheatCodeRemove();
-extern void CheatCodeSearchInit();
 extern void CheatCodeToggle();
 extern void EnableCheatCodeNoPrevMod();
 extern void ProcessCheatCode();

@@ -1369,7 +1369,7 @@ static void GUICheatSearchKeys(char dh, char const al)
 			CompareKeyMacro('C', &CheatSrcSearchType, 1, dh);
 
 			// Start Button
-			if (dh == 13 || dh == 'S') asm_call(CheatCodeSearchInit);
+			if (dh == 13 || dh == 'S') CheatCodeSearchInit();
 			break;
 	}
 }

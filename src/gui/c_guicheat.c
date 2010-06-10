@@ -1,3 +1,5 @@
+#include <string.h>
+
 #include "../cfg.h"
 #include "../ui.h"
 #include "c_gui.h"
@@ -168,4 +170,29 @@ failedfind:
 		CopyRamToggle     = 1;
 		CheatSearchStatus = 1;
 	}
+}
+
+
+void CheatCodeSearchInit(void)
+{
+	CSInputDisplay[0] = '_';
+	CSInputDisplay[1] = '\0';
+	CheatWinMode      = 1;
+	CheatSearchStatus = 0;
+	FirstSearch       = 1;
+	// copy 128k ram
+	memcpy(vidbuffer + 129600, wramdata, 131072);
+	// fill searched buffer with 0xFF
+	memset(vidbuffer + 129600 + 65536 * 2, 0xFF, 32768 * 4);
+	if (CheatSrcSearchType == 1) CheatSearchStatus = 1;
+	CheatCompareValue = 0;
+	u1 val;
+	switch (CheatSrcByteSize)
+	{
+		case 1: val = 0x7F; break;
+		case 2: val = 0x3F; break;
+		case 3: val = 0x1F; break;
+		default: return;
+	}
+	vidbuffer[129600 + 65536 * 2 + 16383] &= val;
 }

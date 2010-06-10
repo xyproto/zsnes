@@ -26,57 +26,6 @@ SECTION .bss
 NEWSYM FirstSearch,   resb 1
 SECTION .text
 
-NEWSYM CheatCodeSearchInit
-    mov byte[CSInputDisplay],'_'
-    mov byte[CSInputDisplay+1],0
-    mov byte[CheatWinMode],1
-    mov byte[CheatSearchStatus],0
-    mov byte[FirstSearch],1
-    mov eax,[vidbuffer]
-    add eax,129600
-    ; copy 128k ram
-    mov ebx,[wramdata]
-    mov ecx,32768
-.loop
-    mov edx,[ebx]
-    mov [eax],edx
-    add ebx,4
-    add eax,4
-    dec ecx
-    jnz .loop
-    ; fill searched buffer with 0xFF
-    mov eax,[vidbuffer]
-    add eax,129600+65536*2
-    mov ecx,8192
-.loop2
-    mov dword[eax],0FFFFFFFFh
-    add eax,4
-    dec ecx
-    jnz .loop2
-    cmp byte[CheatSrcSearchType],1
-    jne .nottype1
-    mov byte[CheatSearchStatus],1
-.nottype1
-    mov dword[CheatCompareValue],0
-    mov eax,[vidbuffer]
-    add eax,129600+65536*2
-    cmp byte[CheatSrcByteSize],1
-    je near .bytesize2
-    cmp byte[CheatSrcByteSize],2
-    je near .bytesize3
-    cmp byte[CheatSrcByteSize],3
-    je near .bytesize4
-    ret
-.bytesize2
-    and byte[eax+16383],07Fh
-    ret
-.bytesize3
-    and byte[eax+16383],03Fh
-    ret
-.bytesize4
-    and byte[eax+16383],01Fh
-    ret
-
 NEWSYM DisableCheatsOnLoad
      ; Disable all codes
     mov esi,cheatdata

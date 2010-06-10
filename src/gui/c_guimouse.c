@@ -619,7 +619,7 @@ hold:
 		case 35: GUICBHold = 0; GUIQuit = 2; MovieStop(); return; // stop dump
 		case 40: SetAllKeys();                            return;
 
-		case 50: asm_call(CheatCodeSearchInit); break;
+		case 50: CheatCodeSearchInit(); break;
 
 		case 60:
 			GUIComboTextH[0] = '\0';

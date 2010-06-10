@@ -46,11 +46,11 @@ EXTSYM frameskip,newengen,cvidmode,antienab
 EXTSYM soundon,StereoSound,SoundQuality,MusicRelVol
 EXTSYM cbitmode
 EXTSYM romloadskip,romdata,current_zst
-EXTSYM vidbuffer,showallext,scanlines
+EXTSYM showallext,scanlines
 EXTSYM KeyRTRCycle
 EXTSYM pressed,memtabler8
 EXTSYM memtablew8,writeon,FPSOn,RevStereo,WDSPReg0C
-EXTSYM WDSPReg1C,pl12s34,vidbufferofsb,wramdata,bgfixer
+EXTSYM WDSPReg1C,pl12s34,vidbufferofsb,bgfixer
 EXTSYM sram,RelPathBase
 EXTSYM Clear2xSaIBuffer,Show224Lines
 EXTSYM NumVideoModes,MusicVol,DSPMem,NumInputDevices
