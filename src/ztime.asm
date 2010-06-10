@@ -25,28 +25,16 @@ EXTSYM SystemTimewHour,SystemTimewMinute,SystemTimewSecond
 SECTION .text
 
 NEWSYM Get_Time
-    pushad
-    call GetTime
-    mov [TempVarSeek],eax
-    popad
-    mov eax,[TempVarSeek]
+    ccall GetTime
     ret
 
 NEWSYM Get_TimeDate
-    pushad
-    call GetDate
-    mov [TempVarSeek],eax
-    popad
-    mov eax,[TempVarSeek]
+    ccall GetDate
     ret
 
 NEWSYM Get_Date
     ; dl = day, dh = month, cx = year
-    pushad
-    call GetDate
-    mov [TempVarSeek],eax
-    popad
-    mov eax,[TempVarSeek]
+    ccall GetDate
     movzx edx,al ;Move day into edx, day is in BCD
     shr edx,4    ;Chop off the second digit
     imul edx,10  ;Multiply first digit by 10, since we want decimal
@@ -64,7 +52,7 @@ NEWSYM Get_Date
     ret
 
 NEWSYM GetTimeInSeconds
-    call GetLocalTime
+    ccallv GetLocalTime
     movzx eax,word[SystemTimewHour]
     mov ebx,60
     mul ebx
@@ -75,6 +63,3 @@ NEWSYM GetTimeInSeconds
     movzx ebx,word[SystemTimewSecond]
     add eax,ebx
     ret
-
-SECTION .data
-TempVarSeek dd 0

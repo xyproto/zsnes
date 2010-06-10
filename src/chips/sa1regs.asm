@@ -1422,9 +1422,7 @@ sa1224Fw:
   jz .nocc2_dma
   test byte[SA1DMAInfo],10h
   jnz .nocc2_dma
-  pushad
-  call SA1_DMA_CC2
-  popad
+  ccallv SA1_DMA_CC2
 .nocc2_dma
   ret
 

@@ -81,15 +81,11 @@ NEWSYM ProcessRewind
     jne near .notokay
     mov byte[pressed+eax],2
 
-    pushad
-    call RestoreCVFrame
-    popad
+    ccallv RestoreCVFrame
 
     cmp byte[PauseFrameMode],1
     jne .notpauserewind
-    pushad
-    call BackupPauseFrame
-    popad
+    ccallv BackupPauseFrame
 .notpauserewind
 
     call UpdateDPage
@@ -116,9 +112,7 @@ NEWSYM UpdateRewind
     mov [tempedi],edi
     mov [tempebp],ebp
 
-    pushad
-    call BackupCVFrame
-    popad
+    ccallv BackupCVFrame
 
 .checkrewind
     call ProcessRewind
@@ -366,9 +360,7 @@ reexecuteb2:
     ;Multipass Movies
     cmp byte[MoviePassWaiting],1
     jne .nomoviepasswaiting
-    pushad
-    call MovieDumpRaw
-    popad
+    ccallv MovieDumpRaw
     jmp continueprog
 .nomoviepasswaiting
 
@@ -392,26 +384,20 @@ reexecuteb2:
     jz .nosavestt
     mov byte[pressed+1],0
     mov byte[pressed+eax],2
-    pushad
-    call statesaver
-    popad
+    ccallv statesaver
     jmp reexecuteb
 .nosavestt
     mov eax,[KeyLoadState]
     test byte[pressed+eax],1
     jz .noloadstt0
-    pushad
-    call loadstate
-    popad
+    ccallv loadstate
     jmp reexecuteb
 .noloadstt0
     mov eax,[KeyInsrtChap]
     test byte[pressed+eax],1
     jz .noinsertchapter
     mov byte[pressed+eax],0
-    pushad
-    call MovieInsertChapter
-    popad
+    ccallv MovieInsertChapter
     jmp continueprognokeys
 .noinsertchapter
     mov eax,[KeyNextChap]
@@ -419,9 +405,7 @@ reexecuteb2:
     jz .nonextchapter
     mov byte[pressed+eax],0
     mov byte[multchange],1
-    pushad
-    call MovieSeekAhead
-    popad
+    ccallv MovieSeekAhead
     jmp continueprognokeys
 .nonextchapter
     mov eax,[KeyPrevChap]
@@ -429,9 +413,7 @@ reexecuteb2:
     jz .noprevchapter
     mov byte[pressed+eax],0
     mov byte[multchange],1
-    pushad
-    call MovieSeekBehind
-    popad
+    ccallv MovieSeekBehind
     jmp continueprognokeys
 .noprevchapter
     cmp byte[SSKeyPressed],1
@@ -442,7 +424,10 @@ reexecuteb2:
    cmp byte[debugdisble],0
     jne .nodebugger
     test byte[pressed+59],1
-    jne near startdebugger
+    je .nostartdebugger
+    ccallv startdebugger
+    ret
+.nostartdebugger
 .nodebugger
 %endif
     test byte[pressed+59],1
@@ -455,7 +440,7 @@ reexecuteb2:
     mov byte[GUIReset],1
     cmp byte[MovieProcessing],2 ;Recording
     jne .nomovierecording
-    call ResetDuringMovie
+    ccallv ResetDuringMovie
     jmp .movieendif
 .nomovierecording
     call GUIDoReset
@@ -473,9 +458,7 @@ reexecuteb2:
 
 NEWSYM endprog
     call deinitvideo
-    pushad
-    call MovieStop
-    popad
+    ccallv MovieStop
 
     jmp DosExit
 
@@ -561,7 +544,7 @@ NEWSYM handler8h
     mov ax,[cs:dssel]
 NEWSYM handler8hseg
     mov ds,ax
-    call Game60hzcall
+    ccallv Game60hzcall
     mov eax,[timercount]
     sub dword[timeradj],eax
     jnc .noupd
@@ -1289,9 +1272,7 @@ NEWSYM cpuover
     ;Pause and Frame increment
     cmp byte[PauseFrameMode],3
     jne .nopauseframemode3
-    pushad
-    call RestorePauseFrame
-    popad
+    ccallv RestorePauseFrame
     mov esi,[tempesi]
     mov edi,[tempedi]
     mov ebp,[tempebp]
@@ -1309,9 +1290,7 @@ NEWSYM cpuover
     mov [tempesi],esi
     mov [tempedi],edi
     mov [tempebp],ebp
-    pushad
-    call BackupPauseFrame
-    popad
+    ccallv BackupPauseFrame
 .nopauseframemode1
 
     call ProcessRewind
@@ -1343,9 +1322,7 @@ NEWSYM cpuover
 
     cmp byte[MovieProcessing],0
     je .noprocmovie
-    pushad
-    call ProcessMovies
-    popad
+    ccallv ProcessMovies
     cmp byte[GUIReset],1
     jne .notreset
     mov byte[MovieWaiting],1

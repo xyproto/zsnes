@@ -183,9 +183,7 @@ NEWSYM breakops
 ;     mov ah,07h
 ;     int 21h
 
-    pushad
-    call my_getch
-    popad
+    ccallv my_getch
     mov eax, [my_getch_ret]
 
     cmp eax,27

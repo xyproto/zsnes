@@ -103,10 +103,8 @@ NEWSYM processmouse1
 %ifndef __MSDOS__
     cmp byte[MouseCount],1
     jle .nomultimouse
-    pushad
     mov byte[mouse],0
-    call MultiMouseProcess
-    popad
+    ccallv MultiMouseProcess
     mov bx,[MouseButtons]
     cmp byte[mouse1lh],1
     jne .notlefthanded1
@@ -163,10 +161,8 @@ NEWSYM processmouse2
 %ifndef __MSDOS__
     cmp byte[MouseCount],1
     jle .nomultimouse
-    pushad
     mov byte[mouse],1
-    call MultiMouseProcess
-    popad
+    ccallv MultiMouseProcess
     mov bx,[MouseButtons+2]
     jmp .mousestuff
 .nomultimouse
@@ -1013,9 +1009,7 @@ DetermineNewest:
     add al,bl
 .again
     mov [current_zst],ecx
-    pushad
-    call zst_determine_newest
-    popad
+    ccallv zst_determine_newest
     inc cl
     cmp cl,al
     jne .again
@@ -1032,9 +1026,7 @@ GetPicture:
 .notskip
     mov [PrevPictureVal],cl
 
-    pushad
-    call LoadPicture
-    popad
+    ccallv LoadPicture
 
     ; convert to 1:5:5:5
     cmp byte[newengen],0
@@ -1094,10 +1086,10 @@ GetPicture:
 
 %ifdef __MSDOS__
 NEWSYM drawfillboxsc
-    pushad
-    call zst_exists
+    push eax
+    ccall zst_exists
     cmp eax,1
-    popad
+    pop eax
     jne .nodraw
 
     push eax
@@ -1132,10 +1124,10 @@ NEWSYM drawfillboxsc
 %endif
 
 NEWSYM drawfillboxsc16b
-    pushad
-    call zst_exists
+    push eax
+    ccall zst_exists
     cmp eax,1
-    popad
+    pop eax
     jne .nodraw
 
     push eax
@@ -2037,9 +2029,7 @@ NEWSYM saveselect
     mov byte[f3menuen],0
     mov byte[ForceNonTransp],0
     mov byte[GUIOn],0
-    pushad
-    call Clear2xSaIBuffer
-    popad
+    ccallv Clear2xSaIBuffer
     ret
 
 SECTION .bss
@@ -2827,9 +2817,7 @@ NEWSYM copyvid
     jz .nomovie4
     cmp byte[MovieDisplayFrame],0
     jz .nomovie4
-    pushad
-    call GetMovieFrameStr
-    popad
+    ccallv GetMovieFrameStr
     mov edi,MovieFrameStr
 %ifdef __MSDOS__
     cmp byte[cbitmode],1

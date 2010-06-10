@@ -1430,7 +1430,7 @@ C4DrawLine:
     mov [C4WFY2Val],al
     mov al,[esi+1F88h]
     mov [C4WFDist],al
-    call C4TransfWireFrame2
+    ccallv C4TransfWireFrame2
     mov ax,[C4WFXVal]
     mov [C4X1],ax
     mov ax,[C4WFYVal]
@@ -1442,7 +1442,7 @@ C4DrawLine:
     mov [C4WFYVal],ax
     mov ax,[C4Z2]
     mov [C4WFZVal],ax
-    call C4TransfWireFrame2
+    ccallv C4TransfWireFrame2
     mov ax,[C4WFXVal]
     mov [C4X2],ax
     mov ax,[C4WFYVal]
@@ -1465,7 +1465,7 @@ C4DrawLine:
     mov [C4WFX2Val],ax
     mov ax,[C4Y2+1]
     mov [C4WFY2Val],ax
-    call C4CalcWireFrame
+    ccallv C4CalcWireFrame
     movzx ecx,word[C4WFDist]
     or ecx,ecx
     jnz .not0
@@ -1663,11 +1663,7 @@ C4WireFrame:
     mov [C4WFYVal],ax
     mov ax,[esi+9]
     mov [C4WFZVal],ax
-    push esi
-    push ecx
-    call C4TransfWireFrame
-    pop ecx
-    pop esi
+    ccallv C4TransfWireFrame
     ; Displace
     mov ax,[C4WFXVal]
     add ax,80h
@@ -1706,13 +1702,7 @@ C4WireFrame:
     mov [C4WFX2Val],bx
     mov bx,[eax+5]
     mov [C4WFY2Val],bx
-    push esi
-    push edi
-    push ecx
-    call C4CalcWireFrame
-    pop ecx
-    pop edi
-    pop esi
+    ccallv C4CalcWireFrame
     mov ax,[C4WFDist]
     or ax,ax
     jnz .yeswire
@@ -1749,7 +1739,7 @@ C4Transform:
     mov [C4WFY2Val],al
     mov al,[esi+1F8Bh]
     mov [C4WFDist],al
-    call C4TransfWireFrame2
+    ccallv C4TransfWireFrame2
     mov ax,[C4WFXVal]
     mov [esi+1F80h],ax
     mov ax,[C4WFYVal]
@@ -1821,9 +1811,7 @@ C4activate:
     ret
 
 .linearray
-    pushad
-    call C4Op22
-    popad
+    ccallv C4Op22
     ret
 
 .propulsion
@@ -1936,7 +1924,7 @@ C4activate:
 ;    mov [C4values+0],cx
 ;    mov cx,[eax+1F83h]
 ;    mov [C4values+2],cx
-    call C4Op15
+    ccallv C4Op15
     mov eax,[C4Ram]
     mov bx,[C41FDist]
     mov [eax+1F80h],bx
@@ -1952,7 +1940,7 @@ C4activate:
     mov [C41FXVal],bx
     mov bx,[esi+1F83h]
     mov [C41FYVal],bx
-    call C4Op1F
+    ccallv C4Op1F
     mov eax,[C4Ram]
     mov bx,[C41FAngleRes]
     mov [eax+1F86h],bx
@@ -2021,7 +2009,7 @@ C4activate:
     mov [C41FYVal],bx
     mov bx,[esi+1F86h]
     mov [C41FDistVal],bx
-    call C4Op0D
+    ccallv C4Op0D
     mov bx,[C41FXVal]
     mov [esi+1F89h],bx
     mov bx,[C41FYVal]

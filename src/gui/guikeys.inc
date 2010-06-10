@@ -192,9 +192,7 @@
   mov [CBBuffer],ecx
   mov eax,[GUIInputLimit]
   mov [CBLength],eax
-  pushad
-  call PasteClipBoard
-  popad
+  ccallv PasteClipBoard
   xor dx,dx
   ret
 %%nopaste
@@ -221,9 +219,7 @@
   cmp dh,13    ;Enter
   jne %%notenter
   mov dword[GUIInputBox],0
-  pushad
-  call %2
-  popad
+  ccallv %2
   xor dx,dx
   ret
 %%notenter
@@ -915,13 +911,9 @@ GUIOptionKeys:
 %ifdef __WIN32__
   GUIKeyCheckbox PauseFocusChange,'B'
   GUIKeyCheckbox HighPriority,'P'
-  pushad
-  call CheckPriority
-  popad
+  ccallv CheckPriority
   GUIKeyCheckbox DisableScreenSaver,'D'
-  pushad
-  call CheckScreenSaver
-  popad
+  ccallv CheckScreenSaver
 %else
   GUIKeyCheckbox DisableScreenSaver,'D'
 %endif
@@ -1020,25 +1012,23 @@ GUIGUIOptnsKeys:
 %ifdef __MSDOS__
   call DOSClearScreen
 %endif
-  pushad
 %ifndef __MSDOS__
+  push ebx
   xor ebx,ebx
   mov bl,[cvidmode]
   cmp byte[GUIBIFIL+ebx],0
+  pop ebx
   je .skipinit
-  pushad
 %ifdef __WIN32__
-  call initDirectDraw
+  ccallv initDirectDraw
 %elifdef __OPENGL__
-  call initwinvideo
+  ccallv initwinvideo
 %else
 
 %endif
-  popad
 .skipinit
 %endif
-  call Clear2xSaIBuffer
-  popad
+  ccallv Clear2xSaIBuffer
 .guioptn8
 
   GUIKeyButtonHole GUIEffect,0,'E'   ; Start From Radio Buttons
@@ -1240,14 +1230,12 @@ GUIVideoKeys:
   je .nobilinearfilter
   xor byte[BilinearFilter],1
   FilterExcl2 NTSCFilter
-  pushad
 %ifdef __WIN32__
-  call initDirectDraw
+  ccallv initDirectDraw
 %elifdef __OPENGL__
-  call initwinvideo
+  ccallv initwinvideo
 %endif
-  call Clear2xSaIBuffer
-  popad
+  ccallv Clear2xSaIBuffer
   jmp .nointerpolation
 .nobilinearfilter
 %elifdef __MSDOS__
@@ -1284,9 +1272,7 @@ GUIVideoKeys:
 .noforce4_3
 %endif
 %ifndef __MSDOS__
-  pushad
-  call NTSCFilterInit
-  popad
+  ccallv NTSCFilterInit
 %endif
 .nontscfilter
   xor ebx,ebx
@@ -1311,9 +1297,7 @@ GUIVideoKeys:
   jne .nosuper2xsai
   mov eax,3
 .yesfilter
-  pushad
-  call Clear2xSaIBuffer
-  popad
+  ccallv Clear2xSaIBuffer
   FilterExcl2 hqFilter,scanlines,antienab,NTSCFilter
   GUIkeystoggleoptn byte[En2xSaI],al
 .nosuper2xsai
@@ -1331,9 +1315,7 @@ GUIVideoKeys:
 %endif
   jmp .nohqfilter
 .hqfilter
-  pushad
-  call Clear2xSaIBuffer
-  popad
+  ccallv Clear2xSaIBuffer
   xor byte[hqFilter],1
   jz .nohqfilter
   FilterExcl2 scanlines,En2xSaI,antienab,NTSCFilter
@@ -1347,9 +1329,7 @@ GUIVideoKeys:
   mov bl,[cvidmode]
   cmp byte[GUIHQ2X+ebx],0
   je .nohq2x
-  pushad
-  call Clear2xSaIBuffer
-  popad
+  ccallv Clear2xSaIBuffer
   GUIKeyButtonHole hqFilterlevel,2,'X'
 .nohq2x
   cmp dh,'3'
@@ -1360,9 +1340,7 @@ GUIVideoKeys:
   mov bl,[cvidmode]
   cmp byte[GUIHQ3X+ebx],0
   je .nohq3x
-  pushad
-  call Clear2xSaIBuffer
-  popad
+  ccallv Clear2xSaIBuffer
   GUIKeyButtonHole hqFilterlevel,3,'3'
 .nohq3x
   cmp dh,'4'
@@ -1373,9 +1351,7 @@ GUIVideoKeys:
   mov bl,[cvidmode]
   cmp byte[GUIHQ4X+ebx],0
   je .nohq4x
-  pushad
-  call Clear2xSaIBuffer
-  popad
+  ccallv Clear2xSaIBuffer
   GUIKeyButtonHole hqFilterlevel,4,'4'
 %endif
 .nohq4x
@@ -1468,18 +1444,14 @@ GUIVideoKeys:
   jne .novsync
   xor byte[vsyncon],1
 %ifdef __WIN32__
-  pushad
-  call initDirectDraw
-  call Clear2xSaIBuffer
-  popad
+  ccallv initDirectDraw
+  ccallv Clear2xSaIBuffer
 %elifdef __MSDOS__
   jz .novsync
   FilterExcl2 Triplebufen
 %elifdef __OPENGL__
-  pushad
-  call initwinvideo
-  call Clear2xSaIBuffer
-  popad
+  ccallv initwinvideo
+  ccallv Clear2xSaIBuffer
 %endif
 .novsync
 %ifndef __UNIXSDL__
@@ -1491,10 +1463,8 @@ GUIVideoKeys:
   cmp byte[GUIWFVID+ebx],0
   je near .notriplebuffer
   xor byte[TripleBufferWin],1
-  pushad
-  call initDirectDraw
-  call Clear2xSaIBuffer
-  popad
+  ccallv initDirectDraw
+  ccallv Clear2xSaIBuffer
 %else
   cmp byte[GUITBVID+ebx],0
   je near .notriplebuffer
@@ -1512,10 +1482,8 @@ GUIVideoKeys:
   cmp byte[GUIKEEP43+ebx],0
   je near .nokeep4_3
   xor byte[Keep4_3Ratio],1
-  pushad
-  call initwinvideo
-  call Clear2xSaIBuffer
-  popad
+  ccallv initwinvideo
+  ccallv Clear2xSaIBuffer
 .nokeep4_3
 %else
   cmp dh,'M'
@@ -1554,9 +1522,7 @@ GUISoundKeys:
   jne .notenablesound
   xor byte[soundon],1
 %ifdef __WIN32__
-  pushad
-  call reInitSound
-  popad
+  ccallv reInitSound
 %endif
 .notenablesound
 
@@ -1752,11 +1718,13 @@ GUICheatKeys:
 .notoggcheat
   cmp dh,'S'
   jne .nosavecheat
-  jmp CheatCodeSave
+  ccallv CheatCodeSave
+  ret
 .nosavecheat
   cmp dh,'L'
   jne .noloadcheat
-  jmp CheatCodeLoad
+  ccallv CheatCodeLoad
+  ret
 .noloadcheat
   cmp dh,'F'
   jne .nofixcheat
@@ -2870,10 +2838,10 @@ GUILoadKeys:
 .keypressed
   mov [gui_key],dh
   mov [gui_key_extended],dl
-  pushad
-  call GUILoadKeysNavigate
+  push eax
+  ccall GUILoadKeysNavigate
   cmp eax,1
-  popad
+  pop eax
   je .nokeypressed
   cmp byte[GUILoadPos],0
   je near .nobacksp
@@ -2894,9 +2862,7 @@ GUILoadKeys:
   mov al,[GUILoadPos]
   mov [GUILoadTextA+eax],dh
   inc byte[GUILoadPos]
-  pushad
-  call GUILoadKeysJumpTo
-  popad
+  ccallv GUILoadKeysJumpTo
   ret
 
 WaitForKey:

@@ -72,28 +72,19 @@ NEWSYM PrintStr          ; Print ASCIIZ string
     mov al,[edx]
     or al,al
     jz .finish
-    push edx
-    mov dl,al
-    push edx
-    call putchar
-    pop edx
-    pop edx
+    ccallv putchar, eax
     inc edx
     jmp .next
 .finish
     popad
     ret
 
-SECTION .data
-NEWSYM wfkey, db 0
-
 SECTION .text
 NEWSYM WaitForKey       ; Wait for a key to be pressed
-    pushad
-    call getchar
-    mov [wfkey],al
-    popad
-    mov al,[wfkey]
+    push eax
+    ccall getchar
+    mov [esp],al
+    pop eax
     ; return key in al
     ret
 
@@ -147,9 +138,7 @@ NEWSYM Output_Text       ; Output character (ah=02h) or string (ah=09h)
     je .string
     ret
 .char
-    push edx
-    call putchar
-    pop edx
+    ccallv putchar, edx
     popad
     ret
 .string
@@ -161,10 +150,8 @@ NEWSYM Output_Text       ; Output character (ah=02h) or string (ah=09h)
 
 NEWSYM InitPreGame   ; Executes before starting/continuing a game
     mov byte[pressed+1],2
-    pushad
-    call Start60HZ
-    call initwinvideo
-    popad
+    ccallv Start60HZ
+    ccallv initwinvideo
 
     mov al,[GrayscaleMode]
     cmp al,[V8Mode]
@@ -184,9 +171,7 @@ NEWSYM InitPreGame   ; Executes before starting/continuing a game
     rep stosd
     popad
 
-    pushad
-    call clearwin
-    popad
+    ccallv clearwin
     ret
 
 NEWSYM SetupPreGame   ; Executes after pre-game init, can execute multiple
@@ -196,9 +181,7 @@ NEWSYM SetupPreGame   ; Executes after pre-game init, can execute multiple
 
 
 NEWSYM DeInitPostGame           ; Called after game is ended
-    pushad
-    call Stop60HZ
-    popad
+    ccallv Stop60HZ
     ret
 
 ; ****************************
@@ -230,9 +213,7 @@ NEWSYM initvideo  ; Returns 1 in videotroub if trouble occurs
    mov dword[vesa2_clbitng2+4],11110111110111101111011111011110b
    mov dword[vesa2_clbitng3],0111101111101111b
 
-   pushad
-   call initwinvideo
-   popad
+   ccallv initwinvideo
 
    movzx eax,byte[cvidmode]
    cmp byte[GUIWFVID+eax],0
@@ -293,18 +274,15 @@ NEWSYM DrawScreen               ; In-game screen render w/ triple buffer check
     popad
 
 .skipconv
-    pushad
-    call drawscreenwin
+    ccallv drawscreenwin
 %ifdef __OPENGL__
     cmp byte[blinit],1
     jne .noreinit
-    call initwinvideo
-    call Clear2xSaIBuffer
+    ccallv initwinvideo
+    ccallv Clear2xSaIBuffer
     mov byte[blinit],0
 .noreinit
 %endif
-    popad
-
     ret
 
 NEWSYM vidpastecopyscr       ; GUI screen render
@@ -414,9 +392,7 @@ NEWSYM UpdateDevices                    ; One-time input device init
         ret
 
 NEWSYM JoyRead
-        pushad
-        call UpdateVFrame
-        popad
+        ccallv UpdateVFrame
         ret
 
 SECTION .data
@@ -539,14 +515,14 @@ SECTION .text
 NEWSYM Get_MouseData         ; Returns both pressed and coordinates
     ; bx : bit 0 = left button, bit 1 = right button
     ; cx = Mouse X Position, dx = Mouse Y Position
-    pushad
-    call GetMouseX
+    push eax
+    ccall GetMouseX
     mov [WMouseX],eax
-    call GetMouseY
+    ccall GetMouseY
     mov [WMouseY],eax
-    call GetMouseButton
+    ccall GetMouseButton
     mov [WMouseButton],eax
-    popad
+    pop eax
     mov cx,[WMouseX]
     mov dx,[WMouseY]
     mov bx,[WMouseButton]
@@ -566,36 +542,30 @@ NEWSYM Set_MousePosition
 
 NEWSYM Get_MousePositionDisplacement
     ; returns x,y displacement in pixel in cx,dx
-    pushad
-    call GetMouseMoveX
+    push eax
+    ccall GetMouseMoveX
     mov [WMouseMoveX],eax
-    call GetMouseMoveY
+    ccall GetMouseMoveY
     mov [WMouseMoveY],eax
-    popad
+    pop eax
     mov cx,[WMouseMoveX]
     mov dx,[WMouseMoveY]
     ret
 
 
 NEWSYM MouseWindow
-    pushad
     or byte[MouseButton],2
     mov byte[T36HZEnabled],1
-    call GetMouseButton
+    ccallv GetMouseButton
     and byte[MouseButton],0FDh
-    popad
     ret
 
 NEWSYM GUIInit
-    pushad
-    call Start36HZ
-    popad
+    ccallv Start36HZ
     ret
 
 NEWSYM GUIDeInit
-    pushad
-    call Stop36HZ
-    popad
+    ccallv Stop36HZ
     ret
 
 ; ****************************
@@ -603,12 +573,12 @@ NEWSYM GUIDeInit
 ; ****************************
 
 NEWSYM StopSound
-    call Start36HZ
+    ccallv Start36HZ
     call JoyRead
     ret
 
 NEWSYM StartSound
-    call Start60HZ
+    ccallv Start60HZ
     call JoyRead
     ret
 
@@ -618,10 +588,8 @@ NEWSYM delay
 
 NEWSYM Check60hz
     ; Call the timer update function here
-    pushad
-    call CheckTimers
-    call sem_sleep
-    popad
+    ccallv CheckTimers
+    ccallv sem_sleep
     ret
 
 SECTION .data

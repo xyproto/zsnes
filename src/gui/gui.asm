@@ -943,10 +943,8 @@ NEWSYM StartGUI
   mov [GUIcurrentvideoviewloc],eax
 .skip
 
-  pushad
-  call SaveSramData
-  call GUIQuickLoadUpdate
-  popad
+  ccallv SaveSramData
+  ccallv GUIQuickLoadUpdate
 
   call LoadDetermine
 
@@ -954,9 +952,7 @@ NEWSYM StartGUI
   je .noautostate
   cmp byte[romloadskip],0
   jne .noautostate
-  pushad
-  call SaveSecondState
-  popad
+  ccallv SaveSecondState
 .noautostate
 
   GUIInitIRQs
@@ -976,7 +972,7 @@ NEWSYM StartGUI
   cmp byte[GUIwinactiv+1],0
   je .noloadrefresh
   mov dword[GUIcurrentfilewin],0
-  call GetLoadData
+  ccallv GetLoadData
 .noloadrefresh
   mov byte[GUIHold],0
   ; clear 256 bytes from hirestiledat
@@ -994,9 +990,7 @@ NEWSYM StartGUI
   je near .csskip
 
   ; Load Cheat Search File
-  pushad
-  call LoadCheatSearchFile
-  popad
+  ccallv LoadCheatSearchFile
 
 .csskip
 
@@ -1022,19 +1016,19 @@ NEWSYM StartGUI
 .nosnow
   cmp byte[GUIEffect],2
   jne .nowater
-  call DrawWater
+  ccallv DrawWater
 .nowater
   cmp byte[GUIEffect],3
   jne .nowater2
-  call DrawWater
+  ccallv DrawWater
 .nowater2
   cmp byte[GUIEffect],4
   jne .noburn
-  call DrawBurn
+  ccallv DrawBurn
 .noburn
   cmp byte[GUIEffect],5
   jne .nosmoke
-  call DrawSmoke
+  ccallv DrawSmoke
 .nosmoke
 
   cmp dword[GUIEditStringcWin],0
@@ -1074,17 +1068,12 @@ NEWSYM StartGUI
 .nofirsttime
   cmp byte[guimsgptr],0
   jne .nohorizon
-  pushad
-  call GetDate
+  ccall GetDate
   cmp ax,1025
-  popad
   jne .nohorizon
-  pushad
-  call GetTime
-  push eax
-  call horizon_get
+  ccall GetTime
+  ccall horizon_get, eax
   mov [guimsgptr],eax
-  popad
   call horizonfixmsg
 .nohorizon
   cmp dword[GUICTimer],0
@@ -1116,9 +1105,7 @@ NEWSYM StartGUI
 %endif
   mov word[t1cc],1
 
-  pushad
-  call GUISaveVars
-  popad
+  ccallv GUISaveVars
 
   mov byte[MousePRClick],1
   mov byte[prevbright],0
@@ -1156,9 +1143,7 @@ NEWSYM StartGUI
   cmp byte[CheatWinMode],0
   je .csskip2
   ;Save Cheat Search File
-  pushad
-  call SaveCheatSearchFile
-  popad
+  ccallv SaveCheatSearchFile
   .csskip2
 
   mov edi,[vidbuffer]
@@ -1699,11 +1684,7 @@ CheckMenuItemHelp:
 %macro checkqloadvalue 1
   cmp byte[GUIcrowpos],%1
   jne %%skip
-  pushad
-  push dword %1
-  call loadquickfname
-  add esp,4
-  popad
+  ccallv loadquickfname, %1
   ret
 %%skip
 %endmacro
@@ -1747,9 +1728,7 @@ GUITryMenuItem:                     ; Defines which menu item calls what window 
   mov edi,prevloadfnamel
   mov ecx,1280
   rep stosd
-  pushad
-  call GUIQuickLoadUpdate
-  popad
+  ccallv GUIQuickLoadUpdate
   ret
 .skipclear
 .noquickload
@@ -1759,7 +1738,8 @@ GUITryMenuItem:                     ; Defines which menu item calls what window 
   cmp byte[GUIcrowpos],0
   jne .noloadrefresh
   mov dword[GUIcurrentfilewin],0
-  jmp GetLoadData
+  ccallv GetLoadData
+  ret
 .noloadrefresh
   cmp byte[romloadskip],0
   jne near .noromloaded
@@ -1872,9 +1852,7 @@ GUITryMenuItem:                     ; Defines which menu item calls what window 
   jne .nosavestuff
 
   mov byte[savecfgforce],1
-  pushad
-  call GUISaveVars
-  popad
+  ccallv GUISaveVars
   mov byte[savecfgforce],0
 
   call Makemode7Table
@@ -1960,9 +1938,7 @@ DisplayBoxes:                        ; Displays window when item is clicked
   jne .noguiconf
   call DisplayGUIOptns
 %ifdef __WIN32__
-  pushad
-  call CheckAlwaysOnTop
-  popad
+  ccallv CheckAlwaysOnTop
 %endif
   jmp .finstuff
 .noguiconf
@@ -2044,14 +2020,10 @@ GUIProcStates:
   mov byte[GUICBHold],0
   cmp byte[GUIStatesText5],1
   je .loadstate
-  pushad
-  call statesaver
-  popad
+  ccallv statesaver
   jmp .changedir
 .loadstate
-  pushad
-  call loadstate2
-  popad
+  ccallv loadstate2
 .changedir
   ret
 
@@ -2062,7 +2034,7 @@ GUIProcReset:
   mov byte[GUIReset],1
   cmp byte[MovieProcessing],2 ;Recording
   jne .nomovierecording
-  call ResetDuringMovie
+  ccallv ResetDuringMovie
   jmp .movieendif
 .nomovierecording
   call GUIDoReset
@@ -2387,9 +2359,7 @@ InitGUI:
 %ifdef __MSDOS__
   call DOSClearScreen
 %endif
-  pushad
-  call Clear2xSaIBuffer
-  popad
+  ccallv Clear2xSaIBuffer
   call GUISetPal
   call GUIBufferData
   ret

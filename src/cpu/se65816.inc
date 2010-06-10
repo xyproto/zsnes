@@ -52,7 +52,7 @@ sa1debug:
    mov [xpc],bx
    mov [SA1RegP],dl
    mov byte[debugsa1],1
-   call nextopcode
+   ccallv nextopcode
    popad
 .nodebugger
 %endif

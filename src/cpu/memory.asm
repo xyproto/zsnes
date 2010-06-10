@@ -1935,9 +1935,7 @@ NEWSYM SA1RAMaccessbankr8
     cmp dword[SA1_in_cc1_dma],0
     je .nocc1dma
     mov [SA1_DMA_ADDR],cx
-    pushad
-    call SA1_DMA_CC1
-    popad
+    ccallv SA1_DMA_CC1
     mov al,[SA1_DMA_VALUE]
     ret
 .nocc1dma
@@ -1952,14 +1950,10 @@ NEWSYM SA1RAMaccessbankr16
     cmp dword[SA1_in_cc1_dma],0
     je .nocc1dma
     mov [SA1_DMA_ADDR],cx
-    pushad
-    call SA1_DMA_CC1
-    popad
+    ccallv SA1_DMA_CC1
     mov al,[SA1_DMA_VALUE]
     inc word[SA1_DMA_ADDR]
-    pushad
-    call SA1_DMA_CC1
-    popad
+    ccallv SA1_DMA_CC1
     mov ah,[SA1_DMA_VALUE]
     ret
 .nocc1dma
@@ -2247,11 +2241,7 @@ NEWSYM memaccessbankr8sdd1
     add eax, [romdata]
     add eax, ecx
 
-    pushad
-    push eax
-    call SDD1_init
-    pop eax
-    popad
+    ccallv SDD1_init, eax
 
     pop ecx
     pop eax
@@ -2277,11 +2267,10 @@ NEWSYM memaccessbankr8sdd1
     xor ebx,ebx
     ret
 .yesdec
-    pushad
-    call SDD1_get_byte
-    mov [.tmpbyte], al
-    popad
-    mov al, [.tmpbyte]
+    push eax
+    ccall SDD1_get_byte
+    mov [esp], al
+    pop eax
     ret
 
 .failed
@@ -2289,7 +2278,3 @@ NEWSYM memaccessbankr8sdd1
     call .nomoredec
     pop ebx
     jmp memaccessbankr8
-SECTION .bss
-.tmpbyte resb 1
-
-

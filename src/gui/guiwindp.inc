@@ -1529,7 +1529,7 @@ DisplayGUIInput:    ; Player Select, Joystick/keyboard Type List, Button Assignm
   mov [GUIJT_currentviewloc],eax
   mov eax,GUIcurrentinputcursloc
   mov [GUIJT_currentcursloc],eax
-  call GUIGenericJumpTo
+  ccallv GUIGenericJumpTo
   popad
 .notfreshinput
   mov al,bl
@@ -1977,9 +1977,7 @@ DisplayGUIVideo:
   GUIDisplayBBox 5,130,130,170,140,167
   GUIDisplayBBox 5,191,130,231,140,167
 
-  pushad
-  call GetCustomXY
-  popad
+  ccallv GetCustomXY
 
   GUIOuttextwin2d 5,138,133,GUICustomX,4,GUICustomResTextPtr,0
   GUIOuttextwin2d 5,199,133,GUICustomY,4,GUICustomResTextPtr,1
@@ -2260,9 +2258,7 @@ DisplayGUIVideo:
   mov al,[cvidmode]
   cmp byte[GUIKEEP43+eax],0
   je near .nocheckboxk43
-  pushad
-  call Keep43Check
-  popad
+  ccallv Keep43Check
   cmp byte[ShowKeep43],0
   je near .nocheckboxk43
   GUIDisplayTextY 5,13,170,GUIVideoTextB5
@@ -3724,11 +3720,9 @@ SECTION .text
 
 DisplayGUIAbout:          ; Displays the About Box
   ;This will attach compile date onto the end of GUIGUIAboutText1
-  pushad
   mov eax,GUIGUIAboutTextA1
   mov [VERSION_STR],eax
-  call placedate
-  popad
+  ccallv placedate
 
   GUIDrawWindowBox 11,GUIAboutDisp
   cmp byte[EEgg],1
@@ -4011,9 +4005,7 @@ DisplayGUIMovies:    ; Movie Record/Playback options
 
   GUIDisplayBBox 15,136,144,205,154,167
 
-  pushad
-  call GetMovieForcedLength
-  popad
+  ccallv GetMovieForcedLength
 
   GUIOuttextwin2d 15,139,148,GUIMovieForcedText,10,GUIMovieTextPtr,0
 .nodumping
@@ -4622,10 +4614,8 @@ GUIIconDataComboSecond:
 SECTION .text
 
 EEMode:
-  pushad
-  call GetTime
+  ccall GetTime
   cmp eax,360
-  popad
   ja .noEE
   mov eax,1
   ret

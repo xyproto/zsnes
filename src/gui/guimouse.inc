@@ -45,9 +45,7 @@ ProcessMouse:
   cmp cl,[ntscLastVar+edx]
   je .norelease1
 %ifndef __MSDOS__
-  pushad
-  call NTSCFilterInit
-  popad
+  ccallv NTSCFilterInit
 %endif
   mov [ntscLastVar+edx],cl
 .norelease1
@@ -594,9 +592,7 @@ ProcessMouseButtons:
   ja .notwinpressc
 %endif
 %ifdef __WIN32__
-  pushad
-  call MinimizeWindow
-  popad
+  ccallv MinimizeWindow
 %endif
 %ifndef __MSDOS__
   ret
@@ -605,7 +601,9 @@ ProcessMouseButtons:
 
   ; ButtonProcess
   cmp byte[GUICBHold],1
-  je near GUILoadData
+  jne .noGUILoadData
+  ccallv GUILoadData
+.noGUILoadData
   cmp byte[GUICBHold],2
   je near GUIProcReset
   cmp byte[GUICBHold],3
@@ -639,9 +637,15 @@ ProcessMouseButtons:
   cmp byte[GUICBHold],6
   je near CheatCodeToggle
   cmp byte[GUICBHold],7
-  je near CheatCodeSave
+  jne .noCheatCodeSave
+  ccallv CheatCodeSave
+  ret
+.noCheatCodeSave
   cmp byte[GUICBHold],8
-  je near CheatCodeLoad
+  jne .noCheatCodeLoad
+  ccallv CheatCodeLoad
+  ret
+.noCheatCodeLoad
   cmp byte[GUICBHold],9
   je near ProcessCheatCode
   cmp byte[GUICBHold],33
@@ -653,86 +657,66 @@ ProcessMouseButtons:
   cmp byte[GUICBHold],16  ; movie replay
   jne .notMoviePlay
   mov byte[GUICBHold],0
-  pushad
-  call MoviePlay
-  popad
+  ccallv MoviePlay
   ret
 .notMoviePlay
   cmp byte[GUICBHold],17
   jne .notMovieRecord0    ; movie record
   mov byte[GUICBHold],0
-  pushad
-  call MovieRecord
-  popad
+  ccallv MovieRecord
   ret
 .notMovieRecord0
   cmp byte[GUICBHold],18  ; movie stop
   jne .notMovieStop
   mov byte[GUICBHold],0
-  pushad
-  call MovieStop
-  popad
+  ccallv MovieStop
   ret
 .notMovieStop
   cmp byte[GUICBHold],19  ; overwrite zmv ? yes
   jne .notMovieRecord1
   mov byte[GUICBHold],0
-  pushad
-  call MovieRecord
-  popad
+  ccallv MovieRecord
   ret
 .notMovieRecord1
   cmp byte[GUICBHold],20  ; overwrite zmv ? no
   jne .notSkipMovie
   mov byte[GUICBHold],0
-  pushad
-  call SkipMovie
-  popad
+  ccallv SkipMovie
   ret
 .notSkipMovie
   cmp byte[GUICBHold],29  ; insert chapter
   jne .noInsertChap
   mov byte[GUICBHold],0
-  pushad
-  call MovieInsertChapter
-  popad
+  ccallv MovieInsertChapter
   ret
 .noInsertChap
   cmp byte[GUICBHold],30  ; back to previous chapter
   jne .noPrevChap
   mov byte[GUICBHold],0
   mov byte[GUIQuit],2
-  pushad
-  call MovieSeekBehind
-  popad
+  ccallv MovieSeekBehind
   ret
 .noPrevChap
   cmp byte[GUICBHold],31  ; jump to next chapter
   jne .noNextChap
   mov byte[GUICBHold],0
   mov byte[GUIQuit],2
-  pushad
-  call MovieSeekAhead
-  popad
+  ccallv MovieSeekAhead
   ret
 .noNextChap
   cmp byte[GUICBHold],32  ; append movie
   jne .noAppend
   mov byte[GUICBHold],0
   mov byte[GUIQuit],2
-  pushad
-  call MovieAppend
-  popad
+  ccallv MovieAppend
   ret
 .noAppend
   cmp byte[GUICBHold],34  ; dump raw
   jne .noDumpRaw
   mov byte[GUICBHold],0
   mov byte[GUIQuit],2
-  pushad
-  call SetMovieForcedLength
-  call MovieDumpRaw
-  popad
+  ccallv SetMovieForcedLength
+  ccallv MovieDumpRaw
   cmp byte[MovieVideoMode],2
   jb .nomencoder
   cmp byte[mencoderExists],0
@@ -753,9 +737,7 @@ ProcessMouseButtons:
   jne .noStopDumping
   mov byte[GUICBHold],0
   mov byte[GUIQuit],2
-  pushad
-  call MovieStop
-  popad
+  ccallv MovieStop
   ret
 .noStopDumping
   cmp byte[GUICBHold],40
@@ -827,15 +809,11 @@ ProcessMouseButtons:
 %ifndef __MSDOS__
   cmp byte[GUICBHold],65
   jne .nozsnespage
-  pushad
-  call ZsnesPage
-  popad
+  ccallv ZsnesPage
 .nozsnespage
   cmp byte[GUICBHold],66
   jne .nodocspage
-  pushad
-  call DocsPage
-  popad
+  ccallv DocsPage
 .nodocspage
 %endif
   mov byte[GUICBHold],0
@@ -984,9 +962,7 @@ GUINTSCReset:
 .reset2done
   mov byte[GUICBHold],0
 %ifndef __MSDOS__
-  pushad
-  call NTSCFilterInit
-  popad
+  ccallv NTSCFilterInit
 %endif
   ret
 
@@ -1011,9 +987,7 @@ GUINTSCPreset:
   mov byte[NTSCPresetVar],3
 .lastpreset
 %ifndef __MSDOS__
-  pushad
-  call NTSCFilterInit
-  popad
+  ccallv NTSCFilterInit
 %endif
   mov byte[NTSCPresetVar],4
   mov byte[GUICBHold],0
@@ -1021,9 +995,7 @@ GUINTSCPreset:
 
 %ifndef __MSDOS__
 GUIProcCustomVideo:
-  pushad
-  call SetCustomXY
-  popad
+  ccallv SetCustomXY
   mov byte[GUICBHold],0
   mov dword[GUIInputBox],0
 %ifdef __WIN32__
@@ -1033,17 +1005,15 @@ GUIProcCustomVideo:
 %endif
   jl .notcustomres
   mov byte[changeRes],1
-  pushad
-  call initwinvideo
-  call Clear2xSaIBuffer
-  popad
+  ccallv initwinvideo
+  ccallv Clear2xSaIBuffer
 .notcustomres
   ret
 %endif
 
 NEWSYM SwitchFullScreen
   pushad
-  call Clear2xSaIBuffer
+  ccallv Clear2xSaIBuffer
   xor eax,eax
   mov al,[cvidmode]
 %ifndef __MSDOS__
@@ -1110,13 +1080,11 @@ GUIWinClicked:
   mov byte[GUIwinactiv+ebx],0
   dec byte[GUIwinptr]
   mov dword[GUIInputBox],0
-  pushad
-  call init_save_paths
-  call SetMovieForcedLength
+  ccallv init_save_paths
+  ccallv SetMovieForcedLength
 %ifndef __MSDOS__
-  call SetCustomXY
+  ccallv SetCustomXY
 %endif
-  popad
   ret
 .noclose
   cmp edx,10
@@ -1205,9 +1173,7 @@ GUIWinClicked:
   GUIClickArea %1+1,%2+3,%1+6,%2+8,%%noclick
   xor %3,1
 %ifdef __WIN32__
-  pushad
-  call %4
-  popad
+  ccallv %4
 %endif
 %%noclick
 %endmacro
@@ -1215,9 +1181,7 @@ GUIWinClicked:
 %macro GUIClickCButtonK 4
   GUIClickArea %1+1,%2+3,%1+6,%2+8,%%noclick
   xor %3,1
-  pushad
-  call %4
-  popad
+  ccallv %4
 %%noclick
 %endmacro
 
@@ -1231,9 +1195,7 @@ GUIWinClicked:
 %endif
   xor %3,1
 %ifdef __WIN32__
-  pushad
-  call %4
-  popad
+  ccallv %4
 %endif
 %%noclick
 %endmacro
@@ -1351,7 +1313,7 @@ GUIWinClicked:
   GUIClickArea %1+1,%2+3,%1+6,%2+8,%%noclick
   xor byte[showallext],1
   mov dword[GUIcurrentfilewin],0
-  call GetLoadData
+  ccallv GetLoadData
   ret
 %%noclick
 %endmacro
@@ -1359,21 +1321,21 @@ GUIWinClicked:
 %macro GUIClickCButtonI 3
   GUIClickArea %1+1,%2+3,%1+6,%2+8,%%noclick
   xor %3,1
-  pushad
 %ifndef __MSDOS__
+  push ebx
   xor ebx,ebx
   mov bl,[cvidmode]
   cmp byte[GUIBIFIL+ebx],0
+  pop ebx
   je %%skipinit
 %ifdef __WIN32__
-  call initDirectDraw
+  ccallv initDirectDraw
 %elifdef __OPENGL__
-  call initwinvideo
+  ccallv initwinvideo
 %endif
 %%skipinit
 %endif
-  call Clear2xSaIBuffer
-  popad
+  ccallv Clear2xSaIBuffer
 %%noclick
 %endmacro
 
@@ -1665,9 +1627,7 @@ SECTION .text
 
 %macro GUITextBoxInputNach 7
   GUIClickArea %1,%2,%3,%4,%%noclick
-  pushad
-  call %7
-  popad
+  ccallv %7
   mov dword[GUIInputBox],%5+1
   mov dword[GUIInputLimit],%6-1
 %%noclick
@@ -1710,9 +1670,7 @@ SECTION .text
 %macro GUIPButtonHoleLoad 4
   GUIClickArea %1+1,%2+1,%1+7,%2+7,%%noclick
   mov %3,%4
-  pushad
-  call GetLoadData
-  popad
+  ccallv GetLoadData
 %%noclick
 %endmacro
 
@@ -1745,7 +1703,7 @@ SECTION .text
   mov eax,%12
   cmp eax,1
   jne %%cheat
-  call GUILoadData
+  ccallv GUILoadData
   ret
 %%cheat
   call CheatCodeToggle
@@ -1802,7 +1760,7 @@ SECTION .text
   mov eax,%12
   cmp eax,1
   jne %%cheat
-  call GUILoadData
+  ccallv GUILoadData
   ret
 %%cheat
   call CheatCodeToggle
@@ -2241,13 +2199,9 @@ DisplayGUIOptionClick:
 %ifdef __WIN32__
   GUIClickCButton 11,161,byte[PauseFocusChange]
   GUIClickCButton 11,171,byte[HighPriority]
-  pushad
-  call CheckPriority
-  popad
+  ccallv CheckPriority
   GUIClickCButton 11,181,byte[DisableScreenSaver]
-  pushad
-  call CheckScreenSaver
-  popad
+  ccallv CheckScreenSaver
 %else
   GUIClickCButton 11,181,byte[DisableScreenSaver]
 %endif
@@ -2312,9 +2266,7 @@ DisplayGUIVideoClick:
   cmp dword[GUIVideoTabs],2               ; Filters tab
   jne near .notfilterstab
 
-  pushad
-  call Clear2xSaIBuffer
-  popad
+  ccallv Clear2xSaIBuffer
 
 %ifdef __MSDOS__
   cmp byte[smallscreenon],1
@@ -2613,9 +2565,7 @@ DisplayGUIVideoClick:
   je .notntsctab
 %ifndef __MSDOS__
   mov dword[NTSCPresetVar],4
-  pushad
-  call NTSCFilterInit
-  popad
+  ccallv NTSCFilterInit
 %endif
 .notntsctab
 
@@ -2722,9 +2672,7 @@ DisplayGUIVideoClick:
   je .notadvntsctab
 %ifndef __MSDOS__
   mov dword[NTSCPresetVar],4
-  pushad
-  call NTSCFilterInit
-  popad
+  ccallv NTSCFilterInit
 %endif
 .notadvntsctab
 

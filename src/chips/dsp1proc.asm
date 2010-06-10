@@ -106,9 +106,7 @@ NEWSYM DSP1Read16b3F
     cmp byte[DSP1COp],0Ah
     jne .goback
     push eax
-    pushad
-    call DSPOp0A
-    popad
+    ccallv DSPOp0A
     mov ax,[Op0AA]
     mov [DSP1RET],ax
     mov ax,[Op0AB]
@@ -170,9 +168,7 @@ NEWSYM DSP1Read16b
     cmp byte[DSP1COp],0Ah
     jne .goback
     push eax
-    pushad
-    call DSPOp0A
-    popad
+    ccallv DSPOp0A
     mov ax,[Op0AA]
     mov [DSP1RET],ax
     mov ax,[Op0AB]
@@ -330,9 +326,7 @@ DSP1_00:  ; 16-bit multiply
     mov [Op00Multiplicand],ax
     mov ax,[DSP1VARS+2]
     mov [Op00Multiplier],ax
-    pushad
-    call DSPOp00
-    popad
+    ccallv DSPOp00
     mov ax,[Op00Result]
     mov [DSP1RET],ax
     mov byte[DSP1RLeft],1
@@ -345,9 +339,7 @@ DSP1_10:  ; Inverse
     mov [Op10Coefficient],ax
     mov ax,[DSP1VARS+2]
     mov [Op10Exponent],ax
-    pushad
-    call DSPOp10
-    popad
+    ccallv DSPOp10
     mov ax,[Op10CoefficientR]
     mov [DSP1RET],ax
     mov ax,[Op10ExponentR]
@@ -363,9 +355,7 @@ DSP1_04:  ; Trigonometric
     mov [Op04Angle],ax
     mov ax,[DSP1VARS+2]
     mov [Op04Radius],ax
-    pushad
-    call DSPOp04
-    popad
+    ccallv DSPOp04
     mov ax,[Op04Sin]
     mov [DSP1RET],ax
     mov ax,[Op04Cos]
@@ -382,9 +372,7 @@ DSP1_08:  ; Vector Size
     mov [Op08Y],ax
     mov ax,[DSP1VARS+4]
     mov [Op08Z],ax
-    pushad
-    call DSPOp08
-    popad
+    ccallv DSPOp08
     mov ax,[Op08Ll]
     mov [DSP1RET],ax
     mov ax,[Op08Lh]
@@ -403,9 +391,7 @@ DSP1_18:  ; Vector Size Comparison
     mov [Op18Z],ax
     mov ax,[DSP1VARS+6]
     mov [Op18R],ax
-    pushad
-    call DSPOp18
-    popad
+    ccallv DSPOp18
     mov ax,[Op18D]
     mov [DSP1RET],ax
     mov byte[DSP1RLeft],1
@@ -421,9 +407,7 @@ DSP1_28:  ; Vector Absolute Value
     mov [Op28Y],ax
     mov ax,[DSP1VARS+4]
     mov [Op28Z],ax
-    pushad
-    call DSPOp28
-    popad
+    ccallv DSPOp28
     mov ax,[Op28R]
     mov [DSP1RET],ax
     mov byte[DSP1RLeft],1
@@ -439,9 +423,7 @@ DSP1_0C:  ; Coordinate Rotation
     mov [Op0CX1],ax
     mov ax,[DSP1VARS+4]
     mov [Op0CY1],ax
-    pushad
-    call DSPOp0C
-    popad
+    ccallv DSPOp0C
     mov ax,[Op0CX2]
     mov [DSP1RET],ax
     mov ax,[Op0CY2]
@@ -464,9 +446,7 @@ DSP1_1C:  ; 3D Coordinate Rotation
     mov [Op1CYBR],ax
     mov ax,[DSP1VARS+10]
     mov [Op1CZBR],ax
-    pushad
-    call DSPOp1C
-    popad
+    ccallv DSPOp1C
     mov ax,[Op1CXAR]
     mov [DSP1RET],ax
     mov ax,[Op1CYAR]
@@ -494,9 +474,7 @@ DSP1_02:  ; Vector Size
     mov [Op02AAS],ax
     mov ax,[DSP1VARS+12]
     mov [Op02AZS],ax
-    pushad
-    call DSPOp02
-    popad
+    ccallv DSPOp02
     mov ax,[Op02VOF]
     mov [DSP1RET],ax
     mov ax,[Op02VVA]
@@ -542,9 +520,7 @@ DSP1_0A:  ; Raster Data Calculation via DMA
     push eax
     mov ax,[DSP1VARS]
     mov [Op0AVS],ax
-    pushad
-    call DSPOp0A
-    popad
+    ccallv DSPOp0A
     mov ax,[Op0AA]
     mov [DSP1RET],ax
     mov ax,[Op0AB]
@@ -566,9 +542,7 @@ DSP1_06:  ; Object Projection Calculation
     mov [Op06Y],ax
     mov ax,[DSP1VARS+4]
     mov [Op06Z],ax
-    pushad
-    call DSPOp06
-    popad
+    ccallv DSPOp06
     mov ax,[Op06H]
     mov [DSP1RET],ax
     mov ax,[Op06V]
@@ -603,9 +577,7 @@ DSP1_0E:  ; Coordinate Calculation of a point onscreen
     mov [Op0EH],ax
     mov ax,[DSP1VARS+2]
     mov [Op0EV],ax
-    pushad
-    call DSPOp0E
-    popad
+    ccallv DSPOp0E
     mov ax,[Op0EX]
     mov [DSP1RET],ax
     mov ax,[Op0EY]
@@ -624,9 +596,7 @@ DSP1_01:  ; Set Attitude Matrix A
     mov [Op01Yr],ax
     mov ax,[DSP1VARS+6]
     mov [Op01Xr],ax
-    pushad
-    call DSPOp01
-    popad
+    ccallv DSPOp01
     pop eax
     ret
 
@@ -640,9 +610,7 @@ DSP1_11:  ; Set Attitude Matrix B
     mov [Op11Yr],ax
     mov ax,[DSP1VARS+6]
     mov [Op11Xr],ax
-    pushad
-    call DSPOp11
-    popad
+    ccallv DSPOp11
     pop eax
     ret
 
@@ -656,9 +624,7 @@ DSP1_21:  ; Set Attitude Matrix C
     mov [Op21Yr],ax
     mov ax,[DSP1VARS+6]
     mov [Op21Xr],ax
-    pushad
-    call DSPOp21
-    popad
+    ccallv DSPOp21
     pop eax
     ret
 
@@ -670,9 +636,7 @@ DSP1_0D:  ; Convert from global to object coords Matrix A
     mov [Op0DY],ax
     mov ax,[DSP1VARS+4]
     mov [Op0DZ],ax
-    pushad
-    call DSPOp0D
-    popad
+    ccallv DSPOp0D
     mov ax,[Op0DF]
     mov [DSP1RET],ax
     mov ax,[Op0DL]
@@ -686,9 +650,7 @@ DSP1_0D:  ; Convert from global to object coords Matrix A
 DSP1_0F:  ; DSP RAM Test
     push eax
     mov ax,[DSP1VARS]
-    pushad
-    call DSPOp0F
-    popad
+    ccallv DSPOp0F
     mov ax,[Op0FPass]
     mov [DSP1RET],ax
     mov byte[DSP1RLeft],1
@@ -703,9 +665,7 @@ DSP1_1D:  ; Convert from global to object coords Matrix B
     mov [Op1DY],ax
     mov ax,[DSP1VARS+4]
     mov [Op1DZ],ax
-    pushad
-    call DSPOp1D
-    popad
+    ccallv DSPOp1D
     mov ax,[Op1DF]
     mov [DSP1RET],ax
     mov ax,[Op1DL]
@@ -724,9 +684,7 @@ DSP1_2D:  ; Convert from global to object coords Matrix C
     mov [Op2DY],ax
     mov ax,[DSP1VARS+4]
     mov [Op2DZ],ax
-    pushad
-    call DSPOp2D
-    popad
+    ccallv DSPOp2D
     mov ax,[Op2DF]
     mov [DSP1RET],ax
     mov ax,[Op2DL]
@@ -745,9 +703,7 @@ DSP1_03:  ; Convert from object to global coords Matrix A
     mov [Op03L],ax
     mov ax,[DSP1VARS+4]
     mov [Op03U],ax
-    pushad
-    call DSPOp03
-    popad
+    ccallv DSPOp03
     mov ax,[Op03X]
     mov [DSP1RET],ax
     mov ax,[Op03Y]
@@ -766,9 +722,7 @@ DSP1_13:  ; Convert from object to global coords Matrix B
     mov [Op13L],ax
     mov ax,[DSP1VARS+4]
     mov [Op13U],ax
-    pushad
-    call DSPOp13
-    popad
+    ccallv DSPOp13
     mov ax,[Op13X]
     mov [DSP1RET],ax
     mov ax,[Op13Y]
@@ -787,9 +741,7 @@ DSP1_23:  ; Convert from object to global coords Matrix C
     mov [Op23L],ax
     mov ax,[DSP1VARS+4]
     mov [Op23U],ax
-    pushad
-    call DSPOp23
-    popad
+    ccallv DSPOp23
     mov ax,[Op23X]
     mov [DSP1RET],ax
     mov ax,[Op23Y]
@@ -808,9 +760,7 @@ DSP1_0B:  ; Calculation of inner product Matrix A
     mov [Op0BY],ax
     mov ax,[DSP1VARS+4]
     mov [Op0BZ],ax
-    pushad
-    call DSPOp0B
-    popad
+    ccallv DSPOp0B
     mov ax,[Op0BS]
     mov [DSP1RET],ax
     mov byte[DSP1RLeft],1
@@ -825,9 +775,7 @@ DSP1_1B:  ; Calculation of inner product Matrix B
     mov [Op1BY],ax
     mov ax,[DSP1VARS+4]
     mov [Op1BZ],ax
-    pushad
-    call DSPOp1B
-    popad
+    ccallv DSPOp1B
     mov ax,[Op1BS]
     mov [DSP1RET],ax
     mov byte[DSP1RLeft],1
@@ -842,9 +790,7 @@ DSP1_2B:  ; Calculation of inner product Matrix C
     mov [Op2BY],ax
     mov ax,[DSP1VARS+4]
     mov [Op2BZ],ax
-    pushad
-    call DSPOp2B
-    popad
+    ccallv DSPOp2B
     mov ax,[Op2BS]
     mov [DSP1RET],ax
     mov byte[DSP1RLeft],1
@@ -865,9 +811,7 @@ DSP1_14:  ; 3D angle rotation
     mov [Op14F],ax
     mov ax,[DSP1VARS+10]
     mov [Op14L],ax
-    pushad
-    call DSPOp14
-    popad
+    ccallv DSPOp14
     mov ax,[Op14Zrr]
     mov [DSP1RET],ax
     mov ax,[Op14Xrr]

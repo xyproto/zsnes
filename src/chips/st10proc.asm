@@ -41,9 +41,7 @@ NEWSYM setaaccessbankw8
     mov [ebx+ecx],al
     cmp byte[ebx+021h], 80h
     jnz .nosetenablew8
-    pushad
-    call ST010DoCommand
-    popad
+    ccallv ST010DoCommand
 .nosetenablew8
     xor ebx,ebx
     ret
@@ -76,9 +74,7 @@ NEWSYM setaaccessbankw16
     mov [ebx+ecx],ax
     cmp byte[ebx+021h], 80h
     jnz .nosetenablew16
-    pushad
-    call ST010DoCommand
-    popad
+    ccallv ST010DoCommand
 .nosetenablew16
     xor ebx,ebx
     ret

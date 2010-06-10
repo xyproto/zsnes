@@ -202,7 +202,6 @@ ASMFLAGS += -fmacho -DMACHO
 
 CFGDEFS += -D__MACOSX__
 
-CFLAGS += -mstackrealign # XXX mandatory, asm calls into C but does not keep stack aligned
 CFLAGS += -fno-pic -read_only_relocs suppress
 
 LDFLAGS += -framework Carbon -framework IOKit -framework Foundation

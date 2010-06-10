@@ -367,9 +367,7 @@ NEWSYM showmenu
     mov byte[SPCSave],1
     call breakatsignb
     mov byte[SPCSave],0
-    pushad
-    call savespcdata
-    popad
+    ccallv savespcdata
 
     mov byte[curblank],40h
     mov dword[Msgptr],spcsaved
@@ -393,9 +391,7 @@ NEWSYM showmenu
 .nospcsave
     cmp dword[menucloc],30*288
     jne .nosnddmp
-    pushad
-    call dumpsound
-    popad
+    ccallv dumpsound
     mov dword[Msgptr],.sndbufsav
     mov eax,[MsgCount]
     mov [MessageOn],eax
@@ -454,9 +450,7 @@ NEWSYM showmenu
     call StartSound
     mov byte[ForceNonTransp],0
     mov byte[GUIOn],0
-    pushad
-    call Clear2xSaIBuffer
-    popad
+    ccallv Clear2xSaIBuffer
     cmp byte[MenuNoExit],1
     je .noexitmenu
     jmp continueprognokeys
@@ -813,9 +807,7 @@ saveimage:
 %ifndef NO_PNG
     cmp byte[ScreenShotFormat],1
     jne .notpng
-    pushad
-    call Grab_PNG_Data
-    popad
+    ccallv Grab_PNG_Data
     ret
 .notpng
 %endif
@@ -823,15 +815,11 @@ saveimage:
 %ifdef __MSDOS__
     cmp byte[cbitmode],1
     je near .save16b
-    pushad
-    call Grab_BMP_Data_8
-    popad
+    ccallv Grab_BMP_Data_8
     ret
 .save16b
 %endif
-    pushad
-    call Grab_BMP_Data
-    popad
+    ccallv Grab_BMP_Data
     ret
 
 SECTION .data

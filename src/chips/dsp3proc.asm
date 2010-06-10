@@ -32,9 +32,7 @@ SECTION .text
 NEWSYM DSP3Read8b
     RouteAccess regaccessbankr8
     mov [dsp3_address],cx
-    pushad
-    call DSP3GetByte
-    popad
+    ccallv DSP3GetByte
     mov al,[dsp3_byte]
     ret
 
@@ -42,22 +40,16 @@ NEWSYM DSP3Write8b
     RouteAccess regaccessbankw8
     mov [dsp3_address],cx
     mov [dsp3_byte],al
-    pushad
-    call DSP3SetByte
-    popad
+    ccallv DSP3SetByte
     ret
 
 NEWSYM DSP3Read16b
     RouteAccess regaccessbankr16
     mov [dsp3_address],cx
-    pushad
-    call DSP3GetByte
+    ccallv DSP3GetByte
     mov al,[dsp3_byte]
-    mov [dsp3temp],al
     inc word[dsp3_address]
-    call DSP3GetByte
-    popad
-    mov al,[dsp3temp]
+    ccallv DSP3GetByte
     mov ah,[dsp3_byte]
     ret
 
@@ -65,15 +57,8 @@ NEWSYM DSP3Write16b
     RouteAccess regaccessbankw16
     mov [dsp3_address],cx
     mov [dsp3_byte],al
-    mov [dsp3temp],ah
-    pushad
-    call DSP3SetByte
-    mov ah,[dsp3temp]
+    ccallv DSP3SetByte
     mov [dsp3_byte],ah
     inc word[dsp3_address]
-    call DSP3SetByte
-    popad
+    ccallv DSP3SetByte
     ret
-
-SECTION .bss
-NEWSYM dsp3temp, resb 1

@@ -195,9 +195,7 @@ NEWSYM cachevideo
     dec dword[sramb4save]
     cmp dword[sramb4save],1
     jne .nofocussave
-    pushad
-    call SaveSramData
-    popad
+    ccallv SaveSramData
     jmp .nofocussave
 .nofocussaveb
     mov dword[sramb4save],0
@@ -337,9 +335,7 @@ NEWSYM cachevideo
     mov byte[MousePRClick],0
 .noclick
 
-    pushad
-    call QuickKeyCheck
-    popad
+    ccallv QuickKeyCheck
 
     mov eax,[KeyNewGfxSwt]
     test byte[pressed+eax],1

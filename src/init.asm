@@ -96,9 +96,7 @@ NEWSYM init
     dec ecx
     jnz .snowloop
 
-    pushad
-    call BackupSystemVars
-    popad
+    ccallv BackupSystemVars
 
     mov al,[romtype]
     mov [forceromtype],al
@@ -115,20 +113,14 @@ NEWSYM init
     inc eax
     dec ecx
     jnz .rbackupl
-    pushad
-    call clearmem
-    popad
+    ccallv clearmem
     call inittable
     call inittablec
     call SA1inittable
     ; SPC Init
-    pushad
-    call procexecloop
-    popad
+    ccallv procexecloop
     ; SNES Init
-    pushad
-    call Setper2exec
-    popad
+    ccallv Setper2exec
     call Makemode7Table
     mov eax,[ZCartName]
     cmp byte[eax],0
@@ -137,25 +129,17 @@ NEWSYM init
     je .noloadfile
 .found
     mov byte[romloadskip],0
-    pushad
-    call loadfileGUI
-    call SetupROM
-    popad
+    ccallv loadfileGUI
+    ccallv SetupROM
     cmp byte[DisplayInfo],0
     je .noloadfile
-    pushad
-    call showinfogui
-    popad
+    ccallv showinfogui
 .noloadfile
     call UpdateDevices
-    pushad
-    call init65816
-    popad
+    ccallv init65816
     call initregr
     call initregw
-    pushad
-    call initsnes
-    popad
+    ccallv initsnes
 
     ; Initialize volume
     xor edx,edx
@@ -172,9 +156,7 @@ NEWSYM init
 
     cmp byte[AutoState],1
     jne .noloadzss
-    pushad
-    call LoadSecondState
-    popad
+    ccallv LoadSecondState
 .noloadzss
 
 ; FIX STATMAT
@@ -186,9 +168,7 @@ NEWSYM init
     mov [current_zst],eax
 
     ; Load the specified state file
-    pushad
-    call loadstate2
-    popad
+    ccallv loadstate2
 .noautoloadstate
 
     cmp byte[autoloadmovie],1
@@ -203,15 +183,13 @@ NEWSYM init
 .notzero1
     mov [CMovieExt],al
 
-    pushad
     cmp byte[ZMVRawDump],0
     je .norawdump
-    call MovieDumpRaw
+    ccallv MovieDumpRaw
     jmp .aftermovieplay
 .norawdump
-    call MoviePlay
+    ccallv MoviePlay
 .aftermovieplay
-    popad
 .noautloadmovie
 
     cmp byte[yesoutofmemory],1
@@ -231,15 +209,14 @@ NEWSYM init
     ;; Most likely it isn't desirable to be checking timers under the
     ;; debugger anyway, but this is a much simpler fix.
 
-    pushad
 %ifdef __WIN32__
     ;; need to get "freq" set first
-    call initwinvideo
+    ccallv initwinvideo
 %endif
-    call Start60HZ
-    popad
+    ccallv Start60HZ
 %endif
-    jmp startdebugger
+    ccallv startdebugger
+    ret
 %else
     jmp start65816
 %endif
@@ -900,14 +877,12 @@ SECTION .text
 NEWSYM DosExit ; Terminate Program
   cmp byte[AutoState],1
   jne .noautostate
-  pushad
-  call SaveSecondState
-  popad
+  ccallv SaveSecondState
 .noautostate
 %ifdef __MSDOS__
   call init18_2hz
 %endif
-  call zexit
+  ccallv zexit
 
 NEWSYM MMXCheck
     ; Check for cpu that doesn't support CPUID

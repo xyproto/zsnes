@@ -35,9 +35,7 @@ SECTION .text
 NEWSYM OBC1Read8b
     RouteAccess r8
     mov [obc1_address],cx
-    pushad
-    call GetOBC1
-    popad
+    ccallv GetOBC1
     mov al,[obc1_byte]
     ret
 
@@ -45,22 +43,16 @@ NEWSYM OBC1Write8b
     RouteAccess w8
     mov [obc1_address],cx
     mov [obc1_byte],al
-    pushad
-    call SetOBC1
-    popad
+    ccallv SetOBC1
     ret
 
 NEWSYM OBC1Read16b
     RouteAccess r16
     mov [obc1_address],cx
-    pushad
-    call GetOBC1
+    ccallv GetOBC1
     mov al,[obc1_byte]
-    mov [obc1temp],al
     inc word[obc1_address]
-    call GetOBC1
-    popad
-    mov al,[obc1temp]
+    ccallv GetOBC1
     mov ah,[obc1_byte]
     ret
 
@@ -68,15 +60,8 @@ NEWSYM OBC1Write16b
     RouteAccess w16
     mov [obc1_address],cx
     mov [obc1_byte],al
-    mov [obc1temp],ah
-    pushad
-    call SetOBC1
-    mov ah,[obc1temp]
+    ccallv SetOBC1
     mov [obc1_byte],ah
     inc word[obc1_address]
-    call SetOBC1
-    popad
+    ccallv SetOBC1
     ret
-
-SECTION .bss
-NEWSYM obc1temp, resb 1

@@ -465,22 +465,16 @@ NEWSYM GUIDoReset
 %ifdef __MSDOS__
     call DOSClearScreen
 %endif
-    pushad
-    call Clear2xSaIBuffer
-    popad
+    ccallv Clear2xSaIBuffer
 ;    mov byte[NetPlayNoMore],1
     mov byte[RestoreValues],0
 
-    pushad
-    call MovieStop
-    call RestoreSystemVars
-    popad
+    ccallv MovieStop
+    ccallv RestoreSystemVars
 
     ; reset the snes
-    call init65816
-    pushad
-    call procexecloop
-    popad
+    ccallv init65816
+    ccallv procexecloop
 
     xor eax,eax
     mov edx,SPCRAM

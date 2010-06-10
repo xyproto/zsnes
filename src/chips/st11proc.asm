@@ -38,9 +38,7 @@ NEWSYM Seta11Write8_68
     jnz .nosetenablew8 ; ignore ROM writes
     mov [seta11_address],cx
     mov [seta11_byte],al
-    pushad
-    call ST011_MapW_68
-    popad
+    ccallv ST011_MapW_68
 .nosetenablew8
     ret
 
@@ -57,14 +55,9 @@ NEWSYM Seta11Write16_68
     jnz .nosetenablew16 ; ignore ROM writes
     mov [seta11_address],cx
     mov [seta11_byte],al
-    mov [seta11temp],ah
-    pushad
-    call ST011_MapW_68
-    mov ah,[seta11temp]
-    mov [seta11_byte],ah
+    ccallv ST011_MapW_68
     inc word[seta11_address]
-    call ST011_MapW_68
-    popad
+    ccallv ST011_MapW_68
 .nosetenablew16
     ret
 
@@ -75,9 +68,7 @@ NEWSYM Seta11Read8_60
     jae .nosetenabler8
     and ecx,3
     mov [seta11_address],cx
-    pushad
-    call ST011_MapR_60
-    popad
+    ccallv ST011_MapR_60
     mov al,[seta11_byte]
  .nosetenabler8
     ret
@@ -88,9 +79,7 @@ NEWSYM Seta11Write8_60
     and ecx,3
     mov [seta11_address],cx
     mov [seta11_byte],al
-    pushad
-    call ST011_MapW_60
-    popad
+    ccallv ST011_MapW_60
 .nosetenablew8
     ret
 
@@ -100,15 +89,11 @@ NEWSYM Seta11Read16_60
     jae .nosetenabler16
     and ecx,3
     mov [seta11_address],cx
-    pushad
-    call ST011_MapR_60
+    ccallv ST011_MapR_60
     mov al,[seta11_byte]
-    mov [seta11temp],al
     inc word[seta11_address]
     and word[seta11_address],3
-    call ST011_MapR_60
-    popad
-    mov al,[seta11temp]
+    ccallv ST011_MapR_60
     mov ah,[seta11_byte]
 .nosetenabler16
     ret
@@ -119,18 +104,10 @@ NEWSYM Seta11Write16_60
     and ecx,3
     mov [seta11_address],cx
     mov [seta11_byte],al
-    mov [seta11temp],ah
-    pushad
-    call ST011_MapW_60
-    mov ah,[seta11temp]
+    ccallv ST011_MapW_60
     mov [seta11_byte],ah
     inc word[seta11_address]
     and word[seta11_address],3
-    call ST011_MapW_60
-    popad
+    ccallv ST011_MapW_60
 .nosetenablew16
     ret
-
-
-SECTION .bss
-NEWSYM seta11temp, resb 1

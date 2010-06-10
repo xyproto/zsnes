@@ -61,9 +61,7 @@ NEWSYM PHnum2writespc7110reg, dd num2writespc7110reg
 SECTION .text
 
 NEWSYM SPC7110init
-    pushad
-    call SPC7110initC
-    popad
+    ccallv SPC7110initC
     mov dword[SPCMultA],0
     mov dword[SPCMultB],0
     mov dword[SPCDivEnd],0
@@ -232,9 +230,7 @@ NEWSYM initSPC7110regs
 %endmacro
 
 SPC4800:
-    pushad
-    call SPC7110_4800
-    popad
+    ccallv SPC7110_4800
     mov al,[SPCCompressionRegs+0]
     ret
 SPC4801:
@@ -292,9 +288,7 @@ SPC4805w:
     ret
 SPC4806w:
     mov [SPCCompressionRegs+6],al
-    pushad
-    call SPC7110_4806w
-    popad
+    ccallv SPC7110_4806w
     ret
 SPC4807w:
     mov [SPCCompressionRegs+7],al
@@ -1030,13 +1024,9 @@ NEWSYM memaccessspc7110r8
     jmp SPC4800
 
 NEWSYM memaccessspc7110r16
-    pushad
-    call SPC7110_4800
-    popad
+    ccallv SPC7110_4800
     mov al,[SPCCompressionRegs+0]
-    pushad
-    call SPC7110_4800
-    popad
+    ccallv SPC7110_4800
     mov ah,[SPCCompressionRegs+0]
     ret
 
