@@ -4,7 +4,6 @@
 #include "../types.h"
 
 extern void CheatCodeFix();
-extern void CheatCodeRemove();
 extern void CheatCodeToggle();
 extern void DisableCheatCode();
 extern void EnableCheatCode();

@@ -579,7 +579,7 @@ hold:
 		case 84: GUINTSCPreset();            return; // ntsc preset
 		case 10:
 		case 11: GUIProcStates();            return;
-		case  5: asm_call(CheatCodeRemove);  return;
+		case  5: CheatCodeRemove();          return;
 		case  6: asm_call(CheatCodeToggle);  return;
 		case  7: CheatCodeSave();            return;
 		case  8: CheatCodeLoad();            return;

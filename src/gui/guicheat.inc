@@ -26,55 +26,6 @@ SECTION .bss
 NEWSYM FirstSearch,   resb 1
 SECTION .text
 
-NEWSYM CheatCodeRemove
-    mov byte[GUICBHold],0
-    cmp dword[NumCheats],0
-    jne .nonone
-    ret
-.nonone
-    mov esi,[GUIcurrentcheatcursloc]
-    shl esi,5
-    sub esi,[GUIcurrentcheatcursloc]
-    sub esi,[GUIcurrentcheatcursloc]
-    sub esi,[GUIcurrentcheatcursloc]
-    sub esi,[GUIcurrentcheatcursloc]
-    add esi,cheatdata
-    push esi
-    call DisableCheatCode
-    pop esi
-    mov eax,255
-    sub eax,[GUIcurrentcheatcursloc]
-    mov ebx,eax
-    shl eax,4
-    add eax,ebx
-    add eax,ebx
-.loop
-    mov bl,[esi+28]
-    mov [esi],bl
-    inc esi
-    dec eax
-    jnz .loop
-    dec dword[NumCheats]
-    mov eax,[GUIcurrentcheatcursloc]
-    cmp dword[NumCheats],0
-    je .okay
-    cmp eax,[NumCheats]
-    jne .okay
-    dec eax
-    mov [GUIcurrentcheatcursloc],eax
-    sub eax,11
-    mov [GUIcurrentcheatviewloc],eax
-    test dword[GUIcurrentcheatviewloc],80000000h
-    jz .noview
-    mov dword[GUIcurrentcheatviewloc],0
-.noview
-.okay
-    cmp byte[NumCheats],0
-    jne .cheatexists
-    mov byte[CheatOn],0
-.cheatexists
-    ret
-
 NEWSYM CheatCodeFix
     mov byte[GUICBHold],0
     cmp dword[NumCheats],0

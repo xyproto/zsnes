@@ -222,3 +222,25 @@ void EnableCheatsOnLoad(void)
 		asm volatile("call %P1" : "+S" (esi_) : "X" (EnableCheatCode) : "cc", "memory", "eax", "ecx", "ebx");
 	}
 }
+
+
+void CheatCodeRemove(void)
+{
+	GUICBHold = 0;
+	if (NumCheats == 0) return;
+
+	u1* const esi  = cheatdata + GUIcurrentcheatcursloc * 28;
+	u1*       esi_ = esi;
+	asm volatile("call %P1" : "+S" (esi_) : "X" (DisableCheatCode) : "cc", "memory", "eax", "ecx", "ebx");
+	memmove(esi, esi + 28, (255 - GUIcurrentcheatcursloc) * 18); // XXX 18? Probably should be 28
+
+	u4 const eax = GUIcurrentcheatcursloc;
+	if (--NumCheats != 0 && eax == NumCheats)
+	{
+		GUIcurrentcheatcursloc = eax -  1;
+		GUIcurrentcheatviewloc = eax - 12;
+		if (GUIcurrentcheatviewloc & 0x80000000) GUIcurrentcheatviewloc = 0;
+	}
+
+	if (NumCheats == 0) CheatOn = 0;
+}

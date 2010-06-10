@@ -2,6 +2,7 @@
 #define C_GUICHEAT_H
 
 void AddCSCheatCode(void);
+void CheatCodeRemove(void);
 void CheatCodeSearchInit(void);
 void CheatCodeSearchProcess(void);
 void DisableCheatsOnLoad(void);

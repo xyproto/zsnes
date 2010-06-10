@@ -954,7 +954,7 @@ static void GUICheatKeys(char dh, char al)
 			dh = ToUpperASM(dh);
 			switch (dh)
 			{
-				case 'R': asm_call(CheatCodeRemove); return;
+				case 'R': CheatCodeRemove();         return;
 				case 'T': asm_call(CheatCodeToggle); return;
 				case 'S': asm_call(CheatCodeSave);   return;
 				case 'L': asm_call(CheatCodeLoad);   return;
