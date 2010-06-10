@@ -170,7 +170,7 @@ typedef recDevice* pRecDevice;
 static IONotificationPortRef  gNotifyPort;
 static io_iterator_t    gAddedIter;
 static CFRunLoopRef   gRunLoop;
-#endif USE_NOTIFICATIONS
+#endif
 
 // for element retrieval
 static pRecDevice gCurrentGetDevice = NULL;
@@ -398,7 +398,7 @@ static void hid_AddElement (CFTypeRef refElement, pRecElement * ppElementCurrent
 #if 0
             else
                 HIDReportError ("CFNumberGetValue error when getting value for refUsage or refUsagePage.");
-#endif 0
+#endif
         }
         else // collection
       pElement = (pRecElement) malloc (sizeof (recElement));
@@ -751,7 +751,7 @@ static pRecDevice hid_DisposeDevice (pRecDevice pDevice)
 #if 0
     if (kIOReturnSuccess != result)
       HIDReportErrorNum ("hid_DisposeDevice: HIDDequeueDevice error: 0x%8.8X.", result);
-#endif 1
+#endif
 
         hid_DisposeDeviceElements (pDevice->pListElements);
     pDevice->pListElements = NULL;
@@ -775,7 +775,7 @@ static pRecDevice hid_DisposeDevice (pRecDevice pDevice)
       if (kIOReturnSuccess != result)
         HIDReportErrorNum ("hid_DisposeDevice: IOObjectRelease error: 0x%8.8X.", result);
     }
-#endif USE_NOTIFICATIONS
+#endif
 
     // remove this device from the device list
     if (gpDeviceList == pDevice)  // head of list?
@@ -878,7 +878,7 @@ static unsigned long  HIDDequeueDevice (pRecDevice pDevice)
       CFRelease(pDevice->queueRunLoopSource);
       pDevice->queueRunLoopSource = NULL;
     }
-#endif USE_ASYNC_EVENTS
+#endif
   }
   else
   {
@@ -1082,7 +1082,7 @@ static void hid_RemovalCallbackFunction(void * target, IOReturn result, void * r
         pDevice->disconnect = DISCONNECT_TELLUSER;
 }
 
-#endif USE_NOTIFICATIONS
+#endif
 
 
 
@@ -1153,7 +1153,7 @@ static void hid_AddDevices (void *refCon, io_iterator_t iterator)
       HIDReportErrorNum ("hid_AddDevices: IOServiceAddInterestNotification error: x0%8.8lX.", result);
 #else
     result = (*(IOHIDDeviceInterface**)pNewDevice->interface)->setRemovalCallback (pNewDevice->interface, hid_RemovalCallbackFunction,pNewDeviceAt,0);
-#endif USE_NOTIFICATIONS
+#endif
 
     // release the device object, it is no longer needed
     result = IOObjectRelease (ioHIDDeviceObject);
@@ -1253,7 +1253,7 @@ static Boolean HIDBuildDeviceList (UInt32 usagePage, UInt32 usage)
         return true;
       }
     }
-#endif USE_NOTIFICATIONS
+#endif
     // IOServiceGetMatchingServices consumes a reference to the dictionary, so we don't need to release the dictionary ref.
     hidMatchDictionary = NULL;
     }
