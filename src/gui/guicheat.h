@@ -3,7 +3,6 @@
 
 #include "../types.h"
 
-extern void EnableCheatCode();
 extern void EnableCheatCodeNoPrevMod();
 extern void ProcessCheatCode();
 

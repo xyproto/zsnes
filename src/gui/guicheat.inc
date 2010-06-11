@@ -26,54 +26,6 @@ SECTION .bss
 NEWSYM FirstSearch,   resb 1
 SECTION .text
 
-NEWSYM EnableCheatCode
-    ; code is at esi
-    xor ecx,ecx
-    xor ebx,ebx
-    and byte[esi],0FBh
-    test byte[esi],1
-    jnz .gfrom
-    mov al,[esi+1]
-    mov cx,[esi+2]
-    mov bl,[esi+4]
-    push ecx
-    push eax
-    push ebx
-    push edx
-    call dword near [memtabler8+ebx*4]
-    pop edx
-    mov [esi+5],al
-    pop ebx
-    pop eax
-    pop ecx
-    mov byte[writeon],1
-    test byte[esi],80h
-    jnz .nowrite
-    test byte[esi-28],80h
-    jnz .nowrite
-    call dword near [memtablew8+ebx*4]
-.nowrite
-    mov byte[writeon],0
-    ret
-.gfrom
-    mov al,[esi+1]
-    mov ecx,[esi+2]
-    and ecx,0FFFFFFh
-    mov esi,[romdata]
-    mov bl,[esi+ecx]
-    mov [esi+ecx],al
-    mov [esi+5],bl
-    ret
-.gfram
-    mov al,[esi+1]
-    mov ecx,[esi+2]
-    and ecx,0FFFFFFh
-    mov esi,[sram]
-    mov bl,[esi+ecx]
-    mov [esi+ecx],al
-    mov [esi+5],bl
-    ret
-
 NEWSYM EnableCheatCodeNoPrevMod
     ; code is at esi
     xor ecx,ecx

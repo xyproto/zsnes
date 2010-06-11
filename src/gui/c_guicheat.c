@@ -227,6 +227,29 @@ void DisableCheatsOnLoad(void)
 }
 
 
+static void EnableCheatCode(u1* const esi)
+{
+	esi[0] &= 0xFB;
+	if (esi[0] & 0x01)
+	{
+		u1  const al  = esi[1];
+		u4  const ecx = *(u4 const*)(esi + 2) & 0x00FFFFFF; // XXX unaligned
+		u1* const esi = romdata;
+		u1  const bl  = esi[ecx];
+		esi[ecx] = al;
+		esi[5]   = bl;
+	}
+	else
+	{
+		u1 const al = esi[1];
+		u2 const cx = *(u2 const*)(esi + 2);
+		u1 const bl = esi[4];
+		esi[5] = memr8(bl, cx);
+		if (!(esi[0] & 0x80) && !(esi[-28] & 0x80)) memw8(bl, cx, al);
+	}
+}
+
+
 void EnableCheatsOnLoad(void)
 {
 	// Enable all ON toggled cheat codes
@@ -234,8 +257,7 @@ void EnableCheatsOnLoad(void)
 	for (u4 ecx = NumCheats; ecx != 0; esi += 28, --ecx)
 	{
 		if (esi[0] & 0x04) continue;
-		u1* esi_ = esi;
-		asm volatile("call %P1" : "+S" (esi_) : "X" (EnableCheatCode) : "cc", "memory", "eax", "ecx", "ebx");
+		EnableCheatCode(esi);
 	}
 }
 
