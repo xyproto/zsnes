@@ -1,6 +1,8 @@
 #include <string.h>
 
 #include "../cfg.h"
+#include "../cpu/memtable.h"
+#include "../init.h"
 #include "../ui.h"
 #include "c_gui.h"
 #include "c_guicheat.h"
@@ -198,6 +200,21 @@ void CheatCodeSearchInit(void)
 }
 
 
+static void DisableCheatCode(u1* const esi)
+{
+	esi[0] |= 0x04;
+	if (esi[0] & 0x01)
+	{
+		u4 const ecx = *(u4 const*)(esi + 2) & 0x00FFFFFF; // XXX unaligned
+		romdata[ecx] = esi[5];
+	}
+	else if (!(esi[0] & 0x80) && !(esi[-28] & 0x80))
+	{
+		memw8(esi[4], *(u2 const*)(esi + 2), esi[5]);
+	}
+}
+
+
 void DisableCheatsOnLoad(void)
 {
 	// Disable all codes
@@ -205,8 +222,7 @@ void DisableCheatsOnLoad(void)
 	for (u4 ecx = NumCheats; ecx != 0; esi += 28, --ecx)
 	{
 		if (esi[0] & 0x04) continue;
-		u1* esi_ = esi;
-		asm volatile("call %P1" : "+S" (esi_) : "X" (DisableCheatCode) : "cc", "memory", "eax", "ecx", "ebx");
+		DisableCheatCode(esi);
 	}
 }
 
@@ -230,8 +246,7 @@ void CheatCodeRemove(void)
 	if (NumCheats == 0) return;
 
 	u1* const esi  = cheatdata + GUIcurrentcheatcursloc * 28;
-	u1*       esi_ = esi;
-	asm volatile("call %P1" : "+S" (esi_) : "X" (DisableCheatCode) : "cc", "memory", "eax", "ecx", "ebx");
+	DisableCheatCode(esi);
 	memmove(esi, esi + 28, (255 - GUIcurrentcheatcursloc) * 18); // XXX 18? Probably should be 28
 
 	u4 const eax = GUIcurrentcheatcursloc;
@@ -252,9 +267,7 @@ void CheatCodeFix(void)
 	if (NumCheats == 0) return;
 
 	u1* const esi = cheatdata + GUIcurrentcheatcursloc * 28;
-	{ u1*       esi_ = esi;
-		asm volatile("call %P1" : "+S" (esi_) : "X" (DisableCheatCode) : "cc", "memory", "eax", "ecx", "ebx");
-	}
+	DisableCheatCode(esi);
 	esi[3] ^= 0x80;
 	{ u1*       esi_ = esi;
 		asm volatile("call %P1" : "+S" (esi_) : "X" (EnableCheatCodeNoPrevMod) : "cc", "memory", "eax", "ecx", "ebx");
@@ -274,6 +287,6 @@ void CheatCodeToggle(void)
 	}
 	else
 	{
-		asm volatile("call %P1" : "+S" (esi) : "X" (DisableCheatCode) : "cc", "memory", "eax", "ecx", "ebx");
+		DisableCheatCode(esi);
 	}
 }
