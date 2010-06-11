@@ -1052,7 +1052,6 @@ void load_file_fs(char *path)
 
 char *STCart2 = 0;
 uint8_t *sram2;
-extern uint8_t *sram;
 
 void SplitSetup(char *basepath, char *basefile, uint32_t MirrorSystem)
 {

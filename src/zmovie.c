@@ -55,6 +55,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "md.h"
 #include "input.h"
 #include "cfg.h"
+#include "ui.h"
 #include "video/procvid.h"
 #include "zpath.h"
 #include "zmovie.h"
@@ -73,7 +74,6 @@ extern uint32_t versionNumber, CRC32, cur_zst_size;
 extern uint8_t GUIReset, GUIQuit;
 extern uint8_t mencoderExists, lameExists;
 extern char CMovieExt;
-extern bool romispal;
 bool MovieWaiting = false;
 
 extern uint8_t device1, device2;
@@ -2381,12 +2381,10 @@ static void raw_audio_write(uint32_t samples)
   }
 }
 
-#define PIXEL (vidbuffer[((y+1)*288) + x + 16])
 static void raw_video_write_frame()
 {
   if (raw_vid.vp)
   {
-    extern uint16_t *vidbuffer;
     size_t x, y;
 
     //Convert 16 bit image to 24 bit image
@@ -2394,7 +2392,7 @@ static void raw_video_write_frame()
     {
       for (x = 0; x < RAW_WIDTH; x++)
       {
-        uint16_t pixel = vidbuffer[((y+1)*288) + x + 16];
+        uint16_t pixel = ((u2 const*)vidbuffer)[(y + 1) * 288 + x + 16];
         fwrite3((((pixel&0xF800) << 8) + ((pixel&0xE000) << 3)) |
                 (((pixel&0x07E0) << 5) + ((pixel&0x0600) >> 1)) |
                 (((pixel&0x001F) << 3) + ((pixel&0x001C) >> 2)), raw_vid.vp);

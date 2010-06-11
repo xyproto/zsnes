@@ -1282,7 +1282,10 @@ void SaveSramData(void)
         data_to_save = (uint8_t *)setaramdata;
         special=1;
       }
-      else { data_to_save = (uint8_t *)sram; }
+      else
+      {
+        data_to_save = sram;
+      }
 
       if (!special || CHIPBATT)
       {
