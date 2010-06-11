@@ -291,9 +291,7 @@ void CheatCodeFix(void)
 	u1* const esi = cheatdata + GUIcurrentcheatcursloc * 28;
 	DisableCheatCode(esi);
 	esi[3] ^= 0x80;
-	{ u1*       esi_ = esi;
-		asm volatile("call %P1" : "+S" (esi_) : "X" (EnableCheatCodeNoPrevMod) : "cc", "memory", "eax", "ecx", "ebx");
-	}
+	EnableCheatCodeNoPrevMod(esi);
 }
 
 
@@ -302,13 +300,33 @@ void CheatCodeToggle(void)
 	GUICBHold = 0;
 	if (NumCheats == 0) return;
 
-	u1* esi = cheatdata + GUIcurrentcheatcursloc * 28;
+	u1* const esi = cheatdata + GUIcurrentcheatcursloc * 28;
 	if (esi[0] & 0x04)
 	{
-		asm volatile("call %P1" : "+S" (esi) : "X" (EnableCheatCodeNoPrevMod) : "cc", "memory", "eax", "ecx", "ebx");
+		EnableCheatCodeNoPrevMod(esi);
 	}
 	else
 	{
 		DisableCheatCode(esi);
+	}
+}
+
+
+void EnableCheatCodeNoPrevMod(u1* const esi)
+{
+	// code is at esi
+	esi[0] &= 0xFB;
+	if (esi[0] & 0x01)
+	{
+		u1  const al  = esi[1];
+		u4  const ecx = *(u4 const*)(esi + 2) & 0x00FFFFFF; // XXX unaligned
+		u1* const esi = romdata;
+		u1  const bl  = esi[ecx];
+		esi[ecx] = al;
+		esi[5]   = bl;
+	}
+	else if (!(esi[0] & 0x80) && !(esi[-28] & 0x80))
+	{
+		memw8(esi[4], *(u2 const*)(esi + 2), esi[1]);
 	}
 }

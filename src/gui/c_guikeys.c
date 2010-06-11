@@ -864,7 +864,7 @@ static void GUICheatKeys(char dh, char al)
 						u1*       esi = cheatdata + GUIcurrentcheatcursloc * 28;
 						esi[1] = al << 4 | ah & 0x0F;
 						GUICheatTextZ1[0] = '\0';
-						asm volatile("call %P1" : "+S" (esi) : "X" (EnableCheatCodeNoPrevMod) : "cc", "memory", "eax", "ecx", "ebx");
+						EnableCheatCodeNoPrevMod(esi);
 					}
 					else
 					{

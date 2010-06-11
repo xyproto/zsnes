@@ -3,7 +3,6 @@
 
 #include "../types.h"
 
-extern void EnableCheatCodeNoPrevMod();
 extern void ProcessCheatCode();
 
 extern u1 FirstSearch;
