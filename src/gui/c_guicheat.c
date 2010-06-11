@@ -14,6 +14,8 @@
 
 u1 CopyRamToggle;
 
+static u1 FirstSearch;
+
 
 static void AddCheatCode(u4 const eax, u1 const bl)
 {

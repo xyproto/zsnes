@@ -22,8 +22,6 @@ EXTSYM guicheaterror
 
 ; GUI Cheat Code Routines
 
-SECTION .bss
-NEWSYM FirstSearch,   resb 1
 SECTION .text
 
 NEWSYM ProcessCheatCode
