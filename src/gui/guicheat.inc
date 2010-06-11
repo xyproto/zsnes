@@ -18,177 +18,11 @@
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 
-EXTSYM guicheaterror
-
 ; GUI Cheat Code Routines
 
 SECTION .text
 
-NEWSYM ProcessCheatCode
-    mov byte[GUICBHold],0
-    cmp dword[NumCheats],255
-    je .fail
-    cmp byte[GUICheatPosA],0
-    je .fail
-    jmp .okay
-.fail
-    ret
-.okay
-    ; make sure flashing cursor doesn't exist
-    xor ebx,ebx
-    mov bl,[GUICheatPosB]
-    mov byte[GUICheatTextZ2+ebx],0
-    ; transfer description
-    mov eax,[NumCheats]
-    shl eax,5
-    sub eax,[NumCheats]
-    sub eax,[NumCheats]
-    sub eax,[NumCheats]
-    sub eax,[NumCheats]
-    add eax,cheatdata
-    add eax,6
-    mov ebx,GUICheatTextZ2
-    mov ecx,20
-.dloop
-    mov dl,[ebx]
-    mov [eax+2],dl
-    mov [eax+18+2],dl
-    mov [eax+18*2+2],dl
-    inc ebx
-    inc eax
-    dec ecx
-    jnz .dloop
-    ; determine whether it is gamegenie, par, or GF
-    ; uppercase all codes if necessary
-    mov eax,GUICheatTextZ1
-    mov ecx,14
-.loop
-    mov bl,[eax]
-    cmp bl,'a'
-    jb .nolower
-    cmp bl,'z'
-    ja .nolower
-    sub bl,'a'-'A'
-    mov [eax],bl
-.nolower
-    inc eax
-    dec ecx
-    jnz .loop
-    mov byte[guicheatvalrep],0
-    xor eax,eax
-    mov al,[GUICheatPosA]
-    dec al
-    cmp byte[GUICheatTextZ1+eax],'R'
-    jne .notrep
-    mov byte[guicheatvalrep],80h
-    dec byte[GUICheatPosA]
-.notrep
-    cmp byte[GUICheatPosA],8
-    je near .par
-    cmp byte[GUICheatPosA],9
-    je near .gg
-    cmp byte[GUICheatPosA],14
-    je near .gf
-.invalidpar
-    ccallv guicheaterror
-    ret
-.par
-    ; check if code is valid
-    mov eax,GUICheatTextZ1
-    mov ecx,8
-.looppar
-    mov bl,[eax]
-    cmp bl,'0'
-    jb .invalidpar
-    cmp bl,'9'
-    jbe .okaypar
-    cmp bl,'A'
-    jb .invalidpar
-    cmp bl,'F'
-    ja .invalidpar
-.okaypar
-    inc eax
-    dec ecx
-    jnz .looppar
-    jmp decodepar
-.invalidgg
-    ccallv guicheaterror
-    ret
-.gg
-    ; check if code is valid
-    mov eax,GUICheatTextZ1
-    mov ecx,9
-.loopgg
-    cmp ecx,5
-    jne .nomid
-    cmp byte[eax],'-'
-    jne .invalidgg
-    inc eax
-    dec ecx
-.nomid
-    mov bl,[eax]
-    cmp bl,'0'
-    jb .invalidgg
-    cmp bl,'9'
-    jbe .okaygg
-    cmp bl,'A'
-    jb .invalidgg
-    cmp bl,'F'
-    ja .invalidgg
-.okaygg
-    inc eax
-    dec ecx
-    jnz .loopgg
-    jmp decodegg
-    ret
-.invalidgf
-    ccallv guicheaterror
-    ret
-.gf
-    ; check if code is valid
-    mov eax,GUICheatTextZ1
-    mov ecx,5
-.loopgf
-    mov bl,[eax]
-    cmp bl,'0'
-    jb .invalidgf
-    cmp bl,'9'
-    jbe .okaygf
-    cmp bl,'A'
-    jb .invalidgf
-    cmp bl,'F'
-    ja .invalidgf
-.okaygf
-    inc eax
-    dec ecx
-    jnz .loopgf
-    mov eax,GUICheatTextZ1+5
-    mov ecx,6
-.loopgf2
-    mov bl,[eax]
-    cmp bl,'X'
-    je .okaygf2
-    cmp bl,'0'
-    jb .invalidgf
-    cmp bl,'9'
-    jbe .okaygf2
-    cmp bl,'A'
-    jb near .invalidgf
-    cmp bl,'F'
-    ja near .invalidgf
-.okaygf2
-    inc eax
-    dec ecx
-    jnz .loopgf2
-    mov bl,[GUICheatTextZ1+13]
-    cmp bl,'0'
-    je .okaygf3
-    cmp bl,'1'
-    jne near .invalidgf
-.okaygf3
-    jmp decodegf
-
-decodegf:
+NEWSYM decodegf
     ; convert code to number format
     mov ecx,14
     mov esi,GUICheatTextZ1
@@ -380,7 +214,7 @@ decodegf:
     mov byte[GUICheatPosB],0
     ret
 
-decodegg:
+NEWSYM decodegg
 ;Genie Hex:    D  F  4  7  0  9  1  5  6  B  C  8  A  2  3  E
 ;Normal  Hex:  0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F
 ;              4  6  D  E  2  7  8  3  B  5  C  9  A  0  F  1
@@ -519,7 +353,7 @@ SECTION .data
 .GG2Norm db 04h,06h,0Dh,0Eh,02h,07h,08h,03h,0Bh,05h,0Ch,09h,0Ah,00h,0Fh,01h
 SECTION .text
 
-decodepar:
+NEWSYM decodepar
     ; convert code to number format
     mov ecx,8
     mov esi,GUICheatTextZ1
@@ -611,4 +445,4 @@ decodepar:
     ret
 
 SECTION .bss
-guicheatvalrep resb 1
+NEWSYM guicheatvalrep, resb 1

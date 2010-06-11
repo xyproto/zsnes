@@ -10,6 +10,7 @@ void CheatCodeToggle(void);
 void DisableCheatsOnLoad(void);
 void EnableCheatCodeNoPrevMod(u1* esi);
 void EnableCheatsOnLoad(void);
+void ProcessCheatCode(void);
 
 extern u1 CopyRamToggle;
 

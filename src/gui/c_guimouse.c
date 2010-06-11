@@ -17,7 +17,6 @@
 #include "c_guikeys.h"
 #include "c_guimouse.h"
 #include "gui.h"
-#include "guicheat.h"
 #include "guicombo.h"
 #include "guifuncs.h"
 #include "guikeys.h"
@@ -563,30 +562,30 @@ hold:
 	// ButtonProcess
 	switch (GUICBHold)
 	{
-		case  1: GUILoadData();              return;
-		case  2: GUIProcReset();             return;
-		case  3: GUIProcReset();             return;
-		case  4: GUIProcVideo();             return; // set video mode
+		case  1: GUILoadData();        return;
+		case  2: GUIProcReset();       return;
+		case  3: GUIProcReset();       return;
+		case  4: GUIProcVideo();       return; // set video mode
 #ifndef __MSDOS__
-		case 12: GUIProcCustomVideo();       return; // set custom video mode
+		case 12: GUIProcCustomVideo(); return; // set custom video mode
 #endif
 		case 37:
 		case 38:
-		case 39: GUINTSCReset();             return; // reset ntsc options
+		case 39: GUINTSCReset();       return; // reset ntsc options
 		case 81:
 		case 82:
 		case 83:
-		case 84: GUINTSCPreset();            return; // ntsc preset
+		case 84: GUINTSCPreset();      return; // ntsc preset
 		case 10:
-		case 11: GUIProcStates();            return;
-		case  5: CheatCodeRemove();          return;
-		case  6: CheatCodeToggle();          return;
-		case  7: CheatCodeSave();            return;
-		case  8: CheatCodeLoad();            return;
-		case  9: asm_call(ProcessCheatCode); return;
-		case 33: CheatCodeFix();             return;
-		case 14: SetDevice();                return;
-		case 15: CalibrateDev1();            return;
+		case 11: GUIProcStates();      return;
+		case  5: CheatCodeRemove();    return;
+		case  6: CheatCodeToggle();    return;
+		case  7: CheatCodeSave();      return;
+		case  8: CheatCodeLoad();      return;
+		case  9: ProcessCheatCode();   return;
+		case 33: CheatCodeFix();       return;
+		case 14: SetDevice();          return;
+		case 15: CalibrateDev1();      return;
 
 		case 16: GUICBHold = 0; MoviePlay();          return; // movie replay
 		case 17: GUICBHold = 0; MovieRecord();        return; // movie record

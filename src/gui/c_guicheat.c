@@ -1,5 +1,6 @@
 #include <string.h>
 
+#include "../asm_call.h"
 #include "../cfg.h"
 #include "../cpu/memtable.h"
 #include "../init.h"
@@ -330,5 +331,124 @@ void EnableCheatCodeNoPrevMod(u1* const esi)
 	else if (!(esi[0] & 0x80) && !(esi[-28] & 0x80))
 	{
 		memw8(esi[4], *(u2 const*)(esi + 2), esi[1]);
+	}
+}
+
+
+void ProcessCheatCode(void)
+{
+	GUICBHold = 0;
+	if (NumCheats    == 255) return;
+	if (GUICheatPosA ==   0) return;
+
+	// make sure flashing cursor doesn't exist
+	GUICheatTextZ2[GUICheatPosB] = '\0';
+	{ // transfer description
+		u1*         eax = cheatdata + NumCheats * 28 + 6;
+		char const* ebx = GUICheatTextZ2;
+		u4          ecx = 20;
+		do
+		{
+			char const dl = *ebx++;
+			eax[         2] = dl;
+			eax[18     + 2] = dl;
+			eax[18 * 2 + 2] = dl;
+		}
+		while (++eax, --ecx != 0);
+	}
+
+	{ // uppercase all codes if necessary
+		char* eax = GUICheatTextZ1;
+		u4    ecx = 14;
+		do
+		{
+			char const bl = *eax;
+			if ('a' <= bl && bl <= 'z') *eax = bl - 'a' + 'A';
+		}
+		while (++eax, --ecx != 0);
+	}
+
+	guicheatvalrep = 0;
+	if (GUICheatTextZ1[GUICheatPosA - 1] == 'R')
+	{
+		guicheatvalrep = 0x80;
+		--GUICheatPosA;
+	}
+
+	// determine whether it is gamegenie, par, or GF
+	switch (GUICheatPosA)
+	{
+		case 8: // PAR
+			{ // check if code is valid
+				char const* eax = GUICheatTextZ1;
+				u4          ecx = 8;
+				do
+				{
+					char const bl = *eax++;
+					if ('0' <= bl && bl <= '9') continue;
+					if ('A' <= bl && bl <= 'F') continue;
+					goto invalid;
+				}
+				while (--ecx != 0);
+			}
+			asm_call(decodepar);
+			break;
+
+		case 9: // GG
+			{ // check if code is valid
+				char const* eax = GUICheatTextZ1;
+				u4          ecx = 9;
+				do
+				{
+					if (ecx == 5)
+					{
+						if (*eax != '-') goto invalid;
+						++eax;
+						--ecx;
+					}
+					char const bl = *eax++;
+					if ('0' <= bl && bl <= '9') continue;
+					if ('A' <= bl && bl <= 'F') continue;
+					goto invalid;
+				}
+				while (--ecx != 0);
+			}
+			asm_call(decodegg);
+			break;
+
+		case 14: // GF
+			{ // check if code is valid
+				char const* eax = GUICheatTextZ1;
+				u4          ecx = 5;
+				do
+				{
+					char const bl = *eax++;
+					if ('0' <= bl && bl <= '9') continue;
+					if ('A' <= bl && bl <= 'F') continue;
+					goto invalid;
+				}
+				while (--ecx != 0);
+			}
+			{ char const* eax = GUICheatTextZ1 + 5;
+				u4          ecx = 6;
+				do
+				{
+					char const bl = *eax++;
+					if (bl == 'X') continue;
+					if ('0' <= bl && bl <= '9') continue;
+					if ('A' <= bl && bl <= 'F') continue;
+					goto invalid;
+				}
+				while (--ecx != 0);
+				char const bl = GUICheatTextZ1[13];
+				if (bl != '0' && bl != '1') goto invalid;
+			}
+			asm_call(decodegf);
+			break;
+
+		default:
+invalid:
+			guicheaterror();
+			break;
 	}
 }

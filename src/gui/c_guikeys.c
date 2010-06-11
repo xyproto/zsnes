@@ -20,7 +20,6 @@
 #include "c_guicheat.h"
 #include "c_guikeys.h"
 #include "gui.h"
-#include "guicheat.h"
 #include "guikeys.h"
 #include "guiwindp.h"
 
@@ -911,7 +910,7 @@ static void GUICheatKeys(char dh, char al)
 			if (dh == 13)
 			{
 				GUICCFlash = 0;
-				asm_call(ProcessCheatCode);
+				ProcessCheatCode();
 				return;
 			}
 
