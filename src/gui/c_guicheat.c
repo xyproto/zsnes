@@ -335,6 +335,140 @@ void EnableCheatCodeNoPrevMod(u1* const esi)
 }
 
 
+static void decodegf(void)
+{
+	{ // convert code to number format
+		u4    ecx = 14;
+		char* esi = GUICheatTextZ1;
+		do
+		{
+			char const al = *esi;
+			if (al != 'X') *esi = al < 'A' ? al - '0' : al - 'A' + 10;
+		}
+		while (++esi, --ecx != 0);
+	}
+
+	// get address
+	u4 ecx =
+		(u1)GUICheatTextZ1[0] << 16 |
+		(u1)GUICheatTextZ1[1] << 12 |
+		(u1)GUICheatTextZ1[2] <<  8 |
+		(u1)GUICheatTextZ1[3] <<  4 |
+		(u1)GUICheatTextZ1[4] <<  0;
+
+	u4 edx = NumCheats * 28;
+
+	// Write data to memory
+	if (GUICheatTextZ1[13] == 1)
+	{
+		if (ecx > 65535) goto quit;
+		u1* const esi = sram;
+
+		// get data
+		if (GUICheatTextZ1[5] != 'X' && GUICheatTextZ1[6] != 'X')
+		{
+			u1 const bl = GUICheatTextZ1[5] << 4 | GUICheatTextZ1[6];
+			u1 const al = esi[ecx];
+			esi[ecx]                    = bl;
+			cheatdata[edx]              = 2;
+			*(u4*)(cheatdata + edx + 2) = ecx; // XXX unaligned
+			cheatdata[edx + 1]          = bl;
+			cheatdata[edx + 5]          = al;
+			++NumCheats;
+			edx += 28;
+		}
+
+		++ecx;
+		if (GUICheatTextZ1[7] != 'X' && GUICheatTextZ1[8] != 'X' && NumCheats != 255 && ecx <= 65535)
+		{
+			u1 const bl = GUICheatTextZ1[7] << 4 | GUICheatTextZ1[8];
+			u1 const al = esi[ecx + 1];
+			esi[ecx + 1]                = bl;
+			cheatdata[edx]              = 2;
+			*(u4*)(cheatdata + edx + 2) = ecx; // XXX unaligned
+			cheatdata[edx + 1]          = bl;
+			cheatdata[edx + 5]          = al;
+			++NumCheats;
+			edx += 28;
+		}
+
+		++ecx;
+		if (GUICheatTextZ1[9] != 'X' && GUICheatTextZ1[10] != 'X' && NumCheats != 255 && ecx <= 65535)
+		{
+			u1 const bl = GUICheatTextZ1[9] << 4 | GUICheatTextZ1[10];
+			u1 const al = esi[ecx + 2];
+			esi[ecx + 2]                = bl;
+			cheatdata[edx]              = 2;
+			*(u4*)(cheatdata + edx + 2) = ecx; // XXX unaligned
+			cheatdata[edx + 1]          = bl;
+			cheatdata[edx + 5]          = al;
+			++NumCheats;
+		}
+	}
+	else
+	{
+		// get data
+		if (GUICheatTextZ1[5] != 'X' && GUICheatTextZ1[6] != 'X')
+		{
+			u1  const bl  = GUICheatTextZ1[5] << 4 | GUICheatTextZ1[6];
+			u1* const esi = romdata;
+			u1  const al  = esi[ecx];
+			esi[ecx] = bl;
+			cheatdata[edx]              = guicheatvalrep | 1;
+			*(u4*)(cheatdata + edx + 2) = ecx; // XXX unaligned
+			cheatdata[edx + 1]          = bl;
+			cheatdata[edx + 5]          = al;
+			++NumCheats;
+			edx += 28;
+		}
+
+		++ecx;
+		if (GUICheatTextZ1[7] != 'X' && GUICheatTextZ1[8] != 'X' && NumCheats != 255)
+		{
+			u1  const bl  = GUICheatTextZ1[7] << 4 | GUICheatTextZ1[8];
+			u1* const esi = romdata;
+			u1  const al  = esi[ecx];
+			esi[ecx] = bl;
+			cheatdata[edx]              = 1;
+			*(u4*)(cheatdata + edx + 2) = ecx; // XXX unaligned
+			cheatdata[edx + 1]          = bl;
+			cheatdata[edx + 5]          = al;
+			++NumCheats;
+			edx += 28;
+		}
+
+		++ecx;
+		if (GUICheatTextZ1[9] != 'X' && GUICheatTextZ1[10] != 'X' && NumCheats != 255)
+		{
+			u1  const bl  = GUICheatTextZ1[9] << 4 | GUICheatTextZ1[10];
+			u1* const esi = romdata;
+			u1  const al  = esi[ecx];
+			esi[ecx] = bl;
+			cheatdata[edx] = 1;
+			*(u4*)(cheatdata + edx + 2) = ecx; // XXX unaligned
+			cheatdata[edx + 1]          = bl;
+			cheatdata[edx + 5]          = al;
+			++NumCheats;
+		}
+	}
+
+quit:
+	if (NumCheats != 0)
+	{
+		CheatOn            = 1;
+		GUIcurrentcheatwin = 1;
+		u4 const eax = NumCheats;
+		GUIcurrentcheatcursloc = eax -  1;
+		GUIcurrentcheatviewloc = eax - 12;
+		if (GUIcurrentcheatviewloc & 0x80000000) GUIcurrentcheatviewloc = 0;
+	}
+	memset(GUICheatTextZ1, 0, 4);
+	memset(GUICheatTextZ2, 0, 4);
+	GUICheatPosA = 0;
+	GUICheatPosB = 0;
+}
+
+
 void ProcessCheatCode(void)
 {
 	GUICBHold = 0;
@@ -443,7 +577,7 @@ void ProcessCheatCode(void)
 				char const bl = GUICheatTextZ1[13];
 				if (bl != '0' && bl != '1') goto invalid;
 			}
-			asm_call(decodegf);
+			decodegf();
 			break;
 
 		default:

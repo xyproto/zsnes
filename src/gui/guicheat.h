@@ -3,7 +3,6 @@
 
 #include "../types.h"
 
-extern void decodegf();
 extern void decodegg();
 extern void decodepar();
 
