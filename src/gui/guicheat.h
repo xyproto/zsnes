@@ -3,7 +3,6 @@
 
 #include "../types.h"
 
-extern void decodegg();
 extern void decodepar();
 
 extern u1 guicheatvalrep;

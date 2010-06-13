@@ -335,6 +335,74 @@ void EnableCheatCodeNoPrevMod(u1* const esi)
 }
 
 
+static void decodegg(void)
+{
+	/* Genie Hex:    D  F  4  7  0  9  1  5  6  B  C  8  A  2  3  E
+	 * Normal  Hex:  0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F
+	 *               4  6  D  E  2  7  8  3  B  5  C  9  A  0  F  1 */
+	{ // Convert code
+		char* esi = GUICheatTextZ1;
+		memmove(esi + 4, esi + 5, 4);
+		// convert code to number format
+		u4 ecx = 8;
+		do
+		{
+			static u1 const GG2Norm[] = { 0x4, 0x6, 0xD, 0xE, 0x2, 0x7, 0x8, 0x3, 0xB, 0x5, 0xC, 0x9, 0xA, 0x0, 0xF, 0x1 };
+			char const al = *esi;
+			*esi++ = GG2Norm[al < 'A' ? al - '0' : al - 'A' + 10];
+		}
+		while (--ecx != 0);
+	}
+
+	char const* const esi = GUICheatTextZ1;
+	u4          const ecx =
+		(u1)esi[2] << 20 |
+		(u1)esi[3] << 16 |
+		(u1)esi[4] << 12 |
+		(u1)esi[5] <<  8 |
+		(u1)esi[6] <<  4 |
+		(u1)esi[7] <<  0;
+
+	/*                        0123456789ABCDEF01234567
+	 * 24bit encoded address: ijklqrstopabcduvwxefghmn
+	 *                        abcdefghijklmnopqrstuvwx
+	 *                        >8  >12 >6<10 >6  <14 <10 */
+	u4 ebx =
+		(ecx & 0x003C00) << 10 | // abcd
+		(ecx & 0x00003C) << 14 | // efgh
+		(ecx & 0xF00000) >>  8 | // ijkl
+		(ecx & 0x000003) << 10 | // mn
+		(ecx & 0x00C000) >>  6 | // op
+		(ecx & 0x0F0000) >> 12 | // qrst
+		(ecx & 0x0003C0) >>  6;  // uvwx
+	u2 const cx = ebx & 0x0000FFFF;
+	ebx >>= 16;
+	u1 const al = (u1)esi[0] << 1 | (u1)esi[1];
+
+	// store into cheatdata
+	u4 const edx = NumCheats * 28;
+	cheatdata[edx]              = guicheatvalrep;
+	cheatdata[edx + 1]          = al;
+	*(u2*)(cheatdata + edx + 2) = cx;
+	cheatdata[edx + 4]          = ebx;
+	cheatdata[edx + 5]          = memr8(ebx, cx);
+
+	if (!(cheatdata[edx] & 0x80) && !(cheatdata[edx - 28] & 0x80)) memw8(ebx, cx, al);
+
+	CheatOn = 1;
+	++NumCheats;
+	memset(GUICheatTextZ1, '\0', 4);
+	memset(GUICheatTextZ2, '\0', 4);
+	GUICheatPosA       = 0;
+	GUICheatPosB       = 0;
+	GUIcurrentcheatwin = 1;
+	u4 const eax = NumCheats;
+	GUIcurrentcheatcursloc = eax -  1;
+	GUIcurrentcheatviewloc = eax - 12;
+	if (GUIcurrentcheatviewloc & 0x80000000) GUIcurrentcheatviewloc = 0;
+}
+
+
 static void decodegf(void)
 {
 	{ // convert code to number format
@@ -547,7 +615,7 @@ void ProcessCheatCode(void)
 				}
 				while (--ecx != 0);
 			}
-			asm_call(decodegg);
+			decodegg();
 			break;
 
 		case 14: // GF
