@@ -22,6 +22,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #ifndef MEMTABLE_H
 #define MEMTABLE_H
 
+#include "../types.h"
+
 extern void (*memtabler8[256])();
 extern void (*memtablew8[256])();
 extern void (*memtabler16[256])();
@@ -61,6 +63,19 @@ static inline void map_mem(size_t dest, mrwp *src, size_t num)
   rep_stosd(memtablew8+dest, src->memw8, num);
   rep_stosd(memtabler16+dest, src->memr16, num);
   rep_stosd(memtablew16+dest, src->memw16, num);
+}
+
+
+static inline u1 memr8(u1 const bank /* bl */, u2 const address /* cx */)
+{
+	u4 eax;
+	u4 ecx = address;
+	u4 edx;
+	u4 ebx = bank;
+	u4 esi;
+	u4 edi;
+	asm volatile("call *%6" : "=a" (eax), "+c" (ecx), "+b" (ebx), "=d" (edx), "=S" (esi), "=D" (edi) : "mr" (memtabler8[ebx]) : "cc", "memory");
+	return (u1)eax;
 }
 
 #endif
