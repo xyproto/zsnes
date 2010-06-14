@@ -67,7 +67,6 @@ section .data
 ;tableF  times 256 dd 0             ; Table addresses (M:1,X:0,D:1)
 ;tableG  times 256 dd 0             ; Table addresses (M:0,X:1,D:1)
 ;tableH  times 256 dd 0             ; Table addresses (M:1,X:1,D:1)
-NEWSYM addrmdef, times 27 dd 0      ; Address modes
 ;tablead times 256 dd 0             ; Table address location according to P
 ;memtabler8 times 256 dd 0          ; Memory Bank Locations for reading 8-bit
 ;memtablew8 times 256 dd 0          ; Memory Bank Locations for writing 8-bit
