@@ -48,8 +48,8 @@ EXTSYM cbitmode
 EXTSYM romloadskip,current_zst
 EXTSYM showallext,scanlines
 EXTSYM KeyRTRCycle
-EXTSYM pressed,memtabler8
-EXTSYM memtablew8,writeon,FPSOn,RevStereo,WDSPReg0C
+EXTSYM pressed
+EXTSYM FPSOn,RevStereo,WDSPReg0C
 EXTSYM WDSPReg1C,pl12s34,vidbufferofsb,bgfixer
 EXTSYM RelPathBase
 EXTSYM Clear2xSaIBuffer,Show224Lines

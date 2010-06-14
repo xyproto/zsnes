@@ -1,6 +1,5 @@
 #include <string.h>
 
-#include "../asm_call.h"
 #include "../cfg.h"
 #include "../cpu/memtable.h"
 #include "../init.h"
@@ -335,6 +334,55 @@ void EnableCheatCodeNoPrevMod(u1* const esi)
 }
 
 
+static void decodepar(void)
+{
+	// convert code to number format
+	u4    ecx = 8;
+	char* esi = GUICheatTextZ1;
+	do
+	{
+		char const al = *esi;
+		*esi++ = al < 'A' ? al - '0' : al - 'A' + 10;
+	}
+	while (--ecx != 0);
+
+	// get address
+	u1 const bl =
+		(u1)GUICheatTextZ1[0] <<  4 |
+		(u1)GUICheatTextZ1[1] <<  0;
+	u2 const cx =
+		(u1)GUICheatTextZ1[2] << 12 |
+		(u1)GUICheatTextZ1[3] <<  8 |
+		(u1)GUICheatTextZ1[4] <<  4 |
+		(u1)GUICheatTextZ1[5] <<  0;
+	u1 const al =
+		(u1)GUICheatTextZ1[6] <<  4 |
+		(u1)GUICheatTextZ1[7] <<  0;
+
+	// store into cheatdata
+	u4 const edx = NumCheats * 28;
+	cheatdata[edx]              = guicheatvalrep;
+	cheatdata[edx + 1]          = al;
+	*(u2*)(cheatdata + edx + 2) = cx;
+	cheatdata[edx + 4]          = bl;
+	cheatdata[edx + 5]          = memr8(bl, cx);
+
+	if (!(cheatdata[edx] & 0x80) && !(cheatdata[edx - 28] & 0x80)) memw8(bl, cx, al);
+
+	CheatOn = 1;
+	++NumCheats;
+	memset(GUICheatTextZ1, '\0', 4);
+	memset(GUICheatTextZ2, '\0', 4);
+	GUICheatPosA       = 0;
+	GUICheatPosB       = 0;
+	GUIcurrentcheatwin = 1;
+	u4 const eax = NumCheats;
+	GUIcurrentcheatcursloc = eax -  1;
+	GUIcurrentcheatviewloc = eax - 12;
+	if (GUIcurrentcheatviewloc & 0x80000000) GUIcurrentcheatviewloc = 0;
+}
+
+
 static void decodegg(void)
 {
 	/* Genie Hex:    D  F  4  7  0  9  1  5  6  B  C  8  A  2  3  E
@@ -593,7 +641,7 @@ void ProcessCheatCode(void)
 				}
 				while (--ecx != 0);
 			}
-			asm_call(decodepar);
+			decodepar();
 			break;
 
 		case 9: // GG
