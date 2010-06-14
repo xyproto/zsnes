@@ -19,6 +19,3 @@
 
 
 ; GUI Cheat Code Routines
-
-SECTION .bss
-NEWSYM guicheatvalrep, resb 1

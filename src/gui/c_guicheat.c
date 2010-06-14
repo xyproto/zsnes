@@ -8,13 +8,13 @@
 #include "c_guicheat.h"
 #include "c_guikeys.h"
 #include "gui.h"
-#include "guicheat.h"
 #include "guiwindp.h"
 
 
 u1 CopyRamToggle;
 
 static u1 FirstSearch;
+static u1 guicheatvalrep;
 
 
 static void AddCheatCode(u4 const eax, u1 const bl)
