@@ -14,6 +14,7 @@ extern u1 forceromtype;
 extern u1 regsbackup[3019];
 extern u1 romtype;          // ROM type in bytes
 extern u1 spcon;            // SPC Enable (1=enabled)
+extern u1 writeon;          // Write enable/disable on snes rom memory
 extern u1 xpb;
 extern u1 yesoutofmemory;
 extern u2 resetv;           // reset vector

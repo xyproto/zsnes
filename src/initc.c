@@ -92,7 +92,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 // Some archaic code from an unfinished Dynarec
 extern uint32_t curexecstate;
-extern bool spcon;
 
 void procexecloop(void)
 {
@@ -2525,7 +2524,7 @@ extern uint8_t SDD1BankA,SDD1BankB, SDD1BankC, SDD1BankD;
 extern uint8_t intrset, curcyc, cycpl, GUIReset;
 extern uint32_t SPC700read, SPC700write;
 extern uint32_t FIRTAPVal0, FIRTAPVal1, FIRTAPVal2, FIRTAPVal3, FIRTAPVal4, FIRTAPVal5, FIRTAPVal6, FIRTAPVal7;
-extern uint32_t xa, xdb, xpb, xs, xd, xx, xy, scrndis;
+extern uint32_t xa, xdb, xs, xx, xy, scrndis;
 extern uint16_t VIRQLoc, resolutn, xpc;
 extern uint8_t spcextraram[64], SPCROM[64];
 extern uint32_t tableD[256];

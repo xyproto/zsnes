@@ -53,7 +53,7 @@ NEWSYM cycpb268, db 109  ; 110
 NEWSYM cycpb358, db 149  ; 155
 NEWSYM cycpbl2,  db 109  ; percentage left of CPU/SPC to run  (3.58 = 175)
 NEWSYM cycpblt2, db 149  ; percentage of CPU/SPC to run
-NEWSYM writeon, db 0    ; Write enable/disable on snes rom memory
+NEWSYM writeon, db 0
 NEWSYM totlines, dw 263 ; total # of lines
 
 ;This is saved in states

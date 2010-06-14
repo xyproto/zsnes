@@ -24,6 +24,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #include <stddef.h>
 
+#include "../init.h"
 #include "../types.h"
 
 extern void (*memtabler8[256])();
@@ -78,6 +79,20 @@ static inline u1 memr8(u1 const bank /* bl */, u2 const address /* cx */)
 	u4 edi;
 	asm volatile("call *%6" : "=a" (eax), "+c" (ecx), "+b" (ebx), "=d" (edx), "=S" (esi), "=D" (edi) : "mr" (memtabler8[ebx]) : "cc", "memory");
 	return (u1)eax;
+}
+
+
+static inline void memw8(u1 const bank /* bl */, u2 const address /* cx */, u1 const val /* al */)
+{
+	u4 eax = val;
+	u4 ecx = address;
+	u4 edx;
+	u4 ebx = bank;
+	u4 esi;
+	u4 edi;
+	writeon = 1;
+	asm volatile("call *%6" : "+a" (eax), "+c" (ecx), "+b" (ebx), "=d" (edx), "=S" (esi), "=D" (edi) : "mr" (memtablew8[ebx]) : "cc", "memory");
+	writeon = 0;
 }
 
 #endif
