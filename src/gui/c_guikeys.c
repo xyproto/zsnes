@@ -17,9 +17,9 @@
 #include "../zpath.h"
 #include "../zstate.h"
 #include "c_gui.h"
-#include "c_guicheat.h"
 #include "c_guikeys.h"
 #include "gui.h"
+#include "guicheat.h"
 #include "guikeys.h"
 #include "guiwindp.h"
 

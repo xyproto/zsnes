@@ -1,5 +1,7 @@
-#ifndef C_GUICHEAT_H
-#define C_GUICHEAT_H
+#ifndef GUICHEAT_H
+#define GUICHEAT_H
+
+// GUI Cheat Code Routines
 
 void AddCSCheatCode(void);
 void CheatCodeFix(void);

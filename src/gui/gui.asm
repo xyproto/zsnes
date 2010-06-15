@@ -142,7 +142,6 @@ EXTSYM GUII2VID
 %include "gui/guimouse.inc"
 %include "gui/guiwindp.inc"
 %include "gui/guikeys.inc"
-%include "gui/guicheat.inc"
 %include "gui/guicombo.inc"
 
 ; Things to do :
