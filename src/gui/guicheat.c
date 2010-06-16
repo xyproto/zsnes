@@ -38,6 +38,16 @@ static u1 FirstSearch;
 static u1 guicheatvalrep;
 
 
+static void set_cheat_data(u1* const c, u1 const toggle, u1 const value, u1 const address, u1 const pvalue)
+{
+	c[0]          = toggle;
+	c[1]          = value;
+	*(u2*)(c + 2) = address;
+	c[4]          = address >> 16;
+	c[5]          = pvalue;
+}
+
+
 static void AddCheatCode(u4 const eax, u1 const bl)
 {
 	GUICBHold = 0;
@@ -58,13 +68,10 @@ static void AddCheatCode(u4 const eax, u1 const bl)
 		while (++eax, --ecx != 0);
 	}
 	// toggle, value, address, pvalue, name(12)
-	edx[0] = 0;
-	edx[1] = bl;
 	u1* const eax_ = wramdata + (eax - 0x7E0000);
 	u1  const bh   = *eax_;
-	*eax_           = bl;
-	*(u4*)(edx + 2) = eax; // XXX ugly cast
-	edx[5]          = bh;
+	*eax_ = bl;
+	set_cheat_data(edx, 0, bl, eax, bh);
 
 	u1 const al = GUIpmenupos;
 	CheckMenuItemHelp(7);
@@ -381,14 +388,10 @@ static void decodepar(void)
 		(u1)GUICheatTextZ1[7] <<  0;
 
 	// store into cheatdata
-	u4 const edx = NumCheats * 28;
-	cheatdata[edx]              = guicheatvalrep;
-	cheatdata[edx + 1]          = al;
-	*(u2*)(cheatdata + edx + 2) = cx;
-	cheatdata[edx + 4]          = bl;
-	cheatdata[edx + 5]          = memr8(bl, cx);
+	u1* const edx = cheatdata + NumCheats * 28;
+	set_cheat_data(edx, guicheatvalrep, al, bl << 16 | cx, memr8(bl, cx));
 
-	if (!(cheatdata[edx] & 0x80) && !(cheatdata[edx - 28] & 0x80)) memw8(bl, cx, al);
+	if (!(edx[0] & 0x80) && !(edx[-28] & 0x80)) memw8(bl, cx, al);
 
 	CheatOn = 1;
 	++NumCheats;
@@ -436,7 +439,7 @@ static void decodegg(void)
 	 * 24bit encoded address: ijklqrstopabcduvwxefghmn
 	 *                        abcdefghijklmnopqrstuvwx
 	 *                        >8  >12 >6<10 >6  <14 <10 */
-	u4 ebx =
+	u4 const ebx =
 		(ecx & 0x003C00) << 10 | // abcd
 		(ecx & 0x00003C) << 14 | // efgh
 		(ecx & 0xF00000) >>  8 | // ijkl
@@ -444,19 +447,13 @@ static void decodegg(void)
 		(ecx & 0x00C000) >>  6 | // op
 		(ecx & 0x0F0000) >> 12 | // qrst
 		(ecx & 0x0003C0) >>  6;  // uvwx
-	u2 const cx = ebx & 0x0000FFFF;
-	ebx >>= 16;
 	u1 const al = (u1)esi[0] << 1 | (u1)esi[1];
 
 	// store into cheatdata
-	u4 const edx = NumCheats * 28;
-	cheatdata[edx]              = guicheatvalrep;
-	cheatdata[edx + 1]          = al;
-	*(u2*)(cheatdata + edx + 2) = cx;
-	cheatdata[edx + 4]          = ebx;
-	cheatdata[edx + 5]          = memr8(ebx, cx);
+	u1* const edx = cheatdata + NumCheats * 28;
+	set_cheat_data(edx, guicheatvalrep, al, ebx, memr8(ebx >> 16, ebx));
 
-	if (!(cheatdata[edx] & 0x80) && !(cheatdata[edx - 28] & 0x80)) memw8(ebx, cx, al);
+	if (!(edx[0] & 0x80) && !(edx[-28] & 0x80)) memw8(ebx >> 16, ebx, al);
 
 	CheatOn = 1;
 	++NumCheats;
@@ -493,7 +490,7 @@ static void decodegf(void)
 		(u1)GUICheatTextZ1[3] <<  4 |
 		(u1)GUICheatTextZ1[4] <<  0;
 
-	u4 edx = NumCheats * 28;
+	u1* edx = cheatdata + NumCheats * 28;
 
 	// Write data to memory
 	if (GUICheatTextZ1[13] == 1)
@@ -506,11 +503,8 @@ static void decodegf(void)
 		{
 			u1 const bl = GUICheatTextZ1[5] << 4 | GUICheatTextZ1[6];
 			u1 const al = esi[ecx];
-			esi[ecx]                    = bl;
-			cheatdata[edx]              = 2;
-			*(u4*)(cheatdata + edx + 2) = ecx; // XXX unaligned
-			cheatdata[edx + 1]          = bl;
-			cheatdata[edx + 5]          = al;
+			esi[ecx] = bl;
+			set_cheat_data(edx, 2, bl, ecx, al);
 			++NumCheats;
 			edx += 28;
 		}
@@ -520,11 +514,8 @@ static void decodegf(void)
 		{
 			u1 const bl = GUICheatTextZ1[7] << 4 | GUICheatTextZ1[8];
 			u1 const al = esi[ecx + 1];
-			esi[ecx + 1]                = bl;
-			cheatdata[edx]              = 2;
-			*(u4*)(cheatdata + edx + 2) = ecx; // XXX unaligned
-			cheatdata[edx + 1]          = bl;
-			cheatdata[edx + 5]          = al;
+			esi[ecx + 1] = bl;
+			set_cheat_data(edx, 2, bl, ecx, al);
 			++NumCheats;
 			edx += 28;
 		}
@@ -534,11 +525,8 @@ static void decodegf(void)
 		{
 			u1 const bl = GUICheatTextZ1[9] << 4 | GUICheatTextZ1[10];
 			u1 const al = esi[ecx + 2];
-			esi[ecx + 2]                = bl;
-			cheatdata[edx]              = 2;
-			*(u4*)(cheatdata + edx + 2) = ecx; // XXX unaligned
-			cheatdata[edx + 1]          = bl;
-			cheatdata[edx + 5]          = al;
+			esi[ecx + 2] = bl;
+			set_cheat_data(edx, 2, bl, ecx, al);
 			++NumCheats;
 		}
 	}
@@ -551,10 +539,7 @@ static void decodegf(void)
 			u1* const esi = romdata;
 			u1  const al  = esi[ecx];
 			esi[ecx] = bl;
-			cheatdata[edx]              = guicheatvalrep | 1;
-			*(u4*)(cheatdata + edx + 2) = ecx; // XXX unaligned
-			cheatdata[edx + 1]          = bl;
-			cheatdata[edx + 5]          = al;
+			set_cheat_data(edx, guicheatvalrep | 1, bl, ecx, al);
 			++NumCheats;
 			edx += 28;
 		}
@@ -566,10 +551,7 @@ static void decodegf(void)
 			u1* const esi = romdata;
 			u1  const al  = esi[ecx];
 			esi[ecx] = bl;
-			cheatdata[edx]              = 1;
-			*(u4*)(cheatdata + edx + 2) = ecx; // XXX unaligned
-			cheatdata[edx + 1]          = bl;
-			cheatdata[edx + 5]          = al;
+			set_cheat_data(edx, 1, bl, ecx, al);
 			++NumCheats;
 			edx += 28;
 		}
@@ -581,10 +563,7 @@ static void decodegf(void)
 			u1* const esi = romdata;
 			u1  const al  = esi[ecx];
 			esi[ecx] = bl;
-			cheatdata[edx] = 1;
-			*(u4*)(cheatdata + edx + 2) = ecx; // XXX unaligned
-			cheatdata[edx + 1]          = bl;
-			cheatdata[edx + 5]          = al;
+			set_cheat_data(edx, 1, bl, ecx, al);
 			++NumCheats;
 		}
 	}
