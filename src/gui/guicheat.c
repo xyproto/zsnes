@@ -35,7 +35,6 @@
 u1 CopyRamToggle;
 
 static u1 FirstSearch;
-static u1 guicheatvalrep;
 
 
 static void set_cheat_data(u1* const c, u1 const toggle, u1 const value, u1 const address, u1 const pvalue)
@@ -362,7 +361,7 @@ void EnableCheatCodeNoPrevMod(u1* const esi)
 }
 
 
-static void decodepar(void)
+static void decodepar(u1 const guicheatvalrep)
 {
 	// convert code to number format
 	u4    ecx = 8;
@@ -407,7 +406,7 @@ static void decodepar(void)
 }
 
 
-static void decodegg(void)
+static void decodegg(u1 const guicheatvalrep)
 {
 	/* Genie Hex:    D  F  4  7  0  9  1  5  6  B  C  8  A  2  3  E
 	 * Normal  Hex:  0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F
@@ -469,7 +468,7 @@ static void decodegg(void)
 }
 
 
-static void decodegf(void)
+static void decodegf(u1 const guicheatvalrep)
 {
 	{ // convert code to number format
 		u4    ecx = 14;
@@ -618,7 +617,7 @@ void ProcessCheatCode(void)
 		while (++eax, --ecx != 0);
 	}
 
-	guicheatvalrep = 0;
+	u1 guicheatvalrep = 0;
 	if (GUICheatTextZ1[GUICheatPosA - 1] == 'R')
 	{
 		guicheatvalrep = 0x80;
@@ -641,7 +640,7 @@ void ProcessCheatCode(void)
 				}
 				while (--ecx != 0);
 			}
-			decodepar();
+			decodepar(guicheatvalrep);
 			break;
 
 		case 9: // GG
@@ -663,7 +662,7 @@ void ProcessCheatCode(void)
 				}
 				while (--ecx != 0);
 			}
-			decodegg();
+			decodegg(guicheatvalrep);
 			break;
 
 		case 14: // GF
@@ -693,7 +692,7 @@ void ProcessCheatCode(void)
 				char const bl = GUICheatTextZ1[13];
 				if (bl != '0' && bl != '1') goto invalid;
 			}
-			decodegf();
+			decodegf(guicheatvalrep);
 			break;
 
 		default:
