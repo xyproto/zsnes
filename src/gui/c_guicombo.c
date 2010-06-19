@@ -49,3 +49,17 @@ void ComboReplace(void)
 	eax->player = GUIComboPNum;
 	eax->ff     = GUIComboLHorz;
 }
+
+
+void ComboRemoval(void)
+{
+	ComboData* const c   = (GUIComboGameSpec == 0 ? CombinDataGlob : CombinDataLocl) + GUIccombcursloc;
+	u4         const ecx = NumCombo - GUIccombcursloc - 1;
+	if ((s4)ecx > 0) memmove(c, c + 1, sizeof(*c) * ecx);
+
+	u4 eax = --NumCombo;
+	if (eax != 0) --eax;
+	if (GUIccombviewloc > eax) GUIccombviewloc = eax;
+	if (GUIccombcursloc > eax) GUIccombcursloc = eax;
+	*(GUIComboGameSpec == 0 ? &NumComboGlob : &NumComboLocl) = NumCombo;
+}

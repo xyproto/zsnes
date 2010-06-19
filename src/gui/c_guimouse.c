@@ -18,7 +18,6 @@
 #include "c_guimouse.h"
 #include "gui.h"
 #include "guicheat.h"
-#include "guicombo.h"
 #include "guifuncs.h"
 #include "guikeys.h"
 #include "guimisc.h"
@@ -627,9 +626,9 @@ hold:
 			GUIComboKey      = 0;
 			break;
 
-		case 61: if (NumCombo != 50) ComboAdder();           break;
-		case 62: if (NumCombo !=  0) ComboReplace();         break;
-		case 63: if (NumCombo !=  0) asm_call(ComboRemoval); break;
+		case 61: if (NumCombo != 50) ComboAdder();   break;
+		case 62: if (NumCombo !=  0) ComboReplace(); break;
+		case 63: if (NumCombo !=  0) ComboRemoval(); break;
 
 		case 51:
 			CheatWinMode      = 0;
