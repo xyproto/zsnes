@@ -45,7 +45,7 @@
 EXTSYM frameskip,newengen,cvidmode,antienab
 EXTSYM soundon,StereoSound,SoundQuality,MusicRelVol
 EXTSYM cbitmode
-EXTSYM romloadskip,current_zst
+EXTSYM current_zst
 EXTSYM showallext,scanlines
 EXTSYM KeyRTRCycle
 EXTSYM pressed

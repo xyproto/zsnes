@@ -13,6 +13,7 @@
 #include "../zmovie.h"
 #include "../zpath.h"
 #include "c_gui.h"
+#include "c_guicombo.h"
 #include "c_guikeys.h"
 #include "c_guimouse.h"
 #include "gui.h"
@@ -626,7 +627,7 @@ hold:
 			GUIComboKey      = 0;
 			break;
 
-		case 61: if (NumCombo != 50) asm_call(ComboAdder);   break;
+		case 61: if (NumCombo != 50) ComboAdder();           break;
 		case 62: if (NumCombo !=  0) asm_call(ComboReplace); break;
 		case 63: if (NumCombo !=  0) asm_call(ComboRemoval); break;
 
