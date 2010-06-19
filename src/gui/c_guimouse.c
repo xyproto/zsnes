@@ -628,7 +628,7 @@ hold:
 			break;
 
 		case 61: if (NumCombo != 50) ComboAdder();           break;
-		case 62: if (NumCombo !=  0) asm_call(ComboReplace); break;
+		case 62: if (NumCombo !=  0) ComboReplace();         break;
 		case 63: if (NumCombo !=  0) asm_call(ComboRemoval); break;
 
 		case 51:

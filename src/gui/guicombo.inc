@@ -19,50 +19,7 @@
 
 
 
-EXTSYM ComboClip
-
 SECTION .text
-
-NEWSYM ComboReplace
-    pushad
-    ccallv ComboClip
-    mov eax,[GUIccombcursloc]
-    shl eax,6
-    add eax,[GUIccombcursloc]
-    add eax,[GUIccombcursloc]
-    add eax,CombinDataGlob
-    cmp byte[GUIComboGameSpec],0
-    je .nogamespec
-    sub eax,CombinDataGlob
-    add eax,CombinDataLocl
-.nogamespec
-    ; copy data to eax
-    mov ecx,20  ; copy name
-    mov ebx,GUIComboTextH
-.loop
-    mov dl,[ebx]
-    mov [eax],dl
-    inc ebx
-    inc eax
-    dec ecx
-    jnz .loop
-    mov ecx,42  ; copy combination code
-    mov ebx,GUIComboData
-.loop2
-    mov dl,[ebx]
-    mov [eax],dl
-    inc ebx
-    inc eax
-    dec ecx
-    jnz .loop2
-    mov dx,[GUIComboKey]
-    mov [eax],dx
-    mov dl,[GUIComboPNum]
-    mov [eax+2],dl
-    mov dl,[GUIComboLHorz]
-    mov [eax+3],dl
-    popad
-    ret
 
 NEWSYM ComboRemoval
     pushad

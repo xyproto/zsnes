@@ -36,3 +36,16 @@ void ComboAdder(void)
 	GUINumCombo      = 0;
 	GUIComboKey      = 0;
 }
+
+
+void ComboReplace(void)
+{
+	ComboClip();
+	ComboData* const eax = &(GUIComboGameSpec == 0 ? CombinDataGlob : CombinDataLocl)[GUIccombcursloc];
+	// copy data to eax
+	memcpy(eax->name,  GUIComboTextH, sizeof(eax->name));  // copy name
+	memcpy(eax->combo, GUIComboData,  sizeof(eax->combo)); // copy combination code
+	eax->key    = GUIComboKey;
+	eax->player = GUIComboPNum;
+	eax->ff     = GUIComboLHorz;
+}

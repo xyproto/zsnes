@@ -3,5 +3,6 @@
 
 void ComboAdder(void);
 void ComboClip(void);
+void ComboReplace(void);
 
 #endif
