@@ -19,18 +19,9 @@
 
 
 
-SECTION .text
+EXTSYM ComboClip
 
-NEWSYM ComboClip
-    movzx eax,byte[GUINumCombo]
-.next
-    cmp al,42
-    jae .excess
-    mov byte[GUIComboData+eax],0
-    inc eax
-    jmp .next
-.excess
-    ret
+SECTION .text
 
 NEWSYM ComboAdder
     cmp byte[romloadskip],0
@@ -39,7 +30,7 @@ NEWSYM ComboAdder
     jne near .skipall
 .romloaded
     pushad
-    call ComboClip
+    ccallv ComboClip
     mov eax,[NumCombo]
     shl eax,6
     add eax,[NumCombo]
@@ -100,7 +91,7 @@ NEWSYM ComboAdder
 
 NEWSYM ComboReplace
     pushad
-    call ComboClip
+    ccallv ComboClip
     mov eax,[GUIccombcursloc]
     shl eax,6
     add eax,[GUIccombcursloc]

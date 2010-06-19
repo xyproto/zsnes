@@ -15,10 +15,10 @@
 #include "../zstate.h"
 #include "../ztimec.h"
 #include "c_gui.h"
+#include "c_guicombo.h"
 #include "c_guikeys.h"
 #include "c_guiwindp.h"
 #include "gui.h"
-#include "guicombo.h"
 #include "guifuncs.h"
 #include "guikeys.h"
 #include "guitools.h"
@@ -2257,7 +2257,7 @@ void DisplayGUICombo(void)
 	{ ComboData* const edi = &(GUIComboGameSpec == 0 ? CombinDataGlob : CombinDataLocl)[GUIccombcursloc];
 		if (strncmp(edi->name, GUIComboTextH, 20) == 0)
 		{
-			asm_call(ComboClip);
+			ComboClip();
 			memcpy(edi->name,  GUIComboTextH, sizeof(edi->name));
 			memcpy(edi->combo, GUIComboData,  sizeof(edi->combo));
 			edi->key    = GUIComboKey;

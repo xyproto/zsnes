@@ -98,6 +98,7 @@ SRCS += effects/smoke.c
 SRCS += effects/water.c
 SRCS += endmem.asm
 SRCS += gui/c_gui.c
+SRCS += gui/c_guicombo.c
 SRCS += gui/c_guikeys.c
 SRCS += gui/c_guimouse.c
 SRCS += gui/c_guiwindp.c
