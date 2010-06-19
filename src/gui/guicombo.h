@@ -1,5 +1,5 @@
-#ifndef C_GUICOMBO_H
-#define C_GUICOMBO_H
+#ifndef GUICOMBO_H
+#define GUICOMBO_H
 
 void ComboAdder(void);
 void ComboClip(void);
