@@ -46,7 +46,7 @@ EXTSYM frameskip,newengen,cvidmode,antienab
 EXTSYM soundon,StereoSound,SoundQuality,MusicRelVol
 EXTSYM cbitmode
 EXTSYM current_zst
-EXTSYM showallext,scanlines
+EXTSYM scanlines
 EXTSYM KeyRTRCycle
 EXTSYM pressed
 EXTSYM FPSOn,RevStereo,WDSPReg0C
@@ -71,7 +71,7 @@ EXTSYM SRAMPath,CheatSrcByteSize
 EXTSYM IPSPath,MoviePath,CHTPath,ComboPath,INPPath,SStatePath
 EXTSYM MMXSupport
 EXTSYM GUIRAdd,GUIGAdd,GUIBAdd,GUITRAdd,GUITGAdd,GUITBAdd,GUIWRAdd
-EXTSYM GUIWGAdd,GUIWBAdd,GUIloadfntype,SoundInterpType
+EXTSYM GUIWGAdd,GUIWBAdd,SoundInterpType
 EXTSYM CheatSrcByteBase,CheatSrcSearchType,CheatUpperByteOnly,GUIComboGameSpec
 EXTSYM KeyStateSlc0,KeyStateSlc1,KeyStateSlc2,KeyStateSlc3,KeyStateSlc4
 EXTSYM KeyStateSlc5,KeyStateSlc6,KeyStateSlc7,KeyStateSlc8,KeyStateSlc9
@@ -108,9 +108,8 @@ EXTSYM GUIEnableTransp,FilteredGUI,Surround,SPCDisable,nosaveSRAM
 EXTSYM FastFwdToggle
 EXTSYM KeyDisplayBatt,KeyIncreaseGamma,KeyDecreaseGamma,vsyncon
 EXTSYM MovieVideoMode,MovieAudio,MovieVideoAudio,MovieAudioCompress,newfont
-EXTSYM GUIfileentries,GUIdirentries,GUIcurrentdirviewloc
-EXTSYM GUIcurrentfilewin,GUIcurrentcursloc,GUIcurrentviewloc,SetMovieForcedLength,DisableScreenSaver
-EXTSYM GUIcurrentdircursloc,GetLoadData,ClockBox,DisplayInfo
+EXTSYM SetMovieForcedLength,DisableScreenSaver
+EXTSYM ClockBox,DisplayInfo
 EXTSYM ScreenShotFormat
 EXTSYM SSAutoFire,SSPause
 
@@ -261,13 +260,13 @@ NEWSYM GUIHoldYlimR, resd 1
 NEWSYM cloadmaxlen,  resd 1
 NEWSYM cplayernum,   resb 1
 NEWSYM GUIScrolTim1, resd 1
-GUIScrolTim2 resd 1
+NEWSYM GUIScrolTim2, resd 1
 NEWSYM GUICHold,     resd 1
 NEWSYM GUICBHold,    resd 1
 NEWSYM GUICBHold2,   resd 1
 NEWSYM GUIDClickTL,  resd 1
-GUIDClCWin   resd 1
-GUIDClCEntry resd 1
+NEWSYM GUIDClCWin,   resd 1
+NEWSYM GUIDClCEntry, resd 1
 NEWSYM GUICResetPos, resd 1
 NEWSYM GUICStatePos, resd 1
 NEWSYM GUICCFlash,   resb 1

@@ -180,15 +180,6 @@ SECTION .text
 %%noclick
 %endmacro
 
-%macro GUIClickCButtonL 2
-  GUIClickArea %1+1,%2+3,%1+6,%2+8,%%noclick
-  xor byte[showallext],1
-  mov dword[GUIcurrentfilewin],0
-  ccallv GetLoadData
-  ret
-%%noclick
-%endmacro
-
 %macro GUIClickCButtonI 3
   GUIClickArea %1+1,%2+3,%1+6,%2+8,%%noclick
   xor %3,1
@@ -292,11 +283,11 @@ SECTION .text
 %endmacro
 
 SECTION .bss
-GUIlastdispval resd 1
-GUIdispmode    resd 1
-GUIlastypos    resd 1
-GUIlastcpos    resd 1
-GUIlastvpos    resd 1
+NEWSYM GUIlastdispval, resd 1
+NEWSYM GUIdispmode,    resd 1
+NEWSYM GUIlastypos,    resd 1
+NEWSYM GUIlastcpos,    resd 1
+NEWSYM GUIlastvpos,    resd 1
 SECTION .text
 
 %macro GUISlidebarImpl 10 ; x1,y1,x2,y2,GUI?StA,ScrnSize,ViewLoc,CursLoc,Entries,win#
@@ -526,13 +517,6 @@ SECTION .text
 %%nomodex
   popad
 %endif
-%%noclick
-%endmacro
-
-%macro GUIPButtonHoleLoad 4
-  GUIClickArea %1+1,%2+1,%1+7,%2+7,%%noclick
-  mov %3,%4
-  ccallv GetLoadData
 %%noclick
 %endmacro
 
@@ -775,41 +759,6 @@ SECTION .text
 %endmacro
 
 ; Mouse implementation
-
-NEWSYM DisplayGUIConfirmClick2
-  cmp dword[GUIfileentries],1
-  jbe near .noload2
-  GUISlidebarPostImpl 146,33,153,33+93,.scrollupsl,.scrolldownsl,1,15,GUIcurrentviewloc,GUIcurrentcursloc,GUIfileentries,GUIcurrentfilewin,0
-  GUIPostWinBoxMove 5,26,144,27+15*7,GUIcurrentviewloc,GUIcurrentcursloc,GUIfileentries,.scrollupsl,.scrolldownsl,DisplayGUIConfirmClick.skipscrol,15
-.noload2
-  cmp dword[GUIdirentries],1
-  jbe near .noload3
-  GUISlidebarPostImpl 230,33,237,33+93,.scrollupsld,.scrolldownsld,3,15,GUIcurrentdirviewloc,GUIcurrentdircursloc,GUIdirentries,GUIcurrentfilewin,1
-  GUIPostWinBoxMove 160,26,228,27+15*7,GUIcurrentdirviewloc,GUIcurrentdircursloc,GUIdirentries,.scrollupsld,.scrolldownsld,DisplayGUIConfirmClick.skipscrol,15
-.noload3
-NEWSYM DisplayGUIConfirmClick
-;ccallv DrawSlideBarWin, 1, 133, 43, [GUIcurrentviewloc], [GUIfileentries], 15, 94, GUILStA
-  ; offset 0 = (ysize-(yend-ystart+1)), offset 1 = starty, offset 2 = endy
-  ; SlideBar Implementation
-  GUISlidebarImpl 146,33,153,33+93,GUILStA,15,GUIcurrentviewloc,GUIcurrentcursloc,GUIfileentries,1
-  GUISlidebarImpl 230,33,237,33+93,GUILStB,15,GUIcurrentdirviewloc,GUIcurrentdircursloc,GUIdirentries,1
-  mov dword[GUIScrolTim1],0
-  mov dword[GUIScrolTim2],6
-.skipscrol
-  GUIClickCButtonL 10,187
-  GUIWinControl 5,27,144,26+15*7,GUIcurrentfilewin,GUIcurrentviewloc,GUIfileentries,27,7,GUIcurrentcursloc,0,1,30
-  GUIWinControl 160,27,228,26+15*7,GUIcurrentfilewin,GUIcurrentdirviewloc,GUIdirentries,27,7,GUIcurrentdircursloc,1,1,30
-  GUIPHoldbutton 186,165,228,176,1
-  GUIPButtonHoleLoad 9,163,byte[GUIloadfntype],0
-  GUIPButtonHoleLoad 9,171,byte[GUIloadfntype],1
-%ifdef __MSDOS__
-  GUIPButtonHoleLoad 9,179,byte[GUIloadfntype],2
-%endif
-  GUIClickCButton5 144,177,byte[ForceROMTiming],1
-  GUIClickCButton5 144,187,byte[ForceROMTiming],2
-  GUIClickCButton5 184,177,byte[ForceHiLoROM],1
-  GUIClickCButton5 184,187,byte[ForceHiLoROM],2
-  ret
 
 NEWSYM DisplayGUIChoseSaveClick
   GUIPHoldbutton2 94,59,102,67,80,byte[GUIChoseSlotTextX],1,'9'

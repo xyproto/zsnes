@@ -13,8 +13,6 @@ extern void DisplayGUIChipClick();
 extern void DisplayGUIChoseSaveClick();
 extern void DisplayGUIComboClick();
 extern void DisplayGUIComboClick2();
-extern void DisplayGUIConfirmClick();
-extern void DisplayGUIConfirmClick2();
 extern void DisplayGUIInputClick();
 extern void DisplayGUIInputClick2();
 extern void DisplayGUIMovieClick();
@@ -31,7 +29,12 @@ extern void DisplayGUIVideoClick2();
 extern void DisplayGameOptnsClick();
 extern void DisplayNetOptnsClick();
 
+extern s4 GUIlastypos;
 extern u1 ntscCurVar;
 extern u1 ntscWhVar;
+extern u4 GUIdispmode;
+extern u4 GUIlastcpos;
+extern u4 GUIlastdispval;
+extern u4 GUIlastvpos;
 
 #endif

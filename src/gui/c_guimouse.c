@@ -169,6 +169,301 @@ void SwitchFullScreen(void)
 }
 
 
+static bool GUIClickArea(s4 const eax, s4 const edx, s4 const p1, s4 const p2, s4 const p3, s4 const p4)
+{
+	return
+		p1 <= eax && eax <= p3 &&
+		p2 <= edx && edx <= p4;
+}
+
+
+static bool GUIClickCButton5(s4 const eax, s4 const edx, s4 const p1, s4 const p2, u1* const p3, u1 const p4)
+{
+	if (GUIClickArea(eax, edx, p1 + 1, p2 + 3, p1 + 6, p2 + 8))
+	{
+		*p3 = *p3 == p4 ? *p3 ^ p4 : p4;
+		return true;
+	}
+	return false;
+}
+
+
+static bool GUIClickCButtonL(s4 const eax, s4 const edx, s4 const p1, s4 const p2)
+{
+	if (GUIClickArea(eax, edx, p1 + 1, p2 + 3, p1 + 6, p2 + 8))
+	{
+		showallext       ^= 1;
+		GUIcurrentfilewin = 0;
+		GetLoadData();
+		return true;
+	}
+	return false;
+}
+
+
+static bool GUISlidebarPostImpl(s4 const eax, s4 const edx, u4 const p1, s4 const p2, s4 const p3, s4 const p4, u1 const p7, u4 const p8, u4* const p9, u4* const p10, u4 const* const p11, u4* const p12, u4 const p13, s4 const p14, s4 const p15, s4 const p16, s4 const p17, u4* const p18, u4* const p19, u4 const* const p20, void (* const p23)(s4 eax, s4 edx), u4 const p24) // p1-p13: x1,y1,x2,y2,upjump,downjump,holdpos,scsize,view,cur,listsize, p14-p24: x1,y1,x2,y2,view,curs,num,.scru,.scrd,jumpto,sizeofscreen
+{
+	if (*p11 == 0) return false;
+
+	if (GUIdispmode != 1)
+	{
+		if (GUIClickArea(eax, edx, p1, p2 - 7, p3, p2 - 1))
+		{
+			*p12     = p13;
+			GUICHold = p7;
+			goto scrollup;
+		}
+		if (GUIClickArea(eax, edx, p1, p4 + 1, p3, p4 + 7))
+		{
+			*p12     = p13;
+			GUICHold = p7 + 1;
+			goto scrolldown;
+		}
+	}
+	else if (GUIClickArea(eax, edx, p1, p2, p3, p4)) // slidebar
+	{
+		*p12 = p13;
+		// displacement = (GUIdispmode * pixeldisp. / (listsize-scsize))
+		s8 const edxeax = (s8)(s4)(*p11 - p8) * (s8)(edx - GUIlastypos);
+		u4 const ebx    = GUIlastdispval;
+		if (ebx != 0 && !(ebx & 0x80000000))
+		{
+			u4 const eax = edxeax / ebx;
+			*p9  = GUIlastvpos + eax;
+			*p10 = GUIlastcpos + eax;
+			if (*p9  & 0x8000000) *p9  = 0; // XXX probably should be 0x80000000
+			if (*p10 & 0x8000000) *p10 = 0; // XXX probably should be 0x80000000
+			u4 const eax_ = *p11;
+			if (*p10 >= eax_ - 1)  *p10 = eax_ - 1;
+			if (*p9  >= eax_ - p8) *p9  = eax_ - p8;
+		}
+		return true;
+	}
+
+	if (p14 <= eax && eax <= p16)
+	{
+		if (edx == p15)
+		{ // Scroll Up
+			*p19 = *p18;
+scrollup:
+			if (GUIScrolTim1 != 0) goto donescrol;
+			if (*p19 != 0)
+			{
+				--*p19;
+				if (*p18 != 0) --*p18;
+			}
+		}
+		else if (edx == p17)
+		{ // Scroll Down
+			if (*p20 > p24) *p19 = *p18 + p24 - 1;
+scrolldown:
+			if (GUIScrolTim1 != 0) goto donescrol;
+			if (*p20 - 1 > *p19)
+			{
+				++*p19;
+				if (*p20 <= p24) goto donescrol;
+				u4 const ebx = *p20 - p24;
+				if (++*p18 >= ebx) *p18 = ebx;
+			}
+		}
+		else
+		{
+			return false;
+		}
+
+		GUIScrolTim1 = 1;
+		if (GUIScrolTim2 >= 4) ++GUIScrolTim1;
+		if (GUIScrolTim2 != 0)
+		{
+			++GUIScrolTim1;
+			--GUIScrolTim2;
+		}
+
+donescrol:
+		p23(eax, edx);
+		return true;
+	}
+
+	return false;
+}
+
+
+static bool GUISlidebarImpl(s4 const eax, s4 const edx, s4 const p1, s4 const p2, s4 const p3, s4 const p4, u4 const* const p5, u4 const p6, u4* const p7, u4* const p8, u4 const* const p9, u4 const p10) // x1,y1,x2,y2,GUI?StA,ScrnSize,ViewLoc,CursLoc,Entries,win#
+{
+	GUIdispmode = 0;
+
+	if (GUIClickArea(eax, edx, p1, p2, p3, p4))
+	{
+		if (p5[1] > (u4)(edx - p2))
+		{
+			*p7 -= p6;
+			*p8 -= p6;
+			if (*p7 & 0x8000000) // XXX probably should be 0x80000000
+			{
+				*p7 = 0;
+				*p8 = 0;
+			}
+		}
+		else if (p5[2] < (u4)(edx - p2))
+		{
+			*p7 += p6;
+			*p8 += p6;
+			u4 const ebx = *p9 - 1;
+			if (*p8 >= ebx)
+			{
+				*p8  = ebx;
+				*p7  = ebx - p6 + 1;
+			}
+			u4 const ebx_ = *p9 - p6;
+			if (*p7 >= ebx_) *p7 = ebx_;
+		}
+		else
+		{
+			GUIlastypos    = edx;
+			GUIdispmode    = 1;
+			GUIHoldYlim    = GUIwinposy[p10] + p2;
+			GUIHoldYlimR   = GUIwinposy[p10] + p4;
+			GUIHoldXlimL   = GUIwinposx[p10] + p1;
+			GUIHoldXlimR   = GUIwinposx[p10] + p3;
+			GUIlastdispval = *p5;
+			GUIlastcpos    = *p8;
+			GUIlastvpos    = *p7;
+			GUIHold        = 3;
+		}
+		return true;
+	}
+
+	// upper arrow
+	if (GUIClickArea(eax, edx, p1, p2 - 7, p3, p2 - 1))
+	{
+		GUIHoldYlim  = GUIwinposy[p10] + p2 - 7;
+		GUIHoldYlimR = GUIwinposy[p10] + p2 - 1;
+		GUIHoldXlimL = GUIwinposx[p10] + p1;
+		GUIHoldXlimR = GUIwinposx[p10] + p3;
+		GUIHold      = 3;
+		return true;
+	}
+
+	// lower arrow
+	if (GUIClickArea(eax, edx, p1, p4 + 1, p3, p4 + 7))
+	{
+		GUIHoldYlim  = GUIwinposy[p10] + p4 + 1;
+		GUIHoldYlimR = GUIwinposy[p10] + p4 + 7;
+		GUIHoldXlimL = GUIwinposx[p10] + p1;
+		GUIHoldXlimR = GUIwinposx[p10] + p3;
+		GUIHold      = 3;
+		return true;
+	}
+
+	return false;
+}
+
+
+static void GUIPHoldbutton(s4 const eax, s4 const edx, s4 const p1, s4 const p2, s4 const p3, s4 const p4, u1 const p5)
+{
+	if (GUIClickArea(eax, edx, p1, p2, p3, p4))
+	{
+		GUIHoldXlimL = p1;
+		GUIHoldXlimR = p3;
+		GUIHoldYlim  = p2;
+		GUIHoldYlimR = p4;
+		GUICBHold2   = p5;
+		GUIHold      = 4;
+	}
+}
+
+
+static void GUIPButtonHoleLoad(s4 const eax, s4 const edx, s4 const p1, s4 const p2, u1* const p3, u1 const p4)
+{
+	if (GUIClickArea(eax, edx, p1 + 1, p2 + 1, p1 + 7, p2 + 7))
+	{
+		*p3 = p4;
+		GetLoadData();
+	}
+}
+
+
+static bool GUIWinControl(s4 const eax, s4 const edx, s4 const p1, s4 const p2, s4 const p3, s4 const p4, u4* const p5, u4 const* const p6, u4 const* const p7, s4 const p8, u4 const p9, u4* const p10, u4 const p11, u4 const p12, u4 const p13) // x,y,x2,y2,currentwin,vpos,#entries,starty,y/entry,cpos,winval,win#,dclicktick#
+{
+	if (GUIClickArea(eax, edx, p1, p2, p3, p4) && *p7 != 0)
+	{
+		*p5 = p11;
+		s4 const eax = (u4)(edx - p8) / (u4)p9 + *p6;
+		if (eax <= (s4)*p7 - 1) *p10 = eax;
+		if (GUIHold == 0)
+		{
+			if (GUIDClickTL != 0 && GUIDClCWin == p11 && GUIDClCEntry == eax)
+			{
+				GUIDClickTL = 0;
+				if (p12 == 1)
+				{
+					GUILoadData();
+				}
+				else
+				{
+					CheatCodeToggle();
+				}
+				return true;
+			}
+			GUIDClickTL  = p13;
+			GUIDClCWin   = p11;
+			GUIDClCEntry = eax;
+		}
+		GUIHoldYlim  = GUIwinposy[p12] + p2 - 1;
+		GUIHoldYlimR = GUIwinposy[p12] + p4 + 1;
+		GUIHoldXlimL = GUIwinposx[p12] + p1;
+		GUIHoldXlimR = GUIwinposx[p12] + p3;
+		GUIHold      = 3;
+		return true;
+	}
+	return false;
+}
+
+
+static void DisplayGUIConfirmClick_skipscrol(s4 const eax, s4 const edx)
+{
+	if (GUIClickCButtonL(eax, edx, 10, 187)) return;
+	if (GUIWinControl(eax, edx,   5, 27, 144, 26 + 15 * 7, &GUIcurrentfilewin, (u4 const*)&GUIcurrentviewloc,    (u4 const*)&GUIfileentries, 27, 7, (u4*)&GUIcurrentcursloc,    0, 1, 30)) return; // XXX ugly casts
+	if (GUIWinControl(eax, edx, 160, 27, 228, 26 + 15 * 7, &GUIcurrentfilewin, (u4 const*)&GUIcurrentdirviewloc, (u4 const*)&GUIdirentries,  27, 7, (u4*)&GUIcurrentdircursloc, 1, 1, 30)) return; // XXX ugly casts
+	GUIPHoldbutton(eax, edx, 186, 165, 228, 176, 1);
+	GUIPButtonHoleLoad(eax, edx, 9, 163, &GUIloadfntype, 0);
+	GUIPButtonHoleLoad(eax, edx, 9, 171, &GUIloadfntype, 1);
+#ifdef __MSDOS__
+	GUIPButtonHoleLoad(eax, edx, 9, 179, &GUIloadfntype, 2);
+#endif
+	if (GUIClickCButton5(eax, edx, 144, 177, &ForceROMTiming, 1)) return;
+	if (GUIClickCButton5(eax, edx, 144, 187, &ForceROMTiming, 2)) return;
+	if (GUIClickCButton5(eax, edx, 184, 177, &ForceHiLoROM,   1)) return;
+	if (GUIClickCButton5(eax, edx, 184, 187, &ForceHiLoROM,   2)) return;
+}
+
+
+static void DisplayGUIConfirmClick(s4 const eax, s4 const edx)
+{
+	// offset 0 = (ysize-(yend-ystart+1)), offset 1 = starty, offset 2 = endy
+	// SlideBar Implementation
+	if (GUISlidebarImpl(eax, edx, 146, 33, 153, 33 + 93, GUILStA, 15, (u4*)&GUIcurrentviewloc,    (u4*)&GUIcurrentcursloc,    (u4 const*)&GUIfileentries, 1)) return; // XXX ugly casts
+	if (GUISlidebarImpl(eax, edx, 230, 33, 237, 33 + 93, GUILStB, 15, (u4*)&GUIcurrentdirviewloc, (u4*)&GUIcurrentdircursloc, (u4 const*)&GUIdirentries,  1)) return; // XXX ugly casts
+	GUIScrolTim1 = 0;
+	GUIScrolTim2 = 6;
+	DisplayGUIConfirmClick_skipscrol(eax, edx);
+}
+
+
+static void DisplayGUIConfirmClick2(s4 const eax, s4 const edx)
+{
+	if (GUIfileentries > 1)
+	{
+		if (GUISlidebarPostImpl(eax, edx, 146, 33, 153, 33 + 93, 1, 15, (u4*)&GUIcurrentviewloc, (u4*)&GUIcurrentcursloc, (u4 const*)&GUIfileentries, &GUIcurrentfilewin, 0, 5, 26, 144, 27 + 15 * 7, (u4*)&GUIcurrentviewloc, (u4*)&GUIcurrentcursloc, (u4 const*)&GUIfileentries, DisplayGUIConfirmClick_skipscrol, 15)) return; // XXX ugly casts
+	}
+	if (GUIdirentries > 1)
+	{
+		if (GUISlidebarPostImpl(eax, edx, 230, 33, 237, 33 + 93, 3, 15, (u4*)&GUIcurrentdirviewloc, (u4*)&GUIcurrentdircursloc, (u4 const*)&GUIdirentries, &GUIcurrentfilewin, 1, 160, 26, 228, 27 + 15 * 7, (u4*)&GUIcurrentdirviewloc, (u4*)&GUIcurrentdircursloc, (u4 const*)&GUIdirentries, DisplayGUIConfirmClick_skipscrol, 15)) return; // XXX ugly casts
+	}
+	DisplayGUIConfirmClick(eax, edx);
+}
+
+
 static void GUIWindowMove(void)
 {
 	u1 const id = GUIwinorder[GUIwinptr - 1];
@@ -182,7 +477,7 @@ static void GUIWindowMove(void)
 		case  7: f = DisplayGUICheatClick2;       break;
 		case 13: f = DisplayGUICheatSearchClick2; break;
 		case 16: f = DisplayGUIComboClick2;       break;
-		default: f = DisplayGUIConfirmClick2;     break;
+		default: DisplayGUIConfirmClick2(rx, ry); return;
 	}
 	asm volatile("call *%0" :: "r" (f), "a" (rx), "d" (ry) : "cc", "memory"); // XXX asm_call
 }
@@ -219,7 +514,7 @@ static void GUIWinClicked(u4 const i, u4 const id)
 		void (* f)();
 		switch (id)
 		{
-			case  1: f = DisplayGUIConfirmClick;     break;
+			case  1: DisplayGUIConfirmClick(rx, ry); return;
 			case  2: f = DisplayGUIChoseSaveClick;   break;
 			case  3: f = DisplayGUIInputClick;       break;
 			case  4: f = DisplayGUIOptionClick;      break;
