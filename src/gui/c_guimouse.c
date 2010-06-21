@@ -12,6 +12,7 @@
 #include "../video/procvid.h"
 #include "../zmovie.h"
 #include "../zpath.h"
+#include "../zstate.h"
 #include "c_gui.h"
 #include "c_guikeys.h"
 #include "c_guimouse.h"
@@ -373,6 +374,27 @@ static void GUIPHoldbutton(s4 const eax, s4 const edx, s4 const p1, s4 const p2,
 }
 
 
+static void GUIPHoldbutton2(s4 const eax, s4 const edx, s4 const p1, s4 const p2, s4 const p3, s4 const p4, u1 const p5, u1* const p6, s1 const p7, u1 const p8)
+{
+	if (GUIClickArea(eax, edx, p1, p2, p3, p4) && GUIHold == 0)
+	{
+		GUIHoldXlimL = p1;
+		GUIHoldXlimR = p3;
+		GUIHoldYlim  = p2;
+		GUIHoldYlimR = p4;
+		GUICBHold2   = p5;
+		GUIHold      = 4;
+		if (*p6 != p8) *p6 += p7;
+	}
+}
+
+
+static void GUIPButtonHole(s4 const eax, s4 const edx, s4 const p1, s4 const p2, u1* const p3, u1 const p4)
+{
+	if (GUIClickArea(eax, edx, p1 + 1, p2 + 1, p1 + 7, p2 + 7)) *p3 = p4;
+}
+
+
 static void GUIPButtonHoleLoad(s4 const eax, s4 const edx, s4 const p1, s4 const p2, u1* const p3, u1 const p4)
 {
 	if (GUIClickArea(eax, edx, p1 + 1, p2 + 1, p1 + 7, p2 + 7))
@@ -464,6 +486,24 @@ static void DisplayGUIConfirmClick2(s4 const eax, s4 const edx)
 }
 
 
+static void DisplayGUIChoseSaveClick(s4 const eax, s4 const edx)
+{
+	GUIPHoldbutton2(eax, edx,  94, 59, 102, 67, 80, (u1*)&GUIChoseSlotTextX[0],  1, '9'); // XXX ugly cast
+	GUIPHoldbutton2(eax, edx, 105, 59, 113, 67, 81, (u1*)&GUIChoseSlotTextX[0], -1, '0'); // XXX ugly cast
+	GUIPButtonHole(eax, edx, 10, 28, (u1*)&GUIChoseSaveText2[0], 0); // XXX ugly cast
+	GUIPButtonHole(eax, edx, 30, 28, (u1*)&GUIChoseSaveText2[0], 1); // XXX ugly cast
+	GUIPButtonHole(eax, edx, 50, 28, (u1*)&GUIChoseSaveText2[0], 2); // XXX ugly cast
+	GUIPButtonHole(eax, edx, 70, 28, (u1*)&GUIChoseSaveText2[0], 3); // XXX ugly cast
+	GUIPButtonHole(eax, edx, 90, 28, (u1*)&GUIChoseSaveText2[0], 4); // XXX ugly cast
+	GUIPButtonHole(eax, edx, 10, 43, (u1*)&GUIChoseSaveText2[0], 5); // XXX ugly cast
+	GUIPButtonHole(eax, edx, 30, 43, (u1*)&GUIChoseSaveText2[0], 6); // XXX ugly cast
+	GUIPButtonHole(eax, edx, 50, 43, (u1*)&GUIChoseSaveText2[0], 7); // XXX ugly cast
+	GUIPButtonHole(eax, edx, 70, 43, (u1*)&GUIChoseSaveText2[0], 8); // XXX ugly cast
+	GUIPButtonHole(eax, edx, 90, 43, (u1*)&GUIChoseSaveText2[0], 9); // XXX ugly cast
+	current_zst = (GUIChoseSlotTextX[0] - '0') * 10 + GUIChoseSaveText2[0];
+}
+
+
 static void GUIWindowMove(void)
 {
 	u1 const id = GUIwinorder[GUIwinptr - 1];
@@ -514,8 +554,8 @@ static void GUIWinClicked(u4 const i, u4 const id)
 		void (* f)();
 		switch (id)
 		{
-			case  1: DisplayGUIConfirmClick(rx, ry); return;
-			case  2: f = DisplayGUIChoseSaveClick;   break;
+			case  1: DisplayGUIConfirmClick(  rx, ry); return;
+			case  2: DisplayGUIChoseSaveClick(rx, ry); return;
 			case  3: f = DisplayGUIInputClick;       break;
 			case  4: f = DisplayGUIOptionClick;      break;
 			case  5: f = DisplayGUIVideoClick;       break;

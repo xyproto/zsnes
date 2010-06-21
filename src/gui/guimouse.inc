@@ -760,27 +760,6 @@ SECTION .text
 
 ; Mouse implementation
 
-NEWSYM DisplayGUIChoseSaveClick
-  GUIPHoldbutton2 94,59,102,67,80,byte[GUIChoseSlotTextX],1,'9'
-  GUIPHoldbutton2 105,59,113,67,81,byte[GUIChoseSlotTextX],-1,'0'
-  GUIPButtonHole 10,28,byte[GUIChoseSaveText2],0
-  GUIPButtonHole 30,28,byte[GUIChoseSaveText2],1
-  GUIPButtonHole 50,28,byte[GUIChoseSaveText2],2
-  GUIPButtonHole 70,28,byte[GUIChoseSaveText2],3
-  GUIPButtonHole 90,28,byte[GUIChoseSaveText2],4
-  GUIPButtonHole 10,43,byte[GUIChoseSaveText2],5
-  GUIPButtonHole 30,43,byte[GUIChoseSaveText2],6
-  GUIPButtonHole 50,43,byte[GUIChoseSaveText2],7
-  GUIPButtonHole 70,43,byte[GUIChoseSaveText2],8
-  GUIPButtonHole 90,43,byte[GUIChoseSaveText2],9
-  movzx eax,byte[GUIChoseSlotTextX]
-  sub al,'0'
-  mov dl,10
-  mul dl
-  add al,byte[GUIChoseSaveText2]
-  mov [current_zst],eax
-  ret
-
 NEWSYM DisplayGUIMovieClick
   cmp byte[MovieProcessing],4
   je near .cannotzmv

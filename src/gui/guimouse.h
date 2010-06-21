@@ -10,7 +10,6 @@ extern void DisplayGUICheatClick2();
 extern void DisplayGUICheatSearchClick();
 extern void DisplayGUICheatSearchClick2();
 extern void DisplayGUIChipClick();
-extern void DisplayGUIChoseSaveClick();
 extern void DisplayGUIComboClick();
 extern void DisplayGUIComboClick2();
 extern void DisplayGUIInputClick();
