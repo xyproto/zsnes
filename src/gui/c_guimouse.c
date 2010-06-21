@@ -1,3 +1,4 @@
+#include <stdarg.h>
 #include <string.h>
 
 #include "../asm_call.h"
@@ -175,6 +176,12 @@ static bool GUIClickArea(s4 const eax, s4 const edx, s4 const p1, s4 const p2, s
 	return
 		p1 <= eax && eax <= p3 &&
 		p2 <= edx && edx <= p4;
+}
+
+
+static void GUIClickCButton(s4 const eax, s4 const edx, s4 const p1, s4 const p2, u1* const p3)
+{
+	if (GUIClickArea(eax, edx, p1 + 1, p2 + 3, p1 + 6, p2 + 8)) *p3 ^= 1;
 }
 
 
@@ -389,6 +396,17 @@ static void GUIPHoldbutton2(s4 const eax, s4 const edx, s4 const p1, s4 const p2
 }
 
 
+static void GUITextBoxInputNach(s4 const eax, s4 const edx, s4 const p1, s4 const p2, s4 const p3, s4 const p4, u4 const p5, u4 const p6, void (* const p7)(void))
+{
+	if (GUIClickArea(eax, edx, p1, p2, p3, p4))
+	{
+		p7();
+		GUIInputBox   = p5 + 1;
+		GUIInputLimit = p6 - 1;
+	}
+}
+
+
 static void GUIPButtonHole(s4 const eax, s4 const edx, s4 const p1, s4 const p2, u1* const p3, u1 const p4)
 {
 	if (GUIClickArea(eax, edx, p1 + 1, p2 + 1, p1 + 7, p2 + 7)) *p3 = p4;
@@ -439,6 +457,48 @@ static bool GUIWinControl(s4 const eax, s4 const edx, s4 const p1, s4 const p2, 
 		return true;
 	}
 	return false;
+}
+
+
+static bool DGOptnsProcBox(s4 const eax, s4 const edx, s4 const p1, s4 const p2, u4* const p3)
+{
+	if (GUIClickArea(eax, edx, p1, p2, p1 + 19, p2 + 6))
+	{
+		u4 const ebx = guipresstest();
+		if (ebx != 0x01 && ebx != 0x3B)
+		{
+			*p3 = ebx;
+#ifndef __MSDOS__
+			if (keycontrolval != 0) *keycontrolval = 1;
+#endif
+		}
+		else
+		{
+			*p3 = 0;
+		}
+		return true;
+	}
+
+	return false;
+}
+
+
+static void GUIPTabClick(s4 const eax, s4 const edx, s4 const p1, s4 const p2, u4 const p3, u4* const p4, ...) // minX, maxX, value, var, vars to zero
+{
+	if (GUIClickArea(eax, edx, p1 + 1, 11, p2 - 1, 22))
+	{
+		GUIInputBox = 0;
+		p4[0] = p3;
+		va_list ap;
+		va_start(ap, p4);
+		for (;;)
+		{
+			u4* const p = va_arg(ap, u4*);
+			if (!p) break;
+			*p = 0;
+		}
+		GUIFreshInputSelect = 1;
+	}
 }
 
 
@@ -501,6 +561,90 @@ static void DisplayGUIChoseSaveClick(s4 const eax, s4 const edx)
 	GUIPButtonHole(eax, edx, 70, 43, (u1*)&GUIChoseSaveText2[0], 8); // XXX ugly cast
 	GUIPButtonHole(eax, edx, 90, 43, (u1*)&GUIChoseSaveText2[0], 9); // XXX ugly cast
 	current_zst = (GUIChoseSlotTextX[0] - '0') * 10 + GUIChoseSaveText2[0];
+}
+
+
+static void DisplayGUIMovieClick(s4 const eax, s4 const edx)
+{
+	if (MovieProcessing < 4 || 6 < MovieProcessing)
+	{
+		GUIPTabClick(eax, edx, 0, 57, 1, GUIMovieTabs, &GUIDumpingTab[0], (u4*)0);
+	}
+
+	if (MovieProcessing < 1 || 3 < MovieProcessing)
+	{
+		GUIPTabClick(eax, edx, 58, 110, 1, GUIDumpingTab, &GUIMovieTabs[0], (u4*)0);
+	}
+
+	GUIPButtonHole(eax, edx,   8, 39, (u1*)&CMovieExt, 'v'); // Radio buttons // XXX ugly cast
+	GUIPButtonHole(eax, edx,  28, 39, (u1*)&CMovieExt, '1'); // XXX ugly cast
+	GUIPButtonHole(eax, edx,  48, 39, (u1*)&CMovieExt, '2'); // XXX ugly cast
+	GUIPButtonHole(eax, edx,  68, 39, (u1*)&CMovieExt, '3'); // XXX ugly cast
+	GUIPButtonHole(eax, edx,  88, 39, (u1*)&CMovieExt, '4'); // XXX ugly cast
+	GUIPButtonHole(eax, edx, 108, 39, (u1*)&CMovieExt, '5'); // XXX ugly cast
+	GUIPButtonHole(eax, edx, 128, 39, (u1*)&CMovieExt, '6'); // XXX ugly cast
+	GUIPButtonHole(eax, edx, 148, 39, (u1*)&CMovieExt, '7'); // XXX ugly cast
+	GUIPButtonHole(eax, edx, 168, 39, (u1*)&CMovieExt, '8'); // XXX ugly cast
+	GUIPButtonHole(eax, edx, 188, 39, (u1*)&CMovieExt, '9'); // XXX ugly cast
+
+	if (GUIMovieTabs[0] == 1)
+	{
+		if (MovieRecordWinVal != 0) // Overwrite Window
+		{
+			GUIPHoldbutton(eax, edx, 17, 65,  59, 76, 19);
+			GUIPHoldbutton(eax, edx, 70, 65, 112, 76, 20);
+			return;
+		}
+
+		// Main Window
+		GUIPHoldbutton(eax, edx,   7,  80,  49,  91, 16); // Buttons
+		GUIPHoldbutton(eax, edx,  55,  80,  97,  91, 17);
+		GUIPHoldbutton(eax, edx, 103,  80, 145,  91, 18);
+		GUIPHoldbutton(eax, edx, 151,  80, 193,  91, 32);
+		GUIPHoldbutton(eax, edx,   7, 108,  50, 119, 29);
+		GUIPHoldbutton(eax, edx,  85, 108, 138, 119, 30);
+		GUIPHoldbutton(eax, edx, 173, 108, 203, 119, 31);
+
+		GUIPButtonHole(eax, edx,   8, 64, &MovieStartMethod, 0); // Start From
+		GUIPButtonHole(eax, edx,  43, 64, &MovieStartMethod, 1);
+		GUIPButtonHole(eax, edx,  89, 64, &MovieStartMethod, 2);
+		GUIPButtonHole(eax, edx, 135, 64, &MovieStartMethod, 3);
+
+		DGOptnsProcBox(eax, edx,  58, 110, &KeyInsrtChap); // Keyboard Shortcut Boxes
+		DGOptnsProcBox(eax, edx, 146, 110, &KeyPrevChap);
+		DGOptnsProcBox(eax, edx, 210, 110, &KeyNextChap);
+
+		DGOptnsProcBox(eax, edx, 135, 124, &KeyRTRCycle);
+
+		GUIPButtonHole(eax, edx, 8, 133, &MZTForceRTR, 0);
+		GUIPButtonHole(eax, edx, 8, 143, &MZTForceRTR, 1);
+		GUIPButtonHole(eax, edx, 8, 153, &MZTForceRTR, 2);
+
+		GUIClickCButton(eax, edx, 8, 163, &MovieDisplayFrame); // Checkbox
+	}
+
+	if (GUIDumpingTab[0] == 1)
+	{
+		GUIPHoldbutton(eax, edx, 165, 178, 200, 189, 34);
+		GUIPHoldbutton(eax, edx, 206, 178, 235, 189, 35);
+
+		GUIPButtonHole(eax, edx, 8,  64, &MovieVideoMode, 0); // Movie Options
+		GUIPButtonHole(eax, edx, 8,  74, &MovieVideoMode, 1);
+		GUIPButtonHole(eax, edx, 8,  84, &MovieVideoMode, 2);
+		GUIPButtonHole(eax, edx, 8,  94, &MovieVideoMode, 3);
+		GUIPButtonHole(eax, edx, 8, 104, &MovieVideoMode, 4);
+		GUIPButtonHole(eax, edx, 8, 114, &MovieVideoMode, 5);
+
+		GUIClickCButton(eax, edx, 130, 62, &MovieAudio);
+		GUIClickCButton(eax, edx, 130, 72, &MovieAudioCompress);
+		GUIClickCButton(eax, edx, 130, 82, &MovieVideoAudio);
+
+		GUIPButtonHole(eax, edx, 8, 135, &MovieForcedLengthEnabled, 0); // Movie Options
+		GUIPButtonHole(eax, edx, 8, 145, &MovieForcedLengthEnabled, 1);
+		GUIPButtonHole(eax, edx, 8, 155, &MovieForcedLengthEnabled, 2);
+
+		GUITextBoxInputNach(eax, edx, 136, 144, 205, 154, 0, 11, SetMovieForcedLength);
+	}
 }
 
 
@@ -568,7 +712,7 @@ static void GUIWinClicked(u4 const i, u4 const id)
 			case 12: f = DisplayGUIResetClick;       break;
 			case 13: f = DisplayGUICheatSearchClick; break;
 			case 14: f = DisplayGUIStatesClick;      break;
-			case 15: f = DisplayGUIMovieClick;       break;
+			case 15: DisplayGUIMovieClick(    rx, ry); return;
 			case 16: f = DisplayGUIComboClick;       break;
 			case 17: f = DisplayGUIAddOnClick;       break;
 			case 18: f = DisplayGUIChipClick;        break;

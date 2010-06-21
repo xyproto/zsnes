@@ -46,7 +46,6 @@ EXTSYM frameskip,newengen,cvidmode,antienab
 EXTSYM soundon,StereoSound,SoundQuality,MusicRelVol
 EXTSYM cbitmode
 EXTSYM scanlines
-EXTSYM KeyRTRCycle
 EXTSYM pressed
 EXTSYM FPSOn,RevStereo,WDSPReg0C
 EXTSYM WDSPReg1C,pl12s34,vidbufferofsb,bgfixer
@@ -59,12 +58,11 @@ EXTSYM MultiTap
 EXTSYM nssdip1,nssdip2,nssdip3,nssdip4,nssdip5,nssdip6
 EXTSYM AutoLoadCht,GUILoadData
 EXTSYM GUISetPal
-EXTSYM MovieProcessing,MovieRecordWinVal
 
 EXTSYM GUIwinposx,GUIwinposy,maxskip,GUIEffect,hqFilter,En2xSaI,NTSCFilter
 EXTSYM NTSCBlend,NTSCHue,NTSCSat,NTSCCont,NTSCBright,NTSCSharp,NTSCRef
 EXTSYM NTSCGamma,NTSCRes,NTSCArt,NTSCFringe,NTSCBleed,NTSCWarp
-EXTSYM LowPassFilterType,MovieStartMethod,MovieDisplayFrame,savewinpos
+EXTSYM LowPassFilterType,savewinpos
 EXTSYM SnapPath,SPCPath,BSXPath,SGPath,STPath,GNextPath
 EXTSYM SRAMPath,CheatSrcByteSize
 EXTSYM IPSPath,MoviePath,CHTPath,ComboPath,INPPath,SStatePath
@@ -93,7 +91,7 @@ EXTSYM KeyBGDisble0,KeyBGDisble1,KeyBGDisble2,KeyBGDisble3,KeySprDisble
 EXTSYM KeyDisableSC0,KeyDisableSC1,KeyDisableSC2,KeyDisableSC3,KeyQuickSnapShot
 EXTSYM KeyDisableSC4,KeyDisableSC5,KeyDisableSC6,KeyDisableSC7,KeyQuickSaveSPC
 EXTSYM KeyQuickLoad,KeyQuickRst,KeyQuickExit,KeyQuickClock,KeyQuickChat
-EXTSYM KeyInsrtChap,KeyPrevChap,KeyNextChap,KeyDisplayFPS,KeyNewGfxSwt
+EXTSYM KeyDisplayFPS,KeyNewGfxSwt
 EXTSYM KeyIncStateSlot,KeyDecStateSlot,KeySaveState,KeyLoadState,KeyStateSelct
 EXTSYM KeyRewind,KeyEmuSpeedUp,KeyEmuSpeedDown,KeyFRateUp,KeyFRateDown
 EXTSYM KeyFastFrwrd,KeySlowDown,KeyResetSpeed,EMUPauseKey,INCRFrameKey
@@ -101,13 +99,13 @@ EXTSYM KeyWinDisble,KeyOffsetMSw,JoyPad1Move,init_save_paths
 EXTSYM mousewrap,GUIRClick
 EXTSYM FPSAtStart,Turbo30hz,TimerEnable,SmallMsgText,mouse1lh,mouse2lh
 EXTSYM AutoPatch,RomInfo,AllowUDLR,GrayscaleMode,GUIMovieForcedText
-EXTSYM Mode7HiRes16b,FFRatio,SDRatio,EmuSpeed,mouseshad,MovieForcedLengthEnabled
-EXTSYM esctomenu,lhguimouse,MZTForceRTR
+EXTSYM Mode7HiRes16b,FFRatio,SDRatio,EmuSpeed,mouseshad
+EXTSYM esctomenu,lhguimouse
 EXTSYM GUIEnableTransp,FilteredGUI,Surround,SPCDisable,nosaveSRAM
 EXTSYM FastFwdToggle
 EXTSYM KeyDisplayBatt,KeyIncreaseGamma,KeyDecreaseGamma,vsyncon
-EXTSYM MovieVideoMode,MovieAudio,MovieVideoAudio,MovieAudioCompress,newfont
-EXTSYM SetMovieForcedLength,DisableScreenSaver
+EXTSYM newfont
+EXTSYM DisableScreenSaver
 EXTSYM ClockBox,DisplayInfo
 EXTSYM ScreenShotFormat
 EXTSYM SSAutoFire,SSPause

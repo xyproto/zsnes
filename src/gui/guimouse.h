@@ -14,7 +14,6 @@ extern void DisplayGUIComboClick();
 extern void DisplayGUIComboClick2();
 extern void DisplayGUIInputClick();
 extern void DisplayGUIInputClick2();
-extern void DisplayGUIMovieClick();
 extern void DisplayGUIOptionClick();
 extern void DisplayGUIOptnsClick();
 extern void DisplayGUIPathsClick();
