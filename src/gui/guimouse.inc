@@ -19,7 +19,7 @@
 
 
 
-EXTSYM guipresstest, SetDevice, CheatCodeToggle
+EXTSYM guipresstest, CheatCodeToggle
 
 SECTION .text
 
@@ -77,30 +77,6 @@ SECTION .text
   mov dword[GUIccombviewloc],0
   mov dword[GUIccombcursloc],0
   mov dword[GUIccomblcursloc],0
-%%noclick
-%endmacro
-
-%macro GUIClickCButtonM 3
-  GUIClickArea %1+1,%2+3,%1+6,%2+8,%%noclick
-  xor %3,1
-  mov byte[MultiTap],1
-  cmp byte[pl12s34],1
-  je %%nomtap
-  cmp byte[pl3contrl],0
-  jne %%noclick
-  cmp byte[pl4contrl],0
-  jne %%noclick
-  cmp byte[pl5contrl],0
-  jne %%noclick
-%%nomtap
-  mov byte[MultiTap],0
-%%noclick
-%endmacro
-
-%macro GUIClickCButtonID 3
-  GUIClickArea %1+1,%2+3,%1+6,%2+8,%%noclick
-  xor %3,1
-  ccallv SetDevice
 %%noclick
 %endmacro
 
@@ -760,128 +736,6 @@ SECTION .text
 
 ; Mouse implementation
 
-%macro GUIInputSetIndKey 1
-  ;Check if controller is set
-  push eax
-  mov eax,[keycontrolval]
-  cmp dword[eax],0
-  pop eax
-  je near %%lockInputChange
-
-  DGOptnsProcBox 45,102,[%1upk]    ; Up
-  DGOptnsProcBox 45,112,[%1downk]  ; Down
-  DGOptnsProcBox 45,122,[%1leftk]  ; Left
-  DGOptnsProcBox 45,132,[%1rightk] ; Right
-  DGOptnsProcBox 45,142,[%1startk] ; Start
-  DGOptnsProcBox 45,152,[%1selk]   ; Select
-  DGOptnsProcBox 85,102,[%1Ak]     ; A
-  DGOptnsProcBox 85,112,[%1Bk]     ; B
-  DGOptnsProcBox 85,122,[%1Xk]     ; X
-  DGOptnsProcBox 85,132,[%1Yk]     ; Y
-  DGOptnsProcBox 85,142,[%1Lk]     ; L
-  DGOptnsProcBox 85,152,[%1Rk]     ; R
-
-  DGOptnsProcBox 125,102,[%1Xtk]   ; X Turbo
-  DGOptnsProcBox 125,112,[%1Ytk]   ; Y Turbo
-  DGOptnsProcBox 125,122,[%1Ltk]   ; L Turbo
-  DGOptnsProcBox 165,102,[%1Atk]   ; A Turbo
-  DGOptnsProcBox 165,112,[%1Btk]   ; B Turbo
-  DGOptnsProcBox 165,122,[%1Rtk]   ; R Turbo
-
-  DGOptnsProcBox 125,142,[%1ULk]   ; Up-Left
-  DGOptnsProcBox 125,152,[%1DLk]   ; Down-Left
-  DGOptnsProcBox 165,142,[%1URk]   ; Up-Right
-  DGOptnsProcBox 165,152,[%1DRk]   ; Down-Right
-%%lockInputChange
-%endmacro
-
-NEWSYM DisplayGUIInputClick2
-  push eax
-  mov eax,[NumInputDevices]
-  mov [GUINumValue],eax
-  pop eax
-  GUISlidebarPostImpl 109,42,116,69,.scrollup,.scrolldown,9,5,GUIcurrentinputviewloc,GUIcurrentinputcursloc,GUINumValue,GUIBlankVar,1
-  GUIPostWinBoxMove 5,35,107,35+5*8,GUIcurrentinputviewloc,GUIcurrentinputcursloc,GUINumValue,.scrollup,.scrolldown,DisplayGUIInputClick.skipscrol,5
-NEWSYM DisplayGUIInputClick
-  ; SlideBar Implementation
-  push eax
-  mov eax,[NumInputDevices]
-  mov [GUINumValue],eax
-  pop eax
-  GUISlidebarImpl 109,42,116,69,GUIIStA,5,GUIcurrentinputviewloc,GUIcurrentinputcursloc,GUINumValue,3
-.skipscrol
-  ;x,y,x2,y2,currentwin,vpos,#entries,starty,y/entry,cpos,winval,win#,dclicktick#
-  GUIWinControl 5,36,107,34+5*8,GUIBlankVar,GUIcurrentinputviewloc,GUINumValue,35,8,GUIcurrentinputcursloc,4,3,0
-
-  GUIPTabClick 0,21,1,GUIInputTabs
-  GUIPTabClick 22,43,2,GUIInputTabs
-  GUIPTabClick 44,65,3,GUIInputTabs
-  GUIPTabClick 66,87,4,GUIInputTabs
-  GUIPTabClick 88,109,5,GUIInputTabs
-
-  GUIPHoldbutton 123,34,153,45,14            ; Buttons
-  GUIPHoldbutton 123,50,177,61,40
-%ifdef __MSDOS__
-  GUIPHoldbutton 123,66,183,77,15
-%endif
-
-  cmp byte[cplayernum],0
-  jne near .nopl1
-  mov dword[keycontrolval],pl1contrl
-  GUIInputSetIndKey pl1
-.nopl1
-  cmp byte[cplayernum],1
-  jne near .nopl2
-  mov dword[keycontrolval],pl2contrl
-  GUIInputSetIndKey pl2
-.nopl2
-  cmp byte[cplayernum],2
-  jne near .nopl3
-  mov dword[keycontrolval],pl3contrl
-  GUIInputSetIndKey pl3
-.nopl3
-  cmp byte[cplayernum],3
-  jne near .nopl4
-  mov dword[keycontrolval],pl4contrl
-  GUIInputSetIndKey pl4
-.nopl4
-  cmp byte[cplayernum],4
-  jne near .nopl5
-  mov dword[keycontrolval],pl5contrl
-  GUIInputSetIndKey pl5
-.nopl5
-
-%ifdef __MSDOS__
-  cmp byte[cplayernum],0
-  jne .notpl1
-  GUIClickCButtonID 5,190,byte[pl1p209]
-.notpl1
-  cmp byte[cplayernum],1
-  jne .notpl2
-  GUIClickCButtonID 5,190,byte[pl2p209]
-.notpl2
-  cmp byte[cplayernum],2
-  jne .notpl3
-  GUIClickCButtonID 5,190,byte[pl3p209]
-.notpl3
-  cmp byte[cplayernum],3
-  jne .notpl4
-  GUIClickCButtonID 5,190,byte[pl4p209]
-.notpl4
-  cmp byte[cplayernum],4
-  jne .notpl5
-  GUIClickCButtonID 5,190,byte[pl5p209]
-.notpl5
-
-  GUIClickCButton 105,160,byte[SidewinderFix]
-%endif
-
-  GUIClickCButton 5,160,byte[GameSpecificInput]
-  GUIClickCButton 5,170,byte[AllowUDLR]
-  GUIClickCButton 105,170,byte[Turbo30hz]
-  GUIClickCButtonM 5,180,byte[pl12s34]
-  ret
-
 NEWSYM DisplayGUIOptionClick
   GUIPTabClick 0,39,1,GUIOptionTabs
   GUIPTabClick 40,74,2,GUIOptionTabs
@@ -1381,8 +1235,8 @@ NEWSYM DisplayGUIVideoClick
   ret
 
 SECTION .bss
-GUINumValue resd 1
-GUIBlankVar resd 1
+NEWSYM GUINumValue, resd 1
+NEWSYM GUIBlankVar, resd 1
 NEWSYM ntscCurVar, resb 1
 NEWSYM ntscWhVar, resb 1
 SECTION .data

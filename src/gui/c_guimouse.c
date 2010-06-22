@@ -5,7 +5,9 @@
 #include "../c_intrf.h"
 #include "../cfg.h"
 #include "../cpu/execute.h"
+#include "../cpu/regs.h"
 #include "../gblvars.h"
+#include "../input.h"
 #include "../link.h"
 #include "../macros.h"
 #include "../ui.h"
@@ -183,6 +185,30 @@ static void GUIClickCButton(s4 const eax, s4 const edx, s4 const p1, s4 const p2
 {
 	if (GUIClickArea(eax, edx, p1 + 1, p2 + 3, p1 + 6, p2 + 8)) *p3 ^= 1;
 }
+
+
+static void GUIClickCButtonM(s4 const eax, s4 const edx, s4 const p1, s4 const p2, u1* const p3)
+{
+	if (GUIClickArea(eax, edx, p1 + 1, p2 + 3, p1 + 6, p2 + 8))
+	{
+		*p3     ^= 1;
+		MultiTap = pl12s34 != 1 && (pl3contrl != 0 || pl4contrl != 0 || pl5contrl != 0);
+	}
+}
+
+
+#ifdef __MSDOS__
+
+static void GUIClickCButtonID(s4 const eax, s4 const edx, s4 const p1, s4 const p2, u1* const p3)
+{
+	if (GUIClickArea(eax, edx, p1 + 1, p2 + 3, p1 + 6, p2 + 8))
+	{
+		*p3 ^= 1
+		SetDevice();
+	}
+}
+
+#endif
 
 
 static bool GUIClickCButton5(s4 const eax, s4 const edx, s4 const p1, s4 const p2, u1* const p3, u1 const p4)
@@ -648,6 +674,102 @@ static void DisplayGUIMovieClick(s4 const eax, s4 const edx)
 }
 
 
+#define GUIInputSetIndKey(p1) \
+do \
+{ \
+	/* Check if controller is set */ \
+	if (*(u4 const*)keycontrolval == 0) return; /* XXX cast makes no sense */ \
+ \
+	DGOptnsProcBox(eax, edx,  45, 102, &p1 ## upk);    /* Up */ \
+	DGOptnsProcBox(eax, edx,  45, 112, &p1 ## downk);  /* Down */ \
+	DGOptnsProcBox(eax, edx,  45, 122, &p1 ## leftk);  /* Left */ \
+	DGOptnsProcBox(eax, edx,  45, 132, &p1 ## rightk); /* Right */ \
+	DGOptnsProcBox(eax, edx,  45, 142, &p1 ## startk); /* Start */ \
+	DGOptnsProcBox(eax, edx,  45, 152, &p1 ## selk);   /* Select */ \
+	DGOptnsProcBox(eax, edx,  85, 102, &p1 ## Ak);     /* A */ \
+	DGOptnsProcBox(eax, edx,  85, 112, &p1 ## Bk);     /* B */ \
+	DGOptnsProcBox(eax, edx,  85, 122, &p1 ## Xk);     /* X */ \
+	DGOptnsProcBox(eax, edx,  85, 132, &p1 ## Yk);     /* Y */ \
+	DGOptnsProcBox(eax, edx,  85, 142, &p1 ## Lk);     /* L */ \
+	DGOptnsProcBox(eax, edx,  85, 152, &p1 ## Rk);     /* R */ \
+ \
+	DGOptnsProcBox(eax, edx, 125, 102, &p1 ## Xtk);    /* X Turbo */ \
+	DGOptnsProcBox(eax, edx, 125, 112, &p1 ## Ytk);    /* Y Turbo */ \
+	DGOptnsProcBox(eax, edx, 125, 122, &p1 ## Ltk);    /* L Turbo */ \
+	DGOptnsProcBox(eax, edx, 165, 102, &p1 ## Atk);    /* A Turbo */ \
+	DGOptnsProcBox(eax, edx, 165, 112, &p1 ## Btk);    /* B Turbo */ \
+	DGOptnsProcBox(eax, edx, 165, 122, &p1 ## Rtk);    /* R Turbo */ \
+ \
+	DGOptnsProcBox(eax, edx, 125, 142, &p1 ## ULk);    /* Up-Left */ \
+	DGOptnsProcBox(eax, edx, 125, 152, &p1 ## DLk);    /* Down-Left */ \
+	DGOptnsProcBox(eax, edx, 165, 142, &p1 ## URk);    /* Up-Right */ \
+	DGOptnsProcBox(eax, edx, 165, 152, &p1 ## DRk);    /* Down-Right */ \
+} \
+while (0)
+
+
+static void DisplayGUIInputClick_skipscrol(s4 const eax, s4 const edx)
+{
+	// x,y,x2,y2,currentwin,vpos,#entries,starty,y/entry,cpos,winval,win#,dclicktick#
+	GUIWinControl(eax, edx, 5, 36, 107, 34 + 5 * 8, &GUIBlankVar, &GUIcurrentinputviewloc, &GUINumValue, 35, 8, &GUIcurrentinputcursloc, 4, 3, 0);
+
+	GUIPTabClick(eax, edx,  0,  21, 1, GUIInputTabs, (u4*)0);
+	GUIPTabClick(eax, edx, 22,  43, 2, GUIInputTabs, (u4*)0);
+	GUIPTabClick(eax, edx, 44,  65, 3, GUIInputTabs, (u4*)0);
+	GUIPTabClick(eax, edx, 66,  87, 4, GUIInputTabs, (u4*)0);
+	GUIPTabClick(eax, edx, 88, 109, 5, GUIInputTabs, (u4*)0);
+
+	GUIPHoldbutton(eax, edx, 123, 34, 153, 45, 14); // Buttons
+	GUIPHoldbutton(eax, edx, 123, 50, 177, 61, 40);
+#ifdef __MSDOS__
+	GUIPHoldbutton(eax, edx, 123, 66, 183, 77, 15);
+#endif
+
+	switch (cplayernum)
+	{
+		case 0: keycontrolval = &pl1contrl; GUIInputSetIndKey(pl1); break;
+		case 1: keycontrolval = &pl2contrl; GUIInputSetIndKey(pl2); break;
+		case 2: keycontrolval = &pl3contrl; GUIInputSetIndKey(pl3); break;
+		case 3: keycontrolval = &pl4contrl; GUIInputSetIndKey(pl4); break;
+		case 4: keycontrolval = &pl5contrl; GUIInputSetIndKey(pl5); break;
+	}
+
+#ifdef __MSDOS__
+	switch (cplayernum)
+	{
+		case 0: GUIClickCButtonID(eax, edx, 5, 190, &pl1p209); break;
+		case 1: GUIClickCButtonID(eax, edx, 5, 190, &pl2p209); break;
+		case 1: GUIClickCButtonID(eax, edx, 5, 190, &pl3p209); break;
+		case 1: GUIClickCButtonID(eax, edx, 5, 190, &pl4p209); break;
+		case 1: GUIClickCButtonID(eax, edx, 5, 190, &pl5p209); break;
+	}
+	GUIClickCButton(eax, edx, 105, 160, &SidewinderFix);
+#endif
+
+	GUIClickCButton( eax, edx,   5, 160, &GameSpecificInput);
+	GUIClickCButton( eax, edx,   5, 170, &AllowUDLR);
+	GUIClickCButton( eax, edx, 105, 170, &Turbo30hz);
+	GUIClickCButtonM(eax, edx,   5, 180, &pl12s34);
+}
+
+
+static void DisplayGUIInputClick(s4 const eax, s4 const edx)
+{
+	// SlideBar Implementation
+	GUINumValue = NumInputDevices;
+	if (GUISlidebarImpl(eax, edx, 109, 42, 116, 69, GUIIStA, 5, &GUIcurrentinputviewloc, &GUIcurrentinputcursloc, &GUINumValue, 3)) return;
+	DisplayGUIInputClick_skipscrol(eax, edx);
+}
+
+
+static void DisplayGUIInputClick2(s4 const eax, s4 const edx)
+{
+	GUINumValue = NumInputDevices;
+	if (GUISlidebarPostImpl(eax, edx, 109, 42, 116, 69, 9, 5, &GUIcurrentinputviewloc, &GUIcurrentinputcursloc, &GUINumValue, &GUIBlankVar, 1, 5, 35, 107, 35 + 5 * 8, &GUIcurrentinputviewloc, &GUIcurrentinputcursloc, &GUINumValue, DisplayGUIInputClick_skipscrol, 5)) return;
+	DisplayGUIInputClick(eax, edx);
+}
+
+
 static void GUIWindowMove(void)
 {
 	u1 const id = GUIwinorder[GUIwinptr - 1];
@@ -656,7 +778,7 @@ static void GUIWindowMove(void)
 	void (* f)();
 	switch (id)
 	{
-		case  3: f = DisplayGUIInputClick2;       break;
+		case  3: DisplayGUIInputClick2(  rx, ry); return;
 		case  5: f = DisplayGUIVideoClick2;       break;
 		case  7: f = DisplayGUICheatClick2;       break;
 		case 13: f = DisplayGUICheatSearchClick2; break;
@@ -700,7 +822,7 @@ static void GUIWinClicked(u4 const i, u4 const id)
 		{
 			case  1: DisplayGUIConfirmClick(  rx, ry); return;
 			case  2: DisplayGUIChoseSaveClick(rx, ry); return;
-			case  3: f = DisplayGUIInputClick;       break;
+			case  3: DisplayGUIInputClick(    rx, ry); return;
 			case  4: f = DisplayGUIOptionClick;      break;
 			case  5: f = DisplayGUIVideoClick;       break;
 			case  6: f = DisplayGUISoundClick;       break;
