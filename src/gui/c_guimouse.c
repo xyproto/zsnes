@@ -2,6 +2,7 @@
 #include <string.h>
 
 #include "../asm_call.h"
+#include "../c_init.h"
 #include "../c_intrf.h"
 #include "../cfg.h"
 #include "../cpu/execute.h"
@@ -770,6 +771,47 @@ static void DisplayGUIInputClick2(s4 const eax, s4 const edx)
 }
 
 
+static void DisplayGUIOptionClick(s4 const eax, s4 const edx)
+{
+	GUIPTabClick(eax, edx,  0, 39, 1, GUIOptionTabs, (s4*)0);
+	GUIPTabClick(eax, edx, 40, 74, 2, GUIOptionTabs, (s4*)0);
+
+	if (GUIOptionTabs[0] == 1)
+	{ // Basic
+		if (ShowMMXSupport == 1) GUIClickCButton(eax, edx, 11, 31, &MMXSupport);
+		GUIClickCButton(eax, edx, 11,  41, &Show224Lines);
+		GUIClickCButton(eax, edx, 11,  71, &newengen);
+		GUIClickCButton(eax, edx, 11,  81, &bgfixer);
+		GUIClickCButton(eax, edx, 11, 111, &AutoPatch);
+		GUIClickCButton(eax, edx, 11, 121, &DisplayInfo);
+		GUIClickCButton(eax, edx, 11, 131, &RomInfo);
+#ifdef __WIN32__
+		GUIClickCButton(eax, edx, 11, 161, &PauseFocusChange);
+		GUIClickCButton(eax, edx, 11, 171, &HighPriority);
+		CheckPriority();
+#endif
+		GUIClickCButton(eax, edx, 11, 181, &DisableScreenSaver);
+#ifdef __WIN32__
+		CheckScreenSaver();
+#endif
+	}
+
+	if (GUIOptionTabs[0] == 2)
+	{
+		GUIClickCButton(eax, edx, 11,  31, &FPSAtStart);
+		GUIClickCButton(eax, edx, 11,  41, &TimerEnable);
+		GUIClickCButton(eax, edx, 89,  41, &TwelveHourClock);
+		GUIClickCButton(eax, edx, 11,  51, &ClockBox);
+		GUIClickCButton(eax, edx, 11,  81, &SmallMsgText);
+		GUIClickCButton(eax, edx, 11,  91, &GUIEnableTransp);
+		GUIPButtonHole( eax, edx, 11, 121, &ScreenShotFormat, 0);
+#ifndef NO_PNG
+		GUIPButtonHole( eax, edx, 11, 131, &ScreenShotFormat, 1);
+#endif
+	}
+}
+
+
 static void GUIWindowMove(void)
 {
 	u1 const id = GUIwinorder[GUIwinptr - 1];
@@ -823,7 +865,7 @@ static void GUIWinClicked(u4 const i, u4 const id)
 			case  1: DisplayGUIConfirmClick(  rx, ry); return;
 			case  2: DisplayGUIChoseSaveClick(rx, ry); return;
 			case  3: DisplayGUIInputClick(    rx, ry); return;
-			case  4: f = DisplayGUIOptionClick;      break;
+			case  4: DisplayGUIOptionClick(   rx, ry); return;
 			case  5: f = DisplayGUIVideoClick;       break;
 			case  6: f = DisplayGUISoundClick;       break;
 			case  7: f = DisplayGUICheatClick;       break;

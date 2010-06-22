@@ -42,17 +42,17 @@
 
 %include "macros.mac"
 
-EXTSYM frameskip,newengen,cvidmode,antienab
+EXTSYM frameskip,cvidmode,antienab
 EXTSYM soundon,StereoSound,SoundQuality,MusicRelVol
 EXTSYM cbitmode
 EXTSYM scanlines
 EXTSYM pressed
 EXTSYM FPSOn,RevStereo,WDSPReg0C
-EXTSYM WDSPReg1C,vidbufferofsb,bgfixer
+EXTSYM WDSPReg1C,vidbufferofsb
 EXTSYM RelPathBase
-EXTSYM Clear2xSaIBuffer,Show224Lines
+EXTSYM Clear2xSaIBuffer
 EXTSYM NumVideoModes,MusicVol,DSPMem
-EXTSYM device1,device2,TwelveHourClock
+EXTSYM device1,device2
 EXTSYM GUIM7VID,GUINTVID,GUIHQ2X
 EXTSYM nssdip1,nssdip2,nssdip3,nssdip4,nssdip5,nssdip6
 EXTSYM AutoLoadCht,GUILoadData
@@ -89,26 +89,22 @@ EXTSYM KeyRewind,KeyEmuSpeedUp,KeyEmuSpeedDown,KeyFRateUp,KeyFRateDown
 EXTSYM KeyFastFrwrd,KeySlowDown,KeyResetSpeed,EMUPauseKey,INCRFrameKey
 EXTSYM KeyWinDisble,KeyOffsetMSw,JoyPad1Move,init_save_paths
 EXTSYM mousewrap,GUIRClick
-EXTSYM FPSAtStart,TimerEnable,SmallMsgText,mouse1lh,mouse2lh
-EXTSYM AutoPatch,RomInfo,GrayscaleMode,GUIMovieForcedText
+EXTSYM mouse1lh,mouse2lh
+EXTSYM GrayscaleMode,GUIMovieForcedText
 EXTSYM Mode7HiRes16b,FFRatio,SDRatio,EmuSpeed,mouseshad
 EXTSYM esctomenu,lhguimouse
-EXTSYM GUIEnableTransp,FilteredGUI,Surround,SPCDisable,nosaveSRAM
+EXTSYM FilteredGUI,Surround,SPCDisable,nosaveSRAM
 EXTSYM FastFwdToggle
 EXTSYM KeyDisplayBatt,KeyIncreaseGamma,KeyDecreaseGamma,vsyncon
 EXTSYM newfont
-EXTSYM DisableScreenSaver
-EXTSYM ClockBox,DisplayInfo
-EXTSYM ScreenShotFormat
 EXTSYM SSAutoFire,SSPause
 
 %ifdef __UNIXSDL__
 EXTSYM CheckOpenGL
 %elifdef __WIN32__
-EXTSYM initDirectDraw,reInitSound,CheckPriority,AlwaysOnTop
-EXTSYM CheckScreenSaver,MouseWheel,TrapMouseCursor,AllowMultipleInst,TripleBufferWin
-EXTSYM HighPriority,SaveMainWindowPos,PrimaryBuffer
-EXTSYM PauseFocusChange
+EXTSYM initDirectDraw,reInitSound,AlwaysOnTop
+EXTSYM MouseWheel,TrapMouseCursor,AllowMultipleInst,TripleBufferWin
+EXTSYM SaveMainWindowPos,PrimaryBuffer
 %elifdef __MSDOS__
 EXTSYM dssel,initvideo2,Force8b,smallscreenon
 EXTSYM Triplebufen,ScreenScale

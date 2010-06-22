@@ -12,7 +12,6 @@ extern void DisplayGUICheatSearchClick2();
 extern void DisplayGUIChipClick();
 extern void DisplayGUIComboClick();
 extern void DisplayGUIComboClick2();
-extern void DisplayGUIOptionClick();
 extern void DisplayGUIOptnsClick();
 extern void DisplayGUIPathsClick();
 extern void DisplayGUIResetClick();

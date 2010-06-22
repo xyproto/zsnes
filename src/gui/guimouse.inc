@@ -736,47 +736,6 @@ SECTION .text
 
 ; Mouse implementation
 
-NEWSYM DisplayGUIOptionClick
-  GUIPTabClick 0,39,1,GUIOptionTabs
-  GUIPTabClick 40,74,2,GUIOptionTabs
-  cmp dword[GUIOptionTabs],1
-  jne near .notbasic
-  cmp byte[ShowMMXSupport],1
-  jne .nommx
-  GUIClickCButton 11,31,byte[MMXSupport]
-.nommx
-  GUIClickCButton 11,41,byte[Show224Lines]
-  GUIClickCButton 11,71,byte[newengen]
-  GUIClickCButton 11,81,byte[bgfixer]
-  GUIClickCButton 11,111,byte[AutoPatch]
-  GUIClickCButton 11,121,byte[DisplayInfo]
-  GUIClickCButton 11,131,byte[RomInfo]
-%ifdef __WIN32__
-  GUIClickCButton 11,161,byte[PauseFocusChange]
-  GUIClickCButton 11,171,byte[HighPriority]
-  ccallv CheckPriority
-  GUIClickCButton 11,181,byte[DisableScreenSaver]
-  ccallv CheckScreenSaver
-%else
-  GUIClickCButton 11,181,byte[DisableScreenSaver]
-%endif
-.notbasic
-
-  cmp dword[GUIOptionTabs],2
-  jne near .notmore
-  GUIClickCButton 11,31,byte[FPSAtStart]
-  GUIClickCButton 11,41,byte[TimerEnable]
-  GUIClickCButton 89,41,byte[TwelveHourClock]
-  GUIClickCButton 11,51,byte[ClockBox]
-  GUIClickCButton 11,81,byte[SmallMsgText]
-  GUIClickCButton 11,91,byte[GUIEnableTransp]
-  GUIPButtonHole 11,121,byte[ScreenShotFormat],0
-%ifndef NO_PNG
-  GUIPButtonHole 11,131,byte[ScreenShotFormat],1
-%endif
-.notmore
-  ret
-
 NEWSYM DisplayGUIVideoClick2
   cmp dword[GUIVideoTabs],1  ; modes
   jne near .notmodestab2
