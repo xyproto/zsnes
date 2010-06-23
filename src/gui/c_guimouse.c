@@ -1805,6 +1805,13 @@ static void DisplayGUIResetClick(s4 const eax, s4 const edx)
 }
 
 
+static void DisplayGUIStatesClick(s4 const eax, s4 const edx)
+{
+	GUIPHoldbutton(eax, edx, 20, 30,  56, 41, 10);
+	GUIPHoldbutton(eax, edx, 80, 30, 116, 41, 11);
+}
+
+
 static void GUIWindowMove(void)
 {
 	u1 const id = GUIwinorder[GUIwinptr - 1];
@@ -1868,7 +1875,7 @@ static void GUIWinClicked(u4 const i, u4 const id)
 			case 11: DisplayGUIAboutClick(    rx, ry); return;
 			case 12: DisplayGUIResetClick(    rx, ry); return;
 			case 13: f = DisplayGUICheatSearchClick; break;
-			case 14: f = DisplayGUIStatesClick;      break;
+			case 14: DisplayGUIStatesClick(   rx, ry); return;
 			case 15: DisplayGUIMovieClick(    rx, ry); return;
 			case 16: DisplayGUIComboClick(    rx, ry); return;
 			case 17: f = DisplayGUIAddOnClick;       break;

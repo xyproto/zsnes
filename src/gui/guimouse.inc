@@ -509,11 +509,6 @@ NEWSYM NTSCPresetVar, dd 4
 
 SECTION .text
 
-NEWSYM DisplayGUIStatesClick
-  GUIPHoldbutton 20,30,56,41,10
-  GUIPHoldbutton 80,30,116,41,11
-  ret
-
 NEWSYM DisplayGUICheatSearchClick2
   cmp byte[CheatWinMode],2
   je near DisplayGUICheatSearchClick.preview

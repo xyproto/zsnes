@@ -10,7 +10,6 @@ extern void DisplayGUIChipClick();
 extern void DisplayGUIPathsClick();
 extern void DisplayGUISaveClick();
 extern void DisplayGUISpeedClick();
-extern void DisplayGUIStatesClick();
 
 extern s4 GUIlastypos;
 extern u4 GUIBlankVar;
