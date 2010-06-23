@@ -509,11 +509,6 @@ NEWSYM NTSCPresetVar, dd 4
 
 SECTION .text
 
-NEWSYM DisplayGUIResetClick
-  GUIPHoldbutton 20,30,56,41,2
-  GUIPHoldbutton 80,30,116,41,3
-  ret
-
 NEWSYM DisplayGUIStatesClick
   GUIPHoldbutton 20,30,56,41,10
   GUIPHoldbutton 80,30,116,41,11
