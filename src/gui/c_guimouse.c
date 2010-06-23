@@ -1457,6 +1457,9 @@ static void DisplayGUICheatClick2(s4 const eax, s4 const edx)
 }
 
 
+static void DisplayNetOptnsClick(void) {}
+
+
 static void GUIWindowMove(void)
 {
 	u1 const id = GUIwinorder[GUIwinptr - 1];
@@ -1514,7 +1517,7 @@ static void GUIWinClicked(u4 const i, u4 const id)
 			case  5: DisplayGUIVideoClick(    rx, ry); return;
 			case  6: DisplayGUISoundClick();           return;
 			case  7: DisplayGUICheatClick(    rx, ry); return;
-			case  8: f = DisplayNetOptnsClick;       break;
+			case  8: DisplayNetOptnsClick();           return;
 			case  9: f = DisplayGameOptnsClick;      break;
 			case 10: f = DisplayGUIOptnsClick;       break;
 			case 11: f = DisplayGUIAboutClick;       break;
