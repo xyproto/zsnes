@@ -648,6 +648,12 @@ static void GUIPTabClick(s4 const eax, s4 const edx, s4 const p1, s4 const p2, u
 }
 
 
+static void GUIBoxVar(s4 const eax, s4 const edx, s4 const p1, s4 const p2, s4 const p3, s4 const p4, u4* const p5, u4 const p6)
+{
+	if (GUIClickArea(eax, edx, p1, p2, p3, p4)) *p5 = p6;
+}
+
+
 static void DisplayGUIConfirmClick_skipscrol(s4 const eax, s4 const edx)
 {
 	if (GUIClickCButtonL(eax, edx, 10, 187)) return;
@@ -1416,6 +1422,41 @@ static void DisplayGUISoundClick(void)
 }
 
 
+static void DisplayGUICheatClick_skipscrol(s4 const eax, s4 const edx)
+{
+	if (GUIcurrentcheatwin == 0)
+	{
+		GUIWinControl(eax, edx, 5, 23, 229, 21 + 12 * 7, &GUIBlankVar, &GUIcurrentcheatviewloc, &NumCheats, 22, 7, &GUIcurrentcheatcursloc, 3, 7, 30);
+	}
+
+	GUIPHoldbutton(  eax, edx,   5, 113,  47, 124,  5); // Buttons
+	GUIPHoldbutton(  eax, edx,  52, 113,  94, 124,  6);
+	GUIPHoldbutton(  eax, edx,  99, 113, 141, 124,  7);
+	GUIPHoldbutton(  eax, edx, 146, 113, 188, 124,  8);
+	GUIPHoldbutton(  eax, edx, 212, 134, 236, 145,  9);
+	GUIPHoldbutton(  eax, edx, 193, 113, 235, 124, 33);
+	GUIClickCButton5(eax, edx,  11, 186, &AutoLoadCht, 1); // Checkbox
+}
+
+
+static void DisplayGUICheatClick(s4 const eax, s4 const edx)
+{
+	GUIBoxVar(eax, edx,  5,  20, 181, 110, &GUIcurrentcheatwin, 0); // Main Box
+	GUIBoxVar(eax, edx, 82, 129, 173, 136, &GUIcurrentcheatwin, 1); // Enter Code Box
+	GUIBoxVar(eax, edx, 82, 140, 196, 147, &GUIcurrentcheatwin, 2); // Description Box
+	// SlideBar Implementation
+	if (GUISlidebarImpl(eax, edx, 231, 28, 238, 100, GUICStA, 12, &GUIcurrentcheatviewloc, &GUIcurrentcheatcursloc, &NumCheats, 7)) return;
+	DisplayGUICheatClick_skipscrol(eax, edx);
+}
+
+
+static void DisplayGUICheatClick2(s4 const eax, s4 const edx)
+{
+	if (GUISlidebarPostImpl(eax, edx, 231, 28, 238, 100, 7, 12, &GUIcurrentcheatviewloc, &GUIcurrentcheatcursloc, &NumCheats, &GUIBlankVar, 1, 5, 22, 229, 22 + 12 * 7, &GUIcurrentcheatviewloc, &GUIcurrentcheatcursloc, &NumCheats, DisplayGUICheatClick_skipscrol, 12)) return;
+	DisplayGUICheatClick(eax, edx);
+}
+
+
 static void GUIWindowMove(void)
 {
 	u1 const id = GUIwinorder[GUIwinptr - 1];
@@ -1426,7 +1467,7 @@ static void GUIWindowMove(void)
 	{
 		case  3: DisplayGUIInputClick2(  rx, ry); return;
 		case  5: DisplayGUIVideoClick2(  rx, ry); return;
-		case  7: f = DisplayGUICheatClick2;       break;
+		case  7: DisplayGUICheatClick2(  rx, ry); return;
 		case 13: f = DisplayGUICheatSearchClick2; break;
 		case 16: f = DisplayGUIComboClick2;       break;
 		default: DisplayGUIConfirmClick2(rx, ry); return;
@@ -1472,7 +1513,7 @@ static void GUIWinClicked(u4 const i, u4 const id)
 			case  4: DisplayGUIOptionClick(   rx, ry); return;
 			case  5: DisplayGUIVideoClick(    rx, ry); return;
 			case  6: DisplayGUISoundClick();           return;
-			case  7: f = DisplayGUICheatClick;       break;
+			case  7: DisplayGUICheatClick(    rx, ry); return;
 			case  8: f = DisplayNetOptnsClick;       break;
 			case  9: f = DisplayGameOptnsClick;      break;
 			case 10: f = DisplayGUIOptnsClick;       break;

@@ -50,7 +50,7 @@ EXTSYM RelPathBase
 EXTSYM Clear2xSaIBuffer
 EXTSYM device1,device2
 EXTSYM nssdip1,nssdip2,nssdip3,nssdip4,nssdip5,nssdip6
-EXTSYM AutoLoadCht,GUILoadData
+EXTSYM GUILoadData
 EXTSYM GUISetPal
 
 EXTSYM GUIwinposx,GUIwinposy,maxskip,GUIEffect

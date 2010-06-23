@@ -75,19 +75,6 @@ SECTION .text
 %endmacro
 %endif
 
-%macro GUIClickCButton5 4
-  GUIClickArea %1+1,%2+3,%1+6,%2+8,%%noclick
-  cmp %3,%4
-  jne %%set
-  xor %3,%4
-  jmp %%clear
-%%set
-  mov %3,%4
-%%clear
-  ret
-%%noclick
-%endmacro
-
 %macro GUIClickCButtonfr 3
   GUIClickArea %1+1,%2+3,%1+6,%2+8,%%noclick
   mov byte[FPSOn],0
@@ -650,30 +637,6 @@ SECTION .data
 NEWSYM NTSCPresetVar, dd 4
 
 SECTION .text
-
-NEWSYM DisplayGUICheatClick2
-  GUISlidebarPostImpl 231,28,238,100,.scrollup,.scrolldown,7,12,GUIcurrentcheatviewloc,GUIcurrentcheatcursloc,NumCheats,GUIBlankVar,1
-  GUIPostWinBoxMove 5,22,229,22+12*7,GUIcurrentcheatviewloc,GUIcurrentcheatcursloc,NumCheats,.scrollup,.scrolldown,DisplayGUICheatClick.skipscrol,12
-
-NEWSYM DisplayGUICheatClick
-  GUIBoxVar 5,20,181,110,GUIcurrentcheatwin,0      ; Main Box
-  GUIBoxVar 82,129,173,136,GUIcurrentcheatwin,1    ; Enter Code Box
-  GUIBoxVar 82,140,196,147,GUIcurrentcheatwin,2    ; Description Box
-  ; SlideBar Implementation
-  GUISlidebarImpl 231,28,238,100,GUICStA,12,GUIcurrentcheatviewloc,GUIcurrentcheatcursloc,NumCheats,7
-.skipscrol
-  cmp byte[GUIcurrentcheatwin],0
-  jne near .nowin
-  GUIWinControl 5,23,229,21+12*7,GUIBlankVar,GUIcurrentcheatviewloc,NumCheats,22,7,GUIcurrentcheatcursloc,3,7,30
-.nowin
-  GUIPHoldbutton 5,113,47,124,5                  ; Buttons
-  GUIPHoldbutton 52,113,94,124,6
-  GUIPHoldbutton 99,113,141,124,7
-  GUIPHoldbutton 146,113,188,124,8
-  GUIPHoldbutton 212,134,236,145,9
-  GUIPHoldbutton 193,113,235,124,33
-  GUIClickCButton5 11,186,byte[AutoLoadCht],1    ; Checkbox
-  ret
 
 NEWSYM DisplayNetOptnsClick
   ret
