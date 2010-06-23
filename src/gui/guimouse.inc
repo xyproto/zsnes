@@ -40,15 +40,6 @@ SECTION .text
 %%noclick
 %endmacro
 
-%macro GUIClickCButtonf 4
-  GUIClickArea %1+1,%2+3,%1+6,%2+8,%%noclick
-  xor %3,1
-%ifdef __WIN32__
-  ccallv %4
-%endif
-%%noclick
-%endmacro
-
 %macro GUIClickCButtonC 3
   GUIClickArea %1+1,%2+3,%1+6,%2+8,%%noclick
   xor %3,1
@@ -658,80 +649,6 @@ NEWSYM GUIBlankVar, resd 1
 SECTION .data
 NEWSYM NTSCPresetVar, dd 4
 
-SECTION .text
-
-NEWSYM DisplayGUISoundClick
-  mov eax,[GUImouseposx]
-  sub eax,[GUIwinposx+6*4]
-  mov edx,[GUImouseposy]
-  sub edx,[GUIwinposy+6*4]
-
-  GUIClickCButton 11,21,byte[SPCDisable]
-  GUIClickCButtonf 11,31,byte[soundon],reInitSound
-  GUIClickCButton 11,41,byte[StereoSound]
-  GUIClickCButton 11,51,byte[RevStereo]
-  GUIClickCButton 11,61,byte[Surround]
-%ifdef __MSDOS__
-  GUIClickCButton 11,71,byte[Force8b]
-%endif
-%ifdef __WIN32__
-  GUIClickCButton 11,71,byte[PrimaryBuffer]
-%endif
-
-  GUIPButtonHole 11,157,byte[SoundInterpType],0
-  GUIPButtonHole 11,167,byte[SoundInterpType],1
-  GUIPButtonHole 11,177,byte[SoundInterpType],2
-  cmp byte[MMXSupport],0
-  je near .no8ptintrp
-  GUIPButtonHole 11,187,byte[SoundInterpType],3
-.no8ptintrp
-
-  GUIPButtonHole 111,157,byte[LowPassFilterType],0
-  GUIPButtonHole 111,167,byte[LowPassFilterType],1
-  GUIPButtonHole 111,177,byte[LowPassFilterType],2
-  cmp byte[MMXSupport],0
-  je near .nohiqualityfilter
-  GUIPButtonHole 111,187,byte[LowPassFilterType],3
-.nohiqualityfilter
-
-  GUIClickArea 15,101,69,109,.nosrate
-  mov eax,[SoundQuality]
-  mov al,[sampratenext+eax]
-  mov [SoundQuality],al
-.nosrate
-  GUIClickArea 15,129,115,133,{near .nomovebar}
-  sub eax,15
-  mov [MusicRelVol],al
-  mov byte[GUIHold],5
-  mov eax,[GUIwinposy+6*4]
-  add eax,131
-  mov [GUIHoldYlim],eax
-  xor eax,eax
-  xor edx,edx
-  mov al,[MusicRelVol]
-  shl eax,7
-  mov ebx,100
-  div ebx
-  cmp al,127
-  jb .noof
-  mov al,127
-.noof
-  mov [MusicVol],al
-  mov al,[DSPMem+0Ch]
-  call WDSPReg0C
-  mov al,[DSPMem+1Ch]
-  call WDSPReg1C
-
-  mov eax,[GUIwinposx+6*4]
-  add eax,15
-  mov [GUIHoldXlimL],eax
-  add eax,100
-  mov [GUIHoldXlimR],eax
-.nomovebar
-  ret
-
-SECTION .data
-sampratenext db 1,4,5,6,2,3,0,0
 SECTION .text
 
 NEWSYM DisplayGUICheatClick2

@@ -43,26 +43,24 @@
 %include "macros.mac"
 
 EXTSYM frameskip,cvidmode
-EXTSYM soundon,StereoSound,SoundQuality,MusicRelVol
 EXTSYM pressed
-EXTSYM FPSOn,RevStereo,WDSPReg0C
-EXTSYM WDSPReg1C,vidbufferofsb
+EXTSYM FPSOn
+EXTSYM vidbufferofsb
 EXTSYM RelPathBase
 EXTSYM Clear2xSaIBuffer
-EXTSYM MusicVol,DSPMem
 EXTSYM device1,device2
 EXTSYM nssdip1,nssdip2,nssdip3,nssdip4,nssdip5,nssdip6
 EXTSYM AutoLoadCht,GUILoadData
 EXTSYM GUISetPal
 
 EXTSYM GUIwinposx,GUIwinposy,maxskip,GUIEffect
-EXTSYM LowPassFilterType,savewinpos
+EXTSYM savewinpos
 EXTSYM SnapPath,SPCPath,BSXPath,SGPath,STPath,GNextPath
 EXTSYM SRAMPath,CheatSrcByteSize
 EXTSYM IPSPath,MoviePath,CHTPath,ComboPath,INPPath,SStatePath
 EXTSYM MMXSupport
 EXTSYM GUIRAdd,GUIGAdd,GUIBAdd,GUITRAdd,GUITGAdd,GUITBAdd,GUIWRAdd
-EXTSYM GUIWGAdd,GUIWBAdd,SoundInterpType
+EXTSYM GUIWGAdd,GUIWBAdd
 EXTSYM CheatSrcByteBase,CheatSrcSearchType,CheatUpperByteOnly,GUIComboGameSpec
 EXTSYM KeyStateSlc0,KeyStateSlc1,KeyStateSlc2,KeyStateSlc3,KeyStateSlc4
 EXTSYM KeyStateSlc5,KeyStateSlc6,KeyStateSlc7,KeyStateSlc8,KeyStateSlc9
@@ -88,7 +86,7 @@ EXTSYM mouse1lh,mouse2lh
 EXTSYM GUIMovieForcedText
 EXTSYM FFRatio,SDRatio,EmuSpeed,mouseshad
 EXTSYM esctomenu,lhguimouse
-EXTSYM FilteredGUI,Surround,SPCDisable,nosaveSRAM
+EXTSYM FilteredGUI,nosaveSRAM
 EXTSYM FastFwdToggle
 EXTSYM KeyDisplayBatt,KeyIncreaseGamma,KeyDecreaseGamma
 EXTSYM newfont
@@ -97,11 +95,11 @@ EXTSYM SSAutoFire,SSPause
 %ifdef __UNIXSDL__
 EXTSYM CheckOpenGL
 %elifdef __WIN32__
-EXTSYM initDirectDraw,reInitSound,AlwaysOnTop
+EXTSYM initDirectDraw,AlwaysOnTop
 EXTSYM MouseWheel,TrapMouseCursor,AllowMultipleInst
-EXTSYM SaveMainWindowPos,PrimaryBuffer
+EXTSYM SaveMainWindowPos
 %elifdef __MSDOS__
-EXTSYM dssel,Force8b
+EXTSYM dssel
 EXTSYM DOSClearScreen
 EXTSYM GUI36hzcall
 %endif

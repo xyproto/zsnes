@@ -16,7 +16,6 @@ extern void DisplayGUIOptnsClick();
 extern void DisplayGUIPathsClick();
 extern void DisplayGUIResetClick();
 extern void DisplayGUISaveClick();
-extern void DisplayGUISoundClick();
 extern void DisplayGUISpeedClick();
 extern void DisplayGUIStatesClick();
 extern void DisplayGameOptnsClick();

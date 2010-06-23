@@ -5,6 +5,7 @@
 #include "../c_init.h"
 #include "../c_intrf.h"
 #include "../cfg.h"
+#include "../cpu/dsp.h"
 #include "../cpu/execute.h"
 #include "../cpu/regs.h"
 #include "../gblvars.h"
@@ -190,9 +191,13 @@ static void GUIClickCButton(s4 const eax, s4 const edx, s4 const p1, s4 const p2
 }
 
 
-#ifdef __WIN32__
 
+#ifdef __WIN32__
 static void GUIClickCButtonf(s4 const eax, s4 const edx, s4 const p1, s4 const p2, u1* const p3, void (* const p4)(void))
+#else
+static void GUIClickCButtonf(s4 const eax, s4 const edx, s4 const p1, s4 const p2, u1* const p3)
+#	define GUIClickCButtonf(eax, edx, p1, p2, p3, p4) GUIClickCButtonf((eax), (edx), (p1), (p2), (p3))
+#endif
 {
 	if (GUIClickArea(eax, edx, p1 + 1, p2 + 3, p1 + 6, p2 + 8))
 	{
@@ -202,8 +207,6 @@ static void GUIClickCButtonf(s4 const eax, s4 const edx, s4 const p1, s4 const p
 #endif
 	}
 }
-
-#endif
 
 
 static void GUIClickCButtonK(s4 const eax, s4 const edx, s4 const p1, s4 const p2, u1* const p3, void (* const p4)(void))
@@ -1363,6 +1366,56 @@ static void DisplayGUIVideoClick2(s4 const eax, s4 const edx)
 }
 
 
+static void DisplayGUISoundClick(void)
+{
+	s4 const eax = GUImouseposx - GUIwinposx[6];
+	s4 const edx = GUImouseposy - GUIwinposy[6];
+
+	GUIClickCButton( eax, edx, 11, 21, &SPCDisable);
+	GUIClickCButtonf(eax, edx, 11, 31, &soundon, reInitSound);
+	GUIClickCButton( eax, edx, 11, 41, &StereoSound);
+	GUIClickCButton( eax, edx, 11, 51, &RevStereo);
+	GUIClickCButton( eax, edx, 11, 61, &Surround);
+#ifdef __MSDOS__
+	GUIClickCButton( eax, edx, 11, 71, &Force8b);
+#endif
+#ifdef __WIN32__
+	GUIClickCButton( eax, edx, 11, 71, &PrimaryBuffer);
+#endif
+
+	GUIPButtonHole(eax, edx, 11, 157, &SoundInterpType, 0);
+	GUIPButtonHole(eax, edx, 11, 167, &SoundInterpType, 1);
+	GUIPButtonHole(eax, edx, 11, 177, &SoundInterpType, 2);
+	if (MMXSupport != 0) GUIPButtonHole(eax, edx, 11, 187, &SoundInterpType, 3);
+
+	GUIPButtonHole(eax, edx, 111, 157, &LowPassFilterType, 0);
+	GUIPButtonHole(eax, edx, 111, 167, &LowPassFilterType, 1);
+	GUIPButtonHole(eax, edx, 111, 177, &LowPassFilterType, 2);
+	if (MMXSupport != 0) GUIPButtonHole(eax, edx, 111, 187, &LowPassFilterType, 3);
+
+	if (GUIClickArea(eax, edx, 15, 101, 69, 109))
+	{
+		static u1 const sampratenext[] = { 1, 4, 5, 6, 2, 3, 0, 0 };
+		SoundQuality = sampratenext[SoundQuality];
+	}
+
+	if (GUIClickArea(eax, edx, 15, 129, 115, 133))
+	{
+		MusicRelVol = eax - 15;
+		GUIHold     = 5;
+		GUIHoldYlim = GUIwinposy[6] + 131;
+		u4 const vol = MusicRelVol * 128 / 100;
+		MusicVol = vol < 127 ? vol : 127;
+		asm volatile("call %P0" :: "X" (WDSPReg0C), "a" (DSPMem[0x0C]) : "cc", "memory");
+		asm volatile("call %P0" :: "X" (WDSPReg1C), "a" (DSPMem[0x1C]) : "cc", "memory");
+
+		s4 const eax = GUIwinposx[6] + 15;
+		GUIHoldXlimL = eax;
+		GUIHoldXlimR = eax + 100;
+	}
+}
+
+
 static void GUIWindowMove(void)
 {
 	u1 const id = GUIwinorder[GUIwinptr - 1];
@@ -1418,7 +1471,7 @@ static void GUIWinClicked(u4 const i, u4 const id)
 			case  3: DisplayGUIInputClick(    rx, ry); return;
 			case  4: DisplayGUIOptionClick(   rx, ry); return;
 			case  5: DisplayGUIVideoClick(    rx, ry); return;
-			case  6: f = DisplayGUISoundClick;       break;
+			case  6: DisplayGUISoundClick();           return;
 			case  7: f = DisplayGUICheatClick;       break;
 			case  8: f = DisplayNetOptnsClick;       break;
 			case  9: f = DisplayGameOptnsClick;      break;
@@ -1646,7 +1699,7 @@ noclick:;
 				u4 const maxx = GUIHoldXlimR;
 				if (x > maxx) GUImouseposx = maxx;
 				lastmouseholded = 1;
-				asm_call(DisplayGUISoundClick);
+				DisplayGUISoundClick();
 				return;
 			}
 
