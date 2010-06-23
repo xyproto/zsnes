@@ -657,7 +657,6 @@ NEWSYM GUINumValue, resd 1
 NEWSYM GUIBlankVar, resd 1
 SECTION .data
 NEWSYM NTSCPresetVar, dd 4
-NEWSYM OGLCheckVar, db 0
 
 SECTION .text
 
