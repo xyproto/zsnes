@@ -3,7 +3,6 @@
 
 #include "../types.h"
 
-extern void DisplayGUIAboutClick();
 extern void DisplayGUIAddOnClick();
 extern void DisplayGUICheatSearchClick();
 extern void DisplayGUICheatSearchClick2();

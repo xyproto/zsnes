@@ -1601,6 +1601,18 @@ static void DisplayGUIOptnsClick(void)
 }
 
 
+static void DisplayGUIAboutClick(s4 const eax, s4 const edx)
+{
+#ifndef __MSDOS__
+	if (EEgg != 1)
+	{
+		GUIPHoldbutton(eax, edx, 90, 22, 175, 32, 65);
+		GUIPHoldbutton(eax, edx, 90, 33, 175, 43, 66);
+	}
+#endif
+}
+
+
 static void GUIWindowMove(void)
 {
 	u1 const id = GUIwinorder[GUIwinptr - 1];
@@ -1661,7 +1673,7 @@ static void GUIWinClicked(u4 const i, u4 const id)
 			case  8: DisplayNetOptnsClick();           return;
 			case  9: DisplayGameOptnsClick(   rx, ry); return;
 			case 10: DisplayGUIOptnsClick();           return;
-			case 11: f = DisplayGUIAboutClick;       break;
+			case 11: DisplayGUIAboutClick(    rx, ry); return;
 			case 12: f = DisplayGUIResetClick;       break;
 			case 13: f = DisplayGUICheatSearchClick; break;
 			case 14: f = DisplayGUIStatesClick;      break;

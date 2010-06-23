@@ -617,16 +617,6 @@ NEWSYM NTSCPresetVar, dd 4
 
 SECTION .text
 
-NEWSYM DisplayGUIAboutClick
-%ifndef __MSDOS__
-  cmp byte[EEgg],1
-  je near .eegg
-  GUIPHoldbutton 90,22,175,32,65
-  GUIPHoldbutton 90,33,175,43,66
-.eegg
-%endif
-  ret
-
 ; DrawSlideBar 16,192,20,[GUIccombviewloc],[NumCombo],8,61,GUICSStC,13,14
 ;    DrawBorderedBox 16,10,20,190,80,19
 
