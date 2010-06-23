@@ -191,6 +191,17 @@ static void GUIClickCButton(s4 const eax, s4 const edx, s4 const p1, s4 const p2
 }
 
 
+static void GUIClickCButtonC(s4 const eax, s4 const edx, s4 const p1, s4 const p2, u1* const p3)
+{
+	if (GUIClickArea(eax, edx, p1 + 1, p2 + 3, p1 + 6, p2 + 8))
+	{
+		*p3 ^= 1;
+		GUIccombviewloc  = 0;
+		GUIccombcursloc  = 0;
+		GUIccomblcursloc = 0;
+	}
+}
+
 
 #ifdef __WIN32__
 static void GUIClickCButtonf(s4 const eax, s4 const edx, s4 const p1, s4 const p2, u1* const p3, void (* const p4)(void))
@@ -606,6 +617,48 @@ static bool GUIWinControl(s4 const eax, s4 const edx, s4 const p1, s4 const p2, 
 }
 
 
+static bool GUIWinControl2(s4 const eax, s4 const edx, s4 const p1, s4 const p2, s4 const p3, s4 const p4, u4* const p5, s4 const p6, s4 const* const p7, s4 const p8, s4 const p9, s4* const p10, u4 const p11, u4 const p12, u4 const p13) // Key Combination Editor Exclusive
+{
+	if (GUIClickArea(eax, edx, p1, p2, p3, p4) && *p7 != 0)
+	{
+		GUIccomblcursloc = 0xFFFFFFFF;
+		*p5              = p11;
+		s4 const eax = (edx - p8) / p9 + p6;
+		if (eax <= *p7 - 1) *p10 = eax;
+
+		if (GUIHold == 0)
+		{
+			if (GUIDClickTL != 0 && GUIDClCWin == p11 && GUIDClCEntry == eax)
+			{
+				GUIDClickTL = 0;
+				u4 const eax = p12;
+				if (eax == 1)
+				{
+					GUILoadData();
+				}
+				else
+				{
+					CheatCodeToggle();
+				}
+				return true;
+			}
+			GUIDClickTL  = p13;
+			GUIDClCWin   = p11;
+			GUIDClCEntry = eax;
+		}
+
+		GUIHoldYlim  = GUIwinposy[p12] + p2 - 1;
+		GUIHoldYlimR = GUIwinposy[p12] + p4 + 1;
+		GUIHoldXlimL = GUIwinposx[p12] + p1;
+		GUIHoldXlimR = GUIwinposx[p12] + p3;
+		GUIHold      = 3;
+		return true;
+	}
+
+	return false;
+}
+
+
 static bool DGOptnsProcBox(s4 const eax, s4 const edx, s4 const p1, s4 const p2, u4* const p3)
 {
 	if (GUIClickArea(eax, edx, p1, p2, p1 + 19, p2 + 6))
@@ -621,6 +674,31 @@ static bool DGOptnsProcBox(s4 const eax, s4 const edx, s4 const p1, s4 const p2,
 		else
 		{
 			*p3 = 0;
+		}
+		return true;
+	}
+
+	return false;
+}
+
+
+static bool DGOptnsProcBoxc(s4 const eax, s4 const edx, s4 const p1, s4 const p2, s4 const p3, s4 const p4, u4* const p5)
+{
+	if (GUIClickArea(eax, edx, p1, p2, p3, p4))
+	{
+		u4 const ebx = guipresstest();
+		switch (ebx)
+		{
+			case 1: // ESC
+				pressed[1] = 2;
+				/* FALLTHROUGH */
+			case 0x3B: // Cancel
+				*p5 = 0;
+				break;
+
+			default:
+				*p5 = ebx;
+				break;
 		}
 		return true;
 	}
@@ -651,6 +729,21 @@ static void GUIPTabClick(s4 const eax, s4 const edx, s4 const p1, s4 const p2, u
 static void GUIBoxVar(s4 const eax, s4 const edx, s4 const p1, s4 const p2, s4 const p3, s4 const p4, u4* const p5, u4 const p6)
 {
 	if (GUIClickArea(eax, edx, p1, p2, p3, p4)) *p5 = p6;
+}
+
+
+static void ComboBoxProc(s4 const eax, s4 const edx, s4 const p1, s4 const p2, s4 const p3, s4 const p4, u1 const p5)
+{
+	if (GUIClickArea(eax, edx, p1, p2, p3, p4) && GUINumCombo != 42)
+	{
+		GUIComboData[GUINumCombo++] = p5;
+	}
+}
+
+
+static void ComboBoxProcD(s4 const eax, s4 const edx, s4 const p1, s4 const p2, s4 const p3, s4 const p4)
+{
+	if (GUIClickArea(eax, edx, p1, p2, p3, p4) && GUINumCombo != 0) --GUINumCombo;
 }
 
 
@@ -1613,6 +1706,98 @@ static void DisplayGUIAboutClick(s4 const eax, s4 const edx)
 }
 
 
+static void DisplayGUIComboClick_skipscrol(s4 const eax, s4 const edx)
+{
+	// x,y,x2,y2,currentwin,vpos,#entries,starty,y/entry,cpos,winval,win#,dclicktick#
+	if (GUIWinControl2(eax, edx, 10, 23, 190, 22 + 8 * 7, &GUIBlankVar, GUIccombviewloc, (s4 const*)&NumCombo, 23, 7, (s4*)&GUIccombcursloc, 6, 16, 0)) return;
+
+	GUIPButtonHole(  eax, edx, 158, 82, &GUIComboPNum, 0);
+	GUIPButtonHole(  eax, edx, 176, 82, &GUIComboPNum, 1);
+	GUIPButtonHole(  eax, edx, 194, 82, &GUIComboPNum, 2);
+	GUIPButtonHole(  eax, edx, 212, 82, &GUIComboPNum, 3);
+	GUIPButtonHole(  eax, edx, 230, 82, &GUIComboPNum, 4);
+	GUIClickCButton( eax, edx, 163, 88, &GUIComboLHorz);
+	GUIClickCButtonC(eax, edx, 163, 96, &GUIComboGameSpec);
+	GUIPHoldbutton(  eax, edx, 202, 20, 246, 31, 60);
+	GUIPHoldbutton(  eax, edx, 202, 35, 246, 46, 61);
+	GUIPHoldbutton(  eax, edx, 202, 50, 246, 61, 62);
+	GUIPHoldbutton(  eax, edx, 202, 65, 246, 76, 63);
+	if (DGOptnsProcBoxc(eax, edx,  10, 91, 32, 99, &GUIComboKey)) return;
+
+	ComboBoxProc(eax, edx,  75, 150,  85, 157,  1);
+	ComboBoxProc(eax, edx,  89, 150,  99, 157,  2);
+	ComboBoxProc(eax, edx, 103, 150, 113, 157,  3);
+	ComboBoxProc(eax, edx, 117, 150, 127, 157,  4);
+	ComboBoxProc(eax, edx, 131, 150, 141, 157,  5);
+	ComboBoxProc(eax, edx, 145, 150, 155, 157,  6);
+	ComboBoxProc(eax, edx, 159, 150, 169, 157,  7);
+	ComboBoxProc(eax, edx, 173, 150, 183, 157,  8);
+	ComboBoxProc(eax, edx, 187, 150, 197, 157,  9);
+	ComboBoxProc(eax, edx, 201, 150, 211, 157, 10);
+	ComboBoxProc(eax, edx, 215, 150, 227, 157, 11);
+	ComboBoxProc(eax, edx, 231, 150, 243, 157, 12);
+	ComboBoxProc(eax, edx,  75, 160,  85, 167, 13);
+	ComboBoxProc(eax, edx,  89, 160,  99, 167, 14);
+	ComboBoxProc(eax, edx, 103, 160, 113, 167, 15);
+	ComboBoxProc(eax, edx, 117, 160, 127, 167, 16);
+	ComboBoxProc(eax, edx, 131, 160, 141, 167, 17);
+	ComboBoxProc(eax, edx, 145, 160, 155, 167, 18);
+	ComboBoxProc(eax, edx, 159, 160, 169, 167, 19);
+	ComboBoxProc(eax, edx, 173, 160, 183, 167, 20);
+	ComboBoxProc(eax, edx, 187, 160, 197, 167, 21);
+	ComboBoxProc(eax, edx, 201, 160, 211, 167, 22);
+	ComboBoxProc(eax, edx, 215, 160, 227, 167, 23);
+	ComboBoxProc(eax, edx, 231, 160, 243, 167, 24);
+	ComboBoxProc(eax, edx,  75, 170,  85, 177, 25);
+	ComboBoxProc(eax, edx,  89, 170,  99, 177, 26);
+	ComboBoxProc(eax, edx, 103, 170, 113, 177, 27);
+	ComboBoxProc(eax, edx, 117, 170, 127, 177, 28);
+	ComboBoxProc(eax, edx, 131, 170, 141, 177, 29);
+	ComboBoxProc(eax, edx, 145, 170, 155, 177, 30);
+	ComboBoxProc(eax, edx, 159, 170, 169, 177, 31);
+	ComboBoxProc(eax, edx, 173, 170, 183, 177, 32);
+	ComboBoxProc(eax, edx, 187, 170, 197, 177, 33);
+	ComboBoxProc(eax, edx, 201, 170, 211, 177, 34);
+	ComboBoxProc(eax, edx, 215, 170, 227, 177, 35);
+	ComboBoxProc(eax, edx, 231, 170, 243, 177, 36);
+
+	ComboBoxProc(eax, edx,  10, 189,  20, 196, 37);
+	ComboBoxProc(eax, edx,  24, 189,  34, 196, 38);
+	ComboBoxProc(eax, edx,  38, 189,  48, 196, 39);
+	ComboBoxProc(eax, edx,  52, 189,  62, 196, 40);
+	ComboBoxProc(eax, edx,  66, 189,  76, 196, 41);
+	ComboBoxProc(eax, edx,  80, 189,  90, 196, 42);
+	ComboBoxProc(eax, edx, 107, 189, 117, 196, 43);
+	ComboBoxProc(eax, edx, 121, 189, 131, 196, 44);
+	ComboBoxProc(eax, edx, 135, 189, 145, 196, 45);
+	ComboBoxProc(eax, edx, 149, 189, 159, 196, 46);
+	ComboBoxProc(eax, edx, 163, 189, 173, 196, 47);
+	ComboBoxProc(eax, edx, 177, 189, 187, 196, 48);
+	ComboBoxProcD(eax, edx, 204, 189, 218, 196);
+
+	NumCombo = GUIComboGameSpec == 0 ? NumComboGlob : NumComboLocl;
+}
+
+
+static void DisplayGUIComboClick(s4 const eax, s4 const edx)
+{
+	// SlideBar Implementation
+	// x1,y1,x2,y2,GUI?StA,ScrnSize,ViewLoc,CursLoc,Entries,win#
+	if (GUISlidebarImpl(eax, edx, 192, 28, 199, 72, GUICSStC, 8, &GUIccombviewloc, &GUIccombviewloc, &NumCombo, 16)) return;
+	DisplayGUIComboClick_skipscrol(eax, edx);
+}
+
+
+static void DisplayGUIComboClick2(s4 const eax, s4 const edx)
+{
+	keycontrolval = 0;
+	// x1,y1,x2,y2,upjump,downjump,holdpos,scsize,view,cur,listsize
+	// x1,y1,x2,y2,view,curs,num,.scru,.scrd,jumpto,sizeofscreen
+	if (GUISlidebarPostImpl(eax, edx, 192, 28, 199, 72, 13, 8, &GUIccombviewloc, &GUIccombcursloc, &NumCombo, &GUIBlankVar, 1, 10, 22, 190, 23 + 8 * 7, &GUIccombviewloc, &GUIccombcursloc, &NumCombo, DisplayGUIComboClick_skipscrol, 8)) return;
+	DisplayGUIComboClick(eax, edx);
+}
+
+
 static void GUIWindowMove(void)
 {
 	u1 const id = GUIwinorder[GUIwinptr - 1];
@@ -1625,7 +1810,7 @@ static void GUIWindowMove(void)
 		case  5: DisplayGUIVideoClick2(  rx, ry); return;
 		case  7: DisplayGUICheatClick2(  rx, ry); return;
 		case 13: f = DisplayGUICheatSearchClick2; break;
-		case 16: f = DisplayGUIComboClick2;       break;
+		case 16: DisplayGUIComboClick2(  rx, ry); return;
 		default: DisplayGUIConfirmClick2(rx, ry); return;
 	}
 	asm volatile("call *%0" :: "r" (f), "a" (rx), "d" (ry) : "cc", "memory"); // XXX asm_call
@@ -1678,7 +1863,7 @@ static void GUIWinClicked(u4 const i, u4 const id)
 			case 13: f = DisplayGUICheatSearchClick; break;
 			case 14: f = DisplayGUIStatesClick;      break;
 			case 15: DisplayGUIMovieClick(    rx, ry); return;
-			case 16: f = DisplayGUIComboClick;       break;
+			case 16: DisplayGUIComboClick(    rx, ry); return;
 			case 17: f = DisplayGUIAddOnClick;       break;
 			case 18: f = DisplayGUIChipClick;        break;
 			case 19: f = DisplayGUIPathsClick;       break;

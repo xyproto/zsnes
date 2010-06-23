@@ -7,8 +7,6 @@ extern void DisplayGUIAddOnClick();
 extern void DisplayGUICheatSearchClick();
 extern void DisplayGUICheatSearchClick2();
 extern void DisplayGUIChipClick();
-extern void DisplayGUIComboClick();
-extern void DisplayGUIComboClick2();
 extern void DisplayGUIPathsClick();
 extern void DisplayGUIResetClick();
 extern void DisplayGUISaveClick();

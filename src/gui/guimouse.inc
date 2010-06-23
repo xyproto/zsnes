@@ -40,15 +40,6 @@ SECTION .text
 %%noclick
 %endmacro
 
-%macro GUIClickCButtonC 3
-  GUIClickArea %1+1,%2+3,%1+6,%2+8,%%noclick
-  xor %3,1
-  mov dword[GUIccombviewloc],0
-  mov dword[GUIccombcursloc],0
-  mov dword[GUIccomblcursloc],0
-%%noclick
-%endmacro
-
 %ifdef __MSDOS__
 %macro GUIClickCButton3 3
   GUIClickArea %1+1,%2+3,%1+6,%2+8,%%noclick
@@ -435,63 +426,6 @@ SECTION .text
 %%noload
 %endmacro
 
-%macro GUIWinControl2 13 ;Key Combination Editor Exclusive
-  GUIClickArea %1,%2,%3,%4,{near %%noload}
-  cmp dword[%7],0
-  je near %%noload
-  mov dword[GUIccomblcursloc],0FFFFFFFFh
-  mov dword[%5],%11
-  mov eax,edx
-  sub eax,%8
-  xor edx,edx
-  mov ebx,%9
-  div ebx
-  add eax,[%6]
-  mov ebx,[%7]
-  dec ebx
-  cmp eax,ebx
-  jg %%nomod
-  mov [%10],eax
-%%nomod
-  cmp byte[GUIHold],0
-  jne %%held
-  cmp dword[GUIDClickTL],0
-  je %%noprevhold
-  cmp byte[GUIDClCWin],%11
-  jne %%noprevhold
-  cmp [GUIDClCEntry],eax
-  jne %%noprevhold
-  mov dword[GUIDClickTL],0
-  mov eax,%12
-  cmp eax,1
-  jne %%cheat
-  ccallv GUILoadData
-  ret
-%%cheat
-  ccallv CheatCodeToggle
-  ret
-%%noprevhold
-  mov dword[GUIDClickTL],%13
-  mov byte[GUIDClCWin],%11
-  mov [GUIDClCEntry],eax
-%%held
-  mov eax,[GUIwinposy+%12*4]
-  add eax,%2-1
-  mov [GUIHoldYlim],eax
-  mov eax,[GUIwinposy+%12*4]
-  add eax,%4+1
-  mov [GUIHoldYlimR],eax
-  mov eax,[GUIwinposx+%12*4]
-  add eax,%1
-  mov [GUIHoldXlimL],eax
-  mov eax,[GUIwinposx+%12*4]
-  add eax,%3
-  mov [GUIHoldXlimR],eax
-  mov byte[GUIHold],3
-  ret
-%%noload
-%endmacro
-
 %macro DGOptnsProcBox 3
   GUIClickArea %1,%2,%1+19,%2+6,%%skip
   push edi
@@ -516,29 +450,6 @@ SECTION .text
 %%cancelkey
   xor ebx,ebx
   mov %3,ebx
-  ret
-%%skip
-%endmacro
-
-%macro DGOptnsProcBoxc 5
-  GUIClickArea %1,%2,%3,%4,%%skip
-  push edi
-  ccall guipresstest
-  mov ebx, eax
-  pop edi
-  cmp ebx,1
-  je %%cancelkey
-  cmp ebx,3Bh
-  je %%cancelkey
-  mov %5,ebx
-  ret
-%%cancelkey
-  cmp ebx,1
-  jne %%noesc
-  mov byte[pressed+1],2
-%%noesc
-  xor ebx,ebx
-  mov %5,ebx
   ret
 %%skip
 %endmacro
@@ -588,25 +499,6 @@ SECTION .text
 %%nope
 %endmacro
 
-%macro ComboBoxProc 5
-  GUIClickArea %1,%2,%3,%4,%%nope
-  cmp byte[GUINumCombo],42
-  je %%nope
-  xor ebx,ebx
-  mov bl,[GUINumCombo]
-  mov byte[GUIComboData+ebx],%5
-  inc byte[GUINumCombo]
-%%nope
-%endmacro
-
-%macro ComboBoxProcD 4
-  GUIClickArea %1,%2,%3,%4,%%nope
-  cmp byte[GUINumCombo],0
-  je %%nope
-  dec byte[GUINumCombo]
-%%nope
-%endmacro
-
 ; Mouse implementation
 
 SECTION .bss
@@ -616,97 +508,6 @@ SECTION .data
 NEWSYM NTSCPresetVar, dd 4
 
 SECTION .text
-
-; DrawSlideBar 16,192,20,[GUIccombviewloc],[NumCombo],8,61,GUICSStC,13,14
-;    DrawBorderedBox 16,10,20,190,80,19
-
-;    ccallv DrawSlideBarWin, 3, 109, 42, [GUIcurrentinputviewloc], 16, 5, 28, GUIIStA
-
-NEWSYM DisplayGUIComboClick2
-  mov dword[keycontrolval],0
-  ; x1,y1,x2,y2,upjump,downjump,holdpos,scsize,view,cur,listsize
-  GUISlidebarPostImpl 192,28,199,72,.scrollup,.scrolldown,13,8,GUIccombviewloc,GUIccombcursloc,NumCombo,GUIBlankVar,1
-  ;x1,y1,x2,y2,view,curs,num,.scru,.scrd,jumpto,sizeofscreen
-  GUIPostWinBoxMove 10,22,190,23+8*7,GUIccombviewloc,GUIccombcursloc,NumCombo,.scrollup,.scrolldown,DisplayGUIComboClick.skipscrol,8
-NEWSYM DisplayGUIComboClick
-  ; SlideBar Implementation
-  ; x1,y1,x2,y2,GUI?StA,ScrnSize,ViewLoc,CursLoc,Entries,win#
-  GUISlidebarImpl 192,28,199,72,GUICSStC,8,GUIccombviewloc,GUIccombviewloc,NumCombo,16
-.skipscrol
-  ;x,y,x2,y2,currentwin,vpos,#entries,starty,y/entry,cpos,winval,win#,dclicktick#
-  GUIWinControl2 10,23,190,22+8*7,GUIBlankVar,GUIccombviewloc,NumCombo,23,7,GUIccombcursloc,6,16,0
-
-  GUIPButtonHole 158,82,byte[GUIComboPNum],0
-  GUIPButtonHole 176,82,byte[GUIComboPNum],1
-  GUIPButtonHole 194,82,byte[GUIComboPNum],2
-  GUIPButtonHole 212,82,byte[GUIComboPNum],3
-  GUIPButtonHole 230,82,byte[GUIComboPNum],4
-  GUIClickCButton 163,88,byte[GUIComboLHorz]
-  GUIClickCButtonC 163,96,byte[GUIComboGameSpec]
-  GUIPHoldbutton 202,20,246,31,60
-  GUIPHoldbutton 202,35,246,46,61
-  GUIPHoldbutton 202,50,246,61,62
-  GUIPHoldbutton 202,65,246,76,63
-  DGOptnsProcBoxc 10,91,32,99,[GUIComboKey]
-
-  ComboBoxProc 75,150,85,157,1
-  ComboBoxProc 89,150,99,157,2
-  ComboBoxProc 103,150,113,157,3
-  ComboBoxProc 117,150,127,157,4
-  ComboBoxProc 131,150,141,157,5
-  ComboBoxProc 145,150,155,157,6
-  ComboBoxProc 159,150,169,157,7
-  ComboBoxProc 173,150,183,157,8
-  ComboBoxProc 187,150,197,157,9
-  ComboBoxProc 201,150,211,157,10
-  ComboBoxProc 215,150,227,157,11
-  ComboBoxProc 231,150,243,157,12
-  ComboBoxProc 75,160,85,167,13
-  ComboBoxProc 89,160,99,167,14
-  ComboBoxProc 103,160,113,167,15
-  ComboBoxProc 117,160,127,167,16
-  ComboBoxProc 131,160,141,167,17
-  ComboBoxProc 145,160,155,167,18
-  ComboBoxProc 159,160,169,167,19
-  ComboBoxProc 173,160,183,167,20
-  ComboBoxProc 187,160,197,167,21
-  ComboBoxProc 201,160,211,167,22
-  ComboBoxProc 215,160,227,167,23
-  ComboBoxProc 231,160,243,167,24
-  ComboBoxProc 75,170,85,177,25
-  ComboBoxProc 89,170,99,177,26
-  ComboBoxProc 103,170,113,177,27
-  ComboBoxProc 117,170,127,177,28
-  ComboBoxProc 131,170,141,177,29
-  ComboBoxProc 145,170,155,177,30
-  ComboBoxProc 159,170,169,177,31
-  ComboBoxProc 173,170,183,177,32
-  ComboBoxProc 187,170,197,177,33
-  ComboBoxProc 201,170,211,177,34
-  ComboBoxProc 215,170,227,177,35
-  ComboBoxProc 231,170,243,177,36
-
-  ComboBoxProc 10,189,20,196,37
-  ComboBoxProc 24,189,34,196,38
-  ComboBoxProc 38,189,48,196,39
-  ComboBoxProc 52,189,62,196,40
-  ComboBoxProc 66,189,76,196,41
-  ComboBoxProc 80,189,90,196,42
-  ComboBoxProc 107,189,117,196,43
-  ComboBoxProc 121,189,131,196,44
-  ComboBoxProc 135,189,145,196,45
-  ComboBoxProc 149,189,159,196,46
-  ComboBoxProc 163,189,173,196,47
-  ComboBoxProc 177,189,187,196,48
-  ComboBoxProcD 204,189,218,196
-  mov ebx,[NumComboLocl]
-  cmp byte[GUIComboGameSpec],0
-  jne .local
-  mov ebx,[NumComboGlob]
-.local
-  mov [NumCombo],ebx
-  xor ebx,ebx
-  ret
 
 NEWSYM DisplayGUIResetClick
   GUIPHoldbutton 20,30,56,41,2
