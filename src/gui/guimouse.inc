@@ -638,46 +638,6 @@ NEWSYM NTSCPresetVar, dd 4
 
 SECTION .text
 
-NEWSYM DisplayGameOptnsClick
-  mov dword[keycontrolval],0                  ; Shortcut Boxes
-  DGOptnsProcBox 27,23,[KeyBGDisble0]
-  DGOptnsProcBox 27+45,23,[KeyBGDisble1]
-  DGOptnsProcBox 27+45*2,23,[KeyBGDisble2]
-  DGOptnsProcBox 27+45*3,23,[KeyBGDisble3]
-  DGOptnsProcBox 27+45*4,23,[KeySprDisble]
-  DGOptnsProcBox 27,41,[KeyDisableSC0]
-  DGOptnsProcBox 27+45,41,[KeyDisableSC1]
-  DGOptnsProcBox 27+45*2,41,[KeyDisableSC2]
-  DGOptnsProcBox 27+45*3,41,[KeyDisableSC3]
-  DGOptnsProcBox 34+45*4,41,[KeyVolUp]
-  DGOptnsProcBox 27,50,[KeyDisableSC4]
-  DGOptnsProcBox 27+45,50,[KeyDisableSC5]
-  DGOptnsProcBox 27+45*2,50,[KeyDisableSC6]
-  DGOptnsProcBox 27+45*3,50,[KeyDisableSC7]
-  DGOptnsProcBox 34+45*4,50,[KeyVolDown]
-
-  DGOptnsProcBox 8+25,70,[KeyQuickLoad]
-  DGOptnsProcBox 8+57+26,70,[KeyQuickRst]
-  DGOptnsProcBox 8+114+20,70,[KeyQuickExit]
-  DGOptnsProcBox 8+114+78,70,[KeyQuickClock]
-  DGOptnsProcBox 8+25,80,[KeyQuickChat]
-  DGOptnsProcBox 8+57+45,80,[KeyQuickSnapShot]
-  DGOptnsProcBox 8+108+70,80,[KeyQuickSaveSPC]
-
-  DGOptnsProcBox 78,100,[KeyUsePlayer1234]
-  DGOptnsProcBox 78,110,[KeyResetAll]
-  DGOptnsProcBox 78,120,[KeyDisplayFPS]
-%ifndef __MSDOS__
-  DGOptnsProcBox 78,130,[KeyDisplayBatt]
-%endif
-
-  DGOptnsProcBox 191,100,[KeyNewGfxSwt]
-  DGOptnsProcBox 191,110,[KeyWinDisble]
-  DGOptnsProcBox 191,120,[KeyOffsetMSw]
-  DGOptnsProcBox 191,130,[KeyIncreaseGamma]
-  DGOptnsProcBox 191,140,[KeyDecreaseGamma]
-  ret
-
 NEWSYM DisplayGUIOptnsClick
   mov eax,[GUImouseposx]
   sub eax,[GUIwinposx+10*4]

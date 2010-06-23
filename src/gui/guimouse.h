@@ -16,7 +16,6 @@ extern void DisplayGUIResetClick();
 extern void DisplayGUISaveClick();
 extern void DisplayGUISpeedClick();
 extern void DisplayGUIStatesClick();
-extern void DisplayGameOptnsClick();
 
 extern s4 GUIlastypos;
 extern u4 GUIBlankVar;

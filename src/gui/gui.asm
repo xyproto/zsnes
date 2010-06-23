@@ -65,22 +65,17 @@ EXTSYM CheatSrcByteBase,CheatSrcSearchType,CheatUpperByteOnly,GUIComboGameSpec
 EXTSYM KeyStateSlc0,KeyStateSlc1,KeyStateSlc2,KeyStateSlc3,KeyStateSlc4
 EXTSYM KeyStateSlc5,KeyStateSlc6,KeyStateSlc7,KeyStateSlc8,KeyStateSlc9
 EXTSYM RewindStates,RewindFrames,PauseRewind,PauseLoad,SRAMState,AutoState
-EXTSYM LatestSave,SRAMSave5Sec,AutoIncSaveSlot,KeyUsePlayer1234
+EXTSYM LatestSave,SRAMSave5Sec,AutoIncSaveSlot
 EXTSYM pl1contrl
 EXTSYM pl2contrl
 EXTSYM pl3contrl
 EXTSYM pl4contrl
 EXTSYM pl5contrl
-EXTSYM KeyResetAll,KeyExtraEnab1,KeyExtraEnab2,KeyVolDown,KeyVolUp
-EXTSYM KeyBGDisble0,KeyBGDisble1,KeyBGDisble2,KeyBGDisble3,KeySprDisble
-EXTSYM KeyDisableSC0,KeyDisableSC1,KeyDisableSC2,KeyDisableSC3,KeyQuickSnapShot
-EXTSYM KeyDisableSC4,KeyDisableSC5,KeyDisableSC6,KeyDisableSC7,KeyQuickSaveSPC
-EXTSYM KeyQuickLoad,KeyQuickRst,KeyQuickExit,KeyQuickClock,KeyQuickChat
-EXTSYM KeyDisplayFPS,KeyNewGfxSwt
+EXTSYM KeyExtraEnab1,KeyExtraEnab2
 EXTSYM KeyIncStateSlot,KeyDecStateSlot,KeySaveState,KeyLoadState,KeyStateSelct
 EXTSYM KeyRewind,KeyEmuSpeedUp,KeyEmuSpeedDown,KeyFRateUp,KeyFRateDown
 EXTSYM KeyFastFrwrd,KeySlowDown,KeyResetSpeed,EMUPauseKey,INCRFrameKey
-EXTSYM KeyWinDisble,KeyOffsetMSw,JoyPad1Move,init_save_paths
+EXTSYM JoyPad1Move,init_save_paths
 EXTSYM mousewrap,GUIRClick
 EXTSYM mouse1lh,mouse2lh
 EXTSYM GUIMovieForcedText
@@ -88,7 +83,6 @@ EXTSYM FFRatio,SDRatio,EmuSpeed,mouseshad
 EXTSYM esctomenu,lhguimouse
 EXTSYM FilteredGUI,nosaveSRAM
 EXTSYM FastFwdToggle
-EXTSYM KeyDisplayBatt,KeyIncreaseGamma,KeyDecreaseGamma
 EXTSYM newfont
 EXTSYM SSAutoFire,SSPause
 

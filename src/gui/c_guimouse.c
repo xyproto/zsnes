@@ -1460,6 +1460,48 @@ static void DisplayGUICheatClick2(s4 const eax, s4 const edx)
 static void DisplayNetOptnsClick(void) {}
 
 
+static void DisplayGameOptnsClick(s4 const eax, s4 const edx)
+{
+	keycontrolval = 0; // Shortcut Boxes
+	DGOptnsProcBox(eax, edx,  27,             23, &KeyBGDisble0);
+	DGOptnsProcBox(eax, edx,  27 +  45,       23, &KeyBGDisble1);
+	DGOptnsProcBox(eax, edx,  27 +  45 * 2,   23, &KeyBGDisble2);
+	DGOptnsProcBox(eax, edx,  27 +  45 * 3,   23, &KeyBGDisble3);
+	DGOptnsProcBox(eax, edx,  27 +  45 * 4,   23, &KeySprDisble);
+	DGOptnsProcBox(eax, edx,  27,             41, &KeyDisableSC0);
+	DGOptnsProcBox(eax, edx,  27 +  45,       41, &KeyDisableSC1);
+	DGOptnsProcBox(eax, edx,  27 +  45 * 2,   41, &KeyDisableSC2);
+	DGOptnsProcBox(eax, edx,  27 +  45 * 3,   41, &KeyDisableSC3);
+	DGOptnsProcBox(eax, edx,  34 +  45 * 4,   41, &KeyVolUp);
+	DGOptnsProcBox(eax, edx,  27,             50, &KeyDisableSC4);
+	DGOptnsProcBox(eax, edx,  27 +  45,       50, &KeyDisableSC5);
+	DGOptnsProcBox(eax, edx,  27 +  45 * 2,   50, &KeyDisableSC6);
+	DGOptnsProcBox(eax, edx,  27 +  45 * 3,   50, &KeyDisableSC7);
+	DGOptnsProcBox(eax, edx,  34 +  45 * 4,   50, &KeyVolDown);
+
+	DGOptnsProcBox(eax, edx,   8 +  25,       70, &KeyQuickLoad);
+	DGOptnsProcBox(eax, edx,   8 +  57 + 26,  70, &KeyQuickRst);
+	DGOptnsProcBox(eax, edx,   8 + 114 + 20,  70, &KeyQuickExit);
+	DGOptnsProcBox(eax, edx,   8 + 114 + 78,  70, &KeyQuickClock);
+	DGOptnsProcBox(eax, edx,   8 +  25,       80, &KeyQuickChat);
+	DGOptnsProcBox(eax, edx,   8 +  57 + 45,  80, &KeyQuickSnapShot);
+	DGOptnsProcBox(eax, edx,   8 + 108 + 70,  80, &KeyQuickSaveSPC);
+
+	DGOptnsProcBox(eax, edx,  78,            100, &KeyUsePlayer1234);
+	DGOptnsProcBox(eax, edx,  78,            110, &KeyResetAll);
+	DGOptnsProcBox(eax, edx,  78,            120, &KeyDisplayFPS);
+#ifndef __MSDOS__
+	DGOptnsProcBox(eax, edx,  78,            130, &KeyDisplayBatt);
+#endif
+
+	DGOptnsProcBox(eax, edx, 191,            100, &KeyNewGfxSwt);
+	DGOptnsProcBox(eax, edx, 191,            110, &KeyWinDisble);
+	DGOptnsProcBox(eax, edx, 191,            120, &KeyOffsetMSw);
+	DGOptnsProcBox(eax, edx, 191,            130, &KeyIncreaseGamma);
+	DGOptnsProcBox(eax, edx, 191,            140, &KeyDecreaseGamma);
+}
+
+
 static void GUIWindowMove(void)
 {
 	u1 const id = GUIwinorder[GUIwinptr - 1];
@@ -1518,7 +1560,7 @@ static void GUIWinClicked(u4 const i, u4 const id)
 			case  6: DisplayGUISoundClick();           return;
 			case  7: DisplayGUICheatClick(    rx, ry); return;
 			case  8: DisplayNetOptnsClick();           return;
-			case  9: f = DisplayGameOptnsClick;      break;
+			case  9: DisplayGameOptnsClick(   rx, ry); return;
 			case 10: f = DisplayGUIOptnsClick;       break;
 			case 11: f = DisplayGUIAboutClick;       break;
 			case 12: f = DisplayGUIResetClick;       break;
