@@ -44,7 +44,9 @@ u1 lastmouseholded;
 
 static u1 LastHoldEnable;
 static u1 MouseMoveOkay;
+static u1 ntscCurVar;
 static u1 ntscLastVar[6];
+static u1 ntscWhVar;
 static u2 mousebuttonstat;
 
 static char const guipresstext1[] = "ENTER THE KEY";
@@ -188,6 +190,47 @@ static void GUIClickCButton(s4 const eax, s4 const edx, s4 const p1, s4 const p2
 }
 
 
+#ifdef __WIN32__
+
+static void GUIClickCButtonf(s4 const eax, s4 const edx, s4 const p1, s4 const p2, u1* const p3, void (* const p4)(void))
+{
+	if (GUIClickArea(eax, edx, p1 + 1, p2 + 3, p1 + 6, p2 + 8))
+	{
+		*p3 ^= 1;
+#ifdef __WIN32__
+		p4();
+#endif
+	}
+}
+
+#endif
+
+
+static void GUIClickCButtonK(s4 const eax, s4 const edx, s4 const p1, s4 const p2, u1* const p3, void (* const p4)(void))
+{
+	if (GUIClickArea(eax, edx, p1 + 1, p2 + 3, p1 + 6, p2 + 8))
+	{
+		*p3 ^= 1;
+		p4();
+	}
+}
+
+
+static void GUIClickCButtonN(s4 const eax, s4 const edx, s4 const p1, s4 const p2, u1* const p3, void (* const p4)(void))
+{
+	if (GUIClickArea(eax, edx, p1 + 1, p2 + 3, p1 + 6, p2 + 8))
+	{
+#ifdef __WIN32__
+		if (*p3 != 1) Keep4_3Ratio = 1;
+#endif
+		*p3 ^= 1;
+#ifdef __WIN32__
+		p4();
+#endif
+	}
+}
+
+
 static void GUIClickCButtonM(s4 const eax, s4 const edx, s4 const p1, s4 const p2, u1* const p3)
 {
 	if (GUIClickArea(eax, edx, p1 + 1, p2 + 3, p1 + 6, p2 + 8))
@@ -223,6 +266,26 @@ static bool GUIClickCButton5(s4 const eax, s4 const edx, s4 const p1, s4 const p
 }
 
 
+static bool GUIClickCButton6(s4 const eax, s4 const edx, s4 const p1, s4 const p2, u1* const p3, u1 const p4)
+{
+	if (GUIClickArea(eax, edx, p1 + 1, p2 + 3, p1 + 6, p2 + 8))
+	{
+		if (*p3 == p4)
+		{
+			*p3 = 0;
+		}
+		else
+		{
+			*p3 = p4;
+			memset(vidbufferofsb, 0, 288 * 128 * 4);
+		}
+		return true;
+	}
+
+	return false;
+}
+
+
 static bool GUIClickCButtonL(s4 const eax, s4 const edx, s4 const p1, s4 const p2)
 {
 	if (GUIClickArea(eax, edx, p1 + 1, p2 + 3, p1 + 6, p2 + 8))
@@ -234,6 +297,40 @@ static bool GUIClickCButtonL(s4 const eax, s4 const edx, s4 const p1, s4 const p
 	}
 	return false;
 }
+
+
+static void GUIClickCButtonI(s4 const eax, s4 const edx, s4 const p1, s4 const p2, u1* const p3)
+{
+	if (GUIClickArea(eax, edx, p1 + 1, p2 + 3, p1 + 6, p2 + 8))
+	{
+		*p3 ^= 1;
+#ifndef __MSDOS__
+		if (GUIBIFIL[cvidmode] != 0)
+		{
+#ifdef __WIN32__
+			initDirectDraw();
+#elif defined __OPENGL__
+			initwinvideo();
+#endif
+		}
+#endif
+		Clear2xSaIBuffer();
+	}
+}
+
+
+#ifdef __MSDOS__
+
+static void GUIClickCButtonT(s4 const eax, s4 const edx, s4 const p1, s4 const p2, u1* const p3, u1* const p4)
+{
+	if (GUIClickArea(eax, edx, p1 + 1, p2 + 3, p1 + 6, p2 + 8))
+	{
+		*p3 ^= 1;
+		*p4  = 0;
+	}
+}
+
+#endif
 
 
 static bool GUISlidebarPostImpl(s4 const eax, s4 const edx, u4 const p1, s4 const p2, s4 const p3, s4 const p4, u1 const p7, u4 const p8, u4* const p9, u4* const p10, u4 const* const p11, u4* const p12, u4 const p13, s4 const p14, s4 const p15, s4 const p16, s4 const p17, u4* const p18, u4* const p19, u4 const* const p20, void (* const p23)(s4 eax, s4 edx), u4 const p24) // p1-p13: x1,y1,x2,y2,upjump,downjump,holdpos,scsize,view,cur,listsize, p14-p24: x1,y1,x2,y2,view,curs,num,.scru,.scrd,jumpto,sizeofscreen
@@ -437,6 +534,25 @@ static void GUITextBoxInputNach(s4 const eax, s4 const edx, s4 const p1, s4 cons
 static void GUIPButtonHole(s4 const eax, s4 const edx, s4 const p1, s4 const p2, u1* const p3, u1 const p4)
 {
 	if (GUIClickArea(eax, edx, p1 + 1, p2 + 1, p1 + 7, p2 + 7)) *p3 = p4;
+}
+
+
+static void GUIPButtonHoleS(s4 const eax, s4 const edx, s4 const p1, s4 const p2, u1* const p3, u1 const p4)
+{
+	if (GUIClickArea(eax, edx, p1 + 1, p2 + 1, p1 + 7, p2 + 7))
+	{
+		*p3 = p4;
+#ifdef __MSDOS__
+		asm_call(DOSClearScreen);
+		if (cvidmode == 2 /* Mode Q */ || cvidmode == 5 /* Mode X */)
+		{
+			cbitmode = 1;
+			asm_call(initvideo2);
+			cbitmode = 0;
+			GUISetPal();
+		}
+#endif
+	}
 }
 
 
@@ -812,6 +928,441 @@ static void DisplayGUIOptionClick(s4 const eax, s4 const edx)
 }
 
 
+static void DisplayGUIVideoClick_notmodestab(s4 const eax, s4 const edx)
+{
+	if (GUIVideoTabs[0] == 2) // Filters tab
+	{
+		Clear2xSaIBuffer();
+
+#ifdef __MSDOS__
+		if (smallscreenon != 1)
+#endif
+		{
+#ifdef __MSDOS__
+			if (scanlines != 1)
+#endif
+			{
+#ifndef __MSDOS__
+				// Bilinear
+				if (GUIBIFIL[cvidmode] != 0)
+				{
+					if (GUIClickArea(eax, edx, 18 + 1, 35 + 3, 18 + 6, 35 + 8)) NTSCFilter = 0;
+					GUIClickCButtonI(eax, edx, 18, 35, &BilinearFilter);
+				}
+				else
+#endif
+				{
+					// Interpolations
+#ifdef __MSDOS__
+					if (GUIEAVID[cvidmode] != 0 || GUII2VID[cvidmode] != 0)
+#elif defined __WIN32__
+					if (GUIDSIZE[cvidmode] != 0)
+#else
+					if (GUII2VID[cvidmode] != 0)
+#endif
+					{
+						if (GUIClickArea(eax, edx, 18 + 1, 35 + 3, 18 + 6, 35 + 8))
+						{
+							hqFilter   = 0;
+							NTSCFilter = 0;
+							En2xSaI    = 0;
+						}
+						GUIClickCButton(eax, edx, 18, 35, &antienab);
+					}
+				}
+
+				// NTSC filter
+				if (GUINTVID[cvidmode] != 0)
+				{
+					if (GUIClickArea(eax, edx, 128 + 1, 35 + 3, 128 + 6, 35 + 8))
+					{
+						En2xSaI   = 0;
+						hqFilter  = 0;
+						scanlines = 0;
+						antienab  = 0;
+					}
+#ifdef __OPENGL__
+					if (GUIClickArea(eax, edx, 128 + 1, 35 + 3, 128 + 6, 35 + 8)) BilinearFilter = 0;
+#endif
+#ifndef __MSDOS__
+					GUIClickCButtonN(eax, edx, 128, 35, &NTSCFilter, NTSCFilterInit);
+#endif
+				}
+
+				// Kreed 2x filters
+#ifdef __MSDOS__
+				if (GUI2xVID[cvidmode] != 0)
+#else
+				if (GUIDSIZE[cvidmode] != 0)
+#endif
+				{
+					if (GUIClickArea(eax, edx, 18 + 1, 45 + 3, 18 + 6, 45 + 8))
+					{
+						hqFilter   = 0;
+						scanlines  = 0;
+						antienab   = 0;
+						NTSCFilter = 0;
+					}
+					if (GUIClickArea(eax, edx, 128 + 1, 45 + 3, 128 + 6, 45 + 8))
+					{
+						hqFilter   = 0;
+						scanlines  = 0;
+						antienab   = 0;
+						NTSCFilter = 0;
+					}
+					if (GUIClickArea(eax, edx, 18 + 1, 55 + 3, 18 + 6, 55 + 8))
+					{
+						hqFilter   = 0;
+						scanlines  = 0;
+						antienab   = 0;
+						NTSCFilter = 0;
+					}
+					GUIClickCButton6(eax, edx,  18, 45, &En2xSaI, 1);
+					GUIClickCButton6(eax, edx, 128, 45, &En2xSaI, 2);
+					GUIClickCButton6(eax, edx,  18, 55, &En2xSaI, 3);
+				}
+
+				u1 const bl = cvidmode; // Hq*x filters
+#ifdef __MSDOS__
+				if (GUIHQ2X[bl] != 0)
+				{
+					if (GUIClickArea(eax, edx, 128 + 1, 55 + 3, 128 + 6, 55 + 8))
+					{
+						En2xSaI    = 0;
+						scanlines  = 0;
+						antienab   = 0;
+						NTSCFilter = 0;
+					}
+					GUIClickCButton(eax, edx, 128, 55, &hqFilter);
+				}
+#else
+				if (GUIHQ4X[bl] != 0)
+				{
+					GUIPButtonHole(eax, edx, 188, 68, &hqFilterlevel, 4);
+					goto radiobuttonhq3x;
+				}
+				if (GUIHQ3X[bl] != 0)
+				{
+radiobuttonhq3x:
+					GUIPButtonHole(eax, edx, 158, 68, &hqFilterlevel, 3);
+					goto radiobuttonhq2x;
+				}
+				if (GUIHQ2X[bl] != 0)
+				{
+radiobuttonhq2x:
+					GUIPButtonHole(eax, edx, 128, 68, &hqFilterlevel, 2);
+					if (GUIClickArea(eax, edx, 128 + 1, 55 + 3, 128 + 6, 55 + 8))
+					{
+						En2xSaI    = 0;
+						scanlines  = 0;
+						antienab   = 0;
+						NTSCFilter = 0;
+					}
+					GUIClickCButton(eax, edx, 128, 55, &hqFilter);
+				}
+#endif
+			}
+
+			GUIClickCButton(eax, edx, 18, 115, &GrayscaleMode); // Grayscale
+
+			// Hires Mode7
+			if (GUIM7VID[cvidmode] != 0) GUIClickCButton5(eax, edx, 128, 115, &Mode7HiRes16b, 1);
+
+#ifdef __MSDOS__
+			// Triple buffs/vsyncs
+			if (GUITBVID[cvidmode] != 0) GUIClickCButtonT(eax, edx, 128, 145, &Triplebufen, &vsyncon);
+			GUIClickCButtonT(eax, edx, 18, 145, &vsyncon, &Triplebufen);
+#endif
+
+#ifdef __WIN32__
+			// Triple buffs/vsyncs
+			if (GUIWFVID[cvidmode] != 0)
+			{
+				GUIClickCButtonf(eax, edx, 128, 145, &TripleBufferWin, initDirectDraw);
+			}
+			GUIClickCButtonf(eax, edx, 18, 145, &vsyncon, initDirectDraw);
+#endif
+
+#ifdef __OPENGL__
+			if (GUIBIFIL[cvidmode] != 0) GUIClickCButtonI(eax, edx, 18, 145, &vsyncon);
+#endif
+
+			// Keep 4:3 Ratio
+			if (GUIKEEP43[cvidmode] != 0) GUIClickCButtonK(eax, edx, 18, 175, &Keep4_3Ratio, initwinvideo);
+
+#ifndef __MSDOS__
+			// GL Scanlines
+			if (GUIBIFIL[cvidmode] != 0)
+			{
+				// Update mouse location
+				s4 const eax = GUImouseposx - GUIwinposx[5];
+				s4 const edx = GUImouseposy - GUIwinposy[5];
+
+				if (GUIClickArea(eax, edx, 23, 88, 23 + 100, 92))
+				{
+					sl_intensity = eax - 23;
+					GUIHold      = 8; // Lock mouse to bar when clicked
+					GUIHoldYlim  = GUIwinposy[5] + 90;
+					s4 const eax = GUIwinposx[5] + 23;
+					GUIHoldXlimL = eax;
+					GUIHoldXlimR = eax + 100;
+				}
+			}
+			else
+#endif
+			{
+				// Scanlines
+#ifdef __MSDOS__
+				if (GUISLVID[cvidmode] != 0)
+#else
+				if (GUIDSIZE[cvidmode] != 0)
+#endif
+				{
+					if (GUIClickArea(eax, edx, 168 + 1, 87 + 3, 168 + 38, 87 + 8))
+					{
+						En2xSaI    = 0;
+						hqFilter   = 0;
+						NTSCFilter = 0;
+					}
+					GUIPButtonHoleS(eax, edx,  18, 87, &scanlines, 0);
+					GUIPButtonHoleS(eax, edx, 168, 87, &scanlines, 1);
+				}
+
+#ifdef __MSDOS__
+				if (ScreenScale != 1)
+#endif
+				{
+#ifdef __MSDOS__
+					if (GUIHSVID[cvidmode] != 0)
+#else
+					if (GUIDSIZE[cvidmode] != 0)
+#endif
+					{
+						if (GUIClickArea(eax, edx, 68 + 1, 87 + 3, 68 + 38, 87 + 8))
+						{
+							En2xSaI    = 0;
+							hqFilter   = 0;
+							NTSCFilter = 0;
+						}
+						if (GUIClickArea(eax, edx, 118 + 1, 87 + 3, 118 + 38, 87 + 8))
+						{
+							En2xSaI    = 0;
+							hqFilter   = 0;
+							NTSCFilter = 0;
+						}
+						GUIPButtonHoleS(eax, edx,  68, 87, &scanlines, 2);
+						GUIPButtonHoleS(eax, edx, 118, 87, &scanlines, 3);
+					}
+				}
+			}
+		}
+	}
+
+	if (GUIVntscTab[0] == 1) // NTSC Tab
+	{
+		// Update mouse location
+		s4 const eax = GUImouseposx - GUIwinposx[5];
+		s4 const edx = GUImouseposy - GUIwinposy[5];
+
+		GUIClickCButton(eax, edx,   5, 25, &NTSCBlend); // Checkboxes
+		GUIClickCButton(eax, edx, 135, 25, &NTSCRef);
+
+		GUIPHoldbutton(eax, edx,   8, 166,  67, 177, 81);
+		GUIPHoldbutton(eax, edx,  72, 166, 119, 177, 82);
+		GUIPHoldbutton(eax, edx, 124, 166, 147, 177, 83);
+		GUIPHoldbutton(eax, edx, 152, 166, 217, 177, 84);
+		GUIPHoldbutton(eax, edx, 102, 186, 137, 197, 37); // button
+		GUIPHoldbutton(eax, edx, 148, 186, 207, 197, 39); // button
+
+		// Sliders
+		if (8 <= eax && eax <= 8 + 200) // X-Range for click-area
+		{
+			s1 const al = eax - 108;
+			if (54 <= edx && edx <= 58) // Y-Range for click-area
+			{ // Hue
+				NTSCHue     = al;
+				ntscCurVar  = al;
+				ntscWhVar   = 0;
+				GUIHoldYlim = GUIwinposy[5] + 56;
+			}
+			else if (74 <= edx && edx <= 78)
+			{ // Saturation
+				NTSCSat     = al;
+				ntscCurVar  = al;
+				ntscWhVar   = 1;
+				GUIHoldYlim = GUIwinposy[5] + 76;
+			}
+			else if (94 <= edx && edx <= 98)
+			{ // Contrast
+				NTSCCont    = al;
+				ntscCurVar  = al;
+				ntscWhVar   = 2;
+				GUIHoldYlim = GUIwinposy[5] + 96;
+			}
+			else if (114 <= edx && edx <= 118)
+			{ // Brightness
+				NTSCBright  = al;
+				ntscCurVar  = al;
+				ntscWhVar   = 3;
+				GUIHoldYlim = GUIwinposy[5] + 116;
+			}
+			else if (134 <= edx && edx <= 138)
+			{
+				NTSCSharp   = al;
+				ntscCurVar  = al;
+				ntscWhVar   = 4;
+				GUIHoldYlim = GUIwinposy[5] + 136;
+			}
+			else
+			{
+				goto nomovebar;
+			}
+
+			s4 const eax = GUIwinposx[5] + 8;
+			GUIHoldXlimL = eax;
+			GUIHoldXlimR = eax + 200;
+			GUIHold      = 7; // Lock mouse to bar when clicked
+nomovebar:;
+		}
+
+#ifndef __MSDOS__
+		if (NTSCRef != 0)
+		{
+			NTSCPresetVar = 4;
+			NTSCFilterInit();
+		}
+#endif
+	}
+
+	if (GUIVntscTab[0] == 2) // NTSC Tab
+	{
+		// Update mouse location
+		s4 const eax = GUImouseposx - GUIwinposx[5];
+		s4 const edx = GUImouseposy - GUIwinposy[5];
+
+		GUIPHoldbutton(eax, edx, 102, 186, 137, 197, 38); // button
+		GUIPHoldbutton(eax, edx, 148, 186, 207, 197, 39); // button
+
+		// Sliders
+		if (8 <= eax && eax <= 8 + 200) // X-Range for click-area
+		{
+			s1 const al = eax - 108;
+			if (44 <= edx && edx <= 48) // Y-Range for click-area
+			{ // Gamma
+				NTSCGamma   = al;
+				ntscCurVar  = al;
+				ntscWhVar   = 0;
+				GUIHoldYlim = GUIwinposy[5] + 46;
+			}
+			else if (64 <= edx && edx <= 68)
+			{ // Resolution
+				NTSCRes     = al;
+				ntscCurVar  = al;
+				ntscWhVar   = 1;
+				GUIHoldYlim = GUIwinposy[5] + 66;
+			}
+			else if (84 <= edx && edx <= 88)
+			{ // Artifacts
+				NTSCArt     = al;
+				ntscCurVar  = al;
+				ntscWhVar   = 2;
+				GUIHoldYlim = GUIwinposy[5] + 86;
+			}
+			else if (104 <= edx && edx <= 108)
+			{ // Fringing
+				NTSCFringe  = al;
+				ntscCurVar  = al;
+				ntscWhVar   = 3;
+				GUIHoldYlim = GUIwinposy[5] + 106;
+			}
+			else if (124 <= edx && edx <= 128)
+			{ // Bleed
+				NTSCBleed   = al;
+				ntscCurVar  = al;
+				ntscWhVar   = 4;
+				GUIHoldYlim = GUIwinposy[5] + 126;
+			}
+			else if (144 <= edx && edx <= 148)
+			{ // Hue warping
+				NTSCWarp    = al;
+				ntscCurVar  = al;
+				ntscWhVar   = 5;
+				GUIHoldYlim = GUIwinposy[5] + 146;
+			}
+			else
+			{
+				goto nomovebar2;
+			}
+
+			s4 const eax = GUIwinposx[5] + 8;
+			GUIHoldXlimL = eax;
+			GUIHoldXlimR = eax + 200;
+			GUIHold      = 7; // Lock mouse to bar when clicked
+nomovebar2:;
+		}
+
+#ifndef __MSDOS__
+		if (NTSCRef != 0)
+		{
+			NTSCPresetVar = 4;
+			NTSCFilterInit();
+		}
+#endif
+	}
+}
+
+
+static void DisplayGUIVideoClick_skipscrol(s4 const eax, s4 const edx)
+{
+	if (GUIWinControl(eax, edx, 5, 27, 115, 27 + 20 * 8, &GUIBlankVar, &GUIcurrentvideoviewloc, &GUINumValue, 27, 8, &GUIcurrentvideocursloc, 2, 5, 0)) return;
+
+	GUIPHoldbutton(eax, edx, 130, 31, 166, 41, 4);
+
+#ifndef __MSDOS__
+	GUIPHoldbutton(eax, edx, 182, 116, 218, 126, 12);
+
+	GUITextBoxInputNach(eax, edx, 130, 130, 178, 140, 0, 5, SetCustomXY);
+	GUITextBoxInputNach(eax, edx, 191, 130, 239, 140, 1, 5, SetCustomXY);
+#endif
+
+	DisplayGUIVideoClick_notmodestab(eax, edx);
+}
+
+
+static void DisplayGUIVideoClick(s4 const eax, s4 const edx)
+{
+	GUIPTabClick(eax, edx,  0, 39, 1, GUIVideoTabs, GUIVntscTab, (s4*)0);
+	GUIPTabClick(eax, edx, 40, 91, 2, GUIVideoTabs, GUIVntscTab, (s4*)0);
+	if (NTSCFilter == 1)
+	{
+		GUIPTabClick(eax, edx,  92, 125, 1, GUIVntscTab, GUIVideoTabs, (s4*)0);
+		GUIPTabClick(eax, edx, 126, 184, 2, GUIVntscTab, GUIVideoTabs, (s4*)0);
+	}
+
+	if (GUIVideoTabs[0] == 1)
+	{ // SlideBar Implementation
+		GUINumValue = NumVideoModes;
+		if (GUISlidebarImpl(eax, edx, 117, 33, 124, 182, GUIVStA, 20, &GUIcurrentvideoviewloc, &GUIcurrentvideocursloc, &GUINumValue, 5)) return;
+		DisplayGUIVideoClick_skipscrol(eax, edx);
+	}
+	else
+	{
+		DisplayGUIVideoClick_notmodestab(eax, edx);
+	}
+}
+
+
+static void DisplayGUIVideoClick2(s4 const eax, s4 const edx)
+{
+	if (GUIVideoTabs[0] == 1) // modes
+	{
+		GUINumValue = NumVideoModes;
+		if (GUISlidebarPostImpl(eax, edx, 117, 33, 124, 182, 5, 20, &GUIcurrentvideoviewloc, &GUIcurrentvideocursloc, &GUINumValue, &GUIBlankVar, 1, 5, 27, 115, 27 + 20 * 8, &GUIcurrentvideoviewloc, &GUIcurrentvideocursloc, &GUINumValue, DisplayGUIVideoClick_skipscrol, 20)) return;
+	}
+	DisplayGUIVideoClick(eax, edx);
+}
+
+
 static void GUIWindowMove(void)
 {
 	u1 const id = GUIwinorder[GUIwinptr - 1];
@@ -821,7 +1372,7 @@ static void GUIWindowMove(void)
 	switch (id)
 	{
 		case  3: DisplayGUIInputClick2(  rx, ry); return;
-		case  5: f = DisplayGUIVideoClick2;       break;
+		case  5: DisplayGUIVideoClick2(  rx, ry); return;
 		case  7: f = DisplayGUICheatClick2;       break;
 		case 13: f = DisplayGUICheatSearchClick2; break;
 		case 16: f = DisplayGUIComboClick2;       break;
@@ -866,7 +1417,7 @@ static void GUIWinClicked(u4 const i, u4 const id)
 			case  2: DisplayGUIChoseSaveClick(rx, ry); return;
 			case  3: DisplayGUIInputClick(    rx, ry); return;
 			case  4: DisplayGUIOptionClick(   rx, ry); return;
-			case  5: f = DisplayGUIVideoClick;       break;
+			case  5: DisplayGUIVideoClick(    rx, ry); return;
 			case  6: f = DisplayGUISoundClick;       break;
 			case  7: f = DisplayGUICheatClick;       break;
 			case  8: f = DisplayNetOptnsClick;       break;
@@ -1120,7 +1671,7 @@ noclick:;
 				u4 const maxx = GUIHoldXlimR;
 				if (x > maxx) GUImouseposx = maxx;
 				lastmouseholded = 1;
-				asm_call(DisplayGUIVideoClick);
+				DisplayGUIVideoClick(0, 0); // XXX eax and edx do not seem to hold sensible values here
 				return;
 			}
 

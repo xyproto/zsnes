@@ -42,25 +42,20 @@
 
 %include "macros.mac"
 
-EXTSYM frameskip,cvidmode,antienab
+EXTSYM frameskip,cvidmode
 EXTSYM soundon,StereoSound,SoundQuality,MusicRelVol
-EXTSYM cbitmode
-EXTSYM scanlines
 EXTSYM pressed
 EXTSYM FPSOn,RevStereo,WDSPReg0C
 EXTSYM WDSPReg1C,vidbufferofsb
 EXTSYM RelPathBase
 EXTSYM Clear2xSaIBuffer
-EXTSYM NumVideoModes,MusicVol,DSPMem
+EXTSYM MusicVol,DSPMem
 EXTSYM device1,device2
-EXTSYM GUIM7VID,GUINTVID,GUIHQ2X
 EXTSYM nssdip1,nssdip2,nssdip3,nssdip4,nssdip5,nssdip6
 EXTSYM AutoLoadCht,GUILoadData
 EXTSYM GUISetPal
 
-EXTSYM GUIwinposx,GUIwinposy,maxskip,GUIEffect,hqFilter,En2xSaI,NTSCFilter
-EXTSYM NTSCBlend,NTSCHue,NTSCSat,NTSCCont,NTSCBright,NTSCSharp,NTSCRef
-EXTSYM NTSCGamma,NTSCRes,NTSCArt,NTSCFringe,NTSCBleed,NTSCWarp
+EXTSYM GUIwinposx,GUIwinposy,maxskip,GUIEffect
 EXTSYM LowPassFilterType,savewinpos
 EXTSYM SnapPath,SPCPath,BSXPath,SGPath,STPath,GNextPath
 EXTSYM SRAMPath,CheatSrcByteSize
@@ -90,12 +85,12 @@ EXTSYM KeyFastFrwrd,KeySlowDown,KeyResetSpeed,EMUPauseKey,INCRFrameKey
 EXTSYM KeyWinDisble,KeyOffsetMSw,JoyPad1Move,init_save_paths
 EXTSYM mousewrap,GUIRClick
 EXTSYM mouse1lh,mouse2lh
-EXTSYM GrayscaleMode,GUIMovieForcedText
-EXTSYM Mode7HiRes16b,FFRatio,SDRatio,EmuSpeed,mouseshad
+EXTSYM GUIMovieForcedText
+EXTSYM FFRatio,SDRatio,EmuSpeed,mouseshad
 EXTSYM esctomenu,lhguimouse
 EXTSYM FilteredGUI,Surround,SPCDisable,nosaveSRAM
 EXTSYM FastFwdToggle
-EXTSYM KeyDisplayBatt,KeyIncreaseGamma,KeyDecreaseGamma,vsyncon
+EXTSYM KeyDisplayBatt,KeyIncreaseGamma,KeyDecreaseGamma
 EXTSYM newfont
 EXTSYM SSAutoFire,SSPause
 
@@ -103,24 +98,17 @@ EXTSYM SSAutoFire,SSPause
 EXTSYM CheckOpenGL
 %elifdef __WIN32__
 EXTSYM initDirectDraw,reInitSound,AlwaysOnTop
-EXTSYM MouseWheel,TrapMouseCursor,AllowMultipleInst,TripleBufferWin
+EXTSYM MouseWheel,TrapMouseCursor,AllowMultipleInst
 EXTSYM SaveMainWindowPos,PrimaryBuffer
 %elifdef __MSDOS__
-EXTSYM dssel,initvideo2,Force8b,smallscreenon
-EXTSYM Triplebufen,ScreenScale
-EXTSYM GUIEAVID,GUITBVID,GUISLVID,GUIHSVID,GUI2xVID
+EXTSYM dssel,Force8b
 EXTSYM DOSClearScreen
 EXTSYM GUI36hzcall
 %endif
 
 %ifndef __MSDOS__
-EXTSYM GUICustomX,GUICustomY,SetCustomXY,initwinvideo
-EXTSYM Keep4_3Ratio,NTSCFilterInit,hqFilterlevel,BilinearFilter,GUIBIFIL
-EXTSYM GUIWFVID,GUIDSIZE,GUIHQ3X,GUIHQ4X,GUIKEEP43,sl_intensity
-%endif
-
-%ifndef __WIN32__
-EXTSYM GUII2VID
+EXTSYM GUICustomX,GUICustomY,initwinvideo
+EXTSYM GUIBIFIL
 %endif
 
 %include "gui/guimouse.inc"

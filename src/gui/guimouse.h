@@ -19,14 +19,10 @@ extern void DisplayGUISaveClick();
 extern void DisplayGUISoundClick();
 extern void DisplayGUISpeedClick();
 extern void DisplayGUIStatesClick();
-extern void DisplayGUIVideoClick();
-extern void DisplayGUIVideoClick2();
 extern void DisplayGameOptnsClick();
 extern void DisplayNetOptnsClick();
 
 extern s4 GUIlastypos;
-extern u1 ntscCurVar;
-extern u1 ntscWhVar;
 extern u4 GUIBlankVar;
 extern u4 GUINumValue;
 extern u4 GUIdispmode;
