@@ -1502,6 +1502,105 @@ static void DisplayGameOptnsClick(s4 const eax, s4 const edx)
 }
 
 
+static void DisplayGUIOptnsClick(void)
+{
+	s4 const eax = GUImouseposx - GUIwinposx[10];
+	s4 const edx = GUImouseposy - GUIwinposy[10];
+
+	GUIClickCButton(eax, edx, 12, 23, &GUIRClick); // Checkboxes
+	GUIClickCButton(eax, edx, 12, 33, &lhguimouse);
+	GUIClickCButton(eax, edx, 12, 43, &mouseshad);
+	GUIClickCButton(eax, edx, 12, 53, &mousewrap);
+
+	GUIClickCButton( eax, edx, 129, 23, &esctomenu);
+	GUIClickCButton( eax, edx, 129, 33, &JoyPad1Move);
+	GUIClickCButtonI(eax, edx, 129, 43, &FilteredGUI);
+	GUIClickCButton( eax, edx, 129, 53, &newfont);
+	GUIClickCButton( eax, edx, 129, 63, &savewinpos);
+
+#ifdef __WIN32__
+	GUIClickCButton(eax, edx, 12,  63, &TrapMouseCursor);
+	GUIClickCButton(eax, edx, 12,  73, &MouseWheel);
+	GUIClickCButton(eax, edx, 12, 168, &AlwaysOnTop);
+	GUIClickCButton(eax, edx, 12, 178, &SaveMainWindowPos);
+	GUIClickCButton(eax, edx, 12, 188, &AllowMultipleInst);
+#endif
+
+	GUIPButtonHole(eax, edx,  72,  88, &GUIEffect, 0); // Radio Buttons
+	GUIPButtonHole(eax, edx, 122,  88, &GUIEffect, 1);
+	GUIPButtonHole(eax, edx, 182,  88, &GUIEffect, 4);
+	GUIPButtonHole(eax, edx,  72,  98, &GUIEffect, 5);
+	GUIPButtonHole(eax, edx, 122,  98, &GUIEffect, 2);
+	GUIPButtonHole(eax, edx, 182,  98, &GUIEffect, 3);
+
+	GUIPButtonHole(eax, edx,  48, 108, &CurPalSelect, 0);
+	GUIPButtonHole(eax, edx,  88, 108, &CurPalSelect, 1);
+	GUIPButtonHole(eax, edx, 133, 108, &CurPalSelect, 2);
+
+	// Sliders
+	switch (CurPalSelect)
+	{
+		default: TRVal2[0] = GUIRAdd;  TGVal2[0] = GUIGAdd;  TBVal2[0] = GUIBAdd;  break;
+		case 1:  TRVal2[0] = GUITRAdd; TGVal2[0] = GUITGAdd; TBVal2[0] = GUITBAdd; break;
+		case 2:  TRVal2[0] = GUIWRAdd; TGVal2[0] = GUIWGAdd; TBVal2[0] = GUIWBAdd; break;
+	}
+
+	if (25 <= eax && eax <= 25 + 127)
+	{
+		u1 const al = (u4)(eax - 25) / 4;
+		if (122 <= edx && edx <= 126)
+		{
+			if (TRVal2[0] != al)
+			{
+				TRVal2[0] = al;
+				TRVal2[1] = 1;
+			}
+			GUIHold     = 2;
+			GUIHoldYlim = GUIwinposy[10] + 124;
+		}
+		else if (134 <= edx && edx <= 138)
+		{
+			if (TGVal2[0] != al)
+			{
+				TGVal2[0] = al;
+				TRVal2[1] = 1;
+			}
+			GUIHold     = 2;
+			GUIHoldYlim = GUIwinposy[10] + 136;
+		}
+		else if (146 <= edx && edx <= 150)
+		{
+			if (TBVal2[0] != al)
+			{
+				TBVal2[0] = al;
+				TRVal2[1] = 1;
+			}
+			GUIHold     = 2;
+			GUIHoldYlim = GUIwinposy[10] + 148;
+		}
+	}
+
+	switch (CurPalSelect)
+	{
+		default: GUIRAdd  = TRVal2[0]; GUIGAdd  = TGVal2[0]; GUIBAdd  = TBVal2[0]; break;
+		case 1:  GUITRAdd = TRVal2[0]; GUITGAdd = TGVal2[0]; GUITBAdd = TBVal2[0]; break;
+		case 2:  GUIWRAdd = TRVal2[0]; GUIWGAdd = TGVal2[0]; GUIWBAdd = TBVal2[0]; break;
+	}
+
+	if (TRVal2[1] == 1)
+	{
+		GUISetPal();
+		TRVal2[1] = 0;
+	}
+
+	if (GUIHold == 2)
+	{
+		GUIHoldXlimL = GUIwinposx[10] + 25;
+		GUIHoldXlimR = GUIwinposx[10] + 25 + 127;
+	}
+}
+
+
 static void GUIWindowMove(void)
 {
 	u1 const id = GUIwinorder[GUIwinptr - 1];
@@ -1561,7 +1660,7 @@ static void GUIWinClicked(u4 const i, u4 const id)
 			case  7: DisplayGUICheatClick(    rx, ry); return;
 			case  8: DisplayNetOptnsClick();           return;
 			case  9: DisplayGameOptnsClick(   rx, ry); return;
-			case 10: f = DisplayGUIOptnsClick;       break;
+			case 10: DisplayGUIOptnsClick();           return;
 			case 11: f = DisplayGUIAboutClick;       break;
 			case 12: f = DisplayGUIResetClick;       break;
 			case 13: f = DisplayGUICheatSearchClick; break;
@@ -1746,7 +1845,7 @@ noclick:;
 				u4 const maxx = GUIHoldXlimR;
 				if (x > maxx) GUImouseposx = maxx;
 				lastmouseholded = 1;
-				asm_call(DisplayGUIOptnsClick);
+				DisplayGUIOptnsClick();
 				return;
 			}
 
