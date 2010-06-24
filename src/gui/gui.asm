@@ -49,14 +49,12 @@ EXTSYM vidbufferofsb
 EXTSYM RelPathBase
 EXTSYM device1,device2
 EXTSYM nssdip1,nssdip2,nssdip3,nssdip4,nssdip5,nssdip6
-EXTSYM GUILoadData
 
 EXTSYM GUIwinposx,GUIwinposy,maxskip
 EXTSYM SnapPath,SPCPath,BSXPath,SGPath,STPath,GNextPath
-EXTSYM SRAMPath,CheatSrcByteSize
+EXTSYM SRAMPath
 EXTSYM IPSPath,MoviePath,CHTPath,ComboPath,INPPath,SStatePath
 EXTSYM MMXSupport
-EXTSYM CheatSrcByteBase,CheatSrcSearchType,CheatUpperByteOnly
 EXTSYM KeyStateSlc0,KeyStateSlc1,KeyStateSlc2,KeyStateSlc3,KeyStateSlc4
 EXTSYM KeyStateSlc5,KeyStateSlc6,KeyStateSlc7,KeyStateSlc8,KeyStateSlc9
 EXTSYM RewindStates,RewindFrames,PauseRewind,PauseLoad,SRAMState,AutoState

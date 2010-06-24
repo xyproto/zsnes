@@ -4,8 +4,6 @@
 #include "../types.h"
 
 extern void DisplayGUIAddOnClick();
-extern void DisplayGUICheatSearchClick();
-extern void DisplayGUICheatSearchClick2();
 extern void DisplayGUIChipClick();
 extern void DisplayGUIPathsClick();
 extern void DisplayGUISaveClick();

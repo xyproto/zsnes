@@ -1812,22 +1812,104 @@ static void DisplayGUIStatesClick(s4 const eax, s4 const edx)
 }
 
 
+static void DisplayGUICheatSearchClick_skipscrol(s4 const eax, s4 const edx)
+{
+	// x,y,x2,y2,currentwin,vpos,#entries,starty,y/entry,cpos,winval,win#,dclicktick#
+	if (GUIWinControl(eax, edx, 5, 23, 171, 21 + 12 * 7, &GUIBlankVar, &GUIcurrentchtsrcviewloc, &NumCheatSrc, 22, 7, &GUIcurrentchtsrccursloc, 5, 13, 30)) return;
+
+	GUIPHoldbutton(eax, edx,  70, 140, 130, 152, 54); // Return/Add Buttons
+	GUIPHoldbutton(eax, edx, 140, 140, 180, 152, 55);
+}
+
+
+static void DisplayGUICheatSearchClick_view(s4 const eax, s4 const edx)
+{
+	// View Cheat
+	// x1,y1,x2,y2,GUI?StA,ScrnSize,ViewLoc,CursLoc,Entries,win#
+	if (GUISlidebarImpl(eax, edx, 173, 28, 180, 100, GUICSStA, 12, &GUIcurrentchtsrcviewloc, &GUIcurrentchtsrccursloc, &NumCheatSrc, 13)) return;
+	DisplayGUICheatSearchClick_skipscrol(eax, edx);
+}
+
+
+static void DisplayGUICheatSearchClick(s4 const eax, s4 const edx)
+{
+	switch (CheatWinMode)
+	{
+		case 1: // Exact Value
+			GUIPHoldbutton(eax, edx, 30, 140, 80, 152, 51);
+			if (CheatSearchStatus != 1)
+			{ // Return and Re-Search
+				if (CheatSrcSearchType == 1)
+				{ // Select Comparison
+					GUIPButtonHole(eax, edx, 11, 33, &CheatCompareValue, 0);
+					GUIPButtonHole(eax, edx, 11, 43, &CheatCompareValue, 1);
+					GUIPButtonHole(eax, edx, 11, 53, &CheatCompareValue, 2);
+					GUIPButtonHole(eax, edx, 11, 63, &CheatCompareValue, 3);
+				}
+				// Restart/View/Search Buttons
+				GUIPHoldbutton(eax, edx, 120, 140, 170, 152, 53);
+			}
+			GUIPHoldbutton(eax, edx, 10, 140,  60, 152, 51);
+			GUIPHoldbutton(eax, edx, 70, 140, 110, 152, 52);
+			break;
+
+		case 2:
+			DisplayGUICheatSearchClick_view(eax, edx);
+			break;
+
+		case 3: // Add Cheat
+			GUIPHoldbutton( eax, edx,  60, 155, 120, 167, 56); // Return/Add Buttons
+			GUIPHoldbutton( eax, edx, 130, 155, 160, 167, 57);
+			GUIClickCButton(eax, edx,   8, 139, &CheatUpperByteOnly); // Checkbox
+			GUIBoxVar(      eax, edx,  10,  30,  80, 37, &CurCStextpos, 0); // Input Boxes
+			GUIBoxVar(      eax, edx,  10,  55, 126, 62, &CurCStextpos, 1);
+			break;
+
+		default:
+			GUIPHoldbutton(eax, edx, 95, 140, 140, 152, 50); //  Main Menu
+			GUIPButtonHole(eax, edx, 11,  28, &CheatSrcByteSize,   0);
+			GUIPButtonHole(eax, edx, 11,  38, &CheatSrcByteSize,   1);
+			GUIPButtonHole(eax, edx, 11,  48, &CheatSrcByteSize,   2);
+			GUIPButtonHole(eax, edx, 11,  58, &CheatSrcByteSize,   3);
+			GUIPButtonHole(eax, edx, 11,  73, &CheatSrcByteBase,   0);
+			GUIPButtonHole(eax, edx, 11,  83, &CheatSrcByteBase,   1);
+			GUIPButtonHole(eax, edx, 11, 113, &CheatSrcSearchType, 0);
+			GUIPButtonHole(eax, edx, 11, 123, &CheatSrcSearchType, 1);
+			break;
+	}
+}
+
+
+static void DisplayGUICheatSearchClick2(s4 const eax, s4 const edx)
+{
+	if (CheatWinMode == 2)
+	{ // Preview Box
+		// x1,y1,x2,y2,upjump,downjump,holdpos,scsize,view,cur,listsize
+		// x1,y1,x2,y2,view,curs,num,.scru,.scrd,jumpto,sizeofscreen
+		if (GUISlidebarPostImpl(eax, edx, 173, 28, 180, 100, 11, 12, &GUIcurrentchtsrcviewloc, &GUIcurrentchtsrccursloc, &NumCheatSrc, &GUIBlankVar, 1, 5, 22, 171, 22 + 12 * 7, &GUIcurrentchtsrcviewloc, &GUIcurrentchtsrccursloc, &NumCheatSrc, DisplayGUICheatSearchClick_skipscrol, 12)) return;
+		DisplayGUICheatSearchClick_view(eax, edx);
+	}
+	else
+	{
+		DisplayGUICheatSearchClick(eax, edx);
+	}
+}
+
+
 static void GUIWindowMove(void)
 {
 	u1 const id = GUIwinorder[GUIwinptr - 1];
 	u4 const rx = GUImouseposx - GUIwinposx[id];
 	u4 const ry = GUImouseposy - GUIwinposy[id];
-	void (* f)();
 	switch (id)
 	{
-		case  3: DisplayGUIInputClick2(  rx, ry); return;
-		case  5: DisplayGUIVideoClick2(  rx, ry); return;
-		case  7: DisplayGUICheatClick2(  rx, ry); return;
-		case 13: f = DisplayGUICheatSearchClick2; break;
-		case 16: DisplayGUIComboClick2(  rx, ry); return;
-		default: DisplayGUIConfirmClick2(rx, ry); return;
+		case  3: DisplayGUIInputClick2(      rx, ry); break;
+		case  5: DisplayGUIVideoClick2(      rx, ry); break;
+		case  7: DisplayGUICheatClick2(      rx, ry); break;
+		case 13: DisplayGUICheatSearchClick2(rx, ry); break;
+		case 16: DisplayGUIComboClick2(      rx, ry); break;
+		default: DisplayGUIConfirmClick2(    rx, ry); break;
 	}
-	asm volatile("call *%0" :: "r" (f), "a" (rx), "d" (ry) : "cc", "memory"); // XXX asm_call
 }
 
 
@@ -1862,22 +1944,22 @@ static void GUIWinClicked(u4 const i, u4 const id)
 		void (* f)();
 		switch (id)
 		{
-			case  1: DisplayGUIConfirmClick(  rx, ry); return;
-			case  2: DisplayGUIChoseSaveClick(rx, ry); return;
-			case  3: DisplayGUIInputClick(    rx, ry); return;
-			case  4: DisplayGUIOptionClick(   rx, ry); return;
-			case  5: DisplayGUIVideoClick(    rx, ry); return;
-			case  6: DisplayGUISoundClick();           return;
-			case  7: DisplayGUICheatClick(    rx, ry); return;
-			case  8: DisplayNetOptnsClick();           return;
-			case  9: DisplayGameOptnsClick(   rx, ry); return;
-			case 10: DisplayGUIOptnsClick();           return;
-			case 11: DisplayGUIAboutClick(    rx, ry); return;
-			case 12: DisplayGUIResetClick(    rx, ry); return;
-			case 13: f = DisplayGUICheatSearchClick; break;
-			case 14: DisplayGUIStatesClick(   rx, ry); return;
-			case 15: DisplayGUIMovieClick(    rx, ry); return;
-			case 16: DisplayGUIComboClick(    rx, ry); return;
+			case  1: DisplayGUIConfirmClick(    rx, ry); return;
+			case  2: DisplayGUIChoseSaveClick(  rx, ry); return;
+			case  3: DisplayGUIInputClick(      rx, ry); return;
+			case  4: DisplayGUIOptionClick(     rx, ry); return;
+			case  5: DisplayGUIVideoClick(      rx, ry); return;
+			case  6: DisplayGUISoundClick();             return;
+			case  7: DisplayGUICheatClick(      rx, ry); return;
+			case  8: DisplayNetOptnsClick();             return;
+			case  9: DisplayGameOptnsClick(     rx, ry); return;
+			case 10: DisplayGUIOptnsClick();             return;
+			case 11: DisplayGUIAboutClick(      rx, ry); return;
+			case 12: DisplayGUIResetClick(      rx, ry); return;
+			case 13: DisplayGUICheatSearchClick(rx, ry); return;
+			case 14: DisplayGUIStatesClick(     rx, ry); return;
+			case 15: DisplayGUIMovieClick(      rx, ry); return;
+			case 16: DisplayGUIComboClick(      rx, ry); return;
 			case 17: f = DisplayGUIAddOnClick;       break;
 			case 18: f = DisplayGUIChipClick;        break;
 			case 19: f = DisplayGUIPathsClick;       break;

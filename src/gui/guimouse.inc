@@ -19,7 +19,7 @@
 
 
 
-EXTSYM guipresstest, CheatCodeToggle
+EXTSYM guipresstest
 
 SECTION .text
 
@@ -94,65 +94,6 @@ SECTION .text
 %%noclick
 %endmacro
 
-%macro GUISlidebarPostImpl 13 ; x1,y1,x2,y2,upjump,downjump,holdpos,scsize,view,cur,listsize
-  cmp dword[%11],0
-  je near %%nolower
-  cmp dword[GUIdispmode],1
-  je near %%slidebar
-  GUIClickArea %1,%2-7,%3,%2-1,%%noupper
-  mov byte[%12],%13
-  mov byte[GUICHold],%7
-  jmp %5
-%%noupper
-  GUIClickArea %1,%4+1,%3,%4+7,{near %%nolower}
-  mov byte[%12],%13
-  mov byte[GUICHold],%7+1
-  jmp %6
-%%slidebar
-  GUIClickArea %1,%2,%3,%4,{near %%nolower}
-  mov byte[%12],%13
-  ; displacement = (GUIdispmode * pixeldisp. / (listsize-scsize))
-  mov eax,[%11]
-  sub eax,%8
-  mov ebx,edx
-  sub ebx,[GUIlastypos]
-  imul ebx
-  mov ebx,[GUIlastdispval]
-  or ebx,ebx
-  jz near %%zerodiv
-  test ebx,80000000h
-  jnz near %%zerodiv
-  idiv ebx
-  mov ebx,[GUIlastvpos]
-  add ebx,eax
-  mov [%9],ebx
-  mov ebx,[GUIlastcpos]
-  add ebx,eax
-  mov [%10],ebx
-  test dword[%9],8000000h
-  jz %%noneg
-  mov dword[%9],0
-%%noneg
-  test dword[%10],8000000h
-  jz %%noneg2
-  mov dword[%10],0
-%%noneg2
-  mov eax,[%11]
-  dec eax
-  cmp [%10],eax
-  jb %%notover
-  mov [%10],eax
-%%notover
-  sub eax,%8-1
-  cmp [%9],eax
-  jb %%notover2
-  mov [%9],eax
-%%notover2
-%%zerodiv
-  ret
-%%nolower
-%endmacro
-
 SECTION .bss
 NEWSYM GUIlastdispval, resd 1
 NEWSYM GUIdispmode,    resd 1
@@ -160,172 +101,6 @@ NEWSYM GUIlastypos,    resd 1
 NEWSYM GUIlastcpos,    resd 1
 NEWSYM GUIlastvpos,    resd 1
 SECTION .text
-
-%macro GUISlidebarImpl 10 ; x1,y1,x2,y2,GUI?StA,ScrnSize,ViewLoc,CursLoc,Entries,win#
-  mov dword[GUIdispmode],0
-  GUIClickArea %1,%2,%3,%4,{near %%nobar}
-  sub edx,%2
-  cmp [%5+4],edx
-  ja near %%above
-  cmp [%5+8],edx
-  jb near %%below
-  add edx,%2
-  mov [GUIlastypos],edx
-  mov dword[GUIdispmode],1
-  mov eax,[GUIwinposy+%10*4]
-  add eax,%2
-  mov [GUIHoldYlim],eax
-  mov eax,[GUIwinposy+%10*4]
-  add eax,%4
-  mov [GUIHoldYlimR],eax
-  mov eax,[GUIwinposx+%10*4]
-  add eax,%1
-  mov [GUIHoldXlimL],eax
-  mov eax,[GUIwinposx+%10*4]
-  add eax,%3
-  mov [GUIHoldXlimR],eax
-  mov eax,[%5]
-  mov [GUIlastdispval],eax
-  mov eax,[%8]
-  mov [GUIlastcpos],eax
-  mov eax,[%7]
-  mov [GUIlastvpos],eax
-  mov byte[GUIHold],3
-  ret
-%%above
-  sub dword[%7],%6
-  sub dword[%8],%6
-  test dword[%7],8000000h
-  jz %%noneg
-  mov dword[%7],0
-  mov dword[%8],0
-%%noneg
-  ret
-%%below
-  add dword[%7],%6
-  add dword[%8],%6
-  mov ebx,[%9]
-  dec ebx
-  cmp [%8],ebx
-  jb %%notoverflow
-  mov [%8],ebx
-  sub ebx,%6-1
-  mov [%7],ebx
-%%notoverflow
-  mov ebx,[%9]
-  sub ebx,%6
-  cmp [%7],ebx
-  jb %%notoverflow2
-  mov [%7],ebx
-%%notoverflow2
-  ret
-%%nobar
-  ; upper arrow
-  GUIClickArea %1,%2-7,%3,%2-1,%%noupper
-  mov eax,[GUIwinposy+%10*4]
-  add eax,%2-7
-  mov [GUIHoldYlim],eax
-  mov eax,[GUIwinposy+%10*4]
-  add eax,%2-1
-  mov [GUIHoldYlimR],eax
-  mov eax,[GUIwinposx+%10*4]
-  add eax,%1
-  mov [GUIHoldXlimL],eax
-  mov eax,[GUIwinposx+%10*4]
-  add eax,%3
-  mov [GUIHoldXlimR],eax
-  mov byte[GUIHold],3
-  ret
-%%noupper
-  ; lower arrow
-  GUIClickArea %1,%4+1,%3,%4+7,%%nolower
-  mov eax,[GUIwinposy+%10*4]
-  add eax,%4+1
-  mov [GUIHoldYlim],eax
-  mov eax,[GUIwinposy+%10*4]
-  add eax,%4+7
-  mov [GUIHoldYlimR],eax
-  mov eax,[GUIwinposx+%10*4]
-  add eax,%1
-  mov [GUIHoldXlimL],eax
-  mov eax,[GUIwinposx+%10*4]
-  add eax,%3
-  mov [GUIHoldXlimR],eax
-  mov byte[GUIHold],3
-  ret
-%%nolower
-%endmacro
-
-%macro GUIPostWinBoxMove 11 ;x1,y1,x2,y2,view,curs,num,.scru,.scrd,jumpto,sizeofscreen
-  cmp eax,%1
-  jl near %%noload
-  cmp eax,%3
-  jg near %%noload
-  cmp edx,%2
-  je near %%scrollup
-  cmp edx,%4
-  jne near %%noload
-  ; Scroll Down
-  cmp dword[%7],%11
-  jbe %9
-  mov ebx,[%5]
-  add ebx,%11-1
-  mov [%6],ebx
-%9
-  cmp dword[GUIScrolTim1],0
-  jne near %%donescrol
-  mov ebx,[%7]
-  dec ebx
-  cmp ebx,[%6]
-  jbe %%donescrolldown
-  inc dword[%6]
-  cmp dword[%7],%11
-  jbe near %%donescrol
-  inc dword[%5]
-  mov ebx,[%7]
-  sub ebx,%11
-  cmp ebx,[%5]
-  ja near %%donescrolldown
-  mov [%5],ebx
-  jmp %%donescrolldown
-%%scrollup
-  mov ebx,[%5]
-  mov [%6],ebx
-%8
-  cmp dword[GUIScrolTim1],0
-  jne near %%donescrol
-  cmp dword[%6],0
-  je %%donescrolldown
-  dec dword[%6]
-  cmp dword[%5],0
-  je %%donescrolldown
-  dec dword[%5]
-%%donescrolldown
-  mov dword[GUIScrolTim1],1
-  cmp dword[GUIScrolTim2],4
-  jb %%noscrol1
-  inc dword[GUIScrolTim1]
-%%noscrol1
-  cmp dword[GUIScrolTim2],0
-  je %%noscrol2
-  inc dword[GUIScrolTim1]
-  dec dword[GUIScrolTim2]
-%%noscrol2
-%%donescrol
-  jmp %10
-%%noload
-%endmacro
-
-%macro GUIPHoldbutton 5
-  GUIClickArea %1,%2,%3,%4,%%nohold
-  mov dword[GUIHoldXlimL],%1
-  mov dword[GUIHoldXlimR],%3
-  mov dword[GUIHoldYlim],%2
-  mov dword[GUIHoldYlimR],%4
-  mov byte[GUICBHold2],%5
-  mov byte[GUIHold],4
-%%nohold
-%endmacro
 
 %macro GUIPHoldbutton2 8
   GUIClickArea %1,%2,%3,%4,%%nohold
@@ -368,62 +143,6 @@ SECTION .text
   mov %3,%4
   mov %5,%6
 %%noclick
-%endmacro
-
-%macro GUIWinControl 13 ;x,y,x2,y2,currentwin,vpos,#entries,starty,y/entry,cpos,winval,win#,dclicktick#
-  GUIClickArea %1,%2,%3,%4,{near %%noload}
-  cmp dword[%7],0
-  je near %%noload
-  mov dword[%5],%11
-  mov eax,edx
-  sub eax,%8
-  xor edx,edx
-  mov ebx,%9
-  div ebx
-  add eax,[%6]
-  mov ebx,[%7]
-  dec ebx
-  cmp eax,ebx
-  jg %%nomod
-  mov [%10],eax
-%%nomod
-  cmp byte[GUIHold],0
-  jne %%held
-  cmp dword[GUIDClickTL],0
-  je %%noprevhold
-  cmp byte[GUIDClCWin],%11
-  jne %%noprevhold
-  cmp [GUIDClCEntry],eax
-  jne %%noprevhold
-  mov dword[GUIDClickTL],0
-  mov eax,%12
-  cmp eax,1
-  jne %%cheat
-  ccallv GUILoadData
-  ret
-%%cheat
-  ccallv CheatCodeToggle
-  ret
-%%noprevhold
-  mov dword[GUIDClickTL],%13
-  mov byte[GUIDClCWin],%11
-  mov [GUIDClCEntry],eax
-%%held
-  mov eax,[GUIwinposy+%12*4]
-  add eax,%2-1
-  mov [GUIHoldYlim],eax
-  mov eax,[GUIwinposy+%12*4]
-  add eax,%4+1
-  mov [GUIHoldYlimR],eax
-  mov eax,[GUIwinposx+%12*4]
-  add eax,%1
-  mov [GUIHoldXlimL],eax
-  mov eax,[GUIwinposx+%12*4]
-  add eax,%3
-  mov [GUIHoldXlimR],eax
-  mov byte[GUIHold],3
-  ret
-%%noload
 %endmacro
 
 %macro DGOptnsProcBox 3
@@ -493,12 +212,6 @@ SECTION .text
 %%noclick
 %endmacro
 
-%macro GUIBoxVar 6
-  GUIClickArea %1,%2,%3,%4,%%nope
-  mov dword[%5],%6
-%%nope
-%endmacro
-
 ; Mouse implementation
 
 SECTION .bss
@@ -508,79 +221,6 @@ SECTION .data
 NEWSYM NTSCPresetVar, dd 4
 
 SECTION .text
-
-NEWSYM DisplayGUICheatSearchClick2
-  cmp byte[CheatWinMode],2
-  je near DisplayGUICheatSearchClick.preview
-NEWSYM DisplayGUICheatSearchClick
-  cmp byte[CheatWinMode],1
-  je near .incheatmode
-  cmp byte[CheatWinMode],2
-  je near .view
-  cmp byte[CheatWinMode],3
-  je near .add
-
-  GUIPHoldbutton 95,140,140,152,50         ; Main Menu
-  GUIPButtonHole 11,28,byte[CheatSrcByteSize],0
-  GUIPButtonHole 11,38,byte[CheatSrcByteSize],1
-  GUIPButtonHole 11,48,byte[CheatSrcByteSize],2
-  GUIPButtonHole 11,58,byte[CheatSrcByteSize],3
-  GUIPButtonHole 11,73,byte[CheatSrcByteBase],0
-  GUIPButtonHole 11,83,byte[CheatSrcByteBase],1
-  GUIPButtonHole 11,113,byte[CheatSrcSearchType],0
-  GUIPButtonHole 11,123,byte[CheatSrcSearchType],1
-  ret
-
-.incheatmode                            ; Exact Value
-  GUIPHoldbutton 30,140,80,152,51
-  cmp byte[CheatSearchStatus],1
-  jne near .cheatsearching
-  jmp .nosearch
-
-.cheatsearching                         ; Return and Re-Search
-  cmp byte[CheatSrcSearchType],1
-  je near .cheatsearchingcomp
-  jmp .searched
-
-.cheatsearchingcomp                     ; Select Comparison
-  GUIPButtonHole 11,33,byte[CheatCompareValue],0
-  GUIPButtonHole 11,43,byte[CheatCompareValue],1
-  GUIPButtonHole 11,53,byte[CheatCompareValue],2
-  GUIPButtonHole 11,63,byte[CheatCompareValue],3
-
-.searched                               ; Restart/View/Search Buttons
-  GUIPHoldbutton 120,140,170,152,53
-.nosearch
-  GUIPHoldbutton 10,140,60,152,51
-  GUIPHoldbutton 70,140,110,152,52
-  ret
-
-; View Cheat
-.preview                     ; Preview Box
-  ; x1,y1,x2,y2,upjump,downjump,holdpos,scsize,view,cur,listsize
-  GUISlidebarPostImpl 173,28,180,100,.scrollup,.scrolldown,11,12,GUIcurrentchtsrcviewloc,GUIcurrentchtsrccursloc,NumCheatSrc,GUIBlankVar,1
-  ;x1,y1,x2,y2,view,curs,num,.scru,.scrd,jumpto,sizeofscreen
-  GUIPostWinBoxMove 5,22,171,22+12*7,GUIcurrentchtsrcviewloc,GUIcurrentchtsrccursloc,NumCheatSrc,.scrollup,.scrolldown,DisplayGUICheatSearchClick.skipscrol,12
-.view
-  ; x1,y1,x2,y2,GUI?StA,ScrnSize,ViewLoc,CursLoc,Entries,win#
-  GUISlidebarImpl 173,28,180,100,GUICSStA,12,GUIcurrentchtsrcviewloc,GUIcurrentchtsrccursloc,NumCheatSrc,13
-.skipscrol
-  ; x,y,x2,y2,currentwin,vpos,#entries,starty,y/entry,cpos,winval,win#,dclicktick#
-  GUIWinControl 5,23,171,21+12*7,GUIBlankVar,GUIcurrentchtsrcviewloc,NumCheatSrc,22,7,GUIcurrentchtsrccursloc,5,13,30
-
-  GUIPHoldbutton 70,140,130,152,54         ; Return/Add Buttons
-  GUIPHoldbutton 140,140,180,152,55
-  ret
-
-;    ccallv DrawSlideBarWin, 13, 173, 28, [GUIcurrentchtsrcviewloc], [NumCheatSrc], 12, 73, GUICSStA
-
-.add                         ; Add Cheat
-  GUIPHoldbutton 60,155,120,167,56                 ; Return/Add Buttons
-  GUIPHoldbutton 130,155,160,167,57
-  GUIClickCButton 8,139,byte[CheatUpperByteOnly]   ; Checkbox
-  GUIBoxVar 10,30,80,37,CurCStextpos,0             ; Input Boxes
-  GUIBoxVar 10,55,126,62,CurCStextpos,1
-  ret
 
 NEWSYM DisplayGUIAddOnClick
   GUIPButtonHole 9,23,byte[device1],0
