@@ -1918,6 +1918,17 @@ static void DisplayGUIAddOnClick(s4 const eax, s4 const edx)
 }
 
 
+static void DisplayGUIChipClick(s4 const eax, s4 const edx)
+{
+	GUIClickCButton(eax, edx,   9, 43, &nssdip1);
+	GUIClickCButton(eax, edx,  59, 43, &nssdip2);
+	GUIClickCButton(eax, edx, 109, 43, &nssdip3);
+	GUIClickCButton(eax, edx,   9, 53, &nssdip4);
+	GUIClickCButton(eax, edx,  59, 53, &nssdip5);
+	GUIClickCButton(eax, edx, 109, 53, &nssdip6);
+}
+
+
 static void GUIWindowMove(void)
 {
 	u1 const id = GUIwinorder[GUIwinptr - 1];
@@ -1983,7 +1994,7 @@ static void GUIWinClicked(u4 const i, u4 const id)
 			case 15: DisplayGUIMovieClick(      rx, ry); return;
 			case 16: DisplayGUIComboClick(      rx, ry); return;
 			case 17: DisplayGUIAddOnClick(      rx, ry); return;
-			case 18: f = DisplayGUIChipClick;        break;
+			case 18: DisplayGUIChipClick(       rx, ry); return;
 			case 19: f = DisplayGUIPathsClick;       break;
 			case 20: f = DisplayGUISaveClick;        break;
 			case 21: f = DisplayGUISpeedClick;       break;

@@ -222,15 +222,6 @@ NEWSYM NTSCPresetVar, dd 4
 
 SECTION .text
 
-NEWSYM DisplayGUIChipClick
-  GUIClickCButton 9,43,byte[nssdip1]
-  GUIClickCButton 59,43,byte[nssdip2]
-  GUIClickCButton 109,43,byte[nssdip3]
-  GUIClickCButton 9,53,byte[nssdip4]
-  GUIClickCButton 59,53,byte[nssdip5]
-  GUIClickCButton 109,53,byte[nssdip6]
-  ret
-
 %ifdef __MSDOS__
 %define path_length 256
 %else

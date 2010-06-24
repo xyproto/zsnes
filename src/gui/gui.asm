@@ -47,7 +47,6 @@ EXTSYM pressed
 EXTSYM FPSOn
 EXTSYM vidbufferofsb
 EXTSYM RelPathBase
-EXTSYM nssdip1,nssdip2,nssdip3,nssdip4,nssdip5,nssdip6
 
 EXTSYM GUIwinposx,GUIwinposy,maxskip
 EXTSYM SnapPath,SPCPath,BSXPath,SGPath,STPath,GNextPath
