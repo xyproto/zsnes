@@ -222,26 +222,6 @@ NEWSYM NTSCPresetVar, dd 4
 
 SECTION .text
 
-NEWSYM DisplayGUIAddOnClick
-  GUIPButtonHole 9,23,byte[device1],0
-  GUIPButtonHole 9,33,byte[device1],1
-
-  GUIPButtonHole 100,23,byte[device2],0
-  GUIPButtonHole 100,33,byte[device2],1
-  GUIPButtonHole 100,43,byte[device2],2
-  GUIPButtonHole 100,53,byte[device2],3
-  GUIPButtonHole 100,63,byte[device2],4
-
-  DGOptnsProcBox 74,76,[KeyExtraEnab1]
-  DGOptnsProcBox 165,76,[KeyExtraEnab2]
-
-  GUIClickCButton 9,83,byte[mouse1lh]
-  GUIClickCButton 100,83,byte[mouse2lh]
-
-  DGOptnsProcBox 74,108,[SSAutoFire]
-  DGOptnsProcBox 165,108,[SSPause]
-  ret
-
 NEWSYM DisplayGUIChipClick
   GUIClickCButton 9,43,byte[nssdip1]
   GUIClickCButton 59,43,byte[nssdip2]

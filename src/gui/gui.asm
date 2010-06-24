@@ -47,7 +47,6 @@ EXTSYM pressed
 EXTSYM FPSOn
 EXTSYM vidbufferofsb
 EXTSYM RelPathBase
-EXTSYM device1,device2
 EXTSYM nssdip1,nssdip2,nssdip3,nssdip4,nssdip5,nssdip6
 
 EXTSYM GUIwinposx,GUIwinposy,maxskip
@@ -64,17 +63,14 @@ EXTSYM pl2contrl
 EXTSYM pl3contrl
 EXTSYM pl4contrl
 EXTSYM pl5contrl
-EXTSYM KeyExtraEnab1,KeyExtraEnab2
 EXTSYM KeyIncStateSlot,KeyDecStateSlot,KeySaveState,KeyLoadState,KeyStateSelct
 EXTSYM KeyRewind,KeyEmuSpeedUp,KeyEmuSpeedDown,KeyFRateUp,KeyFRateDown
 EXTSYM KeyFastFrwrd,KeySlowDown,KeyResetSpeed,EMUPauseKey,INCRFrameKey
 EXTSYM init_save_paths
-EXTSYM mouse1lh,mouse2lh
 EXTSYM GUIMovieForcedText
 EXTSYM FFRatio,SDRatio,EmuSpeed
 EXTSYM nosaveSRAM
 EXTSYM FastFwdToggle
-EXTSYM SSAutoFire,SSPause
 
 %ifdef __UNIXSDL__
 EXTSYM CheckOpenGL

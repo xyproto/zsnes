@@ -1896,6 +1896,28 @@ static void DisplayGUICheatSearchClick2(s4 const eax, s4 const edx)
 }
 
 
+static void DisplayGUIAddOnClick(s4 const eax, s4 const edx)
+{
+	GUIPButtonHole(eax, edx,   9, 23, &device1, 0);
+	GUIPButtonHole(eax, edx,   9, 33, &device1, 1);
+
+	GUIPButtonHole(eax, edx, 100, 23, &device2, 0);
+	GUIPButtonHole(eax, edx, 100, 33, &device2, 1);
+	GUIPButtonHole(eax, edx, 100, 43, &device2, 2);
+	GUIPButtonHole(eax, edx, 100, 53, &device2, 3);
+	GUIPButtonHole(eax, edx, 100, 63, &device2, 4);
+
+	DGOptnsProcBox(eax, edx,  74, 76, &KeyExtraEnab1);
+	DGOptnsProcBox(eax, edx, 165, 76, &KeyExtraEnab2);
+
+	GUIClickCButton(eax, edx,   9, 83, &mouse1lh);
+	GUIClickCButton(eax, edx, 100, 83, &mouse2lh);
+
+	DGOptnsProcBox(eax, edx,  74, 108, &SSAutoFire);
+	DGOptnsProcBox(eax, edx, 165, 108, &SSPause);
+}
+
+
 static void GUIWindowMove(void)
 {
 	u1 const id = GUIwinorder[GUIwinptr - 1];
@@ -1960,7 +1982,7 @@ static void GUIWinClicked(u4 const i, u4 const id)
 			case 14: DisplayGUIStatesClick(     rx, ry); return;
 			case 15: DisplayGUIMovieClick(      rx, ry); return;
 			case 16: DisplayGUIComboClick(      rx, ry); return;
-			case 17: f = DisplayGUIAddOnClick;       break;
+			case 17: DisplayGUIAddOnClick(      rx, ry); return;
 			case 18: f = DisplayGUIChipClick;        break;
 			case 19: f = DisplayGUIPathsClick;       break;
 			case 20: f = DisplayGUISaveClick;        break;
