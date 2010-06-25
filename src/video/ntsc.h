@@ -24,9 +24,10 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #ifndef NTSC_H
 #define NTSC_H
 
+#include "../types.h"
 #include "snes_ntsc/snes_ntsc.h"
 
-extern unsigned char NTSCPresetVar; /* 0 to 3 */
+extern u1 NTSCPresetVar; /* 0 to 3 */
 
 /* (Re)initialize filter with new NTSC settings above */
 void NTSCFilterInit();

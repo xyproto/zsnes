@@ -37,6 +37,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 	/* width = 288 pixels, height = 223 pixels or more */
 	extern unsigned short* vidbuffer;
 
+u1 NTSCPresetVar = 4;
+
 	static snes_ntsc_t ntsc_snes;
 	static unsigned char ntsc_phase = 0;
 

@@ -20,6 +20,3 @@
 
 
 ; Mouse implementation
-
-SECTION .data
-NEWSYM NTSCPresetVar, dd 4
