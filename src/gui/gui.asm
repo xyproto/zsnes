@@ -42,12 +42,9 @@
 
 %include "macros.mac"
 
-EXTSYM frameskip
 EXTSYM pressed
-EXTSYM FPSOn
 EXTSYM vidbufferofsb
 
-EXTSYM GUIwinposx,GUIwinposy,maxskip
 EXTSYM SnapPath,SPCPath,BSXPath,SGPath,STPath,GNextPath
 EXTSYM SRAMPath
 EXTSYM IPSPath,MoviePath,CHTPath,ComboPath,INPPath,SStatePath
@@ -57,11 +54,7 @@ EXTSYM pl2contrl
 EXTSYM pl3contrl
 EXTSYM pl4contrl
 EXTSYM pl5contrl
-EXTSYM KeyEmuSpeedUp,KeyEmuSpeedDown,KeyFRateUp,KeyFRateDown
-EXTSYM KeyFastFrwrd,KeySlowDown,KeyResetSpeed,EMUPauseKey,INCRFrameKey
 EXTSYM GUIMovieForcedText
-EXTSYM FFRatio,SDRatio,EmuSpeed
-EXTSYM FastFwdToggle
 
 %ifdef __UNIXSDL__
 EXTSYM CheckOpenGL

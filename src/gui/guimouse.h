@@ -3,8 +3,6 @@
 
 #include "../types.h"
 
-extern void DisplayGUISpeedClick();
-
 extern s4 GUIlastypos;
 extern u4 GUIBlankVar;
 extern u4 GUINumValue;

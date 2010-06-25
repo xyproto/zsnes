@@ -300,6 +300,16 @@ static bool GUIClickCButton6(s4 const eax, s4 const edx, s4 const p1, s4 const p
 }
 
 
+static void GUIClickCButtonfr(s4 const eax, s4 const edx, s4 const p1, s4 const p2, u1* const p3)
+{
+	if (GUIClickArea(eax, edx, p1 + 1, p2 + 3, p1 + 6, p2 + 8))
+	{
+		FPSOn = 0;
+		*p3   = !*p3;
+	}
+}
+
+
 static bool GUIClickCButtonL(s4 const eax, s4 const edx, s4 const p1, s4 const p2)
 {
 	if (GUIClickArea(eax, edx, p1 + 1, p2 + 3, p1 + 6, p2 + 8))
@@ -2006,6 +2016,61 @@ static void DisplayGUISaveClick(s4 const eax, s4 const edx)
 }
 
 
+static void DisplayGUISpeedClick(void)
+{
+	// This updates the mouse location, effectively 'grabbing' the cursor.
+	s4 const eax = GUImouseposx - GUIwinposx[21];
+	s4 const edx = GUImouseposy - GUIwinposy[21];
+
+	GUIClickCButton(  eax, edx, 11, 135, &FastFwdToggle); // Checkboxes
+	GUIClickCButtonfr(eax, edx, 11, 145, &frameskip);
+
+	if (frameskip == 0)
+	{
+		DGOptnsProcBox(eax, edx, 12, 78, &KeyEmuSpeedUp);
+		DGOptnsProcBox(eax, edx, 12, 98, &KeyEmuSpeedDown);
+	}
+	else
+	{
+		DGOptnsProcBox(eax, edx, 12, 78, &KeyFRateUp);
+		DGOptnsProcBox(eax, edx, 12, 98, &KeyFRateDown);
+	}
+
+	DGOptnsProcBox(eax, edx, 12,  58, &KeyFastFrwrd); // Shortcut Boxes
+	DGOptnsProcBox(eax, edx, 12,  68, &KeySlowDown);
+	DGOptnsProcBox(eax, edx, 12,  88, &KeyResetSpeed);
+	DGOptnsProcBox(eax, edx, 12, 108, &EMUPauseKey);
+	DGOptnsProcBox(eax, edx, 12, 118, &INCRFrameKey);
+
+	GUIPHoldbutton2(eax, edx, 118, 24, 126, 32, 74, &FFRatio,  1, 28);
+	GUIPHoldbutton2(eax, edx, 129, 24, 137, 32, 75, &FFRatio, -1,  0);
+	GUIPHoldbutton2(eax, edx, 118, 35, 126, 43, 76, &SDRatio,  1, 28);
+	GUIPHoldbutton2(eax, edx, 129, 35, 137, 43, 77, &SDRatio, -1,  0);
+	if (frameskip != 0)
+	{
+		GUIPHoldbutton2(eax, edx, 118, 13, 126, 21, 78, &frameskip,  1, 10);
+		GUIPHoldbutton2(eax, edx, 129, 13, 137, 21, 79, &frameskip, -1,  1);
+	}
+	else
+	{
+		GUIPHoldbutton2(eax, edx, 118, 13, 126, 21, 78, &maxskip,  1, 9);
+		GUIPHoldbutton2(eax, edx, 129, 13, 137, 21, 79, &maxskip, -1, 0);
+
+		// Speed Slider
+		if (  7 <= eax && eax <= 7 + 116 && // X-Range for click-area
+				173 <= edx && edx <= 177)       // Y-Range for click-area
+		{
+			EmuSpeed     = (u4)(eax - 7) / 2;
+			GUIHold      = 6; // Lock mouse to bar when clicked
+			GUIHoldYlim  = GUIwinposy[21] + 175;
+			s4 const eax = GUIwinposx[21] +   7;
+			GUIHoldXlimL = eax;
+			GUIHoldXlimR = eax + 116;
+		}
+	}
+}
+
+
 static void GUIWindowMove(void)
 {
 	u1 const id = GUIwinorder[GUIwinptr - 1];
@@ -2051,33 +2116,31 @@ static void GUIWinClicked(u4 const i, u4 const id)
 	else
 	{
 		GUIInputBox = 0;
-		void (* f)();
 		switch (id)
 		{
-			case  1: DisplayGUIConfirmClick(    rx, ry); return;
-			case  2: DisplayGUIChoseSaveClick(  rx, ry); return;
-			case  3: DisplayGUIInputClick(      rx, ry); return;
-			case  4: DisplayGUIOptionClick(     rx, ry); return;
-			case  5: DisplayGUIVideoClick(      rx, ry); return;
-			case  6: DisplayGUISoundClick();             return;
-			case  7: DisplayGUICheatClick(      rx, ry); return;
-			case  8: DisplayNetOptnsClick();             return;
-			case  9: DisplayGameOptnsClick(     rx, ry); return;
-			case 10: DisplayGUIOptnsClick();             return;
-			case 11: DisplayGUIAboutClick(      rx, ry); return;
-			case 12: DisplayGUIResetClick(      rx, ry); return;
-			case 13: DisplayGUICheatSearchClick(rx, ry); return;
-			case 14: DisplayGUIStatesClick(     rx, ry); return;
-			case 15: DisplayGUIMovieClick(      rx, ry); return;
-			case 16: DisplayGUIComboClick(      rx, ry); return;
-			case 17: DisplayGUIAddOnClick(      rx, ry); return;
-			case 18: DisplayGUIChipClick(       rx, ry); return;
-			case 19: DisplayGUIPathsClick(      rx, ry); return;
-			case 20: DisplayGUISaveClick(       rx, ry); return;
-			case 21: f = DisplayGUISpeedClick;       break;
-			default: return;
+			case  1: DisplayGUIConfirmClick(    rx, ry); break;
+			case  2: DisplayGUIChoseSaveClick(  rx, ry); break;
+			case  3: DisplayGUIInputClick(      rx, ry); break;
+			case  4: DisplayGUIOptionClick(     rx, ry); break;
+			case  5: DisplayGUIVideoClick(      rx, ry); break;
+			case  6: DisplayGUISoundClick();             break;
+			case  7: DisplayGUICheatClick(      rx, ry); break;
+			case  8: DisplayNetOptnsClick();             break;
+			case  9: DisplayGameOptnsClick(     rx, ry); break;
+			case 10: DisplayGUIOptnsClick();             break;
+			case 11: DisplayGUIAboutClick(      rx, ry); break;
+			case 12: DisplayGUIResetClick(      rx, ry); break;
+			case 13: DisplayGUICheatSearchClick(rx, ry); break;
+			case 14: DisplayGUIStatesClick(     rx, ry); break;
+			case 15: DisplayGUIMovieClick(      rx, ry); break;
+			case 16: DisplayGUIComboClick(      rx, ry); break;
+			case 17: DisplayGUIAddOnClick(      rx, ry); break;
+			case 18: DisplayGUIChipClick(       rx, ry); break;
+			case 19: DisplayGUIPathsClick(      rx, ry); break;
+			case 20: DisplayGUISaveClick(       rx, ry); break;
+			case 21: DisplayGUISpeedClick();             break;
+			default: break;
 		}
-		asm volatile("call *%0" :: "r" (f), "a" (rx), "d" (ry) : "cc", "memory"); // XXX asm_call
 	}
 }
 
@@ -2299,7 +2362,7 @@ noclick:;
 				u4 const maxx = GUIHoldXlimR;
 				if (x > maxx) GUImouseposx = maxx;
 				lastmouseholded = 1;
-				asm_call(DisplayGUISpeedClick);
+				DisplayGUISpeedClick();
 				return;
 			}
 
