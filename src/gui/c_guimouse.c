@@ -27,7 +27,6 @@
 #include "guifuncs.h"
 #include "guikeys.h"
 #include "guimisc.h"
-#include "guimouse.h"
 #include "guiwindp.h"
 
 #ifndef __MSDOS__
@@ -49,6 +48,13 @@ static u1 ntscCurVar;
 static u1 ntscLastVar[6];
 static u1 ntscWhVar;
 static u2 mousebuttonstat;
+static u4 GUIBlankVar;
+static u4 GUINumValue;
+static u4 GUIdispmode;
+static u4 GUIlastcpos;
+static u4 GUIlastdispval;
+static u4 GUIlastvpos;
+static u4 GUIlastypos;
 
 static char const guipresstext1[] = "ENTER THE KEY";
 static char const guipresstext2[] = "OR BUTTON TO USE";

@@ -40,7 +40,6 @@
 #include "c_guimouse.h"
 #include "gui.h"
 #include "guimisc.h"
-#include "guimouse.h"
 #include "guiwindp.h"
 
 #ifdef __MSDOS__

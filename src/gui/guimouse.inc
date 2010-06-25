@@ -19,16 +19,7 @@
 
 
 
-SECTION .bss
-NEWSYM GUIlastdispval, resd 1
-NEWSYM GUIdispmode,    resd 1
-NEWSYM GUIlastypos,    resd 1
-NEWSYM GUIlastcpos,    resd 1
-NEWSYM GUIlastvpos,    resd 1
-
 ; Mouse implementation
 
-NEWSYM GUINumValue, resd 1
-NEWSYM GUIBlankVar, resd 1
 SECTION .data
 NEWSYM NTSCPresetVar, dd 4
