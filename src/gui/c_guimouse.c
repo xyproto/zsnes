@@ -1929,6 +1929,48 @@ static void DisplayGUIChipClick(s4 const eax, s4 const edx)
 }
 
 
+#ifdef __MSDOS__
+#define PATH_LENGTH 256
+#else
+#define PATH_LENGTH 1024
+#endif
+
+static void DisplayGUIPathsClick(s4 const eax, s4 const edx)
+{
+	GUIPTabClick(eax, edx,  0,  51, 1, GUIPathTabs, (u4*)0);
+	GUIPTabClick(eax, edx, 52,  86, 2, GUIPathTabs, (u4*)0);
+	GUIPTabClick(eax, edx, 87, 157, 3, GUIPathTabs, (u4*)0);
+
+	if (GUIPathTabs[0] == 1)
+	{ // General
+		GUITextBoxInputNach(eax, edx, 8,  41, 237,  51, 0, PATH_LENGTH, init_save_paths); // SRAMPath
+		GUITextBoxInputNach(eax, edx, 8,  76, 237,  86, 1, PATH_LENGTH, init_save_paths); // SStatePath
+		GUITextBoxInputNach(eax, edx, 8, 111, 237, 121, 2, PATH_LENGTH, init_save_paths); // MoviePath
+		GUITextBoxInputNach(eax, edx, 8, 146, 237, 156, 3, PATH_LENGTH, init_save_paths); // IPSPath
+
+		GUIPButtonHole(eax, edx,  8, 178, &RelPathBase, 0);
+		GUIPButtonHole(eax, edx, 88, 178, &RelPathBase, 1);
+	}
+
+	if (GUIPathTabs[0] == 2)
+	{ // More paths
+		GUITextBoxInputNach(eax, edx, 8,  41, 237,  51, 0, PATH_LENGTH, init_save_paths); // SnapPath
+		GUITextBoxInputNach(eax, edx, 8,  76, 237,  86, 1, PATH_LENGTH, init_save_paths); // SPCPath
+		GUITextBoxInputNach(eax, edx, 8, 111, 237, 121, 2, PATH_LENGTH, init_save_paths); // CHTPath
+		GUITextBoxInputNach(eax, edx, 8, 146, 237, 156, 3, PATH_LENGTH, init_save_paths); // ComboPath
+		GUITextBoxInputNach(eax, edx, 8, 181, 237, 191, 4, PATH_LENGTH, init_save_paths); // INPPath
+	}
+
+	if (GUIPathTabs[0] == 3)
+	{ // BIOS+Carts
+		GUITextBoxInputNach(eax, edx, 8,  41, 237,  51, 0, PATH_LENGTH, init_save_paths); // BSXPath
+		GUITextBoxInputNach(eax, edx, 8,  76, 237,  86, 1, PATH_LENGTH, init_save_paths); // STPath
+		GUITextBoxInputNach(eax, edx, 8, 111, 237, 121, 2, PATH_LENGTH, init_save_paths); // GNextPath
+		GUITextBoxInputNach(eax, edx, 8, 146, 237, 156, 3, PATH_LENGTH, init_save_paths); // SGPath
+	}
+}
+
+
 static void GUIWindowMove(void)
 {
 	u1 const id = GUIwinorder[GUIwinptr - 1];
@@ -1995,7 +2037,7 @@ static void GUIWinClicked(u4 const i, u4 const id)
 			case 16: DisplayGUIComboClick(      rx, ry); return;
 			case 17: DisplayGUIAddOnClick(      rx, ry); return;
 			case 18: DisplayGUIChipClick(       rx, ry); return;
-			case 19: f = DisplayGUIPathsClick;       break;
+			case 19: DisplayGUIPathsClick(      rx, ry); return;
 			case 20: f = DisplayGUISaveClick;        break;
 			case 21: f = DisplayGUISpeedClick;       break;
 			default: return;

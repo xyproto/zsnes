@@ -3,7 +3,6 @@
 
 #include "../types.h"
 
-extern void DisplayGUIPathsClick();
 extern void DisplayGUISaveClick();
 extern void DisplayGUISpeedClick();
 

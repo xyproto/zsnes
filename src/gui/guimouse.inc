@@ -124,20 +124,6 @@ SECTION .text
 %%noclick
 %endmacro
 
-%macro GUITextBoxInputNach 7
-  GUIClickArea %1,%2,%3,%4,%%noclick
-  ccallv %7
-  mov dword[GUIInputBox],%5+1
-  mov dword[GUIInputLimit],%6-1
-%%noclick
-%endmacro
-
-%macro GUIPButtonHole 4
-  GUIClickArea %1+1,%2+1,%1+7,%2+7,%%noclick
-  mov %3,%4
-%%noclick
-%endmacro
-
 %macro GUIPButtonHole2 6
   GUIClickArea %1+1,%2+1,%1+7,%2+7,%%noclick
   mov %3,%4
@@ -197,21 +183,6 @@ SECTION .text
 %%skip
 %endmacro
 
-%macro GUIPTabClick 4-* ; minX, maxX, value, var, vars to zero
-  GUIClickArea %1+1,11,%2-1,22,%%noclick
-  mov dword[GUIInputBox],0
-  mov dword[%4],%3
-%if (%0>4)
-  %rotate 4
-%rep (%0-4)
-  mov dword[%1],0
-  %rotate 1
-%endrep
-%endif
-  mov byte[GUIFreshInputSelect],1
-%%noclick
-%endmacro
-
 ; Mouse implementation
 
 SECTION .bss
@@ -221,49 +192,6 @@ SECTION .data
 NEWSYM NTSCPresetVar, dd 4
 
 SECTION .text
-
-%ifdef __MSDOS__
-%define path_length 256
-%else
-%define path_length 1024
-%endif
-
-NEWSYM DisplayGUIPathsClick
-  GUIPTabClick 0,51,1,GUIPathTabs
-  GUIPTabClick 52,86,2,GUIPathTabs
-  GUIPTabClick 87,157,3,GUIPathTabs
-
-  cmp dword[GUIPathTabs],1
-  jne near .notgeneral
-
-  GUITextBoxInputNach 8,41,237,51,0,path_length,init_save_paths        ;SRAMPath
-  GUITextBoxInputNach 8,76,237,86,1,path_length,init_save_paths        ;SStatePath
-  GUITextBoxInputNach 8,111,237,121,2,path_length,init_save_paths      ;MoviePath
-  GUITextBoxInputNach 8,146,237,156,3,path_length,init_save_paths      ;IPSPath
-
-  GUIPButtonHole 8,178,byte[RelPathBase],0
-  GUIPButtonHole 88,178,byte[RelPathBase],1
-.notgeneral
-
-  cmp dword[GUIPathTabs],2
-  jne near .notmorepaths
-
-  GUITextBoxInputNach 8,41,237,51,0,path_length,init_save_paths        ;SnapPath
-  GUITextBoxInputNach 8,76,237,86,1,path_length,init_save_paths        ;SPCPath
-  GUITextBoxInputNach 8,111,237,121,2,path_length,init_save_paths      ;CHTPath
-  GUITextBoxInputNach 8,146,237,156,3,path_length,init_save_paths      ;ComboPath
-  GUITextBoxInputNach 8,181,237,191,4,path_length,init_save_paths      ;INPPath
-.notmorepaths
-
-  cmp dword[GUIPathTabs],3
-  jne near .notbc
-
-  GUITextBoxInputNach 8,41,237,51,0,path_length,init_save_paths        ;BSXPath
-  GUITextBoxInputNach 8,76,237,86,1,path_length,init_save_paths        ;STPath
-  GUITextBoxInputNach 8,111,237,121,2,path_length,init_save_paths      ;GNextPath
-  GUITextBoxInputNach 8,146,237,156,3,path_length,init_save_paths      ;SGPath
-.notbc
-  ret
 
 NEWSYM DisplayGUISaveClick
   GUIClickCButton 11,38,byte[nosaveSRAM]

@@ -46,7 +46,6 @@ EXTSYM frameskip
 EXTSYM pressed
 EXTSYM FPSOn
 EXTSYM vidbufferofsb
-EXTSYM RelPathBase
 
 EXTSYM GUIwinposx,GUIwinposy,maxskip
 EXTSYM SnapPath,SPCPath,BSXPath,SGPath,STPath,GNextPath
@@ -65,7 +64,6 @@ EXTSYM pl5contrl
 EXTSYM KeyIncStateSlot,KeyDecStateSlot,KeySaveState,KeyLoadState,KeyStateSelct
 EXTSYM KeyRewind,KeyEmuSpeedUp,KeyEmuSpeedDown,KeyFRateUp,KeyFRateDown
 EXTSYM KeyFastFrwrd,KeySlowDown,KeyResetSpeed,EMUPauseKey,INCRFrameKey
-EXTSYM init_save_paths
 EXTSYM GUIMovieForcedText
 EXTSYM FFRatio,SDRatio,EmuSpeed
 EXTSYM nosaveSRAM
