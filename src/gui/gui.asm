@@ -65,7 +65,6 @@ EXTSYM GUI36hzcall
 EXTSYM GUICustomX,GUICustomY
 %endif
 
-%include "gui/guimouse.inc"
 %include "gui/guiwindp.inc"
 %include "gui/guikeys.inc"
 

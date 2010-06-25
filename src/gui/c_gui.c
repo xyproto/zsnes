@@ -26,12 +26,12 @@
 #include "../ztimec.h"
 #include "c_gui.h"
 #include "c_guikeys.h"
-#include "c_guimouse.h"
 #include "c_guiwindp.h"
 #include "gui.h"
 #include "guicheat.h"
 #include "guifuncs.h"
 #include "guimisc.h"
+#include "guimouse.h"
 #include "guitools.h"
 #include "guiwindp.h"
 

@@ -37,9 +37,9 @@
 #include "../zstate.h"
 #include "c_gui.h"
 #include "c_guikeys.h"
-#include "c_guimouse.h"
 #include "gui.h"
 #include "guimisc.h"
+#include "guimouse.h"
 #include "guiwindp.h"
 
 #ifdef __MSDOS__

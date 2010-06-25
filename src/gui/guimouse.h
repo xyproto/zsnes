@@ -1,5 +1,7 @@
-#ifndef C_GUIMOUSE_H
-#define C_GUIMOUSE_H
+#ifndef GUIMOUSE_H
+#define GUIMOUSE_H
+
+// Mouse implementation
 
 #include "../types.h"
 
