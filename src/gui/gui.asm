@@ -52,21 +52,15 @@ EXTSYM SnapPath,SPCPath,BSXPath,SGPath,STPath,GNextPath
 EXTSYM SRAMPath
 EXTSYM IPSPath,MoviePath,CHTPath,ComboPath,INPPath,SStatePath
 EXTSYM MMXSupport
-EXTSYM KeyStateSlc0,KeyStateSlc1,KeyStateSlc2,KeyStateSlc3,KeyStateSlc4
-EXTSYM KeyStateSlc5,KeyStateSlc6,KeyStateSlc7,KeyStateSlc8,KeyStateSlc9
-EXTSYM RewindStates,RewindFrames,PauseRewind,PauseLoad,SRAMState,AutoState
-EXTSYM LatestSave,SRAMSave5Sec,AutoIncSaveSlot
 EXTSYM pl1contrl
 EXTSYM pl2contrl
 EXTSYM pl3contrl
 EXTSYM pl4contrl
 EXTSYM pl5contrl
-EXTSYM KeyIncStateSlot,KeyDecStateSlot,KeySaveState,KeyLoadState,KeyStateSelct
-EXTSYM KeyRewind,KeyEmuSpeedUp,KeyEmuSpeedDown,KeyFRateUp,KeyFRateDown
+EXTSYM KeyEmuSpeedUp,KeyEmuSpeedDown,KeyFRateUp,KeyFRateDown
 EXTSYM KeyFastFrwrd,KeySlowDown,KeyResetSpeed,EMUPauseKey,INCRFrameKey
 EXTSYM GUIMovieForcedText
 EXTSYM FFRatio,SDRatio,EmuSpeed
-EXTSYM nosaveSRAM
 EXTSYM FastFwdToggle
 
 %ifdef __UNIXSDL__

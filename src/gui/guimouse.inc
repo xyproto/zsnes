@@ -193,37 +193,6 @@ NEWSYM NTSCPresetVar, dd 4
 
 SECTION .text
 
-NEWSYM DisplayGUISaveClick
-  GUIClickCButton 11,38,byte[nosaveSRAM]
-  GUIClickCButton 11,48,byte[SRAMSave5Sec]
-  GUIClickCButton 11,58,byte[SRAMState]
-  GUIClickCButton 11,68,byte[LatestSave]
-  GUIClickCButton 11,78,byte[AutoIncSaveSlot]
-  GUIClickCButton 11,88,byte[AutoState]
-  GUIClickCButton 11,98,byte[PauseLoad]
-  GUIClickCButton 11,108,byte[PauseRewind]
-  GUIPHoldbutton2 173,17,181,24,70,byte[RewindStates],1,99
-  GUIPHoldbutton2 184,17,192,24,71,byte[RewindStates],-1,0
-  GUIPHoldbutton2 173,29,181,36,72,byte[RewindFrames],1,99
-  GUIPHoldbutton2 184,29,192,36,73,byte[RewindFrames],-1,1
-  DGOptnsProcBox 27,130,[KeyStateSlc0]
-  DGOptnsProcBox 27+45,130,[KeyStateSlc1]
-  DGOptnsProcBox 27+45*2,130,[KeyStateSlc2]
-  DGOptnsProcBox 27+45*3,130,[KeyStateSlc3]
-  DGOptnsProcBox 27,139,[KeyStateSlc4]
-  DGOptnsProcBox 27+45,139,[KeyStateSlc5]
-  DGOptnsProcBox 27+45*2,139,[KeyStateSlc6]
-  DGOptnsProcBox 27+45*3,139,[KeyStateSlc7]
-  DGOptnsProcBox 27,148,[KeyStateSlc8]
-  DGOptnsProcBox 27+45,148,[KeyStateSlc9]
-  DGOptnsProcBox 27+45*2,148,[KeyIncStateSlot]
-  DGOptnsProcBox 27+45*3,148,[KeyDecStateSlot]
-  DGOptnsProcBox 8+25,157,[KeySaveState]
-  DGOptnsProcBox 8+57+25,157,[KeyLoadState]
-  DGOptnsProcBox 8+114+25,157,[KeyStateSelct]
-  DGOptnsProcBox 8+38,166,[KeyRewind]
-  ret
-
 NEWSYM DisplayGUISpeedClick
   mov eax,[GUImouseposx]    ; this updates the mouse location
   sub eax,[GUIwinposx+21*4] ; effectively 'grabbing' the cursor !

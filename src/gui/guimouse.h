@@ -3,7 +3,6 @@
 
 #include "../types.h"
 
-extern void DisplayGUISaveClick();
 extern void DisplayGUISpeedClick();
 
 extern s4 GUIlastypos;

@@ -1971,6 +1971,41 @@ static void DisplayGUIPathsClick(s4 const eax, s4 const edx)
 }
 
 
+static void DisplayGUISaveClick(s4 const eax, s4 const edx)
+{
+	GUIClickCButton(eax, edx,  11,  38, &nosaveSRAM);
+	GUIClickCButton(eax, edx,  11,  48, &SRAMSave5Sec);
+	GUIClickCButton(eax, edx,  11,  58, &SRAMState);
+	GUIClickCButton(eax, edx,  11,  68, &LatestSave);
+	GUIClickCButton(eax, edx,  11,  78, &AutoIncSaveSlot);
+	GUIClickCButton(eax, edx,  11,  88, &AutoState);
+	GUIClickCButton(eax, edx,  11,  98, &PauseLoad);
+	GUIClickCButton(eax, edx,  11, 108, &PauseRewind);
+
+	GUIPHoldbutton2(eax, edx, 173, 17, 181, 24, 70, &RewindStates,  1, 99);
+	GUIPHoldbutton2(eax, edx, 184, 17, 192, 24, 71, &RewindStates, -1,  0);
+	GUIPHoldbutton2(eax, edx, 173, 29, 181, 36, 72, &RewindFrames,  1, 99);
+	GUIPHoldbutton2(eax, edx, 184, 29, 192, 36, 73, &RewindFrames, -1,  1);
+
+	DGOptnsProcBox(eax, edx, 27,            130, &KeyStateSlc0);
+	DGOptnsProcBox(eax, edx, 27 +  45,      130, &KeyStateSlc1);
+	DGOptnsProcBox(eax, edx, 27 +  45 * 2,  130, &KeyStateSlc2);
+	DGOptnsProcBox(eax, edx, 27 +  45 * 3,  130, &KeyStateSlc3);
+	DGOptnsProcBox(eax, edx, 27,            139, &KeyStateSlc4);
+	DGOptnsProcBox(eax, edx, 27 +  45,      139, &KeyStateSlc5);
+	DGOptnsProcBox(eax, edx, 27 +  45 * 2,  139, &KeyStateSlc6);
+	DGOptnsProcBox(eax, edx, 27 +  45 * 3,  139, &KeyStateSlc7);
+	DGOptnsProcBox(eax, edx, 27,            148, &KeyStateSlc8);
+	DGOptnsProcBox(eax, edx, 27 +  45,      148, &KeyStateSlc9);
+	DGOptnsProcBox(eax, edx, 27 +  45 * 2,  148, &KeyIncStateSlot);
+	DGOptnsProcBox(eax, edx, 27 +  45 * 3,  148, &KeyDecStateSlot);
+	DGOptnsProcBox(eax, edx,  8 +  25,      157, &KeySaveState);
+	DGOptnsProcBox(eax, edx,  8 +  57 + 25, 157, &KeyLoadState);
+	DGOptnsProcBox(eax, edx,  8 + 114 + 25, 157, &KeyStateSelct);
+	DGOptnsProcBox(eax, edx,  8 +  38,      166, &KeyRewind);
+}
+
+
 static void GUIWindowMove(void)
 {
 	u1 const id = GUIwinorder[GUIwinptr - 1];
@@ -2038,7 +2073,7 @@ static void GUIWinClicked(u4 const i, u4 const id)
 			case 17: DisplayGUIAddOnClick(      rx, ry); return;
 			case 18: DisplayGUIChipClick(       rx, ry); return;
 			case 19: DisplayGUIPathsClick(      rx, ry); return;
-			case 20: f = DisplayGUISaveClick;        break;
+			case 20: DisplayGUISaveClick(       rx, ry); return;
 			case 21: f = DisplayGUISpeedClick;       break;
 			default: return;
 		}
