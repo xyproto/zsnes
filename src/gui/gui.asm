@@ -43,12 +43,10 @@
 %include "macros.mac"
 
 EXTSYM pressed
-EXTSYM vidbufferofsb
 
 EXTSYM SnapPath,SPCPath,BSXPath,SGPath,STPath,GNextPath
 EXTSYM SRAMPath
 EXTSYM IPSPath,MoviePath,CHTPath,ComboPath,INPPath,SStatePath
-EXTSYM MMXSupport
 EXTSYM pl1contrl
 EXTSYM pl2contrl
 EXTSYM pl3contrl
@@ -60,7 +58,6 @@ EXTSYM GUIMovieForcedText
 EXTSYM CheckOpenGL
 %elifdef __MSDOS__
 EXTSYM dssel
-EXTSYM DOSClearScreen
 EXTSYM GUI36hzcall
 %endif
 
