@@ -385,7 +385,7 @@ static void GUIClickCButtonT(s4 const eax, s4 const edx, s4 const p1, s4 const p
 #endif
 
 
-static bool GUISlidebarPostImpl(s4 const eax, s4 const edx, u4 const p1, s4 const p2, s4 const p3, s4 const p4, u1 const p7, u4 const p8, u4* const p9, u4* const p10, u4 const* const p11, u4* const p12, u4 const p13, s4 const p14, s4 const p15, s4 const p16, s4 const p17, u4* const p18, u4* const p19, u4 const* const p20, void (* const p23)(s4 eax, s4 edx), u4 const p24) // p1-p13: x1,y1,x2,y2,upjump,downjump,holdpos,scsize,view,cur,listsize, p14-p24: x1,y1,x2,y2,view,curs,num,.scru,.scrd,jumpto,sizeofscreen
+static bool GUISlidebarPostImpl(s4 const eax, s4 const edx, u4 const p1, s4 const p2, s4 const p3, s4 const p4, u1 const p7, u4 const p8, u4* const p9, u4* const p10, u4 const* const p11, u4* const p12, u4 const p13, s4 const p14, s4 const p15, s4 const p16, s4 const p17, void (* const p23)(s4 eax, s4 edx)) // p1-p13: x1,y1,x2,y2,upjump,downjump,holdpos,scsize,view,cur,listsize, p14-p24: x1,y1,x2,y2,view,curs,num,.scru,.scrd,jumpto,sizeofscreen
 {
 	if (*p11 == 0) return false;
 
@@ -428,26 +428,26 @@ static bool GUISlidebarPostImpl(s4 const eax, s4 const edx, u4 const p1, s4 cons
 	{
 		if (edx == p15)
 		{ // Scroll Up
-			*p19 = *p18;
+			*p10 = *p9;
 scrollup:
 			if (GUIScrolTim1 != 0) goto donescrol;
-			if (*p19 != 0)
+			if (*p10 != 0)
 			{
-				--*p19;
-				if (*p18 != 0) --*p18;
+				--*p10;
+				if (*p9 != 0) --*p9;
 			}
 		}
 		else if (edx == p17)
 		{ // Scroll Down
-			if (*p20 > p24) *p19 = *p18 + p24 - 1;
+			if (*p11 > p8) *p10 = *p9 + p8 - 1;
 scrolldown:
 			if (GUIScrolTim1 != 0) goto donescrol;
-			if (*p20 - 1 > *p19)
+			if (*p11 - 1 > *p10)
 			{
-				++*p19;
-				if (*p20 <= p24) goto donescrol;
-				u4 const ebx = *p20 - p24;
-				if (++*p18 >= ebx) *p18 = ebx;
+				++*p10;
+				if (*p11 <= p8) goto donescrol;
+				u4 const ebx = *p11 - p8;
+				if (++*p9 >= ebx) *p9 = ebx;
 			}
 		}
 		else
@@ -819,11 +819,11 @@ static void DisplayGUIConfirmClick2(s4 const eax, s4 const edx)
 {
 	if (GUIfileentries > 1)
 	{
-		if (GUISlidebarPostImpl(eax, edx, 146, 33, 153, 33 + 93, 1, 15, (u4*)&GUIcurrentviewloc, (u4*)&GUIcurrentcursloc, (u4 const*)&GUIfileentries, &GUIcurrentfilewin, 0, 5, 26, 144, 27 + 15 * 7, (u4*)&GUIcurrentviewloc, (u4*)&GUIcurrentcursloc, (u4 const*)&GUIfileentries, DisplayGUIConfirmClick_skipscrol, 15)) return; // XXX ugly casts
+		if (GUISlidebarPostImpl(eax, edx, 146, 33, 153, 33 + 93, 1, 15, (u4*)&GUIcurrentviewloc, (u4*)&GUIcurrentcursloc, (u4 const*)&GUIfileentries, &GUIcurrentfilewin, 0, 5, 26, 144, 27 + 15 * 7, DisplayGUIConfirmClick_skipscrol)) return; // XXX ugly casts
 	}
 	if (GUIdirentries > 1)
 	{
-		if (GUISlidebarPostImpl(eax, edx, 230, 33, 237, 33 + 93, 3, 15, (u4*)&GUIcurrentdirviewloc, (u4*)&GUIcurrentdircursloc, (u4 const*)&GUIdirentries, &GUIcurrentfilewin, 1, 160, 26, 228, 27 + 15 * 7, (u4*)&GUIcurrentdirviewloc, (u4*)&GUIcurrentdircursloc, (u4 const*)&GUIdirentries, DisplayGUIConfirmClick_skipscrol, 15)) return; // XXX ugly casts
+		if (GUISlidebarPostImpl(eax, edx, 230, 33, 237, 33 + 93, 3, 15, (u4*)&GUIcurrentdirviewloc, (u4*)&GUIcurrentdircursloc, (u4 const*)&GUIdirentries, &GUIcurrentfilewin, 1, 160, 26, 228, 27 + 15 * 7, DisplayGUIConfirmClick_skipscrol)) return; // XXX ugly casts
 	}
 	DisplayGUIConfirmClick(eax, edx);
 }
@@ -1022,7 +1022,7 @@ static void DisplayGUIInputClick(s4 const eax, s4 const edx)
 static void DisplayGUIInputClick2(s4 const eax, s4 const edx)
 {
 	GUINumValue = NumInputDevices;
-	if (GUISlidebarPostImpl(eax, edx, 109, 42, 116, 69, 9, 5, &GUIcurrentinputviewloc, &GUIcurrentinputcursloc, &GUINumValue, &GUIBlankVar, 1, 5, 35, 107, 35 + 5 * 8, &GUIcurrentinputviewloc, &GUIcurrentinputcursloc, &GUINumValue, DisplayGUIInputClick_skipscrol, 5)) return;
+	if (GUISlidebarPostImpl(eax, edx, 109, 42, 116, 69, 9, 5, &GUIcurrentinputviewloc, &GUIcurrentinputcursloc, &GUINumValue, &GUIBlankVar, 1, 5, 35, 107, 35 + 5 * 8, DisplayGUIInputClick_skipscrol)) return;
 	DisplayGUIInputClick(eax, edx);
 }
 
@@ -1497,7 +1497,7 @@ static void DisplayGUIVideoClick2(s4 const eax, s4 const edx)
 	if (GUIVideoTabs[0] == 1) // modes
 	{
 		GUINumValue = NumVideoModes;
-		if (GUISlidebarPostImpl(eax, edx, 117, 33, 124, 182, 5, 20, &GUIcurrentvideoviewloc, &GUIcurrentvideocursloc, &GUINumValue, &GUIBlankVar, 1, 5, 27, 115, 27 + 20 * 8, &GUIcurrentvideoviewloc, &GUIcurrentvideocursloc, &GUINumValue, DisplayGUIVideoClick_skipscrol, 20)) return;
+		if (GUISlidebarPostImpl(eax, edx, 117, 33, 124, 182, 5, 20, &GUIcurrentvideoviewloc, &GUIcurrentvideocursloc, &GUINumValue, &GUIBlankVar, 1, 5, 27, 115, 27 + 20 * 8, DisplayGUIVideoClick_skipscrol)) return;
 	}
 	DisplayGUIVideoClick(eax, edx);
 }
@@ -1583,7 +1583,7 @@ static void DisplayGUICheatClick(s4 const eax, s4 const edx)
 
 static void DisplayGUICheatClick2(s4 const eax, s4 const edx)
 {
-	if (GUISlidebarPostImpl(eax, edx, 231, 28, 238, 100, 7, 12, &GUIcurrentcheatviewloc, &GUIcurrentcheatcursloc, &NumCheats, &GUIBlankVar, 1, 5, 22, 229, 22 + 12 * 7, &GUIcurrentcheatviewloc, &GUIcurrentcheatcursloc, &NumCheats, DisplayGUICheatClick_skipscrol, 12)) return;
+	if (GUISlidebarPostImpl(eax, edx, 231, 28, 238, 100, 7, 12, &GUIcurrentcheatviewloc, &GUIcurrentcheatcursloc, &NumCheats, &GUIBlankVar, 1, 5, 22, 229, 22 + 12 * 7, DisplayGUICheatClick_skipscrol)) return;
 	DisplayGUICheatClick(eax, edx);
 }
 
@@ -1831,7 +1831,7 @@ static void DisplayGUIComboClick2(s4 const eax, s4 const edx)
 	keycontrolval = 0;
 	// x1,y1,x2,y2,upjump,downjump,holdpos,scsize,view,cur,listsize
 	// x1,y1,x2,y2,view,curs,num,.scru,.scrd,jumpto,sizeofscreen
-	if (GUISlidebarPostImpl(eax, edx, 192, 28, 199, 72, 13, 8, &GUIccombviewloc, &GUIccombcursloc, &NumCombo, &GUIBlankVar, 1, 10, 22, 190, 23 + 8 * 7, &GUIccombviewloc, &GUIccombcursloc, &NumCombo, DisplayGUIComboClick_skipscrol, 8)) return;
+	if (GUISlidebarPostImpl(eax, edx, 192, 28, 199, 72, 13, 8, &GUIccombviewloc, &GUIccombcursloc, &NumCombo, &GUIBlankVar, 1, 10, 22, 190, 23 + 8 * 7, DisplayGUIComboClick_skipscrol)) return;
 	DisplayGUIComboClick(eax, edx);
 }
 
@@ -1924,7 +1924,7 @@ static void DisplayGUICheatSearchClick2(s4 const eax, s4 const edx)
 	{ // Preview Box
 		// x1,y1,x2,y2,upjump,downjump,holdpos,scsize,view,cur,listsize
 		// x1,y1,x2,y2,view,curs,num,.scru,.scrd,jumpto,sizeofscreen
-		if (GUISlidebarPostImpl(eax, edx, 173, 28, 180, 100, 11, 12, &GUIcurrentchtsrcviewloc, &GUIcurrentchtsrccursloc, &NumCheatSrc, &GUIBlankVar, 1, 5, 22, 171, 22 + 12 * 7, &GUIcurrentchtsrcviewloc, &GUIcurrentchtsrccursloc, &NumCheatSrc, DisplayGUICheatSearchClick_skipscrol, 12)) return;
+		if (GUISlidebarPostImpl(eax, edx, 173, 28, 180, 100, 11, 12, &GUIcurrentchtsrcviewloc, &GUIcurrentchtsrccursloc, &NumCheatSrc, &GUIBlankVar, 1, 5, 22, 171, 22 + 12 * 7, DisplayGUICheatSearchClick_skipscrol)) return;
 		DisplayGUICheatSearchClick_view(eax, edx);
 	}
 	else
