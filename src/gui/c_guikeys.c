@@ -20,7 +20,6 @@
 #include "c_guikeys.h"
 #include "gui.h"
 #include "guicheat.h"
-#include "guikeys.h"
 #include "guiwindp.h"
 
 #ifdef __MSDOS__
@@ -60,6 +59,8 @@
 u1 CSOverValue;
 u1 GUIDelayB;
 u4 CSCurValue;
+u4 GUIInputBox;
+u4 GUIInputLimit;
 u4 GUIkeydelay;
 
 static u1 GUIJoyPadnk[8];

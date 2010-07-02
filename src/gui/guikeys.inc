@@ -20,7 +20,3 @@
 
 
 ; GUI Keyboard Routines
-
-SECTION .bss
-NEWSYM GUIInputBox, resd 1
-NEWSYM GUIInputLimit, resd 1
