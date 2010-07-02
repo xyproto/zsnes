@@ -66,7 +66,6 @@ EXTSYM GUICustomX,GUICustomY
 %endif
 
 %include "gui/guiwindp.inc"
-%include "gui/guikeys.inc"
 
 ; Things to do :
 ;

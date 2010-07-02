@@ -1,5 +1,7 @@
-#ifndef C_GUIKEYS_H
-#define C_GUIKEYS_H
+#ifndef GUIKEYS_H
+#define GUIKEYS_H
+
+// GUI Keyboard Routines
 
 void GUIWaitForKey(void);
 void GUIgetcurrentinput(void);

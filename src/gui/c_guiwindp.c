@@ -15,11 +15,11 @@
 #include "../zstate.h"
 #include "../ztimec.h"
 #include "c_gui.h"
-#include "c_guikeys.h"
 #include "c_guiwindp.h"
 #include "gui.h"
 #include "guicombo.h"
 #include "guifuncs.h"
+#include "guikeys.h"
 #include "guitools.h"
 #include "guiwindp.h"
 
