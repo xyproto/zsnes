@@ -2232,7 +2232,6 @@ extern "C"
   void hq4x_16b();
   void hq4x_32b();
   extern unsigned char NGNoTransp;
-  void ClearWin32();
 
   void clearwin(void)
   {

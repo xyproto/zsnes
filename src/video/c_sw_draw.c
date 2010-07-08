@@ -13,3 +13,11 @@ void ClearWin16(void)
 	s4  ebx = 0;
 	do memset(edi, 0, SurfaceX * 2); while (edi += pitch, ++ebx != SurfaceY);
 }
+
+
+void ClearWin32(void)
+{
+	u1* edi = SurfBufD;
+	s4  ebx = 0;
+	do memset(edi, 0, SurfaceX * 4); while (edi += pitch, ++ebx != SurfaceY);
+}

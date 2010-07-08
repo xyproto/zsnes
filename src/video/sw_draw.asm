@@ -24,33 +24,12 @@
 
 %include "macros.mac"
 
-EXTSYM SurfaceX,SurfaceY,ScreenPtr,SurfBufD,pitch,MMXSupport,resolutn,copymaskRB
+EXTSYM ScreenPtr,SurfBufD,pitch,MMXSupport,resolutn,copymaskRB
 EXTSYM copymaskG,copymagic
 
 ALIGN32
 
 SECTION .text
-
-NEWSYM ClearWin32
-    pushad
-    mov  ax,ds
-    mov  es,ax
-    mov  edi, [SurfBufD]
-    xor  ebx,ebx
-.Blank3:
-    xor  eax,eax
-    mov  ecx, [SurfaceX]
-    rep  stosd
-    add  edi, [pitch]
-    sub  edi, [SurfaceX]
-    sub  edi, [SurfaceX]
-    sub  edi, [SurfaceX]
-    sub  edi, [SurfaceX]
-    add  ebx,1
-    cmp  ebx, [SurfaceY]
-    jne .Blank3
-    popad
-    ret
 
 NEWSYM DrawWin256x224x16
     pushad
