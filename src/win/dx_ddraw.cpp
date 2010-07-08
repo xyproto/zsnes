@@ -31,6 +31,7 @@ extern "C"
 #include "../c_intrf.h"
 #include "../cfg.h"
 #include "../intrf.h"
+#include "../link.h"
   void zexit(), zexit_error();
 }
 

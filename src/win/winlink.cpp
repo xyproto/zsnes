@@ -47,6 +47,7 @@ extern "C"
 #include "../input.h"
 #include "../link.h"
 #include "../types.h"
+#include "../video/c_sw_draw.h"
 #include "../video/copyvwin.h"
 #include "../zmovie.h"
 #include "c_winintrf.h"
@@ -143,8 +144,8 @@ BYTE PrevRes=0;
 extern "C"
 {
   u1 MouseButton;
-  DWORD SurfaceX = 0;
-  DWORD SurfaceY = 0;
+  s4 SurfaceX = 0;
+  s4 SurfaceY = 0;
   RECT BlitArea;
   BYTE AltSurface = 0;
   RECT rcWindow;
@@ -1530,9 +1531,8 @@ extern "C"
   short Buffer[1800 * 2];
 
   int X, Y;
-  DWORD pitch;
+  u4 pitch;
   MSG msg;
-  DWORD SurfBufD;
   int count, x, count2;
   HRESULT hr;
   int i;
@@ -2232,7 +2232,6 @@ extern "C"
   void hq4x_16b();
   void hq4x_32b();
   extern unsigned char NGNoTransp;
-  void ClearWin16();
   void ClearWin32();
 
   void clearwin(void)
@@ -2243,7 +2242,7 @@ extern "C"
       return;
     }
 
-    SurfBufD = (DWORD)&SurfBuf[0];
+    SurfBufD = SurfBuf;
 
     if (AltSurface == 0)
     {
@@ -2384,7 +2383,7 @@ extern "C"
       initwinvideo();
     }
 
-    SurfBufD = (DWORD)&SurfBuf[0];
+    SurfBufD = SurfBuf;
     SURFDW = (DWORD *)&SurfBuf[0];
 
     if (!(KitchenSync || (KitchenSyncPAL && totlines == 314)) && Refresh != 0 && !ForceRefreshRate)

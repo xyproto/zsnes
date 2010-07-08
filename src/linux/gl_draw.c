@@ -31,7 +31,6 @@ void hq2x_16b();
 
 // VIDEO VARIABLES
 extern SDL_Surface *surface;
-extern int SurfaceX, SurfaceY;
 extern int SurfaceLocking;
 extern uint64_t BitDepth;
 

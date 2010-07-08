@@ -40,8 +40,6 @@ extern "C" {
   extern DWORD CurMode;
   extern DWORD WindowWidth;
   extern DWORD WindowHeight;
-  extern DWORD SurfaceX;
-  extern DWORD SurfaceY;
   extern BYTE BitDepth;
   extern DWORD GBitMask;
   extern WORD Refresh;

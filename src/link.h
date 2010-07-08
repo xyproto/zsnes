@@ -21,9 +21,12 @@ void clearwin(void);
 void drawscreenwin(void);
 void initwinvideo(void);
 
+extern s4 SurfaceX;
+extern s4 SurfaceY;
 extern u1 MouseButton;
 extern u1 T36HZEnabled;
 extern u1 changeRes;
+extern u4 pitch;
 #endif
 
 #endif

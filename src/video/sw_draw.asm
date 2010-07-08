@@ -31,24 +31,6 @@ ALIGN32
 
 SECTION .text
 
-NEWSYM ClearWin16
-    pushad
-    mov  edi, [SurfBufD]
-    xor  eax,eax
-    xor  ebx,ebx
-.Blank2:
-    mov  ecx, [SurfaceX]
-    rep stosw
-    mov  edx, [SurfaceX]
-    add  edi, [pitch]
-    shl  edx,1
-    add  ebx,1
-    sub  edi,edx
-    cmp  ebx, [SurfaceY]
-    jne .Blank2
-    popad
-    ret
-
 NEWSYM ClearWin32
     pushad
     mov  ax,ds
