@@ -27,6 +27,9 @@ extern u1 MouseButton;
 extern u1 T36HZEnabled;
 extern u1 changeRes;
 extern u4 pitch;
+extern u8 copymagic;
+extern u8 copymaskG;
+extern u8 copymaskRB;
 #endif
 
 #endif

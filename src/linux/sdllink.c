@@ -121,9 +121,9 @@ static SDL_sem *sem_frames = NULL;
 static struct timeval sem_start;
 
 void Game60hzcall();
-int64_t copymaskRB = UINT64_C(0x001FF800001FF800);
-int64_t copymaskG = UINT64_C(0x0000FC000000FC00);
-int64_t copymagic = UINT64_C(0x0008010000080100);
+u8 copymaskRB = UINT64_C(0x001FF800001FF800);
+u8 copymaskG  = UINT64_C(0x0000FC000000FC00);
+u8 copymagic  = UINT64_C(0x0008010000080100);
 
 static void adjustMouseXScale()
 {

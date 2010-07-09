@@ -24,59 +24,11 @@
 
 %include "macros.mac"
 
-EXTSYM ScreenPtr,SurfBufD,pitch,MMXSupport,resolutn,copymaskRB
-EXTSYM copymaskG,copymagic
+EXTSYM ScreenPtr,SurfBufD,pitch,MMXSupport,resolutn
 
 ALIGN32
 
 SECTION .text
-
-NEWSYM DrawWin256x224x32
-    pushad
-    mov  ax,ds
-    mov  es,ax
-    xor  eax,eax
-    movsx edx, word[resolutn]
-    mov  esi, [ScreenPtr]
-    mov  edi, [SurfBufD]
-    movq mm4, [copymaskRB]
-    movq mm5, [copymaskG]
-    movq mm6, [copymagic]
-.Copying32b:
-    mov  ecx,64
-.CopyLoop32b:
-    movq mm0, [esi]
-    movq mm1,mm0
-    punpcklwd mm0,mm0
-    movq mm2,mm0
-    pand mm0,mm4
-    pmaddwd mm0,mm6
-    punpckhwd mm1,mm1
-    movq mm3,mm1
-    pand mm1,mm4
-    pmaddwd mm1,mm6
-    pslld mm2,5
-    pslld mm3,5
-    pand mm2,mm5
-    pand mm3,mm5
-    por  mm0,mm2
-    add  esi,8
-    por  mm1,mm3
-    movq [edi],mm0
-    movq [edi+8],mm1
-    add  edi,16
-    dec  ecx
-    jnz .CopyLoop32b
-    inc  eax
-    add  edi, [pitch]
-    sub  edi,1024
-    sub  esi,512
-    add  esi,576
-    cmp  eax,edx
-    jne .Copying32b
-    popad
-    emms
-    ret
 
 NEWSYM DrawWin320x240x16
     pushad
