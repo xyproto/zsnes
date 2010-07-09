@@ -31,68 +31,6 @@ ALIGN32
 
 SECTION .text
 
-NEWSYM DrawWin256x224x16
-    pushad
-    cmp byte[MMXSupport],0
-    je .noMMX
-    mov  esi, [ScreenPtr]
-    mov  edi, [SurfBufD]
-    xor  eax,eax
-    movsx edx, word[resolutn]
-.Copying3:
-    mov  ecx,32
-.CopyLoop:
-    movq mm0,[esi]
-    movq mm1,[esi+8]
-    movq [edi],mm0
-    movq [edi+8],mm1
-    add  esi,16
-    add  edi,16
-    dec  ecx
-    jnz .CopyLoop
-    inc  eax
-    add  edi, [pitch]
-    sub  edi,512
-    add  esi,64
-%ifdef __WIN32__
-    cmp  eax,edx
-%else
-    cmp  eax,223
-%endif
-    jne .Copying3
-    xor  eax,eax
-    mov  ecx,128
-    rep  stosd
-    emms
-    popad
-    ret
-.noMMX:
-    mov  ax,ds
-    mov  es,ax
-    xor  eax,eax
-    mov  esi, [ScreenPtr]
-    mov  edi, [SurfBufD]
-    movsx edx, word[resolutn]
-.Copying:
-    mov  ecx,128
-    rep  movsd
-    inc  eax
-    add  edi, [pitch]
-    sub  edi,512
-    sub  esi,512
-    add  esi,576
-%ifdef __WIN32__
-    cmp  eax,edx
-%else
-    cmp  eax,223
-%endif
-    jne .Copying
-    xor  eax,edx
-    mov  ecx,128
-    rep  stosd
-    popad
-    ret
-
 NEWSYM DrawWin256x224x32
     pushad
     mov  ax,ds

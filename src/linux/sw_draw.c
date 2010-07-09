@@ -24,6 +24,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "../cfg.h"
 #include "../intrf.h"
 #include "../link.h"
+#include "../ui.h"
 #include "../video/c_sw_draw.h"
 #include "../video/copyvwin.h"
 #include <stdint.h>
@@ -34,7 +35,6 @@ void CheckFrame();
 extern SDL_Surface *surface;
 extern int SurfaceLocking;
 
-extern unsigned int vidbuffer;
 extern unsigned char curblank;
 extern int frametot;
 extern uint8_t GUIOn, GUIOn2;
@@ -119,9 +119,7 @@ extern unsigned short resolutn;
 void hq2x_16b();
 void hq3x_16b();
 void hq4x_16b();
-void DrawWin256x224x16();
 void DrawWin320x240x16();
-uint32_t ScreenPtr;
 uint32_t pitch;
 
 void sw_clearwin()

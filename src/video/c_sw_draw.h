@@ -5,7 +5,9 @@
 
 void ClearWin16(void);
 void ClearWin32(void);
+void DrawWin256x224x16(void);
 
+extern u1* ScreenPtr;
 extern u1* SurfBufD;
 
 #endif

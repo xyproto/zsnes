@@ -47,6 +47,7 @@ extern "C"
 #include "../input.h"
 #include "../link.h"
 #include "../types.h"
+#include "../ui.h"
 #include "../video/c_sw_draw.h"
 #include "../video/copyvwin.h"
 #include "../zmovie.h"
@@ -2055,10 +2056,8 @@ extern "C"
 #endif
   }
 
-  extern unsigned int vidbuffer;
   extern int DSPBuffer;
   int *DSPBuffer1;
-  DWORD ScreenPtr;
   DWORD ScreenPtr2;
   void Game60hzcall();
 
@@ -2283,7 +2282,6 @@ extern "C"
     }
   }
 
-  void DrawWin256x224x16();
   void DrawWin256x224x32();
   void DrawWin320x240x16();
 
