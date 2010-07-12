@@ -25,8 +25,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "../intrf.h"
 #include "../link.h"
 #include "../ui.h"
-#include "../video/c_sw_draw.h"
 #include "../video/copyvwin.h"
+#include "../video/sw_draw.h"
 #include <stdint.h>
 
 

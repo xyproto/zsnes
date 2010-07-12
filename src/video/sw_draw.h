@@ -1,5 +1,5 @@
-#ifndef C_SW_DRAW_H
-#define C_SW_DRAW_H
+#ifndef SW_DRAW_H
+#define SW_DRAW_H
 
 #include "../types.h"
 
