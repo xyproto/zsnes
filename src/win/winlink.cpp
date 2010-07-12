@@ -2282,8 +2282,6 @@ extern "C"
     }
   }
 
-  void DrawWin320x240x16();
-
   u8 copymaskRB = UINT64_C(0x001FF800001FF800);
   u8 copymaskG  = UINT64_C(0x0000FC000000FC00);
   u8 copymagic  = UINT64_C(0x0008010000080100);

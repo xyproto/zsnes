@@ -119,7 +119,6 @@ extern unsigned short resolutn;
 void hq2x_16b();
 void hq3x_16b();
 void hq4x_16b();
-void DrawWin320x240x16();
 uint32_t pitch;
 
 void sw_clearwin()

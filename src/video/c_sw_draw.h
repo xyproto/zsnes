@@ -6,6 +6,7 @@
 void ClearWin16(void);
 void ClearWin32(void);
 void DrawWin256x224x16(void);
+void DrawWin320x240x16(void);
 
 #ifdef __WIN32__
 void DrawWin256x224x32(void);
