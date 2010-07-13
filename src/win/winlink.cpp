@@ -129,8 +129,8 @@ float MouseMinY = 0;
 float MouseMaxY = 223;
 float MouseX;
 float MouseY;
-float MouseMoveX;
-float MouseMoveY;
+static float WinMouseMoveX;
+static float WinMouseMoveY;
 BYTE MouseButtonPressed;
 BYTE IsActivated = 1;
 BYTE PrevRes=0;
@@ -412,8 +412,8 @@ extern "C" void MinimizeWindow()
 BOOL InputRead()
 {
   static int PrevZ = 0;
-  MouseMoveX = 0;
-  MouseMoveY = 0;
+  WinMouseMoveX = 0;
+  WinMouseMoveY = 0;
   if (MouseInput && InputEn == 1)
   {
     DIMOUSESTATE dims;
@@ -422,8 +422,8 @@ BOOL InputRead()
 
     if (SUCCEEDED(hr))
     {
-      MouseMoveX = (float)dims.lX;
-      MouseMoveY = (float)dims.lY;
+      WinMouseMoveX = (float)dims.lX;
+      WinMouseMoveY = (float)dims.lY;
 
       if (MouseWheel == 1)
       {
@@ -2928,7 +2928,7 @@ extern "C"
   int GetMouseX()
   {
     InputRead();
-    MouseX += MouseMoveX / MouseSensitivity;
+    MouseX += WinMouseMoveX / MouseSensitivity;
 
     if (MouseX > MouseMaxX)
     {
@@ -2936,7 +2936,7 @@ extern "C"
 
       if (TrapMouseCursor == 1)
       {
-        if (abs((int)MouseMoveX) > (10 / MouseSensitivity) && T36HZEnabled == 1 && FullScreen == 0 &&
+        if (abs((int)WinMouseMoveX) > (10 / MouseSensitivity) && T36HZEnabled == 1 && FullScreen == 0 &&
             MouseButtonPressed == 0)
         {
           MouseInput->Unacquire();
@@ -2957,7 +2957,7 @@ extern "C"
 
       if (TrapMouseCursor == 1)
       {
-        if (abs((int)MouseMoveX) > (10 / MouseSensitivity) && T36HZEnabled == 1 && FullScreen == 0 &&
+        if (abs((int)WinMouseMoveX) > (10 / MouseSensitivity) && T36HZEnabled == 1 && FullScreen == 0 &&
             MouseButtonPressed == 0)
         {
           MouseInput->Unacquire();
@@ -2976,7 +2976,7 @@ extern "C"
 
   int GetMouseY()
   {
-    MouseY += MouseMoveY / MouseSensitivity;
+    MouseY += WinMouseMoveY / MouseSensitivity;
 
     if (MouseY > MouseMaxY)
     {
@@ -2984,7 +2984,7 @@ extern "C"
 
       if (TrapMouseCursor == 1)
       {
-        if (abs((int)MouseMoveY) > (10 / MouseSensitivity) && T36HZEnabled == 1 && FullScreen == 0 &&
+        if (abs((int)WinMouseMoveY) > (10 / MouseSensitivity) && T36HZEnabled == 1 && FullScreen == 0 &&
             MouseButtonPressed == 0)
         {
           MouseInput->Unacquire();
@@ -3005,7 +3005,7 @@ extern "C"
 
       if (TrapMouseCursor == 1)
       {
-        if (abs((int)MouseMoveY) > (10 / MouseSensitivity) && T36HZEnabled == 1 && FullScreen == 0 &&
+        if (abs((int)WinMouseMoveY) > (10 / MouseSensitivity) && T36HZEnabled == 1 && FullScreen == 0 &&
             MouseButtonPressed == 0)
         {
           MouseInput->Unacquire();
@@ -3025,12 +3025,12 @@ extern "C"
 
   int GetMouseMoveX()
   {
-    return((int)MouseMoveX / MouseSensitivity);
+    return((int)WinMouseMoveX / MouseSensitivity);
   }
 
   int GetMouseMoveY()
   {
-    return((int)MouseMoveY / MouseSensitivity);
+    return((int)WinMouseMoveY / MouseSensitivity);
   }
 
   int GetMouseButton()
@@ -3048,8 +3048,8 @@ extern "C"
       while (MouseButton != 0 && T36HZEnabled && FullScreen == 0)
       {
         Moving = 1;
-        X += (int)MouseMoveX;
-        Y += (int)MouseMoveY;
+        X += (int)WinMouseMoveX;
+        Y += (int)WinMouseMoveY;
 
         InputRead();
         initwinvideo();
