@@ -634,11 +634,6 @@ NEWSYM newengine16b
     mov dword[palchanged],0
 
     ; BG3 Priority
-;    test byte[scaddset],2h
-;    jz .noscaddset
-;    or byte[bgcmsung],0FFh
-;.noscaddset
-
     mov bl,[bg3highst]
     mov [BG3PRI+eax],bl
     cmp [BG3PRI+eax-1],bl
@@ -738,7 +733,7 @@ NEWSYM newengine16b
     mov [BG4SYl+eax*2],bx
     cmp [BG4SYl+eax*2-2],bx
     je .nosbgy4
-    mov byte[bg1change+eax],1
+    mov byte[bg4change+eax],1
 .nosbgy4
 
     ; Background Mode
@@ -2649,19 +2644,9 @@ drawsprng16bt:
     xor eax,eax
     test byte[BGMS1+ebx*2+1],10h
     jnz near drawsprng16bmst
-;    mov al,[BGMS1+ebx*2]
-;    shr al,2
-;    test byte[BGMS1+ebx*2],al
-;    jnz .transpwin
-;    test byte[scaddset],0C0h
-;    jz .transpwin
-;    cmp byte[BGMS1+ebx*2+1],0
-;    jnz .main
-;.transpwin
     mov edi,[CMainWinScr]
     cmp byte[edi+ebx+4*256],0
     jne near drawsprngw16bt
-.main
     xor edi,edi
     normalsprng16b sprdrawpra16bngt,sprdrawprb16bngt
 NEWSYM drawsprngw16bt

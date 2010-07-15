@@ -34,7 +34,6 @@ EXTSYM vidmemch4s,vidmemch8s,bgtxadd2,SpecialLine,cachesingle4bng
 EXTSYM ofshvaladd,ofsmtptrs,ofsmcptr2,ngptrdat2
 
 %include "video/newg162.mac"
-%include "video/newgfx16.mac"
 %include "video/newg16wn.mac"
 
 ;******************************************
@@ -741,7 +740,7 @@ drawlineng2b16bmsntmsw:
 drawlineng2b16bmsntmw:
     drawline16bw2macro tltype2b,preparet2ba,cachesingle2bng,ngpalcon2b,test2ba,03h,procpixelsmsnt,procpixelstmsnt,procpixelstwsmnt,procpixelss,procpixelsts
 drawlineng2b16bmsntsw:
-    drawline16bw2macro tltype2b,preparet2ba,cachesingle2bng,ngpalcon2b,test2ba,03h,procpixelsmsnt,procpixelstmsnt,procpixelstwmsbnt,procpixelsnt,procpixelstnt
+    drawline16bw2macro tltype2b,preparet2ba,cachesingle2bng,ngpalcon2b,test2ba,03h,procpixelsmsnt,procpixelstmsnt,procpixelstwmsbnt,procpixels,procpixelst
 
 NEWSYM drawlineng4b16b
     determinetransp drawlineng4b16bt
@@ -778,7 +777,7 @@ drawlineng4b16bmsntmsw:
 drawlineng4b16bmsntmw:
     drawline16bw2macro tltype4b,preparet4ba,cachesingle4bng,ngpalcon4b,test4ba,0Fh,procpixelsmsnt,procpixelstmsnt,procpixelstwsmnt,procpixelss,procpixelsts
 drawlineng4b16bmsntsw:
-    drawline16bw2macro tltype4b,preparet4ba,cachesingle4bng,ngpalcon4b,test4ba,0Fh,procpixelsmsnt,procpixelstmsnt,procpixelstwmsbnt,procpixelsnt,procpixelstnt
+    drawline16bw2macro tltype4b,preparet4ba,cachesingle4bng,ngpalcon4b,test4ba,0Fh,procpixelsmsnt,procpixelstmsnt,procpixelstwmsbnt,procpixels,procpixelst
 
 NEWSYM drawlineng8b16b
     determinetransp drawlineng8b16bt
@@ -815,7 +814,7 @@ drawlineng8b16bmsntmsw:
 drawlineng8b16bmsntmw:
     drawline16bw2macro tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmsnt,procpixelstmsnt,procpixelstwsmnt,procpixelss,procpixelsts
 drawlineng8b16bmsntsw:
-    drawline16bw2macro tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmsnt,procpixelstmsnt,procpixelstwmsbnt,procpixelsnt,procpixelstnt
+    drawline16bw2macro tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmsnt,procpixelstmsnt,procpixelstwmsbnt,procpixels,procpixelst
 
 ;******************************************
 ; 16x16 tiles - line by line engine
@@ -939,7 +938,7 @@ drawlineng2b16bmsntmsw16x16:
 drawlineng2b16bmsntmw16x16:
     drawline16bw2macro16x16 tltype2b,preparet2ba,cachesingle2bng,ngpalcon2b,test2ba,03h,procpixelsmsnt,procpixelstmsnt,procpixelstwsmnt,procpixelss,procpixelsts
 drawlineng2b16bmsntsw16x16:
-    drawline16bw2macro16x16 tltype2b,preparet2ba,cachesingle2bng,ngpalcon2b,test2ba,03h,procpixelsmsnt,procpixelstmsnt,procpixelstwmsbnt,procpixelsnt,procpixelstnt
+    drawline16bw2macro16x16 tltype2b,preparet2ba,cachesingle2bng,ngpalcon2b,test2ba,03h,procpixelsmsnt,procpixelstmsnt,procpixelstwmsbnt,procpixels,procpixelst
 
 NEWSYM drawlineng16x164b16b
     determinetransp drawlineng4b16bt16x16
@@ -976,7 +975,7 @@ drawlineng4b16bmsntmsw16x16:
 drawlineng4b16bmsntmw16x16:
     drawline16bw2macro16x16 tltype4b,preparet4ba,cachesingle4bng,ngpalcon4b,test4ba,0Fh,procpixelsmsnt,procpixelstmsnt,procpixelstwsmnt,procpixelss,procpixelsts
 drawlineng4b16bmsntsw16x16:
-    drawline16bw2macro16x16 tltype4b,preparet4ba,cachesingle4bng,ngpalcon4b,test4ba,0Fh,procpixelsmsnt,procpixelstmsnt,procpixelstwmsbnt,procpixelsnt,procpixelstnt
+    drawline16bw2macro16x16 tltype4b,preparet4ba,cachesingle4bng,ngpalcon4b,test4ba,0Fh,procpixelsmsnt,procpixelstmsnt,procpixelstwmsbnt,procpixels,procpixelst
 
 NEWSYM drawlineng16x168b16b
     determinetransp drawlineng8b16bt16x16
@@ -1013,7 +1012,7 @@ drawlineng8b16bmsntmsw16x16:
 drawlineng8b16bmsntmw16x16:
     drawline16bw2macro16x16 tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmsnt,procpixelstmsnt,procpixelstwsmnt,procpixelss,procpixelsts
 drawlineng8b16bmsntsw16x16:
-    drawline16bw2macro16x16 tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmsnt,procpixelstmsnt,procpixelstwmsbnt,procpixelsnt,procpixelstnt
+    drawline16bw2macro16x16 tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmsnt,procpixelstmsnt,procpixelstwmsbnt,procpixels,procpixelst
 
 %macro drawline16bmacro16x8 10
     cmp byte[curmosaicsz],1
@@ -1303,7 +1302,7 @@ drawlineng2b16bmsntmswom:
 drawlineng2b16bmsntmwom:
     drawline16bw2macroom tltype2b,preparet2ba,cachesingle2bng,ngpalcon2b,test2ba,03h,procpixelsmsnt,procpixelstmsnt,procpixelstwsmnt,procpixelss,procpixelsts,4
 drawlineng2b16bmsntswom:
-    drawline16bw2macroom tltype2b,preparet2ba,cachesingle2bng,ngpalcon2b,test2ba,03h,procpixelsmsnt,procpixelstmsnt,procpixelstwmsbnt,procpixelsnt,procpixelstnt,4
+    drawline16bw2macroom tltype2b,preparet2ba,cachesingle2bng,ngpalcon2b,test2ba,03h,procpixelsmsnt,procpixelstmsnt,procpixelstwmsbnt,procpixels,procpixelst,4
 
 NEWSYM drawlinengom4b16b
     determinetransp drawlineng4b16btom
@@ -1340,7 +1339,7 @@ drawlineng4b16bmsntmswom:
 drawlineng4b16bmsntmwom:
     drawline16bw2macroom tltype4b,preparet4ba,cachesingle4bng,ngpalcon4b,test4ba,0Fh,procpixelsmsnt,procpixelstmsnt,procpixelstwsmnt,procpixelss,procpixelsts,2
 drawlineng4b16bmsntswom:
-    drawline16bw2macroom tltype4b,preparet4ba,cachesingle4bng,ngpalcon4b,test4ba,0Fh,procpixelsmsnt,procpixelstmsnt,procpixelstwmsbnt,procpixelsnt,procpixelstnt,2
+    drawline16bw2macroom tltype4b,preparet4ba,cachesingle4bng,ngpalcon4b,test4ba,0Fh,procpixelsmsnt,procpixelstmsnt,procpixelstwmsbnt,procpixels,procpixelst,2
 
 NEWSYM drawlinengom8b16b
     determinetransp drawlineng8b16btom
@@ -1377,7 +1376,7 @@ drawlineng8b16bmsntmswom:
 drawlineng8b16bmsntmwom:
     drawline16bw2macroom tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmsnt,procpixelstmsnt,procpixelstwsmnt,procpixelss,procpixelsts,4
 drawlineng8b16bmsntswom:
-    drawline16bw2macroom tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmsnt,procpixelstmsnt,procpixelstwmsbnt,procpixelsnt,procpixelstnt,4
+    drawline16bw2macroom tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmsnt,procpixelstmsnt,procpixelstwmsbnt,procpixels,procpixelst,4
 
 %macro WinClipMacroom16x16 2
     mov byte[tleftn],17
@@ -1608,7 +1607,7 @@ drawlineng2b16bmsntmswom16x16:
 drawlineng2b16bmsntmwom16x16:
     drawline16bw2macroom16x16 tltype2b,preparet2ba,cachesingle2bng,ngpalcon2b,test2ba,03h,procpixelsmsnt,procpixelstmsnt,procpixelstwsmnt,procpixelss,procpixelsts,4
 drawlineng2b16bmsntswom16x16:
-    drawline16bw2macroom16x16 tltype2b,preparet2ba,cachesingle2bng,ngpalcon2b,test2ba,03h,procpixelsmsnt,procpixelstmsnt,procpixelstwmsbnt,procpixelsnt,procpixelstnt,4
+    drawline16bw2macroom16x16 tltype2b,preparet2ba,cachesingle2bng,ngpalcon2b,test2ba,03h,procpixelsmsnt,procpixelstmsnt,procpixelstwmsbnt,procpixels,procpixelst,4
 
 NEWSYM drawlinengom16x164b16b
     determinetransp drawlineng4b16btom16x16
@@ -1645,7 +1644,7 @@ drawlineng4b16bmsntmswom16x16:
 drawlineng4b16bmsntmwom16x16:
     drawline16bw2macroom16x16 tltype4b,preparet4ba,cachesingle4bng,ngpalcon4b,test4ba,0Fh,procpixelsmsnt,procpixelstmsnt,procpixelstwsmnt,procpixelss,procpixelsts,2
 drawlineng4b16bmsntswom16x16:
-    drawline16bw2macroom16x16 tltype4b,preparet4ba,cachesingle4bng,ngpalcon4b,test4ba,0Fh,procpixelsmsnt,procpixelstmsnt,procpixelstwmsbnt,procpixelsnt,procpixelstnt,2
+    drawline16bw2macroom16x16 tltype4b,preparet4ba,cachesingle4bng,ngpalcon4b,test4ba,0Fh,procpixelsmsnt,procpixelstmsnt,procpixelstwmsbnt,procpixels,procpixelst,2
 
 NEWSYM drawlinengom16x168b16b
     determinetransp drawlineng8b16btom16x16
@@ -1682,4 +1681,4 @@ drawlineng8b16bmsntmswom16x16:
 drawlineng8b16bmsntmwom16x16:
     drawline16bw2macroom16x16 tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmsnt,procpixelstmsnt,procpixelstwsmnt,procpixelss,procpixelsts,4
 drawlineng8b16bmsntswom16x16:
-    drawline16bw2macroom16x16 tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmsnt,procpixelstmsnt,procpixelstwmsbnt,procpixelsnt,procpixelstnt,4
+    drawline16bw2macroom16x16 tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmsnt,procpixelstmsnt,procpixelstwmsbnt,procpixels,procpixelst,4
