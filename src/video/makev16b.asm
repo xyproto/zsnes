@@ -21,11 +21,10 @@
 
 %include "macros.mac"
 
-EXTSYM cursprloc,curypos,scrndis,scrnon,winon,winonsp
+EXTSYM curypos,winon
 EXTSYM bgcoloradder
 EXTSYM drawn
 EXTSYM curbgpr,curvidoffset
-EXTSYM sprprifix
 EXTSYM pal16b
 EXTSYM bgofwptr,bgsubby,bshifter,curmosaicsz,cwinptr
 EXTSYM temp,tempcach,temptile,winptrref,xtravbuf,yadder,yrevadder
@@ -34,44 +33,10 @@ EXTSYM vidmemch4,vram,ofsmcptr
 EXTSYM ofsmady,ofsmadx,yposngom,flipyposngom,ofsmtptr,ofsmmptr,ofsmcyps,bgtxadd
 EXTSYM ngptrdat2
 EXTSYM OMBGTestVal,cachesingle4bng,ofsmtptrs,ofsmcptr2,ofshvaladd
-EXTSYM drawsprites16b
 
 %include "video/vidmacro.mac"
 
 ;drawspritesprio
-
-SECTION .bss
-NEWSYM tempstuff, resd 1
-
-;ALIGN16
-.stuff resd 1
-.stuff2 resb 2
-
-SECTION .text
-
-NEWSYM procspritessub16b
-    test byte[scrndis],10h
-    jnz .nosprites
-    test byte[scrnon+1],10h
-    jz .nosprites
-    test byte[scrnon],10h
-    jnz .nosprites
-    cmp byte[winonsp],0FFh
-    je .nosprites
-    xor ebx,ebx
-    mov bl,[curypos]
-    add ebx,[cursprloc]
-    mov cl,[ebx]
-    cmp byte[sprprifix],0
-    jne .sprprio
-    add dword[cursprloc],256
-.sprprio
-    cmp cl,0
-    je .nosprites
-    ccallv drawsprites16b, ecx, ebp
-.nosprites
-    ret
-
 
 SECTION .bss
 NEWSYM tileleft16b, resb 1
