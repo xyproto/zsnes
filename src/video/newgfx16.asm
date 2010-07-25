@@ -85,56 +85,6 @@ EXTSYM smallscreenon,ScreenScale
 ;   3 = All of subscreen added to specific mainscreens
 ;   4 = Add+Sub enabled
 
-SECTION .text
-
-NEWSYM Gendcolortable
-    ; generate Direct Color Table
-    push eax
-    push ebx
-    push ecx
-    push edx
-    xor ecx,ecx
-.loopdct
-    mov al,cl
-    and eax,00000111b
-    mov bl,[vidbright]
-    mul bl
-    mov bl,15
-    div bl
-    xor ah,ah
-    shl eax,13
-    mov edx,eax
-    mov al,cl
-    and eax,00111000b
-    shr eax,3
-    mov bl,[vidbright]
-    mul bl
-    mov bl,15
-    div bl
-    xor ah,ah
-    shl eax,8
-    or edx,eax
-    mov al,cl
-    and eax,11000000b
-    shr eax,6
-    mov bl,[vidbright]
-    mul bl
-    mov bl,15
-    div bl
-    xor ah,ah
-    shl eax,3
-    or edx,eax
-    mov [dcolortab+ecx*2],dx
-    or dx,[UnusedBit]
-    mov [dcolortab+ecx*2+512],dx
-    inc cl
-    jnz .loopdct
-    pop edx
-    pop ecx
-    pop ebx
-    pop eax
-    ret
-
 section .data
 NEWSYM prevbrightdc, db 16
 section .text

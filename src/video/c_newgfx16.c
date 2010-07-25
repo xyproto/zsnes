@@ -1,6 +1,7 @@
 #include "../cpu/regs.h"
 #include "../endmem.h"
 #include "../ui.h"
+#include "../vcache.h"
 #include "c_newgfx16.h"
 #include "makev16b.h"
 #include "newgfx.h"
@@ -128,6 +129,23 @@ void setpalette16bng(void)
 		while (++edi, ++pal, ++i != 256);
 	}
 	if (V8Mode == 1) dovegrest();
+}
+
+
+void Gendcolortable(void)
+{
+	// Generate Direct Color Table
+	u4 ecx = 0;
+	do
+	{
+		u4 const edx =
+			((ecx & 0x07) >> 0) * vidbright / 15 << 13 |
+			((ecx & 0x38) >> 3) * vidbright / 15 <<  8 |
+			((ecx & 0xC0) >> 6) * vidbright / 15 <<  3;
+		dcolortab[0][ecx] = edx;
+		dcolortab[1][ecx] = edx | UnusedBit[0];
+	}
+	while (++ecx != 256);
 }
 
 

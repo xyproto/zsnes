@@ -5,5 +5,6 @@
 
 void setpalette16bng(void);
 void BackAreaFill(u4 eax);
+void Gendcolortable(void);
 
 #endif

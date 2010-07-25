@@ -19,6 +19,8 @@
 
 
 
+EXTSYM Gendcolortable
+
 ; drawtileng16b
 
 %macro ngsub 2
@@ -1457,7 +1459,7 @@
     cmp cl,[prevbrightdc]
     je %%nodcchange
     mov [prevbrightdc],cl
-    call Gendcolortable
+    ccallv Gendcolortable
 %%nodcchange
     mov ebp,dcolortab
 %%nodirectmode
@@ -1792,7 +1794,7 @@
     cmp dl,[prevbrightdc]
     je .nodcchange
     mov [prevbrightdc],dl
-    call Gendcolortable
+    ccallv Gendcolortable
 .nodcchange
     mov ebp,dcolortab
 .nodirect
@@ -1899,7 +1901,7 @@
     cmp dl,[prevbrightdc]
     je .nodcchange2
     mov [prevbrightdc],dl
-    call Gendcolortable
+    ccallv Gendcolortable
 .nodcchange2
     mov ebp,dcolortab
 .nodirect2
@@ -1965,7 +1967,7 @@
     cmp dl,[prevbrightdc]
     je .nodcchange
     mov [prevbrightdc],dl
-    call Gendcolortable
+    ccallv Gendcolortable
 .nodcchange
     mov ebp,dcolortab
 .nodirect
@@ -2034,7 +2036,7 @@
     cmp dl,[prevbrightdc]
     je .nodcchange2
     mov [prevbrightdc],dl
-    call Gendcolortable
+    ccallv Gendcolortable
 .nodcchange2
     mov ebp,dcolortab
 .nodirect2
@@ -2178,7 +2180,7 @@
     cmp dl,[prevbrightdc]
     je .nodcchange
     mov [prevbrightdc],dl
-    call Gendcolortable
+    ccallv Gendcolortable
 .nodcchange
     mov ecx,dcolortab
     mov [CPalPtrng],ecx
@@ -2289,7 +2291,7 @@
     cmp dl,[prevbrightdc]
     je .nodcchange2
     mov [prevbrightdc],dl
-    call Gendcolortable
+    ccallv Gendcolortable
 .nodcchange2
     mov ecx,dcolortab
     mov [CPalPtrng],ecx
@@ -2555,7 +2557,7 @@
     cmp dl,[prevbrightdc]
     je .nodcchangeom16x16
     mov [prevbrightdc],dl
-    call Gendcolortable
+    ccallv Gendcolortable
 .nodcchangeom16x16
     mov ecx,dcolortab
     mov [CPalPtrng],ecx
@@ -2729,7 +2731,7 @@
     cmp dl,[prevbrightdc]
     je .nodcchangedn
     mov [prevbrightdc],dl
-    call Gendcolortable
+    ccallv Gendcolortable
 .nodcchangedn
     mov ecx,dcolortab
     mov [CPalPtrng],ecx
@@ -2853,7 +2855,7 @@
     cmp dl,[prevbrightdc]
     je .nodcchange
     mov [prevbrightdc],dl
-    call Gendcolortable
+    ccallv Gendcolortable
 .nodcchange
     mov ecx,dcolortab
     mov [CPalPtrng],ecx
@@ -2945,7 +2947,7 @@
     cmp dl,[prevbrightdc]
     je .nodcchange2
     mov [prevbrightdc],dl
-    call Gendcolortable
+    ccallv Gendcolortable
 .nodcchange2
     mov ecx,dcolortab
     mov [CPalPtrng],ecx
@@ -3162,7 +3164,7 @@
     cmp dl,[prevbrightdc]
     je .nodcchangeom16x16
     mov [prevbrightdc],dl
-    call Gendcolortable
+    ccallv Gendcolortable
 .nodcchangeom16x16
     mov ecx,dcolortab
     mov [CPalPtrng],ecx
@@ -3307,7 +3309,7 @@
     cmp dl,[prevbrightdc]
     je .nodcchangedn
     mov [prevbrightdc],dl
-    call Gendcolortable
+    ccallv Gendcolortable
 .nodcchangedn
     mov ecx,dcolortab
     mov [CPalPtrng],ecx

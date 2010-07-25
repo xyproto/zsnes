@@ -61,7 +61,7 @@ NEWSYM drawmode7dcolor
     cmp bl,[prevbrightdc]
     je .nodcchange
     mov [prevbrightdc],bl
-    call Gendcolortable
+    ccallv Gendcolortable
 .nodcchange
     mov esi,[cwinptr]
     mov [winptrref],esi
