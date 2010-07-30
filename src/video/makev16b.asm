@@ -21,14 +21,14 @@
 
 %include "macros.mac"
 
-EXTSYM curypos,winon
+EXTSYM winon
 EXTSYM bgcoloradder
 EXTSYM drawn
 EXTSYM curbgpr,curvidoffset
 EXTSYM pal16b
-EXTSYM bgofwptr,bgsubby,bshifter,curmosaicsz,cwinptr
+EXTSYM bgofwptr,bgsubby,bshifter,curmosaicsz
 EXTSYM temp,tempcach,temptile,winptrref,xtravbuf,yadder,yrevadder
-EXTSYM vcache2b,vcache4b,vcache8b,hirestiledat,res512switch,numwin,windowdata
+EXTSYM res512switch,numwin,windowdata
 EXTSYM vidmemch4,vram,ofsmcptr
 EXTSYM ofsmady,ofsmadx,yposngom,flipyposngom,ofsmtptr,ofsmmptr,ofsmcyps,bgtxadd
 EXTSYM ngptrdat2
@@ -41,166 +41,6 @@ EXTSYM OMBGTestVal,cachesingle4bng,ofsmtptrs,ofsmcptr2,ofshvaladd
 SECTION .bss
 NEWSYM tileleft16b, resb 1
 SECTION .text
-
-NEWSYM draw16x816
-    push eax
-    xor eax,eax
-    mov al,[curypos]
-    mov byte[hirestiledat+eax],1
-    pop eax
-    mov [temp],al
-    mov [bshifter],ah
-    mov eax,esi
-    mov [yadder],ecx
-    mov [tempcach],ebx
-    mov ebx,56
-    sub ebx,ecx
-    mov [yrevadder],ebx
-    ; esi = pointer to video buffer
-    mov esi,[cwinptr]
-    sub esi,eax
-    mov [winptrref],esi
-    mov esi,[curvidoffset]
-    sub esi,eax           ; esi = [vidbuffer] + curypos * 288 + 16 - HOfs
-    sub esi,eax
-    cmp byte[curmosaicsz],1
-    je .nomosaic
-    mov esi,xtravbuf+32
-    mov ecx,128
-.clearnext
-    mov dword[esi],0
-    add esi,4
-    dec ecx
-    jnz .clearnext
-    mov esi,xtravbuf+32
-    sub esi,eax
-    sub esi,eax
-.nomosaic
-    mov [temptile],edx
-    push ecx
-    mov dword[bgsubby],262144
-    mov ecx,[vcache2b]
-    add ecx,262144
-    mov [bgofwptr],ecx
-    cmp dword[tempcach],ecx
-    jb .nobit
-    mov dword[bgsubby],131072
-    mov ecx,[vcache4b]
-    add ecx,131072
-    mov [bgofwptr],ecx
-    cmp dword[tempcach],ecx
-    jb .nobit
-    mov ecx,[vcache8b]
-    add ecx,65536
-    mov [bgofwptr],ecx
-    mov dword[bgsubby],65536
-.nobit
-    pop ecx
-; tile value : bit 15 = flipy, bit 14 = flipx, bit 13 = priority value
-;              bit 10-12 = palette, 0-9=tile#
-    cmp byte[curmosaicsz],1
-    jne .domosaic
-    cmp byte[winon],0
-    jne near draw16x816bwinon
-.domosaic
-    cmp byte[res512switch],0
-    jne near draw16x816b
-    mov byte[tileleft16b],33
-    mov byte[drawn],0
-    mov dl,[temp]
-.loopa
-    mov ax,[edi]
-    mov dh,ah
-    add edi,2
-    xor dh,[curbgpr]
-    test dh,20h
-    jnz near .hprior
-    inc byte[drawn]
-    and eax,03FFh                ; filter out tile #
-    mov ebx,[tempcach]
-    shl eax,6
-    add ebx,eax
-    cmp ebx,[bgofwptr]
-    jb .noclip
-    sub ebx,[bgsubby]
-.noclip
-    test dh,80h
-    jz .normadd
-    add ebx,[yrevadder]
-    jmp .skipadd
-.normadd
-    add ebx,[yadder]
-.skipadd
-    test dh,40h
-    jnz near .rloop
-
-    ; Begin Normal Loop
-    mov cl,[bshifter]
-    and dh,1Ch
-    shl dh,cl                    ; process palette # (bits 10-12)
-    add dh,[bgcoloradder]
-    xor eax,eax
-    ; Start loop
-    drawpixel16b8x8 0, .loopd1, 0
-    drawpixel16b8x8 2, .loopd3, 2
-    drawpixel16b8x8 4, .loopd5, 4
-    drawpixel16b8x8 6, .loopd7, 6
-    add ebx,64
-    ; Start loop
-    drawpixel16b8x8 0, .loopd1c, 8
-    drawpixel16b8x8 2, .loopd3c, 10
-    drawpixel16b8x8 4, .loopd5c, 12
-    drawpixel16b8x8 6, .loopd7c, 14
-.hprior
-    add esi,16
-    inc dl
-    cmp dl,20h
-    jne .loopc2
-    mov edi,[temptile]
-.loopc2
-    dec byte[tileleft16b]
-    jnz near .loopa
-    cmp byte[drawn],0
-    je .nodraw
-    mov dh,[curmosaicsz]
-    cmp dh,1
-    jne near domosaic16b
-.nodraw
-    ret
-    ; reversed loop
-.rloop
-    ; Begin Normal Loop
-    mov cl,[bshifter]
-    and dh,1Ch
-    shl dh,cl                    ; process palette # (bits 10-12)
-    add dh,[bgcoloradder]
-    xor eax,eax
-    ; Start loop
-    drawpixel16b8x8 1, .loopd1b, 14
-    drawpixel16b8x8 3, .loopd3b, 12
-    drawpixel16b8x8 5, .loopd5b, 10
-    drawpixel16b8x8 7, .loopd7b, 8
-    add ebx,64
-    ; Start loop
-    drawpixel16b8x8 1, .loopd1d, 6
-    drawpixel16b8x8 3, .loopd3d, 4
-    drawpixel16b8x8 5, .loopd5d, 2
-    drawpixel16b8x8 7, .loopd7d, 0
-    add esi,16
-    inc dl
-    cmp dl,20h
-    jne .loopc
-    mov edi,[temptile]
-.loopc
-    dec byte[tileleft16b]
-    jnz near .loopa
-    cmp byte[drawn],0
-    je .nodraw2
-    mov dh,[curmosaicsz]
-    cmp dh,1
-    jne near domosaic16b
-.nodraw2
-    ret
 
 NEWSYM draw16x816b
     mov byte[tileleft16b],33

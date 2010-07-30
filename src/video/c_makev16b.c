@@ -1034,6 +1034,119 @@ static void draw8x816bwinon(u2* esi, u2 const* edi)
 }
 
 
+static void drawpixel16b8x8(u1 const dh, u1 const* const ebx, u2* const esi, u4 const p1, u4 const p2)
+{
+	u1 const al = ebx[p1];
+	if (al != 0) esi[p2] = pal16b[(al + dh) & 0xFF];
+}
+
+
+static void draw16x816(u4 const eax, u4 const ecx, u2* const edx, u1* const ebx, u4 const eax_, u2 const* edi)
+{
+	hirestiledat[curypos & 0xFF] = 1;
+	temp     = eax;
+	bshifter = eax >> 8;
+	yadder   = ecx;
+	tempcach = ebx;
+	yrevadder = 56 - ecx;
+	// esi = pointer to video buffer
+	winptrref = cwinptr - eax_;
+	u2* esi = (u2*)curvidoffset - eax_; // esi = [vidbuffer] + curypos * 288 + 16 - HOfs
+	if (curmosaicsz != 1)
+	{ // Mosaic
+		memset(xtravbuf + 16, 0, 256 * sizeof(*xtravbuf));
+		esi = xtravbuf + 16 - eax_;
+	}
+	temptile = edx;
+
+	bgsubby  = 262144;
+	bgofwptr = vcache2b + 262144;
+	if (tempcach >= bgofwptr)
+	{
+		bgsubby  = 131072;
+		bgofwptr = vcache4b + 131072;
+		if (tempcach >= bgofwptr)
+		{
+			bgofwptr = vcache8b + 65536;
+			bgsubby  = 65536;
+		}
+	}
+
+	/* tile value : bit 15 = flipy, bit 14 = flipx, bit 13 = priority value
+	 *              bit 10-12 = palette, 0-9=tile# */
+	if (curmosaicsz == 1 && winon != 0)
+	{ // No mosaic
+		asm volatile("push %%ebp;  call %P2;  pop %%ebp" : "+S" (esi), "+D" (edi) : "X" (draw16x816bwinon) : "cc", "memory", "eax", "ecx", "edx", "ebx");
+		return;
+	}
+	if (res512switch != 0)
+	{
+		asm volatile("push %%ebp;  call %P2;  pop %%ebp" : "+S" (esi), "+D" (edi) : "X" (draw16x816b) : "cc", "memory", "eax", "ecx", "edx", "ebx");
+		return;
+	}
+
+	tileleft16b = 33;
+	drawn       =  0;
+	u1 dl = temp;
+	do
+	{
+		u2 const ax = *edi++;
+		u1 const dh = ax >> 8 ^ curbgpr;
+		if (!(dh & 0x20))
+		{
+			++drawn;
+			u4 const eax = (ax & 0x03FF) * 64; // filter out tile #
+			u1* ebx = tempcach + eax;
+			if (ebx >= bgofwptr) ebx -= bgsubby; // Clip
+			ebx += dh & 0x80 ? yrevadder : yadder;
+
+			u1 const dh_ = ((dh & 0x1C) << bshifter) + bgcoloradder; // process palette # (bits 10-12)
+			if (!(dh & 0x40))
+			{ // Begin Normal Loop
+				// Start loop
+				drawpixel16b8x8(dh_, ebx, esi, 0, 0);
+				drawpixel16b8x8(dh_, ebx, esi, 2, 1);
+				drawpixel16b8x8(dh_, ebx, esi, 4, 2);
+				drawpixel16b8x8(dh_, ebx, esi, 6, 3);
+				ebx += 64;
+				// Start loop
+				drawpixel16b8x8(dh_, ebx, esi, 0, 4);
+				drawpixel16b8x8(dh_, ebx, esi, 2, 5);
+				drawpixel16b8x8(dh_, ebx, esi, 4, 6);
+				drawpixel16b8x8(dh_, ebx, esi, 6, 7);
+			}
+			else
+			{ // reversed loop
+				// Start loop
+				drawpixel16b8x8(dh_, ebx, esi, 1, 7);
+				drawpixel16b8x8(dh_, ebx, esi, 3, 6);
+				drawpixel16b8x8(dh_, ebx, esi, 5, 5);
+				drawpixel16b8x8(dh_, ebx, esi, 7, 4);
+				ebx += 64;
+				// Start loop
+				drawpixel16b8x8(dh_, ebx, esi, 1, 3);
+				drawpixel16b8x8(dh_, ebx, esi, 3, 2);
+				drawpixel16b8x8(dh_, ebx, esi, 5, 1);
+				drawpixel16b8x8(dh_, ebx, esi, 7, 0);
+			}
+		}
+		esi += 8;
+		if (++dl == 0x20) edi = temptile;
+	}
+	while (--tileleft16b != 0);
+
+	if (drawn != 0)
+	{
+		u1 const dh = curmosaicsz;
+		if (dh != 1)
+		{
+			u4 edx = dh << 8;
+			asm volatile("push %%ebp;  call %P1;  pop %%ebp" : "+d" (edx) : "X" (domosaic16b) : "cc", "memory", "eax", "ecx", "esi", "edi");
+		}
+	}
+}
+
+
 void draw8x816b(u4 eax, u4 ecx, u2* edx, u1* ebx, u4 const layer, u4 eax_, u2 const* edi)
 {
 	if (osm2dis != 1 && bgmode == 2)
@@ -1043,7 +1156,7 @@ void draw8x816b(u4 eax, u4 ecx, u2* edx, u1* ebx, u4 const layer, u4 eax_, u2 co
 	}
 	if (bgmode == 5)
 	{
-		asm volatile("push %%ebp;  call %P6;  pop %%ebp" : "+a" (eax), "+c" (ecx), "+d" (edx), "+b" (ebx), "+S" (eax_), "+D" (edi) : "X" (draw16x816) : "cc", "memory");
+		draw16x816(eax, ecx, edx, ebx, eax_, edi);
 		return;
 	}
 	temp      = eax;
