@@ -952,6 +952,88 @@ void draw8x816boffset(u4 const eax, u4 const ecx, u2* const edx, u1* const ebx, 
 }
 
 
+static void Draw8x816bwinmacro(u1 const dh, u1 const* const ebx, u1 const* const ebp, u2* const esi, u4 const p1)
+{
+	u1 const al = ebx[p1];
+	if (al != 0 && ebp[p1] == 0) esi[p1] = pal16b[(al + dh) & 0xFF];
+}
+
+
+static void Draw8x816bwinflipmacro(u1 const dh, u1 const* const ebx, u1 const* const ebp, u2* const esi, u4 const p1)
+{
+	u1 const al = ebx[7 - p1];
+	if (al != 0 && ebp[p1] == 0) esi[p1] = pal16b[(al + dh) & 0xFF];
+}
+
+
+static void draw8x816bwinon(u2* esi, u2 const* edi)
+{
+	tileleft16b = 33;
+	drawn       =  0;
+	u1        dl  = temp;
+	u1 const* ebp = winptrref;
+	do
+	{
+		u2 const ax = *edi++;
+		u1 const dh = ax >> 8 ^ curbgpr;
+		if (!(dh & 0x20))
+		{
+			++drawn;
+			u1 const* ebx = tempcach + (ax & 0x03FF) * 64; // filter out tile #
+			if (ebx >= bgofwptr) ebx -= bgsubby;
+			ebx += dh & 0x80 ? yrevadder : yadder;
+
+			u1 const dh_ = ((dh & 0x1C) << bshifter) + bgcoloradder; // process palette # (bits 10-12)
+			if (!(dh & 0x40))
+			{ // Begin Normal Loop
+				// Start loop
+				if (*(u4 const*)ebx != 0)
+				{
+					Draw8x816bwinmacro(dh_, ebx, ebp, esi, 0);
+					Draw8x816bwinmacro(dh_, ebx, ebp, esi, 1);
+					Draw8x816bwinmacro(dh_, ebx, ebp, esi, 2);
+					Draw8x816bwinmacro(dh_, ebx, ebp, esi, 3);
+				}
+				if (*(u4 const*)(ebx + 4) != 0)
+				{
+					Draw8x816bwinmacro(dh_, ebx, ebp, esi, 4);
+					Draw8x816bwinmacro(dh_, ebx, ebp, esi, 5);
+					Draw8x816bwinmacro(dh_, ebx, ebp, esi, 6);
+					Draw8x816bwinmacro(dh_, ebx, ebp, esi, 7);
+				}
+			}
+			else
+			{ // reversed loop
+				if (*(u4 const*)(ebx + 4) != 0)
+				{
+					Draw8x816bwinflipmacro(dh_, ebx, ebp, esi, 0);
+					Draw8x816bwinflipmacro(dh_, ebx, ebp, esi, 1);
+					Draw8x816bwinflipmacro(dh_, ebx, ebp, esi, 2);
+					Draw8x816bwinflipmacro(dh_, ebx, ebp, esi, 3);
+				}
+				if (*(u4 const*)ebx != 0)
+				{
+					Draw8x816bwinflipmacro(dh_, ebx, ebp, esi, 4);
+					Draw8x816bwinflipmacro(dh_, ebx, ebp, esi, 5);
+					Draw8x816bwinflipmacro(dh_, ebx, ebp, esi, 6);
+					Draw8x816bwinflipmacro(dh_, ebx, ebp, esi, 7);
+				}
+			}
+		}
+		esi += 8;
+		ebp += 8;
+		if (++dl == 0x20) edi = temptile;
+	}
+	while (--tileleft16b != 0);
+
+	if (drawn != 0 && curmosaicsz != 1)
+	{
+		u4 edx = curmosaicsz << 8;
+		asm volatile("push %%ebp;  call %P1;  pop %%ebp" : "+d" (edx) : "X" (domosaic16b) : "cc", "memory", "eax", "ecx", "esi", "edi");
+	}
+}
+
+
 void draw8x816b(u4 eax, u4 ecx, u2* edx, u1* ebx, u4 const layer, u4 eax_, u2 const* edi)
 {
 	if (osm2dis != 1 && bgmode == 2)
@@ -997,7 +1079,7 @@ void draw8x816b(u4 eax, u4 ecx, u2* edx, u1* ebx, u4 const layer, u4 eax_, u2 co
 	 *              bit 10-12 = palette, 0-9=tile# */
 	if (curmosaicsz == 1 && winon != 0)
 	{
-		asm volatile("push %%ebp;  call %P2;  pop %%ebp" : "+S" (esi), "+D" (edi) : "X" (draw8x816bwinon) : "cc", "memory", "eax", "ecx", "edx", "ebx");
+		draw8x816bwinon(esi, edi);
 		return;
 	}
 	tileleft16b = 33;
