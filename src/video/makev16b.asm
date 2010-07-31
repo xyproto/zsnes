@@ -22,18 +22,8 @@
 %include "macros.mac"
 
 EXTSYM winon
-EXTSYM bgcoloradder
-EXTSYM drawn
-EXTSYM curbgpr,curvidoffset
-EXTSYM pal16b
-EXTSYM bgofwptr,bgsubby,bshifter
-EXTSYM temp,tempcach,winptrref,xtravbuf,yadder,yrevadder
-EXTSYM vidmemch4,vram,ofsmcptr
-EXTSYM ofsmady,ofsmadx,yposngom,flipyposngom,ofsmtptr,ofsmmptr,ofsmcyps,bgtxadd
-EXTSYM ngptrdat2
-EXTSYM OMBGTestVal,cachesingle4bng,ofsmtptrs,ofsmcptr2,ofshvaladd
-
-%include "video/vidmacro.mac"
+EXTSYM curvidoffset
+EXTSYM winptrref,xtravbuf
 
 ;drawspritesprio
 
@@ -112,95 +102,4 @@ NEWSYM domosaicwin16b
     jnz .loopm
     jmp .zeroloop
 .doneloop
-    ret
-
-NEWSYM draw8x816bwinonoffset
-    mov byte[tileleft16b],33
-    mov byte[drawn],0
-    mov dl,[temp]
-    mov ebp,[winptrref]
-.loopa
-    mov ax,[edi]
-    mov dh,ah
-    add edi,2
-    xor dh,[curbgpr]
-    test dh,20h
-    jnz near .hprior
-    inc byte[drawn]
-    and eax,03FFh                ; filter out tile #
-    offsetmcachechk
-    mov ebx,[tempcach]
-    shl eax,6
-    add ebx,eax
-    cmp ebx,[bgofwptr]
-    jb .noclip
-    sub ebx,[bgsubby]
-.noclip
-    test dh,80h
-    jz .normadd
-    add ebx,[yrevadder]
-    jmp .skipadd
-.normadd
-    add ebx,[yadder]
-.skipadd
-    test dh,40h
-    jnz near .rloop
-
-    ; Begin Normal Loop
-    mov cl,[bshifter]
-    and dh,1Ch
-    shl dh,cl                    ; process palette # (bits 10-12)
-    add dh,[bgcoloradder]
-    xor eax,eax
-    ; Start loop
-    cmp dword[ebx],0
-    je .loopd4
-    Draw8x816bwinmacro 0
-    Draw8x816bwinmacro 1
-    Draw8x816bwinmacro 2
-    Draw8x816bwinmacro 3
-.loopd4
-    cmp dword[ebx+4],0
-    je .loopd8
-    Draw8x816bwinmacro 4
-    Draw8x816bwinmacro 5
-    Draw8x816bwinmacro 6
-    Draw8x816bwinmacro 7
-.loopd8
-.hprior
-    procoffsetmode
-    add esi,16
-    add ebp,8
-    dec byte[tileleft16b]
-    jnz near .loopa
-    xor eax,eax
-    ret
-
-    ; reversed loop
-.rloop
-    mov cl,[bshifter]
-    and dh,1Ch
-    shl dh,cl                    ; process palette # (bits 10-12)
-    add dh,[bgcoloradder]
-    xor eax,eax
-    cmp dword[ebx+4],0
-    je .loopd4b
-    Draw8x816bwinflipmacro 0
-    Draw8x816bwinflipmacro 1
-    Draw8x816bwinflipmacro 2
-    Draw8x816bwinflipmacro 3
-.loopd4b
-    cmp dword[ebx],0
-    je .loopd8b
-    Draw8x816bwinflipmacro 4
-    Draw8x816bwinflipmacro 5
-    Draw8x816bwinflipmacro 6
-    Draw8x816bwinflipmacro 7
-.loopd8b
-    procoffsetmode
-    add esi,16
-    add ebp,8
-    dec byte[tileleft16b]
-    jnz near .loopa
-    xor eax,eax
     ret

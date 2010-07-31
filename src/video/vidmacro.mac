@@ -1214,30 +1214,6 @@
 ; ****************************************************
 ; ****************************************************
 
-%macro Draw8x816bwinmacro 1
-    mov al,[ebx+%1]
-    or al,al
-    jz %%loop
-    test byte[ebp+%1],0FFh
-    jnz %%loop
-    add al,dh
-    mov ecx,[pal16b+eax*4]
-    mov [esi+%1*2],cx
-%%loop
-%endmacro
-
-%macro Draw8x816bwinflipmacro 1
-    mov al,[ebx+7-%1]
-    or al,al
-    jz %%loop
-    test byte[ebp+%1],0FFh
-    jnz %%loop
-    add al,dh
-    mov ecx,[pal16b+eax*4]
-    mov [esi+%1*2],cx
-%%loop
-%endmacro
-
 ;*******************************************************
 ; DrawLine 16bit                  Draws the current line
 ;*******************************************************
