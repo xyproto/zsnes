@@ -4,7 +4,6 @@
 #include "../types.h"
 
 extern void domosaic16b();
-extern void draw16x816winonb();
 extern void draw8x816bwinonoffset();
 
 extern u1 tileleft16b;

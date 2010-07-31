@@ -26,8 +26,8 @@ EXTSYM bgcoloradder
 EXTSYM drawn
 EXTSYM curbgpr,curvidoffset
 EXTSYM pal16b
-EXTSYM bgofwptr,bgsubby,bshifter,curmosaicsz
-EXTSYM temp,tempcach,temptile,winptrref,xtravbuf,yadder,yrevadder
+EXTSYM bgofwptr,bgsubby,bshifter
+EXTSYM temp,tempcach,winptrref,xtravbuf,yadder,yrevadder
 EXTSYM numwin,windowdata
 EXTSYM vidmemch4,vram,ofsmcptr
 EXTSYM ofsmady,ofsmadx,yposngom,flipyposngom,ofsmtptr,ofsmmptr,ofsmcyps,bgtxadd
@@ -41,107 +41,6 @@ EXTSYM OMBGTestVal,cachesingle4bng,ofsmtptrs,ofsmcptr2,ofshvaladd
 SECTION .bss
 NEWSYM tileleft16b, resb 1
 SECTION .text
-
-NEWSYM draw16x816winonb
-    mov ebp,[winptrref]
-    mov byte[tileleft16b],33
-    mov byte[drawn],0
-    mov dl,[temp]
-.loopa
-    mov ax,[edi]
-    mov dh,ah
-    add edi,2
-    xor dh,[curbgpr]
-    test dh,20h
-    jnz near .hprior
-    inc byte[drawn]
-    and eax,03FFh                ; filter out tile #
-    mov ebx,[tempcach]
-    shl eax,6
-    add ebx,eax
-    cmp ebx,[bgofwptr]
-    jb .noclip
-    sub ebx,[bgsubby]
-.noclip
-    test dh,80h
-    jz .normadd
-    add ebx,[yrevadder]
-    jmp .skipadd
-.normadd
-    add ebx,[yadder]
-.skipadd
-    test dh,40h
-    jnz near .rloop
-
-    ; Begin Normal Loop
-    mov cl,[bshifter]
-    and dh,1Ch
-    shl dh,cl                    ; process palette # (bits 10-12)
-    add dh,[bgcoloradder]
-    xor eax,eax
-    ; Start loop
-    drawpixel16b8x8winon 1, .loopd1, 0, 0
-    drawpixel16b8x8winon 3, .loopd3, 2, 1
-    drawpixel16b8x8winon 5, .loopd5, 4, 2
-    drawpixel16b8x8winon 7, .loopd7, 6, 3
-    add ebx,64
-    ; Start loop
-    drawpixel16b8x8winon 1, .loopd1c, 8, 4
-    drawpixel16b8x8winon 3, .loopd3c, 10, 5
-    drawpixel16b8x8winon 5, .loopd5c, 12, 6
-    drawpixel16b8x8winon 7, .loopd7c, 14, 7
-.hprior
-    add esi,16
-    add ebp,8
-    inc dl
-    cmp dl,20h
-    jne .loopc2
-    mov edi,[temptile]
-.loopc2
-    dec byte[tileleft16b]
-    jnz near .loopa
-    cmp byte[drawn],0
-    je .nodraw
-    mov dh,[curmosaicsz]
-    cmp dh,1
-    jne near domosaic16b
-.nodraw
-    ret
-    ; reversed loop
-.rloop
-    ; Begin Normal Loop
-    mov cl,[bshifter]
-    and dh,1Ch
-    shl dh,cl                    ; process palette # (bits 10-12)
-    add dh,[bgcoloradder]
-    xor eax,eax
-    ; Start loop
-    drawpixel16b8x8winon 0, .loopd1b, 14, 0
-    drawpixel16b8x8winon 2, .loopd3b, 12, 1
-    drawpixel16b8x8winon 4, .loopd5b, 10, 2
-    drawpixel16b8x8winon 6, .loopd7b, 8, 3
-    add ebx,64
-    ; Start loop
-    drawpixel16b8x8winon 0, .loopd1d, 6, 4
-    drawpixel16b8x8winon 2, .loopd3d, 4, 5
-    drawpixel16b8x8winon 4, .loopd5d, 2, 6
-    drawpixel16b8x8winon 6, .loopd7d, 0, 7
-    add esi,16
-    add ebp,8
-    inc dl
-    cmp dl,20h
-    jne .loopc
-    mov edi,[temptile]
-.loopc
-    dec byte[tileleft16b]
-    jnz near .loopa
-    cmp byte[drawn],0
-    je .nodraw2
-    mov dh,[curmosaicsz]
-    cmp dh,1
-    jne near domosaic16b
-.nodraw2
-    ret
 
 NEWSYM domosaic16b
     mov esi,xtravbuf+32

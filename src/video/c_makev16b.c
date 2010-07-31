@@ -1041,11 +1041,72 @@ static void drawpixel16b8x8winon(u1 const dh, u1 const* const ebx, u2* const esi
 }
 
 
+static void draw16x816winonb(u2* esi, u2 const* edi)
+{
+	tileleft16b = 33;
+	drawn       =  0;
+	u1 const* ebp = winptrref;
+	u1        dl  = temp;
+	do
+	{
+		u2 const ax = *edi++;
+		u1 const dh = (ax >> 8) ^ curbgpr;
+		if (!(dh & 0x20))
+		{
+			++drawn;
+			u1 const* ebx = tempcach + (ax & 0x03FF) * 64; // filter out tile #
+			if (ebx >= bgofwptr) ebx -= bgsubby; // Clip
+			ebx += dh & 0x80 ? yrevadder : yadder;
+
+			u1 const dh_ = ((dh & 0x1C) << bshifter) + bgcoloradder; // process palette # (bits 10-12)
+			if (!(dh & 0x40))
+			{ // Begin Normal Loop
+				// Start loop
+				drawpixel16b8x8winon(dh_, ebx, esi, ebp, 1, 0, 0);
+				drawpixel16b8x8winon(dh_, ebx, esi, ebp, 3, 1, 1);
+				drawpixel16b8x8winon(dh_, ebx, esi, ebp, 5, 2, 2);
+				drawpixel16b8x8winon(dh_, ebx, esi, ebp, 7, 3, 3);
+				ebx += 64;
+				// Start loop
+				drawpixel16b8x8winon(dh_, ebx, esi, ebp, 1, 4, 4);
+				drawpixel16b8x8winon(dh_, ebx, esi, ebp, 3, 5, 5);
+				drawpixel16b8x8winon(dh_, ebx, esi, ebp, 5, 6, 6);
+				drawpixel16b8x8winon(dh_, ebx, esi, ebp, 7, 7, 7);
+			}
+			else
+			{ // reversed loop
+				// Start loop
+				drawpixel16b8x8winon(dh_, ebx, esi, ebp, 0, 7, 0);
+				drawpixel16b8x8winon(dh_, ebx, esi, ebp, 2, 6, 1);
+				drawpixel16b8x8winon(dh_, ebx, esi, ebp, 4, 5, 2);
+				drawpixel16b8x8winon(dh_, ebx, esi, ebp, 6, 4, 3);
+				ebx += 64;
+				// Start loop
+				drawpixel16b8x8winon(dh_, ebx, esi, ebp, 0, 3, 4);
+				drawpixel16b8x8winon(dh_, ebx, esi, ebp, 2, 2, 5);
+				drawpixel16b8x8winon(dh_, ebx, esi, ebp, 4, 1, 6);
+				drawpixel16b8x8winon(dh_, ebx, esi, ebp, 6, 0, 7);
+			}
+		}
+		esi += 8;
+		ebp += 8;
+		if (++dl == 0x20) edi = temptile;
+	}
+	while (--tileleft16b != 0);
+
+	if (drawn != 0 && curmosaicsz != 1)
+	{
+		u4 edx = curmosaicsz << 8;
+		asm volatile("push %%ebp;  call %P1;  pop %%ebp" : "+d" (edx) : "X" (domosaic16b) : "cc", "memory", "eax", "ecx", "esi", "edi");
+	}
+}
+
+
 static void draw16x816bwinon(u2* esi, u2 const* edi)
 {
 	if (res512switch != 0)
 	{
-		asm volatile("push %%ebp;  call %P2;  pop %%ebp" : "+S" (esi), "+D" (edi) : "X" (draw16x816winonb) : "cc", "memory", "eax", "ecx", "edx", "ebx");
+		draw16x816winonb(esi, edi);
 		return;
 	}
 
