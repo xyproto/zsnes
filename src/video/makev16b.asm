@@ -28,7 +28,6 @@ EXTSYM curbgpr,curvidoffset
 EXTSYM pal16b
 EXTSYM bgofwptr,bgsubby,bshifter
 EXTSYM temp,tempcach,winptrref,xtravbuf,yadder,yrevadder
-EXTSYM numwin,windowdata
 EXTSYM vidmemch4,vram,ofsmcptr
 EXTSYM ofsmady,ofsmadx,yposngom,flipyposngom,ofsmtptr,ofsmmptr,ofsmcyps,bgtxadd
 EXTSYM ngptrdat2
@@ -113,45 +112,6 @@ NEWSYM domosaicwin16b
     jnz .loopm
     jmp .zeroloop
 .doneloop
-    ret
-
-NEWSYM dowindow16b
-    mov ebx,windowdata
-    mov esi,xtravbuf+32
-    mov edi,[curvidoffset]
-    xor edx,edx
-    xor ch,ch
-.getnext
-    mov cl,[ebx]
-    cmp dl,cl
-    je .procnext
-.dorest
-    sub cl,dl
-    cmp ch,0
-    ja .nodraw
-.loopa
-    mov ax,[esi+edx*2]
-    test ax,0FFFFh
-    jz .nocopy
-    mov [edi+edx*2],ax
-.nocopy
-    inc dl
-    dec cl
-    jnz .loopa
-.procnext
-    add ch,[ebx+1]
-    add ebx,2
-    test byte[numwin],0FFh
-    jz .finishwin
-    dec byte[numwin]
-    jnz .getnext
-    xor cl,cl
-    jmp .dorest
-.nodraw
-    add dl,cl
-    jmp .procnext
-.finishwin
-    xor eax,eax
     ret
 
 NEWSYM draw8x816bwinonoffset
