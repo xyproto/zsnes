@@ -1226,16 +1226,6 @@
 %2
 %endmacro
 
-%macro drawpixel16b8x8 3
-    mov al,[ebx+%1]
-    test al,0FFh
-    jz %2
-    add al,dh
-    mov ecx,[pal16b+eax*4]
-    mov [esi+%3],cx
-%2
-%endmacro
-
 %macro Draw8x816bwinmacro 1
     mov al,[ebx+%1]
     or al,al

@@ -1041,6 +1041,65 @@ static void drawpixel16b8x8(u1 const dh, u1 const* const ebx, u2* const esi, u4 
 }
 
 
+static void draw16x816b(u2* esi, u2 const* edi)
+{
+	tileleft16b = 33;
+	drawn       =  0;
+	u1 dl = temp;
+	do
+	{
+		u2 const ax = *edi++;
+		u1 const dh = ax >> 8 ^ curbgpr;
+		if (!(dh & 0x20))
+		{
+			++drawn;
+			u1 const* ebx = tempcach + (ax & 0x03FF) * 64; // Filter out tile #
+			if (ebx >= bgofwptr) ebx -= bgsubby; // Clip
+			ebx += dh & 0x80 ? yrevadder : yadder;
+
+			u1 const dh_ = (dh & 0x1C << bshifter) + bgcoloradder; // process palette # (bits 10-12)
+			if (!(dh & 0x40))
+			{ // Begin Normal Loop
+				// Start loop
+				drawpixel16b8x8(dh_, ebx, esi, 1, 0);
+				drawpixel16b8x8(dh_, ebx, esi, 3, 1);
+				drawpixel16b8x8(dh_, ebx, esi, 5, 2);
+				drawpixel16b8x8(dh_, ebx, esi, 7, 3);
+				ebx += 64;
+				// Start loop
+				drawpixel16b8x8(dh_, ebx, esi, 1, 4);
+				drawpixel16b8x8(dh_, ebx, esi, 3, 5);
+				drawpixel16b8x8(dh_, ebx, esi, 5, 6);
+				drawpixel16b8x8(dh_, ebx, esi, 7, 7);
+			}
+			else
+			{ // reversed loop
+				// Start loop
+				drawpixel16b8x8(dh_, ebx, esi, 0, 7);
+				drawpixel16b8x8(dh_, ebx, esi, 2, 6);
+				drawpixel16b8x8(dh_, ebx, esi, 4, 5);
+				drawpixel16b8x8(dh_, ebx, esi, 6, 4);
+				ebx += 64;
+				// Start loop
+				drawpixel16b8x8(dh_, ebx, esi, 0, 3);
+				drawpixel16b8x8(dh_, ebx, esi, 2, 2);
+				drawpixel16b8x8(dh_, ebx, esi, 4, 1);
+				drawpixel16b8x8(dh_, ebx, esi, 6, 0);
+			}
+		}
+		esi += 8;
+		if (++dl == 0x20) edi = temptile;
+	}
+	while (--tileleft16b != 0);
+
+	if (drawn != 0 && curmosaicsz != 1)
+	{
+		u4 edx = curmosaicsz << 8;
+		asm volatile("push %%ebp;  call %P1;  pop %%ebp" : "+d" (edx) : "X" (domosaic16b) : "cc", "memory", "eax", "ecx", "esi", "edi");
+	}
+}
+
+
 static void draw16x816(u4 const eax, u4 const ecx, u2* const edx, u1* const ebx, u4 const eax_, u2 const* edi)
 {
 	hirestiledat[curypos & 0xFF] = 1;
@@ -1081,7 +1140,7 @@ static void draw16x816(u4 const eax, u4 const ecx, u2* const edx, u1* const ebx,
 	}
 	if (res512switch != 0)
 	{
-		asm volatile("push %%ebp;  call %P2;  pop %%ebp" : "+S" (esi), "+D" (edi) : "X" (draw16x816b) : "cc", "memory", "eax", "ecx", "edx", "ebx");
+		draw16x816b(esi, edi);
 		return;
 	}
 
