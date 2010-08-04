@@ -24,6 +24,7 @@
 EXTSYM memtabler8,regptwa,snesmap2,snesmmap,memtablew8,regptra,memtabler16
 EXTSYM dmadata,hdmatype,nexthdma,resolutn,curhdma,curypos,hdmadata
 EXTSYM hdmadelay,hdmarestart,nohdmaframe,INTEnab,HIRQLoc
+EXTSYM transdma
 
 ;*******************************************************
 ; Transfer DMA                     Inits & Transfers DMA
@@ -32,169 +33,6 @@ EXTSYM hdmadelay,hdmarestart,nohdmaframe,INTEnab,HIRQLoc
 
 section .bss
 NEWSYM AddrNoIncr, resb 1
-section .text
-
-NEWSYM transdma
-    push eax
-    cmp word[esi+5],480h
-    jne .no
-;    mov byte[debstop3],1
-.no
-
-    mov al,[esi]
-    test al,80h
-    jnz near transdmappu2cpu
-
-    ; set address increment value
-    mov dword[.addrincr],0
-    test al,00001000b
-    jnz .skipaddrincr
-    test al,00010000b
-    jnz .autodec
-    mov dword[.addrincr],1
-    jmp .skipaddrincr
-.autodec
-    mov dword[.addrincr],0FFFFFFFFh
-.skipaddrincr
-
-    mov byte[AddrNoIncr],0
-    cmp dword[.addrincr],0
-    jne .notzero
-    mov byte[AddrNoIncr],1
-.notzero
-    ; get address order to be written
-    xor ebx,ebx
-    and al,00000111b
-    cmp al,5
-    jne .notmode5dma
-    sub al,4
-.notmode5dma
-    mov bl,al
-    shl bl,3
-    add ebx,.addrwrite
-    mov edi,ebx
-
-    ; get pointer #1
-    movzx ebx,byte[esi+1]      ; PPU memory - 21xx
-    mov bh,21h
-    add bx,[edi]
-    mov eax,regptw(ebx)
-    mov [.regptra],eax
-
-    ; get pointer #2
-    movzx ebx,byte[esi+1]      ; PPU memory - 21xx
-    mov bh,21h
-    add bx,[edi+2]
-    mov eax,regptw(ebx)
-    mov [.regptrb],eax
-
-    ; get pointer #3
-    movzx ebx,byte[esi+1]      ; PPU memory - 21xx
-    mov bh,21h
-    add bx,[edi+4]
-    mov eax,regptw(ebx)
-    mov [.regptrc],eax
-
-    ; get pointer #4
-    movzx ebx,byte[esi+1]      ; PPU memory - 21xx
-    mov bh,21h
-    add bx,[edi+6]
-    mov eax,regptw(ebx)
-    mov [.regptrd],eax
-
-    mov dx,[esi+5]        ; Number of bytes to transfer
-    movzx ebx,byte[esi+4] ; Bank #
-    mov ecx,[esi+2]       ; address offset #
-    and ecx,0FFFFh
-    mov [.curbank],bl
-    mov word[esi+5],0
-
-    mov ebx,[.curbank]
-    mov eax,snesmap2
-    test ecx,8000h
-    jz .nomap1
-    mov eax,snesmmap
-.nomap1
-    and edx,0FFFFh
-    mov ebx,[eax+ebx*4]
-
-    push esi
-    mov esi,ebx
-    movzx ebx,byte[.curbank]
-    ; do loop
-    cmp edx,0
-    jne .no0
-    mov edx,65536
-.no0
-    mov ebx,[memtabler8+ebx*4]
-    mov [.readaddr],ebx
-    movzx ebx,byte[.curbank]
-    mov [.cebx],ebx
-.againloop
-    cmp edx,4
-    jbe .deccheckloop
-    mov ebx,[.cebx]
-    call dword near [.readaddr]
-    add cx,[.addrincr]
-    call dword near [.regptra]
-    mov ebx,[.cebx]
-    call dword near [.readaddr]
-    add cx,[.addrincr]
-    call dword near [.regptrb]
-    mov ebx,[.cebx]
-    call dword near [.readaddr]
-    add cx,[.addrincr]
-    call dword near [.regptrc]
-    mov ebx,[.cebx]
-    call dword near [.readaddr]
-    add cx,[.addrincr]
-    call dword near [.regptrd]
-    sub edx,4
-    jmp .againloop
-.deccheckloop
-    mov ebx,[.cebx]
-    call dword near [.readaddr]
-    add cx,[.addrincr]
-    call dword near [.regptra]
-    dec edx
-    jz .findma
-    mov ebx,[.cebx]
-    call dword near [.readaddr]
-    add cx,[.addrincr]
-    call dword near [.regptrb]
-    dec edx
-    jz .findma
-    mov ebx,[.cebx]
-    call dword near [.readaddr]
-    add cx,[.addrincr]
-    call dword near [.regptrc]
-    dec edx
-    jz .findma
-    mov ebx,[.cebx]
-    call dword near [.readaddr]
-    add cx,[.addrincr]
-    call dword near [.regptrd]
-.findma
-    pop esi
-    mov [esi+2],cx
-    pop eax
-    mov byte[AddrNoIncr],0
-    ret
-
-section .data
-ALIGN32
-
-.curbank   dd 0
-.addrincr  dd 0
-.addrwrite dw 0,0,0,0, 0,1,0,1, 0,0,0,0, 0,0,1,1, 0,1,2,3, 0,1,2,3, 0,1,2,3
-           dw 0,1,2,3
-; pointer address of registers
-.regptra   dd 0
-.regptrb   dd 0
-.regptrc   dd 0
-.regptrd   dd 0
-.readaddr  dd 0
-.cebx      dd 0
 section .text
 
 NEWSYM transdmappu2cpu
@@ -320,7 +158,6 @@ NEWSYM transdmappu2cpu
 .findma
     pop esi
     mov [esi+2],cx
-    pop eax
     ret
 
 section .data
@@ -354,49 +191,49 @@ NEWSYM reg420Bw
     test al,01h
     jz .notransa
     TestDMA
-    call transdma
+    ccallv transdma, esi
 .notransa
     add esi,16
     test al,02h
     jz .notransb
     TestDMA
-    call transdma
+    ccallv transdma, esi
 .notransb
     add esi,16
     test al,04h
     jz .notransc
     TestDMA
-    call transdma
+    ccallv transdma, esi
 .notransc
     add esi,16
     test al,08h
     jz .notransd
     TestDMA
-    call transdma
+    ccallv transdma, esi
 .notransd
     add esi,16
     test al,10h
     jz .notranse
     TestDMA
-    call transdma
+    ccallv transdma, esi
 .notranse
     add esi,16
     test al,20h
     jz .notransf
     TestDMA
-    call transdma
+    ccallv transdma, esi
 .notransf
     add esi,16
     test al,40h
     jz .notransg
     TestDMA
-    call transdma
+    ccallv transdma, esi
 .notransg
     add esi,16
     test al,80h
     jz .notransh
     TestDMA
-    call transdma
+    ccallv transdma, esi
 .notransh
     pop edx
     pop ecx
