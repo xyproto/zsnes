@@ -136,8 +136,8 @@ NEWSYM wramrwadr, dd 0             ; continuous read/write to wram address
 NEWSYM dmadata, times 129 db 0FFh
 ALIGN32
 NEWSYM irqon,     db 0
-NEWSYM nexthdma,  db 0             ; HDMA data to execute once vblank ends
-NEWSYM curhdma,   db 0             ; Currently executed hdma
+NEWSYM nexthdma,  db 0
+NEWSYM curhdma,   db 0
 NEWSYM hdmadata, times 8*19 db 0
 ALIGN32
 NEWSYM hdmatype,  db 0

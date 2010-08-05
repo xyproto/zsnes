@@ -243,3 +243,18 @@ void setuphdmars(HDMAInfo* const edx, DMAInfo const* const esi)
 		edx->dst_reg[i] = REGPTW(bx);
 	}
 }
+
+
+void starthdma(void)
+{
+	u1 const al = curhdma;
+	nexthdma = al;
+	if (al == 0x00) return;
+
+	DMAInfo*  esi = dmadata;
+	HDMAInfo* edx = hdmadata;
+	for (u1 i = 0x01; i != 0; ++esi, ++edx, i <<= 1)
+	{
+		if (al & i) setuphdma(i, edx, esi);
+	}
+}

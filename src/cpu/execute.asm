@@ -1142,7 +1142,7 @@ NEWSYM cpuover
     mov dword[spc700read],0
 .novblch
     mov byte[NMIEnab],01h
-    call starthdma
+    ccallv starthdma
     ; check for VIRQ/HIRQ/NMI
     ProcessIRQStuff
     xor ebx,ebx
@@ -1478,7 +1478,7 @@ NEWSYM execsingle
     mov byte[NMIEnab],01h
     add dword[opcd],170*262
     ccallv cachevideo
-    call starthdma
+    ccallv starthdma
 
     ProcessIRQStuff
 

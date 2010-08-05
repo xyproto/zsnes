@@ -101,6 +101,7 @@ extern u1 coladdb;          // blue value of color to add
 extern u1 coladdg;          // green value of color to add
 extern u1 coladdr;          // red value of color to add
 extern u1 colnull;          // keep this 0 (when accessing colors by dword)
+extern u1 curhdma;          // Currently executed hdma
 extern u1 doirqnext;
 extern u1 extlatch;
 extern u1 forceblnk;        // force blanking on/off ($80=on)
@@ -111,6 +112,7 @@ extern u1 irqon;            // if IRQ has been called (80h) or not (0)
 extern u1 mode7set;         // mode 7 settings
 extern u1 mosaicon;         // mosaic on, bit 0=bg1,bit1=bg2, etc
 extern u1 mosaicsz;         // mosaic size in pixels
+extern u1 nexthdma;         // HDMA data to execute once vblank ends
 extern u1 nssdip1;
 extern u1 nssdip2;
 extern u1 nssdip3;
