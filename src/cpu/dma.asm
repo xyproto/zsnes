@@ -21,7 +21,7 @@
 %include "cpu/regsw.mac"
 %include "macros.mac"
 
-EXTSYM memtabler8,regptwa,memtabler16
+EXTSYM memtabler8,memtabler16
 EXTSYM dmadata,hdmatype,nexthdma,resolutn,curhdma,curypos,hdmadata
 EXTSYM hdmadelay,hdmarestart,nohdmaframe,INTEnab,HIRQLoc
 EXTSYM transdma
@@ -102,107 +102,6 @@ NEWSYM reg420Bw
     pop esi
     pop eax
     ret
-
-NEWSYM setuphdma2
-    push eax
-
-    cmp byte[esi+10],0
-    je near .nohdma
-
-    ; transfer old address to new address
-    mov ax,[esi+8]
-    mov [edx+17],ax
-    ; get address order to be written
-    xor ebx,ebx
-    xor ecx,ecx
-    movzx eax,byte[esi]
-    and al,00000111b
-    cmp al,5
-    jb .notmode567dma
-    sub al,4
-.notmode567dma
-    mov ah,[.addrnumt+eax]
-    mov [edx+16],ah
-    mov bl,al
-    shl bl,3
-    add ebx,.addrwrite
-    mov edi,ebx
-
-    ; get pointer #1
-    movzx ebx,byte[esi+1]      ; PPU memory - 21xx
-    mov bh,21h
-    add bx,[edi]
-    cmp bx,2118h
-    je .notnormalhdma1
-    cmp bx,2119h
-    je .notnormalhdma1
-    jmp .normalhdma1
-.notnormalhdma1
-    mov bx,2200h        ; bad hack _Demo_
-.normalhdma1
-    mov eax,regptw(ebx)
-    mov [edx],eax
-
-    ; get pointer #2
-    movzx ebx,byte[esi+1]      ; PPU memory - 21xx
-    mov bh,21h
-    add bx,[edi+2]
-    cmp bx,2118h
-    je .notnormalhdma2
-    cmp bx,2119h
-    je .notnormalhdma2
-    jmp .normalhdma2
-.notnormalhdma2
-    mov bx,2200h        ; bad hack _Demo_
-.normalhdma2
-    mov eax,regptw(ebx)
-    mov [edx+4],eax
-
-    ; get pointer #3
-    movzx ebx,byte[esi+1]      ; PPU memory - 21xx
-    mov bh,21h
-    add bx,[edi+4]
-    cmp bx,2118h
-    je .notnormalhdma3
-    cmp bx,2119h
-    je .notnormalhdma3
-    jmp .normalhdma3
-.notnormalhdma3
-    mov bx,2200h        ; bad hack _Demo_
-.normalhdma3
-    mov eax,regptw(ebx)
-    mov [edx+8],eax
-
-    ; get pointer #4
-    movzx ebx,byte[esi+1]      ; PPU memory - 21xx
-    mov bh,21h
-    add bx,[edi+6]
-    cmp bx,2118h
-    je .notnormalhdma4
-    cmp bx,2119h
-    je .notnormalhdma4
-    jmp .normalhdma4
-.notnormalhdma4
-    mov bx,2200h        ; bad hack _Demo_
-.normalhdma4
-    mov eax,regptw(ebx)
-    mov [edx+12],eax
-
-    xor ebx,ebx
-    pop eax
-    and [hdmatype],ah
-    ret
-.nohdma
-    pop eax
-    and [nexthdma],ah
-    ret
-
-section .data
-.addrwrite dw 0,0,0,0, 0,1,0,1, 0,0,0,0, 0,0,1,1, 0,1,2,3, 0,1,2,3, 0,1,2,3
-           dw 0,1,2,3
-.addrnumt  db 1,2,2,4,4,4,4,4
-
-section .text
 
 NEWSYM reg420Cw
     mov [curhdma],al
