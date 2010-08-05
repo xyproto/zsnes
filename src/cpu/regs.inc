@@ -140,7 +140,7 @@ NEWSYM nexthdma,  db 0             ; HDMA data to execute once vblank ends
 NEWSYM curhdma,   db 0             ; Currently executed hdma
 NEWSYM hdmadata, times 8*19 db 0
 ALIGN32
-NEWSYM hdmatype,  db 0             ; if first time executing hdma or not
+NEWSYM hdmatype,  db 0
 NEWSYM coladdr,   db 0
 NEWSYM coladdg,   db 0
 NEWSYM coladdb,   db 0

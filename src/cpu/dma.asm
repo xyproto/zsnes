@@ -25,6 +25,7 @@ EXTSYM memtabler8,regptwa,memtabler16
 EXTSYM dmadata,hdmatype,nexthdma,resolutn,curhdma,curypos,hdmadata
 EXTSYM hdmadelay,hdmarestart,nohdmaframe,INTEnab,HIRQLoc
 EXTSYM transdma
+EXTSYM setuphdma
 
 ;*******************************************************
 ; Transfer DMA                     Inits & Transfers DMA
@@ -100,104 +101,6 @@ NEWSYM reg420Bw
     pop esi
     pop eax
     ret
-
-;*******************************************************
-; HDMA Settings
-;*******************************************************
-NEWSYM setuphdma
-    push eax
-
-    ; transfer old address to new address
-    mov ax,[esi+2]
-    mov [esi+8],ax
-    mov [edx+17],ax
-    ; get address order to be written
-    xor ebx,ebx
-    xor ecx,ecx
-    movzx eax,byte[esi]
-    and al,00000111b
-    cmp al,5
-    jb .notmode567dma
-    sub al,4
-.notmode567dma
-    mov ah,[.addrnumt+eax]
-    mov [edx+16],ah
-    mov bl,al
-    shl bl,3
-    add ebx,.addrwrite
-    mov edi,ebx
-
-    ; get pointer #1
-    movzx ebx,byte[esi+1]      ; PPU memory - 21xx
-    mov bh,21h
-    add bx,[edi]
-    cmp bx,2118h
-    je .notnormalhdma1
-    cmp bx,2119h
-    je .notnormalhdma1
-    jmp .normalhdma1
-.notnormalhdma1
-    mov bx,2200h        ; bad hack _Demo_
-.normalhdma1
-    mov eax,regptw(ebx)
-    mov [edx],eax
-
-    ; get pointer #2
-    movzx ebx,byte[esi+1]      ; PPU memory - 21xx
-    mov bh,21h
-    add bx,[edi+2]
-    cmp bx,2118h
-    je .notnormalhdma2
-    cmp bx,2119h
-    je .notnormalhdma2
-    jmp .normalhdma2
-.notnormalhdma2
-    mov bx,2200h        ; bad hack _Demo_
-.normalhdma2
-    mov eax,regptw(ebx)
-    mov [edx+4],eax
-
-    ; get pointer #3
-    movzx ebx,byte[esi+1]      ; PPU memory - 21xx
-    mov bh,21h
-    add bx,[edi+4]
-    cmp bx,2118h
-    je .notnormalhdma3
-    cmp bx,2119h
-    je .notnormalhdma3
-    jmp .normalhdma3
-.notnormalhdma3
-    mov bx,2200h        ; bad hack _Demo_
-.normalhdma3
-    mov eax,regptw(ebx)
-    mov [edx+8],eax
-
-    ; get pointer #4
-    movzx ebx,byte[esi+1]      ; PPU memory - 21xx
-    mov bh,21h
-    add bx,[edi+6]
-    cmp bx,2118h
-    je .notnormalhdma4
-    cmp bx,2119h
-    je .notnormalhdma4
-    jmp .normalhdma4
-.notnormalhdma4
-    mov bx,2200h        ; bad hack _Demo_
-.normalhdma4
-    mov eax,regptw(ebx)
-    mov [edx+12],eax
-
-    xor ebx,ebx
-    mov byte[esi+10],0
-    pop eax
-    or [hdmatype],ah
-    ret
-
-section .data
-.addrwrite dw 0,0,0,0, 0,1,0,1, 0,0,0,0, 0,0,1,1, 0,1,2,3, 0,1,2,3, 0,1,2,3
-           dw 0,1,2,3
-.addrnumt  db 1,2,2,4,4,4,4,4
-section .text
 
 NEWSYM setuphdmars
     push eax
@@ -414,59 +317,51 @@ NEWSYM reg420Cw
     push edx
     mov esi,dmadata
     mov edx,hdmadata
-    mov ah,01h
     test al,01h
     jz .notransa
-    call setuphdma
+    ccallv setuphdma, 0x01, edx, esi
 .notransa
     add esi,16
     add edx,19
     mov ah,02h
-    test al,02h
     jz .notransb
-    call setuphdma
+    ccallv setuphdma, 0x02, edx, esi
 .notransb
     add esi,16
     add edx,19
-    mov ah,04h
     test al,04h
     jz .notransc
-    call setuphdma
+    ccallv setuphdma, 0x04, edx, esi
 .notransc
     add esi,16
     add edx,19
-    mov ah,08h
     test al,08h
     jz .notransd
-    call setuphdma
+    ccallv setuphdma, 0x08, edx, esi
 .notransd
     add esi,16
     add edx,19
-    mov ah,10h
     test al,10h
     jz .notranse
-    call setuphdma
+    ccallv setuphdma, 0x10, edx, esi
 .notranse
     add esi,16
     add edx,19
-    mov ah,20h
     test al,20h
     jz .notransf
-    call setuphdma
+    ccallv setuphdma, 0x20, edx, esi
 .notransf
     add esi,16
     add edx,19
-    mov ah,40h
     test al,40h
     jz .notransg
-    call setuphdma
+    ccallv setuphdma, 0x40, edx, esi
 .notransg
     add esi,16
     add edx,19
-    mov ah,80h
     test al,80h
     jz .notransh
-    call setuphdma
+    ccallv setuphdma, 0x80, edx, esi
 .notransh
     pop edx
     pop ecx
@@ -497,59 +392,51 @@ NEWSYM startnexthdma
     push edx
     mov esi,dmadata
     mov edx,hdmadata
-    mov ah,01h
     test al,01h
     jz .notransa
-    call setuphdma
+    ccallv setuphdma, 0x01, edx, esi
 .notransa
     add esi,16
     add edx,19
-    mov ah,02h
     test al,02h
     jz .notransb
-    call setuphdma
+    ccallv setuphdma, 0x02, edx, esi
 .notransb
     add esi,16
     add edx,19
-    mov ah,04h
     test al,04h
     jz .notransc
-    call setuphdma
+    ccallv setuphdma, 0x04, edx, esi
 .notransc
     add esi,16
     add edx,19
-    mov ah,08h
     test al,08h
     jz .notransd
-    call setuphdma
+    ccallv setuphdma, 0x08, edx, esi
 .notransd
     add esi,16
     add edx,19
-    mov ah,10h
     test al,10h
     jz .notranse
-    call setuphdma
+    ccallv setuphdma, 0x10, edx, esi
 .notranse
     add esi,16
     add edx,19
-    mov ah,20h
     test al,20h
     jz .notransf
-    call setuphdma
+    ccallv setuphdma, 0x20, edx, esi
 .notransf
     add esi,16
     add edx,19
-    mov ah,40h
     test al,40h
     jz .notransg
-    call setuphdma
+    ccallv setuphdma, 0x40, edx, esi
 .notransg
     add esi,16
     add edx,19
-    mov ah,80h
     test al,80h
     jz .notransh
-    call setuphdma
+    ccallv setuphdma, 0x80, edx, esi
 .notransh
     pop edx
     pop ecx
