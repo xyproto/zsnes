@@ -4,6 +4,87 @@
 #include "memtable.h"
 
 
+static u1 read_reg(eop* const reg, u2 const address)
+{
+	u1 al;
+	asm volatile("call %A1" : "=a" (al) : "rm" (reg), "c" (address) : "cc", "memory", "ebx");
+	return al;
+}
+
+
+static void transdmappu2cpu(u1 const al, DMAInfo* const esi)
+{
+	// set address increment value
+	s4 const addrincr =
+		al & 0x08 ?  0 :
+		al & 0x10 ? -1 : // Automatic decrement
+		1;               // Automatic increment
+
+	// get address order to be written
+	static u1 const addrwrite[][4] =
+	{
+		{ 0, 0, 0, 0 },
+		{ 0, 1, 0, 1 },
+		{ 0, 0, 0, 0 },
+		{ 0, 0, 1, 1 },
+		{ 0, 1, 2, 3 },
+		{ 0, 1, 2, 3 },
+		{ 0, 1, 2, 3 },
+		{ 0, 1, 2, 3 }
+	};
+	u1 const* const edi = addrwrite[al & 0x07];
+
+	// Pointer address of registers
+	eop* const regptr_ = REGPTR(0x2100 + esi->destination + edi[0]); // PPU memory - 21xx
+	eop* const regptrb = REGPTR(0x2100 + esi->destination + edi[1]); // PPU memory - 21xx
+	eop* const regptrc = REGPTR(0x2100 + esi->destination + edi[2]); // PPU memory - 21xx
+	eop* const regptrd = REGPTR(0x2100 + esi->destination + edi[3]); // PPU memory - 21xx
+
+	u2 const dx      = esi->count;
+	u1 const curbank = esi->bank;
+	u2       cx      = esi->offset;
+	esi->count = 0;
+
+#if 0 // XXX seems to be unused in the loop
+	u1 const* const esi = (cx & 0x8000 ? snesmmap : snesmap2)[curbank];
+#endif
+
+	// Do loop
+	u4 edx = dx != 0 ? dx : 65536;
+	while (edx > 4)
+	{
+		memw8no_rom(curbank, cx, read_reg(regptr_, cx));
+		cx += addrincr;
+		memw8no_rom(curbank, cx, read_reg(regptrb, cx));
+		cx += addrincr;
+		memw8no_rom(curbank, cx, read_reg(regptrc, cx));
+		cx += addrincr;
+		memw8no_rom(curbank, cx, read_reg(regptrd, cx));
+		cx += addrincr;
+		edx -= 4;
+	}
+	memw8no_rom(curbank, cx, read_reg(regptr_, cx));
+	cx += addrincr;
+	if (--edx != 0)
+	{
+		memw8no_rom(curbank, cx, read_reg(regptrb, cx));
+		cx += addrincr;
+		if (--edx != 0)
+		{
+			memw8no_rom(curbank, cx, read_reg(regptrc, cx));
+			cx += addrincr;
+			if (--edx != 0)
+			{
+				memw8no_rom(curbank, cx, read_reg(regptrd, cx));
+				cx += addrincr;
+			}
+		}
+	}
+
+	esi->offset = cx;
+}
+
+
 static inline void write_reg(eop* const reg, u2 const address, u1 const val)
 {
 	asm volatile("call %A0" :: "rm" (reg), "c" (address), "a" (val) : "cc", "memory", "ebx");
@@ -15,8 +96,7 @@ void transdma(DMAInfo* const esi)
 	u1 const al = esi->control;
 	if (al & 0x80)
 	{
-		u4 eax = al;
-		asm volatile("call %P1" : "+a" (eax) : "X" (transdmappu2cpu), "S" (esi) : "cc", "memory", "ecx", "edx", "ebx", "edi");
+		transdmappu2cpu(al, esi);
 		return;
 	}
 
