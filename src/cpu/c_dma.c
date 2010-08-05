@@ -212,3 +212,34 @@ void setuphdma(u4 const ah, HDMAInfo* const edx, DMAInfo* const esi)
 	esi->hdma_line_counter = 0;
 	hdmatype              |= ah;
 }
+
+
+void setuphdmars(HDMAInfo* const edx, DMAInfo const* const esi)
+{
+	// get address order to be written
+	u1 mode = esi->control & 0x07;
+	if (mode >= 5) mode -= 4; // Mode 5, 6 or 7;
+	static u1 const addrnumt[] = { 1, 2, 2, 4, 4, 4, 4, 4 };
+	edx->count = addrnumt[mode];
+	static u1 const addrwrite[][4] =
+	{
+		{ 0, 0, 0, 0 },
+		{ 0, 1, 0, 1 },
+		{ 0, 0, 0, 0 },
+		{ 0, 0, 1, 1 },
+		{ 0, 1, 2, 3 },
+		{ 0, 1, 2, 3 },
+		{ 0, 1, 2, 3 },
+		{ 0, 1, 2, 3 }
+	};
+	u1 const* const edi = addrwrite[mode];
+
+	// Get pointers
+	u2 const base_addr = 0x2100 + esi->destination;
+	for (u4 i = 0; i != lengthof(edx->dst_reg); ++i)
+	{
+		u2 bx = base_addr + edi[i]; // PPU memory - 21xx
+		if (bx == 0x2118 || bx == 0x2119) bx = 0x2200; // Bad hack _Demo_
+		edx->dst_reg[i] = REGPTW(bx);
+	}
+}

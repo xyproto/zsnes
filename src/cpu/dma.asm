@@ -26,6 +26,7 @@ EXTSYM dmadata,hdmatype,nexthdma,resolutn,curhdma,curypos,hdmadata
 EXTSYM hdmadelay,hdmarestart,nohdmaframe,INTEnab,HIRQLoc
 EXTSYM transdma
 EXTSYM setuphdma
+EXTSYM setuphdmars
 
 ;*******************************************************
 ; Transfer DMA                     Inits & Transfers DMA
@@ -101,95 +102,6 @@ NEWSYM reg420Bw
     pop esi
     pop eax
     ret
-
-NEWSYM setuphdmars
-    push eax
-
-    ; get address order to be written
-    xor ebx,ebx
-    xor ecx,ecx
-    movzx eax,byte[esi]
-    and al,00000111b
-    cmp al,5
-    jb .notmode567dma
-    sub al,4
-.notmode567dma
-    mov ah,[.addrnumt+eax]
-    mov [edx+16],ah
-    mov bl,al
-    shl bl,3
-    add ebx,.addrwrite
-    mov edi,ebx
-
-    ; get pointer #1
-    movzx ebx,byte[esi+1]      ; PPU memory - 21xx
-    mov bh,21h
-    add bx,[edi]
-    cmp bx,2118h
-    je .notnormalhdma1
-    cmp bx,2119h
-    je .notnormalhdma1
-    jmp .normalhdma1
-.notnormalhdma1
-    mov bx,2200h        ; bad hack _Demo_
-.normalhdma1
-    mov eax,regptw(ebx)
-    mov [edx],eax
-
-    ; get pointer #2
-    movzx ebx,byte[esi+1]      ; PPU memory - 21xx
-    mov bh,21h
-    add bx,[edi+2]
-    cmp bx,2118h
-    je .notnormalhdma2
-    cmp bx,2119h
-    je .notnormalhdma2
-    jmp .normalhdma2
-.notnormalhdma2
-    mov bx,2200h        ; bad hack _Demo_
-.normalhdma2
-    mov eax,regptw(ebx)
-    mov [edx+4],eax
-
-    ; get pointer #3
-    movzx ebx,byte[esi+1]      ; PPU memory - 21xx
-    mov bh,21h
-    add bx,[edi+4]
-    cmp bx,2118h
-    je .notnormalhdma3
-    cmp bx,2119h
-    je .notnormalhdma3
-    jmp .normalhdma3
-.notnormalhdma3
-    mov bx,2200h        ; bad hack _Demo_
-.normalhdma3
-    mov eax,regptw(ebx)
-    mov [edx+8],eax
-
-    ; get pointer #4
-    movzx ebx,byte[esi+1]      ; PPU memory - 21xx
-    mov bh,21h
-    add bx,[edi+6]
-    cmp bx,2118h
-    je .notnormalhdma4
-    cmp bx,2119h
-    je .notnormalhdma4
-    jmp .normalhdma4
-.notnormalhdma4
-    mov bx,2200h        ; bad hack _Demo_
-.normalhdma4
-    mov eax,regptw(ebx)
-    mov [edx+12],eax
-
-    xor ebx,ebx
-    pop eax
-    ret
-
-section .data
-.addrwrite dw 0,0,0,0, 0,1,0,1, 0,0,0,0, 0,0,1,1, 0,1,2,3, 0,1,2,3, 0,1,2,3
-           dw 0,1,2,3
-.addrnumt  db 1,2,2,4,4,4,4,4
-section .text
 
 NEWSYM setuphdma2
     push eax
@@ -769,7 +681,7 @@ NEWSYM exechdmars
     mov ah,01h
     test al,01h
     jz .notransa
-    call setuphdmars
+    ccallv setuphdmars, edx, esi
     call dohdma
 .notransa
     add esi,16
@@ -777,7 +689,7 @@ NEWSYM exechdmars
     mov ah,02h
     test al,02h
     jz .notransb
-    call setuphdmars
+    ccallv setuphdmars, edx, esi
     call dohdma
 .notransb
     add esi,16
@@ -785,7 +697,7 @@ NEWSYM exechdmars
     mov ah,04h
     test al,04h
     jz .notransc
-    call setuphdmars
+    ccallv setuphdmars, edx, esi
     call dohdma
 .notransc
     add esi,16
@@ -793,7 +705,7 @@ NEWSYM exechdmars
     mov ah,08h
     test al,08h
     jz .notransd
-    call setuphdmars
+    ccallv setuphdmars, edx, esi
     call dohdma
 .notransd
     add esi,16
@@ -801,7 +713,7 @@ NEWSYM exechdmars
     mov ah,10h
     test al,10h
     jz .notranse
-    call setuphdmars
+    ccallv setuphdmars, edx, esi
     call dohdma
 .notranse
     add esi,16
@@ -809,7 +721,7 @@ NEWSYM exechdmars
     mov ah,20h
     test al,20h
     jz .notransf
-    call setuphdmars
+    ccallv setuphdmars, edx, esi
     call dohdma
 .notransf
     add esi,16
@@ -817,7 +729,7 @@ NEWSYM exechdmars
     mov ah,40h
     test al,40h
     jz .notransg
-    call setuphdmars
+    ccallv setuphdmars, edx, esi
     call dohdma
 .notransg
     add esi,16
@@ -825,7 +737,7 @@ NEWSYM exechdmars
     mov ah,80h
     test al,80h
     jz .notransh
-    call setuphdmars
+    ccallv setuphdmars, edx, esi
     call dohdma
 .notransh
     pop edx
