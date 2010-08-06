@@ -3,6 +3,9 @@
 
 #include "../types.h"
 
+extern void hdmatype2();
+extern void indirectaddr();
+
 extern u1 AddrNoIncr;
 
 #endif

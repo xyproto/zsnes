@@ -258,3 +258,51 @@ void starthdma(void)
 		if (al & i) setuphdma(i, edx, esi);
 	}
 }
+
+
+void dohdma(u4 const ah, HDMAInfo* const edx, DMAInfo* const esi)
+{
+	if (esi->control & 0x40)
+	{
+		u4 const eax = ah << 8;
+		asm volatile("call %P0" :: "X" (indirectaddr), "a" (eax), "d" (edx), "S" (esi) : "cc", "memory", "ecx", "ebx");
+		return;
+	}
+
+	if ((esi->hdma_line_counter & 0x7F) == 0)
+	{
+		if (!(esi->hdma_line_counter & 0x80) && !(hdmatype & ah)) edx->addr_inc += edx->count; // Increment
+		hdmatype &= ~ah;
+
+		u1 const al = memr8(esi->bank, edx->addr_inc++);
+		esi->hdma_line_counter = al;
+
+		if (al == 0)
+		{
+			nexthdma ^= ah;
+			esi->hdma_table = edx->addr_inc;
+			return;
+		}
+
+		if (esi->hdma_line_counter > 0x80) goto hdmatype2;
+
+		u1          tempdecr = edx->count;
+		u2          cx       = edx->addr_inc;
+		eop* const* reg      = edx->dst_reg;
+		do
+		{
+			u1 const al = memr8(esi->bank, cx);
+			write_reg(*reg, cx, al);
+		}
+		while (++cx, ++reg, --tempdecr != 0);
+	}
+	else if (esi->hdma_line_counter & 0x80)
+	{
+hdmatype2:
+		asm volatile("call %P0" :: "X" (hdmatype2), "d" (edx), "S" (esi) : "cc", "memory", "eax", "ecx", "ebx");
+		return;
+	}
+
+	esi->hdma_table = edx->addr_inc;
+	--esi->hdma_line_counter;
+}

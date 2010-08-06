@@ -27,6 +27,7 @@ EXTSYM hdmadelay,hdmarestart,nohdmaframe,INTEnab,HIRQLoc
 EXTSYM transdma
 EXTSYM setuphdma
 EXTSYM setuphdmars
+EXTSYM dohdma
 
 ;*******************************************************
 ; Transfer DMA                     Inits & Transfers DMA
@@ -189,82 +190,6 @@ NEWSYM reg420Cw
     mov byte[hdmarestart],0
     ret
 
-NEWSYM dohdma
-    xor ebx,ebx
-    test byte[esi],40h
-    jnz near indirectaddr
-    push eax
-    test byte[esi+10],07Fh
-    jnz near .nozero
-    test byte[esi+10],80h
-    jnz near .noincr
-    test [hdmatype],ah
-    jnz .noincr
-    mov bl,[edx+16]
-    add word[edx+17],bx
-.noincr
-    mov bl,ah
-    not bl
-    and [hdmatype],bl
-    mov bl,[esi+4]
-    mov cx,[edx+17]
-    call dword near [memtabler8+ebx*4]
-    inc word[edx+17]
-    mov [esi+10],al
-    test al,0FFh
-    jnz .yeszero
-    xor [nexthdma],ah
-    jmp .finhdma2
-.yeszero
-    cmp byte[esi+10],80h
-    ja near hdmatype2
-    mov al,[edx+16]
-    mov [.tempdecr],al
-    movzx ebx,byte[esi+4]
-    movzx ecx,word[edx+17]  ; increment/decrement/keep pointer location
-    call dword near [memtabler8+ebx*4]
-    call dword near [edx]
-    dec byte[.tempdecr]
-    jz .finhdma
-    movzx ebx,byte[esi+4]
-    mov cx,[edx+17]         ; increment/decrement/keep pointer location
-    inc cx
-    call dword near [memtabler8+ebx*4]
-    call dword near [edx+4]
-    dec byte[.tempdecr]
-    jz .finhdma
-    movzx ebx,byte[esi+4]
-    mov cx,[edx+17]         ; increment/decrement/keep pointer location
-    add cx,2
-    call dword near [memtabler8+ebx*4]
-    call dword near [edx+8]
-    dec byte[.tempdecr]
-    jz .finhdma
-    movzx ebx,byte[esi+4]
-    mov cx,[edx+17]         ; increment/decrement/keep pointer location
-    add cx,3
-    call dword near [memtabler8+ebx*4]
-    call dword near [edx+12]
-    jmp .finhdma
-.nozero
-    test byte[esi+10],80h
-    jnz near hdmatype2
-.finhdma
-    mov ax,[edx+17]
-    mov [esi+8],ax
-    pop eax
-    dec byte[esi+10]
-    ret
-.finhdma2
-    mov ax,[edx+17]
-    mov [esi+8],ax
-    pop eax
-    ret
-
-section .bss
-.tempdecr resd 1
-section .text
-
 NEWSYM hdmatype2
     mov al,[edx+16]
     mov [.tempdecr],al
@@ -297,7 +222,6 @@ NEWSYM hdmatype2
 .finhdma
     mov ax,[edx+17]
     mov [esi+8],ax
-    pop eax
     dec byte[esi+10]
     ret
 
@@ -436,59 +360,51 @@ NEWSYM exechdma
     push edx
     mov esi,dmadata
     mov edx,hdmadata
-    mov ah,01h
     test al,01h
     jz .notransa
-    call dohdma
+    ccallv dohdma, 0x01, edx, esi
 .notransa
     add esi,16
     add edx,19
-    mov ah,02h
     test al,02h
     jz .notransb
-    call dohdma
+    ccallv dohdma, 0x02, edx, esi
 .notransb
     add esi,16
     add edx,19
-    mov ah,04h
     test al,04h
     jz .notransc
-    call dohdma
+    ccallv dohdma, 0x04, edx, esi
 .notransc
     add esi,16
     add edx,19
-    mov ah,08h
     test al,08h
     jz .notransd
-    call dohdma
+    ccallv dohdma, 0x08, edx, esi
 .notransd
     add esi,16
     add edx,19
-    mov ah,10h
     test al,10h
     jz .notranse
-    call dohdma
+    ccallv dohdma, 0x10, edx, esi
 .notranse
     add esi,16
     add edx,19
-    mov ah,20h
     test al,20h
     jz .notransf
-    call dohdma
+    ccallv dohdma, 0x20, edx, esi
 .notransf
     add esi,16
     add edx,19
-    mov ah,40h
     test al,40h
     jz .notransg
-    call dohdma
+    ccallv dohdma, 0x40, edx, esi
 .notransg
     add esi,16
     add edx,19
-    mov ah,80h
     test al,80h
     jz .notransh
-    call dohdma
+    ccallv dohdma, 0x80, edx, esi
 .notransh
     pop edx
     pop ecx
@@ -509,67 +425,59 @@ NEWSYM exechdmars
     push edx
     mov esi,dmadata
     mov edx,hdmadata
-    mov ah,01h
     test al,01h
     jz .notransa
     ccallv setuphdmars, edx, esi
-    call dohdma
+    ccallv dohdma, 0x01, edx, esi
 .notransa
     add esi,16
     add edx,19
-    mov ah,02h
     test al,02h
     jz .notransb
     ccallv setuphdmars, edx, esi
-    call dohdma
+    ccallv dohdma, 0x02, edx, esi
 .notransb
     add esi,16
     add edx,19
-    mov ah,04h
     test al,04h
     jz .notransc
     ccallv setuphdmars, edx, esi
-    call dohdma
+    ccallv dohdma, 0x04, edx, esi
 .notransc
     add esi,16
     add edx,19
-    mov ah,08h
     test al,08h
     jz .notransd
     ccallv setuphdmars, edx, esi
-    call dohdma
+    ccallv dohdma, 0x08, edx, esi
 .notransd
     add esi,16
     add edx,19
-    mov ah,10h
     test al,10h
     jz .notranse
     ccallv setuphdmars, edx, esi
-    call dohdma
+    ccallv dohdma, 0x10, edx, esi
 .notranse
     add esi,16
     add edx,19
-    mov ah,20h
     test al,20h
     jz .notransf
     ccallv setuphdmars, edx, esi
-    call dohdma
+    ccallv dohdma, 0x20, edx, esi
 .notransf
     add esi,16
     add edx,19
-    mov ah,40h
     test al,40h
     jz .notransg
     ccallv setuphdmars, edx, esi
-    call dohdma
+    ccallv dohdma, 0x40, edx, esi
 .notransg
     add esi,16
     add edx,19
-    mov ah,80h
     test al,80h
     jz .notransh
     ccallv setuphdmars, edx, esi
-    call dohdma
+    ccallv dohdma, 0x80, edx, esi
 .notransh
     pop edx
     pop ecx
