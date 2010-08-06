@@ -190,45 +190,6 @@ NEWSYM reg420Cw
     mov byte[hdmarestart],0
     ret
 
-NEWSYM hdmatype2
-    mov al,[edx+16]
-    mov [.tempdecr],al
-    movzx ebx,byte[esi+4]
-    movzx ecx,word[edx+17] ; increment/decrement/keep pointer location
-    inc word[edx+17]
-    call dword near [memtabler8+ebx*4]
-    call dword near [edx]
-    dec byte[.tempdecr]
-    jz .finhdma
-    movzx ebx,byte[esi+4]
-    mov cx,[edx+17]         ; increment/decrement/keep pointer location
-    inc word[edx+17]
-    call dword near [memtabler8+ebx*4]
-    call dword near [edx+4]
-    dec byte[.tempdecr]
-    jz .finhdma
-    movzx ebx,byte[esi+4]
-    mov cx,[edx+17]         ; increment/decrement/keep pointer location
-    inc word[edx+17]
-    call dword near [memtabler8+ebx*4]
-    call dword near [edx+8]
-    dec byte[.tempdecr]
-    jz .finhdma
-    movzx ebx,byte[esi+4]
-    mov cx,[edx+17]         ; increment/decrement/keep pointer location
-    inc word[edx+17]
-    call dword near [memtabler8+ebx*4]
-    call dword near [edx+12]
-.finhdma
-    mov ax,[edx+17]
-    mov [esi+8],ax
-    dec byte[esi+10]
-    ret
-
-section .bss
-.tempdecr resd 1
-section .text
-
 NEWSYM indirectaddr
     push eax
     test byte[esi+10],07Fh
