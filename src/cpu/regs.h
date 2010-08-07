@@ -106,6 +106,7 @@ extern u1 doirqnext;
 extern u1 extlatch;
 extern u1 forceblnk;        // force blanking on/off ($80=on)
 extern u1 frskipper;        // used to control frame skipping
+extern u1 hdmadelay;
 extern u1 hdmarestart;
 extern u1 hdmatype;         // If first time executing hdma or not
 extern u1 interlval;
@@ -114,6 +115,7 @@ extern u1 mode7set;         // mode 7 settings
 extern u1 mosaicon;         // mosaic on, bit 0=bg1,bit1=bg2, etc
 extern u1 mosaicsz;         // mosaic size in pixels
 extern u1 nexthdma;         // HDMA data to execute once vblank ends
+extern u1 nohdmaframe;      // No hdma for current frame
 extern u1 nssdip1;
 extern u1 nssdip2;
 extern u1 nssdip3;
@@ -129,6 +131,7 @@ extern u1 winen[6];         // Win1 on (IN/OUT) or Win2 on (IN/OUT) on BG1/BG2/B
 extern u1 winenabm;         // Window logic enable for main screen
 extern u1 winenabs;         // Window logic enable for sub screen
 extern u1 winlogica;        // Window logic type for BG1 to 4
+extern u2 HIRQLoc;          // HIRQ X location
 extern u2 bg1objptr[4];     // pointer to tiles in background1/2/3/4
 extern u2 bg1ptr[4];        // pointer to background1/2/3/4
 extern u2 bg1ptrb[4];       // pointer to background1/2/3/4

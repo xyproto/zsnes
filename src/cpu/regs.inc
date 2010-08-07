@@ -178,7 +178,7 @@ NEWSYM extlatch,       db 0
 NEWSYM cfield,         db 0
 NEWSYM interlval,      db 0
 
-NEWSYM HIRQLoc,   dw 0             ; HIRQ X location
+NEWSYM HIRQLoc,   dw 0
 
 NEWSYM KeyOnStA, db 0
 NEWSYM KeyOnStB, db 0
@@ -196,7 +196,7 @@ NEWSYM ppustatus, db 0
 NEWSYM hdmastartsc, db 0
 NEWSYM hdmarestart, db 0
 NEWSYM hdmadelay, db 0
-NEWSYM nohdmaframe, db 0           ; no hdma for current frame
+NEWSYM nohdmaframe, db 0
 NEWSYM rtoflags, db 0
 
 NEWSYM tempdat, times 473 db 0     ; expandable area
