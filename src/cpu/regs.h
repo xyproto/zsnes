@@ -79,6 +79,16 @@ STATIC_ASSERT(sizeof(DMAInfo) == 16);
 
 extern DMAInfo dmadata[8]; // DMA data (written from ports 43xx)
 
+typedef struct HDMAInfo
+{
+	eop* dst_reg[4]; // Destination registers
+	u1   count;      // # of bytes to transfer/line
+	u2   addr_inc;   // Address increment
+} __attribute__((packed)) HDMAInfo;
+STATIC_ASSERT(sizeof(HDMAInfo) == 19);
+
+extern HDMAInfo hdmadata[8];
+
 extern u1 INTEnab;          // enables NMI(7)/VIRQ(5)/HIRQ(4)/JOY(0)
 extern u1 MultiTap;
 extern u1 Voice0Disable[8]; // Disable Voice

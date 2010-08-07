@@ -138,8 +138,7 @@ ALIGN32
 NEWSYM irqon,     db 0
 NEWSYM nexthdma,  db 0             ; HDMA data to execute once vblank ends
 NEWSYM curhdma,   db 0             ; Currently executed hdma
-NEWSYM hdmadata, times 8*19 db 0   ; 4 dword register addresses, # of bytes to
-                           ; transfer/line, address increment (word)
+NEWSYM hdmadata, times 8*19 db 0
 ALIGN32
 NEWSYM hdmatype,  db 0             ; if first time executing hdma or not
 NEWSYM coladdr,   db 0
