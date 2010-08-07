@@ -3,8 +3,6 @@
 
 #include "../types.h"
 
-extern void hdmatype2indirect();
-
 extern u1 AddrNoIncr;
 
 #endif

@@ -21,7 +21,6 @@
 %include "cpu/regsw.mac"
 %include "macros.mac"
 
-EXTSYM memtabler8
 EXTSYM dmadata,nexthdma,resolutn,curhdma,curypos,hdmadata
 EXTSYM hdmadelay,hdmarestart,nohdmaframe,INTEnab,HIRQLoc
 EXTSYM transdma
@@ -189,44 +188,6 @@ NEWSYM reg420Cw
 .notframe
     mov byte[hdmarestart],0
     ret
-
-NEWSYM hdmatype2indirect
-    mov al,[edx+16]
-    mov [.tempdecr],al
-    movzx ebx,byte[esi+7]
-    movzx ecx,word[esi+5]  ; increment/decrement/keep pointer location
-    inc word[esi+5]
-    call dword near [memtabler8+ebx*4]
-    call dword near [edx]
-    dec byte[.tempdecr]
-    jz .finhdma
-    movzx ebx,byte[esi+7]
-    mov cx,[esi+5]         ; increment/decrement/keep pointer location
-    inc word[esi+5]
-    call dword near [memtabler8+ebx*4]
-    call dword near [edx+4]
-    dec byte[.tempdecr]
-    jz .finhdma
-    movzx ebx,byte[esi+7]
-    mov cx,[esi+5]         ; increment/decrement/keep pointer location
-    inc word[esi+5]
-    call dword near [memtabler8+ebx*4]
-    call dword near [edx+8]
-    dec byte[.tempdecr]
-    jz .finhdma
-    movzx ebx,byte[esi+7]
-    mov cx,[esi+5]         ; increment/decrement/keep pointer location
-    inc word[esi+5]
-    call dword near [memtabler8+ebx*4]
-    call dword near [edx+12]
-.finhdma
-    dec byte[esi+10]
-    ret
-
-section .bss
-.tempdecr resd 1
-.dest resd 1
-section .text
 
 NEWSYM exechdma
     cmp byte[hdmarestart],1
