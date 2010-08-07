@@ -25,8 +25,6 @@ EXTSYM dmadata,nexthdma,resolutn,curhdma,curypos,hdmadata
 EXTSYM hdmadelay,hdmarestart,nohdmaframe,INTEnab,HIRQLoc
 EXTSYM transdma
 EXTSYM setuphdma
-EXTSYM setuphdmars
-EXTSYM dohdma
 
 ;*******************************************************
 ; Transfer DMA                     Inits & Transfers DMA
@@ -186,79 +184,3 @@ NEWSYM reg420Cw
 .notframe
     mov byte[hdmarestart],0
     ret
-
-NEWSYM exechdmars
-    mov al,[nexthdma]
-    cmp al,0
-    je near .nohdma
-    push ebx
-    push esi
-    push edi
-    push ecx
-    push edx
-    mov esi,dmadata
-    mov edx,hdmadata
-    test al,01h
-    jz .notransa
-    ccallv setuphdmars, edx, esi
-    ccallv dohdma, 0x01, edx, esi
-.notransa
-    add esi,16
-    add edx,19
-    test al,02h
-    jz .notransb
-    ccallv setuphdmars, edx, esi
-    ccallv dohdma, 0x02, edx, esi
-.notransb
-    add esi,16
-    add edx,19
-    test al,04h
-    jz .notransc
-    ccallv setuphdmars, edx, esi
-    ccallv dohdma, 0x04, edx, esi
-.notransc
-    add esi,16
-    add edx,19
-    test al,08h
-    jz .notransd
-    ccallv setuphdmars, edx, esi
-    ccallv dohdma, 0x08, edx, esi
-.notransd
-    add esi,16
-    add edx,19
-    test al,10h
-    jz .notranse
-    ccallv setuphdmars, edx, esi
-    ccallv dohdma, 0x10, edx, esi
-.notranse
-    add esi,16
-    add edx,19
-    test al,20h
-    jz .notransf
-    ccallv setuphdmars, edx, esi
-    ccallv dohdma, 0x20, edx, esi
-.notransf
-    add esi,16
-    add edx,19
-    test al,40h
-    jz .notransg
-    ccallv setuphdmars, edx, esi
-    ccallv dohdma, 0x40, edx, esi
-.notransg
-    add esi,16
-    add edx,19
-    test al,80h
-    jz .notransh
-    ccallv setuphdmars, edx, esi
-    ccallv dohdma, 0x80, edx, esi
-.notransh
-    pop edx
-    pop ecx
-    pop edi
-    pop esi
-    pop ebx
-.nohdma
-    mov byte[hdmarestart],0
-    ret
-
-

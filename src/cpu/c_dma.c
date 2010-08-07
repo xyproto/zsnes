@@ -214,7 +214,7 @@ void setuphdma(u4 const ah, HDMAInfo* const edx, DMAInfo* const esi)
 }
 
 
-void setuphdmars(HDMAInfo* const edx, DMAInfo const* const esi)
+static void setuphdmars(HDMAInfo* const edx, DMAInfo const* const esi)
 {
 	// get address order to be written
 	u1 mode = esi->control & 0x07;
@@ -334,7 +334,7 @@ static void hdmatype2(HDMAInfo* const edx, DMAInfo* const esi)
 }
 
 
-void dohdma(u4 const ah, HDMAInfo* const edx, DMAInfo* const esi)
+static void dohdma(u4 const ah, HDMAInfo* const edx, DMAInfo* const esi)
 {
 	if (esi->control & 0x40)
 	{
@@ -381,11 +381,29 @@ hdmatype2:
 }
 
 
+static void exechdmars(void)
+{
+	u1 const al = nexthdma;
+	if (al != 0x00)
+	{
+		DMAInfo*  esi = dmadata;
+		HDMAInfo* edx = hdmadata;
+		for (u1 i = 0x01; i != 0; ++esi, ++edx, i <<= 1)
+		{
+			if (!(al & i)) continue;
+			setuphdmars(edx, esi);
+			dohdma(i, edx, esi);
+		}
+	}
+	hdmarestart = 0;
+}
+
+
 void exechdma(void)
 {
 	if (hdmarestart == 1)
 	{
-		asm volatile("call %P0" :: "X" (exechdmars) : "cc", "memory", "eax");
+		exechdmars();
 		return;
 	}
 
