@@ -23,8 +23,8 @@
 
 EXTSYM dmadata,nexthdma,resolutn,curhdma,curypos,hdmadata
 EXTSYM hdmadelay,hdmarestart,nohdmaframe,INTEnab,HIRQLoc
-EXTSYM transdma
 EXTSYM setuphdma
+EXTSYM c_reg420Bw
 
 ;*******************************************************
 ; Transfer DMA                     Inits & Transfers DMA
@@ -33,70 +33,10 @@ EXTSYM setuphdma
 
 section .text
 
-%macro TestDMA 0
-%endmacro
-
 ; DMA enable register
 ; use dmadata for input on dma
 NEWSYM reg420Bw
-    push eax
-    push esi
-    push edi
-    push ecx
-    push edx
-    mov esi,dmadata
-    test al,01h
-    jz .notransa
-    TestDMA
-    ccallv transdma, esi
-.notransa
-    add esi,16
-    test al,02h
-    jz .notransb
-    TestDMA
-    ccallv transdma, esi
-.notransb
-    add esi,16
-    test al,04h
-    jz .notransc
-    TestDMA
-    ccallv transdma, esi
-.notransc
-    add esi,16
-    test al,08h
-    jz .notransd
-    TestDMA
-    ccallv transdma, esi
-.notransd
-    add esi,16
-    test al,10h
-    jz .notranse
-    TestDMA
-    ccallv transdma, esi
-.notranse
-    add esi,16
-    test al,20h
-    jz .notransf
-    TestDMA
-    ccallv transdma, esi
-.notransf
-    add esi,16
-    test al,40h
-    jz .notransg
-    TestDMA
-    ccallv transdma, esi
-.notransg
-    add esi,16
-    test al,80h
-    jz .notransh
-    TestDMA
-    ccallv transdma, esi
-.notransh
-    pop edx
-    pop ecx
-    pop edi
-    pop esi
-    pop eax
+    ccallv c_reg420Bw, eax
     ret
 
 NEWSYM reg420Cw

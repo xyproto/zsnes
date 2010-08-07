@@ -93,7 +93,7 @@ static inline void write_reg(eop* const reg, u2 const address, u1 const val)
 }
 
 
-void transdma(DMAInfo* const esi)
+static void transdma(DMAInfo* const esi)
 {
 	u1 const al = esi->control;
 	if (al & 0x80)
@@ -174,6 +174,16 @@ void transdma(DMAInfo* const esi)
 
 	esi->offset = cx;
 	AddrNoIncr  = 0;
+}
+
+
+void c_reg420Bw(u4 eax)
+{
+	DMAInfo* esi = dmadata;
+	for (eax &= 0xFF; eax != 0; ++esi, eax >>= 1)
+	{
+		if (eax & 0x01) transdma(esi);
+	}
 }
 
 
