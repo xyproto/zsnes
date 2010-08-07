@@ -82,6 +82,19 @@ static inline u1 memr8(u1 const bank /* bl */, u2 const address /* cx */)
 }
 
 
+static inline u2 memr16(u1 const bank /* bl */, u2 const address /* cx */)
+{
+	u4 eax;
+	u4 ecx = address;
+	u4 edx;
+	u4 ebx = bank;
+	u4 esi;
+	u4 edi;
+	asm volatile("call *%6" : "=a" (eax), "+c" (ecx), "+b" (ebx), "=d" (edx), "=S" (esi), "=D" (edi) : "mr" (memtabler16[ebx]) : "cc", "memory");
+	return (u2)eax;
+}
+
+
 static inline void memw8no_rom(u1 const bank /* bl */, u2 const address /* cx */, u1 const val /* al */)
 {
 	u4 eax = val;

@@ -260,6 +260,47 @@ void starthdma(void)
 }
 
 
+static void indirectaddr(u4 const ah, HDMAInfo* const edx, DMAInfo* const esi)
+{
+	if ((esi->hdma_line_counter & 0x7F) == 0)
+	{
+		if (!(hdmatype & ah)) edx->addr_inc += 2;
+    hdmatype &= ~ah;
+
+		u1 const al = memr8(esi->bank, edx->addr_inc++);
+		esi->hdma_line_counter = al;
+		esi->count             = memr16(esi->bank, edx->addr_inc);
+		if (al == 0)
+		{
+			nexthdma ^= ah;
+			esi->hdma_table = edx->addr_inc;
+			return;
+		}
+
+		if (esi->hdma_line_counter > 0x80) goto hdmatype2indirect;
+
+		u1          tempdecr = edx->count;
+		u2          cx       = esi->count; // increment/decrement/keep pointer location
+		eop* const* reg      = edx->dst_reg;
+		do
+		{
+			u1 const al = memr8(esi->hdma_bank, cx);
+			write_reg(*reg, cx, al);
+		}
+		while (++cx, ++reg, --tempdecr != 0);
+	}
+	else if (esi->hdma_line_counter & 0x80)
+	{
+hdmatype2indirect:
+		asm volatile("call %P0" :: "X" (hdmatype2indirect), "d" (edx), "S" (esi) : "cc", "memory", "eax", "ecx", "ebx");
+		return;
+	}
+
+	esi->hdma_table = edx->addr_inc;
+	--esi->hdma_line_counter;
+}
+
+
 static void hdmatype2(HDMAInfo* const edx, DMAInfo* const esi)
 {
 	u1          tempdecr = edx->count;
@@ -281,8 +322,7 @@ void dohdma(u4 const ah, HDMAInfo* const edx, DMAInfo* const esi)
 {
 	if (esi->control & 0x40)
 	{
-		u4 const eax = ah << 8;
-		asm volatile("call %P0" :: "X" (indirectaddr), "a" (eax), "d" (edx), "S" (esi) : "cc", "memory", "ecx", "ebx");
+		indirectaddr(ah, edx, esi);
 		return;
 	}
 

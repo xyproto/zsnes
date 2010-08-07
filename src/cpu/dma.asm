@@ -21,8 +21,8 @@
 %include "cpu/regsw.mac"
 %include "macros.mac"
 
-EXTSYM memtabler8,memtabler16
-EXTSYM dmadata,hdmatype,nexthdma,resolutn,curhdma,curypos,hdmadata
+EXTSYM memtabler8
+EXTSYM dmadata,nexthdma,resolutn,curhdma,curypos,hdmadata
 EXTSYM hdmadelay,hdmarestart,nohdmaframe,INTEnab,HIRQLoc
 EXTSYM transdma
 EXTSYM setuphdma
@@ -190,85 +190,6 @@ NEWSYM reg420Cw
     mov byte[hdmarestart],0
     ret
 
-NEWSYM indirectaddr
-    push eax
-    test byte[esi+10],07Fh
-    jnz near .nozero
-    test [hdmatype],ah
-    jnz .noincr
-    add word[edx+17],2
-.noincr
-    mov bl,ah
-    not bl
-    and [hdmatype],bl
-    mov bl,[esi+4]
-    mov cx,[edx+17]
-    call dword near [memtabler8+ebx*4]
-    inc word[edx+17]
-    mov [esi+10],al
-    push eax
-    mov bl,[esi+4]
-    mov cx,[edx+17]
-    call dword near [memtabler16+ebx*4]
-    mov [esi+5],ax
-    pop eax
-    test al,0FFh
-    jnz .yeszero
-    xor [nexthdma],ah
-    jmp .finhdma2
-.yeszero
-    cmp byte[esi+10],80h
-    ja near hdmatype2indirect
-    mov al,[edx+16]
-    mov [.tempdecr],al
-    movzx ebx,byte[esi+7]
-    movzx ecx,word[esi+5]  ; increment/decrement/keep pointer location
-    call dword near [memtabler8+ebx*4]
-    call dword near [edx]
-    dec byte[.tempdecr]
-    jz .finhdma
-    movzx ebx,byte[esi+7]
-    mov cx,[esi+5]         ; increment/decrement/keep pointer location
-    inc cx
-    call dword near [memtabler8+ebx*4]
-    call dword near [edx+4]
-    dec byte[.tempdecr]
-    jz .finhdma
-    movzx ebx,byte[esi+7]
-    mov cx,[esi+5]         ; increment/decrement/keep pointer location
-    add cx,2
-    call dword near [memtabler8+ebx*4]
-    call dword near [edx+8]
-    dec byte[.tempdecr]
-    jz .finhdma
-    movzx ebx,byte[esi+7]
-    mov cx,[esi+5]         ; increment/decrement/keep pointer location
-    add cx,3
-    call dword near [memtabler8+ebx*4]
-    call dword near [edx+12]
-    jmp .finhdma
-.nozero
-    test byte[esi+10],80h
-    jnz near hdmatype2indirect
-.finhdma
-    mov ax,[edx+17]
-    mov [esi+8],ax
-    pop eax
-    dec byte[esi+10]
-    ret
-.finhdma2
-    mov ax,[edx+17]
-    mov [esi+8],ax
-    pop eax
-    ret
-
-section .bss
-.tempdecr resd 1
-
-section .data
-.fname2 db 9,'vram2.dat',0
-section .text
-
 NEWSYM hdmatype2indirect
     mov al,[edx+16]
     mov [.tempdecr],al
@@ -299,7 +220,6 @@ NEWSYM hdmatype2indirect
     call dword near [memtabler8+ebx*4]
     call dword near [edx+12]
 .finhdma
-    pop eax
     dec byte[esi+10]
     ret
 

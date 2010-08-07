@@ -3,7 +3,7 @@
 
 #include "../types.h"
 
-extern void indirectaddr();
+extern void hdmatype2indirect();
 
 extern u1 AddrNoIncr;
 
