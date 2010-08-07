@@ -1,6 +1,7 @@
 #ifndef REGS_H
 #define REGS_H
 
+#include "../macros.h"
 #include "../types.h"
 
 typedef enum Layer
@@ -61,6 +62,23 @@ extern void reg421Fr();
 extern void reg43XXr();
 extern void regINVALID();
 
+typedef struct DMAInfo
+{
+	u1 control;           // Control register
+	u1 destination;       // Lower byte of destination register address, expanded to 0x21xx
+	u2 offset;            // Source address offset
+	u1 bank;              // Source address bank
+	u2 count;             // # of bytes to transfer
+	u1 hdma_bank;         // HDMA indirect address bank
+	u2 hdma_table;        // HDMA table address
+	u1 hdma_line_counter; // HDMA line counter
+	u1 unknown;           // Unknown, 0x43xB and 0x43xF are aliases
+	u1 padding[4];
+} __attribute__((packed)) DMAInfo;
+STATIC_ASSERT(sizeof(DMAInfo) == 16);
+
+extern DMAInfo dmadata[8]; // DMA data (written from ports 43xx)
+
 extern u1 INTEnab;          // enables NMI(7)/VIRQ(5)/HIRQ(4)/JOY(0)
 extern u1 MultiTap;
 extern u1 Voice0Disable[8]; // Disable Voice
@@ -73,7 +91,6 @@ extern u1 coladdb;          // blue value of color to add
 extern u1 coladdg;          // green value of color to add
 extern u1 coladdr;          // red value of color to add
 extern u1 colnull;          // keep this 0 (when accessing colors by dword)
-extern u1 dmadata[129];     // dma data (written from ports 43xx)
 extern u1 doirqnext;
 extern u1 extlatch;
 extern u1 forceblnk;        // force blanking on/off ($80=on)

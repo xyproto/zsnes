@@ -288,7 +288,7 @@ static void breakatsignb(void)
 	u1* esi =
 		eax & 0x8000                                       ? snesmmap[ebx] :
 		eax < 0x4300 || memtabler8[ebx] != regaccessbankr8 ? snesmap2[ebx] :
-		dmadata - 0x4300;
+		(u1*)dmadata - 0x4300; // XXX ugly cast
 	initaddrl = esi;
 	esi += eax; // add program counter to address
 	u1*   ebp = spcPCRam;

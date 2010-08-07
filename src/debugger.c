@@ -897,7 +897,7 @@ unsigned char *findoppage() {
             return snesmap2[xpb];
         } else {
             // dma
-            return dmadata - 0x4300;
+            return (u1*)dmadata - 0x4300; // XXX ugly cast
         }
     }
 }
@@ -911,7 +911,7 @@ unsigned char *findoppage()
     if (xpc < 0x4300 || memtabler8[xpb] != regaccessbankr8)
     { return(snesmap2[xpb]); }
     // dma
-    return(dmadata - 0x4300); // or maybe (&dmadata - 0x4300)
+    return (u1*)dmadata - 0x4300; // XXX ugly cast
   }
 }
 */
