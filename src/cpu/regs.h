@@ -106,6 +106,7 @@ extern u1 doirqnext;
 extern u1 extlatch;
 extern u1 forceblnk;        // force blanking on/off ($80=on)
 extern u1 frskipper;        // used to control frame skipping
+extern u1 hdmarestart;
 extern u1 hdmatype;         // If first time executing hdma or not
 extern u1 interlval;
 extern u1 irqon;            // if IRQ has been called (80h) or not (0)

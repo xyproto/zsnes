@@ -702,7 +702,7 @@ NEWSYM cpuover
     jmp execloop.startagain
 
 .hdma
-    call exechdma
+    ccallv exechdma
     jmp .hdmacont
 
 .drawline
@@ -752,7 +752,7 @@ NEWSYM cpuover
     cmp [curypos],ax
     jae .nodohdma
 .dohdma3
-    call exechdma
+    ccallv exechdma
 .nodohdma
     cmp word[curypos],1
     jne .nocache
@@ -788,8 +788,8 @@ NEWSYM cpuover
 ;    mov al,[SFXIRQFlag]
     mov byte[doirqnext],0
 
-    call exechdma
-    call exechdma
+    ccallv exechdma
+    ccallv exechdma
 
     mov byte[NextNGDisplay],1
     cmp byte[newengen],0
@@ -1168,7 +1168,7 @@ NEWSYM cpuover
     dec byte[hdmadelay]
     jmp .nodohdma2
 .dohdma2
-    call exechdma
+    ccallv exechdma
 .nodohdma2
     cmp word[curypos],1
     jne .nocache2
@@ -1404,7 +1404,7 @@ NEWSYM execsingle
     dec byte[hdmadelay]
     jmp .nodohdma
 .dohdma
-    call exechdma
+    ccallv exechdma
 .nodohdma
     cmp byte[curblank],0
     jne .nodrawlineb
@@ -1504,7 +1504,7 @@ NEWSYM execsingle
     dec byte[hdmadelay]
     jmp .nodohdma2
 .dohdma2
-    call exechdma
+    ccallv exechdma
 .nodohdma2
     cmp byte[curblank],0
     jne .nodrawline

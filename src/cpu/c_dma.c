@@ -379,3 +379,23 @@ hdmatype2:
 	esi->hdma_table = edx->addr_inc;
 	--esi->hdma_line_counter;
 }
+
+
+void exechdma(void)
+{
+	if (hdmarestart == 1)
+	{
+		asm volatile("call %P0" :: "X" (exechdmars) : "cc", "memory", "eax");
+		return;
+	}
+
+	u1 const al = nexthdma;
+	if (al == 0x00) return;
+
+	DMAInfo*  esi = dmadata;
+	HDMAInfo* edx = hdmadata;
+	for (u1 i = 0x01; i != 0; ++esi, ++edx, i <<= 1)
+	{
+		if (al & i) dohdma(i, edx, esi);
+	}
+}
