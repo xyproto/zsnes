@@ -31,8 +31,6 @@ EXTSYM setuphdma
 ;*******************************************************
 ; DMA transfer register
 
-section .bss
-NEWSYM AddrNoIncr, resb 1
 section .text
 
 %macro TestDMA 0

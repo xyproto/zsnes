@@ -1,7 +1,9 @@
 #include "../ui.h"
 #include "c_dma.h"
-#include "dma.h"
 #include "memtable.h"
+
+
+u1 AddrNoIncr = 0;
 
 
 static u1 read_reg(eop* const reg, u2 const address)
