@@ -603,7 +603,7 @@ NEWSYM sa12254w
     popad
     ret
 
-sa12300r:
+NEWSYM sa12300r
     mov al,[SA1Message+1]
     test byte[SA1IRQExec],1
     jz .notexecuted
@@ -617,29 +617,29 @@ sa12300r:
     and bl,50h
     or al,bl
     ret
-sa12301r:
+NEWSYM sa12301r
     mov al,[SA1Message]
     test byte[SA1IRQExec+1],1
     jz .notexecuted
     or al,80h
 .notexecuted
     ret
-sa12306r:
+NEWSYM sa12306r
     mov al,[SA1ARR1]
     ret
-sa12307r:
+NEWSYM sa12307r
     mov al,[SA1ARR1+1]
     ret
-sa12308r:
+NEWSYM sa12308r
     mov al,[SA1ARR1+2]
     ret
-sa12309r:
+NEWSYM sa12309r
     mov al,[SA1ARR1+3]
     ret
-sa1230Ar:
+NEWSYM sa1230Ar
     mov al,[SA1ARR2]
     ret
-sa1230Br:
+NEWSYM sa1230Br
     mov al,[SA1Overflow]
     ret
 
@@ -1116,34 +1116,6 @@ SECTION .bss
 .numrows resd 1
 
 SECTION .text
-
-NEWSYM initSA1regs
-    setreg 2300h,sa12300r
-    setreg 2301h,sa12301r
-    setreg 2302h,sa12302r
-    setreg 2303h,sa12303r
-    setreg 2304h,sa12304r
-    setreg 2305h,sa12305r
-    setreg 2306h,sa12306r
-    setreg 2307h,sa12307r
-    setreg 2308h,sa12308r
-    setreg 2309h,sa12309r
-    setreg 230Ah,sa1230Ar
-    setreg 230Bh,sa1230Br
-    setreg 230Ch,sa1230Cr
-    setreg 230Dh,sa1230Dr
-    setreg 230Eh,sa1230Er
-    ; Set IRam, memory address 3000-37FF
-
-    lea edi,regptr(0x3000)
-    mov eax,IRamRead
-    mov ecx,800h
-.loopr
-    mov [edi],eax
-    add edi,4
-    dec ecx
-    jnz .loopr
-    ret
 
 NEWSYM initSA1regsw
     setregw 2200h,sa12200w

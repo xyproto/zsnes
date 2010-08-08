@@ -113,3 +113,27 @@ void sa1dmabwram(void)
 	sa1dmaptr = &SA1RAMArea[SA1DMADest & 0x03FFFF];
 	executesa1dma();
 }
+
+
+void initSA1regs(void)
+{
+	REGPTR(0x2300) = sa12300r;
+	REGPTR(0x2301) = sa12301r;
+	REGPTR(0x2302) = sa12302r;
+	REGPTR(0x2303) = sa12303r;
+	REGPTR(0x2304) = sa12304r;
+	REGPTR(0x2305) = sa12305r;
+	REGPTR(0x2306) = sa12306r;
+	REGPTR(0x2307) = sa12307r;
+	REGPTR(0x2308) = sa12308r;
+	REGPTR(0x2309) = sa12309r;
+	REGPTR(0x230A) = sa1230Ar;
+	REGPTR(0x230B) = sa1230Br;
+	REGPTR(0x230C) = sa1230Cr;
+	REGPTR(0x230D) = sa1230Dr;
+	REGPTR(0x230E) = sa1230Er;
+
+	// Set IRam, memory address 3000-37FF
+	eop** i = &REGPTR(0x3000);
+	do *i = IRamRead; while (++i != &REGPTR(0x3800));
+}

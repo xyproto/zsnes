@@ -3,10 +3,26 @@
 
 #include "../types.h"
 
+extern void sa12300r();
+extern void sa12301r();
+extern void sa12302r();
+extern void sa12303r();
+extern void sa12304r();
+extern void sa12305r();
+extern void sa12306r();
+extern void sa12307r();
+extern void sa12308r();
+extern void sa12309r();
+extern void sa1230Ar();
+extern void sa1230Br();
+extern void sa1230Cr();
+extern void sa1230Dr();
+extern void sa1230Er();
+
+extern void IRamRead();
 extern void RTC2800();
 extern void RTC2801w();
 extern void SDD1Reset();
-extern void initSA1regs();
 extern void initSA1regsw();
 extern void initSDD1regs();
 

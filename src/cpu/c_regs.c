@@ -130,7 +130,7 @@ void initregr(void)
 	for (u4 i = 0x4300; i != 0x4380; ++i) REGPTR(i) = reg43XXr;
 
 	if (SFXEnable)     initsfxregsr();
-	if (SA1Enable)     asm_call(initSA1regs);
+	if (SA1Enable)     initSA1regs();
 	if (SDD1Enable)    asm_call(initSDD1regs);
 	if (SPC7110Enable) asm_call(initSPC7110regs);
 	if (RTCEnable)     RTCReset();
