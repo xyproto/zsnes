@@ -1117,109 +1117,25 @@ SECTION .bss
 
 SECTION .text
 
-NEWSYM initSA1regsw
-    setregw 2200h,sa12200w
-    setregw 2201h,sa12201w
-    setregw 2202h,sa12202w
-    setregw 2203h,sa12203w
-    setregw 2204h,sa12204w
-    setregw 2205h,sa12205w
-    setregw 2206h,sa12206w
-    setregw 2207h,sa12207w
-    setregw 2208h,sa12208w
-    setregw 2209h,sa12209w
-    setregw 220Ah,sa1220Aw
-    setregw 220Bh,sa1220Bw
-    setregw 220Ch,sa1220Cw
-    setregw 220Dh,sa1220Dw
-    setregw 220Eh,sa1220Ew
-    setregw 220Fh,sa1220Fw
-    setregw 2210h,sa12210w
-    setregw 2211h,sa12211w
-    setregw 2212h,sa12212w
-    setregw 2213h,sa12213w
-    setregw 2214h,sa12214w
-    setregw 2215h,sa12215w
-
-    setregw 2220h,sa12220w
-    setregw 2221h,sa12221w
-    setregw 2222h,sa12222w
-    setregw 2223h,sa12223w
-
-    setregw 2224h,sa12224w
-    setregw 2225h,sa12225w
-    ; Missing 2226-222A
-
-    ; Bitmap register file
-    setregw 2240h,sa12240w
-    setregw 2241h,sa12241w
-    setregw 2242h,sa12242w
-    setregw 2243h,sa12243w
-    setregw 2244h,sa12244w
-    setregw 2245h,sa12245w
-    setregw 2246h,sa12246w
-    setregw 2247h,sa12247w
-    setregw 2248h,sa12248w
-    setregw 2249h,sa12249w
-    setregw 224Ah,sa1224Aw
-    setregw 224Bh,sa1224Bw
-    setregw 224Ch,sa1224Cw
-    setregw 224Dh,sa1224Dw
-    setregw 224Eh,sa1224Ew
-    setregw 224Fh,sa1224Fw
-
-    setregw 2230h,sa12230w
-    setregw 2231h,sa12231w
-    setregw 2232h,sa12232w
-    setregw 2233h,sa12233w
-    setregw 2234h,sa12234w
-    setregw 2235h,sa12235w
-    setregw 2236h,sa12236w
-    setregw 2237h,sa12237w
-    setregw 2238h,sa12238w
-    setregw 2239h,sa12239w
-    setregw 223Fh,sa1223Fw
-
-    setregw 2250h,sa12250w
-    setregw 2251h,sa12251w
-    setregw 2252h,sa12252w
-    setregw 2253h,sa12253w
-    setregw 2254h,sa12254w
-
-    setregw 2259h,sa12259w
-    setregw 225Ah,sa1225Aw
-    setregw 225Bh,sa1225Bw
-
-    lea edi,regptw(0x3000)
-    mov eax,IRamWrite
-    mov ecx,800h
-.loopw
-    mov [edi],eax
-    add edi,4
-    dec ecx
-    jnz .loopw
-    setregw 3000h,IRamWrite2
-    ret
-
-sa12240w:
-sa12241w:
-sa12242w:
-sa12243w:
-sa12244w:
-sa12245w:
-sa12246w:
-sa12248w:
-sa12249w:
-sa1224Aw:
-sa1224Bw:
-sa1224Cw:
-sa1224Dw:
-sa1224Ew:
+NEWSYM sa12240w
+NEWSYM sa12241w
+NEWSYM sa12242w
+NEWSYM sa12243w
+NEWSYM sa12244w
+NEWSYM sa12245w
+NEWSYM sa12246w
+NEWSYM sa12248w
+NEWSYM sa12249w
+NEWSYM sa1224Aw
+NEWSYM sa1224Bw
+NEWSYM sa1224Cw
+NEWSYM sa1224Dw
+NEWSYM sa1224Ew
   mov ebx,SA1_BRF
   mov [ebx+ecx-2240h],al
   ret
-sa12247w:
-sa1224Fw:
+NEWSYM sa12247w
+NEWSYM sa1224Fw
   mov ebx,SA1_BRF
   mov [ebx+ecx-2240h],al
   test byte[SA1DMAInfo],0A0h

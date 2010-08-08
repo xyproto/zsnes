@@ -257,7 +257,7 @@ void initregw(void)
 	REGPTW(0x437F) = reg43XBw;
 
 	if (SFXEnable)     initsfxregsw();
-	if (SA1Enable)     asm_call(initSA1regsw);
+	if (SA1Enable)     initSA1regsw();
 	if (SDD1Enable)    asm_call(SDD1Reset);
 	if (SPC7110Enable) asm_call(SPC7110Reset);
 	if (RTCEnable)     RTCReset2();
