@@ -317,9 +317,6 @@ NEWSYM regaccessbankw16
     pop ecx
     ret
 
-NEWSYM regaccessbankr8mp
-    ret
-
 ;*******************************************************
 ; Register & Memory Bank (Bank 0)
 ;*******************************************************
