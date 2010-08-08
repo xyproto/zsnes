@@ -1146,24 +1146,6 @@ NEWSYM sa1224Fw
 .nocc2_dma
   ret
 
-NEWSYM SDD1Reset
-    setregw 4801h,sdd14801w
-    setregw 4802h,dbstop
-    setregw 4803h,dbstop
-    setregw 4804h,sdd14804w
-    setregw 4805h,sdd14805w
-    setregw 4806h,sdd14806w
-    setregw 4807h,sdd14807w
-    setregw 4808h,dbstop
-    setregw 4809h,dbstop
-    setregw 480Ah,dbstop
-    setregw 480Bh,dbstop
-    setregw 480Ch,dbstop
-    setregw 480Dh,dbstop
-    setregw 480Eh,dbstop
-    setregw 480Fh,dbstop
-    ret
-
 NEWSYM initSDD1regs
     setreg 4804h,sdd14804
     setreg 4805h,sdd14805
@@ -1171,7 +1153,7 @@ NEWSYM initSDD1regs
     setreg 4807h,sdd14807
     ret
 
-dbstop:
+NEWSYM dbstop
 ;    mov byte[debstop3],1
     ret
 

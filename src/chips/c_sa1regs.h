@@ -5,6 +5,7 @@ void RTCReset(void);
 void RTCReset2(void);
 void RTCinit(void);
 void SA1Reset(void);
+void SDD1Reset(void);
 void initSA1regs(void);
 void initSA1regsw(void);
 void sa1dmabwram(void);

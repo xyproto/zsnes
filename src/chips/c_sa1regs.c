@@ -217,3 +217,23 @@ void initSA1regsw(void)
 	*i++ = IRamWrite2;
 	do *i = IRamWrite; while (++i != &REGPTW(0x3800));
 }
+
+
+void SDD1Reset(void)
+{
+	REGPTW(0x4801) = sdd14801w;
+	REGPTW(0x4802) = dbstop;
+	REGPTW(0x4803) = dbstop;
+	REGPTW(0x4804) = sdd14804w;
+	REGPTW(0x4805) = sdd14805w;
+	REGPTW(0x4806) = sdd14806w;
+	REGPTW(0x4807) = sdd14807w;
+	REGPTW(0x4808) = dbstop;
+	REGPTW(0x4809) = dbstop;
+	REGPTW(0x480A) = dbstop;
+	REGPTW(0x480B) = dbstop;
+	REGPTW(0x480C) = dbstop;
+	REGPTW(0x480D) = dbstop;
+	REGPTW(0x480E) = dbstop;
+	REGPTW(0x480F) = dbstop;
+}

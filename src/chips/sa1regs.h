@@ -83,12 +83,18 @@ extern void sa12259w();
 extern void sa1225Aw();
 extern void sa1225Bw();
 
+extern void sdd14801w();
+extern void sdd14804w();
+extern void sdd14805w();
+extern void sdd14806w();
+extern void sdd14807w();
+
 extern void IRamRead();
 extern void IRamWrite();
 extern void IRamWrite2();
 extern void RTC2800();
 extern void RTC2801w();
-extern void SDD1Reset();
+extern void dbstop();
 extern void initSDD1regs();
 
 extern u1  IRAM[2049];     // 2 kbytes of iram
