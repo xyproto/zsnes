@@ -1,5 +1,6 @@
 #include "../asm_call.h"
 #include "../chips/7110proc.h"
+#include "../chips/c_sa1regs.h"
 #include "../chips/c_sfxproc.h"
 #include "../chips/sa1regs.h"
 #include "../gblvars.h"
@@ -259,5 +260,5 @@ void initregw(void)
 	if (SA1Enable)     asm_call(initSA1regsw);
 	if (SDD1Enable)    asm_call(SDD1Reset);
 	if (SPC7110Enable) asm_call(SPC7110Reset);
-	if (RTCEnable)     asm_call(RTCReset2);
+	if (RTCEnable)     RTCReset2();
 }

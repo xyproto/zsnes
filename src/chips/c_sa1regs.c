@@ -13,3 +13,9 @@ void RTCReset(void)
 {
 	REGPTR(0x2800) = RTC2800;
 }
+
+
+void RTCReset2(void)
+{
+	REGPTW(0x2801) = RTC2801w;
+}

@@ -4,7 +4,7 @@
 #include "../types.h"
 
 extern void RTC2800();
-extern void RTCReset2();
+extern void RTC2801w();
 extern void SDD1Reset();
 extern void initSA1regs();
 extern void initSA1regsw();

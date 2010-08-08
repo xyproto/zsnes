@@ -152,7 +152,7 @@ NEWSYM RTC2800
     pop ebx
     ret
 
-RTC2801w:
+NEWSYM RTC2801w
 ;    mov byte[debstop3],1
     mov dword[RTCRest],0
     mov dword[RTCPtr],0
@@ -177,10 +177,6 @@ RTC2801w:
     inc dword[RTCPtr2]
 .nomore
     pop ebx
-    ret
-
-NEWSYM RTCReset2
-    setregw 2801h,RTC2801w
     ret
 
 ; SA-1 Start
