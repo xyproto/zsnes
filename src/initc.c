@@ -36,6 +36,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "c_vcache.h"
 #include "cfg.h"
 #include "chips/c_dsp2proc.h"
+#include "chips/c_sa1regs.h"
 #include "cpu/c_regs.h"
 #include "cpu/c_regsw.h"
 #include "cpu/execute.h"
@@ -2516,7 +2517,6 @@ eop**   Curtableaddr = 0;
 
 void SA1Reset();
 void InitC4();
-void RTCinit();
 void SPC7110init();
 void SPC7110_deinit_decompression_state();
 

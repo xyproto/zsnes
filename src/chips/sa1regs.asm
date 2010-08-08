@@ -179,9 +179,6 @@ RTC2801w:
     pop ebx
     ret
 
-NEWSYM RTCinit
-    mov dword[RTCPtr],0
-    ret
 NEWSYM RTCReset
     setreg 2800h,RTC2800
     ret

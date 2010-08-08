@@ -13,5 +13,6 @@ extern void initSDD1regs();
 extern u1 SA1IRQEnable;
 extern u1 SA1RegP;
 extern u2 SA1xd;
+extern u4 RTCPtr;
 
 #endif
