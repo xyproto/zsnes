@@ -1,5 +1,6 @@
 #include <string.h>
 
+#include "../endmem.h"
 #include "../init.h"
 #include "../ui.h"
 #include "c_sa1regs.h"
@@ -87,4 +88,14 @@ void UpdateArithStuff(void)
 	{ // Multiplication
 		SA1ARR1 = (s4)(s2)SA1AR1 * (s2)SA1AR2;
 	}
+}
+
+
+void executesa1dma(void)
+{
+	sa1dmaptrs =
+		SA1DMAInfo & 0x01 ? &SA1RAMArea[SA1DMASource & 0x0003FFFF] : // BWRAM
+		SA1DMAInfo & 0x02 ? &IRAM[      SA1DMASource & 0x000007FF] : // IRAM
+		((u1* const*)snesmmap)[SA1DMASource >> 16 & 0xFF] + (SA1DMASource & 0x0000FFFF);
+	memcpy(sa1dmaptr, sa1dmaptrs, SA1DMACount);
 }

@@ -43,6 +43,7 @@ EXTSYM GetTime,GetDate,irqv2,irqv,nmiv2,nmiv,snesmmap,snesmap2
 EXTSYM curypos,CurrentExecSA1,memaccessbankr8sdd1,memtabler8,AddrNoIncr
 EXTSYM SA1_DMA_CC2
 EXTSYM UpdateArithStuff
+EXTSYM executesa1dma
 
 %ifndef NO_DEBUGGER
 EXTSYM debuggeron,debstop4
@@ -880,58 +881,14 @@ NEWSYM sa1dmairam
     and ebx,7FFh
     add ebx,IRAM
     mov [sa1dmaptr],ebx
-    jmp executesa1dma
+    ccallv executesa1dma
+    ret
 NEWSYM sa1dmabwram
     mov ebx,[SA1DMADest]
     and ebx,3FFFFh
     add ebx,[SA1RAMArea]
     mov [sa1dmaptr],ebx
-executesa1dma:
-    test byte[SA1DMAInfo],1
-    jz .nobwram
-    mov ebx,[SA1DMASource]
-    and ebx,3FFFFh
-    add ebx,[SA1RAMArea]
-    mov [sa1dmaptrs],ebx
-    jmp .doneram
-.nobwram
-    test byte[SA1DMAInfo],2
-    jz .noiram
-    mov ebx,[SA1DMASource]
-    and ebx,7FFh
-    add ebx,IRAM
-    mov [sa1dmaptrs],ebx
-    jmp .doneram
-.noiram
-    xor ebx,ebx
-    mov bl,[SA1DMASource+2]
-    mov ebx,[snesmmap+ebx*4]
-    push ecx
-    xor ecx,ecx
-    mov cx,[SA1DMASource]
-    add ebx,ecx
-    mov [sa1dmaptrs],ebx
-    pop ecx
-.doneram
-    push edx
-    push eax
-    push ecx
-    mov ecx,[SA1DMACount]
-    or ecx,ecx
-    jz .notransfer
-    mov ebx,[sa1dmaptrs]
-    mov edx,[sa1dmaptr]
-.loop
-    mov al,[ebx]
-    mov [edx],al
-    inc ebx
-    inc edx
-    dec ecx
-    jnz .loop
-.notransfer
-    pop ecx
-    pop eax
-    pop edx
+    ccallv executesa1dma
     ret
 
 %macro setbit2b 3

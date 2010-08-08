@@ -27,7 +27,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 extern unsigned int SA1_CC2_line;  //should be cleared to zero on reset
 
 extern unsigned int SA1DMAChar, SA1DMADest, SA1DMASource;
-extern uint8_t IRAM[2048], *SA1RAMArea;
 
 #define DMACB (SA1DMAChar&3)
 #define DDA SA1DMADest

@@ -38,6 +38,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <stdarg.h>
 #include "c_vcache.h"
 #include "chips/c4proc.h"
+#include "chips/sa1regs.h"
 #include "cpu/execute.h"
 #include "cpu/regs.h"
 #include "cpu/regsw.h"

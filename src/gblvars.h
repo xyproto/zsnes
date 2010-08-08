@@ -24,7 +24,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 extern uint32_t cycpbl;
 extern uint32_t PHspcsave, PHdspsave;
-extern uint32_t PHnum2writesa1reg, SA1Mode, prevedi, SA1xpc, sa1dmaptr;
+extern uint32_t PHnum2writesa1reg, SA1Mode, prevedi, SA1xpc;
 extern uint32_t soundcycleft, spc700read, timer2upd, xa, PHnum2writesfxreg;
 extern uint32_t opcd, HIRQCycNext, oamaddr, curexecstate, nmiprevaddrl;
 extern uint32_t nmirept, nmiprevline, nmistatus, joycontren;
