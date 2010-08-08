@@ -17,6 +17,10 @@ extern u1 spcon;            // SPC Enable (1=enabled)
 extern u1 writeon;          // Write enable/disable on snes rom memory
 extern u1 xpb;
 extern u1 yesoutofmemory;
+extern u2 irqv2;            // IRQ vector
+extern u2 irqv;             // IRQ vector
+extern u2 nmiv2;            // NMI vector
+extern u2 nmiv;             // NMI vector
 extern u2 resetv;           // reset vector
 extern u2 xd;
 extern u2 xpc;

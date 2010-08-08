@@ -31,7 +31,7 @@ EXTSYM SA1xs,SA1IRQExec,SA1Message,Sflagnz,Sflagc,Sflago
 ; *** Disable spc700 if possible ***
 
 SECTION .bss
-NEWSYM SA1Status, resb 1  ; 0 = 65816, 1 = SA1A, 2 = SA1B
+NEWSYM SA1Status, resb 1
 
 NEWSYM CurrentExecSA1, resb 1
 NEWSYM CurrentCPU, resb 1

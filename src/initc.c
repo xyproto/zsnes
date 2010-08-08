@@ -2515,7 +2515,6 @@ uint8_t xe = 0;
 uint8_t xirqb = 0;           // which bank the irqs start at
 eop**   Curtableaddr = 0;
 
-void SA1Reset();
 void InitC4();
 void SPC7110init();
 void SPC7110_deinit_decompression_state();

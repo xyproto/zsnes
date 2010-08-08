@@ -20,8 +20,10 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
 #include <stdint.h>
- 
-extern unsigned char SA1_BRF[16];
+
+#include "sa1regs.h"
+
+
 extern unsigned int SA1_CC2_line;  //should be cleared to zero on reset
 
 extern unsigned int SA1DMAChar, SA1DMADest, SA1DMASource;

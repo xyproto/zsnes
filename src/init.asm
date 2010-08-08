@@ -40,8 +40,8 @@ NEWSYM resetv,  dw 0
 NEWSYM abortv,  dw 0    ; abort vector
 NEWSYM nmiv2,   dw 0    ; nmi vector
 NEWSYM nmiv,    dw 0    ; nmi vector
-NEWSYM irqv,    dw 0    ; irq vector
-NEWSYM irqv2,   dw 0    ; irq vector
+NEWSYM irqv,    dw 0
+NEWSYM irqv2,   dw 0
 NEWSYM brkv,    dw 0    ; brk vector
 NEWSYM copv,    dw 0    ; cop vector
 NEWSYM abortv8, dw 0    ; abort vector emulation mode

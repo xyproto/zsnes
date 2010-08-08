@@ -186,7 +186,7 @@ SECTION .data
 
 ; IRQ Stuff
 NEWSYM SA1Mode, dd 0     ; 0 = SNES CPU, 1 = SA1 CPU
-NEWSYM SA1Control, dd 0         ; don't execute if b5 or 6 are set
+NEWSYM SA1Control, dd 0
 NEWSYM SA1BankPtr, dd 0
 NEWSYM SA1ResetV, dd 0
 NEWSYM SA1NMIV, dd 0
@@ -279,48 +279,6 @@ NEWSYM %1
     mov [%2],al
     ret
 %endmacro
-
-NEWSYM SA1Reset
-    mov dword[SA1_BRF],0
-    mov dword[SA1_BRF+4],0
-    mov dword[SA1_BRF+8],0
-    mov dword[SA1_BRF+12],0
-    mov dword[SA1_in_cc1_dma],0
-    mov dword[SA1_CC2_line],0
-    mov byte[SA1IRQData+1],0
-    mov byte[SA1Mode],0
-    mov byte[SA1Status],0
-    mov byte[SA1Control],20h
-    mov dword[SA1DoIRQ],0
-    mov ax,[irqv2]
-    mov [irqv],ax
-    mov ax,[nmiv2]
-    mov [nmiv],ax
-    mov eax,[romdata]
-    sub eax,8000h
-    mov [SA1RegPCS],eax
-    mov eax,[romdata]
-    add eax,4096*1024
-    mov [SA1RAMArea],eax
-    mov eax,[romdata]
-    add eax,4096*1024-6000h
-    mov [CurBWPtr],eax
-    mov [SA1BWPtr],eax
-    mov [SNSBWPtr],eax
-    mov dword[SA1xa],0
-    mov dword[SA1xx],0
-    mov dword[SA1xy],0
-    mov dword[SA1xd],0
-    mov dword[SA1xdb],0
-    mov dword[SA1xpb],0
-    mov dword[SA1xs],1FFh
-    mov dword[SA1RegP],0
-    mov dword[SA1RegE],0
-    mov dword[SA1IRQExec],0
-    mov dword[SA1IRQEnable],0
-    mov dword[SA1Message],0
-    mov word[SA1Overflow],0
-    ret
 
 %macro BankSwitch 4
     push ecx
