@@ -43,8 +43,8 @@ EXTSYM GetTime,GetDate,irqv2,irqv,nmiv2,nmiv,snesmmap,snesmap2
 EXTSYM curypos,CurrentExecSA1,memaccessbankr8sdd1,memtabler8,AddrNoIncr
 EXTSYM SA1_DMA_CC2
 EXTSYM UpdateArithStuff
-EXTSYM executesa1dma
 EXTSYM sa1dmairam
+EXTSYM sa1dmabwram
 
 %ifndef NO_DEBUGGER
 EXTSYM debuggeron,debstop4
@@ -861,7 +861,7 @@ NEWSYM sa12237w
     jnz .nobwram
     test byte[SA1DMAInfo],4
     jz .nobwram
-    jmp sa1dmabwram
+    ccallv sa1dmabwram
 .nobwram
     ret
 NEWSYM sa12238w
@@ -876,14 +876,6 @@ NEWSYM sa1dmaptr, resd 1
 NEWSYM sa1dmaptrs, resd 1
 
 SECTION .text
-
-NEWSYM sa1dmabwram
-    mov ebx,[SA1DMADest]
-    and ebx,3FFFFh
-    add ebx,[SA1RAMArea]
-    mov [sa1dmaptr],ebx
-    ccallv executesa1dma
-    ret
 
 %macro setbit2b 3
     test al,%1
