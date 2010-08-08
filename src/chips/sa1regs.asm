@@ -934,11 +934,6 @@ executesa1dma:
     pop edx
     ret
 
-SECTION .bss
-tempblah resb 1
-
-SECTION .text
-
 %macro setbit2b 3
     test al,%1
     jz %%nosb
