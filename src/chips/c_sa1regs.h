@@ -8,6 +8,7 @@ void SA1Reset(void);
 void SDD1Reset(void);
 void initSA1regs(void);
 void initSA1regsw(void);
+void initSDD1regs(void);
 void sa1dmabwram(void);
 void sa1dmairam(void);
 

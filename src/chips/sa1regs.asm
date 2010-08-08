@@ -371,16 +371,16 @@ NEWSYM sa12223w
     ret
 %endmacro
 
-sdd14804:
+NEWSYM sdd14804
     mov al,[SDD1BankA]
     ret
-sdd14805:
+NEWSYM sdd14805
     mov al,[SDD1BankA+1]
     ret
-sdd14806:
+NEWSYM sdd14806
     mov al,[SDD1BankA+2]
     ret
-sdd14807:
+NEWSYM sdd14807
     mov al,[SDD1BankA+3]
     ret
 
@@ -1145,13 +1145,6 @@ NEWSYM sa1224Fw
   ccallv SA1_DMA_CC2
 .nocc2_dma
   ret
-
-NEWSYM initSDD1regs
-    setreg 4804h,sdd14804
-    setreg 4805h,sdd14805
-    setreg 4806h,sdd14806
-    setreg 4807h,sdd14807
-    ret
 
 NEWSYM dbstop
 ;    mov byte[debstop3],1

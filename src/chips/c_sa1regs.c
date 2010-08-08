@@ -237,3 +237,12 @@ void SDD1Reset(void)
 	REGPTW(0x480E) = dbstop;
 	REGPTW(0x480F) = dbstop;
 }
+
+
+void initSDD1regs(void)
+{
+	REGPTR(0x4804) = sdd14804;
+	REGPTR(0x4805) = sdd14805;
+	REGPTR(0x4806) = sdd14806;
+	REGPTR(0x4807) = sdd14807;
+}
