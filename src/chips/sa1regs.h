@@ -3,7 +3,7 @@
 
 #include "../types.h"
 
-extern void RTCReset();
+extern void RTC2800();
 extern void RTCReset2();
 extern void SDD1Reset();
 extern void initSA1regs();

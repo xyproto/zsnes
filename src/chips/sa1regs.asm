@@ -58,7 +58,7 @@ NEWSYM RTCRest, dd 0
 
 SECTION .text
 
-RTC2800:
+NEWSYM RTC2800
     push ebx
     cmp dword[RTCRest],100
 ;    je .go
@@ -179,9 +179,6 @@ RTC2801w:
     pop ebx
     ret
 
-NEWSYM RTCReset
-    setreg 2800h,RTC2800
-    ret
 NEWSYM RTCReset2
     setregw 2801h,RTC2801w
     ret
