@@ -99,3 +99,10 @@ void executesa1dma(void)
 		((u1* const*)snesmmap)[SA1DMASource >> 16 & 0xFF] + (SA1DMASource & 0x0000FFFF);
 	memcpy(sa1dmaptr, sa1dmaptrs, SA1DMACount);
 }
+
+
+void sa1dmairam(void)
+{
+	sa1dmaptr = &IRAM[SA1DMADest & 0x000007FF];
+	executesa1dma();
+}

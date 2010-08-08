@@ -44,6 +44,7 @@ EXTSYM curypos,CurrentExecSA1,memaccessbankr8sdd1,memtabler8,AddrNoIncr
 EXTSYM SA1_DMA_CC2
 EXTSYM UpdateArithStuff
 EXTSYM executesa1dma
+EXTSYM sa1dmairam
 
 %ifndef NO_DEBUGGER
 EXTSYM debuggeron,debstop4
@@ -851,7 +852,7 @@ NEWSYM sa12236w
     jnz near sa1chconv
     test byte[SA1DMAInfo],4
     jnz .noiram
-    jmp sa1dmairam
+    ccallv sa1dmairam
 .noiram
     ret
 NEWSYM sa12237w
@@ -876,13 +877,6 @@ NEWSYM sa1dmaptrs, resd 1
 
 SECTION .text
 
-NEWSYM sa1dmairam
-    mov ebx,[SA1DMADest]
-    and ebx,7FFh
-    add ebx,IRAM
-    mov [sa1dmaptr],ebx
-    ccallv executesa1dma
-    ret
 NEWSYM sa1dmabwram
     mov ebx,[SA1DMADest]
     and ebx,3FFFFh

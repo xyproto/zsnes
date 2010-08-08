@@ -6,5 +6,6 @@ void RTCReset2(void);
 void RTCinit(void);
 void SA1Reset(void);
 void executesa1dma(void);
+void sa1dmairam(void);
 
 #endif

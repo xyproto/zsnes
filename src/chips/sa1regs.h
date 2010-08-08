@@ -31,6 +31,7 @@ extern u2  SA1DMACount;
 extern u2  SA1Overflow;
 extern u4  RTCPtr;
 extern u4  SA1ARR1;
+extern u4  SA1DMADest;
 extern u4  SA1DMASource;
 extern u4  SA1DoIRQ;
 extern u4  SA1IRQExec;
