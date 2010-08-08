@@ -42,6 +42,7 @@ EXTSYM regptra,regptwa,romdata,SA1Status,SDD1BankA,NumofBanks,BWUsed2
 EXTSYM GetTime,GetDate,irqv2,irqv,nmiv2,nmiv,snesmmap,snesmap2
 EXTSYM curypos,CurrentExecSA1,memaccessbankr8sdd1,memtabler8,AddrNoIncr
 EXTSYM SA1_DMA_CC2
+EXTSYM UpdateArithStuff
 
 %ifndef NO_DEBUGGER
 EXTSYM debuggeron,debstop4
@@ -580,7 +581,7 @@ NEWSYM sa12254w
     mov byte[SA1ARC+1],1
     test byte[SA1ARC],2
     jnz .cumul
-    call UpdateArithStuff
+    ccallv UpdateArithStuff
     ret
     ; set overflow bit if exceeds 40bits
 .cumul
@@ -597,54 +598,6 @@ NEWSYM sa12254w
     jnc .notoverflow
     mov byte[SA1Overflow],80h
 .notoverflow
-    popad
-    ret
-
-UpdateArithStuff:
-    cmp byte[SA1ARC+1],1
-    jne .noarith
-    pushad
-    mov byte[SA1ARC+1],0
-    test byte[SA1ARC],3
-    jz .multiply
-    test byte[SA1ARC],2
-    jnz near .cumulativesum
-    test byte[SA1ARC],1
-    jnz .division
-.multiply
-    xor edx,edx
-    mov ax,[SA1AR1]
-    mov bx,[SA1AR2]
-    imul bx
-    mov [SA1ARR1],ax
-    mov [SA1ARR1+2],dx
-    popad
-.noarith
-    ret
-.division
-    movsx eax,word[SA1AR1]
-    xor edx,edx
-    test eax,80000000h
-    jz .notneg
-    mov edx,0FFFFFFFFh
-.notneg
-    xor ebx,ebx
-    mov bx,[SA1AR2]
-    or ebx,ebx
-    jz .invalid
-    idiv ebx
-    mov [SA1ARR1],ax
-    mov [SA1ARR1+2],dx
-;    mov word[SA1AR1],0
-;    mov word[SA1AR2],0
-    popad
-    ret
-.invalid
-    mov word[SA1ARR1],0
-    mov word[SA1ARR1+2],0
-    popad
-    ret
-.cumulativesum
     popad
     ret
 
@@ -670,23 +623,18 @@ sa12301r:
 .notexecuted
     ret
 sa12306r:
-;    call UpdateArithStuff
     mov al,[SA1ARR1]
     ret
 sa12307r:
-;    call UpdateArithStuff
     mov al,[SA1ARR1+1]
     ret
 sa12308r:
-;    call UpdateArithStuff
     mov al,[SA1ARR1+2]
     ret
 sa12309r:
-;    call UpdateArithStuff
     mov al,[SA1ARR1+3]
     ret
 sa1230Ar:
-;    call UpdateArithStuff
     mov al,[SA1ARR2]
     ret
 sa1230Br:

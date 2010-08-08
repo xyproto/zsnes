@@ -10,6 +10,7 @@ extern void initSA1regs();
 extern void initSA1regsw();
 extern void initSDD1regs();
 
+extern u1  SA1ARC[4];
 extern u1  SA1Control;     // Don't execute if b5 or 6 are set
 extern u1  SA1IRQData[4];
 extern u1  SA1IRQEnable;
@@ -20,8 +21,11 @@ extern u1* SA1BWPtr;
 extern u1* SA1RAMArea;
 extern u1* SA1RegPCS;
 extern u1* SNSBWPtr;
+extern u2  SA1AR1;
+extern u2  SA1AR2;
 extern u2  SA1Overflow;
 extern u4  RTCPtr;
+extern u4  SA1ARR1;
 extern u4  SA1DoIRQ;
 extern u4  SA1IRQExec;
 extern u4  SA1Message;

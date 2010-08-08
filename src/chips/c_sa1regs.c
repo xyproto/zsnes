@@ -57,3 +57,34 @@ void SA1Reset(void)
 	SA1Message     = 0;
 	SA1Overflow    = 0;
 }
+
+
+void UpdateArithStuff(void)
+{
+	if (SA1ARC[1] != 1) return;
+
+	SA1ARC[1] = 0;
+	if (SA1ARC[0] & 0x02)
+	{ // Cumultative sum
+		// XXX Handled by caller
+	}
+	else if (SA1ARC[0] & 0x01)
+	{ // Divison
+		s2 const dividend = SA1AR1;
+		u2 const divisor  = SA1AR2;
+		if (divisor != 0)
+		{
+			s2 const quotient = dividend / divisor;
+			u2 const reminder = dividend % divisor;
+			SA1ARR1 = (u4)reminder << 16 | (u2)quotient;
+		}
+		else
+		{ // Invalid
+			SA1ARR1 = 0;
+		}
+	}
+	else
+	{ // Multiplication
+		SA1ARR1 = (s4)(s2)SA1AR1 * (s2)SA1AR2;
+	}
+}
