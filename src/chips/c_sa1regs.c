@@ -67,7 +67,13 @@ void UpdateArithStuff(void)
 	SA1ARC[1] = 0;
 	if (SA1ARC[0] & 0x02)
 	{ // Cumultative sum
-		// XXX Handled by caller
+		s4 const product = (s2)SA1AR1 * (s2)SA1AR2;
+		s8 const sum     = ((s8)((u8)SA1ARR2 << 32 | (u8)SA1ARR1) << 24 >> 24) + product;
+		s8 const sign    = sum >> 39;
+		SA1ARR1     = (u4)sum;
+		SA1ARR2     = sum >> 32 & 0x000000FF;
+		// Set overflow bit if sum exceeds 40bits.
+		SA1Overflow = sign != 0 && sign != -1 ? 0x80 : 0x00;
 	}
 	else if (SA1ARC[0] & 0x01)
 	{ // Divison

@@ -581,26 +581,7 @@ NEWSYM sa12253w
 NEWSYM sa12254w
     mov [SA1AR2+1],al
     mov byte[SA1ARC+1],1
-    test byte[SA1ARC],2
-    jnz .cumul
     ccallv UpdateArithStuff
-    ret
-    ; set overflow bit if exceeds 40bits
-.cumul
-    pushad
-    xor edx,edx
-    mov ax,[SA1AR1]
-    mov bx,[SA1AR2]
-    imul bx
-    shl edx,16
-    mov dx,ax
-    mov byte[SA1Overflow],0
-    add [SA1ARR1],edx
-    adc byte[SA1ARR2],0
-    jnc .notoverflow
-    mov byte[SA1Overflow],80h
-.notoverflow
-    popad
     ret
 
 NEWSYM sa12300r
