@@ -33,8 +33,6 @@ extern u1    GUICStatePos;
 extern u1    GUIFontData1[141][5];
 extern u1    GUIFontData[141][5];
 extern u1    GUIHold;
-extern u1    GUIIconDataCheckBoxC[];
-extern u1    GUIIconDataCheckBoxUC[];
 extern u1    GUILDFlash;
 extern u1    GUIOn2;
 extern u1    GUIOn;
