@@ -30,8 +30,6 @@ extern u1    GUICBHold;
 extern u1    GUICCFlash;
 extern u1    GUICResetPos;
 extern u1    GUICStatePos;
-extern u1    GUIFontData1[141][5];
-extern u1    GUIFontData[141][5];
 extern u1    GUIHold;
 extern u1    GUILDFlash;
 extern u1    GUIOn2;

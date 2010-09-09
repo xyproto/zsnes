@@ -26,6 +26,7 @@
 #include "../cfg.h"
 #include "../ui.h"
 #include "../video/procvid.h"
+#include "c_gui.h"
 #include "c_guiwindp.h"
 #include "gui.h"
 #include "guitools.h"
@@ -35,9 +36,8 @@ static void GUIoutputchar(u1* dst, u1 const glyph, u1 const colour)
 {
 	// XXX better variable names
 	// Font Setup (Menus)
-	u1      (*font)[5] = newfont == 0 ? GUIFontData : GUIFontData1;
-	u1 const* edi      = font[glyph];
-	u4        cl       = 5;
+	u1 const* edi = newfont == 0 ? GUIFontData[glyph] : GUIFontData1[glyph];
+	u4        cl  = 5;
 	do
 	{
 		u4 ah = *edi;
@@ -167,9 +167,8 @@ void GUIDrawShadow2(u1* buf, u4 const w, u4 h)
 static void GUIoutputcharwin(u1* dst, u1 const glyph, u1 const colour)
 {
 	// Font Setup (Windows)
-	u1      (*font)[5] = newfont == 0 ? GUIFontData : GUIFontData1;
-	u1 const* edi      = font[glyph];
-	u4        y        = 5;
+	u1 const* edi = newfont == 0 ? GUIFontData[glyph] : GUIFontData1[glyph];
+	u4        y   = 5;
 	do
 	{
 		if (vidbuffer <= dst && dst < vidbuffer + 224 * 288) // XXX possible buffer overflow by 4

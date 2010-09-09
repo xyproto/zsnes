@@ -30,6 +30,7 @@
 #include "../cpu/execute.h"
 #include "../cpu/regs.h"
 #include "../endmem.h"
+#include "../gui/c_gui.h"
 #include "../gui/gui.h"
 #include "../init.h"
 #include "../initc.h"
