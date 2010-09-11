@@ -310,5 +310,3 @@ SECTION .bss
 
 NEWSYM Totalbyteloaded, resd 1
 NEWSYM sramsavedis, resb 1
-
-NEWSYM GUICPC, resw 256

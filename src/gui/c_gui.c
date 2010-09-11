@@ -48,6 +48,8 @@
 #endif
 
 
+u2 GUICPC[256];
+
 // bitmap 5x5 font; char - offset for ASCII2Font
 u1 const GUIFontData[][5] =
 {

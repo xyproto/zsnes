@@ -7,7 +7,7 @@
 #include "../cfg.h"
 #include "../cpu/dspproc.h"
 #include "../cpu/execute.h"
-#include "../gui/gui.h"
+#include "../gui/c_gui.h"
 #include "../input.h"
 #include "../intrf.h"
 #include "../link.h"

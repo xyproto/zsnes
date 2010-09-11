@@ -35,6 +35,7 @@ extern u1 GUIFontData1[141][5];
 extern u1 SnowVelDist[800];
 extern u1 const GUIFontData[141][5];
 extern u1 savecfgforce;
+extern u2 GUICPC[256];
 extern u2 SnowData[800];
 extern u4 NumSnow;
 extern u4 SnowTimer;
