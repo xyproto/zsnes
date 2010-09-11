@@ -1252,7 +1252,7 @@ void SaveSecondState(void)
   zst_name();
 }
 
-extern uint8_t CHIPBATT, sramsavedis, *sram2;
+extern uint8_t CHIPBATT, *sram2;
 void SaveCombFile();
 
 // Sram saving

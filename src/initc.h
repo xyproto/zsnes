@@ -22,6 +22,7 @@ extern char CSStatus[41];
 extern char CSStatus2[41];
 extern char CSStatus3[41];
 extern char CSStatus4[41];
+extern u1   sramsavedis;
 
 extern uint8_t  snesinputdefault1;
 extern uint8_t  snesinputdefault2;

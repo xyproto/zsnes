@@ -98,6 +98,9 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define ResetHiOffset    61
 
 
+u1 sramsavedis;
+
+
 // Some archaic code from an unfinished Dynarec
 extern uint32_t curexecstate;
 
@@ -1703,7 +1706,7 @@ uint32_t showinfogui(void)
 
 extern uint32_t nmiprevaddrl, nmiprevaddrh, nmirept, nmiprevline, nmistatus;
 extern uint8_t spcnumread;
-extern uint8_t NextLineCache, sramsavedis;
+extern uint8_t NextLineCache;
 extern uint32_t Voice0Freq, Voice1Freq, Voice2Freq, Voice3Freq;
 extern uint32_t Voice4Freq, Voice5Freq, Voice6Freq, Voice7Freq;
 extern uint32_t dspPAdj;

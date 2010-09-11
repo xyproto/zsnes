@@ -52,6 +52,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "c_init.h"
 #include "cpu/dspproc.h"
 #include "gui/guimisc.h"
+#include "initc.h"
 #include "md.h"
 #include "input.h"
 #include "cfg.h"
@@ -2667,7 +2668,7 @@ static uint8_t oldmaxskip = 0;
 static void OldMoviePlay(FILE *fp)
 {
   uint8_t RecData[16];
-  extern uint8_t NextLineCache, sramsavedis;
+  extern uint8_t NextLineCache;
   extern size_t Totalbyteloaded;
   void loadstate2();
 

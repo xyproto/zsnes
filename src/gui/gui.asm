@@ -309,4 +309,3 @@ NEWSYM MsgGiftLeft, dd 0
 SECTION .bss
 
 NEWSYM Totalbyteloaded, resd 1
-NEWSYM sramsavedis, resb 1
