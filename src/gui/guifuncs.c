@@ -55,6 +55,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <unistd.h>
 #endif
 
+#include "../initc.h"
 #include "../macros.h"
 #include "../zpath.h"
 #include "../md.h"
@@ -72,7 +73,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #define BIT(X) (1 << (X))
 
-extern unsigned char ComboHeader[23];
 enum vtype { UB, UW, UD, SB, SW, SD };
 
 unsigned int ConvertBinaryToInt(char data[])

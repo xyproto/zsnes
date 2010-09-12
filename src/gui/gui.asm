@@ -221,8 +221,6 @@ NEWSYM TGVal2, resw 1
 NEWSYM TBVal2, resw 1
 
 SECTION .data
-NEWSYM ComboHeader, db 'Key Combination File',26,1,0
-
 NEWSYM GUIoldhand9o, dd 0
 NEWSYM GUIoldhand9s, dw 0
 NEWSYM GUIoldhand8o, dd 0

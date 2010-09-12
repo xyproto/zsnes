@@ -98,6 +98,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define ResetHiOffset    61
 
 
+u1 ComboHeader[23] = "Key Combination File\x1A\x01";
 u1 sramsavedis;
 
 
@@ -2020,7 +2021,6 @@ void SetupROM(void)
   }
 }
 
-extern uint8_t ComboHeader[23];
 
 void SaveCombFile()
 {
