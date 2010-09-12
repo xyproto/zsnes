@@ -49,6 +49,8 @@
 
 
 u2 GUICPC[256];
+u4 MsgGiftLeft =   0;
+u4 SantaPos    = 272;
 
 // bitmap 5x5 font; char - offset for ASCII2Font
 u1 const GUIFontData[][5] =

@@ -87,9 +87,7 @@ extern u4    GUIwinposxo[22];
 extern u4    GUIwinposyo[22];
 extern u4    GUIwinsizex[22];
 extern u4    GUIwinsizey[22];
-extern u4    MsgGiftLeft;
 extern u4    NumCheats;
-extern u4    SantaPos;
 extern u4    cloadmaxlen;
 
 #endif

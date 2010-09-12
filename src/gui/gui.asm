@@ -300,8 +300,3 @@ NEWSYM GUIhandler9h
   sti
   iretd
 %endif
-
-SECTION .data
-
-NEWSYM SantaPos, dd 272
-NEWSYM MsgGiftLeft, dd 0
