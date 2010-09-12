@@ -61,6 +61,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "zpath.h"
 #include "zmovie.h"
 #include "zdir.h"
+#include "zstate.h"
 
 #define NUMCONV_FR2
 #define NUMCONV_FR3
@@ -2669,7 +2670,6 @@ static void OldMoviePlay(FILE *fp)
 {
   uint8_t RecData[16];
   extern uint8_t NextLineCache;
-  extern size_t Totalbyteloaded;
   void loadstate2();
 
   memset(&old_movie, 0, sizeof(old_movie));

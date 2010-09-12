@@ -80,6 +80,10 @@ extern uint8_t intrset, cycpl, cycphb, xdbt, xpbt;
 extern uint8_t xirqb, curnmi;
 extern uint16_t stackand, stackor, xat, xst, xdt, xxt, xyt;
 
+
+u4 Totalbyteloaded;
+
+
 static void copy_snes_data(uint8_t **buffer, void (*copy_func)(uint8_t **, void *, size_t))
 {
   //65816 status, etc.
@@ -938,7 +942,7 @@ void statesaver(void)
   stim();
 }
 
-extern uint32_t Totalbyteloaded, SfxMemTable[256], SfxCPB;
+extern uint32_t SfxMemTable[256], SfxCPB;
 extern uint32_t SfxPBR, SfxROMBR, SfxRAMBR, SCBRrel, SfxSCBR;
 extern uint8_t ioportval;
 extern uint8_t nexthdma;

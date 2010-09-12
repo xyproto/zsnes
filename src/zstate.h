@@ -27,5 +27,6 @@ extern uint32_t current_zst;
 extern uint32_t newest_zst;
 
 extern char     spcsaved[16];
+extern u4       Totalbyteloaded;
 
 #endif

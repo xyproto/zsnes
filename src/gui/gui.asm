@@ -305,7 +305,3 @@ SECTION .data
 
 NEWSYM SantaPos, dd 272
 NEWSYM MsgGiftLeft, dd 0
-
-SECTION .bss
-
-NEWSYM Totalbyteloaded, resd 1
