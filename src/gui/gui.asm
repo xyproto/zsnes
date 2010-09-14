@@ -214,7 +214,6 @@ NEWSYM GUIOn,       resb 1
 NEWSYM GUIOn2,      resb 1
 NEWSYM GUIReset,    resb 1
 NEWSYM CurPalSelect, resb 1
-NEWSYM MotionBlur, resb 1
 
 SECTION .data
 NEWSYM GUIoldhand9o, dd 0
