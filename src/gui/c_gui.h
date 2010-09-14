@@ -34,6 +34,7 @@ u1* GetAnyPressedKey(void);
 extern u1 GUIFontData1[141][5];
 extern u1 MouseDis;
 extern u1 MousePRClick;
+extern u1 ShowTimer;
 extern u1 SnowVelDist[800];
 extern u1 const GUIFontData[141][5];
 extern u1 savecfgforce;
