@@ -49,6 +49,7 @@
 
 
 u1 MouseDis;
+u1 MousePRClick;
 u2 GUICPC[256];
 u4 MsgGiftLeft =   0;
 u4 SantaPos    = 272;
