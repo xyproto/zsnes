@@ -201,7 +201,6 @@ NEWSYM keycontrolval, resd 1
 NEWSYM CheatBDoor,   resb 1
 NEWSYM ShowTimer,    resb 1
 NEWSYM MousePRClick, resb 1
-NEWSYM MouseDis, resb 1
 
 NEWSYM CheatOn, resd 1
 NEWSYM NumCheats, resd 1

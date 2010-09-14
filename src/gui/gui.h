@@ -43,7 +43,6 @@ extern u1    GUIpmenupos;
 extern u1    GUIwinactiv[];
 extern u1    GUIwinorder[22];
 extern u1    GUIwinptr;
-extern u1    MouseDis;
 extern u1    MousePRClick;
 extern u1    ShowTimer;
 extern u1    cheatdata[28 * 255 + 56];

@@ -13,6 +13,7 @@
 #include "cpu/regs.h"
 #include "endmem.h"
 #include "gblvars.h"
+#include "gui/c_gui.h"
 #include "gui/gui.h"
 #include "gui/menu.h"
 #include "initc.h"

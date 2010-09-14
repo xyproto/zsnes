@@ -44,7 +44,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "asm_call.h"
 #include "c_intrf.h"
 #include "cfg.h"
-#include "gui/gui.h"
+#include "gui/c_gui.h"
 #include "init.h"
 #include "initc.h"
 #include "input.h"
