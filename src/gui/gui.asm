@@ -216,10 +216,6 @@ NEWSYM GUIReset,    resb 1
 NEWSYM CurPalSelect, resb 1
 NEWSYM MotionBlur, resb 1
 
-NEWSYM TRVal2, resw 1
-NEWSYM TGVal2, resw 1
-NEWSYM TBVal2, resw 1
-
 SECTION .data
 NEWSYM GUIoldhand9o, dd 0
 NEWSYM GUIoldhand9s, dw 0

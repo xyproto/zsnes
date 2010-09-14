@@ -1981,16 +1981,19 @@ void DisplayGUIOptns(void)
 	GUIDrawWindowBox(10, "GUI OPTIONS");
 
 	// Setup Colors
+	u1 TRVal2;
+	u1 TGVal2;
+	u1 TBVal2;
 	switch (CurPalSelect)
 	{
-		default: TRVal2[0] = GUIRAdd;  TGVal2[0] = GUIGAdd;  TBVal2[0] = GUIBAdd;  break;
-		case 1:  TRVal2[0] = GUITRAdd; TGVal2[0] = GUITGAdd; TBVal2[0] = GUITBAdd; break;
-		case 2:  TRVal2[0] = GUIWRAdd; TGVal2[0] = GUIWGAdd; TBVal2[0] = GUIWBAdd; break;
+		default: TRVal2 = GUIRAdd;  TGVal2 = GUIGAdd;  TBVal2 = GUIBAdd;  break;
+		case 1:  TRVal2 = GUITRAdd; TGVal2 = GUITGAdd; TBVal2 = GUITBAdd; break;
+		case 2:  TRVal2 = GUIWRAdd; TGVal2 = GUIWGAdd; TBVal2 = GUIWBAdd; break;
 	}
 
-	GUIDrawSlider(10, 25, 127, 124, &TRVal2[0], GUICslidSet, GUICslidText);
-	GUIDrawSlider(10, 25, 127, 136, &TGVal2[0], GUICslidSet, GUICslidText);
-	GUIDrawSlider(10, 25, 127, 148, &TBVal2[0], GUICslidSet, GUICslidText);
+	GUIDrawSlider(10, 25, 127, 124, &TRVal2, GUICslidSet, GUICslidText);
+	GUIDrawSlider(10, 25, 127, 136, &TGVal2, GUICslidSet, GUICslidText);
+	GUIDrawSlider(10, 25, 127, 148, &TBVal2, GUICslidSet, GUICslidText);
 
 	GUIDisplayTextY(10, 6, 16, "GUI SWITCHES:");
 

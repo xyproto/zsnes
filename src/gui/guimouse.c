@@ -1668,60 +1668,53 @@ static void DisplayGUIOptnsClick(void)
 	GUIPButtonHole(eax, edx, 133, 108, &CurPalSelect, 2);
 
 	// Sliders
+	u1* TRVal2;
+	u1* TGVal2;
+	u1* TBVal2;
 	switch (CurPalSelect)
 	{
-		default: TRVal2[0] = GUIRAdd;  TGVal2[0] = GUIGAdd;  TBVal2[0] = GUIBAdd;  break;
-		case 1:  TRVal2[0] = GUITRAdd; TGVal2[0] = GUITGAdd; TBVal2[0] = GUITBAdd; break;
-		case 2:  TRVal2[0] = GUIWRAdd; TGVal2[0] = GUIWGAdd; TBVal2[0] = GUIWBAdd; break;
+		default: TRVal2 = &GUIRAdd;  TGVal2 = &GUIGAdd;  TBVal2 = &GUIBAdd;  break;
+		case 1:  TRVal2 = &GUITRAdd; TGVal2 = &GUITGAdd; TBVal2 = &GUITBAdd; break;
+		case 2:  TRVal2 = &GUIWRAdd; TGVal2 = &GUIWGAdd; TBVal2 = &GUIWBAdd; break;
 	}
 
+	bool changed = false;
 	if (25 <= eax && eax <= 25 + 127)
 	{
 		u1 const al = (u4)(eax - 25) / 4;
 		if (122 <= edx && edx <= 126)
 		{
-			if (TRVal2[0] != al)
+			if (*TRVal2 != al)
 			{
-				TRVal2[0] = al;
-				TRVal2[1] = 1;
+				*TRVal2 = al;
+				changed = true;
 			}
 			GUIHold     = 2;
 			GUIHoldYlim = GUIwinposy[10] + 124;
 		}
 		else if (134 <= edx && edx <= 138)
 		{
-			if (TGVal2[0] != al)
+			if (*TGVal2 != al)
 			{
-				TGVal2[0] = al;
-				TRVal2[1] = 1;
+				*TGVal2 = al;
+				changed = true;
 			}
 			GUIHold     = 2;
 			GUIHoldYlim = GUIwinposy[10] + 136;
 		}
 		else if (146 <= edx && edx <= 150)
 		{
-			if (TBVal2[0] != al)
+			if (*TBVal2 != al)
 			{
-				TBVal2[0] = al;
-				TRVal2[1] = 1;
+				*TBVal2 = al;
+				changed = true;
 			}
 			GUIHold     = 2;
 			GUIHoldYlim = GUIwinposy[10] + 148;
 		}
 	}
 
-	switch (CurPalSelect)
-	{
-		default: GUIRAdd  = TRVal2[0]; GUIGAdd  = TGVal2[0]; GUIBAdd  = TBVal2[0]; break;
-		case 1:  GUITRAdd = TRVal2[0]; GUITGAdd = TGVal2[0]; GUITBAdd = TBVal2[0]; break;
-		case 2:  GUIWRAdd = TRVal2[0]; GUIWGAdd = TGVal2[0]; GUIWBAdd = TBVal2[0]; break;
-	}
-
-	if (TRVal2[1] == 1)
-	{
-		GUISetPal();
-		TRVal2[1] = 0;
-	}
+	if (changed) GUISetPal();
 
 	if (GUIHold == 2)
 	{
