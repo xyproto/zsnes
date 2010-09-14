@@ -208,8 +208,6 @@ NEWSYM NumCheats, resd 1
 NEWSYM cheatdataprev, resb 28 ; leave contents blank
 NEWSYM cheatdata, resb 28*255+56 ; toggle, value, address, pvalue, name(22)
 
-NEWSYM GUICMessage, resd 1
-NEWSYM GUICTimer,   resd 1
 NEWSYM GUIOn,       resb 1
 NEWSYM GUIOn2,      resb 1
 NEWSYM GUIReset,    resb 1

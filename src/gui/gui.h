@@ -18,7 +18,6 @@ extern ComboData CombinDataGlob[50];
 extern ComboData CombinDataLocl[50];
 
 extern char  GUIPrevMenuData[];
-extern char* GUICMessage;
 extern s4    GUIDClCEntry;
 extern u1    CheatOn;
 extern u1    CurPalSelect;
@@ -64,7 +63,6 @@ extern u4    CalibYmax;
 extern u4    CalibYmin209;
 extern u4    CalibYmin;
 extern u4    GUICHold;
-extern u4    GUICTimer;
 extern u4    GUIDClCWin;
 extern u4    GUIDClickTL;
 extern u4    GUIHoldXlimL;
