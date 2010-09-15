@@ -138,7 +138,6 @@ NEWSYM GUIwinsizex, dd 0,244 ,126 ,205 ,180 ,245 ,188 ,244 ,128 ,240  ,245  ,190
 NEWSYM GUIwinsizey, dd 0,190 ,68  ,192 ,190 ,190 ,188 ,191 ,40  ,170  ,150  ,190 ,42  ,40  ,42  ,190 ,190 ,120 ,100 ,190  ,168 ,180
 NEWSYM GUIwinptr, db 0
 
-NEWSYM WaterOn,  db 1
 NEWSYM ForceROMTiming, db 0
 NEWSYM ForceHiLoROM, db 0
 NEWSYM CalibXmin, dd 0
