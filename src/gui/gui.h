@@ -42,7 +42,6 @@ extern u1    GUIpclicked;
 extern u1    GUIpmenupos;
 extern u1    GUIwinactiv[];
 extern u1    GUIwinorder[22];
-extern u1    GUIwinptr;
 extern u1    cheatdata[28 * 255 + 56];
 extern u1    cplayernum;
 extern u1    cwindrawn;
@@ -73,10 +72,6 @@ extern u4    GUIMenuL;
 extern u4    GUIMenuR;
 extern u4    GUIScrolTim1;
 extern u4    GUIScrolTim2;
-extern u4    GUIwinposxo[22];
-extern u4    GUIwinposyo[22];
-extern u4    GUIwinsizex[22];
-extern u4    GUIwinsizey[22];
 extern u4    NumCheats;
 extern u4    cloadmaxlen;
 

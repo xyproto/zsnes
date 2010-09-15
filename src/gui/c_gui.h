@@ -32,6 +32,7 @@ void GUIOuttextShadowed(u4 const x, u4 const y, char const* const text);
 u1* GetAnyPressedKey(void);
 
 extern u1 GUIFontData1[141][5];
+extern u1 GUIwinptr;
 extern u1 MouseDis;
 extern u1 MousePRClick;
 extern u1 ShowTimer;
@@ -40,6 +41,8 @@ extern u1 const GUIFontData[141][5];
 extern u1 savecfgforce;
 extern u2 GUICPC[256];
 extern u2 SnowData[800];
+extern u4 GUIwinsizex[22];
+extern u4 GUIwinsizey[22];
 extern u4 MsgGiftLeft;
 extern u4 NumSnow;
 extern u4 SantaPos;

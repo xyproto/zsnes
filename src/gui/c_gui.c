@@ -203,6 +203,14 @@ u1 const GUIFontData[][5] =
 
 u1 GUIFontData1[][5];
 
+/* Window sizes and positions
+ *                       LOAD STAT INPT  OPT  VID  SND  CHT  NET GMKEY GUIOP  ABT RSET  SRC STCN MOVE CMBO ADDO CHIP PATH SAVE SPED */
+static u4 GUIwinposxo[] = { 0,   6,  65,  33,  42,   5,  34,   6,   64,    8,   5,  33,  56,  64,  56,   5,   3,  28,  48,   6,  28,  53 };
+static u4 GUIwinposyo[] = { 0,  20,  70,  20,  20,  20,  20,  20,   30,   30,  20,  20,  60,  30,  60,  20,  20,  60,  60,  20,  30,  20 };
+u4        GUIwinsizex[] = { 0, 244, 126, 205, 180, 245, 188, 244,  128,  240, 245, 190, 144, 128, 144, 246, 250, 200, 160, 244, 200, 150 };
+u4        GUIwinsizey[] = { 0, 190,  68, 192, 190, 190, 188, 191,   40,  170, 150, 190,  42,  40,  42, 190, 190, 120, 100, 190, 168, 180 };
+u1        GUIwinptr;
+
 
 static u4 SantaNextT = 36 * 15;
 u4        NumSnow;
