@@ -197,7 +197,6 @@ NEWSYM GUICStatePos, resd 1
 NEWSYM GUICCFlash,   resb 1
 NEWSYM GUILDFlash,   resb 1
 NEWSYM PrevResoln,   resw 1
-NEWSYM keycontrolval, resd 1
 
 NEWSYM CheatOn, resd 1
 NEWSYM NumCheats, resd 1

@@ -131,6 +131,8 @@ void SetAllKeys(void)
 	memset(pressed, 0, sizeof(pressed));
 
 	GUICBHold = 0;
+
+	u1 const* keycontrolval;
 	switch (cplayernum)
 	{
 		default: keycontrolval = &pl1contrl; break;

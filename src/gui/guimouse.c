@@ -696,7 +696,7 @@ static bool GUIWinControl2(s4 const eax, s4 const edx, s4 const p1, s4 const p2,
 }
 
 
-static bool DGOptnsProcBox(s4 const eax, s4 const edx, s4 const p1, s4 const p2, u4* const p3)
+static bool DGOptnsProcBox(s4 const eax, s4 const edx, s4 const p1, s4 const p2, u4* const p3, u1* const keycontrolval)
 {
 	if (GUIClickArea(eax, edx, p1, p2, p1 + 19, p2 + 6))
 	{
@@ -892,11 +892,11 @@ static void DisplayGUIMovieClick(s4 const eax, s4 const edx)
 		GUIPButtonHole(eax, edx,  89, 64, &MovieStartMethod, 2);
 		GUIPButtonHole(eax, edx, 135, 64, &MovieStartMethod, 3);
 
-		DGOptnsProcBox(eax, edx,  58, 110, &KeyInsrtChap); // Keyboard Shortcut Boxes
-		DGOptnsProcBox(eax, edx, 146, 110, &KeyPrevChap);
-		DGOptnsProcBox(eax, edx, 210, 110, &KeyNextChap);
+		DGOptnsProcBox(eax, edx,  58, 110, &KeyInsrtChap, 0); // Keyboard Shortcut Boxes
+		DGOptnsProcBox(eax, edx, 146, 110, &KeyPrevChap,  0);
+		DGOptnsProcBox(eax, edx, 210, 110, &KeyNextChap,  0);
 
-		DGOptnsProcBox(eax, edx, 135, 124, &KeyRTRCycle);
+		DGOptnsProcBox(eax, edx, 135, 124, &KeyRTRCycle,  0);
 
 		GUIPButtonHole(eax, edx, 8, 133, &MZTForceRTR, 0);
 		GUIPButtonHole(eax, edx, 8, 143, &MZTForceRTR, 1);
@@ -930,36 +930,36 @@ static void DisplayGUIMovieClick(s4 const eax, s4 const edx)
 }
 
 
-#define GUIInputSetIndKey(p1) \
+#define GUIInputSetIndKey(p1, keycontrolval) \
 do \
 { \
 	/* Check if controller is set */ \
-	if (*(u4 const*)keycontrolval == 0) return; /* XXX cast makes no sense */ \
+	if (*(u4 const*)(keycontrolval) == 0) return; /* XXX cast makes no sense */ \
  \
-	DGOptnsProcBox(eax, edx,  45, 102, &p1 ## upk);    /* Up */ \
-	DGOptnsProcBox(eax, edx,  45, 112, &p1 ## downk);  /* Down */ \
-	DGOptnsProcBox(eax, edx,  45, 122, &p1 ## leftk);  /* Left */ \
-	DGOptnsProcBox(eax, edx,  45, 132, &p1 ## rightk); /* Right */ \
-	DGOptnsProcBox(eax, edx,  45, 142, &p1 ## startk); /* Start */ \
-	DGOptnsProcBox(eax, edx,  45, 152, &p1 ## selk);   /* Select */ \
-	DGOptnsProcBox(eax, edx,  85, 102, &p1 ## Ak);     /* A */ \
-	DGOptnsProcBox(eax, edx,  85, 112, &p1 ## Bk);     /* B */ \
-	DGOptnsProcBox(eax, edx,  85, 122, &p1 ## Xk);     /* X */ \
-	DGOptnsProcBox(eax, edx,  85, 132, &p1 ## Yk);     /* Y */ \
-	DGOptnsProcBox(eax, edx,  85, 142, &p1 ## Lk);     /* L */ \
-	DGOptnsProcBox(eax, edx,  85, 152, &p1 ## Rk);     /* R */ \
+	DGOptnsProcBox(eax, edx,  45, 102, &p1 ## upk,    (keycontrolval)); /* Up */ \
+	DGOptnsProcBox(eax, edx,  45, 112, &p1 ## downk,  (keycontrolval)); /* Down */ \
+	DGOptnsProcBox(eax, edx,  45, 122, &p1 ## leftk,  (keycontrolval)); /* Left */ \
+	DGOptnsProcBox(eax, edx,  45, 132, &p1 ## rightk, (keycontrolval)); /* Right */ \
+	DGOptnsProcBox(eax, edx,  45, 142, &p1 ## startk, (keycontrolval)); /* Start */ \
+	DGOptnsProcBox(eax, edx,  45, 152, &p1 ## selk,   (keycontrolval)); /* Select */ \
+	DGOptnsProcBox(eax, edx,  85, 102, &p1 ## Ak,     (keycontrolval)); /* A */ \
+	DGOptnsProcBox(eax, edx,  85, 112, &p1 ## Bk,     (keycontrolval)); /* B */ \
+	DGOptnsProcBox(eax, edx,  85, 122, &p1 ## Xk,     (keycontrolval)); /* X */ \
+	DGOptnsProcBox(eax, edx,  85, 132, &p1 ## Yk,     (keycontrolval)); /* Y */ \
+	DGOptnsProcBox(eax, edx,  85, 142, &p1 ## Lk,     (keycontrolval)); /* L */ \
+	DGOptnsProcBox(eax, edx,  85, 152, &p1 ## Rk,     (keycontrolval)); /* R */ \
  \
-	DGOptnsProcBox(eax, edx, 125, 102, &p1 ## Xtk);    /* X Turbo */ \
-	DGOptnsProcBox(eax, edx, 125, 112, &p1 ## Ytk);    /* Y Turbo */ \
-	DGOptnsProcBox(eax, edx, 125, 122, &p1 ## Ltk);    /* L Turbo */ \
-	DGOptnsProcBox(eax, edx, 165, 102, &p1 ## Atk);    /* A Turbo */ \
-	DGOptnsProcBox(eax, edx, 165, 112, &p1 ## Btk);    /* B Turbo */ \
-	DGOptnsProcBox(eax, edx, 165, 122, &p1 ## Rtk);    /* R Turbo */ \
+	DGOptnsProcBox(eax, edx, 125, 102, &p1 ## Xtk,    (keycontrolval)); /* X Turbo */ \
+	DGOptnsProcBox(eax, edx, 125, 112, &p1 ## Ytk,    (keycontrolval)); /* Y Turbo */ \
+	DGOptnsProcBox(eax, edx, 125, 122, &p1 ## Ltk,    (keycontrolval)); /* L Turbo */ \
+	DGOptnsProcBox(eax, edx, 165, 102, &p1 ## Atk,    (keycontrolval)); /* A Turbo */ \
+	DGOptnsProcBox(eax, edx, 165, 112, &p1 ## Btk,    (keycontrolval)); /* B Turbo */ \
+	DGOptnsProcBox(eax, edx, 165, 122, &p1 ## Rtk,    (keycontrolval)); /* R Turbo */ \
  \
-	DGOptnsProcBox(eax, edx, 125, 142, &p1 ## ULk);    /* Up-Left */ \
-	DGOptnsProcBox(eax, edx, 125, 152, &p1 ## DLk);    /* Down-Left */ \
-	DGOptnsProcBox(eax, edx, 165, 142, &p1 ## URk);    /* Up-Right */ \
-	DGOptnsProcBox(eax, edx, 165, 152, &p1 ## DRk);    /* Down-Right */ \
+	DGOptnsProcBox(eax, edx, 125, 142, &p1 ## ULk,    (keycontrolval)); /* Up-Left */ \
+	DGOptnsProcBox(eax, edx, 125, 152, &p1 ## DLk,    (keycontrolval)); /* Down-Left */ \
+	DGOptnsProcBox(eax, edx, 165, 142, &p1 ## URk,    (keycontrolval)); /* Up-Right */ \
+	DGOptnsProcBox(eax, edx, 165, 152, &p1 ## DRk,    (keycontrolval)); /* Down-Right */ \
 } \
 while (0)
 
@@ -983,11 +983,11 @@ static void DisplayGUIInputClick_skipscrol(s4 const eax, s4 const edx)
 
 	switch (cplayernum)
 	{
-		case 0: keycontrolval = &pl1contrl; GUIInputSetIndKey(pl1); break;
-		case 1: keycontrolval = &pl2contrl; GUIInputSetIndKey(pl2); break;
-		case 2: keycontrolval = &pl3contrl; GUIInputSetIndKey(pl3); break;
-		case 3: keycontrolval = &pl4contrl; GUIInputSetIndKey(pl4); break;
-		case 4: keycontrolval = &pl5contrl; GUIInputSetIndKey(pl5); break;
+		case 0: GUIInputSetIndKey(pl1, &pl1contrl); break;
+		case 1: GUIInputSetIndKey(pl2, &pl2contrl); break;
+		case 2: GUIInputSetIndKey(pl3, &pl3contrl); break;
+		case 3: GUIInputSetIndKey(pl4, &pl4contrl); break;
+		case 4: GUIInputSetIndKey(pl5, &pl5contrl); break;
 	}
 
 #ifdef __MSDOS__
@@ -1592,43 +1592,43 @@ static void DisplayNetOptnsClick(void) {}
 
 static void DisplayGameOptnsClick(s4 const eax, s4 const edx)
 {
-	keycontrolval = 0; // Shortcut Boxes
-	DGOptnsProcBox(eax, edx,  27,             23, &KeyBGDisble0);
-	DGOptnsProcBox(eax, edx,  27 +  45,       23, &KeyBGDisble1);
-	DGOptnsProcBox(eax, edx,  27 +  45 * 2,   23, &KeyBGDisble2);
-	DGOptnsProcBox(eax, edx,  27 +  45 * 3,   23, &KeyBGDisble3);
-	DGOptnsProcBox(eax, edx,  27 +  45 * 4,   23, &KeySprDisble);
-	DGOptnsProcBox(eax, edx,  27,             41, &KeyDisableSC0);
-	DGOptnsProcBox(eax, edx,  27 +  45,       41, &KeyDisableSC1);
-	DGOptnsProcBox(eax, edx,  27 +  45 * 2,   41, &KeyDisableSC2);
-	DGOptnsProcBox(eax, edx,  27 +  45 * 3,   41, &KeyDisableSC3);
-	DGOptnsProcBox(eax, edx,  34 +  45 * 4,   41, &KeyVolUp);
-	DGOptnsProcBox(eax, edx,  27,             50, &KeyDisableSC4);
-	DGOptnsProcBox(eax, edx,  27 +  45,       50, &KeyDisableSC5);
-	DGOptnsProcBox(eax, edx,  27 +  45 * 2,   50, &KeyDisableSC6);
-	DGOptnsProcBox(eax, edx,  27 +  45 * 3,   50, &KeyDisableSC7);
-	DGOptnsProcBox(eax, edx,  34 +  45 * 4,   50, &KeyVolDown);
+	// Shortcut Boxes
+	DGOptnsProcBox(eax, edx,  27,             23, &KeyBGDisble0,     0);
+	DGOptnsProcBox(eax, edx,  27 +  45,       23, &KeyBGDisble1,     0);
+	DGOptnsProcBox(eax, edx,  27 +  45 * 2,   23, &KeyBGDisble2,     0);
+	DGOptnsProcBox(eax, edx,  27 +  45 * 3,   23, &KeyBGDisble3,     0);
+	DGOptnsProcBox(eax, edx,  27 +  45 * 4,   23, &KeySprDisble,     0);
+	DGOptnsProcBox(eax, edx,  27,             41, &KeyDisableSC0,    0);
+	DGOptnsProcBox(eax, edx,  27 +  45,       41, &KeyDisableSC1,    0);
+	DGOptnsProcBox(eax, edx,  27 +  45 * 2,   41, &KeyDisableSC2,    0);
+	DGOptnsProcBox(eax, edx,  27 +  45 * 3,   41, &KeyDisableSC3,    0);
+	DGOptnsProcBox(eax, edx,  34 +  45 * 4,   41, &KeyVolUp,         0);
+	DGOptnsProcBox(eax, edx,  27,             50, &KeyDisableSC4,    0);
+	DGOptnsProcBox(eax, edx,  27 +  45,       50, &KeyDisableSC5,    0);
+	DGOptnsProcBox(eax, edx,  27 +  45 * 2,   50, &KeyDisableSC6,    0);
+	DGOptnsProcBox(eax, edx,  27 +  45 * 3,   50, &KeyDisableSC7,    0);
+	DGOptnsProcBox(eax, edx,  34 +  45 * 4,   50, &KeyVolDown,       0);
 
-	DGOptnsProcBox(eax, edx,   8 +  25,       70, &KeyQuickLoad);
-	DGOptnsProcBox(eax, edx,   8 +  57 + 26,  70, &KeyQuickRst);
-	DGOptnsProcBox(eax, edx,   8 + 114 + 20,  70, &KeyQuickExit);
-	DGOptnsProcBox(eax, edx,   8 + 114 + 78,  70, &KeyQuickClock);
-	DGOptnsProcBox(eax, edx,   8 +  25,       80, &KeyQuickChat);
-	DGOptnsProcBox(eax, edx,   8 +  57 + 45,  80, &KeyQuickSnapShot);
-	DGOptnsProcBox(eax, edx,   8 + 108 + 70,  80, &KeyQuickSaveSPC);
+	DGOptnsProcBox(eax, edx,   8 +  25,       70, &KeyQuickLoad,     0);
+	DGOptnsProcBox(eax, edx,   8 +  57 + 26,  70, &KeyQuickRst,      0);
+	DGOptnsProcBox(eax, edx,   8 + 114 + 20,  70, &KeyQuickExit,     0);
+	DGOptnsProcBox(eax, edx,   8 + 114 + 78,  70, &KeyQuickClock,    0);
+	DGOptnsProcBox(eax, edx,   8 +  25,       80, &KeyQuickChat,     0);
+	DGOptnsProcBox(eax, edx,   8 +  57 + 45,  80, &KeyQuickSnapShot, 0);
+	DGOptnsProcBox(eax, edx,   8 + 108 + 70,  80, &KeyQuickSaveSPC,  0);
 
-	DGOptnsProcBox(eax, edx,  78,            100, &KeyUsePlayer1234);
-	DGOptnsProcBox(eax, edx,  78,            110, &KeyResetAll);
-	DGOptnsProcBox(eax, edx,  78,            120, &KeyDisplayFPS);
+	DGOptnsProcBox(eax, edx,  78,            100, &KeyUsePlayer1234, 0);
+	DGOptnsProcBox(eax, edx,  78,            110, &KeyResetAll,      0);
+	DGOptnsProcBox(eax, edx,  78,            120, &KeyDisplayFPS,    0);
 #ifndef __MSDOS__
-	DGOptnsProcBox(eax, edx,  78,            130, &KeyDisplayBatt);
+	DGOptnsProcBox(eax, edx,  78,            130, &KeyDisplayBatt,   0);
 #endif
 
-	DGOptnsProcBox(eax, edx, 191,            100, &KeyNewGfxSwt);
-	DGOptnsProcBox(eax, edx, 191,            110, &KeyWinDisble);
-	DGOptnsProcBox(eax, edx, 191,            120, &KeyOffsetMSw);
-	DGOptnsProcBox(eax, edx, 191,            130, &KeyIncreaseGamma);
-	DGOptnsProcBox(eax, edx, 191,            140, &KeyDecreaseGamma);
+	DGOptnsProcBox(eax, edx, 191,            100, &KeyNewGfxSwt,     0);
+	DGOptnsProcBox(eax, edx, 191,            110, &KeyWinDisble,     0);
+	DGOptnsProcBox(eax, edx, 191,            120, &KeyOffsetMSw,     0);
+	DGOptnsProcBox(eax, edx, 191,            130, &KeyIncreaseGamma, 0);
+	DGOptnsProcBox(eax, edx, 191,            140, &KeyDecreaseGamma, 0);
 }
 
 
@@ -1820,7 +1820,6 @@ static void DisplayGUIComboClick(s4 const eax, s4 const edx)
 
 static void DisplayGUIComboClick2(s4 const eax, s4 const edx)
 {
-	keycontrolval = 0;
 	// x1,y1,x2,y2,upjump,downjump,holdpos,scsize,view,cur,listsize
 	// x1,y1,x2,y2,view,curs,num,.scru,.scrd,jumpto,sizeofscreen
 	if (GUISlidebarPostImpl(eax, edx, 192, 28, 199, 72, 13, 8, &GUIccombviewloc, &GUIccombcursloc, &NumCombo, &GUIBlankVar, 1, 10, 22, 190, 23 + 8 * 7, DisplayGUIComboClick_skipscrol)) return;
@@ -1937,14 +1936,14 @@ static void DisplayGUIAddOnClick(s4 const eax, s4 const edx)
 	GUIPButtonHole(eax, edx, 100, 53, &device2, 3);
 	GUIPButtonHole(eax, edx, 100, 63, &device2, 4);
 
-	DGOptnsProcBox(eax, edx,  74, 76, &KeyExtraEnab1);
-	DGOptnsProcBox(eax, edx, 165, 76, &KeyExtraEnab2);
+	DGOptnsProcBox(eax, edx,  74, 76, &KeyExtraEnab1, 0);
+	DGOptnsProcBox(eax, edx, 165, 76, &KeyExtraEnab2, 0);
 
 	GUIClickCButton(eax, edx,   9, 83, &mouse1lh);
 	GUIClickCButton(eax, edx, 100, 83, &mouse2lh);
 
-	DGOptnsProcBox(eax, edx,  74, 108, &SSAutoFire);
-	DGOptnsProcBox(eax, edx, 165, 108, &SSPause);
+	DGOptnsProcBox(eax, edx,  74, 108, &SSAutoFire, 0);
+	DGOptnsProcBox(eax, edx, 165, 108, &SSPause,    0);
 }
 
 
@@ -2017,22 +2016,22 @@ static void DisplayGUISaveClick(s4 const eax, s4 const edx)
 	GUIPHoldbutton2(eax, edx, 173, 29, 181, 36, 72, &RewindFrames,  1, 99);
 	GUIPHoldbutton2(eax, edx, 184, 29, 192, 36, 73, &RewindFrames, -1,  1);
 
-	DGOptnsProcBox(eax, edx, 27,            130, &KeyStateSlc0);
-	DGOptnsProcBox(eax, edx, 27 +  45,      130, &KeyStateSlc1);
-	DGOptnsProcBox(eax, edx, 27 +  45 * 2,  130, &KeyStateSlc2);
-	DGOptnsProcBox(eax, edx, 27 +  45 * 3,  130, &KeyStateSlc3);
-	DGOptnsProcBox(eax, edx, 27,            139, &KeyStateSlc4);
-	DGOptnsProcBox(eax, edx, 27 +  45,      139, &KeyStateSlc5);
-	DGOptnsProcBox(eax, edx, 27 +  45 * 2,  139, &KeyStateSlc6);
-	DGOptnsProcBox(eax, edx, 27 +  45 * 3,  139, &KeyStateSlc7);
-	DGOptnsProcBox(eax, edx, 27,            148, &KeyStateSlc8);
-	DGOptnsProcBox(eax, edx, 27 +  45,      148, &KeyStateSlc9);
-	DGOptnsProcBox(eax, edx, 27 +  45 * 2,  148, &KeyIncStateSlot);
-	DGOptnsProcBox(eax, edx, 27 +  45 * 3,  148, &KeyDecStateSlot);
-	DGOptnsProcBox(eax, edx,  8 +  25,      157, &KeySaveState);
-	DGOptnsProcBox(eax, edx,  8 +  57 + 25, 157, &KeyLoadState);
-	DGOptnsProcBox(eax, edx,  8 + 114 + 25, 157, &KeyStateSelct);
-	DGOptnsProcBox(eax, edx,  8 +  38,      166, &KeyRewind);
+	DGOptnsProcBox(eax, edx, 27,            130, &KeyStateSlc0,    0);
+	DGOptnsProcBox(eax, edx, 27 +  45,      130, &KeyStateSlc1,    0);
+	DGOptnsProcBox(eax, edx, 27 +  45 * 2,  130, &KeyStateSlc2,    0);
+	DGOptnsProcBox(eax, edx, 27 +  45 * 3,  130, &KeyStateSlc3,    0);
+	DGOptnsProcBox(eax, edx, 27,            139, &KeyStateSlc4,    0);
+	DGOptnsProcBox(eax, edx, 27 +  45,      139, &KeyStateSlc5,    0);
+	DGOptnsProcBox(eax, edx, 27 +  45 * 2,  139, &KeyStateSlc6,    0);
+	DGOptnsProcBox(eax, edx, 27 +  45 * 3,  139, &KeyStateSlc7,    0);
+	DGOptnsProcBox(eax, edx, 27,            148, &KeyStateSlc8,    0);
+	DGOptnsProcBox(eax, edx, 27 +  45,      148, &KeyStateSlc9,    0);
+	DGOptnsProcBox(eax, edx, 27 +  45 * 2,  148, &KeyIncStateSlot, 0);
+	DGOptnsProcBox(eax, edx, 27 +  45 * 3,  148, &KeyDecStateSlot, 0);
+	DGOptnsProcBox(eax, edx,  8 +  25,      157, &KeySaveState,    0);
+	DGOptnsProcBox(eax, edx,  8 +  57 + 25, 157, &KeyLoadState,    0);
+	DGOptnsProcBox(eax, edx,  8 + 114 + 25, 157, &KeyStateSelct,   0);
+	DGOptnsProcBox(eax, edx,  8 +  38,      166, &KeyRewind,       0);
 }
 
 
@@ -2047,20 +2046,20 @@ static void DisplayGUISpeedClick(void)
 
 	if (frameskip == 0)
 	{
-		DGOptnsProcBox(eax, edx, 12, 78, &KeyEmuSpeedUp);
-		DGOptnsProcBox(eax, edx, 12, 98, &KeyEmuSpeedDown);
+		DGOptnsProcBox(eax, edx, 12, 78, &KeyEmuSpeedUp,   0);
+		DGOptnsProcBox(eax, edx, 12, 98, &KeyEmuSpeedDown, 0);
 	}
 	else
 	{
-		DGOptnsProcBox(eax, edx, 12, 78, &KeyFRateUp);
-		DGOptnsProcBox(eax, edx, 12, 98, &KeyFRateDown);
+		DGOptnsProcBox(eax, edx, 12, 78, &KeyFRateUp,   0);
+		DGOptnsProcBox(eax, edx, 12, 98, &KeyFRateDown, 0);
 	}
 
-	DGOptnsProcBox(eax, edx, 12,  58, &KeyFastFrwrd); // Shortcut Boxes
-	DGOptnsProcBox(eax, edx, 12,  68, &KeySlowDown);
-	DGOptnsProcBox(eax, edx, 12,  88, &KeyResetSpeed);
-	DGOptnsProcBox(eax, edx, 12, 108, &EMUPauseKey);
-	DGOptnsProcBox(eax, edx, 12, 118, &INCRFrameKey);
+	DGOptnsProcBox(eax, edx, 12,  58, &KeyFastFrwrd,  0); // Shortcut Boxes
+	DGOptnsProcBox(eax, edx, 12,  68, &KeySlowDown,   0);
+	DGOptnsProcBox(eax, edx, 12,  88, &KeyResetSpeed, 0);
+	DGOptnsProcBox(eax, edx, 12, 108, &EMUPauseKey,   0);
+	DGOptnsProcBox(eax, edx, 12, 118, &INCRFrameKey,  0);
 
 	GUIPHoldbutton2(eax, edx, 118, 24, 126, 32, 74, &FFRatio,  1, 28);
 	GUIPHoldbutton2(eax, edx, 129, 24, 137, 32, 75, &FFRatio, -1,  0);

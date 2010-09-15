@@ -47,7 +47,6 @@ extern u1    cheatdata[28 * 255 + 56];
 extern u1    cplayernum;
 extern u1    cwindrawn;
 extern u1*   GUICYLocPtr;
-extern u1*   keycontrolval;
 extern u2    GUImouseposx;
 extern u2    GUImouseposy;
 extern u2    PrevResoln;
