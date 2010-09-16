@@ -19,8 +19,6 @@
 
 
 
-SECTION .data
-NEWSYM GUILoadTextA, times 38 db 0
 SECTION .bss
 NEWSYM GUILStA, resd 3
 NEWSYM GUILStB, resd 3

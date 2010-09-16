@@ -35,6 +35,7 @@
 
 
 char      CMovieExt           = 'v';
+char      GUILoadTextA[38];
 u1        GUIFreshInputSelect = 1;
 u1        GUIStatesText5      = 0;
 u1        GUIWincoladd;

@@ -66,6 +66,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "../zloader.h"
 #include "../zdir.h"
 #include "c_gui.h"
+#include "c_guiwindp.h"
 #include "gui.h"
 #include "guicheat.h"
 #include "guifuncs.h"
