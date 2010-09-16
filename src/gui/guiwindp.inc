@@ -40,8 +40,6 @@ NEWSYM GUIInputTabs, dd 1,5
   db '#4',0
   db '#5',0
 
-NEWSYM GUIInputRefP, dd pl1contrl,pl2contrl,pl3contrl,pl4contrl,pl5contrl
-
 NEWSYM GUIFreshInputSelect, db 1
 
 SECTION .bss

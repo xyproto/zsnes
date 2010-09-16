@@ -36,6 +36,7 @@
 #include "../zmovie.h"
 #include "../zstate.h"
 #include "c_gui.h"
+#include "c_guiwindp.h"
 #include "gui.h"
 #include "guikeys.h"
 #include "guimisc.h"

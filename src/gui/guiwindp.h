@@ -32,7 +32,6 @@ extern u1     GUINumCombo;
 extern u1     ShowMMXSupport;
 extern u1     lameExists;
 extern u1     mencoderExists;
-extern u1*    GUIInputRefP[5];
 extern u4     CurCStextpos;
 extern u4     GUICSStA[3];
 extern u4     GUICSStC[3];

@@ -47,11 +47,6 @@ EXTSYM pressed
 EXTSYM SnapPath,SPCPath,BSXPath,SGPath,STPath,GNextPath
 EXTSYM SRAMPath
 EXTSYM IPSPath,MoviePath,CHTPath,ComboPath,INPPath,SStatePath
-EXTSYM pl1contrl
-EXTSYM pl2contrl
-EXTSYM pl3contrl
-EXTSYM pl4contrl
-EXTSYM pl5contrl
 EXTSYM GUIMovieForcedText
 
 %ifdef __UNIXSDL__

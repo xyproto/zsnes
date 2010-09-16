@@ -23,8 +23,9 @@ void DisplayGUIVideo(void);
 void DisplayGameOptns(void);     // Misc Key Window
 void DisplayNetOptns(void);
 
-extern char CMovieExt;
-extern u1   GUIStatesText5;
-extern u1   GUIWincoladd;
+extern char      CMovieExt;
+extern u1        GUIStatesText5;
+extern u1        GUIWincoladd;
+extern u1* const GUIInputRefP[];
 
 #endif

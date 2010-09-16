@@ -34,9 +34,10 @@
 #endif
 
 
-char CMovieExt      = 'v';
-u1   GUIStatesText5 = 0;
-u1   GUIWincoladd;
+char      CMovieExt      = 'v';
+u1        GUIStatesText5 = 0;
+u1        GUIWincoladd;
+u1* const GUIInputRefP[] = { &pl1contrl, &pl2contrl, &pl3contrl, &pl4contrl, &pl5contrl };
 
 
 static s4 cloadnleft;
