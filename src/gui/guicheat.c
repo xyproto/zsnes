@@ -26,6 +26,7 @@
 #include "../init.h"
 #include "../ui.h"
 #include "c_gui.h"
+#include "c_guiwindp.h"
 #include "gui.h"
 #include "guicheat.h"
 #include "guikeys.h"

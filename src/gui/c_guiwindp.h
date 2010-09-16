@@ -24,6 +24,8 @@ void DisplayGameOptns(void);     // Misc Key Window
 void DisplayNetOptns(void);
 
 extern char      CMovieExt;
+extern char      GUICheatTextZ1[];
+extern char      GUICheatTextZ2[];
 extern char      GUIChoseSaveText2[2];
 extern char      GUIChoseSlotTextX[2];
 extern char      GUIComboTextH[21];

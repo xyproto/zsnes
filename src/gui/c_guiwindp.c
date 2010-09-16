@@ -35,6 +35,8 @@
 
 
 char      CMovieExt           = 'v';
+char      GUICheatTextZ1[16]  = "_";
+char      GUICheatTextZ2[23]  = "_";
 char      GUIChoseSaveText2[] = "-";
 char      GUIChoseSlotTextX[] = "-";
 char      GUIComboTextH[21];
