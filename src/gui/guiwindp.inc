@@ -108,6 +108,3 @@ NEWSYM GUIMovieTextPtr, dd GUIMovieForcedText
 %ifndef __MSDOS__
 NEWSYM GUICustomResTextPtr, dd GUICustomX,GUICustomY
 %endif
-
-;General data
-GUINetDisp db 'REMOTE',0,0,0,0,0,0,0,0,0
