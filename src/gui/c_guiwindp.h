@@ -34,7 +34,10 @@ extern u1* const GUIInputRefP[];
 extern u4        GUIIStA[3];
 extern u4        GUILStA[3];
 extern u4        GUILStB[3];
+extern u4        GUIVStA[3];
 extern u4        GUIcurrentinputcursloc;
 extern u4        GUIcurrentinputviewloc;
+extern u4        GUIcurrentvideocursloc;
+extern u4        GUIcurrentvideoviewloc;
 
 #endif

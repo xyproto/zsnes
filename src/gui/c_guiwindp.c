@@ -45,8 +45,11 @@ u1* const GUIInputRefP[]      = { &pl1contrl, &pl2contrl, &pl3contrl, &pl4contrl
 u4        GUIIStA[3];
 u4        GUILStA[3];
 u4        GUILStB[3];
+u4        GUIVStA[3];
 u4        GUIcurrentinputcursloc;
 u4        GUIcurrentinputviewloc;
+u4        GUIcurrentvideocursloc;
+u4        GUIcurrentvideoviewloc;
 
 
 static s4 cloadnleft;

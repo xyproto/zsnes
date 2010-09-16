@@ -41,12 +41,6 @@ NEWSYM GUIVntscTab, dd 0,2
   db 'NTSC',0
   db 'ADV NTSC',0
 
-SECTION .bss
-NEWSYM GUIVStA, resd 3
-NEWSYM GUIcurrentvideoviewloc, resd 1
-NEWSYM GUIcurrentvideocursloc, resd 1
-
-SECTION .data
 NEWSYM GUICheatTextZ1, db '_',0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; 14 characters
 NEWSYM GUICheatTextZ2, db '_',0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; 18 characters
 
