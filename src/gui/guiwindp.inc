@@ -20,9 +20,6 @@
 
 
 SECTION .data
-NEWSYM GUIChoseSaveText2, db '-',0
-NEWSYM GUIChoseSlotTextX, db '-',0
-
 NEWSYM GUIInputTabs, dd 1,5
   db '#1',0
   db '#2',0

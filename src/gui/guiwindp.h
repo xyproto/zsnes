@@ -7,8 +7,6 @@ extern char   CSDescDisplay[20];
 extern char   CSInputDisplay[12];
 extern char   GUICheatTextZ1[16];
 extern char   GUICheatTextZ2[23];
-extern char   GUIChoseSaveText2[2];
-extern char   GUIChoseSlotTextX[2];
 extern char*  GUICustomResTextPtr[2];
 extern char*  GUIPathsTab1Ptr[4];
 extern char*  GUIPathsTab2Ptr[5];
