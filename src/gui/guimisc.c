@@ -41,7 +41,6 @@
 #include "guikeys.h"
 #include "guimisc.h"
 #include "guimouse.h"
-#include "guiwindp.h"
 
 #ifdef __MSDOS__
 #	include "../dos/joy.h"

@@ -30,12 +30,6 @@ NEWSYM GUIInputTabs, dd 1,5
   db '#4',0
   db '#5',0
 
-SECTION .bss
-NEWSYM GUIIStA, resd 3
-NEWSYM GUIcurrentinputviewloc, resd 1
-NEWSYM GUIcurrentinputcursloc, resd 1
-
-SECTION .data
 NEWSYM GUIOptionTabs, dd 1,2
   db 'BASIC',0
   db 'MORE',0

@@ -31,7 +31,10 @@ extern u1        GUIStatesText5;
 extern u1        GUIWincoladd;
 extern u1        ShowMMXSupport;
 extern u1* const GUIInputRefP[];
+extern u4        GUIIStA[3];
 extern u4        GUILStA[3];
 extern u4        GUILStB[3];
+extern u4        GUIcurrentinputcursloc;
+extern u4        GUIcurrentinputviewloc;
 
 #endif
