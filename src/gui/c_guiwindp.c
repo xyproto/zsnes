@@ -41,6 +41,9 @@ u1        GUIStatesText5      = 0;
 u1        GUIWincoladd;
 u1        ShowMMXSupport      = 2;
 u1* const GUIInputRefP[]      = { &pl1contrl, &pl2contrl, &pl3contrl, &pl4contrl, &pl5contrl };
+u4        GUILStA[3];
+u4        GUILStB[3];
+u1        GUILoadPos;
 
 
 static s4 cloadnleft;

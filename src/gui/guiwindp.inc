@@ -19,11 +19,6 @@
 
 
 
-SECTION .bss
-NEWSYM GUILStA, resd 3
-NEWSYM GUILStB, resd 3
-NEWSYM GUILoadPos, resb 1
-
 SECTION .data
 NEWSYM GUIChoseSaveText2, db '-',0
 NEWSYM GUIChoseSlotTextX, db '-',0
