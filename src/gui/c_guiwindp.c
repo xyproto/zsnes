@@ -34,8 +34,9 @@
 #endif
 
 
-u1 GUIStatesText5 = 0;
-u1 GUIWincoladd;
+char CMovieExt      = 'v';
+u1   GUIStatesText5 = 0;
+u1   GUIWincoladd;
 
 
 static s4 cloadnleft;

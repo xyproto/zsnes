@@ -14,6 +14,7 @@
 #include "cpu/stable.h"
 #include "debugger.h"
 #include "gui/c_gui.h"
+#include "gui/c_guiwindp.h"
 #include "gui/gui.h"
 #include "gui/guikeys.h"
 #include "gui/guiwindp.h"

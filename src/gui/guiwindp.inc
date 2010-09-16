@@ -125,8 +125,6 @@ NEWSYM GUIMovieTabs, dd 1,1
 NEWSYM GUIDumpingTab, dd 0,1
   db 'DUMPING',0
 
-NEWSYM CMovieExt, db 'v'
-
 SECTION .bss
 NEWSYM GUIccombviewloc, resd 1
 NEWSYM GUIccombcursloc, resd 1

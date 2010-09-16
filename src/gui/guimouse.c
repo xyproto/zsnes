@@ -41,6 +41,7 @@
 #include "../zpath.h"
 #include "../zstate.h"
 #include "c_gui.h"
+#include "c_guiwindp.h"
 #include "gui.h"
 #include "guicheat.h"
 #include "guicombo.h"

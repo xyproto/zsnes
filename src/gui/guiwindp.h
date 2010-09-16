@@ -3,7 +3,6 @@
 
 #include "../types.h"
 
-extern char   CMovieExt;
 extern char   CSDescDisplay[20];
 extern char   CSInputDisplay[12];
 extern char   GUICSrcTextG1[11];

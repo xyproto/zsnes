@@ -45,7 +45,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "cpu/spc700.h"
 #include "endmem.h"
 #include "gblvars.h"
-#include "gui/guiwindp.h"
+#include "gui/c_guiwindp.h"
 #include "asm_call.h"
 #include "init.h"
 #include "initc.h"

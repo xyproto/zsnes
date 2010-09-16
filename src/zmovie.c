@@ -51,6 +51,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "asm_call.h"
 #include "c_init.h"
 #include "cpu/dspproc.h"
+#include "gui/c_guiwindp.h"
 #include "gui/guimisc.h"
 #include "initc.h"
 #include "md.h"
@@ -75,7 +76,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 extern uint32_t versionNumber, CRC32, cur_zst_size;
 extern uint8_t GUIReset, GUIQuit;
 extern uint8_t mencoderExists, lameExists;
-extern char CMovieExt;
 bool MovieWaiting = false;
 
 extern uint8_t device1, device2;
