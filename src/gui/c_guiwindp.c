@@ -1588,6 +1588,7 @@ static void DisplayChtSrcResNoSearch(void)
 	DrawGUIButton(13, 70, 140, 110, 152, "VIEW",    52, 0, 1);
 
 	// Call and display # of results
+	char GUICSrcTextG1[11];
 	convertnum(GUICSrcTextG1, FindChtSrcRes(0));
 	GUIDisplayText(13, 12, 125, "# OF RESULTS:");
 	GUIDisplayText(13, 97, 125, GUICSrcTextG1);
@@ -1657,6 +1658,7 @@ static void CheatSearching(void) // Exact Value Search
 
 	CSAddFlash(CSInputDisplay); // More flash?
 
+	char        GUICSrcTextG1[11];
 	u4    const eax = SrcMask[CheatSrcByteSize]; // Find Max Size
 	char* const esi = GUICSrcTextG1;
 	if (CheatSrcByteBase != 1)
@@ -1724,6 +1726,7 @@ static void Cheatmodeview(void) // View ResultsWindow
 		{
 			if (curentryleft-- == 0) curentryval = CSCurEntry;
 
+			char GUICSrcTextG1[11];
 			converthex(GUICSrcTextG1, CSCurEntry + 0x7E0000, 3);
 			GUIDisplayTextG(13, CheatSearchXPos, CheatSearchYPos, GUICSrcTextG1);
 
@@ -1793,6 +1796,7 @@ static void Cheatmodeadd(void) // Add Window
 	DrawGUIButton(13, 130, 155, 160, 167, "ADD",    57, 0, 1);
 
 	GUIDisplayText(13, 5, 130, "MAX VALUE:"); // Max Value Text
+	char        GUICSrcTextG1[11];
 	u4    const eax = SrcMask[CheatSrcByteSize];
 	char* const esi = GUICSrcTextG1;
 	if (CheatSrcByteBase != 1)

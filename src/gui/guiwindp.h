@@ -5,7 +5,6 @@
 
 extern char   CSDescDisplay[20];
 extern char   CSInputDisplay[12];
-extern char   GUICSrcTextG1[11];
 extern char   GUICheatTextZ1[16];
 extern char   GUICheatTextZ2[23];
 extern char   GUIChoseSaveText2[2];

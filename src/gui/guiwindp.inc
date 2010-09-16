@@ -71,13 +71,6 @@ NEWSYM curaddrvalcs, resd 1
 NEWSYM curvaluecs, resd 1
 NEWSYM GUICSStA, resd 3
 
-SECTION .data
-
-; G = General Use
-
-NEWSYM GUICSrcTextG1, db '          ',0       ; All variables
-
-SECTION .bss
 CCursLoc resd 1
 CViewLoc resd 1
 NViewLoc resd 1
