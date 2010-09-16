@@ -27,6 +27,7 @@ extern char      CMovieExt;
 extern u1        GUIFreshInputSelect;
 extern u1        GUIStatesText5;
 extern u1        GUIWincoladd;
+extern u1        ShowMMXSupport;
 extern u1* const GUIInputRefP[];
 
 #endif

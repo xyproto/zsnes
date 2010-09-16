@@ -38,6 +38,7 @@ char      CMovieExt           = 'v';
 u1        GUIFreshInputSelect = 1;
 u1        GUIStatesText5      = 0;
 u1        GUIWincoladd;
+u1        ShowMMXSupport      = 2;
 u1* const GUIInputRefP[]      = { &pl1contrl, &pl2contrl, &pl3contrl, &pl4contrl, &pl5contrl };
 
 

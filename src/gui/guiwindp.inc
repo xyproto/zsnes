@@ -50,8 +50,6 @@ NEWSYM GUIOptionTabs, dd 1,2
   db 'BASIC',0
   db 'MORE',0
 
-NEWSYM ShowMMXSupport, db 2
-
 NEWSYM GUIVideoTabs, dd 1,2
   db 'MODES',0
   db 'FILTERS',0

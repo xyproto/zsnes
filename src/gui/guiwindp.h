@@ -28,7 +28,6 @@ extern u1     GUIComboPNum;
 extern u1     GUIComboPos;
 extern u1     GUILoadPos;
 extern u1     GUINumCombo;
-extern u1     ShowMMXSupport;
 extern u1     lameExists;
 extern u1     mencoderExists;
 extern u4     CurCStextpos;
