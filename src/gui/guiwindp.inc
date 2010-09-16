@@ -71,17 +71,7 @@ NEWSYM curaddrvalcs, resd 1
 NEWSYM curvaluecs, resd 1
 NEWSYM GUICSStA, resd 3
 
-CCursLoc resd 1
-CViewLoc resd 1
-NViewLoc resd 1
-TViewLoc resd 1
-
 NEWSYM GUINCStA, resd 3
-FileNameMod resb 512
-CurCStringPos resd 1
-
-GUIGameOptnsColA resb 1
-GUIGameOptnsColB resb 1
 
 SECTION .data
 
