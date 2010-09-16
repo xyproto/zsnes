@@ -96,8 +96,6 @@ NEWSYM GUINumCombo, resb 1
 NEWSYM GUIComboData, resb 50
 
 SECTION .data
-NEWSYM GUIComboTextH, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-
 NEWSYM GUIPathTabs, dd 1,3
   db 'GENERAL',0
   db 'MORE',0

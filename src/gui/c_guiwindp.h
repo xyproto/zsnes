@@ -24,6 +24,7 @@ void DisplayGameOptns(void);     // Misc Key Window
 void DisplayNetOptns(void);
 
 extern char      CMovieExt;
+extern char      GUIComboTextH[21];
 extern char      GUILoadTextA[38];
 extern u1        GUIFreshInputSelect;
 extern u1        GUILoadPos;
