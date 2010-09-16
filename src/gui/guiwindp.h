@@ -26,7 +26,6 @@ extern u1     GUIComboData[50];
 extern u1     GUIComboLHorz;
 extern u1     GUIComboPNum;
 extern u1     GUIComboPos;
-extern u1     GUIFreshInputSelect;
 extern u1     GUILoadPos;
 extern u1     GUINumCombo;
 extern u1     ShowMMXSupport;

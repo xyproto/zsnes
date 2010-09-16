@@ -40,8 +40,6 @@ NEWSYM GUIInputTabs, dd 1,5
   db '#4',0
   db '#5',0
 
-NEWSYM GUIFreshInputSelect, db 1
-
 SECTION .bss
 NEWSYM GUIIStA, resd 3
 NEWSYM GUIcurrentinputviewloc, resd 1
