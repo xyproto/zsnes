@@ -75,7 +75,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 extern uint32_t versionNumber, CRC32, cur_zst_size;
 extern uint8_t GUIReset, GUIQuit;
-extern uint8_t mencoderExists, lameExists;
 bool MovieWaiting = false;
 
 extern uint8_t device1, device2;
@@ -94,6 +93,11 @@ void zst_sram_load_compressed(FILE *);
 void zst_save(FILE *, bool, bool);
 bool zst_load(FILE *, size_t);
 bool zst_compressed_loader(FILE *);
+
+
+u1 lameExists     = 0;
+u1 mencoderExists = 0;
+
 
 /////////////////////////////////////////////////////////
 

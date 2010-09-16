@@ -20,9 +20,6 @@
 
 
 SECTION .data
-NEWSYM mencoderExists, db 0
-NEWSYM lameExists, db 0
-
 NEWSYM GUILoadTextA, times 38 db 0
 SECTION .bss
 NEWSYM GUILStA, resd 3

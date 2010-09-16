@@ -64,6 +64,8 @@ void ResetDuringMovie(void);
 void MovieDumpRaw(void);
 
 extern u1            MovieForcedLengthEnabled;
+extern u1            lameExists;
+extern u1            mencoderExists;
 extern bool          RawDumpInProgress;
 extern char          MovieFrameStr[10];
 extern unsigned char MoviePassWaiting;
