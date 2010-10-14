@@ -11,6 +11,12 @@
 #include "spc700.h"
 
 
+void conv2speed(u4 ecx, u4* esi, u4 const* edi)
+{
+	do *esi++ = (u8)*edi++ * SBToSPC / 11025U; while (--ecx != 0);
+}
+
+
 void InitSPC(void)
 {
 	asm_call(AdjustFrequency);

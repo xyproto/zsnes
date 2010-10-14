@@ -23,6 +23,7 @@ EXTSYM SPCRAM,RevStereo,VolumeConvTable
 EXTSYM spcBuffera,DSPMem,SoundInterpType,NoiseData,Voice0Disable,EchoDis
 EXTSYM Surround,echobuf,ENVDisable,LowPassFilterType,EMUPause,AudioLogging
 EXTSYM MMXSupport,StereoSound,SoundQuality
+EXTSYM conv2speed
 
 %ifdef __MSDOS__
 EXTSYM SB_quality_limiter,vibracard
@@ -303,20 +304,6 @@ NEWSYM NoiseSpeeds, dd 1,16,21,25,31,42,50,63,83,100,125,167,200,250,333,400,500
 
 SECTION .text
 
-NEWSYM conv2speed
-.next
-    mov eax,[edi]
-    mov ebx,[SBToSPC]
-    mul ebx
-    mov ebx,11025
-    div ebx
-    mov [esi],eax
-    add esi,4
-    add edi,4
-    dec ecx
-    jnz .next
-    ret
-
 NEWSYM AdjustFrequency
       xor ebx,ebx
       mov ah,[MMXSupport]
@@ -478,35 +465,35 @@ NEWSYM AdjustFrequency
       mov esi,EchoRate
       mov edi,EchoRateO
       mov ecx,16
-      call conv2speed
+      ccallv conv2speed, ecx, esi, edi
       mov esi,AttackRate
       mov edi,AttackRateO
       mov ecx,16
-      call conv2speed
+      ccallv conv2speed, ecx, esi, edi
       mov esi,DecayRate
       mov edi,DecayRateO
       mov ecx,8
-      call conv2speed
+      ccallv conv2speed, ecx, esi, edi
       mov esi,SustainRate+4
       mov edi,SustainRateO+4
       mov ecx,31
-      call conv2speed
+      ccallv conv2speed, ecx, esi, edi
       mov esi,Increase+4
       mov edi,IncreaseO+4
       mov ecx,31
-      call conv2speed
+      ccallv conv2speed, ecx, esi, edi
       mov esi,IncreaseBent+4
       mov edi,IncreaseBentO+4
       mov ecx,31
-      call conv2speed
+      ccallv conv2speed, ecx, esi, edi
       mov esi,Decrease+4
       mov edi,DecreaseO+4
       mov ecx,31
-      call conv2speed
+      ccallv conv2speed, ecx, esi, edi
       mov esi,DecreaseRateExp+4
       mov edi,DecreaseRateExpO+4
       mov ecx,31
-      call conv2speed
+      ccallv conv2speed, ecx, esi, edi
       mov dword[Voice0Pitch],0xFFFEFFFE
       mov dword[Voice0Pitch+4],0xFFFEFFFE
       mov dword[Voice0Pitch+8],0xFFFEFFFE
