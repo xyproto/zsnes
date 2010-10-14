@@ -36,10 +36,6 @@ EXTSYM AdsrSustLevLoc,AdsrBlocksLeft,AdsrNextTimeDepth
 EXTSYM VoiceStarter,DecayRate,SustainRate
 EXTSYM KeyOnStA,KeyOnStB,keyonsn
 
-SECTION .data
-identcode db 255,1,78,78
-SECTION .text
-
 ; Digital Sound Processor of the SPC700 By _Demo_
 
 SECTION .data
