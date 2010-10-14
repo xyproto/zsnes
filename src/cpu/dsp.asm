@@ -42,13 +42,6 @@ SECTION .text
 
 ; Digital Sound Processor of the SPC700 By _Demo_
 
-%macro initrevsthelp 1
-    mov al,[DSPMem+01h+%1]
-    mov ah,[DSPMem+00h+%1]
-    mov [DSPMem+01h+%1],ah
-    mov [DSPMem+00h+%1],al
-%endmacro
-
 SECTION .data
 ALIGN32
 NEWSYM DSPMem, times 256 db 0
