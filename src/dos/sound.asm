@@ -1190,7 +1190,6 @@ NEWSYM getblaster
     cmp byte[SBIrq],7
     jbe .nohighirq
     add al,60h
-    add byte[PICRotateP],80h
     add byte[PICMaskP],80h
 .nohighirq
     mov [SBInt],al
@@ -1319,7 +1318,6 @@ SECTION .data
 .blinfoc db 13,10,'DMA   : ',0
 .blinfod db 13,10,'HDMA  : ',0
 
-NEWSYM PICRotateP, db 20h
 NEWSYM PICMaskP,   db 21h
 
 ; Line added by Peter Santing
