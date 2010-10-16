@@ -81,10 +81,6 @@ NEWSYM SB_alloc_dma
     mov dword[sbpmofs],8192
     add dword[memoryloc],8192
 .nonextarea
-    mov edi,[sbpmofs]
-    mov [SBBufferLoc],edi
-    mov dword[SBBufferMov],1
-    mov dword[SBBufferInc],4
     ; clear dos memory
     push es
     mov es,[sbselec]
@@ -150,11 +146,6 @@ NEWSYM SBDMAPage, db 83
 NEWSYM SBHDMA, db 0
 NEWSYM SBHDMAPage, db 0
 NEWSYM vibracard, db 0
-
-NEWSYM SBBufferLoc,    dd 0
-NEWSYM SBBufferMov,    dd 0
-NEWSYM SBBufferInc,    dd 0
-NEWSYM SoundInterrupt, dd 0
 
 
 ; ViBRA16X fixes!
