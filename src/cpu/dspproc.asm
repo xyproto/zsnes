@@ -297,8 +297,6 @@ NEWSYM SBToSPCSpeeds2, dd 8192,11289,22579,45158,16384,32768,48000
 %else
 NEWSYM SBToSPCSpeeds, dd 8000,11025,22050,44100,16000,32000,48000
 %endif
-NEWSYM NumofSPCBlock, dd 626,456,228,114,314,156,104
-NEWSYM SPCBlockNum, dd 0
 NEWSYM NoiseSpeeds, dd 1,16,21,25,31,42,50,63,83,100,125,167,200,250,333,400,500
   dd 667,800,1000,1333,1600,2000,2667,3200,4000,5333,6400,8000,10667,16000,32000
 
@@ -428,14 +426,6 @@ NEWSYM AdjustFrequency
 %ifdef __MSDOS__
       call SB_quality_limiter
 %endif
-      mov eax,[SoundQuality]
-      mov ebx,[NumofSPCBlock+eax*4]
-      cmp byte[StereoSound],1
-      jne .nostereo
-      shr ebx,1
-.nostereo
-      mov [SPCBlockNum],ebx
-.next
 
       mov ecx,[SoundQuality]
       mov eax,[SBToSPCSpeeds+ecx*4]
