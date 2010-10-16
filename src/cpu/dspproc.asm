@@ -441,7 +441,6 @@ NEWSYM AdjustFrequency
 .not16bit
 %endif
       mov [SBToSPC],eax
-      mov [SBRateb],eax
 
       xor edx,edx
       mov ebx,eax
@@ -1400,11 +1399,8 @@ NEWSYM Voice5GainTime,       resd 1
 NEWSYM Voice6GainTime,       resd 1
 NEWSYM Voice7GainTime,       resd 1
 
-NEWSYM useless, resd 2    ;This is needed because of the stupid
+NEWSYM useless, resd 4    ;This is needed because of the stupid
                           ;alignment dependency in the savestates.
-
-NEWSYM Freqdisp,        resd 1
-NEWSYM SBRateb,         resd 1
 
 NEWSYM Voice0Looped,            resb 1
 NEWSYM Voice1Looped,            resb 1
