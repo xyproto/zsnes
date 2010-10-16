@@ -193,6 +193,7 @@ endif
 
 ifeq ($(ARCH), DOS)
 SRCS += dos/c_dosintrf.c
+SRCS += dos/c_sound.c
 SRCS += dos/dosintrf.asm
 SRCS += dos/gppro.asm
 SRCS += dos/initvid.asm

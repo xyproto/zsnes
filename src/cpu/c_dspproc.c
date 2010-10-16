@@ -13,6 +13,7 @@
 
 #ifdef __MSDOS__
 #	include "../asm_call.h"
+#	include "../dos/c_sound.h"
 #	include "../dos/sound.h"
 #endif
 
@@ -1248,6 +1249,6 @@ void InitSPC(void)
 	opcjmptab[0xFF] = OpFF;
 
 #ifdef __MSDOS__
-	asm_call(SB_alloc_dma);
+	SB_alloc_dma();
 #endif
 }

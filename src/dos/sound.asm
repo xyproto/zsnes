@@ -56,51 +56,6 @@ printnum:
     pop edx
     ret
 
-NEWSYM SB_alloc_dma
-
-    mov ax,0100h                ; Allocate DOS memory
-    mov bx,16384/16             ; Allocate 16384 bytes
-    int 31h
-    ; To delocate this, use ax=0101h, dx=selector of block/int 31h
-    jc near .error
-    ; Check which 8192 byte boundary doesn't cross a page
-    mov word[memoryloc+2],0
-    mov dword[memoryloc],0
-    mov [memoryloc],ax
-    mov [sbselec],dx
-    shl dword[memoryloc],4
-    mov edx,[memoryloc]
-    shr edx,16
-    mov al,dl
-    mov edx,[memoryloc]
-    add edx,8192
-    shr edx,16
-    mov dword[sbpmofs],0
-    cmp al,dl
-    je .nonextarea
-    mov dword[sbpmofs],8192
-    add dword[memoryloc],8192
-.nonextarea
-    ; clear dos memory
-    push es
-    mov es,[sbselec]
-    mov edi,[sbpmofs]
-    mov ecx,2048
-    mov eax,0
-    rep stosd
-    pop es
-    ret
-
-.error
-    mov edx,.nohand         ;use extended
-    mov ah,9                ;DOS- API
-    int 21h                 ;to print a string
-    ccallv DosExit
-
-SECTION .data
-.nohand db 'Unable to allocate conventional memory!',13,10,'$'
-SECTION .text
-
 
 NEWSYM DeInitSPC
     cmp byte[SBDeinitType],0
