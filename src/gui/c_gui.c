@@ -1,13 +1,12 @@
 #include <string.h>
 
 #include "../asm.h"
-#include "../asm_call.h"
 #include "../c_init.h"
 #include "../c_intrf.h"
 #include "../c_vcache.h"
 #include "../cfg.h"
+#include "../cpu/c_dspproc.h"
 #include "../cpu/c_execute.h"
-#include "../cpu/dspproc.h"
 #include "../cpu/execute.h"
 #include "../cpu/regs.h"
 #include "../effects/burn.h"
@@ -36,6 +35,7 @@
 #include "guiwindp.h"
 
 #ifdef __MSDOS__
+#	include "../asm_call.h"
 #	include "../dos/vesa2.h"
 #endif
 
@@ -1774,7 +1774,7 @@ void StartGUI(void)
 
 	memset(vidbufferofsb, 0, 256 * 144 * 4);
 
-	asm_call(AdjustFrequency);
+	AdjustFrequency();
 	GUIOn    = 0;
 	GUIOn2   = 0;
 	GUIReset = 0;

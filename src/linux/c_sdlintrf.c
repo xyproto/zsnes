@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "../asm_call.h"
 #include "../c_intrf.h"
 #include "../c_vcache.h"
 #include "../cfg.h"
+#include "../cpu/c_dspproc.h"
 #include "../cpu/dspproc.h"
 #include "../cpu/execute.h"
 #include "../gui/c_gui.h"
@@ -88,7 +88,7 @@ void InitPreGame(void)
 
 	if (V8Mode != GrayscaleMode) V8Mode ^= 1;
 
-	asm_call(AdjustFrequency);
+	AdjustFrequency();
 
 	memset(vidbufferofsb, 0, 288 * 128 * 4);
 

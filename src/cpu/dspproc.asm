@@ -20,14 +20,9 @@
 %include "macros.mac"
 
 EXTSYM SPCRAM,RevStereo,VolumeConvTable
-EXTSYM spcBuffera,DSPMem,SoundInterpType,NoiseData,Voice0Disable,EchoDis
+EXTSYM spcBuffera,DSPMem,NoiseData,Voice0Disable,EchoDis
 EXTSYM Surround,echobuf,ENVDisable,LowPassFilterType,EMUPause,AudioLogging
-EXTSYM MMXSupport,StereoSound,SoundQuality
-EXTSYM conv2speed
-
-%ifdef __MSDOS__
-EXTSYM SB_quality_limiter,vibracard
-%endif
+EXTSYM StereoSound
 
 SECTION .data
 NEWSYM SBHDMA, db 0         ; stupid legacy code ...
@@ -62,214 +57,10 @@ SECTION .bss
 ; If A is not zero, goto FFD6
 ; Jump to Address [0000]
 
-DSPInterP resw 1024
+NEWSYM DSPInterP, resw 1024
 
 section .data
 ALIGN32
-
-Gaussian:
-  dw 1305,1305,1304,1304,1304,1304,1304,1303
-  dw 1303,1303,1302,1302,1301,1300,1300,1299
-  dw 1298,1297,1297,1296,1295,1294,1293,1292
-  dw 1291,1290,1288,1287,1286,1284,1283,1282
-  dw 1280,1279,1277,1275,1274,1272,1270,1269
-  dw 1267,1265,1263,1261,1259,1257,1255,1253
-  dw 1251,1248,1246,1244,1241,1239,1237,1234
-  dw 1232,1229,1227,1224,1221,1219,1216,1213
-  dw 1210,1207,1205,1202,1199,1196,1193,1190
-  dw 1186,1183,1180,1177,1174,1170,1167,1164
-  dw 1160,1157,1153,1150,1146,1143,1139,1136
-  dw 1132,1128,1125,1121,1117,1113,1109,1106
-  dw 1102,1098,1094,1090,1086,1082,1078,1074
-  dw 1070,1066,1061,1057,1053,1049,1045,1040
-  dw 1036,1032,1027,1023,1019,1014,1010,1005
-  dw 1001, 997, 992, 988, 983, 978, 974, 969
-  dw  965, 960, 955, 951, 946, 941, 937, 932
-  dw  927, 923, 918, 913, 908, 904, 899, 894
-  dw  889, 884, 880, 875, 870, 865, 860, 855
-  dw  851, 846, 841, 836, 831, 826, 821, 816
-  dw  811, 806, 802, 797, 792, 787, 782, 777
-  dw  772, 767, 762, 757, 752, 747, 742, 737
-  dw  732, 728, 723, 718, 713, 708, 703, 698
-  dw  693, 688, 683, 678, 674, 669, 664, 659
-  dw  654, 649, 644, 640, 635, 630, 625, 620
-  dw  615, 611, 606, 601, 596, 592, 587, 582
-  dw  577, 573, 568, 563, 559, 554, 550, 545
-  dw  540, 536, 531, 527, 522, 517, 513, 508
-  dw  504, 499, 495, 491, 486, 482, 477, 473
-  dw  469, 464, 460, 456, 451, 447, 443, 439
-  dw  434, 430, 426, 422, 418, 414, 410, 405
-  dw  401, 397, 393, 389, 385, 381, 378, 374
-  dw  370, 366, 362, 358, 354, 351, 347, 343
-  dw  339, 336, 332, 328, 325, 321, 318, 314
-  dw  311, 307, 304, 300, 297, 293, 290, 286
-  dw  283, 280, 276, 273, 270, 267, 263, 260
-  dw  257, 254, 251, 248, 245, 242, 239, 236
-  dw  233, 230, 227, 224, 221, 218, 215, 212
-  dw  210, 207, 204, 201, 199, 196, 193, 191
-  dw  188, 186, 183, 180, 178, 175, 173, 171
-  dw  168, 166, 163, 161, 159, 156, 154, 152
-  dw  150, 147, 145, 143, 141, 139, 137, 134
-  dw  132, 130, 128, 126, 124, 122, 120, 118
-  dw  117, 115, 113, 111, 109, 107, 106, 104
-  dw  102, 100,  99,  97,  95,  94,  92,  90
-  dw   89,  87,  86,  84,  83,  81,  80,  78
-  dw   77,  76,  74,  73,  71,  70,  69,  67
-  dw   66,  65,  64,  62,  61,  60,  59,  58
-  dw   56,  55,  54,  53,  52,  51,  50,  49
-  dw   48,  47,  46,  45,  44,  43,  42,  41
-  dw   40,  39,  38,  37,  36,  36,  35,  34
-  dw   33,  32,  32,  31,  30,  29,  29,  28
-  dw   27,  27,  26,  25,  24,  24,  23,  23
-  dw   22,  21,  21,  20,  20,  19,  19,  18
-  dw   17,  17,  16,  16,  15,  15,  15,  14
-  dw   14,  13,  13,  12,  12,  11,  11,  11
-  dw   10,  10,  10,   9,   9,   9,   8,   8
-  dw    8,   7,   7,   7,   6,   6,   6,   6
-  dw    5,   5,   5,   5,   4,   4,   4,   4
-  dw    4,   3,   3,   3,   3,   3,   2,   2
-  dw    2,   2,   2,   2,   2,   1,   1,   1
-  dw    1,   1,   1,   1,   1,   1,   1,   1
-  dw    0,   0,   0,   0,   0,   0,   0,   0
-  dw    0,   0,   0,   0,   0,   0,   0,   0
-  dw    0,   0,   0,   0,   0,   0,   0,   0
-  dw    0,   0,   0,   0,   0,   0,   0,   0
-  dw    0,   0,   0,   0,   0,   0,   0,   0
-  dw    0,   0,   0,   0,   0,   0,   0,   0
-  dw    0,   0,   0,   0,   0,   0,   0,   0
-  dw    0,   0,   0,   0,   0,   0,   0,   0
-
-CubicSpline:
-  dw    0,   0,   0,   0,   0,   0,   0,   0
-  dw    0,  -1,  -1,  -1,  -2,  -2,  -2,  -3
-  dw   -3,  -4,  -4,  -5,  -5,  -6,  -6,  -7
-  dw   -8,  -8,  -9, -10, -10, -11, -12, -13
-  dw  -14, -14, -15, -16, -17, -18, -19, -20
-  dw  -21, -22, -23, -24, -25, -26, -27, -28
-  dw  -29, -30, -31, -32, -33, -34, -35, -37
-  dw  -38, -39, -40, -41, -43, -44, -45, -46
-  dw  -48, -49, -50, -51, -53, -54, -55, -56
-  dw  -58, -59, -60, -62, -63, -64, -66, -67
-  dw  -68, -70, -71, -72, -74, -75, -76, -78
-  dw  -79, -80, -82, -83, -84, -86, -87, -88
-  dw  -90, -91, -92, -93, -95, -96, -97, -99
-  dw -100,-101,-102,-104,-105,-106,-107,-109
-  dw -110,-111,-112,-113,-114,-116,-117,-118
-  dw -119,-120,-121,-122,-123,-124,-125,-126
-  dw -128,-128,-129,-130,-131,-132,-133,-134
-  dw -135,-136,-137,-137,-138,-139,-140,-141
-  dw -141,-142,-143,-143,-144,-144,-145,-146
-  dw -146,-147,-147,-148,-148,-148,-149,-149
-  dw -150,-150,-150,-150,-151,-151,-151,-151
-  dw -151,-151,-151,-151,-151,-151,-151,-151
-  dw -151,-151,-150,-150,-150,-149,-149,-149
-  dw -148,-148,-147,-147,-146,-146,-145,-144
-  dw -144,-143,-142,-141,-140,-139,-138,-137
-  dw -136,-135,-134,-133,-132,-130,-129,-128
-  dw -126,-125,-123,-122,-120,-119,-117,-115
-  dw -113,-112,-110,-108,-106,-104,-102,-100
-  dw  -98, -95, -93, -91, -88, -86, -83, -81
-  dw  -78, -76, -73, -70, -67, -65, -62, -59
-  dw  -56, -53, -50, -46, -43, -40, -36, -33
-  dw  -30, -26, -22, -19, -15, -11,  -7,  -3
-  dw    0,   4,   8,  12,  16,  21,  26,  30
-  dw   35,  40,  46,  51,  56,  62,  67,  73
-  dw   79,  85,  91,  97, 103, 109, 116, 122
-  dw  129, 136, 143, 149, 156, 164, 171, 178
-  dw  186, 193, 201, 208, 216, 224, 232, 240
-  dw  248, 256, 264, 273, 281, 289, 298, 307
-  dw  315, 324, 333, 342, 351, 360, 369, 378
-  dw  387, 397, 406, 415, 425, 435, 444, 454
-  dw  464, 473, 483, 493, 503, 513, 523, 533
-  dw  543, 553, 564, 574, 584, 594, 605, 615
-  dw  626, 636, 647, 657, 668, 679, 689, 700
-  dw  711, 721, 732, 743, 754, 765, 776, 787
-  dw  798, 808, 819, 830, 841, 852, 863, 874
-  dw  886, 897, 908, 919, 930, 941, 952, 963
-  dw  974, 985, 996,1008,1019,1030,1041,1052
-  dw 1063,1074,1085,1096,1107,1118,1129,1140
-  dw 1152,1162,1173,1184,1195,1206,1217,1228
-  dw 1239,1250,1261,1271,1282,1293,1303,1314
-  dw 1325,1335,1346,1356,1367,1377,1388,1398
-  dw 1408,1419,1429,1439,1449,1459,1470,1480
-  dw 1490,1499,1509,1519,1529,1539,1548,1558
-  dw 1567,1577,1586,1595,1605,1614,1623,1632
-  dw 1641,1650,1659,1668,1677,1685,1694,1702
-  dw 1711,1719,1727,1736,1744,1752,1760,1768
-  dw 1776,1783,1791,1798,1806,1813,1820,1828
-  dw 1835,1842,1849,1855,1862,1869,1875,1881
-  dw 1888,1894,1900,1906,1912,1918,1923,1929
-  dw 1934,1940,1945,1950,1955,1960,1964,1969
-  dw 1974,1978,1982,1986,1990,1994,1998,2002
-  dw 2005,2008,2012,2015,2018,2021,2023,2026
-  dw 2028,2031,2033,2035,2037,2038,2040,2041
-  dw 2043,2044,2045,2046,2046,2047,2047,2047
-
-  dw 2048,2047,2047,2047,2046,2046,2045,2044
-  dw 2043,2041,2040,2038,2037,2035,2033,2031
-  dw 2028,2026,2023,2021,2018,2015,2012,2008
-  dw 2005,2002,1998,1994,1990,1986,1982,1978
-  dw 1974,1969,1964,1960,1955,1950,1945,1940
-  dw 1934,1929,1923,1918,1912,1906,1900,1894
-  dw 1888,1881,1875,1869,1862,1855,1849,1842
-  dw 1835,1828,1820,1813,1806,1798,1791,1783
-  dw 1776,1768,1760,1752,1744,1736,1727,1719
-  dw 1711,1702,1694,1685,1677,1668,1659,1650
-  dw 1641,1632,1623,1614,1605,1595,1586,1577
-  dw 1567,1558,1548,1539,1529,1519,1509,1499
-  dw 1490,1480,1470,1459,1449,1439,1429,1419
-  dw 1408,1398,1388,1377,1367,1356,1346,1335
-  dw 1325,1314,1303,1293,1282,1271,1261,1250
-  dw 1239,1228,1217,1206,1195,1184,1173,1162
-  dw 1152,1140,1129,1118,1107,1096,1085,1074
-  dw 1063,1052,1041,1030,1019,1008, 996, 985
-  dw  974, 963, 952, 941, 930, 919, 908, 897
-  dw  886, 874, 863, 852, 841, 830, 819, 808
-  dw  798, 787, 776, 765, 754, 743, 732, 721
-  dw  711, 700, 689, 679, 668, 657, 647, 636
-  dw  626, 615, 605, 594, 584, 574, 564, 553
-  dw  543, 533, 523, 513, 503, 493, 483, 473
-  dw  464, 454, 444, 435, 425, 415, 406, 397
-  dw  387, 378, 369, 360, 351, 342, 333, 324
-  dw  315, 307, 298, 289, 281, 273, 264, 256
-  dw  248, 240, 232, 224, 216, 208, 201, 193
-  dw  186, 178, 171, 164, 156, 149, 143, 136
-  dw  129, 122, 116, 109, 103,  97,  91,  85
-  dw   79,  73,  67,  62,  56,  51,  46,  40
-  dw   35,  30,  26,  21,  16,  12,   8,   4
-
-  dw    0,  -3,  -7, -11, -15, -19, -22, -26
-  dw  -30, -33, -36, -40, -43, -46, -50, -53
-  dw  -56, -59, -62, -65, -67, -70, -73, -76
-  dw  -78, -81, -83, -86, -88, -91, -93, -95
-  dw  -98,-100,-102,-104,-106,-108,-110,-112
-  dw -113,-115,-117,-119,-120,-122,-123,-125
-  dw -126,-128,-129,-130,-132,-133,-134,-135
-  dw -136,-137,-138,-139,-140,-141,-142,-143
-  dw -144,-144,-145,-146,-146,-147,-147,-148
-  dw -148,-149,-149,-149,-150,-150,-150,-151
-  dw -151,-151,-151,-151,-151,-151,-151,-151
-  dw -151,-151,-151,-151,-151,-150,-150,-150
-  dw -150,-149,-149,-148,-148,-148,-147,-147
-  dw -146,-146,-145,-144,-144,-143,-143,-142
-  dw -141,-141,-140,-139,-138,-137,-137,-136
-  dw -135,-134,-133,-132,-131,-130,-129,-128
-  dw -128,-126,-125,-124,-123,-122,-121,-120
-  dw -119,-118,-117,-116,-114,-113,-112,-111
-  dw -110,-109,-107,-106,-105,-104,-102,-101
-  dw -100, -99, -97, -96, -95, -93, -92, -91
-  dw  -90, -88, -87, -86, -84, -83, -82, -80
-  dw  -79, -78, -76, -75, -74, -72, -71, -70
-  dw  -68, -67, -66, -64, -63, -62, -60, -59
-  dw  -58, -56, -55, -54, -53, -51, -50, -49
-  dw  -48, -46, -45, -44, -43, -41, -40, -39
-  dw  -38, -37, -35, -34, -33, -32, -31, -30
-  dw  -29, -28, -27, -26, -25, -24, -23, -22
-  dw  -21, -20, -19, -18, -17, -16, -15, -14
-  dw  -14, -13, -12, -11, -10, -10,  -9,  -8
-  dw   -8,  -7,  -6,  -6,  -5,  -5,  -4,  -4
-  dw   -3,  -3,  -2,  -2,  -2,  -1,  -1,  -1
-  dw    0,   0,   0,   0,   0,   0,   0,   0
 
 %include "cpu/firtable.inc"
 
@@ -279,7 +70,6 @@ NEWSYM spcWptr,  resd 16     ; SPC Write pointers (point to their own functions)
 NEWSYM spcRptr,  resd 16     ; SPC Read pointers (point to their own functions)
 
 SECTION .data
-NEWSYM SBToSPC,        dd 22050
 NEWSYM dspPAdj,        dd 0
 NEWSYM NumBRRconv,     dd 0
 NEWSYM BufferSizeB,    dd 320
@@ -291,203 +81,8 @@ NEWSYM BufferSize,  dw 320, 320, 320, 500, 320, 400, 400
 NEWSYM BufferSizes, dw 320, 320, 500, 900, 400, 750, 750
 NEWSYM SoundSpeeds, db 131, 165, 211, 233, 193, 225, 235 ; 8khz,11khz,22khz,44khz
 NEWSYM SoundSpeedt, db 193, 210, 233                     ; 8khz,11khz,22khz
-%ifdef __MSDOS__
-NEWSYM SBToSPCSpeeds, dd 8000,10989,22222,43478,15874,32258,48000
-NEWSYM SBToSPCSpeeds2, dd 8192,11289,22579,45158,16384,32768,48000
-%else
-NEWSYM SBToSPCSpeeds, dd 8000,11025,22050,44100,16000,32000,48000
-%endif
 NEWSYM NoiseSpeeds, dd 1,16,21,25,31,42,50,63,83,100,125,167,200,250,333,400,500
   dd 667,800,1000,1333,1600,2000,2667,3200,4000,5333,6400,8000,10667,16000,32000
-
-SECTION .text
-
-NEWSYM AdjustFrequency
-      xor ebx,ebx
-      mov ah,[MMXSupport]
-      mov al,[SoundInterpType]
-      or ah,ah
-      jnz .mmx
-      cmp byte[LowPassFilterType],3
-      jb .nothq
-      mov byte[LowPassFilterType],0
-.nothq
-      cmp al,3
-      jb .mmx
-      mov al,1
-      mov [SoundInterpType],al
-.mmx
-      or al,al
-      jz near .notgaussian
-      cmp al,2
-      je near .cubicspline
-      ja near .fir_mmx
-      ; Copy from Gaussian to DSPInterP
-%ifndef __MSDOS__
-      ; this ifndef is needed the workaround the "snow" in the DOS port
-      ; used only for Gaussian though
-      test ah,ah
-      jne .gaussian_mmx
-%endif
-      mov ebx,DSPInterP+1024
-      mov edx,DSPInterP+1022
-      mov esi,Gaussian
-      mov ecx,512
-.intrploop
-      movzx eax,word[esi]
-      mov [edx],ax
-      mov [ebx],ax
-      add ebx,2
-      sub edx,2
-      add esi,2
-      dec ecx
-      jnz .intrploop
-      mov ebx, DSPInterpolate_4
-      jmp .notgaussian
-.gaussian_mmx
-      mov ebx,Gaussian
-      mov edx,Gaussian+510
-      mov esi,DSPInterP
-      mov ecx,256
-.intrploopm
-      mov ax,[ebx+512]
-      mov [esi],ax
-      mov ax,[ebx]
-      mov [esi+2],ax
-      mov ax,[edx]
-      mov [esi+4],ax
-      mov ax,[edx+512]
-      mov [esi+6],ax
-      add ebx,2
-      sub edx,2
-      add esi,8
-      dec ecx
-      jnz .intrploopm
-      mov ebx, DSPInterpolate_4_mmx
-      jmp .notgaussian
-.cubicspline
-      ; Copy from CubicSpline to DSPInterP
-      test ah,ah
-      jne .cubic_mmx
-      mov ebx,CubicSpline
-      mov edx,DSPInterP
-      mov ecx,1024
-.intrploopb
-      movzx eax,word[ebx]
-      push ebx
-      mov bx,ax
-      sar bx,3
-      sub ax,bx
-      pop ebx
-      mov [edx],ax
-      add ebx,2
-      add edx,2
-      dec ecx
-      jnz .intrploopb
-      mov ebx, DSPInterpolate_4
-      jmp .notgaussian
-.cubic_mmx
-      mov ebx,CubicSpline
-      mov esi,DSPInterP
-      mov ecx,256
-.intrploopmb
-      mov ax,[ebx+256*6]
-      mov dx,ax
-      sar dx,3
-      sub ax,dx
-      mov [esi],ax
-      mov ax,[ebx+256*4]
-      mov dx,ax
-      sar dx,3
-      sub ax,dx
-      mov [esi+2],ax
-      mov ax,[ebx+256*2]
-      mov dx,ax
-      sar dx,3
-      sub ax,dx
-      mov [esi+4],ax
-      mov ax,[ebx]
-      mov dx,ax
-      sar dx,3
-      sub ax,dx
-      mov [esi+6],ax
-      add ebx,2
-      add esi,8
-      dec ecx
-      jnz .intrploopmb
-      mov ebx, DSPInterpolate_4_mmx
-      jmp .notgaussian
-
-.fir_mmx
-      mov ebx, DSPInterpolate_8
-
-.notgaussian
-      mov [DSPInterpolate],ebx
-%ifdef __MSDOS__
-      call SB_quality_limiter
-%endif
-
-      mov ecx,[SoundQuality]
-      mov eax,[SBToSPCSpeeds+ecx*4]
-%ifdef __MSDOS__
-      ; code for supporting vibra cards (coded by Peter Santing)
-      cmp byte[vibracard],1
-      je .vibrafix
-
-      cmp byte[SBHDMA],0
-      je .not16bit
-.vibrafix
-      mov eax,[SBToSPCSpeeds2+ecx*4]
-.not16bit
-%endif
-      mov [SBToSPC],eax
-
-      xor edx,edx
-      mov ebx,eax
-      mov eax,32000
-      shld edx,eax,20
-      shl eax,20
-      div ebx
-      mov [dspPAdj],eax
-
-      ; Init all rates
-      mov esi,EchoRate
-      mov edi,EchoRateO
-      mov ecx,16
-      ccallv conv2speed, ecx, esi, edi
-      mov esi,AttackRate
-      mov edi,AttackRateO
-      mov ecx,16
-      ccallv conv2speed, ecx, esi, edi
-      mov esi,DecayRate
-      mov edi,DecayRateO
-      mov ecx,8
-      ccallv conv2speed, ecx, esi, edi
-      mov esi,SustainRate+4
-      mov edi,SustainRateO+4
-      mov ecx,31
-      ccallv conv2speed, ecx, esi, edi
-      mov esi,Increase+4
-      mov edi,IncreaseO+4
-      mov ecx,31
-      ccallv conv2speed, ecx, esi, edi
-      mov esi,IncreaseBent+4
-      mov edi,IncreaseBentO+4
-      mov ecx,31
-      ccallv conv2speed, ecx, esi, edi
-      mov esi,Decrease+4
-      mov edi,DecreaseO+4
-      mov ecx,31
-      ccallv conv2speed, ecx, esi, edi
-      mov esi,DecreaseRateExp+4
-      mov edi,DecreaseRateExpO+4
-      mov ecx,31
-      ccallv conv2speed, ecx, esi, edi
-      mov dword[Voice0Pitch],0xFFFEFFFE
-      mov dword[Voice0Pitch+4],0xFFFEFFFE
-      mov dword[Voice0Pitch+8],0xFFFEFFFE
-      mov dword[Voice0Pitch+12],0xFFFEFFFE
-      ret
 
 SECTION .bss
 
@@ -923,37 +518,6 @@ BRRDecode:
 
 .dlpf
     ProcessDynamicLowPass
-
-section .data
-ALIGN32
-
-; Original Values
-NEWSYM EchoRateO
-  dd 2,172,344,517,689,861,1033,1205,1378,1550,1722,1895,2067,2239,2412,2584
-NEWSYM AttackRateO
-  dd 45202,28665,16537,11025,7056,4189,2866,1764,1058,705,441,264,176,110,66,4
-NEWSYM DecayRateO
-  dd 13230,8158,4851,2697,2284,1212,815,407
-NEWSYM SustainRateO
-  dd 0FFFFFFFFh,418950,308700,265600,209475,154350,132300,103635,78277,65047
-  dd 51817,38587,31972,26460,19845,16537,13230,9702,8158,6504,4851,3879,2697
-  dd 2050,1572,1212,1014,815,606,407,202,125
-NEWSYM IncreaseO
-  dd 0FFFFFFFFh,45202,34177,28665,22050,16537,14332,11025,8489,7056,5622,4189
-  dd 3528,2866,2094,1764,1433,1058,882,705,529,441,352,264,220,176,132,110,88
-  dd 66,44,22
-NEWSYM IncreaseBentO
-  dd 0FFFFFFFFh,79100,59535,50160,38580,28665,25000,19250,14332,12127,9800,7320
-  dd 6160,4961,3650,3060,2425,1845,1540,1212,920,770,614,460,383,306,229,190,152
-  dd 113,75,36
-NEWSYM DecreaseO
-  dd 0FFFFFFFFh,45202,34177,28665,22050,16537,14332,11025,8489,7056,5622,4189
-  dd 3528,2866,2094,1764,1433,1058,882,705,529,441,352,264,220,176,132,110,88,66
-  dd 44,22
-NEWSYM DecreaseRateExpO
-  dd 0FFFFFFFFh,418950,308700,264600,209470,154350,132300,103635,78277,65047
-  dd 51817,38587,31972,26460,19845,16537,13230,9702,8158,6504,4851,4079,3197
-  dd 2425,1984,1653,1212,1014,815,606,407,198
 
 ; used only in dspproc.asm
 SECTION .data
@@ -2310,7 +1874,7 @@ NEWSYM DSPInterpolate, dd 0
 SECTION .text
 
 ALIGN16
-DSPInterpolate_4
+NEWSYM DSPInterpolate_4
     push edi
 %ifdef __MSDOS__
     lea edi,[ds:ebp*2+ebp]
@@ -2383,7 +1947,7 @@ DSPInterpolate_4
     ret
 
 ALIGN16
-DSPInterpolate_8:
+NEWSYM DSPInterpolate_8
 
     push edi
 %ifdef __MSDOS__
@@ -2426,7 +1990,7 @@ DSPInterpolate_8:
     ret
 
 ALIGN16
-DSPInterpolate_4_mmx:
+NEWSYM DSPInterpolate_4_mmx
 
     push edi
 %ifdef __MSDOS__
