@@ -4,7 +4,6 @@
 #include "../types.h"
 
 extern void SBHandler(void);
-extern void SB_quality_limiter();
 
 extern u1 PICMaskP;
 extern u1 SBInt;

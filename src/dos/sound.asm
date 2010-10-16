@@ -23,6 +23,7 @@ EXTSYM DosExit,getenv,PrintStr,printhex,WaitForKey
 EXTSYM soundon,csounddisable,DisplayS,SPCRAM
 EXTSYM StereoSound,SoundQuality
 EXTSYM dssel,PrintChar
+EXTSYM SB_quality_limiter
 ;EXTSYM DSPMem,DSPBuffer,BufferSizeB,BufferSizeW,SBToSPCSpeeds2
 ;EXTSYM ProcessSoundBuffer,BufferSize,BufferSizes,SoundSpeeds,SoundSpeedt
 
@@ -1074,28 +1075,8 @@ SECTION .text
     ja .loop
 
 .fin
-
-NEWSYM SB_quality_limiter
-      cmp byte[StereoSound],1
-      jne .nostereo8b
-      cmp byte[SBHDMA],0
-      jne .nostereo8b
-
-      ; *****************************************
-      ; *** ViBRA16X support by Peter Santing ***
-      ; *****************************************
-      ; before REALLY switching back to 8-bit sucky mono mode
-      ; check that we're dealing with a ViBRA16X Creative Labs Card
-      cmp byte[vibracard], 1
-      je .nostereo8b
-
-      cmp dword[SoundQuality],2
-      jbe .nostereo8b
-      cmp dword[SoundQuality],4
-      je .nostereo8b
-      mov dword[SoundQuality],2
-.nostereo8b
-      ret
+		ccallv SB_quality_limiter
+		ret
 
 NEWSYM SB_blank
     push es

@@ -1,5 +1,7 @@
 #include <string.h>
 
+#include "../cfg.h"
+#include "../cpu/dspproc.h"
 #include "c_sound.h"
 #include "sound.h"
 
@@ -32,4 +34,20 @@ void SB_alloc_dma(void)
 
 	// Clear DOS memory.
 	memset(memoryloc, 0, 8192);
+}
+
+
+void SB_quality_limiter(void)
+{
+	if (StereoSound != 1) return;
+	if (SBHDMA      != 0) return;
+
+	/* ViBRA16X support by Peter Santing
+	 * Before REALLY switching back to 8-bit sucky mono mode, check that we're
+	 * dealing with a ViBRA16X Creative Labs Card. */
+	if (vibracard == 1) return;
+
+	if (SoundQuality <= 2) return;
+	if (SoundQuality == 4) return;
+	SoundQuality = 2;
 }

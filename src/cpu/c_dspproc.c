@@ -12,9 +12,7 @@
 #include "spc700.h"
 
 #ifdef __MSDOS__
-#	include "../asm_call.h"
 #	include "../dos/c_sound.h"
-#	include "../dos/sound.h"
 #endif
 
 
@@ -342,7 +340,7 @@ void AdjustFrequency(void)
 	DSPInterpolate = interpolate;
 
 #ifdef __MSDOS__
-	asm_call(SB_quality_limiter);
+	SB_quality_limiter();
 #endif
 
 #ifdef __MSDOS__
