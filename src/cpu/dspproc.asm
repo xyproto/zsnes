@@ -955,9 +955,6 @@ NEWSYM DecreaseRateExpO
   dd 51817,38587,31972,26460,19845,16537,13230,9702,8158,6504,4851,4079,3197
   dd 2425,1984,1653,1212,1014,815,606,407,198
 
-SECTION .bss
-NoisePtr           resd 1
-
 ; used only in dspproc.asm
 SECTION .data
 ALIGN32
