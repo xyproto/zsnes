@@ -75,6 +75,15 @@ cardfailed:
 }
 
 
+// Write value into DSP port
+void SB_dsp_write(u1 const al)
+{
+	u2 const dx = SBPort + 0x0C;
+	while (inb(dx) & 0x80) {}
+	outb(dx, al);
+}
+
+
 void SB_quality_limiter(void)
 {
 	if (StereoSound != 1) return;

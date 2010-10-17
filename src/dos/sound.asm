@@ -24,6 +24,7 @@ EXTSYM StereoSound,SoundQuality
 EXTSYM dssel
 EXTSYM SB_quality_limiter
 EXTSYM SB_dsp_reset
+EXTSYM SB_dsp_write
 ;EXTSYM DSPMem,DSPBuffer,BufferSizeB,BufferSizeW,SBToSPCSpeeds2
 ;EXTSYM ProcessSoundBuffer,BufferSize,BufferSizes,SoundSpeeds,SoundSpeedt
 
@@ -37,24 +38,24 @@ NEWSYM DeInitSPC
 .nodoublereset
     ; Turn off speakers
     mov al,0d3h
-    call SB_dsp_write
+    ccallv SB_dsp_write, eax
 
 ;      k) Perform Halt DMA Operation, 8-bit command (0D0h - for virtual speaker)
     mov al,0d0h
-    call SB_dsp_write
+    ccallv SB_dsp_write, eax
 ;      l) Perform Exit Auto-Initialize DMA Operation, 8-bit command (0DAh)
     cmp byte[SBHDMA],0
     je .8b
     mov al,0d9h
-    call SB_dsp_write
+    ccallv SB_dsp_write, eax
     jmp .16b
 .8b
     mov al,0dAh
-    call SB_dsp_write
+    ccallv SB_dsp_write, eax
 .16b
 ;      m) Perform Halt DMA Operation, 8-bit command (0D0h - for virtual speaker)
     mov al,0d0h
-    call SB_dsp_write
+    ccallv SB_dsp_write, eax
     ; Disable DMA
     mov al,4
     add al,[SBDMA]
@@ -81,19 +82,6 @@ EXTSYM Msgptr           ; points to the message to be displayed
 NEWSYM vibmsg, db 'VIBRA16X MODE ENABLED', 0
 
 section .text
-
-; Write AL into DSP port
-NEWSYM SB_dsp_write
-    mov dx,[SBPort]
-    add dl,0Ch
-    mov bl,al
-.tryagain
-    in al,dx
-    test al,80h
-    jnz .tryagain
-    mov al,bl
-    out dx,al
-    ret
 
 ; Read DSP port into AL
 NEWSYM SB_dsp_read
@@ -477,7 +465,7 @@ NEWSYM InitSB
 
     ; Determine Version #
     mov al,0E1h
-    call SB_dsp_write
+    ccallv SB_dsp_write, eax
     call SB_dsp_read
     mov [.Versionnum],al
     call SB_dsp_read
@@ -485,12 +473,12 @@ NEWSYM InitSB
 
     ; Turn on speakers
     mov al,0D1h
-    call SB_dsp_write
+    ccallv SB_dsp_write, eax
 
     ; Set Time-Constant Data ( = 256 - (1000000/sampling rate) )
     ; 8000=131, 22050=210, 44100=233, 11025=165
     mov al,40h
-    call SB_dsp_write
+    ccallv SB_dsp_write, eax
 
     cmp byte[StereoSound],1
     jne .nostereo8b
@@ -503,7 +491,7 @@ NEWSYM InitSB
     mov eax,2
 .okay
     ;mov al,[SoundSpeedt+eax]
-    call SB_dsp_write
+    ccallv SB_dsp_write, eax
     ; Set Stereo
     mov dx, [SBPort]
     add dx, 04h
@@ -517,7 +505,7 @@ NEWSYM InitSB
 .nostereo8b
     mov eax,[SoundQuality]
     ;mov al,[SoundSpeeds+eax]
-    call SB_dsp_write
+    ccallv SB_dsp_write, eax
 .donestereo
 
     cmp byte[StereoSound],1
@@ -568,14 +556,14 @@ NEWSYM InitSB
     ; Prepare SB for the first block
     ; 8-bit auto-init, mono, unsigned
     mov al,048h   ; Sb 2.0 version...
-    call SB_dsp_write
+    ccallv SB_dsp_write, eax
 
     ; Send Length-1 to DSP port
     ;mov ax,[BufferSizeB]
     dec ax
-    call SB_dsp_write
+    ccallv SB_dsp_write, eax
     mov al,ah
-    call SB_dsp_write
+    ccallv SB_dsp_write, eax
     mov byte[SBDeinitType],1
     mov al,090h   ; Sb 2.0 version...
     cmp byte[.Versionnum],2
@@ -589,7 +577,7 @@ NEWSYM InitSB
     mov byte[SBDeinitType],0
     mov al,1Ch
 .notversion1
-    call SB_dsp_write
+    ccallv SB_dsp_write, eax
     jmp .fixsurround
 
 SECTION .bss
@@ -653,43 +641,43 @@ SECTION .text
     out dx,al
 
     mov al,41h
-    call SB_dsp_write
+    ccallv SB_dsp_write, eax
     push ecx
     mov ecx,[SoundQuality]
     ;mov al,[SBToSPCSpeeds2+ecx*4+1]
     pop ecx
-    call SB_dsp_write
+    ccallv SB_dsp_write, eax
     push ecx
     mov ecx,[SoundQuality]
     ;mov al,[SBToSPCSpeeds2+ecx*4]
     pop ecx
-    call SB_dsp_write
+    ccallv SB_dsp_write, eax
 
     ; Prepare SB for the first block
     ; 16-bit auto-init, mono, unsigned
     mov al,0B6h   ; Sb 16 version (DSP 4)
-    call SB_dsp_write
+    ccallv SB_dsp_write, eax
     cmp byte[StereoSound],1
     jne ._Mono
 ._surround
     mov al,30h    ; stereo/signed
-    call SB_dsp_write
+    ccallv SB_dsp_write, eax
     jmp ._AfterStereo
 ._Mono
     mov al,10h    ; mono/signed
-    call SB_dsp_write
+    ccallv SB_dsp_write, eax
 ._AfterStereo
 
     ; Send Length-1 to DSP port
     ;mov ax,[BufferSizeB]
     dec ax
-    call SB_dsp_write
+    ccallv SB_dsp_write, eax
     mov al,ah
-    call SB_dsp_write
+    ccallv SB_dsp_write, eax
 
     ; Turn on speakers
     mov al,0D1h
-    call SB_dsp_write
+    ccallv SB_dsp_write, eax
 
     jmp .fixsurround
 
@@ -699,13 +687,13 @@ SECTION .text
     ; Set Time-Constant Data ( = 256 - (1000000/sampling rate) )
     ; 8000=131, 22050=210, 44100=233, 11025=165
     mov al,40h
-    call SB_dsp_write
+    ccallv SB_dsp_write, eax
 
     push ecx
     mov ecx,[SoundQuality]
     ;mov al,[SoundSpeeds+ecx]
     pop ecx
-    call SB_dsp_write
+    ccallv SB_dsp_write, eax
 
     mov edx,[memoryloc]
     shr edx,1
@@ -774,24 +762,24 @@ SECTION .text
     ; Prepare SB for the first block
     ; 16-bit auto-init, mono, unsigned
     mov al,0B6h   ; Sb 16 version (DSP 4)
-    call SB_dsp_write
+    ccallv SB_dsp_write, eax
     cmp byte[StereoSound],1
     jne .Monol
 .surroundl
     mov al,30h    ; stereo/signed
-    call SB_dsp_write
+    ccallv SB_dsp_write, eax
     jmp .AfterStereol
 .Monol
     mov al,10h    ; mono/signed
-    call SB_dsp_write
+    ccallv SB_dsp_write, eax
 .AfterStereol
 
     ; Send Length-1 to DSP port
     ;mov ax,[BufferSizeB]
     dec ax
-    call SB_dsp_write
+    ccallv SB_dsp_write, eax
     mov al,ah
-    call SB_dsp_write
+    ccallv SB_dsp_write, eax
 
     ; turn on DMA
 ;    mov al,[SBHDMA]
@@ -808,24 +796,24 @@ SECTION .text
 
     ; Turn on speakers
     mov al,0D1h
-    call SB_dsp_write
+    ccallv SB_dsp_write, eax
     jmp .fixsurround
 
 .init16bit
     ; Set Time-Constant Data ( = 256 - (1000000/sampling rate) )
     ; 8000=131, 22050=210, 44100=233, 11025=165
     mov al,41h
-    call SB_dsp_write
+    ccallv SB_dsp_write, eax
     push ecx
     mov ecx,[SoundQuality]
     ;mov al,[SBToSPCSpeeds2+ecx*4+1]
     pop ecx
-    call SB_dsp_write
+    ccallv SB_dsp_write, eax
     push ecx
     mov ecx,[SoundQuality]
     ;mov al,[SBToSPCSpeeds2+ecx*4]
     pop ecx
-    call SB_dsp_write
+    ccallv SB_dsp_write, eax
 
     mov edx,[memoryloc]
     shr edx,1
@@ -879,28 +867,28 @@ SECTION .text
     ; Prepare SB for the first block
     ; 16-bit auto-init, mono, unsigned
     mov al,0B6h   ; Sb 16 version (DSP 4)
-    call SB_dsp_write
+    ccallv SB_dsp_write, eax
     cmp byte[StereoSound],1
     jne .Mono
 .surround
     mov al,30h    ; stereo/signed
-    call SB_dsp_write
+    ccallv SB_dsp_write, eax
     jmp .AfterStereo
 .Mono
     mov al,10h    ; mono/signed
-    call SB_dsp_write
+    ccallv SB_dsp_write, eax
 .AfterStereo
 
     ; Send Length-1 to DSP port
     ;mov ax,[BufferSizeB]
     dec ax
-    call SB_dsp_write
+    ccallv SB_dsp_write, eax
     mov al,ah
-    call SB_dsp_write
+    ccallv SB_dsp_write, eax
 
     ; Turn on speakers
     mov al,0D1h
-    call SB_dsp_write
+    ccallv SB_dsp_write, eax
 
     ; turn on DMA
     mov al,[SBHDMA]
