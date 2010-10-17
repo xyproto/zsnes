@@ -77,10 +77,6 @@ NEWSYM BufferSizeW,    dd 640
 
 ;TIME_CONSTANT = 256 - 1000000 / frequency
 
-NEWSYM BufferSize,  dw 320, 320, 320, 500, 320, 400, 400
-NEWSYM BufferSizes, dw 320, 320, 500, 900, 400, 750, 750
-NEWSYM SoundSpeeds, db 131, 165, 211, 233, 193, 225, 235 ; 8khz,11khz,22khz,44khz
-NEWSYM SoundSpeedt, db 193, 210, 233                     ; 8khz,11khz,22khz
 NEWSYM NoiseSpeeds, dd 1,16,21,25,31,42,50,63,83,100,125,167,200,250,333,400,500
   dd 667,800,1000,1333,1600,2000,2667,3200,4000,5333,6400,8000,10667,16000,32000
 

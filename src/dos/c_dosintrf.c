@@ -189,7 +189,7 @@ void SetupPreGame(void)
 		outb(PIC_port, inb(PIC_port) |  irq_bit); // Turn off IRQ through controller
 		set_handler(SBInt, cs, SBHandler);
 		outb(PIC_port, inb(PIC_port) & ~irq_bit); // Turn on IRQ through controller
-		asm_call(InitSB);
+		InitSB();
 		sti();
 	}
 	cli();

@@ -5,11 +5,15 @@
 #include "../c_intrf.h"
 #include "../cfg.h"
 #include "../cpu/dspproc.h"
+#include "../video/procvid.h"
 #include "c_sound.h"
 #include "sound.h"
 
 
 u1 SBInt = 5 + 8;
+
+static u1 SBDeinitType;
+static u4 memoryloc;    // Memory offset in conventional memory
 
 
 void SB_alloc_dma(void)
@@ -43,7 +47,7 @@ void SB_alloc_dma(void)
 }
 
 
-void SB_dsp_reset(void)
+static void SB_dsp_reset(void)
 {
 	u2 const dx = SBPort;
 	outb(dx + 0x06, 0x01);
@@ -76,7 +80,7 @@ cardfailed:
 
 
 // Write value into DSP port
-void SB_dsp_write(u1 const al)
+static void SB_dsp_write(u1 const al)
 {
 	u2 const dx = SBPort + 0x0C;
 	while (inb(dx) & 0x80) {}
@@ -85,7 +89,7 @@ void SB_dsp_write(u1 const al)
 
 
 // Read DSP port
-u1 SB_dsp_read(void)
+static u1 SB_dsp_read(void)
 {
 	u2 const dx = SBPort;
 	while (!(inb(dx + 0x0E) & 0x80)) {}
@@ -115,6 +119,244 @@ void DeInitSPC(void)
 
 	// Disable DMA.
 	outb(0x000A, SBDMA + 4);
+}
+
+
+static void outblh(u2 const port, u2 const val)
+{
+	outb(port, val);
+	outb(port, val >> 8);
+}
+
+
+static void SB_dsp_write_lh(u2 const val)
+{
+	SB_dsp_write(val);
+	SB_dsp_write(val >> 8);
+}
+
+
+static void SB_dsp_write_hl(u2 const val)
+{
+	SB_dsp_write(val >> 8);
+	SB_dsp_write(val);
+}
+
+
+void InitSB(void)
+{
+	static u2 const BufferSize[]  = { 320, 320, 320, 500, 320, 400, 400 };
+	static u2 const BufferSizes[] = { 320, 320, 500, 900, 400, 750, 750 };
+	static u1 const SoundSpeeds[] = { 131, 165, 211, 233, 193, 225, 235}; // 8khz, 11khz, 22khz, 44khz
+	static u1 const SoundSpeedt[] = { 193, 210, 233 };                    // 8khz, 11khz, 22khz
+
+	BufferSizeB = (StereoSound == 1 ? BufferSizes : BufferSize)[SoundQuality];
+	BufferSizeW = BufferSizeB * 2;
+
+	SBswitch = 0;
+	// Allocate pointer.
+	// Set up SB.
+	SB_dsp_reset();
+
+	// Code added by peter santing.
+	if (vibracard == 1)
+	{ /* Alternate ViBRA16X SB init code by Peter Santing.
+		 * Copied portions of original code and modified it. */
+
+		// Notify user that we're in ViBRA16x mode.
+		Msgptr    = "VIBRA16X MODE ENABLED";
+		MessageOn = MsgCount;
+
+		/* Set Time-Constant Data (= 256 - (1000000 / sampling rate))
+		 * 8000=131, 22050=210, 44100=233, 11025=165 */
+
+		// Setup DMA.
+		// Select DMA channel.
+		outb(0x000A, SBDMA + 4);
+		// Clear DMA.
+		outb(0x000C, 0x00);
+		// Set autoinit/write (set as DAC).
+		outb(0x000B, SBDMA + 0x58);
+		// Send Offset Address.
+		u2 const dx = SBDMA << 1;
+		outblh(dx, memoryloc);
+		// Send length of entire block.
+		outblh(dx + 1, BufferSizeW * 2 - 1);
+		// Send page # (address / 65536).
+		outb(SBDMAPage, memoryloc >> 16);
+		// Turn on DMA.
+		outb(0x000A, SBDMA);
+
+		SB_dsp_write(0x41);
+		SB_dsp_write_hl(SBToSPCSpeeds2[SoundQuality]);
+
+		// Prepare SB for the first block.
+		// 16-bit auto-init, mono, unsigned
+		SB_dsp_write(0xB6); // Sb 16 version (DSP 4)
+		SB_dsp_write(StereoSound == 1 ? /* stereo/signed */ 0x30 : /* mono/signed */ 0x10);
+
+		// Send Length - 1 to DSP port.
+		SB_dsp_write_lh(BufferSizeB - 1);
+
+		// Turn on speakers.
+		SB_dsp_write(0xD1);
+	}
+	else if (SBHDMA == 0)
+	{ // No 16 bit.
+		// Determine Version #
+		SB_dsp_write(0xE1);
+		u1 Versionnum[2];
+		Versionnum[0] = SB_dsp_read();
+		Versionnum[1] = SB_dsp_read();
+
+		// Turn on speakers
+		SB_dsp_write(0xD1);
+
+		/* Set Time-Constant Data (= 256 - (1000000 / sampling rate))
+		 * 8000=131, 22050=210, 44100=233, 11025=165 */
+		SB_dsp_write(0x40);
+		if (StereoSound == 1)
+		{
+			SB_dsp_write(SoundSpeedt[SoundQuality <= 2 || SoundQuality == 4 ? SoundQuality : 2]);
+			// Set Stereo
+			u2 const dx = SBPort;
+			outb(dx + 0x04, 0x0E);
+			outb(dx + 0x05, inb(dx + 0x05) | 0x22);
+		}
+		else
+		{
+			SB_dsp_write(SoundSpeeds[SoundQuality]);
+			if (SoundSpeeds[SoundQuality] <= 211) Versionnum[0] = 1;
+		}
+
+		// Setup DMA.
+		// Select DMA channel.
+		outb(0x000A, SBDMA + 4);
+		// Clear DMA.
+		outb(0x000C, 0x00);
+		// Set autoinit/write (set as DAC).
+		outb(0x000B, SBDMA + 0x58);
+		// Send Offset Address.
+		u2 const dx = SBDMA << 1;
+		outblh(dx, memoryloc);
+		// Send length of entire block.
+		outblh(dx + 1, BufferSizeW - 1);
+		// Send page # (address / 65536).
+		outb(SBDMAPage, memoryloc >> 16);
+		// Turn on DMA.
+		outb(0x000A, SBDMA);
+
+		// Prepare SB for the first block.
+		// 8-bit auto-init, mono, unsigned
+		SB_dsp_write(0x48); // Sb 2.0 version.
+
+		// Send Length - 1 to DSP port.
+		SB_dsp_write_lh(BufferSizeB - 1);
+
+		SBDeinitType = Versionnum[0] > 2 || (Versionnum[0] == 2 && Versionnum[1] != 0);
+		SB_dsp_write(SBDeinitType ? /* Sb 2.0 version */ 0x90 : /* Slow speed. */ 0x1C);
+	}
+	else if (SBHDMA < 4)
+	{ // 16 bit low HDMA.
+		/* Set Time-Constant Data (= 256 - (1000000 / sampling rate)).
+		 * 8000=131, 22050=210, 44100=233, 11025=165 */
+		SB_dsp_write(0x40);
+		SB_dsp_write(SoundSpeeds[SoundQuality]);
+
+		// Setup DMA.
+
+		// Turn off DMA.
+#if 0 // XXX was commented out
+		outb(0x00D4, SBHDMA & 0x03 | 0x04);
+#endif
+
+		// Setup DMA.
+		// Select DMA channel.
+		outb(0x000A, SBHDMA & 0x03 | 0x04);
+
+		// Clear flip-flop.
+		outb(0x00D8, 0x00);
+
+		// Set autoinit/write (set as DAC).
+		outb(0x00D6, (SBHDMA & 0x03) + 0x58);
+
+		// Send Offset Address.
+#if 0 // XXX was commented out
+		outblh(0xC0 | (SBHDMA & 0x03) << 2, memoryloc / 2);
+#endif
+
+		// Send Offset Address.
+		u2 const dx = SBDMA << 1;
+		outblh(dx, memoryloc);
+
+		// Send length of entire block.
+		outblh(dx + 2, BufferSizeW - 1);
+
+		// Send page # (address / 65536).
+		outb(SBHDMAPage, memoryloc >> 16);
+
+		// Prepare SB for the first block.
+		// 16-bit auto-init, mono, unsigned
+		SB_dsp_write(0xB6); // Sb 16 version (DSP 4)
+		SB_dsp_write(StereoSound == 1 ? /* stereo/signed */ 0x30 : /* mono/signed */ 0x10);
+
+		// Send Length - 1 to DSP port.
+		SB_dsp_write_lh(BufferSizeB - 1);
+
+		// Turn on DMA.
+#if 0 // XXX was commented out
+		outb(0x00D4, SBHDMA & 0x03);
+#endif
+
+		// Setup DMA.
+		// Select DMA channel.
+		outb(0x000A, SBHDMA & 0x03);
+
+		// Turn on speakers.
+		SB_dsp_write(0xD1);
+	}
+	else
+	{ // 16 bit.
+		/* Set Time-Constant Data (= 256 - (1000000 / sampling rate)).
+		 * 8000=131, 22050=210, 44100=233, 11025=165 */
+		SB_dsp_write(0x41);
+		SB_dsp_write_hl(SBToSPCSpeeds2[SoundQuality]);
+
+		// Setup DMA.
+
+		// Turn off DMA.
+		outb(0x00D4, SBHDMA & 0x03 | 0x04);
+
+		// Clear flip-flop.
+		outb(0x00D8, 0x00);
+
+		// Set autoinit/write (set as DAC).
+		outb(0x00D6, (SBHDMA & 0x03) + 0x58);
+
+		// Send Offset Address.
+		u2 const dx = 0xC0 | (SBHDMA & 0x03) << 2;
+		outblh(dx, memoryloc / 2);
+
+		// Send length of entire block.
+		outblh(dx + 2, BufferSizeW - 1);
+
+		// Send page # (address / 65536).
+		outb(SBHDMAPage, memoryloc >> 16 & 0xFE);
+
+		// Prepare SB for the first block.
+		// 16-bit auto-init, mono, unsigned
+		SB_dsp_write(0xB6); // Sb 16 version (DSP 4)
+		SB_dsp_write(StereoSound == 1 ? /* stereo/signed */ 0x30 : /* mono/signed */ 0x10);
+
+		// Send Length - 1 to DSP port.
+		SB_dsp_write_lh(BufferSizeB - 1);
+
+		// Turn on speakers.
+		SB_dsp_write(0xD1);
+
+		// Turn on DMA.
+		outb(0x00D4, SBHDMA & 0x03);
+	}
 }
 
 
