@@ -19,11 +19,11 @@
 
 %include "macros.mac"
 
-EXTSYM DosExit
 EXTSYM csounddisable,SPCRAM
 EXTSYM StereoSound,SoundQuality
 EXTSYM dssel
 EXTSYM SB_quality_limiter
+EXTSYM SB_dsp_reset
 ;EXTSYM DSPMem,DSPBuffer,BufferSizeB,BufferSizeW,SBToSPCSpeeds2
 ;EXTSYM ProcessSoundBuffer,BufferSize,BufferSizes,SoundSpeeds,SoundSpeedt
 
@@ -32,8 +32,8 @@ SECTION .text
 NEWSYM DeInitSPC
     cmp byte[SBDeinitType],0
     je .nodoublereset
-    call SB_dsp_reset
-    call SB_dsp_reset
+    ccallv SB_dsp_reset
+    ccallv SB_dsp_reset
 .nodoublereset
     ; Turn off speakers
     mov al,0d3h
@@ -80,53 +80,6 @@ EXTSYM MessageOn        ; points to "message" delay counter
 EXTSYM Msgptr           ; points to the message to be displayed
 NEWSYM vibmsg, db 'VIBRA16X MODE ENABLED', 0
 
-section .text
-
-NEWSYM SB_dsp_reset
-    mov dx,[SBPort]
-    add dl,06h
-    mov al,01h
-    out dx,al
-    in al,dx
-    in al,dx
-    in al,dx
-    in al,dx
-    mov al,00h
-    out dx,al
-
-    mov si,200
-    mov dx,[SBPort]
-    add dl,0Eh
-.readloop
-
-    ; wait until port[SBDSPRdStat] AND 80h = 80h
-    mov cx,20000
-.tryagain
-    in al,dx
-    dec cx
-    jz .cardfailed
-    or al,al
-    jns .tryagain
-    sub dx,4
-    in al,dx
-    cmp al,0AAh
-    jne .tryagain2
-    ret
-.tryagain2
-    add dx,4
-    dec si
-    jnz .readloop
-.cardfailed
-    mov ax,0003h
-    int 10h
-    mov edx,initfailed      ;use extended
-    mov ah,9                ;DOS- API
-    int 21h                 ;to print a string
-    ccallv DosExit
-    ret
-
-section .data
-NEWSYM initfailed, db 'Sound card failed to initialize!',13,10,'$'
 section .text
 
 ; Write AL into DSP port
@@ -509,7 +462,7 @@ NEWSYM InitSB
     mov byte[SBswitch],0
     ; Allocate pointer
     ; Set up SB
-    call SB_dsp_reset
+    ccallv SB_dsp_reset
 
     ; code added by peter santing
     cmp byte[vibracard], 1

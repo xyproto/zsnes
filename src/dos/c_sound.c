@@ -1,5 +1,6 @@
 #include <string.h>
 
+#include "../asm.h"
 #include "../c_init.h"
 #include "../c_intrf.h"
 #include "../cfg.h"
@@ -39,6 +40,38 @@ void SB_alloc_dma(void)
 
 	// Clear DOS memory.
 	memset(memoryloc, 0, 8192);
+}
+
+
+void SB_dsp_reset(void)
+{
+	u2 const dx = SBPort;
+	outb(dx + 0x06, 0x01);
+	inb( dx + 0x06);
+	inb( dx + 0x06);
+	inb( dx + 0x06);
+	inb( dx + 0x06);
+	outb(dx + 0x06, 0x00);
+
+	u2 si = 200;
+	do
+	{
+		// Wait until bit 7 of SBDSPRdStat is set.
+		u2 cx = 20000;
+		while (!(inb(dx + 0x0E) & 0x80))
+		{
+			if (--cx == 0) goto cardfailed;
+		}
+		if (inb(dx + 0x0A) == 0xAA) return;
+	}
+	while (--si != 0);
+
+cardfailed:
+	u4 eax;
+	asm volatile("int 0x10" : "=a" (eax) : "a" (0x0003));
+	// Use extended DOS API to print a string.
+	asm volatile("int 0x21" : "=a" (eax) : "a" (0x0900), "d" ("Sound card failed to initialize!\r\n$"));
+	DosExit();
 }
 
 
