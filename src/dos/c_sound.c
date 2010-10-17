@@ -424,6 +424,12 @@ void SB_quality_limiter(void)
 }
 
 
+void SB_blank(void)
+{
+	memset(memoryloc, 0, 1280);
+}
+
+
 static void printnum(u4 val)
 {
 	char  buf[10];

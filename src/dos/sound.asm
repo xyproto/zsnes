@@ -363,20 +363,6 @@ NEWSYM stopsbsound16
 section .bss
 NEWSYM sbselec,   resw 1        ; Selector of Memory location
 NEWSYM sbpmofs,   resd 1        ; offset of Memory location
-section .text
-
-NEWSYM SB_blank
-    push es
-    mov es,[sbselec]
-    mov edi,[sbpmofs]
-    mov ecx,320
-.loopa
-    mov dword[es:edi],0
-    add edi,4
-    dec ecx
-    jnz .loopa
-    pop es
-    ret
 
 SECTION .data
 NEWSYM PICMaskP,   db 21h

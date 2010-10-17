@@ -47,6 +47,7 @@
 
 #ifdef __MSDOS__
 #	include "../dos/c_dosintrf.h"
+#	include "../dos/c_sound.h"
 #	include "makevid.h"
 #endif
 
@@ -846,7 +847,7 @@ static void saveselect(void)
 	{
 		csounddisable = 1;
 #ifdef __MSDOS__
-		asm_call(SB_blank);
+		SB_blank();
 #endif
 	}
 #ifdef __MSDOS__
