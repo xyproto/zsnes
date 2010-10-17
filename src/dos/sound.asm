@@ -205,10 +205,6 @@ NEWSYM stopsbsound
     sti
     iretd
 
-section .bss
-NEWSYM sbhandexec, resd 1
-section .text
-
 ; Process 20 blocks * 8 voices (no pitch yet)
 NEWSYM SBHandler16
     push ebx
@@ -217,7 +213,6 @@ NEWSYM SBHandler16
     push edi
     push esi
     push es
-    inc dword[sbhandexec]
 
     cmp byte[vibracard], 1
     je .donotcallcmdapos
