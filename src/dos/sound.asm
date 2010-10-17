@@ -25,6 +25,7 @@ EXTSYM dssel
 EXTSYM SB_quality_limiter
 EXTSYM SB_dsp_reset
 EXTSYM SB_dsp_write
+EXTSYM SB_dsp_read
 ;EXTSYM DSPMem,DSPBuffer,BufferSizeB,BufferSizeW,SBToSPCSpeeds2
 ;EXTSYM ProcessSoundBuffer,BufferSize,BufferSizes,SoundSpeeds,SoundSpeedt
 
@@ -80,23 +81,6 @@ EXTSYM MsgCount         ; points to counter
 EXTSYM MessageOn        ; points to "message" delay counter
 EXTSYM Msgptr           ; points to the message to be displayed
 NEWSYM vibmsg, db 'VIBRA16X MODE ENABLED', 0
-
-section .text
-
-; Read DSP port into AL
-NEWSYM SB_dsp_read
-    mov dx,[SBPort]
-    add dl,0Eh
-    mov bl,al
-.tryagain
-    in al,dx
-    test al,80h
-    jz .tryagain
-    mov dx,[SBPort]
-    add dl,0Ah
-    mov al,bl
-    in al,dx
-    ret
 
 ;****************************************************
 ; Sound Blaster Interrupt Stuff
@@ -466,9 +450,9 @@ NEWSYM InitSB
     ; Determine Version #
     mov al,0E1h
     ccallv SB_dsp_write, eax
-    call SB_dsp_read
+    ccall SB_dsp_read
     mov [.Versionnum],al
-    call SB_dsp_read
+    ccall SB_dsp_read
     mov [.Versionnum+1],al
 
     ; Turn on speakers

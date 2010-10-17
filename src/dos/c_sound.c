@@ -84,6 +84,15 @@ void SB_dsp_write(u1 const al)
 }
 
 
+// Read DSP port
+u1 SB_dsp_read(void)
+{
+	u2 const dx = SBPort;
+	while (!(inb(dx + 0x0E) & 0x80)) {}
+	return inb(dx + 0x0A);
+}
+
+
 void SB_quality_limiter(void)
 {
 	if (StereoSound != 1) return;

@@ -3,6 +3,7 @@
 
 #include "../types.h"
 
+u1   SB_dsp_read(void);
 void SB_alloc_dma(void);
 void SB_dsp_reset(void);
 void SB_dsp_write(u1 al);
