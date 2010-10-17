@@ -93,6 +93,31 @@ u1 SB_dsp_read(void)
 }
 
 
+void DeInitSPC(void)
+{
+	if (SBDeinitType != 0)
+	{ // Double reset.
+		SB_dsp_reset();
+		SB_dsp_reset();
+	}
+
+	// Turn off speakers.
+	SB_dsp_write(0xD3);
+
+	// k) Perform Halt DMA Operation, 8-bit command (0xD0 - for virtual speaker).
+	SB_dsp_write(0xD0);
+
+	// l) Perform Exit Auto-Initialize DMA Operation, 8-bit command (0xDA).
+	SB_dsp_write(SBHDMA != 0 ? /* 16 bit */ 0xD9 : /* 8 bit */ 0xDA);
+
+	// m) Perform Halt DMA Operation, 8-bit command (0xD0 - for virtual speaker).
+	SB_dsp_write(0xD0);
+
+	// Disable DMA.
+	outb(0x000A, SBDMA + 4);
+}
+
+
 void SB_quality_limiter(void)
 {
 	if (StereoSound != 1) return;

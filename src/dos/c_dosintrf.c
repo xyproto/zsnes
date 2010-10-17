@@ -212,7 +212,7 @@ void DeInitPostGame(void)
 	// DeINITSPC
 	if (soundon != 0 && DSPDisable != 1)
 	{
-		asm_call(DeInitSPC);
+		DeInitSPC();
 		set_handler(SBInt, oldhandSBs, oldhandSBo);
 	}
 }

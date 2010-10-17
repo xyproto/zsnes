@@ -8,6 +8,7 @@ extern void SBHandler(void);
 extern u1 PICMaskP;
 extern u1 SBDMA;
 extern u1 SBDMAPage;
+extern u1 SBDeinitType;
 extern u1 SBHDMA;
 extern u1 SBHDMAPage;
 extern u1 SBIrq;

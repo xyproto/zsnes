@@ -29,41 +29,6 @@ EXTSYM SB_dsp_read
 ;EXTSYM DSPMem,DSPBuffer,BufferSizeB,BufferSizeW,SBToSPCSpeeds2
 ;EXTSYM ProcessSoundBuffer,BufferSize,BufferSizes,SoundSpeeds,SoundSpeedt
 
-SECTION .text
-
-NEWSYM DeInitSPC
-    cmp byte[SBDeinitType],0
-    je .nodoublereset
-    ccallv SB_dsp_reset
-    ccallv SB_dsp_reset
-.nodoublereset
-    ; Turn off speakers
-    mov al,0d3h
-    ccallv SB_dsp_write, eax
-
-;      k) Perform Halt DMA Operation, 8-bit command (0D0h - for virtual speaker)
-    mov al,0d0h
-    ccallv SB_dsp_write, eax
-;      l) Perform Exit Auto-Initialize DMA Operation, 8-bit command (0DAh)
-    cmp byte[SBHDMA],0
-    je .8b
-    mov al,0d9h
-    ccallv SB_dsp_write, eax
-    jmp .16b
-.8b
-    mov al,0dAh
-    ccallv SB_dsp_write, eax
-.16b
-;      m) Perform Halt DMA Operation, 8-bit command (0D0h - for virtual speaker)
-    mov al,0d0h
-    ccallv SB_dsp_write, eax
-    ; Disable DMA
-    mov al,4
-    add al,[SBDMA]
-    mov dx,0ah
-    out dx,al
-    ret
-
 section .data
 
 ;SoundBlaster DSP Ports
@@ -414,7 +379,7 @@ NEWSYM memoryloc, resd 1        ; Memory offset in conventional memory
 NEWSYM memoryloc2, resd 1       ; Memory offset in conventional memory
 NEWSYM sbselec,   resw 1        ; Selector of Memory location
 NEWSYM sbpmofs,   resd 1        ; offset of Memory location
-SBDeinitType resb 1
+NEWSYM SBDeinitType, resb 1
 section .text
 
 NEWSYM InitSB
