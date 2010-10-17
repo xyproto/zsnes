@@ -360,6 +360,54 @@ void InitSB(void)
 }
 
 
+static u2 inblh(u2 const port)
+{
+	u1 const l = inb(port);
+	u1 const h = inb(port);
+	return (u2)h << 8 | l;
+}
+
+
+void GetCDMAPos(void)
+{
+	// Clear flip-flop.
+	outb(0xD8, 0x00);
+
+	static u1 const wordcountport[] = { 1, 3, 5, 7, 0xC2, 0xC6, 0xCA, 0xCE };
+	u2 const dx = wordcountport[SBHDMA >= 4 ? SBHDMA : SBDMA];
+
+	u2 bx = inblh(dx);
+	if (SBHDMA >= 4) bx *= 2;
+
+	// value returned = bx, # of bytes left for transfer
+	u2 cx = BufferSizeB * 2;
+	u2 dx = BufferSizeB;
+	if (SBHDMA >= 4)
+	{
+		cx *= 2;
+		dx *= 2;
+	}
+	SBswitch = cx - bx < dx;
+
+#if 0 // XXX was commented out
+	// Old routines, doesn't work w/ SB live!
+	do
+	{
+		u2       cx = inblh(dx);
+		u2 const bx = inblh(dx);
+		cx -= bx;
+
+		if (cx & 0x8000) cx = -cx;
+
+		if (SBHDMA >= 4) cx *= 2;
+	}
+	while (cx > 4);
+
+	SB_quality_limiter();
+#endif
+}
+
+
 void SB_quality_limiter(void)
 {
 	if (StereoSound != 1) return;

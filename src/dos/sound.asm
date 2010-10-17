@@ -21,7 +21,7 @@
 
 EXTSYM csounddisable,SPCRAM
 EXTSYM dssel
-EXTSYM SB_quality_limiter
+EXTSYM GetCDMAPos
 ;EXTSYM DSPMem,DSPBuffer,BufferSizeB,BufferSizeW
 ;EXTSYM ProcessSoundBuffer
 
@@ -73,7 +73,7 @@ NEWSYM handlersbseg
     push esi
     push es
 
-    call GetCDMAPos
+    ccallv GetCDMAPos
 
     cmp byte[csounddisable],1
     je near stopsbsound
@@ -221,7 +221,7 @@ NEWSYM SBHandler16
 
     cmp byte[vibracard], 1
     je .donotcallcmdapos
-    call GetCDMAPos
+    ccallv GetCDMAPos
 .donotcallcmdapos
 
     cmp byte[csounddisable],1
@@ -364,95 +364,6 @@ section .bss
 NEWSYM sbselec,   resw 1        ; Selector of Memory location
 NEWSYM sbpmofs,   resd 1        ; offset of Memory location
 section .text
-
-GetCDMAPos:
-    ; clear flipflop
-    xor ebx,ebx
-    mov bl,[SBDMA]
-    cmp byte[SBHDMA],4
-    jb .nohdma
-    mov bl,[SBHDMA]
-    mov dx,0Ch
-.nohdma
-    mov dx,0D8h
-    xor al,al
-    out dx,al
-    nop
-    nop
-    nop
-    nop
-    mov dx,[.wordcountport+ebx*2]
-
-    in al,dx
-    nop
-    nop
-    mov bl,al
-    in al,dx
-    nop
-    nop
-    nop
-    nop
-    mov bh,al
-    cmp byte[SBHDMA],4
-    jb .ldma2
-    add bx,bx
-.ldma2
-    ; value returned = bx, # of bytes left for transfer
-    ;mov cx,[BufferSizeB]
-    mov dx,cx
-    add cx,cx
-    cmp byte[SBHDMA],4
-    jb .ldmab
-    add cx,cx
-    add dx,dx
-.ldmab
-    sub cx,bx
-    mov byte[SBswitch],1
-    cmp cx,dx
-    jb .parta
-    mov byte[SBswitch],0
-.parta
-    ret
-SECTION .data
-.wordcountport dw 1,3,5,7,0C2h,0C6h,0CAh,0CEh
-SECTION .text
-
-; old routines, doesn't work w/ sb live!
-    jmp .fin
-
-.loop
-    in al,dx
-    nop
-    nop
-    mov cl,al
-    in al,dx
-    nop
-    nop
-    nop
-    nop
-    mov ch,al
-    in al,dx
-    nop
-    nop
-    mov bl,al
-    in al,dx
-    mov bh,al
-    sub cx,bx
-    test cx,8000h
-    jz .notneg
-    neg cx
-.notneg
-    cmp byte[SBHDMA],4
-    jb .ldma
-    add cx,cx
-    add bx,bx
-.ldma
-    cmp cx,4
-    ja .loop
-
-.fin
-		ccallv SB_quality_limiter
-		ret
 
 NEWSYM SB_blank
     push es
