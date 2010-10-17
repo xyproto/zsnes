@@ -10,6 +10,7 @@
 #include "../input.h"
 #include "../ui.h"
 #include "c_dosintrf.h"
+#include "c_sound.h"
 #include "dosintrf.h"
 #include "sound.h"
 
@@ -69,7 +70,7 @@ void SystemInit(void)
 	asm volatile("movw %%es, %0" : "=mr" (es)); // XXX necessary?
 
 	// Be sure to set SBHDMA to a value other than 0 if 16bit sound exists
-	asm_call(getblaster); // get set blaster environment
+	getblaster(); // get set blaster environment
 	if (Force8b == 1) SBHDMA = 0;
 
 	asm volatile("movw %0, %%es" : "mr" (es)); // XXX necessary?

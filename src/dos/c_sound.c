@@ -1,9 +1,14 @@
 #include <string.h>
 
+#include "../c_init.h"
+#include "../c_intrf.h"
 #include "../cfg.h"
 #include "../cpu/dspproc.h"
 #include "c_sound.h"
 #include "sound.h"
+
+
+u1 SBInt = 5 + 8;
 
 
 void SB_alloc_dma(void)
@@ -50,4 +55,135 @@ void SB_quality_limiter(void)
 	if (SoundQuality <= 2) return;
 	if (SoundQuality == 4) return;
 	SoundQuality = 2;
+}
+
+
+static void printnum(u4 val)
+{
+	char  buf[10];
+	char* b = buf;
+	do *b++ = '0' + val % 10; while ((val /= 10) != 0);
+	do PrintChar(*--b); while (b != buf);
+}
+
+
+// Locates SET BLASTER environment
+void getblaster(void)
+{
+	char const* esi = getenv("BLASTER");
+	if (!esi)
+	{
+		if (soundon != 0)
+		{
+			soundon = 0;
+			PrintStr(
+				"ERROR : SET BLASTER environment NOT found!\r\n"
+				"Unable to enable sound.\r\n"
+				"\r\n"
+				"Press any key to continue."
+			);
+			WaitForKey();
+		}
+		return;
+	}
+
+	u1 cursetting = 0;
+	for (;;)
+	{
+		char dl = *esi++;
+		if ('a' <= dl && dl <= 'z') dl -= 'a' - 'A';
+
+		switch (dl)
+		{
+			case ' ':  cursetting = 0;             continue;
+			case 'A':  cursetting = 1; SBPort = 0; continue;
+			case 'I':  cursetting = 2; SBIrq  = 0; continue;
+			case 'D':  cursetting = 3; SBDMA  = 0; continue;
+			case 'H':  cursetting = 4; SBHDMA = 0; continue;
+			case '\0': goto end;
+
+			deafult:
+				switch (cursetting)
+				{
+					case 1: // Process A.
+						SBPort = SBPort * 16 + (dl - '0');
+						break;
+
+					case 2: // Process I.
+						if (SBIrq == 1) SBIrq = 10;
+						SBIrq += dl - '0';
+						break;
+
+					case 3: // Process D.
+						SBDMA = dl - '0';
+						break;
+
+					case 4: // Process H.
+						SBHDMA = dl - '0';
+						break;
+				}
+				break;
+		}
+	}
+end:
+
+	if (SBIrq == 2) SBIrq = 9;
+
+	u1 al = SBIrq + 8;
+	if (SBIrq >= 8)
+	{ // High IRQ.
+		al       += 0x60;
+		PICMaskP += 0x80;
+	}
+	SBInt = al;
+
+	switch (SBHDMA)
+	{
+		/* This piece of code is added by Peter Santing.  It will enable ZSNES to use
+		 * the full STEREO capability of the ViBRA16X line of Creative instead of
+		 * playing 8-bit MONOURAL sound. */
+#if 0 // XXX was commented out
+		case 0:
+#endif
+		case 1:
+		case 2:
+		case 3:
+			PrintStr(
+				"Creative ViBRA16X PnP card detected (support coded by Peter Santing)\r\n"
+				"High-DMA is below dma #4\r\n"
+				"\r\n"
+				"you have now full 16-bit stereo sound with the surround option!\r\n"
+			);
+			vibracard = 1;
+			SBDMA     = SBHDMA;
+			SBHDMA    = 0;
+			break;
+
+		case 4: SBHDMAPage = 0x8F; break;
+		case 5: SBHDMAPage = 0x8B; break;
+		case 6: SBHDMAPage = 0x89; break;
+		case 7: SBHDMAPage = 0x8A; break;
+	}
+
+	switch (SBDMA)
+	{
+		case 0: SBDMAPage = 0x87; break;
+		case 1: SBDMAPage = 0x83; break;
+		case 2: SBDMAPage = 0x81; break;
+		case 3: SBDMAPage = 0x82; break;
+	}
+
+	if (DisplayS == 1)
+	{
+		PrintStr("Sound Blaster Detection Values : \r\n\r\nPORT  : ");
+		printhex(SBPort);
+		PrintStr("\r\nIRQ   : ");
+		printnum(SBIrq);
+		PrintStr("\r\nDMA   : ");
+		printnum(SBDMA);
+		PrintStr("\r\nHDMA  : ");
+		printnum(SBHDMA);
+		PrintStr("\r\n\r\nPress any key to continue.");
+		WaitForKey();
+	}
 }
