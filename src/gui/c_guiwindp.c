@@ -25,7 +25,7 @@
 
 #ifdef __MSDOS__
 #	include "../cpu/dspproc.h"
-#	include "../dos/sound.h"
+#	include "../dos/c_sound.h"
 #	include "../dos/vesa2.h"
 #endif
 

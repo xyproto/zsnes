@@ -1,19 +1,30 @@
 #include <string.h>
 
 #include "../asm.h"
+#include "../asm_call.h"
 #include "../c_init.h"
 #include "../c_intrf.h"
 #include "../cfg.h"
 #include "../cpu/dspproc.h"
+#include "../cpu/spc700.h"
+#include "../gblvars.h"
 #include "../video/procvid.h"
 #include "c_sound.h"
 #include "sound.h"
 
 
-u1 SBInt = 5 + 8;
+u1 SBHDMA    = 0;
+u1 SBInt     = 5 + 8;
+u1 SBIrq     = 5;
+u1 vibracard = 0;
 
+static u1 SBDMA        =   1;
+static u1 SBDMAPage    =  83;
 static u1 SBDeinitType;
-static u4 memoryloc;    // Memory offset in conventional memory
+static u1 SBHDMAPage   =   0;
+static u1 SBswitch;           // Which block to process next
+static u2 SBPort       = 220; // SoundBlaster DSP Ports
+static u4 memoryloc;          // Memory offset in conventional memory
 
 
 void SB_alloc_dma(void)
@@ -368,7 +379,7 @@ static u2 inblh(u2 const port)
 }
 
 
-void GetCDMAPos(void)
+static void GetCDMAPos(void)
 {
 	// Clear flip-flop.
 	outb(0xD8, 0x00);
@@ -405,6 +416,103 @@ void GetCDMAPos(void)
 
 	SB_quality_limiter();
 #endif
+}
+
+
+static void SBHandler8(void)
+{
+	u4  ecx = BufferSizeB;
+	s4* esi = DSPBuffer;
+	u1* edi = memoryloc;
+	if (SBswitch != 0) edi += ecx; // Process 2nd block.
+	SBswitch ^= 1;
+
+	if (csounddisable == 1 || DSPMem[0x6C] & 0xC0)
+	{
+#if 0 // XXX was commented out
+		memset(&Voice0Status, 0, sizeof(Voice0Status));
+#endif
+
+		memset(esi, 0, ecx * sizeof(*esi));
+		// Clear block.
+		memset(edi, 0x80, ecx);
+	}
+	else
+	{ // Process the sound :I
+		do
+		{
+			s4 eax = *esi++;
+			if (eax < -32768) eax = -32768;
+			if (eax >  32767) eax =  32767;
+			*edi++ = eax >> 8 ^ 0x80;
+		}
+		while (--ecx != 0);
+
+		// Move the good data at SPCRAM[0xF3].
+		SPCRAM[0xF3] = DSPMem[SPCRAM[0xF2]];
+
+		asm_call(ProcessSoundBuffer);
+	}
+
+	// Acknowledge SB for IRQing.
+	inb(SBPort + 0x0E);
+	outb(0x0020, 0x20);
+	if (SBIrq >= 8) outb(0x00A0, 0x20); // High IRQ.
+}
+
+
+// Process 20 blocks * 8 voices (no pitch yet)
+static void SBHandler16(void)
+{
+	if (vibracard != 1) GetCDMAPos();
+
+	u4  ecx = BufferSizeB;
+	s4* esi = DSPBuffer;
+	s2* edi = memoryloc;
+	uf (SBswitch != 0) edi += BufferSizeW / 2; // Process 2nd block.
+	SBswitch ^= 1;
+
+	if (csounddisable == 1 || DSPMem[0x6C] & 0xC0)
+	{
+#if 0 // XXX was commented out
+		memset(&Voice0Status, 0, sizeof(Voice0Status));
+#endif
+
+		memset(esi, 0, BufferSizeB * sizeof(*esi));
+		// Clear block.
+		memset(edi, 0, ecx * sizeof(*edi));
+	}
+	else
+	{
+		do
+		{
+			s4 eax = *esi++;
+			if (eax < -32768) eax = -32768;
+			if (eax >  32767) eax =  32767;
+			*edi++ = eax;
+		}
+		while (--ecx != 0);
+
+		asm_call(ProcessSoundBuffer);
+	}
+
+	// Acknowledge SB for IRQing.
+	inb(SBPort + 0x0F);
+	outb(0x0020, 0x20);
+	if (SBIrq >= 8) outb(0x00A0, 0x20); // High IRQ.
+}
+
+
+void c_SBHandler(void)
+{
+	if (vibracard != 1 && SBHDMA == 0)
+	{
+		SBHandler8();
+	}
+	else
+	{
+		SBHandler16();
+	}
 }
 
 
