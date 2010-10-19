@@ -24,8 +24,7 @@ EXTSYM FIRTAPVal0,FIRTAPVal1,FIRTAPVal2,FIRTAPVal3,FIRTAPVal4,FIRTAPVal5
 EXTSYM FIRTAPVal6,FIRTAPVal7,GlobalVL,GlobalVR,Increase
 EXTSYM MaxEcho,MusicVol,NoiseInc,NoiseSpeeds,dspPAdj,Voice0EnvInc
 EXTSYM Voice0IncNumber,Voice0State,Voice0Time
-EXTSYM Voice0Start,Voice1Start,Voice2Start,Voice3Start
-EXTSYM Voice4Start,Voice5Start,Voice6Start,Voice7Start
+EXTSYM VoiceStart
 EXTSYM Voice0Noise,Voice1Noise,Voice2Noise,Voice3Noise
 EXTSYM Voice4Noise,Voice5Noise,Voice6Noise,Voice7Noise
 EXTSYM VolumeConvTable,VolumeTableb
@@ -1930,51 +1929,35 @@ NEWSYM WDSPReg4C       ; Key On
 NEWSYM ProcessKeyOn
       test al,1
       jz .TestVoice1
-      push edx
-      call Voice0Start
-      pop edx
+      ccallv VoiceStart, 0
 .TestVoice1
       test al,2
       jz .TestVoice2
-      push edx
-      call Voice1Start
-      pop edx
+      ccallv VoiceStart, 1
 .TestVoice2
       test al,4
       jz .TestVoice3
-      push edx
-      call Voice2Start
-      pop edx
+      ccallv VoiceStart, 2
 .TestVoice3
       test al,8
       jz .TestVoice4
-      push edx
-      call Voice3Start
-      pop edx
+      ccallv VoiceStart, 3
 .TestVoice4
       test al,16
       jz .TestVoice5
-      push edx
-      call Voice4Start
-      pop edx
+      ccallv VoiceStart, 4
 .TestVoice5
       test al,32
       jz .TestVoice6
-      push edx
-      call Voice5Start
-      pop edx
+      ccallv VoiceStart, 5
 .TestVoice6
       test al,64
       jz .TestVoice7
-      push edx
-      call Voice6Start
-      pop edx
+      ccallv VoiceStart, 6
 .TestVoice7
       test al,128
       jz .TestVoice8
-      push edx
-      call Voice7Start
-      pop edx
+      ccallv VoiceStart, 7
 .TestVoice8
       test al,0FFh
       jz .novoice

@@ -82,7 +82,7 @@ NEWSYM NoiseSpeeds, dd 1,16,21,25,31,42,50,63,83,100,125,167,200,250,333,400,500
 
 SECTION .bss
 
-PSampleBuf resd 24*8
+NEWSYM PSampleBuf, resd 24*8
 
 NEWSYM LPFsample1, resd 1
 NEWSYM LPFsample2, resd 1
@@ -656,14 +656,14 @@ NEWSYM BRRTemp6,  resd 1             ; Keep this 0
 NEWSYM BRRPlace7, resd 1             ; Place in the BRRBuffer for Voice 0
 NEWSYM BRRTemp7,  resd 1             ; Keep this 0
 
-NEWSYM Voice0Freq, resd 1            ; Frequency of Voice 0 (Delta Freq)
-NEWSYM Voice1Freq, resd 1            ; Frequency of Voice 1 (Delta Freq)
-NEWSYM Voice2Freq, resd 1            ; Frequency of Voice 2 (Delta Freq)
-NEWSYM Voice3Freq, resd 1            ; Frequency of Voice 3 (Delta Freq)
-NEWSYM Voice4Freq, resd 1            ; Frequency of Voice 4 (Delta Freq)
-NEWSYM Voice5Freq, resd 1            ; Frequency of Voice 5 (Delta Freq)
-NEWSYM Voice6Freq, resd 1            ; Frequency of Voice 6 (Delta Freq)
-NEWSYM Voice7Freq, resd 1            ; Frequency of Voice 7 (Delta Freq)
+NEWSYM Voice0Freq, resd 1
+NEWSYM Voice1Freq, resd 1
+NEWSYM Voice2Freq, resd 1
+NEWSYM Voice3Freq, resd 1
+NEWSYM Voice4Freq, resd 1
+NEWSYM Voice5Freq, resd 1
+NEWSYM Voice6Freq, resd 1
+NEWSYM Voice7Freq, resd 1
 
 NEWSYM Voice0Pitch, resw 1            ; Previous Pitch for Voice 0
 NEWSYM Voice1Pitch, resw 1            ; Previous Pitch for Voice 1
@@ -974,10 +974,10 @@ NEWSYM GainDecBendDataDat, resb 8
 NEWSYM AdsrBlocksLeft, resb 8
 NEWSYM AdsrNextTimeDepth, resd 8
 
-TimeTemp   resd 8   ; 104 bytes
-IncNTemp   resd 8
-EnvITemp   resd 8
-StatTemp   resd 2
+NEWSYM TimeTemp,   resd 8   ; 104 bytes
+NEWSYM IncNTemp,   resd 8
+NEWSYM EnvITemp,   resd 8
+NEWSYM StatTemp,   resd 2
 
 NEWSYM FutureExpand,   resb 44
 ; pharos equ hack *sigh*
@@ -1180,314 +1180,7 @@ NEWSYM PHdspsave, dd dspsave
 NEWSYM PHdspconvb, dd dspconvb
 NEWSYM PHdspsave2, dd dspsave2
 
-SECTION .bss
-spc700temp resd 2
 SECTION .text
-
-%macro VoiceStart 2
-      mov byte[Voice0FirstBlock+%1],1
-      mov dword[spc700temp+4],0
-      cmp byte[Voice0Status+%1],0
-      je .moveon
-      push eax
-      mov eax,[Voice0EnvInc+%1*4]
-      mov [spc700temp],eax
-      mov dword[spc700temp+4],1
-      pop eax
-.moveon
-      mov byte[Voice0Status+%1],0
-      push eax
-      push ebx
-      push edx
-      mov eax,[DSPMem+%1*10h]
-      cmp al,40h
-      jae .noskip
-      cmp ah,40h
-      jae .noskip
-      mov eax,[DSPMem+%1*10h+4]
-      cmp eax,0050FF07h
-      jne .noskip
-      cmp byte[DSPMem+5Dh],6
-      jne .noskip
-      mov byte[DSPMem+%1*10h],15
-      mov byte[DSPMem+%1*10h+1],15
-      pop edx
-      pop ebx
-      pop eax
-      ret
-.noskip
-
-      ; Check if adsr or gain
-      test byte[DSPMem+05h+%1*10h],80h
-      jz near .gain
-
-      ; Calculate attack rate
-      movzx eax,byte[DSPMem+05h+%1*10h]
-      and al,0Fh
-      cmp eax,0Fh
-      je .skipattack
-      mov ebx,[AttackRate+eax*4]
-      mov [Voice0Time+%1*4],ebx
-      xor edx,edx
-      mov eax,127*65536
-      div ebx
-      mov [Voice0IncNumber+%1*4],eax
-      mov byte[Voice0State+%1],8
-      mov dword[Voice0EnvInc+%1*4],0
-      mov byte[GainDecBendDataDat+%1],7Fh
-      mov byte[Voice0Status+%1],1
-      jmp .finproc
-.skipattack
-      mov al,[DSPMem+05h+%1*10h]
-      shr al,4
-      and eax,07h
-      mov edx,[DecayRate+eax*4]
-      movzx eax,byte[DSPMem+06h+%1*10h]
-      and al,1Fh
-      mov ebx,[SustainRate+eax*4]
-      cmp edx,ebx
-      jae near .decayover
-
-      ; ebx = total sustain time
-      movzx eax,byte[DSPMem+06h+%1*10h]
-      shr al,5
-      mov al,[AdsrSustLevLoc+eax]
-      ; traverse through al entries in edx time
-      ; then through 64-al entries in ebx-edx time
-      mov [AdsrBlocksLeft+%1],al
-      sub ebx,edx
-      push ebx
-      push eax
-      mov ebx,eax
-      mov eax,edx
-      xor edx,edx
-      div ebx
-      mov [Voice0Time+%1*4],eax
-      mov [GainDecBendDataTime+%1*4],eax
-      pop eax
-      pop ebx
-      mov edx,ebx
-      mov ebx,64
-      sub bl,al
-      mov eax,edx
-      xor edx,edx
-      div ebx
-      mov [AdsrNextTimeDepth+%1*4],eax
-      mov dword[Voice0EnvInc+%1*4],007FFFFFh
-      mov ebx,[Voice0Time+%1*4]
-      xor edx,edx
-      mov eax,127*65536
-      sub eax,122*65536
-      mov byte[GainDecBendDataPos+%1],0
-      mov byte[GainDecBendDataDat+%1],127
-      div ebx
-      neg eax
-      mov [Voice0IncNumber+%1*4],eax
-      mov byte[Voice0State+%1],9
-      mov byte[Voice0Status+%1],1
-      jmp .finproc
-.decayover
-      sub edx,ebx
-      push ebx
-      mov eax,edx
-      movzx ebx,byte[DSPMem+06h+%1*10h]
-      shr bl,5
-      xor bl,07h
-      mul ebx
-      mov ebx,7
-      div ebx
-      pop ebx
-      add ebx,eax
-      mov dword[Voice0EnvInc+%1*4],007FFFFFh
-      shr ebx,5
-      mov [Voice0Time+%1*4],ebx
-      mov [GainDecBendDataTime+%1*4],ebx
-      xor edx,edx
-      mov eax,127*65536
-      sub eax,118*65536
-      mov byte[GainDecBendDataPos+%1],0
-      mov byte[GainDecBendDataDat+%1],127
-      div ebx
-      neg eax
-      mov [Voice0IncNumber+%1*4],eax
-      mov byte[Voice0State+%1],7
-      mov byte[Voice0Status+%1],1
-      jmp .finproc
-.gain
-      test byte[DSPMem+07h+%1*10h],80h
-      jz near .Direct
-      test byte[DSPMem+07h+%1*10h],40h
-      jnz near .Increase
-      test byte[DSPMem+07h+%1*10h],20h
-      jz .LinearDec
-      movzx eax,byte[DSPMem+07h+%1*10h]
-      and al,1Fh
-      mov ebx,[DecreaseRateExp+eax*4]
-      mov dword[Voice0EnvInc+%1*4],007FFFFFh
-      shr ebx,5
-      mov [Voice0Time+%1*4],ebx
-      mov [GainDecBendDataTime+%1*4],ebx
-      xor edx,edx
-      mov eax,127*65536
-      sub eax,118*65536
-      mov byte[GainDecBendDataPos+%1],0
-      mov byte[GainDecBendDataDat+%1],127
-      div ebx
-      neg eax
-      mov [Voice0IncNumber+%1*4],eax
-      mov byte[Voice0State+%1],7
-      mov byte[Voice0Status+%1],1
-      jmp .finproc
-.LinearDec
-      movzx eax,byte[DSPMem+07h+%1*10h]
-      and al,1Fh
-      mov ebx,[Decrease+eax*4]
-      mov dword[Voice0EnvInc+%1*4],007FFFFFh
-      mov [Voice0Time+%1*4],ebx
-      xor edx,edx
-      mov eax,127*65536
-      div ebx
-      neg eax
-      mov [Voice0IncNumber+%1*4],eax
-      mov byte[Voice0State+%1],5
-      mov byte[Voice0Status+%1],1
-      jmp .finproc
-.Increase
-      test byte[DSPMem+07h+%1*10h],20h
-      jz .LinearInc
-      movzx eax,byte[DSPMem+07h+%1*10h]
-      and al,1Fh
-      mov ebx,[Increase+eax*4]
-      mov dword[Voice0EnvInc+%1*4],0
-      mov [Voice0Time+%1*4],ebx
-      xor edx,edx
-      mov eax,127*65536
-      div ebx
-      mov [Voice0IncNumber+%1*4],eax
-      mov ebx,[Voice0Time+%1*4]
-      mov eax,ebx
-      shr eax,2
-      sub ebx,eax
-      dec ebx
-      mov [Voice0Time+%1*4],ebx
-      mov byte[Voice0State+%1],6
-      mov byte[Voice0Status+%1],1
-      jmp .finproc
-.LinearInc
-      movzx eax,byte[DSPMem+07h+%1*10h]
-      and al,1Fh
-      mov ebx,[Increase+eax*4]
-      mov dword[Voice0EnvInc+%1*4],0
-      mov [Voice0Time+%1*4],ebx
-      xor edx,edx
-      mov eax,127*65536
-      div ebx
-      mov [Voice0IncNumber+%1*4],eax
-      mov byte[Voice0State+%1],3
-      mov byte[Voice0Status+%1],1
-      jmp .finproc
-.Direct
-      mov al,[DSPMem+07h+%1*10h]
-      and al,7Fh
-      mov dword[Voice0EnvInc+%1*4],0
-      mov [Voice0EnvInc+%1*4+2],al
-      mov dword[Voice0Time+%1*4],0FFFFFFFFh
-      mov dword[Voice0IncNumber+%1*4],0
-      mov byte[Voice0State+%1],4
-      mov byte[Voice0Status+%1],1
-      jmp .finproc
-.finproc
-      cmp dword[spc700temp+4],0
-      je .skipall
-      mov eax,[Voice0Time+%1*4]
-      mov [TimeTemp+%1*4],eax
-      mov eax,[Voice0IncNumber+%1*4]
-      mov [IncNTemp+%1*4],eax
-      mov eax,[Voice0EnvInc+%1*4]
-      mov [EnvITemp+%1*4],eax
-      mov al,[Voice0State+%1]
-      mov [StatTemp+%1],al
-      mov eax,[spc700temp]
-      mov [Voice0EnvInc+%1*4],eax
-      mov dword[Voice0Time+%1*4],127
-      shr eax,7
-      neg eax
-      mov [Voice0IncNumber+%1*4],eax
-      mov byte[Voice0State+%1],210
-      jmp .novoice
-.skipall
-      mov ax,[DSPMem+02h+%1*10h]
-      cmp word[Voice0Pitch+%1*2],ax
-      je .nopitchc
-      mov [Voice0Pitch+%1*2],ax
-      And EAX, 03FFFh
-      Mul dword[dspPAdj]
-      ShRD EAX,EDX,8
-      mov [Voice0Freq+%1*4],eax
-      ; modpitch
-.nopitchc
-      mov dword[BRRPlace0+%1*8],10000000h
-      mov dword[Voice0Prev0+%1*4],0
-      mov dword[Voice0Prev1+%1*4],0
-      mov byte[Voice0End+%1],0
-      mov byte[Voice0Loop+%1],0
-      mov dword[PSampleBuf+%1*24*4+16*4],0
-      mov dword[PSampleBuf+%1*24*4+17*4],0
-      mov dword[PSampleBuf+%1*24*4+18*4],0
-      mov byte[SoundLooped0+%1],0
-      mov byte[echoon0+%1],0
-      test byte[DSPMem+4Dh],%2
-      jz .noecho
-      mov byte[echoon0+%1],1
-.noecho
-.novoice
-      mov edx,[DSPMem+04h+%1*10h]
-      and edx,0ffh
-      shl edx,2
-      xor eax,eax
-      mov ah,[DSPMem+5Dh]
-      add ax,dx
-      movzx ebx,word[SPCRAM+eax]
-      mov [Voice0Ptr+%1*4],ebx
-      movzx ebx,word[SPCRAM+eax+2]
-      mov [Voice0LoopPtr+%1*4],ebx
-      pop edx
-      pop ebx
-      pop eax
-      ret
-%endmacro
-
-NEWSYM Voice0Start
-      VoiceStart 0,1
-      ret
-
-NEWSYM Voice1Start
-      VoiceStart 1,2
-      ret
-
-NEWSYM Voice2Start
-      VoiceStart 2,4
-      ret
-
-NEWSYM Voice3Start
-      VoiceStart 3,8
-      ret
-
-NEWSYM Voice4Start
-      VoiceStart 4,16
-      ret
-
-NEWSYM Voice5Start
-      VoiceStart 5,32
-      ret
-
-NEWSYM Voice6Start
-      VoiceStart 6,64
-      ret
-
-NEWSYM Voice7Start
-      VoiceStart 7,128
-      ret
 
 ;    mov byte[Voice0Env+%1],3Fh
 ;    jmp .Adsr

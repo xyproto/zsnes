@@ -422,6 +422,173 @@ void AdjustFrequency(void)
 }
 
 
+void VoiceStart(u4 const voice)
+{
+	static u4 spc700temp[2];
+
+	Voice0FirstBlock[voice] = 1;
+	spc700temp[1] = 0;
+	if (Voice0Status[voice] != 0)
+	{
+		spc700temp[0] = Voice0EnvInc[voice];
+		spc700temp[1] = 1;
+	}
+	Voice0Status[voice] = 0;
+
+	if (DSPMem[16 * voice]                  <  0x40       &&
+			DSPMem[16 * voice + 1]              <  0x40       &&
+			*(u4 const*)&DSPMem[16 * voice + 4] == 0x0050FF07 &&
+			DSPMem[0x5D]                        == 6)
+	{ // Skip.
+		DSPMem[16 * voice]     = 15;
+		DSPMem[16 * voice + 1] = 15;
+		return;
+	}
+
+	// Check if adsr or gain
+	if (DSPMem[16 * voice + 5] & 0x80)
+	{
+		// Calculate attack rate
+		u4 const eax = DSPMem[16 * voice + 5] & 0x0F;
+		if (eax != 0x0F)
+		{
+			u4 const ebx = AttackRate[eax];
+			Voice0Time[voice]         = ebx;
+			Voice0IncNumber[voice]    = 127 * 65536 / ebx;
+			Voice0State[voice]        = 8;
+			Voice0EnvInc[voice]       = 0;
+			GainDecBendDataDat[voice] = 0x7F;
+			Voice0Status[voice]       = 1;
+		}
+		else
+		{
+			u4 const edx = DecayRate[  DSPMem[16 * voice + 5] >> 4 & 0x07];
+			u4 const ebx = SustainRate[DSPMem[16 * voice + 6]      & 0x1F];
+			if (edx < ebx)
+			{
+				// ebx = total sustain time
+				/* Traverse through al entries in edx time, then through 64 - al entries
+				 * in ebx - edx time. */
+				u1 const al  = AdsrSustLevLoc[DSPMem[16 * voice + 6] >> 5];
+				u4 const eax = edx / al;
+				AdsrBlocksLeft[voice]      = al;
+				Voice0Time[voice]          = eax;
+				GainDecBendDataTime[voice] = eax;
+				AdsrNextTimeDepth[voice]   = (ebx - edx) / (64 - al);
+				Voice0EnvInc[voice]        = 0x007FFFFF;
+				GainDecBendDataPos[voice]  =   0;
+				GainDecBendDataDat[voice]  = 127;
+				Voice0IncNumber[voice]     = -((127 - 122) * 65536 / eax);
+				Voice0State[voice]         =   9;
+				Voice0Status[voice]        =   1;
+			}
+			else
+			{ // Decay over.
+				u4 const ebx_ = (ebx + (edx - ebx) * (DSPMem[18 * voice + 6] >> 5 ^ 0x07) / 7) / 32;
+				Voice0EnvInc[voice]        = 0x007FFFFF;
+				Voice0Time[voice]          = ebx_;
+				GainDecBendDataTime[voice] = ebx_;
+				GainDecBendDataPos[voice]  =   0;
+				GainDecBendDataDat[voice]  = 127;
+				Voice0IncNumber[voice]     = -((127 - 118) * 65536 / ebx_);
+				Voice0State[voice]         =   7;
+				Voice0Status[voice]        =   1;
+			}
+		}
+	}
+	else
+	{ // Gain.
+		if (!(DSPMem[16 * voice + 7] & 0x80))
+		{ // Direct.
+			Voice0EnvInc[voice]    = (DSPMem[16 * voice + 7] & 0x7F) << 16;
+      Voice0Time[voice]      = 0xFFFFFFFF;
+      Voice0IncNumber[voice] = 0;
+      Voice0State[voice]     = 4;
+      Voice0Status[voice]    = 1;
+		}
+		else if (DSPMem[16 * voice + 7] & 0x40)
+		{ // Increase.
+			if (!(DSPMem[16 * voice + 7] & 0x20))
+			{ // Linear Inc.
+				u4 const ebx = Increase[DSPMem[16 * voice + 7] & 0x1F];
+				Voice0EnvInc[voice]    = 0;
+				Voice0Time[voice]      = ebx;
+				Voice0IncNumber[voice] = (127 * 65536) / ebx;
+				Voice0State[voice]     = 3;
+				Voice0Status[voice]    = 1;
+			}
+			else
+			{
+				u4 const ebx = Increase[DSPMem[16 * voice + 7] & 0x1F];
+				Voice0EnvInc[voice]    = 0;
+				Voice0Time[voice]      = ebx - ebx / 4 - 1;
+				Voice0IncNumber[voice] = (127 * 65536) / ebx;
+				Voice0State[voice]     = 6;
+				Voice0Status[voice]    = 1;
+			}
+		}
+		else if (!(DSPMem[16 * voice + 7] & 0x20))
+		{ // Linear Dec.
+			u4 const ebx = Decrease[DSPMem[16 * voice + 7] & 0x1F];
+			Voice0EnvInc[voice]        = 0x007FFFFF;
+			Voice0Time[voice]          = ebx;
+			Voice0IncNumber[voice]     = -(127 * 65536 / ebx);
+			Voice0State[voice]         =   5;
+			Voice0Status[voice]        =   1;
+		}
+		else
+		{
+			u4 const ebx = DecreaseRateExp[DSPMem[16 * voice + 7] & 0x1F] / 32;
+			Voice0EnvInc[voice]        = 0x007FFFFF;
+			Voice0Time[voice]          = ebx;
+			GainDecBendDataTime[voice] = ebx;
+			GainDecBendDataPos[voice]  =   0;
+			GainDecBendDataDat[voice]  = 127;
+			Voice0IncNumber[voice]     = -((127 - 118) * 65536 / ebx);
+			Voice0State[voice]         =   0;
+			Voice0Status[voice]        =   1;
+		}
+	}
+
+	if (spc700temp[1] != 0)
+	{
+		TimeTemp[voice]        = Voice0Time[voice];
+		IncNTemp[voice]        = Voice0IncNumber[voice];
+		EnvITemp[voice]        = Voice0EnvInc[voice];
+		StatTemp[voice]        = Voice0State[voice];
+		u4 const eax = spc700temp[0];
+		Voice0EnvInc[voice]    = eax;
+		Voice0Time[voice]      = 127;
+		Voice0IncNumber[voice] = -(eax / 128);
+		Voice0State[voice]     = 210;
+	}
+	else
+	{
+		u2 const ax = *(u2 const*)&DSPMem[16 * voice + 2];
+		if (Voice0Pitch[voice] != ax)
+		{ // Pitchc.
+			Voice0Pitch[voice] = ax;
+			Voice0Freq[voice]  = (u8)(ax & 0x3FFF) * dspPAdj >> 8;
+      // modpitch
+		}
+		BRRPlace0[voice][0]   = 0x10000000;
+		Voice0Prev0[voice]    = 0;
+		Voice0Prev1[voice]    = 0;
+		Voice0End[voice]      = 0;
+		Voice0Loop[voice]     = 0;
+		PSampleBuf[voice][16] = 0;
+		PSampleBuf[voice][17] = 0;
+		PSampleBuf[voice][18] = 0;
+		SoundLooped0[voice]   = 0;
+		echoon0[voice]        = (DSPMem[0x4D] & 1U << voice) != 0; // Echo.
+	}
+
+	u2 const ax = (DSPMem[0x5D] * 64 + (*(u4 const*)&DSPMem[16 * voice + 4] & 0x000000FF)) * 4;
+	Voice0Ptr[voice]     = *(u2 const*)&SPCRAM[ax];
+	Voice0LoopPtr[voice] = *(u2 const*)&SPCRAM[ax + 2];
+}
+
+
 void InitSPC(void)
 {
 	AdjustFrequency();
