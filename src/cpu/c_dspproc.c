@@ -4,6 +4,7 @@
 #include "../cfg.h"
 #include "../endmem.h"
 #include "../gblvars.h"
+#include "../initc.h"
 #include "../macros.h"
 #include "../ui.h"
 #include "c_dspproc.h"
@@ -1564,4 +1565,95 @@ void LPFexit(void)
 		esi[1] -= eax - edx;
 	}
 	while (esi += 2, --ecx != 0);
+}
+
+
+void MixEcho(void)
+{
+	static u4 CurFiltPtr = 0;
+
+	EchoT = EchoVL < EchoVR ? EchoVL : EchoVR;
+
+	// Copy echobuf to DSPBuffer, EchoBuffer to echobuf
+	if (StereoSound != 1)
+	{ // Mono.
+		u4 esi = CEchoPtr;
+		u4 edi = 0;
+		do
+		{
+			// Get current echo buffer
+			s4 const ebx = echobuf[esi];
+			// Process FIR Filter
+			u4 edx = CurFiltPtr;
+			FiltLoop[edx] = ebx;
+			s4 ecx = ebx * FIRTAPVal0[0] >> 7;
+			for (u4 i = 1; i != 8; ++i)
+			{
+				edx  = (edx + 14) % 16;
+				ecx += FIRTAPVal0[i] * FiltLoop[edx] >> 7;
+			}
+			CurFiltPtr = (CurFiltPtr + 1) % 16;
+			// Set feedback on previous echo
+			s4 const eax = EchoFB * ecx >> 7;
+			// Add in new echo/Store into Echo Buffer
+			DSPBuffer[edi] = eax;
+			echobuf[esi] = (EchoBuffer[edi] * (s4)EchoT >> 7) + eax;
+			if (++esi >= MaxEcho) esi = 0;
+		}
+		while (++edi != BufferSizeB);
+		CEchoPtr = esi;
+	}
+	else
+	{ // Stereo.
+		u4 esi = CEchoPtr;
+		u4 edi = 0;
+		do
+		{
+			{
+				// Get current echo buffer
+				s4 const ebx = echobuf[esi];
+				// Process FIR Filter
+				u4 edx = CurFiltPtr;
+				FiltLoop[edx] = ebx;
+				s4 ecx = ebx * FIRTAPVal0[0] >> 7;
+				for (u4 i = 1; i != 8; ++i)
+				{
+					edx = (edx - 2) % 16;
+					ecx += FIRTAPVal0[i] * FiltLoop[edx] >> 7;
+				}
+				DSPBuffer[edi] += ecx;
+				// Set feedback on previous echo
+				s4 const eax = EchoFB * ecx >> 7;
+				// Add in new echo/Store into Echo Buffer
+				echobuf[esi] = (EchoBuffer[edi] * (s4)EchoVL >> 7) + eax;
+			}
+
+			++esi;
+			++edi;
+
+			{
+				// Get current echo buffer
+				s4 const ebx = echobuf[esi];
+				// Process FIR Filter
+				u4 edx = CurFiltPtr;
+				FiltLoopR[edx] = ebx;
+				s4 ecx = ebx * FIRTAPVal0[0] >> 7;
+				for (u4 i = 1; i != 8; ++i)
+				{
+					edx = (edx + 14) % 16;
+					ecx += FIRTAPVal0[i] * FiltLoopR[edx] >> 7;
+				}
+				DSPBuffer[edi] += ecx;
+				CurFiltPtr = (CurFiltPtr + 1) % 16;
+				// Set feedback on previous echo
+				s4 const eax = EchoFB * ecx >> 7;
+				// Add in new echo/Store into Echo Buffer
+				echobuf[esi] = (EchoBuffer[edi] * (s4)EchoVR >> 7) + eax;
+			}
+
+			if (++esi >= MaxEcho * 2) esi = 0;
+		}
+		while (++edi != BufferSizeB);
+		CEchoPtr = esi;
+	}
 }

@@ -34,5 +34,6 @@ extern uint8_t  xe;
 extern eop**    Curtableaddr; // Current table address
 
 extern u1 SFXCounter;
+extern s4 echobuf[22500];
 
 #endif

@@ -26,6 +26,7 @@ EXTSYM StereoSound
 EXTSYM VoiceStarter
 EXTSYM LPFexit
 EXTSYM LPFstereo
+EXTSYM MixEcho
 
 SECTION .data
 NEWSYM SBHDMA, db 0         ; stupid legacy code ...
@@ -638,7 +639,7 @@ NEWSYM VolumeTableb
 
 SECTION .bss
 NEWSYM DSPBuffer, resd 320*4
-NEWSYM EchoBuffer, resd 320*4 ; The play buffer...
+NEWSYM EchoBuffer, resd 320*4
 NEWSYM PModBuffer, resd 320*4 ; The play buffer...
 NEWSYM BRRBuffer, resb 32   ; The BRR Decode Buffer
 
@@ -1066,7 +1067,6 @@ NEWSYM Voice5BufPtre, resd 1 ; Ptr to Buffer Block to be played
 NEWSYM Voice6BufPtre, resd 1 ; Ptr to Buffer Block to be played
 NEWSYM Voice7BufPtre, resd 1 ; Ptr to Buffer Block to be played
 
-NEWSYM CurFiltPtr, resd 1
 NEWSYM FiltLoop, resd 16
 NEWSYM FiltLoopR, resd 16
 
@@ -2793,172 +2793,6 @@ NEWSYM EchoStereo
     ProcessVoiceStuff %1, %2, %3, %4
 %endmacro
 
-%macro FiltTapProc 1
-    sub edx,2
-    mov eax,[FIRTAPVal0+%1*4]
-    and edx,0Fh
-    mov ebx,[FiltLoop+edx*4]
-    imul eax,ebx
-    sar eax,7
-    add ecx,eax
-%endmacro
-
-%macro FiltTapProcR 1
-    sub edx,2
-    mov eax,[FIRTAPVal0+%1*4]
-    and edx,0Fh
-    mov ebx,[FiltLoopR+edx*4]
-    imul eax,ebx
-    sar eax,7
-    add ecx,eax
-%endmacro
-
-%macro MixEcho 0
-    mov al,[EchoVL]
-    mov bl,[EchoVR]
-    cmp bl,al
-    ja .novol
-    mov bl,al
-.novol
-    mov [EchoT],bl
-
-    ; Copy echobuf to DSPBuffer, EchoBuffer to echobuf
-    cmp byte[StereoSound],1
-    je near .Stereo
-    mov esi,[CEchoPtr]
-    xor edi,edi
-.next
-    ; Get current echo buffer
-    mov ebx,[echobuf+esi*4]
-    ; Process FIR Filter
-    mov edx,[CurFiltPtr]
-    mov eax,ebx
-    mov [FiltLoop+edx*4],ebx
-    mov ecx,[FIRTAPVal0]
-    imul eax,ecx
-    sar eax,7
-    mov ecx,eax
-    FiltTapProc 1
-    FiltTapProc 2
-    FiltTapProc 3
-    FiltTapProc 4
-    FiltTapProc 5
-    FiltTapProc 6
-    FiltTapProc 7
-    inc dword[CurFiltPtr]
-    and byte[CurFiltPtr],0Fh
-    ; Set feedback on previous echo
-    mov eax,[EchoFB]
-    imul eax,ecx
-    sar eax,7
-    ; Add in new echo/Store into Echo Buffer
-    mov ecx,eax
-    xor ebx,ebx
-    add [DSPBuffer+edi*4],ecx
-    mov eax,[EchoBuffer+edi*4]
-    mov bl,[EchoT]
-    mul ebx
-    sar eax,7
-    add eax,ecx
-    mov [echobuf+esi*4],eax
-    inc esi
-    cmp esi,[MaxEcho]
-    jb .nexte
-    xor esi,esi
-.nexte
-    inc edi
-    cmp edi,[BufferSizeB]
-    jne .next
-    mov [CEchoPtr],esi
-    jmp .Mono
-
-.Stereo
-    mov esi,[CEchoPtr]
-    xor edi,edi
-.nexts
-    ; Get current echo buffer
-    mov ebx,[echobuf+esi*4]
-    ; Process FIR Filter
-    mov edx,[CurFiltPtr]
-    mov eax,ebx
-    mov [FiltLoop+edx*4],ebx
-    mov ecx,[FIRTAPVal0]
-    imul eax,ecx
-    sar eax,7
-    mov ecx,eax
-    FiltTapProc 1
-    FiltTapProc 2
-    FiltTapProc 3
-    FiltTapProc 4
-    FiltTapProc 5
-    FiltTapProc 6
-    FiltTapProc 7
-    add [DSPBuffer+edi*4],ecx
-    ; Set feedback on previous echo
-    mov eax,[EchoFB]
-    imul eax,ecx
-    sar eax,7
-
-    ; Add in new echo/Store into Echo Buffer
-
-    mov ecx,eax
-    mov eax,[EchoBuffer+edi*4]
-    movzx ebx,byte[EchoVL]
-    mul ebx
-    sar eax,7
-    add eax,ecx
-
-    mov [echobuf+esi*4],eax
-    inc esi
-    inc edi
-
-    ; Get current echo buffer
-    mov ebx,[echobuf+esi*4]
-    ; Process FIR Filter
-    mov edx,[CurFiltPtr]
-    mov eax,ebx
-    mov [FiltLoopR+edx*4],ebx
-    mov ecx,[FIRTAPVal0]
-    imul eax,ecx
-    sar eax,7
-    mov ecx,eax
-    FiltTapProcR 1
-    FiltTapProcR 2
-    FiltTapProcR 3
-    FiltTapProcR 4
-    FiltTapProcR 5
-    FiltTapProcR 6
-    FiltTapProcR 7
-    add [DSPBuffer+edi*4],ecx
-    inc dword[CurFiltPtr]
-    and byte[CurFiltPtr],0Fh
-    ; Set feedback on previous echo
-    mov eax,[EchoFB]
-    imul eax,ecx
-    sar eax,7
-    ; Add in new echo/Store into Echo Buffer
-    mov ecx,eax
-    mov eax,[EchoBuffer+edi*4]
-    movzx ebx,byte[EchoVR]
-    mul ebx
-    sar eax,7
-    add eax,ecx
-    mov [echobuf+esi*4],eax
-
-    mov eax,[MaxEcho]
-    inc esi
-    shl eax,1
-    cmp esi,eax
-    jb .nextes
-    xor esi,esi
-.nextes
-    inc edi
-    cmp edi,[BufferSizeB]
-    jne .nexts
-    mov [CEchoPtr],esi
-.Mono
-%endmacro
-
 %macro MixEcho2 0
     mov al,[EchoVL]
     mov bl,[EchoVR]
@@ -3132,7 +2966,7 @@ NEWSYM ProcessVoice816
     MixEcho2
     jmp .echowritten
 .echonotokay
-    MixEcho
+    ccallv MixEcho
     jmp .echowritten
 .nowriteecho2
     cmp byte[echowrittento],0

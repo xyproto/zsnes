@@ -1475,14 +1475,14 @@ extern uint8_t BRRBuffer[32];
 extern uint8_t echoon0;
 extern uint32_t PHdspsave;
 extern uint32_t PHdspsave2;
-uint8_t echobuf[90000];
+s4 echobuf[22500];
 extern uint8_t DSPMem[256];
 
 void clearvidsound()
 {
   memset(BRRBuffer, 0, PHdspsave);
   memset(&echoon0, 0, PHdspsave2);
-  memset(echobuf, 0, 90000);
+  memset(&echobuf, 0, sizeof(echobuf));
   memset(spcBuffera, 0, 65536*4+4096);
   memset(DSPMem, 0, 256);
 }
