@@ -8,6 +8,7 @@ void InitSPC(void);
 void LPFexit(void);
 void LPFstereo(s4* esi);
 void MixEcho(void);
+void MixEcho2(void);
 void VoiceStart(u4 voice);
 void VoiceStarter(u1 voice);
 

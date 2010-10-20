@@ -27,6 +27,7 @@ EXTSYM VoiceStarter
 EXTSYM LPFexit
 EXTSYM LPFstereo
 EXTSYM MixEcho
+EXTSYM MixEcho2
 
 SECTION .data
 NEWSYM SBHDMA, db 0         ; stupid legacy code ...
@@ -2793,101 +2794,6 @@ NEWSYM EchoStereo
     ProcessVoiceStuff %1, %2, %3, %4
 %endmacro
 
-%macro MixEcho2 0
-    mov al,[EchoVL]
-    mov bl,[EchoVR]
-    cmp bl,al
-    ja %%novol
-    mov bl,al
-%%novol
-    mov [EchoT],bl
-
-    ; Copy echobuf to DSPBuffer, EchoBuffer to echobuf
-    cmp byte[StereoSound],1
-    je %%Stereo
-    mov esi,[CEchoPtr]
-    xor edi,edi
-%%next
-    ; Get current echo buffer
-    mov ebx,[echobuf+esi*4]
-    mov eax,[EchoFB]
-    add [DSPBuffer+edi*4],ebx
-    imul eax,ebx
-    sar eax,7
-    ; Add in new echo/Store into Echo Buffer
-    mov ecx,eax
-    mov eax,[EchoBuffer+edi*4]
-    movzx ebx,byte[EchoT]
-    mul ebx
-    sar eax,7
-    add eax,ecx
-    mov [echobuf+esi*4],eax
-    inc esi
-    cmp esi,[MaxEcho]
-    jae %%echowrap
-%%nexte
-    inc edi
-    cmp edi,[BufferSizeB]
-    jne %%next
-    mov [CEchoPtr],esi
-    jmp %%Mono
-%%echowrap
-    xor esi,esi
-    jmp %%nexte
-
-%%Stereo
-    mov esi,[CEchoPtr]
-    xor edi,edi
-%%nexts
-    ; Get current echo buffer
-    mov ecx,[echobuf+esi*4]
-    mov eax,[EchoFB]
-    add [DSPBuffer+edi*4],ecx
-    imul eax,ecx
-    sar eax,7
-    ; Add in new echo/Store into Echo Buffer
-    mov ecx,eax
-    mov eax,[EchoBuffer+edi*4]
-    movzx ebx,byte[EchoVL]
-    mul ebx
-    sar eax,7
-    add eax,ecx
-    mov [echobuf+esi*4],eax
-    inc esi
-    inc edi
-
-    ; Get current echo buffer
-    mov ecx,[echobuf+esi*4]
-    mov eax,[EchoFB]
-    add [DSPBuffer+edi*4],ecx
-    imul eax,ecx
-    sar eax,7
-    ; Add in new echo/Store into Echo Buffer
-    mov ecx,eax
-    mov eax,[EchoBuffer+edi*4]
-    movzx ebx,byte[EchoVR]
-    mul ebx
-    sar eax,7
-    add eax,ecx
-    mov [echobuf+esi*4],eax
-
-    mov eax,[MaxEcho]
-    inc esi
-    shl eax,1
-    cmp esi,eax
-    jae %%echowrap2
-%%nextes
-    inc edi
-    cmp edi,[BufferSizeB]
-    jne %%nexts
-    mov [CEchoPtr],esi
-    jmp %%Mono
-%%echowrap2
-    xor esi,esi
-    jmp %%nextes
-%%Mono
-%endmacro
-
 section .bss
 echowrittento resb 1
 section .text
@@ -2963,7 +2869,7 @@ NEWSYM ProcessVoice816
     jne near .echonotokay
     cmp dword[FIRTAPVal7],0
     jne near .echonotokay
-    MixEcho2
+    ccallv MixEcho2
     jmp .echowritten
 .echonotokay
     ccallv MixEcho

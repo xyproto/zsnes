@@ -20,7 +20,6 @@ extern s4   LPFsample1;
 extern s4   LPFsample2;
 extern u1   AdsrBlocksLeft[8];
 extern u1   AdsrSustLevLoc[8];
-extern u1   EchoT;
 extern u1   EchoVL;
 extern u1   EchoVR;
 extern u1   GainDecBendDataDat[8];

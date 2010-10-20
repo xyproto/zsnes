@@ -18,6 +18,7 @@
 #endif
 
 
+static u1 EchoT;
 static u4 SBToSPC = 22050;
 
 
@@ -1649,6 +1650,60 @@ void MixEcho(void)
 				s4 const eax = EchoFB * ecx >> 7;
 				// Add in new echo/Store into Echo Buffer
 				echobuf[esi] = (EchoBuffer[edi] * (s4)EchoVR >> 7) + eax;
+			}
+
+			if (++esi >= MaxEcho * 2) esi = 0;
+		}
+		while (++edi != BufferSizeB);
+		CEchoPtr = esi;
+	}
+}
+
+
+void MixEcho2(void)
+{
+	EchoT = EchoVL < EchoVR ? EchoVL : EchoVR;
+
+	// Copy echobuf to DSPBuffer, EchoBuffer to echobuf
+	if (StereoSound != 1)
+	{ // Mono.
+		u4 esi = CEchoPtr;
+		u4 edi = 0;
+		do
+		{
+			// Get current echo buffer
+			s4 const ebx = echobuf[esi];
+			DSPBuffer[edi] += ebx;
+			// Add in new echo/Store into Echo Buffer
+			echobuf[esi] = (EchoBuffer[edi] * (s4)EchoT >> 7) + (EchoFB * ebx >> 7);
+			if (++esi >= MaxEcho) esi = 0; // Echo wrap.
+		}
+		while (++edi != BufferSizeB);
+		CEchoPtr = esi;
+	}
+	else
+	{ // Stereo.
+		u4 esi = CEchoPtr;
+		u4 edi = 0;
+		do
+		{
+			{
+				// Get current echo buffer
+				s4 const ecx = echobuf[esi];
+				DSPBuffer[edi] += ecx;
+				// Add in new echo/Store into Echo Buffer
+				echobuf[esi] = (EchoBuffer[edi] * (s4)EchoVL >> 7) + (EchoFB * ecx >> 7);
+			}
+
+			++esi;
+			++edi;
+
+			{
+				// Get current echo buffer
+				s4 const ecx = echobuf[esi];
+				DSPBuffer[edi] += ecx;
+				// Add in new echo/Store into Echo Buffer
+				echobuf[esi] = (EchoBuffer[edi] * (s4)EchoVR >> 7) + (EchoFB * ecx >> 7);
 			}
 
 			if (++esi >= MaxEcho * 2) esi = 0;
