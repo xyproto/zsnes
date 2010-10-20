@@ -18,7 +18,6 @@
 #endif
 
 
-static u1 EchoT;
 static u4 SBToSPC = 22050;
 
 
@@ -1573,13 +1572,12 @@ void MixEcho(void)
 {
 	static u4 CurFiltPtr = 0;
 
-	EchoT = EchoVL < EchoVR ? EchoVL : EchoVR;
-
 	// Copy echobuf to DSPBuffer, EchoBuffer to echobuf
 	if (StereoSound != 1)
 	{ // Mono.
-		u4 esi = CEchoPtr;
-		u4 edi = 0;
+		u1 const EchoT = EchoVL < EchoVR ? EchoVL : EchoVR;
+		u4       esi   = CEchoPtr;
+		u4       edi   = 0;
 		do
 		{
 			// Get current echo buffer
@@ -1662,13 +1660,12 @@ void MixEcho(void)
 
 void MixEcho2(void)
 {
-	EchoT = EchoVL < EchoVR ? EchoVL : EchoVR;
-
 	// Copy echobuf to DSPBuffer, EchoBuffer to echobuf
 	if (StereoSound != 1)
 	{ // Mono.
-		u4 esi = CEchoPtr;
-		u4 edi = 0;
+		u1 const EchoT = EchoVL < EchoVR ? EchoVL : EchoVR;
+		u4       esi   = CEchoPtr;
+		u4       edi   = 0;
 		do
 		{
 			// Get current echo buffer
