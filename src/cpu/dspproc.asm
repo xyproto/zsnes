@@ -21,9 +21,10 @@
 
 EXTSYM SPCRAM,RevStereo,VolumeConvTable
 EXTSYM spcBuffera,DSPMem,NoiseData,Voice0Disable,EchoDis
-EXTSYM Surround,echobuf,ENVDisable,LowPassFilterType,EMUPause,AudioLogging
+EXTSYM echobuf,ENVDisable,LowPassFilterType,EMUPause,AudioLogging
 EXTSYM StereoSound
 EXTSYM VoiceStarter
+EXTSYM LPFexit
 
 SECTION .data
 NEWSYM SBHDMA, db 0         ; stupid legacy code ...
@@ -3165,7 +3166,10 @@ NEWSYM ProcessVoice816
 .norevstereo
 
     cmp byte[LowPassFilterType],1
-    jne near LPFexit
+    je .noLPFexit
+    ccallv LPFexit
+    ret
+.noLPFexit
     mov esi,DSPBuffer
     cmp byte[StereoSound],1
     jz  LPFstereo
@@ -3186,7 +3190,8 @@ NEWSYM LPFmonoloop
     dec ecx
     jnz LPFmonoloop
     mov [LPFsample1],ebx
-    jmp LPFexit
+    ccallv LPFexit
+    ret
 
 NEWSYM LPFstereo
     mov ecx, [BufferSizeB]
@@ -3220,27 +3225,5 @@ NEWSYM LPFstereoloop
     jnz LPFstereoloop
     mov [LPFsample1],ebx
     mov [LPFsample2],edx
-
-NEWSYM LPFexit
-    cmp byte[Surround],1
-    jnz .nosurround
-    cmp byte[StereoSound],1
-    jnz .nosurround
-    mov esi,DSPBuffer
-    mov ecx,[BufferSizeB]
-    shr ecx,1
-.loop
-    mov eax,[esi]
-    mov edx,[esi+4]
-    add edx,eax
-    sar edx,1
-    sub eax,edx
-    mov ebx,[esi+4]
-    sub [esi+4],eax
-    sub ebx,edx
-    sub [esi],ebx
-    add esi,8
-    dec ecx
-    jnz .loop
-.nosurround
+    ccallv LPFexit
     ret

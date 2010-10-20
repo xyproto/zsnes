@@ -1521,3 +1521,22 @@ void InitSPC(void)
 	SB_alloc_dma();
 #endif
 }
+
+
+void LPFexit(void)
+{
+	if (Surround    != 1) return;
+	if (StereoSound != 1) return;
+
+	s4* esi = DSPBuffer;
+	u4  ecx = BufferSizeB / 2;
+	do
+	{
+		s4 const eax = esi[0];
+		s4 const ebx = esi[1];
+		s4 const edx = (ebx + eax) >> 1;
+		esi[0] -= ebx - edx;
+		esi[1] -= eax - edx;
+	}
+	while (esi += 2, --ecx != 0);
+}
