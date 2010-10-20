@@ -1461,13 +1461,8 @@ NEWSYM RDSPRegFF      ;
       mov [DSPMem+05h+%1*10h],al
       cmp byte[Voice0State+%1],210
       jne %%noendofsamp2
-      push eax
-      push ebx
-      mov al,%1
-      call VoiceStarter
+      ccallv VoiceStarter, %1
       mov dword[Voice0EnvInc+%1*4],007FFFFFh
-      pop ebx
-      pop eax
 %%noendofsamp2
       ProcessGain2 %1
       ret
@@ -1505,12 +1500,7 @@ NEWSYM RDSPRegFF      ;
 .gain
       cmp byte[Voice0State+%1],210
       jne %%noendofsamp
-      push eax
-      push ebx
-      mov al,%1
-      call VoiceStarter
-      pop ebx
-      pop eax
+      ccallv VoiceStarter, %1
 %%noendofsamp
       ProcessGain2 %1
 %endmacro

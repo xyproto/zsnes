@@ -589,6 +589,36 @@ void VoiceStart(u4 const voice)
 }
 
 
+void VoiceStarter(u1 const voice)
+{
+	Voice0Time[voice]      = TimeTemp[voice];
+	Voice0IncNumber[voice] = IncNTemp[voice];
+	Voice0EnvInc[voice]    = EnvITemp[voice];
+	Voice0State[voice]     = StatTemp[voice];
+
+	SoundLooped0[voice] = 0;
+	echoon0[voice]      = (DSPMem[0x4D] & 1 << voice) != 0; // Echo.
+	u2 const ax = (DSPMem[0x5D] * 64 + (*(u4 const*)&DSPMem[16 * voice + 4] & 0x000000FF)) * 4;
+	Voice0Ptr[voice]     = *(u2 const*)&SPCRAM[ax];
+	Voice0LoopPtr[voice] = *(u2 const*)&SPCRAM[ax + 2];
+	u2 const pitch = *(u2 const*)&DSPMem[16 * voice + 2];
+	if (Voice0Pitch[voice] != pitch)
+	{ // Pitchc.
+		Voice0Pitch[voice] = pitch;
+		Voice0Freq[voice]  = (u8)(pitch & 0x3FFF) * dspPAdj >> 8;
+		// modpitch
+	}
+	BRRPlace0[voice][0]   = 0x10000000;
+	Voice0Prev0[voice]    = 0;
+	Voice0Prev1[voice]    = 0;
+	Voice0End[voice]      = 0;
+	Voice0Loop[voice]     = 0;
+	PSampleBuf[voice][16] = 0;
+	PSampleBuf[voice][17] = 0;
+	PSampleBuf[voice][18] = 0;
+}
+
+
 void InitSPC(void)
 {
 	AdjustFrequency();

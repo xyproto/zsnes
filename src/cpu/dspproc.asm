@@ -23,6 +23,7 @@ EXTSYM SPCRAM,RevStereo,VolumeConvTable
 EXTSYM spcBuffera,DSPMem,NoiseData,Voice0Disable,EchoDis
 EXTSYM Surround,echobuf,ENVDisable,LowPassFilterType,EMUPause,AudioLogging
 EXTSYM StereoSound
+EXTSYM VoiceStarter
 
 SECTION .data
 NEWSYM SBHDMA, db 0         ; stupid legacy code ...
@@ -1179,75 +1180,6 @@ dspsave2 equ marksave2-echoon0
 NEWSYM PHdspsave, dd dspsave
 NEWSYM PHdspconvb, dd dspconvb
 NEWSYM PHdspsave2, dd dspsave2
-
-SECTION .text
-
-;    mov byte[Voice0Env+%1],3Fh
-;    jmp .Adsr
-; Pass both voice # and next function name
-
-%macro VoiceStarterM 1
-      cmp al,%1
-      jne near %%nope
-      push edx
-      mov eax,[TimeTemp+%1*4]
-      mov [Voice0Time+%1*4],eax
-      mov eax,[IncNTemp+%1*4]
-      mov [Voice0IncNumber+%1*4],eax
-      mov eax,[EnvITemp+%1*4]
-      mov [Voice0EnvInc+%1*4],eax
-      mov al,[StatTemp+%1]
-      mov [Voice0State+%1],al
-
-      mov byte[SoundLooped0+%1],0
-      mov byte[echoon0+%1],0
-      test byte[DSPMem+4Dh],1 << %1
-      jz %%noecho
-      mov byte[echoon0+%1],1
-%%noecho
-      mov edx,[DSPMem+04h+%1*10h]
-      and edx,0ffh
-      shl edx,2
-      xor eax,eax
-      mov ah,[DSPMem+5Dh]
-      add ax,dx
-      movzx ebx,word[SPCRAM+eax]
-      mov [Voice0Ptr+%1*4],ebx
-      movzx ebx,word[SPCRAM+eax+2]
-      mov [Voice0LoopPtr+%1*4],ebx
-      mov ax,[DSPMem+02h+%1*10h]
-      cmp word[Voice0Pitch+%1*2],ax
-      je %%nopitchc
-      mov [Voice0Pitch+%1*2],ax
-      And EAX, 03FFFh
-      Mul dword[dspPAdj]
-      ShRD EAX,EDX,8
-      mov [Voice0Freq+%1*4],eax
-      ; modpitch
-%%nopitchc
-      mov dword[BRRPlace0+%1*8],10000000h
-      mov dword[Voice0Prev0+%1*4],0
-      mov dword[Voice0Prev1+%1*4],0
-      mov byte[Voice0End+%1],0
-      mov byte[Voice0Loop+%1],0
-      mov dword[PSampleBuf+%1*24*4+16*4],0
-      mov dword[PSampleBuf+%1*24*4+17*4],0
-      mov dword[PSampleBuf+%1*24*4+18*4],0
-      pop edx
-      ret
-%%nope
-%endmacro
-
-NEWSYM VoiceStarter
-   VoiceStarterM 0
-   VoiceStarterM 1
-   VoiceStarterM 2
-   VoiceStarterM 3
-   VoiceStarterM 4
-   VoiceStarterM 5
-   VoiceStarterM 6
-   VoiceStarterM 7
-   ret
 
 section .bss
 NEWSYM NoiseInc, resd 1
@@ -2613,8 +2545,7 @@ NEWSYM EchoStereo
     mov byte[Voice0State+%1],0
     mov byte[DSPMem+08h+%1*10h],0
     mov byte[DSPMem+09h+%1*10h],0
-    mov al,%1
-call VoiceStarter
+    ccallv VoiceStarter, %1
     jmp %%SkipProcess2
 %%SkipProcess
     xor esi,esi
