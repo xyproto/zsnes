@@ -11,6 +11,8 @@ extern interpolatefunc* DSPInterpolate;
 extern eop* spcRptr[16];
 extern eop* spcWptr[16];
 extern s4   DSPBuffer[320 * 4]; // The play buffer
+extern s4   LPFsample1;
+extern s4   LPFsample2;
 extern u1   AdsrBlocksLeft[8];
 extern u1   AdsrSustLevLoc[8];
 extern u1   GainDecBendDataDat[8];

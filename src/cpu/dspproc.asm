@@ -25,6 +25,7 @@ EXTSYM echobuf,ENVDisable,LowPassFilterType,EMUPause,AudioLogging
 EXTSYM StereoSound
 EXTSYM VoiceStarter
 EXTSYM LPFexit
+EXTSYM LPFstereo
 
 SECTION .data
 NEWSYM SBHDMA, db 0         ; stupid legacy code ...
@@ -3172,7 +3173,10 @@ NEWSYM ProcessVoice816
 .noLPFexit
     mov esi,DSPBuffer
     cmp byte[StereoSound],1
-    jz  LPFstereo
+    jne .noLPFstereo
+    ccallv LPFstereo, esi
+    ret
+.noLPFstereo
     mov ecx, [BufferSizeB]
     shr ecx,1
     mov ebx,[LPFsample1]
@@ -3190,40 +3194,5 @@ NEWSYM LPFmonoloop
     dec ecx
     jnz LPFmonoloop
     mov [LPFsample1],ebx
-    ccallv LPFexit
-    ret
-
-NEWSYM LPFstereo
-    mov ecx, [BufferSizeB]
-    shr ecx,2
-;    mov ecx, <------------------- # of samples to mix / 4
-    mov ebx,[LPFsample1]
-    mov edx,[LPFsample2]
-
-NEWSYM LPFstereoloop
-    push ecx
-    mov eax,[esi]
-    sar eax,1
-    add ebx,eax
-    mov [esi],ebx
-    mov ecx,[esi+4]
-    sar ecx,1
-    add edx,ecx
-    mov [esi+4],edx
-    add esi,8
-    mov ebx,[esi]
-    sar ebx,1
-    add eax,ebx
-    mov [esi],eax
-    mov edx,[esi+4]
-    sar edx,1
-    add ecx,edx
-    mov [esi+4],ecx
-    add esi,8
-    pop ecx
-    dec ecx
-    jnz LPFstereoloop
-    mov [LPFsample1],ebx
-    mov [LPFsample2],edx
     ccallv LPFexit
     ret

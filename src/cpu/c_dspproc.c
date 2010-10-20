@@ -1523,6 +1523,31 @@ void InitSPC(void)
 }
 
 
+void LPFstereo(s4* esi)
+{
+	u4 n   = BufferSizeB / 4; // # of samples to mix / 4
+	s4 ebx = LPFsample1;
+	s4 edx = LPFsample2;
+	do
+	{
+		s4 const eax = esi[0] >> 1;
+		s4 const ecx = esi[1] >> 1;
+		esi[0] = ebx + eax;
+		esi[1] = edx + ecx;
+		esi += 2;
+		ebx = esi[0] >> 1;
+		edx = esi[1] >> 1;
+		esi[0] = eax + ebx;
+		esi[1] = ecx + edx;
+		esi += 2;
+	}
+	while (--n != 0);
+	LPFsample1 = ebx;
+	LPFsample2 = edx;
+	LPFexit();
+}
+
+
 void LPFexit(void)
 {
 	if (Surround    != 1) return;
