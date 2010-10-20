@@ -3,6 +3,7 @@
 
 #include "types.h"
 
+extern u1 ENVDisable;
 extern u1 ZMVRawDump;
 extern u1 autoloadmovie;
 extern u1 autoloadstate;    // auto load state slot number

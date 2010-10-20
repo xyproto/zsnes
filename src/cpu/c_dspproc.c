@@ -4,6 +4,7 @@
 #include "../cfg.h"
 #include "../endmem.h"
 #include "../gblvars.h"
+#include "../init.h"
 #include "../initc.h"
 #include "../macros.h"
 #include "../ui.h"
@@ -1707,5 +1708,475 @@ void MixEcho2(void)
 		}
 		while (++edi != BufferSizeB);
 		CEchoPtr = esi;
+	}
+}
+
+
+void ProcessVoiceStuff(u4 const ebp, u4 const p1, u4 const p3, u4 const p4)
+{
+	static u1 const AdsrBendData[] =
+	{
+		/**/ 122, 118, 114, 110, 106, 102,  99,  95,  92,  89,  86,  83,  80,  77,  74,  72,
+		/**/  69,  67,  64,  62,  60,  58,  56,  54,  52,  50,  48,  47,  45,  44,  42,  41,
+		/**/  39,  38,  36,  35,  34,  33,  32,  30,  29,  28,  27,  26,  25,  24,  24,  23,
+		/**/  22,  21,  20,  20,  19,  18,  18,  17,  16,  16,  15,  15,  14,  14,  13,  13,
+		/**/  12,  12,  11,  11,  11,  10,  10,   9,   9,   9,   8,   8,   8,   7,   7,   7,
+		/**/   7,   6,   6,   6,   6,   5,   5,   5,   5,   5,   4,   4,   4,   4,   4,   4,
+		/**/   4,   3,   3,   3,   3,   3,   3,   3,   2,   2,   2,   2,   2,   2,   2,   2,
+		/**/   2,   2,   2,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1, 255
+	};
+
+	static u1 const GainDecBendData[] =
+	{
+		/**/ 118, 110, 102,  95,  89,  83,  77,  72,  67,  62,  58,  54,  50,  47,  44,  41,
+		/**/  38,  35,  33,  30,  28,  26,  24,  23,  21,  20,  18,  17,  16,  15,  14,  13,
+		/**/  12,  11,  10,   9,   9,   8,   7,   7,   6,   6,   5,   5,   5,   4,   4,   4,
+		/**/   3,   3,   3,   3,   2,   2,   2,   2,   2,   1,   1,   1,   1, 255
+	};
+
+	static u1 const VolumeTableD[] =
+	{
+		/**/   0,   3,   6,   9,  12,  15,  17,  18,  19,  21,  22,  23,  24,  24,  26,  28,
+		/**/  30,  31,  33,  35,  36,  38,  40,  41,  43,  45,  46,  48,  49,  51,  52,  54,
+		/**/  56,  57,  58,  60,  61,  63,  64,  66,  67,  68,  70,  71,  72,  74,  75,  76,
+		/**/  78,  79,  80,  81,  82,  84,  85,  86,  87,  88,  89,  90,  91,  92,  93,  94,
+		/**/  96,  96,  97,  98,  99, 100, 101, 102, 103, 104, 105, 106, 106, 107, 108, 109,
+		/**/ 110, 110, 111, 112, 112, 113, 114, 114, 115, 116, 116, 117, 117, 118, 118, 119,
+		/**/ 120, 120, 120, 121, 121, 122, 122, 123, 123, 123, 124, 124, 124, 125, 125, 125,
+		/**/ 126, 126, 126, 126, 126, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127,
+		/**/ 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 129, 129, 129, 129, 129,
+		/**/ 130, 130, 130, 131, 131, 131, 132, 132, 132, 133, 133, 134, 134, 135, 135, 135,
+		/**/ 136, 137, 137, 138, 138, 139, 139, 140, 141, 141, 142, 143, 143, 144, 145, 145,
+		/**/ 146, 147, 148, 149, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 159,
+		/**/ 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 173, 174, 175, 176, 177,
+		/**/ 179, 180, 181, 183, 184, 185, 187, 188, 189, 191, 192, 194, 195, 197, 198, 199,
+		/**/ 201, 203, 204, 206, 207, 209, 210, 212, 214, 215, 217, 219, 220, 222, 224, 225,
+		/**/ 227, 229, 231, 231, 232, 233, 234, 236, 237, 238, 240, 243, 246, 249, 252, 255,
+
+		/**/   0,   1,   3,   5,   7,   9,  11,  13,  15,  17,  19,  21,  22,  24,  26,  28,
+		/**/  30,  31,  33,  35,  36,  38,  40,  41,  43,  45,  46,  48,  49,  51,  52,  54,
+		/**/  56,  57,  58,  60,  61,  63,  64,  66,  67,  68,  70,  71,  72,  74,  75,  76,
+		/**/  78,  79,  80,  81,  82,  84,  85,  86,  87,  88,  89,  90,  91,  92,  93,  94,
+		/**/  96,  96,  97,  98,  99, 100, 101, 102, 103, 104, 105, 106, 106, 107, 108, 109,
+		/**/ 110, 110, 111, 112, 112, 113, 114, 114, 115, 116, 116, 117, 117, 118, 118, 119,
+		/**/ 120, 120, 120, 121, 121, 122, 122, 123, 123, 123, 124, 124, 124, 125, 125, 125,
+		/**/ 126, 126, 126, 126, 126, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127,
+		/**/ 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 129, 129, 129, 129, 129,
+		/**/ 130, 130, 130, 131, 131, 131, 132, 132, 132, 133, 133, 134, 134, 135, 135, 135,
+		/**/ 136, 137, 137, 138, 138, 139, 139, 140, 141, 141, 142, 143, 143, 144, 145, 145,
+		/**/ 146, 147, 148, 149, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 159,
+		/**/ 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 173, 174, 175, 176, 177,
+		/**/ 179, 180, 181, 183, 184, 185, 187, 188, 189, 191, 192, 194, 195, 197, 198, 199,
+		/**/ 201, 203, 204, 206, 207, 209, 210, 212, 214, 215, 217, 219, 220, 222, 224, 225,
+		/**/ 227, 229, 231, 233, 234, 236, 238, 240, 242, 244, 246, 248, 250, 252, 254, 255
+	};
+
+
+	{
+		u2 const ax = *(u2 const*)&DSPMem[16 * p1 + 2];
+		if (Voice0Pitch[p1] != ax)
+		{ // Pitchc.
+			Voice0Pitch[p1] = ax;
+			// modpitch
+			Voice0Freq[p1]  = (u8)(ax & 0x3FFF) * dspPAdj >> 8;
+		}
+	}
+
+	u4 esi = 0;
+
+SkipProcess2:
+	{
+	  u1 const al = VolumeTableD[DSPMem[16 * p1 + 0]];
+	  u1 const bl = VolumeTableD[DSPMem[16 * p1 + 1]];
+	  Voice0VolumeRe[p1] = al;
+	  Voice0VolumeLe[p1] = bl;
+	  u1 ah = al;
+	  u1 bh = bl;
+	  if (ah & 0x80) ah = -ah;
+	  if (bh & 0x80) bh = -bh;
+	  ah = (u1)(ah + bh) >> 1;
+	  if (al & 0x80 || bl & 0x80) ah = -ah;
+	  Voice0Volumee[p1] = ah;
+	}
+
+	{
+		u2 const ax = GlobalVL << 8 | VolumeTableD[DSPMem[16 * p1 + 0]];
+		u2 const bx = GlobalVR << 8 | VolumeTableD[DSPMem[16 * p1 + 1]];
+		u1 const al = VolumeConvTable[ax];
+		u1 const bl = VolumeConvTable[bx];
+		Voice0VolumeR[p1] = al;
+		Voice0VolumeL[p1] = bl;
+		u1 ah = al;
+		u1 bh = bl;
+		if (ah & 0x80) ah = -ah;
+		if (bh & 0x80) bh = -bh;
+		ah = (u1)(ah + bh) >> 1;
+		if (al & 0x80 || bl & 0x80) ah = -ah;
+		Voice0Volume[p1] = ah;
+	}
+
+	lastbl = 0;
+	loopbl = 0;
+
+	UniqueSoundv = DSPMem[0x3D] & p3 || (p1 < 7 && DSPMem[0x2D] & p3 << 1);
+
+	s2* edi = Voice0BufPtr[p1];
+	u4  ebx;
+	for (;;)
+	{
+		ebx = Voice0Freq[p1];
+		if (DSPInterpolate != 0)
+		{
+			if (StereoSound == 1)
+			{ // NextSampleSi.
+				do
+				{
+					if (BRRPlace0[p1][0] >= 0x10000000) goto ProcessBRR;
+					Voice0EnvInc[p1] += Voice0IncNumber[p1];
+					if (--Voice0Time[p1] == 0) goto ProcessNextEnvelope;
+EndofProcessNEnvsi:;
+					u4 eax = ebp; // XXX hack: GCC cannot handle ebp as input/output, so take the detour over eax
+					asm volatile("push %%ebp;  mov %0, %%ebp;  call %A4;  pop %%ebp" : "+a" (eax), "+b" (ebx), "+S" (esi), "+D" (edi) : "m" (paramhack[3]) : "cc", "memory", "ecx", "edx");
+				}
+				while (esi != BufferSizeB);
+			}
+			else
+			{ // NextSamplei.
+				do
+				{
+					if (BRRPlace0[p1][0] >= 0x10000000) goto ProcessBRR;
+					Voice0EnvInc[p1] += Voice0IncNumber[p1];
+					if (--Voice0Time[p1] == 0) goto ProcessNextEnvelope;
+EndofProcessNEnvi:;
+					u4 eax = ebp; // XXX hack: GCC cannot handle ebp as input/output, so take the detour over eax
+					asm volatile("push %%ebp;  mov %0, %%ebp;  call %A4;  pop %%ebp" : "+a" (eax), "+b" (ebx), "+S" (esi), "+D" (edi) : "m" (paramhack[2]) : "cc", "memory", "ecx", "edx");
+				}
+				while (esi != BufferSizeW);
+			}
+		}
+		else
+		{
+			if (StereoSound == 1)
+			{ // NextSampleS.
+				do
+				{
+					if (BRRPlace0[p1][0] >= 0x10000000) goto ProcessBRR;
+					Voice0EnvInc[p1] += Voice0IncNumber[p1];
+					if (--Voice0Time[p1] == 0) goto ProcessNextEnvelope;
+EndofProcessNEnvs:;
+					u4 eax = ebp; // XXX hack: GCC cannot handle ebp as input/output, so take the detour over eax
+					asm volatile("push %%ebp;  mov %0, %%ebp;  call %A4;  pop %%ebp" : "+a" (eax), "+b" (ebx), "+S" (esi), "+D" (edi) : "m" (paramhack[1]) : "cc", "memory", "ecx", "edx");
+				}
+				while (esi != BufferSizeB);
+			}
+			else
+			{ // NextSample.
+				do
+				{
+					if (BRRPlace0[p1][0] >= 0x10000000) goto ProcessBRR;
+					Voice0EnvInc[p1] += Voice0IncNumber[p1];
+					if (--Voice0Time[p1] == 0) goto ProcessNextEnvelope;
+EndofProcessNEnv:;
+					u4 eax = ebp; // XXX hack: GCC cannot handle ebp as input/output, so take the detour over eax
+					asm volatile("push %%ebp;  mov %0, %%ebp;  call %A4;  pop %%ebp" : "+a" (eax), "+b" (ebx), "+S" (esi), "+D" (edi) : "m" (paramhack[0]) : "cc", "memory", "ecx", "edx");
+				}
+				while (esi != BufferSizeW);
+			}
+		}
+		DSPMem[16 * p1 + 8] = ENVDisable == 1 ? 0 : Voice0EnvInc[p1] >> 16;
+		return;
+
+ProcessBRR:
+		if (Voice0End[p1] == 1)
+		{ // No decode 1 block.
+#if 0 // XXX was commented out
+			DSPMem[0x5C]    &= p4;
+			DSPMem[0x4C]    &= p4;
+			Voice0Looped[p1] = 0;
+#endif
+			if (Voice0Loop[p1] != 1)
+			{ // End sample.
+				DSPMem[0x7C]        |= p3;
+				DSPMem[16 * p1 + 8]  = 0;
+				DLPFsamples[p1][16]  = 0;
+				DLPFsamples[p1][17]  = 0;
+				DLPFsamples[p1][18]  = 0;
+				DLPFsamples[p1][19]  = 0;
+#if 0 // XXX was commented out
+				DSPMem[0x5C]        &= p4;
+#endif
+				Voice0EnvInc[p1]     = 0;
+				Voice0IncNumber[p1]  = 0;
+				Voice0Status[p1]     = 0;
+#if 0 // XXX was commented out
+				DSPMem[16 * p1 + 9]  = 0;
+#endif
+				return;
+			}
+#if 0 // XXX was commented out
+			Voice0Looped[p1] = 1;
+#endif
+			SoundLooped0[p1] = 1;
+			DSPMem[0x7C]    |= p3;
+#if 0 // XXX was commented out
+			Voice0Prev0[p1] = 0;
+			Voice0Prev1[p1] = 0;
+#endif
+
+#if 0 // XXX was commented out
+			{
+				u2 const ax = DSPMem[0x5D] * 256 + DSPMem[16 * p1 + 4] * 4;
+				Voice0Ptr[p1]     = *(u2 const*)&SPCRAM[ax];
+				Voice0LoopPtr[p1] = *(u2 const*)&SPCRAM[ax + 2];
+			}
+#endif
+
+			Voice0Ptr[p1] = Voice0LoopPtr[p1];
+#if 0 // XXX was commented out
+			Voice0Prev1[p1] = Voice0Prev0[p1];
+#endif
+		}
+
+		// Decode 1 block.
+		BRRPlace0[p1][0] -= 0x10000000;
+		{
+			u4 const esi_ = Voice0Ptr[p1];
+
+			PSampleBuf[p1][0] = PSampleBuf[p1][16];
+			PSampleBuf[p1][1] = PSampleBuf[p1][17];
+			PSampleBuf[p1][2] = PSampleBuf[p1][18];
+
+			s2* edi = (s2*)spcBuffera + (esi_ + 1) * 2;
+			Voice0BufPtr[p1] = edi;
+			u1* esi = SPCRAM + esi_;
+			prev0 = Voice0Prev0[p1];
+			prev1 = Voice0Prev1[p1];
+			u4 eax;
+			u4 ecx;
+			u4 edx;
+			u4 ebx;
+			asm volatile("push %%ebp;  call %P6;  pop %%ebp" : "=a" (eax), "=c" (ecx), "=d" (edx), "=b" (ebx), "+S" (esi), "+D" (edi) : "X" (BRRDecode), "c" (p1) : "cc", "memory");
+		}
+
+		edi = Voice0BufPtr[p1];
+		PSampleBuf[p1][ 3] = edi[ 0];
+		PSampleBuf[p1][ 4] = edi[ 1];
+		PSampleBuf[p1][ 5] = edi[ 2];
+		PSampleBuf[p1][ 6] = edi[ 3];
+		PSampleBuf[p1][ 7] = edi[ 4];
+		PSampleBuf[p1][ 8] = edi[ 5];
+		PSampleBuf[p1][ 9] = edi[ 6];
+		PSampleBuf[p1][10] = edi[ 7];
+		PSampleBuf[p1][11] = edi[ 8];
+		PSampleBuf[p1][12] = edi[ 9];
+		PSampleBuf[p1][13] = edi[10];
+		PSampleBuf[p1][14] = edi[11];
+		PSampleBuf[p1][15] = edi[12];
+		PSampleBuf[p1][16] = edi[13];
+		PSampleBuf[p1][17] = edi[14];
+		PSampleBuf[p1][18] = edi[15];
+
+		PSampleBuf[p1][19] = BRRreadahead[0];
+		PSampleBuf[p1][20] = BRRreadahead[1];
+		PSampleBuf[p1][21] = BRRreadahead[2];
+		PSampleBuf[p1][22] = BRRreadahead[3];
+
+		Voice0Prev0[p1]    = prev0;
+		Voice0Prev1[p1]    = prev1;
+		Voice0Loop[p1]     = loopbl;
+		Voice0End[p1]      = lastbl;
+		Voice0Ptr[p1]     += 9;
+	}
+
+ProcessNextEnvelope:
+	switch (Voice0State[p1])
+	{
+		case 10: // ADSRSustain.
+		{
+			u4 const bl = GainDecBendDataPos[p1];
+			u1 const dh = AdsrBendData[bl + 1];
+			u1 const al = (u1)VolumeConvTable[AdsrBendData[bl] << 8 | GainDecBendDataDat[p1]];
+			Voice0EnvInc[p1] = al << 16;
+			if (dh != 255)
+			{ // More ADSR.
+				u4 const ebx = AdsrNextTimeDepth[p1];
+				Voice0Time[p1]      = ebx;
+				Voice0IncNumber[p1] = -((u1)(al - (u1)VolumeConvTable[dh << 8 | GainDecBendDataDat[p1]]) * 65536 / ebx);
+				++GainDecBendDataPos[p1];
+				goto ContinueGain;
+			}
+			else
+			{
+				Voice0State[p1] = 5;
+				goto MuteGain;
+			}
+		}
+
+		case 9: // ADSRDecayProc.
+		{
+			u4 const bl  = GainDecBendDataPos[p1]++;
+			u1 const al  = (u1)VolumeConvTable[AdsrBendData[bl] << 8 | GainDecBendDataDat[p1]];
+			u4 const ebx = GainDecBendDataTime[p1];
+			Voice0EnvInc[p1]    = al << 16;
+			Voice0Time[p1]      = ebx;
+			Voice0IncNumber[p1] = -((u1)(al - (u1)VolumeConvTable[AdsrBendData[bl + 1] << 8 | GainDecBendDataDat[p1]]) * 65536 / ebx);
+			if (--AdsrBlocksLeft[p1] != 0) Voice0State[p1] = 10;
+			goto ContinueGain;
+		}
+
+		case 7: // DecreaseBent.
+		{
+			u1 const bl = GainDecBendDataPos[p1];
+			u1 const dl = GainDecBendDataDat[p1];
+			u1 const al = (u1)VolumeConvTable[GainDecBendData[bl] << 8 | dl];
+			Voice0EnvInc[p1] = al << 16;
+			u1 const dh = GainDecBendData[bl + 1];
+			if (dh != 255)
+			{ // More.
+				u4 const ebx = GainDecBendDataTime[p1];
+				Voice0Time[p1]      = ebx;
+				Voice0IncNumber[p1] = -((u1)(al - (u1)VolumeConvTable[dh << 8 | dl]) * 65536 / ebx);
+				++GainDecBendDataPos[p1];
+				goto ContinueGain;
+			}
+			else
+			{
+				Voice0State[p1] = 5;
+				goto MuteGain;
+			}
+		}
+
+		case 8: // ADSRDecay.
+		{
+			u4 const edx = DecayRate[DSPMem[16 * p1 + 5] >> 4 & 0x07];
+			u4 const ebx = SustainRate[DSPMem[16 * p1 + 6] & 0x1F];
+			if (edx >= ebx)
+			{ // Decay over.
+				u4 const ebx_ = (ebx + (u4)((u8)(edx - ebx) * (DSPMem[16 * p1 + 6] >> 5 ^ 0x07) / 7)) >> 5;
+				Voice0EnvInc[p1]        = 0x007FFFFF;
+				Voice0Time[p1]          = ebx_;
+				GainDecBendDataTime[p1] = ebx_;
+				GainDecBendDataPos[p1]  =   0;
+				GainDecBendDataDat[p1]  = 127;
+				Voice0IncNumber[p1]     = -((127 - 118) * 65536 / ebx_);
+				Voice0State[p1]         =   7;
+			}
+			else
+			{
+				// ebx = total sustain time
+				u1 const al = AdsrSustLevLoc[DSPMem[16 * p1 + 6] >> 5];
+				/* Traverse through al entries in edx time, then through 64-al entries in ebx-edx time. */
+				AdsrBlocksLeft[p1]      = al;
+				Voice0Time[p1]          = edx / al;
+				GainDecBendDataTime[p1] = edx / al;
+				AdsrNextTimeDepth[p1]   = (ebx - edx) / (64 - al);
+				Voice0EnvInc[p1]        = 0x007FFFFF;
+				GainDecBendDataPos[p1]  =   0;
+				GainDecBendDataDat[p1]  = 127;
+				Voice0IncNumber[p1]     = -((127 - 122) * 65536 / Voice0Time[p1]);
+				Voice0State[p1]         =   9;
+			}
+			goto ContinueGain;
+		}
+
+		u4 ebx_;
+
+		case 1: // Decay.
+		{
+			// Calculate Decay Value
+			Voice0EnvInc[p1] = 0x007FFFFF;
+			u1 const al  = DSPMem[16 * p1 + 5] >> 4 & 0x07;
+			u1 const dl  = DSPMem[16 * p1 + 6]      & 0x1F;
+			u4       ebx = DecayRate[al];
+			if (dl != 0x1F && ebx > SustainRate[dl])
+			{ // Decay fix.
+				if (al == 0 && (DSPMem[16 * p1 + 6] & 0xE0) == 0xE0)
+				{ // Decay skip.
+					ebx_ = SustainRate[dl];
+					goto continuesust;
+				}
+				ebx = DecayRate[DSPMem[16 * p1 + 5] >> 4 & 0x07] - SustainRate[dl];
+				if (ebx < SustainRate[dl]) ebx = SustainRate[dl];
+			}
+			if (ebx == 0) ebx = 1;
+			Voice0Time[p1]      = ebx;
+			static u1 const SustainValue[] = { 15, 31, 47, 63, 79, 95, 111, 127 };
+			Voice0IncNumber[p1] = -((SustainValue[DSPMem[16 * p1 + 6] >> 5 & 0x07] ^ 0x7F) * 65536 / ebx);
+			Voice0State[p1]     = 2;
+			goto ContinueGain;
+		}
+
+		case 2: // Sustain.
+		{
+			// Calculate Decay Value
+			ebx_ = SustainRate[DSPMem[16 * p1 + 6] & 0x1F];
+			if (!(ebx_ & 0x80000000))
+			{ // Sustain not okay.
+				ebx_ -= DecayRate[DSPMem[16 * p1 + 5] >> 4 & 0x07];
+continuesust:
+				if (ebx_ <= 100) ebx_ = 100;
+			}
+			Voice0Time[p1] = ebx_;
+			Voice0IncNumber[p1] = -((Voice0EnvInc[p1] & 0x00FF0000) / ebx_);
+			Voice0State[p1]     = 4;
+			goto ContinueGain;
+		}
+
+		case 3: // Blank.
+			Voice0EnvInc[p1]    = 0x007F0000;
+			Voice0IncNumber[p1] = 0;
+			Voice0Time[p1]      = 0xFFFFFFFF;
+			goto ContinueGain;
+
+		case 4:
+		case 200:
+		default: // EndofSamp.
+			DLPFsamples[p1][16] = 0;
+			DLPFsamples[p1][17] = 0;
+			DLPFsamples[p1][18] = 0;
+			DLPFsamples[p1][19] = 0;
+			Voice0EnvInc[p1]    = 0;
+			Voice0IncNumber[p1] = 0;
+			Voice0Status[p1]    = 0;
+			Voice0State[p1]     = 0;
+			DSPMem[16 * p1 + 8] = 0;
+			DSPMem[16 * p1 + 9] = 0;
+			DSPMem[0x7C]       |= p3;
+			return;
+
+		case 210: // EndofSamp2.
+			Voice0EnvInc[p1]    = 0;
+			Voice0IncNumber[p1] = 0;
+			Voice0State[p1]     = 0;
+			DSPMem[16 * p1 + 8] = 0;
+			DSPMem[16 * p1 + 9] = 0;
+			VoiceStarter(p1);
+			goto SkipProcess2;
+
+		case 5: // MuteGain.
+MuteGain:
+			Voice0EnvInc[p1]    = 0;
+			Voice0IncNumber[p1] = 0;
+			Voice0Time[p1]      = 0xFFFFFFFF;
+			goto ContinueGain;
+
+		case 6: // IncreaseBent.
+			Voice0Time[p1]        = Increase[DSPMem[16 * p1 + 7] & 0x1F];
+			Voice0IncNumber[p1] >>= 2;
+			Voice0State[p1]       = 3;
+			goto ContinueGain;
+
+ContinueGain:
+			ebx = Voice0Freq[p1];
+			if (DSPInterpolate != 0)
+			{
+				if (StereoSound == 1) goto EndofProcessNEnvsi;
+				goto EndofProcessNEnvi;
+			}
+			else
+			{
+				if (StereoSound == 1) goto EndofProcessNEnvs;
+				goto EndofProcessNEnv;
+			}
 	}
 }

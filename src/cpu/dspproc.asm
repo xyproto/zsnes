@@ -20,14 +20,14 @@
 %include "macros.mac"
 
 EXTSYM SPCRAM,RevStereo,VolumeConvTable
-EXTSYM spcBuffera,DSPMem,NoiseData,Voice0Disable,EchoDis
-EXTSYM echobuf,ENVDisable,LowPassFilterType,EMUPause,AudioLogging
+EXTSYM DSPMem,NoiseData,Voice0Disable,EchoDis
+EXTSYM echobuf,LowPassFilterType,EMUPause,AudioLogging
 EXTSYM StereoSound
-EXTSYM VoiceStarter
 EXTSYM LPFexit
 EXTSYM LPFstereo
 EXTSYM MixEcho
 EXTSYM MixEcho2
+EXTSYM ProcessVoiceStuff
 
 SECTION .data
 NEWSYM SBHDMA, db 0         ; stupid legacy code ...
@@ -411,7 +411,7 @@ section .bss
 NEWSYM curvoice, resd 1
 section .text
 
-BRRDecode:
+NEWSYM BRRDecode
     mov [curvoice],ecx
     mov byte[lastbl],0
     mov byte[loopbl],0
@@ -526,44 +526,17 @@ ALIGN32
 
 Filter dd 0,0,240,0,488,-240,460,-208
 
-prev0              dd 0         ; previous value 1
-prev1              dd 0         ; previous value 2
+NEWSYM prev0,              dd 0         ; previous value 1
+NEWSYM prev1,              dd 0         ; previous value 2
 nextsamp           dd 0         ; next sample
 filter0            dd 0         ; filter 0
 filter1            dd 0         ; filter 1
 bshift             dd 0
 sampleleft         dd 0         ; 8 bytes/sample
 
-lastbl             dd 0         ; Last block if = 1
-loopbl             dd 0         ; Loop if = 1
+NEWSYM lastbl,             dd 0
+NEWSYM loopbl,             dd 0
 usenoisedata       dd 0
-
-VolumeTableD:
-db 0,3,6,9,12,15,17,18,19,21,22,23,24,24,26,28,30,31,33,35,36,38,40,41,43,45,46,48,49
-db 51,52,54,56,57,58,60,61,63,64,66,67,68,70,71,72,74,75,76,78,79,80,81,82,84,85,86
-db 87,88,89,90,91,92,93,94,96,96,97,98,99,100,101,102,103,104,105,106,106,107,108
-db 109,110,110,111,112,112,113,114,114,115,116,116,117,117,118,118,119,120,120,120
-db 121,121,122,122,123,123,123,124,124,124,125,125,125,126,126,126,126,126,127,127
-db 127,127,127,127,127,127,127,127,127,128,128,128,128,128,128,128,128,128,128
-db 128,129,129,129,129,129,130,130,130,131,131,131,132,132,132,133,133,134,134,135
-db 135,135,136,137,137,138,138,139,139,140,141,141,142,143,143,144,145,145,146,147
-db 148,149,149,150,151,152,153,154,155,156,157,158,159,159,161,162,163,164,165,166
-db 167,168,169,170,171,173,174,175,176,177,179,180,181,183,184,185,187,188,189,191
-db 192,194,195,197,198,199,201,203,204,206,207,209,210,212,214,215,217,219,220,222
-db 224,225,227,229,231,231,232,233,234,236,237,238,240,243,246,249,252,255
-
-db 0,1,3,5,7,9,11,13,15,17,19,21,22,24,26,28,30,31,33,35,36,38,40,41,43,45,46,48,49
-db 51,52,54,56,57,58,60,61,63,64,66,67,68,70,71,72,74,75,76,78,79,80,81,82,84,85,86
-db 87,88,89,90,91,92,93,94,96,96,97,98,99,100,101,102,103,104,105,106,106,107,108
-db 109,110,110,111,112,112,113,114,114,115,116,116,117,117,118,118,119,120,120,120
-db 121,121,122,122,123,123,123,124,124,124,125,125,125,126,126,126,126,126,127,127
-db 127,127,127,127,127,127,127,127,127,128,128,128,128,128,128,128,128,128,128
-db 128,129,129,129,129,129,130,130,130,131,131,131,132,132,132,133,133,134,134,135
-db 135,135,136,137,137,138,138,139,139,140,141,141,142,143,143,144,145,145,146,147
-db 148,149,149,150,151,152,153,154,155,156,157,158,159,159,161,162,163,164,165,166
-db 167,168,169,170,171,173,174,175,176,177,179,180,181,183,184,185,187,188,189,191
-db 192,194,195,197,198,199,201,203,204,206,207,209,210,212,214,215,217,219,220,222
-db 224,225,227,229,231,233,234,236,238,240,242,244,246,248,250,252,254,255
 
 NEWSYM VolumeTableb
                db 00h,01h,02h,03h,04h,05h,06h,07h,08h,09h,0Ah,0Bh,0Ch,0Dh,0Eh,0Fh
@@ -705,14 +678,14 @@ NEWSYM Voice5LoopPtr,  resd 1 ; Ptr to Loop BRR Block to be played
 NEWSYM Voice6LoopPtr,  resd 1 ; Ptr to Loop BRR Block to be played
 NEWSYM Voice7LoopPtr,  resd 1 ; Ptr to Loop BRR Block to be played
 
-NEWSYM Voice0BufPtr,  resd 1 ; Ptr to Buffer Block to be played
-NEWSYM Voice1BufPtr,  resd 1 ; Ptr to Buffer Block to be played
-NEWSYM Voice2BufPtr,  resd 1 ; Ptr to Buffer Block to be played
-NEWSYM Voice3BufPtr,  resd 1 ; Ptr to Buffer Block to be played
-NEWSYM Voice4BufPtr,  resd 1 ; Ptr to Buffer Block to be played
-NEWSYM Voice5BufPtr,  resd 1 ; Ptr to Buffer Block to be played
-NEWSYM Voice6BufPtr,  resd 1 ; Ptr to Buffer Block to be played
-NEWSYM Voice7BufPtr,  resd 1 ; Ptr to Buffer Block to be played
+NEWSYM Voice0BufPtr,  resd 1
+NEWSYM Voice1BufPtr,  resd 1
+NEWSYM Voice2BufPtr,  resd 1
+NEWSYM Voice3BufPtr,  resd 1
+NEWSYM Voice4BufPtr,  resd 1
+NEWSYM Voice5BufPtr,  resd 1
+NEWSYM Voice6BufPtr,  resd 1
+NEWSYM Voice7BufPtr,  resd 1
 
 NEWSYM SoundCounter,   resd 1 ; Counter used for sound generation
 NEWSYM SoundCounter2,  resd 1 ; Counter used for sound generation
@@ -1136,9 +1109,6 @@ NEWSYM SustainRate
                dd 13230,9702,8158,6504,4851,3879,2697,1450
                dd 1212,1014,815,606,407,202,125,70
 
-NEWSYM SustainValue
-               db 15,31,47,63,79,95,111,127
-
 NEWSYM Increase
                dd 0FFFFFFFFh,45202,34177,28665,22050,16537,14332,11025
                dd 8489,7056,5622,4189,3528,2866,2094,1764
@@ -1162,18 +1132,6 @@ NEWSYM DecreaseRateExp
                dd 78277,65047,51817,38587,31972,26460,19845,16537
                dd 13230,9702,8158,6504,4851,4079,3197,2425
                dd 1984,1653,1212,1014,815,606,407,198
-
-GainDecBendData db 118,110,102,95,89,83,77,72,67,62,58,54,50,47,44,41,38,35
-                db 33,30,28,26,24,23,21,20,18,17,16,15,14,13
-                db 12,11,10,9,9,8,7,7,6,6,5,5,5,4,4,4,3,3,3,3,2,2,2,2,2,1,1,1,1
-                db 255
-
-AdsrBendData db 122,118,114,110,106,102,99,95,92,89,86,83,80,77,74,72,69,67
-             db 64,62,60,58,56,54,52,50,48,47,45,44,42,41,39,38,36,35,34,33
-             db 32,30,29,28,27,26,25,24,24,23,22,21,20,20,19,18,18,17,16,16
-             db 15,15,14,14,13,13,12,12,11,11,11,10,10,9,9,9,8,8,8,7,7,7,7,6
-             db 6,6,6,5,5,5,5,5,4,4,4,4,4,4,4,3,3,3,3,3,3,3,2,2,2,2,2,2,2,2,2
-             db 2,2,1,1,1,1,1,1,1,1,1,1,1,1,255
 
 NEWSYM AdsrSustLevLoc, db 58,39,27,19,13,8,3,1
 
@@ -1217,7 +1175,7 @@ section .text
 
 section .bss
 powhack resd 1
-paramhack resd 4
+NEWSYM paramhack, resd 4
 section .text
 
 ALIGN16
@@ -2051,684 +2009,6 @@ NEWSYM EchoStereo
 %endif
     ret
 
-%macro ProcessVoiceStuff 4
-    mov ax,[DSPMem+02h+%1*10h]
-    cmp word[Voice0Pitch+%1*2],ax
-    je %%nopitchc
-    mov [Voice0Pitch+%1*2],ax
-    And EAX, 03FFFh
-    Mul dword[dspPAdj]
-    ShRD EAX,EDX,8
-    ; modpitch
-    mov [Voice0Freq+%1*4],eax
-%%nopitchc
-    jmp %%SkipProcess
-%%ProcessNextEnvelope
-    cmp byte[Voice0State+%1],10
-    je near %%ADSRSustain
-    cmp byte[Voice0State+%1],9
-    je near %%ADSRDecayProc
-    cmp byte[Voice0State+%1],7
-    je near %%DecreaseBent
-    cmp byte[Voice0State+%1],8
-    je near %%ADSRDecay
-    cmp byte[Voice0State+%1],1
-    je near %%Decay
-    cmp byte[Voice0State+%1],2
-    je near %%Sustain
-    cmp byte[Voice0State+%1],3
-    je near %%Blank
-    cmp byte[Voice0State+%1],4
-    je near %%EndofSamp
-    cmp byte[Voice0State+%1],200
-    je near %%EndofSamp
-    cmp byte[Voice0State+%1],210
-    je near %%EndofSamp2
-    cmp byte[Voice0State+%1],5
-    je %%MuteGain
-    cmp byte[Voice0State+%1],6
-    je %%IncreaseBent
-    jmp %%EndofSamp
-%%MuteGain
-    mov dword[Voice0EnvInc+%1*4],0
-    mov dword[Voice0IncNumber+%1*4],0
-    mov dword[Voice0Time+%1*4],0FFFFFFFFh
-    jmp %%ContinueGain
-%%IncreaseBent
-    push ebx
-    movzx eax,byte[DSPMem+07h+%1*10h]
-    and al,1Fh
-    mov ebx,[Increase+eax*4]
-    mov [Voice0Time+%1*4],ebx
-    shr dword[Voice0IncNumber+%1*4],2
-    mov byte[Voice0State+%1],3
-    pop ebx
-    jmp %%ContinueGain
-%%ADSRDecay
-      push ebx
-      push edx
-      mov al,[DSPMem+05h+%1*10h]
-      shr al,4
-      and eax,07h
-      mov edx,[DecayRate+eax*4]
-      movzx eax,byte[DSPMem+06h+%1*10h]
-      and al,1Fh
-      mov ebx,[SustainRate+eax*4]
-      cmp edx,ebx
-      jae %%decayover
-      ; ebx = total sustain time
-      movzx eax,byte[DSPMem+06h+%1*10h]
-      shr al,5
-      mov al,[AdsrSustLevLoc+eax]
-      ; traverse through al entries in edx time
-      ; then through 64-al entries in ebx-edx time
-      mov [AdsrBlocksLeft+%1],al
-      sub ebx,edx
-      push ebx
-      push eax
-      mov ebx,eax
-      mov eax,edx
-      xor edx,edx
-      div ebx
-      mov [Voice0Time+%1*4],eax
-      mov [GainDecBendDataTime+%1*4],eax
-      pop eax
-      pop ebx
-      mov edx,ebx
-      mov ebx,64
-      sub bl,al
-      mov eax,edx
-      xor edx,edx
-      div ebx
-      mov [AdsrNextTimeDepth+%1*4],eax
-      mov dword[Voice0EnvInc+%1*4],007FFFFFh
-      mov ebx,[Voice0Time+%1*4]
-      xor edx,edx
-      mov eax,127*65536-122*65536
-      mov byte[GainDecBendDataPos+%1],0
-      mov byte[GainDecBendDataDat+%1],127
-      div ebx
-      neg eax
-      mov [Voice0IncNumber+%1*4],eax
-      pop edx
-      pop ebx
-      mov byte[Voice0State+%1],9
-    jmp %%ContinueGain
-%%decayover
-      sub edx,ebx
-      push ebx
-      mov eax,edx
-      movzx ebx,byte[DSPMem+06h+%1*10h]
-      shr bl,5
-      xor bl,07h
-      mul ebx
-      mov ebx,7
-      div ebx
-      pop ebx
-      add ebx,eax
-      mov dword[Voice0EnvInc+%1*4],007FFFFFh
-      shr ebx,5
-      mov [Voice0Time+%1*4],ebx
-      mov [GainDecBendDataTime+%1*4],ebx
-      xor edx,edx
-      mov eax,127*65536-118*65536
-      mov byte[GainDecBendDataPos+%1],0
-      mov byte[GainDecBendDataDat+%1],127
-      div ebx
-      neg eax
-      mov [Voice0IncNumber+%1*4],eax
-      pop edx
-      pop ebx
-      mov byte[Voice0State+%1],7
-    jmp %%ContinueGain
-%%ADSRDecayProc
-    push ebx
-    push edx
-    mov dword[Voice0EnvInc+%1*4],0
-    movzx ebx,byte[GainDecBendDataPos+%1]
-    movzx edx,byte[GainDecBendDataDat+%1]
-    mov dh,[AdsrBendData+ebx]
-    movzx eax,byte[VolumeConvTable+edx*2]
-    mov [Voice0EnvInc+%1*4+2],al
-    mov dl,[GainDecBendDataDat+%1]
-    mov dh,[AdsrBendData+ebx+1]
-    sub al,[VolumeConvTable+edx*2]
-    mov ebx,[GainDecBendDataTime+%1*4]
-    mov [Voice0Time+%1*4],ebx
-    xor edx,edx
-    shl eax,16
-    inc byte[GainDecBendDataPos+%1]
-    div ebx
-    neg eax
-    mov [Voice0IncNumber+%1*4],eax
-    pop edx
-    pop ebx
-    dec byte[AdsrBlocksLeft+%1]
-    jz %%nomoredecay
-    jmp %%ContinueGain
-%%nomoredecay
-    mov byte[Voice0State+%1],10
-    jmp %%ContinueGain
-%%ADSRSustain
-    push ebx
-    push edx
-    mov dword[Voice0EnvInc+%1*4],0
-    movzx ebx,byte[GainDecBendDataPos+%1]
-    movzx edx,byte[GainDecBendDataDat+%1]
-    mov dh,[AdsrBendData+ebx]
-    movzx eax,byte[VolumeConvTable+edx*2]
-    mov [Voice0EnvInc+%1*4+2],al
-    mov dl,[GainDecBendDataDat+%1]
-    mov dh,[AdsrBendData+ebx+1]
-    cmp dh,255
-    je %%nomoreadsr
-    mov dl,[VolumeConvTable+edx*2]
-    mov ebx,[AdsrNextTimeDepth+%1*4]
-    sub al,dl
-    mov [Voice0Time+%1*4],ebx
-    xor edx,edx
-    shl eax,16
-    inc byte[GainDecBendDataPos+%1]
-    div ebx
-    neg eax
-    mov [Voice0IncNumber+%1*4],eax
-    pop edx
-    pop ebx
-    jmp %%ContinueGain
-%%nomoreadsr
-    pop edx
-    pop ebx
-    mov byte[Voice0State+%1],5
-    jmp %%MuteGain
-%%DecreaseBent
-    push ebx
-    push edx
-    movzx ebx,byte[GainDecBendDataPos+%1]
-    movzx edx,byte[GainDecBendDataDat+%1]
-    mov dh,[GainDecBendData+ebx]
-    mov dword[Voice0EnvInc+%1*4],0
-    movzx eax,byte[VolumeConvTable+edx*2]
-    mov [Voice0EnvInc+%1*4+2],al
-    mov dh,[GainDecBendData+ebx+1]
-    cmp dh,255
-    je %%nomore
-    mov ebx,[GainDecBendDataTime+%1*4]
-    sub al,[VolumeConvTable+edx*2]
-    mov [Voice0Time+%1*4],ebx
-    xor edx,edx
-    shl eax,16
-    inc byte[GainDecBendDataPos+%1]
-    div ebx
-    neg eax
-    mov [Voice0IncNumber+%1*4],eax
-    pop edx
-    pop ebx
-    jmp %%ContinueGain
-%%nomore
-    pop edx
-    pop ebx
-    mov byte[Voice0State+%1],5
-    jmp %%MuteGain
-%%Decay
-    ; Calculate Decay Value
-    push ebx
-    push edx
-    mov dword[Voice0EnvInc+%1*4],07FFFFFh
-    mov al,[DSPMem+05h+%1*10h]
-    mov dl,[DSPMem+06h+%1*10h]
-    shr al,4
-    and eax,07h
-    and edx,1Fh
-    mov ebx,[DecayRate+eax*4]
-    cmp edx,1Fh
-    je %%nodecayfix
-    cmp ebx,[SustainRate+edx*4]
-    jbe %%nodecayfix
-    cmp al,0
-    jne %%nodecayskip
-    mov al,[DSPMem+06h+%1*10h]
-    and al,0E0h
-    cmp al,0E0h
-    je near %%Sustain2
-%%nodecayskip
-    mov al,[DSPMem+05h+%1*10h]
-    shr al,4
-    and eax,07h
-    mov ebx,[DecayRate+eax*4]
-    sub ebx,[SustainRate+edx*4]
-    cmp ebx,[SustainRate+edx*4]
-    jae %%nodecayfix
-    mov ebx,[SustainRate+edx*4]
-%%nodecayfix
-    or ebx,ebx
-    jnz %%nozero
-    inc ebx
-%%nozero
-    mov dl,[DSPMem+06h+%1*10h]
-    shr dl,5
-    and dl,07h
-    mov [Voice0Time+%1*4],ebx
-    mov al,[SustainValue+edx]
-    xor al,7Fh
-    shl eax,16
-    xor edx,edx
-    div ebx
-    neg eax
-    mov [Voice0IncNumber+%1*4],eax
-    mov byte[Voice0State+%1],2
-    pop edx
-    pop ebx
-    mov ebx,[Voice0Freq+%1*4]
-    cmp dword[DSPInterpolate],0
-    je %%notinterpsound
-    cmp byte[StereoSound],1
-    je near %%EndofProcessNEnvsi
-    jmp %%EndofProcessNEnvi
-%%notinterpsound
-    cmp byte[StereoSound],1
-    je near %%EndofProcessNEnvs
-    jmp %%EndofProcessNEnv
-%%Sustain2
-    mov ebx,[SustainRate+edx*4]
-    jmp %%continuesust
-%%Sustain
-    ; Calculate Decay Value
-    push ebx
-    push edx
-    mov al,[DSPMem+05h+%1*10h]
-    mov dl,[DSPMem+06h+%1*10h]
-    and edx,1Fh
-    shr al,4
-    and eax,07h
-    mov ebx,[SustainRate+edx*4]
-    test ebx,80000000h
-    jnz %%sustainokay
-    sub ebx,[DecayRate+eax*4]
-%%continuesust
-    cmp ebx,100
-    jg %%sustainokay
-    mov ebx,100
-%%sustainokay
-    mov [Voice0Time+%1*4],ebx
-    mov al,[Voice0EnvInc+%1*4+2]
-    shl eax,16
-    xor edx,edx
-    div ebx
-    neg eax
-    mov [Voice0IncNumber+%1*4],eax
-    mov byte[Voice0State+%1],4
-    pop edx
-    pop ebx
-    mov ebx,[Voice0Freq+%1*4]
-    cmp dword[DSPInterpolate],0
-    je %%notinterpsound2
-    cmp byte[StereoSound],1
-    je near %%EndofProcessNEnvsi
-    jmp %%EndofProcessNEnvi
-%%notinterpsound2
-    cmp byte[StereoSound],1
-    je near %%EndofProcessNEnvs
-    jmp %%EndofProcessNEnv
-%%Blank
-    mov dword[Voice0EnvInc+%1*4],007F0000h
-    mov dword[Voice0IncNumber+%1*4],0
-    mov dword[Voice0Time+%1*4],0FFFFFFFFh
-%%ContinueGain
-    mov ebx,[Voice0Freq+%1*4]
-    cmp dword[DSPInterpolate],0
-    je %%notinterpsound3
-    cmp byte[StereoSound],1
-    je near %%EndofProcessNEnvsi
-    jmp %%EndofProcessNEnvi
-%%notinterpsound3
-    cmp byte[StereoSound],1
-    je near %%EndofProcessNEnvs
-    jmp %%EndofProcessNEnv
-%%EndofSamp
-    mov dword[DLPFsamples+%1*24*4+16*4],0
-    mov dword[DLPFsamples+%1*24*4+17*4],0
-    mov dword[DLPFsamples+%1*24*4+18*4],0
-    mov dword[DLPFsamples+%1*24*4+19*4],0
-    mov dword[Voice0EnvInc+%1*4],0
-    mov dword[Voice0IncNumber+%1*4],0
-    mov byte[Voice0Status+%1],0
-    mov byte[Voice0State+%1],0
-    mov byte[DSPMem+08h+%1*10h],0
-    mov byte[DSPMem+09h+%1*10h],0
-    or byte[DSPMem+7Ch],%3
-    jmp %2
-%%EndofSamp2
-    mov dword[Voice0EnvInc+%1*4],0
-    mov dword[Voice0IncNumber+%1*4],0
-    mov byte[Voice0State+%1],0
-    mov byte[DSPMem+08h+%1*10h],0
-    mov byte[DSPMem+09h+%1*10h],0
-    ccallv VoiceStarter, %1
-    jmp %%SkipProcess2
-%%SkipProcess
-    xor esi,esi
-%%SkipProcess2
-
-    movzx eax,byte[DSPMem+00h+%1*10h]
-    movzx ebx,byte[DSPMem+01h+%1*10h]
-    mov al,[VolumeTableD+eax]
-    mov bl,[VolumeTableD+ebx]
-    mov [Voice0VolumeRe+%1],al
-    mov [Voice0VolumeLe+%1],bl
-    mov ah,al
-    mov bh,bl
-    test ah,80h
-    jz %%notnegc
-    neg ah
-%%notnegc
-    test bh,80h
-    jz %%notnegd
-    neg bh
-%%notnegd
-    add ah,bh
-    shr ah,1
-    test al,80h
-    jnz %%neg2
-    test bl,80h
-    jz %%notneg2
-%%neg2
-    neg ah
-%%notneg2
-    mov [Voice0Volumee+%1],ah
-
-    movzx eax,byte[DSPMem+00h+%1*10h]
-    movzx ebx,byte[DSPMem+01h+%1*10h]
-    mov al,[VolumeTableD+eax]
-    mov bl,[VolumeTableD+ebx]
-    mov ah,[GlobalVL]
-    mov bh,[GlobalVR]
-    mov al,[VolumeConvTable+eax*2]
-    mov bl,[VolumeConvTable+ebx*2]
-    mov [Voice0VolumeR+%1],al
-    mov [Voice0VolumeL+%1],bl
-    mov ah,al
-    mov bh,bl
-    test ah,80h
-    jz %%notneg
-    neg ah
-%%notneg
-    test bh,80h
-    jz %%notnegb
-    neg bh
-%%notnegb
-    add ah,bh
-    shr ah,1
-    test al,80h
-    jnz %%neg3
-    test bl,80h
-    jz %%notneg3
-%%neg3
-    neg ah
-%%notneg3
-    mov [Voice0Volume+%1],ah
-
-;    cmp byte[Voice0Volume+%1],0
-;    je %%volskip
-    mov byte[lastbl],0
-    mov byte[loopbl],0
-    mov ebx,[Voice0Freq+%1*4]
-    mov edi,[Voice0BufPtr+%1*4]
-
-    mov byte[UniqueSoundv],0
-    test byte[DSPMem+3Dh],%3
-    jnz %%Unique
-%if %1<7                                        ; added
-    test byte[DSPMem+2Dh],%3 << 1
-    jnz %%Uniquepm
-%endif                                          ; added
-    jmp %%NotUnique
-%%Uniquepm
-%%Unique
-    mov byte[UniqueSoundv],1
-%%NotUnique
-
-    cmp dword[DSPInterpolate],0
-    je %%notinterpsound4
-    cmp byte[StereoSound],1
-    je %%NextSampleSi
-    jmp %%NextSamplei
-%%notinterpsound4
-    cmp byte[StereoSound],1
-    je near %%NextSampleS
-%%NextSample
-    cmp dword[BRRPlace0+%1*8],10000000h
-    jae near %%ProcessBRR
-    mov eax,[Voice0IncNumber+%1*4]
-    add [Voice0EnvInc+%1*4],eax
-    dec dword[Voice0Time+%1*4]
-    jz %%ProcessNextEnvelope
-%%EndofProcessNEnv
-    ;%5 %1, %2, %3, %4
-    call dword[paramhack];%5
-    cmp esi,[BufferSizeW]
-    jne %%NextSample
-;    mov [DSPMem+09h+%1*10h],ah
-    mov al,[Voice0EnvInc+%1*4+2]
-    mov [DSPMem+08h+%1*10h],al
-    cmp byte[ENVDisable],1
-    jne %%skipenvclear
-    mov byte[DSPMem+08h+%1*10h],0
-%%skipenvclear
-    jmp %2
-%%NextSampleSi
-    cmp dword[BRRPlace0+%1*8],10000000h
-    jae near %%ProcessBRR
-    mov eax,[Voice0IncNumber+%1*4]
-    add [Voice0EnvInc+%1*4],eax
-    dec dword[Voice0Time+%1*4]
-    jz %%ProcessNextEnvelope
-%%EndofProcessNEnvsi
-    ;%8 %1, %2, %3, %4
-    call dword[paramhack+12];%8
-    cmp esi,[BufferSizeB]
-    jne %%NextSampleSi
-;    mov [DSPMem+09h+%1*10h],ah
-    mov al,[Voice0EnvInc+%1*4+2]
-    mov [DSPMem+08h+%1*10h],al
-    cmp byte[ENVDisable],1
-    jne %%skipenvclearsi
-    mov byte[DSPMem+08h+%1*10h],0
-%%skipenvclearsi
-    jmp %2
-%%NextSamplei
-    cmp dword[BRRPlace0+%1*8],10000000h
-    jae near %%ProcessBRR
-    mov eax,[Voice0IncNumber+%1*4]
-    add [Voice0EnvInc+%1*4],eax
-    dec dword[Voice0Time+%1*4]
-    jz %%ProcessNextEnvelope
-%%EndofProcessNEnvi
-    ;%7 %1, %2, %3, %4
-    call dword[paramhack+8];%7
-    cmp esi,[BufferSizeW]
-    jne %%NextSamplei
-;    mov [DSPMem+09h+%1*10h],ah
-    mov al,[Voice0EnvInc+%1*4+2]
-    mov [DSPMem+08h+%1*10h],al
-    cmp byte[ENVDisable],1
-    jne %%skipenvcleari
-    mov byte[DSPMem+08h+%1*10h],0
-%%skipenvcleari
-    jmp %2
-%%NextSampleS
-    cmp dword[BRRPlace0+%1*8],10000000h
-    jae %%ProcessBRR
-    mov eax,[Voice0IncNumber+%1*4]
-    add [Voice0EnvInc+%1*4],eax
-    dec dword[Voice0Time+%1*4]
-    jz %%ProcessNextEnvelope
-%%EndofProcessNEnvs
-    ;%6 %1, %2, %3, %4
-    call dword[paramhack+4];%6
-    cmp esi,[BufferSizeB]
-    jne %%NextSampleS
-;    mov [DSPMem+09h+%1*10h],ah
-    mov al,[Voice0EnvInc+%1*4+2]
-    mov [DSPMem+08h+%1*10h],al
-    cmp byte[ENVDisable],1
-    jne %%skipenvclear2
-    mov byte[DSPMem+08h+%1*10h],0
-%%skipenvclear2
-%%noclearenv
-    jmp %2
-%%ProcessBRR
-    cmp byte[Voice0End+%1],1
-    je near %%noDecode1Block
-%%Decode1Block
-    sub dword[BRRPlace0+%1*8],10000000h
-    push esi
-    mov esi, [Voice0Ptr+%1*4]
-;    cmp byte[Voice0Looped+%1],0
-;    je %%nobrrcheck
-
-    mov eax,[PSampleBuf+16*4+%1*24*4]
-    mov [PSampleBuf+0*4+%1*24*4],eax
-    mov eax,[PSampleBuf+17*4+%1*24*4]
-    mov [PSampleBuf+1*4+%1*24*4],eax
-    mov eax,[PSampleBuf+18*4+%1*24*4]
-    mov [PSampleBuf+2*4+%1*24*4],eax
-
-    mov edi,esi
-    inc edi
-    shl edi,2
-    add esi,SPCRAM
-    add edi,[spcBuffera]
-    mov eax,[Voice0Prev0+%1*4]
-    mov [Voice0BufPtr+%1*4],edi
-    mov [prev0],eax
-    mov eax,[Voice0Prev1+%1*4]
-    mov [prev1],eax
-    mov ecx,%1
-    push ebp
-    call BRRDecode
-    pop ebp
-    pop esi
-    mov edi,[Voice0BufPtr+%1*4]
-
-    movsx eax,word[edi]
-    mov [PSampleBuf+3*4+%1*24*4],eax
-    movsx eax,word[edi+2*1]
-    mov [PSampleBuf+4*4+%1*24*4],eax
-    movsx eax,word[edi+2*2]
-    mov [PSampleBuf+5*4+%1*24*4],eax
-    movsx eax,word[edi+2*3]
-    mov [PSampleBuf+6*4+%1*24*4],eax
-    movsx eax,word[edi+2*4]
-    mov [PSampleBuf+7*4+%1*24*4],eax
-    movsx eax,word[edi+2*5]
-    mov [PSampleBuf+8*4+%1*24*4],eax
-    movsx eax,word[edi+2*6]
-    mov [PSampleBuf+9*4+%1*24*4],eax
-    movsx eax,word[edi+2*7]
-    mov [PSampleBuf+10*4+%1*24*4],eax
-    movsx eax,word[edi+2*8]
-    mov [PSampleBuf+11*4+%1*24*4],eax
-    movsx eax,word[edi+2*9]
-    mov [PSampleBuf+12*4+%1*24*4],eax
-    movsx eax,word[edi+2*10]
-    mov [PSampleBuf+13*4+%1*24*4],eax
-    movsx eax,word[edi+2*11]
-    mov [PSampleBuf+14*4+%1*24*4],eax
-    movsx eax,word[edi+2*12]
-    mov [PSampleBuf+15*4+%1*24*4],eax
-    movsx eax,word[edi+2*13]
-    mov [PSampleBuf+16*4+%1*24*4],eax
-    movsx eax,word[edi+2*14]
-    mov [PSampleBuf+17*4+%1*24*4],eax
-    movsx eax,word[edi+2*15]
-    mov [PSampleBuf+18*4+%1*24*4],eax
-
-    movsx eax,word[BRRreadahead]
-    mov [PSampleBuf+19*4+%1*24*4],eax
-    movsx eax,word[BRRreadahead+2]
-    mov [PSampleBuf+20*4+%1*24*4],eax
-    movsx eax,word[BRRreadahead+4]
-    mov [PSampleBuf+21*4+%1*24*4],eax
-    movsx eax,word[BRRreadahead+6]
-    mov [PSampleBuf+22*4+%1*24*4],eax
-
-    mov eax,[prev0]
-    mov [Voice0Prev0+%1*4],eax
-    mov eax,[prev1]
-    mov [Voice0Prev1+%1*4],eax
-    mov al,[loopbl]
-    mov [Voice0Loop+%1],al
-    mov al,[lastbl]
-    mov [Voice0End+%1],al
-    mov ebx,[Voice0Freq+%1*4]
-    add dword[Voice0Ptr+%1*4],9
-    cmp dword[DSPInterpolate],0
-    je %%notinterpsound6
-    cmp byte[StereoSound],1
-    je near %%NextSampleSi
-    jmp %%NextSamplei
-%%notinterpsound6
-    cmp byte[StereoSound],1
-    je %%NextSampleS
-    jmp %%NextSample
-%%noDecode1Block
-;    and byte[DSPMem+5Ch],%4
-;    and byte[DSPMem+4Ch],%4
-;    mov byte[Voice0Looped+%1],0
-    cmp byte[Voice0Loop+%1],1
-    jne %%EndSample
-;    mov byte[Voice0Looped+%1],1
-    mov byte[SoundLooped0+%1],1
-    or byte[DSPMem+7Ch],%3
-%%SkipStuff3
-;    mov dword[Voice0Prev0+%1*4],0
-;    mov dword[Voice0Prev1+%1*4],0
-
-;      push eax
-;      push edx
-;      push ebx
-;      mov edx,[DSPMem+04h+%1*10h]
-;      and edx,0ffh
-;      shl edx,2
-;      xor eax,eax
-;      mov ah,[DSPMem+5Dh]
-;      add ax,dx
-;      xor ebx,ebx
-;      mov bx,[SPCRAM+eax]
-;      mov dword[Voice0Ptr+%1*4],ebx
-;      xor ebx,ebx
-;      mov bx,[SPCRAM+eax+2]
-;      mov dword[Voice0LoopPtr+%1*4],ebx
-;      pop ebx
-;      pop edx
-;      pop eax
-
-    mov eax,[Voice0LoopPtr+%1*4]
-    mov [Voice0Ptr+%1*4],eax
-;    mov eax,[Voice0Prev0+%1*4]
-;    mov [Voice0Prev1+%1*4],eax
-    jmp %%Decode1Block
-%%EndSample
-;    cmp byte[ENVDisable],1
-;    je %%noSkipStuff4
-%%noSkipStuff4
-    or byte[DSPMem+7Ch],%3
-    mov byte[DSPMem+08h+%1*10h],0
-%%SkipStuff4
-    mov dword[DLPFsamples+%1*24*4+16*4],0
-    mov dword[DLPFsamples+%1*24*4+17*4],0
-    mov dword[DLPFsamples+%1*24*4+18*4],0
-    mov dword[DLPFsamples+%1*24*4+19*4],0
-;    and byte[DSPMem+5Ch],%4
-    mov dword[Voice0EnvInc+%1*4],0
-    mov dword[Voice0IncNumber+%1*4],0
-    mov byte[Voice0Status+%1],0
-;    mov byte[DSPMem+09h+%1*10h],0h
-;    jmp %2
-;%%ProcessVoice1
-;    jmp %2
-%endmacro
-
 %macro ProcessVoiceHandler16 4
     cmp byte[Voice0Disable+%1],1
     jne near %2
@@ -2759,7 +2039,6 @@ NEWSYM EchoStereo
     mov dword[paramhack+8],NonEchoMonoInterpolated
     mov dword[paramhack+12],NonEchoStereoInterpolated
     jmp .pvs
-    ;ProcessVoiceStuff %1, %2, %3, %4, NonEchoMono, NonEchoStereo, NonEchoMonoInterpolated, NonEchoStereoInterpolated
     ; Process Echo
 .echostuff
     mov dword[paramhack],EchoMono
@@ -2767,7 +2046,6 @@ NEWSYM EchoStereo
     mov dword[paramhack+8],EchoMonoInterpolated
     mov dword[paramhack+12],EchoStereoInterpolated
     jmp .pvs
-    ;ProcessVoiceStuff %1, %2, %3, %4, EchoMono, EchoStereo, EchoMonoInterpolated, EchoStereoInterpolated
 .pitchmod
     mov al,[DSPMem+4+%1*10h]
     cmp al,[DSPMem+4+%1*10h-10h]
@@ -2782,16 +2060,14 @@ NEWSYM EchoStereo
     mov dword[paramhack+8],NonEchoMonoPM
     mov dword[paramhack+12],NonEchoStereoPM
     jmp .pvs
-    ;ProcessVoiceStuff %1, %2, %3, %4, NonEchoMonoPM, NonEchoStereoPM, NonEchoMonoPM, NonEchoStereoPM
 .echopm
     mov dword[paramhack],EchoMonoPM
     mov dword[paramhack+4],EchoStereoPM
     mov dword[paramhack+8],EchoMonoPM
     mov dword[paramhack+12],EchoStereoPM
 
-    ;ProcessVoiceStuff %1, %2, %3, %4, EchoMonoPM, EchoStereoPM, EchoMonoPM, EchoStereoPM
 .pvs
-    ProcessVoiceStuff %1, %2, %3, %4
+    ccallv ProcessVoiceStuff, ebp, %1, %3, %4
 %endmacro
 
 section .bss
