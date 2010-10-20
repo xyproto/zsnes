@@ -3,12 +3,11 @@
 
 #include "../types.h"
 
-extern void DSPInterpolate_4();
-extern void DSPInterpolate_4_mmx();
-extern void DSPInterpolate_8();
 extern void ProcessSoundBuffer();
 
-extern eop* DSPInterpolate;
+typedef s4 interpolatefunc(u4 edx, u4 ebp);
+extern interpolatefunc* DSPInterpolate;
+
 extern eop* spcRptr[16];
 extern eop* spcWptr[16];
 extern s4   DSPBuffer[320 * 4]; // The play buffer

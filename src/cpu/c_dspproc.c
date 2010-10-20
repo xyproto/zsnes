@@ -9,6 +9,7 @@
 #include "c_dspproc.h"
 #include "dsp.h"
 #include "dspproc.h"
+#include "firtable.h"
 #include "spc700.h"
 
 #ifdef __MSDOS__
@@ -236,6 +237,79 @@ static u2 const CubicSpline[] =
 };
 
 
+static s4 DSPInterpolate_4(u4 const edx, u4 const ebp)
+{
+	u4 const ebx = BRRPlace0[ebp][0] >> 16 & 0xFF;
+	u4 const eax = *(u4 const*)((u1 const*)&BRRPlace0[ebp][0] + 3); // XXX ugly cast
+	s4       ecx =
+		(s4)(s2)PSampleBuf[ebp][edx + 2] * (s4)DSPInterP[ebx + 256 * 3] +
+		(s4)(s2)PSampleBuf[ebp][eax + 3] * (s2)DSPInterP[ebx + 256 * 2] +
+		(s4)(s2)PSampleBuf[ebp][eax + 4] * (s2)DSPInterP[ebx + 256 * 1] +
+		(s4)(s2)PSampleBuf[ebp][eax + 5] * (s2)DSPInterP[ebx + 256 * 0];
+
+	ecx >>= 11;
+
+	if (ecx < -32768) ecx = -32768;
+	if (ecx >  32767) ecx =  32767;
+
+	return ecx;
+}
+
+
+static s4 DSPInterpolate_8(u4 const edx, u4 const ebp)
+{
+	u8 const* const ebx = (u8 const*)&((u1 const*)fir_lut)[((BRRPlace0[ebp][0] & 0x00FFFFFF) + 0x1000) >> 9 & 0x0000FFF0]; // XXX ugly cast
+	u8 const* const xxx = (u8 const*)&PSampleBuf[ebp][BRRPlace0[ebp][0] >> 24];
+	s4 res;
+	asm(
+		"movq     %1, %%mm0\n\t"
+		"packssdw %2, %%mm0\n\t"
+		"movq     %3, %%mm1\n\t"
+		"packssdw %4, %%mm1\n\t"
+		"movq     %5, %%mm2\n\t"
+		"movq     %6, %%mm3\n\t"
+    "pmaddwd  %%mm2, %%mm0\n\t"
+    "pmaddwd  %%mm3, %%mm1\n\t"
+    "paddd    %%mm1, %%mm0\n\t"
+    "movq     %%mm0, %%mm1\n\t"
+    "psrlq    $32, %%mm0\n\t"
+    "paddd    %%mm1, %%mm0\n\t"
+    "psrad    $14, %%mm0\n\t"
+    "packssdw %%mm0, %%mm0\n\t"
+    "movd     %%mm0, %0"
+		: "=r" (res)
+		: "m" (xxx[0]), "m" (xxx[1]), "m" (xxx[2]), "m" (xxx[3]), "m" (ebx[0]), "m" (ebx[1])
+		: "mm0", "mm1", "mm2", "mm3"
+	);
+	return (s2)res;
+}
+
+
+static s4 DSPInterpolate_4_mmx(u4 const edx, u4 const ebp)
+{
+	u8 const* const eax = (u8 const*)&DSPInterP[(BRRPlace0[ebp][0] >> 16 & 0xFF) * 4];
+	u8 const* const xxx = (u8 const*)&PSampleBuf[ebp][edx + 2];
+	s4              res;
+	asm(
+		"movq     %1,    %%mm0\n\t"
+		"packssdw %2,    %%mm0\n\t"
+		"movq     %3,    %%mm1\n\t"
+		"pmaddwd  %%mm1, %%mm0\n\t"
+		"movq     %%mm0, %%mm1\n\t"
+		"psrlq    $32,   %%mm0\n\t"
+		"paddd    %%mm1, %%mm0\n\t"
+		"psrad    $11,   %%mm0\n\t"
+		"packssdw %%mm0, %%mm0\n\t"
+		"movd     %%mm0, %0\n\t"
+		"emms"
+		: "=r" (res)
+		: "m" (xxx[0]), "m" (xxx[1]), "m" (*eax)
+		: "mm0", "mm1"
+	);
+	return res;
+}
+
+
 void AdjustFrequency(void)
 {
 	u1 const ah = MMXSupport;
@@ -250,7 +324,7 @@ void AdjustFrequency(void)
 		}
 	}
 
-	eop* interpolate;
+	interpolatefunc* interpolate;
 	switch (al)
 	{
 		case 0:

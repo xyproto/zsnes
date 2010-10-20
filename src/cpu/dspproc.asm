@@ -1495,151 +1495,6 @@ NEWSYM DSPInterpolate, dd 0
 SECTION .text
 
 ALIGN16
-NEWSYM DSPInterpolate_4
-    push edi
-%ifdef __MSDOS__
-    lea edi,[ds:ebp*2+ebp]
-%else
-    lea edi,[ebp*2+ebp]
-%endif
-    shl edi,5
-%ifdef __MSDOS__
-    movzx ebx,byte[ds:BRRPlace0+ebp*8+2]
-%else
-    movzx ebx,byte[BRRPlace0+ebp*8+2]
-%endif
-
-    mov ax,[PSampleBuf+edx*4+8+edi]
-    mov dx,[DSPInterP+ebx*2+256*6]
-    imul dx
-    shl edx,16
-    mov dx,ax
-%ifdef __MSDOS__
-    mov eax,[ds:BRRPlace0+ebp*8+3]
-%else
-    mov eax,[BRRPlace0+ebp*8+3]
-%endif
-    mov ecx,edx
-
-    mov ax,[PSampleBuf+eax*4+12+edi]
-    mov dx,[DSPInterP+ebx*2+256*4]
-    imul dx
-    shl edx,16
-    mov dx,ax
-%ifdef __MSDOS__
-    mov eax,[ds:BRRPlace0+ebp*8+3]
-%else
-    mov eax,[BRRPlace0+ebp*8+3]
-%endif
-    add ecx,edx
-
-    mov ax,[PSampleBuf+eax*4+16+edi]
-    mov dx,[DSPInterP+ebx*2+256*2]
-    imul dx
-    shl edx,16
-    mov dx,ax
-%ifdef __MSDOS__
-    mov eax,[ds:BRRPlace0+ebp*8+3]
-%else
-    mov eax,[BRRPlace0+ebp*8+3]
-%endif
-    add ecx,edx
-
-    mov ax,[PSampleBuf+eax*4+20+edi]
-    mov dx,[DSPInterP+ebx*2]
-    imul dx
-    shl edx,16
-    mov dx,ax
-    add ecx,edx
-
-    sar ecx,11
-
-    cmp ecx, -32768
-    jge .sat1
-    mov ecx, -32768
-.sat1
-    cmp ecx, 32767
-    jle .sat2
-    mov ecx, 32767
-.sat2
-
-    mov ax,cx
-    pop edi
-    ret
-
-ALIGN16
-NEWSYM DSPInterpolate_8
-
-    push edi
-%ifdef __MSDOS__
-    lea edi,[ds:ebp*2+ebp]
-%else
-    lea edi,[ebp*2+ebp]
-%endif
-    shl edi,5
-%ifdef __MSDOS__
-    mov ebx,[ds:BRRPlace0+ebp*8]
-    movzx eax,byte[ds:BRRPlace0+ebp*8+3]
-%else
-    mov ebx,[BRRPlace0+ebp*8]
-    movzx eax,byte[BRRPlace0+ebp*8+3]
-%endif
-    shl eax,2
-    and ebx,0FFFFFFh
-    add ebx,1000h
-    shr ebx,9
-    and ebx,0FFF0h
-    add ebx,fir_lut
-    movq mm0,[eax+PSampleBuf+edi]
-    packssdw mm0,[eax+PSampleBuf+edi+8]
-    movq mm1,[eax+PSampleBuf+edi+16]
-    packssdw mm1,[eax+PSampleBuf+edi+24]
-    movq mm2,[ebx]
-    movq mm3,[ebx+8]
-    pmaddwd mm0,mm2
-    pmaddwd mm1,mm3
-    paddd mm0,mm1
-    movq mm1,mm0
-    psrlq mm0, 32
-    paddd mm0, mm1
-    psrad mm0, 14
-    packssdw mm0, mm0
-    movd eax, mm0
-    movsx eax, ax
-.end
-    pop edi
-    ret
-
-ALIGN16
-NEWSYM DSPInterpolate_4_mmx
-
-    push edi
-%ifdef __MSDOS__
-    lea edi,[ds:ebp*2+ebp]
-%else
-    lea edi,[ebp*2+ebp]
-%endif
-    shl edi,5
-%ifdef __MSDOS__
-    movzx eax,byte[ds:BRRPlace0+ebp*8+2]
-%else
-    movzx eax,byte[BRRPlace0+ebp*8+2]
-%endif
-    movq mm0,[edx*4+PSampleBuf+edi+8]
-    packssdw mm0,[edx*4+PSampleBuf+edi+16]
-    movq mm1,[DSPInterP+eax*8]
-    pmaddwd mm0,mm1
-    movq mm1, mm0
-    psrlq mm0, 32
-    paddd mm0, mm1
-    psrad mm0, 11
-    packssdw mm0, mm0
-    movd eax, mm0
-    emms
-    pop edi
-    ret
-
-ALIGN16
 NEWSYM NonEchoMonoInterpolated
 %ifdef __MSDOS__
     mov edx,[ds:BRRPlace0+ebp*8+3]
@@ -1661,7 +1516,7 @@ NEWSYM NonEchoMonoInterpolated
 .PMod
     ProcessPMod ebp
 .NotNoise1
-    call [DSPInterpolate] ;ebp
+    ccall [DSPInterpolate], edx, ebp
 ;    mov edx,[BRRPlace0+ebp*8+3]
 ;    mov ax,[edi+edx*2]
     ; DSPInterP (Samp*i+Samp2*i2+Samp3*i3+Samp4*i3)>>11
@@ -1712,7 +1567,7 @@ NEWSYM EchoMonoInterpolated
 .PMod
     ProcessPMod ebp
 .NotNoise1
-    call [DSPInterpolate] ;ebp
+    ccall [DSPInterpolate], edx, ebp
 ;    mov edx,[BRRPlace0+ebp*8+3]
 ;    mov ax,[edi+edx*2]
 .AfterNoise1
@@ -1781,7 +1636,7 @@ NEWSYM NonEchoStereoInterpolated
 .PMod
     ProcessPMod ebp
 .NotNoise1b
-    call [DSPInterpolate]; %1
+    ccall [DSPInterpolate], edx, ebp
 .AfterNoise1b
 %ifdef __MSDOS__
     movzx edx,byte[ds:Voice0VolumeR+ebp]
@@ -1848,7 +1703,7 @@ NEWSYM EchoStereoInterpolated
     ProcessPMod ebp
 .NotNoise1b
 ;    mov ax,[edi+edx*2]
-    call [DSPInterpolate] ;%1
+    ccall [DSPInterpolate], edx, ebp
 .AfterNoise1b
 %ifdef __MSDOS__
     movzx edx,byte[ds:Voice0VolumeR+ebp]
