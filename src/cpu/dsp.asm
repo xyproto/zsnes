@@ -24,7 +24,6 @@ EXTSYM FIRTAPVal0,FIRTAPVal1,FIRTAPVal2,FIRTAPVal3,FIRTAPVal4,FIRTAPVal5
 EXTSYM FIRTAPVal6,FIRTAPVal7,GlobalVL,GlobalVR,Increase
 EXTSYM MaxEcho,MusicVol,NoiseInc,NoiseSpeeds,dspPAdj,Voice0EnvInc
 EXTSYM Voice0IncNumber,Voice0State,Voice0Time
-EXTSYM VoiceStart
 EXTSYM Voice0Noise,Voice1Noise,Voice2Noise,Voice3Noise
 EXTSYM Voice4Noise,Voice5Noise,Voice6Noise,Voice7Noise
 EXTSYM VolumeConvTable,VolumeTableb
@@ -33,7 +32,7 @@ EXTSYM Voice4Status,Voice5Status,Voice6Status,Voice7Status
 EXTSYM GainDecBendDataPos,GainDecBendDataTime,GainDecBendDataDat
 EXTSYM AdsrSustLevLoc,AdsrBlocksLeft,AdsrNextTimeDepth
 EXTSYM VoiceStarter,DecayRate,SustainRate
-EXTSYM KeyOnStA,KeyOnStB,keyonsn
+EXTSYM KeyOnStA,KeyOnStB
 
 ; Digital Sound Processor of the SPC700 By _Demo_
 
@@ -1914,45 +1913,6 @@ NEWSYM WDSPReg4C       ; Key On
       xor al,0FFh
       and byte[DSPMem+07Ch],al
       pop eax
-      ret
-
-NEWSYM ProcessKeyOn
-      test al,1
-      jz .TestVoice1
-      ccallv VoiceStart, 0
-.TestVoice1
-      test al,2
-      jz .TestVoice2
-      ccallv VoiceStart, 1
-.TestVoice2
-      test al,4
-      jz .TestVoice3
-      ccallv VoiceStart, 2
-.TestVoice3
-      test al,8
-      jz .TestVoice4
-      ccallv VoiceStart, 3
-.TestVoice4
-      test al,16
-      jz .TestVoice5
-      ccallv VoiceStart, 4
-.TestVoice5
-      test al,32
-      jz .TestVoice6
-      ccallv VoiceStart, 5
-.TestVoice6
-      test al,64
-      jz .TestVoice7
-      ccallv VoiceStart, 6
-.TestVoice7
-      test al,128
-      jz .TestVoice8
-      ccallv VoiceStart, 7
-.TestVoice8
-      test al,0FFh
-      jz .novoice
-      mov byte[keyonsn],1
-.novoice
       ret
 
 NEWSYM WDSPReg4D       ; Voice  4

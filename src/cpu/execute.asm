@@ -624,7 +624,7 @@ NEWSYM cpuover
     cmp byte[KeyOnStB],0
     je .nokeyon
     mov al,[KeyOnStB]
-    call ProcessKeyOn
+    ccallv ProcessKeyOn, eax
 .nokeyon
     mov al,[KeyOnStA]
     mov [KeyOnStB],al
@@ -1337,7 +1337,7 @@ NEWSYM execsingle
     cmp byte[KeyOnStB],0
     je .nokeyon
     mov al,[KeyOnStB]
-    call ProcessKeyOn
+    ccallv ProcessKeyOn, eax
 .nokeyon
     mov al,[KeyOnStA]
     mov [KeyOnStB],al
