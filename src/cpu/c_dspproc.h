@@ -9,7 +9,7 @@ void LPFexit(void);
 void LPFstereo(s4* esi);
 void MixEcho(void);
 void MixEcho2(void);
-void ProcessVoiceStuff(u4 ebp, u4 p1, u4 p3, u4 p4);
+void ProcessVoiceStuff(u4 ebp, u4 p1);
 void VoiceStart(u4 voice);
 void VoiceStarter(u1 voice);
 

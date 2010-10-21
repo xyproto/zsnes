@@ -2009,7 +2009,7 @@ NEWSYM EchoStereo
 %endif
     ret
 
-%macro ProcessVoiceHandler16 4
+%macro ProcessVoiceHandler16 3
     cmp byte[Voice0Disable+%1],1
     jne near %2
     cmp byte[Voice0Status+%1],1
@@ -2067,7 +2067,7 @@ NEWSYM EchoStereo
     mov dword[paramhack+12],EchoStereoPM
 
 .pvs
-    ccallv ProcessVoiceStuff, ebp, %1, %3, %4
+    ccallv ProcessVoiceStuff, ebp, %1
 %endmacro
 
 section .bss
@@ -2106,21 +2106,21 @@ NEWSYM ProcessSoundBuffer
 
     ; Process the sound :I
 
-    ProcessVoiceHandler16 0,ProcessVoice116,1,254
+    ProcessVoiceHandler16 0,ProcessVoice116,1
 NEWSYM ProcessVoice116
-    ProcessVoiceHandler16 1,ProcessVoice216,2,253
+    ProcessVoiceHandler16 1,ProcessVoice216,2
 NEWSYM ProcessVoice216
-    ProcessVoiceHandler16 2,ProcessVoice316,4,251
+    ProcessVoiceHandler16 2,ProcessVoice316,4
 NEWSYM ProcessVoice316
-    ProcessVoiceHandler16 3,ProcessVoice416,8,247
+    ProcessVoiceHandler16 3,ProcessVoice416,8
 NEWSYM ProcessVoice416
-    ProcessVoiceHandler16 4,ProcessVoice516,16,239
+    ProcessVoiceHandler16 4,ProcessVoice516,16
 NEWSYM ProcessVoice516
-    ProcessVoiceHandler16 5,ProcessVoice616,32,223
+    ProcessVoiceHandler16 5,ProcessVoice616,32
 NEWSYM ProcessVoice616
-    ProcessVoiceHandler16 6,ProcessVoice716,64,191
+    ProcessVoiceHandler16 6,ProcessVoice716,64
 NEWSYM ProcessVoice716
-    ProcessVoiceHandler16 7,ProcessVoice816,128,127
+    ProcessVoiceHandler16 7,ProcessVoice816,128
 NEWSYM ProcessVoice816
 
     cmp byte[EchoDis],1

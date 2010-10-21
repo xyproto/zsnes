@@ -1712,7 +1712,7 @@ void MixEcho2(void)
 }
 
 
-void ProcessVoiceStuff(u4 const ebp, u4 const p1, u4 const p3, u4 const p4)
+void ProcessVoiceStuff(u4 const ebp, u4 const p1)
 {
 	static u1 const AdsrBendData[] =
 	{
@@ -1818,7 +1818,7 @@ SkipProcess2:
 	lastbl = 0;
 	loopbl = 0;
 
-	UniqueSoundv = DSPMem[0x3D] & p3 || (p1 < 7 && DSPMem[0x2D] & p3 << 1);
+	UniqueSoundv = DSPMem[0x3D] & (1U << p1) || (p1 < 7 && DSPMem[0x2D] & (1U << (p1 + 1)));
 
 	s2* edi = Voice0BufPtr[p1];
 	u4  ebx;
@@ -1890,20 +1890,20 @@ ProcessBRR:
 		if (Voice0End[p1] == 1)
 		{ // No decode 1 block.
 #if 0 // XXX was commented out
-			DSPMem[0x5C]    &= p4;
-			DSPMem[0x4C]    &= p4;
+			DSPMem[0x5C]    &= ~(1U << p1);
+			DSPMem[0x4C]    &= ~(1U << p1);
 			Voice0Looped[p1] = 0;
 #endif
 			if (Voice0Loop[p1] != 1)
 			{ // End sample.
-				DSPMem[0x7C]        |= p3;
+				DSPMem[0x7C]        |= 1U << p1;
 				DSPMem[16 * p1 + 8]  = 0;
 				DLPFsamples[p1][16]  = 0;
 				DLPFsamples[p1][17]  = 0;
 				DLPFsamples[p1][18]  = 0;
 				DLPFsamples[p1][19]  = 0;
 #if 0 // XXX was commented out
-				DSPMem[0x5C]        &= p4;
+				DSPMem[0x5C]        &= ~(1U << p1);
 #endif
 				Voice0EnvInc[p1]     = 0;
 				Voice0IncNumber[p1]  = 0;
@@ -1917,7 +1917,7 @@ ProcessBRR:
 			Voice0Looped[p1] = 1;
 #endif
 			SoundLooped0[p1] = 1;
-			DSPMem[0x7C]    |= p3;
+			DSPMem[0x7C]    |= 1U << p1;
 #if 0 // XXX was commented out
 			Voice0Prev0[p1] = 0;
 			Voice0Prev1[p1] = 0;
@@ -2141,7 +2141,7 @@ continuesust:
 			Voice0State[p1]     = 0;
 			DSPMem[16 * p1 + 8] = 0;
 			DSPMem[16 * p1 + 9] = 0;
-			DSPMem[0x7C]       |= p3;
+			DSPMem[0x7C]       |= 1U << p1;
 			return;
 
 		case 210: // EndofSamp2.
