@@ -2044,14 +2044,14 @@ NEWSYM ProcessSoundBuffer
 
     ; Process the sound :I
 
-    ccallv ProcessVoiceHandler16, 0,   1
-    ccallv ProcessVoiceHandler16, 1,   2
-    ccallv ProcessVoiceHandler16, 2,   4
-    ccallv ProcessVoiceHandler16, 3,   8
-    ccallv ProcessVoiceHandler16, 4,  16
-    ccallv ProcessVoiceHandler16, 5,  32
-    ccallv ProcessVoiceHandler16, 6,  64
-    ccallv ProcessVoiceHandler16, 7, 128
+    ccallv ProcessVoiceHandler16, 0
+    ccallv ProcessVoiceHandler16, 1
+    ccallv ProcessVoiceHandler16, 2
+    ccallv ProcessVoiceHandler16, 3
+    ccallv ProcessVoiceHandler16, 4
+    ccallv ProcessVoiceHandler16, 5
+    ccallv ProcessVoiceHandler16, 6
+    ccallv ProcessVoiceHandler16, 7
 
     cmp byte[EchoDis],1
     je near .echowritten

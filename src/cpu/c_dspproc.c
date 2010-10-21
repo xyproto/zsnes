@@ -2184,7 +2184,7 @@ ContinueGain:
 }
 
 
-void ProcessVoiceHandler16(u4 const p1, u4 const p3)
+void ProcessVoiceHandler16(u4 const p1)
 {
 	if (Voice0Disable[p1] != 1) return;
 	if (Voice0Status[p1]  != 1) return;
@@ -2194,10 +2194,10 @@ void ProcessVoiceHandler16(u4 const p1, u4 const p3)
 	if (p1 == 0                    ||
 			Voice0Disable[p1 - 1] != 1 ||
 			Voice0Status[p1 - 1]  != 1 ||
-			!(DSPMem[0x2D] & p3)       ||
+			!(DSPMem[0x2D] & 1U << p1) ||
 			DSPMem[16 * p1 + 4] == DSPMem[16 * (p1 - 1) + 4])
 	{ // No pitch mod.
-		if (DSPMem[0x3D] & p3 || echoon0[p1] != 1)
+		if (DSPMem[0x3D] & 1U << p1 || echoon0[p1] != 1)
 		{ // No echo.
 			paramhack[0] = NonEchoMono;
 			paramhack[1] = NonEchoStereo;
@@ -2214,7 +2214,7 @@ void ProcessVoiceHandler16(u4 const p1, u4 const p3)
 	}
 	else
 	{ // Pitch mod.
-		if (DSPMem[0x3D] & p3 || echoon0[p1] != 1)
+		if (DSPMem[0x3D] & 1U << p1 || echoon0[p1] != 1)
 		{ // No Echo PM.
 			paramhack[0] = NonEchoMonoPM;
 			paramhack[1] = NonEchoStereoPM;
