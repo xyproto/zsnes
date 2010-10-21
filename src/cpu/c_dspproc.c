@@ -1714,7 +1714,7 @@ void MixEcho2(void)
 }
 
 
-static void ProcessVoiceStuff(u4 const ebp, u4 const p1)
+static void ProcessVoiceStuff(u4 const p1)
 {
 	static u1 const AdsrBendData[] =
 	{
@@ -1837,7 +1837,7 @@ SkipProcess2:
 					Voice0EnvInc[p1] += Voice0IncNumber[p1];
 					if (--Voice0Time[p1] == 0) goto ProcessNextEnvelope;
 EndofProcessNEnvsi:;
-					u4 eax = ebp; // XXX hack: GCC cannot handle ebp as input/output, so take the detour over eax
+					u4 eax = p1; // XXX hack: GCC cannot handle ebp as input/output, so take the detour over eax
 					asm volatile("push %%ebp;  mov %0, %%ebp;  call %A4;  pop %%ebp" : "+a" (eax), "+b" (ebx), "+S" (esi), "+D" (edi) : "m" (paramhack[3]) : "cc", "memory", "ecx", "edx");
 				}
 				while (esi != BufferSizeB);
@@ -1850,7 +1850,7 @@ EndofProcessNEnvsi:;
 					Voice0EnvInc[p1] += Voice0IncNumber[p1];
 					if (--Voice0Time[p1] == 0) goto ProcessNextEnvelope;
 EndofProcessNEnvi:;
-					u4 eax = ebp; // XXX hack: GCC cannot handle ebp as input/output, so take the detour over eax
+					u4 eax = p1; // XXX hack: GCC cannot handle ebp as input/output, so take the detour over eax
 					asm volatile("push %%ebp;  mov %0, %%ebp;  call %A4;  pop %%ebp" : "+a" (eax), "+b" (ebx), "+S" (esi), "+D" (edi) : "m" (paramhack[2]) : "cc", "memory", "ecx", "edx");
 				}
 				while (esi != BufferSizeW);
@@ -1866,7 +1866,7 @@ EndofProcessNEnvi:;
 					Voice0EnvInc[p1] += Voice0IncNumber[p1];
 					if (--Voice0Time[p1] == 0) goto ProcessNextEnvelope;
 EndofProcessNEnvs:;
-					u4 eax = ebp; // XXX hack: GCC cannot handle ebp as input/output, so take the detour over eax
+					u4 eax = p1; // XXX hack: GCC cannot handle ebp as input/output, so take the detour over eax
 					asm volatile("push %%ebp;  mov %0, %%ebp;  call %A4;  pop %%ebp" : "+a" (eax), "+b" (ebx), "+S" (esi), "+D" (edi) : "m" (paramhack[1]) : "cc", "memory", "ecx", "edx");
 				}
 				while (esi != BufferSizeB);
@@ -1879,7 +1879,7 @@ EndofProcessNEnvs:;
 					Voice0EnvInc[p1] += Voice0IncNumber[p1];
 					if (--Voice0Time[p1] == 0) goto ProcessNextEnvelope;
 EndofProcessNEnv:;
-					u4 eax = ebp; // XXX hack: GCC cannot handle ebp as input/output, so take the detour over eax
+					u4 eax = p1; // XXX hack: GCC cannot handle ebp as input/output, so take the detour over eax
 					asm volatile("push %%ebp;  mov %0, %%ebp;  call %A4;  pop %%ebp" : "+a" (eax), "+b" (ebx), "+S" (esi), "+D" (edi) : "m" (paramhack[0]) : "cc", "memory", "ecx", "edx");
 				}
 				while (esi != BufferSizeW);
@@ -2230,5 +2230,5 @@ void ProcessVoiceHandler16(u4 const p1)
 		}
 	}
 
-	ProcessVoiceStuff(p1, p1);
+	ProcessVoiceStuff(p1);
 }
