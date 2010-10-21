@@ -1145,7 +1145,6 @@ NEWSYM PHdspsave2, dd dspsave2
 section .bss
 NEWSYM NoiseInc, resd 1
 NEWSYM NoisePointer, resd 1
-NEWSYM LastNoise, resd 1
 section .text
 
 %macro CalculatePMod 1
@@ -1199,7 +1198,6 @@ NEWSYM NonEchoMonoPM
     mov eax,[NoisePointer]
     shr eax,18 ; maybe will need a change
     mov ax,[NoiseData+eax*2]
-    mov [LastNoise],ax
     jmp .AfterNoise1
 .PMod
     ProcessPMod ebp
@@ -1243,7 +1241,6 @@ NEWSYM NonEchoStereoPM
     mov eax,[NoisePointer]
     shr eax,18 ; maybe will need a change
     mov ax,[NoiseData+eax*2]
-    mov [LastNoise],ax
     jmp .AfterNoise1b
 .PMod
     ProcessPMod ebp
@@ -1304,7 +1301,6 @@ NEWSYM EchoMonoPM
     mov eax,[NoisePointer]
     shr eax,18 ; maybe will need a change
     mov ax,[NoiseData+eax*2]
-    mov [LastNoise],ax
     jmp .AfterNoise1
 .PMod
     ProcessPMod ebp
@@ -1367,7 +1363,6 @@ NEWSYM EchoStereoPM
     mov eax,[NoisePointer]
     shr eax,18 ; maybe will need a change
     mov ax,[NoiseData+eax*2]
-    mov [LastNoise],ax
     jmp .AfterNoise1b
 .PMod
     ProcessPMod ebp
@@ -1471,7 +1466,6 @@ NEWSYM NonEchoMonoInterpolated
     mov eax,[NoisePointer]
     shr eax,18 ; maybe will need a change
     mov ax,[NoiseData+eax*2]
-    mov [LastNoise],ax
     jmp .AfterNoise1
 .PMod
     ProcessPMod ebp
@@ -1522,7 +1516,6 @@ NEWSYM EchoMonoInterpolated
     mov eax,[NoisePointer]
     shr eax,18 ; maybe will need a change
     mov ax,[NoiseData+eax*2]
-    mov [LastNoise],ax
     jmp .AfterNoise1
 .PMod
     ProcessPMod ebp
@@ -1591,7 +1584,6 @@ NEWSYM NonEchoStereoInterpolated
     mov eax,[NoisePointer]
     shr eax,18 ; maybe will need a change
     mov ax,[NoiseData+eax*2]
-    mov [LastNoise],ax
     jmp .AfterNoise1b
 .PMod
     ProcessPMod ebp
@@ -1657,7 +1649,6 @@ NEWSYM EchoStereoInterpolated
     mov eax,[NoisePointer]
     shr eax,18 ; maybe will need a change
     mov ax,[NoiseData+eax*2]
-    mov [LastNoise],ax
     jmp .AfterNoise1b
 .PMod
     ProcessPMod ebp
@@ -1765,7 +1756,6 @@ NEWSYM NonEchoMono
     mov eax,[NoisePointer]
     shr eax,18 ; maybe will need a change
     mov ax,[NoiseData+eax*2]
-    mov [LastNoise],ax
     jmp .AfterNoise1
 .PMod
     ProcessPMod ebp
@@ -1808,7 +1798,6 @@ NEWSYM NonEchoStereo
     mov eax,[NoisePointer]
     shr eax,18 ; maybe will need a change
     mov ax,[NoiseData+eax*2]
-    mov [LastNoise],ax
     jmp .AfterNoise1b
 .PMod
     ProcessPMod ebp
@@ -1868,7 +1857,6 @@ NEWSYM EchoMono
     mov eax,[NoisePointer]
     shr eax,18 ; maybe will need a change
     mov ax,[NoiseData+eax*2]
-    mov [LastNoise],ax
     jmp .AfterNoise1
 .PMod
     ProcessPMod ebp
@@ -1931,7 +1919,6 @@ NEWSYM EchoStereo
     mov eax,[NoisePointer]
     shr eax,18 ; maybe will need a change
     mov ax,[NoiseData+eax*2]
-    mov [LastNoise],ax
     jmp .AfterNoise1b
 .PMod
     ProcessPMod ebp
