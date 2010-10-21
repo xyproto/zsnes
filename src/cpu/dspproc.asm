@@ -20,14 +20,14 @@
 %include "macros.mac"
 
 EXTSYM SPCRAM,RevStereo,VolumeConvTable
-EXTSYM DSPMem,NoiseData,Voice0Disable,EchoDis
+EXTSYM DSPMem,NoiseData,EchoDis
 EXTSYM echobuf,LowPassFilterType,EMUPause,AudioLogging
 EXTSYM StereoSound
 EXTSYM LPFexit
 EXTSYM LPFstereo
 EXTSYM MixEcho
 EXTSYM MixEcho2
-EXTSYM ProcessVoiceStuff
+EXTSYM ProcessVoiceHandler16
 
 SECTION .data
 NEWSYM SBHDMA, db 0         ; stupid legacy code ...
@@ -1174,8 +1174,7 @@ section .text
 %endmacro
 
 section .bss
-powhack resd 1
-NEWSYM paramhack, resd 4
+NEWSYM powhack, resd 1
 section .text
 
 ALIGN16
@@ -2009,67 +2008,6 @@ NEWSYM EchoStereo
 %endif
     ret
 
-%macro ProcessVoiceHandler16 3
-    cmp byte[Voice0Disable+%1],1
-    jne near %2
-    cmp byte[Voice0Status+%1],1
-    jne near %2
-    mov ebp,%1
-    mov dword[powhack],1<<%1
-    mov eax,%1
-    dec al
-    cmp al,0FFh
-    je .nopitchmod
-
-    cmp byte[Voice0Disable+eax],1
-    jne .nopitchmod
-    cmp byte[Voice0Status+eax],1
-    jne .nopitchmod
-
-    test byte[DSPMem+2Dh],%3
-    jnz .pitchmod
-.nopitchmod
-    test byte[DSPMem+3Dh],%3
-    jnz .NoEcho
-    cmp byte[echoon0+%1],1
-    je .echostuff
-.NoEcho
-    mov dword[paramhack],NonEchoMono
-    mov dword[paramhack+4],NonEchoStereo
-    mov dword[paramhack+8],NonEchoMonoInterpolated
-    mov dword[paramhack+12],NonEchoStereoInterpolated
-    jmp .pvs
-    ; Process Echo
-.echostuff
-    mov dword[paramhack],EchoMono
-    mov dword[paramhack+4],EchoStereo
-    mov dword[paramhack+8],EchoMonoInterpolated
-    mov dword[paramhack+12],EchoStereoInterpolated
-    jmp .pvs
-.pitchmod
-    mov al,[DSPMem+4+%1*10h]
-    cmp al,[DSPMem+4+%1*10h-10h]
-    je .nopitchmod
-    test byte[DSPMem+3Dh],%3
-    jnz .NoEchopm
-    cmp byte[echoon0+%1],1
-    je .echopm
-.NoEchopm
-    mov dword[paramhack],NonEchoMonoPM
-    mov dword[paramhack+4],NonEchoStereoPM
-    mov dword[paramhack+8],NonEchoMonoPM
-    mov dword[paramhack+12],NonEchoStereoPM
-    jmp .pvs
-.echopm
-    mov dword[paramhack],EchoMonoPM
-    mov dword[paramhack+4],EchoStereoPM
-    mov dword[paramhack+8],EchoMonoPM
-    mov dword[paramhack+12],EchoStereoPM
-
-.pvs
-    ccallv ProcessVoiceStuff, ebp, %1
-%endmacro
-
 section .bss
 echowrittento resb 1
 section .text
@@ -2106,22 +2044,14 @@ NEWSYM ProcessSoundBuffer
 
     ; Process the sound :I
 
-    ProcessVoiceHandler16 0,ProcessVoice116,1
-NEWSYM ProcessVoice116
-    ProcessVoiceHandler16 1,ProcessVoice216,2
-NEWSYM ProcessVoice216
-    ProcessVoiceHandler16 2,ProcessVoice316,4
-NEWSYM ProcessVoice316
-    ProcessVoiceHandler16 3,ProcessVoice416,8
-NEWSYM ProcessVoice416
-    ProcessVoiceHandler16 4,ProcessVoice516,16
-NEWSYM ProcessVoice516
-    ProcessVoiceHandler16 5,ProcessVoice616,32
-NEWSYM ProcessVoice616
-    ProcessVoiceHandler16 6,ProcessVoice716,64
-NEWSYM ProcessVoice716
-    ProcessVoiceHandler16 7,ProcessVoice816,128
-NEWSYM ProcessVoice816
+    ccallv ProcessVoiceHandler16, 0,   1
+    ccallv ProcessVoiceHandler16, 1,   2
+    ccallv ProcessVoiceHandler16, 2,   4
+    ccallv ProcessVoiceHandler16, 3,   8
+    ccallv ProcessVoiceHandler16, 4,  16
+    ccallv ProcessVoiceHandler16, 5,  32
+    ccallv ProcessVoiceHandler16, 6,  64
+    ccallv ProcessVoiceHandler16, 7, 128
 
     cmp byte[EchoDis],1
     je near .echowritten

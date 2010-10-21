@@ -4,12 +4,23 @@
 #include "../types.h"
 
 extern void BRRDecode();
+extern void EchoMono();
+extern void EchoMonoInterpolated();
+extern void EchoMonoPM();
+extern void EchoStereo();
+extern void EchoStereoInterpolated();
+extern void EchoStereoPM();
+extern void NonEchoMono();
+extern void NonEchoMonoInterpolated();
+extern void NonEchoMonoPM();
+extern void NonEchoStereo();
+extern void NonEchoStereoInterpolated();
+extern void NonEchoStereoPM();
 extern void ProcessSoundBuffer();
 
 typedef s4 interpolatefunc(u4 edx, u4 ebp);
 extern interpolatefunc* DSPInterpolate;
 
-extern eop* paramhack[4];
 extern eop* spcRptr[16];
 extern eop* spcWptr[16];
 extern s2   BRRreadahead[4];
@@ -79,6 +90,7 @@ extern u4   Voice0Prev1[8];
 extern u4   Voice0Ptr[8];
 extern u4   Voice0Time[8];
 extern u4   dspPAdj;
+extern u4   powhack;
 extern u4   prev0;               // previous value 1
 extern u4   prev1;               // previous value 2
 

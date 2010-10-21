@@ -12,6 +12,7 @@
 #include "dsp.h"
 #include "dspproc.h"
 #include "firtable.h"
+#include "regs.h"
 #include "spc700.h"
 
 #ifdef __MSDOS__
@@ -19,7 +20,8 @@
 #endif
 
 
-static u4 SBToSPC = 22050;
+static eop* paramhack[4];
+static u4   SBToSPC = 22050;
 
 
 static void conv2speed(u4 ecx, u4* esi, u4 const* edi)
@@ -1712,7 +1714,7 @@ void MixEcho2(void)
 }
 
 
-void ProcessVoiceStuff(u4 const ebp, u4 const p1)
+static void ProcessVoiceStuff(u4 const ebp, u4 const p1)
 {
 	static u1 const AdsrBendData[] =
 	{
@@ -2179,4 +2181,54 @@ ContinueGain:
 				goto EndofProcessNEnv;
 			}
 	}
+}
+
+
+void ProcessVoiceHandler16(u4 const p1, u4 const p3)
+{
+	if (Voice0Disable[p1] != 1) return;
+	if (Voice0Status[p1]  != 1) return;
+
+	powhack = 1U << p1;
+
+	if (p1 == 0                    ||
+			Voice0Disable[p1 - 1] != 1 ||
+			Voice0Status[p1 - 1]  != 1 ||
+			!(DSPMem[0x2D] & p3)       ||
+			DSPMem[16 * p1 + 4] == DSPMem[16 * (p1 - 1) + 4])
+	{ // No pitch mod.
+		if (DSPMem[0x3D] & p3 || echoon0[p1] != 1)
+		{ // No echo.
+			paramhack[0] = NonEchoMono;
+			paramhack[1] = NonEchoStereo;
+			paramhack[2] = NonEchoMonoInterpolated;
+			paramhack[3] = NonEchoStereoInterpolated;
+		}
+		else
+		{ // Process Echo.
+			paramhack[0] = EchoMono;
+			paramhack[1] = EchoStereo;
+			paramhack[2] = EchoMonoInterpolated;
+			paramhack[3] = EchoStereoInterpolated;
+		}
+	}
+	else
+	{ // Pitch mod.
+		if (DSPMem[0x3D] & p3 || echoon0[p1] != 1)
+		{ // No Echo PM.
+			paramhack[0] = NonEchoMonoPM;
+			paramhack[1] = NonEchoStereoPM;
+			paramhack[2] = NonEchoMonoPM;
+			paramhack[3] = NonEchoStereoPM;
+		}
+		else
+		{ // Echo PM
+			paramhack[0] = EchoMonoPM;
+			paramhack[1] = EchoStereoPM;
+			paramhack[2] = EchoMonoPM;
+			paramhack[3] = EchoStereoPM;
+		}
+	}
+
+	ProcessVoiceStuff(p1, p1);
 }
