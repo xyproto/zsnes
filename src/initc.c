@@ -2515,7 +2515,7 @@ u2 stackor  = 0x0100;
 // 65816 registers
 uint8_t xp = 0;
 uint8_t xe = 0;
-uint8_t xirqb = 0;           // which bank the irqs start at
+u1    xirqb = 0;
 eop**   Curtableaddr = 0;
 
 void InitC4();

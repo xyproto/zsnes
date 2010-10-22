@@ -1,9 +1,11 @@
+#include "../chips/fxemu2.h"
 #include "../endmem.h"
 #include "../init.h"
 #include "../initc.h"
 #include "c_irq.h"
 #include "execute.h"
 #include "memory.h"
+#include "regs.h"
 
 
 static u4 makedl(u4 edx)
@@ -52,4 +54,50 @@ void IRQemulmode(u4* const pedx, u1** const pesi)
 
 	*pedx = edx & 0xFFFFFFF3 | 0x00000004;
 	*pesi = esi + ax;
+}
+
+
+void switchtovirq(u4* const pedx, u1** const pesi)
+{
+	irqon = 0x80;
+
+#if 0 // XXX 0x00 seems wrong
+	if (doirqnext & 0x02) edx = edx & 0xFFFF00FF | ((edx - (3 << 8)) & 0x0000FF00); // Cycle adjust.
+#endif
+
+	if (xe & 0x01)
+	{ // IRQ emulation mode.
+		IRQemulmode(pedx, pesi);
+	}
+	else
+	{
+		xpc = *pesi - initaddrl;
+
+		u2 cx = xs;
+
+		call_membank0w8(cx, xpb);
+		cx = (cx - 1) & stackand | stackor;
+
+		call_membank0w8(cx, (u1)(xpc >> 8));
+		cx = (cx - 1) & stackand | stackor;
+
+		call_membank0w8(cx, (u1)xpc);
+		cx = (cx - 1) & stackand | stackor;
+
+		u4 const edx = makedl(*pedx);
+		call_membank0w8(cx, (u1)edx);
+		cx = (cx - 1) & stackand | stackor;
+
+		xs = cx;
+
+		u1 const bl = xirqb;
+		u2 const ax = SfxSCMR & 0x00000010 ? 0x010C /* SFX NMI */ : irqv;
+		xpb = bl;
+		xpc = ax;
+		u1* const esi = ax & 0x8000 ? snesmmap[bl] : snesmap2[bl];
+		initaddrl = esi;
+
+		*pedx = edx & 0xFFFFFFF3 | 0x00000004;
+		*pesi = esi + ax;
+	}
 }

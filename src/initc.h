@@ -34,6 +34,7 @@ extern uint8_t  xe;
 extern eop**    Curtableaddr; // Current table address
 
 extern u1 SFXCounter;
+extern u1 xirqb;          // which bank the irqs start at
 extern u2 stackand;       // value to and stack to keep it from going to the wrong area
 extern u2 stackor;        // value to or stack to keep it from going to the wrong area
 extern s4 echobuf[22500];

@@ -1183,7 +1183,15 @@ NEWSYM cpuover
     mov byte[intrset],2
 .nointrset2
 ;    sub dh,8
-    jmp switchtovirq
+    push edx
+    mov edx, esp
+    push esi
+    mov esi, esp
+    ccallv switchtovirq, edx, esi
+    pop esi
+    pop edx
+    xor ebx, ebx
+    jmp execloop
 
 .hirq
     mov byte[HIRQNextExe],0
@@ -1200,7 +1208,15 @@ NEWSYM cpuover
 .nointrset2h
     test dl,04h
     jnz .irqd
-    jmp switchtovirq
+    push edx
+    mov edx, esp
+    push esi
+    mov esi, esp
+    ccallv switchtovirq, edx, esi
+    pop esi
+    pop edx
+    xor ebx, ebx
+    jmp execloop
 .irqd
     mov byte[doirqnext],1
 .hirqnotokay
