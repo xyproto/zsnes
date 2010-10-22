@@ -2500,7 +2500,7 @@ extern uint8_t SDD1BankA,SDD1BankB, SDD1BankC, SDD1BankD;
 extern uint8_t intrset, cycpl;
 extern uint32_t SPC700read, SPC700write;
 extern uint32_t FIRTAPVal0, FIRTAPVal1, FIRTAPVal2, FIRTAPVal3, FIRTAPVal4, FIRTAPVal5, FIRTAPVal6, FIRTAPVal7;
-extern uint32_t xa, xdb, xs, xx, xy;
+extern uint32_t xa, xdb, xx, xy;
 extern uint16_t VIRQLoc;
 extern uint8_t spcextraram[64], SPCROM[64];
 uint8_t SPCSkipXtraROM, disableeffects = 0;
@@ -2509,8 +2509,8 @@ uint8_t cycpl = 0;          // cycles per scanline
 uint8_t cycphb = 0;         // cycles per hblank
 uint8_t intrset = 0;        // interrupt set
 uint16_t curypos = 0;
-uint16_t stackand = 0x01FF; // value to and stack to keep it from going to the wrong area
-uint16_t stackor = 0x0100;  // value to or stack to keep it from going to the wrong area
+u2 stackand = 0x01FF;
+u2 stackor  = 0x0100;
 
 // 65816 registers
 uint8_t xp = 0;

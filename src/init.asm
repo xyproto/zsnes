@@ -46,7 +46,7 @@ NEWSYM brkv,    dw 0    ; brk vector
 NEWSYM copv,    dw 0    ; cop vector
 NEWSYM abortv8, dw 0    ; abort vector emulation mode
 NEWSYM nmiv8,   dw 0    ; nmi vector emulation mode
-NEWSYM irqv8,   dw 0    ; irq vector emulation mode
+NEWSYM irqv8,   dw 0
 NEWSYM brkv8,   dw 0    ; brk vector emulation mode
 NEWSYM copv8,   dw 0    ; cop vector emulation mode
 NEWSYM cycpb268, db 109  ; 110

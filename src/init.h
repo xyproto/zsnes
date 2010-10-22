@@ -19,12 +19,14 @@ extern u1 writeon;          // Write enable/disable on snes rom memory
 extern u1 xpb;
 extern u1 yesoutofmemory;
 extern u2 irqv2;            // IRQ vector
+extern u2 irqv8;            // irq vector emulation mode
 extern u2 irqv;             // IRQ vector
 extern u2 nmiv2;            // NMI vector
 extern u2 nmiv;             // NMI vector
 extern u2 resetv;           // reset vector
 extern u2 xd;
 extern u2 xpc;
+extern u2 xs;
 extern u4 cycpblt;          // percentage of CPU/SPC to run
 extern u4 flagc;
 extern u4 flagnz;

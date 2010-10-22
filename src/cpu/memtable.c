@@ -81,7 +81,7 @@ void UpdateBanksSDD1()
 
 extern void (*Bank0datr8[256])(), (*Bank0datr16[256])(), (*Bank0datw8[256])(), (*Bank0datw16[256])();
 
-extern unsigned int xdb, xs, xx, xy;
+extern unsigned int xdb, xx, xy;
 extern unsigned short oamaddrt, xat, xst, xdt, xxt, xyt;
 extern unsigned char xdbt, xpbt;
 
@@ -109,7 +109,7 @@ void unpackfunct()
   xat = (xa & 0xFFFF);
   xdbt = (xdb & 0xFF);
   xpbt = (xpb & 0xFF);
-  xst = (xs & 0xFFFF);
+  xst = xs;
   xdt = (xd & 0xFFFF);
   xxt = (xx & 0xFFFF);
   xyt = (xy & 0xFFFF);

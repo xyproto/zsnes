@@ -24,6 +24,7 @@
 EXTSYM flagnz,flago,flagc,SfxSCMR,curnmi,execloop,initaddrl,nmiv,snesmap2
 EXTSYM snesmmap,stackand,stackor,xe,xirqb,xpb,xpc,xs,irqon,irqv,irqv8
 EXTSYM execloopdeb,nmiv8,membank0w8
+EXTSYM IRQemulmode
 
 ;        NMI     Hardware        00FFFA,B    00FFEA,B     3  -> 000108
 ;        RES     Hardware        00FFFC.D    00FFFC,D     1
@@ -178,7 +179,17 @@ NEWSYM switchtovirq
     sub dh,3
 .nocycadj
     test byte[xe],1
-    jne near IRQemulmode
+    je .noIRQemulmode
+    push edx
+    mov edx, esp
+    push esi
+    mov esi, esp
+    ccallv IRQemulmode, edx, esi
+    pop esi
+    pop edx
+    xor ebx, ebx
+    jmp execloop
+.noIRQemulmode
 
     mov ebx,esi
     sub ebx,[initaddrl]
@@ -239,7 +250,17 @@ NEWSYM switchtovirq
 NEWSYM switchtovirqret
     mov byte[irqon],80h
     test byte[xe],1
-    jne near IRQemulmode
+    je .noIRQemulmode
+    push edx
+    mov edx, esp
+    push esi
+    mov esi, esp
+    ccallv IRQemulmode, edx, esi
+    pop esi
+    pop edx
+    xor ebx, ebx
+    jmp execloop
+.noIRQemulmode
 
     mov ebx,esi
     sub ebx,[initaddrl]
@@ -296,53 +317,6 @@ NEWSYM switchtovirqret
     mov [initaddrl],esi
     add esi,eax
     ret
-
-NEWSYM IRQemulmode
-    mov ebx,esi
-    sub ebx,[initaddrl]
-    mov [xpc],bx
-
-    mov cx,[xs]
-    mov al,[xpc+1]
-    call membank0w8
-    dec cx
-    and cx,word[stackand]
-    or cx,word[stackor]
-
-    mov al,[xpc]
-    call membank0w8
-    dec cx
-    and cx,word[stackand]
-    or cx,word[stackor]
-
-    makedl
-    mov al,dl
-    call membank0w8
-    dec cx
-    and cx,word[stackand]
-    or cx,word[stackor]
-
-    mov [xs],cx
-
-    xor bh,bh
-    mov [xpb],bh
-    mov bl,[xpb]
-    xor eax,eax
-    mov ax,[irqv8]
-    mov [xpc],ax
-    and dl,11110011b
-    or dl,00000100b
-    test ax,8000h
-    jz .loweraddr
-    mov esi,[snesmmap+ebx*4]
-    mov [initaddrl],esi
-    add esi,eax
-    jmp execloop
-.loweraddr
-    mov esi,[snesmap2+ebx*4]
-    mov [initaddrl],esi
-    add esi,eax
-    jmp execloop
 
 
 NEWSYM switchtovirqdeb
