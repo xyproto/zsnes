@@ -39,78 +39,77 @@
 #include "initc.h"
 #include "types.h"
 
-
 void breakops(void)
 {
-	u4        const page      = PrevBreakPt_page;
-	u4        const offset    = PrevBreakPt_offset;
-	u1 const* const map       = offset & 0x8000 ? snesmmap[page] : snesmap2[page];
-	u1 const* const breakarea = map + offset; // add program counter to address
+    u4 const page = PrevBreakPt_page;
+    u4 const offset = PrevBreakPt_offset;
+    u1 const* const map = offset & 0x8000 ? snesmmap[page] : snesmap2[page];
+    u1 const* const breakarea = map + offset; // add program counter to address
 
-	u4  const pc   = xpc;
-	u4  const pb   = xpb;
-	u1* const addr =
-		pc & 0x8000                                      ? snesmmap[pb] :
-		pc < 0x4300 || memtabler8[pb] != regaccessbankr8 ? snesmap2[pb] :
-		(u1*)dmadata - 0x4300; // XXX ugly cast
-	initaddrl = addr;
+    u4 const pc = xpc;
+    u4 const pb = xpb;
+    u1* const addr = pc & 0x8000 ? snesmmap[pb] : pc < 0x4300 || memtabler8[pb] != regaccessbankr8 ? snesmap2[pb]
+                                                                                                   : (u1*)dmadata - 0x4300; // XXX ugly cast
+    initaddrl = addr;
 
-	u4    ecx = 0;
-	u4    edx = curcyc /* cycles */ << 8 | xp /* flags */;
-	u1*   ebp = spcPCRam;
-	u1*   esi = addr + pc; // add program counter to address
-	eop** edi = Curtableaddr;
-	UpdateDPage();
-	// execute
-	do
-	{
-		splitflags(edx);
-		u4 ebx;
-		// XXX hack: GCC cannot handle ebp as input/output, so take the detour over eax
-		asm volatile("push %%ebp;  mov %0, %%ebp;  call %P6;  mov %%ebp, %0;  pop %%ebp" : "+a" (ebp), "+c" (ecx), "+d" (edx), "=b" (ebx), "+S" (esi), "+D" (edi) : "X" (execsingle) : "cc", "memory");
-		edx = joinflags(edx);
-    edx = edx & 0xFFFF00FF | pdh << 8;
-		if ((++numinst & 0xFF) == 0 && getch() == 27) break;
-	}
-	while (esi != breakarea);
-	// copy back data
-	spcPCRam     = ebp;
-	Curtableaddr = edi;
-	xp           = edx;
-	curcyc       = edx >> 8;
-	xpc          = esi - initaddrl; // subtract program counter by address
+    u4 ecx = 0;
+    u4 edx = curcyc /* cycles */ << 8 | xp /* flags */;
+    u1* ebp = spcPCRam;
+    u1* esi = addr + pc; // add program counter to address
+    eop** edi = Curtableaddr;
+    UpdateDPage();
+    // execute
+    do {
+        splitflags(edx);
+        u4 ebx;
+        // XXX hack: GCC cannot handle ebp as input/output, so take the detour over eax
+        asm volatile("push %%ebp;  mov %0, %%ebp;  call %P6;  mov %%ebp, %0;  pop %%ebp"
+                     : "+a"(ebp), "+c"(ecx), "+d"(edx), "=b"(ebx), "+S"(esi), "+D"(edi)
+                     : "X"(execsingle)
+                     : "cc", "memory");
+        edx = joinflags(edx);
+        edx = edx & 0xFFFF00FF | pdh << 8;
+        if ((++numinst & 0xFF) == 0 && getch() == 27)
+            break;
+    } while (esi != breakarea);
+    // copy back data
+    spcPCRam = ebp;
+    Curtableaddr = edi;
+    xp = edx;
+    curcyc = edx >> 8;
+    xpc = esi - initaddrl; // subtract program counter by address
 }
-
 
 void execnextop(void)
 {
-	u4  const pc   = xpc;
-	u4  const pb   = xpb;
-	u1* const addr =
-		pc & 0x8000                                      ? snesmmap[pb] :
-		pc < 0x4300 || memtabler8[pb] != regaccessbankr8 ? snesmap2[pb] :
-		(u1*)dmadata - 0x4300; // XXX ugly cast
-	initaddrl = addr;
+    u4 const pc = xpc;
+    u4 const pb = xpb;
+    u1* const addr = pc & 0x8000 ? snesmmap[pb] : pc < 0x4300 || memtabler8[pb] != regaccessbankr8 ? snesmap2[pb]
+                                                                                                   : (u1*)dmadata - 0x4300; // XXX ugly cast
+    initaddrl = addr;
 
-	u4    ecx = 0;
-	u4    edx = curcyc /* cycles */ << 8 | xp /* flags */;
-	u1*   ebp = spcPCRam;
-	u1*   esi = addr + pc; // add program counter to address
-	eop** edi = Curtableaddr;
+    u4 ecx = 0;
+    u4 edx = curcyc /* cycles */ << 8 | xp /* flags */;
+    u1* ebp = spcPCRam;
+    u1* esi = addr + pc; // add program counter to address
+    eop** edi = Curtableaddr;
 
-	// execute
-	splitflags(edx);
-	u4 ebx;
-	// XXX hack: GCC cannot handle ebp as input/output, so take the detour over eax
-	asm volatile("push %%ebp;  mov %0, %%ebp;  call %P6;  mov %%ebp, %0;  pop %%ebp" : "+a" (ebp), "+c" (ecx), "+d" (edx), "=b" (ebx), "+S" (esi), "+D" (edi) : "X" (execsingle) : "cc", "memory");
-	edx = joinflags(edx);
-	UpdateDPage();
+    // execute
+    splitflags(edx);
+    u4 ebx;
+    // XXX hack: GCC cannot handle ebp as input/output, so take the detour over eax
+    asm volatile("push %%ebp;  mov %0, %%ebp;  call %P6;  mov %%ebp, %0;  pop %%ebp"
+                 : "+a"(ebp), "+c"(ecx), "+d"(edx), "=b"(ebx), "+S"(esi), "+D"(edi)
+                 : "X"(execsingle)
+                 : "cc", "memory");
+    edx = joinflags(edx);
+    UpdateDPage();
 
-	// copy back data
-	spcPCRam     = ebp;
-	Curtableaddr = edi;
-	xp           = edx;
-	curcyc       = pdh;
-	xpc          = esi - initaddrl; // subtract program counter by address
-	++numinst;
+    // copy back data
+    spcPCRam = ebp;
+    Curtableaddr = edi;
+    xp = edx;
+    curcyc = pdh;
+    xpc = esi - initaddrl; // subtract program counter by address
+    ++numinst;
 }

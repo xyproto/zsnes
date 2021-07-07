@@ -4,11 +4,11 @@
 #include "types.h"
 
 #ifndef __MSDOS__
-s4   GetMouseButton(void);
-s4   GetMouseMoveX(void);
-s4   GetMouseMoveY(void);
-s4   GetMouseX(void);
-s4   GetMouseY(void);
+s4 GetMouseButton(void);
+s4 GetMouseMoveX(void);
+s4 GetMouseMoveY(void);
+s4 GetMouseX(void);
+s4 GetMouseY(void);
 void CheckTimers(void);
 void DocsPage(void);
 void Start36HZ(void);

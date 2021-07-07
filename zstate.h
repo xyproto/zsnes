@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <time.h>
 
-int  zst_exists(void);
+int zst_exists(void);
 void BackupSystemVars(void);
 void LoadSecondState(void);
 void RestoreSystemVars(void);
@@ -22,11 +22,11 @@ void SaveSramData(void);
 
 void savespcdata(void);
 
-extern time_t   newestfiledate;
+extern time_t newestfiledate;
 extern uint32_t current_zst;
 extern uint32_t newest_zst;
 
-extern char     spcsaved[16];
-extern u4       Totalbyteloaded;
+extern char spcsaved[16];
+extern u4 Totalbyteloaded;
 
 #endif

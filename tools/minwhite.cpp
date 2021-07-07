@@ -21,8 +21,8 @@ This is part of a toolkit used to assist in ZSNES development
 This program trims unneeded at end of line whitespace.
 */
 
-#include <iostream>
 #include <fstream>
+#include <iostream>
 #include <string>
 #include <vector>
 using namespace std;
@@ -31,89 +31,68 @@ using namespace std;
 
 #define LINE_LENGTH 2048
 
-void handle_file(const char *filename, size_t orig_file_size)
+void handle_file(const char* filename, size_t orig_file_size)
 {
-  bool file_modified = false;
-  vector<string> file_buffer;
+    bool file_modified = false;
+    vector<string> file_buffer;
 
-  ifstream file(filename, ios::in);
-  if (file)
-  {
-    char line[LINE_LENGTH];
+    ifstream file(filename, ios::in);
+    if (file) {
+        char line[LINE_LENGTH];
 
-    while (file.getline(line, LINE_LENGTH))
-    {
-      for (char *p = line+strlen(line)-1; p >= line; p--)
-      {
-        if (strchr(" \t\r", *p))
-        {
-          *p = 0;
-          file_modified = true;
+        while (file.getline(line, LINE_LENGTH)) {
+            for (char* p = line + strlen(line) - 1; p >= line; p--) {
+                if (strchr(" \t\r", *p)) {
+                    *p = 0;
+                    file_modified = true;
+                } else {
+                    break;
+                }
+            }
+            file_buffer.push_back(line);
         }
-        else
-        {
-          break;
+
+        file.close();
+    } else {
+        cerr << "Could not open " << filename << "." << endl;
+    }
+
+    if (file_modified) {
+        ofstream file(filename, ios::out);
+        if (file) {
+            for (vector<string>::iterator i = file_buffer.begin(); i != file_buffer.end(); i++) {
+                file.write(i->data(), i->length());
+                file << "\n";
+            }
+            size_t file_size = file.tellp();
+            file.close();
+            cout << "Trimmed " << filename << " of " << orig_file_size - file_size << " bytes." << endl;
+        } else {
+            cerr << filename << " has extra whitespace, but a trimmed copy can't be saved." << endl;
         }
-      }
-      file_buffer.push_back(line);
     }
-
-    file.close();
-  }
-  else
-  {
-    cerr << "Could not open " << filename << "." << endl;
-  }
-
-  if (file_modified)
-  {
-    ofstream file(filename, ios::out);
-    if (file)
-    {
-      for (vector<string>::iterator i = file_buffer.begin(); i != file_buffer.end(); i++)
-      {
-        file.write(i->data(), i->length());
-        file << "\n";
-      }
-      size_t file_size = file.tellp();
-      file.close();
-      cout << "Trimmed " << filename << " of " << orig_file_size-file_size << " bytes." << endl;
-    }
-    else
-    {
-      cerr << filename << " has extra whitespace, but a trimmed copy can't be saved." << endl;
-    }
-  }
 }
 
-void force_trim(const char *filename, struct stat& stat_buffer)
+void force_trim(const char* filename, struct stat& stat_buffer)
 {
-  handle_file(filename, stat_buffer.st_size);
-}
-
-void trim_whitespace(const char *filename, struct stat& stat_buffer)
-{
-  if (is_c_file(filename) ||
-      is_cpp_file(filename) ||
-      is_asm_file(filename) ||
-      is_psr_file(filename))
-  {
     handle_file(filename, stat_buffer.st_size);
-  }
 }
 
-int main(int argc, char *const *const argv)
+void trim_whitespace(const char* filename, struct stat& stat_buffer)
 {
-  if (argc > 1)
-  {
-    for (const char *const *i = argv+1; *i; i++)
-    {
-      parse_path(*i, force_trim);
+    if (is_c_file(filename) || is_cpp_file(filename) || is_asm_file(filename) || is_psr_file(filename)) {
+        handle_file(filename, stat_buffer.st_size);
     }
-  }
-  else
-  {
-    parse_dir(".", trim_whitespace);
-  }
-  return(0);
+}
+
+int main(int argc, char* const* const argv)
+{
+    if (argc > 1) {
+        for (const char* const* i = argv + 1; *i; i++) {
+            parse_path(*i, force_trim);
+        }
+    } else {
+        parse_dir(".", trim_whitespace);
+    }
+    return (0);
 }

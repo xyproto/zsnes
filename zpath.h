@@ -22,9 +22,9 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #ifndef ZPATH_H
 #define ZPATH_H
 
-#include <zlib.h>
 #include <stdio.h>
 #include <sys/stat.h>
+#include <zlib.h>
 
 #include "zip/zunzip.h"
 
@@ -50,7 +50,7 @@ typedef unsigned short mode_t;
 #define DIR_SLASH_C '/'
 #define DIR_SLASH_C_OTHER '\\'
 #define ROOT_LEN 1 //"/"
-#define DIR_R_ACCESS (R_OK|X_OK)
+#define DIR_R_ACCESS (R_OK | X_OK)
 #define IS_ABSOLUTE(path) ((*(path) == '/') || (*(path) == '~'))
 #else
 #define DIR_SLASH "\\"
@@ -72,7 +72,7 @@ typedef unsigned short mode_t;
 #endif
 
 #ifndef S_ISDIR
-#define S_ISDIR(m) (((m) & S_IFMT) == S_IFDIR)
+#define S_ISDIR(m) (((m)&S_IFMT) == S_IFDIR)
 #endif
 
 extern char ZCfgFile[];
@@ -81,46 +81,46 @@ extern char *ZSnapPath, *ZSpcPath, *ZIpsPath, *ZMoviePath;
 extern char *ZChtPath, *ZComboPath, *ZInpPath, *ZSStatePath;
 extern char *ZCartName, *ZSaveName, *ZStateName, *ZSaveST2Name;
 
-bool init_paths(char *launch_command);
+bool init_paths(char* launch_command);
 void init_save_paths(void);
-bool init_rom_path(char *path);
+bool init_rom_path(char* path);
 
-char *strdupcat(const char *str1, const char *str2);
+char* strdupcat(const char* str1, const char* str2);
 
-int access_dir(const char *path, const char *file, int mode);
-int stat_dir(const char *path, const char *file, struct stat *buf);
-FILE *fopen_dir(const char *path, const char *file, const char *mode);
-gzFile gzopen_dir(const char *path, const char *file, const char *mode);
-unzFile unzopen_dir(const char *path, const char *file);
+int access_dir(const char* path, const char* file, int mode);
+int stat_dir(const char* path, const char* file, struct stat* buf);
+FILE* fopen_dir(const char* path, const char* file, const char* mode);
+gzFile gzopen_dir(const char* path, const char* file, const char* mode);
+unzFile unzopen_dir(const char* path, const char* file);
 #ifndef NO_JMA
-void load_jma_file_dir(const char *path, const char *file);
+void load_jma_file_dir(const char* path, const char* file);
 #endif
-int remove_dir(const char *path, const char *file);
-int mkdir_dir(const char *path, const char *dir);
-char *realpath_dir(const char *path, const char *file, char *buf);
+int remove_dir(const char* path, const char* file);
+int mkdir_dir(const char* path, const char* dir);
+char* realpath_dir(const char* path, const char* file, char* buf);
 #ifdef __MSDOS__
-char *realpath_sfn_dir(const char *path, const char *file, char *buf);
+char* realpath_sfn_dir(const char* path, const char* file, char* buf);
 #endif
-FILE *fdreopen_dir(const char *path, const char *file, const char *mode, int fd);
-int system_dir(const char *path, const char *command);
-FILE *popen_dir(const char *path, char *command, const char *type);
+FILE* fdreopen_dir(const char* path, const char* file, const char* mode, int fd);
+int system_dir(const char* path, const char* command);
+FILE* popen_dir(const char* path, char* command, const char* type);
 
-void natify_slashes(char *str);
-char *strcutslash(char *str);
-char *strcatslash(char *str);
-void setextension(char *base, const char *ext);
-bool isextension(const char *fname, const char *ext);
-void strdirname(char *str);
-void strbasename(char *str);
-bool mkpath(const char *path, mode_t mode);
+void natify_slashes(char* str);
+char* strcutslash(char* str);
+char* strcatslash(char* str);
+void setextension(char* base, const char* ext);
+bool isextension(const char* fname, const char* ext);
+void strdirname(char* str);
+void strbasename(char* str);
+bool mkpath(const char* path, mode_t mode);
 
 #ifdef __UNIXSDL__
-char *realpath_link(const char *path, char *resolved_path);
-char *realpath_tilde(const char *path, char *resolved_path);
+char* realpath_link(const char* path, char* resolved_path);
+char* realpath_tilde(const char* path, char* resolved_path);
 #else
 #define realpath_link realpath_native
 #endif
 
-void psr_cfg_run(unsigned char (*psr_func)(const char *), const char *dir, const char *fname);
+void psr_cfg_run(unsigned char (*psr_func)(const char*), const char* dir, const char* fname);
 
 #endif

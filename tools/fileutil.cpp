@@ -19,68 +19,59 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 This is part of a toolkit used to assist in ZSNES development
 */
 
+#include <dirent.h>
 #include <stdio.h>
 #include <unistd.h>
-#include <dirent.h>
 
 #include "fileutil.h"
 
-void parse_dir(const char *dir_loc, void (*func)(const char *, struct stat&))
+void parse_dir(const char* dir_loc, void (*func)(const char*, struct stat&))
 {
-  char path[4096];
+    char path[4096];
 
-  DIR *curDir = opendir(dir_loc);
-  dirent *curFile;
-  if (curDir)
-  {
-    while ((curFile = readdir(curDir)))
-    {
-      if (!strcmp(curFile->d_name, ".") || !strcmp(curFile->d_name, ".."))
-      {
-        continue;
-      }
+    DIR* curDir = opendir(dir_loc);
+    dirent* curFile;
+    if (curDir) {
+        while ((curFile = readdir(curDir))) {
+            if (!strcmp(curFile->d_name, ".") || !strcmp(curFile->d_name, "..")) {
+                continue;
+            }
 
-      char *filename;
-      if (!strcmp(dir_loc, "."))
-      {
-        filename = curFile->d_name;
-      }
-      else
-      {
-        sprintf(path, "%s/%s", dir_loc, curFile->d_name);
-        filename = path;
-      }
+            char* filename;
+            if (!strcmp(dir_loc, ".")) {
+                filename = curFile->d_name;
+            } else {
+                sprintf(path, "%s/%s", dir_loc, curFile->d_name);
+                filename = path;
+            }
 
-      struct stat stat_buffer;
-      if (stat(filename, &stat_buffer)) { continue; }
+            struct stat stat_buffer;
+            if (stat(filename, &stat_buffer)) {
+                continue;
+            }
 
-      //Directory
-      if (S_ISDIR(stat_buffer.st_mode))
-      {
-        parse_dir(filename, func);
-        continue;
-      }
+            //Directory
+            if (S_ISDIR(stat_buffer.st_mode)) {
+                parse_dir(filename, func);
+                continue;
+            }
 
-      func(filename, stat_buffer);
+            func(filename, stat_buffer);
+        }
+        closedir(curDir);
     }
-    closedir(curDir);
-  }
 }
 
-bool parse_path(const char *path, void (*func)(const char *, struct stat&))
+bool parse_path(const char* path, void (*func)(const char*, struct stat&))
 {
-  struct stat stat_buffer;
-  if (!stat(path, &stat_buffer))
-  {
-    if (S_ISDIR(stat_buffer.st_mode))
-    {
-      parse_dir(path, func);
+    struct stat stat_buffer;
+    if (!stat(path, &stat_buffer)) {
+        if (S_ISDIR(stat_buffer.st_mode)) {
+            parse_dir(path, func);
+        } else {
+            func(path, stat_buffer);
+        }
+        return (true);
     }
-    else
-    {
-      func(path, stat_buffer);
-    }
-    return(true);
-  }
-  return(false);
+    return (false);
 }

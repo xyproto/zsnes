@@ -22,10 +22,10 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #ifndef ZMOVIE_H
 #define ZMOVIE_H
 
-#include <stdbool.h>
-#include <stdint.h>
 #include "gblvars.h"
 #include "types.h"
+#include <stdbool.h>
+#include <stdint.h>
 
 void mzt_chdir_up();
 void mzt_chdir_down();
@@ -46,12 +46,20 @@ void ResetDuringMovie(void);
 void SkipMovie(void);
 
 extern unsigned char MovieProcessing;
-extern uint8_t       MovieRecordWinVal;
+extern uint8_t MovieRecordWinVal;
 
-enum MovieStatus { MOVIE_OFF = 0, MOVIE_PLAYBACK, MOVIE_RECORD, MOVIE_OLD_PLAY, MOVIE_ENDING_DUMPING, MOVIE_DUMPING_NEW, MOVIE_DUMPING_OLD };
+enum MovieStatus { MOVIE_OFF = 0,
+    MOVIE_PLAYBACK,
+    MOVIE_RECORD,
+    MOVIE_OLD_PLAY,
+    MOVIE_ENDING_DUMPING,
+    MOVIE_DUMPING_NEW,
+    MOVIE_DUMPING_OLD };
 #define SetMovieMode(mode) (MovieProcessing = (unsigned char)mode)
 
-enum MZT_FORCE_MODE_SWITCH { RTR_OFF = 0, RTR_REPLAY_TO_RECORD, RTR_RECORD_TO_REPLAY };
+enum MZT_FORCE_MODE_SWITCH { RTR_OFF = 0,
+    RTR_REPLAY_TO_RECORD,
+    RTR_RECORD_TO_REPLAY };
 
 void MovieInsertChapter(void);
 
@@ -63,11 +71,11 @@ void ResetDuringMovie(void);
 
 void MovieDumpRaw(void);
 
-extern u1            MovieForcedLengthEnabled;
-extern u1            lameExists;
-extern u1            mencoderExists;
-extern bool          RawDumpInProgress;
-extern char          MovieFrameStr[10];
+extern u1 MovieForcedLengthEnabled;
+extern u1 lameExists;
+extern u1 mencoderExists;
+extern bool RawDumpInProgress;
+extern char MovieFrameStr[10];
 extern unsigned char MoviePassWaiting;
 
 #endif

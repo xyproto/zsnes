@@ -22,43 +22,38 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <string.h>
 #include <zlib.h>
 
-char *VERSION_STR;
-char *VERSION_DATE = __DATE__;
+char* VERSION_STR;
+char* VERSION_DATE = __DATE__;
 
 #ifdef __MSDOS__
-char *VERSION_PORT = "DOS";
+char* VERSION_PORT = "DOS";
 #elif defined(__WIN32__)
-char *VERSION_PORT = "WIN";
+char* VERSION_PORT = "WIN";
 #elif defined(__MACOSX__)
-char *VERSION_PORT = "SDL - Mac OS X";
+char* VERSION_PORT = "SDL - Mac OS X";
 #elif defined(__BSDSDL__)
-char *VERSION_PORT = "SDL - BSD";
+char* VERSION_PORT = "SDL - BSD";
 #elif defined(__BEOS__)
-char *VERSION_PORT = "SDL - BeOS";
+char* VERSION_PORT = "SDL - BeOS";
 #elif defined(__linux__)
-char *VERSION_PORT = "SDL - Linux";
+char* VERSION_PORT = "SDL - Linux";
 #else
-char *VERSION_PORT = "SDL - Unknown";
+char* VERSION_PORT = "SDL - Unknown";
 #endif
 
 //Place compilation date at the end of VERSION_STR
 void placedate(void)
 {
-  strcpy(VERSION_STR +
-         strlen(VERSION_STR) -
-         strlen(VERSION_DATE), VERSION_DATE);
+    strcpy(VERSION_STR + strlen(VERSION_STR) - strlen(VERSION_DATE), VERSION_DATE);
 }
 
 //Place compilation time at the end of VERSION_STR
 void placetime()
 {
-  strcpy(VERSION_STR +
-         strlen(VERSION_STR) -
-         strlen(__TIME__), __TIME__);
+    strcpy(VERSION_STR + strlen(VERSION_STR) - strlen(__TIME__), __TIME__);
 }
 
 unsigned int version_hash()
 {
-  return(~crc32(0, (const unsigned char *)__DATE__, strlen(__DATE__)));
+    return (~crc32(0, (const unsigned char*)__DATE__, strlen(__DATE__)));
 }
-

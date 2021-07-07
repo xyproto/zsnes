@@ -22,21 +22,20 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #ifndef ZLOADER_H
 #define ZLOADER_H
 
-struct backup_cmdline_vars
-{
+struct backup_cmdline_vars {
 #ifdef __MSDOS__
-  unsigned char _Palette0;
+    unsigned char _Palette0;
 #endif
 #ifdef __WIN32__
-  unsigned char _KitchenSync, _KitchenSyncPAL, _ForceRefreshRate, _SetRefreshRate;
+    unsigned char _KitchenSync, _KitchenSyncPAL, _ForceRefreshRate, _SetRefreshRate;
 #endif
 #ifndef __MSDOS__
-  unsigned short _joy_sensitivity;
+    unsigned short _joy_sensitivity;
 #endif
-  unsigned char _guioff;
-  unsigned char _per2exec;
-  unsigned char _HacksDisable;
-  unsigned char _AllowMMX;
+    unsigned char _guioff;
+    unsigned char _per2exec;
+    unsigned char _HacksDisable;
+    unsigned char _AllowMMX;
 };
 
 extern struct backup_cmdline_vars saved_cmdline_vars;

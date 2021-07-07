@@ -19,10 +19,10 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 This program can add a prefix to every symbol in an object file.
 */
 
-#include <iostream>
 #include <fstream>
-#include <string>
+#include <iostream>
 #include <set>
+#include <string>
 #include <vector>
 using namespace std;
 
@@ -36,126 +36,107 @@ vector<string> files;
 set<string> symbols;
 set<string> sections;
 
-
-const char *symbol_fname = "symbol.map";
-const char *section_fname = "section.map";
+const char* symbol_fname = "symbol.map";
+const char* section_fname = "section.map";
 
 bool create_symbol_file()
 {
-  ofstream stream(symbol_fname, ios::out);
-  if (stream)
-  {
-    for (set<string>::iterator i = symbols.begin(); i != symbols.end(); i++)
-    {
-      stream << *i << "\n";
+    ofstream stream(symbol_fname, ios::out);
+    if (stream) {
+        for (set<string>::iterator i = symbols.begin(); i != symbols.end(); i++) {
+            stream << *i << "\n";
+        }
+        stream.close();
+        return (true);
     }
-    stream.close();
-    return(true);
-  }
-  return(false);
+    return (false);
 }
 
 bool create_section_file()
 {
-  ofstream stream(section_fname, ios::out);
-  if (stream)
-  {
-    for (set<string>::iterator i = sections.begin(); i != sections.end(); i++)
-    {
-      stream << "--rename-section " << *i << " ";
-    }
-    stream.close();
-    return(true);
-  }
-  return(false);
-}
-
-void handle_file(const char *filename)
-{
-  string command("nm ");
-  command += filename;
-
-  FILE *pp = popen(command.c_str(), "r");
-  if (pp)
-  {
-    files.push_back(filename);
-    char line[1024];
-    while (fgets(line, sizeof(line), pp))
-    {
-      vector<string> tokens;
-      Tokenize(line, tokens, " \t\r\n");
-      vector<string>::iterator i = tokens.begin();
-      if ((i->size() != 1) && isxdigit((*i)[0])) { i++; }
-      if (*i != "U")
-      {
-        i++;
-        if ((*i)[0] != '.')
-        {
-          symbols.insert(*i+" "+prefix+*i);
+    ofstream stream(section_fname, ios::out);
+    if (stream) {
+        for (set<string>::iterator i = sections.begin(); i != sections.end(); i++) {
+            stream << "--rename-section " << *i << " ";
         }
-        else
-        {
-          size_t p = i->find('$');
-          if (p != string::npos)
-          {
-            string change(*i);
-            i->insert(p+1, prefix);
-            symbols.insert(change+" "+*i);
-            sections.insert(change+"="+*i);
-          }
-        }
-      }
+        stream.close();
+        return (true);
     }
-    pclose(pp);
-  }
-  else
-  {
-    cout << "Coult not execute " << command << "." << endl;
-  }
+    return (false);
 }
 
-void extra_check(const char *filename, struct stat& stat_buffer)
+void handle_file(const char* filename)
 {
-  if (extension_match(filename, extension.c_str()))
-  {
-    handle_file(filename);
-  }
+    string command("nm ");
+    command += filename;
+
+    FILE* pp = popen(command.c_str(), "r");
+    if (pp) {
+        files.push_back(filename);
+        char line[1024];
+        while (fgets(line, sizeof(line), pp)) {
+            vector<string> tokens;
+            Tokenize(line, tokens, " \t\r\n");
+            vector<string>::iterator i = tokens.begin();
+            if ((i->size() != 1) && isxdigit((*i)[0])) {
+                i++;
+            }
+            if (*i != "U") {
+                i++;
+                if ((*i)[0] != '.') {
+                    symbols.insert(*i + " " + prefix + *i);
+                } else {
+                    size_t p = i->find('$');
+                    if (p != string::npos) {
+                        string change(*i);
+                        i->insert(p + 1, prefix);
+                        symbols.insert(change + " " + *i);
+                        sections.insert(change + "=" + *i);
+                    }
+                }
+            }
+        }
+        pclose(pp);
+    } else {
+        cout << "Coult not execute " << command << "." << endl;
+    }
 }
 
-int main(size_t argc, char **argv)
+void extra_check(const char* filename, struct stat& stat_buffer)
 {
-  if (argc == 3)
-  {
-     prefix = argv[1];
-     extension = argv[2];
-     parse_dir(".", extra_check);
+    if (extension_match(filename, extension.c_str())) {
+        handle_file(filename);
+    }
+}
 
-     if (create_symbol_file())
-     {
-       string objcopy("objcopy ");
-       if (sections.size() && create_section_file())
-       {
-         objcopy += "@";
-         objcopy += section_fname;
-         objcopy += " ";
-       }
-       objcopy += "--redefine-syms ";
-       objcopy += symbol_fname;
-       objcopy += " ";
-       for (vector<string>::iterator i = files.begin(); i != files.end(); i++)
-       {
-         string command(objcopy);
-         command += *i;
-         command += " ";
-         command += prefix;
-         command += *i;
-         system(command.c_str());
-       }
-     }
-     else
-     {
-       cout << "Error creating: " << symbol_fname << endl;
-     }
-  }
-  return(0);
+int main(size_t argc, char** argv)
+{
+    if (argc == 3) {
+        prefix = argv[1];
+        extension = argv[2];
+        parse_dir(".", extra_check);
+
+        if (create_symbol_file()) {
+            string objcopy("objcopy ");
+            if (sections.size() && create_section_file()) {
+                objcopy += "@";
+                objcopy += section_fname;
+                objcopy += " ";
+            }
+            objcopy += "--redefine-syms ";
+            objcopy += symbol_fname;
+            objcopy += " ";
+            for (vector<string>::iterator i = files.begin(); i != files.end(); i++) {
+                string command(objcopy);
+                command += *i;
+                command += " ";
+                command += prefix;
+                command += *i;
+                system(command.c_str());
+            }
+        } else {
+            cout << "Error creating: " << symbol_fname << endl;
+        }
+    }
+    return (0);
 }

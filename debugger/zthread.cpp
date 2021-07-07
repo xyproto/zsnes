@@ -22,37 +22,36 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "zthread.h"
 #include "load.h"
 
-extern "C" { void zstart(); }
+extern "C" {
+void zstart();
+}
 
-ZSNESThread::ZSNESThread() : running(false)
+ZSNESThread::ZSNESThread()
+    : running(false)
 {
 }
 
 void ZSNESThread::run()
 {
-  if (!running)
-  {
-    if (!setjmp(jump))
-    {
-      running = true;
-      zstart();
+    if (!running) {
+        if (!setjmp(jump)) {
+            running = true;
+            zstart();
+        }
     }
-  }
 }
 
 void ZSNESThread::done()
 {
-  if (running)
-  {
-    running = false;
-    longjmp(jump, 1);
-  }
+    if (running) {
+        running = false;
+        longjmp(jump, 1);
+    }
 }
 
 void ZSNESThread::prepare_close()
 {
-  if (running)
-  {
-    debugger_quit = true;
-  }
+    if (running) {
+        debugger_quit = true;
+    }
 }

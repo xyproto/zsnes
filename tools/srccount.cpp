@@ -32,24 +32,29 @@ size_t cpp_count = 0;
 size_t asm_count = 0;
 size_t psr_count = 0;
 
-void size_tally(const char *filename, struct stat& stat_buffer)
+void size_tally(const char* filename, struct stat& stat_buffer)
 {
-  if      (is_c_file(filename))   { c_count += stat_buffer.st_size;   }
-  else if (is_asm_file(filename)) { asm_count += stat_buffer.st_size; }
-  else if (is_cpp_file(filename)) { cpp_count += stat_buffer.st_size; }
-  else if (is_psr_file(filename)) { psr_count += stat_buffer.st_size; }
+    if (is_c_file(filename)) {
+        c_count += stat_buffer.st_size;
+    } else if (is_asm_file(filename)) {
+        asm_count += stat_buffer.st_size;
+    } else if (is_cpp_file(filename)) {
+        cpp_count += stat_buffer.st_size;
+    } else if (is_psr_file(filename)) {
+        psr_count += stat_buffer.st_size;
+    }
 }
 
 int main()
 {
-  parse_dir(".", size_tally);
+    parse_dir(".", size_tally);
 
-  unsigned int total_count = asm_count + c_count + cpp_count + psr_count;
+    unsigned int total_count = asm_count + c_count + cpp_count + psr_count;
 
-  cout << "ASM code uses " << asm_count << " bytes. (" << (float)(asm_count*100)/total_count << ")\n"
-       << "C code uses "   << c_count   << " bytes. (" << (float)(c_count*100)/total_count << ")\n"
-       << "C++ code uses " << cpp_count << " bytes. (" << (float)(cpp_count*100)/total_count << ")\n"
-       << "PSR code uses " << psr_count << " bytes. (" << (float)(psr_count*100)/total_count << ")\n"
-       << endl;
-  return(0);
+    cout << "ASM code uses " << asm_count << " bytes. (" << (float)(asm_count * 100) / total_count << ")\n"
+         << "C code uses " << c_count << " bytes. (" << (float)(c_count * 100) / total_count << ")\n"
+         << "C++ code uses " << cpp_count << " bytes. (" << (float)(cpp_count * 100) / total_count << ")\n"
+         << "PSR code uses " << psr_count << " bytes. (" << (float)(psr_count * 100) / total_count << ")\n"
+         << endl;
+    return (0);
 }

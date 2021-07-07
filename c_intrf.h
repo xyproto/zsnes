@@ -95,26 +95,26 @@ extern char const GUIVideoModeNames[][18];
 // Total Number of Video Modes
 extern u4 const NumVideoModes;
 
-extern u1 GUIHQ2X[];   // Hq2x Filter
-extern u1 GUIM7VID[];  // Hires Mode 7
-extern u1 GUINTVID[];  // NTSC Filter
+extern u1 GUIHQ2X[]; // Hq2x Filter
+extern u1 GUIM7VID[]; // Hires Mode 7
+extern u1 GUINTVID[]; // NTSC Filter
 
 #ifdef __MSDOS__
-extern u1 GUI16VID[];  // 16-bit mode
-extern u1 GUI2xVID[];  // 2xSaI/Super Engines
-extern u1 GUIEAVID[];  // DOS Eagle
-extern u1 GUIHSVID[];  // Half/Quarter Scanlines
-extern u1 GUISLVID[];  // Scanlines
-extern u1 GUISSVID[];  // DOS Smallscreen
-extern u1 GUITBVID[];  // DOS Triple Buffering
-extern u1 GUIWSVID[];  // DOS Widescreen
+extern u1 GUI16VID[]; // 16-bit mode
+extern u1 GUI2xVID[]; // 2xSaI/Super Engines
+extern u1 GUIEAVID[]; // DOS Eagle
+extern u1 GUIHSVID[]; // Half/Quarter Scanlines
+extern u1 GUISLVID[]; // Scanlines
+extern u1 GUISSVID[]; // DOS Smallscreen
+extern u1 GUITBVID[]; // DOS Triple Buffering
+extern u1 GUIWSVID[]; // DOS Widescreen
 #else
-extern u1 GUIBIFIL[];  // Bilinear Filter
-extern u1 GUIDSIZE[];  // D Modes
-extern u1 GUIHQ3X[];   // Hq3x Filter
-extern u1 GUIHQ4X[];   // Hq4x Filter
+extern u1 GUIBIFIL[]; // Bilinear Filter
+extern u1 GUIDSIZE[]; // D Modes
+extern u1 GUIHQ3X[]; // Hq3x Filter
+extern u1 GUIHQ4X[]; // Hq4x Filter
 extern u1 GUIKEEP43[]; // Keep 4:3 Ratio
-extern u1 GUIWFVID[];  // Fullscreen
+extern u1 GUIWFVID[]; // Fullscreen
 #endif
 
 #ifdef __UNIXSDL__
@@ -123,9 +123,9 @@ extern u1 GUIRESIZE[]; // SDL Resizable
 
 #ifdef __WIN32__
 extern u1 GUIDSMODE[]; // Win D-Stretched Modes
-extern u1 GUISMODE[];  // Win Stretched Modes
+extern u1 GUISMODE[]; // Win Stretched Modes
 #else
-extern u1 GUII2VID[];  // Interpolation
+extern u1 GUII2VID[]; // Interpolation
 #endif
 
 // Input Device Names

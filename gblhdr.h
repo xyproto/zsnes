@@ -28,12 +28,12 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 // Standard stuff
 
-#include <math.h>
-#include <ctype.h>
 #include "fcntl.h"
-#include <string.h>
+#include <ctype.h>
 #include <errno.h>
+#include <math.h>
 #include <stdbool.h>
+#include <string.h>
 
 // General time.h checking
 
@@ -41,11 +41,11 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <sys/time.h>
 #include <time.h>
 #else
-# if HAVE_SYS_TIME_H
+#if HAVE_SYS_TIME_H
 #include <sys/time.h>
-# else
+#else
 #include <time.h>
-# endif
+#endif
 #endif
 
 // General dirent.h stuff
@@ -53,22 +53,22 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #if HAVE_DIRENT_H
 #include <dirent.h>
 #else
-# if HAVE_SYS_NDIR_H
+#if HAVE_SYS_NDIR_H
 #include <sys/ndir.h>
-# endif
-# if HAVE_SYS_DIR_H
+#endif
+#if HAVE_SYS_DIR_H
 #include <sys/dir.h>
-# endif
-# if HAVE_NDIR_H
+#endif
+#if HAVE_NDIR_H
 #include <ndir.h>
-# endif
+#endif
 #endif
 
 // more standard stuff
 
-#include <stdlib.h>
-#include <stdio.h>
 #include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 // unistd.h stuff
 
@@ -101,16 +101,16 @@ however it's a static value that we can just define */
 #include "SDL.h"
 #include <limits.h>
 #ifndef __BEOS__
-#include <sys/mman.h>
-#include <glob.h>
 #include <arpa/inet.h>
+#include <glob.h>
+#include <sys/mman.h>
 #endif
-#include <sys/stat.h>
+#include <netdb.h>
+#include <netinet/in.h>
 #include <sys/ioctl.h>
 #include <sys/socket.h>
+#include <sys/stat.h>
 #include <sys/types.h>
-#include <netinet/in.h>
-#include <netdb.h>
 #include <utime.h>
 #include <zlib.h>
 #ifndef NO_PNG
@@ -125,6 +125,5 @@ however it's a static value that we can just define */
 #include <sys/filio.h>
 #endif
 #endif
-
 
 #endif
