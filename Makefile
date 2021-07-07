@@ -1,9 +1,11 @@
 CONFIG ?= config.default
 -include $(CONFIG)
 
-ifeq ($(findstring $(ARCH), DOS LINUX OSX WIN),)
-$(error ARCH must be set to one of DOS, LINUX, OSX or WIN. Copy config.template to config.default and uncomment one of the architectures)
-endif
+ARCH ?= LINUX
+
+#ifeq ($(findstring $(ARCH), DOS LINUX OSX WIN),)
+#$(error ARCH must be set to one of DOS, LINUX, OSX or WIN. Copy config.template to config.default and uncomment one of the architectures)
+#endif
 
 BINARY     ?= zsnes
 PSR        ?= parsegen
@@ -17,7 +19,7 @@ ifneq ($(findstring $(ARCH), LINUX OSX),)
 endif
 
 ifdef WITH_SDL
-  SDL_CONFIG ?= sdl-config
+  SDL_CONFIG ?= pkg-config sdl
   ifndef CFLAGS_SDL
     CFLAGS_SDL := $(shell $(SDL_CONFIG) --cflags)
   endif
@@ -40,6 +42,20 @@ ifdef WITH_PNG
   LDFLAGS += $(LDFLAGS_PNG)
 else
   CFGDEFS += -DNO_PNG
+endif
+
+ifdef WITH_AO
+  AO_CONFIG ?= pkg-config ao
+  ifndef CFLAGS_AO
+    CFLAGS_AO := $(shell $(AO_CONFIG) --cflags)
+  endif
+  ifndef LDFLAGS_AO
+    LDFLAGS_AO := $(shell $(AO_CONFIG) --libs)
+  endif
+  CFLAGS += $(CFLAGS_AO)
+  LDFLAGS += $(LDFLAGS_AO)
+else
+  CFGDEFS += -DNO_AO
 endif
 
 SRCS :=
@@ -171,6 +187,9 @@ PSRS += md.psr
 ifdef WITH_DEBUGGER
 SRCS += debugasm.c
 SRCS += debugger.c
+#CFLAGS += -Og -g -ggdb
+#CXXFLAGS += -Og -g -ggdb
+#LDFLAGS += -g
 else
 CFGDEFS += -DNO_DEBUGGER
 endif
@@ -191,6 +210,10 @@ endif
 
 ifdef WITH_OPENGL
 CFGDEFS += -D__OPENGL__
+endif
+
+ifdef WITH_AO
+CFGDEFS += -D__LIBAO__
 endif
 
 ifeq ($(ARCH), DOS)
@@ -244,11 +267,12 @@ endif
 else
 SRCS += mmlib/linux.c
 
-ASMFLAGS += -felf -DELF
+ASMFLAGS += -felf32 -DELF
 
 ifdef WITH_OPENGL
 LDFLAGS += -lGL
 endif
+
 endif
 endif
 
@@ -261,8 +285,11 @@ SRCS += win/safelib.c
 SRCS += win/winintrf.asm
 SRCS += win/winlink.cpp
 
+LDFLAGS += -ldxguid -ldinput -lgdi32 -lole32 -lz
+
 ifdef WITH_OPENGL
 SRCS += win/gl_draw.c
+LDFLAGS += -lopengl32
 endif
 
 PSRS += win/confloc.psr
@@ -271,10 +298,7 @@ ASMFLAGS += -fwin32
 
 CFGDEFS += -D__WIN32__
 
-LDFLAGS += -ldxguid -ldinput -lgdi32 -lole32 -lz
-ifdef WITH_OPENGL
-LDFLAGS += -lopengl32
-endif
+
 endif
 
 HDRS := $(PSRS:.psr=.h)
@@ -286,19 +310,13 @@ ASMFLAGS += $(CFGDEFS)
 ASMFLAGS += -O1 # XXX mandatory, otherwise zsnes breaks
 ASMFLAGS += -w-orphan-labels
 
-CFLAGS += -m32 -mmmx
-CFLAGS += $(CFGDEFS)
-
-CCFLAGS += -std=gnu99
-CCFLAGS += $(CFLAGS)
-
-CXXFLAGS += $(CFLAGS)
-
+CFLAGS += -m32 -mno-sse -fno-inline -mmmx -O1 -march=pentium-mmx -mtune=generic $(CFGDEFS)
+CXXFLAGS += -m32 -mno-sse -fno-inline -mmmx -O1 -march=pentium-mmx -mtune=generic $(CFGDEFS)
 
 .SUFFIXES:
 .SUFFIXES: .asm .c .cpp .d .o
 
-Q ?= @
+#Q ?= @
 
 all: $(BINARY)
 
@@ -317,7 +335,7 @@ $(filter %.o, $(SRCS:.c=.o) $(SRCS:.cpp=.o)): $(HDRS)
 
 .c.o:
 	@echo '===> CC $<'
-	$(Q)$(CC_TARGET) $(CCFLAGS) -c -MMD -o $@ $<
+	$(Q)$(CC_TARGET) $(CFLAGS) -c -MMD -o $@ $<
 
 .cpp.o:
 	@echo '===> CXX $<'
@@ -329,7 +347,7 @@ $(PSR): parsegen.cpp
 
 %.h %.o: %.psr $(PSR)
 	@echo '===> PSR $@'
-	$(Q)./$(PSR) $(CFGDEFS) -gcc $(CC_TARGET) -compile -flags "$(CFLAGS) -O1" -cheader $@ -fname $(*F) $(@:.h=.o) $<
+	$(Q)./$(PSR) $(CFGDEFS) -gcc $(CC_TARGET) -compile -flags '$(CFLAGS) $(EXTRACFLAGS)' -cheader $@ -fname $(*F) $(@:.h=.o) $<
 
 %.h:
 	@true

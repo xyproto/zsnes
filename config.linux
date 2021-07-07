@@ -1,0 +1,26 @@
+ARCH := LINUX
+
+# TODO: FreeBSD has a patch for being able to build without -fcommon
+
+export CFLAGS += -m32 -std=gnu99 -fcommon -O1 -march=pentium-mmx -mno-sse -fno-inline -fno-pic -mtune=generic -mmmx -D_FORTIY_SOURCE=0 -w
+export CXXFLAGS += -m32 -std=gnu++14 -O1 -march=pentium-mmx -mno-sse -fno-inline -fno-pic -mtune=generic -mmmx -D_FORTIFY_SOURCE=0 -w
+
+#WITH_AO       := yes
+#WITH_DEBUGGER := yes
+WITH_JMA      := yes
+WITH_OPENGL   := yes
+WITH_PNG      := yes
+WITH_SDL      := yes
+
+CXX_HOST   := $(CXX)
+CC_TARGET  := $(CC)
+CXX_TARGET := $(CXX)
+
+EXTRACFLAGS := -fno-pic -no-pie -D_FORTIFY_SOURCE=0 -O1 -mno-sse -mtune=generic -march=pentium-mmx -fno-inline -mmmx -w
+
+# X11
+CFLAGS += -pthread -rdynamic -ldl -no-pie -D_FORTIFY_SOURCE=0
+LDFLAGS += -L/usr/lib32 -lX11 -no-pie
+
+# make clean deletes all *.[do], not just used ones
+#CLEAN_MORE := yes

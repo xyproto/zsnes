@@ -22,6 +22,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "../gblhdr.h"
 #include "x11.h"
 
+#include <dlfcn.h>
 #include <SDL_syswm.h>
 
 

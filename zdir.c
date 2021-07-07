@@ -20,13 +20,16 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
 #define _ATFILE_SOURCE
+
+#include <sys/stat.h>
+
 #include "zdir.h"
 #include "zpath.h"
+
 #include <errno.h>
 #include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/stat.h>
 
 #ifndef __UNIXSDL__
 

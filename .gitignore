@@ -1,9 +1,9 @@
 *.[do]
-/cfg.h
-/config.*
-/input.h
-/md.h
-/parsegen
-/win/confloc.h
-/zsnes
-/zsnes.exe
+config.default
+cfg.h
+input.h
+md.h
+parsegen
+win/confloc.h
+zsnes
+zsnes.exe
