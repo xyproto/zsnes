@@ -24,6 +24,7 @@ Config file handler creator by Nach (C) 2005-2007
 #endif
 
 #include <algorithm>
+#include <cstdlib>
 #include <cstring>
 #include <fstream>
 #include <iostream>
