@@ -16,6 +16,12 @@ Installing a desktop shortcut is also possible. A `zsnes.desktop` file can be ge
     install -Dm644 zsnes.png /usr/share/pixmaps/zsnes.png
     install -Dm644 zsnes.desktop /usr/share/applications/zsnes.desktop
 
+### Pull requests
+
+* Pull reqests are welcome!
+* Being able to build and run ZSNES on Linux is a priority.
+* Please have `clang-format` installed and run `./fmt.sh` before submitting pull requests.
+
 ### General info
 
 * License: GPL2
@@ -28,37 +34,37 @@ These are the contents of the text files that were included with the 1.51 releas
 
 ## The ZSNES Team
 
-zsKnight
-_Demo_
-pagefault
-Nach
+* zsKnight
+* _Demo_
+* pagefault
+* Nach
 
 ## Assistant Coders
 
-pharos
-stainless
-grinvader
-Jonas Quinn
-ipher
+* pharos
+* stainless
+* grinvader
+* Jonas Quinn
+* ipher
 
 ## Additional Authors
 
-teuf
-relnev
-prometheus
-theoddone33
-EvilTypeGuy
-StatMat
-MKendora
-hpsolo
-aaronl
-Diablo-D3
+* teuf
+* relnev
+* prometheus
+* theoddone33
+* EvilTypeGuy
+* StatMat
+* MKendora
+* hpsolo
+* aaronl
+* Diablo-D3
 
 ## Miscellaneous
 
-Wilbern Cobb - initial OpenBSD work
-Thorsten "mirabile" Glaser - more OpenBSD integration
-Mitchell "The Khan Artist/Noxious Ninja" Mebane - manpage
+* Wilbern Cobb - initial OpenBSD work
+* Thorsten "mirabile" Glaser - more OpenBSD integration
+* Mitchell "The Khan Artist/Noxious Ninja" Mebane - manpage
 
 ## HOW OPENGL RENDERS THE SNES VIDEO BUFFER
 
@@ -90,7 +96,8 @@ however, add it in yourself by:
      5. correctly binding the glvidbuffer as a texture to a QUAD
 
 There is a old patch that enables these filters and it is located at:
-http://www.students.uiuc.edu/~handuong/opengl.patch2
+
+* [opengl.patch2](http://www.students.uiuc.edu/~handuong/opengl.patch2)
 
 ## KNOWN ISSUES (AND SOME WORK-AROUNDS)
 
@@ -273,11 +280,6 @@ DSP1EMU.C       ; DSP1 C routines (also includes some C4 C routines)
 SA1PROC.ASM     ; SA-1 processing routines
 SA1REGS.ASM     ; SA-1 registers, also includes S-DD1 and SPC7110 routines
 ```
-
-## Guidelines for hacking ZSNES
-
-* Always run minwhite on your file before committing
-* Run cutrtype when modifying assembly files
 
 ## IRC
 
