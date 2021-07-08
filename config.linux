@@ -16,7 +16,5 @@ CXX_HOST   := $(CXX)
 CC_TARGET  := $(CC)
 CXX_TARGET := $(CXX)
 
-EXTRACFLAGS := -fno-pic -no-pie -D_FORTIFY_SOURCE=0 -O1 -mno-sse -mtune=generic -march=pentium-mmx -fno-inline -mmmx -w
-
 CFLAGS += -pthread -rdynamic -ldl -no-pie -D_FORTIFY_SOURCE=0
 LDFLAGS += -L/usr/lib32 -no-pie

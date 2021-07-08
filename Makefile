@@ -190,9 +190,7 @@ PSRS += md.psr
 ifdef WITH_DEBUGGER
 SRCS += debugasm.c
 SRCS += debugger.c
-#CFLAGS += -Og -g -ggdb
-#CXXFLAGS += -Og -g -ggdb
-#LDFLAGS += -g
+LDFLAGS += -lcurses
 else
 CFGDEFS += -DNO_DEBUGGER
 endif
@@ -251,7 +249,7 @@ endif
 
 CFGDEFS += -D__UNIXSDL__
 
-LDFLAGS += -lcurses -lz
+LDFLAGS += -lz
 
 ifeq ($(ARCH), OSX)
 SRCS += mmlib/osx.c
@@ -349,7 +347,7 @@ $(PSR): parsegen.cpp
 
 %.h %.o: %.psr $(PSR)
 	@echo '===> PSR $@'
-	$(Q)./$(PSR) $(CFGDEFS) -gcc $(CC_TARGET) -compile -flags '$(CFLAGS) $(EXTRACFLAGS)' -cheader $@ -fname $(*F) $(@:.h=.o) $<
+	$(Q)./$(PSR) $(CFGDEFS) -gcc $(CC_TARGET) -compile -flags '$(CFLAGS)' -cheader $@ -fname $(*F) $(@:.h=.o) $<
 
 %.h:
 	@true
