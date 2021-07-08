@@ -25,7 +25,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #include <SDL_thread.h>
 #include <stdbool.h>
-
 #include <sys/time.h>
 #include <time.h>
 
@@ -52,6 +51,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #ifdef QT_DEBUGGER
 #include "debugger/load.h"
 #endif
+
+#include <X11/Xlib.h>
 
 void zexit_error();
 
@@ -984,6 +985,8 @@ int startgame()
 {
     static bool ranonce = false;
     int status;
+
+	XInitThreads();
 
     if (!ranonce) {
         ranonce = true;
