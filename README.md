@@ -8,19 +8,22 @@ Running `make` produces a 32-bit ELF executable with MMX and not SSE support (to
 
 Tested on Arch Linux.
 
-### Building
+### Build
 
     make
 
-### Installing
+For other platforms than Linux, copying config.template or config.linux to config.default, then edting config.default, might be needed.
 
-    install -Dm755 zsnes /usr/bin/zsnes
-    install -Dm644 zsnes.1 /usr/share/man/man1/zsnes.1
+### Install
+
+    make install
 
 Installing a desktop shortcut is also possible. A `zsnes.desktop` file can be generated with [gendesk](https://github.com/xyproto/gendesk). If you have a suitable icon named `zsnes.png` these can both be installed with:
 
     install -Dm644 zsnes.png /usr/share/pixmaps/zsnes.png
     install -Dm644 zsnes.desktop /usr/share/applications/zsnes.desktop
+
+For other platforms than Linux, different flags may apply. ZSNES is primarily one executable, but for UNIX-inspired operating systems, the man page might also be nice to have.
 
 ### Pull requests
 
