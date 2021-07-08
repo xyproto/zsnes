@@ -1,4 +1,4 @@
-# ZSNES
+# ZSNES 2
 
 The last release of [ZSNES](http://zsnes.sourceforge.net/) was over 14 years ago. It requires heavy patching and tweaking of compilation flags to build and run on a modern Linux distro.
 
