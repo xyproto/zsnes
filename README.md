@@ -25,7 +25,7 @@ Installing a desktop shortcut is also possible. A `zsnes.desktop` file can be ge
 ### General info
 
 * License: GPL2
-* Version: 1.6.1
+* Version: 2.0.0
 * Fork author: Alexander F. Rødseth &lt;xyproto@archlinux.org&gt;
 
 # Old documentation from ZSNES 1.51
