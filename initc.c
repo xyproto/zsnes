@@ -2314,10 +2314,7 @@ bool loadfileGUI(void)
         OpenSramFile();
         OpenCombFile();
         LoadGameSpecificInput();
-
-        if (!(GUIOn || GUIOn2)) {
-            puts("File opened successfully !");
-        }
+        // The rom file was successfully opened
     } else {
         if (GUIOn || GUIOn2) {
             result = false;

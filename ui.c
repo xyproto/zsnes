@@ -322,9 +322,6 @@ void zstart()
     MMXCheck();
     StartUp();
 
-    // Print welcome message part 2.
-    puts("Use ZSNES -? for command line definitions.\n");
-
 #ifdef __UNIXSDL__
     MultiMouseInit();
 #endif
@@ -470,7 +467,7 @@ void MultiMouseInit()
         while ((entry = readdir_info(input_dir))) {
             if (!strncasecmp(entry->name, "event", strlen("event"))) {
                 if (dirent_access(entry, R_OK)) {
-                    printf("Unable to poll /dev/input/%s. Make sure you have read permissions to it.\n", entry->name);
+                    //printf("no read access: /dev/input/%s\n", entry->name);
                 }
             }
         }
