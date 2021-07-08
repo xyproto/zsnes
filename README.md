@@ -24,9 +24,10 @@ Installing a desktop shortcut is also possible. A `zsnes.desktop` file can be ge
 
 ### Pull requests
 
-* Pull reqests are welcome!
+* Pull reqests are welcome.
+* A port to SDL2 is extra warmely welcome!
 * Being able to build and run ZSNES on Linux is a priority.
-* Please have `clang-format` installed and run `./fmt.sh` before submitting pull requests.
+* Please have `clang-format` installed and run `./fmt.sh` before submitting a pull requests.
 
 ### General info
 
