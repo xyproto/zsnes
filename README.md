@@ -8,6 +8,8 @@ Running `make` produces a 32-bit ELF executable with MMX and not SSE support (to
 
 Tested on Arch Linux.
 
+The long term goal is to also port ZSNES to SDL2.
+
 ### Build
 
     make
@@ -45,7 +47,7 @@ These are the contents of the text files that were included with the 1.51 releas
 ## The ZSNES Team
 
 * zsKnight
-* _Demo_
+* `_Demo_`
 * pagefault
 * Nach
 
@@ -76,7 +78,7 @@ These are the contents of the text files that were included with the 1.51 releas
 * Thorsten "mirabile" Glaser - more OpenBSD integration
 * Mitchell "The Khan Artist/Noxious Ninja" Mebane - manpage
 
-## HOW OPENGL RENDERS THE SNES VIDEO BUFFER
+## How OpenGL renders the SNES video buffer
 
 The SNES video buffer has dimensions 288x224 (sometimes 288x239 for
 certain games; however I have not come across any). The first 16 and last
@@ -88,7 +90,7 @@ glvidbuffer. glvidbuffer is then turned into a texture that gets bound to
 a QUAD whose size depends on whether ZSNES uses aspect ratio to display
 each frame.
 
-## HI-RES FILTERS WITH OPENGL
+## Hi-res filters with OpenGL
 
 The video mode selection is taken care of by SDL, including full
 screen mode. The current code does not allow for many hi-res filter
@@ -98,30 +100,26 @@ copy640x480x16bwin() causes memory corruption and sometimes segfaults when
 you exit ZSNES. For this reason, the filters have been left out. You can,
 however, add it in yourself by:
 
-     1. allocating enough memory space for glvidbuffer (use realloc)
-     2. assign glvidbuffer to the destination pointer SurfBufD (instead of
-        surface->pixels)
-     3. setting Temp1 to surface->pitch, i.e. Temp1 = 2*SurfaceX
-     4. calling copy640x480x16bwin()
-     5. correctly binding the glvidbuffer as a texture to a QUAD
+1. allocating enough memory space for glvidbuffer (use realloc)
+2. assign glvidbuffer to the destination pointer SurfBufD (instead of
+   surface->pixels)
+3. setting Temp1 to surface->pitch, i.e. Temp1 = 2*SurfaceX
+4. calling copy640x480x16bwin()
+5. correctly binding the glvidbuffer as a texture to a QUAD
 
 There is a old patch that enables these filters and it is located at:
 
 * [opengl.patch2](http://www.students.uiuc.edu/~handuong/opengl.patch2)
 
-## KNOWN ISSUES (AND SOME WORK-AROUNDS)
+## Known issues (and some work-arounds)
 
-- after many video mode switches (all windowed), switching to full screen
+- After many video mode switches (all windowed), switching to full screen
   then back to window mode cases an SDL parachute exit; try not to use too
   many video mode changes, and restart ZSNES every once in a while if you
   are just testing out video modes
 
-- segfault after having compiled the source -- this might be due to an old
+- Segfault after having compiled the source -- this might be due to an old
   zguicfg.dat file; delete this and see if the problem gets fixed
-
-## TODO
-
-- [ ] Use something like SDL_GL_UpdateRects with hi-res filters
 
 ## File List/Information
 
