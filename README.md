@@ -4,7 +4,7 @@ The last release of [ZSNES](http://zsnes.sourceforge.net/) was over 14 years ago
 
 This is a fork of ZSNES that aims to solve this.
 
-Running `make` produces a 32-bit ELF executable with MMX and not SSE support (to play nicely with the 32-bit Assembly code that parts of Zsnes is written in).
+Running `make` produces a 32-bit ELF executable with MMX and not SSE support (to play nicely with the 32-bit Assembly code that parts of ZSNES are written in).
 
 Tested on Arch Linux.
 
