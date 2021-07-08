@@ -1,12 +1,18 @@
-# ZSNES
+# Zsnes
 
-This is a fork of [ZSNES](http://zsnes.sourceforge.net/), for making it build and run on Linux.
+The last release of [Zsnes](http://zsnes.sourceforge.net/) was over 14 years ago. It requires heavy patching and tweaking of compilation flags to build and run on a modern Linux distro.
+
+This is a fork of Zsnes that aims to solve this.
+
+Running `make` produces a 32-bit ELF executable with MMX and not SSE support (to play nicely with the 32-bit Assembly code that parts of Zsnes is written in).
+
+Currently, it's only tested on Arch Linux.
 
 ### Building
 
     make
 
-### Installation
+### Installing
 
     install -Dm755 zsnes /usr/bin/zsnes
     install -Dm644 zsnes.1 /usr/share/man/man1/zsnes.1
@@ -19,7 +25,7 @@ Installing a desktop shortcut is also possible. A `zsnes.desktop` file can be ge
 ### Pull requests
 
 * Pull reqests are welcome!
-* Being able to build and run ZSNES on Linux is a priority.
+* Being able to build and run Zsnes on (Arch) Linux is a priority.
 * Please have `clang-format` installed and run `./fmt.sh` before submitting pull requests.
 
 ### General info
