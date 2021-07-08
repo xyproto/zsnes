@@ -14,6 +14,9 @@ CXX_HOST   ?= $(CXX)
 CC_TARGET  ?= $(CC)
 CXX_TARGET ?= $(CXX)
 
+DESTDIR ?=
+PREFIX ?= /usr
+
 ifneq ($(findstring $(ARCH), LINUX OSX),)
 	WITH_SDL := yes
 endif
@@ -387,3 +390,7 @@ info:
 	@echo "CCFLAGS       = $(CCFLAGS)"
 	@echo "CXXFLAGS      = $(CXXFLAGS)"
 	@echo "LDFLAGS       = $(LDFLAGS)"
+
+install:
+	install -Dm755 zsnes '$(DESTDIR)$(PREFIX)/bin/zsnes'
+	install -Dm644 linux/zsnes.1 '$(DESTDIR)$(PREFIX)/share/man/man1/zsnes.1'
