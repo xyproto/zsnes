@@ -36,47 +36,54 @@ For other platforms than Linux, different flags may apply. ZSNES is primarily on
 
 ### General info
 
+Thanks to Christoph Mallon for the commits that this fork is based on.
+
 * License: GPL2
 * Version: 2.0.2
 * Fork author: Alexander F. Rødseth &lt;xyproto@archlinux.org&gt;
 
-# Old documentation from ZSNES 1.51
+# Old documentation
 
-These are the contents of the text files that were included with the 1.51 release of Zsnes:
+## List of contributors
 
-## The ZSNES Team
+These are the contributors listed in the text files that are included with the 1.51 release of ZSNES, and on the zsnes.com webpage:
 
 * zsKnight
 * `_Demo_`
 * pagefault
 * Nach
-
-## Assistant Coders
-
-* pharos
-* stainless
 * grinvader
+* Deathlike2
 * Jonas Quinn
-* ipher
-
-## Additional Authors
-
+* blargg
+* Pharos
 * teuf
 * relnev
 * prometheus
 * theoddone33
 * EvilTypeGuy
+* stainless
+* aaronl
+* MKendora
+* kode54
+* zinx
+* amit
+* Khan Artist
+* hpsolo
+* Kreed
+* Neviksti
+* ipher
+* relnev
 * StatMat
 * MKendora
 * hpsolo
 * aaronl
 * Diablo-D3
+* Wilbern Cobb
+* Thorsten "mirabile" Glaser
+* Mitchell "The Khan Artist/Noxious Ninja" Mebane
 
-## Miscellaneous
-
-* Wilbern Cobb - initial OpenBSD work
-* Thorsten "mirabile" Glaser - more OpenBSD integration
-* Mitchell "The Khan Artist/Noxious Ninja" Mebane - manpage
+Contents from the text files that came with ZSNES 1.51:
 
 ## How OpenGL renders the SNES video buffer
 
