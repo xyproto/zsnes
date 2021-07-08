@@ -16,9 +16,11 @@ Installing a desktop shortcut is also possible. A `zsnes.desktop` file can be ge
     install -Dm644 zsnes.png /usr/share/pixmaps/zsnes.png
     install -Dm644 zsnes.desktop /usr/share/applications/zsnes.desktop
 
-### License
+### General info
 
-* GPL2
+* License: GPL2
+* Version: 1.6.0
+* Fork author: Alexander F. Rødseth &lt;xyproto@archlinux.org&gt;
 
 # Old documentation from ZSNES 1.51
 
