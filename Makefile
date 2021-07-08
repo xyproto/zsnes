@@ -244,7 +244,6 @@ SRCS += linux/sdlintrf.asm
 SRCS += linux/sdllink.c
 SRCS += linux/sockserv.c
 SRCS += linux/sw_draw.c
-SRCS += linux/x11.c
 
 ifdef WITH_OPENGL
 SRCS += linux/gl_draw.c

@@ -44,7 +44,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "audio.h"
 #include "safelib.h"
 #include "sdllink.h"
-#include "x11.h"
 
 #ifdef __OPENGL__
 #include "gl_draw.h"
@@ -471,10 +470,6 @@ int Main_Proc()
         default:
             break;
         }
-    }
-
-    if (DisableScreenSaver && !ScreenSaverSuspended) {
-        CircumventXScreenSaver();
     }
 
     return TRUE;
@@ -1280,10 +1275,7 @@ void initwinvideo(void)
         InitSound();
         InitInput();
 
-        X11_Init();
-        if (DisableScreenSaver) {
-            ScreenSaverSuspended = XScreenSaverOff();
-        }
+        //SDL_DisableScreenSaver();
     }
 
     if (((PrevStereoSound != StereoSound) || (PrevSoundQuality != SoundQuality))) {
