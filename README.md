@@ -289,10 +289,6 @@ SA1PROC.ASM     ; SA-1 processing routines
 SA1REGS.ASM     ; SA-1 registers, also includes S-DD1 and SPC7110 routines
 ```
 
-## IRC
-
-    #ZSNES on irc.libera.chat
-
 ## Issues
 
 All Ports:
