@@ -1,4 +1,0 @@
-Guidelines for hacking ZSNES:
-
-* Always run minwhite on your file before committing
-* Run cutrtype when modifying assembly files
