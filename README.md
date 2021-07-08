@@ -37,7 +37,7 @@ For other platforms than Linux, different flags may apply. ZSNES is primarily on
 ### General info
 
 * License: GPL2
-* Version: 2.0.0
+* Version: 2.0.1
 * Fork author: Alexander F. Rødseth &lt;xyproto@archlinux.org&gt;
 
 # Old documentation from ZSNES 1.51
