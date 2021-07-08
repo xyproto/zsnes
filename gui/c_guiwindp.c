@@ -9,7 +9,7 @@
 #include "../input.h"
 #include "../macros.h"
 #include "../ui.h"
-#include "../version.h"
+#include "../ver.h"
 #include "../zmovie.h"
 #include "../zpath.h"
 #include "../zstate.h"

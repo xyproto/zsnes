@@ -49,7 +49,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "initc.h"
 #include "input.h"
 #include "ui.h"
-#include "version.h"
+#include "ver.h"
 #include "zloader.h"
 #include "zpath.h"
 

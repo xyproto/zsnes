@@ -137,7 +137,7 @@ SRCS += mmlib/mm.c
 SRCS += patch.c
 SRCS += ui.c
 SRCS += vcache.asm
-SRCS += version.c
+SRCS += ver.c
 SRCS += video/2xsaiw.asm
 SRCS += video/c_2xsaiw.c
 SRCS += video/c_copyvid.c
@@ -392,4 +392,4 @@ info:
 
 install:
 	install -Dm755 zsnes '$(DESTDIR)$(PREFIX)/bin/zsnes'
-	install -Dm644 linux/zsnes.1 '$(DESTDIR)$(PREFIX)/share/man/man1/zsnes.1'
+	install -Dm644 man/zsnes.1 '$(DESTDIR)$(PREFIX)/share/man/man1/zsnes.1'
