@@ -83,7 +83,7 @@ These are the contributors listed in the text files that are included with the 1
 * Thorsten "mirabile" Glaser
 * Mitchell "The Khan Artist/Noxious Ninja" Mebane
 
-Contents from the text files that came with ZSNES 1.51:
+Additional info from the text files that came with ZSNES 1.51:
 
 ## How OpenGL renders the SNES video buffer
 
@@ -113,8 +113,6 @@ however, add it in yourself by:
 3. setting Temp1 to surface->pitch, i.e. Temp1 = 2*SurfaceX
 4. calling copy640x480x16bwin()
 5. correctly binding the glvidbuffer as a texture to a QUAD
-
-There is a old patch that enables these filters and it is located at:
 
 * [opengl.patch2](http://www.students.uiuc.edu/~handuong/opengl.patch2)
 
