@@ -14,7 +14,7 @@ The long term goal is to also port ZSNES to SDL2.
 
     make
 
-For other platforms than Linux, copying config.template or config.linux to config.default, then edting config.default, might be needed.
+For other platforms than Linux, copying `config.template` or `config.linux` to `config.default`, then editing `config.default`, might be needed.
 
 ### Install
 
