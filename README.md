@@ -29,7 +29,7 @@ For other platforms than Linux, different flags may apply. ZSNES is primarily on
 
 ### Pull requests
 
-* Pull reqests are welcome.
+* Pull requests are welcome.
 * A port to SDL2 is extra warmely welcome!
 * Being able to build and run ZSNES on Linux is a priority.
 * Please have `clang-format` installed and run `./fmt.sh` before submitting a pull requests.
