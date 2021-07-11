@@ -16,6 +16,12 @@ The long term goal is to also port ZSNES to SDL2.
 
 For other platforms than Linux, copying `config.template` or `config.linux` to `config.default`, then editing `config.default`, might be needed.
 
+### Debug build
+
+Make sure `~/roms/snes/example.sfc` exists and is a valid SNES rom. Also make sure that `gdb` is installed. Then:
+
+    make debug
+
 ### Install
 
     make install
