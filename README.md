@@ -22,6 +22,8 @@ Make sure `~/roms/snes/example.sfc` exists and is a valid SNES rom. Also make su
 
     make clean debug
 
+Then type `r` in gdb to run zsnes with the example ROM. Use ie. `bt full` to see the backtrace if ZSNES crashes.
+
 ### Install
 
     make install
