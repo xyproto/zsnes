@@ -460,7 +460,6 @@ void MultiMouseInit()
 #ifdef __linux__
     DIR* input_dir;
 
-    puts("Starting Mouse detection.");
     input_dir = opendir("/dev/input");
     if (input_dir) {
         struct dirent_info* entry;
@@ -473,11 +472,13 @@ void MultiMouseInit()
         }
         closedir(input_dir);
     } else {
-        puts("/dev/input does not exist or is inaccessable");
+        puts("mouse detection: /dev/input does not exist or is inaccessable");
     }
 #endif
     MouseCount = ManyMouse_Init();
-    printf("ManyMouse: %d mice detected.\n", MouseCount);
+    if (MouseCount > 0) {
+		printf("ManyMouse: %d mice detected.\n", MouseCount);
+    }
 
     if (MouseCount > 1) {
         MouseMoveX[0] = MouseMoveX[1] = 0;

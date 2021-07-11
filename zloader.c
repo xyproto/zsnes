@@ -90,7 +90,6 @@ static void display_start_message()
 {
     size_t lines_out = 0;
     bool tty = isatty(fileno(stdout));
-    put_line("ZSNES " ZVER "\n");
 }
 
 static void display_version()

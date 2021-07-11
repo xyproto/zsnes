@@ -933,7 +933,7 @@ BOOL InitJoystickInput()
     SDL_InitSubSystem(SDL_INIT_JOYSTICK);
     max_num_joysticks = SDL_NumJoysticks();
     if (!max_num_joysticks) {
-        printf("ZSNES could not find any joysticks.\n");
+        printf("No joysticks found.\n");
         SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
         return FALSE;
     }

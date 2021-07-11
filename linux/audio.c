@@ -309,7 +309,7 @@ static int SoundInit_sdl()
   }
 
   sound_sdl = true;
-  printf("\nAudio Opened.\nDriver: Simple DirectMedia Layer output\nChannels: %u\nRate: %u\n\n", wanted.channels, wanted.freq);
+  printf("SDL audio: %u channels, %u Hz\n", wanted.channels, wanted.freq);
   return(true);
 }
 
@@ -348,4 +348,3 @@ void DeinitSound()
   SDL_CloseAudio();
   if (sdl_audio_buffer) { free(sdl_audio_buffer); }
 }
-
