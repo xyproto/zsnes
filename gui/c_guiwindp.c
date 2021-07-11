@@ -1996,26 +1996,23 @@ void DisplayGUIAbout(void)
     GUIDrawWindowBox(11, "ABOUT");
     if (EEgg != 1) {
         GUIDisplayText(11, 6, 16, GUIGUIAboutTextA1); // Text
-        GUIDisplayText(11, 6, 26, GUIGUIAboutTextA2);
-        GUIDisplayTextY(11, 6, 36, "CODED BY:");
-        GUIDisplayText(11, 6, 46, "    ZSKNIGHT      _DEMO_");
-        GUIDisplayText(11, 6, 56, "    PAGEFAULT     NACH");
-        GUIDisplayTextY(11, 6, 66, "ASSISTANT CODERS:");
-        GUIDisplayText(11, 6, 76, "    PHAROS        STATMAT");
-        GUIDisplayText(11, 6, 86, "    TEUF          HPSOLO");
-        GUIDisplayText(11, 6, 96, "    THEODDONE33   SILOH");
-        GUIDisplayText(11, 6, 106, "    IPHER         GRINVADER");
-        GUIDisplayText(11, 6, 116, "    JONAS QUINN   DEATHLIKE");
-        GUIDisplayText(11, 6, 131, "ZSNES comes with ABSOLUTELY");
-        GUIDisplayText(11, 6, 141, "NO WARRANTY.  This is free");
-        GUIDisplayText(11, 6, 151, "software, and you are welcome");
-        GUIDisplayText(11, 6, 161, "to redistribute it under");
-        GUIDisplayText(11, 6, 171, "certain conditions; please");
-        GUIDisplayText(11, 6, 181, "read 'LICENSE.TXT'");
-        GUIDisplayText(11, 6, 191, "thoroughly before doing so.");
+        //GUIDisplayText(11, 6, 36, GUIGUIAboutTextA2);
+        GUIDisplayTextY(11, 6, 46, "CODED BY:");
+        GUIDisplayText(11, 6, 56, "    ZSKNIGHT      _DEMO_");
+        GUIDisplayText(11, 6, 66, "    PAGEFAULT     NACH");
+        GUIDisplayTextY(11, 6, 76, "ASSISTANT CODERS:");
+        GUIDisplayText(11, 6, 86, "    PHAROS        STATMAT");
+        GUIDisplayText(11, 6, 96, "    TEUF          HPSOLO");
+        GUIDisplayText(11, 6, 106, "    THEODDONE33   SILOH");
+        GUIDisplayText(11, 6, 116, "    IPHER         GRINVADER");
+        GUIDisplayText(11, 6, 126, "    JONAS QUINN   DEATHLIKE");
+        GUIDisplayText(11, 15, 151, "ZSNES is released under");
+        GUIDisplayText(11, 15, 161, "the GPL2 license. See the");
+        GUIDisplayText(11, 15, 171, "contents of the `COPYING`");
+        GUIDisplayText(11, 15, 181, "file for more information.");
 
-        DrawGUIButton(11, 90, 22, 175, 32, "WWW.ZSNES.COM", 65, 0, 0);
-        DrawGUIButton(11, 90, 33, 175, 43, "DOCUMENTATION", 66, 0, 0);
+        DrawGUIButton(11, 90, 27, 175, 37, "WWW.ZSNES.COM", 65, 0, 0);
+        DrawGUIButton(11, 90, 38, 175, 48, "DOCUMENTATION", 66, 0, 0);
     } else { // Playground
         GUIDisplayText(11, 42, 36, "HIDDEN MESSAGE!");
         GUIDisplayText(11, 30, 96, "PRESS 'E' TO RETURN");
