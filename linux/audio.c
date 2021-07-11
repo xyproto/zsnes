@@ -145,7 +145,7 @@ static void* SoundThread_ao(void* useless)
         //The while() is there to prevent error codes from breaking havoc
         while (!samples_waiting) {
             clock_gettime(CLOCK_MONOTONIC, &to);
-            to.tv_sec += 5;
+            to.tv_sec += 10;
             pthread_cond_timedwait(&audio_wait, &audio_mutex, &to); //Wait for signal
         }
 
