@@ -21,10 +21,13 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #ifdef __UNIXSDL__
 #include "gblhdr.h"
+
 #ifdef __LIBAO__
 #include <ao/ao.h>
-#endif
+#endif // __LIBAO__
+
 #else
+
 #define _POSIX_
 #include <ctype.h>
 #include <limits.h>
@@ -32,6 +35,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+
 #ifdef __WIN32__
 #include <direct.h>
 #include <windows.h>
@@ -39,8 +43,10 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <io.h>
 #else
 #include <unistd.h>
-#endif
-#endif
+#endif // __WIN32__
+
+#endif // __UNIXSDL__
+
 #include "asm_call.h"
 #include "c_intrf.h"
 #include "cfg.h"
