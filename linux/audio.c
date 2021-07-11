@@ -185,7 +185,7 @@ static int SoundInit_ao()
     audio_device = ao_open_live(driver_id, &driver_format, 0);
     if (audio_device) {
         ao_info* di = ao_driver_info(driver_id);
-        printf("\nAudio Opened.\nDriver: %s\nChannels: %u\nRate: %u\n\n", di->name, driver_format.channels, driver_format.rate);
+        printf("%s: %u channels, %u Hz\n", di->name, driver_format.channels, driver_format.rate);
     } else {
         SoundEnabled = 0;
         puts("Audio Open Failed");
