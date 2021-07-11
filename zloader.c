@@ -74,17 +74,13 @@ extern char* STCart2;
 extern unsigned int MovieForcedLength;
 void zstart();
 void zexit_error();
+
 #ifdef __WIN32__
 void InitDebugger();
 #endif
 
-#define put_line(x)                              \
-    if (tty && (lines_out == 22)) {              \
-        puts("  -- Press Enter to Continue --"); \
-        getchar();                               \
-        lines_out = 0;                           \
-    }                                            \
-    puts(x);                                     \
+#define put_line(x) \
+    puts(x);        \
     lines_out++;
 
 char* ZVERSION = ZVER;
