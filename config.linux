@@ -2,9 +2,9 @@ ARCH := LINUX
 
 # TODO: FreeBSD has a patch for being able to build without -fcommon
 
-export CFLAGS += -m32 -std=gnu99 -fcommon -O1 -march=pentium-mmx -fno-inline -fno-pic -mtune=generic -mmmx -D_FORTIY_SOURCE=0 -mno-sse -w
-export CXXFLAGS += -m32 -std=gnu++14 -O1 -march=pentium-mmx -fno-inline -fno-pic -mtune=generic -mmmx -D_FORTIFY_SOURCE=0 -mno-sse -w
-export LDFLAGS += -Wl,--as-needed
+export CFLAGS += -m32 -pthread -rdynamic -no-pie -std=gnu99 -fcommon -O1 -march=pentium-mmx -fno-inline -fno-pic -mtune=generic -mmmx -D_FORTIY_SOURCE=0 -L/usr/lib32 -mno-sse -mno-sse2 -w
+export CXXFLAGS += -m32 -pthread -rdynamic -no-pie -std=gnu++14 -O1 -march=pentium-mmx -fno-inline -fno-pic -mtune=generic -mmmx -D_FORTIFY_SOURCE=0 -L/usr/lib32 -mno-sse -mno-sse2 -w
+export LDFLAGS += -Wl,--as-needed -no-pie -ldl -lX11 -L/usr/lib32
 
 #WITH_AO       := yes
 #WITH_DEBUGGER := yes
@@ -15,7 +15,3 @@ WITH_PNG      := yes
 CXX_HOST   := $(CXX)
 CC_TARGET  := $(CC)
 CXX_TARGET := $(CXX)
-
-# X11 related
-CFLAGS += -pthread -rdynamic -D_FORTIFY_SOURCE=0
-LDFLAGS += -L/usr/lib32 -no-pie -ldl -lX11

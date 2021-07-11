@@ -312,8 +312,8 @@ ASMFLAGS += $(CFGDEFS)
 ASMFLAGS += -O1 # XXX mandatory, otherwise zsnes breaks
 ASMFLAGS += -w-orphan-labels
 
-CFLAGS += -m32 -fno-inline -mmmx -O1 -march=pentium-mmx -mtune=generic -mno-sse $(CFGDEFS)
-CXXFLAGS += -m32 -fno-inline -mmmx -O1 -march=pentium-mmx -mtune=generic -mno-sse $(CFGDEFS)
+CFLAGS += -m32 -fno-inline -mmmx -O1 -march=pentium-mmx -mtune=generic -mno-sse -mno-sse2 $(CFGDEFS)
+CXXFLAGS += -m32 -fno-inline -mmmx -O1 -march=pentium-mmx -mtune=generic -mno-sse -mno-sse2 $(CFGDEFS)
 
 .SUFFIXES:
 .SUFFIXES: .asm .c .cpp .d .o
