@@ -6,7 +6,7 @@ export CFLAGS += -m32 -pthread -rdynamic -no-pie -std=gnu99 -fcommon -O1 -march=
 export CXXFLAGS += -m32 -pthread -rdynamic -no-pie -std=gnu++14 -O1 -march=pentium-mmx -fno-inline -fno-pic -mtune=generic -mmmx -D_FORTIFY_SOURCE=0 -L/usr/lib32 -mno-sse -mno-sse2 -w
 export LDFLAGS += -Wl,--as-needed -no-pie -ldl -lX11 -L/usr/lib32
 
-#WITH_AO       := yes
+WITH_AO       := yes
 #WITH_DEBUGGER := yes
 WITH_JMA      := yes
 WITH_OPENGL   := yes
