@@ -83,9 +83,9 @@ These are the contributors listed in the text files that are included with the 1
 * Thorsten "mirabile" Glaser
 * Mitchell "The Khan Artist/Noxious Ninja" Mebane
 
-Additional info from the text files that came with ZSNES 1.51:
+## Additional info from the text files that came with ZSNES 1.51:
 
-## How OpenGL renders the SNES video buffer
+### How OpenGL renders the SNES video buffer
 
 The SNES video buffer has dimensions 288x224 (sometimes 288x239 for
 certain games; however I have not come across any). The first 16 and last
@@ -97,36 +97,33 @@ glvidbuffer. glvidbuffer is then turned into a texture that gets bound to
 a QUAD whose size depends on whether ZSNES uses aspect ratio to display
 each frame.
 
-## Hi-res filters with OpenGL
+### Hi-res filters with OpenGL
 
 The video mode selection is taken care of by SDL, including full
 screen mode. The current code does not allow for many hi-res filter
 options. While it is not difficult to implement the hi-res features using
-the current filtering code (in copyvwin.asm), it appears that the code for
-copy640x480x16bwin() causes memory corruption and sometimes segfaults when
+the current filtering code (in `copyvwin.asm`), it appears that the code for
+`copy640x480x16bwin()` causes memory corruption and sometimes segfaults when
 you exit ZSNES. For this reason, the filters have been left out. You can,
 however, add it in yourself by:
 
-1. allocating enough memory space for glvidbuffer (use realloc)
-2. assign glvidbuffer to the destination pointer SurfBufD (instead of
-   surface->pixels)
-3. setting Temp1 to surface->pitch, i.e. Temp1 = 2*SurfaceX
-4. calling copy640x480x16bwin()
-5. correctly binding the glvidbuffer as a texture to a QUAD
+1. Allocating enough memory space for `glvidbuffer` (use `realloc`)
+2. Assign `glvidbuffer` to the destination pointer SurfBufD (instead of `surface->pixels`)
+3. Setting `Temp1` to `surface->pitch`, i.e. `Temp1 = 2*SurfaceX`
+4. Calling `copy640x480x16bwin()`
+5. Correctly binding the glvidbuffer as a texture to a QUAD
 
-* [opengl.patch2](http://www.students.uiuc.edu/~handuong/opengl.patch2)
+### Known issues and some work-arounds
 
-## Known issues (and some work-arounds)
-
-- After many video mode switches (all windowed), switching to full screen
+* After many video mode switches (all windowed), switching to full screen
   then back to window mode cases an SDL parachute exit; try not to use too
   many video mode changes, and restart ZSNES every once in a while if you
   are just testing out video modes
 
-- Segfault after having compiled the source -- this might be due to an old
-  zguicfg.dat file; delete this and see if the problem gets fixed
+* Segfault after having compiled the source -- this might be due to an old
+  `zguicfg.dat` file; delete this and see if the problem gets fixed.
 
-## File List/Information
+### File list
 
 ```
 ; Porting Routine Files
@@ -144,22 +141,24 @@ copyvwin.asm    ; Video Blitter for D modes
 
 -LINUX-
 copyvwin.asm	; Video Blitter for D modes
-gl_draw.c	; OpenGL routines for drawing the video buffer
-gl_draw.h	;
-protect.c	;
-sdllink.c	; SDL routines (video, input, sound init)
+gl_draw.c	   ; OpenGL routines for drawing the video buffer
+gl_draw.h   	;
+protect.c	   ;
+sdllink.c	   ; SDL routines (video, input, sound init)
 sdlintrf.asm	; Interface routines
-sw_draw.c	; Software (via SDL) drawing routines
-sw_draw.h	;
-zfilew.c	;
-zipxw.c		;
-zloaderw.c	;
-zsnes.1		; man page for zsnes
-ztcp.c		; TCP/IP (Netplay)
+sw_draw.c	   ; Software (via SDL) drawing routines
+sw_draw.h	   ;
+zfilew.c	    ;
+zipxw.c 		;
+zloaderw.c  	;
+ztcp.c	  	; TCP/IP (Netplay)
+
+-MAN-
+zsnes.1         ; man page for zsnes
 
 ; ----------------------------------------------------------------
 ; The following are generally compiled for both ports, but they
-;   are not necessarily used by both
+; are not necessarily used by both
 ; ----------------------------------------------------------------
 
 ; General Stuff
@@ -294,28 +293,28 @@ SA1PROC.ASM     ; SA-1 processing routines
 SA1REGS.ASM     ; SA-1 registers, also includes S-DD1 and SPC7110 routines
 ```
 
-## Issues
+### Issues
 
-All Ports:
+#### All ports
 
 - Recode netplay feature, once core is not random anymore.
 
-SDL Port:
+#### SDL Port
 
 - Low performance due to differences in surface sizes (internal and
   SDL), make both the same size.
-- OpenGL code is awful, uncomprehensible, stupid and awful again.
+- OpenGL code is awful, incomprehensible, stupid and awful again.
   We must fix it.
 - Support overscan in games like DQ5.
 
-Windows Port:
+#### Windows port
 
 - OpenGL, or Direct3D support would be nice (we have the source for
   OpenGL but it needs to be integrated into the main tree, any takers?)
 - Windows port should be converted to Direct3D from DirectDraw 7.0.
 - Windows sound code needs to be rewritten to reflect the SDL port.
 
-Compatibility
+#### Compatibility
 
 - Game not working - Guikuden 1, Cu-On-Pa (and loads more)
 - Graphics Glitches - Killer Instinct (black background), FF3 (Range Time Over
@@ -325,13 +324,13 @@ Compatibility
       SFX1/2 (95% done), Seta 11 (25% done),
       Seta 18 (1% done), BS-X (50% done).
 
-Timing engine
+#### Timing engine
 
 - Convert counter to 32-bit. (assigned to pagefault).
 - Fix 65816 timing and take into consideration cycle differences in
   8/16-bit mode, branches etc.
 
-Graphics Engine
+#### Graphics Engine
 
-- Fix some windowing/subscreen sprite problems that are still present in
+- Fix some windowing/sub-screen sprite problems that are still present in
   the new graphics engine. Probably pagefault will have to do this.
