@@ -141,6 +141,7 @@ void SoundWrite_ao()
 static void *SoundThread_ao(void *useless)
 {
   unsigned int samples;
+  struct timespec to;
 
   for (;;)
   {
@@ -149,7 +150,9 @@ static void *SoundThread_ao(void *useless)
     //The while() is there to prevent error codes from breaking havoc
     while (!samples_waiting)
     {
-      pthread_cond_wait(&audio_wait, &audio_mutex); //Wait for signal
+        clock_gettime(CLOCK_MONOTONIC, &to);
+        to.tv_sec += 5;
+        pthread_cond_timedwait(&audio_wait, &audio_mutex, &to); //Wait for signal
     }
 
     samples = samples_waiting;
