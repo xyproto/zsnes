@@ -39,7 +39,7 @@ For other platforms than Linux, different flags may apply. ZSNES is primarily on
 Thanks to Christoph Mallon for the commits that this fork is based on.
 
 * License: GPL2
-* Version: 2.0.2
+* Version: 2.0.3
 * Fork author: Alexander F. Rødseth &lt;xyproto@archlinux.org&gt;
 
 # Old documentation
