@@ -20,7 +20,7 @@ For other platforms than Linux, copying `config.template` or `config.linux` to `
 
 Make sure `~/roms/snes/example.sfc` exists and is a valid SNES rom. Also make sure that `gdb` is installed. Then:
 
-    make debug
+    make clean debug
 
 ### Install
 
