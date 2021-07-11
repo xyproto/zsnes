@@ -401,10 +401,10 @@ void DSP4_OP01()
         // scan next command
         DSP4.in_count = 2;
         DSP4_WAIT(1)
-        resume1 :
+    resume1:
 
-            // check for termination
-            DSP4_vars.distance
+        // check for termination
+        DSP4_vars.distance
             = DSP4_READ_WORD();
         if (DSP4_vars.distance == -0x8000)
             break;
@@ -413,9 +413,9 @@ void DSP4_OP01()
         if ((uint16_t)DSP4_vars.distance == 0x8001) {
             DSP4.in_count = 6;
             DSP4_WAIT(2)
-            resume2 :
+        resume2:
 
-                DSP4_vars.distance
+            DSP4_vars.distance
                 = DSP4_READ_WORD();
             DSP4_vars.view_turnoff_x = DSP4_READ_WORD();
             DSP4_vars.view_turnoff_dx = DSP4_READ_WORD();
@@ -434,10 +434,10 @@ void DSP4_OP01()
         // already have 2 bytes read
         DSP4.in_count = 6;
         DSP4_WAIT(3)
-        resume3 :
+    resume3:
 
-            // inspect inputs
-            DSP4_vars.world_ddy
+        // inspect inputs
+        DSP4_vars.world_ddy
             = DSP4_READ_WORD();
         DSP4_vars.world_ddx = DSP4_READ_WORD();
         DSP4_vars.view_yofsenv = DSP4_READ_WORD();
@@ -619,10 +619,10 @@ void DSP4_OP07()
         // scan next command
         DSP4.in_count = 2;
         DSP4_WAIT(1)
-        resume1 :
+    resume1:
 
-            // check for opcode termination
-            DSP4_vars.distance
+        // check for opcode termination
+        DSP4_vars.distance
             = DSP4_READ_WORD();
         if (DSP4_vars.distance == -0x8000)
             break;
@@ -630,10 +630,10 @@ void DSP4_OP07()
         // already have 2 bytes in queue
         DSP4.in_count = 10;
         DSP4_WAIT(2)
-        resume2 :
+    resume2:
 
-            // inspect inputs
-            DSP4_vars.view_y2
+        // inspect inputs
+        DSP4_vars.view_y2
             = DSP4_READ_WORD();
         DSP4_vars.view_dy = DSP4_READ_WORD() * DSP4_vars.distance >> 15;
         DSP4_vars.view_x2 = DSP4_READ_WORD();
@@ -787,10 +787,10 @@ void DSP4_OP08()
         // scan next command
         DSP4.in_count = 2;
         DSP4_WAIT(1)
-        resume1 :
+    resume1:
 
-            // terminate op
-            DSP4_vars.distance
+        // terminate op
+        DSP4_vars.distance
             = DSP4_READ_WORD();
         if (DSP4_vars.distance == -0x8000)
             break;
@@ -799,10 +799,10 @@ void DSP4_OP08()
         DSP4.in_count = 16;
 
         DSP4_WAIT(2)
-        resume2 :
+    resume2:
 
-            // look at guidelines for both polygon shapes
-            view_x[0]
+        // look at guidelines for both polygon shapes
+        view_x[0]
             = DSP4_READ_WORD();
         view_y[0] = DSP4_READ_WORD();
         view_x[1] = DSP4_READ_WORD();
@@ -1014,12 +1014,12 @@ void DSP4_OP09()
 
         DSP4.in_count = 4;
         DSP4_WAIT(1)
-        resume1 :
+    resume1:
 
-            ////////////////////////////////////////////////
-            // DSP4_vars.raster overdraw check
+        ////////////////////////////////////////////////
+        // DSP4_vars.raster overdraw check
 
-            DSP4_vars.raster
+        DSP4_vars.raster
             = DSP4_READ_WORD();
 
         // continue updating the DSP4_vars.raster line where overdraw begins
@@ -1055,10 +1055,10 @@ void DSP4_OP09()
             // we already have 4 bytes we want
             DSP4.in_count = 14;
             DSP4_WAIT(2)
-            resume2 :
+        resume2:
 
-                // filter inputs
-                energy
+            // filter inputs
+            energy
                 = DSP4_READ_WORD();
             impact_back = DSP4_READ_WORD();
             car_back = DSP4_READ_WORD();
@@ -1090,10 +1090,10 @@ void DSP4_OP09()
             // grab a few remaining vehicle values
             DSP4.in_count = 4;
             DSP4_WAIT(3)
-            resume3 :
+        resume3:
 
-                // add vertical lift factor
-                DSP4_vars.sprite_y
+            // add vertical lift factor
+            DSP4_vars.sprite_y
                 += DSP4_READ_WORD();
         }
         // terrain sprite
@@ -1104,10 +1104,10 @@ void DSP4_OP09()
             // we already have 4 bytes we want
             DSP4.in_count = 10;
             DSP4_WAIT(4)
-            resume4 :
+        resume4:
 
-                // sort loop inputs
-                DSP4_vars.poly_cx[0][0]
+            // sort loop inputs
+            DSP4_vars.poly_cx[0][0]
                 = DSP4_READ_WORD();
             DSP4_vars.poly_raster[0][1] = DSP4_READ_WORD();
             world_spx = DSP4_READ_WORD();
@@ -1143,9 +1143,9 @@ void DSP4_OP09()
 
             DSP4.in_count = 2;
             DSP4_WAIT(5)
-            resume5 :
+        resume5:
 
-                draw
+            draw
                 = true;
 
             // opcode termination
@@ -1173,9 +1173,9 @@ void DSP4_OP09()
             // read in rest of sprite data
             DSP4.in_count = 4;
             DSP4_WAIT(6)
-            resume6 :
+        resume6:
 
-                draw
+            draw
                 = true;
 
             /////////////////////////////////////
@@ -1459,10 +1459,10 @@ void DSP4_OP0D()
         // scan next command
         DSP4.in_count = 2;
         DSP4_WAIT(1)
-        resume1 :
+    resume1:
 
-            // inspect input
-            DSP4_vars.distance
+        // inspect input
+        DSP4_vars.distance
             = DSP4_READ_WORD();
 
         // terminate op
@@ -1472,10 +1472,10 @@ void DSP4_OP0D()
         // already have 2 bytes in queue
         DSP4.in_count = 6;
         DSP4_WAIT(2)
-        resume2 :
+    resume2:
 
-            // inspect inputs
-            DSP4_vars.world_ddy
+        // inspect inputs
+        DSP4_vars.world_ddy
             = DSP4_READ_WORD();
         DSP4_vars.world_ddx = DSP4_READ_WORD();
         DSP4_vars.view_yofsenv = DSP4_READ_WORD();
@@ -1695,10 +1695,10 @@ void DSP4_OP0F()
         // scan next command
         DSP4.in_count = 2;
         DSP4_WAIT(2)
-        resume2 :
+    resume2:
 
-            // check for termination
-            DSP4_vars.distance
+        // check for termination
+        DSP4_vars.distance
             = DSP4_READ_WORD();
         if (DSP4_vars.distance == -0x8000)
             break;
@@ -1707,9 +1707,9 @@ void DSP4_OP0F()
         if ((uint16_t)DSP4_vars.distance == 0x8001) {
             DSP4.in_count = 6;
             DSP4_WAIT(3)
-            resume3 :
+        resume3:
 
-                DSP4_vars.distance
+            DSP4_vars.distance
                 = DSP4_READ_WORD();
             DSP4_vars.view_turnoff_x = DSP4_READ_WORD();
             DSP4_vars.view_turnoff_dx = DSP4_READ_WORD();
@@ -1728,10 +1728,10 @@ void DSP4_OP0F()
         // already have 2 bytes in queue
         DSP4.in_count = 6;
         DSP4_WAIT(4)
-        resume4 :
+    resume4:
 
-            // inspect inputs
-            DSP4_vars.world_ddy
+        // inspect inputs
+        DSP4_vars.world_ddy
             = DSP4_READ_WORD();
         DSP4_vars.world_ddx = DSP4_READ_WORD();
         DSP4_vars.view_yofsenv = DSP4_READ_WORD();
@@ -1925,10 +1925,10 @@ void DSP4_OP10()
         // scan next command
         DSP4.in_count = 2;
         DSP4_WAIT(2)
-        resume2 :
+    resume2:
 
-            // check for opcode termination
-            DSP4_vars.distance
+        // check for opcode termination
+        DSP4_vars.distance
             = DSP4_READ_WORD();
         if (DSP4_vars.distance == -0x8000)
             break;
@@ -1936,10 +1936,10 @@ void DSP4_OP10()
         // already have 2 bytes in queue
         DSP4.in_count = 10;
         DSP4_WAIT(3)
-        resume3 :
+    resume3:
 
-            // inspect inputs
-            DSP4_vars.view_y2
+        // inspect inputs
+        DSP4_vars.view_y2
             = DSP4_READ_WORD();
         DSP4_vars.view_dy = DSP4_READ_WORD() * DSP4_vars.distance >> 15;
         DSP4_vars.view_x2 = DSP4_READ_WORD();
