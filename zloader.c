@@ -93,6 +93,12 @@ static void display_start_message()
     put_line("ZSNES " ZVER "\n");
 }
 
+static void display_version()
+{
+    printf("ZSNES %s\n", ZVER);
+    zexit();
+}
+
 static void display_help()
 {
     size_t lines_out = 0;
@@ -188,7 +194,7 @@ static void display_help()
 #endif
     put_line("  -t      Force NTSC timing");
     put_line("  -u      Force PAL timing");
-    put_line("  -v #    Select video mode :");
+    put_line("  -v  #    Select video mode :");
 #ifdef __WIN32__
 #define VIDEO_MODE_COUNT 59
     put_line("             0 = 256x224      R WIN     1 = 256x224      R FULL");
@@ -246,14 +252,17 @@ static void display_help()
     put_line("            16 = 640x480x16B  VESA2    17 = 800x600x8B  VESA2");
     put_line("            18 = 800x600x16B  VESA2");
 #endif
-    put_line("  -v8     Grayscale mode");
+    put_line("  -v8       Grayscale mode");
 #ifndef __UNIXSDL__
-    put_line("  -w      Enable vsync (disables triple buffering)");
+    put_line("  -w        Enable vsync (disables triple buffering)");
 #endif
-    put_line("  -y      Enable anti-aliasing (video interpolation)");
-    put_line("  -z      Disable stereo sound");
-    put_line("  -zm #   Auto load specified movie slot on startup [0..9]");
-    put_line("  -zs #   Auto load specified save state slot on startup [0..99]");
+    put_line("  -y        Enable anti-aliasing (video interpolation)");
+    put_line("  -z        Disable stereo sound");
+    put_line("  -zm #     Auto load specified movie slot on startup [0..9]");
+    put_line("  -zs #     Auto load specified save state slot on startup [0..99]");
+#ifdef __UNIXSDL__
+    put_line("  --version Output version information");
+#endif
     put_line("");
     put_line("  File Formats Supported by GUI : SMC,SFC,SWC,FIG,MGD,MGH,UFO,BIN,");
     put_line("                                  GD3,GD7,USA,EUR,JAP,AUS,ST,BS,");
@@ -281,8 +290,7 @@ static void display_help()
 #endif
 #endif
 */
-
-    zexit_error();
+    zexit();
 }
 
 #define ConvertJoyMapHelp(a, b) \
@@ -852,7 +860,7 @@ static void handle_params(int argc, char* argv[])
                     showallext = 1;
                 }
 
-                else if (tolower(argv[i][1]) == 'v' && argv[i][2] == '8') //V8 Mode
+                else if (tolower(argv[i][1]) == 'v' && argv[i][2] == '8') // V8 Mode
                 {
                     V8Mode = 1;
                 }
@@ -881,7 +889,12 @@ static void handle_params(int argc, char* argv[])
                 }
             } else //- followed by more than 2 letters
             {
-                display_help();
+                if (tolower(argv[i][1]) == '-' && tolower(argv[i][2]) == 'v') // --version
+                {
+                    display_version();
+                } else {
+                    display_help();
+                }
             }
         } else //Param with no - or / prefix
         {
