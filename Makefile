@@ -195,6 +195,8 @@ else
 CFGDEFS += -DNO_DEBUGGER
 endif
 
+DEBUGFLAGS :=
+
 ifdef WITH_JMA
 SRCS += jma/7zlzma.cpp
 SRCS += jma/crc32.cpp
@@ -310,8 +312,8 @@ ASMFLAGS += $(CFGDEFS)
 ASMFLAGS += -O1 # XXX mandatory, otherwise zsnes breaks
 ASMFLAGS += -w-orphan-labels
 
-CFLAGS += -m32 -mno-sse -fno-inline -mmmx -O1 -march=pentium-mmx -mtune=generic $(CFGDEFS)
-CXXFLAGS += -m32 -mno-sse -fno-inline -mmmx -O1 -march=pentium-mmx -mtune=generic $(CFGDEFS)
+CFLAGS += -m32 -fno-inline -mmmx -O1 -march=pentium-mmx -mtune=generic -mno-sse $(CFGDEFS)
+CXXFLAGS += -m32 -fno-inline -mmmx -O1 -march=pentium-mmx -mtune=generic -mno-sse $(CFGDEFS)
 
 .SUFFIXES:
 .SUFFIXES: .asm .c .cpp .d .o
@@ -320,26 +322,30 @@ CXXFLAGS += -m32 -mno-sse -fno-inline -mmmx -O1 -march=pentium-mmx -mtune=generi
 
 all: $(BINARY)
 
+debug: DEBUGFLAGS += -g
+debug: $(BINARY)
+	gdb $(BINARY) --args zsnes ~/roms/snes/example.sfc
+
 -include $(DEPS)
 
 $(BINARY): $(OBJS)
 	@echo '===> LD $@'
-	$(Q)$(CXX_TARGET) $(CFLAGS) $(OBJS) $(LDFLAGS) -o $@
+	$(Q)$(CXX_TARGET) $(CFLAGS) $(OBJS) $(LDFLAGS) $(DEBUGFLAGS) -o $@
 
 .asm.o:
 	@echo '===> ASM $<'
-	$(Q)$(ASM) $(ASMFLAGS) -M -o $@ $< > $(@:.o=.d) || rm -f $(@:.o=.d)
-	$(Q)$(ASM) $(ASMFLAGS) -o $@ $<
+	$(Q)$(ASM) $(ASMFLAGS) $(DEBUGFLAGS) -M -o $@ $< > $(@:.o=.d) || rm -f $(@:.o=.d)
+	$(Q)$(ASM) $(ASMFLAGS) $(DEBUGFLAGS) -o $@ $<
 
 $(filter %.o, $(SRCS:.c=.o) $(SRCS:.cpp=.o)): $(HDRS)
 
 .c.o:
 	@echo '===> CC $<'
-	$(Q)$(CC_TARGET) $(CFLAGS) -c -MMD -o $@ $<
+	$(Q)$(CC_TARGET) $(CFLAGS) $(DEBUGFLAGS) -c -MMD -o $@ $<
 
 .cpp.o:
 	@echo '===> CXX $<'
-	$(Q)$(CXX_TARGET) $(CXXFLAGS) -c -MMD -o $@ $<
+	$(Q)$(CXX_TARGET) $(CXXFLAGS) $(DEBUGFLAGS) -c -MMD -o $@ $<
 
 $(PSR): parsegen.cpp
 	@echo '===> CXX $@'
