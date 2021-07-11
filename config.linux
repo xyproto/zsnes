@@ -4,18 +4,19 @@ ARCH := LINUX
 
 export CFLAGS += -m32 -std=gnu99 -fcommon -O1 -march=pentium-mmx -fno-inline -fno-pic -mtune=generic -mmmx -D_FORTIY_SOURCE=0 -mno-sse -w
 export CXXFLAGS += -m32 -std=gnu++14 -O1 -march=pentium-mmx -fno-inline -fno-pic -mtune=generic -mmmx -D_FORTIFY_SOURCE=0 -mno-sse -w
+export LDFLAGS += -Wl,--as-needed
 
 #WITH_AO       := yes
 #WITH_DEBUGGER := yes
 WITH_JMA      := yes
 WITH_OPENGL   := yes
 WITH_PNG      := yes
-WITH_SDL      := yes
 
 CXX_HOST   := $(CXX)
 CC_TARGET  := $(CC)
 CXX_TARGET := $(CXX)
 
+
 # X11 related
-CFLAGS += -pthread -rdynamic -ldl -no-pie -D_FORTIFY_SOURCE=0
-LDFLAGS += -L/usr/lib32 -no-pie -lX11
+CFLAGS += -pthread -rdynamic -no-pie -D_FORTIFY_SOURCE=0
+LDFLAGS += -L/usr/lib32 -no-pie -ldl -lX11
