@@ -21,8 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "iiostrm.h"
 
-bool decompress_lzma_7z(ISequentialInStream& in, unsigned in_size, ISequentialOutStream& out, unsigned out_size) throw ();
-bool decompress_lzma_7z(const unsigned char* in_data, unsigned in_size, unsigned char* out_data, unsigned out_size) throw ();
+bool decompress_lzma_7z(ISequentialInStream& in, unsigned in_size, ISequentialOutStream& out, unsigned out_size) throw();
+bool decompress_lzma_7z(const unsigned char* in_data, unsigned in_size, unsigned char* out_data, unsigned out_size) throw();
 
 #endif
-

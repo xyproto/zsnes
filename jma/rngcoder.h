@@ -24,47 +24,45 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 namespace NCompression {
 namespace NArithmetic {
 
-const UINT32 kNumTopBits = 24;
-const UINT32 kTopValue = (1 << kNumTopBits);
+    const UINT32 kNumTopBits = 24;
+    const UINT32 kTopValue = (1 << kNumTopBits);
 
-class CRangeDecoder
-{
-public:
-  NStream::CInByte m_Stream;
-  UINT32 m_Range;
-  UINT32 m_Code;
-  UINT32 m_Word;
-  void Normalize()
-  {
-    while (m_Range < kTopValue)
-    {
-      m_Code = (m_Code << 8) | m_Stream.ReadByte();
-      m_Range <<= 8;
-    }
-  }
+    class CRangeDecoder {
+    public:
+        NStream::CInByte m_Stream;
+        UINT32 m_Range;
+        UINT32 m_Code;
+        UINT32 m_Word;
+        void Normalize()
+        {
+            while (m_Range < kTopValue) {
+                m_Code = (m_Code << 8) | m_Stream.ReadByte();
+                m_Range <<= 8;
+            }
+        }
 
-  void Init(ISequentialInStream *aStream)
-  {
-    m_Stream.Init(aStream);
-    m_Code = 0;
-    m_Range = UINT32(-1);
-    for(int i = 0; i < 5; i++)
-      m_Code = (m_Code << 8) | m_Stream.ReadByte();
-  }
+        void Init(ISequentialInStream* aStream)
+        {
+            m_Stream.Init(aStream);
+            m_Code = 0;
+            m_Range = UINT32(-1);
+            for (int i = 0; i < 5; i++)
+                m_Code = (m_Code << 8) | m_Stream.ReadByte();
+        }
 
-  UINT32 GetThreshold(UINT32 aTotal)
-  {
-    return (m_Code) / ( m_Range /= aTotal);
-  }
+        UINT32 GetThreshold(UINT32 aTotal)
+        {
+            return (m_Code) / (m_Range /= aTotal);
+        }
 
-  void Decode(UINT32 aStart, UINT32 aSize, UINT32)
-  {
-    m_Code -= aStart * m_Range;
-    m_Range *= aSize;
-    Normalize();
-  }
+        void Decode(UINT32 aStart, UINT32 aSize, UINT32)
+        {
+            m_Code -= aStart * m_Range;
+            m_Range *= aSize;
+            Normalize();
+        }
 
-  /*
+        /*
   UINT32 DecodeDirectBitsDiv(UINT32 aNumTotalBits)
   {
     m_Range >>= aNumTotalBits;
@@ -84,15 +82,14 @@ public:
   }
   */
 
-  UINT32 DecodeDirectBits(UINT32 aNumTotalBits)
-  {
-    UINT32 aRange = m_Range;
-    UINT32 aCode = m_Code;
-    UINT32 aResult = 0;
-    for (UINT32 i = aNumTotalBits; i > 0; i--)
-    {
-      aRange >>= 1;
-      /*
+        UINT32 DecodeDirectBits(UINT32 aNumTotalBits)
+        {
+            UINT32 aRange = m_Range;
+            UINT32 aCode = m_Code;
+            UINT32 aResult = 0;
+            for (UINT32 i = aNumTotalBits; i > 0; i--) {
+                aRange >>= 1;
+                /*
       aResult <<= 1;
       if (aCode >= aRange)
       {
@@ -100,44 +97,41 @@ public:
         aResult |= 1;
       }
       */
-      UINT32 t = (aCode - aRange) >> 31;
-      aCode -= aRange & (t - 1);
-      // aRange = aRangeTmp + ((aRange & 1) & (1 - t));
-      aResult = (aResult << 1) | (1 - t);
+                UINT32 t = (aCode - aRange) >> 31;
+                aCode -= aRange & (t - 1);
+                // aRange = aRangeTmp + ((aRange & 1) & (1 - t));
+                aResult = (aResult << 1) | (1 - t);
 
-      if (aRange < kTopValue)
-      {
-        aCode = (aCode << 8) | m_Stream.ReadByte();
-        aRange <<= 8;
-      }
-    }
-    m_Range = aRange;
-    m_Code = aCode;
-    return aResult;
-  }
+                if (aRange < kTopValue) {
+                    aCode = (aCode << 8) | m_Stream.ReadByte();
+                    aRange <<= 8;
+                }
+            }
+            m_Range = aRange;
+            m_Code = aCode;
+            return aResult;
+        }
 
-  UINT32 DecodeBit(UINT32 aSize0, UINT32 aNumTotalBits)
-  {
-    UINT32 aNewBound = (m_Range >> aNumTotalBits) * aSize0;
-    UINT32 aSymbol;
-    if (m_Code < aNewBound)
-    {
-      aSymbol = 0;
-      m_Range = aNewBound;
-    }
-    else
-    {
-      aSymbol = 1;
-      m_Code -= aNewBound;
-      m_Range -= aNewBound;
-    }
-    Normalize();
-    return aSymbol;
-  }
+        UINT32 DecodeBit(UINT32 aSize0, UINT32 aNumTotalBits)
+        {
+            UINT32 aNewBound = (m_Range >> aNumTotalBits) * aSize0;
+            UINT32 aSymbol;
+            if (m_Code < aNewBound) {
+                aSymbol = 0;
+                m_Range = aNewBound;
+            } else {
+                aSymbol = 1;
+                m_Code -= aNewBound;
+                m_Range -= aNewBound;
+            }
+            Normalize();
+            return aSymbol;
+        }
 
-  UINT64 GetProcessedSize() {return m_Stream.GetProcessedSize(); }
-};
+        UINT64 GetProcessedSize() { return m_Stream.GetProcessedSize(); }
+    };
 
-}}
+}
+}
 
 #endif

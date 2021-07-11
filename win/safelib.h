@@ -19,7 +19,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-
 #ifndef SAFELIB_H
 #define SAFELIB_H
 
@@ -33,8 +32,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define STDOUT_FILENO 1
 #endif
 
-FILE *safe_popen(char *, const char *);
-void safe_pclose(FILE *fp);
+FILE* safe_popen(char*, const char*);
+void safe_pclose(FILE* fp);
 
 #define popen safe_popen
 #define pclose safe_pclose

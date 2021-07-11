@@ -33,6 +33,6 @@ extern u1 NTSCPresetVar; /* 0 to 3 */
 void NTSCFilterInit();
 
 /* Draw current image to specified output pixels */
-void NTSCFilterDraw( int out_width, int out_height, int out_pitch, unsigned char* rgb16_out );
+void NTSCFilterDraw(int out_width, int out_height, int out_pitch, unsigned char* rgb16_out);
 
 #endif

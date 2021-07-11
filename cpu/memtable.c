@@ -19,8 +19,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-
-
 #ifdef __UNIXSDL__
 #include "../gblhdr.h"
 #else
@@ -29,54 +27,52 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <string.h>
 #include <sys/stat.h>
 #endif
-#include <stdint.h>
-#include "memtable.h"
 #include "../gblvars.h"
 #include "../ui.h"
 #include "c_memory.h"
+#include "memtable.h"
 #include "regs.h"
+#include <stdint.h>
 
 extern unsigned int Curtableaddr, tableA[256];
 
 void PrepareOffset()
 {
-  Curtableaddr -= (unsigned int)tableA;
+    Curtableaddr -= (unsigned int)tableA;
 }
 
 void ResetOffset()
 {
-  Curtableaddr += (unsigned int)tableA;
+    Curtableaddr += (unsigned int)tableA;
 }
 
 extern unsigned int snesmmap[256], snesmap2[256];
 
-void BankSwitchSDD1C (unsigned char bankval, unsigned int offset)
+void BankSwitchSDD1C(unsigned char bankval, unsigned int offset)
 {
-  unsigned int curbankval = bankval, i;
+    unsigned int curbankval = bankval, i;
 
-  curbankval &= 7;
-  curbankval <<= 20;
-  curbankval += (uintptr_t)romdata;
+    curbankval &= 7;
+    curbankval <<= 20;
+    curbankval += (uintptr_t)romdata;
 
-  for (i=0; i<16 ; i++)
-  {
-    snesmap2[offset+i] = curbankval;
-    snesmmap[offset+i] = curbankval;
-    curbankval += 0x10000;
-  }
+    for (i = 0; i < 16; i++) {
+        snesmap2[offset + i] = curbankval;
+        snesmmap[offset + i] = curbankval;
+        curbankval += 0x10000;
+    }
 }
 
 extern unsigned char SDD1BankA, SDD1BankB, SDD1BankC, SDD1BankD;
 
 void UpdateBanksSDD1()
 {
-  if (SDD1BankA)
-  {
-    BankSwitchSDD1C(SDD1BankA, 0x0C0);
-    BankSwitchSDD1C(SDD1BankB, 0x0D0);
-    BankSwitchSDD1C(SDD1BankC, 0x0E0);
-    BankSwitchSDD1C(SDD1BankD, 0x0F0);
-  }
+    if (SDD1BankA) {
+        BankSwitchSDD1C(SDD1BankA, 0x0C0);
+        BankSwitchSDD1C(SDD1BankB, 0x0D0);
+        BankSwitchSDD1C(SDD1BankC, 0x0E0);
+        BankSwitchSDD1C(SDD1BankD, 0x0F0);
+    }
 }
 
 extern void (*Bank0datr8[256])(), (*Bank0datr16[256])(), (*Bank0datw8[256])(), (*Bank0datw16[256])();
@@ -87,32 +83,32 @@ extern unsigned char xdbt, xpbt;
 
 void UpdateDPageC()
 {
-  DPageR8 = Bank0datr8[(xd >> 8) & 0xFF];
-  DPageR16 = Bank0datr16[(xd >> 8) & 0xFF];
-  DPageW8 = Bank0datw8[(xd >> 8) & 0xFF];
-  DPageW16 = Bank0datw16[(xd >> 8) & 0xFF];
+    DPageR8 = Bank0datr8[(xd >> 8) & 0xFF];
+    DPageR16 = Bank0datr16[(xd >> 8) & 0xFF];
+    DPageW8 = Bank0datw8[(xd >> 8) & 0xFF];
+    DPageW16 = Bank0datw16[(xd >> 8) & 0xFF];
 }
 
 extern unsigned int SA1xd;
 
 void SA1UpdateDPageC()
 {
-  SA1DPageR8 = Bank0datr8[(SA1xd >> 8) & 0xFF];
-  SA1DPageR16 = Bank0datr16[(SA1xd >> 8) & 0xFF];
-  SA1DPageW8 = Bank0datw8[(SA1xd >> 8) & 0xFF];
-  SA1DPageW16 = Bank0datw16[(SA1xd >> 8) & 0xFF];
+    SA1DPageR8 = Bank0datr8[(SA1xd >> 8) & 0xFF];
+    SA1DPageR16 = Bank0datr16[(SA1xd >> 8) & 0xFF];
+    SA1DPageW8 = Bank0datw8[(SA1xd >> 8) & 0xFF];
+    SA1DPageW16 = Bank0datw16[(SA1xd >> 8) & 0xFF];
 }
 
 void unpackfunct()
 {
-  oamaddrt = (oamaddr & 0xFFFF);
-  xat = (xa & 0xFFFF);
-  xdbt = (xdb & 0xFF);
-  xpbt = (xpb & 0xFF);
-  xst = xs;
-  xdt = (xd & 0xFFFF);
-  xxt = (xx & 0xFFFF);
-  xyt = (xy & 0xFFFF);
+    oamaddrt = (oamaddr & 0xFFFF);
+    xat = (xa & 0xFFFF);
+    xdbt = (xdb & 0xFF);
+    xpbt = (xpb & 0xFF);
+    xst = xs;
+    xdt = (xd & 0xFFFF);
+    xxt = (xx & 0xFFFF);
+    xyt = (xy & 0xFFFF);
 }
 
 #define bit_test(byte, checkbit) (byte & (1 << checkbit)) ? 1 : 0
@@ -141,99 +137,89 @@ void reg2119inc8inc();
 
 void repackfunct()
 {
-  unsigned char block;
+    unsigned char block;
 
-  // Global/Echo Volumes
-  GlobalVL = (VolumeConvTable[(MusicVol << 8) + VolumeTableb[DSPMem[0x0C]]] & 0xFF);
-  GlobalVR = (VolumeConvTable[(MusicVol << 8) + VolumeTableb[DSPMem[0x1C]]] & 0xFF);
-  EchoVL = (VolumeConvTable[(MusicVol << 8) + VolumeTableb[DSPMem[0x2C]]] & 0xFF);
-  EchoVR = (VolumeConvTable[(MusicVol << 8) + VolumeTableb[DSPMem[0x3C]]] & 0xFF);
+    // Global/Echo Volumes
+    GlobalVL = (VolumeConvTable[(MusicVol << 8) + VolumeTableb[DSPMem[0x0C]]] & 0xFF);
+    GlobalVR = (VolumeConvTable[(MusicVol << 8) + VolumeTableb[DSPMem[0x1C]]] & 0xFF);
+    EchoVL = (VolumeConvTable[(MusicVol << 8) + VolumeTableb[DSPMem[0x2C]]] & 0xFF);
+    EchoVR = (VolumeConvTable[(MusicVol << 8) + VolumeTableb[DSPMem[0x3C]]] & 0xFF);
 
-  // Echo Values
-  MaxEcho = EchoRate[(DSPMem[0x7D] & 0xF)];
-  EchoFB = VolumeTableb[DSPMem[0x0D]];
+    // Echo Values
+    MaxEcho = EchoRate[(DSPMem[0x7D] & 0xF)];
+    EchoFB = VolumeTableb[DSPMem[0x0D]];
 
-  // FIR Filter Values
-  FIRTAPVal0 = (char)DSPMem[0x0F];
-  FIRTAPVal1 = (char)DSPMem[0x1F];
-  FIRTAPVal2 = (char)DSPMem[0x2F];
-  FIRTAPVal3 = (char)DSPMem[0x3F];
-  FIRTAPVal4 = (char)DSPMem[0x4F];
-  FIRTAPVal5 = (char)DSPMem[0x5F];
-  FIRTAPVal6 = (char)DSPMem[0x6F];
-  FIRTAPVal7 = (char)DSPMem[0x7F];
+    // FIR Filter Values
+    FIRTAPVal0 = (char)DSPMem[0x0F];
+    FIRTAPVal1 = (char)DSPMem[0x1F];
+    FIRTAPVal2 = (char)DSPMem[0x2F];
+    FIRTAPVal3 = (char)DSPMem[0x3F];
+    FIRTAPVal4 = (char)DSPMem[0x4F];
+    FIRTAPVal5 = (char)DSPMem[0x5F];
+    FIRTAPVal6 = (char)DSPMem[0x6F];
+    FIRTAPVal7 = (char)DSPMem[0x7F];
 
-  // Noise
-  block = DSPMem[0x6C];
-  DSPMem[0x6C] &= 0x7F;
+    // Noise
+    block = DSPMem[0x6C];
+    DSPMem[0x6C] &= 0x7F;
 
-  if (block & 0xC0)
-  {
-    Voice0Status = Voice1Status = Voice2Status = Voice3Status = 0;
-    Voice4Status = Voice5Status = Voice6Status = Voice7Status = 0;
-  }
-
-  NoiseInc = (((NoiseSpeeds[(block & 0x1F)] * dspPAdj) >> 17) & 0xFFFFFFFF);
-
-  Voice0Noise = bit_test(DSPMem[0x3D], 0);
-  Voice1Noise = bit_test(DSPMem[0x3D], 1);
-  Voice2Noise = bit_test(DSPMem[0x3D], 2);
-  Voice3Noise = bit_test(DSPMem[0x3D], 3);
-  Voice4Noise = bit_test(DSPMem[0x3D], 4);
-  Voice5Noise = bit_test(DSPMem[0x3D], 5);
-  Voice6Noise = bit_test(DSPMem[0x3D], 6);
-  Voice7Noise = bit_test(DSPMem[0x3D], 7);
-
-  bg1ptrx[0] = bg1ptrb[0] - bg1ptr[0];
-  bg1ptry[0] = bg1ptrc[0] - bg1ptr[0];
-  bg1ptrx[1] = bg1ptrb[1] - bg1ptr[1];
-  bg1ptry[1] = bg1ptrc[1] - bg1ptr[1];
-  bg1ptrx[2] = bg1ptrb[2] - bg1ptr[2];
-  bg1ptry[2] = bg1ptrc[2] - bg1ptr[2];
-  bg1ptrx[3] = bg1ptrb[3] - bg1ptr[3];
-  bg1ptry[3] = bg1ptrc[3] - bg1ptr[3];
-
-  // 16x16 tiles
-  BG116x16t = bit_test(bgtilesz, 0);
-  BG216x16t = bit_test(bgtilesz, 1);
-  BG316x16t = bit_test(bgtilesz, 2);
-  BG416x16t = bit_test(bgtilesz, 3);
-
-  oamaddr = oamaddrt;
-  xa = xat;
-  xdb = xdbt;
-  xpb = xpbt;
-  xs = xst;
-  xd = xdt;
-  xx = xxt;
-  xy = xyt;
-
-  if (vramincby8on == 1)
-  {
-    if (vramincr == 1)
-    {
-      REGPTW(0x2118) = reg2118inc8inc;
-      REGPTW(0x2119) = reg2119inc8;
+    if (block & 0xC0) {
+        Voice0Status = Voice1Status = Voice2Status = Voice3Status = 0;
+        Voice4Status = Voice5Status = Voice6Status = Voice7Status = 0;
     }
-    else
-    {
-      REGPTW(0x2118) = reg2118inc8;
-      REGPTW(0x2119) = reg2119inc8inc;
+
+    NoiseInc = (((NoiseSpeeds[(block & 0x1F)] * dspPAdj) >> 17) & 0xFFFFFFFF);
+
+    Voice0Noise = bit_test(DSPMem[0x3D], 0);
+    Voice1Noise = bit_test(DSPMem[0x3D], 1);
+    Voice2Noise = bit_test(DSPMem[0x3D], 2);
+    Voice3Noise = bit_test(DSPMem[0x3D], 3);
+    Voice4Noise = bit_test(DSPMem[0x3D], 4);
+    Voice5Noise = bit_test(DSPMem[0x3D], 5);
+    Voice6Noise = bit_test(DSPMem[0x3D], 6);
+    Voice7Noise = bit_test(DSPMem[0x3D], 7);
+
+    bg1ptrx[0] = bg1ptrb[0] - bg1ptr[0];
+    bg1ptry[0] = bg1ptrc[0] - bg1ptr[0];
+    bg1ptrx[1] = bg1ptrb[1] - bg1ptr[1];
+    bg1ptry[1] = bg1ptrc[1] - bg1ptr[1];
+    bg1ptrx[2] = bg1ptrb[2] - bg1ptr[2];
+    bg1ptry[2] = bg1ptrc[2] - bg1ptr[2];
+    bg1ptrx[3] = bg1ptrb[3] - bg1ptr[3];
+    bg1ptry[3] = bg1ptrc[3] - bg1ptr[3];
+
+    // 16x16 tiles
+    BG116x16t = bit_test(bgtilesz, 0);
+    BG216x16t = bit_test(bgtilesz, 1);
+    BG316x16t = bit_test(bgtilesz, 2);
+    BG416x16t = bit_test(bgtilesz, 3);
+
+    oamaddr = oamaddrt;
+    xa = xat;
+    xdb = xdbt;
+    xpb = xpbt;
+    xs = xst;
+    xd = xdt;
+    xx = xxt;
+    xy = xyt;
+
+    if (vramincby8on == 1) {
+        if (vramincr == 1) {
+            REGPTW(0x2118) = reg2118inc8inc;
+            REGPTW(0x2119) = reg2119inc8;
+        } else {
+            REGPTW(0x2118) = reg2118inc8;
+            REGPTW(0x2119) = reg2119inc8inc;
+        }
+    } else {
+        if (vramincr == 1) {
+            REGPTW(0x2118) = reg2118inc;
+            REGPTW(0x2119) = reg2119;
+        } else {
+            REGPTW(0x2118) = reg2118;
+            REGPTW(0x2119) = reg2119inc;
+        }
     }
-  }
-  else
-  {
-    if (vramincr == 1)
-    {
-      REGPTW(0x2118) = reg2118inc;
-      REGPTW(0x2119) = reg2119;
-    }
-    else
-    {
-      REGPTW(0x2118) = reg2118;
-      REGPTW(0x2119) = reg2119inc;
-    }
-  }
 }
 
 void regaccessbankr8(), regaccessbankw8(), regaccessbankr16(), regaccessbankw16();
@@ -296,28 +282,27 @@ mrwp SPC7110SRAMBank = { SPC7110ReadSRAM8b, SPC7110WriteSRAM8b, SPC7110ReadSRAM1
 mrwp stbanka = { stsramr8, stsramw8, stsramr16, stsramw16 };
 mrwp stbankb = { stsramr8b, stsramw8b, stsramr16b, stsramw16b };
 
-
 void SetAddressingModes()
-{                                       //  Banks
-  map_mem(0x00, &regbank,  0x40);       // 00 - 3F
-  map_mem(0x40, &membank,  0x3E);       // 40 - 7D
-  map_mem(0x7E, &wrambank, 0x01);       // 7E
-  map_mem(0x7F, &erambank, 0x01);       // 7F
-  map_mem(0x80, &regbank,  0x40);       // 80 - BF
-  map_mem(0xC0, &membank,  0x40);       // C0 - FF
+{ //  Banks
+    map_mem(0x00, &regbank, 0x40); // 00 - 3F
+    map_mem(0x40, &membank, 0x3E); // 40 - 7D
+    map_mem(0x7E, &wrambank, 0x01); // 7E
+    map_mem(0x7F, &erambank, 0x01); // 7F
+    map_mem(0x80, &regbank, 0x40); // 80 - BF
+    map_mem(0xC0, &membank, 0x40); // C0 - FF
 }
 
 void SetAddressingModesSA1()
 {
-  map_mem(0x00, &sa1regbank,  0x40);    // 00 - 3F
-  map_mem(0x40, &sa1rambank,  0x20);    // 40 - 5F
-  map_mem(0x60, &sa1rambankb, 0x10);    // 60 - 6F
-  map_mem(0x70, &srambank,    0x08);    // 70 - 77
-  map_mem(0x78, &membank,     0x06);    // 78 - 7D
-  map_mem(0x7E, &wrambank,    0x01);    // 7E
-  map_mem(0x7F, &erambank,    0x01);    // 7F
-  map_mem(0x80, &sa1regbank,  0x40);    // 80 - BF
-  map_mem(0xC0, &membank,     0x40);    // C0 - FF
+    map_mem(0x00, &sa1regbank, 0x40); // 00 - 3F
+    map_mem(0x40, &sa1rambank, 0x20); // 40 - 5F
+    map_mem(0x60, &sa1rambankb, 0x10); // 60 - 6F
+    map_mem(0x70, &srambank, 0x08); // 70 - 77
+    map_mem(0x78, &membank, 0x06); // 78 - 7D
+    map_mem(0x7E, &wrambank, 0x01); // 7E
+    map_mem(0x7F, &erambank, 0x01); // 7F
+    map_mem(0x80, &sa1regbank, 0x40); // 80 - BF
+    map_mem(0xC0, &membank, 0x40); // C0 - FF
 }
 
 void membank0r8reg(), membank0w8reg(), membank0r16reg(), membank0w16reg();
@@ -336,25 +321,25 @@ mrwp invbank0 = { membank0r8inv, membank0w8inv, membank0r16inv, membank0w16inv }
 mrwp chipbank0 = { membank0r8chip, membank0w8chip, membank0r16chip, membank0w16chip };
 mrwp sa1rambank0 = { membank0r8ramSA1, membank0w8ramSA1, membank0r16ramSA1, membank0w16ramSA1 };
 
-static void map_bank0(size_t dest, mrwp *src, size_t num)
+static void map_bank0(size_t dest, mrwp* src, size_t num)
 {
-  rep_stosd(Bank0datr8+dest, src->memr8, num);
-  rep_stosd(Bank0datw8+dest, src->memw8, num);
-  rep_stosd(Bank0datr16+dest, src->memr16, num);
-  rep_stosd(Bank0datw16+dest, src->memw16, num);
+    rep_stosd(Bank0datr8 + dest, src->memr8, num);
+    rep_stosd(Bank0datw8 + dest, src->memw8, num);
+    rep_stosd(Bank0datr16 + dest, src->memr16, num);
+    rep_stosd(Bank0datw16 + dest, src->memw16, num);
 }
 
 void GenerateBank0Table()
 {
-  map_bank0(0x00, &rambank0,    0x20);   // 00 - 1F
-  map_bank0(0x20, &regbank0,    0x28);   // 20 - 47
-  map_bank0(0x48, &invbank0,    0x17);   // 48 - 5E
-  map_bank0(0x5F, &chipbank0,   0x1F);   // 5F - 7D
-  map_bank0(0x7E, &rombank0,    0x81);   // 7E - FE
-  map_bank0(0xFF, &romrambank0, 0x01);   // FF
+    map_bank0(0x00, &rambank0, 0x20); // 00 - 1F
+    map_bank0(0x20, &regbank0, 0x28); // 20 - 47
+    map_bank0(0x48, &invbank0, 0x17); // 48 - 5E
+    map_bank0(0x5F, &chipbank0, 0x1F); // 5F - 7D
+    map_bank0(0x7E, &rombank0, 0x81); // 7E - FE
+    map_bank0(0xFF, &romrambank0, 0x01); // FF
 }
 
 void GenerateBank0TableSA1()
 {
-  map_bank0(0x00, &sa1rambank0, 0x20);   // 00 - 1F
+    map_bank0(0x00, &sa1rambank0, 0x20); // 00 - 1F
 }

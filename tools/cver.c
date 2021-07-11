@@ -37,14 +37,14 @@ static int stdcv = 198900;
 
 int main()
 {
-  #ifdef __GNUC__
-  printf("Compiler: GCC\nMajor: %u\nMinor: %u\nMicro: %u\nVersion: %s\n",
-         __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__, __VERSION__);
-  #elif defined(_MSC_VER)
-  printf("Compiler: MSVC\nMajor: %u\nMinor: %u\nVersion: %u\n",
-         _MSC_VER/100, _MSC_VER%100, _MSC_VER);
-  #endif
-  printf("C99: %s\nx86-32: %s\nx86-64: %s\n", (stdcv >= 199901L) ? "Yes":"No", x86_32 ? "Yes":"No", x86_64 ? "Yes":"No");
-  fflush(stdout);
-  return(0);
+#ifdef __GNUC__
+    printf("Compiler: GCC\nMajor: %u\nMinor: %u\nMicro: %u\nVersion: %s\n",
+        __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__, __VERSION__);
+#elif defined(_MSC_VER)
+    printf("Compiler: MSVC\nMajor: %u\nMinor: %u\nVersion: %u\n",
+        _MSC_VER / 100, _MSC_VER % 100, _MSC_VER);
+#endif
+    printf("C99: %s\nx86-32: %s\nx86-64: %s\n", (stdcv >= 199901L) ? "Yes" : "No", x86_32 ? "Yes" : "No", x86_64 ? "Yes" : "No");
+    fflush(stdout);
+    return (0);
 }

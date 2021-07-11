@@ -30,6 +30,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define strncasecmp _strnicmp
 #endif
 
-char *realpath(const char *path, char *resolved_path);
+char* realpath(const char* path, char* resolved_path);
 
 #endif

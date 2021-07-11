@@ -34,10 +34,10 @@ extern void (*memtablew16[256])();
 
 typedef struct
 {
-  void (*memr8)();
-  void (*memw8)();
-  void (*memr16)();
-  void (*memw16)();
+    void (*memr8)();
+    void (*memw8)();
+    void (*memr16)();
+    void (*memw16)();
 } mrwp;
 
 extern mrwp regbank, membank, wrambank, srambank, erambank, sramsbank;
@@ -55,63 +55,70 @@ instruction rep stosd, which is able to do that (and much more).
 Since ZSNES is just full of func pointer arrays, it'll probably come in handy.
 */
 
-static inline void rep_stosd(void (**dest)(), void (*func_ptr), size_t num)
+static inline void rep_stosd(void (**dest)(), void(*func_ptr), size_t num)
 {
-  while (num--) { dest[num] = func_ptr; }
+    while (num--) {
+        dest[num] = func_ptr;
+    }
 }
 
-static inline void map_mem(size_t dest, mrwp *src, size_t num)
+static inline void map_mem(size_t dest, mrwp* src, size_t num)
 {
-  rep_stosd(memtabler8+dest, src->memr8, num);
-  rep_stosd(memtablew8+dest, src->memw8, num);
-  rep_stosd(memtabler16+dest, src->memr16, num);
-  rep_stosd(memtablew16+dest, src->memw16, num);
+    rep_stosd(memtabler8 + dest, src->memr8, num);
+    rep_stosd(memtablew8 + dest, src->memw8, num);
+    rep_stosd(memtabler16 + dest, src->memr16, num);
+    rep_stosd(memtablew16 + dest, src->memw16, num);
 }
-
 
 static inline u1 memr8(u1 const bank /* bl */, u2 const address /* cx */)
 {
-	u4 eax;
-	u4 ecx = address;
-	u4 edx;
-	u4 ebx = bank;
-	u4 esi;
-	u4 edi;
-	asm volatile("call *%6" : "=a" (eax), "+c" (ecx), "+b" (ebx), "=d" (edx), "=S" (esi), "=D" (edi) : "mr" (memtabler8[ebx]) : "cc", "memory");
-	return (u1)eax;
+    u4 eax;
+    u4 ecx = address;
+    u4 edx;
+    u4 ebx = bank;
+    u4 esi;
+    u4 edi;
+    asm volatile("call *%6"
+                 : "=a"(eax), "+c"(ecx), "+b"(ebx), "=d"(edx), "=S"(esi), "=D"(edi)
+                 : "mr"(memtabler8[ebx])
+                 : "cc", "memory");
+    return (u1)eax;
 }
-
 
 static inline u2 memr16(u1 const bank /* bl */, u2 const address /* cx */)
 {
-	u4 eax;
-	u4 ecx = address;
-	u4 edx;
-	u4 ebx = bank;
-	u4 esi;
-	u4 edi;
-	asm volatile("call *%6" : "=a" (eax), "+c" (ecx), "+b" (ebx), "=d" (edx), "=S" (esi), "=D" (edi) : "mr" (memtabler16[ebx]) : "cc", "memory");
-	return (u2)eax;
+    u4 eax;
+    u4 ecx = address;
+    u4 edx;
+    u4 ebx = bank;
+    u4 esi;
+    u4 edi;
+    asm volatile("call *%6"
+                 : "=a"(eax), "+c"(ecx), "+b"(ebx), "=d"(edx), "=S"(esi), "=D"(edi)
+                 : "mr"(memtabler16[ebx])
+                 : "cc", "memory");
+    return (u2)eax;
 }
-
 
 static inline void memw8no_rom(u1 const bank /* bl */, u2 const address /* cx */, u1 const val /* al */)
 {
-	u4 eax = val;
-	u4 ecx = address;
-	u4 edx;
-	u4 ebx = bank;
-	u4 esi;
-	u4 edi;
-	asm volatile("call *%6" : "+a" (eax), "+c" (ecx), "+b" (ebx), "=d" (edx), "=S" (esi), "=D" (edi) : "mr" (memtablew8[ebx]) : "cc", "memory");
+    u4 eax = val;
+    u4 ecx = address;
+    u4 edx;
+    u4 ebx = bank;
+    u4 esi;
+    u4 edi;
+    asm volatile("call *%6"
+                 : "+a"(eax), "+c"(ecx), "+b"(ebx), "=d"(edx), "=S"(esi), "=D"(edi)
+                 : "mr"(memtablew8[ebx])
+                 : "cc", "memory");
 }
-
 
 static inline void memw8(u1 const bank /* bl */, u2 const address /* cx */, u1 const val /* al */)
 {
-	writeon = 1;
-	memw8no_rom(bank, address, val);
-	writeon = 0;
+    writeon = 1;
+    memw8no_rom(bank, address, val);
+    writeon = 0;
 }
 
 #endif

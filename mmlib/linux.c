@@ -30,20 +30,19 @@ misrepresented as being the original software.
 
 #ifdef __linux__
 
+#include <dirent.h>
+#include <errno.h>
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
-#include <dirent.h>
-#include <errno.h>
+#include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <sys/stat.h>
-#include <fcntl.h>
 
-#include <linux/input.h>  /* evdev interface...  */
+#include <linux/input.h> /* evdev interface...  */
 
-#define test_bit(array, bit)    (array[bit/8] & (1<<(bit%8)))
+#define test_bit(array, bit) (array[bit / 8] & (1 << (bit % 8)))
 
 /* linux allows 32 evdev nodes currently. */
 #define MAX_MICE 32
@@ -60,80 +59,69 @@ typedef struct
 static MouseStruct mice[MAX_MICE];
 static unsigned int available_mice = 0;
 
-
-static int poll_mouse(MouseStruct *mouse, ManyMouseEvent *outevent)
+static int poll_mouse(MouseStruct* mouse, ManyMouseEvent* outevent)
 {
     int unhandled = 1;
-    while (unhandled)  /* read until failure or valid event. */
+    while (unhandled) /* read until failure or valid event. */
     {
         struct input_event event;
-        int br = read(mouse->fd, &event, sizeof (event));
-        if (br == -1)
-        {
+        int br = read(mouse->fd, &event, sizeof(event));
+        if (br == -1) {
             if (errno == EAGAIN)
-                return(0);  /* just no new data at the moment. */
+                return (0); /* just no new data at the moment. */
 
             /* mouse was unplugged? */
-            close(mouse->fd);  /* stop reading from this mouse. */
+            close(mouse->fd); /* stop reading from this mouse. */
             mouse->fd = -1;
             outevent->type = MANYMOUSE_EVENT_DISCONNECT;
-            return(1);
+            return (1);
         } /* if */
 
-        if (br != sizeof (event))
-            return(0);  /* oh well. */
+        if (br != sizeof(event))
+            return (0); /* oh well. */
 
-        unhandled = 0;  /* will reset if necessary. */
+        unhandled = 0; /* will reset if necessary. */
         outevent->value = event.value;
-        if (event.type == EV_REL)
-        {
+        if (event.type == EV_REL) {
             outevent->type = MANYMOUSE_EVENT_RELMOTION;
             if ((event.code == REL_X) || (event.code == REL_DIAL))
                 outevent->item = 0;
             else if (event.code == REL_Y)
                 outevent->item = 1;
 
-            else if (event.code == REL_WHEEL)
-            {
+            else if (event.code == REL_WHEEL) {
                 outevent->type = MANYMOUSE_EVENT_SCROLL;
                 outevent->item = 0;
             } /* else if */
 
-            else if (event.code == REL_HWHEEL)
-            {
+            else if (event.code == REL_HWHEEL) {
                 outevent->type = MANYMOUSE_EVENT_SCROLL;
                 outevent->item = 1;
             } /* else if */
 
-            else
-            {
+            else {
                 unhandled = 1;
             } /* else */
         } /* if */
 
-        else if (event.type == EV_ABS)
-        {
+        else if (event.type == EV_ABS) {
             outevent->type = MANYMOUSE_EVENT_ABSMOTION;
-            if (event.code == ABS_X)
-            {
+            if (event.code == ABS_X) {
                 outevent->item = 0;
                 outevent->minval = mouse->min_x;
                 outevent->maxval = mouse->max_x;
             } /* if */
-            else if (event.code == ABS_Y)
-            {
+            else if (event.code == ABS_Y) {
                 outevent->item = 1;
                 outevent->minval = mouse->min_y;
                 outevent->maxval = mouse->max_y;
             } /* if */
-            else
-            {
+            else {
                 unhandled = 1;
             } /* else */
         } /* else if */
 
-        else if (event.type == EV_KEY)
-        {
+        else if (event.type == EV_KEY) {
             outevent->type = MANYMOUSE_EVENT_BUTTON;
             if ((event.code >= BTN_LEFT) && (event.code <= BTN_BACK))
                 outevent->item = event.code - BTN_MOUSE;
@@ -149,60 +137,52 @@ static int poll_mouse(MouseStruct *mouse, ManyMouseEvent *outevent)
             else if (event.code == BTN_STYLUS2) /* tablet... */
                 outevent->item = 2;
 
-            else
-            {
+            else {
                 /*printf("unhandled mouse button: 0x%X\n", event.code);*/
                 unhandled = 1;
             } /* else */
         } /* else if */
-        else
-        {
+        else {
             unhandled = 1;
         } /* else */
     } /* while */
 
-    return(1);  /* got a valid event */
+    return (1); /* got a valid event */
 } /* poll_mouse */
 
-
-static int init_mouse(const char *fname, int fd)
+static int init_mouse(const char* fname, int fd)
 {
-    MouseStruct *mouse = &mice[available_mice];
+    MouseStruct* mouse = &mice[available_mice];
     int has_absolutes = 0;
     int is_mouse = 0;
     unsigned char relcaps[(REL_MAX / 8) + 1];
     unsigned char abscaps[(ABS_MAX / 8) + 1];
     unsigned char keycaps[(KEY_MAX / 8) + 1];
 
-    memset(relcaps, '\0', sizeof (relcaps));
-    memset(abscaps, '\0', sizeof (abscaps));
-    memset(keycaps, '\0', sizeof (keycaps));
+    memset(relcaps, '\0', sizeof(relcaps));
+    memset(abscaps, '\0', sizeof(abscaps));
+    memset(keycaps, '\0', sizeof(keycaps));
 
-    if (ioctl(fd, EVIOCGBIT(EV_KEY, sizeof (keycaps)), keycaps) == -1)
-        return 0;  /* gotta have some buttons!  :)  */
+    if (ioctl(fd, EVIOCGBIT(EV_KEY, sizeof(keycaps)), keycaps) == -1)
+        return 0; /* gotta have some buttons!  :)  */
 
-    if (ioctl(fd, EVIOCGBIT(EV_REL, sizeof (relcaps)), relcaps) != -1)
-    {
-        if ( (test_bit(relcaps, REL_X)) && (test_bit(relcaps, REL_Y)) )
-        {
+    if (ioctl(fd, EVIOCGBIT(EV_REL, sizeof(relcaps)), relcaps) != -1) {
+        if ((test_bit(relcaps, REL_X)) && (test_bit(relcaps, REL_Y))) {
             if (test_bit(keycaps, BTN_MOUSE))
                 is_mouse = 1;
         } /* if */
 
-        #if ALLOW_DIALS_TO_BE_MICE
+#if ALLOW_DIALS_TO_BE_MICE
         if (test_bit(relcaps, REL_DIAL))
-            is_mouse = 1;  // griffin powermate?
-        #endif
+            is_mouse = 1; // griffin powermate?
+#endif
     } /* if */
 
-    if (ioctl(fd, EVIOCGBIT(EV_ABS, sizeof (abscaps)), abscaps) != -1)
-    {
-        if ( (test_bit(abscaps, ABS_X)) && (test_bit(abscaps, ABS_Y)) )
-        {
+    if (ioctl(fd, EVIOCGBIT(EV_ABS, sizeof(abscaps)), abscaps) != -1) {
+        if ((test_bit(abscaps, ABS_X)) && (test_bit(abscaps, ABS_Y))) {
             /* might be a touchpad... */
-            if (test_bit(keycaps, BTN_TOUCH))
-            {
-                is_mouse = 1;  /* touchpad, touchscreen, or tablet. */
+            if (test_bit(keycaps, BTN_TOUCH)) {
+                is_mouse = 1; /* touchpad, touchscreen, or tablet. */
                 has_absolutes = 1;
             } /* if */
         } /* if */
@@ -212,15 +192,14 @@ static int init_mouse(const char *fname, int fd)
         return 0;
 
     mouse->min_x = mouse->min_y = mouse->max_x = mouse->max_y = 0;
-    if (has_absolutes)
-    {
+    if (has_absolutes) {
         struct
         {
-          int value;
-          int minimum;
-          int maximum;
-          int fuzz;
-          int flat;
+            int value;
+            int minimum;
+            int maximum;
+            int fuzz;
+            int flat;
         } absinfo;
         if (ioctl(fd, EVIOCGABS(ABS_X), &absinfo) == -1)
             return 0;
@@ -233,17 +212,16 @@ static int init_mouse(const char *fname, int fd)
         mouse->max_y = absinfo.maximum;
     } /* if */
 
-    if (ioctl(fd, EVIOCGNAME(sizeof (mouse->name)), mouse->name) == -1)
-        snprintf(mouse->name, sizeof (mouse->name), "Unknown device");
+    if (ioctl(fd, EVIOCGNAME(sizeof(mouse->name)), mouse->name) == -1)
+        snprintf(mouse->name, sizeof(mouse->name), "Unknown device");
 
     mouse->fd = fd;
 
-    return 1;  /* we're golden. */
+    return 1; /* we're golden. */
 } /* init_mouse */
 
-
 /* Return a file descriptor if this is really a mouse, -1 otherwise. */
-static int open_if_mouse(const char *fname)
+static int open_if_mouse(const char* fname)
 {
     struct stat statbuf;
     int fd;
@@ -253,13 +231,13 @@ static int open_if_mouse(const char *fname)
         return 0;
 
     if (S_ISCHR(statbuf.st_mode) == 0)
-        return 0;  /* not a character device... */
+        return 0; /* not a character device... */
 
     /* evdev node ids are major 13, minor 64-96. Is this safe to check? */
     devmajor = (statbuf.st_rdev & 0xFF00) >> 8;
     devminor = (statbuf.st_rdev & 0x00FF);
-    if ( (devmajor != 13) || (devminor < 64) || (devminor > 96) )
-        return 0;  /* not an evdev. */
+    if ((devmajor != 13) || (devminor < 64) || (devminor > 96))
+        return 0; /* not an evdev. */
 
     if ((fd = open(fname, O_RDONLY | O_NONBLOCK)) == -1)
         return 0;
@@ -271,11 +249,10 @@ static int open_if_mouse(const char *fname)
     return 0;
 } /* open_if_mouse */
 
-
 static int linux_evdev_init(void)
 {
-    DIR *dirp;
-    struct dirent *dent;
+    DIR* dirp;
+    struct dirent* dent;
     int i;
 
     for (i = 0; i < MAX_MICE; i++)
@@ -285,10 +262,9 @@ static int linux_evdev_init(void)
     if (!dirp)
         return -1;
 
-    while ((dent = readdir(dirp)) != NULL)
-    {
+    while ((dent = readdir(dirp)) != NULL) {
         char fname[128];
-        snprintf(fname, sizeof (fname), "/dev/input/%s", dent->d_name);
+        snprintf(fname, sizeof(fname), "/dev/input/%s", dent->d_name);
         if (open_if_mouse(fname))
             available_mice++;
     } /* while */
@@ -298,27 +274,23 @@ static int linux_evdev_init(void)
     return available_mice;
 } /* linux_evdev_init */
 
-
 static void linux_evdev_quit(void)
 {
-    while (available_mice)
-    {
+    while (available_mice) {
         int fd = mice[available_mice--].fd;
         if (fd != -1)
             close(fd);
     } /* while */
 } /* linux_evdev_quit */
 
-
-static const char *linux_evdev_name(unsigned int index)
+static const char* linux_evdev_name(unsigned int index)
 {
     if (index < available_mice)
-        return(mice[index].name);
-    return(NULL);
+        return (mice[index].name);
+    return (NULL);
 } /* linux_evdev_name */
 
-
-static int linux_evdev_poll(ManyMouseEvent *event)
+static int linux_evdev_poll(ManyMouseEvent* event)
 {
     /*
      * (i) is static so we iterate through all mice round-robin. This
@@ -327,39 +299,34 @@ static int linux_evdev_poll(ManyMouseEvent *event)
     static unsigned int i = 0;
 
     if (i >= available_mice)
-        i = 0;  /* handle reset condition. */
+        i = 0; /* handle reset condition. */
 
-    if (event != NULL)
-    {
-        while (i < available_mice)
-        {
-            MouseStruct *mouse = &mice[i];
-            if (mouse->fd != -1)
-            {
-                if (poll_mouse(mouse, event))
-                {
+    if (event != NULL) {
+        while (i < available_mice) {
+            MouseStruct* mouse = &mice[i];
+            if (mouse->fd != -1) {
+                if (poll_mouse(mouse, event)) {
                     event->device = i;
-                    return(1);
+                    return (1);
                 } /* if */
             } /* if */
             i++;
         } /* while */
     } /* if */
 
-    return(0);  /* no new events */
+    return (0); /* no new events */
 } /* linux_evdev_poll */
 
 #else
 
-static int linux_evdev_init(void) { return(-1); }
-static void linux_evdev_quit(void) {}
-static const char *linux_evdev_name(unsigned int index) { return(0); }
-static int linux_evdev_poll(ManyMouseEvent *event) { return(0); }
+static int linux_evdev_init(void) { return (-1); }
+static void linux_evdev_quit(void) { }
+static const char* linux_evdev_name(unsigned int index) { return (0); }
+static int linux_evdev_poll(ManyMouseEvent* event) { return (0); }
 
-#endif  /* defined __linux__ */
+#endif /* defined __linux__ */
 
-ManyMouseDriver ManyMouseDriver_evdev =
-{
+ManyMouseDriver ManyMouseDriver_evdev = {
     linux_evdev_init,
     linux_evdev_quit,
     linux_evdev_name,

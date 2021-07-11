@@ -19,8 +19,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-
-
 #ifdef __UNIXSDL__
 #include "../gblhdr.h"
 #else
@@ -31,14 +29,12 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #endif
 #include "../gblvars.h"
 
-
 //Start of execute.asm goodness
 extern unsigned char t1cc; // not sure about this one
 extern unsigned short int nextframe; // framecounter for frameskipping
 
 void Game60hzcall()
 {
-  t1cc++;
-  nextframe++;
+    t1cc++;
+    nextframe++;
 }
-

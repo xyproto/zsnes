@@ -18,8 +18,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #ifdef __cplusplus
 extern "C" {
 #endif
-void load_jma_file(const char *filename);
+void load_jma_file(const char* filename);
 #ifdef __cplusplus
 }
 #endif
-

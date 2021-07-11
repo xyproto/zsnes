@@ -4,9 +4,10 @@
 namespace NCompression {
 namespace NArithmetic {
 
-const UINT32 kNumBitPriceShiftBits = 6;
-const UINT32 kBitPrice = 1 << kNumBitPriceShiftBits;
+    const UINT32 kNumBitPriceShiftBits = 6;
+    const UINT32 kBitPrice = 1 << kNumBitPriceShiftBits;
 
-}}
+}
+}
 
 #endif

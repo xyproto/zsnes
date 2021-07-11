@@ -986,7 +986,7 @@ int startgame()
     static bool ranonce = false;
     int status;
 
-	XInitThreads();
+    XInitThreads();
 
     if (!ranonce) {
         ranonce = true;

@@ -19,20 +19,18 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-
-#include "../gblhdr.h"
+#include "../video/sw_draw.h"
 #include "../cfg.h"
+#include "../gblhdr.h"
 #include "../intrf.h"
 #include "../link.h"
 #include "../ui.h"
 #include "../video/copyvwin.h"
-#include "../video/sw_draw.h"
 #include <stdint.h>
-
 
 void CheckFrame();
 // VIDEO VARIABLES
-extern SDL_Surface *surface;
+extern SDL_Surface* surface;
 extern int SurfaceLocking;
 
 extern unsigned char curblank;
@@ -40,78 +38,72 @@ extern int frametot;
 extern uint8_t GUIOn, GUIOn2;
 
 void NTSCFilterInit();
-void NTSCFilterDraw(int SurfaceX, int SurfaceY, int pitch, unsigned char *buffer);
+void NTSCFilterDraw(int SurfaceX, int SurfaceY, int pitch, unsigned char* buffer);
 char CheckOGLMode();
 
 bool sw_start(int width, int height, int req_depth, int FullScreen)
 {
-  //unsigned int color32, p;
-  //int i;
+    //unsigned int color32, p;
+    //int i;
 #ifndef __MACOSX__
-  uint32_t flags = SDL_DOUBLEBUF | SDL_HWSURFACE;
+    uint32_t flags = SDL_DOUBLEBUF | SDL_HWSURFACE;
 #else
-  uint32_t flags = SDL_SWSURFACE;
+    uint32_t flags = SDL_SWSURFACE;
 #endif
-  uint32_t GBitMask;
+    uint32_t GBitMask;
 
-  flags |= (FullScreen ? SDL_FULLSCREEN : 0);
+    flags |= (FullScreen ? SDL_FULLSCREEN : 0);
 
-  if (NTSCFilter)
-  {
-    NTSCFilterInit();
-  }
+    if (NTSCFilter) {
+        NTSCFilterInit();
+    }
 
-  SurfaceX = width; SurfaceY = height;
-  surface = SDL_SetVideoMode(SurfaceX, SurfaceY, req_depth, flags);
-  if (surface == NULL)
-  {
-    fprintf(stderr, "Could not set %dx%d video mode: %s\n", SurfaceX, SurfaceY, SDL_GetError());
-    return false;
-  }
+    SurfaceX = width;
+    SurfaceY = height;
+    surface = SDL_SetVideoMode(SurfaceX, SurfaceY, req_depth, flags);
+    if (surface == NULL) {
+        fprintf(stderr, "Could not set %dx%d video mode: %s\n", SurfaceX, SurfaceY, SDL_GetError());
+        return false;
+    }
 
-  SurfaceLocking = SDL_MUSTLOCK(surface);
-  SDL_WarpMouse(SurfaceX / 4, SurfaceY / 4);
+    SurfaceLocking = SDL_MUSTLOCK(surface);
+    SDL_WarpMouse(SurfaceX / 4, SurfaceY / 4);
 
-  // Grab mouse in fullscreen mode
-  FullScreen ? SDL_WM_GrabInput(SDL_GRAB_ON) : SDL_WM_GrabInput(SDL_GRAB_OFF);
+    // Grab mouse in fullscreen mode
+    FullScreen ? SDL_WM_GrabInput(SDL_GRAB_ON) : SDL_WM_GrabInput(SDL_GRAB_OFF);
 
-  SDL_WM_SetCaption("ZSNES", "ZSNES");
-  SDL_ShowCursor(0);
+    SDL_WM_SetCaption("ZSNES", "ZSNES");
+    SDL_ShowCursor(0);
 
-  // Check hardware for 565/555
-  GBitMask = surface->format->Gmask;
-  if (GBitMask != 0x07E0)
-  {
-    converta = 1;
-  }
-  else
-  {
-    converta = 0;
-  }
+    // Check hardware for 565/555
+    GBitMask = surface->format->Gmask;
+    if (GBitMask != 0x07E0) {
+        converta = 1;
+    } else {
+        converta = 0;
+    }
 
-  return true;
+    return true;
 }
 
 void sw_end()
 {
-  // Do nothing
+    // Do nothing
 }
 
 static void LockSurface()
 {
-  if (SurfaceLocking)
-  {
-    SDL_LockSurface(surface);
-  }
+    if (SurfaceLocking) {
+        SDL_LockSurface(surface);
+    }
 }
 
 static void UnlockSurface()
 {
-  if (SurfaceLocking)
-  {
-    SDL_UnlockSurface(surface);
-  }
-  SDL_Flip(surface);
+    if (SurfaceLocking) {
+        SDL_UnlockSurface(surface);
+    }
+    SDL_Flip(surface);
 }
 
 extern unsigned char NGNoTransp;
@@ -123,12 +115,12 @@ uint32_t pitch;
 
 void sw_clearwin()
 {
-  pitch = surface->pitch;
-  SurfBufD = surface->pixels;
+    pitch = surface->pitch;
+    SurfBufD = surface->pixels;
 
-  LockSurface();
-  ClearWin16();
-  UnlockSurface();
+    LockSurface();
+    ClearWin16();
+    UnlockSurface();
 }
 
 extern unsigned char prevNTSCMode;
@@ -137,130 +129,104 @@ extern unsigned char prevKeep4_3Ratio;
 
 void sw_drawwin()
 {
-  NGNoTransp = 0;             // Set this value to 1 within the appropriate
-  // video mode if you want to add a custom
-  // transparency routine or hardware
-  // transparency.  This only works if
-  // the value of newengen is equal to 1.
-  // (see ProcessTransparencies in newgfx16.asm
-  //  for ZSNES' current transparency code)
+    NGNoTransp = 0; // Set this value to 1 within the appropriate
+    // video mode if you want to add a custom
+    // transparency routine or hardware
+    // transparency.  This only works if
+    // the value of newengen is equal to 1.
+    // (see ProcessTransparencies in newgfx16.asm
+    //  for ZSNES' current transparency code)
 
+    UpdateVFrame();
 
-  UpdateVFrame();
+    if (curblank || CheckOGLMode()) {
+        return;
+    }
+    LockSurface();
 
-  if (curblank || CheckOGLMode())
-  {
-    return;
-  }
-  LockSurface();
+    if (NTSCFilter != prevNTSCMode) {
+        initwinvideo();
+    }
 
-  if (NTSCFilter != prevNTSCMode)
-  {
-    initwinvideo();
-  }
+    if (changeRes) {
+        initwinvideo();
+    }
 
-  if (changeRes)
-  {
-    initwinvideo();
-  }
+    if (prevKeep4_3Ratio != Keep4_3Ratio) {
+        initwinvideo();
+    }
 
-  if (prevKeep4_3Ratio != Keep4_3Ratio)
-  {
-    initwinvideo();
-  }
+    ScreenPtr = vidbuffer;
+    ScreenPtr += 16 * 2 + 32 * 2 + 256 * 2;
 
-  ScreenPtr = vidbuffer;
-  ScreenPtr += 16 * 2 + 32 * 2 + 256 * 2;
+    if (resolutn == 239) {
+        ScreenPtr += 8 * 288 * 2;
+    }
 
-  if (resolutn == 239)
-  {
-    ScreenPtr += 8 * 288 * 2;
-  }
+    pitch = surface->pitch;
+    SurfBufD = surface->pixels;
 
-  pitch = surface->pitch;
-  SurfBufD = surface->pixels;
+    if (SurfBufD == 0) {
+        UnlockSurface();
+        return;
+    }
 
-  if (SurfBufD == 0)
-  {
+    if (SurfaceX == 256 && SurfaceY == 224) {
+        DrawWin256x224x16();
+    } else if (SurfaceX == 320 && SurfaceY == 240) {
+        DrawWin320x240x16();
+    } else if ((SurfaceX == 512 && SurfaceY == 448)) {
+        AddEndBytes = pitch - 1024;
+        NumBytesPerLine = pitch;
+        WinVidMemStart = SurfBufD;
+
+        if (hqFilter) {
+            switch (hqFilter) {
+            case 1:
+                hq2x_16b();
+                break;
+            case 2:
+                //hq3x_16b();
+                break;
+            case 3:
+                //hq4x_16b();
+                break;
+            default:
+                break;
+            }
+        } else {
+            copy640x480x16bwin();
+        }
+    } else if ((SurfaceX == 602) && NTSCFilter) {
+        AddEndBytes = pitch - 1024;
+        NumBytesPerLine = pitch;
+        WinVidMemStart = SurfBufD;
+
+        NTSCFilterDraw(SurfaceX, SurfaceY, pitch, WinVidMemStart);
+    } else if (SurfaceX == 640 && SurfaceY == 480) {
+        AddEndBytes = pitch - 1024;
+        NumBytesPerLine = pitch;
+        WinVidMemStart = SurfBufD + 16 * 640 * 2 + 64 * 2;
+        if (hqFilter) {
+            switch (hqFilter) {
+            case 1:
+                hq2x_16b();
+                break;
+            case 2:
+                //hq3x_16b();
+                break;
+            case 3:
+                //hq4x_16b();
+                break;
+            default:
+                break;
+            }
+        } else if (NTSCFilter) {
+            NTSCFilterDraw(SurfaceX, SurfaceY, pitch, WinVidMemStart - 16 * 640 * 2 - 64 * 2);
+        } else {
+            copy640x480x16bwin();
+        }
+    }
+
     UnlockSurface();
-    return;
-  }
-
-  if (SurfaceX == 256 && SurfaceY == 224)
-  {
-    DrawWin256x224x16();
-  }
-  else if (SurfaceX == 320 && SurfaceY == 240)
-  {
-    DrawWin320x240x16();
-  }
-  else if ((SurfaceX == 512 && SurfaceY == 448))
-  {
-    AddEndBytes = pitch - 1024;
-    NumBytesPerLine = pitch;
-    WinVidMemStart = SurfBufD;
-
-    if (hqFilter)
-    {
-      switch (hqFilter)
-      {
-        case 1:
-          hq2x_16b();
-          break;
-        case 2:
-          //hq3x_16b();
-          break;
-        case 3:
-          //hq4x_16b();
-          break;
-        default:
-          break;
-      }
-    }
-    else
-    {
-      copy640x480x16bwin();
-    }
-  }
-  else if ((SurfaceX == 602) && NTSCFilter)
-  {
-    AddEndBytes = pitch - 1024;
-    NumBytesPerLine = pitch;
-    WinVidMemStart = SurfBufD;
-
-    NTSCFilterDraw(SurfaceX, SurfaceY, pitch, WinVidMemStart);
-  }
-  else if (SurfaceX == 640 && SurfaceY == 480)
-  {
-    AddEndBytes = pitch - 1024;
-    NumBytesPerLine = pitch;
-    WinVidMemStart = SurfBufD + 16 * 640 * 2 + 64 * 2;
-    if (hqFilter)
-    {
-      switch (hqFilter)
-      {
-        case 1:
-          hq2x_16b();
-          break;
-        case 2:
-          //hq3x_16b();
-          break;
-        case 3:
-          //hq4x_16b();
-          break;
-        default:
-          break;
-      }
-    }
-    else if (NTSCFilter)
-    {
-      NTSCFilterDraw(SurfaceX, SurfaceY, pitch, WinVidMemStart - 16 * 640 * 2 - 64 * 2);
-    }
-    else
-    {
-      copy640x480x16bwin();
-    }
-  }
-
-  UnlockSurface();
 }

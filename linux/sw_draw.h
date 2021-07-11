@@ -19,7 +19,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-
 #ifndef SW_DRAW_h
 #define SW_DRAW_h 1
 
@@ -29,5 +28,3 @@ void sw_clearwin();
 void sw_drawwin();
 
 #endif
-
-

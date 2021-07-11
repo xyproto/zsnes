@@ -34,7 +34,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define AT_SYMLINK_NOFOLLOW 1
 #endif
 
-int fstatat(int dirfd, const char *pathname, struct stat *buf, int flags);
+int fstatat(int dirfd, const char* pathname, struct stat* buf, int flags);
 
 #endif
 

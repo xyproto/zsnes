@@ -25,21 +25,20 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <QThread>
 #include <setjmp.h>
 
-class ZSNESThread : public QThread
-{
-  Q_OBJECT
+class ZSNESThread : public QThread {
+    Q_OBJECT
 
-  private:
-  bool running;
-  jmp_buf jump;
+private:
+    bool running;
+    jmp_buf jump;
 
-  public:
-  ZSNESThread();
-  void run();
-  void done();
+public:
+    ZSNESThread();
+    void run();
+    void done();
 
-  public slots:
-  void prepare_close();
+public slots:
+    void prepare_close();
 };
 
 #endif

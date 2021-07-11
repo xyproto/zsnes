@@ -19,7 +19,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-
 #ifndef GL_DRAW_h
 #define GL_DRAW_h 1
 
@@ -32,5 +31,3 @@ void SetGLAttributes();
 extern char allow_glvsync;
 
 #endif
-
-

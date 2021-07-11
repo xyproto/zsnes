@@ -22,8 +22,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #ifndef LIB_H
 #define LIB_H
 
-char *realpath_sfn(const char *file, char *buf);
-char *realpath_lfn(const char *file, char *buf);
+char* realpath_sfn(const char* file, char* buf);
+char* realpath_lfn(const char* file, char* buf);
 
 //Only beta versions of DJGPP currently have this function
 #if (__DJGPP__ < 3) && (__DJGPP_MINOR__ < 4)

@@ -35,8 +35,7 @@ extern "C" {
 
 #define MANYMOUSE_VERSION "0.0.1"
 
-typedef enum
-{
+typedef enum {
     MANYMOUSE_EVENT_ABSMOTION = 0,
     MANYMOUSE_EVENT_RELMOTION,
     MANYMOUSE_EVENT_BUTTON,
@@ -55,27 +54,24 @@ typedef struct
     int maxval;
 } ManyMouseEvent;
 
-
 /* internal use only. */
 typedef struct
 {
     int (*init)(void);
     void (*quit)(void);
-    const char *(*name)(unsigned int index);
-    int (*poll)(ManyMouseEvent *event);
+    const char* (*name)(unsigned int index);
+    int (*poll)(ManyMouseEvent* event);
 } ManyMouseDriver;
-
 
 int ManyMouse_Init(void);
 void ManyMouse_Quit(void);
-const char *ManyMouse_DeviceName(unsigned int index);
-int ManyMouse_PollEvent(ManyMouseEvent *event);
+const char* ManyMouse_DeviceName(unsigned int index);
+int ManyMouse_PollEvent(ManyMouseEvent* event);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif  /* !defined _INCLUDE_MANYMOUSE_H_ */
+#endif /* !defined _INCLUDE_MANYMOUSE_H_ */
 
 /* end of manymouse.h ... */
-

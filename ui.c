@@ -477,7 +477,7 @@ void MultiMouseInit()
 #endif
     MouseCount = ManyMouse_Init();
     if (MouseCount > 0) {
-		printf("ManyMouse: %d mice detected.\n", MouseCount);
+        printf("ManyMouse: %d mice detected.\n", MouseCount);
     }
 
     if (MouseCount > 1) {

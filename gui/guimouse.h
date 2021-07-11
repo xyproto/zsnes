@@ -7,7 +7,7 @@
 
 void SwitchFullScreen(void);
 void ProcessMouse(void);
-u4   guipresstest(void);
+u4 guipresstest(void);
 void guipresstestb(u4* guicpressptr, char const* guipressptr);
 void DrawMouse(void);
 

@@ -25,37 +25,34 @@ This is part of a toolkit used to assist in ZSNES development
 #include <string.h>
 #include <sys/stat.h>
 
-void parse_dir(const char *, void (*func)(const char *, struct stat&));
-bool parse_path(const char *, void (*func)(const char *, struct stat&));
+void parse_dir(const char*, void (*func)(const char*, struct stat&));
+bool parse_path(const char*, void (*func)(const char*, struct stat&));
 
-inline bool extension_match(const char *filename, const char *ext)
+inline bool extension_match(const char* filename, const char* ext)
 {
-  size_t filen_len = strlen(filename);
-  size_t ext_len = strlen(ext);
-  return((filen_len > ext_len) && !strcasecmp(filename+filen_len-ext_len, ext));
+    size_t filen_len = strlen(filename);
+    size_t ext_len = strlen(ext);
+    return ((filen_len > ext_len) && !strcasecmp(filename + filen_len - ext_len, ext));
 }
 
-inline bool is_c_file(const char *filename)
+inline bool is_c_file(const char* filename)
 {
-  return(extension_match(filename, ".c") ||
-         extension_match(filename, ".h"));
+    return (extension_match(filename, ".c") || extension_match(filename, ".h"));
 }
 
-inline bool is_cpp_file(const char *filename)
+inline bool is_cpp_file(const char* filename)
 {
-  return(extension_match(filename, ".cpp"));
+    return (extension_match(filename, ".cpp"));
 }
 
-inline bool is_psr_file(const char *filename)
+inline bool is_psr_file(const char* filename)
 {
-  return(extension_match(filename, ".psr"));
+    return (extension_match(filename, ".psr"));
 }
 
-inline bool is_asm_file(const char *filename)
+inline bool is_asm_file(const char* filename)
 {
-  return(extension_match(filename, ".asm") ||
-         extension_match(filename, ".inc") ||
-         extension_match(filename, ".mac"));
+    return (extension_match(filename, ".asm") || extension_match(filename, ".inc") || extension_match(filename, ".mac"));
 }
 
 #endif

@@ -19,39 +19,34 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include <unistd.h>
+#include <errno.h>
 #include <fcntl.h>
 #include <sys/stat.h>
-#include <errno.h>
+#include <unistd.h>
 
 #include "lib.h"
 
 #ifndef HAVE_AT_FUNCTIONS
 
-int fstatat(int dirfd, const char *pathname, struct stat *buf, int flags)
+int fstatat(int dirfd, const char* pathname, struct stat* buf, int flags)
 {
-  int success = -1;
+    int success = -1;
 
-  if ((!flags || (flags == AT_SYMLINK_NOFOLLOW)))
-  {
-    int cwdfd = -1;
-    if ((dirfd == AT_FDCWD) || (pathname && (*pathname == '/')) || (((cwdfd=open(".", O_RDONLY)) != -1) && !fchdir(dirfd)))
-    {
-      success = (!flags) ? stat(pathname, buf) : lstat(pathname, buf);
+    if ((!flags || (flags == AT_SYMLINK_NOFOLLOW))) {
+        int cwdfd = -1;
+        if ((dirfd == AT_FDCWD) || (pathname && (*pathname == '/')) || (((cwdfd = open(".", O_RDONLY)) != -1) && !fchdir(dirfd))) {
+            success = (!flags) ? stat(pathname, buf) : lstat(pathname, buf);
+        }
+
+        if (cwdfd != -1) {
+            fchdir(cwdfd);
+            close(cwdfd);
+        }
+    } else {
+        errno = EINVAL;
     }
 
-    if (cwdfd != -1)
-    {
-      fchdir(cwdfd);
-      close(cwdfd);
-    }
-  }
-  else
-  {
-    errno = EINVAL;
-  }
-
-  return(success);
+    return (success);
 }
 
 #endif
