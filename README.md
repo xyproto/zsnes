@@ -33,14 +33,15 @@ Installing a desktop shortcut is also possible. A `zsnes.desktop` file can be ge
     install -Dm644 zsnes.png /usr/share/pixmaps/zsnes.png
     install -Dm644 zsnes.desktop /usr/share/applications/zsnes.desktop
 
-For other platforms than Linux, different flags may apply. ZSNES is primarily one executable, but for UNIX-inspired operating systems, the man page might also be nice to have.
+For other platforms than Linux, different flags may apply. ZSNES is primarily one executable, but for UNIX-inspired operating systems, the man page (`man/zsnes.1`) can be installed as ie. `/usr/share/man/man1/zsnes.1` (this is handled by `make install`, though).
+
 
 ### Pull requests
 
 * Pull requests are welcome.
 * A port to SDL2 is extra warmly welcome!
 * Being able to build and run ZSNES on Linux is a priority.
-* Please have `clang-format` installed and run `./fmt.sh` before submitting a pull requests.
+* Please have `clang-format` installed and run `./fmt.sh` before submitting a pull request.
 
 ### General info
 
