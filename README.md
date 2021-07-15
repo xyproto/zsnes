@@ -124,13 +124,9 @@ however, add it in yourself by:
 
 ### Known issues and some work-arounds
 
-* After many video mode switches (all windowed), switching to full screen
-  then back to window mode cases an SDL parachute exit; try not to use too
-  many video mode changes, and restart ZSNES every once in a while if you
-  are just testing out video modes
+* After many video mode switches (all windowed), switching to full screen then back to window mode cases an SDL parachute exit; try not to use too many video mode changes, and restart ZSNES every once in a while if you are just testing out video modes.
 
-* Segfault after having compiled the source -- this might be due to an old
-  `zguicfg.dat` file; delete this and see if the problem gets fixed.
+* Segfault after having compiled the source -- this might be due to an old `zguicfg.dat` file; delete this and see if the problem gets fixed.
 
 ### File list
 
@@ -150,17 +146,17 @@ copyvwin.asm    ; Video Blitter for D modes
 
 -LINUX-
 copyvwin.asm	; Video Blitter for D modes
-gl_draw.c	   ; OpenGL routines for drawing the video buffer
+gl_draw.c	    ; OpenGL routines for drawing the video buffer
 gl_draw.h   	;
-protect.c	   ;
-sdllink.c	   ; SDL routines (video, input, sound init)
+protect.c	    ;
+sdllink.c	    ; SDL routines (video, input, sound init)
 sdlintrf.asm	; Interface routines
-sw_draw.c	   ; Software (via SDL) drawing routines
-sw_draw.h	   ;
+sw_draw.c	    ; Software (via SDL) drawing routines
+sw_draw.h	    ;
 zfilew.c	    ;
 zipxw.c 		;
 zloaderw.c  	;
-ztcp.c	  	; TCP/IP (Netplay)
+ztcp.c	  	    ; TCP/IP (Netplay)
 
 -MAN-
 zsnes.1         ; man page for zsnes
@@ -310,36 +306,43 @@ SA1REGS.ASM     ; SA-1 registers, also includes S-DD1 and SPC7110 routines
 
 #### SDL Port
 
-- Low performance due to differences in surface sizes (internal and
-  SDL), make both the same size.
-- OpenGL code is awful, incomprehensible, stupid and awful again.
-  We must fix it.
+- Low performance due to differences in surface sizes (internal and SDL), make both the same size.
+- OpenGL code is awful, incomprehensible, stupid and awful again. We must fix it.
 - Support overscan in games like DQ5.
 
 #### Windows port
 
-- OpenGL, or Direct3D support would be nice (we have the source for
-  OpenGL but it needs to be integrated into the main tree, any takers?)
+- OpenGL, or Direct3D support would be nice (we have the source for OpenGL but it needs to be integrated into the main tree, any takers?)
 - Windows port should be converted to Direct3D from DirectDraw 7.0.
 - Windows sound code needs to be rewritten to reflect the SDL port.
 
 #### Compatibility
 
-- Game not working - Guikuden 1, Cu-On-Pa (and loads more)
-- Graphics Glitches - Killer Instinct (black background), FF3 (Range Time Over
-      and other sprite trouble), Tactic Ogre (Menus), lots of others...
-- Special Chips - DSP1 (99% done), DSP3 (50% done), DSP4 (99% done)
-      SA-1 (95% done), SPC7110 (Needs decompression)
-      SFX1/2 (95% done), Seta 11 (25% done),
-      Seta 18 (1% done), BS-X (50% done).
+- Games not working:
+  - Guikuden 1
+  - Cu-On-Pa
+  - Loads more
+- Graphics Glitches:
+  - Killer Instinct (black background)
+  - FF3 (Range Time Over and other sprite trouble)
+  - Tactic Ogre (Menus)
+  - Lots of others
+- Special Chips:
+  - DSP1 (99% done)
+  - DSP3 (50% done)
+  - DSP4 (99% done)
+  - SA-1 (95% done)
+  - SPC7110 (Needs decompression)
+  - SFX1/2 (95% done)
+  - Seta 11 (25% done)
+  - Seta 18 (1% done)
+  - BS-X (50% done)
 
 #### Timing engine
 
 - Convert counter to 32-bit. (assigned to pagefault).
-- Fix 65816 timing and take into consideration cycle differences in
-  8/16-bit mode, branches etc.
+- Fix 65816 timing and take into consideration cycle differences in 8/16-bit mode, branches etc.
 
 #### Graphics Engine
 
-- Fix some windowing/sub-screen sprite problems that are still present in
-  the new graphics engine. Probably pagefault will have to do this.
+- Fix some windowing/sub-screen sprite problems that are still present in the new graphics engine. Probably pagefault will have to do this.
