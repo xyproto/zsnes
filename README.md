@@ -145,18 +145,18 @@ ztcp.c          ; TCP/IP & UDP driver
 copyvwin.asm    ; Video Blitter for D modes
 
 -LINUX-
-copyvwin.asm	; Video Blitter for D modes
-gl_draw.c	    ; OpenGL routines for drawing the video buffer
-gl_draw.h   	;
-protect.c	    ;
-sdllink.c	    ; SDL routines (video, input, sound init)
-sdlintrf.asm	; Interface routines
-sw_draw.c	    ; Software (via SDL) drawing routines
-sw_draw.h	    ;
-zfilew.c	    ;
-zipxw.c 		;
-zloaderw.c  	;
-ztcp.c	  	    ; TCP/IP (Netplay)
+copyvwin.asm    ; Video Blitter for D modes
+gl_draw.c       ; OpenGL routines for drawing the video buffer
+gl_draw.h       ;
+protect.c       ;
+sdllink.c       ; SDL routines (video, input, sound init)
+sdlintrf.asm    ; Interface routines
+sw_draw.c       ; Software (via SDL) drawing routines
+sw_draw.h       ;
+zfilew.c        ;
+zipxw.c         ;
+zloaderw.c      ;
+ztcp.c          ; TCP/IP (Netplay)
 
 -MAN-
 zsnes.1         ; man page for zsnes
