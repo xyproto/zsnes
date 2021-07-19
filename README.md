@@ -18,11 +18,11 @@ For other platforms than Linux, copying `config.template` or `config.linux` to `
 
 ### Debug build
 
-Make sure `~/roms/snes/example.sfc` exists and is a valid SNES rom. Also make sure that `gdb` is installed. Then:
+Make sure that `gdb` is installed. Then:
 
     make clean debug
 
-Then type `r` in gdb to run zsnes with the example ROM. Use ie. `bt full` to see the backtrace if ZSNES crashes.
+Then type `r` in gdb to run zsnes with the example ROM (`~/roms/snes/example.sfc`). Use ie. `bt full` to see the backtrace if ZSNES crashes.
 
 ### Install
 
