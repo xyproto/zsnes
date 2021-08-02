@@ -28,7 +28,7 @@ Then type `r` in gdb to run zsnes with the example ROM (`~/roms/snes/example.sfc
 
     make install
 
-Installing a desktop shortcut is also possible. A `zsnes.desktop` file can be generated with [gendesk](https://github.com/xyproto/gendesk). If you have a suitable icon named `zsnes.png` these can both be installed with:
+Installing a desktop shortcut is possible. A `zsnes.desktop` file is included in `linux/zsnes.desktop`. It could also be generated with [gendesk](https://github.com/xyproto/gendesk). If you have a suitable icon named `zsnes.png` then they can both be installed with:
 
     install -Dm644 zsnes.png /usr/share/pixmaps/zsnes.png
     install -Dm644 zsnes.desktop /usr/share/applications/zsnes.desktop
