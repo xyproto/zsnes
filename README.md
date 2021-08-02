@@ -6,6 +6,8 @@ This is a fork of ZSNES that aims to solve this.
 
 Running `make` produces a 32-bit ELF executable with MMX and not SSE support (to play nicely with the 32-bit Assembly code that parts of ZSNES are written in).
 
+Compiling ZSNES so that it works on 64-bit x86 is a goal. Supporting 32-bit x86 is not a goal, but pull requests are welcome.
+
 Tested on Arch Linux.
 
 The long term goal is to also port ZSNES to SDL2.
@@ -35,7 +37,6 @@ Installing a desktop shortcut is possible. A `zsnes.desktop` file is included in
 
 For other platforms than Linux, different flags may apply. ZSNES is primarily one executable, but for UNIX-inspired operating systems, the man page (`man/zsnes.1`) can be installed as ie. `/usr/share/man/man1/zsnes.1` (this is handled by `make install`, though).
 
-
 ### Pull requests
 
 * Pull requests are welcome.
@@ -52,6 +53,11 @@ Thanks to Christoph Mallon for the commits that this fork is based on.
 * Fork author: Alexander F. Rødseth &lt;xyproto@archlinux.org&gt;
 
 # Old documentation
+
+* Some of the information in the old text files in `docs/readme.txt/*.txt` has not yet been ported over to the `linux/zsnes.1` man page, or to a Markdown document.
+* The plan is to do this. Pull requests are welcome.
+
+This is a summary based on the other text files that were not in `docs/readme.txt/*.txt`:
 
 ## List of contributors
 
