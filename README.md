@@ -6,7 +6,8 @@ This is a fork of ZSNES that aims to solve this.
 
 Running `make` produces a 32-bit ELF executable with MMX and not SSE support (to play nicely with the 32-bit Assembly code that parts of ZSNES are written in).
 
-Compiling ZSNES so that it works on 64-bit x86 is a goal. Supporting 32-bit x86 is not a goal, but pull requests are welcome.
+* Compiling ZSNES so that it works on 64-bit x86 is a goal (that has been reached).
+* Supporting 32-bit x86 is not a goal, but pull requests are welcome.
 
 Tested on Arch Linux.
 
