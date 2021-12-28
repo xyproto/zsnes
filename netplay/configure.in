@@ -1,0 +1,190 @@
+dnl Process this file with autoconf to produce a configure script.
+
+AC_INIT(init.asm)
+AC_CONFIG_HEADER(config.h)	
+ISODATE=`date +%Y-%m-%d`
+AC_SUBST(ISODATE)
+VERSION=1.42
+AC_SUBST(VERSION)
+AC_ARG_WITH(nasm-prefix,[  --with-nasm-prefix=PFX Prefix where nasm is installed (optional)], nasm_prefix="$withval", nasm_prefix="")
+
+dnl -- Where is our compiler, and who are we compiling for?
+CFLAGS="$CFLAGS -pipe -I. -Wall -I/usr/local/include -I/usr/include"
+
+dnl -- You might wanna change -I/usr/include if you're trying to do this with
+dnl Mingw, because it doesnt have a standard file tree. Maybe if ming do this
+dnl else do -I/usr/include. Or some shit. You figure it out.
+
+LDFLAGS="$LDFLAGS -L/usr/local/lib -L/usr/lib"
+
+dnl -- Same thing here.
+
+AC_CANONICAL_SYSTEM
+AC_PROG_CC
+AC_PROG_CXX
+AC_CHECK_TOOL(NASMPATH,nasm,"no",$nasm_prefix:$PATH)
+if test x$NASMPATH = xno; then
+AC_MSG_ERROR(You need NASM installed to compile ZSNES)
+fi
+NFLAGS="$NFLAGS -w-orphan-labels"
+AC_PROG_INSTALL
+case "$target" in
+	*-*-linux*)
+		CFLAGS="$CFLAGS -D__LINUX__"
+        	NFLAGS="$NFLAGS -D__LINUX__ -f elf -DELF"
+		;;
+	*-*-beos*)
+		CFLAGS="$CFLAGS -D__LINUX__ -D__BEOS__"
+        	NFLAGS="$NFLAGS -D__LINUX__ -D__BEOS__ -f elf -DELF"
+		;;
+	*-*-*openbsd*)
+		CFLAGS="$CFLAGS -D__LINUX__ -D__FreeBSD__"
+		NFLAGS="$NFLAGS -D__LINUX__ -D__FreeBSD__ -D__OpenBSD__ -f aoutb"
+		;;
+	*-*-*bsd*)
+		CFLAGS="$CFLAGS -D__LINUX__ -D__FreeBSD__"
+		NFLAGS="$NFLAGS -D__LINUX__ -D__FreeBSD__ -DELF -f elf"
+		;;
+	*-*-cygwin* | *-*-*ming*)
+		CFLAGS="$CFLAGS -D__LINUX__"
+		NFLAGS="$NFLAGS -D__LINUX__ -f win32"
+		;;
+	*)
+		AC_MSG_ERROR(This Target is Not Supported)
+		;;
+esac
+
+dnl Checks for libraries.
+
+dnl -- Where is libSDL and zlib, and do we want/have libPNG and OpenGL support?
+
+AM_PATH_SDL(1.2.0,,[AC_MSG_ERROR(SDL >= 1.2.0 is required)])
+AM_PATH_ZLIB(1.1.0,,[AC_MSG_ERROR(ZLIB >= 1.1.0 is required)])
+CFLAGS="$CFLAGS $ZLIB_CFLAGS"
+LDFLAGS="$LDFLAGS $ZLIB_LIBS"
+AM_PATH_LIBPNG(1.2.0,,)
+CFLAGS="$CFLAGS $SDL_CFLAGS"
+LDFLAGS="$LDFLAGS $SDL_LIBS"
+
+if test x$with_libpng != xyes; then
+        CFLAGS="$CFLAGS -DNO_PNG"
+        NFLAGS="$NFLAGS -DNO_PNG"
+else
+	CFLAGS="$CFLAGS $LIBPNG_CFLAGS"
+	LDFLAGS="$LDFLAGS $LIBPNG_LIBS"
+fi
+
+dnl -- opengl stuff
+AC_ARG_ENABLE(opengl,[  --disable-opengl        Build without opengl support],,enable_opengl=yes)
+AC_ARG_WITH(opengl-prefix,[  --with-opengl-prefix=PFX Prefix where opengl is installed (optional)], opengl_prefix="$withval", opengl_prefix="")
+
+if test x$enable_opengl != xno; then
+AC_PATH_X
+if test x$opengl_prefix != x; then
+CFLAGS="$CFLAGS -I$opengl_prefix/include"
+LDFLAGS-"$LDFLAGS -L$opengl_prefix/lib"
+fi
+if test x$x_libraries != x; then
+LDFLAGS="$LDFLAGS -L$x_libraries"
+fi
+AC_CHECK_LIB(GL, glGetError,found_opengl="yes",,)
+if test x$found_opengl = xyes; then
+        echo checking for OpenGL... yes
+        LDFLAGS="$LDFLAGS -lGL"
+        CFLAGS="$CFLAGS -D__OPENGL__"
+        NFLAGS="$NFLAGS -D__OPENGL__"
+        GL_DRAW="\${WINDIR}/gl_draw.o"
+else
+        echo checking for OpenGL... no
+fi
+else
+	echo checking for OpenGL... disabled by user
+fi
+dnl --
+
+
+
+dnl -- Various debug and optimization option checks
+
+AC_ARG_ENABLE(debug, [  --enable-debug          Build GDB Friendly binary (zsnesd) ],debug=yes)
+AC_MSG_CHECKING(if you want gdb friendly executable)
+if test x$debug = xyes; then
+	AC_MSG_RESULT(yes)
+		
+	dnl It is actually easier to debug zsnes with no optimization
+	dnl enabled. 
+
+	CFLAGS="$CFLAGS -DDEBUG -O0 -fno-omit-frame-pointer -ggdb3"
+	NFLAGS="$NFLAGS -DDEBUG -g -s -O0" dnl it works now
+	ZSNESEXE="zsnesd"
+else
+	AC_MSG_RESULT(no)
+	
+	CFLAGS="$CFLAGS -O3 -ffast-math -fomit-frame-pointer -fexpensive-optimizations -s"
+	NFLAGS="$NFLAGS -O1"
+	ZSNESEXE="zsnes"
+fi
+
+AC_MSG_CHECKING(which processor class to optimize for)
+if test x$debug != xyes; then
+	case "$target" in
+		i486-*-*)
+			CFLAGS="$CFLAGS -march=i486"
+			AC_MSG_RESULT(486)
+			;;
+		i586-*-*)
+			CFLAGS="$CFLAGS -march=pentium"
+			AC_MSG_RESULT(586)
+			;;
+		i686-*-*)
+			CFLAGS="$CFLAGS -march=pentiumpro"
+			dnl CFLAGS="$CFLAGS -march=pentium3 -mmmx -msse -mfpmath=sse,387"
+			AC_MSG_RESULT(686)
+			;;
+		*)
+			AC_MSG_RESULT(386)
+			AC_MSG_WARN(*** This is probably not what you want use --target)
+			;;
+	esac
+else
+	AC_MSG_RESULT(no optimization because debug enabled)
+fi
+
+dnl Checks for header files.
+AC_HEADER_STDC
+AC_HEADER_MAJOR
+
+dnl Checks for library functions.
+AC_SUBST(ZSNESEXE)
+AC_SUBST(GL_DRAW)
+AC_SUBST(NFLAGS)
+AC_SUBST(NASMPATH)
+AC_OUTPUT(Makefile)
+echo
+echo
+echo ZSNES v$VERSION
+echo
+echo "SDL support                         Version `$SDL_CONFIG --version`"
+echo "NASM support                        `nasm -r`"
+echo "ZLib support                        Version $ZLIB_VERSION"
+if test "$with_libpng" = "yes"; then
+	echo "PNG support (png screenshots)       Yes, version $LIBPNG_VERSION"
+elif test "$enable_libpng" = "no"; then
+	echo "PNG support                         Disabled by user"
+else
+	echo "PNG support                  	  Disabled, library not found"
+fi
+if test "$found_opengl" = "yes"; then
+	echo "OpenGL support                      Yes"
+elif test "$enable_opengl" = "no"; then
+	echo "OpenGL support                      Disabled by user"
+else
+	echo "OpenGL support                      Disabled, library not found"
+fi
+echo
+echo The binary will be installed in $prefix/bin
+echo
+echo Configure complete, now type \'make\' and pray.
+echo
+
+

@@ -1,0 +1,173 @@
+.TH ZSNES 1 "16 January 2005"
+
+.SH NAME
+zsnes - The ZSNES Super Nintendo emulator, version 1.41
+.SH SYNOPSIS
+.B zsnes
+[-?] [-0] [-1 #] [-2 #] [-7] [-8] [-9] [-a] [-cb] [-cc] [-cs] [-dd] [-f #] [-h | -l] [-i] [-j] [-k #] [-m] [-n] [-om] [-p #] [-r #] [-s] [-sa] [-sn] [-t | -u] [-w] [-y] [-z] [-zs #] [romname]
+
+.SH DESCRIPTION
+.B ZSNES
+is an emulator for the Super Nintendo video game console. It is written in a combination of x86 assembler, C and C++ and is currently available on Windows, DOS and x86 Linux.
+
+Visit http://www.zsnes.com/ for the latest updates.
+
+.SH OPTIONS
+Note: many of these options can also be set in the GUI
+.TP
+.B -?
+Display command-line help
+.TP
+.B -0
+Disable color 0 modification in 256 (8-bit) color modes
+.TP
+.B -1 # / -2 #
+Set controls for Player 1/2.
+.nf
+\fI0\fP = None       \fI1\fP = Keyboard       \fI2\fP = Joystick       \fI3\fP = Gamepad 
+\fI4\fP = 4 Button   \fI5\fP = 6 Button       \fI6\fP = Sidewinder
+.fi
+.TP
+.B -7
+Disable SPC700 speedhack
+.TP
+.B -8
+Force 8-bit sound
+.TP
+.B -9
+Off by 1 line fix
+.TP
+.B -a
+Enable automatic frame rate
+.TP
+.B -cb
+Remove Background Color in 256 (8-bit) color modes
+.TP
+.B -cc
+Enable small screen (when available)
+.TP
+.B -cs
+Enable full/wide screen (when available)
+.TP
+.B -dd
+Disable sound DSP emulation
+.TP
+.B -f #
+Enable frame skipping, where \fB#\fP is a numerical value from \fI0-9\fP
+.TP
+.B -h
+Force HiROM. Cannot be used with \fB-l\fP
+.TP
+.B -i
+Uninterleave ROM image
+.TP
+.B -j
+Disable Mouse (Automatically turns off right mouse click)
+.TP
+.B -k #
+Set volume level, where \fB#\fP is a numerical value from \fI1-100\fP
+.TP
+.B -l
+Force LoROM. Cannot be used with \fB-h\fP
+.TP
+.B -m
+Disable GUI
+.TP
+.B -n
+Enable full scanlines (when available)
+.TP
+.B -om
+Enable MMX support (when available)
+.TP
+.B -p #
+Change the clock speed of the main CPU, where
+.B #
+is a numerical value from \fI50-120\fP. 100 is the normal speed. Changing this value may have adverse side effects.
+.TP
+.B -r #
+Set audio sampling rate, where
+.B #
+is one of:
+.nf
+\fI0\fP = 8 KHz       \fI1\fP = 11.025 KHz       \fI2\fP = 22.05 KHz
+\fI3\fP = 44.1 KHz    \fI4\fP = 16 KHz           \fI5\fP = 32 KHz
+.fi
+.TP
+.B -s
+Enable SPC700/DSP emulation (Sound)
+.TP
+.B -sa
+Show files with all extensions (*.*) in GUI. Default is to only show files with one of the extensions listed in
+.B romname
+.TP
+.B -sn
+Enable snowy GUI background
+.TP
+.B -t
+Force NTSC (60 Hz) timing. Cannot be used with \fB-u\fP
+.TP
+.B -u
+Force PAL (50 Hz) timing. Cannot be used with \fB-t\fP
+.TP
+.B -w
+Enable VSync (disables triple buffering)
+.TP
+.B -y
+Enable EAGLE (640x480x8B only) or Interpolation (640x480x16B only)
+.TP
+.B -z
+Disable stereo sound. Stereo sound is enabled by default.
+.TP
+.B -zs #
+Auto load specified save state on startup
+.TP
+.B romname
+Name of ROM to auto-load. 
+.B romname
+is of the format \fBfilename.ext\fP, where
+.B .ext
+is one of
+.I .SMC, .SFC, .SWC, .FIG, .058, .078, .1, .A, .USA, .JAP,
+or \fI.GD3\fP.  You can also load ROMs which have been compressed with Zip, GZip or JMA.
+
+
+.SH "FILES AND DIRECTORIES"
+.TP
+zsnes
+The main program
+.TP
+~/.zsnes
+This is the directory where ZSNES configuration files are stored. By default, it is also the directory where save states, screenshots, SPC dumps and ZMV movie files are stored, but you can change this behaviour by editing zsnesl.cfg. This directory is created by ZSNES.
+.TP
+~/.zsnes/zsnesl.cfg
+This file is where configuration settings for ZSNES are stored. It is in a human-readable format and can be edited by hand. It is created by ZSNES.
+.TP
+~/.zsnes/.zguicfgl.dat
+This file is where settings for the GUI are saved. It is created by ZSNES.
+
+.B If for some reason you update your version of ZSNES and it keeps crashing before you can do anything, you should try deleting the two above files and let ZSNES create new ones.
+
+
+.SH "SPECIAL CHIP GAMES"
+Many games on the Super Nintendo used custom CPUs in addition to the main SNES CPU. Some of these CPUs have not been fully reverse-engineered, and games that use them may either not work or may experience strange bugs.
+
+You can find more information about many of these special CPUs at http://users.tpg.com.au/trauma/dsp/ and http://nsrt.edgeemu.com/INFO/chipinfo.htm .
+
+
+.SH "GRAPHICS PACKS"
+Some games based on the SPC7110 chip, such as Far East of Eden Zero, can use special graphics packs to work around unemulated portions of their custom CPU. These graphics packs must be stored in individual directories within the save directory, which is specified in zsnesl.cfg. By default, this is ~/.zsnes. The directory name of each graphics pack must be capitalized and all files within that directory must be in lowercase.
+
+The proper directory name for a given graphics pack can be found in the readme file included with that pack.
+
+NOTE: As of version 1.40, games which use the S-DD1 chip (Star Ocean, Street Fighter Alpha 2) do not require graphics packs.
+
+.SH "REPORTING BUGS"
+You can report bugs using the bug tracker at the ZSNES SourceForge page, located at http://sourceforge.net/projects/zsnes/.
+
+.SH AUTHORS
+Please see the authors.txt file included in the ZSNES archive.
+
+.SH "COPYRIGHT NOTICE"
+Copyright \(co 1997-2004 the ZSNES team
+
+Permission is granted to copy and distribute this  manual  under the terms of the GNU Free Documentation License.

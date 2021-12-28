@@ -1,0 +1,1910 @@
+;Copyright (C) 1997-2005 ZSNES Team ( zsKnight, _Demo_, pagefault, Nach )
+;
+;http://www.zsnes.com
+;http://sourceforge.net/projects/zsnes
+;
+;This program is free software; you can redistribute it and/or
+;modify it under the terms of the GNU General Public License
+;as published by the Free Software Foundation; either
+;version 2 of the License, or (at your option) any later
+;version.
+;
+;This program is distributed in the hope that it will be useful,
+;but WITHOUT ANY WARRANTY; without even the implied warranty of
+;MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;GNU General Public License for more details.
+;
+;You should have received a copy of the GNU General Public License
+;along with this program; if not, write to the Free Software
+;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+
+EXTSYM BGMS1,FillSubScr,CMainWinScr,CSubWinScr,scadtng
+EXTSYM ngwinen, winbg1enval, BuildWindow, ngwintable, ngcwinptr, domosaicng16b
+EXTSYM pesimpng,ScrDispl
+
+
+
+%macro ProcessBuildWindow 1
+    mov dword[ngwinen],0
+    test byte[winbg1enval+ebx+%1*256],0Ah
+    jz %%nowindowing
+    push eax
+    push ebx
+    mov al,[winlogicaval+ebx*2]
+    shr al,%1*2
+    and al,03h
+    mov [nglogicval],al
+    mov eax,ebx
+    add ebx,%1*256
+    call BuildWindow
+    cmp dword[ngwintable],0
+    je %%zero
+    dec dword[ngwintable]
+    jmp %%notzero
+%%zero
+    dec dword[ngwintable+4]
+%%notzero
+    pop ebx
+    pop eax
+    mov dword[ngcwinptr],ngwintable
+%%nowindowing
+%endmacro
+
+;Skip transparency if the bg is just a sub-screen or there are no sub-screens
+;for that line:
+%macro CheckTransparency 2
+    cmp byte[curmosaicsz],1
+    jne %%nosubmain
+    test byte[BGMS1+ebx*2],%1
+    jz %%nosubmain
+    test byte[FillSubScr+ebx],1
+    jnz near %2
+%%nosubmain
+%endmacro
+
+%macro Mode7NoTranspPreStartUp 0
+    mov esi,[cwinptr]
+    mov [winptrref],esi
+    mov esi,[curvidoffset]
+    test byte[FillSubScr+ebx],1
+    jz %%main
+    test byte[BGMS1+ebx*2],01h
+    jnz %%main
+    add esi,75036*2
+%%main
+%endmacro
+
+%macro Mode7NoTranspPreStartUp2 0
+    mov esi,[cwinptr]
+    mov [winptrref],esi
+    mov esi,[curvidoffset]
+%endmacro
+
+%macro WinEnCheck 0
+    mov esi,[CMainWinScr]
+    test byte[FillSubScr+ebx],1
+    jz %%main2
+    test byte[BGMS1+ebx*2],01h
+    jnz %%main2
+    mov esi,[CSubWinScr]
+%%main2
+%endmacro
+
+%macro WinEnCheckMS 0
+    mov esi,winbg1enval
+%endmacro
+
+%macro Mode7Calculate16b 0
+    ; mode 7, ax = curyposition, dx = curxposition (left side)
+    ; draw center map coordinates at (X0-bg1scrolx,Y0-bg1scroly) on screen
+    ; center map coordinates = (X0,Y0)
+    ; 1.) cx=X0-bg1scrolx, cy =Y0-ax
+
+    cmp byte[M7HROn],1
+    je near .calculateb
+
+    mov bx,[mode7X0]
+    and bx,0001111111111111b    ; 13 -> 16 bit signed value
+    test bx,0001000000000000b
+    jz .nonega
+    or bx,1110000000000000b    
+    or word[mode7X0],1110000000000000b    
+.nonega
+    mov [mcxloc],bx
+    mov bx,dx
+    and bx,0001111111111111b    ; 13 -> 16 bit signed value
+    test bx,0001000000000000b
+    jz .nonegb
+    or bx,1110000000000000b
+.nonegb
+    sub [mcxloc],bx
+    mov bx,ax
+    and bx,0001111111111111b    ; 13 -> 16 bit signed value
+    test bx,0001000000000000b
+    jz .nonegc
+    or bx,1110000000000000b
+.nonegc
+    sub bx,[ScrDispl]
+    mov [mcyloc],bx
+    mov bx,[mode7Y0]
+    and bx,0001111111111111b    ; 13 -> 16 bit signed value
+    test bx,0001000000000000b
+    jz .nonegd
+    or bx,1110000000000000b
+    or word[mode7Y0],1110000000000000b    
+.nonegd
+    sub word[mcyloc],bx
+
+    ; 2.) Find position at scaled y, centered x at SCX=X0-(cy*C),SCY=Y0-(cy*D)
+
+    movsx eax,word[mode7B]
+    movsx ebx,word[mcyloc]
+    imul eax,ebx
+    mov [mmode7xpos],eax
+    mov bx,word[mode7X0]
+    add [mmode7xpos+1],bx
+
+    movsx ebx,word[mcyloc]
+    movsx eax,word[mode7D]
+    imul eax,ebx
+    mov [mmode7ypos],eax
+    mov bx,word[mode7Y0]
+    add [mmode7ypos+1],bx
+
+    ; 3.) Find left scaled location : SCX=SCX-(cx*A),SCY=SCY-(cx*B)
+
+    movsx ebx,word[mcxloc]
+    movsx eax,word[mode7A]
+    mov [mmode7xadder],eax
+    imul eax,ebx
+    neg eax
+    add [mmode7xpos],eax
+
+    movsx eax,word[mode7C]
+    movsx ebx,word[mcxloc]
+    neg eax
+    mov [mmode7yadder],eax
+    imul eax,ebx
+    add [mmode7ypos],eax
+
+    test byte[mode7set],1
+    jz .nohflip
+    mov eax,[mmode7xadder]
+    shl eax,8
+    add [mmode7xpos],eax
+    neg dword[mmode7xadder]
+    mov eax,[mmode7yadder]
+    shl eax,8
+    sub [mmode7ypos],eax
+    neg dword[mmode7yadder]
+.nohflip
+    jmp .calculatea
+.calculateb
+
+    ; mode 7, ax = curyposition, dx = curxposition (left side)
+    ; draw center map coordinates at (X0-bg1scrolx,Y0-bg1scroly) on screen
+    ; center map coordinates = (X0,Y0)
+    ; 1.) cx=X0-bg1scrolx, cy =Y0-ax
+
+    mov bx,[mode7X0]
+    and bx,0001111111111111b    ; 13 -> 16 bit signed value
+    test bx,0001000000000000b
+    jz .nonegacb
+    or word[mode7X0],1110000000000000b    
+    or bx,1110000000000000b    
+.nonegacb
+    mov [mcxloc],bx
+    mov bx,dx
+    and bx,0001111111111111b    ; 13 -> 16 bit signed value
+    test bx,0001000000000000b
+    jz .nonegbcb
+    or bx,1110000000000000b
+.nonegbcb
+    sub [mcxloc],bx
+    mov bx,ax
+    and bx,0011111111111111b    ; 13 -> 16 bit signed value
+    test bx,0010000000000000b
+    jz .nonegccb
+    or bx,1100000000000000b
+.nonegccb
+    mov [mcyloc],bx
+    mov bx,[mode7Y0]
+    and bx,0001111111111111b    ; 13 -> 16 bit signed value
+    test bx,0001000000000000b
+    jz .nonegdcb
+    or word[mode7Y0],1110000000000000b    
+    or bx,1110000000000000b
+.nonegdcb
+    add bx,bx
+    sub word[mcyloc],bx
+
+    ; 2.) Find position at scaled y, centered x at SCX=X0-(cy*C),SCY=Y0-(cy*D)
+
+    movsx eax,word[mode7B]
+    movsx ebx,word[mcyloc]
+    imul eax,ebx
+    sar eax,1
+    mov [mmode7xpos],eax
+    mov bx,word[mode7X0]
+    add [mmode7xpos+1],bx
+
+    movsx ebx,word[mcyloc]
+    movsx eax,word[mode7D]
+    imul eax,ebx
+    sar eax,1
+    mov [mmode7ypos],eax
+    mov bx,word[mode7Y0]
+    add [mmode7ypos+1],bx
+
+    ; 3.) Find left scaled location : SCX=SCX-(cx*A),SCY=SCY-(cx*B)
+
+    movsx ebx,word[mcxloc]
+    movsx eax,word[mode7A]
+    mov [mmode7xadder],eax
+    imul eax,ebx
+    neg eax
+    add [mmode7xpos],eax
+
+    movsx eax,word[mode7C]
+    movsx ebx,word[mcxloc]
+    neg eax
+    mov [mmode7yadder],eax
+    imul eax,ebx
+    add [mmode7ypos],eax
+
+    test byte[mode7set],1
+    jz .nohflipcb
+    mov eax,[mmode7xadder]
+    shl eax,8
+    add [mmode7xpos],eax
+    neg dword[mmode7xadder]
+    mov eax,[mmode7yadder]
+    shl eax,8
+    sub [mmode7ypos],eax
+    neg dword[mmode7yadder]
+.nohflipcb
+.calculatea
+%endmacro
+
+Mode7Startup16b:
+    Mode7Calculate16b
+    ; esi = pointer to video buffer
+    mov [pesimpng],esi
+    cmp byte[curmosaicsz],1
+    je .nomosaic
+    mov esi,xtravbuf+32
+    mov ecx,128
+.clearnext
+    mov dword[esi],0
+    add esi,4
+    dec ecx
+    jnz .clearnext
+    mov esi,xtravbuf+32
+.nomosaic
+
+    ; esi = pointer to video buffer
+    ; edi = pointer to vram
+    ; [.mode7xadder] = dword value to add to x value (decimal between 7 & 8bit)
+    ; [.mode7yadder] = dword value to add to y value (decimal between 7 & 8bit)
+    ; [.mode7xpos]   = dword value of x position, decimal between 7 & 8bit
+    ; [.mode7xpos+1] = word value of x position
+    ; [.mode7ypos]   = dword value of y position, decimal between 7 & 8bit
+    ; [.mode7ypos+1] = word value of y position
+    xor ebx,ebx
+    xor edx,edx
+    xor ecx,ecx
+    mov dword[mmode7xadd2],800h
+    mov byte[mmode7xinc],2
+    mov byte[mmode7xincc],0
+    test dword[mmode7xadder],80000000h
+    jz .noneg
+    mov dword[mmode7xadd2],-800h
+    mov byte[mmode7xinc],-2
+    mov byte[mmode7xincc],0FEh
+.noneg
+    mov dword[mmode7yadd2],800h
+    mov byte[mmode7yinc],1
+    test dword[mmode7yadder],80000000h
+    jz .noneg2
+    mov dword[mmode7yadd2],-800h
+    mov byte[mmode7yinc],-1
+.noneg2
+    ret
+
+%macro Mode7Startup 0
+    call Mode7Startup16b
+
+    cmp byte[ngwinen],1
+    je near .drawmode7win
+
+    mov edi,[vram]
+    cmp dword[mmode7xadder],7F0h
+    jg near .nextval3
+    cmp dword[mmode7xadder],-7F0h
+    jl near .nextval3
+    cmp dword[mmode7yadder],7F0h
+    jg near .nextval3
+    cmp dword[mmode7yadder],-7F0h
+    jl near .nextval3
+%endmacro
+
+%macro Mode7MidRoutines 0
+
+.drawmode7win
+.domosaicw
+    mov ebx,[mmode7xrpos]
+    mov [mode7xrpos],ebx
+    mov ebx,[mmode7yrpos]
+    mov [mode7yrpos],ebx
+    mov ebx,[mmode7xadder]
+    mov [mode7xadder],ebx
+    mov ebx,[mmode7yadder]
+    mov [mode7yadder],ebx
+    mov ebx,[mmode7xpos]
+    mov [mode7xpos],ebx
+    mov ebx,[mmode7ypos]
+    mov [mode7ypos],ebx
+%endmacro
+
+
+NEWSYM ProcessMode7ngwin16b
+    mov ecx,[ngcwinptr]
+    mov ecx,[ecx]
+    or ecx,ecx
+    jz near .winb
+    cmp ecx,[ngwleft]
+    jae .alldisplay
+    sub [ngwleft],ecx
+    mov dword[ngwleftb],ecx
+    xor ecx,ecx
+    mov eax,[mode7xrpos]
+    ret
+.alldisplay
+    mov ecx,[ngwleft]
+    mov dword[ngwleftb],ecx
+    mov dword[ngwleft],0
+    xor ecx,ecx
+    mov eax,[mode7xrpos]
+    ret
+.winb
+NEWSYM ProcessMode7ngwinB16b
+    add dword[ngcwinptr],4
+    mov ecx,[ngcwinptr]
+    mov ecx,[ecx]
+    cmp ecx,[ngwleft]
+    jae near .finishmode7
+
+;    mov ecx,[ngwleft]
+;    mov dword[ngwleftb],ecx
+;    mov dword[ngwleft],0
+;    xor ecx,ecx
+;    mov eax,[mode7xrpos]
+;    ret
+
+    sub [ngwleft],ecx
+    or ecx,ecx
+    jz .noclip
+    mov [pixelsleft],ecx
+.nextvalngw
+    test byte[mode7xrpos+1],0F8h
+    jnz near .rposoffx
+.nextposx
+    test byte[mode7yrpos+1],0F8h
+    jnz near .rposoffy
+.nextposy
+
+    mov eax,[mode7xadder]
+    add [mode7xrpos],eax
+    mov eax,[mode7yadder]
+    sub [mode7yrpos],eax
+    add esi,2
+    dec dword[pixelsleft]
+    jnz near .nextvalngw
+.noclip
+    add dword[ngcwinptr],4
+    jmp ProcessMode7ngwin16b
+.finishmode7
+    mov dword[ngwleft],0
+    mov dword[ngwleftb],0
+    ret
+
+.rposoffx
+    mov eax,[m7xaddof]
+    sub [mode7xrpos],eax
+    add bl,[m7xaddof2]
+    test byte[mode7xrpos+1],0F8h
+    jz .noaddstuff
+    add bl,[mmode7xinc]
+    mov eax,[mmode7xadd2]
+    sub [mode7xrpos],eax
+.noaddstuff
+    xor ecx,ecx
+    mov cl,[vrama+ebx]
+    shl ecx,7
+    lea edi,[ecx+vrama]
+    jmp .nextposx
+.rposoffy
+    mov eax,[m7yaddof]
+    add dword[mode7yrpos],eax
+    sub bh,[m7yaddof2]
+    test byte[mode7yrpos+1],0F8h
+    jz .noaddstuff2
+    sub bh,[mmode7yinc]
+    mov eax,[mmode7yadd2]
+    add dword[mode7yrpos],eax
+.noaddstuff2
+    and ebx,07FFFh
+    xor ecx,ecx
+    mov cl,[vrama+ebx]
+    shl ecx,7
+    lea edi,[ecx+vrama]
+    jmp .nextposy
+
+NEWSYM ProcessMode7ngwinC16b
+    mov ecx,[ngcwinptr]
+    mov ecx,[ecx]
+    or ecx,ecx
+    jz near .winb
+    cmp ecx,[ngwleft]
+    jae .alldisplay
+    sub [ngwleft],ecx
+    mov dword[ngwleftb],ecx
+    xor ecx,ecx
+    mov eax,[mode7xpos]
+    ret
+.alldisplay
+    mov ecx,[ngwleft]
+    mov dword[ngwleftb],ecx
+    mov dword[ngwleft],0
+    xor ecx,ecx
+    mov eax,[mode7xpos]
+    ret
+.winb
+NEWSYM ProcessMode7ngwinD16b
+    add dword[ngcwinptr],4
+    mov ecx,[ngcwinptr]
+    mov ecx,[ecx]
+    cmp ecx,[ngwleft]
+    jae near .finishmode7
+    sub [ngwleft],ecx
+    or ecx,ecx
+    jz .noclip
+.nextvalngw
+.nextvalr
+;    cmp byte[switchtorep3],1
+;    je .nextposy
+;    test byte[mode7xpos+1],0F8h
+;    jnz near .rposoffx
+.nextposx
+;    test byte[mode7ypos+1],0F8h
+;    jnz near .rposoffy
+.nextposy
+    mov eax,[mode7xadder]
+    add [mode7xpos],eax
+    mov eax,[mode7yadder]
+    sub [mode7ypos],eax
+    add esi,2
+    dec ecx
+    jnz near .nextvalngw
+.noclip
+    add dword[ngcwinptr],4
+    jmp ProcessMode7ngwin16b
+.finishmode7
+    mov dword[ngwleft],0
+    mov dword[ngwleftb],0
+    ret
+.rposoffx
+    mov al,[mmode7xinc]
+    mov edi,[vram]
+    add [mmode7ptr],al
+    mov cl,byte[mmode7xincc]
+    cmp byte[mmode7ptr],cl
+    je .roffx
+.roffxretb
+    mov ebx,[mmode7ptr]
+    xor ecx,ecx
+    mov cl,[edi+ebx]
+    mov eax,[mmode7xadd2]
+    shl ecx,7
+    sub [mode7xrpos],eax
+    add edi,ecx
+    jmp .nextvalr
+.roffx
+    mov byte[switchtorep3],1
+    jmp .roffxretb
+.rposoffy
+    mov al,[mmode7yinc]
+    mov edi,[vram]
+    sub [mmode7ptr+1],al
+    js .roffy
+.roffyretb
+    mov ebx,[mmode7ptr]
+    xor ecx,ecx
+    mov cl,[edi+ebx]
+    mov eax,[mmode7yadd2]
+    shl ecx,7
+    add [mode7yrpos],eax
+    add edi,ecx
+    jmp .nextposx
+.roffy
+    mov byte[switchtorep3],1
+    jmp .roffyretb
+
+%macro ProcessBuildWindow16b 1
+    mov dword[ngwinen],0
+    test byte[esi+ebx+%1*256],0Ah
+    jz %%nowindowing
+    push eax
+    push ebx
+    mov al,[winlogicaval+ebx*2]
+    shr al,%1*2
+    and al,03h
+    mov [nglogicval],al
+    mov eax,ebx
+    add ebx,%1*256
+    call BuildWindow
+    cmp dword[ngwintable],0
+    je %%zero
+    dec dword[ngwintable]
+    jmp %%notzero
+%%zero
+    dec dword[ngwintable+4]
+%%notzero
+    pop ebx
+    pop eax
+    mov dword[ngcwinptr],ngwintable
+%%nowindowing
+%endmacro
+
+%macro Mode7Process 3
+    mov dword[mtemp],256
+    test byte[mode7set],80h
+    jnz near %%norep2
+
+    mov eax,[mmode7xpos]
+    and eax,7FFh
+    mov [mmode7xrpos],eax
+    mov eax,[mmode7ypos]
+    and eax,7FFh
+    mov [mmode7yrpos],eax
+
+    ; get tile data offset into edi
+    mov ebx,[mmode7ypos+1]
+    mov eax,[mmode7xpos+1]
+    shl ebx,5
+    shr eax,3
+    and ebx,07FF8h
+    shl al,1
+    mov bl,al
+    mov edi,[vram]
+    xor ch,ch
+    mov [mmode7ptr],ebx
+    mov cl,[edi+ebx]
+    shl ecx,7
+    add edi,ecx
+
+    mov eax,[mmode7xrpos]
+    mov ebx,[mmode7ptr]
+    jmp %%nextval
+    ALIGN16
+%%nextval
+    test ah,08h
+    jnz near %%rposoffx
+%%nextposx
+    test byte[mmode7yrpos+1],08h
+    jnz near %%rposoffy
+%%nextposy
+    mov ch,ah
+    mov edx,[mmode7yadder]
+    mov cl,byte[mmode7yrpos+1]
+    sub dword[mmode7yrpos],edx
+    xor edx,edx
+    mov dl,[mode7tab+ecx]
+    add eax,[mmode7xadder]
+    mov dl,[edi+edx]
+    %1
+    dec dword[mtemp]
+    jnz near %%nextval
+    jmp %%finishmode7
+
+%%rposoffx
+    add bl,[mmode7xinc]
+    xor ecx,ecx
+    mov cl,[vrama+ebx]
+    shl ecx,7
+    sub eax,[mmode7xadd2]
+    lea edi,[ecx+vrama]
+    jmp %%nextposx
+
+%%rposoffy
+    sub bh,[mmode7yinc]
+    and ebx,07FFFh
+    xor ecx,ecx
+    mov cl,[vrama+ebx]
+    mov edx,[mmode7yadd2]
+    shl ecx,7
+    add dword[mmode7yrpos],edx
+    lea edi,[ecx+vrama]
+    jmp %%nextposy
+
+%%finishmode7
+    xor eax,eax
+    mov dh,byte[curmosaicsz]
+    cmp dh,1
+    jne near %2
+    ret
+
+;**********************************************************
+; Mode 7, no repetition mode
+;**********************************************************
+
+%%norep2
+    test byte[mode7set],40h
+    jnz %%tilerep2
+    jmp %%nextvalb2
+    ALIGN16
+%%nextvalb2
+    cmp byte[mmode7ypos+2],3
+    ja %%offscr2
+    cmp byte[mmode7xpos+2],3
+    jbe near %%offscr3
+%%offscr2
+    mov eax,[mmode7xadder]
+    mov ebx,[mmode7yadder]
+    add [mmode7xpos],eax
+    sub [mmode7ypos],ebx
+    add esi,%3
+    dec dword[mtemp]
+    jnz near %%nextvalb2
+    jmp %%finishmode7
+%%tilerep2
+%%nextvalb3
+    cmp byte[mmode7ypos+2],3
+    ja %%offscr2b
+    cmp byte[mmode7xpos+2],3
+    jbe near %%offscr3
+%%offscr2b
+    mov ch,[mmode7xpos+1]
+    mov eax,[mmode7xadder]
+    mov cl,[mmode7ypos+1]
+    mov ebx,[mmode7yadder]
+    mov dl,[mode7tab+ecx]
+    add [mmode7xpos],eax
+    mov dl,[vrama+edx]
+    sub [mmode7ypos],ebx
+    %1
+    dec dword[mtemp]
+    jnz near %%nextvalb3
+    jmp %%finishmode7
+%%offscr3
+    mov eax,[mmode7xpos]
+    and eax,7FFh
+    mov [mmode7xrpos],eax
+    mov eax,[mmode7ypos]
+    and eax,7FFh
+    mov [mmode7yrpos],eax
+
+    ; get tile data offset into edi
+    mov ebx,[mmode7ypos+1]
+    mov eax,[mmode7xpos+1]
+    shl ebx,5
+    shr eax,3
+    and ebx,07FF8h
+    shl al,1
+    mov bl,al
+    mov edi,[vram]
+    xor ch,ch
+    mov [mmode7ptr],ebx
+    mov cl,[edi+ebx]
+    shl ecx,7
+    add edi,ecx
+
+    jmp %%nextvalr
+    ALIGN16
+%%nodr2
+    add esi,%3
+    dec dword[mtemp]
+    jz near %%fin2
+%%nextvalr
+    test byte[mmode7xrpos+1],08h
+    jnz near %%rposoffxr
+%%nextposxr
+    test byte[mmode7yrpos+1],08h
+    jnz near %%rposoffyr
+%%nextposyr
+    mov cl,[mmode7yrpos+1]
+    mov ch,[mmode7xrpos+1]
+    mov edx,[mmode7xadder]
+    add dword[mmode7xrpos],edx
+    mov edx,[mmode7yadder]
+    sub dword[mmode7yrpos],edx
+    xor edx,edx
+    mov dl,[mode7tab+ecx]
+%%m7yrpa2
+    mov dl,[edi+edx]
+    %1
+    dec dword[mtemp]
+    jnz near %%nextvalr
+%%fin2
+    jmp %%finishmode7
+%%rposoffxr
+    mov al,[mmode7xinc]
+    mov edi,[vram]
+    add [mmode7ptr],al
+    mov cl,byte[mmode7xincc]
+    cmp byte[mmode7ptr],cl
+    je %%roff
+%%roffxretb
+    mov ebx,[mmode7ptr]
+    xor ecx,ecx
+    mov cl,[edi+ebx]
+    mov eax,[mmode7xadd2]
+    shl ecx,7
+    sub [mmode7xrpos],eax
+    add edi,ecx
+    jmp %%nextposxr
+%%rposoffyr
+    mov al,[mmode7yinc]
+    mov edi,[vram]
+    sub [mmode7ptr+1],al
+    js %%roff
+%%roffyretb
+    mov ebx,[mmode7ptr]
+    xor ecx,ecx
+    mov cl,[edi+ebx]
+    mov eax,[mmode7yadd2]
+    shl ecx,7
+    add [mmode7yrpos],eax
+    add edi,ecx
+    jmp %%nextposyr
+%%roff
+    test byte[mode7set],40h
+    jnz %%tilerep3
+    jmp %%finishmode7
+%%tilerep3
+    and byte[mmode7yrpos+1],07h
+    and byte[mmode7xrpos+1],07h
+    mov cl,[mmode7yrpos+1]
+    mov eax,[mmode7xadder]
+    mov ch,[mmode7xrpos+1]
+    add [mmode7xrpos],eax
+    mov dl,[mode7tab+ecx]
+    mov eax,[mmode7yadder]
+    mov dl,[vrama+edx]
+    sub [mmode7yrpos],eax
+    %1
+    dec dword[mtemp]
+    jnz near %%tilerep3
+    jmp %%finishmode7
+%endmacro
+
+%macro Mode7ProcessB 3
+    mov dword[mtemp],256
+    test byte[mode7set],80h
+    jnz near %%norep2
+
+    mov eax,[mmode7xpos]
+    and eax,7FFh
+    mov [mmode7xrpos],eax
+    mov eax,[mmode7ypos]
+    and eax,7FFh
+    mov [mmode7yrpos],eax
+
+    ; get tile data offset into edi
+    mov ebx,[mmode7ypos+1]
+    mov eax,[mmode7xpos+1]
+    shl ebx,5
+    shr eax,3
+    and ebx,07FF8h
+    shl al,1
+    mov bl,al
+    mov edi,[vram]
+    xor ch,ch
+    mov [mmode7ptr],ebx
+    mov cl,[edi+ebx]
+    shl ecx,7
+    add edi,ecx
+
+    xor dl,dl
+    xor ecx,ecx
+    mov ebx,[mmode7xadder]
+    test ebx,80000000h
+    jz %%nexta
+    neg ebx
+%%nexta
+    cmp ebx,0800h
+    jl %%skipx
+    sub ebx,800h
+    add ecx,[mmode7xadd2]
+    add dl,[mmode7xinc]
+    jmp %%nexta
+%%skipx
+    mov [mm7xaddof],ecx
+    mov [mm7xaddof2],dl
+
+    xor dl,dl
+    xor ecx,ecx
+    mov ebx,[mmode7yadder]
+    test ebx,80000000h
+    jz %%nextay
+    neg ebx
+%%nextay
+    cmp ebx,0800h
+    jl %%skipy
+    sub ebx,800h
+    add ecx,[mmode7yadd2]
+    add dl,[mmode7yinc]
+    jmp %%nextay
+%%skipy
+    mov [mm7yaddof],ecx
+    mov [mm7yaddof2],dl
+
+    xor ecx,ecx
+
+    mov eax,[mmode7xrpos]
+    mov ebx,[mmode7ptr]
+    jmp %%nextval
+    ALIGN16
+%%nextval
+    test ah,0F8h
+    jnz near %%rposoffx
+%%nextposx
+    test byte[mmode7yrpos+1],0F8h
+    jnz near %%rposoffy
+%%nextposy
+    mov ch,ah
+    mov cl,byte[mmode7yrpos+1]
+    mov edx,[mmode7yadder]
+    sub dword[mmode7yrpos],edx
+    xor edx,edx
+    mov dl,[mode7tab+ecx]
+    add eax,[mmode7xadder]
+    mov dl,[edi+edx]
+    %1
+    dec dword[mtemp]
+    jnz near %%nextval
+    jmp %%finishmode7
+
+%%rposoffx
+    sub eax,[mm7xaddof]
+    add bl,[mm7xaddof2]
+    test ah,0F8h
+    jz %%noaddstuff
+    add bl,[mmode7xinc]
+    sub eax,[mmode7xadd2]
+%%noaddstuff
+    xor ecx,ecx
+    mov cl,[vrama+ebx]
+    shl ecx,7
+    lea edi,[ecx+vrama]
+    jmp %%nextposx
+
+%%rposoffy
+    mov edx,[m7yaddof]
+    add dword[mmode7yrpos],edx
+    sub bh,[mm7yaddof2]
+    test byte[mmode7yrpos+1],0F8h
+    jz %%noaddstuff2
+    mov edx,[mmode7yadd2]
+    sub bh,[mmode7yinc]
+    add dword[mmode7yrpos],edx
+%%noaddstuff2
+    and ebx,07FFFh
+    xor ecx,ecx
+    mov cl,[vrama+ebx]
+    shl ecx,7
+    lea edi,[ecx+vrama]
+    jmp %%nextposy
+
+%%finishmode7
+    xor eax,eax
+    mov dh,byte[curmosaicsz]
+    cmp dh,1
+    jne near %2
+    ret
+
+;**********************************************************
+; Mode 7, no repetition mode
+;**********************************************************
+
+%%norep2
+    test byte[mode7set],40h
+    jnz %%tilerep2
+    jmp %%nextvalb2
+    ALIGN16
+%%nextvalb2
+    cmp byte[mmode7ypos+2],3
+    ja %%offscr2
+    cmp byte[mmode7xpos+2],3
+    jbe near %%offscr3
+%%offscr2
+    mov eax,[mmode7xadder]
+    mov ebx,[mmode7yadder]
+    add [mmode7xpos],eax
+    sub [mmode7ypos],ebx
+    add esi,%3
+    dec dword[mtemp]
+    jnz near %%nextvalb2
+    jmp %%finishmode7
+%%tilerep2
+%%nextvalb3
+    cmp byte[mmode7ypos+2],3
+    ja %%offscr2b
+    cmp byte[mmode7xpos+2],3
+    jbe near %%offscr3
+%%offscr2b
+    mov ch,[mmode7xpos+1]
+    mov eax,[mmode7xadder]
+    mov cl,[mmode7ypos+1]
+    mov ebx,[mmode7yadder]
+    mov dl,[mode7tab+ecx]
+    add [mmode7xpos],eax
+    mov dl,[vrama+edx]
+    sub [mmode7ypos],ebx
+    %1
+    dec dword[mtemp]
+    jnz near %%nextvalb3
+    jmp %%finishmode7
+%%offscr3
+    mov eax,[mmode7xpos]
+    and eax,7FFh
+    mov [mmode7xrpos],eax
+    mov eax,[mmode7ypos]
+    and eax,7FFh
+    mov [mmode7yrpos],eax
+
+    ; get tile data offset into edi
+    mov ebx,[mmode7ypos+1]
+    mov eax,[mmode7xpos+1]
+    shl ebx,5
+    shr eax,3
+    and ebx,07FF8h
+    shl al,1
+    mov bl,al
+    mov edi,[vram]
+    xor ch,ch
+    mov [mmode7ptr],ebx
+    mov cl,[edi+ebx]
+    shl ecx,7
+    add edi,ecx
+
+    jmp %%nextvalr
+    ALIGN16
+%%nodr2
+    add esi,%3
+    dec dword[mtemp]
+    jz near %%fin2
+%%nextvalr
+    test byte[mmode7xrpos+1],0F8h
+    jnz near %%rposoffxr
+%%nextposxr
+    test byte[mmode7yrpos+1],0F8h
+    jnz near %%rposoffyr
+%%nextposyr
+    mov cl,[mmode7yrpos+1]
+    mov ch,[mmode7xrpos+1]
+    mov edx,[mmode7xadder]
+    add dword[mmode7xrpos],edx
+    mov edx,[mmode7yadder]
+    sub dword[mmode7yrpos],edx
+    xor edx,edx
+    mov dl,[mode7tab+ecx]
+    mov dl,[edi+edx]
+    %1
+    dec dword[mtemp]
+    jnz near %%nextvalr
+%%fin2
+    jmp %%finishmode7
+%%rposoffxr
+    mov al,[mmode7xinc]
+    mov edi,[vram]
+    add [mmode7ptr],al
+    mov cl,byte[mmode7xincc]
+    cmp byte[mmode7ptr],cl
+    je %%roff
+%%roffxretb
+    mov ebx,[mmode7ptr]
+    xor ecx,ecx
+    mov cl,[edi+ebx]
+    mov eax,[mmode7xadd2]
+    shl ecx,7
+    sub [mmode7xrpos],eax
+    add edi,ecx
+    jmp %%nextvalr
+%%rposoffyr
+    mov al,[mmode7yinc]
+    mov edi,[vram]
+    sub [mmode7ptr+1],al
+    js %%roff
+%%roffyretb
+    mov ebx,[mmode7ptr]
+    xor ecx,ecx
+    mov cl,[edi+ebx]
+    mov eax,[mmode7yadd2]
+    shl ecx,7
+    add [mmode7yrpos],eax
+    add edi,ecx
+    jmp %%nextposxr
+%%roff
+    test byte[mode7set],40h
+    jnz %%tilerep3
+    jmp %%finishmode7
+%%tilerep3
+    and byte[mmode7yrpos+1],07h
+    and byte[mmode7xrpos+1],07h
+    mov cl,[mmode7yrpos+1]
+    mov eax,[mmode7xadder]
+    mov ch,[mmode7xrpos+1]
+    add [mmode7xrpos],eax
+    mov dl,[mode7tab+ecx]
+    mov eax,[mmode7yadder]
+    mov dl,[vrama+edx]
+    sub [mmode7yrpos],eax
+    %1
+    dec dword[mtemp]
+    jnz near %%tilerep3
+    jmp %%finishmode7
+%endmacro
+
+%macro Mode7Processngw16b 3
+    mov dword[ngwleftb],256
+    mov dword[ngwleft],256
+    test byte[mode7set],80h
+    jnz near %%norep2
+
+    mov eax,[mmode7xpos]
+    and eax,7FFh
+    mov [mode7xrpos],eax
+    mov eax,[mmode7ypos]
+    and eax,7FFh
+    mov [mode7yrpos],eax
+
+    ; get tile data offset into edi
+    mov ebx,[mmode7ypos+1]
+    mov eax,[mmode7xpos+1]
+    shl ebx,5
+    shr eax,3
+    and ebx,07FF8h
+    shl al,1
+    mov bl,al
+    mov edi,[vram]
+    xor ch,ch
+    mov [mmode7ptr],ebx
+    mov cl,[edi+ebx]
+    shl ecx,7
+    add edi,ecx
+
+    xor dl,dl
+    xor ecx,ecx
+    mov ebx,[mmode7xadder]
+    test ebx,80000000h
+    jz %%nexta
+    neg ebx
+%%nexta
+    cmp ebx,0800h
+    jl %%skipx
+    sub ebx,800h
+    add ecx,[mmode7xadd2]
+    add dl,[mmode7xinc]
+    jmp %%nexta
+%%skipx
+    mov [mm7xaddof],ecx
+    mov [mm7xaddof2],dl
+    mov [m7xaddof],ecx
+    mov [m7xaddof2],dl
+
+    xor dl,dl
+    xor ecx,ecx
+    mov ebx,[mmode7yadder]
+    test ebx,80000000h
+    jz %%nextay
+    neg ebx
+%%nextay
+    cmp ebx,0800h
+    jl %%skipy
+    sub ebx,800h
+    add ecx,[mmode7yadd2]
+    add dl,[mmode7yinc]
+    jmp %%nextay
+%%skipy
+    mov [mm7yaddof],ecx
+    mov [mm7yaddof2],dl
+    mov [m7yaddof],ecx
+    mov [m7yaddof2],dl
+
+    xor ecx,ecx
+
+    mov eax,[mode7xrpos]
+    mov ebx,[mmode7ptr]
+
+    call ProcessMode7ngwin16b
+
+    cmp dword[ngwleftb],0
+    jne near %%nextval
+    jmp %%finishmode7
+    ALIGN16
+%%nextval
+    test ah,0F8h
+    jnz near %%rposoffx
+%%nextposx
+    test byte[mode7yrpos+1],0F8h
+    jnz near %%rposoffy
+%%nextposy
+    mov ch,ah
+    mov cl,byte[mode7yrpos+1]
+    mov edx,[mode7yadder]
+    sub dword[mode7yrpos],edx
+    xor edx,edx
+    mov dl,[mode7tab+ecx]
+    add eax,[mode7xadder]
+    mov dl,[edi+edx]
+    %1
+    dec dword[ngwleftb]
+    jnz near %%nextval
+    mov [mode7xrpos],eax
+    cmp dword[ngwleft],0
+    je %%notskipvalues
+    call ProcessMode7ngwinB16b
+    cmp dword[ngwleftb],0
+    jne near %%nextval
+%%notskipvalues
+    jmp %%finishmode7
+
+%%rposoffx
+    sub eax,[mm7xaddof]
+    add bl,[mm7xaddof2]
+    test ah,0F8h
+    jz %%noaddstuff
+    add bl,[mmode7xinc]
+    sub eax,[mmode7xadd2]
+%%noaddstuff
+    xor ecx,ecx
+    mov cl,[vrama+ebx]
+    shl ecx,7
+    lea edi,[ecx+vrama]
+    jmp %%nextposx
+
+%%rposoffy
+    mov edx,[mm7yaddof]
+    add dword[mode7yrpos],edx
+    sub bh,[mm7yaddof2]
+    test byte[mode7yrpos+1],0F8h
+    jz %%noaddstuff2
+    mov edx,[mmode7yadd2]
+    sub bh,[mmode7yinc]
+    add dword[mode7yrpos],edx
+%%noaddstuff2
+    and ebx,07FFFh
+    xor ecx,ecx
+    mov cl,[vrama+ebx]
+    shl ecx,7
+    lea edi,[ecx+vrama]
+    jmp %%nextposy
+
+%%finishmode7
+    xor eax,eax
+    mov dh,byte[curmosaicsz]
+    cmp dh,1
+    jne near %2
+    ret
+
+;**********************************************************
+; Mode 7, no repetition mode
+;**********************************************************
+
+%%norep2
+    mov byte[switchtorep3],0
+
+;    mov dword[ngcwinptr],ngwintable blahblah
+;    mov ebx,dword[ngcwinptr]
+;    mov dword[ebx],900
+    ;ngwintable
+;    jmp %%finishmode7
+
+    call ProcessMode7ngwinC16b
+    cmp dword[ngwleftb],0
+    jne near %%nextvald
+    jmp %%finishmode7
+%%nextvald
+    mov dword[ngwleft],0
+
+    test byte[mode7set],40h
+    jnz near %%tilerep2
+    jmp %%nextvalb2
+    ALIGN16
+%%nextvalb2
+    cmp byte[mode7ypos+2],3
+    ja %%offscr2
+    cmp byte[mode7xpos+2],3
+    jbe near %%offscr3
+%%offscr2
+    mov eax,[mode7xadder]
+    mov ebx,[mode7yadder]
+    add [mode7xpos],eax
+    sub [mode7ypos],ebx
+    add esi,%3
+    dec dword[ngwleftb]
+    jnz near %%nextvalb2
+
+    cmp dword[ngwleft],0
+    je %%notskipvalues3b
+    call ProcessMode7ngwinD16b
+    cmp dword[ngwleftb],0
+    jne near %%nextvalb2
+%%notskipvalues3b
+
+    jmp %%finishmode7
+%%tilerep2
+%%nextvalb3
+    cmp byte[mode7ypos+2],3
+    ja %%offscr2b
+    cmp byte[mode7xpos+2],3
+    jbe near %%offscr3
+%%offscr2b
+    mov ch,[mode7xpos+1]
+    mov eax,[mode7xadder]
+    mov cl,[mode7ypos+1]
+    mov ebx,[mode7yadder]
+    mov dl,[mode7tab+ecx]
+    add [mode7xpos],eax
+    mov dl,[vrama+edx]
+    sub [mode7ypos],ebx
+    %1
+    dec dword[ngwleftb]
+    jnz near %%nextvalb3
+
+    cmp dword[ngwleft],0
+    je %%notskipvalues3
+    call ProcessMode7ngwinD16b
+    cmp dword[ngwleftb],0
+    jne near %%nextvalb3
+%%notskipvalues3
+
+    jmp %%finishmode7
+%%offscr3
+    mov eax,[mode7xpos]
+    and eax,7FFh
+    mov [mode7xrpos],eax
+    mov eax,[mode7ypos]
+    and eax,7FFh
+    mov [mode7yrpos],eax
+
+    ; get tile data offset into edi
+    mov ebx,[mode7ypos+1]
+    mov eax,[mode7xpos+1]
+    shl ebx,5
+    shr eax,3
+    and ebx,07FF8h
+    shl al,1
+    mov bl,al
+    mov edi,[vram]
+    xor ch,ch
+    mov [mmode7ptr],ebx
+    mov cl,[edi+ebx]
+    shl ecx,7
+    add edi,ecx
+
+    jmp %%nextvalr
+    ALIGN16
+%%nodr2
+    add esi,%3
+    dec dword[ngwleftb]
+    jz near %%fin2
+%%nextvalr
+    test byte[mode7xrpos+1],0F8h
+    jnz near %%rposoffxr
+%%nextposxr
+    test byte[mode7yrpos+1],0F8h
+    jnz near %%rposoffyr
+%%nextposyr
+    mov cl,[mode7yrpos+1]
+    mov ch,[mode7xrpos+1]
+    mov edx,[mode7xadder]
+    add dword[mode7xrpos],edx
+    mov edx,[mode7yadder]
+    sub dword[mode7yrpos],edx
+    xor edx,edx
+    mov dl,[mode7tab+ecx]
+    mov dl,[edi+edx]
+    %1
+    dec dword[ngwleftb]
+    jnz near %%nextvalr
+%%fin2
+
+    cmp dword[ngwleft],0
+    je %%notskipvalues4
+    call ProcessMode7ngwinB16b
+    cmp byte[switchtorep3],0
+    jne near %%tilerep3
+    cmp dword[ngwleftb],0
+    jne near %%nextvalr
+%%notskipvalues4
+
+    jmp %%finishmode7
+%%rposoffxr
+    mov al,[mmode7xinc]
+    mov edi,[vram]
+    add [mmode7ptr],al
+    mov cl,byte[mmode7xincc]
+    cmp byte[mmode7ptr],cl
+    je %%roff
+%%roffxretb
+    mov ebx,[mmode7ptr]
+    xor ecx,ecx
+    mov cl,[edi+ebx]
+    mov eax,[mmode7xadd2]
+    shl ecx,7
+    sub [mode7xrpos],eax
+    add edi,ecx
+    jmp %%nextvalr
+%%rposoffyr
+    mov al,[mmode7yinc]
+    mov edi,[vram]
+    sub [mmode7ptr+1],al
+    js %%roff
+%%roffyretb
+    mov ebx,[mmode7ptr]
+    xor ecx,ecx
+    mov cl,[edi+ebx]
+    mov eax,[mmode7yadd2]
+    shl ecx,7
+    add [mode7yrpos],eax
+    add edi,ecx
+    jmp %%nextposxr
+%%roff
+    test byte[mode7set],40h
+    jnz %%tilerep3
+    jmp %%finishmode7
+%%tilerep3
+    and byte[mode7yrpos+1],07h
+    and byte[mode7xrpos+1],07h
+    mov cl,[mode7yrpos+1]
+    mov eax,[mode7xadder]
+    mov ch,[mode7xrpos+1]
+    add [mode7xrpos],eax
+    mov dl,[mode7tab+ecx]
+    mov eax,[mode7yadder]
+    mov dl,[vrama+edx]
+    sub [mode7yrpos],eax
+    %1
+    dec dword[ngwleftb]
+    jnz near %%tilerep3
+
+    mov [mode7xrpos],eax
+    cmp dword[ngwleft],0
+    je %%notskipvalues5
+    call ProcessMode7ngwinB16b
+    cmp dword[ngwleftb],0
+    jne near %%tilerep3
+%%notskipvalues5
+
+    jmp %%finishmode7
+%endmacro
+
+%macro Mode7Processngw216b 4
+    mov eax,[ngcwinptr]
+    mov eax,[eax]
+    mov [ngwleft],eax
+
+    mov dword[mtemp],256
+    test byte[mode7set],80h
+    jnz near %%norep2start
+
+    mov eax,[mmode7xpos]
+    and eax,7FFh
+    mov [mmode7xrpos],eax
+    mov eax,[mmode7ypos]
+    and eax,7FFh
+    mov [mmode7yrpos],eax
+
+    ; get tile data offset into edi
+    mov ebx,[mmode7ypos+1]
+    mov eax,[mmode7xpos+1]
+    shl ebx,5
+    shr eax,3
+    and ebx,07FF8h
+    shl al,1
+    mov bl,al
+    mov edi,[vram]
+    xor ch,ch
+    mov [mmode7ptr],ebx
+    mov cl,[edi+ebx]
+    shl ecx,7
+    add edi,ecx
+
+    mov eax,[mmode7xrpos]
+    mov ebx,[mmode7ptr]
+
+    cmp dword[ngwleft],0
+    jne %%nextvalwb
+    jmp %%nextvalwc
+%%nextvalw
+    add dword[ngcwinptr],4
+    mov edx,[ngcwinptr]
+    mov edx,[edx]
+    mov dword[ngwleft],edx
+    xor edx,edx
+%%nextvalwb
+
+    test ah,08h
+    jnz near %%rposoffxw
+%%nextposxw
+    test byte[mmode7yrpos+1],08h
+    jnz near %%rposoffyw
+%%nextposyw
+    mov ch,ah
+    mov cl,byte[mmode7yrpos+1]
+    mov edx,[mmode7yadder]
+    sub dword[mmode7yrpos],edx
+    xor edx,edx
+    mov dl,[mode7tab+ecx]
+    add eax,[mmode7xadder]
+    mov dl,[edi+edx]
+    %1
+    dec dword[mtemp]
+    jz near %%finishmode7
+    dec dword[ngwleft]
+    jnz near %%nextvalwb
+    jmp %%nextvalwc
+
+%%rposoffxw
+    add bl,[mmode7xinc]
+    xor ecx,ecx
+    mov cl,[vrama+ebx]
+    shl ecx,7
+    sub eax,[mmode7xadd2]
+    lea edi,[ecx+vrama]
+    jmp %%nextposxw
+%%rposoffyw
+    sub bh,[mmode7yinc]
+    and ebx,07FFFh
+    xor ecx,ecx
+    mov cl,[vrama+ebx]
+    mov edx,[mmode7yadd2]
+    shl ecx,7
+    add dword[mmode7yrpos],edx
+    lea edi,[ecx+vrama]
+    jmp %%nextposyw
+
+%%nextvalwc
+    add dword[ngcwinptr],4
+    mov edx,[ngcwinptr]
+    mov edx,[edx]
+    mov dword[ngwleft],edx
+    xor edx,edx
+%%nextval
+    test ah,08h
+    jnz near %%rposoffx
+%%nextposx
+    test byte[mmode7yrpos+1],08h
+    jnz near %%rposoffy
+%%nextposy
+    mov ch,ah
+    mov cl,byte[mmode7yrpos+1]
+    mov edx,[mmode7yadder]
+    sub dword[mmode7yrpos],edx
+    xor edx,edx
+    mov dl,[mode7tab+ecx]
+    add eax,[mmode7xadder]
+    mov dl,[edi+edx]
+    %4
+    dec dword[mtemp]
+    jz near %%finishmode7
+    dec dword[ngwleft]
+    jnz near %%nextval
+    jmp %%nextvalw
+%%rposoffx
+    add bl,[mmode7xinc]
+    xor ecx,ecx
+    mov cl,[vrama+ebx]
+    shl ecx,7
+    sub eax,[mmode7xadd2]
+    lea edi,[ecx+vrama]
+    jmp %%nextposx
+%%rposoffy
+    sub bh,[mmode7yinc]
+    and ebx,07FFFh
+    xor ecx,ecx
+    mov cl,[vrama+ebx]
+    mov edx,[mmode7yadd2]
+    shl ecx,7
+    add dword[mmode7yrpos],edx
+    lea edi,[ecx+vrama]
+    jmp %%nextposy
+%%finishmode7
+    xor eax,eax
+    mov dh,byte[curmosaicsz]
+    cmp dh,1
+    jne near %2
+    ret
+
+; *******************************************
+
+%%norep2start
+    cmp dword[ngwleft],0
+    jne %%firstsetwb
+    jmp %%firstsetww
+%%firstsetw
+    add dword[ngcwinptr],4
+    mov edx,[ngcwinptr]
+    mov edx,[edx]
+    mov dword[ngwleft],edx
+    xor edx,edx
+%%firstsetwb
+%%norep2
+    test byte[mode7set],40h
+    jnz %%tilerep2
+%%nextvalb2
+    cmp byte[mmode7ypos+2],3
+    ja %%offscr2
+    cmp byte[mmode7xpos+2],3
+    jbe near %%offscr3
+%%offscr2
+    mov eax,[mmode7xadder]
+    mov ebx,[mmode7yadder]
+    add [mmode7xpos],eax
+    sub [mmode7ypos],ebx
+    add esi,%3
+    dec dword[mtemp]
+    jz near %%finishmode7
+    dec dword[ngwleft]
+    jnz near %%nextvalb2
+    jmp %%firstsetww
+%%tilerep2
+%%nextvalb3
+    cmp byte[mmode7ypos+2],3
+    ja %%offscr2b
+    cmp byte[mmode7xpos+2],3
+    jbe near %%offscr3
+%%offscr2b
+    mov ch,[mmode7xpos+1]
+    mov eax,[mmode7xadder]
+    mov cl,[mmode7ypos+1]
+    mov ebx,[mmode7yadder]
+    mov dl,[mode7tab+ecx]
+    add [mmode7xpos],eax
+    mov dl,[vrama+edx]
+    sub [mmode7ypos],ebx
+    %1
+    dec dword[mtemp]
+    jz near %%finishmode7
+    dec dword[ngwleft]
+    jnz near %%nextvalb3
+    jmp %%firstsetw
+
+%%offscr3
+    mov eax,[mmode7xpos]
+    and eax,7FFh
+    mov [mmode7xrpos],eax
+    mov eax,[mmode7ypos]
+    and eax,7FFh
+    mov [mmode7yrpos],eax
+    ; get tile data offset into edi
+    mov ebx,[mmode7ypos+1]
+    mov eax,[mmode7xpos+1]
+    shl ebx,5
+    shr eax,3
+    and ebx,07FF8h
+    shl al,1
+    mov bl,al
+    mov edi,[vram]
+    xor ch,ch
+    mov [mmode7ptr],ebx
+    mov cl,[edi+ebx]
+    shl ecx,7
+    add edi,ecx
+    jmp %%nextvalr
+%%nodr2
+    add esi,%3
+
+    dec dword[mtemp]
+    jz near %%finishmode7
+    dec dword[ngwleft]
+    jnz %%nextvalr
+%%secondsetw
+    add dword[ngcwinptr],4
+    mov edx,[ngcwinptr]
+    mov edx,[edx]
+    mov dword[ngwleft],edx
+    xor edx,edx
+%%nextvalr
+    test byte[mmode7xrpos+1],08h
+    jnz near %%rposoffxr
+%%nextposxr
+    test byte[mmode7yrpos+1],08h
+    jnz near %%rposoffyr
+%%nextposyr
+    mov cl,[mmode7yrpos+1]
+    mov ch,[mmode7xrpos+1]
+    mov edx,[mmode7xadder]
+    add dword[mmode7xrpos],edx
+    mov edx,[mmode7yadder]
+    sub dword[mmode7yrpos],edx
+    xor edx,edx
+    mov dl,[mode7tab+ecx]
+    mov dl,[edi+edx]
+    %1
+    dec dword[mtemp]
+    jz near %%finishmode7
+    dec dword[ngwleft]
+    jnz near %%nextvalr
+    jmp %%secondsetww
+%%rposoffxr
+    mov al,[mmode7xinc]
+    mov edi,[vram]
+    add [mmode7ptr],al
+    mov cl,byte[mmode7xincc]
+    cmp byte[mmode7ptr],cl
+    je %%roff
+%%roffxretb
+    mov ebx,[mmode7ptr]
+    xor ecx,ecx
+    mov cl,[edi+ebx]
+    mov eax,[mmode7xadd2]
+    shl ecx,7
+    sub [mmode7xrpos],eax
+    add edi,ecx
+    jmp %%nextposxr
+%%rposoffyr
+    mov al,[mmode7yinc]
+    mov edi,[vram]
+    sub [mmode7ptr+1],al
+    js %%roff
+%%roffyretb
+    mov ebx,[mmode7ptr]
+    xor ecx,ecx
+    mov cl,[edi+ebx]
+    mov eax,[mmode7yadd2]
+    shl ecx,7
+    add [mmode7yrpos],eax
+    add edi,ecx
+    jmp %%nextposyr
+
+%%roff
+    test byte[mode7set],40h
+    jnz %%tilerep3
+    jmp %%finishmode7
+%%thirdsetw
+    add dword[ngcwinptr],4
+    mov edx,[ngcwinptr]
+    mov edx,[edx]
+    mov dword[ngwleft],edx
+    xor edx,edx
+%%tilerep3
+    and byte[mmode7yrpos+1],07h
+    and byte[mmode7xrpos+1],07h
+    mov cl,[mmode7yrpos+1]
+    mov eax,[mmode7xadder]
+    mov ch,[mmode7xrpos+1]
+    add [mmode7xrpos],eax
+    mov dl,[mode7tab+ecx]
+    mov eax,[mmode7yadder]
+    mov dl,[vrama+edx]
+    sub [mmode7yrpos],eax
+    %1
+    dec dword[mtemp]
+    jz near %%finishmode7
+    dec dword[ngwleft]
+    jnz near %%tilerep3
+    jmp %%thirdsetww
+
+; *************************************
+%%firstsetww
+    add dword[ngcwinptr],4
+    mov edx,[ngcwinptr]
+    mov edx,[edx]
+    mov dword[ngwleft],edx
+    xor edx,edx
+%%norep2w
+    test byte[mode7set],40h
+    jnz %%tilerep2w
+%%nextvalb2w
+    cmp byte[mmode7ypos+2],3
+    ja %%offscr2w
+    cmp byte[mmode7xpos+2],3
+    jbe near %%offscr3w
+%%offscr2w
+    mov eax,[mmode7xadder]
+    mov ebx,[mmode7yadder]
+    add [mmode7xpos],eax
+    sub [mmode7ypos],ebx
+    add esi,%3
+    dec dword[mtemp]
+    jz near %%finishmode7
+    dec dword[ngwleft]
+    jnz near %%nextvalb2w
+    jmp %%firstsetw
+%%tilerep2w
+%%nextvalb3w
+    cmp byte[mmode7ypos+2],3
+    ja %%offscr2bw
+    cmp byte[mmode7xpos+2],3
+    jbe near %%offscr3w
+%%offscr2bw
+    mov ch,[mmode7xpos+1]
+    mov eax,[mmode7xadder]
+    mov cl,[mmode7ypos+1]
+    mov ebx,[mmode7yadder]
+    mov dl,[mode7tab+ecx]
+    add [mmode7xpos],eax
+    mov dl,[vrama+edx]
+    sub [mmode7ypos],ebx
+    %4
+    dec dword[mtemp]
+    jz near %%finishmode7
+    dec dword[ngwleft]
+    jnz near %%nextvalb3w
+    jmp %%firstsetw
+
+%%offscr3w
+    mov eax,[mmode7xpos]
+    and eax,7FFh
+    mov [mmode7xrpos],eax
+    mov eax,[mmode7ypos]
+    and eax,7FFh
+    mov [mmode7yrpos],eax
+    ; get tile data offset into edi
+    mov ebx,[mmode7ypos+1]
+    mov eax,[mmode7xpos+1]
+    shl ebx,5
+    shr eax,3
+    and ebx,07FF8h
+    shl al,1
+    mov bl,al
+    mov edi,[vram]
+    xor ch,ch
+    mov [mmode7ptr],ebx
+    mov cl,[edi+ebx]
+    shl ecx,7
+    add edi,ecx
+    jmp %%nextvalrw
+%%nodr2w
+    add esi,%3
+
+    dec dword[mtemp]
+    jz near %%finishmode7
+    dec dword[ngwleft]
+    jnz %%nextvalrw
+%%secondsetww
+    add dword[ngcwinptr],4
+    mov edx,[ngcwinptr]
+    mov edx,[edx]
+    mov dword[ngwleft],edx
+    xor edx,edx
+%%nextvalrw
+    test byte[mmode7xrpos+1],08h
+    jnz near %%rposoffxrw
+%%nextposxrw
+    test byte[mmode7yrpos+1],08h
+    jnz near %%rposoffyrw
+%%nextposyrw
+    mov cl,[mmode7yrpos+1]
+    mov ch,[mmode7xrpos+1]
+    mov edx,[mmode7xadder]
+    add dword[mmode7xrpos],edx
+    mov edx,[mmode7yadder]
+    sub dword[mmode7yrpos],edx
+    xor edx,edx
+    mov dl,[mode7tab+ecx]
+    mov dl,[edi+edx]
+    %4
+    dec dword[mtemp]
+    jz near %%finishmode7
+    dec dword[ngwleft]
+    jnz near %%nextvalrw
+    jmp %%secondsetw
+%%rposoffxrw
+    mov al,[mmode7xinc]
+    mov edi,[vram]
+    add [mmode7ptr],al
+    mov cl,byte[mmode7xincc]
+    cmp byte[mmode7ptr],cl
+    je %%roffw
+%%roffxretbw
+    mov ebx,[mmode7ptr]
+    xor ecx,ecx
+    mov cl,[edi+ebx]
+    mov eax,[mmode7xadd2]
+    shl ecx,7
+    sub [mmode7xrpos],eax
+    add edi,ecx
+    jmp %%nextposxrw
+%%rposoffyrw
+    mov al,[mmode7yinc]
+    mov edi,[vram]
+    sub [mmode7ptr+1],al
+    js %%roffw
+%%roffyretbw
+    mov ebx,[mmode7ptr]
+    xor ecx,ecx
+    mov cl,[edi+ebx]
+    mov eax,[mmode7yadd2]
+    shl ecx,7
+    add [mmode7yrpos],eax
+    add edi,ecx
+    jmp %%nextposyrw
+
+%%roffw
+    test byte[mode7set],40h
+    jnz %%tilerep3w
+    jmp %%finishmode7
+%%thirdsetww
+    add dword[ngcwinptr],4
+    mov edx,[ngcwinptr]
+    mov edx,[edx]
+    mov dword[ngwleft],edx
+    xor edx,edx
+%%tilerep3w
+    and byte[mmode7yrpos+1],07h
+    and byte[mmode7xrpos+1],07h
+    mov cl,[mmode7yrpos+1]
+    mov eax,[mmode7xadder]
+    mov ch,[mmode7xrpos+1]
+    add [mmode7xrpos],eax
+    mov dl,[mode7tab+ecx]
+    mov eax,[mmode7yadder]
+    mov dl,[vrama+edx]
+    sub [mmode7yrpos],eax
+    %4
+    dec dword[mtemp]
+    jz near %%finishmode7
+    dec dword[ngwleft]
+    jnz near %%tilerep3w
+    jmp %%thirdsetw
+%endmacro
+
+; *********************************************************************
+
+%macro Mode7NonMainSub 1
+    WinEnCheck
+    ProcessBuildWindow16b 0
+.nohr
+    Mode7NoTranspPreStartUp
+    Mode7Startup
+    Mode7Process %1, domosaicng16b, 2
+.nextval3
+    Mode7ProcessB %1, domosaicng16b, 2
+    Mode7MidRoutines
+    mov edi,[vram]
+    Mode7Processngw16b %1, domosaicng16b, 2
+%endmacro
+
+%macro Mode7NonMainSube 1
+    WinEnCheck
+    ProcessBuildWindow16b 0
+.nohr
+    Mode7NoTranspPreStartUp2
+    Mode7Startup
+    Mode7Process %1, domosaicng16b, 2
+.nextval3
+    Mode7ProcessB %1, domosaicng16b, 2
+    Mode7MidRoutines
+    mov edi,[vram]
+    Mode7Processngw16b %1, domosaicng16b, 2
+%endmacro
+
+%macro Mode7MainSub 2
+    WinEnCheckMS
+    ProcessBuildWindow16b 0
+.nohr
+    Mode7NoTranspPreStartUp
+    call Mode7Startup16b
+    Mode7MidRoutines
+    mov edi,[vram]
+    Mode7Processngw216b %1, domosaicng16b, 2, %2
+%endmacro
+
+%macro Mode7MainSube 2
+    WinEnCheckMS
+    ProcessBuildWindow16b 0
+.nohr
+    Mode7NoTranspPreStartUp2
+    call Mode7Startup16b
+    Mode7MidRoutines
+    mov edi,[vram]
+    Mode7Processngw216b %1, domosaicng16b, 2, %2
+%endmacro
+
+
+

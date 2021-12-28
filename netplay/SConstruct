@@ -1,0 +1,150 @@
+# SConstruct file for ZSNES
+# Run 'scons' in this directory to build.
+# Run 'scons -c' in this directory to cleanup.
+
+# Source file list
+source_files = Split("""
+	chips/sfxproc.asm
+	chips/fxemu2.asm
+	chips/dsp1proc.asm
+	chips/fxemu2b.asm
+	chips/fxemu2c.asm
+	chips/fxtable.asm
+	chips/sa1proc.asm
+	chips/sa1regs.asm
+	chips/dsp1emu.c
+	chips/st10proc.asm
+	chips/seta10.c
+	chips/dsp2proc.asm
+	chips/sdd1emu.c
+	chips/c4emu.c
+	net/ztcp.c
+	cpu/addrni.asm
+	cpu/dma.asm
+	cpu/dsp.asm
+	cpu/dspproc.asm
+	cpu/execute.asm
+	cpu/irq.asm
+	cpu/memory.asm
+	cpu/memtable.c
+	cpu/spc700.asm
+	cpu/stable.asm
+	cpu/table.asm
+	cpu/tableb.asm
+	cpu/tablec.asm
+	dos/debug.asm
+	dos/joy.asm
+	dos/modemrtn.asm
+	dos/vesa2.asm
+	dos/initvid.asm
+	dos/sw.asm
+	dos/gppro.asm
+	dos/vesa12.asm
+	effects/burn.c
+	effects/water.c
+	effects/smoke.c
+	gui/gui.asm
+	gui/menu.asm
+	video/makev16b.asm
+	video/makev16t.asm
+	video/makevid.asm
+	video/mode716.asm
+	video/mode716b.asm
+	video/mode716d.asm
+	video/mode716e.asm
+	video/mode716t.asm
+	video/mode7.asm
+	video/mode7ext.asm
+	video/mv16tms.asm
+	video/newg162.asm
+	video/newgfx16.asm
+	video/newgfx2.asm
+	video/newgfx.asm
+	video/m716text.asm
+	video/2xsaiw.asm
+	video/procvid.asm
+	video/procvidc.c
+	video/sw_draw.asm
+	video/hq2x16.asm
+	video/hq2x32.asm
+	video/hq3x16.asm
+	video/hq3x32.asm
+	video/hq4x16.asm
+	video/hq4x32.asm
+	zip/unzip.c
+	zip/zpng.c
+	cfgload.c
+	endmem.asm
+	init.asm
+	initc.c
+	jma/7zlzma.cpp
+	jma/crc32.cpp
+	jma/iiostrm.cpp
+	jma/inbyte.cpp
+	jma/jma.cpp
+	jma/lzma.cpp
+	jma/lzmadec.cpp
+	jma/winout.cpp
+	jma/zsnesjma.cpp
+	uic.c
+	patch.c
+	ui.asm
+	vcache.asm
+	version.c
+	zmovie.c
+	zstate.c
+	zloader.c
+""")
+
+linux_source_files = Split("""
+	linux/copyvwin.asm
+	linux/sdlintrf.asm
+	linux/sdllink.c
+	linux/sw_draw.c
+	linux/zipxw.c
+	linux/zfilew.c
+""")
+
+zsnes = Environment ()
+
+platform = zsnes['PLATFORM']
+
+# Setup environment for nasm
+zsnes.Replace (AS = 'nasm')
+zsnes.Replace (ASFLAGS = '-f elf ')
+
+#sdl_config = Builder (action = 'sdl-config --include')
+
+# Run config tests.
+conf = Configure (zsnes)
+
+# Must have SDL to compile
+if not conf.CheckLib ('SDL', 'SDL_Init'):
+	print 'SDL not found! Please install SDL and try again.'
+	Exit (1)
+
+if not conf.CheckLib ('png'):
+	print 'libpng not found! Please install libpng and try again.'
+	Exit (1)
+
+if not conf.CheckLib ('z'):
+	print 'zlib not found! Please install zlib and try again.'
+	Exit (1)
+
+# Check for nasm's existence
+if not conf.TryCompile ('db __NASM_VER__', '.asm'):
+	print 'NASM not found! Please install NASM and try again.'
+	Exit (1)
+
+zsnes = conf.Finish ()
+
+# Perform any platform-specific initialization
+if platform == 'posix':
+	source_files = source_files + linux_source_files
+	zsnes.Append (CCFLAGS = '-D__LINUX__')
+	zsnes.Append (ASFLAGS = '-DELF -D__LINUX__')
+	zsnes.Append (CCFLAGS = '-I.')
+	zsnes.Append (CCFLAGS = '-I/usr/include/SDL')
+
+# Build the program.
+zsnes.Program ('zsnes', source_files)
