@@ -131,6 +131,7 @@ SRCS += gui/guimisc.c
 SRCS += gui/guimouse.c
 SRCS += gui/guitools.c
 SRCS += gui/menu.c
+#SRCS += net/ztcp.c
 SRCS += init.asm
 SRCS += initc.c
 SRCS += mmlib/mm.c
@@ -312,8 +313,8 @@ ASMFLAGS += $(CFGDEFS)
 ASMFLAGS += -O1 # XXX mandatory, otherwise zsnes breaks
 ASMFLAGS += -w-orphan-labels
 
-CFLAGS += -m32 -fno-inline -mmmx -O1 -march=pentium-mmx -mtune=generic -mno-sse -mno-sse2 $(CFGDEFS)
-CXXFLAGS += -m32 -fno-inline -mmmx -O1 -march=pentium-mmx -mtune=generic -mno-sse -mno-sse2 $(CFGDEFS)
+CFLAGS += -m32 -fno-inline -mmmx -O1 -march=pentium-mmx -mtune=generic -mno-sse -mno-sse2 -Wfatal-errors $(CFGDEFS)
+CXXFLAGS += -m32 -fno-inline -mmmx -O1 -march=pentium-mmx -mtune=generic -mno-sse -mno-sse2 -Wfatal-errors $(CFGDEFS)
 
 .SUFFIXES:
 .SUFFIXES: .asm .c .cpp .d .o
