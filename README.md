@@ -13,7 +13,7 @@ Tested on Arch Linux.
 
 The intention is that this can be like an LTS release of Zsnes. The long term goal is to also port ZSNES to SDL2.
 
-Pull requests that fixes inaccuracies with the emulation are welcome, as well as pull requests for regular bugs. 
+Pull requests that fixes inaccuracies with the emulation are welcome, as well as pull requests for regular bugs.
 
 ### Build
 
@@ -150,7 +150,6 @@ DOSINTRF.ASM    ; DOS Interface routines (File,video,timers,etc.)
 ZLOADERW.C      ; Start-up C routines for Windows (Commandline parser, etc.)
 Winintrf.asm    ; Windows Interface routines (File,video,timers,etc.)
 winlink.cpp     ; Win32 routines (DirectX, Win32 functions)
-ztcp.c          ; TCP/IP & UDP driver
 copyvwin.asm    ; Video Blitter for D modes
 
 -LINUX-
@@ -165,7 +164,6 @@ sw_draw.h       ;
 zfilew.c        ;
 zipxw.c         ;
 zloaderw.c      ;
-ztcp.c          ; TCP/IP (Netplay)
 
 -MAN-
 zsnes.1         ; man page for zsnes
