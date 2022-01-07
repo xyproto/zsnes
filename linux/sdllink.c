@@ -23,7 +23,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "gl_draw.h"
 #include "sw_draw.h"
 
-#include <SDL_thread.h>
+#include <SDL.h>
+//#include <SDL_thread.h>
 #include <stdbool.h>
 #include <sys/time.h>
 #include <time.h>
@@ -68,8 +69,13 @@ typedef enum vidstate_e {
     vid_gl
 } vidstate_t;
 
-/* VIDEO VARIABLES */
-SDL_Surface* surface;
+// SDL 2
+SDL_Window* win;
+SDL_Renderer* ren;
+
+// SDL 1
+// SDL_Surface* surface;
+
 int SurfaceLocking = 0;
 int SurfaceX, SurfaceY;
 static uint32_t WindowWidth = 256;
@@ -202,53 +208,55 @@ int Main_Proc()
 #ifndef __MACOSX__
 #ifdef __OPENGL__
             case SDL_WINDOWEVENT_RESIZED:
-                if (!GUIRESIZE[cvidmode]) {
-                    SetGLAttributes();
-                    surface = SDL_SetVideoMode(WindowWidth, WindowHeight, BitDepth,
-                        surface->flags & ~SDL_WINDOW_RESIZABLE);
-                    adjustMouseXScale();
-                    adjustMouseYScale();
-                    break;
-                }
-                WindowWidth = SurfaceX = event.window.data1;
-                WindowHeight = SurfaceY = event.window.data2;
-                SetHQx(SurfaceX, SurfaceY);
-                SetHiresOpt(SurfaceX, SurfaceY);
-                SetGLAttributes();
-                surface = SDL_SetVideoMode(WindowWidth, WindowHeight, BitDepth, surface->flags);
-                adjustMouseXScale();
-                adjustMouseYScale();
-                glViewport(0, 0, WindowWidth, WindowHeight);
-                glMatrixMode(GL_PROJECTION);
-                glLoadIdentity();
-                if (cvidmode == 20) {
-                    if (224 * WindowWidth > 256 * WindowHeight && WindowHeight) {
-                        glOrtho(-((float)224 * WindowWidth) / ((float)256 * WindowHeight),
-                            ((float)224 * WindowWidth) / ((float)256 * WindowHeight), -1, 1, -1, 1);
-                    } else if (224 * WindowWidth < 256 * WindowHeight && WindowWidth) {
-                        glOrtho(-1, 1, -((float)256 * WindowHeight) / ((float)224 * WindowWidth),
-                            ((float)256 * WindowHeight) / ((float)224 * WindowWidth), -1, 1);
-                    } else {
-                        glOrtho(-1, 1, -1, 1, -1, 1);
-                    }
-                }
-                if (Keep4_3Ratio && (cvidmode == 21)) {
-                    if (3 * WindowWidth > 4 * WindowHeight && WindowHeight) {
-                        glOrtho(-((float)3 * WindowWidth) / ((float)4 * WindowHeight),
-                            ((float)3 * WindowWidth) / ((float)4 * WindowHeight), -1, 1, -1, 1);
-                    } else if (3 * WindowWidth < 4 * WindowHeight && WindowWidth) {
-                        glOrtho(-1, 1, -((float)4 * WindowHeight) / ((float)3 * WindowWidth),
-                            ((float)4 * WindowHeight) / ((float)3 * WindowWidth), -1, 1);
-                    } else {
-                        glOrtho(-1, 1, -1, 1, -1, 1);
-                    }
-                }
-                glMatrixMode(GL_MODELVIEW);
-                glLoadIdentity();
-                glDisable(GL_DEPTH_TEST);
-                glFlush();
-                gl_clearwin();
-                Clear2xSaIBuffer();
+
+                //                 if (!GUIRESIZE[cvidmode]) {
+                //                     SetGLAttributes();
+                //                     surface = SDL_SetVideoMode(WindowWidth, WindowHeight, BitDepth,
+                //                         surface->flags & ~SDL_WINDOW_RESIZABLE);
+                //                     adjustMouseXScale();
+                //                     adjustMouseYScale();
+                //                     break;
+                //                 }
+                //                 WindowWidth = SurfaceX = event.window.data1;
+                //                 WindowHeight = SurfaceY = event.window.data2;
+                //                 SetHQx(SurfaceX, SurfaceY);
+                //                 SetHiresOpt(SurfaceX, SurfaceY);
+                //                 SetGLAttributes();
+                //                 surface = SDL_SetVideoMode(WindowWidth, WindowHeight, BitDepth, surface->flags);
+                //                 adjustMouseXScale();
+                //                 adjustMouseYScale();
+                //                 glViewport(0, 0, WindowWidth, WindowHeight);
+                //                 glMatrixMode(GL_PROJECTION);
+                //                 glLoadIdentity();
+                //                 if (cvidmode == 20) {
+                //                     if (224 * WindowWidth > 256 * WindowHeight && WindowHeight) {
+                //                         glOrtho(-((float)224 * WindowWidth) / ((float)256 * WindowHeight),
+                //                             ((float)224 * WindowWidth) / ((float)256 * WindowHeight), -1, 1, -1, 1);
+                //                     } else if (224 * WindowWidth < 256 * WindowHeight && WindowWidth) {
+                //                         glOrtho(-1, 1, -((float)256 * WindowHeight) / ((float)224 * WindowWidth),
+                //                             ((float)256 * WindowHeight) / ((float)224 * WindowWidth), -1, 1);
+                //                     } else {
+                //                         glOrtho(-1, 1, -1, 1, -1, 1);
+                //                     }
+                //                 }
+                //                 if (Keep4_3Ratio && (cvidmode == 21)) {
+                //                     if (3 * WindowWidth > 4 * WindowHeight && WindowHeight) {
+                //                         glOrtho(-((float)3 * WindowWidth) / ((float)4 * WindowHeight),
+                //                             ((float)3 * WindowWidth) / ((float)4 * WindowHeight), -1, 1, -1, 1);
+                //                     } else if (3 * WindowWidth < 4 * WindowHeight && WindowWidth) {
+                //                         glOrtho(-1, 1, -((float)4 * WindowHeight) / ((float)3 * WindowWidth),
+                //                             ((float)4 * WindowHeight) / ((float)3 * WindowWidth), -1, 1);
+                //                     } else {
+                //                         glOrtho(-1, 1, -1, 1, -1, 1);
+                //                     }
+                //                 }
+                //                 glMatrixMode(GL_MODELVIEW);
+                //                 glLoadIdentity();
+                //                 glDisable(GL_DEPTH_TEST);
+                //                 glFlush();
+                //                 gl_clearwin();
+                //                 Clear2xSaIBuffer();
+
                 break;
 #endif
 #endif
@@ -1239,7 +1247,15 @@ void initwinvideo(void)
 #ifdef __OPENGL__
         if (CheckOGLMode()) {
             SetGLAttributes();
-            surface = SDL_SetVideoMode(WindowWidth, WindowHeight, BitDepth, surface->flags);
+            // TODO: Respect BitDepth and surface->flags
+            win = SDL_CreateWindow("zsnes", WindowWidth, WindowHeight, 0, 0, SDL_WINDOW_SHOWN);
+            if (win == NULL) {
+                zexit_error();
+            }
+            ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+            if (ren == NULL) {
+                zexit_error();
+            }
             adjustMouseXScale();
             adjustMouseYScale();
             glViewport(0, 0, WindowWidth, WindowHeight);
