@@ -24,7 +24,7 @@ misrepresented as being the original software.
     Ryan C. Gordon <icculus@icculus.org>
 */
 
-//Support for Linux evdevs...the /dev/input/event* devices.
+// Support for Linux evdevs...the /dev/input/event* devices.
 
 #include "mm.h"
 

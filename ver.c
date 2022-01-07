@@ -41,13 +41,13 @@ char* VERSION_PORT = "SDL - Linux";
 char* VERSION_PORT = "SDL - Unknown";
 #endif
 
-//Place compilation date at the end of VERSION_STR
+// Place compilation date at the end of VERSION_STR
 void placedate(void)
 {
     strcpy(VERSION_STR + strlen(VERSION_STR) - strlen(VERSION_DATE), VERSION_DATE);
 }
 
-//Place compilation time at the end of VERSION_STR
+// Place compilation time at the end of VERSION_STR
 void placetime()
 {
     strcpy(VERSION_STR + strlen(VERSION_STR) - strlen(__TIME__), __TIME__);

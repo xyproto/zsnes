@@ -47,29 +47,29 @@ static char* get_param(char* str)
     static char* pos = 0;
     char* token = 0;
 
-    if (str) //Start a new string?
+    if (str) // Start a new string?
     {
         pos = str;
     }
 
     if (pos) {
-        //Skip delimiters
+        // Skip delimiters
         while (*pos == ' ') {
             pos++;
         }
         if (*pos) {
             token = pos;
 
-            //Skip non-delimiters
+            // Skip non-delimiters
             while (*pos && (*pos != ' ')) {
-                //Skip quoted characters
+                // Skip quoted characters
                 if ((*pos == '\"') || (*pos == '\'')) {
                     char* match_pos = 0;
                     if ((match_pos = find_next_match(pos + 1, *pos))) {
                         pos = match_pos;
                     }
                 }
-                //Skip escaped spaces
+                // Skip escaped spaces
                 if (*pos == '\\') {
                     pos++;
                 }
@@ -88,20 +88,20 @@ static size_t count_param(char* str)
     size_t i = 0;
 
     while (*str) {
-        //Skip delimiters
+        // Skip delimiters
         while (*str == ' ') {
             str++;
         }
-        //Skip non-delimiters
+        // Skip non-delimiters
         while (*str && (*str != ' ')) {
-            //Skip quoted characters
+            // Skip quoted characters
             if ((*str == '\"') || (*str == '\'')) {
                 char* match_str = 0;
                 if ((match_str = find_next_match(str + 1, *str))) {
                     str = match_str;
                 }
             }
-            //Skip escaped spaces
+            // Skip escaped spaces
             if (*str == '\\') {
                 str++;
             }

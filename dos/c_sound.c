@@ -166,14 +166,14 @@ void InitSB(void)
 
     // Code added by peter santing.
     if (vibracard == 1) { /* Alternate ViBRA16X SB init code by Peter Santing.
-		 * Copied portions of original code and modified it. */
+                           * Copied portions of original code and modified it. */
 
         // Notify user that we're in ViBRA16x mode.
         Msgptr = "VIBRA16X MODE ENABLED";
         MessageOn = MsgCount;
 
         /* Set Time-Constant Data (= 256 - (1000000 / sampling rate))
-		 * 8000=131, 22050=210, 44100=233, 11025=165 */
+         * 8000=131, 22050=210, 44100=233, 11025=165 */
 
         // Setup DMA.
         // Select DMA channel.
@@ -216,7 +216,7 @@ void InitSB(void)
         SB_dsp_write(0xD1);
 
         /* Set Time-Constant Data (= 256 - (1000000 / sampling rate))
-		 * 8000=131, 22050=210, 44100=233, 11025=165 */
+         * 8000=131, 22050=210, 44100=233, 11025=165 */
         SB_dsp_write(0x40);
         if (StereoSound == 1) {
             SB_dsp_write(SoundSpeedt[SoundQuality <= 2 || SoundQuality == 4 ? SoundQuality : 2]);
@@ -258,7 +258,7 @@ void InitSB(void)
         SB_dsp_write(SBDeinitType ? /* Sb 2.0 version */ 0x90 : /* Slow speed. */ 0x1C);
     } else if (SBHDMA < 4) { // 16 bit low HDMA.
         /* Set Time-Constant Data (= 256 - (1000000 / sampling rate)).
-		 * 8000=131, 22050=210, 44100=233, 11025=165 */
+         * 8000=131, 22050=210, 44100=233, 11025=165 */
         SB_dsp_write(0x40);
         SB_dsp_write(SoundSpeeds[SoundQuality]);
 
@@ -315,7 +315,7 @@ void InitSB(void)
         SB_dsp_write(0xD1);
     } else { // 16 bit.
         /* Set Time-Constant Data (= 256 - (1000000 / sampling rate)).
-		 * 8000=131, 22050=210, 44100=233, 11025=165 */
+         * 8000=131, 22050=210, 44100=233, 11025=165 */
         SB_dsp_write(0x41);
         SB_dsp_write_hl(SBToSPCSpeeds2[SoundQuality]);
 
@@ -499,8 +499,8 @@ void SB_quality_limiter(void)
         return;
 
     /* ViBRA16X support by Peter Santing
-	 * Before REALLY switching back to 8-bit sucky mono mode, check that we're
-	 * dealing with a ViBRA16X Creative Labs Card. */
+     * Before REALLY switching back to 8-bit sucky mono mode, check that we're
+     * dealing with a ViBRA16X Creative Labs Card. */
     if (vibracard == 1)
         return;
 
@@ -611,8 +611,8 @@ end:
 
     switch (SBHDMA) {
         /* This piece of code is added by Peter Santing.  It will enable ZSNES to use
-		 * the full STEREO capability of the ViBRA16X line of Creative instead of
-		 * playing 8-bit MONOURAL sound. */
+         * the full STEREO capability of the ViBRA16X line of Creative instead of
+         * playing 8-bit MONOURAL sound. */
 #if 0 // XXX was commented out
 		case 0:
 #endif

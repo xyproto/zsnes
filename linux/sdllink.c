@@ -377,7 +377,7 @@ int Main_Proc()
             if (offset >= (256 + 128 + 64)) {
                 break;
             }
-            //printf("DEBUG axis offset: %d\n", offset);
+            // printf("DEBUG axis offset: %d\n", offset);
             if (event.jaxis.value < -(joy_sensitivity)) {
                 pressed[offset + 1] = 1;
                 pressed[offset + 0] = 0;
@@ -393,7 +393,7 @@ int Main_Proc()
         case SDL_JOYBUTTONDOWN:
             offset = ButtonOffset[event.jbutton.which];
             offset += event.jbutton.button;
-            //printf("DEBUG button offset: %d\n", offset);
+            // printf("DEBUG button offset: %d\n", offset);
             if (offset >= (256 + 128 + 64)) {
                 break;
             }
@@ -403,7 +403,7 @@ int Main_Proc()
         case SDL_JOYBUTTONUP:
             offset = ButtonOffset[event.jbutton.which];
             offset += event.jbutton.button;
-            //printf("DEBUG button offset: %d\n", offset);
+            // printf("DEBUG button offset: %d\n", offset);
             if (offset >= (256 + 128 + 64)) {
                 break;
             }
@@ -1264,7 +1264,7 @@ void initwinvideo(void)
 #ifdef __MACOSX__
             clearwin();
             Clear2xSaIBuffer();
-            initwinvideo(); //really really bad hack for OSX+ATI video cards -DL
+            initwinvideo(); // really really bad hack for OSX+ATI video cards -DL
 #endif
         }
 #endif
@@ -1278,7 +1278,7 @@ void initwinvideo(void)
         InitSound();
         InitInput();
 
-        //SDL_DisableScreenSaver();
+        // SDL_DisableScreenSaver();
     }
 
     if (((PrevStereoSound != StereoSound) || (PrevSoundQuality != SoundQuality))) {
@@ -1363,7 +1363,7 @@ static void sem_sleep_die()
 
 void UpdateVFrame(void)
 {
-    //Quick fix for GUI CPU usage
+    // Quick fix for GUI CPU usage
     if (GUIOn || GUIOn2 || EMUPause) {
         usleep(6000);
     }
@@ -1448,7 +1448,7 @@ s4 GetMouseY(void)
 s4 GetMouseMoveX(void)
 {
     //   InputRead();
-    //SDL_GetRelativeMouseState(&MouseMove2X, NULL);
+    // SDL_GetRelativeMouseState(&MouseMove2X, NULL);
 #if SDL_VERSION_ATLEAST(1, 3, 0)
     SDL_GetRelativeMouseState(0, &MouseMove2X, &MouseMove2Y);
 #else
@@ -1514,16 +1514,16 @@ void LaunchBrowser(char* browser, char* url)
 
 void LaunchURL(char* url)
 {
-    if (safe_fork(0, 0)) //If fork failed, or we are the parent
+    if (safe_fork(0, 0)) // If fork failed, or we are the parent
     {
         MouseX = 0;
         MouseY = 0;
         return;
     }
 
-    //We are now the child proccess
+    // We are now the child proccess
 
-    //If any of these LaunchBrowser() calls return that means it failed and we should try the next one
+    // If any of these LaunchBrowser() calls return that means it failed and we should try the next one
     LaunchBrowser("mozilla", url);
     LaunchBrowser("mozilla-firefox", url);
     LaunchBrowser("firefox", url);
@@ -1532,7 +1532,7 @@ void LaunchURL(char* url)
     LaunchBrowser("lynx", url);
     LaunchBrowser("links", url);
 
-    _exit(0); //All browser launches failed, oh well
+    _exit(0); // All browser launches failed, oh well
 }
 
 void ZsnesPage(void)

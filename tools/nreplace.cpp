@@ -129,7 +129,7 @@ int main(int argc, const char* const* argv)
             }
         }
     } else {
-        struct stat stat_buffer; //Not used
+        struct stat stat_buffer; // Not used
         for (; *argp; argp++) {
             handle_file(*argp, stat_buffer);
         }

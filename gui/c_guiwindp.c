@@ -1996,7 +1996,7 @@ void DisplayGUIAbout(void)
     GUIDrawWindowBox(11, "ABOUT");
     if (EEgg != 1) {
         GUIDisplayText(11, 6, 16, GUIGUIAboutTextA1); // Text
-        //GUIDisplayText(11, 6, 36, GUIGUIAboutTextA2);
+        // GUIDisplayText(11, 6, 36, GUIGUIAboutTextA2);
         GUIDisplayTextY(11, 6, 46, "CODED BY:");
         GUIDisplayText(11, 6, 56, "    ZSKNIGHT      _DEMO_");
         GUIDisplayText(11, 6, 66, "    PAGEFAULT     NACH");

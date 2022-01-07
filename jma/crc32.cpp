@@ -18,7 +18,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <stdlib.h>
 
 namespace CRC32lib {
-//Don't ask questions, this is the PKZip CRC32 table
+// Don't ask questions, this is the PKZip CRC32 table
 const unsigned int crc32Table[256] = {
     0x00000000, 0x77073096, 0xee0e612c, 0x990951ba, 0x076dc419, 0x706af48f,
     0xe963a535, 0x9e6495a3, 0x0edb8832, 0x79dcb8a4, 0xe0d5e91e, 0x97d2d988,
@@ -65,7 +65,7 @@ const unsigned int crc32Table[256] = {
     0xb40bbe37, 0xc30c8ea1, 0x5a05df1b, 0x2d02ef8d
 };
 
-//CRC32 for char arrays
+// CRC32 for char arrays
 unsigned int CRC32(const unsigned char* array, size_t size, register unsigned int crc32)
 {
     const unsigned char* end_p = array + size;

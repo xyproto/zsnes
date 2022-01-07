@@ -57,24 +57,24 @@ unsigned int count_slashes(const char* path)
 
 void fix_line(string& line, const char* filename)
 {
-    if (line.find(":") != string::npos) //If this is the first line outputed for this file
+    if (line.find(":") != string::npos) // If this is the first line outputed for this file
     {
         string fname(filename);
         size_t last_slash = fname.find_last_of("/");
-        if (last_slash != string::npos) //If it's in a subdirectory, add directory path to the object filename
+        if (last_slash != string::npos) // If it's in a subdirectory, add directory path to the object filename
         {
             line.replace(0, 3, fname, 0, last_slash + 1);
-        } else //Otherwise just remove the leading spaces
+        } else // Otherwise just remove the leading spaces
         {
             line.erase(0, 3);
         }
-    } else //Sequal lines need to make sure previous line ends with a \ and then go to next line
+    } else // Sequal lines need to make sure previous line ends with a \ and then go to next line
     {
         cout << " \\\n";
     }
 }
 
-//This function is so crazy because GCC doesn't put in proper directories, and adds system headers
+// This function is so crazy because GCC doesn't put in proper directories, and adds system headers
 void dependency_calculate_c(const char* filename)
 {
     string command = cc + " " + cflags + " -M -MG " + filename;
@@ -83,16 +83,16 @@ void dependency_calculate_c(const char* filename)
         char line[256];
         string processed_line("  ");
         bool line_read = false;
-        while (fgets(line, sizeof(line), fp)) //Process all lines of output
+        while (fgets(line, sizeof(line), fp)) // Process all lines of output
         {
             line_read = true;
             vector<string> tokens;
-            Tokenize(string(line), tokens, " \t\n\\"); //Break apart into each dependency
+            Tokenize(string(line), tokens, " \t\n\\"); // Break apart into each dependency
             for (vector<string>::iterator i = tokens.begin(); i != tokens.end(); i++) {
-                if (!IS_ABSOLUTE(*i)) //If dependency isn't a system header (all system headers would begin with /)
+                if (!IS_ABSOLUTE(*i)) // If dependency isn't a system header (all system headers would begin with /)
                 {
-                    //This if has to be before the dependency is added onto the processed line string
-                    if (processed_line.length() > 50) //Let's wrap every time we go over 50 characters
+                    // This if has to be before the dependency is added onto the processed line string
+                    if (processed_line.length() > 50) // Let's wrap every time we go over 50 characters
                     {
                         fix_line(processed_line, filename);
                         cout << processed_line;
@@ -100,24 +100,24 @@ void dependency_calculate_c(const char* filename)
                     }
                     string dependency = *i;
 
-                    //Now check if there is a needless dir/../
+                    // Now check if there is a needless dir/../
                     size_t first_slash = dependency.find_first_of("/");
                     if ((first_slash != string::npos) && dependency.compare(0, 2, "..") && !dependency.compare(first_slash, 4, "/../")) {
                         dependency.erase(0, first_slash + strlen("/../"));
                     }
 
-                    //Now remove improper ../ from GCC output
+                    // Now remove improper ../ from GCC output
                     unsigned int slashes = count_slashes(filename);
                     while (!dependency.compare(0, 3, "../") && slashes) {
                         dependency.erase(0, strlen("../"));
                         slashes--;
                     }
 
-                    processed_line += " " + dependency; //Add dependency to current line. Output for overflow (wrapping) should be done before this
+                    processed_line += " " + dependency; // Add dependency to current line. Output for overflow (wrapping) should be done before this
                 }
             }
         }
-        if (line_read) //Only output if there was dependency data
+        if (line_read) // Only output if there was dependency data
         {
             fix_line(processed_line, filename);
             cout << processed_line << "\n";

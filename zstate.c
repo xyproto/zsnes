@@ -82,7 +82,7 @@ u4 Totalbyteloaded;
 
 static void copy_snes_data(uint8_t** buffer, void (*copy_func)(uint8_t**, void*, size_t))
 {
-    //65816 status, etc.
+    // 65816 status, etc.
     copy_func(buffer, &curcyc, 1);
     copy_func(buffer, &curypos, 2);
     copy_func(buffer, &cacheud, 1);
@@ -107,16 +107,16 @@ static void copy_snes_data(uint8_t** buffer, void (*copy_func)(uint8_t**, void*,
     copy_func(buffer, &debugger, 1);
     copy_func(buffer, &Curtableaddr, 4);
     copy_func(buffer, &curnmi, 1);
-    //SPC Timers
+    // SPC Timers
     copy_func(buffer, &cycpbl, 4);
     copy_func(buffer, &cycpblt, 4);
-    //SNES PPU Register status
+    // SNES PPU Register status
     copy_func(buffer, &sndrot, 3019);
 }
 
 static void copy_spc_data(uint8_t** buffer, void (*copy_func)(uint8_t**, void*, size_t))
 {
-    //SPC stuff, DSP stuff
+    // SPC stuff, DSP stuff
     copy_func(buffer, SPCRAM, PHspcsave);
     copy_func(buffer, &BRRBuffer, PHdspsave);
     copy_func(buffer, &DSPMem, sizeof(DSPMem));
@@ -156,7 +156,7 @@ static void copy_state_data(uint8_t* buffer, void (*copy_func)(uint8_t**, void*,
 {
     copy_snes_data(&buffer, copy_func);
 
-    //WRAM (128k), VRAM (64k)
+    // WRAM (128k), VRAM (64k)
     copy_func(&buffer, wramdata, 8192 * 16);
     copy_func(&buffer, vram, 4096 * 16);
 
@@ -211,8 +211,8 @@ static void copy_state_data(uint8_t* buffer, void (*copy_func)(uint8_t**, void*,
     if (SETAEnable) {
         copy_func(&buffer, setaramdata, 256 * 16);
 
-        //Todo: copy the SetaCmdEnable?  For completeness we should do it
-        //but currently we ignore it anyway.
+        // Todo: copy the SetaCmdEnable?  For completeness we should do it
+        // but currently we ignore it anyway.
     }
 
     if (SPC7110Enable) {
@@ -288,7 +288,7 @@ static void copy_state_data(uint8_t* buffer, void (*copy_func)(uint8_t**, void*,
     if (method != csm_load_zst_old) {
         copy_extra_data(&buffer, copy_func);
 
-        //We don't load SRAM from new states if box isn't checked
+        // We don't load SRAM from new states if box isn't checked
         if ((method != csm_load_zst_new) || SRAMState) {
             copy_func(&buffer, sram, ramsize);
         }
@@ -332,7 +332,7 @@ void ClearCacheCheck()
     memset(vidmemch8, 1, sizeof(vidmemch8));
 }
 
-//Code to handle special frames for pausing, and desync checking
+// Code to handle special frames for pausing, and desync checking
 uint8_t *SpecialPauseBackup = 0, PauseFrameMode = 0;
 /*
 Pause frame modes
@@ -355,7 +355,7 @@ void RestorePauseFrame()
 {
     if (SpecialPauseBackup) {
         copy_state_data(SpecialPauseBackup, memcpyrinc, csm_load_rewind);
-        //ClearCacheCheck();
+        // ClearCacheCheck();
         PauseFrameMode = 0;
     }
 }
@@ -416,7 +416,7 @@ void RestoreCVFrame()
     }
 
     RewindBufferPos = StateBackup + LatestRewindPos * rewind_state_size;
-    //printf("Restoring from #%u, earliest: #%u\n", LatestRewindPos, EarliestRewindPos);
+    // printf("Restoring from #%u, earliest: #%u\n", LatestRewindPos, EarliestRewindPos);
 
     if (MovieProcessing == MOVIE_RECORD) {
         zmv_rewind_load(LatestRewindPos, false);
@@ -440,11 +440,11 @@ void RestoreCVFrame()
 
 void SetupRewindBuffer()
 {
-    //For special rewind case to help out pauses
+    // For special rewind case to help out pauses
     DeallocPauseFrame();
     SpecialPauseBackup = malloc(rewind_state_size);
 
-    //For standard rewinds
+    // For standard rewinds
     if (StateBackup) {
         free(StateBackup);
     }
@@ -474,7 +474,7 @@ static void state_size_tally(uint8_t** dest, void* src, size_t len)
 
 void InitRewindVars()
 {
-    uint8_t almost_useless_array[1]; //An array is needed for copy_state_data to give the correct size
+    uint8_t almost_useless_array[1]; // An array is needed for copy_state_data to give the correct size
     state_size = 0;
     copy_state_data(almost_useless_array, state_size_tally, csm_save_rewind);
     rewind_state_size = state_size;
@@ -496,7 +496,7 @@ void InitRewindVarsForMovie()
     DblRewTimer = 1;
 }
 
-//This is used to preserve system load state between game loads
+// This is used to preserve system load state between game loads
 static uint8_t* BackupSystemBuffer = 0;
 
 void BackupSystemVars(void)
@@ -741,9 +741,9 @@ static bool zst_save_compressed(FILE* fp)
         free(buffer);
     }
 
-    if (!worked) //Compression failed for whatever reason
+    if (!worked) // Compression failed for whatever reason
     {
-        fwrite3(cur_zst_size | 0x00800000, fp); //Uncompressed ZST will never break 8MB
+        fwrite3(cur_zst_size | 0x00800000, fp); // Uncompressed ZST will never break 8MB
     }
 
     return (worked);
@@ -761,14 +761,14 @@ void zst_save(FILE* fp, bool Thumbnail, bool Compress)
     }
 
     if (SA1Enable) {
-        SaveSA1(); //Convert SA-1 stuff to standard, non displacement format
+        SaveSA1(); // Convert SA-1 stuff to standard, non displacement format
     }
 
-    if (!Compress || !zst_save_compressed(fp)) //If we don't want compressed or compression failed
+    if (!Compress || !zst_save_compressed(fp)) // If we don't want compressed or compression failed
     {
         fwrite(zst_header_cur, 1, sizeof(zst_header_cur) - 1, fp); //-1 for null
 
-        fhandle = fp; //Set global file handle
+        fhandle = fp; // Set global file handle
         copy_state_data(0, write_save_state_data, csm_save_zst_new);
 
         if (Thumbnail) {
@@ -783,7 +783,7 @@ void zst_save(FILE* fp, bool Thumbnail, bool Compress)
     }
 
     if (SA1Enable) {
-        RestoreSA1(); //Convert back SA-1 stuff
+        RestoreSA1(); // Convert back SA-1 stuff
     }
 
     ResetOffset();
@@ -876,10 +876,10 @@ void statesaver(void)
         zst_save(fhandle, !!cbitmode, false);
         fclose(fhandle);
 
-        //Display message onscreen, 'STATE XX SAVED.'
+        // Display message onscreen, 'STATE XX SAVED.'
         set_state_message("STATE ", " SAVED.");
     } else {
-        //Display message onscreen, 'UNABLE TO SAVE.'
+        // Display message onscreen, 'UNABLE TO SAVE.'
         Msgptr = "UNABLE TO SAVE.";
         MessageOn = MsgCount;
 
@@ -939,19 +939,19 @@ bool zst_load(FILE* fp, size_t Compressed)
         Totalbyteloaded += fread(zst_header_check, 1, sizeof(zst_header_check), fp);
 
         if (!memcmp(zst_header_check, zst_header_cur, sizeof(zst_header_check) - 2)) {
-            zst_version = 143; //v1.43+
+            zst_version = 143; // v1.43+
         }
 
         if (!memcmp(zst_header_check, zst_header_old, sizeof(zst_header_check) - 2)) {
-            zst_version = 60; //v0.60 - v1.42
+            zst_version = 60; // v0.60 - v1.42
         }
 
         if (!zst_version) {
             return (false);
-        } //Pre v0.60 saves are no longer loaded
+        } // Pre v0.60 saves are no longer loaded
 
         load_save_size = 0;
-        fhandle = fp; //Set global file handle
+        fhandle = fp; // Set global file handle
         copy_state_data(0, read_save_state_data, (zst_version == 143) ? csm_load_zst_new : csm_load_zst_old);
         Totalbyteloaded += load_save_size;
     }
@@ -966,7 +966,7 @@ bool zst_load(FILE* fp, size_t Compressed)
     }
 
     if (SA1Enable) {
-        RestoreSA1(); //Convert back SA-1 stuff
+        RestoreSA1(); // Convert back SA-1 stuff
         SA1UpdateDPageC();
     }
 
@@ -974,10 +974,10 @@ bool zst_load(FILE* fp, size_t Compressed)
         UpdateBanksSDD1();
     }
 
-    //Clear cache check if state loaded
+    // Clear cache check if state loaded
     ClearCacheCheck();
 
-    if (zst_version < 143) //Set new vars which old states did not have
+    if (zst_version < 143) // Set new vars which old states did not have
     {
         prevoamptr = 0xFF;
         ioportval = 0xFF;
@@ -997,7 +997,7 @@ bool zst_load(FILE* fp, size_t Compressed)
     return (true);
 }
 
-//Wrapper for above
+// Wrapper for above
 bool zst_compressed_loader(FILE* fp)
 {
     size_t data_size = fread3(fp);
@@ -1150,7 +1150,7 @@ void stateloader(char* statename, bool keycheck, bool xfercheck)
         zst_name();
     }
 
-    //Actual state loading code
+    // Actual state loading code
     if ((fhandle = fopen_dir(ZSStatePath, statename, "rb"))) {
         if (xfercheck) {
             Totalbyteloaded = 0;
@@ -1331,7 +1331,7 @@ void savespcdata(void)
             time_t t = time(0);
             struct tm* lt = localtime(&t);
 
-            //Assemble N/Z flags into P
+            // Assemble N/Z flags into P
             spcP &= 0xFD;
             if (!spcNZ) {
                 spcP |= 2;
@@ -1341,40 +1341,40 @@ void savespcdata(void)
                 spcP |= 0x80;
             }
 
-            strcpy((char*)ssdatst, "SNES-SPC700 Sound File Data v0.30"); //00000h - File Header : SNES-SPC700 Sound File Data v0.00
-            ssdatst[0x21] = ssdatst[0x22] = ssdatst[0x23] = 0x1a; //00021h - 0x1a,0x1a,0x1a
-            ssdatst[0x24] = 10; //00024h - 10
-            *(uint16_t*)(ssdatst + 0x25) = spcPCRam - SPCRAM; //00025h - PC Register value (1 Word)
-            ssdatst[0x27] = spcA; //00027h - A Register Value (1 byte)
-            ssdatst[0x28] = spcX; //00028h - X Register Value (1 byte)
-            ssdatst[0x29] = spcY; //00029h - Y Register Value (1 byte)
-            ssdatst[0x2A] = spcP; //0002Ah - Status Flags Value (1 byte)
-            ssdatst[0x2B] = spcS; //0002Bh - Stack Register Value (1 byte)
+            strcpy((char*)ssdatst, "SNES-SPC700 Sound File Data v0.30"); // 00000h - File Header : SNES-SPC700 Sound File Data v0.00
+            ssdatst[0x21] = ssdatst[0x22] = ssdatst[0x23] = 0x1a; // 00021h - 0x1a,0x1a,0x1a
+            ssdatst[0x24] = 10; // 00024h - 10
+            *(uint16_t*)(ssdatst + 0x25) = spcPCRam - SPCRAM; // 00025h - PC Register value (1 Word)
+            ssdatst[0x27] = spcA; // 00027h - A Register Value (1 byte)
+            ssdatst[0x28] = spcX; // 00028h - X Register Value (1 byte)
+            ssdatst[0x29] = spcY; // 00029h - Y Register Value (1 byte)
+            ssdatst[0x2A] = spcP; // 0002Ah - Status Flags Value (1 byte)
+            ssdatst[0x2B] = spcS; // 0002Bh - Stack Register Value (1 byte)
 
-            ssdatst[0x2C] = 0; //0002Ch - Reserved
-            ssdatst[0x2D] = 0; //0002Dh - Reserved
+            ssdatst[0x2C] = 0; // 0002Ch - Reserved
+            ssdatst[0x2D] = 0; // 0002Dh - Reserved
 
             PrepareSaveState();
 
-            memset(ssdatst + 0x2E, 0, 32); //0002Eh-0004Dh - SubTitle/Song Name
-            memset(ssdatst + 0x4E, 0, 32); //0004Eh-0006Dh - Title of Game
+            memset(ssdatst + 0x2E, 0, 32); // 0002Eh-0004Dh - SubTitle/Song Name
+            memset(ssdatst + 0x4E, 0, 32); // 0004Eh-0006Dh - Title of Game
             memcpy(ssdatst + 0x4E, ((uint8_t*)romdata) + infoloc, 21);
-            memset(ssdatst + 0x6E, 0, 16); //0006Eh-0007Dh - Name of Dumper
-            memset(ssdatst + 0x7E, 0, 32); //0007Eh-0009Dh - Comments
+            memset(ssdatst + 0x6E, 0, 16); // 0006Eh-0007Dh - Name of Dumper
+            memset(ssdatst + 0x7E, 0, 32); // 0007Eh-0009Dh - Comments
 
-            //0009Eh-000A1h - Date the SPC was Dumped
+            // 0009Eh-000A1h - Date the SPC was Dumped
             ssdatst[0x9E] = lt->tm_mday;
             ssdatst[0x9F] = lt->tm_mon + 1;
             ssdatst[0xA0] = (lt->tm_year + 1900) & 0xFF;
             ssdatst[0xA1] = ((lt->tm_year + 1900) >> 8) & 0xFF;
 
-            memset(ssdatst + 0xA2, 0, 7); //000A2h-000A8h - Reserved
-            memset(ssdatst + 0xA9, 0, 4); //000A9h-000ACh - Length of SPC in seconds
-            memset(ssdatst + 0xAD, 0, 3); //000ADh-000AFh - Fade out time in milliseconds
-            memset(ssdatst + 0xB0, 0, 32); //000B0h-000CFh - Author of Song
+            memset(ssdatst + 0xA2, 0, 7); // 000A2h-000A8h - Reserved
+            memset(ssdatst + 0xA9, 0, 4); // 000A9h-000ACh - Length of SPC in seconds
+            memset(ssdatst + 0xAD, 0, 3); // 000ADh-000AFh - Fade out time in milliseconds
+            memset(ssdatst + 0xB0, 0, 32); // 000B0h-000CFh - Author of Song
 
-            //Set Channel Disables
-            ssdatst[0xD0] = 0; //000D0h - Default Channel Disables (0 = enable, 1 = disable)
+            // Set Channel Disables
+            ssdatst[0xD0] = 0; // 000D0h - Default Channel Disables (0 = enable, 1 = disable)
             if (Voice0Disable[0]) {
                 ssdatst[0xD0] |= BIT(0);
             }
@@ -1400,13 +1400,13 @@ void savespcdata(void)
                 ssdatst[0xD0] |= BIT(7);
             }
 
-            ssdatst[0xD1] = 1; //000D1h - Emulator used to dump .spc file
-            memset(ssdatst + 0xD2, 0, 46); //000D2h-000FFh - Reserved
+            ssdatst[0xD1] = 1; // 000D1h - Emulator used to dump .spc file
+            memset(ssdatst + 0xD2, 0, 46); // 000D2h-000FFh - Reserved
 
             fwrite(ssdatst, 1, sizeof(ssdatst), fp);
-            fwrite(SPCRAM, 1, 65536, fp); //00100h-100FFh - SPCRam
-            fwrite(DSPMem, 1, 192, fp); //10100h-101FFh - DSPRam
-            fwrite(spcextraram, 1, 64, fp); //Seems DSPRam is split in two, but I don't get what's going on here
+            fwrite(SPCRAM, 1, 65536, fp); // 00100h-100FFh - SPCRam
+            fwrite(DSPMem, 1, 192, fp); // 10100h-101FFh - DSPRam
+            fwrite(spcextraram, 1, 64, fp); // Seems DSPRam is split in two, but I don't get what's going on here
             fclose(fp);
 
             ResetState();

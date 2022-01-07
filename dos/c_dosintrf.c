@@ -61,7 +61,7 @@ void StartUp(void)
 
     // Get base address
     /* These variables are used for memory allocation so they can be ignored for
-	 * non-DOS ports */
+     * non-DOS ports */
     u2 base_lo;
     u2 base_hi;
     u4 failed;

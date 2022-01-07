@@ -472,13 +472,13 @@ void ST011_Command()
 
     // Unknown - seems to set flags $00,$20,$40,..$e0 for restricted movement lists
     case 0x06:
-        //ST011_OP06();
+        // ST011_OP06();
         ST011_SR = 0xc4;
         break;
 
     // Unknown - seems to set flags $00,$20,$40,..$e0 for restricted movement lists
     case 0x07:
-        //ST011_OP07();
+        // ST011_OP07();
         ST011_SR = 0xc4;
         break;
 

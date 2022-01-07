@@ -1346,7 +1346,7 @@ static void waitvsync(void)
 {
     u2 const port = 0x03DA; // VGA status port
     u1 const vr = 0x08; // check VR bit
-    //while (inb(port) & vr) {} // in middle of VR, better wait for next one
+    // while (inb(port) & vr) {} // in middle of VR, better wait for next one
     while (!(inb(port) & vr)) { } // updating the screen
 }
 #endif

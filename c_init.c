@@ -79,7 +79,7 @@ void init(void)
     romtype = 0;
 
     /* XXX sndrot is a global variable, but is treated like the first entry of a
-	 * big struct */
+     * big struct */
     memcpy(regsbackup, &sndrot, sizeof(regsbackup));
 
     clearmem();
@@ -141,11 +141,11 @@ void init(void)
     if (debugger != 0 && romloadskip != 1) {
 #ifndef __MSDOS__
         /* Prevent nasty hang in debugger. Likely not a good way...
-		 * If we don't do this, then on the SDL and win32 ports, update_ticks_pc2
-		 * won't be set and CheckTimers will hang. */
+         * If we don't do this, then on the SDL and win32 ports, update_ticks_pc2
+         * won't be set and CheckTimers will hang. */
 
         /* Most likely it isn't desirable to be checking timers under the
-		 * debugger anyway, but this is a much simpler fix. */
+         * debugger anyway, but this is a much simpler fix. */
 #ifdef __WIN32__
         // need to get "freq" set first
         initwinvideo();
@@ -350,7 +350,7 @@ void ReadInputDevice(void)
                 eax[0x040E] = mouseyloc;
             }
         }
-        //JoyBOrig = JoyBOrig & 0x0000FFFF | 0x000E0000;
+        // JoyBOrig = JoyBOrig & 0x0000FFFF | 0x000E0000;
         if (mousebuttons & 0x01)
             JoyAOrig |= 0x80000000;
         if (mousebuttons & 0x02)

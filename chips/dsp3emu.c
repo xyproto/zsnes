@@ -1017,7 +1017,7 @@ void DSP3_OP0C()
     // absorb 2 bytes
 
     DSP3_DR = 0;
-    //SetDSP3 = &DSP3_OP0C_A;
+    // SetDSP3 = &DSP3_OP0C_A;
     SetDSP3 = &DSP3_Reset;
 }
 

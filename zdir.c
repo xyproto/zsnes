@@ -52,7 +52,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define WILD_ALL "*"
 #endif
 
-//Note, these are faster than the built in DJGPP/MinGW ones
+// Note, these are faster than the built in DJGPP/MinGW ones
 z_DIR* z_opendir(const char* path)
 {
     z_DIR* dir = 0;
@@ -66,7 +66,7 @@ z_DIR* z_opendir(const char* path)
         if (dir) {
             dir->find_first_handle = _findfirst(search, &dir->fileinfo);
             if (FIND_FAIL(dir->find_first_handle)) {
-                //ENOENT set by findfirst already
+                // ENOENT set by findfirst already
                 free(dir);
                 dir = 0;
             }
@@ -175,7 +175,7 @@ struct dirent_info* readdir_info(z_DIR* dir)
 
 int dirent_access(struct dirent_info* entry, int mode)
 {
-    int accessable = 0; //This is accessable, non access is -1
+    int accessable = 0; // This is accessable, non access is -1
 
     if (!entry) {
         accessable = -1;

@@ -140,20 +140,20 @@ bool PatchUsingIPS(const char* ext)
     int sub = Header512 ? 512 : 0;
 
     if (!AutoPatch) {
-        deinitPatch(); //Needed if the call to this function was done from findZipIPS()
+        deinitPatch(); // Needed if the call to this function was done from findZipIPS()
         return (false);
     }
 
-    if (!IPSPatch.zipfile) //Regular file, not Zip
+    if (!IPSPatch.zipfile) // Regular file, not Zip
     {
         if (!initPatch(ext)) {
-            deinitPatch(); //Needed because if it didn't fully init, some things could have
+            deinitPatch(); // Needed because if it didn't fully init, some things could have
             return (false);
         }
     }
 
-    //Yup, it's goto! :)
-    //See 'IPSDone:' for explanation
+    // Yup, it's goto! :)
+    // See 'IPSDone:' for explanation
     if (IPSget() != 'P') {
         goto IPSDone;
     }
@@ -171,18 +171,18 @@ bool PatchUsingIPS(const char* ext)
     }
 
     while (IPSPatch.proccessed != IPSPatch.file_size) {
-        //Location is a 3 byte value (max 16MB)
+        // Location is a 3 byte value (max 16MB)
         int inloc = (IPSget() << 16) | (IPSget() << 8) | IPSget();
 
-        if (inloc == 0x454f46) //EOF
+        if (inloc == 0x454f46) // EOF
         {
             break;
         }
 
-        //Offset by size of ROM header
+        // Offset by size of ROM header
         location = inloc - sub;
 
-        //Length is a 2 byte value (max 64KB)
+        // Length is a 2 byte value (max 64KB)
         length = (IPSget() << 8) | IPSget();
 
         if (length) // Not RLE
@@ -198,10 +198,10 @@ bool PatchUsingIPS(const char* ext)
                         last = location;
                     }
                 } else {
-                    IPSget(); //Need to skip the bytes that write to header
+                    IPSget(); // Need to skip the bytes that write to header
                 }
             }
-        } else //RLE
+        } else // RLE
         {
             int i;
             unsigned char newVal;
@@ -221,16 +221,16 @@ bool PatchUsingIPS(const char* ext)
         }
     }
 
-//We use gotos to break out of the nested loops,
-//as well as a simple way to check for 'PATCH' in
-//some cases like this one, goto is the way to go.
+// We use gotos to break out of the nested loops,
+// as well as a simple way to check for 'PATCH' in
+// some cases like this one, goto is the way to go.
 IPSDone:
 
     deinitPatch();
 
     IPSPatched = true;
 
-    //Adjust size values if the ROM was expanded
+    // Adjust size values if the ROM was expanded
     if (last >= curromspace) {
         NumofBytes = curromspace = last + 1;
         NumofBanks = NumofBytes / 32768;
@@ -253,34 +253,34 @@ IPSDone:
 bool findZipIPS(char* compressedfile, const char* ext)
 {
     bool FoundIPS = false;
-    unz_file_info cFileInfo; //Create variable to hold info for a compressed file
+    unz_file_info cFileInfo; // Create variable to hold info for a compressed file
     int cFile;
 
     memset(&IPSPatch, 0, sizeof(IPSPatch));
 
-    IPSPatch.zipfile = unzopen_dir(ZRomPath, compressedfile); //Open zip file
-    cFile = unzGoToFirstFile(IPSPatch.zipfile); //Set cFile to first compressed file
+    IPSPatch.zipfile = unzopen_dir(ZRomPath, compressedfile); // Open zip file
+    cFile = unzGoToFirstFile(IPSPatch.zipfile); // Set cFile to first compressed file
 
-    while (cFile == UNZ_OK) //While not at end of compressed file list
+    while (cFile == UNZ_OK) // While not at end of compressed file list
     {
-        //Temporary char array for file name
+        // Temporary char array for file name
         char cFileName[256];
 
-        //Gets info on current file, and places it in cFileInfo
+        // Gets info on current file, and places it in cFileInfo
         unzGetCurrentFileInfo(IPSPatch.zipfile, &cFileInfo, cFileName, 256, NULL, 0, NULL, 0);
 
-        //Find IPS file
+        // Find IPS file
         if (isextension(cFileName, ext)) {
             FoundIPS = true;
             break;
         }
 
-        //Go to next file in zip file
+        // Go to next file in zip file
         cFile = unzGoToNextFile(IPSPatch.zipfile);
     }
 
     if (FoundIPS) {
-        //Open file
+        // Open file
         unzOpenCurrentFile(IPSPatch.zipfile);
 
         IPSPatch.file_size = (unsigned int)cFileInfo.uncompressed_size;

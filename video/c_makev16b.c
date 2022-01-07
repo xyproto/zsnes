@@ -903,7 +903,7 @@ void draw8x816boffset(u4 const eax, u4 const ecx, u2* const edx, u1* const ebx, 
         }
     }
     /* tile value : bit 15 = flipy, bit 14 = flipx, bit 13 = priority value
-	 *              bit 10-12 = palette, 0-9=tile# */
+     *              bit 10-12 = palette, 0-9=tile# */
     if (curmosaicsz == 1 && winon != 0) {
         draw8x816bwinonoffset(esi, edi);
     } else {
@@ -1243,7 +1243,7 @@ static void draw16x816(u4 const eax, u4 const ecx, u2* const edx, u1* const ebx,
     }
 
     /* tile value : bit 15 = flipy, bit 14 = flipx, bit 13 = priority value
-	 *              bit 10-12 = palette, 0-9=tile# */
+     *              bit 10-12 = palette, 0-9=tile# */
     if (curmosaicsz == 1 && winon != 0) { // No mosaic
         draw16x816bwinon(esi, edi);
         return;
@@ -1348,7 +1348,7 @@ void draw8x816b(u4 eax, u4 ecx, u2* edx, u1* ebx, u4 const layer, u4 eax_, u2 co
         }
     }
     /* tile value : bit 15 = flipy, bit 14 = flipx, bit 13 = priority value
-	 *              bit 10-12 = palette, 0-9=tile# */
+     *              bit 10-12 = palette, 0-9=tile# */
     if (curmosaicsz == 1 && winon != 0) {
         draw8x816bwinon(esi, edi);
         return;

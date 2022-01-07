@@ -36,7 +36,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #include "../argv.h"
 
-//Introducing secure forking ;) -Nach
+// Introducing secure forking ;) -Nach
 
 #ifdef __linux__
 static int z_setreuid(uid_t uid)
@@ -62,7 +62,7 @@ static int z_setregid(gid_t gid)
 }
 #endif
 
-//Taken from the secure programming cookbook, somewhat modified
+// Taken from the secure programming cookbook, somewhat modified
 static bool spc_drop_privileges()
 {
     gid_t newgid = getgid(), oldgid = getegid();
@@ -75,22 +75,22 @@ static bool spc_drop_privileges()
         userinfo = getpwnam(name);
     }
 
-    if (!olduid && !newuid && userinfo && userinfo->pw_uid) //If currently using su to root or sudo
+    if (!olduid && !newuid && userinfo && userinfo->pw_uid) // If currently using su to root or sudo
     {
         newuid = userinfo->pw_uid;
     }
 
-    if (!oldgid && !newgid && userinfo && userinfo->pw_gid) //Same thing, but now check the group
+    if (!oldgid && !newgid && userinfo && userinfo->pw_gid) // Same thing, but now check the group
     {
         newgid = userinfo->pw_gid;
     }
 
-    //If the above failed, we check for root via +s as a mode on the binary
+    // If the above failed, we check for root via +s as a mode on the binary
 
-    //If root privileges are to be dropped, be sure to pare down the ancillary
-    //groups for the process before doing anything else because the setgroups()
-    //system call requires root privileges.  Drop ancillary groups regardless of
-    //whether privileges are being dropped temporarily or permanently.
+    // If root privileges are to be dropped, be sure to pare down the ancillary
+    // groups for the process before doing anything else because the setgroups()
+    // system call requires root privileges.  Drop ancillary groups regardless of
+    // whether privileges are being dropped temporarily or permanently.
 
     if (!olduid) {
         setgroups(1, &newgid);
@@ -100,7 +100,7 @@ static bool spc_drop_privileges()
         return (false);
     }
 
-    //verify that the changes were successful
+    // verify that the changes were successful
     if (newgid != oldgid && (setegid(oldgid) != -1 || getegid() != newgid)) {
         return (false);
     }
@@ -141,7 +141,7 @@ static bool spc_sanitize_files(int* a, size_t size, int skip)
     int fd, fds;
     struct stat st;
 
-    //Make sure all open descriptors other than the standard ones are closed
+    // Make sure all open descriptors other than the standard ones are closed
     if ((fds = getdtablesize()) == -1) {
         fds = OPEN_MAX;
     }
@@ -151,8 +151,8 @@ static bool spc_sanitize_files(int* a, size_t size, int skip)
         }
     }
 
-    //Verify that the standard descriptors are open.  If they're not, attempt to
-    //open them using /dev/null.  If any are unsuccessful, fail.
+    // Verify that the standard descriptors are open.  If they're not, attempt to
+    // open them using /dev/null.  If any are unsuccessful, fail.
     for (fd = 0; fd < 3; fd++) {
         if (fstat(fd, &st) == -1 && (errno != EBADF || !open_devnull(fd))) {
             return (false);
@@ -161,23 +161,23 @@ static bool spc_sanitize_files(int* a, size_t size, int skip)
     return (true);
 }
 
-//Pass array of file descriptors to leave open
+// Pass array of file descriptors to leave open
 pid_t safe_fork(int* a, size_t size)
 {
     int filedes[2];
     if (!pipe(filedes)) {
         char success = 0;
         pid_t childpid;
-        if ((childpid = fork()) == -1) //Fork Failed
+        if ((childpid = fork()) == -1) // Fork Failed
         {
             close(filedes[0]);
             close(filedes[1]);
             return (-1);
         }
 
-        if (childpid) //Parent Process
+        if (childpid) // Parent Process
         {
-            close(filedes[1]); //Close writing
+            close(filedes[1]); // Close writing
             read(filedes[0], &success, 1);
             close(filedes[0]);
             if (success) {
@@ -187,9 +187,9 @@ pid_t safe_fork(int* a, size_t size)
             return (-1);
         }
 
-        //This is the child proccess
+        // This is the child proccess
 
-        close(filedes[0]); //Close reading
+        close(filedes[0]); // Close reading
 
         if (!spc_sanitize_files(a, size, filedes[1]) || !spc_drop_privileges()) {
             write(filedes[1], &success, 1);
@@ -205,19 +205,19 @@ pid_t safe_fork(int* a, size_t size)
     return (-1);
 }
 
-//Introducing a popen which doesn't return until it knows for sure of program launched or couldn't open -Nach
+// Introducing a popen which doesn't return until it knows for sure of program launched or couldn't open -Nach
 
-//Forks, parent is paused until child successfully execs (returns child pid) or child exits (returns failure)
+// Forks, parent is paused until child successfully execs (returns child pid) or child exits (returns failure)
 static pid_t parent_pause_fork()
 {
     int filedes[2];
     if (!pipe(filedes)) {
         int pid = fork();
-        if (pid == -1) //Failed
+        if (pid == -1) // Failed
         {
             close(filedes[0]);
             close(filedes[1]);
-        } else if (pid > 0) //Parent
+        } else if (pid > 0) // Parent
         {
             char success = 1;
             close(filedes[1]);
@@ -227,7 +227,7 @@ static pid_t parent_pause_fork()
                 return (pid);
             }
             waitpid(pid, 0, 0);
-        } else //Child
+        } else // Child
         {
             close(filedes[0]);
             fcntl(filedes[1], F_SETFD, FD_CLOEXEC);
@@ -257,8 +257,8 @@ static struct fp_pid_link {
 
 FILE* safe_popen(char* command, const char* mode)
 {
-    //filedes[0] is for reading
-    //filedes[1] is for writing.
+    // filedes[0] is for reading
+    // filedes[1] is for writing.
     int filedes[2];
 
     if (mode && (*mode == 'r' || *mode == 'w') && !pipe(filedes)) {

@@ -24,7 +24,7 @@ misrepresented as being the original software.
     Ryan C. Gordon <icculus@icculus.org>
 */
 
-//Support for MacOS X via the HID Manager APIs.
+// Support for MacOS X via the HID Manager APIs.
 
 #include "mm.h"
 
@@ -663,7 +663,7 @@ static unsigned long HIDCloseReleaseInterface(pRecDevice pDevice)
             //  do nothing as device was not opened, thus can't be closed
         } else if (kIOReturnSuccess != result)
             HIDREPORTERRORNUM("HIDCloseReleaseInterface - Failed to close IOHIDDeviceInterface.", result);
-        //release the interface
+        // release the interface
         result = (*(IOHIDDeviceInterface**)pDevice->interface)->Release(pDevice->interface);
         if (kIOReturnSuccess != result)
             HIDREPORTERRORNUM("HIDCloseReleaseInterface - Failed to release interface.", result);
@@ -955,7 +955,7 @@ static pRecDevice hid_BuildDevice(io_object_t hidDevice)
             if (kIOReturnSuccess != result)
                 HIDReportErrorNum("HIDCreateOpenDeviceInterface failed.", result);
             hid_GetDeviceInfo(hidDevice, hidProperties, pDevice); // hidDevice used to find parents in registry tree
-                // set current device for use in getting elements
+                                                                  // set current device for use in getting elements
             gCurrentGetDevice = pDevice;
             // Add all elements
             hid_GetCollectionElements(hidProperties, &pCurrentElement);
@@ -987,14 +987,14 @@ static void hid_DeviceNotification(void* refCon,
     pRecDevice pDevice = (pRecDevice)refCon;
 
     if (messageType == kIOMessageServiceIsTerminated) {
-        //printf("Device 0x%08x \"%s\"removed.\n", service, pDevice->product);
-        // ryan added this.
+        // printf("Device 0x%08x \"%s\"removed.\n", service, pDevice->product);
+        //  ryan added this.
         if (pDevice->disconnect == DISCONNECT_CONNECTED)
             pDevice->disconnect = DISCONNECT_TELLUSER;
 
         // Free the data we're no longer using now that the device is going away
         // ryan commented this out.
-        //hid_DisposeDevice (pDevice);
+        // hid_DisposeDevice (pDevice);
     }
 }
 #else
@@ -1002,7 +1002,7 @@ static void hid_DeviceNotification(void* refCon,
 static void hid_RemovalCallbackFunction(void* target, IOReturn result, void* refcon, void* sender)
 {
     // ryan commented this out.
-    //hid_DisposeDevice ((pRecDevice) target);
+    // hid_DisposeDevice ((pRecDevice) target);
 
     // ryan added this.
     pRecDevice = (pRecDevice)target;
@@ -1241,7 +1241,7 @@ static pRecElement HIDGetNextDeviceElement(pRecElement pElement, HIDElementTypeM
             else
                 return hid_GetDeviceElement(pElement->pChild, typeMask); // return the child of this element
         } else if (pElement->pSibling) {
-            return hid_GetDeviceElement(pElement->pSibling, typeMask); //return the sibling of this element
+            return hid_GetDeviceElement(pElement->pSibling, typeMask); // return the sibling of this element
         } else // at end back up correctly
         {
             pRecElement pPreviousElement = NULL;
@@ -1252,7 +1252,7 @@ static pRecElement HIDGetNextDeviceElement(pRecElement pElement, HIDElementTypeM
             while (NULL != pElement->pPrevious) {
                 pPreviousElement = pElement;
                 pElement = pElement->pPrevious; // look at previous element
-                    // if we have a collection and the previous element is the branch element (should have both a colection and next element attached to it)
+                                                // if we have a collection and the previous element is the branch element (should have both a colection and next element attached to it)
                 // if we found a collection, which we are not at the sibling level that actually does have siblings
                 if (((pElement->type == kIOHIDElementTypeCollection) && (pPreviousElement != pElement->pSibling) && pElement->pSibling) ||
                     // or if we are at the top
@@ -1261,7 +1261,7 @@ static pRecElement HIDGetNextDeviceElement(pRecElement pElement, HIDElementTypeM
             }
             if (NULL == pElement->pPrevious)
                 return NULL; // got to top of list with only a collection as the first element
-                    // now we must have been down the child route so go down the sibling route
+                             // now we must have been down the child route so go down the sibling route
             pElement = pElement->pSibling; // element of interest
             return hid_GetDeviceElement(pElement, typeMask); // otherwise return this element
         }

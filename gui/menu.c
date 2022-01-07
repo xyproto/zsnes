@@ -385,7 +385,7 @@ void showmenu(void)
             copyvid();
             StopSound();
             for (;;) {
-                //GUIUnBuffer();
+                // GUIUnBuffer();
                 menudrawbox8b();
                 copyvid();
 

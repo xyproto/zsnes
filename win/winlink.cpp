@@ -1402,7 +1402,7 @@ void TestJoy()
 }
 
 extern "C" {
-//BYTE changeRes = 1;
+// BYTE changeRes = 1;
 extern unsigned int BitConv32Ptr;
 extern unsigned int RGBtoYUVPtr;
 extern unsigned short resolutn;
@@ -1422,7 +1422,7 @@ DWORD LockSurface();
 void UnlockSurface();
 void clear_ddraw();
 
-//The big extern
+// The big extern
 extern "C" {
 char CheckOGLMode();
 BYTE* SurfBuf;
@@ -1508,7 +1508,7 @@ void Start60HZ(void)
         MultiMouseInit();
     }
 
-    //if (!device1 && !device2) MouseInput->Unacquire();
+    // if (!device1 && !device2) MouseInput->Unacquire();
 }
 
 void Stop60HZ(void)
@@ -1846,7 +1846,7 @@ void initwinvideo(void)
         }
 
         hMainWindow = CreateWindow("ZSNES", WinName, WS_VISIBLE | WS_POPUP, X, Y,
-            //WS_OVERLAPPED "ZSNES"
+            // WS_OVERLAPPED "ZSNES"
             WindowWidth, WindowHeight, NULL, NULL, hInst, NULL);
 
         if (!hMainWindow) {
@@ -1951,7 +1951,7 @@ void UpdateVFrame(void)
     int DataNeeded;
     SPCSize = 256;
 
-    //if (StereoSound==1) SPCSize=256;
+    // if (StereoSound==1) SPCSize=256;
 
     while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
         TranslateMessage(&msg);
@@ -2105,12 +2105,12 @@ void drawscreenwin(void)
     DWORD* SURFDW;
 
     NGNoTransp = 0; // Set this value to 1 within the appropriate
-        // video mode if you want to add a custom
-        // transparency routine or hardware
-        // transparency.  This only works if
-        // the value of newengen is equal to 1.
-        // (see ProcessTransparencies in newgfx16.asm
-        //  for ZSNES' current transparency code)
+                    // video mode if you want to add a custom
+                    // transparency routine or hardware
+                    // transparency.  This only works if
+                    // the value of newengen is equal to 1.
+                    // (see ProcessTransparencies in newgfx16.asm
+                    //  for ZSNES' current transparency code)
 
     UpdateVFrame();
     if (curblank != 0) {
@@ -2269,7 +2269,7 @@ void drawscreenwin(void)
 
                     for (i = 32; i < (256 + 32); i++) {
                         color32 = (((*(WORD*)(ScreenPtr)) & 0xF800) << 8) + (((*(WORD*)(ScreenPtr)) & 0x07E0) << 5) + (((*(WORD*)(ScreenPtr)) & 0x001F) << 3) + 0xFF000000;
-                        //SURFDW[i]=color32;
+                        // SURFDW[i]=color32;
                         ScreenPtr += 2;
                     }
 
@@ -2823,24 +2823,24 @@ int CheckBattery()
     SYSTEM_POWER_STATUS SysPowerStat;
     GetSystemPowerStatus(&SysPowerStat);
 
-    if (SysPowerStat.ACLineStatus == 0) //Definitly running off of battery
+    if (SysPowerStat.ACLineStatus == 0) // Definitly running off of battery
     {
-        return (1); //Running off of battery
+        return (1); // Running off of battery
     }
 
-    if ((SysPowerStat.BatteryFlag == 255) || //Unknown
-        (SysPowerStat.BatteryFlag & 128)) //No battery
+    if ((SysPowerStat.BatteryFlag == 255) || // Unknown
+        (SysPowerStat.BatteryFlag & 128)) // No battery
     {
         return (-1);
     }
 
-    if ((SysPowerStat.BatteryFlag & 8) || //Charging
-        (SysPowerStat.ACLineStatus == 1)) //Plugged in
+    if ((SysPowerStat.BatteryFlag & 8) || // Charging
+        (SysPowerStat.ACLineStatus == 1)) // Plugged in
     {
-        return (0); //Plugged in
+        return (0); // Plugged in
     }
 
-    return (1); //Running off of battery
+    return (1); // Running off of battery
 }
 
 int CheckBatteryTime()

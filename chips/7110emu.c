@@ -63,64 +63,64 @@ and request permission.
 */
 
 static uint8_t EvolutionTable[53][4] = {
-    //prob, nextlps, nextmps, toggle invert
-    { 0x5a, 1, 1, 1 }, //0  l,m
-    { 0x25, 6, 2, 0 }, //1  l,m
-    { 0x11, 8, 3, 0 }, //2  l,m
-    { 0x08, 10, 4, 0 }, //3   ,m
-    { 0x03, 12, 5, 0 }, //4   ,m
-    { 0x01, 15, 5, 0 }, //5   ,m
+    // prob, nextlps, nextmps, toggle invert
+    { 0x5a, 1, 1, 1 }, // 0  l,m
+    { 0x25, 6, 2, 0 }, // 1  l,m
+    { 0x11, 8, 3, 0 }, // 2  l,m
+    { 0x08, 10, 4, 0 }, // 3   ,m
+    { 0x03, 12, 5, 0 }, // 4   ,m
+    { 0x01, 15, 5, 0 }, // 5   ,m
 
-    { 0x5a, 7, 7, 1 }, //6  l,
-    { 0x3f, 19, 8, 0 }, //7  l,m
-    { 0x2c, 21, 9, 0 }, //8  l,m
-    { 0x20, 22, 10, 0 }, //9   ,m
-    { 0x17, 23, 11, 0 }, //10  ,m
-    { 0x11, 25, 12, 0 }, //11  ,m
-    { 0x0c, 26, 13, 0 }, //12  ,m
-    { 0x09, 28, 14, 0 }, //13  ,m
-    { 0x07, 29, 15, 0 }, //14  ,m
-    { 0x05, 31, 16, 0 }, //15  ,m
-    { 0x04, 32, 17, 0 }, //16  ,m
-    { 0x03, 34, 18, 0 }, //17  ,m
-    { 0x02, 35, 5, 0 }, //18  ,m
+    { 0x5a, 7, 7, 1 }, // 6  l,
+    { 0x3f, 19, 8, 0 }, // 7  l,m
+    { 0x2c, 21, 9, 0 }, // 8  l,m
+    { 0x20, 22, 10, 0 }, // 9   ,m
+    { 0x17, 23, 11, 0 }, // 10  ,m
+    { 0x11, 25, 12, 0 }, // 11  ,m
+    { 0x0c, 26, 13, 0 }, // 12  ,m
+    { 0x09, 28, 14, 0 }, // 13  ,m
+    { 0x07, 29, 15, 0 }, // 14  ,m
+    { 0x05, 31, 16, 0 }, // 15  ,m
+    { 0x04, 32, 17, 0 }, // 16  ,m
+    { 0x03, 34, 18, 0 }, // 17  ,m
+    { 0x02, 35, 5, 0 }, // 18  ,m
 
-    { 0x5a, 20, 20, 1 }, //19 l,m
-    { 0x48, 39, 21, 0 }, //20 l,m
-    { 0x3a, 40, 22, 0 }, //21 l,m
-    { 0x2e, 42, 23, 0 }, //22 l,m
-    { 0x26, 44, 24, 0 }, //23 l,m
-    { 0x1f, 45, 25, 0 }, //24 l,m
-    { 0x19, 46, 26, 0 }, //25 l,m
-    { 0x15, 25, 27, 0 }, //26 l,m
-    { 0x11, 26, 28, 0 }, //27 l,m
-    { 0x0e, 26, 29, 0 }, //28 l,m
-    { 0x0b, 27, 30, 0 }, //29  ,m
-    { 0x09, 28, 31, 0 }, //30  ,m
-    { 0x08, 29, 32, 0 }, //31 l,m
-    { 0x07, 30, 33, 0 }, //32 l,m
-    { 0x05, 31, 34, 0 }, //33 l,m  <--- changed lps
-    { 0x04, 33, 35, 0 }, //34  ,m ... this is NOT skipped
-    { 0x04, 33, 36, 0 }, //35  ,m
-    { 0x03, 34, 37, 0 }, //36  ,m
-    { 0x02, 35, 38, 0 }, //37  ,m ... this is NOT skipped
-    { 0x02, 36, 5, 0 }, //38  ,m
+    { 0x5a, 20, 20, 1 }, // 19 l,m
+    { 0x48, 39, 21, 0 }, // 20 l,m
+    { 0x3a, 40, 22, 0 }, // 21 l,m
+    { 0x2e, 42, 23, 0 }, // 22 l,m
+    { 0x26, 44, 24, 0 }, // 23 l,m
+    { 0x1f, 45, 25, 0 }, // 24 l,m
+    { 0x19, 46, 26, 0 }, // 25 l,m
+    { 0x15, 25, 27, 0 }, // 26 l,m
+    { 0x11, 26, 28, 0 }, // 27 l,m
+    { 0x0e, 26, 29, 0 }, // 28 l,m
+    { 0x0b, 27, 30, 0 }, // 29  ,m
+    { 0x09, 28, 31, 0 }, // 30  ,m
+    { 0x08, 29, 32, 0 }, // 31 l,m
+    { 0x07, 30, 33, 0 }, // 32 l,m
+    { 0x05, 31, 34, 0 }, // 33 l,m  <--- changed lps
+    { 0x04, 33, 35, 0 }, // 34  ,m ... this is NOT skipped
+    { 0x04, 33, 36, 0 }, // 35  ,m
+    { 0x03, 34, 37, 0 }, // 36  ,m
+    { 0x02, 35, 38, 0 }, // 37  ,m ... this is NOT skipped
+    { 0x02, 36, 5, 0 }, // 38  ,m
 
-    { 0x58, 39, 40, 1 }, //39 l,m
-    { 0x4d, 47, 41, 0 }, //40 l,m
-    { 0x43, 48, 42, 0 }, //41  ,m
-    { 0x3b, 49, 43, 0 }, //42  ,m
-    { 0x34, 50, 44, 0 }, //43 l,m
-    { 0x2e, 51, 45, 0 }, //44 l,m
-    { 0x29, 44, 46, 0 }, //45 l,m
-    { 0x25, 45, 24, 0 }, //46  ,m
+    { 0x58, 39, 40, 1 }, // 39 l,m
+    { 0x4d, 47, 41, 0 }, // 40 l,m
+    { 0x43, 48, 42, 0 }, // 41  ,m
+    { 0x3b, 49, 43, 0 }, // 42  ,m
+    { 0x34, 50, 44, 0 }, // 43 l,m
+    { 0x2e, 51, 45, 0 }, // 44 l,m
+    { 0x29, 44, 46, 0 }, // 45 l,m
+    { 0x25, 45, 24, 0 }, // 46  ,m
 
-    { 0x56, 47, 48, 1 }, //47 l,m
-    { 0x4f, 47, 49, 0 }, //48 l,m
-    { 0x47, 48, 50, 0 }, //49 l,m
-    { 0x41, 49, 51, 0 }, //50 l,m
-    { 0x3c, 50, 52, 0 }, //51 l,m
-    { 0x37, 51, 43, 0 } //52  ,m
+    { 0x56, 47, 48, 1 }, // 47 l,m
+    { 0x4f, 47, 49, 0 }, // 48 l,m
+    { 0x47, 48, 50, 0 }, // 49 l,m
+    { 0x41, 49, 51, 0 }, // 50 l,m
+    { 0x3c, 50, 52, 0 }, // 51 l,m
+    { 0x37, 51, 43, 0 } // 52  ,m
 };
 
 #define PROB(x) EvolutionTable[Contexts[x].index][0]
@@ -142,9 +142,9 @@ static int buf_idx;
 static uint32_t pixelorder[16];
 static uint32_t pixel_left, pixel_above, pixel_above_left, pixel_context;
 
-//Note that the following function doesn't neccesarily work right when x is 0
-//So don't use it outside of SPC7110 code without a protect that x isn't 0,
-//or you are happy with input = 0, output = 0.
+// Note that the following function doesn't neccesarily work right when x is 0
+// So don't use it outside of SPC7110 code without a protect that x isn't 0,
+// or you are happy with input = 0, output = 0.
 INLINE uint8_t highest_bit_position(uint8_t x)
 {
 #if defined(__GNUC__) && defined(__i386__)
@@ -168,36 +168,36 @@ INLINE void update_context(uint8_t con)
     uint8_t prob;
     int flag_lps, shift;
 
-    //get PROB
+    // get PROB
     prob = PROB(con);
 
-    //get symbol
+    // get symbol
     top = top - prob;
     if (val <= top) {
-        //mps
+        // mps
         flag_lps = 0;
     } else {
-        //lps
+        // lps
         val = val - top - 1;
         top = prob - 1;
         flag_lps = 1;
     }
 
-    //renormalize
+    // renormalize
     shift = 0;
     if (top < 0x7F) {
         if (in_count < 8) {
             in = (in << 8) | *datain++;
             in_count += 8;
         }
-        shift = 7 - highest_bit_position(top + 1); //1+(top<63)+(top<31)+(top<15)+(top<7)+(top<3)+!top;
+        shift = 7 - highest_bit_position(top + 1); // 1+(top<63)+(top<31)+(top<15)+(top<7)+(top<3)+!top;
         top = ((top + 1) << shift) - 1;
         val = (val << shift) + ((in >> (in_count - shift)) & ((1 << shift) - 1));
         in_count -= shift;
     }
 
-    //update processing info
-    //update context state
+    // update processing info
+    // update context state
     if (flag_lps) {
         inverts = (inverts << 1) + (1 - Contexts[con].invert);
         if (TOGGLE_INVERT(con)) {
@@ -297,7 +297,7 @@ INLINE uint32_t pixel_shift(int index)
             }
             return (pixelorder[index - 1]);
 
-        case 4: //pixel_left != pixel_above != pixel_above_left != pixel_left
+        case 4: // pixel_left != pixel_above != pixel_above_left != pixel_left
             if (index == 1) {
                 return (pixel_above);
             }
@@ -325,7 +325,7 @@ INLINE uint32_t pixel_shift(int index)
             return (pixelorder[index - 2]);
         }
     }
-    return (pixel_left); //pixel_left is always index 0
+    return (pixel_left); // pixel_left is always index 0
 }
 
 static void InitDecompression(int inmode, uint8_t* data)
@@ -381,11 +381,11 @@ static uint8_t DecompressByte(void)
             out = (buffer[30] << 8) + buffer[31];
             for (i = 0; i < 32; i += 2) {
                 for (bit = 7; bit >= 0; bit--) {
-                    //get first symbol context
+                    // get first symbol context
                     con = pixel_context = CONTEXT();
                     update_context(con);
 
-                    //get context of second symbol
+                    // get context of second symbol
                     con = 5 + con * 2 + (inverts & 1);
                     update_context(con);
 
@@ -397,7 +397,7 @@ static uint8_t DecompressByte(void)
                     pixel_above = ((out >> 6) & 0x0101);
                     pixel_above_left = ((out >> 7) & 0x0101);
 
-                    //get new pixel
+                    // get new pixel
                     out = ((out << 1) & 0xfefe) + pixel;
                 }
                 buffer[i] = (uint8_t)(out >> 8);
@@ -442,7 +442,7 @@ static uint8_t DecompressByte(void)
                     pixel_above = ((out >> (bit - 1)) & 0x01010101);
                     pixel_above_left = ((out >> bit) & 0x01010101);
 
-                    //get new pixel
+                    // get new pixel
                     out2 += pixel << bit;
                 }
                 // Miscalculated 'pixel_above' at the end of the loop above, so fix it now
@@ -475,7 +475,7 @@ static void DecompressSkipBytes(uint16_t amount)
     }
 }
 
-//Communication Code
+// Communication Code
 extern uint32_t CRC32;
 extern uint8_t SPCCompressionRegs[];
 extern uint8_t* romdata;
@@ -488,7 +488,7 @@ extern uint8_t* romdata;
 
 #define NUM_ELEMENTS(x) (sizeof((x)) / sizeof((x)[0]))
 
-//Caching Code
+// Caching Code
 
 #define TABLE_AMOUNT 256
 #define LOOKUP_AMOUNT 64
@@ -543,7 +543,7 @@ static void save_decompression_state()
                 for (; lookup_ptr < lookup_end; ++lookup_ptr) {
                     unsigned int entry_index;
                     for (entry_index = 0; entry_index < 256; ++entry_index) {
-                        if (lookup_ptr->table[entry_index].length) //We only write graphics that have completed decompressing
+                        if (lookup_ptr->table[entry_index].length) // We only write graphics that have completed decompressing
                         {
                             fwrite(&lookup_ptr->address, 3, 1, fp_idx);
                             fwrite(&entry_index, 1, 1, fp_idx);
@@ -615,7 +615,7 @@ static bool SPC7110_init_decompression_state()
         if (!decompression_state.graphics_buffer) {
             memset(&decompression_state, 0, sizeof(decompression_state));
 
-            decompression_state.graphics_buffer = malloc(0x1000000); //16MB
+            decompression_state.graphics_buffer = malloc(0x1000000); // 16MB
             if (decompression_state.graphics_buffer) {
                 decompression_state.lookup = malloc(lookup_bytes);
                 if (decompression_state.lookup) {
@@ -632,7 +632,7 @@ static bool SPC7110_init_decompression_state()
                     free(decompression_state.graphics_buffer);
                 }
             }
-        } else //Loading a second SPC7110 game right after another
+        } else // Loading a second SPC7110 game right after another
         {
             uint8_t* graphics_buffer = decompression_state.graphics_buffer;
             struct decompression_table* tables = decompression_state.tables;
@@ -700,9 +700,9 @@ static void get_lookup(uint32_t address)
 static void init_buffered_decompression(uint32_t address, uint8_t entry, uint16_t skip_amount)
 {
     if (decompression_state.graphics_buffer) {
-        //First handle previous decompression cache
-        if (decompression_state.last_address && //Check that there was indeed a last decompression
-            !decompression_state.table_current->length) //And it exceeded the known length
+        // First handle previous decompression cache
+        if (decompression_state.last_address && // Check that there was indeed a last decompression
+            !decompression_state.table_current->length) // And it exceeded the known length
         {
             decompression_state.table_current->length = decompression_state.decompression_used_length;
             decompression_state.graphics_buffer_used += decompression_state.decompression_used_length;
@@ -733,8 +733,8 @@ static void init_buffered_decompression(uint32_t address, uint8_t entry, uint16_
 static uint8_t read_buffered_decompress(uint8_t byte)
 {
     if (decompression_state.table_current) {
-        if (decompression_state.table_current->length && //There is a known length
-            decompression_state.table_current->length <= decompression_state.decompression_used_length) //And it's about to exceed it
+        if (decompression_state.table_current->length && // There is a known length
+            decompression_state.table_current->length <= decompression_state.decompression_used_length) // And it's about to exceed it
         {
             decompression_state.table_current->data = decompression_state.graphics_buffer + decompression_state.graphics_buffer_used;
             decompression_state.table_current->length = 0;
@@ -742,7 +742,7 @@ static uint8_t read_buffered_decompress(uint8_t byte)
             InitDecompression(decompression_state.compression_mode, decompression_state.compression_begin);
             DecompressSkipBytesBuffer(decompression_state.table_current->data, decompression_state.decompression_used_length + 1);
 
-            //puts("Exceeded previous known length");
+            // puts("Exceeded previous known length");
         } else if (!decompression_state.table_current->length) {
             decompression_state.table_current->data[decompression_state.decompression_used_length] = DecompressByte();
         }
@@ -799,7 +799,7 @@ void copy_spc7110_state_data(uint8_t** buffer, void (*copy_func)(unsigned char**
     }
 }
 
-//Processing Code, a work in progress
+// Processing Code, a work in progress
 /*
 SPCCompressionRegs[x]
 0 - Decompressed byte
@@ -832,8 +832,8 @@ void SPC7110initC()
     }
 }
 
-//DECOMPRESSED DATA CONTINUOUS READ PORT
-//Returns a decompressed value from bank $50 and decrements 16 bit counter value at $4809/A by 1
+// DECOMPRESSED DATA CONTINUOUS READ PORT
+// Returns a decompressed value from bank $50 and decrements 16 bit counter value at $4809/A by 1
 void SPC7110_4800()
 {
     WRITE_WORD16_LE(SPCCompressionRegs + 9, READ_WORD16_LE(SPCCompressionRegs + 9) - 1);

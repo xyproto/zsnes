@@ -156,7 +156,7 @@ static void user_specifc_path()
         version.dwOSVersionInfoSize = sizeof(version);
         GetVersionEx(&version);
 
-        if (((version.dwPlatformId == 2) && (version.dwMajorVersion >= 6)) || //NT 6+
+        if (((version.dwPlatformId == 2) && (version.dwMajorVersion >= 6)) || // NT 6+
             (version.dwPlatformId > 2)) //>NT
         {
             zsnesw_config_location = 0;
@@ -210,7 +210,7 @@ void cfgpath_ensure(const char* launch_command)
             strdirname(ZCfgPath);
             strcatslash(ZCfgPath);
 
-            user_specifc_path(); //This will set a user specific config directory if desired
+            user_specifc_path(); // This will set a user specific config directory if desired
         } else {
             free(ZCfgPath);
             ZCfgAlloc = false;
@@ -227,7 +227,7 @@ void SaveGameSpecificInput();
 
 void deinit_paths()
 {
-    //Save data that depends on paths before deinit of them
+    // Save data that depends on paths before deinit of them
     void SaveSramData();
     void GUISaveVars();
 
@@ -237,7 +237,7 @@ void deinit_paths()
     GUISaveVars();
     SaveGameSpecificInput();
 
-    //Now deallocate the paths
+    // Now deallocate the paths
     if (ZStartAlloc && ZStartPath) {
         free(ZStartPath);
     }
@@ -403,7 +403,7 @@ char* strdupcat(const char* str1, const char* str2)
 }
 
 #ifndef DEBUG
-//This function is only for this file, and it uses an internal buffer, and is intended for path file merging
+// This function is only for this file, and it uses an internal buffer, and is intended for path file merging
 static const char* strdupcat_internal(const char* path, const char* file)
 {
     static char buffer_dir[PATH_SIZE * 2];
@@ -451,7 +451,7 @@ static const char* strdupcat_internal(const char* path, const char* file, const 
     return (buffer_dir);
 }
 
-//This is to keep the modeless functions working right
+// This is to keep the modeless functions working right
 static const char* mode = 0;
 static const char* mode_text = 0;
 
@@ -542,7 +542,7 @@ char* realpath_sfn_dir(const char* path, const char* file, char* buf)
 
 FILE* fdreopen_dir(const char* path, const char* file, const char* mode, int fd)
 {
-    //Because DOSBox and Windows is stupid, we're implementing this manually;
+    // Because DOSBox and Windows is stupid, we're implementing this manually;
     FILE* fp = fopen(strdupcat_internal(path, file), mode);
     if (fp) {
         dup2(fileno(fp), fd);
@@ -666,11 +666,11 @@ static bool mkpath_help(char* path, char* element, mode_t mmode)
                 *p = 0;
             }
 
-            //Current path fragment created or already exists as a drive or directory already
+            // Current path fragment created or already exists as a drive or directory already
             if ((created = !mkdir_p(path)) || (isalpha(*path) && !strcmp(path + 1, ":") && ((errno == EACCES) || (errno == EEXIST))) || (!stat(path, &stat_buffer) && S_ISDIR(stat_buffer.st_mode))) {
                 if (p) {
                     *p = DIR_SLASH_C;
-                    if (!mkpath_help(path, p + 1, mmode)) //If creation of next fragment fails
+                    if (!mkpath_help(path, p + 1, mmode)) // If creation of next fragment fails
                     {
                         if (created) {
                             *p = 0;
@@ -705,7 +705,7 @@ bool mkpath(const char* path, mode_t mode)
 
 #ifdef __UNIXSDL__
 
-//Like realpath(), but will return the last element as the link it is
+// Like realpath(), but will return the last element as the link it is
 char* realpath_link(const char* path, char* resolved_path)
 {
     char buffer[PATH_SIZE], *p, *base, *last_element;
@@ -730,7 +730,7 @@ char* realpath_link(const char* path, char* resolved_path)
     return (0);
 }
 
-//realpath() with ~ support
+// realpath() with ~ support
 char* realpath_tilde(const char* path, char* resolved_path)
 {
     if (*path == '~') {

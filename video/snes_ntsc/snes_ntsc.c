@@ -82,8 +82,8 @@ void snes_ntsc_init(snes_ntsc_t* ntsc, snes_ntsc_setup_t const* setup)
 
     for (entry = 0; entry < snes_ntsc_color_count; entry++) {
         /* Reduce number of significant bits of source color. Clearing the
-		low bits of R and B were least notictable. Modifying green was too
-		noticeable. */
+                low bits of R and B were least notictable. Modifying green was too
+                noticeable. */
         float rr = impl.to_float[entry >> 8 & 0x1E];
         float gg = impl.to_float[entry >> 4 & 0x1F];
         float bb = impl.to_float[entry << 1 & 0x1E];

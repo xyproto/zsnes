@@ -65,7 +65,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define strncasecmp strnicmp
 #endif
 
-//NSRT Goodness
+// NSRT Goodness
 #define Lo 0x7FC0
 #define Hi 0xFFC0
 #define EHi 0x40FFC0
@@ -73,8 +73,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define MB_bytes 0x100000
 #define Mbit_bytes 0x20000
 
-//Offsets to add to infoloc start to reach particular variable
-#define BankOffset 21 //Contains Speed as well
+// Offsets to add to infoloc start to reach particular variable
+#define BankOffset 21 // Contains Speed as well
 #define TypeOffset 22
 #define ROMSizeOffset 23
 #define SRAMSizeOffset 24
@@ -85,13 +85,13 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define InvCSHiOffset 29
 #define CSLowOffset 30
 #define CSHiOffset 31
-//Additional defines for the BS header
-#define BSYearOffset 21 //Not sure how to calculate year yet
+// Additional defines for the BS header
+#define BSYearOffset 21 // Not sure how to calculate year yet
 #define BSMonthOffset 22
 #define BSDayOffset 23
 #define BSBankOffset 24
-#define BSSizeOffset 25 //Contains Type as well
-//26 - 31 is the same
+#define BSSizeOffset 25 // Contains Type as well
+// 26 - 31 is the same
 #define ResetLoOffset 60
 #define ResetHiOffset 61
 
@@ -123,11 +123,11 @@ void Debug_WriteString(char* str)
     fclose(fp);
 }
 
-//I want to port over the more complicated
-//functions from init.asm, or replace with
-//better versions from NSRT. -Nach
+// I want to port over the more complicated
+// functions from init.asm, or replace with
+// better versions from NSRT. -Nach
 
-//init.asm goodness
+// init.asm goodness
 extern uint32_t NumofBanks;
 extern uint32_t NumofBytes;
 static uint8_t Interleaved;
@@ -142,7 +142,7 @@ bool SplittedROM;
 uint32_t addOnStart;
 uint32_t addOnSize;
 
-//Deinterleave functions
+// Deinterleave functions
 bool validChecksum(uint8_t* ROM, int32_t BankLoc)
 {
     if (ROM[BankLoc + InvCSLowOffset] + (ROM[BankLoc + InvCSHiOffset] << 8) + ROM[BankLoc + CSLowOffset] + (ROM[BankLoc + CSHiOffset] << 8) == 0xFFFF) {
@@ -214,14 +214,14 @@ void deintlv1()
 void CheckIntl1(uint8_t* ROM)
 {
     uint32_t ROMmidPoint = NumofBytes / 2;
-    if (validChecksum(ROM, ROMmidPoint + Lo) && !validChecksum(ROM, Lo) && ROM[ROMmidPoint + Lo + CountryOffset] < 14) //Country Code
+    if (validChecksum(ROM, ROMmidPoint + Lo) && !validChecksum(ROM, Lo) && ROM[ROMmidPoint + Lo + CountryOffset] < 14) // Country Code
     {
         deintlv1();
         Interleaved = true;
-    } else if (validChecksum(ROM, Lo) && !validChecksum(ROM, Hi) && ROM[Lo + CountryOffset] < 14 && //Country code
-        //Rom make up
+    } else if (validChecksum(ROM, Lo) && !validChecksum(ROM, Hi) && ROM[Lo + CountryOffset] < 14 && // Country code
+                                                                                                    // Rom make up
         (ROM[Lo + BankOffset] == 33 || ROM[Lo + BankOffset] == 49 || ROM[Lo + BankOffset] == 53 || ROM[Lo + BankOffset] == 58)) {
-        if (ROM[Lo + 20] == 32 || //Check that Header name did not overflow
+        if (ROM[Lo + 20] == 32 || // Check that Header name did not overflow
             !(ROM[Lo + BankOffset] == ROM[Lo + 20] || ROM[Lo + BankOffset] == ROM[Lo + 19] || ROM[Lo + BankOffset] == ROM[Lo + 18] || ROM[Lo + BankOffset] == ROM[Lo + 17])) {
             deintlv1();
             Interleaved = true;
@@ -234,19 +234,19 @@ void CheckIntlEHi(uint8_t* ROM)
     if (EHiHeader(ROM, Lo)) {
         uint32_t oldNumBanks = NumofBanks;
 
-        //Swap 4MB ROM with the other one
+        // Swap 4MB ROM with the other one
         SwapData((uint32_t*)romdata, ((uint32_t*)romdata + ((NumofBytes - 0x400000) / 4)), 0x100000);
 
-        //Deinterleave the 4MB ROM first
+        // Deinterleave the 4MB ROM first
         NumofBanks = 128;
         deintlv1();
 
-        //Now the other one
+        // Now the other one
         NumofBanks = oldNumBanks - 128;
-        romdata += 0x100000; //Ofset pointer
+        romdata += 0x100000; // Ofset pointer
         deintlv1();
 
-        //Now fix the data and we're done
+        // Now fix the data and we're done
         NumofBanks = oldNumBanks;
         romdata -= 0x100000;
 
@@ -254,7 +254,7 @@ void CheckIntlEHi(uint8_t* ROM)
     }
 }
 
-//ROM loading functions, which some strangly enough were in guiload.inc
+// ROM loading functions, which some strangly enough were in guiload.inc
 bool AllASCII(unsigned char* b, int32_t size)
 {
     int_fast32_t i;
@@ -266,8 +266,8 @@ bool AllASCII(unsigned char* b, int32_t size)
     return (true);
 }
 
-//Code to detect if opcode sequence is a valid and popular one for an SNES ROM
-//Code by Cowering
+// Code to detect if opcode sequence is a valid and popular one for an SNES ROM
+// Code by Cowering
 static bool valid_start_sequence(uint8_t opcode1, uint8_t opcode2, uint8_t opcode3)
 {
     switch (opcode1) {
@@ -384,7 +384,7 @@ void BankCheck()
 
     if (NumofBytes < Lo) {
         romtype = 1;
-        infoloc = 1; //Whatever, we just need a valid location
+        infoloc = 1; // Whatever, we just need a valid location
     }
 
     if (NumofBytes < Hi) {
@@ -393,7 +393,7 @@ void BankCheck()
     }
 
     if (NumofBytes >= 0x500000) {
-        //Deinterleave if neccesary
+        // Deinterleave if neccesary
         CheckIntlEHi(ROM);
 
         if (EHiHeader(ROM, EHi)) {
@@ -406,7 +406,7 @@ void BankCheck()
         static bool CommandLineForce2 = false;
         int32_t loscore, hiscore;
 
-        //Deinterleave if neccesary
+        // Deinterleave if neccesary
         CheckIntl1(ROM);
 
         loscore = InfoScore(ROM + Lo);
@@ -454,10 +454,10 @@ void BankCheck()
     }
 }
 
-//Chip detection functions
+// Chip detection functions
 bool CHIPBATT, BSEnable, C4Enable, DSP1Enable, DSP2Enable, DSP3Enable;
 bool DSP4Enable, OBCEnable, RTCEnable, SA1Enable, SDD1Enable, SFXEnable;
-bool SETAEnable; //ST010 & 11
+bool SETAEnable; // ST010 & 11
 bool SGBEnable, SPC7110Enable, ST18Enable;
 
 void chip_detect()
@@ -468,7 +468,7 @@ void chip_detect()
     SGBEnable = ST18Enable = DSP1Enable = DSP2Enable = DSP3Enable = false;
     DSP4Enable = SPC7110Enable = BSEnable = SFXEnable = SETAEnable = false;
 
-    //DSP Family
+    // DSP Family
     if (ROM[infoloc + TypeOffset] == 3) {
         if (ROM[infoloc + BankOffset] == 48) {
             DSP4Enable = true;
@@ -482,7 +482,7 @@ void chip_detect()
         CHIPBATT = true;
         if (ROM[infoloc + BankOffset] == 32) {
             DSP2Enable = true;
-        } else if (ROM[infoloc + BankOffset] == 48 && ROM[infoloc + CompanyOffset] == 0xB2) //Bandai
+        } else if (ROM[infoloc + BankOffset] == 48 && ROM[infoloc + CompanyOffset] == 0xB2) // Bandai
         {
             DSP3Enable = true;
         } else {
@@ -492,14 +492,14 @@ void chip_detect()
     }
 
     switch ((uint16_t)ROM[infoloc + BankOffset] | (ROM[infoloc + TypeOffset] << 8)) {
-    case 0x1320: //Mario Chip 1
-    case 0x1420: //GSU-x
+    case 0x1320: // Mario Chip 1
+    case 0x1420: // GSU-x
         SFXEnable = true;
         return;
         break;
 
-    case 0x1520: //GSU-x + Battery
-    case 0x1A20: //GSU-1 + Battery + Start in 21MHz
+    case 0x1520: // GSU-x + Battery
+    case 0x1A20: // GSU-1 + Battery + Start in 21MHz
         SFXEnable = true;
         CHIPBATT = true;
         return;
@@ -516,7 +516,7 @@ void chip_detect()
         return;
         break;
 
-    case 0x3223: //One sample game seems to use this for some reason
+    case 0x3223: // One sample game seems to use this for some reason
     case 0x3523:
         SA1Enable = true;
         CHIPBATT = true;
@@ -552,7 +552,7 @@ void chip_detect()
 
     case 0xF530:
         ST18Enable = true;
-        CHIPBATT = true; //Check later if this should be removed
+        CHIPBATT = true; // Check later if this should be removed
         return;
         break;
 
@@ -576,11 +576,11 @@ void chip_detect()
         break;
     }
 
-    //BS Dump
+    // BS Dump
     if ((ROM[infoloc + CompanyOffset] == 0x33 || ROM[infoloc + CompanyOffset] == 0xFF) && (!ROM[infoloc + BSYearOffset] || (ROM[infoloc + BSYearOffset] & 131) == 128) && valid_normal_bank(ROM[infoloc + BSBankOffset])) {
         uint8_t m = ROM[infoloc + BSMonthOffset];
         if (!m && !ROM[infoloc + BSDayOffset]) {
-            //BS Add-on cart
+            // BS Add-on cart
             return;
         }
         if ((m == 0xFF && ROM[infoloc + BSDayOffset] == 0xFF) || (!(m & 0xF) && ((m >> 4) - 1 < 12))) {
@@ -590,13 +590,13 @@ void chip_detect()
     }
 }
 
-//Checksum functions
+// Checksum functions
 uint16_t sum(uint8_t* array, size_t size)
 {
     uint16_t theSum = 0;
     uint_fast32_t i;
 
-    //Prevent crashing by reading too far (needed for messed up ROMs)
+    // Prevent crashing by reading too far (needed for messed up ROMs)
     if (array + size > romdata + maxromspace) {
         return (0xFFFF);
     }
@@ -623,7 +623,7 @@ void CalcChecksum()
             Checksumvalue += sum(ROM + 4 * MB_bytes, 2 * MB_bytes);
         }
         if (BSEnable) {
-            Checksumvalue -= sum(&ROM[infoloc - 16], 48); //Fix for BS Dumps
+            Checksumvalue -= sum(&ROM[infoloc - 16], 48); // Fix for BS Dumps
         }
     }
 }
@@ -636,7 +636,7 @@ static void rom_memcpy(uint8_t* dest, uint8_t* src, size_t len)
     }
 }
 
-//This will mirror up non power of two ROMs to powers of two
+// This will mirror up non power of two ROMs to powers of two
 static uint32_t mirror_rom(uint8_t* start, size_t length)
 {
     uint32_t mask = 0x800000;
@@ -658,7 +658,7 @@ static uint32_t mirror_rom(uint8_t* start, size_t length)
     return (length + mask);
 }
 
-//Misc functions
+// Misc functions
 void MirrorROM(uint8_t* ROM)
 {
     uint32_t ROMSize, StartMirror = 0;
@@ -674,13 +674,13 @@ void MirrorROM(uint8_t* ROM)
     }
     NumofBanks = curromspace >> 15;
 
-    //This will mirror (now) full sized ROMs through the ROM buffer
+    // This will mirror (now) full sized ROMs through the ROM buffer
     ROMSize = curromspace;
     while (ROMSize < maxromspace) {
         ROM[ROMSize++] = ROM[StartMirror++];
     }
 
-    //If ROM was too small before, but now decent size with mirroring, adjust location
+    // If ROM was too small before, but now decent size with mirroring, adjust location
     if (infoloc < Lo) {
         infoloc = Lo;
     }
@@ -692,7 +692,7 @@ void SetupSramSize()
     if (BSEnable) {
         ramsize = 0;
     } else if (SFXEnable) {
-        if (ROM[infoloc + CompanyOffset] == 0x33) //Extended header
+        if (ROM[infoloc + CompanyOffset] == 0x33) // Extended header
         {
             ramsize = 8 << ((uint32_t)ROM[infoloc - 3]);
         } else {
@@ -706,17 +706,17 @@ void SetupSramSize()
         ramsize = ((ROM[infoloc + SRAMSizeOffset]) ? (8 << ((uint32_t)ROM[infoloc + SRAMSizeOffset])) : 0);
     }
 
-    //Fix if some ROM goes nuts on size
+    // Fix if some ROM goes nuts on size
     if (ramsize > 1024) {
         ramsize = 1024;
     }
 
-    //Convert from Kb to bytes;
+    // Convert from Kb to bytes;
     ramsize *= 128;
     ramsizeand = ramsize - 1;
 }
 
-//File loading code
+// File loading code
 bool Header512;
 
 char CSStatus[41], CSStatus2[41], CSStatus3[41], CSStatus4[41];
@@ -727,7 +727,7 @@ void DumpROMLoadInfo()
 
     FILE* fp = 0;
 
-    if (RomInfo) //rominfo.txt info dumping enabled?
+    if (RomInfo) // rominfo.txt info dumping enabled?
     {
         fp = fopen_dir(ZCfgPath, "rominfo.txt", "w");
         if (!fp) {
@@ -757,7 +757,7 @@ void loadFile(char* filename)
     char* incrementer = 0;
     uint8_t* ROM = romdata;
 
-    if (strlen(filename) >= 3) //Char + ".1"
+    if (strlen(filename) >= 3) // Char + ".1"
     {
         char* ext = filename + strlen(filename) - 2;
         if (!strcmp(ext, ".1") || !strcasecmp(ext, ".A")) {
@@ -801,7 +801,7 @@ void loadFile(char* filename)
 
 void loadGZipFile(char* filename)
 {
-    //Open file for size reading
+    // Open file for size reading
     FILE* fp = fopen_dir(ZRomPath, filename, "rb");
     if (fp) {
         uint32_t fsize, gzsize;
@@ -812,11 +812,11 @@ void loadGZipFile(char* filename)
         fsize = ftell(fp);
         rewind(fp);
 
-        //Open GZip file for decompression, use existing file handle
+        // Open GZip file for decompression, use existing file handle
         if ((GZipFile = gzdopen(fileno(fp), "rb"))) {
             uint32_t len = gzdirect(GZipFile) ? fsize : gzsize;
             if (len && (len <= maxromspace + 512) && ((uint32_t)gzread(GZipFile, romdata, len) == len)) {
-                curromspace = len; //Success
+                curromspace = len; // Success
             }
             gzclose(GZipFile);
         }
@@ -831,29 +831,29 @@ void loadZipFile(char* filename)
     bool multifile = false, NSS = false;
     char* incrementer = 0;
 
-    unzFile zipfile = unzopen_dir(ZRomPath, filename); //Open zip file
-    int cFile = unzGoToFirstFile(zipfile); //Set cFile to first compressed file
-    unz_file_info cFileInfo; //Create variable to hold info for a compressed file
+    unzFile zipfile = unzopen_dir(ZRomPath, filename); // Open zip file
+    int cFile = unzGoToFirstFile(zipfile); // Set cFile to first compressed file
+    unz_file_info cFileInfo; // Create variable to hold info for a compressed file
 
-    int LargestGoodFile = 0; //To keep track of largest file
+    int LargestGoodFile = 0; // To keep track of largest file
 
-    //Variables for the file we pick
+    // Variables for the file we pick
     char ourFile[256];
     ourFile[0] = '\n';
 
-    while (cFile == UNZ_OK) //While not at end of compressed file list
+    while (cFile == UNZ_OK) // While not at end of compressed file list
     {
-        //Temporary char array for file name
+        // Temporary char array for file name
         char cFileName[256];
 
-        //Gets info on current file, and places it in cFileInfo
+        // Gets info on current file, and places it in cFileInfo
         unzGetCurrentFileInfo(zipfile, &cFileInfo, cFileName, 256, NULL, 0, NULL, 0);
 
-        //Get the file's size
+        // Get the file's size
         fileSize = cFileInfo.uncompressed_size;
 
-        //Find split files
-        if (strlen(cFileName) >= 3) //Char + ".1"
+        // Find split files
+        if (strlen(cFileName) >= 3) // Char + ".1"
         {
             char* ext = cFileName + strlen(cFileName) - 2;
             if (!strcmp(ext, ".1") || !strcasecmp(ext, ".A")) {
@@ -864,8 +864,8 @@ void loadZipFile(char* filename)
             }
         }
 
-        //Find Nintendo Super System ROMs
-        if (strlen(cFileName) >= 5) //Char + ".IC2"
+        // Find Nintendo Super System ROMs
+        if (strlen(cFileName) >= 5) // Char + ".IC2"
         {
             char* ext = cFileName + strlen(cFileName) - 4;
             if (!strncasecmp(ext, ".IC", 3)) {
@@ -877,24 +877,24 @@ void loadZipFile(char* filename)
             }
         }
 
-        //Check for valid ROM based on size
+        // Check for valid ROM based on size
         if (((intmax_t)fileSize <= maxromspace + 512) && (fileSize > LargestGoodFile)) {
             strcpy(ourFile, cFileName);
             LargestGoodFile = fileSize;
         }
 
-        //Go to next file in zip file
+        // Go to next file in zip file
         cFile = unzGoToNextFile(zipfile);
     }
 
-    //No files found
+    // No files found
     if (ourFile[0] == '\n') {
         unzClose(zipfile);
         return;
     }
 
     for (;;) {
-        //Sets current file to the file we liked before
+        // Sets current file to the file we liked before
         if (unzLocateFile(zipfile, ourFile, 1) != UNZ_OK) {
             if (NSS) {
                 (*incrementer)--;
@@ -904,28 +904,28 @@ void loadZipFile(char* filename)
             return;
         }
 
-        //Gets info on current file, and places it in cFileInfo
+        // Gets info on current file, and places it in cFileInfo
         unzGetCurrentFileInfo(zipfile, &cFileInfo, ourFile, 256, NULL, 0, NULL, 0);
 
-        //Get the file's size
+        // Get the file's size
         fileSize = cFileInfo.uncompressed_size;
 
-        //Too big?
+        // Too big?
         if (curromspace + fileSize > maxromspace + 512) {
             unzClose(zipfile);
             return;
         }
 
-        //Open file
+        // Open file
         unzOpenCurrentFile(zipfile);
 
-        //Read file into memory
+        // Read file into memory
         err = unzReadCurrentFile(zipfile, ROM + curromspace, fileSize);
 
-        //Close file
+        // Close file
         unzCloseCurrentFile(zipfile);
 
-        //Encountered error?
+        // Encountered error?
         if (err != fileSize) {
             unzClose(zipfile);
             return;
@@ -1005,13 +1005,13 @@ void SplitSetup(char* basepath, char* basefile, uint32_t MirrorSystem)
 
     switch (MirrorSystem) {
     case 1:
-        memcpy(ROM + 0x100000, ROM, 0x100000); //Mirror 8 to 16
+        memcpy(ROM + 0x100000, ROM, 0x100000); // Mirror 8 to 16
         break;
 
     case 2:
-        memcpy(ROM + 0x180000, ROM + 0x100000, 0x80000); //Mirrors 12 to 16
-        memcpy(ROM + 0x200000, ROM + 0x400000, 0x80000); //Copy base over
-        memset(ROM + 0x280000, 0, 0x180000); //Blank out rest
+        memcpy(ROM + 0x180000, ROM + 0x100000, 0x80000); // Mirrors 12 to 16
+        memcpy(ROM + 0x200000, ROM + 0x400000, 0x80000); // Copy base over
+        memset(ROM + 0x280000, 0, 0x180000); // Blank out rest
         break;
 
     case 3:
@@ -1029,22 +1029,22 @@ void SplitSupport()
     char* ROM = (char*)romdata;
     SplittedROM = false;
 
-    //Same Game add on
+    // Same Game add on
     if (((curromspace == 0x60000) || (curromspace == 0x80000)) && ROM[Hi + CompanyOffset] == 0x33 && !ROM[Hi + BankOffset] && !ROM[Hi + BSMonthOffset] && !ROM[Hi + BSDayOffset]) {
         addOnStart = 0x200000;
         addOnSize = 0x80000;
         SplitSetup(SGPath, "SAMEGAME.ZIP", 1);
     }
 
-    //SD Gundam G-Next add on
+    // SD Gundam G-Next add on
     if (curromspace == 0x80000 && ROM[Lo + CompanyOffset] == 0x33 && !ROM[Lo + BankOffset] && !ROM[Lo + BSMonthOffset] && !ROM[Lo + BSDayOffset] && !strncmp(ROM + Lo, "GNEXT", 5)) {
         addOnStart = 0x400000;
         addOnSize = 0x80000;
         SplitSetup(GNextPath, "G-NEXT.ZIP", 2);
-        addOnStart = 0x200000; //Correct for checksum calc
+        addOnStart = 0x200000; // Correct for checksum calc
     }
 
-    //Sufami Turbo
+    // Sufami Turbo
     if (!strncmp(ROM, "BANDAI SFC-ADX", 14)) {
         if (!STCart2) {
             addOnStart = 0x100000;
@@ -1060,7 +1060,7 @@ void SplitSupport()
             addOnSize = curromspace << 2;
             addOnStart = 0x100000;
             SplitSetup(STPath, "STBIOS.ZIP", 3);
-            addOnSize = (curromspace - addOnStart) >> 2; //Correct for checksum calc
+            addOnSize = (curromspace - addOnStart) >> 2; // Correct for checksum calc
             sram2 = sram + 65536;
         }
     }
@@ -1068,15 +1068,15 @@ void SplitSupport()
 
 bool NSRTHead(uint8_t* ROM)
 {
-    uint8_t* NSRTHead = ROM + 0x1D0; //NSRT Header Location
+    uint8_t* NSRTHead = ROM + 0x1D0; // NSRT Header Location
 
     if (!strncmp("NSRT", (char*)&NSRTHead[24], 4) && NSRTHead[28] == 22) {
         if ((sum(NSRTHead, 32) & 0xFF) != NSRTHead[30] || NSRTHead[30] + NSRTHead[31] != 255 || (NSRTHead[0] & 0x0F) > 13 || ((NSRTHead[0] & 0xF0) >> 4) > 3 || ((NSRTHead[0] & 0xF0) >> 4) == 0) {
-            return (false); //Corrupt
+            return (false); // Corrupt
         }
-        return (true); //NSRT header
+        return (true); // NSRT header
     }
-    return (false); //None
+    return (false); // None
 }
 
 void calculate_state_sizes(), InitRewindVars(), zst_init();
@@ -1137,11 +1137,11 @@ void loadROM()
         default: {
             uint8_t* ROM = romdata;
 
-            //SMC/SWC header
+            // SMC/SWC header
             if (ROM[8] == 0xAA && ROM[9] == 0xBB && ROM[10] == 4) {
                 Header512 = true;
             }
-            //FIG header
+            // FIG header
             else if ((ROM[4] == 0x77 && ROM[5] == 0x83) || (ROM[4] == 0xDD && ROM[5] == 0x82) || (ROM[4] == 0xDD && ROM[5] == 2) || (ROM[4] == 0xF7 && ROM[5] == 0x83) || (ROM[4] == 0xFD && ROM[5] == 0x82) || (ROM[4] == 0x00 && ROM[5] == 0x80) || (ROM[4] == 0x47 && ROM[5] == 0x83) || (ROM[4] == 0x11 && ROM[5] == 2)) {
                 Header512 = true;
             }
@@ -1162,92 +1162,92 @@ void loadROM()
     if (Header512) {
         uint8_t* ROM = romdata;
         if (NSRTHead(ROM)) {
-            switch (ROM[0x1ED] & 0xF0) //Port 1
+            switch (ROM[0x1ED] & 0xF0) // Port 1
             {
-            case 0x00: //Gamepad
+            case 0x00: // Gamepad
                 input1mouse = false;
                 break;
 
-            case 0x10: //Mouse port 1
+            case 0x10: // Mouse port 1
                 device1 = 1;
                 input1gp = false;
                 break;
 
-            case 0x20: //Mouse or Gamepad port 1
+            case 0x20: // Mouse or Gamepad port 1
                 device1 = 1;
                 break;
 
-            case 0x90: //Lasabirdie - not yet supported
+            case 0x90: // Lasabirdie - not yet supported
                 input1gp = false;
                 input1mouse = false;
                 break;
             }
 
-            switch (ROM[0x1ED] & 0x0F) //Port 1
+            switch (ROM[0x1ED] & 0x0F) // Port 1
             {
-            case 0x00: //Gamepad
+            case 0x00: // Gamepad
                 input2mouse = false;
                 input2scope = false;
                 input2just = false;
                 break;
 
-            case 0x01: //Mouse port 2
+            case 0x01: // Mouse port 2
                 device2 = 1;
                 input2gp = false;
                 input2scope = false;
                 input2just = false;
                 break;
 
-            case 0x02: //Mouse or Gamepad port 2
+            case 0x02: // Mouse or Gamepad port 2
                 device1 = 2;
                 input2just = false;
                 input2scope = false;
                 break;
 
-            case 0x03: //Super Scope port 2
+            case 0x03: // Super Scope port 2
                 device2 = 2;
                 input2gp = false;
                 input2mouse = false;
                 input2just = false;
                 break;
 
-            case 0x04: //Super Scope or Gamepad port 2
+            case 0x04: // Super Scope or Gamepad port 2
                 device2 = 2;
                 input2mouse = false;
                 input2just = false;
                 break;
 
-            case 0x05: //Justifier (Lethal Enforcer gun) port 2
+            case 0x05: // Justifier (Lethal Enforcer gun) port 2
                 device2 = 3;
                 input2mouse = false;
                 input2scope = false;
                 break;
 
-            case 0x06: //Multitap port 2
+            case 0x06: // Multitap port 2
                 input2gp = false;
                 input2mouse = false;
                 input2just = false;
                 input2scope = false;
                 break;
 
-            case 0x07: //Mouse or Gamepad port 1, Mouse, Super Scope, or Gamepad port 2
+            case 0x07: // Mouse or Gamepad port 1, Mouse, Super Scope, or Gamepad port 2
                 input2just = false;
                 break;
 
-            case 0x08: //Mouse or Multitap port 2
+            case 0x08: // Mouse or Multitap port 2
                 device2 = 1;
                 input2just = false;
                 input2scope = false;
                 break;
 
-            case 0x09: //Lasabirdie - not yet supported
+            case 0x09: // Lasabirdie - not yet supported
                 input2gp = false;
                 input2mouse = false;
                 input2just = false;
                 input2scope = false;
                 break;
 
-            case 0x0A: //Barcode Battler - not yet supported
+            case 0x0A: // Barcode Battler - not yet supported
                 input2gp = false;
                 input2mouse = false;
                 input2just = false;
@@ -1304,7 +1304,7 @@ void loadROM()
     }
 }
 
-//Memory Setup functions
+// Memory Setup functions
 extern uint8_t wramdataa[65536];
 extern uint8_t ram7fa[65536];
 extern uint8_t vidmemch2[4096];
@@ -1399,33 +1399,33 @@ void headerhack()
         return;
     }
 
-    //Super Famista (J)
-    //Shows black screen after one screen.
+    // Super Famista (J)
+    // Shows black screen after one screen.
     if (!strncmp((RomData + Lo), "\xbd\xb0\xca\xdf\xb0\xcc\xa7\xd0\xbd\xc0  ", 12)) {
         RomData[0x2762F] = 0xEA;
         RomData[0x27630] = 0xEA;
     }
 
-    //Super Famista 2 (J)
-    //Shows black screen after loading the ROM.
+    // Super Famista 2 (J)
+    // Shows black screen after loading the ROM.
     if (!strncmp((RomData + Lo), "\xbd\xb0\xca\xdf\xb0\xcc\xa7\xd0\xbd\xc0 2", 12)) {
-        //Skip a check for value FF at 2140 when spc not initialized yet?!?
+        // Skip a check for value FF at 2140 when spc not initialized yet?!?
         RomData[0x6CED] = 0xEA;
         RomData[0x6CEE] = 0xEA;
-        //Skip a check for value FF at 2140 when spc not initialized yet?!?
+        // Skip a check for value FF at 2140 when spc not initialized yet?!?
         RomData[0x6CF9] = 0xEA;
         RomData[0x6CFA] = 0xEA;
     }
 
-    //Deae Tonosama Appare Ichiban (J)
-    //Shows some screen and hangs there.
+    // Deae Tonosama Appare Ichiban (J)
+    // Shows some screen and hangs there.
     if (!strncmp((RomData + Lo), "\xc3\xde\xb1\xb4\xc4\xc9\xbb\xcf", 8)) {
         RomData[0x17837C] = 0xEA;
         RomData[0x17837D] = 0xEA;
     }
 
-    //Human Grand Prix III - F1 Triple Battle (J)
-    //Shows black screen after loading the ROM.
+    // Human Grand Prix III - F1 Triple Battle (J)
+    // Shows black screen after loading the ROM.
     if (!strncmp((RomData + Lo), "HUMAN GRANDPRIX 3   ", 20)) {
         cycpb268 = 135;
         cycpb358 = 157;
@@ -1435,28 +1435,28 @@ void headerhack()
         cycpblt = 125;
     }
 
-    //Accele Brid (J)
-    //Hangs after some time in the first level.
+    // Accele Brid (J)
+    // Hangs after some time in the first level.
     if (!strncmp((RomData + Lo), "ACCELEBRID  ", 12)) {
         RomData[0x34DA2] = 0;
         RomData[0x34DA3] = 0;
     }
 
-    //Home Alone (J/E/U)
-    //Hangs after starting a new game.
+    // Home Alone (J/E/U)
+    // Hangs after starting a new game.
     if (!strncmp((RomData + Lo), "HOME ALONE  ", 12)) {
         RomData[0x666B] = 0xEE;
         RomData[0x666C] = 0xBC;
     }
 
-    //Emerald Dragon (J)
-    //Hangs while drawing the logo after loading the ROM.
+    // Emerald Dragon (J)
+    // Hangs while drawing the logo after loading the ROM.
     if (!strncmp((RomData + Hi), "EMERALD DRAG", 12)) {
         ENVDisable = true;
     }
 
-    //Rendering Ranger R2
-    //Shows black screen after loading the ROM.
+    // Rendering Ranger R2
+    // Shows black screen after loading the ROM.
     if (!strncmp((RomData + Lo), "REND", 4)) {
         cycpb268 = 157;
         cycpb358 = 157;
@@ -1466,10 +1466,10 @@ void headerhack()
         cycpblt = 157;
     }
 
-    //Tuff E Nuff (U/E), Dead Dance (J),
-    //Cyber Knight II - Tikyu Teikoku no Yabou (J)
-    //Shows black screen after loading the ROM. (Tuff E Nuff, Dead Dance)
-    //Shows black screen after two screens. (Cyber Knight II)
+    // Tuff E Nuff (U/E), Dead Dance (J),
+    // Cyber Knight II - Tikyu Teikoku no Yabou (J)
+    // Shows black screen after loading the ROM. (Tuff E Nuff, Dead Dance)
+    // Shows black screen after two screens. (Cyber Knight II)
     if (!strncmp((RomData + Lo), "CYBER KNIGHT 2  ", 16) || !strncmp((RomData + Lo), "DEAD", 4) || !strncmp((RomData + Lo), "TUFF", 4)) {
         cycpb268 = 75;
         cycpb358 = 77;
@@ -1479,15 +1479,15 @@ void headerhack()
         cycpblt = 75;
     }
 
-    //Addams Family Values (U/E)
-    //Restarts or shows a black screen after starting a new game.
+    // Addams Family Values (U/E)
+    // Restarts or shows a black screen after starting a new game.
     if (!strncmp((RomData + Lo), "ADDAMS FAMILY VALUES", 20)) {
         opexec268 = 120;
         opexec358 = 100;
     }
 
-    //Front Mission
-    //Flickering worldmap and statusbar.
+    // Front Mission
+    // Flickering worldmap and statusbar.
     if (!strncmp((RomData + Hi), "\xcc\xdb\xdd\xc4\xd0\xaf\xbc\xae", 8) || !strncmp((RomData + Hi), "FRONT MI", 8)) {
         opexec268 = 226;
         opexec358 = 226;
@@ -1659,12 +1659,12 @@ void CheckROMType()
 {
     char* ROM = (char*)romdata;
 
-    //Do this before mirroring
+    // Do this before mirroring
     lorommapmode2 = 0;
-    //24 Mbit ROMs with the following game code have a BS-X slot on board and need
-    //different mapping for them. Known matches are Derby Stallion 96 and Sound Novel Tsukuru.
-    //Note, in 4 character game codes, Z generally means there is a BS-X slot, but some games
-    //abuse this. So we check specifically for B1, as B1 is a non abuser.
+    // 24 Mbit ROMs with the following game code have a BS-X slot on board and need
+    // different mapping for them. Known matches are Derby Stallion 96 and Sound Novel Tsukuru.
+    // Note, in 4 character game codes, Z generally means there is a BS-X slot, but some games
+    // abuse this. So we check specifically for B1, as B1 is a non abuser.
     if ((curromspace == 0x300000) && !strncmp(ROM + Lo - 16, "B1Z", 3) && ROM[Lo + CompanyOffset] == 0x33) {
         lorommapmode2 = 1;
     }
@@ -1748,13 +1748,13 @@ void CheckROMType()
     if (SFXEnable) {
         // Setup SuperFX stuff
         if (maxromspace >= 0x600000) {
-            //SuperFX mapping, banks 70 - 73
+            // SuperFX mapping, banks 70 - 73
             map_mem(0x70, &sfxbank, 1);
             map_mem(0x71, &sfxbankb, 1);
             map_mem(0x72, &sfxbankc, 1);
             map_mem(0x73, &sfxbankd, 1);
 
-            //SRAM mapping, banks 78 - 79
+            // SRAM mapping, banks 78 - 79
             map_mem(0x78, &sramsbank, 2);
 
             SfxR1 = 0;
@@ -1773,13 +1773,13 @@ void CheckROMType()
 
     if (SETAEnable) {
         if (strncmp(ROM + Lo, "2DAN MORITA SHOUGI", 18)) {
-            //Setup Seta 10 stuff
+            // Setup Seta 10 stuff
 
-            //Really banks 68h-6Fh:0000-7FFF are all mapped the same by the chip but
-            //F1 ROC II only uses bank 68h
+            // Really banks 68h-6Fh:0000-7FFF are all mapped the same by the chip but
+            // F1 ROC II only uses bank 68h
             map_mem(0x68, &setabank, 1);
 
-            //Control register (and some status?) is in banks 60h-67h:0000-3FFF
+            // Control register (and some status?) is in banks 60h-67h:0000-3FFF
             map_mem(0x60, &setabanka, 1);
 
             SetaCmdEnable = 0x00000080; // 60:0000
@@ -2394,7 +2394,7 @@ extern uint32_t xa, xdb, xx, xy;
 extern uint16_t VIRQLoc;
 extern uint8_t spcextraram[64], SPCROM[64];
 uint8_t SPCSkipXtraROM, disableeffects = 0;
-//This is saved in states
+// This is saved in states
 uint8_t cycpl = 0; // cycles per scanline
 uint8_t cycphb = 0; // cycles per hblank
 uint8_t intrset = 0; // interrupt set
@@ -2433,10 +2433,10 @@ void init65816(void)
         map_mem(0x50, &SPC7110bank, 1);
         map_mem(0x00, &SPC7110SRAMBank, 1);
         map_mem(0x30, &SPC7110SRAMBank, 1);
-        //Below should not be needed, since 50 is mapped above
-        //snesmmap[0x50] = SPC7110_buffer;
-        //snesmap2[0x50] = SPC7110_buffer;
-        //memset(SPC7110_buffer, 0, 0x10000);
+        // Below should not be needed, since 50 is mapped above
+        // snesmmap[0x50] = SPC7110_buffer;
+        // snesmap2[0x50] = SPC7110_buffer;
+        // memset(SPC7110_buffer, 0, 0x10000);
     } else {
         SPC7110_deinit_decompression_state();
     }
@@ -2554,7 +2554,7 @@ void init65816(void)
 
     if (xpc < 0x8000) {
         xpc += 0x8000;
-        //xpb = 0x40;
+        // xpb = 0x40;
     }
 
     // 2.68 Mhz  / 3.58 Mhz = 228

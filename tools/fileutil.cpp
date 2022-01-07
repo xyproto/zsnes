@@ -50,7 +50,7 @@ void parse_dir(const char* dir_loc, void (*func)(const char*, struct stat&))
                 continue;
             }
 
-            //Directory
+            // Directory
             if (S_ISDIR(stat_buffer.st_mode)) {
                 parse_dir(filename, func);
                 continue;

@@ -25,7 +25,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <QCloseEvent>
 #include <QMainWindow>
 
-#ifdef __UNIXSDL__ //I hate this hack -Nach
+#ifdef __UNIXSDL__ // I hate this hack -Nach
 #include "debugger/ui_debugger.h"
 #else
 #include "ui_debugger.h"

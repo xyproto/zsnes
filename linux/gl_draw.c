@@ -117,10 +117,10 @@ int gl_start(int width, int height, int req_depth, int FullScreen)
     glViewport(0, 0, SurfaceX, SurfaceY);
 
     /*
-   * gltextures[0]: 2D texture, 256x224
-   * gltextures[1]: 2D texture, 512x224
-   * gltextures[3]: 1D texture, 256 lines of alternating alpha
-   */
+     * gltextures[0]: 2D texture, 256x224
+     * gltextures[1]: 2D texture, 512x224
+     * gltextures[3]: 1D texture, 256 lines of alternating alpha
+     */
     glGenTextures(4, gltextures);
     for (i = 0; i < 3; i++) {
         glBindTexture(GL_TEXTURE_2D, gltextures[i]);
@@ -305,9 +305,9 @@ void gl_drawwin()
         glEnd();
     } else {
         /*
-     * This code splits the hires/lores portions up, and draws
-     * them with gl_drawspan
-     */
+         * This code splits the hires/lores portions up, and draws
+         * them with gl_drawspan
+         */
         int lasthires, lasthires_line = 0;
 
         gltexture256 = gltexture512 = 0;
@@ -338,12 +338,12 @@ void gl_drawwin()
         }
 
         /*
-     * This is here rather than right outside this if because the
-     * GUI doesn't allow scanlines to be selected while filters are
-     * on.. There is no technical reason they can't be on while
-     * filters are on, however.  Feel free to change the GUI, and
-     * move this outside the if (En2xSaI) {}, if you do.
-     */
+         * This is here rather than right outside this if because the
+         * GUI doesn't allow scanlines to be selected while filters are
+         * on.. There is no technical reason they can't be on while
+         * filters are on, however.  Feel free to change the GUI, and
+         * move this outside the if (En2xSaI) {}, if you do.
+         */
         if (sl_intensity) {
             glDisable(GL_TEXTURE_2D);
             glEnable(GL_BLEND);

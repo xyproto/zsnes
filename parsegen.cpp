@@ -38,7 +38,7 @@ using namespace std;
 #include <errno.h>
 #include <zlib.h>
 
-#ifdef _MSC_VER //MSVC
+#ifdef _MSC_VER // MSVC
 typedef int ssize_t;
 #define strcasecmp stricmp
 #define strncasecmp strnicmp
@@ -48,7 +48,7 @@ typedef int ssize_t;
 string gcc = "gcc";
 string cflags;
 
-#ifdef _MSC_VER //MSVC
+#ifdef _MSC_VER // MSVC
 static inline string COMPILE_OBJ(const string& obj, const string& c)
 {
     return (string(string("cl /nologo /c /Fo") + obj + string(" ") + c));
@@ -88,7 +88,7 @@ String Functions for various parsing
 
 */
 
-//Find next matching character which is not escaped
+// Find next matching character which is not escaped
 char* find_next_match(char* str, char match_char)
 {
     char* pos = 0;
@@ -110,28 +110,28 @@ char* find_next_match(char* str, char match_char)
     return (pos);
 }
 
-//This is like strtok(), except this understands quoted characters and updates error locations
+// This is like strtok(), except this understands quoted characters and updates error locations
 char* get_token(char* str, const char* delim)
 {
     static char* pos = 0;
     char* token = 0;
 
-    if (str) //Start a new string?
+    if (str) // Start a new string?
     {
         pos = str;
     }
 
     if (pos) {
-        //Skip delimiters
+        // Skip delimiters
         while (*pos && strchr(delim, *pos)) {
             pos++;
         }
         if (*pos) {
             token = pos;
 
-            //Skip non-delimiters
+            // Skip non-delimiters
             while (*pos && !strchr(delim, *pos)) {
-                //Skip quoted characters
+                // Skip quoted characters
                 if ((*pos == '\"') || (*pos == '\'')) {
                     char* match_pos = 0;
                     if ((match_pos = find_next_match(pos + 1, *pos))) {
@@ -152,7 +152,7 @@ char* get_token(char* str, const char* delim)
     return (token);
 }
 
-//Like strchr() but understands quoted characters
+// Like strchr() but understands quoted characters
 char* find_chr(char* str, char match_char)
 {
     char* pos = 0;
@@ -162,7 +162,7 @@ char* find_chr(char* str, char match_char)
             pos = str;
             break;
         }
-        //Skip quoted characters
+        // Skip quoted characters
         if ((*str == '\"') || (*str == '\'')) {
             char* match_pos = 0;
             if ((match_pos = find_next_match(str + 1, *str))) {
@@ -174,7 +174,7 @@ char* find_chr(char* str, char match_char)
     return (pos);
 }
 
-//Convert $AB12 and 0AB12h style hex to 0xAB12 hex
+// Convert $AB12 and 0AB12h style hex to 0xAB12 hex
 string asm2c_hex_convert(string str)
 {
     size_t dollar_pos;
@@ -207,7 +207,7 @@ string asm2c_hex_convert(string str)
     return (str);
 }
 
-//Convert 2EF to 751
+// Convert 2EF to 751
 string c_hex_convert(string str)
 {
     size_t hex_pos;
@@ -226,7 +226,7 @@ string c_hex_convert(string str)
     return (str);
 }
 
-//Ascii numbers to integer, with support for mathematics in the string
+// Ascii numbers to integer, with support for mathematics in the string
 ssize_t enhanced_atoi(char*& s, int level = 0)
 {
     const int max_level = 6;
@@ -323,12 +323,12 @@ ssize_t enhanced_atoi(char*& s, int level = 0)
     return (val);
 }
 
-//Standard atoi(), but shows error if string isn't all a number
+// Standard atoi(), but shows error if string isn't all a number
 ssize_t safe_atoi(string str)
 {
     if (!str.length()) {
         str = "X";
-    } //Force error
+    } // Force error
 
     const char* p = str.c_str();
     for (p = ((*p == '-') ? p + 1 : p); *p; p++) {
@@ -614,7 +614,7 @@ Compiler with it's helper functions
 #define short_scale "*sizeof(short)"
 #define int_scale "*sizeof(int)"
 
-//Convert asm types to C types
+// Convert asm types to C types
 const char* convert_asm_type(const char* str, bool unsigned_var = true)
 {
     const char* var_type = 0;
@@ -1372,7 +1372,7 @@ void handle_directive(const char* instruction, const char* label)
     }
 }
 
-//Return the comment from global line variable
+// Return the comment from global line variable
 char* get_comment(char comment_seperator)
 {
     char* comment = find_chr(line, comment_seperator);
@@ -1480,12 +1480,12 @@ void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_st
                         ostringstream var_init("");
 
                         if (((initial_value[0] == '\"') && (initial_value[initial_value.length() - 1] == '\"')) || ((initial_value[0] == '\'') && (initial_value[initial_value.length() - 1] == '\''))) {
-                            //Make sure it's double quoted
+                            // Make sure it's double quoted
                             initial_value[0] = '\"';
                             initial_value[initial_value.length() - 1] = '\"';
 
                             if (!array) {
-                                array = initial_value.length() - 1; //Size minus quotes plus null
+                                array = initial_value.length() - 1; // Size minus quotes plus null
                             }
 
                             var_init << "char " << varname << "[" << array << "];";
@@ -1587,7 +1587,7 @@ void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_st
                             hvars << "extern " << header_data << "\n";
                         }
                     }
-                    //Else already handled
+                    // Else already handled
                 } else {
                     current_location.error("Could not get array size");
                 }

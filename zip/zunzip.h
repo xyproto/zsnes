@@ -81,7 +81,7 @@ typedef struct tm_unz_s {
    These data comes from the end of central dir */
 typedef struct unz_global_info_s {
     uLong number_entry; /* total number of entries in
-				       the central dir on this disk */
+                                       the central dir on this disk */
     uLong size_comment; /* size of the global comment of the zipfile */
 } unz_global_info;
 
@@ -113,20 +113,20 @@ extern int ZEXPORT unzStringFileNameCompare OF((const char* fileName1,
    Compare two filename (fileName1,fileName2).
    If iCaseSenisivity = 1, comparision is case sensitivity (like strcmp)
    If iCaseSenisivity = 2, comparision is not case sensitivity (like strcmpi
-								or strcasecmp)
+                                                                or strcasecmp)
    If iCaseSenisivity = 0, case sensitivity is defaut of your operating system
-	(like 1 on Unix, 2 on Windows)
+        (like 1 on Unix, 2 on Windows)
 */
 
 extern unzFile ZEXPORT unzOpen OF((const char* path));
 /*
   Open a Zip file. path contain the full pathname (by example,
      on a Windows NT computer "c:\\zlib\\zlib111.zip" or on an Unix computer
-	 "zlib/zlib111.zip".
-	 If the zipfile cannot be opened (file don't exist or in not valid), the
-	   return value is NULL.
+         "zlib/zlib111.zip".
+         If the zipfile cannot be opened (file don't exist or in not valid), the
+           return value is NULL.
      Else, the return value is a unzFile Handle, usable with other function
-	   of this unzip package.
+           of this unzip package.
 */
 
 extern int ZEXPORT unzClose OF((unzFile file));
@@ -191,14 +191,14 @@ extern int ZEXPORT unzGetCurrentFileInfo OF((unzFile file,
 /*
   Get Info about the current file
   if pfile_info!=NULL, the *pfile_info structure will contain somes info about
-	    the current file
+            the current file
   if szFileName!=NULL, the filemane string will be copied in szFileName
-			(fileNameBufferSize is the size of the buffer)
+                        (fileNameBufferSize is the size of the buffer)
   if extraField!=NULL, the extra field information will be copied in extraField
-			(extraFieldBufferSize is the size of the buffer).
-			This is the Central-header version of the extra field
+                        (extraFieldBufferSize is the size of the buffer).
+                        This is the Central-header version of the extra field
   if szComment!=NULL, the comment string of the file will be copied in szComment
-			(commentBufferSize is the size of the buffer)
+                        (commentBufferSize is the size of the buffer)
 */
 
 /***************************************************************************/
@@ -253,9 +253,9 @@ extern int ZEXPORT unzGetLocalExtrafield OF((unzFile file,
   if buf==NULL, it return the size of the local extra field
 
   if buf!=NULL, len is the size of the buffer, the extra header is copied in
-	buf.
+        buf.
   the return value is the number of bytes copied in buf, or (if <0)
-	the error code
+        the error code
 */
 
 #ifdef __cplusplus

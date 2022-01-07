@@ -24,7 +24,7 @@ misrepresented as being the original software.
     Ryan C. Gordon <icculus@icculus.org>
 */
 
-//ManyMouse main header. Include this from your app.
+// ManyMouse main header. Include this from your app.
 
 #ifndef _INCLUDE_MANYMOUSE_H_
 #define _INCLUDE_MANYMOUSE_H_

@@ -92,7 +92,7 @@ static void SoundWriteSamples_ao(unsigned int samples)
         samples -= 1280;
     }
 
-    //printf("samples %d\n", samples);
+    // printf("samples %d\n", samples);
 
     BufferSizeB = samples;
     BufferSizeW = samples << 1;
@@ -126,11 +126,11 @@ void SoundWrite_ao()
             sample_control.balance += sample_control.hi;
 
             samples_waiting = samples;
-            pthread_cond_broadcast(&audio_wait); //Send signal
+            pthread_cond_broadcast(&audio_wait); // Send signal
         }
         pthread_mutex_unlock(&audio_mutex);
     } else {
-        pthread_cond_broadcast(&audio_wait); //Send signal
+        pthread_cond_broadcast(&audio_wait); // Send signal
     }
 }
 
@@ -142,11 +142,11 @@ static void* SoundThread_ao(void* useless)
     for (;;) {
         pthread_mutex_lock(&audio_mutex);
 
-        //The while() is there to prevent error codes from breaking havoc
+        // The while() is there to prevent error codes from breaking havoc
         while (!samples_waiting) {
             clock_gettime(CLOCK_MONOTONIC, &to);
             to.tv_sec += 10;
-            pthread_cond_timedwait(&audio_wait, &audio_mutex, &to); //Wait for signal
+            pthread_cond_timedwait(&audio_wait, &audio_mutex, &to); // Wait for signal
         }
 
         samples = samples_waiting;
@@ -180,7 +180,7 @@ static int SoundInit_ao()
         InitSampleControl();
     }
 
-    //ao_option driver_options = { "buf_size", "32768", 0 };
+    // ao_option driver_options = { "buf_size", "32768", 0 };
 
     audio_device = ao_open_live(driver_id, &driver_format, 0);
     if (audio_device) {

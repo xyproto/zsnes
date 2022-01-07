@@ -24,7 +24,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #include <stdio.h>
 
-//Get correct mask for particular bit
+// Get correct mask for particular bit
 #define BIT(X) (1 << (X))
 
 /*
@@ -120,7 +120,7 @@ static unsigned short bytes_to_uint16(const unsigned char buffer[2])
 }
 #endif
 
-//Functions to read 2, 3, 4 bytes and convert to uint16, uint24, uint32
+// Functions to read 2, 3, 4 bytes and convert to uint16, uint24, uint32
 #ifdef NUMCONV_FR2
 static unsigned short fread2(FILE* fp)
 {
@@ -148,7 +148,7 @@ static unsigned int fread4(FILE* fp)
 }
 #endif
 
-//Functions to write uint16, uint24, uint32 as 2, 3, 4 bytes
+// Functions to write uint16, uint24, uint32 as 2, 3, 4 bytes
 #ifdef NUMCONV_FW2
 static void fwrite2(unsigned short var, FILE* fp)
 {

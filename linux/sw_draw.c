@@ -43,8 +43,8 @@ char CheckOGLMode();
 
 bool sw_start(int width, int height, int req_depth, int FullScreen)
 {
-    //unsigned int color32, p;
-    //int i;
+    // unsigned int color32, p;
+    // int i;
 #ifndef __MACOSX__
     uint32_t flags = SDL_DOUBLEBUF | SDL_HWSURFACE;
 #else
@@ -186,10 +186,10 @@ void sw_drawwin()
                 hq2x_16b();
                 break;
             case 2:
-                //hq3x_16b();
+                // hq3x_16b();
                 break;
             case 3:
-                //hq4x_16b();
+                // hq4x_16b();
                 break;
             default:
                 break;
@@ -213,10 +213,10 @@ void sw_drawwin()
                 hq2x_16b();
                 break;
             case 2:
-                //hq3x_16b();
+                // hq3x_16b();
                 break;
             case 3:
-                //hq4x_16b();
+                // hq4x_16b();
                 break;
             default:
                 break;

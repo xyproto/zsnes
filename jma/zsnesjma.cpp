@@ -37,7 +37,7 @@ void load_jma_file(const char* filename)
         size_t our_file_size = 0;
 
         for (vector<JMA::jma_public_file_info>::iterator i = file_info.begin(); i != file_info.end(); i++) {
-            //Check for valid ROM based on size
+            // Check for valid ROM based on size
             if ((i->size <= maxromspace + 512) && (i->size > our_file_size)) {
                 our_file_name = i->name;
                 our_file_size = i->size;
@@ -52,6 +52,6 @@ void load_jma_file(const char* filename)
 
         curromspace = our_file_size;
     } catch (JMA::jma_errors jma_error) {
-        //No need to do anything
+        // No need to do anything
     }
 }

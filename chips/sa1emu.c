@@ -23,7 +23,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #include "sa1regs.h"
 
-extern unsigned int SA1_CC2_line; //should be cleared to zero on reset
+extern unsigned int SA1_CC2_line; // should be cleared to zero on reset
 
 extern unsigned int SA1DMAChar, SA1DMADest, SA1DMASource;
 
@@ -33,7 +33,7 @@ extern unsigned int SA1DMAChar, SA1DMADest, SA1DMASource;
 
 void SA1_DMA_CC2()
 {
-    //select register file index (0-7 or 8-15)
+    // select register file index (0-7 or 8-15)
     const unsigned char* brf = &SA1_BRF[(SA1_CC2_line & 1) << 3];
     unsigned bpp = 2 << (2 - DMACB);
     unsigned addr = DDA & 0x07ff;
@@ -64,11 +64,11 @@ unsigned int SA1_DMA_ADDR;
 
 void SA1_DMA_CC1()
 {
-    //16 bytes/char (2bpp); 32 bytes/char (4bpp); 64 bytes/char (8bpp)
+    // 16 bytes/char (2bpp); 32 bytes/char (4bpp); 64 bytes/char (8bpp)
     unsigned charmask = (1 << (6 - DMACB)) - 1;
 
     if ((SA1_DMA_ADDR & charmask) == 0) {
-        //buffer next character to I-RAM
+        // buffer next character to I-RAM
         unsigned bpp = 2 << (2 - DMACB);
         unsigned bpl = (8 << DMASIZE) >> DMACB;
         unsigned bwmask = BWRAM_SIZE - 1;

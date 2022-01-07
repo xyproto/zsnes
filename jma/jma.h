@@ -55,7 +55,7 @@ inline size_t get_total_size(std::vector<jma_file_type>& files)
 {
     size_t size = 0;
     for (typename std::vector<jma_file_type>::iterator i = files.begin(); i != files.end(); i++) {
-        size += i->size; //We do have a problem if this wraps around
+        size += i->size; // We do have a problem if this wraps around
     }
 
     return (size);

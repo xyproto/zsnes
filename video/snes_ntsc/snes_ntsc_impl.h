@@ -146,13 +146,13 @@ static void init_filters(init_t* impl, snes_ntsc_setup_t const* setup)
     }
 
 /*
-	printf( "luma:\n" );
-	for ( i = kernel_size; i < kernel_size * 2; i++ )
-		printf( "%f\n", kernels [i] );
-	printf( "chroma:\n" );
-	for ( i = 0; i < kernel_size; i++ )
-		printf( "%f\n", kernels [i] );
-	*/
+        printf( "luma:\n" );
+        for ( i = kernel_size; i < kernel_size * 2; i++ )
+                printf( "%f\n", kernels [i] );
+        printf( "chroma:\n" );
+        for ( i = 0; i < kernel_size; i++ )
+                printf( "%f\n", kernels [i] );
+        */
 
 /* generate linear rescale kernels */
 #if rescale_out > 1
@@ -290,9 +290,9 @@ static void gen_kernel(init_t* impl, float y, float i, float q, snes_ntsc_rgb_t*
     y -= rgb_offset;
     do {
         /* Encode yiq into *two* composite signals (to allow control over artifacting).
-		Convolve these with kernels which: filter respective components, apply
-		sharpening, and rescale horizontally. Convert resulting yiq to rgb and pack
-		into integer. Based on algorithm by NewRisingSun. */
+                Convolve these with kernels which: filter respective components, apply
+                sharpening, and rescale horizontally. Convert resulting yiq to rgb and pack
+                into integer. Based on algorithm by NewRisingSun. */
         pixel_info_t const* pixel = snes_ntsc_pixels;
         int alignment_remain = alignment_count;
         do {

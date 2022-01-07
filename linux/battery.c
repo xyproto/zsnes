@@ -35,10 +35,10 @@ Special thanks David Lee Lambert for most of the code here
 
 int CheckBattery()
 {
-    int battery = -1; //No battery / Can't get info
+    int battery = -1; // No battery / Can't get info
     const char* ac = "/proc/acpi/ac_adapter/";
 
-    //Check ac adapter
+    // Check ac adapter
     DIR* ac_dir = opendir(ac);
     if (ac_dir) {
         char fnbuf[40]; // longer than len(ac)+len(HEXDIGIT*4)+len({state|info})
@@ -80,7 +80,7 @@ static void update_battery_info()
 {
     const char* batt = "/proc/acpi/battery/";
 
-    //Check batteries
+    // Check batteries
     DIR* batt_dir = opendir(batt);
     if (batt_dir) {
         char fnbuf[40]; // longer than len(ac)+len(HEXDIGIT*4)+len({state|info})
@@ -172,18 +172,18 @@ int CheckBattery()
     int state;
     size_t state_len = sizeof(state);
     if (!sysctlbyname("hw.acpi.battery.state", &state, &state_len, 0, 0)) {
-        if ((state > -1) && (state < 7)) //7 == failure
+        if ((state > -1) && (state < 7)) // 7 == failure
         {
             if (!state || state & 2) {
-                return (0); //Plugged in
+                return (0); // Plugged in
             }
-            return (1); //Running off of battery
+            return (1); // Running off of battery
         }
     }
     return (-1);
 }
 
-//Note that I have not yet gotten anyone to test if this function has correct info returned
+// Note that I have not yet gotten anyone to test if this function has correct info returned
 int CheckBatteryTime()
 {
     int batt_time;
@@ -233,8 +233,8 @@ int CheckBattery()
             close(fd);
             if ((info.battery_state == APM_BATT_CHARGING) || (info.ac_state == APM_AC_ON)) {
                 return (0);
-            } //Plugged in
-            return (1); //Running off of battery
+            } // Plugged in
+            return (1); // Running off of battery
         }
         close(fd);
     }
@@ -315,7 +315,7 @@ static void update_battery_info()
         powerSource = CFArrayGetValueAtIndex(powerSourcesList, i);
         description = IOPSGetPowerSourceDescription(powerBlob, powerSource);
 
-        //continue if one battery is not present
+        // continue if one battery is not present
         if (CFDictionaryGetValue(description, CFSTR(kIOPSIsPresentKey)) == kCFBooleanFalse) {
             continue;
         }
@@ -377,7 +377,7 @@ int CheckBatteryPercent()
     return (BatteryLifePercent);
 }
 
-#else //Not Linux, FreeBSD/DragonFlyBSD, NetBSD/OpenBSD, Mac OS X
+#else // Not Linux, FreeBSD/DragonFlyBSD, NetBSD/OpenBSD, Mac OS X
 
 int CheckBattery()
 {

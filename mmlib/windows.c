@@ -24,7 +24,7 @@ misrepresented as being the original software.
     Ryan C. Gordon <icculus@icculus.org>
 */
 
-//Support for Windows via the WM_INPUT message.
+// Support for Windows via the WM_INPUT message.
 
 #include "mm.h"
 

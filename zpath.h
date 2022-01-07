@@ -34,14 +34,14 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #ifdef _MSC_VER
 #define F_OK 0
-#define X_OK F_OK //Drop down to F_OK because MSVC is stupid
+#define X_OK F_OK // Drop down to F_OK because MSVC is stupid
 #define W_OK 2
 #define R_OK 4
 typedef unsigned short mode_t;
 #endif
 
 #if !defined(__cplusplus) && !defined(bool)
-//C++ style code in C
+// C++ style code in C
 #include <stdbool.h>
 #endif
 

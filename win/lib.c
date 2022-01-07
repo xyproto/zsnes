@@ -27,7 +27,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #define fullpath _fullpath
 
-//This file contains library functions that can be found on other OSs
+// This file contains library functions that can be found on other OSs
 
 char* realpath(const char* path, char* resolved_path)
 {

@@ -36,10 +36,10 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #define BIT(X) (1 << (X))
 
-//This file contains library functions that can be found on other OSs
+// This file contains library functions that can be found on other OSs
 
-//Return realpath in 8.3 or LFN format for any given filename
-//Based on code from DJGPP website, here was the notice for that code:
+// Return realpath in 8.3 or LFN format for any given filename
+// Based on code from DJGPP website, here was the notice for that code:
 
 /* Copyright (C) 2003 DJ Delorie, see COPYING.DJ for details */
 /* Copyright (C) 1997 DJ Delorie, see COPYING.DJ for details */
@@ -118,9 +118,9 @@ char* realpath_lfn(const char* file, char* buf)
     return (realpath_internal(file, buf, true));
 }
 
-//We tested this with Hard Disks, Floppies, CD/DVD-ROM, Network drives, no issues.
-//It should also be tested with RAM drives and on more versions of DOS (DR-DOS, MS-DOS 5.0, etc...)
-static bool _is_drive(unsigned char drive) //A == 1, B == 2, etc...
+// We tested this with Hard Disks, Floppies, CD/DVD-ROM, Network drives, no issues.
+// It should also be tested with RAM drives and on more versions of DOS (DR-DOS, MS-DOS 5.0, etc...)
+static bool _is_drive(unsigned char drive) // A == 1, B == 2, etc...
 {
     __dpmi_regs regs;
 
@@ -145,7 +145,7 @@ static bool _is_drive(unsigned char drive) //A == 1, B == 2, etc...
     return (true);
 }
 
-//Return bitmask of available drives, A = BIT(0), B = BIT(1), etc...
+// Return bitmask of available drives, A = BIT(0), B = BIT(1), etc...
 unsigned int GetLogicalDrives()
 {
     unsigned int drives = 0;

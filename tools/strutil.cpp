@@ -25,20 +25,20 @@ using namespace std;
 template <typename T1, typename T2>
 static inline void Tokenize(const T1& str, T2& tokens, const T1& delimiters)
 {
-    //Skip delimiters at beginning
+    // Skip delimiters at beginning
     string::size_type lastPos = str.find_first_not_of(delimiters, 0);
 
-    //Find first "non-delimiter"
+    // Find first "non-delimiter"
     string::size_type pos = str.find_first_of(delimiters, lastPos);
 
     while (string::npos != pos || string::npos != lastPos) {
-        //Found a token, add it to the vector
+        // Found a token, add it to the vector
         tokens.push_back(str.substr(lastPos, pos - lastPos));
 
-        //Skip delimiters.  Note the "not_of"
+        // Skip delimiters.  Note the "not_of"
         lastPos = str.find_first_not_of(delimiters, pos);
 
-        //Find next "non-delimiter"
+        // Find next "non-delimiter"
         pos = str.find_first_of(delimiters, lastPos);
     }
 }

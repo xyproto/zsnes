@@ -1166,7 +1166,7 @@ void DSP4_OP09()
             // check for valid sprite header
             header = DSP4_vars.raster;
             header >>= 8;
-            if (header != 0x20 && header != 0x2e && //This is for attractor sprite
+            if (header != 0x20 && header != 0x2e && // This is for attractor sprite
                 header != 0x40 && header != 0x60 && header != 0xa0 && header != 0xc0 && header != 0xe0)
                 break;
 
@@ -1958,7 +1958,7 @@ void DSP4_OP11(int16_t A, int16_t B, int16_t C, int16_t D, int16_t* M)
 }
 
 /////////////////////////////////////////////////////////////
-//Processing Code
+// Processing Code
 /////////////////////////////////////////////////////////////
 uint8_t dsp4_byte;
 uint16_t dsp4_address;

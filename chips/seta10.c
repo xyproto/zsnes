@@ -19,7 +19,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-//http://users.tpg.com.au/trauma/dsp/st010.html
+// http://users.tpg.com.au/trauma/dsp/st010.html
 
 #ifdef __UNIXSDL__
 #include "../gblhdr.h"
@@ -272,7 +272,7 @@ void ST010DoCommand()
         ST010_OP01(*(short*)&SRAM[0x0000], *(short*)&SRAM[0x0002], (short*)SRAM, (short*)&SRAM[2], (short*)&SRAM[4], (short*)&SRAM[0x10]);
     } break;
 
-        //Sorts a bunch of values by weight
+        // Sorts a bunch of values by weight
 
     case 0x02: {
         ST010_SortDrivers(*(short*)&SRAM[0x0024], (uint16_t*)&SRAM[0x0040], (uint16_t*)&SRAM[0x0080]);
@@ -294,7 +294,7 @@ void ST010DoCommand()
         ST010_Scale(*(short*)&SRAM[0x0004], *(short*)&SRAM[0x0000], *(short*)&SRAM[0x0002], (int*)&SRAM[0x10], (int*)&SRAM[0x14]);
     } break;
 
-        //Calculate the vector length of (x,y)
+        // Calculate the vector length of (x,y)
 
     case 0x04: {
         int16_t square, x, y;
@@ -305,7 +305,7 @@ void ST010DoCommand()
         break;
     }
 
-    //Calculate AI orientation based on specific guidelines
+    // Calculate AI orientation based on specific guidelines
     case 0x05: {
         int dx, dy;
         int16_t a1, b1, c1;
@@ -313,75 +313,75 @@ void ST010DoCommand()
 
         bool wrap = false;
 
-        //Target (x,y) coordinates
+        // Target (x,y) coordinates
         int16_t ypos_max = ST010_WORD(0x00C0);
         int16_t xpos_max = ST010_WORD(0x00C2);
 
-        //Current coordinates and direction
+        // Current coordinates and direction
         int32_t ypos = SRAM[0xC4] | (SRAM[0xC5] << 8) | (SRAM[0xC6] << 16) | (SRAM[0xC7] << 24);
         int32_t xpos = SRAM[0xC8] | (SRAM[0xC9] << 8) | (SRAM[0xCA] << 16) | (SRAM[0xCB] << 24);
         uint16_t rot = SRAM[0xCC] | (SRAM[0xCD] << 8);
 
-        //Physics
+        // Physics
         uint16_t speed = ST010_WORD(0x00D4);
         uint16_t accel = ST010_WORD(0x00D6);
         uint16_t speed_max = ST010_WORD(0x00D8);
 
-        //Special condition acknowledgment
+        // Special condition acknowledgment
         int16_t system = ST010_WORD(0x00DA);
         int16_t flags = ST010_WORD(0x00DC);
 
-        //New target coordinates
+        // New target coordinates
         int16_t ypos_new = ST010_WORD(0x00DE);
         int16_t xpos_new = ST010_WORD(0x00E0);
 
-        //Backup speed
+        // Backup speed
         uint16_t old_speed = speed;
 
-        //Mask upper bit
+        // Mask upper bit
         xpos_new &= 0x7FFF;
 
-        //Get the current distance
+        // Get the current distance
         dx = xpos_max - (xpos >> 16);
         dy = ypos_max - (ypos >> 16);
 
-        //Quirk: clear and move in9
+        // Quirk: clear and move in9
         SRAM[0xD2] = 0xFF;
         SRAM[0xD3] = 0xFF;
         SRAM[0xDA] = 0;
         SRAM[0xDB] = 0;
 
-        //Grab the target angle
+        // Grab the target angle
         ST010_OP01(dy, dx, &a1, &b1, &c1, (int16_t*)&o1);
 
-        //Check for wrapping
+        // Check for wrapping
         if (abs(o1 - rot) > 0x8000) {
             o1 += 0x8000;
             rot += 0x8000;
             wrap = true;
         }
 
-        //Special case
+        // Special case
         if (abs(o1 - rot) == 0x8000) {
             speed = 0x100;
         }
 
-        //Slow down for sharp curves
+        // Slow down for sharp curves
         else if (abs(o1 - rot) >= 0x1000) {
             uint32_t slow = abs(o1 - rot);
-            slow >>= 4; //Scaling
+            slow >>= 4; // Scaling
             speed -= slow;
         }
-        //Otherwise accelerate
+        // Otherwise accelerate
         else {
             speed += accel;
             if (speed > speed_max) {
-                //Clip speed
+                // Clip speed
                 speed = speed_max;
             }
         }
 
-        //Prevent negative/positive overflow
+        // Prevent negative/positive overflow
         if (abs(old_speed - speed) > 0x8000) {
             if (old_speed < speed) {
                 speed = 0;
@@ -390,8 +390,8 @@ void ST010DoCommand()
             }
         }
 
-        //Adjust direction by so many degrees
-        //Be careful of negative adjustments
+        // Adjust direction by so many degrees
+        // Be careful of negative adjustments
         if ((o1 > rot && (o1 - rot) > 0x80) || (o1 < rot && (rot - o1) >= 0x80)) {
             if (o1 < rot) {
                 rot -= 0x280;
@@ -400,30 +400,30 @@ void ST010DoCommand()
             }
         }
 
-        //Turn off wrapping
+        // Turn off wrapping
         if (wrap) {
             rot -= 0x8000;
         }
 
-        //Now check the distances (store for later)
+        // Now check the distances (store for later)
         dx = (xpos_max << 16) - xpos;
         dy = (ypos_max << 16) - ypos;
         dx >>= 16;
         dy >>= 16;
 
-        //If we're in so many units of the target, signal it
+        // If we're in so many units of the target, signal it
         if ((system && (dy <= 6 && dy >= -8) && (dx <= 126 && dx >= -128)) || (!system && (dx <= 6 && dx >= -8) && (dy <= 126 && dy >= -128))) {
-            //Announce our new destination and flag it
+            // Announce our new destination and flag it
             xpos_max = xpos_new & 0x7FFF;
             ypos_max = ypos_new;
             flags |= 0x08;
         }
 
-        //Update position
+        // Update position
         xpos -= (ST010_Cos(rot) * 0x400 >> 15) * (speed >> 8) << 1;
         ypos -= (ST010_Sin(rot) * 0x400 >> 15) * (speed >> 8) << 1;
 
-        //Quirk: mask upper byte
+        // Quirk: mask upper byte
         xpos &= 0x1FFFFFFF;
         ypos &= 0x1FFFFFFF;
 
@@ -480,14 +480,14 @@ void ST010DoCommand()
 
         int32_t line;
         for (line = 0; line < 176; line++) {
-            //Calculate Mode 7 Matrix A/D data
+            // Calculate Mode 7 Matrix A/D data
             data = ST010_M7Scale[line] * ST010_Cos(Theta) >> 15;
             SRAM[0x00f0 + offset] = (uint8_t)(data);
             SRAM[0x00f1 + offset] = (uint8_t)(data >> 8);
             SRAM[0x0510 + offset] = (uint8_t)(data);
             SRAM[0x0511 + offset] = (uint8_t)(data >> 8);
 
-            //Calculate Mode 7 Matrix B/C data
+            // Calculate Mode 7 Matrix B/C data
             data = ST010_M7Scale[line] * ST010_Sin(Theta) >> 15;
             SRAM[0x0250 + offset] = (uint8_t)(data);
             SRAM[0x0251 + offset] = (uint8_t)(data >> 8);
@@ -502,7 +502,7 @@ void ST010DoCommand()
             offset += 2;
         }
 
-        //Shift Angle for use with Lookup table
+        // Shift Angle for use with Lookup table
         SRAM[0x00] = SRAM[0x01];
         SRAM[0x01] = 0x00;
     } break;
@@ -527,7 +527,7 @@ void ST010DoCommand()
         break;
     }
 
-    //Lower signal: op processed
+    // Lower signal: op processed
     SRAM[0x20] = 0;
     SRAM[0x21] = 0;
 }

@@ -130,7 +130,7 @@ void process_file(string filename)
     if (file) {
         char line[LINE_LENGTH];
 
-        //Parse file
+        // Parse file
         while (file.getline(line, LINE_LENGTH)) {
             vector<string> tokens;
             char* p = line;

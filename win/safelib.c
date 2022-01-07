@@ -31,14 +31,14 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "../argv.h"
 #include "safelib.h"
 
-//These are here because I don't believe in MSVC's prefixing affixation
+// These are here because I don't believe in MSVC's prefixing affixation
 #define dup _dup
 #define dup2 _dup2
 #define pipe _pipe
 #define flushall _flushall
 #define cwait _cwait
 
-//Introducing a popen which doesn't return until it knows for sure of program launched or couldn't open -Nach
+// Introducing a popen which doesn't return until it knows for sure of program launched or couldn't open -Nach
 
 #define READ_FD 0
 #define WRITE_FD 1

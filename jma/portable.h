@@ -71,7 +71,7 @@ inline T MyMax(T a, T b)
 #define UINT_SIZE (4)
 #define USHORT_SIZE (2)
 
-//Convert an array of 4 bytes back into an integer
+// Convert an array of 4 bytes back into an integer
 inline unsigned int charp_to_uint(const unsigned char buffer[UINT_SIZE])
 {
     unsigned int num = (unsigned int)buffer[3];
@@ -81,7 +81,7 @@ inline unsigned int charp_to_uint(const unsigned char buffer[UINT_SIZE])
     return (num);
 }
 
-//Convert an array of 2 bytes back into a short integer
+// Convert an array of 2 bytes back into a short integer
 inline unsigned short charp_to_ushort(const unsigned char buffer[USHORT_SIZE])
 {
     unsigned short num = (unsigned short)buffer[1];

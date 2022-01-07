@@ -386,8 +386,8 @@ static void decodepar(u1 const guicheatvalrep)
 static void decodegg(u1 const guicheatvalrep)
 {
     /* Genie Hex:    D  F  4  7  0  9  1  5  6  B  C  8  A  2  3  E
-	 * Normal  Hex:  0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F
-	 *               4  6  D  E  2  7  8  3  B  5  C  9  A  0  F  1 */
+     * Normal  Hex:  0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F
+     *               4  6  D  E  2  7  8  3  B  5  C  9  A  0  F  1 */
     { // Convert code
         char* esi = GUICheatTextZ1;
         memmove(esi + 4, esi + 5, 4);
@@ -404,9 +404,9 @@ static void decodegg(u1 const guicheatvalrep)
     u4 const ecx = (u1)esi[2] << 20 | (u1)esi[3] << 16 | (u1)esi[4] << 12 | (u1)esi[5] << 8 | (u1)esi[6] << 4 | (u1)esi[7] << 0;
 
     /*                        0123456789ABCDEF01234567
-	 * 24bit encoded address: ijklqrstopabcduvwxefghmn
-	 *                        abcdefghijklmnopqrstuvwx
-	 *                        >8  >12 >6<10 >6  <14 <10 */
+     * 24bit encoded address: ijklqrstopabcduvwxefghmn
+     *                        abcdefghijklmnopqrstuvwx
+     *                        >8  >12 >6<10 >6  <14 <10 */
     u4 const ebx = (ecx & 0x003C00) << 10 | // abcd
         (ecx & 0x00003C) << 14 | // efgh
         (ecx & 0xF00000) >> 8 | // ijkl

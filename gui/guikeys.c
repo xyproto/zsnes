@@ -1707,8 +1707,8 @@ void GUIgetcurrentinput(void)
         goto done; // ENTER
 #endif
 #ifdef __WIN32__
-    //if (GUIgetprkeys(0xC8, 72, &al)) goto done;
-    //if (GUIgetprkeys(0xD0, 80, &al)) goto done;
+    // if (GUIgetprkeys(0xC8, 72, &al)) goto done;
+    // if (GUIgetprkeys(0xD0, 80, &al)) goto done;
     if (GUIgetprkeys(0xCB, 75, &al))
         goto done;
     if (GUIgetprkeys(0xCD, 77, &al))

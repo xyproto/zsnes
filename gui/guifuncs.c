@@ -106,19 +106,19 @@ void LoadCustomFont()
     fp = fopen_dir(ZCfgPath, "zfont.txt", "r");
     if (fp) {
         while (fgets(data, 100, fp) && strcmp(data, "EOF\n") && x < 141) {
-            fgets(data, 10, fp); //get first line
+            fgets(data, 10, fp); // get first line
             InsertFontChar(data, x, 0);
 
-            fgets(data, 10, fp); //get second line
+            fgets(data, 10, fp); // get second line
             InsertFontChar(data, x, 1);
 
-            fgets(data, 10, fp); //get third line
+            fgets(data, 10, fp); // get third line
             InsertFontChar(data, x, 2);
 
-            fgets(data, 10, fp); //get fourth line
+            fgets(data, 10, fp); // get fourth line
             InsertFontChar(data, x, 3);
 
-            fgets(data, 10, fp); //get fifth line
+            fgets(data, 10, fp); // get fifth line
             InsertFontChar(data, x, 4);
         }
     } else {
@@ -589,7 +589,7 @@ void GUIRestoreVars()
 #endif
     CheckValueBounds(&cfgdontsave, 0, 1, 0, UB);
 
-    //if (TimeChecker == CalcCfgChecksum()) //What does this do?
+    // if (TimeChecker == CalcCfgChecksum()) //What does this do?
     {
         ShowTimer = 1;
         NumSnow = 200;
@@ -814,11 +814,11 @@ static const char* get_rom_name(struct dirent_info* entry, char* namebuffer)
                     HasHeadScore += 2;
                 }
 
-                //SMC/SWC Header
+                // SMC/SWC Header
                 if (HeaderBuffer[8] == 0xAA && HeaderBuffer[9] == 0xBB && HeaderBuffer[10] == 4) {
                     HasHeadScore += 3;
                 }
-                //FIG Header
+                // FIG Header
                 else if ((HeaderBuffer[4] == 0x77 && HeaderBuffer[5] == 0x83) || (HeaderBuffer[4] == 0xDD && HeaderBuffer[5] == 0x82) || (HeaderBuffer[4] == 0xDD && HeaderBuffer[5] == 2) || (HeaderBuffer[4] == 0xF7 && HeaderBuffer[5] == 0x83) || (HeaderBuffer[4] == 0xFD && HeaderBuffer[5] == 0x82) || (HeaderBuffer[4] == 0x00 && HeaderBuffer[5] == 0x80) || (HeaderBuffer[4] == 0x47 && HeaderBuffer[5] == 0x83) || (HeaderBuffer[4] == 0x11 && HeaderBuffer[5] == 2)) {
                     HasHeadScore += 2;
                 } else if (!strncmp("GAME DOCTOR SF 3", (char*)HeaderBuffer, 16)) {
@@ -861,22 +861,22 @@ static const char* get_rom_name(struct dirent_info* entry, char* namebuffer)
                                 strncpy(namebuffer, LoHead, INAME_LEN);
                             }
                         }
-                    } else //ROM only has one block
+                    } else // ROM only has one block
                     {
                         fseek(fp, 0x7FC0 + HeaderSize, SEEK_SET);
                         fread(namebuffer, INAME_LEN, 1, fp);
                     }
                 }
                 fclose(fp);
-            } else //Couldn't open file
+            } else // Couldn't open file
             {
                 strcpy(namebuffer, "** READ FAILURE **");
             }
-        } else //Smaller than a block, or Larger than 6MB
+        } else // Smaller than a block, or Larger than 6MB
         {
             strcpy(namebuffer, "** INVALID FILE **");
         }
-    } else //Compressed archive
+    } else // Compressed archive
     {
         return (entry->name);
     }
@@ -884,9 +884,9 @@ static const char* get_rom_name(struct dirent_info* entry, char* namebuffer)
     return (namebuffer);
 }
 
-char** lf_names = 0; //Long File Names
-char** et_names = 0; //Eight Three Names
-char** i_names = 0; //Internal Names
+char** lf_names = 0; // Long File Names
+char** et_names = 0; // Eight Three Names
+char** i_names = 0; // Internal Names
 char** d_names = 0;
 
 char** selected_names = 0;
@@ -964,7 +964,7 @@ void free_list(char*** list)
     }
 }
 
-//A possible problem here would be if one of the list arrays got enlarged but a corosponding one ran out of memory
+// A possible problem here would be if one of the list arrays got enlarged but a corosponding one ran out of memory
 static void add_list(char*** reallist, const char* p)
 {
     char** list = *reallist;
@@ -995,7 +995,7 @@ static void add_list(char*** reallist, const char* p)
     *reallist = list;
 }
 
-//Make sure ZRomPath contains a full absolute directory name before calling
+// Make sure ZRomPath contains a full absolute directory name before calling
 void populate_lists(unsigned int lists, bool snes_ext_match)
 {
     DIR* dir;
@@ -1138,7 +1138,7 @@ void GUIQuickLoadUpdate(void)
 
     src = (char*)prevloadiname;
     entry_size = 28;
-    copy_num = 28; //full window width
+    copy_num = 28; // full window width
 
     while (i--) {
         char* p_src = src + i * entry_size;
@@ -1179,11 +1179,11 @@ void GetLoadData(void)
     free_all_file_lists();
 
     switch (GUIloadfntype) {
-    case 0: //LFN
+    case 0: // LFN
         populate_lists(LIST_DN | LIST_ETN | LIST_LFN, !showallext);
         selected_names = lf_names ? lf_names : et_names;
         break;
-    case 1: //IN
+    case 1: // IN
         populate_lists(LIST_DN | LIST_MAIN | LIST_IN, !showallext);
         selected_names = i_names;
         break;
@@ -1311,7 +1311,7 @@ u4 GUILoadKeysNavigate(u1 const gui_key_extended)
         entries = &GUIfileentries;
     }
 
-    //Handle left and right
+    // Handle left and right
     if (GUIfileentries && GUIdirentries) {
 #ifdef __UNIXSDL__
         if ((gui_key_extended == 92) || ((numlockptr != 1) && (gui_key_extended == 75)))
@@ -1336,14 +1336,14 @@ u4 GUILoadKeysNavigate(u1 const gui_key_extended)
         }
     }
 
-    //Enter press
+    // Enter press
     if (gui_key_extended == 13) {
         GUILoadPos = 0;
         GUILoadManualDir();
         return (1);
     }
 
-//Home key
+// Home key
 #ifdef __UNIXSDL__
     if ((gui_key_extended == 89) || ((numlockptr != 1) && (gui_key_extended == 71)))
 #else
@@ -1356,7 +1356,7 @@ u4 GUILoadKeysNavigate(u1 const gui_key_extended)
         return (1);
     }
 
-//End key
+// End key
 #ifdef __UNIXSDL__
     if ((gui_key_extended == 95) || ((numlockptr != 1) && (gui_key_extended == 79)))
 #else
@@ -1372,7 +1372,7 @@ u4 GUILoadKeysNavigate(u1 const gui_key_extended)
         return (1);
     }
 
-//Up arrow key
+// Up arrow key
 #ifdef __UNIXSDL__
     if ((gui_key_extended == 90) || ((numlockptr != 1) && (gui_key_extended == 72)))
 #else
@@ -1389,7 +1389,7 @@ u4 GUILoadKeysNavigate(u1 const gui_key_extended)
         return (1);
     }
 
-//Down arrow key
+// Down arrow key
 #ifdef __UNIXSDL__
     if ((gui_key_extended == 96) || ((numlockptr != 1) && (gui_key_extended == 80)))
 #else
@@ -1406,7 +1406,7 @@ u4 GUILoadKeysNavigate(u1 const gui_key_extended)
         return (1);
     }
 
-//Page up key
+// Page up key
 #ifdef __UNIXSDL__
     if ((gui_key_extended == 91) || ((numlockptr != 1) && (gui_key_extended == 73)))
 #else
@@ -1425,7 +1425,7 @@ u4 GUILoadKeysNavigate(u1 const gui_key_extended)
         return (1);
     }
 
-//Page down key
+// Page down key
 #ifdef __UNIXSDL__
     if ((gui_key_extended == 97) || ((numlockptr != 1) && (gui_key_extended == 81)))
 #else
@@ -1507,7 +1507,7 @@ void GUILoadKeysJumpTo(void)
     start = 0;
     end = GUIJT_entries - 1;
     GUIJT_offset = GUIJT_entries;
-    if (!strcmp(GUILoadTextA, " ")) //Exactly a space picks a game randomely
+    if (!strcmp(GUILoadTextA, " ")) // Exactly a space picks a game randomely
     {
         GUIJT_offset = rand() % GUIJT_entries;
     } else {
@@ -1542,7 +1542,7 @@ void GUILoadKeysJumpTo(void)
     }
 }
 
-//Not entirely accurate pow, but good for most needs and very fast
+// Not entirely accurate pow, but good for most needs and very fast
 static unsigned int npow(register unsigned int base, register unsigned int exponent)
 {
     register unsigned int total = 1;

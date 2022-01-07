@@ -938,10 +938,10 @@ void nextopcode()
     // I don't understand the buffering scheme here... I'm just going
     // to hope it isn't really all that important.
 
-    //if (debugsa1 != 1)
+    // if (debugsa1 != 1)
     out65816();
-    //else
-    //  outputbuffersa1();
+    // else
+    //   outputbuffersa1();
 }
 
 void cleardisplay()

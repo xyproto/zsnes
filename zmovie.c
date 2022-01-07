@@ -288,7 +288,7 @@ struct zmv_header {
     uint32_t key_combos;
     uint16_t internal_chapters;
     uint16_t author_len;
-    uint32_t zst_size; //We only read/write 3 bytes for this
+    uint32_t zst_size; // We only read/write 3 bytes for this
     uint16_t initial_input;
     struct
     {
@@ -347,8 +347,8 @@ static void zmv_header_write(struct zmv_header* zmv_head, FILE* fp)
         break;
     }
 
-    //Not needed, but oh well, it makes it easier to read for some.
-    //Reserved bits:
+    // Not needed, but oh well, it makes it easier to read for some.
+    // Reserved bits:
     flag &= ~BIT(4);
     flag &= ~BIT(3);
     flag &= ~BIT(2);
@@ -689,7 +689,7 @@ static size_t pad_bit_encoder(uint8_t pad, uint8_t* buffer, size_t skip_bits)
 
     switch (pad) {
     case 2:
-        if ((zmv_vars.inputs_enabled & BIT(0x8))) //Super Scope
+        if ((zmv_vars.inputs_enabled & BIT(0x8))) // Super Scope
         {
             uint32_t xdata = (zmv_vars.last_joy_state.latchx - 40) & 0xFF;
             uint32_t ydata = zmv_vars.last_joy_state.latchy & 0xFF;
@@ -702,7 +702,7 @@ static size_t pad_bit_encoder(uint8_t pad, uint8_t* buffer, size_t skip_bits)
         }
 
     case 1:
-        if ((zmv_vars.inputs_enabled & ((pad == 1) ? BIT(0xA) : BIT(0x9)))) //Mouse ?
+        if ((zmv_vars.inputs_enabled & ((pad == 1) ? BIT(0xA) : BIT(0x9)))) // Mouse ?
         {
             skip_bits = bit_encoder(last_state, MOUSE_MASK, buffer, skip_bits);
         } else {
@@ -713,7 +713,7 @@ static size_t pad_bit_encoder(uint8_t pad, uint8_t* buffer, size_t skip_bits)
     case 3:
     case 4:
     case 5:
-        //No multitap if both ports use special devices
+        // No multitap if both ports use special devices
         if ((zmv_vars.inputs_enabled & (BIT(0xA) | BIT(0x9) | BIT(0x8))) <= BIT(0xA)) {
             skip_bits = bit_encoder(last_state, GAMEPAD_MASK, buffer, skip_bits);
         }
@@ -756,7 +756,7 @@ static size_t pad_bit_decoder(uint8_t pad, uint8_t* buffer, size_t skip_bits)
 
     switch (pad) {
     case 2:
-        if ((zmv_vars.inputs_enabled & BIT(0x8))) //Super Scope
+        if ((zmv_vars.inputs_enabled & BIT(0x8))) // Super Scope
         {
             uint32_t xdata, ydata;
 
@@ -772,7 +772,7 @@ static size_t pad_bit_decoder(uint8_t pad, uint8_t* buffer, size_t skip_bits)
         }
 
     case 1:
-        if (zmv_vars.inputs_enabled & ((pad == 1) ? BIT(0xA) : BIT(0x9))) //Mouse ?
+        if (zmv_vars.inputs_enabled & ((pad == 1) ? BIT(0xA) : BIT(0x9))) // Mouse ?
         {
             skip_bits = bit_decoder(last_state, MOUSE_MASK, buffer, skip_bits);
             *last_state |= MOUSE_ENABLE;
@@ -785,7 +785,7 @@ static size_t pad_bit_decoder(uint8_t pad, uint8_t* buffer, size_t skip_bits)
     case 3:
     case 4:
     case 5:
-        //No multitap if both ports use special devices
+        // No multitap if both ports use special devices
         if ((zmv_vars.inputs_enabled & (BIT(0xA) | BIT(0x9) | BIT(0x8))) > BIT(0xA)) {
             *last_state = 0;
         } else {
@@ -821,7 +821,7 @@ static void load_last_joy_state(uint8_t* buffer)
     skip_bits = pad_bit_decoder(5, buffer, skip_bits);
 }
 
-//These things are a total of 11 bytes (2 byte enable field, up to 9 bytes for input bits)
+// These things are a total of 11 bytes (2 byte enable field, up to 9 bytes for input bits)
 static void write_last_joy_state(FILE* fp)
 {
     save_last_joy_state(zmv_vars.write_buffer);
@@ -843,7 +843,7 @@ static void flush_input_buffer()
 
     if (zmv_vars.rle_count) {
         if (zmv_vars.rle_count > 5) {
-            zmv_vars.write_buffer[0] = BIT(1); //RLE bit
+            zmv_vars.write_buffer[0] = BIT(1); // RLE bit
             fwrite(zmv_vars.write_buffer, 1, 1, zmv_vars.fp);
             fwrite4(zmv_vars.header.frames, zmv_vars.fp);
         } else {
@@ -853,26 +853,26 @@ static void flush_input_buffer()
         zmv_vars.rle_count = 0;
     }
 
-    zmv_vars.header.author_len = 0; //If we're writing, then author is erased if there
+    zmv_vars.header.author_len = 0; // If we're writing, then author is erased if there
 }
 
 static void flush_input_if_needed()
 {
-    if (zmv_vars.write_buffer_loc > WRITE_BUFFER_SIZE - 15) //14 is a RLE buffer (5) + flag (1) + largest input (9)
+    if (zmv_vars.write_buffer_loc > WRITE_BUFFER_SIZE - 15) // 14 is a RLE buffer (5) + flag (1) + largest input (9)
     {
         flush_input_buffer();
     }
 }
 
-//For various ZMV calculations, the length of the last chapter needs to be known
+// For various ZMV calculations, the length of the last chapter needs to be known
 static size_t internal_chapter_length(size_t offset)
 {
     size_t current_loc = ftell(zmv_vars.fp);
     size_t icl = 0;
 
     fseek(zmv_vars.fp, offset, SEEK_SET);
-    icl = fread3(zmv_vars.fp) & 0x007FFFFF; //The upper 9 bits are not part of the length
-    icl += 3; //Add 3 for the header which says how long it is
+    icl = fread3(zmv_vars.fp) & 0x007FFFFF; // The upper 9 bits are not part of the length
+    icl += 3; // Add 3 for the header which says how long it is
 
     fseek(zmv_vars.fp, current_loc, SEEK_SET);
     return (icl);
@@ -936,7 +936,7 @@ static void zmv_rle_flush()
 {
     if (zmv_vars.rle_count) {
         if (zmv_vars.rle_count > 5) {
-            zmv_vars.write_buffer[zmv_vars.write_buffer_loc++] = BIT(1); //RLE bit
+            zmv_vars.write_buffer[zmv_vars.write_buffer_loc++] = BIT(1); // RLE bit
             memcpy(zmv_vars.write_buffer + zmv_vars.write_buffer_loc, uint32_to_bytes(zmv_vars.header.frames), 4);
             zmv_vars.write_buffer_loc += 4;
         } else {
@@ -1077,7 +1077,7 @@ static void zmv_record_finish()
 
     flush_input_buffer();
 
-    //Now write the save for append data
+    // Now write the save for append data
     mzt_chdir_up();
     if ((fp = fopen_dir(ZMoviePath, "append.zst", "wb"))) {
         zst_save(fp, false, false);
@@ -1092,7 +1092,7 @@ static void zmv_record_finish()
     }
     mzt_chdir_down();
 
-    //Finish up writing the ZMV
+    // Finish up writing the ZMV
     internal_chapter_write(&zmv_vars.internal_chapters, zmv_vars.fp);
     internal_chapter_free_chain(zmv_vars.internal_chapters.next);
 
@@ -1101,7 +1101,7 @@ static void zmv_record_finish()
         zmv_vars.filename = 0;
     }
 
-    fwrite2(0, zmv_vars.fp); //External chapter count
+    fwrite2(0, zmv_vars.fp); // External chapter count
 
     rewind(zmv_vars.fp);
     zmv_header_write(&zmv_vars.header, zmv_vars.fp);
@@ -1135,7 +1135,7 @@ static struct
     size_t last_chapter_frame;
     size_t first_chapter_pos;
     size_t input_start_pos;
-} zmv_open_vars; //Additional vars for open/replay of a ZMV
+} zmv_open_vars; // Additional vars for open/replay of a ZMV
 
 static bool zmv_open(char* filename)
 {
@@ -1206,7 +1206,7 @@ static bool zmv_open(char* filename)
         internal_chapter_read(&zmv_vars.internal_chapters, zmv_vars.fp, zmv_vars.header.internal_chapters);
 
         for (i = 0; i < zmv_open_vars.external_chapter_count; i++) {
-            //Seek to 4 bytes before end of chapter, since last 4 bytes is where it contains offset value
+            // Seek to 4 bytes before end of chapter, since last 4 bytes is where it contains offset value
             fseek(zmv_vars.fp, EXT_CHAP_SIZE - 4, SEEK_CUR);
             internal_chapter_add_offset(&zmv_open_vars.external_chapters, fread4(zmv_vars.fp));
         }
@@ -1305,7 +1305,7 @@ static bool zmv_replay()
 
             fread(&flag, 1, 1, zmv_vars.fp);
 
-            if (flag & BIT(0)) //Command
+            if (flag & BIT(0)) // Command
             {
                 uint8_t command = flag >> 1;
                 if (command == zmv_command_reset) {
@@ -1319,13 +1319,13 @@ static bool zmv_replay()
                 return (false);
             }
 
-            else if (flag & BIT(1)) //RLE
+            else if (flag & BIT(1)) // RLE
             {
                 zmv_vars.rle_count = fread4(zmv_vars.fp) - zmv_open_vars.frames_replayed;
                 return (zmv_replay());
             }
 
-            else if (flag & BIT(2)) //Internal Chapter
+            else if (flag & BIT(2)) // Internal Chapter
             {
                 fseek(zmv_vars.fp, INT_CHAP_SIZE(ftell(zmv_vars.fp)), SEEK_CUR);
                 return (zmv_replay());
@@ -1393,7 +1393,7 @@ static bool zmv_next_chapter()
     return (false);
 }
 
-//Have playback start movie from beginning
+// Have playback start movie from beginning
 static void zmv_rewind_playback()
 {
     fseek(zmv_vars.fp, zmv_open_vars.first_chapter_pos, SEEK_SET);
@@ -1428,8 +1428,8 @@ static void zmv_prev_chapter()
         return;
     }
 
-    //Code to go back before the previous chapter if the previous chapter was loaded recently
-    if ((zmv_open_vars.frames_replayed - zmv_open_vars.last_chapter_frame) < 5 * ((unsigned int)EmuSpeed + 1)) { //2.5 seconds NTSC when in 100% speed - altered to make slowmo nicer
+    // Code to go back before the previous chapter if the previous chapter was loaded recently
+    if ((zmv_open_vars.frames_replayed - zmv_open_vars.last_chapter_frame) < 5 * ((unsigned int)EmuSpeed + 1)) { // 2.5 seconds NTSC when in 100% speed - altered to make slowmo nicer
         size_t pprev = prev - 1;
         size_t pprev_internal = internal_chapter_lesser(&zmv_vars.internal_chapters, pprev);
         size_t pprev_external = internal_chapter_lesser(&zmv_open_vars.external_chapters, pprev);
@@ -1467,17 +1467,17 @@ static void zmv_prev_chapter()
     zmv_vars.rle_count = 0;
 }
 
-//External chapter
+// External chapter
 static void zmv_add_chapter()
 {
     if ((zmv_open_vars.external_chapter_count < 65535) && zmv_open_vars.frames_replayed) {
         size_t current_loc = ftell(zmv_vars.fp);
 
-        //Check if there is external here already - should possibly modify this to use
-        //intern_chapter_lesser() to see if an internal chapter was made right before this
-        //point in the stream
+        // Check if there is external here already - should possibly modify this to use
+        // intern_chapter_lesser() to see if an internal chapter was made right before this
+        // point in the stream
         if ((internal_chapter_pos(&zmv_open_vars.external_chapters, current_loc)) == 0xFFFFFFFF) {
-            //Check if we have internal right here
+            // Check if we have internal right here
             uint8_t flag;
             fread(&flag, 1, 1, zmv_vars.fp);
 
@@ -1508,7 +1508,7 @@ static void zmv_add_chapter()
                 }
 
                 fseek(zmv_vars.fp, current_loc, SEEK_SET);
-            } else //Just skip the internal
+            } else // Just skip the internal
             {
                 fseek(zmv_vars.fp, INT_CHAP_SIZE(ftell(zmv_vars.fp)), SEEK_CUR);
             }
@@ -1574,7 +1574,7 @@ static bool zmv_append(char* filename)
                 mzt_chdir_down();
 
                 zmv_replay_to_record();
-                zmv_vars.header.rerecords--; //Remove the rerecord count added by replay to record
+                zmv_vars.header.rerecords--; // Remove the rerecord count added by replay to record
                 return (true);
             }
         }
@@ -1724,7 +1724,7 @@ bool mzt_save(int position, bool thumb, bool playback)
                     zmv_header_write(&zmv_vars.header, zmv_vars.fp);
                     rewind(zmv_vars.fp);
 
-                    //Copy the real ZMV to the MZT GZipped ZMV
+                    // Copy the real ZMV to the MZT GZipped ZMV
                     for (amount_written = 0; amount_written < rewind_point;) {
                         size_t amount = rewind_point - amount_written;
                         if (amount > WRITE_BUFFER_SIZE) {
@@ -1746,23 +1746,23 @@ bool mzt_save(int position, bool thumb, bool playback)
                         gzwrite(gzp, zmv_vars.write_buffer, amount);
                         amount_written += amount;
                     }
-                    //External chapter count
+                    // External chapter count
                     gzputc(gzp, 0);
                     gzputc(gzp, 0);
-                    //Done
+                    // Done
                     gzclose(gzp);
 
-                    //Now fix data for the real ZMV file's header since we destroyed it
+                    // Now fix data for the real ZMV file's header since we destroyed it
                     zmv_vars.header.frames = frames;
                     zmv_vars.header.internal_chapters = internal_chapters;
                     zmv_vars.header.author_len = author_len;
 
                     rewind(zmv_vars.fp);
                     zmv_header_write(&zmv_vars.header, zmv_vars.fp);
-                } else //During record is much simpler
+                } else // During record is much simpler
                 {
                     internal_chapter_write(&zmv_vars.internal_chapters, zmv_vars.fp);
-                    fwrite2(0, zmv_vars.fp); //External chapter count
+                    fwrite2(0, zmv_vars.fp); // External chapter count
 
                     rewind(zmv_vars.fp);
                     zmv_header_write(&zmv_vars.header, zmv_vars.fp);
@@ -1864,14 +1864,14 @@ Code for dumping raw video
 #define RAW_HEIGHT 224
 #define RAW_FRAME_SIZE (RAW_WIDTH * RAW_HEIGHT * 3)
 
-//NTSC FPS is  59.948743718592964824120603015060 in AVI that's a fraction of 59649/995
-//which equals 59.948743718592964824120603015075, so videos should not desync for several millenia
+// NTSC FPS is  59.948743718592964824120603015060 in AVI that's a fraction of 59649/995
+// which equals 59.948743718592964824120603015075, so videos should not desync for several millenia
 
-//FPS = Rate*Stereo / Samples per Frame
+// FPS = Rate*Stereo / Samples per Frame
 
-//These two numbers help with calculating how many samples are needed per frame
-//59.948743718592964824120603015060 = SAMPLE_NTSC_LO*Rate/SAMPLE_NTSC_HI
-//Samples per Frame = SAMPLE_NTSC_HI/SAMPLE_NTSC_LO *Stereo
+// These two numbers help with calculating how many samples are needed per frame
+// 59.948743718592964824120603015060 = SAMPLE_NTSC_LO*Rate/SAMPLE_NTSC_HI
+// Samples per Frame = SAMPLE_NTSC_HI/SAMPLE_NTSC_LO *Stereo
 
 #define SAMPLE_NTSC_HI_SCALE 995ULL
 #define SAMPLE_NTSC_LO 59649ULL
@@ -1880,13 +1880,13 @@ Code for dumping raw video
 #define SAMPLE_PAL_HI_SCALE 1ULL
 #define SAMPLE_PAL_LO 50ULL
 
-//Code using this by Bisqwit
-//Used by raw videos for calculating sample rate
+// Code using this by Bisqwit
+// Used by raw videos for calculating sample rate
 
 static const uint32_t freqtab[] = { 8000, 11025, 22050, 44100, 16000, 32000, 48000 };
 #define RATE freqtab[SoundQuality]
 
-//0 = None; 1 Logging, but not now, 2 Log now
+// 0 = None; 1 Logging, but not now, 2 Log now
 uint8_t AudioLogging;
 
 extern uint8_t ZMVRawDump;
@@ -1998,7 +1998,7 @@ static char* encode_command(char* p)
         }
     }
 
-#ifndef DEBUG //Debug mode prints out commands used in system_dir and popen_dir anyway
+#ifndef DEBUG // Debug mode prints out commands used in system_dir and popen_dir anyway
     puts(command);
 #endif
 
@@ -2048,7 +2048,7 @@ static void raw_embed_logo(bool audio)
                 fwrite(logo_buffer, RAW_FRAME_SIZE, 1, raw_vid.vp);
 
                 if (audio) {
-                    //Thanks Bisqwit for this algorithm
+                    // Thanks Bisqwit for this algorithm
                     uint32_t samples = (uint32_t)((raw_vid.sample_balance / raw_vid.sample_lo) << StereoSound);
                     raw_vid.sample_balance %= raw_vid.sample_lo;
                     raw_vid.sample_balance += raw_vid.sample_hi;
@@ -2084,15 +2084,15 @@ static void raw_video_close()
     }
 
     if (raw_vid.ap) {
-        size_t file_size = ftell(raw_vid.ap); //Get file size
-        if (!fseek(raw_vid.ap, 4, SEEK_SET)) //Seek to after RIFF header
+        size_t file_size = ftell(raw_vid.ap); // Get file size
+        if (!fseek(raw_vid.ap, 4, SEEK_SET)) // Seek to after RIFF header
         {
-            fwrite4(file_size - 8, raw_vid.ap); //Don't include header or this write, -8
+            fwrite4(file_size - 8, raw_vid.ap); // Don't include header or this write, -8
         }
-        if (!fseek(raw_vid.ap, raw_vid.aud_dsize_pos, SEEK_SET)) //Seek to where the audio data size goes
+        if (!fseek(raw_vid.ap, raw_vid.aud_dsize_pos, SEEK_SET)) // Seek to where the audio data size goes
         {
-            //Data size is remainder of file, which is file size, less current position, plus
-            //The 4 bytes needed to hold the data size
+            // Data size is remainder of file, which is file size, less current position, plus
+            // The 4 bytes needed to hold the data size
             fwrite4(file_size - (raw_vid.aud_dsize_pos + 4), raw_vid.ap);
         }
         if (MovieAudioCompress) {
@@ -2122,7 +2122,7 @@ static void raw_video_close()
 
 static bool raw_video_open()
 {
-    if (ZMVRawDump) //Command line
+    if (ZMVRawDump) // Command line
     {
         MovieVideoMode = ZMVRawDump;
     }
@@ -2176,22 +2176,22 @@ static bool raw_video_open()
             raw_vid.ap = fopen_dir(ZCfgPath, md_pcm_audio, "wb");
         }
         if (raw_vid.ap) {
-            uint16_t ba = (16 / 8) << StereoSound; //block align (SignificantBitsPerSample / 8 * NumChannels)
+            uint16_t ba = (16 / 8) << StereoSound; // block align (SignificantBitsPerSample / 8 * NumChannels)
 
-            fputs("RIFF", raw_vid.ap); //header
-            fwrite4(~0, raw_vid.ap); //file size - unknown till file close
-            fputs("WAVEfmt ", raw_vid.ap); //format
-            fwrite4(0x12, raw_vid.ap); //fmt size
-            fwrite2(1, raw_vid.ap); //fmt type (PCM)
-            fwrite2(StereoSound + 1, raw_vid.ap); //channels
-            fwrite4(RATE, raw_vid.ap); //sample rate
-            fwrite4(RATE * ba, raw_vid.ap); //byte rate (sample rate*block align)
-            fwrite2(ba, raw_vid.ap); //calculated above
-            fwrite2(16, raw_vid.ap); //Significant bits per sample
-            fwrite2(0, raw_vid.ap); //Extra format bytes
-            fputs("data", raw_vid.ap); //data header
-            raw_vid.aud_dsize_pos = ftell(raw_vid.ap); //Save current position for use later
-            fwrite4(~0, raw_vid.ap); //data size - unknown till file close
+            fputs("RIFF", raw_vid.ap); // header
+            fwrite4(~0, raw_vid.ap); // file size - unknown till file close
+            fputs("WAVEfmt ", raw_vid.ap); // format
+            fwrite4(0x12, raw_vid.ap); // fmt size
+            fwrite2(1, raw_vid.ap); // fmt type (PCM)
+            fwrite2(StereoSound + 1, raw_vid.ap); // channels
+            fwrite4(RATE, raw_vid.ap); // sample rate
+            fwrite4(RATE * ba, raw_vid.ap); // byte rate (sample rate*block align)
+            fwrite2(ba, raw_vid.ap); // calculated above
+            fwrite2(16, raw_vid.ap); // Significant bits per sample
+            fwrite2(0, raw_vid.ap); // Extra format bytes
+            fputs("data", raw_vid.ap); // data header
+            raw_vid.aud_dsize_pos = ftell(raw_vid.ap); // Save current position for use later
+            fwrite4(~0, raw_vid.ap); // data size - unknown till file close
 
             if (romispal) {
                 raw_vid.sample_hi = SAMPLE_PAL_HI_SCALE * RATE;
@@ -2220,7 +2220,7 @@ static void raw_audio_write(uint32_t samples)
     extern unsigned int BufferSizeB, BufferSizeW;
     int *d = DSPBuffer, *d_end;
 
-    while (samples > 1280) //This is in a loop for future proofing if we ever add above 48KHz
+    while (samples > 1280) // This is in a loop for future proofing if we ever add above 48KHz
     {
         raw_audio_write(1280);
         samples -= 1280;
@@ -2249,7 +2249,7 @@ static void raw_video_write_frame()
     if (raw_vid.vp) {
         size_t x, y;
 
-        //Convert 16 bit image to 24 bit image
+        // Convert 16 bit image to 24 bit image
         for (y = 0; y < RAW_HEIGHT; y++) {
             for (x = 0; x < RAW_WIDTH; x++) {
                 uint16_t pixel = ((u2 const*)vidbuffer)[(y + 1) * 288 + x + 16];
@@ -2259,11 +2259,11 @@ static void raw_video_write_frame()
     }
 
     if (raw_vid.ap) {
-        //Thanks Bisqwit for this algorithm
+        // Thanks Bisqwit for this algorithm
         uint32_t samples = (uint32_t)((raw_vid.sample_balance / raw_vid.sample_lo) << StereoSound);
         raw_vid.sample_balance %= raw_vid.sample_lo;
         raw_vid.sample_balance += raw_vid.sample_hi;
-        //printf("Samples: %u\n", samples);
+        // printf("Samples: %u\n", samples);
 
         AudioLogging = 2;
         raw_audio_write(samples);
@@ -2399,7 +2399,7 @@ static void DumpVideoFrame(bool playback_over)
     if (RawDumpInProgress) {
         if (playback_over && MovieForcedLengthEnabled) {
             SetMovieMode(MOVIE_ENDING_DUMPING);
-            //Disable Input
+            // Disable Input
             JoyAOrig = JoyBOrig = JoyCOrig = JoyDOrig = JoyEOrig = 0;
         }
 
@@ -2755,7 +2755,7 @@ void MoviePlay()
             char header_buf[3];
             fread(header_buf, 3, 1, fp);
 
-            if (!strncmp("ZMV", header_buf, 3)) //New Enhanced Format
+            if (!strncmp("ZMV", header_buf, 3)) // New Enhanced Format
             {
                 fclose(fp);
 
@@ -2778,7 +2778,7 @@ void MoviePlay()
                     Msgptr = "MOVIE COULD NOT BE STARTED.";
                     MessageOn = MsgCount;
                 }
-            } else //Old Pathetic Format
+            } else // Old Pathetic Format
             {
                 OldMoviePlay(fp);
             }
@@ -2803,7 +2803,7 @@ void MovieRecord()
         ZSaveName[fname_len - 1] = CMovieExt;
 
         if (MovieRecordWinVal == 1) {
-            //Erase old ZMV
+            // Erase old ZMV
             remove_dir(ZMoviePath, ZSaveName);
             MovieRecordWinVal = 0;
         }
@@ -2826,7 +2826,7 @@ void MovieRecord()
                 frameskip = 0;
                 maxskip = 0;
 
-                //Cleanup old MZTs
+                // Cleanup old MZTs
                 mzt_chdir_up();
                 if ((dir = opendir(ZMoviePath))) {
                     struct dirent* entry;

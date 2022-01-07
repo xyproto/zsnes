@@ -24,8 +24,8 @@ misrepresented as being the original software.
     Ryan C. Gordon <icculus@icculus.org>
 */
 
-//ManyMouse foundation code; apps talks to this and it talks to the lowlevel
-//code for various platforms.
+// ManyMouse foundation code; apps talks to this and it talks to the lowlevel
+// code for various platforms.
 
 #include "mm.h"
 #include <stdlib.h>

@@ -42,7 +42,7 @@ struct dirent_info {
 #include <windows.h>
 #endif
 
-//Avoid clashing with DJGPP and MinGW extras
+// Avoid clashing with DJGPP and MinGW extras
 
 struct z_dirent {
     char d_name[256];

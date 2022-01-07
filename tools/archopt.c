@@ -202,14 +202,14 @@ int main(int argc, const char* const* const argv)
             add_flags(flags, ecx, 160);
         }
 
-        //Transmeta
+        // Transmeta
         cpuid(0x80860000, eax, unused, unused, unused);
         if (((eax & 0xffff0000) == 0x80860000) && (eax > 0x80860001)) {
             cpuid(0x80860001, unused, unused, unused, edx);
             add_flags(flags, edx, 64);
         }
 
-        //Centaur
+        // Centaur
         cpuid(0xC0000000, eax, unused, unused, unused);
         if (eax >= 0xC0000001) {
             cpuid(0xC0000001, unused, unused, unused, edx);
@@ -251,11 +251,11 @@ int main(int argc, const char* const* const argv)
 #if __GNUC__ > 3 || __GNUC_MINOR__ > 0
                             if (strstr(flags, " sse ")) {
 #if __GNUC__ > 3 || __GNUC_MINOR__ > 3
-                                if (strstr(flags, " sse2 ") && strstr(flags, " lm ")) //Need two checks to protect Semprons
+                                if (strstr(flags, " sse2 ") && strstr(flags, " lm ")) // Need two checks to protect Semprons
                                 {
                                     if (strstr(model_name, "Opteron")) {
                                         cpu = "opteron";
-                                    } else if (strstr(model_name, "Athlon(tm) 64")) //Also athlon-fx
+                                    } else if (strstr(model_name, "Athlon(tm) 64")) // Also athlon-fx
                                     {
                                         cpu = "athlon64";
                                     } else {
@@ -400,7 +400,7 @@ int main(int argc, const char* const* const argv)
                     cpu = "i386";
                 }
             }
-#else //MSVC
+#else // MSVC
             cpu = cpubuf;
             *cpu = 0;
 
@@ -411,7 +411,7 @@ int main(int argc, const char* const* const argv)
             }
 
 #ifdef __x86_64__
-            if (strstr(flags, " lm ")) //64 bit
+            if (strstr(flags, " lm ")) // 64 bit
             {
                 if (!strcmp(vendor_id, "AuthenticAMD") || strstr(model_name, "AMD")) {
                     strcat(cpu, " /favor:AMD64");

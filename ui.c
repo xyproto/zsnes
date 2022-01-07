@@ -403,11 +403,11 @@ void DisplayBatteryStatus(void)
     *CSStatus4 = 0;
 
     switch (CheckBattery()) {
-    case -1: //No battery
+    case -1: // No battery
         strcpy(CSStatus, "No battery present");
         break;
 
-    case 0: //Plugged in
+    case 0: // Plugged in
     {
         int percent = CheckBatteryPercent();
 
@@ -417,7 +417,7 @@ void DisplayBatteryStatus(void)
         }
     } break;
 
-    case 1: //Not plugged in
+    case 1: // Not plugged in
     {
         int percent = CheckBatteryPercent();
         int battery_time = CheckBatteryTime();
@@ -466,7 +466,7 @@ void MultiMouseInit()
         while ((entry = readdir_info(input_dir))) {
             if (!strncasecmp(entry->name, "event", strlen("event"))) {
                 if (dirent_access(entry, R_OK)) {
-                    //printf("no read access: /dev/input/%s\n", entry->name);
+                    // printf("no read access: /dev/input/%s\n", entry->name);
                 }
             }
         }
@@ -523,7 +523,7 @@ void MultiMouseProcess(void)
                 continue;
             }
 
-            //printf("Device: %d; Type: %d; Item: %d; Value: %d\n", event.device, event.type, event.item, event.value);
+            // printf("Device: %d; Type: %d; Item: %d; Value: %d\n", event.device, event.type, event.item, event.value);
 
             if ((event.device == (mouse ^ 1)) && !MouseWaiting[event.device]) {
                 MouseMoveX[event.device] = 0;

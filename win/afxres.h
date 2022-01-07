@@ -101,14 +101,14 @@
 
 #define AFX_IDW_SIZE_BOX 0xEA20 // size box for splitters
 #define AFX_IDW_PANE_SAVE 0xEA21 // to shift AFX_IDW_PANE_FIRST
-#endif //!RC_INVOKED
+#endif //! RC_INVOKED
 
 #ifndef APSTUDIO_INVOKED
 
 // common style for form views
 #define AFX_WS_DEFAULT_VIEW (WS_CHILD | WS_VISIBLE | WS_BORDER)
 
-#endif //!APSTUDIO_INVOKED
+#endif //! APSTUDIO_INVOKED
 
 /////////////////////////////////////////////////////////////////////////////
 // Standard app configurable strings
@@ -190,7 +190,7 @@
 #define AFX_IDM_WINDOW_FIRST 0xE130
 #define AFX_IDM_WINDOW_LAST 0xE13F
 #define AFX_IDM_FIRST_MDICHILD 0xFF00 // window list starts here
-#endif //!RC_INVOKED
+#endif //! RC_INVOKED
 
 // Help and App commands
 #define ID_APP_ABOUT 0xE140
@@ -219,7 +219,7 @@
 #define ID_OLE_VERB_FIRST 0xE210 // range - 16 max
 #ifndef RC_INVOKED // code only
 #define ID_OLE_VERB_LAST 0xE21F
-#endif //!RC_INVOKED
+#endif //! RC_INVOKED
 
 #define IDC_STATIC (-1)
 #ifndef SS_BITMAP

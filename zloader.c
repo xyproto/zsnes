@@ -351,7 +351,7 @@ void ConvertJoyMap1()
 void ConvertJoyMap2()
 {
     unsigned int bl;
-    //If pl1contrl=2 and pl2contrl=2, then set pl2 buttons to 3 & 4
+    // If pl1contrl=2 and pl2contrl=2, then set pl2 buttons to 3 & 4
     if (pl2contrl == 2) {
         if (pl1contrl != 2) {
             pl2Bk = 0x83;
@@ -376,7 +376,7 @@ void ConvertJoyMap2()
     }
 
     if (bl) {
-        //Convert button data
+        // Convert button data
         pl2upk = 0xCC;
         pl2downk = 0xCD;
         pl2leftk = 0xCE;
@@ -391,7 +391,7 @@ void ConvertJoyMap2()
         ConvertJoyMapHelp(bl, pl2Rk);
     }
 
-    //If both sidewinder, set pl2 buttons to sw2
+    // If both sidewinder, set pl2 buttons to sw2
     if (pl2contrl == 6) {
         if (pl1contrl != 6) {
             pl2upk = 0xD4;
@@ -556,19 +556,19 @@ static void handle_params(int argc, char* argv[])
         if (argv[i][0] == '-')
 #endif
         {
-            if (!argv[i][1]) //Nothing but a - or /
+            if (!argv[i][1]) // Nothing but a - or /
             {
                 display_help();
             } else if (!argv[i][2]) //- followed by a single letter
             {
                 switch (tolower(argv[i][1])) {
 #ifdef __MSDOS__
-                case '0': //Palette color 0 disable
+                case '0': // Palette color 0 disable
                     Palette0 = 1;
                     break;
 #endif
 
-                case '1': //Player 1 Input
+                case '1': // Player 1 Input
                     i++;
 
                     if ((pl1contrl = zatoi(argv[i])) >= NumInputDevices) {
@@ -579,7 +579,7 @@ static void handle_params(int argc, char* argv[])
                     ConvertJoyMap1();
                     break;
 
-                case '2': //Player 2 Input
+                case '2': // Player 2 Input
                     i++;
 
                     if ((pl2contrl = zatoi(argv[i])) > NumInputDevices) {
@@ -591,7 +591,7 @@ static void handle_params(int argc, char* argv[])
                     break;
 
 #ifndef __UNIXSDL__
-                case '3': //Enable triple buffering for DOS/Windows
+                case '3': // Enable triple buffering for DOS/Windows
                     vsyncon = 0;
 #ifdef __MSDOS__
                     Triplebufen = 1;
@@ -602,7 +602,7 @@ static void handle_params(int argc, char* argv[])
 #endif
 
 #ifdef __WIN32__
-                case '6': //Force Refresh Rate
+                case '6': // Force Refresh Rate
                     i++;
                     SetRefreshRate = zatoi(argv[i]);
                     if ((SetRefreshRate < 50) || (SetRefreshRate > 180)) {
@@ -616,11 +616,11 @@ static void handle_params(int argc, char* argv[])
 #endif
 
 #ifdef __MSDOS__
-                case '8': //Force 8-bit sound
+                case '8': // Force 8-bit sound
                     Force8b = 1;
                     break;
 
-                case 'c': //Enable full screen (when available)
+                case 'c': // Enable full screen (when available)
                     ScreenScale = 1;
                     break;
 #endif
@@ -632,7 +632,7 @@ static void handle_params(int argc, char* argv[])
 #endif
 
 #ifndef NO_DEBUGGER
-                case 'd': //Start with debugger enabled
+                case 'd': // Start with debugger enabled
                     debugger = 1;
                     debugdisble = 0;
 #ifdef __WIN32__
@@ -641,7 +641,7 @@ static void handle_params(int argc, char* argv[])
                     break;
 #endif
 
-                case 'f': //Enable fixed frame rate
+                case 'f': // Enable fixed frame rate
                     i++;
                     if ((frameskip = zatoi(argv[i]) + 1) > 10) {
                         puts("Frame Skip must be a value of 0 to 9!");
@@ -649,7 +649,7 @@ static void handle_params(int argc, char* argv[])
                     }
                     break;
 
-                case 'g': //Specify gamma correction value
+                case 'g': // Specify gamma correction value
                     i++;
                     if ((gammalevel = zatoi(argv[i])) > 15) {
                         puts("Gamma Correction Level must be a value of 0 to 15!");
@@ -657,15 +657,15 @@ static void handle_params(int argc, char* argv[])
                     }
                     break;
 
-                case 'h': //Force HiROM
+                case 'h': // Force HiROM
                     romtype = 2;
                     break;
 
-                case 'j': //Disable mouse
+                case 'j': // Disable mouse
                     MouseDis = 1;
                     break;
 
-                case 'k': //Set volume level
+                case 'k': // Set volume level
                     i++;
                     if ((MusicRelVol = zatoi(argv[i])) > 100) {
                         puts("Volume must be a value from 0 to 100!");
@@ -673,15 +673,15 @@ static void handle_params(int argc, char* argv[])
                     }
                     break;
 
-                case 'l': //Force LoROM
+                case 'l': // Force LoROM
                     romtype = 1;
                     break;
 
-                case 'm': //Disable GUI
+                case 'm': // Disable GUI
                     guioff = 1;
                     break;
 
-                case 'n': //Enable scanlines (when available)
+                case 'n': // Enable scanlines (when available)
                     i++;
                     if ((scanlines = zatoi(argv[i])) > 3) {
                         puts("Scanlines must be a value 0 to 3!");
@@ -689,11 +689,11 @@ static void handle_params(int argc, char* argv[])
                     }
                     break;
 
-                case 'o': //Disable MMX support
+                case 'o': // Disable MMX support
                     AllowMMX = 0;
                     break;
 
-                case 'p': //Percentage of instructions to execute
+                case 'p': // Percentage of instructions to execute
                     i++;
                     per2exec = zatoi(argv[i]);
                     if (per2exec > 150 || per2exec < 50) {
@@ -702,7 +702,7 @@ static void handle_params(int argc, char* argv[])
                     }
                     break;
 
-                case 'r': //Set sampling rate
+                case 'r': // Set sampling rate
                     i++;
                     if ((SoundQuality = zatoi(argv[i])) > 6) {
                         puts("Sound Sampling Rate must be a value of 0 to 6!");
@@ -710,20 +710,20 @@ static void handle_params(int argc, char* argv[])
                     }
                     break;
 
-                case 's': //Enable sound output, and SPC700/DSP emulation
+                case 's': // Enable sound output, and SPC700/DSP emulation
                     spcon = 1;
                     soundon = 1;
                     break;
 
-                case 't': //Force NTSC
+                case 't': // Force NTSC
                     ForcePal = 1;
                     break;
 
-                case 'u': //Force PAL
+                case 'u': // Force PAL
                     ForcePal = 2;
                     break;
 
-                case 'v': //Select video mode
+                case 'v': // Select video mode
                     i++;
                     if ((cvidmode = zatoi(argv[i])) > VIDEO_MODE_COUNT) {
                         puts("Invalid Video Mode!");
@@ -732,7 +732,7 @@ static void handle_params(int argc, char* argv[])
                     break;
 
 #ifndef __UNIXSDL__
-                case 'w': //Enable vsync for DOS/Windows
+                case 'w': // Enable vsync for DOS/Windows
                     vsyncon = 1;
 #ifdef __MSDOS__
                     Triplebufen = 0;
@@ -742,11 +742,11 @@ static void handle_params(int argc, char* argv[])
                     break;
 #endif
 
-                case 'y': //Enable anti-aliasing
+                case 'y': // Enable anti-aliasing
                     antienab = 1;
                     break;
 
-                case 'z': //Disable stereo sound
+                case 'z': // Disable stereo sound
                     StereoSound = 0;
                     break;
 
@@ -756,13 +756,13 @@ static void handle_params(int argc, char* argv[])
                 }
             } else if (!argv[i][3]) //- followed by two letters
             {
-                if (tolower(argv[i][1]) == 'd' && tolower(argv[i][2]) == 'd') //Disable sound DSP emulation
+                if (tolower(argv[i][1]) == 'd' && tolower(argv[i][2]) == 'd') // Disable sound DSP emulation
                 {
                     DSPDisable = 1;
                 }
 
 #ifdef __UNIXSDL__
-                else if (tolower(argv[i][1]) == 'a' && tolower(argv[i][2]) == 'd') //Disable sound DSP emulation
+                else if (tolower(argv[i][1]) == 'a' && tolower(argv[i][2]) == 'd') // Disable sound DSP emulation
                 {
                     i++;
                     if (!argv[i]) {
@@ -783,25 +783,25 @@ static void handle_params(int argc, char* argv[])
                 }
 #endif
 
-                else if (tolower(argv[i][1]) == 'd' && tolower(argv[i][2]) == 's') //Disable sound output
+                else if (tolower(argv[i][1]) == 'd' && tolower(argv[i][2]) == 's') // Disable sound output
                 {
                     soundon = 0;
                 }
 
 #ifdef __MSDOS__
-                else if (tolower(argv[i][1]) == 'c' && tolower(argv[i][2]) == 'c') //Enable small screen (when available)
+                else if (tolower(argv[i][1]) == 'c' && tolower(argv[i][2]) == 'c') // Enable small screen (when available)
                 {
                     smallscreenon = 1;
                 }
 #endif
 
-                else if (tolower(argv[i][1]) == 'd' && tolower(argv[i][2]) == 'h') //Disable hacks
+                else if (tolower(argv[i][1]) == 'd' && tolower(argv[i][2]) == 'h') // Disable hacks
                 {
                     HacksDisable = 1;
                 }
 
 #ifndef __MSDOS__
-                else if (tolower(argv[i][1]) == 'j' && tolower(argv[i][2]) == 's') //Set joystick sensitivity
+                else if (tolower(argv[i][1]) == 'j' && tolower(argv[i][2]) == 's') // Set joystick sensitivity
                 {
                     i++;
                     if ((joy_sensitivity = zatoi(argv[i]) + 1) > 32767) {
@@ -812,26 +812,26 @@ static void handle_params(int argc, char* argv[])
 #endif
 
 #ifdef __WIN32__
-                else if (tolower(argv[i][1]) == 'k' && tolower(argv[i][2]) == 's') //Enable KitchenSync
+                else if (tolower(argv[i][1]) == 'k' && tolower(argv[i][2]) == 's') // Enable KitchenSync
                 {
                     KitchenSync = 1;
                 }
 #endif
 
 #ifdef __WIN32__
-                else if (tolower(argv[i][1]) == 'k' && tolower(argv[i][2]) == 'p') //Enable KitchenSync for PAL only
+                else if (tolower(argv[i][1]) == 'k' && tolower(argv[i][2]) == 'p') // Enable KitchenSync for PAL only
                 {
                     KitchenSyncPAL = 1;
                     KitchenSync = 0;
                 }
 #endif
 
-                else if (tolower(argv[i][1]) == 'm' && tolower(argv[i][2]) == 'c') //Close ZSNES when ZMV closes
+                else if (tolower(argv[i][1]) == 'm' && tolower(argv[i][2]) == 'c') // Close ZSNES when ZMV closes
                 {
                     ZMVZClose = 1;
                 }
 
-                else if (tolower(argv[i][1]) == 'm' && tolower(argv[i][2]) == 'd') //Dump raw vid with ZMV
+                else if (tolower(argv[i][1]) == 'm' && tolower(argv[i][2]) == 'd') // Dump raw vid with ZMV
                 {
                     i++;
                     if ((ZMVRawDump = zatoi(argv[i])) > 5) {
@@ -840,7 +840,7 @@ static void handle_params(int argc, char* argv[])
                     }
                 }
 
-                else if (tolower(argv[i][1]) == 'm' && tolower(argv[i][2]) == 'l') //Force ZMV length
+                else if (tolower(argv[i][1]) == 'm' && tolower(argv[i][2]) == 'l') // Force ZMV length
                 {
                     i++;
                     MovieForcedLengthEnabled = true;
@@ -848,13 +848,13 @@ static void handle_params(int argc, char* argv[])
                 }
 
 #ifdef __MSDOS__
-                else if (tolower(argv[i][1]) == 's' && tolower(argv[i][2]) == 'p') //Display sound information
+                else if (tolower(argv[i][1]) == 's' && tolower(argv[i][2]) == 'p') // Display sound information
                 {
                     DisplayS = 1;
                 }
 #endif
 
-                else if (tolower(argv[i][1]) == 's' && tolower(argv[i][2]) == 'a') //Show all extensions in GUI
+                else if (tolower(argv[i][1]) == 's' && tolower(argv[i][2]) == 'a') // Show all extensions in GUI
                 {
                     showallext = 1;
                 }
@@ -864,7 +864,7 @@ static void handle_params(int argc, char* argv[])
                     V8Mode = 1;
                 }
 
-                else if (tolower(argv[i][1]) == 'z' && tolower(argv[i][2]) == 's') //Autoload save state
+                else if (tolower(argv[i][1]) == 'z' && tolower(argv[i][2]) == 's') // Autoload save state
                 {
                     i++;
                     if ((autoloadstate = zatoi(argv[i]) + 1) > 100) {
@@ -873,7 +873,7 @@ static void handle_params(int argc, char* argv[])
                     }
                 }
 
-                else if (tolower(argv[i][1]) == 'z' && tolower(argv[i][2]) == 'm') //Autoload movie
+                else if (tolower(argv[i][1]) == 'z' && tolower(argv[i][2]) == 'm') // Autoload movie
                 {
                     i++;
                     if ((autoloadmovie = zatoi(argv[i]) + 1) > 10) {
@@ -895,13 +895,13 @@ static void handle_params(int argc, char* argv[])
                     display_help();
                 }
             }
-        } else //Param with no - or / prefix
+        } else // Param with no - or / prefix
         {
             if (argv[i] && !init_rom_path(argv[i])) {
                 printf("Could not load: %s\n", argv[i]);
             }
 
-            if ((STCart2 = argv[i + 1])) //Sufami Turbo second cart
+            if ((STCart2 = argv[i + 1])) // Sufami Turbo second cart
             {
                 char* p;
 

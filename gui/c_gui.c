@@ -2096,7 +2096,7 @@ void DisplayMenu(void)
     GUIMenuD = 0;
 
     /* format : x pos, y pos, #charx, #chary, name, xpos+2, xpos+5,22,
-	 *          19+#chary*10, length of top menu box */
+     *          19+#chary*10, length of top menu box */
     if (GUIcmenupos == 1) {
         GUIDrawMenuM(4, 16, 30, 13, GUIPrevMenuData, 6, 9, 22, 149, 8); // 19+13*10
         GUICYLocPtr = MenuDat1;
