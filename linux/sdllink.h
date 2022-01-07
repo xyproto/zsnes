@@ -1,6 +1,7 @@
 #ifndef SDLLINK_H
 #define SDLLINK_H
 
+#include <SDL.h>
 #include <stdint.h>
 
 void sem_sleep(void);

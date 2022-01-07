@@ -23,6 +23,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "../gblhdr.h"
 #include "../link.h"
 #include "../video/copyvwin.h"
+#include <SDL.h>
 #include <stdint.h>
 
 // FUNCTIONS
@@ -73,11 +74,11 @@ void SetGLAttributes()
 
 int gl_start(int width, int height, int req_depth, int FullScreen)
 {
-    uint32_t flags = SDL_OPENGL;
+    uint32_t flags = SDL_WINDOW_OPENGL;
     int i;
 
-    flags |= (GUIRESIZE[cvidmode] ? SDL_RESIZABLE : 0);
-    flags |= (FullScreen ? SDL_FULLSCREEN : 0);
+    flags |= (GUIRESIZE[cvidmode] ? SDL_WINDOW_RESIZABLE : 0);
+    flags |= (FullScreen ? SDL_WINDOW_FULLSCREEN : 0);
 
     if (BilinearFilter) {
         glfilters = GL_LINEAR;
@@ -103,10 +104,13 @@ int gl_start(int width, int height, int req_depth, int FullScreen)
     gl_clearwin();
 
     // Grab mouse in fullscreen mode
-    FullScreen ? SDL_WM_GrabInput(SDL_GRAB_ON) : SDL_WM_GrabInput(SDL_GRAB_OFF);
+    // FullScreen ? SDL_WM_GrabInput(SDL_GRAB_ON) : SDL_WM_GrabInput(SDL_GRAB_OFF);
+    if (FullScreen) {
+        SDL_SetRelativeMouseMode(SDL_TRUE);
+    }
 
     SDL_WM_SetCaption("ZSNES", "ZSNES");
-    SDL_ShowCursor(0);
+    // SDL_ShowCursor(0);
 
     /* Setup some GL stuff */
 
