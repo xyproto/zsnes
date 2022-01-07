@@ -43,16 +43,18 @@ char CheckOGLMode();
 
 bool sw_start(int width, int height, int req_depth, int FullScreen)
 {
-    // unsigned int color32, p;
-    // int i;
-#ifndef __MACOSX__
-    uint32_t flags = SDL_DOUBLEBUF | SDL_HWSURFACE;
-#else
-    uint32_t flags = SDL_SWSURFACE;
-#endif
+
+    //#ifndef __MACOSX__
+    //    uint32_t flags = SDL_WINDOW_DOUBLEBUF | SDL_WINDOW_HWSURFACE;
+    //#else
+    //    uint32_t flags = SDL_WINDOW_SWSURFACE;
+    //#endif
+
+    uint32_t flags = 0;
+
     uint32_t GBitMask;
 
-    flags |= (FullScreen ? SDL_FULLSCREEN : 0);
+    flags |= (FullScreen ? SDL_WINDOW_FULLSCREEN : 0);
 
     if (NTSCFilter) {
         NTSCFilterInit();
