@@ -1,5 +1,5 @@
 /*
-Copyright (c) 1998-2005 Charles Bilyue'.
+Copyright (c) 1998-2005 Charles Bilyue.
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
