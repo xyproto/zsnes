@@ -1,11 +1,16 @@
 # Possible values: LINUX, DOS, OSX, WIN
+# The flags below also needs to be modified if this is not set to LINUX
 ARCH := LINUX
 
-# TODO: FreeBSD has a patch for being able to build without -fcommon
+CC ?= gcc
+CXX ?= g++
 
-export CFLAGS += -m32 -pthread -rdynamic -no-pie -std=gnu99 -fcommon -O1 -march=pentium-mmx -fno-inline -fno-pic -mtune=generic -mmmx -D_FORTIY_SOURCE=0 -L/usr/lib32 -mno-sse -mno-sse2 -w
-export CXXFLAGS += -m32 -pthread -rdynamic -no-pie -std=gnu++14 -O1 -march=pentium-mmx -fno-inline -fno-pic -mtune=generic -mmmx -D_FORTIFY_SOURCE=0 -L/usr/lib32 -mno-sse -mno-sse2 -w
-export LDFLAGS += -Wl,--as-needed -no-pie -ldl -lX11 -L/usr/lib32
+# TODO: FreeBSD has a patch for being able to build without -fcommon
+CFLAGS += -m32 -pthread -rdynamic -no-pie -std=gnu99 -fcommon -O1 -march=pentium-mmx -fno-inline -fno-pic -mtune=generic -mmmx -D_FORTIY_SOURCE=0 -L/usr/lib32 -mno-sse -mno-sse2 -ffunction-sections -fdata-sections -Wfatal-errors -w
+CXXFLAGS += -m32 -pthread -rdynamic -no-pie -std=gnu++14 -O1 -march=pentium-mmx -fno-inline -fno-pic -mtune=generic -mmmx -D_FORTIFY_SOURCE=0 -L/usr/lib32 -mno-sse -mno-sse2 -ffunction-sections -fdata-sections -Wfatal-errors -w
+LDFLAGS += -Wl,--as-needed -no-pie -ldl -lX11 -L/usr/lib32 -Wl,--gc-sections -lz
+# -O1 is mandatory
+ASMFLAGS += -O1 -w-orphan-labels
 
 #WITH_AO       := yes
 #WITH_DEBUGGER := yes
@@ -68,8 +73,6 @@ ifdef WITH_AO
 else
   CFGDEFS += -DNO_AO
 endif
-
-# --- Make modifications to the lines from there to the top if you are compiling for a different platform than Linux
 
 SRCS :=
 SRCS += c_init.c
@@ -141,7 +144,6 @@ SRCS += gui/guimisc.c
 SRCS += gui/guimouse.c
 SRCS += gui/guitools.c
 SRCS += gui/menu.c
-#SRCS += net/ztcp.c
 SRCS += init.asm
 SRCS += initc.c
 SRCS += mmlib/mm.c
@@ -168,18 +170,15 @@ SRCS += video/m716text.asm
 SRCS += video/makev16b.asm
 SRCS += video/makev16t.asm
 SRCS += video/makevid.asm
-#SRCS += video/mode7.asm # DOS only?
 SRCS += video/mode716.asm
 SRCS += video/mode716b.asm
 SRCS += video/mode716d.asm
 SRCS += video/mode716e.asm
 SRCS += video/mode716t.asm
-#SRCS += video/mode7ext.asm # DOS only?
 SRCS += video/mv16tms.asm
 SRCS += video/newg162.asm
 SRCS += video/newgfx.asm
 SRCS += video/newgfx16.asm
-#SRCS += video/newgfx2.asm # DOS only?
 SRCS += video/ntsc.c
 SRCS += video/procvid.c
 SRCS += video/procvidc.c
@@ -262,7 +261,6 @@ endif
 
 CFGDEFS += -D__UNIXSDL__
 
-LDFLAGS += -lz
 
 ifeq ($(ARCH), OSX)
 SRCS += mmlib/osx.c
@@ -311,20 +309,15 @@ ASMFLAGS += -fwin32
 
 CFGDEFS += -D__WIN32__
 
-
 endif
+
+ASMFLAGS += $(CFGDEFS)
+CFLAGS += $(CFGDEFS)
+CXXFLAGS += $(CFGDEFS)
 
 HDRS := $(PSRS:.psr=.h)
 OBJS := $(filter %.o, $(SRCS:.asm=.o) $(SRCS:.c=.o) $(SRCS:.cpp=.o) $(PSRS:.psr=.o))
 DEPS := $(OBJS:.o=.d)
-
-
-ASMFLAGS += $(CFGDEFS)
-ASMFLAGS += -O1 # XXX mandatory, otherwise zsnes breaks
-ASMFLAGS += -w-orphan-labels
-
-CFLAGS += -m32 -fno-inline -mmmx -O1 -march=pentium-mmx -mtune=generic -mno-sse -mno-sse2 -Wfatal-errors $(CFGDEFS)
-CXXFLAGS += -m32 -fno-inline -mmmx -O1 -march=pentium-mmx -mtune=generic -mno-sse -mno-sse2 -Wfatal-errors $(CFGDEFS)
 
 .SUFFIXES:
 .SUFFIXES: .asm .c .cpp .d .o
