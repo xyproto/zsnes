@@ -128,17 +128,4 @@ static char** build_argv(char* str)
     return (0);
 }
 
-/*
-static void argv_print(char **argv)
-{
-  char **argp = argv;
-  while (*argp)
-  {
-    printf("argv[%u]: %s\n", argp-argv, *argp);
-    argp++;
-  }
-  printf("argv[%u]: NULL\n", argp-argv);
-}
-*/
-
 #endif
