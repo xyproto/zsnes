@@ -35,7 +35,7 @@ ifneq ($(findstring $(ARCH), LINUX OSX),)
 endif
 
 ifdef WITH_SDL
-  SDL_CONFIG ?= pkg-config sdl
+  SDL_CONFIG ?= pkg-config sdl2
   ifndef CFLAGS_SDL
     CFLAGS_SDL := $(shell $(SDL_CONFIG) --cflags)
   endif
