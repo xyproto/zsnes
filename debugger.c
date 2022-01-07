@@ -67,11 +67,6 @@ char* spcnametab[];
 char* AddressTable[];
 unsigned char ArgumentTable[];
 
-/*
-unsigned short debugh  = 0; // debug head
-unsigned short debugt  = 0; // debug tail
-unsigned short debugv  = 0; // debug view
-*/
 unsigned char debugds = 0; // debug disable (bit 0 = 65816, bit 1 = SPC)
 unsigned int numinst = 0;
 
@@ -246,11 +241,6 @@ b:
 
     case '\n': // step
         goto e;
-
-        /* Ported this but couldn't bring myself to commit it.
-      pagefault said to remove it.
-   case '-':      // skip opcode
-   */
 
     case 'C': // clear
         numinst = 0;
@@ -825,17 +815,7 @@ void out65816_addrmode(unsigned char* instr)
 
     case 19: // [$12]
     {
-        // unsigned short addr1;
-        // unsigned int   addr2;
-
         wprintw(debugwin, "[$%02x]%5s", instr[1], padding);
-
-        /*
-        addr1 = instr[1] + xd;
-
-        addr2  = memr8(0, addr1);
-        addr2 |= memr8(
-        */
 
         wprintw(debugwin, "[nnnnnn] ");
 
@@ -911,20 +891,6 @@ unsigned char* findoppage()
         }
     }
 }
-
-/* grinvader's version -- kept incase I didn't get mine to match
-unsigned char *findoppage()
-{
-  if (xpc & 0x8000) { return(snesmmap[xpb]); }
-  else
-  { // lower address
-    if (xpc < 0x4300 || memtabler8[xpb] != regaccessbankr8)
-    { return(snesmap2[xpb]); }
-    // dma
-    return (u1*)dmadata - 0x4300; // XXX ugly cast
-  }
-}
-*/
 
 unsigned char* findop()
 {

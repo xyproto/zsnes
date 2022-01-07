@@ -64,11 +64,6 @@ static u4 const* CombCont[5];
 
 void init(void)
 {
-#if 0 // XXX This seems very strange \
-    // prevents a crash if cpalval gets accessed before initializing
-	for (void** i = cpalval; i != endof(cpalval); ++i) *i = cpalval;
-#endif
-
     // Initialize snow stuff
     for (u4 i = 0; i != 400; ++i) // XXX Why only 400 of 800?
     {
