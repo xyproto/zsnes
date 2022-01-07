@@ -19,7 +19,7 @@ Pull requests that fixes inaccuracies with the emulation are welcome, as well as
 
     make
 
-For other platforms than Linux, copying `config.template` or `config.linux` to `config.default`, then editing `config.default`, might be needed.
+For other platforms than Linux, adjust the first 70 lines `Makefile` as needed.
 
 ### Debug build
 

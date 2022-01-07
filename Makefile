@@ -1,15 +1,23 @@
-CONFIG ?= config.default
--include $(CONFIG)
+# Possible values: LINUX, DOS, OSX, WIN
+ARCH := LINUX
 
-ARCH ?= LINUX
+# TODO: FreeBSD has a patch for being able to build without -fcommon
 
-#ifeq ($(findstring $(ARCH), DOS LINUX OSX WIN),)
-#$(error ARCH must be set to one of DOS, LINUX, OSX or WIN. Copy config.template to config.default and uncomment one of the architectures)
-#endif
+export CFLAGS += -m32 -pthread -rdynamic -no-pie -std=gnu99 -fcommon -O1 -march=pentium-mmx -fno-inline -fno-pic -mtune=generic -mmmx -D_FORTIY_SOURCE=0 -L/usr/lib32 -mno-sse -mno-sse2 -w
+export CXXFLAGS += -m32 -pthread -rdynamic -no-pie -std=gnu++14 -O1 -march=pentium-mmx -fno-inline -fno-pic -mtune=generic -mmmx -D_FORTIFY_SOURCE=0 -L/usr/lib32 -mno-sse -mno-sse2 -w
+export LDFLAGS += -Wl,--as-needed -no-pie -ldl -lX11 -L/usr/lib32
+
+#WITH_AO       := yes
+#WITH_DEBUGGER := yes
+WITH_JMA      := yes
+WITH_OPENGL   := yes
+WITH_PNG      := yes
+WITH_SDL      := yes
 
 BINARY     ?= zsnes
 PSR        ?= parsegen
 ASM        ?= nasm
+
 CXX_HOST   ?= $(CXX)
 CC_TARGET  ?= $(CC)
 CXX_TARGET ?= $(CXX)
@@ -60,6 +68,8 @@ ifdef WITH_AO
 else
   CFGDEFS += -DNO_AO
 endif
+
+# --- Make modifications to the lines from there to the top if you are compiling for a different platform than Linux
 
 SRCS :=
 SRCS += c_init.c
