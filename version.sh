@@ -19,8 +19,8 @@ sed -i "s/Version: [[:digit:]]*\.[[:digit:]]*\.[[:digit:]]*/Version: $VERSION/g"
 # Set the version in various files
 sed -i "s/[[:digit:]]*\.[[:digit:]]*\.[[:digit:]]*/$VERSION/g" ver.h
 
-# Update the date in the man page
+# Set the version in the man page
 sed -i "s/[[:digit:]]*\.[[:digit:]]*\.[[:digit:]]*/$VERSION/g" man/zsnes.1
 
-# Update the version in this script
+# Set the version in this script
 sed -i "s/[[:digit:]]*\.[[:digit:]]*\.[[:digit:]]*/$VERSION/g" "$0"
