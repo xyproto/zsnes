@@ -56,12 +56,17 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 void zexit_error();
 
-typedef enum { FALSE = 0,
-    TRUE = 1 } BOOL;
-typedef enum vidstate_e { vid_null,
+typedef enum {
+    FALSE = 0,
+    TRUE = 1
+} BOOL;
+
+typedef enum vidstate_e {
+    vid_null,
     vid_none,
     vid_soft,
-    vid_gl } vidstate_t;
+    vid_gl
+} vidstate_t;
 
 /* VIDEO VARIABLES */
 SDL_Surface* surface;
