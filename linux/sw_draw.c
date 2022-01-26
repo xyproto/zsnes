@@ -33,9 +33,7 @@ void CheckFrame();
 // SDL2
 extern SDL_Window* win;
 extern SDL_Renderer* ren;
-
-// SDL 1
-// extern SDL_Surface* surface;
+extern SDL_Surface* surface;
 
 extern int SurfaceLocking;
 
@@ -87,10 +85,17 @@ bool sw_start(int width, int height, int req_depth, int FullScreen)
         fprintf(stderr, "Could not set %dx%d video mode: %s\n", SurfaceX, SurfaceY, SDL_GetError());
         return false;
     }
+    surface = SDL_GetWindowSurface(win);
+    if (surface == NULL) {
+        fprintf(stderr, "Could not get window surface: %s\n", SDL_GetError());
+        return false;
+    }
 
     // TODO: Use win and ren instead of surface. SDL_MUSTLOCK might not be needed.
 
     SurfaceLocking = SDL_MUSTLOCK(surface);
+
+    SDL_WarpMouseInWindow(win, SurfaceX / 4, SurfaceY / 4);
 
     // Grab mouse in fullscreen mode
     // FullScreen ? SDL_WM_GrabInput(SDL_GRAB_ON) : SDL_WM_GrabInput(SDL_GRAB_OFF);
