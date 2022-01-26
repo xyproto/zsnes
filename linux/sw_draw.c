@@ -33,6 +33,8 @@ void CheckFrame();
 // SDL2
 extern SDL_Window* win;
 extern SDL_Renderer* ren;
+
+// SDL1
 extern SDL_Surface* surface;
 
 extern int SurfaceLocking;
@@ -85,6 +87,7 @@ bool sw_start(int width, int height, int req_depth, int FullScreen)
         fprintf(stderr, "Could not set %dx%d video mode: %s\n", SurfaceX, SurfaceY, SDL_GetError());
         return false;
     }
+
     surface = SDL_GetWindowSurface(win);
     if (surface == NULL) {
         fprintf(stderr, "Could not get window surface: %s\n", SDL_GetError());
@@ -134,7 +137,8 @@ static void UnlockSurface()
     if (SurfaceLocking) {
         SDL_UnlockSurface(surface);
     }
-    SDL_Flip(surface);
+    //SDL_Flip(surface);
+    SDL_RenderPresent(ren);
 }
 
 extern unsigned char NGNoTransp;
