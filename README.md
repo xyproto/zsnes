@@ -11,7 +11,7 @@ Running `make` produces a 32-bit ELF executable with MMX and not SSE support (to
 
 Tested on Arch Linux.
 
-The intention is that this can be like an LTS release of Zsnes. The long term goal is to also port ZSNES to SDL2.
+The intention is that this can be like an LTS release of ZSNES. The long term goal is to also port ZSNES to SDL2.
 
 Pull requests that fixes inaccuracies with the emulation are welcome, as well as pull requests for regular bugs.
 
