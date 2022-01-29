@@ -49,7 +49,7 @@ char CheckOGLMode();
 
 bool sw_start(int width, int height, int req_depth, int FullScreen)
 {
-	printf("sw_start\n");
+    printf("sw_start\n");
 
     //#ifndef __MACOSX__
     //    uint32_t flags = SDL_WINDOW_DOUBLEBUF | SDL_WINDOW_HWSURFACE;
@@ -78,7 +78,7 @@ bool sw_start(int width, int height, int req_depth, int FullScreen)
     //         return false;
     //     }
 
-    win = SDL_CreateWindow("ZSNES", SurfaceX, SurfaceY, 0, 0, SDL_WINDOW_SHOWN);
+    win = SDL_CreateWindow("ZSNES", 0, 0, SurfaceX, SurfaceY, flags);
     if (win == NULL) {
         fprintf(stderr, "Could not set %dx%d video mode: %s\n", SurfaceX, SurfaceY, SDL_GetError());
         return false;
@@ -106,8 +106,8 @@ bool sw_start(int width, int height, int req_depth, int FullScreen)
         SDL_SetRelativeMouseMode(SDL_TRUE);
     }
 
-    //SDL_WM_SetCaption("ZSNES", "ZSNES");
-    // SDL_ShowCursor(0);
+    // SDL_WM_SetCaption("ZSNES", "ZSNES");
+    //  SDL_ShowCursor(0);
 
     // Check hardware for 565/555
     GBitMask = surface->format->Gmask;
@@ -137,7 +137,7 @@ static void UnlockSurface()
     if (SurfaceLocking) {
         SDL_UnlockSurface(surface);
     }
-    //SDL_Flip(surface);
+    // SDL_Flip(surface);
     SDL_RenderPresent(ren);
 }
 
