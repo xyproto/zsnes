@@ -30,6 +30,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 void hq2x_16b();
 
 // VIDEO VARIABLES
+extern SDL_Window* win;
 extern SDL_Surface* surface;
 extern int SurfaceLocking;
 extern uint64_t BitDepth;
@@ -74,6 +75,8 @@ void SetGLAttributes()
 
 int gl_start(int width, int height, int req_depth, int FullScreen)
 {
+	printf("gl_start\n");
+
     uint32_t flags = SDL_WINDOW_OPENGL;
     int i;
 
@@ -92,16 +95,29 @@ int gl_start(int width, int height, int req_depth, int FullScreen)
     SurfaceX = width;
     SurfaceY = height;
     SetGLAttributes();
-    surface = SDL_SetVideoMode(SurfaceX, SurfaceY, req_depth, flags);
-    if (surface == NULL) {
-        fprintf(stderr, "Could not set %dx%d-GL video mode.\n", SurfaceX, SurfaceY);
+
+    // surface = SDL_CreateRGBSurface(0, SurfaceX, SurfaceY, 32, 0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
+    // surface = SDL_SetVideoMode(SurfaceX, SurfaceY, req_depth, flags);
+
+    win = SDL_CreateWindow("ZSNES", SurfaceX, SurfaceY, 0, 0, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
+    if (win == NULL) {
+        fprintf(stderr, "Could not create window: %s\n", SDL_GetError());
         return false;
     }
+    surface = SDL_GetWindowSurface(win);
+    if (surface == NULL) {
+        fprintf(stderr, "Could not get surface from window: %s\n", SDL_GetError());
+        return false;
+    }
+
+    SDL_GL_CreateContext(win);
 
     if (!glvidbuffer) {
         glvidbuffer = (unsigned short*)malloc(512 * 512 * sizeof(short));
     }
     gl_clearwin();
+
+    // SDL_WarpMouse(SurfaceX / 4, SurfaceY / 4);
 
     // Grab mouse in fullscreen mode
     // FullScreen ? SDL_WM_GrabInput(SDL_GRAB_ON) : SDL_WM_GrabInput(SDL_GRAB_OFF);
@@ -109,8 +125,8 @@ int gl_start(int width, int height, int req_depth, int FullScreen)
         SDL_SetRelativeMouseMode(SDL_TRUE);
     }
 
-    SDL_WM_SetCaption("ZSNES", "ZSNES");
-    // SDL_ShowCursor(0);
+    // SDL_WM_SetCaption("ZSNES", "ZSNES");
+    //  SDL_ShowCursor(0);
 
     /* Setup some GL stuff */
 
@@ -374,7 +390,7 @@ void gl_drawwin()
             glEnable(GL_TEXTURE_2D);
         }
     }
-    SDL_GL_SwapBuffers();
+    SDL_GL_SwapWindow(win);
 }
 
 void gl_scanlines()

@@ -34,7 +34,7 @@ void CheckFrame();
 extern SDL_Window* win;
 extern SDL_Renderer* ren;
 
-// SDL1
+// Remnants from SDL1
 extern SDL_Surface* surface;
 
 extern int SurfaceLocking;
@@ -49,6 +49,7 @@ char CheckOGLMode();
 
 bool sw_start(int width, int height, int req_depth, int FullScreen)
 {
+	printf("sw_start\n");
 
     //#ifndef __MACOSX__
     //    uint32_t flags = SDL_WINDOW_DOUBLEBUF | SDL_WINDOW_HWSURFACE;
@@ -77,12 +78,13 @@ bool sw_start(int width, int height, int req_depth, int FullScreen)
     //         return false;
     //     }
 
-    win = SDL_CreateWindow("zsnes", SurfaceX, SurfaceY, 0, 0, SDL_WINDOW_SHOWN);
+    win = SDL_CreateWindow("ZSNES", SurfaceX, SurfaceY, 0, 0, SDL_WINDOW_SHOWN);
     if (win == NULL) {
         fprintf(stderr, "Could not set %dx%d video mode: %s\n", SurfaceX, SurfaceY, SDL_GetError());
         return false;
     }
-    ren = CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+
+    ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (ren == NULL) {
         fprintf(stderr, "Could not set %dx%d video mode: %s\n", SurfaceX, SurfaceY, SDL_GetError());
         return false;
@@ -94,8 +96,6 @@ bool sw_start(int width, int height, int req_depth, int FullScreen)
         return false;
     }
 
-    // TODO: Use win and ren instead of surface. SDL_MUSTLOCK might not be needed.
-
     SurfaceLocking = SDL_MUSTLOCK(surface);
 
     SDL_WarpMouseInWindow(win, SurfaceX / 4, SurfaceY / 4);
@@ -106,7 +106,7 @@ bool sw_start(int width, int height, int req_depth, int FullScreen)
         SDL_SetRelativeMouseMode(SDL_TRUE);
     }
 
-    SDL_WM_SetCaption("ZSNES", "ZSNES");
+    //SDL_WM_SetCaption("ZSNES", "ZSNES");
     // SDL_ShowCursor(0);
 
     // Check hardware for 565/555
