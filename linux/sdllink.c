@@ -73,8 +73,8 @@ typedef enum vidstate_e {
 SDL_Window* win;
 SDL_Renderer* ren;
 
-// SDL 1
-// SDL_Surface* surface;
+// Remnants from SDL 1
+SDL_Surface* surface;
 
 int SurfaceLocking = 0;
 int SurfaceX, SurfaceY;
