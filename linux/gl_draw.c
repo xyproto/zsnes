@@ -32,6 +32,7 @@ void hq2x_16b();
 // VIDEO VARIABLES
 extern SDL_Window* win;
 extern SDL_Surface* surface;
+SDL_GLContext glcontext;
 extern int SurfaceLocking;
 extern uint64_t BitDepth;
 
@@ -75,7 +76,7 @@ void SetGLAttributes()
 
 int gl_start(int width, int height, int req_depth, int FullScreen)
 {
-	printf("gl_start\n");
+    printf("gl_start\n");
 
     uint32_t flags = SDL_WINDOW_OPENGL;
     int i;
@@ -94,23 +95,25 @@ int gl_start(int width, int height, int req_depth, int FullScreen)
 
     SurfaceX = width;
     SurfaceY = height;
-    SetGLAttributes();
 
     // surface = SDL_CreateRGBSurface(0, SurfaceX, SurfaceY, 32, 0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
     // surface = SDL_SetVideoMode(SurfaceX, SurfaceY, req_depth, flags);
 
-    win = SDL_CreateWindow("ZSNES", SurfaceX, SurfaceY, 0, 0, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
+    win = SDL_CreateWindow("ZSNES", 0, 0, SurfaceX, SurfaceY, SDL_WINDOW_SHOWN | flags);
     if (win == NULL) {
         fprintf(stderr, "Could not create window: %s\n", SDL_GetError());
         return false;
     }
+
+    glcontext = SDL_GL_CreateContext(win);
+
     surface = SDL_GetWindowSurface(win);
     if (surface == NULL) {
         fprintf(stderr, "Could not get surface from window: %s\n", SDL_GetError());
         return false;
     }
 
-    SDL_GL_CreateContext(win);
+    SetGLAttributes();
 
     if (!glvidbuffer) {
         glvidbuffer = (unsigned short*)malloc(512 * 512 * sizeof(short));
@@ -278,6 +281,8 @@ static void gl_drawspan(int hires, int start, int end)
 void gl_drawwin()
 {
     int i;
+
+    SDL_GL_MakeCurrent(win, glcontext);
 
     NGNoTransp = 0; // Set this value to 1 within the appropriate
     // video mode if you want to add a custom
