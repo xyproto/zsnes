@@ -19,7 +19,7 @@ Pull requests that fixes inaccuracies with the emulation are welcome, as well as
 
     make
 
-For other platforms than Linux, adjust the first 70 lines `Makefile` as needed.
+For other platforms than Linux, adjust the first 70 lines of the `Makefile` as needed.
 
 ### Debug build
 
