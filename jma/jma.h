@@ -19,6 +19,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define JMA_H
 
 #include <fstream>
+#include <iostream>
 #include <string>
 #include <time.h>
 #include <vector>
