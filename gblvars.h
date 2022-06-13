@@ -35,8 +35,8 @@ extern uint32_t SPCMultA, PHnum2writespc7110reg, PHdspsave2;
 extern uint32_t* setaramdata;
 extern uint8_t *romdata, *SA1RAMArea;
 
-extern unsigned char sndrot, SPCRAM[65472], DSPMem[256], SA1Status;
-extern unsigned char DSP1Enable, DSP1COp, prevoamptr, BRRBuffer[32];
+extern unsigned char sndrot, SPCRAM[], DSPMem[256], SA1Status;
+extern unsigned char DSP1Enable, DSP1COp, prevoamptr, BRRBuffer[];
 extern unsigned char curcyc, spcnumread, NextLineCache, HIRQNextExe;
 extern unsigned char vidmemch8[4096], vidmemch2[4096];
 
