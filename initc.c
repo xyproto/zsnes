@@ -1363,7 +1363,7 @@ void clearmem(void)
     clearmem2();
 }
 
-extern uint8_t BRRBuffer[32];
+extern uint8_t BRRBuffer[];
 extern uint8_t echoon0;
 extern uint32_t PHdspsave;
 extern uint32_t PHdspsave2;

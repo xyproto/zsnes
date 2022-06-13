@@ -118,7 +118,7 @@ static void copy_spc_data(uint8_t** buffer, void (*copy_func)(uint8_t**, void*, 
 {
     // SPC stuff, DSP stuff
     copy_func(buffer, SPCRAM, PHspcsave);
-    copy_func(buffer, &BRRBuffer, PHdspsave);
+    copy_func(buffer, BRRBuffer, PHdspsave);
     copy_func(buffer, &DSPMem, sizeof(DSPMem));
 }
 
