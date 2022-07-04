@@ -42,7 +42,7 @@ extern HGLRC hRC;
 
 // OPENGL VARIABLES
 extern uint8_t GUIOn2;
-extern uint32_t vidbuffer;
+extern unsigned char* vidbuffer;
 extern uint8_t curblank;
 extern uint8_t GUIRESIZE[];
 

@@ -89,7 +89,7 @@ void WinUpdateDevices(void);
 void initDirectDraw(void);
 void reInitSound(void);
 
-extern bool ctrlptr;
+extern BOOL ctrlptr;
 extern char* CBBuffer;
 extern u4 CBLength;
 

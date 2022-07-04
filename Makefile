@@ -6,9 +6,9 @@ CC ?= gcc
 CXX ?= g++
 
 # TODO: FreeBSD has a patch for being able to build without -fcommon
-CFLAGS += -m32 -pthread -rdynamic -no-pie -std=gnu99 -fcommon -O1 -march=pentium-mmx -fno-inline -fno-pic -mtune=generic -mmmx -D_FORTIY_SOURCE=2 -L/usr/lib32 -mno-sse -mno-sse2 -ffunction-sections -fdata-sections -Wfatal-errors -w
-CXXFLAGS += -m32 -pthread -rdynamic -no-pie -std=gnu++14 -O1 -march=pentium-mmx -fno-inline -fno-pic -mtune=generic -mmmx -D_FORTIFY_SOURCE=2 -L/usr/lib32 -mno-sse -mno-sse2 -ffunction-sections -fdata-sections -Wfatal-errors -w
-LDFLAGS += -Wl,--as-needed -no-pie -ldl -lX11 -L/usr/lib32 -Wl,--gc-sections -lz
+CFLAGS += -m32 -pthread -no-pie -std=gnu99 -fcommon -O1 -march=pentium-mmx -fno-inline -fno-pic -mtune=generic -mmmx -D_FORTIY_SOURCE=2 -L/usr/lib32 -mno-sse -mno-sse2 -ffunction-sections -fdata-sections -Wfatal-errors -w
+CXXFLAGS += -m32 -pthread -no-pie -std=gnu++14 -O1 -march=pentium-mmx -fno-inline -fno-pic -mtune=generic -mmmx -D_FORTIFY_SOURCE=2 -L/usr/lib32 -mno-sse -mno-sse2 -ffunction-sections -fdata-sections -Wfatal-errors -w
+LDFLAGS += -Wl,--as-needed -no-pie -L/usr/lib32 -Wl,--gc-sections -lz
 # -O1 is mandatory
 ASMFLAGS += -O1 -w-orphan-labels
 
@@ -32,6 +32,15 @@ PREFIX ?= /usr
 
 ifneq ($(findstring $(ARCH), LINUX OSX),)
 	WITH_SDL := yes
+endif
+
+ifneq ($(findstring $(ARCH), WIN DOS),)
+  CFLAGS += -fstack-protector
+  WITH_OPENGL :=
+else
+  CFLAGS += -rdynamic
+  CXXFLAGS += -rdynamic
+  LDFLAGS += -ldl -lX11
 endif
 
 ifdef WITH_SDL

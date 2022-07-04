@@ -447,7 +447,7 @@ void ExitFunction()
 }
 
 extern "C" {
-bool ctrlptr = false;
+BOOL ctrlptr = false;
 }
 
 LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
