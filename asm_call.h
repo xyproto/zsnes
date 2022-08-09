@@ -6,7 +6,7 @@
  * asm_call( func_name );
  *
  * NOTE: It might not work with GCC and the -MASM=intel flag.
-*/
+ */
 
 #ifndef ASM_CALL_H
 #define ASM_CALL_H
