@@ -13,6 +13,8 @@ Tested on Arch Linux.
 
 The intention is that this can be like a LTS release of ZSNES. The long term goal is to also port ZSNES to SDL2. Currently, SDL1 is a required dependency.
 
+The `sdl2` branch is a work-in-progress branch where ZSNES can be compiled with SDL2 but does not yet work. Contributions are welcome!
+
 Pull requests that fixes inaccuracies with the emulation are welcome, as well as pull requests for regular bugs.
 
 ### Build
