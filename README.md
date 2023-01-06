@@ -49,6 +49,11 @@ For other platforms than Linux, different flags may apply. ZSNES is primarily on
 * Being able to build and run ZSNES on Linux is a priority.
 * Please have `clang-format` installed and run `./fmt.sh` before submitting a pull request.
 
+### Windows users
+
+* Compiled executables for ZSNES 1.51 for Windows are available at https://sourceforge.net/projects/zsnes/files/zsnes/ZSNES%20v1.51/
+* Pull requests for supporting Windows are welcome, but it's not a goal for this project.
+
 ### General info
 
 Thanks to Christoph Mallon for the commits that this fork is based on.
