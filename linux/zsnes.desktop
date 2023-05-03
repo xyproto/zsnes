@@ -1,5 +1,5 @@
 [Desktop Entry]
-Version=1.5
+Version=1.4
 Type=Application
 Name=ZSNES
 Comment=Super Nintendo emulator
@@ -8,6 +8,6 @@ TryExec=zsnes
 Icon=io.github.xyproto.zsnes
 Terminal=false
 StartupNotify=false
-SingleMainWindow=true
+X-SingleMainWindow=true
 Categories=Game;Emulator;
 MimeType=application/vnd.nintendo.snes.rom;application/x-snes-rom;
