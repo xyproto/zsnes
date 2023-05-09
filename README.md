@@ -2,7 +2,7 @@
 
 <img align="right" width="128" height="128" alt="logo" src="icons/128x128x32.png">
 
-The last release of [ZSNES](http://zsnes.sourceforge.net/) was well over 14 years ago. It requires heavy patching and tweaking of compilation flags to build and run on a modern Linux distro.
+The last release of [ZSNES](http://zsnes.sourceforge.net/) was well over 16 years ago. It requires heavy patching and tweaking of compilation flags to build and run on a modern Linux distro.
 
 This is a fork of ZSNES that aims to solve this.
 
