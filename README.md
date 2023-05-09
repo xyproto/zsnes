@@ -4,6 +4,8 @@ The last release of [ZSNES](http://zsnes.sourceforge.net/) was well over 14 year
 
 Running `make` produces a 32-bit x86 ELF executable with MMX support, that can be run on a 64-bit x86 system. SSE support is disabled. Large parts of ZSNES is written in 32-bit x86 Assembly, which is not easily ported to other platforms or systems.
 
+Goals and non-goals:
+
 * Compiling ZSNES so that it works on 64-bit x86 is a goal (that has been reached).
 * Supporting 32-bit platforms is not a goal, but pull requests are welcome.
 * Supporting Windows is not a goal, but pull requests are welcome.
