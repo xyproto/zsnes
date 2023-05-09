@@ -2,7 +2,9 @@
 
 <img align="right" width="128" height="128" alt="logo" src="icons/128x128x32.png">
 
-The last release of [ZSNES](http://zsnes.sourceforge.net/) was well over 14 years ago. It requires heavy patching and tweaking of compilation flags to build and run on a modern Linux distro. This is a fork of ZSNES that aims to solve this.
+The last release of [ZSNES](http://zsnes.sourceforge.net/) was well over 14 years ago. It requires heavy patching and tweaking of compilation flags to build and run on a modern Linux distro.
+
+This is a fork of ZSNES that aims to solve this.
 
 Running `make` produces a 32-bit x86 ELF executable with MMX support, that can be run on a 64-bit x86 system. SSE support is disabled. Large parts of ZSNES is written in 32-bit x86 Assembly, which is not easily ported to other platforms or systems.
 
