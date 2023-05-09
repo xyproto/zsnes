@@ -15,7 +15,8 @@ Goals and non-goals:
 * Supporting Windows is not a goal, but pull requests are welcome.
 * Supporting modern Linux distros (and FreeBSD, if possible) is a goal, which requires continous maintenance.
 * To be like an LTS release of ZSNES.
-* A long-term goal is to port ZSNES to SDL2.
+* Porting ZSNES to SDL2 (as a long-term goal).
+* To add back a more secure version of the net-play code (as a long-term goal).
 
 Pull requests that fixes inaccuracies with the emulation are welcome, as well as pull requests for regular bugs.
 
