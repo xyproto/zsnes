@@ -10,13 +10,15 @@ Goals and non-goals:
 * Supporting 32-bit platforms is not a goal, but pull requests are welcome.
 * Supporting Windows is not a goal, but pull requests are welcome.
 * Supporting modern Linux distros (and FreeBSD, if possible) is a goal, which requires continous maintenance.
-
-
-The intention is that this can be like a LTS release of ZSNES. The long term goal is to also port ZSNES to SDL2. Currently, SDL1 (or `sdl12-compat`) is a required dependency.
-
-The `sdl2` branch is a work-in-progress branch where ZSNES can be compiled with SDL2 but does not yet work.
+* To be like an LTS release of ZSNES.
+* A long-term goal is to port ZSNES to SDL2.
 
 Pull requests that fixes inaccuracies with the emulation are welcome, as well as pull requests for regular bugs.
+
+About SDL1 and SDL2:
+
+* Currently, `sdl1` (or `sdl12-compat`) is a required dependency.
+* The `sdl2` branch is a work-in-progress branch where ZSNES can be compiled with SDL2 but it does not yet run correctly.
 
 Tested on Arch Linux and Fedora.
 
