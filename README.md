@@ -1,21 +1,22 @@
-# ZSNES 2
+# ZSNES 2: Reviving a Classic
 
-The last release of [ZSNES](http://zsnes.sourceforge.net/) was over 14 years ago. It requires heavy patching and tweaking of compilation flags to build and run on a modern Linux distro.
+The last release of [ZSNES](http://zsnes.sourceforge.net/) was well over 14 years ago. It requires heavy patching and tweaking of compilation flags to build and run on a modern Linux distro. This is a fork of ZSNES that aims to solve this.
 
-This is a fork of ZSNES that aims to solve this.
-
-Running `make` produces a 32-bit ELF executable with MMX and not SSE support (to play nicely with the 32-bit Assembly code that parts of ZSNES are written in).
+Running `make` produces a 32-bit x86 ELF executable with MMX support, that can be run on a 64-bit x86 system. SSE support is disabled. Large parts of ZSNES is written in 32-bit x86 Assembly, which is not easily ported to other platforms or systems.
 
 * Compiling ZSNES so that it works on 64-bit x86 is a goal (that has been reached).
-* Supporting 32-bit x86 is not a goal, but pull requests are welcome.
+* Supporting 32-bit platforms is not a goal, but pull requests are welcome.
+* Supporting Windows is not a goal, but pull requests are welcome.
+* Supporting modern Linux distros (and FreeBSD, if possible) is a goal.
 
-Tested on Arch Linux.
 
-The intention is that this can be like a LTS release of ZSNES. The long term goal is to also port ZSNES to SDL2. Currently, SDL1 (or sdl12-compat) is a required dependency.
+The intention is that this can be like a LTS release of ZSNES. The long term goal is to also port ZSNES to SDL2. Currently, SDL1 (or `sdl12-compat`) is a required dependency.
 
-The `sdl2` branch is a work-in-progress branch where ZSNES can be compiled with SDL2 but does not yet work. Contributions are welcome!
+The `sdl2` branch is a work-in-progress branch where ZSNES can be compiled with SDL2 but does not yet work.
 
 Pull requests that fixes inaccuracies with the emulation are welcome, as well as pull requests for regular bugs.
+
+Tested on Arch Linux.
 
 ### Build
 
@@ -308,7 +309,7 @@ FXTABLE.ASM
 SFXPROC.ASM
 DSP1PROC.ASM    ; DSP1 communication routines
 DSP1EMU.C       ; DSP1 C routines (also includes some C4 C routines)
-SA1PROC.ASM     ; SA-1 processing routines
+SA1PROC.ASM     ; SA-1 processing routinest
 SA1REGS.ASM     ; SA-1 registers, also includes S-DD1 and SPC7110 routines
 ```
 
