@@ -1,0 +1,3 @@
+tar: @version@:.
+diff: @version@:. . name=@name@-@version@-alt.patch
+spec: .gear/zsnes.spec
