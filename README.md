@@ -20,9 +20,7 @@ Goals and non-goals:
 
 Pull requests that fixes inaccuracies with the emulation are welcome, as well as pull requests for regular bugs.
 
-About SDL1 and SDL2:
-
-* Currently, `sdl1` (or `sdl12-compat`) is a required dependency.
+* Currently, `sdl1` (or better: `sdl12-compat`) is a required dependency.
 * The `sdl2` branch is a work-in-progress branch where ZSNES can be compiled with SDL2 but it does not yet run correctly.
 
 Tested on Arch Linux and Fedora.
