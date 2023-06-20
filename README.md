@@ -23,7 +23,7 @@ Pull requests that fixes inaccuracies with the emulation are welcome, as well as
 * Currently, `sdl1` (or better: `sdl12-compat`) is a required dependency.
 * The `sdl2` branch is a work-in-progress branch where ZSNES can be compiled with SDL2 but it does not yet run correctly.
 
-Tested on Arch Linux and Fedora.
+Tested on Arch Linux, Fedora and Debian 12 on x86_64.
 
 ### Build
 
@@ -49,6 +49,24 @@ Installing a desktop shortcut is possible. A `zsnes.desktop` file is included in
     install -Dm644 zsnes.desktop /usr/share/applications/zsnes.desktop
 
 For other platforms than Linux, different flags may apply. ZSNES is primarily one executable, but for UNIX-inspired operating systems, the man page (`man/zsnes.1`) can be installed as ie. `/usr/share/man/man1/zsnes.1` (this is handled by `make install`, though).
+
+### Debian and Ubuntu
+
+Try installing ZSNES from [this flatpak](https://flathub.org/apps/io.github.xyproto.zsnes), or see if the following commands works for you, on **x86_64**. Please create a PR if they don't:
+
+```sh
+dpkg --add-architecture i386
+apt update
+apt install -y git make nasm file pkg-config zlib1g-dev pkg-config
+git clone https://github.com/xyproto/zsnes
+cd zsnes
+apt install -y build-essential
+make
+apt install -y libpng-dev libgl-dev libsdl2-dev zlib1g-dev
+apt install -y zlib1g-dev:i386 libpng-dev:i386 libsdl1.2-compat-dev:i386 libgl-dev:i386
+apt install -y gcc-multilib g++-multilib
+make
+```
 
 ### Pull requests
 
