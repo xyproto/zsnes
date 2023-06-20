@@ -330,7 +330,7 @@ SA1REGS.ASM     ; SA-1 registers, also includes S-DD1 and SPC7110 routines
 
 - Low performance due to differences in surface sizes (internal and SDL), make both the same size.
 - OpenGL code is awful, incomprehensible, stupid and awful again. We must fix it.
-- Support overscan in games like DQ5.
+- Support overscan in games like *Dragon Quest 5*
 
 #### Windows port
 
@@ -341,13 +341,13 @@ SA1REGS.ASM     ; SA-1 registers, also includes S-DD1 and SPC7110 routines
 #### Compatibility
 
 - Games not working:
-  - Guikuden 1
-  - Cu-On-Pa
+  - *Guikuden 1*
+  - *Cu-On-Pa*
   - Loads more
 - Graphics Glitches:
-  - Killer Instinct (black background)
-  - FF3 (Range Time Over and other sprite trouble)
-  - Tactic Ogre (Menus)
+  - *Killer Instinct* (black background)
+  - *Final Fantasy III* (known as *Final Fantasy VI* in Japan; Range Time Over and other sprite trouble)
+  - *Tactic Ogre* (Menus)
   - Lots of others
 - Special Chips:
   - DSP1 (99% done)
