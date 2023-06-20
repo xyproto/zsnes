@@ -83,6 +83,12 @@ else
   CFGDEFS += -DNO_AO
 endif
 
+ifeq ($(wildcard /usr/lib/i386-linux-gnu/.),)
+  CFLAGS += -I/usr/include/x86_64-linux-gnu -I /usr/include/X11
+  CXXFLAGS += -I/usr/include/x86_64-linux-gnu -I /usr/include/X11
+  LDFLAGS = -Wl,--as-needed -no-pie -L/usr/lib32 -L/usr/lib/i386-linux-gnu -Wl,--gc-sections -lz -lSDL-1.2 -lpng16 -lX11
+endif
+
 SRCS :=
 SRCS += c_init.c
 SRCS += c_vcache.c
