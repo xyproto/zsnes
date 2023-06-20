@@ -18,6 +18,12 @@ DEBUGFLAGS :=
 LDFLAGS := -Wl,--as-needed -no-pie -L/usr/lib32 -Wl,--gc-sections -lz -ldl -lX11 $(shell pkg-config sdl --libs) $(shell pkg-config libpng --libs) -lGL
 PSRFLAGS := -DNO_AO -DNO_DEBUGGER -D__OPENGL__ -D__UNIXSDL__
 
+ifeq ($(wildcard /usr/lib/i386-linux-gnu/.),)
+  CFLAGS += -I/usr/include/x86_64-linux-gnu -I /usr/include/X11
+  CXXFLAGS += -I/usr/include/x86_64-linux-gnu -I /usr/include/X11
+  LDFLAGS = -Wl,--as-needed -no-pie -L/usr/lib32 -L/usr/lib/i386-linux-gnu -Wl,--gc-sections -lz -lSDL-1.2 -lpng16 -lX11
+endif
+
 SRCS :=
 SRCS += c_init.c
 SRCS += c_vcache.c
