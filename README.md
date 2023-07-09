@@ -1,4 +1,4 @@
-# ZSNES 2: Reviving a Classic
+# ZSNES 2
 
 <img align="right" width="128" height="128" alt="logo" src="icons/128x128x32.png">
 
