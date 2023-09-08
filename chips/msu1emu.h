@@ -32,7 +32,7 @@ extern void msu1volume();
 extern void msu1statecontrol();
 
 //Misc. Functions
-extern void mixMSU1Audio(int* start, int* end);
+extern void mixMSU1Audio(int* start, int* end, int rate);
 extern void MSU1GetStatusBitsSpecial();
 extern void MSU1HandleTrackChange();
 extern void MSU1HandleStatusBits();

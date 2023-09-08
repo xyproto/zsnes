@@ -32,6 +32,7 @@ short* TRACK_DATA = NULL;
 u2 MSU_Track;
 u1 MSU_MusicVolume;
 u1 MSU_CurrentStatus;
+int MSU_Rate_Add = 0;
 int MSU_Track_Position = 0;
 int MSU_Track_Length = 0;
 int MSU_Busy = 0;
@@ -83,6 +84,9 @@ int readMSU() {
     FILE *MSUBinary; long filelen;
     MSUBinary = fopen(MSUBinaryFile, "rb");
     if(MSUBinary) {
+#ifdef DEBUG
+        printf("Found MSU-1 binary!\n");
+#endif
         fseek(MSUBinary, 0, SEEK_END); filelen = ftell(MSUBinary); rewind(MSUBinary);
 
         MSU_DATA = (u1*)malloc(filelen);
@@ -96,13 +100,16 @@ int readMSU() {
 void MSU1HandleTrackChange() {
     while(MSU_Busy) { ;; }
     MSU_Track_Position = 0;
+    MSU_Rate_Add = 0;
 
     //Requested a track.
     MSU_Track_Length = 0;
     MSU_StatusRead &= ~0x30; //Turn off playing bits
 
     //Request new track
+#ifdef DEBUG
     printf("Requesting track %hu to be played..\n", MSU_Track);
+#endif
     if(TRACK_DATA) {
         free(TRACK_DATA);
         TRACK_DATA = NULL;
@@ -121,8 +128,9 @@ void MSU1HandleTrackChange() {
         TRACK_DATA = (short*)malloc(filelen);
         fread(TRACK_DATA, filelen, 1, TrackFileReader);
         fclose(TrackFileReader);
+#ifdef DEBUG
         printf("Succesfully loaded Track %lu with length %lu\n", MSU_Track, filelen);
-
+#endif
         MSU_Track_Length = filelen / 2;
     }
 }
@@ -140,11 +148,13 @@ void MSU1HandleStatusBits() {
     //Error reading audio
     if(MSU_StatusRead & 0x8) { return; }
 	MSU_StatusRead = (MSU_StatusRead & ~0x30) | ((MSU_CurrentStatus & 0x03) << 4);
+#ifdef DEBUG
     printf("Status bits new: %hhu\n", MSU_StatusRead);
+#endif
 }
 
 //Mix MSU1 audio signal with DSP
-void mixMSU1Audio(int* start, int* end) {
+void mixMSU1Audio(int* start, int* end, int rate) {
     //Play
     if((MSU_StatusRead & 0x10) && MSU_Track_Length > 0) {
         MSU_Busy = 1;
@@ -154,9 +164,17 @@ void mixMSU1Audio(int* start, int* end) {
             if(MSU_Track_Position < MSU_Track_Length) {
                 *start += (TRACK_DATA[MSU_Track_Position] * MSU_MusicVolume) / 0x80;
 
+                //Stereo Mixer
+                if(StereoSound) {
+                    *start++; *start += (TRACK_DATA[MSU_Track_Position+1] * MSU_MusicVolume) / 0x80;
+                }
+
                 //Take care of incrementing the pointer
-                MSU_Track_Position++;
-                if(!StereoSound) { MSU_Track_Position++; }
+                MSU_Rate_Add += 44100;
+                while(MSU_Rate_Add >= rate) {
+                    MSU_Track_Position += 2;
+                    MSU_Rate_Add -= rate;
+                }
             }
 
             //Check if we should repeat
