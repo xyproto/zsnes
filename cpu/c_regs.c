@@ -3,6 +3,7 @@
 #include "../chips/7110proc.h"
 #include "../chips/c_sa1regs.h"
 #include "../chips/c_sfxproc.h"
+#include "../chips/msu1emu.h"
 #include "../gblvars.h"
 #include "../initc.h"
 #include "../macros.h"
@@ -131,6 +132,8 @@ void initregr(void)
 
     if (SFXEnable)
         initsfxregsr();
+    if (MSUEnable)
+        initMSU1regsRead();
     if (SA1Enable)
         initSA1regs();
     if (SDD1Enable)
