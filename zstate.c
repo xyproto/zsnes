@@ -37,6 +37,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "c_vcache.h"
 #include "cfg.h"
 #include "chips/c4proc.h"
+#include "chips/msu1emu.h"
 #include "chips/dsp4emu.h"
 #include "chips/sa1regs.h"
 #include "cpu/execute.h"
@@ -283,6 +284,10 @@ static void copy_state_data(uint8_t* buffer, void (*copy_func)(uint8_t**, void*,
         copy_func(&buffer, &DSP4_vars.OAM_bits, sizeof(DSP4_vars.OAM_bits));
         copy_func(&buffer, &DSP4_vars.OAM_RowMax, sizeof(DSP4_vars.OAM_RowMax));
         copy_func(&buffer, &DSP4_vars.OAM_Row, sizeof(DSP4_vars.OAM_Row));
+    }
+
+    if(MSUEnable) {
+        copy_func(&buffer, &MSU_Track_Position, sizeof(MSU_Track_Position));
     }
 
     if (method != csm_load_zst_old) {
@@ -1034,6 +1039,9 @@ void zst_sram_load(FILE* fp)
     if (DSP4Enable) {
         fseek(fp, 1294, SEEK_CUR);
     }
+    if(MSUEnable) {
+        fseek(fp, 4, SEEK_CUR);
+    }
     fseek(fp, 220, SEEK_CUR);
     if (ramsize) {
         fread(sram, 1, ramsize, fp);
@@ -1081,6 +1089,9 @@ void zst_sram_load_compressed(FILE* fp)
                     }
                     if (DSP4Enable) {
                         data += 1294;
+                    }
+                    if(MSUEnable) {
+                        data += 4;
                     }
                     data += 220;
                     if (ramsize) {

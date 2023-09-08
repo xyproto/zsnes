@@ -34,6 +34,7 @@ u1 MSU_MusicVolume;
 u1 MSU_CurrentStatus;
 int MSU_Rate_Add = 0;
 int MSU_Track_Position = 0;
+int MSU_Loop_Point = 0;
 int MSU_Track_Length = 0;
 int MSU_Busy = 0;
 char MSU_BasePath[260];
@@ -123,9 +124,15 @@ void MSU1HandleTrackChange() {
     FILE *TrackFileReader; long filelen;
     TrackFileReader = fopen(MSUTrackFile, "rb");
     if(TrackFileReader) {
-        fseek(TrackFileReader, 0, SEEK_END); filelen = ftell(TrackFileReader); rewind(TrackFileReader);
+        fseek(TrackFileReader, 0, SEEK_END); filelen = ftell(TrackFileReader);
 
+        //remove header
+        filelen -= 8;
+
+        //initialize track data
         TRACK_DATA = (short*)malloc(filelen);
+        fseek(TrackFileReader, 4, SEEK_SET);
+        fread(&MSU_Loop_Point, sizeof(int), 1, TrackFileReader);
         fread(TRACK_DATA, filelen, 1, TrackFileReader);
         fclose(TrackFileReader);
 #ifdef DEBUG
@@ -179,7 +186,7 @@ void mixMSU1Audio(int* start, int* end, int rate) {
 
             //Check if we should repeat
             if(MSU_Track_Position >= MSU_Track_Length) {
-                if(MSU_StatusRead & 0x20) { MSU_Track_Position = 0; }
+                if(MSU_StatusRead & 0x20) { MSU_Track_Position = MSU_Loop_Point * 2; }
             }
         }
         MSU_Busy = 0;
