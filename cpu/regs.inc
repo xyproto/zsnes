@@ -659,10 +659,6 @@ NEWSYM reg2143r
     mov al,[xa+1]
     ret
 
-NEWSYM reg2144r
-    xor al,al
-    ret
-
 ; WRAM Read
 NEWSYM reg2180r
     mov ebx,[wramrwadr]

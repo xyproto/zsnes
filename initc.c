@@ -35,6 +35,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "cfg.h"
 #include "chips/c_dsp2proc.h"
 #include "chips/c_sa1regs.h"
+#include "chips/msu1emu.h"
 #include "cpu/c_regs.h"
 #include "cpu/c_regsw.h"
 #include "cpu/execute.h"
@@ -458,7 +459,7 @@ void BankCheck()
 bool CHIPBATT, BSEnable, C4Enable, DSP1Enable, DSP2Enable, DSP3Enable;
 bool DSP4Enable, OBCEnable, RTCEnable, SA1Enable, SDD1Enable, SFXEnable;
 bool SETAEnable; // ST010 & 11
-bool SGBEnable, SPC7110Enable, ST18Enable;
+bool SGBEnable, SPC7110Enable, ST18Enable, MSUEnable;
 
 void chip_detect()
 {
@@ -466,7 +467,7 @@ void chip_detect()
 
     C4Enable = RTCEnable = SA1Enable = SDD1Enable = OBCEnable = CHIPBATT = false;
     SGBEnable = ST18Enable = DSP1Enable = DSP2Enable = DSP3Enable = false;
-    DSP4Enable = SPC7110Enable = BSEnable = SFXEnable = SETAEnable = false;
+    DSP4Enable = SPC7110Enable = BSEnable = SFXEnable = SETAEnable = MSUEnable = false;
 
     // DSP Family
     if (ROM[infoloc + TypeOffset] == 3) {
@@ -491,15 +492,24 @@ void chip_detect()
         return;
     }
 
+    // [sneed]: MSU detection
+    sprintf(MSU_BasePath, "%s%s", ZRomPath, ZCartName);
+    MSUEnable = readMSU();
+
+    // [sneed]: add support for FastROM superFX roms
     switch ((uint16_t)ROM[infoloc + BankOffset] | (ROM[infoloc + TypeOffset] << 8)) {
     case 0x1320: // Mario Chip 1
+    case 0x1330: // Mario Chip 1 + FastROM
     case 0x1420: // GSU-x
+    case 0x1430: // GSU-x + FastROM
         SFXEnable = true;
         return;
         break;
 
     case 0x1520: // GSU-x + Battery
+    case 0x1530: // GSU-x + Battery + FastROM
     case 0x1A20: // GSU-1 + Battery + Start in 21MHz
+    case 0x1A30: // GSU-1 + Battery + Start in 21MHz + FastROM
         SFXEnable = true;
         CHIPBATT = true;
         return;
@@ -1364,7 +1374,7 @@ void clearmem(void)
 }
 
 extern uint8_t BRRBuffer[];
-extern uint8_t echoon0;
+extern uint8_t echoon0[];
 extern uint32_t PHdspsave;
 extern uint32_t PHdspsave2;
 s4 echobuf[22500];
@@ -1373,7 +1383,7 @@ extern uint8_t DSPMem[256];
 void clearvidsound()
 {
     memset(BRRBuffer, 0, PHdspsave);
-    memset(&echoon0, 0, PHdspsave2);
+    memset(echoon0, 0, PHdspsave2);
     memset(&echobuf, 0, sizeof(echobuf));
     memset(spcBuffera, 0, 65536 * 4 + 4096);
     memset(DSPMem, 0, 256);
@@ -1534,6 +1544,10 @@ uint32_t showinfogui(void)
 
     memcpy(CSStatus2 + 20, (IPSPatched) ? "IPS " : "    ", 4);
     memcpy(CSStatus3 + 6, (ROM[infoloc + 25] < 2 || ROM[infoloc + 25] > 12) ? "NTSC" : "PAL ", 4);
+
+    if(MSUEnable) {
+        memcpy(CSStatus2 + 16, "MSU-1", 5);
+    }
 
     if (infoloc == EHi) {
         memcpy(CSStatus3 + 19, "EHi ", 4);
@@ -1746,29 +1760,24 @@ void CheckROMType()
     }
 
     if (SFXEnable) {
-        // Setup SuperFX stuff
-        if (maxromspace >= 0x600000) {
-            // SuperFX mapping, banks 70 - 73
-            map_mem(0x70, &sfxbank, 1);
-            map_mem(0x71, &sfxbankb, 1);
-            map_mem(0x72, &sfxbankc, 1);
-            map_mem(0x73, &sfxbankd, 1);
+        // SuperFX mapping, banks 70 - 73
+        map_mem(0x70, &sfxbank, 1);
+        map_mem(0x71, &sfxbankb, 1);
+        map_mem(0x72, &sfxbankc, 1);
+        map_mem(0x73, &sfxbankd, 1);
 
-            // SRAM mapping, banks 78 - 79
-            map_mem(0x78, &sramsbank, 2);
+        // SRAM mapping, banks 78 - 79
+        map_mem(0x78, &sramsbank, 2);
 
-            SfxR1 = 0;
-            SfxR2 = 0;
-            memset(sfxramdata, 0, 262144); // clear 256kB SFX ram
+        SfxR1 = 0;
+        SfxR2 = 0;
+        memset(sfxramdata, 0, 262144); // clear 256kB SFX ram
 
-            if (SramExists) {
-                memcpy(sfxramdata, sram, 65536); // proper SFX sram area
-            }
-
-            asm_call(InitFxTables);
-        } else {
-            yesoutofmemory = 1;
+        if (SramExists) {
+            memcpy(sfxramdata, sram, 65536); // proper SFX sram area
         }
+
+        asm_call(InitFxTables);
     }
 
     if (SETAEnable) {
@@ -1953,7 +1962,7 @@ uint8_t SfxAC, ForceNewGfxOff;
 void preparesfx()
 {
     char* ROM = (char*)romdata;
-    int_fast8_t i;
+    int_fast16_t i;
 
     SFXCounter = SfxAC = 0;
 
@@ -1963,7 +1972,8 @@ void preparesfx()
         ForceNewGfxOff = 1;
     }
 
-    for (i = 63; i >= 0; i--) {
+    // [sneed]: bigger rom support
+    for (i = (NumofBanks-1); i >= 0; i--) {
         memcpy((int32_t*)romdata + i * 0x4000, (int32_t*)romdata + i * 0x2000, 0x8000);
         memcpy((int32_t*)romdata + i * 0x4000 + 0x2000, (int32_t*)romdata + i * 0x2000, 0x8000);
     }
@@ -2112,6 +2122,7 @@ void map_ehirom()
 void map_sfx()
 {
     uint8_t* ROM = romdata;
+    uint_fast8_t x;
 
     // Clear SFX registers
     SfxR0 = SfxR1 = SfxR2 = SfxR3 = SfxR4 = SfxR5 = SfxR6 = SfxR7 = 0;
@@ -2121,35 +2132,50 @@ void map_sfx()
     // set banks 00-3F (40h x 64KB ROM banks @10000h)
     map_set(snesmmap, ROM, 0x40, 0x10000);
 
-    // set banks 40-7F (40h x128KB ROM banks @20000h)
+    // set banks 40-5F (40h x128KB ROM banks @20000h)
+    // [sneed]: fix inaccuracy in mapping (40-5F is Hirom banks), this value should be 0x20 but it's being set to 0x30 for safety
     map_set(snesmmap + 0x40, ROM + 0x8000, 0x30, 0x20000);
-    map_set(snesmmap + 0x70, ROM + 0x8000, 0x10, 0x20000);
 
     // set banks 80-BF (40h x 64KB ROM banks @10000h)
     map_set(snesmmap + 0x80, ROM, 0x40, 0x10000);
 
     // set banks C0-FF (40h x128KB ROM banks @20000h)
-    map_set(snesmmap + 0xC0, ROM + 0x8000, 0x30, 0x20000);
-    map_set(snesmmap + 0xF0, ROM + 0x8000, 0x10, 0x20000);
+    // [sneed]: 3/4MB rom support, preserve compatible behaviour
+    if(NumofBanks > 64) {
+        map_set(snesmmap + 0xC0, ROM + 0x8000, 0x40, 0x20000);
+    } else {
+        map_set(snesmmap + 0xC0, ROM + 0x8000, 0x30, 0x20000);
+        map_set(snesmmap + 0xF0, ROM + 0x8000, 0x10, 0x20000);
+    }
 
     // set addresses 0000-7FFF
     // set banks 00-3F (40h x WRAM)
     map_set(snesmap2, wramdata, 0x40, 0);
 
-    // set banks 40-7F (40h x128KB ROM banks @20000h)
+    // set banks 40-5F (40h x128KB ROM banks @20000h)
+    // [sneed]: fix inaccuracy in mapping (40-5F is Hirom banks), this value should be 0x20 but it's being set to 0x30 for safety
     map_set(snesmap2 + 0x40, ROM + 0x8000, 0x30, 0x20000);
-    map_set(snesmap2 + 0x70, ROM + 0x8000, 0x10, 0x20000);
 
     // set banks 80-BF (40h x WRAM)
     map_set(snesmap2 + 0x80, wramdata, 0x40, 0);
 
     // set banks C0-FF (40h x128KB ROM banks @20000h)
-    map_set(snesmap2 + 0xC0, ROM + 0x8000, 0x30, 0x20000);
-    map_set(snesmap2 + 0xF0, ROM + 0x8000, 0x10, 0x20000);
+    // [sneed]: 3/4MB rom support, preserve compatible behaviour
+    if(NumofBanks > 64) {
+        map_set(snesmap2 + 0xC0, ROM + 0x8000, 0x40, 0x20000);
+    } else {
+        map_set(snesmap2 + 0xC0, ROM + 0x8000, 0x30, 0x20000);
+        map_set(snesmap2 + 0xF0, ROM + 0x8000, 0x10, 0x20000);
+    }
 
-    // set banks 70-73/78/79 (SFXRAM & SRAM)
-    map_set(snesmap2 + 0x70, sfxramdata, 4, 0x10000);
-    snesmap2[0x78] = snesmap2[0x79] = sram;
+    // set banks 70-77/78-7F (SFXRAM & SRAM)
+    // [sneed]: fixed mapping
+    for (x = 0x70; x < 0x78; x += 4) {
+        map_set(snesmap2 + x, sfxramdata, 4, 0x10000);
+    }
+    for (x = 0x78; x < 0x7E; x++) {
+        snesmap2[x] = sram;
+    }
 
     // set banks 7E/7F (WRAM)
     snesmmap[0x7E] = snesmap2[0x7E] = wramdata;
@@ -2491,7 +2517,9 @@ void init65816(void)
     opexec268cph = opexec268cphb;
     opexec358cph = opexec358cphb;
 
-    if (!(romdata[infoloc + BankOffset] & 0xF0)) // if not fastrom
+    // [sneed]: fix inaccuracy here, https://snes.nesdev.org/wiki/ROM_header
+    // fastrom speed is indicated by FFD5 having bit 0x10 enabled.
+    if (!(romdata[infoloc + BankOffset] & 0x10)) // if not fastrom
     {
         opexec358 = opexec268;
         opexec358cph = opexec268cph;
