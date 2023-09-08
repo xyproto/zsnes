@@ -1760,24 +1760,29 @@ void CheckROMType()
     }
 
     if (SFXEnable) {
-        // SuperFX mapping, banks 70 - 73
-        map_mem(0x70, &sfxbank, 1);
-        map_mem(0x71, &sfxbankb, 1);
-        map_mem(0x72, &sfxbankc, 1);
-        map_mem(0x73, &sfxbankd, 1);
+        // Setup SuperFX stuff
+        if (maxromspace >= 0x600000) {
+            // SuperFX mapping, banks 70 - 73
+            map_mem(0x70, &sfxbank, 1);
+            map_mem(0x71, &sfxbankb, 1);
+            map_mem(0x72, &sfxbankc, 1);
+            map_mem(0x73, &sfxbankd, 1);
 
-        // SRAM mapping, banks 78 - 79
-        map_mem(0x78, &sramsbank, 2);
+            // SRAM mapping, banks 78 - 79
+            map_mem(0x78, &sramsbank, 2);
 
-        SfxR1 = 0;
-        SfxR2 = 0;
-        memset(sfxramdata, 0, 262144); // clear 256kB SFX ram
+            SfxR1 = 0;
+            SfxR2 = 0;
+            memset(sfxramdata, 0, 262144); // clear 256kB SFX ram
 
-        if (SramExists) {
-            memcpy(sfxramdata, sram, 65536); // proper SFX sram area
+            if (SramExists) {
+                memcpy(sfxramdata, sram, 65536); // proper SFX sram area
+            }
+
+            asm_call(InitFxTables);
+        } else {
+            yesoutofmemory = 1;
         }
-
-        asm_call(InitFxTables);
     }
 
     if (SETAEnable) {

@@ -102,7 +102,7 @@ static void SoundWriteSamples_ao(unsigned int samples)
     asm_call(ProcessSoundBuffer);
 
     if (MSUEnable) {
-        mixMSU1Audio(DSPBuffer, DSPBuffer + BufferSizeB);
+        mixMSU1Audio(DSPBuffer, DSPBuffer + BufferSizeB, RATE);
     }
 
     end_d = DSPBuffer + samples;
@@ -174,7 +174,7 @@ static int SoundInit_ao()
     ao_sample_format driver_format;
     driver_format.bits = 16;
     driver_format.channels = StereoSound + 1;
-    driver_format.rate = freqtab[SoundQuality = ((SoundQuality > 6) ? 1 : SoundQuality)];
+    driver_format.rate = RATE;
     driver_format.byte_format = AO_FMT_LITTLE;
 
     if (audio_device) {
@@ -220,7 +220,7 @@ void SoundWrite_sdl()
         if (soundon && !DSPDisable) {
             asm_call(ProcessSoundBuffer);
             if (MSUEnable) {
-                mixMSU1Audio(DSPBuffer, DSPBuffer + BufferSizeB);
+                mixMSU1Audio(DSPBuffer, DSPBuffer + BufferSizeB, RATE);
             }
         }
 
