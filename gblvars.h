@@ -40,7 +40,7 @@ extern unsigned char DSP1Enable, DSP1COp, prevoamptr, BRRBuffer[];
 extern unsigned char curcyc, spcnumread, NextLineCache, HIRQNextExe;
 extern unsigned char vidmemch8[4096], vidmemch2[4096];
 
-extern bool C4Enable, SFXEnable, SA1Enable, SPC7110Enable, SETAEnable, DSP4Enable;
+extern bool C4Enable, SFXEnable, SA1Enable, SPC7110Enable, SETAEnable, DSP4Enable, MSUEnable;
 
 extern int16_t C4WFXVal, C41FXVal, Op00Multiplicand, Op04Angle, Op08X, Op18X;
 extern int16_t Op28X, Op0CA, Op02FX, Op0AVS, Op06X, Op01m, Op0DX, Op03F, Op14Zr;

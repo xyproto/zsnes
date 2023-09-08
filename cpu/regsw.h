@@ -3,6 +3,12 @@
 
 #include "../types.h"
 
+extern u1 MSU_MusicState;
+extern u1 MSU_MusicVolume;
+extern u2 MSU_Track;
+extern u4 MSU_Data_Seek;
+extern u1* MSU_DATA;
+
 extern void reg2100w();
 extern void reg2101w();
 extern void reg2102w();

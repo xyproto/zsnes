@@ -20,6 +20,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
 #include "../gblhdr.h"
+#include "../gblvars.h"
 #include <stdbool.h>
 
 #ifdef __LIBAO__
@@ -28,6 +29,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <signal.h>
 #endif
 
+#include "../chips/msu1emu.h"
 #include "../asm_call.h"
 #include "../cfg.h"
 #include "../cpu/dspproc.h"
@@ -98,6 +100,10 @@ static void SoundWriteSamples_ao(unsigned int samples)
     BufferSizeW = samples << 1;
 
     asm_call(ProcessSoundBuffer);
+
+    if (MSUEnable) {
+        mixMSU1Audio(DSPBuffer, DSPBuffer + BufferSizeB);
+    }
 
     end_d = DSPBuffer + samples;
     for (; d < end_d; d++, p++) {
@@ -213,6 +219,9 @@ void SoundWrite_sdl()
 
         if (soundon && !DSPDisable) {
             asm_call(ProcessSoundBuffer);
+            if (MSUEnable) {
+                mixMSU1Audio(DSPBuffer, DSPBuffer + BufferSizeB);
+            }
         }
 
         if (T36HZEnabled) {
