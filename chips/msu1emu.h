@@ -4,6 +4,7 @@
 #include "../types.h"
 
 //File
+extern int MSU_Track_Position;
 extern char MSU_BasePath[];
 int readMSU();
 
