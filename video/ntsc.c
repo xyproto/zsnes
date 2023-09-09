@@ -31,7 +31,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #endif
 
 #include "ntsc.h"
-#include "../cfg.h"
+#include "cfg.h"
 
 /* Source image */
 /* width = 288 pixels, height = 223 pixels or more */

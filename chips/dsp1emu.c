@@ -22,7 +22,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define __ZSNES__
 
 #if (defined __ZSNES__ && __UNIXSDL__)
-#include "../gblhdr.h"
+#include "gblhdr.h"
 #else
 
 #include <stdio.h>

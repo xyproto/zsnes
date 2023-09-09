@@ -19,7 +19,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include "../gblhdr.h"
+#include "gblhdr.h"
 
 #include <grp.h>
 #include <paths.h>
@@ -34,7 +34,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #include "safelib.h"
 
-#include "../argv.h"
+#include "argv.h"
 
 // Introducing secure forking ;) -Nach
 

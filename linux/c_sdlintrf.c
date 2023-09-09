@@ -1,26 +1,26 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "../c_intrf.h"
-#include "../c_vcache.h"
-#include "../cfg.h"
-#include "../cpu/c_dspproc.h"
-#include "../cpu/dspproc.h"
-#include "../cpu/execute.h"
-#include "../gui/c_gui.h"
-#include "../input.h"
-#include "../intrf.h"
-#include "../link.h"
-#include "../macros.h"
-#include "../ui.h"
-#include "../vcache.h"
-#include "../video/c_2xsaiw.h"
-#include "../video/newgfx16.h"
+#include "c_intrf.h"
+#include "c_vcache.h"
+#include "cfg.h"
+#include "cpu/c_dspproc.h"
+#include "cpu/dspproc.h"
+#include "cpu/execute.h"
+#include "gui/c_gui.h"
+#include "input.h"
+#include "intrf.h"
+#include "link.h"
+#include "macros.h"
+#include "ui.h"
+#include "vcache.h"
+#include "video/c_2xsaiw.h"
+#include "video/newgfx16.h"
 #include "c_sdlintrf.h"
 #include "sdllink.h"
 
 #ifdef __OPENGL__
-#include "../video/procvidc.h"
+#include "video/procvidc.h"
 
 u1 blinit;
 #endif

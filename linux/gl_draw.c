@@ -19,10 +19,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include "../cfg.h"
-#include "../gblhdr.h"
-#include "../link.h"
-#include "../video/copyvwin.h"
+#include "cfg.h"
+#include "gblhdr.h"
+#include "link.h"
+#include "video/copyvwin.h"
 #include <stdint.h>
 
 // FUNCTIONS

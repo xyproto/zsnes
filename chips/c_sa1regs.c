@@ -1,8 +1,8 @@
 #include <string.h>
 
-#include "../endmem.h"
-#include "../init.h"
-#include "../ui.h"
+#include "endmem.h"
+#include "init.h"
+#include "ui.h"
 #include "c_sa1regs.h"
 #include "sa1proc.h"
 #include "sa1regs.h"

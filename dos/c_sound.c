@@ -1,14 +1,14 @@
 #include <string.h>
 
-#include "../asm.h"
-#include "../asm_call.h"
-#include "../c_init.h"
-#include "../c_intrf.h"
-#include "../cfg.h"
-#include "../cpu/dspproc.h"
-#include "../cpu/spc700.h"
-#include "../gblvars.h"
-#include "../video/procvid.h"
+#include "asm.h"
+#include "asm_call.h"
+#include "c_init.h"
+#include "c_intrf.h"
+#include "cfg.h"
+#include "cpu/dspproc.h"
+#include "cpu/spc700.h"
+#include "gblvars.h"
+#include "video/procvid.h"
 #include "c_sound.h"
 #include "sound.h"
 

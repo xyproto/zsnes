@@ -21,20 +21,20 @@
 
 #include <string.h>
 
-#include "../asm.h"
-#include "../asm_call.h"
-#include "../c_intrf.h"
-#include "../cpu/dspproc.h"
-#include "../cpu/execute.h"
-#include "../cpu/regs.h"
-#include "../cpu/spc700.h"
-#include "../gblvars.h"
-#include "../initc.h"
-#include "../input.h"
-#include "../macros.h"
-#include "../video/procvidc.h"
-#include "../zmovie.h"
-#include "../zstate.h"
+#include "asm.h"
+#include "asm_call.h"
+#include "c_intrf.h"
+#include "cpu/dspproc.h"
+#include "cpu/execute.h"
+#include "cpu/regs.h"
+#include "cpu/spc700.h"
+#include "gblvars.h"
+#include "initc.h"
+#include "input.h"
+#include "macros.h"
+#include "video/procvidc.h"
+#include "zmovie.h"
+#include "zstate.h"
 #include "c_gui.h"
 #include "c_guiwindp.h"
 #include "gui.h"
@@ -43,7 +43,7 @@
 #include "guimouse.h"
 
 #ifdef __MSDOS__
-#include "../dos/joy.h"
+#include "dos/joy.h"
 #endif
 
 u1 JoyExists2;

@@ -1,28 +1,28 @@
 #include <string.h>
 
-#include "../asm.h"
-#include "../c_init.h"
-#include "../c_intrf.h"
-#include "../c_vcache.h"
-#include "../cfg.h"
-#include "../cpu/c_dspproc.h"
-#include "../cpu/c_execute.h"
-#include "../cpu/execute.h"
-#include "../cpu/regs.h"
-#include "../effects/burn.h"
-#include "../effects/smoke.h"
-#include "../effects/water.h"
-#include "../endmem.h"
-#include "../macros.h"
-#include "../ui.h"
-#include "../vcache.h"
-#include "../video/c_mode716.h"
-#include "../video/makevid.h"
-#include "../video/procvid.h"
-#include "../video/procvidc.h"
-#include "../zmovie.h"
-#include "../zstate.h"
-#include "../ztimec.h"
+#include "asm.h"
+#include "c_init.h"
+#include "c_intrf.h"
+#include "c_vcache.h"
+#include "cfg.h"
+#include "cpu/c_dspproc.h"
+#include "cpu/c_execute.h"
+#include "cpu/execute.h"
+#include "cpu/regs.h"
+#include "effects/burn.h"
+#include "effects/smoke.h"
+#include "effects/water.h"
+#include "endmem.h"
+#include "macros.h"
+#include "ui.h"
+#include "vcache.h"
+#include "video/c_mode716.h"
+#include "video/makevid.h"
+#include "video/procvid.h"
+#include "video/procvidc.h"
+#include "zmovie.h"
+#include "zstate.h"
+#include "ztimec.h"
 #include "c_gui.h"
 #include "c_guiwindp.h"
 #include "gui.h"
@@ -35,16 +35,16 @@
 #include "guiwindp.h"
 
 #ifdef __MSDOS__
-#include "../asm_call.h"
-#include "../dos/vesa2.h"
+#include "asm_call.h"
+#include "dos/vesa2.h"
 #endif
 
 #ifdef __OPENGL__
-#include "../linux/c_sdlintrf.h"
+#include "linux/c_sdlintrf.h"
 #endif
 
 #ifdef __WIN32__
-#include "../win/winlink.h"
+#include "win/winlink.h"
 #endif
 
 u1 MouseDis;

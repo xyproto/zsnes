@@ -5,6 +5,7 @@ set(ZSNES_C_SRC
     c_init.c
     c_vcache.c
     chips/7110emu.c
+    chips/msu1emu.c
     chips/c4emu.c
     chips/c_dsp2proc.c
     chips/c_sa1regs.c
@@ -48,13 +49,6 @@ set(ZSNES_C_SRC
     patch.c
     ui.c
     ver.c
-    video/c_2xsaiw.c
-    video/c_copyvid.c
-    video/c_makev16b.c
-    video/c_makevid.c
-    video/c_mode716.c
-    video/c_newgfx16.c
-    video/copyvwin.c
     video/ntsc.c
     video/procvid.c
     video/procvidc.c
@@ -67,15 +61,6 @@ set(ZSNES_C_SRC
     zpath.c
     zstate.c
     ztimec.c
-    jma/7zlzma.cpp
-    jma/crc32.cpp
-    jma/iiostrm.cpp
-    jma/inbyte.cpp
-    jma/jma.cpp
-    jma/lzma.cpp
-    jma/lzmadec.cpp
-    jma/winout.cpp
-    jma/zsnesjma.cpp
     linux/audio.c
     linux/battery.c
     linux/c_sdlintrf.c
@@ -86,21 +71,6 @@ set(ZSNES_C_SRC
     linux/sw_draw.c
     linux/gl_draw.c
     mmlib/linux.c
-    cpu/regs.mac
-    cpu/regsw.mac
-    macros.mac
-    video/mode7.mac
-    video/mode716.mac
-    video/newg162.mac
-    video/newg16wn.mac
-    video/newgfx.mac
-    video/newgfx16.mac
-    video/newgfx2.mac
-    video/newgfxwn.mac
-    video/vidmacro.mac
-    chips/fxemu2.mac
-    chips/fxemu2b.mac
-    chips/fxemu2c.mac
 )
 
 # Assembly source files

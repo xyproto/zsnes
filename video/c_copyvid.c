@@ -1,9 +1,9 @@
 #ifdef __MSDOS__
 #include "c_copyvid.h"
-#include "../chips/c4proc.h"
-#include "../cpu/regs.h"
-#include "../dos/c_dosintrf.h"
-#include "../ui.h"
+#include "chips/c4proc.h"
+#include "cpu/regs.h"
+#include "dos/c_dosintrf.h"
+#include "ui.h"
 #include "procvid.h"
 
 void hextestoutput(void)

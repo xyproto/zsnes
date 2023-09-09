@@ -20,7 +20,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
 #ifdef __UNIXSDL__
-#include "../gblhdr.h"
+#include "gblhdr.h"
 #else
 #include <ctype.h>
 #include <stdio.h>
@@ -33,8 +33,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <unistd.h>
 #endif
 #endif
-#include "../zmovie.h"
-#include "../zpath.h"
+#include "zmovie.h"
+#include "zpath.h"
 #include "procvidc.h"
 
 extern unsigned char newengen;

@@ -19,8 +19,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include "../gblhdr.h"
-#include "../gblvars.h"
+#include "gblhdr.h"
+#include "gblvars.h"
 #include <stdbool.h>
 
 #ifdef __LIBAO__
@@ -29,11 +29,11 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <signal.h>
 #endif
 
-#include "../chips/msu1emu.h"
-#include "../asm_call.h"
-#include "../cfg.h"
-#include "../cpu/dspproc.h"
-#include "../link.h"
+#include "chips/msu1emu.h"
+#include "asm_call.h"
+#include "cfg.h"
+#include "cpu/dspproc.h"
+#include "link.h"
 
 #ifdef __LIBAO__
 static pthread_t audio_thread;

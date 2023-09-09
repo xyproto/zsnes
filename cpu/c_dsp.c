@@ -1,4 +1,4 @@
-#include "../gui/menu.h"
+#include "gui/menu.h"
 #include "c_dsp.h"
 #include "c_dspproc.h"
 

@@ -1,7 +1,7 @@
 #include "c_memory.h"
-#include "../chips/sa1regs.h"
-#include "../endmem.h"
-#include "../init.h"
+#include "chips/sa1regs.h"
+#include "endmem.h"
+#include "init.h"
 
 eop* DPageR16;
 eop* DPageR8;

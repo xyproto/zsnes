@@ -21,9 +21,9 @@
 
 #include <string.h>
 
-#include "../c_init.h"
-#include "../cpu/regs.h"
-#include "../link.h"
+#include "c_init.h"
+#include "cpu/regs.h"
+#include "link.h"
 #include "sw_draw.h"
 
 u1* ScreenPtr;

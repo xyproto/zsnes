@@ -24,7 +24,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #endif
 
 #ifdef __UNIXSDL__
-#include "../gblhdr.h"
+#include "gblhdr.h"
 #else
 #include <stdlib.h>
 #include <string.h>
@@ -34,12 +34,12 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <unistd.h>
 #endif
 #endif
-#include "../zpath.h"
+#include "zpath.h"
 
 #define NUMCONV_FW2
 #define NUMCONV_FW3
 #define NUMCONV_FW4
-#include "../numconv.h"
+#include "numconv.h"
 
 #ifdef __MSDOS__
 #define MAX_PNGNAME_LEN 13

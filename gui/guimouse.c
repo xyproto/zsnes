@@ -22,23 +22,23 @@
 #include <stdarg.h>
 #include <string.h>
 
-#include "../asm_call.h"
-#include "../c_init.h"
-#include "../c_intrf.h"
-#include "../cfg.h"
-#include "../cpu/dsp.h"
-#include "../cpu/execute.h"
-#include "../cpu/regs.h"
-#include "../gblvars.h"
-#include "../input.h"
-#include "../link.h"
-#include "../macros.h"
-#include "../ui.h"
-#include "../vcache.h"
-#include "../video/procvid.h"
-#include "../zmovie.h"
-#include "../zpath.h"
-#include "../zstate.h"
+#include "asm_call.h"
+#include "c_init.h"
+#include "c_intrf.h"
+#include "cfg.h"
+#include "cpu/dsp.h"
+#include "cpu/execute.h"
+#include "cpu/regs.h"
+#include "gblvars.h"
+#include "input.h"
+#include "link.h"
+#include "macros.h"
+#include "ui.h"
+#include "vcache.h"
+#include "video/procvid.h"
+#include "zmovie.h"
+#include "zpath.h"
+#include "zstate.h"
 #include "c_gui.h"
 #include "c_guiwindp.h"
 #include "gui.h"
@@ -51,12 +51,12 @@
 #include "guiwindp.h"
 
 #ifndef __MSDOS__
-#include "../video/ntsc.h"
-#include "../video/procvidc.h"
+#include "video/ntsc.h"
+#include "video/procvidc.h"
 #endif
 
 #ifdef __WIN32__
-#include "../win/winlink.h"
+#include "win/winlink.h"
 #endif
 
 u1 GUIcwinpress;

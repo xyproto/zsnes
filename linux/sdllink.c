@@ -19,7 +19,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include "../gblhdr.h"
+#include "gblhdr.h"
 #include "gl_draw.h"
 #include "sw_draw.h"
 
@@ -28,18 +28,18 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <sys/time.h>
 #include <time.h>
 
-#include "../c_intrf.h"
-#include "../cfg.h"
-#include "../cpu/execute.h"
-#include "../gui/c_gui.h"
-#include "../gui/gui.h"
-#include "../gui/guimouse.h"
-#include "../initc.h"
-#include "../input.h"
-#include "../intrf.h"
-#include "../link.h"
-#include "../ui.h"
-#include "../video/procvidc.h"
+#include "c_intrf.h"
+#include "cfg.h"
+#include "cpu/execute.h"
+#include "gui/c_gui.h"
+#include "gui/gui.h"
+#include "gui/guimouse.h"
+#include "initc.h"
+#include "input.h"
+#include "intrf.h"
+#include "link.h"
+#include "ui.h"
+#include "video/procvidc.h"
 #include "audio.h"
 #include "safelib.h"
 #include "sdllink.h"

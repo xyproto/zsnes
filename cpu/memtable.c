@@ -20,15 +20,15 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
 #ifdef __UNIXSDL__
-#include "../gblhdr.h"
+#include "gblhdr.h"
 #else
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
 #endif
-#include "../gblvars.h"
-#include "../ui.h"
+#include "gblvars.h"
+#include "ui.h"
 #include "c_memory.h"
 #include "memtable.h"
 #include "regs.h"

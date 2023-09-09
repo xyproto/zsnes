@@ -5,7 +5,7 @@
 */
 
 #ifdef __UNIXSDL__
-#include "../gblhdr.h"
+#include "gblhdr.h"
 #else
 #include <stdio.h>
 #include <stdlib.h>

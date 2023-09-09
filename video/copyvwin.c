@@ -21,22 +21,22 @@
 
 #include <string.h>
 
-#include "../c_init.h"
-#include "../c_vcache.h"
-#include "../cfg.h"
-#include "../cpu/regs.h"
-#include "../endmem.h"
-#include "../gui/gui.h"
-#include "../ui.h"
-#include "../vcache.h"
+#include "c_init.h"
+#include "c_vcache.h"
+#include "cfg.h"
+#include "cpu/regs.h"
+#include "endmem.h"
+#include "gui/gui.h"
+#include "ui.h"
+#include "vcache.h"
 #include "2xsaiw.h"
 #include "copyvwin.h"
 #include "makevid.h"
 #include "newgfx16.h"
 
 #ifdef __WIN32__
-#include "../c_intrf.h"
-#include "../win/winlink.h"
+#include "c_intrf.h"
+#include "win/winlink.h"
 #endif
 
 u1* WinVidMemStart;

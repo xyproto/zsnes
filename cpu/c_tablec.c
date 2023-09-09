@@ -1,6 +1,6 @@
 #include "c_tablec.h"
-#include "../endmem.h"
-#include "../macros.h"
+#include "endmem.h"
+#include "macros.h"
 #include "e65816c.h"
 #include "table.h"
 

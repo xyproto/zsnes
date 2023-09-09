@@ -20,17 +20,17 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
 #ifdef __UNIXSDL__
-#include "../gblhdr.h"
-#include "../linux/sdllink.h"
+#include "gblhdr.h"
+#include "linux/sdllink.h"
 #define fnamecmp strcmp
 #define fnamencmp strncmp
 #else
 #ifdef __WIN32__
-#include "../win/lib.h"
+#include "win/lib.h"
 #endif
 
 #ifdef __MSDOS__
-#include "../dos/lib.h"
+#include "dos/lib.h"
 #include <fcntl.h>
 #endif
 
@@ -44,7 +44,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #endif
 
 #ifndef __MSDOS__
-#include "../c_intrf.h"
+#include "c_intrf.h"
 #endif
 
 #ifndef _MSC_VER
@@ -52,16 +52,16 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <unistd.h>
 #endif
 
-#include "../asm_call.h"
-#include "../cfg.h"
-#include "../initc.h"
-#include "../input.h"
-#include "../macros.h"
-#include "../md.h"
-#include "../ui.h"
-#include "../zdir.h"
-#include "../zloader.h"
-#include "../zpath.h"
+#include "asm_call.h"
+#include "cfg.h"
+#include "initc.h"
+#include "input.h"
+#include "macros.h"
+#include "md.h"
+#include "ui.h"
+#include "zdir.h"
+#include "zloader.h"
+#include "zpath.h"
 #include "c_gui.h"
 #include "c_guiwindp.h"
 #include "gui.h"

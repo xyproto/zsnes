@@ -1,9 +1,9 @@
 #include "c_table.h"
-#include "../cpu/e65816.h"
-#include "../endmem.h"
-#include "../macros.h"
-#include "../video/newgfx.h"
-#include "../video/newgfx16.h"
+#include "cpu/e65816.h"
+#include "endmem.h"
+#include "macros.h"
+#include "video/newgfx.h"
+#include "video/newgfx16.h"
 #include "table.h"
 
 /* Sets the opcode tables

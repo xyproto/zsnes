@@ -22,7 +22,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 // http://users.tpg.com.au/trauma/dsp/st010.html
 
 #ifdef __UNIXSDL__
-#include "../gblhdr.h"
+#include "gblhdr.h"
 #else
 #include <math.h> //sqrt()
 #include <stdbool.h>

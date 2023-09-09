@@ -23,20 +23,20 @@
 #include <stdbool.h>
 #include <string.h>
 
-#include "../asm_call.h"
-#include "../c_init.h"
-#include "../c_intrf.h"
-#include "../cfg.h"
-#include "../cpu/execute.h"
-#include "../cpu/regs.h"
-#include "../input.h"
-#include "../link.h"
-#include "../types.h"
-#include "../video/procvid.h"
-#include "../video/procvidc.h"
-#include "../zmovie.h"
-#include "../zpath.h"
-#include "../zstate.h"
+#include "asm_call.h"
+#include "c_init.h"
+#include "c_intrf.h"
+#include "cfg.h"
+#include "cpu/execute.h"
+#include "cpu/regs.h"
+#include "input.h"
+#include "link.h"
+#include "types.h"
+#include "video/procvid.h"
+#include "video/procvidc.h"
+#include "zmovie.h"
+#include "zpath.h"
+#include "zstate.h"
 #include "c_gui.h"
 #include "c_guiwindp.h"
 #include "gui.h"
@@ -47,25 +47,25 @@
 #ifdef __MSDOS__
 #include <string.h>
 
-#include "../dos/initvid.h"
-#include "../ui.h"
-#include "../video/copyvid.h"
+#include "dos/initvid.h"
+#include "ui.h"
+#include "video/copyvid.h"
 #include "guimisc.h"
 #else
-#include "../video/ntsc.h"
+#include "video/ntsc.h"
 #include "guifuncs.h"
 #endif
 
 #ifdef __UNIXSDL__
-#include "../linux/sdllink.h"
+#include "linux/sdllink.h"
 
 #ifdef __OPENGL__
-#include "../linux/gl_draw.h"
+#include "linux/gl_draw.h"
 #endif
 #endif
 
 #ifdef __WIN32__
-#include "../win/winlink.h"
+#include "win/winlink.h"
 #endif
 
 #ifdef __UNIXSDL__

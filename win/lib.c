@@ -20,7 +20,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
 #include "lib.h"
-#include "../zpath.h"
+#include "zpath.h"
 #include <errno.h>
 #include <stdlib.h>
 #include <string.h>

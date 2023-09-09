@@ -1,12 +1,12 @@
 #include <string.h>
 
-#include "../asm_call.h"
-#include "../c_vcache.h"
-#include "../cpu/regs.h"
-#include "../endmem.h"
-#include "../initc.h"
-#include "../ui.h"
-#include "../vcache.h"
+#include "asm_call.h"
+#include "c_vcache.h"
+#include "cpu/regs.h"
+#include "endmem.h"
+#include "initc.h"
+#include "ui.h"
+#include "vcache.h"
 #include "c_makevid.h"
 #include "makevid.h"
 

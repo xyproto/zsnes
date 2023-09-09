@@ -1,6 +1,6 @@
 #include "c_65816d.h"
-#include "../chips/sa1regs.h"
-#include "../init.h"
+#include "chips/sa1regs.h"
+#include "init.h"
 #include "s65816d.h"
 
 static void restoredl(u4 const edx)

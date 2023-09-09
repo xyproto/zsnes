@@ -1,19 +1,19 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "../asm_call.h"
-#include "../c_init.h"
-#include "../c_intrf.h"
-#include "../cfg.h"
-#include "../cpu/regs.h"
-#include "../input.h"
-#include "../macros.h"
-#include "../ui.h"
-#include "../ver.h"
-#include "../zmovie.h"
-#include "../zpath.h"
-#include "../zstate.h"
-#include "../ztimec.h"
+#include "asm_call.h"
+#include "c_init.h"
+#include "c_intrf.h"
+#include "cfg.h"
+#include "cpu/regs.h"
+#include "input.h"
+#include "macros.h"
+#include "ui.h"
+#include "ver.h"
+#include "zmovie.h"
+#include "zpath.h"
+#include "zstate.h"
+#include "ztimec.h"
 #include "c_gui.h"
 #include "c_guiwindp.h"
 #include "gui.h"
@@ -24,13 +24,13 @@
 #include "guiwindp.h"
 
 #ifdef __MSDOS__
-#include "../cpu/dspproc.h"
-#include "../dos/c_sound.h"
-#include "../dos/vesa2.h"
+#include "cpu/dspproc.h"
+#include "dos/c_sound.h"
+#include "dos/vesa2.h"
 #endif
 
 #if defined __UNIXSDL__ && defined __OPENGL__
-#include "../linux/gl_draw.h"
+#include "linux/gl_draw.h"
 #endif
 
 char CMovieExt = 'v';

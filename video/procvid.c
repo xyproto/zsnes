@@ -22,37 +22,37 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "../asm.h"
-#include "../asm_call.h"
-#include "../c_intrf.h"
-#include "../c_vcache.h"
-#include "../cfg.h"
-#include "../cpu/execute.h"
-#include "../cpu/regs.h"
-#include "../endmem.h"
-#include "../gui/c_gui.h"
-#include "../gui/gui.h"
-#include "../init.h"
-#include "../initc.h"
-#include "../input.h"
-#include "../macros.h"
-#include "../ui.h"
-#include "../vcache.h"
-#include "../zmovie.h"
-#include "../zstate.h"
-#include "../ztimec.h"
+#include "asm.h"
+#include "asm_call.h"
+#include "c_intrf.h"
+#include "c_vcache.h"
+#include "cfg.h"
+#include "cpu/execute.h"
+#include "cpu/regs.h"
+#include "endmem.h"
+#include "gui/c_gui.h"
+#include "gui/gui.h"
+#include "init.h"
+#include "initc.h"
+#include "input.h"
+#include "macros.h"
+#include "ui.h"
+#include "vcache.h"
+#include "zmovie.h"
+#include "zstate.h"
+#include "ztimec.h"
 #include "newgfx16.h"
 #include "procvid.h"
 #include "procvidc.h"
 
 #ifdef __MSDOS__
-#include "../dos/c_dosintrf.h"
-#include "../dos/c_sound.h"
+#include "dos/c_dosintrf.h"
+#include "dos/c_sound.h"
 #include "makevid.h"
 #endif
 
 #ifdef __UNIXSDL__
-#include "../linux/sdllink.h"
+#include "linux/sdllink.h"
 #endif
 
 char const* Msgptr;

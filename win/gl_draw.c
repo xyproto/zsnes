@@ -20,9 +20,9 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
 #include "gl_draw.h"
-#include "../cfg.h"
-#include "../link.h"
-#include "../video/copyvwin.h"
+#include "cfg.h"
+#include "link.h"
+#include "video/copyvwin.h"
 #include "winlink.h"
 #include <GL/gl.h>
 #include <GL/glext.h>

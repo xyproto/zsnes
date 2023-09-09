@@ -1,7 +1,7 @@
 #include "c_mode716.h"
-#include "../macros.h"
-#include "../types.h"
-#include "../ui.h"
+#include "macros.h"
+#include "types.h"
+#include "ui.h"
 
 void Makemode7Table(void)
 {

@@ -28,7 +28,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <stdlib.h>
 #include <string.h>
 
-#include "../argv.h"
+#include "argv.h"
 #include "safelib.h"
 
 // These are here because I don't believe in MSVC's prefixing affixation

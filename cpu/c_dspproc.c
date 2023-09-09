@@ -1,13 +1,13 @@
 #include <string.h>
 
-#include "../c_init.h"
-#include "../cfg.h"
-#include "../endmem.h"
-#include "../gblvars.h"
-#include "../init.h"
-#include "../initc.h"
-#include "../macros.h"
-#include "../ui.h"
+#include "c_init.h"
+#include "cfg.h"
+#include "endmem.h"
+#include "gblvars.h"
+#include "init.h"
+#include "initc.h"
+#include "macros.h"
+#include "ui.h"
 #include "c_dspproc.h"
 #include "dsp.h"
 #include "dspproc.h"
@@ -16,7 +16,7 @@
 #include "spc700.h"
 
 #ifdef __MSDOS__
-#include "../dos/c_sound.h"
+#include "dos/c_sound.h"
 #endif
 
 static eop* paramhack[4];

@@ -1,6 +1,6 @@
 #include "c_dma.h"
-#include "../initc.h"
-#include "../ui.h"
+#include "initc.h"
+#include "ui.h"
 #include "memtable.h"
 
 u1 AddrNoIncr = 0;

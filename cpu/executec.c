@@ -20,14 +20,14 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
 #ifdef __UNIXSDL__
-#include "../gblhdr.h"
+#include "gblhdr.h"
 #else
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
 #endif
-#include "../gblvars.h"
+#include "gblvars.h"
 
 //Start of execute.asm goodness
 extern unsigned char t1cc; // not sure about this one
