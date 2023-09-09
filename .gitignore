@@ -1,6 +1,8 @@
 *.[do]
-config.default
+build/
 cfg.h
+config.default
+include.txt
 input.h
 md.h
 parsegen
