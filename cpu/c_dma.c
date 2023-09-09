@@ -215,13 +215,16 @@ void c_reg420Cw(u4 eax)
 {
     u1 const al = eax;
     curhdma = al;
-    if (curypos < resolutn && (!(INTEnab & 0x10) || (80 <= HIRQLoc && HIRQLoc <= 176)) && nexthdma & al == 0) {
+    // [sneed] fix games that use double HDMA.
+    if (curypos < resolutn && (!(INTEnab & 0x10) || (80 <= HIRQLoc && HIRQLoc <= 176))) {
         nexthdma = al;
-        DMAInfo* esi = dmadata;
-        HDMAInfo* edx = hdmadata;
-        for (u1 i = 0x01; i != 0; ++esi, ++edx, i <<= 1) {
-            if (al & i)
-                setuphdma(i, edx, esi);
+        if (al != 0x00) {
+            DMAInfo* esi = dmadata;
+            HDMAInfo* edx = hdmadata;
+            for (u1 i = 0x01; i != 0; ++esi, ++edx, i <<= 1) {
+                if (al & i)
+                    setuphdma(i, edx, esi);
+            }
         }
     }
     if (nohdmaframe == 1)
