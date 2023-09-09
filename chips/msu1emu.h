@@ -4,6 +4,8 @@
 #include "../types.h"
 
 //File
+extern u1 MSU_StatusRead;
+extern u1 MSU_MusicVolume;
 extern int MSU_Track_Position;
 extern char MSU_BasePath[];
 int readMSU();

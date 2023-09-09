@@ -288,6 +288,8 @@ static void copy_state_data(uint8_t* buffer, void (*copy_func)(uint8_t**, void*,
 
     if(MSUEnable) {
         copy_func(&buffer, &MSU_Track_Position, sizeof(MSU_Track_Position));
+        copy_func(&buffer, &MSU_StatusRead, sizeof(MSU_StatusRead));
+        copy_func(&buffer, &MSU_MusicVolume, sizeof(MSU_MusicVolume));
     }
 
     if (method != csm_load_zst_old) {
@@ -901,7 +903,7 @@ void statesaver(void)
 extern uint32_t SfxMemTable[256], SfxCPB;
 extern uint32_t SfxPBR, SfxROMBR, SfxRAMBR, SCBRrel, SfxSCBR;
 extern uint8_t ioportval;
-extern uint8_t nexthdma;
+extern u1 nexthdma;
 
 static void read_save_state_data(uint8_t** dest, void* data, size_t len)
 {
@@ -1040,7 +1042,7 @@ void zst_sram_load(FILE* fp)
         fseek(fp, 1294, SEEK_CUR);
     }
     if(MSUEnable) {
-        fseek(fp, 4, SEEK_CUR);
+        fseek(fp, 6, SEEK_CUR);
     }
     fseek(fp, 220, SEEK_CUR);
     if (ramsize) {
@@ -1091,7 +1093,7 @@ void zst_sram_load_compressed(FILE* fp)
                         data += 1294;
                     }
                     if(MSUEnable) {
-                        data += 4;
+                        data += 6;
                     }
                     data += 220;
                     if (ramsize) {
