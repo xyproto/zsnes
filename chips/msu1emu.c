@@ -91,9 +91,13 @@ int readMSU() {
         fseek(MSUBinary, 0, SEEK_END); filelen = ftell(MSUBinary); rewind(MSUBinary);
 
         MSU_DATA = (u1*)malloc(filelen);
-        fread(MSU_DATA, filelen, 1, MSUBinary);
-        fclose(MSUBinary);
-        return 1;
+        if(MSU_DATA) {
+            fread(MSU_DATA, filelen, 1, MSUBinary);
+            fclose(MSUBinary);
+            return 1;
+        } else {
+            printf("Not enough space in memory for MSU-1.\n");
+        }
     }
     return 0;
 }
@@ -131,14 +135,18 @@ void MSU1HandleTrackChange() {
 
         //initialize track data
         TRACK_DATA = (short*)malloc(filelen);
-        fseek(TrackFileReader, 4, SEEK_SET);
-        fread(&MSU_Loop_Point, sizeof(int), 1, TrackFileReader);
-        fread(TRACK_DATA, filelen, 1, TrackFileReader);
-        fclose(TrackFileReader);
+        if(TRACK_DATA) {
+            fseek(TrackFileReader, 4, SEEK_SET);
+            fread(&MSU_Loop_Point, sizeof(int), 1, TrackFileReader);
+            fread(TRACK_DATA, filelen, 1, TrackFileReader);
+            fclose(TrackFileReader);
 #ifdef DEBUG
-        printf("Succesfully loaded Track %lu with length %lu\n", MSU_Track, filelen);
+            printf("Succesfully loaded Track %lu with length %lu\n", MSU_Track, filelen);
 #endif
-        MSU_Track_Length = filelen / 2;
+            MSU_Track_Length = filelen / 2;
+        } else {
+            printf("Not enough space in memory for MSU-1.\n");
+        }
     }
 }
 
