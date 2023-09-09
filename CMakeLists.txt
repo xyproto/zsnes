@@ -1,28 +1,72 @@
-cmake_minimum_required(VERSION 3.7)
-project(zsnes)
+cmake_minimum_required(VERSION 3.8)
+project(zsnes C CXX ASM_NASM)
 
-set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32 -pthread -no-pie -std=gnu++14 -O1 -march=pentium-mmx -fno-inline -fno-pic -mtune=generic -mmmx -D_FORTIFY_SOURCE=2 -L/usr/lib32 -mno-sse -mno-sse2 -ffunction-sections -fdata-sections -Wfatal-errors -w -rdynamic -DNO_AO -DNO_DEBUGGER -D__OPENGL__ -D__UNIXSDL__")
 set(CMAKE_C_STANDARD 99)
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -m32 -pthread -no-pie -std=gnu99 -fcommon -O1 -march=pentium-mmx -fno-inline -fno-pic -mtune=generic -mmmx -D_FORTIY_SOURCE=2 -L/usr/lib32 -mno-sse -mno-sse2 -ffunction-sections -fdata-sections -Wfatal-errors -w -rdynamic -DNO_AO -DNO_DEBUGGER -D__OPENGL__ -D__UNIXSDL__")
-set(CMAKE_LD_FLAGS "${CMAKE_LD_FLAGS} Wl,--as-needed -no-pie -L/usr/lib32 -Wl,--gc-sections -lz -ldl -lX11 -lGL")
+set(CMAKE_CXX_STANDARD 14)
 
-# Find and use sdl and png
-INCLUDE(FindPkgConfig)
-PKG_SEARCH_MODULE(SDL1 REQUIRED sdl)
-PKG_SEARCH_MODULE(PNG REQUIRED png)
-INCLUDE_DIRECTORIES(${SDL1_INCLUDE_DIRS} ${PKG_INCLUDE_DIRS)
-TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${SDL_LIBRARIES} ${PNG_LIBRARIES})
+set(BINARY zsnes)
+set(PSR parsegen)
+set(ASM nasm)
+
+ set(CMAKE_ASM_NASM_FLAGS "-O1 -w-orphan-labels -felf32 -DELF")
+set(CMAKE_C_FLAGS "-m32 -pthread -no-pie -std=gnu99 -fcommon -O1 -march=pentium-mmx -fno-inline -fno-pic -mtune=generic -mmmx -D_FORTIY_SOURCE=2 -L/usr/lib32 -mno-sse -mno-sse2 -ffunction-sections -fdata-sections -Wfatal-errors -w -rdynamic")
+set(CMAKE_CXX_FLAGS "-m32 -pthread -no-pie -std=gnu++14 -O1 -march=pentium-mmx -fno-inline -fno-pic -mtune=generic -mmmx -D_FORTIFY_SOURCE=2 -L/usr/lib32 -mno-sse -mno-sse2 -ffunction-sections -fdata-sections -Wfatal-errors -w -rdynamic")
+set(CMAKE_LINKER_FLAGS "-Wl,--as-needed -no-pie -L/usr/lib32 -Wl,--gc-sections -lz -ldl -lX11 -lGL")
+
+set(PSRFLAGS "-DNO_AO -DNO_DEBUGGER -D__OPENGL__ -D__UNIXSDL__")
 
 set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR})
 set(DIVISIBLE_INSTALL_BIN_DIR ${PROJECT_SOURCE_DIR}/bin)
 
-# include_directories(${DIVISIBLE_INSTALL_INCLUDE_DIR})
-# include_directories(${DIVISION_HEADERS_DIR})
-# add_subdirectory(src)
-# add_subdirectory(test)
+enable_language(ASM_NASM)
 
-add_executable(${PROJECT_NAME} "")
+
+add_library(c_init OBJECT c_init.c asm_call.h c_init.h types.h c_intrf.h cfg.h
+ cpu/c_execute.h cpu/../types.h cpu/c_regs.h cpu/c_regsw.h cpu/c_table.h
+ cpu/c_tablec.h cpu/execute.h cpu/regs.h cpu/../macros.h cpu/stable.h
+ debugger.h gui/c_gui.h gui/../types.h gui/c_guiwindp.h gui/gui.h
+ gui/../macros.h gui/guikeys.h gui/guiwindp.h init.h initc.h input.h
+ link.h macros.h ui.h video/c_mode716.h video/procvid.h video/../types.h
+ zmovie.h gblvars.h zpath.h zip/zunzip.h jma/zsnesjma.h zstate.h)
+target_include_directories(c_init PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+
+
+add_executable(${PROJECT_NAME} $<TARGET_OBJECTS:c_init>)
+target_link_libraries(${PROJECT_NAME} c_init)
+
+
+add_compile_definitions(NO_AO NO_DEBUGGER __OPENGL__ __UNIXSDL__)
+
+# Find and use sdl and png
+INCLUDE(FindPkgConfig)
+PKG_SEARCH_MODULE(SDL1 REQUIRED sdl)
+PKG_SEARCH_MODULE(PNG REQUIRED libpng)
+INCLUDE_DIRECTORIES(${SDL1_INCLUDE_DIRS} ${PKG_INCLUDE_DIRS})
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${SDL_LIBRARIES} ${PNG_LIBRARIES})
+
+add_executable(parsegen parsegen.cpp)
+target_link_libraries(parsegen LINK_PUBLIC z)
+
+add_custom_target(generate_files DEPENDS cfg.h input.h md.h)
+add_custom_command(
+    OUTPUT cfg.h cfg.o
+    COMMAND parsegen -DNO_AO -DNO_DEBUGGER -D__OPENGL__ -D__UNIXSDL__ -gcc cc -compile -flags '-m32 -pthread -no-pie -std=gnu99 -fcommon -O1 -march=pentium-mmx -fno-inline -fno-pic -mtune=generic -mmmx -D_FORTIY_SOURCE=2 -L/usr/lib32 -mno-sse -mno-sse2 -ffunction-sections -fdata-sections -Wfatal-errors -w -rdynamic -I/usr/include/SDL -D_GNU_SOURCE=1 -D_REENTRANT  -I/usr/include/libpng16  -DNO_AO -DNO_DEBUGGER -D__OPENGL__ -D__UNIXSDL__' -cheader cfg.h -fname cfg cfg.o cfg.psr
+    WORKDIR ${PROJECT_SOURCE_DIR}
+    DEPENDS parsegen
+)
+add_custom_command(
+    OUTPUT input.h input.o
+    COMMAND parsegen -DNO_AO -DNO_DEBUGGER -D__OPENGL__ -D__UNIXSDL__ -gcc cc -compile -flags '-m32 -pthread -no-pie -std=gnu99 -fcommon -O1 -march=pentium-mmx -fno-inline -fno-pic -mtune=generic -mmmx -D_FORTIY_SOURCE=2 -L/usr/lib32 -mno-sse -mno-sse2 -ffunction-sections -fdata-sections -Wfatal-errors -w -rdynamic -I/usr/include/SDL -D_GNU_SOURCE=1 -D_REENTRANT  -I/usr/include/libpng16  -DNO_AO -DNO_DEBUGGER -D__OPENGL__ -D__UNIXSDL__' -cheader input.h -fname input input.o input.psr
+    WORKDIR ${PROJECT_SOURCE_DIR}
+    DEPENDS parsegen
+)
+add_custom_command(
+    OUTPUT md.h md.o
+    COMMAND parsegen -DNO_AO -DNO_DEBUGGER -D__OPENGL__ -D__UNIXSDL__ -gcc cc -compile -flags '-m32 -pthread -no-pie -std=gnu99 -fcommon -O1 -march=pentium-mmx -fno-inline -fno-pic -mtune=generic -mmmx -D_FORTIY_SOURCE=2 -L/usr/lib32 -mno-sse -mno-sse2 -ffunction-sections -fdata-sections -Wfatal-errors -w -rdynamic -I/usr/include/SDL -D_GNU_SOURCE=1 -D_REENTRANT  -I/usr/include/libpng16  -DNO_AO -DNO_DEBUGGER -D__OPENGL__ -D__UNIXSDL__' -cheader md.h -fname md md.o md.psr
+    WORKDIR ${PROJECT_SOURCE_DIR}
+    DEPENDS parsegen
+)
+
 target_sources(${PROJECT_NAME} PRIVATE
 c_init.c
 c_vcache.c
@@ -160,4 +204,25 @@ linux/sockserv.c
 linux/sw_draw.c
 linux/gl_draw.c
 mmlib/linux.c
+cpu/regs.mac
+cpu/regsw.mac
+macros.mac
+video/mode7.mac
+video/mode716.mac
+video/newg162.mac
+video/newg16wn.mac
+video/newgfx.mac
+video/newgfx16.mac
+video/newgfx2.mac
+video/newgfxwn.mac
+video/vidmacro.mac
+chips/fxemu2.mac
+chips/fxemu2b.mac
+chips/fxemu2c.mac
 )
+
+# Set the project root directory
+set(PROJECT_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
+
+# Add the project root directory as a source directory
+include_directories(${PROJECT_ROOT})
