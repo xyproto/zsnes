@@ -822,6 +822,8 @@ COPemulmode
     mov esi,IRAM
     sub esi,3000h
     mov [initaddrl],esi
+    and eax,7ffh
+    add eax,3000h		;FuSoYa:Fixes the fix
     add esi,eax
     endloop
 %endmacro

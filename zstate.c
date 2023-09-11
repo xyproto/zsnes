@@ -600,7 +600,6 @@ void RestoreSA1()
     }
 
     SA1Ptr += (uintptr_t)SA1RegPCS;
-    SA1RAMArea = romdata + 4096 * 1024;
 }
 
 #define ResState(Voice_BufPtr)                               \

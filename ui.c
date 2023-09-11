@@ -41,6 +41,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #define BIT(x) (1 << (x))
 
+extern uint8_t *SA1RAMArea;
 extern unsigned int xa, maxromspace;
 extern unsigned char spcon, device1, device2;
 extern char CSStatus[], CSStatus2[], CSStatus3[], CSStatus4[];
@@ -272,22 +273,12 @@ static void allocmem()
     AllocmemFail(vcache2b, 262144 + 256);
     AllocmemFail(vcache4b, 131072 + 256);
     AllocmemFail(vcache8b, 65536 + 256);
+    AllocmemFail(SA1RAMArea, 131072);
+    AllocmemFail(romaptr, 0x1000000);
 
     newgfx16b = 1;
-    if ((romaptr = malloc(0x600000 + 32768 * 2 + 4096))) {
-        maxromspace = 0x600000;
-    } else {
-        if ((romaptr = malloc(0x400000 + 32768 * 2 + 4096))) {
-            maxromspace = 0x400000;
-        } else {
-            if ((romaptr = malloc(0x200000 + 32768 * 2 + 4096))) {
-                maxromspace = 0x200000;
-            } else {
-                outofmemory();
-            }
-        }
-    }
-
+    maxromspace = 0xC00000;
+    
     // Set up memory values
     vidbuffer = vbufaptr;
     vidbufferofsa = vbufaptr;
@@ -296,8 +287,8 @@ static void allocmem()
 
     headdata = romaptr;
     romdata = romaptr;
-    sfxramdata = romaptr + 0x400000;
-    setaramdata = romaptr + 0x400000;
+    sfxramdata = romaptr + 0xE00000;
+    setaramdata = romaptr + 0xE00000;
 
     // Puts this ASM after the end of the ROM:
     //         CLI
