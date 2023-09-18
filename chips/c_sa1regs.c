@@ -35,11 +35,9 @@ void SA1Reset(void)
     irqv = irqv2;
     nmiv = nmiv2;
     SA1RegPCS = romdata - 0x8000;
-    SA1RAMArea = romdata + 4096 * 1024;
-    u1* const eax = romdata + 4096 * 1024 - 0x6000;
-    CurBWPtr = eax;
-    SA1BWPtr = eax;
-    SNSBWPtr = eax;
+    CurBWPtr = SA1RAMArea - 0x6000;
+    SA1BWPtr = SA1RAMArea - 0x6000;
+    SNSBWPtr = SA1RAMArea - 0x6000;
     SA1xa = 0;
     SA1xx = 0;
     SA1xy = 0;

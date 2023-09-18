@@ -501,8 +501,8 @@ NEWSYM sa12224w ; BWRAM
     mov bl,al
     and ebx,1Fh
     shl ebx,13
-    add ebx,[romdata]
-    add ebx,1024*4096-6000h
+    add ebx,[SA1RAMArea]
+    sub ebx,6000h
     mov [SNSBWPtr],ebx
     cmp byte[SA1Status],0
     jne .nosnes
@@ -516,8 +516,8 @@ NEWSYM sa12225w ; BWRAM
     mov bl,al
     and ebx,1Fh
     shl ebx,13
-    add ebx,[romdata]
-    add ebx,1024*4096-6000h
+    add ebx,[SA1RAMArea]
+    sub ebx,6000h
     mov [SA1BWPtr],ebx
     cmp byte[SA1Status],0
     je .nosa1b
@@ -547,8 +547,7 @@ NEWSYM sa12225w ; BWRAM
     and ebx,3Fh
     shl ebx,12
 .4col
-    add ebx,[romdata]
-    add ebx,1024*4096
+    add ebx,[SA1RAMArea]
     mov [SA1BWPtr],ebx
     cmp byte[SA1Status],0
     je .nosa1
@@ -936,7 +935,7 @@ sa1chconv:
     pushad
     mov edx,[sa1dmaptrs]
     mov ebx,[romdata]
-    add ebx,4096*1024+1024*1024
+    add ebx,0xE00000 ; [sneed] Fix SA-1
     mov edi,16*2
 .loop38b
     push ebx
@@ -979,7 +978,7 @@ sa1chconv:
     mov ecx,10000h
     mov edx,[sa1dmaptrs]
     mov ebx,[romdata]
-    add ebx,4096*1024+1024*1024
+    add ebx,0xE00000 ; [sneed] Fix SA-1
 .next8b
     mov al,[ebx]
     mov [edx],al
@@ -994,7 +993,7 @@ sa1chconv:
     pushad
     mov edx,[sa1dmaptrs]
     mov ebx,[romdata]
-    add ebx,4096*1024+1024*1024
+    add ebx,0xE00000 ; [sneed] Fix SA-1
     mov edi,16
 .loop34b
     push ebx
@@ -1031,7 +1030,7 @@ sa1chconv:
     mov ecx,10*128*8
     mov edx,[sa1dmaptrs]
     mov ebx,[romdata]
-    add ebx,4096*1024+1024*1024
+    add ebx,0xE00000 ; [sneed] Fix SA-1
 .next4b
     mov al,[ebx]
     mov [edx],al
@@ -1047,7 +1046,7 @@ sa1chconv:
     pushad
     mov edx,[sa1dmaptrs]
     mov ebx,[romdata]
-    add ebx,4096*1024+1024*1024
+    add ebx,0xE00000 ; [sneed] Fix SA-1
     mov edi,16
 .loop3
     push ebx
@@ -1081,7 +1080,7 @@ sa1chconv:
     mov ecx,10*64*8
     mov edx,[sa1dmaptrs]
     mov ebx,[romdata]
-    add ebx,4096*1024+1024*1024
+    add ebx,0xE00000 ; [sneed] Fix SA-1
 .next
     mov al,[ebx]
     mov [edx],al
