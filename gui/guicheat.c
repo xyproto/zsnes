@@ -36,11 +36,12 @@ u1 CopyRamToggle;
 
 static u1 FirstSearch;
 
-static void set_cheat_data(u1* const c, u1 const toggle, u1 const value, u1 const address, u1 const pvalue)
+static void set_cheat_data(u1* const c, u1 const toggle, u1 const value, u4 const address, u1 const pvalue)
 {
     c[0] = toggle;
     c[1] = value;
-    *(u2*)(c + 2) = address;
+    c[2] = address;
+    c[3] = address >> 8;
     c[4] = address >> 16;
     c[5] = pvalue;
 }
