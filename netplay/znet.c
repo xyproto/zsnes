@@ -177,7 +177,6 @@ void NetplayHandleInputsBlank(void) {
 
 	// Let's check for new inputs
 	if (currentNetdup > netdupValue) {
-		currentNetdup = 0;
 		if (!NetIsClient) { // server input handling, receive client data, send over full input data
 			CheckForNewStateServer(true);
 
@@ -211,6 +210,7 @@ void NetplayHandleInputsBlank(void) {
 			memcpy(ZTransmitBuffer + HEADER_SIZE_NET, &ClientData, sizeof(struct PacketInfoClient));
 			PacketSend(0);
 		}
+		currentNetdup = 0;
 		MyJoyData = 0;
 		MyJoyDataBlacklistCurrent = MyJoyDataBlacklistNext;
 		MyJoyDataBlacklistNext = 0;
