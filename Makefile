@@ -3,7 +3,7 @@ CXX_HOST = g++
 ASM = nasm
 
 # TODO: FreeBSD has a patch for being able to build without -fcommon
-CFLAGS += -m32 -march=pentium-mmx -D_FORTIFY_SOURCE=2 -no-pie -std=gnu99 -fcommon -O1 -fno-inline -fno-pic -ffunction-sections -fdata-sections -Wfatal-errors -w
+CFLAGS += -m32 -march=pentium-mmx -no-pie -std=gnu99 -fcommon -O1 -fno-inline -fno-pic -ffunction-sections -fdata-sections -Wfatal-errors -w
 LDFLAGS += -Wl,--as-needed -no-pie -Wl,--gc-sections -lz
 # -O1 is mandatory
 ASMFLAGS += -O1 -w-orphan-labels
@@ -32,6 +32,7 @@ ifdef WINDOWS
 else
 	CC = gcc
 	CXX = g++
+	CFLAGS += -D_FORTIFY_SOURCE=2
 	ASMFLAGS += -felf32 -DELF
 	LDFLAGS += -lGL
 	ifdef LIBRARIES_ROOT
