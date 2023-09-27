@@ -227,7 +227,7 @@ all: $(BINARY)
 
 debug: DEBUGFLAGS += -g
 debug: $(BINARY)
-	gdb $(BINARY) --args zsnes -join 127.0.0.1 ./rom.sfc
+	gdb $(BINARY) --args zsnes ./rom.sfc
 
 -include $(DEPS)
 
