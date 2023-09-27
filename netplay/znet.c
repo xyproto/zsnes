@@ -28,6 +28,7 @@ int netdupValue = 0;
 int currentNetdup = 0;
 int playersCountedInput = 0;
 int retries = 0;
+int triedToHitBetterNetdup = 0;
 
 // For current frame (if netdup)
 u4 LastJoyDataA;
@@ -82,10 +83,11 @@ void CheckForNewStateServer(bool repeat) {
 					return;
 				}
 			}
-			if(seconds > 0.1f && !badNetdup) {
+			if(seconds > (1.f/30.f) && !badNetdup) {
 				//we didn't receive everything in time, netdup should probably be raised to avoid lagging
 				netdupValue++;
 				if(netdupValue > 20) { netdupValue = 20; }
+				triedToHitBetterNetdup = 0;
 				//printf("Raised netdup due to repeat to: %d\n", netdupValue);
 				badNetdup = true;
 			}
@@ -94,8 +96,12 @@ void CheckForNewStateServer(bool repeat) {
 
 	//we got everything earlier than expected, maybe it's safe to try a less little netdup?
 	if(repeat && !badNetdup) {
-		netdupValue--;
-		if(netdupValue < 0) { netdupValue = 0; }
+		triedToHitBetterNetdup++;
+		if(triedToHitBetterNetdup >= 10) { //it must really be better if we have tried it 10 times
+			netdupValue--;
+			if(netdupValue < 0) { netdupValue = 0; }
+			triedToHitBetterNetdup = 0;
+		}
 		//printf("Lowered netdup (good): %d\n", netdupValue);
 	}
 	retries = 0;
