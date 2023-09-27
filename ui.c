@@ -34,6 +34,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define BIT(x) (1 << (x))
 
 extern uint8_t *SA1RAMArea;
+extern uint8_t *SA1DMAData;
 extern unsigned int xa;
 extern unsigned char spcon, device1, device2;
 extern char CSStatus[], CSStatus2[], CSStatus3[], CSStatus4[];
@@ -367,6 +368,7 @@ static void allocmem() {
 	AllocmemFail(vcache4b, 131072 + 256);
 	AllocmemFail(vcache8b, 65536 + 256);
 	AllocmemFail(SA1RAMArea, 131072);
+	AllocmemFail(SA1DMAData, 262144); //to-do: verify number, should be safe though
 	AllocmemFail(sfxplotcache, 1048576);
 	AllocmemFail(sfxramdata, 262144);
 	AllocmemFail(setaramdata, 4096);

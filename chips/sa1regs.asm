@@ -269,6 +269,7 @@ num2writesa1reg equ $-SA1Mode
 NEWSYM PHnum2writesa1reg, dd num2writesa1reg
 
 NEWSYM SA1RAMArea, dd 0
+NEWSYM SA1DMAData, dd 0
 NEWSYM SA1Temp, dd 0
 NEWSYM Sdd1Mode, dd 0
 NEWSYM Sdd1Bank, dd 0
@@ -937,8 +938,7 @@ sa1chconv:
 .8bit
     pushad
     mov edx,[sa1dmaptrs]
-    mov ebx,[romdata]
-    add ebx,0xE00000 ; [sneed] Fix SA-1
+    mov ebx,[SA1DMAData] ; [sneed] Fix SA-1
     mov edi,16*2
 .loop38b
     push ebx
@@ -980,8 +980,7 @@ sa1chconv:
 
     mov ecx,10000h
     mov edx,[sa1dmaptrs]
-    mov ebx,[romdata]
-    add ebx,0xE00000 ; [sneed] Fix SA-1
+    mov ebx,[SA1DMAData] ; [sneed] Fix SA-1
 .next8b
     mov al,[ebx]
     mov [edx],al
@@ -995,8 +994,7 @@ sa1chconv:
 .4bit
     pushad
     mov edx,[sa1dmaptrs]
-    mov ebx,[romdata]
-    add ebx,0xE00000 ; [sneed] Fix SA-1
+    mov ebx,[SA1DMAData] ; [sneed] Fix SA-1
     mov edi,16
 .loop34b
     push ebx
@@ -1032,8 +1030,7 @@ sa1chconv:
 
     mov ecx,10*128*8
     mov edx,[sa1dmaptrs]
-    mov ebx,[romdata]
-    add ebx,0xE00000 ; [sneed] Fix SA-1
+    mov ebx,[SA1DMAData] ; [sneed] Fix SA-1
 .next4b
     mov al,[ebx]
     mov [edx],al
@@ -1048,8 +1045,7 @@ sa1chconv:
 .2bit
     pushad
     mov edx,[sa1dmaptrs]
-    mov ebx,[romdata]
-    add ebx,0xE00000 ; [sneed] Fix SA-1
+    mov ebx,[SA1DMAData] ; [sneed] Fix SA-1
     mov edi,16
 .loop3
     push ebx
@@ -1082,8 +1078,7 @@ sa1chconv:
 
     mov ecx,10*64*8
     mov edx,[sa1dmaptrs]
-    mov ebx,[romdata]
-    add ebx,0xE00000 ; [sneed] Fix SA-1
+    mov ebx,[SA1DMAData] ; [sneed] Fix SA-1
 .next
     mov al,[ebx]
     mov [edx],al
