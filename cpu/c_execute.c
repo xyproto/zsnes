@@ -25,6 +25,7 @@
 #include "../video/procvid.h"
 #include "../zmovie.h"
 #include "../zstate.h"
+#include "../netplay/znet.h"
 #include "c_65816d.h"
 #include "c_execute.h"
 #include "c_memory.h"
@@ -119,6 +120,8 @@ static void reexecuteb2(void)
         showmenu();
     } else if (ReturnFromSPCStall == 1) {
         goto activatereset;
+    } else if (NetIsNetplay) {
+        return;
     } else if (pressed[KeySaveState] & 1) {
         pressed[1] = 0;
         pressed[KeySaveState] = 2;
