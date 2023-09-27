@@ -45,6 +45,7 @@ struct PacketInfoClient ClientData;
 // Check for new state (Server)
 void CheckForNewStateServer(bool repeat) {
 	// let's wait until we know everyone is in the same state.
+	bool badNetdup = false;
 	clock_t start = clock();
 	do {
 		// check
@@ -81,8 +82,22 @@ void CheckForNewStateServer(bool repeat) {
 					return;
 				}
 			}
+			if(seconds > 0.1f && !badNetdup) {
+				//we didn't receive everything in time, netdup should probably be raised to avoid lagging
+				netdupValue++;
+				if(netdupValue > 20) { netdupValue = 20; }
+				//printf("Raised netdup due to repeat to: %d\n", netdupValue);
+				badNetdup = true;
+			}
 		}
 	} while (repeat && playersCountedInput < ZPlayers);
+
+	//we got everything earlier than expected, maybe it's safe to try a less little netdup?
+	if(repeat && !badNetdup) {
+		netdupValue--;
+		if(netdupValue < 0) { netdupValue = 0; }
+		//printf("Lowered netdup (good): %d\n", netdupValue);
+	}
 	retries = 0;
 }
 
@@ -173,10 +188,12 @@ void NetplayHandleInputsBlank(void) {
 			DataServer.JoyDataA = JoyDataNextA;
 			DataServer.JoyDataB = JoyDataNextB;
 			DataServer.JoyDataC = JoyDataNextC;
+			DataServer.SendNetdup = netdupValue;
 			memcpy(ZTransmitBuffer + HEADER_SIZE_NET, &DataServer, sizeof(struct PacketInfoServer));
 			for (int i = 0; i < ZPlayers; i++) { PacketSend(i); }
 		} else { // client input handling, receive server data for handling input
 			CheckForNewStateClient(true);
+			netdupValue = DataServer.SendNetdup;
 
 			// Update timer.
 			CurrentInputFetch++;

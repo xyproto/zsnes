@@ -56,12 +56,7 @@ static void display_start_message() {
 static void handle_params(int argc, char *argv[]) {
 	for (int i = 1; i < argc; i++) {
 		if (argv[i]) {
-			if (strcmp(argv[i], "-netdup") == 0) {
-				netdupValue = (argv[i + 1][0] - 0x30) * 2;
-				currentNetdup = netdupValue;
-				i++;
-				printf("Netdupvalue set to %d\n", netdupValue);
-			} else if (strcmp(argv[i], "-host") == 0) {
+			if (strcmp(argv[i], "-host") == 0) {
 				StartServer(argv[i + 1]);
 				i++;
 			} else if (strcmp(argv[i], "-join") == 0) {

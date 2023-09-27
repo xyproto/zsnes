@@ -41,8 +41,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 // Netplay variables
 extern int ZMaxPlayers;
-extern int netdupValue;
-extern int currentNetdup;
 extern bool NetIsNetplay;
 extern bool NetIsClient;
 extern u4 MyJoyData;
@@ -60,13 +58,14 @@ extern void HandleDisconnection();
 
 // Packet info (Client)
 struct PacketInfoClient {
-	int CurrentInputTimer;
+	u4 CurrentInputTimer;
 	u4 JoyDataClient;
 };
 
 // Packet info (Server)
 struct PacketInfoServer {
-	int CurrentInputTimer;
+	u1 SendNetdup;
+	u4 CurrentInputTimer;
 	u4 JoyDataA;
 	u4 JoyDataB;
 	u4 JoyDataC;
