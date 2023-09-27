@@ -25,7 +25,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #include "../chips/msu1emu.h"
 #include "../asm_call.h"
-#include "../cfg.h"
+#include "../config/cfg.h"
 #include "../cpu/dspproc.h"
 #include "../netplay/znet.h"
 #include "../link.h"

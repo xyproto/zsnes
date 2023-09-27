@@ -32,11 +32,11 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #endif
 
 #include "../asm_call.h"
-#include "../cfg.h"
+#include "../config/cfg.h"
 #include "../initc.h"
-#include "../input.h"
+#include "../config/input.h"
 #include "../macros.h"
-#include "../md.h"
+#include "../config/md.h"
 #include "../ui.h"
 #include "../zdir.h"
 #include "../zpath.h"

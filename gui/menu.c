@@ -25,7 +25,7 @@
 #include "../asm_call.h"
 #include "../c_intrf.h"
 #include "../c_vcache.h"
-#include "../cfg.h"
+#include "../config/cfg.h"
 #include "../cpu/c_65816d.h"
 #include "../cpu/c_execute.h"
 #include "../cpu/c_memory.h"

@@ -10,7 +10,6 @@ ASMFLAGS += -O1 -w-orphan-labels
 
 #WITH_DEBUGGER  := yes
 #WITH_PNG       := yes
-#REGEN_PSR      := yes
 #WINDOWS        := yes
 
 # Import libraries from root folder. This is currently necessary on Ubuntu, since it's not possible to download i386 packages
@@ -43,7 +42,6 @@ endif
 
 # Other
 BINARY     ?= zsnes
-PSR        ?= parsegen
 
 # SDL is necessary
 SDL_CONFIG ?= pkg-config sdl
@@ -179,17 +177,9 @@ SRCS += zstate.c
 SRCS += ztimec.c
 SRCS += netplay/znet.c
 SRCS += netplay/zsocket.c
-
-ifdef REGEN_PSR
-PSRS :=
-PSRS += cfg.psr
-PSRS += input.psr
-PSRS += md.psr
-else
-SRCS += cfg.c
-SRCS += input.c
-SRCS += md.c
-endif
+SRCS += config/cfg.c
+SRCS += config/input.c
+SRCS += config/md.c
 
 ifdef WITH_DEBUGGER
 SRCS += debugasm.c
@@ -212,11 +202,7 @@ SRCS += mmlib/linux.c
 ASMFLAGS += $(CFGDEFS)
 CFLAGS += $(CFGDEFS)
 
-ifdef REGEN_PSR
-	OBJS := $(filter %.o, $(SRCS:.asm=.o) $(SRCS:.c=.o) $(PSRS:.psr=.o))
-else
-	OBJS := $(filter %.o, $(SRCS:.asm=.o) $(SRCS:.c=.o))
-endif
+OBJS := $(filter %.o, $(SRCS:.asm=.o) $(SRCS:.c=.o))
 DEPS := $(OBJS:.o=.d)
 
 .SUFFIXES:
@@ -245,16 +231,6 @@ $(BINARY): $(OBJS)
 	@echo '===> CC $<'
 	$(Q)$(CC) $(CFLAGS) $(DEBUGFLAGS) -c -MMD -o $@ $<
 
-ifdef REGEN_PSR
-$(PSR): parsegen.cpp
-	@echo '===> PSRBUILD $@'
-	$(Q)$(CXX_HOST) -o $@ $< -lz
-
-%.h %.o: %.psr $(PSR)
-	@echo '===> PSR $@'
-	$(Q)./$(PSR) $(CFGDEFS) -gcc $(CC) -compile -flags '$(CFLAGS)' -cheader $@ -fname $(*F) $(@:.h=.o) $<
-endif
-
 %.h:
 	@true
 
@@ -263,7 +239,7 @@ endif
 
 clean distclean:
 	@echo '===> CLEAN'
-	$(Q)rm -fr $(DEPS) $(OBJS) $(BINARY) $(PSR)
+	$(Q)rm -fr $(DEPS) $(OBJS) $(BINARY)
 ifdef CLEAN_MORE
 	$(Q)find . -name "*.[do]" -delete
 endif
@@ -271,14 +247,12 @@ endif
 info:
 	@echo "WITH_DEBUGGER = $(WITH_DEBUGGER)"
 	@echo "WITH_PNG      = $(WITH_PNG)"
-	@echo "REGEN_PSR     = $(REGEN_PSR)"
 	@echo "WINDOWS       = $(WINDOWS)"
 	@echo "BINARY        = $(BINARY)"
 	@echo "ASM           = $(ASM)"
 	@echo "CC            = $(CC)"
 	@echo "CXX           = $(CXX)"
 	@echo "CXX_HOST      = $(CXX_HOST)"
-	@echo "PSR           = $(PSR)"
 	@echo "PNG_CONFIG    = $(PNG_CONFIG)"
 	@echo "CFLAGS_PNG    = $(CFLAGS_PNG)"
 	@echo "LDFLAGS_PNG   = $(LDFLAGS_PNG)"

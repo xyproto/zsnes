@@ -23,7 +23,7 @@
 
 #include <string.h>
 
-#include "../cfg.h"
+#include "../config/cfg.h"
 #include "../ui.h"
 #include "../video/procvid.h"
 #include "c_gui.h"

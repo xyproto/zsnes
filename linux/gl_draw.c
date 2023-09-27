@@ -20,7 +20,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
 #include "../ver.h"
-#include "../cfg.h"
+#include "../config/cfg.h"
 #include "../gblhdr.h"
 #include "../link.h"
 #include <stdint.h>

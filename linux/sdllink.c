@@ -28,13 +28,13 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <time.h>
 
 #include "../c_intrf.h"
-#include "../cfg.h"
+#include "../config/cfg.h"
 #include "../cpu/execute.h"
 #include "../gui/c_gui.h"
 #include "../gui/gui.h"
 #include "../gui/guimouse.h"
 #include "../initc.h"
-#include "../input.h"
+#include "../config/input.h"
 #include "../types.h"
 #include "../link.h"
 #include "../ui.h"

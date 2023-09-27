@@ -30,7 +30,7 @@
 #include "../cpu/spc700.h"
 #include "../gblvars.h"
 #include "../initc.h"
-#include "../input.h"
+#include "../config/input.h"
 #include "../macros.h"
 #include "../video/procvidc.h"
 #include "../zmovie.h"

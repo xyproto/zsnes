@@ -28,7 +28,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #endif
 #include <errno.h>
 
-#include "cfg.h"
+#include "config/cfg.h"
 #include "zpath.h"
 
 char ZCfgFile[] = "zsnesl.cfg";

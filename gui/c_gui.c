@@ -4,7 +4,7 @@
 #include "../c_init.h"
 #include "../c_intrf.h"
 #include "../c_vcache.h"
-#include "../cfg.h"
+#include "../config/cfg.h"
 #include "../cpu/c_dspproc.h"
 #include "../cpu/c_execute.h"
 #include "../cpu/execute.h"

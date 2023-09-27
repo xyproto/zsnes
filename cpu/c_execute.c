@@ -5,7 +5,7 @@
 #include "../c_init.h"
 #include "../c_intrf.h"
 #include "../c_vcache.h"
-#include "../cfg.h"
+#include "../config/cfg.h"
 #include "../chips/fxemu2.h"
 #include "../chips/fxtable.h"
 #include "../chips/sa1regs.h"

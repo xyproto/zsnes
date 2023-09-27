@@ -18,7 +18,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "msu1emu.h"
 #include "../gblvars.h"
 #include "../ui.h"
-#include "../cfg.h"
+#include "../config/cfg.h"
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>

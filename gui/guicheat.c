@@ -21,7 +21,7 @@
 
 #include <string.h>
 
-#include "../cfg.h"
+#include "../config/cfg.h"
 #include "../cpu/memtable.h"
 #include "../init.h"
 #include "../ui.h"
