@@ -148,6 +148,7 @@ int InitSound() {
 }
 
 void DeinitSound() {
+	SDL_PauseAudio(1);
 	SDL_CloseAudio();
 	if (sdl_audio_buffer) {
 		free(sdl_audio_buffer);
