@@ -1,4 +1,4 @@
-# ZSNES 2 (Custom Test Branch)
+# ZSNES 2.0.13-experimental (Custom Test Branch)
 This is a new branch of https://github.com/xyproto/zsnes to test certain features, a full conversion to SDL/OpenGL, Netplay Reimplementation, along other features. All changes here are experimental and aren't ready for the main branch yet.
 
 <img align="right" width="128" height="128" alt="logo" src="icon.png">
