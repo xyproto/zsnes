@@ -24,30 +24,25 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #include <QCloseEvent>
 #include <QMainWindow>
-
-#ifdef __UNIXSDL__ // I hate this hack -Nach
 #include "debugger/ui_debugger.h"
-#else
-#include "ui_debugger.h"
-#endif
 
 class QtDebugger : public QMainWindow {
-    Q_OBJECT
+	Q_OBJECT
 
-private:
-    Ui::Debugger ui;
+  private:
+	Ui::Debugger ui;
 
-    static QtDebugger* singleton;
+	static QtDebugger *singleton;
 
-    QtDebugger(QWidget* parent);
-    ~QtDebugger();
+	QtDebugger(QWidget *parent);
+	~QtDebugger();
 
-private slots:
-    void on_pauseButton_clicked();
+  private slots:
+	void on_pauseButton_clicked();
 
-public:
-    static void showQtDebugger(QWidget* parent);
-    static void destroyQtDebugger();
+  public:
+	static void showQtDebugger(QWidget *parent);
+	static void destroyQtDebugger();
 };
 
 #endif

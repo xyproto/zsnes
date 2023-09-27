@@ -42,7 +42,6 @@ using namespace std;
 typedef int ssize_t;
 #define strcasecmp stricmp
 #define strncasecmp strnicmp
-#define __WIN32__
 #endif
 
 string gcc = "gcc";
@@ -651,9 +650,6 @@ void output_parser_start(ostream& c_stream, const string& cheader_file)
              << "#include <stdlib.h>\n"
              << "#include <ctype.h>\n"
              << "#include <string.h>\n";
-    if (defines.find("PSR_COMPRESSED") != defines.end()) {
-        c_stream << "#include <zlib.h>\n";
-    }
     if (cheader_file.length()) {
         c_stream << "#include \"" << cheader_file << "\"\n";
     }
@@ -782,10 +778,6 @@ void output_cheader_start(ostream& cheader_stream)
                    << "\n"
                    << "unsigned char read_" << family_name << "_vars(const char *);\n"
                    << "unsigned char write_" << family_name << "_vars(const char *);\n";
-    if (defines.find("PSR_COMPRESSED") != defines.end()) {
-        cheader_stream << "unsigned char read_" << family_name << "_vars_compressed(const char *);\n"
-                       << "unsigned char write_" << family_name << "_vars_compressed(const char *);\n";
-    }
     if (defines.find("PSR_MEMCPY") != defines.end()) {
         cheader_stream << "void read_" << family_name << "_vars_memory(unsigned char *);\n"
                        << "void write_" << family_name << "_vars_memory(unsigned char *);\n"
@@ -967,28 +959,6 @@ void output_write_var(ostream& c_stream)
              << "  }\n"
              << "  return(0);\n"
              << "}\n";
-
-    if (defines.find("PSR_COMPRESSED") != defines.end()) {
-        c_stream << "\n"
-                 << "unsigned char write_" << family_name << "_vars_compressed(const char *file)\n"
-                 << "{\n"
-                 << "  gzFile gzfp;\n"
-                 << "\n";
-        if (defines.find("PSR_EXTERN") == defines.end()) {
-            c_stream << "  init_" << family_name << "_vars();\n"
-                     << "\n";
-        }
-        c_stream << "  if ((gzfp = gzopen(file, \"wb9\")))\n"
-                 << "  {\n"
-                 << "    write_" << family_name << "_vars_internal(gzfp, gzprintf);\n"
-                 << "    gzclose(gzfp);\n"
-                 << "\n"
-                 << "    return(1);\n"
-                 << "  }\n"
-                 << "\n"
-                 << "  return(0);\n"
-                 << "}\n";
-    }
 
     if (defines.find("PSR_MEMCPY") != defines.end()) {
         c_stream << "\n"
@@ -1250,38 +1220,6 @@ void output_read_var(ostream& c_stream)
     }
     c_stream << "  return(0);\n"
              << "}\n";
-
-    if (defines.find("PSR_COMPRESSED") != defines.end()) {
-        c_stream << "\n"
-                 << "static char *gzgets_fix(char *buf, int len, void *file)\n"
-                 << "{\n"
-                 << "  return(gzgets(file, buf, len));\n"
-                 << "}\n"
-                 << "\n"
-                 << "unsigned char read_" << family_name << "_vars_compressed(const char *file)\n"
-                 << "{\n"
-                 << "  gzFile gzfp;\n"
-                 << "\n";
-        if (defines.find("PSR_EXTERN") == defines.end()) {
-            c_stream << "  init_" << family_name << "_vars();\n"
-                     << "\n";
-        }
-        c_stream << "  if ((gzfp = gzopen(file, \"rb\")))\n"
-                 << "  {\n"
-                 << "    read_" << family_name << "_vars_internal(gzfp, gzgets_fix, gzeof);\n"
-                 << "    gzclose(gzfp);\n";
-        if (defines.find("PSR_NOUPDATE") == defines.end()) {
-            c_stream << "    write_" << family_name << "_vars_compressed(file);\n";
-        }
-        c_stream << "    return(1);\n"
-                 << "  }\n"
-                 << "\n";
-        if (defines.find("PSR_NOUPDATE") == defines.end()) {
-            c_stream << "  write_" << family_name << "_vars_compressed(file);\n";
-        }
-        c_stream << "  return(0);\n"
-                 << "}\n";
-    }
 
     if (defines.find("PSR_MEMCPY") != defines.end()) {
         c_stream << "\n"
@@ -1668,9 +1606,6 @@ int main(int argc, const char* const* const argv)
              << "\n"
              << "Options:\n"
              << "\n"
-             << "  -Ddefine   Define a processor director. Example: -D__WIN32__\n"
-             << "             Can specify multiple defines.\n"
-             << "\n"
              << "  -cheader   Create a C/C++ header with the following name.\n"
              << "             Example: -cheader cfgvars.h\n"
              << "\n"
@@ -1733,7 +1668,7 @@ int main(int argc, const char* const* const argv)
         string command = COMPILE_OBJ(obj_file, cname);
         cout << "parsegen: " << command << "\n";
         system(command.c_str());
-        remove(cname.c_str());
+        //remove(cname.c_str());
     }
 
     return (ret_val);

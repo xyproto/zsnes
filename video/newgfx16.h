@@ -67,10 +67,10 @@ extern void mosdraw1416bntms();
 extern void mosdraw1516bntms();
 extern void mosdraw1616bntms();
 
-extern eop* mosjmptab16b[15];
-extern eop* mosjmptab16bntms[15];
-extern eop* mosjmptab16bt[15];
-extern eop* mosjmptab16btms[15];
+extern eop *mosjmptab16b[15];
+extern eop *mosjmptab16bntms[15];
+extern eop *mosjmptab16bt[15];
+extern eop *mosjmptab16btms[15];
 extern u4 BackAreaAdd;
 extern u4 BackAreaFillCol;
 extern u4 BackAreaUnFillCol;

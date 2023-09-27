@@ -21,7 +21,7 @@
 
 EXTSYM FxTable,FxTableA1,FxTableA2,FxTableA3,FxTableb,FxTablebA1,FxTablebA2
 EXTSYM FxTablebA3,FxTablec,FxTablecA1,FxTablecA2,FxTablecA3,FxTabled
-EXTSYM FxTabledA1,FxTabledA2,FxTabledA3,SfxMemTable,romdata,sfxramdata
+EXTSYM FxTabledA1,FxTabledA2,FxTabledA3,SfxMemTable,romdata,sfxramdata,sfxplotcache
 EXTSYM FxOp00,FxOp01,FxOp02,FxOp03,FxOp04,FxOp05,FxOp06,FxOp07,FxOp08
 EXTSYM FxOp09,FxOp0A,FxOp0B,FxOp0C,FxOp0D,FxOp0E,FxOp0F,FxOp10,FxOp11
 EXTSYM FxOp12,FxOp13,FxOp14,FxOp15,FxOp16,FxOp17,FxOp18,FxOp19,FxOp1A
@@ -455,8 +455,7 @@ NEWSYM InitFxTables
    jnz near .loopb01
 
    ; Initialize PLOT tables
-   mov esi,[sfxramdata]
-   add esi,1024*1024
+   mov esi,[sfxplotcache]
    ; Create 4 * 256k plot tables
    ; 128 line mode
    mov [sfx128lineloc],esi

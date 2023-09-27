@@ -45,13 +45,6 @@ GameSpecificInput db 0
 @  ----
 
 @
-@ Allow MMX Support (0 = No, 1 = YES)
-@ Disable this only if you actually do NOT have a processor that supports MMX.
-@ Disabling this option will prevent you from using some of the more advanced
-@ video/sound filters.
-AllowMMX db 1
-
-@
 @ Show 224 Lines (0 = No, 1 = YES)
 @ Toggle off if you do not want to see the last line
 Show224Lines db 1
@@ -78,24 +71,6 @@ DisplayInfo db 1
 @
 @ Log Info About the Last ROM Loaded to rominfo.txt (0 = No, 1 = YES)
 RomInfo db 1
-
-%ifdef __WIN32__
-@
-@ Pause Emulation when ZSNES is Out of Focus (0 = NO, 1 = Yes)
-PauseFocusChange db 0
-
-@
-@ Increase Priority of ZSNES (0 = NO, 1 = Yes)
-@ Enable this if it improves performance. This option is not for everyone.
-@ This may cause other background apps to be sluggish.
-@ The priority in Win9x will be High, Win2k will be Above Normal.
-HighPriority db 0
-%endif
-
-@
-@ Disable Power Management while ZSNES Runs (0 = No, 1 = YES)
-@ This is very necessary for gamepad users.
-DisableScreenSaver db 1
 
 @
 @ Enable FPS Counter when ZSNES is Started (0 = NO, 1 = Yes)
@@ -125,18 +100,11 @@ GUIEnableTransp db 0
 @
 %ifndef NO_PNG
 @ Snapshot Format (0 = BMP, 1 = PNG)
-%ifdef __MSDOS__
-@ Note: in 8 bit video modes PNG is not selectable
-%endif
 %else
 @ Snapshot Format (0 = BMP)
 %endif
 %ifndef NO_PNG
-%ifndef __MSDOS__
 ScreenShotFormat db 1
-%else
-ScreenShotFormat db 0
-%endif
 %else
 ScreenShotFormat db 0
 %endif
@@ -146,293 +114,37 @@ ScreenShotFormat db 0
 @ -- Video --
 @  ----
 
-%ifdef __MSDOS__
-@
-@ Force Black Background (0 = NO, 1 = Yes)
-@ This is necessary to get a black background.
-@ This can cause rendering problems in certain games.
-@ Only applicable for 8-bit modes.
-Palette0 db 0
-%endif
-
-@
-%ifdef __WIN32__
-@ Video Mode [0..42]
-@   0 = 256x224      R WIN     1 = 256x224        R FULL
-@   2 = 512x448      R WIN     3 = 512x448       DR WIN
-@   4 = 640x480      S WIN     5 = 640x480       DS WIN
-@   6 = 640x480     DR FULL    7 = 640x480       DS FULL
-@   8 = 640x480      S FULL    9 = 768x672        R WIN
-@  10 = 768x672     DR WIN    11 = 800x600        S WIN
-@  12 = 800x600     DS WIN    13 = 800x600        S FULL
-@  14 = 800x600     DR FULL   15 = 800x600       DS FULL
-@  16 = 1024x768     S WIN    17 = 1024x768      DS WIN
-@  18 = 1024x768     S FULL   19 = 1024x768      DR FULL
-@  20 = 1024x768    DS FULL   21 = 1024x896       R WIN
-@  22 = 1024x896    DR WIN    23 = 1280x960       S WIN
-@  24 = 1280x960    DS WIN    25 = 1280x960       S FULL
-@  26 = 1280x960    DR FULL   27 = 1280x960      DS FULL
-@  28 = 1280x1024    S WIN    29 = 1280x1024     DS WIN
-@  30 = 1280x1024    S FULL   31 = 1280x1024     DR FULL
-@  32 = 1280x1024   DS FULL   33 = 1600x1200      S WIN
-@  34 = 1600x1200   DS WIN    35 = 1600x1200     DR FULL
-@  36 = 1600x1200   DS FULL   37 = 1600x1200      S FULL
-@  38 = CUSTOM      D  WIN    39 = CUSTOM        DS FULL
-@  40 = CUSTOM         WIN    41 = CUSTOM         S FULL
-@  42 = CUSTOM      DR FULL
-@ You need to select one of the custom video modes and modify CustomResX/Y to
-@ properly use custom res support.
-@ WARNING: Custom resolutions are only valid if they are supported by your system!
-@ ZSNES will hang if an invalid fullscreen resolution is used.
-cvidmode db 2
-@ Last windowed & fullscreen modes (used when alt-tabbing)
-PrevWinMode db 2
-PrevFSMode db 6
-
-%elifdef __UNIXSDL__
-
-%ifndef __OPENGL__
-@ Video Mode [0..4]
-%else
 @ Video Mode [0..22]
-%endif
-@   0 = 256x224      R WIN     1 = 256x224      R FULL
-@   2 = 512x448     DR WIN     3 = 512x448     DR FULL
-@   4 = 640x480     DR FULL
-%ifdef __OPENGL__
-@   5 = 256x224    O R WIN     6 = 512x448    ODR WIN
-@   7 = 640x480    ODS FULL    8 = 640x480    ODS WIN
-@   9 = 640x560    ODR WIN    10 = 768x672    ODR WIN
-@  11 = 800x600    ODS FULL   12 = 800x600    ODS WIN
-@  13 = 896x784    ODR WIN    14 = 1024x768   ODS FULL
-@  15 = 1024x768   ODS WIN    16 = 1024x896   ODR WIN
-@  17 = 1280x960   ODS FULL   18 = 1280x1024  ODS FULL
-@  19 = 1600x1200  ODS FULL   20 = VARIABLE   ODR WIN
-@  21 = VARIABLE   ODS WIN    22 = CUSTOM     OD  FULL
+@  0 = VARIABLE   ODR WIN
+@  1 = VARIABLE   ODS WIN
+@  2 = CUSTOM     ODR FULL
+@  3 = CUSTOM     ODS FULL
 @ You need to select the custom video mode and modify CustomResX/Y to properly
 @ use custom res support.
-%endif
-cvidmode db 2
-@ Last windowed & fullscreen modes (used when alt-tabbing)
-PrevWinMode db 2
-PrevFSMode db 3
+cvidmode db 0
 
-%elifdef __MSDOS__
-@ Video Mode [0..18]
-@   0 = 256x224x8B   MODEQ     1 = 256x240x8B MODEQ
-@   2 = 256x256x8B   MODEQ     3 = 320x224x8B MODEX
-@   4 = 320x240x8B   MODEX     5 = 320x256x8B MODEX
-@   6 = 640x480x16B  VESA1     7 = 320x240x8B VESA2
-@   8 = 320x240x16B  VESA2     9 = 320x480x8B VESA2
-@  10 = 320x480x16B  VESA2    11 = 512x384x8B VESA2
-@  12 = 512x384x16B  VESA2    13 = 640x400x8B VESA2
-@  14 = 640x400x16B  VESA2    15 = 640x480x8B VESA2
-@  16 = 640x480x16B  VESA2    17 = 800x600x8B VESA2
-@  18 = 800x600x16B  VESA2
-cvidmode db 4
-%endif
-
-%ifndef __MSDOS__
 @
 @ Custom Resolution X and Y for Custom Video Modes [256x224..2048x1536]
 CustomResX dd 640
 CustomResY dd 480
-%endif
-
-@
-%ifndef __MSDOS__
-@ Enable Video Interpolation, Bilinear Filtering (0 = NO, 1 = Yes)
-@ Bilinear Filtering is compatible with all filters except NTSC.
-@ Bilinear Filtering replaces Interpolation and is OpenGL only.
-%else
-@ Enable Video Interpolation (0 = NO, 1 = Yes)
-%endif
-@ Video Interpolation is compatible with scanlines.
-@ Blends the neighboring pixels on the screen to eliminate pixelation.
-%ifdef __MSDOS__
-@ Available in most VESA2 16-bit modes
-@ Note: This option enables the Eagle filter in the VESA2 640x480 8-bit mode.
-%endif
-antienab db 0
-%ifndef __MSDOS__
-BilinearFilter db 0
-%endif
-
-@
-%ifndef __MSDOS__
-@ Enable NTSC Filter (0 = NO, 1 = Yes)
-@ Enable Blargg's wonderful NTSC filter which simulates the artifacts of an
-@ NTSC TV set - it is probably not a good idea to use with TV-out
-@ Recommended to use a minimum res of 602x448
-%else
-@ The NTSC filter is not available for DOS at the moment, sorry.
-%endif
-NTSCFilter db 0
-%ifndef __MSDOS__
-@ Blend Frames, Refresh Screen (0 = OFF, 1 = On)
-@ Blend Frames allows smoother transitions between frames for non-60Hz refresh rates.
-@ Refresh Screen allows the screen to be updated while changing the filter's parameters.
-%endif
-NTSCBlend db 0
-NTSCRef db 0
-%ifndef __MSDOS__
-@ NTSC TV Attributes [-100..100]
-%endif
-NTSCHue sb 0
-NTSCSat sb 0
-NTSCCont sb 0
-NTSCBright sb 0
-NTSCSharp sb 0
-NTSCGamma sb 0
-NTSCRes sb 0
-NTSCArt sb 0
-NTSCFringe sb 0
-NTSCBleed sb 0
-NTSCWarp sb 0
-
-@
-@ Enable Kreed's 2x Filters (0 = NONE, 1 = 2xSaI, 2 = Super Eagle, 3 = Super 2xSaI)
-@ These are Kreed's various 2x filters. They do not exhibit the same level of
-@ blurring than interpolation/bilinear. MMX support is required.
-@ This is disabled when other filters are used.
-En2xSaI db 0
-
-@
-%ifndef __MSDOS__
-@ Use HQ*x Filter (0 = NO, 1 = Yes)
-@ This is a filter MaxSt has created. These are very CPU intensive filters that
-@ do very awesome blending to remove the pixelation.
-@ This is disabled when other filters are used. MMX support is required.
-%else
-@ The HQ*x filter is not available for DOS at the moment, sorry.
-%endif
-hqFilter db 0
-%ifndef __MSDOS__
-@ Set HQ*x level [2..4]
-@ Recommended min resolutions
-@ HQ2x = 512x448
-@ HQ3x = 768x672
-@ HQ4x = 1024x896
-%ifdef __OPENGL__
-@ HQ2x is only available for OpenGL.
-%endif
-hqFilterlevel db 2
-%endif
-
-@
-@ Enable Scanlines (0 = NONE, 1 = Full, 2 = 25%, 3 = 50%) - simulate TV scanlines
-@ This is compatible with interpolation.
-#ifdef __MSDOS__
-@ 256x256 or 640x480 8bit modes only (25% and 50% in 640x480 16bit mode only)
-#endif
-scanlines db 0
-#ifndef __MSDOS__
-@ OpenGL scanlines intensity [0..100]
-sl_intensity db 0
-#endif
-
-@
-@ Enable Grayscale Mode (0 = NO, 1 = Yes) - don't enable this for other than nostalgia
-@ The whole screen is displayed in monochrome color.
-GrayscaleMode db 0
-
-@
-@ Enable High-Res Mode 7 (0 = NO, 1 = Yes)
-@ Doubles the internal resolution of the image when Mode 7 is in use
-@ However this disables most filters, except for interpolation.
-@ This is only useful in certain games and is not useful in general.
-@ Requires a minimum res of 512x448
-Mode7HiRes16b db 0
 
 @
 @ Sync Frames to Monitor Refresh Rate (0 = NO, 1 = Yes)
 @ It is not recommended to be used if you cannot normally sustain 60fps
-%ifdef __UNIXSDL__
-%ifdef __OPENGL__
 @ OpenGL only - You need SDL 1.2.10 or later to use this.
-%endif
 @ VSync is automatically enforced in SDL software modes.
-%endif
 vsyncon db 0
-
-#ifndef __UNIXSDL__
-@
-@ Use Triple Buffering (0 = NO, 1 = Yes) - replaces vsync
-@ This is usually more beneficial than VSync.
-#endif
-#ifdef __WIN32__
-@ This is not available in Windowed modes.
-TripleBufferWin db 0
-#elifdef __MSDOS__
-Triplebufen db 0
-#endif
-
-%ifdef __WIN32__
-@
-@ Force Refresh Rate (0 = NO, 1 = Yes)
-@ Enable this if you are experiencing visual tearing
-@ WARNING: Setting a refresh rate that your monitor cannot handle will have
-@ consequences! The DX Refresh Rate Override in dxdiag must be set to default
-@ in order for this to work! The refresh rate is only valid if it is supported
-@ by your system! This option is only useful in fullscreen modes.
-ForceRefreshRate db 0
-SetRefreshRate db 60
-
-@
-@ Enable KitchenSync/KitchenSyncPAL (0 = NO, 1 = Yes)
-@ When enabled, ZSNES will use double the refresh rate of the game and use
-@ half of it to sync with the game to reduce/prevent visual tearing.
-@ You can enable this if your video card/monitor AND current ZSNES resolution
-@ supports 100Hz (for PAL games) and 120Hz (for NTSC games)
-@ KitchenSyncPAL applies to PAL games only, use KitchenSync for PAL+NTSC games.
-@ WARNING: The DX Refresh Rate Override in dxdiag must be set to default in
-@ order for this to work!
-@ This option is completely useless in a non-fullscreen mode.
-KitchenSync db 0
-KitchenSyncPAL db 0
-%endif
-
-%ifndef __MSDOS__
-@
-@ Keep 4:3 Ratio (0 = No, 1 = YES)
-@ This is particularly handy for those that use laptops/LCDs+non 4:3 resolutions.
-%ifdef __WIN32__
-@ This can be used for any S/DS mode and any Custom Windowed mode.
-%elifdef __UNIXSDL__
-@ This can be used for Variable ODS Windowed and Custom Res OD Fullscreen.
-%endif
-@ It is not recommended to enable this while under 298x224.
-@ Disable this if you want to use the non-standard ratio instead.
-Keep4_3Ratio db 1
-
-%else
-@
-@ Small Screen (0 = NO, 1 = Yes)
-@ Enabling small screen will render in 256x224 (not a good idea generally).
-smallscreenon dd 0
-
-@
-@ Wide Screen (0 = NO, 1 = Yes)
-@ Enabling wide screen will widen the image as much as possible.
-ScreenScale db 0
-%endif
-
-@
-@ Set Gamma Level [0..15]
-gammalevel db 0
 
 @
 @  ----
 @ -- Sound --
 @  ----
 
-%ifdef __UNIXSDL__
 @
 @ libAO driver to use. Use zsnes --help to see valid list.
 @ However "auto" (to automatically pick best one), and "sdl" should
 @ always be available.
 libAoDriver times 10 db "auto"
-%endif
 
 @
 @ Disable SPC Emulation (0 = NO, 1 = Yes)
@@ -460,30 +172,11 @@ RevStereo db 0
 @ Stereo Sound must be enabled for this to work.
 Surround db 0
 
-%ifdef __WIN32__
-@
-@ Use Primary Sound Buffer (0 = NO, 1 = Yes)
-@ Enable this if you are experiencing sound playback/static problems.
-PrimaryBuffer db 0
-%endif
-
-#ifdef __MSDOS__
-@
-@ Force 8-bit Sound (0 = NO, 1 = Yes)
-@ Enable this option if your sound card is producing nothing or static.
-@ This will limit the max frequency while using Stereo sound to 22KHz
-Force8b db 0
-#endif
-
 @
 @ Sampling Rate: (0 = 8000Hz, 1 = 11025Hz, 2 = 22050Hz, 3 = 44100Hz,
 @                             4 = 16000Hz, 5 = 32000Hz, 6 = 48000Hz)
 @ Using any other sound frequencies other than the default 32000Hz
 @ is COMPLETELY UNACCEPTABLE in use for sound bug reports.
-#ifdef __MSDOS__
-@ Forcing 8-bit sound will limit the max sampling rate while using Stereo sound
-@ to 22KHz
-#endif
 SoundQuality dd 5
 
 @
@@ -502,12 +195,6 @@ SoundInterpType db 1
 @ A low-pass filter improves the bass in the sounds.
 @ This is useful if you have a Subwoofer.
 LowPassFilterType db 0
-
-#ifdef __MSDOS__
-@
-@ Display ZSNES Sound Detection Info (0 = NO, 1 = Yes)
-DisplayS db 0
-#endif
 
 @
 @ Disable Echo (0 = NO, 1 = Yes)
@@ -622,34 +309,8 @@ SPC7110Cache db 1
 @  ----
 
 @ It is suggested to go to GUI->Paths and modify the paths from there.
-%ifndef __UNIXSDL__
-@ ROMs drive + directory
-@
-@ Note, when entering a path, make sure every backslash is doubled
-@ "C:\Games\SNES" for example is incorrect.
-@ "C:\\Games\\SNES" is correct.
-@
-%else
 @ ROMs directory
-%endif
-%ifdef __MSDOS__
-ROMPath times 256 db ""
-@ Save states & SRAMs, snapshots, SPCs
-SRAMPath times 256 db ""
-SStatePath times 256 db ""
-SnapPath times 256 db ""
-IPSPath times 256 db ""
-MoviePath times 256 db ""
-SPCPath times 256 db ""
-CHTPath times 256 db ""
-ComboPath times 256 db ""
-INPPath times 256 db ""
-@ BIOS/base carts (BS-X, Sufami Turbo, Same Game & SD Gundam G-Next)
-BSXPath times 256 db ""
-STPath times 256 db ""
-GNextPath times 256 db ""
-SGPath times 256 db ""
-%else
+
 ROMPath times 1024 db ""
 @ Save states & SRAMs, snapshots, SPCs
 SRAMPath times 1024 db ""
@@ -666,16 +327,11 @@ BSXPath times 1024 db ""
 STPath times 1024 db ""
 GNextPath times 1024 db ""
 SGPath times 1024 db ""
-%endif
 
 @
 @ Relative Path Base (0 = Config dir, 1 = ROM Dir)
 @ Change the default base path used by ZSNES when using relative paths
-%ifdef __UNIXSDL__
 RelPathBase db 0
-%else
-RelPathBase db 1
-%endif
 
 @
 @  ----
@@ -691,13 +347,8 @@ guioff db 0
 showallext db 0
 
 @
-%ifdef __MSDOS__
-@ Filename Display Mode (0 = Win9x Long filename, 1 = Internal header name, 2 = DOS 8.3)
-GUIloadfntype db 2
-%else
 @ Filename Display Mode (0 = LONG FILENAME, 1 = Internal header name)
 GUIloadfntype db 0
-%endif
 
 @
 @ Recent games played, you shouldn't edit this manually (8.3 / Paths / LFN)
@@ -724,25 +375,6 @@ lhguimouse db 0
 mouseshad db 1
 
 @
-@ Wrap Mouse Cursor (0 = NO, 1 = Yes)
-@ If enabled, the cursor will wrap around to the other side.
-%ifndef __MSDOS__
-@ Only useful for Fullscreen modes.
-%endif
-mousewrap db 0
-
-%ifdef __WIN32__
-@
-@ Trap Mouse Cursor in Window (0 = NO, 1 = Yes)
-@ Only useful in Windowed modes.
-TrapMouseCursor db 0
-
-@
-@ Use Mouse Wheel to Scroll (0 = No, 1 = YES)
-MouseWheel db 1
-%endif
-
-@
 @ ESC to Game Menu (0 = No, 1 = YES)
 @ If yes, visiting the GUI will have the Game Menu automatically selected.
 @ It will also enable the main menu keyboard shortcuts.
@@ -751,11 +383,6 @@ esctomenu db 1
 @
 @ Control the GUI Using Gamepad 1 (0 = NO, 1 = Yes)
 JoyPad1Move db 0
-
-@
-@ Filter GUI Display (0 = No, 1 = YES)
-@ If enabled, the current filter you are using will also filter the GUI.
-FilteredGUI db 1
 
 @
 @ Use Custom Font (0 = NO, 1 = Yes)
@@ -807,22 +434,6 @@ GUITBAdd db 31
 GUIWRAdd db 8
 GUIWGAdd db 8
 GUIWBAdd db 25
-
-%ifdef __WIN32__
-@
-@ Main Window Always on Top (0 = NO, 1 = Yes)
-AlwaysOnTop db 0
-
-@
-@ Save Main Window Position (0 = No, 1 = YES) and X/Y coordinates
-SaveMainWindowPos db 1
-MainWindowX sw -1
-MainWindowY sw -1
-
-@
-@ Allow Multiple ZSNES Instances at Once (0 = No, 1 = YES)
-AllowMultipleInst db 1
-%endif
 
 @
 @  ----
@@ -1002,19 +613,10 @@ KeyUsePlayer1234 dd 0
 KeyDisplayFPS dd 0
 
 @
-@ Laptop Battery Display Toggle
-KeyDisplayBatt dd 0
-
-@
 @ Video Engine: Old/New Graphic Engine | Windowing | Offset Effects Toggles
 KeyNewGfxSwt dd 9
 KeyWinDisble dd 10
 KeyOffsetMSw dd 11
-
-@
-@ Gamma Correction Up/Down
-KeyIncreaseGamma dd 0
-KeyDecreaseGamma dd 0
 
 @
 @ Movie Chapters: Insert / Go to Previous / Go to Next

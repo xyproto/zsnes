@@ -46,23 +46,20 @@ EXTSYM drawlineng2b16b,drawlineng4b16b,drawlineng8b16b,BuildWindow,winenabs
 EXTSYM drawlineng16x162b16b,drawlineng16x164b16b,drawlineng16x168b16b,winenabm
 EXTSYM disableeffects,winl1,winbg1enval,winbg1envalm,winlogica,winlogicaval
 EXTSYM winboundary,winobjen,winlogicb,nglogicval,ngwintable,winbg2enval
-EXTSYM winbg3enval,winbg4enval,winbgobjenval,Mode7HiRes16b,res640,hiresstuff
+EXTSYM winbg3enval,winbg4enval,winbgobjenval,res640,hiresstuff
 EXTSYM Mode7BackA,Mode7BackC,Mode7BackX0,Mode7BackSet,drawmode7win16b,ngwinen
 EXTSYM drawlineng16x84b16b,drawlineng16x82b16b,ofsmcyps,vram,ofsmcptr,ofsmady
 EXTSYM ofsmadx,ofsmtptr,yposngom,flipyposngom,ofsmmptr,ofsmval,ofsmvalh
 EXTSYM winbg1envals,m7starty,bgallchange
-EXTSYM FillSubScr,scanlines,SpecialLine,vidmemch2s
+EXTSYM FillSubScr,SpecialLine,vidmemch2s
 EXTSYM drawlinengom2b16b,drawlinengom4b16b,drawlinengom8b16b
 EXTSYM drawlinengom16x162b16b,drawlinengom16x164b16b,drawlinengom16x168b16b
 EXTSYM bg1change,bg2change,bg3change,bg4change,ngwinptr,objwlrpos,objwen
-EXTSYM objclineptr,CSprWinPtr,BuildWindow2,NGNumSpr,fulladdtab,MMXSupport
-EXTSYM bgtxadd2,drawmode7ngextbg16b,processmode7hires16b
+EXTSYM objclineptr,CSprWinPtr,BuildWindow2,NGNumSpr,fulladdtab
+EXTSYM bgtxadd2,drawmode7ngextbg16b
 EXTSYM drawmode7ngextbg216b,osm2dis,ofsmtptrs,ofsmcptr2
 EXTSYM dcolortab,setpalallng,setpalette16bng,BackAreaFill
 
-%ifdef __MSDOS__
-EXTSYM smallscreenon,ScreenScale
-%endif
 
 %include "video/vidmacro.mac"
 %include "video/newgfx16.mac"
@@ -971,21 +968,10 @@ NEWSYM newengine16b
     pop ecx
 
     mov byte[SpecialLine+eax],0
-%ifdef __MSDOS__
-    cmp byte[smallscreenon],1
-    je .nomode7hr
-    cmp byte[ScreenScale],1
-    je .nomode7hr
-%endif
-    cmp byte[scanlines],0
-    jne .nomode7hr
     cmp byte[bgmode],7
     jb .hrstuff
     test byte[interlval],40h
     jnz .nomode7hr
-    cmp byte[Mode7HiRes16b],1
-    jne .nomode7hr
-    jmp .hrstuff
 .nomode7hr
     jmp .no512
 .hrstuff
@@ -1032,9 +1018,6 @@ NEWSYM newengine16b
     pop esi
     pop edi
 .no512
-
-    cmp byte[scanlines],0
-    jne .notinterl
     test byte[interlval],01h
     jz .notinterl
     or byte[SpecialLine+eax],4
@@ -2462,209 +2445,6 @@ drawsprngw16bmsnthr:
     normalwsprng16b sprdrawprawb16bngmsnthr,sprdrawprbwb16bngmsnthr
 
 
-ProcessTransparencies:
-    cmp byte[NGNoTransp],0
-    je .yestransp
-    ret
-.yestransp
-    cmp byte[MMXSupport],1
-    je near ProcessTransparenciesMMX
-    mov esi,[vidbuffer]
-    add esi,16*2+288*2
-    mov ebx,1
-.nextline
-    test byte[FillSubScr+ebx],1
-    jz near .notransp
-    mov dword[HiResDone],0
-.againtransp
-    test byte[scadtng+ebx],40h
-    jz near .fulltransp
-    test byte[scadtng+ebx],80h
-    jnz near .subtract
-
-    ; Half Add
-    push esi
-    push ebx
-    ; filter out all fixed color sub-screen
-    test byte[FillSubScr+ebx],2
-    jnz .halfaddcomb
-    mov ecx,256
-    mov ebx,[UnusedBit]
-    mov edi,[HalfTrans]
-    xor eax,eax
-    jmp .next2
-.notranspha
-    add esi,2
-    dec ecx
-    jz .done
-.next2
-    mov ax,[esi]
-    test ax,bx
-    jz .notranspha
-    mov dx,[esi+75036*2]
-    test dx,bx
-    jnz .notranspha
-    and eax,edi
-    and edx,edi
-    add eax,edx
-    shr eax,1
-    mov [esi],ax
-    add esi,2
-    dec ecx
-    jnz .next2
-.done
-    pop ebx
-    pop esi
-    jmp .donetransp
-.halfaddcomb
-    mov ecx,256
-    mov ebx,[UnusedBit]
-    mov edi,[HalfTrans]
-    xor eax,eax
-    xor edx,edx
-    jmp .next2c
-.notransphac
-    add esi,2
-    dec ecx
-    jz .donec
-.next2c
-    mov ax,[esi]
-    test ax,bx
-    jz .notransphac
-    mov dx,[esi+75036*2]
-    test dx,bx
-    jnz .fulladdtranspc
-    and eax,edi
-    and edx,edi
-    add eax,edx
-    shr eax,1
-    mov [esi],ax
-    add esi,2
-    dec ecx
-    jnz .next2c
-.donec
-    pop ebx
-    pop esi
-    jmp .donetransp
-.fulladdtranspc
-    and eax,edi
-    and edx,edi
-    add eax,edx
-    shr eax,1
-    mov ax,[fulladdtab+eax*2]
-    mov [esi],ax
-    add esi,2
-    dec ecx
-    jnz .next2c
-    pop ebx
-    pop esi
-    jmp .donetransp
-
-.subtract
-    push ebx
-    push esi
-    ; half adder
-    mov ecx,256
-    mov ebp,[HalfTrans]
-    xor edx,edx
-    mov bx,[UnusedBit]
-.nextfshs
-    mov ax,[esi]
-    test ax,bx
-    je .notranspfshs
-    mov dx,[esi+75036*2]
-    xor ax,0FFFFh
-    and edx,ebp
-    and eax,ebp
-    add edx,eax
-    shr edx,1
-    mov dx,[fulladdtab+edx*2]
-    xor dx,0FFFFh
-    test word[esi+75036*2],bx
-    jnz .nothalfhs
-    and edx,ebp
-    shr edx,1
-.nothalfhs
-    mov [esi],dx
-.notranspfshs
-    add esi,2
-    dec ecx
-    jnz .nextfshs
-    pop esi
-    pop ebx
-    jmp .donetransp
-.fulltransp
-    test byte[scadtng+ebx],80h
-    jnz near .fullsubtract
-    push ebx
-    push esi
-    mov ecx,256
-    mov ebp,[HalfTrans]
-    xor edx,edx
-    xor eax,eax
-    mov bx,[UnusedBit]
-.nextfa
-    mov ax,[esi]
-    test ax,bx
-    jz .notranspfa
-    mov dx,[esi+75036*2]
-    and eax,ebp
-    and edx,ebp
-    add edx,eax
-    shr edx,1
-    mov dx,[fulladdtab+edx*2]
-    mov [esi],dx
-.notranspfa
-    add esi,2
-    dec ecx
-    jnz .nextfa
-    pop esi
-    pop ebx
-    jmp .donetransp
-.fullsubtract
-    push ebx
-    push esi
-    ; half adder
-    mov ecx,256
-    mov ebp,[HalfTrans]
-    xor edx,edx
-    xor eax,eax
-    mov bx,[UnusedBit]
-.nextfs
-    mov ax,[esi]
-    test ax,bx
-    jz .notranspfs
-    mov dx,[esi+75036*2]
-    xor ax,0FFFFh
-    and edx,ebp
-    and eax,ebp
-    add edx,eax
-    shr edx,1
-    mov dx,[fulladdtab+edx*2]
-    xor dx,0FFFFh
-    mov [esi],dx
-.notranspfs
-    add esi,2
-    dec ecx
-    jnz .nextfs
-    pop esi
-    pop ebx
-.donetransp
-    test byte[SpecialLine+ebx],3
-    jz .notransp
-    xor dword[HiResDone],1
-    cmp dword[HiResDone],0
-    je .okaytransp
-    add esi,75036*4
-    jmp .againtransp
-.okaytransp
-    sub esi,75036*4
-.notransp
-    inc ebx
-    add esi,288*2
-    cmp [resolutn],bx
-    jae near .nextline
-    ret
 
 %macro TranspMMX 3
     mov esi,[vidbuffer]
@@ -3115,54 +2895,16 @@ ProcessTransparencies:
     ret
 %endmacro
 
-ProcessTransparenciesMMX:
+ProcessTransparencies:
+    cmp byte[NGNoTransp],0
+    je .yestransp
+    ret
+.yestransp
     cmp byte[ngrposng],10
     je near ProcessTransparenciesMMXargb
     TranspMMX 0,5,11
 ProcessTransparenciesMMXargb
     TranspMMX 1,6,11
-
-; movq mm0,[esi]
-; movq mm1,[esi+75036*2]
-; movq mm2,mm0
-; movq mm4,mm1
-; movq mm3,mm0
-; movq mm5,mm0
-; movq mm6,mm0
-; ;psllw mm0,0
-; ;psllw mm1,0
-; paddusw mm0,mm1
-; pand mm6,[UnusedBitXor]
-; pand mm0,[FullBitAnd]
-; movq mm1,mm4
-; ;psrlw mm0,0
-; psllw mm2,5
-; psllw mm1,5
-; paddusw mm2,mm1
-; pand mm2,[FullBitAnd]
-; psrlw mm2,5
-; psllw mm3,11
-; psllw mm4,11
-; paddusw mm3,mm4
-; pand mm3,[FullBitAnd]
-; psrlw mm3,11
-; por mm0,mm3
-; por mm0,mm2
-; pand mm6,[UnusedBit]
-; pcmpeqw mm6,[UnusedBit]
-; pand mm0,mm6
-; pxor mm6,[UnusedBitXor]
-; pand mm5,mm6
-; por mm0,mm5
-; movq [esi],mm0
-
-; PADDUSW - Add Unsigned with Saturation on Word
-; PAND (source can be a memory location)
-; PANDN - bitwise AND NOT
-; PCMPEQW - packed compare for equal, word
-; PSLLW - Shift Left, Logical, Word
-; PSRLW - Shirt Right, Logical
-; POR
 
 section .data
 ALIGN32

@@ -550,24 +550,6 @@ static void settableDm16(eop** table)
 void inittable(void)
 {
     // set up mosaic
-#ifdef __MSDOS__
-    mosjmptab[0] = mosdraw2;
-    mosjmptab[1] = mosdraw3;
-    mosjmptab[2] = mosdraw4;
-    mosjmptab[3] = mosdraw5;
-    mosjmptab[4] = mosdraw6;
-    mosjmptab[5] = mosdraw7;
-    mosjmptab[6] = mosdraw8;
-    mosjmptab[7] = mosdraw9;
-    mosjmptab[8] = mosdraw10;
-    mosjmptab[9] = mosdraw11;
-    mosjmptab[10] = mosdraw12;
-    mosjmptab[11] = mosdraw13;
-    mosjmptab[12] = mosdraw14;
-    mosjmptab[13] = mosdraw15;
-    mosjmptab[14] = mosdraw16;
-#endif
-
     mosjmptab16b[0] = mosdraw216b;
     mosjmptab16b[1] = mosdraw316b;
     mosjmptab16b[2] = mosdraw416b;

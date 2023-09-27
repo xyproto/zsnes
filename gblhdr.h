@@ -72,58 +72,29 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 // unistd.h stuff
 
-//#if HAVE_UNISTD_H
-// Small hack for now
+// #if HAVE_UNISTD_H
+//  Small hack for now
 #if unix
 #include <sys/types.h>
 #include <unistd.h>
 #endif
 
 // opengl stuff
-
-#ifdef __OPENGL__
-#ifndef __MACOSX__
 #include <GL/gl.h>
-#else
-#include <OpenGL/gl.h>
-#endif
-#endif
 
 // os specific stuff
-
 #ifdef __QNXNTO__
 /* QNX6 has getpagesize() commented out in unistd.h,
 however it's a static value that we can just define */
 #define getpagesize() 4096
 #endif
 
-#ifdef __UNIXSDL__
-#include "SDL.h"
+#include <SDL/SDL.h>
 #include <limits.h>
-#ifndef __BEOS__
-#include <arpa/inet.h>
-#include <glob.h>
-#include <sys/mman.h>
-#endif
-#include <netdb.h>
-#include <netinet/in.h>
-#include <sys/ioctl.h>
-#include <sys/socket.h>
-#include <sys/stat.h>
-#include <sys/types.h>
 #include <utime.h>
 #include <zlib.h>
 #ifndef NO_PNG
 #include <png.h>
-#endif
-#endif
-
-#ifdef __UNIXSDL__
-#ifdef __linux__
-#include <asm/ioctls.h>
-#else
-#include <sys/filio.h>
-#endif
 #endif
 
 #endif

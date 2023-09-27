@@ -24,13 +24,10 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #include <stdio.h>
 #include <sys/stat.h>
-#include <zlib.h>
-
 #include "zip/zunzip.h"
 
-#ifndef NO_JMA
-#include "jma/zsnesjma.h"
-#endif
+// Max ROM Space
+#define MAXROMSPACE 0x800000
 
 #ifdef _MSC_VER
 #define F_OK 0
@@ -45,31 +42,16 @@ typedef unsigned short mode_t;
 #include <stdbool.h>
 #endif
 
-#ifdef __UNIXSDL__
 #define DIR_SLASH "/"
 #define DIR_SLASH_C '/'
 #define DIR_SLASH_C_OTHER '\\'
 #define ROOT_LEN 1 //"/"
 #define DIR_R_ACCESS (R_OK | X_OK)
 #define IS_ABSOLUTE(path) ((*(path) == '/') || (*(path) == '~'))
-#else
-#define DIR_SLASH "\\"
-#define DIR_SLASH_C '\\'
-#define DIR_SLASH_C_OTHER '/'
-#define ROOT_LEN 3 //"A:\"
-#define DIR_R_ACCESS (F_OK)
-#define IS_ABSOLUTE(path) ((*(path) == '\\') || (*(path) && ((path)[1] == ':')))
-#endif
 
-#ifndef __MSDOS__
 #define PATH_SIZE 4096
 #define NAME_SIZE 512
 #define realpath_native realpath
-#else
-#define PATH_SIZE 256
-#define NAME_SIZE 13
-#define realpath_native realpath_sfn
-#endif
 
 #ifndef S_ISDIR
 #define S_ISDIR(m) (((m)&S_IFMT) == S_IFDIR)
@@ -81,46 +63,35 @@ extern char *ZSnapPath, *ZSpcPath, *ZIpsPath, *ZMoviePath;
 extern char *ZChtPath, *ZComboPath, *ZInpPath, *ZSStatePath;
 extern char *ZCartName, *ZSaveName, *ZStateName, *ZSaveST2Name;
 
-bool init_paths(char* launch_command);
+bool init_paths(char *launch_command);
 void init_save_paths(void);
-bool init_rom_path(char* path);
+bool init_rom_path(char *path);
 
-char* strdupcat(const char* str1, const char* str2);
+char *strdupcat(const char *str1, const char *str2);
 
-int access_dir(const char* path, const char* file, int mode);
-int stat_dir(const char* path, const char* file, struct stat* buf);
-FILE* fopen_dir(const char* path, const char* file, const char* mode);
-gzFile gzopen_dir(const char* path, const char* file, const char* mode);
-unzFile unzopen_dir(const char* path, const char* file);
-#ifndef NO_JMA
-void load_jma_file_dir(const char* path, const char* file);
-#endif
-int remove_dir(const char* path, const char* file);
-int mkdir_dir(const char* path, const char* dir);
-char* realpath_dir(const char* path, const char* file, char* buf);
-#ifdef __MSDOS__
-char* realpath_sfn_dir(const char* path, const char* file, char* buf);
-#endif
-FILE* fdreopen_dir(const char* path, const char* file, const char* mode, int fd);
-int system_dir(const char* path, const char* command);
-FILE* popen_dir(const char* path, char* command, const char* type);
+int access_dir(const char *path, const char *file, int mode);
+int stat_dir(const char *path, const char *file, struct stat *buf);
+FILE *fopen_dir(const char *path, const char *file, const char *mode);
+gzFile gzopen_dir(const char *path, const char *file, const char *mode);
+unzFile unzopen_dir(const char *path, const char *file);
+int remove_dir(const char *path, const char *file);
+int mkdir_dir(const char *path, const char *dir);
+char *realpath_dir(const char *path, const char *file, char *buf);
+FILE *fdreopen_dir(const char *path, const char *file, const char *mode, int fd);
+int system_dir(const char *path, const char *command);
+FILE *popen_dir(const char *path, char *command, const char *type);
 
-void natify_slashes(char* str);
-char* strcutslash(char* str);
-char* strcatslash(char* str);
-void setextension(char* base, const char* ext);
-bool isextension(const char* fname, const char* ext);
-void strdirname(char* str);
-void strbasename(char* str);
-bool mkpath(const char* path, mode_t mode);
+void natify_slashes(char *str);
+char *strcutslash(char *str);
+char *strcatslash(char *str);
+void setextension(char *base, const char *ext);
+bool isextension(const char *fname, const char *ext);
+void strdirname(char *str);
+void strbasename(char *str);
+bool mkpath(const char *path, mode_t mode);
+char *realpath_link(const char *path, char *resolved_path);
+char *realpath_tilde(const char *path, char *resolved_path);
 
-#ifdef __UNIXSDL__
-char* realpath_link(const char* path, char* resolved_path);
-char* realpath_tilde(const char* path, char* resolved_path);
-#else
-#define realpath_link realpath_native
-#endif
-
-void psr_cfg_run(unsigned char (*psr_func)(const char*), const char* dir, const char* fname);
+void psr_cfg_run(unsigned char (*psr_func)(const char *), const char *dir, const char *fname);
 
 #endif

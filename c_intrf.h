@@ -3,7 +3,36 @@
 
 #include "types.h"
 
-void StartUp(void);
+// ****************************
+// Input Device Stuff
+// ****************************
+
+// Variables related to Input Device Routines:
+//   pl1selk,pl1startk,pl1upk,pl1downk,pl1leftk,pl1rightk,pl1Xk,
+//   pl1Ak,pl1Lk,pl1Yk,pl1Bk,pl1Rk
+//     (Change 1 to 2,3,4 for other players)
+//     Each of these variables contains the corresponding key pressed value
+//       for the key data
+//   pressed[]
+//     - This is an array of pressed/released data (bytes) where the
+//       corresponding key pressed value is used as the index.  The value
+//       for each entry is 0 for released and 1 for pressed.  Also, when
+//       writing keyboard data to this array, be sure to first check if
+//       the value of the array entry is 2 or not.  If it is 2, do not write 1
+//       to that array entry. (however, you can write 0 to it)
+//   As an example, to access Player 1 L button press data, it is
+//     done like : pressed[pl1Lk]
+//   The 3 character key description of that array entry is accessed by the
+//     GUI through ScanCodeListing[pl1Lk*3]
+
+// Note: When storing the input device configuration of a dynamic input
+//   device system (ie. Win9x) rather than a static system (ie. Dos), it
+//   is best to store in the name of the device and relative button
+//   assignments in the configuration file, then convert it to ZSNES'
+//   numerical corresponding key format after reading from it. And then
+//   convert it back when writing to it back.
+extern u4 KeyBuffer[16];
+extern u4 CurKeyPos;
 
 /* Initialize all Joystick stuff, load in all configuration data, parse
  * commandline data, obtain current directory (One time initialization) */
@@ -13,7 +42,7 @@ void SystemInit(void);
 void PrintChar(char);
 
 // Print ASCIIZ string
-void PrintStr(char const*);
+void PrintStr(char const *);
 
 // Wait for a key to be pressed
 char WaitForKey(void);
@@ -44,8 +73,6 @@ void GUIDeInit(void);
 
 // Returns 1 in videotroub if trouble occurs
 void initvideo(void);
-
-void deinitvideo(void);
 
 // In-game screen render w/ triple buffer check
 void DrawScreen(void);
@@ -94,39 +121,6 @@ extern char const GUIVideoModeNames[][18];
 
 // Total Number of Video Modes
 extern u4 const NumVideoModes;
-
-extern u1 GUIHQ2X[]; // Hq2x Filter
-extern u1 GUIM7VID[]; // Hires Mode 7
-extern u1 GUINTVID[]; // NTSC Filter
-
-#ifdef __MSDOS__
-extern u1 GUI16VID[]; // 16-bit mode
-extern u1 GUI2xVID[]; // 2xSaI/Super Engines
-extern u1 GUIEAVID[]; // DOS Eagle
-extern u1 GUIHSVID[]; // Half/Quarter Scanlines
-extern u1 GUISLVID[]; // Scanlines
-extern u1 GUISSVID[]; // DOS Smallscreen
-extern u1 GUITBVID[]; // DOS Triple Buffering
-extern u1 GUIWSVID[]; // DOS Widescreen
-#else
-extern u1 GUIBIFIL[]; // Bilinear Filter
-extern u1 GUIDSIZE[]; // D Modes
-extern u1 GUIHQ3X[]; // Hq3x Filter
-extern u1 GUIHQ4X[]; // Hq4x Filter
-extern u1 GUIKEEP43[]; // Keep 4:3 Ratio
-extern u1 GUIWFVID[]; // Fullscreen
-#endif
-
-#ifdef __UNIXSDL__
-extern u1 GUIRESIZE[]; // SDL Resizable
-#endif
-
-#ifdef __WIN32__
-extern u1 GUIDSMODE[]; // Win D-Stretched Modes
-extern u1 GUISMODE[]; // Win Stretched Modes
-#else
-extern u1 GUII2VID[]; // Interpolation
-#endif
 
 // Input Device Names
 extern char const GUIInputNames[][17];

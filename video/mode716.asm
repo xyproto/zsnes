@@ -529,19 +529,3 @@ CalculateNewValues:
     mov ax,[BG1SYl+ebx*2+2]
     add eax,ecx
     ret
-
-NEWSYM processmode7hires16b
-    cmp byte[BGMA+ebx+1],7
-    jne near .nogo
-    push esi
-    push ebx
-    call CalculateNewValues
-    add esi,75036*4
-    mov [curvidoffset],esi
-    mov dword[M7HROn],1
-    call drawmode7win16b
-    mov dword[M7HROn],0
-    pop ebx
-    pop esi
-.nogo
-    ret

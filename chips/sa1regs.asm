@@ -450,6 +450,7 @@ SA1QuickF sa12205w, SA1NMIV
 SA1QuickF sa12206w, SA1NMIV+1
 SA1QuickF sa12207w, SA1IRQV
 SA1QuickF sa12208w, SA1IRQV+1
+
 NEWSYM sa12209w ; IRQ Stuff
     mov [SA1IRQData+1],al
     test al,80h
@@ -497,7 +498,7 @@ SA1QuickF sa1220Dw, SNSNMIV+1
 SA1QuickF sa1220Ew, SNSIRQV
 SA1QuickF sa1220Fw, SNSIRQV+1
 
-NEWSYM sa12224w ; BWRAM
+NEWSYM sa12224w ; Super Nintendo CPU BW-RAM Address Mapping
     mov bl,al
     and ebx,1Fh
     shl ebx,13
@@ -509,7 +510,8 @@ NEWSYM sa12224w ; BWRAM
     mov [CurBWPtr],ebx
 .nosnes
     ret
-NEWSYM sa12225w ; BWRAM
+
+NEWSYM sa12225w ; SA-1 CPU BW-RAM Address Mapping
     mov [BWUsed2],al
     test al,80h
     jnz .upper
@@ -528,6 +530,7 @@ NEWSYM sa12225w ; BWRAM
     mov byte[BWAnd],0FFh
     mov byte[BWRAnd],0h
     ret
+
 .upper
     mov bl,al
     and ebx,7Fh

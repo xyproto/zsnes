@@ -14,10 +14,10 @@
 #ifdef __GNUC__
 #if defined __x86_64__
 #define asm_call(func) asm volatile("push %%rbx; call %P0; pop %%rbx" ::"X"(func) \
-                                    : "cc", "memory", "rax", "rcx", "rdx", "rbp", "rsi", "rdi")
+									: "cc", "memory", "rax", "rcx", "rdx", "rbp", "rsi", "rdi")
 #elif defined __i386__
 #define asm_call(func) asm volatile("push %%ebp; call %P0; pop %%ebp" ::"X"(func) \
-                                    : "cc", "memory", "eax", "ecx", "edx", "ebx", "esi", "edi")
+									: "cc", "memory", "eax", "ecx", "edx", "ebx", "esi", "edi")
 #else
 #error unknown architecture
 #endif

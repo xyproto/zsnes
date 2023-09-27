@@ -49,17 +49,17 @@ extern unsigned char MovieProcessing;
 extern uint8_t MovieRecordWinVal;
 
 enum MovieStatus { MOVIE_OFF = 0,
-    MOVIE_PLAYBACK,
-    MOVIE_RECORD,
-    MOVIE_OLD_PLAY,
-    MOVIE_ENDING_DUMPING,
-    MOVIE_DUMPING_NEW,
-    MOVIE_DUMPING_OLD };
+				   MOVIE_PLAYBACK,
+				   MOVIE_RECORD,
+				   MOVIE_OLD_PLAY,
+				   MOVIE_ENDING_DUMPING,
+				   MOVIE_DUMPING_NEW,
+				   MOVIE_DUMPING_OLD };
 #define SetMovieMode(mode) (MovieProcessing = (unsigned char)mode)
 
 enum MZT_FORCE_MODE_SWITCH { RTR_OFF = 0,
-    RTR_REPLAY_TO_RECORD,
-    RTR_RECORD_TO_REPLAY };
+							 RTR_REPLAY_TO_RECORD,
+							 RTR_RECORD_TO_REPLAY };
 
 void MovieInsertChapter(void);
 

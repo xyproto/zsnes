@@ -49,16 +49,7 @@ EXTSYM SRAMPath
 EXTSYM IPSPath,MoviePath,CHTPath,ComboPath,INPPath,SStatePath
 EXTSYM GUIMovieForcedText
 
-%ifdef __UNIXSDL__
-EXTSYM CheckOpenGL
-%elifdef __MSDOS__
-EXTSYM dssel
-EXTSYM GUI36hzcall
-%endif
-
-%ifndef __MSDOS__
 EXTSYM GUICustomX,GUICustomY
-%endif
 
 %include "gui/guiwindp.inc"
 
@@ -191,82 +182,3 @@ NEWSYM GUIOn,       resb 1
 NEWSYM GUIOn2,      resb 1
 NEWSYM GUIReset,    resb 1
 NEWSYM CurPalSelect, resb 1
-
-SECTION .data
-NEWSYM GUIoldhand9o, dd 0
-NEWSYM GUIoldhand9s, dw 0
-NEWSYM GUIoldhand8o, dd 0
-NEWSYM GUIoldhand8s, dw 0
-GUIt1ccSwap db 0
-GUIskipnextkey42 db 0
-
-SECTION .text
-%ifdef __MSDOS__
-NEWSYM GUIhandler8h
-  cli
-  push ds
-  push eax
-  mov ax,[cs:dssel]
-  mov ds,ax
-  ccallv GUI36hzcall
-  xor byte[GUIt1ccSwap],1
-  cmp byte[GUIt1ccSwap],0
-  je .nocall
-  pushf
-  call far [GUIoldhand8o]
-.nocall
-  mov al,20h
-  out 20h,al
-  pop eax
-  pop ds
-  sti
-  iretd
-
-NEWSYM GUIhandler9h
-  cli
-  push ds
-  push eax
-  push ebx
-  mov ax,[cs:dssel]
-  mov ds,ax
-
-  xor ebx,ebx
-  in al,60h                 ; get keyboard scan code
-  cmp al,42
-  jne .no42
-  cmp byte[GUIskipnextkey42],0
-  je .no42
-  mov byte[GUIskipnextkey42],0
-  jmp .skipkeyrel
-.no42
-  cmp al,0E0h
-  jne .noE0
-  mov byte[GUIskipnextkey42],1
-  jmp .skipkeyrel
-.noE0
-  mov byte[GUIskipnextkey42],0
-  mov bl,al
-  xor bh,bh
-  test bl,80h               ; check if bit 7 is on (key released)
-  jnz .keyrel
-  cmp byte[pressed+ebx],0
-  jne .skipa
-  mov byte[pressed+ebx],1        ; if not, set key to pressed
-.skipa
-  jmp .skipkeyrel
-.keyrel
-  and bl,7Fh
-  mov byte[pressed+ebx],0        ; if not, set key to pressed
-.skipkeyrel
-  mov byte[pressed],0
-
-  pushf
-  call far [GUIoldhand9o]
-  mov al,20h
-  out 20h,al
-  pop ebx
-  pop eax
-  pop ds
-  sti
-  iretd
-%endif

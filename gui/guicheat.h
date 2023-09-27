@@ -10,7 +10,7 @@ void CheatCodeSearchInit(void);
 void CheatCodeSearchProcess(void);
 void CheatCodeToggle(void);
 void DisableCheatsOnLoad(void);
-void EnableCheatCodeNoPrevMod(u1* esi);
+void EnableCheatCodeNoPrevMod(u1 *esi);
 void EnableCheatsOnLoad(void);
 void ProcessCheatCode(void);
 

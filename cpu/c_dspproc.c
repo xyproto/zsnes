@@ -15,10 +15,6 @@
 #include "regs.h"
 #include "spc700.h"
 
-#ifdef __MSDOS__
-#include "../dos/c_sound.h"
-#endif
-
 static eop* paramhack[4];
 static u4 SBToSPC = 22050;
 
@@ -236,22 +232,6 @@ static u2 const CubicSpline[] = {
     /**/ 0, 0, 0, 0, 0, 0, 0, 0
 };
 
-static s4 DSPInterpolate_4(u4 const edx, u4 const ebp)
-{
-    u4 const ebx = BRRPlace0[ebp][0] >> 16 & 0xFF;
-    u4 const eax = *(u4 const*)((u1 const*)&BRRPlace0[ebp][0] + 3); // XXX ugly cast
-    s4 ecx = (s4)(s2)PSampleBuf[ebp][edx + 2] * (s4)DSPInterP[ebx + 256 * 3] + (s4)(s2)PSampleBuf[ebp][eax + 3] * (s2)DSPInterP[ebx + 256 * 2] + (s4)(s2)PSampleBuf[ebp][eax + 4] * (s2)DSPInterP[ebx + 256 * 1] + (s4)(s2)PSampleBuf[ebp][eax + 5] * (s2)DSPInterP[ebx + 256 * 0];
-
-    ecx >>= 11;
-
-    if (ecx < -32768)
-        ecx = -32768;
-    if (ecx > 32767)
-        ecx = 32767;
-
-    return ecx;
-}
-
 static s4 DSPInterpolate_8(u4 const edx, u4 const ebp)
 {
     u8 const* const ebx = (u8 const*)&((u1 const*)fir_lut)[((BRRPlace0[ebp][0] & 0x00FFFFFF) + 0x1000) >> 9 & 0x0000FFF0]; // XXX ugly cast
@@ -304,109 +284,61 @@ static s4 DSPInterpolate_4_mmx(u4 const edx, u4 const ebp)
 
 void AdjustFrequency(void)
 {
-    u1 const ah = MMXSupport;
     u1 al = SoundInterpType;
-    if (ah == 0) {
-        if (LowPassFilterType >= 3)
-            LowPassFilterType = 0; // HQ
-        if (al >= 3) {
-            al = 1;
-            SoundInterpType = al;
-        }
-    }
 
     interpolatefunc* interpolate;
     switch (al) {
     case 0:
+    {
         interpolate = 0;
         break;
-
+    }
     case 1: // Gaussian
+    {
         // Copy from Gaussian to DSPInterP
-#ifndef __MSDOS__
         // this ifndef is needed the workaround the "snow" in the DOS port
         // used only for Gaussian though
-        if (ah == 0)
-#endif
-        {
-            u2* ebx = DSPInterP + 512;
-            u2* edx = DSPInterP + 511;
-            u2 const* esi = Gaussian;
-            u4 ecx = 512;
-            do {
-                u2 const ax = *esi++;
-                *edx-- = ax;
-                *ebx++ = ax;
-            } while (--ecx != 0);
-            interpolate = DSPInterpolate_4;
-        }
-#ifndef __MSDOS__
-        else { // Gaussian MMX
-            u2 const* ebx = Gaussian;
-            u2 const* edx = Gaussian + 255;
-            u2* esi = DSPInterP;
-            u4 ecx = 256;
-            do {
-                *esi++ = ebx[256];
-                *esi++ = ebx[0];
-                *esi++ = edx[0];
-                *esi++ = edx[256];
-            } while (++ebx, --edx, --ecx != 0);
-            interpolate = DSPInterpolate_4_mmx;
-        }
-#endif
+        u2 const* ebx = Gaussian;
+        u2 const* edx = Gaussian + 255;
+        u2* esi = DSPInterP;
+        u4 ecx = 256;
+        do {
+            *esi++ = ebx[256];
+            *esi++ = ebx[0];
+            *esi++ = edx[0];
+            *esi++ = edx[256];
+        } while (++ebx, --edx, --ecx != 0);
+        interpolate = DSPInterpolate_4_mmx;
         break;
-
+    }
     case 2: // Cubic spline
     { // Copy from CubicSpline to DSPInterP
         u2 const* ebx = CubicSpline;
         u2* esi = DSPInterP;
-        if (ah == 0) {
-            u4 ecx = 1024;
-            do {
-                u2 const ax = *ebx++;
-                *esi++ = ax - ax / 8;
-            } while (--ecx != 0);
-            interpolate = DSPInterpolate_4;
-        } else { // Cubix MMX
-            u4 ecx = 256;
-            do {
-                u2 const v3 = ebx[256 * 3];
-                *esi++ = v3 - v3 / 8;
-                u2 const v2 = ebx[256 * 2];
-                *esi++ = v2 - v2 / 8;
-                u2 const v1 = ebx[256 * 1];
-                *esi++ = v1 - v1 / 8;
-                u2 const v0 = ebx[256 * 0];
-                *esi++ = v0 - v0 / 8;
-            } while (++ebx, --ecx != 0);
-            interpolate = DSPInterpolate_4_mmx;
-        }
+        u4 ecx = 256;
+        do {
+            u2 const v3 = ebx[256 * 3];
+            *esi++ = v3 - v3 / 8;
+            u2 const v2 = ebx[256 * 2];
+            *esi++ = v2 - v2 / 8;
+            u2 const v1 = ebx[256 * 1];
+            *esi++ = v1 - v1 / 8;
+            u2 const v0 = ebx[256 * 0];
+            *esi++ = v0 - v0 / 8;
+        } while (++ebx, --ecx != 0);
+        interpolate = DSPInterpolate_4_mmx;
         break;
     }
-
     default: // Fir MMX
+    {
         interpolate = DSPInterpolate_8;
         break;
     }
+    }
     DSPInterpolate = interpolate;
 
-#ifdef __MSDOS__
-    SB_quality_limiter();
-#endif
-
-#ifdef __MSDOS__
-    static u4 const SBToSPCSpeeds[] = { 8000, 10989, 22222, 43478, 15874, 32258, 48000 };
-    static u4 const SBToSPCSpeeds2[] = { 8192, 11289, 22579, 45158, 16384, 32768, 48000 };
-#else
     static u4 const SBToSPCSpeeds[] = { 8000, 11025, 22050, 44100, 16000, 32000, 48000 };
-#endif
-    u4 const eax =
-#ifdef __MSDOS__
-        // code for supporting vibra cards (coded by Peter Santing)
-        vibracard == 1 || SBHDMA != 0 ? SBToSPCSpeeds2[SoundQuality] : // Vibra card or 16 bit
-#endif
-        SBToSPCSpeeds[SoundQuality];
+    u4 const eax = SBToSPCSpeeds[SoundQuality];
     SBToSPC = eax;
     dspPAdj = ((u8)32000 << 20) / eax;
 
@@ -1456,10 +1388,6 @@ void InitSPC(void)
     opcjmptab[0xFD] = OpFD;
     opcjmptab[0xFE] = OpFE;
     opcjmptab[0xFF] = OpFF;
-
-#ifdef __MSDOS__
-    SB_alloc_dma();
-#endif
 }
 
 void LPFstereo(s4* esi)

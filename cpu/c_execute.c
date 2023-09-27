@@ -96,10 +96,6 @@ static void reexecuteb2(void)
     curcyc = edx >> 8;
     xpc = esi - initaddrl; // subtract program counter by address
 
-#ifdef __MSDOS__
-    asm_call(ResetTripleBuf);
-#endif
-
     if (pressed[KeySaveState] & 1 || pressed[KeyLoadState] & 1) {
         NoSoundReinit = 1;
         csounddisable = 1;
@@ -213,48 +209,19 @@ void continueprognokeys(void)
 // Incorrect
 void reexecuteb(void)
 {
-#ifndef __MSDOS__
     reexecuteb2();
-#else
-    reexecute();
-#endif
 }
 
 void endprog(void)
 {
-    deinitvideo();
     MovieStop();
     DosExit();
 }
 
 void interror(void)
 {
-#ifdef __MSDOS__
-    sti();
-#endif
-    deinitvideo();
     PrintStr("Cannot process interrupt handler!\r\n");
     DosExit();
-}
-
-static void set_timer_interval(u4 const ticks)
-{
-    timercount = ticks;
-    outb(0x43, 0x36);
-    outb(0x40, ticks);
-    outb(0x40, ticks >> 8);
-}
-
-void init60hz(void)
-{
-    u4 const hz = romispal != 0 ? 50 : 60;
-    u4 const ticks = 1193182 /* frequency of the 8253/8254 */ / hz;
-    set_timer_interval(ticks);
-}
-
-void init18_2hz(void)
-{
-    set_timer_interval(65536);
 }
 
 void Donextlinecache(void)

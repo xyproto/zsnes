@@ -3,18 +3,20 @@
 
 #include "../types.h"
 
-//File
+// File
 extern u1 MSU_StatusRead;
 extern u1 MSU_MusicVolume;
+extern u2 MSU_Track_Previous;
+extern u2 MSU_Track;
 extern int MSU_Track_Position;
 extern char MSU_BasePath[];
 int readMSU();
 
-//Registers
+// Registers
 extern void initMSU1regsRead();
 extern void initMSU1regsWrite();
 
-//Read Registers
+// Read Registers
 extern void msuid1();
 extern void msuid2();
 extern void msuid3();
@@ -24,7 +26,7 @@ extern void msuid6();
 extern void msudataread();
 extern void msustatusread();
 
-//Write Registers
+// Write Registers
 extern void msudataseek0();
 extern void msudataseek1();
 extern void msudataseek2();
@@ -34,10 +36,11 @@ extern void msu1track1();
 extern void msu1volume();
 extern void msu1statecontrol();
 
-//Misc. Functions
-extern void mixMSU1Audio(int* start, int* end, int rate);
+// Misc. Functions
+extern void mixMSU1Audio(int *start, int *end, int rate);
 extern void MSU1GetStatusBitsSpecial();
 extern void MSU1HandleTrackChange();
 extern void MSU1HandleStatusBits();
+extern void MSU1LoadNewTrack();
 
 #endif

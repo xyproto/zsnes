@@ -28,25 +28,28 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #ifndef HAVE_AT_FUNCTIONS
 
-int fstatat(int dirfd, const char* pathname, struct stat* buf, int flags)
-{
-    int success = -1;
+int fstatat(int dirfd, const char *pathname, struct stat *buf, int flags) {
+#ifdef _WIN32
+	return 1;
+#else
+	int success = -1;
 
-    if ((!flags || (flags == AT_SYMLINK_NOFOLLOW))) {
-        int cwdfd = -1;
-        if ((dirfd == AT_FDCWD) || (pathname && (*pathname == '/')) || (((cwdfd = open(".", O_RDONLY)) != -1) && !fchdir(dirfd))) {
-            success = (!flags) ? stat(pathname, buf) : lstat(pathname, buf);
-        }
+	if ((!flags || (flags == AT_SYMLINK_NOFOLLOW))) {
+		int cwdfd = -1;
+		if ((dirfd == AT_FDCWD) || (pathname && (*pathname == '/')) || (((cwdfd = open(".", O_RDONLY)) != -1) && !fchdir(dirfd))) {
+			success = (!flags) ? stat(pathname, buf) : lstat(pathname, buf);
+		}
 
-        if (cwdfd != -1) {
-            fchdir(cwdfd);
-            close(cwdfd);
-        }
-    } else {
-        errno = EINVAL;
-    }
+		if (cwdfd != -1) {
+			fchdir(cwdfd);
+			close(cwdfd);
+		}
+	} else {
+		errno = EINVAL;
+	}
 
-    return (success);
+	return (success);
+#endif
 }
 
 #endif

@@ -16,11 +16,6 @@ void endprog(void);
 
 void interror(void);
 
-// sets to either 60Hz or 50Hz depending on PAL/NTSC
-void init60hz(void);
-
-void init18_2hz(void);
-
 void Donextlinecache(void);
 
 void execute(u4* pedx, u1** pebp, u1** pesi, eop*** pedi);

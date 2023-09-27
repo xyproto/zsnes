@@ -3,6 +3,6 @@
 
 #include "../types.h"
 
-extern u1* C4Ram;
+extern u1 *C4Ram;
 
 #endif

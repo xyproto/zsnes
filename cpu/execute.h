@@ -23,17 +23,4 @@ extern u2 t1cc;
 extern u4 NumberOfOpcodes2;
 extern u4 timercount;
 
-#ifdef __MSDOS__
-typedef void IRQHandler(void);
-
-extern void handler8h(void);
-extern void handler9h(void);
-
-extern IRQHandler* oldhand8o;
-extern IRQHandler* oldhand9o;
-extern IRQHandler* oldhandSBo;
-extern u2 oldhand8s;
-extern u2 oldhand9s;
-#endif
-
 #endif

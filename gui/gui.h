@@ -5,11 +5,11 @@
 #include "../types.h"
 
 typedef struct ComboData {
-    char name[20];
-    u1 combo[42];
-    u2 key;
-    u1 player;
-    u1 ff;
+	char name[20];
+	u1 combo[42];
+	u2 key;
+	u1 player;
+	u1 ff;
 } ComboData;
 STATIC_ASSERT(sizeof(ComboData) == 66);
 
@@ -44,7 +44,7 @@ extern u1 GUIwinorder[22];
 extern u1 cheatdata[28 * 255 + 56];
 extern u1 cplayernum;
 extern u1 cwindrawn;
-extern u1* GUICYLocPtr;
+extern u1 *GUICYLocPtr;
 extern u2 GUImouseposx;
 extern u2 GUImouseposy;
 extern u4 CalibXmax209;

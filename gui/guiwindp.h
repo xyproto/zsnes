@@ -5,11 +5,11 @@
 
 extern char CSDescDisplay[20];
 extern char CSInputDisplay[12];
-extern char* GUICustomResTextPtr[2];
-extern char* GUIPathsTab1Ptr[4];
-extern char* GUIPathsTab2Ptr[5];
-extern char* GUIPathsTab3Ptr[4];
-extern char** GUIMovieTextPtr;
+extern char *GUICustomResTextPtr[2];
+extern char *GUIPathsTab1Ptr[4];
+extern char *GUIPathsTab2Ptr[5];
+extern char *GUIPathsTab3Ptr[4];
+extern char **GUIMovieTextPtr;
 extern u1 CheatCompareValue;
 extern u1 CheatSearchStatus;
 extern u1 CheatWinMode;
@@ -30,8 +30,6 @@ extern u4 GUIInputTabs[];
 extern u4 GUIMovieTabs[];
 extern u4 GUIOptionTabs[];
 extern u4 GUIPathTabs[];
-extern u4 GUIVideoTabs[];
-extern u4 GUIVntscTab[];
 extern u4 GUIccombcursloc;
 extern u4 GUIccomblcursloc;
 extern u4 GUIccombviewloc;

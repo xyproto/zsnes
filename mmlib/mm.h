@@ -21,7 +21,7 @@ misrepresented as being the original software.
 
 3. This notice may not be removed or altered from any source distribution.
 
-    Ryan C. Gordon <icculus@icculus.org>
+	Ryan C. Gordon <icculus@icculus.org>
 */
 
 // ManyMouse main header. Include this from your app.
@@ -36,37 +36,37 @@ extern "C" {
 #define MANYMOUSE_VERSION "0.0.1"
 
 typedef enum {
-    MANYMOUSE_EVENT_ABSMOTION = 0,
-    MANYMOUSE_EVENT_RELMOTION,
-    MANYMOUSE_EVENT_BUTTON,
-    MANYMOUSE_EVENT_SCROLL,
-    MANYMOUSE_EVENT_DISCONNECT,
-    MANYMOUSE_EVENT_MAX
+	MANYMOUSE_EVENT_ABSMOTION = 0,
+	MANYMOUSE_EVENT_RELMOTION,
+	MANYMOUSE_EVENT_BUTTON,
+	MANYMOUSE_EVENT_SCROLL,
+	MANYMOUSE_EVENT_DISCONNECT,
+	MANYMOUSE_EVENT_MAX
 } ManyMouseEventType;
 
 typedef struct
 {
-    ManyMouseEventType type;
-    unsigned int device;
-    unsigned int item;
-    int value;
-    int minval;
-    int maxval;
+	ManyMouseEventType type;
+	unsigned int device;
+	unsigned int item;
+	int value;
+	int minval;
+	int maxval;
 } ManyMouseEvent;
 
 /* internal use only. */
 typedef struct
 {
-    int (*init)(void);
-    void (*quit)(void);
-    const char* (*name)(unsigned int index);
-    int (*poll)(ManyMouseEvent* event);
+	int (*init)(void);
+	void (*quit)(void);
+	const char *(*name)(unsigned int index);
+	int (*poll)(ManyMouseEvent *event);
 } ManyMouseDriver;
 
 int ManyMouse_Init(void);
 void ManyMouse_Quit(void);
-const char* ManyMouse_DeviceName(unsigned int index);
-int ManyMouse_PollEvent(ManyMouseEvent* event);
+const char *ManyMouse_DeviceName(unsigned int index);
+int ManyMouse_PollEvent(ManyMouseEvent *event);
 
 #ifdef __cplusplus
 }

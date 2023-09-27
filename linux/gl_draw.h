@@ -24,10 +24,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 int gl_start(int width, int height, int req_depth, int FullScreen);
 void gl_end();
-void gl_clearwin();
 void gl_drawwin();
 void SetGLAttributes();
-
-extern char allow_glvsync;
 
 #endif

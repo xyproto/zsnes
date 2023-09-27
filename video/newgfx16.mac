@@ -1474,13 +1474,6 @@ EXTSYM Gendcolortable
     pop edx
     pop eax
 
-    cmp byte[Mode7HiRes16b],0
-    je %%nogoc
-    cmp byte[scanlines],0
-    jne %%nogoc
-    call processmode7hires16b
-%%nogoc
-
 %%nogo
     inc ebx
     add esi,288*2

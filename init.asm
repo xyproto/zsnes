@@ -122,8 +122,4 @@ NEWSYM NumofBytes,    resd 1
 ; FFD6 (ROM Type) : 0*=DSP,1*=SFX,2*=OBC1,3*=SA-1,E*-F*=other
 ;                   *3=ROM,*4=ROM+RAM,*5=ROM+RAM+BATTERY,*6=ROM+BATTERY
 ;                   F3=C4
-
-
 NEWSYM DSP1Type, resb 1
-
-NEWSYM yesoutofmemory, resb 1

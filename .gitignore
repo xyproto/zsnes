@@ -1,11 +1,10 @@
 *.[do]
-build/
-cfg.h
 config.default
-include.txt
-input.h
-md.h
 parsegen
 win/confloc.h
 zsnes
 zsnes.exe
+libraries
+rom.sfc
+*.msu
+*.pcm

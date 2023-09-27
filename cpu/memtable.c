@@ -19,14 +19,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifdef __UNIXSDL__
 #include "../gblhdr.h"
-#else
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/stat.h>
-#endif
 #include "../gblvars.h"
 #include "../ui.h"
 #include "c_memory.h"
