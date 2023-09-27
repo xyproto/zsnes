@@ -120,8 +120,6 @@ static void reexecuteb2(void)
         showmenu();
     } else if (ReturnFromSPCStall == 1) {
         goto activatereset;
-    } else if (NetIsNetplay) {
-        return;
     } else if (pressed[KeySaveState] & 1) {
         pressed[1] = 0;
         pressed[KeySaveState] = 2;
@@ -164,7 +162,7 @@ static void reexecuteb2(void)
         }
         ReturnFromSPCStall = 0;
         continueprog();
-    } else if (guioff == 1 || pressed[KeyQuickExit] & 1) {
+    } else if (guioff == 1 || NetIsNetplay || pressed[KeyQuickExit] & 1) {
         endprog();
     } else {
         StartGUI();
