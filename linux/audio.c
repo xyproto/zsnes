@@ -67,33 +67,80 @@ void InitSampleControl() {
 	sample_control.balance = sample_control.hi;
 }
 
-static void SoundUpdate_sdl(void *userdata, unsigned char *stream, int len) {
-	BufferSizeB = len / 2;
-	BufferSizeW = BufferSizeB + BufferSizeB;
+void SoundWrite_sdl() {
+	if(!NetIsNetplay) { // [sneed] standard linux audio handler in non netplay
+		BufferSizeB = 256;
+		BufferSizeW = BufferSizeB + BufferSizeB;
 
-	//normal mixer
-	if (soundon && !T36HZEnabled) {
-		SoundBusy = 1;
-		short *buffer = (short *)stream;
-		asm_call(ProcessSoundBuffer);
-		if (MSUEnable) { mixMSU1Audio(DSPBuffer, DSPBuffer + BufferSizeB, RATE); }
+		//take care of the things we left behind last time
+		SDL_LockAudio();
+		while (sdl_audio_buffer_fill < sdl_audio_buffer_len) {
+			short* p = (short*)&sdl_audio_buffer[sdl_audio_buffer_tail];
 
-		//handle audio capping
-		int *d = DSPBuffer, *end_d = DSPBuffer + BufferSizeB;
-		for (; d < end_d; d++, buffer++) {
-			if ((unsigned int)(*d + 0x7fff) < 0xffff) {
-				*buffer = *d;
-				continue;
-			}
-			if (*d > 0x7fff) {
-				*buffer = 0x7fff;
+			//normal mixer
+			if (soundon && !T36HZEnabled) {
+				asm_call(ProcessSoundBuffer);
+				if (MSUEnable) { mixMSU1Audio(DSPBuffer, DSPBuffer + BufferSizeB, RATE); }
+				int *d = DSPBuffer, *end_d = DSPBuffer + BufferSizeB;
+				for (; d < end_d; d++, p++) {
+					if ((unsigned int)(*d + 0x7fff) < 0xffff) {
+						*p = *d; continue;
+					}
+					if (*d > 0x7fff) { *p = 0x7fff; } else { *p = 0x8001; }
+				}
 			} else {
-				*buffer = 0x8001;
+				memset(p, 0, BufferSizeW); //clear mixer
+			}
+
+			sdl_audio_buffer_fill += BufferSizeW; sdl_audio_buffer_tail += BufferSizeW;
+			if (sdl_audio_buffer_tail >= sdl_audio_buffer_len) { sdl_audio_buffer_tail = 0; }
+		}
+		SDL_UnlockAudio();
+	}
+}
+
+static void SoundUpdate_sdl(void *userdata, unsigned char *stream, int len) {
+	if(NetIsNetplay) { // [sneed] special audio handler for Netplay games
+		BufferSizeB = len / 2;
+		BufferSizeW = BufferSizeB + BufferSizeB;
+
+		//normal mixer
+		if (soundon && !T36HZEnabled) {
+			SoundBusy = 1;
+			short *buffer = (short *)stream;
+			asm_call(ProcessSoundBuffer);
+			if (MSUEnable) { mixMSU1Audio(DSPBuffer, DSPBuffer + BufferSizeB, RATE); }
+
+			//handle audio capping
+			int *d = DSPBuffer, *end_d = DSPBuffer + BufferSizeB;
+			for (; d < end_d; d++, buffer++) {
+				if ((unsigned int)(*d + 0x7fff) < 0xffff) {
+					*buffer = *d;
+					continue;
+				}
+				if (*d > 0x7fff) { *buffer = 0x7fff; } else { *buffer = 0x8001; }
+			}
+			SoundBusy = 0;
+		} else {
+			memset(stream, 0, len); //clear mixer
+		}
+	} else { // use standard linuxaudio handler
+   		int left = sdl_audio_buffer_len - sdl_audio_buffer_head;
+		if (left > 0) {
+			if (left <= len) {
+				memcpy(stream, &sdl_audio_buffer[sdl_audio_buffer_head], left);
+				stream += left;
+				len -= left;
+				sdl_audio_buffer_head = 0;
+				sdl_audio_buffer_fill -= left;
+			}
+
+			if (len) {
+				memcpy(stream, &sdl_audio_buffer[sdl_audio_buffer_head], len);
+				sdl_audio_buffer_head += len;
+				sdl_audio_buffer_fill -= len;
 			}
 		}
-		SoundBusy = 0;
-	} else {
-		memset(stream, 0, len); //clear mixer
 	}
 }
 
@@ -112,7 +159,7 @@ static int SoundInit_sdl() {
 
 	wanted.freq = RATE;
 	wanted.channels = StereoSound + 1;
-	wanted.samples = samptab[SoundQuality] * 32 * wanted.channels;
+	wanted.samples = samptab[SoundQuality] * (NetIsNetplay ? 32 : 128) * wanted.channels;
 	wanted.format = AUDIO_S16LSB;
 	wanted.userdata = 0;
 	wanted.callback = SoundUpdate_sdl;

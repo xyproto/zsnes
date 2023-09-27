@@ -1103,6 +1103,7 @@ void UpdateVFrame(void) {
 
 	CheckTimers();
 	Main_Proc();
+    if (sound_sdl) { SoundWrite_sdl(); }
 }
 
 void UnloadSDL() {
