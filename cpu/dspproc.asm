@@ -612,9 +612,9 @@ NEWSYM VolumeTableb
 ;                db 1,1,1,1,1,1,1,1
 
 SECTION .bss
-NEWSYM DSPBuffer, resd 320*4
-NEWSYM EchoBuffer, resd 320*4
-NEWSYM PModBuffer, resd 320*4 ; The play buffer...
+NEWSYM DSPBuffer, resd 320 * 4
+NEWSYM EchoBuffer, resd 320 * 4
+NEWSYM PModBuffer, resd 320 * 4 ; The play buffer...
 NEWSYM BRRBuffer, resb 32   ; The BRR Decode Buffer
 
 NEWSYM BRRPlace0, resd 1             ; Place in the BRRBuffer for Voice 0

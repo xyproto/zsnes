@@ -38,7 +38,7 @@ unsigned char sound_sdl = false;
 int SoundEnabled = 1;
 unsigned char PrevStereoSound;
 unsigned int PrevSoundQuality;
-extern int DSPBuffer[];
+extern int DSPBuffer[1280];
 extern unsigned int BufferSizeB, BufferSizeW;
 
 #define SAMPLE_NTSC_HI_SCALE 995ULL
