@@ -149,8 +149,11 @@ int PacketGet(bool isForConnection) {
 				if (ZReadBuffer[5] == 'C') {
 					netdupValue = ZReadBuffer[6];
 					currentNetdup = (int)netdupValue;
-					printf("Got join info from server. Running on netdup value %d\n", netdupValue);
-					return 0;
+					printf("Got join info from server. Running on netdup value %d.\n", netdupValue);
+					if(ZReadBuffer[7] > 0) {
+						printf("Ready.");
+						return 0;
+					}
 				}
 			} else {
 				return 0;
@@ -226,6 +229,7 @@ void StartNetwork(bool autoPort) {
 	ZTransmitBuffer[4] = 'S';
 	ZTransmitBuffer[5] = 'C';
 	ZTransmitBuffer[6] = netdupValue;
+	ZTransmitBuffer[7] = ZMaxPlayers == 1;
 }
 
 // Start server loop
@@ -240,7 +244,10 @@ void StartServer(char *Players) {
 			;
 			;
 		}
+		ZTransmitBuffer[7] = 1;
 		printf("All here!\n");
+		for (int i = 0; i < ZPlayers; i++) { PacketSend(i); }
+		Sleep(1);
 	} else {
 		printf("Invalid player count. Just going to game.\n");
 	}
