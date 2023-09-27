@@ -81,7 +81,6 @@ unsigned char Doublevbuf = 1; // Double video buffer
 unsigned char fastmemptr = 0;
 unsigned char ForcePal = 0; // 1 = NTSC, 2 = PAL
 unsigned char finterleave = 0;
-u1 DSPDisable = 0;
 u1 MusicVol = 0;
 
 void init();
@@ -414,7 +413,6 @@ void zstart() {
 	if (!(spcon = !SPCDisable)) {
 		soundon = 0;
 	}
-	DSPDisable = !soundon;
 
 	if (!frameskip) {
 		FPSOn = FPSAtStart;

@@ -15,7 +15,6 @@ extern eop *dspRptr[256];
 extern eop *dspWptr[256];
 extern eop *regptra[0x3000];
 extern eop *regptwa[0x3000];
-extern u1 DSPDisable; // Disable DSP emulation
 extern u1 MusicVol;
 extern u1 cbitmode;	   // bit mode, 0=8bit, 1=16bit
 extern u1 debugdisble; // debugger disable.  0 = no, 1 = yes

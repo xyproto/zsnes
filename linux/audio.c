@@ -39,7 +39,6 @@ int SoundEnabled = 1;
 unsigned char PrevStereoSound;
 unsigned int PrevSoundQuality;
 extern int DSPBuffer[];
-extern unsigned char DSPDisable;
 extern unsigned int BufferSizeB, BufferSizeW;
 
 #define SAMPLE_NTSC_HI_SCALE 995ULL
@@ -71,15 +70,13 @@ static void SoundUpdate_sdl(void *userdata, unsigned char *stream, int len) {
 	BufferSizeB = len / 2;
 	BufferSizeW = BufferSizeB + BufferSizeB;
 
-	short *buffer = (short *)stream;
-	if (soundon && !DSPDisable) {
+	//normal mixer
+	if (soundon && !T36HZEnabled) {
+		short *buffer = (short *)stream;
 		asm_call(ProcessSoundBuffer);
 		if (MSUEnable) { mixMSU1Audio(DSPBuffer, DSPBuffer + BufferSizeB, RATE); }
-	}
 
-	if (T36HZEnabled) {
-		memset(buffer, 0, len);
-	} else {
+		//handle audio capping
 		int *d = DSPBuffer, *end_d = DSPBuffer + BufferSizeB;
 		for (; d < end_d; d++, buffer++) {
 			if ((unsigned int)(*d + 0x7fff) < 0xffff) {
@@ -92,6 +89,8 @@ static void SoundUpdate_sdl(void *userdata, unsigned char *stream, int len) {
 				*buffer = 0x8001;
 			}
 		}
+	} else {
+		memset(stream, 0, len); //clear mixer
 	}
 }
 
