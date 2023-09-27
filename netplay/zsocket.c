@@ -95,6 +95,7 @@ void HandleDisconnection() {
 	Msgptr = "SOCKET DISCONNECTED.";
 	MessageOn = MsgCount;
 	NetIsNetplay = false;
+	InitSound();
 }
 
 // PacketSend
@@ -151,7 +152,7 @@ int PacketGet(bool isForConnection) {
 					currentNetdup = (int)netdupValue;
 					printf("Got join info from server. Running on netdup value %d.\n", netdupValue);
 					if(ZReadBuffer[7] > 0) {
-						printf("Ready.");
+						printf("Ready.\n");
 						return 0;
 					}
 				}
