@@ -16,6 +16,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
 #include "msu1emu.h"
+#include "../gblvars.h"
 #include "../ui.h"
 #include "../cfg.h"
 #include <ctype.h>
@@ -37,7 +38,6 @@ int MSU_Rate_Add = 0;
 int MSU_Track_Position = 0;
 int MSU_Loop_Point = 0;
 int MSU_Track_Length = 0;
-int MSU_Busy = 0;
 char MSU_BasePath[260];
 
 // Prepare read registers
@@ -73,7 +73,6 @@ int readMSU() {
 	}
 	MSU_Data_Seek = 0;
 	MSU_StatusRead = 2;
-	MSU_Busy = 0;
 	MSU_MusicVolume = 0xFF;
 
 	// Get Filename
@@ -149,7 +148,7 @@ void MSU1LoadNewTrack() {
 }
 
 void MSU1HandleTrackChange() {
-	while (MSU_Busy) {
+	while (SoundBusy) {
 		;
 		;
 	}
@@ -186,7 +185,6 @@ void MSU1HandleStatusBits() {
 void mixMSU1Audio(int *start, int *end, int rate) {
 	// Play
 	if ((MSU_StatusRead & 0x10) && MSU_Track_Length > 0) {
-		MSU_Busy = 1;
 		// printf("MSU Status: Track: %d   Playing: %d     Repeat: %d    Volume: %d     Pos: %d/%d\n", (int)MSU_Track, MSU_Playing, MSU_Repeat, (int)MSU_MusicVolume, MSU_Track_Position, MSU_Track_Length);
 		for (; start < end; start++) {
 			// Check if the pointer of the track is valid.
@@ -212,6 +210,5 @@ void mixMSU1Audio(int *start, int *end, int rate) {
 				if (MSU_StatusRead & 0x20) { MSU_Track_Position = MSU_Loop_Point * 2; }
 			}
 		}
-		MSU_Busy = 0;
 	}
 }

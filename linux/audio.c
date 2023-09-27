@@ -36,6 +36,7 @@ int sdl_audio_buffer_head = 0, sdl_audio_buffer_tail = 0;
 unsigned char sound_sdl = false;
 
 int SoundEnabled = 1;
+int SoundBusy = 0;
 unsigned char PrevStereoSound;
 unsigned int PrevSoundQuality;
 extern int DSPBuffer[1280];
@@ -72,6 +73,7 @@ static void SoundUpdate_sdl(void *userdata, unsigned char *stream, int len) {
 
 	//normal mixer
 	if (soundon && !T36HZEnabled) {
+		SoundBusy = 1;
 		short *buffer = (short *)stream;
 		asm_call(ProcessSoundBuffer);
 		if (MSUEnable) { mixMSU1Audio(DSPBuffer, DSPBuffer + BufferSizeB, RATE); }
@@ -89,6 +91,7 @@ static void SoundUpdate_sdl(void *userdata, unsigned char *stream, int len) {
 				*buffer = 0x8001;
 			}
 		}
+		SoundBusy = 0;
 	} else {
 		memset(stream, 0, len); //clear mixer
 	}
@@ -147,7 +150,10 @@ int InitSound() {
 }
 
 void DeinitSound() {
-	SDL_PauseAudio(1);
+	while (SoundBusy) {
+		;
+		;
+	}
 	SDL_CloseAudio();
 	if (sdl_audio_buffer) {
 		free(sdl_audio_buffer);
