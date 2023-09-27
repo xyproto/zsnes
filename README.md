@@ -108,6 +108,7 @@ Thanks to Christoph Mallon for the commits that this fork is based on.
 - Low performance due to differences in surface sizes (internal and SDL), make both the same size.
 - OpenGL code is awful, incomprehensible, stupid and awful again. We must fix it.
 - Support overscan in games like *Dragon Quest 5*
+- Random crashes can occur when starting certain games up, the cause is not known but it's probably memory-related as the emulator crashes with a SIGSEGV.
 
 #### Compatibility
 - Games not working:
