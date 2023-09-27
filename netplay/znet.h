@@ -41,7 +41,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 // Netplay variables
 extern int ZMaxPlayers;
-extern bool NetIsNetplay;
+extern unsigned char NetIsNetplay;
 extern bool NetIsClient;
 extern u4 MyJoyData;
 extern u4 CurrentInputFetch;

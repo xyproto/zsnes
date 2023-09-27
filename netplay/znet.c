@@ -72,7 +72,7 @@ void CheckForNewStateServer(bool repeat) {
 				printf("[Server] No sync in a second! Retrying.\n");
 				memcpy(ZTransmitBuffer + HEADER_SIZE_NET, &DataServer, sizeof(struct PacketInfoServer));
 				for (int i = 0; i < ZPlayers; i++) {
-					if (!allMatching[i]) { PacketSend(i); }
+					PacketSend(i);
 				}
 				start = clock();
 
@@ -222,7 +222,7 @@ void NetplayHandleInputsBlank(void) {
 			CheckForNewStateServer(false);
 			memcpy(ZTransmitBuffer + HEADER_SIZE_NET, &DataServer, sizeof(struct PacketInfoServer));
 			for (int i = 0; i < ZPlayers; i++) {
-				if (!allMatching[i]) { PacketSend(i); }
+				PacketSend(i);
 			}
 		} else {
 			CheckForNewStateClient(false);

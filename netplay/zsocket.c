@@ -87,14 +87,14 @@ char *ZTransmitBuffer = NULL;
 char *ZReadBuffer = NULL;
 
 // Net
-bool NetIsNetplay = false;
+unsigned char NetIsNetplay = false;
 bool NetIsClient = false;
 
 // Handle disconnection
 void HandleDisconnection() {
 	Msgptr = "SOCKET DISCONNECTED.";
 	MessageOn = MsgCount;
-	NetIsNetplay = false;
+	NetIsNetplay = 0;
 	InitSound();
 }
 
@@ -199,7 +199,7 @@ void StartNetwork(bool autoPort) {
 	memset(&ClientData, 0, sizeof(struct PacketInfoClient));
 
 	// Mark this as a netplay game
-	NetIsNetplay = true;
+	NetIsNetplay = 1;
 
 	// Create communication socket
 	mysocket = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP);

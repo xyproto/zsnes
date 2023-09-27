@@ -195,7 +195,6 @@ SRCS += linux/audio.c
 SRCS += linux/c_sdlintrf.c
 SRCS += linux/lib.c
 SRCS += linux/sdllink.c
-SRCS += linux/sockserv.c
 SRCS += linux/gl_draw.c
 SRCS += mmlib/linux.c
 
