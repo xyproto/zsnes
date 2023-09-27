@@ -10,7 +10,7 @@ ASMFLAGS += -O1 -w-orphan-labels
 
 #WITH_DEBUGGER  := yes
 #WITH_PNG       := yes
-WINDOWS        := yes
+#WINDOWS        := yes
 
 # Import libraries from root folder. This is currently necessary on Ubuntu, since it's not possible to download i386 packages
 # due to what seems to be a bug in apt install where it wants you to install libc:i386 which leads to all of your other packages getting deleted.
@@ -41,7 +41,7 @@ else
 endif
 
 # Other
-BINARY     ?= zsnes
+BINARY ?= zsnes
 
 # SDL is necessary
 SDL_CONFIG ?= pkg-config sdl
@@ -239,7 +239,7 @@ $(BINARY): $(OBJS)
 
 clean distclean:
 	@echo '===> CLEAN'
-	$(Q)rm -fr $(DEPS) $(OBJS) $(BINARY)
+	$(Q)rm -fr $(DEPS) $(OBJS)
 ifdef CLEAN_MORE
 	$(Q)find . -name "*.[do]" -delete
 endif
