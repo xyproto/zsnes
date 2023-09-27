@@ -122,7 +122,7 @@ extern u1 nssdip6;
 extern u1 scaddset; // screen/fixed color addition settings
 extern u1 scaddtype; // which screen to add/sub
 extern u1 scrndis; // which background is disabled
-extern u1 sndrot; // rotates to use A,X or Y for sound skip
+extern u1 sndrot[]; // rotates to use A,X or Y for sound skip
 extern u1 vidbright; // screen brightness (0 .. 15)
 extern u1 winen[6]; // Win1 on (IN/OUT) or Win2 on (IN/OUT) on BG1/BG2/BG3/BG4/sprites/backarea
 extern u1 winenabm; // Window logic enable for main screen

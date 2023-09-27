@@ -2230,7 +2230,7 @@ void powercycle(bool sramload, bool romload) {
 		}
 
 		sramsavedis = 0;
-		memcpy(&sndrot, regsbackup, 3019);
+		memcpy(sndrot, regsbackup, 3019);
 		GUIDoReset();
 
 		if (romload) {
