@@ -52,8 +52,8 @@ sudo apt install g++-multilib gcc-multilib libgl-dev libpng-dev zlib1g-dev nasm 
 
 ### Packages needed on Windows
 These have to be downloaded from the File link directly. Fully tested to be working.
-https://packages.msys2.org/package/mingw-w64-i686-SDL?repo=mingw32
-https://packages.msys2.org/package/mingw-w64-i686-zlib?repo=mingw32
+* https://packages.msys2.org/package/mingw-w64-i686-SDL?repo=mingw32
+* https://packages.msys2.org/package/mingw-w64-i686-zlib?repo=mingw32
 
 ### Pull requests
 
