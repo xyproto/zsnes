@@ -159,7 +159,7 @@ static int SoundInit_sdl() {
 
 	wanted.freq = RATE;
 	wanted.channels = StereoSound + 1;
-	wanted.samples = samptab[SoundQuality] * (NetIsNetplay ? 32 : 128) * wanted.channels;
+	wanted.samples = samptab[SoundQuality] * 128 * wanted.channels;
 	wanted.format = AUDIO_S16LSB;
 	wanted.userdata = 0;
 	wanted.callback = SoundUpdate_sdl;
