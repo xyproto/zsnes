@@ -1210,21 +1210,22 @@ void SaveSramData(void) {
 
 extern bool SramExists;
 void OpenSramFile() {
-	FILE *fp;
+	SramExists = false;
+	if(!NetIsNetplay) { // [Sneed] no sram for netplay
+		FILE *fp;
 
-	setextension(ZSaveName, "srm");
-	if ((fp = fopen_dir(ZSramPath, ZSaveName, "rb"))) {
-		fread(sram, 1, ramsize, fp);
-		fclose(fp);
-
-		SramExists = true;
-
-		if (*ZSaveST2Name && (fp = fopen_dir(ZSramPath, ZSaveST2Name, "rb"))) {
-			fread(sram2, 1, ramsize, fp);
+		setextension(ZSaveName, "srm");
+		if ((fp = fopen_dir(ZSramPath, ZSaveName, "rb"))) {
+			fread(sram, 1, ramsize, fp);
 			fclose(fp);
+
+			SramExists = true;
+
+			if (*ZSaveST2Name && (fp = fopen_dir(ZSramPath, ZSaveST2Name, "rb"))) {
+				fread(sram2, 1, ramsize, fp);
+				fclose(fp);
+			}
 		}
-	} else {
-		SramExists = false;
 	}
 }
 
