@@ -339,7 +339,6 @@ void deallocmem() {
 	deallocmemhelp(vbufaptr);
 	deallocmemhelp(ngwinptrb);
 	deallocmemhelp(vbufdptr);
-	deallocmemhelp(romaptr);
 	deallocmemhelp(vcache2bs);
 	deallocmemhelp(vcache4bs);
 	deallocmemhelp(vcache8bs);
@@ -347,6 +346,12 @@ void deallocmem() {
 	deallocmemhelp(vcache4b);
 	deallocmemhelp(vcache8b);
 	deallocmemhelp(sram);
+	deallocmemhelp(SA1RAMArea);
+	deallocmemhelp(SA1DMAData);
+	deallocmemhelp(sfxplotcache);
+	deallocmemhelp(sfxramdata);
+	deallocmemhelp(setaramdata);
+	deallocmemhelp(romaptr);
 }
 
 #define AllocmemFail(ptr, size)  \
@@ -363,10 +368,10 @@ static void allocmem() {
 	AllocmemFail(vcache2bs, 65536 * 4 * 4 + 4096);
 	AllocmemFail(vcache4bs, 65536 * 4 * 2 + 4096);
 	AllocmemFail(vcache8bs, 65536 * 4 + 4096);
-	AllocmemFail(sram, 65536 * 2);
 	AllocmemFail(vcache2b, 262144 + 256);
 	AllocmemFail(vcache4b, 131072 + 256);
 	AllocmemFail(vcache8b, 65536 + 256);
+	AllocmemFail(sram, 65536 * 2);
 	AllocmemFail(SA1RAMArea, 131072);
 	AllocmemFail(SA1DMAData, 262144); //to-do: verify number, should be safe though
 	AllocmemFail(sfxplotcache, 1048576);
