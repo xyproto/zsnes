@@ -1925,7 +1925,7 @@ void map_ehirom() {
 	map_set(snesmmap + 0x40, ROM + 0x400000, 0x40, 0x10000); // FuSoYa: extended from 48Mbits to 64Mbits
 
 	// set banks 80-BF (40h x 32KB ROM banks @10000h)
-	map_set(snesmmap + 0x80, ROM + 0x400000, 0x40, 0x10000); // FuSoYa: extended from 48Mbits to 64Mbits
+	map_set(snesmmap + 0x80, ROM, 0x40, 0x10000);
 
 	// set banks C0-FF (40h x 64KB ROM banks @10000h)
 	map_set(snesmmap + 0xC0, ROM, 0x40, 0x10000);
