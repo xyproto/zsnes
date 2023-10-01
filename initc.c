@@ -1914,7 +1914,7 @@ void map_hirom() {
 	snesmmap[0x7F] = snesmap2[0x7F] = ram7f;
 }
 
-// [Sneed] fixed accuracy to official board
+// [Sneed] fixed accuracy to official board, to-do test that 6000-7FFF writes to SRAM properly
 void map_ehirom() {
 	uint8_t *ROM = romdata;
 	uint_fast8_t x;
