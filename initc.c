@@ -1914,6 +1914,7 @@ void map_hirom() {
 	snesmmap[0x7F] = snesmap2[0x7F] = ram7f;
 }
 
+// [Sneed] fixed accuracy to official board
 void map_ehirom() {
 	uint8_t *ROM = romdata;
 	uint_fast8_t x;
@@ -1942,9 +1943,6 @@ void map_ehirom() {
 
 	// set banks C0-FF (40h x 64KB ROM banks @10000h)
 	map_set(snesmap2 + 0xC0, ROM, 0x40, 0x10000);
-
-	// set banks 70-77 (07h x SRAM)
-	for (x = 0x70; x <= 0x77; x++) { snesmap2[x] = sram; }
 
 	// set banks 7E/7F (WRAM)
 	snesmmap[0x7E] = snesmap2[0x7E] = wramdata;
