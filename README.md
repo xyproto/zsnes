@@ -104,13 +104,12 @@ Thanks to Christoph Mallon for the commits that this fork is based on.
 
 ### Issues
 
-#### SDL/OpenGL Port
+#### General
 - A port to SDL2..
 - Support overscan in games like *Dragon Quest 5*
-- Random crashes can occur when starting certain games up, the cause is not known but it's probably memory-related as the emulator crashes with a SIGSEGV.
+- Random crashes can occur when starting certain games up, the cause is not known but it's probably memory-related as the emulator crashes with a SIGSEGV. Appears to be due to uninitialized memory map? Need to verify that all banks are getting mapped in properly.
 - Input Menu appears to be unusable? Cannot set input device for other gamepads.
-
-#### Netplay
+- JMA support is currently out and needs to be reimplemented.
 - The current netplay implementation sucks. It works fine with low ping or LAN, but when playing with someone who has a high ping/network latency, the game will really be slow and almost unplayable. There's probably nothing that can be done about this, but a input buffer of sorts should be added. Porting the old ZSNES networking code is a possibility, but it's sadly very unreadable and I couldn't comprehend what was going on in the communication side of things.
 
 #### Compatibility
