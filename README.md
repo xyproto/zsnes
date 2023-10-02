@@ -133,6 +133,7 @@ Thanks to Christoph Mallon for the commits that this fork is based on.
   - Seta 11 (25% done)
   - Seta 18 (1% done)
   - BS-X (50% done)
+  - MSU-1 (100% done, needs read protection)
 
 #### Timing engine
 - Convert counter to 32-bit.
