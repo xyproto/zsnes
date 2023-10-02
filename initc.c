@@ -1401,7 +1401,7 @@ uint32_t showinfogui(void) {
 	for (i = 0; i < 21; i++) {
 		CSStatus[i] = (ROM[infoloc + i]) ? ROM[infoloc + i] : 32;
 	}
-	memcpy(CSStatus3 + 6, (ROM[infoloc + 25] < 2 || ROM[infoloc + 25] > 12) ? "NTSC" : "PAL ", 4);
+	memcpy(CSStatus3 + 6, romispal ? "PAL " : "NTSC", 4);
 
 	if (IPSPatched) {
 		memcpy(CSStatus2 + 15, "IPS PATCH", 9);
@@ -1729,11 +1729,11 @@ void SetupROM(void) {
 	SetIRQVectors();
 
 	/* get timing (pal/ntsc)
-  ForceROMTiming is from the GUI.
-  ForcePal is from Command line, we have a static var
-  to prevent forcing a secong game loaded from the GUI when
-  the first was loaded from the command line with forcing.
-  */
+	ForceROMTiming is from the GUI.
+	ForcePal is from Command line, we have a static var
+	to prevent forcing a secong game loaded from the GUI when
+	the first was loaded from the command line with forcing.
+	*/
 	if (ForcePal && !CLforce) {
 		CLforce = true;
 	} else {
@@ -1752,7 +1752,6 @@ void SetupROM(void) {
 	}
 
 	InitSampleControl();
-
 	if (romispal) {
 		totlines = 314;
 		MsgCount = 100;
