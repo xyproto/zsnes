@@ -2085,42 +2085,39 @@ void map_hirom()
     snesmmap[0x7F] = snesmap2[0x7F] = ram7f;
 }
 
-void map_ehirom()
-{
-    uint8_t* ROM = romdata;
-    uint_fast8_t x;
-    // set addresses 8000-FFFF
-    // set banks 00-3F (40h x 32KB ROM banks @ 10000h)
-    map_set(snesmmap,ROM+0x400000,0x40,0x10000); //FuSoYa: extended from 48Mbits to 64Mbits
+// [Sneed] fixed accuracy to official board, to-do test that 6000-7FFF writes to SRAM properly
+void map_ehirom() {
+	uint8_t *ROM = romdata;
+	uint_fast8_t x;
+	// set addresses 8000-FFFF
+	// set banks 00-3F (40h x 32KB ROM banks @ 10000h)
+	map_set(snesmmap, ROM + 0x400000, 0x40, 0x10000); // FuSoYa: extended from 48Mbits to 64Mbits
 
-    // set banks 40-7F (40h x 32KB ROM banks @ 10000h)
-    map_set(snesmmap+0x40,ROM+0x400000,0x40,0x10000); //FuSoYa: extended from 48Mbits to 64Mbits
+	// set banks 40-7F (40h x 32KB ROM banks @ 10000h)
+	map_set(snesmmap + 0x40, ROM + 0x400000, 0x40, 0x10000); // FuSoYa: extended from 48Mbits to 64Mbits
 
-    // set banks 80-BF (40h x 32KB ROM banks @10000h)
-    map_set(snesmmap+0x80,ROM+0x400000,0x40,0x10000); //FuSoYa: extended from 48Mbits to 64Mbits
+	// set banks 80-BF (40h x 32KB ROM banks @10000h)
+	map_set(snesmmap + 0x80, ROM, 0x40, 0x10000);
 
-    // set banks C0-FF (40h x 64KB ROM banks @10000h)
-    map_set(snesmmap+0xC0,ROM,0x40,0x10000);
+	// set banks C0-FF (40h x 64KB ROM banks @10000h)
+	map_set(snesmmap + 0xC0, ROM, 0x40, 0x10000);
 
-    // set addresses 0000-7FFF
-    // set banks 00-3F (40h x WRAM)
-    map_set(snesmap2,wramdata,0x40,0);
+	// set addresses 0000-7FFF
+	// set banks 00-3F (40h x WRAM)
+	map_set(snesmap2, wramdata, 0x40, 0);
 
-    // set banks 40-7F (40h x 32KB ROM banks @ 8000h)
-    map_set(snesmap2+0x40,ROM+0x400000,0x40,0x10000); //FuSoYa: extended from 48Mbits to 64Mbits
+	// set banks 40-7F (40h x 32KB ROM banks @ 8000h)
+	map_set(snesmap2 + 0x40, ROM + 0x400000, 0x40, 0x10000); // FuSoYa: extended from 48Mbits to 64Mbits
 
-    // set banks 80-BF (40h x WRAM)
-    map_set(snesmap2+0x80,wramdata,0x40,0);
+	// set banks 80-BF (40h x WRAM)
+	map_set(snesmap2 + 0x80, wramdata, 0x40, 0);
 
-    // set banks C0-FF (40h x 64KB ROM banks @10000h)
-    map_set(snesmap2+0xC0,ROM,0x40,0x10000);
+	// set banks C0-FF (40h x 64KB ROM banks @10000h)
+	map_set(snesmap2 + 0xC0, ROM, 0x40, 0x10000);
 
-    // set banks 70-77 (07h x SRAM)
-    for(x = 0x70; x <= 0x77; x++) { snesmap2[x] = sram; }
-
-    // set banks 7E/7F (WRAM)
-    snesmmap[0x7E] = snesmap2[0x7E] = wramdata;
-    snesmmap[0x7F] = snesmap2[0x7F] = ram7f;
+	// set banks 7E/7F (WRAM)
+	snesmmap[0x7E] = snesmap2[0x7E] = wramdata;
+	snesmmap[0x7F] = snesmap2[0x7F] = ram7f;
 }
 
 //FuSoYa: Add support for 64Mbit ExLoROM
