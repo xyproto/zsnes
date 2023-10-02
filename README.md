@@ -25,6 +25,19 @@ Pull requests that fixes inaccuracies with the emulation are welcome, as well as
 * License: GPL2
 * Version: 2.0.13
 
+### Packages
+**This is still being tested, compilation appears to work on Ubuntu but requires some extra steps, read** https://github.com/xyproto/zsnes/issues/19
+
+```sh
+sudo dpkg --add-architecture i386
+sudo apt update
+sudo apt upgrade
+sudo apt install g++-multilib gcc-multilib libgl-dev zlib1g-dev nasm libgl1-mesa-dev:i386 libgl1-mesa-glx:i386
+
+# See if this command can be gotten working on Ubuntu at one point
+sudo apt install libsdl1.2-compat-dev:i386
+```
+
 ### Build
 ```sh
 make -j$(nproc)
@@ -38,17 +51,6 @@ Make sure that `gdb` is installed. Then:
 make clean debug
 ```
 Then type `r` in gdb to run zsnes with the example ROM (`./rom.sfc` must exist). Use ie. `bt full` to see the backtrace if ZSNES crashes.
-
-### Compilation
-
-**This is still being tested, compilation appears to work on Ubuntu but requires some extra steps on Ubuntu, read** https://github.com/xyproto/zsnes/issues/19
-
-```sh
-sudo dpkg --add-architecture i386
-sudo apt update
-sudo apt upgrade
-sudo apt install g++-multilib gcc-multilib libgl-dev libpng-dev zlib1g-dev nasm libgl1-mesa-dev:i386 libgl1-mesa-glx:i386
-```
 
 ### Packages needed on Windows
 These have to be downloaded from the File link directly. Fully tested to be working.
@@ -111,6 +113,7 @@ Thanks to Christoph Mallon for the commits that this fork is based on.
 - Input Menu appears to be unusable? Cannot set input device for other gamepads.
 - JMA support is currently out and needs to be reimplemented.
 - The current netplay implementation sucks. It works fine with low ping or LAN, but when playing with someone who has a high ping/network latency, the game will really be slow and almost unplayable. There's probably nothing that can be done about this, but a input buffer of sorts should be added. Porting the old ZSNES networking code is a possibility, but it's sadly very unreadable and I couldn't comprehend what was going on in the communication side of things.
+- LibPNG needs to be tested.
 
 #### Compatibility
 - Games not working:
