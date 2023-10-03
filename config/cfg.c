@@ -646,7 +646,7 @@ static void write_cfg_vars_internal(void *fp, int (*outf)(void *, const char *, 
 	outf(fp, ";%s\n", " -- Emulation --");
 	outf(fp, ";%s\n", "  ----");
 	outf(fp, "\n");
-	outf(fp, ";%s\n", " Percent to Execute [50..150] - only modify if you know what you are doing");
+	outf(fp, ";%s\n", " Percent to Execute [50..2048] - only modify if you know what you are doing");
 	outf(fp, ";%s\n", " Changing this value may help certain games run.");
 	outf(fp, "per2exec=%u\n", per2exec);
 	outf(fp, "\n");

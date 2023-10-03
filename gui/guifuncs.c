@@ -379,7 +379,7 @@ void GUIRestoreVars() {
 	CheckValueBounds(&PauseLoad, 0, 1, 0, UB);
 	CheckValueBounds(&PauseRewind, 0, 1, 0, UB);
 
-	CheckValueBounds(&per2exec, 50, 150, 100, UD);
+	CheckValueBounds(&per2exec, 50, 2048, 100, UD);
 	CheckValueBounds(&HacksDisable, 0, 1, 0, UB);
 	CheckValueBounds(&frameskip, 0, 10, 0, UB);
 	CheckValueBounds(&maxskip, 0, 9, 9, UB);

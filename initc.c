@@ -1377,13 +1377,14 @@ void headerhack() {
 	}
 }
 
+#define MIN_PER2EXEC(a,b) (((a)<(b))?(a):(b))
 void Setper2exec(void) {
 	if (per2exec != 100 && !NetIsNetplay) { // Decrease standard % of execution by 5% to replace branch and 16bit
 		// cycle deductions
-		opexec268b = (unsigned char)((opexec268 * 95 * per2exec) / 10000);
-		opexec358b = (unsigned char)((opexec358 * 87 * per2exec) / 10000); // 82
-		opexec268cphb = (unsigned char)((opexec268cph * 95 * per2exec) / 10000);
-		opexec358cphb = (unsigned char)((opexec358cph * 87 * per2exec) / 10000); // 82
+		opexec268b = (unsigned char)(MIN_PER2EXEC(255, (opexec268 * 95 * per2exec) / 10000));
+		opexec358b = (unsigned char)(MIN_PER2EXEC(255, (opexec358 * 87 * per2exec) / 10000)); // 82
+		opexec268cphb = (unsigned char)(MIN_PER2EXEC(255, (opexec268cph * 95 * per2exec) / 10000));
+		opexec358cphb = (unsigned char)(MIN_PER2EXEC(255, (opexec358cph * 87 * per2exec) / 10000)); // 82
 		printf("Per2exec: %d %d %d %d\n", opexec268b, opexec358b, opexec268cphb, opexec358cphb);
 	}
 }
