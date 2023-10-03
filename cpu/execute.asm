@@ -338,7 +338,7 @@ NEWSYM cpuover
     test byte[SA1Control],60h
     jnz near .nosa1
     call SA1Swap
-    cmp byte[CurrentExecSA1],15
+    cmp byte[CurrentExecSA1],24 ; [Sneed] this controls the SA-1 Frequency, this value was originally 15 for 6.55mhz but it should be 10.74mhz (or some approximation)
     ja .nocontinueexec
     xor ebx,ebx
     mov bl,[esi]
