@@ -199,7 +199,7 @@ NEWSYM hdmadelay, db 0
 NEWSYM nohdmaframe, db 0
 NEWSYM rtoflags, db 0
 
-NEWSYM tempdat, times 473 db 0     ; expandable area
+NEWSYM tempdat, times 443 db 0     ; expandable area
 
 num2writeppureg equ $-sndrot
 ; pharos equ hack *sigh*

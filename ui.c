@@ -37,6 +37,7 @@ extern uint8_t *SA1RAMArea;
 extern uint8_t *SA1DMAData;
 extern unsigned int xa;
 extern unsigned char spcon, device1, device2;
+extern int PHnum2writeppureg;
 extern char CSStatus[], CSStatus2[], CSStatus3[], CSStatus4[];
 
 u2 selcA000;
@@ -379,6 +380,7 @@ static void allocmem() {
 	AllocmemFail(setaramdata, 4096);
 	AllocmemFail(romaptr, MAXROMSPACE + 512);
 
+	printf("Sndrot copy: %d\n", PHnum2writeppureg);
 	newgfx16b = 1;
 
 	// Set up memory values
