@@ -108,6 +108,7 @@ Thanks to Christoph Mallon for the commits that this fork is based on.
 
 #### General
 - A port to SDL2..
+- Input menu appears to be broken, selecting a device is impossible. A way to get around this is to manually edit zinput.cfg and change pl1contrl, pl2contrl, etc. This appears to be due to missing code for that feature entirely..
 - Support overscan in games like *Dragon Quest 5*
 - Random crashes can occur when starting certain games up, the cause is not known but it's probably memory-related as the emulator crashes with a SIGSEGV. Appears to be due to uninitialized memory map? Need to verify that all banks are getting mapped in properly.
 - Input Menu appears to be unusable? Cannot set input device for other gamepads.
