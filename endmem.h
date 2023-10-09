@@ -41,7 +41,7 @@ extern u1 sprtilecnt[256];
 extern u1 winbgbackenval[256];
 extern u1 winbgdata[288]; // window buffer for backgrounds
 extern u1 winspdata[288]; // window buffer for sprites
-extern u1 *snesmap2[256];
+extern u1 *snesmmaplow[256];
 extern u1 *snesmmap[256];
 extern u2 PrevPicture[56 * 64];
 extern u2 prevpal[256]; // previous palette buffer

@@ -21,7 +21,7 @@
 EXTSYM brkv,brkv8,copv,copv8,curexecstate,curnmi,initaddrl
 EXTSYM membank0r16,membank0r8,membank0w16,membank0w8
 EXTSYM memtabler16,memtabler8,memtablew16,memtablew8
-EXTSYM regaccessbankr8,snesmap2,snesmmap,stackand,stackor
+EXTSYM regaccessbankr8,snesmmaplow,snesmmap,stackand,stackor
 EXTSYM wramdata,SA1xa,SA1xd,SA1xdb,xe,xirqb,SA1xpb,xpc,SA1xs,SA1xx,SA1xy
 EXTSYM SA1RegP
 %ifndef NO_DEBUGGER
@@ -45,7 +45,7 @@ sa1debug:
    mov eax,[snesmmap+ebx*4]
    jmp .nextaddr
 .loweraddr2
-   mov eax,[snesmap2+ebx*4]
+   mov eax,[snesmmaplow+ebx*4]
 .nextaddr
    mov ebx,esi
    sub ebx,eax

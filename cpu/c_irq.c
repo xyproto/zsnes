@@ -49,7 +49,7 @@ void IRQemulmode(u4* const pedx, u1** const pesi)
 	u2 const ax = irqv8;
 	xpb = 0;
 	xpc = ax;
-	u1* const esi = ax & 0x8000 ? snesmmap[0] : snesmap2[0];
+	u1* const esi = ax & 0x8000 ? snesmmap[0] : snesmmaplow[0];
 	initaddrl = esi;
 
 	*pedx = edx & 0xFFFFFFF3 | 0x00000004;
@@ -94,7 +94,7 @@ void switchtovirq(u4* const pedx, u1** const pesi)
 		u2 const ax = SfxSCMR & 0x00000010 ? 0x010C /* SFX NMI */ : irqv;
 		xpb = bl;
 		xpc = ax;
-		u1* const esi = ax & 0x8000 ? snesmmap[bl] : snesmap2[bl];
+		u1* const esi = ax & 0x8000 ? snesmmap[bl] : snesmmaplow[bl];
 		initaddrl = esi;
 
 		*pedx = edx & 0xFFFFFFF3 | 0x00000004;

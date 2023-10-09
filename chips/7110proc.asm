@@ -22,7 +22,7 @@
 EXTSYM memaccessbankr8,memaccessbankr16,memaccessbankw8,memaccessbankw16
 EXTSYM regaccessbankr8,regaccessbankr16,regaccessbankw8,regaccessbankw16
 EXTSYM sramaccessbankr8b,sramaccessbankr16b,sramaccessbankw8b,sramaccessbankw16b
-EXTSYM GetTime,GetDate,snesmmap,snesmap2
+EXTSYM GetTime,GetDate,snesmmap,snesmmaplow
 EXTSYM curromsize,regptwa,regptra,romdata
 EXTSYM SPC7110_4800,SPC7110_4806w,SPC7110initC
 
@@ -213,7 +213,7 @@ NEWSYM initSPC7110regs
     shl eax,20
     add eax,[romdata]
     mov ecx,10h
-    mov ebx,snesmap2+%2*4
+    mov ebx,snesmmaplow+%2*4
     mov edx,snesmmap+%2*4
 .mmaploop2
     mov [ebx],eax

@@ -42,12 +42,12 @@
 void breakops(void) {
 	u4 const page = PrevBreakPt_page;
 	u4 const offset = PrevBreakPt_offset;
-	u1 const *const map = offset & 0x8000 ? snesmmap[page] : snesmap2[page];
+	u1 const *const map = offset & 0x8000 ? snesmmap[page] : snesmmaplow[page];
 	u1 const *const breakarea = map + offset; // add program counter to address
 
 	u4 const pc = xpc;
 	u4 const pb = xpb;
-	u1 *const addr = pc & 0x8000 ? snesmmap[pb] : pc < 0x4300 || memtabler8[pb] != regaccessbankr8 ? snesmap2[pb]
+	u1 *const addr = pc & 0x8000 ? snesmmap[pb] : pc < 0x4300 || memtabler8[pb] != regaccessbankr8 ? snesmmaplow[pb]
 																								   : (u1 *)dmadata - 0x4300; // XXX ugly cast
 	initaddrl = addr;
 
@@ -83,7 +83,7 @@ void breakops(void) {
 void execnextop(void) {
 	u4 const pc = xpc;
 	u4 const pb = xpb;
-	u1 *const addr = pc & 0x8000 ? snesmmap[pb] : pc < 0x4300 || memtabler8[pb] != regaccessbankr8 ? snesmap2[pb]
+	u1 *const addr = pc & 0x8000 ? snesmmap[pb] : pc < 0x4300 || memtabler8[pb] != regaccessbankr8 ? snesmmaplow[pb]
 																								   : (u1 *)dmadata - 0x4300; // XXX ugly cast
 	initaddrl = addr;
 

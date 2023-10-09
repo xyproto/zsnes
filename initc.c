@@ -1853,25 +1853,25 @@ void map_lorom() {
 
 	// set addresses 0000-7FFF
 	// set banks 00-3F (40h x WRAM)
-	map_set(snesmap2, wramdata, 0x40, 0);
+	map_set(snesmmaplow, wramdata, 0x40, 0);
 
 	// set banks 40-7F (40h x 32KB ROM banks @ 8000h)
-	map_set(snesmap2 + 0x40, ROM + 0x200000, 0x40, 0x8000);
+	map_set(snesmmaplow + 0x40, ROM + 0x200000, 0x40, 0x8000);
 
 	// set banks 80-BF (40h x WRAM)
-	map_set(snesmap2 + 0x80, wramdata, 0x40, 0);
+	map_set(snesmmaplow + 0x80, wramdata, 0x40, 0);
 
 	// set banks C0-FF (40h x 32KB ROM banks @ 8000h)
-	map_set(snesmap2 + 0xC0, ROM + 0x200000, 0x40, 0x8000);
+	map_set(snesmmaplow + 0xC0, ROM + 0x200000, 0x40, 0x8000);
 
 	// set banks 70-77 (07h x SRAM)
 	for (x = 0x70; x <= 0x77; x++) {
-		snesmap2[x] = sram;
+		snesmmaplow[x] = sram;
 	}
 
 	// set banks 7E/7F (WRAM)
-	snesmmap[0x7E] = snesmap2[0x7E] = wramdata;
-	snesmmap[0x7F] = snesmap2[0x7F] = ram7f;
+	snesmmap[0x7E] = snesmmaplow[0x7E] = wramdata;
+	snesmmap[0x7F] = snesmmaplow[0x7F] = ram7f;
 }
 
 void map_hirom() {
@@ -1893,25 +1893,25 @@ void map_hirom() {
 
 	// set addresses 0000-7FFF
 	// set banks 00-3F (40h x WRAM)
-	map_set(snesmap2, wramdata, 0x40, 0);
+	map_set(snesmmaplow, wramdata, 0x40, 0);
 
 	// set banks 40-7F (40h x 64KB ROM banks @10000h)
-	map_set(snesmap2 + 0x40, ROM, 0x40, 0x10000);
+	map_set(snesmmaplow + 0x40, ROM, 0x40, 0x10000);
 
 	// set banks 80-BF (40h x WRAM)
-	map_set(snesmap2 + 0x80, wramdata, 0x40, 0);
+	map_set(snesmmaplow + 0x80, wramdata, 0x40, 0);
 
 	// set banks C0-FF (40h x 64KB ROM banks @10000h)
-	map_set(snesmap2 + 0xC0, ROM, 0x40, 0x10000);
+	map_set(snesmmaplow + 0xC0, ROM, 0x40, 0x10000);
 
 	// set banks 70-77 (07h x SRAM)
 	for (x = 0x70; x <= 0x77; x++) {
-		snesmap2[x] = sram;
+		snesmmaplow[x] = sram;
 	}
 
 	// set banks 7E/7F (WRAM)
-	snesmmap[0x7E] = snesmap2[0x7E] = wramdata;
-	snesmmap[0x7F] = snesmap2[0x7F] = ram7f;
+	snesmmap[0x7E] = snesmmaplow[0x7E] = wramdata;
+	snesmmap[0x7F] = snesmmaplow[0x7F] = ram7f;
 }
 
 // [Sneed] fixed accuracy to official board, to-do test that 6000-7FFF writes to SRAM properly
@@ -1933,20 +1933,20 @@ void map_ehirom() {
 
 	// set addresses 0000-7FFF
 	// set banks 00-3F (40h x WRAM)
-	map_set(snesmap2, wramdata, 0x40, 0);
+	map_set(snesmmaplow, wramdata, 0x40, 0);
 
 	// set banks 40-7F (40h x 32KB ROM banks @ 8000h)
-	map_set(snesmap2 + 0x40, ROM + 0x400000, 0x40, 0x10000); // FuSoYa: extended from 48Mbits to 64Mbits
+	map_set(snesmmaplow + 0x40, ROM + 0x400000, 0x40, 0x10000); // FuSoYa: extended from 48Mbits to 64Mbits
 
 	// set banks 80-BF (40h x WRAM)
-	map_set(snesmap2 + 0x80, wramdata, 0x40, 0);
+	map_set(snesmmaplow + 0x80, wramdata, 0x40, 0);
 
 	// set banks C0-FF (40h x 64KB ROM banks @10000h)
-	map_set(snesmap2 + 0xC0, ROM, 0x40, 0x10000);
+	map_set(snesmmaplow + 0xC0, ROM, 0x40, 0x10000);
 
 	// set banks 7E/7F (WRAM)
-	snesmmap[0x7E] = snesmap2[0x7E] = wramdata;
-	snesmmap[0x7F] = snesmap2[0x7F] = ram7f;
+	snesmmap[0x7E] = snesmmaplow[0x7E] = wramdata;
+	snesmmap[0x7F] = snesmmaplow[0x7F] = ram7f;
 }
 
 // FuSoYa: Add support for 64Mbit ExLoROM
@@ -1963,23 +1963,23 @@ void map_elorom() {
 
 	// set addresses 0000-7FFF
 	// set banks 00-3F (40h x WRAM)
-	map_set(snesmap2, wramdata, 0x40, 0);
+	map_set(snesmmaplow, wramdata, 0x40, 0);
 
 	// set banks 40-7F (40h x 32KB ROM banks @ 8000h)
-	map_set(snesmap2 + 0x40, ROM + 0x600000, 0x40, 0x8000);
+	map_set(snesmmaplow + 0x40, ROM + 0x600000, 0x40, 0x8000);
 
 	// set banks 80-BF (40h x WRAM)
-	map_set(snesmap2 + 0x80, wramdata, 0x40, 0);
+	map_set(snesmmaplow + 0x80, wramdata, 0x40, 0);
 
 	// set banks C0-FF (40h x 32KB ROM banks @ 8000h)
-	map_set(snesmap2 + 0xC0, ROM + 0x200000, 0x40, 0x8000);
+	map_set(snesmmaplow + 0xC0, ROM + 0x200000, 0x40, 0x8000);
 
 	// set banks 70-77 (07h x SRAM)
-	for (x = 0x70; x <= 0x77; x++) { snesmap2[x] = sram; }
+	for (x = 0x70; x <= 0x77; x++) { snesmmaplow[x] = sram; }
 
 	// set banks 7E/7F (WRAM)
-	snesmmap[0x7E] = snesmap2[0x7E] = wramdata;
-	snesmmap[0x7F] = snesmap2[0x7F] = ram7f;
+	snesmmap[0x7E] = snesmmaplow[0x7E] = wramdata;
+	snesmmap[0x7F] = snesmmaplow[0x7F] = ram7f;
 }
 
 void map_sfx() {
@@ -1995,15 +1995,15 @@ void map_sfx() {
 
 	// set addresses 0000-7FFF
 	// set banks 00-3F (40h x WRAM)
-	map_set(snesmap2, wramdata, 0x40, 0);
+	map_set(snesmmaplow, wramdata, 0x40, 0);
 
 	// set banks 40-5F (40h x128KB ROM banks @20000h)
 	// [sneed]: fix inaccuracy in mapping (40-5F is Hirom banks)
-	map_set(snesmap2 + 0x40, ROM + 0x8000, 0x20, 0x20000);
+	map_set(snesmmaplow + 0x40, ROM + 0x8000, 0x20, 0x20000);
 	map_set(snesmmap + 0x40, ROM + 0x8000, 0x20, 0x20000);
 
 	// set banks 80-BF (40h x WRAM)
-	map_set(snesmap2 + 0x80, wramdata, 0x40, 0);
+	map_set(snesmmaplow + 0x80, wramdata, 0x40, 0);
 	// set banks 80-BF (40h x 64KB ROM banks @10000h)
 	map_set(snesmmap + 0x80, ROM, 0x40, 0x10000);
 
@@ -2011,17 +2011,17 @@ void map_sfx() {
 	// [sneed]: 3/4MB rom support, preserve compatible behaviour
 	if (curromsize >= 0xC) {
 		map_set(snesmmap + 0xC0, ROM + 0x8000, 0x40, 0x20000);
-		map_set(snesmap2 + 0xC0, ROM + 0x8000, 0x40, 0x20000);
+		map_set(snesmmaplow + 0xC0, ROM + 0x8000, 0x40, 0x20000);
 	} else {
 		map_set(snesmmap + 0xC0, ROM + 0x8000, 0x20, 0x20000);
-		map_set(snesmap2 + 0xC0, ROM + 0x8000, 0x20, 0x20000);
+		map_set(snesmmaplow + 0xC0, ROM + 0x8000, 0x20, 0x20000);
 		map_set(snesmmap + 0xE0, ROM + 0x8000, 0x20, 0x20000);
-		map_set(snesmap2 + 0xE0, ROM + 0x8000, 0x20, 0x20000);
+		map_set(snesmmaplow + 0xE0, ROM + 0x8000, 0x20, 0x20000);
 	}
 
 	// set banks 7E/7F (WRAM)
-	snesmmap[0x7E] = snesmap2[0x7E] = wramdata;
-	snesmmap[0x7F] = snesmap2[0x7F] = ram7f;
+	snesmmap[0x7E] = snesmmaplow[0x7E] = wramdata;
+	snesmmap[0x7F] = snesmmaplow[0x7F] = ram7f;
 
 	preparesfx();
 }
@@ -2049,20 +2049,20 @@ void map_sa1() {
 
 	// set addresses 0000-7FFF
 	// set banks 00-3F (40h x WRAM)
-	map_set(snesmap2, wramdata, 0x40, 0);
+	map_set(snesmmaplow, wramdata, 0x40, 0);
 
 	// set banks 40-7F (40h x 64KB ROM banks @10000h)
-	map_set(snesmap2 + 0x40, ROM, 0x40, 0x10000);
+	map_set(snesmmaplow + 0x40, ROM, 0x40, 0x10000);
 
 	// set banks 80-BF (40h x WRAM)
-	map_set(snesmap2 + 0x80, wramdata, 0x40, 0);
+	map_set(snesmmaplow + 0x80, wramdata, 0x40, 0);
 
 	// set banks C0-FF (40h x 64KB ROM banks @10000h)
-	map_set(snesmap2 + 0xC0, ROM, 0x40, 0x10000);
+	map_set(snesmmaplow + 0xC0, ROM, 0x40, 0x10000);
 
 	// set banks 7E/7F (WRAM)
-	snesmmap[0x7E] = snesmap2[0x7E] = wramdata;
-	snesmmap[0x7F] = snesmap2[0x7F] = ram7f;
+	snesmmap[0x7E] = snesmmaplow[0x7E] = wramdata;
+	snesmmap[0x7F] = snesmmaplow[0x7F] = ram7f;
 }
 
 void map_sdd1() {
@@ -2083,20 +2083,20 @@ void map_sdd1() {
 
 	// set addresses 0000-7FFF
 	// set banks 00-3F (40h x WRAM)
-	map_set(snesmap2, wramdata, 0x40, 0);
+	map_set(snesmmaplow, wramdata, 0x40, 0);
 
 	// set banks 40-7F (40h x 64KB ROM banks @10000h)
-	map_set(snesmap2 + 0x40, ROM, 0x40, 0x10000);
+	map_set(snesmmaplow + 0x40, ROM, 0x40, 0x10000);
 
 	// set banks 80-BF (40h x WRAM)
-	map_set(snesmap2 + 0x80, wramdata, 0x40, 0);
+	map_set(snesmmaplow + 0x80, wramdata, 0x40, 0);
 
 	// set banks C0-FF (40h x 64KB ROM banks @10000h)
-	map_set(snesmap2 + 0xC0, ROM, 0x40, 0x10000);
+	map_set(snesmmaplow + 0xC0, ROM, 0x40, 0x10000);
 
 	// set banks 7E/7F (WRAM)
-	snesmmap[0x7E] = snesmap2[0x7E] = wramdata;
-	snesmmap[0x7F] = snesmap2[0x7F] = ram7f;
+	snesmmap[0x7E] = snesmmaplow[0x7E] = wramdata;
+	snesmmap[0x7F] = snesmmaplow[0x7F] = ram7f;
 }
 
 void map_bsx() {
@@ -2115,25 +2115,25 @@ void map_bsx() {
 
 	// set addresses 0000-7FFF
 	// set banks 00-3F (40h x WRAM)
-	map_set(snesmap2, wramdata, 0x40, 0);
+	map_set(snesmmaplow, wramdata, 0x40, 0);
 
 	// set banks 40-7F (40h x 32KB ROM banks @ 8000h)
-	map_set(snesmap2 + 0x40, ROM + 0x200000, 0x40, 0x8000);
+	map_set(snesmmaplow + 0x40, ROM + 0x200000, 0x40, 0x8000);
 
 	// set banks 80-BF (40h x WRAM)
-	map_set(snesmap2 + 0x80, wramdata, 0x40, 0);
+	map_set(snesmmaplow + 0x80, wramdata, 0x40, 0);
 
 	// set banks C0-FF (40h x 32KB ROM banks @ 8000h)
-	map_set(snesmap2 + 0xC0, ROM + 0x8000, 0x40, 0x8000);
+	map_set(snesmmaplow + 0xC0, ROM + 0x8000, 0x40, 0x8000);
 
 	// set banks 70-77 (07h x SRAM)
 	for (x = 0x70; x <= 0x77; x++) {
-		snesmap2[x] = sram;
+		snesmmaplow[x] = sram;
 	}
 
 	// set banks 7E/7F (WRAM)
-	snesmmap[0x7E] = snesmap2[0x7E] = wramdata;
-	snesmmap[0x7F] = snesmap2[0x7F] = ram7f;
+	snesmmap[0x7E] = snesmmaplow[0x7E] = wramdata;
+	snesmmap[0x7F] = snesmmaplow[0x7F] = ram7f;
 }
 
 void initsnes(void) {
@@ -2296,7 +2296,7 @@ void init65816(void) {
 		map_mem(0x30, &SPC7110SRAMBank, 1);
 		// Below should not be needed, since 50 is mapped above
 		// snesmmap[0x50] = SPC7110_buffer;
-		// snesmap2[0x50] = SPC7110_buffer;
+		// snesmmaplow[0x50] = SPC7110_buffer;
 		// memset(SPC7110_buffer, 0, 0x10000);
 	} else {
 		SPC7110_deinit_decompression_state();

@@ -39,7 +39,7 @@ void ResetOffset()
     Curtableaddr += (unsigned int)tableA;
 }
 
-extern unsigned int snesmmap[256], snesmap2[256];
+extern unsigned int snesmmap[256], snesmmaplow[256];
 
 void BankSwitchSDD1C(unsigned char bankval, unsigned int offset)
 {
@@ -50,7 +50,7 @@ void BankSwitchSDD1C(unsigned char bankval, unsigned int offset)
     curbankval += (uintptr_t)romdata;
 
     for (i = 0; i < 16; i++) {
-        snesmap2[offset + i] = curbankval;
+        snesmmaplow[offset + i] = curbankval;
         snesmmap[offset + i] = curbankval;
         curbankval += 0x10000;
     }

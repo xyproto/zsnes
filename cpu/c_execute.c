@@ -76,7 +76,7 @@ static void reexecuteb2(void)
 
     u4 const pc = xpc;
     u4 const pb = xpb;
-    u1* const addr = pc & 0x8000 ? snesmmap[pb] : pc < 0x4300 || memtabler8[pb] != regaccessbankr8 ? snesmap2[pb]
+    u1* const addr = pc & 0x8000 ? snesmmap[pb] : pc < 0x4300 || memtabler8[pb] != regaccessbankr8 ? snesmmaplow[pb]
                                                                                                    : (u1*)dmadata - 0x4300; // XXX ugly cast
     initaddrl = addr;
 

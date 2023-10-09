@@ -21,7 +21,7 @@
 
 %include "macros.mac"
 
-EXTSYM flagnz,flago,flagc,SfxSCMR,curnmi,execloop,initaddrl,nmiv,snesmap2
+EXTSYM flagnz,flago,flagc,SfxSCMR,curnmi,execloop,initaddrl,nmiv,snesmmaplow
 EXTSYM snesmmap,stackand,stackor,xe,xirqb,xpb,xpc,xs,irqon,irqv,irqv8
 EXTSYM execloopdeb,nmiv8,membank0w8
 EXTSYM IRQemulmode
@@ -118,7 +118,7 @@ NEWSYM switchtonmi
     add esi,eax
     jmp execloop
 .loweraddr
-    mov esi,[snesmap2+ebx*4]
+    mov esi,[snesmmaplow+ebx*4]
     mov [initaddrl],esi
     add esi,eax
     jmp execloop
@@ -165,7 +165,7 @@ NEWSYM NMIemulmode
     add esi,eax
     jmp execloop
 .loweraddr
-    mov esi,[snesmap2+ebx*4]
+    mov esi,[snesmmaplow+ebx*4]
     mov [initaddrl],esi
     add esi,eax
     jmp execloop
@@ -236,7 +236,7 @@ NEWSYM switchtovirqret
     add esi,eax
     ret
 .loweraddr
-    mov esi,[snesmap2+ebx*4]
+    mov esi,[snesmmaplow+ebx*4]
     mov [initaddrl],esi
     add esi,eax
     ret
@@ -298,7 +298,7 @@ NEWSYM switchtovirqdeb
     add esi,eax
     jmp execloopdeb
 .loweraddr
-    mov esi,[snesmap2+ebx*4]
+    mov esi,[snesmmaplow+ebx*4]
     mov [initaddrl],esi
     add esi,eax
     jmp execloopdeb
@@ -345,7 +345,7 @@ NEWSYM IRQemulmodedeb
     add esi,eax
     jmp execloopdeb
 .loweraddr
-    mov esi,[snesmap2+ebx*4]
+    mov esi,[snesmmaplow+ebx*4]
     mov [initaddrl],esi
     add esi,eax
     jmp execloopdeb
@@ -405,7 +405,7 @@ NEWSYM switchtonmideb
     add esi,eax
     jmp execloopdeb
 .loweraddr
-    mov esi,[snesmap2+ebx*4]
+    mov esi,[snesmmaplow+ebx*4]
     mov [initaddrl],esi
     add esi,eax
     jmp execloopdeb
@@ -452,7 +452,7 @@ NEWSYM NMIemulmodedeb
     add esi,eax
     jmp execloopdeb
 .loweraddr
-    mov esi,[snesmap2+ebx*4]
+    mov esi,[snesmmaplow+ebx*4]
     mov [initaddrl],esi
     add esi,eax
     jmp execloopdeb

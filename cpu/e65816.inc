@@ -22,7 +22,7 @@
 EXTSYM brkv,brkv8,copv,copv8,curexecstate,curnmi,initaddrl
 EXTSYM membank0r16,membank0r8,membank0w16,membank0w8
 EXTSYM memtabler16,memtabler8,memtablew16,memtablew8
-EXTSYM nmistatus,regaccessbankr8,snesmap2,snesmmap,stackand,stackor,tablead
+EXTSYM nmistatus,regaccessbankr8,snesmmaplow,snesmmap,stackand,stackor,tablead
 EXTSYM wramdata,xa,xd,xdb,xe,xirqb,xpb,xpc,xs,xx,xy
 EXTSYM intrset,UpdateDPage,switchtovirqret
 

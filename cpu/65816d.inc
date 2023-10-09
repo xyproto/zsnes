@@ -369,7 +369,7 @@ SECTION .text
     mov eax,[snesmmap+ebx*4]
     jmp .nextaddr
 .loweraddr2
-    mov eax,[snesmap2+ebx*4]
+    mov eax,[snesmmaplow+ebx*4]
 .nextaddr
     mov ebx,esi
     sub ebx,eax
@@ -413,7 +413,7 @@ SECTION .text
     add esi,eax
     endloop
 .loweraddr
-    mov esi,[snesmap2+ebx*4]
+    mov esi,[snesmmaplow+ebx*4]
     mov [initaddrl],esi
     add esi,eax
     endloop
@@ -425,7 +425,7 @@ BRKemulmode
     mov eax,[snesmmap+ebx*4]
     jmp .nextaddr
 .loweraddr2
-    mov eax,[snesmap2+ebx*4]
+    mov eax,[snesmmaplow+ebx*4]
 .nextaddr
     mov ebx,esi
     sub ebx,eax
@@ -463,7 +463,7 @@ BRKemulmode
     add esi,eax
     endloop
 .loweraddr
-    mov esi,[snesmap2+ebx*4]
+    mov esi,[snesmmaplow+ebx*4]
     mov [initaddrl],esi
     add esi,eax
     endloop
@@ -486,7 +486,7 @@ BRKemulmode
     add esi,eax
     endloop
 .loweraddr
-    mov esi,[snesmap2+ebx*4]
+    mov esi,[snesmmaplow+ebx*4]
     mov [initaddrl],esi
     add esi,eax
     endloop
@@ -515,7 +515,7 @@ BRKemulmode
     mov eax,[snesmmap+ebx*4]
     jmp .nextaddr
 .loweraddr2
-    mov eax,[snesmap2+ebx*4]
+    mov eax,[snesmmaplow+ebx*4]
 .nextaddr
     mov ebx,esi
     sub ebx,eax
@@ -559,7 +559,7 @@ BRKemulmode
     add esi,eax
     endloop
 .loweraddr
-    mov esi,[snesmap2+ebx*4]
+    mov esi,[snesmmaplow+ebx*4]
     mov [initaddrl],esi
     add esi,eax
     endloop
@@ -571,7 +571,7 @@ COPemulmode
     mov eax,[snesmmap+ebx*4]
     jmp .nextaddr
 .loweraddr2
-    mov eax,[snesmap2+ebx*4]
+    mov eax,[snesmmaplow+ebx*4]
 .nextaddr
     mov ebx,esi
     sub ebx,eax
@@ -609,7 +609,7 @@ COPemulmode
     add esi,eax
     endloop
 .loweraddr
-    mov esi,[snesmap2+ebx*4]
+    mov esi,[snesmmaplow+ebx*4]
     mov [initaddrl],esi
     add esi,eax
     endloop
@@ -671,7 +671,7 @@ COPemulmode
     add esi,eax
     endloop
 .loweraddr
-    mov esi,[snesmap2+ebx*4]
+    mov esi,[snesmmaplow+ebx*4]
     mov [initaddrl],esi
     add esi,eax
     endloop
@@ -689,11 +689,11 @@ COPemulmode
     add esi,eax
     endloop
 .loweraddr
-;    mov esi,[snesmap2+ebx*4]
+;    mov esi,[snesmmaplow+ebx*4]
 ;    mov [initaddrl],esi
 ;    add esi,eax
 ;    endloop
-    mov esi,[snesmap2+ebx*4]
+    mov esi,[snesmmaplow+ebx*4]
     cmp eax,4300h
     jae .upperlower
     mov [initaddrl],esi
@@ -725,7 +725,7 @@ COPemulmode
     add esi,eax
     endloop
 .loweraddr
-    mov esi,[snesmap2+ebx*4]
+    mov esi,[snesmmaplow+ebx*4]
     mov [initaddrl],esi
     add esi,eax
     endloop
@@ -746,7 +746,7 @@ COPemulmode
     add esi,eax
     endloop
 .loweraddr
-    mov esi,[snesmap2+ebx*4]
+    mov esi,[snesmmaplow+ebx*4]
     mov [initaddrl],esi
     add esi,eax
     endloop
@@ -765,7 +765,7 @@ COPemulmode
     add esi,eax
     endloop
 .loweraddr
-    mov esi,[snesmap2+ebx*4]
+    mov esi,[snesmmaplow+ebx*4]
     mov [initaddrl],esi
     add esi,eax
     endloop
@@ -808,7 +808,7 @@ COPemulmode
     add esi,eax
     endloop
 .loweraddr
-    mov esi,[snesmap2+ebx*4]
+    mov esi,[snesmmaplow+ebx*4]
     mov [initaddrl],esi
     add esi,eax
     endloop
@@ -847,7 +847,7 @@ COPemulmode
     add esi,eax
     endloop
 .loweraddr
-    mov esi,[snesmap2+ebx*4]
+    mov esi,[snesmmaplow+ebx*4]
     cmp eax,4300h
     jae .upperlower
     mov [initaddrl],esi
@@ -903,7 +903,7 @@ COPemulmode
     add esi,eax
     endloop
 .loweraddr
-    mov esi,[snesmap2+ebx*4]
+    mov esi,[snesmmaplow+ebx*4]
     mov [initaddrl],esi
     add esi,eax
     endloop
@@ -1131,7 +1131,7 @@ COPemulmode
     xor ebx,ebx
     endloop
 .loweraddr
-    mov eax,[snesmap2+ebx*4]
+    mov eax,[snesmmaplow+ebx*4]
     mov ebx,esi
     sub ebx,eax
     add bx,[esi]
@@ -1351,7 +1351,7 @@ COPemulmode
     jnz .setx
     endloop
 .loweraddr
-    mov esi,[snesmap2+ebx*4]
+    mov esi,[snesmmaplow+ebx*4]
     cmp eax,4300h
     jae .upperlower
     mov [initaddrl],esi
@@ -1428,7 +1428,7 @@ emulRTI
     add esi,eax
     endloop
 .loweraddr
-    mov esi,[snesmap2+ebx*4]
+    mov esi,[snesmmaplow+ebx*4]
     mov [initaddrl],esi
     add esi,eax
     endloop
@@ -1482,7 +1482,7 @@ emulRTI
     add esi,eax
     endloop
 .loweraddr
-    mov esi,[snesmap2+ebx*4]
+    mov esi,[snesmmaplow+ebx*4]
     mov [initaddrl],esi
     add esi,eax
     endloop
@@ -1515,7 +1515,7 @@ emulRTI
     add esi,eax
     endloop
 .loweraddr
-    mov esi,[snesmap2+ebx*4]
+    mov esi,[snesmmaplow+ebx*4]
     mov [initaddrl],esi
     add esi,eax
     endloop

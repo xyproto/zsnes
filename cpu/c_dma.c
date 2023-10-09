@@ -47,7 +47,7 @@ static void transdmappu2cpu(u1 const al, DMAInfo* const esi)
     esi->count = 0;
 
 #if 0 // XXX seems to be unused in the loop
-	u1 const* const esi = (cx & 0x8000 ? snesmmap : snesmap2)[curbank];
+	u1 const* const esi = (cx & 0x8000 ? snesmmap : snesmmaplow)[curbank];
 #endif
 
     // Do loop
@@ -129,7 +129,7 @@ static void transdma(DMAInfo* const esi)
     esi->count = 0;
 
 #if 0 // XXX seems to be unused in the loop
-	u1 const* const esi = (cx & 0x8000 ? snesmmap : snesmap2)[curbank];
+	u1 const* const esi = (cx & 0x8000 ? snesmmap : snesmmaplow)[curbank];
 #endif
 
     // Do loop

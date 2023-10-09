@@ -39,7 +39,7 @@
 %include "macros.mac"
 
 EXTSYM regptra,regptwa,romdata,SA1Status,SDD1BankA,NumofBanks,BWUsed2
-EXTSYM GetTime,GetDate,irqv2,irqv,nmiv2,nmiv,snesmmap,snesmap2
+EXTSYM GetTime,GetDate,irqv2,irqv,nmiv2,nmiv,snesmmap,snesmmaplow
 EXTSYM curypos,CurrentExecSA1,memaccessbankr8sdd1,memtabler8,AddrNoIncr
 EXTSYM SA1_DMA_CC2
 EXTSYM UpdateArithStuff
@@ -322,7 +322,7 @@ NEWSYM %1
     pop eax
     add eax,[romdata]
     mov ecx,10h
-    mov ebx,snesmap2+%3*4
+    mov ebx,snesmmaplow+%3*4
     mov edx,snesmmap+%3*4
 .mmaploop2
     mov [ebx],eax
@@ -356,7 +356,7 @@ NEWSYM sa12223w
     shl eax,20
     add eax,[romdata]
     mov ecx,10h
-    mov ebx,snesmap2+%2*4
+    mov ebx,snesmmaplow+%2*4
     mov edx,snesmmap+%2*4
 .mmaploop2
     mov [ebx],eax
@@ -690,7 +690,7 @@ NEWSYM sa1230Cr
     add ecx,[snesmmap+ebx*4]
     jmp .upperaddr
 .loweraddr
-    add ecx,[snesmap2+ebx*4]
+    add ecx,[snesmmaplow+ebx*4]
 .upperaddr
     mov ebx,[ecx]
     mov cl,[VarLenBarrel+1]
@@ -723,7 +723,7 @@ NEWSYM sa1230Dr
     add ecx,[snesmmap+ebx*4]
     jmp .upperaddr
 .loweraddr
-    add ecx,[snesmap2+ebx*4]
+    add ecx,[snesmmaplow+ebx*4]
 .upperaddr
     mov ebx,[ecx]
     mov cl,[VarLenBarrel+1]

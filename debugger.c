@@ -869,7 +869,7 @@ unsigned char *findoppage() {
 		// lower address
 		if ((xpc < 0x4300) || (memtabler8[xpb] != regaccessbankr8)) {
 			// lower memory
-			return snesmap2[xpb];
+			return snesmmaplow[xpb];
 		} else {
 			// dma
 			return (u1 *)dmadata - 0x4300; // XXX ugly cast

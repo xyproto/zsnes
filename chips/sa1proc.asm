@@ -22,7 +22,7 @@
 %include "macros.mac"
 
 EXTSYM initaddrl,wramdata,IRAM,SA1DoIRQ,SNSRegP,SNSRegPCS
-EXTSYM SA1Ptr,SNSPtr,snesmap2,SA1tablead,SA1xpb,SA1RegP,wramdataa,SA1TimerVal
+EXTSYM SA1Ptr,SNSPtr,snesmmaplow,SA1tablead,SA1xpb,SA1RegP,wramdataa,SA1TimerVal
 EXTSYM SA1RegPCS,SA1BWPtr,SNSBWPtr,CurBWPtr,SA1NMIV,SA1IRQV
 EXTSYM membank0w8,SA1LBound,SA1UBound,SA1SH,SA1SHb,stackor,stackand,snesmmap
 EXTSYM SA1xs,SA1IRQExec,SA1Message,Sflagnz,Sflagc,Sflago
@@ -113,7 +113,7 @@ NEWSYM SA1Swap
     mov eax,[SA1BWPtr]
     mov [CurBWPtr],eax
     mov esi,[SA1Ptr]
-    mov dword[snesmap2],IRAM
+    mov dword[snesmmaplow],IRAM
     mov dword[wramdata],IRAM
     ; Check if IRQ is executed on SA-1
     xor eax,eax
@@ -151,7 +151,7 @@ NEWSYM SA1Swap
     mov dword[wramdata],wramdataa
     mov esi,[SNSPtr]
     mov eax,[wramdata]
-    mov [snesmap2],eax
+    mov [snesmmaplow],eax
     mov edi,[prevedi]
     xor eax,eax
     add dh,11
@@ -181,7 +181,7 @@ NEWSYM SA1Swap
     mov dword[wramdata],wramdataa
     mov esi,[SNSPtr]
     mov eax,[wramdata]
-    mov [snesmap2],eax
+    mov [snesmmaplow],eax
     mov edi,[prevedi]
     xor eax,eax
     add byte[CurrentExecSA1],4
@@ -303,7 +303,7 @@ NEWSYM SA1switchtonmi
     add esi,eax
     ret
 .loweraddr
-    mov esi,[snesmap2+ebx*4]
+    mov esi,[snesmmaplow+ebx*4]
     mov [initaddrl],esi
     add esi,eax
     ret
@@ -357,7 +357,7 @@ NEWSYM SA1switchtovirq
     add esi,eax
     ret
 .loweraddr
-    mov esi,[snesmap2+ebx*4]
+    mov esi,[snesmmaplow+ebx*4]
     mov [initaddrl],esi
     add esi,eax
     ret
