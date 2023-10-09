@@ -200,10 +200,7 @@ NEWSYM nohdmaframe, db 0
 NEWSYM rtoflags, db 0
 
 NEWSYM tempdat, times 443 db 0     ; expandable area
-
-num2writeppureg equ $-sndrot
-; pharos equ hack *sigh*
-NEWSYM PHnum2writeppureg, dd num2writeppureg
+;this makes up for the 3019 bytes in sndrot/regsbackup
 
 NEWSYM scrndis,   db 0
 
