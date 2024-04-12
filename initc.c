@@ -616,8 +616,8 @@ void SetupSramSize() {
 	}
 
 	// Fix if some ROM goes nuts on size
-	if (ramsize > 1024) {
-		ramsize = 1024;
+	if (ramsize > 4096) {
+		ramsize = 4096;
 	}
 
 	// Convert from Kb to bytes;
@@ -656,6 +656,8 @@ void DumpROMLoadInfo() {
 		fputs("\n", fp);
 		fclose(fp);
 	}
+	printf("-- ROM INFORMATION --\nFile: %s\nHeader: %s\n", ZCartName, Header512 ? "Yes" : "No");
+	printf("%s\n%s\n%s\n%s\n\n", CSStatus, CSStatus2, CSStatus3, CSStatus4);
 }
 
 void loadFile(char *filename) {
@@ -1211,7 +1213,6 @@ void clearSPCRAM() {
 }
 
 void clearmem2() {
-	memset(sram, 0xFF, 65536);
 	memset(vram, 0, 65536);
 	memset(vidmemch2, 1, 4096);
 	memset(vidmemch4, 1, sizeof(vidmemch4));
@@ -1223,7 +1224,7 @@ void clearmem(void) {
 	memset(vidbuffer, 0, 131072);
 	memset(wramdataa, 0, 65536);
 	memset(ram7fa, 0, 65536);
-	memset(sram, 0, 65536 * 2);
+	memset(sram, 0, 524288);
 	memset(regptra, 0, sizeof(regptra));
 	memset(regptwa, 0, sizeof(regptwa));
 	memset(vcache2b, 0, 262144 + 256);
@@ -1624,12 +1625,20 @@ void CheckROMType() {
 	if (SFXEnable) {
 		uint_fast8_t x;
 		// SuperFX mapping, banks 60 - 77
-		for (x = 0x60; x < 0x78; x += 2) {
-			map_mem(x, &sfxbank, 1);
-			map_mem(x + 1, &sfxbankb, 1);
+		printf("SuperFX RAMSize: %d\n", ramsize);
+		if(ramsize >= 262144) { //256KB sram mode.
+			for (x = 0x60; x < 0x78; x += 4) {
+				map_mem(x, &sfxbank, 1);
+				map_mem(x + 1, &sfxbankb, 1);
+				map_mem(x + 2, &sfxbankc, 1);
+				map_mem(x + 3, &sfxbankd, 1);
+			}
+		} else {
+			for (x = 0x60; x < 0x78; x += 2) {
+				map_mem(x, &sfxbank, 1);
+				map_mem(x + 1, &sfxbankb, 1);
+			}
 		}
-		// map_mem(0x72, &sfxbankc, 1);
-		// map_mem(0x73, &sfxbankd, 1);
 
 		// set sram banks from 78-7D
 		for (x = 0x78; x < 0x7E; x += 2) {
@@ -1835,9 +1844,17 @@ extern uint32_t SfxR0, SfxR1, SfxR2, SfxR3, SfxR4, SfxR5, SfxR6, SfxR7,
 	SfxR8, SfxR9, SfxR10, SfxR11, SfxR12, SfxR13, SfxR14, SfxR15;
 extern void *ram7f;
 
+void map_sram_generic() {
+	printf("SRAM: %d\n", ramsize);
+	// set banks 70-7D (07h x SRAM)
+	for (uint_fast8_t x = 0x70; x <= 0x7D; x++) {
+		snesmmaplow[x] = sram;
+	}
+}
+
 void map_lorom() {
+	printf("Map: LoROM\n");
 	uint8_t *ROM = romdata;
-	uint_fast8_t x;
 
 	// set addresses 8000-FFFF
 	// set banks 00-7F (80h x 32KB ROM banks @ 8000h)
@@ -1864,10 +1881,7 @@ void map_lorom() {
 	// set banks C0-FF (40h x 32KB ROM banks @ 8000h)
 	map_set(snesmmaplow + 0xC0, ROM + 0x200000, 0x40, 0x8000);
 
-	// set banks 70-77 (07h x SRAM)
-	for (x = 0x70; x <= 0x77; x++) {
-		snesmmaplow[x] = sram;
-	}
+	map_sram_generic();
 
 	// set banks 7E/7F (WRAM)
 	snesmmap[0x7E] = snesmmaplow[0x7E] = wramdata;
@@ -1875,8 +1889,8 @@ void map_lorom() {
 }
 
 void map_hirom() {
+	printf("Map: HiROM\n");
 	uint8_t *ROM = romdata;
-	uint_fast8_t x;
 
 	// set addresses 8000-FFFF
 	// set banks 00-3F (40h x 64KB ROM banks @10000h)
@@ -1904,10 +1918,7 @@ void map_hirom() {
 	// set banks C0-FF (40h x 64KB ROM banks @10000h)
 	map_set(snesmmaplow + 0xC0, ROM, 0x40, 0x10000);
 
-	// set banks 70-77 (07h x SRAM)
-	for (x = 0x70; x <= 0x77; x++) {
-		snesmmaplow[x] = sram;
-	}
+	map_sram_generic();
 
 	// set banks 7E/7F (WRAM)
 	snesmmap[0x7E] = snesmmaplow[0x7E] = wramdata;
@@ -1916,8 +1927,9 @@ void map_hirom() {
 
 // [Sneed] fixed accuracy to official board, to-do test that 6000-7FFF writes to SRAM properly
 void map_ehirom() {
+	printf("Map: ExHiROM\n");
 	uint8_t *ROM = romdata;
-	uint_fast8_t x;
+
 	// set addresses 8000-FFFF
 	// set banks 00-3F (40h x 32KB ROM banks @ 10000h)
 	map_set(snesmmap, ROM + 0x400000, 0x40, 0x10000); // FuSoYa: extended from 48Mbits to 64Mbits
@@ -1944,6 +1956,8 @@ void map_ehirom() {
 	// set banks C0-FF (40h x 64KB ROM banks @10000h)
 	map_set(snesmmaplow + 0xC0, ROM, 0x40, 0x10000);
 
+	map_sram_generic();
+
 	// set banks 7E/7F (WRAM)
 	snesmmap[0x7E] = snesmmaplow[0x7E] = wramdata;
 	snesmmap[0x7F] = snesmmaplow[0x7F] = ram7f;
@@ -1951,6 +1965,7 @@ void map_ehirom() {
 
 // FuSoYa: Add support for 64Mbit ExLoROM
 void map_elorom() {
+	printf("Map: ExLoROM\n");
 	unsigned char *ROM = (unsigned char *)romdata;
 	int x;
 
@@ -1974,8 +1989,7 @@ void map_elorom() {
 	// set banks C0-FF (40h x 32KB ROM banks @ 8000h)
 	map_set(snesmmaplow + 0xC0, ROM + 0x200000, 0x40, 0x8000);
 
-	// set banks 70-77 (07h x SRAM)
-	for (x = 0x70; x <= 0x77; x++) { snesmmaplow[x] = sram; }
+	map_sram_generic();
 
 	// set banks 7E/7F (WRAM)
 	snesmmap[0x7E] = snesmmaplow[0x7E] = wramdata;
@@ -1983,6 +1997,7 @@ void map_elorom() {
 }
 
 void map_sfx() {
+	printf("Map: Super FX\n");
 	uint8_t *ROM = romdata;
 
 	// Clear SFX registers
@@ -2027,6 +2042,7 @@ void map_sfx() {
 }
 
 void map_sa1() {
+	printf("Map: SA-1\n");
 	uint8_t *ROM = romdata;
 	uint8_t test[] = {0xA9, 0x10, 0xCF, 0xAD};
 
@@ -2066,6 +2082,7 @@ void map_sa1() {
 }
 
 void map_sdd1() {
+	printf("Map: SDD-1\n");
 	uint8_t *ROM = romdata;
 
 	// set addresses 8000-FFFF
@@ -2100,6 +2117,7 @@ void map_sdd1() {
 }
 
 void map_bsx() {
+	printf("Map: BSX\n");
 	uint8_t *ROM = romdata;
 	uint_fast8_t x;
 
@@ -2126,10 +2144,7 @@ void map_bsx() {
 	// set banks C0-FF (40h x 32KB ROM banks @ 8000h)
 	map_set(snesmmaplow + 0xC0, ROM + 0x8000, 0x40, 0x8000);
 
-	// set banks 70-77 (07h x SRAM)
-	for (x = 0x70; x <= 0x77; x++) {
-		snesmmaplow[x] = sram;
-	}
+	map_sram_generic();
 
 	// set banks 7E/7F (WRAM)
 	snesmmap[0x7E] = snesmmaplow[0x7E] = wramdata;

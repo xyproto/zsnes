@@ -371,7 +371,7 @@ static void allocmem() {
 	AllocmemFail(vcache2b, 262144 + 256);
 	AllocmemFail(vcache4b, 131072 + 256);
 	AllocmemFail(vcache8b, 65536 + 256);
-	AllocmemFail(sram, 65536 * 2);
+	AllocmemFail(sram, 524288);
 	AllocmemFail(SA1RAMArea, 131072);
 	AllocmemFail(SA1DMAData, 262144); //to-do: verify number, should be safe though
 	AllocmemFail(sfxplotcache, 1048576);

@@ -25,7 +25,7 @@ extern u1 *romdata;	   // rom data  (4MB = 4194304)
 extern u1 *sfxramdata; // SuperFX Ram Data
 extern u1 *spcBuffera;
 extern u1 *spritetablea;
-extern u1 *sram; // sram = 65536 * 2 = 131072
+extern u1 *sram;
 extern u1 *vbufdptr;
 extern u1 *vcache2b;	  // 2-bit video cache
 extern u1 *vcache4b;	  // 4-bit video cache
