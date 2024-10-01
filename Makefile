@@ -31,9 +31,9 @@ ifdef WINDOWS
 else
 	CC = gcc
 	CXX = g++
-	CFLAGS += -D_FORTIFY_SOURCE=2
+	CFLAGS += -D_FORTIFY_SOURCE=2 -g
 	ASMFLAGS += -felf32 -DELF
-	LDFLAGS += -lGL
+	LDFLAGS += -lGL -g
 	ifdef LIBRARIES_ROOT
 		CFLAGS += -L./libraries/usr/lib
 		LDFLAGS += -L./libraries/usr/lib

@@ -18,6 +18,7 @@
 #include "gui/menu.h"
 #include "initc.h"
 #include "config/input.h"
+#include "netplay/znet.h"
 #include "macros.h"
 #include "ui.h"
 #include "vcache.h"
@@ -240,37 +241,42 @@ void cachevideo(void) {
 	// if emulation paused, don't alter timing
 	u2 ax = 1;
 	if (EMUPause != 1) {
-		// fast forward goes over all other throttles
-		// don't fast forward while dumping a movie
-		if (RawDumpInProgress != 1) {
-			if (FastFwdToggle == 0) {
-				if (pressed[KeyFastFrwrd] & 1) {
-					goto fastfor;
-				}
-			} else {
-				if (TestKey2(KeyFastFrwrd)) {
-					FastForwardLock ^= 1;
-				}
-				if (FastForwardLock == 1) {
-				fastfor:
-					bl = FFRatio + 1; // 1-29, 2x-30x fastmotion
-					goto fastforb;
-				}
-			}
-		}
-		// next up, check for slowdown
-		if (FastFwdToggle == 0) {
-			if (pressed[KeySlowDown] & 1) {
-				goto slowdwn;
-			}
+		if (NetFastforward) {
+			bl = 4;
+			goto fastforb;
 		} else {
-			if (TestKey2(KeySlowDown)) {
-				SlowDownLock ^= 1;
-			}
-			if (SlowDownLock == 1) {
-			slowdwn:
-				SloMo = SDRatio + 1; // 1-29 -> /2-/30 slowmotion
-				goto throttleskip;
+			// fast forward goes over all other throttles
+			// don't fast forward while dumping a movie
+			if (RawDumpInProgress != 1) {
+				if (FastFwdToggle == 0) {
+					if (pressed[KeyFastFrwrd] & 1) {
+						goto fastfor;
+					}
+				} else {
+					if (TestKey2(KeyFastFrwrd)) {
+						FastForwardLock ^= 1;
+					}
+					if (FastForwardLock == 1) {
+					fastfor:
+						bl = FFRatio + 1; // 1-29, 2x-30x fastmotion
+						goto fastforb;
+					}
+				}
+				// next up, check for slowdown
+				if (FastFwdToggle == 0) {
+					if (pressed[KeySlowDown] & 1) {
+						goto slowdwn;
+					}
+				} else {
+					if (TestKey2(KeySlowDown)) {
+						SlowDownLock ^= 1;
+					}
+					if (SlowDownLock == 1) {
+					slowdwn:
+						SloMo = SDRatio + 1; // 1-29 -> /2-/30 slowmotion
+						goto throttleskip;
+					}
+				}
 			}
 		}
 		// now we can look at emuspeed

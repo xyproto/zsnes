@@ -22,6 +22,7 @@
 EXTSYM KeyRewind,Voice0Status,UpdateDPage
 EXTSYM romdata,DosExit
 EXTSYM device2,RawDumpInProgress
+EXTSYM NetIsNetplay
 EXTSYM KeySaveState,KeyLoadState,KeyQuickExit,KeyQuickLoad,KeyQuickRst
 EXTSYM GUIReset,KeyOnStA,KeyOnStB,ProcessKeyOn,KeyQuickClock
 EXTSYM KeyQuickSaveSPC,TimerEnable
@@ -338,7 +339,7 @@ NEWSYM cpuover
     test byte[SA1Control],60h
     jnz near .nosa1
     call SA1Swap
-    cmp byte[CurrentExecSA1],24 ; [Sneed] this controls the SA-1 Frequency, this value was originally 15 for 6.55mhz but it should be 10.74mhz (or some approximation)
+    cmp byte[CurrentExecSA1],200 ; [Sneed] this controls the SA-1 Frequency, this value was originally 15 for 6.55mhz but it should be 10.74mhz (or some approximation)
     ja .nocontinueexec
     xor ebx,ebx
     mov bl,[esi]
@@ -670,6 +671,9 @@ NEWSYM cpuover
 ;    je .nonewgfx
     call StartDrawNewGfx
 .nonewgfx
+    test byte[NetIsNetplay],01h
+    jnz .returntoloop
+
     cmp byte[GUIQuit],1
     jne .notGUIQuit
     ccallv endprog

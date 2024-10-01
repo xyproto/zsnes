@@ -97,9 +97,11 @@ static void reexecuteb2(void)
     curcyc = edx >> 8;
     xpc = esi - initaddrl; // subtract program counter by address
 
-    if (pressed[KeySaveState] & 1 || pressed[KeyLoadState] & 1) {
-        NoSoundReinit = 1;
-        csounddisable = 1;
+    if(!NetIsNetplay) {
+        if (pressed[KeySaveState] & 1 || pressed[KeyLoadState] & 1) {
+            NoSoundReinit = 1;
+            csounddisable = 1;
+        }
     }
 
     if (NoSoundReinit != 1)
@@ -115,6 +117,10 @@ static void reexecuteb2(void)
     // clear all keys
     while (Check_Key() != 0)
         Get_Key();
+
+    if (NetIsNetplay) {
+        return;
+    }
 
     if (nextmenupopup == 1) {
         showmenu();

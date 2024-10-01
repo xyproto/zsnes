@@ -1786,8 +1786,6 @@ NEWSYM ProcessSoundBuffer
     rep stosd
 
     ; Clear Echo Buffer
-    cmp byte[NetIsNetplay],1
-    je .nowriteecho
     cmp byte[EchoDis],1
     je .nowriteecho
     test byte[DSPMem+6Ch],20h
@@ -1819,8 +1817,6 @@ NEWSYM ProcessSoundBuffer
     ccallv ProcessVoiceHandler16, 6
     ccallv ProcessVoiceHandler16, 7
 
-    cmp byte[NetIsNetplay],1
-    je .echowritten
     cmp byte[EchoDis],1
     je near .echowritten
     test byte[DSPMem+6Ch],20h

@@ -35,19 +35,49 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #endif
 
 // As per http://support.microsoft.com/kb/q192599/ the standard size for network buffers is 8k.
-#define TRANSMIT_SIZE 32
-#define HEADER_SIZE_NET 5
-#define MAXNETNODES 2
+#define TRANSMIT_SIZE 4000
+#define MAXNETNODES 4
+#define TOTALNETNODES 5
+#define BACKUPTICS 64
+#define BACKUPTICS_ANDV 63
 
 // Netplay variables
 extern int ZMaxPlayers;
+extern int NetworkTick;
+extern int LocalNetworkTick;
+extern int MyNetworkNode;
 extern unsigned char NetIsNetplay;
 extern bool NetIsClient;
-extern u4 MyJoyData;
-extern u4 CurrentInputFetch;
-extern char *ZTransmitBuffer;
-extern char *ZReadBuffer;
+extern bool NetFastforward;
 extern int ZPlayers;
+
+// Player
+struct NetworkNode {
+	int NetTic;
+	u4 JoyDataFrames[BACKUPTICS];
+};
+
+extern struct NetworkNode ZSNodes[TOTALNETNODES];
+
+// Packet data
+// Headers:
+// 2 bytes for "ZS"
+// 1 byte for header. 4 bits for command 4 bits for player count
+// foreach player:
+//    4 bytes for the current tic
+//    1 byte for the node
+//    1 byte for amount of tics packaged in this packet
+//    foreach input tick:
+//        4 bytes for each tic
+
+#define HEADER_SIZE_NET 2
+extern char ZNetplayMessage[50];
+extern char ZTransmitBuffer[TRANSMIT_SIZE];
+extern int TransmitBufferSize;
+
+// Getting
+#define copyVarTransmitBuffer(point, val) memcpy(ZTransmitBuffer + point, &val, sizeof(val))
+extern u4 getU4TransmitBuffer(int point);
 
 // Netplay functions
 extern void StartServer();
@@ -55,22 +85,3 @@ extern int PacketSend();
 extern int PacketGet(bool isForConnection);
 extern void NetplayHandleInputsBlank();
 extern void HandleDisconnection();
-
-// Packet info (Client)
-struct PacketInfoClient {
-	u4 CurrentInputTimer;
-	u4 JoyDataClient;
-};
-
-// Packet info (Server)
-struct PacketInfoServer {
-	u1 SendNetdup;
-	u4 CurrentInputTimer;
-	u4 JoyDataA;
-	u4 JoyDataB;
-	u4 JoyDataC;
-};
-
-// Info state
-extern struct PacketInfoServer DataServer;
-extern struct PacketInfoClient ClientData;

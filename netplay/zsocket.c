@@ -81,10 +81,22 @@ typedef int SOCKET;
 static unsigned short ZSNESPORT = 25500;
 static SOCKET mysocket = INVALID_SOCKET;
 static struct sockaddr_in sendaddress[MAXNETNODES];
+int NetworkTick = 0;
+int LocalNetworkTick = 0;
 int ZPlayers = 0;
 int ZMaxPlayers = 0;
-char *ZTransmitBuffer = NULL;
-char *ZReadBuffer = NULL;
+int MyNetworkNode = 0;
+int TransmitBufferSize;
+char ZTransmitBuffer[TRANSMIT_SIZE];
+char ZTransmitBufferCompressed[TRANSMIT_SIZE];
+struct NetworkNode ZSNodes[TOTALNETNODES];
+char ZNetplayMessage[50];
+
+u4 getU4TransmitBuffer(int point) {
+	u4 dest = 0;
+	memcpy(&dest, ZTransmitBuffer + point, sizeof(dest));
+	return dest;
+}
 
 // Net
 unsigned char NetIsNetplay = false;
@@ -100,11 +112,28 @@ void HandleDisconnection() {
 
 // PacketSend
 int PacketSend(int node) {
-	int size = NetIsClient ? sizeof(struct PacketInfoClient) : sizeof(struct PacketInfoServer);
-	int bytes = sendto(mysocket, ZTransmitBuffer, size + 5, 0, (struct sockaddr *)&sendaddress[node], sizeof(sendaddress[node]));
-	if (bytes == -1) {
-		printf("PacketSend(%d) with %d size data failed: %s\n", node, size, neterror());
-		return 0;
+	ZTransmitBuffer[0] = 'Z'; ZTransmitBuffer[1] = 'S';
+
+	//Attempt some form of compression.
+	uLong cmp_len = 0;
+    int cmp_status = compress2(ZTransmitBufferCompressed, &cmp_len, ZTransmitBuffer + 2, TransmitBufferSize - 2, 9);
+    if(cmp_status == Z_OK) {
+		//we want smaller packets
+		if(cmp_len < TransmitBufferSize) {
+			ZTransmitBuffer[0] |= 0x80;
+			memcpy(ZTransmitBuffer + 2, ZTransmitBufferCompressed, cmp_len);
+			TransmitBufferSize = 2 + cmp_len;
+			printf("Compressed a packet!\n");
+		}
+	}
+
+	//Yeah
+	if(TransmitBufferSize > 0) {
+		int bytes = sendto(mysocket, ZTransmitBuffer, TransmitBufferSize, 0, (struct sockaddr *)&sendaddress[node], sizeof(sendaddress[node]));
+		if(bytes == -1) {
+			printf("PacketSend(%d) with %d size data failed: %s\n", node, TransmitBufferSize, neterror());
+			return 0;
+		}
 	}
 	return 1;
 }
@@ -113,22 +142,21 @@ int PacketSend(int node) {
 int PacketGet(bool isForConnection) {
 	socklen_t fromlen = sizeof(struct sockaddr_in);
 	struct sockaddr_in fromaddress;
-	int c = recvfrom(mysocket, ZReadBuffer, TRANSMIT_SIZE, 0, (struct sockaddr *)&fromaddress, &fromlen);
-	if (c < (HEADER_SIZE_NET + 2)) {
-		return -1;
-	}
-	if (c == SOCKET_ERROR) {
+	TransmitBufferSize = recvfrom(mysocket, ZTransmitBuffer, TRANSMIT_SIZE, 0, (struct sockaddr *)&fromaddress, &fromlen);
+	if(TransmitBufferSize < HEADER_SIZE_NET) { return -1; }
+	if(TransmitBufferSize == SOCKET_ERROR) {
 		HandleDisconnection();
 		return -1;
 	}
 
 	// check if packet is valid (has ZSNES header)
-	if (
-		ZReadBuffer[0] == 'Z' &&
-		ZReadBuffer[1] == 'S' &&
-		ZReadBuffer[2] == 'N' &&
-		ZReadBuffer[3] == 'E' &&
-		ZReadBuffer[4] == 'S') {
+	if ((ZTransmitBuffer[0] & 0x7F) == 'Z' && ZTransmitBuffer[1] == 'S') {
+		if (ZTransmitBuffer[0] & 0x80) {
+			//Compressed packet
+			uLong cmp_len = 0;
+			int cmp_status = uncompress(ZTransmitBufferCompressed, &cmp_len, ZTransmitBuffer + 2, TransmitBufferSize - 2);
+			memcpy(ZTransmitBufferCompressed, ZTransmitBuffer + 2, cmp_len);
+		}
 		if (!NetIsClient) {
 			// find remote node number
 			int nodeNumber = -1;
@@ -138,8 +166,9 @@ int PacketGet(bool isForConnection) {
 					break;
 				}
 			}
-			if (isForConnection && ZReadBuffer[5] == 'C') {
+			if (isForConnection && ZTransmitBuffer[HEADER_SIZE_NET] == 'C') {
 				memcpy(&sendaddress[ZPlayers], &fromaddress, sizeof(fromaddress));
+				ZTransmitBuffer[HEADER_SIZE_NET] = 'C'; ZTransmitBuffer[HEADER_SIZE_NET + 1] = 0; TransmitBufferSize = 7;
 				PacketSend(ZPlayers);
 				printf("Got connect from player %d from %s:%d\n", ZPlayers + 1, inet_ntoa(fromaddress.sin_addr), fromaddress.sin_port);
 				ZPlayers++;
@@ -147,10 +176,12 @@ int PacketGet(bool isForConnection) {
 			return nodeNumber;
 		} else {
 			if (isForConnection) {
-				if (ZReadBuffer[5] == 'C') {
+				if (ZTransmitBuffer[HEADER_SIZE_NET] == 'C') {
 					printf("Got join info from server.\n");
-					if(ZReadBuffer[6] > 0) {
-						printf("Ready.\n");
+					if(ZTransmitBuffer[HEADER_SIZE_NET + 1] > 0) {
+						ZPlayers = ZTransmitBuffer[HEADER_SIZE_NET + 1];
+						MyNetworkNode = ZTransmitBuffer[HEADER_SIZE_NET + 2];
+						printf("Ready. Players: %d. I am node %d\n", ZPlayers + 1, MyNetworkNode);
 						return 0;
 					}
 				}
@@ -194,21 +225,17 @@ void StartNetwork(bool autoPort) {
 	}
 #endif
 
-	// Ensure no garbage data
-	memset(&DataServer, 0, sizeof(struct PacketInfoServer));
-	memset(&ClientData, 0, sizeof(struct PacketInfoClient));
+	// Reset node data
+	memset(ZSNodes, 0, sizeof(ZSNodes));
+	memset(ZNetplayMessage, 0, sizeof(ZNetplayMessage));
 
 	// Mark this as a netplay game
 	NetIsNetplay = 1;
 
 	// Create communication socket
 	mysocket = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP);
-	if (mysocket == INVALID_SOCKET) {
-		printf("Can't create socket: %s\n", neterror());
-	}
-	if (!autoPort) {
-		BindToLocalPort(mysocket, autoPort ? 0 : ZSNESPORT);
-	}
+	if(mysocket == INVALID_SOCKET) { printf("Can't create socket: %s\n", neterror()); }
+	if(!autoPort) { BindToLocalPort(mysocket, autoPort ? 0 : ZSNESPORT); }
 
 	u_long trueval = 1;
 	ioctlsocket(mysocket, FIONBIO, &trueval);
@@ -217,34 +244,24 @@ void StartNetwork(bool autoPort) {
 	printf("Network ready! Initializing buffers.\n");
 
 	// Initialize transit buffer and read buffer
-	ZTransmitBuffer = malloc(TRANSMIT_SIZE);
-	ZReadBuffer = malloc(TRANSMIT_SIZE);
-
-	// Write packet header (this should never be overwritten by anything)
-	ZTransmitBuffer[0] = 'Z';
-	ZTransmitBuffer[1] = 'S';
-	ZTransmitBuffer[2] = 'N';
-	ZTransmitBuffer[3] = 'E';
-	ZTransmitBuffer[4] = 'S';
-	ZTransmitBuffer[5] = 'C';
-	ZTransmitBuffer[6] = ZMaxPlayers == 1;
+	NetworkTick = 0; LocalNetworkTick = 0;
 }
 
 // Start server loop
 void StartServer(char *Players) {
 	printf("Starting ZSNES server..\n");
 	ZMaxPlayers = Players[0] - 0x30;
-	if (ZMaxPlayers > 0 && ZMaxPlayers <= MAXNETNODES) {
+	MyNetworkNode = 0;
+	if(ZMaxPlayers > 0 && ZMaxPlayers <= MAXNETNODES) {
 		StartNetwork(false);
 		NetIsClient = false;
 		printf("Waiting for client connections.\n");
-		while (!Host_CheckForConnects()) {
-			;
-			;
-		}
-		ZTransmitBuffer[6] = 1;
-		printf("All here!\n");
-		for (int i = 0; i < ZPlayers; i++) { PacketSend(i); }
+		while (!Host_CheckForConnects()) { Sleep(1); }
+
+		//Prepare challenge packet
+		ZTransmitBuffer[HEADER_SIZE_NET] = 'C'; ZTransmitBuffer[HEADER_SIZE_NET + 1] = ZPlayers; TransmitBufferSize = 8;
+		printf("All here! Players: %d\n", ZPlayers + 1);
+		for (int i = 0; i < ZPlayers; i++) { ZTransmitBuffer[HEADER_SIZE_NET + 2] = i + 1; PacketSend(i); }
 		Sleep(1);
 	} else {
 		printf("Invalid player count. Just going to game.\n");
@@ -256,6 +273,7 @@ void StartClient(char *IPAddress) {
 	printf("Starting ZSNES client..\n");
 	StartNetwork(true);
 	NetIsClient = true;
+	ZPlayers = 1;
 
 	// Allocate the server sock address
 	printf("Preparing client, connecting to %s.\n", IPAddress);
@@ -264,10 +282,8 @@ void StartClient(char *IPAddress) {
 	sendaddress[0].sin_addr.s_addr = inet_addr(IPAddress);
 
 	// Packet sending
-	PacketSend(0);
+	ZTransmitBuffer[HEADER_SIZE_NET] = 'C'; TransmitBufferSize = 6; PacketSend(0);
 	printf("Packet sent. Waiting for server response.\n");
-	while (PacketGet(true) < 0) {
-		Sleep(1);
-	}
+	while(PacketGet(true) < 0) { Sleep(1); }
 	printf("Got hit by server. We are online!\n");
 }

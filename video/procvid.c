@@ -42,6 +42,7 @@
 #include "../zstate.h"
 #include "../ztimec.h"
 #include "newgfx16.h"
+#include "../netplay/znet.h"
 #include "procvid.h"
 #include "procvidc.h"
 #include "../linux/sdllink.h"
@@ -1503,6 +1504,15 @@ void copyvid(void) {
 			OutputGraphicString16b(buf, msg);
 		}
 		--MessageOn;
+	}
+
+	if(NetIsNetplay) {
+		u2 *buf = (u2 *)vidbuffer + 218 * 288 + 18;
+		OutputGraphicString16b5x5(buf, ZNetplayMessage);
+		if(NetFastforward) {
+			buf = (u2 *)vidbuffer + 213 * 288 + 18;
+			OutputGraphicString16b5x5(buf, "FF >>");
+		}
 	}
 
 	if (MovieProcessing != 0 && MovieDisplayFrame != 0) {

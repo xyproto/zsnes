@@ -583,6 +583,7 @@ void MirrorROM(uint8_t *ROM) {
 
 	if (curromspace > MAXROMSPACE) { curromspace = MAXROMSPACE; }
 	NumofBanks = curromspace >> 15;
+	if(NumofBanks >= 128) { NumofBanks = 128; }
 
 	// This will mirror (now) full sized ROMs through the ROM buffer
 	ROMSize = curromspace;
@@ -1175,6 +1176,7 @@ void loadROM() {
 
 		NumofBytes = curromspace;
 		NumofBanks = curromspace >> 15;
+		if(NumofBanks >= 128) { NumofBanks = 128; }
 		BankCheck();
 		curromsize = ROM[infoloc + ROMSizeOffset];
 		chip_detect();
@@ -1825,6 +1827,7 @@ void preparesfx() {
 	}
 
 	// [sneed]: bigger rom support
+	printf("Num of banks: %d\n", NumofBanks);
 	for (i = (NumofBanks - 1); i >= 0; i--) {
 		memcpy((int32_t *)romdata + i * 0x4000, (int32_t *)romdata + i * 0x2000, 0x8000);
 		memcpy((int32_t *)romdata + i * 0x4000 + 0x2000, (int32_t *)romdata + i * 0x2000, 0x8000);
