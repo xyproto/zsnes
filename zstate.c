@@ -157,7 +157,7 @@ static void copy_state_data(uint8_t *buffer, void (*copy_func)(uint8_t **, void 
 	}
 
 	if (SFXEnable) {
-		copy_func(&buffer, sfxramdata, 8192 * 16);
+		copy_func(&buffer, sfxramdata, 262144);
 		copy_func(&buffer, &SfxR0, PHnum2writesfxreg);
 	}
 

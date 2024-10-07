@@ -1370,6 +1370,14 @@ void headerhack() {
 		opexec358cph = 80;
 	}
 
+	// Homebrew
+	if (!strncmp(RomData + 0x7FB0, "01NI", 4)) {
+		opexec268 = 255;
+		opexec358 = 255;
+		opexec268cph = 255;
+		opexec358cph = 255;
+	}
+
 	// STAR FOX
 	// does not boot
 	if (!strncmp(RomData + Lo, "STAR FOX", 8)) {
@@ -1572,7 +1580,7 @@ void CheckROMType() {
 			map_mem(0x78, &srambank, 0x06);
 		}
 
-		if (!SDD1Enable) { // banks F0 - FF (not for S-DD1)
+		if (!SDD1Enable && !SFXEnable) { // banks F0 - FF (not for S-DD1)
 			map_mem(0xF0, &srambank, 0x10);
 		}
 	}
@@ -1814,8 +1822,6 @@ uint8_t SfxAC, ForceNewGfxOff;
 
 void preparesfx() {
 	char *ROM = (char *)romdata;
-	int_fast16_t i;
-
 	SFXCounter = SfxAC = 0;
 
 	if (!HacksDisable) {
@@ -1828,7 +1834,7 @@ void preparesfx() {
 
 	// [sneed]: bigger rom support
 	printf("Num of banks: %d\n", NumofBanks);
-	for (i = (NumofBanks - 1); i >= 0; i--) {
+	for (int_fast16_t i = (NumofBanks - 1); i >= 0; i--) {
 		memcpy((int32_t *)romdata + i * 0x4000, (int32_t *)romdata + i * 0x2000, 0x8000);
 		memcpy((int32_t *)romdata + i * 0x4000 + 0x2000, (int32_t *)romdata + i * 0x2000, 0x8000);
 	}
@@ -2000,7 +2006,6 @@ void map_elorom() {
 }
 
 void map_sfx() {
-	printf("Map: Super FX\n");
 	uint8_t *ROM = romdata;
 
 	// Clear SFX registers
@@ -2028,9 +2033,11 @@ void map_sfx() {
 	// set banks C0-FF (40h x128KB ROM banks @20000h)
 	// [sneed]: 3/4MB rom support, preserve compatible behaviour
 	if (curromsize >= 0xC) {
+		printf("Map: Super FX (Extended)\n");
 		map_set(snesmmap + 0xC0, ROM + 0x8000, 0x40, 0x20000);
 		map_set(snesmmaplow + 0xC0, ROM + 0x8000, 0x40, 0x20000);
 	} else {
+		printf("Map: Super FX\n");
 		map_set(snesmmap + 0xC0, ROM + 0x8000, 0x20, 0x20000);
 		map_set(snesmmaplow + 0xC0, ROM + 0x8000, 0x20, 0x20000);
 		map_set(snesmmap + 0xE0, ROM + 0x8000, 0x20, 0x20000);

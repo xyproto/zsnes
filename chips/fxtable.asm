@@ -571,7 +571,8 @@ NEWSYM InitFxTables
    inc bl
    jnz .nexty4
 
-   mov eax,[romdata]
+   ;banks 00-FF (default to RAM)
+   mov eax,[sfxramdata]
    xor ebx,ebx
    mov ecx,256
 .loopc
@@ -580,6 +581,7 @@ NEWSYM InitFxTables
    dec ecx
    jnz .loopc
 
+   ;banks 00-3F
    mov eax,[romdata]
 ;   sub eax,32768
    xor ebx,ebx
@@ -591,6 +593,7 @@ NEWSYM InitFxTables
    dec ecx
    jnz .loop
 
+   ;banks 40-5F
    mov eax,[romdata]
    add eax,32768
    mov ecx,32
@@ -601,6 +604,7 @@ NEWSYM InitFxTables
    dec ecx
    jnz .loop2
 
+   ;banks 70-73
    mov eax,[sfxramdata]
    mov [SfxMemTable+70h*4],eax
    add eax,65536
@@ -610,6 +614,7 @@ NEWSYM InitFxTables
    add eax,65536
    mov [SfxMemTable+73h*4],eax
 
+   ;banks 80-BF
    mov eax,[romdata]
 ;   sub eax,32768
    xor ebx,ebx
@@ -622,23 +627,26 @@ NEWSYM InitFxTables
    dec ecx
    jnz .loops
 
+   ;banks C0-FF
    mov eax,[romdata]
    add eax,32768
-   mov ecx,32
+   mov ecx,64
 .loop2s
    mov [SfxMemTable+ebx*4],eax
    add eax,65536*2
    inc ebx
    dec ecx
    jnz .loop2s
-   mov eax,[sfxramdata]
-   mov [SfxMemTable+0F0h*4],eax
-   add eax,65536
-   mov [SfxMemTable+0F1h*4],eax
-   add eax,65536
-   mov [SfxMemTable+0F2h*4],eax
-   add eax,65536
-   mov [SfxMemTable+0F3h*4],eax
+
+   ;banks F0-F3
+   ;mov eax,[sfxramdata]
+   ;mov [SfxMemTable+0F0h*4],eax
+   ;add eax,65536
+   ;mov [SfxMemTable+0F1h*4],eax
+   ;add eax,65536
+   ;mov [SfxMemTable+0F2h*4],eax
+   ;add eax,65536
+   ;mov [SfxMemTable+0F3h*4],eax
 
    mov dword[FxTable+00h*4],FxOp00
    mov dword[FxTable+01h*4],FxOp01
