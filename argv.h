@@ -66,7 +66,7 @@ static char* get_param(char* str)
                 if ((*pos == '\"') || (*pos == '\'')) {
                     char* match_pos = 0;
                     if ((match_pos = find_next_match(pos + 1, *pos))) {
-                        pos = match_pos;
+                        pos = match_pos; // TODO: Figure out if + 1 is needed here
                     }
                 }
                 // Skip escaped spaces
