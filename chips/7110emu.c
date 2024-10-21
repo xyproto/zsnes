@@ -350,7 +350,7 @@ static void InitDecompression(int inmode, uint8_t* data)
 
 #define CONTEXT() (pixel_left == pixel_above ? pixel_above != pixel_above_left : pixel_above == pixel_above_left ? 2 \
                                                                                                                  : 3 + (pixel_left != pixel_above_left))
-//#define CONTEXT() ((pixel_left==pixel_above && pixel_above==pixel_above_left)?0:(pixel_left==pixel_above)?1:(pixel_above==pixel_above_left)?2:(pixel_left==pixel_above_left)?3:4)
+// #define CONTEXT() ((pixel_left==pixel_above && pixel_above==pixel_above_left)?0:(pixel_left==pixel_above)?1:(pixel_above==pixel_above_left)?2:(pixel_left==pixel_above_left)?3:4)
 
 static uint8_t DecompressByte(void)
 {

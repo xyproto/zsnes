@@ -29,7 +29,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <stdlib.h>
 #include <string.h>
 #endif
-//#define DebugDSP1
+// #define DebugDSP1
 
 #ifdef DebugDSP1
 

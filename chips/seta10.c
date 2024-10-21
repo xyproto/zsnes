@@ -251,7 +251,7 @@ void ST010_SortDrivers(uint16_t Positions, uint16_t Places[32], uint16_t Drivers
 }
 
 #define ST010_WORD(offset) (*((short*)(SRAM + offset)))
-//#define ST010_WORD(offset) (SRAM[offset + 1] << 8) | SRAM[offset]
+// #define ST010_WORD(offset) (SRAM[offset + 1] << 8) | SRAM[offset]
 
 void ST010DoCommand()
 {

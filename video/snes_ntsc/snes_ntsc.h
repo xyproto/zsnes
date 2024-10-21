@@ -57,7 +57,7 @@ void snes_ntsc_blit_hires(snes_ntsc_t const*, SNES_NTSC_IN_T const* input,
 might be rounded down slightly; use SNES_NTSC_IN_WIDTH() on result to find rounded
 value. Guaranteed not to round 256 down at all. */
 #define SNES_NTSC_OUT_WIDTH(in_width) \
-    (((in_width)-1) / snes_ntsc_in_chunk * snes_ntsc_out_chunk + snes_ntsc_out_chunk)
+    (((in_width) - 1) / snes_ntsc_in_chunk * snes_ntsc_out_chunk + snes_ntsc_out_chunk)
 
 /* Number of low-res input pixels that will fit within given output width. Might be
 rounded down slightly; use SNES_NTSC_OUT_WIDTH() on result to find rounded

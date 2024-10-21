@@ -70,7 +70,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define Lo 0x7FC0
 #define Hi 0xFFC0
 #define EHi 0x40FFC0
-#define ELo 0x407FC0 //FuSoYa: add support for ExLoROM
+#define ELo 0x407FC0 // FuSoYa: add support for ExLoROM
 
 #define MB_bytes 0x100000
 #define Mbit_bytes 0x20000
@@ -174,13 +174,13 @@ bool EHiHeader(uint8_t* ROM, int32_t BankLoc)
     return (false);
 }
 
-//FuSoYa: add support for ExLoROM
-bool ELoHeader(unsigned char *ROM, int BankLoc)
+// FuSoYa: add support for ExLoROM
+bool ELoHeader(unsigned char* ROM, int BankLoc)
 {
-    if (validChecksum(ROM, BankLoc) && (ROM[BankLoc+BankOffset] == 0x30 || ROM[BankLoc+BankOffset] == 0x20)) {
-        return(true);
+    if (validChecksum(ROM, BankLoc) && (ROM[BankLoc + BankOffset] == 0x30 || ROM[BankLoc + BankOffset] == 0x20)) {
+        return (true);
     }
-    return(false);
+    return (false);
 }
 
 void SwapData(uint32_t* loc1, uint32_t* loc2, uint32_t amount)
@@ -410,7 +410,7 @@ void BankCheck()
         if (EHiHeader(ROM, EHi)) {
             romtype = 2;
             infoloc = EHi;
-        } else if (ELoHeader(ROM, ELo)) { //FuSoYa:Add support for ExLoROM
+        } else if (ELoHeader(ROM, ELo)) { // FuSoYa:Add support for ExLoROM
             romtype = 1;
             infoloc = ELo;
         }
@@ -692,7 +692,9 @@ void MirrorROM(uint8_t* ROM)
         curromspace += curromspace;
     }
 
-    if (curromspace > maxromspace) { curromspace = maxromspace; }
+    if (curromspace > maxromspace) {
+        curromspace = maxromspace;
+    }
     NumofBanks = curromspace >> 15;
 
     // This will mirror (now) full sized ROMs through the ROM buffer
@@ -1556,14 +1558,14 @@ uint32_t showinfogui(void)
     memcpy(CSStatus2 + 20, (IPSPatched) ? "IPS " : "    ", 4);
     memcpy(CSStatus3 + 6, (ROM[infoloc + 25] < 2 || ROM[infoloc + 25] > 12) ? "NTSC" : "PAL ", 4);
 
-    if(MSUEnable) {
+    if (MSUEnable) {
         memcpy(CSStatus2 + 16, "MSU-1", 5);
     }
 
     if (infoloc == EHi) {
         memcpy(CSStatus3 + 19, "EHi ", 4);
     } else if (infoloc == ELo) {
-        memcpy(CSStatus3 + 19, "ELo ", 4); //FuSoYa:Add label support for ExLoROM
+        memcpy(CSStatus3 + 19, "ELo ", 4); // FuSoYa:Add label support for ExLoROM
     } else {
         memcpy(CSStatus3 + 19, (romtype == 2) ? "Hi  " : "Lo  ", 4);
     }
@@ -1984,7 +1986,7 @@ void preparesfx()
     }
 
     // [sneed]: bigger rom support
-    for (i = (NumofBanks-1); i >= 0; i--) {
+    for (i = (NumofBanks - 1); i >= 0; i--) {
         memcpy((int32_t*)romdata + i * 0x4000, (int32_t*)romdata + i * 0x2000, 0x8000);
         memcpy((int32_t*)romdata + i * 0x4000 + 0x2000, (int32_t*)romdata + i * 0x2000, 0x8000);
     }
@@ -2086,68 +2088,71 @@ void map_hirom()
 }
 
 // [Sneed] fixed accuracy to official board, to-do test that 6000-7FFF writes to SRAM properly
-void map_ehirom() {
-	uint8_t *ROM = romdata;
-	uint_fast8_t x;
-	// set addresses 8000-FFFF
-	// set banks 00-3F (40h x 32KB ROM banks @ 10000h)
-	map_set(snesmmap, ROM + 0x400000, 0x40, 0x10000); // FuSoYa: extended from 48Mbits to 64Mbits
+void map_ehirom()
+{
+    uint8_t* ROM = romdata;
+    uint_fast8_t x;
+    // set addresses 8000-FFFF
+    // set banks 00-3F (40h x 32KB ROM banks @ 10000h)
+    map_set(snesmmap, ROM + 0x400000, 0x40, 0x10000); // FuSoYa: extended from 48Mbits to 64Mbits
 
-	// set banks 40-7F (40h x 32KB ROM banks @ 10000h)
-	map_set(snesmmap + 0x40, ROM + 0x400000, 0x40, 0x10000); // FuSoYa: extended from 48Mbits to 64Mbits
+    // set banks 40-7F (40h x 32KB ROM banks @ 10000h)
+    map_set(snesmmap + 0x40, ROM + 0x400000, 0x40, 0x10000); // FuSoYa: extended from 48Mbits to 64Mbits
 
-	// set banks 80-BF (40h x 32KB ROM banks @10000h)
-	map_set(snesmmap + 0x80, ROM, 0x40, 0x10000);
+    // set banks 80-BF (40h x 32KB ROM banks @10000h)
+    map_set(snesmmap + 0x80, ROM, 0x40, 0x10000);
 
-	// set banks C0-FF (40h x 64KB ROM banks @10000h)
-	map_set(snesmmap + 0xC0, ROM, 0x40, 0x10000);
+    // set banks C0-FF (40h x 64KB ROM banks @10000h)
+    map_set(snesmmap + 0xC0, ROM, 0x40, 0x10000);
 
-	// set addresses 0000-7FFF
-	// set banks 00-3F (40h x WRAM)
-	map_set(snesmap2, wramdata, 0x40, 0);
+    // set addresses 0000-7FFF
+    // set banks 00-3F (40h x WRAM)
+    map_set(snesmap2, wramdata, 0x40, 0);
 
-	// set banks 40-7F (40h x 32KB ROM banks @ 8000h)
-	map_set(snesmap2 + 0x40, ROM + 0x400000, 0x40, 0x10000); // FuSoYa: extended from 48Mbits to 64Mbits
+    // set banks 40-7F (40h x 32KB ROM banks @ 8000h)
+    map_set(snesmap2 + 0x40, ROM + 0x400000, 0x40, 0x10000); // FuSoYa: extended from 48Mbits to 64Mbits
 
-	// set banks 80-BF (40h x WRAM)
-	map_set(snesmap2 + 0x80, wramdata, 0x40, 0);
+    // set banks 80-BF (40h x WRAM)
+    map_set(snesmap2 + 0x80, wramdata, 0x40, 0);
 
-	// set banks C0-FF (40h x 64KB ROM banks @10000h)
-	map_set(snesmap2 + 0xC0, ROM, 0x40, 0x10000);
+    // set banks C0-FF (40h x 64KB ROM banks @10000h)
+    map_set(snesmap2 + 0xC0, ROM, 0x40, 0x10000);
 
-	// set banks 7E/7F (WRAM)
-	snesmmap[0x7E] = snesmap2[0x7E] = wramdata;
-	snesmmap[0x7F] = snesmap2[0x7F] = ram7f;
+    // set banks 7E/7F (WRAM)
+    snesmmap[0x7E] = snesmap2[0x7E] = wramdata;
+    snesmmap[0x7F] = snesmap2[0x7F] = ram7f;
 }
 
-//FuSoYa: Add support for 64Mbit ExLoROM
+// FuSoYa: Add support for 64Mbit ExLoROM
 void map_elorom()
 {
-    unsigned char *ROM = (unsigned char *)romdata;
+    unsigned char* ROM = (unsigned char*)romdata;
     int x;
 
     // set addresses 8000-FFFF
     // set banks 00-7F (80h x 32KB ROM banks @ 8000h)
-    map_set(snesmmap,ROM+0x400000-0x8000,0x80,0x8000);
+    map_set(snesmmap, ROM + 0x400000 - 0x8000, 0x80, 0x8000);
 
     // set banks 80-FF (80h x 32KB ROM banks @ 8000h)
-    map_set(snesmmap+0x80,ROM-0x8000,0x80,0x8000);
+    map_set(snesmmap + 0x80, ROM - 0x8000, 0x80, 0x8000);
 
     // set addresses 0000-7FFF
     // set banks 00-3F (40h x WRAM)
-    map_set(snesmap2,wramdata,0x40,0);
+    map_set(snesmap2, wramdata, 0x40, 0);
 
     // set banks 40-7F (40h x 32KB ROM banks @ 8000h)
-    map_set(snesmap2+0x40,ROM+0x600000,0x40,0x8000);
+    map_set(snesmap2 + 0x40, ROM + 0x600000, 0x40, 0x8000);
 
     // set banks 80-BF (40h x WRAM)
-    map_set(snesmap2+0x80,wramdata,0x40,0);
+    map_set(snesmap2 + 0x80, wramdata, 0x40, 0);
 
     // set banks C0-FF (40h x 32KB ROM banks @ 8000h)
-    map_set(snesmap2+0xC0,ROM+0x200000,0x40,0x8000);
+    map_set(snesmap2 + 0xC0, ROM + 0x200000, 0x40, 0x8000);
 
     // set banks 70-77 (07h x SRAM)
-    for (x = 0x70; x <= 0x77; x++) { snesmap2[x] = sram; }
+    for (x = 0x70; x <= 0x77; x++) {
+        snesmap2[x] = sram;
+    }
 
     // set banks 7E/7F (WRAM)
     snesmmap[0x7E] = snesmap2[0x7E] = wramdata;
@@ -2187,7 +2192,7 @@ void map_sfx()
 
     // set banks C0-FF (40h x128KB ROM banks @20000h)
     // [sneed]: 3/4MB rom support, preserve compatible behaviour
-    if(NumofBanks > 64) {
+    if (NumofBanks > 64) {
         map_set(snesmmap + 0xC0, ROM + 0x8000, 0x40, 0x20000);
         map_set(snesmap2 + 0xC0, ROM + 0x8000, 0x40, 0x20000);
     } else {
@@ -2346,7 +2351,7 @@ void initsnes(void)
         } else if ((curromsize == 13) && (romtype == 2)) {
             map_ehirom();
         } else if ((curromsize == 13) && (romtype == 1)) {
-            map_elorom(); //FuSoYa:added support for ExLoROM
+            map_elorom(); // FuSoYa:added support for ExLoROM
         } else if (romtype == 2) {
             map_hirom();
         } else {

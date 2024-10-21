@@ -11,7 +11,7 @@
 //   (play the game until captured/promoted pieces, king checked, endgame)
 // - minus emulation cycles (busy signals), bit-perfect to 'st011-demo'
 
-//#define DEBUG_DSP
+// #define DEBUG_DSP
 
 #ifdef DEBUG_DSP
 #include <stdio.h>

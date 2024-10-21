@@ -37,8 +37,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "c_vcache.h"
 #include "cfg.h"
 #include "chips/c4proc.h"
-#include "chips/msu1emu.h"
 #include "chips/dsp4emu.h"
+#include "chips/msu1emu.h"
 #include "chips/sa1regs.h"
 #include "cpu/execute.h"
 #include "cpu/regs.h"
@@ -286,7 +286,7 @@ static void copy_state_data(uint8_t* buffer, void (*copy_func)(uint8_t**, void*,
         copy_func(&buffer, &DSP4_vars.OAM_Row, sizeof(DSP4_vars.OAM_Row));
     }
 
-    if(MSUEnable) {
+    if (MSUEnable) {
         copy_func(&buffer, &MSU_Track_Position, sizeof(MSU_Track_Position));
         copy_func(&buffer, &MSU_StatusRead, sizeof(MSU_StatusRead));
         copy_func(&buffer, &MSU_MusicVolume, sizeof(MSU_MusicVolume));
@@ -1040,7 +1040,7 @@ void zst_sram_load(FILE* fp)
     if (DSP4Enable) {
         fseek(fp, 1294, SEEK_CUR);
     }
-    if(MSUEnable) {
+    if (MSUEnable) {
         fseek(fp, 6, SEEK_CUR);
     }
     fseek(fp, 220, SEEK_CUR);
@@ -1091,7 +1091,7 @@ void zst_sram_load_compressed(FILE* fp)
                     if (DSP4Enable) {
                         data += 1294;
                     }
-                    if(MSUEnable) {
+                    if (MSUEnable) {
                         data += 6;
                     }
                     data += 220;

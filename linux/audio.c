@@ -29,9 +29,9 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <signal.h>
 #endif
 
-#include "../chips/msu1emu.h"
 #include "../asm_call.h"
 #include "../cfg.h"
+#include "../chips/msu1emu.h"
 #include "../cpu/dspproc.h"
 #include "../link.h"
 

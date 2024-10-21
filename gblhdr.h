@@ -72,8 +72,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 // unistd.h stuff
 
-//#if HAVE_UNISTD_H
-// Small hack for now
+// #if HAVE_UNISTD_H
+//  Small hack for now
 #if unix
 #include <sys/types.h>
 #include <unistd.h>

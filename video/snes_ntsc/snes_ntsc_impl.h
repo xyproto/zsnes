@@ -244,10 +244,10 @@ static void init(init_t* impl, snes_ntsc_setup_t const* setup)
 
 /* kernel generation */
 
-#define RGB_TO_YIQ(r, g, b, y, i) (             \
-    (y = (r)*0.299f + (g)*0.587f + (b)*0.114f), \
-    (i = (r)*0.596f - (g)*0.275f - (b)*0.321f), \
-    ((r)*0.212f - (g)*0.523f + (b)*0.311f))
+#define RGB_TO_YIQ(r, g, b, y, i) (                   \
+    (y = (r) * 0.299f + (g) * 0.587f + (b) * 0.114f), \
+    (i = (r) * 0.596f - (g) * 0.275f - (b) * 0.321f), \
+    ((r) * 0.212f - (g) * 0.523f + (b) * 0.311f))
 
 #define YIQ_TO_RGB(y, i, q, to_rgb, type, r, g) (  \
     r = (type)(y + to_rgb[0] * i + to_rgb[1] * q), \

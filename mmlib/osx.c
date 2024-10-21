@@ -49,7 +49,7 @@ misrepresented as being the original software.
 
 #include <IOKit/IOTypes.h>
 // 10.0.x
-//#include <IOKit/IOUSBHIDParser.h>
+// #include <IOKit/IOUSBHIDParser.h>
 // 10.1.x
 #include <IOKit/IOCFPlugIn.h>
 #include <IOKit/IOKitLib.h>
@@ -1339,7 +1339,7 @@ static unsigned long HIDQueueDevice(pRecDevice pDevice)
             HIDREPORTERRORNUM("HIDQueueDevice - Failed to stop queue.", result);
 
         // queue element
-        //¥ pElement = HIDGetFirstDeviceElement (pDevice, kHIDElementTypeIO);
+        // ¥ pElement = HIDGetFirstDeviceElement (pDevice, kHIDElementTypeIO);
         pElement = HIDGetFirstDeviceElement(pDevice, kHIDElementTypeInput | kHIDElementTypeFeature);
 
         while (pElement) {
@@ -1348,7 +1348,7 @@ static unsigned long HIDQueueDevice(pRecDevice pDevice)
                 if (kIOReturnSuccess != result)
                     HIDREPORTERRORNUM("HIDQueueDevice - Failed to add element to queue.", result);
             }
-            //¥ pElement = HIDGetNextDeviceElement (pElement, kHIDElementTypeIO);
+            // ¥ pElement = HIDGetNextDeviceElement (pElement, kHIDElementTypeIO);
             pElement = HIDGetNextDeviceElement(pElement, kHIDElementTypeInput | kHIDElementTypeFeature);
         }
 

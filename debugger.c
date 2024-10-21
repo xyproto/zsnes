@@ -92,7 +92,7 @@ enum color_pair {
 WINDOW* debugwin;
 
 // can't get this to work right...
-//#define CHECK (COLOR_PAIR(cp_white) | A_DIM | ACS_CKBOARD)
+// #define CHECK (COLOR_PAIR(cp_white) | A_DIM | ACS_CKBOARD)
 #define CHECK (CP(cp_white) | ' ')
 
 void debugloop();

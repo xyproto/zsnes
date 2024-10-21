@@ -41,7 +41,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #define BIT(x) (1 << (x))
 
-extern uint8_t *SA1RAMArea;
+extern uint8_t* SA1RAMArea;
 extern unsigned int xa, maxromspace;
 extern unsigned char spcon, device1, device2;
 extern char CSStatus[], CSStatus2[], CSStatus3[], CSStatus4[];
@@ -278,7 +278,7 @@ static void allocmem()
 
     newgfx16b = 1;
     maxromspace = 0xC00000;
-    
+
     // Set up memory values
     vidbuffer = vbufaptr;
     vidbufferofsa = vbufaptr;

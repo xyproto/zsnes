@@ -465,8 +465,7 @@ struct backup_cmdline_vars saved_cmdline_vars;
                             BACKUP_HELP_SDL(func)
 
 #define BACKUP_VAR(var) saved_cmdline_vars._##var = var;
-static void backup_all_vars()
-{
+static void backup_all_vars() {
     BACKUP_HELP(BACKUP_VAR)
 }
 

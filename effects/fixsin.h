@@ -20,8 +20,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
 #define FSINMAX 2047
-#define FSin(x) FSinTab[(x)&FSINMAX]
-#define FCos(x) FCosTab[(x)&FSINMAX]
+#define FSin(x) FSinTab[(x) & FSINMAX]
+#define FCos(x) FCosTab[(x) & FSINMAX]
 
 int FSinTab[2048] = {
     0, 201, 402, 603, 804, 1005, 1206, 1407, 1608, 1809, 2010, 2211, 2412, 2613,

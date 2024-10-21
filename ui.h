@@ -5,8 +5,8 @@
 
 #include "types.h"
 
-#define REGPTR(x) (regptra[(x)-0x2000])
-#define REGPTW(x) (regptwa[(x)-0x2000])
+#define REGPTR(x) (regptra[(x) - 0x2000])
+#define REGPTW(x) (regptwa[(x) - 0x2000])
 
 void cycleinputdevice1(void);
 bool cycleinputdevice2(void);
