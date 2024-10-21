@@ -170,7 +170,6 @@ SRCS += vcache.asm
 SRCS += ver.c
 SRCS += video/2xsaiw.asm
 SRCS += video/c_2xsaiw.c
-SRCS += video/c_copyvid.c
 SRCS += video/c_makev16b.c
 SRCS += video/c_makevid.c
 SRCS += video/c_mode716.c

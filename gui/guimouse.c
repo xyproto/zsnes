@@ -166,8 +166,7 @@ void SwitchFullScreen(void)
     if (GUIWFVID[cvidmode] != 0) {
         cvidmode = PrevWinMode;
         initvideo();
-    } else
-    {
+    } else {
         cvidmode = PrevFSMode;
         initvideo();
     }
@@ -923,8 +922,7 @@ static void DisplayGUIVideoClick_notmodestab(s4 const eax, s4 const edx)
                     if (GUIClickArea(eax, edx, 18 + 1, 35 + 3, 18 + 6, 35 + 8))
                         NTSCFilter = 0;
                     GUIClickCButtonI(eax, edx, 18, 35, &BilinearFilter);
-                } else
-                {
+                } else {
                     // Interpolations
 #ifdef __WIN32__
                     if (GUIDSIZE[cvidmode] != 0)
@@ -957,8 +955,7 @@ static void DisplayGUIVideoClick_notmodestab(s4 const eax, s4 const edx)
                 }
 
                 // Kreed 2x filters
-                if (GUIDSIZE[cvidmode] != 0)
-                {
+                if (GUIDSIZE[cvidmode] != 0) {
                     if (GUIClickArea(eax, edx, 18 + 1, 45 + 3, 18 + 6, 45 + 8)) {
                         hqFilter = 0;
                         scanlines = 0;
@@ -1042,11 +1039,9 @@ static void DisplayGUIVideoClick_notmodestab(s4 const eax, s4 const edx)
                     GUIHoldXlimL = eax;
                     GUIHoldXlimR = eax + 100;
                 }
-            } else
-            {
+            } else {
                 // Scanlines
-                if (GUIDSIZE[cvidmode] != 0)
-                {
+                if (GUIDSIZE[cvidmode] != 0) {
                     if (GUIClickArea(eax, edx, 168 + 1, 87 + 3, 168 + 38, 87 + 8)) {
                         En2xSaI = 0;
                         hqFilter = 0;
@@ -1057,8 +1052,7 @@ static void DisplayGUIVideoClick_notmodestab(s4 const eax, s4 const edx)
                 }
 
                 {
-                    if (GUIDSIZE[cvidmode] != 0)
-                    {
+                    if (GUIDSIZE[cvidmode] != 0) {
                         if (GUIClickArea(eax, edx, 68 + 1, 87 + 3, 68 + 38, 87 + 8)) {
                             En2xSaI = 0;
                             hqFilter = 0;

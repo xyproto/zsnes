@@ -125,18 +125,11 @@ GUIEnableTransp db 0
 @
 %ifndef NO_PNG
 @ Snapshot Format (0 = BMP, 1 = PNG)
-%ifdef __MSDOS__
-@ Note: in 8 bit video modes PNG is not selectable
-%endif
 %else
 @ Snapshot Format (0 = BMP)
 %endif
 %ifndef NO_PNG
-%ifndef __MSDOS__
 ScreenShotFormat db 1
-%else
-ScreenShotFormat db 0
-%endif
 %else
 ScreenShotFormat db 0
 %endif
@@ -145,15 +138,6 @@ ScreenShotFormat db 0
 @  ----
 @ -- Video --
 @  ----
-
-%ifdef __MSDOS__
-@
-@ Force Black Background (0 = NO, 1 = Yes)
-@ This is necessary to get a black background.
-@ This can cause rendering problems in certain games.
-@ Only applicable for 8-bit modes.
-Palette0 db 0
-%endif
 
 @
 %ifdef __WIN32__
@@ -217,67 +201,34 @@ cvidmode db 2
 PrevWinMode db 2
 PrevFSMode db 3
 
-%elifdef __MSDOS__
-@ Video Mode [0..18]
-@   0 = 256x224x8B   MODEQ     1 = 256x240x8B MODEQ
-@   2 = 256x256x8B   MODEQ     3 = 320x224x8B MODEX
-@   4 = 320x240x8B   MODEX     5 = 320x256x8B MODEX
-@   6 = 640x480x16B  VESA1     7 = 320x240x8B VESA2
-@   8 = 320x240x16B  VESA2     9 = 320x480x8B VESA2
-@  10 = 320x480x16B  VESA2    11 = 512x384x8B VESA2
-@  12 = 512x384x16B  VESA2    13 = 640x400x8B VESA2
-@  14 = 640x400x16B  VESA2    15 = 640x480x8B VESA2
-@  16 = 640x480x16B  VESA2    17 = 800x600x8B VESA2
-@  18 = 800x600x16B  VESA2
-cvidmode db 4
 %endif
 
-%ifndef __MSDOS__
 @
 @ Custom Resolution X and Y for Custom Video Modes [256x224..2048x1536]
 CustomResX dd 640
 CustomResY dd 480
-%endif
 
 @
-%ifndef __MSDOS__
 @ Enable Video Interpolation, Bilinear Filtering (0 = NO, 1 = Yes)
 @ Bilinear Filtering is compatible with all filters except NTSC.
 @ Bilinear Filtering replaces Interpolation and is OpenGL only.
-%else
-@ Enable Video Interpolation (0 = NO, 1 = Yes)
-%endif
 @ Video Interpolation is compatible with scanlines.
 @ Blends the neighboring pixels on the screen to eliminate pixelation.
-%ifdef __MSDOS__
-@ Available in most VESA2 16-bit modes
-@ Note: This option enables the Eagle filter in the VESA2 640x480 8-bit mode.
-%endif
 antienab db 0
-%ifndef __MSDOS__
 BilinearFilter db 0
-%endif
 
 @
-%ifndef __MSDOS__
 @ Enable NTSC Filter (0 = NO, 1 = Yes)
 @ Enable Blargg's wonderful NTSC filter which simulates the artifacts of an
 @ NTSC TV set - it is probably not a good idea to use with TV-out
 @ Recommended to use a minimum res of 602x448
-%else
-@ The NTSC filter is not available for DOS at the moment, sorry.
-%endif
 NTSCFilter db 0
-%ifndef __MSDOS__
 @ Blend Frames, Refresh Screen (0 = OFF, 1 = On)
 @ Blend Frames allows smoother transitions between frames for non-60Hz refresh rates.
 @ Refresh Screen allows the screen to be updated while changing the filter's parameters.
-%endif
 NTSCBlend db 0
 NTSCRef db 0
-%ifndef __MSDOS__
 @ NTSC TV Attributes [-100..100]
-%endif
 NTSCHue sb 0
 NTSCSat sb 0
 NTSCCont sb 0
@@ -298,16 +249,11 @@ NTSCWarp sb 0
 En2xSaI db 0
 
 @
-%ifndef __MSDOS__
 @ Use HQ*x Filter (0 = NO, 1 = Yes)
 @ This is a filter MaxSt has created. These are very CPU intensive filters that
 @ do very awesome blending to remove the pixelation.
 @ This is disabled when other filters are used. MMX support is required.
-%else
-@ The HQ*x filter is not available for DOS at the moment, sorry.
-%endif
 hqFilter db 0
-%ifndef __MSDOS__
 @ Set HQ*x level [2..4]
 @ Recommended min resolutions
 @ HQ2x = 512x448
@@ -317,19 +263,13 @@ hqFilter db 0
 @ HQ2x is only available for OpenGL.
 %endif
 hqFilterlevel db 2
-%endif
 
 @
 @ Enable Scanlines (0 = NONE, 1 = Full, 2 = 25%, 3 = 50%) - simulate TV scanlines
 @ This is compatible with interpolation.
-#ifdef __MSDOS__
-@ 256x256 or 640x480 8bit modes only (25% and 50% in 640x480 16bit mode only)
-#endif
 scanlines db 0
-#ifndef __MSDOS__
 @ OpenGL scanlines intensity [0..100]
 sl_intensity db 0
-#endif
 
 @
 @ Enable Grayscale Mode (0 = NO, 1 = Yes) - don't enable this for other than nostalgia
@@ -363,8 +303,6 @@ vsyncon db 0
 #ifdef __WIN32__
 @ This is not available in Windowed modes.
 TripleBufferWin db 0
-#elifdef __MSDOS__
-Triplebufen db 0
 #endif
 
 %ifdef __WIN32__
@@ -392,7 +330,6 @@ KitchenSync db 0
 KitchenSyncPAL db 0
 %endif
 
-%ifndef __MSDOS__
 @
 @ Keep 4:3 Ratio (0 = No, 1 = YES)
 @ This is particularly handy for those that use laptops/LCDs+non 4:3 resolutions.
@@ -404,18 +341,6 @@ KitchenSyncPAL db 0
 @ It is not recommended to enable this while under 298x224.
 @ Disable this if you want to use the non-standard ratio instead.
 Keep4_3Ratio db 1
-
-%else
-@
-@ Small Screen (0 = NO, 1 = Yes)
-@ Enabling small screen will render in 256x224 (not a good idea generally).
-smallscreenon dd 0
-
-@
-@ Wide Screen (0 = NO, 1 = Yes)
-@ Enabling wide screen will widen the image as much as possible.
-ScreenScale db 0
-%endif
 
 @
 @ Set Gamma Level [0..15]
@@ -467,23 +392,11 @@ Surround db 0
 PrimaryBuffer db 0
 %endif
 
-#ifdef __MSDOS__
-@
-@ Force 8-bit Sound (0 = NO, 1 = Yes)
-@ Enable this option if your sound card is producing nothing or static.
-@ This will limit the max frequency while using Stereo sound to 22KHz
-Force8b db 0
-#endif
-
 @
 @ Sampling Rate: (0 = 8000Hz, 1 = 11025Hz, 2 = 22050Hz, 3 = 44100Hz,
 @                             4 = 16000Hz, 5 = 32000Hz, 6 = 48000Hz)
 @ Using any other sound frequencies other than the default 32000Hz
 @ is COMPLETELY UNACCEPTABLE in use for sound bug reports.
-#ifdef __MSDOS__
-@ Forcing 8-bit sound will limit the max sampling rate while using Stereo sound
-@ to 22KHz
-#endif
 SoundQuality dd 5
 
 @
@@ -502,12 +415,6 @@ SoundInterpType db 1
 @ A low-pass filter improves the bass in the sounds.
 @ This is useful if you have a Subwoofer.
 LowPassFilterType db 0
-
-#ifdef __MSDOS__
-@
-@ Display ZSNES Sound Detection Info (0 = NO, 1 = Yes)
-DisplayS db 0
-#endif
 
 @
 @ Disable Echo (0 = NO, 1 = Yes)
@@ -632,24 +539,6 @@ SPC7110Cache db 1
 %else
 @ ROMs directory
 %endif
-%ifdef __MSDOS__
-ROMPath times 256 db ""
-@ Save states & SRAMs, snapshots, SPCs
-SRAMPath times 256 db ""
-SStatePath times 256 db ""
-SnapPath times 256 db ""
-IPSPath times 256 db ""
-MoviePath times 256 db ""
-SPCPath times 256 db ""
-CHTPath times 256 db ""
-ComboPath times 256 db ""
-INPPath times 256 db ""
-@ BIOS/base carts (BS-X, Sufami Turbo, Same Game & SD Gundam G-Next)
-BSXPath times 256 db ""
-STPath times 256 db ""
-GNextPath times 256 db ""
-SGPath times 256 db ""
-%else
 ROMPath times 1024 db ""
 @ Save states & SRAMs, snapshots, SPCs
 SRAMPath times 1024 db ""
@@ -666,7 +555,6 @@ BSXPath times 1024 db ""
 STPath times 1024 db ""
 GNextPath times 1024 db ""
 SGPath times 1024 db ""
-%endif
 
 @
 @ Relative Path Base (0 = Config dir, 1 = ROM Dir)
@@ -691,13 +579,8 @@ guioff db 0
 showallext db 0
 
 @
-%ifdef __MSDOS__
-@ Filename Display Mode (0 = Win9x Long filename, 1 = Internal header name, 2 = DOS 8.3)
-GUIloadfntype db 2
-%else
 @ Filename Display Mode (0 = LONG FILENAME, 1 = Internal header name)
 GUIloadfntype db 0
-%endif
 
 @
 @ Recent games played, you shouldn't edit this manually (8.3 / Paths / LFN)
@@ -726,9 +609,7 @@ mouseshad db 1
 @
 @ Wrap Mouse Cursor (0 = NO, 1 = Yes)
 @ If enabled, the cursor will wrap around to the other side.
-%ifndef __MSDOS__
 @ Only useful for Fullscreen modes.
-%endif
 mousewrap db 0
 
 %ifdef __WIN32__

@@ -24,13 +24,11 @@ void loadquickfname(u1 slot);
 
 char const* const* horizon_get(u4 distance);
 
-#ifndef __MSDOS__
 void GetCustomXY(void);
 void SetCustomXY(void);
 
 extern char GUICustomX[5];
 extern char GUICustomY[5];
-#endif
 
 extern char GUIMovieForcedText[11];
 extern char** d_names; // Directory Names

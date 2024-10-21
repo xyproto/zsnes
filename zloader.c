@@ -113,20 +113,8 @@ static void display_help()
     put_line("Usage : zsnes [-d,-f #, ... ] <filename.sfc>");
     put_line("   Eg : zsnes -s -r 2 game.sfc");
     put_line("");
-#ifdef __MSDOS__
-    put_line("  -0      Force black blackground in 8-bit modes");
-#endif
     put_line("  -1 #/-2 #   Select Player 1/2 Input :");
-#ifdef __MSDOS__
-    put_line("                0 = None             1 = Keyboard         2 = 2 button pad");
-    put_line("                3 = 4 button pad     4 = 6 button pad     5 = 8 button pad");
-    put_line("                6 = Sidewinder #1    7 = Sidewinder #2    8 = Sidewinder #3");
-    put_line("                9 = Sidewinder #4   10 = Gamepad Pro #0  11 = Gamepad Pro #1");
-    put_line("               12 = LPT1 #1         13 = LPT1 #2         14 = LPT1 #3");
-    put_line("               15 = LPT1 #4         16 = LPT1 #5");
-#else
     put_line("                0 = None       1 = Keyboard/Gamepad");
-#endif
 #ifndef __UNIXSDL__
     put_line("  -3      Enable triple buffering (replaces vsync)");
 #endif
@@ -149,11 +137,6 @@ static void display_help()
     snprintf(line, sizeof(line), "%22s = Simple DirectMedia Layer output", "sdl");
     put_line(line);
 #endif
-#ifdef __MSDOS__
-    put_line("  -8      Force 8-bit sound");
-    put_line("  -c      Enable wide screen (when available)");
-    put_line("  -cc     Enable small screen (when available)");
-#endif
 #ifndef NO_DEBUGGER
     put_line("  -d      Start with debugger enabled");
 #endif
@@ -164,9 +147,7 @@ static void display_help()
     put_line("  -g #    Specify gamma correction value [0..15]");
     put_line("  -h      Force HiROM");
     put_line("  -j      Disable mouse (Automatically turns off right mouse click)");
-#ifndef __MSDOS__
     put_line("  -js #   Set joystick sensitivity [0..32767]");
-#endif
     put_line("  -k #    Set volume level [0..100]");
 #ifdef __WIN32__
     put_line("  -kp     Enable the KitchenSync for PAL only");
@@ -188,9 +169,6 @@ static void display_help()
     put_line("             4 = 16000Hz 5 = 32000Hz 6 = 48000Hz");
     put_line("  -s      Enable sound output and enable SPC700/DSP emulation");
     put_line("  -sa     Show all files in GUI (*.*)");
-#ifdef __MSDOS__
-    put_line("  -sp     Display sound information");
-#endif
     put_line("  -t      Force NTSC timing");
     put_line("  -u      Force PAL timing");
     put_line("  -v  #    Select video mode :");
@@ -238,19 +216,6 @@ static void display_help()
     put_line("            21 = VARIABLE   ODS WIN    22 = CUSTOM     OD  FULL");
 #endif
 #endif
-#ifdef __MSDOS__
-#define VIDEO_MODE_COUNT 18
-    put_line("             0 = 256x224x8B   MODEQ     1 = 256x240x8B  MODEQ");
-    put_line("             2 = 256x256x8B   MODEQ     3 = 320x224x8B  MODEX");
-    put_line("             4 = 320x240x8B   MODEX     5 = 320x256x8B  MODEX");
-    put_line("             6 = 640x480x16B  VESA1     7 = 320x240x8B  VESA2");
-    put_line("             8 = 320x240x16B  VESA2     9 = 320x480x8B  VESA2");
-    put_line("            10 = 320x480x16B  VESA2    11 = 512x384x8B  VESA2");
-    put_line("            12 = 512x384x16B  VESA2    13 = 640x400x8B  VESA2");
-    put_line("            14 = 640x400x16B  VESA2    15 = 640x480x8B  VESA2");
-    put_line("            16 = 640x480x16B  VESA2    17 = 800x600x8B  VESA2");
-    put_line("            18 = 800x600x16B  VESA2");
-#endif
     put_line("  -v8       Grayscale mode");
 #ifndef __UNIXSDL__
     put_line("  -w        Enable vsync (disables triple buffering)");
@@ -271,7 +236,6 @@ static void display_help()
     put_line("  Microsoft-style options (/option) are also accepted");
 #endif
     /*
-#ifndef __MSDOS__
   put_line("               --Netplay Parameters--");
   put_line(" Commandline: /ABCDE <nickname> <fname> <IP Addy>");
   put_line("   nickname = user nickname");
@@ -286,7 +250,6 @@ static void display_help()
   put_line("   eg: ZSNESW /UCCN2 nickname d:\\snesroms 202.36.124.28");
 #else
   put_line("   eg: zsnes /UCCN2 nickname /home/zuser/snesroms 202.36.124.28");
-#endif
 #endif
 */
     zexit();
@@ -427,13 +390,7 @@ void ConvertJoyMap2()
 
 struct backup_cmdline_vars saved_cmdline_vars;
 
-#ifdef __MSDOS__
-#define BACKUP_HELP_DOS(func) \
-    func(Palette0);
-
-#else
 #define BACKUP_HELP_DOS(func)
-#endif
 
 #ifdef __WIN32__
 #define BACKUP_HELP_WIN(func) \
@@ -498,55 +455,52 @@ static void handle_params(int argc, char* argv[])
 
     backup_all_vars();
 
-#ifndef __MSDOS__
-
-/*
-  if (argc >= 5 && argv[1][0] == '/' && strlen(argv[1]) == 6)
-  {
-    size_t i = 0, j = 0;
-    char *strp;
-
-    if (toupper(argv[1][1]) == 'T') UDPConfig=0;
-
-    //Next should be # of connections
-
-    while (argv[2][i]!=0)
-    {
-      switch (argv[2][i])
+    /*
+      if (argc >= 5 && argv[1][0] == '/' && strlen(argv[1]) == 6)
       {
-        case '_':
-        case '-':
-        case '^':
-        case '=':
-        case '+':
-        case '[':
-        case ']':
-        if ( j < 10)
-        {
-          strp[j] = argv[2][i];
-          j++;
-        }
-        break;
+        size_t i = 0, j = 0;
+        char *strp;
 
-        default:
-          if (((toupper(argv[2][i]) >= 'A') && (toupper(argv[2][i]) <= 'Z')) ||
-              ((argv[2][i] >= '0') && (argv[2][i] <= '9')))
+        if (toupper(argv[1][1]) == 'T') UDPConfig=0;
+
+        //Next should be # of connections
+
+        while (argv[2][i]!=0)
+        {
+          switch (argv[2][i])
           {
-            if (j < 10)
+            case '_':
+            case '-':
+            case '^':
+            case '=':
+            case '+':
+            case '[':
+            case ']':
+            if ( j < 10)
             {
               strp[j] = argv[2][i];
               j++;
             }
-          }
-          break;
-      }
-      i++;
-    }
-    strp[j] = 0;
+            break;
 
-  }
-  */
-#endif
+            default:
+              if (((toupper(argv[2][i]) >= 'A') && (toupper(argv[2][i]) <= 'Z')) ||
+                  ((argv[2][i] >= '0') && (argv[2][i] <= '9')))
+              {
+                if (j < 10)
+                {
+                  strp[j] = argv[2][i];
+                  j++;
+                }
+              }
+              break;
+          }
+          i++;
+        }
+        strp[j] = 0;
+
+      }
+      */
 
     for (i = 1; i < argc; i++) {
 #ifndef __UNIXSDL__
@@ -561,11 +515,6 @@ static void handle_params(int argc, char* argv[])
             } else if (!argv[i][2]) //- followed by a single letter
             {
                 switch (tolower(argv[i][1])) {
-#ifdef __MSDOS__
-                case '0': // Palette color 0 disable
-                    Palette0 = 1;
-                    break;
-#endif
 
                 case '1': // Player 1 Input
                     i++;
@@ -592,9 +541,7 @@ static void handle_params(int argc, char* argv[])
 #ifndef __UNIXSDL__
                 case '3': // Enable triple buffering for DOS/Windows
                     vsyncon = 0;
-#ifdef __MSDOS__
-                    Triplebufen = 1;
-#elif __WIN32__
+#ifdef __WIN32__
                     TripleBufferWin = 1;
 #endif
                     break;
@@ -611,16 +558,6 @@ static void handle_params(int argc, char* argv[])
                     } else {
                         ForceRefreshRate = 1;
                     }
-                    break;
-#endif
-
-#ifdef __MSDOS__
-                case '8': // Force 8-bit sound
-                    Force8b = 1;
-                    break;
-
-                case 'c': // Enable full screen (when available)
-                    ScreenScale = 1;
                     break;
 #endif
 
@@ -733,9 +670,7 @@ static void handle_params(int argc, char* argv[])
 #ifndef __UNIXSDL__
                 case 'w': // Enable vsync for DOS/Windows
                     vsyncon = 1;
-#ifdef __MSDOS__
-                    Triplebufen = 0;
-#elif __WIN32__
+#ifdef __WIN32__
                     TripleBufferWin = 0;
 #endif
                     break;
@@ -787,19 +722,11 @@ static void handle_params(int argc, char* argv[])
                     soundon = 0;
                 }
 
-#ifdef __MSDOS__
-                else if (tolower(argv[i][1]) == 'c' && tolower(argv[i][2]) == 'c') // Enable small screen (when available)
-                {
-                    smallscreenon = 1;
-                }
-#endif
-
                 else if (tolower(argv[i][1]) == 'd' && tolower(argv[i][2]) == 'h') // Disable hacks
                 {
                     HacksDisable = 1;
                 }
 
-#ifndef __MSDOS__
                 else if (tolower(argv[i][1]) == 'j' && tolower(argv[i][2]) == 's') // Set joystick sensitivity
                 {
                     i++;
@@ -808,7 +735,6 @@ static void handle_params(int argc, char* argv[])
                         zexit_error();
                     }
                 }
-#endif
 
 #ifdef __WIN32__
                 else if (tolower(argv[i][1]) == 'k' && tolower(argv[i][2]) == 's') // Enable KitchenSync
@@ -845,13 +771,6 @@ static void handle_params(int argc, char* argv[])
                     MovieForcedLengthEnabled = true;
                     MovieForcedLength = zatoi(argv[i]);
                 }
-
-#ifdef __MSDOS__
-                else if (tolower(argv[i][1]) == 's' && tolower(argv[i][2]) == 'p') // Display sound information
-                {
-                    DisplayS = 1;
-                }
-#endif
 
                 else if (tolower(argv[i][1]) == 's' && tolower(argv[i][2]) == 'a') // Show all extensions in GUI
                 {
