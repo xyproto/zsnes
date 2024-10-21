@@ -33,24 +33,12 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #ifndef __UNIXSDL__
 
-#ifdef __MSDOS__
-#include <dos.h>
-#define _findfirst(regex, info) findfirst(regex, info, FA_HIDDEN | FA_DIREC)
-#define _findnext(handle, info) findnext(info)
-#define _findclose(handle)
-#define FIND_GOOD(handle) (!(handle))
-#define FIND_FAIL(handle) (handle)
-#define S_IWRITE S_IWUSR
-#define S_IREAD S_IRUSR
-#define WILD_ALL "*.*"
-#else
 #define FIND_GOOD(handle) ((handle) != -1)
 #define FIND_FAIL(handle) ((handle) == -1)
 #define ff_name name
 #define ff_fsize size
 #define ff_attrib attrib
 #define WILD_ALL "*"
-#endif
 
 // Note, these are faster than the built in DJGPP/MinGW ones
 z_DIR* z_opendir(const char* path)

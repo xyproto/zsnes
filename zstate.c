@@ -61,13 +61,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define NUMCONV_FW3
 #include "numconv.h"
 
-#ifdef __MSDOS__
-#define clim() __asm__ __volatile__("cli");
-#define stim() __asm__ __volatile__("sti");
-#else
 #define clim()
 #define stim()
-#endif
 
 void SA1UpdateDPageC(), unpackfunct(), repackfunct();
 void PrepareOffset(), ResetOffset(), initpitch(), UpdateBanksSDD1();

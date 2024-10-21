@@ -34,13 +34,9 @@ struct dirent_info {
 
 #ifndef __UNIXSDL__
 #include <stdint.h>
-#ifdef __MSDOS__
-#include <dir.h>
-#define _finddata_t ffblk
-#else
+
 #include <io.h>
 #include <windows.h>
-#endif
 
 // Avoid clashing with DJGPP and MinGW extras
 

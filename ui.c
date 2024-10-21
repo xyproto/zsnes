@@ -198,10 +198,9 @@ static void outofmemory()
 
 extern unsigned char wramdataa[65536], ram7fa[65536];
 
-#ifndef __MSDOS__
 unsigned char* BitConv32Ptr = 0;
 unsigned char* RGBtoYUVPtr = 0;
-#endif
+
 u1* spcBuffera = 0;
 u1* spritetablea = 0;
 unsigned char* vbufaptr = 0;
@@ -229,10 +228,8 @@ eop* dspRptr[256];
 
 void deallocmem()
 {
-#ifndef __MSDOS__
     deallocmemhelp(BitConv32Ptr);
     deallocmemhelp(RGBtoYUVPtr);
-#endif
     deallocmemhelp(spcBuffera);
     deallocmemhelp(spritetablea);
     deallocmemhelp(vbufaptr);
@@ -256,10 +253,8 @@ void deallocmem()
 
 static void allocmem()
 {
-#ifndef __MSDOS__
     AllocmemFail(BitConv32Ptr, 4096 + 65536 * 16);
     AllocmemFail(RGBtoYUVPtr, 65536 * 4 + 4096);
-#endif
     AllocmemFail(spcBuffera, 65536 * 4 + 4096);
     AllocmemFail(spritetablea, 256 * 512 + 4096);
     AllocmemFail(vbufaptr, 512 * 296 * 4 + 4096 + 512 * 296);
@@ -384,7 +379,6 @@ static char* seconds_to_asc(unsigned int seconds)
 
 void DisplayBatteryStatus(void)
 {
-#ifndef __MSDOS__
     int CheckBattery();
     int CheckBatteryTime();
     int CheckBatteryPercent();
@@ -425,12 +419,9 @@ void DisplayBatteryStatus(void)
 
     Msgptr = CSStatus;
     MessageOn = 100;
-#endif
 }
 
 // Make use of multiple mice.
-
-#ifndef __MSDOS__
 
 s4 MouseCount = 0;
 
@@ -538,5 +529,3 @@ void MultiMouseProcess(void)
         }
     }
 }
-
-#endif

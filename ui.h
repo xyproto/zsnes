@@ -44,7 +44,6 @@ extern u2 VolumeConvTable[32768];
 extern u2 fulladdtab[65536];
 extern u2 selcA000;
 
-#ifndef __MSDOS__
 void MultiMouseProcess(void);
 
 extern s4 MouseCount;
@@ -52,6 +51,5 @@ extern u1 mouse;
 extern u2 MouseButtons[2];
 extern u2 MouseMoveX[2];
 extern u2 MouseMoveY[2];
-#endif
 
 #endif

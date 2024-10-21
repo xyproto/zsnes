@@ -61,15 +61,9 @@ typedef unsigned short mode_t;
 #define IS_ABSOLUTE(path) ((*(path) == '\\') || (*(path) && ((path)[1] == ':')))
 #endif
 
-#ifndef __MSDOS__
 #define PATH_SIZE 4096
 #define NAME_SIZE 512
 #define realpath_native realpath
-#else
-#define PATH_SIZE 256
-#define NAME_SIZE 13
-#define realpath_native realpath_sfn
-#endif
 
 #ifndef S_ISDIR
 #define S_ISDIR(m) (((m) & S_IFMT) == S_IFDIR)
@@ -98,9 +92,6 @@ void load_jma_file_dir(const char* path, const char* file);
 int remove_dir(const char* path, const char* file);
 int mkdir_dir(const char* path, const char* dir);
 char* realpath_dir(const char* path, const char* file, char* buf);
-#ifdef __MSDOS__
-char* realpath_sfn_dir(const char* path, const char* file, char* buf);
-#endif
 FILE* fdreopen_dir(const char* path, const char* file, const char* mode, int fd);
 int system_dir(const char* path, const char* command);
 FILE* popen_dir(const char* path, char* command, const char* type);

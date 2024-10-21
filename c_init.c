@@ -139,7 +139,6 @@ void init(void)
 
 #ifndef NO_DEBUGGER
     if (debugger != 0 && romloadskip != 1) {
-#ifndef __MSDOS__
         /* Prevent nasty hang in debugger. Likely not a good way...
          * If we don't do this, then on the SDL and win32 ports, update_ticks_pc2
          * won't be set and CheckTimers will hang. */
@@ -151,7 +150,6 @@ void init(void)
         initwinvideo();
 #endif
         Start60HZ();
-#endif
         startdebugger();
     } else
 #endif
@@ -491,9 +489,6 @@ void DosExit(void)
 {
     if (AutoState == 1)
         SaveSecondState();
-#ifdef __MSDOS__
-    init18_2hz();
-#endif
     zexit();
 }
 

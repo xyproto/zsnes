@@ -533,13 +533,6 @@ char* realpath_dir(const char* path, const char* file, char* buf)
 #endif
 }
 
-#ifdef __MSDOS__
-char* realpath_sfn_dir(const char* path, const char* file, char* buf)
-{
-    return (realpath_sfn(strdupcat_internal(path, file), buf));
-}
-#endif
-
 FILE* fdreopen_dir(const char* path, const char* file, const char* mode, int fd)
 {
     // Because DOSBox and Windows is stupid, we're implementing this manually;
