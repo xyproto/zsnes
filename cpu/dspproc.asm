@@ -1178,15 +1178,9 @@ section .text
 
 ALIGN16
 NEWSYM NonEchoMonoPM
-%ifdef __MSDOS__
-    movzx eax,byte[ds:Voice0Volume+ebp]
-    mov ah,[ds:Voice0EnvInc+ebp*4+2]
-    mov edx,[ds:BRRPlace0+ebp*8+3]
-%else
     movzx eax,byte[Voice0Volume+ebp]
     mov ah,[Voice0EnvInc+ebp*4+2]
     mov edx,[BRRPlace0+ebp*8+3]
-%endif
     mov cx,[VolumeConvTable+eax*2]
     cmp byte[UniqueSoundv],0
     je .NotNoise1
@@ -1212,24 +1206,14 @@ NEWSYM NonEchoMonoPM
     add [DSPBuffer+esi*2],eax
     add esi,2
     CalculatePMod ebp
-%ifdef __MSDOS__
-    add [ds:BRRPlace0+ebp*8],ebx
-%else
     add [BRRPlace0+ebp*8],ebx
-%endif
     ret
 
 ALIGN16
 NEWSYM NonEchoStereoPM
-%ifdef __MSDOS__
-    movzx eax,byte[ds:Voice0VolumeR+ebp]
-    mov ah,[ds:Voice0EnvInc+ebp*4+2]
-    mov edx,[ds:BRRPlace0+ebp*8+3]
-%else
     movzx eax,byte[Voice0VolumeR+ebp]
     mov ah,[Voice0EnvInc+ebp*4+2]
     mov edx,[BRRPlace0+ebp*8+3]
-%endif
     mov cx,[VolumeConvTable+eax*2]
     cmp byte[UniqueSoundv],0
     je .NotNoise1b
@@ -1255,13 +1239,8 @@ NEWSYM NonEchoStereoPM
     or ah,dl
     movsx eax,ax
     add dword[DSPBuffer+esi*4],eax
-%ifdef __MSDOS__
-    movzx eax,byte[ds:Voice0VolumeL+ebp]
-    mov ah,[ds:Voice0EnvInc+ebp*4+2]
-%else
     movzx eax,byte[Voice0VolumeL+ebp]
     mov ah,[Voice0EnvInc+ebp*4+2]
-%endif
     add esi,2
     mov cx,[VolumeConvTable+eax*2]
     pop eax
@@ -1272,24 +1251,14 @@ NEWSYM NonEchoStereoPM
     movsx eax,ax
     add dword[DSPBuffer+esi*4-4],eax
     CalculatePMod ebp
-%ifdef __MSDOS__
-    add [ds:BRRPlace0+ebp*8],ebx
-%else
     add [BRRPlace0+ebp*8],ebx
-%endif
     ret
 
 ALIGN16
 NEWSYM EchoMonoPM
-%ifdef __MSDOS__
-    movzx eax,byte[ds:Voice0Volume+ebp]
-    mov ah,[ds:Voice0EnvInc+ebp*4+2]
-    mov edx,[ds:BRRPlace0+ebp*8+3]
-%else
     movzx eax,byte[Voice0Volume+ebp]
     mov ah,[Voice0EnvInc+ebp*4+2]
     mov edx,[BRRPlace0+ebp*8+3]
-%endif
     mov cx,[VolumeConvTable+eax*2]
     cmp byte[UniqueSoundv],0
     je .NotNoise1
@@ -1315,13 +1284,8 @@ NEWSYM EchoMonoPM
     or ah,dl
     movsx eax,ax
     add [DSPBuffer+esi*2],eax
-%ifdef __MSDOS__
-    movzx eax,byte[ds:Voice0Volumee+ebp]
-    mov ah,[ds:Voice0EnvInc+ebp*4+2]
-%else
     movzx eax,byte[Voice0Volumee+ebp]
     mov ah,[Voice0EnvInc+ebp*4+2]
-%endif
     mov cx,[VolumeConvTable+eax*2]
     pop eax
 
@@ -1334,24 +1298,14 @@ NEWSYM EchoMonoPM
 
     add esi,2
     CalculatePMod ebp
-%ifdef __MSDOS__
-    add [ds:BRRPlace0+ebp*8],ebx
-%else
     add [BRRPlace0+ebp*8],ebx
-%endif
     ret
 
 ALIGN16
 NEWSYM EchoStereoPM
-%ifdef __MSDOS__
-    movzx eax,byte[ds:Voice0VolumeR+ebp]
-    mov ah,[ds:Voice0EnvInc+ebp*4+2]
-    mov edx,[ds:BRRPlace0+ebp*8+3]
-%else
     movzx eax,byte[Voice0VolumeR+ebp]
     mov ah,[Voice0EnvInc+ebp*4+2]
     mov edx,[BRRPlace0+ebp*8+3]
-%endif
     mov cx,[VolumeConvTable+eax*2]
     cmp byte[UniqueSoundv],0
     je .NotNoise1b
@@ -1377,15 +1331,9 @@ NEWSYM EchoStereoPM
     or ah,dl
     movsx eax,ax
     add dword[DSPBuffer+esi*4],eax
-%ifdef __MSDOS__
-    movzx eax,byte[ds:Voice0VolumeRe+ebp]
-    mov ah,[ds:Voice0EnvInc+ebp*4+2]
-    mov cx,[ds:VolumeConvTable+eax*2]
-%else
     movzx eax,byte[Voice0VolumeRe+ebp]
     mov ah,[Voice0EnvInc+ebp*4+2]
     mov cx,[VolumeConvTable+eax*2]
-%endif
     mov eax,ebx
     imul cx
     shr ax,7
@@ -1393,13 +1341,8 @@ NEWSYM EchoStereoPM
     or ah,dl
     movsx eax,ax
     add [EchoBuffer+esi*4],eax
-%ifdef __MSDOS__
-    movzx eax,byte[ds:Voice0VolumeL+ebp]
-    mov ah,[ds:Voice0EnvInc+ebp*4+2]
-%else
     movzx eax,byte[Voice0VolumeL+ebp]
     mov ah,[Voice0EnvInc+ebp*4+2]
-%endif
     mov cx,[VolumeConvTable+eax*2]
 
     mov eax,ebx
@@ -1409,13 +1352,8 @@ NEWSYM EchoStereoPM
     or ah,dl
     movsx eax,ax
     add dword[DSPBuffer+esi*4+4],eax
-%ifdef __MSDOS__
-    movzx eax,byte[ds:Voice0VolumeLe+ebp]
-    mov ah,[ds:Voice0EnvInc+ebp*4+2]
-%else
     movzx eax,byte[Voice0VolumeLe+ebp]
     mov ah,[Voice0EnvInc+ebp*4+2]
-%endif
     mov cx,[VolumeConvTable+eax*2]
     mov eax,ebx
 
@@ -1424,20 +1362,12 @@ NEWSYM EchoStereoPM
     add dl,dl
     or ah,dl
     movsx eax,ax
-%ifdef __MSDOS__
-    mov ebx,[ds:Voice0Freq+ebp*4]
-%else
     mov ebx,[Voice0Freq+ebp*4]
-%endif
     add [EchoBuffer+esi*4+4],eax
 
     add esi,2
     CalculatePMod ebp
-%ifdef __MSDOS__
-    add [ds:BRRPlace0+ebp*8],ebx
-%else
     add [BRRPlace0+ebp*8],ebx
-%endif
     ret
 
 ; interpolation is only done when the rate < mixRate, so ebx always contains
@@ -1451,11 +1381,7 @@ SECTION .text
 
 ALIGN16
 NEWSYM NonEchoMonoInterpolated
-%ifdef __MSDOS__
-    mov edx,[ds:BRRPlace0+ebp*8+3]
-%else
     mov edx,[BRRPlace0+ebp*8+3]
-%endif
     cmp byte[UniqueSoundv],0
     je .NotNoise1
     mov al,[powhack]
@@ -1475,15 +1401,9 @@ NEWSYM NonEchoMonoInterpolated
 ;    mov ax,[edi+edx*2]
     ; DSPInterP (Samp*i+Samp2*i2+Samp3*i3+Samp4*i3)>>11
 .AfterNoise1
-%ifdef __MSDOS__
-    movzx edx,byte[ds:Voice0Volume+ebp]
-    mov dh,[ds:Voice0EnvInc+ebp*4+2]
-    mov ebx,[ds:Voice0Freq+ebp*4]
-%else
     movzx edx,byte[Voice0Volume+ebp]
     mov dh,[Voice0EnvInc+ebp*4+2]
     mov ebx,[Voice0Freq+ebp*4]
-%endif
     mov cx,[VolumeConvTable+edx*2]
     imul cx
     shr ax,7
@@ -1492,20 +1412,12 @@ NEWSYM NonEchoMonoInterpolated
     movsx eax,ax
     add [DSPBuffer+esi*2],eax
     add esi,2
-%ifdef __MSDOS__
-    add [ds:BRRPlace0+ebp*8],ebx
-%else
     add [BRRPlace0+ebp*8],ebx
-%endif
     ret
 
 ALIGN16
 NEWSYM EchoMonoInterpolated
-%ifdef __MSDOS__
-    mov edx,[ds:BRRPlace0+ebp*8+3]
-%else
     mov edx,[BRRPlace0+ebp*8+3]
-%endif
     cmp byte[UniqueSoundv],0
     je .NotNoise1
     mov al,[powhack]
@@ -1524,21 +1436,11 @@ NEWSYM EchoMonoInterpolated
 ;    mov edx,[BRRPlace0+ebp*8+3]
 ;    mov ax,[edi+edx*2]
 .AfterNoise1
-%ifdef __MSDOS__
-    movzx edx,byte[ds:Voice0Volume+ebp]
-    mov dh,[ds:Voice0EnvInc+ebp*4+2]
-    mov ebx,[ds:Voice0Freq+ebp*4]
-%else
     movzx edx,byte[Voice0Volume+ebp]
     mov dh,[Voice0EnvInc+ebp*4+2]
     mov ebx,[Voice0Freq+ebp*4]
-%endif
     mov cx,[VolumeConvTable+edx*2]
-%ifdef __MSDOS__
-    add [ds:BRRPlace0+ebp*8],ebx    ; ***
-%else
     add [BRRPlace0+ebp*8],ebx    ; ***
-%endif
     add esi,2                   ; ***
     mov ebx,eax
 
@@ -1548,13 +1450,8 @@ NEWSYM EchoMonoInterpolated
     or ah,dl
     movsx eax,ax
     add [DSPBuffer+esi*2-4],eax
-%ifdef __MSDOS__
-    movzx eax,byte[ds:Voice0Volumee+ebp]
-    mov ah,[ds:Voice0EnvInc+ebp*4+2]
-%else
     movzx eax,byte[Voice0Volumee+ebp]
     mov ah,[Voice0EnvInc+ebp*4+2]
-%endif
     mov cx,[VolumeConvTable+eax*2]
 
     mov eax,ebx
@@ -1569,11 +1466,7 @@ NEWSYM EchoMonoInterpolated
 
 ALIGN16
 NEWSYM NonEchoStereoInterpolated
-%ifdef __MSDOS__
-    mov edx,[ds:BRRPlace0+ebp*8+3]
-%else
     mov edx,[BRRPlace0+ebp*8+3]
-%endif
     cmp byte[UniqueSoundv],0
     je .NotNoise1b
     mov al,[powhack]
@@ -1590,15 +1483,9 @@ NEWSYM NonEchoStereoInterpolated
 .NotNoise1b
     ccall [DSPInterpolate], edx, ebp
 .AfterNoise1b
-%ifdef __MSDOS__
-    movzx edx,byte[ds:Voice0VolumeR+ebp]
-    mov dh,[ds:Voice0EnvInc+ebp*4+2]
-    mov ebx,[ds:Voice0Freq+ebp*4]
-%else
     movzx edx,byte[Voice0VolumeR+ebp]
     mov dh,[Voice0EnvInc+ebp*4+2]
     mov ebx,[Voice0Freq+ebp*4]
-%endif
     mov cx,[VolumeConvTable+edx*2]
 
     movsx eax,ax
@@ -1609,13 +1496,8 @@ NEWSYM NonEchoStereoInterpolated
     or ah,dl
     movsx eax,ax
     add dword[DSPBuffer+esi*4],eax
-%ifdef __MSDOS__
-    movzx eax,byte[ds:Voice0VolumeL+ebp]
-    mov ah,[ds:Voice0EnvInc+ebp*4+2]
-%else
     movzx eax,byte[Voice0VolumeL+ebp]
     mov ah,[Voice0EnvInc+ebp*4+2]
-%endif
     add esi,2
     mov cx,[VolumeConvTable+eax*2]
     pop eax
@@ -1625,20 +1507,12 @@ NEWSYM NonEchoStereoInterpolated
     or ah,dl
     movsx eax,ax
     add dword[DSPBuffer+esi*4-4],eax
-%ifdef __MSDOS__
-    add [ds:BRRPlace0+ebp*8],ebx
-%else
     add [BRRPlace0+ebp*8],ebx
-%endif
     ret
 
 ALIGN16
 NEWSYM EchoStereoInterpolated
-%ifdef __MSDOS__
-    mov edx,[ds:BRRPlace0+ebp*8+3]
-%else
     mov edx,[BRRPlace0+ebp*8+3]
-%endif
     cmp byte[UniqueSoundv],0
     je .NotNoise1b
     mov al,[powhack]
@@ -1656,13 +1530,8 @@ NEWSYM EchoStereoInterpolated
 ;    mov ax,[edi+edx*2]
     ccall [DSPInterpolate], edx, ebp
 .AfterNoise1b
-%ifdef __MSDOS__
-    movzx edx,byte[ds:Voice0VolumeR+ebp]
-    mov dh,[ds:Voice0EnvInc+ebp*4+2]
-%else
     movzx edx,byte[Voice0VolumeR+ebp]
     mov dh,[Voice0EnvInc+ebp*4+2]
-%endif
     mov cx,[VolumeConvTable+edx*2]
 
     movsx eax,ax
@@ -1673,13 +1542,8 @@ NEWSYM EchoStereoInterpolated
     or ah,dl
     movsx eax,ax
     add dword[DSPBuffer+esi*4],eax
-%ifdef __MSDOS__
-    movzx eax,byte[ds:Voice0VolumeRe+ebp]
-    mov ah,[ds:Voice0EnvInc+ebp*4+2]
-%else
     movzx eax,byte[Voice0VolumeRe+ebp]
     mov ah,[Voice0EnvInc+ebp*4+2]
-%endif
     mov cx,[VolumeConvTable+eax*2]
     mov eax,ebx
     imul cx
@@ -1688,13 +1552,8 @@ NEWSYM EchoStereoInterpolated
     or ah,dl
     movsx eax,ax
     add [EchoBuffer+esi*4],eax
-%ifdef __MSDOS__
-    movzx eax,byte[ds:Voice0VolumeL+ebp]
-    mov ah,[ds:Voice0EnvInc+ebp*4+2]
-%else
     movzx eax,byte[Voice0VolumeL+ebp]
     mov ah,[Voice0EnvInc+ebp*4+2]
-%endif
     mov cx,[VolumeConvTable+eax*2]
 
     mov eax,ebx
@@ -1704,13 +1563,8 @@ NEWSYM EchoStereoInterpolated
     or ah,dl
     movsx eax,ax
     add dword[DSPBuffer+esi*4+4],eax
-%ifdef __MSDOS__
-    movzx eax,byte[ds:Voice0VolumeLe+ebp]
-    mov ah,[dS:Voice0EnvInc+ebp*4+2]
-%else
     movzx eax,byte[Voice0VolumeLe+ebp]
     mov ah,[Voice0EnvInc+ebp*4+2]
-%endif
     mov cx,[VolumeConvTable+eax*2]
     mov eax,ebx
 
@@ -1719,32 +1573,18 @@ NEWSYM EchoStereoInterpolated
     add dl,dl
     or ah,dl
     movsx eax,ax
-%ifdef __MSDOS__
-    mov ebx,[ds:Voice0Freq+ebp*4]
-%else
     mov ebx,[Voice0Freq+ebp*4]
-%endif
     add [EchoBuffer+esi*4+4],eax
 
     add esi,2
-%ifdef __MSDOS__
-    add [ds:BRRPlace0+ebp*8],ebx
-%else
     add [BRRPlace0+ebp*8],ebx
-%endif
     ret
 
 ALIGN16
 NEWSYM NonEchoMono
-%ifdef __MSDOS__
-    movzx eax,byte[ds:Voice0Volume+ebp]
-    mov ah,[ds:Voice0EnvInc+ebp*4+2]
-    mov edx,[ds:BRRPlace0+ebp*8+3]
-%else
     movzx eax,byte[Voice0Volume+ebp]
     mov ah,[Voice0EnvInc+ebp*4+2]
     mov edx,[BRRPlace0+ebp*8+3]
-%endif
     mov cx,[VolumeConvTable+eax*2]
     cmp byte[UniqueSoundv],0
     je .NotNoise1
@@ -1769,24 +1609,14 @@ NEWSYM NonEchoMono
     movsx eax,ax
     add [DSPBuffer+esi*2],eax
     add esi,2
-%ifdef __MSDOS__
-    add [ds:BRRPlace0+ebp*8],ebx
-%else
     add [BRRPlace0+ebp*8],ebx
-%endif
     ret
 
 ALIGN16
 NEWSYM NonEchoStereo
-%ifdef __MSDOS__
-    movzx eax,byte[ds:Voice0VolumeR+ebp]
-    mov ah,[ds:Voice0EnvInc+ebp*4+2]
-    mov edx,[ds:BRRPlace0+ebp*8+3]
-%else
     movzx eax,byte[Voice0VolumeR+ebp]
     mov ah,[Voice0EnvInc+ebp*4+2]
     mov edx,[BRRPlace0+ebp*8+3]
-%endif
     mov cx,[VolumeConvTable+eax*2]
     cmp byte[UniqueSoundv],0
     je .NotNoise1b
@@ -1812,13 +1642,8 @@ NEWSYM NonEchoStereo
     or ah,dl
     movsx eax,ax
     add dword[DSPBuffer+esi*4],eax
-%ifdef __MSDOS__
-    movzx eax,byte[ds:Voice0VolumeL+ebp]
-    mov ah,[ds:Voice0EnvInc+ebp*4+2]
-%else
     movzx eax,byte[Voice0VolumeL+ebp]
     mov ah,[Voice0EnvInc+ebp*4+2]
-%endif
     add esi,2
     mov cx,[VolumeConvTable+eax*2]
     pop eax
@@ -1828,24 +1653,14 @@ NEWSYM NonEchoStereo
     or ah,dl
     movsx eax,ax
     add dword[DSPBuffer+esi*4-4],eax
-%ifdef __MSDOS__
-    add [ds:BRRPlace0+ebp*8],ebx
-%else
     add [BRRPlace0+ebp*8],ebx
-%endif
     ret
 
 ALIGN16
 NEWSYM EchoMono
-%ifdef __MSDOS__
-    movzx eax,byte[ds:Voice0Volume+ebp]
-    mov ah,[ds:Voice0EnvInc+ebp*4+2]
-    mov edx,[ds:BRRPlace0+ebp*8+3]
-%else
     movzx eax,byte[Voice0Volume+ebp]
     mov ah,[Voice0EnvInc+ebp*4+2]
     mov edx,[BRRPlace0+ebp*8+3]
-%endif
     mov cx,[VolumeConvTable+eax*2]
     cmp byte[UniqueSoundv],0
     je .NotNoise1
@@ -1872,13 +1687,8 @@ NEWSYM EchoMono
     movsx eax,ax
     add [DSPBuffer+esi*2],eax
 
-%ifdef __MSDOS__
-    movzx eax,byte[ds:Voice0Volumee+ebp]
-    mov ah,[ds:Voice0EnvInc+ebp*4+2]
-%else
     movzx eax,byte[Voice0Volumee+ebp]
     mov ah,[Voice0EnvInc+ebp*4+2]
-%endif
     mov cx,[VolumeConvTable+eax*2]
     pop eax
 
@@ -1890,24 +1700,14 @@ NEWSYM EchoMono
     add [EchoBuffer+esi*2],eax
 
     add esi,2
-%ifdef __MSDOS__
-    add [ds:BRRPlace0+ebp*8],ebx
-%else
     add [BRRPlace0+ebp*8],ebx
-%endif
     ret
 
 ALIGN16
 NEWSYM EchoStereo
-%ifdef __MSDOS__
-    movzx eax,byte[ds:Voice0VolumeR+ebp]
-    mov ah,[ds:Voice0EnvInc+ebp*4+2]
-    mov edx,[ds:BRRPlace0+ebp*8+3]
-%else
     movzx eax,byte[Voice0VolumeR+ebp]
     mov ah,[Voice0EnvInc+ebp*4+2]
     mov edx,[BRRPlace0+ebp*8+3]
-%endif
     mov cx,[VolumeConvTable+eax*2]
     cmp byte[UniqueSoundv],0
     je .NotNoise1b
@@ -1933,13 +1733,8 @@ NEWSYM EchoStereo
     or ah,dl
     movsx eax,ax
     add dword[DSPBuffer+esi*4],eax
-%ifdef __MSDOS__
-    movzx eax,byte[ds:Voice0VolumeRe+ebp]
-    mov ah,[ds:Voice0EnvInc+ebp*4+2]
-%else
     movzx eax,byte[Voice0VolumeRe+ebp]
     mov ah,[Voice0EnvInc+ebp*4+2]
-%endif
     mov cx,[VolumeConvTable+eax*2]
     mov eax,ebx
     imul cx
@@ -1949,13 +1744,8 @@ NEWSYM EchoStereo
     movsx eax,ax
     add [EchoBuffer+esi*4],eax
 
-%ifdef __MSDOS__
-    movzx eax,byte[ds:Voice0VolumeL+ebp]
-    mov ah,[ds:Voice0EnvInc+ebp*4+2]
-%else
     movzx eax,byte[Voice0VolumeL+ebp]
     mov ah,[Voice0EnvInc+ebp*4+2]
-%endif
     mov cx,[VolumeConvTable+eax*2]
 
     mov eax,ebx
@@ -1965,13 +1755,8 @@ NEWSYM EchoStereo
     or ah,dl
     movsx eax,ax
     add dword[DSPBuffer+esi*4+4],eax
-%ifdef __MSDOS__
-    movzx eax,byte[ds:Voice0VolumeLe+ebp]
-    mov ah,[ds:Voice0EnvInc+ebp*4+2]
-%else
     movzx eax,byte[Voice0VolumeLe+ebp]
     mov ah,[Voice0EnvInc+ebp*4+2]
-%endif
     mov cx,[VolumeConvTable+eax*2]
     mov eax,ebx
 
@@ -1980,19 +1765,11 @@ NEWSYM EchoStereo
     add dl,dl
     or ah,dl
     movsx eax,ax
-%ifdef __MSDOS__
-    mov ebx,[ds:Voice0Freq+ebp*4]
-%else
     mov ebx,[Voice0Freq+ebp*4]
-%endif
     add [EchoBuffer+esi*4+4],eax
 
     add esi,2
-%ifdef __MSDOS__
-    add [ds:BRRPlace0+ebp*8],ebx
-%else
     add [BRRPlace0+ebp*8],ebx
-%endif
     ret
 
 section .bss

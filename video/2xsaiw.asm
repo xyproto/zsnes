@@ -747,16 +747,6 @@ NEWSYM _2xSaISuper2xSaILine
     punpcklwd mm4, mm6
     punpckhwd mm5, mm6
 
-
-%ifdef __MSDOS__
-    movq [es:edx], mm0
-    movq [es:edx+8], mm1
-    push edx
-    add edx, [ebp+dstPitch]
-    movq [es:edx], mm4
-    movq [es:edx+8], mm5
-    pop edx
-%else
     movq [edx], mm0
     movq [edx+8], mm1
     push edx
@@ -764,7 +754,7 @@ NEWSYM _2xSaISuper2xSaILine
     movq [edx], mm4
     movq [edx+8], mm5
     pop edx
-%endif
+
 .SKIP_PROCESS:
     mov ecx, [ebp+deltaPtr]
     add ecx, 8
@@ -1297,15 +1287,6 @@ NEWSYM _2xSaISuperEagleLine
 
 
 
-%ifdef __MSDOS__
-    movq [es:edx], mm0
-    movq [es:edx+8], mm1
-    push edx
-    add edx, [ebp+dstPitch]
-    movq [es:edx], mm4
-    movq [es:edx+8], mm5
-    pop edx
-%else
     movq [edx], mm0
     movq [edx+8], mm1
     push edx
@@ -1313,7 +1294,7 @@ NEWSYM _2xSaISuperEagleLine
     movq [edx], mm4
     movq [edx+8], mm5
     pop edx
-%endif
+
 .SKIP_PROCESS:
     mov ecx, [ebp+deltaPtr]
     add ecx, 8
@@ -1556,13 +1537,8 @@ NEWSYM _2xSaILine
     punpcklwd mm5, mm0
     punpckhwd mm6, mm0
 
-%ifdef __MSDOS__
-    movq [es:edx], mm5
-    movq [es:edx+8], mm6
-%else
     movq [edx], mm5
     movq [edx+8], mm6
-%endif
 
 ;------------------------------------------------
 ;        Create the Nextline
@@ -1909,13 +1885,9 @@ NEWSYM _2xSaILine
     push edx
     add edx, [ebp+dstPitch]
 
-%ifdef __MSDOS__
-    movq [es:edx], mm0
-    movq [es:edx+8], mm1
-%else
     movq [edx], mm0
     movq [edx+8], mm1
-%endif
+
     pop edx
 
 .SKIP_PROCESS:

@@ -44,17 +44,8 @@
 #include "guikeys.h"
 #include "guiwindp.h"
 
-#ifdef __MSDOS__
-#include <string.h>
-
-#include "../dos/initvid.h"
-#include "../ui.h"
-#include "../video/copyvid.h"
-#include "guimisc.h"
-#else
 #include "../video/ntsc.h"
 #include "guifuncs.h"
-#endif
 
 #ifdef __UNIXSDL__
 #include "../linux/sdllink.h"

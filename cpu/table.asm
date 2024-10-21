@@ -41,12 +41,6 @@ EXTSYM DPageR8,DPageW8,DPageR16,DPageW16
 EXTSYM SDD1Enable
 EXTSYM JoyAOrig,JoyANow,JoyBOrig,JoyBNow,JoyCOrig,JoyCNow,JoyDOrig,JoyDNow
 
-%ifdef __MSDOS__
-EXTSYM mosdraw10,mosdraw11,mosdraw12,mosdraw13,mosdraw9,mosjmptab
-EXTSYM mosdraw14,mosdraw15,mosdraw16,mosdraw2,mosdraw3
-EXTSYM mosdraw4,mosdraw5,mosdraw6,mosdraw7,mosdraw8
-%endif
-
 %include "cpu/65816d.inc"
 %include "cpu/address.inc"
 %include "cpu/addrni.inc"

@@ -33,7 +33,7 @@ using namespace std;
 #include "fileutil.h"
 #include "strutil.h"
 
-#if defined(__MSDOS__) || defined(__WIN32__)
+#if defined(__WIN32__)
 #define IS_ABSOLUTE(path) (((path)[0] == '\\') || ((path)[0] && ((path)[1] == ':')))
 #else
 #define IS_ABSOLUTE(path) (((path)[0] == '/') || ((path)[0] == '~'))

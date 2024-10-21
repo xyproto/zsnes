@@ -319,8 +319,6 @@ void AdjustFrequency(void)
 
     case 1: // Gaussian
         // Copy from Gaussian to DSPInterP
-        // this ifndef is needed the workaround the "snow" in the DOS port
-        // used only for Gaussian though
         if (ah == 0)
         {
             u2* ebx = DSPInterP + 512;
