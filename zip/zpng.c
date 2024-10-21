@@ -41,21 +41,13 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define NUMCONV_FW4
 #include "../numconv.h"
 
-#ifdef __MSDOS__
-#define MAX_PNGNAME_LEN 13
-#else
 #define MAX_PNGNAME_LEN (strlen(ZSaveName) + 11) // 11 = _12345.png\0
-#endif
 
 char* generate_image_filename(const char* image_suffix)
 {
     char* filename = (char*)malloc(MAX_PNGNAME_LEN);
     if (filename) {
         unsigned int i;
-#ifdef __MSDOS__
-        char* p = filename + 3;
-        strcpy(filename, "img");
-#else
         char* p;
         strcpy(filename, ZSaveName);
         p = strrchr(filename, '.');
@@ -63,7 +55,6 @@ char* generate_image_filename(const char* image_suffix)
             p = filename + strlen(filename);
         }
         *p++ = '_';
-#endif
         for (i = 0; i < 100000; i++) {
             sprintf(p, "%05d.%s", i, image_suffix);
             if (access_dir(ZSnapPath, filename, F_OK)) {

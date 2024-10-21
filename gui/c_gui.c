@@ -34,11 +34,6 @@
 #include "guitools.h"
 #include "guiwindp.h"
 
-#ifdef __MSDOS__
-#include "../asm_call.h"
-#include "../dos/vesa2.h"
-#endif
-
 #ifdef __OPENGL__
 #include "../linux/c_sdlintrf.h"
 #endif
@@ -215,20 +210,12 @@ u4 SnowTimer = 36 * 30;
 
 u1 savecfgforce;
 
-#ifdef __MSDOS__
-static u1 SubPalTable[256]; // Corresponding Gray Scale Color
-#endif
-
 // The first byte is the number of fields on the right not including the seperators
 static u1 MenuDat1[] = { 12, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 2, 0 };
 static u1 MenuDat2[] = { 8, 3, 1, 1, 0, 1, 1, 1, 0, 2, 0 };
 static u1 MenuDat3[] = { 10, 3, 0, 1, 1, 0, 1, 1, 1, 1, 1, 2, 0 };
 static u1 MenuDat4[] = { 2, 3, 1, 2, 0 };
-#ifndef __MSDOS__
 static u1 MenuDat5[] = { 0, 2, 0, 0 };
-#else
-static u1 MenuDat5[] = { 1, 3, 2, 0 };
-#endif
 static u1 MenuDat6[] = { 6, 3, 1, 1, 1, 1, 0, 2, 0 };
 
 static bool GUIPalConv;
@@ -300,17 +287,10 @@ static char GUICheatMenuData[][14] = {
 };
 
 static char GUINetPlayMenuData[][14] = {
-#ifndef __MSDOS__
     { "\x1"
       "INTERNET    " },
     { "\x0"
       "------------" }
-#else
-    { "\x1"
-      "MODEM       " },
-    { "\x1"
-      "IPX         " }
-#endif
 };
 
 static char GUIMiscMenuData[][14] = {
@@ -416,20 +396,6 @@ u1 SnowVelDist[] = {
     226, 86, 221, 254, 72, 14, 126, 180, 200, 171, 85, 94, 120, 124, 196, 225, 150, 57, 219, 158
 };
 
-void GUIinit18_2hz(void)
-{
-    outb(0x43, 0x36);
-    outb(0x40, 0x00);
-    outb(0x40, 0x00);
-}
-
-void GUIinit36_4hz(void)
-{
-    outb(0x43, 0x36);
-    outb(0x40, 0x00);
-    outb(0x40, 0x80);
-}
-
 void GUI36hzcall(void)
 {
     ++SnowMover;
@@ -448,9 +414,7 @@ void GUI36hzcall(void)
 static void LoadDetermine(void)
 {
     GUINetPlayMenuData[0][0] = 2; // Gray out Netplay options
-#ifdef __MSDOS__
-    GUINetPlayMenuData[1][0] = 2;
-#endif
+    //GUINetPlayMenuData[1][0] = 2;
     u1 const v = romloadskip != 0 ? 2 : 1;
     GUIGameMenuData[1][0] = v;
     GUIGameMenuData[2][0] = v;
@@ -566,61 +530,6 @@ void guipostvideo(void)
     GUIkeydelay = 36 * 10;
     guipostvideoloop();
 }
-
-#ifdef __MSDOS__
-void guipostvideofail(void)
-{
-    char guipostvidmsg3b[3][26];
-    guipostvidmsg3b[0][0] = '\0';
-    guipostvidmsg3b[1][0] = '\0';
-    guipostvidmsg3b[2][0] = '\0';
-
-    char const* src = ErrorPointer;
-    char const* end = src;
-    while (*end != '\0' && *end != '$')
-        ++end;
-    char(*guipostvidptr)[26] = guipostvidmsg3b;
-    for (;; ++src, ++guipostvidptr) {
-        u4 n = end - src;
-        for (;;) {
-            if (n == 0)
-                goto notext;
-            if (n < lengthof(*guipostvidptr))
-                break;
-            while (src[--n] != ' ') { } // XXX potential buffer underrun
-        }
-        char* dst = *guipostvidptr;
-        do {
-            char c = *src++;
-            if (c == '$')
-                c = '\0';
-            *dst++ = c;
-        } while (--n != 0);
-        *dst = '\0';
-        if (*src == '\0' || *src == '$')
-            break; // XXX buffer overrun if there are more than 3 lines of text
-    }
-notext:
-
-    memset(pressed, 0, 256); // XXX maybe should be sizeof(pressed)
-    GUIUnBuffer();
-    DisplayBoxes();
-    DisplayMenu();
-    GUIBox3D(43, 90, 213, 163);
-    GUIOuttextShadowed(55, 95, "VIDEO MODE CHANGE FAILED.");
-    GUIOuttextShadowed(55, 107, "UNABLE TO INIT VESA2:");
-    GUIOuttextShadowed(55, 118, guipostvidmsg3b[0]);
-    GUIOuttextShadowed(55, 128, guipostvidmsg3b[1]);
-    GUIOuttextShadowed(55, 138, guipostvidmsg3b[2]);
-    GUIOuttextShadowed(55, 151, "PRESS ANY KEY");
-    vidpastecopyscr();
-    GUIUnBuffer();
-    DisplayBoxes();
-    DisplayMenu();
-    GUIkeydelay = 0xFFFFFFFF;
-    guipostvideoloop();
-}
-#endif
 
 void CheckMenuItemHelp(u4 const id)
 {
@@ -798,11 +707,7 @@ void GUIUnBuffer(void)
 static void GUIBufferData(void)
 {
     // copy to spritetable
-    u4 const n =
-#ifdef __MSDOS__
-        cbitmode != 1 ? 65536 :
-#endif
-                      131072;
+    u4 const n = 131072;
     u1* src = vidbuffer;
     if (PrevResoln != 224)
         src += 288 * 8;
@@ -816,9 +721,6 @@ static void GUIBufferData(void)
 
 static void InitGUI(void)
 {
-#ifdef __MSDOS__
-    asm_call(DOSClearScreen);
-#endif
     Clear2xSaIBuffer();
     GUISetPal();
     GUIBufferData();
@@ -1102,316 +1004,9 @@ static void GUISetPal16(void)
     }
 }
 
-#ifdef __MSDOS__
-static void GUIconvpal(void)
-{
-    tempco0 = cgram[0];
-    if ((scaddtype & 0xA0) == 0x20) {
-        u2 const c = cgram[0];
-        u4 r = (c & 0x1F) + coladdr;
-        if (r >= 0x1F)
-            r = 0x1F;
-        u4 g = (c >> 5 & 0x1F) + coladdg;
-        if (g >= 0x1F)
-            g = 0x1F;
-        u4 b = (c >> 10 & 0x1F) + coladdb;
-        if (b >= 0x1F)
-            b = 0x1F;
-        cgram[0] = b << 10 | g << 5 | r;
-    }
-    u2 const* src = cgram;
-    u2* dst = prevpal;
-    u4 i = 0;
-    do {
-        u2 const c = *dst++ = *src++;
-        u4 const curgsval = (c & 0x1F) * maxbr / 15 + (c >> 5 & 0x1F) * maxbr / 15 + (c >> 10 & 0x1F) * maxbr / 15;
-        u4 bl = curgsval / 3;
-        if (MessageOn != 0 && i == 128)
-            bl = 31;
-        if (bl == 0)
-            bl = 1;
-        SubPalTable[i] = bl;
-    } while (++i != 256);
-    prevbright = maxbr;
-    cgram[0] = tempco0;
-}
-
-static void GUIRGB(u1 const r, u1 const g, u1 const b)
-{
-    outb(0x03C9, r);
-    outb(0x03C9, g);
-    outb(0x03C9, b);
-}
-
-static void GUIPal(u1 const idx, u1 const r, u1 const g, u1 const b)
-{
-    outb(0x03C8, idx);
-    GUIRGB(r, g, b);
-}
-#endif
-
 void GUISetPal(void)
 {
-#ifdef __MSDOS__
-    if (cbitmode != 1) {
-        // set palette
-        { // Fixed Color Scale = 0 .. 31
-            GUIPal(0, 0, 0, 0);
-
-            outb(0x03C8, 1);
-            u4 i = 0;
-            do
-                GUIRGB(i + GUIRAdd, i + GUIGAdd, i + GUIBAdd);
-            while (++i != 32);
-        }
-
-        { // gray scale = 32 .. 63
-            outb(0x03C8, 32);
-            u4 i = 32;
-            // XXX values too large: 64..126
-            do
-                GUIRGB(2 * i, 2 * i, 2 * i);
-            while (++i != 64);
-        }
-
-        { // shadow = 96 .. 127
-            u4 i = 0;
-            outb(0x03C8, 96);
-            do {
-                u1 const r = (i + GUIRAdd) * 3 / 4;
-                u1 const g = (i + GUIGAdd) * 3 / 4;
-                u1 const b = (i + GUIBAdd) * 3 / 4;
-                GUIRGB(r, g, b);
-            } while (++i != 32);
-        }
-
-        { // 0, 10, 31
-            TRVal = GUITRAdd;
-            TGVal = GUITGAdd;
-            TBVal = GUITBAdd;
-            u2 const r = (TRVal + 1) / 8;
-            TRVali = r;
-            TRVal += r * 8;
-            u2 const g = (TGVal + 1) / 8;
-            TGVali = g;
-            TGVal += g * 8;
-            u2 const b = (TBVal + 1) / 8;
-            TBVali = b;
-            TBVal += b * 8;
-        }
-
-        GUIPal(64, TRVal, TGVal, TBVal);
-        DecPalVal();
-        GUIPal(65, TRVal, TGVal, TBVal);
-        DecPalVal();
-        GUIPal(66, TRVal, TGVal, TBVal);
-        DecPalVal();
-        GUIPal(67, TRVal, TGVal, TBVal);
-        DecPalVal();
-        GUIPal(68, TRVal, TGVal, TBVal);
-        DecPalVal();
-        GUIPal(69, TRVal, TGVal, TBVal);
-        DecPalVal();
-        GUIPal(70, TRVal, TGVal, TBVal);
-        DecPalVal();
-        GUIPal(71, TRVal, TGVal, TBVal);
-
-        GUIPal(72, 40, 0, 20);
-        GUIPal(73, 34, 0, 21);
-
-        GUIPal(80, 0, 10, 28);
-        GUIPal(81, 0, 10, 27);
-        GUIPal(82, 0, 10, 25);
-        GUIPal(83, 0, 9, 24);
-        GUIPal(84, 0, 8, 22);
-        GUIPal(85, 0, 7, 20);
-        GUIPal(86, 0, 6, 18);
-        GUIPal(87, 0, 5, 15);
-        GUIPal(88, 20, 0, 10);
-        GUIPal(89, 17, 0, 10);
-
-        { // Orange Scale
-            outb(0x03C8, 128);
-            u4 i = 0;
-            do {
-                ++i;
-                GUIRGB(63, i * 2, i);
-            } while (i != 20);
-        }
-
-        // Blue scale = 148 .. 167
-        TRVal = GUIWRAdd * 2;
-        TGVal = GUIWGAdd * 2;
-        TBVal = GUIWBAdd * 2;
-        TRVali = 4;
-        TGVali = 4;
-        TBVali = 4;
-
-        GUIPal(152, TRVal, TGVal, TBVal);
-        DecPalVal();
-        GUIPal(151, TRVal, TGVal, TBVal);
-        DecPalVal();
-        GUIPal(150, TRVal, TGVal, TBVal);
-        DecPalVal();
-        GUIPal(149, TRVal, TGVal, TBVal);
-        DecPalVal();
-        GUIPal(148, TRVal, TGVal, TBVal);
-
-        TRVal = GUIWRAdd * 2;
-        TGVal = GUIWGAdd * 2;
-        TBVal = GUIWBAdd * 2;
-        TRVali = 4;
-        TGVali = 4;
-        TBVali = 4;
-        DecPalVal();
-        DecPalVal();
-
-        GUIPal(157, TRVal, TGVal, TBVal);
-        DecPalVal();
-        GUIPal(156, TRVal, TGVal, TBVal);
-        DecPalVal();
-        GUIPal(155, TRVal, TGVal, TBVal);
-        DecPalVal();
-        GUIPal(154, TRVal, TGVal, TBVal);
-        DecPalVal();
-        GUIPal(153, TRVal, TGVal, TBVal);
-
-        TRVal = GUIWRAdd * 2;
-        TGVal = GUIWGAdd * 2;
-        TBVal = GUIWBAdd * 2;
-        TRVali = 4;
-        TGVali = 4;
-        TBVali = 4;
-        DecPalVal();
-        DecPalVal();
-        DecPalVal();
-        DecPalVal();
-
-        GUIPal(162, TRVal, TGVal, TBVal);
-        DecPalVal();
-        GUIPal(161, TRVal, TGVal, TBVal);
-        DecPalVal();
-        GUIPal(160, TRVal, TGVal, TBVal);
-        DecPalVal();
-        GUIPal(159, TRVal, TGVal, TBVal);
-        DecPalVal();
-        GUIPal(158, TRVal, TGVal, TBVal);
-
-        GUIPal(163, 40, 40, 0);
-        GUIPal(164, 30, 30, 0);
-        GUIPal(165, 50, 0, 0);
-        GUIPal(166, 35, 0, 0);
-        GUIPal(167, 0, 0, 0);
-
-        // Blue scale shadow
-        TRVal = GUIWRAdd;
-        TGVal = GUIWGAdd;
-        TBVal = GUIWBAdd;
-        TRVali = 2;
-        TGVali = 2;
-        TBVali = 2;
-
-        GUIPal(172, TRVal, TGVal, TBVal);
-        DecPalVal();
-        GUIPal(171, TRVal, TGVal, TBVal);
-        DecPalVal();
-        GUIPal(170, TRVal, TGVal, TBVal);
-        DecPalVal();
-        GUIPal(169, TRVal, TGVal, TBVal);
-        DecPalVal();
-        GUIPal(168, TRVal, TGVal, TBVal);
-
-        TRVal = GUIWRAdd;
-        TGVal = GUIWGAdd;
-        TBVal = GUIWBAdd;
-        TRVali = 2;
-        TGVali = 2;
-        TBVali = 2;
-        DecPalVal();
-        DecPalVal();
-
-        GUIPal(177, TRVal, TGVal, TBVal);
-        DecPalVal();
-        GUIPal(176, TRVal, TGVal, TBVal);
-        DecPalVal();
-        GUIPal(175, TRVal, TGVal, TBVal);
-        DecPalVal();
-        GUIPal(174, TRVal, TGVal, TBVal);
-        DecPalVal();
-        GUIPal(173, TRVal, TGVal, TBVal);
-
-        TRVal = GUIWRAdd;
-        TGVal = GUIWGAdd;
-        TBVal = GUIWBAdd;
-        TRVali = 2;
-        TGVali = 2;
-        TBVali = 2;
-        DecPalVal();
-        DecPalVal();
-        DecPalVal();
-        DecPalVal();
-
-        GUIPal(182, TRVal, TGVal, TBVal);
-        DecPalVal();
-        GUIPal(181, TRVal, TGVal, TBVal);
-        DecPalVal();
-        GUIPal(180, TRVal, TGVal, TBVal);
-        DecPalVal();
-        GUIPal(179, TRVal, TGVal, TBVal);
-        DecPalVal();
-        GUIPal(178, TRVal, TGVal, TBVal);
-
-        GUIPal(183, 20, 20, 0);
-        GUIPal(184, 15, 15, 0);
-        GUIPal(185, 25, 0, 0);
-        GUIPal(186, 17, 0, 0);
-        GUIPal(187, 0, 0, 0);
-
-        { // gray scale2 = 189 .. 220
-            outb(0x03C8, 189);
-            u4 i = 0;
-            do
-                GUIRGB(i * 3 / 2, i * 3 / 2, i / 2);
-            while (++i != 64); // XXX comment says till 220, but loop goes to 252
-        }
-
-        GUIPal(221, 0, 55, 0);
-        GUIPal(222, 0, 45, 0);
-        GUIPal(223, 0, 25, 0);
-
-        GUIPal(224, 40, 0, 20);
-        GUIPal(225, 32, 0, 15);
-
-        GUIPal(226, 20, 0, 10);
-        GUIPal(227, 16, 0, 7);
-
-        GUIPal(228, 45, 45, 50);
-        GUIPal(229, 40, 40, 45);
-        GUIPal(230, 35, 35, 40);
-        GUIPal(231, 30, 30, 35);
-
-        GUIPal(232, 35, 15, 15);
-
-        GUIPal(233, 50, 12, 60);
-        GUIPal(234, 30, 14, 60);
-
-        if (!GUIPalConv) {
-            GUIPalConv = true;
-            // Convert Image data to Gray Scale
-            // Create Palette Table
-            GUIconvpal();
-            // Convert Current Image in Buffer
-            u1* buf = vidbuffer;
-            u4 n = 288 * 240;
-            do
-                *buf = SubPalTable[*buf];
-            while (++buf, --n != 0);
-        }
-    } else
-#endif
-    {
-        GUISetPal16();
-    }
+    GUISetPal16();
 }
 
 void convertnum(char* dst, u4 val)
@@ -1534,18 +1129,11 @@ void StartGUI(void)
         blinit = 1;
 #endif
     GUILoadPos = 0;
-#ifdef __MSDOS__
-    if (TripBufAvail == 0)
-        Triplebufen = 0;
-#endif
     if (MMXSupport != 1 || newgfx16b == 0) {
         En2xSaI = 0;
         hqFilter = 0;
     }
     if (En2xSaI != 0) {
-#ifdef __MSDOS__
-        Triplebufen = 0;
-#endif
         hqFilter = 0;
         scanlines = 0;
         antienab = 0;
@@ -1561,9 +1149,6 @@ void StartGUI(void)
     GUIOn = 1;
     GUIOn2 = 1;
     NumCombo = GUIComboGameSpec != 0 ? NumComboLocl : NumComboGlob;
-#ifdef __MSDOS__
-    asm_call(ResetTripleBuf);
-#endif
 
     if (GUIwinposx[16] == 0) {
         GUIwinposx[16] = 3;
@@ -1706,11 +1291,6 @@ void StartGUI(void)
     }
     memset(spcBuffera, 0, 256 * 1024);
     GUIDeInit();
-#ifdef __MSDOS__
-    asm_call(DOSClearScreen);
-    if (cbitmode == 0)
-        dosmakepal();
-#endif
     t1cc = 1;
 
     GUISaveVars();
@@ -2114,11 +1694,7 @@ void DisplayMenu(void)
         GUICYLocPtr = MenuDat4;
     }
     if (GUIcmenupos == 5) {
-#ifdef __MSDOS__
-        GUIDrawMenuM(140, 16, 10, 2, GUINetPlayMenuData[0], 142, 145, 22, 39, 48); // 19+2*10
-#else
         GUIDrawMenuM(140, 16, 10, 1, GUINetPlayMenuData[0], 142, 145, 22, 29, 48); // 19+1*10
-#endif
         GUICYLocPtr = MenuDat5;
     }
     if (GUIcmenupos == 6) {

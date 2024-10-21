@@ -46,17 +46,14 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "zpath.h"
 
 #ifdef __WIN32__
-#define mkdir_p(path) mkdir(path)
-#else
-#define mkdir_p(path) mkdir(path, mmode)
-#endif
 
-#ifdef __MSDOS__
-char ZCfgFile[] = "zsnes.cfg";
-#elif defined(__WIN32__)
+#define mkdir_p(path) mkdir(path)
 char ZCfgFile[] = "zsnesw.cfg";
 #else
+
+#define mkdir_p(path) mkdir(path, mmode)
 char ZCfgFile[] = "zsnesl.cfg";
+
 #endif
 
 char *ZStartPath = 0, *ZCfgPath = 0, *ZSramPath = 0, *ZRomPath = 0;

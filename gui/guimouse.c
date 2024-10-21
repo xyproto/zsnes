@@ -50,10 +50,8 @@
 #include "guimouse.h"
 #include "guiwindp.h"
 
-#ifndef __MSDOS__
 #include "../video/ntsc.h"
 #include "../video/procvidc.h"
-#endif
 
 #ifdef __WIN32__
 #include "../win/winlink.h"
@@ -86,19 +84,7 @@ static void GUIProcVideo(void)
     guiprevideo();
     u1 const prevvid = cvidmode;
     cvidmode = GUIcurrentvideocursloc;
-#ifdef __MSDOS__
-    ExitFromGUI = 1;
-#endif
     initvideo();
-#ifdef __MSDOS__
-    if (videotroub == 1) {
-        videotroub = 0;
-        cvidmode = prevvid;
-        initvideo();
-        GUISetPal();
-        guipostvideofail();
-    } else
-#endif
     {
         GUISetPal();
         guipostvideo();
@@ -133,9 +119,7 @@ static void GUINTSCReset(void)
         NTSCWarp = 0;
     }
     GUICBHold = 0;
-#ifndef __MSDOS__
     NTSCFilterInit();
-#endif
 }
 
 static void GUINTSCPreset(void)
@@ -154,14 +138,11 @@ static void GUINTSCPreset(void)
         NTSCPresetVar = 3;
         break;
     }
-#ifndef __MSDOS__
     NTSCFilterInit();
-#endif
     NTSCPresetVar = 4;
     GUICBHold = 0;
 }
 
-#ifndef __MSDOS__
 static void GUIProcCustomVideo(void)
 {
     SetCustomXY();
@@ -178,21 +159,16 @@ static void GUIProcCustomVideo(void)
         Clear2xSaIBuffer();
     }
 }
-#endif
 
 void SwitchFullScreen(void)
 {
     Clear2xSaIBuffer();
-#ifndef __MSDOS__
     if (GUIWFVID[cvidmode] != 0) {
         cvidmode = PrevWinMode;
         initvideo();
     } else
-#endif
     {
-#ifndef __MSDOS__
         cvidmode = PrevFSMode;
-#endif
         initvideo();
     }
 }
@@ -263,17 +239,6 @@ static void GUIClickCButtonM(s4 const eax, s4 const edx, s4 const p1, s4 const p
     }
 }
 
-#ifdef __MSDOS__
-
-static void GUIClickCButtonID(s4 const eax, s4 const edx, s4 const p1, s4 const p2, u1* const p3)
-{
-    if (GUIClickArea(eax, edx, p1 + 1, p2 + 3, p1 + 6, p2 + 8)) {
-        *p3 ^= 1 SetDevice();
-    }
-}
-
-#endif
-
 static bool GUIClickCButton5(s4 const eax, s4 const edx, s4 const p1, s4 const p2, u1* const p3, u1 const p4)
 {
     if (GUIClickArea(eax, edx, p1 + 1, p2 + 3, p1 + 6, p2 + 8)) {
@@ -321,7 +286,6 @@ static void GUIClickCButtonI(s4 const eax, s4 const edx, s4 const p1, s4 const p
 {
     if (GUIClickArea(eax, edx, p1 + 1, p2 + 3, p1 + 6, p2 + 8)) {
         *p3 ^= 1;
-#ifndef __MSDOS__
         if (GUIBIFIL[cvidmode] != 0) {
 #ifdef __WIN32__
             initDirectDraw();
@@ -329,22 +293,9 @@ static void GUIClickCButtonI(s4 const eax, s4 const edx, s4 const p1, s4 const p
             initwinvideo();
 #endif
         }
-#endif
         Clear2xSaIBuffer();
     }
 }
-
-#ifdef __MSDOS__
-
-static void GUIClickCButtonT(s4 const eax, s4 const edx, s4 const p1, s4 const p2, u1* const p3, u1* const p4)
-{
-    if (GUIClickArea(eax, edx, p1 + 1, p2 + 3, p1 + 6, p2 + 8)) {
-        *p3 ^= 1;
-        *p4 = 0;
-    }
-}
-
-#endif
 
 static bool GUISlidebarPostImpl(s4 const eax, s4 const edx, u4 const p1, s4 const p2, s4 const p3, s4 const p4, u1 const p7, u4 const p8, u4* const p9, u4* const p10, u4 const* const p11, u4* const p12, u4 const p13, s4 const p14, s4 const p15, s4 const p16, s4 const p17, void (*const p23)(s4 eax, s4 edx)) // p1-p13: x1,y1,x2,y2,upjump,downjump,holdpos,scsize,view,cur,listsize, p14-p24: x1,y1,x2,y2,view,curs,num,.scru,.scrd,jumpto,sizeofscreen
 {
@@ -537,15 +488,6 @@ static void GUIPButtonHoleS(s4 const eax, s4 const edx, s4 const p1, s4 const p2
 {
     if (GUIClickArea(eax, edx, p1 + 1, p2 + 1, p1 + 7, p2 + 7)) {
         *p3 = p4;
-#ifdef __MSDOS__
-        asm_call(DOSClearScreen);
-        if (cvidmode == 2 /* Mode Q */ || cvidmode == 5 /* Mode X */) {
-            cbitmode = 1;
-            asm_call(initvideo2);
-            cbitmode = 0;
-            GUISetPal();
-        }
-#endif
     }
 }
 
@@ -630,10 +572,8 @@ static bool DGOptnsProcBox(s4 const eax, s4 const edx, s4 const p1, s4 const p2,
         u4 const ebx = guipresstest();
         if (ebx != 0x01 && ebx != 0x3B) {
             *p3 = ebx;
-#ifndef __MSDOS__
             if (keycontrolval != 0)
                 *keycontrolval = 1;
-#endif
         } else {
             *p3 = 0;
         }
@@ -712,9 +652,6 @@ static void DisplayGUIConfirmClick_skipscrol(s4 const eax, s4 const edx)
     GUIPHoldbutton(eax, edx, 186, 165, 228, 176, 1);
     GUIPButtonHoleLoad(eax, edx, 9, 163, &GUIloadfntype, 0);
     GUIPButtonHoleLoad(eax, edx, 9, 171, &GUIloadfntype, 1);
-#ifdef __MSDOS__
-    GUIPButtonHoleLoad(eax, edx, 9, 179, &GUIloadfntype, 2);
-#endif
     if (GUIClickCButton5(eax, edx, 144, 177, &ForceROMTiming, 1))
         return;
     if (GUIClickCButton5(eax, edx, 144, 187, &ForceROMTiming, 2))
@@ -892,9 +829,6 @@ static void DisplayGUIInputClick_skipscrol(s4 const eax, s4 const edx)
 
     GUIPHoldbutton(eax, edx, 123, 34, 153, 45, 14); // Buttons
     GUIPHoldbutton(eax, edx, 123, 50, 177, 61, 40);
-#ifdef __MSDOS__
-    GUIPHoldbutton(eax, edx, 123, 66, 183, 77, 15);
-#endif
 
     switch (cplayernum) {
     case 0:
@@ -913,27 +847,6 @@ static void DisplayGUIInputClick_skipscrol(s4 const eax, s4 const edx)
         GUIInputSetIndKey(pl5, &pl5contrl);
         break;
     }
-
-#ifdef __MSDOS__
-    switch (cplayernum) {
-    case 0:
-        GUIClickCButtonID(eax, edx, 5, 190, &pl1p209);
-        break;
-    case 1:
-        GUIClickCButtonID(eax, edx, 5, 190, &pl2p209);
-        break;
-    case 1:
-        GUIClickCButtonID(eax, edx, 5, 190, &pl3p209);
-        break;
-    case 1:
-        GUIClickCButtonID(eax, edx, 5, 190, &pl4p209);
-        break;
-    case 1:
-        GUIClickCButtonID(eax, edx, 5, 190, &pl5p209);
-        break;
-    }
-    GUIClickCButton(eax, edx, 105, 160, &SidewinderFix);
-#endif
 
     GUIClickCButton(eax, edx, 5, 160, &GameSpecificInput);
     GUIClickCButton(eax, edx, 5, 170, &AllowUDLR);
@@ -1003,27 +916,17 @@ static void DisplayGUIVideoClick_notmodestab(s4 const eax, s4 const edx)
     {
         Clear2xSaIBuffer();
 
-#ifdef __MSDOS__
-        if (smallscreenon != 1)
-#endif
         {
-#ifdef __MSDOS__
-            if (scanlines != 1)
-#endif
             {
-#ifndef __MSDOS__
                 // Bilinear
                 if (GUIBIFIL[cvidmode] != 0) {
                     if (GUIClickArea(eax, edx, 18 + 1, 35 + 3, 18 + 6, 35 + 8))
                         NTSCFilter = 0;
                     GUIClickCButtonI(eax, edx, 18, 35, &BilinearFilter);
                 } else
-#endif
                 {
                     // Interpolations
-#ifdef __MSDOS__
-                    if (GUIEAVID[cvidmode] != 0 || GUII2VID[cvidmode] != 0)
-#elif defined __WIN32__
+#ifdef __WIN32__
                     if (GUIDSIZE[cvidmode] != 0)
 #else
                     if (GUII2VID[cvidmode] != 0)
@@ -1050,17 +953,11 @@ static void DisplayGUIVideoClick_notmodestab(s4 const eax, s4 const edx)
                     if (GUIClickArea(eax, edx, 128 + 1, 35 + 3, 128 + 6, 35 + 8))
                         BilinearFilter = 0;
 #endif
-#ifndef __MSDOS__
                     GUIClickCButtonN(eax, edx, 128, 35, &NTSCFilter, NTSCFilterInit);
-#endif
                 }
 
                 // Kreed 2x filters
-#ifdef __MSDOS__
-                if (GUI2xVID[cvidmode] != 0)
-#else
                 if (GUIDSIZE[cvidmode] != 0)
-#endif
                 {
                     if (GUIClickArea(eax, edx, 18 + 1, 45 + 3, 18 + 6, 45 + 8)) {
                         hqFilter = 0;
@@ -1086,17 +983,6 @@ static void DisplayGUIVideoClick_notmodestab(s4 const eax, s4 const edx)
                 }
 
                 u1 const bl = cvidmode; // Hq*x filters
-#ifdef __MSDOS__
-                if (GUIHQ2X[bl] != 0) {
-                    if (GUIClickArea(eax, edx, 128 + 1, 55 + 3, 128 + 6, 55 + 8)) {
-                        En2xSaI = 0;
-                        scanlines = 0;
-                        antienab = 0;
-                        NTSCFilter = 0;
-                    }
-                    GUIClickCButton(eax, edx, 128, 55, &hqFilter);
-                }
-#else
                 if (GUIHQ4X[bl] != 0) {
                     GUIPButtonHole(eax, edx, 188, 68, &hqFilterlevel, 4);
                     goto radiobuttonhq3x;
@@ -1117,7 +1003,6 @@ static void DisplayGUIVideoClick_notmodestab(s4 const eax, s4 const edx)
                     }
                     GUIClickCButton(eax, edx, 128, 55, &hqFilter);
                 }
-#endif
             }
 
             GUIClickCButton(eax, edx, 18, 115, &GrayscaleMode); // Grayscale
@@ -1125,13 +1010,6 @@ static void DisplayGUIVideoClick_notmodestab(s4 const eax, s4 const edx)
             // Hires Mode7
             if (GUIM7VID[cvidmode] != 0)
                 GUIClickCButton5(eax, edx, 128, 115, &Mode7HiRes16b, 1);
-
-#ifdef __MSDOS__
-            // Triple buffs/vsyncs
-            if (GUITBVID[cvidmode] != 0)
-                GUIClickCButtonT(eax, edx, 128, 145, &Triplebufen, &vsyncon);
-            GUIClickCButtonT(eax, edx, 18, 145, &vsyncon, &Triplebufen);
-#endif
 
 #ifdef __WIN32__
             // Triple buffs/vsyncs
@@ -1150,7 +1028,6 @@ static void DisplayGUIVideoClick_notmodestab(s4 const eax, s4 const edx)
             if (GUIKEEP43[cvidmode] != 0)
                 GUIClickCButtonK(eax, edx, 18, 175, &Keep4_3Ratio, initwinvideo);
 
-#ifndef __MSDOS__
             // GL Scanlines
             if (GUIBIFIL[cvidmode] != 0) {
                 // Update mouse location
@@ -1166,14 +1043,9 @@ static void DisplayGUIVideoClick_notmodestab(s4 const eax, s4 const edx)
                     GUIHoldXlimR = eax + 100;
                 }
             } else
-#endif
             {
                 // Scanlines
-#ifdef __MSDOS__
-                if (GUISLVID[cvidmode] != 0)
-#else
                 if (GUIDSIZE[cvidmode] != 0)
-#endif
                 {
                     if (GUIClickArea(eax, edx, 168 + 1, 87 + 3, 168 + 38, 87 + 8)) {
                         En2xSaI = 0;
@@ -1184,15 +1056,8 @@ static void DisplayGUIVideoClick_notmodestab(s4 const eax, s4 const edx)
                     GUIPButtonHoleS(eax, edx, 168, 87, &scanlines, 1);
                 }
 
-#ifdef __MSDOS__
-                if (ScreenScale != 1)
-#endif
                 {
-#ifdef __MSDOS__
-                    if (GUIHSVID[cvidmode] != 0)
-#else
                     if (GUIDSIZE[cvidmode] != 0)
-#endif
                     {
                         if (GUIClickArea(eax, edx, 68 + 1, 87 + 3, 68 + 38, 87 + 8)) {
                             En2xSaI = 0;
@@ -1269,12 +1134,10 @@ static void DisplayGUIVideoClick_notmodestab(s4 const eax, s4 const edx)
         nomovebar:;
         }
 
-#ifndef __MSDOS__
         if (NTSCRef != 0) {
             NTSCPresetVar = 4;
             NTSCFilterInit();
         }
-#endif
     }
 
     if (GUIVntscTab[0] == 2) // NTSC Tab
@@ -1332,12 +1195,10 @@ static void DisplayGUIVideoClick_notmodestab(s4 const eax, s4 const edx)
         nomovebar2:;
         }
 
-#ifndef __MSDOS__
         if (NTSCRef != 0) {
             NTSCPresetVar = 4;
             NTSCFilterInit();
         }
-#endif
     }
 }
 
@@ -1348,12 +1209,10 @@ static void DisplayGUIVideoClick_skipscrol(s4 const eax, s4 const edx)
 
     GUIPHoldbutton(eax, edx, 130, 31, 166, 41, 4);
 
-#ifndef __MSDOS__
     GUIPHoldbutton(eax, edx, 182, 116, 218, 126, 12);
 
     GUITextBoxInputNach(eax, edx, 130, 130, 178, 140, 0, 5, SetCustomXY);
     GUITextBoxInputNach(eax, edx, 191, 130, 239, 140, 1, 5, SetCustomXY);
-#endif
 
     DisplayGUIVideoClick_notmodestab(eax, edx);
 }
@@ -1398,9 +1257,6 @@ static void DisplayGUISoundClick(void)
     GUIClickCButton(eax, edx, 11, 41, &StereoSound);
     GUIClickCButton(eax, edx, 11, 51, &RevStereo);
     GUIClickCButton(eax, edx, 11, 61, &Surround);
-#ifdef __MSDOS__
-    GUIClickCButton(eax, edx, 11, 71, &Force8b);
-#endif
 #ifdef __WIN32__
     GUIClickCButton(eax, edx, 11, 71, &PrimaryBuffer);
 #endif
@@ -1504,9 +1360,7 @@ static void DisplayGameOptnsClick(s4 const eax, s4 const edx)
     DGOptnsProcBox(eax, edx, 78, 100, &KeyUsePlayer1234, 0);
     DGOptnsProcBox(eax, edx, 78, 110, &KeyResetAll, 0);
     DGOptnsProcBox(eax, edx, 78, 120, &KeyDisplayFPS, 0);
-#ifndef __MSDOS__
     DGOptnsProcBox(eax, edx, 78, 130, &KeyDisplayBatt, 0);
-#endif
 
     DGOptnsProcBox(eax, edx, 191, 100, &KeyNewGfxSwt, 0);
     DGOptnsProcBox(eax, edx, 191, 110, &KeyWinDisble, 0);
@@ -1610,12 +1464,10 @@ static void DisplayGUIOptnsClick(void)
 
 static void DisplayGUIAboutClick(s4 const eax, s4 const edx)
 {
-#ifndef __MSDOS__
     if (EEgg != 1) {
         GUIPHoldbutton(eax, edx, 90, 22, 175, 32, 65);
         GUIPHoldbutton(eax, edx, 90, 33, 175, 43, 66);
     }
-#endif
 }
 
 static void DisplayGUIComboClick_skipscrol(s4 const eax, s4 const edx)
@@ -1830,11 +1682,7 @@ static void DisplayGUIChipClick(s4 const eax, s4 const edx)
     GUIClickCButton(eax, edx, 109, 53, &nssdip6);
 }
 
-#ifdef __MSDOS__
-#define PATH_LENGTH 256
-#else
 #define PATH_LENGTH 1024
-#endif
 
 static void DisplayGUIPathsClick(s4 const eax, s4 const edx)
 {
@@ -1989,9 +1837,7 @@ static void GUIWinClicked(u4 const i, u4 const id)
         --GUIwinptr;
         init_save_paths();
         SetMovieForcedLength();
-#ifndef __MSDOS__
         SetCustomXY();
-#endif
     } else if (ry < 10) {
         GUIHold = 1;
         GUIHoldxm = (short)GUIwinposx[id];
@@ -2150,13 +1996,11 @@ static void ProcessMouseButtons(void)
                     }
                 }
 
-#ifndef __MSDOS__
                 GUIpclicked = 1;
                 GUIHold = 255;
                 GUIHoldYlim = y;
                 GUIHoldXlimL = x;
                 MouseWindow();
-#endif
             } else if (GUIcmenupos == 0) {
                 GUIpclicked = 1;
                 u4 i = GUIwinptr;
@@ -2321,7 +2165,6 @@ static void ProcessMouseButtons(void)
     }
 #endif
 
-#ifndef __MSDOS__
     if (GUIcwinpress == 2) {
         GUIcwinpress = 0;
         if (3 <= y && y <= 13 && 44 <= x && x <= 253) {
@@ -2339,7 +2182,6 @@ static void ProcessMouseButtons(void)
             return;
         }
     }
-#endif
 
     // ButtonProcess
     switch (GUICBHold) {
@@ -2355,11 +2197,9 @@ static void ProcessMouseButtons(void)
     case 4:
         GUIProcVideo();
         return; // set video mode
-#ifndef __MSDOS__
     case 12:
         GUIProcCustomVideo();
         return; // set custom video mode
-#endif
     case 37:
     case 38:
     case 39:
@@ -2520,14 +2360,12 @@ static void ProcessMouseButtons(void)
         AddCSCheatCode();
         break;
 
-#ifndef __MSDOS__
     case 65:
         ZsnesPage();
         break;
     case 66:
         DocsPage();
         break;
-#endif
     }
     GUICBHold = 0;
 }
@@ -2543,9 +2381,7 @@ void ProcessMouse(void)
                 u4 const idx = ntscWhVar;
                 u1 const cur = ntscCurVar;
                 if (ntscLastVar[idx] != cur) {
-#ifndef __MSDOS__
                     NTSCFilterInit();
-#endif
                     ntscLastVar[idx] = cur;
                 }
             }

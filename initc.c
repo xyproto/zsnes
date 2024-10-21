@@ -1888,13 +1888,6 @@ void SetupROM(void)
     CheckROMType();
     SetIRQVectors();
 
-#ifdef __MSDOS__
-    if (!cbitmode) // 8-bit mode uses a palette
-    {
-        dosmakepal();
-    }
-#endif
-
     /* get timing (pal/ntsc)
   ForceROMTiming is from the GUI.
   ForcePal is from Command line, we have a static var

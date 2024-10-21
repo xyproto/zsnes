@@ -28,10 +28,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #endif
 #include "zpath.h"
 
-#ifdef __MSDOS__
-#include <dpmi.h>
-#endif // __MSDOS__
-
 #include "c_vcache.h"
 #include "cpu/c_execute.h"
 #include "cpu/memory.h"
@@ -114,12 +110,6 @@ unsigned char* findoppage();
 void startdebugger(void)
 {
     static int firsttime = 1;
-
-#ifdef __MSDOS__
-    __dpmi_regs regs;
-    regs.x.ax = 0x0003;
-    __dpmi_int(0x10, &regs);
-#endif // __MSDOS__
 
     curblank = 0x40;
     debuggeron = 1;

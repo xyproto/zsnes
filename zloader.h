@@ -23,15 +23,10 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define ZLOADER_H
 
 struct backup_cmdline_vars {
-#ifdef __MSDOS__
-    unsigned char _Palette0;
-#endif
 #ifdef __WIN32__
     unsigned char _KitchenSync, _KitchenSyncPAL, _ForceRefreshRate, _SetRefreshRate;
 #endif
-#ifndef __MSDOS__
     unsigned short _joy_sensitivity;
-#endif
     unsigned char _guioff;
     unsigned char _per2exec;
     unsigned char _HacksDisable;

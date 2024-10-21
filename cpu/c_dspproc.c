@@ -15,10 +15,6 @@
 #include "regs.h"
 #include "spc700.h"
 
-#ifdef __MSDOS__
-#include "../dos/c_sound.h"
-#endif
-
 static eop* paramhack[4];
 static u4 SBToSPC = 22050;
 
@@ -323,11 +319,9 @@ void AdjustFrequency(void)
 
     case 1: // Gaussian
         // Copy from Gaussian to DSPInterP
-#ifndef __MSDOS__
         // this ifndef is needed the workaround the "snow" in the DOS port
         // used only for Gaussian though
         if (ah == 0)
-#endif
         {
             u2* ebx = DSPInterP + 512;
             u2* edx = DSPInterP + 511;
@@ -340,7 +334,6 @@ void AdjustFrequency(void)
             } while (--ecx != 0);
             interpolate = DSPInterpolate_4;
         }
-#ifndef __MSDOS__
         else { // Gaussian MMX
             u2 const* ebx = Gaussian;
             u2 const* edx = Gaussian + 255;
@@ -354,7 +347,6 @@ void AdjustFrequency(void)
             } while (++ebx, --edx, --ecx != 0);
             interpolate = DSPInterpolate_4_mmx;
         }
-#endif
         break;
 
     case 2: // Cubic spline
@@ -391,21 +383,8 @@ void AdjustFrequency(void)
     }
     DSPInterpolate = interpolate;
 
-#ifdef __MSDOS__
-    SB_quality_limiter();
-#endif
-
-#ifdef __MSDOS__
-    static u4 const SBToSPCSpeeds[] = { 8000, 10989, 22222, 43478, 15874, 32258, 48000 };
-    static u4 const SBToSPCSpeeds2[] = { 8192, 11289, 22579, 45158, 16384, 32768, 48000 };
-#else
     static u4 const SBToSPCSpeeds[] = { 8000, 11025, 22050, 44100, 16000, 32000, 48000 };
-#endif
     u4 const eax =
-#ifdef __MSDOS__
-        // code for supporting vibra cards (coded by Peter Santing)
-        vibracard == 1 || SBHDMA != 0 ? SBToSPCSpeeds2[SoundQuality] : // Vibra card or 16 bit
-#endif
         SBToSPCSpeeds[SoundQuality];
     SBToSPC = eax;
     dspPAdj = ((u8)32000 << 20) / eax;
@@ -1456,10 +1435,6 @@ void InitSPC(void)
     opcjmptab[0xFD] = OpFD;
     opcjmptab[0xFE] = OpFE;
     opcjmptab[0xFF] = OpFF;
-
-#ifdef __MSDOS__
-    SB_alloc_dma();
-#endif
 }
 
 void LPFstereo(s4* esi)

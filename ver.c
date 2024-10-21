@@ -25,9 +25,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 char* VERSION_STR;
 char* VERSION_DATE = __DATE__;
 
-#ifdef __MSDOS__
-char* VERSION_PORT = "DOS";
-#elif defined(__WIN32__)
+#ifdef __WIN32__
 char* VERSION_PORT = "WIN";
 #elif defined(__MACOSX__)
 char* VERSION_PORT = "SDL - Mac OS X";

@@ -11,9 +11,6 @@ void guimencodermsg(void);
 void guilamemsg(void);
 void guiprevideo(void);
 void guipostvideo(void);
-#ifdef __MSDOS__
-void guipostvideofail(void);
-#endif
 void CheckMenuItemHelp(u4 id);
 void GUITryMenuItem(void);
 void GUIProcStates(void);
