@@ -96,10 +96,6 @@ static void reexecuteb2(void)
     curcyc = edx >> 8;
     xpc = esi - initaddrl; // subtract program counter by address
 
-#ifdef __MSDOS__
-    asm_call(ResetTripleBuf);
-#endif
-
     if (pressed[KeySaveState] & 1 || pressed[KeyLoadState] & 1) {
         NoSoundReinit = 1;
         csounddisable = 1;
@@ -213,11 +209,7 @@ void continueprognokeys(void)
 // Incorrect
 void reexecuteb(void)
 {
-#ifndef __MSDOS__
     reexecuteb2();
-#else
-    reexecute();
-#endif
 }
 
 void endprog(void)
@@ -229,9 +221,6 @@ void endprog(void)
 
 void interror(void)
 {
-#ifdef __MSDOS__
-    sti();
-#endif
     deinitvideo();
     PrintStr("Cannot process interrupt handler!\r\n");
     DosExit();

@@ -45,12 +45,6 @@
 #include "procvid.h"
 #include "procvidc.h"
 
-#ifdef __MSDOS__
-#include "../dos/c_dosintrf.h"
-#include "../dos/c_sound.h"
-#include "makevid.h"
-#endif
-
 #ifdef __UNIXSDL__
 #include "../linux/sdllink.h"
 #endif
@@ -174,7 +168,6 @@ void processmouse1(void)
 {
     s2 dx;
     s2 dy;
-#ifndef __MSDOS__
     if (MouseCount > 1) {
         mouse = 0;
         MultiMouseProcess();
@@ -184,9 +177,7 @@ void processmouse1(void)
         mousebuttons = buttons;
         dx = MouseMoveX[0];
         dy = MouseMoveY[0];
-    } else
-#endif
-    {
+    } else {
         u4 buttons = Get_MouseData() & 0xFFFF;
         if (mouse1lh == 1)
             buttons = SwapMouseButtons(buttons);
@@ -208,14 +199,11 @@ void processmouse2(void)
     static u1 ssautoswb;
 
     u4 buttons;
-#ifndef __MSDOS__
     if (MouseCount > 1) {
         mouse = 1;
         MultiMouseProcess();
         buttons = MouseButtons[1];
-    } else
-#endif
-    {
+    } else {
         buttons = Get_MouseData() & 0xFFFF;
     }
     if (mouse2lh == 1)
@@ -233,15 +221,12 @@ void processmouse2(void)
         }
     }
 
-#ifndef __MSDOS__
     s2 dx;
     s2 dy;
     if (MouseCount > 1) {
         dx = MouseMoveX[1];
         dy = MouseMoveY[1];
-    } else
-#endif
-    {
+    } else {
         u4 const eax = Get_MousePositionDisplacement();
         dy = eax >> 16;
         dx = eax;
@@ -274,31 +259,6 @@ void processmouse2(void)
         mouseydir = dy < 0 ? dy = -dy, 1 : 0;
     mouseypos = dy;
 }
-
-#ifdef __MSDOS__
-void outputhex(u1* buf, u1 const val)
-{
-    for (u4 i = 0; i != 2; buf += 8, ++i) {
-        u4 const digit = val >> (i * 4) & 0x0F;
-        u1 const* src = FontData[digit + 1];
-        u1* dst = buf;
-        u4 y = 8;
-        do {
-            u1 ah = *src++;
-            u4 x = 8;
-            do {
-                if (ah & 0x80) {
-                    dst[0] = 128;
-                    dst[289] = 192;
-                }
-                ah <<= 1;
-                ++dst;
-            } while (--x != 0);
-            dst += 280;
-        } while (--y != 0);
-    }
-}
-#endif
 
 static void OutText16bnt(u2* dst, u1 const* src, u4 const edx)
 {
@@ -363,51 +323,11 @@ void outputhex16(u2* const buf, u1 const val)
     OutputText16b(buf + 8, FontData[(val & 0x0F) + 1], edx);
 }
 
-#ifdef __MSDOS__
-void outputchar(u1* buf, u1 const glyph)
-{
-    u1 const* src = FontData[glyph];
-    u4 y = 8;
-    do {
-        u1 ah = *src++;
-        u4 x = 8;
-        do {
-            if (ah & 0x80) {
-                buf[0] = textcolor;
-                buf[289] = 192;
-            }
-            ah <<= 1;
-            ++buf;
-        } while (--x != 0);
-        buf += 280;
-    } while (--y != 0);
-}
-#endif
-
 void outputchar16b(u2* const buf, u1 const glyph)
 {
     u4 const edx = (u2)vesa2_clbitng >> 1 << 16 | (u2)vesa2_clbitng;
     OutputText16b(buf, FontData[glyph], edx);
 }
-
-#ifdef __MSDOS__
-static void outputchar5x5(u1* buf, u1 const glyph)
-{
-    u1 const* src = GUIFontData[glyph];
-    u4 y = 5;
-    do {
-        u1 ah = *src++;
-        u4 x = 5;
-        do {
-            if (ah & 0x80)
-                *buf = textcolor;
-            ah <<= 1;
-            ++buf;
-        } while (--x != 0);
-        buf += 283;
-    } while (--y != 0);
-}
-#endif
 
 static void outputchar16b5x5(u2* buf, u1 const glyph)
 {
@@ -431,16 +351,6 @@ static void outputchar16b5x5(u2* buf, u1 const glyph)
 
 void OutputGraphicString(u1* buf, char const* text)
 {
-#ifdef __MSDOS__
-    if (cbitmode != 1) {
-        for (;; buf += 8) {
-            u1 const al = *text++;
-            if (al == '\0')
-                break;
-            outputchar(buf, ASCII2Font[al]);
-        }
-    } else
-#endif
     { // XXX probably never reached, callers seem to test cbitmode beforehand
         u2* const buf16 = (u2*)vidbuffer + (buf - vidbuffer);
         switch (textcolor) {
@@ -472,38 +382,6 @@ void OutputGraphicString16b(u2* buf, char const* text)
     }
 }
 
-#ifdef __MSDOS__
-void OutputGraphicString5x5(u1* buf, char const* text)
-{
-    if (cbitmode != 1) {
-        for (;; buf += 6) {
-            u1 const al = *text++;
-            if (al == '\0')
-                break;
-            outputchar5x5(buf, ASCII2Font[al]);
-        }
-    } else { // XXX probably never reached, callers seem to test cbitmode beforehand
-        u2* const buf16 = (u2*)vidbuffer + (buf - vidbuffer);
-        switch (textcolor) {
-        case 128:
-            textcolor16b = 0xFFFF;
-            break;
-        case 129:
-            textcolor16b = 0x0000;
-            break;
-        case 130:
-            textcolor16b = (20 << vesa2_rpos) + (20 << vesa2_gpos) + (20 << vesa2_bpos);
-            break;
-        // Color #131, Red
-        case 131:
-            textcolor16b = (22 << vesa2_rpos) + (5 << vesa2_gpos) + (5 << vesa2_bpos);
-            break;
-        }
-        OutputGraphicString16b5x5(buf16, text);
-    }
-}
-#endif
-
 void OutputGraphicString16b5x5(u2* buf, char const* text)
 {
     for (;; buf += 6) {
@@ -514,31 +392,12 @@ void OutputGraphicString16b5x5(u2* buf, char const* text)
     }
 }
 
-#ifdef __MSDOS__
-void drawhline(u1* buf, u4 n, u1 const colour)
-{
-    do
-        *buf++ = colour;
-    while (--n != 0);
-}
-#endif
-
 void drawhline16b(u2* buf, u4 n, u2 const colour)
 {
     do
         *buf++ = colour;
     while (--n != 0);
 }
-
-#ifdef __MSDOS__
-void drawvline(u1* buf, u4 n, u1 const colour)
-{
-    do {
-        *buf = colour;
-        buf += 288;
-    } while (--n != 0);
-}
-#endif
 
 void drawvline16b(u2* buf, u4 n, u2 const colour)
 {
@@ -602,23 +461,6 @@ static void GetPicture(void)
     }
 }
 
-#ifdef __MSDOS__
-// draws a 10x10 filled box according to position x
-static void drawfillboxsc(u4 const x)
-{
-    if (zst_exists() != 1)
-        return;
-
-    u1* buf = vidbuffer + 76 + 104 * 288 + 11 * x;
-    u1 const colour = current_zst == newest_zst ? 208 : 176;
-    u4 n = 10;
-    do {
-        drawhline(buf, 10, colour);
-        buf += 288;
-    } while (--n != 0);
-}
-#endif
-
 // draws a 10x10 filled box according to position x
 static void drawfillboxsc16b(u4 const x)
 {
@@ -633,18 +475,6 @@ static void drawfillboxsc16b(u4 const x)
         buf += 288;
     } while (--n != 0);
 }
-
-#ifdef __MSDOS__
-// draws a box according to position x and color colour
-static void drawbox(u1 const x, u1 const colour)
-{
-    u1* const buf = vidbuffer + 75 + 103 * 288 + 11 * x;
-    drawhline(buf, 12, colour);
-    drawvline(buf, 12, colour);
-    drawvline(buf + 11, 12, colour);
-    drawhline(buf + 11 * 288, 12, colour);
-}
-#endif
 
 // draws a box according to position x and color colour
 static void drawbox16b(u1 const x, u2 const colour)
@@ -711,7 +541,6 @@ static u4 testpressed(u4* ebx)
         }
     }
 
-#ifndef __MSDOS__
 #ifdef __UNIXSDL__
     if (pressed[92] & 1)
 #else
@@ -766,7 +595,6 @@ static u4 testpressed(u4* ebx)
 #endif
         goto out;
     }
-#endif
     res = 0;
 out:
     current_zst = ten + one;
@@ -796,135 +624,7 @@ static void saveselect(void)
     StopSound();
     if (soundon != 0) {
         csounddisable = 1;
-#ifdef __MSDOS__
-        SB_blank();
-#endif
     }
-#ifdef __MSDOS__
-    if (cbitmode != 1) {
-    updatescreen8b:
-        saveselectpal();
-        { // draw a small blue box with a white border
-            u1* esi = vidbuffer + 70 + 70 * 288;
-            u1 al = 80;
-            do {
-                u4 ecx = 150;
-                do
-                    *esi++ = 144;
-                while (--ecx != 0);
-                esi += 288 - 150;
-            } while (--al != 0);
-        }
-
-        { // draw filled boxes for existing files
-            DetermineNewest();
-            u4 const eax = current_zst;
-            slotlevelnum[0] = '0' + eax / 10;
-            for (u4 i = 0; i != 10; ++i) {
-                current_zst = current_zst / 10 * 10 + i;
-                drawfillboxsc(i);
-            }
-            current_zst = eax;
-        }
-
-        OutputGraphicString(vidbuffer + 75 + 73 * 288, stringa);
-        OutputGraphicString(vidbuffer + 75 + 83 * 288, stringb);
-        OutputGraphicString(vidbuffer + 75 + 93 * 288, stringb2);
-        OutputGraphicString(vidbuffer + 171 + 93 * 288, slotlevelnum);
-        OutputGraphicString(vidbuffer + 75 + 118 * 288, stringc);
-        OutputGraphicString(vidbuffer + 75 + 128 * 288, stringd);
-        OutputGraphicString(vidbuffer + 75 + 138 * 288, stringe);
-        {
-            u1 const al = 128;
-            drawhline(vidbuffer + 70 + 70 * 288, 150, al);
-            drawvline(vidbuffer + 70 + 70 * 288, 80, al);
-            drawhline(vidbuffer + 70 + 149 * 288, 150, al);
-            drawvline(vidbuffer + 219 + 70 * 288, 80, al);
-            drawhline(vidbuffer + 75 + 103 * 288, 111, al);
-            drawhline(vidbuffer + 75 + 114 * 288, 111, al);
-            u1* esi = vidbuffer + 75 + 104 * 288;
-            u1 bl = 11;
-            do {
-                drawvline(esi, 10, al);
-                esi += 11;
-            } while (--bl != 0);
-        }
-        {
-            u1* esi = vidbuffer + 78 + 106 * 288;
-            u4 al = 1;
-            outputchar(esi, al);
-            u4 bl = 9;
-            do {
-                esi += 11;
-                outputchar(esi, ++al);
-            } while (--bl != 0);
-        }
-        curblank = 0;
-
-        {
-            u4 ebx = 0;
-            drawbox(ebx, 160);
-            copyvid();
-            // wait until esc/enter is pressed
-            for (;;) {
-                drawbox(ebx, 128);
-                delay(2500);
-                if (testpressed(&ebx))
-                    goto updatescreen8b;
-                if (pressed[1] & 1)
-                    goto esc;
-                if (pressed[28] & 1)
-                    goto enter;
-                delay(2500);
-                if (testpressed(&ebx))
-                    goto updatescreen8b;
-                if (pressed[1] & 1)
-                    goto esc;
-                if (pressed[28] & 1)
-                    goto enter;
-                copyvid();
-                delay(2500);
-                if (testpressed(&ebx))
-                    goto updatescreen8b;
-                if (pressed[1] & 1)
-                    goto esc;
-                if (pressed[28] & 1)
-                    goto enter;
-                delay(2500);
-                if (testpressed(&ebx))
-                    goto updatescreen8b;
-                if (pressed[1] & 1)
-                    goto esc;
-                if (pressed[28] & 1)
-                    goto enter;
-                drawbox(ebx, 160);
-                copyvid();
-            }
-        enter:;
-            pressed[28] = 2;
-        esc:;
-        }
-
-        {
-            u1* eax = pressed;
-            u4 ecx = 256;
-            do {
-                if (*eax == 1)
-                    *eax = 2;
-                ++eax;
-            } while (--ecx != 0);
-        }
-        pressed[1] = 0;
-
-        t1cc = 0;
-        csounddisable = 0;
-        StartSound();
-
-        dosmakepal();
-        f3menuen = 0;
-        ForceNonTransp = 0;
-    } else
-#endif
     {
         // Start 16-bit stuff here
         if (newengen != 0)
@@ -1080,9 +780,6 @@ static void saveselect(void)
                 *eax = 2;
             ++eax;
         } while (--ecx != 0);
-#ifdef __MSDOS__
-        pressed[1] = 0;
-#endif
         t1cc = 0;
         csounddisable = 0;
         StartSound();
@@ -1126,135 +823,6 @@ void dovegrest(void)
     memcpy(cgram, cgramback, sizeof(cgram));
 }
 
-#ifdef __MSDOS__
-static inline void SetPal(u1 const i, u1 const r, u1 const g, u1 const b)
-{
-    outb(0x03C8, i);
-    outb(0x03C9, r);
-    outb(0x03C9, g);
-    outb(0x03C9, b);
-}
-
-static void makepalb(void)
-{
-    u2 const* src = cgram;
-    u2* dst = prevpal;
-    u1 const bright = maxbr;
-    u1 const gamma = gammalevel;
-    u4 i = 0;
-    do {
-        u2 const c = *src++;
-        *dst++ = c;
-        u4 r = (c & 0x1F) * bright / 15 * 2 + gamma;
-        if (r > 63)
-            r = 63;
-        u4 g = (c >> 5 & 0x1F) * bright / 15 * 2 + gamma;
-        if (g > 63)
-            g = 63;
-        u4 b = (c >> 10 & 0x1F) * bright / 15 * 2 + gamma;
-        if (b > 63)
-            b = 63;
-        SetPal(i, r, g, b);
-    } while (++i != 256);
-
-    prevbright = maxbr;
-    cgram[0] = tempco0;
-
-    if (MessageOn != 0) {
-        SetPal(128, 63, 63, 63);
-        SetPal(128 + 64, 0, 0, 0);
-    }
-
-    if (V8Mode == 1)
-        dovegrest();
-}
-
-void dosmakepal(void)
-{
-    if (V8Mode == 1)
-        doveg();
-
-    tempco0 = cgram[0];
-    if ((scaddtype & 0xA0) == 0x20) {
-        u2 const c = cgram[0];
-        u2 r = (c & 0x1F) + coladdr;
-        if (r > 0x1F)
-            r = 0x1F;
-        u2 g = (c >> 5 & 0x1F) + coladdg;
-        if (g > 0x1F)
-            g = 0x1F;
-        u2 b = (c >> 10 & 0x1F) + coladdb;
-        if (b > 0x1F)
-            b = 0x1F;
-        cgram[0] = b << 10 | g << 5 | r;
-    }
-    if (Palette0 != 0)
-        cgram[0] = 0;
-    makepalb();
-}
-
-// Sets up the palette
-static void doschangepal(void)
-{
-    if (V8Mode == 1)
-        doveg();
-
-    tempco0 = cgram[0];
-
-    if ((scaddtype & 0xA0) == 0x20) {
-        u2 const c = cgram[0];
-        u2 r = (c & 0x1F) + coladdr;
-        if (r > 0x1F)
-            r = 0x1F;
-        u2 g = (c >> 5 & 0x1F) + coladdg;
-        if (g > 0x1F)
-            g = 0x1F;
-        u2 b = (c >> 10 & 0x1F) + coladdb;
-        if (b > 0x1F)
-            b = 0x1F;
-        cgram[0] = b << 10 | g << 5 | r;
-    }
-
-    if (Palette0 != 0)
-        cgram[0] = 0;
-
-    // check if brightness differs
-    if (prevbright != maxbr) {
-        makepalb();
-    } else {
-        // check for duplicate palette (Compare prevpal with cgram)
-        u2* dst = prevpal;
-        u2 const* src = cgram;
-        u1 const bright = maxbr;
-        u1 const gamma = gammalevel;
-        u4 i = 0;
-        do {
-            u2 const c = *src++;
-            if (*dst == c)
-                continue;
-            *dst = c;
-            u2 r = (c & 0x1F) * bright / 15 * 2 + gamma;
-            if (r > 63)
-                r = 63;
-            u2 g = (c >> 5 & 0x1F) * bright / 15 * 2 + gamma;
-            if (g > 63)
-                g = 63;
-            u2 b = (c >> 10 & 0x1F) * bright / 15 * 2 + gamma;
-            if (b > 63)
-                b = 63;
-            SetPal(i, r, g, b);
-        } while (++dst, ++i != 256);
-
-        cgram[0] = tempco0;
-
-        if (MessageOn != 0)
-            SetPal(128, 63, 63, 63);
-        if (V8Mode == 1)
-            dovegrest();
-    }
-}
-#endif
-
 static void showfps(void)
 {
     u4 limit = romispal != 0 ? 50 : 60;
@@ -1267,15 +835,6 @@ static void showfps(void)
     if (SloMo != 0)
         limit /= SloMo + 1;
 
-#ifdef __MSDOS__
-    if (cbitmode != 1) {
-        displayfpspal();
-        u4 const fps = lastfps;
-        outputhex(vidbuffer + 208 * 288 + 32, fps / 10 << 4 | fps % 10);
-        outputchar(vidbuffer + 208 * 288 + 48, 0x29);
-        outputhex(vidbuffer + 208 * 288 + 56, limit / 10 << 4 | limit % 10);
-    } else
-#endif
     {
         u2* buf = (u2*)vidbuffer + 208 * 288 + 48;
         u4 fps = lastfps;
@@ -1292,19 +851,6 @@ static void showfps(void)
 
 static void ClockOutput(void)
 {
-#ifdef __MSDOS__
-    if (cbitmode != 1) {
-        displayfpspal();
-        u1* buf = vidbuffer + 215 * 288 + 32 + 192;
-        if (ForceNonTransp == 1 || ClockBox == 1) {
-            u4 y = 7;
-            do {
-                memset(buf - 1, 0xC0, 49);
-                buf += 288;
-            } while (--y != 0);
-        }
-    } else
-#endif
     {
         u2* buf = (u2*)vidbuffer + 215 * 288 + 32 + 192;
         if (ForceNonTransp == 1 || ClockBox == 1) {
@@ -1331,34 +877,11 @@ static void ClockOutput(void)
 
     char buf[9];
     sprintf(buf, "%02d:%02d:%02d", h, m, s);
-#ifdef __MSDOS__
-    if (cbitmode != 1) {
-        OutputGraphicString5x5(vidbuffer + 216 * 288 + 32 + 192, buf);
-    } else
-#endif
-    {
-        OutputGraphicString16b5x5((u2*)vidbuffer + 216 * 288 + 32 + 192, buf);
-    }
+    OutputGraphicString16b5x5((u2*)vidbuffer + 216 * 288 + 32 + 192, buf);
 }
-
-#ifdef __MSDOS__
-static void waitvsync(void)
-{
-    u2 const port = 0x03DA; // VGA status port
-    u1 const vr = 0x08; // check VR bit
-    // while (inb(port) & vr) {} // in middle of VR, better wait for next one
-    while (!(inb(port) & vr)) { } // updating the screen
-}
-#endif
 
 static void vidpaste(void)
 {
-#ifdef __MSDOS__
-    if (vsyncon != 0 && Triplebufen == 0 && curblank == 0)
-        waitvsync();
-    if (cbitmode != 1 && curblank == 0)
-        doschangepal();
-#endif
     if (FPSOn != 0 && curblank == 0)
         showfps();
     if (TimerEnable != 0 && ShowTimer != 0)
@@ -1388,29 +911,8 @@ static void vidpaste(void)
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
         };
 
-#ifdef __MSDOS__
-        if (cbitmode != 1)
-            superscopepal();
-#endif
         u1 const* src = SScopeCursor;
         u4 pos = mouseyloc * 288 + mousexloc + 6;
-#ifdef __MSDOS__
-        if (cbitmode != 1) {
-            u1* const dst = vidbuffer;
-            u4 y = 20;
-            do {
-                u4 x = 20;
-                do {
-                    if (*src++ == 0)
-                        continue;
-                    if (pos < 288 * 10)
-                        continue;
-                    dst[pos - 288 * 10] = 128 + 16;
-                } while (++pos, --x != 0);
-                pos += 288 - 20;
-            } while (--y != 0);
-        } else
-#endif
         {
             u2 const SSRedCo = 31 << vesa2_rpos;
             u2* const dst = (u2*)vidbuffer;
@@ -1429,48 +931,14 @@ static void vidpaste(void)
         }
     }
 
-#ifdef __MSDOS__
-    static u2 prevresolutn = 224;
-    if (prevresolutn != resolutn) {
-        prevresolutn = resolutn;
-        asm_call(DOSClearScreen);
-    }
-#endif
-
     DrawScreen();
 }
 
 void copyvid(void)
 {
-#ifdef __MSDOS__
-    // Test if add table needs updating
-    static u1 prevengval = 10;
-    if (cbitmode != 0 && vesa2red10 != 0 && prevengval != newengen) {
-        prevengval = newengen;
-        genfulladdtab();
-    }
-#endif
 
     if (MessageOn != 0) {
         char const* const msg = Msgptr;
-#ifdef __MSDOS__
-        if (cbitmode != 1) {
-            u1* const buf = vidbuffer + 192 * 288 + 32;
-            if (msg == CSStatus) {
-                OutputGraphicString5x5(buf, msg);
-                OutputGraphicString5x5(vidbuffer + 200 * 288 + 32, CSStatus2);
-                OutputGraphicString5x5(vidbuffer + 208 * 288 + 32, CSStatus3);
-                OutputGraphicString5x5(vidbuffer + 216 * 288 + 32, CSStatus4);
-            } else if (SmallMsgText == 1) {
-                OutputGraphicString5x5(buf, msg);
-            } else {
-                OutputGraphicString(buf, msg);
-            }
-            --MessageOn;
-            if (MessageOn == 0)
-                dosmakepal();
-        } else
-#endif
         {
             u2* const buf = (u2*)vidbuffer + 192 * 288 + 32;
             if (msg == CSStatus) {
@@ -1490,14 +958,7 @@ void copyvid(void)
     if (MovieProcessing != 0 && MovieDisplayFrame != 0) {
         GetMovieFrameStr();
         char const* const msg = MovieFrameStr;
-#ifdef __MSDOS__
-        if (cbitmode != 1) {
-            OutputGraphicString5x5(vidbuffer + 216 * 288 + 32, msg);
-        } else
-#endif
-        {
-            OutputGraphicString16b5x5((u2*)vidbuffer + 216 * 288 + 32, msg);
-        }
+        OutputGraphicString16b5x5((u2*)vidbuffer + 216 * 288 + 32, msg);
     }
     vidpaste();
 }
