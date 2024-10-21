@@ -539,7 +539,7 @@ static void handle_params(int argc, char* argv[])
                     break;
 
 #ifndef __UNIXSDL__
-                case '3': // Enable triple buffering for DOS/Windows
+                case '3': // Enable triple buffering for Windows
                     vsyncon = 0;
 #ifdef __WIN32__
                     TripleBufferWin = 1;
@@ -668,7 +668,7 @@ static void handle_params(int argc, char* argv[])
                     break;
 
 #ifndef __UNIXSDL__
-                case 'w': // Enable vsync for DOS/Windows
+                case 'w': // Enable vsync for Windows
                     vsyncon = 1;
 #ifdef __WIN32__
                     TripleBufferWin = 0;

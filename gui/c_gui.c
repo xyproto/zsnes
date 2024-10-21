@@ -414,7 +414,9 @@ void GUI36hzcall(void)
 static void LoadDetermine(void)
 {
     GUINetPlayMenuData[0][0] = 2; // Gray out Netplay options
+
     // GUINetPlayMenuData[1][0] = 2;
+
     u1 const v = romloadskip != 0 ? 2 : 1;
     GUIGameMenuData[1][0] = v;
     GUIGameMenuData[2][0] = v;

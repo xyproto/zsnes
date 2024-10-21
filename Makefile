@@ -1,4 +1,4 @@
-# Possible values: LINUX, DOS, OSX, WIN
+# Possible values: LINUX, OSX, WIN
 # The flags below also needs to be modified if this is not set to LINUX
 ARCH := LINUX
 
@@ -34,7 +34,7 @@ ifneq ($(findstring $(ARCH), LINUX OSX),)
 	WITH_SDL := yes
 endif
 
-ifneq ($(findstring $(ARCH), WIN DOS),)
+ifneq ($(findstring $(ARCH), WIN),)
   CFLAGS += -fstack-protector
   WITH_OPENGL :=
 else
@@ -242,21 +242,6 @@ endif
 
 ifdef WITH_AO
 CFGDEFS += -D__LIBAO__
-endif
-
-ifeq ($(ARCH), DOS)
-SRCS += dos/c_dosintrf.c
-SRCS += dos/c_sound.c
-SRCS += dos/dosintrf.asm
-SRCS += dos/gppro.asm
-SRCS += dos/initvid.asm
-SRCS += dos/joy.asm
-SRCS += dos/lib.c
-SRCS += dos/sound.asm
-SRCS += dos/sw.asm
-SRCS += dos/sw32.asm
-SRCS += dos/vesa12.asm
-SRCS += dos/vesa2.asm
 endif
 
 ifneq ($(findstring $(ARCH), LINUX OSX),)

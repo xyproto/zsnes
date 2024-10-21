@@ -83,7 +83,6 @@ u1 gammalevel16b = 0;
 unsigned char AddSub256 = 0; // screen add/sub in 256 colors
 unsigned char dmadeddis = 0; // DMA deduction
 unsigned char OldStyle = 1; // Old style joystick on
-unsigned char SecondPort = 0; // Secondary Joystick Port Enabled (209h) (DOS port only)
 
 unsigned char Doublevbuf = 1; // Double video buffer
 u1 V8Mode = 0;

@@ -2233,7 +2233,6 @@ static void ProcessMouseButtons(void)
     case 15:
         CalibrateDev1();
         return;
-
     case 16:
         GUICBHold = 0;
         MoviePlay();
