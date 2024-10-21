@@ -23,12 +23,6 @@
 #include "guitools.h"
 #include "guiwindp.h"
 
-#ifdef __MSDOS__
-#include "../cpu/dspproc.h"
-#include "../dos/c_sound.h"
-#include "../dos/vesa2.h"
-#endif
-
 #if defined __UNIXSDL__ && defined __OPENGL__
 #include "../linux/gl_draw.h"
 #endif
@@ -592,16 +586,8 @@ void DisplayGUILoad(void)
 {
     GUIDrawWindowBox(1, "LOAD GAME");
 
-#ifndef __MSDOS__
     char const* const GUILoadText3 = "LONG FILENAME";
-#else
-    char const* const GUILoadText3 = "WIN9X LONG FILENAME";
-#endif
     GUIDisplayText(1, 21, 166, GUILoadText3);
-#ifdef __MSDOS__
-    GUIDisplayTextY(1, 6, 157, "DISPLAY TYPE:");
-    GUIDisplayText(1, 21, 182, "DOS 8.3 FORMAT");
-#endif
     GUIDisplayText(1, 21, 174, "SNES HEADER NAME");
     GUIDisplayText(1, 6, 16, "FILENAME");
     GUIDisplayText(1, 161, 16, "DIRECTORY");
@@ -616,7 +602,6 @@ void DisplayGUILoad(void)
     GUIDisplayText(1, 6, 138, esi);
 
     cloadmaxlen = 39;
-#ifndef __MSDOS__
     u1 const colour = GUIWincoladd == 0 ? 202 : 196;
     if (GUIcurrentfilewin != 0) {
         char const* const eax = d_names[GUIcurrentdircursloc + 2];
@@ -630,7 +615,6 @@ void DisplayGUILoad(void)
             GUIOuttextwin2l(1, 5, 157, name, colour + 15);
         }
     }
-#endif
 
     DrawGUIButton(1, 186, 165, 228, 176, "LOAD", 1, 0, 0);
 
@@ -687,9 +671,6 @@ void DisplayGUILoad(void)
 
     GUIDisplayButtonHole(1, 9, 163, &GUIloadfntype, 0); // Radio Buttons
     GUIDisplayButtonHole(1, 9, 171, &GUIloadfntype, 1);
-#ifdef __MSDOS__
-    GUIDisplayButtonHole(1, 9, 179, &GUIloadfntype, 2);
-#endif
 
     GUIDisplayCheckboxTn(1, 10, 187, &showallext, 1, "SHOW ALL EXTENSIONS"); // Checkboxes
     GUIDisplayCheckboxTn(1, 144, 177, &ForceROMTiming, 1, "NTSC");
@@ -876,29 +857,6 @@ void DisplayGUIInput(void)
     GUIDisplayText(3, 113, 154, "DL");
     GUIDisplayText(3, 153, 154, "DR");
 
-#ifdef __MSDOS__
-    GUIDisplayCheckboxu(3, 105, 160, &SidewinderFix, "SIDEWINDER FIX", 0);
-
-    char const* const GUIInputTextE5 = "USE JOYSTICK PORT 209H";
-    switch (cplayernum) {
-    case 0:
-        GUIDisplayCheckboxu(3, 5, 190, &pl1p209, GUIInputTextE5, 4);
-        break;
-    case 1:
-        GUIDisplayCheckboxu(3, 5, 190, &pl2p209, GUIInputTextE5, 4);
-        break;
-    case 2:
-        GUIDisplayCheckboxu(3, 5, 190, &pl3p209, GUIInputTextE5, 4);
-        break;
-    case 3:
-        GUIDisplayCheckboxu(3, 5, 190, &pl4p209, GUIInputTextE5, 4);
-        break;
-    case 4:
-        GUIDisplayCheckboxu(3, 5, 190, &pl5p209, GUIInputTextE5, 4);
-        break;
-    }
-#endif
-
     GUIDisplayCheckboxu(3, 5, 160, &GameSpecificInput, "GAME SPECIFIC", 0);
     GUIDisplayCheckboxu(3, 5, 170, &AllowUDLR, "ALLOW U+D/L+R", 0);
     GUIDisplayCheckboxu(3, 105, 170, &Turbo30hz, "TURBO AT 30HZ", 0);
@@ -906,9 +864,6 @@ void DisplayGUIInput(void)
 
     DrawGUIButton(3, 123, 34, 153, 45, "SET", 14, 0, 0); // Buttons
     DrawGUIButton(3, 123, 50, 177, 61, "SET KEYS", 40, 0, 0);
-#ifdef __MSDOS__
-    DrawGUIButton(3, 123, 66, 183, 77, "CALIBRATE", 15, 0, 0);
-#endif
 
     GUIDisplayBBoxS(3, 5, 34, 107, 77, 167); // Main Box
     u4 const eax = GUIcurrentinputcursloc - GUIcurrentinputviewloc;
@@ -1027,20 +982,12 @@ static char const* NTSCslidText(void const* const p1) // slider var, text
 void DisplayGUIVideo(void)
 {
     // Check features
-#ifdef __MSDOS__
-    if (TripBufAvail == 0)
-        Triplebufen = 0;
-#endif
-
     if (MMXSupport != 1 || newgfx16b == 0) {
         En2xSaI = 0;
         hqFilter = 0;
     }
 
     if (En2xSaI != 0) {
-#ifdef __MSDOS__
-        Triplebufen = 0;
-#endif
         hqFilter = 0;
         scanlines = 0;
         antienab = 0;
@@ -1074,7 +1021,6 @@ void DisplayGUIVideo(void)
     {
         DrawGUIButton(5, 128, 30, 164, 41, "SET", 4, 0, 0); // Mode Set Button
 
-#ifndef __MSDOS__ // Legend
         GUIDisplayTextY(5, 130, 50, "LEGEND:");
         GUIDisplayText(5, 130, 58, "D = ALLOW FILTERS");
         GUIDisplayText(5, 130, 66, "S = STRETCH");
@@ -1096,7 +1042,6 @@ void DisplayGUIVideo(void)
 
         GUIOuttextwin2d(5, 138, 133, GUICustomX, 4, GUICustomResTextPtr, 0);
         GUIOuttextwin2d(5, 199, 133, GUICustomY, 4, GUICustomResTextPtr, 1);
-#endif
 
         GUIDisplayBBoxS(5, 5, 26, 115, 189, 167); // Video Modes Box
         DrawSlideBar(5, 117, 26, GUIcurrentvideoviewloc, NumVideoModes, 20, 164, GUIVStA, 5, 6);
@@ -1117,23 +1062,14 @@ void DisplayGUIVideo(void)
     // Filters tab
     if (GUIVideoTabs[0] == 2) {
         // Video Filters
-#ifdef __MSDOS__
-        if (smallscreenon != 1)
-#endif
         {
-#ifdef __MSDOS__
-            if (ScreenScale != 1)
-#endif
             {
                 char const* const GUIVideoTextB1 = "VIDEO FILTERS:"; // Filters.Exclusive
-#ifndef __MSDOS__
                 // Bilinear
                 if (GUIBIFIL[cvidmode] != 0) {
                     GUIDisplayTextY(5, 13, 30, GUIVideoTextB1);
                     GUIDisplayCheckboxu(5, 18, 35, &BilinearFilter, "BILINEAR FILTER", 1);
-                } else
-#endif
-                {
+                } else {
                     // Interpolations
 #ifdef __WIN32__
                     if (GUIDSIZE[cvidmode] != 0)
@@ -1144,12 +1080,6 @@ void DisplayGUIVideo(void)
                         GUIDisplayTextY(5, 13, 30, GUIVideoTextB1);
                         GUIDisplayCheckboxu(5, 18, 35, &antienab, "INTERPOLATION", 0); // -y
                     }
-#ifdef __MSDOS__ // Eagle Filter
-                    if (GUIEAVID[cvidmode] != 0) {
-                        GUIDisplayTextY(5, 13, 30, GUIVideoTextB1);
-                        GUIDisplayCheckboxu(5, 18, 35, &antienab, "EAGLE ENGINE", 9); // same loc at interpolation   -y
-                    }
-#endif
                 }
 
                 // NTSC filter
@@ -1157,12 +1087,7 @@ void DisplayGUIVideo(void)
                     GUIDisplayCheckboxu(5, 128, 35, &NTSCFilter, "NTSC FILTER", 0);
 
                 if (MMXSupport != 0) { // Kreed 2x filters
-#ifdef __MSDOS__
-                    if (GUI2xVID[cvidmode] != 0)
-#else
-                    if (GUIDSIZE[cvidmode] != 0)
-#endif
-                    {
+                    if (GUIDSIZE[cvidmode] != 0) {
                         GUIDisplayCheckboxun(5, 18, 45, &En2xSaI, 1, "2XSAI ENGINE", 2); // 2x
                         GUIDisplayCheckboxun(5, 128, 45, &En2xSaI, 2, "SUPER EAGLE", 6); // Seagle
                         GUIDisplayCheckboxun(5, 18, 55, &En2xSaI, 3, "SUPER 2XSAI", 2); // S2x
@@ -1172,53 +1097,34 @@ void DisplayGUIVideo(void)
                 if (MMXSupport != 0) {
                     // Hq*x
                     if (GUIHQ2X[cvidmode] != 0) {
-#ifdef __MSDOS__
-                        GUIDisplayCheckboxu(5, 128, 55, &hqFilter, "HQ2X", 1);
-#else
                         GUIDisplayCheckboxu(5, 128, 55, &hqFilter, "HQ FILTER", 1);
                         if (hqFilter != 0) {
                             GUIDisplayButtonHoleTu(5, 128, 68, &hqFilterlevel, 2, "2X", 1);
                             goto hq_x;
                         }
-#endif
                     } else {
                     hq_x:;
-#ifndef __MSDOS__
                         if (GUIHQ3X[cvidmode] != 0)
                             GUIDisplayButtonHoleTu(5, 158, 68, &hqFilterlevel, 3, "3X", 0);
                         if (GUIHQ4X[cvidmode] != 0)
                             GUIDisplayButtonHoleTu(5, 188, 68, &hqFilterlevel, 4, "4X", 0);
-#endif
                     }
                 }
             }
 
             char const* const GUIVideoTextB2 = "SCANLINES:"; // Filters.Scanlines
-#ifndef __MSDOS__
             // GL Scanlines
             if (GUIBIFIL[cvidmode] != 0) {
                 GUIDisplayTextY(5, 13, 80, GUIVideoTextB2); // Scanlines text
                 GUIDrawSlider(5, 23, 100, 90, &sl_intensity, glscslidSet, glscslidText);
-            } else
-#endif
-            {
+            } else {
                 // Scanlines
-#ifdef __MSDOS__
-                if (GUISLVID[cvidmode] != 0)
-#else
-                if (GUIDSIZE[cvidmode] != 0)
-#endif
-                {
+                if (GUIDSIZE[cvidmode] != 0) {
                     GUIDisplayTextY(5, 13, 80, GUIVideoTextB2); // Scanlines text
                     GUIDisplayButtonHoleTu(5, 18, 87, &scanlines, 0, "NONE", 1); // None
                     GUIDisplayButtonHoleTu(5, 168, 87, &scanlines, 1, "FULL", 0); // Full
                 }
-#ifdef __MSDOS__
-                if (ScreenScale != 1 && GUIHSVID[cvidmode] != 0)
-#else
-                if (GUIDSIZE[cvidmode] != 0)
-#endif
-                {
+                if (GUIDSIZE[cvidmode] != 0) {
                     GUIDisplayButtonHoleTu(5, 68, 87, &scanlines, 2, "25%", 0); // 25%
                     GUIDisplayButtonHoleTu(5, 118, 87, &scanlines, 3, "50%", 0); // 50%
                 }
@@ -1254,32 +1160,13 @@ void DisplayGUIVideo(void)
             GUIDisplayCheckboxu(5, 128, 145, &TripleBufferWin, GUIVideoTextB4b, 0);
         }
 #endif
-#ifdef __MSDOS__
-        if (GUITBVID[cvidmode] != 0 && TripBufAvail != 0) {
-            GUIDisplayCheckboxu(5, 128, 145, &Triplebufen, GUIVideoTextB4b, 0);
-        }
-#endif
 
         char const* const GUIVideoTextB5 = "DISPLAY OPTIONS:"; // Video.Display
-#ifndef __MSDOS__
         // Keep 4:3 Ratio
         if (GUIKEEP43[cvidmode] != 0 && Keep43Check()) {
             GUIDisplayTextY(5, 13, 170, GUIVideoTextB5);
             GUIDisplayCheckboxu(5, 18, 175, &Keep4_3Ratio, "USE 4:3 RATIO", 8);
         }
-#else
-        // Small Screen
-        if (GUISSVID[cvidmode] != 0) {
-            GUIDisplayTextY(5, 13, 170, GUIVideoTextB5);
-            GUIDisplayCheckboxu(5, 18, 175, &smallscreenon, "SMALL SCREEN", 1); // -c
-        }
-
-        // Full/Widescreen
-        if (GUIWSVID[cvidmode] != 0) {
-            GUIDisplayTextY(5, 13, 170, GUIVideoTextB5);
-            GUIDisplayCheckboxu(5, 128, 175, &ScreenScale, "WIDE SCREEN", 6); // -cc
-        }
-#endif
     }
 
     char const* const GUIVideoTextCD1 = "RESET"; // NTSC buttons + counter
@@ -1346,9 +1233,6 @@ void DisplayGUISound(void)
                 GUIDisplayCheckboxu(6, 11, 51, &RevStereo, "REVERSE STEREO CHANNELS", 2);
                 GUIDisplayCheckboxu(6, 11, 61, &Surround, "SIMULATE SURROUND SOUND", 2);
             }
-#ifdef __MSDOS__
-            GUIDisplayCheckboxu(6, 11, 71, &Force8b, "FORCE 8-BIT OUTPUT", 0);
-#endif
 #ifdef __WIN32__
             GUIDisplayCheckboxu(6, 11, 71, &PrimaryBuffer, "USE PRIMARY BUFFER", 4);
 #endif
@@ -1374,12 +1258,6 @@ void DisplayGUISound(void)
     }
 
     GUIDisplayTextY(6, 6, 93, "SAMPLING RATE:");
-#ifdef __MSDOS__
-    if ((SoundQuality & 0xFF) > 2 && (SoundQuality & 0xFF) != 4 && StereoSound == 1 && SBHDMA == 0 && vibracard != 1) {
-        GUIDisplayBBox(6, 15, 101, 69, 109, 167);
-        GUIDisplayTextG(6, 23, 104, "N/A");
-    } else
-#endif
     {
         GUIDisplayBBox(6, 15, 101, 69, 109, 167); // Sampling Rate Box
         static char const GUISoundTextB1[][8] = {
@@ -1835,9 +1713,7 @@ void DisplayGameOptns(void)
     GUIDisplayText(9, 9, 102, "USE PL12/34");
     GUIDisplayText(9, 9, 112, "PANIC KEY");
     GUIDisplayText(9, 9, 122, "DISPLAY FPS");
-#ifndef __MSDOS__
     GUIDisplayText(9, 9, 132, "BATT POWER");
-#endif
 
     GUIDisplayTextY(9, 119, 93, "GFX TOGGLES:");
     GUIDisplayText(9, 122, 102, "NEW GFX ENG");
@@ -1875,9 +1751,7 @@ void DisplayGameOptns(void)
     DDrawBox(9, 77, 99, &KeyUsePlayer1234);
     DDrawBox(9, 77, 109, &KeyResetAll);
     DDrawBox(9, 77, 119, &KeyDisplayFPS);
-#ifndef __MSDOS__
     DDrawBox(9, 77, 129, &KeyDisplayBatt);
-#endif
 
     DDrawBox(9, 190, 99, &KeyNewGfxSwt);
     DDrawBox(9, 190, 109, &KeyWinDisble);
@@ -1985,9 +1859,7 @@ void DisplayGUIAbout(void)
     VERSION_STR = GUIGUIAboutTextA1;
     placedate();
 
-#if defined __MSDOS__
-    char const* const GUIGUIAboutTextA2 = "DOS VERSION";
-#elif defined __WIN32__
+#if defined __WIN32__
     char const* const GUIGUIAboutTextA2 = "WIN VERSION";
 #elif defined __UNIXSDL__
     char const* const GUIGUIAboutTextA2 = "SDL VERSION";

@@ -42,10 +42,6 @@
 #include "guimisc.h"
 #include "guimouse.h"
 
-#ifdef __MSDOS__
-#include "../dos/joy.h"
-#endif
-
 u1 JoyExists2;
 u1 JoyExists;
 u4 JoyMaxX;
@@ -204,33 +200,6 @@ void CalibrateDev1(void)
     GUICBHold = 0;
 
     u4 port = 0x201;
-#ifdef __MSDOS__
-    switch (player) {
-    case 0:
-        if (pl1p209 != 0)
-            goto port209;
-        break;
-    case 1:
-        if (pl2p209 != 0)
-            goto port209;
-        break;
-    case 2:
-        if (pl3p209 != 0)
-            goto port209;
-        break;
-    case 3:
-        if (pl4p209 != 0)
-            goto port209;
-        break;
-    case 4:
-        if (pl5p209 != 0)
-            goto port209;
-        break;
-    port209:
-        port = 0x209;
-        break;
-    }
-#endif
 
     if (contrl <= 1 || 6 <= contrl)
         return;
@@ -244,14 +213,6 @@ void CalibrateDev1(void)
     u4 const joybly = JoyY;
     CalibrateDispB();
     get(port);
-#ifdef __MSDOS__
-    if (port == 0x209) {
-        CalibXmin209 = JoyMinX209 = (joybcx + joyblx) / 2;
-        CalibYmin209 = JoyMinY209 = (joybcy + joybly) / 2;
-        CalibXmax209 = JoyMaxX209 = (joybcx + JoyX) / 2;
-        CalibYmax209 = JoyMaxY209 = (joybcy + JoyY) / 2;
-    } else
-#endif
     {
         CalibXmin = JoyMinX = (joybcx + joyblx) / 2;
         CalibYmin = JoyMinY = (joybcy + joybly) / 2;
@@ -266,31 +227,6 @@ void SetDevice(void)
     u4 const player = cplayernum;
     u4 const contrl = GUIcurrentinputcursloc;
     *GUIInputRefP[player] = contrl;
-#ifdef __MSDOS__
-    u1 p209 = 0;
-    switch (player) {
-    case 0:
-        p209 = pl1p209;
-        break;
-    case 1:
-        p209 = pl2p209;
-        break;
-    case 2:
-        p209 = pl3p209;
-        break;
-    case 3:
-        p209 = pl4p209;
-        break;
-    case 4:
-        p209 = pl5p209;
-        break;
-    }
-    if (p209 != 0) {
-        CalibXmin209 = 0;
-        asm volatile("call %P0" ::"X"(SetInputDevice209), "b"(player << 8 | contrl)
-                     : "cc", "memory"); // XXX asm_call
-    } else
-#endif
     {
         CalibXmin = 0;
         SetInputDevice(contrl, player);
@@ -301,9 +237,6 @@ void SetDevice(void)
 
 void GUIDoReset(void)
 {
-#ifdef __MSDOS__
-    asm_call(DOSClearScreen);
-#endif
     Clear2xSaIBuffer();
 
     MovieStop();

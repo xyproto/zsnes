@@ -29,11 +29,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "../win/lib.h"
 #endif
 
-#ifdef __MSDOS__
-#include "../dos/lib.h"
-#include <fcntl.h>
-#endif
-
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -43,9 +38,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define fnamecmp strcasecmp
 #endif
 
-#ifndef __MSDOS__
 #include "../c_intrf.h"
-#endif
 
 #ifndef _MSC_VER
 #include <stdint.h>
@@ -344,33 +337,15 @@ void GUIRestoreVars()
     psr_cfg_run(read_md_vars, ZCfgPath, "zmovie.cfg");
     psr_cfg_run(read_input_vars, ZCfgPath, "zinput.cfg");
 
-#ifdef __MSDOS__
-    CheckValueBounds(&pl1contrl, 0, 16, 1, UB);
-    CheckValueBounds(&pl1p209, 0, 1, 0, UB);
-    CheckValueBounds(&pl2contrl, 0, 16, 0, UB);
-    CheckValueBounds(&pl2p209, 0, 1, 0, UB);
-    CheckValueBounds(&pl3contrl, 0, 16, 0, UB);
-    CheckValueBounds(&pl3p209, 0, 1, 0, UB);
-    CheckValueBounds(&pl4contrl, 0, 16, 0, UB);
-    CheckValueBounds(&pl4p209, 0, 1, 0, UB);
-    CheckValueBounds(&pl5contrl, 0, 16, 0, UB);
-    CheckValueBounds(&pl5p209, 0, 1, 0, UB);
-#else
     CheckValueBounds(&pl1contrl, 0, 1, 1, UB);
     CheckValueBounds(&pl2contrl, 0, 1, 0, UB);
     CheckValueBounds(&pl3contrl, 0, 1, 0, UB);
     CheckValueBounds(&pl4contrl, 0, 1, 0, UB);
     CheckValueBounds(&pl5contrl, 0, 1, 0, UB);
-#endif
 
-#ifndef __MSDOS__
     CheckValueBounds(&joy_sensitivity, 0, 32767, 16384, UW);
-#endif
 #ifdef __WIN32__
     CheckValueBounds(&MouseSensitivity, 1, 255, 1, UB);
-#endif
-#ifdef __MSDOS__
-    CheckValueBounds(&SidewinderFix, 0, 1, 0, UB);
 #endif
     CheckValueBounds(&pl12s34, 0, 1, 0, UB);
     CheckValueBounds(&AllowUDLR, 0, 1, 0, UB);
@@ -391,11 +366,7 @@ void GUIRestoreVars()
     CheckValueBounds(&newengen, 0, 1, 1, UB);
     CheckValueBounds(&bgfixer, 0, 1, 0, UB);
 #ifndef NO_PNG
-#ifndef __MSDOS__
     CheckValueBounds(&ScreenShotFormat, 0, 1, 1, UB);
-#else
-    CheckValueBounds(&ScreenShotFormat, 0, 1, 0, UB);
-#endif
 #else
     CheckValueBounds(&ScreenShotFormat, 0, 0, 0, UB);
 #endif
@@ -409,9 +380,6 @@ void GUIRestoreVars()
     CheckValueBounds(&SmallMsgText, 0, 1, 0, UB);
     CheckValueBounds(&GUIEnableTransp, 0, 1, 0, UB);
 
-#ifdef __MSDOS__
-    CheckValueBounds(&Palette0, 0, 1, 1, UB);
-#endif
 #ifdef __WIN32__
     CheckValueBounds(&cvidmode, 0, 59, 2, UB);
     CheckValueBounds(&PrevWinMode, 0, 59, 2, UB);
@@ -428,13 +396,8 @@ void GUIRestoreVars()
     CheckValueBounds(&PrevFSMode, 0, 4, 3, UB);
 #endif
 #endif
-#ifdef __MSDOS__
-    CheckValueBounds(&cvidmode, 0, 18, 4, UB);
-#endif
-#ifndef __MSDOS__
     CheckValueBounds(&CustomResX, 256, 2048, 640, UD);
     CheckValueBounds(&CustomResY, 224, 1536, 480, UD);
-#endif
 
     CheckValueBounds(&antienab, 0, 1, 0, UB);
 #ifdef __OPENGL__
@@ -455,10 +418,8 @@ void GUIRestoreVars()
     CheckValueBounds(&NTSCBleed, -100, 100, 0, SB);
     CheckValueBounds(&NTSCWarp, -100, 100, 0, SB);
     CheckValueBounds(&En2xSaI, 0, 3, 0, UB);
-#ifndef __MSDOS__
     CheckValueBounds(&hqFilter, 0, 1, 0, UB);
     CheckValueBounds(&hqFilterlevel, 2, 4, 2, UB);
-#endif
     CheckValueBounds(&scanlines, 0, 3, 0, UB);
     CheckValueBounds(&GrayscaleMode, 0, 1, 0, UB);
     CheckValueBounds(&Mode7HiRes16b, 0, 1, 0, UB);
@@ -468,21 +429,13 @@ void GUIRestoreVars()
 #ifdef __WIN32__
     CheckValueBounds(&TripleBufferWin, 0, 1, 0, UB);
 #endif
-#ifdef __MSDOS__
-    CheckValueBounds(&Triplebufen, 0, 1, 0, UB);
-#endif
 #ifdef __WIN32__
     CheckValueBounds(&ForceRefreshRate, 0, 1, 0, UB);
     CheckValueBounds(&SetRefreshRate, 50, 180, 60, UB);
     CheckValueBounds(&KitchenSync, 0, 1, 0, UB);
     CheckValueBounds(&KitchenSyncPAL, 0, 1, 0, UB);
 #endif
-#ifndef __MSDOS__
     CheckValueBounds(&Keep4_3Ratio, 0, 1, 1, UB);
-#else
-    CheckValueBounds(&smallscreenon, 0, 1, 0, UD);
-    CheckValueBounds(&ScreenScale, 0, 1, 0, UB);
-#endif
     CheckValueBounds(&gammalevel, 0, 15, 0, UB);
 
     CheckValueBounds(&SPCDisable, 0, 1, 0, UB);
@@ -493,16 +446,10 @@ void GUIRestoreVars()
 #ifdef __WIN32__
     CheckValueBounds(&PrimaryBuffer, 0, 1, 0, UB);
 #endif
-#ifdef __MSDOS__
-    CheckValueBounds(&Force8b, 0, 1, 0, UB);
-#endif
     CheckValueBounds(&SoundQuality, 0, 6, 5, UD);
     CheckValueBounds(&MusicRelVol, 0, 100, 100, UB);
     CheckValueBounds(&SoundInterpType, 0, 3, 1, UB);
     CheckValueBounds(&LowPassFilterType, 0, 3, 0, UB);
-#ifdef __MSDOS__
-    CheckValueBounds(&DisplayS, 0, 1, 0, UB);
-#endif
     CheckValueBounds(&EchoDis, 0, 1, 0, UB);
 
     CheckValueBounds(&RelPathBase, 0, 1, 0, UB);
@@ -530,11 +477,7 @@ void GUIRestoreVars()
 
     CheckValueBounds(&guioff, 0, 1, 0, UB);
     CheckValueBounds(&showallext, 0, 1, 0, UB);
-#ifdef __MSDOS__
-    CheckValueBounds(&GUIloadfntype, 0, 2, 2, UB);
-#else
     CheckValueBounds(&GUIloadfntype, 0, 1, 0, UB);
-#endif
     CheckValueBounds(&prevlfreeze, 0, 1, 0, UB);
     CheckValueBounds(&GUIRClick, 0, 1, 0, UB);
     CheckValueBounds(&lhguimouse, 0, 1, 0, UB);
@@ -896,13 +839,8 @@ char** selected_names = 0;
 #define LIST_IN BIT(2)
 #define LIST_DN BIT(3)
 
-#ifdef __MSDOS__
-#define main_names et_names
-#define LIST_MAIN LIST_ETN
-#else
 #define main_names lf_names
 #define LIST_MAIN LIST_LFN
-#endif
 
 #ifndef _USE_LFN
 #define _USE_LFN 1
@@ -1022,25 +960,6 @@ void populate_lists(unsigned int lists, bool snes_ext_match)
                         char namebuffer[22];
                         add_list(&i_names, get_rom_name(entry, namebuffer));
                     }
-
-#ifdef __MSDOS__
-                    if (lists & LIST_ETN) {
-                        if (!_USE_LFN) //_USE_LFN won't be true when running under pure DOS
-                        {
-                            add_list(&et_names, entry->name);
-                        } else {
-                            char* sfn = realpath_sfn_dir(ZRomPath, entry->name, 0);
-                            if (sfn) {
-                                add_list(&et_names, basename(sfn));
-                                free(sfn);
-                            } else {
-                                char sfn[13];
-                                _lfn_gen_short_fname(entry->name, sfn);
-                                add_list(&et_names, sfn);
-                            }
-                        }
-                    }
-#endif
                 }
             }
         }
@@ -1571,8 +1490,6 @@ static void int_to_str(char* dest, unsigned int len, unsigned int num)
     }
 }
 
-#ifndef __MSDOS__
-
 char GUICustomX[5], GUICustomY[5];
 void GetCustomXY(void)
 {
@@ -1603,8 +1520,6 @@ char CheckOGLMode()
 {
     return (GUIBIFIL[cvidmode]);
 }
-
-#endif
 
 extern unsigned int MovieForcedLength;
 char GUIMovieForcedText[11];

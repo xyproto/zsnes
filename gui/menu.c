@@ -48,10 +48,6 @@
 #include "guifuncs.h"
 #include "menu.h"
 
-#if !defined NO_PNG && defined __MSDOS__
-#include "../dos/dosintrf.h"
-#endif
-
 u1 NoInputRead;
 u1 SPCSave;
 u1 keyonsn;
@@ -79,11 +75,7 @@ static char menudrawbox_stringi[] = "IMAGE FORMAT: ---";
 static void GUIBufferData(void)
 {
     // copy to spritetable
-    u4 const n =
-#ifdef __MSDOS__
-        cbitmode != 1 ? 64000 :
-#endif
-                      129536;
+    u4 const n = 129536;
     memcpy(spritetablea + 4 * 384, vidbuffer + 4 * 384, n);
     memset(sprlefttot, 0, sizeof(sprlefttot));
     memset(sprleftpr, 0, sizeof(sprleftpr));
@@ -95,11 +87,7 @@ static void GUIBufferData(void)
 static void GUIUnBuffer(void)
 {
     // copy from spritetable
-    u4 const n =
-#ifdef __MSDOS__
-        cbitmode != 1 ? 64000 :
-#endif
-                      129536;
+    u4 const n = 129536;
     memcpy(vidbuffer + 4 * 384, spritetablea + 4 * 384, n);
 }
 
@@ -174,59 +162,9 @@ static void menudrawbox16b(void)
     copyvid();
 }
 
-#ifdef __MSDOS__
-static void menudrawcursor8b(void)
-{
-    if (cbitmode != 1) // XXX always true due to caller
-    {
-        // draw a small red box
-        u1* buf = vidbuffer + MenuDisplace + menucloc + 41 + 34 * 288;
-        u4 h = 9;
-        do {
-            memset(buf, 160, 148);
-            buf += 288;
-        } while (--h != 0);
-    } else {
-        menudrawcursor16b();
-    }
-}
-#endif
-
 static void menudrawbox8b(void)
 {
-#ifdef __MSDOS__
-    if (cbitmode != 1) {
-        // draw a small blue box with a white border
-        u1* buf = vidbuffer + MenuDisplace + 40 + 20 * 288;
-        u4 h = 95;
-        do {
-            memset(buf, 144, 150);
-            buf += 288;
-        } while (--h != 0);
-
-        // Draw lines
-        drawhline(vidbuffer + MenuDisplace + 40 + 20 * 288, 150, 128);
-        drawvline(vidbuffer + MenuDisplace + 40 + 20 * 288, 95, 128);
-        drawhline(vidbuffer + MenuDisplace + 40 + 114 * 288, 150, 128);
-        drawhline(vidbuffer + MenuDisplace + 40 + 32 * 288, 150, 128);
-        drawvline(vidbuffer + MenuDisplace + 189 + 20 * 288, 95, 128);
-        menudrawcursor8b();
-
-        OutputGraphicString(vidbuffer + MenuDisplace + 45 + 23 * 288, menudrawbox_string);
-        OutputGraphicString(vidbuffer + MenuDisplace + 45 + 35 * 288, menudrawbox_stringa);
-        OutputGraphicString(vidbuffer + MenuDisplace + 45 + 45 * 288, FPSOn & 1 ? menudrawbox_stringc : menudrawbox_stringb);
-        OutputGraphicString(vidbuffer + MenuDisplace + 45 + 55 * 288, menudrawbox_stringd);
-        OutputGraphicString(vidbuffer + MenuDisplace + 45 + 65 * 288, menudrawbox_stringe);
-        OutputGraphicString(vidbuffer + MenuDisplace + 45 + 75 * 288, menudrawbox_stringf);
-        OutputGraphicString(vidbuffer + MenuDisplace + 45 + 85 * 288, menudrawbox_stringg);
-        OutputGraphicString(vidbuffer + MenuDisplace + 45 + 95 * 288, menudrawbox_stringh);
-        OutputGraphicString(vidbuffer + MenuDisplace + 45 + 105 * 288, menudrawbox_stringi);
-        copyvid();
-    } else
-#endif
-    {
-        menudrawbox16b();
-    }
+    menudrawbox16b();
 }
 
 static void saveimage(void)
@@ -239,11 +177,6 @@ static void saveimage(void)
         Grab_PNG_Data();
         return;
     }
-#endif
-#ifdef __MSDOS__
-    if (cbitmode != 1) {
-        Grab_BMP_Data_8();
-    } else
 #endif
     {
         Grab_BMP_Data();
@@ -298,36 +231,9 @@ static void breakatsignb(void)
 #endif
 }
 
-#ifdef __MSDOS__
-static inline void SetPal(u1 const i, u1 const r, u1 const g, u1 const b)
-{
-    outb(0x03C8, i);
-    outb(0x03C9, r);
-    outb(0x03C9, g);
-    outb(0x03C9, b);
-}
-#endif
-
 void showmenu(void)
 {
     for (;;) {
-#ifdef __MSDOS__
-        if (cbitmode != 1) {
-            u1* buf = vidbuffer + 100000;
-            outb(0x03C7, 0);
-            *buf++ = 12;
-            u4 n = 768;
-            do
-                *buf++ = inb(0x03C9) << 2;
-            while (--n != 0);
-
-            // set palette of colors 128,144, and 160 to white, blue, and red
-            SetPal(128, 63, 63, 63);
-            SetPal(144, 0, 0, 50);
-            SetPal(160, 45, 0, 0);
-        }
-#endif
-
         ForceNonTransp = 1;
         NoInputRead = 0;
         if (SSKeyPressed == 1) {
@@ -359,11 +265,6 @@ void showmenu(void)
             char const* fmt = " BMP";
 #ifndef NO_PNG
             if (ScreenShotFormat != 0) {
-#ifdef __MSDOS__
-                if (GUI16VID[cvidmode] != 1) {
-                    ScreenShotFormat = 0;
-                } else
-#endif
                 {
                     fmt = " PNG";
                 }
@@ -432,9 +333,6 @@ void showmenu(void)
                 PrevMenuPos = 1;
             }
             if (menucloc == 70 * 288) {
-#ifdef __MSDOS__
-                if (cbitmode != 0)
-#endif
                 {
                     ScreenShotFormat ^= 1;
                     MenuNoExit = 1;
@@ -498,16 +396,6 @@ void showmenu(void)
             exitloop:
                 GUIUnBuffer();
                 copyvid();
-#ifdef __MSDOS__
-                if (cbitmode != 1) {
-                    u1 const* buf = vidbuffer + 100000 + 1;
-                    outb(0x03C8, 0);
-                    u4 n = 768;
-                    do
-                        outb(0x03C9, *buf++ >> 2);
-                    while (--n != 0);
-                }
-#endif
             }
         }
         u1* i = pressed;

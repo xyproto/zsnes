@@ -99,6 +99,4 @@ NEWSYM GUIPathsTab1Ptr, dd SRAMPath,SStatePath,MoviePath,IPSPath
 NEWSYM GUIPathsTab2Ptr, dd SnapPath,SPCPath,CHTPath,ComboPath,INPPath
 NEWSYM GUIPathsTab3Ptr, dd BSXPath,STPath,GNextPath,SGPath
 NEWSYM GUIMovieTextPtr, dd GUIMovieForcedText
-%ifndef __MSDOS__
 NEWSYM GUICustomResTextPtr, dd GUICustomX,GUICustomY
-%endif

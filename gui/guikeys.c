@@ -344,29 +344,6 @@ static void GUIInputKeys(char dh)
         pl12s34 ^= 1;
         MultiTap = pl12s34 != 1 && (pl3contrl != 0 || pl4contrl != 0 || pl5contrl != 0);
     }
-#ifdef __MSDOS__
-    GUIKeyCheckbox(&SidewinderFix, 'S', dh);
-    if (dh == 'J') {
-        switch (cplayernum) {
-        case 0:
-            pl1p209 ^= 1;
-            break;
-        case 1:
-            pl2p209 ^= 1;
-            break;
-        case 2:
-            pl3p209 ^= 1;
-            break;
-        case 3:
-            pl4p209 ^= 1;
-            break;
-        case 4:
-            pl5p209 ^= 1;
-            break;
-        }
-        SetDevice();
-    }
-#endif
 }
 
 static void GUIOptionKeys(char dh)
@@ -409,20 +386,9 @@ static void GUIOptionKeys(char dh)
     }
 }
 
-#ifdef __MSDOS__
-static void DOSClearScreenKey(void)
-{
-    asm_call(DOSClearScreen);
-    memset(vidbufferofsb, 0, 288 * 128 * 4);
-}
-#endif
-
 static void GUIVideoKeys(char dh, char const dl)
 {
-#ifndef __MSDOS__
     dh = GUIInputBoxText(GUICustomResTextPtr, SetCustomXY, dh);
-#endif
-
     if (dh == 9) {
         if (NTSCFilter != 0 && GUINTVID[cvidmode] != 0) {
             KeyTabInc(GUIVideoTabs, GUIVntscTab, (u4*)0);
@@ -498,17 +464,10 @@ static void GUIVideoKeys(char dh, char const dl)
     }
 
     if (GUIVideoTabs[0] == 2) {
-#ifdef __MSDOS__
-        if ((smallscreenon & 0xFF) != 1)
-#endif
         {
-#ifdef __MSDOS__
-            if (ScreenScale != 1)
-#endif
             {
                 if (dh == 'I') {
                     u4 const ebx = cvidmode;
-#ifndef __MSDOS__
                     if (GUIBIFIL[ebx] != 0) {
                         BilinearFilter ^= 1;
                         NTSCFilter = 0;
@@ -519,19 +478,12 @@ static void GUIVideoKeys(char dh, char const dl)
 #endif
                         Clear2xSaIBuffer();
                     } else {
-#else
-                    if (GUIEAVID[ebx] != 0)
-                        goto interpolation;
-#endif
 #ifdef __WIN32__
                         if (GUIDSIZE[ebx] != 0)
 #else
-                    if (GUII2VID[ebx] != 0)
+                        if (GUII2VID[ebx] != 0)
 #endif
                         {
-#ifdef __MSDOS__
-                        interpolation:
-#endif
                             antienab ^= 1;
                             if (antienab != 0) {
                                 En2xSaI = 0;
@@ -539,9 +491,7 @@ static void GUIVideoKeys(char dh, char const dl)
                                 NTSCFilter = 0;
                             }
                         }
-#ifndef __MSDOS__
                     }
-#endif
                 }
 
                 if (dh == 'N') {
@@ -559,19 +509,12 @@ static void GUIVideoKeys(char dh, char const dl)
                             if (NTSCFilter != 0)
                                 Keep4_3Ratio = 1;
 #endif
-#ifndef __MSDOS__
                             NTSCFilterInit();
-#endif
                         }
                     }
                 }
 
-#ifdef __MSDOS__
-                if (GUI2xVID[cvidmode] != 0)
-#else
-                if (GUIDSIZE[cvidmode] != 0)
-#endif
-                {
+                if (GUIDSIZE[cvidmode] != 0) {
                     switch (dh) {
                         u1 al;
                     case 'S':
@@ -595,12 +538,7 @@ static void GUIVideoKeys(char dh, char const dl)
                 }
 
                 if (dh == 'Q') {
-#ifndef __MSDOS__
-                    if (GUIHQ2X[cvidmode] != 0 || GUIHQ3X[cvidmode] != 0 || GUIHQ4X[cvidmode] != 0)
-#else
-                    if (GUIHQ2X[cvidmode] != 0)
-#endif
-                    {
+                    if (GUIHQ2X[cvidmode] != 0 || GUIHQ3X[cvidmode] != 0 || GUIHQ4X[cvidmode] != 0) {
                         Clear2xSaIBuffer();
                         hqFilter ^= 1;
                         if (hqFilter != 0) {
@@ -612,7 +550,6 @@ static void GUIVideoKeys(char dh, char const dl)
                     }
                 }
 
-#ifndef __MSDOS__
                 if (dh == 'X') {
                     if (hqFilter != 0 && GUIHQ2X[cvidmode] != 0) {
                         Clear2xSaIBuffer();
@@ -633,56 +570,24 @@ static void GUIVideoKeys(char dh, char const dl)
                         GUIKeyButtonHole(&hqFilterlevel, 4, '4', dh);
                     }
                 }
-#endif
             }
 
-#ifdef __MSDOS__
-            if (GUISLVID[cvidmode] != 0)
-#else
-            if (GUIDSIZE[cvidmode] != 0)
-#endif
-            {
+            if (GUIDSIZE[cvidmode] != 0) {
                 GUIKeyButtonHole(&scanlines, 0, 'O', dh);
-#ifdef __MSDOS__
-                if (dh == 'O')
-                    goto needupdate;
-#endif
                 if (dh == 'F') {
                     En2xSaI = 0;
                     hqFilter = 0;
                     NTSCFilter = 0;
                     GUIKeyButtonHole(&scanlines, 1, 'F', dh);
-#ifdef __MSDOS__
-                needupdate:
-                    asm_call(DOSClearScreen);
-                    if (cvidmode == 2 || cvidmode == 5) // modeQ
-                    {
-                        cbitmode = 1;
-                        asm_call(initvideo2);
-                        cbitmode = 0;
-                        GUISetPal();
-                    }
-#endif
                 }
             }
 
-#ifdef __MSDOS__
-            if (ScreenScale != 1)
-#endif
             {
-#ifdef __MSDOS__
-                if (GUIHSVID[cvidmode] != 0)
-#else
-                if (GUIDSIZE[cvidmode] != 0)
-#endif
-                {
+                if (GUIDSIZE[cvidmode] != 0) {
                     if (dh == '5') {
                         En2xSaI = 0;
                         hqFilter = 0;
                         NTSCFilter = 0;
-#ifdef __MSDOS__
-                        asm_call(DOSClearScreen);
-#endif
                         GUIKeyButtonHole(&scanlines, 3, '5', dh);
                     }
 
@@ -690,9 +595,6 @@ static void GUIVideoKeys(char dh, char const dl)
                         En2xSaI = 0;
                         hqFilter = 0;
                         NTSCFilter = 0;
-#ifdef __MSDOS__
-                        asm_call(DOSClearScreen);
-#endif
                         GUIKeyButtonHole(&scanlines, 2, '2', dh);
                     }
                 }
@@ -715,9 +617,6 @@ static void GUIVideoKeys(char dh, char const dl)
 #ifdef __WIN32__
                 initDirectDraw();
                 Clear2xSaIBuffer();
-#elif defined __MSDOS__
-                if (vsyncon != 0)
-                    Triplebufen = 0;
 #elif defined __OPENGL__
                 initwinvideo();
                 Clear2xSaIBuffer();
@@ -744,7 +643,6 @@ static void GUIVideoKeys(char dh, char const dl)
         }
 #endif
 
-#ifndef __MSDOS__
         if (dh == 'R') {
             if (GUIKEEP43[cvidmode] != 0) {
                 Keep4_3Ratio ^= 1;
@@ -752,28 +650,6 @@ static void GUIVideoKeys(char dh, char const dl)
                 Clear2xSaIBuffer();
             }
         }
-#else
-        if (dh == 'M') {
-            if (GUISSVID[cvidmode] != 0) {
-                smallscreenon ^= 1;
-                ScreenScale = 0;
-                antienab = 0;
-                En2xSaI = 0;
-                scanlines = 0;
-                DOSClearScreenKey();
-            }
-        }
-
-        if (dh == 'C') {
-            if (GUIWSVID[cvidmode] != 0) {
-                ScreenScale ^= 1;
-                smallscreenon = 0;
-                antienab = 0;
-                En2xSaI = 0;
-                DOSClearScreenKey();
-            }
-        }
-#endif
     }
 
     if ((s4)GUIVntscTab >= 1) {
@@ -796,9 +672,6 @@ static void GUISoundKeys(char dh)
     GUIKeyCheckbox(&RevStereo, 'V', dh);
     GUIKeyCheckbox(&Surround, 'M', dh);
     GUIKeyCheckbox(&SPCDisable, 'D', dh);
-#ifdef __MSDOS__
-    GUIKeyCheckbox(&Force8b, 'F', dh);
-#endif
 #ifdef __WIN32__
     GUIKeyCheckbox(&PrimaryBuffer, 'P', dh);
 #endif
@@ -1024,9 +897,6 @@ static void GUIGUIOptnsKeys(char dh)
 
     if (dh == 'F') {
         FilteredGUI ^= 1;
-#ifdef __MSDOS__
-        asm_call(DOSClearScreen);
-#else
         if (GUIBIFIL[cvidmode] != 0) {
 #ifdef __WIN32__
             initDirectDraw();
@@ -1034,7 +904,6 @@ static void GUIGUIOptnsKeys(char dh)
             initwinvideo();
 #endif
         }
-#endif
         Clear2xSaIBuffer();
     }
 
@@ -1574,7 +1443,6 @@ void GUIgetcurrentinput(void)
     GUIqcheckkeys(79);
     GUIqcheckkeys(1);
     GUIqcheckkeys(0x1C);
-#ifndef __MSDOS__
     GUIqcheckkeys(0xC8);
     GUIqcheckkeys(0xD0);
     GUIqcheckkeys(0xCB);
@@ -1584,7 +1452,6 @@ void GUIgetcurrentinput(void)
     GUIqcheckkeys(0xC7);
     GUIqcheckkeys(0xCF);
     GUIqcheckkeys(0x9C);
-#endif
 
     if (JoyPad1Move != 0) {
         JoyRead();

@@ -183,7 +183,6 @@ static void GUIOutputStringwinl(s4 x, u1* const dst, char const* text, u1 const 
     u4 n = cloadmaxlen;
     do {
         u1 c = *text++;
-#ifndef __MSDOS__
         if (c == '%') {
             u1 v;
             u1 const c0 = text[0];
@@ -209,7 +208,6 @@ static void GUIOutputStringwinl(s4 x, u1* const dst, char const* text, u1 const 
             text += 2;
         no_number:;
         }
-#endif
         if (c == '\0')
             break;
         if (-8 <= x && x <= 255)
