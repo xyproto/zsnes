@@ -1,68 +1,105 @@
+// endmem.h
 #ifndef ENDMEM_H
 #define ENDMEM_H
 
-#include "types.h"
+#include <stdint.h>
 
-extern eop* Bank0datr16[256];
-extern eop* Bank0datr8[256];
-extern eop* Bank0datw16[256];
-extern eop* Bank0datw8[256];
-extern eop* opcjmptab[256];
-extern eop* tableA[256];
-extern eop* tableAc[256];
-extern eop* tableB[256];
-extern eop* tableBc[256];
-extern eop* tableC[256];
-extern eop* tableCc[256];
-extern eop* tableD[256];
-extern eop* tableDc[256];
-extern eop* tableE[256];
-extern eop* tableEc[256];
-extern eop* tableF[256];
-extern eop* tableFc[256];
-extern eop* tableG[256];
-extern eop* tableGc[256];
-extern eop* tableH[256];
-extern eop* tableHc[256];
-extern eop** tablead[256];
-extern eop** tableadc[256];
-extern u1 SpecialLine[256];
-extern u1 cachebg[4][64];
-extern u1 sprcnt[256];
-extern u1 sprend[256];
-extern u1 sprleftpr1[256]; // sprites left for priority 1
-extern u1 sprleftpr2[256]; // sprites left for priority 2
-extern u1 sprleftpr3[256]; // sprites left for priority 3
-extern u1 sprleftpr[256]; // sprites left for priority 0
-extern u1 sprlefttot[256]; // total sprites left
-extern u1 sprpriodata[288];
-extern u1 sprstart[256];
-extern u1 sprtilecnt[256];
-extern u1 winbgbackenval[256];
-extern u1 winbgdata[288]; // window buffer for backgrounds
-extern u1 winspdata[288]; // window buffer for sprites
-extern u1* snesmap2[256];
-extern u1* snesmmap[256];
-extern u2 PrevPicture[56 * 64];
-extern u2 prevpal[256]; // previous palette buffer
-extern u2 sprendx[256];
-extern u2 vidmemch4[2048];
-extern u2 xtravbuf[288];
-extern u4 FxTable[256];
-extern u4 FxTableb[256];
-extern u4 FxTablec[256];
-extern u4 FxTabled[256];
-extern u4 PLOTJmpa[64];
-extern u4 PLOTJmpb[64];
-extern u4 fxbit01[256];
-extern u4 fxbit23[256];
-extern u4 fxbit45[256];
-extern u4 fxbit67[256];
-extern u4 ngpalcon2b[32];
-extern u4 ngpalcon4b[32];
-extern u4 objwlrpos[256];
-extern u4 pal16b[256];
-extern u4 pal16bcl[256];
-extern u4 pal16bxcl[256];
+/* BSS allocations */
+extern uint32_t   Bank0datr8[256];
+extern uint32_t   Bank0datr16[256];
+extern uint32_t   Bank0datw8[256];
+extern uint32_t   Bank0datw16[256];
+extern uint32_t   opcjmptab[256];
 
-#endif
+extern uint32_t   tableA[256];
+extern uint32_t   tableAc[256];
+extern uint32_t   tableB[256];
+extern uint32_t   tableBc[256];
+extern uint32_t   tableC[256];
+extern uint32_t   tableCc[256];
+extern uint32_t   tableD[256];
+extern uint32_t   tableDc[256];
+extern uint32_t   tableE[256];
+extern uint32_t   tableEc[256];
+extern uint32_t   tableF[256];
+extern uint32_t   tableFc[256];
+extern uint32_t   tableG[256];
+extern uint32_t   tableGc[256];
+extern uint32_t   tableH[256];
+extern uint32_t   tableHc[256];
+
+extern uint32_t   tablead[256];
+extern uint32_t   tableadc[256];
+
+extern uint8_t    SpecialLine[256];
+
+/* background cache */
+extern uint8_t    cachebg1[64];
+extern uint8_t    cachebg2[64];
+extern uint8_t    cachebg3[64];
+extern uint8_t    cachebg4[64];
+
+/* sprite state */
+extern uint8_t    sprcnt[256];
+extern uint8_t    sprend[256];
+extern uint8_t    sprleftpr1[256];
+extern uint8_t    sprleftpr2[256];
+extern uint8_t    sprleftpr3[256];
+extern uint8_t    sprleftpr[256];
+extern uint8_t    sprlefttot[256];
+extern uint8_t    sprpriodata[288];
+extern uint8_t    sprstart[256];
+extern uint8_t    sprtilecnt[256];
+extern uint16_t   sprendx[256];
+
+/* window buffers */
+extern uint8_t    winbgdata[288];
+extern uint8_t    winspdata[288];
+
+/* SNES memory maps */
+extern uint32_t   snesmmap[256];
+extern uint32_t   snesmap2[256];
+
+/* palettes */
+extern uint16_t   prevpal[256];
+
+/* extra video buffers */
+extern uint8_t    vidmemch2[4096];
+extern uint8_t    vidmemch4[4096];
+extern uint8_t    vidmemch8[4096];
+extern uint8_t    xtravbuf[576];
+
+/* FX tables */
+extern uint32_t   FxTable[256];
+extern uint32_t   FxTableb[256];
+extern uint32_t   FxTablec[256];
+extern uint32_t   FxTabled[256];
+
+/* plot jump tables */
+extern uint32_t   PLOTJmpa[64];
+extern uint32_t   PLOTJmpb[64];
+
+/* bit‐mask tables */
+extern uint32_t   fxbit01[256];
+extern uint32_t   fxbit23[256];
+extern uint32_t   fxbit45[256];
+extern uint32_t   fxbit67[256];
+
+/* palette constants */
+extern uint32_t   ngpalcon2b[32];
+extern uint32_t   ngpalcon4b[32];
+extern uint32_t   ngpalcon8b[32];
+
+/* object‐window registers */
+extern uint32_t   objwlrpos[256];
+extern uint16_t   objwen[256];
+
+/* 16‑bit palettes */
+extern uint32_t   pal16b[256];
+extern uint32_t   pal16bcl[256];
+extern uint32_t   pal16bxcl[256];
+
+/* previous full‐screen image */
+extern uint8_t    PrevPicture[7168];
+
+#endif // ENDMEM_H
