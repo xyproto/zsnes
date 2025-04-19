@@ -167,7 +167,7 @@ however, add it in yourself by:
 
 * Segfault after having compiled the source -- this might be due to an old `zguicfg.dat` file; delete this and see if the problem gets fixed.
 
-### File list
+### The old file list
 
 ```
 ; Porting Routine Files

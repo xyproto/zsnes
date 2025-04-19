@@ -125,11 +125,6 @@ void Debug_WriteString(char* str)
     fclose(fp);
 }
 
-// I want to port over the more complicated
-// functions from init.asm, or replace with
-// better versions from NSRT. -Nach
-
-// init.asm goodness
 extern uint32_t NumofBanks;
 extern uint32_t NumofBytes;
 static uint8_t Interleaved;
