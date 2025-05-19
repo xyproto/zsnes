@@ -1,4 +1,4 @@
-project('zsnes', ['c', 'cpp', 'nasm'], version: '1.0', meson_version: '>=1.5', default_options: {'pkg_config_path': '/usr/lib32/pkgconfig'})
+project('zsnes', ['c', 'cpp', 'nasm'], version: '2.0.12', meson_version: '>=1.5', default_options: {'pkg_config_path': '/usr/lib32/pkgconfig'})
 
 zlib = dependency('zlib')
 sdl = dependency('sdl')
