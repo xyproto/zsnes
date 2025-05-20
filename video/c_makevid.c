@@ -35,9 +35,9 @@ static void makedualwin(u1 const al, Layer const ebp)
         u1 al_ = al;
         u1 cl_ = cl;
         asm volatile("call %P2"
-                     : "+a"(al_), "+c"(cl_)
-                     : "X"(dualstartprocess)
-                     : "cc", "memory", "edx", "edi");
+            : "+a"(al_), "+c"(cl_)
+            : "X"(dualstartprocess)
+            : "cc", "memory", "edx", "edi");
     }
 }
 
@@ -239,15 +239,15 @@ static void proc16x16(u2 const ax, u2 const dx, u1* const edi, u4 const layer, u
         switch (curcolor) {
         case 1:
             asm volatile("call %P0" ::"X"(cachetile2b16x16), "a"(eax)
-                         : "cc", "memory", "ecx", "esi", "edi");
+                : "cc", "memory", "ecx", "esi", "edi");
             break;
         case 2:
             asm volatile("call %P0" ::"X"(cachetile4b16x16), "a"(eax)
-                         : "cc", "memory", "ecx", "esi", "edi");
+                : "cc", "memory", "ecx", "esi", "edi");
             break;
         default:
             asm volatile("call %P0" ::"X"(cachetile8b16x16), "a"(eax)
-                         : "cc", "memory", "ecx", "esi", "edi");
+                : "cc", "memory", "ecx", "esi", "edi");
             break;
         }
     }
@@ -310,15 +310,15 @@ static void proc16x8(u2 const ax, u2 const dx, u1* const edi, u4 const layer, u1
         switch (curcolor) {
         case 1:
             asm volatile("call %P0" ::"X"(cachetile2b16x16), "a"(eax)
-                         : "cc", "memory", "ecx", "esi", "edi");
+                : "cc", "memory", "ecx", "esi", "edi");
             break;
         case 2:
             asm volatile("call %P0" ::"X"(cachetile4b16x16), "a"(eax)
-                         : "cc", "memory", "ecx", "esi", "edi");
+                : "cc", "memory", "ecx", "esi", "edi");
             break;
         default:
             asm volatile("call %P0" ::"X"(cachetile8b16x16), "a"(eax)
-                         : "cc", "memory", "ecx", "esi", "edi");
+                : "cc", "memory", "ecx", "esi", "edi");
             break;
         }
     }
@@ -377,15 +377,15 @@ static void proc8x8(u2 const ax, u2 const dx, u1* const edi, u4 const layer, u1 
         switch (curcolor) {
         case 1:
             asm volatile("call %P0" ::"X"(cachetile2b), "a"(eax)
-                         : "cc", "memory", "ecx", "esi", "edi");
+                : "cc", "memory", "ecx", "esi", "edi");
             break;
         case 2:
             asm volatile("call %P0" ::"X"(cachetile4b), "a"(eax)
-                         : "cc", "memory", "ecx", "esi", "edi");
+                : "cc", "memory", "ecx", "esi", "edi");
             break;
         default:
             asm volatile("call %P0" ::"X"(cachetile8b), "a"(eax)
-                         : "cc", "memory", "ecx", "esi", "edi");
+                : "cc", "memory", "ecx", "esi", "edi");
             break;
         }
     }

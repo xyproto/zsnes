@@ -10,8 +10,8 @@ static inline u1 inb(u2 const port)
 {
     u1 val;
     asm volatile("inb %1, %0"
-                 : "=a"(val)
-                 : "Nd"(port));
+        : "=a"(val)
+        : "Nd"(port));
     return val;
 }
 

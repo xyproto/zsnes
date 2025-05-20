@@ -1000,7 +1000,7 @@ void copy640x480x16bwin(void)
 
     u2 ds;
     asm volatile("movw %%ds, %0;  movw %0, %%es"
-                 : "=r"(ds)); // XXX necessary?
+        : "=r"(ds)); // XXX necessary?
     (void)ds;
 
     u2* src = (u2*)vidbuffer + 16 + 288;

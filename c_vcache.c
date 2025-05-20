@@ -67,9 +67,9 @@ static void UpdateVolume(void)
     MusicVol = vol < 127 ? vol : 127;
 
     asm volatile("call %P0" ::"X"(WDSPReg0C), "a"(DSPMem[0x0C])
-                 : "cc", "memory");
+        : "cc", "memory");
     asm volatile("call %P0" ::"X"(WDSPReg1C), "a"(DSPMem[0x1C])
-                 : "cc", "memory");
+        : "cc", "memory");
 
     static char vollv[] = "VOLUME LEVEL :    ";
     sprintf(vollv + 15, "%-3d", MusicRelVol);

@@ -64,9 +64,9 @@ void breakops(void)
         u4 ebx;
         // XXX hack: GCC cannot handle ebp as input/output, so take the detour over eax
         asm volatile("push %%ebp;  mov %0, %%ebp;  call %P6;  mov %%ebp, %0;  pop %%ebp"
-                     : "+a"(ebp), "+c"(ecx), "+d"(edx), "=b"(ebx), "+S"(esi), "+D"(edi)
-                     : "X"(execsingle)
-                     : "cc", "memory");
+            : "+a"(ebp), "+c"(ecx), "+d"(edx), "=b"(ebx), "+S"(esi), "+D"(edi)
+            : "X"(execsingle)
+            : "cc", "memory");
         edx = joinflags(edx);
         edx = edx & 0xFFFF00FF | pdh << 8;
         if ((++numinst & 0xFF) == 0 && getch() == 27)
@@ -99,9 +99,9 @@ void execnextop(void)
     u4 ebx;
     // XXX hack: GCC cannot handle ebp as input/output, so take the detour over eax
     asm volatile("push %%ebp;  mov %0, %%ebp;  call %P6;  mov %%ebp, %0;  pop %%ebp"
-                 : "+a"(ebp), "+c"(ecx), "+d"(edx), "=b"(ebx), "+S"(esi), "+D"(edi)
-                 : "X"(execsingle)
-                 : "cc", "memory");
+        : "+a"(ebp), "+c"(ecx), "+d"(edx), "=b"(ebx), "+S"(esi), "+D"(edi)
+        : "X"(execsingle)
+        : "cc", "memory");
     edx = joinflags(edx);
     UpdateDPage();
 

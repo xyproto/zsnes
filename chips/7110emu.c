@@ -150,8 +150,8 @@ INLINE uint8_t highest_bit_position(uint8_t x)
 #if defined(__GNUC__) && defined(__i386__)
     uint16_t x2 = x;
     __asm__ __volatile__("bsrw %0,%0"
-                         : "=r"(x2)
-                         : "0"(x2));
+        : "=r"(x2)
+        : "0"(x2));
     return (x2);
 #else
     if (x >> 4) {

@@ -26,18 +26,18 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #ifdef __GNUC__
 #ifdef __x86_64__
-#define cpuid(in, a, b, c, d) asm volatile("cpuid"                              \
-                                           : "=a"(a), "=b"(b), "=c"(c), "=d"(d) \
-                                           : "a"(in));
+#define cpuid(in, a, b, c, d) asm volatile("cpuid" \
+    : "=a"(a), "=b"(b), "=c"(c), "=d"(d)           \
+    : "a"(in));
 #else
 #define cpuid(in, a, b, c, d) asm volatile("\
   pushl %%ebx;\
   movl %%edi,%%ebx;\
   cpuid;\
   movl %%ebx,%%edi;\
-  popl %%ebx"                                   \
-                                           : "=a"(a), "=D"(b), "=c"(c), "=d"(d) \
-                                           : "a"(in));
+  popl %%ebx" \
+    : "=a"(a), "=D"(b), "=c"(c), "=d"(d)      \
+    : "a"(in));
 #endif
 #else
 char cpubuf[256];

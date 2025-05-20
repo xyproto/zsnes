@@ -51,7 +51,7 @@ static void draw_bottom_line_of_fire()
 
     for (count = 0; count < FIRE_HOTSPOTS; count++) {
         for (count2 = (fire_hotspot[count] - 20);
-             count2 < (fire_hotspot[count] + 20); count2++) {
+            count2 < (fire_hotspot[count] + 20); count2++) {
             if ((count2 >= 0) && (count2 < SCRW)) {
                 fire_line[count2] = MIN((fire_line[count2] + 20) - ABS(fire_hotspot[count] - count2), 256);
             }

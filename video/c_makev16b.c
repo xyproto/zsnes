@@ -565,9 +565,9 @@ static void draw16x1616bwinon(u2* esi, u2 const* edi)
     if (curmosaicsz != 1) {
         u4 edx = curmosaicsz << 8;
         asm volatile("push %%ebp;  call %P1;  pop %%ebp"
-                     : "+d"(edx)
-                     : "X"(domosaic16b)
-                     : "cc", "memory", "eax", "ecx", "esi", "edi");
+            : "+d"(edx)
+            : "X"(domosaic16b)
+            : "cc", "memory", "eax", "ecx", "esi", "edi");
     }
 }
 
@@ -683,9 +683,9 @@ void draw16x1616b(u4 const eax, u4 const ecx, u2* const edx, u1* const ebx, u4 c
         if (curmosaicsz != 1) {
             u4 edx = curmosaicsz << 8;
             asm volatile("push %%ebp;  call %P1;  pop %%ebp"
-                         : "+d"(edx)
-                         : "X"(domosaic16b)
-                         : "cc", "memory", "eax", "ecx", "esi", "edi");
+                : "+d"(edx)
+                : "X"(domosaic16b)
+                : "cc", "memory", "eax", "ecx", "esi", "edi");
         }
     }
 }
@@ -759,7 +759,7 @@ static void offsetmcachechk(u4 const eax)
     if (vidmemch4[ecx] == 0)
         return;
     asm volatile("call %P0" ::"X"(cachesingle4bng), "c"(ecx)
-                 : "cc", "memory");
+        : "cc", "memory");
 }
 
 static u2* procoffsetmode(void)
@@ -955,9 +955,9 @@ void draw8x816boffset(u4 const eax, u4 const ecx, u2* const edx, u1* const ebx, 
         if (drawn != 0 && curmosaicsz != 1) {
             u4 edx = curmosaicsz << 8;
             asm volatile("push %%ebp;  call %P1;  pop %%ebp"
-                         : "+d"(edx)
-                         : "X"(domosaic16b)
-                         : "cc", "memory", "eax", "ecx", "esi", "edi");
+                : "+d"(edx)
+                : "X"(domosaic16b)
+                : "cc", "memory", "eax", "ecx", "esi", "edi");
         }
     }
 }
@@ -1017,9 +1017,9 @@ static void draw8x816bwinon(u2* esi, u2 const* edi)
     if (drawn != 0 && curmosaicsz != 1) {
         u4 edx = curmosaicsz << 8;
         asm volatile("push %%ebp;  call %P1;  pop %%ebp"
-                     : "+d"(edx)
-                     : "X"(domosaic16b)
-                     : "cc", "memory", "eax", "ecx", "esi", "edi");
+            : "+d"(edx)
+            : "X"(domosaic16b)
+            : "cc", "memory", "eax", "ecx", "esi", "edi");
     }
 }
 
@@ -1082,9 +1082,9 @@ static void draw16x816winonb(u2* esi, u2 const* edi)
     if (drawn != 0 && curmosaicsz != 1) {
         u4 edx = curmosaicsz << 8;
         asm volatile("push %%ebp;  call %P1;  pop %%ebp"
-                     : "+d"(edx)
-                     : "X"(domosaic16b)
-                     : "cc", "memory", "eax", "ecx", "esi", "edi");
+            : "+d"(edx)
+            : "X"(domosaic16b)
+            : "cc", "memory", "eax", "ecx", "esi", "edi");
     }
 }
 
@@ -1145,9 +1145,9 @@ static void draw16x816bwinon(u2* esi, u2 const* edi)
     if (drawn != 0 && curmosaicsz != 1) {
         u4 edx = curmosaicsz << 8;
         asm volatile("push %%ebp;  call %P1;  pop %%ebp"
-                     : "+d"(edx)
-                     : "X"(domosaic16b)
-                     : "cc", "memory", "eax", "ecx", "esi", "edi");
+            : "+d"(edx)
+            : "X"(domosaic16b)
+            : "cc", "memory", "eax", "ecx", "esi", "edi");
     }
 }
 
@@ -1208,9 +1208,9 @@ static void draw16x816b(u2* esi, u2 const* edi)
     if (drawn != 0 && curmosaicsz != 1) {
         u4 edx = curmosaicsz << 8;
         asm volatile("push %%ebp;  call %P1;  pop %%ebp"
-                     : "+d"(edx)
-                     : "X"(domosaic16b)
-                     : "cc", "memory", "eax", "ecx", "esi", "edi");
+            : "+d"(edx)
+            : "X"(domosaic16b)
+            : "cc", "memory", "eax", "ecx", "esi", "edi");
     }
 }
 
@@ -1304,9 +1304,9 @@ static void draw16x816(u4 const eax, u4 const ecx, u2* const edx, u1* const ebx,
         if (dh != 1) {
             u4 edx = dh << 8;
             asm volatile("push %%ebp;  call %P1;  pop %%ebp"
-                         : "+d"(edx)
-                         : "X"(domosaic16b)
-                         : "cc", "memory", "eax", "ecx", "esi", "edi");
+                : "+d"(edx)
+                : "X"(domosaic16b)
+                : "cc", "memory", "eax", "ecx", "esi", "edi");
         }
     }
 }
@@ -1402,9 +1402,9 @@ void draw8x816b(u4 eax, u4 ecx, u2* edx, u1* ebx, u4 const layer, u4 eax_, u2 co
     if (drawn != 0 && curmosaicsz != 1) {
         u4 edx = curmosaicsz << 8;
         asm volatile("push %%ebp;  call %P1;  pop %%ebp"
-                     : "+d"(edx)
-                     : "X"(domosaic16b)
-                     : "cc", "memory", "eax", "ecx", "esi", "edi");
+            : "+d"(edx)
+            : "X"(domosaic16b)
+            : "cc", "memory", "eax", "ecx", "esi", "edi");
     }
 }
 
@@ -1482,9 +1482,9 @@ static void procmode716bextbg(u2 const* const p1, u2 const* const p2, u1 const p
     u4 eax;
     u4 edx;
     asm volatile("push %%ebp;  call %P2;  pop %%ebp"
-                 : "=a"(eax), "=d"(edx)
-                 : "X"(drawmode716extbg), "a"(*p1), "d"(*p2)
-                 : "cc", "memory", "ecx", "ebx", "esi", "edi");
+        : "=a"(eax), "=d"(edx)
+        : "X"(drawmode716extbg), "a"(*p1), "d"(*p2)
+        : "cc", "memory", "ecx", "ebx", "esi", "edi");
 }
 
 static void procmode716bextbg2(u1 const p3)
@@ -1496,7 +1496,7 @@ static void procmode716bextbg2(u1 const p3)
             curmosaicsz = bl + 1;
     }
     asm volatile("push %%ebp;  call %P0;  pop %%ebp" ::"X"(drawmode716extbg2)
-                 : "cc", "memory", "eax", "ecx", "edx", "ebx", "esi", "edi");
+        : "cc", "memory", "eax", "ecx", "edx", "ebx", "esi", "edi");
 }
 
 static void procmode716b(u2 const* const p1, u2 const* const p2, u1 const p3)
@@ -1517,9 +1517,9 @@ static void procmode716b(u2 const* const p1, u2 const* const p2, u1 const p3)
     u4 eax;
     u4 edx;
     asm volatile("call %P2"
-                 : "=a"(eax), "=d"(edx)
-                 : "X"(drawmode716b), "a"(*p1), "d"(*p2)
-                 : "cc", "memory", "ecx", "ebx", "esi", "edi");
+        : "=a"(eax), "=d"(edx)
+        : "X"(drawmode716b), "a"(*p1), "d"(*p2)
+        : "cc", "memory", "ecx", "ebx", "esi", "edi");
 }
 
 static void processmode716b(void)
