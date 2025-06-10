@@ -5,7 +5,7 @@ ARCH := LINUX
 CC ?= gcc
 CXX ?= g++
 
-COMMON_FLAGS = -m32 -pthread -no-pie -O1 -march=pentium-mmx -fno-inline -fno-pic -mtune=generic -mmmx -D_FORTIFY_SOURCE=2 -L/usr/lib32 -mno-sse -mno-sse2 -ffunction-sections -fdata-sections -Wfatal-errors -w
+COMMON_FLAGS = -m32 -pthread -no-pie -O1 -march=pentium-mmx -fno-pic -mtune=generic -mmmx -D_FORTIFY_SOURCE=2 -L/usr/lib32 -mno-sse -mno-sse2 -ffunction-sections -fdata-sections -Wfatal-errors -w
 
 # TODO: FreeBSD has a patch for being able to build without -fcommon
 CFLAGS += $(COMMON_FLAGS) -std=gnu99 -fcommon
