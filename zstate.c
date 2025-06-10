@@ -107,7 +107,7 @@ static void copy_snes_data(uint8_t** buffer, void (*copy_func)(uint8_t**, void*,
     copy_func(buffer, &cycpbl, 4);
     copy_func(buffer, &cycpblt, 4);
     // SNES PPU Register status
-    copy_func(buffer, &sndrot, 3019);
+    copy_func(buffer, &sndrot, 1);
 }
 
 static void copy_spc_data(uint8_t** buffer, void (*copy_func)(uint8_t**, void*, size_t))

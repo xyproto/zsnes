@@ -80,7 +80,7 @@ void init(void)
 
     /* XXX sndrot is a global variable, but is treated like the first entry of a
      * big struct */
-    memcpy(regsbackup, &sndrot, sizeof(regsbackup));
+    memcpy(regsbackup, &sndrot, sizeof(sndrot));
 
     clearmem();
 
