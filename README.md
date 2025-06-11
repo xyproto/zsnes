@@ -29,7 +29,7 @@ Tested on Arch Linux, Fedora and Debian 12 on x86_64.
 
     make
 
-For other platforms than Linux, adjust the first 70 lines of the `Makefile` as needed.
+For other platforms than Linux, adjust the first 70 (!) lines of the `Makefile` as needed.
 
 ### Debug build
 
@@ -70,7 +70,7 @@ make
 * Pull requests are welcome.
 * A port to SDL2 is extra warmly welcome!
 * Being able to build and run ZSNES on Linux is a priority.
-* Please have `clang-format` installed and run `./fmt.sh` before submitting a pull request.
+* Please have `clang-format` installed and run `make fmt` before submitting a pull request.
 
 ### Windows users
 
