@@ -1,3 +1,5 @@
+.PHONY: clean distclean fmt info
+
 # Possible values: LINUX, OSX, WIN
 # The flags below also needs to be modified if this is not set to LINUX
 ARCH := LINUX
@@ -399,6 +401,9 @@ info:
 	@echo "CCFLAGS       = $(CCFLAGS)"
 	@echo "CXXFLAGS      = $(CXXFLAGS)"
 	@echo "LDFLAGS       = $(LDFLAGS)"
+
+fmt:
+	@./fmt.sh
 
 install:
 	install -Dm755 zsnes '$(DESTDIR)$(PREFIX)/bin/zsnes'
