@@ -301,7 +301,7 @@ static int SoundInit_sdl()
 
     sdl_audio_buffer_len = audiospec.size * 2;
     sdl_audio_buffer_len = (sdl_audio_buffer_len + 255) & ~255; // Align to SPCSize
-    if (!(sdl_audio_buffer = malloc(sdl_audio_buffer_len))) {
+    if (!(sdl_audio_buffer = calloc(1, sdl_audio_buffer_len))) {
         SDL_CloseAudio();
         puts("Audio Open Failed");
         SoundEnabled = 0;
