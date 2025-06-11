@@ -1,0 +1,827 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+  <title>Advanced Usage - ZSNES Documentation</title>
+
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+  <link rel="stylesheet" href="styles/print.css" media="print" type="text/css" />
+  <link rel="stylesheet" href="styles/radio.css" title="Radio's style" media="screen" type="text/css" />
+  <link rel="alternate stylesheet" href="styles/jipcy.css" title="Jipcy's style" media="screen" type="text/css" />
+  <link rel="alternate stylesheet" href="styles/plaintxt.css" title="Plain Text" media="screen" type="text/css" />
+
+  <link rel="contents" href="index.htm" title="Index" />
+  <link rel="start" href="readme.htm" title="Readme" />
+  <link rel="previous" href="netplay.htm" title="Netplay" />
+  <link rel="next" href="games.htm" title="Games" />
+  <link rel="help" href="support.htm" title="Getting Support" />
+  <link rel="copyright" href="license.htm" title="GNU General Public License" />
+</head>
+
+<body>
+
+<div id="header">
+  <a href="readme.htm" title="ZSNES Documentation Home"><img id="logo" src="images/zsneslogo.png" alt="The ZSNES Logo" /></a>
+  <h1>ZSNES v1.51 Documentation</h1>
+</div>
+
+<div id="nav_column">
+
+<div id="navigation">
+  <h2>Navigation</h2>
+
+  <ul class="navigation_list">
+    <li><a href="index.htm" title="ZSNES Documentation Index">Index</a></li>
+    <li><a href="readme.htm" title="General documentation">Readme</a></li>
+    <li><a href="gui.htm" title="Description of the GUI and its options">GUI</a></li>
+    <li><a href="netplay.htm" title="Documentation for Netplay">Netplay</a></li>
+    <li><a href="advanced.htm" title="Advanced Usage">Advanced Usage</a>
+      <ul>
+        <li><a href="#movie_dumping">Movie Dumping</a></li>
+        <li><a href="#config_files">Configuration Files</a></li>
+        <li><a href="#debugger">Debugger</a></li>
+        <li><a href="#kitchensync">KitchenSync</a></li>
+        <li><a href="#command_line">Command-Line</a></li>
+      </ul>
+    </li>
+    <li><a href="games.htm" title="Information about Games">Games</a></li>
+    <li><a href="faq.htm" title="Frequently Asked Questions">FAQ</a></li>
+  </ul>
+  <hr />
+  <ul>
+    <li><a href="support.htm" title="How to get support">Getting Support</a></li>
+    <li><a href="history.htm" title="The log of changes to ZSNES">History</a></li>
+    <li><a href="about.htm" title="A brief description of the ZSNES emulator and ZSNES documentation projects">About</a></li>
+    <li><a href="license.htm" title="GNU General Public License">License</a></li>
+  </ul>
+  <hr />
+  <ul>
+    <li><a href="http://zsnes-docs.sourceforge.net/nsrt" title="NSRT Guide">NSRT Guide</a></li>
+    <li><a href="http://www.zsnes.com" title="ZSNES Home Page on the Web">ZSNES.com</a></li>
+  </ul>
+</div>
+
+</div>
+
+<div id="content_column">
+
+<div id="content">
+
+  <h2>Advanced Usage</h2>
+
+  <div class="section">
+    <p>This page documents the advanced features of ZSNES, probably not useful for most end users.</p>
+  </div>
+
+  <div class="section" id="movie_dumping">
+    <h3>Movie Dumping</h3>
+
+    <p>Please note that ZSNES does not support real-time video encoding.  ZSNES only encodes existing ZMV (ZSNES movie) files.  Refer to <a href="gui.htm#misc_movie" title="Description of the Movie Options dialog">the GUI page</a> for instructions on recording movies.</p>
+    <p>All instructions in this section assume that you are using the default settings of the <code class="file">zmovie.cfg</code> file.  If you are smart enough to edit <code class="file">zmovie.cfg</code>, you had better be smart enough to dump movies with whatever new settings you've created.</p>
+    <p>You can dump video output alone, audio output alone, both at the same time (to separate files), or both to the same file (merged).  If you choose to dump audio output, you can choose to dump that audio output uncompressed or compressed to MP3.  Both uncompressed and compressed audio can be merged with the video.</p>
+
+    <div class="section">
+      <h4>About Video Encoding</h4>
+      <p>Video encoding requires <a href="http://www.mplayerhq.hu" title="MPlayer/MEncoder Home Page">MEncoder</a>.</p>
+    </div>
+
+    <div class="section" id="movie_dumping_about_audio">
+      <h4>About Audio Encoding</h4>
+      <p>Audio encoding requires <a href="http://lame.sourceforge.net" title="LAME Home Page">LAME</a>.  Currently, Windows users <strong>must</strong> use <a href="http://nsrt.edgeemu.com/lame.zip" title="Fixed LAME build for Windows required for ZSNES audio encoding">this fixed LAME build</a> due to a bug in the official versions.</p>
+      <p>You have a choice of dumping audio either in uncompressed PCM format with WAV header, or compressed as MP3.  ZSNES uses <a href="http://lame.sourceforge.net" title="LAME Home Page">LAME</a> for MP3, so you can expect high-quality audio, given the bit rate.</p>
+      <p>When dumping audio to a separate file (not merged with video), audio compressed to MP3 will be about 6% of the size of the same uncompressed PCM audio.</p>
+    </div>
+
+    <div class="section">
+      <h4>Dumping a Movie</h4>
+      <ol>
+        <li>Place your MEncoder (<code class="file">mencoder.exe</code>) and LAME (<code class="file">lame.exe</code>) binaries in the same directory as ZSNES.  Alternatively, configure your PATH environment variable to include the directories where MEncoder and LAME are installed.</li>
+        <li>Start ZSNES and <a href="gui.htm#game_load" title="Description of the Load Game dialog">load</a> a game.</li>
+        <li>Open the <a href="gui.htm#misc_movie" title="Description of the Movie Options dialog">Movie Options</a> dialog.  (Misc Menu->Movie Opt).</li>
+        <li>Make sure to select the correct movie slot, depending on which movie slot you used to record a ZMV.</li>
+        <li>Select the <strong class="gui">Dumping</strong> tab, and configure the <strong class="gui">Video Options</strong> and <strong class="gui">Audio Options</strong> to your liking.</li>
+        <li>Hit the <strong class="gui">Start</strong> button.</li>
+        <li>ZSNES will then exit the GUI and start playing back the previously recorded movie.  If you chose to encode the video and/or audio output, you will see a console window appear, showing the progress of encoding.  Don't worry if ZSNES slows down while playing back the movie; it needs to do this because the encoding process takes a lot of processor time.</li>
+        <li>ZSNES will indicate when the movie has finished playback (and encoding).  You can now look in your ZSNES directory for the newly created file(s).</li>
+      </ol>
+      <p><strong>Note:</strong> ZSNES does not create an uncompressed temporary file and then encode it.  Instead, the output stream is directly encoded.  The only output files will be the finished, compressed files.  Because ZSNES must encode the output stream as it is generated, ZSNES may delay the output of new frames of video/audio to give more time to MEncoder/LAME to compress the current frame.  This means that you <strong>should not worry</strong> if you see the playback of your movie slow down while ZSNES is dumping it.  The dumped file(s) will play back at full speed!</p>
+    </div>
+
+  </div>
+
+  <div class="section" id="config_files">
+    <h3>Configuration Files</h3>
+
+    <p>Every time you run ZSNES, it checks to see if these files are present in the same directory as the ZSNES executable.  If they are not, ZSNES will create them with their default values.  Thus, if you are having weird problems with ZSNES, try deleting these files.</p>
+
+    <p>If there are any missing or invalid lines in <code class="file">zsnes*.cfg</code>, ZSNES will insert or replace the lines with their default values.</p>
+
+    <div class="section" id="config_files_zsnes">
+      <h4>zsnes*.cfg</h4>
+      <p>Almost every option available in ZSNES can be configured in this file.  If there is something you don't understand in this file, please refrain from changing it, and instead set the option from within the ZSNES <a href="gui.htm" title="Description of the GUI">GUI</a>.</p>
+      <p>The last letter of the filename is different for each port.  Windows: <code class="file">zsnesw.cfg</code>.  SDL: <code class="file">zsnesl.cfg</code>.  DOS: <code class="file">zsnes.cfg</code>.</p>
+    </div>
+
+    <div class="section" id="config_files_zmovie">
+      <h4>zmovie.cfg</h4>
+      <p>This file contains <a href="advanced.htm#movie_dumping" title="Description of the Movie dumping feature">movie-dumping</a> configuration information.</p>
+      <p>You can edit this file to make ZSNES use something other than MEncoder or LAME, or to tweak options. Read the MEncoder and LAME manuals to see what options you can tweak. If you choose other applications, they must support stream input via stdin and raw video (in the case of video encoding). Refer to the appropriate documentation for more information.</p>
+      <p>Unfortunately, you're on your own if wish to play with this.</p>
+    </div>
+
+    <div class="section" id="config_files_zfont">
+      <h4>zfont.txt</h4>
+      <p>This file contains the font data for the ZSNES <a href="gui.htm" title="Description of the GUI">GUI</a>.  You can edit this file to customize the font.</p>
+      <ul>
+        <li>Comments are preceded by a <code>;</code> and can be up to 99 characters in length.
+          <ul><li>In the default file, each comment precedes the character it's labeling.</li></ul>
+        </li>
+        <li>Each letter is represented by a block of five rows, each containing 8 bits.  Only the first five columns of bits are used for font data; ZSNES uses a 5x5 font.  The last three columns of bits should always be zeros.
+          <ul><li>There are characters for English, Hiragana, and Katakana scripts.</li></ul>
+        </li>
+        <li>In case it isn't obvious, a <code>1</code> means the pixel is on in that location.  A <code>0</code> means it's off.  If you view <code class="file">zfont.txt</code>, you should be able to figure it out.</li>
+        <li>The file terminates on the EOF+newline character or the last character (whichever comes first).</li>
+      </ul>
+      <p>The absolute ordering of each and every line in this file <strong>is important</strong>.  If you're missing a single line, things might start messing up.  Just so you know, the last line of data should be on line 846, followed by the EOF character on line 847.</p>
+      <p>If you mess something up, just delete <code class="file">zfont.txt</code>, and ZSNES will re-generate it as normal.</p>
+    </div>
+  </div>
+
+  <div class="section" id="debugger">
+    <h3>Debugger</h3>
+
+    <p>The debugger, now available in all ports, is enabled only when you enter ZSNES with a -d.  (If you are using the DOS port, just type "zsnes -d" at the commandline. Win port users should add a "-d" after their ZSNES shortcut target). Loading a ROM via a command line will start ZSNES in debugger mode; otherwise press F1 to reach it.</p>
+    <p>Average users, however, should have no need to use the debugger.</p>
+
+    <div class="section">
+      <h4>Debugger Keys:</h4>
+      <table id="table_debugger_keys">
+        <tr>
+          <th>Key</th><th>Function</th>
+        </tr>
+        <tr>
+          <td><kbd class="key">1</kbd></td><td>Enable/Disable SPC700 display</td>
+        </tr>
+        <tr>
+          <td><kbd class="key">2</kbd></td><td>Enable/Disable 65816 display</td>
+        </tr>
+        <tr>
+          <td><kbd class="key">T</kbd></td><td>Trace (in 65816 opcodes)</td>
+        </tr>
+        <tr>
+          <td><kbd class="key">B</kbd></td><td>65816 break point</td>
+        </tr>
+        <tr>
+          <td><kbd class="key">S</kbd></td><td>SPC break point</td>
+        </tr>
+        <tr>
+          <td><kbd class="key">C</kbd></td><td>Clear counter</td>
+        </tr>
+        <tr>
+          <td><kbd class="key">M</kbd></td><td>65816 modify</td>
+        </tr>
+        <tr>
+          <td><kbd class="key">A</kbd></td><td>SPC modify</td>
+        </tr>
+        <tr>
+          <td><kbd class="key">D</kbd></td><td>Debug dump (SPC/DSPRAM dump only)</td>
+        </tr>
+        <tr>
+          <td><kbd class="key">W</kbd></td><td>Break at signal (used only by the programmers)</td>
+        </tr>
+        <tr>
+          <td><kbd class="key">F1</kbd></td><td>Switch between debugger input and game input</td>
+        </tr>
+        <tr>
+          <td><kbd class="key">F2</kbd></td><td>Save state</td>
+        </tr>
+        <tr>
+          <td><kbd class="key">F4</kbd></td><td>Load state</td>
+        </tr>
+        <tr>
+          <td><kbd class="key">Esc</kbd></td><td>Exit entire program</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="section" id="kitchensync">
+    <h3>KitchenSync (Win port only)</h3>
+
+    <p>This makes NTSC games (60Hz) run at 120Hz, and PAL games (50Hz) run at 100Hz. To enable it, just start ZSNESw with the <code>-ks</code> <a href="#command_line_windows" title="List of command-line switches for the Windows port of ZSNES">switch</a>.  Alternatively, you can create a shortcut to ZSNESw that starts with this switch enabled, every time.  First create a shortcut to ZSNESw in Windows. Next, right-click on the shortcut and choose Properties. Then, put the cursor right after the quotation marks in the Target box, press the space bar, and type <code>-ks</code>. Finally, click OK. If ZSNESw crashes or refuses to start after enabling this, your monitor does not support the 100/120 Hz refresh rate.</p>
+    <p>If your monitor supports 100Hz and not 120Hz, you can instead use the <code>-kp</code> switch for PAL only. This way, you will not have to disable the <code>-ks</code> switch every time you wish to play an NTSC game.</p>
+
+  </div>
+
+  <div class="section" id="command_line">
+    <h3>Command-Line Arguments</h3>
+
+    <p>ZSNES supports execution arguments via the command line.  More detailed descriptions of how to use the arguments with each port is forthcoming.</p>
+    <p>Clicking on the description of an argument will take you to the corresponding GUI option, if one exists.</p>
+    <p>Usage : <kbd>zsnes* [-d,-f #, ... ] filename.sfc</kbd></p>
+    <p>Example : <kbd>zsnes* -s -r 2 game.sfc</kbd></p>
+    <p>*Fill in the appropriate letter for your port when entering this into the command line.</p>
+
+    <div class="section" id="command_line_universal">
+      <h4>Universal Switches</h4>
+
+      <table class="argument_list" id="table_command_line_universal">
+        <tr>
+          <th>Argument</th><th>Sub-Argument</th><th>Description</th>
+        </tr>
+        <tr>
+          <td>-1 #/-2 #</td><td></td><td><a href="gui.htm#config_input" title="Go to corresponding GUI option">Select Player 1/2 Input</a></td>
+        </tr>
+        <tr>
+          <td></td><td>0</td><td>None</td>
+        </tr>
+        <tr>
+          <td></td><td>1</td><td>Keyboard</td>
+        </tr>
+        <tr>
+          <td>-d</td><td></td><td>Start with <a href="advanced.htm#debugger" title="Go to information about the Debugger">debugger</a> enabled</td>
+        </tr>
+        <tr>
+          <td>-dd</td><td></td><td><a href="gui.htm#config_sound_enable" title="Go to the corresponding GUI option">Disable sound SPC700/DSP emulation</a>, which also disables sound output</td>
+        </tr>
+        <tr>
+          <td>-dh</td><td></td><td>Disable <a href="games.htm#roms" title="General information about ROMs">ROM</a>-specific hacks</td>
+        </tr>
+        <tr>
+          <td>-ds</td><td></td><td><a href="gui.htm#config_sound_enable" title="Go to the corresponding GUI option">Disable sound output</a></td>
+        </tr>
+        <tr>
+          <td>-f #</td><td>[0...9]</td><td><a href="gui.htm#config_speed_frameskip" title="Go to the corresponding GUI option">Enable fixed frame rate</a></td>
+        </tr>
+        <tr>
+          <td>-g #</td><td>[0...15]</td><td>Specify <a href="gui.htm#misc_misckeys_gfxtoggles" title="Go to the corresponding GUI option">gamma correction</a> value</td>
+        </tr>
+        <tr>
+          <td>-h</td><td></td><td><a href="gui.htm#game_load_force" title="Go to the corresponding GUI option">Force HiROM</a></td>
+        </tr>
+        <tr>
+          <td>-j</td><td></td><td>Disable Mouse (Automatically turns off right mouse-click)</td>
+        </tr>
+        <tr>
+          <td>-k #</td><td>[0...100]</td><td><a href="gui.htm#config_sound_volume" title="Go to corresponding GUI option">Set volume level</a></td>
+        </tr>
+        <tr>
+          <td>-l</td><td></td><td><a href="gui.htm#game_load_force" title="Go to the corresponding GUI option">Force LoROM</a></td>
+        </tr>
+        <tr>
+          <td>-m</td><td></td><td>Disable <a href="gui.htm" title="Description of the GUI">GUI</a> (must specify ROM filename)</td>
+        </tr>
+        <tr>
+          <td>-mc</td><td></td><td>Exit ZSNES when closing a movie (use with -zm)</td>
+        </tr>
+        <tr>
+          <td>-md #</td><td></td><td><a href="advanced.htm#movie_dumping" title="Go to the Movie Dumping section">Dump video</a> (use with -zm)</td>
+        </tr>
+        <tr>
+          <td></td><td>1</td><td>Raw</td>
+        </tr>
+        <tr>
+          <td></td><td>2</td><td>FFV1</td>
+        </tr>
+        <tr>
+          <td></td><td>3</td><td>x264</td>
+        </tr>
+        <tr>
+          <td></td><td>4</td><td>XviD</td>
+        </tr>
+        <tr>
+          <td></td><td>5</td><td>Custom</td>
+        </tr>
+        <tr>
+          <td>-ml #</td><td></td><td>Define movie dump length in amount of frames (use with -md)</td>
+        </tr>
+        <tr>
+          <td>-n #</td><td></td><td><a href="gui.htm#config_video_scanlines" title="Go to corresponding GUI option">Enable scanlines</a> (when available)</td>
+        </tr>
+        <tr>
+          <td></td><td>0</td><td>None</td>
+        </tr>
+        <tr>
+          <td></td><td>1</td><td>Full</td>
+        </tr>
+        <tr>
+          <td></td><td>2</td><td>25%</td>
+        </tr>
+        <tr>
+          <td></td><td>3</td><td>50%</td>
+        </tr>
+        <tr>
+          <td>-o</td><td></td><td>Disable <a href="gui.htm#config_options_mmx" title="Go to corresponding GUI option">MMX support</a></td>
+        </tr>
+        <tr>
+          <td>-p #</td><td>[50...150]</td><td>Percentage of instructions to execute</td>
+        </tr>
+        <tr>
+          <td>-r #</td><td></td><td><a href="gui.htm#config_sound_samplerate" title="Go to corresponding GUI option">Set sound sampling rate</a></td>
+        </tr>
+        <tr>
+          <td></td><td>0</td><td>8000Hz</td>
+        </tr>
+        <tr>
+          <td></td><td>1</td><td>11025Hz</td>
+        </tr>
+        <tr>
+          <td></td><td>2</td><td>22050Hz</td>
+        </tr>
+        <tr>
+          <td></td><td>3</td><td>44100Hz</td>
+        </tr>
+        <tr>
+          <td></td><td>4</td><td>16000Hz</td>
+        </tr>
+        <tr>
+          <td></td><td>5</td><td>32000Hz</td>
+        </tr>
+        <tr>
+          <td></td><td>6</td><td>48000Hz</td>
+        </tr>
+        <tr>
+          <td>-s</td><td></td><td><a href="gui.htm#config_sound_enable" title="Go to the corresponding GUI option">Enable sound output and enable SPC700/DSP emulation</a></td>
+        </tr>
+        <tr>
+          <td>-sa</td><td></td><td><a href="gui.htm#game_load_allext" title="Go to corresponding GUI option">Show all extensions in GUI (*.*)</a></td>
+        </tr>
+        <tr>
+          <td>-t</td><td></td><td><a href="gui.htm#game_load_force" title="Go to the corresponding GUI option">Force NTSC timing</a></td>
+        </tr>
+        <tr>
+          <td>-u</td><td></td><td><a href="gui.htm#game_load_force" title="Go to the corresponding GUI option">Force PAL timing</a></td>
+        </tr>
+        <tr>
+          <td>-v8</td><td></td><td><a href="gui.htm#config_video_grayscale" title="Go to the corresponding GUI option">Grayscale mode</a></td>
+        </tr>
+        <tr>
+          <td>-y</td><td></td><td>Enable <a href="gui.htm#config_video_interpolation" title="Go to the corresponding GUI option">Interpolation</a> graphics filter</td>
+        </tr>
+        <tr>
+          <td>-z</td><td></td><td><a href="gui.htm#config_sound_stereo" title="Go to the corresponding GUI option">Disable stereo sound</a></td>
+        </tr>
+        <tr>
+          <td>-zm #</td><td>[0...9]</td><td>Auto load specified <a href="gui.htm#misc_movie_slot" title="Go to the corresponding GUI option">movie slot</a> on startup</td>
+        </tr>
+        <tr>
+          <td>-zs #</td><td>[0...99]</td><td>Auto load specified <a href="gui.htm#save_slot_chooser" title="Go to the corresponding GUI option">save state slot</a> on startup</td>
+        </tr>
+      </table>
+
+    </div>
+
+    <div class="section" id="command_line_windows">
+      <h4>Windows-only Switches</h4>
+
+      <p>From the Windows NT command-line, you can use the following command to view the accepted command-line input for a given ZSNES binary: <kbd>zsnesw -? | more</kbd>.  Typing <kbd>zsnesw -?</kbd> does not work.</p>
+      <p>Users of any flavor of Windows can use the following command to output to a file the same information returned from the command above: <kbd>zsnesw -? > commands.txt</kbd>.</p>
+
+      <table class="argument_list" id="table_command_line_windows">
+        <tr>
+          <th>Argument</th><th>Sub-Argument</th><th>Description</th>
+        </tr>
+        <tr>
+         <td>-3</td><td></td><td>Enable <a href="gui.htm#config_video_triple" title="Go to corresponding GUI option">triple buffering</a> (disables <a href="gui.htm#config_video_vsync" title="Go to corresponding GUI option">VSync</a>)</td>
+        </tr>
+        <tr>
+          <td>-6 #</td><td>[50...180]</td><td>Force a user-specified refresh rate for fullscreen modes</td>
+        </tr>
+        <tr>
+          <td>-js #</td><td>[0...32767]</td><td>Set joystick sensitivity</td>
+        </tr>
+        <tr>
+          <td>-kp</td><td></td><td>Enable the <a href="faq.htm#win_video_kitchensync" title="FAQ answer about the KitchenSync">KitchenSync</a> for PAL only (100Hz)</td>
+        </tr>
+        <tr>
+          <td>-ks</td><td></td><td>Enable the <a href="faq.htm#win_video_kitchensync" title="FAQ answer about the KitchenSync">KitchenSync</a> for NTSC and PAL (120Hz/100Hz)</td>
+        </tr>
+        <tr>
+          <td>-v #</td><td></td><td><a href="gui.htm#config_video_mode" title="Go to corresponding GUI option">Select Video Mode:</a></td>
+        </tr>
+        <tr>
+          <td></td><td>0</td><td>256x224 R WIN</td>
+        </tr>
+        <tr>
+          <td></td><td>1</td><td>256x224 R FULL</td>
+        </tr>
+        <tr>
+          <td></td><td>2</td><td>512x448 R WIN</td>
+        </tr>
+        <tr>
+          <td></td><td>3</td><td>512x448 DR WIN</td>
+        </tr>
+        <tr>
+          <td></td><td>4</td><td>640x480 S WIN</td>
+        </tr>
+        <tr>
+          <td></td><td>5</td><td>640x480 DS WIN</td>
+        </tr>
+        <tr>
+          <td></td><td>6</td><td>640x480 DR FULL</td>
+        </tr>
+        <tr>
+          <td></td><td>7</td><td>640x480 DS FULL</td>
+        </tr>
+        <tr>
+          <td></td><td>8</td><td>640x480 S FULL</td>
+        </tr>
+        <tr>
+          <td></td><td>9</td><td>768x672 R WIN</td>
+        </tr>
+        <tr>
+          <td></td><td>10</td><td>768x672 DR WIN</td>
+        </tr>
+        <tr>
+          <td></td><td>11</td><td>800x600 S WIN</td>
+        </tr>
+        <tr>
+          <td></td><td>12</td><td>800x600 DS WIN</td>
+        </tr>
+        <tr>
+          <td></td><td>13</td><td>800x600 S FULL</td>
+        </tr>
+        <tr>
+          <td></td><td>14</td><td>800x600 DR FULL</td>
+        </tr>
+        <tr>
+          <td></td><td>15</td><td>800x600 DS FULL</td>
+        </tr>
+        <tr>
+          <td></td><td>16</td><td>1024x768 S WIN</td>
+        </tr>
+        <tr>
+          <td></td><td>17</td><td>1024x768 DS WIN</td>
+        </tr>
+        <tr>
+          <td></td><td>18</td><td>1024x768 S FULL</td>
+        </tr>
+        <tr>
+          <td></td><td>19</td><td>1024x768 DR FULL</td>
+        </tr>
+        <tr>
+          <td></td><td>20</td><td>1024x768 DS FULL</td>
+        </tr>
+        <tr>
+          <td></td><td>21</td><td>1024x896 R WIN</td>
+        </tr>
+        <tr>
+          <td></td><td>22</td><td>1024x896 DR WIN</td>
+        </tr>
+        <tr>
+          <td></td><td>23</td><td>1280x960 S WIN</td>
+        </tr>
+        <tr>
+          <td></td><td>24</td><td>1280x960 DS WIN</td>
+        </tr>
+        <tr>
+          <td></td><td>25</td><td>1280x960 S FULL</td>
+        </tr>
+        <tr>
+          <td></td><td>26</td><td>1280x960 DR FULL</td>
+        </tr>
+        <tr>
+          <td></td><td>27</td><td>1280x960 DS FULL</td>
+        </tr>
+        <tr>
+          <td></td><td>28</td><td>1280x1024 S WIN</td>
+        </tr>
+        <tr>
+          <td></td><td>29</td><td>1280x1024 DS WIN</td>
+        </tr>
+        <tr>
+          <td></td><td>30</td><td>1280x1024 S FULL</td>
+        </tr>
+        <tr>
+          <td></td><td>31</td><td>1280x1024 DR FULL</td>
+        </tr>
+        <tr>
+          <td></td><td>32</td><td>1280x1024 DS FULL</td>
+        </tr>
+        <tr>
+          <td></td><td>33</td><td>1600x1200 S WIN</td>
+        </tr>
+        <tr>
+          <td></td><td>34</td><td>1600x1200 DS WIN</td>
+        </tr>
+        <tr>
+          <td></td><td>35</td><td>1600x1200 DR FULL</td>
+        </tr>
+        <tr>
+          <td></td><td>36</td><td>1600x1200 DS FULL</td>
+        </tr>
+        <tr>
+          <td></td><td>37</td><td>1600x1200 S FULL</td>
+        </tr>
+        <tr>
+          <td></td><td>38</td><td>CUSTOM D WIN</td>
+        </tr>
+        <tr>
+          <td></td><td>39</td><td>CUSTOM DS FULL</td>
+        </tr>
+        <tr>
+          <td></td><td>40</td><td>CUSTOM WIN</td>
+        </tr>
+        <tr>
+          <td></td><td>41</td><td>CUSTOM S FULL</td>
+        </tr>
+        <tr>
+          <td></td><td>42</td><td>CUSTOM DR FULL</td>
+        </tr>
+        <tr>
+          <td>-w</td><td></td><td><a href="gui.htm#config_video_vsync" title="Go to corresponding GUI option">Enable VSync</a> (disables <a href="gui.htm#config_video_triple" title="Go to corresponding GUI option">triple buffering</a>)</td>
+        </tr>
+      </table>
+
+    </div>
+
+    <div class="section" id="command_line_sdl">
+      <h4>SDL-only Switches</h4>
+
+      <table class="argument_list" id="table_command_line_sdl">
+        <tr>
+          <th>Argument</th><th>Sub-Argument</th><th>Description</th>
+        </tr>
+        <tr>
+          <td>-ad &lt;&gt;</td><td></td><td>Audio Driver (note you may not have all of these):</td>
+        </tr>
+        <tr>
+          <td></td><td>auto</td><td>Select a driver automatically - uses SDL without libao</td>
+        </tr>
+        <tr>
+          <td></td><td>null</td><td>No sound, only available with libao</td>
+        </tr>
+        <tr>
+          <td></td><td>oss</td><td>Open Sound System, only available with libao on UNIX systems with OSS</td>
+        </tr>
+        <tr>
+          <td></td><td>alsa</td><td>Advanced Linux Sound Architecture, only available with libao on Linux systems with ALSA</td>
+        </tr>
+        <tr>
+          <td></td><td>alsa09</td><td>Advanced Linux Sound Architecture, only available with libao on Linux systems with ALSA</td>
+        </tr>
+        <tr>
+          <td></td><td>polyp</td><td>polypaudio (next generation GNOME sound server), only available with libao and new versions of GNOME</td>
+        </tr>
+        <tr>
+          <td></td><td>esd</td><td>ESounD or Enlightened Sound Daemon, only available with libao and ESD installed</td>
+        </tr>
+        <tr>
+          <td></td><td>sun</td><td>Sun Microsystem's audio system, only available with libao and Solaris or certain BSD systems</td>
+        </tr>
+        <tr>
+          <td></td><td>irix</td><td>IRIX audio system, only available with libao and IRIX systems</td>
+        </tr>
+        <tr>
+          <td></td><td>nas</td><td>Network Audio System, only available with libao and NAS installed</td>
+        </tr>
+        <tr>
+          <td></td><td>arts</td><td>Analog RealTime Synthesizer sound, only available with libao on systems with aRts (KDE)</td>
+        </tr>
+        <tr>
+          <td></td><td>sdl</td><td>Simple DirectMedia Layer sound</td>
+        </tr>
+        <tr>
+          <td>-js #</td><td>[0...32767]</td><td>Set joystick sensitivity</td>
+        </tr>
+        <tr>
+          <td>-v #</td><td></td><td><a href="gui.htm#config_video_mode" title="Go to corresponding GUI option">Select Video Mode:</a></td>
+        </tr>
+        <tr>
+          <td></td><td>0</td><td>256x224 R WIN</td>
+        </tr>
+        <tr>
+          <td></td><td>1</td><td>256x224 R FULL</td>
+        </tr>
+        <tr>
+          <td></td><td>2</td><td>512x448 DR WIN</td>
+        </tr>
+        <tr>
+          <td></td><td>3</td><td>512x448 DR FULL</td>
+        </tr>
+        <tr>
+          <td></td><td>4</td><td>640x480 DR FULL</td>
+        </tr>
+        <tr>
+          <td></td><td>5</td><td>256x224 OR WIN</td>
+        </tr>
+        <tr>
+          <td></td><td>6</td><td>512x448 ODR WIN</td>
+        </tr>
+        <tr>
+          <td></td><td>7</td><td>640x480 ODS FULL</td>
+        </tr>
+        <tr>
+          <td></td><td>8</td><td>640x480 ODS WIN</td>
+        </tr>
+        <tr>
+          <td></td><td>9</td><td>640x560 ODR WIN</td>
+        </tr>
+        <tr>
+          <td></td><td>10</td><td>768x672 ODR WIN</td>
+        </tr>
+        <tr>
+          <td></td><td>11</td><td>800x600 ODS FULL</td>
+        </tr>
+        <tr>
+          <td></td><td>12</td><td>800x600 ODS WIN</td>
+        </tr>
+        <tr>
+          <td></td><td>13</td><td>896x784 ODR WIN</td>
+        </tr>
+        <tr>
+          <td></td><td>14</td><td>1024x768 ODS FULL</td>
+        </tr>
+        <tr>
+          <td></td><td>15</td><td>1024x768 ODS WIN</td>
+        </tr>
+        <tr>
+          <td></td><td>16</td><td>1024x896 ODR WIN</td>
+        </tr>
+        <tr>
+          <td></td><td>17</td><td>1280x960 ODS FULL</td>
+        </tr>
+        <tr>
+          <td></td><td>18</td><td>1280x1024 ODS FULL</td>
+        </tr>
+        <tr>
+          <td></td><td>19</td><td>1600x1200 ODS FULL</td>
+        </tr>
+        <tr>
+          <td></td><td>20</td><td>VARIABLE ODR WIN</td>
+        </tr>
+        <tr>
+          <td></td><td>21</td><td>VARIABLE ODS WIN</td>
+        </tr>
+        <tr>
+          <td></td><td>22</td><td>CUSTOM OD FULL</td>
+        </tr>
+      </table>
+
+    </div>
+
+    <div class="section" id="command_line_dos">
+      <h4>DOS-only Switches</h4>
+
+      <table class="argument_list" id="table_command_line_dos">
+        <tr>
+          <th>Argument</th><th>Sub-Argument</th><th>Description</th>
+        </tr>
+        <tr>
+          <td>-0</td><td></td><td>Force black background in 8-bit modes</td>
+        </tr>
+        <tr>
+          <td>-1 #/-2 #</td><td></td><td><a href="gui.htm#config_input" title="Go to corresponding GUI option">Select Player 1/2 Input</a>:</td>
+        </tr>
+        <tr>
+          <td></td><td>2</td><td>2 Button</td>
+        </tr>
+        <tr>
+          <td></td><td>3</td><td>4 Button</td>
+        </tr>
+        <tr>
+          <td></td><td>4</td><td>6 Button</td>
+        </tr>
+        <tr>
+          <td></td><td>5</td><td>8 Button</td>
+        </tr>
+        <tr>
+          <td></td><td>6</td><td>Sidewinder #1</td>
+        </tr>
+        <tr>
+          <td></td><td>7</td><td>Sidewinder #2</td>
+        </tr>
+        <tr>
+          <td></td><td>8</td><td>Sidewinder #3</td>
+        </tr>
+        <tr>
+          <td></td><td>9</td><td>Sidewinder #4</td>
+        </tr>
+        <tr>
+          <td></td><td>10</td><td>Gamepad Pro #0</td>
+        </tr>
+        <tr>
+          <td></td><td>11</td><td>Gamepad Pro #1</td>
+        </tr>
+        <tr>
+          <td></td><td>12</td><td>LPT1 #1</td>
+        </tr>
+        <tr>
+          <td></td><td>13</td><td>LPT1 #2</td>
+        </tr>
+        <tr>
+          <td></td><td>14</td><td>LPT1 #3</td>
+        </tr>
+        <tr>
+          <td></td><td>15</td><td>LPT1 #4</td>
+        </tr>
+        <tr>
+          <td></td><td>16</td><td>LPT1 #5</td>
+        </tr>
+        <tr>
+         <td>-3</td><td></td><td>Enable <a href="gui.htm#config_video_triple" title="Go to corresponding GUI option">triple buffering</a> (disables <a href="gui.htm#config_video_vsync" title="Go to corresponding GUI option">VSync</a>)</td>
+        </tr>
+        <tr>
+          <td>-8</td><td></td><td><a href="gui.htm#config_sound_8bit" title="Go to corresponding GUI option">Force 8-bit sound</a></td>
+        </tr>
+        <tr>
+          <td>-c</td><td></td><td>Enable <a href="gui.htm#config_video_full" title="Go to the corresponding GUI option">full/wide screen</a> (when available)</td>
+        </tr>
+        <tr>
+          <td>-cc</td><td></td><td>Enable <a href="gui.htm#config_video_small" title="Go to the corresponding GUI option">small screen</a> (when available)</td>
+        </tr>
+        <tr>
+          <td>-sp</td><td></td><td>Report sound detection information</td>
+        </tr>
+        <tr>
+          <td>-v #</td><td></td><td><a href="gui.htm#config_video_mode" title="Go to corresponding GUI option">Select Video Mode:</a></td>
+        </tr>
+        <tr>
+          <td></td><td>0</td><td>256x224x8B (MODEQ)</td>
+        </tr>
+        <tr>
+          <td></td><td>1</td><td>256x240x8B (MODEQ)</td>
+        </tr>
+        <tr>
+          <td></td><td>2</td><td>256x256x8B (MODEQ)</td>
+        </tr>
+        <tr>
+          <td></td><td>3</td><td>320x224x8B (MODEX)</td>
+        </tr>
+        <tr>
+          <td></td><td>4</td><td>320x240x8B (MODEX)</td>
+        </tr>
+        <tr>
+          <td></td><td>5</td><td>320x256x8B (MODEX)</td>
+        </tr>
+        <tr>
+          <td></td><td>6</td><td>640x480x16B (VESA1)*</td>
+        </tr>
+        <tr>
+          <td></td><td>7</td><td>320x240x8B (VESA2)</td>
+        </tr>
+        <tr>
+          <td></td><td>8</td><td>320x240x16B (VESA2)</td>
+        </tr>
+        <tr>
+          <td></td><td>9</td><td>320x480x8B (VESA2)</td>
+        </tr>
+        <tr>
+          <td></td><td>10</td><td>320x480x16B (VESA2)</td>
+        </tr>
+        <tr>
+          <td></td><td>11</td><td>512x384x8B (VESA2)</td>
+        </tr>
+        <tr>
+          <td></td><td>12</td><td>512x384x16B (VESA2)</td>
+        </tr>
+        <tr>
+          <td></td><td>13</td><td>640x400x8B (VESA2)</td>
+        </tr>
+        <tr>
+          <td></td><td>14</td><td>640x400x16B (VESA2)</td>
+        </tr>
+        <tr>
+          <td></td><td>15</td><td>640x480x8B (VESA2)</td>
+        </tr>
+        <tr>
+          <td></td><td>16</td><td>640x480x16B (VESA2)</td>
+        </tr>
+        <tr>
+          <td></td><td>17</td><td>800x600x8B (VESA2)</td>
+        </tr>
+        <tr>
+          <td></td><td>18</td><td>800x600x16B (VESA2)</td>
+        </tr>
+        <tr>
+          <td>-w</td><td></td><td><a href="gui.htm#config_video_vsync" title="Go to corresponding GUI option">Enable VSync</a> (disables <a href="gui.htm#config_video_triple" title="Go to corresponding GUI option">triple buffering</a>)</td>
+        </tr>
+      </table>
+
+      <p>*The 640x480x16B (VESA1) video mode is compatible with many video cards, but can also be very slow.  We recommend that you use a VESA2 mode if your video card supports it.  Please see the <a href="readme.htm#system_requirements_dos_port" title="Recommended system requirements for running ZSNES DOS">system requirements</a> for more information.</p>
+    </div>
+
+  </div>
+
+</div>
+
+<div id="footer">
+  <h2>Footer</h2>
+  <p>This documentation is best viewed in a standards-compliant web browser, like <a href="http://www.mozilla.com" title="Mozilla Corporation home page">Firefox</a> or <a href="http://www.opera.com" title="Opera web browser home page">Opera</a>.</p>
+
+  <a href="http://sourceforge.net" title="SourceForge.net"><img style="border:0;width:88px;height:31px" src="http://sflogo.sourceforge.net/sflogo.php?group_id=127354&amp;type=1" alt="SourceForge.net Logo" /></a>
+  <a href="http://sourceforge.net/donate/index.php?group_id=19677" title="Donate to the ZSNES Project"><img style="border:0;width:88px;height:32px" src="http://images.sourceforge.net/images/project-support.jpg" alt="Support This Project" /> </a>
+  <span class="web_only">
+    <a href="http://validator.w3.org/check?uri=referer" title="Validate this page's HTML"><img style="border:0;width:88px;height:31px" src="http://www.w3.org/Icons/valid-xhtml10" alt="Valid XHTML 1.0 Strict" /></a>
+    <a href="http://jigsaw.w3.org/css-validator/check/referer" title="Validate this page's CSS"><img style="border:0;width:88px;height:31px" src="http://jigsaw.w3.org/css-validator/images/vcss" alt="Valid CSS!" /></a>
+  </span>
+
+  <p><a href="license.htm" title="View the General Public License">Copyright (C) ZSNES Team &amp; ZSNES Documentation Team</a></p>
+</div>
+
+</div>
+
+</body>
+
+</html>

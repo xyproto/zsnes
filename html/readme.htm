@@ -1,0 +1,931 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+  <title>Readme - ZSNES Documentation</title>
+
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+  <link rel="stylesheet" href="styles/print.css" media="print" type="text/css" />
+  <link rel="stylesheet" href="styles/radio.css" title="Radio's style" media="screen" type="text/css" />
+  <link rel="alternate stylesheet" href="styles/jipcy.css" title="Jipcy's style" media="screen" type="text/css" />
+  <link rel="alternate stylesheet" href="styles/plaintxt.css" title="Plain Text" media="screen" type="text/css" />
+
+  <link rel="contents" href="index.htm" title="Index" />
+  <link rel="start" href="readme.htm" title="Readme" />
+  <link rel="previous" href="index.htm" title="Index" />
+  <link rel="next" href="gui.htm" title="GUI" />
+  <link rel="help" href="support.htm" title="Getting Support" />
+  <link rel="copyright" href="license.htm" title="GNU General Public License" />
+</head>
+
+<body>
+
+<div id="header">
+  <a href="readme.htm" title="ZSNES Documentation Home"><img id="logo" src="images/zsneslogo.png" alt="The ZSNES Logo" /></a>
+  <h1>ZSNES v1.51 Documentation</h1>
+</div>
+
+<div id="nav_column">
+
+<div id="navigation">
+  <h2>Navigation</h2>
+
+  <ul class="navigation_list">
+    <li><a href="index.htm" title="ZSNES Documentation Index">Index</a></li>
+    <li><a href="readme.htm" title="General documentation">Readme</a>
+      <ul>
+        <li><a href="#disclaimer">Disclaimer</a></li>
+        <li><a href="#current_progress">Current Progress</a></li>
+        <li><a href="#extra_features">Extra Features</a></li>
+        <li><a href="#system_requirements">System Requirements</a></li>
+        <li><strong><a href="#installation">Installation</a></strong></li>
+        <li><a href="#basic_usage">Basic Usage</a></li>
+        <li><a href="#default_keys">Default Keys</a></li>
+        <li><a href="#save_states">Save States</a></li>
+        <li><a href="#movies">Movies</a></li>
+        <li><a href="#ips_patching">IPS Patching</a></li>
+        <li><a href="#cheat_codes">Cheat Codes</a></li>
+        <li><a href="#files">Files</a></li>
+      </ul>
+    </li>
+    <li><a href="gui.htm" title="Description of the GUI and its options">GUI</a></li>
+    <li><a href="netplay.htm" title="Documentation for Netplay">Netplay</a></li>
+    <li><a href="advanced.htm" title="Advanced Usage">Advanced Usage</a></li>
+    <li><a href="games.htm" title="Information about Games">Games</a></li>
+    <li><a href="faq.htm" title="Frequently Asked Questions">FAQ</a></li>
+  </ul>
+  <hr />
+  <ul>
+    <li><a href="support.htm" title="How to get support">Getting Support</a></li>
+    <li><a href="history.htm" title="The log of changes to ZSNES">History</a></li>
+    <li><a href="about.htm" title="A brief description of the ZSNES emulator and ZSNES documentation projects">About</a></li>
+    <li><a href="license.htm" title="GNU General Public License">License</a></li>
+  </ul>
+  <hr />
+  <ul>
+    <li><a href="http://zsnes-docs.sourceforge.net/nsrt" title="NSRT Guide">NSRT Guide</a></li>
+    <li><a href="http://www.zsnes.com" title="ZSNES Home Page on the Web">ZSNES.com</a></li>
+  </ul>
+</div>
+
+</div>
+
+<div id="content_column">
+
+<div id="content">
+  <h2>Readme</h2>
+
+  <div class="section">
+    <p>ZSNES is an open-source Super Nintendo Entertainment System emulator written in x86 assembly, C, and C++. Bleeding with cutting edge SNES emulation, ZSNES is easily comparable to other leading SNES emulators, such as <span id="snes_emus"><a href="http://www.snes9x.com" title="Snes9X Home Page">Snes9x</a>, <a href="http://sneese.sourceforge.net/" title="SNEeSe Home Page">SNEeSe</a>, <a href="http://users.tpg.com.au/advlink/spx/" title="Super Sleuth Home Page">Super Sleuth</a>, and <a href="http://www.byuu.org/" title="byuu's Home Page">bsnes</a></span>.</p>
+    <p>Special thanks to the Snes9x team for all of their help and also for the excellent SNES emulator they have developed.  We wish them the very best of luck!</p>
+  </div>
+
+  <div class="section" id="disclaimer">
+    <h3>Disclaimer</h3>
+    <p>The ZSNES Development Team, including all developers and contributors, is in no way responsible for any damage caused by the use of this software. Please read the <a href="license.htm" title="GNU General Public License">license</a> for more details.</p>
+    <p>Due to legal issues, the ZSNES Development Team can provide you neither with <a href="games.htm#roms" title="Description of ROMs">ROMs</a> nor links to them.  In addition, ZSNES <strong>may not be distributed with ROM images.</strong>  However, as with many cases like this, <a href="http://www.google.com" title="Google.com web site">Google</a> is your friend.</p>
+    <p>There are still many bugs left in ZSNES, so don't expect it to run all your favorite games.  If ZSNES doesn't work for you, then don't use it.  Use Snes9x, SNEeSe, Super Sleuth, or bsnes instead!  In fact, even if you use ZSNES, use those emulators too!</p>
+  </div>
+
+  <div class="section" id="current_progress">
+    <h3>Current Progress</h3>
+
+    <div class="section">
+      <h4>The following are implemented</h4>
+      <ul>
+        <li>Complete 65816 instruction set</li>
+        <li>SRAM support</li>
+        <li>LoROM and HiROM support</li>
+        <li>SlowROM and FastROM support</li>
+        <li>Full DMA support</li>
+        <li>HIRQ/VIRQ/NMI Interrupts</li>
+        <li id="rom_file_types">Support for several SNES file formats (SMC, SFC, SWC, FIG, MGD, MGH, UFO, BIN, GD3, GD7, DX2, USA, EUR, JAP, AUS, ST, BS, 048, 058, 078,), including split files (1, 2, 3; A, B, C)</li>
+        <li>Interleaved format support (<a href="games.htm#special_chip_superfx" title="Information about SuperFX emulation">except SuperFX games</a>)</li>
+        <li>PAL/NTSC timing support</li>
+      </ul>
+    </div>
+
+    <div class="section" id="graphics_engines">
+      <h4>Graphics engines (PPUs)</h4>
+
+      <div class="section">
+        <h5>The following are implemented in both graphics engines, all color modes:</h5>
+        <ul>
+          <li>Graphic modes 0,1,2,3,4,5,6,7</li>
+          <li>8x8, 16x16, 32x32, and 64x64 sprite support (flipped in all directions)</li>
+          <li>8x8 and 16x16 tiles</li>
+          <li>32x32,64x32,32x64,64x64 tile modes</li>
+          <li>Full HDMA effects for wavy backgrounds, interesting mode 7 effects, etc.</li>
+          <li>Mode 7 rotating and scaling effects</li>
+          <li>BG priorities</li>
+          <li>Sprite priorities</li>
+          <li>Add/sub of back area</li>
+          <li>Mosaic effects</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h5>About the old graphics engine:</h5>
+        <ul>
+          <li>Line engine</li>
+          <li>Missing lots of windowing and DMA effects</li>
+          <li>More accurate at drawing some things</li>
+          <li>13-bit color rendering.  (This is a compromise between color accuracy and speed.  Not all transparencies will work correctly with this engine.)</li>
+        </ul>
+
+        <h5>What's available in the old graphics engine when using an 8-bit color video mode:</h5>
+        <ul>
+          <li>Offset per tile mode (mode 2/vertical only)</li>
+          <li>High-res 512 horizontal resolution (missing in 16x16)</li>
+          <li>Single and dual windowing routines</li>
+        </ul>
+
+        <h5>What's available in the old graphics engine when using a 16-bit color video mode:</h5>
+        <ul>
+          <li>Palette changing in the middle of a screen</li>
+          <li>Screen addition (full and half)</li>
+          <li>Screen subtraction (full)</li>
+          <li>Fixed color addition/subtraction</li>
+          <li>Window clipping for fixed color</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h5>About the new graphics engine:</h5>
+        <ul>
+          <li>Tile engine</li>
+          <li>Nearly complete engine with a few bugs</li>
+          <li>Can draw mostly everything on the SNES</li>
+          <li>15-bit coloring</li>
+        </ul>
+
+        <h5>What's available in the new graphics engine when using an 8-bit color video mode:</h5>
+        <ul>
+          <li>Offset per tile mode (mode 2/vertical only, mode 4)</li>
+          <li>High res 512 resolution and 448/478 vertical resolution</li>
+          <li>Windowing effects</li>
+          <li>High resolution mode 7 (only in 640x480x256 video mode; active when all other video filters are disabled)</li>
+        </ul>
+
+        <h5>What's available in the new graphics engine when using a 16-bit color video mode:</h5>
+        <ul>
+          <li>All of old graphics engine 16-bit</li>
+          <li>High resolution mode 7</li>
+          <li>High resolution 16x16 tiles for mode 5</li>
+          <li>Full 15-bit color transparencies for improved picture quality (MMX compatible CPUs only)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="section">
+      <h4>The following are present in sound:</h4>
+      <ul>
+        <li>16-bit digital stereo sound</li>
+        <li>SPC700 Sound CPU</li>
+        <li>DSP Sound Processor
+          <ul>
+            <li>Echo effects</li>
+            <li>FIR filter</li>
+            <li>ADSR volume effects</li>
+            <li>GAIN volume effects</li>
+            <li>Noise effects</li>
+            <li>Pitch modulation</li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h4>The following special input devices are emulated:</h4>
+      <ul>
+        <li><a href="gui.htm#config_input" title="Description of the Input Device dialog">MultiTap (5-player support)</a></li>
+        <li><a href="gui.htm#config_devices" title="Description of the Devices Selector dialog">Super NES Mouse</a> (missing some features, such as speed settings)</li>
+        <li><a href="gui.htm#config_devices" title="Description of the Devices Selector dialog">Super NES Super Scope</a></li>
+        <li><a href="gui.htm#config_devices" title="Description of the Devices Selector dialog">Konami Lethal Enforcer Gun</a></li>
+        <li>Automatic configuration via <a href="support.htm#utilities_nsrt">NSRT</a> headers</li>
+      </ul>
+    </div>
+
+    <div class="section" id="current_progress_special_chips">
+      <h4>The following special cartridge processors are emulated, in whole or in part:</h4>
+
+      <table id="table_current_progress_special_chips" style="text-align: center">
+        <tr>
+          <th>Special Chip</th><th>Progress</th>
+        </tr>
+        <tr>
+          <td><a href="games.htm#special_chip_c4" title="Information about C4 emulation">C4</a></td><td>100%</td>
+        </tr>
+        <tr>
+          <td><a href="games.htm#special_chip_dsp1" title="Information about Nintendo DSP-1 emulation">Nintendo DSP-1</a></td><td>100%</td>
+        </tr>
+        <tr>
+          <td><a href="games.htm#special_chip_dsp2" title="Information about Nintendo DSP-2 emulation">Nintendo DSP-2</a></td><td>100%</td>
+        </tr>
+        <tr>
+          <td><a href="games.htm#special_chip_dsp3" title="Information about Nintendo DSP-3 emulation">Nintendo DSP-3</a></td><td>80%</td>
+        </tr>
+        <tr>
+          <td><a href="games.htm#special_chip_dsp4" title="Information about Nintendo DSP-4 emulation">Nintendo DSP-4</a></td><td>95%</td>
+        </tr>
+        <tr>
+          <td><a href="games.htm#special_chip_obc1" title="Information about OBC-1 emulation">OBC-1</a></td><td>100%</td>
+        </tr>
+        <tr>
+          <td><a href="games.htm#special_chip_sa1" title="Information about SA-1 emulation">SA-1</a></td><td>90%</td>
+        </tr>
+        <tr>
+          <td><a href="games.htm#special_chip_sdd1" title="Information about S-DD1 emulation">S-DD1</a></td><td>100%</td>
+        </tr>
+        <tr>
+          <td><a href="games.htm#special_chip_setadsp10" title="Information about Seta DSP-10 emulation">Seta DSP 10</a></td><td>99%</td>
+        </tr>
+        <tr>
+          <td><a href="games.htm#special_chip_setadsp11" title="Information about Seta DSP-11 emulation">Seta DSP 11</a></td><td>80%</td>
+        </tr>
+        <tr>
+          <td><a href="games.htm#special_chip_spc7110" title="Information about SPC7110 emulation">SPC7110</a></td><td>100% except decompression</td>
+        </tr>
+        <tr>
+          <td><a href="games.htm#special_chip_srtc" title="Information about S-RTC emulation">S-RTC</a></td><td>95%</td>
+        </tr>
+        <tr>
+          <td><a href="games.htm#special_chip_superfx" title="Information about SuperFX emulation">SuperFX</a></td><td>90%</td>
+        </tr>
+      </table>
+
+    </div>
+
+    <div class="section" id="current_progress_add_ons">
+      <h4>The following add-on devices are emulated:</h4>
+
+      <table id="table_current_progress_add_ons" style="text-align: center">
+        <tr>
+          <th>Special Cartridge / Add-On</th><th>Progress</th>
+        </tr>
+        <tr>
+          <td><a href="games.htm#satellaview" title="Information about Broadcast Satellaview emulation">Broadcast Satellaview (BS-X)</a></td><td>50%</td>
+        </tr>
+        <tr>
+          <td><a href="gui.htm#config_chipcfg" title="Description of Nintendo Super System settings">Nintendo Super System</a></td><td>100% except the menus</td>
+        </tr>
+        <tr>
+          <td><a href="games.htm#special_carts_samegame" title="Information about Same Game and SD Gundam G-Next emulation">Same Game, SD Gundam G-Next</a></td><td>100%</td>
+        </tr>
+        <tr>
+          <td><a href="games.htm#special_carts_st" title="Information about the Sufami Turbo emulation">Sufami Turbo</a></td><td>95%</td>
+        </tr>
+      </table>
+
+    </div>
+
+    <div class="section">
+      <h4>The following features are missing:</h4>
+      <ul>
+        <li>Pseudo 512 SNES horizontal resolution (no games are known to use this)</li>
+        <li>Some modes in offset per tile mode</li>
+        <li>Some direct color modes (no games are known to use these)</li>
+        <li><a href="games.htm#special_chip_setarisc" title="Information about Seta RISC emulation">Seta RISC chip</a></li>
+        <li><a href="games.htm#special_chip_spc7110" title="Information about SPC7110 emulation">True SPC7110 decompression</a></li>
+        <li><a href="games.htm#super_gameboy" title="Information about Super GameBoy emulation">Super GameBoy emulation</a></li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h4>What will not run (or not play properly):</h4>
+
+      <p>Please read our <a href="games.htm#compatibility" title="Statement on Game Compatibility">statement on game compatibility</a>.</p>
+      <ul>
+        <li>Some SuperFX games (<a href="games.htm#compatibility" title="Statement on Game Compatibility">regardless of interleave status</a>)</li>
+        <li>Interleaved <a href="games.htm#special_chip_superfx" title="Information about SuperFX emulation">SuperFX</a> games (deinterleave them with <a href="support.htm#utilities_nsrt" title="Nach's SNES ROM Tools">NSRT</a>)</li>
+        <li>Some <a href="games.htm#satellaview" title="Information about Broadcast Satellaview emulation">Broadcast Satellaview (BS-X)</a> games</li>
+        <li>Games with unknown co-processors</li>
+        <li>Games that don't have a valid header</li>
+        <li>Games that hit a severe bug in the 65816/PPU/SPC700/DSP routines</li>
+        <li>Games that require special timing</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <div class="section" id="extra_features">
+    <h3>Extra Features</h3>
+    <ul>
+      <li>Support for <a href="readme.htm#save_states" title="Description of the Save States feature">save states</a>, including <a href="gui.htm#config_saves_keys_rewind" title="Description of the Rewind function">rewinding</a></li>
+      <li>Extensive movie <a href="readme.htm#movies" title="Description of the Movie feature">recording</a> and <a href="advanced.htm#movie_dumping" title="Description of the Movie Dumping features">dumping</a> features</li>
+      <li>Many emulation <a href="gui.htm#config_speed" title="Description of the Speed Options dialog">speed</a> options, including <a href="gui.htm#config_speed_autoframerate" title="Description of the Auto Frame Rate option">automatic frame skipping</a> to compensate for slower machines</li>
+      <li>Full <a href="readme.htm#cheat_codes" title="Description of the Cheat feature">cheat code</a> support (including Game Genie, Pro Action Replay, and GoldFinger)</li>
+      <li>Automatic <a href="readme.htm#ips_patching" title="Description of the IPS Patching feature">IPS soft-patching</a> (including up to 11 sequential patches)</li>
+    </ul>
+    <ul>
+      <li>Custom-built <a href="gui.htm" title="Description of the ZSNES GUI">GUI</a> with many time-saving features</li>
+      <li>Support for loading Zip, gZip, and <a href="support.htm#utilities_nsrt" title="Description of JMA format">JMA</a>-compressed <a href="games.htm#roms" title="Description of ROMs">ROMs</a></li>
+      <li><a href="gui.htm#game_load_random" title="Description of the random ROM loading feature">Randomized ROM loading</a></li>
+      <li>Support for <a href="gui.htm#config_input" title="Description of the Input Device dialog">input</a> from keyboards, joysticks, and gamepads, as well as a <a href="gui.htm#misc_keycomb" title="Description of the key combination editor">key combination editor</a></li>
+      <li>Many <a href="gui.htm#config_video" title="Description of the Video Config dialog">video</a> output options, including graphics-enhancing <a href="gui.htm#config_video_filters" title="Description of the Video Filter options">filters</a></li>
+      <li>Highly configurable <a href="gui.htm#config_sound" title="Description of the Sound Config dialog">sound</a> output options</li>
+    </ul>
+    <ul>
+      <li><a href="netplay.htm" title="Netplay Instructions">Netplay</a> (currently disabled)</li>
+    </ul>
+    <ul>
+      <li>User-editable <a href="advanced.htm#config_files" title="Description of the ZSNES configuration files">configuration files</a></li>
+      <li><a href="advanced.htm#debugger" title="Description of the Debugger">Debugger</a></li>
+      <li>Accepts <a href="advanced.htm#command_line" title="Description of the command-line arguments">command-line arguments</a></li>
+    </ul>
+  </div>
+
+  <div class="section" id="system_requirements">
+    <h3>System Requirements</h3>
+
+    <div class="section" id="system_requirements_os">
+      <h4>Supported operating systems</h4>
+
+      <div class="section">
+        <h5>Official Ports</h5>
+        <ul>
+          <li>Win port: Microsoft Windows 95/98/ME/2000/XP/2003/Vista</li>
+          <li><a href="support.htm#utilities_sdl" title="Description of the SDL API">SDL</a> port: Linux, BSD, Mac OS X, or Xbox running Linux</li>
+          <li>DOS port: Microsoft DOS (may work on other non-MS DOSes)</li>
+        </ul>
+
+        <h5>Un-Official Ports</h5>
+        <ul>
+          <li><a href="http://board.zsnes.com/phpBB2/viewtopic.php?t=6933" title="ZSNES Board thread about the Xbox port">ZsnexBox</a>: Microsoft Xbox (native)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="section" id="system_requirements_cpu">
+      <h4>CPU requirements</h4>
+
+      <p>ZSNES absolutely requires a <strong>100% x86-compatible processor</strong>.  You probably already meet this requirement.  Most consumer-grade processors sold by Intel and AMD use the x86 instruction set.</p>
+      <p>Because much of ZSNES' source code is written in x86 assembly, it will only run on processors that are 100% x86 compatible. "Ports" to other architectures are impossible; we recommend <a href="http://www.snes9x.com" title="Snes9X Home Page">Snes9x</a> as the SNES emulator of choice for portability.</p>
+      <p>Playing a <a href="readme.htm#current_progress_special_chips" title="Current emulation progress of special chips">special chip</a> game will significantly increase CPU usage.  For these games, you may require a processor faster than those listed below.</p>
+    </div>
+
+    <div class="section" id="system_requirements_free_space">
+      <h4>Free space requirements</h4>
+
+      <p>The program files alone require about 1MB.  The amount of disk space required for other files varies greatly.  For example, uncompressed <a href="games.htm#roms" title="Description of ROMs">ROMs</a> <strong>(not included!)</strong> require 256KB-6144KB each.  <a href="readme.htm#save_states" title="Description of the Save States feature">Save states</a> typically require about 270KB each; however, this can increase up to an additional 200KB for <a href="readme.htm#current_progress_special_chips" title="Current emulation progress of special chips">special chip</a> games.</p>
+    </div>
+
+    <div class="section" id="system_requirements_win_port">
+      <h4>Win Port</h4>
+      <ul>
+        <li><strong>OS:</strong> Windows <a href="http://support.microsoft.com/kb/304297/" title="System requirements for Microsoft Windows operating systems">95/98/ME</a>
+          <ul>
+            <li><strong>CPU:</strong> Pentium II (or equivalent) 233MHz (500MHz recommended)</li>
+            <li><strong>RAM:</strong> 32MB (64MB recommended)</li>
+          </ul>
+        </li>
+        <li><strong>OS:</strong> Windows 2000/<a href="http://support.microsoft.com/kb/314865/" title="System requirements for Windows XP operating systems">XP</a>/2003/Vista
+          <ul>
+            <li><strong>CPU:</strong> Pentium II (or equivalent) 266MHz (500MHz recommended)</li>
+            <li><strong>RAM:</strong> 64MB of RAM (128MB recommended)</li>
+          </ul>
+        </li>
+        <li><strong>API:</strong> <a href="support.htm#utilities_directx" title="Description of DirectX">DirectX</a> v8.0a or later must be installed</li>
+        <li><strong>Video:</strong> any video card that supports DirectDraw (acceleration recommended)</li>
+        <li><strong>Sound:</strong> any sound card that supports DirectSound (acceleration recommended)</li>
+      </ul>
+    </div>
+
+    <div class="section" id="system_requirements_sdl_port">
+      <h4>SDL Port</h4>
+      <ul>
+        <li><strong>OS:</strong> Linux, BSD, or Mac OS X</li>
+        <li><strong>CPU:</strong> 266MHz (500MHz recommended, especially if using X)</li>
+        <li><strong>RAM:</strong> 32MB (64MB recommended; more if SDL is compiled to use X)</li>
+        <li><strong>API:</strong> <a href="support.htm#utilities_sdl" title="Description of SDL">SDL</a> v1.20 or later</li>
+        <li><strong>Video:</strong> almost any video card will work (hardware OpenGL support and acceleration highly recommended)</li>
+        <li><strong>Sound:</strong> any sound card supported by SDL (using ALSA or OSS)</li>
+      </ul>
+    </div>
+
+    <div class="section" id="system_requirements_dos_port">
+      <h4>DOS Port</h4>
+
+      <ul>
+        <li><strong>OS:</strong> Microsoft DOS (some non-MS DOSes may work)</li>
+        <li><strong>CPU:</strong> Pentium II (or equivalent) 233MHz</li>
+        <li><strong>RAM:</strong> 32MB (minimum of 17MB free, required for loading 48mbit ROMs)</li>
+        <li><strong>Video:</strong> VGA card
+          <ul>
+            <li>For 16-bit color and therefore proper support of transparencies, an SVGA card with VESA 2 and Linear Frame Buffer support is required.</li>
+            <li>You may be able to use <a href="support.htm#utilities_scitech" title="Scitech Display Doctor">Scitech Display Doctor</a> to enable VESA 2 support on some cards that don't already support it.</li>
+          </ul>
+        </li>
+        <li><strong>Sound:</strong> Sound Blaster Pro or 100% compatible (SB16 or 100% compatible recommended)</li>
+      </ul>
+
+      <p>These system requirements assume you are running the DOS port under pure DOS.  If you are using the DOS port from within Windows, the CPU and RAM requirements will be the same as for the <a href="readme.htm#system_requirements_win_port" title="System Requirements for the Win port">Win port</a>.</p>
+    </div>
+  </div>
+
+  <div class="section" id="installation">
+    <h3>Installation</h3>
+
+    <div class="section">
+      <h4>Win/DOS Port</h4>
+
+      <div class="section">
+        <h5>Installation:</h5>
+        <ol>
+          <li>Download the latest version of ZSNES from <a href="http://www.zsnes.com/index.php?page=files" title="ZSNES.com files page">ZSNES.com</a>.  The file you download is an archive containing the ZSNES binary file and documentation.</li>
+          <li>Extract the contents of the archive into a new folder on your hard drive.  Do not simply overwrite an older version of ZSNES.</li>
+          <li>You can now run ZSNES by executing the ZSNES binary, named <code class="file">zsnesw.exe</code> (Windows) or <code class="file">zsnes.exe</code> (DOS).  ZSNES is not packaged with an installer, so there will be no entry in the Windows Start Menu.</li>
+        </ol>
+        <p><strong>Note:</strong> In Windows, you can create a shortcut to ZSNES to make it easier to open the program.  Right-click on the <code class="file">zsnesw.exe</code> icon to bring up the context menu, and left-click <code>Create Shortcut</code>.  A shortcut to the executable file will appear in the folder.  You can now move the newly-created shortcut to your Desktop or Start Menu.  Opening the shortcut will run ZSNES from its original location.</p>
+      </div>
+
+      <div class="section">
+        <h5>Re-Installation / Reset to default settings:</h5>
+        <p>If you find that you are experiencing a number of unexplained errors in ZSNES, or if you wish to reset all settings back to their defaults, simply delete the <a href="advanced.htm#config_files" title="Description of the configuration files">configuration files</a> that were generated by ZSNES the first time you ran the program.</p>
+      </div>
+
+      <div class="section">
+        <h5>Un-Installation:</h5>
+        <p>If you wish to uninstall ZSNES, simply delete the entire folder (and thus, all files contained within) into which you installed ZSNES (as described in Step 2 of Installation, above).</p>
+        <p>-or-</p>
+        <p>If you have since put additional files (such as <a href="games.htm#roms" title="Description of ROMs">ROMs</a>) into your ZSNES install folder, and do not wish to delete or move them, you will have to delete the individual ZSNES files.  Please refer to the <a href="readme.htm#files" title="Description of the files related to ZSNES">Files</a> section for information on individual files and file types related to ZSNES.  You will also need to delete the <code class="file">docs</code> folder.</p>
+        <p><strong>Note:</strong> ZSNES does not use the <a href="http://support.microsoft.com/kb/256986" title="Description of the Microsoft Windows registry">Windows registry</a>, nor does it generate "hidden" configuration files all over your system.</p>
+      </div>
+    </div>
+
+    <div class="section">
+      <h4>SDL Port / Compiling from source</h4>
+      <ul>
+        <li>Download the latest source release of ZSNES from <a href="http://www.zsnes.com/index.php?page=files" title="ZSNES.com files page">ZSNES.com</a>.</li>
+        <li>After unpacking, navigate to the <code class="file">src</code> directory and run the following commands:
+          <ul>
+            <li><kbd>./configure --enable-release</kbd></li>
+            <li><kbd>make</kbd></li>
+          </ul>
+          And as root:
+          <ul>
+            <li><kbd>make install</kbd></li>
+          </ul>
+        </li>
+        <li>Other, more detailed instructions are provided in the <code class="file">docs/install.txt</code> file.</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h5>Un-Installation:</h5>
+      <p>If you wish to uninstall ZSNES, you can run <kbd>make uninstall</kbd> as root if you still have your <code class="file">Makefile</code>.</p>
+      <p>Otherwise, you will need to navigate to <code class="file">/usr/local/bin</code> and delete <code class="file">zsnes</code>. Then navigate to <code class="file">/usr/local/man/man1</code> and delete <code class="file">zsnes.1</code>. Or just delete the <code class="file">man1</code> directory if you have nothing else in it.</p>
+      <p>You will need root access to perform the above actions.</p>
+      <p>You will also need to delete <code class="file">~/.zsnes</code> or <code class="file">~/Library/Application Support/ZSNES</code> in Mac OS X. Do note that <a href="readme.htm#files" title="Description of the files related to ZSNES">various files</a> are saved in here by default (such as game saves); be sure to back them up if you want to keep them.</p>
+    </div>
+  </div>
+
+  <div class="section" id="basic_usage">
+    <h3>Basic Usage</h3>
+
+    <ol>
+      <li><a href="readme.htm#installation" title="How to Install ZSNES">Install</a> ZSNES.</li>
+      <li>Run ZSNES.
+        <ul>
+          <li>If you're using Windows, double-click on <a href="readme.htm#files_executable" title="Read about the filenames for the ZSNES executable file">the executable file</a>.</li>
+          <li>If you're using DOS, navigate to the ZSNES installation folder and type <kbd>zsnes.exe</kbd> at the command line.</li>
+        </ul>
+      </li>
+      <li>Configure the input settings (<a href="gui.htm#config_input" title="Description of the Input Device dialog">Config Menu -> Input</a>) as desired, or use <a href="readme.htm#default_keys" title="The default keys for controlling games and the emulator">the default settings</a>.</li>
+      <li>Configure the video settings (<a href="gui.htm#config_video" title="Description of the Video Config dialog">Config Menu -> Video</a>) as desired, or use the default settings.</li>
+      <li>Configure path settings (<a href="gui.htm#config_paths" title="Description of the Setup Paths dialog">Config Menu -> Paths</a>) if you don't want all the automatically generated files going into the same directories as your <a href="games.htm#roms" title="Description of ROMs">ROMs</a>.</li>
+      <li>Load a game (<a href="gui.htm#game_load" title="Description of the Load Game dialog">Game Menu -> Load</a>) and start playing.</li>
+      <li>When you are ready to stop playing, you have a number of choices to save your game.
+        <ul>
+          <li>If your game has its own native save function, just use it.</li>
+          <li>If your game does not have a save function, or you are at a point in the game where you can't save, you can create a <a href="readme.htm#save_states" title="Description of the save state feature">save state</a>.  Do this by pressing <kbd class="key">F2</kbd>.</li>
+        </ul>
+      </li>
+      <li>After you save your game:
+        <ul>
+          <li>You can load a new game using the same steps as above, or</li>
+          <li>Exit the emulator by going to <a href="gui.htm#game_quit" title="Description of the Quit menu option">Game Menu -> Quit</a>.</li>
+        </ul>
+      </li>
+      <li>When you are ready to return to a previously saved game, just re-load that game.
+        <ul>
+          <li>Load an in-game save in the normal way.</li>
+          <li>If you saved a state, you can load that state by pressing <kbd class="key">F4</kbd>.</li>
+        </ul>
+      </li>
+    </ol>
+
+    <p>This section only covers very basic usage.  Please read the entire documentation for more information.</p>
+  </div>
+
+  <div class="section" id="default_keys">
+    <h3>Default Keys</h3>
+
+    <div class="section" id="default_keys_game">
+      <h4>Game Keys</h4>
+
+      <p>You can change the default keys for the standard SNES controller under <a href="gui.htm#config_input" title="Description of the Input Device dialog">Config->Input</a>.</p>
+
+      <table id="table_default_keys_pad">
+        <tr>
+          <th>SNES Button</th><th>Player 1 Key</th><th>Player 2 Key</th>
+        </tr>
+        <tr>
+          <td>D-Pad Up</td><td>Arrow Up</td><td><kbd class="key">J</kbd></td>
+        </tr>
+        <tr>
+          <td>D-Pad Down</td><td>Arrow Down</td><td><kbd class="key">M</kbd></td>
+        </tr>
+        <tr>
+          <td>D-Pad Left</td><td>Arrow Left</td><td><kbd class="key">N</kbd></td>
+        </tr>
+        <tr>
+          <td>D-Pad Right</td><td>Arrow Right</td><td><kbd class="key">,</kbd></td>
+        </tr>
+        <tr>
+          <td>Start</td><td><kbd class="key">Return</kbd> / <kbd class="key">Enter</kbd></td><td>Left <kbd class="key">Ctrl</kbd></td>
+        </tr>
+        <tr>
+          <td>Select</td><td>Right <kbd class="key">Shift</kbd></td><td>Left <kbd class="key">Alt</kbd></td>
+        </tr>
+        <tr>
+          <td>A</td><td><kbd class="key">X</kbd></td><td><kbd class="key">Home</kbd></td>
+        </tr>
+        <tr>
+          <td>B</td><td><kbd class="key">Z</kbd></td><td><kbd class="key">End</kbd></td>
+        </tr>
+        <tr>
+          <td>X</td><td><kbd class="key">S</kbd></td><td><kbd class="key">Insert</kbd></td>
+        </tr>
+        <tr>
+          <td>Y</td><td><kbd class="key">A</kbd></td><td><kbd class="key">Delete</kbd></td>
+        </tr>
+        <tr>
+          <td>L (Left Shoulder)</td><td><kbd class="key">D</kbd></td><td><kbd class="key">Page Up</kbd></td>
+        </tr>
+        <tr>
+          <td>R (Right Shoulder)</td><td><kbd class="key">C</kbd></td><td><kbd class="key">Page Down</kbd></td>
+        </tr>
+      </table>
+
+      <p>You can change the default keys for special input devices under <a href="gui.htm#config_devices" title="Description of the Devices Selector dialog">Config->Devices</a>.</p>
+      <p>The special input devices just use input from your mouse for movement and aiming.</p>
+
+      <table id="table_default_keys_scope">
+        <tr>
+          <th>Super Scope Button</th><th>Computer/Mouse Button</th>
+        </tr>
+        <tr>
+          <td>Fire</td><td>Left mouse button</td>
+        </tr>
+        <tr>
+          <td>Cursor Mode Button</td><td>Right mouse button</td>
+        </tr>
+        <tr>
+          <td>Toggle Auto-fire</td><td><kbd class="key">=</kbd></td>
+        </tr>
+        <tr>
+          <td>Pause</td><td><kbd class="key">Backspace</kbd></td>
+        </tr>
+      </table>
+
+    </div>
+
+    <div class="section" id="default_keys_emulator">
+      <h4>Emulator Keys</h4>
+
+      <table id="table_default_keys_emulator">
+        <tr>
+          <th>Key</th><th>Function</th><th>Where to Customize</th>
+        </tr>
+        <tr>
+          <td><kbd class="key">Esc</kbd></td><td>When a game is loaded, toggle the GUI (pauses emulation while GUI visible).</td><td>Cannot be changed</td>
+        </tr>
+        <tr>
+          <td><kbd class="key">F1</kbd></td><td>Open the <a href="gui.htm#f1_menu" title="Description of the F1 Menu">F1 Quick Menu.</a></td><td>Cannot be changed</td>
+        </tr>
+        <tr>
+          <td><kbd class="key">F2</kbd></td><td>Save a state to current slot.</td><td><a href="gui.htm#config_saves_keys" title="Key configuration for save functions">Config->Saves</a></td>
+        </tr>
+        <tr>
+          <td><kbd class="key">F3</kbd></td><td>Open the <a href="gui.htm#save_slot_chooser" title="Description of the Save State Chooser dialog">save state slot chooser</a>.</td><td><a href="gui.htm#config_saves_keys" title="Key configuration for save functions">Config->Saves</a></td>
+        </tr>
+        <tr>
+          <td><kbd class="key">F4</kbd></td><td>Load a save state from the current slot.</td><td><a href="gui.htm#config_saves_keys" title="Key configuration for save functions">Config->Saves</a></td>
+        </tr>
+        <tr>
+          <td><kbd class="key">F5</kbd> &lt;--&gt; <kbd class="key">F12</kbd></td><td>Toggle sound channels 1 through 8, respectively</td><td><a href="gui.htm#misc_misckeys_sound">Misc->Misc Keys</a></td>
+        </tr>
+        <tr>
+          <td><kbd class="key">1</kbd> <kbd class="key">2</kbd> <kbd class="key">3</kbd> <kbd class="key">4</kbd></td><td>Toggle background layers 1, 2, 3, and 4, respectively</td><td><a href="gui.htm#misc_misckeys_bglayers">Misc->Misc Keys</a></td>
+        </tr>
+        <tr>
+          <td><kbd class="key">5</kbd></td><td>Toggle sprite/object layer</td><td><a href="gui.htm#misc_misckeys_bglayers">Misc->Misc Keys</a></td>
+        </tr>
+        <tr>
+          <td><kbd class="key">6</kbd></td><td>Panic Key - Reset all switches to default (enable Offset Mode, Windowing, all background layers, sprite/object layer, and sound channels; disable Add-on Devices; reset Emulation Speed Throttle)</td><td><a href="gui.htm#misc_misckeys_misctoggles">Misc->Misc Keys</a></td>
+        </tr>
+        <tr>
+          <td><kbd class="key">8</kbd></td><td>Toggle <a href="gui.htm#config_options_newgfx" title="Description of the New Graphics Engine option">New Graphics Engine</a></td><td><a href="gui.htm#misc_misckeys_gfxtoggles">Misc->Misc Keys</a></td>
+        </tr>
+        <tr>
+          <td><kbd class="key">9</kbd></td><td>Toggle Windowing</td><td><a href="gui.htm#misc_misckeys_gfxtoggles">Misc->Misc Keys</a></td>
+        </tr>
+        <tr>
+          <td><kbd class="key">0</kbd></td><td>Toggle Offset Mode</td><td><a href="gui.htm#misc_misckeys_gfxtoggles">Misc->Misc Keys</a></td>
+        </tr>
+        <tr>
+          <td><kbd class="key">T</kbd></td><td>While using Netplay, press to open the Chat window</td><td><a href="gui.htm#misc_misckeys_quick">Misc->Misc Keys</a></td>
+        </tr>
+        <tr>
+          <td><kbd class="key">~</kbd></td><td>Fast Forward</td><td><a href="gui.htm#config_speed_fastforward">Config->Speed</a></td>
+        </tr>
+        <tr>
+          <td><kbd class="key">P</kbd></td><td><a href="gui.htm#config_saves_pause" title="Descriptions of two options in the GUI that pause emulation">Pause Emulation</a></td><td><a href="gui.htm#config_speed_pause">Config->Speed</a></td>
+        </tr>
+      </table>
+       <p>Note: Besides these default keys, there are many other keys that you can configure in the GUI.</p>
+    </div>
+  </div>
+
+  <div class="section" id="save_states">
+    <h3>Save States</h3>
+
+    <p><strong>Warning:</strong> If you care about your progress in a game, remember to use in-game saves regularly!  Do not rely solely on save states!</p>
+    <p>When you "save a state," ZSNES creates a file that contains the values of all the variables that change while ZSNES is emulating a game.  These values are specific to the exact moment that you saved the state.  You can then load a save state at a later time, thus returning ZSNES to the exact point in the game when you saved the state originally.  This allows you to save your progress at a point that might not normally be possible with in-game saves, or in games that don't have in-game saves at all.</p>
+    <p>Save states are typically not compatible between emulators, and sometimes not even between different versions of the same emulator, often due to internal core changes. In fact, it should be noted that save states created prior to <a href="history.htm#v0600" title="Changelog for ZSNES v0.600">v0.600</a> of ZSNES will not work in current versions.</p>
+    <p>To remedy this problem, first load the state in any version of ZSNES from v0.600 to v1.42. Then, immediately after loading, save another state. The new state you just created should (hopefully) load correctly in ZSNES v1.50 and higher.</p>
+    <p>Since ZSNES does not support save states created by any other SNES emulator, you can instead use the emulator-independent SRAM (.srm) data to transfer game progress from one emulator to another.</p>
+    <p>Each ZSNES save state is approximately 270KB in size. <a href="readme.htm#current_progress_special_chips" title="Current emulation progress of special chips">Special chip</a> games may require an additional 200KB, however.</p>
+
+    <div class="section">
+      <h4>How to Use Save States</h4>
+      <p>You can create and load save states using the <a href="gui.htm#game_savestate" title="Description of the Save State menu item">GUI</a>.</p>
+      <p>It's much easier to just use the <a href="readme.htm#default_keys_emulator" title="Description of the default emulator keys">default quick keys</a> for these features.  Press <kbd class="key">F2</kbd> to save, <kbd class="key">F4</kbd> to load, and <kbd class="key">F3</kbd> to open the <a href="gui.htm#save_slot_chooser" title="Description of the Save State Chooser dialog">save state slot chooser</a> (with graphical preview).  However, if you don't like that method, many other save and load techniques are available.</p>
+      <p>Configure general save behavior under <a href="gui.htm#config_saves" title="Description of the Save Options dialog">Config->Saves</a>.  Configure save paths under <a href="gui.htm#config_paths" title="Description of the Setup Paths dialog">Config->Paths</a>.</p>
+    </div>
+  </div>
+
+  <div class="section" id="movies">
+    <h3>Movies</h3>
+
+    <p><strong>Warning:</strong> Playing back a previously recorded movie will overwrite any SRAM data for the current game with the SRAM data contained in the ZMV file.  This means you should enable <a href="gui.htm#config_saves_do_not_save_sram" title="Description of the Do Not Save SRAM option">Do Not Save SRAM</a> when playing around with movies!!</p>
+    <p>Note that re-recording, chapters, and appending will not work with movies recorded in the old ZMV format (movies made prior to ZSNES v1.50).</p>
+    <p>For descriptions of the <a href="gui.htm#misc_movie" title="Description of the Movie Options dialog">Movie Options dialog</a>, please refer to the <a href="gui.htm" title="Description of the GUI">GUI</a> page.</p>
+
+    <div class="section">
+      <h4>About Movies</h4>
+      <p>The ZSNES movie format (ZMV) has been completely rewritten and is now better and more feature-rich than before, with the most capabilities yet implemented in an emulator. Three of the most notable new features are re-recording, dumping ZMVs to AVI, and movie subtitles, described below.</p>
+      <p>A movie file consists of a <a href="readme.htm#save_states" title="Description of the Save State feature">save state</a>, SRAM data (when applicable), and the recorded controller data, as well as any chapters (states) that have been inserted. It also keeps track of a few other things which are negligible with regard to the overall filesize. Movie files should record at less than 1KB/minute (60KB/hour).</p>
+      <p>ZSNES should be able to record most actions you can do with a real SNES, including resetting.  During playback, the game will reset just as you did during recording.</p>
+    </div>
+
+    <div class="section">
+      <h4>Limitations</h4>
+      <p>You cannot record games that use the Konami Justifier <a href="gui.htm#config_devices" title="Description of the Input Deviced dialog">special input device</a>.  <em class="game">Lethal Enforcers</em> is the only game known to require this device.</p>
+      <p>You cannot record games while using <a href="netplay.htm" title="Description of the Netplay feature">Netplay</a>.</p>
+      <p>You should be able to record ZSNES movies for all game types; however, ZMVs are heavily dependant on save states, so any games that exhibit problems while using save states will also exhibit problems when recording and playing movies.</p>
+      <p>For best results, you should play back movies with the same version of ZSNES that was used to record them.  Otherwise, keypresses may become desynchronized from the emulation playback.</p>
+    </div>
+
+    <div class="section">
+      <h4>Re-Recording</h4>
+
+      <p>You do not have to do everything perfectly the first time you record a movie.  ZSNES allows you to re-record parts of a movie, inserting the newly recorded parts seamlessly into the previously recorded parts.  You can accomplish this in a number of ways:</p>
+      <ul>
+        <li>While <a href="gui.htm#misc_movie_maincontrols" title="Description of the movie playback controls">playing back</a> a movie, start <a href="gui.htm#misc_movie_maincontrols" title="Description of the movie playback controls">recording</a> again.</li>
+        <li>Use save states while recording movies. Loading the states will allow you to re-record.</li>
+        <li>You can use the rewind key to go back in movies. The rewind key can be configured under the <a href="gui.htm#config_saves" title="Description of the Save Options dialog">Config->Saves</a> menu.</li>
+      </ul>
+
+    </div>
+
+    <div class="section">
+      <h4>Chapters</h4>
+      <p>You can insert chapters into your movies, to which you can seek during movie playback.</p>
+      <p>You are limited to 65535 (2<sup>16</sup>-1) chapters created during recording, in addition to 65535 (2<sup>16</sup>-1) created during playback.</p>
+    </div>
+
+
+    <div class="section" id="movies_subtitles">
+      <h4>Subtitles</h4>
+
+      <p>Subtitles allow you to create a short message that will be visible on-screen during playback of a movie.</p>
+
+      <ol>
+        <li>Create an empty file in your <a href="gui.htm#config_paths" title="Description of the Setup Paths dialog">save directory</a> (or wherever your movies are saved).</li>
+        <li>The subtitle file must be named in the following manner:
+          <ul>
+            <li>Subtitle file name = ZMV file name = ROM file name.  (Example: <code class="filename">smw.sfc</code> (<em class="game">Super Mario World</em> ROM), <code class="filename">smw.zmv</code>, <code class="filename">smw.sub</code>).</li>
+            <li>If you are using movie slot <strong class="gui">0</strong>, file extension = <code class="filename">.sub</code>.</li>
+            <li>If you are using movie slot <strong class="gui">1</strong> through <strong class="gui">9</strong>, change the last letter of the extension to match the movie slot you are using.  (Example: slot 1 = <code class="filename">.su1</code>, slot 5 = <code class="filename">.su5</code>, slot 9 = <code class="filename">.su9</code>).</li>
+          </ul>
+        </li>
+        <li>For each subtitle you want in the movie, add a new line to the subtitle file, with the following information:
+          <ul>
+            <li>Start Frame:Frame Duration:Message</li>
+            <li>For example: <kbd>10:100:Beating the Last Boss</kbd> without the quotes.  In this example, the message "Beating the Last Boss" will appear in the tenth frame and stay visible for 100 frames (thus, until the 110th frame).</li>
+            <li>ZSNES can display only one subtitle at a time.  So make sure that the start frame for the next subtitle is not during the duration time of the previous subtitle.  You must also list your subtitles sequentially for all of them to be played (they cannot be out of order).</li>
+            <li>ZSNES can display a maximum of 34 characters (of a subtitle message) across the width of the screen.</li>
+          </ul>
+        </li>
+        <li>Now save your new subtitle file.  Open ZSNES, play a movie, and you should see your subtitles appear!</li>
+      </ol>
+    </div>
+
+    <div class="section">
+      <h4>Movie Dumping</h4>
+      <p>See the <a href="advanced.htm#movie_dumping" title="Description of the movie dumping features">Movie Dumping</a> section of the <a href="advanced.htm" title="Advanced Usage">Advanced Usage</a> page for more information.</p>
+    </div>
+  </div>
+
+  <div class="section" id="ips_patching">
+    <h3>IPS Patching</h3>
+
+    <p><acronym title="International Patching System">IPS</acronym> patches are files that are applied to an original <a href="games.htm#roms" title="Description of ROMs">ROM</a>, which change the programming of the ROM in some way.  They are primarily used to translate ROMs into another language; however, they can be used for a variety of purposes. Visit <a href="http://www.romhacking.net" title="Romhacking.net - Home of the Romh!">Romhacking.net</a> for more information about translations and ROM hacks.</p>
+    <p>ZSNES has the ability to automatically "soft-patch" a ROM.  This means that after ZSNES loads a ROM into its memory, it will apply the IPS patch to the <strong>in-memory</strong> ROM data, <strong>not</strong> the ROM file on your hard disk.  This <em>eliminates</em> the need to keep two copies of a ROM: the original, and the patched.</p>
+
+    <div class="section">
+      <h4>Applying a single IPS file to a ROM:</h4>
+      <ol>
+        <li>Make sure <strong class="gui">Enable Auto-Patch</strong> is checked in <a href="gui.htm#config_options" title="Description of the Options dialog">Config->Options</a>.</li>
+        <li>The IPS file must be either in your <a href="gui.htm#config_paths" title="Description of the Setup Paths dialog">Saves directory</a> or in the same directory as the ROM.</li>
+        <li>The IPS file and the ROM file must have matching filenames.  For example, <code class="file">SD3.sfc</code> and <code class="file">SD3.ips</code>.  If your ROM file is compressed, the IPS file must match the <strong>compressed</strong> filename.  For example, if you have the file <code class="file">SD3.sfc</code> compressed inside the file <code class="file">Seiken Densetsu 3 (J).zip</code>, the IPS file must be named <code class="file">Seiken Densetsu 3 (J).ips</code>.</li>
+        <li>If you meet the above three conditions, just load your ROM file as normal, and ZSNES should automatically patch the IPS file to the in-memory ROM.  Remember, your original ROM file will <strong>not</strong> be changed.</li>
+        <li>If you have done everything outlined in the steps above, and your game does not appear to be working, refer to the <a href="faq.htm#universal_games_ips" title="Frequently Asked Questions">FAQ</a>.</li>
+      </ol>
+    </div>
+
+    <div class="section">
+      <h4>Applying multiple IPS files to a ROM:</h4>
+      <p>ZSNES has the ability to apply up to eleven separate IPS files to the same ROM file.  You must give each IPS file a specific extension to tell ZSNES in what order to apply them.  Aside from changing the extension of the IPS files, just follow the directions above.</p>
+
+      <table id="table_ips_extensions" style="text-align:center">
+        <tr>
+          <th>IPS file extension</th><th>Applied When?</th>
+        </tr>
+        <tr><td>ips</td><td>First</td></tr>
+        <tr><td>ip0</td><td>Second</td></tr>
+        <tr><td>ip1</td><td>Third</td></tr>
+        <tr><td>ip2</td><td>Fourth</td></tr>
+        <tr><td>ip3</td><td>Fifth</td></tr>
+        <tr><td>ip4</td><td>Sixth</td></tr>
+        <tr><td>ip5</td><td>Seventh</td></tr>
+        <tr><td>ip6</td><td>Eighth</td></tr>
+        <tr><td>ip7</td><td>Ninth</td></tr>
+        <tr><td>ip8</td><td>Tenth</td></tr>
+        <tr><td>ip9</td><td>Eleventh</td></tr>
+      </table>
+      <p>ZSNES will <em>not</em> apply non-sequentially extensioned IPS files.  This means that if you have three IPS files, named <code class="file">patch.ips</code>, <code class="file">patch.ip0</code>, and <code class="file">patch.ip6</code>, ZSNES will only apply the first two.</p>
+      <p>Please remember that <strong>the order in which you apply the IPS patches may be important</strong>.  Applying the patches in the wrong order may result in strange bugs, or even an unplayable game.  Please refer to the documentation that accompanied your IPS file.</p>
+    </div>
+
+    <div class="section">
+      <h4>Alternative method of applying IPS files to compressed ROMs:</h4>
+      <p>The simplest method of applying an IPS file to a compressed ROM is to simply place the IPS file in the same archive as the ROM.  The filename of the IPS file does <strong>not</strong> have to match the compressed or uncompressed filename of the ROM.  <strong>Do not</strong> add more than one IPS file of a given extension to an archive.  Results can be unpredictable as to which of the same-extension IPS files will be applied to the ROM.</p>
+      <p>If your ROM is compressed, ZSNES will first look for IPS files inside the archive.  If it finds any, it will only load IPS files from inside the archive, and will not look anywhere else.  Otherwise, ZSNES looks in the <a href="gui.htm#config_paths" title="Description of the Setup Paths dialog">Saves directory</a> and the same directory as the ROM.</p>
+    </div>
+  </div>
+
+  <div class="section" id="cheat_codes">
+    <h3>Cheat Codes</h3>
+
+    <p>Currently, ZSNES supports Game Genie, Pro Action Replay, and GoldFinger codes.</p>
+
+    <div class="section">
+      <h4>How to use cheat codes:</h4>
+      <ol>
+        <li>Load the ROM to which you want to apply cheats.</li>
+        <li>Press <kbd class="key">ESC</kbd> to toggle the <a href="gui.htm" title="Description of the GUI">GUI</a>.  Open the <a href="gui.htm#cheat_addcode" title="Description of the Add Code dialog">Add Code</a> dialog from the <a href="gui.htm#cheat_menu" title="Description of the Cheat Menu">Cheat Menu</a>.  You can enter up to 255 codes for each game.</li>
+        <li>After adding your codes, press <kbd class="key">ESC</kbd> until you are back to your game.</li>
+      </ol>
+
+      <p><strong>To use a multi-line cheat code, just enter each line as a separate code!</strong></p>
+    </div>
+
+    <div class="section">
+      <h4>How to use <code class="file">.cht</code> files:</h4>
+      <p>Place the <code class="file">.cht</code> file into the same directory as the ROM, or into your <a href="gui.htm#config_paths" title="Description of the Setup Paths dialog">Saves folder</a>.  The <code class="file">.cht</code> file must be named according to <a href="readme.htm#files_naming_rules" title="The pattern used for naming files and extensions">the normal naming rules</a>.</p>
+    </div>
+
+    <div class="section">
+      <h4>Troubleshooting Cheat Codes</h4>
+      <ul>
+        <li>Try using the <strong class="gui">Fix</strong> button in the <a href="gui.htm#cheat_menu_browse" title="Description of the Browse Cheats dialog">Browse Cheats</a> dialog.</li>
+        <li>Some codes are meant to be used with different versions of the same game.  If a cheat code doesn't work and there is one for both Game Genie and Pro Action Replay, try them both.</li>
+        <li>Remember that Game Genie codes require the <kbd>-</kbd> (dashes).</li>
+        <li>Try <a href="gui.htm#game_reset" title="Description of the Reset menu item">resetting</a> the game.  Any code for a game that mentions a term similar to "Start with" means that the game must be reset in order to take effect.</li>
+        <li>If you are having a hard time with comparative searches, make sure to delete the <code class="file">tmpchtsr.___</code> file in your ZSNES directory.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="section" id="files">
+    <h3>Files</h3>
+
+    <p>This section attempts to explain the various files that are created, loaded, or used by ZSNES.</p>
+
+    <div class="section" id="files_naming_rules">
+      <p>Most of the data files that are specific to individual <a href="games.htm#roms" title="Description of ROMs">ROMs</a> are named in the following manner:</p>
+      <ul>
+        <li>The filename of the data file is the same as the filename of the ROM from which it was created.</li>
+        <li>The file extension of the data file changes, depending on the following:
+          <ul>
+            <li>If there are no "slots" for the data file, then it is just the normal file extension (srm, bmp, png, raw, cht, cmb, cfg, txt).</li>
+            <li>If you are using slot 0, then it is just the normal file extension (zst, zmv, sub, ips, spc).</li>
+            <li>If you are using slots 1-9, then the last letter of the file extension changes to match the slot number (zs1-zs9).</li>
+            <li>If you are using slots 10-99, then the last <em>two</em> letters of the file extension change to match the slot number (z10-z99).</li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+
+    <table style="text-align: center" id="table_files">
+      <tr>
+        <th>File Name</th><th>File Extension</th><th>File Type Name</th><th>Description</th><th>Where Created?</th>
+      </tr>
+      <tr>
+        <td>Whatever you want, or have them automatically named by <a href="support.htm#utilities_nsrt" title="Nach's SNES ROM Tools">NSRT</a>.</td><td><a href="readme.htm#rom_file_types" title="Read the full list of supported ROM file extensions">smc, sfc, swc, ...</a></td><td><acronym title="Read Only Memory">ROM</acronym> (Game)</td><td>These are common extensions for <a href="games.htm#roms" title="Description of ROMs">ROMs</a>, which are computer files of the game data on real SNES cartridges.</td><td>Wherever you put them.</td>
+      </tr>
+      <tr>
+        <td>romname</td><td>srm</td><td>Static RAM</td><td>This is the <em>in-game</em> save file.  It is automatically generated by ZSNES when you use the in-game save function.  <a href="gui.htm#config_saves_sram_check_save" title="Description of the SRAM Check+Save option">Some games use Static RAM as working RAM rather than to save a game.</a>  This format <em>should</em> be compatible among all emulators.</td><td><a href="gui.htm#config_paths" title="Description of the Setup Paths dialog">Saves folder</a></td>
+      </tr>
+      <tr>
+        <td>romname</td><td>zst, zs1-zs9, z10-z99, zss</td><td>ZSNES Save State</td><td>See the <a href="readme.htm#save_states" title="Description of the Save State feature">Save States</a> section for more information.</td><td><a href="gui.htm#config_paths" title="Description of the Setup Paths dialog">Saves folder</a></td>
+      </tr>
+      <tr>
+        <td>romname</td><td>zmv, zm1-zm9</td><td>ZSNES Movie</td><td>See the <a href="readme.htm#movies" title="Description of the Movie feature">Movies</a> section for more information.</td><td><a href="gui.htm#config_paths" title="Description of the Setup Paths dialog">Saves folder</a></td>
+      </tr>
+      <tr>
+        <td>romname</td><td>mzt, mz1-mz9</td><td>ZSNES Movie States</td><td>Directories which contain the various save state data for that particular movie. See the <a href="readme.htm#movies" title="Description of the Movie feature">Movies</a> section for more information.</td><td><a href="gui.htm#config_paths" title="Description of the Setup Paths dialog">Saves folder</a></td>
+      </tr>
+      <tr>
+        <td>romname</td><td>sub, su1-su9</td><td>ZSNES Subtitle</td><td>See the <a href="readme.htm#movies_subtitles" title="Description of the Subtitle feature">Subtitles</a> section for more information.</td><td><a href="gui.htm#config_paths" title="Description of the Setup Paths dialog">Saves folder</a></td>
+      </tr>
+      <tr>
+        <td>romname</td><td>ips, ip0-ip9</td><td>International Patching System</td><td>See the <a href="readme.htm#ips_patching" title="Description of the IPS patching features">IPS Patching</a> section for more information.</td><td><a href="gui.htm#config_paths" title="Description of the Setup Paths dialog">Saves folder</a>, Same folder as ROM</td>
+      </tr>
+      <tr>
+        <td>romname_***** / img*****</td><td>bmp, png</td><td>Images</td><td>These are snapshots of the game screen, created by ZSNES when you use the <a href="gui.htm#f1_menu" title="Description of the F1 Menu">F1 Menu</a>.  The file name is appended by a number, up to 99999.</td><td><a href="gui.htm#config_paths" title="Description of the Setup Paths dialog">Snapshots folder</a></td>
+      </tr>
+      <tr>
+        <td>romname</td><td>spc, sp1-sp9, s10-s99</td><td>SPC Sound</td><td>These files are created by ZSNES when you dump the SPC data of the game you are playing by using the <a href="gui.htm#f1_menu" title="Description of the F1 Menu">F1 Menu</a>.  <strong>Note:</strong> In Windows, the <code class="file">.spc</code> extension is sometimes used for PKCS Certificates.</td><td><a href="gui.htm#config_paths" title="Description of the Setup Paths dialog">SPCs folder</a></td>
+      </tr>
+      <tr id="files_cht">
+        <td>romname</td><td>cht</td><td>Cheat Data</td><td>This file contains <a href="readme.htm#cheat_codes" title="Description of the cheat code features">cheat codes</a> that you entered using the <a href="gui.htm#cheat_menu" title="Description of the Cheat Code Editor">Cheat Code Editor</a>.  These files are generally compatible between different versions of the same emulator, but not necessarily between different emulators.</td><td><a href="gui.htm#config_paths" title="Description of the Setup Paths dialog">Saves folder</a></td>
+      </tr>
+      <tr>
+        <td>romname</td><td>cmb</td><td>Key Combination Data</td><td>These files contain key combination data, created when you use the <a href="gui.htm#misc_keycomb" title="Description of the Key Combination Editor">Key Combination Editor</a>.</td><td><a href="gui.htm#config_paths" title="Description of the Setup Paths dialog">Saves folder</a></td>
+      </tr>
+      <tr>
+        <td>romname</td><td>inp</td><td>ZSNES Input </td><td>These files contain input configuration for the specific game.</td><td><a href="gui.htm#config_paths" title="Description of the Setup Paths dialog">Saves folder</a></td>
+      </tr>
+      <tr>
+        <td>sounddmp</td><td>raw</td><td>Sound Buffer Dump</td><td>This is a dump of sound buffer data, created when you use the appropriate <a href="gui.htm#f1_menu" title="Description of the F1 Menu">F1 Menu</a> option.</td><td><a href="gui.htm#config_paths" title="Description of the Setup Paths dialog">SPCs folder</a></td>
+      </tr>
+      <tr>
+        <td>data</td><td>cmb</td><td>Key Combination Data</td><td>This file contains key combination data, created when you use the <a href="gui.htm#misc_keycomb" title="Description of the Key Combination Editor">Key Combination Editor</a> for an unspecific game.</td><td>ZSNES folder (Win/DOS) / ~/.zsnes (SDL) / ~/Library/Application Support/ZSNES (SDL - Mac OS X)</td>
+      </tr>
+      <tr id="files_executable">
+        <td>zsnes / zsnesw</td><td>exe (Win/DOS)</td><td>ZSNES executable</td><td>This is the main ZSNES executable binary file.</td><td>"ZSNES Folder" means the location of this executable</td>
+      </tr>
+      <tr>
+        <td>zsnes / zsnesw / zsnesl</td><td>cfg</td><td>ZSNES <a href="advanced.htm#config_files" title="Description of the ZSNES configuration files">Configuration File</a></td><td>User-editable configuration file where you can set almost any option in ZSNES.</td><td>ZSNES folder (Win/DOS) / ~/.zsnes (SDL) / ~/Library/Application Support/ZSNES (SDL - Mac OS X)</td>
+      </tr>
+      <tr>
+        <td>zmovie</td><td>cfg</td><td>ZSNES Movie <a href="advanced.htm#config_files" title="Description of the ZSNES configuration files">Configuration File</a></td><td>User-editable configuration file where you can change advanced <a href="advanced.htm#movie_dumping" title="Description of the movie dumping features">movie dumping</a> features.</td><td>ZSNES folder (Win/DOS) / ~/.zsnes (SDL) / ~/Library/Application Support/ZSNES (SDL - Mac OS X)</td>
+      </tr>
+      <tr>
+        <td>zinput</td><td>cfg</td><td>ZSNES Input <a href="advanced.htm#config_files" title="Description of the ZSNES configuration files">Configuration File</a></td><td>User-editable configuration file where you can change settings for controllers and extra SNES devices.  This is the same as the files with the .inp extension, but is used globally.</td><td>ZSNES folder (Win/DOS) / ~/.zsnes (SDL) / ~/Library/Application Support/ZSNES (SDL - Mac OS X)</td>
+      </tr>
+      <tr id="files_zfont">
+        <td>zfont</td><td>txt</td><td>ZSNES Font <a href="advanced.htm#config_files" title="Description of the ZSNES configuration files">Configuration File</a></td><td>This is where the appearance of text in the ZSNES GUI is <a href="advanced.htm#config_files" title="Description of the ZSNES configuration files">configured</a>.</td><td>ZSNES folder (Win/DOS) / ~/.zsnes (SDL) / ~/Library/Application Support/ZSNES (SDL - Mac OS X)</td>
+      </tr>
+      <tr id="files_rominfo">
+        <td>rominfo</td><td>txt</td><td>ROM Information</td><td>This contains information about the ROM you most recently ran.  You can configure this behavior under <a href="gui.htm#config_options" title="Description of the Options dialog">Config->Options</a>.</td><td>ZSNES folder (Win/DOS) / ~/.zsnes (SDL) / ~/Library/Application Support/ZSNES (SDL - Mac OS X)</td>
+      </tr>
+    </table>
+  </div>
+
+</div>
+
+<div id="footer">
+  <h2>Footer</h2>
+  <p>This documentation is best viewed in a standards-compliant web browser, like <a href="http://www.mozilla.com" title="Mozilla Corporation home page">Firefox</a> or <a href="http://www.opera.com" title="Opera web browser home page">Opera</a>.</p>
+
+  <a href="http://sourceforge.net" title="SourceForge.net"><img style="border:0;width:88px;height:31px" src="http://sflogo.sourceforge.net/sflogo.php?group_id=127354&amp;type=1" alt="SourceForge.net Logo" /></a>
+  <a href="http://sourceforge.net/donate/index.php?group_id=19677" title="Donate to the ZSNES Project"><img style="border:0;width:88px;height:32px" src="http://images.sourceforge.net/images/project-support.jpg" alt="Support This Project" /> </a>
+  <span class="web_only">
+    <a href="http://validator.w3.org/check?uri=referer" title="Validate this page's HTML"><img style="border:0;width:88px;height:31px" src="http://www.w3.org/Icons/valid-xhtml10" alt="Valid XHTML 1.0 Strict" /></a>
+    <a href="http://jigsaw.w3.org/css-validator/check/referer" title="Validate this page's CSS"><img style="border:0;width:88px;height:31px" src="http://jigsaw.w3.org/css-validator/images/vcss" alt="Valid CSS!" /></a>
+  </span>
+
+  <p><a href="license.htm" title="View the General Public License">Copyright (C) ZSNES Team &amp; ZSNES Documentation Team</a></p>
+</div>
+
+</div>
+
+</body>
+
+</html>

@@ -1,0 +1,143 @@
+/*    Jipcy's style.
+This is used as the default stylesheet for the NSRT guide, and an alternative stylesheet for the docs proper.    */
+
+/*    ALL PROPERTIES ARE ALPHABETIZED!!!  KEEP THEM THAT WAY!!!    */
+
+@import url(shared.css);          /*    Loads shared.css, which contains shared styling information.    */
+@import url(release.css);          /*    Loads release.css, which contains styling information specific to public releases of the docs.    */
+
+body {
+  background-color: white;
+  color: black;
+  font-family: Verdana, "Arial Unicode MS", Arial, sans-serif;
+  margin: 0em;          /*    Removes default ~0.5em margin between the body and the view port.    */
+}
+
+a img {
+  border-width: 0px;
+}
+
+#header {
+  background-color: #C8CFD8;
+  border-bottom: solid 1em #00CC99;
+  color: inherit;
+}
+
+#header #logo {
+  margin: 5px 7px 0px 7px;          /*    Compensates for the apparent non-centering in the logo image itself.    */
+}
+
+#header h1 {
+  display: inline;
+  margin-left: 1em;
+  text-align: right;
+}
+
+#nav_column {
+  float: left;
+  margin: 1em;
+  width: 15em;
+}
+
+#navigation {
+  border: solid 1px #00CC99;
+}
+
+#navigation h2, #content h2, #content h3 {
+  background-color: #00CC99;
+  color: inherit;
+  margin: 0px 0px 1px 0px;
+  padding: 0.1em 0.5em 0.1em 0.5em;
+}
+
+#navigation a:hover, #content a:hover {
+  background-color: #00CC99;
+  color: inherit;
+}
+
+#navigation ul {
+  list-style-type: none;
+  margin: 0em;
+  padding-left: 0.5em;
+}
+
+#navigation ul li {
+  font-weight: bold;
+  margin: 0.3em 0em 0.3em 0em;
+}
+
+#navigation ul ul {
+  margin-top: 0.45em;
+  padding-left: 1.2em;
+}
+
+#navigation ul ul li {
+  font-weight: normal;
+  margin: 0em;
+}
+
+#navigation ul ul a {
+  text-decoration: none;
+}
+
+#content_column {
+  margin: 1em 1em 1em 17em;
+  min-width: 40em;
+}
+
+#content {
+  border-bottom: solid 3px black;
+  max-width: 60em;
+  margin: auto;
+  padding-bottom: 1em;
+}
+
+#content h4 {
+  background-color: #00FFCC;
+  color: inherit;
+  margin: 0px 0px 1px 0px;
+  padding: 0.2em 1.5em 0.2em 1.5em;
+}
+
+#content h5 {
+  margin-bottom: -1em;
+}
+
+#content img {
+  margin-bottom: 0.5em;
+  margin-top: 0.5em;
+}
+
+#footer {
+  clear: both;          /*    This is mainly for pages that might be shorter than the nav-list on the left.  Keeps things looking correct.    */
+  font-size: 0.7em;
+  font-weight: bold;
+  text-align: center;
+}
+
+#footer h2 {
+  display: none;
+}
+
+/*    Use <dt></dt> for a FAQ question.    */
+dt {
+  font-weight: bold;
+  margin-left: 1.5em;
+  text-indent: -1.5em;
+}
+
+/*    Use <dd></dd> for a FAQ answer.    */
+dd {
+  margin-bottom: 1em;
+  margin-left: 1.5em;
+  text-indent: -1.5em;
+}
+
+dd p {
+  margin-top: 1em;
+  text-indent: 0em;
+}
+
+dd ul {
+  text-indent: 0em;
+}
