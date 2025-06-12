@@ -57,7 +57,7 @@ Try installing ZSNES from [this flatpak](https://flathub.org/apps/io.github.xypr
 ```sh
 dpkg --add-architecture i386
 apt update
-apt install -y git make nasm pkg-config zlib1g-dev build-essential
+apt install -y git make nasm pkg-config python3 zlib1g-dev build-essential
 git clone https://github.com/xyproto/zsnes
 cd zsnes
 make
