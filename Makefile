@@ -24,8 +24,9 @@ WITH_PNG      := yes
 WITH_SDL      := yes
 
 BINARY     ?= zsnes
-PSR        ?= parsegen
+PSR        ?= parsegen.py
 ASM        ?= nasm
+PYTHON     ?= python3
 
 CXX_HOST   ?= $(CXX)
 CC_TARGET  ?= $(CC)
@@ -355,13 +356,9 @@ $(filter %.o, $(SRCS:.c=.o) $(SRCS:.cpp=.o)): $(HDRS)
 	@echo '===> CXX $<'
 	$(Q)$(CXX_TARGET) $(CXXFLAGS) $(DEBUGFLAGS) -c -MMD -o $@ $<
 
-$(PSR): parsegen.cpp
-	@echo '===> CXX $@'
-	$(Q)$(CXX_HOST) -o $@ $< -lz
-
 %.h %.o: %.psr $(PSR)
 	@echo '===> PSR $@'
-	$(Q)./$(PSR) $(CFGDEFS) -gcc $(CC_TARGET) -compile -flags '$(CFLAGS)' -cheader $@ -fname $(*F) $(@:.h=.o) $<
+	$(Q)$(PYTHON) ./$(PSR) $(CFGDEFS) -gcc $(CC_TARGET) -compile -flags '$(CFLAGS)' -cheader $*.h -fname $(*F) $*.o $*.psr
 
 %.h:
 	@true
@@ -371,7 +368,7 @@ $(PSR): parsegen.cpp
 
 clean distclean:
 	@echo '===> CLEAN'
-	$(Q)rm -fr $(HDRS) $(DEPS) $(OBJS) $(BINARY) $(PSR)
+	$(Q)rm -fr $(HDRS) $(DEPS) $(OBJS) $(BINARY)
 ifdef CLEAN_MORE
 	$(Q)find . -name "*.[do]" -delete
 endif
