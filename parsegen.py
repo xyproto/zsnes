@@ -622,9 +622,9 @@ static void write_{family_name}_vars_internal(void *fp, int (*outf)(void *, cons
             self._write_element(elem)
 
         if "PSR_HASH" in defines:
-            self.c_stream.write(f"""  outf(fp, "\\n\\n\\n;Do not modify the following, for internal use only.\\n");
-  outf(fp, "PSR_HASH=%u\\n", PSR_HASH);
-""")
+            hash_output = "\\n\\n\\n;Do not modify the following, for internal use only.\\n"
+            self.c_stream.write(f'  outf(fp, "{hash_output}");\n')
+            self.c_stream.write(f'  outf(fp, "PSR_HASH=%u\\n", PSR_HASH);\n')
 
         self.c_stream.write(f"""}}
 
@@ -754,9 +754,13 @@ unsigned char read_{family_name}_vars(const char *file)
         self.c_stream.write(' continue; }\n')
 
     def _write_dependancy_checks(self):
-        self.c_stream.write("""      if ((p = strchr(var, ':')))
-      {
-        if (!strlen(p+1)) { continue; }
+        # Extract search and replace patterns for f-string
+        search_pattern = " \\t\\r\\n"
+        backslash_t_r_n = " \\t\\r\\n"
+        
+        self.c_stream.write(f"""      if ((p = strchr(var, ':')))
+      {{
+        if (!strlen(p+1)) {{ continue; }}
 """)
         deps = list(dependancies)
         self.c_stream.write(f'        if (!strncmp(var, "{deps[0]}:", (p-var)+1)) {{ if (!{deps[0]}) {{ continue; }} }}\n')
@@ -818,9 +822,12 @@ unsigned char read_{family_name}_vars(const char *file)
         self.c_stream.write("  return(0);\n}\n")
 
     def _write_compressed_io(self, operation: str):
+        gzgets_fix = ""
+        if operation == "read":
+            gzgets_fix = "static char *gzgets_fix(char *buf, int len, void *file)\n{\n  return(gzgets(file, buf, len));\n}\n"
+        
         self.c_stream.write(f"""
-{"static char *gzgets_fix(char *buf, int len, void *file)\n{\n  return(gzgets(file, buf, len));\n}\n" if operation == "read" else ""}
-unsigned char {operation}_{family_name}_vars_compressed(const char *file)
+{gzgets_fix}unsigned char {operation}_{family_name}_vars_compressed(const char *file)
 {{
   gzFile gzfp;
 
