@@ -12,7 +12,8 @@ if get_option('with-png')
     libpng = dependency('libpng')
 endif
 
-parsegen = executable('parsegen', ['parsegen.cpp'], dependencies: [zlib], cpp_args: ['-m32'], link_args: ['-m32', '-std=gnu++14'])
+python = import('python').find_installation('python3')
+parsegen_py = files('parsegen.py')
 
 parsegen_sources = []
 
@@ -190,7 +191,7 @@ dependencies = [
 ]
 
 c_args = [
-    '-m32', 
+    '-m32',
     '-pthread',
     '-no-pie',
     '-std=gnu99',
@@ -201,7 +202,7 @@ c_args = [
     '-fno-pic',
     '-mtune=generic',
     '-mmmx',
-    '-D_FORTIY_SOURCE=2',
+    '-D_FORTIFY_SOURCE=2',
     '-mno-sse',
     '-mno-sse2',
     '-ffunction-sections',
@@ -273,7 +274,7 @@ executable('zsnes', sources, parsegen_sources,
 
 foreach size : ['16', '32', '48', '64', '128']
     install_data(
-        'icons/' + size + 'x' + size + 'x32.png', 
+        'icons/' + size + 'x' + size + 'x32.png',
         rename : 'io.github.xyproto.zsnes.png',
         install_dir: join_paths(get_option('datadir'), 'icons', 'hicolor', size + 'x' + size, 'apps'),
     )
