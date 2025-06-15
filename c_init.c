@@ -11,7 +11,7 @@
 #include "cpu/c_tablec.h"
 #include "cpu/execute.h"
 #include "cpu/regs.h"
-#include "cpu/stable.h"
+#include "cpu/c_stable.h"
 #include "debugger.h"
 #include "gui/c_gui.h"
 #include "gui/c_guiwindp.h"
@@ -86,7 +86,7 @@ void init(void)
 
     inittable();
     inittablec();
-    asm_call(SA1inittable);
+    SA1inittable();
 
     // SPC Init
     procexecloop();

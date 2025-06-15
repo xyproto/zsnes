@@ -149,6 +149,7 @@ SRCS += cpu/memory.asm
 SRCS += cpu/memtable.c
 SRCS += cpu/spc700.asm
 SRCS += cpu/stable.asm
+SRCS += cpu/c_stable.c
 SRCS += cpu/table.asm
 SRCS += cpu/tablec.asm
 SRCS += effects/burn.c
