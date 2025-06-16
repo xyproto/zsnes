@@ -50,15 +50,6 @@ NEWSYM tableF,  resd 256
 NEWSYM tableG,  resd 256
 NEWSYM tableH,  resd 256
 
-NEWSYM tableAb,  resd 256
-NEWSYM tableBb,  resd 256
-NEWSYM tableCb,  resd 256
-NEWSYM tableDb,  resd 256
-NEWSYM tableEb,  resd 256
-NEWSYM tableFb,  resd 256
-NEWSYM tableGb,  resd 256
-NEWSYM tableHb,  resd 256
-
 NEWSYM tableAc,  resd 256
 NEWSYM tableBc,  resd 256
 NEWSYM tableCc,  resd 256
@@ -78,7 +69,6 @@ NEWSYM SA1tableG,  resd 256
 NEWSYM SA1tableH,  resd 256
 
 NEWSYM tablead, resd 256
-NEWSYM tableadb, resd 256
 NEWSYM tableadc, resd 256
 NEWSYM SA1tablead, resd 256
 
