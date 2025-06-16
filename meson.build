@@ -1,8 +1,12 @@
 project('zsnes', ['c', 'cpp', 'nasm'], version: '2.0.12', meson_version: '>=1.5', default_options: {'pkg_config_path': '/usr/lib32/pkgconfig'})
 
+pymod = import('python')
+
 zlib = dependency('zlib')
 sdl = dependency('sdl')
 x11 = dependency('x11')
+
+python = pymod.find_installation('python3')
 
 if get_option('with-debugger')
     ncurses = dependency('ncurses')
@@ -12,7 +16,6 @@ if get_option('with-png')
     libpng = dependency('libpng')
 endif
 
-python = import('python').find_installation('python3')
 parsegen_py = files('parsegen.py')
 
 parsegen_sources = []
@@ -22,8 +25,7 @@ foreach parsegen_name : ['cfg', 'input', 'md']
         parsegen_name + '_parsegen',
         input: [parsegen_name + '.psr'],
         output: [parsegen_name + '.c', parsegen_name + '.h'],
-        command: [parsegen, '-D__UNIXSDL__', '-cheader', parsegen_name + '.h', '-fname', parsegen_name, parsegen_name + '.c', '@INPUT@'],
-        depends: [parsegen]
+        command: [python, parsegen_py, '-D__UNIXSDL__', '-cheader', parsegen_name + '.h', '-fname', parsegen_name, parsegen_name + '.c', '@INPUT@'],
     )
     parsegen_sources += current_target
 endforeach
