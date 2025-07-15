@@ -91,11 +91,12 @@ extern uint32_t* BitConv32Ptr;
 extern uint32_t* RGBtoYUVPtr;
 
 /* JOYSTICK AND KEYBOARD INPUT */
-static SDL_Joystick* JoystickInput[5];
-static unsigned int AxisOffset[5] = { 256 + 128 + 64 }; // per joystick offsets in
-static unsigned int ButtonOffset[5] = { 448 }; // pressed. We have 128 + 64
-static unsigned int HatOffset[5] = { 448 }; // bytes for all joysticks. We
-static unsigned int BallOffset[5] = { 448 }; // can control all 5 players.
+#define MAX_JOYSTICKS 5
+static SDL_Joystick *JoystickInput[MAX_JOYSTICKS];
+static unsigned int AxisOffset[MAX_JOYSTICKS] = { 256 + 128 + 64 }; // per joystick offsets in
+static unsigned int ButtonOffset[MAX_JOYSTICKS] = { 448 }; // pressed. We have 128 + 64
+static unsigned int HatOffset[MAX_JOYSTICKS] = { 448 }; // bytes for all joysticks. We
+static unsigned int BallOffset[MAX_JOYSTICKS] = { 448 }; // can control all 5 players.
 static int shiftptr = 0;
 static int offset;
 uint32_t numlockptr;
@@ -940,39 +941,46 @@ static void ProcessKeyBuf(int scancode)
 
 BOOL InitJoystickInput()
 {
-    int i, max_num_joysticks;
-    int num_axes, num_buttons, num_hats, num_balls;
+    int i;
+    int max_num_joysticks;
     int next_offset = 256;
 
-    for (i = 0; i < 5; i++) {
+    for (i = 0; i < MAX_JOYSTICKS; i++)
         JoystickInput[i] = NULL;
+
+    if (SDL_InitSubSystem(SDL_INIT_JOYSTICK) < 0) {
+        fprintf(stderr, "SDL joystick init failed: %s\n", SDL_GetError());
+        return FALSE;
     }
 
-    // If it is possible to use SDL_NumJoysticks
-    // before initialising SDL_INIT_JOYSTICK then
-    // this call can be replaced with SDL_InitSubSystem
-    SDL_InitSubSystem(SDL_INIT_JOYSTICK);
     max_num_joysticks = SDL_NumJoysticks();
-    if (!max_num_joysticks) {
+    if (max_num_joysticks <= 0) {
         printf("No joysticks found.\n");
         SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
         return FALSE;
     }
+
     SDL_JoystickEventState(SDL_ENABLE);
 
-    if (max_num_joysticks > 5) {
-        max_num_joysticks = 5;
-    }
+    if (max_num_joysticks > MAX_JOYSTICKS)
+        max_num_joysticks = MAX_JOYSTICKS;
 
     for (i = 0; i < max_num_joysticks; i++) {
         JoystickInput[i] = SDL_JoystickOpen(i);
-        num_axes = SDL_JoystickNumAxes(JoystickInput[i]);
-        num_buttons = SDL_JoystickNumButtons(JoystickInput[i]);
-        num_hats = SDL_JoystickNumHats(JoystickInput[i]);
-        num_balls = SDL_JoystickNumBalls(JoystickInput[i]);
-        printf("Device %i %s\n", i, SDL_JoystickName(i));
-        printf("  %i axis, %i buttons, %i hats, %i balls\n", num_axes, num_buttons, num_hats,
-            num_balls);
+        if (!JoystickInput[i]) {
+            fprintf(stderr, "Could not open joystick %d: %s\n", i, SDL_GetError());
+            continue;
+        }
+
+        int num_axes = SDL_JoystickNumAxes(JoystickInput[i]);
+        int num_buttons = SDL_JoystickNumButtons(JoystickInput[i]);
+        int num_hats = SDL_JoystickNumHats(JoystickInput[i]);
+        int num_balls = SDL_JoystickNumBalls(JoystickInput[i]);
+
+        const char *joyname = SDL_JoystickName(JoystickInput[i]);
+        printf("Device %d %s\n", i, joyname ? joyname : "(unknown)");
+        printf("  %d axes, %d buttons, %d hats, %d balls\n",
+               num_axes, num_buttons, num_hats, num_balls);
 
         if (next_offset >= 448) {
             printf("Warning: Joystick won't work.\n");
