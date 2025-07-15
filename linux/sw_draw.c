@@ -51,11 +51,11 @@ bool sw_start(int width, int height, int req_depth, int FullScreen)
 {
     printf("sw_start\n");
 
-    //#ifndef __MACOSX__
-    //    uint32_t flags = SDL_WINDOW_DOUBLEBUF | SDL_WINDOW_HWSURFACE;
-    //#else
-    //    uint32_t flags = SDL_WINDOW_SWSURFACE;
-    //#endif
+    // #ifndef __MACOSX__
+    //     uint32_t flags = SDL_WINDOW_DOUBLEBUF | SDL_WINDOW_HWSURFACE;
+    // #else
+    //     uint32_t flags = SDL_WINDOW_SWSURFACE;
+    // #endif
 
     uint32_t flags = 0;
 
