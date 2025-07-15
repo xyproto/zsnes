@@ -6,7 +6,7 @@ The last release of [ZSNES](http://zsnes.sourceforge.net/) was around 18 years a
 
 This is a fork of ZSNES that aims to solve this.
 
-Running `make` produces a 32-bit x86 ELF executable with MMX support, that can be run on a 64-bit x86 system. Large parts of ZSNES is written in 32-bit x86 Assembly, which is not easily ported to other platforms or systems. SSE support is disabled.
+Running `make` produces a 32-bit x86 ELF executable with MMX support, that can be run on a 64-bit x86 system. Large parts of ZSNES is written in 32-bit x86 Assembly, which are not easily ported to other platforms or systems. SSE support is disabled.
 
 Goals and non-goals:
 
@@ -163,7 +163,7 @@ however, add it in yourself by:
 
 ### Known issues and some work-arounds
 
-* After many video mode switches (all windowed), switching to full screen then back to window mode cases an SDL parachute exit; try not to use too many video mode changes, and restart ZSNES every once in a while if you are just testing out video modes.
+* After many video mode switches (all windowed), switching to full screen then back to window mode causes an SDL parachute exit; try not to use too many video mode changes, and restart ZSNES every once in a while if you are just testing out video modes.
 
 * Segfault after having compiled the source -- this might be due to an old `zguicfg.dat` file; delete this and see if the problem gets fixed.
 
@@ -331,7 +331,7 @@ FXTABLE.ASM
 SFXPROC.ASM
 DSP1PROC.ASM    ; DSP1 communication routines
 DSP1EMU.C       ; DSP1 C routines (also includes some C4 C routines)
-SA1PROC.ASM     ; SA-1 processing routinest
+SA1PROC.ASM     ; SA-1 processing routines
 SA1REGS.ASM     ; SA-1 registers, also includes S-DD1 and SPC7110 routines
 ```
 
@@ -339,7 +339,7 @@ SA1REGS.ASM     ; SA-1 registers, also includes S-DD1 and SPC7110 routines
 
 #### All ports
 
-- Recode netplay feature, once core is not random anymore.
+- Recode netplay feature, once core is not random anymore. 
 
 #### SDL Port
 
