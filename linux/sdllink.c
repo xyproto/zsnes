@@ -92,7 +92,7 @@ extern uint32_t* RGBtoYUVPtr;
 
 /* JOYSTICK AND KEYBOARD INPUT */
 #define MAX_JOYSTICKS 5
-static SDL_Joystick *JoystickInput[MAX_JOYSTICKS];
+static SDL_Joystick* JoystickInput[MAX_JOYSTICKS];
 static unsigned int AxisOffset[MAX_JOYSTICKS] = { 256 + 128 + 64 }; // per joystick offsets in
 static unsigned int ButtonOffset[MAX_JOYSTICKS] = { 448 }; // pressed. We have 128 + 64
 static unsigned int HatOffset[MAX_JOYSTICKS] = { 448 }; // bytes for all joysticks. We
@@ -977,10 +977,10 @@ BOOL InitJoystickInput()
         int num_hats = SDL_JoystickNumHats(JoystickInput[i]);
         int num_balls = SDL_JoystickNumBalls(JoystickInput[i]);
 
-        const char *joyname = SDL_JoystickName(JoystickInput[i]);
+        const char* joyname = SDL_JoystickName(JoystickInput[i]);
         printf("Device %d %s\n", i, joyname ? joyname : "(unknown)");
         printf("  %d axes, %d buttons, %d hats, %d balls\n",
-               num_axes, num_buttons, num_hats, num_balls);
+            num_axes, num_buttons, num_hats, num_balls);
 
         if (next_offset >= 448) {
             printf("Warning: Joystick won't work.\n");
