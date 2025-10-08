@@ -51,6 +51,7 @@
 
 char const* Msgptr;
 u1 FPSOn;
+u1 CPUOn;
 u1 ForceNonTransp;
 u1 csounddisable;
 u1 f3menuen;
@@ -146,17 +147,18 @@ static u1 const FontData[][8] = {
     { 0x38, 0x20, 0x20, 0x20, 0x20, 0x20, 0x38, 0x00 }, // [, 2C
     { 0x38, 0x08, 0x08, 0x08, 0x08, 0x08, 0x38, 0x00 }, // ], 2D
     { 0x00, 0x18, 0x18, 0x00, 0x18, 0x18, 0x00, 0x00 }, // :, 2E
-    { 0x18, 0x24, 0x18, 0x3A, 0x44, 0x46, 0x3A, 0x00 } // &, 2F
-    // Arrow, 30
-    // #, 31  (, 3A  {, 43
-    // =, 32  ), 3B  }, 44
-    // ", 33  @, 3C  Up,45
-    // \, 34  ', 3D  Dn,46
-    // *, 35  !, 3E  Lt,47
-    // ?, 36  $, 3F  Rt,48
-    // %, 37  ;, 40  Bk,49
-    // +, 38  `, 41  .5,4A
-    // ,, 39  ^, 42
+    { 0x18, 0x24, 0x18, 0x3A, 0x44, 0x46, 0x3A, 0x00 }, // &, 2F
+
+    // 30-36 not implemented
+    { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }, // , 30
+    { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }, // , 31
+    { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }, // , 32
+    { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }, // , 33
+    { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }, // , 34
+    { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }, // , 35
+    { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }, // , 36
+
+    { 0x61, 0x92, 0x94, 0x68, 0x1E, 0x29, 0x49, 0x86 }, // %, 37
 };
 
 u4 SwapMouseButtons(u4 const buttons)
@@ -844,9 +846,44 @@ static void showfps(void)
             fps /= 10;
         } while (fps != 0);
 
-        outputchar16b((u2*)vidbuffer + 208 * 288 + 48, 41); // '/'
+        outputchar16b((u2*)vidbuffer + 208 * 288 + 48, 0x29); // '/'
         outputhex16((u2*)vidbuffer + 208 * 288 + 56, limit / 10 << 4 | limit % 10);
     }
+}
+
+static inline double timespec_to_sec(struct timespec const *ts)
+{
+    return (double)ts->tv_sec + (double)ts->tv_nsec / 1000000000.0;
+}
+
+static void show_cpu_usage(void)
+{
+    static struct timespec cpu_prev = {};
+    static struct timespec prev = {};
+    static char cpu_usage[10] = {"0.00%"};
+    double const prevd = timespec_to_sec(&prev);
+
+    struct timespec now = {};
+    clock_gettime(CLOCK_MONOTONIC, &now);
+
+    if (prevd == 0.0) {
+        prev = now;
+        return;
+    }
+
+    double const nowd = timespec_to_sec(&now);
+
+    if (nowd - prevd >= 1.0) {
+        static struct timespec cpu_now;
+        clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &cpu_now);
+        double const cpu_nowd = timespec_to_sec(&cpu_now);
+        double const cpu_prevd = timespec_to_sec(&cpu_prev);
+        snprintf(cpu_usage, sizeof(cpu_usage), "%.2f%%", 100.0 * ((cpu_nowd - cpu_prevd) / (nowd - prevd)));
+        prev = now;
+        cpu_prev = cpu_now;
+    }
+
+    OutputGraphicString16b((u2*)vidbuffer + 198 * 288 + 32, cpu_usage);
 }
 
 static void ClockOutput(void)
@@ -884,6 +921,8 @@ static void vidpaste(void)
 {
     if (FPSOn != 0 && curblank == 0)
         showfps();
+    if (CPUOn != 0 && curblank == 0)
+        show_cpu_usage();
     if (TimerEnable != 0 && ShowTimer != 0)
         ClockOutput();
 

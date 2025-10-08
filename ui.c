@@ -333,6 +333,7 @@ void zstart()
 
     if (!frameskip) {
         FPSOn = FPSAtStart;
+        CPUOn = CPUAtStart;
     }
 
     gammalevel16b = gammalevel >> 1;

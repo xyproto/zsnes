@@ -447,6 +447,9 @@ fastforb:
     if (TestKey2(KeyDisplayFPS) && frameskip == 0)
         FPSOn ^= 1;
 
+    if (TestKey2(KeyDisplayCPU) && frameskip == 0)
+        CPUOn ^= 1;
+
     // do state selects
     stateselcomp(&KeyStateSlc0, 0);
     stateselcomp(&KeyStateSlc1, 1);
