@@ -374,6 +374,7 @@ static void GUIOptionKeys(char dh)
 
     if (GUIOptionTabs[0] == 2) { // More
         GUIKeyCheckbox(&FPSAtStart, 'F', dh);
+        GUIKeyCheckbox(&CPUAtStart, 'U', dh);
         GUIKeyCheckbox(&TimerEnable, 'C', dh);
         GUIKeyCheckbox(&TwelveHourClock, 'H', dh);
         GUIKeyCheckbox(&ClockBox, 'X', dh);

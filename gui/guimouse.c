@@ -270,6 +270,14 @@ static void GUIClickCButtonfr(s4 const eax, s4 const edx, s4 const p1, s4 const 
     }
 }
 
+static void GUIClickCButtoncpu(s4 const eax, s4 const edx, s4 const p1, s4 const p2, u1* const p3)
+{
+    if (GUIClickArea(eax, edx, p1 + 1, p2 + 3, p1 + 6, p2 + 8)) {
+        CPUOn = 0;
+        *p3 = !*p3;
+    }
+}
+
 static bool GUIClickCButtonL(s4 const eax, s4 const edx, s4 const p1, s4 const p2)
 {
     if (GUIClickArea(eax, edx, p1 + 1, p2 + 3, p1 + 6, p2 + 8)) {
@@ -897,14 +905,15 @@ static void DisplayGUIOptionClick(s4 const eax, s4 const edx)
 
     if (GUIOptionTabs[0] == 2) {
         GUIClickCButton(eax, edx, 11, 31, &FPSAtStart);
-        GUIClickCButton(eax, edx, 11, 41, &TimerEnable);
-        GUIClickCButton(eax, edx, 89, 41, &TwelveHourClock);
-        GUIClickCButton(eax, edx, 11, 51, &ClockBox);
-        GUIClickCButton(eax, edx, 11, 81, &SmallMsgText);
-        GUIClickCButton(eax, edx, 11, 91, &GUIEnableTransp);
-        GUIPButtonHole(eax, edx, 11, 121, &ScreenShotFormat, 0);
+        GUIClickCButton(eax, edx, 11, 41, &CPUAtStart);
+        GUIClickCButton(eax, edx, 11, 51, &TimerEnable);
+        GUIClickCButton(eax, edx, 89, 51, &TwelveHourClock);
+        GUIClickCButton(eax, edx, 11, 61, &ClockBox);
+        GUIClickCButton(eax, edx, 11, 91, &SmallMsgText);
+        GUIClickCButton(eax, edx, 11, 101, &GUIEnableTransp);
+        GUIPButtonHole(eax, edx, 11, 131, &ScreenShotFormat, 0);
 #ifndef NO_PNG
-        GUIPButtonHole(eax, edx, 11, 131, &ScreenShotFormat, 1);
+        GUIPButtonHole(eax, edx, 11, 141, &ScreenShotFormat, 1);
 #endif
     }
 }
@@ -1355,6 +1364,7 @@ static void DisplayGameOptnsClick(s4 const eax, s4 const edx)
     DGOptnsProcBox(eax, edx, 78, 110, &KeyResetAll, 0);
     DGOptnsProcBox(eax, edx, 78, 120, &KeyDisplayFPS, 0);
     DGOptnsProcBox(eax, edx, 78, 130, &KeyDisplayBatt, 0);
+    DGOptnsProcBox(eax, edx, 78, 140, &KeyDisplayCPU, 0);
 
     DGOptnsProcBox(eax, edx, 191, 100, &KeyNewGfxSwt, 0);
     DGOptnsProcBox(eax, edx, 191, 110, &KeyWinDisble, 0);
@@ -1752,6 +1762,7 @@ static void DisplayGUISpeedClick(void)
 
     GUIClickCButton(eax, edx, 11, 135, &FastFwdToggle); // Checkboxes
     GUIClickCButtonfr(eax, edx, 11, 145, &frameskip);
+    GUIClickCButtoncpu(eax, edx, 11, 155, &frameskip);
 
     if (frameskip == 0) {
         DGOptnsProcBox(eax, edx, 12, 78, &KeyEmuSpeedUp, 0);

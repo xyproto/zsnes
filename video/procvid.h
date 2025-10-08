@@ -35,6 +35,7 @@ void copyvid(void);
 
 extern char const* Msgptr; // Pointer to message
 extern u1 FPSOn;
+extern u1 CPUOn;
 extern u1 ForceNonTransp;
 extern u1 csounddisable;
 extern u1 f3menuen;

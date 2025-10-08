@@ -374,6 +374,7 @@ void GUIRestoreVars()
     CheckValueBounds(&DisplayInfo, 0, 1, 1, UB);
     CheckValueBounds(&RomInfo, 0, 1, 1, UB);
     CheckValueBounds(&FPSAtStart, 0, 1, 0, UB);
+    CheckValueBounds(&CPUAtStart, 0, 1, 0, UB);
     CheckValueBounds(&TimerEnable, 0, 1, 0, UB);
     CheckValueBounds(&TwelveHourClock, 0, 1, 0, UB);
     CheckValueBounds(&ClockBox, 0, 1, 1, UB);
