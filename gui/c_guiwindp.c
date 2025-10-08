@@ -937,20 +937,21 @@ void DisplayGUIOption(void)
     if (GUIOptionTabs[0] == 2) {
         GUIDisplayTextY(4, 11, 26, "OVERLAYS:");
         GUIDisplayCheckboxu(4, 11, 31, &FPSAtStart, "SHOW FPS CNTR ON EMU LOAD", 5);
-        GUIDisplayCheckboxu(4, 11, 41, &TimerEnable, "SHOW CLOCK", 5);
+        GUIDisplayCheckboxu(4, 11, 41, &CPUAtStart, "SHOW CPU PCNT ON EMU LOAD", 7);
+        GUIDisplayCheckboxu(4, 11, 51, &TimerEnable, "SHOW CLOCK", 5);
         if (TimerEnable == 1) {
-            GUIDisplayCheckboxu(4, 89, 41, &TwelveHourClock, "12 HOUR MODE", 3);
-            GUIDisplayCheckboxu(4, 11, 51, &ClockBox, "SHOW CLOCK BOX", 13);
+            GUIDisplayCheckboxu(4, 89, 51, &TwelveHourClock, "12 HOUR MODE", 3);
+            GUIDisplayCheckboxu(4, 11, 61, &ClockBox, "SHOW CLOCK BOX", 13);
         }
 
-        GUIDisplayTextY(4, 11, 76, "MESSAGES:");
-        GUIDisplayCheckboxu(4, 11, 81, &SmallMsgText, "USE SMALL MESSAGE TEXT", 4);
-        GUIDisplayCheckboxu(4, 11, 91, &GUIEnableTransp, "USE TRANSPARENT TEXT", 4);
+        GUIDisplayTextY(4, 11, 86, "MESSAGES:");
+        GUIDisplayCheckboxu(4, 11, 91, &SmallMsgText, "USE SMALL MESSAGE TEXT", 4);
+        GUIDisplayCheckboxu(4, 11, 101, &GUIEnableTransp, "USE TRANSPARENT TEXT", 4);
 
-        GUIDisplayTextY(4, 11, 116, "SCREENSHOT FORMAT:");
-        GUIDisplayButtonHoleTu(4, 11, 121, &ScreenShotFormat, 0, "BMP", 0);
+        GUIDisplayTextY(4, 11, 126, "SCREENSHOT FORMAT:");
+        GUIDisplayButtonHoleTu(4, 11, 131, &ScreenShotFormat, 0, "BMP", 0);
 #ifndef NO_PNG
-        GUIDisplayButtonHoleTu(4, 11, 131, &ScreenShotFormat, 1, "PNG", 0);
+        GUIDisplayButtonHoleTu(4, 11, 141, &ScreenShotFormat, 1, "PNG", 0);
 #endif
     }
 }
@@ -1714,6 +1715,7 @@ void DisplayGameOptns(void)
     GUIDisplayText(9, 9, 112, "PANIC KEY");
     GUIDisplayText(9, 9, 122, "DISPLAY FPS");
     GUIDisplayText(9, 9, 132, "BATT POWER");
+    GUIDisplayText(9, 9, 142, "CPU USAGE");
 
     GUIDisplayTextY(9, 119, 93, "GFX TOGGLES:");
     GUIDisplayText(9, 122, 102, "NEW GFX ENG");
@@ -1752,6 +1754,7 @@ void DisplayGameOptns(void)
     DDrawBox(9, 77, 109, &KeyResetAll);
     DDrawBox(9, 77, 119, &KeyDisplayFPS);
     DDrawBox(9, 77, 129, &KeyDisplayBatt);
+    DDrawBox(9, 77, 139, &KeyDisplayCPU);
 
     DDrawBox(9, 190, 99, &KeyNewGfxSwt);
     DDrawBox(9, 190, 109, &KeyWinDisble);

@@ -71,6 +71,8 @@ static char const menudrawbox_stringf[] = "SNAPSHOT/INCR FRM";
 static char const menudrawbox_stringg[] = "INCR FRAME ONLY";
 static char const menudrawbox_stringh[] = "MOVE THIS WINDOW";
 static char menudrawbox_stringi[] = "IMAGE FORMAT: ---";
+static char const menudrawbox_stringj[] = "SHOW CPU USAGE";
+static char const menudrawbox_stringk[] = "HIDE CPU USAGE";
 
 static void GUIBufferData(void)
 {
@@ -159,6 +161,7 @@ static void menudrawbox16b(void)
     OutputGraphicString16b((u2*)vidbuffer + MenuDisplace16 / 2 + 45 + 85 * 288, menudrawbox_stringg);
     OutputGraphicString16b((u2*)vidbuffer + MenuDisplace16 / 2 + 45 + 95 * 288, menudrawbox_stringh);
     OutputGraphicString16b((u2*)vidbuffer + MenuDisplace16 / 2 + 45 + 105 * 288, menudrawbox_stringi);
+    OutputGraphicString16b((u2*)vidbuffer + MenuDisplace16 / 2 + 45 + 115 * 288, CPUOn & 1 ? menudrawbox_stringj : menudrawbox_stringk);
     copyvid();
 }
 
@@ -280,7 +283,6 @@ void showmenu(void)
             GUIBufferData();
             // Draw box
             menudrawbox8b();
-            menudrawbox8b(); // XXX twice?
             if (newengen != 0)
                 GUIOn = 1;
             copyvid();
