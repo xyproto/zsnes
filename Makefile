@@ -4,10 +4,20 @@
 # The flags below also needs to be modified if this is not set to LINUX
 ARCH := LINUX
 
-CC ?= gcc
-CXX ?= g++
+# Using zig's C/C++ compiler wrapper for cross-compilation support
+# Zig provides a complete C/C++ toolchain with cross-compilation built-in
+#
+# To build with zig (default):
+#   make
+#
+# To use gcc/g++ instead:
+#   make CC=gcc CXX=g++
+#
+# Note: Zig requires parsegen.py and nasm to be available
+CC := zig cc
+CXX := zig c++
 
-COMMON_FLAGS = -m32 -pthread -no-pie -O1 -march=pentium-mmx -fno-inline -fno-pic -mtune=generic -mmmx -D_FORTIFY_SOURCE=2 -L/usr/lib32 -mno-sse -mno-sse2 -ffunction-sections -fdata-sections -Wfatal-errors -w
+COMMON_FLAGS = -target x86-linux-gnu -pthread -O1 -march=pentium-mmx -fno-inline -mmmx -D_FORTIFY_SOURCE=2 -L/usr/lib32 -mno-sse -mno-sse2 -ffunction-sections -fdata-sections -Wfatal-errors -w
 
 # TODO: FreeBSD has a patch for being able to build without -fcommon
 CFLAGS += $(COMMON_FLAGS) -std=gnu99 -fcommon
@@ -43,8 +53,7 @@ ifneq ($(findstring $(ARCH), WIN),)
   CFLAGS += -fstack-protector
   WITH_OPENGL :=
 else
-  CFLAGS += -rdynamic
-  CXXFLAGS += -rdynamic
+  # -rdynamic is a linker flag, not needed for zig
   LDFLAGS += -ldl -lX11
 endif
 
@@ -89,9 +98,9 @@ else
 endif
 
 ifeq ($(wildcard /usr/lib/i386-linux-gnu/.),)
-  CFLAGS += -I/usr/include/x86_64-linux-gnu -I /usr/include/X11
-  CXXFLAGS += -I/usr/include/x86_64-linux-gnu -I /usr/include/X11
-  LDFLAGS = -Wl,--as-needed -no-pie -L/usr/lib32 -L/usr/lib/i386-linux-gnu -Wl,--gc-sections -lz -lSDL-1.2 -lpng16 -lX11
+  CFLAGS += -I/usr/include -I/usr/include/x86_64-linux-gnu -I /usr/include/X11
+  CXXFLAGS += -I/usr/include -I/usr/include/x86_64-linux-gnu -I /usr/include/X11
+  LDFLAGS = -Wl,--as-needed -L/usr/lib32 -L/usr/lib/i386-linux-gnu -Wl,--gc-sections -lz -lSDL-1.2 -lpng16 -lX11
 endif
 
 SRCS :=
@@ -359,7 +368,7 @@ $(filter %.o, $(SRCS:.c=.o) $(SRCS:.cpp=.o)): $(HDRS)
 
 %.h %.o: %.psr $(PSR)
 	@echo '===> PSR $@'
-	$(Q)$(PYTHON) ./$(PSR) $(CFGDEFS) -gcc $(CC_TARGET) -compile -flags '$(CFLAGS)' -cheader $*.h -fname $(*F) $*.o $*.psr
+	$(Q)$(PYTHON) ./$(PSR) $(CFGDEFS) -gcc '$(CC_TARGET)' -compile -flags '$(CFLAGS)' -cheader $*.h -fname $(*F) $*.o $*.psr
 
 %.h:
 	@true

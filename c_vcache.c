@@ -530,7 +530,7 @@ void ConvertToAFormat(void)
 
     u1* buf = vidbuffer + 16 * 2 + 288 * 2;
     u4 h = resolutn;
-    if (MMXSupport == 1) {
+    /*if (MMXSupport == 1) {
         u4 w;
         u8 a;
         u8 b;
@@ -558,7 +558,7 @@ void ConvertToAFormat(void)
         (void)w;
         (void)a;
         (void)b;
-    } else {
+    } else {*/
         u4* b = (u4*)buf;
         do {
             u4 w = 128;
@@ -568,5 +568,5 @@ void ConvertToAFormat(void)
             } while (--w != 0);
             b += 16;
         } while (--h != 0);
-    }
+    //}
 }
