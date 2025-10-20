@@ -36,6 +36,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "../link.h"
 
 #ifdef __LIBAO__
+static int terminated = 0;
 static pthread_t audio_thread;
 static pthread_mutex_t audio_mutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_cond_t audio_wait = PTHREAD_COND_INITIALIZER;
@@ -143,24 +144,24 @@ void SoundWrite_ao()
 static void* SoundThread_ao(void* useless)
 {
     unsigned int samples;
-    struct timespec to;
 
-    for (;;) {
+    while (!terminated) {
         pthread_mutex_lock(&audio_mutex);
 
         // The while() is there to prevent error codes from breaking havoc
-        while (!samples_waiting) {
-            clock_gettime(CLOCK_REALTIME, &to);
-            to.tv_sec += 10;
-            pthread_cond_timedwait(&audio_wait, &audio_mutex, &to); // Wait for signal
+        while (!samples_waiting && !terminated) {
+            pthread_cond_wait(&audio_wait, &audio_mutex); // Wait for signal
         }
 
         samples = samples_waiting;
         samples_waiting = 0;
         pthread_mutex_unlock(&audio_mutex);
 
-        SoundWriteSamples_ao(samples);
+        if (!terminated) {
+            SoundWriteSamples_ao(samples);
+        }
     }
+
     return (0);
 }
 
@@ -334,9 +335,12 @@ void DeinitSound()
 {
 #ifdef __LIBAO__
     if (audio_device) {
-        pthread_kill(audio_thread, SIGTERM);
-        pthread_mutex_destroy(&audio_mutex);
+        void *retval;
+        terminated = 1;
+        pthread_cond_broadcast(&audio_wait);
+        pthread_join(audio_thread, &retval);
         pthread_cond_destroy(&audio_wait);
+        pthread_mutex_destroy(&audio_mutex);
         ao_close(audio_device);
     }
 #endif
