@@ -335,7 +335,7 @@ void DeinitSound()
 {
 #ifdef __LIBAO__
     if (audio_device) {
-        void *retval;
+        void* retval;
         terminated = 1;
         pthread_cond_broadcast(&audio_wait);
         pthread_join(audio_thread, &retval);

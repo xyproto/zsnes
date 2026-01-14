@@ -851,7 +851,7 @@ static void showfps(void)
     }
 }
 
-static inline double timespec_to_sec(struct timespec const *ts)
+static inline double timespec_to_sec(struct timespec const* ts)
 {
     return (double)ts->tv_sec + (double)ts->tv_nsec / 1000000000.0;
 }
@@ -860,7 +860,7 @@ static void show_cpu_usage(void)
 {
     static struct timespec cpu_prev = {};
     static struct timespec prev = {};
-    static char cpu_usage[10] = {"0.00%"};
+    static char cpu_usage[10] = { "0.00%" };
     double const prevd = timespec_to_sec(&prev);
 
     struct timespec now = {};
