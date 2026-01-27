@@ -43,6 +43,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "cpu/regs.h"
 #include "cpu/spc700.h"
 #include "endmem.h"
+#include "gblvars.h"
 #include "gui/gui.h"
 #include "gui/guimisc.h"
 #include "gui/guiwindp.h"
@@ -469,7 +470,9 @@ void BankCheck()
 }
 
 // Chip detection functions
-bool CHIPBATT, BSEnable, C4Enable, DSP1Enable, DSP2Enable, DSP3Enable;
+uint8_t CHIPBATT;
+unsigned char DSP1Enable;
+bool BSEnable, C4Enable, DSP2Enable, DSP3Enable;
 bool DSP4Enable, OBCEnable, RTCEnable, SA1Enable, SDD1Enable, SFXEnable;
 bool SETAEnable; // ST010 & 11
 bool SGBEnable, SPC7110Enable, ST18Enable, MSUEnable;
@@ -1409,7 +1412,8 @@ void clearvidsound()
 Would be nice to trash this section in the future
 */
 
-extern uint8_t ENVDisable, cycpb268, cycpb358, cycpbl2, cycpblt2, cycpbl;
+extern uint8_t ENVDisable, cycpb268, cycpb358, cycpbl2, cycpblt2;
+extern uint32_t cycpbl;
 extern uint8_t opexec268, opexec358, opexec268b, opexec358b;
 extern uint8_t opexec268cph, opexec358cph, opexec268cphb, opexec358cphb;
 
@@ -1677,7 +1681,8 @@ void initpitch()
 
 extern uint32_t SfxR1, SfxR2, SetaCmdEnable, SfxSFR, SfxSCMR;
 extern uint8_t disablespcclr, *sfxramdata, SramExists;
-extern uint8_t *setaramdata, *SA1RAMArea;
+extern uint32_t* setaramdata;
+extern uint8_t* SA1RAMArea;
 extern uint8_t ForcePal, ForceROMTiming, MovieWaiting, DSP1Type;
 extern uint16_t totlines;
 void SetAddressingModes(), GenerateBank0Table();
@@ -2421,7 +2426,11 @@ void powercycle(bool sramload, bool romload)
         }
 
         sramsavedis = 0;
-        memcpy(&sndrot, regsbackup, sizeof(sndrot));
+        size_t ppu_reg_size = PHnum2writeppureg;
+        if (ppu_reg_size > sizeof(regsbackup)) {
+            ppu_reg_size = sizeof(regsbackup);
+        }
+        memcpy(&sndrot, regsbackup, ppu_reg_size);
 
         if (yesoutofmemory)
             outofmemfix();

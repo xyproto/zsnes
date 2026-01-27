@@ -106,8 +106,8 @@ static void copy_snes_data(uint8_t** buffer, void (*copy_func)(uint8_t**, void*,
     // SPC Timers
     copy_func(buffer, &cycpbl, 4);
     copy_func(buffer, &cycpblt, 4);
-    // SNES PPU Register status
-    copy_func(buffer, &sndrot, 1);
+    // SNES PPU Register status (sndrot is the start of this block in asm)
+    copy_func(buffer, &sndrot, PHnum2writeppureg);
 }
 
 static void copy_spc_data(uint8_t** buffer, void (*copy_func)(uint8_t**, void*, size_t))

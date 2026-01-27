@@ -13,6 +13,7 @@
 #include "cpu/execute.h"
 #include "cpu/regs.h"
 #include "debugger.h"
+#include "gblvars.h"
 #include "gui/c_gui.h"
 #include "gui/c_guiwindp.h"
 #include "gui/gui.h"
@@ -78,9 +79,12 @@ void init(void)
     forceromtype = romtype;
     romtype = 0;
 
-    /* XXX sndrot is a global variable, but is treated like the first entry of a
-     * big struct */
-    memcpy(regsbackup, &sndrot, sizeof(sndrot));
+    /* sndrot is the start of the SNES register block defined in asm. */
+    size_t ppu_reg_size = PHnum2writeppureg;
+    if (ppu_reg_size > sizeof(regsbackup)) {
+        ppu_reg_size = sizeof(regsbackup);
+    }
+    memcpy(regsbackup, &sndrot, ppu_reg_size);
 
     clearmem();
 
