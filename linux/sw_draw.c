@@ -30,8 +30,10 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 void CheckFrame();
 // VIDEO VARIABLES
+extern SDL_Window* sdl_window;
 extern SDL_Surface* surface;
 extern int SurfaceLocking;
+static SDL_Surface* render_surface = NULL; // 16-bit RGB565 surface for emulator output
 
 extern unsigned char curblank;
 extern int frametot;
@@ -43,16 +45,9 @@ char CheckOGLMode();
 
 bool sw_start(int width, int height, int req_depth, int FullScreen)
 {
-    // unsigned int color32, p;
-    // int i;
-#ifndef __MACOSX__
-    uint32_t flags = SDL_DOUBLEBUF | SDL_HWSURFACE;
-#else
-    uint32_t flags = SDL_SWSURFACE;
-#endif
-    uint32_t GBitMask;
+    uint32_t flags = 0;
 
-    flags |= (FullScreen ? SDL_FULLSCREEN : 0);
+    flags |= (FullScreen ? SDL_WINDOW_FULLSCREEN : 0);
 
     if (NTSCFilter) {
         NTSCFilterInit();
@@ -60,34 +55,54 @@ bool sw_start(int width, int height, int req_depth, int FullScreen)
 
     SurfaceX = width;
     SurfaceY = height;
-    surface = SDL_SetVideoMode(SurfaceX, SurfaceY, req_depth, flags);
-    if (surface == NULL) {
-        fprintf(stderr, "Could not set %dx%d video mode: %s\n", SurfaceX, SurfaceY, SDL_GetError());
+
+    if (render_surface) {
+        SDL_FreeSurface(render_surface);
+        render_surface = NULL;
+    }
+    if (sdl_window) {
+        SDL_DestroyWindow(sdl_window);
+    }
+    sdl_window = SDL_CreateWindow("ZSNES", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+        SurfaceX, SurfaceY, flags);
+    if (sdl_window == NULL) {
+        fprintf(stderr, "Could not create %dx%d window: %s\n", SurfaceX, SurfaceY, SDL_GetError());
         return false;
     }
 
+    // Create a 16-bit RGB565 surface for the emulator to render into
+    render_surface = SDL_CreateRGBSurface(0, SurfaceX, SurfaceY, 16,
+        0xF800, 0x07E0, 0x001F, 0);
+    if (render_surface == NULL) {
+        fprintf(stderr, "Could not create render surface: %s\n", SDL_GetError());
+        return false;
+    }
+
+    surface = render_surface;
     SurfaceLocking = SDL_MUSTLOCK(surface);
 
     // Grab mouse in fullscreen mode
-    FullScreen ? SDL_WM_GrabInput(SDL_GRAB_ON) : SDL_WM_GrabInput(SDL_GRAB_OFF);
+    SDL_SetWindowGrab(sdl_window, FullScreen ? SDL_TRUE : SDL_FALSE);
 
-    SDL_WM_SetCaption("ZSNES", "ZSNES");
-    SDL_ShowCursor(0);
+    SDL_ShowCursor(SDL_DISABLE);
 
-    // Check hardware for 565/555
-    GBitMask = surface->format->Gmask;
-    if (GBitMask != 0x07E0) {
-        converta = 1;
-    } else {
-        converta = 0;
-    }
+    // Always RGB565
+    converta = 0;
 
     return true;
 }
 
 void sw_end()
 {
-    // Do nothing
+    if (render_surface) {
+        SDL_FreeSurface(render_surface);
+        render_surface = NULL;
+        surface = NULL;
+    }
+    if (sdl_window) {
+        SDL_DestroyWindow(sdl_window);
+        sdl_window = NULL;
+    }
 }
 
 static void LockSurface()
@@ -102,7 +117,12 @@ static void UnlockSurface()
     if (SurfaceLocking) {
         SDL_UnlockSurface(surface);
     }
-    SDL_Flip(surface);
+    // Blit the 16-bit render surface to the window surface (with format conversion)
+    SDL_Surface* win_surface = SDL_GetWindowSurface(sdl_window);
+    if (win_surface) {
+        SDL_BlitSurface(render_surface, NULL, win_surface, NULL);
+        SDL_UpdateWindowSurface(sdl_window);
+    }
 }
 
 extern unsigned char NGNoTransp;

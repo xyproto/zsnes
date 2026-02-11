@@ -294,7 +294,7 @@ Mode7HiRes16b db 0
 @ It is not recommended to be used if you cannot normally sustain 60fps
 %ifdef __UNIXSDL__
 %ifdef __OPENGL__
-@ OpenGL only - You need SDL 1.2.10 or later to use this.
+@ OpenGL only.
 %endif
 @ VSync is automatically enforced in SDL software modes.
 %endif

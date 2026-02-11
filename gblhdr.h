@@ -82,11 +82,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 // opengl stuff
 
 #ifdef __OPENGL__
-#ifndef __MACOSX__
 #include <GL/gl.h>
-#else
-#include <OpenGL/gl.h>
-#endif
 #endif
 
 // os specific stuff
@@ -99,15 +95,13 @@ however it's a static value that we can just define */
 
 #ifdef __UNIXSDL__
 #include "SDL.h"
-#include <limits.h>
-#ifndef __BEOS__
 #include <arpa/inet.h>
 #include <glob.h>
-#include <sys/mman.h>
-#endif
+#include <limits.h>
 #include <netdb.h>
 #include <netinet/in.h>
 #include <sys/ioctl.h>
+#include <sys/mman.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
 #include <sys/types.h>

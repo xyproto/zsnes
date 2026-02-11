@@ -20,8 +20,8 @@ Goals and non-goals:
 
 Pull requests that fixes inaccuracies with the emulation are welcome, as well as pull requests for regular bugs.
 
-* Currently, `sdl1` (or better: `sdl12-compat`) is a required dependency.
-* The `sdl2` branch is a work-in-progress branch where ZSNES can be compiled with SDL2 but it does not yet run correctly.
+* Currently, `sdl2` is a required dependency.
+* Porting ZSNES to SDL3 is a long term goal.
 
 Tested on Arch Linux, Fedora and Debian 12 on x86_64.
 
@@ -61,14 +61,13 @@ apt install -y git make nasm pkg-config python3 zlib1g-dev build-essential
 git clone https://github.com/xyproto/zsnes
 cd zsnes
 make
-apt install -y g++-multilib gcc-multilib libgl-dev libgl-dev:i386 libpng-dev libpng-dev:i386 libsdl1.2-compat-dev libsdl1.2-compat-dev:i386 libsdl2-dev zlib1g-dev zlib1g-dev:i386
+apt install -y g++-multilib gcc-multilib libgl-dev libgl-dev:i386 libpng-dev libpng-dev:i386 libsdl2-dev libsdl2-dev:i386 zlib1g-dev zlib1g-dev:i386
 make
 ```
 
 ### Pull requests
 
 * Pull requests are welcome.
-* A port to SDL2 is extra warmly welcome!
 * Being able to build and run ZSNES on Linux is a priority.
 * Please have `clang-format` installed and run `make fmt` before submitting a pull request.
 

@@ -27,12 +27,8 @@ char* VERSION_DATE = __DATE__;
 
 #ifdef __WIN32__
 char* VERSION_PORT = "WIN";
-#elif defined(__MACOSX__)
-char* VERSION_PORT = "SDL - Mac OS X";
 #elif defined(__BSDSDL__)
 char* VERSION_PORT = "SDL - BSD";
-#elif defined(__BEOS__)
-char* VERSION_PORT = "SDL - BeOS";
 #elif defined(__linux__)
 char* VERSION_PORT = "SDL - Linux";
 #else

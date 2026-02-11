@@ -69,6 +69,7 @@ typedef enum vidstate_e {
 } vidstate_t;
 
 /* VIDEO VARIABLES */
+SDL_Window* sdl_window = NULL;
 SDL_Surface* surface;
 int SurfaceLocking = 0;
 int SurfaceX, SurfaceY;
@@ -80,6 +81,9 @@ static int UseOpenGL = 0;
 static const int BitDepth = 16;
 static bool ScreenSaverSuspended = false;
 static uint32_t FirstVid = 1;
+#ifdef __OPENGL__
+SDL_GLContext gl_context = NULL;
+#endif
 
 extern uint32_t* BitConv32Ptr;
 extern uint32_t* RGBtoYUVPtr;
@@ -188,8 +192,57 @@ int Main_Proc()
 
     while (SDL_PollEvent(&event)) {
         switch (event.type) {
-        case SDL_ACTIVEEVENT:
-            IsActivated = event.active.gain;
+        case SDL_WINDOWEVENT:
+            if (event.window.event == SDL_WINDOWEVENT_FOCUS_GAINED)
+                IsActivated = 1;
+            else if (event.window.event == SDL_WINDOWEVENT_FOCUS_LOST)
+                IsActivated = 0;
+#ifdef __OPENGL__
+            else if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
+                if (GUIRESIZE[cvidmode]) {
+                    WindowWidth = SurfaceX = event.window.data1;
+                    WindowHeight = SurfaceY = event.window.data2;
+                    SetHQx(SurfaceX, SurfaceY);
+                    SetHiresOpt(SurfaceX, SurfaceY);
+                    adjustMouseXScale();
+                    adjustMouseYScale();
+                    glViewport(0, 0, WindowWidth, WindowHeight);
+                    glMatrixMode(GL_PROJECTION);
+                    glLoadIdentity();
+
+                    if (cvidmode == 20) {
+                        if (224 * WindowWidth > 256 * WindowHeight && WindowHeight) {
+                            glOrtho(-((float)224 * WindowWidth) / ((float)256 * WindowHeight),
+                                ((float)224 * WindowWidth) / ((float)256 * WindowHeight), -1, 1, -1, 1);
+                        } else if (224 * WindowWidth < 256 * WindowHeight && WindowWidth) {
+                            glOrtho(-1, 1, -((float)256 * WindowHeight) / ((float)224 * WindowWidth),
+                                ((float)256 * WindowHeight) / ((float)224 * WindowWidth), -1, 1);
+                        } else {
+                            glOrtho(-1, 1, -1, 1, -1, 1);
+                        }
+                    }
+
+                    if (Keep4_3Ratio && (cvidmode == 21)) {
+                        if (3 * WindowWidth > 4 * WindowHeight && WindowHeight) {
+                            glOrtho(-((float)3 * WindowWidth) / ((float)4 * WindowHeight),
+                                ((float)3 * WindowWidth) / ((float)4 * WindowHeight), -1, 1, -1, 1);
+                        } else if (3 * WindowWidth < 4 * WindowHeight && WindowWidth) {
+                            glOrtho(-1, 1, -((float)4 * WindowHeight) / ((float)3 * WindowWidth),
+                                ((float)4 * WindowHeight) / ((float)3 * WindowWidth), -1, 1);
+                        } else {
+                            glOrtho(-1, 1, -1, 1, -1, 1);
+                        }
+                    }
+
+                    glMatrixMode(GL_MODELVIEW);
+                    glLoadIdentity();
+                    glDisable(GL_DEPTH_TEST);
+                    glFlush();
+                    gl_clearwin();
+                    Clear2xSaIBuffer();
+                }
+            }
+#endif
             break;
         case SDL_KEYDOWN:
             if ((event.key.keysym.sym == SDLK_RETURN) && (event.key.keysym.mod & KMOD_ALT)) {
@@ -245,26 +298,22 @@ int Main_Proc()
             }
             break;
 
-        case SDL_MOUSEBUTTONDOWN:
-            /*
-           button 2 = enter (i.e. select)
-           button 4 = mouse wheel up (treat as "up" key)
-           button 5 = mouse wheel down (treat as "down" key)
-         */
-            switch (event.button.button) {
-            case 4:
+        case SDL_MOUSEWHEEL:
+            if (event.wheel.y > 0)
                 ProcessKeyBuf(SDLK_UP);
-                break;
-            case 5:
+            else if (event.wheel.y < 0)
                 ProcessKeyBuf(SDLK_DOWN);
-                break;
-            case 3:
+            break;
+
+        case SDL_MOUSEBUTTONDOWN:
+            switch (event.button.button) {
+            case SDL_BUTTON_RIGHT:
                 MouseButton |= 2;
                 break;
-            case 2:
+            case SDL_BUTTON_MIDDLE:
                 ProcessKeyBuf(SDLK_RETURN);
                 // Yes, this is intentional - DDOI
-            case 1:
+            case SDL_BUTTON_LEFT:
                 MouseButton |= event.button.button;
                 break;
             }
@@ -272,12 +321,12 @@ int Main_Proc()
 
         case SDL_MOUSEBUTTONUP:
             switch (event.button.button) {
-            case 1:
-            case 2:
+            case SDL_BUTTON_LEFT:
+            case SDL_BUTTON_MIDDLE:
                 MouseButton &= ~event.button.button;
                 break;
 
-            case 3:
+            case SDL_BUTTON_RIGHT:
                 MouseButton &= ~2;
                 break;
             }
@@ -417,62 +466,6 @@ int Main_Proc()
         case SDL_QUIT:
             zexit();
             break;
-#ifndef __MACOSX__
-#ifdef __OPENGL__
-        case SDL_VIDEORESIZE:
-            if (!GUIRESIZE[cvidmode]) {
-                SetGLAttributes();
-                surface = SDL_SetVideoMode(WindowWidth, WindowHeight, BitDepth,
-                    surface->flags & ~SDL_RESIZABLE);
-                adjustMouseXScale();
-                adjustMouseYScale();
-                break;
-            }
-            WindowWidth = SurfaceX = event.resize.w;
-            WindowHeight = SurfaceY = event.resize.h;
-            SetHQx(SurfaceX, SurfaceY);
-            SetHiresOpt(SurfaceX, SurfaceY);
-            SetGLAttributes();
-            surface = SDL_SetVideoMode(WindowWidth, WindowHeight, BitDepth, surface->flags);
-            adjustMouseXScale();
-            adjustMouseYScale();
-            glViewport(0, 0, WindowWidth, WindowHeight);
-            glMatrixMode(GL_PROJECTION);
-            glLoadIdentity();
-
-            if (cvidmode == 20) {
-                if (224 * WindowWidth > 256 * WindowHeight && WindowHeight) {
-                    glOrtho(-((float)224 * WindowWidth) / ((float)256 * WindowHeight),
-                        ((float)224 * WindowWidth) / ((float)256 * WindowHeight), -1, 1, -1, 1);
-                } else if (224 * WindowWidth < 256 * WindowHeight && WindowWidth) {
-                    glOrtho(-1, 1, -((float)256 * WindowHeight) / ((float)224 * WindowWidth),
-                        ((float)256 * WindowHeight) / ((float)224 * WindowWidth), -1, 1);
-                } else {
-                    glOrtho(-1, 1, -1, 1, -1, 1);
-                }
-            }
-
-            if (Keep4_3Ratio && (cvidmode == 21)) {
-                if (3 * WindowWidth > 4 * WindowHeight && WindowHeight) {
-                    glOrtho(-((float)3 * WindowWidth) / ((float)4 * WindowHeight),
-                        ((float)3 * WindowWidth) / ((float)4 * WindowHeight), -1, 1, -1, 1);
-                } else if (3 * WindowWidth < 4 * WindowHeight && WindowWidth) {
-                    glOrtho(-1, 1, -((float)4 * WindowHeight) / ((float)3 * WindowWidth),
-                        ((float)4 * WindowHeight) / ((float)3 * WindowWidth), -1, 1);
-                } else {
-                    glOrtho(-1, 1, -1, 1, -1, 1);
-                }
-            }
-
-            glMatrixMode(GL_MODELVIEW);
-            glLoadIdentity();
-            glDisable(GL_DEPTH_TEST);
-            glFlush();
-            gl_clearwin();
-            Clear2xSaIBuffer();
-            break;
-#endif
-#endif
         default:
             break;
         }
@@ -621,33 +614,33 @@ static unsigned int sdl_keysym_to_pc_scancode(int sym)
         return 0x43;
     case SDLK_F10:
         return 0x44;
-    case SDLK_NUMLOCK:
+    case SDLK_NUMLOCKCLEAR:
         return 0x45;
-    case SDLK_SCROLLOCK:
+    case SDLK_SCROLLLOCK:
         return 0x46;
-    case SDLK_KP7:
+    case SDLK_KP_7:
         return 0x47;
-    case SDLK_KP8:
+    case SDLK_KP_8:
         return 0x48;
-    case SDLK_KP9:
+    case SDLK_KP_9:
         return 0x49;
     case SDLK_KP_MINUS:
         return 0x4a;
-    case SDLK_KP4:
+    case SDLK_KP_4:
         return 0x4b;
-    case SDLK_KP5:
+    case SDLK_KP_5:
         return 0x4c;
-    case SDLK_KP6:
+    case SDLK_KP_6:
         return 0x4d;
     case SDLK_KP_PLUS:
         return 0x4e;
-    case SDLK_KP1:
+    case SDLK_KP_1:
         return 0x4f;
-    case SDLK_KP2:
+    case SDLK_KP_2:
         return 0x50;
-    case SDLK_KP3:
+    case SDLK_KP_3:
         return 0x51;
-    case SDLK_KP0:
+    case SDLK_KP_0:
         return 0x52;
     case SDLK_KP_PERIOD:
         return 0x53;
@@ -726,45 +719,45 @@ static void ProcessKeyBuf(int scancode)
             }
         }
     }
-    if ((scancode >= SDLK_KP0) && (scancode <= SDLK_KP9)) {
+    if ((scancode >= SDLK_KP_0) && (scancode <= SDLK_KP_9)) {
         if (numlockptr) {
             accept = 1;
-            vkeyval = scancode - SDLK_KP0 + '0';
+            vkeyval = scancode - SDLK_KP_0 + '0';
         } else {
             switch (scancode) {
-            case SDLK_KP9:
+            case SDLK_KP_9:
                 vkeyval = 256 + 73;
                 accept = 1;
                 break;
-            case SDLK_KP8:
+            case SDLK_KP_8:
                 vkeyval = 256 + 72;
                 accept = 1;
                 break;
-            case SDLK_KP7:
+            case SDLK_KP_7:
                 vkeyval = 256 + 71;
                 accept = 1;
                 break;
-            case SDLK_KP6:
+            case SDLK_KP_6:
                 vkeyval = 256 + 77;
                 accept = 1;
                 break;
-            case SDLK_KP5:
+            case SDLK_KP_5:
                 vkeyval = 256 + 76;
                 accept = 1;
                 break;
-            case SDLK_KP4:
+            case SDLK_KP_4:
                 vkeyval = 256 + 75;
                 accept = 1;
                 break;
-            case SDLK_KP3:
+            case SDLK_KP_3:
                 vkeyval = 256 + 81;
                 accept = 1;
                 break;
-            case SDLK_KP2:
+            case SDLK_KP_2:
                 vkeyval = 256 + 80;
                 accept = 1;
                 break;
-            case SDLK_KP1:
+            case SDLK_KP_1:
                 vkeyval = 256 + 79;
                 accept = 1;
                 break;
@@ -954,7 +947,7 @@ BOOL InitJoystickInput()
         num_buttons = SDL_JoystickNumButtons(JoystickInput[i]);
         num_hats = SDL_JoystickNumHats(JoystickInput[i]);
         num_balls = SDL_JoystickNumBalls(JoystickInput[i]);
-        printf("Device %i %s\n", i, SDL_JoystickName(i));
+        printf("Device %i %s\n", i, SDL_JoystickName(JoystickInput[i]));
         printf("  %i axis, %i buttons, %i hats, %i balls\n", num_axes, num_buttons, num_hats,
             num_balls);
 
@@ -1231,7 +1224,9 @@ void initwinvideo(void)
 #ifdef __OPENGL__
         if (CheckOGLMode()) {
             SetGLAttributes();
-            surface = SDL_SetVideoMode(WindowWidth, WindowHeight, BitDepth, surface->flags);
+            if (sdl_window) {
+                SDL_SetWindowSize(sdl_window, WindowWidth, WindowHeight);
+            }
             adjustMouseXScale();
             adjustMouseYScale();
             glViewport(0, 0, WindowWidth, WindowHeight);
@@ -1266,11 +1261,6 @@ void initwinvideo(void)
             glLoadIdentity();
             glDisable(GL_DEPTH_TEST);
             glFlush();
-#ifdef __MACOSX__
-            clearwin();
-            Clear2xSaIBuffer();
-            initwinvideo(); // really really bad hack for OSX+ATI video cards -DL
-#endif
         }
 #endif
         clearwin();
@@ -1350,7 +1340,7 @@ static void sem_sleep_rdy(void)
     }
     sem_frames = SDL_CreateSemaphore(0);
     sem_threadrun = 1;
-    sem_threadid = SDL_CreateThread(sem_thread, 0);
+    sem_threadid = SDL_CreateThread(sem_thread, "sem_thread", 0);
 }
 
 static void sem_sleep_die()
@@ -1435,8 +1425,8 @@ void UnloadSDL()
         gl_end();
     }
 #endif
-    if (sdl_state != vid_null) {
-        SDL_WM_GrabInput(SDL_GRAB_OFF); // probably redundant
+    if (sdl_state != vid_null && sdl_window) {
+        SDL_SetWindowGrab(sdl_window, SDL_FALSE);
     }
     SDL_Quit();
 }
@@ -1454,11 +1444,7 @@ s4 GetMouseMoveX(void)
 {
     //   InputRead();
     // SDL_GetRelativeMouseState(&MouseMove2X, NULL);
-#if SDL_VERSION_ATLEAST(1, 3, 0)
-    SDL_GetRelativeMouseState(0, &MouseMove2X, &MouseMove2Y);
-#else
     SDL_GetRelativeMouseState(&MouseMove2X, &MouseMove2Y);
-#endif
     return (MouseMove2X);
 }
 

@@ -29,6 +29,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 void hq2x_16b();
 
 // VIDEO VARIABLES
+extern SDL_Window* sdl_window;
 extern SDL_Surface* surface;
 extern int SurfaceLocking;
 extern uint64_t BitDepth;
@@ -45,39 +46,33 @@ extern unsigned short* vidbuffer;
 extern unsigned char curblank;
 extern uint8_t GUIRESIZE[];
 
+#ifdef __OPENGL__
+extern SDL_GLContext gl_context;
+#endif
+
 void gl_clearwin();
 
 void gl_scanlines();
 
 char CheckOGLMode();
 
-#if (SDL_MAJOR_VERSION > 1) || ((SDL_MINOR_VERSION > 2) || ((SDL_MINOR_VERSION == 2) && (SDL_PATCHLEVEL >= 10)))
 char allow_glvsync = 1;
-#else
-char allow_glvsync = 0;
-#endif
 
 void SetGLAttributes()
 {
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-#if SDL_VERSION_ATLEAST(1, 2, 10)
     int const value = vsyncon ? 1 : 0;
-#if SDL_VERSION_ATLEAST(1, 3, 0)
     SDL_GL_SetSwapInterval(value);
-#else
-    SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL, value);
-#endif
     SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
-#endif
 }
 
 int gl_start(int width, int height, int req_depth, int FullScreen)
 {
-    uint32_t flags = SDL_OPENGL;
+    uint32_t flags = SDL_WINDOW_OPENGL;
     int i;
 
-    flags |= (GUIRESIZE[cvidmode] ? SDL_RESIZABLE : 0);
-    flags |= (FullScreen ? SDL_FULLSCREEN : 0);
+    flags |= (GUIRESIZE[cvidmode] ? SDL_WINDOW_RESIZABLE : 0);
+    flags |= (FullScreen ? SDL_WINDOW_FULLSCREEN : 0);
 
     if (BilinearFilter) {
         glfilters = GL_LINEAR;
@@ -91,9 +86,23 @@ int gl_start(int width, int height, int req_depth, int FullScreen)
     SurfaceX = width;
     SurfaceY = height;
     SetGLAttributes();
-    surface = SDL_SetVideoMode(SurfaceX, SurfaceY, req_depth, flags);
-    if (surface == NULL) {
-        fprintf(stderr, "Could not set %dx%d-GL video mode.\n", SurfaceX, SurfaceY);
+
+    if (sdl_window) {
+        SDL_DestroyWindow(sdl_window);
+    }
+    sdl_window = SDL_CreateWindow("ZSNES", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+        SurfaceX, SurfaceY, flags);
+    if (sdl_window == NULL) {
+        fprintf(stderr, "Could not create %dx%d-GL window.\n", SurfaceX, SurfaceY);
+        return false;
+    }
+
+    if (gl_context) {
+        SDL_GL_DeleteContext(gl_context);
+    }
+    gl_context = SDL_GL_CreateContext(sdl_window);
+    if (gl_context == NULL) {
+        fprintf(stderr, "Could not create GL context: %s\n", SDL_GetError());
         return false;
     }
 
@@ -103,10 +112,9 @@ int gl_start(int width, int height, int req_depth, int FullScreen)
     gl_clearwin();
 
     // Grab mouse in fullscreen mode
-    FullScreen ? SDL_WM_GrabInput(SDL_GRAB_ON) : SDL_WM_GrabInput(SDL_GRAB_OFF);
+    SDL_SetWindowGrab(sdl_window, FullScreen ? SDL_TRUE : SDL_FALSE);
 
-    SDL_WM_SetCaption("ZSNES", "ZSNES");
-    SDL_ShowCursor(0);
+    SDL_ShowCursor(SDL_DISABLE);
 
     /* Setup some GL stuff */
 
@@ -142,6 +150,14 @@ void gl_end()
         glDeleteTextures(4, gltextures);
         free(glvidbuffer);
         glvidbuffer = 0;
+    }
+    if (gl_context) {
+        SDL_GL_DeleteContext(gl_context);
+        gl_context = NULL;
+    }
+    if (sdl_window) {
+        SDL_DestroyWindow(sdl_window);
+        sdl_window = NULL;
     }
 }
 
@@ -370,7 +386,7 @@ void gl_drawwin()
             glEnable(GL_TEXTURE_2D);
         }
     }
-    SDL_GL_SwapBuffers();
+    SDL_GL_SwapWindow(sdl_window);
 }
 
 void gl_scanlines()

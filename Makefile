@@ -49,7 +49,7 @@ else
 endif
 
 ifdef WITH_SDL
-  SDL_CONFIG ?= pkg-config sdl
+  SDL_CONFIG ?= pkg-config sdl2
   ifndef CFLAGS_SDL
     CFLAGS_SDL := $(shell $(SDL_CONFIG) --cflags)
   endif
@@ -91,7 +91,7 @@ endif
 ifeq ($(wildcard /usr/lib/i386-linux-gnu/.),)
   CFLAGS += -I/usr/include/x86_64-linux-gnu -I /usr/include/X11
   CXXFLAGS += -I/usr/include/x86_64-linux-gnu -I /usr/include/X11
-  LDFLAGS = -Wl,--as-needed -no-pie -L/usr/lib32 -L/usr/lib/i386-linux-gnu -Wl,--gc-sections -lz -lSDL-1.2 -lpng16 -lX11
+  LDFLAGS = -Wl,--as-needed -no-pie -L/usr/lib32 -L/usr/lib/i386-linux-gnu -Wl,--gc-sections -lz -lSDL2 -lpng16 -lX11
 endif
 
 SRCS :=
