@@ -2426,11 +2426,7 @@ void powercycle(bool sramload, bool romload)
         }
 
         sramsavedis = 0;
-        size_t ppu_reg_size = PHnum2writeppureg;
-        if (ppu_reg_size > sizeof(regsbackup)) {
-            ppu_reg_size = sizeof(regsbackup);
-        }
-        memcpy(&sndrot, regsbackup, ppu_reg_size);
+        memcpy(&sndrot, regsbackup, sizeof(regsbackup));
 
         if (yesoutofmemory)
             outofmemfix();
