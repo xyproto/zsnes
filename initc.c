@@ -2426,7 +2426,10 @@ void powercycle(bool sramload, bool romload)
         }
 
         sramsavedis = 0;
-        memcpy(&sndrot, regsbackup, sizeof(regsbackup));
+        /* sndrot is the start of a larger asm-defined register block.
+         * Use volatile to prevent _FORTIFY_SOURCE from treating &sndrot as 1 byte. */
+        void* volatile sndrot_base = &sndrot;
+        memcpy(sndrot_base, regsbackup, sizeof(regsbackup));
 
         if (yesoutofmemory)
             outofmemfix();

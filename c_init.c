@@ -78,8 +78,10 @@ void init(void)
     forceromtype = romtype;
     romtype = 0;
 
-    /* sndrot is the start of the SNES register block defined in asm. */
-    memcpy(regsbackup, &sndrot, sizeof(regsbackup));
+    /* sndrot is the start of the SNES register block defined in asm.
+     * Use volatile to prevent _FORTIFY_SOURCE from treating &sndrot as 1 byte. */
+    void* volatile sndrot_base = &sndrot;
+    memcpy(regsbackup, sndrot_base, sizeof(regsbackup));
 
     clearmem();
 
