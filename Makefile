@@ -256,7 +256,7 @@ SRCS += linux/battery.c
 SRCS += linux/c_sdlintrf.c
 SRCS += linux/lib.c
 SRCS += linux/safelib.c
-SRCS += linux/sdlintrf.asm
+
 SRCS += linux/sdllink.c
 SRCS += linux/sockserv.c
 SRCS += linux/sw_draw.c

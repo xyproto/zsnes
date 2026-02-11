@@ -10,6 +10,12 @@
 #include "../gui/c_gui.h"
 #include "../input.h"
 #include "../intrf.h"
+
+// Variables previously in sdlintrf.asm
+u4 volatile CurKeyPos = 0;
+u4 CurKeyReadPos = 0;
+u4 KeyBuffer[16] = { 0 };
+u4 converta = 0;
 #include "../link.h"
 #include "../macros.h"
 #include "../ui.h"
