@@ -12,7 +12,7 @@ Goals and non-goals:
 
 * Compiling ZSNES so that it works on 64-bit x86 is a goal (that has been reached).
 * Supporting 32-bit platforms is not a goal, but pull requests are welcome.
-* Supporting Windows is not a goal, but pull requests are welcome.
+* Supporting Windows and DOS are not goals.
 * Supporting modern Linux distros (and FreeBSD, if possible) is a goal.
 * To be like an LTS release of ZSNES is a goal.
 * Porting ZSNES to SDL3 is a long term goal.
