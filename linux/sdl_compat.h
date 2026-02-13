@@ -3,6 +3,8 @@
 
 #ifdef __SDL3__
 
+#include <SDL3/SDL.h>
+
 #ifndef SDL_ENABLE
 #define SDL_ENABLE 1
 #endif
