@@ -15,13 +15,12 @@ Goals and non-goals:
 * Supporting Windows and DOS are not goals.
 * Supporting modern Linux distros (and FreeBSD, if possible) is a goal.
 * To be like an LTS release of ZSNES is a goal.
-* Porting ZSNES to SDL3 is a long term goal.
 * Adding back a more secure version of the net-play code is a long term goal.
 
 Pull requests that fixes inaccuracies with the emulation are welcome, as well as pull requests for regular bugs.
 
-* Currently, `sdl2` is a required dependency.
-* Porting ZSNES to SDL3 is a long term goal.
+* Currently, `sdl2` or `sdl3` is a required dependency.
+* PipeWire or libao is recommended for the best audio quality.
 
 Tested on Arch Linux, Fedora and Debian 12 on x86_64.
 
@@ -338,7 +337,7 @@ SA1REGS.ASM     ; SA-1 registers, also includes S-DD1 and SPC7110 routines
 
 #### All ports
 
-- Recode netplay feature, once core is not random anymore. 
+- Recode netplay feature, once core is not random anymore.
 
 #### SDL Port
 
