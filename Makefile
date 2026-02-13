@@ -4,6 +4,12 @@
 # The flags below also needs to be modified if this is not set to LINUX
 ARCH := LINUX
 
+# Use all available cores by default unless user already passed -j/--jobs.
+ifeq ($(filter -j% --jobs%,$(MAKEFLAGS)),)
+  NPROC ?= $(shell getconf _NPROCESSORS_ONLN 2>/dev/null || nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 1)
+  MAKEFLAGS += -j$(NPROC)
+endif
+
 CC ?= gcc
 CXX ?= g++
 
@@ -16,12 +22,27 @@ LDFLAGS += -Wl,--as-needed -no-pie -L/usr/lib32 -Wl,--gc-sections -lz
 # -O1 is mandatory
 ASMFLAGS += -O1 -w-orphan-labels
 
-#WITH_AO       := yes
+WITH_AO       :=
 #WITH_DEBUGGER := yes
 WITH_JMA      := yes
 WITH_OPENGL   := yes
 WITH_PNG      := yes
 WITH_SDL      := yes
+
+PIPEWIRE_AVAILABLE := $(shell pkg-config --exists libpipewire-0.3 && echo yes)
+AO_AVAILABLE := $(shell pkg-config --exists ao && echo yes)
+
+ifeq ($(WITH_PIPEWIRE),)
+  ifeq ($(PIPEWIRE_AVAILABLE),yes)
+    WITH_PIPEWIRE := yes
+  endif
+endif
+
+ifeq ($(WITH_AO),)
+  ifeq ($(AO_AVAILABLE),yes)
+    WITH_AO := yes
+  endif
+endif
 
 BINARY     ?= zsnes
 PSR        ?= parsegen.py
@@ -74,7 +95,7 @@ else
   CFGDEFS += -DNO_PNG
 endif
 
-ifdef WITH_AO
+ifeq ($(WITH_AO),yes)
   AO_CONFIG ?= pkg-config ao
   ifndef CFLAGS_AO
     CFLAGS_AO := $(shell $(AO_CONFIG) --cflags)
@@ -82,16 +103,39 @@ ifdef WITH_AO
   ifndef LDFLAGS_AO
     LDFLAGS_AO := $(shell $(AO_CONFIG) --libs)
   endif
+  ifeq ($(strip $(LDFLAGS_AO)),)
+    LDFLAGS_AO := -lao
+  endif
   CFLAGS += $(CFLAGS_AO)
   LDFLAGS += $(LDFLAGS_AO)
 else
   CFGDEFS += -DNO_AO
 endif
 
+ifeq ($(WITH_PIPEWIRE),yes)
+  ifeq ($(PIPEWIRE_AVAILABLE),yes)
+    PIPEWIRE_CONFIG ?= pkg-config libpipewire-0.3
+    ifndef CFLAGS_PIPEWIRE
+      CFLAGS_PIPEWIRE := $(shell $(PIPEWIRE_CONFIG) --cflags)
+    endif
+    ifndef LDFLAGS_PIPEWIRE
+      LDFLAGS_PIPEWIRE := $(shell $(PIPEWIRE_CONFIG) --libs)
+    endif
+    ifeq ($(strip $(LDFLAGS_PIPEWIRE)),)
+      LDFLAGS_PIPEWIRE := -lpipewire-0.3
+    endif
+    CFLAGS += $(CFLAGS_PIPEWIRE)
+    LDFLAGS += $(LDFLAGS_PIPEWIRE)
+    CFGDEFS += -D__PIPEWIRE__
+  else
+    WITH_PIPEWIRE :=
+  endif
+endif
+
 ifeq ($(wildcard /usr/lib/i386-linux-gnu/.),)
   CFLAGS += -I/usr/include/x86_64-linux-gnu -I /usr/include/X11
   CXXFLAGS += -I/usr/include/x86_64-linux-gnu -I /usr/include/X11
-  LDFLAGS = -Wl,--as-needed -no-pie -L/usr/lib32 -L/usr/lib/i386-linux-gnu -Wl,--gc-sections -lz -lSDL2 -lpng16 -lX11
+  LDFLAGS += -L/usr/lib/i386-linux-gnu -lSDL2 -lpng16 -lX11
 endif
 
 SRCS :=
@@ -246,7 +290,7 @@ ifdef WITH_OPENGL
 CFGDEFS += -D__OPENGL__
 endif
 
-ifdef WITH_AO
+ifeq ($(WITH_AO),yes)
 CFGDEFS += -D__LIBAO__
 endif
 
@@ -382,6 +426,10 @@ info:
 	@echo "WITH_OPENGL   = $(WITH_OPENGL)"
 	@echo "WITH_PNG      = $(WITH_PNG)"
 	@echo "WITH_SDL      = $(WITH_SDL)"
+	@echo "WITH_PIPEWIRE = $(WITH_PIPEWIRE)"
+	@echo "WITH_AO       = $(WITH_AO)"
+	@echo "PIPEWIRE_AVAILABLE = $(PIPEWIRE_AVAILABLE)"
+	@echo "AO_AVAILABLE  = $(AO_AVAILABLE)"
 	@echo "BINARY        = $(BINARY)"
 	@echo "ASM           = $(ASM)"
 	@echo "CC            = $(CC)"

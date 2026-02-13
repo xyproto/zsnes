@@ -136,6 +136,10 @@ static void display_help()
 #endif
     snprintf(line, sizeof(line), "%22s = Simple DirectMedia Layer output", "sdl");
     put_line(line);
+#ifdef __PIPEWIRE__
+    snprintf(line, sizeof(line), "%22s = Native PipeWire output", "pipewire");
+    put_line(line);
+#endif
 #endif
 #ifndef NO_DEBUGGER
     put_line("  -d      Start with debugger enabled");
@@ -703,10 +707,24 @@ static void handle_params(int argc, char* argv[])
                         display_help();
                     }
 
+                    if (!strcmp(argv[i], "pulse")) {
+                        fprintf(stderr, "WARNING: -ad pulse is deprecated; using auto backend selection.\n");
+                        strcpy(libAoDriver, "auto");
+                        continue;
+                    }
+
 #ifdef __LIBAO__
-                    if (!strcmp(argv[i], "auto") || !strcmp(argv[i], "sdl") || (ao_driver_id(argv[i]) >= 0))
+                    if (!strcmp(argv[i], "auto") || !strcmp(argv[i], "sdl")
+#ifdef __PIPEWIRE__
+                        || !strcmp(argv[i], "pipewire")
+#endif
+                        || (ao_driver_id(argv[i]) >= 0))
 #else
-                    if (!strcmp(argv[i], "auto") || !strcmp(argv[i], "sdl"))
+                    if (!strcmp(argv[i], "auto") || !strcmp(argv[i], "sdl")
+#ifdef __PIPEWIRE__
+                        || !strcmp(argv[i], "pipewire")
+#endif
+                        )
 #endif
                     {
                         strcpy(libAoDriver, argv[i]);

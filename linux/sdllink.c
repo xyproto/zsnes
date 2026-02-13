@@ -1391,10 +1391,20 @@ void clearwin(void)
 
 void drawscreenwin(void)
 {
-#ifdef __LIBAO__
+#if defined(__LIBAO__) || defined(__PIPEWIRE__)
     extern bool RawDumpInProgress;
     if (!sound_sdl && !GUIOn2 && !GUIOn && !EMUPause && !RawDumpInProgress) {
+#ifdef __PIPEWIRE__
+        if (sound_pipewire) {
+            SoundWrite_pipewire();
+        }
+#endif
+#ifdef __LIBAO__
+#ifdef __PIPEWIRE__
+        else
+#endif
         SoundWrite_ao();
+#endif
     }
 #endif
 

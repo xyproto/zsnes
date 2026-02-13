@@ -29,11 +29,17 @@ void DeinitSound();
 #ifdef __LIBAO__
 void SoundWrite_ao();
 #endif
+#ifdef __PIPEWIRE__
+void SoundWrite_pipewire();
+#endif
 void SoundWrite_sdl();
 
 extern int SoundEnabled;
 extern unsigned char PrevStereoSound;
 extern unsigned int PrevSoundQuality;
 extern unsigned char sound_sdl;
+#ifdef __PIPEWIRE__
+extern unsigned char sound_pipewire;
+#endif
 
 #endif

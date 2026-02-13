@@ -360,7 +360,8 @@ gammalevel db 0
 @
 @ libAO driver to use. Use zsnes --help to see valid list.
 @ However "auto" (to automatically pick best one), and "sdl" should
-@ always be available.
+@ always be available. If compiled with native PipeWire support,
+@ "pipewire" will also be available.
 libAoDriver times 10 db "auto"
 %endif
 
