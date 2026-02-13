@@ -320,13 +320,14 @@ endif
 ASMFLAGS += $(CFGDEFS)
 CFLAGS += $(CFGDEFS)
 CXXFLAGS += $(CFGDEFS)
+DEPFLAGS_C = -MMD -MP -MF $(@:.o=.d) -MT $@
+DEPFLAGS_CXX = -MMD -MP -MF $(@:.o=.d) -MT $@
 
 HDRS := $(PSRS:.psr=.h)
 OBJS := $(filter %.o, $(SRCS:.asm=.o) $(SRCS:.c=.o) $(SRCS:.cpp=.o) $(PSRS:.psr=.o))
 DEPS := $(OBJS:.o=.d)
 
 .SUFFIXES:
-.SUFFIXES: .asm .c .cpp .d .o
 
 #Q ?= @
 
@@ -336,26 +337,26 @@ debug: DEBUGFLAGS += -g
 debug: $(BINARY)
 	gdb $(BINARY) --args zsnes ~/roms/snes/example.sfc
 
--include $(DEPS)
+-include $(wildcard $(DEPS))
 
 $(BINARY): $(OBJS)
 	@echo '===> LD $@'
 	$(Q)$(CXX_TARGET) $(CFLAGS) $(OBJS) $(LDFLAGS) $(DEBUGFLAGS) -o $@
 
-.asm.o:
+%.o: %.asm
 	@echo '===> ASM $<'
 	$(Q)$(ASM) $(ASMFLAGS) $(DEBUGFLAGS) -M -o $@ $< > $(@:.o=.d) || rm -f $(@:.o=.d)
 	$(Q)$(ASM) $(ASMFLAGS) $(DEBUGFLAGS) -o $@ $<
 
 $(filter %.o, $(SRCS:.c=.o) $(SRCS:.cpp=.o)): $(HDRS)
 
-.c.o:
+%.o: %.c
 	@echo '===> CC $<'
-	$(Q)$(CC_TARGET) $(CFLAGS) $(DEBUGFLAGS) -c -MMD -o $@ $<
+	$(Q)$(CC_TARGET) $(CFLAGS) $(DEBUGFLAGS) -c $(DEPFLAGS_C) -o $@ $<
 
-.cpp.o:
+%.o: %.cpp
 	@echo '===> CXX $<'
-	$(Q)$(CXX_TARGET) $(CXXFLAGS) $(DEBUGFLAGS) -c -MMD -o $@ $<
+	$(Q)$(CXX_TARGET) $(CXXFLAGS) $(DEBUGFLAGS) -c $(DEPFLAGS_CXX) -o $@ $<
 
 %.h %.o: %.psr $(PSR)
 	@echo '===> PSR $@'
