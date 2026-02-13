@@ -23,7 +23,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "gl_draw.h"
 #include "sw_draw.h"
 
-#include <SDL_thread.h>
 #include <stdbool.h>
 #include <sys/time.h>
 #include <time.h>
@@ -192,6 +191,60 @@ int Main_Proc()
 
     while (SDL_PollEvent(&event)) {
         switch (event.type) {
+#ifdef __SDL3__
+        case SDL_EVENT_WINDOW_FOCUS_GAINED:
+            IsActivated = 1;
+            break;
+        case SDL_EVENT_WINDOW_FOCUS_LOST:
+            IsActivated = 0;
+            break;
+#ifdef __OPENGL__
+        case SDL_EVENT_WINDOW_RESIZED:
+            if (GUIRESIZE[cvidmode]) {
+                WindowWidth = SurfaceX = event.window.data1;
+                WindowHeight = SurfaceY = event.window.data2;
+                SetHQx(SurfaceX, SurfaceY);
+                SetHiresOpt(SurfaceX, SurfaceY);
+                adjustMouseXScale();
+                adjustMouseYScale();
+                glViewport(0, 0, WindowWidth, WindowHeight);
+                glMatrixMode(GL_PROJECTION);
+                glLoadIdentity();
+
+                if (cvidmode == 20) {
+                    if (224 * WindowWidth > 256 * WindowHeight && WindowHeight) {
+                        glOrtho(-((float)224 * WindowWidth) / ((float)256 * WindowHeight),
+                            ((float)224 * WindowWidth) / ((float)256 * WindowHeight), -1, 1, -1, 1);
+                    } else if (224 * WindowWidth < 256 * WindowHeight && WindowWidth) {
+                        glOrtho(-1, 1, -((float)256 * WindowHeight) / ((float)224 * WindowWidth),
+                            ((float)256 * WindowHeight) / ((float)224 * WindowWidth), -1, 1);
+                    } else {
+                        glOrtho(-1, 1, -1, 1, -1, 1);
+                    }
+                }
+
+                if (Keep4_3Ratio && (cvidmode == 21)) {
+                    if (3 * WindowWidth > 4 * WindowHeight && WindowHeight) {
+                        glOrtho(-((float)3 * WindowWidth) / ((float)4 * WindowHeight),
+                            ((float)3 * WindowWidth) / ((float)4 * WindowHeight), -1, 1, -1, 1);
+                    } else if (3 * WindowWidth < 4 * WindowHeight && WindowWidth) {
+                        glOrtho(-1, 1, -((float)4 * WindowHeight) / ((float)3 * WindowWidth),
+                            ((float)4 * WindowHeight) / ((float)3 * WindowWidth), -1, 1);
+                    } else {
+                        glOrtho(-1, 1, -1, 1, -1, 1);
+                    }
+                }
+
+                glMatrixMode(GL_MODELVIEW);
+                glLoadIdentity();
+                glDisable(GL_DEPTH_TEST);
+                glFlush();
+                gl_clearwin();
+                Clear2xSaIBuffer();
+            }
+            break;
+#endif
+#else
         case SDL_WINDOWEVENT:
             if (event.window.event == SDL_WINDOWEVENT_FOCUS_GAINED)
                 IsActivated = 1;
@@ -244,32 +297,61 @@ int Main_Proc()
             }
 #endif
             break;
+#endif
         case SDL_KEYDOWN:
+#ifdef __SDL3__
+            if ((event.key.key == SDLK_RETURN) && (event.key.mod & KMOD_ALT)) {
+#else
             if ((event.key.keysym.sym == SDLK_RETURN) && (event.key.keysym.mod & KMOD_ALT)) {
+#endif
                 SwitchFullScreen();
                 break;
             }
+#ifdef __SDL3__
+            if (event.key.key == SDLK_LSHIFT || event.key.key == SDLK_RSHIFT) {
+#else
             if (event.key.keysym.sym == SDLK_LSHIFT || event.key.keysym.sym == SDLK_RSHIFT) {
+#endif
                 shiftptr = 1;
             }
+#ifdef __SDL3__
+            if (event.key.mod & KMOD_NUM) {
+#else
             if (event.key.keysym.mod & KMOD_NUM) {
+#endif
                 numlockptr = 1;
             } else {
                 numlockptr = 0;
             }
 
+#ifdef __SDL3__
+            key = sdl_keysym_to_pc_scancode(event.key.key);
+#else
             key = sdl_keysym_to_pc_scancode(event.key.keysym.sym);
+#endif
             if (key < 448) {
                 pressed[key] = 1;
+#ifdef __SDL3__
+                ProcessKeyBuf(event.key.key);
+#else
                 ProcessKeyBuf(event.key.keysym.sym);
+#endif
             }
             break;
 
         case SDL_KEYUP:
+#ifdef __SDL3__
+            if (event.key.key == SDLK_LSHIFT || event.key.key == SDLK_RSHIFT) {
+#else
             if (event.key.keysym.sym == SDLK_LSHIFT || event.key.keysym.sym == SDLK_RSHIFT) {
+#endif
                 shiftptr = 0;
             }
+#ifdef __SDL3__
+            key = sdl_keysym_to_pc_scancode(event.key.key);
+#else
             key = sdl_keysym_to_pc_scancode(event.key.keysym.sym);
+#endif
             if (key < 448) {
                 pressed[key] = 0;
             }
@@ -996,7 +1078,13 @@ int startgame()
     }
 
     if (sdl_state != vid_null) {
-        if (SDL_Init(SDL_INIT_AUDIO | SDL_INIT_TIMER | SDL_INIT_VIDEO) < 0) {
+        if (
+#ifdef __SDL3__
+            !SDL_Init(SDL_INIT_AUDIO | SDL_INIT_TIMER | SDL_INIT_VIDEO)
+#else
+            SDL_Init(SDL_INIT_AUDIO | SDL_INIT_TIMER | SDL_INIT_VIDEO) < 0
+#endif
+        ) {
             fprintf(stderr, "Could not initialize SDL: %s", SDL_GetError());
             return FALSE;
         }

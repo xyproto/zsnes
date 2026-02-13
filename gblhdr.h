@@ -95,7 +95,12 @@ however it's a static value that we can just define */
 #endif
 
 #ifdef __UNIXSDL__
+#ifdef __SDL3__
+#include "linux/sdl_compat.h"
+#include <SDL3/SDL.h>
+#else
 #include "SDL.h"
+#endif
 #include <arpa/inet.h>
 #include <glob.h>
 #include <limits.h>

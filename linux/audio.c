@@ -69,6 +69,9 @@ uint8_t* sdl_audio_buffer = NULL;
 int sdl_audio_buffer_len = 0, sdl_audio_buffer_fill = 0;
 int sdl_audio_buffer_head = 0, sdl_audio_buffer_tail = 0;
 bool sound_sdl = false;
+#ifdef __SDL3__
+static SDL_AudioStream* sdl_audio_stream = NULL;
+#endif
 
 int SoundEnabled = 1;
 uint8_t PrevStereoSound;
@@ -231,11 +234,17 @@ static void* SoundThread_ao(void* useless)
     return (0);
 }
 
-static int SoundInit_ao()
+static int SoundInit_ao_driver(const char* driver_name)
 {
-    int driver_id = ao_driver_id(libAoDriver);
-    if (driver_id < 0) {
+    int driver_id = -1;
+
+    if (!driver_name || !strcmp(driver_name, "auto")) {
         driver_id = ao_default_driver_id();
+    } else {
+        driver_id = ao_driver_id(driver_name);
+    }
+    if (driver_id < 0) {
+        return (false);
     }
 
     ao_sample_format driver_format = { 0 };
@@ -261,11 +270,15 @@ static int SoundInit_ao()
         ao_info* di = ao_driver_info(driver_id);
         printf("%s: %u channels, %u Hz\n", di->name, driver_format.channels, driver_format.rate);
     } else {
-        SoundEnabled = 0;
         puts("Audio Open Failed");
         return (false);
     }
     return (true);
+}
+
+static int SoundInit_ao()
+{
+    return (SoundInit_ao_driver(libAoDriver));
 }
 
 #endif
@@ -450,6 +463,25 @@ static int SoundInit_pipewire()
 
 void SoundWrite_sdl()
 {
+#ifdef __SDL3__
+    if (!sdl_audio_stream) {
+        return;
+    }
+
+    for (;;) {
+        int queued = SDL_GetAudioStreamQueued(sdl_audio_stream);
+        int16_t chunk[256];
+
+        if (queued < 0 || queued >= sdl_audio_buffer_len) {
+            break;
+        }
+
+        MixSoundBlock(chunk, 256);
+        if (!SDL_PutAudioStreamData(sdl_audio_stream, chunk, sizeof(chunk))) {
+            break;
+        }
+    }
+#else
     extern int DSPBuffer[];
     extern uint8_t DSPDisable;
     extern uint32_t BufferSizeB, BufferSizeW;
@@ -495,6 +527,7 @@ void SoundWrite_sdl()
         }
     }
     SDL_UnlockAudio();
+#endif
 }
 
 static void SoundUpdate_sdl(void* userdata, uint8_t* stream, int len)
@@ -521,6 +554,48 @@ static void SoundUpdate_sdl(void* userdata, uint8_t* stream, int len)
 static int SoundInit_sdl()
 {
     const int samptab[7] = { 1, 1, 2, 4, 2, 4, 4 };
+#ifdef __SDL3__
+    SDL_AudioSpec wanted;
+
+    if (sdl_audio_stream) {
+        SDL_DestroyAudioStream(sdl_audio_stream);
+        sdl_audio_stream = NULL;
+    }
+
+    if (sdl_audio_buffer) {
+        free(sdl_audio_buffer);
+        sdl_audio_buffer = 0;
+    }
+    sdl_audio_buffer_len = 0;
+    sdl_audio_buffer_fill = 0;
+    sdl_audio_buffer_head = 0;
+    sdl_audio_buffer_tail = 0;
+
+    wanted.freq = RATE;
+    wanted.channels = StereoSound + 1;
+    wanted.format = SDL_AUDIO_S16LE;
+
+    sdl_audio_stream = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &wanted, NULL, NULL);
+    if (!sdl_audio_stream) {
+        SoundEnabled = 0;
+        return (false);
+    }
+    if (!SDL_ResumeAudioStreamDevice(sdl_audio_stream)) {
+        SDL_DestroyAudioStream(sdl_audio_stream);
+        sdl_audio_stream = NULL;
+        SoundEnabled = 0;
+        return (false);
+    }
+
+    sdl_audio_buffer_len = (samptab[SoundQuality] * 128 * wanted.channels * 4 + 255) & ~255;
+    if (sdl_audio_buffer_len < 512) {
+        sdl_audio_buffer_len = 512;
+    }
+
+    sound_sdl = true;
+    printf("SDL audio: %u channels, %u Hz\n", wanted.channels, wanted.freq);
+    return (true);
+#else
     SDL_AudioSpec audiospec;
     SDL_AudioSpec wanted;
 
@@ -556,6 +631,7 @@ static int SoundInit_sdl()
     sound_sdl = true;
     printf("SDL audio: %u channels, %u Hz\n", wanted.channels, wanted.freq);
     return (true);
+#endif
 }
 
 int InitSound()
@@ -572,44 +648,96 @@ int InitSound()
     PrevSoundQuality = SoundQuality;
     PrevStereoSound = StereoSound;
 
+    if (!strcmp(libAoDriver, "pulse")) {
+#ifdef __PIPEWIRE__
+        strcpy(libAoDriver, "pipewire");
+#else
+        strcpy(libAoDriver, "auto");
+#endif
+    }
+
+#ifdef __SDL3__
+#ifdef __PIPEWIRE__
+    {
+        int const prev_sound_enabled = SoundEnabled;
+        if (SoundInit_pipewire()) {
+            return (true);
+        }
+        SoundEnabled = prev_sound_enabled;
+    }
+#endif
+#ifdef __LIBAO__
+    {
+        int const prev_sound_enabled = SoundEnabled;
+        if (SoundInit_ao_driver("alsa")) {
+            return (true);
+        }
+        SoundEnabled = prev_sound_enabled;
+    }
+#endif
+    if (SoundInit_sdl()) {
+        return (true);
+    }
+    SoundEnabled = 0;
+    return (false);
+#else
 #ifdef __PIPEWIRE__
     if (!strcmp(libAoDriver, "pipewire")) {
         return (SoundInit_pipewire());
     }
+#endif
+
     if (!strcmp(libAoDriver, "auto")) {
-        if (SoundInit_pipewire()) {
+#ifdef __PIPEWIRE__
+        {
+            int const prev_sound_enabled = SoundEnabled;
+            if (SoundInit_pipewire()) {
+                return (true);
+            }
+            SoundEnabled = prev_sound_enabled;
+        }
+#endif
+#ifdef __LIBAO__
+        {
+            int const prev_sound_enabled = SoundEnabled;
+            if (SoundInit_ao_driver("alsa")) {
+                return (true);
+            }
+            SoundEnabled = prev_sound_enabled;
+        }
+#endif
+        if (SoundInit_sdl()) {
             return (true);
         }
-    }
+#ifdef __LIBAO__
+        {
+            int const prev_sound_enabled = SoundEnabled;
+            if (SoundInit_ao_driver("oss")) {
+                return (true);
+            }
+            SoundEnabled = prev_sound_enabled;
+        }
 #endif
+        if (!warned_sdl_fallback) {
+            warned_sdl_fallback = true;
+            puts("WARNING: Auto audio backend selection failed (PipeWire/libao-ALSA/SDL/libao-OSS).");
+        }
+        SoundEnabled = 0;
+        return (false);
+    }
 
 #ifdef __LIBAO__
     if (strcmp(libAoDriver, "sdl")
 #ifdef __PIPEWIRE__
         && strcmp(libAoDriver, "pipewire")
 #endif
-        && !(!strcmp(libAoDriver, "auto") && !strcmp(ao_driver_info(ao_default_driver_id())->name, "null"))) {
+    ) {
         return (SoundInit_ao());
     }
 #endif
 
-    if (!strcmp(libAoDriver, "auto")
-#ifndef __PIPEWIRE__
-        && true
-#else
-        && !sound_pipewire
-#endif
-#ifndef __LIBAO__
-        && true
-#else
-        && !audio_device
-#endif
-        && !warned_sdl_fallback) {
-        warned_sdl_fallback = true;
-        puts("WARNING: Falling back to SDL audio (PipeWire/libao unavailable). Audio quality may suffer.");
-    }
-
     return (SoundInit_sdl());
+#endif
 }
 
 void DeinitSound()
@@ -643,7 +771,14 @@ void DeinitSound()
         audio_device = 0;
     }
 #endif
+#ifdef __SDL3__
+    if (sdl_audio_stream) {
+        SDL_DestroyAudioStream(sdl_audio_stream);
+        sdl_audio_stream = NULL;
+    }
+#else
     SDL_CloseAudio();
+#endif
     if (sdl_audio_buffer) {
         free(sdl_audio_buffer);
         sdl_audio_buffer = 0;

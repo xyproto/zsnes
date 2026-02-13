@@ -70,7 +70,19 @@ else
 endif
 
 ifdef WITH_SDL
-  SDL_CONFIG ?= pkg-config sdl2
+  ifndef SDL_CONFIG
+    ifeq ($(shell pkg-config --exists sdl3 && echo yes),yes)
+      SDL_CONFIG := pkg-config sdl3
+      SDL_PKG := sdl3
+    else ifeq ($(shell pkg-config --exists sdl2 && echo yes),yes)
+      SDL_CONFIG := pkg-config sdl2
+      SDL_PKG := sdl2
+    else
+      $(error SDL development package not found (tried pkg-config sdl3 then sdl2))
+    endif
+  else
+    SDL_PKG := $(lastword $(SDL_CONFIG))
+  endif
   ifndef CFLAGS_SDL
     CFLAGS_SDL := $(shell $(SDL_CONFIG) --cflags)
   endif
@@ -135,7 +147,11 @@ endif
 ifeq ($(wildcard /usr/lib/i386-linux-gnu/.),)
   CFLAGS += -I/usr/include/x86_64-linux-gnu -I /usr/include/X11
   CXXFLAGS += -I/usr/include/x86_64-linux-gnu -I /usr/include/X11
-  LDFLAGS += -L/usr/lib/i386-linux-gnu -lSDL2 -lpng16 -lX11
+  ifeq ($(SDL_PKG),sdl3)
+    LDFLAGS += -L/usr/lib/i386-linux-gnu -lSDL3 -lpng16 -lX11
+  else
+    LDFLAGS += -L/usr/lib/i386-linux-gnu -lSDL2 -lpng16 -lX11
+  endif
 endif
 
 SRCS :=
@@ -310,6 +326,9 @@ SRCS += linux/gl_draw.c
 endif
 
 CFGDEFS += -D__UNIXSDL__
+ifeq ($(SDL_PKG),sdl3)
+CFGDEFS += -D__SDL3__ -DSDL_ENABLE_OLD_NAMES
+endif
 
 
 ifeq ($(ARCH), OSX)
@@ -442,6 +461,7 @@ info:
 	@echo "CFLAGS_PNG    = $(CFLAGS_PNG)"
 	@echo "LDFLAGS_PNG   = $(LDFLAGS_PNG)"
 	@echo "SDL_CONFIG    = $(SDL_CONFIG)"
+	@echo "SDL_PKG       = $(SDL_PKG)"
 	@echo "CFLAGS_SDL    = $(CFLAGS_SDL)"
 	@echo "LDFLAGS_SDL   = $(LDFLAGS_SDL)"
 	@echo "CFLAGS        = $(CFLAGS)"
