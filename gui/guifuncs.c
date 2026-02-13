@@ -1522,7 +1522,7 @@ char CheckOGLMode()
     return (GUIBIFIL[cvidmode]);
 }
 
-extern unsigned int MovieForcedLength;
+extern uint32_t MovieForcedLength;
 char GUIMovieForcedText[11];
 
 void GetMovieForcedLength(void)

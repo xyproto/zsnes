@@ -35,7 +35,7 @@ extern SDL_Surface* surface;
 extern int SurfaceLocking;
 static SDL_Surface* render_surface = NULL; // 16-bit RGB565 surface for emulator output
 
-extern unsigned char curblank;
+extern uint8_t curblank;
 extern int frametot;
 extern uint8_t GUIOn, GUIOn2;
 
@@ -125,8 +125,8 @@ static void UnlockSurface()
     }
 }
 
-extern unsigned char NGNoTransp;
-extern unsigned short resolutn;
+extern uint8_t NGNoTransp;
+extern uint16_t resolutn;
 void hq2x_16b();
 void hq3x_16b();
 void hq4x_16b();
@@ -142,9 +142,9 @@ void sw_clearwin()
     UnlockSurface();
 }
 
-extern unsigned char prevNTSCMode;
-extern unsigned char changeRes;
-extern unsigned char prevKeep4_3Ratio;
+extern uint8_t prevNTSCMode;
+extern uint8_t changeRes;
+extern uint8_t prevKeep4_3Ratio;
 
 void sw_drawwin()
 {

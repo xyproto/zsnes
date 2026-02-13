@@ -33,6 +33,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <errno.h>
 #include <math.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <string.h>
 
 // General time.h checking

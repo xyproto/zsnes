@@ -1,3 +1,5 @@
+#include <stdint.h>
+
 // ST-011 SNES DSP adapted from Morita Shogi 64
 //
 // notes:
@@ -29,7 +31,7 @@ int ST011_input_length;
 
 #define ST011_ram setaramdata
 
-extern unsigned char* setaramdata;
+extern uint8_t* setaramdata;
 
 #define ST011_board (ST011_ram + 0x130)
 

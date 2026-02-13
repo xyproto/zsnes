@@ -1,3 +1,5 @@
+#include <stdint.h>
+
 #if !defined(__GNUC__) || !defined(__i386__)
 #error "chips/dsp4proc.c requires GCC-compatible inline assembly on i386"
 #endif
@@ -8,8 +10,8 @@
 #define CSYM(x) #x
 #endif
 
-extern unsigned char dsp4_byte;
-extern unsigned short dsp4_address;
+extern uint8_t dsp4_byte;
+extern uint16_t dsp4_address;
 extern void DSP4GetByte(void);
 extern void DSP4SetByte(void);
 extern void regaccessbankr8(void);

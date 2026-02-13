@@ -32,7 +32,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #define SRAM setaramdata
 
-extern unsigned char* setaramdata;
+extern uint8_t* setaramdata;
 void ST010DoCommand();
 
 // Mode 7 scaling constants for all raster lines

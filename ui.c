@@ -42,8 +42,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define BIT(x) (1 << (x))
 
 extern uint8_t* SA1RAMArea;
-extern unsigned int xa, maxromspace;
-extern unsigned char spcon, device1, device2;
+extern uint32_t xa, maxromspace;
+extern uint8_t spcon, device1, device2;
 extern char CSStatus[], CSStatus2[], CSStatus3[], CSStatus4[];
 
 u2 selcA000;
@@ -195,7 +195,7 @@ static void outofmemory()
     DosExit();
 }
 
-extern unsigned char wramdataa[65536], ram7fa[65536];
+extern uint8_t wramdataa[65536], ram7fa[65536];
 
 unsigned char* BitConv32Ptr = 0;
 unsigned char* RGBtoYUVPtr = 0;

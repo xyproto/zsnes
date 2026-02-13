@@ -36,10 +36,10 @@ extern uint32_t PHnum2writeppureg;
 extern uint32_t* setaramdata;
 extern uint8_t *romdata, *SA1RAMArea;
 
-extern unsigned char sndrot, SPCRAM[], DSPMem[256], SA1Status;
-extern unsigned char DSP1Enable, DSP1COp, prevoamptr, BRRBuffer[];
-extern unsigned char curcyc, spcnumread, NextLineCache, HIRQNextExe;
-extern unsigned char vidmemch8[4096], vidmemch2[4096];
+extern uint8_t sndrot, SPCRAM[], DSPMem[256], SA1Status;
+extern uint8_t DSP1Enable, DSP1COp, prevoamptr, BRRBuffer[];
+extern uint8_t curcyc, spcnumread, NextLineCache, HIRQNextExe;
+extern uint8_t vidmemch8[4096], vidmemch2[4096];
 
 extern bool C4Enable, SFXEnable, SA1Enable, SPC7110Enable, SETAEnable, DSP4Enable, MSUEnable;
 

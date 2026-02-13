@@ -67,11 +67,11 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 void ImportDirectX();
 #endif
 
-extern unsigned char ZMVZClose, ZMVRawDump;
-extern unsigned char ForcePal;
-extern unsigned char MovieForcedLengthEnabled;
+extern uint8_t ZMVZClose, ZMVRawDump;
+extern uint8_t ForcePal;
+extern uint8_t MovieForcedLengthEnabled;
 extern char* STCart2;
-extern unsigned int MovieForcedLength;
+extern uint32_t MovieForcedLength;
 void zstart();
 void zexit_error();
 
@@ -724,7 +724,7 @@ static void handle_params(int argc, char* argv[])
 #ifdef __PIPEWIRE__
                         || !strcmp(argv[i], "pipewire")
 #endif
-                        )
+                    )
 #endif
                     {
                         strcpy(libAoDriver, argv[i]);

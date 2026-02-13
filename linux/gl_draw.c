@@ -42,8 +42,8 @@ static int glfilters = GL_NEAREST;
 static int glscanready = 0;
 extern Uint8 GUIOn2;
 
-extern unsigned short* vidbuffer;
-extern unsigned char curblank;
+extern uint16_t* vidbuffer;
+extern uint8_t curblank;
 extern uint8_t GUIRESIZE[];
 
 #ifdef __OPENGL__
@@ -161,8 +161,8 @@ void gl_end()
     }
 }
 
-extern unsigned char NGNoTransp;
-extern unsigned char SpecialLine[224]; /* 0 if lo-res, > 0 if hi-res */
+extern uint8_t NGNoTransp;
+extern uint8_t SpecialLine[224]; /* 0 if lo-res, > 0 if hi-res */
 
 void gl_clearwin()
 {

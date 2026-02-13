@@ -1,3 +1,5 @@
+#include <stdint.h>
+
 /*
 Copyright (C) 1997-2008 ZSNES Team ( zsKnight, _Demo_, pagefault, Nach )
 
@@ -30,12 +32,12 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #endif
 #endif
 
-#include "ntsc.h"
 #include "../cfg.h"
+#include "ntsc.h"
 
 /* Source image */
 /* width = 288 pixels, height = 223 pixels or more */
-extern unsigned short* vidbuffer;
+extern uint16_t* vidbuffer;
 
 u1 NTSCPresetVar = 4;
 

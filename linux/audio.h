@@ -22,6 +22,9 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #ifndef AUDIO_H
 #define AUDIO_H
 
+#include <stdbool.h>
+#include <stdint.h>
+
 void InitSampleControl();
 int InitSound();
 void DeinitSound();
@@ -35,11 +38,11 @@ void SoundWrite_pipewire();
 void SoundWrite_sdl();
 
 extern int SoundEnabled;
-extern unsigned char PrevStereoSound;
-extern unsigned int PrevSoundQuality;
-extern unsigned char sound_sdl;
+extern uint8_t PrevStereoSound;
+extern uint32_t PrevSoundQuality;
+extern bool sound_sdl;
 #ifdef __PIPEWIRE__
-extern unsigned char sound_pipewire;
+extern bool sound_pipewire;
 #endif
 
 #endif

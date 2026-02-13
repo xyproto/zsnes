@@ -1,3 +1,5 @@
+#include <stdint.h>
+
 #if !defined(__GNUC__) || !defined(__i386__)
 #error "chips/dsp3proc.c requires GCC-compatible inline assembly on i386"
 #endif
@@ -8,8 +10,8 @@
 #define CSYM(x) #x
 #endif
 
-extern unsigned char dsp3_byte;
-extern unsigned short dsp3_address;
+extern uint8_t dsp3_byte;
+extern uint16_t dsp3_address;
 extern void DSP3GetByte(void);
 extern void DSP3SetByte(void);
 extern void regaccessbankr8(void);

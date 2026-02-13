@@ -1,3 +1,5 @@
+#include <stdint.h>
+
 /*
 Copyright (C) 1997-2008 ZSNES Team ( zsKnight, _Demo_, pagefault, Nach )
 
@@ -107,7 +109,7 @@ int started = 0;
 
 unsigned char flamearray[BUF_WIDTH];
 int morefire;
-extern unsigned char* vidbuffer;
+extern uint8_t* vidbuffer;
 
 /* damn, this seems like such a waste */
 static unsigned char pt[BUF_WIDTH * BUF_HEIGHT];

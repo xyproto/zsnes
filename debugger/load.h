@@ -29,7 +29,7 @@ extern "C" {
 void debug_main();
 void debug_exit(int);
 
-extern unsigned char debugger_quit;
+extern uint8_t debugger_quit;
 
 #ifdef __cplusplus
 }

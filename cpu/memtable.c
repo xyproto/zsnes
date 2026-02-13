@@ -34,7 +34,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "regs.h"
 #include <stdint.h>
 
-extern unsigned int Curtableaddr, tableA[256];
+extern uint32_t Curtableaddr, tableA[256];
 
 void PrepareOffset()
 {
@@ -46,7 +46,7 @@ void ResetOffset()
     Curtableaddr += (unsigned int)tableA;
 }
 
-extern unsigned int snesmmap[256], snesmap2[256];
+extern uint32_t snesmmap[256], snesmap2[256];
 
 void BankSwitchSDD1C(unsigned char bankval, unsigned int offset)
 {
@@ -63,7 +63,7 @@ void BankSwitchSDD1C(unsigned char bankval, unsigned int offset)
     }
 }
 
-extern unsigned char SDD1BankA, SDD1BankB, SDD1BankC, SDD1BankD;
+extern uint8_t SDD1BankA, SDD1BankB, SDD1BankC, SDD1BankD;
 
 void UpdateBanksSDD1()
 {
@@ -77,9 +77,9 @@ void UpdateBanksSDD1()
 
 extern void (*Bank0datr8[256])(), (*Bank0datr16[256])(), (*Bank0datw8[256])(), (*Bank0datw16[256])();
 
-extern unsigned int xdb, xx, xy;
-extern unsigned short oamaddrt, xat, xst, xdt, xxt, xyt;
-extern unsigned char xdbt, xpbt;
+extern uint32_t xdb, xx, xy;
+extern uint16_t oamaddrt, xat, xst, xdt, xxt, xyt;
+extern uint8_t xdbt, xpbt;
 
 void UpdateDPageC()
 {
@@ -89,7 +89,7 @@ void UpdateDPageC()
     DPageW16 = Bank0datw16[(xd >> 8) & 0xFF];
 }
 
-extern unsigned int SA1xd;
+extern uint32_t SA1xd;
 
 void SA1UpdateDPageC()
 {
@@ -113,18 +113,18 @@ void unpackfunct()
 
 #define bit_test(byte, checkbit) (byte & (1 << checkbit)) ? 1 : 0
 
-extern unsigned int GlobalVL, GlobalVR, EchoVL, EchoVR, EchoRate[16], MaxEcho;
-extern unsigned int EchoFB, NoiseSpeeds[32], dspPAdj, NoiseInc;
+extern uint32_t GlobalVL, GlobalVR, EchoVL, EchoVR, EchoRate[16], MaxEcho;
+extern uint32_t EchoFB, NoiseSpeeds[32], dspPAdj, NoiseInc;
 extern int FIRTAPVal0, FIRTAPVal1, FIRTAPVal2, FIRTAPVal3, FIRTAPVal4;
 extern int FIRTAPVal5, FIRTAPVal6, FIRTAPVal7;
-extern unsigned short VolumeConvTable[32768];
-extern unsigned char VolumeTableb[256], MusicVol, Voice0Status;
-extern unsigned char Voice1Status, Voice2Status, Voice3Status, Voice4Status;
-extern unsigned char Voice5Status, Voice6Status, Voice7Status, Voice0Noise;
-extern unsigned char Voice1Noise, Voice2Noise, Voice3Noise, Voice4Noise;
-extern unsigned char Voice5Noise, Voice6Noise, Voice7Noise, bgtilesz;
-extern unsigned char BG116x16t, BG216x16t, BG316x16t, BG416x16t, vramincby8on;
-extern unsigned char vramincr;
+extern uint16_t VolumeConvTable[32768];
+extern uint8_t VolumeTableb[256], MusicVol, Voice0Status;
+extern uint8_t Voice1Status, Voice2Status, Voice3Status, Voice4Status;
+extern uint8_t Voice5Status, Voice6Status, Voice7Status, Voice0Noise;
+extern uint8_t Voice1Noise, Voice2Noise, Voice3Noise, Voice4Noise;
+extern uint8_t Voice5Noise, Voice6Noise, Voice7Noise, bgtilesz;
+extern uint8_t BG116x16t, BG216x16t, BG316x16t, BG416x16t, vramincby8on;
+extern uint8_t vramincr;
 
 void reg2118();
 void reg2118inc();

@@ -30,8 +30,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "../gblvars.h"
 
 //Start of execute.asm goodness
-extern unsigned char t1cc; // not sure about this one
-extern unsigned short int nextframe; // framecounter for frameskipping
+extern uint8_t t1cc; // not sure about this one
+extern uint16_t nextframe; // framecounter for frameskipping
 
 void Game60hzcall()
 {

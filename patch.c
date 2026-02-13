@@ -40,9 +40,9 @@ extern int maxromspace;
 extern int curromspace;
 extern int NumofBytes;
 extern int NumofBanks;
-extern unsigned int* romdata;
+extern uint32_t* romdata;
 extern bool IPSPatched;
-extern unsigned char Header512;
+extern uint8_t Header512;
 extern bool AutoPatch;
 
 struct

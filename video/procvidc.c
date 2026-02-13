@@ -37,9 +37,9 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "../zpath.h"
 #include "procvidc.h"
 
-extern unsigned char newengen;
-extern unsigned int nggposng[];
-extern unsigned short PrevPicture[64 * 56], *vidbuffer, *vidbufferofsb;
+extern uint8_t newengen;
+extern uint32_t nggposng[];
+extern uint16_t PrevPicture[64 * 56], *vidbuffer, *vidbufferofsb;
 
 void CapturePicture()
 {
@@ -71,7 +71,7 @@ void CapturePicture()
     }
 }
 
-extern unsigned int cur_zst_size, old_zst_size;
+extern uint32_t cur_zst_size, old_zst_size;
 
 char* zst_name();
 

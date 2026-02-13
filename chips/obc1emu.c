@@ -110,7 +110,7 @@ void SetOBC1()
     OBC1_RAM[obc1_address & 0x1fff] = obc1_byte;
 }
 
-extern unsigned char* romdata;
+extern uint8_t* romdata;
 void InitOBC1()
 {
     OBC1_RAM = romdata + 0x400000;

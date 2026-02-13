@@ -45,7 +45,7 @@ void MovieSeekBehind(void);
 void ResetDuringMovie(void);
 void SkipMovie(void);
 
-extern unsigned char MovieProcessing;
+extern uint8_t MovieProcessing;
 extern uint8_t MovieRecordWinVal;
 
 enum MovieStatus { MOVIE_OFF = 0,
@@ -76,6 +76,6 @@ extern u1 lameExists;
 extern u1 mencoderExists;
 extern bool RawDumpInProgress;
 extern char MovieFrameStr[10];
-extern unsigned char MoviePassWaiting;
+extern uint8_t MoviePassWaiting;
 
 #endif

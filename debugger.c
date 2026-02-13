@@ -42,17 +42,17 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 // All of these should be in headers, people!
 
-extern unsigned char oamram[1024], DSPMem[256];
+extern uint8_t oamram[1024], DSPMem[256];
 
-extern unsigned char CurrentCPU;
+extern uint8_t CurrentCPU;
 
-extern unsigned char soundon;
-extern unsigned int cycpbl;
+extern uint8_t soundon;
+extern uint32_t cycpbl;
 
-extern unsigned short xa, xx, xy, xs;
-extern unsigned char xdb;
+extern uint16_t xa, xx, xy, xs;
+extern uint8_t xdb;
 
-extern unsigned char debuggeron;
+extern uint8_t debuggeron;
 
 // should be in "zstate.h"
 void debugloadstate();

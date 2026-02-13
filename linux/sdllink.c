@@ -1403,7 +1403,7 @@ void drawscreenwin(void)
 #ifdef __PIPEWIRE__
         else
 #endif
-        SoundWrite_ao();
+            SoundWrite_ao();
 #endif
     }
 #endif

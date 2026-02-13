@@ -23,9 +23,9 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #include "sa1regs.h"
 
-extern unsigned int SA1_CC2_line; // should be cleared to zero on reset
+extern uint32_t SA1_CC2_line; // should be cleared to zero on reset
 
-extern unsigned int SA1DMAChar, SA1DMADest, SA1DMASource;
+extern uint32_t SA1DMAChar, SA1DMADest, SA1DMASource;
 
 #define DMACB (SA1DMAChar & 3)
 #define DDA SA1DMADest

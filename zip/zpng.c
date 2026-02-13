@@ -69,8 +69,8 @@ char* generate_image_filename(const char* image_suffix)
     return (filename);
 }
 
-extern unsigned short* vidbuffer;
-extern unsigned short resolutn;
+extern uint16_t* vidbuffer;
+extern uint16_t resolutn;
 
 #define SNAP_HEIGHT resolutn
 #define SNAP_WIDTH 256

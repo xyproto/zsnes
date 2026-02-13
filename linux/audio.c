@@ -22,6 +22,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "../gblhdr.h"
 #include "../gblvars.h"
 #include <stdbool.h>
+#include <stdint.h>
 
 #if defined(__LIBAO__) || defined(__PIPEWIRE__)
 #include <pthread.h>
@@ -60,18 +61,18 @@ static struct pw_stream* pipewire_stream = 0;
 static struct spa_audio_info_raw pipewire_info;
 static int pipewire_inited = 0;
 static uint32_t pipewire_target_frames = 256;
-static volatile unsigned char pipewire_shutting_down = 0;
-unsigned char sound_pipewire = false;
+static volatile bool pipewire_shutting_down = false;
+bool sound_pipewire = false;
 #endif
 
-unsigned char* sdl_audio_buffer = 0;
+uint8_t* sdl_audio_buffer = NULL;
 int sdl_audio_buffer_len = 0, sdl_audio_buffer_fill = 0;
 int sdl_audio_buffer_head = 0, sdl_audio_buffer_tail = 0;
-unsigned char sound_sdl = false;
+bool sound_sdl = false;
 
 int SoundEnabled = 1;
-unsigned char PrevStereoSound;
-unsigned int PrevSoundQuality;
+uint8_t PrevStereoSound;
+uint32_t PrevSoundQuality;
 
 #define SAMPLE_NTSC_HI_SCALE 995ULL
 #define SAMPLE_NTSC_LO 59649ULL
@@ -82,14 +83,14 @@ static const int freqtab[7] = { 8000, 11025, 22050, 44100, 16000, 32000, 48000 }
 
 struct
 {
-    unsigned long long hi;
-    unsigned long long lo;
-    unsigned long long balance;
+    uint64_t hi;
+    uint64_t lo;
+    uint64_t balance;
 } sample_control;
 
 void InitSampleControl()
 {
-    extern unsigned char romispal;
+    extern uint8_t romispal;
     if (romispal) {
         sample_control.hi = SAMPLE_PAL_HI_SCALE * RATE;
         sample_control.lo = SAMPLE_PAL_LO;
@@ -100,13 +101,13 @@ void InitSampleControl()
     sample_control.balance = sample_control.hi;
 }
 
-static void MixSoundBlock(short* const out, unsigned int const samples)
+static void MixSoundBlock(int16_t* const out, uint32_t const samples)
 {
-    extern unsigned int BufferSizeB, BufferSizeW;
-    extern unsigned char DSPDisable;
+    extern uint32_t BufferSizeB, BufferSizeW;
+    extern uint8_t DSPDisable;
     extern int DSPBuffer[1280];
     int *d = DSPBuffer, *end_d;
-    short* p = out;
+    int16_t* p = out;
 
     BufferSizeB = samples;
     BufferSizeW = samples << 1;
@@ -138,14 +139,14 @@ static void MixSoundBlock(short* const out, unsigned int const samples)
 }
 
 #ifdef __LIBAO__
-static void SoundWriteSamples_ao(unsigned int samples)
+static void SoundWriteSamples_ao(uint32_t samples)
 {
-    extern unsigned int BufferSizeB, BufferSizeW;
+    extern uint32_t BufferSizeB, BufferSizeW;
     extern int DSPBuffer[1280];
-    short stemp[1280];
+    int16_t stemp[1280];
 
-    int *d = DSPBuffer, *end_d = 0;
-    short* p = stemp;
+    int *d = DSPBuffer, *end_d = NULL;
+    int16_t* p = stemp;
 
     if (!audio_device) {
         return;
@@ -185,7 +186,7 @@ static void SoundWriteSamples_ao(unsigned int samples)
 
 void SoundWrite_ao()
 {
-    unsigned int samples = 0;
+    uint32_t samples = 0;
 
     if (!audio_device) {
         return;
@@ -208,7 +209,7 @@ void SoundWrite_ao()
 
 static void* SoundThread_ao(void* useless)
 {
-    unsigned int samples;
+    uint32_t samples;
 
     while (!terminated) {
         pthread_mutex_lock(&audio_mutex);
@@ -277,8 +278,8 @@ static void PipeWireProcess(void* userdata)
     struct spa_data* d;
     uint32_t bytes;
     uint32_t stride = (StereoSound + 1) * 2;
-    unsigned char* out;
-    short stemp[1280];
+    uint8_t* out;
+    int16_t stemp[1280];
     bool render_audio;
 
     (void)userdata;
@@ -316,7 +317,7 @@ static void PipeWireProcess(void* userdata)
         }
     }
     bytes -= bytes % stride;
-    out = (unsigned char*)d->data;
+    out = (uint8_t*)d->data;
     render_audio = !pipewire_shutting_down && !GUIOn2 && !GUIOn && !EMUPause && !RawDumpInProgress && !T36HZEnabled && soundon;
 
     if (!render_audio) {
@@ -329,7 +330,7 @@ static void PipeWireProcess(void* userdata)
     }
 
     while (bytes > 0) {
-        unsigned int chunk = bytes >> 1;
+        uint32_t chunk = bytes >> 1;
         if (chunk > sizeof(stemp) / sizeof(stemp[0])) {
             chunk = (unsigned int)(sizeof(stemp) / sizeof(stemp[0]));
         }
@@ -341,7 +342,7 @@ static void PipeWireProcess(void* userdata)
 
     d->chunk->offset = 0;
     d->chunk->stride = (StereoSound + 1) * 2;
-    d->chunk->size = out - (unsigned char*)d->data;
+    d->chunk->size = out - (uint8_t*)d->data;
     pw_stream_queue_buffer(pipewire_stream, b);
 }
 
@@ -450,8 +451,8 @@ static int SoundInit_pipewire()
 void SoundWrite_sdl()
 {
     extern int DSPBuffer[];
-    extern unsigned char DSPDisable;
-    extern unsigned int BufferSizeB, BufferSizeW;
+    extern uint8_t DSPDisable;
+    extern uint32_t BufferSizeB, BufferSizeW;
 
     // Process sound
     BufferSizeB = 256;
@@ -460,7 +461,7 @@ void SoundWrite_sdl()
     // take care of the things we left behind last time
     SDL_LockAudio();
     while (sdl_audio_buffer_fill < sdl_audio_buffer_len) {
-        short* p = (short*)&sdl_audio_buffer[sdl_audio_buffer_tail];
+        int16_t* p = (int16_t*)&sdl_audio_buffer[sdl_audio_buffer_tail];
 
         if (soundon && !DSPDisable) {
             asm_call(ProcessSoundBuffer);
@@ -496,7 +497,7 @@ void SoundWrite_sdl()
     SDL_UnlockAudio();
 }
 
-static void SoundUpdate_sdl(void* userdata, unsigned char* stream, int len)
+static void SoundUpdate_sdl(void* userdata, uint8_t* stream, int len)
 {
     int left = sdl_audio_buffer_len - sdl_audio_buffer_head;
 
@@ -559,7 +560,7 @@ static int SoundInit_sdl()
 
 int InitSound()
 {
-    static unsigned char warned_sdl_fallback = false;
+    static bool warned_sdl_fallback = false;
     sound_sdl = false;
 #ifdef __PIPEWIRE__
     sound_pipewire = false;
