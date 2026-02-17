@@ -1,0 +1,95 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      DEBIAN_FRONTEND: noninteractive
+      PKG_CONFIG_LIBDIR: /usr/lib/i386-linux-gnu/pkgconfig:/usr/share/pkgconfig
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Install dependencies
+        run: |
+          sudo dpkg --add-architecture i386
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            build-essential \
+            cmake \
+            gcc-multilib \
+            g++-multilib \
+            git \
+            libc6-dev-i386 \
+            make \
+            nasm \
+            ninja-build \
+            python3 \
+            pkg-config \
+            clang-format-19 \
+            libxcursor-dev:i386 \
+            libxi-dev:i386 \
+            libxinerama-dev:i386 \
+            libx11-dev:i386 \
+            libxfixes-dev:i386 \
+            libxrandr-dev:i386 \
+            libgl1-mesa-dev:i386 \
+            zlib1g-dev:i386 \
+            libpng-dev:i386 \
+            libpipewire-0.3-dev:i386
+          sudo ln -sf /usr/bin/clang-format-19 /usr/local/bin/clang-format
+
+      - name: Install SDL3 (i386)
+        run: |
+          if apt-cache show libsdl3-dev:i386 >/dev/null 2>&1; then
+            sudo apt-get install -y --no-install-recommends libsdl3-dev:i386
+          else
+            rm -rf /tmp/SDL
+            git clone --depth 1 https://github.com/libsdl-org/SDL.git /tmp/SDL
+            cmake -S /tmp/SDL -B /tmp/SDL/build -GNinja \
+              -DCMAKE_BUILD_TYPE=Release \
+              -DCMAKE_INSTALL_PREFIX=/usr/local \
+              -DSDL_SHARED=ON \
+              -DSDL_STATIC=OFF \
+              -DSDL_X11=OFF \
+              -DSDL_WAYLAND=OFF \
+              -DSDL_KMSDRM=OFF \
+              -DSDL_UNIX_CONSOLE_BUILD=ON \
+              -DSDL_ALSA=OFF \
+              -DSDL_PULSEAUDIO=OFF \
+              -DSDL_PIPEWIRE=OFF \
+              -DSDL_JACK=OFF \
+              -DSDL_SNDIO=OFF \
+              -DCMAKE_C_FLAGS='-m32' \
+              -DCMAKE_CXX_FLAGS='-m32'
+            cmake --build /tmp/SDL/build --parallel
+            sudo cmake --install /tmp/SDL/build
+            echo '/usr/local/lib' | sudo tee /etc/ld.so.conf.d/zsnes-ci-sdl3.conf
+            sudo ldconfig
+            echo 'PKG_CONFIG_PATH=/usr/local/lib/pkgconfig' >> "$GITHUB_ENV"
+          fi
+
+      - name: Build
+        run: |
+          make clean
+          make
+          test -x ./zsnes
+
+      - name: Verify runtime links
+        run: |
+          ldd ./zsnes | tee ldd.txt
+          grep -E 'libSDL3|SDL3' ldd.txt
+          grep -E 'libpipewire-0\.3' ldd.txt
+
+      - name: Check formatting
+        run: |
+          make fmt
+          if ! git diff --quiet; then
+            git --no-pager diff --name-only
+            exit 1
+          fi
