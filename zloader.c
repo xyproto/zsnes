@@ -125,6 +125,8 @@ static void display_help()
     put_line("  -ad <>  Select Audio Driver :");
     snprintf(line, sizeof(line), "%22s = Automatically select output", "auto");
     put_line(line);
+    snprintf(line, sizeof(line), "%22s = Disable audio output backend", "none");
+    put_line(line);
 #ifdef __LIBAO__
     driver_info = ao_driver_info_list(&driver_count);
     while (driver_count--) {
@@ -714,13 +716,13 @@ static void handle_params(int argc, char* argv[])
                     }
 
 #ifdef __LIBAO__
-                    if (!strcmp(argv[i], "auto") || !strcmp(argv[i], "sdl")
+                    if (!strcmp(argv[i], "auto") || !strcmp(argv[i], "none") || !strcmp(argv[i], "sdl")
 #ifdef __PIPEWIRE__
                         || !strcmp(argv[i], "pipewire")
 #endif
                         || (ao_driver_id(argv[i]) >= 0))
 #else
-                    if (!strcmp(argv[i], "auto") || !strcmp(argv[i], "sdl")
+                    if (!strcmp(argv[i], "auto") || !strcmp(argv[i], "none") || !strcmp(argv[i], "sdl")
 #ifdef __PIPEWIRE__
                         || !strcmp(argv[i], "pipewire")
 #endif

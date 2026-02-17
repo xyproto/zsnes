@@ -1080,9 +1080,9 @@ int startgame()
     if (sdl_state != vid_null) {
         if (
 #ifdef __SDL3__
-            !SDL_Init(SDL_INIT_AUDIO | SDL_INIT_TIMER | SDL_INIT_VIDEO)
+            !SDL_Init(SDL_INIT_TIMER | SDL_INIT_VIDEO)
 #else
-            SDL_Init(SDL_INIT_AUDIO | SDL_INIT_TIMER | SDL_INIT_VIDEO) < 0
+            SDL_Init(SDL_INIT_TIMER | SDL_INIT_VIDEO) < 0
 #endif
         ) {
             fprintf(stderr, "Could not initialize SDL: %s", SDL_GetError());
