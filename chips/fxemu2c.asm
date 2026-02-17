@@ -26,7 +26,7 @@ EXTSYM SfxPBR,SfxPIPE,SfxPOR,SfxR0,SfxR1,SfxR11,SfxR12,SfxR13,SfxR14
 EXTSYM SfxR15,SfxR2,SfxR4,SfxR6,SfxR7,SfxR8,SfxRAMBR,SfxRAMMem,SfxROMBR
 EXTSYM SfxRomBuffer,SfxSCBR,SfxSCMR,SfxSFR,SfxSignZero,SfxnRamBanks,flagnz
 EXTSYM sfx128lineloc,sfx160lineloc,sfx192lineloc,sfxobjlineloc,sfxramdata
-EXTSYM withr15sk,sfxclineloc,SCBRrel,ChangeOps
+EXTSYM withr15sk,sfxclineloc,SCBRrel,ChangeOps,SFXCounter
 EXTSYM fxbit01pcal,fxbit23pcal,fxbit45pcal,fxbit67pcal
 EXTSYM fxbit01,fxbit23,fxbit45,fxbit67,fxxand,PLOTJmpa,PLOTJmpb
 
@@ -44,13 +44,16 @@ NEWSYM FxOpd00      ; STOP   stop GSU execution (and maybe generate an IRQ)     
    and dword[SfxSFR],0FFFFh-32     ; Clear Go flag (set to 1 when the GSU is running)
    test dword[SfxCFGR],080h        ; Check if the interrupt generation is on
    jnz .NoIRQ
-         ; Set IRQ Flag
+   or dword[SfxSFR],08000h         ; Set IRQ Flag
 .NoIRQ
    CLRFLAGS
    inc ebp
+   cmp byte[SFXCounter],1
+   je .skipChangeOps
    mov eax,[NumberOfOpcodes]
    add eax,0F0000000h
    add [ChangeOps],eax
+.skipChangeOps
    mov dword[NumberOfOpcodes],1
    jmp FXEndLoop
    FXReturn
