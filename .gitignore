@@ -9,3 +9,5 @@ parsegen
 win/confloc.h
 zsnes
 zsnes.exe
+*.raw
+*.wav
