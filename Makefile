@@ -68,12 +68,6 @@ ifeq ($(SKIP_AUDIO_BACKEND_CHECK),)
   endif
 endif
 
-ifeq ($(SKIP_AUDIO_BACKEND_CHECK),)
-  ifeq ($(PIPEWIRE_AVAILABLE)$(AO_AVAILABLE),)
-    $(warning PipeWire and libao were not found. libao-ALSA/libao-OSS will be unavailable; SDL audio may be less stable)
-  endif
-endif
-
 BINARY     ?= zsnes
 PSR        ?= parsegen.py
 ASM        ?= nasm
