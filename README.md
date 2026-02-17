@@ -1,5 +1,7 @@
 # ZSNES 2
 
+[![CI](https://github.com/xyproto/zsnes/actions/workflows/ci.yml/badge.svg)](https://github.com/xyproto/zsnes/actions/workflows/ci.yml)
+
 <img align="right" width="128" height="128" alt="logo" src="icons/128x128x32.png">
 
 The last release of [ZSNES](http://zsnes.sourceforge.net/) was around 18 years ago (2007-10-31). It requires heavy patching and tweaking of compilation flags to build and run on a modern Linux distro.
