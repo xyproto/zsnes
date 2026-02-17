@@ -29,8 +29,23 @@ WITH_OPENGL   := yes
 WITH_PNG      := yes
 WITH_SDL      := yes
 
-PIPEWIRE_AVAILABLE := $(shell pkg-config --exists libpipewire-0.3 && echo yes)
-AO_AVAILABLE := $(shell pkg-config --exists ao && echo yes)
+# Check that pkg-config deps are also linkable with the current target flags (for example, -m32).
+define detect_pkg_for_target
+$(shell \
+  if pkg-config --exists $(1) >/dev/null 2>&1; then \
+    printf 'int main(void){return 0;}\n' | \
+      $(or $(CC_TARGET),$(CC)) $(COMMON_FLAGS) -x c - -o /dev/null $$(pkg-config --libs $(1)) >/dev/null 2>&1 && \
+      echo yes; \
+  fi)
+endef
+
+PIPEWIRE_AVAILABLE := $(call detect_pkg_for_target,libpipewire-0.3)
+AO_AVAILABLE := $(call detect_pkg_for_target,ao)
+SDL3_AVAILABLE := $(shell pkg-config --exists sdl3 && echo yes)
+SDL2_AVAILABLE := $(shell pkg-config --exists sdl2 && echo yes)
+SDL_BACKEND_AVAILABLE := $(if $(or $(SDL3_AVAILABLE),$(SDL2_AVAILABLE),$(strip $(WITH_SDL)),$(strip $(SDL_CONFIG)),$(strip $(CFLAGS_SDL)),$(strip $(LDFLAGS_SDL))),yes)
+
+SKIP_AUDIO_BACKEND_CHECK := $(if $(filter clean distclean,$(MAKECMDGOALS)),yes)
 
 ifeq ($(WITH_PIPEWIRE),)
   ifeq ($(PIPEWIRE_AVAILABLE),yes)
@@ -42,6 +57,16 @@ ifeq ($(WITH_AO),)
   ifeq ($(AO_AVAILABLE),yes)
     WITH_AO := yes
   endif
+endif
+
+ifeq ($(SKIP_AUDIO_BACKEND_CHECK),)
+  ifeq ($(if $(or $(PIPEWIRE_AVAILABLE),$(AO_AVAILABLE),$(SDL_BACKEND_AVAILABLE)),yes),)
+    $(error No audio backend available. Install one of: PipeWire (libpipewire-0.3), libao, SDL3 or SDL2)
+  endif
+endif
+
+ifeq ($(PIPEWIRE_AVAILABLE)$(AO_AVAILABLE),)
+  $(warning PipeWire and libao were not found. Audio may be crackling or uneven when using SDL audio)
 endif
 
 BINARY     ?= zsnes
@@ -70,24 +95,24 @@ else
 endif
 
 ifdef WITH_SDL
-  ifndef SDL_CONFIG
-    ifeq ($(shell pkg-config --exists sdl3 && echo yes),yes)
+  ifeq ($(strip $(SDL_CONFIG)),)
+    ifeq ($(SDL3_AVAILABLE),yes)
       SDL_CONFIG := pkg-config sdl3
       SDL_PKG := sdl3
-    else ifeq ($(shell pkg-config --exists sdl2 && echo yes),yes)
+    else ifeq ($(SDL2_AVAILABLE),yes)
       SDL_CONFIG := pkg-config sdl2
       SDL_PKG := sdl2
-    else
-      $(error SDL development package not found (tried pkg-config sdl3 then sdl2))
     endif
   else
     SDL_PKG := $(lastword $(SDL_CONFIG))
   endif
-  ifndef CFLAGS_SDL
-    CFLAGS_SDL := $(shell $(SDL_CONFIG) --cflags)
-  endif
-  ifndef LDFLAGS_SDL
-    LDFLAGS_SDL := $(shell $(SDL_CONFIG) --libs)
+  ifneq ($(strip $(SDL_CONFIG)),)
+    ifndef CFLAGS_SDL
+      CFLAGS_SDL := $(shell $(SDL_CONFIG) --cflags)
+    endif
+    ifndef LDFLAGS_SDL
+      LDFLAGS_SDL := $(shell $(SDL_CONFIG) --libs)
+    endif
   endif
   CFLAGS  += $(CFLAGS_SDL)
   LDFLAGS += $(LDFLAGS_SDL)
