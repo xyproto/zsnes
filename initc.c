@@ -1913,7 +1913,12 @@ void SetupROM(void)
         romispal = (!BSEnable);
         break;
     default:
-        romispal = ((!BSEnable) && (ROM[infoloc + CountryOffset] > 1) && (ROM[infoloc + CountryOffset] < 0xD));
+        // Country codes 2-12 are PAL regions (Europe through Indonesia).
+        // Code 13 (South Korea) is NTSC. Code 18 is used by some PAL games.
+        {
+            uint8_t country = ROM[infoloc + CountryOffset];
+            romispal = !BSEnable && ((country >= 2 && country <= 12) || country == 18);
+        }
     }
 
 #ifdef __UNIXSDL__
