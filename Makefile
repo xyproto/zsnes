@@ -41,9 +41,9 @@ endef
 
 PIPEWIRE_AVAILABLE := $(call detect_pkg_for_target,libpipewire-0.3)
 AO_AVAILABLE := $(call detect_pkg_for_target,ao)
-SDL3_AVAILABLE := $(shell pkg-config --exists sdl3 && echo yes)
-SDL2_AVAILABLE := $(shell pkg-config --exists sdl2 && echo yes)
-SDL_BACKEND_AVAILABLE := $(if $(or $(SDL3_AVAILABLE),$(SDL2_AVAILABLE),$(strip $(WITH_SDL)),$(strip $(SDL_CONFIG)),$(strip $(CFLAGS_SDL)),$(strip $(LDFLAGS_SDL))),yes)
+SDL3_AVAILABLE := $(call detect_pkg_for_target,sdl3)
+SDL2_AVAILABLE := $(call detect_pkg_for_target,sdl2)
+SDL_BACKEND_AVAILABLE := $(if $(or $(SDL3_AVAILABLE),$(SDL2_AVAILABLE),$(strip $(SDL_CONFIG)),$(strip $(CFLAGS_SDL)),$(strip $(LDFLAGS_SDL))),yes)
 
 SKIP_AUDIO_BACKEND_CHECK := $(if $(filter clean distclean,$(MAKECMDGOALS)),yes)
 
@@ -60,13 +60,18 @@ ifeq ($(WITH_AO),)
 endif
 
 ifeq ($(SKIP_AUDIO_BACKEND_CHECK),)
+  ifeq ($(SDL_BACKEND_AVAILABLE),)
+    $(error No SDL backend available. Install SDL3 or SDL2 (32-bit, since this build uses -m32))
+  endif
   ifeq ($(if $(or $(PIPEWIRE_AVAILABLE),$(AO_AVAILABLE),$(SDL_BACKEND_AVAILABLE)),yes),)
     $(error No audio backend available. Install one of: PipeWire (libpipewire-0.3), libao, SDL3 or SDL2)
   endif
 endif
 
-ifeq ($(PIPEWIRE_AVAILABLE)$(AO_AVAILABLE),)
-  $(warning PipeWire and libao were not found. Audio may be crackling or uneven when using SDL audio)
+ifeq ($(SKIP_AUDIO_BACKEND_CHECK),)
+  ifeq ($(PIPEWIRE_AVAILABLE)$(AO_AVAILABLE),)
+    $(warning PipeWire and libao were not found. libao-ALSA/libao-OSS will be unavailable; SDL audio may be less stable)
+  endif
 endif
 
 BINARY     ?= zsnes
@@ -472,6 +477,8 @@ info:
 	@echo "WITH_SDL      = $(WITH_SDL)"
 	@echo "WITH_PIPEWIRE = $(WITH_PIPEWIRE)"
 	@echo "WITH_AO       = $(WITH_AO)"
+	@echo "SDL3_AVAILABLE = $(SDL3_AVAILABLE)"
+	@echo "SDL2_AVAILABLE = $(SDL2_AVAILABLE)"
 	@echo "PIPEWIRE_AVAILABLE = $(PIPEWIRE_AVAILABLE)"
 	@echo "AO_AVAILABLE  = $(AO_AVAILABLE)"
 	@echo "BINARY        = $(BINARY)"
