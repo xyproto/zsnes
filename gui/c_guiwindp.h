@@ -22,6 +22,10 @@ void DisplayGUIStates(void); // Save/Load State Confirmation
 void DisplayGUIVideo(void);
 void DisplayGameOptns(void); // Misc Key Window
 void DisplayNetOptns(void);
+void NetplayHostSession(void);
+void NetplayJoinSession(void);
+void NetplayDisconnectSession(void);
+void NetplaySyncInputs(unsigned int* joy_a, unsigned int* joy_b);
 
 extern char CMovieExt;
 extern char GUICheatTextZ1[];
@@ -31,6 +35,7 @@ extern char GUIChoseSlotTextX[2];
 extern char GUIComboTextH[21];
 extern char GUILoadTextA[38];
 extern u1 GUIFreshInputSelect;
+extern u1 NetplayUDPConfig;
 extern u1 GUILoadPos;
 extern u1 GUIStatesText5;
 extern u1 GUIWincoladd;

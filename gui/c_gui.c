@@ -413,9 +413,7 @@ void GUI36hzcall(void)
 
 static void LoadDetermine(void)
 {
-    GUINetPlayMenuData[0][0] = 2; // Gray out Netplay options
-
-    // GUINetPlayMenuData[1][0] = 2;
+    GUINetPlayMenuData[0][0] = 1;
 
     u1 const v = romloadskip != 0 ? 2 : 1;
     GUIGameMenuData[1][0] = v;
@@ -644,6 +642,9 @@ void GUITryMenuItem(void)
             GUIcurrentcheatwin = 1;
         if (GUIcrowpos == 1)
             GUIcurrentcheatwin = 0;
+    }
+    if (GUIcmenupos == 5) {
+        GUICheckMenuItem(8, 0);
     }
     if (GUIcmenupos == 6) {
         GUICheckMenuItem(9, 0);

@@ -483,6 +483,10 @@ void ReadInputDevice(void)
         if (device2 == 0)
             JoyBOrig = JoyDOrig;
     }
+
+    // Netplay lockstep is applied after local device mapping so each peer gets
+    // one local pad and one synchronized remote pad.
+    NetplaySyncInputs(&JoyAOrig, &JoyBOrig);
 }
 
 // Terminate Program

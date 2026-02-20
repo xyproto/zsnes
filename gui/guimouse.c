@@ -1331,7 +1331,16 @@ static void DisplayGUICheatClick2(s4 const eax, s4 const edx)
     DisplayGUICheatClick(eax, edx);
 }
 
-static void DisplayNetOptnsClick(void) { }
+static void DisplayNetOptnsClick(void)
+{
+    s4 const eax = GUImouseposx - GUIwinposx[8];
+    s4 const edx = GUImouseposy - GUIwinposy[8];
+
+    GUIClickCButton(eax, edx, 8, 58, &NetplayUDPConfig);
+    GUIPHoldbutton(eax, edx, 8, 66, 56, 77, 85);
+    GUIPHoldbutton(eax, edx, 66, 66, 114, 77, 86);
+    GUIPHoldbutton(eax, edx, 124, 66, 212, 77, 87);
+}
 
 static void DisplayGameOptnsClick(s4 const eax, s4 const edx)
 {
@@ -2370,6 +2379,15 @@ static void ProcessMouseButtons(void)
     case 66:
         DocsPage();
         break;
+    case 85:
+        NetplayHostSession();
+        return;
+    case 86:
+        NetplayJoinSession();
+        return;
+    case 87:
+        NetplayDisconnectSession();
+        return;
     }
     GUICBHold = 0;
 }
