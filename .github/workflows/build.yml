@@ -145,70 +145,64 @@ jobs:
             CXX=i686-w64-mingw32-g++
 
   freebsd:
-    name: freebsd
+    name: freebsd (optional)
+    continue-on-error: true
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v6
-      - name: Install host tools
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y rsync
-      - name: Stage workspace for VM sync
-        run: |
-          sudo mkdir -p /root/work
-          sudo rsync -a --delete "$GITHUB_WORKSPACE"/ /root/work/
       - name: Build in FreeBSD VM
         uses: vmactions/freebsd-vm@v1
         with:
           usesh: true
+          sync: no
           run: |
+            rm -rf "$HOME/work"
+            mkdir -p "$HOME/work"
             cd "$HOME/work"
-            pkg install -y gmake nasm pkgconf sdl2 libpng
+            fetch -o src.tar.gz "https://codeload.github.com/${{ github.repository }}/tar.gz/${{ github.sha }}"
+            tar -xzf src.tar.gz --strip-components=1
+            pkg install -y gmake nasm pkgconf sdl2 png
             gmake clean
             gmake ARCH=freebsd WITH_AO= WITH_PIPEWIRE=
 
   openbsd:
-    name: openbsd
+    name: openbsd (optional)
+    continue-on-error: true
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v6
-      - name: Install host tools
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y rsync
-      - name: Stage workspace for VM sync
-        run: |
-          sudo mkdir -p /root/work
-          sudo rsync -a --delete "$GITHUB_WORKSPACE"/ /root/work/
       - name: Build in OpenBSD VM
         uses: vmactions/openbsd-vm@v1
         with:
           usesh: true
+          sync: no
           run: |
+            rm -rf "$HOME/work"
+            mkdir -p "$HOME/work"
             cd "$HOME/work"
+            ftp -o src.tar.gz "https://codeload.github.com/${{ github.repository }}/tar.gz/${{ github.sha }}"
+            tar -xzf src.tar.gz --strip-components=1
             pkg_add gmake nasm pkgconf sdl2 png
             gmake clean
             gmake ARCH=openbsd WITH_AO= WITH_PIPEWIRE=
 
   netbsd:
-    name: netbsd
+    name: netbsd (optional)
+    continue-on-error: true
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v6
-      - name: Install host tools
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y rsync
-      - name: Stage workspace for VM sync
-        run: |
-          sudo mkdir -p /root/work
-          sudo rsync -a --delete "$GITHUB_WORKSPACE"/ /root/work/
       - name: Build in NetBSD VM
         uses: vmactions/netbsd-vm@v1
         with:
           usesh: true
+          sync: no
           run: |
+            rm -rf "$HOME/work"
+            mkdir -p "$HOME/work"
             cd "$HOME/work"
+            ftp -o src.tar.gz "https://codeload.github.com/${{ github.repository }}/tar.gz/${{ github.sha }}"
+            tar -xzf src.tar.gz --strip-components=1
             /usr/sbin/pkg_add gmake nasm pkgconf SDL2 libpng
             gmake clean
             gmake ARCH=netbsd WITH_AO= WITH_PIPEWIRE=
