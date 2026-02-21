@@ -77,7 +77,12 @@ $(error ARCH=WIN requested, but required win/ source files are missing in this t
 endif
 endif
 
-COMMON_FLAGS = -m32 -pthread -no-pie -O1 -fno-inline -fno-pic -mtune=generic -D_FORTIFY_SOURCE=2 -mno-sse -mno-sse2 -ffunction-sections -fdata-sections -Wfatal-errors -w
+ARCH_CFLAGS :=
+ifneq ($(filter $(ARCH),LINUX WIN),)
+ARCH_CFLAGS += -m32
+endif
+
+COMMON_FLAGS = $(ARCH_CFLAGS) -pthread -no-pie -O1 -fno-inline -fno-pic -mtune=generic -D_FORTIFY_SOURCE=2 -mno-sse -mno-sse2 -ffunction-sections -fdata-sections -Wfatal-errors -w
 
 # TODO: FreeBSD has a patch for being able to build without -fcommon
 CFLAGS += $(COMMON_FLAGS) -std=gnu99 -fcommon
@@ -142,7 +147,7 @@ endif
 ifeq ($(SKIP_AUDIO_BACKEND_CHECK),)
   ifeq ($(WITH_SDL),yes)
     ifeq ($(SDL_BACKEND_AVAILABLE),)
-      $(error No SDL backend available. Install SDL3 or SDL2 (32-bit, since this build uses -m32))
+      $(error No SDL backend available. Install SDL3 or SDL2 for ARCH=$(ARCH))
     endif
   endif
   ifneq ($(ARCH),WIN)
