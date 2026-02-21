@@ -22,6 +22,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #ifndef ZPATH_H
 #define ZPATH_H
 
+#include <stdint.h>
 #include <stdio.h>
 #include <sys/stat.h>
 #include <zlib.h>

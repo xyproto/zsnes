@@ -32,7 +32,6 @@ extern "C" {
 #include <dinput.h>
 #include <dsound.h>
 #include <math.h>
-#include <mmintrin.h>
 #include <stdint.h>
 #include <winuser.h>
 
@@ -1942,8 +1941,6 @@ void CheckTimers(void)
 }
 
 volatile int SPCSize;
-volatile int buffer_ptr;
-
 void UpdateVFrame(void)
 {
     static uint32_t LastUsedPos = 0;
@@ -1984,27 +1981,16 @@ void UpdateVFrame(void)
         SoundProcess();
 
         DSPBuffer1 = (int*)&DSPBuffer;
-        buffer_ptr = (int)&Buffer[0];
 
         if (T36HZEnabled == 1) {
-            memset((void*)buffer_ptr, 0, SPCSize * 2);
+            memset(Buffer, 0, SPCSize * 2);
         } else {
-            if (MMXSupport == 1) {
-                u4 n = (u4)SPCSize / 4;
-                __m64 const* src = (__m64 const*)DSPBuffer1;
-                __m64* dst = (__m64*)buffer_ptr;
-                do
-                    *dst++ = _m_packssdw(src[0], src[1]);
-                while (src += 2, --n != 0);
-                _mm_empty();
-            } else {
-                for (i = 0; i < SPCSize; i++) {
-                    Buffer[i] = DSPBuffer1[i];
-                    if (DSPBuffer1[i] > 32767)
-                        Buffer[i] = 32767;
-                    if (DSPBuffer1[i] < -32767)
-                        Buffer[i] = -32767;
-                }
+            for (i = 0; i < SPCSize; i++) {
+                Buffer[i] = DSPBuffer1[i];
+                if (DSPBuffer1[i] > 32767)
+                    Buffer[i] = 32767;
+                if (DSPBuffer1[i] < -32767)
+                    Buffer[i] = -32767;
             }
         }
 
@@ -2126,9 +2112,7 @@ void drawscreenwin(void)
 
     DWORD HQMode = 0;
 
-    if (MMXSupport == 0) {
-        hqFilter = 0;
-    }
+    hqFilter = 0;
 
     if (hqFilter != 0) {
         if ((GUIHQ2X[cvidmode] != 0) && (hqFilterlevel == 2)) {

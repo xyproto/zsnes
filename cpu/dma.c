@@ -4,7 +4,7 @@
 #error "cpu/dma.c requires GCC-compatible inline assembly on i386"
 #endif
 
-#if defined(__APPLE__)
+#if defined(__APPLE__) || defined(__MINGW32__)
 #define CSYM(x) "_" #x
 #else
 #define CSYM(x) #x

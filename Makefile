@@ -140,11 +140,15 @@ ifeq ($(WITH_AO),)
 endif
 
 ifeq ($(SKIP_AUDIO_BACKEND_CHECK),)
-  ifeq ($(SDL_BACKEND_AVAILABLE),)
-    $(error No SDL backend available. Install SDL3 or SDL2 (32-bit, since this build uses -m32))
+  ifeq ($(WITH_SDL),yes)
+    ifeq ($(SDL_BACKEND_AVAILABLE),)
+      $(error No SDL backend available. Install SDL3 or SDL2 (32-bit, since this build uses -m32))
+    endif
   endif
-  ifeq ($(if $(or $(PIPEWIRE_AVAILABLE),$(AO_AVAILABLE),$(SDL_BACKEND_AVAILABLE)),yes),)
+  ifneq ($(ARCH),WIN)
+  ifeq ($(if $(or $(PIPEWIRE_AVAILABLE),$(AO_AVAILABLE),$(if $(WITH_SDL),$(SDL_BACKEND_AVAILABLE),)),yes),)
     $(error No audio backend available. Install one of: PipeWire (libpipewire-0.3), libao, SDL3 or SDL2)
+  endif
   endif
 endif
 
@@ -492,6 +496,26 @@ endif
 endif
 
 ifeq ($(ARCH),WIN)
+SRCS += mmlib/windows.c
+SRCS += win/c_winintrf.c
+SRCS += win/dx_ddraw.cpp
+SRCS += win/lib.c
+SRCS += win/safelib.c
+SRCS += win/winintrf.asm
+SRCS += win/winlink.cpp
+
+LDFLAGS += -ldxguid -ldinput -lgdi32 -lole32 -lwinmm
+
+ifdef WITH_OPENGL
+SRCS += win/gl_draw.c
+LDFLAGS += -lopengl32
+endif
+
+PSRS += win/confloc.psr
+
+ASMFLAGS += -fwin32
+
+CFGDEFS += -D__WIN32__
 CFGDEFS += -D__ZSNES_PLATFORM_WINDOWS__
 endif
 

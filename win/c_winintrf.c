@@ -24,6 +24,7 @@
 #endif
 
 u4 delayvalue;
+u1 blinit;
 
 void StartUp(void) { }
 
@@ -173,7 +174,7 @@ static void InitializeGfxStuff(void)
 
     vesa2_clbit ^= 0xFFFF;
     genfulladdtab();
-    Init_2xSaIMMX(converta != 1 ? 565 : 555);
+    Init_2xSaI(converta != 1 ? 565 : 555);
 }
 
 void initvideo(void)
