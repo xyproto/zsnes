@@ -131,8 +131,7 @@ static void HighResProc(u2** psrc, u1** pdst, u1* ebx)
                             "movq %%mm2, 8(%2)\n\t"
                             "movq %%mm0,  (%0)\n\t"
                             "movq %%mm2, 8(%0)\n\t" ::"r"(eax),
-                            "r"(src), "r"(dst)
-                            : "memory", "mm0", "mm1", "mm2");
+                            "r"(src), "r"(dst) : "memory", "mm0", "mm1", "mm2");
                         src += 4;
                         dst += 16;
                         eax += 16;
@@ -168,8 +167,7 @@ static void HighResProc(u2** psrc, u1** pdst, u1* ebx)
                                     "movq %%mm1,  8(%1)\n\t"
                                     "movq %%mm2, 16(%1)\n\t"
                                     "movq %%mm3, 24(%1)\n\t" ::"r"(eax),
-                                    "r"(dst), "y"(mm4)
-                                    : "memory", "mm0", "mm1", "mm2", "mm3");
+                                    "r"(dst), "y"(mm4) : "memory", "mm0", "mm1", "mm2", "mm3");
                                 eax += 32;
                                 dst += 32;
                             } while (--ecx != 0);
@@ -199,8 +197,7 @@ static void HighResProc(u2** psrc, u1** pdst, u1* ebx)
                                     "paddd %%mm3, %%mm1\n\t"
                                     "movq %%mm0,  (%1)\n\t"
                                     "movq %%mm1, 8(%1)\n\t" ::"r"(eax),
-                                    "r"(dst), "y"(mm4)
-                                    : "memory", "mm0", "mm1", "mm2", "mm3");
+                                    "r"(dst), "y"(mm4) : "memory", "mm0", "mm1", "mm2", "mm3");
                                 eax += 16;
                                 dst += 16;
                             } while (--ecx != 0);
@@ -235,8 +232,7 @@ static void HighResProc(u2** psrc, u1** pdst, u1* ebx)
                                         "paddd %%mm3, %%mm2\n\t"
                                         "movq %%mm0,  (%2)\n\t"
                                         "movq %%mm2, 8(%2)\n\t" ::"r"(eax),
-                                        "r"(src), "r"(dst), "y"(mm4)
-                                        : "memory", "mm0", "mm1", "mm2", "mm3");
+                                        "r"(src), "r"(dst), "y"(mm4) : "memory", "mm0", "mm1", "mm2", "mm3");
                                     eax += 16;
                                     dst += 16;
                                     src += 4;
@@ -255,8 +251,7 @@ static void HighResProc(u2** psrc, u1** pdst, u1* ebx)
                                         "movq %%mm2, 16(%1)\n\t"
                                         "movq 24(%0), %%mm3\n\t"
                                         "movq %%mm3, 24(%1)\n\t" ::"r"(eax),
-                                        "r"(dst)
-                                        : "memory", "mm0", "mm1", "mm2", "mm3");
+                                        "r"(dst) : "memory", "mm0", "mm1", "mm2", "mm3");
                                     eax += 32;
                                     dst += 32;
                                 } while (--ecx != 0);
@@ -304,8 +299,7 @@ static void HighResProc(u2** psrc, u1** pdst, u1* ebx)
                     "movq %%mm0,  (%1)\n\t"
                     "punpckhwd %%mm1, %%mm1\n\t"
                     "movq %%mm1, 8(%1)" ::"r"(src),
-                    "r"(dst)
-                    : "memory", "mm0", "mm1");
+                    "r"(dst) : "memory", "mm0", "mm1");
                 src += 4;
                 dst += 16;
             } while (--ecx != 0);
@@ -323,8 +317,7 @@ static void HighResProc(u2** psrc, u1** pdst, u1* ebx)
                     "movq %%mm0,  (%1)\n\t"
                     "punpckhwd %%mm1, %%mm1\n\t"
                     "movq %%mm1, 8(%1)" ::"r"(src),
-                    "r"(dst)
-                    : "memory", "mm0", "mm1");
+                    "r"(dst) : "memory", "mm0", "mm1");
                 src += 4;
                 dst += 16;
             } while (--ecx != 0);
@@ -448,8 +441,7 @@ static void MMXInterpolwin(u2* esi, u1* edi, u1 const dl)
                         "punpckhwd %%mm0, %%mm5\n\t"
                         "movq %%mm4,  (%1)\n\t"
                         "movq %%mm5, 8(%1)" ::"r"(esi),
-                        "r"(edi), "y"(mm2)
-                        : "memory", "mm0", "mm1", "mm4", "mm5");
+                        "r"(edi), "y"(mm2) : "memory", "mm0", "mm1", "mm4", "mm5");
                     esi += 4;
                     edi += 16;
                 } while (--ecx != 0);
@@ -505,8 +497,7 @@ static void MMXInterpolwin(u2* esi, u1* edi, u1 const dl)
                             "movq %%mm5, 8(%0)\n\t"
                             "movq %%mm4,  (%2)\n\t"
                             "movq %%mm5, 8(%2)" ::"r"(edx),
-                            "r"(esi), "r"(edi), "y"(mm2), "m"(*(u8*)HalfTransB)
-                            : "memory", "mm0", "mm1", "mm3", "mm4", "mm5");
+                            "r"(esi), "r"(edi), "y"(mm2), "m"(*(u8*)HalfTransB) : "memory", "mm0", "mm1", "mm3", "mm4", "mm5");
                         esi += 4;
                         edi += 16;
                         edx += 16;
@@ -534,8 +525,7 @@ static void MMXInterpolwin(u2* esi, u1* edi, u1 const dl)
                             "paddd %%mm5, %%mm1\n\t"
                             "movq %%mm0,  (%1)\n\t"
                             "movq %%mm1, 8(%1)" ::"r"(edx),
-                            "r"(edi), "y"(mm2)
-                            : "memory", "mm0", "mm1", "mm4", "mm5");
+                            "r"(edi), "y"(mm2) : "memory", "mm0", "mm1", "mm4", "mm5");
                         edi += 16;
                         edx += 16;
                     } while (--ecx != 0);
@@ -584,8 +574,7 @@ static void MMXInterpolwin(u2* esi, u1* edi, u1 const dl)
                             "movq %%mm5, 8(%0)\n\t"
                             "movq %%mm4,  (%2)\n\t"
                             "movq %%mm5, 8(%2)" ::"r"(edx),
-                            "r"(esi), "r"(edi), "y"(mm2)
-                            : "memory", "mm0", "mm1", "mm4", "mm5");
+                            "r"(esi), "r"(edi), "y"(mm2) : "memory", "mm0", "mm1", "mm4", "mm5");
                         esi += 4;
                         edi += 16;
                         edx += 16;
@@ -605,8 +594,7 @@ static void MMXInterpolwin(u2* esi, u1* edi, u1 const dl)
                             "psrlw $1, %%mm1\n\t"
                             "movq %%mm0,  (%1)\n\t"
                             "movq %%mm1, 8(%1)" ::"r"(edx),
-                            "r"(edi), "y"(mm2)
-                            : "memory", "mm0", "mm1");
+                            "r"(edi), "y"(mm2) : "memory", "mm0", "mm1");
                         edi += 16;
                         edx += 16;
                     } while (--ecx != 0);
@@ -648,8 +636,7 @@ static void MMXInterpolwin(u2* esi, u1* edi, u1 const dl)
                 "movq %%mm5, 8(%2)\n\t"
                 "movq %%mm4,  (%0)\n\t"
                 "movq %%mm5, 8(%0)" ::"r"(edx),
-                "r"(esi), "r"(edi), "y"(mm2), "m"(*(u8*)HalfTransB)
-                : "memory", "mm0", "mm1", "mm3", "mm4", "mm5");
+                "r"(esi), "r"(edi), "y"(mm2), "m"(*(u8*)HalfTransB) : "memory", "mm0", "mm1", "mm3", "mm4", "mm5");
             esi += 4;
             edi += 16;
             edx += 16;
@@ -714,8 +701,7 @@ static void MMXInterpolwin(u2* esi, u1* edi, u1 const dl)
                             "paddw %%mm0, %%mm5\n\t"
                             "movq %%mm4,  (%2)\n\t"
                             "movq %%mm5, 8(%2)" ::"r"(edx),
-                            "r"(esi), "r"(edi), "y"(mm2), "m"(*(u8*)HalfTransB)
-                            : "memory", "mm0", "mm1", "mm3", "mm4", "mm5", "mm6", "mm7");
+                            "r"(esi), "r"(edi), "y"(mm2), "m"(*(u8*)HalfTransB) : "memory", "mm0", "mm1", "mm3", "mm4", "mm5", "mm6", "mm7");
                         esi += 4;
                         edi += 16;
                         edx += 16;
@@ -732,8 +718,7 @@ static void MMXInterpolwin(u2* esi, u1* edi, u1 const dl)
                             "movq 8(%0), %%mm1\n\t"
                             "movq %%mm0,  (%1)\n\t"
                             "movq %%mm1, 8(%1)" ::"r"(edx),
-                            "r"(edi)
-                            : "memory", "mm0", "mm1");
+                            "r"(edi) : "memory", "mm0", "mm1");
                         edi += 16;
                         edx += 16;
                     } while (--ecx != 0);
@@ -1003,8 +988,7 @@ void copy640x480x16bwin(void)
         return;
 
     u2 ds;
-    MMX_ASM("movw %%ds, %0;  movw %0, %%es"
-        : "=r"(ds)); // XXX necessary?
+    MMX_ASM("movw %%ds, %0;  movw %0, %%es" : "=r"(ds)); // XXX necessary?
     (void)ds;
 
     u2* src = (u2*)vidbuffer + 16 + 288;
@@ -1047,8 +1031,7 @@ void copy640x480x16bwin(void)
                                 "punpckhwd %%mm1, %%mm1\n\t"
                                 "movq %%mm0,  (%1)\n\t"
                                 "movq %%mm1, 8(%1)" ::"r"(src),
-                                "r"(dst)
-                                : "memory", "mm0", "mm1");
+                                "r"(dst) : "memory", "mm0", "mm1");
                             src += 4;
                             dst += 16;
                         } while (--ecx != 0);
@@ -1118,8 +1101,7 @@ void copy640x480x16bwin(void)
                                 "movq %%mm1, 8(%2)\n\t"
                                 "movq %%mm0,  (%0)\n\t"
                                 "movq %%mm1, 8(%0)" ::"r"(eax),
-                                "r"(src), "r"(dst)
-                                : "memory", "mm0", "mm1");
+                                "r"(src), "r"(dst) : "memory", "mm0", "mm1");
                             src += 4;
                             dst += 16;
                             eax += 16;
@@ -1148,8 +1130,7 @@ void copy640x480x16bwin(void)
                                 "paddd %%mm3, %%mm1\n\t"
                                 "movq %%mm0,  (%1)\n\t"
                                 "movq %%mm1, 8(%1)" ::"r"(eax),
-                                "r"(dst), "y"(trans)
-                                : "memory", "mm0", "mm1", "mm2", "mm3");
+                                "r"(dst), "y"(trans) : "memory", "mm0", "mm1", "mm2", "mm3");
                             eax += 16;
                             dst += 16;
                         } while (--ecx != 0);
@@ -1209,8 +1190,7 @@ void copy640x480x16bwin(void)
                                 "movq %%mm1, 8(%2)\n\t"
                                 "movq %%mm0,  (%0)\n\t"
                                 "movq %%mm1, 8(%0)" ::"r"(eax),
-                                "r"(src), "r"(dst)
-                                : "memory", "mm0", "mm1");
+                                "r"(src), "r"(dst) : "memory", "mm0", "mm1");
                             src += 4;
                             dst += 16;
                             eax += 16;
@@ -1239,8 +1219,7 @@ void copy640x480x16bwin(void)
                                 "movq %%mm1,  8(%1)\n\t"
                                 "movq %%mm2, 16(%1)\n\t"
                                 "movq %%mm3, 24(%1)" ::"r"(eax),
-                                "r"(dst), "y"(trans)
-                                : "memory", "mm0", "mm1", "mm2", "mm3");
+                                "r"(dst), "y"(trans) : "memory", "mm0", "mm1", "mm2", "mm3");
                             eax += 32;
                             dst += 32;
                         } while (--ecx != 0);
@@ -1300,8 +1279,7 @@ void copy640x480x16bwin(void)
                                 "movq %%mm1, 8(%2)\n\t"
                                 "movq %%mm0,  (%0)\n\t"
                                 "movq %%mm1, 8(%0)" ::"r"(eax),
-                                "r"(src), "r"(dst)
-                                : "memory", "mm0", "mm1");
+                                "r"(src), "r"(dst) : "memory", "mm0", "mm1");
                             src += 4;
                             dst += 16;
                             eax += 16;
@@ -1321,8 +1299,7 @@ void copy640x480x16bwin(void)
                                 "movq %%mm2, 16(%1)\n\t"
                                 "movq 24(%0), %%mm3\n\t"
                                 "movq %%mm3, 24(%1)" ::"r"(eax),
-                                "r"(dst)
-                                : "memory", "mm0", "mm1", "mm2", "mm3");
+                                "r"(dst) : "memory", "mm0", "mm1", "mm2", "mm3");
                             eax += 32;
                             dst += 32;
                         } while (--ecx != 0);
