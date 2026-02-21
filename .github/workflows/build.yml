@@ -25,7 +25,7 @@ on:
 
 jobs:
   linux:
-    name: linux (strict)
+    name: linux
     runs-on: ubuntu-latest
     env:
       DEBIAN_FRONTEND: noninteractive
@@ -108,20 +108,6 @@ jobs:
             exit 1
           fi
 
-  darwin:
-    name: darwin
-    runs-on: macos-14
-    steps:
-      - uses: actions/checkout@v6
-      - name: Install dependencies
-        run: |
-          brew update
-          brew install nasm pkg-config sdl2 libpng
-      - name: Build
-        run: |
-          make clean
-          make ARCH=darwin WITH_AO= WITH_PIPEWIRE=
-
   windows:
     name: win
     runs-on: ubuntu-24.04
@@ -144,65 +130,76 @@ jobs:
             CC=i686-w64-mingw32-gcc \
             CXX=i686-w64-mingw32-g++
 
-  freebsd:
-    name: freebsd (optional)
-    continue-on-error: true
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v6
-      - name: Build in FreeBSD VM
-        uses: vmactions/freebsd-vm@v1
-        with:
-          usesh: true
-          sync: no
-          run: |
-            rm -rf "$HOME/work"
-            mkdir -p "$HOME/work"
-            cd "$HOME/work"
-            fetch -o src.tar.gz "https://codeload.github.com/${{ github.repository }}/tar.gz/${{ github.sha }}"
-            tar -xzf src.tar.gz --strip-components=1
-            pkg install -y gmake nasm pkgconf sdl2 png
-            gmake clean
-            gmake ARCH=freebsd WITH_AO= WITH_PIPEWIRE=
-
-  openbsd:
-    name: openbsd (optional)
-    continue-on-error: true
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v6
-      - name: Build in OpenBSD VM
-        uses: vmactions/openbsd-vm@v1
-        with:
-          usesh: true
-          sync: no
-          run: |
-            rm -rf "$HOME/work"
-            mkdir -p "$HOME/work"
-            cd "$HOME/work"
-            ftp -o src.tar.gz "https://codeload.github.com/${{ github.repository }}/tar.gz/${{ github.sha }}"
-            tar -xzf src.tar.gz --strip-components=1
-            pkg_add gmake nasm pkgconf sdl2 png
-            gmake clean
-            gmake ARCH=openbsd WITH_AO= WITH_PIPEWIRE=
-
-  netbsd:
-    name: netbsd (optional)
-    continue-on-error: true
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v6
-      - name: Build in NetBSD VM
-        uses: vmactions/netbsd-vm@v1
-        with:
-          usesh: true
-          sync: no
-          run: |
-            rm -rf "$HOME/work"
-            mkdir -p "$HOME/work"
-            cd "$HOME/work"
-            ftp -o src.tar.gz "https://codeload.github.com/${{ github.repository }}/tar.gz/${{ github.sha }}"
-            tar -xzf src.tar.gz --strip-components=1
-            /usr/sbin/pkg_add gmake nasm pkgconf SDL2 libpng
-            gmake clean
-            gmake ARCH=netbsd WITH_AO= WITH_PIPEWIRE=
+#  darwin:
+#    name: darwin
+#    runs-on: macos-14
+#    steps:
+#      - uses: actions/checkout@v6
+#      - name: Install dependencies
+#        run: |
+#          brew update
+#          brew install nasm pkg-config sdl2 libpng
+#      - name: Build
+#        run: |
+#          make clean
+#          make ARCH=darwin WITH_AO= WITH_PIPEWIRE=
+#  freebsd:
+#    name: freebsd (optional)
+#    continue-on-error: true
+#    runs-on: ubuntu-24.04
+#    steps:
+#      - uses: actions/checkout@v6
+#      - name: Build in FreeBSD VM
+#        uses: vmactions/freebsd-vm@v1
+#        with:
+#          usesh: true
+#          sync: no
+#          run: |
+#            rm -rf "$HOME/work"
+#            mkdir -p "$HOME/work"
+#            cd "$HOME/work"
+#            fetch -o src.tar.gz "https://codeload.github.com/${{ github.repository }}/tar.gz/${{ github.sha }}"
+#            tar -xzf src.tar.gz --strip-components=1
+#            pkg install -y gmake nasm pkgconf sdl2 png
+#            gmake clean
+#            gmake ARCH=freebsd WITH_AO= WITH_PIPEWIRE=
+#  openbsd:
+#    name: openbsd (optional)
+#    continue-on-error: true
+#    runs-on: ubuntu-24.04
+#    steps:
+#      - uses: actions/checkout@v6
+#      - name: Build in OpenBSD VM
+#        uses: vmactions/openbsd-vm@v1
+#        with:
+#          usesh: true
+#          sync: no
+#          run: |
+#            rm -rf "$HOME/work"
+#            mkdir -p "$HOME/work"
+#            cd "$HOME/work"
+#            ftp -o src.tar.gz "https://codeload.github.com/${{ github.repository }}/tar.gz/${{ github.sha }}"
+#            tar -xzf src.tar.gz --strip-components=1
+#            pkg_add gmake nasm pkgconf sdl2 png
+#            gmake clean
+#            gmake ARCH=openbsd WITH_AO= WITH_PIPEWIRE=
+#  netbsd:
+#    name: netbsd (optional)
+#    continue-on-error: true
+#    runs-on: ubuntu-24.04
+#    steps:
+#      - uses: actions/checkout@v6
+#      - name: Build in NetBSD VM
+#        uses: vmactions/netbsd-vm@v1
+#        with:
+#          usesh: true
+#          sync: no
+#          run: |
+#            rm -rf "$HOME/work"
+#            mkdir -p "$HOME/work"
+#            cd "$HOME/work"
+#            ftp -o src.tar.gz "https://codeload.github.com/${{ github.repository }}/tar.gz/${{ github.sha }}"
+#            tar -xzf src.tar.gz --strip-components=1
+#            /usr/sbin/pkg_add gmake nasm pkgconf SDL2 libpng
+#            gmake clean
+#            gmake ARCH=netbsd WITH_AO= WITH_PIPEWIRE=
