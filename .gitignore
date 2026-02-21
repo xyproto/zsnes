@@ -11,3 +11,4 @@ zsnes
 zsnes.exe
 *.raw
 *.wav
+*.log
