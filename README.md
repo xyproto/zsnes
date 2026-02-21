@@ -1,6 +1,6 @@
 # ZSNES 2
 
-[![CI](https://github.com/xyproto/zsnes/actions/workflows/ci.yml/badge.svg)](https://github.com/xyproto/zsnes/actions/workflows/ci.yml)
+[![CI](https://github.com/xyproto/zsnes/actions/workflows/build.yml/badge.svg)](https://github.com/xyproto/zsnes/actions/workflows/build.yml)
 
 <img align="right" width="128" height="128" alt="logo" src="icons/128x128x32.png">
 
