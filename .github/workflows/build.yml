@@ -2,7 +2,25 @@ name: Build Supported Platforms
 
 on:
   push:
+    paths-ignore:
+      - "**/*.txt"
+      - "**/*.md"
+      - "**/*.sh"
+      - "**/*.1"
+      - "**/*.1.gz"
+      - "doc/**"
+      - "man/**"
+      - "html/**"
   pull_request:
+    paths-ignore:
+      - "**/*.txt"
+      - "**/*.md"
+      - "**/*.sh"
+      - "**/*.1"
+      - "**/*.1.gz"
+      - "doc/**"
+      - "man/**"
+      - "html/**"
   workflow_dispatch:
 
 jobs:
@@ -114,11 +132,13 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y \
             mingw-w64 \
+            libz-mingw-w64-dev \
             nasm python3 pkg-config
       - name: Build
         run: |
           make clean
           make ARCH=win \
+            WITH_PNG= \
             CC_TARGET=i686-w64-mingw32-gcc \
             CXX_TARGET=i686-w64-mingw32-g++ \
             CC=i686-w64-mingw32-gcc \
