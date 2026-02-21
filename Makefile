@@ -1,8 +1,34 @@
 .PHONY: clean distclean fmt info
 
-# Possible values: LINUX, OSX, WIN
-# The flags below also needs to be modified if this is not set to LINUX
-ARCH := LINUX
+# Supported ARCH values:
+#   LINUX, FREEBSD, OPENBSD, NETBSD, DARWIN, WIN
+# Backward-compatible aliases:
+#   OSX -> DARWIN
+#   WINDOWS -> WIN
+SUPPORTED_ARCHES := LINUX FREEBSD OPENBSD NETBSD DARWIN WIN
+UNIXSDL_ARCHES := LINUX FREEBSD OPENBSD NETBSD DARWIN
+LEGACY_UNSUPPORTED_ARCHES := DOS BEOS AMIGA
+HOST_OS := $(shell uname -s 2>/dev/null | tr '[:lower:]' '[:upper:]')
+
+ARCH ?= $(shell uname -s 2>/dev/null | tr '[:lower:]' '[:upper:]')
+override ARCH := $(shell printf '%s' "$(ARCH)" | tr '[:lower:]' '[:upper:]')
+
+ifeq ($(ARCH),OSX)
+ARCH := DARWIN
+endif
+ifeq ($(ARCH),WINDOWS)
+ARCH := WIN
+endif
+ifeq ($(ARCH),WIN32)
+ARCH := WIN
+endif
+
+ifneq ($(filter $(ARCH),$(LEGACY_UNSUPPORTED_ARCHES)),)
+$(error Unsupported ARCH '$(ARCH)': DOS/BeOS/Amiga support has been removed)
+endif
+ifeq ($(filter $(ARCH),$(SUPPORTED_ARCHES)),)
+$(error Unsupported ARCH '$(ARCH)'. Supported values: $(SUPPORTED_ARCHES))
+endif
 
 # Use all available cores by default unless user already passed -j/--jobs.
 ifeq ($(filter -j% --jobs%,$(MAKEFLAGS)),)
@@ -12,22 +38,62 @@ endif
 
 CC ?= gcc
 CXX ?= g++
+CXX_HOST ?= $(CXX)
+CC_TARGET  ?= $(CC)
+CXX_TARGET ?= $(CXX)
+CC_TARGET_TRIPLE := $(shell $(CC_TARGET) -dumpmachine 2>/dev/null)
+WIN_PORT_AVAILABLE := $(if $(wildcard win/c_winintrf.c),yes,)
 
-COMMON_FLAGS = -m32 -pthread -no-pie -O1 -fno-inline -fno-pic -mtune=generic -D_FORTIFY_SOURCE=2 -L/usr/lib32 -mno-sse -mno-sse2 -ffunction-sections -fdata-sections -Wfatal-errors -w
+ifeq ($(ARCH),FREEBSD)
+ifeq ($(findstring freebsd,$(CC_TARGET_TRIPLE)),)
+$(error ARCH=FREEBSD requires a FreeBSD-targeting compiler (current CC_TARGET triple: '$(CC_TARGET_TRIPLE)'))
+endif
+endif
+
+ifeq ($(ARCH),OPENBSD)
+ifeq ($(findstring openbsd,$(CC_TARGET_TRIPLE)),)
+$(error ARCH=OPENBSD requires an OpenBSD-targeting compiler (current CC_TARGET triple: '$(CC_TARGET_TRIPLE)'))
+endif
+endif
+
+ifeq ($(ARCH),NETBSD)
+ifeq ($(findstring netbsd,$(CC_TARGET_TRIPLE)),)
+$(error ARCH=NETBSD requires a NetBSD-targeting compiler (current CC_TARGET triple: '$(CC_TARGET_TRIPLE)'))
+endif
+endif
+
+ifeq ($(ARCH),DARWIN)
+ifeq ($(or $(findstring darwin,$(CC_TARGET_TRIPLE)),$(findstring apple,$(CC_TARGET_TRIPLE))),)
+$(error ARCH=DARWIN requires a Darwin-targeting compiler (current CC_TARGET triple: '$(CC_TARGET_TRIPLE)'))
+endif
+endif
+
+ifeq ($(ARCH),WIN)
+ifeq ($(or $(findstring mingw,$(CC_TARGET_TRIPLE)),$(findstring windows,$(CC_TARGET_TRIPLE)),$(findstring cygwin,$(CC_TARGET_TRIPLE)),$(findstring msys,$(CC_TARGET_TRIPLE))),)
+$(error ARCH=WIN requires a Windows-targeting compiler (current CC_TARGET triple: '$(CC_TARGET_TRIPLE)'))
+endif
+ifeq ($(WIN_PORT_AVAILABLE),)
+$(error ARCH=WIN requested, but required win/ source files are missing in this tree)
+endif
+endif
+
+COMMON_FLAGS = -m32 -pthread -no-pie -O1 -fno-inline -fno-pic -mtune=generic -D_FORTIFY_SOURCE=2 -mno-sse -mno-sse2 -ffunction-sections -fdata-sections -Wfatal-errors -w
 
 # TODO: FreeBSD has a patch for being able to build without -fcommon
 CFLAGS += $(COMMON_FLAGS) -std=gnu99 -fcommon
 CXXFLAGS += $(COMMON_FLAGS) -std=gnu++14
-LDFLAGS += -Wl,--as-needed -no-pie -L/usr/lib32 -Wl,--gc-sections -lz
+LDFLAGS += -Wl,--as-needed -no-pie -Wl,--gc-sections -lz
 # -O1 is mandatory
-ASMFLAGS += -O1 -w-orphan-labels
+ASMFLAGS += -O1 -w-orphan-labels -w-number-deprecated-hex -w-pp-macro-params-legacy
 
 WITH_AO       :=
 #WITH_DEBUGGER := yes
 WITH_JMA      := yes
 WITH_OPENGL   := yes
 WITH_PNG      := yes
-WITH_SDL      := yes
+WITH_SDL      := $(if $(filter $(ARCH),$(UNIXSDL_ARCHES)),yes,)
+WITH_PIPEWIRE :=
+WITH_AO       :=
 
 # Check that pkg-config deps are also linkable with the current target flags (for example, -m32).
 define detect_pkg_for_target
@@ -39,17 +105,31 @@ $(shell \
   fi)
 endef
 
+PIPEWIRE_AVAILABLE :=
+AO_AVAILABLE :=
+SDL3_AVAILABLE :=
+SDL2_AVAILABLE :=
+SDL_BACKEND_AVAILABLE :=
+
+ifneq ($(filter $(ARCH),$(UNIXSDL_ARCHES)),)
+ifeq ($(ARCH),LINUX)
 PIPEWIRE_AVAILABLE := $(call detect_pkg_for_target,libpipewire-0.3)
+endif
+ifneq ($(filter $(ARCH),LINUX FREEBSD OPENBSD NETBSD DARWIN WIN),)
 AO_AVAILABLE := $(call detect_pkg_for_target,ao)
+endif
 SDL3_AVAILABLE := $(call detect_pkg_for_target,sdl3)
 SDL2_AVAILABLE := $(call detect_pkg_for_target,sdl2)
 SDL_BACKEND_AVAILABLE := $(if $(or $(SDL3_AVAILABLE),$(SDL2_AVAILABLE),$(strip $(SDL_CONFIG)),$(strip $(CFLAGS_SDL)),$(strip $(LDFLAGS_SDL))),yes)
+endif
 
 SKIP_AUDIO_BACKEND_CHECK := $(if $(filter clean distclean,$(MAKECMDGOALS)),yes)
 
 ifeq ($(WITH_PIPEWIRE),)
-  ifeq ($(PIPEWIRE_AVAILABLE),yes)
-    WITH_PIPEWIRE := yes
+  ifeq ($(ARCH),LINUX)
+    ifeq ($(PIPEWIRE_AVAILABLE),yes)
+      WITH_PIPEWIRE := yes
+    endif
   endif
 endif
 
@@ -69,31 +149,35 @@ ifeq ($(SKIP_AUDIO_BACKEND_CHECK),)
 endif
 
 BINARY     ?= zsnes
+ifeq ($(ARCH),WIN)
+BINARY := zsnes.exe
+endif
 PSR        ?= parsegen.py
 ASM        ?= nasm
 PYTHON     ?= python3
 
-CXX_HOST   ?= $(CXX)
-CC_TARGET  ?= $(CC)
-CXX_TARGET ?= $(CXX)
-
 DESTDIR ?=
 PREFIX ?= /usr
 
-ifneq ($(findstring $(ARCH), LINUX OSX),)
-	WITH_SDL := yes
-endif
-
-ifneq ($(findstring $(ARCH), WIN),)
-  CFLAGS += -fstack-protector
-  WITH_OPENGL :=
-else
+ifneq ($(filter $(ARCH),LINUX FREEBSD OPENBSD NETBSD),)
   CFLAGS += -rdynamic
   CXXFLAGS += -rdynamic
   LDFLAGS += -ldl -lX11
 endif
+ifeq ($(ARCH),DARWIN)
+ifneq ($(HOST_OS),DARWIN)
+  CFLAGS += -rdynamic
+  CXXFLAGS += -rdynamic
+  LDFLAGS += -ldl -lX11
+endif
+endif
+ifeq ($(ARCH),LINUX)
+  CFLAGS += -L/usr/lib32
+  CXXFLAGS += -L/usr/lib32
+  LDFLAGS += -L/usr/lib32
+endif
 
-ifdef WITH_SDL
+ifeq ($(WITH_SDL),yes)
   ifeq ($(strip $(SDL_CONFIG)),)
     ifeq ($(SDL3_AVAILABLE),yes)
       SDL_CONFIG := pkg-config sdl3
@@ -168,6 +252,7 @@ ifeq ($(WITH_PIPEWIRE),yes)
   endif
 endif
 
+ifeq ($(ARCH),LINUX)
 ifeq ($(wildcard /usr/lib/i386-linux-gnu/.),)
   CFLAGS += -I/usr/include/x86_64-linux-gnu -I /usr/include/X11
   CXXFLAGS += -I/usr/include/x86_64-linux-gnu -I /usr/include/X11
@@ -176,6 +261,7 @@ ifeq ($(wildcard /usr/lib/i386-linux-gnu/.),)
   else
     LDFLAGS += -L/usr/lib/i386-linux-gnu -lSDL2 -lpng16 -lX11
   endif
+endif
 endif
 
 SRCS :=
@@ -334,7 +420,7 @@ ifeq ($(WITH_AO),yes)
 CFGDEFS += -D__LIBAO__
 endif
 
-ifneq ($(findstring $(ARCH), LINUX OSX),)
+ifneq ($(filter $(ARCH),$(UNIXSDL_ARCHES)),)
 SRCS += linux/audio.c
 SRCS += linux/battery.c
 SRCS += linux/c_sdlintrf.c
@@ -350,12 +436,29 @@ SRCS += linux/gl_draw.c
 endif
 
 CFGDEFS += -D__UNIXSDL__
+ifeq ($(ARCH),LINUX)
+CFGDEFS += -D__ZSNES_PLATFORM_LINUX__
+endif
+ifneq ($(filter $(ARCH),FREEBSD OPENBSD NETBSD),)
+CFGDEFS += -D__BSDSDL__
+endif
+ifeq ($(ARCH),FREEBSD)
+CFGDEFS += -D__ZSNES_PLATFORM_FREEBSD__
+endif
+ifeq ($(ARCH),OPENBSD)
+CFGDEFS += -D__ZSNES_PLATFORM_OPENBSD__
+endif
+ifeq ($(ARCH),NETBSD)
+CFGDEFS += -D__ZSNES_PLATFORM_NETBSD__
+endif
 ifeq ($(SDL_PKG),sdl3)
 CFGDEFS += -D__SDL3__ -DSDL_ENABLE_OLD_NAMES
 endif
 
 
-ifeq ($(ARCH), OSX)
+ifeq ($(ARCH),DARWIN)
+CFGDEFS += -D__ZSNES_PLATFORM_DARWIN__
+ifeq ($(HOST_OS),DARWIN)
 SRCS += mmlib/osx.c
 
 ASMFLAGS += -fmacho -DMACHO
@@ -372,6 +475,14 @@ else
 SRCS += mmlib/linux.c
 
 ASMFLAGS += -felf32 -DELF
+ifdef WITH_OPENGL
+LDFLAGS += -lGL
+endif
+endif
+else
+SRCS += mmlib/linux.c
+
+ASMFLAGS += -felf32 -DELF
 
 ifdef WITH_OPENGL
 LDFLAGS += -lGL
@@ -380,28 +491,8 @@ endif
 endif
 endif
 
-ifeq ($(ARCH), WIN)
-SRCS += mmlib/windows.c
-SRCS += win/c_winintrf.c
-SRCS += win/dx_ddraw.cpp
-SRCS += win/lib.c
-SRCS += win/safelib.c
-SRCS += win/winintrf.asm
-SRCS += win/winlink.cpp
-
-LDFLAGS += -ldxguid -ldinput -lgdi32 -lole32 -lz
-
-ifdef WITH_OPENGL
-SRCS += win/gl_draw.c
-LDFLAGS += -lopengl32
-endif
-
-PSRS += win/confloc.psr
-
-ASMFLAGS += -fwin32
-
-CFGDEFS += -D__WIN32__
-
+ifeq ($(ARCH),WIN)
+CFGDEFS += -D__ZSNES_PLATFORM_WINDOWS__
 endif
 
 ASMFLAGS += $(CFGDEFS)
@@ -457,7 +548,7 @@ $(filter %.o, $(SRCS:.c=.o) $(SRCS:.cpp=.o)): $(HDRS)
 
 clean distclean:
 	@echo '===> CLEAN'
-	$(Q)rm -fr $(HDRS) $(DEPS) $(OBJS) $(BINARY)
+	$(Q)rm -fr $(HDRS) $(DEPS) $(OBJS) $(BINARY) zsnes zsnes.exe
 ifdef CLEAN_MORE
 	$(Q)find . -name "*.[do]" -delete
 endif

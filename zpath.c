@@ -32,7 +32,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <shlobj.h>
 #include <windows.h>
 #else
-#error "Unsupported platform: DOS/BeOS/Amiga ports have been removed"
+#error "Unsupported platform"
 #endif
 
 #include <ctype.h>
