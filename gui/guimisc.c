@@ -21,8 +21,6 @@
 
 #include <string.h>
 
-#include "../asm.h"
-#include "../asm_call.h"
 #include "../c_intrf.h"
 #include "../cpu/dspproc.h"
 #include "../cpu/execute.h"
@@ -41,46 +39,6 @@
 #include "guikeys.h"
 #include "guimisc.h"
 #include "guimouse.h"
-
-u1 JoyExists2;
-u1 JoyExists;
-u4 JoyMaxX;
-u4 JoyMaxY;
-u4 JoyMinX;
-u4 JoyMinY;
-u4 JoyX2;
-u4 JoyX;
-u4 JoyY2;
-u4 JoyY;
-
-static void CalibrateDispA(void)
-{
-    memset(pressed, 0, 256); // XXX Probably should be sizeof(pressed)
-    GUIUnBuffer();
-    DisplayBoxes();
-    DisplayMenu();
-    GUIBox3D(75, 103, 192, 135);
-    GUIOuttextShadowed(80, 108, "PRESS THE TOP LEFT");
-    GUIOuttextShadowed(80, 116, "CORNER AND PRESS A");
-    GUIOuttextShadowed(80, 124, "BUTTON OR KEY");
-    vidpastecopyscr();
-    GUIWaitForKey();
-}
-
-static void CalibrateDispB(void)
-{
-    memset(pressed, 0, 256); // XXX Probably should be sizeof(pressed)
-    GUIUnBuffer();
-    DisplayBoxes();
-    DisplayMenu();
-    GUIBox3D(75, 103, 192, 143);
-    GUIOuttextShadowed(80, 108, "PRESS THE BOTTOM");
-    GUIOuttextShadowed(80, 116, "RIGHT CORNER AND");
-    GUIOuttextShadowed(80, 124, "PRESS A BUTTON OR");
-    GUIOuttextShadowed(80, 132, "KEY");
-    vidpastecopyscr();
-    GUIWaitForKey();
-}
 
 #define ConfigureKey2(i, player)            \
     do {                                    \
@@ -195,30 +153,7 @@ void SetAllKeys(void)
 
 void CalibrateDev1(void)
 {
-    u4 const player = cplayernum;
-    u1 const contrl = *GUIInputRefP[player];
     GUICBHold = 0;
-
-    u4 port = 0x201;
-
-    if (contrl <= 1 || 6 <= contrl)
-        return;
-    void (*const get)(u2) = contrl != 18 && contrl != 5 ? GetCoords : GetCoords3;
-    get(port);
-    u4 const joybcx = JoyX;
-    u4 const joybcy = JoyY;
-    CalibrateDispA();
-    get(port);
-    u4 const joyblx = JoyX;
-    u4 const joybly = JoyY;
-    CalibrateDispB();
-    get(port);
-    {
-        CalibXmin = JoyMinX = (joybcx + joyblx) / 2;
-        CalibYmin = JoyMinY = (joybcy + joybly) / 2;
-        CalibXmax = JoyMaxX = (joybcx + JoyX) / 2;
-        CalibYmax = JoyMaxY = (joybcy + JoyY) / 2;
-    }
 }
 
 void SetDevice(void)
@@ -256,65 +191,4 @@ void GUIDoReset(void)
     spcNZ = 0;
     GUIQuit = 2;
     memset(&Voice0Status, 0, sizeof(Voice0Status));
-}
-
-void GetCoords(u2 const port)
-{
-    JoyX = 0;
-    JoyY = 0;
-    cli();
-    outb(port, 0);
-    u4 n = 0xFFFF;
-    u4 val = 0x03;
-    for (;;) {
-        val &= inb(port);
-        if (val == 0)
-            break;
-        if (val & 0x01)
-            ++JoyX;
-        if (val & 0x02)
-            ++JoyY;
-        if (--n == 0) {
-            JoyExists = 0;
-            JoyX = 0;
-            JoyY = 0;
-            break;
-        }
-    }
-    sti();
-}
-
-// Dual Joysticks
-void GetCoords3(u2 const port)
-{
-    JoyX = 0;
-    JoyY = 0;
-    JoyX2 = 0;
-    JoyY2 = 0;
-    cli();
-    outb(port, 0);
-    u4 n = 0x1FFFF;
-    for (;;) {
-        u1 const val = inb(port);
-        if (val & 0x01)
-            ++JoyX;
-        if (val & 0x02)
-            ++JoyY;
-        if (val & 0x04)
-            ++JoyX2;
-        if (val & 0x08)
-            ++JoyY2;
-        if ((val & 0x0F) == 0)
-            break;
-        if (--n == 0) {
-            JoyExists = 0;
-            JoyX = 0;
-            JoyY = 0;
-            JoyExists2 = 0;
-            JoyX2 = 0;
-            JoyY2 = 0;
-            break;
-        }
-    }
-    sti();
 }

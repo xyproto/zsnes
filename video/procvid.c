@@ -22,7 +22,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "../asm.h"
 #include "../asm_call.h"
 #include "../c_intrf.h"
 #include "../c_vcache.h"
@@ -36,6 +35,7 @@
 #include "../initc.h"
 #include "../input.h"
 #include "../macros.h"
+#include "../types.h"
 #include "../ui.h"
 #include "../vcache.h"
 #include "../zmovie.h"

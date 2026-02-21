@@ -1,6 +1,5 @@
 #include <string.h>
 
-#include "../asm.h"
 #include "../c_init.h"
 #include "../c_intrf.h"
 #include "../c_vcache.h"
@@ -14,6 +13,7 @@
 #include "../effects/water.h"
 #include "../endmem.h"
 #include "../macros.h"
+#include "../types.h"
 #include "../ui.h"
 #include "../vcache.h"
 #include "../video/c_mode716.h"

@@ -21,7 +21,6 @@
 
 #include <string.h>
 
-#include "../asm.h"
 #include "../asm_call.h"
 #include "../c_intrf.h"
 #include "../c_vcache.h"
@@ -38,6 +37,7 @@
 #include "../endmem.h"
 #include "../init.h"
 #include "../initc.h"
+#include "../types.h"
 #include "../ui.h"
 #include "../vcache.h"
 #include "../video/procvid.h"
