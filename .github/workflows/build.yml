@@ -1,4 +1,4 @@
-name: CI
+name: Build Supported Platforms
 
 on:
   push:
@@ -6,15 +6,14 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  linux:
+    name: linux (strict)
     runs-on: ubuntu-latest
     env:
       DEBIAN_FRONTEND: noninteractive
       PKG_CONFIG_LIBDIR: /usr/lib/i386-linux-gnu/pkgconfig:/usr/share/pkgconfig
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
+      - uses: actions/checkout@v6
       - name: Install dependencies
         run: |
           sudo dpkg --add-architecture i386
@@ -41,9 +40,9 @@ jobs:
             libgl1-mesa-dev:i386 \
             zlib1g-dev:i386 \
             libpng-dev:i386 \
+            libao-dev:i386 \
             libpipewire-0.3-dev:i386
           sudo ln -sf /usr/bin/clang-format-19 /usr/local/bin/clang-format
-
       - name: Install SDL3 (i386)
         run: |
           if apt-cache show libsdl3-dev:i386 >/dev/null 2>&1; then
@@ -73,19 +72,16 @@ jobs:
             sudo ldconfig
             echo 'PKG_CONFIG_PATH=/usr/local/lib/pkgconfig' >> "$GITHUB_ENV"
           fi
-
       - name: Build
         run: |
           make clean
-          make
+          make ARCH=linux
           test -x ./zsnes
-
       - name: Verify runtime links
         run: |
           ldd ./zsnes | tee ldd.txt
           grep -E 'libSDL3|SDL3' ldd.txt
           grep -E 'libpipewire-0\.3' ldd.txt
-
       - name: Check formatting
         run: |
           make fmt
@@ -93,3 +89,85 @@ jobs:
             git --no-pager diff --name-only
             exit 1
           fi
+
+  darwin:
+    name: darwin
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v6
+      - name: Install dependencies
+        run: |
+          brew update
+          brew install nasm pkg-config sdl2 libpng
+      - name: Build
+        run: |
+          make clean
+          make ARCH=darwin WITH_AO= WITH_PIPEWIRE=
+
+  windows:
+    name: win
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            mingw-w64 \
+            nasm python3 pkg-config
+      - name: Build
+        run: |
+          make clean
+          make ARCH=win \
+            CC_TARGET=i686-w64-mingw32-gcc \
+            CXX_TARGET=i686-w64-mingw32-g++ \
+            CC=i686-w64-mingw32-gcc \
+            CXX=i686-w64-mingw32-g++
+
+  freebsd:
+    name: freebsd
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - name: Build in FreeBSD VM
+        uses: vmactions/freebsd-vm@v1
+        with:
+          usesh: true
+          prepare: |
+            pkg install -y gmake nasm pkgconf sdl2 libpng
+          run: |
+            cd "$GITHUB_WORKSPACE"
+            gmake clean
+            gmake ARCH=freebsd WITH_AO= WITH_PIPEWIRE=
+
+  openbsd:
+    name: openbsd
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - name: Build in OpenBSD VM
+        uses: vmactions/openbsd-vm@v1
+        with:
+          usesh: true
+          prepare: |
+            pkg_add gmake nasm pkgconf sdl2 png
+          run: |
+            cd "$GITHUB_WORKSPACE"
+            gmake clean
+            gmake ARCH=openbsd WITH_AO= WITH_PIPEWIRE=
+
+  netbsd:
+    name: netbsd
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - name: Build in NetBSD VM
+        uses: vmactions/netbsd-vm@v1
+        with:
+          usesh: true
+          prepare: |
+            /usr/sbin/pkg_add gmake nasm pkgconf SDL2 libpng
+          run: |
+            cd "$GITHUB_WORKSPACE"
+            gmake clean
+            gmake ARCH=netbsd WITH_AO= WITH_PIPEWIRE=
