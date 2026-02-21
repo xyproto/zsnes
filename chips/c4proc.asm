@@ -1652,7 +1652,7 @@ C4WireFrame:
     mov [C4WFScale],ax
 ;    mov [C4values+6],ax
 
-    ; transform vertices (MMX2 - 36 vertices, 54 lines)
+    ; transform vertices (legacy x86 SIMD2 - 36 vertices, 54 lines)
     movzx ecx,word[esi+1F80h]
 .loop
     mov ax,[esi+1]

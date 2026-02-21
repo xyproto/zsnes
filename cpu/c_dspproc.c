@@ -250,7 +250,7 @@ static s4 DSPInterpolate_4(u4 const edx, u4 const ebp)
 
 static s4 DSPInterpolate_8(u4 const edx, u4 const ebp)
 {
-    // Keep the FIR interpolation mode available without MMX.
+    // Keep the FIR interpolation mode available with the current implementation.
     u4 const offset = ((BRRPlace0[ebp][0] & 0x00FFFFFF) + 0x1000) >> 9 & 0x0000FFF0;
     s2 const* const coeff = (s2 const*)((u1 const*)fir_lut + offset);
     u4 const base = BRRPlace0[ebp][0] >> 24;
@@ -306,7 +306,7 @@ void AdjustFrequency(void)
         break;
     }
 
-    default: // Fir MMX
+    default: // FIR
         interpolate = DSPInterpolate_8;
         break;
     }

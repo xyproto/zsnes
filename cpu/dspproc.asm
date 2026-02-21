@@ -202,7 +202,7 @@ section .text
     lea ebx,[ecx*2+ebx]
     lea ebx,[DLPFsamples+ebx*4]
     cmp byte[LowPassFilterType],3
-    je near %%DLPF_fir
+    je near %%dlpf_by_5
 ;dynamic
     mov eax,[ebx+16*4]
     mov [ebx],eax
@@ -317,94 +317,6 @@ ALIGN16
     pop ecx
     ret
 
-%%DLPF_fir
-    sub edi,byte 32
-    sub edx,0780000h    ;ac - address calculation (see below)
-    mov eax,[ebx+16*4]
-    mov ecx,[ebx+17*4]
-    mov [ebx],eax
-    mov [ebx+1*4],ecx
-    shr edx,18          ;ac
-    mov eax,[ebx+18*4]
-    and edx,3FF0h       ;ac
-    mov ecx,[ebx+19*4]
-    mov [ebx+2*4],eax
-    mov [ebx+3*4],ecx
-
-    movq mm1,[edi]      ;u1 (U-pipe marker)
-    movq mm3,[edi+8]    ;u2
-    punpcklwd mm0,mm1
-    movq mm5,[edi+16]   ;u3
-    psrad mm0, 16
-    movq mm7,[edi+24]   ;u4
-    punpckhwd mm1,mm1
-    movq [ebx+4*4],mm0  ;u5
-    psrad mm1, 16
-    movq mm4,[BRRreadahead] ;u6
-    punpcklwd mm0,mm3
-    movq [ebx+6*4],mm1  ;u7
-    psrad mm0, 16
-    punpckhwd mm3,mm3   ;u8
-    movq [ebx+8*4],mm0  ;u9
-    psrad mm3, 16
-    punpcklwd mm0,mm5   ;u10
-    movq [ebx+10*4],mm3 ;u11
-    psrad mm0, 16
-    punpckhwd mm5,mm5   ;u12
-    movq [ebx+12*4],mm0 ;u13
-    psrad mm5, 16
-    punpcklwd mm0,mm7   ;u14
-    movq [ebx+14*4],mm5 ;u15
-    psrad mm0, 16
-    punpckhwd mm7,mm7   ;u16
-    movq mm2,[fir_lut_co+edx]   ;u17
-    psrad mm7, 16
-    punpcklwd mm6,mm4   ;u18
-    movq [ebx+16*4],mm0 ;u19
-    psrad mm6, 16
-    movq [ebx+18*4],mm7 ;u20
-    punpckhwd mm4,mm4
-    movq mm3,[fir_lut_co+edx+8] ;u21
-    psrad mm4, 16
-    movq [ebx+20*4],mm6 ;u22
-    movq [ebx+22*4],mm4 ;u23
-
-    mov ecx,16
-    jmp %%DLPF_fir_loop
-    ALIGN16
-
-; output 2 samples per iteration
-%%DLPF_fir_loop
-    movq mm0,[ebx]
-    packssdw mm0,[ebx+8]
-    movq mm4,[ebx+4]
-    pmaddwd mm0,mm2
-    packssdw mm4,[ebx+12]
-    movq mm1,[ebx+16]
-    pmaddwd mm4,mm2
-    packssdw mm1,[ebx+24]
-    movq mm5,[ebx+20]
-    pmaddwd mm1,mm3
-    packssdw mm5,[ebx+28]
-    pmaddwd mm5,mm3
-    paddd mm0,mm1
-    add ebx,byte 8
-    paddd mm4,mm5
-    movq mm1,mm0
-    movq mm5,mm4
-    psrlq mm0,32
-    psrlq mm4,32
-    paddd mm0,mm1
-    paddd mm4,mm5
-    punpckldq mm0,mm4
-    psrad mm0,14
-    packssdw mm0,mm0
-    sub ecx,byte 2
-    movd [edi],mm0
-    lea edi,[edi+4]
-    jnz %%DLPF_fir_loop
-    emms
-    ret
 %endmacro
 
 section .bss

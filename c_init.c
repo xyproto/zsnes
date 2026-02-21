@@ -31,7 +31,6 @@
 #include "zstate.h"
 
 u1 ComboCounter;
-u1 MMXSupport;
 u1 ReturnFromSPCStall;
 u1 SPCStallSetting;
 u1 WhichSW;
@@ -497,12 +496,9 @@ void DosExit(void)
     zexit();
 }
 
-void MMXCheck(void)
+void CPUFeatureCheck(void)
 {
-    // Portability-first build: MMX paths are intentionally disabled.
-    ShowMMXSupport = 0;
-    MMXSupport = 0;
-    (void)AllowMMX;
+    // CPU feature probing is not required.
 }
 
 void outofmemfix(void)

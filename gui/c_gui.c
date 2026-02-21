@@ -1132,7 +1132,7 @@ void StartGUI(void)
         blinit = 1;
 #endif
     GUILoadPos = 0;
-    if (MMXSupport != 1 || newgfx16b == 0) {
+    if (newgfx16b == 0) {
         En2xSaI = 0;
         hqFilter = 0;
     }

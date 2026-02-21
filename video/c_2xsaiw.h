@@ -3,6 +3,6 @@
 
 #include "../types.h"
 
-u4 Init_2xSaIMMX(u4 format);
+u4 Init_2xSaI(u4 format);
 
 #endif

@@ -23,7 +23,7 @@
 
 EXTSYM cwinptr,dualstartprocess,dualwinbg,dualwinsp,dwinptrproc,pwinbgenab
 EXTSYM pwinbgtype,pwinspenab,pwinsptype,winbgdata,winlogicb,winonbtype
-EXTSYM winonstype,winspdata,interlval,MMXSupport,bg1scrolx,bg1scroly,curmosaicsz
+EXTSYM winonstype,winspdata,interlval,bg1scrolx,bg1scroly,curmosaicsz
 EXTSYM curypos,drawmode716t,makewindow,mode7set,mosaicon,mosaicsz,scrnon
 EXTSYM winbg1en,winenabm,drawmode716textbg,drawmode716textbg2,extbgdone
 EXTSYM drawmode716tb,drawmode716b,drawmode716extbg,drawmode716extbg2,cursprloc
@@ -1442,30 +1442,11 @@ NEWSYM clearback16bts
     mov edi,[curvidoffset]
     or eax,eax
     jz near clearback16bts0.clearing
-    cmp byte[MMXSupport],1
-    je .dommxclear
     mov ecx,128
     rep stosd
     xor eax,eax
     ret
-.dommxclear
-    mov [mmxtempdat],eax
-    mov [mmxtempdat+4],eax
-    mov ecx,32
-    movq mm0,[mmxtempdat]
-.mmxloop
-    movq [edi],mm0
-    movq [edi+8],mm0
-    add edi,16
-    dec ecx
-    jnz .mmxloop
-    emms
-    xor eax,eax
-    ret
-
-SECTION .bss
-mmxtempdat resd 2
-SECTION .text
+ 
 
 NEWSYM clearback16bts0b
     mov eax,[coladdr]
@@ -1515,24 +1496,8 @@ NEWSYM clearback16bts0b
     mov edi,[curvidoffset]
     or eax,eax
     jz near clearback16bts0.clearing
-    cmp byte[MMXSupport],1
-    je .dommxclear
     mov ecx,128
     rep stosd
-    xor eax,eax
-    ret
-.dommxclear
-    mov [mmxtempdat],eax
-    mov [mmxtempdat+4],eax
-    mov ecx,32
-    movq mm0,[mmxtempdat]
-.mmxloop
-    movq [edi],mm0
-    movq [edi+8],mm0
-    add edi,16
-    dec ecx
-    jnz .mmxloop
-    emms
     xor eax,eax
     ret
 
@@ -1549,23 +1514,8 @@ NEWSYM clearback16bts0
     jnz .notnotransp
     mov byte[DoTransp],1
 .notnotransp
-    cmp byte[MMXSupport],1
-    je .dommxclear
     mov ecx,128
     rep stosd
-    ret
-.dommxclear
-    mov [mmxtempdat],eax
-    mov [mmxtempdat+4],eax
-    mov ecx,32
-    movq mm0,[mmxtempdat]
-.mmxloop
-    movq [edi],mm0
-    movq [edi+8],mm0
-    add edi,16
-    dec ecx
-    jnz .mmxloop
-    emms
     ret
 
 NEWSYM dowindowback16b
@@ -2013,30 +1963,11 @@ NEWSYM clearback16t
     xor eax,eax
     ret
 .subcopy
-    cmp byte[MMXSupport],1
-    je .dommxcopy
     mov ecx,128
     xor ebx,ebx
     mov edi,esi
     mov esi,ebp
     rep movsd
-    xor eax,eax
-    ret
-.dommxcopy
-    mov ecx,32
-    xor ebx,ebx
-    mov edi,esi
-    mov esi,ebp
-.mmxloop2
-    movq mm0,[esi]
-    movq mm1,[esi+8]
-    movq [edi],mm0
-    movq [edi+8],mm1
-    add esi,16
-    add edi,16
-    dec ecx
-    jnz .mmxloop2
-    emms
     xor eax,eax
     ret
 .backcopy
@@ -2045,23 +1976,7 @@ NEWSYM clearback16t
     mov ax,[pal16b]
     shl eax,16
     mov ax,[pal16b]
-    cmp byte[MMXSupport],1
-    je .dommxclear
     rep stosd
-    xor eax,eax
-    ret
-.dommxclear
-    mov [mmxtempdat],eax
-    mov [mmxtempdat+4],eax
-    mov ecx,32
-    movq mm0,[mmxtempdat]
-.mmxloop
-    movq [edi],mm0
-    movq [edi+8],mm0
-    add edi,16
-    dec ecx
-    jnz .mmxloop
-    emms
     xor eax,eax
     ret
 

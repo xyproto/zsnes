@@ -357,7 +357,6 @@ void GUIRestoreVars()
     CheckValueBounds(&GUIComboGameSpec, 0, 1, 0, UB);
     CheckValueBounds(&GameSpecificInput, 0, 1, 0, UB);
 
-    CheckValueBounds(&AllowMMX, 0, 1, 1, UB);
 #ifdef __WIN32__
     CheckValueBounds(&PauseFocusChange, 0, 1, 0, UB);
     CheckValueBounds(&HighPriority, 0, 1, 0, UB);

@@ -168,7 +168,6 @@ static void display_help()
     put_line("  -ml #   Define movie dump length in amount of frames (use with -md)");
     put_line("  -n #    Enable scanlines (when available)");
     put_line("             0 = None, 1 = Full, 2 = 25%, 3 = 50%");
-    put_line("  -o      Disable MMX support");
     put_line("  -p #    Percentage of instructions to execute [50..150]");
     put_line("  -r #    Set sound sampling rate:");
     put_line("             0 = 8000Hz  1 = 11025Hz 2 = 22050Hz 3 = 44100Hz");
@@ -418,14 +417,13 @@ struct backup_cmdline_vars saved_cmdline_vars;
 #define BACKUP_HELP_SDL(func)
 #endif
 
-#define BACKUP_HELP(func)                     \
-    func(guioff)                              \
-        func(per2exec)                        \
-            func(HacksDisable)                \
-                func(AllowMMX)                \
-                    BACKUP_HELP_DOS(func)     \
-                        BACKUP_HELP_WIN(func) \
-                            BACKUP_HELP_SDL(func)
+#define BACKUP_HELP(func)                 \
+    func(guioff)                          \
+        func(per2exec)                    \
+            func(HacksDisable)            \
+                BACKUP_HELP_DOS(func)     \
+                    BACKUP_HELP_WIN(func) \
+                        BACKUP_HELP_SDL(func)
 
 #define BACKUP_VAR(var) saved_cmdline_vars._##var = var;
 static void backup_all_vars() {
@@ -629,10 +627,6 @@ static void handle_params(int argc, char* argv[])
                         puts("Scanlines must be a value 0 to 3!");
                         zexit_error();
                     }
-                    break;
-
-                case 'o': // Disable MMX support
-                    AllowMMX = 0;
                     break;
 
                 case 'p': // Percentage of instructions to execute

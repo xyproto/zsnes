@@ -884,8 +884,6 @@ static void DisplayGUIOptionClick(s4 const eax, s4 const edx)
     GUIPTabClick(eax, edx, 40, 74, 2, GUIOptionTabs, (s4*)0);
 
     if (GUIOptionTabs[0] == 1) { // Basic
-        if (ShowMMXSupport == 1)
-            GUIClickCButton(eax, edx, 11, 31, &MMXSupport);
         GUIClickCButton(eax, edx, 11, 41, &Show224Lines);
         GUIClickCButton(eax, edx, 11, 71, &newengen);
         GUIClickCButton(eax, edx, 11, 81, &bgfixer);
@@ -1267,14 +1265,11 @@ static void DisplayGUISoundClick(void)
     GUIPButtonHole(eax, edx, 11, 157, &SoundInterpType, 0);
     GUIPButtonHole(eax, edx, 11, 167, &SoundInterpType, 1);
     GUIPButtonHole(eax, edx, 11, 177, &SoundInterpType, 2);
-    if (MMXSupport != 0)
-        GUIPButtonHole(eax, edx, 11, 187, &SoundInterpType, 3);
+    GUIPButtonHole(eax, edx, 11, 187, &SoundInterpType, 3);
 
     GUIPButtonHole(eax, edx, 111, 157, &LowPassFilterType, 0);
     GUIPButtonHole(eax, edx, 111, 167, &LowPassFilterType, 1);
     GUIPButtonHole(eax, edx, 111, 177, &LowPassFilterType, 2);
-    if (MMXSupport != 0)
-        GUIPButtonHole(eax, edx, 111, 187, &LowPassFilterType, 3);
 
     if (GUIClickArea(eax, edx, 15, 101, 69, 109)) {
         static u1 const sampratenext[] = { 1, 4, 5, 6, 2, 3, 0, 0 };

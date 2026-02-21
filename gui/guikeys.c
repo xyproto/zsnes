@@ -353,8 +353,6 @@ static void GUIOptionKeys(char dh)
     }
     dh = ToUpperASM(dh);
     if (GUIOptionTabs[0] == 1) { // Basic
-        if (ShowMMXSupport == 1)
-            GUIKeyCheckbox(&MMXSupport, 'M', dh);
         GUIKeyCheckbox(&Show224Lines, 'L', dh);
         GUIKeyCheckbox(&newengen, 'N', dh);
         GUIKeyCheckbox(&bgfixer, 'A', dh);
@@ -685,14 +683,11 @@ static void GUISoundKeys(char dh)
     GUIKeyButtonHole(&SoundInterpType, 0, 'N', dh);
     GUIKeyButtonHole(&SoundInterpType, 1, 'G', dh);
     GUIKeyButtonHole(&SoundInterpType, 2, 'C', dh);
-    if (MMXSupport != 0)
-        GUIKeyButtonHole(&SoundInterpType, 3, '8', dh);
+    GUIKeyButtonHole(&SoundInterpType, 3, '8', dh);
 
     GUIKeyButtonHole(&LowPassFilterType, 0, 'O', dh);
     GUIKeyButtonHole(&LowPassFilterType, 1, 'I', dh);
     GUIKeyButtonHole(&LowPassFilterType, 2, 'Y', dh);
-    if (MMXSupport != 0)
-        GUIKeyButtonHole(&LowPassFilterType, 3, 'H', dh);
 }
 
 static u1 digit2num(char const d)

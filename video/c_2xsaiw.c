@@ -1,7 +1,7 @@
 #include "c_2xsaiw.h"
 #include "2xsaiw.h"
 
-u4 Init_2xSaIMMX(u4 const format)
+u4 Init_2xSaI(u4 const format)
 {
     u4 full;
     u4 color;

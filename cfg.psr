@@ -45,11 +45,10 @@ GameSpecificInput db 0
 @  ----
 
 @
-@ Allow MMX Support (0 = No, 1 = YES)
-@ Disable this only if you actually do NOT have a processor that supports MMX.
+@ Allow enhanced filter support (0 = No, 1 = YES)
+@ Disable this only if you actually do NOT have a processor supporting enhanced filter.
 @ Disabling this option will prevent you from using some of the more advanced
 @ video/sound filters.
-AllowMMX db 1
 
 @
 @ Show 224 Lines (0 = No, 1 = YES)
@@ -249,7 +248,7 @@ NTSCWarp sb 0
 @
 @ Enable Kreed's 2x Filters (0 = NONE, 1 = 2xSaI, 2 = Super Eagle, 3 = Super 2xSaI)
 @ These are Kreed's various 2x filters. They do not exhibit the same level of
-@ blurring than interpolation/bilinear. MMX support is required.
+@ blurring than interpolation/bilinear. enhanced filter support is required.
 @ This is disabled when other filters are used.
 En2xSaI db 0
 
@@ -257,7 +256,7 @@ En2xSaI db 0
 @ Use HQ*x Filter (0 = NO, 1 = Yes)
 @ This is a filter MaxSt has created. These are very CPU intensive filters that
 @ do very awesome blending to remove the pixelation.
-@ This is disabled when other filters are used. MMX support is required.
+@ This is disabled when other filters are used. enhanced filter support is required.
 hqFilter db 0
 @ Set HQ*x level [2..4]
 @ Recommended min resolutions

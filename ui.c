@@ -304,7 +304,7 @@ void zstart()
 {
     unsigned int ptr;
 
-    MMXCheck();
+    CPUFeatureCheck();
     StartUp();
 
 #ifdef __UNIXSDL__

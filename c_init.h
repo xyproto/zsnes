@@ -6,7 +6,7 @@
 void init(void);
 void ReadInputDevice(void);
 void DosExit(void);
-void MMXCheck(void);
+void CPUFeatureCheck(void);
 void outofmemfix(void);
 void idledetectspc(void);
 
@@ -14,7 +14,6 @@ void idledetectspc(void);
 void printhex(u2 ax);
 
 extern u1 ComboCounter;
-extern u1 MMXSupport;
 extern u1 ReturnFromSPCStall;
 extern u1 SPCStallSetting;
 extern u1 WhichSW;

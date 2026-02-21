@@ -34,9 +34,7 @@
 #include "makevid.h"
 #include "newgfx16.h"
 
-#define MMX_ASM(...) ((void)0)
-
-enum { MMX_ENABLED = 0 };
+#define INLINE_ASM(...) ((void)0)
 
 #ifdef __WIN32__
 #include "../c_intrf.h"
@@ -60,7 +58,7 @@ static void HighResProc(u2** psrc, u1** pdst, u1* ebx)
         }
         do {
             if (*ebx & 3) {
-                if (!MMX_ENABLED) {
+                if (1) {
                     do {
                         *(u4*)dst = src[75036 * 2] << 16 | *src;
                         src += 1;
@@ -121,7 +119,7 @@ static void HighResProc(u2** psrc, u1** pdst, u1* ebx)
                     u1* eax = spritetablea + 512 * 256;
                     u4 ecx = 64;
                     do {
-                        MMX_ASM(
+                        INLINE_ASM(
                             "movq       (%1), %%mm0\n\t"
                             "movq 300144(%1), %%mm1\n\t"
                             "movq %%mm0, %%mm2\n\t"
@@ -150,7 +148,7 @@ static void HighResProc(u2** psrc, u1** pdst, u1* ebx)
                             dst += AddEndBytes;
                             u8 mm4 = *(u8*)HalfTrans;
                             do {
-                                MMX_ASM(
+                                INLINE_ASM(
                                     "movq   (%0), %%mm0\n\t"
                                     "movq  8(%0), %%mm1\n\t"
                                     "movq 16(%0), %%mm2\n\t"
@@ -180,7 +178,7 @@ static void HighResProc(u2** psrc, u1** pdst, u1* ebx)
                             dst += AddEndBytes;
                             u8 mm4 = *(u8*)HalfTransC;
                             do {
-                                MMX_ASM(
+                                INLINE_ASM(
                                     "movq  (%0), %%mm0\n\t"
                                     "movq 8(%0), %%mm1\n\t"
                                     "pand %2, %%mm0\n\t"
@@ -212,7 +210,7 @@ static void HighResProc(u2** psrc, u1** pdst, u1* ebx)
                                 src -= 256;
                                 u8 mm4 = *(u8*)HalfTrans;
                                 do {
-                                    MMX_ASM(
+                                    INLINE_ASM(
                                         "movq    576(%1), %%mm0\n\t"
                                         "movq 300720(%1), %%mm1\n\t"
                                         "movq %%mm0, %%mm2\n\t"
@@ -242,7 +240,7 @@ static void HighResProc(u2** psrc, u1** pdst, u1* ebx)
                                 u1* eax = spritetablea + 512 * 256;
                                 u4 ecx = 32;
                                 do {
-                                    MMX_ASM(
+                                    INLINE_ASM(
                                         "movq   (%0), %%mm0\n\t"
                                         "movq %%mm0,   (%1)\n\t"
                                         "movq  8(%0), %%mm1\n\t"
@@ -272,7 +270,7 @@ static void HighResProc(u2** psrc, u1** pdst, u1* ebx)
         } while (scanlines != 0);
         if (!(cfield & 1))
             dst += NumBytesPerLine;
-    } else if (!MMX_ENABLED) {
+    } else if (1) {
         do {
             *(u4*)dst = *src * 0x00010001;
             src += 1;
@@ -292,7 +290,7 @@ static void HighResProc(u2** psrc, u1** pdst, u1* ebx)
         {
             u4 ecx = 64;
             do {
-                MMX_ASM(
+                INLINE_ASM(
                     "movq (%0), %%mm0\n\t"
                     "movq %%mm0, %%mm1\n\t"
                     "punpcklwd %%mm1, %%mm0\n\t"
@@ -310,7 +308,7 @@ static void HighResProc(u2** psrc, u1** pdst, u1* ebx)
         {
             u4 ecx = 64;
             do {
-                MMX_ASM(
+                INLINE_ASM(
                     "movq (%0), %%mm0\n\t"
                     "movq %%mm0, %%mm1\n\t"
                     "punpcklwd %%mm1, %%mm0\n\t"
@@ -401,10 +399,10 @@ static void Process2xSaIwin(u2* src, u1* dst)
             }
         }
     }
-    MMX_ASM("emms"); // XXX necessary?
+    INLINE_ASM("emms"); // XXX necessary?
 }
 
-static void MMXInterpolwin(u2* esi, u1* edi, u1 const dl)
+static void InterpolWin(u2* esi, u1* edi, u1 const dl)
 {
     u1* ebx = SelectTile();
     u8 mm2 = *(u8*)HalfTransC;
@@ -426,7 +424,7 @@ static void MMXInterpolwin(u2* esi, u1* edi, u1 const dl)
                 mm2 = *(u8*)HalfTrans;
             } else {
                 do {
-                    MMX_ASM(
+                    INLINE_ASM(
                         "movq  (%0), %%mm0\n\t"
                         "movq %%mm0, %%mm4\n\t"
                         "movq 2(%0), %%mm1\n\t"
@@ -476,7 +474,7 @@ static void MMXInterpolwin(u2* esi, u1* edi, u1 const dl)
                 {
                     u4 ecx = 64;
                     do {
-                        MMX_ASM(
+                        INLINE_ASM(
                             "movq  (%1), %%mm0\n\t"
                             "movq %%mm0, %%mm3\n\t"
                             "movq %%mm0, %%mm4\n\t"
@@ -508,7 +506,7 @@ static void MMXInterpolwin(u2* esi, u1* edi, u1 const dl)
                 {
                     u4 ecx = 64;
                     do {
-                        MMX_ASM(
+                        INLINE_ASM(
                             "movq  (%0), %%mm0\n\t"
                             "movq 8(%0), %%mm1\n\t"
                             "pand %2, %%mm0\n\t"
@@ -557,7 +555,7 @@ static void MMXInterpolwin(u2* esi, u1* edi, u1 const dl)
                 {
                     u4 ecx = 64;
                     do {
-                        MMX_ASM(
+                        INLINE_ASM(
                             "movq  (%1), %%mm0\n\t"
                             "movq %%mm0, %%mm4\n\t"
                             "movq 2(%1), %%mm1\n\t"
@@ -585,7 +583,7 @@ static void MMXInterpolwin(u2* esi, u1* edi, u1 const dl)
                 {
                     u4 ecx = 64;
                     do {
-                        MMX_ASM(
+                        INLINE_ASM(
                             "movq  (%0), %%mm0\n\t"
                             "movq 8(%0), %%mm1\n\t"
                             "pand %2, %%mm0\n\t"
@@ -615,7 +613,7 @@ static void MMXInterpolwin(u2* esi, u1* edi, u1 const dl)
         u1* edx = spritetablea + 512 * 256;
         u4 ecx = 64;
         do {
-            MMX_ASM(
+            INLINE_ASM(
                 "movq  (%1), %%mm0\n\t"
                 "movq %%mm0, %%mm3\n\t"
                 "movq %%mm0, %%mm4\n\t"
@@ -660,7 +658,7 @@ static void MMXInterpolwin(u2* esi, u1* edi, u1 const dl)
                     u4 ecx = 64;
                     // Process next line
                     do {
-                        MMX_ASM(
+                        INLINE_ASM(
                             "movq  (%1), %%mm0\n\t"
                             "movq %%mm0, %%mm3\n\t"
                             "movq %%mm0, %%mm4\n\t"
@@ -713,7 +711,7 @@ static void MMXInterpolwin(u2* esi, u1* edi, u1 const dl)
                     u4 ecx = 64;
                     do {
                         // XXX memcpy()?
-                        MMX_ASM(
+                        INLINE_ASM(
                             "movq  (%0), %%mm0\n\t"
                             "movq 8(%0), %%mm1\n\t"
                             "movq %%mm0,  (%1)\n\t"
@@ -731,13 +729,13 @@ static void MMXInterpolwin(u2* esi, u1* edi, u1 const dl)
         break;
     }
     }
-    MMX_ASM("emms");
+    INLINE_ASM("emms");
 }
 
 static void interpolate640x480x16bwin(u2* src, u1* dst, u1 dl)
 {
-    if (MMX_ENABLED) {
-        MMXInterpolwin(src, dst, dl);
+    if (0) {
+        InterpolWin(src, dst, dl);
         return;
     }
 
@@ -988,7 +986,7 @@ void copy640x480x16bwin(void)
         return;
 
     u2 ds;
-    MMX_ASM("movw %%ds, %0;  movw %0, %%es" : "=r"(ds)); // XXX necessary?
+    INLINE_ASM("movw %%ds, %0;  movw %0, %%es" : "=r"(ds)); // XXX necessary?
     (void)ds;
 
     u2* src = (u2*)vidbuffer + 16 + 288;
@@ -1004,7 +1002,7 @@ void copy640x480x16bwin(void)
 #endif
     // Check if interpolation mode
     if (FilteredGUI != 0 || GUIOn2 != 1) {
-        if (MMX_ENABLED && En2xSaI != 0) {
+        if (0 && En2xSaI != 0) {
             Process2xSaIwin(src, dst);
             return;
         }
@@ -1021,10 +1019,10 @@ void copy640x480x16bwin(void)
             {
                 u4 ecx = 256;
                 if (*ebx < 1) {
-                    if (MMX_ENABLED) {
+                    if (0) {
                         u4 ecx = 64;
                         do {
-                            MMX_ASM(
+                            INLINE_ASM(
                                 "movq (%0), %%mm0\n\t"
                                 "movq %%mm0, %%mm1\n\t"
                                 "punpcklwd %%mm1, %%mm0\n\t"
@@ -1087,12 +1085,12 @@ void copy640x480x16bwin(void)
         u1* ebx = SelectTile();
         do {
             if (*ebx <= 1) {
-                if (MMX_ENABLED) {
+                if (0) {
                     {
                         u1* eax = spritetablea + 512 * 256;
                         u4 ecx = 64;
                         do {
-                            MMX_ASM(
+                            INLINE_ASM(
                                 "movq (%1), %%mm0\n\t"
                                 "movq %%mm0, %%mm1\n\t"
                                 "punpcklwd %%mm1, %%mm0\n\t"
@@ -1113,7 +1111,7 @@ void copy640x480x16bwin(void)
                         dst += AddEndBytes;
                         u8 const trans = *(u8*)HalfTrans;
                         do {
-                            MMX_ASM(
+                            INLINE_ASM(
                                 "movq  (%0), %%mm0\n\t"
                                 "movq 8(%0), %%mm1\n\t"
                                 "pand %2, %%mm0\n\t"
@@ -1176,12 +1174,12 @@ void copy640x480x16bwin(void)
         u1* ebx = SelectTile();
         do {
             if (*ebx <= 1) {
-                if (MMX_ENABLED) {
+                if (0) {
                     {
                         u1* eax = spritetablea + 512 * 256;
                         u4 ecx = 64;
                         do {
-                            MMX_ASM(
+                            INLINE_ASM(
                                 "movq (%1), %%mm0\n\t"
                                 "movq %%mm0, %%mm1\n\t"
                                 "punpcklwd %%mm1, %%mm0\n\t"
@@ -1202,7 +1200,7 @@ void copy640x480x16bwin(void)
                         dst += AddEndBytes;
                         u8 const trans = *(u8*)HalfTrans;
                         do {
-                            MMX_ASM(
+                            INLINE_ASM(
                                 "movq   (%0), %%mm0\n\t"
                                 "movq  8(%0), %%mm1\n\t"
                                 "movq 16(%0), %%mm2\n\t"
@@ -1265,12 +1263,12 @@ void copy640x480x16bwin(void)
         do {
             u4 ecx = 256;
             if (*ebx < 1) {
-                if (MMX_ENABLED) {
+                if (0) {
                     {
                         u1* eax = spritetablea + 512 * 256;
                         u4 ecx = 64;
                         do {
-                            MMX_ASM(
+                            INLINE_ASM(
                                 "movq (%1), %%mm0\n\t"
                                 "movq %%mm0, %%mm1\n\t"
                                 "punpcklwd %%mm1, %%mm0\n\t"
@@ -1290,7 +1288,7 @@ void copy640x480x16bwin(void)
                         u4 ecx = 32;
                         dst += AddEndBytes;
                         do {
-                            MMX_ASM(
+                            INLINE_ASM(
                                 "movq   (%0), %%mm0\n\t"
                                 "movq %%mm0,   (%1)\n\t"
                                 "movq  8(%0), %%mm1\n\t"
@@ -1360,6 +1358,6 @@ void copy640x480x16bwin(void)
     }
     }
 
-    if (MMX_ENABLED)
-        MMX_ASM("emms");
+    if (0)
+        INLINE_ASM("emms");
 }
