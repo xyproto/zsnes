@@ -34,6 +34,12 @@
 #include "makevid.h"
 #include "newgfx16.h"
 
+#if defined(__i386__) || defined(__x86_64__)
+#define MMX_ASM(...) asm volatile(__VA_ARGS__)
+#else
+#define MMX_ASM(...) ((void)0)
+#endif
+
 #ifdef __WIN32__
 #include "../c_intrf.h"
 #include "../win/winlink.h"
@@ -117,7 +123,7 @@ static void HighResProc(u2** psrc, u1** pdst, u1* ebx)
                     u1* eax = spritetablea + 512 * 256;
                     u4 ecx = 64;
                     do {
-                        asm volatile(
+                        MMX_ASM(
                             "movq       (%1), %%mm0\n\t"
                             "movq 300144(%1), %%mm1\n\t"
                             "movq %%mm0, %%mm2\n\t"
@@ -147,7 +153,7 @@ static void HighResProc(u2** psrc, u1** pdst, u1* ebx)
                             dst += AddEndBytes;
                             u8 mm4 = *(u8*)HalfTrans;
                             do {
-                                asm volatile(
+                                MMX_ASM(
                                     "movq   (%0), %%mm0\n\t"
                                     "movq  8(%0), %%mm1\n\t"
                                     "movq 16(%0), %%mm2\n\t"
@@ -178,7 +184,7 @@ static void HighResProc(u2** psrc, u1** pdst, u1* ebx)
                             dst += AddEndBytes;
                             u8 mm4 = *(u8*)HalfTransC;
                             do {
-                                asm volatile(
+                                MMX_ASM(
                                     "movq  (%0), %%mm0\n\t"
                                     "movq 8(%0), %%mm1\n\t"
                                     "pand %2, %%mm0\n\t"
@@ -211,7 +217,7 @@ static void HighResProc(u2** psrc, u1** pdst, u1* ebx)
                                 src -= 256;
                                 u8 mm4 = *(u8*)HalfTrans;
                                 do {
-                                    asm volatile(
+                                    MMX_ASM(
                                         "movq    576(%1), %%mm0\n\t"
                                         "movq 300720(%1), %%mm1\n\t"
                                         "movq %%mm0, %%mm2\n\t"
@@ -242,7 +248,7 @@ static void HighResProc(u2** psrc, u1** pdst, u1* ebx)
                                 u1* eax = spritetablea + 512 * 256;
                                 u4 ecx = 32;
                                 do {
-                                    asm volatile(
+                                    MMX_ASM(
                                         "movq   (%0), %%mm0\n\t"
                                         "movq %%mm0,   (%1)\n\t"
                                         "movq  8(%0), %%mm1\n\t"
@@ -293,7 +299,7 @@ static void HighResProc(u2** psrc, u1** pdst, u1* ebx)
         {
             u4 ecx = 64;
             do {
-                asm volatile(
+                MMX_ASM(
                     "movq (%0), %%mm0\n\t"
                     "movq %%mm0, %%mm1\n\t"
                     "punpcklwd %%mm1, %%mm0\n\t"
@@ -312,7 +318,7 @@ static void HighResProc(u2** psrc, u1** pdst, u1* ebx)
         {
             u4 ecx = 64;
             do {
-                asm volatile(
+                MMX_ASM(
                     "movq (%0), %%mm0\n\t"
                     "movq %%mm0, %%mm1\n\t"
                     "punpcklwd %%mm1, %%mm0\n\t"
@@ -404,7 +410,7 @@ static void Process2xSaIwin(u2* src, u1* dst)
             }
         }
     }
-    asm volatile("emms"); // XXX necessary?
+    MMX_ASM("emms"); // XXX necessary?
 }
 
 static void MMXInterpolwin(u2* esi, u1* edi, u1 const dl)
@@ -429,7 +435,7 @@ static void MMXInterpolwin(u2* esi, u1* edi, u1 const dl)
                 mm2 = *(u8*)HalfTrans;
             } else {
                 do {
-                    asm volatile(
+                    MMX_ASM(
                         "movq  (%0), %%mm0\n\t"
                         "movq %%mm0, %%mm4\n\t"
                         "movq 2(%0), %%mm1\n\t"
@@ -480,7 +486,7 @@ static void MMXInterpolwin(u2* esi, u1* edi, u1 const dl)
                 {
                     u4 ecx = 64;
                     do {
-                        asm volatile(
+                        MMX_ASM(
                             "movq  (%1), %%mm0\n\t"
                             "movq %%mm0, %%mm3\n\t"
                             "movq %%mm0, %%mm4\n\t"
@@ -513,7 +519,7 @@ static void MMXInterpolwin(u2* esi, u1* edi, u1 const dl)
                 {
                     u4 ecx = 64;
                     do {
-                        asm volatile(
+                        MMX_ASM(
                             "movq  (%0), %%mm0\n\t"
                             "movq 8(%0), %%mm1\n\t"
                             "pand %2, %%mm0\n\t"
@@ -563,7 +569,7 @@ static void MMXInterpolwin(u2* esi, u1* edi, u1 const dl)
                 {
                     u4 ecx = 64;
                     do {
-                        asm volatile(
+                        MMX_ASM(
                             "movq  (%1), %%mm0\n\t"
                             "movq %%mm0, %%mm4\n\t"
                             "movq 2(%1), %%mm1\n\t"
@@ -592,7 +598,7 @@ static void MMXInterpolwin(u2* esi, u1* edi, u1 const dl)
                 {
                     u4 ecx = 64;
                     do {
-                        asm volatile(
+                        MMX_ASM(
                             "movq  (%0), %%mm0\n\t"
                             "movq 8(%0), %%mm1\n\t"
                             "pand %2, %%mm0\n\t"
@@ -623,7 +629,7 @@ static void MMXInterpolwin(u2* esi, u1* edi, u1 const dl)
         u1* edx = spritetablea + 512 * 256;
         u4 ecx = 64;
         do {
-            asm volatile(
+            MMX_ASM(
                 "movq  (%1), %%mm0\n\t"
                 "movq %%mm0, %%mm3\n\t"
                 "movq %%mm0, %%mm4\n\t"
@@ -669,7 +675,7 @@ static void MMXInterpolwin(u2* esi, u1* edi, u1 const dl)
                     u4 ecx = 64;
                     // Process next line
                     do {
-                        asm volatile(
+                        MMX_ASM(
                             "movq  (%1), %%mm0\n\t"
                             "movq %%mm0, %%mm3\n\t"
                             "movq %%mm0, %%mm4\n\t"
@@ -723,7 +729,7 @@ static void MMXInterpolwin(u2* esi, u1* edi, u1 const dl)
                     u4 ecx = 64;
                     do {
                         // XXX memcpy()?
-                        asm volatile(
+                        MMX_ASM(
                             "movq  (%0), %%mm0\n\t"
                             "movq 8(%0), %%mm1\n\t"
                             "movq %%mm0,  (%1)\n\t"
@@ -742,7 +748,7 @@ static void MMXInterpolwin(u2* esi, u1* edi, u1 const dl)
         break;
     }
     }
-    asm volatile("emms");
+    MMX_ASM("emms");
 }
 
 static void interpolate640x480x16bwin(u2* src, u1* dst, u1 dl)
@@ -999,7 +1005,7 @@ void copy640x480x16bwin(void)
         return;
 
     u2 ds;
-    asm volatile("movw %%ds, %0;  movw %0, %%es"
+    MMX_ASM("movw %%ds, %0;  movw %0, %%es"
         : "=r"(ds)); // XXX necessary?
     (void)ds;
 
@@ -1036,7 +1042,7 @@ void copy640x480x16bwin(void)
                     if (MMXSupport == 1) {
                         u4 ecx = 64;
                         do {
-                            asm volatile(
+                            MMX_ASM(
                                 "movq (%0), %%mm0\n\t"
                                 "movq %%mm0, %%mm1\n\t"
                                 "punpcklwd %%mm1, %%mm0\n\t"
@@ -1105,7 +1111,7 @@ void copy640x480x16bwin(void)
                         u1* eax = spritetablea + 512 * 256;
                         u4 ecx = 64;
                         do {
-                            asm volatile(
+                            MMX_ASM(
                                 "movq (%1), %%mm0\n\t"
                                 "movq %%mm0, %%mm1\n\t"
                                 "punpcklwd %%mm1, %%mm0\n\t"
@@ -1127,7 +1133,7 @@ void copy640x480x16bwin(void)
                         dst += AddEndBytes;
                         u8 const trans = *(u8*)HalfTrans;
                         do {
-                            asm volatile(
+                            MMX_ASM(
                                 "movq  (%0), %%mm0\n\t"
                                 "movq 8(%0), %%mm1\n\t"
                                 "pand %2, %%mm0\n\t"
@@ -1196,7 +1202,7 @@ void copy640x480x16bwin(void)
                         u1* eax = spritetablea + 512 * 256;
                         u4 ecx = 64;
                         do {
-                            asm volatile(
+                            MMX_ASM(
                                 "movq (%1), %%mm0\n\t"
                                 "movq %%mm0, %%mm1\n\t"
                                 "punpcklwd %%mm1, %%mm0\n\t"
@@ -1218,7 +1224,7 @@ void copy640x480x16bwin(void)
                         dst += AddEndBytes;
                         u8 const trans = *(u8*)HalfTrans;
                         do {
-                            asm volatile(
+                            MMX_ASM(
                                 "movq   (%0), %%mm0\n\t"
                                 "movq  8(%0), %%mm1\n\t"
                                 "movq 16(%0), %%mm2\n\t"
@@ -1287,7 +1293,7 @@ void copy640x480x16bwin(void)
                         u1* eax = spritetablea + 512 * 256;
                         u4 ecx = 64;
                         do {
-                            asm volatile(
+                            MMX_ASM(
                                 "movq (%1), %%mm0\n\t"
                                 "movq %%mm0, %%mm1\n\t"
                                 "punpcklwd %%mm1, %%mm0\n\t"
@@ -1308,7 +1314,7 @@ void copy640x480x16bwin(void)
                         u4 ecx = 32;
                         dst += AddEndBytes;
                         do {
-                            asm volatile(
+                            MMX_ASM(
                                 "movq   (%0), %%mm0\n\t"
                                 "movq %%mm0,   (%1)\n\t"
                                 "movq  8(%0), %%mm1\n\t"
@@ -1380,5 +1386,5 @@ void copy640x480x16bwin(void)
     }
 
     if (MMXSupport == 1)
-        asm volatile("emms");
+        MMX_ASM("emms");
 }

@@ -147,20 +147,12 @@ static uint32_t pixel_left, pixel_above, pixel_above_left, pixel_context;
 // or you are happy with input = 0, output = 0.
 INLINE uint8_t highest_bit_position(uint8_t x)
 {
-#if defined(__GNUC__) && defined(__i386__)
-    uint16_t x2 = x;
-    __asm__ __volatile__("bsrw %0,%0"
-        : "=r"(x2)
-        : "0"(x2));
-    return (x2);
-#else
     if (x >> 4) {
         x = ((0xFFA4 >> ((x >> 4) & 0xE)) & 3) + 4;
     } else {
         x = (0xFFA4 >> (x & 0xE)) & 3;
     }
     return (x);
-#endif
 }
 
 INLINE void update_context(uint8_t con)
