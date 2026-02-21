@@ -149,6 +149,14 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v6
+      - name: Install host tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y rsync
+      - name: Stage workspace for VM sync
+        run: |
+          sudo mkdir -p /root/work
+          sudo rsync -a --delete "$GITHUB_WORKSPACE"/ /root/work/
       - name: Build in FreeBSD VM
         uses: vmactions/freebsd-vm@v1
         with:
@@ -165,6 +173,14 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v6
+      - name: Install host tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y rsync
+      - name: Stage workspace for VM sync
+        run: |
+          sudo mkdir -p /root/work
+          sudo rsync -a --delete "$GITHUB_WORKSPACE"/ /root/work/
       - name: Build in OpenBSD VM
         uses: vmactions/openbsd-vm@v1
         with:
@@ -181,6 +197,14 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v6
+      - name: Install host tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y rsync
+      - name: Stage workspace for VM sync
+        run: |
+          sudo mkdir -p /root/work
+          sudo rsync -a --delete "$GITHUB_WORKSPACE"/ /root/work/
       - name: Build in NetBSD VM
         uses: vmactions/netbsd-vm@v1
         with:
