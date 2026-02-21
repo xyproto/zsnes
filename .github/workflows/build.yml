@@ -159,12 +159,14 @@ jobs:
           sudo rsync -a --delete "$GITHUB_WORKSPACE"/ /root/work/
       - name: Build in FreeBSD VM
         uses: vmactions/freebsd-vm@v1
+        env:
+          GITHUB_WORKSPACE: /root/work
         with:
           usesh: true
           prepare: |
             pkg install -y gmake nasm pkgconf sdl2 libpng
           run: |
-            cd "$GITHUB_WORKSPACE"
+            cd "$HOME/work"
             gmake clean
             gmake ARCH=freebsd WITH_AO= WITH_PIPEWIRE=
 
@@ -183,12 +185,14 @@ jobs:
           sudo rsync -a --delete "$GITHUB_WORKSPACE"/ /root/work/
       - name: Build in OpenBSD VM
         uses: vmactions/openbsd-vm@v1
+        env:
+          GITHUB_WORKSPACE: /root/work
         with:
           usesh: true
           prepare: |
             pkg_add gmake nasm pkgconf sdl2 png
           run: |
-            cd "$GITHUB_WORKSPACE"
+            cd "$HOME/work"
             gmake clean
             gmake ARCH=openbsd WITH_AO= WITH_PIPEWIRE=
 
@@ -207,11 +211,13 @@ jobs:
           sudo rsync -a --delete "$GITHUB_WORKSPACE"/ /root/work/
       - name: Build in NetBSD VM
         uses: vmactions/netbsd-vm@v1
+        env:
+          GITHUB_WORKSPACE: /root/work
         with:
           usesh: true
           prepare: |
             /usr/sbin/pkg_add gmake nasm pkgconf SDL2 libpng
           run: |
-            cd "$GITHUB_WORKSPACE"
+            cd "$HOME/work"
             gmake clean
             gmake ARCH=netbsd WITH_AO= WITH_PIPEWIRE=
