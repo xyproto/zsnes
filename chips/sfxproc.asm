@@ -386,6 +386,7 @@ NEWSYM reg3033w       ; BRAMR Backup Ram Read only on/off (bits 1-15 unused)
     mov [SfxBRAMR],al
     ret
 NEWSYM reg3034w       ; PBR (Program Bank)
+    and al,7Fh
     mov [SfxPBR],al
     xor ebx,ebx
     mov bl,al
@@ -395,6 +396,7 @@ NEWSYM reg3034w       ; PBR (Program Bank)
 NEWSYM reg3035w       ; Unused
     ret
 NEWSYM reg3036w       ; ROMBR (Gamepak Rom Bank Register)
+    and al,7Fh
     mov [SfxROMBR],al
     xor ebx,ebx
     mov bl,al
@@ -537,5 +539,4 @@ NEWSYM sfxaccessbankw16d
     mov [ebx+ecx+65536*3],ax
     xor ebx,ebx
     ret
-
 
