@@ -23,8 +23,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "gblhdr.h"
 #include "linux/safelib.h"
 #include <pwd.h>
-#else
-#ifdef __WIN32__
+#elif defined(__WIN32__)
 #include "win/confloc.h"
 #include "win/lib.h"
 #include "win/safelib.h"
@@ -33,13 +32,12 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <shlobj.h>
 #include <windows.h>
 #else
-#include "dos/lib.h"
-#include <unistd.h>
+#error "Unsupported platform: DOS/BeOS/Amiga ports have been removed"
 #endif
+
 #include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
-#endif
 #include <errno.h>
 
 #include "cfg.h"
@@ -101,9 +99,7 @@ void cfgpath_ensure(const char* launch_command)
     }
 }
 
-#else
-
-#ifdef __WIN32__
+#elif defined(__WIN32__)
 
 #ifndef KF_FLAG_CREATE
 #define KF_FLAG_CREATE (0x00008000)
@@ -177,12 +173,6 @@ static void user_specifc_path()
         }
     }
 }
-#else
-static void user_specifc_path()
-{
-}
-#endif
-
 void cfgpath_ensure(const char* launch_command)
 {
     ZCfgPath = malloc(PATH_SIZE);
@@ -213,7 +203,6 @@ void cfgpath_ensure(const char* launch_command)
         ZCfgPath = ZStartPath;
     }
 }
-
 #endif
 
 void SaveGameSpecificInput();

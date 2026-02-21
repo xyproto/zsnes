@@ -34,11 +34,9 @@
 #include "makevid.h"
 #include "newgfx16.h"
 
-#if defined(__i386__) || defined(__x86_64__)
-#define MMX_ASM(...) asm volatile(__VA_ARGS__)
-#else
 #define MMX_ASM(...) ((void)0)
-#endif
+
+enum { MMX_ENABLED = 0 };
 
 #ifdef __WIN32__
 #include "../c_intrf.h"
@@ -62,7 +60,7 @@ static void HighResProc(u2** psrc, u1** pdst, u1* ebx)
         }
         do {
             if (*ebx & 3) {
-                if (MMXSupport != 1) {
+                if (!MMX_ENABLED) {
                     do {
                         *(u4*)dst = src[75036 * 2] << 16 | *src;
                         src += 1;
@@ -279,7 +277,7 @@ static void HighResProc(u2** psrc, u1** pdst, u1* ebx)
         } while (scanlines != 0);
         if (!(cfield & 1))
             dst += NumBytesPerLine;
-    } else if (MMXSupport != 1) {
+    } else if (!MMX_ENABLED) {
         do {
             *(u4*)dst = *src * 0x00010001;
             src += 1;
@@ -753,7 +751,7 @@ static void MMXInterpolwin(u2* esi, u1* edi, u1 const dl)
 
 static void interpolate640x480x16bwin(u2* src, u1* dst, u1 dl)
 {
-    if (MMXSupport == 1) {
+    if (MMX_ENABLED) {
         MMXInterpolwin(src, dst, dl);
         return;
     }
@@ -1022,7 +1020,7 @@ void copy640x480x16bwin(void)
 #endif
     // Check if interpolation mode
     if (FilteredGUI != 0 || GUIOn2 != 1) {
-        if (MMXSupport == 1 && En2xSaI != 0) {
+        if (MMX_ENABLED && En2xSaI != 0) {
             Process2xSaIwin(src, dst);
             return;
         }
@@ -1039,7 +1037,7 @@ void copy640x480x16bwin(void)
             {
                 u4 ecx = 256;
                 if (*ebx < 1) {
-                    if (MMXSupport == 1) {
+                    if (MMX_ENABLED) {
                         u4 ecx = 64;
                         do {
                             MMX_ASM(
@@ -1106,7 +1104,7 @@ void copy640x480x16bwin(void)
         u1* ebx = SelectTile();
         do {
             if (*ebx <= 1) {
-                if (MMXSupport == 1) {
+                if (MMX_ENABLED) {
                     {
                         u1* eax = spritetablea + 512 * 256;
                         u4 ecx = 64;
@@ -1197,7 +1195,7 @@ void copy640x480x16bwin(void)
         u1* ebx = SelectTile();
         do {
             if (*ebx <= 1) {
-                if (MMXSupport == 1) {
+                if (MMX_ENABLED) {
                     {
                         u1* eax = spritetablea + 512 * 256;
                         u4 ecx = 64;
@@ -1288,7 +1286,7 @@ void copy640x480x16bwin(void)
         do {
             u4 ecx = 256;
             if (*ebx < 1) {
-                if (MMXSupport == 1) {
+                if (MMX_ENABLED) {
                     {
                         u1* eax = spritetablea + 512 * 256;
                         u4 ecx = 64;
@@ -1385,6 +1383,6 @@ void copy640x480x16bwin(void)
     }
     }
 
-    if (MMXSupport == 1)
+    if (MMX_ENABLED)
         MMX_ASM("emms");
 }
