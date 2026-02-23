@@ -91,7 +91,7 @@ void switchtovirq(u4* const pedx, u1** const pesi)
 		xs = cx;
 
 		u1 const bl = xirqb;
-		u2 const ax = SfxSCMR & 0x00000010 ? 0x010C /* SFX NMI */ : irqv;
+		u2 const ax = irqv;
 		xpb = bl;
 		xpc = ax;
 		u1* const esi = ax & 0x8000 ? snesmmap[bl] : snesmap2[bl];

@@ -354,7 +354,7 @@ void UpdatePORSCMR(void)
 
     u4 const eax_ = (SfxPOR & 0x0F) << 2 | SfxSCMR & 0x03;
     u4 const ebx = PLOTJmpb[eax_];
-    u4 const eax = PLOTJmpb[eax_];
+    u4 const eax = PLOTJmpa[eax_];
     FxTable[0x4C] = eax;
     FxTableb[0x4C] = eax;
     FxTablec[0x4C] = eax;
@@ -382,5 +382,8 @@ void StartSFX(void)
     if (SfxSCMR & ((SfxPBR & 0x7F) < 0x70 ? /* noram */ 0x10 : /* ram */ 0x08)) {
         NumberOfOpcodes = NumberOfOpcodes2;
         asm_call(MainLoop);
+        // Deliver SuperFX IRQ to 65816 CPU (like snes9x CPU.IRQExternal)
+        if ((SfxSFR & 0x8020) == 0x8000) // IRQ set (bit 15), Go cleared (bit 5)
+            doirqnext = 1;
     }
 }

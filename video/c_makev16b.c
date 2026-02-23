@@ -390,21 +390,21 @@ static void drawsprites16bwinon(u1 cl)
         u1 const ch = esi->pal;
         u1* const esi_ = esi->obj;
         if (esi->status & 0x20) { // flip x
-            if (esi_[7] & 0x0F && winspdata[ebx - 8 - 16] == 0)
+            if (esi_[7] & 0x0F && winspdata[ebx - 8 + 16] == 0)
                 edi[ebx - 8] = pal16b[(esi_[7] + ch) & 0xFF];
-            if (esi_[6] & 0x0F && winspdata[ebx - 7 - 16] == 0)
+            if (esi_[6] & 0x0F && winspdata[ebx - 7 + 16] == 0)
                 edi[ebx - 7] = pal16b[(esi_[6] + ch) & 0xFF];
-            if (esi_[5] & 0x0F && winspdata[ebx - 6 - 16] == 0)
+            if (esi_[5] & 0x0F && winspdata[ebx - 6 + 16] == 0)
                 edi[ebx - 6] = pal16b[(esi_[5] + ch) & 0xFF];
-            if (esi_[4] & 0x0F && winspdata[ebx - 5 - 16] == 0)
+            if (esi_[4] & 0x0F && winspdata[ebx - 5 + 16] == 0)
                 edi[ebx - 5] = pal16b[(esi_[4] + ch) & 0xFF];
-            if (esi_[3] & 0x0F && winspdata[ebx - 4 - 16] == 0)
+            if (esi_[3] & 0x0F && winspdata[ebx - 4 + 16] == 0)
                 edi[ebx - 4] = pal16b[(esi_[3] + ch) & 0xFF];
-            if (esi_[2] & 0x0F && winspdata[ebx - 3 - 16] == 0)
+            if (esi_[2] & 0x0F && winspdata[ebx - 3 + 16] == 0)
                 edi[ebx - 3] = pal16b[(esi_[2] + ch) & 0xFF];
-            if (esi_[1] & 0x0F && winspdata[ebx - 2 - 16] == 0)
+            if (esi_[1] & 0x0F && winspdata[ebx - 2 + 16] == 0)
                 edi[ebx - 2] = pal16b[(esi_[1] + ch) & 0xFF];
-            if (esi_[0] & 0x0F && winspdata[ebx - 1 - 16] == 0)
+            if (esi_[0] & 0x0F && winspdata[ebx - 1 + 16] == 0)
                 edi[ebx - 1] = pal16b[(esi_[0] + ch) & 0xFF];
         } else {
             if (esi_[0] & 0x0F && winspdata[ebx - 8 + 16] == 0)

@@ -22,6 +22,7 @@
 EXTSYM FxTable,FxTableb,FxTablec,FxTabled,SfxMemTable,flagnz,fxbit01,fxbit23
 EXTSYM fxxand,sfx128lineloc,sfx160lineloc,sfx192lineloc,sfxobjlineloc
 EXTSYM sfxramdata,fxbit45,fxbit67,SFXProc,ChangeOps,PLOTJmpa,PLOTJmpb
+EXTSYM SFXCounter
 
 %include "chips/fxemu2.mac"
 
@@ -141,11 +142,15 @@ NEWSYM FxOp00     ; STOP   stop GSU execution (and maybe generate an IRQ)     ; 
    jnz .NoIRQ
    or dword[SfxSFR],08000h         ; Set IRQ Flag
 .NoIRQ
+   mov dword[SfxCacheActive],0     ; Flush cache on STOP (match snes9x)
    CLRFLAGS
    inc ebp
+   cmp byte[SFXCounter],1
+   je .skipChangeOps
    mov eax,[NumberOfOpcodes]
    add eax,0F0000000h
    add [ChangeOps],eax
+.skipChangeOps
    mov dword[NumberOfOpcodes],1
    mov dword[SFXProc],0
    xor cl,cl
@@ -163,9 +168,10 @@ NEWSYM FxOp02      ; CACHE  reintialize GSU cache
    sub eax,[SfxCPB]
    and eax,0FFF0h
    cmp dword[SfxCBR],eax
-   je .SkipUpdate
+   jne .DoUpdate
    cmp byte[SfxCacheActive],1
    je .SkipUpdate
+.DoUpdate
    mov [SfxCBR],eax
    mov dword[SfxCacheActive],1
    call FlushCache

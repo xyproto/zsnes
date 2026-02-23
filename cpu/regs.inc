@@ -315,7 +315,18 @@ NEWSYM reg2137r
     xor ebx,ebx
     mov bl,[cycpl]
     sub bl,dh
+    mov ecx,ebx
     add bx,bx
+    ; Apply sub-dot correction only near the raster-effect window
+    ; to avoid changing values that init code depends on
+    cmp bx,86
+    jb .store_latch
+    cmp bx,98
+    ja .store_latch
+    lea ecx,[ecx+ecx*2]
+    shr ecx,5
+    add bx,cx
+.store_latch:
     mov [latchx],bx
     mov bx,[curypos]
     mov [latchy],bx
@@ -345,7 +356,16 @@ debblah:
     xor ebx,ebx
     mov bl,[cycpl]
     sub bl,[pdh]
+    mov ecx,ebx
     add bx,bx
+    cmp bx,86
+    jb .store_latch2
+    cmp bx,98
+    ja .store_latch2
+    lea ecx,[ecx+ecx*2]
+    shr ecx,5
+    add bx,cx
+.store_latch2:
     mov [latchx],bx
     mov bx,[curypos]
     mov [latchy],bx

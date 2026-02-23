@@ -26,6 +26,7 @@ EXTSYM SfxR7,SfxR8,SfxR9,SfxRAMBR,SfxRAMMem,SfxROMBR,SfxSCBR,SfxSCMR,SfxSFR
 EXTSYM SfxSignZero,SfxnRamBanks,sfxramdata,ChangeOps
 EXTSYM SfxPOR,sfxclineloc,UpdatePORSCMR,UpdateCLSR,UpdateSCBRCOLR,SfxAC
 EXTSYM sfx128lineloc,sfx160lineloc,sfx192lineloc,sfxobjlineloc,SFXProc
+EXTSYM doirqnext
 
 %macro AssembleSFXFlags 0
     and word[SfxSFR],8F60h
@@ -172,22 +173,9 @@ NEWSYM reg3030r
     mov al,[SfxSFR]
     ret
 NEWSYM reg3031r
-    cmp byte[SfxAC],1
-    je .alwaysclear
-    cmp dword[ChangeOps],-350*240
-    jl .noclear
-.alwaysclear
-    and byte[SfxSFR+1],07fh        ; clear IRQ flag
-    jmp .cleared
-.noclear
-    cmp dword[ChangeOps],-350*240*4
-    jge .clear
-    mov dword[ChangeOps],-350*240*4
-    jmp .cleared
-.clear
-    add dword[ChangeOps],350*240
-.cleared
-    mov al,[SfxSFR+1]
+    mov al,[SfxSFR+1]              ; Read value first (game sees IRQ flag)
+    and byte[SfxSFR+1],07fh        ; Then clear IRQ flag (match snes9x/bsnes)
+    mov byte[doirqnext],0          ; Clear pending IRQ delivery (match snes9x CPU.IRQExternal=FALSE)
     ret
 SECTION .bss
 .test resb 1
@@ -365,7 +353,6 @@ NEWSYM reg301Fw
     pop edx
     inc word[SfxR15]
     or byte[SfxSFR],20h
-    or dword[SfxSFR],08000h         ; Set IRQ Flag
     mov dword[SFXProc],1
     ret
 
@@ -411,7 +398,6 @@ NEWSYM reg3038w       ; SCBR (Screen Bank Register)
     ccallv UpdateSCBRCOLR
     ret
 NEWSYM reg3039w       ; CLSR (Clock Speed Register)
-    and al,0FEh
     mov [SfxCLSR],al
     ccallv UpdateCLSR
     ret

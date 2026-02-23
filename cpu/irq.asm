@@ -222,10 +222,6 @@ NEWSYM switchtovirqret
     mov [xpb],bl
     xor eax,eax
     mov ax,[irqv]
-    test byte[SfxSCMR],10h
-    jz .nosfxnmi
-    mov ax,010Ch
-.nosfxnmi
     mov [xpc],ax
     and dl,11110011b
     or dl,00000100b
@@ -284,10 +280,6 @@ NEWSYM switchtovirqdeb
     mov [xpb],bl
     xor eax,eax
     mov ax,[irqv]
-    test byte[SfxSCMR],10h
-    jz .nosfxnmi
-    mov ax,010Ch
-.nosfxnmi
     mov [xpc],ax
     and dl,11110011b
     or dl,00000100b
