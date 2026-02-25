@@ -58,7 +58,6 @@ NEWSYM cacheregr
     ret
 
 NEWSYM cacheregw
-    mov al, dl
     or byte[cachewarning],2
     ret
 
@@ -262,131 +261,99 @@ NEWSYM reg303Fr       ; CBR (Cache Base Register), upper byte
 ; SFX Write Registers
 
 NEWSYM reg3000w
-    mov al, dl
     mov [SfxR0],al
     ret
 NEWSYM reg3001w
-    mov al, dl
     mov [SfxR0+1],al
     ret
 NEWSYM reg3002w
-    mov al, dl
     mov [SfxR1],al
     ret
 NEWSYM reg3003w
-    mov al, dl
     mov [SfxR1+1],al
     ret
 NEWSYM reg3004w
-    mov al, dl
     mov [SfxR2],al
     ret
 NEWSYM reg3005w
-    mov al, dl
     mov [SfxR2+1],al
     ret
 NEWSYM reg3006w
-    mov al, dl
     mov [SfxR3],al
     ret
 NEWSYM reg3007w
-    mov al, dl
     mov [SfxR3+1],al
     ret
 NEWSYM reg3008w
-    mov al, dl
     mov [SfxR4],al
     ret
 NEWSYM reg3009w
-    mov al, dl
     mov [SfxR4+1],al
     ret
 NEWSYM reg300Aw
-    mov al, dl
     mov [SfxR5],al
     ret
 NEWSYM reg300Bw
-    mov al, dl
     mov [SfxR5+1],al
     ret
 NEWSYM reg300Cw
-    mov al, dl
     mov [SfxR6],al
     ret
 NEWSYM reg300Dw
-    mov al, dl
     mov [SfxR6+1],al
     ret
 NEWSYM reg300Ew
-    mov al, dl
     mov [SfxR7],al
     ret
 NEWSYM reg300Fw
-    mov al, dl
     mov [SfxR7+1],al
     ret
 NEWSYM reg3010w
-    mov al, dl
     mov [SfxR8],al
     ret
 NEWSYM reg3011w
-    mov al, dl
     mov [SfxR8+1],al
     ret
 NEWSYM reg3012w
-    mov al, dl
     mov [SfxR9],al
     ret
 NEWSYM reg3013w
-    mov al, dl
     mov [SfxR9+1],al
     ret
 NEWSYM reg3014w
-    mov al, dl
     mov [SfxR10],al
     ret
 NEWSYM reg3015w
-    mov al, dl
     mov [SfxR10+1],al
     ret
 NEWSYM reg3016w
-    mov al, dl
     mov [SfxR11],al
     ret
 NEWSYM reg3017w
-    mov al, dl
     mov [SfxR11+1],al
     ret
 NEWSYM reg3018w
-    mov al, dl
     mov [SfxR12],al
     ret
 NEWSYM reg3019w
-    mov al, dl
     mov [SfxR12+1],al
     ret
 NEWSYM reg301Aw
-    mov al, dl
     mov [SfxR13],al
     ret
 NEWSYM reg301Bw
-    mov al, dl
     mov [SfxR13+1],al
     ret
 NEWSYM reg301Cw
-    mov al, dl
     mov [SfxR14],al
     ret
 NEWSYM reg301Dw
-    mov al, dl
     mov [SfxR14+1],al
     ret
 NEWSYM reg301Ew
-    mov al, dl
     mov [SfxR15],al
     ret
 NEWSYM reg301Fw
-    mov al, dl
     mov [SfxR15+1],al
     ; start execution
     push edx
@@ -405,25 +372,20 @@ NEWSYM reg301Fw
 ; Other SFX stuff
 
 NEWSYM reg3030w
-    mov al, dl
     mov [SfxSFR],al
     mov byte[SfxAC],1
     mov dh,10
     ret
 NEWSYM reg3031w
-    mov al, dl
     mov [SfxSFR+1],al
     ret
 NEWSYM reg3032w       ; Unused
-    mov al, dl
     ret
 NEWSYM reg3033w       ; BRAMR Backup Ram Read only on/off (bits 1-15 unused)
-    mov al, dl
     and al,0FEh
     mov [SfxBRAMR],al
     ret
 NEWSYM reg3034w       ; PBR (Program Bank)
-    mov al, dl
     and al,7Fh
     mov [SfxPBR],al
     xor ebx,ebx
@@ -432,10 +394,8 @@ NEWSYM reg3034w       ; PBR (Program Bank)
     mov [SfxCPB],ebx
     ret
 NEWSYM reg3035w       ; Unused
-    mov al, dl
     ret
 NEWSYM reg3036w       ; ROMBR (Gamepak Rom Bank Register)
-    mov al, dl
     and al,7Fh
     mov [SfxROMBR],al
     xor ebx,ebx
@@ -444,30 +404,24 @@ NEWSYM reg3036w       ; ROMBR (Gamepak Rom Bank Register)
     mov [SfxCROM],ebx
     ret
 NEWSYM reg3037w       ; CFGR (Control Flags Register)
-    mov al, dl
     mov [SfxCFGR],al
     ret
 NEWSYM reg3038w       ; SCBR (Screen Bank Register)
-    mov al, dl
     mov [SfxSCBR],al
     ccallv UpdateSCBRCOLR
     ret
 NEWSYM reg3039w       ; CLSR (Clock Speed Register)
-    mov al, dl
     and al,0FEh
     mov [SfxCLSR],al
     ccallv UpdateCLSR
     ret
 NEWSYM reg303Aw       ; SCMR (Screen Mode Register)
-    mov al, dl
     mov [SfxSCMR],al
     ccallv UpdatePORSCMR
     ret
 NEWSYM reg303Bw       ; VCR (Version Code Register)
-    mov al, dl
     ret
 NEWSYM reg303Cw       ; RAMBR (Ram bank register)
-    mov al, dl
     mov bl,[SfxnRamBanks]
     dec bl
     and al,bl
@@ -482,14 +436,11 @@ NEWSYM reg303Cw       ; RAMBR (Ram bank register)
     mov [SfxRAMMem],ebx
     ret
 NEWSYM reg303Dw       ; Unused
-    mov al, dl
     ret
 NEWSYM reg303Ew       ; CBR (Cache Base Register), lower byte
-    mov al, dl
     mov [SfxCBR],al
     ret
 NEWSYM reg303Fw       ; CBR (Cache Base Register), upper byte
-    mov al, dl
     mov [SfxCBR+1],al
     ret
 
@@ -500,7 +451,6 @@ NEWSYM sfxaccessbankr8
     ret
 
 NEWSYM sfxaccessbankw8
-    mov al, dl
     mov ebx,[sfxramdata]
     mov [ebx+ecx],al
     xor ebx,ebx
@@ -513,7 +463,6 @@ NEWSYM sfxaccessbankr16
     ret
 
 NEWSYM sfxaccessbankw16
-    movzx eax, dx
     mov ebx,[sfxramdata]
     mov [ebx+ecx],ax
     xor ebx,ebx
@@ -526,7 +475,6 @@ NEWSYM sfxaccessbankr8b
     ret
 
 NEWSYM sfxaccessbankw8b
-    mov al, dl
     mov ebx,[sfxramdata]
     mov [ebx+ecx+65536],al
     xor ebx,ebx
@@ -539,7 +487,6 @@ NEWSYM sfxaccessbankr16b
     ret
 
 NEWSYM sfxaccessbankw16b
-    movzx eax, dx
     mov ebx,[sfxramdata]
     mov [ebx+ecx+65536],ax
     xor ebx,ebx
@@ -552,7 +499,6 @@ NEWSYM sfxaccessbankr8c
     ret
 
 NEWSYM sfxaccessbankw8c
-    mov al, dl
     mov ebx,[sfxramdata]
     mov [ebx+ecx+65536*2],al
     xor ebx,ebx
@@ -565,7 +511,6 @@ NEWSYM sfxaccessbankr16c
     ret
 
 NEWSYM sfxaccessbankw16c
-    movzx eax, dx
     mov ebx,[sfxramdata]
     mov [ebx+ecx+65536*2],ax
     xor ebx,ebx
@@ -578,7 +523,6 @@ NEWSYM sfxaccessbankr8d
     ret
 
 NEWSYM sfxaccessbankw8d
-    mov al, dl
     mov ebx,[sfxramdata]
     mov [ebx+ecx+65536*3],al
     xor ebx,ebx
@@ -591,7 +535,6 @@ NEWSYM sfxaccessbankr16d
     ret
 
 NEWSYM sfxaccessbankw16d
-    movzx eax, dx
     mov ebx,[sfxramdata]
     mov [ebx+ecx+65536*3],ax
     xor ebx,ebx

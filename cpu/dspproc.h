@@ -21,8 +21,8 @@ extern void ProcessSoundBuffer();
 typedef s4 interpolatefunc(u4 edx, u4 ebp);
 extern interpolatefunc* DSPInterpolate;
 
-extern mr8* spcRptr[16];
-extern mw8* spcWptr[16];
+extern eop* spcRptr[16];
+extern eop* spcWptr[16];
 extern s2 BRRreadahead[4];
 extern s2* Voice0BufPtr[8]; // Ptr to Buffer Block to be played
 extern s4 DSPBuffer[320 * 4]; // The play buffer

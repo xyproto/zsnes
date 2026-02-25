@@ -156,7 +156,6 @@ NEWSYM RTC2800
     ret
 
 NEWSYM RTC2801w
-    mov al, dl
 ;    mov byte[debstop3],1
     mov dword[RTCRest],0
     mov dword[RTCPtr],0
@@ -339,16 +338,12 @@ NEWSYM %1
 %endmacro
 
 NEWSYM sa12220w
-    mov al, dl
     BankSwitch 0,0,0C0h,0
 NEWSYM sa12221w
-    mov al, dl
     BankSwitch 1,20h,0D0h,100000h
 NEWSYM sa12222w
-    mov al, dl
     BankSwitch 2,80h,0E0h,200000h
 NEWSYM sa12223w
-    mov al, dl
     BankSwitch 3,0A0h,0F0h,300000h
 
 %macro BankSwitchSDD1 2
@@ -390,20 +385,15 @@ NEWSYM sdd14807
     ret
 
 NEWSYM sdd14804w
-    mov al, dl
     BankSwitchSDD1 0,0C0h
 NEWSYM sdd14805w
-    mov al, dl
     BankSwitchSDD1 1,0D0h
 NEWSYM sdd14806w
-    mov al, dl
     BankSwitchSDD1 2,0E0h
 NEWSYM sdd14807w
-    mov al, dl
     BankSwitchSDD1 3,0F0h
 
 NEWSYM sa12200w
-    mov al, dl
     mov bl,al
     and bl,0Fh
     mov [SA1Message],bl
@@ -439,11 +429,9 @@ NEWSYM sa12200w
     ret
 
 NEWSYM sa12201w         ; IRQ Enable
-    mov al, dl
     mov [SA1IRQEnable],al
     ret
 NEWSYM sa12202w         ; IRQ Clear
-    mov al, dl
     test al,80h
     jz .noirqclear
     and byte[SA1IRQExec],0FEh
@@ -463,7 +451,6 @@ SA1QuickF sa12206w, SA1NMIV+1
 SA1QuickF sa12207w, SA1IRQV
 SA1QuickF sa12208w, SA1IRQV+1
 NEWSYM sa12209w ; IRQ Stuff
-    mov al, dl
     mov [SA1IRQData+1],al
     test al,80h
     jz .noirq
@@ -490,7 +477,6 @@ NEWSYM sa12209w ; IRQ Stuff
 SA1QuickF sa1220Aw, SA1IRQEn
 
 NEWSYM sa1220Bw         ; SA-1 IRQ Clear
-    mov al, dl
     test al,80h
     jz .noirqclear
     mov byte[SA1IRQExec+1],0
@@ -512,7 +498,6 @@ SA1QuickF sa1220Ew, SNSIRQV
 SA1QuickF sa1220Fw, SNSIRQV+1
 
 NEWSYM sa12224w ; BWRAM
-    mov al, dl
     mov bl,al
     and ebx,1Fh
     shl ebx,13
@@ -525,7 +510,6 @@ NEWSYM sa12224w ; BWRAM
 .nosnes
     ret
 NEWSYM sa12225w ; BWRAM
-    mov al, dl
     mov [BWUsed2],al
     test al,80h
     jnz .upper
@@ -572,7 +556,6 @@ NEWSYM sa12225w ; BWRAM
 ;    mov byte[debstop3],1
     ret
 NEWSYM sa12250w
-    mov al, dl
     mov [SA1ARC],al
     mov byte[SA1ARC+1],1
     test al,2
@@ -583,22 +566,18 @@ NEWSYM sa12250w
 .notcumul
     ret
 NEWSYM sa12251w
-    mov al, dl
     mov [SA1AR1],al
     mov byte[SA1ARC+1],1
     ret
 NEWSYM sa12252w
-    mov al, dl
     mov [SA1AR1+1],al
     mov byte[SA1ARC+1],1
     ret
 NEWSYM sa12253w
-    mov al, dl
     mov [SA1AR2],al
     mov byte[SA1ARC+1],1
     ret
 NEWSYM sa12254w
-    mov al, dl
     mov [SA1AR2+1],al
     mov byte[SA1ARC+1],1
     ccallv UpdateArithStuff
@@ -649,23 +628,19 @@ NEWSYM IRamRead
     ret
 
 NEWSYM IRamWrite
-    mov al, dl
     mov [IRAM+ecx-3000h],al
     ret
 NEWSYM IRamWrite2
-    mov al, dl
     mov [IRAM+ecx-3000h],al
     xor dh,dh
     ret
 
 NEWSYM sa1223Fw
-    mov al, dl
     mov [SA1Overflow+1],al
     ret
 
 ; Variable Length Data
 NEWSYM sa12258w
-    mov al, dl
     mov [VarLenBarrel+2],al
     mov bl,al
     and bl,0Fh
@@ -681,21 +656,18 @@ NEWSYM sa12258w
 .notchange
     ret
 NEWSYM sa12259w
-    mov al, dl
     mov [VarLenAddr],al
     mov [VarLenAddrB],al
     mov byte[VarLenBarrel],0
     mov byte[VarLenBarrel+1],0
     ret
 NEWSYM sa1225Aw
-    mov al, dl
     mov [VarLenAddr+1],al
     mov [VarLenAddrB+1],al
     mov byte[VarLenBarrel],0
     mov byte[VarLenBarrel+1],0
     ret
 NEWSYM sa1225Bw
-    mov al, dl
     mov [VarLenAddr+2],al
     mov [VarLenAddrB+2],al
     mov byte[VarLenBarrel],0
@@ -817,32 +789,25 @@ NEWSYM sa12305r
     ret
 
 NEWSYM sa12210w ; Timer Settings
-    mov al, dl
    mov [SA1TimerSet],al
    ret
 NEWSYM sa12211w ; Timer Clear
-    mov al, dl
    mov dword[SA1TimerVal],0
    ret
 NEWSYM sa12212w
-    mov al, dl
    mov [SA1TimerCount],al
    ret
 NEWSYM sa12213w
-    mov al, dl
    mov [SA1TimerCount+1],al
    ret
 NEWSYM sa12214w
-    mov al, dl
    mov [SA1TimerCount+2],al
    ret
 NEWSYM sa12215w
-    mov al, dl
    mov [SA1TimerCount+3],al
    ret
 
 NEWSYM sa12230w
-    mov al, dl
     test al,80h
     jnz .nodmaline
     mov dword[SA1_CC2_line],0
@@ -850,7 +815,6 @@ NEWSYM sa12230w
     mov [SA1DMAInfo],al
     ret
 NEWSYM sa12231w
-    mov al, dl
     mov [SA1DMAChar],al
     test al,80h
     jz .nodmaend
@@ -863,7 +827,6 @@ SA1QuickF sa12233w, SA1DMASource+1
 SA1QuickF sa12234w, SA1DMASource+2
 SA1QuickF sa12235w, SA1DMADest
 NEWSYM sa12236w
-    mov al, dl
     mov [SA1DMADest+1],al
     test byte[SA1DMAInfo],10h
     jnz near sa1chconv
@@ -873,7 +836,6 @@ NEWSYM sa12236w
 .noiram
     ret
 NEWSYM sa12237w
-    mov al, dl
     mov [SA1DMADest+2],al
     test byte[SA1DMAInfo],10h
     jnz .nobwram
@@ -883,11 +845,9 @@ NEWSYM sa12237w
 .nobwram
     ret
 NEWSYM sa12238w
-    mov al, dl
     mov [SA1DMACount],al
     ret
 NEWSYM sa12239w
-    mov al, dl
     mov [SA1DMACount+1],al
     ret
 
@@ -1138,40 +1098,24 @@ SECTION .bss
 SECTION .text
 
 NEWSYM sa12240w
-    mov al, dl
 NEWSYM sa12241w
-    mov al, dl
 NEWSYM sa12242w
-    mov al, dl
 NEWSYM sa12243w
-    mov al, dl
 NEWSYM sa12244w
-    mov al, dl
 NEWSYM sa12245w
-    mov al, dl
 NEWSYM sa12246w
-    mov al, dl
 NEWSYM sa12248w
-    mov al, dl
 NEWSYM sa12249w
-    mov al, dl
 NEWSYM sa1224Aw
-    mov al, dl
 NEWSYM sa1224Bw
-    mov al, dl
 NEWSYM sa1224Cw
-    mov al, dl
 NEWSYM sa1224Dw
-    mov al, dl
 NEWSYM sa1224Ew
-    mov al, dl
   mov ebx,SA1_BRF
   mov [ebx+ecx-2240h],al
   ret
 NEWSYM sa12247w
-    mov al, dl
 NEWSYM sa1224Fw
-    mov al, dl
   mov ebx,SA1_BRF
   mov [ebx+ecx-2240h],al
   test byte[SA1DMAInfo],0A0h
@@ -1183,12 +1127,10 @@ NEWSYM sa1224Fw
   ret
 
 NEWSYM dbstop
-    mov al, dl
 ;    mov byte[debstop3],1
     ret
 
 NEWSYM sdd14801w
-    mov al, dl
     cmp al,0
     jne .notzero
     ret

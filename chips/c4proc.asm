@@ -67,7 +67,6 @@ NEWSYM C4Read16b
     ret
 
 NEWSYM C4Write8b
-    mov al, dl
     RouteAccess w8
     push ecx
     sub ecx,6000h
@@ -79,7 +78,6 @@ NEWSYM C4Write8b
     ret
 
 NEWSYM C4Write16b
-    movzx eax, dx
     RouteAccess w16
     push ecx
     sub ecx,6000h
@@ -2164,7 +2162,6 @@ NEWSYM C4ReadReg
     ret
 
 NEWSYM C4WriteReg
-    mov al, dl
     add ecx,[C4Ram]
     mov [ecx],al
     sub ecx,[C4Ram]

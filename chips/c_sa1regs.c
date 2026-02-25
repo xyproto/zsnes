@@ -122,7 +122,7 @@ void initSA1regs(void)
     REGPTR(0x230E) = sa1230Er;
 
     // Set IRam, memory address 3000-37FF
-    mr8** i = &REGPTR(0x3000);
+    eop** i = &REGPTR(0x3000);
     do
         *i = IRamRead;
     while (++i != &REGPTR(0x3800));
@@ -202,7 +202,7 @@ void initSA1regsw(void)
     REGPTW(0x225A) = sa1225Aw;
     REGPTW(0x225B) = sa1225Bw;
 
-    mw8** i = &REGPTW(0x3000);
+    eop** i = &REGPTW(0x3000);
     *i++ = IRamWrite2;
     do
         *i = IRamWrite;

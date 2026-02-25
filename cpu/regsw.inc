@@ -38,7 +38,6 @@ EXTSYM sndwrit,debstop
 
 ; Screen display register
 NEWSYM reg2100w
-    mov al, dl
     mov [vidbright],al
     and byte[vidbright],0Fh
     mov [forceblnk],al
@@ -51,7 +50,6 @@ SECTION .text
 
 ; OAM size register
 NEWSYM reg2101w
-    mov al, dl
     cmp byte[prevoamptr],0FFh
     je .noskip
     cmp byte[prevoamptr],al
@@ -105,7 +103,6 @@ SECTION .text
 
 ; OAM address register
 NEWSYM reg2102w
-    mov al, dl
     mov bx,[oamaddrs]
     mov [poamaddrs],bx
     shr bx,1
@@ -132,7 +129,6 @@ NEWSYM reg2102w
 
 ; OAM address register
 NEWSYM reg2103w
-    mov al, dl
     mov bx,[oamaddrs]
     shr bx,1
     mov bh,al
@@ -165,7 +161,6 @@ NEWSYM reg2103w
 
 ; OAM data register
 NEWSYM reg2104w
-    mov al, dl
     mov byte[NextLineCache],1
     mov ebx,[oamaddr]
     cmp byte[nosprincr],1
@@ -197,7 +192,6 @@ NEWSYM reg2104w
 
 ; Screen mode register
 NEWSYM reg2105w
-    mov al, dl
     mov bl,al
     and bl,00000111b
     mov [bgmode],bl
@@ -222,7 +216,6 @@ NEWSYM reg2105w
 
 ; Screen pixelation register
 NEWSYM reg2106w
-    mov al, dl
     mov bl,al
     and bl,0Fh
     mov [mosaicon],bl
@@ -233,7 +226,6 @@ NEWSYM reg2106w
 
 ; BG1 VRAM location register
 NEWSYM reg2107w
-    mov al, dl
     xor ebx,ebx
     mov bl,al
     shr bl,2
@@ -271,7 +263,6 @@ NEWSYM reg2107w
 
 ; BG2 VRAM location register
 NEWSYM reg2108w
-    mov al, dl
     xor ebx,ebx
     mov bl,al
     shr bl,2
@@ -309,7 +300,6 @@ NEWSYM reg2108w
 
 ; BG3 VRAM location register
 NEWSYM reg2109w
-    mov al, dl
     xor ebx,ebx
     mov bl,al
     shr bl,2
@@ -347,7 +337,6 @@ NEWSYM reg2109w
 
 ; BG4 VRAM location register
 NEWSYM reg210Aw
-    mov al, dl
     xor ebx,ebx
     mov bl,al
     shr bl,2
@@ -385,7 +374,6 @@ NEWSYM reg210Aw
 
 ; BG1 & BG2 VRAM location register
 NEWSYM reg210Bw
-    mov al, dl
     xor ebx,ebx
     mov bl,al
     and bl,0Fh
@@ -399,7 +387,6 @@ NEWSYM reg210Bw
 
 ; BG3 & BG4 VRAM location register
 NEWSYM reg210Cw
-    mov al, dl
     xor ebx,ebx
     mov bl,al
     and bl,0Fh
@@ -437,7 +424,6 @@ section .text
 
 ; BG1 horizontal scroll register
 NEWSYM reg210Dw
-    mov al, dl
     UpdateScrollRegX bg1scrolx
 ;    mov bl,[m7byte]
     mov [bg1scrolx_m7],bx
@@ -446,7 +432,6 @@ NEWSYM reg210Dw
 
 ; BG1 vertical scroll register
 NEWSYM reg210Ew
-    mov al, dl
     UpdateScrollRegY bg1scroly
 ;    mov bl,[m7byte]
     mov [bg1scroly_m7],bx
@@ -455,43 +440,36 @@ NEWSYM reg210Ew
 
 ; BG2 horizontal scroll register
 NEWSYM reg210Fw
-    mov al, dl
     UpdateScrollRegX bg2scrolx
     ret
 
 ; BG2 vertical scroll register
 NEWSYM reg2110w
-    mov al, dl
     UpdateScrollRegY bg2scroly
     ret
 
 ; BG3 horizontal scroll register
 NEWSYM reg2111w
-    mov al, dl
     UpdateScrollRegX bg3scrolx
     ret
 
 ; BG3 vertical scroll register
 NEWSYM reg2112w
-    mov al, dl
     UpdateScrollRegY bg3scroly
     ret
 
 ; BG4 horizontal scroll register
 NEWSYM reg2113w
-    mov al, dl
     UpdateScrollRegX bg4scrolx
     ret
 
 ; BG4 vertical scroll register
 NEWSYM reg2114w
-    mov al, dl
     UpdateScrollRegY bg4scroly
     ret
 
 ; Video port control
 NEWSYM reg2115w
-    mov al, dl
     and al,11111111b
     mov [vraminctype],al
     mov bl,al
@@ -566,7 +544,6 @@ NEWSYM reg2115w
 
 ; Video port address (Low)
 NEWSYM reg2116w
-    mov al, dl
     shr word[vramaddr],1
     mov [vramaddr],al
     shl word[vramaddr],1
@@ -575,7 +552,6 @@ NEWSYM reg2116w
 
 ; Video port address (High)
 NEWSYM reg2117w
-    mov al, dl
     shr word[vramaddr],1
     mov [vramaddr+1],al
     shl word[vramaddr],1
@@ -593,7 +569,6 @@ NEWSYM reg2117w
 
 ; Video port data (Low)
 NEWSYM reg2118
-    mov al, dl
     mov ebx,[vramaddr]
     mov [vrama+ebx],al
     shr ebx,4
@@ -603,7 +578,6 @@ NEWSYM reg2118
     ret
 
 NEWSYM reg2118inc
-    mov al, dl
     mov ebx,[vramaddr]
     mov [vrama+ebx],al
     shr ebx,4
@@ -615,7 +589,6 @@ NEWSYM reg2118inc
     ret
 
 NEWSYM reg2118inc8
-    mov al, dl
     push ecx
     mov ebx,[vramaddr]
     movzx ecx,byte[vramincby8left]
@@ -645,7 +618,6 @@ NEWSYM reg2118inc8
     ret
 
 NEWSYM reg2118inc8inc
-    mov al, dl
     push ecx
     mov ebx,[vramaddr]
     movzx ecx,byte[vramincby8left]
@@ -677,7 +649,6 @@ NEWSYM reg2118inc8inc
     ret
 
 NEWSYM reg2119
-    mov al, dl
     cmp dword[vramaddr],0E000h
     jb .skip
 %ifndef NO_DEBUGGER
@@ -696,7 +667,6 @@ NEWSYM reg2119
     ret
 
 NEWSYM reg2119inc
-    mov al, dl
     mov ebx,[vramaddr]
 ;    cmp [vrama+ebx+1],al
 ;    je .nochange
@@ -711,7 +681,6 @@ NEWSYM reg2119inc
     ret
 
 NEWSYM reg2119inc8
-    mov al, dl
     push ecx
     mov ebx,[vramaddr]
     movzx ecx,byte[vramincby8left]
@@ -739,7 +708,6 @@ NEWSYM reg2119inc8
     ret
 
 NEWSYM reg2119inc8inc
-    mov al, dl
     push ecx
     mov ebx,[vramaddr]
     movzx ecx,byte[vramincby8left]
@@ -770,7 +738,6 @@ NEWSYM reg2119inc8inc
 
 ; MODE7 settings register
 NEWSYM reg211Aw
-    mov al, dl
     mov [mode7set],al
     ret
 
@@ -789,45 +756,38 @@ SECTION .text
 
 ; COS (COSINE) rotate angle / X Expansion
 NEWSYM reg211Bw
-    mov al, dl
     Mode7Regs mode7A
     mov byte[multchange],1
     ret
 
 ; SIN (SIN)    rotate angle / X Expansion & Complement Multiplication Start
 NEWSYM reg211Cw
-    mov al, dl
     Mode7Regs mode7B
     mov byte[multchange],1
     ret
 
 ; SIN (SIN)    rotate angle / Y Expansion
 NEWSYM reg211Dw
-    mov al, dl
     Mode7Regs mode7C
     ret
 
 ; COS (COSINE) rotate angle / Y Expansion
 NEWSYM reg211Ew
-    mov al, dl
     Mode7Regs mode7D
     ret
 
 ; Center position X (13-bit data only)
 NEWSYM reg211Fw
-    mov al, dl
     Mode7Regs mode7X0
     ret
 
 ; Center position Y (13-bit data only)
 NEWSYM reg2120w
-    mov al, dl
     Mode7Regs mode7Y0
     ret
 
 ; Colour # (or palette) selection register
 NEWSYM reg2121w
-    mov al, dl
     xor bh,bh
     mov bl,al
     shl bx,1
@@ -837,7 +797,6 @@ NEWSYM reg2121w
 
 ; Colour data register
 NEWSYM reg2122w
-    mov al, dl
     movzx ebx,word[cgaddr]
     cmp [cgram+ebx],al
     je .nomod
@@ -850,7 +809,6 @@ NEWSYM reg2122w
 
 ; Window mask settings register [W12SEL]
 NEWSYM reg2123w
-    mov al, dl
     mov bl,al
     and bl,0Fh
     test bl,0Ah
@@ -869,7 +827,6 @@ NEWSYM reg2123w
 
 ; Window mask settings register [W34SEL]
 NEWSYM reg2124w
-    mov al, dl
     mov bl,al
     and bl,0Fh
     test bl,0Ah
@@ -888,7 +845,6 @@ NEWSYM reg2124w
 
 ; Window mask settings register [WOBJSEL]
 NEWSYM reg2125w
-    mov al, dl
     mov bl,al
     and bl,0Fh
     mov [winobjen],bl
@@ -899,79 +855,66 @@ NEWSYM reg2125w
 
 ; Window 1 left position register
 NEWSYM reg2126w
-    mov al, dl
     mov [winl1],al
     ret
 
 ; Window 1 right position register
 NEWSYM reg2127w
-    mov al, dl
     mov [winr1],al
     ret
 
 ; Window 2 left position register
 NEWSYM reg2128w
-    mov al, dl
     mov [winl2],al
     ret
 
 ; Window 2 right position register
 NEWSYM reg2129w
-    mov al, dl
     mov [winr2],al
     ret
 
 ; Mask logic settings for Window 1 & 2 per screen
 NEWSYM reg212Aw
-    mov al, dl
     mov [winlogica],al
     ret
 
 ; Mask logic settings for Colour Windows & OBJ Windows
 NEWSYM reg212Bw
-    mov al, dl
     mov [winlogicb],al
     ret
 
 ; Main screen designation
 NEWSYM reg212Cw
-    mov al, dl
     mov [scrnon],al
     ret
 
 ; Sub-screen designation
 NEWSYM reg212Dw
-    mov al, dl
     mov [scrnon+1],al
     ret
 
 ; Window mask main screen designation register
 NEWSYM reg212Ew
-    mov al, dl
     mov [winenabm],al
     ret
 
 ; Window mask sub screen designation register
 NEWSYM reg212Fw
-    mov al, dl
     mov [winenabs],al
     ret
 
 ; Fixed color addition or screen addition register
 NEWSYM reg2130w
-    mov al, dl
     mov [scaddset],al
     ret
 
 ; Addition/subtraction for screens, BGs, & OBJs
 NEWSYM reg2131w
-    mov al, dl
     mov [scaddtype],al
     ret
 
 ; Fixed colour data for fixed colour +/-
 NEWSYM reg2132w
-    mov al, dl
     mov bl,al
     and bl,1Fh
     test al,20h
@@ -990,7 +933,6 @@ NEWSYM reg2132w
 
 ; Screen mode/video select register
 NEWSYM reg2133w
-    mov al, dl
     mov [interlval],al
     and byte[interlval],43h
     test al,04h
@@ -1003,7 +945,6 @@ NEWSYM reg2133w
 
 ; Sound Register #1
 NEWSYM reg2140w
-    mov al, dl
 %ifndef NO_DEBUGGER
     mov byte[sndwrit],1
 %endif
@@ -1024,7 +965,6 @@ NEWSYM reg2140w
 
 ; Sound Register #2
 NEWSYM reg2141w
-    mov al, dl
 %ifndef NO_DEBUGGER
     mov byte[sndwrit],1
 %endif
@@ -1041,7 +981,6 @@ NEWSYM reg2141w
 
 ; Sound Register #3
 NEWSYM reg2142w
-    mov al, dl
 %ifndef NO_DEBUGGER
     mov byte[sndwrit],1
 %endif
@@ -1058,7 +997,6 @@ NEWSYM reg2142w
 
 ; Sound Register #4
 NEWSYM reg2143w
-    mov al, dl
 %ifndef NO_DEBUGGER
     mov byte[sndwrit],1
 %endif
@@ -1075,7 +1013,6 @@ NEWSYM reg2143w
 
 ; Read/write WRAM register
 NEWSYM reg2180w
-    mov al, dl
     mov ebx,[wramrwadr]
     add ebx,[wramdata]
     mov [ebx],al
@@ -1085,19 +1022,16 @@ NEWSYM reg2180w
 
 ; WRAM data register (low byte)
 NEWSYM reg2181w
-    mov al, dl
     mov [wramrwadr],al
     ret
 
 ; WRAM data register (middle byte)
 NEWSYM reg2182w
-    mov al, dl
     mov [wramrwadr+1],al
     ret
 
 ; WRAM data register (high byte)
 NEWSYM reg2183w
-    mov al, dl
     mov bl,al
     and bl,01h
     mov [wramrwadr+2],bl
@@ -1109,7 +1043,6 @@ NEWSYM MultiTapStat, resb 1
 SECTION .text
 
 NEWSYM reg4016w
-    mov al, dl
     test byte[INTEnab],1
     jnz .nointenab
     mov ebx,[JoyAOrig]
@@ -1172,13 +1105,11 @@ NEWSYM reg4016w
 
 ; Counter enable
 NEWSYM reg4200w
-    mov al, dl
     mov [INTEnab],al
     ret
 
 ; Programmable I/O port (out-port)
 NEWSYM reg4201w
-    mov al, dl
     cmp byte[iohvlatch],1
     jne .noiohvlatch
     test al,80h
@@ -1200,13 +1131,11 @@ NEWSYM reg4201w
 
 ; Multiplicand 'A'
 NEWSYM reg4202w
-    mov al, dl
     mov [multa],al
     ret
 
 ; Multiplier 'B'
 NEWSYM reg4203w
-    mov al, dl
     push edx
     push eax
     xor ah,ah
@@ -1220,19 +1149,16 @@ NEWSYM reg4203w
 
 ; Dividend C (Low)
 NEWSYM reg4204w
-    mov al, dl
     mov [diva],al
     ret
 
 ; Dividend C (High)
 NEWSYM reg4205w
-    mov al, dl
     mov [diva+1],al
     ret
 
 ; Divisor B
 NEWSYM reg4206w
-    mov al, dl
     cmp al,0
     je .divby0
     push eax
@@ -1288,7 +1214,6 @@ DetermineHIRQExec
 
 ; Video horizontal IRQ beam position/pointer (Low)
 NEWSYM reg4207w
-    mov al, dl
     cmp [HIRQLoc],al
     je .nohirqc
     mov [HIRQLoc],al
@@ -1300,7 +1225,6 @@ NEWSYM reg4207w
 
 ; Video horizontal IRQ beam position/pointer (High)
 NEWSYM reg4208w
-    mov al, dl
     cmp [HIRQLoc+1],al
     je .nohirqc
     mov [HIRQLoc+1],al
@@ -1312,7 +1236,6 @@ NEWSYM reg4208w
 
 ; Video vertical IRQ beam position/pointer (Low)
 NEWSYM reg4209w
-    mov al, dl
     mov [VIRQLoc],al
 ;    mov bx,[curypos]
     cmp byte[HIRQNextExe],1
@@ -1330,7 +1253,6 @@ NEWSYM reg4209w
 
 ; Video vertical IRQ beam position/pointer (High)
 NEWSYM reg420Aw
-    mov al, dl
     and al,01h
     mov [VIRQLoc+1],al
     mov bx,[totlines]
@@ -1354,7 +1276,6 @@ NEWSYM reg420Aw
 
 ; Cycle speed register
 NEWSYM reg420Dw
-    mov al, dl
     test al,01h
     jnz .speed358
     ; 2.68 Mhz
@@ -1379,7 +1300,6 @@ NEWSYM reg420Dw
 
 ; DMA Control register
 NEWSYM reg43X0w
-    mov al, dl
     xor ebx,ebx
     mov bx,cx
     sub bx,4300h
@@ -1389,7 +1309,6 @@ NEWSYM reg43X0w
 
 ; DMA Destination register
 NEWSYM reg43X1w
-    mov al, dl
     xor ebx,ebx
     mov bx,cx
     sub bx,4300h
@@ -1399,7 +1318,6 @@ NEWSYM reg43X1w
 
 ; Source address (Low)
 NEWSYM reg43x2w
-    mov al, dl
     xor ebx,ebx
     mov bx,cx
     sub bx,4300h
@@ -1409,7 +1327,6 @@ NEWSYM reg43x2w
 
 ; Source address (High)
 NEWSYM reg43x3w
-    mov al, dl
     xor ebx,ebx
     mov bx,cx
     sub bx,4300h
@@ -1419,7 +1336,6 @@ NEWSYM reg43x3w
 
 ; Source bank address
 NEWSYM reg43x4w
-    mov al, dl
     xor ebx,ebx
     mov bx,cx
     sub bx,4300h
@@ -1428,7 +1344,6 @@ NEWSYM reg43x4w
 
 ; DMA transfer size & HDMA address register (Low)
 NEWSYM reg43x5w
-    mov al, dl
     xor ebx,ebx
     mov bx,cx
     sub bx,4300h
@@ -1437,7 +1352,6 @@ NEWSYM reg43x5w
 
 ; DMA transfer size & HDMA address register (High)
 NEWSYM reg43x6w
-    mov al, dl
     xor ebx,ebx
     mov bx,cx
     sub bx,4300h
@@ -1446,7 +1360,6 @@ NEWSYM reg43x6w
 
 ; DMA transfer size & HDMA address register (Bank)
 NEWSYM reg43x7w
-    mov al, dl
     xor ebx,ebx
     mov bx,cx
     sub bx,4300h
@@ -1455,7 +1368,6 @@ NEWSYM reg43x7w
 
 ; Table Address of A-BUS by DMA < A2 Table Address (Low)
 NEWSYM reg43x8w
-    mov al, dl
     xor ebx,ebx
     mov bx,cx
     sub bx,4300h
@@ -1464,7 +1376,6 @@ NEWSYM reg43x8w
 
 ; Table Address of A-BUS by DMA < A2 Table Address (High)
 NEWSYM reg43x9w
-    mov al, dl
     xor ebx,ebx
     mov bx,cx
     sub bx,4300h
@@ -1473,7 +1384,6 @@ NEWSYM reg43x9w
 
 ; Number of lines for HDMA transfer
 NEWSYM reg43XAw
-    mov al, dl
     mov byte[nohdmaframe],0
     xor ebx,ebx
     mov bx,cx
@@ -1491,7 +1401,6 @@ NEWSYM reg43XAw
 
 ; Unknown DMA byte
 NEWSYM reg43XBw
-    mov al, dl
     xor ebx,ebx
     mov bx,cx
     sub bx,4300h
@@ -1499,5 +1408,4 @@ NEWSYM reg43XBw
     ret
 
 NEWSYM regINVALIDw     ; Invalid Register
-    mov al, dl
     ret

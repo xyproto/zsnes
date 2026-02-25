@@ -5,9 +5,14 @@
 
 u1 AddrNoIncr = 0;
 
-static u1 read_reg(mr8* const reg, u2 const address)
+static u1 read_reg(eop* const reg, u2 const address)
 {
-    return reg(address);
+    u1 al;
+    asm volatile("call %A1"
+                 : "=a"(al)
+                 : "rm"(reg), "c"(address)
+                 : "cc", "memory", "ebx");
+    return al;
 }
 
 static void transdmappu2cpu(u1 const al, DMAInfo* const esi)
@@ -31,10 +36,10 @@ static void transdmappu2cpu(u1 const al, DMAInfo* const esi)
     u1 const* const edi = addrwrite[al & 0x07];
 
     // Pointer address of registers
-    mr8* const regptr_ = REGPTR(0x2100 + esi->destination + edi[0]); // PPU memory - 21xx
-    mr8* const regptrb = REGPTR(0x2100 + esi->destination + edi[1]); // PPU memory - 21xx
-    mr8* const regptrc = REGPTR(0x2100 + esi->destination + edi[2]); // PPU memory - 21xx
-    mr8* const regptrd = REGPTR(0x2100 + esi->destination + edi[3]); // PPU memory - 21xx
+    eop* const regptr_ = REGPTR(0x2100 + esi->destination + edi[0]); // PPU memory - 21xx
+    eop* const regptrb = REGPTR(0x2100 + esi->destination + edi[1]); // PPU memory - 21xx
+    eop* const regptrc = REGPTR(0x2100 + esi->destination + edi[2]); // PPU memory - 21xx
+    eop* const regptrd = REGPTR(0x2100 + esi->destination + edi[3]); // PPU memory - 21xx
 
     u2 const dx = esi->count;
     u1 const curbank = esi->bank;
@@ -76,9 +81,10 @@ static void transdmappu2cpu(u1 const al, DMAInfo* const esi)
     esi->offset = cx;
 }
 
-static inline void write_reg(mw8* const reg, u2 const address, u1 const val)
+static inline void write_reg(eop* const reg, u2 const address, u1 const val)
 {
-    reg(address, val);
+    asm volatile("call %A0" ::"rm"(reg), "c"(address), "a"(val)
+                 : "cc", "memory", "ebx");
 }
 
 static void transdma(DMAInfo* const esi)
@@ -112,10 +118,10 @@ static void transdma(DMAInfo* const esi)
     u1 const* const edi = addrwrite[mode];
 
     // Pointer address of registers
-    mw8* const regptra = REGPTW(0x2100 + esi->destination + edi[0]); // PPU memory - 21xx
-    mw8* const regptrb = REGPTW(0x2100 + esi->destination + edi[1]); // PPU memory - 21xx
-    mw8* const regptrc = REGPTW(0x2100 + esi->destination + edi[2]); // PPU memory - 21xx
-    mw8* const regptrd = REGPTW(0x2100 + esi->destination + edi[3]); // PPU memory - 21xx
+    eop* const regptra = REGPTW(0x2100 + esi->destination + edi[0]); // PPU memory - 21xx
+    eop* const regptrb = REGPTW(0x2100 + esi->destination + edi[1]); // PPU memory - 21xx
+    eop* const regptrc = REGPTW(0x2100 + esi->destination + edi[2]); // PPU memory - 21xx
+    eop* const regptrd = REGPTW(0x2100 + esi->destination + edi[3]); // PPU memory - 21xx
 
     u2 const dx = esi->count;
     u1 const curbank = esi->bank;
@@ -274,7 +280,7 @@ void starthdma(void)
 static void hdmatype2indirect(HDMAInfo const* const edx, DMAInfo* const esi)
 {
     u1 tempdecr = edx->count;
-    mw8* const* reg = edx->dst_reg;
+    eop* const* reg = edx->dst_reg;
     do {
         u2 const cx = esi->count++; // increment/decrement/keep pointer location
         u1 const al = memr8(esi->hdma_bank, cx);
@@ -305,7 +311,7 @@ static void indirectaddr(u4 const ah, HDMAInfo* const edx, DMAInfo* const esi)
 
         u1 tempdecr = edx->count;
         u2 cx = esi->count; // increment/decrement/keep pointer location
-        mw8* const* reg = edx->dst_reg;
+        eop* const* reg = edx->dst_reg;
         do {
             u1 const al = memr8(esi->hdma_bank, cx);
             write_reg(*reg, cx, al);
@@ -323,7 +329,7 @@ static void indirectaddr(u4 const ah, HDMAInfo* const edx, DMAInfo* const esi)
 static void hdmatype2(HDMAInfo* const edx, DMAInfo* const esi)
 {
     u1 tempdecr = edx->count;
-    mw8* const* reg = edx->dst_reg;
+    eop* const* reg = edx->dst_reg;
     do {
         u2 const cx = edx->addr_inc++; // increment/decrement/keep pointer location
         u1 const al = memr8(esi->bank, cx);
@@ -360,7 +366,7 @@ static void dohdma(u4 const ah, HDMAInfo* const edx, DMAInfo* const esi)
 
         u1 tempdecr = edx->count;
         u2 cx = edx->addr_inc;
-        mw8* const* reg = edx->dst_reg;
+        eop* const* reg = edx->dst_reg;
         do {
             u1 const al = memr8(esi->bank, cx);
             write_reg(*reg, cx, al);

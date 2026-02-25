@@ -13,7 +13,7 @@
 void initregw(void)
 {
     // Fill register pointer with invalid register accesses
-    for (mw8** i = regptwa; i != endof(regptwa); ++i)
+    for (eop** i = regptwa; i != endof(regptwa); ++i)
         *i = regINVALIDw;
 
     // Set all valid register accesses

@@ -779,19 +779,16 @@ COPemulmode
 
     mov cx,[xs]
     mov al,[xpb]
-    movzx edx, al
     call membank0w8
 
     dec cx
     or cx,word[stackor]
     mov al,[xpc+1]
-    movzx edx, al
     call membank0w8
 
     dec cx
     or cx,word[stackor]
     mov al,[xpc]
-    movzx edx, al
     call membank0w8
 
     dec cx
@@ -825,13 +822,11 @@ COPemulmode
 
     mov cx,[xs]
     mov al,[xpc+1]
-    movzx edx, al
     call membank0w8
 
     dec cx
     or cx,word[stackor]
     mov al,[xpc]
-    movzx edx, al
     call membank0w8
 
     dec cx
@@ -879,13 +874,11 @@ COPemulmode
 
     mov cx,[xs]
     mov al,[xpc+1]
-    movzx edx, al
     call membank0w8
 
     dec cx
     or cx,word[stackor]
     mov al,[xpc]
-    movzx edx, al
     call membank0w8
 
     dec cx
@@ -973,7 +966,6 @@ COPemulmode
     call dword near [memtabler8+ebx*4]
     mov bl,[xdb]
     mov cx,[xy]
-    movzx edx, al
     call dword near [memtablew8+ebx*4]
     test dl,10h
     jnz .pagezero
@@ -1005,7 +997,6 @@ COPemulmode
     call dword near [memtabler8+ebx*4]
     mov bl,[xdb]
     mov cx,[xy]
-    movzx edx, al
     call dword near [memtablew8+ebx*4]
     test dl,10h
     jnz .pagezero
@@ -1046,7 +1037,6 @@ COPemulmode
 %macro PUSHMacro8b 1
     mov cx,[xs]
     mov al,%1
-    movzx edx, al
     call membank0w8
     dec cx
     or cx,word[stackor]
@@ -1058,7 +1048,6 @@ COPemulmode
     makedl
     mov cx,[xs]
     mov al,dl
-    movzx edx, al
     call membank0w8
     dec cx
     or cx,word[stackor]
@@ -1069,12 +1058,10 @@ COPemulmode
 %macro PUSHMacro16b 2
     mov cx,[xs]
     mov al,%2
-    movzx edx, al
     call membank0w8
     dec cx
     or cx,word[stackor]
     mov al,%1
-    movzx edx, al
     call membank0w8
     dec cx
     or cx,word[stackor]
@@ -1085,12 +1072,10 @@ COPemulmode
 %macro PEAMacro 0
     mov cx,[xs]
     mov al,[esi+1]
-    movzx edx, al
     call membank0w8
     dec cx
     or cx,word[stackor]
     mov al,[esi]
-    movzx edx, al
     call membank0w8
     dec cx
     or cx,word[stackor]
@@ -1109,12 +1094,10 @@ COPemulmode
     mov cx,[xs]
     push eax
     mov al,ah
-    movzx edx, al
     call membank0w8
     pop eax
     dec cx
     or cx,word[stackor]
-    movzx edx, al
     call membank0w8
     dec cx
     or cx,word[stackor]
@@ -1137,12 +1120,10 @@ COPemulmode
     mov cx,[xs]
     push eax
     mov al,ah
-    movzx edx, al
     call membank0w8
     pop eax
     dec cx
     or cx,word[stackor]
-    movzx edx, al
     call membank0w8
     dec cx
     or cx,word[stackor]
@@ -1160,12 +1141,10 @@ COPemulmode
     mov cx,[xs]
     push eax
     mov al,ah
-    movzx edx, al
     call membank0w8
     pop eax
     dec cx
     or cx,word[stackor]
-    movzx edx, al
     call membank0w8
     dec cx
     or cx,word[stackor]

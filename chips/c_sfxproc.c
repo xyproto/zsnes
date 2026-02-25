@@ -54,7 +54,7 @@ void initsfxregsr(void)
     REGPTR(0x303F) = reg303Fr;
 
     // set 3100-31FF to cacheregr
-    mr8** i = &REGPTR(0x3100);
+    eop** i = &REGPTR(0x3100);
     do
         *i = cacheregr;
     while (++i != &REGPTR(0x3300)); // XXX code and comment disagree: 0x31FF vs. 0x32FF
@@ -112,7 +112,7 @@ void initsfxregsw(void)
     REGPTW(0x303F) = reg303Fw;
 
     // set 3100-31FF to cacheregw
-    mw8** i = &REGPTW(0x3100);
+    eop** i = &REGPTW(0x3100);
     do
         *i = cacheregw;
     while (++i != &REGPTW(0x3300)); // XXX code and comment disagree: 0x31FF vs. 0x32FF

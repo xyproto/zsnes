@@ -55,7 +55,6 @@
     mov cx,[esi]
     mov bl,[xdb]
     add esi,2
-    movzx edx, al
     call dword near [memtablew8+ebx*4]
 %endmacro
 
@@ -63,7 +62,6 @@
     mov cx,[esi]
     mov bl,[xdb]
     add esi,2
-    movzx edx, ax
     call dword near [memtablew16+ebx*4]
 %endmacro
 
@@ -87,7 +85,6 @@
     mov cx,[esi]
     mov bl,[esi+2]
     add esi,3
-    movzx edx, al
     call dword near [memtablew8+ebx*4]
 %endmacro
 
@@ -95,7 +92,6 @@
     mov cx,[esi]
     mov bl,[esi+2]
     add esi,3
-    movzx edx, ax
     call dword near [memtablew16+ebx*4]
 %endmacro
 
@@ -120,7 +116,6 @@
     mov bl,[esi]
     mov ecx,[xd]
     inc esi
-    movzx edx, al
     call dword near [DPageW8]
 %endmacro
 
@@ -128,7 +123,6 @@
     mov bl,[esi]
     mov ecx,[xd]
     inc esi
-    movzx edx, ax
     call dword near [DPageW16]
 %endmacro
 
@@ -193,7 +187,6 @@
     inc bl
 .np
     pop ax
-    movzx edx, al
     call dword near [memtablew8+ebx*4]
 %endmacro
 
@@ -210,7 +203,6 @@
     inc bl
 .np
     pop ax
-    movzx edx, ax
     call dword near [memtablew16+ebx*4]
 %endmacro
 
@@ -278,7 +270,6 @@
     jnc .np
     inc bl
 .np
-    movzx edx, al
     call dword near [memtablew8+ebx*4]
 %endmacro
 
@@ -303,7 +294,6 @@
     jnc .np
     inc bl
 .np
-    movzx edx, ax
     call dword near [memtablew16+ebx*4]
 %endmacro
 
@@ -344,7 +334,6 @@
     mov cx,ax
     mov bl,[xdb]
     pop ax
-    movzx edx, al
     call dword near [memtablew8+ebx*4]
 %endmacro
 
@@ -359,7 +348,6 @@
     mov cx,ax
     mov bl,[xdb]
     pop ax
-    movzx edx, ax
     call dword near [memtablew16+ebx*4]
 %endmacro
 
@@ -389,7 +377,6 @@
     add cx,bx
     inc esi
     add cx,[xx]
-    movzx edx, al
     call membank0w8
 %endmacro
 
@@ -399,7 +386,6 @@
     add cx,bx
     inc esi
     add cx,[xx]
-    movzx edx, ax
     call membank0w16
 %endmacro
 
@@ -429,7 +415,6 @@
     add cx,bx
     inc esi
     add cx,[xy]
-    movzx edx, al
     call membank0w8
 %endmacro
 
@@ -439,7 +424,6 @@
     add cx,bx
     inc esi
     add cx,[xy]
-    movzx edx, ax
     call membank0w16
 %endmacro
 
@@ -475,7 +459,6 @@
     jnc .np
     inc bl
 .np
-    movzx edx, al
     call dword near [memtablew8+ebx*4]
 %endmacro
 
@@ -487,7 +470,6 @@
     jnc .np
     inc bl
 .np
-    movzx edx, ax
     call dword near [memtablew16+ebx*4]
 %endmacro
 
@@ -523,7 +505,6 @@
     jnc .np
     inc bl
 .np
-    movzx edx, al
     call dword near [memtablew8+ebx*4]
 %endmacro
 
@@ -535,7 +516,6 @@
     jnc .np
     inc bl
 .np
-    movzx edx, ax
     call dword near [memtablew16+ebx*4]
 %endmacro
 
@@ -571,7 +551,6 @@
     jnc .np
     inc bl
 .np
-    movzx edx, al
     call dword near [memtablew8+ebx*4]
 %endmacro
 
@@ -583,7 +562,6 @@
     jnc .np
     inc bl
 .np
-    movzx edx, ax
     call dword near [memtablew16+ebx*4]
 %endmacro
 
@@ -630,7 +608,6 @@
     mov cx,ax
     mov bl,[xdb]
     pop ax
-    movzx edx, al
     call dword near [memtablew8+ebx*4]
 %endmacro
 
@@ -643,7 +620,6 @@
     mov cx,ax
     mov bl,[xdb]
     pop ax
-    movzx edx, ax
     call dword near [memtablew16+ebx*4]
 %endmacro
 
@@ -709,7 +685,6 @@
     pop ax
     mov cx,ax
     pop ax
-    movzx edx, al
     call dword near [memtablew8+ebx*4]
 %endmacro
 
@@ -729,7 +704,6 @@
     pop ax
     mov cx,ax
     pop ax
-    movzx edx, ax
     call dword near [memtablew16+ebx*4]
 %endmacro
 
@@ -756,7 +730,6 @@
     mov cx,[xs]
     inc esi
     add cx,bx
-    movzx edx, al
     call membank0w8
 %endmacro
 
@@ -765,7 +738,6 @@
     mov cx,[xs]
     inc esi
     add cx,bx
-    movzx edx, ax
     call membank0w16
 %endmacro
 
@@ -815,7 +787,6 @@
     jnc .np
     inc bl
 .np
-    movzx edx, al
     call dword near [memtablew8+ebx*4]
 %endmacro
 
@@ -833,7 +804,6 @@
     jnc .np
     inc bl
 .np
-    movzx edx, ax
     call dword near [memtablew16+ebx*4]
 %endmacro
 

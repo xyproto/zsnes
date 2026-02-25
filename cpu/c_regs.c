@@ -13,7 +13,7 @@
 void initregr(void)
 {
     // Fill register pointer with invalid register accesses
-    for (mr8** i = regptra; i != endof(regptra); ++i)
+    for (eop** i = regptra; i != endof(regptra); ++i)
         *i = regINVALID;
 
     // Set all valid register accesses

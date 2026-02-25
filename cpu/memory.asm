@@ -179,7 +179,6 @@ NEWSYM regaccessbankr16
     ret
 
 NEWSYM regaccessbankw8
-    mov al, dl
     test ecx,8000h
     jnz .romacc
     cmp ecx,2000h
@@ -198,7 +197,6 @@ NEWSYM regaccessbankw8
 .regs
     cmp ecx,48FFh
     ja .invaccess
-    movzx edx, al
     call dword near regptw(ecx)
     xor ebx,ebx
     ret
@@ -220,7 +218,6 @@ NEWSYM regaccessbankw8
 .dsp1
     cmp byte[DSP1Type],2
     jne .nodsp1
-    movzx edx, al
     call DSP1Write8b
 .nodsp1
     xor ebx,ebx
@@ -233,7 +230,6 @@ NEWSYM regaccessbankw8
     shl ebx,13
     add ecx,ebx
     and ecx,0FFFFh
-    movzx edx, al
     call sramaccessbankw8b
     pop ecx
     ret
@@ -248,7 +244,6 @@ NEWSYM regaccessbankw8
     ret
 
 NEWSYM regaccessbankw16
-    movzx eax, dx
     test ecx,8000h
     jnz .romacc
     cmp ecx,2000h
@@ -272,11 +267,9 @@ NEWSYM regaccessbankw16
 .regs
     cmp cx,48FFh
     ja .invaccess
-    movzx edx, al
     call dword near regptw(ecx)
     inc ecx
     mov al,ah
-    movzx edx, al
     call dword near regptw(ecx)
     dec ecx
     xor ebx,ebx
@@ -300,7 +293,6 @@ NEWSYM regaccessbankw16
 .dsp1
     cmp byte[DSP1Type],2
     jne .nodsp1
-    movzx edx, ax
     call DSP1Write16b
 .nodsp1
     ret
@@ -312,7 +304,6 @@ NEWSYM regaccessbankw16
     shl ebx,13
     add ecx,ebx
     and ecx,0FFFFh
-    movzx edx, ax
     call sramaccessbankw16b
     pop ecx
     ret
@@ -683,7 +674,6 @@ NEWSYM membank0r16ramSA1             ; 0000-1FFF
     xor ax,ax
     ret
 NEWSYM membank0w8ramSA1             ; 0000-1FFF
-    mov al, dl
     cmp byte[SA1Status],0
     jne .nowram
     mov [wramdataa+ecx+ebx],al
@@ -695,7 +685,6 @@ NEWSYM membank0w8ramSA1             ; 0000-1FFF
 .invaccess
     ret
 NEWSYM membank0w16ramSA1             ; 0000-1FFF
-    movzx eax, dx
     cmp byte[SA1Status],0
     jne .nowram
     mov [wramdataa+ecx+ebx],ax
@@ -845,21 +834,16 @@ NEWSYM membank0r16romram             ; 0000-1FFF
 
 ; --- 8 BIT WRITE STUFF ---
 NEWSYM membank0w8ram             ; 0000-1FFF
-    mov al, dl
     mov [wramdataa+ebx+ecx],al
     ret
 NEWSYM membank0w8reg             ; 2000-48FF
-    mov al, dl
     add ecx,ebx
-    movzx edx, al
     call dword near regptw(ecx)
     xor ebx,ebx
     ret
 NEWSYM membank0w8inv             ; 4800-5FFF
-    mov al, dl
     ret
 NEWSYM membank0w8chip            ; 6000-FFFF
-    mov al, dl
     add ecx,ebx
     cmp byte[SFXEnable],1
     je .sfxram
@@ -867,7 +851,6 @@ NEWSYM membank0w8chip            ; 6000-FFFF
     je .sa1ram
     cmp byte[DSP1Type],2
     jne .nodsp1
-    movzx edx, al
     call DSP1Write8b
 .nodsp1
     ret
@@ -888,10 +871,8 @@ NEWSYM membank0w8chip            ; 6000-FFFF
     ret
     BWCheck2w8
 NEWSYM membank0w8rom             ; 8000-FFFF
-    mov al, dl
     ret
 NEWSYM membank0w8romram             ; 0000-1FFF
-    mov al, dl
     add cx,bx
     test cx,8000h
     jnz .rom
@@ -902,11 +883,9 @@ NEWSYM membank0w8romram             ; 0000-1FFF
 
 ; --- 16 BIT WRITE STUFF ---
 NEWSYM membank0w16ram             ; 0000-1EFF
-    movzx eax, dx
     mov [wramdataa+ebx+ecx],ax
     ret
 NEWSYM membank0w16ramh            ; 1F00-1FFF
-    movzx eax, dx
     add ecx,ebx
     cmp ecx,1FFFh
     je .over
@@ -916,32 +895,25 @@ NEWSYM membank0w16ramh            ; 1F00-1FFF
     mov [wramdataa+ecx],al
     ret
 NEWSYM membank0w16reg             ; 2000-48FF
-    movzx eax, dx
     add ecx,ebx
-    movzx edx, al
     call dword near regptw(ecx)
     inc ecx
     mov al,ah
-    movzx edx, al
     call dword near regptw(ecx)
     dec ecx
     xor ebx,ebx
     ret
 NEWSYM membank0w16inv             ; 4800-5FFF
-    movzx eax, dx
     ret
 NEWSYM membank0w16chip            ; 6000-FFFF
-    movzx eax, dx
     add ecx,ebx
 NEWSYM membank0w16rom             ; 8000-FFFF
-    movzx eax, dx
     cmp byte[SFXEnable],1
     je .sfxram
     cmp byte[SA1Enable],1
     je .sa1ram
     cmp byte[DSP1Type],2
     jne .nodsp1
-    movzx edx, ax
     call DSP1Write16b
 .nodsp1
     ret
@@ -962,7 +934,6 @@ NEWSYM membank0w16rom             ; 8000-FFFF
     ret
     BWCheck2w16
 NEWSYM membank0w16romram             ; 0000-1FFF
-    movzx eax, dx
     add cx,bx
     test cx,8000h
     jnz .rom
@@ -1069,7 +1040,6 @@ NEWSYM membank0r16
     ret
 
 NEWSYM membank0w8
-    mov al, dl
     and ecx,0FFFFh
     cmp byte[SA1Enable],1
     je near membank0w8SA1
@@ -1091,7 +1061,6 @@ NEWSYM membank0w8
     jnz .romacc
     cmp ecx,48FFh
     ja .invaccess
-    movzx edx, al
     call dword near regptw(ecx)
     xor ebx,ebx
     ret
@@ -1104,7 +1073,6 @@ NEWSYM membank0w8
     je .sfxram
     cmp byte[DSP1Type],2
     jne .nodsp1
-    movzx edx, al
     call DSP1Write8b
 .nodsp1
     ret
@@ -1118,7 +1086,6 @@ NEWSYM membank0w8
     pop ecx
     ret
 NEWSYM membank0w16
-    movzx eax, dx
     and ecx,0FFFFh
     cmp byte[SA1Enable],1
     je near membank0w16SA1
@@ -1140,11 +1107,9 @@ NEWSYM membank0w16
     jnz .romacc
     cmp ecx,48FFh
     ja .invaccess
-    movzx edx, al
     call dword near regptw(ecx)
     inc ecx
     mov al,ah
-    movzx edx, al
     call dword near regptw(ecx)
     dec ecx
     xor ebx,ebx
@@ -1158,7 +1123,6 @@ NEWSYM membank0w16
     je .sfxram
     cmp byte[DSP1Type],2
     jne .nodsp1
-    movzx edx, ax
     call DSP1Write16b
 .nodsp1
     ret
@@ -1256,7 +1220,6 @@ NEWSYM membank0r16SA1
     BWCheck2r16
 
 NEWSYM membank0w8SA1
-    mov al, dl
     test ecx,8000h
     jnz .romacc
     cmp ecx,2000h
@@ -1275,7 +1238,6 @@ NEWSYM membank0w8SA1
 .regs
     cmp ecx,48FFh
     ja .invaccess
-    movzx edx, al
     call dword near regptw(ecx)
     xor ebx,ebx
     ret
@@ -1292,7 +1254,6 @@ NEWSYM membank0w8SA1
     BWCheck2w8
 
 NEWSYM membank0w16SA1
-    movzx eax, dx
     test ecx,8000h
     jnz .romacc
     cmp ecx,2000h
@@ -1311,11 +1272,9 @@ NEWSYM membank0w16SA1
 .regs
     cmp cx,48FFh
     ja .invaccess
-    movzx edx, al
     call dword near regptw(ecx)
     inc ecx
     mov al,ah
-    movzx edx, al
     call dword near regptw(ecx)
     dec ecx
     xor ebx,ebx
@@ -1349,7 +1308,6 @@ NEWSYM memaccessbankr16
     ret
 
 NEWSYM memaccessbankw8
-    mov al, dl
     cmp byte[writeon],0
     jne .modrom
     ret
@@ -1360,7 +1318,6 @@ NEWSYM memaccessbankw8
     ret
 
 NEWSYM memaccessbankw16
-    movzx eax, dx
     cmp byte[writeon],0
     jne .modrom
     ret
@@ -1409,27 +1366,23 @@ NEWSYM sramaccessbankr16
     ret
 
 NEWSYM sramaccessbankw8
-    mov al, dl
     SRAMAccess memaccessbankw8
     push ecx
     and bl,7Fh
     sub bl,70h
     shl ebx,15
     add ecx,ebx
-    movzx edx, al
     call sramaccessbankw8b
     pop ecx
     ret
 
 NEWSYM sramaccessbankw16
-    movzx eax, dx
     SRAMAccess memaccessbankw16
     push ecx
     and bl,7Fh
     sub bl,70h
     shl ebx,15
     add ecx,ebx
-    movzx edx, ax
     call sramaccessbankw16b
     pop ecx
     ret
@@ -1452,22 +1405,18 @@ NEWSYM sramaccessbankr16s
     pop ecx
     ret
 NEWSYM sramaccessbankw8s
-    mov al, dl
     push ecx
     sub bl,78h
     shl ebx,15
     add ecx,ebx
-    movzx edx, al
     call sramaccessbankw8b
     pop ecx
     ret
 NEWSYM sramaccessbankw16s
-    movzx eax, dx
     push ecx
     sub bl,78h
     shl ebx,15
     add ecx,ebx
-    movzx edx, ax
     call sramaccessbankw16b
     pop ecx
     ret
@@ -1506,7 +1455,6 @@ NEWSYM sramaccessbankr16b
     ret
 
 NEWSYM sramaccessbankw8b
-    mov al, dl
     cmp dword[ramsize],0
     je .noaccess
     mov ebx,[sram]
@@ -1520,7 +1468,6 @@ NEWSYM sramaccessbankw8b
     ret
 
 NEWSYM sramaccessbankw16b
-    movzx eax, dx
     cmp dword[ramsize],0
     je .noaccess
     mov ebx,[sram]
@@ -1571,7 +1518,6 @@ NEWSYM stsramr16
     ret
 
 NEWSYM stsramw8
-    mov al, dl
     STsramaccess memaccessbankw8
     push ecx
     sub bl,60h
@@ -1586,7 +1532,6 @@ NEWSYM stsramw8
     ret
 
 NEWSYM stsramw16
-    movzx eax, dx
     STsramaccess memaccessbankw16
     push ecx
     sub bl,60h
@@ -1633,7 +1578,6 @@ NEWSYM stsramr16b
     ret
 
 NEWSYM stsramw8b
-    mov al, dl
     STsramaccess memaccessbankw8
     push ecx
     sub bl,70h
@@ -1648,7 +1592,6 @@ NEWSYM stsramw8b
     ret
 
 NEWSYM stsramw16b
-    movzx eax, dx
     STsramaccess memaccessbankw16
     push ecx
     sub bl,70h
@@ -1684,7 +1627,6 @@ NEWSYM wramaccessbankr16
     ret
 
 NEWSYM wramaccessbankw8
-    mov al, dl
 ;    mov ebx,[wramdata]
 ;    mov [ebx+ecx],al
 ;    xor ebx,ebx
@@ -1692,7 +1634,6 @@ NEWSYM wramaccessbankw8
     ret
 
 NEWSYM wramaccessbankw16
-    movzx eax, dx
 ;    mov ebx,[wramdata]
 ;    mov [ebx+ecx],ax
 ;    xor ebx,ebx
@@ -1717,7 +1658,6 @@ NEWSYM eramaccessbankr16
     ret
 
 NEWSYM eramaccessbankw8
-    mov al, dl
 ;    mov ebx,[ram7f]
 ;    mov [ebx+ecx],al
 ;    xor ebx,ebx
@@ -1725,7 +1665,6 @@ NEWSYM eramaccessbankw8
     ret
 
 NEWSYM eramaccessbankw16
-    movzx eax, dx
 ;    mov ebx,[ram7f]
 ;    mov [ebx+ecx],ax
 ;    xor ebx,ebx
@@ -1820,7 +1759,6 @@ NEWSYM regaccessbankr16SA1
     BWCheck2r16
 
 NEWSYM regaccessbankw8SA1
-    mov al, dl
     test ecx,8000h
     jnz .romacc
     cmp ecx,2000h
@@ -1846,7 +1784,6 @@ NEWSYM regaccessbankw8SA1
 .regs
     cmp ecx,48FFh
     ja .invaccess
-    movzx edx, al
     call dword near regptw(ecx)
     xor ebx,ebx
     ret
@@ -1863,7 +1800,6 @@ NEWSYM regaccessbankw8SA1
     BWCheck2w8
 
 NEWSYM regaccessbankw16SA1
-    movzx eax, dx
     test ecx,8000h
     jnz .romacc
     cmp ecx,2000h
@@ -1889,11 +1825,9 @@ NEWSYM regaccessbankw16SA1
 .regs
     cmp cx,48FFh
     ja .invaccess
-    movzx edx, al
     call dword near regptw(ecx)
     inc ecx
     mov al,ah
-    movzx edx, al
     call dword near regptw(ecx)
     dec ecx
     xor ebx,ebx
@@ -1944,7 +1878,6 @@ NEWSYM SA1RAMaccessbankr16
     ret
 
 NEWSYM SA1RAMaccessbankw8
-    mov al, dl
     and ebx,03h
     shl ebx,16
     add ebx,[SA1RAMArea]
@@ -1953,7 +1886,6 @@ NEWSYM SA1RAMaccessbankw8
     ret
 
 NEWSYM SA1RAMaccessbankw16
-    movzx eax, dx
     and ebx,03h
     shl ebx,16
     add ebx,[SA1RAMArea]
@@ -2089,7 +2021,6 @@ NEWSYM SA1RAMaccessbankr16b
     ret
 
 NEWSYM SA1RAMaccessbankw8b
-    mov al, dl
     test byte[SA1Overflow+1],80h
     jnz .2bit
     and ebx,07h
@@ -2154,16 +2085,13 @@ NEWSYM SA1RAMaccessbankw8b
     ret
 
 NEWSYM SA1RAMaccessbankw16b
-    movzx eax, dx
     push ecx
     push ebx
-    movzx edx, al
     call SA1RAMaccessbankw8b
     pop ebx
     pop ecx
     inc ecx
     mov al,ah
-    movzx edx, al
     call SA1RAMaccessbankw8b
     ret
 

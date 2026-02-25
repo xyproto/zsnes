@@ -15,24 +15,24 @@ extern void initMSU1regsRead();
 extern void initMSU1regsWrite();
 
 // Read Registers
-extern mr8 msuid1;
-extern mr8 msuid2;
-extern mr8 msuid3;
-extern mr8 msuid4;
-extern mr8 msuid5;
-extern mr8 msuid6;
-extern mr8 msudataread;
-extern mr8 msustatusread;
+extern void msuid1();
+extern void msuid2();
+extern void msuid3();
+extern void msuid4();
+extern void msuid5();
+extern void msuid6();
+extern void msudataread();
+extern void msustatusread();
 
 // Write Registers
-extern mw8 msudataseek0;
-extern mw8 msudataseek1;
-extern mw8 msudataseek2;
-extern mw8 msudataseek3;
-extern mw8 msu1track0;
-extern mw8 msu1track1;
-extern mw8 msu1volume;
-extern mw8 msu1statecontrol;
+extern void msudataseek0();
+extern void msudataseek1();
+extern void msudataseek2();
+extern void msudataseek3();
+extern void msu1track0();
+extern void msu1track1();
+extern void msu1volume();
+extern void msu1statecontrol();
 
 // Misc. Functions
 extern void mixMSU1Audio(int* start, int* end, int rate);

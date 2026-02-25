@@ -13,10 +13,10 @@ bool cycleinputdevice2(void);
 
 void DisplayBatteryStatus(void);
 
-extern mr8* dspRptr[256];
-extern mw8* dspWptr[256];
-extern mr8* regptra[0x3000];
-extern mw8* regptwa[0x3000];
+extern eop* dspRptr[256];
+extern eop* dspWptr[256];
+extern eop* regptra[0x3000];
+extern eop* regptwa[0x3000];
 extern u1 DSPDisable; // Disable DSP emulation
 extern u1 MusicVol;
 extern u1 V8Mode; // Vegetable mode! =) (Greyscale mode)

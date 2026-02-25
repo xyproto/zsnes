@@ -60,42 +60,34 @@ ret
 
 ;DATA Seek Pointer
 NEWSYM msudataseek0
-    mov al, dl
 	mov [MSU_Data_Seek],al
 ret
 NEWSYM msudataseek1
-    mov al, dl
 	mov [MSU_Data_Seek+1],al
 ret
 NEWSYM msudataseek2
-    mov al, dl
 	mov [MSU_Data_Seek+2],al
 ret
 NEWSYM msudataseek3
-    mov al, dl
 	mov [MSU_Data_Seek+3],al
 ret
 
 ;TRACK
 NEWSYM msu1track0
-    mov al, dl
 	mov [MSU_Track],al
 ret
 NEWSYM msu1track1
-    mov al, dl
 	mov [MSU_Track+1],al
 	ccall MSU1HandleTrackChange
 ret
 
 ;VOLUME
 NEWSYM msu1volume
-    mov al, dl
 	mov [MSU_MusicVolume],al
 ret
 
 ;STATE CONTROL
 NEWSYM msu1statecontrol
-    mov al, dl
 	mov [MSU_CurrentStatus],al
 	ccall MSU1HandleStatusBits
 ret

@@ -61,8 +61,8 @@ u1* wramdata;
 unsigned char* ram7f; // ram @ 7f = 65536
 u1* vram;
 u1* sram;
-mr8* regptra[0x3000];
-mw8* regptwa[0x3000];
+eop* regptra[0x3000];
+eop* regptwa[0x3000];
 u1* vcache2b;
 u1* vcache4b;
 u1* vcache8b;
@@ -218,8 +218,8 @@ u1 mode7tab[65536];
 
 u2 fulladdtab[65536];
 u2 VolumeConvTable[32768];
-mw8* dspWptr[256];
-mr8* dspRptr[256];
+eop* dspWptr[256];
+eop* dspRptr[256];
 
 #define deallocmemhelp(p) \
     if (p) {              \
