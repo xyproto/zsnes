@@ -95,6 +95,8 @@ jobs:
           make clean
           make ARCH=linux
           test -x ./zsnes
+      - name: Run tests
+        run: make test
       - name: Verify runtime links
         run: |
           ldd ./zsnes | tee ldd.txt

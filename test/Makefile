@@ -14,10 +14,14 @@ CC     := gcc
 CFLAGS := -m32 -std=gnu99 -I.. -Wall -Wextra -Wno-unused-parameter
 
 BIN  := zsnes_test
-SRC  := main.c
+SRC  := main.c test_endmem.c test_init.c
 # Object files from the parent build that contain the functions under test.
 # These must already exist (built by `make` in the parent directory).
-OBJS := ../zpath.o
+ifdef NO_ASM
+OBJS := ../zpath.o ../c_endmem_data.o ../init_data.o
+else
+OBJS := ../zpath.o ../endmem.o ../init.o
+endif
 
 .PHONY: all run clean
 

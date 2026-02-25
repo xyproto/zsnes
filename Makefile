@@ -94,6 +94,7 @@ ASMFLAGS += -O1 -w-orphan-labels -w-number-deprecated-hex -w-pp-macro-params-leg
 WITH_AO       :=
 #WITH_DEBUGGER := yes
 WITH_JMA      := yes
+NO_ASM        ?=
 WITH_OPENGL   := yes
 WITH_PNG      := yes
 WITH_SDL      := $(if $(filter $(ARCH),$(UNIXSDL_ARCHES)),yes,)
@@ -334,7 +335,11 @@ SRCS += cpu/tablec.asm
 SRCS += effects/burn.c
 SRCS += effects/smoke.c
 SRCS += effects/water.c
+ifdef NO_ASM
+SRCS += c_endmem_data.c
+else
 SRCS += endmem.asm
+endif
 SRCS += gui/c_gui.c
 SRCS += gui/c_guiwindp.c
 SRCS += gui/gui.asm
@@ -346,7 +351,11 @@ SRCS += gui/guimisc.c
 SRCS += gui/guimouse.c
 SRCS += gui/guitools.c
 SRCS += gui/menu.c
+ifdef NO_ASM
+SRCS += init_data.c
+else
 SRCS += init.asm
+endif
 SRCS += initc.c
 SRCS += mmlib/mm.c
 SRCS += patch.c
@@ -619,7 +628,7 @@ fmt:
 	@./fmt.sh
 
 test: $(BINARY)
-	$(MAKE) -C test run
+	$(MAKE) -C test $(if $(NO_ASM),NO_ASM=1) run
 
 install:
 	install -Dm755 zsnes '$(DESTDIR)$(PREFIX)/bin/zsnes'

@@ -14,6 +14,10 @@
 
 /* ── forward-declare only what we need from the project (no heavy headers) ── */
 
+/* test_endmem.c / test_init.c */
+void test_endmem(void);
+void test_init(void);
+
 /* zpath.c – pure string utilities */
 void natify_slashes(char* str);
 char* strcutslash(char* str);
@@ -288,6 +292,9 @@ int main(void)
     test_strdirname();
     test_strbasename();
     test_strdupcat();
+
+    test_endmem();
+    test_init();
 
     ZT_RESULTS();
 }
