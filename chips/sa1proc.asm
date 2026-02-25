@@ -264,18 +264,21 @@ NEWSYM SA1switchtonmi
     xor ecx,ecx
     mov cx,[SA1xs]
     mov al,[SA1xpb]
+    movzx edx, al
     call membank0w8
 
     dec cx
     and cx,word[stackand]
     or cx,word[stackor]
     mov al,[SA1xpc+1]
+    movzx edx, al
     call membank0w8
 
     dec cx
     and cx,word[stackand]
     or cx,word[stackor]
     mov al,[SA1xpc]
+    movzx edx, al
     call membank0w8
 
     dec cx
@@ -283,6 +286,7 @@ NEWSYM SA1switchtonmi
     or cx,word[stackor]
     makedl
     mov al,dl
+    movzx edx, al
     call membank0w8
 
     dec cx
@@ -319,18 +323,21 @@ NEWSYM SA1switchtovirq
     xor ecx,ecx
     mov cx,[SA1xs]
     mov al,[SA1xpb]
+    movzx edx, al
     call membank0w8
 
     dec cx
     and cx,word[stackand]
     or cx,word[stackor]
     mov al,[SA1xpc+1]
+    movzx edx, al
     call membank0w8
 
     dec cx
     and cx,word[stackand]
     or cx,word[stackor]
     mov al,[SA1xpc]
+    movzx edx, al
     call membank0w8
 
     dec cx
@@ -338,6 +345,7 @@ NEWSYM SA1switchtovirq
     or cx,word[stackor]
     makedl
     mov al,dl
+    movzx edx, al
     call membank0w8
 
     dec cx

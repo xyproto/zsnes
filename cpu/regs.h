@@ -13,53 +13,53 @@ typedef enum Layer {
     LAYER_COL = 5
 } Layer;
 
-extern void reg2100r();
-extern void reg2134r();
-extern void reg2135r();
-extern void reg2136r();
-extern void reg2137r();
-extern void reg2138r();
-extern void reg2139r();
-extern void reg213Ar();
-extern void reg213Br();
-extern void reg213Cr();
-extern void reg213Dr();
-extern void reg213Er();
-extern void reg213Fr();
-extern void reg2140r();
-extern void reg2141r();
-extern void reg2142r();
-extern void reg2143r();
-extern void reg2180r();
-extern void reg21C2r();
-extern void reg21C3r();
-extern void reg4016r();
-extern void reg4017r();
-extern void reg4100r();
-extern void reg420Ar();
-extern void reg420Br();
-extern void reg420Cr();
-extern void reg420Dr();
-extern void reg420Er();
-extern void reg420Fr();
-extern void reg4210r();
-extern void reg4211r();
-extern void reg4212r();
-extern void reg4213r();
-extern void reg4214r();
-extern void reg4215r();
-extern void reg4216r();
-extern void reg4217r();
-extern void reg4218r();
-extern void reg4219r();
-extern void reg421Ar();
-extern void reg421Br();
-extern void reg421Cr();
-extern void reg421Dr();
-extern void reg421Er();
-extern void reg421Fr();
-extern void reg43XXr();
-extern void regINVALID();
+extern mr8 reg2100r;
+extern mr8 reg2134r;
+extern mr8 reg2135r;
+extern mr8 reg2136r;
+extern mr8 reg2137r;
+extern mr8 reg2138r;
+extern mr8 reg2139r;
+extern mr8 reg213Ar;
+extern mr8 reg213Br;
+extern mr8 reg213Cr;
+extern mr8 reg213Dr;
+extern mr8 reg213Er;
+extern mr8 reg213Fr;
+extern mr8 reg2140r;
+extern mr8 reg2141r;
+extern mr8 reg2142r;
+extern mr8 reg2143r;
+extern mr8 reg2180r;
+extern mr8 reg21C2r;
+extern mr8 reg21C3r;
+extern mr8 reg4016r;
+extern mr8 reg4017r;
+extern mr8 reg4100r;
+extern mr8 reg420Ar;
+extern mr8 reg420Br;
+extern mr8 reg420Cr;
+extern mr8 reg420Dr;
+extern mr8 reg420Er;
+extern mr8 reg420Fr;
+extern mr8 reg4210r;
+extern mr8 reg4211r;
+extern mr8 reg4212r;
+extern mr8 reg4213r;
+extern mr8 reg4214r;
+extern mr8 reg4215r;
+extern mr8 reg4216r;
+extern mr8 reg4217r;
+extern mr8 reg4218r;
+extern mr8 reg4219r;
+extern mr8 reg421Ar;
+extern mr8 reg421Br;
+extern mr8 reg421Cr;
+extern mr8 reg421Dr;
+extern mr8 reg421Er;
+extern mr8 reg421Fr;
+extern mr8 reg43XXr;
+extern mr8 regINVALID;
 
 typedef struct DMAInfo {
     u1 control; // Control register
@@ -78,7 +78,7 @@ STATIC_ASSERT(sizeof(DMAInfo) == 16);
 extern DMAInfo dmadata[8]; // DMA data (written from ports 43xx)
 
 typedef struct HDMAInfo {
-    eop* dst_reg[4]; // Destination registers
+    mw8* dst_reg[4]; // Destination registers
     u1 count; // # of bytes to transfer/line
     u2 addr_inc; // Address increment
 } __attribute__((packed)) HDMAInfo;

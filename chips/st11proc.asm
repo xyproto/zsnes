@@ -34,6 +34,7 @@ NEWSYM Seta11Read8_68
     ret
 
 NEWSYM Seta11Write8_68
+    mov al, dl
     test ecx,8000h
     jnz .nosetenablew8 ; ignore ROM writes
     mov [seta11_address],cx
@@ -51,6 +52,7 @@ NEWSYM Seta11Read16_68
     ret
 
 NEWSYM Seta11Write16_68
+    movzx eax, dx
     test ecx,8000h
     jnz .nosetenablew16 ; ignore ROM writes
     mov [seta11_address],cx
@@ -74,6 +76,7 @@ NEWSYM Seta11Read8_60
     ret
 
 NEWSYM Seta11Write8_60
+    mov al, dl
     cmp ecx,4000h
     jae .nosetenablew8
     and ecx,3
@@ -99,6 +102,7 @@ NEWSYM Seta11Read16_60
     ret
 
 NEWSYM Seta11Write16_60
+    movzx eax, dx
     cmp ecx,4000h
     jae .nosetenablew16
     and ecx,3

@@ -61,6 +61,7 @@ EXTSYM DPageR8,DPageR16,DPageW8,DPageW16
     mov cx,[esi]
     mov bl,[xdb]
     add esi,2
+    movzx edx, al
     call dword near [memtablew8+ebx*4]
 %endmacro
 
@@ -68,6 +69,7 @@ EXTSYM DPageR8,DPageR16,DPageW8,DPageW16
     mov cx,[esi]
     mov bl,[xdb]
     add esi,2
+    movzx edx, ax
     call dword near [memtablew16+ebx*4]
 %endmacro
 
@@ -91,6 +93,7 @@ EXTSYM DPageR8,DPageR16,DPageW8,DPageW16
     mov cx,[esi]
     mov bl,[esi+2]
     add esi,3
+    movzx edx, al
     call dword near [memtablew8+ebx*4]
 %endmacro
 
@@ -98,6 +101,7 @@ EXTSYM DPageR8,DPageR16,DPageW8,DPageW16
     mov cx,[esi]
     mov bl,[esi+2]
     add esi,3
+    movzx edx, ax
     call dword near [memtablew16+ebx*4]
 %endmacro
 
@@ -121,6 +125,7 @@ EXTSYM DPageR8,DPageR16,DPageW8,DPageW16
     mov bl,[esi]
     mov ecx,[xd]
     inc esi
+    movzx edx, al
     call dword near [DPageW8]
 %endmacro
 
@@ -128,6 +133,7 @@ EXTSYM DPageR8,DPageR16,DPageW8,DPageW16
     mov bl,[esi]
     mov ecx,[xd]
     inc esi
+    movzx edx, ax
     call dword near [DPageW16]
 %endmacro
 
@@ -192,6 +198,7 @@ EXTSYM DPageR8,DPageR16,DPageW8,DPageW16
     inc bl
 .np
     pop ax
+    movzx edx, al
     call dword near [memtablew8+ebx*4]
 %endmacro
 
@@ -208,6 +215,7 @@ EXTSYM DPageR8,DPageR16,DPageW8,DPageW16
     inc bl
 .np
     pop ax
+    movzx edx, ax
     call dword near [memtablew16+ebx*4]
 %endmacro
 
@@ -272,6 +280,7 @@ EXTSYM DPageR8,DPageR16,DPageW8,DPageW16
     jnc .np
     inc bl
 .np
+    movzx edx, al
     call dword near [memtablew8+ebx*4]
 %endmacro
 
@@ -295,6 +304,7 @@ EXTSYM DPageR8,DPageR16,DPageW8,DPageW16
     jnc .np
     inc bl
 .np
+    movzx edx, ax
     call dword near [memtablew16+ebx*4]
 %endmacro
 
@@ -332,6 +342,7 @@ EXTSYM DPageR8,DPageR16,DPageW8,DPageW16
     mov cx,ax
     mov bl,[xdb]
     pop ax
+    movzx edx, al
     call dword near [memtablew8+ebx*4]
 %endmacro
 
@@ -345,6 +356,7 @@ EXTSYM DPageR8,DPageR16,DPageW8,DPageW16
     mov cx,ax
     mov bl,[xdb]
     pop ax
+    movzx edx, ax
     call dword near [memtablew16+ebx*4]
 %endmacro
 
@@ -371,6 +383,7 @@ EXTSYM DPageR8,DPageR16,DPageW8,DPageW16
     mov bl,[esi]
     inc esi
     add cx,[xx]
+    movzx edx, al
     call dword near [DPageW8]
 %endmacro
 
@@ -379,6 +392,7 @@ EXTSYM DPageR8,DPageR16,DPageW8,DPageW16
     mov bl,[esi]
     inc esi
     add cx,[xx]
+    movzx edx, ax
     call dword near [DPageW16]
 %endmacro
 
@@ -405,6 +419,7 @@ EXTSYM DPageR8,DPageR16,DPageW8,DPageW16
     mov bl,[esi]
     inc esi
     add cx,[xy]
+    movzx edx, al
     call dword near [DPageW8]
 %endmacro
 
@@ -413,6 +428,7 @@ EXTSYM DPageR8,DPageR16,DPageW8,DPageW16
     mov bl,[esi]
     inc esi
     add cx,[xy]
+    movzx edx, ax
     call dword near [DPageW16]
 %endmacro
 
@@ -448,6 +464,7 @@ EXTSYM DPageR8,DPageR16,DPageW8,DPageW16
     jnc .np
     inc bl
 .np
+    movzx edx, al
     call dword near [memtablew8+ebx*4]
 %endmacro
 
@@ -459,6 +476,7 @@ EXTSYM DPageR8,DPageR16,DPageW8,DPageW16
     jnc .np
     inc bl
 .np
+    movzx edx, ax
     call dword near [memtablew16+ebx*4]
 %endmacro
 
@@ -494,6 +512,7 @@ EXTSYM DPageR8,DPageR16,DPageW8,DPageW16
     jnc .np
     inc bl
 .np
+    movzx edx, al
     call dword near [memtablew8+ebx*4]
 %endmacro
 
@@ -505,6 +524,7 @@ EXTSYM DPageR8,DPageR16,DPageW8,DPageW16
     jnc .np
     inc bl
 .np
+    movzx edx, ax
     call dword near [memtablew16+ebx*4]
 %endmacro
 
@@ -540,6 +560,7 @@ EXTSYM DPageR8,DPageR16,DPageW8,DPageW16
     jnc .np
     inc bl
 .np
+    movzx edx, al
     call dword near [memtablew8+ebx*4]
 %endmacro
 
@@ -551,6 +572,7 @@ EXTSYM DPageR8,DPageR16,DPageW8,DPageW16
     jnc .np
     inc bl
 .np
+    movzx edx, ax
     call dword near [memtablew16+ebx*4]
 %endmacro
 
@@ -597,6 +619,7 @@ EXTSYM DPageR8,DPageR16,DPageW8,DPageW16
     mov cx,ax
     mov bl,[xdb]
     pop ax
+    movzx edx, al
     call dword near [memtablew8+ebx*4]
 %endmacro
 
@@ -609,6 +632,7 @@ EXTSYM DPageR8,DPageR16,DPageW8,DPageW16
     mov cx,ax
     mov bl,[xdb]
     pop ax
+    movzx edx, ax
     call dword near [memtablew16+ebx*4]
 %endmacro
 
@@ -671,6 +695,7 @@ EXTSYM DPageR8,DPageR16,DPageW8,DPageW16
     pop ax
     mov cx,ax
     pop ax
+    movzx edx, al
     call dword near [memtablew8+ebx*4]
 %endmacro
 
@@ -689,6 +714,7 @@ EXTSYM DPageR8,DPageR16,DPageW8,DPageW16
     pop ax
     mov cx,ax
     pop ax
+    movzx edx, ax
     call dword near [memtablew16+ebx*4]
 %endmacro
 
@@ -715,6 +741,7 @@ EXTSYM DPageR8,DPageR16,DPageW8,DPageW16
     mov cx,[xs]
     inc esi
     add cx,bx
+    movzx edx, al
     call membank0w8
 %endmacro
 
@@ -723,6 +750,7 @@ EXTSYM DPageR8,DPageR16,DPageW8,DPageW16
     mov cx,[xs]
     inc esi
     add cx,bx
+    movzx edx, ax
     call membank0w16
 %endmacro
 
@@ -772,6 +800,7 @@ EXTSYM DPageR8,DPageR16,DPageW8,DPageW16
     jnc .np
     inc bl
 .np
+    movzx edx, al
     call dword near [memtablew8+ebx*4]
 %endmacro
 
@@ -789,6 +818,7 @@ EXTSYM DPageR8,DPageR16,DPageW8,DPageW16
     jnc .np
     inc bl
 .np
+    movzx edx, ax
     call dword near [memtablew16+ebx*4]
 %endmacro
 

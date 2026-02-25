@@ -190,6 +190,7 @@ NEWSYM DSP1Read16b
 %endmacro
 
 NEWSYM DSP1Write8b3F
+    mov al, dl
     test ecx,8000h
     jnz .dsp1area
     cmp bl,0E0h
@@ -200,6 +201,7 @@ NEWSYM DSP1Write8b3F
     ret
 
 NEWSYM DSP1Write16b3F
+    movzx eax, dx
     test ecx,8000h
     jnz .dsp1area
     cmp bl,0E0h
@@ -210,6 +212,7 @@ NEWSYM DSP1Write16b3F
     ret
 
 NEWSYM DSP1Write8b
+    mov al, dl
     push ebx
     xor ebx,ebx
     mov bl,al
@@ -256,6 +259,7 @@ NEWSYM DSP1Write8b
 %endmacro
 
 NEWSYM DSP1Write16b
+    movzx eax, dx
 ;    mov byte[debstop],1
     cmp byte[DSP1WLeft],0
     jne .yesleft

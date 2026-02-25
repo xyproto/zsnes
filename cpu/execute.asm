@@ -1109,6 +1109,7 @@ NEWSYM cpuover
     mov cx,[cheatdata+edx+2]
     mov bl,[cheatdata+edx+4]
     push edx
+    movzx edx, al
     call dword near [memtablew8+ebx*4]
     pop edx
     jmp .nonormcheat
@@ -1123,6 +1124,7 @@ NEWSYM cpuover
     mov cx,[cheatdata+edx+2]
     mov bl,[cheatdata+edx+4]
     push edx
+    movzx edx, al
     call dword near [memtablew8+ebx*4]
     pop edx
     add edx,28

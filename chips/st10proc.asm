@@ -34,6 +34,7 @@ NEWSYM setaaccessbankr8
     ret
 
 NEWSYM setaaccessbankw8
+    mov al, dl
     test ecx,8000h
     jnz .nosetenablew8  ; ignore ROM writes
     and ecx,0fffh
@@ -55,6 +56,7 @@ NEWSYM setaaccessbankr16
     ret
 
 NEWSYM setaaccessbankw16
+    movzx eax, dx
     test ecx,8000h
     jnz .nosetenablew16  ; ignore ROM writes
     cmp ecx,7fffh
@@ -91,6 +93,7 @@ NEWSYM setaaccessbankr8a
     ret
 
 NEWSYM setaaccessbankw8a
+    mov al, dl
     cmp ecx,4000h
     jae .nosetenablew8a
     and ecx, 03h
@@ -114,6 +117,7 @@ NEWSYM setaaccessbankr16a
     ret
 
 NEWSYM setaaccessbankw16a
+    movzx eax, dx
     cmp ecx,4000h
     jae .nosetenablew16a
     mov ebx,[setaramdata]

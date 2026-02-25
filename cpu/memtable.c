@@ -75,7 +75,7 @@ void UpdateBanksSDD1()
     }
 }
 
-extern void (*Bank0datr8[256])(), (*Bank0datr16[256])(), (*Bank0datw8[256])(), (*Bank0datw16[256])();
+#include "../chips/c_obc1proc.h"
 
 extern uint32_t xdb, xx, xy;
 extern uint16_t oamaddrt, xat, xst, xdt, xxt, xyt;
@@ -126,14 +126,8 @@ extern uint8_t Voice5Noise, Voice6Noise, Voice7Noise, bgtilesz;
 extern uint8_t BG116x16t, BG216x16t, BG316x16t, BG416x16t, vramincby8on;
 extern uint8_t vramincr;
 
-void reg2118();
-void reg2118inc();
-void reg2118inc8();
-void reg2118inc8inc();
-void reg2119();
-void reg2119inc();
-void reg2119inc8();
-void reg2119inc8inc();
+extern mw8 reg2118, reg2118inc, reg2118inc8, reg2118inc8inc;
+extern mw8 reg2119, reg2119inc, reg2119inc8, reg2119inc8inc;
 
 void repackfunct()
 {
@@ -222,35 +216,46 @@ void repackfunct()
     }
 }
 
-void regaccessbankr8(), regaccessbankw8(), regaccessbankr16(), regaccessbankw16();
-void memaccessbankr8(), memaccessbankw8(), memaccessbankr16(), memaccessbankw16();
-void wramaccessbankr8(), wramaccessbankw8(), wramaccessbankr16(), wramaccessbankw16();
-void sramaccessbankr8(), sramaccessbankw8(), sramaccessbankr16(), sramaccessbankw16();
-void eramaccessbankr8(), eramaccessbankw8(), eramaccessbankr16(), eramaccessbankw16();
+extern mr8  regaccessbankr8,   memaccessbankr8,   wramaccessbankr8,   sramaccessbankr8,   eramaccessbankr8;
+extern mw8  regaccessbankw8,   memaccessbankw8,   wramaccessbankw8,   sramaccessbankw8,   eramaccessbankw8;
+extern mr16 regaccessbankr16,  memaccessbankr16,  wramaccessbankr16,  sramaccessbankr16,  eramaccessbankr16;
+extern mw16 regaccessbankw16,  memaccessbankw16,  wramaccessbankw16,  sramaccessbankw16,  eramaccessbankw16;
 
-void regaccessbankr8SA1(), regaccessbankw8SA1(), regaccessbankr16SA1(), regaccessbankw16SA1();
-void SA1RAMaccessbankr8(), SA1RAMaccessbankw8(), SA1RAMaccessbankr16(), SA1RAMaccessbankw16();
-void SA1RAMaccessbankr8b(), SA1RAMaccessbankw8b(), SA1RAMaccessbankr16b(), SA1RAMaccessbankw16b();
+extern mr8  regaccessbankr8SA1,  SA1RAMaccessbankr8,  SA1RAMaccessbankr8b;
+extern mw8  regaccessbankw8SA1,  SA1RAMaccessbankw8,  SA1RAMaccessbankw8b;
+extern mr16 regaccessbankr16SA1, SA1RAMaccessbankr16, SA1RAMaccessbankr16b;
+extern mw16 regaccessbankw16SA1, SA1RAMaccessbankw16, SA1RAMaccessbankw16b;
 
-void sramaccessbankr8s(), sramaccessbankw8s(), sramaccessbankr16s(), sramaccessbankw16s();
-void DSP1Read8b3F(), DSP1Write8b3F(), DSP1Read16b3F(), DSP1Write16b3F();
-void DSP2Read8b(), DSP2Write8b(), DSP2Read16b(), DSP2Write16b();
-void DSP3Read8b(), DSP3Write8b(), DSP3Read16b(), DSP3Write16b();
-void DSP4Read8b(), DSP4Write8b(), DSP4Read16b(), DSP4Write16b();
-void setaaccessbankr8(), setaaccessbankw8(), setaaccessbankr16(), setaaccessbankw16();
-void setaaccessbankr8a(), setaaccessbankw8a(), setaaccessbankr16a(), setaaccessbankw16a();
-void Seta11Read8_60(), Seta11Write8_60(), Seta11Read16_60(), Seta11Write16_60();
-void Seta11Read8_68(), Seta11Write8_68(), Seta11Read16_68(), Seta11Write16_68();
-void sfxaccessbankr8(), sfxaccessbankw8(), sfxaccessbankr16(), sfxaccessbankw16();
-void sfxaccessbankr8b(), sfxaccessbankw8b(), sfxaccessbankr16b(), sfxaccessbankw16b();
-void sfxaccessbankr8c(), sfxaccessbankw8c(), sfxaccessbankr16c(), sfxaccessbankw16c();
-void sfxaccessbankr8d(), sfxaccessbankw8d(), sfxaccessbankr16d(), sfxaccessbankw16d();
-void OBC1Read8b(), OBC1Write8b(), OBC1Read16b(), OBC1Write16b();
-void C4Read8b(), C4Write8b(), C4Read16b(), C4Write16b();
-void memaccessspc7110r8(), memaccessspc7110r16(), memaccessspc7110w8(), memaccessspc7110w16();
-void SPC7110ReadSRAM8b(), SPC7110ReadSRAM16b(), SPC7110WriteSRAM8b(), SPC7110WriteSRAM16b();
-void stsramr8(), stsramr16(), stsramw8(), stsramw16();
-void stsramr8b(), stsramr16b(), stsramw8b(), stsramw16b();
+extern mr8  sramaccessbankr8s;  extern mw8  sramaccessbankw8s;
+extern mr16 sramaccessbankr16s; extern mw16 sramaccessbankw16s;
+extern mr8  DSP1Read8b3F;   extern mw8  DSP1Write8b3F;
+extern mr16 DSP1Read16b3F;  extern mw16 DSP1Write16b3F;
+extern mr8  DSP2Read8b;     extern mw8  DSP2Write8b;
+extern mr16 DSP2Read16b;    extern mw16 DSP2Write16b;
+extern mr8  DSP3Read8b;     extern mw8  DSP3Write8b;
+extern mr16 DSP3Read16b;    extern mw16 DSP3Write16b;
+extern mr8  DSP4Read8b;     extern mw8  DSP4Write8b;
+extern mr16 DSP4Read16b;    extern mw16 DSP4Write16b;
+extern mr8  setaaccessbankr8,  setaaccessbankr8a;
+extern mw8  setaaccessbankw8,  setaaccessbankw8a;
+extern mr16 setaaccessbankr16, setaaccessbankr16a;
+extern mw16 setaaccessbankw16, setaaccessbankw16a;
+extern mr8  Seta11Read8_60,  Seta11Read8_68;
+extern mw8  Seta11Write8_60, Seta11Write8_68;
+extern mr16 Seta11Read16_60,  Seta11Read16_68;
+extern mw16 Seta11Write16_60, Seta11Write16_68;
+extern mr8  sfxaccessbankr8,  sfxaccessbankr8b,  sfxaccessbankr8c,  sfxaccessbankr8d;
+extern mw8  sfxaccessbankw8,  sfxaccessbankw8b,  sfxaccessbankw8c,  sfxaccessbankw8d;
+extern mr16 sfxaccessbankr16, sfxaccessbankr16b, sfxaccessbankr16c, sfxaccessbankr16d;
+extern mw16 sfxaccessbankw16, sfxaccessbankw16b, sfxaccessbankw16c, sfxaccessbankw16d;
+extern mr8  C4Read8b;     extern mw8  C4Write8b;
+extern mr16 C4Read16b;    extern mw16 C4Write16b;
+extern mr8  memaccessspc7110r8;   extern mw8  memaccessspc7110w8;
+extern mr16 memaccessspc7110r16;  extern mw16 memaccessspc7110w16;
+extern mr8  SPC7110ReadSRAM8b;    extern mw8  SPC7110WriteSRAM8b;
+extern mr16 SPC7110ReadSRAM16b;   extern mw16 SPC7110WriteSRAM16b;
+extern mr8  stsramr8,  stsramr8b;   extern mw8  stsramw8,  stsramw8b;
+extern mr16 stsramr16, stsramr16b;  extern mw16 stsramw16, stsramw16b;
 
 mrwp regbank = { regaccessbankr8, regaccessbankw8, regaccessbankr16, regaccessbankw16 };
 mrwp membank = { memaccessbankr8, memaccessbankw8, memaccessbankr16, memaccessbankw16 };
@@ -305,13 +310,14 @@ void SetAddressingModesSA1()
     map_mem(0xC0, &membank, 0x40); // C0 - FF
 }
 
-void membank0r8reg(), membank0w8reg(), membank0r16reg(), membank0w16reg();
-void membank0r8ram(), membank0w8ram(), membank0r16ram(), membank0w16ram();
-void membank0r8rom(), membank0w8rom(), membank0r16rom(), membank0w16rom();
-void membank0r8romram(), membank0w8romram(), membank0r16romram(), membank0w16romram();
-void membank0r8inv(), membank0w8inv(), membank0r16inv(), membank0w16inv();
-void membank0r8chip(), membank0w8chip(), membank0r16chip(), membank0w16chip();
-void membank0r8ramSA1(), membank0w8ramSA1(), membank0r16ramSA1(), membank0w16ramSA1();
+extern mr8  membank0r8reg,    membank0r8ram,    membank0r8rom,    membank0r8romram;
+extern mr8  membank0r8inv,    membank0r8chip,   membank0r8ramSA1;
+extern mw8  membank0w8reg,    membank0w8ram,    membank0w8rom,    membank0w8romram;
+extern mw8  membank0w8inv,    membank0w8chip,   membank0w8ramSA1;
+extern mr16 membank0r16reg,   membank0r16ram,   membank0r16rom,   membank0r16romram;
+extern mr16 membank0r16inv,   membank0r16chip,  membank0r16ramSA1;
+extern mw16 membank0w16reg,   membank0w16ram,   membank0w16rom,   membank0w16romram;
+extern mw16 membank0w16inv,   membank0w16chip,  membank0w16ramSA1;
 
 mrwp regbank0 = { membank0r8reg, membank0w8reg, membank0r16reg, membank0w16reg };
 mrwp rambank0 = { membank0r8ram, membank0w8ram, membank0r16ram, membank0w16ram };
@@ -323,10 +329,10 @@ mrwp sa1rambank0 = { membank0r8ramSA1, membank0w8ramSA1, membank0r16ramSA1, memb
 
 static void map_bank0(size_t dest, mrwp* src, size_t num)
 {
-    rep_stosd(Bank0datr8 + dest, src->memr8, num);
-    rep_stosd(Bank0datw8 + dest, src->memw8, num);
-    rep_stosd(Bank0datr16 + dest, src->memr16, num);
-    rep_stosd(Bank0datw16 + dest, src->memw16, num);
+    rep_stosd_r8 (Bank0datr8  + dest, src->memr8,  num);
+    rep_stosd_w8 (Bank0datw8  + dest, src->memw8,  num);
+    rep_stosd_r16(Bank0datr16 + dest, src->memr16, num);
+    rep_stosd_w16(Bank0datw16 + dest, src->memw16, num);
 }
 
 void GenerateBank0Table()

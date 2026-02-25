@@ -3,14 +3,14 @@
 #include "../endmem.h"
 #include "../init.h"
 
-eop* DPageR16;
-eop* DPageR8;
-eop* DPageW16;
-eop* DPageW8;
-eop* SA1DPageR16;
-eop* SA1DPageR8;
-eop* SA1DPageW16;
-eop* SA1DPageW8;
+mr8*  DPageR8;
+mr16* DPageR16;
+mw8*  DPageW8;
+mw16* DPageW16;
+mr8*  SA1DPageR8;
+mr16* SA1DPageR16;
+mw8*  SA1DPageW8;
+mw16* SA1DPageW16;
 
 void UpdateDPage(void)
 {

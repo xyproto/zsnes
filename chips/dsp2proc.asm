@@ -225,6 +225,7 @@ NEWSYM _DSP2Add2Queue
     ret
 
 NEWSYM DSP2Write8b
+    mov al, dl
 .enter
     ; Tests halt flag
     test byte[dsp2state],DSP2F_HALT
@@ -588,6 +589,7 @@ NEWSYM DSP2Write8b
     ret
 
 NEWSYM DSP2Write16b
+    movzx eax, dx
 .enter
     xor eax,eax
 .leave

@@ -1032,9 +1032,11 @@ NEWSYM memaccessspc7110r16
 
 ;Should look into these two
 NEWSYM memaccessspc7110w8
+    mov al, dl
     ;int 3
     ret
 
 NEWSYM memaccessspc7110w16
+    movzx eax, dx
     ;int 3
     ret

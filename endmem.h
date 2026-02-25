@@ -3,10 +3,10 @@
 
 #include "types.h"
 
-extern eop* Bank0datr16[256];
-extern eop* Bank0datr8[256];
-extern eop* Bank0datw16[256];
-extern eop* Bank0datw8[256];
+extern mr8* Bank0datr8[256];
+extern mr16* Bank0datr16[256];
+extern mw8* Bank0datw8[256];
+extern mw16* Bank0datw16[256];
 extern eop* opcjmptab[256];
 
 extern eop* tableA[256];
