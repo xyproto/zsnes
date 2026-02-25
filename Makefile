@@ -1,4 +1,4 @@
-.PHONY: clean distclean fmt info
+.PHONY: clean distclean fmt info test
 
 # Supported ARCH values:
 #   LINUX, FREEBSD, OPENBSD, NETBSD, DARWIN, WIN
@@ -296,8 +296,8 @@ SRCS += chips/fxemu2.asm
 SRCS += chips/fxemu2b.asm
 SRCS += chips/fxemu2c.asm
 SRCS += chips/fxtable.asm
+SRCS += chips/c_obc1proc.c
 SRCS += chips/obc1emu.c
-SRCS += chips/obc1proc.asm
 SRCS += chips/sa1emu.c
 SRCS += chips/sa1proc.asm
 SRCS += chips/sa1regs.asm
@@ -617,6 +617,9 @@ info:
 
 fmt:
 	@./fmt.sh
+
+test: $(BINARY)
+	$(MAKE) -C test run
 
 install:
 	install -Dm755 zsnes '$(DESTDIR)$(PREFIX)/bin/zsnes'
