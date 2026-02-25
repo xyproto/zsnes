@@ -7,11 +7,11 @@
  *   0x8000-0xBFFF  → DSP4 chip registers
  */
 
-#include "../types.h"
 #include "../cpu/memory.h"
+#include "../types.h"
 
-extern u1   dsp4_byte;
-extern u2   dsp4_address;
+extern u1 dsp4_byte;
+extern u2 dsp4_address;
 extern void DSP4GetByte(void);
 extern void DSP4SetByte(void);
 
@@ -28,10 +28,14 @@ u1 __attribute__((fastcall)) DSP4Read8b(u2 addr)
 
 void __attribute__((fastcall)) DSP4Write8b(u2 addr, u1 val)
 {
-    if (!(addr & 0x8000)) { regaccessbankw8(addr, val); return; }
-    if (addr & 0x4000) return;
+    if (!(addr & 0x8000)) {
+        regaccessbankw8(addr, val);
+        return;
+    }
+    if (addr & 0x4000)
+        return;
     dsp4_address = addr;
-    dsp4_byte    = val;
+    dsp4_byte = val;
     DSP4SetByte();
 }
 
@@ -51,10 +55,14 @@ u2 __attribute__((fastcall)) DSP4Read16b(u2 addr)
 
 void __attribute__((fastcall)) DSP4Write16b(u2 addr, u2 val)
 {
-    if (!(addr & 0x8000)) { regaccessbankw16(addr, val); return; }
-    if (addr & 0x4000) return;
+    if (!(addr & 0x8000)) {
+        regaccessbankw16(addr, val);
+        return;
+    }
+    if (addr & 0x4000)
+        return;
     dsp4_address = addr;
-    dsp4_byte    = (u1)val;
+    dsp4_byte = (u1)val;
     DSP4SetByte();
     dsp4_address++;
     dsp4_byte = (u1)(val >> 8);
