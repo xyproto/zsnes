@@ -3,6 +3,17 @@
 
 #include "types.h"
 
+#ifdef NO_ASM
+extern void cachetile2b(u4 area);
+extern void cachetile2b16x16(u4 area);
+extern void cachetile4b(u4 area);
+extern void cachetile4b16x16(u4 area);
+extern void cachetile8b(u4 area);
+extern void cachetile8b16x16(u4 area);
+extern void cachesprites(void);
+extern void processsprites(void);
+extern void cachesingle4bng(void);
+#else
 extern void cachesingle4bng();
 extern void cachesprites();
 extern void cachetile2b();
@@ -12,6 +23,7 @@ extern void cachetile4b16x16();
 extern void cachetile8b();
 extern void cachetile8b16x16();
 extern void processsprites();
+#endif
 
 extern u1 lineleft;
 extern u1 res480;

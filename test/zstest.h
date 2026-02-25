@@ -4,9 +4,9 @@
 #include <stdio.h>
 #include <string.h>
 
-static int zt_passes = 0;
-static int zt_failures = 0;
-static int zt_section_fails = 0;
+extern int zt_passes;
+extern int zt_failures;
+extern int zt_section_fails;
 
 #define ZT_SECTION(name)                \
     do {                                \

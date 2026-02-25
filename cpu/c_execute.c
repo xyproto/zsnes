@@ -239,8 +239,13 @@ void Donextlinecache(void)
             sprend[ecx] = 0;
             sprendx[ecx] = 0;
         } while (++ecx != 0);
+#ifdef NO_ASM
+        processsprites();
+        cachesprites();
+#else
         asm_call(processsprites);
         asm_call(cachesprites);
+#endif
     }
     NextLineCache = 0;
 }

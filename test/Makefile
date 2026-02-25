@@ -18,7 +18,9 @@ SRC  := main.c test_endmem.c test_init.c
 # Object files from the parent build that contain the functions under test.
 # These must already exist (built by `make` in the parent directory).
 ifdef NO_ASM
-OBJS := ../zpath.o ../c_endmem_data.o ../init_data.o
+SRC  += test_vcache.c
+CFLAGS += -DNO_ASM
+OBJS := ../zpath.o ../c_endmem_data.o ../init_data.o ../c_vcache_asm.o
 else
 OBJS := ../zpath.o ../endmem.o ../init.o
 endif

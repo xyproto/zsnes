@@ -200,8 +200,13 @@ static void docache(void)
 
     // do sprites
     if (!(scrndis & 0x10)) {
+#ifdef NO_ASM
+        cachesprites();
+        processsprites();
+#else
         asm_call(cachesprites);
         asm_call(processsprites);
+#endif
     }
 }
 

@@ -238,16 +238,28 @@ static void proc16x16(u2 const ax, u2 const dx, u1* const edi, u4 const layer, u
         edi[eax] = 1;
         switch (curcolor) {
         case 1:
+            #ifdef NO_ASM
+            cachetile2b16x16(eax);
+            #else
             asm volatile("call %P0" ::"X"(cachetile2b16x16), "a"(eax)
                 : "cc", "memory", "ecx", "esi", "edi");
+            #endif
             break;
         case 2:
+            #ifdef NO_ASM
+            cachetile4b16x16(eax);
+            #else
             asm volatile("call %P0" ::"X"(cachetile4b16x16), "a"(eax)
                 : "cc", "memory", "ecx", "esi", "edi");
+            #endif
             break;
         default:
+            #ifdef NO_ASM
+            cachetile8b16x16(eax);
+            #else
             asm volatile("call %P0" ::"X"(cachetile8b16x16), "a"(eax)
                 : "cc", "memory", "ecx", "esi", "edi");
+            #endif
             break;
         }
     }
@@ -309,16 +321,28 @@ static void proc16x8(u2 const ax, u2 const dx, u1* const edi, u4 const layer, u1
         edi[eax] = 1;
         switch (curcolor) {
         case 1:
+            #ifdef NO_ASM
+            cachetile2b16x16(eax);
+            #else
             asm volatile("call %P0" ::"X"(cachetile2b16x16), "a"(eax)
                 : "cc", "memory", "ecx", "esi", "edi");
+            #endif
             break;
         case 2:
+            #ifdef NO_ASM
+            cachetile4b16x16(eax);
+            #else
             asm volatile("call %P0" ::"X"(cachetile4b16x16), "a"(eax)
                 : "cc", "memory", "ecx", "esi", "edi");
+            #endif
             break;
         default:
+            #ifdef NO_ASM
+            cachetile8b16x16(eax);
+            #else
             asm volatile("call %P0" ::"X"(cachetile8b16x16), "a"(eax)
                 : "cc", "memory", "ecx", "esi", "edi");
+            #endif
             break;
         }
     }
@@ -376,16 +400,28 @@ static void proc8x8(u2 const ax, u2 const dx, u1* const edi, u4 const layer, u1 
         edi[eax] = 1;
         switch (curcolor) {
         case 1:
+            #ifdef NO_ASM
+            cachetile2b(eax);
+            #else
             asm volatile("call %P0" ::"X"(cachetile2b), "a"(eax)
                 : "cc", "memory", "ecx", "esi", "edi");
+            #endif
             break;
         case 2:
+            #ifdef NO_ASM
+            cachetile4b(eax);
+            #else
             asm volatile("call %P0" ::"X"(cachetile4b), "a"(eax)
                 : "cc", "memory", "ecx", "esi", "edi");
+            #endif
             break;
         default:
+            #ifdef NO_ASM
+            cachetile8b(eax);
+            #else
             asm volatile("call %P0" ::"X"(cachetile8b), "a"(eax)
                 : "cc", "memory", "ecx", "esi", "edi");
+            #endif
             break;
         }
     }

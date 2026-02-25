@@ -12,11 +12,19 @@
 
 #include "zstest.h"
 
+int zt_passes = 0;
+int zt_failures = 0;
+int zt_section_fails = 0;
+
 /* ── forward-declare only what we need from the project (no heavy headers) ── */
 
 /* test_endmem.c / test_init.c */
 void test_endmem(void);
 void test_init(void);
+#ifdef NO_ASM
+/* test_vcache.c — only in NO_ASM builds (C tile cache functions) */
+void test_vcache(void);
+#endif
 
 /* zpath.c – pure string utilities */
 void natify_slashes(char* str);
@@ -295,6 +303,9 @@ int main(void)
 
     test_endmem();
     test_init();
+#ifdef NO_ASM
+    test_vcache();
+#endif
 
     ZT_RESULTS();
 }

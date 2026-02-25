@@ -95,6 +95,9 @@ WITH_AO       :=
 #WITH_DEBUGGER := yes
 WITH_JMA      := yes
 NO_ASM        ?=
+ifdef NO_ASM
+  CFLAGS += -DNO_ASM
+endif
 WITH_OPENGL   := yes
 WITH_PNG      := yes
 WITH_SDL      := $(if $(filter $(ARCH),$(UNIXSDL_ARCHES)),yes,)
@@ -360,7 +363,11 @@ SRCS += initc.c
 SRCS += mmlib/mm.c
 SRCS += patch.c
 SRCS += ui.c
+ifdef NO_ASM
+SRCS += c_vcache_asm.c
+else
 SRCS += vcache.asm
+endif
 SRCS += ver.c
 SRCS += video/2xsaiw.asm
 SRCS += video/c_2xsaiw.c
