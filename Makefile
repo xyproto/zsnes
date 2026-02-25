@@ -345,7 +345,11 @@ SRCS += endmem.asm
 endif
 SRCS += gui/c_gui.c
 SRCS += gui/c_guiwindp.c
+ifdef NO_ASM
+SRCS += gui/c_gui_data.c
+else
 SRCS += gui/gui.asm
+endif
 SRCS += gui/guicheat.c
 SRCS += gui/guicombo.c
 SRCS += gui/guifuncs.c
