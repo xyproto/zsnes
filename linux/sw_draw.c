@@ -20,6 +20,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
 #include "../video/sw_draw.h"
+#include "../video_backend.h"
 #include "../cfg.h"
 #include "../gblhdr.h"
 #include "../intrf.h"
@@ -43,7 +44,7 @@ void NTSCFilterInit();
 void NTSCFilterDraw(int SurfaceX, int SurfaceY, int pitch, unsigned char* buffer);
 char CheckOGLMode();
 
-bool sw_start(int width, int height, int req_depth, int FullScreen)
+int sw_start(int width, int height, int req_depth, int FullScreen)
 {
     uint32_t flags = 0;
 
@@ -249,3 +250,11 @@ void sw_drawwin()
 
     UnlockSurface();
 }
+
+video_backend_t const video_sw = {
+    "software",
+    sw_start,
+    sw_end,
+    sw_clearwin,
+    sw_drawwin
+};

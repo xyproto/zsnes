@@ -20,6 +20,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
 #include "../cfg.h"
+#include "../video_backend.h"
 #include "../gblhdr.h"
 #include "../link.h"
 #include "../video/copyvwin.h"
@@ -409,3 +410,11 @@ void gl_scanlines()
 
     glscanready = sl_intensity;
 }
+
+video_backend_t const video_gl = {
+    "opengl",
+    gl_start,
+    gl_end,
+    gl_clearwin,
+    gl_drawwin
+};

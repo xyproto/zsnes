@@ -22,6 +22,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "../gblhdr.h"
 #include "gl_draw.h"
 #include "sw_draw.h"
+#include "../video_backend.h"
 
 #include <stdbool.h>
 #include <sys/time.h>
@@ -45,7 +46,9 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #ifdef __OPENGL__
 #include "gl_draw.h"
+extern video_backend_t const video_gl;
 #endif
+extern video_backend_t const video_sw;
 
 #ifdef QT_DEBUGGER
 #include "debugger/load.h"
@@ -77,6 +80,7 @@ static uint32_t WindowHeight = 224;
 static uint32_t FullScreen = 0;
 static vidstate_t sdl_state = vid_null;
 static int UseOpenGL = 0;
+static video_backend_t const* vbackend = NULL;
 static const int BitDepth = 16;
 static bool ScreenSaverSuspended = false;
 static uint32_t FirstVid = 1;
@@ -1091,23 +1095,21 @@ int startgame()
         sdl_state = vid_none;
     }
 
-    if (sdl_state == vid_soft) {
-        sw_end();
+    if (vbackend) {
+        vbackend->end();
+        vbackend = NULL;
     }
 #ifdef __OPENGL__
-    else if (sdl_state == vid_gl) {
-        gl_end();
-    }
 
     SDL_Init(SDL_INIT_VIDEO);
 
-    if (UseOpenGL) {
-        status = gl_start(WindowWidth, WindowHeight, BitDepth, FullScreen);
-    } else
+    vbackend = UseOpenGL ? &video_gl : &video_sw;
+#else
+    SDL_Init(SDL_INIT_VIDEO);
+
+    vbackend = &video_sw;
 #endif
-    {
-        status = sw_start(WindowWidth, WindowHeight, BitDepth, FullScreen);
-    }
+    status = vbackend->start(WindowWidth, WindowHeight, BitDepth, FullScreen);
 
     if (!status) {
         return FALSE;
@@ -1467,13 +1469,8 @@ void clearwin(void)
         return;
     }
 
-#ifdef __OPENGL__
-    if (UseOpenGL) {
-        gl_clearwin();
-    } else
-#endif
-    {
-        sw_clearwin();
+    if (vbackend) {
+        vbackend->clear();
     }
 }
 
@@ -1501,13 +1498,8 @@ void drawscreenwin(void)
         return;
     }
 
-#ifdef __OPENGL__
-    if (UseOpenGL) {
-        gl_drawwin();
-    } else
-#endif
-    {
-        sw_drawwin();
+    if (vbackend) {
+        vbackend->draw();
     }
 }
 
@@ -1515,14 +1507,10 @@ void UnloadSDL()
 {
     DeinitSound();
     sem_sleep_die(); // Shutdown semaphore
-    if (sdl_state == vid_soft) {
-        sw_end();
+    if (vbackend) {
+        vbackend->end();
+        vbackend = NULL;
     }
-#ifdef __OPENGL__
-    else if (sdl_state == vid_gl) {
-        gl_end();
-    }
-#endif
     if (sdl_state != vid_null && sdl_window) {
         SDL_SetWindowGrab(sdl_window, SDL_FALSE);
     }
