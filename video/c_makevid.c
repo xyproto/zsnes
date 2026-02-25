@@ -10,6 +10,10 @@
 #include "c_makevid.h"
 #include "makevid.h"
 
+#ifdef NO_ASM
+extern void dualstartprocess_c(u1 flags, u1 logic);
+#endif
+
 static void makedualwin(u1 const al, Layer const ebp)
 {
     u1 const cl = winlogica >> (u1)(ebp * 2) & 0x03;
@@ -32,12 +36,16 @@ static void makedualwin(u1 const al, Layer const ebp)
         cwinptr = winbgdata + 16;
         winon = 1;
         winonbtype = 1;
+#ifdef NO_ASM
+        dualstartprocess_c(al, cl);
+#else
         u1 al_ = al;
         u1 cl_ = cl;
         asm volatile("call %P2"
             : "+a"(al_), "+c"(cl_)
             : "X"(dualstartprocess)
             : "cc", "memory", "edx", "edi");
+#endif
     }
 }
 
@@ -146,7 +154,12 @@ void makewindowsp(void)
     case 0x00:
         return;
     case 0x0A:
+#ifdef NO_ASM
+        { extern void makedualwinsp_c(u1 flags);
+          makedualwinsp_c(al); }
+#else
         asm_call(makedualwinsp);
+#endif
         return;
     }
 

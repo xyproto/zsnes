@@ -194,26 +194,43 @@ u4 cpalval[256];
 u1 cgfxmod[256];
 
 u4 winboundary[256];
-u1 winbg1enval[256];
-u1 winbg2enval[256];
-u1 winbg3enval[256];
-u1 winbg4enval[256];
-u1 winbgobjenval[256];
-u1 winbgbackenval[256];
-u2 winlogicaval[256];
+/*
+ * These three groups must each be CONTIGUOUS and IN DECLARATION ORDER.
+ * newgfx16.asm WinBGCheck macro accesses them as [winbg1envalX + %1*256]
+ * where %1 = 0..5, so winbg(N+1)envalX must be at winbg1envalX + N*256.
+ * We use inline assembly to guarantee the correct ordering regardless of
+ * linker behaviour with -fdata-sections / -fcommon.
+ */
+__asm__(
+    ".pushsection .bss.winbg_enval_grp,\"aw\",@nobits\n"
+    ".global winbg1enval\nwinbg1enval:\n.zero 256\n"
+    ".global winbg2enval\nwinbg2enval:\n.zero 256\n"
+    ".global winbg3enval\nwinbg3enval:\n.zero 256\n"
+    ".global winbg4enval\nwinbg4enval:\n.zero 256\n"
+    ".global winbgobjenval\nwinbgobjenval:\n.zero 256\n"
+    ".global winbgbackenval\nwinbgbackenval:\n.zero 256\n"
+    ".popsection\n"
 
-u1 winbg1envals[256];
-u1 winbg2envals[256];
-u1 winbg3envals[256];
-u1 winbg4envals[256];
-u1 winbgobjenvals[256];
-u1 winbgbackenvals[256];
-u1 winbg1envalm[256];
-u1 winbg2envalm[256];
-u1 winbg3envalm[256];
-u1 winbg4envalm[256];
-u1 winbgobjenvalm[256];
-u1 winbgbackenvalm[256];
+    ".pushsection .bss.winbg_envals_grp,\"aw\",@nobits\n"
+    ".global winbg1envals\nwinbg1envals:\n.zero 256\n"
+    ".global winbg2envals\nwinbg2envals:\n.zero 256\n"
+    ".global winbg3envals\nwinbg3envals:\n.zero 256\n"
+    ".global winbg4envals\nwinbg4envals:\n.zero 256\n"
+    ".global winbgobjenvals\nwinbgobjenvals:\n.zero 256\n"
+    ".global winbgbackenvals\nwinbgbackenvals:\n.zero 256\n"
+    ".popsection\n"
+
+    ".pushsection .bss.winbg_envalm_grp,\"aw\",@nobits\n"
+    ".global winbg1envalm\nwinbg1envalm:\n.zero 256\n"
+    ".global winbg2envalm\nwinbg2envalm:\n.zero 256\n"
+    ".global winbg3envalm\nwinbg3envalm:\n.zero 256\n"
+    ".global winbg4envalm\nwinbg4envalm:\n.zero 256\n"
+    ".global winbgobjenvalm\nwinbgobjenvalm:\n.zero 256\n"
+    ".global winbgbackenvalm\nwinbgbackenvalm:\n.zero 256\n"
+    ".popsection\n"
+);
+
+u2 winlogicaval[256];
 
 u1 FillSubScr[256];
 

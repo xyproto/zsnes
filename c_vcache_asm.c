@@ -665,7 +665,88 @@ void processsprites(void)
     }
 }
 
-/* Stub functions called only from video rendering ASM */
+/*
+ * cachesingle*ng — decode a single tile on demand.
+ * Called from C video code (c_makev16b.c) with the tile index.
+ * "ng" = new graphics (16-bit) path.
+ *
+ * Input: tile index is passed via the global `ecx` register in ASM,
+ *        but in C we use a parameter.  The callers are wrapped with
+ *        #ifdef NO_ASM to call the C version with a direct argument.
+ *
+ * The ASM-compatible wrappers (no args, reads ecx) are kept for
+ * symbol compatibility when ASM video code is still linked.
+ */
+
+void cachesingle4bng_c(u4 idx)
+{
+    vidmemch4[idx] = 0;
+    u1 ttype = 3;
+    u1* dst = vcache4b + idx * 64;
+    const u1* src = vram + idx * 32;
+    int row;
+    for (row = 0; row < 8; row++) {
+        decode_4bpp_row_typed(src + row * 2, dst + row * 8, &ttype);
+    }
+    tltype4b[idx] = ttype;
+}
+
+void cachesingle2bng_c(u4 idx)
+{
+    vidmemch2[idx] = 0;
+    u1 ttype = 3;
+    u1* dst = vcache2b + idx * 64;
+    const u1* src = vram + idx * 16;
+    int row;
+    for (row = 0; row < 8; row++) {
+        u1 p0 = src[row * 2];
+        u1 p1 = src[row * 2 + 1];
+        int i;
+        for (i = 0; i < 8; i++) {
+            int shift = 7 - i;
+            u1 px = (u1)(((p1 >> shift) & 1) << 1 |
+                          ((p0 >> shift) & 1));
+            dst[row * 8 + i] = px;
+            if (px) ttype &= 1;
+            else    ttype &= 2;
+        }
+    }
+    tltype2b[idx] = ttype;
+}
+
+void cachesingle8bng_c(u4 idx)
+{
+    vidmemch8[idx] = 0;
+    u1 ttype = 3;
+    u1* dst = vcache8b + idx * 64;
+    const u1* src = vram + idx * 64;
+    int row;
+    for (row = 0; row < 8; row++) {
+        u1 planes[8];
+        int p;
+        planes[0] = src[row * 2];
+        planes[1] = src[row * 2 + 1];
+        planes[2] = src[row * 2 + 16];
+        planes[3] = src[row * 2 + 17];
+        planes[4] = src[row * 2 + 32];
+        planes[5] = src[row * 2 + 33];
+        planes[6] = src[row * 2 + 48];
+        planes[7] = src[row * 2 + 49];
+        int i;
+        for (i = 0; i < 8; i++) {
+            int shift = 7 - i;
+            u1 px = 0;
+            for (p = 0; p < 8; p++)
+                px |= (u1)(((planes[p] >> shift) & 1) << p);
+            dst[row * 8 + i] = px;
+            if (px) ttype &= 1;
+            else    ttype &= 2;
+        }
+    }
+    tltype8b[idx] = ttype;
+}
+
+/* ASM-compatible stubs (no args — called from ASM with ecx in register) */
 void cachesingle4bng(void) { }
 void cachesingle2bng(void) { }
 void cachesingle8bng(void) { }

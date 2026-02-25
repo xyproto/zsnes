@@ -20,6 +20,12 @@
 #include "newgfx.h"
 #include "procvid.h"
 
+#ifdef NO_ASM
+extern void cachesingle4bng_c(u4 idx);
+extern void preparesprpr_c(void);
+extern void domosaic16b_c(void);
+#endif
+
 static u2 draw16x1616b_yadd;
 static u2 draw16x1616b_yflipadd;
 
@@ -563,11 +569,15 @@ static void draw16x1616bwinon(u2* esi, u2 const* edi)
         }
     } while (--tileleft16b != 0);
     if (curmosaicsz != 1) {
+        #ifdef NO_ASM
+        domosaic16b_c();
+        #else
         u4 edx = curmosaicsz << 8;
         asm volatile("push %%ebp;  call %P1;  pop %%ebp"
             : "+d"(edx)
             : "X"(domosaic16b)
             : "cc", "memory", "eax", "ecx", "esi", "edi");
+        #endif
     }
 }
 
@@ -681,11 +691,15 @@ void draw16x1616b(u4 const eax, u4 const ecx, u2* const edx, u1* const ebx, u4 c
             }
         } while (--tileleft16b != 0);
         if (curmosaicsz != 1) {
+            #ifdef NO_ASM
+            domosaic16b_c();
+            #else
             u4 edx = curmosaicsz << 8;
             asm volatile("push %%ebp;  call %P1;  pop %%ebp"
                 : "+d"(edx)
                 : "X"(domosaic16b)
                 : "cc", "memory", "eax", "ecx", "esi", "edi");
+            #endif
         }
     }
 }
@@ -758,8 +772,12 @@ static void offsetmcachechk(u4 const eax)
     u4 const ecx = (eax + ngptrdat2) & 0x07FF;
     if (vidmemch4[ecx] == 0)
         return;
+#ifdef NO_ASM
+    cachesingle4bng_c(ecx);
+#else
     asm volatile("call %P0" ::"X"(cachesingle4bng), "c"(ecx)
         : "cc", "memory");
+#endif
 }
 
 static u2* procoffsetmode(void)
@@ -953,11 +971,15 @@ void draw8x816boffset(u4 const eax, u4 const ecx, u2* const edx, u1* const ebx, 
             edi = procoffsetmode();
         } while (esi += 8, --tileleft16b != 0);
         if (drawn != 0 && curmosaicsz != 1) {
+            #ifdef NO_ASM
+            domosaic16b_c();
+            #else
             u4 edx = curmosaicsz << 8;
             asm volatile("push %%ebp;  call %P1;  pop %%ebp"
                 : "+d"(edx)
                 : "X"(domosaic16b)
                 : "cc", "memory", "eax", "ecx", "esi", "edi");
+            #endif
         }
     }
 }
@@ -1015,11 +1037,15 @@ static void draw8x816bwinon(u2* esi, u2 const* edi)
     } while (--tileleft16b != 0);
 
     if (drawn != 0 && curmosaicsz != 1) {
+        #ifdef NO_ASM
+        domosaic16b_c();
+        #else
         u4 edx = curmosaicsz << 8;
         asm volatile("push %%ebp;  call %P1;  pop %%ebp"
             : "+d"(edx)
             : "X"(domosaic16b)
             : "cc", "memory", "eax", "ecx", "esi", "edi");
+        #endif
     }
 }
 
@@ -1080,11 +1106,15 @@ static void draw16x816winonb(u2* esi, u2 const* edi)
     } while (--tileleft16b != 0);
 
     if (drawn != 0 && curmosaicsz != 1) {
+        #ifdef NO_ASM
+        domosaic16b_c();
+        #else
         u4 edx = curmosaicsz << 8;
         asm volatile("push %%ebp;  call %P1;  pop %%ebp"
             : "+d"(edx)
             : "X"(domosaic16b)
             : "cc", "memory", "eax", "ecx", "esi", "edi");
+        #endif
     }
 }
 
@@ -1143,11 +1173,15 @@ static void draw16x816bwinon(u2* esi, u2 const* edi)
     } while (--tileleft16b != 0);
 
     if (drawn != 0 && curmosaicsz != 1) {
+        #ifdef NO_ASM
+        domosaic16b_c();
+        #else
         u4 edx = curmosaicsz << 8;
         asm volatile("push %%ebp;  call %P1;  pop %%ebp"
             : "+d"(edx)
             : "X"(domosaic16b)
             : "cc", "memory", "eax", "ecx", "esi", "edi");
+        #endif
     }
 }
 
@@ -1206,11 +1240,15 @@ static void draw16x816b(u2* esi, u2 const* edi)
     } while (--tileleft16b != 0);
 
     if (drawn != 0 && curmosaicsz != 1) {
+        #ifdef NO_ASM
+        domosaic16b_c();
+        #else
         u4 edx = curmosaicsz << 8;
         asm volatile("push %%ebp;  call %P1;  pop %%ebp"
             : "+d"(edx)
             : "X"(domosaic16b)
             : "cc", "memory", "eax", "ecx", "esi", "edi");
+        #endif
     }
 }
 
@@ -1302,11 +1340,15 @@ static void draw16x816(u4 const eax, u4 const ecx, u2* const edx, u1* const ebx,
     if (drawn != 0) {
         u1 const dh = curmosaicsz;
         if (dh != 1) {
+            #ifdef NO_ASM
+            domosaic16b_c();
+            #else
             u4 edx = dh << 8;
             asm volatile("push %%ebp;  call %P1;  pop %%ebp"
                 : "+d"(edx)
                 : "X"(domosaic16b)
                 : "cc", "memory", "eax", "ecx", "esi", "edi");
+            #endif
         }
     }
 }
@@ -1400,11 +1442,15 @@ void draw8x816b(u4 eax, u4 ecx, u2* edx, u1* ebx, u4 const layer, u4 eax_, u2 co
             edi = temptile;
     } while (esi += 8, --tileleft16b != 0);
     if (drawn != 0 && curmosaicsz != 1) {
+        #ifdef NO_ASM
+        domosaic16b_c();
+        #else
         u4 edx = curmosaicsz << 8;
         asm volatile("push %%ebp;  call %P1;  pop %%ebp"
             : "+d"(edx)
             : "X"(domosaic16b)
             : "cc", "memory", "eax", "ecx", "esi", "edi");
+        #endif
     }
 }
 
@@ -1530,7 +1576,11 @@ static void processmode716b(void)
     // setup priorities
     if (sprprifix != 0) {
         cursprloc = sprlefttot;
+#ifdef NO_ASM
+        preparesprpr_c();
+#else
         asm_call(preparesprpr);
+#endif
     }
     // calculate current video offset
     curvidoffset = vidbuffer + curypos * 576 + 32;
@@ -1648,7 +1698,11 @@ void drawline16b(void)
     // setup priorities
     if (sprprifix != 0) {
         cursprloc = sprlefttot;
+#ifdef NO_ASM
+        preparesprpr_c();
+#else
         asm_call(preparesprpr);
+#endif
     } else {
         cursprloc = sprleftpr;
     }

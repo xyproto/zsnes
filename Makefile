@@ -374,6 +374,9 @@ SRCS += video/c_2xsaiw.c
 SRCS += video/c_makev16b.c
 SRCS += video/c_makevid.c
 SRCS += video/c_mode716.c
+ifdef NO_ASM
+SRCS += video/c_newgfx_asm.c
+endif
 SRCS += video/c_newgfx16.c
 SRCS += video/copyvwin.c
 SRCS += video/hq2x16.asm
