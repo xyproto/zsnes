@@ -38,7 +38,7 @@ int MSU_Track_Position = 0;
 int MSU_Loop_Point = 0;
 int MSU_Track_Length = 0;
 int MSU_Busy = 0;
-char MSU_BasePath[260];
+char MSU_BasePath[4096];
 
 // Prepare read registers
 void initMSU1regsRead(void)
@@ -80,10 +80,13 @@ int readMSU()
     MSU_MusicVolume = 0xFF;
 
     // Get Filename
-    MSU_BasePath[strlen(MSU_BasePath) - 4] = 0;
+    size_t len = strlen(MSU_BasePath);
+    if (len >= 4) {
+        MSU_BasePath[len - 4] = 0;
+    }
 
-    char MSUBinaryFile[260];
-    sprintf(MSUBinaryFile, "%s.msu", MSU_BasePath);
+    char MSUBinaryFile[4120];
+    snprintf(MSUBinaryFile, sizeof(MSUBinaryFile), "%s.msu", MSU_BasePath);
 
     // Open binary
     FILE* MSUBinary;
@@ -132,8 +135,8 @@ void MSU1HandleTrackChange()
     }
 
     // Print track file
-    char MSUTrackFile[260];
-    sprintf(MSUTrackFile, "%s-%hu.pcm", MSU_BasePath, MSU_Track);
+    char MSUTrackFile[4120];
+    snprintf(MSUTrackFile, sizeof(MSUTrackFile), "%s-%hu.pcm", MSU_BasePath, MSU_Track);
 
     // Open track
     FILE* TrackFileReader;

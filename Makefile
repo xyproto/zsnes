@@ -82,11 +82,15 @@ ifneq ($(filter $(ARCH),LINUX WIN),)
 ARCH_CFLAGS += -m32
 endif
 
-COMMON_FLAGS = $(ARCH_CFLAGS) -pthread -no-pie -O1 -fno-inline -fno-pic -mtune=generic -D_FORTIFY_SOURCE=2 -mno-sse -mno-sse2 -ffunction-sections -fdata-sections -Wfatal-errors -w
+COMMON_FLAGS = $(ARCH_CFLAGS) -pthread -no-pie -O1 -fno-inline -fno-pic -mtune=generic -D_FORTIFY_SOURCE=2 -ffunction-sections -fdata-sections -Wfatal-errors -w
 
 # TODO: FreeBSD has a patch for being able to build without -fcommon
 CFLAGS += $(COMMON_FLAGS) -std=gnu99 -fcommon
 CXXFLAGS += $(COMMON_FLAGS) -std=gnu++14
+ifneq ($(ARCH),DARWIN)
+CFLAGS += -mno-sse -mno-sse2
+CXXFLAGS += -mno-sse -mno-sse2
+endif
 LDFLAGS += -Wl,--as-needed -no-pie -Wl,--gc-sections -lz
 # -O1 is mandatory
 ASMFLAGS += -O1 -w-orphan-labels -w-number-deprecated-hex -w-pp-macro-params-legacy
@@ -474,7 +478,7 @@ ASMFLAGS += -fmacho -DMACHO
 
 CFGDEFS += -D__MACOSX__
 
-CFLAGS += -fno-pic -read_only_relocs suppress
+CFLAGS += -fno-pic
 
 LDFLAGS += -framework Carbon -framework IOKit -framework Foundation
 ifdef WITH_OPENGL

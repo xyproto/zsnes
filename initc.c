@@ -509,7 +509,7 @@ void chip_detect()
     }
 
     // [sneed]: MSU detection
-    sprintf(MSU_BasePath, "%s%s", ZRomPath, ZCartName);
+    snprintf(MSU_BasePath, sizeof(MSU_BasePath), "%s%s", ZRomPath, ZCartName);
     MSUEnable = readMSU();
 
     // [sneed]: add support for FastROM superFX roms
