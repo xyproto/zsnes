@@ -82,7 +82,7 @@ make
 Thanks to Christoph Mallon for the commits that this fork is based on.
 
 * License: GPL2
-* Version: 2.0.12
+* Version: 2.1.0
 * Fork author: Alexander F. Rødseth &lt;xyproto@archlinux.org&gt;
 
 # Old documentation
