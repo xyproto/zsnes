@@ -16,8 +16,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef __PORTABLE_H
-#define __PORTABLE_H
+#ifndef PORTABLE_H
+#define PORTABLE_H
 
 #include <stdint.h>
 #include <string.h>
@@ -37,56 +37,36 @@ typedef UINT32 DWORD;
 
 typedef unsigned UINT_PTR;
 
-typedef int BOOL;
-#define FALSE 0
-#define TRUE 1
-
 #define HRESULT int
 #define S_OK 0
-#define E_INVALIDARG -1
-#define E_OUTOFMEMORY -2
-#define E_FAIL -3
-#define E_INTERNAL_ERROR -4
-#define E_INVALIDDATA -5
+#define E_INVALIDARG (-1)
+#define E_OUTOFMEMORY (-2)
+#define E_FAIL (-3)
+#define E_INTERNAL_ERROR (-4)
+#define E_INVALIDDATA (-5)
 
-template <class T>
-inline T MyMin(T a, T b)
+#define JMA_MIN(a, b) ((a) < (b) ? (a) : (b))
+#define JMA_MAX(a, b) ((a) > (b) ? (a) : (b))
+
+#define RETURN_IF_NOT_S_OK(x) \
+    do {                      \
+        HRESULT _r = (x);     \
+        if (_r != S_OK)       \
+            return _r;        \
+    } while (0)
+
+#define UINT_SIZE 4
+#define USHORT_SIZE 2
+
+static inline unsigned int charp_to_uint(const unsigned char buf[UINT_SIZE])
 {
-    return a < b ? a : b;
+    return ((unsigned int)buf[0] << 24) | ((unsigned int)buf[1] << 16)
+        | ((unsigned int)buf[2] << 8) | (unsigned int)buf[3];
 }
 
-template <class T>
-inline T MyMax(T a, T b)
+static inline unsigned short charp_to_ushort(const unsigned char buf[USHORT_SIZE])
 {
-    return a > b ? a : b;
+    return (unsigned short)(((unsigned short)buf[0] << 8) | buf[1]);
 }
 
-#define RETURN_IF_NOT_S_OK(x)     \
-    {                             \
-        HRESULT __aResult_ = (x); \
-        if (__aResult_ != S_OK)   \
-            return __aResult_;    \
-    }
-
-#define UINT_SIZE (4)
-#define USHORT_SIZE (2)
-
-// Convert an array of 4 bytes back into an integer
-inline unsigned int charp_to_uint(const unsigned char buffer[UINT_SIZE])
-{
-    unsigned int num = (unsigned int)buffer[3];
-    num |= ((unsigned int)buffer[2]) << 8;
-    num |= ((unsigned int)buffer[1]) << 16;
-    num |= ((unsigned int)buffer[0]) << 24;
-    return (num);
-}
-
-// Convert an array of 2 bytes back into a short integer
-inline unsigned short charp_to_ushort(const unsigned char buffer[USHORT_SIZE])
-{
-    unsigned short num = (unsigned short)buffer[1];
-    num |= ((unsigned short)buffer[0]) << 8;
-    return (num);
-}
-
-#endif
+#endif /* PORTABLE_H */
