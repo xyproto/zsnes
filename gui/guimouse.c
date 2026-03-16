@@ -165,9 +165,10 @@ void SwitchFullScreen(void)
     Clear2xSaIBuffer();
     if (GUIWFVID[cvidmode] != 0) {
         cvidmode = PrevWinMode;
-        initvideo();
     } else {
         cvidmode = PrevFSMode;
+    }
+    if (!TryToggleFullScreen()) {
         initvideo();
     }
 }

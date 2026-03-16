@@ -223,7 +223,7 @@ int Main_Proc()
                     }
                 }
 
-                if (Keep4_3Ratio && (cvidmode == 21)) {
+                if (Keep4_3Ratio && ((cvidmode == 21) || (cvidmode == 22))) {
                     if (3 * WindowWidth > 4 * WindowHeight && WindowHeight) {
                         glOrtho(-((float)3 * WindowWidth) / ((float)4 * WindowHeight),
                             ((float)3 * WindowWidth) / ((float)4 * WindowHeight), -1, 1, -1, 1);
@@ -275,7 +275,7 @@ int Main_Proc()
                         }
                     }
 
-                    if (Keep4_3Ratio && (cvidmode == 21)) {
+                    if (Keep4_3Ratio && ((cvidmode == 21) || (cvidmode == 22))) {
                         if (3 * WindowWidth > 4 * WindowHeight && WindowHeight) {
                             glOrtho(-((float)3 * WindowWidth) / ((float)4 * WindowHeight),
                                 ((float)3 * WindowWidth) / ((float)4 * WindowHeight), -1, 1, -1, 1);
@@ -300,9 +300,9 @@ int Main_Proc()
 #endif
         case SDL_KEYDOWN:
 #ifdef __SDL3__
-            if ((event.key.key == SDLK_RETURN) && (event.key.mod & KMOD_ALT)) {
+            if ((event.key.key == SDLK_RETURN) && (event.key.mod & KMOD_ALT) && !event.key.repeat) {
 #else
-            if ((event.key.keysym.sym == SDLK_RETURN) && (event.key.keysym.mod & KMOD_ALT)) {
+            if ((event.key.keysym.sym == SDLK_RETURN) && (event.key.keysym.mod & KMOD_ALT) && !event.key.repeat) {
 #endif
                 SwitchFullScreen();
                 break;
@@ -1077,7 +1077,7 @@ int startgame()
         sem_sleep_rdy();
     }
 
-    if (sdl_state != vid_null) {
+    if (sdl_state == vid_null) {
         if (
 #ifdef __SDL3__
             !SDL_Init(SDL_INIT_TIMER | SDL_INIT_VIDEO)
@@ -1378,6 +1378,162 @@ void initwinvideo(void)
     if (((PrevStereoSound != StereoSound) || (PrevSoundQuality != SoundQuality))) {
         InitSound();
     }
+}
+
+int TryToggleFullScreen(void)
+{
+    if (!sdl_window) {
+        return 0;
+    }
+
+    FullScreen = GUIWFVID[cvidmode];
+
+#ifdef __OPENGL__
+    // Fall back to full reinit if the backend would change
+    int newUseOpenGL = CheckOGLMode() ? 1 : 0;
+    if (newUseOpenGL != UseOpenGL) {
+        return 0;
+    }
+#endif
+
+    CurMode = cvidmode;
+
+    // Compute WindowWidth/WindowHeight for the new mode
+    WindowWidth = 256;
+    WindowHeight = 224;
+    switch (cvidmode) {
+    default:
+    case 0:
+    case 1:
+        break;
+    case 2:
+    case 3:
+    case 6:
+        if (NTSCFilter) {
+            WindowWidth = 602;
+            WindowHeight = 446;
+        } else {
+            WindowWidth = 512;
+            WindowHeight = 448;
+        }
+        break;
+    case 4:
+    case 7:
+    case 8:
+        WindowWidth = 640;
+        WindowHeight = 480;
+        break;
+    case 9:
+        WindowWidth = 640;
+        WindowHeight = 560;
+        break;
+    case 10:
+        WindowWidth = 768;
+        WindowHeight = 672;
+        break;
+    case 11:
+    case 12:
+        WindowWidth = 800;
+        WindowHeight = 600;
+        break;
+    case 13:
+        WindowWidth = 896;
+        WindowHeight = 784;
+        break;
+    case 14:
+    case 15:
+        WindowWidth = 1024;
+        WindowHeight = 768;
+        break;
+    case 16:
+        WindowWidth = 1024;
+        WindowHeight = 896;
+        break;
+    case 17:
+        WindowWidth = 1280;
+        WindowHeight = 960;
+        break;
+    case 18:
+        WindowWidth = 1280;
+        WindowHeight = 1024;
+        break;
+    case 19:
+        WindowWidth = 1600;
+        WindowHeight = 1200;
+        break;
+    case 20:
+    case 21:
+    case 22:
+        WindowWidth = CustomResX;
+        WindowHeight = CustomResY;
+        break;
+    }
+
+#ifdef __SDL3__
+    SDL_SetWindowFullscreen(sdl_window, FullScreen ? true : false);
+#else
+    SDL_SetWindowFullscreen(sdl_window, FullScreen ? SDL_WINDOW_FULLSCREEN : 0);
+#endif
+
+    if (!FullScreen) {
+        SDL_SetWindowSize(sdl_window, WindowWidth, WindowHeight);
+    }
+
+    SDL_SetWindowGrab(sdl_window, FullScreen ? SDL_TRUE : SDL_FALSE);
+
+    adjustMouseXScale();
+    adjustMouseYScale();
+
+#ifdef __OPENGL__
+    if (CheckOGLMode()) {
+        int vp_w = (int)WindowWidth;
+        int vp_h = (int)WindowHeight;
+        if (FullScreen) {
+#ifdef __SDL3__
+            SDL_GetWindowSizeInPixels(sdl_window, &vp_w, &vp_h);
+#else
+            SDL_GL_GetDrawableSize(sdl_window, &vp_w, &vp_h);
+#endif
+        }
+        glViewport(0, 0, vp_w, vp_h);
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+
+        if (cvidmode == 20) {
+            if (224 * vp_w > 256 * vp_h && vp_h) {
+                glOrtho(-((float)224 * vp_w) / ((float)256 * vp_h),
+                    ((float)224 * vp_w) / ((float)256 * vp_h), -1, 1, -1, 1);
+            } else if (224 * vp_w < 256 * vp_h && vp_w) {
+                glOrtho(-1, 1, -((float)256 * vp_h) / ((float)224 * vp_w),
+                    ((float)256 * vp_h) / ((float)224 * vp_w), -1, 1);
+            } else {
+                glOrtho(-1, 1, -1, 1, -1, 1);
+            }
+        }
+
+        if (Keep4_3Ratio && ((cvidmode == 21) || (cvidmode == 22))) {
+            if (3 * vp_w > 4 * vp_h && vp_h) {
+                glOrtho(-((float)3 * vp_w) / ((float)4 * vp_h),
+                    ((float)3 * vp_w) / ((float)4 * vp_h), -1, 1, -1, 1);
+            } else if (3 * vp_w < 4 * vp_h && vp_w) {
+                glOrtho(-1, 1, -((float)4 * vp_h) / ((float)3 * vp_w),
+                    ((float)4 * vp_h) / ((float)3 * vp_w), -1, 1);
+            } else {
+                glOrtho(-1, 1, -1, 1, -1, 1);
+            }
+        }
+
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+        glDisable(GL_DEPTH_TEST);
+        glFlush();
+    }
+#endif
+
+    clearwin();
+    Clear2xSaIBuffer();
+
+    return 1;
 }
 
 void CheckTimers(void)

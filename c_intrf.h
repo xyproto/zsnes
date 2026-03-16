@@ -45,6 +45,10 @@ void GUIDeInit(void);
 // Returns 1 in videotroub if trouble occurs
 void initvideo(void);
 
+// Toggle fullscreen on the existing window without recreating it.
+// Returns 1 on success, 0 if a full reinit via initvideo() is needed.
+int TryToggleFullScreen(void);
+
 void deinitvideo(void);
 
 // In-game screen render w/ triple buffer check

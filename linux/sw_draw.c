@@ -101,6 +101,7 @@ void sw_end()
         surface = NULL;
     }
     if (sdl_window) {
+        SDL_PumpEvents();
         SDL_DestroyWindow(sdl_window);
         sdl_window = NULL;
     }
