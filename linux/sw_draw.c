@@ -61,6 +61,7 @@ bool sw_start(int width, int height, int req_depth, int FullScreen)
         render_surface = NULL;
     }
     if (sdl_window) {
+        SDL_PumpEvents();
         SDL_DestroyWindow(sdl_window);
     }
     sdl_window = SDL_CreateWindow("ZSNES", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
@@ -120,7 +121,16 @@ static void UnlockSurface()
     // Blit the 16-bit render surface to the window surface (with format conversion)
     SDL_Surface* win_surface = SDL_GetWindowSurface(sdl_window);
     if (win_surface) {
-        SDL_BlitSurface(render_surface, NULL, win_surface, NULL);
+        if (win_surface->w != render_surface->w || win_surface->h != render_surface->h) {
+            // fullscreen: scale game surface to fit the display
+#ifdef __SDL3__
+            SDL_BlitSurfaceScaled(render_surface, NULL, win_surface, NULL, SDL_SCALEMODE_NEAREST);
+#else
+            SDL_BlitScaled(render_surface, NULL, win_surface, NULL);
+#endif
+        } else {
+            SDL_BlitSurface(render_surface, NULL, win_surface, NULL);
+        }
         SDL_UpdateWindowSurface(sdl_window);
     }
 }

@@ -87,7 +87,12 @@ int gl_start(int width, int height, int req_depth, int FullScreen)
     SurfaceY = height;
     SetGLAttributes();
 
+    if (gl_context) {
+        SDL_GL_DeleteContext(gl_context);
+        gl_context = NULL;
+    }
     if (sdl_window) {
+        SDL_PumpEvents();
         SDL_DestroyWindow(sdl_window);
     }
     sdl_window = SDL_CreateWindow("ZSNES", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
@@ -97,9 +102,6 @@ int gl_start(int width, int height, int req_depth, int FullScreen)
         return false;
     }
 
-    if (gl_context) {
-        SDL_GL_DeleteContext(gl_context);
-    }
     gl_context = SDL_GL_CreateContext(sdl_window);
     if (gl_context == NULL) {
         fprintf(stderr, "Could not create GL context: %s\n", SDL_GetError());

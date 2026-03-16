@@ -1317,31 +1317,42 @@ void initwinvideo(void)
             }
             adjustMouseXScale();
             adjustMouseYScale();
-            glViewport(0, 0, WindowWidth, WindowHeight);
-            glMatrixMode(GL_PROJECTION);
-            glLoadIdentity();
-
-            if (cvidmode == 20) {
-                if (224 * WindowWidth > 256 * WindowHeight && WindowHeight) {
-                    glOrtho(-((float)224 * WindowWidth) / ((float)256 * WindowHeight),
-                        ((float)224 * WindowWidth) / ((float)256 * WindowHeight), -1, 1, -1, 1);
-                } else if (224 * WindowWidth < 256 * WindowHeight && WindowWidth) {
-                    glOrtho(-1, 1, -((float)256 * WindowHeight) / ((float)224 * WindowWidth),
-                        ((float)256 * WindowHeight) / ((float)224 * WindowWidth), -1, 1);
-                } else {
-                    glOrtho(-1, 1, -1, 1, -1, 1);
+            {
+                int vp_w = (int)WindowWidth;
+                int vp_h = (int)WindowHeight;
+                if (FullScreen && sdl_window) {
+#ifdef __SDL3__
+                    SDL_GetWindowSizeInPixels(sdl_window, &vp_w, &vp_h);
+#else
+                    SDL_GL_GetDrawableSize(sdl_window, &vp_w, &vp_h);
+#endif
                 }
-            }
+                glViewport(0, 0, vp_w, vp_h);
+                glMatrixMode(GL_PROJECTION);
+                glLoadIdentity();
 
-            if (Keep4_3Ratio && ((cvidmode == 21) || (cvidmode == 22))) {
-                if (3 * WindowWidth > 4 * WindowHeight && WindowHeight) {
-                    glOrtho(-((float)3 * WindowWidth) / ((float)4 * WindowHeight),
-                        ((float)3 * WindowWidth) / ((float)4 * WindowHeight), -1, 1, -1, 1);
-                } else if (3 * WindowWidth < 4 * WindowHeight && WindowWidth) {
-                    glOrtho(-1, 1, -((float)4 * WindowHeight) / ((float)3 * WindowWidth),
-                        ((float)4 * WindowHeight) / ((float)3 * WindowWidth), -1, 1);
-                } else {
-                    glOrtho(-1, 1, -1, 1, -1, 1);
+                if (cvidmode == 20) {
+                    if (224 * vp_w > 256 * vp_h && vp_h) {
+                        glOrtho(-((float)224 * vp_w) / ((float)256 * vp_h),
+                            ((float)224 * vp_w) / ((float)256 * vp_h), -1, 1, -1, 1);
+                    } else if (224 * vp_w < 256 * vp_h && vp_w) {
+                        glOrtho(-1, 1, -((float)256 * vp_h) / ((float)224 * vp_w),
+                            ((float)256 * vp_h) / ((float)224 * vp_w), -1, 1);
+                    } else {
+                        glOrtho(-1, 1, -1, 1, -1, 1);
+                    }
+                }
+
+                if (Keep4_3Ratio && ((cvidmode == 21) || (cvidmode == 22))) {
+                    if (3 * vp_w > 4 * vp_h && vp_h) {
+                        glOrtho(-((float)3 * vp_w) / ((float)4 * vp_h),
+                            ((float)3 * vp_w) / ((float)4 * vp_h), -1, 1, -1, 1);
+                    } else if (3 * vp_w < 4 * vp_h && vp_w) {
+                        glOrtho(-1, 1, -((float)4 * vp_h) / ((float)3 * vp_w),
+                            ((float)4 * vp_h) / ((float)3 * vp_w), -1, 1);
+                    } else {
+                        glOrtho(-1, 1, -1, 1, -1, 1);
+                    }
                 }
             }
 
