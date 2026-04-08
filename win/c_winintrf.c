@@ -215,6 +215,14 @@ void initvideo(void)
 
 void deinitvideo(void) { }
 
+int TryToggleFullScreen(void)
+{
+    /* Windows implementation: toggling fullscreen without recreating the window
+     * is not supported in this build. Return 0 to indicate a full reinit via
+     * initvideo() is required (caller will reinitialize video accordingly). */
+    return 0;
+}
+
 void DrawScreen(void)
 {
     if (converta == 1) {
