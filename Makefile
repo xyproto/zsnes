@@ -82,6 +82,9 @@ ifneq ($(filter $(ARCH),LINUX WIN),)
 ARCH_CFLAGS += -m32
 endif
 
+IS_FEDORA       := $(if $(wildcard /etc/fedora-release),yes)
+IS_DEBIAN_BASED := $(if $(wildcard /etc/debian_version),yes)
+
 COMMON_FLAGS = $(ARCH_CFLAGS) -pthread -no-pie -O1 -fno-inline -fno-pic -mtune=generic -D_FORTIFY_SOURCE=2 -ffunction-sections -fdata-sections -Wfatal-errors -w
 
 # TODO: FreeBSD has a patch for being able to build without -fcommon
@@ -154,11 +157,20 @@ ifeq ($(SKIP_AUDIO_BACKEND_CHECK),)
       ifeq ($(ARCH),LINUX)
         $(info )
         $(info ERROR: No 32-bit SDL library found. This is a 32-bit build (-m32).)
-        $(info Install the 32-bit SDL package on Fedora (note the .i686 suffix):)
+        ifeq ($(IS_FEDORA),yes)
+        $(info Install the 32-bit SDL package (note the .i686 suffix — NOT the x86_64 package):)
         $(info   sudo dnf install SDL3-devel.i686)
         $(info or:)
         $(info   sudo dnf install SDL2-devel.i686)
-        $(info Do NOT install SDL3-devel or SDL2-devel (x86_64) — only .i686 packages provide 32-bit libraries.)
+        else ifeq ($(IS_DEBIAN_BASED),yes)
+        $(info Enable 32-bit support and install the 32-bit SDL package (note the :i386 suffix):)
+        $(info   sudo dpkg --add-architecture i386 && sudo apt update)
+        $(info   sudo apt install libsdl3-dev:i386)
+        $(info or:)
+        $(info   sudo apt install libsdl2-dev:i386)
+        else
+        $(info Install the 32-bit SDL3 or SDL2 development package for your distribution.)
+        endif
         $(info )
         $(error Missing 32-bit SDL library. See instructions above.)
       else
@@ -171,12 +183,22 @@ ifeq ($(SKIP_AUDIO_BACKEND_CHECK),)
     ifeq ($(ARCH),LINUX)
       $(info )
       $(info ERROR: No 32-bit audio backend found. This is a 32-bit build (-m32).)
-      $(info Install one of the following 32-bit packages on Fedora (note the .i686 suffix):)
+      ifeq ($(IS_FEDORA),yes)
+      $(info Install one of the following 32-bit packages (note the .i686 suffix — NOT the x86_64 packages):)
       $(info   sudo dnf install pipewire-devel.i686)
       $(info   sudo dnf install libao-devel.i686)
       $(info   sudo dnf install SDL3-devel.i686)
       $(info   sudo dnf install SDL2-devel.i686)
-      $(info Do NOT install the x86_64 versions — only .i686 packages provide 32-bit libraries.)
+      else ifeq ($(IS_DEBIAN_BASED),yes)
+      $(info Enable 32-bit support, then install one of the following 32-bit packages (note the :i386 suffix):)
+      $(info   sudo dpkg --add-architecture i386 && sudo apt update)
+      $(info   sudo apt install libpipewire-0.3-dev:i386)
+      $(info   sudo apt install libao-dev:i386)
+      $(info   sudo apt install libsdl3-dev:i386)
+      $(info   sudo apt install libsdl2-dev:i386)
+      else
+      $(info Install the 32-bit development package for one of: PipeWire, libao, SDL3, or SDL2.)
+      endif
       $(info )
       $(error Missing 32-bit audio library. See instructions above.)
     else
