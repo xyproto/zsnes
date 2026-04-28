@@ -13,3 +13,7 @@ zsnes.exe
 *.wav
 *.log
 test/zsnes_test
+zfont.txt
+zinput.cfg
+zmovie.cfg
+zsnesl.cfg
