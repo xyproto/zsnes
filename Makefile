@@ -151,12 +151,37 @@ endif
 ifeq ($(SKIP_AUDIO_BACKEND_CHECK),)
   ifeq ($(WITH_SDL),yes)
     ifeq ($(SDL_BACKEND_AVAILABLE),)
-      $(error No SDL backend available. Install SDL3 or SDL2 for ARCH=$(ARCH))
+      ifeq ($(ARCH),LINUX)
+        $(info )
+        $(info ERROR: No 32-bit SDL library found. This is a 32-bit build (-m32).)
+        $(info Install the 32-bit SDL package on Fedora (note the .i686 suffix):)
+        $(info   sudo dnf install SDL3-devel.i686)
+        $(info or:)
+        $(info   sudo dnf install SDL2-devel.i686)
+        $(info Do NOT install SDL3-devel or SDL2-devel (x86_64) — only .i686 packages provide 32-bit libraries.)
+        $(info )
+        $(error Missing 32-bit SDL library. See instructions above.)
+      else
+        $(error No SDL backend available. Install SDL3 or SDL2 for ARCH=$(ARCH))
+      endif
     endif
   endif
   ifneq ($(ARCH),WIN)
   ifeq ($(if $(or $(PIPEWIRE_AVAILABLE),$(AO_AVAILABLE),$(if $(WITH_SDL),$(SDL_BACKEND_AVAILABLE),)),yes),)
-    $(error No audio backend available. Install one of: PipeWire (libpipewire-0.3), libao, SDL3 or SDL2)
+    ifeq ($(ARCH),LINUX)
+      $(info )
+      $(info ERROR: No 32-bit audio backend found. This is a 32-bit build (-m32).)
+      $(info Install one of the following 32-bit packages on Fedora (note the .i686 suffix):)
+      $(info   sudo dnf install pipewire-devel.i686)
+      $(info   sudo dnf install libao-devel.i686)
+      $(info   sudo dnf install SDL3-devel.i686)
+      $(info   sudo dnf install SDL2-devel.i686)
+      $(info Do NOT install the x86_64 versions — only .i686 packages provide 32-bit libraries.)
+      $(info )
+      $(error Missing 32-bit audio library. See instructions above.)
+    else
+      $(error No audio backend available. Install one of: PipeWire (libpipewire-0.3), libao, SDL3 or SDL2)
+    endif
   endif
   endif
 endif
