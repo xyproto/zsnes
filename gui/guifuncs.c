@@ -526,7 +526,6 @@ void GUIRestoreVars()
     CheckValueBounds(&MovieAudioCompress, 0, 1, 1, UB);
     CheckValueBounds(&MovieVideoAudio, 0, 1, 1, UB);
 
-    CheckValueBounds(&FirstTimeData, 0, 1, 1, UB);
 #ifndef NO_DEBUGGER
     CheckValueBounds(&debuggeron, 0, 1, 0, UB);
 #endif

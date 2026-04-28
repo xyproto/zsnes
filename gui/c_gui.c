@@ -1078,29 +1078,6 @@ void GUIOuttextShadowed(u4 const x, u4 const y, char const* const text)
 
 static char const guiftimemsg8[] = "PRESS SPACEBAR TO PROCEED.";
 
-static void guifirsttimemsg(void)
-{
-    memset(pressed, 0, 256); // XXX maybe should be sizeof(pressed)
-    pressed[0x2C] = 0; // XXX redundant
-
-    do {
-        GUIBox3D(43, 75, 213, 163);
-        GUIOuttextShadowed(51, 80, " ONE-TIME USER REMINDER : ");
-        GUIOuttextShadowed(51, 95, "  PLEASE BE SURE TO READ  ");
-        GUIOuttextShadowed(51, 103, "THE DOCUMENTATION INCLUDED");
-        GUIOuttextShadowed(51, 111, " WITH ZSNES FOR IMPORTANT");
-        GUIOuttextShadowed(51, 119, " INFORMATION AND ANSWERS");
-        GUIOuttextShadowed(51, 127, "    TO COMMON PROBLEMS");
-        GUIOuttextShadowed(51, 135, "      AND QUESTIONS.");
-        GUIOuttextShadowed(51, 150, guiftimemsg8);
-        vidpastecopyscr();
-        GUIUnBuffer();
-        DisplayBoxes();
-        DisplayMenu();
-        JoyRead();
-    } while (pressed[0x39] == 0);
-}
-
 static void horizonfixmsg(void)
 {
     memset(pressed, 0, 256); // XXX maybe should be sizeof(pressed)
@@ -1274,11 +1251,6 @@ void StartGUI(void)
         DisplayMenu();
         if (MouseDis != 1)
             DrawMouse();
-        if (FirstTimeData == 0) {
-            guifirsttimemsg();
-            FirstTimeData = 1;
-        }
-
         static bool showed_msg = false;
         if (!showed_msg && (GetDate() & 0xFFFF) == 0x0401) {
             showed_msg = true;

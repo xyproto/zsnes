@@ -926,10 +926,6 @@ KeyRTRCycle dd 0
 TimeChecker db 0
 PrevBuildNum dd 0
 
-@
-@ Display First-Time Use Reminder (0 = YES, 1 = No)
-FirstTimeData db 0
-
 %ifndef NO_DEBUGGER
 @
 @ Enable Debugger (0 = NO, 1 = Yes)
