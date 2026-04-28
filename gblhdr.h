@@ -106,10 +106,10 @@ however it's a static value that we can just define */
 #include <limits.h>
 #include <netdb.h>
 #include <netinet/in.h>
+#include <pwd.h>
 #include <sys/ioctl.h>
 #include <sys/mman.h>
 #include <sys/socket.h>
-#include <pwd.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <utime.h>

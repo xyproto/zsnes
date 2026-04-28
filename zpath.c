@@ -22,7 +22,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #ifdef __UNIXSDL__
 #include "gblhdr.h"
 #include "linux/safelib.h"
-#include <pwd.h>
 #elif defined(__WIN32__)
 #include "win/confloc.h"
 #include "win/lib.h"
@@ -66,33 +65,47 @@ static bool ZCartAlloc = false, ZSaveAlloc = false, ZStateAlloc = false, ZSaveST
 
 void cfgpath_ensure(const char* launch_command)
 {
-    struct passwd* userinfo;
-#ifdef ZCONF
-    const char* const zpath = ZCONF;
-#else
-    const char* const zpath = ".zsnes";
+    const char* const home = getenv("HOME");
+    char pathbuf[PATH_SIZE];
+    const char* cfgdir = NULL;
+
+#ifndef ZCONF
+    // Prefer the legacy ~/.zsnes directory if it already exists.
+    if (home) {
+        snprintf(pathbuf, sizeof(pathbuf), "%s/.zsnes", home);
+        if (access(pathbuf, F_OK) == 0)
+            cfgdir = pathbuf;
+    }
 #endif
 
-    if ((userinfo = getpwuid(getuid()))) {
-        ZCfgPath = malloc(PATH_SIZE);
-    } else {
-        puts("Error obtaining info about your user.");
+    if (!cfgdir) {
+        const char* const xdg = getenv("XDG_CONFIG_HOME");
+#ifdef ZCONF
+        const char* const subdir = ZCONF;
+#else
+        const char* const subdir = "zsnes";
+#endif
+        if (xdg)
+            snprintf(pathbuf, sizeof(pathbuf), "%s/%s", xdg, subdir);
+        else if (home)
+            snprintf(pathbuf, sizeof(pathbuf), "%s/.config/%s", home, subdir);
+        if (xdg || home)
+            cfgdir = pathbuf;
     }
 
-    if (ZCfgPath) {
-        ZCfgAlloc = true;
-        strcpy(ZCfgPath, userinfo->pw_dir);
-        strcatslash(ZCfgPath);
-        strcat(ZCfgPath, zpath);
-
-        if (mkpath(ZCfgPath, 0755) && !access(ZCfgPath, W_OK)) {
-            strcatslash(ZCfgPath);
-        } else {
-            printf("Error creating: %s\n", ZCfgPath);
-            free(ZCfgPath);
-            ZCfgAlloc = false;
-
-            ZCfgPath = ZStartPath;
+    if (cfgdir) {
+        ZCfgPath = malloc(PATH_SIZE);
+        if (ZCfgPath) {
+            ZCfgAlloc = true;
+            snprintf(ZCfgPath, PATH_SIZE, "%s", cfgdir);
+            if (mkpath(ZCfgPath, 0755) && !access(ZCfgPath, W_OK)) {
+                strcatslash(ZCfgPath);
+            } else {
+                printf("Error creating: %s\n", ZCfgPath);
+                free(ZCfgPath);
+                ZCfgAlloc = false;
+                ZCfgPath = ZStartPath;
+            }
         }
     } else {
         ZCfgPath = ZStartPath;
