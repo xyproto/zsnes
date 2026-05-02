@@ -21,8 +21,9 @@ Goals and non-goals:
 
 Pull requests that fixes inaccuracies with the emulation are welcome, as well as pull requests for regular bugs.
 
-* Currently, `sdl2` or `sdl3` is a required dependency.
-* PipeWire or libao is recommended for the best audio quality.
+### Requirements
+
+* `nasm`, `python3`, `sdl3` (or `sdl2`), `pipewire` (or `libao`), a C and a C++ compiler (like `gcc`/`g++`).
 
 Tested on Arch Linux, Fedora and Debian 12 on x86_64.
 
@@ -82,7 +83,7 @@ make
 Thanks to Christoph Mallon for the commits that this fork is based on.
 
 * License: GPL2
-* Version: 2.1.0
+* Version: 2.1.1
 * Fork author: Alexander F. Rødseth &lt;xyproto@archlinux.org&gt;
 
 # Old documentation
@@ -96,40 +97,40 @@ This is a summary based on the other text files that were not in `docs/readme.tx
 
 These are the contributors listed in the text files that are included with the 1.51 release of ZSNES, and on the zsnes.com webpage:
 
-* zsKnight
+* `zsKnight`
 * `_Demo_`
-* pagefault
-* Nach
-* grinvader
-* Deathlike2
-* Jonas Quinn
-* blargg
-* Pharos
-* teuf
-* relnev
-* prometheus
-* theoddone33
-* EvilTypeGuy
-* stainless
-* aaronl
-* MKendora
-* kode54
-* zinx
-* amit
-* Khan Artist
-* hpsolo
-* Kreed
-* Neviksti
-* ipher
-* relnev
-* StatMat
-* MKendora
-* hpsolo
-* aaronl
-* Diablo-D3
-* Wilbern Cobb
-* Thorsten "mirabile" Glaser
-* Mitchell "The Khan Artist/Noxious Ninja" Mebane
+* `pagefault`
+* `Nach`
+* `grinvader`
+* `Deathlike2`
+* `Jonas Quinn`
+* `blargg`
+* `Pharos`
+* `teuf`
+* `relnev`
+* `prometheus`
+* `theoddone33`
+* `EvilTypeGuy`
+* `stainless`
+* `aaronl`
+* `MKendora`
+* `kode54`
+* `zinx`
+* `amit`
+* `Khan Artist`
+* `hpsolo`
+* `Kreed`
+* `Neviksti`
+* `ipher`
+* `relnev`
+* `StatMat`
+* `MKendora`
+* `hpsolo`
+* `aaronl`
+* `Diablo-D3`
+* `Wilbern Cobb`
+* `Thorsten "mirabile" Glaser`
+* `Mitchell "The Khan Artist/Noxious Ninja" Mebane`
 
 ## Additional info from the text files that came with ZSNES 1.51:
 

@@ -1,7 +1,7 @@
 #ifndef VERSION_H
 #define VERSION_H
 
-#define ZVER "2.1.0"
+#define ZVER "2.1.1"
 
 void placedate(void);
 
