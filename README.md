@@ -17,7 +17,7 @@ Goals and non-goals:
 * Supporting Windows and DOS are not goals.
 * Supporting modern Linux distros (and FreeBSD, if possible) is a goal.
 * To be like an LTS release of ZSNES is a goal.
-* Adding back a more secure version of the net-play code is a long term goal.
+* Improving the net-play code is a long term goal.
 
 Pull requests that fixes inaccuracies with the emulation are welcome, as well as pull requests for regular bugs.
 
