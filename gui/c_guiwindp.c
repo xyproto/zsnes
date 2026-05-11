@@ -6,6 +6,8 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <netdb.h>
+#include <netinet/tcp.h>
+#include <pthread.h>
 #include <sys/select.h>
 #include <sys/socket.h>
 #include <unistd.h>
@@ -1672,16 +1674,19 @@ enum {
     NETPLAY_IDLE = 0,
     NETPLAY_WAITING = 1,
     NETPLAY_CONNECTING = 2,
-    NETPLAY_CONNECTED = 3
+    NETPLAY_CONNECTED = 3,
+    NETPLAY_JOINING = 4
 };
 
 typedef struct {
     u4 magic;
     u4 seq;
     u4 joy;
+    u4 crc;
 } NetplayInputPacket;
 
 static char NetplayStatusLine[64] = "IDLE";
+static char NetplayLastEvent[64] = "";
 static int NetplayClientSocket = -1;
 static int NetplayServerSocket = -1;
 static u1 NetplaySessionState = NETPLAY_IDLE;
@@ -1696,7 +1701,22 @@ static u1 NetplayPendingRemoteValid = 0;
 static NetplayInputPacket NetplayPendingRemote;
 static u4 const NetplayMagic = 0x4E455450; // "NETP"
 
+#define NETPLAY_INPUT_DELAY 3
+#define NETPLAY_FRAME_MS 17
+
 #ifdef __UNIXSDL__
+static char NetplayExternalIP[24] = "";
+static u4 NetplayInputQueue[NETPLAY_INPUT_DELAY];
+static int NetplayInputQueuePos = 0;
+static int NetplayInputQueueFilled = 0;
+static volatile int NetplayStunActive = 0;
+static volatile int NetplayJoinActive = 0;
+static volatile int NetplayJoinCancel = 0;
+static int NetplayJoinFd = -1;
+static int NetplayJoinResult = 0;
+static int NetplayJoinIsUDP = 0;
+static char NetplayJoinHostCopy[32] = "";
+
 static void NetplaySetNonBlocking(int const fd)
 {
     int flags = fcntl(fd, F_GETFL, 0);
@@ -1705,19 +1725,42 @@ static void NetplaySetNonBlocking(int const fd)
     fcntl(fd, F_SETFL, flags | O_NONBLOCK);
 }
 
+static void NetplaySetTCPOptions(int const fd)
+{
+    int const one = 1;
+    setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, &one, sizeof(one));
+    setsockopt(fd, SOL_SOCKET, SO_KEEPALIVE, &one, sizeof(one));
+#ifdef TCP_KEEPIDLE
+    int const idle = 5;
+    setsockopt(fd, IPPROTO_TCP, TCP_KEEPIDLE, &idle, sizeof(idle));
+#endif
+#ifdef TCP_KEEPINTVL
+    int const intvl = 2;
+    setsockopt(fd, IPPROTO_TCP, TCP_KEEPINTVL, &intvl, sizeof(intvl));
+#endif
+#ifdef TCP_KEEPCNT
+    int const cnt = 3;
+    setsockopt(fd, IPPROTO_TCP, TCP_KEEPCNT, &cnt, sizeof(cnt));
+#endif
+}
+
 static int NetplayResolveHost(struct sockaddr_in* const out)
 {
     memset(out, 0, sizeof(*out));
-    out->sin_family = AF_INET;
-    out->sin_port = htons(NetplayDefaultPort);
 
-    if (inet_pton(AF_INET, NetplayHostName, &out->sin_addr) == 1)
-        return 1;
+    struct addrinfo hints;
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_family = AF_INET;
+    hints.ai_socktype = SOCK_STREAM;
 
-    struct hostent* he = gethostbyname(NetplayHostName);
-    if (he == NULL || he->h_addr_list == NULL || he->h_addr_list[0] == NULL)
+    char portstr[8];
+    snprintf(portstr, sizeof(portstr), "%u", (unsigned)NetplayDefaultPort);
+
+    struct addrinfo* res = NULL;
+    if (getaddrinfo(NetplayHostName, portstr, &hints, &res) != 0 || res == NULL)
         return 0;
-    memcpy(&out->sin_addr, he->h_addr_list[0], sizeof(out->sin_addr));
+    memcpy(out, res->ai_addr, sizeof(*out));
+    freeaddrinfo(res);
     return 1;
 }
 
@@ -1734,6 +1777,22 @@ static int NetplayWaitFD(int const fd, int const want_write, int timeout_ms)
     if (want_write != 0)
         return select(fd + 1, NULL, &fds, NULL, &timeout);
     return select(fd + 1, &fds, NULL, NULL, &timeout);
+}
+
+static void NetplayPacketHton(NetplayInputPacket* const p)
+{
+    p->magic = htonl(p->magic);
+    p->seq = htonl(p->seq);
+    p->joy = htonl(p->joy);
+    p->crc = htonl(p->crc);
+}
+
+static void NetplayPacketNtoh(NetplayInputPacket* const p)
+{
+    p->magic = ntohl(p->magic);
+    p->seq = ntohl(p->seq);
+    p->joy = ntohl(p->joy);
+    p->crc = ntohl(p->crc);
 }
 
 static int NetplaySendExact(int const fd, void const* const data, size_t size, int timeout_ms)
@@ -1782,28 +1841,35 @@ static int NetplayRecvExact(int const fd, void* const data, size_t size, int tim
 
 static int NetplaySendPacket(int const fd, NetplayInputPacket const* const packet, int timeout_ms)
 {
+    NetplayInputPacket wire = *packet;
+    NetplayPacketHton(&wire);
     if (NetplayUDPConfig == 0)
-        return NetplaySendExact(fd, packet, sizeof(*packet), timeout_ms);
+        return NetplaySendExact(fd, &wire, sizeof(wire), timeout_ms);
     if (NetplayWaitFD(fd, 1, timeout_ms) <= 0)
         return 0;
     int flags = 0;
 #ifdef MSG_NOSIGNAL
     flags = MSG_NOSIGNAL;
 #endif
-    ssize_t n = send(fd, packet, sizeof(*packet), flags);
-    return n == (ssize_t)sizeof(*packet);
+    ssize_t n = send(fd, &wire, sizeof(wire), flags);
+    return n == (ssize_t)sizeof(wire);
 }
 
 static int NetplayRecvPacket(int const fd, NetplayInputPacket* const packet, int timeout_ms)
 {
-    if (NetplayUDPConfig == 0)
-        return NetplayRecvExact(fd, packet, sizeof(*packet), timeout_ms);
+    if (NetplayUDPConfig == 0) {
+        if (!NetplayRecvExact(fd, packet, sizeof(*packet), timeout_ms))
+            return 0;
+        NetplayPacketNtoh(packet);
+        return 1;
+    }
     for (;;) {
         if (NetplayWaitFD(fd, 0, timeout_ms) <= 0)
             return 0;
         NetplayInputPacket tmp;
         ssize_t n = recv(fd, &tmp, sizeof(tmp), 0);
         if (n == (ssize_t)sizeof(tmp)) {
+            NetplayPacketNtoh(&tmp);
             if (tmp.magic == NetplayMagic) {
                 *packet = tmp;
                 return 1;
@@ -1816,6 +1882,202 @@ static int NetplayRecvPacket(int const fd, NetplayInputPacket* const packet, int
             continue;
         return 0;
     }
+}
+
+static void NetplayFetchExternalIP(void)
+{
+    // RFC 5389 STUN Binding Request — no attributes, fixed transaction ID
+    static u1 const req[20] = {
+        0x00,
+        0x01, // Binding Request
+        0x00,
+        0x00, // Attributes length: 0
+        0x21,
+        0x12,
+        0xA4,
+        0x42, // Magic cookie
+        0x6E,
+        0x65,
+        0x74,
+        0x70, // Transaction ID
+        0x6C,
+        0x61,
+        0x79,
+        0x5A,
+        0x53,
+        0x4E,
+        0x45,
+        0x53,
+    };
+
+    struct addrinfo hints;
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_family = AF_INET;
+    hints.ai_socktype = SOCK_DGRAM;
+    struct addrinfo* res = NULL;
+    if (getaddrinfo("stun.l.google.com", "19302", &hints, &res) != 0 || res == NULL)
+        return;
+
+    int fd = socket(AF_INET, SOCK_DGRAM, 0);
+    if (fd < 0) {
+        freeaddrinfo(res);
+        return;
+    }
+
+    struct timeval tv;
+    tv.tv_sec = 1;
+    tv.tv_usec = 0;
+    setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
+    sendto(fd, req, sizeof(req), 0, res->ai_addr, res->ai_addrlen);
+    freeaddrinfo(res);
+
+    u1 resp[256];
+    ssize_t n = recv(fd, resp, sizeof(resp), 0);
+    close(fd);
+    if (n < 20)
+        return;
+
+    uint16_t msg_len;
+    memcpy(&msg_len, resp + 2, 2);
+    msg_len = ntohs(msg_len);
+
+    int pos = 20;
+    while (pos + 4 <= (int)n && pos < 20 + (int)msg_len) {
+        uint16_t attr_type, attr_len;
+        memcpy(&attr_type, resp + pos, 2);
+        memcpy(&attr_len, resp + pos + 2, 2);
+        attr_type = ntohs(attr_type);
+        attr_len = ntohs(attr_len);
+
+        if (attr_type == 0x0020 && attr_len >= 8) { // XOR-MAPPED-ADDRESS
+            u4 xaddr;
+            memcpy(&xaddr, resp + pos + 8, 4);
+            u4 const ip = ntohl(xaddr) ^ 0x2112A442u;
+            snprintf(NetplayExternalIP, sizeof(NetplayExternalIP), "%u.%u.%u.%u",
+                (ip >> 24) & 0xFFu, (ip >> 16) & 0xFFu,
+                (ip >> 8) & 0xFFu, ip & 0xFFu);
+            return;
+        }
+        if (attr_type == 0x0001 && attr_len >= 8) { // MAPPED-ADDRESS fallback
+            u4 addr;
+            memcpy(&addr, resp + pos + 8, 4);
+            u4 const ip = ntohl(addr);
+            snprintf(NetplayExternalIP, sizeof(NetplayExternalIP), "%u.%u.%u.%u",
+                (ip >> 24) & 0xFFu, (ip >> 16) & 0xFFu,
+                (ip >> 8) & 0xFFu, ip & 0xFFu);
+            return;
+        }
+        pos += 4 + (int)((attr_len + 3u) & ~3u);
+    }
+}
+
+static void* NetplayStunThreadFunc(void* arg)
+{
+    (void)arg;
+    NetplayFetchExternalIP();
+    NetplayStunActive = 0;
+    return NULL;
+}
+
+static void NetplayStartStunLookup(void)
+{
+    NetplayExternalIP[0] = '\0';
+    NetplayStunActive = 1;
+    pthread_t t;
+    if (pthread_create(&t, NULL, NetplayStunThreadFunc, NULL) == 0)
+        pthread_detach(t);
+    else
+        NetplayStunActive = 0;
+}
+
+static u4 NetplayStateHash(void)
+{
+    if (wramdata == NULL)
+        return 0;
+    u4 h = 2166136261u;
+    for (int i = 0; i < 256; i++) {
+        h ^= (u4)wramdata[i];
+        h *= 16777619u;
+    }
+    return h;
+}
+
+static void* NetplayJoinThreadFunc(void* arg)
+{
+    (void)arg;
+    int const type = NetplayJoinIsUDP != 0 ? SOCK_DGRAM : SOCK_STREAM;
+
+    struct addrinfo hints, *res = NULL;
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_family = AF_INET;
+    hints.ai_socktype = type;
+    char portstr[8];
+    snprintf(portstr, sizeof(portstr), "%u", (unsigned)NetplayDefaultPort);
+
+    if (getaddrinfo(NetplayJoinHostCopy, portstr, &hints, &res) != 0 || res == NULL || NetplayJoinCancel != 0) {
+        if (res)
+            freeaddrinfo(res);
+        NetplayJoinResult = 0;
+        NetplayJoinActive = 0;
+        return NULL;
+    }
+
+    int fd = socket(AF_INET, type, 0);
+    if (fd < 0 || NetplayJoinCancel != 0) {
+        if (fd >= 0)
+            close(fd);
+        freeaddrinfo(res);
+        NetplayJoinResult = 0;
+        NetplayJoinActive = 0;
+        return NULL;
+    }
+
+    if (type == SOCK_STREAM) {
+        int rc = connect(fd, res->ai_addr, res->ai_addrlen);
+        freeaddrinfo(res);
+        if (rc != 0 || NetplayJoinCancel != 0) {
+            close(fd);
+            NetplayJoinResult = 0;
+            NetplayJoinActive = 0;
+            return NULL;
+        }
+    } else {
+        connect(fd, res->ai_addr, res->ai_addrlen);
+        freeaddrinfo(res);
+        if (NetplayJoinCancel != 0) {
+            close(fd);
+            NetplayJoinResult = 0;
+            NetplayJoinActive = 0;
+            return NULL;
+        }
+        NetplayInputPacket hello;
+        memset(&hello, 0, sizeof(hello));
+        hello.magic = NetplayMagic;
+        hello.joy = 0x00008000u;
+        int flags = 0;
+#ifdef MSG_NOSIGNAL
+        flags = MSG_NOSIGNAL;
+#endif
+        NetplayInputPacket wire = hello;
+        NetplayPacketHton(&wire);
+        for (int i = 0; i < 3 && NetplayJoinCancel == 0; i++) {
+            send(fd, &wire, sizeof(wire), flags);
+            if (i < 2)
+                usleep(50000);
+        }
+    }
+
+    if (NetplayJoinCancel != 0) {
+        close(fd);
+        NetplayJoinResult = 0;
+        NetplayJoinActive = 0;
+        return NULL;
+    }
+
+    NetplayJoinFd = fd;
+    NetplayJoinResult = 1;
+    NetplayJoinActive = 0;
+    return NULL;
 }
 #endif
 
@@ -1830,6 +2092,15 @@ void NetplayDisconnectSession(void)
         close(NetplayServerSocket);
         NetplayServerSocket = -1;
     }
+    NetplayInputQueuePos = 0;
+    NetplayInputQueueFilled = 0;
+    NetplayExternalIP[0] = '\0';
+    NetplayLastEvent[0] = '\0';
+    NetplayJoinCancel = 1;
+    if (NetplayJoinFd >= 0) {
+        close(NetplayJoinFd);
+        NetplayJoinFd = -1;
+    }
 #endif
     NetplaySessionState = NETPLAY_IDLE;
     NetplayHostRole = 0;
@@ -1837,7 +2108,6 @@ void NetplayDisconnectSession(void)
     NetplayRemoteSeq = 0;
     NetplayRemoteJoy = 0x00008000;
     NetplayPendingRemoteValid = 0;
-    strcpy(NetplayStatusLine, "IDLE");
 }
 
 void NetplayHostSession(void)
@@ -1849,7 +2119,7 @@ void NetplayHostSession(void)
     int const type = NetplayUDPConfig != 0 ? SOCK_DGRAM : SOCK_STREAM;
     int fd = socket(AF_INET, type, 0);
     if (fd < 0) {
-        strcpy(NetplayStatusLine, "SERVER SOCKET FAILED");
+        strcpy(NetplayLastEvent, "SERVER SOCKET FAILED");
         return;
     }
 
@@ -1864,7 +2134,7 @@ void NetplayHostSession(void)
 
     if (bind(fd, (struct sockaddr*)&addr, sizeof(addr)) != 0) {
         close(fd);
-        strcpy(NetplayStatusLine, "BIND FAILED");
+        strcpy(NetplayLastEvent, "BIND FAILED");
         return;
     }
 
@@ -1874,16 +2144,16 @@ void NetplayHostSession(void)
     if (type == SOCK_STREAM) {
         if (listen(fd, 1) != 0) {
             close(fd);
-            strcpy(NetplayStatusLine, "LISTEN FAILED");
+            strcpy(NetplayLastEvent, "LISTEN FAILED");
             return;
         }
         NetplayServerSocket = fd;
         NetplaySessionState = NETPLAY_WAITING;
-        strcpy(NetplayStatusLine, "WAITING FOR TCP CLIENT");
+        NetplayStartStunLookup();
     } else {
         NetplayClientSocket = fd;
         NetplaySessionState = NETPLAY_WAITING;
-        strcpy(NetplayStatusLine, "WAITING FOR UDP PEER");
+        NetplayStartStunLookup();
     }
 #endif
 }
@@ -1891,47 +2161,26 @@ void NetplayHostSession(void)
 void NetplayJoinSession(void)
 {
 #ifndef __UNIXSDL__
-    strcpy(NetplayStatusLine, "UNSUPPORTED ON THIS PORT");
+    strcpy(NetplayLastEvent, "UNSUPPORTED ON THIS PORT");
     NetplaySessionState = NETPLAY_IDLE;
 #else
-    int const type = NetplayUDPConfig != 0 ? SOCK_DGRAM : SOCK_STREAM;
-    int fd = socket(AF_INET, type, 0);
-    if (fd < 0) {
-        strcpy(NetplayStatusLine, "CLIENT SOCKET FAILED");
+    if (NetplayJoinActive != 0)
         return;
-    }
-
-    struct sockaddr_in addr;
-    if (NetplayResolveHost(&addr) == 0) {
-        close(fd);
-        strcpy(NetplayStatusLine, "INVALID HOST");
-        return;
-    }
-
-    NetplaySetNonBlocking(fd);
-    int rc = connect(fd, (struct sockaddr*)&addr, sizeof(addr));
-    if (rc != 0 && errno != EINPROGRESS) {
-        close(fd);
-        strcpy(NetplayStatusLine, "CONNECT FAILED");
-        return;
-    }
-
     NetplayDisconnectSession();
     NetplayHostRole = 0;
-    NetplayClientSocket = fd;
-    if (type == SOCK_STREAM) {
-        if (rc == 0) {
-            NetplaySessionState = NETPLAY_CONNECTED;
-            strcpy(NetplayStatusLine, "TCP CONNECTED");
-        } else {
-            NetplaySessionState = NETPLAY_CONNECTING;
-            strcpy(NetplayStatusLine, "CONNECTING (TCP)");
-        }
+    NetplayJoinIsUDP = NetplayUDPConfig != 0 ? 1 : 0;
+    NetplayJoinFd = -1;
+    NetplayJoinResult = 0;
+    NetplayJoinCancel = 0;
+    memcpy(NetplayJoinHostCopy, NetplayHostName, sizeof(NetplayJoinHostCopy));
+    NetplayJoinActive = 1;
+    pthread_t t;
+    if (pthread_create(&t, NULL, NetplayJoinThreadFunc, NULL) == 0) {
+        pthread_detach(t);
+        NetplaySessionState = NETPLAY_JOINING;
     } else {
-        NetplayInputPacket hello = { NetplayMagic, 0, 0x00008000 };
-        NetplaySendPacket(fd, &hello, 50);
-        NetplaySessionState = NETPLAY_CONNECTED;
-        strcpy(NetplayStatusLine, "UDP CONNECTED");
+        NetplayJoinActive = 0;
+        strcpy(NetplayLastEvent, "THREAD FAILED");
     }
 #endif
 }
@@ -1945,10 +2194,13 @@ static void NetplayAdvanceState(int timeout_ms)
             if (fd >= 0) {
                 NetplayClientSocket = fd;
                 NetplaySetNonBlocking(fd);
+                NetplaySetTCPOptions(fd);
                 close(NetplayServerSocket);
                 NetplayServerSocket = -1;
+                NetplayInputQueuePos = 0;
+                NetplayInputQueueFilled = 0;
                 NetplaySessionState = NETPLAY_CONNECTED;
-                strcpy(NetplayStatusLine, "TCP CLIENT CONNECTED");
+                strcpy(NetplayLastEvent, "TCP CLIENT CONNECTED");
             }
         }
     }
@@ -1959,12 +2211,17 @@ static void NetplayAdvanceState(int timeout_ms)
             socklen_t peer_len = sizeof(peer);
             NetplayInputPacket packet;
             ssize_t n = recvfrom(NetplayClientSocket, &packet, sizeof(packet), 0, (struct sockaddr*)&peer, &peer_len);
-            if (n == (ssize_t)sizeof(packet) && packet.magic == NetplayMagic) {
-                connect(NetplayClientSocket, (struct sockaddr*)&peer, peer_len);
-                NetplayPendingRemote = packet;
-                NetplayPendingRemoteValid = 1;
-                NetplaySessionState = NETPLAY_CONNECTED;
-                strcpy(NetplayStatusLine, "UDP PEER CONNECTED");
+            if (n == (ssize_t)sizeof(packet)) {
+                NetplayPacketNtoh(&packet);
+                if (packet.magic == NetplayMagic) {
+                    connect(NetplayClientSocket, (struct sockaddr*)&peer, peer_len);
+                    NetplayPendingRemote = packet;
+                    NetplayPendingRemoteValid = 1;
+                    NetplayInputQueuePos = 0;
+                    NetplayInputQueueFilled = 0;
+                    NetplaySessionState = NETPLAY_CONNECTED;
+                    strcpy(NetplayLastEvent, "UDP PEER CONNECTED");
+                }
             }
         }
     }
@@ -1974,12 +2231,33 @@ static void NetplayAdvanceState(int timeout_ms)
             int so_error = 0;
             socklen_t len = sizeof(so_error);
             if (getsockopt(NetplayClientSocket, SOL_SOCKET, SO_ERROR, &so_error, &len) == 0 && so_error == 0) {
+                NetplaySetTCPOptions(NetplayClientSocket);
+                NetplayInputQueuePos = 0;
+                NetplayInputQueueFilled = 0;
                 NetplaySessionState = NETPLAY_CONNECTED;
-                strcpy(NetplayStatusLine, "TCP CONNECTED");
-            } else if (so_error != EINPROGRESS) {
+                strcpy(NetplayLastEvent, "TCP CONNECTED");
+            } else if (so_error != 0) {
                 NetplayDisconnectSession();
-                strcpy(NetplayStatusLine, "CONNECT FAILED");
+                strcpy(NetplayLastEvent, "CONNECT FAILED");
             }
+        }
+    }
+
+    if (NetplaySessionState == NETPLAY_JOINING && NetplayJoinActive == 0) {
+        if (NetplayJoinResult != 0 && NetplayJoinFd >= 0) {
+            int const fd = NetplayJoinFd;
+            NetplayJoinFd = -1;
+            NetplaySetNonBlocking(fd);
+            if (NetplayJoinIsUDP == 0)
+                NetplaySetTCPOptions(fd);
+            NetplayClientSocket = fd;
+            NetplayInputQueuePos = 0;
+            NetplayInputQueueFilled = 0;
+            NetplaySessionState = NETPLAY_CONNECTED;
+            strcpy(NetplayLastEvent, NetplayJoinIsUDP != 0 ? "UDP CONNECTED" : "TCP CONNECTED");
+        } else {
+            NetplaySessionState = NETPLAY_IDLE;
+            strcpy(NetplayLastEvent, "CONNECT FAILED");
         }
     }
 #else
@@ -1990,14 +2268,38 @@ static void NetplayAdvanceState(int timeout_ms)
 void NetplaySyncInputs(unsigned int* joy_a, unsigned int* joy_b)
 {
 #ifdef __UNIXSDL__
-    NetplayAdvanceState(200);
+    NetplayAdvanceState(0);
     if (NetplaySessionState != NETPLAY_CONNECTED || NetplayClientSocket < 0)
         return;
+
+    u4 const raw = NetplayHostRole != 0 ? (u4)*joy_a : (u4)*joy_b;
+
+    // Delay local input by NETPLAY_INPUT_DELAY frames so the peer has time to
+    // receive it before the frame executes — absorbs up to ~50ms of jitter.
+    u4 delayed;
+    if (NetplayInputQueueFilled < NETPLAY_INPUT_DELAY) {
+        delayed = 0x00008000u; // neutral during warmup
+        NetplayInputQueueFilled++;
+    } else {
+        delayed = NetplayInputQueue[NetplayInputQueuePos];
+    }
+    NetplayInputQueue[NetplayInputQueuePos] = raw;
+    NetplayInputQueuePos = (NetplayInputQueuePos + 1) % NETPLAY_INPUT_DELAY;
+
+    if (NetplayHostRole != 0)
+        *joy_a = delayed;
+    else
+        *joy_b = delayed;
+
+    u4 const local_crc = NetplayStateHash();
 
     NetplayInputPacket local;
     local.magic = NetplayMagic;
     local.seq = NetplayLocalSeq++;
-    local.joy = NetplayHostRole != 0 ? (u4)*joy_a : (u4)*joy_b;
+    local.joy = delayed;
+    local.crc = local_crc;
+
+    int const timeout = NETPLAY_INPUT_DELAY * NETPLAY_FRAME_MS;
 
     NetplayInputPacket remote;
     int ok = 0;
@@ -2007,21 +2309,24 @@ void NetplaySyncInputs(unsigned int* joy_a, unsigned int* joy_b)
             NetplayPendingRemoteValid = 0;
             ok = 1;
         } else {
-            ok = NetplayRecvPacket(NetplayClientSocket, &remote, 200);
+            ok = NetplayRecvPacket(NetplayClientSocket, &remote, timeout);
         }
         if (ok != 0)
-            ok = NetplaySendPacket(NetplayClientSocket, &local, 200);
+            ok = NetplaySendPacket(NetplayClientSocket, &local, timeout);
     } else {
-        ok = NetplaySendPacket(NetplayClientSocket, &local, 200);
+        ok = NetplaySendPacket(NetplayClientSocket, &local, timeout);
         if (ok != 0)
-            ok = NetplayRecvPacket(NetplayClientSocket, &remote, 200);
+            ok = NetplayRecvPacket(NetplayClientSocket, &remote, timeout);
     }
 
     if (ok == 0) {
         NetplayDisconnectSession();
-        strcpy(NetplayStatusLine, "CONNECTION LOST");
+        strcpy(NetplayLastEvent, "CONNECTION LOST");
         return;
     }
+
+    if (local_crc != 0 && remote.crc != 0 && remote.crc != local_crc && NetplayLocalSeq > NETPLAY_INPUT_DELAY + 2)
+        strcpy(NetplayLastEvent, "DESYNC DETECTED");
 
     NetplayRemoteSeq = remote.seq;
     NetplayRemoteJoy = remote.joy;
@@ -2035,9 +2340,41 @@ void NetplaySyncInputs(unsigned int* joy_a, unsigned int* joy_b)
 #endif
 }
 
+static void NetplayUpdateStatus(void)
+{
+#ifdef __UNIXSDL__
+    switch ((int)NetplaySessionState) {
+    case NETPLAY_IDLE:
+        snprintf(NetplayStatusLine, sizeof(NetplayStatusLine), "%s",
+            NetplayLastEvent[0] != '\0' ? NetplayLastEvent : "IDLE");
+        return;
+    case NETPLAY_WAITING:
+        if (NetplayStunActive == 0 && NetplayExternalIP[0] != '\0')
+            snprintf(NetplayStatusLine, sizeof(NetplayStatusLine), "%s - EXT: %s",
+                NetplayUDPConfig != 0 ? "WAITING UDP" : "WAITING TCP",
+                NetplayExternalIP);
+        else
+            snprintf(NetplayStatusLine, sizeof(NetplayStatusLine), "%s",
+                NetplayUDPConfig != 0 ? "WAITING FOR UDP PEER" : "WAITING FOR TCP CLIENT");
+        return;
+    case NETPLAY_CONNECTING:
+        snprintf(NetplayStatusLine, sizeof(NetplayStatusLine), "CONNECTING (TCP)");
+        return;
+    case NETPLAY_JOINING:
+        snprintf(NetplayStatusLine, sizeof(NetplayStatusLine), "RESOLVING %s...", NetplayJoinHostCopy);
+        return;
+    case NETPLAY_CONNECTED:
+        snprintf(NetplayStatusLine, sizeof(NetplayStatusLine), "%s",
+            NetplayLastEvent[0] != '\0' ? NetplayLastEvent : "CONNECTED");
+        return;
+    }
+#endif
+}
+
 void DisplayNetOptns(void)
 {
     NetplayAdvanceState(0);
+    NetplayUpdateStatus();
 
     GUIwinsizex[8] = 220;
     GUIwinsizey[8] = 96;
