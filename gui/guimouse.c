@@ -2381,13 +2381,13 @@ static void ProcessMouseButtons(void)
         break;
     case 85:
         NetplayHostSession();
-        return;
+        break;
     case 86:
         NetplayJoinSession();
-        return;
+        break;
     case 87:
         NetplayDisconnectSession();
-        return;
+        break;
     }
     GUICBHold = 0;
 }

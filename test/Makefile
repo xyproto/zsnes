@@ -13,21 +13,25 @@
 CC     := gcc
 CFLAGS := -m32 -std=gnu99 -I.. -Wall -Wextra -Wno-unused-parameter
 
-BIN  := zsnes_test
-SRC  := main.c
-# Object files from the parent build that contain the functions under test.
-# These must already exist (built by `make` in the parent directory).
-OBJS := ../zpath.o
+BIN       := zsnes_test
+NETPLAY   := zsnes_netplay_test
+SRC       := main.c
+NETPLAY_SRC := netplay_test.c
+OBJS      := ../zpath.o
 
 .PHONY: all run clean
 
-all: $(BIN)
+all: $(BIN) $(NETPLAY)
 
 $(BIN): $(SRC) zstest.h $(OBJS)
 	$(CC) $(CFLAGS) $(SRC) $(OBJS) -no-pie -Wl,--gc-sections -o $(BIN)
 
+$(NETPLAY): $(NETPLAY_SRC) zstest.h
+	$(CC) $(CFLAGS) $(NETPLAY_SRC) -no-pie -lpthread -o $(NETPLAY)
+
 run: all
 	@./$(BIN)
+	@./$(NETPLAY)
 
 clean:
-	rm -f $(BIN)
+	rm -f $(BIN) $(NETPLAY)

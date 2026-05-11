@@ -12,7 +12,7 @@
 
 #include "zstest.h"
 
-/* ── forward-declare only what we need from the project (no heavy headers) ── */
+/* Forward-declare only what we need from the project (no heavy headers). */
 
 /* zpath.c – pure string utilities */
 void natify_slashes(char* str);
@@ -24,13 +24,13 @@ void strdirname(char* str);
 void strbasename(char* str);
 char* strdupcat(const char* str1, const char* str2);
 
-/* ── helpers ── */
+/* Helpers */
 
 /* Return a mutable copy of a string literal. Caller must not free. */
 #define BUF(lit) ({ static char _b[] = lit; char _t[sizeof _b]; \
                     memcpy(_t, _b, sizeof _b); _t; })
 
-/* ── test functions ── */
+/* Tests */
 
 static void test_natify_slashes(void)
 {
@@ -273,12 +273,11 @@ static void test_strdupcat(void)
     free(r);
 }
 
-/* ── entry point ── */
+/* Entry point */
 
 int main(void)
 {
     printf("ZSNES2 headless tests\n");
-    printf("─────────────────────\n");
 
     test_natify_slashes();
     test_strcutslash();
