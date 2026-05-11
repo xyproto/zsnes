@@ -1332,10 +1332,14 @@ static void DisplayNetOptnsClick(void)
     s4 const eax = GUImouseposx - GUIwinposx[8];
     s4 const edx = GUImouseposy - GUIwinposy[8];
 
-    GUIClickCButton(eax, edx, 8, 58, &NetplayUDPConfig);
-    GUIPHoldbutton(eax, edx, 8, 66, 56, 77, 85);
-    GUIPHoldbutton(eax, edx, 66, 66, 114, 77, 86);
-    GUIPHoldbutton(eax, edx, 124, 66, 212, 77, 87);
+    if (GUIClickArea(eax, edx, 38, 24, 214, 34)) {
+        GUIInputBox = 1;
+        GUIInputLimit = 31;
+    }
+    GUIClickCButton(eax, edx, 8, 66, &NetplayUDPConfig);
+    GUIPHoldbutton(eax, edx, 8, 74, 56, 85, 85);
+    GUIPHoldbutton(eax, edx, 66, 74, 114, 85, 86);
+    GUIPHoldbutton(eax, edx, 124, 74, 212, 85, 87);
 }
 
 static void DisplayGameOptnsClick(s4 const eax, s4 const edx)

@@ -1354,6 +1354,30 @@ static void GUIChipKeys(char dh)
     GUIKeyCheckbox(&nssdip6, '6', dh);
 }
 
+static void netplay_hostname_noop(void) { }
+
+static void GUINetplayKeys(char dh)
+{
+    dh = GUIInputBoxText(GUINetplayTextPtr, netplay_hostname_noop, dh);
+    if (GUIInputBox != 0)
+        return;
+    dh = ToUpperASM(dh);
+    switch (dh) {
+    case 'H':
+        NetplayHostSession();
+        break;
+    case 'J':
+        NetplayJoinSession();
+        break;
+    case 'D':
+        NetplayDisconnectSession();
+        break;
+    case 'U':
+        NetplayUDPConfig ^= 1;
+        break;
+    }
+}
+
 static void GUIPathKeys(char dh)
 {
     if (GUIPathTabs[0] == 1)
@@ -1640,6 +1664,9 @@ done:
                     break;
                 case 7:
                     GUICheatKeys(dh, al);
+                    break;
+                case 8:
+                    GUINetplayKeys(dh);
                     break;
                 case 10:
                     GUIGUIOptnsKeys(dh);

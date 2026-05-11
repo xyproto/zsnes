@@ -1690,7 +1690,8 @@ static u1 NetplayHostRole = 0;
 static u4 NetplayLocalSeq = 0;
 static u4 NetplayRemoteSeq = 0;
 static u4 NetplayRemoteJoy = 0x00008000;
-static char NetplayHostName[32] = "127.0.0.1";
+char NetplayHostName[32] = "127.0.0.1";
+char* GUINetplayTextPtr[1] = { NetplayHostName };
 static u1 NetplayPendingRemoteValid = 0;
 static NetplayInputPacket NetplayPendingRemote;
 static u4 const NetplayMagic = 0x4E455450; // "NETP"
@@ -2039,19 +2040,21 @@ void DisplayNetOptns(void)
     NetplayAdvanceState(0);
 
     GUIwinsizex[8] = 220;
-    GUIwinsizey[8] = 86;
+    GUIwinsizey[8] = 96;
     GUIDrawWindowBox(8, "NETPLAY");
 
     GUIDisplayTextY(8, 6, 16, "STATUS:");
     GUIDisplayTextG(8, 50, 16, NetplayStatusLine);
-    GUIDisplayText(8, 6, 28, "HOST: 127.0.0.1");
-    GUIDisplayText(8, 6, 38, NetplayHostRole != 0 ? "ROLE: HOST (P1)" : "ROLE: CLIENT (P2)");
-    GUIDisplayText(8, 6, 48, NetplayUDPConfig != 0 ? "PORT: 7845 (UDP LOCKSTEP)" : "PORT: 7845 (TCP LOCKSTEP)");
-    GUIDisplayCheckbox(8, 8, 58, &NetplayUDPConfig, "USE UDP");
+    GUIDisplayText(8, 6, 28, "HOST:");
+    GUIDisplayBBox(8, 38, 24, 214, 34, 167);
+    GUIOuttextwin2d(8, 40, 28, NetplayHostName, 26, GUINetplayTextPtr, 0);
+    GUIDisplayText(8, 6, 46, NetplayHostRole != 0 ? "ROLE: HOST (P1)" : "ROLE: CLIENT (P2)");
+    GUIDisplayText(8, 6, 56, NetplayUDPConfig != 0 ? "PORT: 7845 (UDP LOCKSTEP)" : "PORT: 7845 (TCP LOCKSTEP)");
+    GUIDisplayCheckbox(8, 8, 66, &NetplayUDPConfig, "USE UDP");
 
-    DrawGUIButton(8, 8, 66, 56, 77, "HOST", 85, 0, 0);
-    DrawGUIButton(8, 66, 66, 114, 77, "JOIN", 86, 0, 0);
-    DrawGUIButton(8, 124, 66, 212, 77, "DISCONNECT", 87, 0, 0);
+    DrawGUIButton(8, 8, 74, 56, 85, "HOST", 85, 0, 0);
+    DrawGUIButton(8, 66, 74, 114, 85, "JOIN", 86, 0, 0);
+    DrawGUIButton(8, 124, 74, 212, 85, "DISCONNECT", 87, 0, 0);
 }
 
 void DisplayGameOptns(void)

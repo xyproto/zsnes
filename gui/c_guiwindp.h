@@ -30,6 +30,8 @@ void NetplaySyncInputs(unsigned int* joy_a, unsigned int* joy_b);
 extern char CMovieExt;
 extern char GUICheatTextZ1[];
 extern char GUICheatTextZ2[];
+extern char NetplayHostName[32];
+extern char* GUINetplayTextPtr[1];
 extern char GUIChoseSaveText2[2];
 extern char GUIChoseSlotTextX[2];
 extern char GUIComboTextH[21];
