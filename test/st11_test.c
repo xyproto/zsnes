@@ -17,18 +17,25 @@
 /* --- Mock state ---------------------------------------------------------- */
 
 static uint8_t mock_ram[0x1001]; /* +1 so a 16-bit read at 0xFFF doesn't OOB */
-uint8_t *setaramdata = mock_ram;
+uint8_t* setaramdata = mock_ram;
 
-uint8_t  ST011_DR;
+uint8_t ST011_DR;
 uint16_t seta11_address;
-uint8_t  seta11_byte;
+uint8_t seta11_byte;
 
 /* Call logs */
-typedef struct { uint16_t addr; uint8_t byte; } CallRec;
+typedef struct {
+    uint16_t addr;
+    uint8_t byte;
+} CallRec;
 
-static CallRec w68_log[8]; static int w68_n;
-static CallRec r60_log[8]; static int r60_n; static uint8_t r60_ret[8];
-static CallRec w60_log[8]; static int w60_n;
+static CallRec w68_log[8];
+static int w68_n;
+static CallRec r60_log[8];
+static int r60_n;
+static uint8_t r60_ret[8];
+static CallRec w60_log[8];
+static int w60_n;
 
 void ST011_MapW_68(void)
 {
@@ -51,25 +58,28 @@ void ST011_MapW_60(void)
     w60_n++;
 }
 
-#define RESET_MOCKS() do {                       \
-    w68_n = r60_n = w60_n = 0;                  \
-    memset(w68_log, 0, sizeof(w68_log));         \
-    memset(r60_log, 0, sizeof(r60_log));         \
-    memset(r60_ret, 0, sizeof(r60_ret));         \
-    memset(w60_log, 0, sizeof(w60_log));         \
-    ST011_DR = 0; seta11_address = 0; seta11_byte = 0; \
-} while (0)
+#define RESET_MOCKS()                        \
+    do {                                     \
+        w68_n = r60_n = w60_n = 0;           \
+        memset(w68_log, 0, sizeof(w68_log)); \
+        memset(r60_log, 0, sizeof(r60_log)); \
+        memset(r60_ret, 0, sizeof(r60_ret)); \
+        memset(w60_log, 0, sizeof(w60_log)); \
+        ST011_DR = 0;                        \
+        seta11_address = 0;                  \
+        seta11_byte = 0;                     \
+    } while (0)
 
 /* --- Declarations (from chips/st11proc.c) -------------------------------- */
 
-uint8_t  Seta11Read8_68(uint32_t addr);
-void     Seta11Write8_68(uint32_t addr, uint8_t val);
+uint8_t Seta11Read8_68(uint32_t addr);
+void Seta11Write8_68(uint32_t addr, uint8_t val);
 uint16_t Seta11Read16_68(uint32_t addr);
-void     Seta11Write16_68(uint32_t addr, uint16_t val);
-uint8_t  Seta11Read8_60(uint32_t addr);
-void     Seta11Write8_60(uint32_t addr, uint8_t val);
+void Seta11Write16_68(uint32_t addr, uint16_t val);
+uint8_t Seta11Read8_60(uint32_t addr);
+void Seta11Write8_60(uint32_t addr, uint8_t val);
 uint16_t Seta11Read16_60(uint32_t addr);
-void     Seta11Write16_60(uint32_t addr, uint16_t val);
+void Seta11Write16_60(uint32_t addr, uint16_t val);
 
 /* ======================================================================== */
 /* Region 68 — setaramdata buffer                                          */

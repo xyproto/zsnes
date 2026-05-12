@@ -17,15 +17,17 @@ BIN       := zsnes_test
 NETPLAY   := zsnes_netplay_test
 ST10      := zsnes_st10_test
 ST11      := zsnes_st11_test
+OBC1      := zsnes_obc1_test
 SRC       := main.c
 NETPLAY_SRC := netplay_test.c
 ST10_SRC  := st10_test.c
 ST11_SRC  := st11_test.c
+OBC1_SRC  := obc1_test.c
 OBJS      := ../zpath.o
 
 .PHONY: all run clean
 
-all: $(BIN) $(NETPLAY) $(ST10) $(ST11)
+all: $(BIN) $(NETPLAY) $(ST10) $(ST11) $(OBC1)
 
 $(BIN): $(SRC) zstest.h $(OBJS)
 	$(CC) $(CFLAGS) $(SRC) $(OBJS) -no-pie -Wl,--gc-sections -o $(BIN)
@@ -39,11 +41,15 @@ $(ST10): $(ST10_SRC) zstest.h ../chips/st10proc.c
 $(ST11): $(ST11_SRC) zstest.h ../chips/st11proc.c
 	$(CC) $(CFLAGS) $(ST11_SRC) ../chips/st11proc.c -no-pie -o $(ST11)
 
+$(OBC1): $(OBC1_SRC) zstest.h ../chips/obc1proc.c
+	$(CC) $(CFLAGS) $(OBC1_SRC) ../chips/obc1proc.c -no-pie -o $(OBC1)
+
 run: all
 	@./$(BIN)
 	@./$(NETPLAY)
 	@./$(ST10)
 	@./$(ST11)
+	@./$(OBC1)
 
 clean:
-	rm -f $(BIN) $(NETPLAY) $(ST10) $(ST11)
+	rm -f $(BIN) $(NETPLAY) $(ST10) $(ST11) $(OBC1)
