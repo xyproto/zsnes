@@ -59,7 +59,8 @@ NEWSYM setaaccessbankw16
     jnz .nosetenablew16  ; ignore ROM writes
     cmp ecx,7fffh
     jne .noromw16
-    mov [setaramdata+0fffh],al  ; only write ram part in, not rom part
+    mov ebx,[setaramdata]
+    mov [ebx+0fffh],al  ; only write ram part in, not rom part
     jmp short .nosetenablew16
 .noromw16
     and ecx,0fffh
@@ -116,13 +117,11 @@ NEWSYM setaaccessbankr16a
 NEWSYM setaaccessbankw16a
     cmp ecx,4000h
     jae .nosetenablew16a
-    mov ebx,[setaramdata]
     and ecx,3
-    mov [ebx+ecx],al
-    xchg ah,al
+    mov [SetaCmdEnable+ecx],ah  ; high byte first (big-endian, matches r16a)
     inc ecx
     and ecx,3
-    mov [ebx+ecx],al
+    mov [SetaCmdEnable+ecx],al  ; low byte second
 .nosetenablew16a
     xor ebx,ebx
     ret
