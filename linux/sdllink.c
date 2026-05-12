@@ -750,6 +750,12 @@ static unsigned int sdl_keysym_to_pc_scancode(int sym)
         return 0x62;
     case SDLK_DELETE:
         return 0x63;
+    case SDLK_RCTRL:
+        return 0x54;
+    case SDLK_RALT:
+        return 0x55;
+    case SDLK_KP_ENTER:
+        return 0x5D;
     }
     return (0x64 + sym);
 }
@@ -762,6 +768,10 @@ static void ProcessKeyBuf(int scancode)
     if (((scancode >= 'A') && (scancode <= 'Z')) || ((scancode >= 'a') && (scancode <= 'z')) || (scancode == SDLK_ESCAPE) || (scancode == SDLK_SPACE) || (scancode == SDLK_BACKSPACE) || (scancode == SDLK_RETURN) || (scancode == SDLK_TAB)) {
         accept = 1;
         vkeyval = scancode;
+    }
+    if (scancode == SDLK_KP_ENTER) {
+        accept = 1;
+        vkeyval = SDLK_RETURN;
     }
     if ((scancode >= '0') && (scancode <= '9')) {
         accept = 1;
