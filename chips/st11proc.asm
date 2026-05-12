@@ -56,6 +56,7 @@ NEWSYM Seta11Write16_68
     mov [seta11_address],cx
     mov [seta11_byte],al
     ccallv ST011_MapW_68
+    mov [seta11_byte],ah        ; high byte for second write (was missing — bug fix)
     inc word[seta11_address]
     ccallv ST011_MapW_68
 .nosetenablew16
