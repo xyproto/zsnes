@@ -15,13 +15,15 @@ CFLAGS := -m32 -std=gnu99 -I.. -Wall -Wextra -Wno-unused-parameter
 
 BIN       := zsnes_test
 NETPLAY   := zsnes_netplay_test
+ST10      := zsnes_st10_test
 SRC       := main.c
 NETPLAY_SRC := netplay_test.c
+ST10_SRC  := st10_test.c
 OBJS      := ../zpath.o
 
 .PHONY: all run clean
 
-all: $(BIN) $(NETPLAY)
+all: $(BIN) $(NETPLAY) $(ST10)
 
 $(BIN): $(SRC) zstest.h $(OBJS)
 	$(CC) $(CFLAGS) $(SRC) $(OBJS) -no-pie -Wl,--gc-sections -o $(BIN)
@@ -29,9 +31,13 @@ $(BIN): $(SRC) zstest.h $(OBJS)
 $(NETPLAY): $(NETPLAY_SRC) zstest.h
 	$(CC) $(CFLAGS) $(NETPLAY_SRC) -no-pie -lpthread -o $(NETPLAY)
 
+$(ST10): $(ST10_SRC) zstest.h ../chips/st10proc.c
+	$(CC) $(CFLAGS) $(ST10_SRC) ../chips/st10proc.c -no-pie -o $(ST10)
+
 run: all
 	@./$(BIN)
 	@./$(NETPLAY)
+	@./$(ST10)
 
 clean:
-	rm -f $(BIN) $(NETPLAY)
+	rm -f $(BIN) $(NETPLAY) $(ST10)
