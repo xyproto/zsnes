@@ -1,4 +1,7 @@
 *.[do]
+*.log
+*.raw
+*.wav
 build/
 cfg.h
 config.default
@@ -6,14 +9,13 @@ include.txt
 input.h
 md.h
 parsegen
-win/confloc.h
-zsnes
-zsnes.exe
-*.raw
-*.wav
-*.log
+test/zsnes_netplay_test
+test/zsnes_st10_test
 test/zsnes_test
+win/confloc.h
 zfont.txt
 zinput.cfg
 zmovie.cfg
+zsnes
+zsnes.exe
 zsnesl.cfg
