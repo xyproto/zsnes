@@ -12,9 +12,9 @@
 #include <stdint.h>
 #include <string.h>
 
-#define DSP2F_HALT              1u
+#define DSP2F_HALT 1u
 #define DSP2F_AUTO_BUFFER_SHIFT 2u
-#define DSP2F_NO_ADDR_CHK       4u
+#define DSP2F_NO_ADDR_CHK 4u
 
 /* BSS */
 uint8_t dsp2buffer[256];
@@ -22,11 +22,11 @@ uint8_t dsp2enforcerQueue[8 * 512];
 uint8_t dsp2enforcer[8];
 
 /* Data */
-uint8_t  dsp2f03KeyLo;
-uint8_t  dsp2f03KeyHi;
+uint8_t dsp2f03KeyLo;
+uint8_t dsp2f03KeyHi;
 uint32_t dsp2enforcerReaderCursor;
 uint32_t dsp2enforcerWriterCursor = 1;
-uint32_t dsp2state                = DSP2F_HALT;
+uint32_t dsp2state = DSP2F_HALT;
 uint32_t dsp2input;
 uint32_t dsp2inputTemp;
 uint32_t dsp2f0dSizeOrg;
@@ -34,48 +34,528 @@ uint32_t dsp2f0dSizeNew;
 
 /* Command 01 — bit-plane rearrangement lookup tables */
 static const uint8_t dsp2f01TblByte[256] = {
-     0, 1,16,17, 0, 1,16,17, 0, 1,16,17, 0, 1,16,17,
-     0, 1,16,17, 0, 1,16,17, 0, 1,16,17, 0, 1,16,17,
-     2, 3,18,19, 2, 3,18,19, 2, 3,18,19, 2, 3,18,19,
-     2, 3,18,19, 2, 3,18,19, 2, 3,18,19, 2, 3,18,19,
-     4, 5,20,21, 4, 5,20,21, 4, 5,20,21, 4, 5,20,21,
-     4, 5,20,21, 4, 5,20,21, 4, 5,20,21, 4, 5,20,21,
-     6, 7,22,23, 6, 7,22,23, 6, 7,22,23, 6, 7,22,23,
-     6, 7,22,23, 6, 7,22,23, 6, 7,22,23, 6, 7,22,23,
-     8, 9,24,25, 8, 9,24,25, 8, 9,24,25, 8, 9,24,25,
-     8, 9,24,25, 8, 9,24,25, 8, 9,24,25, 8, 9,24,25,
-    10,11,26,27,10,11,26,27,10,11,26,27,10,11,26,27,
-    10,11,26,27,10,11,26,27,10,11,26,27,10,11,26,27,
-    12,13,28,29,12,13,28,29,12,13,28,29,12,13,28,29,
-    12,13,28,29,12,13,28,29,12,13,28,29,12,13,28,29,
-    14,15,30,31,14,15,30,31,14,15,30,31,14,15,30,31,
-    14,15,30,31,14,15,30,31,14,15,30,31,14,15,30,31,
+    0,
+    1,
+    16,
+    17,
+    0,
+    1,
+    16,
+    17,
+    0,
+    1,
+    16,
+    17,
+    0,
+    1,
+    16,
+    17,
+    0,
+    1,
+    16,
+    17,
+    0,
+    1,
+    16,
+    17,
+    0,
+    1,
+    16,
+    17,
+    0,
+    1,
+    16,
+    17,
+    2,
+    3,
+    18,
+    19,
+    2,
+    3,
+    18,
+    19,
+    2,
+    3,
+    18,
+    19,
+    2,
+    3,
+    18,
+    19,
+    2,
+    3,
+    18,
+    19,
+    2,
+    3,
+    18,
+    19,
+    2,
+    3,
+    18,
+    19,
+    2,
+    3,
+    18,
+    19,
+    4,
+    5,
+    20,
+    21,
+    4,
+    5,
+    20,
+    21,
+    4,
+    5,
+    20,
+    21,
+    4,
+    5,
+    20,
+    21,
+    4,
+    5,
+    20,
+    21,
+    4,
+    5,
+    20,
+    21,
+    4,
+    5,
+    20,
+    21,
+    4,
+    5,
+    20,
+    21,
+    6,
+    7,
+    22,
+    23,
+    6,
+    7,
+    22,
+    23,
+    6,
+    7,
+    22,
+    23,
+    6,
+    7,
+    22,
+    23,
+    6,
+    7,
+    22,
+    23,
+    6,
+    7,
+    22,
+    23,
+    6,
+    7,
+    22,
+    23,
+    6,
+    7,
+    22,
+    23,
+    8,
+    9,
+    24,
+    25,
+    8,
+    9,
+    24,
+    25,
+    8,
+    9,
+    24,
+    25,
+    8,
+    9,
+    24,
+    25,
+    8,
+    9,
+    24,
+    25,
+    8,
+    9,
+    24,
+    25,
+    8,
+    9,
+    24,
+    25,
+    8,
+    9,
+    24,
+    25,
+    10,
+    11,
+    26,
+    27,
+    10,
+    11,
+    26,
+    27,
+    10,
+    11,
+    26,
+    27,
+    10,
+    11,
+    26,
+    27,
+    10,
+    11,
+    26,
+    27,
+    10,
+    11,
+    26,
+    27,
+    10,
+    11,
+    26,
+    27,
+    10,
+    11,
+    26,
+    27,
+    12,
+    13,
+    28,
+    29,
+    12,
+    13,
+    28,
+    29,
+    12,
+    13,
+    28,
+    29,
+    12,
+    13,
+    28,
+    29,
+    12,
+    13,
+    28,
+    29,
+    12,
+    13,
+    28,
+    29,
+    12,
+    13,
+    28,
+    29,
+    12,
+    13,
+    28,
+    29,
+    14,
+    15,
+    30,
+    31,
+    14,
+    15,
+    30,
+    31,
+    14,
+    15,
+    30,
+    31,
+    14,
+    15,
+    30,
+    31,
+    14,
+    15,
+    30,
+    31,
+    14,
+    15,
+    30,
+    31,
+    14,
+    15,
+    30,
+    31,
+    14,
+    15,
+    30,
+    31,
 };
 
 static const uint8_t dsp2f01TblBitMask[256] = {
-     64, 64, 64, 64,128,128,128,128, 16, 16, 16, 16, 32, 32, 32, 32,
-      4,  4,  4,  4,  8,  8,  8,  8,  1,  1,  1,  1,  2,  2,  2,  2,
-     64, 64, 64, 64,128,128,128,128, 16, 16, 16, 16, 32, 32, 32, 32,
-      4,  4,  4,  4,  8,  8,  8,  8,  1,  1,  1,  1,  2,  2,  2,  2,
-     64, 64, 64, 64,128,128,128,128, 16, 16, 16, 16, 32, 32, 32, 32,
-      4,  4,  4,  4,  8,  8,  8,  8,  1,  1,  1,  1,  2,  2,  2,  2,
-     64, 64, 64, 64,128,128,128,128, 16, 16, 16, 16, 32, 32, 32, 32,
-      4,  4,  4,  4,  8,  8,  8,  8,  1,  1,  1,  1,  2,  2,  2,  2,
-     64, 64, 64, 64,128,128,128,128, 16, 16, 16, 16, 32, 32, 32, 32,
-      4,  4,  4,  4,  8,  8,  8,  8,  1,  1,  1,  1,  2,  2,  2,  2,
-     64, 64, 64, 64,128,128,128,128, 16, 16, 16, 16, 32, 32, 32, 32,
-      4,  4,  4,  4,  8,  8,  8,  8,  1,  1,  1,  1,  2,  2,  2,  2,
-     64, 64, 64, 64,128,128,128,128, 16, 16, 16, 16, 32, 32, 32, 32,
-      4,  4,  4,  4,  8,  8,  8,  8,  1,  1,  1,  1,  2,  2,  2,  2,
-     64, 64, 64, 64,128,128,128,128, 16, 16, 16, 16, 32, 32, 32, 32,
-      4,  4,  4,  4,  8,  8,  8,  8,  1,  1,  1,  1,  2,  2,  2,  2,
+    64,
+    64,
+    64,
+    64,
+    128,
+    128,
+    128,
+    128,
+    16,
+    16,
+    16,
+    16,
+    32,
+    32,
+    32,
+    32,
+    4,
+    4,
+    4,
+    4,
+    8,
+    8,
+    8,
+    8,
+    1,
+    1,
+    1,
+    1,
+    2,
+    2,
+    2,
+    2,
+    64,
+    64,
+    64,
+    64,
+    128,
+    128,
+    128,
+    128,
+    16,
+    16,
+    16,
+    16,
+    32,
+    32,
+    32,
+    32,
+    4,
+    4,
+    4,
+    4,
+    8,
+    8,
+    8,
+    8,
+    1,
+    1,
+    1,
+    1,
+    2,
+    2,
+    2,
+    2,
+    64,
+    64,
+    64,
+    64,
+    128,
+    128,
+    128,
+    128,
+    16,
+    16,
+    16,
+    16,
+    32,
+    32,
+    32,
+    32,
+    4,
+    4,
+    4,
+    4,
+    8,
+    8,
+    8,
+    8,
+    1,
+    1,
+    1,
+    1,
+    2,
+    2,
+    2,
+    2,
+    64,
+    64,
+    64,
+    64,
+    128,
+    128,
+    128,
+    128,
+    16,
+    16,
+    16,
+    16,
+    32,
+    32,
+    32,
+    32,
+    4,
+    4,
+    4,
+    4,
+    8,
+    8,
+    8,
+    8,
+    1,
+    1,
+    1,
+    1,
+    2,
+    2,
+    2,
+    2,
+    64,
+    64,
+    64,
+    64,
+    128,
+    128,
+    128,
+    128,
+    16,
+    16,
+    16,
+    16,
+    32,
+    32,
+    32,
+    32,
+    4,
+    4,
+    4,
+    4,
+    8,
+    8,
+    8,
+    8,
+    1,
+    1,
+    1,
+    1,
+    2,
+    2,
+    2,
+    2,
+    64,
+    64,
+    64,
+    64,
+    128,
+    128,
+    128,
+    128,
+    16,
+    16,
+    16,
+    16,
+    32,
+    32,
+    32,
+    32,
+    4,
+    4,
+    4,
+    4,
+    8,
+    8,
+    8,
+    8,
+    1,
+    1,
+    1,
+    1,
+    2,
+    2,
+    2,
+    2,
+    64,
+    64,
+    64,
+    64,
+    128,
+    128,
+    128,
+    128,
+    16,
+    16,
+    16,
+    16,
+    32,
+    32,
+    32,
+    32,
+    4,
+    4,
+    4,
+    4,
+    8,
+    8,
+    8,
+    8,
+    1,
+    1,
+    1,
+    1,
+    2,
+    2,
+    2,
+    2,
+    64,
+    64,
+    64,
+    64,
+    128,
+    128,
+    128,
+    128,
+    16,
+    16,
+    16,
+    16,
+    32,
+    32,
+    32,
+    32,
+    4,
+    4,
+    4,
+    4,
+    8,
+    8,
+    8,
+    8,
+    1,
+    1,
+    1,
+    1,
+    2,
+    2,
+    2,
+    2,
 };
 
 /* Copies dsp2enforcer[0..7] into the next queue slot; advances writer cursor */
 static void DSP2Add2Queue(void)
 {
-    uint32_t wc  = dsp2enforcerWriterCursor;
-    uint8_t *dst = dsp2enforcerQueue + wc * 8;
+    uint32_t wc = dsp2enforcerWriterCursor;
+    uint8_t* dst = dsp2enforcerQueue + wc * 8;
     dsp2enforcerWriterCursor = (wc + 1) & 511;
     memcpy(dst, dsp2enforcer, 8);
 }
@@ -86,14 +566,16 @@ uint8_t DSP2Read8b(uint32_t addr)
         return 0;
 
     uint16_t cx = (uint16_t)addr;
-    if (!(cx & 0x8000)) return 0; /* bit 15 must be set   */
-    if (  cx & 0x7000)  return 0; /* bits 14-12 must clear */
+    if (!(cx & 0x8000))
+        return 0; /* bit 15 must be set   */
+    if (cx & 0x7000)
+        return 0; /* bits 14-12 must clear */
 
-    uint8_t idx    = (uint8_t)cx; /* low 8 bits */
+    uint8_t idx = (uint8_t)cx; /* low 8 bits */
     uint8_t result = dsp2buffer[idx];
 
     if (dsp2state & DSP2F_AUTO_BUFFER_SHIFT)
-        *(int32_t *)dsp2buffer >>= 8; /* arithmetic shift of first dword */
+        *(int32_t*)dsp2buffer >>= 8; /* arithmetic shift of first dword */
 
     return result;
 }
@@ -112,8 +594,8 @@ void DSP2Write8b(uint32_t addr, uint8_t val)
     dsp2input = val;
 
     /* Load enforcer entry from queue at reader cursor */
-    uint32_t rc   = dsp2enforcerReaderCursor;
-    uint8_t *slot = dsp2enforcerQueue + rc * 8;
+    uint32_t rc = dsp2enforcerReaderCursor;
+    uint8_t* slot = dsp2enforcerQueue + rc * 8;
     memcpy(dsp2enforcer, slot, 8);
 
     /* Address check (skipped when NO_ADDR_CHK set) */
@@ -189,7 +671,7 @@ void DSP2Write8b(uint32_t addr, uint8_t val)
     /* ------------------------------------------------------------------ */
     case 0x01: { /* bit-plane rearrangement for one column */
         uint32_t ecx = (uint32_t)dsp2enforcer[4] * 8;
-        uint8_t  tmp = (uint8_t)dsp2input;
+        uint8_t tmp = (uint8_t)dsp2input;
         for (int i = 0; i < 8; i++, ecx++) {
             uint8_t bidx = dsp2f01TblByte[ecx];
             uint8_t mask = dsp2f01TblBitMask[ecx];
@@ -213,7 +695,8 @@ void DSP2Write8b(uint32_t addr, uint8_t val)
     /* ------------------------------------------------------------------ */
     case 0x03: { /* queue N w04 then N w05 entries */
         uint8_t n = (uint8_t)dsp2input;
-        if (!n) goto gohalt;
+        if (!n)
+            goto gohalt;
         for (uint8_t al = 0; al < n; al++) {
             memset(dsp2enforcer, 0, 8);
             dsp2enforcer[0] = 0x04;
@@ -258,13 +741,14 @@ void DSP2Write8b(uint32_t addr, uint8_t val)
     /* ------------------------------------------------------------------ */
     case 0x06: { /* queue N nibble-swap (w07) entries */
         uint8_t count = (uint8_t)dsp2input;
-        if (!count) goto gohalt;
+        if (!count)
+            goto gohalt;
         for (uint8_t i = 0; i < count; i++) {
             memset(dsp2enforcer, 0, 8);
             dsp2enforcer[0] = 0x07;
             dsp2enforcer[5] = 0x80;
             dsp2enforcer[1] = (uint8_t)(count - 1 - i); /* decreasing param */
-            dsp2enforcer[4] = i;                         /* increasing addr  */
+            dsp2enforcer[4] = i; /* increasing addr  */
             DSP2Add2Queue();
         }
         goto queueincoming;
@@ -283,7 +767,7 @@ void DSP2Write8b(uint32_t addr, uint8_t val)
         dsp2buffer[idx] = (uint8_t)dsp2input;
         if (idx == 3) {
             uint32_t product = (uint32_t)dsp2buffer[0] * (uint32_t)dsp2buffer[2];
-            *(uint32_t *)dsp2buffer = product;
+            *(uint32_t*)dsp2buffer = product;
             dsp2state |= DSP2F_AUTO_BUFFER_SHIFT;
         }
         goto done;
@@ -293,7 +777,8 @@ void DSP2Write8b(uint32_t addr, uint8_t val)
     case 0x09: { /* set original size for bitmap scaling */
         int8_t orig = (int8_t)dsp2input >> 1;
         dsp2f0dSizeOrg = (uint32_t)(uint8_t)orig;
-        if (!orig) goto gohalt;
+        if (!orig)
+            goto gohalt;
         memset(dsp2enforcer, 0, 8);
         dsp2enforcer[0] = 0x0A;
         dsp2enforcer[5] = 0x80;
@@ -305,7 +790,8 @@ void DSP2Write8b(uint32_t addr, uint8_t val)
     case 0x0A: { /* set new size for bitmap scaling; queue w0B entries */
         int8_t nw = (int8_t)dsp2input >> 1;
         dsp2f0dSizeNew = (uint32_t)(uint8_t)nw;
-        if (!nw) goto gohalt;
+        if (!nw)
+            goto gohalt;
         uint8_t orig = (uint8_t)dsp2f0dSizeOrg;
         uint8_t neww = (uint8_t)dsp2f0dSizeNew;
         for (uint8_t cl = 0; cl < orig; cl++) {
