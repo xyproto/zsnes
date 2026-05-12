@@ -24,10 +24,10 @@
 
 #include <stdint.h>
 
-extern uint8_t  *setaramdata;
-extern uint8_t   ST011_DR;
-extern uint16_t  seta11_address;
-extern uint8_t   seta11_byte;
+extern uint8_t* setaramdata;
+extern uint8_t ST011_DR;
+extern uint16_t seta11_address;
+extern uint8_t seta11_byte;
 extern void ST011_MapW_68(void);
 extern void ST011_MapR_60(void);
 extern void ST011_MapW_60(void);
@@ -48,13 +48,13 @@ void Seta11Write8_68(uint32_t addr, uint8_t val)
     if (addr & 0x8000)
         return;
     seta11_address = (uint16_t)addr;
-    seta11_byte    = val;
+    seta11_byte = val;
     ST011_MapW_68();
 }
 
 uint16_t Seta11Read16_68(uint32_t addr)
 {
-    uint32_t a   = addr & 0xfff;
+    uint32_t a = addr & 0xfff;
     uint16_t val = (uint16_t)(setaramdata[a] | ((uint16_t)setaramdata[a + 1] << 8));
     ST011_DR = (uint8_t)(val >> 8);
     return val;
@@ -65,7 +65,7 @@ void Seta11Write16_68(uint32_t addr, uint16_t val)
     if (addr & 0x8000)
         return;
     seta11_address = (uint16_t)addr;
-    seta11_byte    = (uint8_t)val;
+    seta11_byte = (uint8_t)val;
     ST011_MapW_68();
     seta11_byte = (uint8_t)(val >> 8);
     seta11_address++;
@@ -90,7 +90,7 @@ void Seta11Write8_60(uint32_t addr, uint8_t val)
     if (addr >= 0x4000)
         return;
     seta11_address = (uint16_t)(addr & 3);
-    seta11_byte    = val;
+    seta11_byte = val;
     ST011_MapW_60();
 }
 
@@ -112,9 +112,9 @@ void Seta11Write16_60(uint32_t addr, uint16_t val)
     if (addr >= 0x4000)
         return;
     seta11_address = (uint16_t)(addr & 3);
-    seta11_byte    = (uint8_t)val;
+    seta11_byte = (uint8_t)val;
     ST011_MapW_60();
-    seta11_byte    = (uint8_t)(val >> 8);
+    seta11_byte = (uint8_t)(val >> 8);
     seta11_address = (uint16_t)((seta11_address + 1) & 3);
     ST011_MapW_60();
 }
