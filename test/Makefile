@@ -19,17 +19,19 @@ ST10      := zsnes_st10_test
 ST11      := zsnes_st11_test
 OBC1      := zsnes_obc1_test
 MSU1      := zsnes_msu1_test
+DSP2      := zsnes_dsp2_test
 SRC       := main.c
 NETPLAY_SRC := netplay_test.c
 ST10_SRC  := st10_test.c
 ST11_SRC  := st11_test.c
 OBC1_SRC  := obc1_test.c
 MSU1_SRC  := msu1_test.c
+DSP2_SRC  := dsp2_test.c
 OBJS      := ../zpath.o
 
 .PHONY: all run clean
 
-all: $(BIN) $(NETPLAY) $(ST10) $(ST11) $(OBC1) $(MSU1)
+all: $(BIN) $(NETPLAY) $(ST10) $(ST11) $(OBC1) $(MSU1) $(DSP2)
 
 $(BIN): $(SRC) zstest.h $(OBJS)
 	$(CC) $(CFLAGS) $(SRC) $(OBJS) -no-pie -Wl,--gc-sections -o $(BIN)
@@ -49,6 +51,9 @@ $(OBC1): $(OBC1_SRC) zstest.h ../chips/obc1proc.c
 $(MSU1): $(MSU1_SRC) zstest.h ../chips/msu1regs.c
 	$(CC) $(CFLAGS) $(MSU1_SRC) ../chips/msu1regs.c -no-pie -o $(MSU1)
 
+$(DSP2): $(DSP2_SRC) zstest.h ../chips/dsp2proc.c
+	$(CC) $(CFLAGS) $(DSP2_SRC) ../chips/dsp2proc.c -no-pie -o $(DSP2)
+
 run: all
 	@./$(BIN)
 	@./$(NETPLAY)
@@ -56,6 +61,7 @@ run: all
 	@./$(ST11)
 	@./$(OBC1)
 	@./$(MSU1)
+	@./$(DSP2)
 
 clean:
-	rm -f $(BIN) $(NETPLAY) $(ST10) $(ST11) $(OBC1) $(MSU1)
+	rm -f $(BIN) $(NETPLAY) $(ST10) $(ST11) $(OBC1) $(MSU1) $(DSP2)
