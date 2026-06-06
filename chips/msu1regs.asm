@@ -77,7 +77,14 @@ NEWSYM msudataseek2
 	mov [MSU_Data_SeekPort+2],al
 ret
 NEWSYM msudataseek3
+	; Writing to $2003 triggers seek
 	mov [MSU_Data_SeekPort+3],al
+
+	; writes have no effect if data busy bit set
+	mov al,[MSU_StatusRead]
+	and al,80h
+	jnz .dontseek
+
 	; Start seek, set data busy bit
 	or byte[MSU_StatusRead],80h
 	; Set data address to seek port
@@ -85,6 +92,8 @@ NEWSYM msudataseek3
 	mov [MSU_Data_Addr],eax
 	; Seek finished, clear data busy bit
 	and byte[MSU_StatusRead],~80h
+
+.dontseek
 ret
 
 ;TRACK
