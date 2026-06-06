@@ -18,7 +18,8 @@
 /* --- Mock globals -------------------------------------------------------- */
 
 uint8_t MSU_StatusRead;
-uint32_t MSU_Data_Seek;
+uint32_t MSU_Data_SeekPort;
+uint32_t MSU_Data_Addr;
 uint16_t MSU_Track;
 uint8_t MSU_AudioVolume;
 uint8_t MSU_StateControl;
@@ -44,10 +45,11 @@ void MSU1HandleStatusBits(void) { handle_status_calls++; }
         handle_track_calls = 0;                  \
         handle_status_calls = 0;                 \
         MSU_StatusRead = 0;                      \
-        MSU_Data_Seek = 0;                       \
+        MSU_Data_SeekPort = 0;                   \
+        MSU_Data_Addr = 0;                       \
         MSU_Track = 0;                           \
         MSU_AudioVolume = 0;                     \
-        MSU_StateControl = 0;                   \
+        MSU_StateControl = 0;                    \
         memset(mock_data, 0, sizeof(mock_data)); \
     } while (0)
 
@@ -101,22 +103,22 @@ static void test_msudataread(void)
     mock_data[0] = 0x11;
     mock_data[1] = 0x22;
     mock_data[2] = 0x33;
-    MSU_Data_Seek = 0;
+    MSU_Data_SeekPort = 0;
 
     ZT_CHECK(msudataread() == 0x11);
-    ZT_CHECK(MSU_Data_Seek == 1);
+    ZT_CHECK(MSU_Data_SeekPort == 1);
 
     ZT_CHECK(msudataread() == 0x22);
-    ZT_CHECK(MSU_Data_Seek == 2);
+    ZT_CHECK(MSU_Data_SeekPort == 2);
 
     ZT_CHECK(msudataread() == 0x33);
-    ZT_CHECK(MSU_Data_Seek == 3);
+    ZT_CHECK(MSU_Data_SeekPort == 3);
 
     /* seek at arbitrary offset */
     mock_data[100] = 0xAB;
-    MSU_Data_Seek = 100;
+    MSU_Data_SeekPort = 100;
     ZT_CHECK(msudataread() == 0xAB);
-    ZT_CHECK(MSU_Data_Seek == 101);
+    ZT_CHECK(MSU_Data_SeekPort == 101);
 }
 
 static void test_msu_id_chars(void)
@@ -133,27 +135,27 @@ static void test_msu_id_chars(void)
 
 static void test_msudataseek_bytes(void)
 {
-    ZT_SECTION("msudataseek0..3: write individual bytes of MSU_Data_Seek");
+    ZT_SECTION("msudataseek0..3: write individual bytes of MSU_Data_SeekPort");
 
     /* byte 0 — least significant byte */
-    MSU_Data_Seek = 0x12345678u;
+    MSU_Data_SeekPort = 0x12345678u;
     msudataseek0(0xAB);
-    ZT_CHECK(MSU_Data_Seek == 0x123456ABu);
+    ZT_CHECK(MSU_Data_SeekPort == 0x123456ABu);
 
     /* byte 1 */
-    MSU_Data_Seek = 0x12345678u;
+    MSU_Data_SeekPort = 0x12345678u;
     msudataseek1(0xCD);
-    ZT_CHECK(MSU_Data_Seek == 0x1234CD78u);
+    ZT_CHECK(MSU_Data_SeekPort == 0x1234CD78u);
 
     /* byte 2 */
-    MSU_Data_Seek = 0x12345678u;
+    MSU_Data_SeekPort = 0x12345678u;
     msudataseek2(0xEF);
-    ZT_CHECK(MSU_Data_Seek == 0x12EF5678u);
+    ZT_CHECK(MSU_Data_SeekPort == 0x12EF5678u);
 
     /* byte 3 — most significant byte */
-    MSU_Data_Seek = 0x12345678u;
+    MSU_Data_SeekPort = 0x12345678u;
     msudataseek3(0x90);
-    ZT_CHECK(MSU_Data_Seek == 0x90345678u);
+    ZT_CHECK(MSU_Data_SeekPort == 0x90345678u);
 }
 
 static void test_msu1track(void)

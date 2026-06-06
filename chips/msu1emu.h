@@ -4,7 +4,7 @@
 #include "../types.h"
 
 // Bitfield Constants
-// 0x2000 (MSU_STATUS)
+// 0x2000 read (MSU_STATUS)
 #define MSU_STATUS_REVISION0 0x01
 #define MSU_STATUS_REVISION1 0x02
 #define MSU_STATUS_REVISION2 0x04
@@ -13,7 +13,7 @@
 #define MSU_STATUS_LOOP 0x20
 #define MSU_STATUS_AUDIO_BUSY 0x40
 #define MSU_STATUS_DATA_BUSY 0x80
-// 0x2007 (MSU_CONTROL)
+// 0x2007 write (MSU_CONTROL)
 #define MSU_CONTROL_PLAY 0x01
 #define MSU_CONTROL_LOOP 0x02
 #define MSU_CONTROL_RESUME 0x04
