@@ -31,10 +31,12 @@ u1* MSU_DATA = NULL;
 // DSP
 short* TRACK_DATA = NULL;
 u2 MSU_Track;
+u2 MSU_Resume_Track = -1;
 u1 MSU_MusicVolume;
 u1 MSU_CurrentStatus;
 int MSU_Rate_Add = 0;
 int MSU_Track_Position = 0;
+int MSU_Resume_Track_Position = 0;
 int MSU_Loop_Point = 0;
 int MSU_Track_Length = 0;
 int MSU_Busy = 0;
@@ -118,7 +120,13 @@ void MSU1HandleTrackChange()
         ;
         ;
     }
-    MSU_Track_Position = 0;
+    if (MSU_Track == MSU_Resume_Track) {
+        MSU_Track_Position = MSU_Resume_Track_Position;
+        MSU_Resume_Track = -1;
+        MSU_Resume_Track_Position = 0;
+    } else {
+        MSU_Track_Position = 0;
+    }
     MSU_Rate_Add = 0;
 
     // Requested a track.
@@ -179,6 +187,12 @@ void MSU1GetStatusBitsSpecial()
 void MSU1HandleStatusBits()
 {
     MSU1GetStatusBitsSpecial();
+
+    // Check for and set up resume
+    if (MSU_CurrentStatus == 0x4) {
+        MSU_Resume_Track = MSU_Track;
+        MSU_Resume_Track_Position = MSU_Track_Position;
+    }
 
     // Error reading audio
     if (MSU_StatusRead & 0x8) {
