@@ -56,10 +56,14 @@ void msudataseek1(uint8_t val) { ((uint8_t*)&MSU_Data_SeekPort)[1] = val; }
 void msudataseek2(uint8_t val) { ((uint8_t*)&MSU_Data_SeekPort)[2] = val; }
 void msudataseek3(uint8_t val)
 {
-    ((uint8_t*)&MSU_Data_SeekPort)[3] = val; // Writing to $2003 triggers seek
-    MSU_StatusRead |= MSU_STATUS_DATA_BUSY; // Start seek, set data busy bit
-    MSU_Data_Addr = MSU_Data_SeekPort; // Set data address to seek port
-    MSU_StatusRead &= ~MSU_STATUS_DATA_BUSY; // Seek finished, clear data busy bit
+    // Writing to $2003 triggers seek
+    ((uint8_t*)&MSU_Data_SeekPort)[3] = val;
+    // Writes have no effect if data busy bit set
+    if (!(MSU_StatusRead & MSU_STATUS_DATA_BUSY)) {
+        MSU_StatusRead |= MSU_STATUS_DATA_BUSY; // Start seek, set data busy bit
+        MSU_Data_Addr = MSU_Data_SeekPort; // Set data address to seek port
+        MSU_StatusRead &= ~MSU_STATUS_DATA_BUSY; // Seek finished, clear data busy bit
+    }
 }
 
 void msu1track0(uint8_t val)
