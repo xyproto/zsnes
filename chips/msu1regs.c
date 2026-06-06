@@ -9,8 +9,8 @@
  * msudataseek0..3  — write one byte of MSU_Data_Seek (little-endian byte n)
  * msu1track0       — write low byte of MSU_Track
  * msu1track1       — write high byte of MSU_Track, then call MSU1HandleTrackChange
- * msu1volume       — write MSU_MusicVolume
- * msu1statecontrol — write MSU_CurrentStatus, then call MSU1HandleStatusBits
+ * msu1volume       — write MSU_AudioVolume
+ * msu1statecontrol — write MSU_StateControl, then call MSU1HandleStatusBits
  */
 
 #include <stdint.h>
@@ -19,8 +19,8 @@ extern uint8_t MSU_StatusRead;
 extern uint32_t MSU_Data_Seek;
 extern uint8_t* MSU_DATA;
 extern uint16_t MSU_Track;
-extern uint8_t MSU_MusicVolume;
-extern uint8_t MSU_CurrentStatus;
+extern uint8_t MSU_AudioVolume;
+extern uint8_t MSU_StateControl;
 
 extern void MSU1GetStatusBitsSpecial(void);
 extern void MSU1HandleTrackChange(void);
@@ -62,11 +62,11 @@ void msu1track1(uint8_t val)
 
 void msu1volume(uint8_t val)
 {
-    MSU_MusicVolume = val;
+    MSU_AudioVolume = val;
 }
 
 void msu1statecontrol(uint8_t val)
 {
-    MSU_CurrentStatus = val;
+    MSU_StateControl = val;
     MSU1HandleStatusBits();
 }

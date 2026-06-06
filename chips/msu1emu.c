@@ -32,8 +32,8 @@ u1* MSU_DATA = NULL;
 short* TRACK_DATA = NULL;
 u2 MSU_Track;
 u2 MSU_Resume_Track = -1;
-u1 MSU_MusicVolume;
-u1 MSU_CurrentStatus;
+u1 MSU_AudioVolume;
+u1 MSU_StateControl;
 int MSU_Rate_Add = 0;
 int MSU_Track_Position = 0;
 int MSU_Resume_Track_Position = 0;
@@ -77,9 +77,9 @@ int readMSU()
         MSU_DATA = NULL;
     }
     MSU_Data_Seek = 0;
-    MSU_StatusRead = 2;
+    MSU_StatusRead = MSU_REVISION;
     MSU_Busy = 0;
-    MSU_MusicVolume = 0xFF;
+    MSU_AudioVolume = 0xFF;
 
     // Get Filename
     size_t len = strlen(MSU_BasePath);
@@ -120,18 +120,22 @@ void MSU1HandleTrackChange()
         ;
         ;
     }
+
+    // If requested track matches resume track, restore track position
     if (MSU_Track == MSU_Resume_Track) {
         MSU_Track_Position = MSU_Resume_Track_Position;
+        // Reset resume variables
         MSU_Resume_Track = -1;
         MSU_Resume_Track_Position = 0;
     } else {
         MSU_Track_Position = 0;
     }
+
     MSU_Rate_Add = 0;
 
     // Requested a track.
     MSU_Track_Length = 0;
-    MSU_StatusRead &= ~0x30; // Turn off playing bits
+    MSU_StatusRead &= ~(MSU_STATUS_PLAY + MSU_STATUS_LOOP); // Turn off playing bits
 
     // Request new track
 #ifdef DEBUG
@@ -177,9 +181,9 @@ void MSU1HandleTrackChange()
 // Read from bits
 void MSU1GetStatusBitsSpecial()
 {
-    MSU_StatusRead &= 0x37; // Leave revision and playing bits alone
+    MSU_StatusRead &= 0x37; // Leave revision, playing, and busy bits alone
     if (!MSU_Track_Length) {
-        MSU_StatusRead |= 0x8;
+        MSU_StatusRead |= MSU_STATUS_ERROR;
     }
 }
 
@@ -189,16 +193,16 @@ void MSU1HandleStatusBits()
     MSU1GetStatusBitsSpecial();
 
     // Check for and set up resume
-    if (MSU_CurrentStatus == 0x4) {
+    if (MSU_StateControl == MSU_CONTROL_RESUME) {
         MSU_Resume_Track = MSU_Track;
         MSU_Resume_Track_Position = MSU_Track_Position;
     }
 
     // Error reading audio
-    if (MSU_StatusRead & 0x8) {
+    if (MSU_StatusRead & MSU_STATUS_ERROR) {
         return;
     }
-    MSU_StatusRead = (MSU_StatusRead & ~0x30) | ((MSU_CurrentStatus & 0x03) << 4);
+    MSU_StatusRead = (MSU_StatusRead & ~(MSU_STATUS_PLAY + MSU_STATUS_LOOP)) | ((MSU_StateControl & (MSU_CONTROL_PLAY + MSU_CONTROL_LOOP)) << 4);
 #ifdef DEBUG
     printf("Status bits new: %hhu\n", MSU_StatusRead);
 #endif
@@ -208,18 +212,18 @@ void MSU1HandleStatusBits()
 void mixMSU1Audio(int* start, int* end, int rate)
 {
     // Play
-    if ((MSU_StatusRead & 0x10) && MSU_Track_Length > 0) {
+    if ((MSU_StatusRead & MSU_STATUS_PLAY) && MSU_Track_Length > 0) {
         MSU_Busy = 1;
-        // printf("MSU Status: Track: %d   Playing: %d     Repeat: %d    Volume: %d     Pos: %d/%d\n", (int)MSU_Track, MSU_Playing, MSU_Repeat, (int)MSU_MusicVolume, MSU_Track_Position, MSU_Track_Length);
+        // printf("MSU Status: Track: %d   Playing: %d     Repeat: %d    Volume: %d     Pos: %d/%d\n", (int)MSU_Track, MSU_Playing, MSU_Repeat, (int)MSU_AudioVolume, MSU_Track_Position, MSU_Track_Length);
         for (; start < end; start++) {
             // Check if the pointer of the track is valid.
             if (MSU_Track_Position < MSU_Track_Length) {
-                *start += (TRACK_DATA[MSU_Track_Position] * MSU_MusicVolume) / 0x80;
+                *start += (TRACK_DATA[MSU_Track_Position] * MSU_AudioVolume) / 0x80;
 
                 // Stereo Mixer
                 if (StereoSound) {
                     *start++;
-                    *start += (TRACK_DATA[MSU_Track_Position + 1] * MSU_MusicVolume) / 0x80;
+                    *start += (TRACK_DATA[MSU_Track_Position + 1] * MSU_AudioVolume) / 0x80;
                 }
 
                 // Take care of incrementing the pointer
@@ -232,7 +236,7 @@ void mixMSU1Audio(int* start, int* end, int rate)
 
             // Check if we should repeat
             if (MSU_Track_Position >= MSU_Track_Length) {
-                if (MSU_StatusRead & 0x20) {
+                if (MSU_StatusRead & MSU_STATUS_LOOP) {
                     MSU_Track_Position = MSU_Loop_Point * 2;
                 }
             }

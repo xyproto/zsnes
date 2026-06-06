@@ -14,7 +14,7 @@
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 %include "macros.mac"
 
-EXTSYM MSU_CurrentStatus,MSU_MusicVolume,MSU_Track,MSU_Data_Seek,MSU_DATA,MSU_StatusRead,MSU1HandleTrackChange,MSU1HandleStatusBits,MSU1GetStatusBitsSpecial
+EXTSYM MSU_StateControl,MSU_AudioVolume,MSU_Track,MSU_Data_Seek,MSU_DATA,MSU_StatusRead,MSU1HandleTrackChange,MSU1HandleStatusBits,MSU1GetStatusBitsSpecial
 
 SECTION .text
 
@@ -83,11 +83,11 @@ ret
 
 ;VOLUME
 NEWSYM msu1volume
-	mov [MSU_MusicVolume],al
+	mov [MSU_AudioVolume],al
 ret
 
 ;STATE CONTROL
 NEWSYM msu1statecontrol
-	mov [MSU_CurrentStatus],al
+	mov [MSU_StateControl],al
 	ccall MSU1HandleStatusBits
 ret
