@@ -14,7 +14,8 @@
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 %include "macros.mac"
 
-EXTSYM MSU_StateControl,MSU_AudioVolume,MSU_Track,MSU_Data_SeekPort,MSU_Data_Addr,MSU_DATA,MSU_StatusRead,MSU1HandleTrackChange,MSU1HandleStatusBits,MSU1GetStatusBitsSpecial
+EXTSYM MSU_StateControl,MSU_AudioVolume,MSU_Track,MSU_Data_SeekPort,MSU_Data_Addr
+EXTSYM MSU_DATA,MSU_StatusRead,MSU1HandleTrackChange,MSU1HandleStatusBits,MSU1GetStatusBitsSpecial
 
 SECTION .text
 
