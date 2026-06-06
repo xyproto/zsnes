@@ -242,6 +242,9 @@ void mixMSU1Audio(int* start, int* end, int rate)
             if (MSU_Track_Position >= MSU_Track_Length) {
                 if (MSU_StatusRead & MSU_STATUS_LOOP) {
                     MSU_Track_Position = MSU_Loop_Point * 2;
+                } else {
+                    // Track finished and not looping, clear play bit
+                    MSU_StatusRead &= ~MSU_STATUS_PLAY;
                 }
             }
         }
