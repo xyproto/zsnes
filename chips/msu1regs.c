@@ -36,7 +36,12 @@ uint8_t msustatusread(void)
 
 uint8_t msudataread(void)
 {
-    return MSU_DATA[MSU_Data_Addr++];
+    // Reads have no effect when data busy bit set
+    if (MSU_StatusRead & MSU_STATUS_DATA_BUSY) {
+        return MSU_DATA[MSU_Data_Addr];
+    } else {
+        return MSU_DATA[MSU_Data_Addr++];
+    }
 }
 
 uint8_t msuid1(void) { return 'S'; }

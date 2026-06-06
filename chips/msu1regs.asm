@@ -30,11 +30,18 @@ ret
 ;DATA read
 NEWSYM msudataread
 	mov ebx,[MSU_DATA]
-	add ebx,[MSU_Data_SeekPort]
-	mov al,[ebx]
+	add ebx,[MSU_Data_Addr]
 
-	;increment seek
-	inc dword[MSU_Data_SeekPort]
+; Reads have no effect when data busy bit set
+	mov	al,[MSU_StatusRead]
+	and al,80h
+	jnz .dontincrement
+
+; Increment data address
+	inc dword[MSU_Data_Addr]
+
+.dontincrement
+	mov al,[ebx]
 ret
 
 ;MSU-1 ID
