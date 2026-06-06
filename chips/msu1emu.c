@@ -185,7 +185,7 @@ void MSU1HandleTrackChange()
 // Read from bits
 void MSU1GetStatusBitsSpecial()
 {
-    MSU_StatusRead &= 0x37; // Leave revision, playing, and busy bits alone
+    MSU_StatusRead &= (MSU_STATUS_LOOP + MSU_STATUS_PLAY + MSU_STATUS_REVISION); // Leave revision, play/loop, and busy bits alone
     if (!MSU_Track_Length) {
         MSU_StatusRead |= MSU_STATUS_ERROR;
     }
