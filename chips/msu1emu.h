@@ -3,21 +3,20 @@
 
 #include "../types.h"
 
-// Bitfield Constants
-// 0x2000 read (MSU_STATUS)
-#define MSU_STATUS_REVISION0 0x01
-#define MSU_STATUS_REVISION1 0x02
-#define MSU_STATUS_REVISION2 0x04
+// Status bits ($2000 read)
+#define MSU_STATUS_REVISION 0x07 // bits 0-2
 #define MSU_STATUS_ERROR 0x08
 #define MSU_STATUS_PLAY 0x10
 #define MSU_STATUS_LOOP 0x20
 #define MSU_STATUS_AUDIO_BUSY 0x40
 #define MSU_STATUS_DATA_BUSY 0x80
-// 0x2007 write (MSU_CONTROL)
+
+// Control bits ($2007 write)
 #define MSU_CONTROL_PLAY 0x01
 #define MSU_CONTROL_LOOP 0x02
 #define MSU_CONTROL_RESUME 0x04
-// Chip Revision
+
+// MSU-1 Revision
 #define MSU_REVISION 2
 
 // File
