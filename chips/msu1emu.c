@@ -39,7 +39,6 @@ int MSU_Track_Position = 0;
 int MSU_Resume_Track_Position = 0;
 int MSU_Loop_Point = 0;
 int MSU_Track_Length = 0;
-int MSU_Busy = 0;
 char MSU_BasePath[4096];
 
 // Prepare read registers
@@ -78,7 +77,7 @@ int readMSU()
     }
     MSU_Data_Seek = 0;
     MSU_StatusRead = MSU_REVISION;
-    MSU_Busy = 0;
+    MSU_StatusRead &= ~MSU_STATUS_DATA_BUSY; // Clear data busy bit
     MSU_AudioVolume = 0xFF;
 
     // Get Filename
@@ -116,11 +115,12 @@ int readMSU()
 
 void MSU1HandleTrackChange()
 {
-    while (MSU_Busy) {
-        ;
-        ;
+    // Writes have no effect if audio busy bit set
+    if (MSU_StatusRead & MSU_STATUS_AUDIO_BUSY) {
+        return;
     }
-
+    // Begin track change, set audio busy bit
+    MSU_StatusRead |= MSU_STATUS_AUDIO_BUSY;
     // If requested track matches resume track, restore track position
     if (MSU_Track == MSU_Resume_Track) {
         MSU_Track_Position = MSU_Resume_Track_Position;
@@ -176,6 +176,8 @@ void MSU1HandleTrackChange()
             printf("Not enough space in memory for MSU-1.\n");
         }
     }
+    // Track change complete, clear audio busy bit
+    MSU_StatusRead &= ~MSU_STATUS_AUDIO_BUSY;
 }
 
 // Read from bits
@@ -213,7 +215,7 @@ void mixMSU1Audio(int* start, int* end, int rate)
 {
     // Play
     if ((MSU_StatusRead & MSU_STATUS_PLAY) && MSU_Track_Length > 0) {
-        MSU_Busy = 1;
+        MSU_StatusRead |= MSU_STATUS_AUDIO_BUSY; // Set audio busy flag
         // printf("MSU Status: Track: %d   Playing: %d     Repeat: %d    Volume: %d     Pos: %d/%d\n", (int)MSU_Track, MSU_Playing, MSU_Repeat, (int)MSU_AudioVolume, MSU_Track_Position, MSU_Track_Length);
         for (; start < end; start++) {
             // Check if the pointer of the track is valid.
@@ -241,6 +243,6 @@ void mixMSU1Audio(int* start, int* end, int rate)
                 }
             }
         }
-        MSU_Busy = 0;
+        MSU_StatusRead &= ~MSU_STATUS_AUDIO_BUSY; // Clear audio busy flag
     }
 }
