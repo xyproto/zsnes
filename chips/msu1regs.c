@@ -4,19 +4,21 @@
  * Ported from chips/msu1regs.asm.
  *
  * msustatusread    — calls MSU1GetStatusBitsSpecial then returns MSU_StatusRead
- * msudataread      — returns MSU_DATA[MSU_Data_Seek], increments seek
+ * msudataread      — returns MSU_DATA[MSU_Data_Addr], increments data address
  * msuid1..msuid6   — return the six ID bytes: 'S', '-', 'M', 'S', 'U', '1'
- * msudataseek0..3  — write one byte of MSU_Data_Seek (little-endian byte n)
+ * msudataseek0..3  — write one byte of MSU_Data_SeekPort (little-endian byte n)
  * msu1track0       — write low byte of MSU_Track
  * msu1track1       — write high byte of MSU_Track, then call MSU1HandleTrackChange
  * msu1volume       — write MSU_AudioVolume
  * msu1statecontrol — write MSU_StateControl, then call MSU1HandleStatusBits
  */
 
+#include "msu1emu.h"
 #include <stdint.h>
 
 extern uint8_t MSU_StatusRead;
-extern uint32_t MSU_Data_Seek;
+extern uint32_t MSU_Data_SeekPort;
+extern uint32_t MSU_Data_Addr;
 extern uint8_t* MSU_DATA;
 extern uint16_t MSU_Track;
 extern uint8_t MSU_AudioVolume;
@@ -34,7 +36,7 @@ uint8_t msustatusread(void)
 
 uint8_t msudataread(void)
 {
-    return MSU_DATA[MSU_Data_Seek++];
+    return MSU_DATA[MSU_Data_Addr++];
 }
 
 uint8_t msuid1(void) { return 'S'; }
@@ -44,10 +46,16 @@ uint8_t msuid4(void) { return 'S'; }
 uint8_t msuid5(void) { return 'U'; }
 uint8_t msuid6(void) { return '1'; }
 
-void msudataseek0(uint8_t val) { ((uint8_t*)&MSU_Data_Seek)[0] = val; }
-void msudataseek1(uint8_t val) { ((uint8_t*)&MSU_Data_Seek)[1] = val; }
-void msudataseek2(uint8_t val) { ((uint8_t*)&MSU_Data_Seek)[2] = val; }
-void msudataseek3(uint8_t val) { ((uint8_t*)&MSU_Data_Seek)[3] = val; }
+void msudataseek0(uint8_t val) { ((uint8_t*)&MSU_Data_SeekPort)[0] = val; }
+void msudataseek1(uint8_t val) { ((uint8_t*)&MSU_Data_SeekPort)[1] = val; }
+void msudataseek2(uint8_t val) { ((uint8_t*)&MSU_Data_SeekPort)[2] = val; }
+void msudataseek3(uint8_t val)
+{
+    ((uint8_t*)&MSU_Data_SeekPort)[3] = val;
+    MSU_StatusRead |= MSU_STATUS_DATA_BUSY; // Start seek, set data busy bit
+    MSU_Data_Addr = MSU_Data_SeekPort; // Set data address to seek port
+    MSU_StatusRead &= ~MSU_STATUS_DATA_BUSY; // Seek finished, clear data busy bit
+}
 
 void msu1track0(uint8_t val)
 {

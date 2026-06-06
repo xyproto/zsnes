@@ -25,7 +25,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 // Data
 u1 MSU_StatusRead;
-u4 MSU_Data_Seek;
+u4 MSU_Data_SeekPort;
+u4 MSU_Data_Addr;
 u1* MSU_DATA = NULL;
 
 // DSP
@@ -75,7 +76,8 @@ int readMSU()
         free(MSU_DATA);
         MSU_DATA = NULL;
     }
-    MSU_Data_Seek = 0;
+    MSU_Data_SeekPort = 0;
+    MSU_Data_Addr = 0;
     MSU_StatusRead = MSU_REVISION;
     MSU_StatusRead &= ~MSU_STATUS_DATA_BUSY; // Clear data busy bit
     MSU_AudioVolume = 0xFF;

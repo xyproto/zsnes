@@ -14,7 +14,7 @@
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 %include "macros.mac"
 
-EXTSYM MSU_StateControl,MSU_AudioVolume,MSU_Track,MSU_Data_Seek,MSU_DATA,MSU_StatusRead,MSU1HandleTrackChange,MSU1HandleStatusBits,MSU1GetStatusBitsSpecial
+EXTSYM MSU_StateControl,MSU_AudioVolume,MSU_Track,MSU_Data_SeekPort,MSU_Data_Addr,MSU_DATA,MSU_StatusRead,MSU1HandleTrackChange,MSU1HandleStatusBits,MSU1GetStatusBitsSpecial
 
 SECTION .text
 
@@ -29,11 +29,11 @@ ret
 ;DATA read
 NEWSYM msudataread
 	mov ebx,[MSU_DATA]
-	add ebx,[MSU_Data_Seek]
+	add ebx,[MSU_Data_SeekPort]
 	mov al,[ebx]
 
 	;increment seek
-	inc dword[MSU_Data_Seek]
+	inc dword[MSU_Data_SeekPort]
 ret
 
 ;MSU-1 ID
@@ -60,16 +60,23 @@ ret
 
 ;DATA Seek Pointer
 NEWSYM msudataseek0
-	mov [MSU_Data_Seek],al
+	mov [MSU_Data_SeekPort],al
 ret
 NEWSYM msudataseek1
-	mov [MSU_Data_Seek+1],al
+	mov [MSU_Data_SeekPort+1],al
 ret
 NEWSYM msudataseek2
-	mov [MSU_Data_Seek+2],al
+	mov [MSU_Data_SeekPort+2],al
 ret
 NEWSYM msudataseek3
-	mov [MSU_Data_Seek+3],al
+	mov [MSU_Data_SeekPort+3],al
+	; Start seek, set data busy bit
+	or byte[MSU_StatusRead],80h
+	; Set data address to seek port
+	mov eax,[MSU_Data_SeekPort]
+	mov [MSU_Data_Addr],eax
+	; Seek finished, clear data busy bit
+	and byte[MSU_StatusRead],~80h
 ret
 
 ;TRACK
