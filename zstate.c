@@ -284,7 +284,7 @@ static void copy_state_data(uint8_t* buffer, void (*copy_func)(uint8_t**, void*,
     if (MSUEnable) {
         copy_func(&buffer, &MSU_Track_Position, sizeof(MSU_Track_Position));
         copy_func(&buffer, &MSU_StatusRead, sizeof(MSU_StatusRead));
-        copy_func(&buffer, &MSU_MusicVolume, sizeof(MSU_MusicVolume));
+        copy_func(&buffer, &MSU_AudioVolume, sizeof(MSU_AudioVolume));
     }
 
     if (method != csm_load_zst_old) {

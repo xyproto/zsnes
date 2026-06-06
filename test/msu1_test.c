@@ -20,8 +20,8 @@
 uint8_t MSU_StatusRead;
 uint32_t MSU_Data_Seek;
 uint16_t MSU_Track;
-uint8_t MSU_MusicVolume;
-uint8_t MSU_CurrentStatus;
+uint8_t MSU_AudioVolume;
+uint8_t MSU_StateControl;
 
 static uint8_t mock_data[256];
 uint8_t* MSU_DATA = mock_data;
@@ -46,8 +46,8 @@ void MSU1HandleStatusBits(void) { handle_status_calls++; }
         MSU_StatusRead = 0;                      \
         MSU_Data_Seek = 0;                       \
         MSU_Track = 0;                           \
-        MSU_MusicVolume = 0;                     \
-        MSU_CurrentStatus = 0;                   \
+        MSU_AudioVolume = 0;                     \
+        MSU_StateControl = 0;                   \
         memset(mock_data, 0, sizeof(mock_data)); \
     } while (0)
 
@@ -184,30 +184,30 @@ static void test_msu1track(void)
 
 static void test_msu1volume(void)
 {
-    ZT_SECTION("msu1volume: writes MSU_MusicVolume directly");
+    ZT_SECTION("msu1volume: writes MSU_AudioVolume directly");
 
-    MSU_MusicVolume = 0;
+    MSU_AudioVolume = 0;
     msu1volume(0xFF);
-    ZT_CHECK(MSU_MusicVolume == 0xFF);
+    ZT_CHECK(MSU_AudioVolume == 0xFF);
 
     msu1volume(0x80);
-    ZT_CHECK(MSU_MusicVolume == 0x80);
+    ZT_CHECK(MSU_AudioVolume == 0x80);
 
     msu1volume(0x00);
-    ZT_CHECK(MSU_MusicVolume == 0x00);
+    ZT_CHECK(MSU_AudioVolume == 0x00);
 }
 
 static void test_msu1statecontrol(void)
 {
-    ZT_SECTION("msu1statecontrol: writes MSU_CurrentStatus, calls HandleStatusBits");
+    ZT_SECTION("msu1statecontrol: writes MSU_StateControl, calls HandleStatusBits");
 
     RESET_MOCKS();
     msu1statecontrol(0x03);
-    ZT_CHECK(MSU_CurrentStatus == 0x03);
+    ZT_CHECK(MSU_StateControl == 0x03);
     ZT_CHECK(handle_status_calls == 1);
 
     msu1statecontrol(0x00);
-    ZT_CHECK(MSU_CurrentStatus == 0x00);
+    ZT_CHECK(MSU_StateControl == 0x00);
     ZT_CHECK(handle_status_calls == 2);
 }
 
