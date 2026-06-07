@@ -199,10 +199,6 @@ void MSU1HandleTrackChange()
 // Handle control register bits
 void MSU1HandleControlBits()
 {
-    if (!MSU_Track_Length) {
-        MSU_StatusRead |= MSU_STATUS_ERROR;
-    }
-
     // Writes have no effect if audio busy bit or error bit set
     if (MSU_StatusRead & (MSU_STATUS_AUDIO_BUSY | MSU_STATUS_ERROR)) {
         return;
