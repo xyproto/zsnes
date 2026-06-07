@@ -569,6 +569,8 @@ SRCS += win/gl_draw.c
 LDFLAGS += -lopengl32
 endif
 
+LDFLAGS += --static
+
 PSRS += win/confloc.psr
 
 ASMFLAGS += -fwin32

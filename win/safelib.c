@@ -80,7 +80,7 @@ FILE* safe_popen(char* command, const char* mode)
                 intptr_t childpid;
                 flushall();
 
-                childpid = spawnvp(P_NOWAIT, argv[0], (const char* const*)argv);
+                childpid = _spawnvp(P_NOWAIT, argv[0], (const char* const*)argv);
                 if (childpid > 0) {
                     struct fp_pid_link* link = &fp_pids;
                     while (link->next) {

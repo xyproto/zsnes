@@ -67,6 +67,36 @@ apt install -y g++-multilib gcc-multilib libgl-dev libgl-dev:i386 libpng-dev lib
 make
 ```
 
+### Cross-Compiling for Windows on Debian/Ubuntu
+
+Run the following commands. Please create a PR if you have issues.
+
+Tested on Windows with WSL installed running Ubuntu 24.04.3 LTS on x86_64.
+
+```sh
+apt update
+apt install -y git make mingw-w64 libz-mingw-w64-dev nasm python3 pkg-config build-essential
+git clone https://github.com/xyproto/zsnes
+cd zsnes
+make ARCH=win WITH_PNG= CC_TARGET=i686-w64-mingw32-gcc CXX_TARGET=i686-w64-mingw32-g++ CC=i686-w64-mingw32-gcc CXX=i686-w64-mingw32-g++ WINDRES=i686-w64-mingw32-windres
+```
+
+### Compiling for Windows with MSYS2
+
+Use MSYS2 MINGW32.
+
+Depending on your installation, you may not have a shortcut created for this. If so, locate ``mingw32.exe`` in your MSYS2 installation directory.
+
+Run the following commands. Please create a PR if you have issues.
+
+Tested on MSYS2 x86_64 version 20260322.
+
+```sh
+pacman -Syu
+pacman -Sy git make pkg-config nasm python3 mingw-w64-i686-gcc mingw-w64-i686-libpng mingw-w64-i686-zlib mingw-w64-i686-SDL2
+make ARCH=win
+```
+
 ### Pull requests
 
 * Pull requests are welcome.
