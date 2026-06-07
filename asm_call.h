@@ -19,12 +19,14 @@
 #define asm_call(func) __asm__ volatile("push %%ebp; call %P0; pop %%ebp" ::"X"(func) \
     : "cc", "memory", "eax", "ecx", "edx", "ebx", "esi", "edi")
 #else
-#error unknown architecture
+/* Non-x86: call directly. All assembly must be ported to C before linking. */
+#define asm_call(func) func()
 #endif
 #elif defined _MSC_VER
 #define asm_call(func) __asm { __asm pushad  __asm call func  __asm popad }
 #else
-#error unknown compiler
+/* Unknown compiler on non-x86: best-effort direct call. */
+#define asm_call(func) func()
 #endif
 
 #endif

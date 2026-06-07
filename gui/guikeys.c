@@ -803,10 +803,10 @@ static void GUICheatKeys(char dh, char al)
             CheatCodeToggle();
             return;
         case 'S':
-            asm_call(CheatCodeSave);
+            CheatCodeSave();
             return;
         case 'L':
-            asm_call(CheatCodeLoad);
+            CheatCodeLoad();
             return;
         case 'F':
             CheatCodeFix();

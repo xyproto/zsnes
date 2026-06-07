@@ -1,0 +1,113 @@
+/* C port of gui/gui.asm: global GUI state variables.
+ * gui/gui.asm contains only SECTION .data / .bss declarations — no code.
+ * Types are aligned with gui.h declarations. BSS entries are zero-initialised.
+ */
+
+#include "gui.h"
+
+/* ------------------------------------------------------------------
+ * SECTION .data — initialised variables
+ * ------------------------------------------------------------------ */
+
+char GUIPrevMenuData[] = {
+    1, '1', '.', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+    ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 0,
+    1, '2', '.', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+    ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 0,
+    1, '3', '.', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+    ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 0,
+    1, '4', '.', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+    ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 0,
+    1, '5', '.', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+    ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 0,
+    1, '6', '.', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+    ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 0,
+    1, '7', '.', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+    ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 0,
+    1, '8', '.', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+    ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 0,
+    1, '9', '.', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+    ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 0,
+    1, '0', '.', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+    ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 0,
+    0, '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', 0,
+    1, 'F', 'R', 'E', 'E', 'Z', 'E', ' ', 'D', 'A', 'T', 'A', ':', ' ', 'O', 'F',
+    'F', ' ', ' ', ' ', 0,
+    1, 'C', 'L', 'E', 'A', 'R', ' ', 'A', 'L', 'L', ' ', 'D', 'A', 'T', 'A', ' ',
+    ' ', ' ', ' ', ' ', 0,
+};
+
+u1 ForceROMTiming   = 0;
+u1 ForceHiLoROM     = 0;
+u4 CalibXmin        = 0;
+u4 CalibXmax        = 0;
+u4 CalibYmin        = 0;
+u4 CalibYmax        = 0;
+u4 CalibXmin209     = 0;
+u4 CalibXmax209     = 0;
+u4 CalibYmin209     = 0;
+u4 CalibYmax209     = 0;
+u1 EEgg             = 0;
+
+/* Saved interrupt handler addresses (legacy, kept for link compatibility) */
+u4 GUIoldhand9o     = 0;
+u2 GUIoldhand9s     = 0;
+u4 GUIoldhand8o     = 0;
+u2 GUIoldhand8s     = 0;
+
+/* ------------------------------------------------------------------
+ * SECTION .bss — zero-initialised variables (types match gui.h)
+ * ------------------------------------------------------------------ */
+
+ComboData CombinDataGlob[50];   /* 50 * 66 = 3300 bytes, matches resb 3300 */
+ComboData CombinDataLocl[50];
+
+u1 GUIwinorder[22];
+u1 GUIwinactiv[22];
+
+u1  GUIcmenupos;
+u1  GUIescpress;
+u1  GUIpmenupos;
+u1  GUIcrowpos;      /* declared u1 in gui.h; asm uses resd (only low byte matters) */
+u1  GUIpclicked;
+u2  GUImouseposx;    /* declared u2 in gui.h */
+u2  GUImouseposy;
+u1* GUICYLocPtr;     /* declared u1* in gui.h */
+u4  GUIMenuL;
+u4  GUIMenuR;
+u4  GUIMenuD;
+u1  GUIQuit;
+u1  GUIHold;
+u4  GUIHoldx;
+u4  GUIHoldy;
+u4  GUIHoldxm;
+u4  GUIHoldym;
+u1  cwindrawn;
+u4  GUIHoldXlimL;
+u4  GUIHoldXlimR;
+u4  GUIHoldYlim;
+u4  GUIHoldYlimR;
+u4  cloadmaxlen;
+u1  cplayernum;
+u4  GUIScrolTim1;
+u4  GUIScrolTim2;
+u4  GUICHold;
+u1  GUICBHold;       /* declared u1 in gui.h */
+u1  GUICBHold2;
+u4  GUIDClickTL;
+u4  GUIDClCWin;
+s4  GUIDClCEntry;    /* declared s4 in gui.h */
+u1  GUICResetPos;    /* declared u1 in gui.h */
+u1  GUICStatePos;
+u1  GUICCFlash;
+u1  GUILDFlash;
+
+u1  CheatOn;         /* declared u1 in gui.h; asm uses resd (only low byte matters) */
+u4  NumCheats;
+u1  cheatdataprev[28];
+u1  cheatdata[28 * 255 + 56];
+
+u1  GUIOn;
+u1  GUIOn2;
+u1  GUIReset;
+u1  CurPalSelect;

@@ -31,6 +31,18 @@ extern void ST010DoCommand(void);
 
 static uint8_t SetaCmdEnable[4];
 
+void ST010_Reset(void)
+{
+    /* Initialise the command-enable register to 0x80 at offset 0.
+     * initc.c previously wrote the 32-bit value 0x00000080 to the
+     * (then-global) SetaCmdEnable; on a little-endian host that sets
+     * byte[0]=0x80 and byte[1..3]=0x00, which is what we replicate here. */
+    SetaCmdEnable[0] = 0x80;
+    SetaCmdEnable[1] = 0;
+    SetaCmdEnable[2] = 0;
+    SetaCmdEnable[3] = 0;
+}
+
 /* -----------------------------------------------------------------------
  * Region A — setaramdata buffer
  * ----------------------------------------------------------------------- */

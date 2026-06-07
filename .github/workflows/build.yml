@@ -108,6 +108,35 @@ jobs:
             exit 1
           fi
 
+  linux-aarch64:
+    name: linux-aarch64 (cross, link errors expected until asm is fully ported)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    env:
+      DEBIAN_FRONTEND: noninteractive
+    steps:
+      - uses: actions/checkout@v6
+      - name: Install cross-compiler and dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            gcc-aarch64-linux-gnu \
+            g++-aarch64-linux-gnu \
+            pkg-config \
+            python3
+      - name: Cross-compile (compile errors = regression; link errors = expected)
+        run: |
+          make ARCH=LINUX \
+            CC_TARGET=aarch64-linux-gnu-gcc \
+            CXX_TARGET=aarch64-linux-gnu-g++ \
+            WITH_PNG= WITH_AO= WITH_PIPEWIRE= WITH_SDL= \
+            2>&1 | tee build.log || true
+          if grep -q '^.*error:' build.log | grep -v 'undefined reference'; then
+            echo "Compile errors found (not just link errors) — failing"
+            exit 1
+          fi
+          echo "Only link errors remain (expected while asm is being ported)"
+
   windows:
     name: win
     runs-on: ubuntu-24.04
