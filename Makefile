@@ -562,12 +562,14 @@ SRCS += win/safelib.c
 SRCS += win/winintrf.asm
 SRCS += win/winlink.cpp
 
-LDFLAGS += -ldxguid -ldinput -lgdi32 -lole32 -lwinmm --static
+LDFLAGS += -ldxguid -ldinput -lgdi32 -lole32 -lwinmm
 
 ifdef WITH_OPENGL
 SRCS += win/gl_draw.c
 LDFLAGS += -lopengl32
 endif
+
+LDFLAGS += --static
 
 PSRS += win/confloc.psr
 
