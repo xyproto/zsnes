@@ -220,12 +220,6 @@ void MSU1HandleControlBits()
 // Mix MSU1 audio signal with DSP
 void mixMSU1Audio(int* start, int* end, int rate)
 {
-    extern unsigned char EMUPause;
-    // Don't process MSU-1 audio if emulator is paused
-    if (EMUPause) {
-        return;
-    }
-
     // Play
     if ((MSU_StatusRead & (MSU_STATUS_PLAY & ~MSU_STATUS_AUDIO_BUSY)) && MSU_Track_Length > 0) {
         MSU_StatusRead |= MSU_STATUS_AUDIO_BUSY; // Set audio busy flag
@@ -233,12 +227,12 @@ void mixMSU1Audio(int* start, int* end, int rate)
         for (; start < end; start++) {
             // Check if the pointer of the track is valid.
             if (MSU_Track_Position < MSU_Track_Length) {
-                *start += (TRACK_DATA[MSU_Track_Position] * MSU_AudioVolume) / 0x80;
+                *start += (TRACK_DATA[MSU_Track_Position] * MSU_AudioVolume * MusicVol) / 0x4000;
 
                 // Stereo Mixer
                 if (StereoSound) {
                     *start++;
-                    *start += (TRACK_DATA[MSU_Track_Position + 1] * MSU_AudioVolume) / 0x80;
+                    *start += (TRACK_DATA[MSU_Track_Position + 1] * MSU_AudioVolume * MusicVol) / 0x4000;
                 }
 
                 // Take care of incrementing the pointer
