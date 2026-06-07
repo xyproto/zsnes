@@ -41,6 +41,7 @@ CXX ?= g++
 CXX_HOST ?= $(CXX)
 CC_TARGET  ?= $(CC)
 CXX_TARGET ?= $(CXX)
+WINDRES ?= windres
 CC_TARGET_TRIPLE := $(shell $(CC_TARGET) -dumpmachine 2>/dev/null)
 WIN_PORT_AVAILABLE := $(if $(wildcard win/c_winintrf.c),yes,)
 
@@ -619,7 +620,7 @@ $(filter %.o, $(SRCS:.c=.o) $(SRCS:.cpp=.o)): $(HDRS)
 
 %.o: %.rc
 	@echo '===> RES $<'
-	$(Q)i686-w64-mingw32-windres -o $@ $<
+	$(Q)$(WINDRES) -o $@ $<
 
 %.h %.o: %.psr $(PSR)
 	@echo '===> PSR $@'
@@ -659,6 +660,7 @@ info:
 	@echo "CC_TARGET     = $(CC_TARGET)"
 	@echo "CXX_TARGET    = $(CXX_TARGET)"
 	@echo "PSR           = $(PSR)"
+	@echo "WINDRES       = $(WINDRES)"
 	@echo "PNG_CONFIG    = $(PNG_CONFIG)"
 	@echo "CFLAGS_PNG    = $(CFLAGS_PNG)"
 	@echo "LDFLAGS_PNG   = $(LDFLAGS_PNG)"
