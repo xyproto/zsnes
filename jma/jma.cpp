@@ -443,6 +443,11 @@ void jma_open::extract_file(string& name, unsigned char* buffer) throw(jma_error
 
             size_t copy_amount = our_file_size - i > chunk_size - first_chunk_offset ? chunk_size - first_chunk_offset : our_file_size - i;
 
+            if (first_chunk_offset + copy_amount > chunk_size || i + copy_amount > our_file_size) {
+                delete[] comp_buffer;
+                throw(JMA_BAD_FILE);
+            }
+
             memcpy(buffer + i, decomp_buffer + first_chunk_offset, copy_amount);
             first_chunk_offset = 0; // Set to zero since this is only for the first iteration
             i += copy_amount;
