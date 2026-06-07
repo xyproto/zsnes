@@ -6,8 +6,10 @@
 #include "../c_intrf.h"
 #include "../c_vcache.h"
 #include "../cfg.h"
+#include "../chips/msu1emu.h"
 #include "../cpu/dspproc.h"
 #include "../cpu/execute.h"
+#include "../gblvars.h"
 #include "../gui/c_gui.h"
 #include "../input.h"
 #include "../intrf.h"
@@ -25,6 +27,9 @@
 
 u4 delayvalue;
 u1 blinit;
+
+static const int freqtab[7] = { 8000, 11025, 22050, 44100, 16000, 32000, 48000 };
+#define RATE freqtab[SoundQuality = ((SoundQuality > 6) ? 1 : SoundQuality)]
 
 void StartUp(void) { }
 
@@ -380,6 +385,9 @@ void SoundProcess(void)
         BufferSizeB = 256; // Size
         BufferSizeW = 512;
         asm_call(ProcessSoundBuffer);
+        if (MSUEnable) {
+            mixMSU1Audio(DSPBuffer, DSPBuffer + BufferSizeB, RATE);
+        }
         // DSPBuffer should contain the processed buffer in the specified size
         // You will have to convert/clip it to 16-bit for actual sound process
     }
