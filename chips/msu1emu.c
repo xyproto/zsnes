@@ -121,8 +121,13 @@ void MSU1HandleTrackChange()
     if (MSU_StatusRead & MSU_STATUS_AUDIO_BUSY) {
         return;
     }
+
     // Begin track change, set audio busy bit
     MSU_StatusRead |= MSU_STATUS_AUDIO_BUSY;
+
+    // Set error bit in case track read fails
+    MSU_StatusRead |= MSU_STATUS_ERROR;
+
     // If requested track matches resume track, restore track position
     if (MSU_Track == MSU_Resume_Track) {
         MSU_Track_Position = MSU_Resume_Track_Position;
@@ -175,26 +180,29 @@ void MSU1HandleTrackChange()
 #endif
             MSU_Track_Length = filelen / 2;
         } else {
+            // Clear audio busy bit
+            MSU_StatusRead &= ~MSU_STATUS_AUDIO_BUSY;
             printf("Not enough space in memory for MSU-1.\n");
+            return;
         }
+    } else {
+        // Clear audio busy bit
+        MSU_StatusRead &= ~MSU_STATUS_AUDIO_BUSY;
+        return;
     }
+    // Audio read success, clear error bit
+    MSU_StatusRead &= ~MSU_STATUS_ERROR;
     // Track change complete, clear audio busy bit
     MSU_StatusRead &= ~MSU_STATUS_AUDIO_BUSY;
 }
 
-// Read from bits
-void MSU1GetStatusBitsSpecial()
+// Handle control register bits
+void MSU1HandleControlBits()
 {
-    MSU_StatusRead &= (MSU_STATUS_LOOP + MSU_STATUS_PLAY + MSU_STATUS_REVISION); // Leave revision, play/loop, and busy bits alone
-    if (!MSU_Track_Length) {
-        MSU_StatusRead |= MSU_STATUS_ERROR;
+    // Writes have no effect if audio busy bit or error bit set
+    if (MSU_StatusRead & (MSU_STATUS_AUDIO_BUSY | MSU_STATUS_ERROR)) {
+        return;
     }
-}
-
-// Handle status
-void MSU1HandleStatusBits()
-{
-    MSU1GetStatusBitsSpecial();
 
     // Check for and set up resume
     if (MSU_StateControl == MSU_CONTROL_RESUME) {
@@ -202,10 +210,7 @@ void MSU1HandleStatusBits()
         MSU_Resume_Track_Position = MSU_Track_Position;
     }
 
-    // Error reading audio
-    if (MSU_StatusRead & MSU_STATUS_ERROR) {
-        return;
-    }
+    // Set status bits based on control register bits
     MSU_StatusRead = (MSU_StatusRead & ~(MSU_STATUS_PLAY + MSU_STATUS_LOOP)) | ((MSU_StateControl & (MSU_CONTROL_PLAY + MSU_CONTROL_LOOP)) << 4);
 #ifdef DEBUG
     printf("Status bits new: %hhu\n", MSU_StatusRead);
