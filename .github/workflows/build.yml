@@ -128,7 +128,8 @@ jobs:
             CC_TARGET=i686-w64-mingw32-gcc \
             CXX_TARGET=i686-w64-mingw32-g++ \
             CC=i686-w64-mingw32-gcc \
-            CXX=i686-w64-mingw32-g++
+            CXX=i686-w64-mingw32-g++ \
+            WINDRES=i686-w64-mingw32-windres
 
 #  darwin:
 #    name: darwin

@@ -41,6 +41,7 @@ CXX ?= g++
 CXX_HOST ?= $(CXX)
 CC_TARGET  ?= $(CC)
 CXX_TARGET ?= $(CXX)
+WINDRES ?= windres
 CC_TARGET_TRIPLE := $(shell $(CC_TARGET) -dumpmachine 2>/dev/null)
 WIN_PORT_AVAILABLE := $(if $(wildcard win/c_winintrf.c),yes,)
 
@@ -553,6 +554,7 @@ endif
 
 ifeq ($(ARCH),WIN)
 SRCS += mmlib/windows.c
+SRCS += win/resource.rc
 SRCS += win/c_winintrf.c
 SRCS += win/dx_ddraw.cpp
 SRCS += win/lib.c
@@ -582,7 +584,7 @@ DEPFLAGS_C = -MMD -MP -MF $(@:.o=.d) -MT $@
 DEPFLAGS_CXX = -MMD -MP -MF $(@:.o=.d) -MT $@
 
 HDRS := $(PSRS:.psr=.h)
-OBJS := $(filter %.o, $(SRCS:.asm=.o) $(SRCS:.c=.o) $(SRCS:.cpp=.o) $(PSRS:.psr=.o))
+OBJS := $(filter %.o, $(SRCS:.asm=.o) $(SRCS:.c=.o) $(SRCS:.cpp=.o) $(SRCS:.rc=.o) $(PSRS:.psr=.o))
 DEPS := $(OBJS:.o=.d)
 
 .SUFFIXES:
@@ -615,6 +617,10 @@ $(filter %.o, $(SRCS:.c=.o) $(SRCS:.cpp=.o)): $(HDRS)
 %.o: %.cpp
 	@echo '===> CXX $<'
 	$(Q)$(CXX_TARGET) $(CXXFLAGS) $(DEBUGFLAGS) -c $(DEPFLAGS_CXX) -o $@ $<
+
+%.o: %.rc
+	@echo '===> RES $<'
+	$(Q)$(WINDRES) -o $@ $<
 
 %.h %.o: %.psr $(PSR)
 	@echo '===> PSR $@'
@@ -654,6 +660,7 @@ info:
 	@echo "CC_TARGET     = $(CC_TARGET)"
 	@echo "CXX_TARGET    = $(CXX_TARGET)"
 	@echo "PSR           = $(PSR)"
+	@echo "WINDRES       = $(WINDRES)"
 	@echo "PNG_CONFIG    = $(PNG_CONFIG)"
 	@echo "CFLAGS_PNG    = $(CFLAGS_PNG)"
 	@echo "LDFLAGS_PNG   = $(LDFLAGS_PNG)"
