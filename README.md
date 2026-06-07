@@ -71,7 +71,7 @@ make
 
 Run the following commands. Please create a PR if you have issues.
 
-Tested on Windows with WSL installed running Ubuntu 24.04.3 LTS on X86_64.
+Tested on Windows with WSL installed running Ubuntu 24.04.3 LTS on x86_64.
 
 ```sh
 apt update
@@ -83,7 +83,9 @@ make ARCH=win WITH_PNG= CC_TARGET=i686-w64-mingw32-gcc CXX_TARGET=i686-w64-mingw
 
 ### Compiling for Windows with MSYS2
 
-Use MSYS2 MINGW32. Depending on your installation, you may not have a shortcut created for this. If so, locate ``mingw32.exe`` in your MSYS2 installation directory.
+Use MSYS2 MINGW32.
+
+Depending on your installation, you may not have a shortcut created for this. If so, locate ``mingw32.exe`` in your MSYS2 installation directory.
 
 Run the following commands. Please create a PR if you have issues.
 
