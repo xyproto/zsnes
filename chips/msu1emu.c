@@ -227,7 +227,7 @@ void mixMSU1Audio(int* start, int* end, int rate)
     }
 
     // Play
-    if ((MSU_StatusRead & MSU_STATUS_PLAY) && MSU_Track_Length > 0) {
+    if ((MSU_StatusRead & (MSU_STATUS_PLAY & ~MSU_STATUS_AUDIO_BUSY)) && MSU_Track_Length > 0) {
         MSU_StatusRead |= MSU_STATUS_AUDIO_BUSY; // Set audio busy flag
         // printf("MSU Status: Track: %d   Playing: %d     Repeat: %d    Volume: %d     Pos: %d/%d\n", (int)MSU_Track, MSU_Playing, MSU_Repeat, (int)MSU_AudioVolume, MSU_Track_Position, MSU_Track_Length);
         for (; start < end; start++) {
