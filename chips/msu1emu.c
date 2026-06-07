@@ -215,6 +215,12 @@ void MSU1HandleStatusBits()
 // Mix MSU1 audio signal with DSP
 void mixMSU1Audio(int* start, int* end, int rate)
 {
+    extern unsigned char EMUPause;
+    // Don't process MSU-1 audio if emulator is paused
+    if (EMUPause) {
+        return;
+    }
+
     // Play
     if ((MSU_StatusRead & MSU_STATUS_PLAY) && MSU_Track_Length > 0) {
         MSU_StatusRead |= MSU_STATUS_AUDIO_BUSY; // Set audio busy flag
