@@ -117,7 +117,6 @@ These are the contributors listed in the text files that are included with the 1
 * `kode54`
 * `zinx`
 * `amit`
-* `Khan Artist`
 * `hpsolo`
 * `Kreed`
 * `Neviksti`
