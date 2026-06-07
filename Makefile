@@ -553,6 +553,7 @@ endif
 
 ifeq ($(ARCH),WIN)
 SRCS += mmlib/windows.c
+SRCS += win/resource.rc
 SRCS += win/c_winintrf.c
 SRCS += win/dx_ddraw.cpp
 SRCS += win/lib.c
@@ -582,7 +583,7 @@ DEPFLAGS_C = -MMD -MP -MF $(@:.o=.d) -MT $@
 DEPFLAGS_CXX = -MMD -MP -MF $(@:.o=.d) -MT $@
 
 HDRS := $(PSRS:.psr=.h)
-OBJS := $(filter %.o, $(SRCS:.asm=.o) $(SRCS:.c=.o) $(SRCS:.cpp=.o) $(PSRS:.psr=.o))
+OBJS := $(filter %.o, $(SRCS:.asm=.o) $(SRCS:.c=.o) $(SRCS:.cpp=.o) $(SRCS:.rc=.o) $(PSRS:.psr=.o))
 DEPS := $(OBJS:.o=.d)
 
 .SUFFIXES:
@@ -615,6 +616,10 @@ $(filter %.o, $(SRCS:.c=.o) $(SRCS:.cpp=.o)): $(HDRS)
 %.o: %.cpp
 	@echo '===> CXX $<'
 	$(Q)$(CXX_TARGET) $(CXXFLAGS) $(DEBUGFLAGS) -c $(DEPFLAGS_CXX) -o $@ $<
+
+%.o: %.rc
+	@echo '===> RES $<'
+	$(Q)i686-w64-mingw32-windres -o $@ $<
 
 %.h %.o: %.psr $(PSR)
 	@echo '===> PSR $@'
