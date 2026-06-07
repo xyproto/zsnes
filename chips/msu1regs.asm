@@ -15,7 +15,7 @@
 %include "macros.mac"
 
 EXTSYM MSU_StateControl,MSU_AudioVolume,MSU_Track,MSU_Data_SeekPort,MSU_Data_Addr
-EXTSYM MSU_DATA,MSU_StatusRead,MSU1HandleTrackChange,MSU1HandleStatusBits,MSU1GetStatusBitsSpecial
+EXTSYM MSU_DATA,MSU_StatusRead,MSU1HandleTrackChange,MSU1HandleControlBits
 
 SECTION .text
 
@@ -23,7 +23,6 @@ SECTION .text
 ;Data busy 	Audio busy 	Audio repeat 	Audio playing 	Track missing 	Revision
 ;No need for busy bits since data will be stored in RAM
 NEWSYM msustatusread
-	ccall MSU1GetStatusBitsSpecial
 	mov al,[MSU_StatusRead]
 ret
 
@@ -113,5 +112,5 @@ ret
 ;STATE CONTROL
 NEWSYM msu1statecontrol
 	mov [MSU_StateControl],al
-	ccall MSU1HandleStatusBits
+	ccall MSU1HandleControlBits
 ret

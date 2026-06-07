@@ -27,17 +27,11 @@ uint8_t MSU_StateControl;
 static uint8_t mock_data[256];
 uint8_t* MSU_DATA = mock_data;
 
-static int get_status_calls;
-void MSU1GetStatusBitsSpecial(void)
-{
-    get_status_calls++;
-}
-
 static int handle_track_calls;
 void MSU1HandleTrackChange(void) { handle_track_calls++; }
 
 static int handle_status_calls;
-void MSU1HandleStatusBits(void) { handle_status_calls++; }
+void MSU1HandleControlBits(void) { handle_status_calls++; }
 
 #define RESET_MOCKS()                            \
     do {                                         \
@@ -76,12 +70,11 @@ void msu1statecontrol(uint8_t val);
 
 static void test_msustatusread(void)
 {
-    ZT_SECTION("msustatusread: calls GetStatusBitsSpecial then returns MSU_StatusRead");
+    ZT_SECTION("msustatusread: returns MSU_StatusRead");
 
     RESET_MOCKS();
     MSU_StatusRead = 0xC4;
     uint8_t r = msustatusread();
-    ZT_CHECK(get_status_calls == 1);
     ZT_CHECK(r == 0xC4);
 
     /* verify call happens before the read: mock updates StatusRead */
@@ -91,7 +84,6 @@ static void test_msustatusread(void)
        present after the call (set externally before calling) is returned */
     MSU_StatusRead = 0xA4;
     r = msustatusread();
-    ZT_CHECK(get_status_calls == 1);
     ZT_CHECK(r == 0xA4);
 }
 

@@ -3,14 +3,14 @@
  *
  * Ported from chips/msu1regs.asm.
  *
- * msustatusread    — calls MSU1GetStatusBitsSpecial then returns MSU_StatusRead
+ * msustatusread    — returns MSU_StatusRead
  * msudataread      — returns MSU_DATA[MSU_Data_Addr], increments data address
  * msuid1..msuid6   — return the six ID bytes: 'S', '-', 'M', 'S', 'U', '1'
  * msudataseek0..3  — write one byte of MSU_Data_SeekPort (little-endian byte n)
  * msu1track0       — write low byte of MSU_Track
  * msu1track1       — write high byte of MSU_Track, then call MSU1HandleTrackChange
  * msu1volume       — write MSU_AudioVolume
- * msu1statecontrol — write MSU_StateControl, then call MSU1HandleStatusBits
+ * msu1statecontrol — write MSU_StateControl, then call MSU1HandleControlBits
  */
 
 #include "msu1emu.h"
@@ -24,13 +24,11 @@ extern uint16_t MSU_Track;
 extern uint8_t MSU_AudioVolume;
 extern uint8_t MSU_StateControl;
 
-extern void MSU1GetStatusBitsSpecial(void);
 extern void MSU1HandleTrackChange(void);
-extern void MSU1HandleStatusBits(void);
+extern void MSU1HandleControlBits(void);
 
 uint8_t msustatusread(void)
 {
-    MSU1GetStatusBitsSpecial();
     return MSU_StatusRead;
 }
 
@@ -85,5 +83,5 @@ void msu1volume(uint8_t val)
 void msu1statecontrol(uint8_t val)
 {
     MSU_StateControl = val;
-    MSU1HandleStatusBits();
+    MSU1HandleControlBits();
 }
