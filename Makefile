@@ -554,7 +554,7 @@ endif
 
 ifeq ($(ARCH),WIN)
 SRCS += mmlib/windows.c
-SRCS += win/resource.rc
+SRCS += win/zsnes.rc
 SRCS += win/c_winintrf.c
 SRCS += win/dx_ddraw.cpp
 SRCS += win/lib.c
