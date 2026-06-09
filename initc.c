@@ -984,13 +984,6 @@ void load_file_fs(char* path)
 {
     uint8_t* ROM = romdata;
 
-    if (isextension(path, "jma")) {
-#ifdef NO_JMA
-        puts("This binary was built without JMA support.");
-#else
-        load_jma_file_dir(ZRomPath, path);
-#endif
-    }
     if (isextension(path, "zip")) {
         loadZipFile(path);
     }
@@ -1121,15 +1114,7 @@ void loadROM()
     EMUPause = false;
     curromspace = 0;
 
-    if (isextension(ZCartName, "jma")) {
-#ifdef NO_JMA
-        puts("This binary was built without JMA support.");
-        return;
-#else
-        isCompressed = true;
-        load_jma_file_dir(ZRomPath, ZCartName);
-#endif
-    } else if (isextension(ZCartName, "zip")) {
+    if (isextension(ZCartName, "zip")) {
         isCompressed = true;
         isZip = true;
         loadZipFile(ZCartName);

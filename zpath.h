@@ -29,10 +29,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #include "zip/zunzip.h"
 
-#ifndef NO_JMA
-#include "jma/zsnesjma.h"
-#endif
-
 #ifdef _MSC_VER
 #define F_OK 0
 #define X_OK F_OK // Drop down to F_OK because MSVC is stupid
@@ -87,9 +83,6 @@ int stat_dir(const char* path, const char* file, struct stat* buf);
 FILE* fopen_dir(const char* path, const char* file, const char* mode);
 gzFile gzopen_dir(const char* path, const char* file, const char* mode);
 unzFile unzopen_dir(const char* path, const char* file);
-#ifndef NO_JMA
-void load_jma_file_dir(const char* path, const char* file);
-#endif
 int remove_dir(const char* path, const char* file);
 int mkdir_dir(const char* path, const char* dir);
 char* realpath_dir(const char* path, const char* file, char* buf);

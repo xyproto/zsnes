@@ -711,11 +711,7 @@ static bool snes_extension_match(const char* filename)
     char* dot = strrchr(filename, '.');
     if (dot) {
         dot++;
-        if (!strcasecmp(dot, "sfc") ||
-#ifndef NO_JMA
-            !strcasecmp(dot, "jma") ||
-#endif
-            !strcasecmp(dot, "zip") || !strcasecmp(dot, "gz") || !strcasecmp(dot, "st") || !strcasecmp(dot, "bs") || !strcasecmp(dot, "smc") || !strcasecmp(dot, "swc") || !strcasecmp(dot, "fig") || !strcasecmp(dot, "dx2") || !strcasecmp(dot, "ufo") || !strcasecmp(dot, "gd3") || !strcasecmp(dot, "gd7") || !strcasecmp(dot, "mgd") || !strcasecmp(dot, "mgh") || !strcasecmp(dot, "048") || !strcasecmp(dot, "058") || !strcasecmp(dot, "078") || !strcasecmp(dot, "bin") || !strcasecmp(dot, "usa") || !strcasecmp(dot, "eur") || !strcasecmp(dot, "jap") || !strcasecmp(dot, "aus") || !strcasecmp(dot, "1") || !strcasecmp(dot, "a")) {
+        if (!strcasecmp(dot, "sfc") || !strcasecmp(dot, "zip") || !strcasecmp(dot, "gz") || !strcasecmp(dot, "st") || !strcasecmp(dot, "bs") || !strcasecmp(dot, "smc") || !strcasecmp(dot, "swc") || !strcasecmp(dot, "fig") || !strcasecmp(dot, "dx2") || !strcasecmp(dot, "ufo") || !strcasecmp(dot, "gd3") || !strcasecmp(dot, "gd7") || !strcasecmp(dot, "mgd") || !strcasecmp(dot, "mgh") || !strcasecmp(dot, "048") || !strcasecmp(dot, "058") || !strcasecmp(dot, "078") || !strcasecmp(dot, "bin") || !strcasecmp(dot, "usa") || !strcasecmp(dot, "eur") || !strcasecmp(dot, "jap") || !strcasecmp(dot, "aus") || !strcasecmp(dot, "1") || !strcasecmp(dot, "a")) {
             return (true);
         }
     }
@@ -732,7 +728,7 @@ static const char* get_rom_name(struct dirent_info* entry, char* namebuffer)
     unsigned int sum(unsigned char* array, unsigned int size);
 
     char* last_dot = strrchr(entry->name, '.');
-    if (!last_dot || (strcasecmp(last_dot, ".zip") && strcasecmp(last_dot, ".gz") && strcasecmp(last_dot, ".jma"))) {
+    if (!last_dot || (strcasecmp(last_dot, ".zip") && strcasecmp(last_dot, ".gz"))) {
         if ((entry->size >= 0x8000) && (entry->size <= 0x600000 + HEADER_SIZE)) {
             FILE* fp = fopen_dir(ZRomPath, entry->name, "rb");
             if (fp) {

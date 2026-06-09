@@ -235,7 +235,7 @@ static void display_help()
     put_line("");
     put_line("  File Formats Supported by GUI : SMC,SFC,SWC,FIG,MGD,MGH,UFO,BIN,");
     put_line("                                  GD3,GD7,USA,EUR,JAP,AUS,ST,BS,");
-    put_line("                                  DX2,048,058,078,1,A,GZ,ZIP,JMA");
+    put_line("                                  DX2,048,058,078,1,A,GZ,ZIP");
     put_line("");
 #ifndef __UNIXSDL__
     put_line("  Microsoft-style options (/option) are also accepted");

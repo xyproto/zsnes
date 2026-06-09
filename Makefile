@@ -101,7 +101,6 @@ ASMFLAGS += -O1 -w-orphan-labels -w-number-deprecated-hex -w-pp-macro-params-leg
 
 WITH_AO       :=
 #WITH_DEBUGGER := yes
-WITH_JMA      := yes
 WITH_OPENGL   := yes
 WITH_PNG      := yes
 WITH_SDL      := $(if $(filter $(ARCH),$(UNIXSDL_ARCHES)),yes,)
@@ -457,20 +456,6 @@ endif
 
 DEBUGFLAGS :=
 
-ifdef WITH_JMA
-SRCS += jma/7zlzma.cpp
-SRCS += jma/crc32.cpp
-SRCS += jma/iiostrm.cpp
-SRCS += jma/inbyte.cpp
-SRCS += jma/jma.cpp
-SRCS += jma/lzma.cpp
-SRCS += jma/lzmadec.cpp
-SRCS += jma/winout.cpp
-SRCS += jma/zsnesjma.cpp
-else
-CFGDEFS += -DNO_JMA
-endif
-
 ifdef WITH_OPENGL
 CFGDEFS += -D__OPENGL__
 endif
@@ -639,7 +624,6 @@ endif
 info:
 	@echo "ARCH          = $(ARCH)"
 	@echo "WITH_DEBUGGER = $(WITH_DEBUGGER)"
-	@echo "WITH_JMA      = $(WITH_JMA)"
 	@echo "WITH_OPENGL   = $(WITH_OPENGL)"
 	@echo "WITH_PNG      = $(WITH_PNG)"
 	@echo "WITH_SDL      = $(WITH_SDL)"

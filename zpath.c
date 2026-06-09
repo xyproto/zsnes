@@ -501,13 +501,6 @@ unzFile unzopen_dir(const char* path, const char* file)
     return (unzOpen(strdupcat_internal(path, file)));
 }
 
-#ifndef NO_JMA
-void load_jma_file_dir(const char* path, const char* file)
-{
-    load_jma_file(strdupcat_internal(path, file));
-}
-#endif
-
 int remove_dir(const char* path, const char* file)
 {
     return (remove(strdupcat_internal(path, file)));
