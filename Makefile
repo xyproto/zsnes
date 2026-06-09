@@ -1,4 +1,4 @@
-.PHONY: clean distclean fmt info test
+.PHONY: clean distclean fmt info test win32
 
 # Supported ARCH values:
 #   LINUX, FREEBSD, OPENBSD, NETBSD, DARWIN, WIN
@@ -563,6 +563,13 @@ DEPS := $(OBJS:.o=.d)
 #Q ?= @
 
 all: $(BINARY)
+
+# Cross-build the Windows executable from Linux using the mingw32 toolchain.
+MINGW32_PREFIX ?= i686-w64-mingw32
+win32:
+	@command -v $(MINGW32_PREFIX)-gcc >/dev/null 2>&1 || { \
+	  echo "error: $(MINGW32_PREFIX)-gcc not found; install the mingw32 toolchain" >&2; exit 1; }
+	$(MAKE) ARCH=WIN CC=$(MINGW32_PREFIX)-gcc CC_TARGET=$(MINGW32_PREFIX)-gcc WINDRES=$(MINGW32_PREFIX)-windres
 
 debug: DEBUGFLAGS += -g
 debug: $(BINARY)
