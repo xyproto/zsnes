@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "lzmadec.h"
 
-bool decompress_lzma_7z(ISequentialInStream& in, unsigned in_size, ISequentialOutStream& out, unsigned out_size) throw()
+bool decompress_lzma_7z(ISequentialInStream& in, unsigned in_size, ISequentialOutStream& out, unsigned out_size) noexcept
 {
     try {
         NCompress::NLZMA::CDecoder cc;
@@ -44,7 +44,7 @@ bool decompress_lzma_7z(ISequentialInStream& in, unsigned in_size, ISequentialOu
     }
 }
 
-bool decompress_lzma_7z(const unsigned char* in_data, unsigned int in_size, unsigned char* out_data, unsigned int out_size) throw()
+bool decompress_lzma_7z(const unsigned char* in_data, unsigned int in_size, unsigned char* out_data, unsigned int out_size) noexcept
 {
     ISequentialInStream_Array in(reinterpret_cast<const char*>(in_data), in_size);
     ISequentialOutStream_Array out(reinterpret_cast<char*>(out_data), out_size);

@@ -19,7 +19,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define CRC32_H
 
 namespace CRC32lib {
-unsigned int CRC32(const unsigned char*, size_t, register unsigned int crc32 = 0xFFFFFFFF);
+unsigned int CRC32(const unsigned char*, size_t, unsigned int crc32 = 0xFFFFFFFF);
 }
 
 #endif
