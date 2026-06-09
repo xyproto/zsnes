@@ -27,7 +27,7 @@ char* VERSION_DATE = __DATE__;
 
 #if defined(__WIN32__) || defined(__ZSNES_PLATFORM_WINDOWS__)
 char* VERSION_PORT = "WIN";
-#elif defined(__ZSNES_PLATFORM_DARWIN__) || defined(__MACOSX__)
+#elif defined(__ZSNES_PLATFORM_DARWIN__)
 char* VERSION_PORT = "SDL - Darwin";
 #elif defined(__ZSNES_PLATFORM_FREEBSD__)
 char* VERSION_PORT = "SDL - FreeBSD";
@@ -35,8 +35,6 @@ char* VERSION_PORT = "SDL - FreeBSD";
 char* VERSION_PORT = "SDL - OpenBSD";
 #elif defined(__ZSNES_PLATFORM_NETBSD__)
 char* VERSION_PORT = "SDL - NetBSD";
-#elif defined(__BSDSDL__)
-char* VERSION_PORT = "SDL - BSD";
 #elif defined(__ZSNES_PLATFORM_LINUX__) || defined(__linux__)
 char* VERSION_PORT = "SDL - Linux";
 #else

@@ -86,11 +86,11 @@ endif
 IS_FEDORA       := $(if $(wildcard /etc/fedora-release),yes)
 IS_DEBIAN_BASED := $(if $(wildcard /etc/debian_version),yes)
 
-COMMON_FLAGS = $(ARCH_CFLAGS) -pthread -no-pie -O3 -fno-inline -fno-pic -mtune=generic -D_FORTIFY_SOURCE=2 -ffunction-sections -fdata-sections -Wfatal-errors -w
+COMMON_FLAGS = $(ARCH_CFLAGS) -pthread -no-pie -O3 -fno-inline -fno-pic -D_FORTIFY_SOURCE=2 -ffunction-sections -fdata-sections -Wfatal-errors -w
 
 # TODO: FreeBSD has a patch for being able to build without -fcommon
-CFLAGS += $(COMMON_FLAGS) -std=gnu99 -fcommon
-CXXFLAGS += $(COMMON_FLAGS) -std=gnu++14
+CFLAGS += $(COMMON_FLAGS) -fcommon
+CXXFLAGS += $(COMMON_FLAGS)
 ifneq ($(ARCH),DARWIN)
 CFLAGS += -mno-sse -mno-sse2
 CXXFLAGS += -mno-sse -mno-sse2
@@ -289,8 +289,6 @@ ifeq ($(WITH_AO),yes)
   endif
   CFLAGS += $(CFLAGS_AO)
   LDFLAGS += $(LDFLAGS_AO)
-else
-  CFGDEFS += -DNO_AO
 endif
 
 ifeq ($(WITH_PIPEWIRE),yes)
@@ -500,9 +498,6 @@ CFGDEFS += -D__UNIXSDL__
 ifeq ($(ARCH),LINUX)
 CFGDEFS += -D__ZSNES_PLATFORM_LINUX__
 endif
-ifneq ($(filter $(ARCH),FREEBSD OPENBSD NETBSD),)
-CFGDEFS += -D__BSDSDL__
-endif
 ifeq ($(ARCH),FREEBSD)
 CFGDEFS += -D__ZSNES_PLATFORM_FREEBSD__
 endif
@@ -524,7 +519,7 @@ SRCS += mmlib/osx.c
 
 ASMFLAGS += -fmacho -DMACHO
 
-CFGDEFS += -D__MACOSX__
+CFGDEFS += -D__ZSNES_PLATFORM_DARWIN__
 
 CFLAGS += -fno-pic
 
