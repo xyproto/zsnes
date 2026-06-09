@@ -24,9 +24,9 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define __STDC_CONSTANT_MACROS
 #define COBJMACROS
 
-#include <windows.h>
 #include <ddraw.h>
 #include <stdio.h>
+#include <windows.h>
 
 #include "../c_intrf.h"
 #include "../cfg.h"
