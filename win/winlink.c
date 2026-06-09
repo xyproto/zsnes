@@ -22,21 +22,21 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define DIRECTINPUT_VERSION 0x0800
 #define DIRECTSOUND_VERSION 0x0800
 #define __STDC_CONSTANT_MACROS
+#define COBJMACROS
 
-extern "C" {
-#include "../c_init.h"
-#include <stdio.h>
-}
-#include "resource.h"
 #include <ctype.h>
+#include <math.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include <stdio.h>
+
+#include <windows.h>
+#include <winuser.h>
 #include <dinput.h>
 #include <dsound.h>
-#include <math.h>
-#include <stdint.h>
-#include <winuser.h>
 
-extern "C" {
 #include "../asm_call.h"
+#include "../c_init.h"
 #include "../c_intrf.h"
 #include "../cfg.h"
 #include "../gui/c_gui.h"
@@ -49,15 +49,15 @@ extern "C" {
 #include "../video/sw_draw.h"
 #include "../zmovie.h"
 #include "c_winintrf.h"
+#include "resource.h"
+#include "winlink.h"
 
 #ifdef __OPENGL__
 #include "gl_draw.h"
 #endif
 
-void zexit(), zexit_error();
-}
-
-#include "winlink.h"
+void zexit(void);
+void zexit_error(void);
 
 #ifdef QT_DEBUGGER
 #include "../debugger/load.h"
@@ -74,14 +74,12 @@ DWORD FirstActivate = 1;
 
 HANDLE debugWindow = 0;
 
-extern "C" {
 HWND hMainWindow;
 HDC hDC;
 HGLRC hRC;
 DWORD FullScreen = 0;
 DWORD WindowWidth = 256;
 DWORD WindowHeight = 224;
-}
 
 LPDIRECTSOUND8 lpDirectSound = NULL;
 LPDIRECTSOUNDBUFFER8 lpSoundBuffer = NULL;
@@ -138,7 +136,6 @@ BYTE MouseButtonPressed;
 BYTE IsActivated = 1;
 BYTE PrevRes = 0;
 
-extern "C" {
 u1 MouseButton;
 s4 SurfaceX = 0;
 s4 SurfaceY = 0;
@@ -146,12 +143,10 @@ RECT BlitArea;
 BYTE AltSurface = 0;
 RECT rcWindow;
 DWORD GBitMask;
-}
 
 HANDLE hLock, hThread;
 DWORD dwThreadId, dwThreadParam, semaphore_run;
 
-extern "C" {
 int SemaphoreMax = 5;
 void InitSemaphore();
 void ShutdownSemaphore();
@@ -161,7 +156,6 @@ void Clear2xSaIBuffer();
 void clear_display();
 DWORD CurMode = ~0;
 extern WORD totlines;
-}
 static char dinput8_dll[] = { "dinput8.dll\0" };
 static char dinput8_imp[] = { "DirectInput8Create\0" };
 
@@ -180,15 +174,13 @@ static lpDirectInput8Create pDirectInput8Create;
 typedef HRESULT(WINAPI* lpDirectDrawCreateEx)(GUID FAR* lpGuid, LPVOID* lplpDD, REFIID iid,
     IUnknown FAR* pUnkOuter);
 
-extern "C" {
 lpDirectDrawCreateEx pDirectDrawCreateEx;
-}
 
 typedef HRESULT(WINAPI* lpDirectSoundCreate8)(LPCGUID pcGuidDevice, LPDIRECTSOUND8* ppDS8,
     LPUNKNOWN pUnkOuter);
 static lpDirectSoundCreate8 pDirectSoundCreate8;
 
-extern "C" void FreeDirectX()
+void FreeDirectX()
 {
     FreeLibrary(hM_dsound);
     FreeLibrary(hM_ddraw);
@@ -196,7 +188,7 @@ extern "C" void FreeDirectX()
     zexit();
 }
 
-extern "C" void DXLoadError()
+void DXLoadError()
 {
     if (MessageBox(NULL,
             "Sorry, you need to install or reinstall DirectX v8.0 or higher\nto use ZSNESW.\nWould you like to go to the DirectX homepage?",
@@ -207,7 +199,7 @@ extern "C" void DXLoadError()
     FreeDirectX();
 }
 
-extern "C" void ImportDirectX()
+void ImportDirectX()
 {
     hM_dinput8 = LoadLibrary(dinput8_dll);
 
@@ -275,7 +267,6 @@ void ReleaseDirectInput();
 int InitDirectDraw();
 int ReInitSound();
 
-extern "C" {
 void MultiMouseInit();
 void MultiMouseShutdown();
 extern BYTE device1, device2;
@@ -286,23 +277,22 @@ void reInitSound()
 {
     ReInitSound();
 }
-}
 
 BOOL InputAcquire()
 {
     for (unsigned int i = 0; i < 5; i++) {
         if (JoystickInput[i]) {
-            JoystickInput[i]->Acquire();
+            IDirectInputDevice8_Acquire(JoystickInput[i]);
         }
     }
 
     if (device1 && device2 && !GUIOn2) {
         MultiMouseInit();
     } else if (MouseInput && GUIOn2) {
-        MouseInput->Acquire();
+        IDirectInputDevice8_Acquire(MouseInput);
     }
     if (KeyboardInput) {
-        KeyboardInput->Acquire();
+        IDirectInputDevice8_Acquire(KeyboardInput);
     }
     InputEn = 1;
     return TRUE;
@@ -311,33 +301,31 @@ BOOL InputAcquire()
 BOOL InputDeAcquire()
 {
     if (KeyboardInput) {
-        KeyboardInput->Unacquire();
+        IDirectInputDevice8_Unacquire(KeyboardInput);
     }
 
     for (unsigned int i = 0; i < 5; i++) {
         if (JoystickInput[i]) {
-            JoystickInput[i]->Unacquire();
+            IDirectInputDevice8_Unacquire(JoystickInput[i]);
         }
     }
 
     if (device1 && device2 && !GUIOn2) {
         MultiMouseShutdown();
     } else if (MouseInput) {
-        MouseInput->Unacquire();
+        IDirectInputDevice8_Unacquire(MouseInput);
     }
     InputEn = 0;
     return TRUE;
 }
 
-extern "C" {
 extern BYTE EMUPause;
 extern int CurKeyPos;
 extern int CurKeyReadPos;
 extern int KeyBuffer[16];
 extern BYTE debugger;
-}
 
-extern "C" void CheckPriority()
+void CheckPriority()
 {
     if (HighPriority == 1) {
         if (!SetPriorityClass(GetCurrentProcess(), ABOVE_NORMAL_PRIORITY_CLASS)) {
@@ -348,7 +336,7 @@ extern "C" void CheckPriority()
     }
 }
 
-extern "C" void CheckAlwaysOnTop()
+void CheckAlwaysOnTop()
 {
     if (AlwaysOnTop == 1) {
         SetWindowPos(hMainWindow, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
@@ -357,7 +345,7 @@ extern "C" void CheckAlwaysOnTop()
     }
 }
 
-extern "C" void CheckScreenSaver()
+void CheckScreenSaver()
 {
     if (DisableScreenSaver == 1 && IsActivated == 1) {
         SystemParametersInfo(SPI_SETSCREENSAVEACTIVE, FALSE, 0, SPIF_SENDCHANGE);
@@ -370,7 +358,7 @@ extern "C" void CheckScreenSaver()
     }
 }
 
-extern "C" void MinimizeWindow()
+void MinimizeWindow()
 {
     ShowWindow(hMainWindow, SW_MINIMIZE);
     IsActivated = 0;
@@ -384,7 +372,7 @@ BOOL InputRead()
     if (MouseInput && InputEn == 1) {
         DIMOUSESTATE dims;
         HRESULT hr;
-        hr = MouseInput->GetDeviceState(sizeof(DIMOUSESTATE), &dims);
+        hr = IDirectInputDevice8_GetDeviceState(MouseInput, sizeof(DIMOUSESTATE), &dims);
 
         if (SUCCEEDED(hr)) {
             WinMouseMoveX = (float)dims.lX;
@@ -445,9 +433,7 @@ void ExitFunction()
     DestroyWindow(hMainWindow);
 }
 
-extern "C" {
 BOOL ctrlptr = false;
-}
 
 LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -690,7 +676,7 @@ LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         break;
     case WM_MOUSEMOVE:
         if (MouseInput && GUIOn2) {
-            MouseInput->Acquire();
+            IDirectInputDevice8_Acquire(MouseInput);
         }
         break;
     case WM_MOVE:
@@ -812,19 +798,19 @@ BOOL InitSound()
     PrevStereoSound = StereoSound;
 
     if (DS_OK == pDirectSoundCreate8(NULL, &lpDirectSound, NULL)) {
-        lpDirectSound->Initialize(NULL);
+        IDirectSound8_Initialize(lpDirectSound, NULL);
 
         if (PrimaryBuffer) {
-            if (DS_OK != lpDirectSound->SetCooperativeLevel(hMainWindow, DSSCL_WRITEPRIMARY)) {
-                if (DS_OK != lpDirectSound->SetCooperativeLevel(hMainWindow, DSSCL_EXCLUSIVE)) {
+            if (DS_OK != IDirectSound8_SetCooperativeLevel(lpDirectSound, hMainWindow, DSSCL_WRITEPRIMARY)) {
+                if (DS_OK != IDirectSound8_SetCooperativeLevel(lpDirectSound, hMainWindow, DSSCL_EXCLUSIVE)) {
                     return FALSE;
                 }
             } else {
                 UsePrimaryBuffer = 1;
             }
         } else {
-            if (DS_OK != lpDirectSound->SetCooperativeLevel(hMainWindow, DSSCL_NORMAL)) {
-                if (DS_OK != lpDirectSound->SetCooperativeLevel(hMainWindow, DSSCL_EXCLUSIVE)) {
+            if (DS_OK != IDirectSound8_SetCooperativeLevel(lpDirectSound, hMainWindow, DSSCL_NORMAL)) {
+                if (DS_OK != IDirectSound8_SetCooperativeLevel(lpDirectSound, hMainWindow, DSSCL_EXCLUSIVE)) {
                     return FALSE;
                 }
             } else {
@@ -893,22 +879,22 @@ BOOL InitSound()
     dsbd.dwBufferBytes = UsePrimaryBuffer ? 0 : SoundBufferSize;
     dsbd.lpwfxFormat = UsePrimaryBuffer ? NULL : &wfx;
 
-    if (DS_OK == lpDirectSound->CreateSoundBuffer(&dsbd, &lpPrimaryBuffer, NULL)) {
+    if (DS_OK == IDirectSound8_CreateSoundBuffer(lpDirectSound, &dsbd, &lpPrimaryBuffer, NULL)) {
         if (!UsePrimaryBuffer) {
-            if (DS_OK == lpPrimaryBuffer->QueryInterface(IID_IDirectSoundBuffer8, (LPVOID*)&lpSoundBuffer)) {
-                if (DS_OK != lpSoundBuffer->Play(0, 0, DSBPLAY_LOOPING)) {
+            if (DS_OK == IDirectSoundBuffer_QueryInterface(lpPrimaryBuffer, &IID_IDirectSoundBuffer8, (LPVOID*)&lpSoundBuffer)) {
+                if (DS_OK != IDirectSoundBuffer8_Play(lpSoundBuffer, 0, 0, DSBPLAY_LOOPING)) {
                     return FALSE;
                 }
             } else {
                 return FALSE;
             }
         } else {
-            lpPrimaryBuffer->SetFormat(&wfx);
+            IDirectSoundBuffer_SetFormat(lpPrimaryBuffer, &wfx);
             dsbcaps.dwSize = sizeof(DSBCAPS);
-            lpPrimaryBuffer->GetCaps(&dsbcaps);
+            IDirectSoundBuffer_GetCaps(lpPrimaryBuffer, &dsbcaps);
             SoundBufferSize = dsbcaps.dwBufferBytes;
 
-            if (DS_OK != lpPrimaryBuffer->Play(0, 0, DSBPLAY_LOOPING)) {
+            if (DS_OK != IDirectSoundBuffer_Play(lpPrimaryBuffer, 0, 0, DSBPLAY_LOOPING)) {
                 return FALSE;
             }
         }
@@ -927,14 +913,14 @@ BOOL ReInitSound()
     DSBCAPS dsbcaps;
 
     if (lpSoundBuffer) {
-        lpSoundBuffer->Stop();
-        lpSoundBuffer->Release();
+        IDirectSoundBuffer8_Stop(lpSoundBuffer);
+        IDirectSoundBuffer8_Release(lpSoundBuffer);
         lpSoundBuffer = NULL;
     }
 
     if (lpPrimaryBuffer) {
-        lpPrimaryBuffer->Stop();
-        lpPrimaryBuffer->Release();
+        IDirectSoundBuffer_Stop(lpPrimaryBuffer);
+        IDirectSoundBuffer_Release(lpPrimaryBuffer);
         lpPrimaryBuffer = NULL;
     }
 
@@ -1009,22 +995,22 @@ BOOL ReInitSound()
     dsbd.dwBufferBytes = UsePrimaryBuffer ? 0 : SoundBufferSize;
     dsbd.lpwfxFormat = UsePrimaryBuffer ? NULL : &wfx;
 
-    if (DS_OK == lpDirectSound->CreateSoundBuffer(&dsbd, &lpPrimaryBuffer, NULL)) {
+    if (DS_OK == IDirectSound8_CreateSoundBuffer(lpDirectSound, &dsbd, &lpPrimaryBuffer, NULL)) {
         if (!UsePrimaryBuffer) {
-            if (DS_OK == lpPrimaryBuffer->QueryInterface(IID_IDirectSoundBuffer8, (LPVOID*)&lpSoundBuffer)) {
-                if (DS_OK != lpSoundBuffer->Play(0, 0, DSBPLAY_LOOPING)) {
+            if (DS_OK == IDirectSoundBuffer_QueryInterface(lpPrimaryBuffer, &IID_IDirectSoundBuffer8, (LPVOID*)&lpSoundBuffer)) {
+                if (DS_OK != IDirectSoundBuffer8_Play(lpSoundBuffer, 0, 0, DSBPLAY_LOOPING)) {
                     return FALSE;
                 }
             } else {
                 return FALSE;
             }
         } else {
-            lpPrimaryBuffer->SetFormat(&wfx);
+            IDirectSoundBuffer_SetFormat(lpPrimaryBuffer, &wfx);
             dsbcaps.dwSize = sizeof(DSBCAPS);
-            lpPrimaryBuffer->GetCaps(&dsbcaps);
+            IDirectSoundBuffer_GetCaps(lpPrimaryBuffer, &dsbcaps);
             SoundBufferSize = dsbcaps.dwBufferBytes;
 
-            if (DS_OK != lpPrimaryBuffer->Play(0, 0, DSBPLAY_LOOPING)) {
+            if (DS_OK != IDirectSoundBuffer_Play(lpPrimaryBuffer, 0, 0, DSBPLAY_LOOPING)) {
                 return FALSE;
             }
         }
@@ -1047,19 +1033,19 @@ BOOL FAR PASCAL InitJoystickInput(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef)
     }
 
     // Create the DirectInput joystick device.
-    if (pdi->CreateDevice(DeviceGuid, &JoystickInput[CurrentJoy], NULL) != DI_OK) {
+    if (IDirectInput8_CreateDevice(pdi, &DeviceGuid, &JoystickInput[CurrentJoy], NULL) != DI_OK) {
         return DIENUM_CONTINUE;
     }
 
-    if (JoystickInput[CurrentJoy]->SetDataFormat(&c_dfDIJoystick) != DI_OK) {
-        JoystickInput[CurrentJoy]->Release();
+    if (IDirectInputDevice8_SetDataFormat(JoystickInput[CurrentJoy], &c_dfDIJoystick) != DI_OK) {
+        IDirectInputDevice8_Release(JoystickInput[CurrentJoy]);
         return DIENUM_CONTINUE;
     }
 
-    if (JoystickInput[CurrentJoy]->SetCooperativeLevel(hMainWindow,
+    if (IDirectInputDevice8_SetCooperativeLevel(JoystickInput[CurrentJoy], hMainWindow,
             DISCL_EXCLUSIVE | DISCL_BACKGROUND)
         != DI_OK) {
-        JoystickInput[CurrentJoy]->Release();
+        IDirectInputDevice8_Release(JoystickInput[CurrentJoy]);
         return DIENUM_CONTINUE;
     }
 
@@ -1072,50 +1058,50 @@ BOOL FAR PASCAL InitJoystickInput(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef)
     diprg.lMin = joy_sensitivity * -1;
     diprg.lMax = joy_sensitivity;
 
-    if (FAILED(JoystickInput[CurrentJoy]->SetProperty(DIPROP_RANGE, &diprg.diph))) {
+    if (FAILED(IDirectInputDevice8_SetProperty(JoystickInput[CurrentJoy], DIPROP_RANGE, &diprg.diph))) {
         X1Disable[CurrentJoy] = 1;
         X2Disable[CurrentJoy] = 1;
     }
 
     diprg.diph.dwObj = DIJOFS_Y;
 
-    if (FAILED(JoystickInput[CurrentJoy]->SetProperty(DIPROP_RANGE, &diprg.diph))) {
+    if (FAILED(IDirectInputDevice8_SetProperty(JoystickInput[CurrentJoy], DIPROP_RANGE, &diprg.diph))) {
         Y1Disable[CurrentJoy] = 1;
         Y2Disable[CurrentJoy] = 1;
     }
 
     diprg.diph.dwObj = DIJOFS_Z;
-    if (FAILED(JoystickInput[CurrentJoy]->SetProperty(DIPROP_RANGE, &diprg.diph))) {
+    if (FAILED(IDirectInputDevice8_SetProperty(JoystickInput[CurrentJoy], DIPROP_RANGE, &diprg.diph))) {
         Z1Disable[CurrentJoy] = 1;
         Z2Disable[CurrentJoy] = 1;
     }
 
     diprg.diph.dwObj = DIJOFS_RX;
-    if (FAILED(JoystickInput[CurrentJoy]->SetProperty(DIPROP_RANGE, &diprg.diph))) {
+    if (FAILED(IDirectInputDevice8_SetProperty(JoystickInput[CurrentJoy], DIPROP_RANGE, &diprg.diph))) {
         RX1Disable[CurrentJoy] = 1;
         RX2Disable[CurrentJoy] = 1;
     }
 
     diprg.diph.dwObj = DIJOFS_RY;
-    if (FAILED(JoystickInput[CurrentJoy]->SetProperty(DIPROP_RANGE, &diprg.diph))) {
+    if (FAILED(IDirectInputDevice8_SetProperty(JoystickInput[CurrentJoy], DIPROP_RANGE, &diprg.diph))) {
         RY1Disable[CurrentJoy] = 1;
         RY2Disable[CurrentJoy] = 1;
     }
 
     diprg.diph.dwObj = DIJOFS_RZ;
-    if (FAILED(JoystickInput[CurrentJoy]->SetProperty(DIPROP_RANGE, &diprg.diph))) {
+    if (FAILED(IDirectInputDevice8_SetProperty(JoystickInput[CurrentJoy], DIPROP_RANGE, &diprg.diph))) {
         RZ1Disable[CurrentJoy] = 1;
         RZ2Disable[CurrentJoy] = 1;
     }
 
     diprg.diph.dwObj = DIJOFS_SLIDER(0);
-    if (FAILED(JoystickInput[CurrentJoy]->SetProperty(DIPROP_RANGE, &diprg.diph))) {
+    if (FAILED(IDirectInputDevice8_SetProperty(JoystickInput[CurrentJoy], DIPROP_RANGE, &diprg.diph))) {
         S01Disable[CurrentJoy] = 1;
         S02Disable[CurrentJoy] = 1;
     }
 
     diprg.diph.dwObj = DIJOFS_SLIDER(1);
-    if (FAILED(JoystickInput[CurrentJoy]->SetProperty(DIPROP_RANGE, &diprg.diph))) {
+    if (FAILED(IDirectInputDevice8_SetProperty(JoystickInput[CurrentJoy], DIPROP_RANGE, &diprg.diph))) {
         S11Disable[CurrentJoy] = 1;
         S12Disable[CurrentJoy] = 1;
     }
@@ -1124,8 +1110,8 @@ BOOL FAR PASCAL InitJoystickInput(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef)
 
     didc.dwSize = sizeof(DIDEVCAPS);
 
-    if (JoystickInput[CurrentJoy]->GetCapabilities(&didc) != DI_OK) {
-        JoystickInput[CurrentJoy]->Release();
+    if (IDirectInputDevice8_GetCapabilities(JoystickInput[CurrentJoy], &didc) != DI_OK) {
+        IDirectInputDevice8_Release(JoystickInput[CurrentJoy]);
         return DIENUM_CONTINUE;
     }
 
@@ -1148,28 +1134,28 @@ BOOL FAR PASCAL InitJoystickInput(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef)
     dipdw.diph.dwHow = DIPH_BYOFFSET;
     dipdw.dwData = 2500;
     dipdw.diph.dwObj = DIJOFS_X;
-    JoystickInput[CurrentJoy]->SetProperty(DIPROP_DEADZONE, &dipdw.diph);
+    IDirectInputDevice8_SetProperty(JoystickInput[CurrentJoy], DIPROP_DEADZONE, &dipdw.diph);
 
     dipdw.diph.dwObj = DIJOFS_Y;
-    JoystickInput[CurrentJoy]->SetProperty(DIPROP_DEADZONE, &dipdw.diph);
+    IDirectInputDevice8_SetProperty(JoystickInput[CurrentJoy], DIPROP_DEADZONE, &dipdw.diph);
 
     dipdw.diph.dwObj = DIJOFS_Z;
-    JoystickInput[CurrentJoy]->SetProperty(DIPROP_DEADZONE, &dipdw.diph);
+    IDirectInputDevice8_SetProperty(JoystickInput[CurrentJoy], DIPROP_DEADZONE, &dipdw.diph);
 
     dipdw.diph.dwObj = DIJOFS_RX;
-    JoystickInput[CurrentJoy]->SetProperty(DIPROP_DEADZONE, &dipdw.diph);
+    IDirectInputDevice8_SetProperty(JoystickInput[CurrentJoy], DIPROP_DEADZONE, &dipdw.diph);
 
     dipdw.diph.dwObj = DIJOFS_RY;
-    JoystickInput[CurrentJoy]->SetProperty(DIPROP_DEADZONE, &dipdw.diph);
+    IDirectInputDevice8_SetProperty(JoystickInput[CurrentJoy], DIPROP_DEADZONE, &dipdw.diph);
 
     dipdw.diph.dwObj = DIJOFS_RZ;
-    JoystickInput[CurrentJoy]->SetProperty(DIPROP_DEADZONE, &dipdw.diph);
+    IDirectInputDevice8_SetProperty(JoystickInput[CurrentJoy], DIPROP_DEADZONE, &dipdw.diph);
 
     dipdw.diph.dwObj = DIJOFS_SLIDER(0);
-    JoystickInput[CurrentJoy]->SetProperty(DIPROP_DEADZONE, &dipdw.diph);
+    IDirectInputDevice8_SetProperty(JoystickInput[CurrentJoy], DIPROP_DEADZONE, &dipdw.diph);
 
     dipdw.diph.dwObj = DIJOFS_SLIDER(1);
-    JoystickInput[CurrentJoy]->SetProperty(DIPROP_DEADZONE, &dipdw.diph);
+    IDirectInputDevice8_SetProperty(JoystickInput[CurrentJoy], DIPROP_DEADZONE, &dipdw.diph);
 
     dipdw.diph.dwSize = sizeof(DIPROPDWORD);
     dipdw.diph.dwHeaderSize = sizeof(dipdw.diph);
@@ -1177,7 +1163,7 @@ BOOL FAR PASCAL InitJoystickInput(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef)
     dipdw.dwData = DIPROPAXISMODE_ABS;
     dipdw.diph.dwObj = 0;
 
-    JoystickInput[CurrentJoy]->SetProperty(DIPROP_AXISMODE, &dipdw.diph);
+    IDirectInputDevice8_SetProperty(JoystickInput[CurrentJoy], DIPROP_AXISMODE, &dipdw.diph);
 
     CurrentJoy += 1;
 
@@ -1187,24 +1173,24 @@ BOOL FAR PASCAL InitJoystickInput(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef)
 void ReleaseDirectInput()
 {
     if (MouseInput) {
-        MouseInput->Release();
+        IDirectInputDevice8_Release(MouseInput);
         MouseInput = NULL;
     }
 
     if (KeyboardInput) {
-        KeyboardInput->Release();
+        IDirectInputDevice8_Release(KeyboardInput);
         KeyboardInput = NULL;
     }
 
     for (int i = 0; i < 5; i++) {
         if (JoystickInput[i]) {
-            JoystickInput[i]->Release();
+            IDirectInputDevice8_Release(JoystickInput[i]);
             JoystickInput[i] = NULL;
         }
     }
 
     if (DInput) {
-        DInput->Release();
+        IDirectInput8_Release(DInput);
         DInput = NULL;
     }
 }
@@ -1212,17 +1198,17 @@ void ReleaseDirectInput()
 void ReleaseDirectSound()
 {
     if (lpSoundBuffer) {
-        lpSoundBuffer->Release();
+        IDirectSoundBuffer8_Release(lpSoundBuffer);
         lpSoundBuffer = NULL;
     }
 
     if (lpPrimaryBuffer) {
-        lpPrimaryBuffer->Release();
+        IDirectSoundBuffer_Release(lpPrimaryBuffer);
         lpPrimaryBuffer = NULL;
     }
 
     if (lpDirectSound) {
-        lpDirectSound->Release();
+        IDirectSound8_Release(lpDirectSound);
         lpDirectSound = NULL;
     }
 }
@@ -1242,7 +1228,7 @@ static bool InitInput(HINSTANCE const hInst)
     char message1[256];
     HRESULT hr;
 
-    if (FAILED(hr = pDirectInput8Create(hInst, DIRECTINPUT_VERSION, IID_IDirectInput8A, (void**)&DInput,
+    if (FAILED(hr = pDirectInput8Create(hInst, DIRECTINPUT_VERSION, &IID_IDirectInput8A, (void**)&DInput,
                    NULL))) {
         sprintf(message1,
             "Error initializing DirectInput\nYou may need to install DirectX 8.0a or higher located at www.microsoft.com/directx%c",
@@ -1274,33 +1260,33 @@ static bool InitInput(HINSTANCE const hInst)
         return FALSE;
     }
 
-    hr = DInput->CreateDevice(GUID_SysKeyboard, &KeyboardInput, NULL);
+    hr = IDirectInput8_CreateDevice(DInput, &GUID_SysKeyboard, &KeyboardInput, NULL);
     if (FAILED(hr)) {
         DInputError();
         return FALSE;
     }
 
-    hr = KeyboardInput->SetDataFormat(&c_dfDIKeyboard);
+    hr = IDirectInputDevice8_SetDataFormat(KeyboardInput, &c_dfDIKeyboard);
     if (FAILED(hr)) {
         DInputError();
         return FALSE;
     }
 
-    hr = KeyboardInput->SetCooperativeLevel(hMainWindow, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND);
+    hr = IDirectInputDevice8_SetCooperativeLevel(KeyboardInput, hMainWindow, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND);
 
-    hr = DInput->CreateDevice(GUID_SysMouse, &MouseInput, NULL);
+    hr = IDirectInput8_CreateDevice(DInput, &GUID_SysMouse, &MouseInput, NULL);
     if (FAILED(hr)) {
         DInputError();
         return FALSE;
     }
 
-    hr = MouseInput->SetDataFormat(&c_dfDIMouse);
+    hr = IDirectInputDevice8_SetDataFormat(MouseInput, &c_dfDIMouse);
     if (FAILED(hr)) {
         DInputError();
         return FALSE;
     }
 
-    hr = MouseInput->SetCooperativeLevel(hMainWindow, DISCL_EXCLUSIVE | DISCL_FOREGROUND);
+    hr = IDirectInputDevice8_SetCooperativeLevel(MouseInput, hMainWindow, DISCL_EXCLUSIVE | DISCL_FOREGROUND);
     if (FAILED(hr)) {
         DInputError();
         return FALSE;
@@ -1312,7 +1298,7 @@ static bool InitInput(HINSTANCE const hInst)
     JoystickInput[3] = NULL;
     JoystickInput[4] = NULL;
 
-    hr = DInput->EnumDevices(DI8DEVCLASS_GAMECTRL, InitJoystickInput, DInput, DIEDFL_ATTACHEDONLY);
+    hr = IDirectInput8_EnumDevices(DInput, DI8DEVCLASS_GAMECTRL, InitJoystickInput, DInput, DIEDFL_ATTACHEDONLY);
 
     if (FAILED(hr)) {
         DInputError();
@@ -1330,13 +1316,13 @@ void TestJoy()
 
     for (i = 0; i < 5; i++) {
         if (JoystickInput[i]) {
-            JoystickInput[i]->Poll();
+            IDirectInputDevice8_Poll(JoystickInput[i]);
 
-            if (JoystickInput[i]->GetDeviceState(sizeof(DIJOYSTATE), &js[i]) == DIERR_INPUTLOST) {
+            if (IDirectInputDevice8_GetDeviceState(JoystickInput[i], sizeof(DIJOYSTATE), &js[i]) == DIERR_INPUTLOST) {
                 if (JoystickInput[i]) {
-                    JoystickInput[i]->Acquire();
+                    IDirectInputDevice8_Acquire(JoystickInput[i]);
                 }
-                if (FAILED(JoystickInput[i]->GetDeviceState(sizeof(DIJOYSTATE), &js[i]))) {
+                if (FAILED(IDirectInputDevice8_GetDeviceState(JoystickInput[i], sizeof(DIJOYSTATE), &js[i]))) {
                     return;
                 }
             }
@@ -1400,14 +1386,12 @@ void TestJoy()
     }
 }
 
-extern "C" {
 // BYTE changeRes = 1;
 extern unsigned int BitConv32Ptr;
 extern unsigned int RGBtoYUVPtr;
 extern unsigned short resolutn;
 extern BYTE hqFilterlevel;
 BYTE changeRes = 1;
-}
 
 DWORD FirstVid = 1;
 DWORD FirstFull = 1;
@@ -1422,7 +1406,6 @@ void UnlockSurface();
 void clear_ddraw();
 
 // The big extern
-extern "C" {
 char CheckOGLMode();
 BYTE* SurfBuf;
 DWORD DMode = 0;
@@ -1503,11 +1486,11 @@ void Start60HZ(void)
     InitSemaphore();
 
     if (device1 && device2) {
-        MouseInput->Unacquire();
+        IDirectInputDevice8_Unacquire(MouseInput);
         MultiMouseInit();
     }
 
-    // if (!device1 && !device2) MouseInput->Unacquire();
+    // if (!device1 && !device2) IDirectInputDevice8_Unacquire(MouseInput);
 }
 
 void Stop60HZ(void)
@@ -1518,7 +1501,7 @@ void Stop60HZ(void)
         MultiMouseShutdown();
     }
 
-    MouseInput->Acquire();
+    IDirectInputDevice8_Acquire(MouseInput);
 
     ShutdownSemaphore();
 }
@@ -1963,9 +1946,9 @@ void UpdateVFrame(void)
     }
 
     if (!UsePrimaryBuffer) {
-        lpSoundBuffer->GetCurrentPosition(&CurrentPos, &WritePos);
+        IDirectSoundBuffer8_GetCurrentPosition(lpSoundBuffer, &CurrentPos, &WritePos);
     } else {
-        lpPrimaryBuffer->GetCurrentPosition(&CurrentPos, &WritePos);
+        IDirectSoundBuffer_GetCurrentPosition(lpPrimaryBuffer, &CurrentPos, &WritePos);
     }
 
     if (LastUsedPos <= CurrentPos) {
@@ -1995,11 +1978,11 @@ void UpdateVFrame(void)
         }
 
         if (!UsePrimaryBuffer) {
-            if (DS_OK != lpSoundBuffer->Lock(LastUsedPos, SPCSize * 2, &lpvPtr1, &dwBytes1, &lpvPtr2, &dwBytes2, 0)) {
+            if (DS_OK != IDirectSoundBuffer8_Lock(lpSoundBuffer, LastUsedPos, SPCSize * 2, &lpvPtr1, &dwBytes1, &lpvPtr2, &dwBytes2, 0)) {
                 return;
             }
         } else {
-            if (DS_OK != lpPrimaryBuffer->Lock(LastUsedPos, SPCSize * 2, &lpvPtr1, &dwBytes1, &lpvPtr2, &dwBytes2, 0)) {
+            if (DS_OK != IDirectSoundBuffer_Lock(lpPrimaryBuffer, LastUsedPos, SPCSize * 2, &lpvPtr1, &dwBytes1, &lpvPtr2, &dwBytes2, 0)) {
                 return;
             }
         }
@@ -2013,11 +1996,11 @@ void UpdateVFrame(void)
         }
 
         if (!UsePrimaryBuffer) {
-            if (DS_OK != lpSoundBuffer->Unlock(lpvPtr1, dwBytes1, lpvPtr2, dwBytes2)) {
+            if (DS_OK != IDirectSoundBuffer8_Unlock(lpSoundBuffer, lpvPtr1, dwBytes1, lpvPtr2, dwBytes2)) {
                 return;
             }
         } else {
-            if (DS_OK != lpPrimaryBuffer->Unlock(lpvPtr1, dwBytes1, lpvPtr2, dwBytes2)) {
+            if (DS_OK != IDirectSoundBuffer_Unlock(lpPrimaryBuffer, lpvPtr1, dwBytes1, lpvPtr2, dwBytes2)) {
                 return;
             }
         }
@@ -2414,9 +2397,9 @@ void WinUpdateDevices()
     keys = (unsigned char*)&pressed;
 
     if (KeyboardInput && InputEn == 1) {
-        if (FAILED(KeyboardInput->GetDeviceState(256, keys2))) {
-            KeyboardInput->Acquire();
-            if (FAILED(KeyboardInput->GetDeviceState(256, keys2))) {
+        if (FAILED(IDirectInputDevice8_GetDeviceState(KeyboardInput, 256, keys2))) {
+            IDirectInputDevice8_Acquire(KeyboardInput);
+            if (FAILED(IDirectInputDevice8_GetDeviceState(KeyboardInput, 256, keys2))) {
                 return;
             }
         }
@@ -2448,13 +2431,13 @@ void WinUpdateDevices()
                 keys[0x100 + i * 32 + j] = 0;
             }
 
-            JoystickInput[i]->Poll();
+            IDirectInputDevice8_Poll(JoystickInput[i]);
 
-            if (JoystickInput[i]->GetDeviceState(sizeof(DIJOYSTATE), &js[i]) == DIERR_INPUTLOST) {
+            if (IDirectInputDevice8_GetDeviceState(JoystickInput[i], sizeof(DIJOYSTATE), &js[i]) == DIERR_INPUTLOST) {
                 if (JoystickInput[i]) {
-                    JoystickInput[i]->Acquire();
+                    IDirectInputDevice8_Acquire(JoystickInput[i]);
                 }
-                if (FAILED(JoystickInput[i]->GetDeviceState(sizeof(DIJOYSTATE), &js[i]))) {
+                if (FAILED(IDirectInputDevice8_GetDeviceState(JoystickInput[i], sizeof(DIJOYSTATE), &js[i]))) {
                     return;
                 }
             }
@@ -2603,11 +2586,11 @@ s4 GetMouseX(void)
 
         if (TrapMouseCursor == 1) {
             if (abs((int)WinMouseMoveX) > (10 / MouseSensitivity) && T36HZEnabled == 1 && FullScreen == 0 && MouseButtonPressed == 0) {
-                MouseInput->Unacquire();
+                IDirectInputDevice8_Unacquire(MouseInput);
                 SetCursorPos(X + WindowWidth + 32, (int)(Y + (MouseY * WindowHeight / 224)));
             }
         } else if (FullScreen == 0 && device1 == 0 && device2 == 0 && MouseButtonPressed == 0 && GUIOn2 == 1) {
-            MouseInput->Unacquire();
+            IDirectInputDevice8_Unacquire(MouseInput);
             SetCursorPos(X + WindowWidth + 1, (int)(Y + (MouseY * WindowHeight / 224)));
         }
     }
@@ -2617,11 +2600,11 @@ s4 GetMouseX(void)
 
         if (TrapMouseCursor == 1) {
             if (abs((int)WinMouseMoveX) > (10 / MouseSensitivity) && T36HZEnabled == 1 && FullScreen == 0 && MouseButtonPressed == 0) {
-                MouseInput->Unacquire();
+                IDirectInputDevice8_Unacquire(MouseInput);
                 SetCursorPos(X - 32, (int)(Y + (MouseY * WindowHeight / 224)));
             }
         } else if (FullScreen == 0 && device1 == 0 && device2 == 0 && MouseButtonPressed == 0 && GUIOn2 == 1) {
-            MouseInput->Unacquire();
+            IDirectInputDevice8_Unacquire(MouseInput);
             SetCursorPos(X - 1, (int)(Y + (MouseY * WindowHeight / 224)));
         }
     }
@@ -2637,11 +2620,11 @@ s4 GetMouseY(void)
 
         if (TrapMouseCursor == 1) {
             if (abs((int)WinMouseMoveY) > (10 / MouseSensitivity) && T36HZEnabled == 1 && FullScreen == 0 && MouseButtonPressed == 0) {
-                MouseInput->Unacquire();
+                IDirectInputDevice8_Unacquire(MouseInput);
                 SetCursorPos((int)(X + (MouseX * WindowWidth / 256)), Y + WindowHeight + 32);
             }
         } else if (FullScreen == 0 && device1 == 0 && device2 == 0 && MouseButtonPressed == 0 && GUIOn2 == 1) {
-            MouseInput->Unacquire();
+            IDirectInputDevice8_Unacquire(MouseInput);
             SetCursorPos((int)(X + (MouseX * WindowWidth / 256)), Y + WindowHeight + 1);
         }
     }
@@ -2651,11 +2634,11 @@ s4 GetMouseY(void)
 
         if (TrapMouseCursor == 1) {
             if (abs((int)WinMouseMoveY) > (10 / MouseSensitivity) && T36HZEnabled == 1 && FullScreen == 0 && MouseButtonPressed == 0) {
-                MouseInput->Unacquire();
+                IDirectInputDevice8_Unacquire(MouseInput);
                 SetCursorPos((int)(X + (MouseX * WindowWidth / 256)), Y - 32);
             }
         } else if (FullScreen == 0 && device1 == 0 && device2 == 0 && MouseButtonPressed == 0 && GUIOn2 == 1) {
-            MouseInput->Unacquire();
+            IDirectInputDevice8_Unacquire(MouseInput);
             SetCursorPos((int)(X + (MouseX * WindowWidth / 256)), Y - 1);
         }
     }
@@ -2870,5 +2853,4 @@ void DockDebugger()
     GetWindowRect(hMainWindow, &MainWindowXY);
     DebugWindowHandle = FindWindow(NULL, "ZSNES Debugger");
     SetWindowPos(DebugWindowHandle, HWND_TOP, MainWindowXY.right, MainWindowXY.top, 0, 0, SWP_NOSIZE);
-}
 }

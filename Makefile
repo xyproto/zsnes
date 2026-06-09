@@ -37,10 +37,7 @@ ifeq ($(filter -j% --jobs%,$(MAKEFLAGS)),)
 endif
 
 CC ?= gcc
-CXX ?= g++
-CXX_HOST ?= $(CXX)
 CC_TARGET  ?= $(CC)
-CXX_TARGET ?= $(CXX)
 WINDRES ?= windres
 CC_TARGET_TRIPLE := $(shell $(CC_TARGET) -dumpmachine 2>/dev/null)
 WIN_PORT_AVAILABLE := $(if $(wildcard win/c_winintrf.c),yes,)
@@ -90,12 +87,10 @@ COMMON_FLAGS = $(ARCH_CFLAGS) -pthread -no-pie -O3 -fno-inline -fno-pic -D_FORTI
 
 # TODO: FreeBSD has a patch for being able to build without -fcommon
 CFLAGS += $(COMMON_FLAGS) -fcommon
-CXXFLAGS += $(COMMON_FLAGS)
 ifneq ($(ARCH),DARWIN)
 CFLAGS += -mno-sse -mno-sse2
-CXXFLAGS += -mno-sse -mno-sse2
 endif
-LDFLAGS += -Wl,--as-needed -no-pie -Wl,--gc-sections -lz
+LDFLAGS += -Wl,--as-needed -no-pie -Wl,--gc-sections -lz -lm
 # -O1 is mandatory for Assembly, for now
 ASMFLAGS += -O1 -w-orphan-labels -w-number-deprecated-hex -w-pp-macro-params-legacy
 
@@ -221,19 +216,16 @@ PREFIX ?= /usr
 
 ifneq ($(filter $(ARCH),LINUX FREEBSD OPENBSD NETBSD),)
   CFLAGS += -rdynamic
-  CXXFLAGS += -rdynamic
   LDFLAGS += -ldl -lX11
 endif
 ifeq ($(ARCH),DARWIN)
 ifneq ($(HOST_OS),DARWIN)
   CFLAGS += -rdynamic
-  CXXFLAGS += -rdynamic
   LDFLAGS += -ldl -lX11
 endif
 endif
 ifeq ($(ARCH),LINUX)
   CFLAGS += -L/usr/lib32
-  CXXFLAGS += -L/usr/lib32
   LDFLAGS += -L/usr/lib32
 endif
 
@@ -313,7 +305,6 @@ endif
 ifeq ($(ARCH),LINUX)
 ifeq ($(wildcard /usr/lib/i386-linux-gnu/.),)
   CFLAGS += -I/usr/include/x86_64-linux-gnu -I /usr/include/X11
-  CXXFLAGS += -I/usr/include/x86_64-linux-gnu -I /usr/include/X11
   ifeq ($(SDL_PKG),sdl3)
     LDFLAGS += -L/usr/lib/i386-linux-gnu -lSDL3 -lpng16 -lX11
   else
@@ -536,11 +527,11 @@ ifeq ($(ARCH),WIN)
 SRCS += mmlib/windows.c
 SRCS += win/zsnes.rc
 SRCS += win/c_winintrf.c
-SRCS += win/dx_ddraw.cpp
+SRCS += win/dx_ddraw.c
 SRCS += win/lib.c
 SRCS += win/safelib.c
 SRCS += win/winintrf.asm
-SRCS += win/winlink.cpp
+SRCS += win/winlink.c
 
 LDFLAGS += -ldxguid -ldinput -lgdi32 -lole32 -lwinmm
 
@@ -561,12 +552,10 @@ endif
 
 ASMFLAGS += $(CFGDEFS)
 CFLAGS += $(CFGDEFS)
-CXXFLAGS += $(CFGDEFS)
 DEPFLAGS_C = -MMD -MP -MF $(@:.o=.d) -MT $@
-DEPFLAGS_CXX = -MMD -MP -MF $(@:.o=.d) -MT $@
 
 HDRS := $(PSRS:.psr=.h)
-OBJS := $(filter %.o, $(SRCS:.asm=.o) $(SRCS:.c=.o) $(SRCS:.cpp=.o) $(SRCS:.rc=.o) $(PSRS:.psr=.o))
+OBJS := $(filter %.o, $(SRCS:.asm=.o) $(SRCS:.c=.o) $(SRCS:.rc=.o) $(PSRS:.psr=.o))
 DEPS := $(OBJS:.o=.d)
 
 .SUFFIXES:
@@ -583,22 +572,18 @@ debug: $(BINARY)
 
 $(BINARY): $(OBJS)
 	@echo '===> LD $@'
-	$(Q)$(CXX_TARGET) $(CFLAGS) $(OBJS) $(LDFLAGS) $(DEBUGFLAGS) -o $@
+	$(Q)$(CC_TARGET) $(CFLAGS) $(OBJS) $(LDFLAGS) $(DEBUGFLAGS) -o $@
 
 %.o: %.asm
 	@echo '===> ASM $<'
 	$(Q)$(ASM) $(ASMFLAGS) $(DEBUGFLAGS) -M -o $@ $< > $(@:.o=.d) || rm -f $(@:.o=.d)
 	$(Q)$(ASM) $(ASMFLAGS) $(DEBUGFLAGS) -o $@ $<
 
-$(filter %.o, $(SRCS:.c=.o) $(SRCS:.cpp=.o)): $(HDRS)
+$(filter %.o, $(SRCS:.c=.o)): $(HDRS)
 
 %.o: %.c
 	@echo '===> CC $<'
 	$(Q)$(CC_TARGET) $(CFLAGS) $(DEBUGFLAGS) -c $(DEPFLAGS_C) -o $@ $<
-
-%.o: %.cpp
-	@echo '===> CXX $<'
-	$(Q)$(CXX_TARGET) $(CXXFLAGS) $(DEBUGFLAGS) -c $(DEPFLAGS_CXX) -o $@ $<
 
 %.o: %.rc
 	@echo '===> RES $<'
@@ -636,10 +621,7 @@ info:
 	@echo "BINARY        = $(BINARY)"
 	@echo "ASM           = $(ASM)"
 	@echo "CC            = $(CC)"
-	@echo "CXX           = $(CXX)"
-	@echo "CXX_HOST      = $(CXX_HOST)"
 	@echo "CC_TARGET     = $(CC_TARGET)"
-	@echo "CXX_TARGET    = $(CXX_TARGET)"
 	@echo "PSR           = $(PSR)"
 	@echo "WINDRES       = $(WINDRES)"
 	@echo "PNG_CONFIG    = $(PNG_CONFIG)"
@@ -650,8 +632,6 @@ info:
 	@echo "CFLAGS_SDL    = $(CFLAGS_SDL)"
 	@echo "LDFLAGS_SDL   = $(LDFLAGS_SDL)"
 	@echo "CFLAGS        = $(CFLAGS)"
-	@echo "CCFLAGS       = $(CCFLAGS)"
-	@echo "CXXFLAGS      = $(CXXFLAGS)"
 	@echo "LDFLAGS       = $(LDFLAGS)"
 
 fmt:

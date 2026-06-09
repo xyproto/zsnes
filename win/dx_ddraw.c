@@ -22,19 +22,20 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define DIRECTINPUT_VERSION 0x0800
 #define DIRECTSOUND_VERSION 0x0800
 #define __STDC_CONSTANT_MACROS
+#define COBJMACROS
 
-extern "C" {
+#include <windows.h>
+#include <ddraw.h>
+#include <stdio.h>
+
 #include "../c_intrf.h"
 #include "../cfg.h"
 #include "../intrf.h"
 #include "../link.h"
-#include <ddraw.h>
-#include <stdio.h>
-#include <windows.h>
-void zexit(), zexit_error();
-}
-
 #include "winlink.h"
+
+void zexit(void);
+void zexit_error(void);
 
 static LPDIRECTDRAW BasiclpDD = NULL;
 static LPDIRECTDRAW7 lpDD = NULL;
@@ -59,39 +60,39 @@ void DDDrawScreen()
 {
     if (FullScreen == 1) {
         if (TripleBufferWin == 1 || KitchenSync == 1 || (KitchenSyncPAL == 1 && totlines == 314)) {
-            if (DD_BackBuffer->Blt(&rcWindow, DD_CFB, &BlitArea, DDBLT_WAIT, NULL) == DDERR_SURFACELOST) {
-                DD_Primary->Restore();
+            if (IDirectDrawSurface7_Blt(DD_BackBuffer, &rcWindow, DD_CFB, &BlitArea, DDBLT_WAIT, NULL) == DDERR_SURFACELOST) {
+                IDirectDrawSurface7_Restore(DD_Primary);
             }
 
-            if (DD_Primary->Flip(NULL, DDFLIP_WAIT) == DDERR_SURFACELOST) {
-                DD_Primary->Restore();
+            if (IDirectDrawSurface7_Flip(DD_Primary, NULL, DDFLIP_WAIT) == DDERR_SURFACELOST) {
+                IDirectDrawSurface7_Restore(DD_Primary);
             }
 
             if (KitchenSync == 1 || (KitchenSyncPAL == 1 && totlines == 314)) {
-                if (DD_BackBuffer->Blt(&rcWindow, DD_CFB, &BlitArea, DDBLT_WAIT, NULL) == DDERR_SURFACELOST) {
-                    DD_Primary->Restore();
+                if (IDirectDrawSurface7_Blt(DD_BackBuffer, &rcWindow, DD_CFB, &BlitArea, DDBLT_WAIT, NULL) == DDERR_SURFACELOST) {
+                    IDirectDrawSurface7_Restore(DD_Primary);
                 }
 
-                if (DD_Primary->Flip(NULL, DDFLIP_WAIT) == DDERR_SURFACELOST) {
-                    DD_Primary->Restore();
+                if (IDirectDrawSurface7_Flip(DD_Primary, NULL, DDFLIP_WAIT) == DDERR_SURFACELOST) {
+                    IDirectDrawSurface7_Restore(DD_Primary);
                 }
             }
         } else {
             if (vsyncon == 1 && curblank != 0x40) {
-                if (lpDD->WaitForVerticalBlank(DDWAITVB_BLOCKBEGIN, NULL) != DD_OK) {
+                if (IDirectDraw7_WaitForVerticalBlank(lpDD, DDWAITVB_BLOCKBEGIN, NULL) != DD_OK) {
                     DDrawError();
                 }
             }
-            DD_Primary->Blt(&rcWindow, DD_CFB, &BlitArea, DDBLT_WAIT, NULL);
-            DD_Primary->Restore();
+            IDirectDrawSurface7_Blt(DD_Primary, &rcWindow, DD_CFB, &BlitArea, DDBLT_WAIT, NULL);
+            IDirectDrawSurface7_Restore(DD_Primary);
         }
     } else {
         if (vsyncon == 1) {
-            if (lpDD->WaitForVerticalBlank(DDWAITVB_BLOCKBEGIN, NULL) != DD_OK) {
+            if (IDirectDraw7_WaitForVerticalBlank(lpDD, DDWAITVB_BLOCKBEGIN, NULL) != DD_OK) {
                 DDrawError();
             }
         }
-        DD_Primary->Blt(&rcWindow, AltSurface == 0 ? DD_CFB : DD_CFB16, &BlitArea, DDBLT_WAIT, NULL);
+        IDirectDrawSurface7_Blt(DD_Primary, &rcWindow, AltSurface == 0 ? DD_CFB : DD_CFB16, &BlitArea, DDBLT_WAIT, NULL);
     }
 }
 
@@ -105,15 +106,15 @@ DWORD LockSurface()
             ddsd.dwSize = sizeof(ddsd);
             ddsd.dwFlags = DDSD_LPSURFACE | DDSD_PITCH;
 
-            hRes = DD_CFB->Lock(NULL, &ddsd, DDLOCK_WAIT, NULL);
+            hRes = IDirectDrawSurface7_Lock(DD_CFB, NULL, &ddsd, DDLOCK_WAIT, NULL);
 
             if (hRes == DD_OK) {
                 SurfBuf = (BYTE*)ddsd.lpSurface;
                 return (ddsd.lPitch);
             } else {
                 if (hRes == DDERR_SURFACELOST) {
-                    DD_Primary->Restore();
-                    DD_CFB->Restore();
+                    IDirectDrawSurface7_Restore(DD_Primary);
+                    IDirectDrawSurface7_Restore(DD_CFB);
                     Clear2xSaIBuffer();
                 }
                 return (0);
@@ -127,15 +128,15 @@ DWORD LockSurface()
             ddsd.dwSize = sizeof(ddsd);
             ddsd.dwFlags = DDSD_LPSURFACE | DDSD_PITCH;
 
-            hRes = DD_CFB16->Lock(NULL, &ddsd, DDLOCK_WAIT, NULL);
+            hRes = IDirectDrawSurface7_Lock(DD_CFB16, NULL, &ddsd, DDLOCK_WAIT, NULL);
 
             if (hRes == DD_OK) {
                 SurfBuf = (BYTE*)ddsd.lpSurface;
                 return (ddsd.lPitch);
             } else {
                 if (hRes == DDERR_SURFACELOST) {
-                    DD_Primary->Restore();
-                    DD_CFB16->Restore();
+                    IDirectDrawSurface7_Restore(DD_Primary);
+                    IDirectDrawSurface7_Restore(DD_CFB16);
                     Clear2xSaIBuffer();
                 }
                 return (0);
@@ -149,9 +150,9 @@ DWORD LockSurface()
 void UnlockSurface()
 {
     if (AltSurface == 0) {
-        DD_CFB->Unlock((struct tagRECT*)ddsd.lpSurface);
+        IDirectDrawSurface7_Unlock(DD_CFB, (struct tagRECT*)ddsd.lpSurface);
     } else {
-        DD_CFB16->Unlock((struct tagRECT*)ddsd.lpSurface);
+        IDirectDrawSurface7_Unlock(DD_CFB16, (struct tagRECT*)ddsd.lpSurface);
     }
 }
 
@@ -312,21 +313,21 @@ int InitDirectDraw()
         }
     }
 
-    if (pDirectDrawCreateEx(NULL, (void**)&lpDD, IID_IDirectDraw7, NULL) != DD_OK) {
+    if (pDirectDrawCreateEx(NULL, (void**)&lpDD, &IID_IDirectDraw7, NULL) != DD_OK) {
         MessageBox(NULL, "DirectDrawCreateEx failed.", "DirectDraw Error", MB_ICONERROR);
         return FALSE;
     }
 
     if (FullScreen == 1) {
-        if (lpDD->SetCooperativeLevel(hMainWindow,
+        if (IDirectDraw7_SetCooperativeLevel(lpDD, hMainWindow,
                 DDSCL_FULLSCREEN | DDSCL_EXCLUSIVE | DDSCL_ALLOWREBOOT)
             != DD_OK) {
             MessageBox(NULL, "IDirectDraw7::SetCooperativeLevel failed.", "DirectDraw Error",
                 MB_ICONERROR);
             return FALSE;
         }
-        if (lpDD->SetDisplayMode(WindowWidth, WindowHeight, 16, Refresh, 0) != DD_OK) {
-            if (lpDD->SetDisplayMode(WindowWidth, WindowHeight, 16, 0, 0) != DD_OK) {
+        if (IDirectDraw7_SetDisplayMode(lpDD, WindowWidth, WindowHeight, 16, Refresh, 0) != DD_OK) {
+            if (IDirectDraw7_SetDisplayMode(lpDD, WindowWidth, WindowHeight, 16, 0, 0) != DD_OK) {
                 MessageBox(
                     NULL,
                     "IDirectDraw7::SetDisplayMode failed.\nMake sure your video card supports this mode.",
@@ -339,7 +340,7 @@ int InitDirectDraw()
             }
         }
     } else {
-        if (lpDD->SetCooperativeLevel(hMainWindow, DDSCL_NORMAL) != DD_OK) {
+        if (IDirectDraw7_SetCooperativeLevel(lpDD, hMainWindow, DDSCL_NORMAL) != DD_OK) {
             MessageBox(NULL, "IDirectDraw7::SetCooperativeLevel failed.", "DirectDraw Error",
                 MB_ICONERROR);
             return FALSE;
@@ -358,12 +359,12 @@ int InitDirectDraw()
         ddsd2.ddsCaps.dwCaps |= DDSCAPS_FLIP | DDSCAPS_COMPLEX;
     }
 
-    HRESULT hRes = lpDD->CreateSurface(&ddsd2, &DD_Primary, NULL);
+    HRESULT hRes = IDirectDraw7_CreateSurface(lpDD, &ddsd2, &DD_Primary, NULL);
 
     if (FullScreen == 1) {
         if ((hRes == DDERR_OUTOFMEMORY) || (hRes == DDERR_OUTOFVIDEOMEMORY)) {
             ddsd2.dwBackBufferCount = 1;
-            hRes = lpDD->CreateSurface(&ddsd2, &DD_Primary, NULL);
+            hRes = IDirectDraw7_CreateSurface(lpDD, &ddsd2, &DD_Primary, NULL);
         }
     }
 
@@ -374,32 +375,32 @@ int InitDirectDraw()
 
     if (FullScreen == 1) {
         ddsd2.ddsCaps.dwCaps = DDSCAPS_BACKBUFFER;
-        if (DD_Primary->GetAttachedSurface(&ddsd2.ddsCaps, &DD_BackBuffer) != DD_OK) {
+        if (IDirectDrawSurface7_GetAttachedSurface(DD_Primary, &ddsd2.ddsCaps, &DD_BackBuffer) != DD_OK) {
             MessageBox(NULL, "IDirectDrawSurface7::GetAttachedSurface failed.", "DirectDraw Error",
                 MB_ICONERROR);
             return FALSE;
         }
     } else {
-        if (lpDD->CreateClipper(0, &lpDDClipper, NULL) != DD_OK) {
-            lpDD->Release();
+        if (IDirectDraw7_CreateClipper(lpDD, 0, &lpDDClipper, NULL) != DD_OK) {
+            IDirectDraw7_Release(lpDD);
             lpDD = NULL;
             return FALSE;
         }
 
-        if (lpDDClipper->SetHWnd(0, hMainWindow) != DD_OK) {
-            lpDD->Release();
+        if (IDirectDrawClipper_SetHWnd(lpDDClipper, 0, hMainWindow) != DD_OK) {
+            IDirectDraw7_Release(lpDD);
             lpDD = NULL;
             return FALSE;
         }
 
-        if (DD_Primary->SetClipper(lpDDClipper) != DD_OK) {
+        if (IDirectDrawSurface7_SetClipper(DD_Primary, lpDDClipper) != DD_OK) {
             return FALSE;
         }
     }
 
     format.dwSize = sizeof(DDPIXELFORMAT);
 
-    if (DD_Primary->GetPixelFormat(&format) != DD_OK) {
+    if (IDirectDrawSurface7_GetPixelFormat(DD_Primary, &format) != DD_OK) {
         MessageBox(NULL, "IDirectDrawSurface7::GetPixelFormat failed.", "DirectDraw Error",
             MB_ICONERROR);
         return FALSE;
@@ -425,7 +426,7 @@ int InitDirectDraw()
     ddsd2.dwHeight = SurfaceY;
 
     // create drawing surface
-    if (lpDD->CreateSurface(&ddsd2, &DD_CFB, NULL) != DD_OK) {
+    if (IDirectDraw7_CreateSurface(lpDD, &ddsd2, &DD_CFB, NULL) != DD_OK) {
         MessageBox(NULL, "IDirectDraw7::CreateSurface failed.", "DirectDraw Error", MB_ICONERROR);
         return FALSE;
     }
@@ -445,7 +446,7 @@ int InitDirectDraw()
         ddsd2.ddpfPixelFormat.dwGBitMask = 0x07E0;
         ddsd2.ddpfPixelFormat.dwBBitMask = 0x001F;
 
-        if (lpDD->CreateSurface(&ddsd2, &DD_CFB16, NULL) != DD_OK) {
+        if (IDirectDraw7_CreateSurface(lpDD, &ddsd2, &DD_CFB16, NULL) != DD_OK) {
             MessageBox(
                 NULL,
                 "IDirectDraw7::CreateSurface failed. You should update your video card drivers. Alternatively, you could use a 16-bit desktop or use a non-D mode.",
@@ -464,27 +465,27 @@ int InitDirectDraw()
 void ReleaseDirectDraw()
 {
     if (DD_CFB) {
-        DD_CFB->Release();
+        IDirectDrawSurface7_Release(DD_CFB);
         DD_CFB = NULL;
     }
 
     if (DD_CFB16) {
-        DD_CFB16->Release();
+        IDirectDrawSurface7_Release(DD_CFB16);
         DD_CFB16 = NULL;
     }
 
     if (lpDDClipper) {
-        lpDDClipper->Release();
+        IDirectDrawClipper_Release(lpDDClipper);
         lpDDClipper = NULL;
     }
 
     if (DD_Primary) {
-        DD_Primary->Release();
+        IDirectDrawSurface7_Release(DD_Primary);
         DD_Primary = NULL;
     }
 
     if (lpDD) {
-        lpDD->Release();
+        IDirectDraw7_Release(lpDD);
         lpDD = NULL;
     }
 }
@@ -499,35 +500,35 @@ void clear_ddraw()
 
         if (TripleBufferWin == 1) {
             if ((DD_Primary != NULL) && (DD_BackBuffer != NULL)) {
-                if (DD_BackBuffer->Blt(NULL, NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &ddbltfx) == DDERR_SURFACELOST) {
-                    DD_Primary->Restore();
+                if (IDirectDrawSurface7_Blt(DD_BackBuffer, NULL, NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &ddbltfx) == DDERR_SURFACELOST) {
+                    IDirectDrawSurface7_Restore(DD_Primary);
                 }
 
-                if (DD_Primary->Flip(NULL, DDFLIP_WAIT) == DDERR_SURFACELOST) {
-                    DD_Primary->Restore();
+                if (IDirectDrawSurface7_Flip(DD_Primary, NULL, DDFLIP_WAIT) == DDERR_SURFACELOST) {
+                    IDirectDrawSurface7_Restore(DD_Primary);
                 }
 
-                if (DD_BackBuffer->Blt(NULL, NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &ddbltfx) == DDERR_SURFACELOST) {
-                    DD_Primary->Restore();
+                if (IDirectDrawSurface7_Blt(DD_BackBuffer, NULL, NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &ddbltfx) == DDERR_SURFACELOST) {
+                    IDirectDrawSurface7_Restore(DD_Primary);
                 }
 
-                if (DD_Primary->Flip(NULL, DDFLIP_WAIT) == DDERR_SURFACELOST) {
-                    DD_Primary->Restore();
+                if (IDirectDrawSurface7_Flip(DD_Primary, NULL, DDFLIP_WAIT) == DDERR_SURFACELOST) {
+                    IDirectDrawSurface7_Restore(DD_Primary);
                 }
 
-                if (DD_BackBuffer->Blt(NULL, NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &ddbltfx) == DDERR_SURFACELOST) {
-                    DD_Primary->Restore();
+                if (IDirectDrawSurface7_Blt(DD_BackBuffer, NULL, NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &ddbltfx) == DDERR_SURFACELOST) {
+                    IDirectDrawSurface7_Restore(DD_Primary);
                 }
             }
         } else {
             if (DD_Primary != NULL) {
                 if (vsyncon == 1) {
-                    if (lpDD->WaitForVerticalBlank(DDWAITVB_BLOCKBEGIN, NULL) != DD_OK) {
+                    if (IDirectDraw7_WaitForVerticalBlank(lpDD, DDWAITVB_BLOCKBEGIN, NULL) != DD_OK) {
                         DDrawError();
                     }
                 }
-                if (DD_Primary->Blt(NULL, NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &ddbltfx) == DDERR_SURFACELOST) {
-                    DD_Primary->Restore();
+                if (IDirectDrawSurface7_Blt(DD_Primary, NULL, NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &ddbltfx) == DDERR_SURFACELOST) {
+                    IDirectDrawSurface7_Restore(DD_Primary);
                 }
             }
         }
