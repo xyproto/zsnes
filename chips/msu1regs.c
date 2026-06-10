@@ -13,8 +13,9 @@
  * msu1statecontrol — write MSU_StateControl, then call MSU1HandleControlBits
  */
 
-#include "msu1emu.h"
 #include <stdint.h>
+
+#define MSU_STATUS_DATA_BUSY 0x80
 
 extern uint8_t MSU_StatusRead;
 extern uint32_t MSU_Data_SeekPort;
