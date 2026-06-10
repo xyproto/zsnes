@@ -73,7 +73,6 @@ extern uint8_t MovieForcedLengthEnabled;
 extern char* STCart2;
 extern uint32_t MovieForcedLength;
 void zstart();
-void zexit_error();
 
 #ifdef __WIN32__
 void InitDebugger();
@@ -400,8 +399,6 @@ void ConvertJoyMap2()
 
 struct backup_cmdline_vars saved_cmdline_vars;
 
-#define BACKUP_HELP_DOS(func)
-
 #ifdef __WIN32__
 #define BACKUP_HELP_WIN(func) \
     func(KitchenSync);        \
@@ -422,13 +419,12 @@ struct backup_cmdline_vars saved_cmdline_vars;
 #define BACKUP_HELP_SDL(func)
 #endif
 
-#define BACKUP_HELP(func)                 \
-    func(guioff)                          \
-        func(per2exec)                    \
-            func(HacksDisable)            \
-                BACKUP_HELP_DOS(func)     \
-                    BACKUP_HELP_WIN(func) \
-                        BACKUP_HELP_SDL(func)
+#define BACKUP_HELP(func)             \
+    func(guioff)                      \
+        func(per2exec)                \
+            func(HacksDisable)        \
+                BACKUP_HELP_WIN(func) \
+                    BACKUP_HELP_SDL(func)
 
 #define BACKUP_VAR(var) saved_cmdline_vars._##var = var;
 static void backup_all_vars() {
