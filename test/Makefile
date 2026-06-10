@@ -20,6 +20,7 @@ ST11      := zsnes_st11_test
 OBC1      := zsnes_obc1_test
 MSU1      := zsnes_msu1_test
 DSP2      := zsnes_dsp2_test
+SAI       := zsnes_2xsaiw_test
 SRC       := main.c
 NETPLAY_SRC := netplay_test.c
 ST10_SRC  := st10_test.c
@@ -27,11 +28,12 @@ ST11_SRC  := st11_test.c
 OBC1_SRC  := obc1_test.c
 MSU1_SRC  := msu1_test.c
 DSP2_SRC  := dsp2_test.c
+SAI_SRC   := 2xsaiw_test.c
 OBJS      := ../zpath.o
 
 .PHONY: all run clean
 
-all: $(BIN) $(NETPLAY) $(ST10) $(ST11) $(OBC1) $(MSU1) $(DSP2)
+all: $(BIN) $(NETPLAY) $(ST10) $(ST11) $(OBC1) $(MSU1) $(DSP2) $(SAI)
 
 $(BIN): $(SRC) zstest.h $(OBJS)
 	$(CC) $(CFLAGS) $(SRC) $(OBJS) -no-pie -Wl,--gc-sections -o $(BIN)
@@ -54,6 +56,9 @@ $(MSU1): $(MSU1_SRC) zstest.h ../chips/msu1regs.c
 $(DSP2): $(DSP2_SRC) zstest.h ../chips/dsp2proc.c
 	$(CC) $(CFLAGS) $(DSP2_SRC) ../chips/dsp2proc.c -no-pie -o $(DSP2)
 
+$(SAI): $(SAI_SRC) zstest.h ../video/2xsaiw.c
+	$(CC) $(CFLAGS) $(SAI_SRC) ../video/2xsaiw.c -no-pie -o $(SAI)
+
 run: all
 	@./$(BIN)
 	@./$(NETPLAY)
@@ -62,6 +67,7 @@ run: all
 	@./$(OBC1)
 	@./$(MSU1)
 	@./$(DSP2)
+	@./$(SAI)
 
 clean:
-	rm -f $(BIN) $(NETPLAY) $(ST10) $(ST11) $(OBC1) $(MSU1) $(DSP2)
+	rm -f $(BIN) $(NETPLAY) $(ST10) $(ST11) $(OBC1) $(MSU1) $(DSP2) $(SAI)
