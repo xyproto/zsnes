@@ -1649,33 +1649,22 @@ void DoRumble(void)
     }
 
     if (RumbleData == 0xFFFF) {
-        printf("Null rumble data hit!\n");
         RumbleData = 0;
-    }
-
-    if (RumbleData != 0) {
-        printf("RumbleData: $%X\n", RumbleData);
     }
 
     if ((RumbleData & 0xFF00) == 0x7200) {
-        printf("Rumble sentry hit!\n");
         u2 RumbleLeft = ((RumbleData & 0x000F) * 4369);
-        printf("Left: $%X\n", RumbleLeft);
         u2 RumbleRight = (((RumbleData & 0x00F0) >> 4) * 4369);
-        printf("Right: $%X\n", RumbleRight);
-        bool result = SDL_JoystickRumble(JoystickInput[0], RumbleLeft, RumbleRight, 500);
+        SDL_JoystickRumble(JoystickInput[0], RumbleLeft, RumbleRight, 500);
         RumbleTimer++;
-
         RumbleData = 0;
-
-        if (result == true) {
-            printf("Rumble started!\n");
-        }
     }
 }
 
 void UpdateVFrame(void)
 {
+    extern u1 MultiTap;
+
     // Quick fix for GUI CPU usage
     if (GUIOn || GUIOn2 || EMUPause) {
         usleep(6000);
@@ -1684,7 +1673,7 @@ void UpdateVFrame(void)
     CheckTimers();
     Main_Proc();
 
-    if (SNESRumble) {
+    if (SNESRumble && !MultiTap) {
         DoRumble();
     } else {
         // Stop vibration

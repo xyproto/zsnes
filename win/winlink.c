@@ -1680,34 +1680,22 @@ void DoRumble(void)
     }
 
     if (RumbleData == 0xFFFF) {
-        printf("Null rumble data hit!\n");
         RumbleData = 0;
-    }
-
-    if (RumbleData != 0) {
-        printf("RumbleData: $%X\n", RumbleData);
     }
 
     if ((RumbleData & 0xFF00) == 0x7200) {
-        printf("Rumble sentry hit!\n");
         vibration.wLeftMotorSpeed = ((RumbleData & 0x000F) * 4369);
-        printf("Left: $%X\n", vibration.wLeftMotorSpeed);
         vibration.wRightMotorSpeed = (((RumbleData & 0x00F0) >> 4) * 4369);
-        printf("Right: $%X\n", vibration.wRightMotorSpeed);
-        DWORD result = XInputSetState(0, &vibration); // controller index 0
+        XInputSetState(0, &vibration); // controller index 0
         RumbleTimer++;
-
         RumbleData = 0;
-
-        if (result == ERROR_SUCCESS) {
-            printf("Rumble started!\n");
-        }
     }
 }
 
 volatile int SPCSize;
 void UpdateVFrame(void)
 {
+    extern u1 MultiTap;
     static uint32_t LastUsedPos = 0;
 
     int DataNeeded;
@@ -1715,7 +1703,7 @@ void UpdateVFrame(void)
 
     // if (StereoSound==1) SPCSize=256;
 
-    if (SNESRumble) {
+    if (SNESRumble && !MultiTap) {
         DoRumble();
     } else {
         // Stop vibration
