@@ -100,8 +100,6 @@ XINPUT_STATE xstate[4];
 BOOL XInputConnected[4];
 DWORD result;
 
-DWORD CurrentJoy = 0;
-
 BYTE BitDepth;
 BYTE BackColor = 0;
 DEVMODE mode;
@@ -1109,7 +1107,7 @@ static bool InitInput(HINSTANCE const hInst)
         return FALSE;
     }
 
-    for (DWORD i = 0; i < 4; i++) {
+    for (int i = 0; i < 4; i++) {
         ZeroMemory(&xstate[i], sizeof(XINPUT_STATE));
         result = XInputGetState(i, &xstate[i]);
         XInputConnected[i] = (result == ERROR_SUCCESS);
@@ -1125,6 +1123,7 @@ void TestJoy()
     int i;
 
     for (i = 0; i < 4; i++) {
+        result = XInputGetState(i, &xstate[i]);
         if (result != ERROR_SUCCESS) {
             continue;
         }
@@ -2136,8 +2135,11 @@ void WinUpdateDevices()
     unsigned char* keys;
     unsigned char keys2[256];
 
-    result = XInputGetState(i, &xstate[i]);
-    XInputConnected[i] = (result == ERROR_SUCCESS);
+    for (int i = 0; i < 4; i++) {
+        //ZeroMemory(&xstate[i], sizeof(XINPUT_STATE));
+        result = XInputGetState(i, &xstate[i]);
+        XInputConnected[i] = (result == ERROR_SUCCESS);
+    }
 
     for (i = 0; i < 256; i++) {
         keys2[i] = 0;
@@ -2175,10 +2177,6 @@ void WinUpdateDevices()
 
     for (i = 0; i < 4; i++) {
         if (XInputConnected[i]) {
-
-            if (result != ERROR_SUCCESS) {
-                continue;
-            }
 
             if (xstate[i].Gamepad.sThumbLX > ANALOG_DEADZONE) {
                 keys[0x100 + i * 32 + 0] = 1;
