@@ -1643,9 +1643,10 @@ void DoRumble(void)
     extern u2 RumbleData;
     extern u1 RumbleTimer;
 
-    if (RumbleTimer == 60) {
+    if (RumbleTimer >= 60) {
         // Stop vibration
         SDL_JoystickRumble(JoystickInput[0], 0, 0, 1);
+        RumbleTimer = 0;
     }
 
     if (RumbleData == 0xFFFF) {
