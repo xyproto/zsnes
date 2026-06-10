@@ -1673,10 +1673,11 @@ void DoRumble(void)
     extern u2 RumbleData;
     extern u1 RumbleTimer;
 
-    if (RumbleTimer == 60) {
+    if (RumbleTimer >= 60) {
         // Stop vibration
         ZeroMemory(&vibration, sizeof(XINPUT_VIBRATION));
         XInputSetState(0, &vibration);
+		RumbleTimer = 0;
     }
 
     if (RumbleData == 0xFFFF) {
