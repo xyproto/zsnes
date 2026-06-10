@@ -1641,13 +1641,6 @@ static void sem_sleep_die()
 void DoRumble(void)
 {
     extern u2 RumbleData;
-    extern u1 RumbleTimer;
-
-    if (RumbleTimer >= 60) {
-        // Stop vibration
-        SDL_JoystickRumble(JoystickInput[0], 0, 0, 1);
-        RumbleTimer = 0;
-    }
 
     if (RumbleData == 0xFFFF) {
         RumbleData = 0;
@@ -1656,8 +1649,7 @@ void DoRumble(void)
     if ((RumbleData & 0xFF00) == 0x7200) {
         u2 RumbleLeft = ((RumbleData & 0x000F) * 4369);
         u2 RumbleRight = (((RumbleData & 0x00F0) >> 4) * 4369);
-        SDL_JoystickRumble(JoystickInput[0], RumbleLeft, RumbleRight, 500);
-        RumbleTimer++;
+        SDL_JoystickRumble(JoystickInput[0], RumbleLeft, RumbleRight, 600);
         RumbleData = 0;
     }
 }
