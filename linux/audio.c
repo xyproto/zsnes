@@ -21,8 +21,10 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #include "../gblhdr.h"
 #include "../gblvars.h"
+#include <fcntl.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <unistd.h>
 
 #if defined(__LIBAO__) || defined(__PIPEWIRE__)
 #include <pthread.h>
@@ -63,6 +65,48 @@ static int pipewire_inited = 0;
 static uint32_t pipewire_target_frames = 256;
 static volatile bool pipewire_shutting_down = false;
 bool sound_pipewire = false;
+
+/*
+ * Producer/consumer decoupling, modeled after the libao backend.
+ *
+ * The PipeWire RT process callback used to call MixSoundBlock() directly,
+ * which (a) ran the SNES audio synthesis on a real-time graph thread with a
+ * sub-millisecond budget and (b) had no buffer headroom, so any scheduling
+ * jitter produced an underrun and an audible click.
+ *
+ * Instead, a dedicated SoundThread_pipewire producer generates samples ahead
+ * of time into pw_ring, and PipeWireProcess just memcpys the requested
+ * number of bytes out of the ring (filling any shortfall with silence).
+ * This mirrors how libao's blocking ao_play decouples the SNES synthesis
+ * loop from the device's actual playback timing.
+ */
+static pthread_t pw_producer_thread;
+static int pw_producer_running = 0;
+static volatile int pw_producer_terminated = 0;
+static pthread_mutex_t pw_audio_mutex = PTHREAD_MUTEX_INITIALIZER;
+static pthread_cond_t pw_audio_wait = PTHREAD_COND_INITIALIZER;
+static volatile unsigned int pw_samples_waiting = 0;
+
+static uint8_t* pw_ring = NULL;
+static uint32_t pw_ring_size = 0;
+static pthread_mutex_t pw_ring_mutex = PTHREAD_MUTEX_INITIALIZER;
+static volatile uint32_t pw_ring_head = 0;
+static volatile uint32_t pw_ring_tail = 0;
+
+/* Smart adaptation state.  We let PipeWire negotiate its own quantum and
+ * learn it on the first process callback (or via the param_changed event),
+ * then grow the ring on persistent underruns up to a hard cap. */
+static volatile uint32_t pw_observed_quantum_frames = 0;
+static volatile uint32_t pw_ring_min_frames = 0;
+static volatile uint32_t pw_ring_max_frames = 0;
+static uint32_t pw_stride_bytes = 4;
+static uint32_t pw_rate_hz = 48000;
+static int pw_user_forced_latency = 0;
+static int pw_stats_enabled = 0;
+static volatile uint64_t pw_stat_cycles = 0;
+static volatile uint64_t pw_stat_underruns = 0;
+static volatile uint64_t pw_stat_silent_pads = 0;
+static volatile uint64_t pw_stat_resizes = 0;
 #endif
 
 uint8_t* sdl_audio_buffer = NULL;
@@ -236,20 +280,64 @@ static void* SoundThread_ao(void* useless)
     return (0);
 }
 
+/* Preferred libao live drivers when "-ad ao" is given, in order.
+ * Order: pulse (modern Linux), alsa (Linux), sndio (OpenBSD/FreeBSD),
+ * oss (FreeBSD/legacy), sun (NetBSD/Solaris), macosx (macOS),
+ * wmm (Windows). The probe is silent, only the chosen one is announced. */
+static const char* const ao_preferred_drivers[] = {
+    "pulse", "alsa", "sndio", "oss", "sun", "macosx", "wmm", NULL
+};
+
+/* Temporarily redirect stderr to /dev/null so libao's chatty plugins
+ * (e.g. ao_alsa) stay quiet during speculative probes. */
+static int ao_stderr_silence(void)
+{
+    int saved = dup(STDERR_FILENO);
+    int devnull = open("/dev/null", O_WRONLY);
+    if (devnull >= 0) {
+        dup2(devnull, STDERR_FILENO);
+        close(devnull);
+    }
+    return saved;
+}
+
+static void ao_stderr_restore(int saved)
+{
+    if (saved >= 0) {
+        dup2(saved, STDERR_FILENO);
+        close(saved);
+    }
+}
+
+static ao_device* SoundInit_ao_try_open(int driver_id, ao_sample_format* fmt, bool quiet)
+{
+    ao_device* dev;
+    int saved = -1;
+    if (quiet) {
+        saved = ao_stderr_silence();
+    }
+    dev = ao_open_live(driver_id, fmt, 0);
+    if (quiet) {
+        ao_stderr_restore(saved);
+    }
+    return dev;
+}
+
 static int SoundInit_ao_driver(const char* driver_name)
 {
     int driver_id = -1;
+    bool walk_preferred = false;
+    ao_sample_format driver_format = { 0 };
 
     if (!driver_name || !strcmp(driver_name, "auto")) {
-        driver_id = ao_default_driver_id();
+        walk_preferred = true;
     } else {
         driver_id = ao_driver_id(driver_name);
-    }
-    if (driver_id < 0) {
-        return (false);
+        if (driver_id < 0) {
+            return (false);
+        }
     }
 
-    ao_sample_format driver_format = { 0 };
     driver_format.bits = 16;
     driver_format.channels = StereoSound + 1;
     driver_format.rate = RATE;
@@ -258,6 +346,7 @@ static int SoundInit_ao_driver(const char* driver_name)
 
     if (audio_device) {
         ao_close(audio_device);
+        audio_device = NULL;
     } else {
         if (pthread_create(&audio_thread, 0, SoundThread_ao, 0)) {
             puts("pthread_create() failed.");
@@ -265,15 +354,34 @@ static int SoundInit_ao_driver(const char* driver_name)
         InitSampleControl();
     }
 
-    // ao_option driver_options = { "buf_size", "32768", 0 };
+    if (walk_preferred) {
+        int i;
+        for (i = 0; ao_preferred_drivers[i]; i++) {
+            int id = ao_driver_id(ao_preferred_drivers[i]);
+            if (id < 0) {
+                continue;
+            }
+            audio_device = SoundInit_ao_try_open(id, &driver_format, true);
+            if (audio_device) {
+                driver_id = id;
+                break;
+            }
+        }
+        if (!audio_device) {
+            puts("libao: no usable native audio driver found.");
+            return (false);
+        }
+    } else {
+        audio_device = SoundInit_ao_try_open(driver_id, &driver_format, false);
+        if (!audio_device) {
+            puts("Audio Open Failed");
+            return (false);
+        }
+    }
 
-    audio_device = ao_open_live(driver_id, &driver_format, 0);
-    if (audio_device) {
+    {
         ao_info* di = ao_driver_info(driver_id);
         printf("%s: %u channels, %u Hz\n", di->name, driver_format.channels, driver_format.rate);
-    } else {
-        puts("Audio Open Failed");
-        return (false);
     }
     return (true);
 }
@@ -286,22 +394,381 @@ static int SoundInit_ao()
 #endif
 
 #ifdef __PIPEWIRE__
+/* PipeWire stream runs at the host-negotiated rate (pw_out_rate, learned
+ * via the param_changed event, typically 48 kHz, sometimes 44.1 kHz or
+ * higher). The emulator generates samples at RATE (32 kHz) and we
+ * resample to pw_out_rate client-side with a 16-tap Kaiser-windowed sinc
+ * (polyphase, 256 phases, linear-interpolated). The resample ratio is
+ * biased +/-PW_RS_MAX_DELTA from the ring fill level so emulator/host
+ * clock drift is absorbed without underrun or growing latency
+ * (bsnes-style dynamic rate control). */
+#define PW_RS_MAX_DELTA 0.005
+#define PW_SINC_TAPS 16
+#define PW_SINC_HALF (PW_SINC_TAPS / 2)
+#define PW_SINC_PHASES 256
+
+static uint32_t pw_out_rate = 48000;
+static int pw_banner_shown = 0;
+static double pw_sinc_table[PW_SINC_PHASES + 1][PW_SINC_TAPS];
+
+static struct {
+    double pos;
+    double ratio;
+    double base_ratio;
+    int16_t hist[2][PW_SINC_TAPS];
+} pw_rs;
+
+static double pw_i0(double x)
+{
+    double sum = 1.0;
+    double term = 1.0;
+    double y = x * 0.5;
+    int k;
+    for (k = 1; k < 64; k++) {
+        double f = y / (double)k;
+        term *= f * f;
+        sum += term;
+        if (term < 1e-14 * sum)
+            break;
+    }
+    return sum;
+}
+
+static void pw_sinc_build(double ratio)
+{
+    /* fc = cycles/sample (output domain). Upsampling -> 0.5 (Nyquist).
+     * Downsampling (ratio > 1) -> 0.5/ratio to prevent aliasing. */
+    double fc = (ratio > 1.0) ? (0.5 / ratio) : 0.5;
+    /* Kaiser beta=8.5 -> ~96 dB stopband attenuation. */
+    double beta = 8.5;
+    double inv_i0_beta = 1.0 / pw_i0(beta);
+    int p, t;
+    for (p = 0; p <= PW_SINC_PHASES; p++) {
+        double frac = (double)p / (double)PW_SINC_PHASES;
+        double sum = 0.0;
+        for (t = 0; t < PW_SINC_TAPS; t++) {
+            /* Tap t holds input sample at offset (PW_SINC_HALF-1-t) from
+             * the (frac=0) reference; output sits at +frac. So x is the
+             * time distance from the output to the tap's sample. */
+            double x = (double)(PW_SINC_HALF - 1 - t) + frac;
+            double xn = x / (double)PW_SINC_HALF;
+            double sinc;
+            double win;
+            if (xn < -1.0)
+                xn = -1.0;
+            if (xn > 1.0)
+                xn = 1.0;
+            if (x == 0.0) {
+                sinc = 2.0 * fc;
+            } else {
+                sinc = sin(M_PI * 2.0 * fc * x) / (M_PI * x);
+            }
+            win = pw_i0(beta * sqrt(1.0 - xn * xn)) * inv_i0_beta;
+            pw_sinc_table[p][t] = sinc * win;
+            sum += pw_sinc_table[p][t];
+        }
+        /* Normalize to unity DC gain. */
+        if (sum != 0.0) {
+            double inv = 1.0 / sum;
+            for (t = 0; t < PW_SINC_TAPS; t++) {
+                pw_sinc_table[p][t] *= inv;
+            }
+        }
+    }
+}
+
+static void pw_rs_init(void)
+{
+    pw_rs.pos = (double)PW_SINC_HALF;
+    pw_rs.base_ratio = (double)RATE / (double)pw_out_rate;
+    pw_rs.ratio = pw_rs.base_ratio;
+    memset(pw_rs.hist, 0, sizeof(pw_rs.hist));
+    pw_sinc_build(pw_rs.base_ratio);
+}
+
+static void pw_rs_set_output_rate(uint32_t rate)
+{
+    if (!rate || rate == pw_out_rate) {
+        return;
+    }
+    pw_out_rate = rate;
+    pw_rs.base_ratio = (double)RATE / (double)pw_out_rate;
+    pw_rs.ratio = pw_rs.base_ratio;
+    pw_sinc_build(pw_rs.base_ratio);
+}
+
+static uint32_t pw_rs_process(const int16_t* in, uint32_t in_frames,
+    int16_t* out, uint32_t out_max_frames, uint32_t channels)
+{
+    uint32_t out_idx = 0;
+    uint32_t in_idx = 0;
+    while (out_idx < out_max_frames) {
+        uint32_t c;
+        double pf;
+        int p0;
+        double pf_frac;
+        const double* k0;
+        const double* k1;
+        while (pw_rs.pos >= 1.0) {
+            if (in_idx >= in_frames) {
+                return out_idx;
+            }
+            for (c = 0; c < channels; c++) {
+                memmove(&pw_rs.hist[c][0], &pw_rs.hist[c][1],
+                    (PW_SINC_TAPS - 1) * sizeof(int16_t));
+                pw_rs.hist[c][PW_SINC_TAPS - 1] = in[in_idx * channels + c];
+            }
+            in_idx++;
+            pw_rs.pos -= 1.0;
+        }
+        pf = pw_rs.pos * (double)PW_SINC_PHASES;
+        p0 = (int)pf;
+        if (p0 < 0)
+            p0 = 0;
+        if (p0 >= PW_SINC_PHASES)
+            p0 = PW_SINC_PHASES - 1;
+        pf_frac = pf - (double)p0;
+        k0 = pw_sinc_table[p0];
+        k1 = pw_sinc_table[p0 + 1];
+        for (c = 0; c < channels; c++) {
+            double acc = 0.0;
+            int t;
+            for (t = 0; t < PW_SINC_TAPS; t++) {
+                double h = k0[t] + (k1[t] - k0[t]) * pf_frac;
+                acc += h * (double)pw_rs.hist[c][t];
+            }
+            if (acc > 32767.0)
+                acc = 32767.0;
+            else if (acc < -32768.0)
+                acc = -32768.0;
+            out[out_idx * channels + c] = (int16_t)acc;
+        }
+        out_idx++;
+        pw_rs.pos += pw_rs.ratio;
+    }
+    return out_idx;
+}
+
+/* Ring helpers, head and tail are monotonically increasing byte counters.
+ * Modulo arithmetic against pw_ring_size yields the physical position. */
+static inline uint32_t pw_ring_fill_locked(void) { return pw_ring_head - pw_ring_tail; }
+static inline uint32_t pw_ring_space_locked(void) { return pw_ring_size - pw_ring_fill_locked(); }
+
+static void pw_rs_update_dynamic(void)
+{
+    uint32_t fill_bytes;
+    double fill;
+    if (!pw_ring_size) {
+        return;
+    }
+    pthread_mutex_lock(&pw_ring_mutex);
+    fill_bytes = pw_ring_fill_locked();
+    pthread_mutex_unlock(&pw_ring_mutex);
+    fill = (double)fill_bytes / (double)pw_ring_size;
+    if (fill > 1.0)
+        fill = 1.0;
+    /* fill=0.5 -> ratio=base. fill=1 -> +max (drain). fill=0 -> -max (fill). */
+    pw_rs.ratio = pw_rs.base_ratio * (1.0 + PW_RS_MAX_DELTA * (2.0 * fill - 1.0));
+}
+
+static void pw_ring_write(const uint8_t* src, uint32_t n)
+{
+    pthread_mutex_lock(&pw_ring_mutex);
+    if (n >= pw_ring_size) {
+        /* Producer outran us by more than the ring, keep newest only. */
+        src += n - pw_ring_size;
+        n = pw_ring_size;
+        pw_ring_head = pw_ring_tail = 0;
+    }
+    uint32_t space = pw_ring_space_locked();
+    if (space < n) {
+        /* Drop oldest samples to make room (graceful overflow). */
+        pw_ring_tail += n - space;
+    }
+    uint32_t pos = pw_ring_head % pw_ring_size;
+    uint32_t first = (n <= pw_ring_size - pos) ? n : (pw_ring_size - pos);
+    memcpy(pw_ring + pos, src, first);
+    if (n > first) {
+        memcpy(pw_ring, src + first, n - first);
+    }
+    pw_ring_head += n;
+    pthread_mutex_unlock(&pw_ring_mutex);
+}
+
+static uint32_t pw_ring_read(uint8_t* dst, uint32_t n)
+{
+    pthread_mutex_lock(&pw_ring_mutex);
+    uint32_t avail = pw_ring_fill_locked();
+    if (n > avail) {
+        n = avail;
+    }
+    uint32_t pos = pw_ring_tail % pw_ring_size;
+    uint32_t first = (n <= pw_ring_size - pos) ? n : (pw_ring_size - pos);
+    memcpy(dst, pw_ring + pos, first);
+    if (n > first) {
+        memcpy(dst + first, pw_ring, n - first);
+    }
+    pw_ring_tail += n;
+    pthread_mutex_unlock(&pw_ring_mutex);
+    return n;
+}
+
+/* Resize the ring while preserving already-buffered data.  Cap at max_bytes. */
+static void pw_ring_resize(uint32_t want_bytes)
+{
+    uint8_t* fresh;
+    uint32_t cap;
+
+    pthread_mutex_lock(&pw_ring_mutex);
+    cap = pw_ring_max_frames * pw_stride_bytes;
+    if (cap && want_bytes > cap) {
+        want_bytes = cap;
+    }
+    if (want_bytes <= pw_ring_size) {
+        pthread_mutex_unlock(&pw_ring_mutex);
+        return;
+    }
+    fresh = (uint8_t*)malloc(want_bytes);
+    if (!fresh) {
+        pthread_mutex_unlock(&pw_ring_mutex);
+        return;
+    }
+    uint32_t fill = pw_ring_fill_locked();
+    if (fill > want_bytes) {
+        pw_ring_tail += fill - want_bytes;
+        fill = want_bytes;
+    }
+    if (fill) {
+        uint32_t pos = pw_ring_tail % pw_ring_size;
+        uint32_t first = (fill <= pw_ring_size - pos) ? fill : (pw_ring_size - pos);
+        memcpy(fresh, pw_ring + pos, first);
+        if (fill > first) {
+            memcpy(fresh + first, pw_ring, fill - first);
+        }
+    }
+    free(pw_ring);
+    pw_ring = fresh;
+    pw_ring_size = want_bytes;
+    pw_ring_tail = 0;
+    pw_ring_head = fill;
+    pw_stat_resizes++;
+    pthread_mutex_unlock(&pw_ring_mutex);
+}
+
+/* Called from PipeWireProcess once the actual quantum is known.  Ensures the
+ * ring is at least 8x the negotiated period (so producer jitter has headroom)
+ * and at least pw_ring_min_frames worth.  Never shrinks. */
+static void pw_smart_size_ring(uint32_t quantum_frames)
+{
+    uint32_t want_frames;
+    uint32_t want_bytes;
+
+    if (!quantum_frames) {
+        return;
+    }
+    if (pw_observed_quantum_frames != quantum_frames) {
+        pw_observed_quantum_frames = quantum_frames;
+    }
+    want_frames = quantum_frames * 8U;
+    if (want_frames < pw_ring_min_frames) {
+        want_frames = pw_ring_min_frames;
+    }
+    want_bytes = want_frames * pw_stride_bytes;
+    if (want_bytes > pw_ring_size) {
+        pw_ring_resize(want_bytes);
+    }
+}
+
+static void* SoundThread_pipewire(void* useless)
+{
+    int16_t stemp[1280];
+    /* Output buffer must hold at most ~1/ratio outputs per input. With
+     * ratio~32/48, that's ~1.5x; use 2x plus a small headroom for safety. */
+    int16_t outbuf[1280 * 2 + 32];
+    uint32_t channels = StereoSound + 1;
+    (void)useless;
+
+    while (!pw_producer_terminated) {
+        unsigned int samples;
+
+        pthread_mutex_lock(&pw_audio_mutex);
+        while (!pw_samples_waiting && !pw_producer_terminated) {
+            pthread_cond_wait(&pw_audio_wait, &pw_audio_mutex);
+        }
+        samples = pw_samples_waiting;
+        pw_samples_waiting = 0;
+        pthread_mutex_unlock(&pw_audio_mutex);
+
+        if (pw_producer_terminated) {
+            break;
+        }
+
+        pw_rs_update_dynamic();
+
+        /* MixSoundBlock writes <samples> int16_t values; cap at stemp size. */
+        while (samples > 0) {
+            uint32_t chunk = (samples > 1280) ? 1280 : samples;
+            uint32_t in_frames;
+            uint32_t out_frames;
+            MixSoundBlock(stemp, chunk);
+            in_frames = chunk / channels;
+            out_frames = pw_rs_process(stemp, in_frames, outbuf,
+                sizeof(outbuf) / (sizeof(int16_t) * (channels ? channels : 1)),
+                channels);
+            pw_ring_write((uint8_t*)outbuf, out_frames * channels * sizeof(int16_t));
+            samples -= chunk;
+        }
+    }
+    return NULL;
+}
+
+static void PipeWireParamChanged(void* userdata, uint32_t id, const struct spa_pod* param)
+{
+    struct spa_audio_info info;
+    (void)userdata;
+    if (!param || id != SPA_PARAM_Format) {
+        return;
+    }
+    memset(&info, 0, sizeof(info));
+    if (spa_format_parse(param, &info.media_type, &info.media_subtype) < 0) {
+        return;
+    }
+    if (info.media_type != SPA_MEDIA_TYPE_audio
+        || info.media_subtype != SPA_MEDIA_SUBTYPE_raw) {
+        return;
+    }
+    if (spa_format_audio_raw_parse(param, &info.info.raw) < 0) {
+        return;
+    }
+    if (info.info.raw.rate && info.info.raw.rate != pw_out_rate) {
+        pw_rs_set_output_rate(info.info.raw.rate);
+        pw_rate_hz = info.info.raw.rate;
+        /* Resize ring targets to keep ~same wall-clock buffering at new rate. */
+        pw_ring_min_frames = (info.info.raw.rate * 250U) / 1000U;
+        pw_ring_max_frames = (info.info.raw.rate * 2000U) / 1000U;
+    }
+    if (!pw_banner_shown) {
+        pw_banner_shown = 1;
+        printf("PipeWire audio: %u ch, %u Hz\n", info.info.raw.channels, info.info.raw.rate);
+    }
+}
+
 static void PipeWireProcess(void* userdata)
 {
     struct pw_buffer* b;
     struct spa_buffer* buf;
     struct spa_data* d;
+    uint32_t stride = pw_stride_bytes ? pw_stride_bytes : ((StereoSound + 1) * 2);
     uint32_t bytes;
-    uint32_t stride = (StereoSound + 1) * 2;
+    uint32_t frames;
     uint8_t* out;
-    int16_t stemp[1280];
     bool render_audio;
+    uint32_t got;
 
     (void)userdata;
     if (!pipewire_stream) {
         return;
     }
-
     if (!(b = pw_stream_dequeue_buffer(pipewire_stream))) {
         return;
     }
@@ -313,18 +780,10 @@ static void PipeWireProcess(void* userdata)
     }
 
     if (b->requested > 0) {
-        uint64_t requested_bytes = b->requested * stride;
-        if (requested_bytes > d->maxsize) {
-            requested_bytes = d->maxsize;
+        bytes = (uint32_t)b->requested * stride;
+        if (bytes > d->maxsize) {
+            bytes = d->maxsize;
         }
-        /* Avoid bursty very-large requests that increase jitter under load. */
-        {
-            uint64_t max_bytes = (uint64_t)pipewire_target_frames * 4U * stride;
-            if (requested_bytes > max_bytes) {
-                requested_bytes = max_bytes;
-            }
-        }
-        bytes = (uint32_t)requested_bytes;
     } else {
         bytes = pipewire_target_frames * stride;
         if (bytes > d->maxsize) {
@@ -332,39 +791,78 @@ static void PipeWireProcess(void* userdata)
         }
     }
     bytes -= bytes % stride;
+    frames = bytes / stride;
+
+    /* Smart adaptation: learn the server's actual quantum and ensure the ring
+     * has at least 8x headroom against it. */
+    if (frames && (!pw_observed_quantum_frames || frames > pw_observed_quantum_frames)) {
+        pw_smart_size_ring(frames);
+        if (frames > pipewire_target_frames) {
+            pipewire_target_frames = frames;
+        }
+    }
+
     out = (uint8_t*)d->data;
     render_audio = !pipewire_shutting_down && !GUIOn2 && !GUIOn && !EMUPause && !RawDumpInProgress && !T36HZEnabled && soundon;
+    pw_stat_cycles++;
 
     if (!render_audio) {
         memset(out, 0, bytes);
-        d->chunk->offset = 0;
-        d->chunk->stride = (StereoSound + 1) * 2;
-        d->chunk->size = bytes;
-        pw_stream_queue_buffer(pipewire_stream, b);
-        return;
+    } else {
+        got = pw_ring_read(out, bytes);
+        if (got < bytes) {
+            pw_stat_underruns++;
+            pw_stat_silent_pads += (bytes - got);
+            /* On persistent underrun, grow the ring (capped by max_frames). */
+            if (pw_observed_quantum_frames) {
+                uint32_t bigger = (pw_ring_size / stride) * 2U;
+                if (bigger > pw_ring_max_frames) {
+                    bigger = pw_ring_max_frames;
+                }
+                if (bigger * stride > pw_ring_size) {
+                    pw_ring_resize(bigger * stride);
+                }
+            }
+            memset(out + got, 0, bytes - got);
+        }
     }
 
-    while (bytes > 0) {
-        uint32_t chunk = bytes >> 1;
-        if (chunk > sizeof(stemp) / sizeof(stemp[0])) {
-            chunk = (unsigned int)(sizeof(stemp) / sizeof(stemp[0]));
-        }
-        MixSoundBlock(stemp, chunk);
-        memcpy(out, stemp, chunk << 1);
-        out += chunk << 1;
-        bytes -= chunk << 1;
+    if (pw_stats_enabled && (pw_stat_cycles % 500U) == 0U) {
+        printf("PipeWire stats: %llu cycles, %llu underruns, %llu silence bytes, %llu ring resizes, ring=%u/%u frames\n",
+            (unsigned long long)pw_stat_cycles,
+            (unsigned long long)pw_stat_underruns,
+            (unsigned long long)pw_stat_silent_pads,
+            (unsigned long long)pw_stat_resizes,
+            pw_ring_size / stride,
+            pw_ring_max_frames);
     }
 
     d->chunk->offset = 0;
-    d->chunk->stride = (StereoSound + 1) * 2;
-    d->chunk->size = out - (uint8_t*)d->data;
+    d->chunk->stride = stride;
+    d->chunk->size = bytes;
     pw_stream_queue_buffer(pipewire_stream, b);
 }
 
 void SoundWrite_pipewire()
 {
+    uint32_t samples = 0;
+
     if (!sound_pipewire) {
         return;
+    }
+
+    if (!pthread_mutex_trylock(&pw_audio_mutex)) {
+        if (!pw_samples_waiting && sample_control.lo) {
+            samples = (unsigned int)((sample_control.balance / sample_control.lo) << StereoSound);
+            sample_control.balance %= sample_control.lo;
+            sample_control.balance += sample_control.hi;
+
+            pw_samples_waiting = samples;
+            pthread_cond_broadcast(&pw_audio_wait);
+        }
+        pthread_mutex_unlock(&pw_audio_mutex);
+    } else {
+        pthread_cond_broadcast(&pw_audio_wait);
     }
 }
 
@@ -376,12 +874,19 @@ static int SoundInit_pipewire()
     struct spa_pod* params[1];
     static struct pw_stream_events stream_events = {
         PW_VERSION_STREAM_EVENTS,
+        .param_changed = PipeWireParamChanged,
         .process = PipeWireProcess,
     };
-    enum pw_stream_flags const flags = PW_STREAM_FLAG_AUTOCONNECT | PW_STREAM_FLAG_MAP_BUFFERS | PW_STREAM_FLAG_RT_PROCESS;
+    /* No PW_STREAM_FLAG_RT_PROCESS, synthesis happens on the producer thread,
+     * so the process callback only memcpys and can run on a normal-priority
+     * thread with deeper buffering. */
+    enum pw_stream_flags const flags = PW_STREAM_FLAG_AUTOCONNECT | PW_STREAM_FLAG_MAP_BUFFERS;
     int rc;
-    int bytes_per_sample = (StereoSound + 1) * 2;
-    char latency_str[64];
+    uint32_t stride;
+    uint32_t initial_ring_ms = 250; /* generous starting headroom */
+    uint32_t max_ring_ms = 2000; /* hard upper cap for auto-grow */
+    long forced_latency_ms = 0; /* >0 -> pin PW_KEY_NODE_LATENCY */
+    const char* env;
 
     if (!pipewire_inited) {
         pw_init(NULL, NULL);
@@ -411,33 +916,103 @@ static int SoundInit_pipewire()
 
     memset(&pipewire_info, 0, sizeof(pipewire_info));
     pipewire_info.format = SPA_AUDIO_FORMAT_S16_LE;
-    pipewire_info.rate = RATE;
+    pipewire_info.rate = pw_out_rate;
     pipewire_info.channels = StereoSound + 1;
-    if (RATE >= 48000) {
-        pipewire_target_frames = 320;
-    } else if (RATE >= 44100) {
-        pipewire_target_frames = 256;
-    } else if (RATE >= 22050) {
-        pipewire_target_frames = 128;
-    } else {
-        pipewire_target_frames = 64;
-    }
     if (pipewire_info.channels == 1) {
         pipewire_info.position[0] = SPA_AUDIO_CHANNEL_MONO;
     } else {
         pipewire_info.position[0] = SPA_AUDIO_CHANNEL_FL;
         pipewire_info.position[1] = SPA_AUDIO_CHANNEL_FR;
     }
-    snprintf(latency_str, sizeof(latency_str), "%u/%u", pipewire_target_frames, RATE);
+    pw_rs_init();
 
-    props = pw_properties_new(
-        PW_KEY_MEDIA_TYPE, "Audio",
-        PW_KEY_MEDIA_CATEGORY, "Playback",
-        PW_KEY_MEDIA_ROLE, "Game",
-        PW_KEY_APP_NAME, "zsnes",
-        PW_KEY_NODE_LATENCY, latency_str,
-        PW_KEY_NODE_RATE, "1/1",
-        NULL);
+    /* Smart defaults, no fixed latency hint, let PipeWire's server pick its
+     * configured quantum so we match whatever the user's wireplumber/pulse
+     * setup is tuned for.  Env vars override for power users. */
+    pw_user_forced_latency = 0;
+    if ((env = getenv("ZSNES_PIPEWIRE_LATENCY_MS")) && *env) {
+        long v = strtol(env, NULL, 10);
+        if (v >= 1 && v <= 1000) {
+            forced_latency_ms = v;
+            pw_user_forced_latency = 1;
+        }
+    }
+    if ((env = getenv("ZSNES_PIPEWIRE_BUFFER_MS")) && *env) {
+        long v = strtol(env, NULL, 10);
+        if (v >= 50 && v <= 5000) {
+            initial_ring_ms = (uint32_t)v;
+        }
+    }
+    if ((env = getenv("ZSNES_PIPEWIRE_BUFFER_MAX_MS")) && *env) {
+        long v = strtol(env, NULL, 10);
+        if (v >= initial_ring_ms && v <= 10000) {
+            max_ring_ms = (uint32_t)v;
+        }
+    }
+    pw_stats_enabled = 0;
+    if ((env = getenv("ZSNES_AUDIO_STATS")) && *env && *env != '0') {
+        pw_stats_enabled = 1;
+    }
+
+    stride = (StereoSound + 1) * 2;
+    pw_stride_bytes = stride;
+    pw_rate_hz = pw_out_rate;
+    pw_ring_min_frames = (pw_out_rate * initial_ring_ms) / 1000;
+    pw_ring_max_frames = (pw_out_rate * max_ring_ms) / 1000;
+    pw_observed_quantum_frames = 0;
+    pw_stat_cycles = pw_stat_underruns = pw_stat_silent_pads = pw_stat_resizes = 0;
+
+    /* Initial ring sized to user request; smart logic will grow it if the
+     * negotiated quantum turns out to be larger than expected. */
+    {
+        uint32_t want = pw_ring_min_frames * stride;
+        if (pw_ring) {
+            free(pw_ring);
+            pw_ring = NULL;
+        }
+        pw_ring = (uint8_t*)malloc(want);
+        if (!pw_ring) {
+            pw_thread_loop_unlock(pipewire_loop);
+            return false;
+        }
+        pw_ring_size = want;
+        pthread_mutex_lock(&pw_ring_mutex);
+        pw_ring_head = pw_ring_tail = 0;
+        pthread_mutex_unlock(&pw_ring_mutex);
+    }
+
+    /* Conservative pre-fill target for when the server quantum is unknown. */
+    pipewire_target_frames = (pw_out_rate / 50); /* ~20 ms */
+    if (pipewire_target_frames < 64) {
+        pipewire_target_frames = 64;
+    }
+
+    if (pw_user_forced_latency) {
+        char latency_str[64];
+        uint32_t frames = (pw_out_rate * (uint32_t)forced_latency_ms) / 1000;
+        if (frames < 32)
+            frames = 32;
+        snprintf(latency_str, sizeof(latency_str), "%u/%u", frames, pw_out_rate);
+        props = pw_properties_new(
+            PW_KEY_MEDIA_TYPE, "Audio",
+            PW_KEY_MEDIA_CATEGORY, "Playback",
+            PW_KEY_MEDIA_ROLE, "Game",
+            PW_KEY_APP_NAME, "zsnes",
+            PW_KEY_NODE_LATENCY, latency_str,
+            NULL);
+        pipewire_target_frames = frames;
+    } else {
+        /* Stream runs at host-native rate (negotiated via param_changed).
+         * Client-side polyphase Kaiser-sinc resampler + dynamic rate
+         * control absorbs clock drift; no server resampling needed. */
+        props = pw_properties_new(
+            PW_KEY_MEDIA_TYPE, "Audio",
+            PW_KEY_MEDIA_CATEGORY, "Playback",
+            PW_KEY_MEDIA_ROLE, "Game",
+            PW_KEY_APP_NAME, "zsnes",
+            NULL);
+    }
+
     pipewire_stream = pw_stream_new_simple(
         pw_thread_loop_get_loop(pipewire_loop),
         "zsnes",
@@ -449,7 +1024,33 @@ static int SoundInit_pipewire()
         return false;
     }
 
-    params[0] = spa_format_audio_raw_build(&b, SPA_PARAM_EnumFormat, &pipewire_info);
+    {
+        struct spa_pod_frame f[2];
+        uint32_t pos[2];
+        uint32_t nch = (uint32_t)(StereoSound + 1);
+        pos[0] = (nch == 1) ? SPA_AUDIO_CHANNEL_MONO : SPA_AUDIO_CHANNEL_FL;
+        pos[1] = SPA_AUDIO_CHANNEL_FR;
+        spa_pod_builder_push_object(&b, &f[0], SPA_TYPE_OBJECT_Format, SPA_PARAM_EnumFormat);
+        spa_pod_builder_add(&b,
+            SPA_FORMAT_mediaType, SPA_POD_Id(SPA_MEDIA_TYPE_audio),
+            SPA_FORMAT_mediaSubtype, SPA_POD_Id(SPA_MEDIA_SUBTYPE_raw),
+            SPA_FORMAT_AUDIO_format, SPA_POD_Id(SPA_AUDIO_FORMAT_S16_LE),
+            SPA_FORMAT_AUDIO_channels, SPA_POD_Int((int)nch),
+            SPA_FORMAT_AUDIO_position, SPA_POD_Array(sizeof(uint32_t), SPA_TYPE_Id, nch, pos),
+            0);
+        /* Offer a list of acceptable rates so the server can pick the
+         * device-native one. The first value is the default/preferred. */
+        spa_pod_builder_prop(&b, SPA_FORMAT_AUDIO_rate, 0);
+        spa_pod_builder_push_choice(&b, &f[1], SPA_CHOICE_Enum, 0);
+        spa_pod_builder_int(&b, 48000);
+        spa_pod_builder_int(&b, 48000);
+        spa_pod_builder_int(&b, 44100);
+        spa_pod_builder_int(&b, 96000);
+        spa_pod_builder_int(&b, 88200);
+        spa_pod_builder_int(&b, 192000);
+        spa_pod_builder_pop(&b, &f[1]);
+        params[0] = (struct spa_pod*)spa_pod_builder_pop(&b, &f[0]);
+    }
     rc = pw_stream_connect(pipewire_stream, PW_DIRECTION_OUTPUT, PW_ID_ANY, flags, (const struct spa_pod* const*)params, 1);
     pw_thread_loop_unlock(pipewire_loop);
     if (rc < 0) {
@@ -457,8 +1058,21 @@ static int SoundInit_pipewire()
         return false;
     }
 
+    if (!pw_producer_running) {
+        InitSampleControl();
+        pw_producer_terminated = 0;
+        if (pthread_create(&pw_producer_thread, NULL, SoundThread_pipewire, NULL) == 0) {
+            pw_producer_running = 1;
+        } else {
+            puts("pthread_create() for PipeWire producer failed.");
+        }
+    }
+
     sound_pipewire = true;
-    printf("PipeWire audio: %u channels, %u Hz, target %u frames\n", StereoSound + 1, RATE, pipewire_target_frames);
+    /* Banner is printed from PipeWireParamChanged once the rate is negotiated. */
+    (void)forced_latency_ms;
+    (void)initial_ring_ms;
+    (void)max_ring_ms;
     return true;
 }
 #endif
@@ -779,25 +1393,11 @@ int InitSound()
         }
         SoundEnabled = prev_sound_enabled;
 #endif
-#ifdef __LIBAO__
-        prev_sound_enabled = SoundEnabled;
-        if (SoundInit_ao_driver("alsa")) {
-            return (true);
-        }
-        SoundEnabled = prev_sound_enabled;
-#endif
         prev_sound_enabled = SoundEnabled;
         if (SoundInit_sdl()) {
             return (true);
         }
         SoundEnabled = prev_sound_enabled;
-#ifdef __LIBAO__
-        prev_sound_enabled = SoundEnabled;
-        if (SoundInit_ao_driver("oss")) {
-            return (true);
-        }
-        SoundEnabled = prev_sound_enabled;
-#endif
         if (!warned_auto_fallback) {
             warned_auto_fallback = true;
             if (sdl_audio_last_error[0]) {
@@ -814,6 +1414,12 @@ int InitSound()
     }
 
 #ifdef __LIBAO__
+    if (!strcmp(libAoDriver, "ao")) {
+        return (SoundInit_ao_driver(NULL));
+    }
+    if (!strncmp(libAoDriver, "ao:", 3)) {
+        return (SoundInit_ao_driver(libAoDriver + 3));
+    }
     return (SoundInit_ao());
 #else
     printf("WARNING: Audio backend \"%s\" requested, but this build has no matching support.\n", libAoDriver);
@@ -827,6 +1433,14 @@ void DeinitSound()
 #ifdef __PIPEWIRE__
     pipewire_shutting_down = 1;
     sound_pipewire = false;
+    if (pw_producer_running) {
+        pthread_mutex_lock(&pw_audio_mutex);
+        pw_producer_terminated = 1;
+        pthread_cond_broadcast(&pw_audio_wait);
+        pthread_mutex_unlock(&pw_audio_mutex);
+        pthread_join(pw_producer_thread, NULL);
+        pw_producer_running = 0;
+    }
     if (pipewire_stream) {
         pw_thread_loop_lock(pipewire_loop);
         pw_stream_set_active(pipewire_stream, false);
@@ -840,6 +1454,21 @@ void DeinitSound()
         pw_thread_loop_destroy(pipewire_loop);
         pipewire_loop = 0;
     }
+    if (pw_stats_enabled && pw_stat_cycles) {
+        printf("PipeWire final: %llu cycles, %llu underruns (%.4f%%), %llu silence bytes, ring grew %llu times to %u frames\n",
+            (unsigned long long)pw_stat_cycles,
+            (unsigned long long)pw_stat_underruns,
+            (100.0 * (double)pw_stat_underruns) / (double)pw_stat_cycles,
+            (unsigned long long)pw_stat_silent_pads,
+            (unsigned long long)pw_stat_resizes,
+            pw_stride_bytes ? (pw_ring_size / pw_stride_bytes) : 0);
+    }
+    if (pw_ring) {
+        free(pw_ring);
+        pw_ring = NULL;
+        pw_ring_size = 0;
+    }
+    pw_banner_shown = 0;
 #endif
 #ifdef __LIBAO__
     if (audio_device) {

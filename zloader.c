@@ -123,11 +123,22 @@ static void display_help()
 #endif
 #ifdef __UNIXSDL__
     put_line("  -ad <>  Select Audio Driver :");
-    snprintf(line, sizeof(line), "%22s = Automatically select output", "auto");
+    snprintf(line, sizeof(line), "%22s = Auto-detect best backend (recommended)", "auto");
     put_line(line);
     snprintf(line, sizeof(line), "%22s = Disable audio output backend", "none");
     put_line(line);
+#ifdef __PIPEWIRE__
+    snprintf(line, sizeof(line), "%22s = Native PipeWire output (smooth, low-latency)", "pipewire");
+    put_line(line);
+#endif
 #ifdef __LIBAO__
+    snprintf(line, sizeof(line), "%22s = libao output (auto-tries pulse, alsa, sndio, oss, …)", "ao");
+    put_line(line);
+#endif
+    snprintf(line, sizeof(line), "%22s = Simple DirectMedia Layer output", "sdl");
+    put_line(line);
+#ifdef __LIBAO__
+    put_line("  -ad ao:<name>  Pick a specific libao plugin (e.g. ao:alsa, ao:oss, ao:sndio):");
     driver_info = ao_driver_info_list(&driver_count);
     while (driver_count--) {
         if (driver_info[driver_count]->type == AO_TYPE_LIVE) {
@@ -135,12 +146,6 @@ static void display_help()
             put_line(line);
         }
     }
-#endif
-    snprintf(line, sizeof(line), "%22s = Simple DirectMedia Layer output", "sdl");
-    put_line(line);
-#ifdef __PIPEWIRE__
-    snprintf(line, sizeof(line), "%22s = Native PipeWire output", "pipewire");
-    put_line(line);
 #endif
 #endif
 #ifndef NO_DEBUGGER
@@ -506,6 +511,14 @@ static void handle_params(int argc, char* argv[])
       }
       */
 
+    /* The audio-driver choice is meant to be ephemeral, but cfg.psr persists
+     * libAoDriver across runs. Discard any saved value so a stale "-ad ao:alsa"
+     * from a previous session can't override today's default ("auto"). The
+     * command-line scan below restores any explicitly requested -ad value. */
+#if defined(__UNIXSDL__)
+    strcpy(libAoDriver, "auto");
+#endif
+
     for (i = 1; i < argc; i++) {
 #ifndef __UNIXSDL__
         if (argv[i][0] == '-' || argv[i][0] == '/')
@@ -709,6 +722,25 @@ static void handle_params(int argc, char* argv[])
                         continue;
                     }
 
+                    /* "ao" → libao with default plugin; "ao:NAME" → libao with NAME */
+                    if (!strcmp(argv[i], "ao") || !strncmp(argv[i], "ao:", 3)) {
+#ifdef __LIBAO__
+                        if (argv[i][2] == ':' && ao_driver_id(argv[i] + 3) < 0) {
+                            printf("Audio driver \"%s\" not available in libao.\n", argv[i] + 3);
+                            zexit_error();
+                        }
+                        if (strlen(argv[i]) >= sizeof(libAoDriver)) {
+                            printf("Audio driver name too long: %s\n", argv[i]);
+                            zexit_error();
+                        }
+                        strcpy(libAoDriver, argv[i]);
+                        continue;
+#else
+                        puts("This build has no libao support.");
+                        zexit_error();
+#endif
+                    }
+
 #ifdef __LIBAO__
                     if (!strcmp(argv[i], "auto") || !strcmp(argv[i], "none") || !strcmp(argv[i], "sdl")
 #ifdef __PIPEWIRE__
@@ -723,6 +755,10 @@ static void handle_params(int argc, char* argv[])
                     )
 #endif
                     {
+                        if (strlen(argv[i]) >= sizeof(libAoDriver)) {
+                            printf("Audio driver name too long: %s\n", argv[i]);
+                            zexit_error();
+                        }
                         strcpy(libAoDriver, argv[i]);
                     } else {
                         puts("Audio driver selection invalid.");
