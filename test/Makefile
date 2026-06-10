@@ -62,6 +62,12 @@ run: all
 	@./$(OBC1)
 	@./$(MSU1)
 	@./$(DSP2)
+	@if command -v go >/dev/null 2>&1; then \
+		echo "ZSNES2 relay-server tests"; \
+		cd ../server && go test -count=1 ./...; \
+	else \
+		echo "ZSNES2 relay-server tests SKIPPED (no 'go' in PATH)"; \
+	fi
 
 clean:
 	rm -f $(BIN) $(NETPLAY) $(ST10) $(ST11) $(OBC1) $(MSU1) $(DSP2)

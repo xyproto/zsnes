@@ -122,6 +122,7 @@ AO_AVAILABLE :=
 SDL3_AVAILABLE :=
 SDL2_AVAILABLE :=
 SDL_BACKEND_AVAILABLE :=
+OPENSSL_AVAILABLE :=
 
 ifneq ($(filter $(ARCH),$(UNIXSDL_ARCHES)),)
 ifeq ($(ARCH),LINUX)
@@ -133,7 +134,13 @@ endif
 SDL3_AVAILABLE := $(call detect_pkg_for_target,sdl3)
 SDL2_AVAILABLE := $(call detect_pkg_for_target,sdl2)
 SDL_BACKEND_AVAILABLE := $(if $(or $(SDL3_AVAILABLE),$(SDL2_AVAILABLE),$(strip $(SDL_CONFIG)),$(strip $(CFLAGS_SDL)),$(strip $(LDFLAGS_SDL))),yes)
+OPENSSL_AVAILABLE := $(call detect_pkg_for_target,openssl)
 endif
+
+# WITH_TLS: build the netplay client with OpenSSL-backed TLS. Defaults to yes
+# when a 32-bit openssl is detected; set to empty to force a plaintext-only
+# build (development).
+WITH_TLS ?= $(if $(OPENSSL_AVAILABLE),yes,)
 
 SKIP_AUDIO_BACKEND_CHECK := $(if $(filter clean distclean,$(MAKECMDGOALS)),yes)
 
@@ -485,11 +492,28 @@ SRCS += linux/audio.c
 SRCS += linux/battery.c
 SRCS += linux/c_sdlintrf.c
 SRCS += linux/lib.c
+SRCS += linux/netplay.c
 SRCS += linux/safelib.c
 
 SRCS += linux/sdllink.c
 SRCS += linux/sockserv.c
 SRCS += linux/sw_draw.c
+
+ifeq ($(WITH_TLS),yes)
+  OPENSSL_CONFIG ?= pkg-config openssl
+  ifndef CFLAGS_OPENSSL
+    CFLAGS_OPENSSL  := $(shell $(OPENSSL_CONFIG) --cflags)
+  endif
+  ifndef LDFLAGS_OPENSSL
+    LDFLAGS_OPENSSL := $(shell $(OPENSSL_CONFIG) --libs)
+  endif
+  ifeq ($(strip $(LDFLAGS_OPENSSL)),)
+    LDFLAGS_OPENSSL := -lssl -lcrypto
+  endif
+  CFLAGS  += $(CFLAGS_OPENSSL)
+  LDFLAGS += $(LDFLAGS_OPENSSL)
+  CFGDEFS += -DWITH_TLS
+endif
 
 ifdef WITH_OPENGL
 SRCS += linux/gl_draw.c
@@ -642,6 +666,8 @@ info:
 	@echo "WITH_SDL      = $(WITH_SDL)"
 	@echo "WITH_PIPEWIRE = $(WITH_PIPEWIRE)"
 	@echo "WITH_AO       = $(WITH_AO)"
+	@echo "WITH_TLS      = $(WITH_TLS)"
+	@echo "OPENSSL_AVAILABLE = $(OPENSSL_AVAILABLE)"
 	@echo "SDL3_AVAILABLE = $(SDL3_AVAILABLE)"
 	@echo "SDL2_AVAILABLE = $(SDL2_AVAILABLE)"
 	@echo "PIPEWIRE_AVAILABLE = $(PIPEWIRE_AVAILABLE)"

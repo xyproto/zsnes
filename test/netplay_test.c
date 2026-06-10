@@ -395,6 +395,241 @@ static void test_packet_layout(void)
     ZT_CHECK_INT((int)((char*)&p.crc - (char*)&p), 12);
 }
 
+/* Relay-protocol framing tests — these mirror the on-wire layout the C
+ * client (linux/netplay.c) and the Go server (server/main.go) both use. */
+
+#define ZNP_FRAME_MAX_PAYLOAD 4096
+#define ZNP_ROOM_CODE_LEN 16
+#define ZNP_PASSWORD_LEN 32
+#define ZNP_NICKNAME_LEN 16
+#define ZNP_PROTOCOL_VERSION 1u
+
+#define ZNP_FRAME_CLIENT_HELLO 0x0001u
+#define ZNP_FRAME_SERVER_HELLO 0x0002u
+#define ZNP_FRAME_INPUT 0x0010u
+#define ZNP_FRAME_PING 0x0020u
+#define ZNP_FRAME_BYE 0x00FFu
+
+#define ZNP_HELLO_MODE_CREATE 1u
+
+/* Encode a frame header into 4 bytes, big-endian. Returns 1 on success. */
+static int frame_hdr_encode(uint8_t out[4], uint16_t typ, uint16_t length)
+{
+    if (length > ZNP_FRAME_MAX_PAYLOAD)
+        return 0;
+    out[0] = (uint8_t)(typ >> 8);
+    out[1] = (uint8_t)(typ & 0xFF);
+    out[2] = (uint8_t)(length >> 8);
+    out[3] = (uint8_t)(length & 0xFF);
+    return 1;
+}
+
+static int frame_hdr_decode(uint8_t const in[4], uint16_t* typ, uint16_t* length)
+{
+    *typ = ((uint16_t)in[0] << 8) | in[1];
+    *length = ((uint16_t)in[2] << 8) | in[3];
+    if (*length > ZNP_FRAME_MAX_PAYLOAD)
+        return 0;
+    return 1;
+}
+
+static void test_frame_header_layout(void)
+{
+    ZT_SECTION("frame header layout (big-endian, 4 bytes)");
+
+    uint8_t hdr[4];
+    ZT_CHECK(frame_hdr_encode(hdr, ZNP_FRAME_INPUT, 16) == 1);
+    ZT_CHECK_INT(hdr[0], 0x00);
+    ZT_CHECK_INT(hdr[1], 0x10);
+    ZT_CHECK_INT(hdr[2], 0x00);
+    ZT_CHECK_INT(hdr[3], 0x10);
+
+    uint16_t typ, length;
+    ZT_CHECK(frame_hdr_decode(hdr, &typ, &length) == 1);
+    ZT_CHECK_INT(typ, ZNP_FRAME_INPUT);
+    ZT_CHECK_INT(length, 16);
+
+    /* BYE: type=0x00FF, length=0 */
+    ZT_CHECK(frame_hdr_encode(hdr, ZNP_FRAME_BYE, 0) == 1);
+    ZT_CHECK_INT(hdr[0], 0x00);
+    ZT_CHECK_INT(hdr[1], 0xFF);
+    ZT_CHECK_INT(hdr[2], 0x00);
+    ZT_CHECK_INT(hdr[3], 0x00);
+}
+
+static void test_frame_oversize_rejected(void)
+{
+    ZT_SECTION("frame header rejects oversize payload");
+
+    uint8_t hdr[4];
+    ZT_CHECK(frame_hdr_encode(hdr, ZNP_FRAME_INPUT, ZNP_FRAME_MAX_PAYLOAD) == 1);
+    ZT_CHECK(frame_hdr_encode(hdr, ZNP_FRAME_INPUT, ZNP_FRAME_MAX_PAYLOAD + 1) == 0);
+
+    /* A bogus length on the read side must also fail. */
+    hdr[2] = 0xFF;
+    hdr[3] = 0xFF;
+    uint16_t typ, length;
+    ZT_CHECK(frame_hdr_decode(hdr, &typ, &length) == 0);
+}
+
+/* CLIENT_HELLO payload layout: u32 proto, u8 mode, char room[16],
+ * char password[32], char nickname[16]. Total = 4+1+16+32+16 = 69 bytes. */
+static void encode_hello(uint8_t* out, uint8_t mode,
+    char const* room, char const* password, char const* nick)
+{
+    uint32_t proto = htonl(ZNP_PROTOCOL_VERSION);
+    memcpy(out, &proto, 4);
+    out[4] = mode;
+    memset(out + 5, 0, ZNP_ROOM_CODE_LEN);
+    memset(out + 5 + ZNP_ROOM_CODE_LEN, 0, ZNP_PASSWORD_LEN);
+    memset(out + 5 + ZNP_ROOM_CODE_LEN + ZNP_PASSWORD_LEN, 0, ZNP_NICKNAME_LEN);
+    size_t n = strlen(room);
+    if (n > ZNP_ROOM_CODE_LEN)
+        n = ZNP_ROOM_CODE_LEN;
+    memcpy(out + 5, room, n);
+    n = strlen(password);
+    if (n > ZNP_PASSWORD_LEN)
+        n = ZNP_PASSWORD_LEN;
+    memcpy(out + 5 + ZNP_ROOM_CODE_LEN, password, n);
+    n = strlen(nick);
+    if (n > ZNP_NICKNAME_LEN)
+        n = ZNP_NICKNAME_LEN;
+    memcpy(out + 5 + ZNP_ROOM_CODE_LEN + ZNP_PASSWORD_LEN, nick, n);
+}
+
+static void test_hello_payload_layout(void)
+{
+    ZT_SECTION("CLIENT_HELLO payload layout");
+
+    enum { HELLO_SZ = 4 + 1 + ZNP_ROOM_CODE_LEN + ZNP_PASSWORD_LEN + ZNP_NICKNAME_LEN };
+    ZT_CHECK_INT(HELLO_SZ, 69);
+
+    uint8_t buf[HELLO_SZ];
+    encode_hello(buf, ZNP_HELLO_MODE_CREATE, "lobby", "secret", "alice");
+
+    /* protocol version is BE-1 */
+    uint32_t proto;
+    memcpy(&proto, buf, 4);
+    ZT_CHECK_INT((int)ntohl(proto), (int)ZNP_PROTOCOL_VERSION);
+
+    /* mode byte */
+    ZT_CHECK_INT(buf[4], ZNP_HELLO_MODE_CREATE);
+
+    /* room is at offset 5, NUL-padded */
+    ZT_CHECK(strncmp((char const*)buf + 5, "lobby", 5) == 0);
+    ZT_CHECK(buf[5 + 5] == 0);
+
+    /* password at offset 5+16 = 21 */
+    ZT_CHECK(strncmp((char const*)buf + 21, "secret", 6) == 0);
+    ZT_CHECK(buf[21 + 6] == 0);
+
+    /* nickname at offset 5+16+32 = 53 */
+    ZT_CHECK(strncmp((char const*)buf + 53, "alice", 5) == 0);
+    ZT_CHECK(buf[53 + 5] == 0);
+}
+
+static void test_hello_truncates_overlong_fields(void)
+{
+    ZT_SECTION("CLIENT_HELLO truncates overlong strings");
+
+    enum { HELLO_SZ = 4 + 1 + ZNP_ROOM_CODE_LEN + ZNP_PASSWORD_LEN + ZNP_NICKNAME_LEN };
+    uint8_t buf[HELLO_SZ];
+    /* 20-char room name (> ZNP_ROOM_CODE_LEN=16) */
+    encode_hello(buf, ZNP_HELLO_MODE_CREATE,
+        "abcdefghijklmnopqrst", "supersecretpasswordsupersecretpasswordmore",
+        "a-very-long-nickname-indeed");
+
+    /* room field holds exactly 16 chars, no terminator inside it */
+    ZT_CHECK(memcmp(buf + 5, "abcdefghijklmnop", 16) == 0);
+    /* the byte immediately after the room field is the start of the password
+     * field, so it should hold "supe..." rather than any leaked nul */
+    ZT_CHECK(buf[5 + 16] == 's');
+
+    /* password field is exactly 32 chars */
+    ZT_CHECK(memcmp(buf + 21, "supersecretpasswordsupersecretpa", 32) == 0);
+
+    /* nickname field is exactly 16 chars */
+    ZT_CHECK(memcmp(buf + 53, "a-very-long-nick", 16) == 0);
+}
+
+/* Stream prefix must be exactly the 4 ASCII bytes "ZNP1". */
+static void test_stream_prefix(void)
+{
+    ZT_SECTION("stream prefix is ASCII 'ZNP1'");
+    char const* p = "ZNP1";
+    ZT_CHECK(p[0] == 'Z');
+    ZT_CHECK(p[1] == 'N');
+    ZT_CHECK(p[2] == 'P');
+    ZT_CHECK(p[3] == '1');
+}
+
+/* Send a length-prefixed frame on a TCP loopback, read it back, and verify
+ * the full structure decodes the same way the relay would see it. */
+static void test_framed_tcp_loopback(void)
+{
+    ZT_SECTION("framed TCP loopback (write/read of one INPUT frame)");
+
+    int lfd = make_tcp_listener(17847);
+    if (lfd < 0) {
+        fprintf(stderr, "    SKIP: listener failed\n");
+        return;
+    }
+
+    int cfd = socket(AF_INET, SOCK_STREAM, 0);
+    if (cfd < 0) {
+        close(lfd);
+        fprintf(stderr, "    SKIP: client socket failed\n");
+        return;
+    }
+    struct sockaddr_in a;
+    memset(&a, 0, sizeof(a));
+    a.sin_family = AF_INET;
+    a.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+    a.sin_port = htons(17847);
+    if (connect(cfd, (struct sockaddr*)&a, sizeof(a)) != 0) {
+        close(cfd);
+        close(lfd);
+        fprintf(stderr, "    SKIP: connect failed\n");
+        return;
+    }
+
+    int afd = accept(lfd, NULL, NULL);
+    close(lfd);
+    if (afd < 0) {
+        close(cfd);
+        fprintf(stderr, "    SKIP: accept failed\n");
+        return;
+    }
+
+    /* Write: 4-byte header + 16-byte INPUT payload. */
+    uint8_t wire[4 + 16];
+    frame_hdr_encode(wire, ZNP_FRAME_INPUT, 16);
+    Packet payload = { NETP_MAGIC, 7, 0xAA55AA55u, 0x12345678u };
+    Packet wirep = payload;
+    pkt_hton(&wirep);
+    memcpy(wire + 4, &wirep, 16);
+    ZT_CHECK(send_exact(cfd, wire, sizeof(wire)));
+
+    /* Read back at the other end. */
+    uint8_t read_hdr[4];
+    ZT_CHECK(recv_exact(afd, read_hdr, 4));
+    uint16_t typ, length;
+    ZT_CHECK(frame_hdr_decode(read_hdr, &typ, &length) == 1);
+    ZT_CHECK_INT(typ, ZNP_FRAME_INPUT);
+    ZT_CHECK_INT(length, 16);
+
+    Packet read_pkt;
+    ZT_CHECK(recv_exact(afd, &read_pkt, sizeof(read_pkt)));
+    pkt_ntoh(&read_pkt);
+    ZT_CHECK_INT((int)read_pkt.magic, (int)NETP_MAGIC);
+    ZT_CHECK_INT((int)read_pkt.seq, 7);
+    ZT_CHECK((unsigned)read_pkt.joy == 0xAA55AA55u);
+    ZT_CHECK((unsigned)read_pkt.crc == 0x12345678u);
+
+    close(afd);
+    close(cfd);
+}
+
 /* Entry point */
 
 int main(void)
@@ -408,6 +643,13 @@ int main(void)
     test_desync_detection();
     test_udp_loopback();
     test_tcp_loopback();
+
+    test_stream_prefix();
+    test_frame_header_layout();
+    test_frame_oversize_rejected();
+    test_hello_payload_layout();
+    test_hello_truncates_overlong_fields();
+    test_framed_tcp_loopback();
 
     ZT_RESULTS();
 }

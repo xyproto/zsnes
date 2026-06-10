@@ -22,7 +22,6 @@ void DisplayGUIStates(void); // Save/Load State Confirmation
 void DisplayGUIVideo(void);
 void DisplayGameOptns(void); // Misc Key Window
 void DisplayNetOptns(void);
-void NetplayHostSession(void);
 void NetplayJoinSession(void);
 void NetplayDisconnectSession(void);
 void NetplaySyncInputs(unsigned int* joy_a, unsigned int* joy_b);
@@ -32,6 +31,7 @@ extern char GUICheatTextZ1[];
 extern char GUICheatTextZ2[];
 extern char NetplayHostName[32];
 extern char* GUINetplayTextPtr[1];
+extern u1 NetplayTLSConfig;
 extern char GUIChoseSaveText2[2];
 extern char GUIChoseSlotTextX[2];
 extern char GUIComboTextH[21];
@@ -50,5 +50,8 @@ extern u4 GUIcurrentinputcursloc;
 extern u4 GUIcurrentinputviewloc;
 extern u4 GUIcurrentvideocursloc;
 extern u4 GUIcurrentvideoviewloc;
+
+char const* NetplayStatusText(void);
+void NetplayServiceTick(void);
 
 #endif

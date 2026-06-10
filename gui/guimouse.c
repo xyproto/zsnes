@@ -1336,10 +1336,9 @@ static void DisplayNetOptnsClick(void)
         GUIInputBox = 1;
         GUIInputLimit = 31;
     }
-    GUIClickCButton(eax, edx, 8, 66, &NetplayUDPConfig);
-    GUIPHoldbutton(eax, edx, 8, 74, 56, 85, 85);
-    GUIPHoldbutton(eax, edx, 66, 74, 114, 85, 86);
-    GUIPHoldbutton(eax, edx, 124, 74, 212, 85, 87);
+    GUIClickCButton(eax, edx, 8, 66, &NetplayTLSConfig);
+    GUIPHoldbutton(eax, edx, 8, 74, 104, 85, 86);
+    GUIPHoldbutton(eax, edx, 114, 74, 212, 85, 87);
 }
 
 static void DisplayGameOptnsClick(s4 const eax, s4 const edx)
@@ -2378,9 +2377,6 @@ static void ProcessMouseButtons(void)
         break;
     case 66:
         DocsPage();
-        break;
-    case 85:
-        NetplayHostSession();
         break;
     case 86:
         NetplayJoinSession();

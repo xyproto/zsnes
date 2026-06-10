@@ -1363,17 +1363,15 @@ static void GUINetplayKeys(char dh)
         return;
     dh = ToUpperASM(dh);
     switch (dh) {
-    case 'H':
-        NetplayHostSession();
-        break;
+    case 'C':
     case 'J':
         NetplayJoinSession();
         break;
     case 'D':
         NetplayDisconnectSession();
         break;
-    case 'U':
-        NetplayUDPConfig ^= 1;
+    case 'T':
+        NetplayTLSConfig ^= 1;
         break;
     }
 }
