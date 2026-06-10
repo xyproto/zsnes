@@ -57,7 +57,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define SDL_RUMBLECONTROLLER(gamepad, left, right, time) SDL_RumbleGamepad(gamepad, left, right, time)
 #define SDL_OPENCONTROLLER(index) SDL_OpenGamepad(index)
 #else
-#define SDL_RUMBLECONTROLLER(gamepad, left, right, time) SDL_GameControllerRumble(gamepad, left, right, time)
+#define SDL_RUMBLECONTROLLER(gamepad, left, right, time) SDL_JoystickRumble(gamepad, left, right, time)
 #define SDL_OPENCONTROLLER(index) SDL_GameControllerOpen(index)
 #endif
 
@@ -1640,12 +1640,16 @@ static void sem_sleep_die()
 
 void DoRumble(void)
 {
+    SDL_Gamepad* gamepad = SDL_OPENCONTROLLER(0);
     extern u2 RumbleData;
     extern u1 RumbleTimer;
 
     if (RumbleTimer == 60) {
         // Stop vibration
-        SDL_RUMBLECONTROLLER(gamepad,0,0,1);
+        SDL_RUMBLECONTROLLER(gamepad, 0, 0, 1);
+#ifdef __SDL3__
+        SDL_UpdateJoysticks();
+#endif
     }
 
     if (RumbleData == 0xFFFF) {
@@ -1663,12 +1667,15 @@ void DoRumble(void)
         printf("Left: $%X\n", RumbleLeft);
         u2 RumbleRight = (((RumbleData & 0x00F0) >> 4) * 4369);
         printf("Right: $%X\n", RumbleRight);
-        SDL_RUMBLECONTROLLER(gamepad,((RumbleData & 0x000F) * 4369),(((RumbleData & 0x00F0) >> 4) * 4369),500);
+        bool result = SDL_RUMBLECONTROLLER(gamepad, RumbleLeft, RumbleRight, 2000);
+#ifdef __SDL3__
+        SDL_UpdateJoysticks();
+#endif
         RumbleTimer++;
 
         RumbleData = 0;
 
-        if (result == ERROR_SUCCESS) {
+        if (result == true) {
             printf("Rumble started!\n");
         }
     }
@@ -1684,11 +1691,15 @@ void UpdateVFrame(void)
     CheckTimers();
     Main_Proc();
 
+    SDL_Gamepad* gamepad = SDL_OPENCONTROLLER(0);
     if (SNESRumble) {
         DoRumble();
     } else {
         // Stop vibration
-        SDL_RUMBLECONTROLLER(gamepad,0,0,1);
+        SDL_RUMBLECONTROLLER(gamepad, 0, 0, 1);
+#ifdef __SDL3__
+        SDL_UpdateJoysticks();
+#endif
     }
 
     if (sound_sdl) {
