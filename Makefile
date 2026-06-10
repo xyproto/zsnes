@@ -1,4 +1,4 @@
-.PHONY: clean distclean fmt info test win32
+.PHONY: clean distclean fmt info test win32 unused
 
 # Supported ARCH values:
 #   LINUX, FREEBSD, OPENBSD, NETBSD, DARWIN, WIN
@@ -83,7 +83,10 @@ endif
 IS_FEDORA       := $(if $(wildcard /etc/fedora-release),yes)
 IS_DEBIAN_BASED := $(if $(wildcard /etc/debian_version),yes)
 
-COMMON_FLAGS = $(ARCH_CFLAGS) -pthread -no-pie -std=c11 -D_DEFAULT_SOURCE -D_POSIX_C_SOURCE=200809L -O3 -fno-gcse -fno-inline -fno-pic -D_FORTIFY_SOURCE=2 -ffunction-sections -fdata-sections -Wfatal-errors -w
+# `unused` target overrides this to re-enable -Wunused* (GCC's -w cannot be
+# undone by appending -W flags later).
+WARN_FLAGS ?= -w
+COMMON_FLAGS = $(ARCH_CFLAGS) -pthread -no-pie -std=c11 -D_DEFAULT_SOURCE -D_POSIX_C_SOURCE=200809L -O3 -fno-gcse -fno-inline -fno-pic -D_FORTIFY_SOURCE=2 -ffunction-sections -fdata-sections -Wfatal-errors $(WARN_FLAGS)
 
 # TODO: FreeBSD has a patch for being able to build without -fcommon
 CFLAGS += $(COMMON_FLAGS) -fcommon
@@ -559,6 +562,10 @@ endif
 
 ASMFLAGS += $(CFGDEFS)
 CFLAGS += $(CFGDEFS)
+# Append hooks for layered flags.
+CFLAGS   += $(EXTRA_CFLAGS)
+ASMFLAGS += $(EXTRA_ASMFLAGS)
+LDFLAGS  += $(EXTRA_LDFLAGS)
 DEPFLAGS_C = -MMD -MP -MF $(@:.o=.d) -MT $@
 
 HDRS := $(PSRS:.psr=.h)
@@ -662,3 +669,28 @@ install:
 	install -Dm755 linux/zsnes.desktop '$(DESTDIR)$(PREFIX)/share/applications/io.github.xyproto.zsnes.desktop'
 	install -Dm755 linux/io.github.xyproto.zsnes.metainfo.xml -t '$(DESTDIR)$(PREFIX)/share/metainfo'
 	install -Dm644 man/zsnes.1 '$(DESTDIR)$(PREFIX)/share/man/man1/zsnes.1'
+
+# Detect likely-unused C/ASM code via -Wunused* + linker --gc-sections reports.
+# The build already uses -ffunction-sections/-fdata-sections, so each dropped
+# section maps to a function or datum with no reachable references.
+UNUSED_LOG ?= unused-report.txt
+UNUSED_CFLAGS  := -Wunused -Wunused-function -Wunused-variable \
+                  -Wunused-but-set-variable -Wunused-label -Wunused-value \
+                  -Wunused-parameter
+UNUSED_LDFLAGS := -Wl,--print-gc-sections
+unused:
+	@echo '===> UNUSED: clean rebuild with -Wunused* and --print-gc-sections'
+	$(Q)$(MAKE) --no-print-directory clean >/dev/null
+	$(Q)$(MAKE) --no-print-directory \
+	    WARN_FLAGS='$(UNUSED_CFLAGS)' \
+	    EXTRA_LDFLAGS='$(UNUSED_LDFLAGS)' 2>&1 | tee $(UNUSED_LOG)
+	@echo
+	@echo '===> UNUSED: summary (full log in $(UNUSED_LOG))'
+	@echo '--- C -Wunused warnings ---'
+	@grep -E 'warning:.*\[-Wunused' $(UNUSED_LOG) | sort -u || true
+	@echo
+	@echo '--- Linker discarded sections (likely-unused functions/data) ---'
+	@grep -E 'removing unused section' $(UNUSED_LOG) | sort -u || true
+	@echo
+	@echo 'Tip: function "foo" in a discarded ".text.foo" section has no callers'
+	@echo '     reachable from main(); review before deleting (callbacks, asm refs).'
