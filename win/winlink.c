@@ -23,6 +23,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define DIRECTSOUND_VERSION 0x0800
 #define __STDC_CONSTANT_MACROS
 #define COBJMACROS
+#define ANALOG_DEADZONE 16000
 
 #include <ctype.h>
 #include <math.h>
@@ -30,6 +31,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <stdint.h>
 #include <stdio.h>
 
+#include <Xinput.h>
 #include <dinput.h>
 #include <dsound.h>
 #include <windows.h>
@@ -94,28 +96,9 @@ DWORD dwBytes2;
 LPDIRECTINPUT8 DInput = NULL;
 LPDIRECTINPUTDEVICE8 MouseInput = NULL;
 LPDIRECTINPUTDEVICE8 KeyboardInput = NULL;
-LPDIRECTINPUTDEVICE8 JoystickInput[5];
-DIJOYSTATE js[5];
-
-DWORD X1Disable[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-DWORD X2Disable[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-DWORD Y1Disable[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-DWORD Y2Disable[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-DWORD Z1Disable[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-DWORD Z2Disable[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-DWORD RX1Disable[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-DWORD RX2Disable[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-DWORD RY1Disable[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-DWORD RY2Disable[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-DWORD RZ1Disable[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-DWORD RZ2Disable[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-DWORD S01Disable[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-DWORD S02Disable[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-DWORD S11Disable[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-DWORD S12Disable[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-DWORD POVDisable[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-DWORD NumPOV[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-DWORD NumBTN[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+XINPUT_STATE xstate[4];
+BOOL XInputConnected[4];
+DWORD result;
 
 DWORD CurrentJoy = 0;
 
@@ -280,12 +263,6 @@ void reInitSound()
 
 BOOL InputAcquire()
 {
-    for (unsigned int i = 0; i < 5; i++) {
-        if (JoystickInput[i]) {
-            IDirectInputDevice8_Acquire(JoystickInput[i]);
-        }
-    }
-
     if (device1 && device2 && !GUIOn2) {
         MultiMouseInit();
     } else if (MouseInput && GUIOn2) {
@@ -302,12 +279,6 @@ BOOL InputDeAcquire()
 {
     if (KeyboardInput) {
         IDirectInputDevice8_Unacquire(KeyboardInput);
-    }
-
-    for (unsigned int i = 0; i < 5; i++) {
-        if (JoystickInput[i]) {
-            IDirectInputDevice8_Unacquire(JoystickInput[i]);
-        }
     }
 
     if (device1 && device2 && !GUIOn2) {
@@ -1023,153 +994,6 @@ BOOL ReInitSound()
     }
 }
 
-BOOL FAR PASCAL InitJoystickInput(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef)
-{
-    LPDIRECTINPUT8 pdi = (LPDIRECTINPUT8)pvRef;
-    GUID DeviceGuid = pdinst->guidInstance;
-
-    if (CurrentJoy > 4) {
-        return DIENUM_CONTINUE;
-    }
-
-    // Create the DirectInput joystick device.
-    if (IDirectInput8_CreateDevice(pdi, &DeviceGuid, &JoystickInput[CurrentJoy], NULL) != DI_OK) {
-        return DIENUM_CONTINUE;
-    }
-
-    if (IDirectInputDevice8_SetDataFormat(JoystickInput[CurrentJoy], &c_dfDIJoystick) != DI_OK) {
-        IDirectInputDevice8_Release(JoystickInput[CurrentJoy]);
-        return DIENUM_CONTINUE;
-    }
-
-    if (IDirectInputDevice8_SetCooperativeLevel(JoystickInput[CurrentJoy], hMainWindow,
-            DISCL_EXCLUSIVE | DISCL_BACKGROUND)
-        != DI_OK) {
-        IDirectInputDevice8_Release(JoystickInput[CurrentJoy]);
-        return DIENUM_CONTINUE;
-    }
-
-    DIPROPRANGE diprg;
-
-    diprg.diph.dwSize = sizeof(diprg);
-    diprg.diph.dwHeaderSize = sizeof(diprg.diph);
-    diprg.diph.dwObj = DIJOFS_X;
-    diprg.diph.dwHow = DIPH_BYOFFSET;
-    diprg.lMin = joy_sensitivity * -1;
-    diprg.lMax = joy_sensitivity;
-
-    if (FAILED(IDirectInputDevice8_SetProperty(JoystickInput[CurrentJoy], DIPROP_RANGE, &diprg.diph))) {
-        X1Disable[CurrentJoy] = 1;
-        X2Disable[CurrentJoy] = 1;
-    }
-
-    diprg.diph.dwObj = DIJOFS_Y;
-
-    if (FAILED(IDirectInputDevice8_SetProperty(JoystickInput[CurrentJoy], DIPROP_RANGE, &diprg.diph))) {
-        Y1Disable[CurrentJoy] = 1;
-        Y2Disable[CurrentJoy] = 1;
-    }
-
-    diprg.diph.dwObj = DIJOFS_Z;
-    if (FAILED(IDirectInputDevice8_SetProperty(JoystickInput[CurrentJoy], DIPROP_RANGE, &diprg.diph))) {
-        Z1Disable[CurrentJoy] = 1;
-        Z2Disable[CurrentJoy] = 1;
-    }
-
-    diprg.diph.dwObj = DIJOFS_RX;
-    if (FAILED(IDirectInputDevice8_SetProperty(JoystickInput[CurrentJoy], DIPROP_RANGE, &diprg.diph))) {
-        RX1Disable[CurrentJoy] = 1;
-        RX2Disable[CurrentJoy] = 1;
-    }
-
-    diprg.diph.dwObj = DIJOFS_RY;
-    if (FAILED(IDirectInputDevice8_SetProperty(JoystickInput[CurrentJoy], DIPROP_RANGE, &diprg.diph))) {
-        RY1Disable[CurrentJoy] = 1;
-        RY2Disable[CurrentJoy] = 1;
-    }
-
-    diprg.diph.dwObj = DIJOFS_RZ;
-    if (FAILED(IDirectInputDevice8_SetProperty(JoystickInput[CurrentJoy], DIPROP_RANGE, &diprg.diph))) {
-        RZ1Disable[CurrentJoy] = 1;
-        RZ2Disable[CurrentJoy] = 1;
-    }
-
-    diprg.diph.dwObj = DIJOFS_SLIDER(0);
-    if (FAILED(IDirectInputDevice8_SetProperty(JoystickInput[CurrentJoy], DIPROP_RANGE, &diprg.diph))) {
-        S01Disable[CurrentJoy] = 1;
-        S02Disable[CurrentJoy] = 1;
-    }
-
-    diprg.diph.dwObj = DIJOFS_SLIDER(1);
-    if (FAILED(IDirectInputDevice8_SetProperty(JoystickInput[CurrentJoy], DIPROP_RANGE, &diprg.diph))) {
-        S11Disable[CurrentJoy] = 1;
-        S12Disable[CurrentJoy] = 1;
-    }
-
-    DIDEVCAPS didc;
-
-    didc.dwSize = sizeof(DIDEVCAPS);
-
-    if (IDirectInputDevice8_GetCapabilities(JoystickInput[CurrentJoy], &didc) != DI_OK) {
-        IDirectInputDevice8_Release(JoystickInput[CurrentJoy]);
-        return DIENUM_CONTINUE;
-    }
-
-    if (didc.dwButtons <= 16) {
-        NumBTN[CurrentJoy] = didc.dwButtons;
-    } else {
-        NumBTN[CurrentJoy] = 16;
-    }
-
-    if (didc.dwPOVs) {
-        NumPOV[CurrentJoy] = didc.dwPOVs;
-    } else {
-        POVDisable[CurrentJoy] = 1;
-    }
-
-    DIPROPDWORD dipdw;
-
-    dipdw.diph.dwSize = sizeof(DIPROPDWORD);
-    dipdw.diph.dwHeaderSize = sizeof(dipdw.diph);
-    dipdw.diph.dwHow = DIPH_BYOFFSET;
-    dipdw.dwData = 2500;
-    dipdw.diph.dwObj = DIJOFS_X;
-    IDirectInputDevice8_SetProperty(JoystickInput[CurrentJoy], DIPROP_DEADZONE, &dipdw.diph);
-
-    dipdw.diph.dwObj = DIJOFS_Y;
-    IDirectInputDevice8_SetProperty(JoystickInput[CurrentJoy], DIPROP_DEADZONE, &dipdw.diph);
-
-    dipdw.diph.dwObj = DIJOFS_Z;
-    IDirectInputDevice8_SetProperty(JoystickInput[CurrentJoy], DIPROP_DEADZONE, &dipdw.diph);
-
-    dipdw.diph.dwObj = DIJOFS_RX;
-    IDirectInputDevice8_SetProperty(JoystickInput[CurrentJoy], DIPROP_DEADZONE, &dipdw.diph);
-
-    dipdw.diph.dwObj = DIJOFS_RY;
-    IDirectInputDevice8_SetProperty(JoystickInput[CurrentJoy], DIPROP_DEADZONE, &dipdw.diph);
-
-    dipdw.diph.dwObj = DIJOFS_RZ;
-    IDirectInputDevice8_SetProperty(JoystickInput[CurrentJoy], DIPROP_DEADZONE, &dipdw.diph);
-
-    dipdw.diph.dwObj = DIJOFS_SLIDER(0);
-    IDirectInputDevice8_SetProperty(JoystickInput[CurrentJoy], DIPROP_DEADZONE, &dipdw.diph);
-
-    dipdw.diph.dwObj = DIJOFS_SLIDER(1);
-    IDirectInputDevice8_SetProperty(JoystickInput[CurrentJoy], DIPROP_DEADZONE, &dipdw.diph);
-
-    dipdw.diph.dwSize = sizeof(DIPROPDWORD);
-    dipdw.diph.dwHeaderSize = sizeof(dipdw.diph);
-    dipdw.diph.dwHow = DIPH_DEVICE;
-    dipdw.dwData = DIPROPAXISMODE_ABS;
-    dipdw.diph.dwObj = 0;
-
-    IDirectInputDevice8_SetProperty(JoystickInput[CurrentJoy], DIPROP_AXISMODE, &dipdw.diph);
-
-    CurrentJoy += 1;
-
-    return DIENUM_CONTINUE;
-}
-
 void ReleaseDirectInput()
 {
     if (MouseInput) {
@@ -1180,13 +1004,6 @@ void ReleaseDirectInput()
     if (KeyboardInput) {
         IDirectInputDevice8_Release(KeyboardInput);
         KeyboardInput = NULL;
-    }
-
-    for (int i = 0; i < 5; i++) {
-        if (JoystickInput[i]) {
-            IDirectInputDevice8_Release(JoystickInput[i]);
-            JoystickInput[i] = NULL;
-        }
     }
 
     if (DInput) {
@@ -1292,17 +1109,10 @@ static bool InitInput(HINSTANCE const hInst)
         return FALSE;
     }
 
-    JoystickInput[0] = NULL;
-    JoystickInput[1] = NULL;
-    JoystickInput[2] = NULL;
-    JoystickInput[3] = NULL;
-    JoystickInput[4] = NULL;
-
-    hr = IDirectInput8_EnumDevices(DInput, DI8DEVCLASS_GAMECTRL, InitJoystickInput, DInput, DIEDFL_ATTACHEDONLY);
-
-    if (FAILED(hr)) {
-        DInputError();
-        return FALSE;
+    for (DWORD i = 0; i < 4; i++) {
+        ZeroMemory(&xstate[i], sizeof(XINPUT_STATE));
+        result = XInputGetState(i, &xstate[i]);
+        XInputConnected[i] = (result == ERROR_SUCCESS);
     }
 
     InputAcquire();
@@ -1314,74 +1124,9 @@ void TestJoy()
 {
     int i;
 
-    for (i = 0; i < 5; i++) {
-        if (JoystickInput[i]) {
-            IDirectInputDevice8_Poll(JoystickInput[i]);
-
-            if (IDirectInputDevice8_GetDeviceState(JoystickInput[i], sizeof(DIJOYSTATE), &js[i]) == DIERR_INPUTLOST) {
-                if (JoystickInput[i]) {
-                    IDirectInputDevice8_Acquire(JoystickInput[i]);
-                }
-                if (FAILED(IDirectInputDevice8_GetDeviceState(JoystickInput[i], sizeof(DIJOYSTATE), &js[i]))) {
-                    return;
-                }
-            }
-
-            if (!X1Disable[i] && (js[i].lX > 0)) {
-                X1Disable[i] = 1;
-            }
-
-            if (!X2Disable[i] && (js[i].lX < 0)) {
-                X2Disable[i] = 1;
-            }
-
-            if (!Y1Disable[i] && (js[i].lY > 0)) {
-                Y1Disable[i] = 1;
-            }
-
-            if (!Y2Disable[i] && (js[i].lY < 0)) {
-                Y2Disable[i] = 1;
-            }
-
-            if (!Z1Disable[i] && (js[i].lZ > 0)) {
-                Z1Disable[i] = 1;
-            }
-
-            if (!Z2Disable[i] && (js[i].lZ < 0)) {
-                Z2Disable[i] = 1;
-            }
-
-            if (!RY1Disable[i] && (js[i].lRy > 0)) {
-                RY1Disable[i] = 1;
-            }
-
-            if (!RY2Disable[i] && (js[i].lRy < 0)) {
-                RY2Disable[i] = 1;
-            }
-
-            if (!RZ1Disable[i] && (js[i].lRz > 0)) {
-                RZ1Disable[i] = 1;
-            }
-
-            if (!RZ2Disable[i] && (js[i].lRz < 0)) {
-                RZ2Disable[i] = 1;
-            }
-
-            if (!S01Disable[i] && (js[i].rglSlider[0] > 0)) {
-                S01Disable[i] = 1;
-            }
-
-            if (!S02Disable[i] && (js[i].rglSlider[0] < 0)) {
-                S02Disable[i] = 1;
-            }
-
-            if (!S11Disable[i] && (js[i].rglSlider[1] > 0)) {
-                S11Disable[i] = 1;
-            }
-
-            if (!S12Disable[i] && (js[i].rglSlider[1] < 0)) {
-                S12Disable[i] = 1;
-            }
+    for (i = 0; i < 4; i++) {
+        if (result != ERROR_SUCCESS) {
+            continue;
         }
     }
 }
@@ -2391,6 +2136,9 @@ void WinUpdateDevices()
     unsigned char* keys;
     unsigned char keys2[256];
 
+    result = XInputGetState(i, &xstate[i]);
+    XInputConnected[i] = (result == ERROR_SUCCESS);
+
     for (i = 0; i < 256; i++) {
         keys2[i] = 0;
     }
@@ -2425,152 +2173,155 @@ void WinUpdateDevices()
 
     keys[0] = 0;
 
-    for (i = 0; i < 5; i++) {
-        if (JoystickInput[i]) {
-            for (j = 0; j < 32; j++) {
-                keys[0x100 + i * 32 + j] = 0;
+    for (i = 0; i < 4; i++) {
+        if (XInputConnected[i]) {
+
+            if (result != ERROR_SUCCESS) {
+                continue;
             }
 
-            IDirectInputDevice8_Poll(JoystickInput[i]);
-
-            if (IDirectInputDevice8_GetDeviceState(JoystickInput[i], sizeof(DIJOYSTATE), &js[i]) == DIERR_INPUTLOST) {
-                if (JoystickInput[i]) {
-                    IDirectInputDevice8_Acquire(JoystickInput[i]);
-                }
-                if (FAILED(IDirectInputDevice8_GetDeviceState(JoystickInput[i], sizeof(DIJOYSTATE), &js[i]))) {
-                    return;
-                }
+            if (xstate[i].Gamepad.sThumbLX > ANALOG_DEADZONE) {
+                keys[0x100 + i * 32 + 0] = 1;
+            } else {
+                keys[0x100 + i * 32 + 0] = 0;
             }
 
-            if (!X1Disable[i]) {
-                if (js[i].lX > 0) {
-                    keys[0x100 + i * 32 + 0] = 1;
-                }
+            if (xstate[i].Gamepad.sThumbLX < -ANALOG_DEADZONE) {
+                keys[0x100 + i * 32 + 1] = 1;
+            } else {
+                keys[0x100 + i * 32 + 1] = 0;
             }
 
-            if (!X2Disable[i]) {
-                if (js[i].lX < 0) {
-                    keys[0x100 + i * 32 + 1] = 1;
-                }
+            if (xstate[i].Gamepad.sThumbLY > ANALOG_DEADZONE) {
+                keys[0x100 + i * 32 + 2] = 1;
+            } else {
+                keys[0x100 + i * 32 + 2] = 0;
             }
 
-            if (!Y1Disable[i]) {
-                if (js[i].lY > 0) {
-                    keys[0x100 + i * 32 + 2] = 1;
-                }
+            if (xstate[i].Gamepad.sThumbLY < -ANALOG_DEADZONE) {
+                keys[0x100 + i * 32 + 3] = 1;
+            } else {
+                keys[0x100 + i * 32 + 3] = 0;
             }
 
-            if (!Y2Disable[i]) {
-                if (js[i].lY < 0) {
-                    keys[0x100 + i * 32 + 3] = 1;
-                }
+            if (xstate[i].Gamepad.sThumbRX > ANALOG_DEADZONE) {
+                keys[0x100 + i * 32 + 4] = 1;
+            } else {
+                keys[0x100 + i * 32 + 4] = 0;
             }
 
-            if (!Z1Disable[i]) {
-                if (js[i].lZ > 0) {
-                    keys[0x100 + i * 32 + 4] = 1;
-                }
+            if (xstate[i].Gamepad.sThumbRX < -ANALOG_DEADZONE) {
+                keys[0x100 + i * 32 + 5] = 1;
+            } else {
+                keys[0x100 + i * 32 + 5] = 0;
             }
 
-            if (!Z2Disable[i]) {
-                if (js[i].lZ < 0) {
-                    keys[0x100 + i * 32 + 5] = 1;
-                }
+            if (xstate[i].Gamepad.sThumbRY > ANALOG_DEADZONE) {
+                keys[0x100 + i * 32 + 6] = 1;
+            } else {
+                keys[0x100 + i * 32 + 6] = 0;
             }
 
-            if (!RY1Disable[i]) {
-                if (js[i].lRy > 0) {
-                    keys[0x100 + i * 32 + 6] = 1;
-                }
+            if (xstate[i].Gamepad.sThumbRY < -ANALOG_DEADZONE) {
+                keys[0x100 + i * 32 + 7] = 1;
+            } else {
+                keys[0x100 + i * 32 + 7] = 0;
             }
 
-            if (!RY2Disable[i]) {
-                if (js[i].lRy < 0) {
-                    keys[0x100 + i * 32 + 7] = 1;
-                }
+            if (xstate[i].Gamepad.bLeftTrigger > ANALOG_DEADZONE) {
+                keys[0x100 + i * 32 + 8] = 1;
+            } else {
+                keys[0x100 + i * 32 + 8] = 0;
             }
 
-            if (!RZ1Disable[i]) {
-                if (js[i].lRz > 0) {
-                    keys[0x100 + i * 32 + 8] = 1;
-                }
+            if (xstate[i].Gamepad.bRightTrigger > ANALOG_DEADZONE) {
+                keys[0x100 + i * 32 + 9] = 1;
+            } else {
+                keys[0x100 + i * 32 + 9] = 0;
             }
 
-            if (!RZ2Disable[i]) {
-                if (js[i].lRz < 0) {
-                    keys[0x100 + i * 32 + 9] = 1;
-                }
+            if (xstate[i].Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP) {
+                keys[0x100 + i * 32 + 10] = 1;
+            } else {
+                keys[0x100 + i * 32 + 10] = 0;
             }
 
-            if (!S01Disable[i]) {
-                if (js[i].rglSlider[0] > 0) {
-                    keys[0x100 + i * 32 + 10] = 1;
-                }
+            if (xstate[i].Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN) {
+                keys[0x100 + i * 32 + 11] = 1;
+            } else {
+                keys[0x100 + i * 32 + 11] = 0;
             }
 
-            if (!S02Disable[i]) {
-                if (js[i].rglSlider[0] < 0) {
-                    keys[0x100 + i * 32 + 11] = 1;
-                }
+            if (xstate[i].Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT) {
+                keys[0x100 + i * 32 + 12] = 1;
+            } else {
+                keys[0x100 + i * 32 + 12] = 0;
             }
 
-            if (!S11Disable[i]) {
-                if (js[i].rglSlider[1] > 0) {
-                    keys[0x100 + i * 32 + 12] = 1;
-                }
+            if (xstate[i].Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT) {
+                keys[0x100 + i * 32 + 13] = 1;
+            } else {
+                keys[0x100 + i * 32 + 13] = 0;
             }
 
-            if (!S12Disable[i]) {
-                if (js[i].rglSlider[1] < 0) {
-                    keys[0x100 + i * 32 + 13] = 1;
-                }
+            if (xstate[i].Gamepad.wButtons & XINPUT_GAMEPAD_START) {
+                keys[0x100 + i * 32 + 14] = 1;
+            } else {
+                keys[0x100 + i * 32 + 14] = 0;
             }
 
-            if (!POVDisable[i]) {
-                for (int p = 0; (unsigned long)p < NumPOV[i]; p++) {
-                    switch (js[i].rgdwPOV[p]) {
-                    case 0:
-                        keys[0x100 + i * 32 + 3] = 1;
-                        break;
-                    case 4500:
-                        keys[0x100 + i * 32 + 0] = 1;
-                        keys[0x100 + i * 32 + 3] = 1;
-                        break;
-                    case 9000:
-                        keys[0x100 + i * 32 + 0] = 1;
-                        break;
-                    case 13500:
-                        keys[0x100 + i * 32 + 0] = 1;
-                        keys[0x100 + i * 32 + 2] = 1;
-                        break;
-                    case 18000:
-                        keys[0x100 + i * 32 + 2] = 1;
-                        break;
-                    case 22500:
-                        keys[0x100 + i * 32 + 1] = 1;
-                        keys[0x100 + i * 32 + 2] = 1;
-                        break;
-                    case 27000:
-                        keys[0x100 + i * 32 + 1] = 1;
-                        break;
-                    case 31500:
-                        keys[0x100 + i * 32 + 1] = 1;
-                        keys[0x100 + i * 32 + 3] = 1;
-                        break;
-                    }
-                }
+            if (xstate[i].Gamepad.wButtons & XINPUT_GAMEPAD_BACK) {
+                keys[0x100 + i * 32 + 15] = 1;
+            } else {
+                keys[0x100 + i * 32 + 15] = 0;
             }
 
-            if (NumBTN[i]) {
-                for (j = 0; (unsigned long)j < NumBTN[i]; j++) {
-                    if (js[i].rgbButtons[j]) {
-                        keys[0x100 + i * 32 + 16 + j] = 1;
-                    }
-                }
+            if (xstate[i].Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_THUMB) {
+                keys[0x100 + i * 32 + 16] = 1;
+            } else {
+                keys[0x100 + i * 32 + 16] = 0;
             }
-        } else {
-            for (j = 0; j < 32; j++) {
-                keys[0x100 + i * 32 + j] = 0;
+
+            if (xstate[i].Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_THUMB) {
+                keys[0x100 + i * 32 + 17] = 1;
+            } else {
+                keys[0x100 + i * 32 + 17] = 0;
+            }
+
+            if (xstate[i].Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER) {
+                keys[0x100 + i * 32 + 18] = 1;
+            } else {
+                keys[0x100 + i * 32 + 18] = 0;
+            }
+
+            if (xstate[i].Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) {
+                keys[0x100 + i * 32 + 19] = 1;
+            } else {
+                keys[0x100 + i * 32 + 19] = 0;
+            }
+
+            if (xstate[i].Gamepad.wButtons & XINPUT_GAMEPAD_A) {
+                keys[0x100 + i * 32 + 20] = 1;
+            } else {
+                keys[0x100 + i * 32 + 20] = 0;
+            }
+
+            if (xstate[i].Gamepad.wButtons & XINPUT_GAMEPAD_B) {
+                keys[0x100 + i * 32 + 21] = 1;
+            } else {
+                keys[0x100 + i * 32 + 21] = 0;
+            }
+
+            if (xstate[i].Gamepad.wButtons & XINPUT_GAMEPAD_X) {
+                keys[0x100 + i * 32 + 22] = 1;
+            } else {
+                keys[0x100 + i * 32 + 22] = 0;
+            }
+
+            if (xstate[i].Gamepad.wButtons & XINPUT_GAMEPAD_Y) {
+                keys[0x100 + i * 32 + 23] = 1;
+            } else {
+                keys[0x100 + i * 32 + 23] = 0;
             }
         }
     }

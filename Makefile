@@ -543,7 +543,7 @@ SRCS += win/safelib.c
 SRCS += win/winintrf.asm
 SRCS += win/winlink.c
 
-LDFLAGS += -ldxguid -ldinput -lgdi32 -lole32 -lwinmm
+LDFLAGS += -ldxguid -ldinput -lxinput -lgdi32 -lole32 -lwinmm
 
 ifdef WITH_OPENGL
 SRCS += win/gl_draw.c
