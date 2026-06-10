@@ -551,6 +551,8 @@ LDFLAGS += -lopengl32
 endif
 
 LDFLAGS += --static
+# clock_gettime lives in winpthread; put it after objects so --as-needed keeps it.
+LDFLAGS += -lwinpthread
 
 PSRS += win/confloc.psr
 
