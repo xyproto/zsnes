@@ -327,10 +327,8 @@ void zstart()
 
     allocmem();
 
-    if (!(spcon = !SPCDisable)) {
-        soundon = 0;
-    }
-    DSPDisable = !soundon;
+    spcon = !SPCDisable;
+    DSPDisable = !soundon || !spcon;
 
     if (!frameskip) {
         FPSOn = FPSAtStart;
