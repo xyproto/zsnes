@@ -1677,7 +1677,7 @@ void DoRumble(void)
         // Stop vibration
         ZeroMemory(&vibration, sizeof(XINPUT_VIBRATION));
         XInputSetState(0, &vibration);
-		RumbleTimer = 0;
+        RumbleTimer = 0;
     }
 
     if (RumbleData == 0xFFFF) {
