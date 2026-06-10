@@ -3,6 +3,7 @@
 *.raw
 *.wav
 build/
+.vscode/
 cfg.h
 config.default
 include.txt
