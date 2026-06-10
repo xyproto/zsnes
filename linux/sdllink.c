@@ -53,6 +53,16 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #include <X11/Xlib.h>
 
+#ifdef __SDL3__
+#define SDL_RUMBLECONTROLLER(gamepad, left, right, time) SDL_RumbleGamepad(gamepad, left, right, time)
+#define SDL_OPENCONTROLLER(index) SDL_OpenGamepad(index)
+#else
+#define SDL_RUMBLECONTROLLER(gamepad, left, right, time) SDL_GameControllerRumble(gamepad, left, right, time)
+#define SDL_OPENCONTROLLER(index) SDL_GameControllerOpen(index)
+#endif
+
+SDL_Gamepad *gamepad = SDL_OPENCONTROLLER(0);
+
 _Noreturn void zexit_error(void);
 
 typedef enum {
@@ -1628,6 +1638,42 @@ static void sem_sleep_die()
     }
 }
 
+void DoRumble(void)
+{
+    extern u2 RumbleData;
+    extern u1 RumbleTimer;
+
+    if (RumbleTimer == 60) {
+        // Stop vibration
+        SDL_RUMBLECONTROLLER(gamepad,0,0,1);
+    }
+
+    if (RumbleData == 0xFFFF) {
+        printf("Null rumble data hit!\n");
+        RumbleData = 0;
+    }
+
+    if (RumbleData != 0) {
+        printf("RumbleData: $%X\n", RumbleData);
+    }
+
+    if ((RumbleData & 0xFF00) == 0x7200) {
+        printf("Rumble sentry hit!\n");
+        u2 RumbleLeft = ((RumbleData & 0x000F) * 4369);
+        printf("Left: $%X\n", RumbleLeft);
+        u2 RumbleRight = (((RumbleData & 0x00F0) >> 4) * 4369);
+        printf("Right: $%X\n", RumbleRight);
+        SDL_RUMBLECONTROLLER(gamepad,((RumbleData & 0x000F) * 4369),(((RumbleData & 0x00F0) >> 4) * 4369),500);
+        RumbleTimer++;
+
+        RumbleData = 0;
+
+        if (result == ERROR_SUCCESS) {
+            printf("Rumble started!\n");
+        }
+    }
+}
+
 void UpdateVFrame(void)
 {
     // Quick fix for GUI CPU usage
@@ -1637,6 +1683,13 @@ void UpdateVFrame(void)
 
     CheckTimers();
     Main_Proc();
+
+    if (SNESRumble) {
+        DoRumble();
+    } else {
+        // Stop vibration
+        SDL_RUMBLECONTROLLER(gamepad,0,0,1);
+    }
 
     if (sound_sdl) {
         SoundWrite_sdl();
