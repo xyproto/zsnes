@@ -1057,7 +1057,7 @@ BOOL InitJoystickInput()
         num_hats = SDL_JoystickNumHats(JoystickInput[i]);
         num_balls = SDL_JoystickNumBalls(JoystickInput[i]);
         printf("Device %i %s\n", i, SDL_JoystickName(JoystickInput[i]));
-        printf("  %i axis, %i buttons, %i hats, %i balls, %i rumble\n", num_axes, num_buttons, num_hats,
+        printf("  %i axis, %i buttons, %i hats, %i balls\n", num_axes, num_buttons, num_hats,
             num_balls);
 
         if (next_offset >= 448) {
