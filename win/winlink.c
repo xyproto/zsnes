@@ -2228,13 +2228,14 @@ void WinUpdateDevices()
                 keys[0x100 + i * 32 + 7] = 0;
             }
 
-            if (xstate[i].Gamepad.bLeftTrigger > ANALOG_DEADZONE) {
+            // Analog triggers' range is 0 - 255
+            if (xstate[i].Gamepad.bLeftTrigger > 0) {
                 keys[0x100 + i * 32 + 8] = 1;
             } else {
                 keys[0x100 + i * 32 + 8] = 0;
             }
 
-            if (xstate[i].Gamepad.bRightTrigger > ANALOG_DEADZONE) {
+            if (xstate[i].Gamepad.bRightTrigger > 0) {
                 keys[0x100 + i * 32 + 9] = 1;
             } else {
                 keys[0x100 + i * 32 + 9] = 0;
