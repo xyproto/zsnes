@@ -756,6 +756,10 @@ static unsigned int sdl_keysym_to_pc_scancode(int sym)
         return 0x55;
     case SDLK_KP_ENTER:
         return 0x5D;
+    case SDLK_KP_DIVIDE:
+        return 0x56;
+    case SDLK_KP_EQUALS:
+        return 0x64;
     }
     return (0x64 + sym);
 }
@@ -990,6 +994,10 @@ static void ProcessKeyBuf(int scancode)
         break;
     case SDLK_KP_DIVIDE:
         vkeyval = '/';
+        accept = 1;
+        break;
+    case SDLK_KP_EQUALS:
+        vkeyval = '=';
         accept = 1;
         break;
     case SDLK_KP_PERIOD:
