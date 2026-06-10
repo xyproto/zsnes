@@ -1057,7 +1057,7 @@ BOOL InitJoystickInput()
         num_hats = SDL_JoystickNumHats(JoystickInput[i]);
         num_balls = SDL_JoystickNumBalls(JoystickInput[i]);
         printf("Device %i %s\n", i, SDL_JoystickName(JoystickInput[i]));
-        printf("  %i axis, %i buttons, %i hats, %i balls\n", num_axes, num_buttons, num_hats,
+        printf("  %i axis, %i buttons, %i hats, %i balls, %i rumble\n", num_axes, num_buttons, num_hats,
             num_balls);
 
         if (next_offset >= 448) {
@@ -1640,16 +1640,12 @@ static void sem_sleep_die()
 
 void DoRumble(void)
 {
-    SDL_Gamepad* gamepad = SDL_OPENCONTROLLER(0);
     extern u2 RumbleData;
     extern u1 RumbleTimer;
 
     if (RumbleTimer == 60) {
         // Stop vibration
-        SDL_RUMBLECONTROLLER(gamepad, 0, 0, 1);
-#ifdef __SDL3__
-        SDL_UpdateJoysticks();
-#endif
+        SDL_JoystickRumble(JoystickInput[0], 0, 0, 1);
     }
 
     if (RumbleData == 0xFFFF) {
@@ -1667,10 +1663,7 @@ void DoRumble(void)
         printf("Left: $%X\n", RumbleLeft);
         u2 RumbleRight = (((RumbleData & 0x00F0) >> 4) * 4369);
         printf("Right: $%X\n", RumbleRight);
-        bool result = SDL_RUMBLECONTROLLER(gamepad, RumbleLeft, RumbleRight, 2000);
-#ifdef __SDL3__
-        SDL_UpdateJoysticks();
-#endif
+        bool result = SDL_JoystickRumble(JoystickInput[0], RumbleLeft, RumbleRight, 500);
         RumbleTimer++;
 
         RumbleData = 0;
@@ -1691,15 +1684,11 @@ void UpdateVFrame(void)
     CheckTimers();
     Main_Proc();
 
-    SDL_Gamepad* gamepad = SDL_OPENCONTROLLER(0);
     if (SNESRumble) {
         DoRumble();
     } else {
         // Stop vibration
-        SDL_RUMBLECONTROLLER(gamepad, 0, 0, 1);
-#ifdef __SDL3__
-        SDL_UpdateJoysticks();
-#endif
+        SDL_RumbleJoystick(JoystickInput[0], 0, 0, 1);
     }
 
     if (sound_sdl) {
