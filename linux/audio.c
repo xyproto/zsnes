@@ -65,8 +65,8 @@ static uint32_t pipewire_target_frames = 256;
 static volatile bool pipewire_shutting_down = false;
 bool sound_pipewire = false;
 
-/* Producer fills pw_ring; PipeWireProcess memcpys from it. Producer
- * waits until pw_format_ready and pw_stream_streaming are set. */
+/* Producer fills pw_ring; PipeWireProcess memcpys from it.
+ * Producer waits until pw_format_ready and pw_stream_streaming are set. */
 static pthread_t pw_producer_thread;
 static int pw_producer_running = 0;
 static volatile int pw_producer_terminated = 0;
@@ -667,17 +667,23 @@ static void pw_smart_size_ring(uint32_t quantum_frames)
 static void* SoundThread_pipewire(void* useless)
 {
     int16_t stemp[1280];
-    /* Output buffer must hold at most ~1/ratio outputs per input. With
-     * ratio~32/48, that's ~1.5x; use 2x plus a small headroom for safety. */
+    /* Output buffer sized for moderate upsampling (~2x). When the server
+     * rate forces a larger expansion (e.g. RATE=32000 -> 96000Hz, ratio=3x),
+     * the input is processed in sub-batches so output always fits. */
     int16_t outbuf[1280 * 2 + 32];
     uint32_t channels = StereoSound + 1;
+    uint32_t out_max_frames;
     (void)useless;
+
+    if (!channels) {
+        channels = 1;
+    }
+    out_max_frames = (uint32_t)(sizeof(outbuf) / (sizeof(int16_t) * channels));
 
     while (!pw_producer_terminated) {
         unsigned int samples;
 
         pthread_mutex_lock(&pw_audio_mutex);
-        /* Don't produce until format negotiated and stream is streaming. */
         while (!pw_producer_terminated
             && (!pw_format_ready || !pw_stream_streaming || !pw_samples_waiting)) {
             pthread_cond_wait(&pw_audio_wait, &pw_audio_mutex);
@@ -692,19 +698,46 @@ static void* SoundThread_pipewire(void* useless)
 
         pw_rs_update_dynamic();
 
-        /* MixSoundBlock writes <samples> int16_t values; cap at stemp size. */
         while (samples > 0) {
             uint32_t chunk = (samples > 1280) ? 1280 : samples;
             uint32_t in_frames;
-            uint32_t out_frames;
+            uint32_t in_done = 0;
+            double ratio_now;
+            uint32_t sub_max;
+
             MixSoundBlock(stemp, chunk);
             in_frames = chunk / channels;
+
             pthread_mutex_lock(&pw_rs_mutex);
-            out_frames = pw_rs_process(stemp, in_frames, outbuf,
-                sizeof(outbuf) / (sizeof(int16_t) * (channels ? channels : 1)),
-                channels);
+            ratio_now = pw_rs.ratio;
+            if (ratio_now <= 0.0) {
+                ratio_now = pw_rs.base_ratio > 0.0 ? pw_rs.base_ratio : 1.0;
+            }
             pthread_mutex_unlock(&pw_rs_mutex);
-            pw_ring_write((uint8_t*)outbuf, out_frames * channels * sizeof(int16_t));
+
+            /* out ~= in / ratio, so cap in per call to keep out <= out_max_frames.
+             * 0.95 leaves headroom for dynamic-ratio drift; min 1 frame. */
+            {
+                double allow = (double)out_max_frames * ratio_now * 0.95;
+                sub_max = (allow >= 1.0) ? (uint32_t)allow : 1U;
+            }
+
+            while (in_done < in_frames) {
+                uint32_t sub = in_frames - in_done;
+                uint32_t out_frames;
+                if (sub > sub_max) {
+                    sub = sub_max;
+                }
+                pthread_mutex_lock(&pw_rs_mutex);
+                out_frames = pw_rs_process(stemp + in_done * channels, sub,
+                    outbuf, out_max_frames, channels);
+                pthread_mutex_unlock(&pw_rs_mutex);
+                if (out_frames) {
+                    pw_ring_write((uint8_t*)outbuf,
+                        out_frames * channels * sizeof(int16_t));
+                }
+                in_done += sub;
+            }
             samples -= chunk;
         }
     }
