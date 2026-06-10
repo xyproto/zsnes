@@ -99,6 +99,7 @@ LPDIRECTINPUTDEVICE8 KeyboardInput = NULL;
 XINPUT_STATE xstate[4];
 BOOL XInputConnected[4];
 DWORD result;
+XINPUT_VIBRATION vibration = { 0 };
 
 BYTE BitDepth;
 BYTE BackColor = 0;
@@ -1669,10 +1670,8 @@ void CheckTimers(void)
 
 void DoRumble(void)
 {
-    // SUNLIT RUMBLE CONTROLLER TEST
     extern u2 RumbleData;
     extern u1 RumbleTimer;
-    XINPUT_VIBRATION vibration = { 0 };
 
     if (RumbleTimer == 60) {
         // Stop vibration
@@ -1704,7 +1703,6 @@ void DoRumble(void)
             printf("Rumble started!\n");
         }
     }
-    // SUNLIT RUMBLE CONTROLLER TEST
 }
 
 volatile int SPCSize;
@@ -1717,7 +1715,13 @@ void UpdateVFrame(void)
 
     // if (StereoSound==1) SPCSize=256;
 
-    DoRumble(); // SUNLIT RUMBLE CONTROLLER TEST
+    if (SNESRumble) {
+        DoRumble();
+    } else {
+        // Stop vibration
+        ZeroMemory(&vibration, sizeof(XINPUT_VIBRATION));
+        XInputSetState(0, &vibration);
+    }
 
     while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
         TranslateMessage(&msg);
