@@ -94,13 +94,19 @@ LDFLAGS += -Wl,--as-needed -no-pie -Wl,--gc-sections -lz -lm
 # -O1 is mandatory for Assembly, for now
 ASMFLAGS += -O1 -w-orphan-labels -w-number-deprecated-hex -w-pp-macro-params-legacy
 
-WITH_AO       :=
 #WITH_DEBUGGER := yes
 WITH_OPENGL   := yes
 WITH_PNG      := yes
 WITH_SDL      := $(if $(filter $(ARCH),$(UNIXSDL_ARCHES)),yes,)
 WITH_PIPEWIRE :=
 WITH_AO       :=
+
+# Add more pkg-config paths, with Fedora and Debian/Ubuntu in mind
+ifneq ($(filter $(ARCH),LINUX),)
+ifneq ($(filter -m32,$(ARCH_CFLAGS)),)
+export PKG_CONFIG_PATH := /usr/lib/pkgconfig:/usr/lib/i386-linux-gnu/pkgconfig:/usr/share/pkgconfig:$(PKG_CONFIG_PATH)
+endif
+endif
 
 # Check that pkg-config deps are also linkable with the current target flags (for example, -m32).
 define detect_pkg_for_target
@@ -280,6 +286,7 @@ ifeq ($(WITH_AO),yes)
   endif
   CFLAGS += $(CFLAGS_AO)
   LDFLAGS += $(LDFLAGS_AO)
+  CFGDEFS += -D__LIBAO__
 endif
 
 ifeq ($(WITH_PIPEWIRE),yes)
