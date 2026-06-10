@@ -53,7 +53,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #include <X11/Xlib.h>
 
-void zexit_error();
+_Noreturn void zexit_error(void);
 
 typedef enum {
     FALSE = 0,

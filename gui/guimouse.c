@@ -1283,9 +1283,9 @@ static void DisplayGUISoundClick(void)
         GUIHoldYlim = GUIwinposy[6] + 131;
         u4 const vol = MusicRelVol * 128 / 100;
         MusicVol = vol < 127 ? vol : 127;
-        asm volatile("call %P0" ::"X"(WDSPReg0C), "a"(DSPMem[0x0C])
+        __asm__ volatile("call %P0" ::"X"(WDSPReg0C), "a"(DSPMem[0x0C])
             : "cc", "memory");
-        asm volatile("call %P0" ::"X"(WDSPReg1C), "a"(DSPMem[0x1C])
+        __asm__ volatile("call %P0" ::"X"(WDSPReg1C), "a"(DSPMem[0x1C])
             : "cc", "memory");
 
         s4 const eax = GUIwinposx[6] + 15;

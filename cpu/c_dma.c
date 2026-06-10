@@ -8,7 +8,7 @@ u1 AddrNoIncr = 0;
 static u1 read_reg(eop* const reg, u2 const address)
 {
     u1 al;
-    asm volatile("call %A1"
+    __asm__ volatile("call %A1"
                  : "=a"(al)
                  : "rm"(reg), "c"(address)
                  : "cc", "memory", "ebx");
@@ -83,7 +83,7 @@ static void transdmappu2cpu(u1 const al, DMAInfo* const esi)
 
 static inline void write_reg(eop* const reg, u2 const address, u1 const val)
 {
-    asm volatile("call %A0" ::"rm"(reg), "c"(address), "a"(val)
+    __asm__ volatile("call %A0" ::"rm"(reg), "c"(address), "a"(val)
                  : "cc", "memory", "ebx");
 }
 

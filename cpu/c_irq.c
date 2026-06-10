@@ -24,7 +24,7 @@ static void call_membank0w8(u2 const cx, u1 const al)
 	u4 eax;
 	u4 ecx;
 	u4 ebx;
-	asm volatile("call %P3" : "=a" (eax), "=c" (ecx), "=b" (ebx) : "X" (membank0w8), "a" (al), "c" (cx) : "cc", "memory");
+	__asm__ volatile("call %P3" : "=a" (eax), "=c" (ecx), "=b" (ebx) : "X" (membank0w8), "a" (al), "c" (cx) : "cc", "memory");
 }
 
 

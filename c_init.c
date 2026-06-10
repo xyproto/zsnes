@@ -489,7 +489,7 @@ void ReadInputDevice(void)
 }
 
 // Terminate Program
-void DosExit(void)
+_Noreturn void DosExit(void)
 {
     if (AutoState == 1)
         SaveSecondState();

@@ -12,9 +12,9 @@ void continueprognokeys(void);
 
 void reexecuteb(void);
 
-void endprog(void);
+_Noreturn void endprog(void);
 
-void interror(void);
+_Noreturn void interror(void);
 
 void Donextlinecache(void);
 

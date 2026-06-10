@@ -590,9 +590,8 @@ void startdisplay()
     printinfo(" 65816 ");
 
     // HACK ALERT! this should really be on the bottom line, but
-    // xterms default to being one line shorter than 80x25, so this
-    // won't be on the bottom line on DOS!
-    // Also, we are printing on top of the (currently invisible) drop shadow!"
+    // xterms default to being one line shorter than 80x25.
+    // Also, we are printing on top of the (currently invisible) drop shadow.
     move(23, 0);
     printinfo("@4(@6T@4)@7race for  @4(@6B@4)@7reakpoint  "
               "@4(@6Enter@4)@7 Next  "

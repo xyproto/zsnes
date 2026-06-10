@@ -2654,7 +2654,7 @@ void init65816(void)
 
 static bool zexit_called = false;
 
-void zexit(void)
+_Noreturn void zexit(void)
 {
     if (!zexit_called) {
         zexit_called = true;
@@ -2664,9 +2664,11 @@ void zexit(void)
             exit(0);
         }
     }
+    /* Re-entrant exit (e.g. from an atexit handler); bypass it. */
+    _Exit(0);
 }
 
-void zexit_error()
+_Noreturn void zexit_error(void)
 {
     if (!zexit_called) {
         zexit_called = true;
@@ -2676,4 +2678,5 @@ void zexit_error()
             exit(1);
         }
     }
+    _Exit(1);
 }

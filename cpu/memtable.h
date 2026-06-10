@@ -78,7 +78,7 @@ static inline u1 memr8(u1 const bank /* bl */, u2 const address /* cx */)
     u4 ebx = bank;
     u4 esi;
     u4 edi;
-    asm volatile("call *%6"
+    __asm__ volatile("call *%6"
                  : "=a"(eax), "+c"(ecx), "+b"(ebx), "=d"(edx), "=S"(esi), "=D"(edi)
                  : "mr"(memtabler8[ebx])
                  : "cc", "memory");
@@ -93,7 +93,7 @@ static inline u2 memr16(u1 const bank /* bl */, u2 const address /* cx */)
     u4 ebx = bank;
     u4 esi;
     u4 edi;
-    asm volatile("call *%6"
+    __asm__ volatile("call *%6"
                  : "=a"(eax), "+c"(ecx), "+b"(ebx), "=d"(edx), "=S"(esi), "=D"(edi)
                  : "mr"(memtabler16[ebx])
                  : "cc", "memory");
@@ -108,7 +108,7 @@ static inline void memw8no_rom(u1 const bank /* bl */, u2 const address /* cx */
     u4 ebx = bank;
     u4 esi;
     u4 edi;
-    asm volatile("call *%6"
+    __asm__ volatile("call *%6"
                  : "+a"(eax), "+c"(ecx), "+b"(ebx), "=d"(edx), "=S"(esi), "=D"(edi)
                  : "mr"(memtablew8[ebx])
                  : "cc", "memory");

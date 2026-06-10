@@ -212,14 +212,14 @@ void reexecuteb(void)
     reexecuteb2();
 }
 
-void endprog(void)
+_Noreturn void endprog(void)
 {
     deinitvideo();
     MovieStop();
     DosExit();
 }
 
-void interror(void)
+_Noreturn void interror(void)
 {
     deinitvideo();
     PrintStr("Cannot process interrupt handler!\r\n");
@@ -273,7 +273,7 @@ void execute(u4* const pedx, u1** const pebp, u1** const pesi, eop*** const pedi
             u4 ecx;
             u4 ebx = 0;
             u4 const op = *ebp++;
-            asm volatile("push %%ebp;  mov %0, %%ebp;  call *%5;  mov %%ebp, %0;  pop %%ebp"
+            __asm__ volatile("push %%ebp;  mov %0, %%ebp;  call *%5;  mov %%ebp, %0;  pop %%ebp"
                          : "+a"(ebp), "=c"(ecx), "+b"(ebx), "+S"(esi), "+D"(edi)
                          : "c"(opcjmptab[op])
                          : "cc", "memory");
@@ -291,7 +291,7 @@ void execute(u4* const pedx, u1** const pebp, u1** const pesi, eop*** const pedi
         u4 ecx = 0;
         u4 ebx = p; // XXX HACK: We run out of registers.  p is guaranteed to have only the lower 8 bits set, which is sufficient
         // XXX hack: GCC cannot handle ebp as input/output, so take the detour over eax
-        asm volatile("push %%ebp;  mov %0, %%ebp;  call *(%5, %3, %c6);  mov %%ebp, %0;  pop %%ebp"
+        __asm__ volatile("push %%ebp;  mov %0, %%ebp;  call *(%5, %3, %c6);  mov %%ebp, %0;  pop %%ebp"
                      : "+a"(ebp), "+c"(ecx), "+d"(edx), "+b"(ebx), "+S"(esi), "+D"(edi)
                      : "n"(sizeof(*edi))
                      : "cc", "memory");
@@ -302,7 +302,7 @@ cpuover :
     u4 ecx = 0;
     u4 ebx = 0;
     // XXX hack: GCC cannot handle ebp as input/output, so take the detour over eax
-    asm volatile("push %%ebp;  mov %0, %%ebp;  call %P6;  mov %%ebp, %0;  pop %%ebp"
+    __asm__ volatile("push %%ebp;  mov %0, %%ebp;  call %P6;  mov %%ebp, %0;  pop %%ebp"
                  : "+a"(ebp), "+c"(ecx), "+d"(edx), "+b"(ebx), "+S"(esi), "+D"(edi)
                  : "X"(cpuover)
                  : "cc", "memory");

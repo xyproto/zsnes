@@ -22,6 +22,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "../gblhdr.h"
 #include "../gblvars.h"
 #include <fcntl.h>
+#include <stdatomic.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <unistd.h>
@@ -62,40 +63,40 @@ static struct pw_thread_loop* pipewire_loop = 0;
 static struct pw_stream* pipewire_stream = 0;
 static int pipewire_inited = 0;
 static uint32_t pipewire_target_frames = 256;
-static volatile bool pipewire_shutting_down = false;
+static atomic_bool pipewire_shutting_down = false;
 bool sound_pipewire = false;
 
 /* Producer fills pw_ring; PipeWireProcess memcpys from it.
  * Producer waits until pw_format_ready and pw_stream_streaming are set. */
 static pthread_t pw_producer_thread;
 static int pw_producer_running = 0;
-static volatile int pw_producer_terminated = 0;
+static atomic_int pw_producer_terminated = 0;
 static pthread_mutex_t pw_audio_mutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_cond_t pw_audio_wait = PTHREAD_COND_INITIALIZER;
-static volatile unsigned int pw_samples_waiting = 0;
+static atomic_uint pw_samples_waiting = 0;
 
-static volatile int pw_stream_streaming = 0; /* set by state_changed */
-static volatile int pw_format_ready = 0; /* set by param_changed */
-static volatile int pw_drained = 0; /* set by drained event */
+static atomic_int pw_stream_streaming = 0; /* set by state_changed */
+static atomic_int pw_format_ready = 0; /* set by param_changed */
+static atomic_int pw_drained = 0; /* set by drained event */
 
 static uint8_t* pw_ring = NULL;
-static uint32_t pw_ring_size = 0;
+static uint32_t pw_ring_size = 0; /* guarded by pw_ring_mutex */
 static pthread_mutex_t pw_ring_mutex = PTHREAD_MUTEX_INITIALIZER;
-static volatile uint32_t pw_ring_head = 0;
-static volatile uint32_t pw_ring_tail = 0;
+static uint32_t pw_ring_head = 0; /* guarded by pw_ring_mutex */
+static uint32_t pw_ring_tail = 0; /* guarded by pw_ring_mutex */
 
 /* Ring grows on persistent underrun, capped at pw_ring_max_frames. */
-static volatile uint32_t pw_observed_quantum_frames = 0;
-static volatile uint32_t pw_ring_min_frames = 0;
-static volatile uint32_t pw_ring_max_frames = 0;
+static atomic_uint pw_observed_quantum_frames = 0;
+static atomic_uint pw_ring_min_frames = 0;
+static atomic_uint pw_ring_max_frames = 0;
 static uint32_t pw_stride_bytes = 4;
 static uint32_t pw_rate_hz = 0;
 static int pw_user_forced_latency = 0;
 static int pw_stats_enabled = 0;
-static volatile uint64_t pw_stat_cycles = 0;
-static volatile uint64_t pw_stat_underruns = 0;
-static volatile uint64_t pw_stat_silent_pads = 0;
-static volatile uint64_t pw_stat_resizes = 0;
+static _Atomic uint64_t pw_stat_cycles = 0;
+static _Atomic uint64_t pw_stat_underruns = 0;
+static _Atomic uint64_t pw_stat_silent_pads = 0;
+static _Atomic uint64_t pw_stat_resizes = 0;
 
 static uint32_t pw_initial_ring_ms = 250;
 static uint32_t pw_max_ring_ms = 2000;
@@ -636,7 +637,7 @@ static void pw_ring_resize(uint32_t want_bytes)
     pw_ring_size = want_bytes;
     pw_ring_tail = 0;
     pw_ring_head = fill;
-    pw_stat_resizes++;
+    atomic_fetch_add_explicit(&pw_stat_resizes, 1, memory_order_relaxed);
     pthread_mutex_unlock(&pw_ring_mutex);
 }
 
@@ -812,7 +813,7 @@ static void PipeWireParamChanged(void* userdata, uint32_t id, const struct spa_p
     }
 
     pthread_mutex_lock(&pw_audio_mutex);
-    pw_format_ready = 1;
+    atomic_store_explicit(&pw_format_ready, 1, memory_order_release);
     pthread_cond_broadcast(&pw_audio_wait);
     pthread_mutex_unlock(&pw_audio_mutex);
 }
@@ -897,17 +898,18 @@ static void PipeWireProcess(void* userdata)
 
     out = (uint8_t*)d->data;
     /* Silence until param_changed has set up resampler+ring. */
-    render_audio = pw_format_ready && !pipewire_shutting_down
+    render_audio = atomic_load_explicit(&pw_format_ready, memory_order_acquire)
+        && !atomic_load_explicit(&pipewire_shutting_down, memory_order_relaxed)
         && !GUIOn2 && !GUIOn && !EMUPause && !RawDumpInProgress && !T36HZEnabled && soundon;
-    pw_stat_cycles++;
+    atomic_fetch_add_explicit(&pw_stat_cycles, 1, memory_order_relaxed);
 
     if (!render_audio) {
         memset(out, 0, bytes);
     } else {
         got = pw_ring_read(out, bytes);
         if (got < bytes) {
-            pw_stat_underruns++;
-            pw_stat_silent_pads += (bytes - got);
+            atomic_fetch_add_explicit(&pw_stat_underruns, 1, memory_order_relaxed);
+            atomic_fetch_add_explicit(&pw_stat_silent_pads, bytes - got, memory_order_relaxed);
             /* On persistent underrun, grow the ring (capped by max_frames). */
             if (pw_observed_quantum_frames) {
                 uint32_t bigger = (pw_ring_size / stride) * 2U;

@@ -17,7 +17,7 @@ static void restoredl(u4 const edx)
 
 void splitflags(u4 const edx)
 {
-    asm volatile("call %P0" ::"X"(Ssplitflags), "d"(SA1RegP)
+    __asm__ volatile("call %P0" ::"X"(Ssplitflags), "d"(SA1RegP)
                  : "cc", "memory");
     restoredl(edx);
 }
@@ -39,7 +39,7 @@ static u4 makedl(u4 edx)
 u4 joinflags(u4 edx)
 {
     edx = makedl(edx);
-    asm volatile("call %P1"
+    __asm__ volatile("call %P1"
                  : "+d"(SA1RegP)
                  : "X"(Sjoinflags)
                  : "cc", "memory");

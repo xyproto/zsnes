@@ -5,7 +5,7 @@
 
 void init(void);
 void ReadInputDevice(void);
-void DosExit(void);
+_Noreturn void DosExit(void);
 void CPUFeatureCheck(void);
 void outofmemfix(void);
 void idledetectspc(void);

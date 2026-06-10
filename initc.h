@@ -14,7 +14,8 @@ void clearmem(void);
 void init65816(void);
 void initsnes(void);
 void procexecloop(void);
-void zexit(void);
+_Noreturn void zexit(void);
+_Noreturn void zexit_error(void);
 
 extern bool RTCEnable;
 extern bool SDD1Enable;

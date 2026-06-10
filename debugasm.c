@@ -63,7 +63,7 @@ void breakops(void)
         splitflags(edx);
         u4 ebx;
         // XXX hack: GCC cannot handle ebp as input/output, so take the detour over eax
-        asm volatile("push %%ebp;  mov %0, %%ebp;  call %P6;  mov %%ebp, %0;  pop %%ebp"
+        __asm__ volatile("push %%ebp;  mov %0, %%ebp;  call %P6;  mov %%ebp, %0;  pop %%ebp"
             : "+a"(ebp), "+c"(ecx), "+d"(edx), "=b"(ebx), "+S"(esi), "+D"(edi)
             : "X"(execsingle)
             : "cc", "memory");
@@ -98,7 +98,7 @@ void execnextop(void)
     splitflags(edx);
     u4 ebx;
     // XXX hack: GCC cannot handle ebp as input/output, so take the detour over eax
-    asm volatile("push %%ebp;  mov %0, %%ebp;  call %P6;  mov %%ebp, %0;  pop %%ebp"
+    __asm__ volatile("push %%ebp;  mov %0, %%ebp;  call %P6;  mov %%ebp, %0;  pop %%ebp"
         : "+a"(ebp), "+c"(ecx), "+d"(edx), "=b"(ebx), "+S"(esi), "+D"(edi)
         : "X"(execsingle)
         : "cc", "memory");

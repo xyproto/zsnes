@@ -73,7 +73,7 @@ typedef struct DMAInfo {
     u1 unknown; // Unknown, 0x43xB and 0x43xF are aliases
     u1 padding[4];
 } __attribute__((packed)) DMAInfo;
-STATIC_ASSERT(sizeof(DMAInfo) == 16);
+_Static_assert(sizeof(DMAInfo) == 16, "DMAInfo size mismatch");
 
 extern DMAInfo dmadata[8]; // DMA data (written from ports 43xx)
 
@@ -82,7 +82,7 @@ typedef struct HDMAInfo {
     u1 count; // # of bytes to transfer/line
     u2 addr_inc; // Address increment
 } __attribute__((packed)) HDMAInfo;
-STATIC_ASSERT(sizeof(HDMAInfo) == 19);
+_Static_assert(sizeof(HDMAInfo) == 19, "HDMAInfo size mismatch");
 
 extern HDMAInfo hdmadata[8];
 

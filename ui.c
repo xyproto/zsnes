@@ -96,7 +96,8 @@ u1 MusicVol = 0;
 void init();
 void MultiMouseInit();
 
-void zexit(), zexit_error();
+_Noreturn void zexit(void);
+_Noreturn void zexit_error(void);
 
 extern bool input1gp;
 extern bool input1mouse;

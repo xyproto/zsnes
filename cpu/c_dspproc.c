@@ -1656,7 +1656,7 @@ SkipProcess2 : {
                         goto ProcessNextEnvelope;
                 EndofProcessNEnvsi:;
                     u4 eax = p1; // XXX hack: GCC cannot handle ebp as input/output, so take the detour over eax
-                    asm volatile("push %%ebp;  mov %0, %%ebp;  call %A4;  pop %%ebp"
+                    __asm__ volatile("push %%ebp;  mov %0, %%ebp;  call %A4;  pop %%ebp"
                                  : "+a"(eax), "+b"(ebx), "+S"(esi), "+D"(edi)
                                  : "m"(paramhack[3])
                                  : "cc", "memory", "ecx", "edx");
@@ -1670,7 +1670,7 @@ SkipProcess2 : {
                         goto ProcessNextEnvelope;
                 EndofProcessNEnvi:;
                     u4 eax = p1; // XXX hack: GCC cannot handle ebp as input/output, so take the detour over eax
-                    asm volatile("push %%ebp;  mov %0, %%ebp;  call %A4;  pop %%ebp"
+                    __asm__ volatile("push %%ebp;  mov %0, %%ebp;  call %A4;  pop %%ebp"
                                  : "+a"(eax), "+b"(ebx), "+S"(esi), "+D"(edi)
                                  : "m"(paramhack[2])
                                  : "cc", "memory", "ecx", "edx");
@@ -1686,7 +1686,7 @@ SkipProcess2 : {
                         goto ProcessNextEnvelope;
                 EndofProcessNEnvs:;
                     u4 eax = p1; // XXX hack: GCC cannot handle ebp as input/output, so take the detour over eax
-                    asm volatile("push %%ebp;  mov %0, %%ebp;  call %A4;  pop %%ebp"
+                    __asm__ volatile("push %%ebp;  mov %0, %%ebp;  call %A4;  pop %%ebp"
                                  : "+a"(eax), "+b"(ebx), "+S"(esi), "+D"(edi)
                                  : "m"(paramhack[1])
                                  : "cc", "memory", "ecx", "edx");
@@ -1700,7 +1700,7 @@ SkipProcess2 : {
                         goto ProcessNextEnvelope;
                 EndofProcessNEnv:;
                     u4 eax = p1; // XXX hack: GCC cannot handle ebp as input/output, so take the detour over eax
-                    asm volatile("push %%ebp;  mov %0, %%ebp;  call %A4;  pop %%ebp"
+                    __asm__ volatile("push %%ebp;  mov %0, %%ebp;  call %A4;  pop %%ebp"
                                  : "+a"(eax), "+b"(ebx), "+S"(esi), "+D"(edi)
                                  : "m"(paramhack[0])
                                  : "cc", "memory", "ecx", "edx");
@@ -1777,7 +1777,7 @@ SkipProcess2 : {
             u4 ecx;
             u4 edx;
             u4 ebx;
-            asm volatile("push %%ebp;  call %P6;  pop %%ebp"
+            __asm__ volatile("push %%ebp;  call %P6;  pop %%ebp"
                          : "=a"(eax), "=c"(ecx), "=d"(edx), "=b"(ebx), "+S"(esi), "+D"(edi)
                          : "X"(BRRDecode), "c"(p1)
                          : "cc", "memory");

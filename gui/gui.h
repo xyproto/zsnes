@@ -11,7 +11,7 @@ typedef struct ComboData {
     u1 player;
     u1 ff;
 } ComboData;
-STATIC_ASSERT(sizeof(ComboData) == 66);
+_Static_assert(sizeof(ComboData) == 66, "ComboData size mismatch");
 
 extern ComboData CombinDataGlob[50];
 extern ComboData CombinDataLocl[50];
