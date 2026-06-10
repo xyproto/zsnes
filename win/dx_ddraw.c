@@ -56,11 +56,55 @@ void DDrawError()
     MessageBox(NULL, message1, "DirectDraw Error", MB_ICONERROR);
 }
 
+// Letterbox src into the real fullscreen surface (wine ignores SetDisplayMode).
+static void resolve_dest_rect(LPDIRECTDRAWSURFACE7 dst_surf,
+    const RECT* src_rect, RECT* out)
+{
+    *out = rcWindow;
+    if (FullScreen != 1 || !dst_surf || !src_rect) {
+        return;
+    }
+    DDSURFACEDESC2 desc;
+    ZeroMemory(&desc, sizeof(desc));
+    desc.dwSize = sizeof(desc);
+    if (IDirectDrawSurface7_GetSurfaceDesc(dst_surf, &desc) != DD_OK) {
+        return;
+    }
+    LONG dw = (LONG)desc.dwWidth;
+    LONG dh = (LONG)desc.dwHeight;
+    if (dw <= 0 || dh <= 0) {
+        return;
+    }
+    LONG cw = out->right - out->left;
+    LONG ch = out->bottom - out->top;
+    if (cw == dw && ch == dh && out->left == 0 && out->top == 0) {
+        return;
+    }
+    LONG sw = src_rect->right - src_rect->left;
+    LONG sh = src_rect->bottom - src_rect->top;
+    if (sw <= 0 || sh <= 0) {
+        return;
+    }
+    // Fit preserving aspect.
+    LONG fit_w = dw;
+    LONG fit_h = (LONG)(((LONGLONG)sh * dw) / sw);
+    if (fit_h > dh) {
+        fit_h = dh;
+        fit_w = (LONG)(((LONGLONG)sw * dh) / sh);
+    }
+    out->left = (dw - fit_w) / 2;
+    out->top = (dh - fit_h) / 2;
+    out->right = out->left + fit_w;
+    out->bottom = out->top + fit_h;
+}
+
 void DDDrawScreen()
 {
+    RECT dst;
     if (FullScreen == 1) {
         if (TripleBufferWin == 1 || KitchenSync == 1 || (KitchenSyncPAL == 1 && totlines == 314)) {
-            if (IDirectDrawSurface7_Blt(DD_BackBuffer, &rcWindow, DD_CFB, &BlitArea, DDBLT_WAIT, NULL) == DDERR_SURFACELOST) {
+            resolve_dest_rect(DD_BackBuffer, &BlitArea, &dst);
+            if (IDirectDrawSurface7_Blt(DD_BackBuffer, &dst, DD_CFB, &BlitArea, DDBLT_WAIT, NULL) == DDERR_SURFACELOST) {
                 IDirectDrawSurface7_Restore(DD_Primary);
             }
 
@@ -69,7 +113,8 @@ void DDDrawScreen()
             }
 
             if (KitchenSync == 1 || (KitchenSyncPAL == 1 && totlines == 314)) {
-                if (IDirectDrawSurface7_Blt(DD_BackBuffer, &rcWindow, DD_CFB, &BlitArea, DDBLT_WAIT, NULL) == DDERR_SURFACELOST) {
+                resolve_dest_rect(DD_BackBuffer, &BlitArea, &dst);
+                if (IDirectDrawSurface7_Blt(DD_BackBuffer, &dst, DD_CFB, &BlitArea, DDBLT_WAIT, NULL) == DDERR_SURFACELOST) {
                     IDirectDrawSurface7_Restore(DD_Primary);
                 }
 
@@ -83,7 +128,8 @@ void DDDrawScreen()
                     DDrawError();
                 }
             }
-            IDirectDrawSurface7_Blt(DD_Primary, &rcWindow, DD_CFB, &BlitArea, DDBLT_WAIT, NULL);
+            resolve_dest_rect(DD_Primary, &BlitArea, &dst);
+            IDirectDrawSurface7_Blt(DD_Primary, &dst, DD_CFB, &BlitArea, DDBLT_WAIT, NULL);
             IDirectDrawSurface7_Restore(DD_Primary);
         }
     } else {
@@ -92,6 +138,7 @@ void DDDrawScreen()
                 DDrawError();
             }
         }
+        // Windowed: clipper handles dest, leave rcWindow.
         IDirectDrawSurface7_Blt(DD_Primary, &rcWindow, AltSurface == 0 ? DD_CFB : DD_CFB16, &BlitArea, DDBLT_WAIT, NULL);
     }
 }
