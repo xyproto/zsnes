@@ -679,12 +679,6 @@ NEWSYM reg21C3r
 ; Joystick Data for controller 1 and 2
 
 NEWSYM reg4016r
-    xor al,al
-    test dword[JoyANow],80000000h
-    jz .noal
-    mov al,1
-.noal
-    rol dword[JoyANow],1
     ;/// SUNLIT RUMBLE CONTROLLER TEST
     mov al,[ioportval]  ; Get IO port value
 	cmp al,0FFh	 ; is it set to $FF?
@@ -697,6 +691,13 @@ NEWSYM reg4016r
     rol word[RumbleData],1 ; rotate left
 .dontrol
     ;/// SUNLIT RUMBLE CONTROLLER TEST
+
+    xor al,al
+    test dword[JoyANow],80000000h
+    jz .noal
+    mov al,1
+.noal
+    rol dword[JoyANow],1
     ret
 
 SECTION .bss
