@@ -40,6 +40,10 @@ GUIComboGameSpec db 0
 GameSpecificInput db 0
 
 @
+@ Enable rumble for player 1 (0 = NO, 1 = Yes)
+SNESRumble db 0
+
+@
 @  ----
 @ -- Options --
 @  ----

@@ -338,6 +338,7 @@ static void GUIInputKeys(char dh)
         GUIFreshInputSelect = 1;
     }
     GUIKeyCheckbox(&GameSpecificInput, 'G', dh);
+    GUIKeyCheckbox(&SNESRumble, 'R', dh);
     GUIKeyCheckbox(&AllowUDLR, 'A', dh);
     GUIKeyCheckbox(&Turbo30hz, 'T', dh);
     if (dh == 'U') {

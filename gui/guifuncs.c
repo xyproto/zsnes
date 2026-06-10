@@ -356,6 +356,7 @@ void GUIRestoreVars()
     CheckValueBounds(&device2, 0, 4, 0, UB);
     CheckValueBounds(&GUIComboGameSpec, 0, 1, 0, UB);
     CheckValueBounds(&GameSpecificInput, 0, 1, 0, UB);
+    CheckValueBounds(&SNESRumble, 0, 1, 0, UB);
 
 #ifdef __WIN32__
     CheckValueBounds(&PauseFocusChange, 0, 1, 0, UB);

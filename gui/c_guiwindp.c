@@ -871,6 +871,7 @@ void DisplayGUIInput(void)
 
     GUIDisplayCheckboxu(3, 5, 160, &GameSpecificInput, "GAME SPECIFIC", 0);
     GUIDisplayCheckboxu(3, 5, 170, &AllowUDLR, "ALLOW U+D/L+R", 0);
+    GUIDisplayCheckboxu(3, 105, 160, &SNESRumble, "P1 Rumble", 3);
     GUIDisplayCheckboxu(3, 105, 170, &Turbo30hz, "TURBO AT 30HZ", 0);
     GUIDisplayCheckboxu(3, 5, 180, &pl12s34, "USE PL3/4 AS PL1/2", 0);
 
