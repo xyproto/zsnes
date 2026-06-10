@@ -65,6 +65,8 @@ void zexit_error(void);
 #include "../debugger/load.h"
 #endif
 
+u2 RumbleWait = 0;
+
 DWORD Moving = 0;
 DWORD SoundBufferSize = 1024 * 18;
 DWORD FirstSound = 1;
@@ -2131,6 +2133,48 @@ void drawscreenwin(void)
 
 void WinUpdateDevices()
 {
+    /// SUNLIT RUMBLE CONTROLLER TEST
+    // Rumble Test
+    extern u2 RumbleData;
+    extern u1 ioportval;
+    XINPUT_VIBRATION vibration = {0};
+	//if(RumbleData == 0xFFFF) {
+	//	RumbleData = 0;
+	//}
+	//if(RumbleData != 0) {
+		printf("RumbleData: $%X\n", RumbleData);
+	//}
+    if ((RumbleData & 0xFF00) == 0x7200) {
+		printf("Rumble sentry hit!\n");
+		printf("RumbleWait: $%X\n", RumbleWait);
+		vibration.wLeftMotorSpeed  = ((RumbleData & 0x000F) * 4369);
+		printf("LeftRumble: $%X\n",vibration.wLeftMotorSpeed);
+		vibration.wRightMotorSpeed = (((RumbleData & 0x00F0) >> 4) * 4369);
+		printf("RightRumble: $%X\n",vibration.wRightMotorSpeed);
+		//if(RumbleWait != 255) {
+		DWORD result = XInputSetState(0, &vibration); // controller index 0
+		//RumbleWait++;
+		//} else {
+    	//Sleep(2000); // vibrate for 2 seconds
+		RumbleData = 0;
+		//ioportval = 0;
+		//}
+		if (result == ERROR_SUCCESS)
+		{
+			printf("Vibration started\n");
+		}
+		else
+		{
+			printf("Failed to set vibration: %lu\n", result);
+		}
+		// Stop vibration
+		ZeroMemory(&vibration, sizeof(XINPUT_VIBRATION));
+		XInputSetState(0, &vibration);
+    } else {
+		RumbleData = 0;
+	}
+    /// SUNLIT RUMBLE CONTROLLER TEST
+
     int i, j;
     unsigned char* keys;
     unsigned char keys2[256];
