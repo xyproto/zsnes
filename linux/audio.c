@@ -60,26 +60,13 @@ static volatile unsigned int samples_waiting = 0;
 #ifdef __PIPEWIRE__
 static struct pw_thread_loop* pipewire_loop = 0;
 static struct pw_stream* pipewire_stream = 0;
-static struct spa_audio_info_raw pipewire_info;
 static int pipewire_inited = 0;
 static uint32_t pipewire_target_frames = 256;
 static volatile bool pipewire_shutting_down = false;
 bool sound_pipewire = false;
 
-/*
- * Producer/consumer decoupling, modeled after the libao backend.
- *
- * The PipeWire RT process callback used to call MixSoundBlock() directly,
- * which (a) ran the SNES audio synthesis on a real-time graph thread with a
- * sub-millisecond budget and (b) had no buffer headroom, so any scheduling
- * jitter produced an underrun and an audible click.
- *
- * Instead, a dedicated SoundThread_pipewire producer generates samples ahead
- * of time into pw_ring, and PipeWireProcess just memcpys the requested
- * number of bytes out of the ring (filling any shortfall with silence).
- * This mirrors how libao's blocking ao_play decouples the SNES synthesis
- * loop from the device's actual playback timing.
- */
+/* Producer fills pw_ring; PipeWireProcess memcpys from it. Producer
+ * waits until pw_format_ready and pw_stream_streaming are set. */
 static pthread_t pw_producer_thread;
 static int pw_producer_running = 0;
 static volatile int pw_producer_terminated = 0;
@@ -87,26 +74,31 @@ static pthread_mutex_t pw_audio_mutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_cond_t pw_audio_wait = PTHREAD_COND_INITIALIZER;
 static volatile unsigned int pw_samples_waiting = 0;
 
+static volatile int pw_stream_streaming = 0; /* set by state_changed */
+static volatile int pw_format_ready = 0; /* set by param_changed */
+static volatile int pw_drained = 0; /* set by drained event */
+
 static uint8_t* pw_ring = NULL;
 static uint32_t pw_ring_size = 0;
 static pthread_mutex_t pw_ring_mutex = PTHREAD_MUTEX_INITIALIZER;
 static volatile uint32_t pw_ring_head = 0;
 static volatile uint32_t pw_ring_tail = 0;
 
-/* Smart adaptation state.  We let PipeWire negotiate its own quantum and
- * learn it on the first process callback (or via the param_changed event),
- * then grow the ring on persistent underruns up to a hard cap. */
+/* Ring grows on persistent underrun, capped at pw_ring_max_frames. */
 static volatile uint32_t pw_observed_quantum_frames = 0;
 static volatile uint32_t pw_ring_min_frames = 0;
 static volatile uint32_t pw_ring_max_frames = 0;
 static uint32_t pw_stride_bytes = 4;
-static uint32_t pw_rate_hz = 48000;
+static uint32_t pw_rate_hz = 0;
 static int pw_user_forced_latency = 0;
 static int pw_stats_enabled = 0;
 static volatile uint64_t pw_stat_cycles = 0;
 static volatile uint64_t pw_stat_underruns = 0;
 static volatile uint64_t pw_stat_silent_pads = 0;
 static volatile uint64_t pw_stat_resizes = 0;
+
+static uint32_t pw_initial_ring_ms = 250;
+static uint32_t pw_max_ring_ms = 2000;
 #endif
 
 uint8_t* sdl_audio_buffer = NULL;
@@ -394,22 +386,18 @@ static int SoundInit_ao()
 #endif
 
 #ifdef __PIPEWIRE__
-/* PipeWire stream runs at the host-negotiated rate (pw_out_rate, learned
- * via the param_changed event, typically 48 kHz, sometimes 44.1 kHz or
- * higher). The emulator generates samples at RATE (32 kHz) and we
- * resample to pw_out_rate client-side with a 16-tap Kaiser-windowed sinc
- * (polyphase, 256 phases, linear-interpolated). The resample ratio is
- * biased +/-PW_RS_MAX_DELTA from the ring fill level so emulator/host
- * clock drift is absorbed without underrun or growing latency
- * (bsnes-style dynamic rate control). */
+/* Emulator outputs at RATE; resample client-side to pw_out_rate with a
+ * 16-tap polyphase Kaiser sinc. Ratio is biased +/-PW_RS_MAX_DELTA by
+ * ring fill (bsnes-style DRC) to absorb clock drift. */
 #define PW_RS_MAX_DELTA 0.005
 #define PW_SINC_TAPS 16
 #define PW_SINC_HALF (PW_SINC_TAPS / 2)
 #define PW_SINC_PHASES 256
 
-static uint32_t pw_out_rate = 48000;
+static uint32_t pw_out_rate = 0; /* set by param_changed */
 static int pw_banner_shown = 0;
 static double pw_sinc_table[PW_SINC_PHASES + 1][PW_SINC_TAPS];
+static pthread_mutex_t pw_rs_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 static struct {
     double pos;
@@ -477,24 +465,21 @@ static void pw_sinc_build(double ratio)
     }
 }
 
-static void pw_rs_init(void)
+/* (Re)init resampler for the negotiated rate. Mutex keeps the producer
+ * out while pw_sinc_table is being rebuilt. */
+static void pw_rs_apply_rate(uint32_t rate)
 {
+    if (!rate) {
+        return;
+    }
+    pthread_mutex_lock(&pw_rs_mutex);
+    pw_out_rate = rate;
     pw_rs.pos = (double)PW_SINC_HALF;
-    pw_rs.base_ratio = (double)RATE / (double)pw_out_rate;
+    pw_rs.base_ratio = (double)RATE / (double)rate;
     pw_rs.ratio = pw_rs.base_ratio;
     memset(pw_rs.hist, 0, sizeof(pw_rs.hist));
     pw_sinc_build(pw_rs.base_ratio);
-}
-
-static void pw_rs_set_output_rate(uint32_t rate)
-{
-    if (!rate || rate == pw_out_rate) {
-        return;
-    }
-    pw_out_rate = rate;
-    pw_rs.base_ratio = (double)RATE / (double)pw_out_rate;
-    pw_rs.ratio = pw_rs.base_ratio;
-    pw_sinc_build(pw_rs.base_ratio);
+    pthread_mutex_unlock(&pw_rs_mutex);
 }
 
 static uint32_t pw_rs_process(const int16_t* in, uint32_t in_frames,
@@ -692,7 +677,9 @@ static void* SoundThread_pipewire(void* useless)
         unsigned int samples;
 
         pthread_mutex_lock(&pw_audio_mutex);
-        while (!pw_samples_waiting && !pw_producer_terminated) {
+        /* Don't produce until format negotiated and stream is streaming. */
+        while (!pw_producer_terminated
+            && (!pw_format_ready || !pw_stream_streaming || !pw_samples_waiting)) {
             pthread_cond_wait(&pw_audio_wait, &pw_audio_mutex);
         }
         samples = pw_samples_waiting;
@@ -712,9 +699,11 @@ static void* SoundThread_pipewire(void* useless)
             uint32_t out_frames;
             MixSoundBlock(stemp, chunk);
             in_frames = chunk / channels;
+            pthread_mutex_lock(&pw_rs_mutex);
             out_frames = pw_rs_process(stemp, in_frames, outbuf,
                 sizeof(outbuf) / (sizeof(int16_t) * (channels ? channels : 1)),
                 channels);
+            pthread_mutex_unlock(&pw_rs_mutex);
             pw_ring_write((uint8_t*)outbuf, out_frames * channels * sizeof(int16_t));
             samples -= chunk;
         }
@@ -722,9 +711,15 @@ static void* SoundThread_pipewire(void* useless)
     return NULL;
 }
 
+/* Authoritative setter for pw_out_rate, pw_stride_bytes, and pw_ring.
+ * Flips pw_format_ready last so the producer sees a consistent state. */
 static void PipeWireParamChanged(void* userdata, uint32_t id, const struct spa_pod* param)
 {
     struct spa_audio_info info;
+    uint32_t rate;
+    uint32_t channels;
+    uint32_t stride;
+    uint32_t want_bytes;
     (void)userdata;
     if (!param || id != SPA_PARAM_Format) {
         return;
@@ -740,17 +735,80 @@ static void PipeWireParamChanged(void* userdata, uint32_t id, const struct spa_p
     if (spa_format_audio_raw_parse(param, &info.info.raw) < 0) {
         return;
     }
-    if (info.info.raw.rate && info.info.raw.rate != pw_out_rate) {
-        pw_rs_set_output_rate(info.info.raw.rate);
-        pw_rate_hz = info.info.raw.rate;
-        /* Resize ring targets to keep ~same wall-clock buffering at new rate. */
-        pw_ring_min_frames = (info.info.raw.rate * 250U) / 1000U;
-        pw_ring_max_frames = (info.info.raw.rate * 2000U) / 1000U;
+    rate = info.info.raw.rate;
+    channels = info.info.raw.channels;
+    if (!rate || !channels) {
+        return;
     }
+
+    stride = channels * sizeof(int16_t); /* we negotiated S16_LE */
+    pw_stride_bytes = stride;
+    pw_rate_hz = rate;
+
+    pw_rs_apply_rate(rate);
+
+    pw_ring_min_frames = (rate * pw_initial_ring_ms) / 1000U;
+    pw_ring_max_frames = (rate * pw_max_ring_ms) / 1000U;
+    if (pw_ring_min_frames < 256U) {
+        pw_ring_min_frames = 256U;
+    }
+
+    /* Size the ring for the actual negotiated rate, not our guess. */
+    want_bytes = pw_ring_min_frames * stride;
+    pthread_mutex_lock(&pw_ring_mutex);
+    if (pw_ring) {
+        free(pw_ring);
+        pw_ring = NULL;
+        pw_ring_size = 0;
+    }
+    pw_ring = (uint8_t*)malloc(want_bytes);
+    if (pw_ring) {
+        pw_ring_size = want_bytes;
+        pw_ring_head = pw_ring_tail = 0;
+    }
+    pthread_mutex_unlock(&pw_ring_mutex);
+
+    pipewire_target_frames = rate / 50U; /* ~20 ms */
+    if (pipewire_target_frames < 64U) {
+        pipewire_target_frames = 64U;
+    }
+
     if (!pw_banner_shown) {
         pw_banner_shown = 1;
-        printf("PipeWire audio: %u ch, %u Hz\n", info.info.raw.channels, info.info.raw.rate);
+        printf("PipeWire audio: %u ch, %u Hz\n", channels, rate);
     }
+
+    pthread_mutex_lock(&pw_audio_mutex);
+    pw_format_ready = 1;
+    pthread_cond_broadcast(&pw_audio_wait);
+    pthread_mutex_unlock(&pw_audio_mutex);
+}
+
+static void PipeWireStateChanged(void* userdata, enum pw_stream_state old,
+    enum pw_stream_state state, const char* error)
+{
+    (void)userdata;
+    (void)old;
+    pthread_mutex_lock(&pw_audio_mutex);
+    pw_stream_streaming = (state == PW_STREAM_STATE_STREAMING);
+    pthread_cond_broadcast(&pw_audio_wait);
+    pthread_mutex_unlock(&pw_audio_mutex);
+
+    if (state == PW_STREAM_STATE_ERROR && error && *error) {
+        fprintf(stderr, "PipeWire stream error: %s\n", error);
+    } else if (pw_stats_enabled) {
+        fprintf(stderr, "PipeWire stream state: %s -> %s\n",
+            pw_stream_state_as_string(old), pw_stream_state_as_string(state));
+    }
+}
+
+static void PipeWireDrained(void* userdata)
+{
+    (void)userdata;
+    pthread_mutex_lock(&pw_audio_mutex);
+    pw_drained = 1;
+    pthread_cond_broadcast(&pw_audio_wait);
+    pthread_mutex_unlock(&pw_audio_mutex);
 }
 
 static void PipeWireProcess(void* userdata)
@@ -758,7 +816,7 @@ static void PipeWireProcess(void* userdata)
     struct pw_buffer* b;
     struct spa_buffer* buf;
     struct spa_data* d;
-    uint32_t stride = pw_stride_bytes ? pw_stride_bytes : ((StereoSound + 1) * 2);
+    uint32_t stride;
     uint32_t bytes;
     uint32_t frames;
     uint8_t* out;
@@ -778,6 +836,8 @@ static void PipeWireProcess(void* userdata)
         pw_stream_queue_buffer(pipewire_stream, b);
         return;
     }
+
+    stride = pw_stride_bytes ? pw_stride_bytes : ((uint32_t)d->maxsize >= 4 ? 4 : 2);
 
     if (b->requested > 0) {
         bytes = (uint32_t)b->requested * stride;
@@ -803,7 +863,9 @@ static void PipeWireProcess(void* userdata)
     }
 
     out = (uint8_t*)d->data;
-    render_audio = !pipewire_shutting_down && !GUIOn2 && !GUIOn && !EMUPause && !RawDumpInProgress && !T36HZEnabled && soundon;
+    /* Silence until param_changed has set up resampler+ring. */
+    render_audio = pw_format_ready && !pipewire_shutting_down
+        && !GUIOn2 && !GUIOn && !EMUPause && !RawDumpInProgress && !T36HZEnabled && soundon;
     pw_stat_cycles++;
 
     if (!render_audio) {
@@ -874,17 +936,14 @@ static int SoundInit_pipewire()
     struct spa_pod* params[1];
     static struct pw_stream_events stream_events = {
         PW_VERSION_STREAM_EVENTS,
+        .state_changed = PipeWireStateChanged,
         .param_changed = PipeWireParamChanged,
         .process = PipeWireProcess,
+        .drained = PipeWireDrained,
     };
-    /* No PW_STREAM_FLAG_RT_PROCESS, synthesis happens on the producer thread,
-     * so the process callback only memcpys and can run on a normal-priority
-     * thread with deeper buffering. */
+    /* No RT_PROCESS: the process callback takes a pthread mutex. */
     enum pw_stream_flags const flags = PW_STREAM_FLAG_AUTOCONNECT | PW_STREAM_FLAG_MAP_BUFFERS;
     int rc;
-    uint32_t stride;
-    uint32_t initial_ring_ms = 250; /* generous starting headroom */
-    uint32_t max_ring_ms = 2000; /* hard upper cap for auto-grow */
     long forced_latency_ms = 0; /* >0 -> pin PW_KEY_NODE_LATENCY */
     const char* env;
 
@@ -914,21 +973,16 @@ static int SoundInit_pipewire()
         pipewire_stream = 0;
     }
 
-    memset(&pipewire_info, 0, sizeof(pipewire_info));
-    pipewire_info.format = SPA_AUDIO_FORMAT_S16_LE;
-    pipewire_info.rate = pw_out_rate;
-    pipewire_info.channels = StereoSound + 1;
-    if (pipewire_info.channels == 1) {
-        pipewire_info.position[0] = SPA_AUDIO_CHANNEL_MONO;
-    } else {
-        pipewire_info.position[0] = SPA_AUDIO_CHANNEL_FL;
-        pipewire_info.position[1] = SPA_AUDIO_CHANNEL_FR;
-    }
-    pw_rs_init();
+    /* Reset negotiation state; callbacks will repopulate. */
+    pw_format_ready = 0;
+    pw_stream_streaming = 0;
+    pw_drained = 0;
+    pw_out_rate = 0;
+    pw_rate_hz = 0;
+    pw_observed_quantum_frames = 0;
+    pw_banner_shown = 0;
+    pw_stat_cycles = pw_stat_underruns = pw_stat_silent_pads = pw_stat_resizes = 0;
 
-    /* Smart defaults, no fixed latency hint, let PipeWire's server pick its
-     * configured quantum so we match whatever the user's wireplumber/pulse
-     * setup is tuned for.  Env vars override for power users. */
     pw_user_forced_latency = 0;
     if ((env = getenv("ZSNES_PIPEWIRE_LATENCY_MS")) && *env) {
         long v = strtol(env, NULL, 10);
@@ -937,16 +991,18 @@ static int SoundInit_pipewire()
             pw_user_forced_latency = 1;
         }
     }
+    pw_initial_ring_ms = 250;
     if ((env = getenv("ZSNES_PIPEWIRE_BUFFER_MS")) && *env) {
         long v = strtol(env, NULL, 10);
         if (v >= 50 && v <= 5000) {
-            initial_ring_ms = (uint32_t)v;
+            pw_initial_ring_ms = (uint32_t)v;
         }
     }
+    pw_max_ring_ms = 2000;
     if ((env = getenv("ZSNES_PIPEWIRE_BUFFER_MAX_MS")) && *env) {
         long v = strtol(env, NULL, 10);
-        if (v >= initial_ring_ms && v <= 10000) {
-            max_ring_ms = (uint32_t)v;
+        if (v >= (long)pw_initial_ring_ms && v <= 10000) {
+            pw_max_ring_ms = (uint32_t)v;
         }
     }
     pw_stats_enabled = 0;
@@ -954,63 +1010,33 @@ static int SoundInit_pipewire()
         pw_stats_enabled = 1;
     }
 
-    stride = (StereoSound + 1) * 2;
-    pw_stride_bytes = stride;
-    pw_rate_hz = pw_out_rate;
-    pw_ring_min_frames = (pw_out_rate * initial_ring_ms) / 1000;
-    pw_ring_max_frames = (pw_out_rate * max_ring_ms) / 1000;
-    pw_observed_quantum_frames = 0;
-    pw_stat_cycles = pw_stat_underruns = pw_stat_silent_pads = pw_stat_resizes = 0;
-
-    /* Initial ring sized to user request; smart logic will grow it if the
-     * negotiated quantum turns out to be larger than expected. */
+    /* Hint preferences via properties; server picks final values. */
     {
-        uint32_t want = pw_ring_min_frames * stride;
-        if (pw_ring) {
-            free(pw_ring);
-            pw_ring = NULL;
-        }
-        pw_ring = (uint8_t*)malloc(want);
-        if (!pw_ring) {
-            pw_thread_loop_unlock(pipewire_loop);
-            return false;
-        }
-        pw_ring_size = want;
-        pthread_mutex_lock(&pw_ring_mutex);
-        pw_ring_head = pw_ring_tail = 0;
-        pthread_mutex_unlock(&pw_ring_mutex);
-    }
-
-    /* Conservative pre-fill target for when the server quantum is unknown. */
-    pipewire_target_frames = (pw_out_rate / 50); /* ~20 ms */
-    if (pipewire_target_frames < 64) {
-        pipewire_target_frames = 64;
-    }
-
-    if (pw_user_forced_latency) {
+        char rate_str[32];
         char latency_str[64];
-        uint32_t frames = (pw_out_rate * (uint32_t)forced_latency_ms) / 1000;
-        if (frames < 32)
-            frames = 32;
-        snprintf(latency_str, sizeof(latency_str), "%u/%u", frames, pw_out_rate);
-        props = pw_properties_new(
-            PW_KEY_MEDIA_TYPE, "Audio",
-            PW_KEY_MEDIA_CATEGORY, "Playback",
-            PW_KEY_MEDIA_ROLE, "Game",
-            PW_KEY_APP_NAME, "zsnes",
-            PW_KEY_NODE_LATENCY, latency_str,
-            NULL);
-        pipewire_target_frames = frames;
-    } else {
-        /* Stream runs at host-native rate (negotiated via param_changed).
-         * Client-side polyphase Kaiser-sinc resampler + dynamic rate
-         * control absorbs clock drift; no server resampling needed. */
-        props = pw_properties_new(
-            PW_KEY_MEDIA_TYPE, "Audio",
-            PW_KEY_MEDIA_CATEGORY, "Playback",
-            PW_KEY_MEDIA_ROLE, "Game",
-            PW_KEY_APP_NAME, "zsnes",
-            NULL);
+        snprintf(rate_str, sizeof(rate_str), "1/%u", (unsigned)RATE);
+        if (pw_user_forced_latency) {
+            uint32_t frames = ((uint32_t)RATE * (uint32_t)forced_latency_ms) / 1000U;
+            if (frames < 32U)
+                frames = 32U;
+            snprintf(latency_str, sizeof(latency_str), "%u/%u", frames, (unsigned)RATE);
+            props = pw_properties_new(
+                PW_KEY_MEDIA_TYPE, "Audio",
+                PW_KEY_MEDIA_CATEGORY, "Playback",
+                PW_KEY_MEDIA_ROLE, "Game",
+                PW_KEY_APP_NAME, "zsnes",
+                PW_KEY_NODE_RATE, rate_str,
+                PW_KEY_NODE_LATENCY, latency_str,
+                NULL);
+        } else {
+            props = pw_properties_new(
+                PW_KEY_MEDIA_TYPE, "Audio",
+                PW_KEY_MEDIA_CATEGORY, "Playback",
+                PW_KEY_MEDIA_ROLE, "Game",
+                PW_KEY_APP_NAME, "zsnes",
+                PW_KEY_NODE_RATE, rate_str,
+                NULL);
+        }
     }
 
     pipewire_stream = pw_stream_new_simple(
@@ -1024,34 +1050,16 @@ static int SoundInit_pipewire()
         return false;
     }
 
+    /* S16_LE, rate=0 means "any"; server reports actual rate in param_changed. */
     {
-        struct spa_pod_frame f[2];
-        uint32_t pos[2];
-        uint32_t nch = (uint32_t)(StereoSound + 1);
-        pos[0] = (nch == 1) ? SPA_AUDIO_CHANNEL_MONO : SPA_AUDIO_CHANNEL_FL;
-        pos[1] = SPA_AUDIO_CHANNEL_FR;
-        spa_pod_builder_push_object(&b, &f[0], SPA_TYPE_OBJECT_Format, SPA_PARAM_EnumFormat);
-        spa_pod_builder_add(&b,
-            SPA_FORMAT_mediaType, SPA_POD_Id(SPA_MEDIA_TYPE_audio),
-            SPA_FORMAT_mediaSubtype, SPA_POD_Id(SPA_MEDIA_SUBTYPE_raw),
-            SPA_FORMAT_AUDIO_format, SPA_POD_Id(SPA_AUDIO_FORMAT_S16_LE),
-            SPA_FORMAT_AUDIO_channels, SPA_POD_Int((int)nch),
-            SPA_FORMAT_AUDIO_position, SPA_POD_Array(sizeof(uint32_t), SPA_TYPE_Id, nch, pos),
-            0);
-        /* Offer a list of acceptable rates so the server can pick the
-         * device-native one. The first value is the default/preferred. */
-        spa_pod_builder_prop(&b, SPA_FORMAT_AUDIO_rate, 0);
-        spa_pod_builder_push_choice(&b, &f[1], SPA_CHOICE_Enum, 0);
-        spa_pod_builder_int(&b, 48000);
-        spa_pod_builder_int(&b, 48000);
-        spa_pod_builder_int(&b, 44100);
-        spa_pod_builder_int(&b, 96000);
-        spa_pod_builder_int(&b, 88200);
-        spa_pod_builder_int(&b, 192000);
-        spa_pod_builder_pop(&b, &f[1]);
-        params[0] = (struct spa_pod*)spa_pod_builder_pop(&b, &f[0]);
+        struct spa_audio_info_raw info = { 0 };
+        info.format = SPA_AUDIO_FORMAT_S16_LE;
+        info.channels = (uint32_t)(StereoSound + 1);
+        info.rate = 0;
+        params[0] = spa_format_audio_raw_build(&b, SPA_PARAM_EnumFormat, &info);
     }
-    rc = pw_stream_connect(pipewire_stream, PW_DIRECTION_OUTPUT, PW_ID_ANY, flags, (const struct spa_pod* const*)params, 1);
+    rc = pw_stream_connect(pipewire_stream, PW_DIRECTION_OUTPUT, PW_ID_ANY, flags,
+        (const struct spa_pod* const*)params, 1);
     pw_thread_loop_unlock(pipewire_loop);
     if (rc < 0) {
         SoundEnabled = 0;
@@ -1070,9 +1078,6 @@ static int SoundInit_pipewire()
 
     sound_pipewire = true;
     /* Banner is printed from PipeWireParamChanged once the rate is negotiated. */
-    (void)forced_latency_ms;
-    (void)initial_ring_ms;
-    (void)max_ring_ms;
     return true;
 }
 #endif
@@ -1433,6 +1438,7 @@ void DeinitSound()
 #ifdef __PIPEWIRE__
     pipewire_shutting_down = 1;
     sound_pipewire = false;
+    /* Stop producer first so the ring stops growing. */
     if (pw_producer_running) {
         pthread_mutex_lock(&pw_audio_mutex);
         pw_producer_terminated = 1;
@@ -1441,8 +1447,28 @@ void DeinitSound()
         pthread_join(pw_producer_thread, NULL);
         pw_producer_running = 0;
     }
-    if (pipewire_stream) {
+    /* Drain queued audio, then tear down. Lock for stream ops; release
+     * before pw_thread_loop_stop (loop docs require this). */
+    if (pipewire_stream && pipewire_loop) {
         pw_thread_loop_lock(pipewire_loop);
+        pw_drained = 0;
+        if (pw_stream_flush(pipewire_stream, true) == 0) {
+            /* Up to 200 ms for the drained event. */
+            struct timespec deadline;
+            clock_gettime(CLOCK_REALTIME, &deadline);
+            deadline.tv_nsec += 200 * 1000 * 1000;
+            if (deadline.tv_nsec >= 1000000000L) {
+                deadline.tv_sec += 1;
+                deadline.tv_nsec -= 1000000000L;
+            }
+            pthread_mutex_lock(&pw_audio_mutex);
+            while (!pw_drained) {
+                if (pthread_cond_timedwait(&pw_audio_wait, &pw_audio_mutex, &deadline) != 0) {
+                    break;
+                }
+            }
+            pthread_mutex_unlock(&pw_audio_mutex);
+        }
         pw_stream_set_active(pipewire_stream, false);
         pw_stream_disconnect(pipewire_stream);
         pw_stream_destroy(pipewire_stream);
@@ -1450,6 +1476,7 @@ void DeinitSound()
         pw_thread_loop_unlock(pipewire_loop);
     }
     if (pipewire_loop) {
+        /* Must be unlocked: stop joins the loop thread. */
         pw_thread_loop_stop(pipewire_loop);
         pw_thread_loop_destroy(pipewire_loop);
         pipewire_loop = 0;
