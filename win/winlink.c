@@ -31,7 +31,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <stdint.h>
 #include <stdio.h>
 
-#include <Xinput.h>
+#include <xinput.h>
 #include <dinput.h>
 #include <dsound.h>
 #include <windows.h>
