@@ -22,7 +22,7 @@
 EXTSYM SPC7110Enable,curypos,cycpl
 EXTSYM pdh,vram,romispal,reg1read,spcnumread,spcon,reg2read,reg3read
 EXTSYM reg4read,JoyEOrig,JoyENow,device2,cycphb,joycontren,totlines
-EXTSYM RumbleData ;/// SUNLIT RUMBLE CONTROLLER TEST
+EXTSYM RumbleData ;// SUNLIT RUMBLE CONTROLLER TEST
 
 %ifndef NO_DEBUGGER
 EXTSYM debuggeron
@@ -679,18 +679,18 @@ NEWSYM reg21C3r
 ; Joystick Data for controller 1 and 2
 
 NEWSYM reg4016r
-    ;/// SUNLIT RUMBLE CONTROLLER TEST
+    ;// SUNLIT RUMBLE CONTROLLER TEST
     mov al,[ioportval]  ; Get IO port value
-	cmp al,0FFh	 ; is it set to $FF?
-	je .dontrol  ; if yes, skip all this
+    cmp al,0FFh	 ; is it set to $FF?
+    je .donerumble  ; if yes, skip all this
     and al,040h    ; isolate IO bit 6 (controller 1 I/O)
     shr al,6       ; shift into bit 0
     or  [RumbleData],al ; insert bit
     cmp byte[RumbleData+1],072h ; is hi byte == rumble sentry?
-    je .dontrol ; yes, don't rotate any further 
+    je .donerumble ; yes, don't rotate any further 
     rol word[RumbleData],1 ; rotate left
-.dontrol
-    ;/// SUNLIT RUMBLE CONTROLLER TEST
+.donerumble
+    ;// SUNLIT RUMBLE CONTROLLER TEST
 
     xor al,al
     test dword[JoyANow],80000000h
