@@ -2131,7 +2131,7 @@ void drawscreenwin(void)
 
 void DoRumble(void)
 {
-	/// SUNLIT RUMBLE CONTROLLER TEST
+	// SUNLIT RUMBLE CONTROLLER TEST
 	extern u2 RumbleData;
 	double intensity = 10; // ideally this would be in the options, range should be 1.0 - 10.0
 	XINPUT_VIBRATION vibration = {0};
@@ -2143,6 +2143,7 @@ void DoRumble(void)
 	}
 
 	if(RumbleData == 0xFFFF) {
+		printf("Null rumble data hit!\n");
 		RumbleData = 0;
 	}
 
@@ -2153,17 +2154,18 @@ void DoRumble(void)
 	if ((RumbleData & 0xFF00) == 0x7200) {
 		printf("Rumble sentry hit!\n");
 		vibration.wLeftMotorSpeed  = (((RumbleData & 0x000F) * 4369) * intensity);
-		printf("LeftRumble: $%X\n",vibration.wLeftMotorSpeed);
+		printf("Left: $%X\n",vibration.wLeftMotorSpeed);
 		vibration.wRightMotorSpeed = ((((RumbleData & 0x00F0) >> 4) * 4369) * intensity);
-		printf("RightRumble: $%X\n",vibration.wRightMotorSpeed);
+		printf("Right: $%X\n",vibration.wRightMotorSpeed);
 		DWORD result = XInputSetState(0, &vibration); // controller index 0
 
 		RumbleData = 0;
 
 		if (result == ERROR_SUCCESS) {
-			printf("Vibration started\n");
+			printf("Rumble started!\n");
 		}
 	}
+	// SUNLIT RUMBLE CONTROLLER TEST
 }
 
 void WinUpdateDevices()

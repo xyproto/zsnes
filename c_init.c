@@ -46,7 +46,7 @@ u4 JoyENow;
 u4 JoyEOrig;
 u4 numspcvblleft;
 u4 spc700idle;
-u2 RumbleData;    /// SUNLIT RUMBLE CONTROLLER TEST
+u2 RumbleData;    // SUNLIT RUMBLE CONTROLLER TEST
 
 static u1 ComboProg[5];
 static u1 ComboPtr[5];
