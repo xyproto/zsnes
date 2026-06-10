@@ -1671,10 +1671,10 @@ void DoRumble(void)
 {
     // SUNLIT RUMBLE CONTROLLER TEST
     extern u2 RumbleData;
-    double intensity = 10; // ideally this would be in the options, range should be 1.0 - 10.0
+    extern u1 RumbleTimer;
     XINPUT_VIBRATION vibration = { 0 };
 
-    if (RumbleData == 0) {
+    if (RumbleTimer == 60) {
         // Stop vibration
         ZeroMemory(&vibration, sizeof(XINPUT_VIBRATION));
         XInputSetState(0, &vibration);
@@ -1691,11 +1691,12 @@ void DoRumble(void)
 
     if ((RumbleData & 0xFF00) == 0x7200) {
         printf("Rumble sentry hit!\n");
-        vibration.wLeftMotorSpeed = (((RumbleData & 0x000F) * 4369) * intensity);
+        vibration.wLeftMotorSpeed = ((RumbleData & 0x000F) * 4369);
         printf("Left: $%X\n", vibration.wLeftMotorSpeed);
-        vibration.wRightMotorSpeed = ((((RumbleData & 0x00F0) >> 4) * 4369) * intensity);
+        vibration.wRightMotorSpeed = (((RumbleData & 0x00F0) >> 4) * 4369);
         printf("Right: $%X\n", vibration.wRightMotorSpeed);
         DWORD result = XInputSetState(0, &vibration); // controller index 0
+        RumbleTimer++;
 
         RumbleData = 0;
 
