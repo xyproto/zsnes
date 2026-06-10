@@ -78,17 +78,13 @@ void zstart();
 void InitDebugger();
 #endif
 
-#define put_line(x) \
-    puts(x);        \
-    lines_out++;
+#define put_line(x) puts(x)
 
 char* ZVERSION = ZVER;
 const unsigned int versionNumber = 0x00000098; // 1.52
 
 static void display_start_message()
 {
-    size_t lines_out = 0;
-    bool tty = isatty(fileno(stdout));
 }
 
 static void display_version()
@@ -99,8 +95,6 @@ static void display_version()
 
 static void display_help()
 {
-    size_t lines_out = 0;
-    bool tty = isatty(fileno(stdout));
 #ifdef __UNIXSDL__
 #ifdef __LIBAO__
     int driver_count;

@@ -1744,26 +1744,6 @@ static void NetplaySetTCPOptions(int const fd)
 #endif
 }
 
-static int NetplayResolveHost(struct sockaddr_in* const out)
-{
-    memset(out, 0, sizeof(*out));
-
-    struct addrinfo hints;
-    memset(&hints, 0, sizeof(hints));
-    hints.ai_family = AF_INET;
-    hints.ai_socktype = SOCK_STREAM;
-
-    char portstr[8];
-    snprintf(portstr, sizeof(portstr), "%u", (unsigned)NetplayDefaultPort);
-
-    struct addrinfo* res = NULL;
-    if (getaddrinfo(NetplayHostName, portstr, &hints, &res) != 0 || res == NULL)
-        return 0;
-    memcpy(out, res->ai_addr, sizeof(*out));
-    freeaddrinfo(res);
-    return 1;
-}
-
 static int NetplayWaitFD(int const fd, int const want_write, int timeout_ms)
 {
     if (timeout_ms < 0)
@@ -2578,16 +2558,9 @@ void DisplayGUIAbout(void)
     VERSION_STR = GUIGUIAboutTextA1;
     placedate();
 
-#if defined __WIN32__
-    char const* const GUIGUIAboutTextA2 = "WIN VERSION";
-#elif defined __UNIXSDL__
-    char const* const GUIGUIAboutTextA2 = "SDL VERSION";
-#endif
-
     GUIDrawWindowBox(11, "ABOUT");
     if (EEgg != 1) {
         GUIDisplayText(11, 6, 16, GUIGUIAboutTextA1); // Text
-        // GUIDisplayText(11, 6, 36, GUIGUIAboutTextA2);
         GUIDisplayTextY(11, 6, 46, "CODED BY:");
         GUIDisplayText(11, 6, 56, "    ZSKNIGHT      _DEMO_");
         GUIDisplayText(11, 6, 66, "    PAGEFAULT     NACH");

@@ -117,7 +117,7 @@ static unsigned char pt[BUF_WIDTH * BUF_HEIGHT];
 void DrawBurn(void)
 {
     int i, j;
-    int x, p;
+    int x;
     int v;
 
     if (!started) {
@@ -171,7 +171,6 @@ void DrawBurn(void)
     }
 
     /* Smoothen the values of FrameArray to avoid "discrete" flames */
-    p = 0;
     for (i = xstart + smooth; i <= xend - smooth; i++) {
         x = 0;
         for (j = -smooth; j <= smooth; j++)

@@ -78,7 +78,6 @@ static uint32_t FullScreen = 0;
 static vidstate_t sdl_state = vid_null;
 static int UseOpenGL = 0;
 static const int BitDepth = 16;
-static bool ScreenSaverSuspended = false;
 static uint32_t FirstVid = 1;
 #ifdef __OPENGL__
 SDL_GLContext gl_context = NULL;

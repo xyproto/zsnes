@@ -2079,7 +2079,6 @@ void map_hirom()
 void map_ehirom()
 {
     uint8_t* ROM = romdata;
-    uint_fast8_t x;
     // set addresses 8000-FFFF
     // set banks 00-3F (40h x 32KB ROM banks @ 10000h)
     map_set(snesmmap, ROM + 0x400000, 0x40, 0x10000); // FuSoYa: extended from 48Mbits to 64Mbits
