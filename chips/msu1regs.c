@@ -3,14 +3,14 @@
  *
  * Ported from chips/msu1regs.asm.
  *
- * msustatusread    — returns MSU_StatusRead
- * msudataread      — returns MSU_DATA[MSU_Data_Addr], increments data address
- * msuid1..msuid6   — return the six ID bytes: 'S', '-', 'M', 'S', 'U', '1'
- * msudataseek0..3  — write one byte of MSU_Data_SeekPort (little-endian byte n)
- * msu1track0       — write low byte of MSU_Track
- * msu1track1       — write high byte of MSU_Track, then call MSU1HandleTrackChange
- * msu1volume       — write MSU_AudioVolume
- * msu1statecontrol — write MSU_StateControl, then call MSU1HandleControlBits
+ * msustatusread    - returns MSU_StatusRead
+ * msudataread      - returns MSU_DATA[MSU_Data_Addr], increments data address
+ * msuid1..msuid6   - return the six ID bytes: 'S', '-', 'M', 'S', 'U', '1'
+ * msudataseek0..3  - write one byte of MSU_Data_SeekPort (little-endian byte n)
+ * msu1track0       - write low byte of MSU_Track
+ * msu1track1       - write high byte of MSU_Track, then call MSU1HandleTrackChange
+ * msu1volume       - write MSU_AudioVolume
+ * msu1statecontrol - write MSU_StateControl, then call MSU1HandleControlBits
  */
 
 #include <stdint.h>

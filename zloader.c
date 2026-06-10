@@ -132,7 +132,7 @@ static void display_help()
     put_line(line);
 #endif
 #ifdef __LIBAO__
-    snprintf(line, sizeof(line), "%22s = libao output (auto-tries pulse, alsa, sndio, oss, …)", "ao");
+    snprintf(line, sizeof(line), "%22s = libao output (auto-tries pulse, alsa, sndio, oss, ...)", "ao");
     put_line(line);
 #endif
     snprintf(line, sizeof(line), "%22s = Simple DirectMedia Layer output", "sdl");
@@ -722,7 +722,7 @@ static void handle_params(int argc, char* argv[])
                         continue;
                     }
 
-                    /* "ao" → libao with default plugin; "ao:NAME" → libao with NAME */
+                    /* "ao" -> libao with default plugin; "ao:NAME" -> libao with NAME */
                     if (!strcmp(argv[i], "ao") || !strncmp(argv[i], "ao:", 3)) {
 #ifdef __LIBAO__
                         if (argv[i][2] == ':' && ao_driver_id(argv[i] + 3) < 0) {

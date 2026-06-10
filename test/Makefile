@@ -1,9 +1,9 @@
-# test/Makefile — ZSNES2 headless test suite
+# test/Makefile, ZSNES2 headless test suite
 #
 # Usage:
-#   make          — build the test binary
-#   make run      — build and run
-#   make clean    — remove build products
+#   make         , build the test binary
+#   make run     , build and run
+#   make clean   , remove build products
 #
 # The test binary links only the pre-compiled object files it needs from the
 # parent build.  Because the parent compiles with -ffunction-sections, the

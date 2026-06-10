@@ -2,7 +2,7 @@
  * Scalar nearest-neighbor 2x line filters
  *
  * Ported from video/2xsaiw.asm.  All three entry points share an identical
- * scale2x implementation — they only differ in name to satisfy the
+ * scale2x implementation, they only differ in name to satisfy the
  * LineFilter typedef expected by callers that pick a filter by symbol.
  *
  * Signature (LineFilter, from video/2xsaiw.h):

@@ -136,7 +136,7 @@ static void test_msudataseek_bytes(void)
 {
     ZT_SECTION("msudataseek0..3: write individual bytes of MSU_Data_SeekPort");
 
-    /* byte 0 — least significant byte */
+    /* byte 0, least significant byte */
     MSU_Data_SeekPort = 0x12345678u;
     msudataseek0(0xAB);
     ZT_CHECK(MSU_Data_SeekPort == 0x123456ABu);
@@ -151,7 +151,7 @@ static void test_msudataseek_bytes(void)
     msudataseek2(0xEF);
     ZT_CHECK(MSU_Data_SeekPort == 0x12EF5678u);
 
-    /* byte 3 — most significant byte */
+    /* byte 3, most significant byte */
     MSU_Data_SeekPort = 0x12345678u;
     msudataseek3(0x90);
     ZT_CHECK(MSU_Data_SeekPort == 0x90345678u);
