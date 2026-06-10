@@ -1667,6 +1667,45 @@ void CheckTimers(void)
     }
 }
 
+void DoRumble(void)
+{
+    // SUNLIT RUMBLE CONTROLLER TEST
+    extern u2 RumbleData;
+    double intensity = 10; // ideally this would be in the options, range should be 1.0 - 10.0
+    XINPUT_VIBRATION vibration = { 0 };
+
+    if (RumbleData == 0) {
+        // Stop vibration
+        ZeroMemory(&vibration, sizeof(XINPUT_VIBRATION));
+        XInputSetState(0, &vibration);
+    }
+
+    if (RumbleData == 0xFFFF) {
+        printf("Null rumble data hit!\n");
+        RumbleData = 0;
+    }
+
+    if (RumbleData != 0) {
+        printf("RumbleData: $%X\n", RumbleData);
+    }
+
+    if ((RumbleData & 0xFF00) == 0x7200) {
+        printf("Rumble sentry hit!\n");
+        vibration.wLeftMotorSpeed = (((RumbleData & 0x000F) * 4369) * intensity);
+        printf("Left: $%X\n", vibration.wLeftMotorSpeed);
+        vibration.wRightMotorSpeed = ((((RumbleData & 0x00F0) >> 4) * 4369) * intensity);
+        printf("Right: $%X\n", vibration.wRightMotorSpeed);
+        DWORD result = XInputSetState(0, &vibration); // controller index 0
+
+        RumbleData = 0;
+
+        if (result == ERROR_SUCCESS) {
+            printf("Rumble started!\n");
+        }
+    }
+    // SUNLIT RUMBLE CONTROLLER TEST
+}
+
 volatile int SPCSize;
 void UpdateVFrame(void)
 {
@@ -1676,6 +1715,8 @@ void UpdateVFrame(void)
     SPCSize = 256;
 
     // if (StereoSound==1) SPCSize=256;
+
+    DoRumble(); // SUNLIT RUMBLE CONTROLLER TEST
 
     while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
         TranslateMessage(&msg);
@@ -2129,54 +2170,14 @@ void drawscreenwin(void)
         DDDrawScreen();
 }
 
-void DoRumble(void)
-{
-	// SUNLIT RUMBLE CONTROLLER TEST
-	extern u2 RumbleData;
-	double intensity = 10; // ideally this would be in the options, range should be 1.0 - 10.0
-	XINPUT_VIBRATION vibration = {0};
-
-	if(RumbleData == 0) {
-		// Stop vibration
-		ZeroMemory(&vibration, sizeof(XINPUT_VIBRATION));
-		XInputSetState(0, &vibration);
-	}
-
-	if(RumbleData == 0xFFFF) {
-		printf("Null rumble data hit!\n");
-		RumbleData = 0;
-	}
-
-	if (RumbleData != 0) {
-		printf("RumbleData: $%X\n", RumbleData);
-	}
-
-	if ((RumbleData & 0xFF00) == 0x7200) {
-		printf("Rumble sentry hit!\n");
-		vibration.wLeftMotorSpeed  = (((RumbleData & 0x000F) * 4369) * intensity);
-		printf("Left: $%X\n",vibration.wLeftMotorSpeed);
-		vibration.wRightMotorSpeed = ((((RumbleData & 0x00F0) >> 4) * 4369) * intensity);
-		printf("Right: $%X\n",vibration.wRightMotorSpeed);
-		DWORD result = XInputSetState(0, &vibration); // controller index 0
-
-		RumbleData = 0;
-
-		if (result == ERROR_SUCCESS) {
-			printf("Rumble started!\n");
-		}
-	}
-	// SUNLIT RUMBLE CONTROLLER TEST
-}
-
 void WinUpdateDevices()
 {
-	DoRumble();
     int i, j;
     unsigned char* keys;
     unsigned char keys2[256];
 
     for (int i = 0; i < 4; i++) {
-        //ZeroMemory(&xstate[i], sizeof(XINPUT_STATE));
+        // ZeroMemory(&xstate[i], sizeof(XINPUT_STATE));
         result = XInputGetState(i, &xstate[i]);
         XInputConnected[i] = (result == ERROR_SUCCESS);
     }
