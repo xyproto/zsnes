@@ -31,11 +31,11 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <stdint.h>
 #include <stdio.h>
 
-#include <xinput.h>
 #include <dinput.h>
 #include <dsound.h>
 #include <windows.h>
 #include <winuser.h>
+#include <xinput.h>
 
 #include "../asm_call.h"
 #include "../c_init.h"
