@@ -51,8 +51,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "debugger/load.h"
 #endif
 
-#include <X11/Xlib.h>
-
 _Noreturn void zexit_error(void);
 
 typedef enum {
@@ -1000,8 +998,6 @@ int startgame()
 {
     static bool ranonce = false;
     int status;
-
-    XInitThreads();
 
     if (!ranonce) {
         ranonce = true;

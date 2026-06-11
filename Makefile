@@ -217,12 +217,12 @@ PREFIX ?= /usr
 
 ifneq ($(filter $(ARCH),LINUX FREEBSD OPENBSD NETBSD),)
   CFLAGS += -rdynamic
-  LDFLAGS += -ldl -lX11
+  LDFLAGS += -ldl
 endif
 ifeq ($(ARCH),DARWIN)
 ifneq ($(HOST_OS),DARWIN)
   CFLAGS += -rdynamic
-  LDFLAGS += -ldl -lX11
+  LDFLAGS += -ldl
 endif
 endif
 ifeq ($(ARCH),LINUX)
@@ -303,8 +303,7 @@ endif
 
 ifeq ($(ARCH),LINUX)
 ifeq ($(wildcard /usr/lib/i386-linux-gnu/.),)
-  CFLAGS += -I/usr/include/x86_64-linux-gnu -I /usr/include/X11
-  LDFLAGS += -L/usr/lib/i386-linux-gnu -lSDL3 -lpng16 -lX11
+  CFLAGS += -I/usr/include/x86_64-linux-gnu
 endif
 endif
 
