@@ -26,9 +26,45 @@
 ;   bug fix for Dungeon Master.
 ;   Command 05h fixed.
 ;   when you got the magic missile damage such as fireball, DSP2 support in prior version entered halt state.
+%ifdef __AMD64__
+bits 64
+%else
+bits 32
+%endif
 
-%include "macros.mac"
+section .text
 
+%ifdef MACHO
+section .text align=16
+section .data align=4
+section .bss  align=4
+%endif
+
+%ifdef ELF
+section .note.GNU-stack noalloc noexec nowrite progbits
+%endif
+
+%ifdef ELF
+%imacro newsym 1
+  GLOBAL %1
+  %1:
+%endmacro
+%imacro newsym 2+
+  GLOBAL %1
+  %1: %2
+%endmacro
+%else
+%imacro newsym 1
+  GLOBAL _%1
+  _%1:
+  %1:
+%endmacro
+%imacro newsym 2+
+  GLOBAL _%1
+  _%1:
+  %1: %2
+%endmacro
+%endif
 DSP2F_HALT              equ 1
 DSP2F_AUTO_BUFFER_SHIFT equ 2
 DSP2F_NO_ADDR_CHK       equ 4

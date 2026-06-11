@@ -12,8 +12,87 @@
 ;You should have received a copy of the GNU General Public License
 ;along with this program; if not, write to the Free Software
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-%include "macros.mac"
+%ifdef __AMD64__
+bits 64
+%else
+bits 32
+%endif
 
+section .text
+
+%ifdef MACHO
+section .text align=16
+section .data align=4
+section .bss  align=4
+%endif
+
+%ifdef ELF
+section .note.GNU-stack noalloc noexec nowrite progbits
+%endif
+
+%ifdef ELF
+%imacro newsym 1
+  GLOBAL %1
+  %1:
+%endmacro
+%imacro newsym 2+
+  GLOBAL %1
+  %1: %2
+%endmacro
+%else
+%imacro newsym 1
+  GLOBAL _%1
+  _%1:
+  %1:
+%endmacro
+%imacro newsym 2+
+  GLOBAL _%1
+  _%1:
+  %1: %2
+%endmacro
+%endif
+
+%ifdef ELF
+%define EXTSYM EXTERN
+%else
+%imacro EXTSYM 1-*
+%rep %0
+  EXTERN _%1
+  %define %1 _%1
+%rotate 1
+%endrep
+%endmacro
+%endif
+
+%macro ccall 1-*
+	push ecx
+	push edx
+%ifdef MACHO
+	mov edx, esp
+	sub esp, %0 * 4
+	and esp, 0xFFFFFFF0 ; Align the stack pointer
+%if %0 != 1
+	add esp, %0 * 4
+	push edx
+	mov edx, [edx]
+%else
+	mov [esp], edx
+%endif
+%endif
+%rep %0 - 1
+%rotate -1
+	push dword %1
+%endrep
+%rotate -1
+	call %1
+%ifdef MACHO
+	mov esp, [esp + (%0 - 1) * 4]
+%elif %0 != 1
+	add esp, (%0 - 1) * 4
+%endif
+	pop edx
+	pop ecx
+%endmacro
 EXTSYM MSU_StateControl,MSU_AudioVolume,MSU_Track,MSU_Data_SeekPort,MSU_Data_Addr
 EXTSYM MSU_DATA,MSU_StatusRead,MSU1HandleTrackChange,MSU1HandleControlBits
 

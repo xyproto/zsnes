@@ -35,9 +35,93 @@
 ;   that no other place in the game is using, which I suppose is the cause
 ;   of the problem, but it's been so long since I worked on SA-1, that
 ;   I forgot which part.
+%ifdef __AMD64__
+bits 64
+%else
+bits 32
+%endif
 
-%include "macros.mac"
+section .text
 
+%ifdef MACHO
+section .text align=16
+section .data align=4
+section .bss  align=4
+%endif
+
+%ifdef ELF
+section .note.GNU-stack noalloc noexec nowrite progbits
+%endif
+
+%ifdef ELF
+%imacro newsym 1
+  GLOBAL %1
+  %1:
+%endmacro
+%imacro newsym 2+
+  GLOBAL %1
+  %1: %2
+%endmacro
+%else
+%imacro newsym 1
+  GLOBAL _%1
+  _%1:
+  %1:
+%endmacro
+%imacro newsym 2+
+  GLOBAL _%1
+  _%1:
+  %1: %2
+%endmacro
+%endif
+
+%ifdef ELF
+%define EXTSYM EXTERN
+%else
+%imacro EXTSYM 1-*
+%rep %0
+  EXTERN _%1
+  %define %1 _%1
+%rotate 1
+%endrep
+%endmacro
+%endif
+
+%macro ccall 1-*
+	push ecx
+	push edx
+%ifdef MACHO
+	mov edx, esp
+	sub esp, %0 * 4
+	and esp, 0xFFFFFFF0 ; Align the stack pointer
+%if %0 != 1
+	add esp, %0 * 4
+	push edx
+	mov edx, [edx]
+%else
+	mov [esp], edx
+%endif
+%endif
+%rep %0 - 1
+%rotate -1
+	push dword %1
+%endrep
+%rotate -1
+	call %1
+%ifdef MACHO
+	mov esp, [esp + (%0 - 1) * 4]
+%elif %0 != 1
+	add esp, (%0 - 1) * 4
+%endif
+	pop edx
+	pop ecx
+%endmacro
+
+%macro ccallv 1+
+	push eax
+	ccall %1
+	pop eax
+%endmacro
 EXTSYM regptra,regptwa,romdata,SA1Status,SDD1BankA,NumofBanks,BWUsed2
 EXTSYM GetTime,GetDate,irqv2,irqv,nmiv2,nmiv,snesmmap,snesmap2
 EXTSYM curypos,CurrentExecSA1,memaccessbankr8sdd1,memtabler8,AddrNoIncr

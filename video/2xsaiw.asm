@@ -1,7 +1,43 @@
 ; Portable scalar 2xSaI line filters.
+%ifdef __AMD64__
+bits 64
+%else
+bits 32
+%endif
 
-%include "macros.mac"
+section .text
 
+%ifdef MACHO
+section .text align=16
+section .data align=4
+section .bss  align=4
+%endif
+
+%ifdef ELF
+section .note.GNU-stack noalloc noexec nowrite progbits
+%endif
+
+%ifdef ELF
+%imacro newsym 1
+  GLOBAL %1
+  %1:
+%endmacro
+%imacro newsym 2+
+  GLOBAL %1
+  %1: %2
+%endmacro
+%else
+%imacro newsym 1
+  GLOBAL _%1
+  _%1:
+  %1:
+%endmacro
+%imacro newsym 2+
+  GLOBAL _%1
+  _%1:
+  %1: %2
+%endmacro
+%endif
 SECTION .text
 
 %macro SCALE2X_LINE 0

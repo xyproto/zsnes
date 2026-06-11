@@ -16,11 +16,97 @@
 ;You should have received a copy of the GNU General Public License
 ;along with this program; if not, write to the Free Software
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+%ifdef __AMD64__
+bits 64
+%else
+bits 32
+%endif
 
+section .text
 
+%ifdef MACHO
+section .text align=16
+section .data align=4
+section .bss  align=4
+%endif
 
-%include "macros.mac"
+%ifdef ELF
+section .note.GNU-stack noalloc noexec nowrite progbits
+%endif
 
+%ifdef ELF
+%imacro newsym 1
+  GLOBAL %1
+  %1:
+%endmacro
+%imacro newsym 2+
+  GLOBAL %1
+  %1: %2
+%endmacro
+%else
+%imacro newsym 1
+  GLOBAL _%1
+  _%1:
+  %1:
+%endmacro
+%imacro newsym 2+
+  GLOBAL _%1
+  _%1:
+  %1: %2
+%endmacro
+%endif
+
+%ifdef ELF
+%define EXTSYM EXTERN
+%else
+%imacro EXTSYM 1-*
+%rep %0
+  EXTERN _%1
+  %define %1 _%1
+%rotate 1
+%endrep
+%endmacro
+%endif
+
+%macro ALIGN32 0
+  times ($$-$) & 1Fh nop    ; Long word alignment
+%endmacro
+
+%macro ccall 1-*
+	push ecx
+	push edx
+%ifdef MACHO
+	mov edx, esp
+	sub esp, %0 * 4
+	and esp, 0xFFFFFFF0 ; Align the stack pointer
+%if %0 != 1
+	add esp, %0 * 4
+	push edx
+	mov edx, [edx]
+%else
+	mov [esp], edx
+%endif
+%endif
+%rep %0 - 1
+%rotate -1
+	push dword %1
+%endrep
+%rotate -1
+	call %1
+%ifdef MACHO
+	mov esp, [esp + (%0 - 1) * 4]
+%elif %0 != 1
+	add esp, (%0 - 1) * 4
+%endif
+	pop edx
+	pop ecx
+%endmacro
+
+%macro ccallv 1+
+	push eax
+	ccall %1
+	pop eax
+%endmacro
 EXTSYM BG116x16t,BG1SXl,BG1SYl,BG216x16t,BG2SXl,BG2SYl,BG316x16t,BG3PRI,BG3SXl
 EXTSYM BG3SYl,BG416x16t,BG4SXl,BG4SYl,BGFB,BGMA,BGMS1,BGOPT1,BGOPT2,BGOPT3
 EXTSYM BGOPT4,BGPT1,BGPT1X,BGPT1Y,BGPT2,BGPT2X,BGPT2Y,BGPT3,BGPT3X,BGPT3Y,BGPT4

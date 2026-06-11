@@ -16,9 +16,57 @@
 ;You should have received a copy of the GNU General Public License
 ;along with this program; if not, write to the Free Software
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+%ifdef __AMD64__
+bits 64
+%else
+bits 32
+%endif
 
-%include "macros.mac"
+section .text
 
+%ifdef MACHO
+section .text align=16
+section .data align=4
+section .bss  align=4
+%endif
+
+%ifdef ELF
+section .note.GNU-stack noalloc noexec nowrite progbits
+%endif
+
+%ifdef ELF
+%imacro newsym 1
+  GLOBAL %1
+  %1:
+%endmacro
+%imacro newsym 2+
+  GLOBAL %1
+  %1: %2
+%endmacro
+%else
+%imacro newsym 1
+  GLOBAL _%1
+  _%1:
+  %1:
+%endmacro
+%imacro newsym 2+
+  GLOBAL _%1
+  _%1:
+  %1: %2
+%endmacro
+%endif
+
+%ifdef ELF
+%define EXTSYM EXTERN
+%else
+%imacro EXTSYM 1-*
+%rep %0
+  EXTERN _%1
+  %define %1 _%1
+%rotate 1
+%endrep
+%endmacro
+%endif
 EXTSYM FxTable,FxTableA1,FxTableA2,FxTableA3,FxTableb,FxTablebA1,FxTablebA2
 EXTSYM FxTablebA3,FxTablec,FxTablecA1,FxTablecA2,FxTablecA3,FxTabled
 EXTSYM FxTabledA1,FxTabledA2,FxTabledA3,SfxMemTable,romdata,sfxramdata
