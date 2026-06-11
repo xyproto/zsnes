@@ -139,7 +139,7 @@ jobs:
 #      - name: Install dependencies
 #        run: |
 #          brew update
-#          brew install nasm pkg-config sdl2 libpng
+#          brew install nasm pkg-config sdl3 libpng
 #      - name: Build
 #        run: |
 #          make clean
@@ -161,7 +161,7 @@ jobs:
 #            cd "$HOME/work"
 #            fetch -o src.tar.gz "https://codeload.github.com/${{ github.repository }}/tar.gz/${{ github.sha }}"
 #            tar -xzf src.tar.gz --strip-components=1
-#            pkg install -y gmake nasm pkgconf sdl2 png
+#            pkg install -y gmake nasm pkgconf sdl3 png
 #            gmake clean
 #            gmake ARCH=freebsd WITH_AO= WITH_PIPEWIRE=
 #  openbsd:
@@ -181,7 +181,7 @@ jobs:
 #            cd "$HOME/work"
 #            ftp -o src.tar.gz "https://codeload.github.com/${{ github.repository }}/tar.gz/${{ github.sha }}"
 #            tar -xzf src.tar.gz --strip-components=1
-#            pkg_add gmake nasm pkgconf sdl2 png
+#            pkg_add gmake nasm pkgconf sdl3 png
 #            gmake clean
 #            gmake ARCH=openbsd WITH_AO= WITH_PIPEWIRE=
 #  netbsd:
@@ -201,6 +201,6 @@ jobs:
 #            cd "$HOME/work"
 #            ftp -o src.tar.gz "https://codeload.github.com/${{ github.repository }}/tar.gz/${{ github.sha }}"
 #            tar -xzf src.tar.gz --strip-components=1
-#            /usr/sbin/pkg_add gmake nasm pkgconf SDL2 libpng
+#            /usr/sbin/pkg_add gmake nasm pkgconf SDL3 libpng
 #            gmake clean
 #            gmake ARCH=netbsd WITH_AO= WITH_PIPEWIRE=

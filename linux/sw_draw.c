@@ -124,11 +124,7 @@ static void UnlockSurface()
     if (win_surface) {
         if (win_surface->w != render_surface->w || win_surface->h != render_surface->h) {
             // fullscreen: scale game surface to fit the display
-#ifdef __SDL3__
             SDL_BlitSurfaceScaled(render_surface, NULL, win_surface, NULL, SDL_SCALEMODE_NEAREST);
-#else
-            SDL_BlitScaled(render_surface, NULL, win_surface, NULL);
-#endif
         } else {
             SDL_BlitSurface(render_surface, NULL, win_surface, NULL);
         }

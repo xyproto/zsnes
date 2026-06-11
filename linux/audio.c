@@ -108,9 +108,7 @@ int sdl_audio_buffer_head = 0, sdl_audio_buffer_tail = 0;
 bool sound_sdl = false;
 static bool sdl_audio_subsystem = false;
 static char sdl_audio_last_error[256];
-#ifdef __SDL3__
 static SDL_AudioStream* sdl_audio_stream = NULL;
-#endif
 
 int SoundEnabled = 1;
 uint8_t PrevStereoSound;
@@ -1119,7 +1117,6 @@ static int SoundInit_pipewire()
 
 void SoundWrite_sdl()
 {
-#ifdef __SDL3__
     if (!sdl_audio_stream) {
         return;
     }
@@ -1137,93 +1134,16 @@ void SoundWrite_sdl()
             break;
         }
     }
-#else
-    extern int DSPBuffer[];
-    extern uint8_t DSPDisable;
-    extern uint32_t BufferSizeB, BufferSizeW;
-
-    // Process sound
-    BufferSizeB = 256;
-    BufferSizeW = BufferSizeB + BufferSizeB;
-
-    // take care of the things we left behind last time
-    SDL_LockAudio();
-    while (sdl_audio_buffer_fill < sdl_audio_buffer_len) {
-        int16_t* p = (int16_t*)&sdl_audio_buffer[sdl_audio_buffer_tail];
-
-        if (soundon && !DSPDisable) {
-            asm_call(ProcessSoundBuffer);
-            if (MSUEnable) {
-                mixMSU1Audio(DSPBuffer, DSPBuffer + BufferSizeB, RATE);
-            }
-        }
-
-        if (T36HZEnabled) {
-            memset(p, 0, BufferSizeW);
-        } else {
-            int *d = DSPBuffer, *end_d = DSPBuffer + BufferSizeB;
-
-            for (; d < end_d; d++, p++) {
-                if ((unsigned int)(*d + 0x7fff) < 0xffff) {
-                    *p = *d;
-                    continue;
-                }
-                if (*d > 0x7fff) {
-                    *p = 0x7fff;
-                } else {
-                    *p = 0x8001;
-                }
-            }
-        }
-
-        sdl_audio_buffer_fill += BufferSizeW;
-        sdl_audio_buffer_tail += BufferSizeW;
-        if (sdl_audio_buffer_tail >= sdl_audio_buffer_len) {
-            sdl_audio_buffer_tail = 0;
-        }
-    }
-    SDL_UnlockAudio();
-#endif
-}
-
-static void SoundUpdate_sdl(void* userdata, uint8_t* stream, int len)
-{
-    int left = sdl_audio_buffer_len - sdl_audio_buffer_head;
-
-    if (left > 0) {
-        if (left <= len) {
-            memcpy(stream, &sdl_audio_buffer[sdl_audio_buffer_head], left);
-            stream += left;
-            len -= left;
-            sdl_audio_buffer_head = 0;
-            sdl_audio_buffer_fill -= left;
-        }
-
-        if (len) {
-            memcpy(stream, &sdl_audio_buffer[sdl_audio_buffer_head], len);
-            sdl_audio_buffer_head += len;
-            sdl_audio_buffer_fill -= len;
-        }
-    }
 }
 
 static int EnsureSDLAudioSubsystem()
 {
-#ifdef __SDL3__
     if (!sdl_audio_subsystem) {
         if (!SDL_InitSubSystem(SDL_INIT_AUDIO)) {
             return (false);
         }
         sdl_audio_subsystem = true;
     }
-#else
-    if (!sdl_audio_subsystem) {
-        if (SDL_InitSubSystem(SDL_INIT_AUDIO) < 0) {
-            return (false);
-        }
-        sdl_audio_subsystem = true;
-    }
-#endif
     return (true);
 }
 
@@ -1257,7 +1177,6 @@ static int SoundInit_sdl_once()
         SoundEnabled = 0;
         return (false);
     }
-#ifdef __SDL3__
     SDL_AudioSpec wanted;
 
     if (sdl_audio_stream) {
@@ -1300,44 +1219,6 @@ static int SoundInit_sdl_once()
     sound_sdl = true;
     printf("SDL audio: %u channels, %u Hz\n", wanted.channels, wanted.freq);
     return (true);
-#else
-    SDL_AudioSpec audiospec;
-    SDL_AudioSpec wanted;
-
-    SDL_CloseAudio();
-
-    if (sdl_audio_buffer) {
-        free(sdl_audio_buffer);
-        sdl_audio_buffer = 0;
-    }
-    sdl_audio_buffer_len = 0;
-
-    wanted.freq = RATE;
-    wanted.channels = StereoSound + 1;
-    wanted.samples = samptab[SoundQuality] * 128 * wanted.channels;
-    wanted.format = AUDIO_S16LSB;
-    wanted.userdata = 0;
-    wanted.callback = SoundUpdate_sdl;
-
-    if (SDL_OpenAudio(&wanted, &audiospec) < 0) {
-        SaveSDLError();
-        SoundEnabled = 0;
-        return (false);
-    }
-    SDL_PauseAudio(0);
-
-    sdl_audio_buffer_len = (audiospec.size * 2 + 255) & ~255; // Align to SPCSize
-    if (!(sdl_audio_buffer = calloc(1, sdl_audio_buffer_len))) {
-        SDL_CloseAudio();
-        puts("Audio Open Failed");
-        SoundEnabled = 0;
-        return (false);
-    }
-
-    sound_sdl = true;
-    printf("SDL audio: %u channels, %u Hz\n", wanted.channels, wanted.freq);
-    return (true);
-#endif
 }
 
 static int SoundInit_sdl()
@@ -1352,13 +1233,8 @@ static int SoundInit_sdl()
         return (true);
     }
 
-#ifdef __SDL3__
     env_driver = getenv("SDL_AUDIO_DRIVER");
     hinted_driver = SDL_GetHint(SDL_HINT_AUDIO_DRIVER);
-#else
-    env_driver = getenv("SDL_AUDIODRIVER");
-    hinted_driver = SDL_GetHint(SDL_HINT_AUDIODRIVER);
-#endif
     if ((env_driver && *env_driver) || (hinted_driver && *hinted_driver)) {
         return (false);
     }
@@ -1370,11 +1246,7 @@ static int SoundInit_sdl()
         if (!driver || !*driver) {
             continue;
         }
-#ifdef __SDL3__
         SDL_SetHint(SDL_HINT_AUDIO_DRIVER, driver);
-#else
-        SDL_SetHint(SDL_HINT_AUDIODRIVER, driver);
-#endif
         ShutdownSDLAudioSubsystem();
         if (SoundInit_sdl_once()) {
             return (true);
@@ -1544,16 +1416,10 @@ void DeinitSound()
         audio_device = 0;
     }
 #endif
-#ifdef __SDL3__
     if (sdl_audio_stream) {
         SDL_DestroyAudioStream(sdl_audio_stream);
         sdl_audio_stream = NULL;
     }
-#else
-    if (sdl_audio_subsystem) {
-        SDL_CloseAudio();
-    }
-#endif
     if (sdl_audio_buffer) {
         free(sdl_audio_buffer);
         sdl_audio_buffer = 0;

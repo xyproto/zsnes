@@ -190,7 +190,6 @@ int Main_Proc()
 
     while (SDL_PollEvent(&event)) {
         switch (event.type) {
-#ifdef __SDL3__
         case SDL_EVENT_WINDOW_FOCUS_GAINED:
             IsActivated = 1;
             break;
@@ -243,114 +242,32 @@ int Main_Proc()
             }
             break;
 #endif
-#else
-        case SDL_WINDOWEVENT:
-            if (event.window.event == SDL_WINDOWEVENT_FOCUS_GAINED)
-                IsActivated = 1;
-            else if (event.window.event == SDL_WINDOWEVENT_FOCUS_LOST)
-                IsActivated = 0;
-#ifdef __OPENGL__
-            else if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
-                if (GUIRESIZE[cvidmode]) {
-                    WindowWidth = SurfaceX = event.window.data1;
-                    WindowHeight = SurfaceY = event.window.data2;
-                    SetHQx(SurfaceX, SurfaceY);
-                    SetHiresOpt(SurfaceX, SurfaceY);
-                    adjustMouseXScale();
-                    adjustMouseYScale();
-                    glViewport(0, 0, WindowWidth, WindowHeight);
-                    glMatrixMode(GL_PROJECTION);
-                    glLoadIdentity();
-
-                    if (cvidmode == 20) {
-                        if (224 * WindowWidth > 256 * WindowHeight && WindowHeight) {
-                            glOrtho(-((float)224 * WindowWidth) / ((float)256 * WindowHeight),
-                                ((float)224 * WindowWidth) / ((float)256 * WindowHeight), -1, 1, -1, 1);
-                        } else if (224 * WindowWidth < 256 * WindowHeight && WindowWidth) {
-                            glOrtho(-1, 1, -((float)256 * WindowHeight) / ((float)224 * WindowWidth),
-                                ((float)256 * WindowHeight) / ((float)224 * WindowWidth), -1, 1);
-                        } else {
-                            glOrtho(-1, 1, -1, 1, -1, 1);
-                        }
-                    }
-
-                    if (Keep4_3Ratio && ((cvidmode == 21) || (cvidmode == 22))) {
-                        if (3 * WindowWidth > 4 * WindowHeight && WindowHeight) {
-                            glOrtho(-((float)3 * WindowWidth) / ((float)4 * WindowHeight),
-                                ((float)3 * WindowWidth) / ((float)4 * WindowHeight), -1, 1, -1, 1);
-                        } else if (3 * WindowWidth < 4 * WindowHeight && WindowWidth) {
-                            glOrtho(-1, 1, -((float)4 * WindowHeight) / ((float)3 * WindowWidth),
-                                ((float)4 * WindowHeight) / ((float)3 * WindowWidth), -1, 1);
-                        } else {
-                            glOrtho(-1, 1, -1, 1, -1, 1);
-                        }
-                    }
-
-                    glMatrixMode(GL_MODELVIEW);
-                    glLoadIdentity();
-                    glDisable(GL_DEPTH_TEST);
-                    glFlush();
-                    gl_clearwin();
-                    Clear2xSaIBuffer();
-                }
-            }
-#endif
-            break;
-#endif
         case SDL_KEYDOWN:
-#ifdef __SDL3__
             if ((event.key.key == SDLK_RETURN) && (event.key.mod & KMOD_ALT) && !event.key.repeat) {
-#else
-            if ((event.key.keysym.sym == SDLK_RETURN) && (event.key.keysym.mod & KMOD_ALT) && !event.key.repeat) {
-#endif
                 SwitchFullScreen();
                 break;
             }
-#ifdef __SDL3__
             if (event.key.key == SDLK_LSHIFT || event.key.key == SDLK_RSHIFT) {
-#else
-            if (event.key.keysym.sym == SDLK_LSHIFT || event.key.keysym.sym == SDLK_RSHIFT) {
-#endif
                 shiftptr = 1;
             }
-#ifdef __SDL3__
             if (event.key.mod & KMOD_NUM) {
-#else
-            if (event.key.keysym.mod & KMOD_NUM) {
-#endif
                 numlockptr = 1;
             } else {
                 numlockptr = 0;
             }
 
-#ifdef __SDL3__
             key = sdl_keysym_to_pc_scancode(event.key.key);
-#else
-            key = sdl_keysym_to_pc_scancode(event.key.keysym.sym);
-#endif
             if (key < 448) {
                 pressed[key] = 1;
-#ifdef __SDL3__
                 ProcessKeyBuf(event.key.key);
-#else
-                ProcessKeyBuf(event.key.keysym.sym);
-#endif
             }
             break;
 
         case SDL_KEYUP:
-#ifdef __SDL3__
             if (event.key.key == SDLK_LSHIFT || event.key.key == SDLK_RSHIFT) {
-#else
-            if (event.key.keysym.sym == SDLK_LSHIFT || event.key.keysym.sym == SDLK_RSHIFT) {
-#endif
                 shiftptr = 0;
             }
-#ifdef __SDL3__
             key = sdl_keysym_to_pc_scancode(event.key.key);
-#else
-            key = sdl_keysym_to_pc_scancode(event.key.keysym.sym);
-#endif
             if (key < 448) {
                 pressed[key] = 0;
             }
@@ -1095,13 +1012,7 @@ int startgame()
     }
 
     if (sdl_state == vid_null) {
-        if (
-#ifdef __SDL3__
-            !SDL_Init(SDL_INIT_TIMER | SDL_INIT_VIDEO)
-#else
-            SDL_Init(SDL_INIT_TIMER | SDL_INIT_VIDEO) < 0
-#endif
-        ) {
+        if (!SDL_Init(SDL_INIT_TIMER | SDL_INIT_VIDEO)) {
             fprintf(stderr, "Could not initialize SDL: %s", SDL_GetError());
             return FALSE;
         }
@@ -1338,11 +1249,7 @@ void initwinvideo(void)
                 int vp_w = (int)WindowWidth;
                 int vp_h = (int)WindowHeight;
                 if (FullScreen && sdl_window) {
-#ifdef __SDL3__
                     SDL_GetWindowSizeInPixels(sdl_window, &vp_w, &vp_h);
-#else
-                    SDL_GL_GetDrawableSize(sdl_window, &vp_w, &vp_h);
-#endif
                 }
                 glViewport(0, 0, vp_w, vp_h);
                 glMatrixMode(GL_PROJECTION);
@@ -1486,11 +1393,7 @@ int TryToggleFullScreen(void)
         break;
     }
 
-#ifdef __SDL3__
     SDL_SetWindowFullscreen(sdl_window, FullScreen ? true : false);
-#else
-    SDL_SetWindowFullscreen(sdl_window, FullScreen ? SDL_WINDOW_FULLSCREEN : 0);
-#endif
 
     if (!FullScreen) {
         SDL_SetWindowSize(sdl_window, WindowWidth, WindowHeight);
@@ -1506,11 +1409,7 @@ int TryToggleFullScreen(void)
         int vp_w = (int)WindowWidth;
         int vp_h = (int)WindowHeight;
         if (FullScreen) {
-#ifdef __SDL3__
             SDL_GetWindowSizeInPixels(sdl_window, &vp_w, &vp_h);
-#else
-            SDL_GL_GetDrawableSize(sdl_window, &vp_w, &vp_h);
-#endif
         }
         glViewport(0, 0, vp_w, vp_h);
         glMatrixMode(GL_PROJECTION);

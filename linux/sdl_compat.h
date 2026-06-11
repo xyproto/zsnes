@@ -1,8 +1,6 @@
 #ifndef ZSNES_LINUX_SDL_COMPAT_H
 #define ZSNES_LINUX_SDL_COMPAT_H
 
-#ifdef __SDL3__
-
 #include <SDL3/SDL.h>
 
 #ifndef SDL_ENABLE
@@ -93,7 +91,5 @@ static inline int z_sdl_show_cursor(int toggle)
 #define SDL_GetRelativeMouseState z_sdl_get_relative_mouse_state
 #define SDL_ShowCursor z_sdl_show_cursor
 #define SDL_CreateWindow(title, x, y, w, h, flags) SDL_CreateWindow((title), (w), (h), (flags))
-
-#endif
 
 #endif

@@ -124,7 +124,6 @@ endef
 PIPEWIRE_AVAILABLE :=
 AO_AVAILABLE :=
 SDL3_AVAILABLE :=
-SDL2_AVAILABLE :=
 SDL_BACKEND_AVAILABLE :=
 
 ifneq ($(filter $(ARCH),$(UNIXSDL_ARCHES)),)
@@ -135,8 +134,7 @@ ifneq ($(filter $(ARCH),LINUX FREEBSD OPENBSD NETBSD DARWIN WIN),)
 AO_AVAILABLE := $(call detect_pkg_for_target,ao)
 endif
 SDL3_AVAILABLE := $(call detect_pkg_for_target,sdl3)
-SDL2_AVAILABLE := $(call detect_pkg_for_target,sdl2)
-SDL_BACKEND_AVAILABLE := $(if $(or $(SDL3_AVAILABLE),$(SDL2_AVAILABLE),$(strip $(SDL_CONFIG)),$(strip $(CFLAGS_SDL)),$(strip $(LDFLAGS_SDL))),yes)
+SDL_BACKEND_AVAILABLE := $(if $(or $(SDL3_AVAILABLE),$(strip $(SDL_CONFIG)),$(strip $(CFLAGS_SDL)),$(strip $(LDFLAGS_SDL))),yes)
 endif
 
 SKIP_AUDIO_BACKEND_CHECK := $(if $(filter clean distclean,$(MAKECMDGOALS)),yes)
@@ -162,23 +160,19 @@ ifeq ($(SKIP_AUDIO_BACKEND_CHECK),)
         $(info )
         $(info ERROR: No 32-bit SDL library found. This is a 32-bit build (-m32).)
         ifeq ($(IS_FEDORA),yes)
-        $(info Install the 32-bit SDL package (note the .i686 suffix, NOT the x86_64 package):)
+        $(info Install the 32-bit SDL3 package (note the .i686 suffix, NOT the x86_64 package):)
         $(info   sudo dnf install SDL3-devel.i686)
-        $(info or:)
-        $(info   sudo dnf install SDL2-devel.i686)
         else ifeq ($(IS_DEBIAN_BASED),yes)
-        $(info Enable 32-bit support and install the 32-bit SDL package (note the :i386 suffix):)
+        $(info Enable 32-bit support and install the 32-bit SDL3 package (note the :i386 suffix):)
         $(info   sudo dpkg --add-architecture i386 && sudo apt update)
         $(info   sudo apt install libsdl3-dev:i386)
-        $(info or:)
-        $(info   sudo apt install libsdl2-dev:i386)
         else
-        $(info Install the 32-bit SDL3 or SDL2 development package for your distribution.)
+        $(info Install the 32-bit SDL3 development package for your distribution.)
         endif
         $(info )
         $(error Missing 32-bit SDL library. See instructions above.)
       else
-        $(error No SDL backend available. Install SDL3 or SDL2 for ARCH=$(ARCH))
+        $(error No SDL backend available. Install SDL3 for ARCH=$(ARCH))
       endif
     endif
   endif
@@ -192,21 +186,19 @@ ifeq ($(SKIP_AUDIO_BACKEND_CHECK),)
       $(info   sudo dnf install pipewire-devel.i686)
       $(info   sudo dnf install libao-devel.i686)
       $(info   sudo dnf install SDL3-devel.i686)
-      $(info   sudo dnf install SDL2-devel.i686)
       else ifeq ($(IS_DEBIAN_BASED),yes)
       $(info Enable 32-bit support, then install one of the following 32-bit packages (note the :i386 suffix):)
       $(info   sudo dpkg --add-architecture i386 && sudo apt update)
       $(info   sudo apt install libpipewire-0.3-dev:i386)
       $(info   sudo apt install libao-dev:i386)
       $(info   sudo apt install libsdl3-dev:i386)
-      $(info   sudo apt install libsdl2-dev:i386)
       else
-      $(info Install the 32-bit development package for one of: PipeWire, libao, SDL3, or SDL2.)
+      $(info Install the 32-bit development package for one of: PipeWire, libao, or SDL3.)
       endif
       $(info )
       $(error Missing 32-bit audio library. See instructions above.)
     else
-      $(error No audio backend available. Install one of: PipeWire (libpipewire-0.3), libao, SDL3 or SDL2)
+      $(error No audio backend available. Install one of: PipeWire (libpipewire-0.3), libao, or SDL3)
     endif
   endif
   endif
@@ -243,9 +235,6 @@ ifeq ($(WITH_SDL),yes)
     ifeq ($(SDL3_AVAILABLE),yes)
       SDL_CONFIG := pkg-config sdl3
       SDL_PKG := sdl3
-    else ifeq ($(SDL2_AVAILABLE),yes)
-      SDL_CONFIG := pkg-config sdl2
-      SDL_PKG := sdl2
     endif
   else
     SDL_PKG := $(lastword $(SDL_CONFIG))
@@ -315,11 +304,7 @@ endif
 ifeq ($(ARCH),LINUX)
 ifeq ($(wildcard /usr/lib/i386-linux-gnu/.),)
   CFLAGS += -I/usr/include/x86_64-linux-gnu -I /usr/include/X11
-  ifeq ($(SDL_PKG),sdl3)
-    LDFLAGS += -L/usr/lib/i386-linux-gnu -lSDL3 -lpng16 -lX11
-  else
-    LDFLAGS += -L/usr/lib/i386-linux-gnu -lSDL2 -lpng16 -lX11
-  endif
+  LDFLAGS += -L/usr/lib/i386-linux-gnu -lSDL3 -lpng16 -lX11
 endif
 endif
 
@@ -494,7 +479,7 @@ ifeq ($(ARCH),NETBSD)
 CFGDEFS += -D__ZSNES_PLATFORM_NETBSD__
 endif
 ifeq ($(SDL_PKG),sdl3)
-CFGDEFS += -D__SDL3__ -DSDL_ENABLE_OLD_NAMES
+CFGDEFS += -DSDL_ENABLE_OLD_NAMES
 endif
 
 
@@ -638,7 +623,6 @@ info:
 	@echo "WITH_PIPEWIRE = $(WITH_PIPEWIRE)"
 	@echo "WITH_AO       = $(WITH_AO)"
 	@echo "SDL3_AVAILABLE = $(SDL3_AVAILABLE)"
-	@echo "SDL2_AVAILABLE = $(SDL2_AVAILABLE)"
 	@echo "PIPEWIRE_AVAILABLE = $(PIPEWIRE_AVAILABLE)"
 	@echo "AO_AVAILABLE  = $(AO_AVAILABLE)"
 	@echo "BINARY        = $(BINARY)"

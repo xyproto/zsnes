@@ -23,7 +23,7 @@ Pull requests that fixes inaccuracies with the emulation are welcome, as well as
 
 ### Requirements
 
-* `nasm`, `python3`, `sdl3` (or `sdl2`), `pipewire` (or `libao`), and a C compiler like `gcc`.
+* `nasm`, `python3`, `sdl3`, `pipewire` (or `libao`), and a C compiler like `gcc`.
 
 Tested on Arch Linux, Fedora and Debian 12 on x86_64.
 
@@ -63,7 +63,7 @@ apt install -y git make nasm pkg-config python3 zlib1g-dev build-essential
 git clone https://github.com/xyproto/zsnes
 cd zsnes
 make
-apt install -y gcc-multilib libgl-dev libgl-dev:i386 libpng-dev libpng-dev:i386 libsdl2-dev libsdl2-dev:i386 zlib1g-dev zlib1g-dev:i386
+apt install -y gcc-multilib libgl-dev libgl-dev:i386 libpng-dev libpng-dev:i386 libsdl3-dev libsdl3-dev:i386 zlib1g-dev zlib1g-dev:i386
 make
 ```
 
@@ -93,7 +93,7 @@ Tested on MSYS2 x86_64 version 20260322.
 
 ```sh
 pacman -Syu
-pacman -Sy git make pkg-config nasm python3 mingw-w64-i686-gcc mingw-w64-i686-libpng mingw-w64-i686-zlib mingw-w64-i686-SDL2
+pacman -Sy git make pkg-config nasm python3 mingw-w64-i686-gcc mingw-w64-i686-libpng mingw-w64-i686-zlib mingw-w64-i686-SDL3
 make ARCH=win
 ```
 
