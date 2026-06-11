@@ -19,7 +19,6 @@
 #include "../cfg.h"
 #include "../cpu/regs.h"
 #include "../input.h"
-#include "../macros.h"
 #include "../ui.h"
 #include "../ver.h"
 #include "../zmovie.h"

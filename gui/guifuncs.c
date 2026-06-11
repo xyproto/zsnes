@@ -49,7 +49,9 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "../cfg.h"
 #include "../initc.h"
 #include "../input.h"
-#include "../macros.h"
+#ifndef lengthof
+#define lengthof(x) (sizeof(x) / sizeof *(x))
+#endif
 #include "../md.h"
 #include "../ui.h"
 #include "../zdir.h"

@@ -18,7 +18,12 @@
 #include "../gui/menu.h"
 #include "../init.h"
 #include "../initc.h"
-#include "../macros.h"
+#ifndef lengthof
+#define lengthof(x) (sizeof(x) / sizeof *(x))
+#endif
+#ifndef endof
+#define endof(x) ((x) + lengthof(x))
+#endif
 #include "../ui.h"
 #include "../vcache.h"
 #include "../video/c_mode716.h"

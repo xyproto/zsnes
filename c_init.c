@@ -22,7 +22,6 @@
 #include "initc.h"
 #include "input.h"
 #include "link.h"
-#include "macros.h"
 #include "ui.h"
 #include "video/c_mode716.h"
 #include "video/procvid.h"

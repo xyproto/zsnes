@@ -32,7 +32,12 @@
 #include "../gblvars.h"
 #include "../input.h"
 #include "../link.h"
-#include "../macros.h"
+#ifndef lengthof
+#define lengthof(x) (sizeof(x) / sizeof *(x))
+#endif
+#ifndef endof
+#define endof(x) ((x) + lengthof(x))
+#endif
 #include "../ui.h"
 #include "../vcache.h"
 #include "../video/procvid.h"

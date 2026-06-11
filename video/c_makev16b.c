@@ -6,7 +6,9 @@
 #include "../cpu/regsw.h"
 #include "../endmem.h"
 #include "../initc.h"
-#include "../macros.h"
+#ifndef ROL
+#define ROL(x, n) ((x) << (n) | (x) >> (sizeof(x) * 8 - (n)))
+#endif
 #include "../ui.h"
 #include "../vcache.h"
 #include "c_makev16b.h"

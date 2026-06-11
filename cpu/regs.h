@@ -1,7 +1,6 @@
 #ifndef REGS_H
 #define REGS_H
 
-#include "../macros.h"
 #include "../types.h"
 
 typedef enum Layer {

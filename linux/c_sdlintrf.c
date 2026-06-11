@@ -17,7 +17,9 @@ u4 CurKeyReadPos = 0;
 u4 KeyBuffer[16] = { 0 };
 u4 converta = 0;
 #include "../link.h"
-#include "../macros.h"
+#ifndef lengthof
+#define lengthof(x) (sizeof(x) / sizeof *(x))
+#endif
 #include "../ui.h"
 #include "../vcache.h"
 #include "../video/c_2xsaiw.h"

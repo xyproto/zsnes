@@ -29,7 +29,9 @@
 #include "../gblvars.h"
 #include "../initc.h"
 #include "../input.h"
-#include "../macros.h"
+#ifndef lengthof
+#define lengthof(x) (sizeof(x) / sizeof *(x))
+#endif
 #include "../video/procvidc.h"
 #include "../zmovie.h"
 #include "../zstate.h"

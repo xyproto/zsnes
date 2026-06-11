@@ -14,7 +14,9 @@
 #include "../input.h"
 #include "../intrf.h"
 #include "../link.h"
-#include "../macros.h"
+#ifndef lengthof
+#define lengthof(x) (sizeof(x) / sizeof *(x))
+#endif
 #include "../ui.h"
 #include "../vcache.h"
 #include "../video/c_2xsaiw.h"

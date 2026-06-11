@@ -1,7 +1,6 @@
 #ifndef GUI_H
 #define GUI_H
 
-#include "../macros.h"
 #include "../types.h"
 
 typedef struct ComboData {

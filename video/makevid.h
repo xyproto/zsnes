@@ -1,7 +1,6 @@
 #ifndef MAKEVID_H
 #define MAKEVID_H
 
-#include "../macros.h"
 #include "../types.h"
 
 typedef struct SpriteInfo {

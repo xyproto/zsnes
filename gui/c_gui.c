@@ -12,7 +12,12 @@
 #include "../effects/smoke.h"
 #include "../effects/water.h"
 #include "../endmem.h"
-#include "../macros.h"
+#ifndef lengthof
+#define lengthof(x) (sizeof(x) / sizeof *(x))
+#endif
+#ifndef endof
+#define endof(x) ((x) + lengthof(x))
+#endif
 #include "../types.h"
 #include "../ui.h"
 #include "../vcache.h"

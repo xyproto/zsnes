@@ -34,7 +34,12 @@
 #include "../init.h"
 #include "../initc.h"
 #include "../input.h"
-#include "../macros.h"
+#ifndef lengthof
+#define lengthof(x) (sizeof(x) / sizeof *(x))
+#endif
+#ifndef endof
+#define endof(x) ((x) + lengthof(x))
+#endif
 #include "../types.h"
 #include "../ui.h"
 #include "../vcache.h"
