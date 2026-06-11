@@ -61,7 +61,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define SDL_OPENCONTROLLER(index) SDL_GameControllerOpen(index)
 #endif
 
-SDL_Gamepad *gamepad = SDL_OPENCONTROLLER(0);
+SDL_Gamepad* gamepad = SDL_OPENCONTROLLER(0);
 
 _Noreturn void zexit_error(void);
 
