@@ -57,23 +57,21 @@ bool sw_start(int width, int height, int req_depth, int FullScreen)
     SurfaceY = height;
 
     if (render_surface) {
-        SDL_FreeSurface(render_surface);
+        SDL_DestroySurface(render_surface);
         render_surface = NULL;
     }
     if (sdl_window) {
         SDL_PumpEvents();
         SDL_DestroyWindow(sdl_window);
     }
-    sdl_window = SDL_CreateWindow("ZSNES", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-        SurfaceX, SurfaceY, flags);
+    sdl_window = SDL_CreateWindow("ZSNES", SurfaceX, SurfaceY, flags);
     if (sdl_window == NULL) {
         fprintf(stderr, "Could not create %dx%d window: %s\n", SurfaceX, SurfaceY, SDL_GetError());
         return false;
     }
 
     // Create a 16-bit RGB565 surface for the emulator to render into
-    render_surface = SDL_CreateRGBSurface(0, SurfaceX, SurfaceY, 16,
-        0xF800, 0x07E0, 0x001F, 0);
+    render_surface = SDL_CreateSurface(SurfaceX, SurfaceY, SDL_PIXELFORMAT_RGB565);
     if (render_surface == NULL) {
         fprintf(stderr, "Could not create render surface: %s\n", SDL_GetError());
         return false;
@@ -83,9 +81,9 @@ bool sw_start(int width, int height, int req_depth, int FullScreen)
     SurfaceLocking = SDL_MUSTLOCK(surface);
 
     // Grab mouse in fullscreen mode
-    SDL_SetWindowGrab(sdl_window, FullScreen ? SDL_TRUE : SDL_FALSE);
+    SDL_SetWindowMouseGrab(sdl_window, FullScreen ? true : false);
 
-    SDL_ShowCursor(SDL_DISABLE);
+    SDL_HideCursor();
 
     // Always RGB565
     converta = 0;
@@ -96,7 +94,7 @@ bool sw_start(int width, int height, int req_depth, int FullScreen)
 void sw_end()
 {
     if (render_surface) {
-        SDL_FreeSurface(render_surface);
+        SDL_DestroySurface(render_surface);
         render_surface = NULL;
         surface = NULL;
     }

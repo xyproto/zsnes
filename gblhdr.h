@@ -95,7 +95,6 @@ however it's a static value that we can just define */
 #endif
 
 #ifdef __UNIXSDL__
-#include "linux/sdl_compat.h"
 #include <SDL3/SDL.h>
 #include <arpa/inet.h>
 #include <glob.h>

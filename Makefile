@@ -478,9 +478,6 @@ endif
 ifeq ($(ARCH),NETBSD)
 CFGDEFS += -D__ZSNES_PLATFORM_NETBSD__
 endif
-ifeq ($(SDL_PKG),sdl3)
-CFGDEFS += -DSDL_ENABLE_OLD_NAMES
-endif
 
 
 ifeq ($(ARCH),DARWIN)

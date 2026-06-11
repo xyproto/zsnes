@@ -88,15 +88,14 @@ int gl_start(int width, int height, int req_depth, int FullScreen)
     SetGLAttributes();
 
     if (gl_context) {
-        SDL_GL_DeleteContext(gl_context);
+        SDL_GL_DestroyContext(gl_context);
         gl_context = NULL;
     }
     if (sdl_window) {
         SDL_PumpEvents();
         SDL_DestroyWindow(sdl_window);
     }
-    sdl_window = SDL_CreateWindow("ZSNES", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-        SurfaceX, SurfaceY, flags);
+    sdl_window = SDL_CreateWindow("ZSNES", SurfaceX, SurfaceY, flags);
     if (sdl_window == NULL) {
         fprintf(stderr, "Could not create %dx%d-GL window.\n", SurfaceX, SurfaceY);
         return false;
@@ -114,9 +113,9 @@ int gl_start(int width, int height, int req_depth, int FullScreen)
     gl_clearwin();
 
     // Grab mouse in fullscreen mode
-    SDL_SetWindowGrab(sdl_window, FullScreen ? SDL_TRUE : SDL_FALSE);
+    SDL_SetWindowMouseGrab(sdl_window, FullScreen ? true : false);
 
-    SDL_ShowCursor(SDL_DISABLE);
+    SDL_HideCursor();
 
     /* Setup some GL stuff */
 
@@ -154,7 +153,7 @@ void gl_end()
         glvidbuffer = 0;
     }
     if (gl_context) {
-        SDL_GL_DeleteContext(gl_context);
+        SDL_GL_DestroyContext(gl_context);
         gl_context = NULL;
     }
     if (sdl_window) {
