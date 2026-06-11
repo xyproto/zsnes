@@ -53,16 +53,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #include <X11/Xlib.h>
 
-#ifdef __SDL3__
-#define SDL_RUMBLECONTROLLER(gamepad, left, right, time) SDL_RumbleGamepad(gamepad, left, right, time)
-#define SDL_OPENCONTROLLER(index) SDL_OpenGamepad(index)
-#else
-#define SDL_RUMBLECONTROLLER(gamepad, left, right, time) SDL_JoystickRumble(gamepad, left, right, time)
-#define SDL_OPENCONTROLLER(index) SDL_GameControllerOpen(index)
-#endif
-
-SDL_Gamepad* gamepad = SDL_OPENCONTROLLER(0);
-
 _Noreturn void zexit_error(void);
 
 typedef enum {
