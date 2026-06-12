@@ -129,14 +129,14 @@ void SPC4841w(void);
 void SPC4842w(void);
 
 /* Memory-bank access functions (used in cpu/memtable.c mrwp entries) */
-u1   SPC7110ReadSRAM8b(u4 addr);
+u1 SPC7110ReadSRAM8b(u4 addr);
 void SPC7110WriteSRAM8b(u4 addr, u1 val);
-u2   SPC7110ReadSRAM16b(u4 addr);
+u2 SPC7110ReadSRAM16b(u4 addr);
 void SPC7110WriteSRAM16b(u4 addr, u2 val);
 
-u1   memaccessspc7110r8(u4 addr);
+u1 memaccessspc7110r8(u4 addr);
 void memaccessspc7110w8(u4 addr, u1 val);
-u2   memaccessspc7110r16(u4 addr);
+u2 memaccessspc7110r16(u4 addr);
 void memaccessspc7110w16(u4 addr, u2 val);
 
 #endif

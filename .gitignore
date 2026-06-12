@@ -4,8 +4,11 @@
 *.wav
 build/
 .vscode/
+cfg.h
 config.default
 include.txt
+input.h
+md.h
 parsegen
 test/zsnes_*_test
 win/confloc.h

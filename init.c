@@ -17,8 +17,8 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdint.h>
 #include <stddef.h>
+#include <stdint.h>
 
 #ifdef __GNUC__
 #define ALIGN32 __attribute__((aligned(32)))
@@ -27,7 +27,7 @@
 #endif
 
 /* Initiation */
-uint8_t regsbackup[3019] = {0};
+uint8_t regsbackup[3019] = { 0 };
 uint8_t forceromtype = 0;
 /* FIX STATMAT */
 uint8_t autoloadstate = 0;
@@ -37,22 +37,22 @@ uint8_t ZMVRawDump = 0;
 /* global variables */
 uint8_t romtype = 0;
 uint16_t resetv = 0;
-uint16_t abortv = 0;    /* abort vector */
-uint16_t nmiv2 = 0;      /* nmi vector */
-uint16_t nmiv = 0;       /* nmi vector */
+uint16_t abortv = 0; /* abort vector */
+uint16_t nmiv2 = 0; /* nmi vector */
+uint16_t nmiv = 0; /* nmi vector */
 uint16_t irqv = 0;
 uint16_t irqv2 = 0;
-uint16_t brkv = 0;       /* brk vector */
-uint16_t copv = 0;       /* cop vector */
-uint16_t abortv8 = 0;    /* abort vector emulation mode */
-uint16_t nmiv8 = 0;      /* nmi vector emulation mode */
+uint16_t brkv = 0; /* brk vector */
+uint16_t copv = 0; /* cop vector */
+uint16_t abortv8 = 0; /* abort vector emulation mode */
+uint16_t nmiv8 = 0; /* nmi vector emulation mode */
 uint16_t irqv8 = 0;
-uint16_t brkv8 = 0;      /* brk vector emulation mode */
-uint16_t copv8 = 0;      /* cop vector emulation mode */
-uint8_t cycpb268 = 109;  /* 110 */
-uint8_t cycpb358 = 149;  /* 155 */
-uint8_t cycpbl2 = 109;   /* percentage left of CPU/SPC to run  (3.58 = 175) */
-uint8_t cycpblt2 = 149;  /* percentage of CPU/SPC to run */
+uint16_t brkv8 = 0; /* brk vector emulation mode */
+uint16_t copv8 = 0; /* cop vector emulation mode */
+uint8_t cycpb268 = 109; /* 110 */
+uint8_t cycpb358 = 149; /* 155 */
+uint8_t cycpbl2 = 109; /* percentage left of CPU/SPC to run  (3.58 = 175) */
+uint8_t cycpblt2 = 149; /* percentage of CPU/SPC to run */
 uint8_t writeon = 0;
 uint16_t totlines = 263; /* total # of lines */
 
@@ -72,9 +72,9 @@ uint16_t xxt = 0;
 uint16_t xyt = 0;
 uint16_t xpc = 0;
 uint8_t debugger = 0;
-uint8_t curnmi = 0;      /* if in NMI(1) or not(0) */
+uint8_t curnmi = 0; /* if in NMI(1) or not(0) */
 
-ALIGN32 uint32_t cycpbl = 110;  /* percentage left of CPU/SPC to run  (3.58 = 175) */
+ALIGN32 uint32_t cycpbl = 110; /* percentage left of CPU/SPC to run  (3.58 = 175) */
 ALIGN32 uint32_t cycpblt = 110;
 
 ALIGN32 uint32_t xa = 0;

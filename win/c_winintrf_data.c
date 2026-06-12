@@ -4,7 +4,7 @@
 
 #include "../types.h"
 
-u4 CurKeyPos      = 0;
-u4 CurKeyReadPos  = 0;
-u4 KeyBuffer[16]  = {0};
-u4 converta       = 0;
+u4 CurKeyPos = 0;
+u4 CurKeyReadPos = 0;
+u4 KeyBuffer[16] = { 0 };
+u4 converta = 0;

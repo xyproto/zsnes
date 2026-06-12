@@ -57,14 +57,14 @@ extern void SPC7110_4806w(void);
 /* External variables required by register handlers and bank-switch logic */
 extern u1* romdata;
 extern u1* sram;
-extern u4  ramsize;
-extern u4  ramsizeand;
-extern u4  sramb4save;
-extern u1  curromsize;
+extern u4 ramsize;
+extern u4 ramsizeand;
+extern u4 sramb4save;
+extern u1 curromsize;
 extern u1* snesmmap[256];
 extern u1* snesmap2[256];
 #ifndef NO_DEBUGGER
-extern u1  debuggeron;
+extern u1 debuggeron;
 #endif
 
 /* ---------------------------------------------------------------------------
@@ -82,28 +82,28 @@ extern u1  debuggeron;
  * unit, so this preserves the original layout.
  * --------------------------------------------------------------------------- */
 #ifdef __GNUC__
-#  define SPC7110_SAVEBLOCK __attribute__((section(".data.spc7110_saveblock")))
+#define SPC7110_SAVEBLOCK __attribute__((section(".data.spc7110_saveblock")))
 #else
-#  define SPC7110_SAVEBLOCK /* no guarantee of contiguity on non-GCC */
+#define SPC7110_SAVEBLOCK /* no guarantee of contiguity on non-GCC */
 #endif
 
-u4 SPCMultA      SPC7110_SAVEBLOCK = 0;   /* 16-bit multiplicand / 32-bit dividend – low dword */
-u4 SPCMultB      SPC7110_SAVEBLOCK = 0;   /* 16-bit multiplier */
-u4 SPCDivEnd     SPC7110_SAVEBLOCK = 0;   /* 16-bit divisor */
-u4 SPCMulRes     SPC7110_SAVEBLOCK = 0;   /* 32-bit product / quotient */
-u4 SPCDivRes     SPC7110_SAVEBLOCK = 0;   /* 16-bit remainder */
-u4 SPC7110BankA  SPC7110_SAVEBLOCK = 0x020100; /* current data-ROM bank selection for D0/E0/F0 */
-u4 SPC7110RTCStat SPC7110_SAVEBLOCK = 0;  /* RTC state machine: byte[0]=enable, [1]=index, [2]=cmd */
-u1 SPC7110RTC[16]  SPC7110_SAVEBLOCK = { 0,0,0,0,0,0,1,0,1,0,0,0,0,0,0x0F,0 };
-u1 SPC7110RTCB[16] SPC7110_SAVEBLOCK = { 0,0,0,0,0,0,1,0,1,0,0,0,0,1,0x0F,6 };
-u4  SPCROMPtr    SPC7110_SAVEBLOCK = 0;   /* 24-bit data-ROM read pointer */
-u4* SPCROMtoI    SPC7110_SAVEBLOCK = &SPCROMPtr; /* pointer to the field that auto-increments */
-u4  SPCROMAdj    SPC7110_SAVEBLOCK = 0;   /* 16-bit signed offset used with the pointer */
-u4  SPCROMInc    SPC7110_SAVEBLOCK = 0;   /* 16-bit signed increment added after $4810 reads */
-u4  SPCROMCom    SPC7110_SAVEBLOCK = 0;   /* command mode: byte[0]=raw register, byte[1]=decoded */
-u4  SPCCheckFix  SPC7110_SAVEBLOCK = 0;   /* 0 until $4811 has been written; gate for $4810/$481A */
-u4  SPCSignedVal SPC7110_SAVEBLOCK = 0;   /* bit 0: 1 = signed mul/div mode */
-u1  SPCCompressionRegs[13] SPC7110_SAVEBLOCK = { 0 }; /* compression-state registers 0x00–0x0C */
+u4 SPCMultA SPC7110_SAVEBLOCK = 0; /* 16-bit multiplicand / 32-bit dividend – low dword */
+u4 SPCMultB SPC7110_SAVEBLOCK = 0; /* 16-bit multiplier */
+u4 SPCDivEnd SPC7110_SAVEBLOCK = 0; /* 16-bit divisor */
+u4 SPCMulRes SPC7110_SAVEBLOCK = 0; /* 32-bit product / quotient */
+u4 SPCDivRes SPC7110_SAVEBLOCK = 0; /* 16-bit remainder */
+u4 SPC7110BankA SPC7110_SAVEBLOCK = 0x020100; /* current data-ROM bank selection for D0/E0/F0 */
+u4 SPC7110RTCStat SPC7110_SAVEBLOCK = 0; /* RTC state machine: byte[0]=enable, [1]=index, [2]=cmd */
+u1 SPC7110RTC[16] SPC7110_SAVEBLOCK = { 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0x0F, 0 };
+u1 SPC7110RTCB[16] SPC7110_SAVEBLOCK = { 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0x0F, 6 };
+u4 SPCROMPtr SPC7110_SAVEBLOCK = 0; /* 24-bit data-ROM read pointer */
+u4* SPCROMtoI SPC7110_SAVEBLOCK = &SPCROMPtr; /* pointer to the field that auto-increments */
+u4 SPCROMAdj SPC7110_SAVEBLOCK = 0; /* 16-bit signed offset used with the pointer */
+u4 SPCROMInc SPC7110_SAVEBLOCK = 0; /* 16-bit signed increment added after $4810 reads */
+u4 SPCROMCom SPC7110_SAVEBLOCK = 0; /* command mode: byte[0]=raw register, byte[1]=decoded */
+u4 SPCCheckFix SPC7110_SAVEBLOCK = 0; /* 0 until $4811 has been written; gate for $4810/$481A */
+u4 SPCSignedVal SPC7110_SAVEBLOCK = 0; /* bit 0: 1 = signed mul/div mode */
+u1 SPCCompressionRegs[13] SPC7110_SAVEBLOCK = { 0 }; /* compression-state registers 0x00–0x0C */
 
 /*
  * PHnum2writespc7110reg – byte count of the save-state block.
@@ -121,9 +121,9 @@ u4 PHnum2writespc7110reg = 101;
 /* 12-hour BCD conversion table (from SPCTimerVal in 7110proc.asm SECTION .data).
  * Referenced in the commented-out 12-hour clock branch of SPC4841. */
 static const u1 SPCTimerVal[34] = {
-    0x12,0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0,0,0,0,0,0,
-    0x10,0x11,0x32,0x21,0x22,0x23,0x24,0x25,0x26,0x27,0,0,0,0,0,0,
-    0x28,0x29
+    0x12, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0, 0, 0, 0, 0, 0,
+    0x10, 0x11, 0x32, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0, 0, 0, 0, 0, 0,
+    0x28, 0x29
 };
 
 /* ===========================================================================
@@ -144,13 +144,15 @@ static const u1 SPCTimerVal[34] = {
  * ported, at which point these functions will be revisited).
  * =========================================================================== */
 #if defined(__GNUC__) && defined(__i386__)
-#  define REGVAL_WRITE  register u1 al asm("al")
-#  define REGVAL_READ(v) register u1 al asm("al") = (v); (void)al
+#define REGVAL_WRITE register u1 al asm("al")
+#define REGVAL_READ(v)              \
+    register u1 al asm("al") = (v); \
+    (void)al
 #else
 /* Non-x86 placeholder – memory dispatch not yet ported, so these handlers
  * are unreachable; define stubs to keep the translation unit self-consistent. */
-#  define REGVAL_WRITE  u1 al = 0
-#  define REGVAL_READ(v) (void)(v)
+#define REGVAL_WRITE u1 al = 0
+#define REGVAL_READ(v) (void)(v)
 #endif
 
 /* ===========================================================================
@@ -160,19 +162,19 @@ void SPC7110init(void)
 {
     SPC7110initC();
 
-    SPCMultA      = 0;
-    SPCMultB      = 0;
-    SPCDivEnd     = 0;
-    SPCMulRes     = 0;
-    SPCDivRes     = 0;
-    SPC7110BankA  = 0x020100;
+    SPCMultA = 0;
+    SPCMultB = 0;
+    SPCDivEnd = 0;
+    SPCMulRes = 0;
+    SPCDivRes = 0;
+    SPC7110BankA = 0x020100;
     SPC7110RTCStat = 0;
-    SPCROMPtr     = 0;
-    SPCROMtoI     = &SPCROMPtr;
-    SPCROMAdj     = 0;
-    SPCROMInc     = 0;
-    SPCROMCom     = 0;
-    SPCCheckFix   = 0;
+    SPCROMPtr = 0;
+    SPCROMtoI = &SPCROMPtr;
+    SPCROMAdj = 0;
+    SPCROMInc = 0;
+    SPCROMCom = 0;
+    SPCCheckFix = 0;
 }
 
 /* ===========================================================================
@@ -509,18 +511,18 @@ void SPC4841(void)
         u4 d = GetDate();
 
         /* Seconds: BCD nibbles in bits 7:4 and 3:0 of t */
-        SPC7110RTC[0x00] = (u1)( t        & 0x0F);
-        SPC7110RTC[0x01] = (u1)((t >>  4) & 0x0F);
+        SPC7110RTC[0x00] = (u1)(t & 0x0F);
+        SPC7110RTC[0x01] = (u1)((t >> 4) & 0x0F);
         /* Minutes */
-        SPC7110RTC[0x02] = (u1)((t >>  8) & 0x0F);
+        SPC7110RTC[0x02] = (u1)((t >> 8) & 0x0F);
         SPC7110RTC[0x03] = (u1)((t >> 12) & 0x0F);
         /* Hours (24-hr; bits 23:16 of GetTime return value) */
         SPC7110RTC[0x04] = (u1)((t >> 16) & 0x0F);
         SPC7110RTC[0x05] = (u1)((t >> 20) & 0x0F);
 
         /* Day: BCD nibbles in bits 7:0 of d */
-        SPC7110RTC[0x06] = (u1)( d        & 0x0F);
-        SPC7110RTC[0x07] = (u1)((d >>  4) & 0x0F);
+        SPC7110RTC[0x06] = (u1)(d & 0x0F);
+        SPC7110RTC[0x07] = (u1)((d >> 4) & 0x0F);
 
         /* Month: binary 1..12 in bits 15:8 of d; split into two BCD nibbles */
         u1 month = (u1)((d >> 8) & 0xFF);
@@ -532,8 +534,11 @@ void SPC4841(void)
          * of the 23:16 byte); we need to split into [0xA]=units, [0xB]=tens. */
         u1 yr = (u1)((d >> 16) & 0xFF);
         u1 yr10 = 0;
-        u1 yr1  = yr & 0x1F;
-        while (yr1 > 9) { yr10++; yr1 -= 10; }
+        u1 yr1 = yr & 0x1F;
+        while (yr1 > 9) {
+            yr10++;
+            yr1 -= 10;
+        }
         SPC7110RTC[0x0A] = yr1;
         SPC7110RTC[0x0B] = yr10;
 
@@ -576,11 +581,31 @@ void SPC485F(void) { REGVAL_READ(SPC7110RTC[0xF]); }
 
 /* -- Compression control write ports ($4801–$480B) ------------------------- */
 
-void SPC4801w(void) { REGVAL_WRITE; SPCCompressionRegs[1] = al; }
-void SPC4802w(void) { REGVAL_WRITE; SPCCompressionRegs[2] = al; }
-void SPC4803w(void) { REGVAL_WRITE; SPCCompressionRegs[3] = al; }
-void SPC4804w(void) { REGVAL_WRITE; SPCCompressionRegs[4] = al; }
-void SPC4805w(void) { REGVAL_WRITE; SPCCompressionRegs[5] = al; }
+void SPC4801w(void)
+{
+    REGVAL_WRITE;
+    SPCCompressionRegs[1] = al;
+}
+void SPC4802w(void)
+{
+    REGVAL_WRITE;
+    SPCCompressionRegs[2] = al;
+}
+void SPC4803w(void)
+{
+    REGVAL_WRITE;
+    SPCCompressionRegs[3] = al;
+}
+void SPC4804w(void)
+{
+    REGVAL_WRITE;
+    SPCCompressionRegs[4] = al;
+}
+void SPC4805w(void)
+{
+    REGVAL_WRITE;
+    SPCCompressionRegs[5] = al;
+}
 /* $4806 – store then trigger decompression init */
 void SPC4806w(void)
 {
@@ -588,11 +613,31 @@ void SPC4806w(void)
     SPCCompressionRegs[6] = al;
     SPC7110_4806w();
 }
-void SPC4807w(void) { REGVAL_WRITE; SPCCompressionRegs[7] = al; }
-void SPC4808w(void) { REGVAL_WRITE; SPCCompressionRegs[8] = al; }
-void SPC4809w(void) { REGVAL_WRITE; SPCCompressionRegs[9] = al; }
-void SPC480Aw(void) { REGVAL_WRITE; SPCCompressionRegs[0xA] = al; }
-void SPC480Bw(void) { REGVAL_WRITE; SPCCompressionRegs[0xB] = al; }
+void SPC4807w(void)
+{
+    REGVAL_WRITE;
+    SPCCompressionRegs[7] = al;
+}
+void SPC4808w(void)
+{
+    REGVAL_WRITE;
+    SPCCompressionRegs[8] = al;
+}
+void SPC4809w(void)
+{
+    REGVAL_WRITE;
+    SPCCompressionRegs[9] = al;
+}
+void SPC480Aw(void)
+{
+    REGVAL_WRITE;
+    SPCCompressionRegs[0xA] = al;
+}
+void SPC480Bw(void)
+{
+    REGVAL_WRITE;
+    SPCCompressionRegs[0xB] = al;
+}
 
 /* -- Data-ROM pointer write ports ($4811–$4818) ----------------------------- */
 
@@ -603,8 +648,16 @@ void SPC4811w(void)
     ((u1*)&SPCROMPtr)[0] = al;
     SPCCheckFix = 1;
 }
-void SPC4812w(void) { REGVAL_WRITE; ((u1*)&SPCROMPtr)[1] = al; }
-void SPC4813w(void) { REGVAL_WRITE; ((u1*)&SPCROMPtr)[2] = al; }
+void SPC4812w(void)
+{
+    REGVAL_WRITE;
+    ((u1*)&SPCROMPtr)[1] = al;
+}
+void SPC4813w(void)
+{
+    REGVAL_WRITE;
+    ((u1*)&SPCROMPtr)[2] = al;
+}
 
 /*
  * $4814 – low byte of offset adjust (SPCROMAdj).
@@ -619,8 +672,8 @@ void SPC4814w(void)
 
     if ((u1)(SPCROMCom >> 8) == 2) {
         u4 adj = (SPCROMCom & 0x08)
-            ? (u4)(s4)(s1)((u1*)&SPCROMAdj)[0]  /* signed */
-            : ((u1*)&SPCROMAdj)[0];              /* unsigned */
+            ? (u4)(s4)(s1)((u1*)&SPCROMAdj)[0] /* signed */
+            : ((u1*)&SPCROMAdj)[0]; /* unsigned */
         *SPCROMtoI += adj;
     }
 }
@@ -646,7 +699,11 @@ void SPC4815w(void)
         *SPCROMtoI += SPCROMAdj;
 }
 
-void SPC4816w(void) { REGVAL_WRITE; ((u1*)&SPCROMInc)[0] = al; }
+void SPC4816w(void)
+{
+    REGVAL_WRITE;
+    ((u1*)&SPCROMInc)[0] = al;
+}
 
 /*
  * $4817 – high byte of increment; sign-extend from bit 14 if signed mode
@@ -738,11 +795,31 @@ void SPC4818w(void)
 
 /* -- Multiply / divide write ports ($4820–$482E) --------------------------- */
 
-void SPC4820w(void) { REGVAL_WRITE; ((u1*)&SPCMultA)[0] = al; }
-void SPC4821w(void) { REGVAL_WRITE; ((u1*)&SPCMultA)[1] = al; }
-void SPC4822w(void) { REGVAL_WRITE; ((u1*)&SPCMultA)[2] = al; }
-void SPC4823w(void) { REGVAL_WRITE; ((u1*)&SPCMultA)[3] = al; }
-void SPC4824w(void) { REGVAL_WRITE; ((u1*)&SPCMultB)[0] = al; }
+void SPC4820w(void)
+{
+    REGVAL_WRITE;
+    ((u1*)&SPCMultA)[0] = al;
+}
+void SPC4821w(void)
+{
+    REGVAL_WRITE;
+    ((u1*)&SPCMultA)[1] = al;
+}
+void SPC4822w(void)
+{
+    REGVAL_WRITE;
+    ((u1*)&SPCMultA)[2] = al;
+}
+void SPC4823w(void)
+{
+    REGVAL_WRITE;
+    ((u1*)&SPCMultA)[3] = al;
+}
+void SPC4824w(void)
+{
+    REGVAL_WRITE;
+    ((u1*)&SPCMultB)[0] = al;
+}
 
 /*
  * $4825 – high byte of 16-bit multiplier; perform multiplication immediately.
@@ -762,7 +839,11 @@ void SPC4825w(void)
     }
 }
 
-void SPC4826w(void) { REGVAL_WRITE; ((u1*)&SPCDivEnd)[0] = al; }
+void SPC4826w(void)
+{
+    REGVAL_WRITE;
+    ((u1*)&SPCDivEnd)[0] = al;
+}
 
 /*
  * $4827 – high byte of 16-bit divisor; perform division immediately.
@@ -794,9 +875,9 @@ void SPC4827w(void)
          * IDIV), divisor is sign-extended from 16 bits.
          */
         s4 dividend = (s4)SPCMultA;
-        s2 div16    = (s2)divisor;
-        s4 quot     = dividend / div16;
-        s2 rem      = (s2)(dividend % div16);
+        s2 div16 = (s2)divisor;
+        s4 quot = dividend / div16;
+        s2 rem = (s2)(dividend % div16);
         SPCMulRes = (u4)quot;
         ((u1*)&SPCDivRes)[0] = (u1)(u2)rem;
         ((u1*)&SPCDivRes)[1] = (u1)((u2)rem >> 8);
@@ -811,8 +892,8 @@ void SPC482Ew(void)
 {
     REGVAL_WRITE;
     SPCSignedVal = al;
-    SPCMultA  = 0;
-    SPCMultB  = 0;
+    SPCMultA = 0;
+    SPCMultB = 0;
     SPCDivEnd = 0;
     SPCMulRes = 0;
     SPCDivRes = 0;
@@ -821,9 +902,21 @@ void SPC482Ew(void)
 /* -- Bank-switch write ports ($4831–$4833) ---------------------------------- */
 
 /* $4831/$4832/$4833 – map data-ROM bank for SNES banks $D0/$E0/$F0 range */
-void SPC4831w(void) { REGVAL_WRITE; BankSwitchSPC7110(al, 0, 0xD0); }
-void SPC4832w(void) { REGVAL_WRITE; BankSwitchSPC7110(al, 1, 0xE0); }
-void SPC4833w(void) { REGVAL_WRITE; BankSwitchSPC7110(al, 2, 0xF0); }
+void SPC4831w(void)
+{
+    REGVAL_WRITE;
+    BankSwitchSPC7110(al, 0, 0xD0);
+}
+void SPC4832w(void)
+{
+    REGVAL_WRITE;
+    BankSwitchSPC7110(al, 1, 0xE0);
+}
+void SPC4833w(void)
+{
+    REGVAL_WRITE;
+    BankSwitchSPC7110(al, 2, 0xF0);
+}
 
 /* -- RTC write ports ($4840–$4842) ----------------------------------------- */
 
@@ -855,7 +948,7 @@ void SPC4841w(void)
     u1 stat = ((u1*)&SPC7110RTCStat)[1];
 
     if (stat == 0xFE) {
-        ((u1*)&SPC7110RTCStat)[1]++;   /* → 0xFF */
+        ((u1*)&SPC7110RTCStat)[1]++; /* → 0xFF */
         ((u1*)&SPC7110RTCStat)[2] = al;
         return;
     }
@@ -871,8 +964,10 @@ void SPC4841w(void)
         SPC7110RTC[0x00] = SPC7110RTC[0x01] = 0;
         SPC7110RTC[0x02] = SPC7110RTC[0x03] = 0;
         SPC7110RTC[0x04] = SPC7110RTC[0x05] = 0;
-        SPC7110RTC[0x06] = 1; SPC7110RTC[0x07] = 0;
-        SPC7110RTC[0x08] = 1; SPC7110RTC[0x09] = 0;
+        SPC7110RTC[0x06] = 1;
+        SPC7110RTC[0x07] = 0;
+        SPC7110RTC[0x08] = 1;
+        SPC7110RTC[0x09] = 0;
         SPC7110RTC[0x0A] = SPC7110RTC[0x0B] = 0;
         SPC7110RTC[0x0C] = 0;
     }
@@ -905,14 +1000,14 @@ void SPC4842w(void) { }
  * both mappings.
  * =========================================================================== */
 
-extern u1  memaccessbankr8(u4 addr);
+extern u1 memaccessbankr8(u4 addr);
 extern void memaccessbankw8(u4 addr, u1 val);
-extern u2  memaccessbankr16(u4 addr);
+extern u2 memaccessbankr16(u4 addr);
 extern void memaccessbankw16(u4 addr, u2 val);
 
-extern u1  regaccessbankr8(u4 addr);
+extern u1 regaccessbankr8(u4 addr);
 extern void regaccessbankw8(u4 addr, u1 val);
-extern u2  regaccessbankr16(u4 addr);
+extern u2 regaccessbankr16(u4 addr);
 extern void regaccessbankw16(u4 addr, u2 val);
 
 /* Inline SRAM helpers – equivalent to sramaccessbankr8b / sramaccessbankw8b */
@@ -922,20 +1017,23 @@ static inline u1 sram_read8(u4 off)
 }
 static inline u2 sram_read16(u4 off)
 {
-    if (!ramsize) return 0;
-    return (u2)(sram[(off    ) & ramsizeand]
-              | (u2)sram[(off + 1) & ramsizeand] << 8);
+    if (!ramsize)
+        return 0;
+    return (u2)(sram[(off)&ramsizeand]
+        | (u2)sram[(off + 1) & ramsizeand] << 8);
 }
 static inline void sram_write8(u4 off, u1 val)
 {
-    if (!ramsize) return;
+    if (!ramsize)
+        return;
     sram[off & ramsizeand] = val;
     sramb4save = 5 * 60;
 }
 static inline void sram_write16(u4 off, u2 val)
 {
-    if (!ramsize) return;
-    sram[(off    ) & ramsizeand] = (u1)val;
+    if (!ramsize)
+        return;
+    sram[(off)&ramsizeand] = (u1)val;
     sram[(off + 1) & ramsizeand] = (u1)(val >> 8);
     sramb4save = 5 * 60;
 }
@@ -945,28 +1043,44 @@ static inline u4 spc7110_sram_off(u4 addr)
     return (addr - 0x6000) & 0xFFFF;
 }
 
-u1   SPC7110ReadSRAM8b(u4 addr)
+u1 SPC7110ReadSRAM8b(u4 addr)
 {
-    if (addr & 0x8000)  return memaccessbankr8(addr);
-    if (addr < 0x6000)  return regaccessbankr8(addr);
+    if (addr & 0x8000)
+        return memaccessbankr8(addr);
+    if (addr < 0x6000)
+        return regaccessbankr8(addr);
     return sram_read8(spc7110_sram_off(addr));
 }
 void SPC7110WriteSRAM8b(u4 addr, u1 val)
 {
-    if (addr & 0x8000)  { memaccessbankw8(addr, val); return; }
-    if (addr < 0x6000)  { regaccessbankw8(addr, val); return; }
+    if (addr & 0x8000) {
+        memaccessbankw8(addr, val);
+        return;
+    }
+    if (addr < 0x6000) {
+        regaccessbankw8(addr, val);
+        return;
+    }
     sram_write8(spc7110_sram_off(addr), val);
 }
-u2   SPC7110ReadSRAM16b(u4 addr)
+u2 SPC7110ReadSRAM16b(u4 addr)
 {
-    if (addr & 0x8000)  return memaccessbankr16(addr);
-    if (addr < 0x6000)  return regaccessbankr16(addr);
+    if (addr & 0x8000)
+        return memaccessbankr16(addr);
+    if (addr < 0x6000)
+        return regaccessbankr16(addr);
     return sram_read16(spc7110_sram_off(addr));
 }
 void SPC7110WriteSRAM16b(u4 addr, u2 val)
 {
-    if (addr & 0x8000)  { memaccessbankw16(addr, val); return; }
-    if (addr < 0x6000)  { regaccessbankw16(addr, val); return; }
+    if (addr & 0x8000) {
+        memaccessbankw16(addr, val);
+        return;
+    }
+    if (addr < 0x6000) {
+        regaccessbankw16(addr, val);
+        return;
+    }
     sram_write16(spc7110_sram_off(addr), val);
 }
 
@@ -994,5 +1108,13 @@ u2 memaccessspc7110r16(u4 addr)
     u1 hi = SPCCompressionRegs[0];
     return (u2)(lo | (u2)hi << 8);
 }
-void memaccessspc7110w8(u4 addr, u1 val)  { (void)addr; (void)val; }
-void memaccessspc7110w16(u4 addr, u2 val) { (void)addr; (void)val; }
+void memaccessspc7110w8(u4 addr, u1 val)
+{
+    (void)addr;
+    (void)val;
+}
+void memaccessspc7110w16(u4 addr, u2 val)
+{
+    (void)addr;
+    (void)val;
+}
