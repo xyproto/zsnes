@@ -26,21 +26,23 @@
 
 #include <stdint.h>
 
+#include "regabi.h"
+
 extern uint8_t* setaramdata;
 extern void ST010DoCommand(void);
 
-static uint8_t SetaCmdEnable[4];
+uint8_t SetaCmdEnable[4];
 
 /* -----------------------------------------------------------------------
  * Region A — setaramdata buffer
  * ----------------------------------------------------------------------- */
 
-uint8_t setaaccessbankr8(uint32_t addr)
+uint8_t c_setaaccessbankr8(uint32_t addr)
 {
     return setaramdata[addr & 0xfff];
 }
 
-void setaaccessbankw8(uint32_t addr, uint8_t val)
+void c_setaaccessbankw8(uint32_t addr, uint8_t val)
 {
     if (addr & 0x8000)
         return;
@@ -49,13 +51,13 @@ void setaaccessbankw8(uint32_t addr, uint8_t val)
         ST010DoCommand();
 }
 
-uint16_t setaaccessbankr16(uint32_t addr)
+uint16_t c_setaaccessbankr16(uint32_t addr)
 {
     uint32_t a = addr & 0xfff;
     return (uint16_t)(setaramdata[a] | ((uint16_t)setaramdata[a + 1] << 8));
 }
 
-void setaaccessbankw16(uint32_t addr, uint16_t val)
+void c_setaaccessbankw16(uint32_t addr, uint16_t val)
 {
     if (addr & 0x8000)
         return;
@@ -85,21 +87,21 @@ void setaaccessbankw16(uint32_t addr, uint16_t val)
  * Region B — SetaCmdEnable register
  * ----------------------------------------------------------------------- */
 
-uint8_t setaaccessbankr8a(uint32_t addr)
+uint8_t c_setaaccessbankr8a(uint32_t addr)
 {
     if (addr >= 0x4000)
         return 0;
     return SetaCmdEnable[addr & 3];
 }
 
-void setaaccessbankw8a(uint32_t addr, uint8_t val)
+void c_setaaccessbankw8a(uint32_t addr, uint8_t val)
 {
     if (addr >= 0x4000)
         return;
     SetaCmdEnable[addr & 3] = val;
 }
 
-uint16_t setaaccessbankr16a(uint32_t addr)
+uint16_t c_setaaccessbankr16a(uint32_t addr)
 {
     if (addr >= 0x4000)
         return 0;
@@ -107,7 +109,7 @@ uint16_t setaaccessbankr16a(uint32_t addr)
     return (uint16_t)((SetaCmdEnable[a] << 8) | SetaCmdEnable[(a + 1) & 3]);
 }
 
-void setaaccessbankw16a(uint32_t addr, uint16_t val)
+void c_setaaccessbankw16a(uint32_t addr, uint16_t val)
 {
     if (addr >= 0x4000)
         return;
@@ -115,3 +117,12 @@ void setaaccessbankw16a(uint32_t addr, uint16_t val)
     SetaCmdEnable[a] = (uint8_t)(val >> 8);
     SetaCmdEnable[(a + 1) & 3] = (uint8_t)val;
 }
+
+REGABI_BANK_READ8(setaaccessbankr8);
+REGABI_BANK_WRITE8(setaaccessbankw8);
+REGABI_BANK_READ16(setaaccessbankr16);
+REGABI_BANK_WRITE16(setaaccessbankw16);
+REGABI_BANK_READ8(setaaccessbankr8a);
+REGABI_BANK_WRITE8(setaaccessbankw8a);
+REGABI_BANK_READ16(setaaccessbankr16a);
+REGABI_BANK_WRITE16(setaaccessbankw16a);

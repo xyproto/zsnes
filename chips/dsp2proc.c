@@ -12,6 +12,8 @@
 #include <stdint.h>
 #include <string.h>
 
+#include "regabi.h"
+
 #define DSP2F_HALT 1u
 #define DSP2F_AUTO_BUFFER_SHIFT 2u
 #define DSP2F_NO_ADDR_CHK 4u
@@ -560,7 +562,7 @@ static void DSP2Add2Queue(void)
     memcpy(dst, dsp2enforcer, 8);
 }
 
-uint8_t DSP2Read8b(uint32_t addr)
+uint8_t c_DSP2Read8b(uint32_t addr)
 {
     if (dsp2state & DSP2F_HALT)
         return 0;
@@ -574,19 +576,24 @@ uint8_t DSP2Read8b(uint32_t addr)
     uint8_t idx = (uint8_t)cx; /* low 8 bits */
     uint8_t result = dsp2buffer[idx];
 
-    if (dsp2state & DSP2F_AUTO_BUFFER_SHIFT)
-        *(int32_t*)dsp2buffer >>= 8; /* arithmetic shift of first dword */
+    if (dsp2state & DSP2F_AUTO_BUFFER_SHIFT) {
+        /* arithmetic shift of first dword */
+        int32_t v;
+        memcpy(&v, dsp2buffer, 4);
+        v >>= 8;
+        memcpy(dsp2buffer, &v, 4);
+    }
 
     return result;
 }
 
-uint16_t DSP2Read16b(uint32_t addr)
+uint16_t c_DSP2Read16b(uint32_t addr)
 {
     (void)addr;
     return 0;
 }
 
-void DSP2Write8b(uint32_t addr, uint8_t val)
+void c_DSP2Write8b(uint32_t addr, uint8_t val)
 {
     if (dsp2state & DSP2F_HALT)
         return;
@@ -767,7 +774,7 @@ void DSP2Write8b(uint32_t addr, uint8_t val)
         dsp2buffer[idx] = (uint8_t)dsp2input;
         if (idx == 3) {
             uint32_t product = (uint32_t)dsp2buffer[0] * (uint32_t)dsp2buffer[2];
-            *(uint32_t*)dsp2buffer = product;
+            memcpy(dsp2buffer, &product, 4);
             dsp2state |= DSP2F_AUTO_BUFFER_SHIFT;
         }
         goto done;
@@ -832,8 +839,13 @@ gohalt:
     dsp2state |= DSP2F_HALT;
 }
 
-void DSP2Write16b(uint32_t addr, uint16_t val)
+void c_DSP2Write16b(uint32_t addr, uint16_t val)
 {
     (void)addr;
     (void)val;
 }
+
+REGABI_BANK_READ8(DSP2Read8b);
+REGABI_BANK_READ16(DSP2Read16b);
+REGABI_BANK_WRITE8(DSP2Write8b);
+REGABI_BANK_WRITE16(DSP2Write16b);

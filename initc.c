@@ -1669,7 +1669,8 @@ void initpitch()
     Voice7Freq = ((((Voice7Pitch & 0x3FFF) * dspPAdj) >> 8) & 0xFFFFFFFF);
 }
 
-extern uint32_t SfxR1, SfxR2, SetaCmdEnable, SfxSFR, SfxSCMR;
+extern uint32_t SfxR1, SfxR2, SfxSFR, SfxSCMR;
+extern uint8_t SetaCmdEnable[4];
 extern uint8_t disablespcclr, *sfxramdata, SramExists;
 extern uint32_t* setaramdata;
 extern uint8_t* SA1RAMArea;
@@ -1801,7 +1802,8 @@ void CheckROMType()
             // Control register (and some status?) is in banks 60h-67h:0000-3FFF
             map_mem(0x60, &setabanka, 1);
 
-            SetaCmdEnable = 0x00000080; // 60:0000
+            memset(SetaCmdEnable, 0, 4);
+            SetaCmdEnable[0] = 0x80; // 60:0000
         } else {
             void ST011_Reset();
             ST011_Reset();

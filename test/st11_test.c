@@ -72,14 +72,14 @@ void ST011_MapW_60(void)
 
 /* --- Declarations (from chips/st11proc.c) -------------------------------- */
 
-uint8_t Seta11Read8_68(uint32_t addr);
-void Seta11Write8_68(uint32_t addr, uint8_t val);
-uint16_t Seta11Read16_68(uint32_t addr);
-void Seta11Write16_68(uint32_t addr, uint16_t val);
-uint8_t Seta11Read8_60(uint32_t addr);
-void Seta11Write8_60(uint32_t addr, uint8_t val);
-uint16_t Seta11Read16_60(uint32_t addr);
-void Seta11Write16_60(uint32_t addr, uint16_t val);
+uint8_t c_Seta11Read8_68(uint32_t addr);
+void c_Seta11Write8_68(uint32_t addr, uint8_t val);
+uint16_t c_Seta11Read16_68(uint32_t addr);
+void c_Seta11Write16_68(uint32_t addr, uint16_t val);
+uint8_t c_Seta11Read8_60(uint32_t addr);
+void c_Seta11Write8_60(uint32_t addr, uint8_t val);
+uint16_t c_Seta11Read16_60(uint32_t addr);
+void c_Seta11Write16_60(uint32_t addr, uint16_t val);
 
 /* ======================================================================== */
 /* Region 68 — setaramdata buffer                                          */
@@ -93,12 +93,12 @@ static void test_read8_68(void)
     mock_ram[0x200] = 0xAB;
     ST011_DR = 0;
 
-    ZT_CHECK(Seta11Read8_68(0x200) == 0xAB);
+    ZT_CHECK(c_Seta11Read8_68(0x200) == 0xAB);
     ZT_CHECK(ST011_DR == 0xAB);
 
     /* address masked to 12 bits */
     mock_ram[0x300] = 0x77;
-    ZT_CHECK(Seta11Read8_68(0x1300) == 0x77); /* 0x1300 & 0xFFF = 0x300 */
+    ZT_CHECK(c_Seta11Read8_68(0x1300) == 0x77); /* 0x1300 & 0xFFF = 0x300 */
     ZT_CHECK(ST011_DR == 0x77);
 }
 
@@ -107,10 +107,10 @@ static void test_write8_68_rom_guard(void)
     ZT_SECTION("Write8_68: bit-15 guard — addr with bit 15 set is ignored");
 
     RESET_MOCKS();
-    Seta11Write8_68(0x8000, 0xFF);
+    c_Seta11Write8_68(0x8000, 0xFF);
     ZT_CHECK(w68_n == 0);
 
-    Seta11Write8_68(0xFFFF, 0xFF);
+    c_Seta11Write8_68(0xFFFF, 0xFF);
     ZT_CHECK(w68_n == 0);
 }
 
@@ -119,7 +119,7 @@ static void test_write8_68_normal(void)
     ZT_SECTION("Write8_68: sets seta11_address (raw, not masked), seta11_byte, calls MapW_68");
 
     RESET_MOCKS();
-    Seta11Write8_68(0x100, 0xCD);
+    c_Seta11Write8_68(0x100, 0xCD);
 
     ZT_CHECK(w68_n == 1);
     ZT_CHECK(w68_log[0].addr == 0x100);
@@ -127,7 +127,7 @@ static void test_write8_68_normal(void)
 
     /* full lower-16-bit address preserved (no 12-bit mask here) */
     RESET_MOCKS();
-    Seta11Write8_68(0x2345, 0xEF);
+    c_Seta11Write8_68(0x2345, 0xEF);
     ZT_CHECK(w68_n == 1);
     ZT_CHECK(w68_log[0].addr == 0x2345);
     ZT_CHECK(w68_log[0].byte == 0xEF);
@@ -142,13 +142,13 @@ static void test_read16_68(void)
     mock_ram[0x201] = 0x12;
     ST011_DR = 0;
 
-    ZT_CHECK(Seta11Read16_68(0x200) == 0x1234);
+    ZT_CHECK(c_Seta11Read16_68(0x200) == 0x1234);
     ZT_CHECK(ST011_DR == 0x12); /* high byte of the 16-bit result */
 
     /* address masked to 12 bits */
     mock_ram[0x000] = 0xCD;
     mock_ram[0x001] = 0xAB;
-    ZT_CHECK(Seta11Read16_68(0x1000) == 0xABCD); /* 0x1000 & 0xFFF = 0x000 */
+    ZT_CHECK(c_Seta11Read16_68(0x1000) == 0xABCD); /* 0x1000 & 0xFFF = 0x000 */
     ZT_CHECK(ST011_DR == 0xAB);
 }
 
@@ -157,7 +157,7 @@ static void test_write16_68_rom_guard(void)
     ZT_SECTION("Write16_68: bit-15 guard — addr with bit 15 set is ignored");
 
     RESET_MOCKS();
-    Seta11Write16_68(0x8000, 0x1234);
+    c_Seta11Write16_68(0x8000, 0x1234);
     ZT_CHECK(w68_n == 0);
 }
 
@@ -166,7 +166,7 @@ static void test_write16_68_normal(void)
     ZT_SECTION("Write16_68: two MapW_68 calls — low byte then high byte (asm bug fixed)");
 
     RESET_MOCKS();
-    Seta11Write16_68(0x100, 0xABCD);
+    c_Seta11Write16_68(0x100, 0xABCD);
 
     ZT_CHECK(w68_n == 2);
     /* first call: low byte at base address */
@@ -186,8 +186,8 @@ static void test_read8_60_guard(void)
     ZT_SECTION("Read8_60: addr >= 0x4000 returns 0, no callback");
 
     RESET_MOCKS();
-    ZT_CHECK(Seta11Read8_60(0x4000) == 0x00);
-    ZT_CHECK(Seta11Read8_60(0xFFFF) == 0x00);
+    ZT_CHECK(c_Seta11Read8_60(0x4000) == 0x00);
+    ZT_CHECK(c_Seta11Read8_60(0xFFFF) == 0x00);
     ZT_CHECK(r60_n == 0);
 }
 
@@ -197,14 +197,14 @@ static void test_read8_60_normal(void)
 
     RESET_MOCKS();
     r60_ret[0] = 0x5A;
-    ZT_CHECK(Seta11Read8_60(0x01) == 0x5A);
+    ZT_CHECK(c_Seta11Read8_60(0x01) == 0x5A);
     ZT_CHECK(r60_n == 1);
     ZT_CHECK(r60_log[0].addr == 0x01);
 
     /* addr masked to 2 bits: 0x05 → index 1 */
     RESET_MOCKS();
     r60_ret[0] = 0x3C;
-    ZT_CHECK(Seta11Read8_60(0x05) == 0x3C); /* 5 & 3 = 1 */
+    ZT_CHECK(c_Seta11Read8_60(0x05) == 0x3C); /* 5 & 3 = 1 */
     ZT_CHECK(r60_log[0].addr == 0x01);
 }
 
@@ -213,7 +213,7 @@ static void test_write8_60_guard(void)
     ZT_SECTION("Write8_60: addr >= 0x4000 is ignored, no callback");
 
     RESET_MOCKS();
-    Seta11Write8_60(0x4000, 0xFF);
+    c_Seta11Write8_60(0x4000, 0xFF);
     ZT_CHECK(w60_n == 0);
 }
 
@@ -222,14 +222,14 @@ static void test_write8_60_normal(void)
     ZT_SECTION("Write8_60: 2-bit addr mask, sets seta11_byte, one MapW_60 call");
 
     RESET_MOCKS();
-    Seta11Write8_60(0x02, 0xBB);
+    c_Seta11Write8_60(0x02, 0xBB);
     ZT_CHECK(w60_n == 1);
     ZT_CHECK(w60_log[0].addr == 0x02);
     ZT_CHECK(w60_log[0].byte == 0xBB);
 
     /* addr masked: 0x06 → index 2 */
     RESET_MOCKS();
-    Seta11Write8_60(0x06, 0xCC);
+    c_Seta11Write8_60(0x06, 0xCC);
     ZT_CHECK(w60_log[0].addr == 0x02); /* 6 & 3 = 2 */
     ZT_CHECK(w60_log[0].byte == 0xCC);
 }
@@ -239,7 +239,7 @@ static void test_read16_60_guard(void)
     ZT_SECTION("Read16_60: addr >= 0x4000 returns 0, no callbacks");
 
     RESET_MOCKS();
-    ZT_CHECK(Seta11Read16_60(0x4000) == 0x0000);
+    ZT_CHECK(c_Seta11Read16_60(0x4000) == 0x0000);
     ZT_CHECK(r60_n == 0);
 }
 
@@ -250,7 +250,7 @@ static void test_read16_60_normal(void)
     RESET_MOCKS();
     r60_ret[0] = 0x34; /* first read → low byte */
     r60_ret[1] = 0x12; /* second read → high byte */
-    uint16_t result = Seta11Read16_60(0x00);
+    uint16_t result = c_Seta11Read16_60(0x00);
     ZT_CHECK(result == 0x1234);
     ZT_CHECK(r60_n == 2);
     ZT_CHECK(r60_log[0].addr == 0);
@@ -260,7 +260,7 @@ static void test_read16_60_normal(void)
     RESET_MOCKS();
     r60_ret[0] = 0x78;
     r60_ret[1] = 0x56;
-    result = Seta11Read16_60(0x03);
+    result = c_Seta11Read16_60(0x03);
     ZT_CHECK(result == 0x5678);
     ZT_CHECK(r60_log[0].addr == 3);
     ZT_CHECK(r60_log[1].addr == 0); /* (3+1) & 3 = 0 */
@@ -269,7 +269,7 @@ static void test_read16_60_normal(void)
     RESET_MOCKS();
     r60_ret[0] = 0xCD;
     r60_ret[1] = 0xAB;
-    result = Seta11Read16_60(0x07); /* 7 & 3 = 3 */
+    result = c_Seta11Read16_60(0x07); /* 7 & 3 = 3 */
     ZT_CHECK(result == 0xABCD);
     ZT_CHECK(r60_log[0].addr == 3);
     ZT_CHECK(r60_log[1].addr == 0);
@@ -280,7 +280,7 @@ static void test_write16_60_guard(void)
     ZT_SECTION("Write16_60: addr >= 0x4000 is ignored, no callbacks");
 
     RESET_MOCKS();
-    Seta11Write16_60(0x4000, 0x1234);
+    c_Seta11Write16_60(0x4000, 0x1234);
     ZT_CHECK(w60_n == 0);
 }
 
@@ -289,7 +289,7 @@ static void test_write16_60_normal(void)
     ZT_SECTION("Write16_60: two MapW_60 calls — low byte then high byte, addr wraps");
 
     RESET_MOCKS();
-    Seta11Write16_60(0x00, 0x1234);
+    c_Seta11Write16_60(0x00, 0x1234);
     ZT_CHECK(w60_n == 2);
     ZT_CHECK(w60_log[0].addr == 0);
     ZT_CHECK(w60_log[0].byte == 0x34); /* low byte first */
@@ -298,7 +298,7 @@ static void test_write16_60_normal(void)
 
     /* wrap: start at addr 3, second write goes to addr 0 */
     RESET_MOCKS();
-    Seta11Write16_60(0x03, 0xABCD);
+    c_Seta11Write16_60(0x03, 0xABCD);
     ZT_CHECK(w60_log[0].addr == 3);
     ZT_CHECK(w60_log[0].byte == 0xCD);
     ZT_CHECK(w60_log[1].addr == 0); /* (3+1) & 3 = 0 */
@@ -306,7 +306,7 @@ static void test_write16_60_normal(void)
 
     /* addr masked: 0x07 → index 3 */
     RESET_MOCKS();
-    Seta11Write16_60(0x07, 0x5678);
+    c_Seta11Write16_60(0x07, 0x5678);
     ZT_CHECK(w60_log[0].addr == 3); /* 7 & 3 = 3 */
     ZT_CHECK(w60_log[0].byte == 0x78);
     ZT_CHECK(w60_log[1].addr == 0);

@@ -3,7 +3,8 @@
 
 #include "../types.h"
 
-extern u4 dsp2enforcerQueue[512][2];
+// 512 enforcer entries of 8 bytes: cmd, param, 0, 0, expected addr (le16), 0, 0
+extern u1 dsp2enforcerQueue[512 * 8];
 extern u4 dsp2enforcerReaderCursor;
 extern u4 dsp2enforcerWriterCursor;
 extern u4 dsp2state;

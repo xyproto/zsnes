@@ -24,6 +24,8 @@
 
 #include <stdint.h>
 
+#include "regabi.h"
+
 extern uint8_t* setaramdata;
 extern uint8_t ST011_DR;
 extern uint16_t seta11_address;
@@ -36,14 +38,14 @@ extern void ST011_MapW_60(void);
  * Region 68 — setaramdata buffer
  * ----------------------------------------------------------------------- */
 
-uint8_t Seta11Read8_68(uint32_t addr)
+uint8_t c_Seta11Read8_68(uint32_t addr)
 {
     uint8_t val = setaramdata[addr & 0xfff];
     ST011_DR = val;
     return val;
 }
 
-void Seta11Write8_68(uint32_t addr, uint8_t val)
+void c_Seta11Write8_68(uint32_t addr, uint8_t val)
 {
     if (addr & 0x8000)
         return;
@@ -52,7 +54,7 @@ void Seta11Write8_68(uint32_t addr, uint8_t val)
     ST011_MapW_68();
 }
 
-uint16_t Seta11Read16_68(uint32_t addr)
+uint16_t c_Seta11Read16_68(uint32_t addr)
 {
     uint32_t a = addr & 0xfff;
     uint16_t val = (uint16_t)(setaramdata[a] | ((uint16_t)setaramdata[a + 1] << 8));
@@ -60,7 +62,7 @@ uint16_t Seta11Read16_68(uint32_t addr)
     return val;
 }
 
-void Seta11Write16_68(uint32_t addr, uint16_t val)
+void c_Seta11Write16_68(uint32_t addr, uint16_t val)
 {
     if (addr & 0x8000)
         return;
@@ -76,7 +78,7 @@ void Seta11Write16_68(uint32_t addr, uint16_t val)
  * Region 60 — command/status port via callbacks
  * ----------------------------------------------------------------------- */
 
-uint8_t Seta11Read8_60(uint32_t addr)
+uint8_t c_Seta11Read8_60(uint32_t addr)
 {
     if (addr >= 0x4000)
         return 0;
@@ -85,7 +87,7 @@ uint8_t Seta11Read8_60(uint32_t addr)
     return seta11_byte;
 }
 
-void Seta11Write8_60(uint32_t addr, uint8_t val)
+void c_Seta11Write8_60(uint32_t addr, uint8_t val)
 {
     if (addr >= 0x4000)
         return;
@@ -94,7 +96,7 @@ void Seta11Write8_60(uint32_t addr, uint8_t val)
     ST011_MapW_60();
 }
 
-uint16_t Seta11Read16_60(uint32_t addr)
+uint16_t c_Seta11Read16_60(uint32_t addr)
 {
     if (addr >= 0x4000)
         return 0;
@@ -107,7 +109,7 @@ uint16_t Seta11Read16_60(uint32_t addr)
     return (uint16_t)(lo | ((uint16_t)hi << 8));
 }
 
-void Seta11Write16_60(uint32_t addr, uint16_t val)
+void c_Seta11Write16_60(uint32_t addr, uint16_t val)
 {
     if (addr >= 0x4000)
         return;
@@ -118,3 +120,12 @@ void Seta11Write16_60(uint32_t addr, uint16_t val)
     seta11_address = (uint16_t)((seta11_address + 1) & 3);
     ST011_MapW_60();
 }
+
+REGABI_BANK_READ8(Seta11Read8_68);
+REGABI_BANK_WRITE8(Seta11Write8_68);
+REGABI_BANK_READ16(Seta11Read16_68);
+REGABI_BANK_WRITE16(Seta11Write16_68);
+REGABI_BANK_READ8(Seta11Read8_60);
+REGABI_BANK_WRITE8(Seta11Write8_60);
+REGABI_BANK_READ16(Seta11Read16_60);
+REGABI_BANK_WRITE16(Seta11Write16_60);

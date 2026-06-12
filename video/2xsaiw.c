@@ -17,6 +17,12 @@
 
 #include "../types.h"
 
+// Pixel masks written by Init_2xSaI(); defaults match the 565 format.
+u4 colorMask[2] = { 0xF7DEF7DE, 0xF7DEF7DE };
+u4 lowPixelMask[2] = { 0x08210821, 0x08210821 };
+u4 qcolorMask[2] = { 0xE79CE79C, 0xE79CE79C };
+u4 qlowpixelMask[2] = { 0x18631863, 0x18631863 };
+
 static void scale2x_line(u2* src, u4 width, u1* dst, u4 dstPitch)
 {
     u1* dst2 = dst + dstPitch;

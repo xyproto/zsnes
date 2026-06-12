@@ -10,6 +10,13 @@
  *
  * 16-bit operations issue two consecutive GetOBC1 / SetOBC1 calls,
  * incrementing obc1_address between them.  Low byte is transferred first.
+ *
+ * The c_* functions are the portable implementations.  The OBC1* entry
+ * points the memory map dispatches to are i386 trampolines that keep the
+ * legacy register ABI (bank in EBX, address in ECX, value in AL/AX): they
+ * tail-jump to the asm mem/regaccessbank handlers for routed addresses,
+ * so the delegate branches in the c_* functions are only reachable from
+ * unit tests until the 65816 core itself is C.
  */
 
 #include <stdint.h>
@@ -28,7 +35,7 @@ extern void memaccessbankw8(uint32_t addr, uint8_t val);
 extern uint16_t memaccessbankr16(uint32_t addr);
 extern void memaccessbankw16(uint32_t addr, uint16_t val);
 
-uint8_t OBC1Read8b(uint32_t addr)
+uint8_t c_OBC1Read8b(uint32_t addr)
 {
     if (addr & 0x8000)
         return memaccessbankr8(addr);
@@ -39,7 +46,7 @@ uint8_t OBC1Read8b(uint32_t addr)
     return obc1_byte;
 }
 
-void OBC1Write8b(uint32_t addr, uint8_t val)
+void c_OBC1Write8b(uint32_t addr, uint8_t val)
 {
     if (addr & 0x8000) {
         memaccessbankw8(addr, val);
@@ -54,7 +61,7 @@ void OBC1Write8b(uint32_t addr, uint8_t val)
     SetOBC1();
 }
 
-uint16_t OBC1Read16b(uint32_t addr)
+uint16_t c_OBC1Read16b(uint32_t addr)
 {
     if (addr & 0x8000)
         return memaccessbankr16(addr);
@@ -69,7 +76,7 @@ uint16_t OBC1Read16b(uint32_t addr)
     return (uint16_t)(lo | ((uint16_t)hi << 8));
 }
 
-void OBC1Write16b(uint32_t addr, uint16_t val)
+void c_OBC1Write16b(uint32_t addr, uint16_t val)
 {
     if (addr & 0x8000) {
         memaccessbankw16(addr, val);
@@ -86,3 +93,85 @@ void OBC1Write16b(uint32_t addr, uint16_t val)
     obc1_address++;
     SetOBC1();
 }
+
+#if defined(__GNUC__) && defined(__i386__)
+
+#if defined(__APPLE__) || defined(__MINGW32__)
+#define CSYM(x) "_" #x
+#else
+#define CSYM(x) #x
+#endif
+
+__asm__(
+    ".globl " CSYM(OBC1Read8b) "\n" CSYM(OBC1Read8b) ":\n"
+                                                     "testw $0x8000, %cx\n"
+                                                     "jnz " CSYM(memaccessbankr8) "\n"
+                                                                                  "cmpl $0x6000, %ecx\n"
+                                                                                  "jb " CSYM(regaccessbankr8) "\n"
+                                                                                                              "pushl %ecx\n"
+                                                                                                              "pushl %edx\n"
+                                                                                                              "pushl %eax\n"
+                                                                                                              "pushl %ecx\n"
+                                                                                                              "call " CSYM(c_OBC1Read8b) "\n"
+                                                                                                                                         "addl $4, %esp\n"
+                                                                                                                                         "movb %al, (%esp)\n"
+                                                                                                                                         "popl %eax\n"
+                                                                                                                                         "popl %edx\n"
+                                                                                                                                         "popl %ecx\n"
+                                                                                                                                         "ret\n");
+
+__asm__(
+    ".globl " CSYM(OBC1Write8b) "\n" CSYM(OBC1Write8b) ":\n"
+                                                       "testw $0x8000, %cx\n"
+                                                       "jnz " CSYM(memaccessbankw8) "\n"
+                                                                                    "cmpl $0x6000, %ecx\n"
+                                                                                    "jb " CSYM(regaccessbankw8) "\n"
+                                                                                                                "pushl %eax\n"
+                                                                                                                "pushl %ecx\n"
+                                                                                                                "pushl %edx\n"
+                                                                                                                "pushl %eax\n"
+                                                                                                                "pushl %ecx\n"
+                                                                                                                "call " CSYM(c_OBC1Write8b) "\n"
+                                                                                                                                            "addl $8, %esp\n"
+                                                                                                                                            "popl %edx\n"
+                                                                                                                                            "popl %ecx\n"
+                                                                                                                                            "popl %eax\n"
+                                                                                                                                            "ret\n");
+
+__asm__(
+    ".globl " CSYM(OBC1Read16b) "\n" CSYM(OBC1Read16b) ":\n"
+                                                       "testw $0x8000, %cx\n"
+                                                       "jnz " CSYM(memaccessbankr16) "\n"
+                                                                                     "cmpl $0x6000, %ecx\n"
+                                                                                     "jb " CSYM(regaccessbankr16) "\n"
+                                                                                                                  "pushl %ecx\n"
+                                                                                                                  "pushl %edx\n"
+                                                                                                                  "pushl %eax\n"
+                                                                                                                  "pushl %ecx\n"
+                                                                                                                  "call " CSYM(c_OBC1Read16b) "\n"
+                                                                                                                                              "addl $4, %esp\n"
+                                                                                                                                              "movw %ax, (%esp)\n"
+                                                                                                                                              "popl %eax\n"
+                                                                                                                                              "popl %edx\n"
+                                                                                                                                              "popl %ecx\n"
+                                                                                                                                              "ret\n");
+
+__asm__(
+    ".globl " CSYM(OBC1Write16b) "\n" CSYM(OBC1Write16b) ":\n"
+                                                         "testw $0x8000, %cx\n"
+                                                         "jnz " CSYM(memaccessbankw16) "\n"
+                                                                                       "cmpl $0x6000, %ecx\n"
+                                                                                       "jb " CSYM(regaccessbankw16) "\n"
+                                                                                                                    "pushl %eax\n"
+                                                                                                                    "pushl %ecx\n"
+                                                                                                                    "pushl %edx\n"
+                                                                                                                    "pushl %eax\n"
+                                                                                                                    "pushl %ecx\n"
+                                                                                                                    "call " CSYM(c_OBC1Write16b) "\n"
+                                                                                                                                                 "addl $8, %esp\n"
+                                                                                                                                                 "popl %edx\n"
+                                                                                                                                                 "popl %ecx\n"
+                                                                                                                                                 "popl %eax\n"
+                                                                                                                                                 "ret\n");
+
+#endif

@@ -2,7 +2,7 @@
  * OBC1 coprocessor unit tests
  *
  * Covers all four bank-access functions ported from chips/obc1proc.asm:
- *   OBC1Read8b / OBC1Write8b / OBC1Read16b / OBC1Write16b
+ *   c_OBC1Read8b / c_OBC1Write8b / c_OBC1Read16b / c_OBC1Write16b
  *
  * Each function routes to one of three paths:
  *   - addr bit 15 set  → memaccessbank (tail-delegate)
@@ -112,13 +112,13 @@ void memaccessbankw16(uint32_t a, uint16_t v)
 
 /* --- Declarations (from chips/obc1proc.c) -------------------------------- */
 
-uint8_t OBC1Read8b(uint32_t addr);
-void OBC1Write8b(uint32_t addr, uint8_t val);
-uint16_t OBC1Read16b(uint32_t addr);
-void OBC1Write16b(uint32_t addr, uint16_t val);
+uint8_t c_OBC1Read8b(uint32_t addr);
+void c_OBC1Write8b(uint32_t addr, uint8_t val);
+uint16_t c_OBC1Read16b(uint32_t addr);
+void c_OBC1Write16b(uint32_t addr, uint16_t val);
 
 /* ======================================================================== */
-/* OBC1Read8b                                                               */
+/* c_OBC1Read8b                                                               */
 /* ======================================================================== */
 
 static void test_read8b_routes_mem(void)
@@ -126,14 +126,14 @@ static void test_read8b_routes_mem(void)
     ZT_SECTION("Read8b: bit-15 set → delegates to memaccessbankr8");
 
     RESET_MOCKS();
-    uint8_t r = OBC1Read8b(0x8100);
+    uint8_t r = c_OBC1Read8b(0x8100);
     ZT_CHECK(mem_r8_n == 1);
     ZT_CHECK(mem_r8_addr == 0x8100);
     ZT_CHECK(reg_r8_n == 0);
     ZT_CHECK(r == 0xDE);
 
     RESET_MOCKS();
-    OBC1Read8b(0xFFFF);
+    c_OBC1Read8b(0xFFFF);
     ZT_CHECK(mem_r8_n == 1);
     ZT_CHECK(reg_r8_n == 0);
 }
@@ -143,14 +143,14 @@ static void test_read8b_routes_reg(void)
     ZT_SECTION("Read8b: addr < 0x6000 → delegates to regaccessbankr8");
 
     RESET_MOCKS();
-    uint8_t r = OBC1Read8b(0x2000);
+    uint8_t r = c_OBC1Read8b(0x2000);
     ZT_CHECK(reg_r8_n == 1);
     ZT_CHECK(reg_r8_addr == 0x2000);
     ZT_CHECK(mem_r8_n == 0);
     ZT_CHECK(r == 0xAD);
 
     RESET_MOCKS();
-    OBC1Read8b(0x5FFF);
+    c_OBC1Read8b(0x5FFF);
     ZT_CHECK(reg_r8_n == 1);
     ZT_CHECK(mem_r8_n == 0);
 }
@@ -161,7 +161,7 @@ static void test_read8b_obc1(void)
 
     RESET_MOCKS();
     getobc1_queue[0] = 0x42;
-    uint8_t r = OBC1Read8b(0x6000);
+    uint8_t r = c_OBC1Read8b(0x6000);
     ZT_CHECK(reg_r8_n == 0);
     ZT_CHECK(mem_r8_n == 0);
     ZT_CHECK(obc1_address == 0x6000);
@@ -170,13 +170,13 @@ static void test_read8b_obc1(void)
 
     RESET_MOCKS();
     getobc1_queue[0] = 0x99;
-    OBC1Read8b(0x7FFF);
+    c_OBC1Read8b(0x7FFF);
     ZT_CHECK(obc1_address == 0x7FFF);
     ZT_CHECK(getobc1_n == 1);
 }
 
 /* ======================================================================== */
-/* OBC1Write8b                                                              */
+/* c_OBC1Write8b                                                              */
 /* ======================================================================== */
 
 static void test_write8b_routes_mem(void)
@@ -184,7 +184,7 @@ static void test_write8b_routes_mem(void)
     ZT_SECTION("Write8b: bit-15 set → delegates to memaccessbankw8");
 
     RESET_MOCKS();
-    OBC1Write8b(0x8000, 0xAB);
+    c_OBC1Write8b(0x8000, 0xAB);
     ZT_CHECK(mem_w8_n == 1);
     ZT_CHECK(mem_w8_addr == 0x8000);
     ZT_CHECK(mem_w8_val == 0xAB);
@@ -196,7 +196,7 @@ static void test_write8b_routes_reg(void)
     ZT_SECTION("Write8b: addr < 0x6000 → delegates to regaccessbankw8");
 
     RESET_MOCKS();
-    OBC1Write8b(0x1000, 0xCD);
+    c_OBC1Write8b(0x1000, 0xCD);
     ZT_CHECK(reg_w8_n == 1);
     ZT_CHECK(reg_w8_addr == 0x1000);
     ZT_CHECK(reg_w8_val == 0xCD);
@@ -208,7 +208,7 @@ static void test_write8b_obc1(void)
     ZT_SECTION("Write8b: [0x6000,0x7FFF] → sets obc1_address + obc1_byte, calls SetOBC1");
 
     RESET_MOCKS();
-    OBC1Write8b(0x6100, 0xEF);
+    c_OBC1Write8b(0x6100, 0xEF);
     ZT_CHECK(reg_w8_n == 0);
     ZT_CHECK(mem_w8_n == 0);
     ZT_CHECK(setobc1_n == 1);
@@ -217,7 +217,7 @@ static void test_write8b_obc1(void)
 }
 
 /* ======================================================================== */
-/* OBC1Read16b                                                              */
+/* c_OBC1Read16b                                                              */
 /* ======================================================================== */
 
 static void test_read16b_routes(void)
@@ -225,13 +225,13 @@ static void test_read16b_routes(void)
     ZT_SECTION("Read16b: routing — mem for bit-15, reg for < 0x6000");
 
     RESET_MOCKS();
-    uint16_t r = OBC1Read16b(0x9000);
+    uint16_t r = c_OBC1Read16b(0x9000);
     ZT_CHECK(mem_r16_n == 1);
     ZT_CHECK(mem_r16_addr == 0x9000);
     ZT_CHECK(r == 0xDEAD);
 
     RESET_MOCKS();
-    r = OBC1Read16b(0x3000);
+    r = c_OBC1Read16b(0x3000);
     ZT_CHECK(reg_r16_n == 1);
     ZT_CHECK(reg_r16_addr == 0x3000);
     ZT_CHECK(r == 0xBEEF);
@@ -245,7 +245,7 @@ static void test_read16b_obc1(void)
     getobc1_queue[0] = 0x34; /* first  read → low  byte */
     getobc1_queue[1] = 0x12; /* second read → high byte */
 
-    uint16_t r = OBC1Read16b(0x6000);
+    uint16_t r = c_OBC1Read16b(0x6000);
     ZT_CHECK(getobc1_n == 2);
     ZT_CHECK(r == 0x1234);
 
@@ -256,13 +256,13 @@ static void test_read16b_obc1(void)
     RESET_MOCKS();
     getobc1_queue[0] = 0xCD;
     getobc1_queue[1] = 0xAB;
-    r = OBC1Read16b(0x7FFE);
+    r = c_OBC1Read16b(0x7FFE);
     ZT_CHECK(r == 0xABCD);
     ZT_CHECK(obc1_address == 0x7FFF);
 }
 
 /* ======================================================================== */
-/* OBC1Write16b                                                             */
+/* c_OBC1Write16b                                                             */
 /* ======================================================================== */
 
 static void test_write16b_routes(void)
@@ -270,13 +270,13 @@ static void test_write16b_routes(void)
     ZT_SECTION("Write16b: routing — mem for bit-15, reg for < 0x6000");
 
     RESET_MOCKS();
-    OBC1Write16b(0xA000, 0x1234);
+    c_OBC1Write16b(0xA000, 0x1234);
     ZT_CHECK(mem_w16_n == 1);
     ZT_CHECK(mem_w16_addr == 0xA000);
     ZT_CHECK(mem_w16_val == 0x1234);
 
     RESET_MOCKS();
-    OBC1Write16b(0x0100, 0x5678);
+    c_OBC1Write16b(0x0100, 0x5678);
     ZT_CHECK(reg_w16_n == 1);
     ZT_CHECK(reg_w16_addr == 0x0100);
     ZT_CHECK(reg_w16_val == 0x5678);
@@ -287,7 +287,7 @@ static void test_write16b_obc1(void)
     ZT_SECTION("Write16b: two SetOBC1 calls — low byte first, high byte second");
 
     RESET_MOCKS();
-    OBC1Write16b(0x6000, 0xABCD);
+    c_OBC1Write16b(0x6000, 0xABCD);
 
     ZT_CHECK(setobc1_n == 2);
     ZT_CHECK(setobc1_log[0].addr == 0x6000);
@@ -297,7 +297,7 @@ static void test_write16b_obc1(void)
 
     /* check with a different address */
     RESET_MOCKS();
-    OBC1Write16b(0x7FFE, 0x1234);
+    c_OBC1Write16b(0x7FFE, 0x1234);
     ZT_CHECK(setobc1_log[0].addr == 0x7FFE);
     ZT_CHECK(setobc1_log[0].byte == 0x34);
     ZT_CHECK(setobc1_log[1].addr == 0x7FFF);
