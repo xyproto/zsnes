@@ -359,7 +359,7 @@ void UpdatePORSCMR(void)
 
     u4 const eax_ = (SfxPOR & 0x0F) << 2 | SfxSCMR & 0x03;
     u4 const ebx = PLOTJmpb[eax_];
-    u4 const eax = PLOTJmpb[eax_];
+    u4 const eax = PLOTJmpa[eax_];
     FxTable[0x4C] = eax;
     FxTableb[0x4C] = eax;
     FxTablec[0x4C] = eax;
