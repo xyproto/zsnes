@@ -970,7 +970,7 @@ static void vidpaste(void)
                         continue;
                     dst[pos - 288 * 10] = SSRedCo;
                 } while (++pos, --x != 0);
-                pos -= 288 - 20;
+                pos += 288 - 20;
             } while (--y != 0);
         }
     }
