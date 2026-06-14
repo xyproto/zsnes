@@ -10,7 +10,7 @@ include.txt
 input.h
 md.h
 parsegen
-test/zsnes_*_test
+test/zsnes_*test
 win/confloc.h
 zfont.txt
 zinput.cfg
