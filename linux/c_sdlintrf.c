@@ -255,8 +255,10 @@ void vidpastecopyscr(void)
     DrawScreen();
 }
 
+// SDL is event-driven (see Main_Proc), so unlike the Windows DirectInput port
+// there is no per-frame device polling to do here.
 void UpdateDevices(void)
-{ /* Stub please fix */
+{
 }
 
 void JoyRead(void)
@@ -335,19 +337,19 @@ u4 Get_MouseData(void)
 
 void Set_MouseXMax(u4 const min, u4 const max)
 {
-    (void)min;
-    (void)max; /* Stub please fix */
+    SetMouseMinX(min);
+    SetMouseMaxX(max);
 }
 void Set_MouseYMax(u4 const min, u4 const max)
 {
-    (void)min;
-    (void)max; /* Stub please fix */
+    SetMouseMinY(min);
+    SetMouseMaxY(max);
 }
 
 void Set_MousePosition(u4 const x, u4 const y)
 {
-    (void)x;
-    (void)y; /* Stub please fix */
+    SetMouseX(x);
+    SetMouseY(y);
 }
 
 u4 Get_MousePositionDisplacement(void)
