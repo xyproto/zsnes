@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "../c_intrf.h"
 #include "../c_vcache.h"
@@ -76,7 +77,8 @@ char Get_Key(void)
     }
 }
 
-void delay(u4 const n) { (void)n; /* Stub please fix */ }
+// delay(n) sleeps n/100 ms, matching the Windows port semantics
+void delay(u4 const n) { usleep(n * 10); }
 
 void InitPreGame(void)
 {

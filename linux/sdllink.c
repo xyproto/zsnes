@@ -205,6 +205,11 @@ int Main_Proc()
             break;
         case SDL_EVENT_WINDOW_FOCUS_LOST:
             IsActivated = 0;
+            // Drop held key state, otherwise a key released while the window
+            // is unfocused never gets a KEY_UP event and stays "pressed",
+            // hanging the wait-for-release loop in guipresstestb (Set Keys).
+            memset(pressed, 0, sizeof(pressed));
+            shiftptr = 0;
             break;
 #ifdef __OPENGL__
         case SDL_EVENT_WINDOW_RESIZED:
@@ -921,6 +926,11 @@ static void ProcessKeyBuf(int scancode)
     }
 
     if (accept) {
+        // Drop the event if the ring buffer is full, to avoid corrupting
+        // CurKeyPos/CurKeyReadPos which would freeze Get_Key.
+        unsigned int const next = (CurKeyPos + 1) % 16;
+        if (next == CurKeyReadPos)
+            return;
         KeyBuffer[CurKeyPos] = vkeyval;
         CurKeyPos++;
         if (CurKeyPos == 16) {
