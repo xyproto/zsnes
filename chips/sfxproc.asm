@@ -69,39 +69,39 @@ section .note.GNU-stack noalloc noexec nowrite progbits
 %endif
 
 %macro ccall 1-*
-	push ecx
-	push edx
+  push ecx
+  push edx
 %ifdef MACHO
-	mov edx, esp
-	sub esp, %0 * 4
-	and esp, 0xFFFFFFF0 ; Align the stack pointer
+  mov edx, esp
+  sub esp, %0 * 4
+  and esp, 0xFFFFFFF0 ; Align the stack pointer
 %if %0 != 1
-	add esp, %0 * 4
-	push edx
-	mov edx, [edx]
+  add esp, %0 * 4
+  push edx
+  mov edx, [edx]
 %else
-	mov [esp], edx
+  mov [esp], edx
 %endif
 %endif
 %rep %0 - 1
 %rotate -1
-	push dword %1
+  push dword %1
 %endrep
 %rotate -1
-	call %1
+  call %1
 %ifdef MACHO
-	mov esp, [esp + (%0 - 1) * 4]
+  mov esp, [esp + (%0 - 1) * 4]
 %elif %0 != 1
-	add esp, (%0 - 1) * 4
+  add esp, (%0 - 1) * 4
 %endif
-	pop edx
-	pop ecx
+  pop edx
+  pop ecx
 %endmacro
 
 %macro ccallv 1+
-	push eax
-	ccall %1
-	pop eax
+  push eax
+  ccall %1
+  pop eax
 %endmacro
 EXTSYM SfxB,SfxBRAMR,SfxCBR,SfxCFGR,SfxCLSR,SfxCPB,SfxCROM
 EXTSYM SfxCarry,SfxMemTable,SfxOverflow,SfxPBR,SfxPIPE,SfxR0,SfxR1,SfxR10
@@ -256,21 +256,7 @@ NEWSYM reg3030r
     mov al,[SfxSFR]
     ret
 NEWSYM reg3031r
-    cmp byte[SfxAC],1
-    je .alwaysclear
-    cmp dword[ChangeOps],-350*240
-    jl .noclear
-.alwaysclear
     and byte[SfxSFR+1],07fh        ; clear IRQ flag
-    jmp .cleared
-.noclear
-    cmp dword[ChangeOps],-350*240*4
-    jge .clear
-    mov dword[ChangeOps],-350*240*4
-    jmp .cleared
-.clear
-    add dword[ChangeOps],350*240
-.cleared
     mov al,[SfxSFR+1]
     ret
 SECTION .bss
@@ -623,4 +609,3 @@ NEWSYM sfxaccessbankw16d
     mov [ebx+ecx+65536*3],ax
     xor ebx,ebx
     ret
-

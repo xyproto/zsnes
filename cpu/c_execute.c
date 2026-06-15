@@ -319,6 +319,17 @@ cpuover :
     *pedi = edi;
 }
 
+// After the GSU runs, raise a 65816 IRQ if the GSU asserted the IRQ
+// flag (SFR bit 15) with IRQs unmasked (CFGR bit 7 clear), matching
+// bsnes/snes9x behavior (cpu.irq(1) on STOP).
+static inline void SfxIRQpoll(void)
+{
+    extern u4 SfxSFR, SfxCFGR;
+    if ((SfxSFR & 0x8000) && !(SfxCFGR & 0x80)) {
+        doirqnext = 1;
+    }
+}
+
 void StartSFXdebugb(void)
 {
     UpdatePORSCMR();
@@ -329,6 +340,7 @@ void StartSFXdebugb(void)
                                                                         : // 678*2
             420; // 678
         asm_call(MainLoop);
+        SfxIRQpoll();
     }
 }
 
@@ -387,5 +399,6 @@ void StartSFX(void)
     if (SfxSCMR & ((SfxPBR & 0x7F) < 0x70 ? /* noram */ 0x10 : /* ram */ 0x08)) {
         NumberOfOpcodes = NumberOfOpcodes2;
         asm_call(MainLoop);
+        SfxIRQpoll();
     }
 }

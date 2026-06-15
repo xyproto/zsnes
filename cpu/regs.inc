@@ -199,6 +199,7 @@ NEWSYM hdmarestart, db 0
 NEWSYM hdmadelay, db 0
 NEWSYM nohdmaframe, db 0
 NEWSYM rtoflags, db 0
+NEWSYM h_dot_counter, dd 0
 
 NEWSYM tempdat, times 473 db 0     ; expandable area
 
@@ -301,9 +302,13 @@ NEWSYM reg2136r
     mov al,[compmult+2]
     ret
 
-; Software latch for horizontal/vertical counter
+; Software latch for horizontal/vertical counter.
+; zsnes lacks an accurate dot-level H counter, so we synthesize latchx
+; by advancing a 0-339 dot value on each $2137 read. This lets games
+; that poll $213C for a specific hdot range (e.g. Super FX titles like
+; Star Fox) make progress instead of looping forever.
 NEWSYM reg2137r
-;    mov byte[debstop3],1
+    inc dword[h_dot_counter]
 %ifndef NO_DEBUGGER
     cmp byte[debuggeron],1
     je .debugger
@@ -313,13 +318,19 @@ NEWSYM reg2137r
     test byte[ioportval],80h
     jz .nolatch
 .dolatch
-    xor ebx,ebx
-    mov bl,[cycpl]
-    sub bl,dh
-    add bx,bx
-    mov [latchx],bx
+    push edx
+    push eax
+    push ebx
+    mov eax,[h_dot_counter]
+    xor edx,edx
+    mov ebx,340
+    div ebx
+    mov [latchx],dx
     mov bx,[curypos]
     mov [latchy],bx
+    pop ebx
+    pop eax
+    pop edx
     mov bl,[INTEnab]
     and bl,30h
     cmp bl,30h
@@ -488,7 +499,9 @@ NEWSYM reg213Br
     and word[cgaddr],01FFh
     ret
 
-; H counter data by external or software latch
+; H counter data by external or software latch.
+; First read returns low byte; second read returns bit 0 of high byte
+; (the rest is open bus on real hardware).
 NEWSYM reg213Cr
     cmp byte[latchxr],1
     je .highv
@@ -496,13 +509,13 @@ NEWSYM reg213Cr
     mov byte[latchxr],1
     ret
 .highv
-    mov al,[latchx]
-    and al,0FEh
-    or  al,byte[latchx+1]
+    mov al,byte[latchx+1]
+    and al,01h
     mov byte[latchxr],0
     ret
 
-; V counter data by external or software latch
+; V counter data by external or software latch.
+; First read returns low byte; second read returns bit 0 of high byte.
 NEWSYM reg213Dr
     cmp byte[latchyr],1
     je .highv
@@ -510,9 +523,8 @@ NEWSYM reg213Dr
     mov byte[latchyr],1
     ret
 .highv
-    mov al,[latchy]
-    and al,0FEh
-    or  al,byte[latchy+1]
+    mov al,byte[latchy+1]
+    and al,01h
     mov byte[latchyr],0
     ret
 
