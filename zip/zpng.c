@@ -229,11 +229,13 @@ void Grab_ASCII_Data_Path(const char* path)
     for (int oy = 0; oy < out_h; oy++) {
         int y0 = (oy * SNAP_HEIGHT) / out_h;
         int y1 = ((oy + 1) * SNAP_HEIGHT) / out_h;
-        if (y1 <= y0) y1 = y0 + 1;
+        if (y1 <= y0)
+            y1 = y0 + 1;
         for (int ox = 0; ox < out_w; ox++) {
             int x0 = (ox * SNAP_WIDTH) / out_w;
             int x1 = ((ox + 1) * SNAP_WIDTH) / out_w;
-            if (x1 <= x0) x1 = x0 + 1;
+            if (x1 <= x0)
+                x1 = x0 + 1;
             unsigned long sum = 0;
             unsigned long cnt = 0;
             for (int y = y0; y < y1; y++) {
@@ -248,7 +250,8 @@ void Grab_ASCII_Data_Path(const char* path)
             }
             unsigned int lum = cnt ? (unsigned int)(sum / cnt) : 0;
             int idx = (lum * ramp_n) / 255;
-            if (idx > ramp_n) idx = ramp_n;
+            if (idx > ramp_n)
+                idx = ramp_n;
             fputc(ramp[idx], fp);
         }
         fputc('\n', fp);
