@@ -213,6 +213,49 @@ void Grab_BMP_Data(void)
     }
 }
 
+// Write current vidbuffer as a 32-wide ASCII art screenshot to an absolute path
+void Grab_ASCII_Data_Path(const char* path)
+{
+    FILE* fp = fopen(path, "wb");
+    if (!fp)
+        return;
+
+    static const char ramp[] = " .:-=+*#%@";
+    const int ramp_n = (int)(sizeof(ramp) - 2);
+    const int out_w = 32;
+    // Account for character cells being ~2x taller than wide
+    const int out_h = (SNAP_HEIGHT * out_w) / (SNAP_WIDTH * 2);
+
+    for (int oy = 0; oy < out_h; oy++) {
+        int y0 = (oy * SNAP_HEIGHT) / out_h;
+        int y1 = ((oy + 1) * SNAP_HEIGHT) / out_h;
+        if (y1 <= y0) y1 = y0 + 1;
+        for (int ox = 0; ox < out_w; ox++) {
+            int x0 = (ox * SNAP_WIDTH) / out_w;
+            int x1 = ((ox + 1) * SNAP_WIDTH) / out_w;
+            if (x1 <= x0) x1 = x0 + 1;
+            unsigned long sum = 0;
+            unsigned long cnt = 0;
+            for (int y = y0; y < y1; y++) {
+                for (int x = x0; x < x1; x++) {
+                    unsigned short p = PIXEL;
+                    unsigned int r = (p & 0xF800) >> 8;
+                    unsigned int g = (p & 0x07E0) >> 3;
+                    unsigned int b = (p & 0x001F) << 3;
+                    sum += (r * 299 + g * 587 + b * 114) / 1000;
+                    cnt++;
+                }
+            }
+            unsigned int lum = cnt ? (unsigned int)(sum / cnt) : 0;
+            int idx = (lum * ramp_n) / 255;
+            if (idx > ramp_n) idx = ramp_n;
+            fputc(ramp[idx], fp);
+        }
+        fputc('\n', fp);
+    }
+    fclose(fp);
+}
+
 void Grab_BMP_Data_8(void)
 {
     char* filename = generate_image_filename("bmp");

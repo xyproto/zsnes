@@ -39,6 +39,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "../link.h"
 #include "../ui.h"
 #include "../video/procvidc.h"
+#include "../zip/zpng.h"
 #include "audio.h"
 #include "safelib.h"
 #include "sdllink.h"
@@ -1561,6 +1562,29 @@ void UpdateVFrame(void)
 
     CheckTimers();
     Main_Proc();
+
+    // Debug: ASCII_SCREENSHOT_EVERY_FIVE=1 writes /tmp/zsnes_<seq>.txt every 5s
+    {
+        static int sshot_checked = 0;
+        static int sshot_enabled = 0;
+        static Uint64 sshot_next_ms = 0;
+        static unsigned int sshot_seq = 0;
+        if (!sshot_checked) {
+            const char* e = getenv("ASCII_SCREENSHOT_EVERY_FIVE");
+            sshot_enabled = (e && *e == '1');
+            sshot_next_ms = SDL_GetTicks() + 5000;
+            sshot_checked = 1;
+        }
+        if (sshot_enabled) {
+            Uint64 now = SDL_GetTicks();
+            if (now >= sshot_next_ms) {
+                char path[64];
+                snprintf(path, sizeof(path), "/tmp/zsnes_%05u.txt", sshot_seq++);
+                Grab_ASCII_Data_Path(path);
+                sshot_next_ms = now + 5000;
+            }
+        }
+    }
 
     if (SNESRumble && !MultiTap) {
         DoRumble();
