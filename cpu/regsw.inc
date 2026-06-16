@@ -20,6 +20,7 @@
 
 
 EXTSYM reg420Bw,reg420Cw,regptwa,NextLineCache,vidmemch2,vidmemch4
+EXTSYM dbg210e,curypos
 EXTSYM vidmemch8,vrama,nmirept,SPCRAM,HIRQCycNext,HIRQNextExe,tableadc
 EXTSYM cycpb268,cycpb358,cycpbl,cycpblt,opexec268,opexec268cph,opexec358
 EXTSYM opexec358cph
@@ -436,6 +437,11 @@ NEWSYM reg210Ew
 ;    mov bl,[m7byte]
     mov [bg1scroly_m7],bx
 ;    mov [m7byte],al
+    pushad
+    movzx eax,word[bg1scroly]
+    movzx edx,word[curypos]
+    ccall dbg210e, edx, eax
+    popad
     ret
 
 ; BG2 horizontal scroll register

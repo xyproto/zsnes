@@ -5,6 +5,8 @@
 #include "../initc.h"
 #include "../ui.h"
 #include "memtable.h"
+#include <stdlib.h>
+#include <stdio.h>
 
 u1 AddrNoIncr = 0;
 
@@ -203,6 +205,8 @@ void setuphdma(u4 const ah, HDMAInfo* const edx, DMAInfo* const esi)
 
     // Get pointers
     u2 const base_addr = 0x2100 + esi->destination;
+    if (getenv("DBG_HDMA"))
+        fprintf(stderr, "HDMA ch setup dst=%04X mode=%u\n", base_addr, (unsigned)(esi->control & 0x07));
     for (u4 i = 0; i != lengthof(edx->dst_reg); ++i) {
         u2 bx = base_addr + edi[i]; // PPU memory - 21xx
         if (bx == 0x2118 || bx == 0x2119)

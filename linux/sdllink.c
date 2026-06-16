@@ -1563,25 +1563,45 @@ void UpdateVFrame(void)
     CheckTimers();
     Main_Proc();
 
-    // Debug: ASCII_SCREENSHOT_EVERY_FIVE=1 writes /tmp/zsnes_<seq>.txt every 5s
+    // Debug screenshots to /tmp every 5s, enabled via env vars:
+    //   ASCII_SCREENSHOT_EVERY_FIVE=1 writes /tmp/zsnes_<seq>.txt (ASCII art)
+    //   BMP_SCREENSHOT_EVERY_FIVE=1   writes /tmp/zsnes_<seq>.bmp (24-bit BMP)
     {
         static int sshot_checked = 0;
-        static int sshot_enabled = 0;
+        static int sshot_ascii = 0;
+        static int sshot_bmp = 0;
         static Uint64 sshot_next_ms = 0;
         static unsigned int sshot_seq = 0;
         if (!sshot_checked) {
-            const char* e = getenv("ASCII_SCREENSHOT_EVERY_FIVE");
-            sshot_enabled = (e && *e == '1');
-            sshot_next_ms = SDL_GetTicks() + 5000;
+            const char* a = getenv("ASCII_SCREENSHOT_EVERY_FIVE");
+            const char* b = getenv("BMP_SCREENSHOT_EVERY_FIVE");
+            sshot_ascii = (a && *a == '1');
+            sshot_bmp = (b && *b == '1');
+            sshot_next_ms = SDL_GetTicks() + 80;
             sshot_checked = 1;
         }
-        if (sshot_enabled) {
+        if (sshot_ascii || sshot_bmp) {
             Uint64 now = SDL_GetTicks();
             if (now >= sshot_next_ms) {
                 char path[64];
-                snprintf(path, sizeof(path), "/tmp/zsnes_%05u.txt", sshot_seq++);
-                Grab_ASCII_Data_Path(path);
-                sshot_next_ms = now + 5000;
+                if (sshot_ascii) {
+                    snprintf(path, sizeof(path), "/tmp/zsnes_%05u.txt", sshot_seq);
+                    Grab_ASCII_Data_Path(path);
+                }
+                if (sshot_bmp) {
+                    snprintf(path, sizeof(path), "/tmp/zsnes_%05u.bmp", sshot_seq);
+                    Grab_BMP_Data_Path(path);
+                }
+                {
+                    extern u2 bg1scroly[4];
+                    extern u1* vram;
+                    extern u1 bg1scsize;
+                    u2* tm = (u2*)vram;
+                    fprintf(stderr, "SHOT %05u scroly=%u scsz=%u scr2row28=%04X\n",
+                        sshot_seq, bg1scroly[0], bg1scsize, tm[0x400 + 28 * 32]);
+                }
+                sshot_seq++;
+                sshot_next_ms = now + 80;
             }
         }
     }
@@ -1618,6 +1638,35 @@ void clearwin(void)
 
 void drawscreenwin(void)
 {
+    if (getenv("DBG_VRAM")) {
+        extern u1* vram;
+        extern u2 bg1objptr[4];
+        static int fc = 0;
+        if ((fc++ % 200) == 0) {
+            u2* tm = (u2*)vram;
+            unsigned mn = 0xFFFF, mx = 0;
+            int has3c = 0;
+            for (int i = 0; i < 0x800; i++) { // both screens, 0x000-0xFFF bytes
+                unsigned c = tm[i] & 0x3FF;
+                if (c < mn)
+                    mn = c;
+                if (c > mx)
+                    mx = c;
+                if (c >= 0x3C && c <= 0x3F)
+                    has3c++;
+            }
+            fprintf(stderr, "TILEMAP charmin=%03X charmax=%03X refs_to_3C_3F=%d  scr2row28=%04X\n",
+                mn, mx, has3c, tm[0x400 + 28 * 32]);
+        }
+    }
+    if (getenv("DBG_PPU")) {
+        extern u1 bg3highst, bgtilesz, bgmode, INTEnab, bg1scsize;
+        extern u2 scrnon, bg1ptr[4], bg1ptrc[4], bg1scroly[4];
+        static int fc = 0;
+        if ((fc++ & 0x3F) == 0)
+            fprintf(stderr, "PPU mode=%u scrnon=%04X scsz=%u scroly=%u b1ptr=%04X b1ptrc=%04X\n",
+                bgmode, scrnon, bg1scsize, bg1scroly[0], bg1ptr[0], bg1ptrc[0]);
+    }
 #if defined(__LIBAO__) || defined(__PIPEWIRE__)
     extern bool RawDumpInProgress;
     if (!sound_sdl && !GUIOn2 && !GUIOn && !EMUPause && !RawDumpInProgress) {

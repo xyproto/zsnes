@@ -259,6 +259,37 @@ void Grab_ASCII_Data_Path(const char* path)
     fclose(fp);
 }
 
+// Write current vidbuffer as a 24-bit BMP to an absolute path
+void Grab_BMP_Data_Path(const char* path)
+{
+    FILE* fp = fopen(path, "wb");
+    if (!fp)
+        return;
+
+    const unsigned int header_size = 26;
+    const unsigned short width = SNAP_WIDTH;
+    const unsigned short height = SNAP_HEIGHT;
+    unsigned short y = height, x;
+
+    fputs("BM", fp); // Header
+    fwrite4(width * height * 3 + header_size, fp); // File size
+    fwrite4(0, fp); // Reserved
+    fwrite4(header_size, fp); // Offset to bitmap
+    fwrite4(12, fp); // Length of color explain field;
+    fwrite2(width, fp); // Width
+    fwrite2(height, fp); // Height
+    fwrite2(1, fp); // Planes
+    fwrite2(24, fp); // Bits per pixel
+
+    while (y--) // Have to write image upside down
+    {
+        for (x = 0; x < width; x++) {
+            fwrite3(((PIXEL & 0xF800) << 8) | ((PIXEL & 0x07E0) << 5) | ((PIXEL & 0x001F) << 3), fp);
+        }
+    }
+    fclose(fp);
+}
+
 void Grab_BMP_Data_8(void)
 {
     char* filename = generate_image_filename("bmp");

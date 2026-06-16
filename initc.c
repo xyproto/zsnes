@@ -1974,9 +1974,10 @@ void preparesfx()
 
     SFXCounter = SfxAC = 0;
 
-    if (!strncmp(ROM + Lo, "FX S", 4) || !strncmp(ROM + Lo, "DIRT", 4)) {
+    if (!strncmp(ROM + Lo, "FX S", 4)) {
         SFXCounter = 1;
-    } else if (!strncmp(ROM + Lo, "Stun", 4)) {
+    }
+    if (!strncmp(ROM + Lo, "Stun", 4) || !strncmp(ROM + Lo, "DIRT", 4)) {
         ForceNewGfxOff = 1;
     }
 
@@ -2198,10 +2199,11 @@ void map_sfx()
     }
 
     // set banks 70-77/78-7F (SFXRAM & SRAM)
-    // [sneed]: fixed mapping. Later on the SRAM size should be checked (so that the 64kb, 128kb, 256kb setting work properly.)
-    // most SNES SuperFX games didn't use more than 128kb SuperFX ram, so this is fine to use.
-    for (x = 0x70; x < 0x78; x += 2) {
-        map_set(snesmap2 + x, sfxramdata, 2, 0x10000);
+    // banks 70-73 are the four consecutive 64kB SFX-RAM banks (256kB), matching
+    // the GSU memory table; 74-77 mirror them. GSU2 games (e.g. Dirt Trax FX) plot
+    // into banks 72/73, so the SNES view must not alias them back to 70/71.
+    for (x = 0x70; x < 0x78; x++) {
+        snesmap2[x] = sfxramdata + ((x - 0x70) & 0x03) * 0x10000;
     }
     for (x = 0x78; x < 0x7E; x++) {
         snesmap2[x] = sram;

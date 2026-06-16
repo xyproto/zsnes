@@ -1,7 +1,18 @@
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "../asm_call.h"
 #include "../c_vcache.h"
+
+void dbg210e(int ypos, int val)
+{
+    static int last = -1;
+    if (val != last) {
+        fprintf(stderr, "S210E y=%d scroly=%d\n", ypos, val);
+        last = val;
+    }
+}
 #include "../cpu/regs.h"
 #include "../cpu/regsw.h"
 #include "../endmem.h"
@@ -1416,6 +1427,11 @@ static void drawbackgrndmain16b(Layer const layer)
         return;
     if (!(scrnon & curbgnum))
         return;
+    {
+        const char* m = getenv("DBG_BGMASK");
+        if (m && (((unsigned)atoi(m)) & curbgnum))
+            return;
+    }
     if (alreadydrawn & curbgnum)
         return;
     if (scrndis & curbgnum)
@@ -1613,6 +1629,15 @@ static void processmode716b(void)
 void drawline16b(void)
 {
     cwinenabm = winenabs;
+    if (getenv("DBG_LINE")) {
+        extern u2 bg1scroly[4], bg1scrolx[4];
+        extern u1 bgmode;
+        static u2 lasty = 0xABCD;
+        if (curypos == 1 && bg1scroly[0] != lasty) {
+            lasty = bg1scroly[0];
+            fprintf(stderr, "FRAME scroly=%u scrolx=%u mode=%u\n", bg1scroly[0], bg1scrolx[0], bgmode);
+        }
+    }
 
     bg3high2 = bgmode == 1 ? bg3highst : 0;
     if (curblank != 0)
