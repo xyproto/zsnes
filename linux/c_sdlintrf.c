@@ -136,7 +136,7 @@ static void InitializeGfxStuff(void)
         vesa2_rpos = al;
         --al;
         vesa2_rfull = al != 0xFF ? 0x1FU << al : 0x1FU >> 1;
-        bx = 1U << (al + 5);
+        bx = 1U << ((al + 5) & 31);
         vesa2_rtrcl = bx;
         vesa2_rtrcla = ~bx;
     }
@@ -152,7 +152,7 @@ static void InitializeGfxStuff(void)
         vesa2_gpos = al;
         --al;
         vesa2_gfull = al != 0xFF ? 0x1FU << al : 0x1FU >> 1;
-        bx = 1U << (al + 5);
+        bx = 1U << ((al + 5) & 31);
         vesa2_gtrcl = bx;
         vesa2_gtrcla = ~bx;
     }
@@ -168,7 +168,7 @@ static void InitializeGfxStuff(void)
         vesa2_bpos = al;
         --al;
         vesa2_bfull = al != 0xFF ? 0x1FU << al : 0x1FU >> 1;
-        bx = 1U << (al + 5);
+        bx = 1U << ((al + 5) & 31);
         vesa2_btrcl = bx;
         vesa2_btrcla = ~bx;
     }
