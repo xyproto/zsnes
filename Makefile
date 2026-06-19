@@ -83,9 +83,7 @@ endif
 IS_FEDORA       := $(if $(wildcard /etc/fedora-release),yes)
 IS_DEBIAN_BASED := $(if $(wildcard /etc/debian_version),yes)
 
-# `unused` target overrides this to re-enable -Wunused* (GCC's -w cannot be
-# undone by appending -W flags later).
-WARN_FLAGS ?= -w
+WARN_FLAGS ?= -Wall -Wno-address-of-packed-member
 COMMON_FLAGS = $(ARCH_CFLAGS) -pthread -no-pie -std=c11 -D_DEFAULT_SOURCE -D_POSIX_C_SOURCE=200809L -O3 -fno-gcse -fno-inline -fno-pic -D_FORTIFY_SOURCE=2 -ffunction-sections -fdata-sections -Wfatal-errors $(WARN_FLAGS)
 
 # TODO: FreeBSD has a patch for being able to build without -fcommon
