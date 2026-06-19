@@ -319,7 +319,7 @@ void safe_pclose(FILE* fp)
     while (link->next && link->next->fp != fp) {
         link = link->next;
     }
-    if (link->next->fp == fp) {
+    if (link->next && link->next->fp == fp) {
         struct fp_pid_link* dellink = link->next;
         fclose(fp);
         waitpid(link->next->pid, 0, 0);
