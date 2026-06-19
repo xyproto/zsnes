@@ -164,7 +164,7 @@ void gl_end()
 }
 
 extern uint8_t NGNoTransp;
-extern uint8_t SpecialLine[224]; /* 0 if lo-res, > 0 if hi-res */
+extern uint8_t SpecialLine[256]; /* 0 if lo-res, > 0 if hi-res; real size (see endmem) */
 
 void gl_clearwin()
 {

@@ -69,7 +69,7 @@ static bool spc_drop_privileges()
     uid_t newuid = getuid(), olduid = geteuid();
 
     char* name = getlogin();
-    struct passwd* userinfo;
+    struct passwd* userinfo = NULL; // getlogin() may fail
 
     if (name) {
         userinfo = getpwnam(name);

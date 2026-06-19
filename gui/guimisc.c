@@ -129,7 +129,7 @@ void SetAllKeys(void)
         return; // XXX original compares dword instead of byte, former makes no sense
     u4 i = 0;
     do {
-        u4* guicpressptr;
+        u4* guicpressptr = 0;
         switch (cplayernum) {
         case 0:
             ConfigureKey2(i, pl1);
