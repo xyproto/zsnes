@@ -431,7 +431,8 @@ static uint8_t DecompressByte(void)
 
                     // Update reference pixels
                     pixel_left = pixel;
-                    pixel_above = ((out >> (bit - 1)) & 0x01010101);
+                    // bit==0 would shift by -1; that value is dead (recomputed after the loop)
+                    pixel_above = ((bit ? out >> (bit - 1) : 0) & 0x01010101);
                     pixel_above_left = ((out >> bit) & 0x01010101);
 
                     // get new pixel
