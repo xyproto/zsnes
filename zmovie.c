@@ -889,7 +889,7 @@ static bool zmv_create(char* filename)
     memset(&zmv_vars, 0, sizeof(zmv_vars));
     if ((zmv_vars.fp = fopen_dir(ZMoviePath, filename, "w+b"))) {
         size_t filename_len = strlen(filename);
-        strncpy(zmv_vars.header.magic, "ZMV", 3);
+        memcpy(zmv_vars.header.magic, "ZMV", 3);
         zmv_vars.header.zsnes_version = versionNumber & 0xFFFF;
         zmv_vars.header.rom_crc32 = CRC32;
         zmv_vars.header.zst_size = cur_zst_size;

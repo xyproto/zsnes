@@ -773,7 +773,7 @@ static const char* get_rom_name(struct dirent_info* entry, char* namebuffer)
                     fread(HeaderBuffer, 1, INFO_LEN, fp);
                     if (InfoScore((char*)HeaderBuffer) > 1) {
                         EHi = true;
-                        strncpy(namebuffer, (char*)HeaderBuffer, INAME_LEN);
+                        memcpy(namebuffer, HeaderBuffer, INAME_LEN);
                     }
                 }
 
@@ -790,7 +790,7 @@ static const char* get_rom_name(struct dirent_info* entry, char* namebuffer)
                         fread(HiHead, 1, INFO_LEN, fp);
                         HiScore = InfoScore(HiHead);
 
-                        strncpy(namebuffer, LoScore > HiScore ? LoHead : HiHead, INAME_LEN);
+                        memcpy(namebuffer, LoScore > HiScore ? LoHead : HiHead, INAME_LEN);
 
                         if (entry->size - HeaderSize >= 0x20000) {
                             int IntLScore;
@@ -799,7 +799,7 @@ static const char* get_rom_name(struct dirent_info* entry, char* namebuffer)
                             IntLScore = InfoScore(LoHead) / 2;
 
                             if (IntLScore > LoScore && IntLScore > HiScore) {
-                                strncpy(namebuffer, LoHead, INAME_LEN);
+                                memcpy(namebuffer, LoHead, INAME_LEN);
                             }
                         }
                     } else // ROM only has one block
@@ -1068,7 +1068,7 @@ void GUIQuickLoadUpdate(void)
                 memset(p_dest + 25, '.', 3);
             }
         } else {
-            strncpy(p_dest, p_src, srclen);
+            memcpy(p_dest, p_src, srclen);
             memset(p_dest + srclen, ' ', 28 - srclen);
         }
     }
