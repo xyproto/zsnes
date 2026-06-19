@@ -1092,7 +1092,7 @@ static int SoundInit_pipewire()
         params[0] = spa_format_audio_raw_build(&b, SPA_PARAM_EnumFormat, &info);
     }
     rc = pw_stream_connect(pipewire_stream, PW_DIRECTION_OUTPUT, PW_ID_ANY, flags,
-        (const struct spa_pod* const*)params, 1);
+        (const struct spa_pod**)params, 1);
     pw_thread_loop_unlock(pipewire_loop);
     if (rc < 0) {
         SoundEnabled = 0;
