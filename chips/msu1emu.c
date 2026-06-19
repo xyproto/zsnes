@@ -231,7 +231,7 @@ void mixMSU1Audio(int* start, int* end, int rate)
 
                 // Stereo Mixer
                 if (StereoSound) {
-                    *start++;
+                    start++; // advance to the right-channel sample
                     *start += (TRACK_DATA[MSU_Track_Position + 1] * MSU_AudioVolume * MusicVol) / 0x4000;
                 }
 

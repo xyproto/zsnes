@@ -179,7 +179,7 @@ void CheatCodeSearchProcess(void)
             if (eax == CSCurValue) {
                 if (!(edi[16384] & bh))
                     goto failedfind;
-            } else if ((eax + 1) & edx == CSCurValue) {
+            } else if (((eax + 1) & edx) == CSCurValue) {
                 if (FirstSearch == 1) {
                     edi[16384] &= bl;
                 } else {

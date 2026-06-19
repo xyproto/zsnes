@@ -264,9 +264,9 @@ static void PlayerDeviceFix(u4* const device)
     if (AllowUDLR == 1)
         return;
     u4 d = *device;
-    if (d & 0x0C000000 == 0x0C000000)
+    if ((d & 0x0C000000) == 0x0C000000)
         d &= 0xF3FFFFFF;
-    if (d & 0x03000000 == 0x03000000)
+    if ((d & 0x03000000) == 0x03000000)
         d &= 0xFCFFFFFF;
     *device = d;
 }
