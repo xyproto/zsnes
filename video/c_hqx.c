@@ -24,10 +24,10 @@
  * block doubler (NxN pixel replication), not the real hq filter.
  */
 
+#include "c_hqx.h"
 #include "../c_vcache.h"
 #include "../cpu/regs.h"
 #include "../ui.h"
-#include "c_hqx.h"
 #include "copyvwin.h"
 
 // 16->32bit color lookup table (4096 + 65536*16 bytes), defined in ui.c.
