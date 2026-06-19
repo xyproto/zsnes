@@ -146,29 +146,14 @@ u8 copymaskRB = UINT64_C(0x001FF800001FF800);
 u8 copymaskG = UINT64_C(0x0000FC000000FC00);
 u8 copymagic = UINT64_C(0x0008010000080100);
 
-// Map mouse motion against the window's *actual* logical size (the same space
-// SDL reports motion events in) rather than the requested WindowWidth/Height.
-// In-place SDL_SetWindowSize() may settle to a slightly different size (and
-// asynchronously on Wayland), so trusting the request drifts the on-screen
-// cursor from the system pointer.
 static void adjustMouseXScale()
 {
-    int w = (int)WindowWidth;
-    int gw = 0, gh = 0;
-    if (sdl_window && SDL_GetWindowSize(sdl_window, &gw, &gh) && gw > 0) {
-        w = gw;
-    }
-    MouseXScale = (MouseMaxX - MouseMinX) / ((float)w);
+    MouseXScale = (MouseMaxX - MouseMinX) / ((float)WindowWidth);
 }
 
 static void adjustMouseYScale()
 {
-    int h = (int)WindowHeight;
-    int gw = 0, gh = 0;
-    if (sdl_window && SDL_GetWindowSize(sdl_window, &gw, &gh) && gh > 0) {
-        h = gh;
-    }
-    MouseYScale = (MouseMaxY - MouseMinY) / ((float)h);
+    MouseYScale = (MouseMaxY - MouseMinY) / ((float)WindowHeight);
 }
 
 void SetHQx(unsigned int ResX, unsigned int ResY)
@@ -227,12 +212,8 @@ int Main_Proc()
             memset(pressed, 0, sizeof(pressed));
             shiftptr = 0;
             break;
-        case SDL_EVENT_WINDOW_RESIZED:
-            // Keep the mouse mapping in sync with the real window size once it
-            // settles (resizes from SDL_SetWindowSize arrive here on Wayland).
-            adjustMouseXScale();
-            adjustMouseYScale();
 #ifdef __OPENGL__
+        case SDL_EVENT_WINDOW_RESIZED:
             if (GUIRESIZE[cvidmode]) {
                 WindowWidth = SurfaceX = event.window.data1;
                 WindowHeight = SurfaceY = event.window.data2;
@@ -275,8 +256,8 @@ int Main_Proc()
                 gl_clearwin();
                 Clear2xSaIBuffer();
             }
-#endif
             break;
+#endif
         case SDL_EVENT_KEY_DOWN:
             if ((event.key.key == SDLK_RETURN) && (event.key.mod & SDL_KMOD_ALT) && !event.key.repeat) {
                 SwitchFullScreen();
