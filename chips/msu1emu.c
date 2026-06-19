@@ -109,6 +109,7 @@ int readMSU()
             fclose(MSUBinary);
             return 1;
         } else {
+            fclose(MSUBinary);
             printf("Not enough space in memory for MSU-1.\n");
         }
     }
@@ -180,6 +181,7 @@ void MSU1HandleTrackChange()
 #endif
             MSU_Track_Length = filelen / 2;
         } else {
+            fclose(TrackFileReader);
             // Clear audio busy bit
             MSU_StatusRead &= ~MSU_STATUS_AUDIO_BUSY;
             printf("Not enough space in memory for MSU-1.\n");
