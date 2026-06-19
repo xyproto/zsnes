@@ -16,6 +16,7 @@
 ;You should have received a copy of the GNU General Public License
 ;along with this program; if not, write to the Free Software
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
 %ifdef __AMD64__
 bits 64
 %else
@@ -61,7 +62,7 @@ section .note.GNU-stack noalloc noexec nowrite progbits
 %endmacro
 %ifdef __UNIXSDL__
 %ifdef DEBUG
-;; workaround NASM stabs generation bug 
+;; workaround NASM stabs generation bug
 ;; http://sourceforge.net/tracker/index.php?func=detail&aid=1714701&group_id=6208&atid=106208
 SECTION .text
         nop
