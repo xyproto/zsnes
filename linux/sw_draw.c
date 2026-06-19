@@ -61,13 +61,21 @@ bool sw_start(int width, int height, int req_depth, int FullScreen)
         render_surface = NULL;
     }
     if (sdl_window) {
-        SDL_PumpEvents();
-        SDL_DestroyWindow(sdl_window);
-    }
-    sdl_window = SDL_CreateWindow("ZSNES", SurfaceX, SurfaceY, flags);
-    if (sdl_window == NULL) {
-        fprintf(stderr, "Could not create %dx%d window: %s\n", SurfaceX, SurfaceY, SDL_GetError());
-        return false;
+        // Reuse the existing window by resizing it in place. Destroying and
+        // recreating the window on every mode/filter change also tears down the
+        // window framebuffer's EGL/GL context (SDL_GetWindowSurface builds one
+        // behind the window on Wayland); repeating that churn corrupts the
+        // driver heap on some systems ("double free or corruption"). Keeping the
+        // window alive avoids it (and is faster / flicker-free).
+        SDL_SetWindowFullscreen(sdl_window, FullScreen ? true : false);
+        SDL_SetWindowSize(sdl_window, SurfaceX, SurfaceY);
+        SDL_SyncWindow(sdl_window); // settle the new size before mapping the mouse
+    } else {
+        sdl_window = SDL_CreateWindow("ZSNES", SurfaceX, SurfaceY, flags);
+        if (sdl_window == NULL) {
+            fprintf(stderr, "Could not create %dx%d window: %s\n", SurfaceX, SurfaceY, SDL_GetError());
+            return false;
+        }
     }
 
     // Create a 16-bit RGB565 surface for the emulator to render into
