@@ -1,0 +1,137 @@
+/* C port of gui.asm + guiwindp.inc data (GUI state, menus, paths).
+   Byte-exact with the original NASM data; generated then verified. */
+#include "../types.h"
+
+extern char SRAMPath[];
+extern char SStatePath[];
+extern char MoviePath[];
+extern char IPSPath[];
+extern char SnapPath[];
+extern char SPCPath[];
+extern char CHTPath[];
+extern char ComboPath[];
+extern char INPPath[];
+extern char BSXPath[];
+extern char STPath[];
+extern char GNextPath[];
+extern char SGPath[];
+extern char GUIMovieForcedText[];
+extern char GUICustomX[];
+extern char GUICustomY[];
+
+/* cheatdataprev must sit immediately before cheatdata: cpu/execute.asm and
+   gui/guicheat.c read the previous entry as cheatdata[-28]. */
+__asm__(
+    ".pushsection .bss.cheatblk,\"aw\",@nobits\n"
+    ".global cheatdataprev\ncheatdataprev:\n.zero 28\n"
+    ".global cheatdata\ncheatdata:\n.zero 7196\n"
+    ".popsection\n");
+
+char CSDescDisplay[20] = { 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 0, 0 };
+char CSInputDisplay[12] = { 95, 0, 32, 32, 32, 32, 32, 32, 32, 32, 32, 0 };
+u4 CalibXmax;
+u4 CalibXmax209;
+u4 CalibXmin;
+u4 CalibXmin209;
+u4 CalibYmax;
+u4 CalibYmax209;
+u4 CalibYmin;
+u4 CalibYmin209;
+u1 CheatCompareValue;
+u1 CheatOn;
+u1 CheatSearchStatus;
+u1 CheatWinMode;
+u1 CombinDataGlob[3300];
+u1 CombinDataLocl[3300];
+u4 CurCStextpos;
+u1 CurPalSelect;
+u1 EEgg;
+u1 ForceHiLoROM;
+u1 ForceROMTiming;
+u1 GUICBHold;
+u1 GUICBHold2;
+u1 GUICCFlash;
+u4 GUICHold;
+u1 GUICResetPos;
+u4 GUICSStA[3];
+u4 GUICSStC[3];
+u4 GUICStA[3];
+u1 GUICStatePos;
+u1* GUICYLocPtr;
+u1 GUICheatPosA;
+u1 GUICheatPosB;
+u1 GUIComboData[50];
+u4 GUIComboKey;
+u1 GUIComboLHorz;
+u1 GUIComboPNum;
+u1 GUIComboPos;
+char* GUICustomResTextPtr[2] = { GUICustomX, GUICustomY };
+s4 GUIDClCEntry;
+u4 GUIDClCWin;
+u4 GUIDClickTL;
+char GUIDumpingTab[16] = { 0, 0, 0, 0, 1, 0, 0, 0, 68, 85, 77, 80, 73, 78, 71, 0 };
+u1 GUIHold;
+u4 GUIHoldXlimL;
+u4 GUIHoldXlimR;
+u4 GUIHoldYlim;
+u4 GUIHoldYlimR;
+u4 GUIHoldx;
+u4 GUIHoldxm;
+u4 GUIHoldy;
+u4 GUIHoldym;
+char GUIInputTabs[23] = { 1, 0, 0, 0, 5, 0, 0, 0, 35, 49, 0, 35, 50, 0, 35, 51, 0, 35, 52, 0, 35, 53, 0 };
+u1 GUILDFlash;
+u4 GUIMenuD;
+u4 GUIMenuL;
+u4 GUIMenuR;
+char GUIMovieTabs[17] = { 1, 0, 0, 0, 1, 0, 0, 0, 67, 79, 78, 84, 82, 79, 76, 83, 0 };
+char* GUIMovieTextPtr[1] = { GUIMovieForcedText };
+u4 GUINCStA[3];
+u1 GUINumCombo;
+u1 GUIOn;
+u1 GUIOn2;
+char GUIOptionTabs[19] = { 1, 0, 0, 0, 2, 0, 0, 0, 66, 65, 83, 73, 67, 0, 77, 79, 82, 69, 0 };
+char GUIPathTabs[32] = { 1, 0, 0, 0, 3, 0, 0, 0, 71, 69, 78, 69, 82, 65, 76, 0, 77, 79, 82, 69, 0, 66, 73, 79, 83, 43, 67, 65, 82, 84, 83, 0 };
+char* GUIPathsTab1Ptr[4] = { SRAMPath, SStatePath, MoviePath, IPSPath };
+char* GUIPathsTab2Ptr[5] = { SnapPath, SPCPath, CHTPath, ComboPath, INPPath };
+char* GUIPathsTab3Ptr[4] = { BSXPath, STPath, GNextPath, SGPath };
+char GUIPrevMenuData[376] = { 1, 49, 46, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 0, 1, 50, 46, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 0, 1, 51, 46, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 0, 1, 52, 46, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 0, 1, 53, 46, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 0, 1, 54, 46, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 0, 1, 55, 46, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 0, 1, 56, 46, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 0, 1, 57, 46, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 0, 1, 48, 46, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 0, 0, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 0, 1, 70, 82, 69, 69, 90, 69, 32, 68, 65, 84, 65, 58, 32, 79, 70, 70, 32, 32, 32, 0, 1, 67, 76, 69, 65, 82, 32, 65, 76, 76, 32, 68, 65, 84, 65, 32, 32, 32, 32, 32, 0 };
+u1 GUIQuit;
+u1 GUIReset;
+u4 GUIScrolTim1;
+u4 GUIScrolTim2;
+char GUIVideoTabs[22] = { 1, 0, 0, 0, 2, 0, 0, 0, 77, 79, 68, 69, 83, 0, 70, 73, 76, 84, 69, 82, 83, 0 };
+char GUIVntscTab[22] = { 0, 0, 0, 0, 2, 0, 0, 0, 78, 84, 83, 67, 0, 65, 68, 86, 32, 78, 84, 83, 67, 0 };
+u4 GUIccombcursloc;
+u4 GUIccomblcursloc;
+u4 GUIccombviewloc;
+u1 GUIcmenupos;
+u1 GUIcrowpos;
+u4 GUIcurrentcheatcursloc;
+u4 GUIcurrentcheatviewloc;
+u4 GUIcurrentcheatwin;
+u4 GUIcurrentchtsrccursloc;
+u4 GUIcurrentchtsrcviewloc;
+u1 GUIescpress;
+u2 GUImouseposx;
+u2 GUImouseposy;
+u4 GUIoldhand8o;
+u2 GUIoldhand8s;
+u4 GUIoldhand9o;
+u2 GUIoldhand9s;
+u1 GUIpclicked;
+u1 GUIpmenupos;
+u1 GUIwinactiv[22];
+u1 GUIwinorder[22];
+u4 NumCheatSrc;
+u4 NumCheats;
+u4 NumCombo;
+u4 NumComboGlob;
+u4 NumComboLocl;
+u4 SrcMask[4] = { 0xff, 0xffff, 0xffffff, 0xffffffff };
+u4 cloadmaxlen;
+u1 cplayernum;
+u4 curaddrvalcs;
+u4 curentryval;
+u4 curvaluecs;
+u1 cwindrawn;
