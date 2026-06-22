@@ -46,6 +46,52 @@ uint16_t irqv, irqv2, nmiv, nmiv2;
 void c_sa12200w(uint8_t), c_sa12201w(uint8_t), c_sa12202w(uint8_t), c_sa12203w(uint8_t);
 void c_sa12205w(uint8_t), c_sa12209w(uint8_t), c_sa1220Bw(uint8_t), c_sa1220Cw(uint8_t);
 
+/* Stage 4 state + handlers */
+extern uint32_t SA1RAMArea, SNSBWPtr, CurBWPtr, SA1BWPtr, BWShift, BWAnd, Sdd1Mode;
+/* externs sa1regs.c needs; test owns them */
+uint32_t NumofBanks;
+uint8_t *snesmmap[256], *snesmap2[256];
+uint8_t SA1Status, BWUsed2, SDD1BankA[4], AddrNoIncr;
+void* memtabler8[256];
+void memaccessbankr8sdd1(void) { }
+
+void c_sa12220w(uint8_t), c_sa12224w(uint8_t), c_sa12225w(uint8_t);
+void c_sdd14804w(uint8_t), c_sdd14801w(uint8_t);
+uint8_t c_sdd14804(void);
+
+/* Stage 5 state + handlers */
+extern uint32_t SA1ARC, SA1AR1, SA1AR2;
+extern uint32_t SA1DMAInfo, SA1DMAChar, SA1DMASource, SA1DMADest, SA1DMACount;
+extern uint32_t SA1_CC2_line, SA1_in_cc1_dma;
+/* called by the handlers; the test owns them and counts invocations */
+int arith_calls, dmairam_calls, dmabwram_calls, cc2_calls;
+void UpdateArithStuff(void) { arith_calls++; }
+void sa1dmairam(void) { dmairam_calls++; }
+void sa1dmabwram(void) { dmabwram_calls++; }
+void SA1_DMA_CC2(void) { cc2_calls++; }
+/* RTC handlers pull wall-clock time; the test owns deterministic stubs */
+uint8_t debuggeron;
+uint32_t GetTime(void) { return 0x231259; } /* 12:59:23 BCD */
+uint32_t GetDate(void) { return 0x30190625; }
+
+void c_sa12250w(uint8_t), c_sa12251w(uint8_t), c_sa12252w(uint8_t);
+void c_sa12253w(uint8_t), c_sa12254w(uint8_t);
+void c_sa12230w(uint8_t), c_sa12231w(uint8_t), c_sa12236w(uint8_t), c_sa12237w(uint8_t);
+
+/* Stage 6 state + handlers */
+extern uint8_t SA1_BRF[16];
+extern uint32_t VarLenAddr, VarLenAddrB, VarLenBarrel;
+void c_sa12258w(uint8_t), c_sa12259w(uint8_t), c_sa1225Aw(uint8_t), c_sa1225Bw(uint8_t);
+void c_sa12240w(uint8_t), c_sa12247w(uint8_t), c_sa1224Fw(uint8_t);
+uint8_t c_sa1230Cr(void), c_sa1230Dr(void), c_sa1230Er(void);
+void sa1chconv(void);
+
+/* Stage 7 state + handlers */
+extern uint32_t RTCPtr, RTCPtr2;
+void c_sa12212w(uint8_t), c_sa12213w(uint8_t), c_sa12214w(uint8_t), c_sa12215w(uint8_t);
+void c_RTC2801w(uint8_t);
+uint8_t c_RTC2800(void);
+
 #define OFF(sym) ((char*)&(sym) - (char*)&SA1Mode)
 #define BYTE(v, n) (((uint8_t*)&(v))[n])
 
@@ -160,6 +206,180 @@ int main(void)
     SNSNMIV = 0;
     c_sa1220Cw(0x7E);
     ZT_CHECK_INT(BYTE(SNSNMIV, 0), 0x7E);
+
+    ZT_SECTION("ROM bank mapping (0x2220-0x2223)");
+    NumofBanks = 0; /* != 64 -> use al & 7 */
+    c_sa12220w(0x00);
+    ZT_CHECK(snesmmap[0] == romdata - 0x8000);
+    ZT_CHECK(snesmmap[1] == romdata); /* +0x8000 per LoROM bank */
+    ZT_CHECK(snesmap2[0xC0] == romdata); /* HiROM region */
+    ZT_CHECK(snesmap2[0xC1] == romdata + 0x10000);
+    ZT_CHECK(snesmmap[0xC0] == romdata);
+    ZT_CHECK_INT(SA1BankVal[0], 0);
+    c_sa12220w(0x82); /* upper set, bank 2 -> 0x200000 */
+    ZT_CHECK(snesmmap[0] == romdata + 0x200000 - 0x8000);
+    ZT_CHECK(snesmap2[0xC0] == romdata + 0x200000);
+    ZT_CHECK_INT(SA1BankVal[0], 0x82);
+
+    ZT_SECTION("BW-RAM bank registers (0x2224-0x2225)");
+    SA1RAMArea = 0x01000000;
+    SA1Status = 0;
+    c_sa12224w(0x03);
+    ZT_CHECK_INT(SNSBWPtr, (3u << 13) + SA1RAMArea - 0x6000);
+    ZT_CHECK_INT(CurBWPtr, SNSBWPtr); /* SA1Status==0 mirrors SNS */
+    SA1Overflow = 0; /* 16-colour path (bit15 clear) */
+    c_sa12225w(0x80);
+    ZT_CHECK_INT(BYTE(BWShift, 0), 1);
+    ZT_CHECK_INT(BYTE(BWAnd, 0), 0x0F);
+    c_sa12225w(0x05); /* no bit7 -> linear */
+    ZT_CHECK_INT(SA1BWPtr, (5u << 13) + SA1RAMArea - 0x6000);
+    ZT_CHECK_INT(BYTE(BWAnd, 0), 0xFF);
+
+    ZT_SECTION("S-DD1 bank registers (0x4804-0x4807, 0x4801)");
+    c_sdd14804w(0x05);
+    ZT_CHECK_INT(SDD1BankA[0], 0x05);
+    ZT_CHECK_INT(c_sdd14804(), 0x05);
+    ZT_CHECK(snesmap2[0xC0] == romdata + (5u << 20));
+    Sdd1Mode = 0;
+    c_sdd14801w(0x01);
+    ZT_CHECK_INT(Sdd1Mode, 1);
+    ZT_CHECK(memtabler8[0xC0] == (void*)memaccessbankr8sdd1);
+    ZT_CHECK(memtabler8[0xFF] == (void*)memaccessbankr8sdd1);
+    Sdd1Mode = 7;
+    c_sdd14801w(0x00); /* al==0 -> no-op */
+    ZT_CHECK_INT(Sdd1Mode, 7);
+
+    ZT_SECTION("arithmetic registers (0x2250-0x2254)");
+    SA1ARC = 0;
+    SA1ARR1 = 0xFFFFFFFF;
+    SA1ARR2 = 0xFFFF;
+    c_sa12250w(0x02); /* bit1 -> cumulative reset clears 48-bit result */
+    ZT_CHECK_INT(BYTE(SA1ARC, 0), 0x02);
+    ZT_CHECK_INT(BYTE(SA1ARC, 1), 1);
+    ZT_CHECK_INT(SA1ARR1, 0);
+    ZT_CHECK_INT((uint16_t)SA1ARR2, 0);
+    arith_calls = 0;
+    c_sa12251w(0x12);
+    c_sa12252w(0x34);
+    c_sa12253w(0x56);
+    ZT_CHECK_INT((uint16_t)SA1AR1, 0x3412);
+    ZT_CHECK_INT(BYTE(SA1AR2, 0), 0x56);
+    ZT_CHECK_INT(arith_calls, 0); /* not triggered until AR2 hi byte */
+    c_sa12254w(0x78);
+    ZT_CHECK_INT((uint16_t)SA1AR2, 0x7856);
+    ZT_CHECK_INT(arith_calls, 1);
+
+    ZT_SECTION("DMA registers (0x2230-0x2239)");
+    SA1_CC2_line = 1;
+    c_sa12230w(0x00); /* no bit7 -> clears CC2 line */
+    ZT_CHECK_INT(SA1_CC2_line, 0);
+    ZT_CHECK_INT(BYTE(SA1DMAInfo, 0), 0x00);
+    SA1_in_cc1_dma = 1;
+    c_sa12231w(0x80); /* bit7 -> clears in-cc1-dma */
+    ZT_CHECK_INT(SA1_in_cc1_dma, 0);
+    ZT_CHECK_INT(BYTE(SA1DMAChar, 0), 0x80);
+    /* 2236: IRAM DMA when DMAInfo has neither char-conv (0x10) nor BW dest (4) */
+    SA1DMAInfo = 0;
+    dmairam_calls = 0;
+    c_sa12236w(0x11);
+    ZT_CHECK_INT(BYTE(SA1DMADest, 1), 0x11);
+    ZT_CHECK_INT(dmairam_calls, 1);
+    /* 2237: BW-RAM DMA when DMAInfo bit2 set and char-conv bit clear */
+    SA1DMAInfo = 0x04;
+    dmabwram_calls = 0;
+    c_sa12237w(0x22);
+    ZT_CHECK_INT(BYTE(SA1DMADest, 2), 0x22);
+    ZT_CHECK_INT(dmabwram_calls, 1);
+    /* 2236 with char-conv bit -> CC#1 path (sets IRQ + in-cc1-dma, no IRAM DMA) */
+    SA1DMAInfo = 0x10;
+    SA1DoIRQ = 0;
+    SA1_in_cc1_dma = 0;
+    dmairam_calls = 0;
+    c_sa12236w(0x33);
+    ZT_CHECK_INT(BYTE(SA1DoIRQ, 0) & 8, 8);
+    ZT_CHECK_INT(SA1_in_cc1_dma, 1);
+    ZT_CHECK_INT(dmairam_calls, 0);
+
+    ZT_SECTION("char-conversion DMA (sa1chconv)");
+    SA1DoIRQ = 0;
+    SA1_in_cc1_dma = 0;
+    sa1chconv();
+    ZT_CHECK_INT(BYTE(SA1DoIRQ, 0) & 8, 8);
+    ZT_CHECK_INT(SA1_in_cc1_dma, 1);
+
+    ZT_SECTION("variable-length bit reads (0x2258-0x225B, 0x230C-0x230E)");
+    /* 2258: low nibble is shift step (0 -> 16); bit7 also seeds the barrel */
+    c_sa12258w(0x84);
+    ZT_CHECK_INT(BYTE(VarLenBarrel, 2), 0x84);
+    ZT_CHECK_INT(BYTE(VarLenBarrel, 3), 4);
+    ZT_CHECK_INT(BYTE(VarLenBarrel, 0), 4);
+    ZT_CHECK_INT(BYTE(VarLenBarrel, 1), 4);
+    c_sa12258w(0x00); /* step nibble 0 -> 16 */
+    ZT_CHECK_INT(BYTE(VarLenBarrel, 3), 16);
+    /* set up a 24-bit address into a stub ROM page and read shifted bytes */
+    {
+        static uint8_t page[0x10000];
+        page[0x100] = 0x21;
+        page[0x101] = 0x43;
+        page[0x102] = 0x65;
+        snesmap2[0x12] = page; /* bank 0x12, addr 0x0100 (bit15 clear -> snesmap2) */
+        VarLenAddr = 0x120100;
+        VarLenAddrB = 0x120100;
+        VarLenBarrel = 0; /* shift 0, manual (no auto-inc) */
+        ZT_CHECK_INT(c_sa1230Cr(), 0x21); /* low byte */
+        ZT_CHECK_INT(c_sa1230Dr(), 0x43); /* second byte */
+    }
+    ZT_CHECK_INT(c_sa1230Er(), 0x10);
+
+    ZT_SECTION("bitmap register file (0x2240-0x224F)");
+    c_sa12240w(0xA0);
+    c_sa12247w(0xA7);
+    c_sa1224Fw(0xAF);
+    ZT_CHECK_INT(SA1_BRF[0], 0xA0);
+    ZT_CHECK_INT(SA1_BRF[7], 0xA7);
+    ZT_CHECK_INT(SA1_BRF[15], 0xAF);
+    /* 0x224F triggers CC#2 only when DMAInfo has bit5/7 set and char-conv clear */
+    SA1DMAInfo = 0x80;
+    cc2_calls = 0;
+    c_sa1224Fw(0x01);
+    ZT_CHECK_INT(cc2_calls, 1);
+    SA1DMAInfo = 0x80 | 0x10; /* char-conv bit suppresses CC#2 */
+    cc2_calls = 0;
+    c_sa1224Fw(0x02);
+    ZT_CHECK_INT(cc2_calls, 0);
+
+    ZT_SECTION("SA-1 timer count (0x2212-0x2215)");
+    c_sa12212w(0x11);
+    c_sa12213w(0x22);
+    c_sa12214w(0x33);
+    c_sa12215w(0x44);
+    ZT_CHECK_INT(SA1TimerCount, 0x44332211);
+
+    ZT_SECTION("RTC (0x2800 read, 0x2801 write)");
+    RTCPtr = 0;
+    RTCPtr2 = 0;
+    /* first read latches GetTime/GetDate, returns RTCData[0] then advances */
+    ZT_CHECK_INT(c_RTC2800(), 0x0F); /* RTCData[0] */
+    ZT_CHECK_INT(RTCData[1], 9); /* seconds ones from 0x231259 */
+    ZT_CHECK_INT(RTCData[2], 5); /* seconds tens */
+    ZT_CHECK_INT(RTCData[5], 3); /* hours ones */
+    ZT_CHECK_INT(c_RTC2800(), 9); /* RTCData[1] */
+    /* read wraps to 0 at index 0x0F */
+    RTCPtr = 0x0E;
+    c_RTC2800();
+    ZT_CHECK_INT(RTCPtr, 0);
+    /* 0x2801 == 0x0E/0x0D resets RTCPtr2; otherwise stores from index 1 */
+    RTCPtr2 = 5;
+    c_RTC2801w(0x0E);
+    ZT_CHECK_INT(RTCPtr2, 0);
+    c_RTC2801w(0x00); /* index 0: no store, advances */
+    ZT_CHECK_INT(RTCPtr2, 1);
+    c_RTC2801w(0x07); /* index 1: store */
+    ZT_CHECK_INT(RTCData[1], 0x07);
+    ZT_CHECK_INT(RTCPtr2, 2);
+    RTCPtr2 = 14; /* >13: no store, no advance */
+    c_RTC2801w(0x99);
+    ZT_CHECK_INT(RTCPtr2, 14);
 
     ZT_RESULTS();
 }
