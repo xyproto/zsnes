@@ -760,8 +760,7 @@ static void offsetmcachechk(u4 const eax)
     u4 const ecx = (eax + ngptrdat2) & 0x07FF;
     if (vidmemch4[ecx] == 0)
         return;
-    __asm__ volatile("call %P0" ::"X"(cachesingle4bng), "c"(ecx)
-        : "cc", "memory");
+    c_cachesingle4bng(ecx);
 }
 
 static u2* procoffsetmode(void)

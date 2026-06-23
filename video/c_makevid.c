@@ -238,16 +238,13 @@ static void proc16x16(u2 const ax, u2 const dx, u1* const edi, u4 const layer, u
         edi[eax] = 1;
         switch (curcolor) {
         case 1:
-            __asm__ volatile("call %P0" ::"X"(cachetile2b16x16), "a"(eax)
-                : "cc", "memory", "ecx", "esi", "edi");
+            cachetile2b16x16(eax);
             break;
         case 2:
-            __asm__ volatile("call %P0" ::"X"(cachetile4b16x16), "a"(eax)
-                : "cc", "memory", "ecx", "esi", "edi");
+            cachetile4b16x16(eax);
             break;
         default:
-            __asm__ volatile("call %P0" ::"X"(cachetile8b16x16), "a"(eax)
-                : "cc", "memory", "ecx", "esi", "edi");
+            cachetile8b16x16(eax);
             break;
         }
     }
@@ -309,16 +306,13 @@ static void proc16x8(u2 const ax, u2 const dx, u1* const edi, u4 const layer, u1
         edi[eax] = 1;
         switch (curcolor) {
         case 1:
-            __asm__ volatile("call %P0" ::"X"(cachetile2b16x16), "a"(eax)
-                : "cc", "memory", "ecx", "esi", "edi");
+            cachetile2b16x16(eax);
             break;
         case 2:
-            __asm__ volatile("call %P0" ::"X"(cachetile4b16x16), "a"(eax)
-                : "cc", "memory", "ecx", "esi", "edi");
+            cachetile4b16x16(eax);
             break;
         default:
-            __asm__ volatile("call %P0" ::"X"(cachetile8b16x16), "a"(eax)
-                : "cc", "memory", "ecx", "esi", "edi");
+            cachetile8b16x16(eax);
             break;
         }
     }
@@ -376,16 +370,13 @@ static void proc8x8(u2 const ax, u2 const dx, u1* const edi, u4 const layer, u1 
         edi[eax] = 1;
         switch (curcolor) {
         case 1:
-            __asm__ volatile("call %P0" ::"X"(cachetile2b), "a"(eax)
-                : "cc", "memory", "ecx", "esi", "edi");
+            cachetile2b(eax);
             break;
         case 2:
-            __asm__ volatile("call %P0" ::"X"(cachetile4b), "a"(eax)
-                : "cc", "memory", "ecx", "esi", "edi");
+            cachetile4b(eax);
             break;
         default:
-            __asm__ volatile("call %P0" ::"X"(cachetile8b), "a"(eax)
-                : "cc", "memory", "ecx", "esi", "edi");
+            cachetile8b(eax);
             break;
         }
     }
