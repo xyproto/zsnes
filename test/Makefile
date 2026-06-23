@@ -23,6 +23,8 @@ DSP2      := zsnes_dsp2_test
 SAI       := zsnes_2xsaiw_test
 SA1       := zsnes_sa1_test
 SPC7110   := zsnes_7110_test
+VCACHE    := zsnes_vcache_test
+SPRITES   := zsnes_sprites_test
 SRC       := main.c
 NETPLAY_SRC := netplay_test.c
 ST10_SRC  := st10_test.c
@@ -33,11 +35,13 @@ DSP2_SRC  := dsp2_test.c
 SAI_SRC   := 2xsaiw_test.c
 SA1_SRC   := sa1_test.c
 SPC7110_SRC := 7110_test.c
+VCACHE_SRC := vcache_test.c
+SPRITES_SRC := sprites_test.c
 OBJS      := ../zpath.o
 
 .PHONY: all run clean
 
-all: $(BIN) $(NETPLAY) $(ST10) $(ST11) $(OBC1) $(MSU1) $(DSP2) $(SAI) $(SA1) $(SPC7110)
+all: $(BIN) $(NETPLAY) $(ST10) $(ST11) $(OBC1) $(MSU1) $(DSP2) $(SAI) $(SA1) $(SPC7110) $(VCACHE) $(SPRITES)
 
 $(BIN): $(SRC) zstest.h $(OBJS)
 	$(CC) $(CFLAGS) $(SRC) $(OBJS) -no-pie -Wl,--gc-sections -o $(BIN)
@@ -69,6 +73,12 @@ $(SA1): $(SA1_SRC) zstest.h ../chips/sa1regs.c
 $(SPC7110): $(SPC7110_SRC) zstest.h ../chips/7110proc.c
 	$(CC) $(CFLAGS) $(SPC7110_SRC) ../chips/7110proc.c -no-pie -o $(SPC7110)
 
+$(VCACHE): $(VCACHE_SRC) zstest.h ../video/tilecache.c
+	$(CC) $(CFLAGS) -ffunction-sections -fdata-sections $(VCACHE_SRC) ../video/tilecache.c -no-pie -Wl,--gc-sections -o $(VCACHE)
+
+$(SPRITES): $(SPRITES_SRC) zstest.h ../video/sprites.c
+	$(CC) $(CFLAGS) -ffunction-sections -fdata-sections $(SPRITES_SRC) ../video/sprites.c -no-pie -Wl,--gc-sections -o $(SPRITES)
+
 run: all
 	@./$(BIN)
 	@./$(NETPLAY)
@@ -80,6 +90,8 @@ run: all
 	@./$(SAI)
 	@./$(SA1)
 	@./$(SPC7110)
+	@./$(VCACHE)
+	@./$(SPRITES)
 
 clean:
-	rm -f $(BIN) $(NETPLAY) $(ST10) $(ST11) $(OBC1) $(MSU1) $(DSP2) $(SAI) $(SA1) $(SPC7110)
+	rm -f $(BIN) $(NETPLAY) $(ST10) $(ST11) $(OBC1) $(MSU1) $(DSP2) $(SAI) $(SA1) $(SPC7110) $(VCACHE) $(SPRITES)
