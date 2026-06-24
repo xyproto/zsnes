@@ -92,3 +92,109 @@ SPC_REG_W(SPC4808w, 8)
 SPC_REG_W(SPC4809w, 9)
 SPC_REG_W(SPC480Aw, 10)
 SPC_REG_W(SPC480Bw, 11)
+
+/* ===== Stage 3: math unit (0x4820-0x482F) =====
+   The math registers are byte views into the wide values:
+   0x4820-0x4823 -> SPCMultA (multiplicand / 32-bit dividend)
+   0x4824-0x4825 -> SPCMultB (multiplier)
+   0x4826-0x4827 -> SPCDivEnd (divisor)
+   0x4828-0x482B -> SPCMulRes (product / quotient)
+   0x482C-0x482D -> SPCDivRes (remainder)
+   A multiply triggers on a write to 0x4825, a divide on a write to 0x4827. */
+extern uint32_t SPCMulRes, SPCSignedVal;
+
+/* Byte view of a 32-bit register (little-endian, as the asm assumed). */
+#define SPC_MATH_R(name, base, idx) \
+    REGABI_REG_READ8(name);         \
+    uint8_t c_##name(void) { return ((uint8_t*)&base)[idx]; }
+#define SPC_MATH_W(name, base, idx) \
+    REGABI_REG_WRITE8(name);        \
+    void c_##name(uint8_t al) { ((uint8_t*)&base)[idx] = al; }
+
+static void spc7110_multiply(void)
+{
+    uint16_t a = (uint16_t)SPCMultA;
+    uint16_t b = (uint16_t)SPCMultB;
+    if (SPCSignedVal & 1)
+        SPCMulRes = (uint32_t)((int32_t)(int16_t)a * (int32_t)(int16_t)b);
+    else
+        SPCMulRes = (uint32_t)a * (uint32_t)b;
+}
+
+static void spc7110_set_remainder(uint16_t rem)
+{
+    /* The asm stored only the low word, leaving SPCDivRes's upper bytes. */
+    ((uint8_t*)&SPCDivRes)[0] = (uint8_t)rem;
+    ((uint8_t*)&SPCDivRes)[1] = (uint8_t)(rem >> 8);
+}
+
+static void spc7110_divide(void)
+{
+    uint16_t divisor = (uint16_t)SPCDivEnd;
+    if (divisor == 0) {
+        /* Hardware yields quotient 0 and remainder = low word of the dividend
+           (per bsnes and snes9x). The asm set 0xFFFFFFFF/0xFFFF, a bug. */
+        SPCMulRes = 0;
+        spc7110_set_remainder((uint16_t)SPCMultA);
+        return;
+    }
+    if (SPCSignedVal & 1) {
+        int32_t dividend = (int32_t)SPCMultA;
+        int16_t d = (int16_t)divisor;
+        SPCMulRes = (uint32_t)(dividend / d);
+        spc7110_set_remainder((uint16_t)(dividend % d));
+    } else {
+        uint32_t dividend = SPCMultA;
+        SPCMulRes = dividend / divisor;
+        spc7110_set_remainder((uint16_t)(dividend % divisor));
+    }
+}
+
+SPC_MATH_R(SPC4820, SPCMultA, 0)
+SPC_MATH_R(SPC4821, SPCMultA, 1)
+SPC_MATH_R(SPC4822, SPCMultA, 2)
+SPC_MATH_R(SPC4823, SPCMultA, 3)
+SPC_MATH_R(SPC4824, SPCMultB, 0)
+SPC_MATH_R(SPC4825, SPCMultB, 1)
+SPC_MATH_R(SPC4826, SPCDivEnd, 0)
+SPC_MATH_R(SPC4827, SPCDivEnd, 1)
+SPC_MATH_R(SPC4828, SPCMulRes, 0)
+SPC_MATH_R(SPC4829, SPCMulRes, 1)
+SPC_MATH_R(SPC482A, SPCMulRes, 2)
+SPC_MATH_R(SPC482B, SPCMulRes, 3)
+SPC_MATH_R(SPC482C, SPCDivRes, 0)
+SPC_MATH_R(SPC482D, SPCDivRes, 1)
+
+REGABI_REG_READ8(SPC482E);
+uint8_t c_SPC482E(void) { return 0; }
+REGABI_REG_READ8(SPC482F);
+uint8_t c_SPC482F(void) { return 0; }
+
+SPC_MATH_W(SPC4820w, SPCMultA, 0)
+SPC_MATH_W(SPC4821w, SPCMultA, 1)
+SPC_MATH_W(SPC4822w, SPCMultA, 2)
+SPC_MATH_W(SPC4823w, SPCMultA, 3)
+SPC_MATH_W(SPC4824w, SPCMultB, 0)
+REGABI_REG_WRITE8(SPC4825w);
+void c_SPC4825w(uint8_t al)
+{
+    ((uint8_t*)&SPCMultB)[1] = al;
+    spc7110_multiply();
+}
+SPC_MATH_W(SPC4826w, SPCDivEnd, 0)
+REGABI_REG_WRITE8(SPC4827w);
+void c_SPC4827w(uint8_t al)
+{
+    ((uint8_t*)&SPCDivEnd)[1] = al;
+    spc7110_divide();
+}
+REGABI_REG_WRITE8(SPC482Ew);
+void c_SPC482Ew(uint8_t al)
+{
+    SPCSignedVal = al;
+    SPCMultA = 0;
+    SPCMultB = 0;
+    SPCDivEnd = 0;
+    SPCMulRes = 0;
+    SPCDivRes = 0;
+}
