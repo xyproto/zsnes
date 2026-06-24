@@ -198,3 +198,141 @@ void c_SPC482Ew(uint8_t al)
     SPCMulRes = 0;
     SPCDivRes = 0;
 }
+
+/* ===== Stage 4: RTC (0x4840-0x4842, 0x4850-0x485F) =====
+   SPC7110RTCStat is a byte view: [0] enable, [1] index/mode, [2] command byte.
+   Mode 0xFE expects the command byte, 0xFF expects the register index, and
+   0x00-0x0F is the live register index (auto-incrementing after each access).
+   SPC7110RTC[0..15] holds the BCD time/date; an index-0 read latches the host
+   clock via GetTime/GetDate, matching the SA-1 RTC. */
+extern uint8_t SPC7110RTC[16];
+extern uint32_t GetTime(void), GetDate(void); /* ztimec.c */
+#ifndef NO_DEBUGGER
+extern uint8_t debuggeron;
+#endif
+
+#define RTC_STAT(i) (((uint8_t *)&SPC7110RTCStat)[i])
+
+static void spc7110_latch_clock(void)
+{
+    uint32_t e = GetTime(); /* sec | min<<8 | hour<<16, each BCD */
+    SPC7110RTC[0] = e & 0x0F;
+    e >>= 4;
+    SPC7110RTC[1] = e & 0x0F;
+    e >>= 4;
+    SPC7110RTC[2] = e & 0x0F;
+    e >>= 4;
+    SPC7110RTC[3] = e & 0x0F;
+    e >>= 4;
+    SPC7110RTC[4] = e & 0x0F; /* always the 24-hour path; asm's 12-hour path is dead */
+    e >>= 4;
+    SPC7110RTC[5] = e & 0x0F;
+
+    e = GetDate(); /* mday | (mon+1)<<8 | year<<16 | wday<<28 */
+    SPC7110RTC[6] = e & 0x0F;
+    e >>= 4;
+    SPC7110RTC[7] = e & 0x0F;
+    e >>= 4;
+    {
+        uint8_t bl = e & 0x0F, bh = 0; /* month is binary 1-12 here */
+        if (bl > 9) {
+            bl -= 10;
+            bh = 1;
+        }
+        SPC7110RTC[8] = bl;
+        SPC7110RTC[9] = bh;
+    }
+    e >>= 8;
+    SPC7110RTC[10] = e & 0x0F;
+    e >>= 4;
+    {
+        uint8_t bl = e & 0x1F; /* year 10's digit, reduced mod 10 */
+        while (bl > 9)
+            bl -= 10;
+        SPC7110RTC[11] = bl;
+    }
+    e >>= 8;
+    SPC7110RTC[12] = e & 0x0F; /* day of week */
+}
+
+REGABI_REG_WRITE8(SPC4840w);
+void c_SPC4840w(uint8_t al)
+{
+    if (al & 1) {
+        RTC_STAT(0) = al;
+        RTC_STAT(1) = 0xFE;
+    }
+}
+REGABI_REG_READ8(SPC4840);
+uint8_t c_SPC4840(void) { return RTC_STAT(0); }
+
+REGABI_REG_WRITE8(SPC4841w);
+void c_SPC4841w(uint8_t al)
+{
+    uint8_t mode = RTC_STAT(1);
+    if (mode == 0xFE) { /* first write after enable: command byte */
+        RTC_STAT(1) = 0xFF;
+        RTC_STAT(2) = al;
+        return;
+    }
+    if (mode == 0xFF) { /* second write: register index */
+        RTC_STAT(1) = al & 0x0F;
+        return;
+    }
+    SPC7110RTC[mode] = al;
+    if (mode == 0x0F && (al & 1)) { /* control reg reset: day and month back to 1 */
+        SPC7110RTC[0] = SPC7110RTC[1] = SPC7110RTC[2] = SPC7110RTC[3] = 0;
+        SPC7110RTC[4] = SPC7110RTC[5] = 0;
+        SPC7110RTC[6] = 1;
+        SPC7110RTC[7] = 0;
+        SPC7110RTC[8] = 1;
+        SPC7110RTC[9] = SPC7110RTC[10] = SPC7110RTC[11] = 0;
+        SPC7110RTC[12] = 0;
+    }
+    RTC_STAT(1) = (mode + 1) & 0x0F;
+}
+REGABI_REG_READ8(SPC4841);
+uint8_t c_SPC4841(void)
+{
+    uint8_t mode = RTC_STAT(1);
+    uint8_t al;
+    if (mode == 0xFE || mode == 0xFF) { /* return the stored command byte */
+        RTC_STAT(1) = mode + 1;
+        return RTC_STAT(2);
+    }
+    if (mode == 0 && !(SPC7110RTC[0x0F] & 0x03) && !(SPC7110RTC[0x0D] & 0x01)
+#ifndef NO_DEBUGGER
+        && debuggeron != 1
+#endif
+    ) {
+        spc7110_latch_clock();
+    }
+    al = SPC7110RTC[mode];
+    RTC_STAT(1) = (mode + 1) & 0x0F;
+    return al;
+}
+
+REGABI_REG_WRITE8(SPC4842w);
+void c_SPC4842w(uint8_t al) { (void)al; }
+REGABI_REG_READ8(SPC4842);
+uint8_t c_SPC4842(void) { return 0x80; } /* always ready */
+
+#define SPC_RTC_R(name, idx) \
+    REGABI_REG_READ8(name);  \
+    uint8_t c_##name(void) { return SPC7110RTC[idx]; }
+SPC_RTC_R(SPC4850, 0x00)
+SPC_RTC_R(SPC4851, 0x01)
+SPC_RTC_R(SPC4852, 0x02)
+SPC_RTC_R(SPC4853, 0x03)
+SPC_RTC_R(SPC4854, 0x04)
+SPC_RTC_R(SPC4855, 0x05)
+SPC_RTC_R(SPC4856, 0x06)
+SPC_RTC_R(SPC4857, 0x07)
+SPC_RTC_R(SPC4858, 0x08)
+SPC_RTC_R(SPC4859, 0x09)
+SPC_RTC_R(SPC485A, 0x0A)
+SPC_RTC_R(SPC485B, 0x0B)
+SPC_RTC_R(SPC485C, 0x0C)
+SPC_RTC_R(SPC485D, 0x0D)
+SPC_RTC_R(SPC485E, 0x0E)
+SPC_RTC_R(SPC485F, 0x0F)
