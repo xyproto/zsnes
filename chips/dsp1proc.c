@@ -623,29 +623,29 @@ uint16_t c_DSP1Read16b3Farea(uint32_t off)
 
 #if defined(__GNUC__) && defined(__i386__)
 __asm__(
-    ".globl DSP1Write8b3F\nDSP1Write8b3F:\n"
-    "  testl $0x8000, %ecx\n  jnz 1f\n"
-    "  cmpb $0xE0, %bl\n  je 1f\n"
-    "  jmp regaccessbankw8\n"
-    "1:jmp DSP1Write8b\n"
+    ".globl " REGABI_SYM(DSP1Write8b3F) "\n" REGABI_SYM(DSP1Write8b3F) ":\n"
+                                                                       "  testl $0x8000, %ecx\n  jnz 1f\n"
+                                                                       "  cmpb $0xE0, %bl\n  je 1f\n"
+                                                                       "  jmp " REGABI_SYM(regaccessbankw8) "\n"
+                                                                                                            "1:jmp " REGABI_SYM(DSP1Write8b) "\n"
 
-    ".globl DSP1Write16b3F\nDSP1Write16b3F:\n"
-    "  testl $0x8000, %ecx\n  jnz 2f\n"
-    "  cmpb $0xE0, %bl\n  je 2f\n"
-    "  jmp regaccessbankw16\n"
-    "2:jmp DSP1Write16b\n"
+                                                                                                                                             ".globl " REGABI_SYM(DSP1Write16b3F) "\n" REGABI_SYM(DSP1Write16b3F) ":\n"
+                                                                                                                                                                                                                  "  testl $0x8000, %ecx\n  jnz 2f\n"
+                                                                                                                                                                                                                  "  cmpb $0xE0, %bl\n  je 2f\n"
+                                                                                                                                                                                                                  "  jmp " REGABI_SYM(regaccessbankw16) "\n"
+                                                                                                                                                                                                                                                        "2:jmp " REGABI_SYM(DSP1Write16b) "\n"
 
-    ".globl DSP1Read8b3F\nDSP1Read8b3F:\n"
-    "  testl $0x8000, %ecx\n  jnz 3f\n"
-    "  cmpb $0xE0, %bl\n  je 3f\n"
-    "  jmp regaccessbankr8\n"
-    "3:movb $0x80, %al\n  ret\n"
+                                                                                                                                                                                                                                                                                          ".globl " REGABI_SYM(DSP1Read8b3F) "\n" REGABI_SYM(DSP1Read8b3F) ":\n"
+                                                                                                                                                                                                                                                                                                                                                           "  testl $0x8000, %ecx\n  jnz 3f\n"
+                                                                                                                                                                                                                                                                                                                                                           "  cmpb $0xE0, %bl\n  je 3f\n"
+                                                                                                                                                                                                                                                                                                                                                           "  jmp " REGABI_SYM(regaccessbankr8) "\n"
+                                                                                                                                                                                                                                                                                                                                                                                                "3:movb $0x80, %al\n  ret\n"
 
-    ".globl DSP1Read16b3F\nDSP1Read16b3F:\n"
-    "  testl $0x8000, %ecx\n  jnz 4f\n"
-    "  cmpb $0xE0, %bl\n  je 4f\n"
-    "  jmp regaccessbankr16\n"
-    "4:pushl %ecx\n  pushl %edx\n  pushl %eax\n  pushl %ecx\n"
-    "  call c_DSP1Read16b3Farea\n  addl $4, %esp\n"
-    "  movw %ax, (%esp)\n  popl %eax\n  popl %edx\n  popl %ecx\n  ret\n");
+                                                                                                                                                                                                                                                                                                                                                                                                ".globl " REGABI_SYM(DSP1Read16b3F) "\n" REGABI_SYM(DSP1Read16b3F) ":\n"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                   "  testl $0x8000, %ecx\n  jnz 4f\n"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                   "  cmpb $0xE0, %bl\n  je 4f\n"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                   "  jmp " REGABI_SYM(regaccessbankr16) "\n"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         "4:pushl %ecx\n  pushl %edx\n  pushl %eax\n  pushl %ecx\n"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         "  call " REGABI_SYM(c_DSP1Read16b3Farea) "\n  addl $4, %esp\n"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   "  movw %ax, (%esp)\n  popl %eax\n  popl %edx\n  popl %ecx\n  ret\n");
 #endif
