@@ -71,6 +71,28 @@ void c_SPC4817w(uint8_t), c_SPC4818w(uint8_t);
 uint8_t c_SPC4831(void), c_SPC4832(void), c_SPC4833(void), c_SPC4834(void);
 void c_SPC4831w(uint8_t), c_SPC4832w(uint8_t), c_SPC4833w(uint8_t);
 
+/* Stage 6: dispatch tables + memory-core symbols 7110proc.c bridges into.
+   The SRAM trampolines reference these; tests don't exercise that routing, so
+   plain stubs satisfy the linker. */
+typedef void eop();
+eop* regptra[0x3000];
+eop* regptwa[0x3000];
+void initSPC7110regs(void), SPC7110Reset(void);
+uint8_t c_memaccessspc7110r8(uint32_t);
+uint16_t c_memaccessspc7110r16(uint32_t);
+void memaccessbankr8(void) { }
+void memaccessbankr16(void) { }
+void memaccessbankw8(void) { }
+void memaccessbankw16(void) { }
+void regaccessbankr8(void) { }
+void regaccessbankr16(void) { }
+void regaccessbankw8(void) { }
+void regaccessbankw16(void) { }
+void sramaccessbankr8b(void) { }
+void sramaccessbankr16b(void) { }
+void sramaccessbankw8b(void) { }
+void sramaccessbankw16b(void) { }
+
 #define OFF(sym) ((char*)&(sym) - (char*)&SPCMultA)
 
 int main(void)
@@ -232,14 +254,24 @@ int main(void)
     c_SPC4841w(0x00);
     ZT_CHECK_INT(c_SPC4841(), 7); /* read back the written seconds 1's */
 
-    ZT_SECTION("RTC: elapsed real seconds advance the clock");
+    ZT_SECTION("RTC: elapsed real seconds advance the clock via the serial protocol");
     test_time = 0x231259; /* re-seed at 23:12:59 */
     SPC7110init();
     test_time = 0x231300; /* one second later: 23:13:00 */
-    ZT_CHECK_INT(c_SPC4850(), 0); /* seconds rolled 59 -> 00 */
+    c_SPC4840w(0x01); /* chip select on */
+    c_SPC4841w(0x0C); /* read mode */
+    c_SPC4841w(0x00); /* seek register 0 -> READ */
+    ZT_CHECK_INT(c_SPC4841(), 0); /* read syncs: seconds rolled 59 -> 00 */
+    /* the serial read repacked the shadow, so the direct mirrors agree */
+    ZT_CHECK_INT(c_SPC4850(), 0); /* seconds 1's = 0 */
     ZT_CHECK_INT(c_SPC4852(), 3); /* minute carried 12 -> 13 */
 
-    ZT_SECTION("RTC: direct reads 0x4850-0x485F mirror the registers");
+    ZT_SECTION("RTC: direct reads 0x4850-0x485F are pure shadows (no self-advance)");
+    test_time = 0x231259; /* re-seed at 23:12:59 */
+    SPC7110init();
+    test_time = 0x240000; /* host clock jumps far ahead */
+    ZT_CHECK_INT(c_SPC4850(), 9); /* direct read does not sync, stays seeded */
+    ZT_CHECK_INT(c_SPC4850(), 9); /* repeat reads are stable */
     ZT_CHECK_INT(c_SPC4856(), SPC7110RTC[6]);
     ZT_CHECK_INT(c_SPC485F(), SPC7110RTC[15]);
 
@@ -308,6 +340,23 @@ int main(void)
 
     free(romdata);
     romdata = NULL;
+
+    ZT_SECTION("dispatch: initSPC7110regs/SPC7110Reset populate the reg tables");
+    initSPC7110regs();
+    SPC7110Reset();
+    ZT_CHECK(regptra[0x4800 - 0x2000] != NULL); /* read handler registered */
+    ZT_CHECK(regptra[0x485F - 0x2000] != NULL);
+    ZT_CHECK(regptwa[0x4801 - 0x2000] != NULL); /* write handler registered */
+    ZT_CHECK(regptwa[0x4842 - 0x2000] != NULL);
+    ZT_CHECK(regptwa[0x4800 - 0x2000] == NULL); /* 0x4800 has no write handler */
+
+    ZT_SECTION("memaccess: $50 data window reads pull from port 0x4800");
+    spc4800_calls = 0;
+    SPCCompressionRegs[0] = 0x7E;
+    ZT_CHECK_INT(c_memaccessspc7110r8(0x0000), 0x7E); /* one 0x4800 read */
+    ZT_CHECK_INT(spc4800_calls, 1);
+    ZT_CHECK_INT(c_memaccessspc7110r16(0x0000), 0x7E7E); /* two 0x4800 reads */
+    ZT_CHECK_INT(spc4800_calls, 3);
 
     ZT_RESULTS();
 }
