@@ -39,6 +39,17 @@ void c_SPC4820w(uint8_t), c_SPC4821w(uint8_t), c_SPC4822w(uint8_t), c_SPC4823w(u
 void c_SPC4824w(uint8_t), c_SPC4825w(uint8_t), c_SPC4826w(uint8_t), c_SPC4827w(uint8_t);
 void c_SPC482Ew(uint8_t);
 
+/* Stage 4 RTC (0x4840-0x4842, 0x4850-0x485F) */
+uint8_t c_SPC4840(void), c_SPC4841(void), c_SPC4842(void);
+void c_SPC4840w(uint8_t), c_SPC4841w(uint8_t), c_SPC4842w(uint8_t);
+uint8_t c_SPC4850(void), c_SPC4851(void), c_SPC4852(void), c_SPC4853(void);
+uint8_t c_SPC4854(void), c_SPC4855(void), c_SPC4856(void), c_SPC485F(void);
+
+/* 7110proc.c pulls the host clock from these; the test owns deterministic stubs */
+uint8_t debuggeron;
+uint32_t GetTime(void) { return 0x231259; } /* 12:59:23 BCD */
+uint32_t GetDate(void) { return 0x30190625; } /* Wed 25 / (mon+1)=06 / year 19 */
+
 #define OFF(sym) ((char*)&(sym) - (char*)&SPCMultA)
 
 int main(void)
@@ -166,6 +177,58 @@ int main(void)
     ZT_CHECK_INT(SPCSignedVal, 1); /* mode byte retained */
     ZT_CHECK_INT(c_SPC482E(), 0); /* status regs read as zero */
     ZT_CHECK_INT(c_SPC482F(), 0);
+
+    ZT_SECTION("RTC: enable and indexed write with auto-increment");
+    debuggeron = 0;
+    c_SPC4840w(0x01); /* enable, mode -> 0xFE */
+    ZT_CHECK_INT(c_SPC4840(), 0x01);
+    c_SPC4841w(0xAB); /* command byte, mode -> 0xFF */
+    c_SPC4841w(0x03); /* register index 3 */
+    c_SPC4841w(0x07); /* RTC[3] = 7, index -> 4 */
+    c_SPC4841w(0x09); /* RTC[4] = 9, index -> 5 */
+    ZT_CHECK_INT(SPC7110RTC[3], 0x07);
+    ZT_CHECK_INT(SPC7110RTC[4], 0x09);
+
+    ZT_SECTION("RTC: command-byte read path and status/no-op");
+    c_SPC4840w(0x01); /* mode -> 0xFE */
+    c_SPC4841w(0x5A); /* command byte, mode -> 0xFF */
+    ZT_CHECK_INT(c_SPC4841(), 0x5A); /* read returns command byte, mode -> 0x00 */
+    ZT_CHECK_INT(c_SPC4842(), 0x80); /* always ready */
+    c_SPC4842w(0x00);                /* no-op */
+
+    ZT_SECTION("RTC: index-0 read latches the host clock");
+    SPC7110RTC[0x0F] = 0; /* clear the latch-inhibit bits */
+    SPC7110RTC[0x0D] = 0;
+    c_SPC4840w(0x01); /* mode -> 0xFE */
+    c_SPC4841w(0x00); /* command byte */
+    c_SPC4841w(0x00); /* index 0 */
+    ZT_CHECK_INT(c_SPC4841(), 9); /* sec 1's (triggers latch) */
+    ZT_CHECK_INT(c_SPC4841(), 5); /* sec 10's */
+    ZT_CHECK_INT(c_SPC4841(), 2); /* min 1's */
+    ZT_CHECK_INT(c_SPC4841(), 1); /* min 10's */
+    ZT_CHECK_INT(c_SPC4841(), 3); /* hour 1's */
+    ZT_CHECK_INT(c_SPC4841(), 2); /* hour 10's */
+    ZT_CHECK_INT(c_SPC4841(), 5); /* day 1's */
+    ZT_CHECK_INT(c_SPC4841(), 2); /* day 10's */
+    ZT_CHECK_INT(c_SPC4841(), 6); /* month 1's */
+    ZT_CHECK_INT(c_SPC4841(), 0); /* month 10's */
+    ZT_CHECK_INT(c_SPC4841(), 9); /* year 1's */
+    ZT_CHECK_INT(c_SPC4841(), 1); /* year 10's */
+    ZT_CHECK_INT(c_SPC4841(), 3); /* day of week */
+
+    ZT_SECTION("RTC: direct reads 0x4850-0x485F mirror the registers");
+    ZT_CHECK_INT(c_SPC4850(), SPC7110RTC[0]);
+    ZT_CHECK_INT(c_SPC4856(), SPC7110RTC[6]);
+    ZT_CHECK_INT(c_SPC485F(), SPC7110RTC[15]);
+
+    ZT_SECTION("RTC: control-register reset (index 0x0F, bit 0)");
+    c_SPC4840w(0x01); /* mode -> 0xFE */
+    c_SPC4841w(0x00); /* command byte */
+    c_SPC4841w(0x0F); /* index 0x0F */
+    c_SPC4841w(0x01); /* write bit0 triggers reset */
+    ZT_CHECK_INT(SPC7110RTC[0], 0); /* time cleared */
+    ZT_CHECK_INT(SPC7110RTC[6], 1); /* day back to 1 */
+    ZT_CHECK_INT(SPC7110RTC[8], 1); /* month back to 1 */
 
     ZT_RESULTS();
 }
