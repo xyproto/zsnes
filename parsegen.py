@@ -4,6 +4,7 @@ import sys
 import os
 import re
 import subprocess
+import tempfile
 import zlib
 from enum import Enum
 from typing import List, Set, Dict, Optional, TextIO, Tuple
@@ -1326,19 +1327,34 @@ Options:
 """, file=sys.stderr)
         return 1
 
-    cname = f"{family_name}.c"
     psr_file = sys.argv[param_pos + 1]
-    c_file = cname if compile_flag else sys.argv[param_pos]
-    obj_file = sys.argv[param_pos] if compile_flag else None
+    out_arg = sys.argv[param_pos]
     ret_val = 0
+
+    # When compiling, generate the C source to a unique temp file in the current
+    # directory (so the generated relative includes still resolve) and install
+    # the header and object atomically.  Parallel make targets can resolve to
+    # the same output path (e.g. input.o and win/../input.o); without unique
+    # temps and atomic renames they would clobber each other mid-write.
+    if compile_flag:
+        obj_file = out_arg
+        c_fd, c_file = tempfile.mkstemp(prefix=f".{family_name}.", suffix=".c", dir=".")
+        os.close(c_fd)
+    else:
+        obj_file = None
+        c_file = out_arg
+
+    cheader_tmp = None
 
     try:
         with open(psr_file, 'r') as psr_stream:
             with open(c_file, 'w') as c_stream:
                 cheader_stream = None
                 if cheader_file:
+                    ch_dir = os.path.dirname(cheader_file) or "."
+                    ch_fd, cheader_tmp = tempfile.mkstemp(prefix=".psrh.", suffix=".h", dir=ch_dir)
                     try:
-                        cheader_stream = open(cheader_file, 'w')
+                        cheader_stream = os.fdopen(ch_fd, 'w')
                         parser_generate(psr_stream, c_stream, cheader_stream, cheader_file)
                     except IOError:
                         print(f"Error opening {cheader_file} for writing.", file=sys.stderr)
@@ -1356,12 +1372,35 @@ Options:
             print(f"Error opening {c_file} for writing.", file=sys.stderr)
             ret_val |= 2
 
+    # Atomically install the generated header so a concurrent build of the same
+    # output never observes a half-written file.
+    if not ret_val and cheader_tmp:
+        os.replace(cheader_tmp, cheader_file)
+        cheader_tmp = None
+
     if not ret_val and compile_flag:
-        command = f"{gcc} {cflags} -o {obj_file} -c {cname}"
+        o_dir = os.path.dirname(obj_file) or "."
+        o_fd, tmp_o = tempfile.mkstemp(prefix=".psro.", suffix=".o", dir=o_dir)
+        os.close(o_fd)
+        command = f"{gcc} {cflags} -o {tmp_o} -c {c_file}"
         print(f"parsegen: {command}")
-        subprocess.call(command, shell=True)
+        if subprocess.call(command, shell=True) == 0:
+            os.replace(tmp_o, obj_file)
+        else:
+            ret_val |= 1
+            try:
+                os.remove(tmp_o)
+            except OSError:
+                pass
+
+    if compile_flag:
         try:
-            os.remove(cname)
+            os.remove(c_file)
+        except OSError:
+            pass
+    if cheader_tmp:
+        try:
+            os.remove(cheader_tmp)
         except OSError:
             pass
 
