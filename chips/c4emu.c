@@ -183,24 +183,31 @@ double c4x2, c4y2, c4z2;
 
 void C4TransfWireFrame()
 {
+    double s, c;
     c4x = (double)C4WFXVal;
     c4y = (double)C4WFYVal;
     c4z = (double)C4WFZVal - 0x95;
 
     // Rotate X
     tanval = -(double)C4WFX2Val * PI * 2 / 128;
-    c4y2 = c4y * cos(tanval) - c4z * sin(tanval);
-    c4z2 = c4y * sin(tanval) + c4z * cos(tanval);
+    s = sin(tanval);
+    c = cos(tanval);
+    c4y2 = c4y * c - c4z * s;
+    c4z2 = c4y * s + c4z * c;
 
     // Rotate Y
     tanval = -(double)C4WFY2Val * PI * 2 / 128;
-    c4x2 = c4x * cos(tanval) + c4z2 * sin(tanval);
-    c4z = c4x * -sin(tanval) + c4z2 * cos(tanval);
+    s = sin(tanval);
+    c = cos(tanval);
+    c4x2 = c4x * c + c4z2 * s;
+    c4z = c4x * -s + c4z2 * c;
 
     // Rotate Z
     tanval = -(double)C4WFDist * PI * 2 / 128;
-    c4x = c4x2 * cos(tanval) - c4y2 * sin(tanval);
-    c4y = c4x2 * sin(tanval) + c4y2 * cos(tanval);
+    s = sin(tanval);
+    c = cos(tanval);
+    c4x = c4x2 * c - c4y2 * s;
+    c4y = c4x2 * s + c4y2 * c;
 
     // Scale
     C4WFXVal = (short)(c4x * C4WFScale / (0x90 * (c4z + 0x95)) * 0x95);
@@ -209,24 +216,31 @@ void C4TransfWireFrame()
 
 void C4TransfWireFrame2()
 {
+    double s, c;
     c4x = (double)C4WFXVal;
     c4y = (double)C4WFYVal;
     c4z = (double)C4WFZVal;
 
     // Rotate X
     tanval = -(double)C4WFX2Val * PI * 2 / 128;
-    c4y2 = c4y * cos(tanval) - c4z * sin(tanval);
-    c4z2 = c4y * sin(tanval) + c4z * cos(tanval);
+    s = sin(tanval);
+    c = cos(tanval);
+    c4y2 = c4y * c - c4z * s;
+    c4z2 = c4y * s + c4z * c;
 
     // Rotate Y
     tanval = -(double)C4WFY2Val * PI * 2 / 128;
-    c4x2 = c4x * cos(tanval) + c4z2 * sin(tanval);
-    c4z = c4x * -sin(tanval) + c4z2 * cos(tanval);
+    s = sin(tanval);
+    c = cos(tanval);
+    c4x2 = c4x * c + c4z2 * s;
+    c4z = c4x * -s + c4z2 * c;
 
     // Rotate Z
     tanval = -(double)C4WFDist * PI * 2 / 128;
-    c4x = c4x2 * cos(tanval) - c4y2 * sin(tanval);
-    c4y = c4x2 * sin(tanval) + c4y2 * cos(tanval);
+    s = sin(tanval);
+    c = cos(tanval);
+    c4x = c4x2 * c - c4y2 * s;
+    c4y = c4x2 * s + c4y2 * c;
 
     // Scale
     C4WFXVal = (short)(c4x * C4WFScale / 0x100);
