@@ -8,6 +8,7 @@
  */
 
 #include <stdint.h>
+#include <stdlib.h>
 
 #include "zstest.h"
 
@@ -45,10 +46,30 @@ void c_SPC4840w(uint8_t), c_SPC4841w(uint8_t), c_SPC4842w(uint8_t);
 uint8_t c_SPC4850(void), c_SPC4851(void), c_SPC4852(void), c_SPC4853(void);
 uint8_t c_SPC4854(void), c_SPC4855(void), c_SPC4856(void), c_SPC485F(void);
 
-/* 7110proc.c pulls the host clock from these; the test owns deterministic stubs */
-uint8_t debuggeron;
-uint32_t GetTime(void) { return 0x231259; } /* 12:59:23 BCD */
-uint32_t GetDate(void) { return 0x30190625; } /* Wed 25 / (mon+1)=06 / year 19 */
+/* The RTC seeds and advances from these; the test drives them deterministically.
+   GetTime: sec | min<<8 | hour<<16 (BCD).  GetDate: mday | (mon+1)<<8 |
+   year<<16 | wday<<28 (mday/year BCD, month binary 1-12). */
+uint32_t test_time = 0x231259; /* 23:12:59 */
+uint32_t test_date = 0x30190625; /* wday 3, year 19, mon 6, mday 25 */
+uint32_t GetTime(void) { return test_time; }
+uint32_t GetDate(void) { return test_date; }
+void SPC7110RTCReset(void);
+
+/* Stage 5 data-port / bank-map externs the test owns */
+extern uint32_t SPCROMPtr, SPCROMtoI, SPCROMAdj, SPCROMInc, SPCROMCom, SPCCheckFix;
+uint8_t* romdata;
+uint8_t curromsize;
+uint8_t *snesmmap[256], *snesmap2[256];
+
+/* Stage 5 handlers */
+uint8_t c_SPC4810(void), c_SPC4811(void), c_SPC4812(void), c_SPC4813(void);
+uint8_t c_SPC4814(void), c_SPC4815(void), c_SPC4816(void), c_SPC4817(void);
+uint8_t c_SPC4818(void), c_SPC481A(void);
+void c_SPC4811w(uint8_t), c_SPC4812w(uint8_t), c_SPC4813w(uint8_t);
+void c_SPC4814w(uint8_t), c_SPC4815w(uint8_t), c_SPC4816w(uint8_t);
+void c_SPC4817w(uint8_t), c_SPC4818w(uint8_t);
+uint8_t c_SPC4831(void), c_SPC4832(void), c_SPC4833(void), c_SPC4834(void);
+void c_SPC4831w(uint8_t), c_SPC4832w(uint8_t), c_SPC4833w(uint8_t);
 
 #define OFF(sym) ((char*)&(sym) - (char*)&SPCMultA)
 
@@ -178,57 +199,115 @@ int main(void)
     ZT_CHECK_INT(c_SPC482E(), 0); /* status regs read as zero */
     ZT_CHECK_INT(c_SPC482F(), 0);
 
-    ZT_SECTION("RTC: enable and indexed write with auto-increment");
-    debuggeron = 0;
-    c_SPC4840w(0x01); /* enable, mode -> 0xFE */
+    ZT_SECTION("RTC: seeded from the host clock (23:12:59, 12-hour mode)");
+    test_time = 0x231259; /* 23:12:59 BCD */
+    test_date = 0x30190625; /* wday 3, year 19, mon 6, mday 25 */
+    SPC7110init(); /* SPC7110RTCReset seeds the RTC */
+    ZT_CHECK_INT(c_SPC4850(), 9); /* seconds 1's */
+    ZT_CHECK_INT(c_SPC4852(), 2); /* minutes 1's */
+    ZT_CHECK_INT(c_SPC4853() & 7, 1); /* minutes 10's (resync in bit3) */
+    ZT_CHECK_INT(c_SPC4854(), 1); /* hour 1's (23 -> 11 PM) */
+    ZT_CHECK_INT(c_SPC4855() & 3, 1); /* hour 10's */
+    ZT_CHECK_INT((c_SPC4855() >> 2) & 1, 1); /* meridian = PM */
+
+    ZT_SECTION("RTC: serial read protocol with chip select and seek");
+    c_SPC4840w(0x01); /* chip select on */
     ZT_CHECK_INT(c_SPC4840(), 0x01);
-    c_SPC4841w(0xAB); /* command byte, mode -> 0xFF */
-    c_SPC4841w(0x03); /* register index 3 */
-    c_SPC4841w(0x07); /* RTC[3] = 7, index -> 4 */
-    c_SPC4841w(0x09); /* RTC[4] = 9, index -> 5 */
-    ZT_CHECK_INT(SPC7110RTC[3], 0x07);
-    ZT_CHECK_INT(SPC7110RTC[4], 0x09);
+    ZT_CHECK_INT(c_SPC4842(), 0x80); /* ready */
+    c_SPC4841w(0x0C); /* mode: read/indexed */
+    c_SPC4841w(0x00); /* seek to register 0 -> READ state */
+    ZT_CHECK_INT(c_SPC4841(), 9); /* reg 0: seconds 1's, offset++ */
+    ZT_CHECK_INT(c_SPC4841(), 5); /* reg 1: seconds 10's */
+    ZT_CHECK_INT(c_SPC4841(), 2); /* reg 2: minutes 1's */
 
-    ZT_SECTION("RTC: command-byte read path and status/no-op");
-    c_SPC4840w(0x01); /* mode -> 0xFE */
-    c_SPC4841w(0x5A); /* command byte, mode -> 0xFF */
-    ZT_CHECK_INT(c_SPC4841(), 0x5A); /* read returns command byte, mode -> 0x00 */
-    ZT_CHECK_INT(c_SPC4842(), 0x80); /* always ready */
-    c_SPC4842w(0x00);                /* no-op */
+    ZT_SECTION("RTC: serial write protocol writes a register");
+    c_SPC4840w(0x00); /* deselect to start a clean transaction */
+    c_SPC4840w(0x01);
+    c_SPC4841w(0x03); /* mode: write/linear */
+    c_SPC4841w(0x00); /* seek to register 0 -> WRITE state */
+    c_SPC4841w(0x07); /* reg 0 = 7 */
+    c_SPC4840w(0x00); /* deselect resets the protocol */
+    c_SPC4840w(0x01);
+    c_SPC4841w(0x0C);
+    c_SPC4841w(0x00);
+    ZT_CHECK_INT(c_SPC4841(), 7); /* read back the written seconds 1's */
 
-    ZT_SECTION("RTC: index-0 read latches the host clock");
-    SPC7110RTC[0x0F] = 0; /* clear the latch-inhibit bits */
-    SPC7110RTC[0x0D] = 0;
-    c_SPC4840w(0x01); /* mode -> 0xFE */
-    c_SPC4841w(0x00); /* command byte */
-    c_SPC4841w(0x00); /* index 0 */
-    ZT_CHECK_INT(c_SPC4841(), 9); /* sec 1's (triggers latch) */
-    ZT_CHECK_INT(c_SPC4841(), 5); /* sec 10's */
-    ZT_CHECK_INT(c_SPC4841(), 2); /* min 1's */
-    ZT_CHECK_INT(c_SPC4841(), 1); /* min 10's */
-    ZT_CHECK_INT(c_SPC4841(), 3); /* hour 1's */
-    ZT_CHECK_INT(c_SPC4841(), 2); /* hour 10's */
-    ZT_CHECK_INT(c_SPC4841(), 5); /* day 1's */
-    ZT_CHECK_INT(c_SPC4841(), 2); /* day 10's */
-    ZT_CHECK_INT(c_SPC4841(), 6); /* month 1's */
-    ZT_CHECK_INT(c_SPC4841(), 0); /* month 10's */
-    ZT_CHECK_INT(c_SPC4841(), 9); /* year 1's */
-    ZT_CHECK_INT(c_SPC4841(), 1); /* year 10's */
-    ZT_CHECK_INT(c_SPC4841(), 3); /* day of week */
+    ZT_SECTION("RTC: elapsed real seconds advance the clock");
+    test_time = 0x231259; /* re-seed at 23:12:59 */
+    SPC7110init();
+    test_time = 0x231300; /* one second later: 23:13:00 */
+    ZT_CHECK_INT(c_SPC4850(), 0); /* seconds rolled 59 -> 00 */
+    ZT_CHECK_INT(c_SPC4852(), 3); /* minute carried 12 -> 13 */
 
     ZT_SECTION("RTC: direct reads 0x4850-0x485F mirror the registers");
-    ZT_CHECK_INT(c_SPC4850(), SPC7110RTC[0]);
     ZT_CHECK_INT(c_SPC4856(), SPC7110RTC[6]);
     ZT_CHECK_INT(c_SPC485F(), SPC7110RTC[15]);
 
-    ZT_SECTION("RTC: control-register reset (index 0x0F, bit 0)");
-    c_SPC4840w(0x01); /* mode -> 0xFE */
-    c_SPC4841w(0x00); /* command byte */
-    c_SPC4841w(0x0F); /* index 0x0F */
-    c_SPC4841w(0x01); /* write bit0 triggers reset */
-    ZT_CHECK_INT(SPC7110RTC[0], 0); /* time cleared */
-    ZT_CHECK_INT(SPC7110RTC[6], 1); /* day back to 1 */
-    ZT_CHECK_INT(SPC7110RTC[8], 1); /* month back to 1 */
+    ZT_SECTION("RTC: chip select != 1 resets the serial protocol");
+    c_SPC4840w(0x00); /* deselect to start a clean transaction */
+    c_SPC4840w(0x01);
+    c_SPC4841w(0x0C);
+    c_SPC4841w(0x00); /* now in READ state */
+    c_SPC4840w(0x02); /* invalid chip select -> reset */
+    ZT_CHECK_INT(c_SPC4841(), 0); /* reads as zero when not selected */
+
+    ZT_SECTION("data port: reads as zero before first 0x4811 write");
+    romdata = calloc(0x200000, 1);
+    for (int i = 0; i < 0x10000; i++)
+        romdata[0x100000 + i] = (uint8_t)i; /* offset == byte value */
+    SPC7110init(); /* clears SPCCheckFix */
+    ZT_CHECK_INT(c_SPC4810(), 0);
+    ZT_CHECK_INT(c_SPC481A(), 0);
+
+    ZT_SECTION("data port: sequential read, +1 after read (cmd 0x00)");
+    c_SPC4811w(0x10); /* ptr low = 0x10, also sets SPCCheckFix */
+    c_SPC4812w(0x00);
+    c_SPC4813w(0x00);
+    c_SPC4818w(0x00); /* add 1 to SPCROMPtr after each 4810 read */
+    ZT_CHECK_INT(c_SPC4810(), 0x10);
+    ZT_CHECK_INT(c_SPC4810(), 0x11);
+    ZT_CHECK_INT(c_SPC4810(), 0x12);
+    ZT_CHECK_INT(c_SPC4811(), 0x13); /* pointer advanced */
+
+    ZT_SECTION("data port: read with SPCROMInc step (cmd 0x01)");
+    c_SPC4811w(0x00);
+    c_SPC4812w(0x00);
+    c_SPC4813w(0x00);
+    c_SPC4816w(0x04); /* SPCROMInc = 4 */
+    c_SPC4817w(0x00);
+    c_SPC4818w(0x01); /* add SPCROMInc after each 4810 read */
+    ZT_CHECK_INT(c_SPC4810(), 0x00);
+    ZT_CHECK_INT(c_SPC4810(), 0x04);
+    ZT_CHECK_INT(c_SPC4810(), 0x08);
+
+    ZT_SECTION("data port: 4810 with SPCROMAdj offset (cmd bit1)");
+    c_SPC4811w(0x00);
+    c_SPC4812w(0x00);
+    c_SPC4813w(0x00);
+    c_SPC4814w(0x05); /* SPCROMAdj = 5 */
+    c_SPC4815w(0x00);
+    c_SPC4818w(0x02); /* read at ptr+adj, post-increment adj */
+    ZT_CHECK_INT(c_SPC4810(), 0x05);
+    ZT_CHECK_INT(c_SPC4814(), 0x06); /* adj auto-incremented */
+    ZT_CHECK_INT(c_SPC4810(), 0x06);
+
+    ZT_SECTION("bank map: 0x4831-0x4833 fill snesmmap/snesmap2");
+    curromsize = 0; /* 24-bit reduction path */
+    c_SPC4831w(0x00); /* bank base 1<<20, banks 0xD0-0xDF */
+    ZT_CHECK(snesmmap[0xD0] == romdata + 0x100000);
+    ZT_CHECK(snesmap2[0xD0] == romdata + 0x100000);
+    ZT_CHECK(snesmmap[0xDF] == romdata + 0x100000 + 15 * 0x10000);
+    ZT_CHECK_INT(c_SPC4831(), 0x00);
+    c_SPC4832w(0x01); /* al+1=2 -> v=2; banks 0xE0-0xEF, base 2<<20 */
+    ZT_CHECK(snesmmap[0xE0] == romdata + 0x200000);
+    ZT_CHECK_INT(c_SPC4832(), 0x01);
+    c_SPC4833w(0x02); /* al+1=3 -> reduce to 1; banks 0xF0-0xFF, base 1<<20 */
+    ZT_CHECK(snesmmap[0xF0] == romdata + 0x100000);
+    ZT_CHECK_INT(c_SPC4833(), 0x02);
+    ZT_CHECK_INT(c_SPC4834(), 0x00);
+
+    free(romdata);
+    romdata = NULL;
 
     ZT_RESULTS();
 }
