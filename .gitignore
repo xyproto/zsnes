@@ -2,6 +2,7 @@
 *.log
 *.raw
 *.wav
+.buildmode
 build/
 .vscode/
 cfg.h

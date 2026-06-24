@@ -549,6 +549,26 @@ HDRS := $(PSRS:.psr=.h)
 OBJS := $(filter %.o, $(SRCS:.asm=.o) $(SRCS:.c=.o) $(SRCS:.rc=.o) $(PSRS:.psr=.o))
 DEPS := $(OBJS:.o=.d)
 
+# Auto-clean on build-target switch.  Native (ELF) and win32 (PE/COFF) builds
+# share the same .o paths but emit incompatible object formats, so switching
+# between "make" and "make win32" used to need a manual "make clean".  Record
+# the active target in a stamp file and wipe stale objects when it changes.
+# This runs at parse time (before any parallel recipe), and is skipped for the
+# win32 wrapper goal (its recursive "make ARCH=WIN" does the real build) and for
+# maintenance goals like clean/info/fmt.
+BUILDSTAMP := .buildmode
+BUILD_TAG := $(ARCH)|$(CC_TARGET_TRIPLE)
+ifneq ($(filter all debug test,$(or $(MAKECMDGOALS),all)),)
+PREV_BUILD_TAG := $(shell cat $(BUILDSTAMP) 2>/dev/null)
+ifneq ($(PREV_BUILD_TAG),)
+ifneq ($(PREV_BUILD_TAG),$(BUILD_TAG))
+$(info ===> build target changed ($(PREV_BUILD_TAG) -> $(BUILD_TAG)), cleaning stale objects)
+_CLEAN_SWITCH := $(shell rm -fr $(HDRS) $(DEPS) $(OBJS) $(BINARY) zsnes zsnes.exe)
+endif
+endif
+_WRITE_STAMP := $(shell printf '%s' '$(BUILD_TAG)' > $(BUILDSTAMP))
+endif
+
 .SUFFIXES:
 
 #Q ?= @
@@ -599,7 +619,7 @@ $(filter %.o, $(SRCS:.c=.o)): $(HDRS)
 
 clean distclean:
 	@echo '===> CLEAN'
-	$(Q)rm -fr $(HDRS) $(DEPS) $(OBJS) $(BINARY) zsnes zsnes.exe
+	$(Q)rm -fr $(HDRS) $(DEPS) $(OBJS) $(BINARY) zsnes zsnes.exe $(BUILDSTAMP)
 ifdef CLEAN_MORE
 	$(Q)find . -name "*.[do]" -delete
 endif
