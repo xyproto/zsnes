@@ -516,7 +516,6 @@ SRCS += win/c_winintrf.c
 SRCS += win/dx_ddraw.c
 SRCS += win/lib.c
 SRCS += win/safelib.c
-SRCS += win/winintrf.asm
 SRCS += win/winlink.c
 
 LDFLAGS += -ldxguid -ldinput -lxinput -lgdi32 -lole32 -lwinmm

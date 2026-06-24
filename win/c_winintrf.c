@@ -28,6 +28,12 @@
 #endif
 
 u4 delayvalue;
+
+// Variables previously in winintrf.asm
+u4 volatile CurKeyPos = 0;
+u4 CurKeyReadPos = 0;
+u4 KeyBuffer[16] = { 0 };
+u4 converta = 0;
 u1 blinit;
 
 static const int freqtab[7] = { 8000, 11025, 22050, 44100, 16000, 32000, 48000 };
