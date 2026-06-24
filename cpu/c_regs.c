@@ -144,7 +144,7 @@ void initregr(void)
     if (SDD1Enable)
         initSDD1regs();
     if (SPC7110Enable)
-        asm_call(initSPC7110regs);
+        initSPC7110regs();
     if (RTCEnable)
         RTCReset();
 }

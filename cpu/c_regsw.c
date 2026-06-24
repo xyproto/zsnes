@@ -271,7 +271,7 @@ void initregw(void)
     if (SDD1Enable)
         SDD1Reset();
     if (SPC7110Enable)
-        asm_call(SPC7110Reset);
+        SPC7110Reset();
     if (RTCEnable)
         RTCReset2();
 }
