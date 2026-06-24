@@ -10,6 +10,12 @@
 #include "../vcache.h"
 #include "makevid.h"
 
+#if defined(__APPLE__) || defined(__MINGW32__)
+#define CSYM(x) "_" #x
+#else
+#define CSYM(x) #x
+#endif
+
 // Decode one SNES planar 8x8 tile into the linear pixel cache.
 // src points at the tile in VRAM, dst at the 64-byte cache slot, bpp = 2, 4 or 8.
 static void decode_tile(u1 const* const src, u1* const dst, int const bpp)
@@ -135,18 +141,15 @@ void c_cachesingle8bng(u4 const ecx) { cachesingle_ng(ecx, 8); }
 // cdecl only preserves ebx/esi/edi/ebp, so save the caller-saved eax/ecx/edx.
 __asm__(
     ".text\n"
-    ".globl cachesingle2bng\n"
-    "cachesingle2bng:\n"
-    "    push %eax\n    push %ecx\n    push %edx\n"
-    "    push %ecx\n    call c_cachesingle2bng\n    add $4, %esp\n"
-    "    pop %edx\n    pop %ecx\n    pop %eax\n    ret\n"
-    ".globl cachesingle4bng\n"
-    "cachesingle4bng:\n"
-    "    push %eax\n    push %ecx\n    push %edx\n"
-    "    push %ecx\n    call c_cachesingle4bng\n    add $4, %esp\n"
-    "    pop %edx\n    pop %ecx\n    pop %eax\n    ret\n"
-    ".globl cachesingle8bng\n"
-    "cachesingle8bng:\n"
-    "    push %eax\n    push %ecx\n    push %edx\n"
-    "    push %ecx\n    call c_cachesingle8bng\n    add $4, %esp\n"
-    "    pop %edx\n    pop %ecx\n    pop %eax\n    ret\n");
+    ".globl " CSYM(cachesingle2bng) "\n" CSYM(cachesingle2bng) ":\n"
+                                                               "    push %eax\n    push %ecx\n    push %edx\n"
+                                                               "    push %ecx\n    call " CSYM(c_cachesingle2bng) "\n    add $4, %esp\n"
+                                                                                                                  "    pop %edx\n    pop %ecx\n    pop %eax\n    ret\n"
+                                                                                                                  ".globl " CSYM(cachesingle4bng) "\n" CSYM(cachesingle4bng) ":\n"
+                                                                                                                                                                             "    push %eax\n    push %ecx\n    push %edx\n"
+                                                                                                                                                                             "    push %ecx\n    call " CSYM(c_cachesingle4bng) "\n    add $4, %esp\n"
+                                                                                                                                                                                                                                "    pop %edx\n    pop %ecx\n    pop %eax\n    ret\n"
+                                                                                                                                                                                                                                ".globl " CSYM(cachesingle8bng) "\n" CSYM(cachesingle8bng) ":\n"
+                                                                                                                                                                                                                                                                                           "    push %eax\n    push %ecx\n    push %edx\n"
+                                                                                                                                                                                                                                                                                           "    push %ecx\n    call " CSYM(c_cachesingle8bng) "\n    add $4, %esp\n"
+                                                                                                                                                                                                                                                                                                                                              "    pop %edx\n    pop %ecx\n    pop %eax\n    ret\n");
