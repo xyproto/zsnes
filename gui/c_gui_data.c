@@ -2,6 +2,8 @@
    Byte-exact with the original NASM data; generated then verified. */
 #include "../types.h"
 
+#include "../asmdata.h"
+
 extern char SRAMPath[];
 extern char SStatePath[];
 extern char MoviePath[];
@@ -22,10 +24,8 @@ extern char GUICustomY[];
 /* cheatdataprev must sit immediately before cheatdata: cpu/execute.asm and
    gui/guicheat.c read the previous entry as cheatdata[-28]. */
 __asm__(
-    ".pushsection .bss.cheatblk,\"aw\",@nobits\n"
-    ".global cheatdataprev\ncheatdataprev:\n.zero 28\n"
-    ".global cheatdata\ncheatdata:\n.zero 7196\n"
-    ".popsection\n");
+    ASM_SEC_BSS(".bss.cheatblk")
+        ASM_GSYM(cheatdataprev) ".zero 28\n" ASM_GSYM(cheatdata) ".zero 7196\n" ASM_SEC_END);
 
 char CSDescDisplay[20] = { 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 0, 0 };
 char CSInputDisplay[12] = { 95, 0, 32, 32, 32, 32, 32, 32, 32, 32, 32, 0 };

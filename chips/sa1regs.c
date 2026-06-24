@@ -3,88 +3,26 @@
    the run &SA1Mode .. PHnum2writesa1reg bytes. Shared with sa1proc.asm (asm). */
 #include <stdint.h>
 
+#include "../asmdata.h"
+
 /* RTC (not part of the save block) */
 uint8_t RTCData[16] = { [0] = 0x0F, [14] = 0x0F };
 uint32_t RTCPtr, RTCPtr2, RTCRest;
 
 __asm__(
-    ".pushsection .data.sa1state,\"aw\",@progbits\n"
-    ".global SA1Mode\nSA1Mode:\n.long 0\n"
-    ".global SA1Control\nSA1Control:\n.long 0\n"
-    ".global SA1BankPtr\nSA1BankPtr:\n.long 0\n"
-    ".global SA1ResetV\nSA1ResetV:\n.long 0\n"
-    ".global SA1NMIV\nSA1NMIV:\n.long 0\n"
-    ".global SA1IRQV\nSA1IRQV:\n.long 0\n"
-    ".global SA1RV\nSA1RV:\n.long 0\n"
-    ".global CurBWPtr\nCurBWPtr:\n.long 0\n"
-    ".global SA1TempVar\nSA1TempVar:\n.long 0\n"
-    ".global SA1IRQEn\nSA1IRQEn:\n.long 0\n"
-    ".global SA1Message\nSA1Message:\n.long 0\n"
-    ".global SA1IRQExec\nSA1IRQExec:\n.long 0\n"
-    ".global SA1IRQEnable\nSA1IRQEnable:\n.long 0\n"
-    ".global SA1DoIRQ\nSA1DoIRQ:\n.long 0\n"
-    ".global SA1ARC\nSA1ARC:\n.long 0\n"
-    ".global SA1AR1\nSA1AR1:\n.long 0\n"
-    ".global SA1AR2\nSA1AR2:\n.long 0\n"
-    ".global SA1ARR1\nSA1ARR1:\n.long 0\n"
-    ".global SA1ARR2\nSA1ARR2:\n.long 0\n"
-    ".global SA1Stat\nSA1Stat:\n.long 0\n"
-    ".global SNSNMIV\nSNSNMIV:\n.long 0\n"
-    ".global SNSIRQV\nSNSIRQV:\n.long 0\n"
-    ".global SA1DMACount\nSA1DMACount:\n.long 0\n"
-    ".global SA1DMAInfo\nSA1DMAInfo:\n.long 0\n"
-    ".global SA1DMAChar\nSA1DMAChar:\n.long 0\n"
-    ".global SA1DMASource\nSA1DMASource:\n.long 0\n"
-    ".global SA1DMADest\nSA1DMADest:\n.long 0\n"
-    ".global SA1IRQTemp\nSA1IRQTemp:\n.long 0\n"
-    ".global SA1BankSw\nSA1BankSw:\n.long 1\n"
-    ".global SA1BankVal\nSA1BankVal:\n.byte 0,1,2,3\n"
-    ".global BWShift\nBWShift:\n.long 0\n"
-    ".global BWAndAddr\nBWAndAddr:\n.long 0\n"
-    ".global BWAnd\nBWAnd:\n.long 0\n"
-    ".global BWRAnd\nBWRAnd:\n.long 0\n"
-    ".global SA1_in_cc1_dma\nSA1_in_cc1_dma:\n.long 0\n"
-    ".global SA1_CC2_line\nSA1_CC2_line:\n.long 0\n"
-    ".global SA1_BRF\nSA1_BRF:\n.zero 16\n"
-    ".zero 432\n" /* SA1Reserved (unnamed padding) */
-    ".global SA1xa\nSA1xa:\n.long 0\n"
-    ".global SA1xx\nSA1xx:\n.long 0\n"
-    ".global SA1xy\nSA1xy:\n.long 0\n"
-    ".global SA1xd\nSA1xd:\n.long 0\n"
-    ".global SA1xdb\nSA1xdb:\n.long 0\n"
-    ".global SA1xpb\nSA1xpb:\n.long 0\n"
-    ".global SA1xs\nSA1xs:\n.long 0\n"
-    ".global SA1RegP\nSA1RegP:\n.long 0\n"
-    ".global SA1RegE\nSA1RegE:\n.long 0\n"
-    ".global SA1RegPCS\nSA1RegPCS:\n.long 0\n"
-    ".global SA1BWPtr\nSA1BWPtr:\n.long 0\n"
-    ".global SA1Ptr\nSA1Ptr:\n.long 0\n"
-    ".global SA1Overflow\nSA1Overflow:\n.long 0\n"
-    ".global VarLenAddr\nVarLenAddr:\n.long 0\n"
-    ".global VarLenAddrB\nVarLenAddrB:\n.long 0\n"
-    ".global VarLenBarrel\nVarLenBarrel:\n.long 0\n"
-    ".global SA1TimerVal\nSA1TimerVal:\n.long 0\n"
-    ".global SA1TimerSet\nSA1TimerSet:\n.long 0\n"
-    ".global SA1TimerCount\nSA1TimerCount:\n.long 0\n"
-    ".global SA1IRQData\nSA1IRQData:\n.long 0\n"
-    ".global SNSRegP\nSNSRegP:\n.long 0\n"
-    ".global SNSRegE\nSNSRegE:\n.long 0\n"
-    ".global SNSRegPCS\nSNSRegPCS:\n.long 0\n"
-    ".global SNSBWPtr\nSNSBWPtr:\n.long 0\n"
-    ".global SNSPtr\nSNSPtr:\n.long 0\n"
-    ".global IRAM\nIRAM:\n.zero 2049\n"
-    ".global PHnum2writesa1reg\nPHnum2writesa1reg:\n.long . - SA1Mode\n" /* save-state block size */
-    ".popsection\n");
+    ASM_SEC_DATA(".data.sa1state")
+        ASM_GSYM(SA1Mode) ".long 0\n" ASM_GSYM(SA1Control) ".long 0\n" ASM_GSYM(SA1BankPtr) ".long 0\n" ASM_GSYM(SA1ResetV) ".long 0\n" ASM_GSYM(SA1NMIV) ".long 0\n" ASM_GSYM(SA1IRQV) ".long 0\n" ASM_GSYM(SA1RV) ".long 0\n" ASM_GSYM(CurBWPtr) ".long 0\n" ASM_GSYM(SA1TempVar) ".long 0\n" ASM_GSYM(SA1IRQEn) ".long 0\n" ASM_GSYM(SA1Message) ".long 0\n" ASM_GSYM(SA1IRQExec) ".long 0\n" ASM_GSYM(SA1IRQEnable) ".long 0\n" ASM_GSYM(SA1DoIRQ) ".long 0\n" ASM_GSYM(SA1ARC) ".long 0\n" ASM_GSYM(SA1AR1) ".long 0\n" ASM_GSYM(SA1AR2) ".long 0\n" ASM_GSYM(SA1ARR1) ".long 0\n" ASM_GSYM(SA1ARR2) ".long 0\n" ASM_GSYM(SA1Stat) ".long 0\n" ASM_GSYM(SNSNMIV) ".long 0\n" ASM_GSYM(SNSIRQV) ".long 0\n" ASM_GSYM(SA1DMACount) ".long 0\n" ASM_GSYM(SA1DMAInfo) ".long 0\n" ASM_GSYM(SA1DMAChar) ".long 0\n" ASM_GSYM(SA1DMASource) ".long 0\n" ASM_GSYM(SA1DMADest) ".long 0\n" ASM_GSYM(SA1IRQTemp) ".long 0\n" ASM_GSYM(SA1BankSw) ".long 1\n" ASM_GSYM(SA1BankVal) ".byte 0,1,2,3\n" ASM_GSYM(BWShift) ".long 0\n" ASM_GSYM(BWAndAddr) ".long 0\n" ASM_GSYM(BWAnd) ".long 0\n" ASM_GSYM(BWRAnd) ".long 0\n" ASM_GSYM(SA1_in_cc1_dma) ".long 0\n" ASM_GSYM(SA1_CC2_line) ".long 0\n" ASM_GSYM(SA1_BRF) ".zero 16\n"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 ".zero 432\n" /* SA1Reserved (unnamed padding) */
+    ASM_GSYM(SA1xa) ".long 0\n" ASM_GSYM(SA1xx) ".long 0\n" ASM_GSYM(SA1xy) ".long 0\n" ASM_GSYM(SA1xd) ".long 0\n" ASM_GSYM(SA1xdb) ".long 0\n" ASM_GSYM(SA1xpb) ".long 0\n" ASM_GSYM(SA1xs) ".long 0\n" ASM_GSYM(SA1RegP) ".long 0\n" ASM_GSYM(SA1RegE) ".long 0\n" ASM_GSYM(SA1RegPCS) ".long 0\n" ASM_GSYM(SA1BWPtr) ".long 0\n" ASM_GSYM(SA1Ptr) ".long 0\n" ASM_GSYM(SA1Overflow) ".long 0\n" ASM_GSYM(VarLenAddr) ".long 0\n" ASM_GSYM(VarLenAddrB) ".long 0\n" ASM_GSYM(VarLenBarrel) ".long 0\n" ASM_GSYM(SA1TimerVal) ".long 0\n" ASM_GSYM(SA1TimerSet) ".long 0\n" ASM_GSYM(SA1TimerCount) ".long 0\n" ASM_GSYM(SA1IRQData) ".long 0\n" ASM_GSYM(SNSRegP) ".long 0\n" ASM_GSYM(SNSRegE) ".long 0\n" ASM_GSYM(SNSRegPCS) ".long 0\n" ASM_GSYM(SNSBWPtr) ".long 0\n" ASM_GSYM(SNSPtr) ".long 0\n" ASM_GSYM(IRAM) ".zero 2049\n" ASM_GSYM(PHnum2writesa1reg) ".long . - SA1Mode\n" /* save-state block size */
+    ASM_SEC_END);
 
 /* trailing state (after the save block) */
 uint32_t SA1RAMArea, SA1Temp, Sdd1Mode, Sdd1Bank, Sdd1Addr, Sdd1NewAddr;
 
 /* DMA pointers; zstate.c saves them as one adjacent 8-byte block, so force
    their layout rather than letting -fdata-sections scatter them. */
-__asm__(".pushsection .data.sa1dmaptr,\"aw\",@progbits\n"
-        ".global sa1dmaptr\nsa1dmaptr:\n.long 0\n"
-        ".global sa1dmaptrs\nsa1dmaptrs:\n.long 0\n"
-        ".popsection\n");
+__asm__(ASM_SEC_DATA(".data.sa1dmaptr")
+        ASM_GSYM(sa1dmaptr) ".long 0\n" ASM_GSYM(sa1dmaptrs) ".long 0\n" ASM_SEC_END);
 
 /* ===== Stage 2: status reads (0x2300-0x230B) + IRAM access ===== */
 #include "regabi.h"

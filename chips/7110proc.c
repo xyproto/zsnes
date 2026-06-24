@@ -4,32 +4,16 @@
    decompression engine lives in 7110emu.c. */
 #include <stdint.h>
 
+#include "../asmdata.h"
+
 extern void SPC7110initC(void); /* 7110emu.c */
 
 /* Save-state block (101 bytes). SPCROMtoI initialises to &SPCROMPtr, so the
    whole run is laid out via inline asm to keep it contiguous and self-exact
    under -fdata-sections. */
 __asm__(
-    ".pushsection .data.spc7110state,\"aw\",@progbits\n"
-    ".global SPCMultA\nSPCMultA:\n.long 0\n"
-    ".global SPCMultB\nSPCMultB:\n.long 0\n"
-    ".global SPCDivEnd\nSPCDivEnd:\n.long 0\n"
-    ".global SPCMulRes\nSPCMulRes:\n.long 0\n"
-    ".global SPCDivRes\nSPCDivRes:\n.long 0\n"
-    ".global SPC7110BankA\nSPC7110BankA:\n.long 0x020100\n"
-    ".global SPC7110RTCStat\nSPC7110RTCStat:\n.long 0\n"
-    ".global SPC7110RTC\nSPC7110RTC:\n.byte 0,0,0,0,0,0,1,0,1,0,0,0,0,0,0x0F,0\n"
-    ".global SPC7110RTCB\nSPC7110RTCB:\n.byte 0,0,0,0,0,0,1,0,1,0,0,0,0,1,0x0F,6\n"
-    ".global SPCROMPtr\nSPCROMPtr:\n.long 0\n"
-    ".global SPCROMtoI\nSPCROMtoI:\n.long SPCROMPtr\n"
-    ".global SPCROMAdj\nSPCROMAdj:\n.long 0\n"
-    ".global SPCROMInc\nSPCROMInc:\n.long 0\n"
-    ".global SPCROMCom\nSPCROMCom:\n.long 0\n"
-    ".global SPCCheckFix\nSPCCheckFix:\n.long 0\n"
-    ".global SPCSignedVal\nSPCSignedVal:\n.long 0\n"
-    ".global SPCCompressionRegs\nSPCCompressionRegs:\n.zero 13\n"
-    ".global PHnum2writespc7110reg\nPHnum2writespc7110reg:\n.long . - SPCMultA\n"
-    ".popsection\n");
+    ASM_SEC_DATA(".data.spc7110state")
+        ASM_GSYM(SPCMultA) ".long 0\n" ASM_GSYM(SPCMultB) ".long 0\n" ASM_GSYM(SPCDivEnd) ".long 0\n" ASM_GSYM(SPCMulRes) ".long 0\n" ASM_GSYM(SPCDivRes) ".long 0\n" ASM_GSYM(SPC7110BankA) ".long 0x020100\n" ASM_GSYM(SPC7110RTCStat) ".long 0\n" ASM_GSYM(SPC7110RTC) ".byte 0,0,0,0,0,0,1,0,1,0,0,0,0,0,0x0F,0\n" ASM_GSYM(SPC7110RTCB) ".byte 0,0,0,0,0,0,1,0,1,0,0,0,0,1,0x0F,6\n" ASM_GSYM(SPCROMPtr) ".long 0\n" ASM_GSYM(SPCROMtoI) ".long SPCROMPtr\n" ASM_GSYM(SPCROMAdj) ".long 0\n" ASM_GSYM(SPCROMInc) ".long 0\n" ASM_GSYM(SPCROMCom) ".long 0\n" ASM_GSYM(SPCCheckFix) ".long 0\n" ASM_GSYM(SPCSignedVal) ".long 0\n" ASM_GSYM(SPCCompressionRegs) ".zero 13\n" ASM_GSYM(PHnum2writespc7110reg) ".long . - SPCMultA\n" ASM_SEC_END);
 
 extern uint32_t SPCMultA, SPCMultB, SPCDivEnd, SPCMulRes, SPCDivRes;
 extern uint32_t SPC7110BankA, SPC7110RTCStat;
