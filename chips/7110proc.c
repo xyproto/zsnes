@@ -168,9 +168,9 @@ SPC_MATH_R(SPC482C, SPCDivRes, 0)
 SPC_MATH_R(SPC482D, SPCDivRes, 1)
 
 REGABI_REG_READ8(SPC482E);
-uint8_t c_SPC482E(void) { return 0; }
+uint8_t c_SPC482E(void) { return (uint8_t)SPCSignedVal; } /* mode register read-back */
 REGABI_REG_READ8(SPC482F);
-uint8_t c_SPC482F(void) { return 0; }
+uint8_t c_SPC482F(void) { return 0; } /* ALU never busy in the instant model */
 
 SPC_MATH_W(SPC4820w, SPCMultA, 0)
 SPC_MATH_W(SPC4821w, SPCMultA, 1)
@@ -480,6 +480,9 @@ static uint8_t rtc_read_reg(uint8_t addr)
     case 12:
         return rtc_weekday | rtc_resync << 3;
     case 13: {
+        /* The periodic IRQ flag is a sub-second pulse (1/64s, cleared by a
+           1/128s duty) on real hardware.  Our lazy clock has only whole-second
+           resolution, so the flag reads inactive, never generated here. */
         uint8_t readflag = rtc_irqflag & !rtc_irqmask;
         rtc_irqflag = 0;
         return rtc_hold | rtc_calendar << 1 | readflag << 2 | rtc_roundseconds << 3;
