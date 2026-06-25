@@ -1,4 +1,4 @@
-.PHONY: clean distclean fmt info test win32 unused
+.PHONY: clean distclean fmt info test win32 w32 unused
 
 # Supported ARCH values:
 #   LINUX, FREEBSD, OPENBSD, NETBSD, DARWIN, WIN
@@ -577,6 +577,7 @@ all: $(BINARY)
 
 # Cross-build the Windows executable from Linux using the mingw32 toolchain.
 MINGW32_PREFIX ?= i686-w64-mingw32
+w32:
 win32:
 	@command -v $(MINGW32_PREFIX)-gcc >/dev/null 2>&1 || { \
 	  echo "error: $(MINGW32_PREFIX)-gcc not found; install the mingw32 toolchain" >&2; exit 1; }
