@@ -212,14 +212,16 @@ int main(void)
     ZT_CHECK_INT(c_SPC482C(), 0x21); /* remainder = low word of dividend */
     ZT_CHECK_INT(c_SPC482D(), 0x43);
 
-    ZT_SECTION("math unit: reset (0x482E) and read-as-zero status");
+    ZT_SECTION("math unit: reset (0x482E) clears operands, mode reads back");
     c_SPC4820w(0xAA);
     c_SPC482Ew(1);
     ZT_CHECK_INT(c_SPC4820(), 0); /* SPCMultA cleared */
     ZT_CHECK_INT(SPCMulRes, 0);
     ZT_CHECK_INT(SPCSignedVal, 1); /* mode byte retained */
-    ZT_CHECK_INT(c_SPC482E(), 0); /* status regs read as zero */
-    ZT_CHECK_INT(c_SPC482F(), 0);
+    ZT_CHECK_INT(c_SPC482E(), 1); /* 0x482E reads back the mode (bsnes/snes9x) */
+    c_SPC482Ew(0);
+    ZT_CHECK_INT(c_SPC482E(), 0); /* mode now unsigned */
+    ZT_CHECK_INT(c_SPC482F(), 0); /* ALU never busy in the instant model */
 
     ZT_SECTION("RTC: seeded from the host clock (23:12:59, 12-hour mode)");
     test_time = 0x231259; /* 23:12:59 BCD */
