@@ -184,7 +184,7 @@ static void interpolate640x480x16bwin(u2* src, u1* dst, u1 dl)
                         u4 ebx = src[1];
                         ebx &= *(u4*)((u1*)HalfTrans + 6); // XXX unaligned?
                         eax &= *(u4*)((u1*)HalfTrans + 6); // XXX unaligned?
-                        ebx = (ebx + eax) << 15 & 0xFFFF0000 | *src;
+                        ebx = ((ebx + eax) << 15 & 0xFFFF0000) | *src;
                         *(u4*)dst = ebx;
                         src += 1;
                         dst += 4;
@@ -245,7 +245,7 @@ static void interpolate640x480x16bwin(u2* src, u1* dst, u1 dl)
                         u4 ebx = src[1];
                         ebx &= *(u4*)((u1*)HalfTrans + 6); // XXX unaligned?
                         eax &= *(u4*)((u1*)HalfTrans + 6); // XXX unaligned?
-                        ebx = (ebx + eax) << 15 & 0xFFFF0000 | *src;
+                        ebx = ((ebx + eax) << 15 & 0xFFFF0000) | *src;
                         *(u4*)edx = ebx;
                         *(u4*)dst = ebx;
                         src += 1;
@@ -297,7 +297,7 @@ static void interpolate640x480x16bwin(u2* src, u1* dst, u1 dl)
                         u4 ebx = src[1];
                         ebx &= *(u4*)((u1*)HalfTrans + 6); // XXX unaligned?
                         eax &= *(u4*)((u1*)HalfTrans + 6); // XXX unaligned?
-                        ebx = (ebx + eax) << 15 & 0xFFFF0000 | *src;
+                        ebx = ((ebx + eax) << 15 & 0xFFFF0000) | *src;
                         *(u4*)edx = ebx;
                         *(u4*)dst = ebx;
                         src += 1;
@@ -333,7 +333,7 @@ static void interpolate640x480x16bwin(u2* src, u1* dst, u1 dl)
             u4 ebx = src[1];
             ebx &= *(u4*)((u1*)HalfTrans + 6); // XXX unaligned?
             eax &= *(u4*)((u1*)HalfTrans + 6); // XXX unaligned?
-            ebx = (ebx + eax) << 15 & 0xFFFF0000 | *src;
+            ebx = ((ebx + eax) << 15 & 0xFFFF0000) | *src;
             *(u4*)dst = ebx;
             *(u4*)edx = ebx;
             src += 1;
@@ -365,7 +365,7 @@ static void interpolate640x480x16bwin(u2* src, u1* dst, u1 dl)
                         ebx += eax;
                         ebx <<= 15;
                         u4 eax_ = *(u4*)edx;
-                        ebx = ebx & 0xFFFF0000 | *src;
+                        ebx = (ebx & 0xFFFF0000) | *src;
                         *(u4*)edx = ebx;
                         *(u4*)dst = ((eax_ & HalfTrans[0]) >> 1) + ((ebx & HalfTrans[0]) >> 1);
                         src += 1;
