@@ -100,7 +100,7 @@ static void display_help()
     int driver_count;
     ao_info** driver_info;
 #endif
-    char line[75];
+    char line[96];
 #endif
 
     put_line("Usage : zsnes [-d,-f #, ... ] <filename.sfc>");
