@@ -8,6 +8,7 @@ TryExec=zsnes
 Icon=io.github.xyproto.zsnes
 Terminal=false
 StartupNotify=false
+StartupWMClass=zsnes
 X-SingleMainWindow=true
 Categories=Game;Emulator;
 MimeType=application/vnd.nintendo.snes.rom;application/x-snes-rom;
