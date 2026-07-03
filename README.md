@@ -113,7 +113,7 @@ make ARCH=win
 Thanks to Christoph Mallon for the commits that this fork is based on.
 
 * License: GPL2
-* Version: 2.1.1
+* Version: 2.2.0
 * Fork author: Alexander F. Rødseth &lt;xyproto@archlinux.org&gt;
 
 # Old documentation
