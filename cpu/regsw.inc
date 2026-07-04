@@ -518,26 +518,26 @@ NEWSYM reg2115w
 .nextinc8c
     test al,80h
     jz .from2118
-    mov regptw(0x2118),dword reg2118inc8
-    mov regptw(0x2119),dword reg2119inc8inc
+    mov dword regptw(0x2118),reg2118inc8
+    mov dword regptw(0x2119),reg2119inc8inc
     mov byte[vramincr],0
     jmp .from2119
 .from2118
-    mov regptw(0x2118),dword reg2118inc8inc
-    mov regptw(0x2119),dword reg2119inc8
+    mov dword regptw(0x2118),reg2118inc8inc
+    mov dword regptw(0x2119),reg2119inc8
     mov byte[vramincr],1
 .from2119
     ret
 .noincby8
     test al,80h
     jz .from2118b
-    mov regptw(0x2118),dword reg2118
-    mov regptw(0x2119),dword reg2119inc
+    mov dword regptw(0x2118),reg2118
+    mov dword regptw(0x2119),reg2119inc
     mov byte[vramincr],0
     jmp .from2119b
 .from2118b
-    mov regptw(0x2118),dword reg2118inc
-    mov regptw(0x2119),dword reg2119
+    mov dword regptw(0x2118),reg2118inc
+    mov dword regptw(0x2119),reg2119
     mov byte[vramincr],1
 .from2119b
     ret

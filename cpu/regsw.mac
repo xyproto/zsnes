@@ -40,5 +40,5 @@
 %endmacro
 
 %macro setregw 2
-    mov regptw(%1), dword %2
+    mov dword regptw(%1), %2
 %endmacro
