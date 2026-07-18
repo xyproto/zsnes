@@ -1,11 +1,11 @@
 /*
- * Mode 7 16-bit background renderer, ported from mode716b.asm and
- * makev16b.asm.
+ * Mode 7 16-bit background renderers, ported from mode716b.asm,
+ * mode716d.asm, and makev16b.asm.
  *
- * drawmode716b keeps the legacy register ABI (y scroll in AX, x scroll
- * in DX) through an i386 trampoline; the asm renderers tail-jump to
- * domosaic16b with DH holding curmosaicsz, so the C version reads the
- * global instead.
+ * drawmode716b and drawmode7dcolor keep the legacy register ABI
+ * (y scroll in AX, x scroll in DX) through i386 trampolines; the asm
+ * renderers tail-jump to domosaic16b with DH holding curmosaicsz, so
+ * the C version reads the global instead.
  *
  * Positions are 24.8 fixed point kept in 32-bit words.  The asm mixed
  * byte, word, and dword accesses into those words; the masked helpers
@@ -18,15 +18,19 @@
 #include "../endmem.h"
 #include "../types.h"
 #include "../ui.h"
+#include "../vcache.h"
+#include "c_newgfx16.h"
 #include "makev16b.h"
 #include "makevid.h"
 #include "mode716.h"
 #include "mode716b.h"
 #include "mode716d.h"
+#include "newgfx16.h"
 
 u1 tileleft16b;
 
 /* mode 7 line state, mirrors the asm scratch words */
+static u1 m7dcolor; // pixels look up dcolortab instead of pal16b
 static u4 m7xpos;
 static u4 m7ypos;
 static s4 m7xadder;
@@ -89,7 +93,7 @@ static void mode7calculate(u2 y, u2 x)
 static void plot(u2** dest, u1 const** win, u1 pix)
 {
     if (pix != 0 && (*win == NULL || **win == 0))
-        **dest = (u2)pal16b[pix];
+        **dest = m7dcolor ? dcolortab[0][pix] : (u2)pal16b[pix];
     ++*dest;
     if (*win != NULL)
         ++*win;
@@ -338,19 +342,10 @@ offmap:
     finishline();
 }
 
-void c_drawmode716b(u4 ypos, u4 xpos)
+static void renderline(u2 ypos, u2 xpos)
 {
-    if (scrndis & 0x01)
-        return;
-    if (scaddset & 0x01) {
-        __asm__ volatile("push %%ebp;  call %P2;  pop %%ebp"
-            : "+a"(ypos), "+d"(xpos)
-            : "X"(drawmode7dcolor)
-            : "cc", "memory", "ebx", "ecx", "esi", "edi");
-        return;
-    }
     winptrref = cwinptr;
-    mode7calculate((u2)ypos, (u2)xpos);
+    mode7calculate(ypos, xpos);
 
     u2* dest = (u2*)curvidoffset;
     if (curmosaicsz != 1) {
@@ -381,6 +376,30 @@ void c_drawmode716b(u4 ypos, u4 xpos)
     } else {
         process(dest, NULL);
     }
+}
+
+void c_drawmode7dcolor(u4 ypos, u4 xpos)
+{
+    if (scrndis & 0x01)
+        return;
+    if (vidbright != prevbrightdc) {
+        prevbrightdc = vidbright;
+        Gendcolortable();
+    }
+    m7dcolor = 1;
+    renderline((u2)ypos, (u2)xpos);
+}
+
+void c_drawmode716b(u4 ypos, u4 xpos)
+{
+    if (scrndis & 0x01)
+        return;
+    if (scaddset & 0x01) {
+        c_drawmode7dcolor(ypos, xpos);
+        return;
+    }
+    m7dcolor = 0;
+    renderline((u2)ypos, (u2)xpos);
 }
 
 /* expand the first pixel of each block; the first 0x200 bytes of the
@@ -424,5 +443,13 @@ __asm__(
                                                          "call " CSYM(c_drawmode716b) "\n"
                                                                                       "addl $8, %esp\n"
                                                                                       "ret\n");
+
+__asm__(
+    ".globl " CSYM(drawmode7dcolor) "\n" CSYM(drawmode7dcolor) ":\n"
+                                                               "pushl %edx\n"
+                                                               "pushl %eax\n"
+                                                               "call " CSYM(c_drawmode7dcolor) "\n"
+                                                                                               "addl $8, %esp\n"
+                                                                                               "ret\n");
 
 #endif

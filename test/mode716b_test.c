@@ -17,6 +17,7 @@ typedef uint16_t u2;
 typedef uint32_t u4;
 
 void c_drawmode716b(u4 ypos, u4 xpos);
+void c_drawmode7dcolor(u4 ypos, u4 xpos);
 void domosaic16b(void);
 extern u1 tileleft16b;
 
@@ -36,11 +37,16 @@ u1 scrndis;
 u1 mode7set;
 u2 mode7A, mode7B, mode7C, mode7D, mode7X0, mode7Y0;
 u2 m7starty;
+u2 dcolortab[2][256];
+u1 vidbright;
+u1 prevbrightdc;
 
-static u4 dcolor_calls;
-void drawmode7dcolor(void)
+static u4 gen_calls;
+void Gendcolortable(void)
 {
-    ++dcolor_calls;
+    ++gen_calls;
+    for (u4 i = 0; i != 256; ++i)
+        dcolortab[0][i] = (u2)(0x4000 | vidbright << 8 | i);
 }
 
 static u2 destbuf[512];
@@ -83,7 +89,11 @@ static void reset(void)
     mode7X0 = 0;
     mode7Y0 = 0;
     m7starty = 0;
-    dcolor_calls = 0;
+    for (u4 i = 0; i != 256; ++i)
+        dcolortab[0][i] = (u2)(0x2000 | i);
+    vidbright = 15;
+    prevbrightdc = 15;
+    gen_calls = 0;
 }
 
 static void test_earlyouts(void)
@@ -95,11 +105,35 @@ static void test_earlyouts(void)
     c_drawmode716b(0, 0);
     ZT_CHECK_INT(destbuf[0], 0xCCCC);
 
+    /* scaddset routes to the direct color renderer */
     reset();
     scaddset = 1;
     c_drawmode716b(0, 0);
-    ZT_CHECK_INT(dcolor_calls, 1);
-    ZT_CHECK_INT(destbuf[0], 0xCCCC);
+    ZT_CHECK_INT(destbuf[0], 0x2000 | 8);
+}
+
+static void test_dcolor(void)
+{
+    ZT_SECTION("direct color renderer and table regeneration");
+
+    reset();
+    c_drawmode7dcolor(0, 0);
+    ZT_CHECK_INT(gen_calls, 0); /* brightness unchanged */
+    ZT_CHECK_INT(destbuf[0], 0x2000 | 8);
+    ZT_CHECK_INT(destbuf[255], 0x2000 | ((32 * 8 + 7) & 0xFF));
+
+    /* brightness change regenerates dcolortab first */
+    reset();
+    vidbright = 7;
+    c_drawmode7dcolor(0, 0);
+    ZT_CHECK_INT(gen_calls, 1);
+    ZT_CHECK_INT(prevbrightdc, 7);
+    ZT_CHECK_INT(destbuf[0], 0x4000 | 7 << 8 | 8);
+
+    /* the next mode716b render uses pal16b again */
+    reset();
+    c_drawmode716b(0, 0);
+    ZT_CHECK_INT(destbuf[0], 0x8000 | 8);
 }
 
 static void test_identity_render(void)
@@ -189,6 +223,7 @@ int main(void)
     tileleft16b = 0;
 
     test_earlyouts();
+    test_dcolor();
     test_identity_render();
     test_window();
     test_mosaic();

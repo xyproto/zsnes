@@ -85,5 +85,6 @@ extern u4 nggposng;
 extern u4 ngmsdraw;
 extern u4 ngrposng;
 extern u4 palchanged;
+extern u1 prevbrightdc;
 
 #endif
