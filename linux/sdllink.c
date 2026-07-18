@@ -1569,26 +1569,39 @@ void UpdateVFrame(void)
     CheckTimers();
     Main_Proc();
 
-    // Debug: ASCII_SCREENSHOT_EVERY_FIVE=1 writes /tmp/zsnes_<seq>.txt every 5s
+    // Debug: ASCII_SCREENSHOT_EVERY_FIVE=1 writes a burst of consecutive
+    // frames (ASCII_SCREENSHOT_BURST, default 10) to /tmp/zsnes_<seq>.txt
+    // every 5s, and per-frame hashes to /tmp/zsnes_hashes.txt
     {
         static int sshot_checked = 0;
         static int sshot_enabled = 0;
+        static int sshot_burst = 0;
+        static int sshot_burst_len = 10;
         static Uint64 sshot_next_ms = 0;
         static unsigned int sshot_seq = 0;
         if (!sshot_checked) {
             const char* e = getenv("ASCII_SCREENSHOT_EVERY_FIVE");
+            const char* b = getenv("ASCII_SCREENSHOT_BURST");
             sshot_enabled = (e && *e == '1');
+            if (b && atoi(b) > 0) {
+                sshot_burst_len = atoi(b);
+            }
             sshot_next_ms = SDL_GetTicks() + 5000;
             sshot_checked = 1;
         }
         if (sshot_enabled) {
             Uint64 now = SDL_GetTicks();
-            if (now >= sshot_next_ms) {
+            if (sshot_burst == 0 && now >= sshot_next_ms) {
+                sshot_burst = sshot_burst_len;
+                sshot_next_ms = now + 5000;
+            }
+            if (sshot_burst > 0) {
+                sshot_burst--;
                 char path[64];
                 snprintf(path, sizeof(path), "/tmp/zsnes_%05u.txt", sshot_seq++);
                 Grab_ASCII_Data_Path(path);
-                sshot_next_ms = now + 5000;
             }
+            Grab_Frame_Hash_Path("/tmp/zsnes_hashes.txt");
         }
     }
 

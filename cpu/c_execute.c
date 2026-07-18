@@ -319,15 +319,29 @@ cpuover :
     *pedi = edi;
 }
 
-// After the GSU runs, raise a 65816 IRQ if the GSU asserted the IRQ
-// flag (SFR bit 15) with IRQs unmasked (CFGR bit 7 clear), matching
-// bsnes/snes9x behavior (cpu.irq(1) on STOP).
+// Raise a 65816 IRQ only when the GSU has stopped (Go clear, IRQ flag
+// set, IRQs unmasked); an IRQ while it is merely suspended mid-task
+// makes games flip buffers before rendering is done.
 static inline void SfxIRQpoll(void)
 {
     extern u4 SfxSFR, SfxCFGR;
-    if ((SfxSFR & 0x8000) && !(SfxCFGR & 0x80)) {
+    if ((SfxSFR & 0x8020) == 0x8000 && !(SfxCFGR & 0x80)) {
         doirqnext = 1;
     }
+}
+
+// Per-scanline GSU opcode budget: ~5.82M instructions/s at 10.7 MHz,
+// 2.5x that at 21.4 MHz (CLSR bit 0). Unlimited runs games too fast.
+static u4 SfxOpcodesPerLine(void)
+{
+    u4 const perLine = 5823405u / (romispal ? 50u * 312u : 60u * 262u);
+    u4 const budget = SfxCLSR & 0x01 ? perLine * 5 / 2 : perLine;
+    u4 percent = SuperFXClockMultiplier;
+
+    if (percent < 50 || percent > 800) {
+        percent = 100;
+    }
+    return budget * percent / 100;
 }
 
 void StartSFXdebugb(void)
@@ -336,9 +350,7 @@ void StartSFXdebugb(void)
     UpdateSCBRCOLR();
 
     if (SfxSCMR & ((SfxPBR & 0x7F) < 0x70 ? /* noram */ 0x10 : /* ram */ 0x08)) {
-        NumberOfOpcodes = SFXCounter == 1 ? 0x0FFFFFFF : SfxCLSR & 0x01 ? 800
-                                                                        : // 678*2
-            420; // 678
+        NumberOfOpcodes = SfxOpcodesPerLine();
         asm_call(MainLoop);
         SfxIRQpoll();
     }
@@ -390,8 +402,7 @@ void UpdateSCBRCOLR(void)
 
 void UpdateCLSR(void)
 {
-    NumberOfOpcodes2 = SFXCounter != 1 ? 0x0FFFFFFF : SfxCLSR & 0x01 ? 700
-                                                                     : 350;
+    NumberOfOpcodes2 = SfxOpcodesPerLine();
 }
 
 void StartSFX(void)

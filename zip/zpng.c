@@ -259,6 +259,23 @@ void Grab_ASCII_Data_Path(const char* path)
     fclose(fp);
 }
 
+// Debug: append a hash of the current frame to path, one hex value per line
+void Grab_Frame_Hash_Path(const char* path)
+{
+    FILE* fp = fopen(path, "ab");
+    if (!fp)
+        return;
+
+    unsigned long hash = 5381;
+    for (int y = 0; y < SNAP_HEIGHT; y++) {
+        for (int x = 0; x < SNAP_WIDTH; x++) {
+            hash = hash * 33 + PIXEL;
+        }
+    }
+    fprintf(fp, "%08lx\n", hash & 0xFFFFFFFF);
+    fclose(fp);
+}
+
 void Grab_BMP_Data_8(void)
 {
     char* filename = generate_image_filename("bmp");

@@ -1952,7 +1952,6 @@ void OpenCombFile()
     }
 }
 
-u1 SFXCounter;
 uint32_t SfxAC;
 uint8_t ForceNewGfxOff;
 
@@ -1961,11 +1960,9 @@ void preparesfx()
     char* ROM = (char*)romdata;
     int_fast16_t i;
 
-    SFXCounter = SfxAC = 0;
+    SfxAC = 0;
 
-    if (!strncmp(ROM + Lo, "FX S", 4) || !strncmp(ROM + Lo, "DIRT", 4)) {
-        SFXCounter = 1;
-    } else if (!strncmp(ROM + Lo, "Stun", 4)) {
+    if (!strncmp(ROM + Lo, "Stun", 4)) {
         ForceNewGfxOff = 1;
     }
 

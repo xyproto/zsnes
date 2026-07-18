@@ -145,12 +145,11 @@ REGABI_REG_WRITE8(reg301Fw);
 void c_reg301Fw(uint8_t v)
 {
     BYTE(SfxR15, 1) = v;
-    /* start execution */
+    /* start execution; the IRQ flag is only set when the GSU stops */
     uint8_t* p = (uint8_t*)(uintptr_t)SfxMemTable[(uint8_t)SfxPBR] + (uint16_t)SfxR15;
     BYTE(SfxPIPE, 0) = *p;
     *(uint16_t*)&SfxR15 += 1;
     BYTE(SfxSFR, 0) |= 0x20;
-    SfxSFR |= 0x8000; /* set IRQ flag */
     SFXProc = 1;
 }
 REGABI_REG_READ8(reg3030r);
@@ -173,8 +172,11 @@ uint8_t c_reg3030r(void)
 REGABI_REG_READ8(reg3031r);
 uint8_t c_reg3031r(void)
 {
-    BYTE(SfxSFR, 1) &= 0x7F;
-    return BYTE(SfxSFR, 1);
+    // Reading clears the IRQ flag (bit 7), but must return the old value
+    // so IRQ handlers can identify the interrupt source.
+    uint8_t v = BYTE(SfxSFR, 1);
+    BYTE(SfxSFR, 1) = v & 0x7F;
+    return v;
 }
 REGABI_REG_READ8(reg3032r);
 uint8_t c_reg3032r(void)
@@ -321,7 +323,7 @@ void c_reg3038w(uint8_t v)
 REGABI_REG_WRITE8(reg3039w);
 void c_reg3039w(uint8_t v)
 {
-    BYTE(SfxCLSR, 0) = v & 0xFE;
+    BYTE(SfxCLSR, 0) = v & 0x01; // bit 0 selects 10.7/21.4 MHz
     UpdateCLSR();
 }
 REGABI_REG_WRITE8(reg303Aw);

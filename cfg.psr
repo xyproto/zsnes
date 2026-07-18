@@ -503,6 +503,10 @@ PauseRewind db 0
 per2exec dd 100
 
 @
+@ SuperFX clock speed percentage [50..800] (100 = approximate hardware speed)
+SuperFXClockMultiplier dd 100
+
+@
 @ Disable Hacks (0 = NO, 1 = Yes)
 @ Set this to 1 if you want to disable game specific hacks
 HacksDisable db 0

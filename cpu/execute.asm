@@ -406,7 +406,7 @@ NEWSYM SA1UBound,  dd 0
 NEWSYM SA1LBound,  dd 0
 NEWSYM SA1SH,      dd 0
 NEWSYM SA1SHb,     dd 0
-NEWSYM NumberOfOpcodes2, dd 0
+NEWSYM NumberOfOpcodes2, dd 370
 NEWSYM ChangeOps, dd 0
 NEWSYM SFXProc,    dd 0
 NEWSYM EMUPause, db 0
