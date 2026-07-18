@@ -12,6 +12,7 @@ extern uint8_t* sfxramdata;
 void UpdatePORSCMR(void);
 void UpdateSCBRCOLR(void);
 void UpdateCLSR(void);
+void SfxExecOnStart(void);
 
 #define BYTE(v, n) (((uint8_t*)&(v))[n])
 
@@ -151,6 +152,7 @@ void c_reg301Fw(uint8_t v)
     *(uint16_t*)&SfxR15 += 1;
     BYTE(SfxSFR, 0) |= 0x20;
     SFXProc = 1;
+    SfxExecOnStart();
 }
 REGABI_REG_READ8(reg3030r);
 uint8_t c_reg3030r(void)

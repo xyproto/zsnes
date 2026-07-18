@@ -405,10 +405,50 @@ void UpdateCLSR(void)
     NumberOfOpcodes2 = SfxOpcodesPerLine();
 }
 
+static u1 SfxRanThisLine; // GSU already got its slice this scanline
+static u4 SfxOwedOps; // budget banked while the bus is assigned to the 65816
+
 void StartSFX(void)
+{
+    if (SfxRanThisLine) {
+        SfxRanThisLine = 0;
+        return;
+    }
+    if (SfxSCMR & ((SfxPBR & 0x7F) < 0x70 ? /* noram */ 0x10 : /* ram */ 0x08)) {
+        NumberOfOpcodes = NumberOfOpcodes2 + SfxOwedOps;
+        SfxOwedOps = 0;
+        asm_call(MainLoop);
+        SfxIRQpoll();
+    } else {
+        // The gate only pauses the GSU briefly on hardware, not for whole
+        // scanlines; bank the budget (up to one frame) and pay it back.
+        SfxOwedOps += NumberOfOpcodes2;
+        if (SfxOwedOps > NumberOfOpcodes2 * 240) {
+            SfxOwedOps = NumberOfOpcodes2 * 240;
+        }
+    }
+}
+
+// Run a slice as soon as the game starts the GSU, so short tasks finish
+// before the game polls the Go flag.
+void SfxExecOnStart(void)
 {
     if (SfxSCMR & ((SfxPBR & 0x7F) < 0x70 ? /* noram */ 0x10 : /* ram */ 0x08)) {
         NumberOfOpcodes = NumberOfOpcodes2;
+        asm_call(MainLoop);
+        SfxIRQpoll();
+        SfxRanThisLine = 1;
+    }
+}
+
+// Finish the in-flight GSU task when vblank starts (bounded to about a
+// frame of work), so the NMI handler never copies a half-drawn buffer.
+void SfxVblankCatchup(void)
+{
+    extern u4 SfxSFR;
+
+    if ((SfxSFR & 0x20) && (SfxSCMR & ((SfxPBR & 0x7F) < 0x70 ? /* noram */ 0x10 : /* ram */ 0x08))) {
+        NumberOfOpcodes = NumberOfOpcodes2 * 240;
         asm_call(MainLoop);
         SfxIRQpoll();
     }

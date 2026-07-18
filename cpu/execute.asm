@@ -145,6 +145,7 @@ EXTSYM rtoflags,sprcnt,sprtilecnt,endprog
 EXTSYM Donextlinecache
 EXTSYM StartSFX
 EXTSYM StartSFXdebugb
+EXTSYM SfxVblankCatchup
 
 SECTION .data
 NEWSYM tempedx, dd 0
@@ -749,6 +750,10 @@ NEWSYM cpuover
     jne .noout
     ccallv outofmemfix
 .noout
+    test byte[SfxSFR],20h
+    jz .nosfxcatchup
+    ccallv SfxVblankCatchup
+.nosfxcatchup
 
     dec word[curypos]
     mov [tempdh],dh
