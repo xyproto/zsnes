@@ -107,7 +107,13 @@ extern u1 hdmarestart;
 extern u1 hdmatype; // If first time executing hdma or not
 extern u1 interlval;
 extern u1 irqon; // if IRQ has been called (80h) or not (0)
+extern u2 mode7A; // matrix values for Mode 7
+extern u2 mode7B;
+extern u2 mode7C;
+extern u2 mode7D;
 extern u1 mode7set; // mode 7 settings
+extern u2 mode7X0; // center X for Mode 7
+extern u2 mode7Y0; // center Y for Mode 7
 extern u1 mosaicon; // mosaic on, bit 0=bg1,bit1=bg2, etc
 extern u1 mosaicsz; // mosaic size in pixels
 extern u1 nexthdma; // HDMA data to execute once vblank ends

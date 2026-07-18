@@ -3,7 +3,7 @@
 
 #include "../types.h"
 
-extern void domosaic16b();
+void domosaic16b(void);
 
 extern u1 tileleft16b;
 

@@ -564,13 +564,8 @@ static void draw16x1616bwinon(u2* esi, u2 const* edi)
             edi = temptile;
         }
     } while (--tileleft16b != 0);
-    if (curmosaicsz != 1) {
-        u4 edx = curmosaicsz << 8;
-        __asm__ volatile("push %%ebp;  call %P1;  pop %%ebp"
-            : "+d"(edx)
-            : "X"(domosaic16b)
-            : "cc", "memory", "eax", "ecx", "esi", "edi");
-    }
+    if (curmosaicsz != 1)
+        domosaic16b();
 }
 
 // Processes & Draws 16x16 tiles in 2, 4, & 8 bit mode
@@ -682,13 +677,8 @@ void draw16x1616b(u4 const eax, u4 const ecx, u2* const edx, u1* const ebx, u4 c
                 edi = temptile;
             }
         } while (--tileleft16b != 0);
-        if (curmosaicsz != 1) {
-            u4 edx = curmosaicsz << 8;
-            __asm__ volatile("push %%ebp;  call %P1;  pop %%ebp"
-                : "+d"(edx)
-                : "X"(domosaic16b)
-                : "cc", "memory", "eax", "ecx", "esi", "edi");
-        }
+        if (curmosaicsz != 1)
+            domosaic16b();
     }
 }
 
@@ -953,13 +943,8 @@ void draw8x816boffset(u4 const eax, u4 const ecx, u2* const edx, u1* const ebx, 
             }
             edi = procoffsetmode();
         } while (esi += 8, --tileleft16b != 0);
-        if (drawn != 0 && curmosaicsz != 1) {
-            u4 edx = curmosaicsz << 8;
-            __asm__ volatile("push %%ebp;  call %P1;  pop %%ebp"
-                : "+d"(edx)
-                : "X"(domosaic16b)
-                : "cc", "memory", "eax", "ecx", "esi", "edi");
-        }
+        if (drawn != 0 && curmosaicsz != 1)
+            domosaic16b();
     }
 }
 
@@ -1015,13 +1000,8 @@ static void draw8x816bwinon(u2* esi, u2 const* edi)
             edi = temptile;
     } while (--tileleft16b != 0);
 
-    if (drawn != 0 && curmosaicsz != 1) {
-        u4 edx = curmosaicsz << 8;
-        __asm__ volatile("push %%ebp;  call %P1;  pop %%ebp"
-            : "+d"(edx)
-            : "X"(domosaic16b)
-            : "cc", "memory", "eax", "ecx", "esi", "edi");
-    }
+    if (drawn != 0 && curmosaicsz != 1)
+        domosaic16b();
 }
 
 static void drawpixel16b8x8winon(u1 const dh, u1 const* const ebx, u2* const esi, u1 const* const ebp, u4 const p1, u4 const p2, u4 const p3)
@@ -1080,13 +1060,8 @@ static void draw16x816winonb(u2* esi, u2 const* edi)
             edi = temptile;
     } while (--tileleft16b != 0);
 
-    if (drawn != 0 && curmosaicsz != 1) {
-        u4 edx = curmosaicsz << 8;
-        __asm__ volatile("push %%ebp;  call %P1;  pop %%ebp"
-            : "+d"(edx)
-            : "X"(domosaic16b)
-            : "cc", "memory", "eax", "ecx", "esi", "edi");
-    }
+    if (drawn != 0 && curmosaicsz != 1)
+        domosaic16b();
 }
 
 static void draw16x816bwinon(u2* esi, u2 const* edi)
@@ -1143,13 +1118,8 @@ static void draw16x816bwinon(u2* esi, u2 const* edi)
             edi = temptile;
     } while (--tileleft16b != 0);
 
-    if (drawn != 0 && curmosaicsz != 1) {
-        u4 edx = curmosaicsz << 8;
-        __asm__ volatile("push %%ebp;  call %P1;  pop %%ebp"
-            : "+d"(edx)
-            : "X"(domosaic16b)
-            : "cc", "memory", "eax", "ecx", "esi", "edi");
-    }
+    if (drawn != 0 && curmosaicsz != 1)
+        domosaic16b();
 }
 
 static void drawpixel16b8x8(u1 const dh, u1 const* const ebx, u2* const esi, u4 const p1, u4 const p2)
@@ -1206,13 +1176,8 @@ static void draw16x816b(u2* esi, u2 const* edi)
             edi = temptile;
     } while (--tileleft16b != 0);
 
-    if (drawn != 0 && curmosaicsz != 1) {
-        u4 edx = curmosaicsz << 8;
-        __asm__ volatile("push %%ebp;  call %P1;  pop %%ebp"
-            : "+d"(edx)
-            : "X"(domosaic16b)
-            : "cc", "memory", "eax", "ecx", "esi", "edi");
-    }
+    if (drawn != 0 && curmosaicsz != 1)
+        domosaic16b();
 }
 
 static void draw16x816(u4 const eax, u4 const ecx, u2* const edx, u1* const ebx, u4 const eax_, u2 const* edi)
@@ -1302,13 +1267,8 @@ static void draw16x816(u4 const eax, u4 const ecx, u2* const edx, u1* const ebx,
 
     if (drawn != 0) {
         u1 const dh = curmosaicsz;
-        if (dh != 1) {
-            u4 edx = dh << 8;
-            __asm__ volatile("push %%ebp;  call %P1;  pop %%ebp"
-                : "+d"(edx)
-                : "X"(domosaic16b)
-                : "cc", "memory", "eax", "ecx", "esi", "edi");
-        }
+        if (dh != 1)
+            domosaic16b();
     }
 }
 
@@ -1400,13 +1360,8 @@ void draw8x816b(u4 eax, u4 ecx, u2* edx, u1* ebx, u4 const layer, u4 eax_, u2 co
         if (++dl == 0x20)
             edi = temptile;
     } while (esi += 8, --tileleft16b != 0);
-    if (drawn != 0 && curmosaicsz != 1) {
-        u4 edx = curmosaicsz << 8;
-        __asm__ volatile("push %%ebp;  call %P1;  pop %%ebp"
-            : "+d"(edx)
-            : "X"(domosaic16b)
-            : "cc", "memory", "eax", "ecx", "esi", "edi");
-    }
+    if (drawn != 0 && curmosaicsz != 1)
+        domosaic16b();
 }
 
 static void drawbackgrndmain16b(Layer const layer)
@@ -1515,12 +1470,7 @@ static void procmode716b(u2 const* const p1, u2 const* const p2, u1 const p3)
         }
     }
     m7starty = ax;
-    u4 eax;
-    u4 edx;
-    __asm__ volatile("call %P2"
-        : "=a"(eax), "=d"(edx)
-        : "X"(drawmode716b), "a"(*p1), "d"(*p2)
-        : "cc", "memory", "ecx", "ebx", "esi", "edi");
+    c_drawmode716b(*p1, *p2);
 }
 
 static void processmode716b(void)
