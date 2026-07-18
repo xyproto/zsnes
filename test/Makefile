@@ -37,11 +37,13 @@ SA1_SRC   := sa1_test.c
 SPC7110_SRC := 7110_test.c
 VCACHE_SRC := vcache_test.c
 SPRITES_SRC := sprites_test.c
+C4        := zsnes_c4_test
+C4_SRC    := c4proc_test.c
 OBJS      := ../zpath.o
 
 .PHONY: all run clean
 
-all: $(BIN) $(NETPLAY) $(ST10) $(ST11) $(OBC1) $(MSU1) $(DSP2) $(SAI) $(SA1) $(SPC7110) $(VCACHE) $(SPRITES)
+all: $(BIN) $(NETPLAY) $(ST10) $(ST11) $(OBC1) $(MSU1) $(DSP2) $(SAI) $(SA1) $(SPC7110) $(VCACHE) $(SPRITES) $(C4)
 
 $(BIN): $(SRC) zstest.h $(OBJS)
 	$(CC) $(CFLAGS) $(SRC) $(OBJS) -no-pie -Wl,--gc-sections -o $(BIN)
@@ -73,6 +75,9 @@ $(SA1): $(SA1_SRC) zstest.h ../chips/sa1regs.c
 $(SPC7110): $(SPC7110_SRC) zstest.h ../chips/7110proc.c
 	$(CC) $(CFLAGS) $(SPC7110_SRC) ../chips/7110proc.c -no-pie -o $(SPC7110)
 
+$(C4): $(C4_SRC) zstest.h ../chips/c4proc.c ../chips/c4emu.c
+	$(CC) $(CFLAGS) $(C4_SRC) ../chips/c4proc.c ../chips/c4emu.c -no-pie -lm -o $(C4)
+
 $(VCACHE): $(VCACHE_SRC) zstest.h ../video/tilecache.c
 	$(CC) $(CFLAGS) -ffunction-sections -fdata-sections $(VCACHE_SRC) ../video/tilecache.c -no-pie -Wl,--gc-sections -o $(VCACHE)
 
@@ -92,6 +97,7 @@ run: all
 	@./$(SPC7110)
 	@./$(VCACHE)
 	@./$(SPRITES)
+	@./$(C4)
 
 clean:
-	rm -f $(BIN) $(NETPLAY) $(ST10) $(ST11) $(OBC1) $(MSU1) $(DSP2) $(SAI) $(SA1) $(SPC7110) $(VCACHE) $(SPRITES)
+	rm -f $(BIN) $(NETPLAY) $(ST10) $(ST11) $(OBC1) $(MSU1) $(DSP2) $(SAI) $(SA1) $(SPC7110) $(VCACHE) $(SPRITES) $(C4)
