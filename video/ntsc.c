@@ -37,7 +37,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 /* Source image */
 /* width = 288 pixels, height = 223 pixels or more */
-extern uint16_t* vidbuffer;
+extern uint8_t* vidbuffer;
 
 u1 NTSCPresetVar = 4;
 
@@ -125,7 +125,7 @@ void NTSCFilterInit()
 
 void NTSCFilterDraw(int out_width, int out_height, int out_pitch, unsigned char* rgb16_out)
 {
-    ntsc_blit(&ntsc_snes, vidbuffer + 16 + 576, 576, ntsc_phase,
+    ntsc_blit(&ntsc_snes, (uint16_t*)vidbuffer + 16 + 576, 576, ntsc_phase,
         out_width, out_height, rgb16_out, out_pitch);
 
     /* Change phase on alternating frames unless blending is enabled */

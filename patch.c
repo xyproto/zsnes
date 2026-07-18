@@ -41,7 +41,7 @@ extern int maxromspace;
 extern int curromspace;
 extern int NumofBytes;
 extern int NumofBanks;
-extern uint32_t* romdata;
+extern uint8_t* romdata;
 extern bool IPSPatched;
 extern uint8_t Header512;
 extern bool AutoPatch;

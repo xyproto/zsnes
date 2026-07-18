@@ -33,7 +33,7 @@ extern uint32_t tempesi, tempedi, tempedx, tempebp;
 extern uint32_t SPCMultA, PHnum2writespc7110reg, PHdspsave2;
 extern uint32_t PHnum2writeppureg;
 
-extern uint32_t* setaramdata;
+extern unsigned char* setaramdata;
 extern uint8_t *romdata, *SA1RAMArea;
 
 extern uint8_t sndrot, SPCRAM[], DSPMem[256], SA1Status;

@@ -82,8 +82,8 @@ static uint32_t FirstVid = 1;
 SDL_GLContext gl_context = NULL;
 #endif
 
-extern uint32_t* BitConv32Ptr;
-extern uint32_t* RGBtoYUVPtr;
+extern unsigned char* BitConv32Ptr;
+extern unsigned char* RGBtoYUVPtr;
 
 /* JOYSTICK AND KEYBOARD INPUT */
 static SDL_Joystick* JoystickInput[5];
@@ -1105,7 +1105,7 @@ void init_hqNx()
     uint32_t* p;
     int i, j, k, r, g, b, Y, u, v;
 
-    for (i = 0, p = BitConv32Ptr; i < 65536; i++, p++) {
+    for (i = 0, p = (uint32_t*)BitConv32Ptr; i < 65536; i++, p++) {
         color32 = ((i & 0xF800) << 8) + ((i & 0x07E0) << 5) + ((i & 0x001F) << 3) + 0xFF000000;
 
         *p = color32;
@@ -1120,7 +1120,7 @@ void init_hqNx()
                 Y = (r + g + b) >> 2;
                 u = 128 + ((r - b) >> 2);
                 v = 128 + ((-r + 2 * g - b) >> 3);
-                RGBtoYUVPtr[(i << 11) + (j << 5) + k] = (Y << 16) + (u << 8) + v;
+                ((uint32_t*)RGBtoYUVPtr)[(i << 11) + (j << 5) + k] = (Y << 16) + (u << 8) + v;
             }
         }
     }

@@ -42,7 +42,7 @@ static int glfilters = GL_NEAREST;
 static int glscanready = 0;
 extern Uint8 GUIOn2;
 
-extern uint16_t* vidbuffer;
+extern uint8_t* vidbuffer;
 extern uint8_t curblank;
 extern uint8_t GUIRESIZE[];
 
@@ -195,8 +195,8 @@ static void gl_drawspan(int hires, int start, int end)
 
     if (hires) {
         if (hires != gltexture512) {
-            unsigned short* vbuf1 = vidbuffer + 16;
-            unsigned short* vbuf2 = vidbuffer + (75036 * 2 + 16);
+            unsigned short* vbuf1 = (unsigned short*)vidbuffer + 16;
+            unsigned short* vbuf2 = (unsigned short*)vidbuffer + (75036 * 2 + 16);
             unsigned short* vbuf = glvidbuffer;
 
             if (hires > 1) // mode 7
@@ -252,7 +252,7 @@ static void gl_drawspan(int hires, int start, int end)
             glPixelStorei(GL_UNPACK_ROW_LENGTH, 288);
 
             glTexImage2D(GL_TEXTURE_2D, 0, 3, 256, 256, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5,
-                vidbuffer + 288);
+                (unsigned short*)vidbuffer + 288);
 
             glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
             glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);

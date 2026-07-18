@@ -728,7 +728,7 @@ static bool snes_extension_match(const char* filename)
 static const char* get_rom_name(struct dirent_info* entry, char* namebuffer)
 {
     int InfoScore(char*);
-    unsigned int sum(unsigned char* array, unsigned int size);
+    uint16_t sum(uint8_t* array, size_t size);
 
     char* last_dot = strrchr(entry->name, '.');
     if (!last_dot || (strcasecmp(last_dot, ".zip") && strcasecmp(last_dot, ".gz"))) {

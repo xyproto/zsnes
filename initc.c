@@ -1643,36 +1643,24 @@ uint32_t showinfogui(void)
 extern uint32_t nmiprevaddrl, nmiprevaddrh, nmirept, nmiprevline, nmistatus;
 extern uint8_t spcnumread;
 extern uint8_t NextLineCache;
-extern uint32_t Voice0Freq, Voice1Freq, Voice2Freq, Voice3Freq;
-extern uint32_t Voice4Freq, Voice5Freq, Voice6Freq, Voice7Freq;
+extern uint32_t Voice0Freq[8]; // Frequency of Voice (Delta Freq)
 extern uint32_t dspPAdj;
-extern uint16_t Voice0Pitch, Voice1Pitch, Voice2Pitch, Voice3Pitch;
-extern uint16_t Voice4Pitch, Voice5Pitch, Voice6Pitch, Voice7Pitch;
+extern uint16_t Voice0Pitch[8];
 
 void initpitch()
 {
-    Voice0Pitch = DSPMem[2 + 0 * 0x10];
-    Voice0Freq = ((((Voice0Pitch & 0x3FFF) * dspPAdj) >> 8) & 0xFFFFFFFF);
-    Voice1Pitch = DSPMem[2 + 1 * 0x10];
-    Voice1Freq = ((((Voice1Pitch & 0x3FFF) * dspPAdj) >> 8) & 0xFFFFFFFF);
-    Voice2Pitch = DSPMem[2 + 2 * 0x10];
-    Voice2Freq = ((((Voice2Pitch & 0x3FFF) * dspPAdj) >> 8) & 0xFFFFFFFF);
-    Voice3Pitch = DSPMem[2 + 3 * 0x10];
-    Voice3Freq = ((((Voice3Pitch & 0x3FFF) * dspPAdj) >> 8) & 0xFFFFFFFF);
-    Voice4Pitch = DSPMem[2 + 4 * 0x10];
-    Voice4Freq = ((((Voice4Pitch & 0x3FFF) * dspPAdj) >> 8) & 0xFFFFFFFF);
-    Voice5Pitch = DSPMem[2 + 5 * 0x10];
-    Voice5Freq = ((((Voice5Pitch & 0x3FFF) * dspPAdj) >> 8) & 0xFFFFFFFF);
-    Voice6Pitch = DSPMem[2 + 6 * 0x10];
-    Voice6Freq = ((((Voice6Pitch & 0x3FFF) * dspPAdj) >> 8) & 0xFFFFFFFF);
-    Voice7Pitch = DSPMem[2 + 7 * 0x10];
-    Voice7Freq = ((((Voice7Pitch & 0x3FFF) * dspPAdj) >> 8) & 0xFFFFFFFF);
+    int i;
+
+    for (i = 0; i < 8; i++) {
+        Voice0Pitch[i] = DSPMem[2 + i * 0x10];
+        Voice0Freq[i] = ((((Voice0Pitch[i] & 0x3FFF) * dspPAdj) >> 8) & 0xFFFFFFFF);
+    }
 }
 
 extern uint32_t SfxR1, SfxR2, SfxSFR, SfxSCMR;
 extern uint8_t SetaCmdEnable[4];
 extern uint8_t disablespcclr, *sfxramdata, SramExists;
-extern uint32_t* setaramdata;
+extern unsigned char* setaramdata;
 extern uint8_t* SA1RAMArea;
 extern uint8_t ForcePal, ForceROMTiming, MovieWaiting, DSP1Type;
 extern uint16_t totlines;
@@ -1965,7 +1953,8 @@ void OpenCombFile()
 }
 
 u1 SFXCounter;
-uint8_t SfxAC, ForceNewGfxOff;
+uint32_t SfxAC;
+uint8_t ForceNewGfxOff;
 
 void preparesfx()
 {
@@ -2447,10 +2436,10 @@ void powercycle(bool sramload, bool romload)
 extern uint8_t prevoamptr;
 extern uint8_t reg1read, reg2read, reg3read, reg4read, NMIEnab;
 extern uint8_t timeron, JoyAPos, JoyBPos;
-extern uint8_t SDD1BankA, SDD1BankB, SDD1BankC, SDD1BankD;
+extern uint8_t SDD1BankA[4];
 extern uint8_t intrset, cycpl;
 extern uint32_t SPC700read, SPC700write;
-extern uint32_t FIRTAPVal0, FIRTAPVal1, FIRTAPVal2, FIRTAPVal3, FIRTAPVal4, FIRTAPVal5, FIRTAPVal6, FIRTAPVal7;
+extern int32_t FIRTAPVal0[8];
 extern uint32_t xa, xdb, xx, xy;
 extern uint16_t VIRQLoc;
 extern uint8_t spcextraram[64], SPCROM[64];
@@ -2561,14 +2550,14 @@ void init65816(void)
         cycpb358 = cycpb268;
     }
 
-    FIRTAPVal0 = 0x7F;
-    FIRTAPVal1 = 0;
-    FIRTAPVal2 = 0;
-    FIRTAPVal3 = 0;
-    FIRTAPVal4 = 0;
-    FIRTAPVal5 = 0;
-    FIRTAPVal6 = 0;
-    FIRTAPVal7 = 0;
+    FIRTAPVal0[0] = 0x7F;
+    FIRTAPVal0[1] = 0;
+    FIRTAPVal0[2] = 0;
+    FIRTAPVal0[3] = 0;
+    FIRTAPVal0[4] = 0;
+    FIRTAPVal0[5] = 0;
+    FIRTAPVal0[6] = 0;
+    FIRTAPVal0[7] = 0;
 
     // Check Headers
     headerhack();
@@ -2604,10 +2593,10 @@ void init65816(void)
     xd = 0;
     xx = 0;
     xy = 0;
-    SDD1BankA = 0;
-    SDD1BankB = 0x01;
-    SDD1BankC = 0x02;
-    SDD1BankD = 0x03;
+    SDD1BankA[0] = 0;
+    SDD1BankA[1] = 0x01;
+    SDD1BankA[2] = 0x02;
+    SDD1BankA[3] = 0x03;
     xirqb = 0;
     xp = 52; // NVMXDIZC
     xe = 1; // E

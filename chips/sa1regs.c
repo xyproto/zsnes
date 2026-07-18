@@ -17,7 +17,8 @@ __asm__(
     ASM_SEC_END);
 
 /* trailing state (after the save block) */
-uint32_t SA1RAMArea, SA1Temp, Sdd1Mode, Sdd1Bank, Sdd1Addr, Sdd1NewAddr;
+uint8_t* SA1RAMArea;
+uint32_t SA1Temp, Sdd1Mode, Sdd1Bank, Sdd1Addr, Sdd1NewAddr;
 
 /* DMA pointers; zstate.c saves them as one adjacent 8-byte block, so force
    their layout rather than letting -fdata-sections scatter them. */
@@ -27,7 +28,8 @@ __asm__(ASM_SEC_DATA(".data.sa1dmaptr")
 /* ===== Stage 2: status reads (0x2300-0x230B) + IRAM access ===== */
 #include "regabi.h"
 
-extern uint32_t SA1Message, SA1IRQExec, SA1IRQData, SA1ARR1, SA1ARR2, SA1Overflow;
+extern uint32_t SA1Message, SA1IRQExec, SA1IRQData, SA1ARR1, SA1ARR2;
+extern uint16_t SA1Overflow;
 extern uint32_t SA1TimerSet, SA1TimerCount, SA1TimerVal;
 extern uint8_t IRAM[2049]; /* defined in the asm state block above */
 extern uint8_t CurrentExecSA1; /* sa1proc.asm */
@@ -109,32 +111,34 @@ REGABI_BANK_WRITE8(IRamWrite2);
 void c_IRamWrite2(uint32_t a, uint8_t v) { IRAM[(uint16_t)a - 0x3000] = v; }
 
 /* ===== Stage 3: control / IRQ / vector writes (0x2200-0x220F) ===== */
-extern uint32_t SA1DoIRQ, SA1Control, SA1BankPtr, SA1ResetV, SA1Ptr, SA1xpb, SA1xs;
-extern uint32_t SA1RegPCS, SA1IRQEnable, SA1NMIV, SA1IRQV, SA1IRQEn, SNSNMIV, SNSIRQV;
+extern uint32_t SA1DoIRQ, SA1BankPtr, SA1ResetV, SA1xpb, SA1xs;
+extern uint32_t SA1NMIV, SA1IRQV, SA1IRQEn, SNSNMIV, SNSIRQV;
+extern uint8_t SA1Control, SA1IRQEnable;
+extern uint8_t *SA1Ptr, *SA1RegPCS;
 extern uint8_t* romdata;
 extern uint16_t irqv, irqv2, nmiv, nmiv2; /* initdata.c */
 
 REGABI_REG_WRITE8(sa12200w);
 void c_sa12200w(uint8_t al) /* SA-1 CPU control */
 {
-    uint8_t oldctrl = BYTE(SA1Control, 0);
+    uint8_t oldctrl = SA1Control;
     BYTE(SA1Message, 0) = al & 0x0F;
     if (al & 0x80)
         BYTE(SA1DoIRQ, 0) |= 1;
     if (al & 0x10)
         BYTE(SA1DoIRQ, 0) |= 2;
-    BYTE(SA1Control, 0) = al;
+    SA1Control = al;
     if ((oldctrl & 0x20) && !(al & 0x20)) { /* SA-1 leaving reset */
         SA1BankPtr = (uint32_t)(uintptr_t)romdata;
-        SA1Ptr = (uint32_t)((uintptr_t)romdata + (uint16_t)SA1ResetV - 0x8000);
+        SA1Ptr = romdata + (uint16_t)SA1ResetV - 0x8000;
         BYTE(SA1xpb, 0) = 0;
         *(uint16_t*)&SA1xs = 0x1FF;
-        SA1RegPCS = (uint32_t)((uintptr_t)romdata - 0x8000);
+        SA1RegPCS = romdata - 0x8000;
     }
 }
 
 REGABI_REG_WRITE8(sa12201w);
-void c_sa12201w(uint8_t al) { BYTE(SA1IRQEnable, 0) = al; }
+void c_sa12201w(uint8_t al) { SA1IRQEnable = al; }
 
 REGABI_REG_WRITE8(sa12202w); /* IRQ clear */
 void c_sa12202w(uint8_t al)
@@ -192,7 +196,7 @@ SA1_QUICKW(sa1220Ew, SNSIRQV, 0)
 SA1_QUICKW(sa1220Fw, SNSIRQV, 1)
 
 /* ===== Stage 4: ROM/BWRAM bank mapping (0x2220-0x2225) + S-DD1 ===== */
-extern uint32_t SA1RAMArea, SNSBWPtr, CurBWPtr, SA1BWPtr;
+extern uint8_t *SA1RAMArea, *SNSBWPtr, *CurBWPtr, *SA1BWPtr;
 extern uint32_t BWShift, BWAndAddr, BWAnd, BWRAnd, Sdd1Mode;
 extern uint8_t SA1BankVal[4];
 extern uint32_t NumofBanks; /* initdata.c (byte 0 used) */
@@ -242,7 +246,7 @@ void c_sa12223w(uint8_t al)
 REGABI_REG_WRITE8(sa12224w); /* SNES BW-RAM bank */
 void c_sa12224w(uint8_t al)
 {
-    uint32_t e = ((uint32_t)(al & 0x1F) << 13) + SA1RAMArea - 0x6000;
+    uint8_t* e = SA1RAMArea + ((uint32_t)(al & 0x1F) << 13) - 0x6000;
     SNSBWPtr = e;
     if (SA1Status == 0)
         CurBWPtr = e;
@@ -252,26 +256,25 @@ REGABI_REG_WRITE8(sa12225w); /* SA-1 BW-RAM bank + bitmap mode */
 void c_sa12225w(uint8_t al)
 {
     BWUsed2 = al;
-    uint32_t e;
+    uint8_t* e;
     if (!(al & 0x80)) {
-        e = ((uint32_t)(al & 0x1F) << 13) + SA1RAMArea - 0x6000;
+        e = SA1RAMArea + ((uint32_t)(al & 0x1F) << 13) - 0x6000;
         BYTE(BWShift, 0) = 0;
         BYTE(BWAndAddr, 0) = 0;
         BYTE(BWAnd, 0) = 0xFF;
         BYTE(BWRAnd, 0) = 0;
     } else if (BYTE(SA1Overflow, 1) & 0x80) { /* 4-colour */
-        e = (uint32_t)(al & 0x7F) << 11;
         BYTE(BWShift, 0) = 2;
         BYTE(BWAndAddr, 0) = 0x03;
         BYTE(BWAnd, 0) = 0x03;
         BYTE(BWRAnd, 0) = 0xFC;
-        e += SA1RAMArea;
+        e = SA1RAMArea + ((uint32_t)(al & 0x7F) << 11);
     } else { /* 16-colour */
         BYTE(BWShift, 0) = 1;
         BYTE(BWAndAddr, 0) = 0x01;
         BYTE(BWAnd, 0) = 0x0F;
         BYTE(BWRAnd, 0) = 0xF0;
-        e = ((uint32_t)(al & 0x3F) << 12) + SA1RAMArea;
+        e = SA1RAMArea + ((uint32_t)(al & 0x3F) << 12);
     }
     SA1BWPtr = e;
     if (SA1Status != 0)
@@ -316,8 +319,10 @@ void c_sdd14801w(uint8_t al)
 }
 
 /* ===== Stage 5: arithmetic (0x2250-0x2254) + DMA (0x2230-0x2239) ===== */
-extern uint32_t SA1ARC, SA1AR1, SA1AR2;
-extern uint32_t SA1DMAInfo, SA1DMAChar, SA1DMASource, SA1DMADest, SA1DMACount;
+extern uint32_t SA1ARC;
+extern uint16_t SA1AR1, SA1AR2, SA1DMACount;
+extern uint32_t SA1DMAChar, SA1DMASource, SA1DMADest;
+extern uint8_t SA1DMAInfo;
 extern uint32_t SA1_CC2_line, SA1_in_cc1_dma;
 void UpdateArithStuff(void); /* c_sa1regs.c */
 void sa1dmairam(void);
@@ -401,7 +406,7 @@ SA1_QUICKW(sa12239w, SA1DMACount, 1)
 
 /* ===== Stage 6: char-conversion DMA, variable-length decode, bitmap RF ===== */
 extern uint8_t SA1_BRF[16];
-extern uint32_t SA1DoIRQ, SA1Overflow, VarLenAddr, VarLenAddrB, VarLenBarrel;
+extern uint32_t SA1DoIRQ, VarLenAddr, VarLenAddrB, VarLenBarrel;
 void SA1_DMA_CC2(void); /* sa1emu.c */
 
 /* The bit-plane conversion path is disabled upstream (its guard is commented

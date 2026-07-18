@@ -43,7 +43,7 @@ void NTSCFilterInit();
 void NTSCFilterDraw(int SurfaceX, int SurfaceY, int pitch, unsigned char* buffer);
 char CheckOGLMode();
 
-bool sw_start(int width, int height, int req_depth, int FullScreen)
+int sw_start(int width, int height, int req_depth, int FullScreen)
 {
     uint32_t flags = 0;
 
@@ -74,7 +74,7 @@ bool sw_start(int width, int height, int req_depth, int FullScreen)
         sdl_window = SDL_CreateWindow("ZSNES", SurfaceX, SurfaceY, flags);
         if (sdl_window == NULL) {
             fprintf(stderr, "Could not create %dx%d window: %s\n", SurfaceX, SurfaceY, SDL_GetError());
-            return false;
+            return 0;
         }
     }
 
@@ -82,7 +82,7 @@ bool sw_start(int width, int height, int req_depth, int FullScreen)
     render_surface = SDL_CreateSurface(SurfaceX, SurfaceY, SDL_PIXELFORMAT_RGB565);
     if (render_surface == NULL) {
         fprintf(stderr, "Could not create render surface: %s\n", SDL_GetError());
-        return false;
+        return 0;
     }
 
     surface = render_surface;
@@ -96,7 +96,7 @@ bool sw_start(int width, int height, int req_depth, int FullScreen)
     // Always RGB565
     converta = 0;
 
-    return true;
+    return 1;
 }
 
 void sw_end()

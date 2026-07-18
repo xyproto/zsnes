@@ -34,44 +34,42 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "regs.h"
 #include <stdint.h>
 
-extern uint32_t Curtableaddr, tableA[256];
+extern eop** Curtableaddr;
+extern eop* tableA[256];
 
 void PrepareOffset()
 {
-    Curtableaddr -= (unsigned int)tableA;
+    Curtableaddr = (eop**)((uintptr_t)Curtableaddr - (uintptr_t)tableA);
 }
 
 void ResetOffset()
 {
-    Curtableaddr += (unsigned int)tableA;
+    Curtableaddr = (eop**)((uintptr_t)Curtableaddr + (uintptr_t)tableA);
 }
 
-extern uint32_t snesmmap[256], snesmap2[256];
+extern uint8_t *snesmmap[256], *snesmap2[256];
 
 void BankSwitchSDD1C(unsigned char bankval, unsigned int offset)
 {
-    unsigned int curbankval = bankval, i;
-
-    curbankval &= 7;
-    curbankval <<= 20;
-    curbankval += (uintptr_t)romdata;
+    uint8_t* curbank = romdata + ((bankval & 7u) << 20);
+    unsigned int i;
 
     for (i = 0; i < 16; i++) {
-        snesmap2[offset + i] = curbankval;
-        snesmmap[offset + i] = curbankval;
-        curbankval += 0x10000;
+        snesmap2[offset + i] = curbank;
+        snesmmap[offset + i] = curbank;
+        curbank += 0x10000;
     }
 }
 
-extern uint8_t SDD1BankA, SDD1BankB, SDD1BankC, SDD1BankD;
+extern uint8_t SDD1BankA[4];
 
 void UpdateBanksSDD1()
 {
-    if (SDD1BankA) {
-        BankSwitchSDD1C(SDD1BankA, 0x0C0);
-        BankSwitchSDD1C(SDD1BankB, 0x0D0);
-        BankSwitchSDD1C(SDD1BankC, 0x0E0);
-        BankSwitchSDD1C(SDD1BankD, 0x0F0);
+    if (SDD1BankA[0]) {
+        BankSwitchSDD1C(SDD1BankA[0], 0x0C0);
+        BankSwitchSDD1C(SDD1BankA[1], 0x0D0);
+        BankSwitchSDD1C(SDD1BankA[2], 0x0E0);
+        BankSwitchSDD1C(SDD1BankA[3], 0x0F0);
     }
 }
 
@@ -113,14 +111,13 @@ void unpackfunct()
 
 #define bit_test(byte, checkbit) (byte & (1 << checkbit)) ? 1 : 0
 
-extern uint32_t GlobalVL, GlobalVR, EchoVL, EchoVR, EchoRate[16], MaxEcho;
+extern uint8_t GlobalVL, GlobalVR, EchoVL, EchoVR;
+extern uint32_t EchoRate[16], MaxEcho;
 extern uint32_t EchoFB, NoiseSpeeds[32], dspPAdj, NoiseInc;
-extern int FIRTAPVal0, FIRTAPVal1, FIRTAPVal2, FIRTAPVal3, FIRTAPVal4;
-extern int FIRTAPVal5, FIRTAPVal6, FIRTAPVal7;
+extern int FIRTAPVal0[8];
 extern uint16_t VolumeConvTable[32768];
-extern uint8_t VolumeTableb[256], MusicVol, Voice0Status;
-extern uint8_t Voice1Status, Voice2Status, Voice3Status, Voice4Status;
-extern uint8_t Voice5Status, Voice6Status, Voice7Status, Voice0Noise;
+extern uint8_t VolumeTableb[256], MusicVol, Voice0Status[8];
+extern uint8_t Voice0Noise;
 extern uint8_t Voice1Noise, Voice2Noise, Voice3Noise, Voice4Noise;
 extern uint8_t Voice5Noise, Voice6Noise, Voice7Noise, bgtilesz;
 extern uint8_t BG116x16t, BG216x16t, BG316x16t, BG416x16t, vramincby8on;
@@ -150,22 +147,21 @@ void repackfunct()
     EchoFB = VolumeTableb[DSPMem[0x0D]];
 
     // FIR Filter Values
-    FIRTAPVal0 = (char)DSPMem[0x0F];
-    FIRTAPVal1 = (char)DSPMem[0x1F];
-    FIRTAPVal2 = (char)DSPMem[0x2F];
-    FIRTAPVal3 = (char)DSPMem[0x3F];
-    FIRTAPVal4 = (char)DSPMem[0x4F];
-    FIRTAPVal5 = (char)DSPMem[0x5F];
-    FIRTAPVal6 = (char)DSPMem[0x6F];
-    FIRTAPVal7 = (char)DSPMem[0x7F];
+    FIRTAPVal0[0] = (char)DSPMem[0x0F];
+    FIRTAPVal0[1] = (char)DSPMem[0x1F];
+    FIRTAPVal0[2] = (char)DSPMem[0x2F];
+    FIRTAPVal0[3] = (char)DSPMem[0x3F];
+    FIRTAPVal0[4] = (char)DSPMem[0x4F];
+    FIRTAPVal0[5] = (char)DSPMem[0x5F];
+    FIRTAPVal0[6] = (char)DSPMem[0x6F];
+    FIRTAPVal0[7] = (char)DSPMem[0x7F];
 
     // Noise
     block = DSPMem[0x6C];
     DSPMem[0x6C] &= 0x7F;
 
     if (block & 0xC0) {
-        Voice0Status = Voice1Status = Voice2Status = Voice3Status = 0;
-        Voice4Status = Voice5Status = Voice6Status = Voice7Status = 0;
+        memset(Voice0Status, 0, sizeof(Voice0Status));
     }
 
     NoiseInc = (((NoiseSpeeds[(block & 0x1F)] * dspPAdj) >> 17) & 0xFFFFFFFF);

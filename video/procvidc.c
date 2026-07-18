@@ -39,10 +39,12 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 extern uint8_t newengen;
 extern uint32_t nggposng[];
-extern uint16_t PrevPicture[64 * 56], *vidbuffer, *vidbufferofsb;
+extern uint16_t PrevPicture[64 * 56];
+extern uint8_t *vidbuffer, *vidbufferofsb;
 
 void CapturePicture()
 {
+    const uint16_t* vbuf = (uint16_t*)vidbuffer;
     unsigned short work1, work2, filter;
     unsigned int i, j, offset, pppos = 0;
 
@@ -56,8 +58,8 @@ void CapturePicture()
         offset = 288 + 16 + j * 288 * 4;
 
         for (i = 0; i < 64; i++) {
-            work1 = ((vidbuffer[offset] & filter) >> 1) + ((vidbuffer[offset + 2] & filter) >> 1);
-            work2 = ((vidbuffer[offset + 288] & filter) >> 1) + ((vidbuffer[offset + 288 + 2] & filter) >> 1);
+            work1 = ((vbuf[offset] & filter) >> 1) + ((vbuf[offset + 2] & filter) >> 1);
+            work2 = ((vbuf[offset + 288] & filter) >> 1) + ((vbuf[offset + 288 + 2] & filter) >> 1);
             PrevPicture[pppos] = ((work1 & filter) >> 1) + ((work2 & filter) >> 1);
             offset += 4;
             pppos++;

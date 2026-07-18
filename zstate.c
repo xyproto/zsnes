@@ -539,22 +539,18 @@ void DeallocSystemVars()
     }
 }
 
-extern uintptr_t Voice0BufPtr, Voice1BufPtr, Voice2BufPtr, Voice3BufPtr;
-extern uintptr_t Voice4BufPtr, Voice5BufPtr, Voice6BufPtr, Voice7BufPtr;
+extern s2* Voice0BufPtr[8]; // Ptr to Buffer Block to be played
 
 void PrepareSaveState()
 {
+    int i;
+
     spcPCRam -= (uintptr_t)SPCRAM;
     spcRamDP -= (uintptr_t)SPCRAM;
 
-    Voice0BufPtr -= (uintptr_t)spcBuffera;
-    Voice1BufPtr -= (uintptr_t)spcBuffera;
-    Voice2BufPtr -= (uintptr_t)spcBuffera;
-    Voice3BufPtr -= (uintptr_t)spcBuffera;
-    Voice4BufPtr -= (uintptr_t)spcBuffera;
-    Voice5BufPtr -= (uintptr_t)spcBuffera;
-    Voice6BufPtr -= (uintptr_t)spcBuffera;
-    Voice7BufPtr -= (uintptr_t)spcBuffera;
+    for (i = 0; i < 8; i++) {
+        Voice0BufPtr[i] = (s2*)((uintptr_t)Voice0BufPtr[i] - (uintptr_t)spcBuffera);
+    }
 }
 
 extern uintptr_t SA1Stat;
@@ -597,25 +593,20 @@ void RestoreSA1()
     SA1Ptr += (uintptr_t)SA1RegPCS;
 }
 
-#define ResState(Voice_BufPtr)                               \
-    Voice_BufPtr += (uintptr_t)spcBuffera;                   \
-    if (Voice_BufPtr >= (uintptr_t)spcBuffera + 65536 * 4) { \
-        Voice_BufPtr = (uintptr_t)spcBuffera;                \
-    }
-
 void ResetState()
 {
+    int i;
+
     spcPCRam += (uintptr_t)SPCRAM;
     spcRamDP += (uintptr_t)SPCRAM;
 
-    ResState(Voice0BufPtr);
-    ResState(Voice1BufPtr);
-    ResState(Voice2BufPtr);
-    ResState(Voice3BufPtr);
-    ResState(Voice4BufPtr);
-    ResState(Voice5BufPtr);
-    ResState(Voice6BufPtr);
-    ResState(Voice7BufPtr);
+    for (i = 0; i < 8; i++) {
+        uintptr_t p = (uintptr_t)Voice0BufPtr[i] + (uintptr_t)spcBuffera;
+        if (p >= (uintptr_t)spcBuffera + 65536 * 4) {
+            p = (uintptr_t)spcBuffera;
+        }
+        Voice0BufPtr[i] = (s2*)p;
+    }
 }
 
 extern uint32_t SfxRomBuffer, SfxCROM;
@@ -895,7 +886,8 @@ void statesaver(void)
 }
 
 extern uint32_t SfxMemTable[256], SfxCPB;
-extern uint32_t SfxPBR, SfxROMBR, SfxRAMBR, SCBRrel, SfxSCBR;
+extern uint32_t SfxPBR, SfxROMBR, SfxRAMBR, SfxSCBR;
+extern u1* SCBRrel;
 extern uint8_t ioportval;
 extern u1 nexthdma;
 
@@ -963,7 +955,7 @@ bool zst_load(FILE* fp, size_t Compressed)
         SfxRAMMem = (uintptr_t)sfxramdata + ((SfxRAMBR & 0xFF) << 16);
         SfxRomBuffer += SfxCROM;
         SfxLastRamAdr += SfxRAMMem;
-        SCBRrel = (SfxSCBR << 10) + (uintptr_t)sfxramdata;
+        SCBRrel = sfxramdata + (SfxSCBR << 10);
     }
 
     if (SA1Enable) {

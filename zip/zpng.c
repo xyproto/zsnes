@@ -69,12 +69,12 @@ char* generate_image_filename(const char* image_suffix)
     return (filename);
 }
 
-extern uint16_t* vidbuffer;
+extern uint8_t* vidbuffer;
 extern uint16_t resolutn;
 
 #define SNAP_HEIGHT resolutn
 #define SNAP_WIDTH 256
-#define PIXEL (vidbuffer[((y + 1) * 288) + x + 16])
+#define PIXEL (((uint16_t*)vidbuffer)[((y + 1) * 288) + x + 16])
 
 #ifndef NO_PNG
 
