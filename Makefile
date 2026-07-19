@@ -249,13 +249,32 @@ ifeq ($(WITH_SDL),yes)
   LDFLAGS += $(LDFLAGS_SDL)
 endif
 
+# libpng must come from the target's pkg-config (the mingw32 one for
+# "make win32"); fall back to a PNG-less build when the target lacks it.
+PKG_CONFIG ?= pkg-config
 ifdef WITH_PNG
-  PNG_CONFIG ?= pkg-config libpng
+  ifeq ($(origin PNG_CONFIG),undefined)
+    ifneq ($(shell $(PKG_CONFIG) --exists libpng >/dev/null 2>&1 && echo yes),yes)
+      WITH_PNG :=
+      $(info ===> libpng for the target not found via '$(PKG_CONFIG)'; building without PNG support)
+      ifeq ($(ARCH),WIN)
+        $(info ===> for PNG support, install the mingw32 libpng (Arch Linux: mingw-w64-libpng from the AUR))
+      endif
+    endif
+  endif
+endif
+ifdef WITH_PNG
+  PNG_CONFIG ?= $(PKG_CONFIG) libpng
   ifndef CFLAGS_PNG
     CFLAGS_PNG  := $(shell $(PNG_CONFIG) --cflags)
   endif
   ifndef LDFLAGS_PNG
-    LDFLAGS_PNG := $(shell $(PNG_CONFIG) --libs)
+    # the win32 link is static: let pkg-config order zlib after libpng
+    ifeq ($(ARCH),WIN)
+      LDFLAGS_PNG := $(shell $(PNG_CONFIG) --static --libs)
+    else
+      LDFLAGS_PNG := $(shell $(PNG_CONFIG) --libs)
+    endif
   endif
   CFLAGS  += $(CFLAGS_PNG)
   LDFLAGS += $(LDFLAGS_PNG)
@@ -577,7 +596,8 @@ w32:
 win32:
 	@command -v $(MINGW32_PREFIX)-gcc >/dev/null 2>&1 || { \
 	  echo "error: $(MINGW32_PREFIX)-gcc not found; install the mingw32 toolchain" >&2; exit 1; }
-	$(MAKE) ARCH=WIN CC=$(MINGW32_PREFIX)-gcc CC_TARGET=$(MINGW32_PREFIX)-gcc WINDRES=$(MINGW32_PREFIX)-windres
+	$(MAKE) ARCH=WIN CC=$(MINGW32_PREFIX)-gcc CC_TARGET=$(MINGW32_PREFIX)-gcc \
+	  WINDRES=$(MINGW32_PREFIX)-windres PKG_CONFIG=$(MINGW32_PREFIX)-pkg-config
 
 debug: DEBUGFLAGS += -g
 debug: $(BINARY)
