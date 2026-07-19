@@ -41,7 +41,7 @@ int CheckBattery()
     // Check ac adapter
     DIR* ac_dir = opendir(ac);
     if (ac_dir) {
-        char fnbuf[40]; // longer than len(ac)+len(HEXDIGIT*4)+len({state|info})
+        char fnbuf[284]; // longer than len(ac)+len(HEXDIGIT*4)+len({state|info})
         FILE* fp;
         const char* pattern = " %39[^:]: %39[ -~]"; // for sscanf
         char line[80], key[40], arg[40];
@@ -52,7 +52,7 @@ int CheckBattery()
                 continue;
             }
 
-            snprintf(fnbuf, 40, "%s%s/state", ac, ent->d_name);
+            snprintf(fnbuf, 284, "%s%s/state", ac, ent->d_name);
             fp = fopen(fnbuf, "r");
             if (fp) {
                 while (fgets(line, 80, fp) && sscanf(line, pattern, key, arg) == 2) {
