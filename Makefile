@@ -395,7 +395,6 @@ SRCS += video/c_mode716.c
 SRCS += video/c_hqx.c
 SRCS += video/c_newgfx16.c
 SRCS += video/copyvwin.c
-SRCS += video/m716text.asm
 SRCS += video/makev16t.asm
 SRCS += video/makevid.asm
 SRCS += video/mode716.asm

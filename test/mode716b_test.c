@@ -20,6 +20,8 @@ void c_drawmode716b(u4 ypos, u4 xpos);
 void c_drawmode7dcolor(u4 ypos, u4 xpos);
 void c_drawmode716t(u4 ypos, u4 xpos);
 void c_drawmode716tb(u4 ypos, u4 xpos);
+void c_drawmode716textbg(u4 ypos, u4 xpos);
+void c_drawmode716textbg2(u4 craw);
 void domosaic16b(void);
 extern u1 tileleft16b;
 
@@ -60,7 +62,7 @@ void Gendcolortable(void)
         dcolortab[0][i] = (u2)(0x4000 | vidbright << 8 | i);
 }
 
-static u2 destbuf[512];
+static u2 destbuf[1024]; /* extbg stashes bytes at +576..+1087 */
 static u1 winbuf[512];
 
 static void reset(void)
@@ -82,7 +84,7 @@ static void reset(void)
                 vrama[tile * 128 + y * 16 + x * 2 + 1]
                     = (u1)(tile * 8 + x + y);
 
-    for (u4 i = 0; i != 512; ++i)
+    for (u4 i = 0; i != 1024; ++i)
         destbuf[i] = 0xCCCC;
     memset(winbuf, 0, sizeof winbuf);
     curvidoffset = (u1*)destbuf;
@@ -326,6 +328,74 @@ static void test_mainsub(void)
     ZT_CHECK_INT(tw[3], 0x8000 | 11);
 }
 
+static void test_extbg(void)
+{
+    ZT_SECTION("extbg pass 1: byte buffer and priority gate");
+
+    /* pixel p is p+8, so slots 120..247 carry the priority bit */
+    reset();
+    c_drawmode716textbg(0, 0);
+    ZT_CHECK_INT(((u1*)destbuf)[576], 8); /* raw byte stashed */
+    ZT_CHECK_INT(((u1*)destbuf)[576 + 240], 128);
+    ZT_CHECK_INT(destbuf[0], 0x4000 ^ (0x80 >> 1)); /* full add default */
+    ZT_CHECK_INT(destbuf[120], 0xCCCC); /* high priority skipped */
+
+    /* half add path blends with the sub screen */
+    reset();
+    scaddtype = 0x40;
+    u2* const tw = (u2*)(transpbuf + 32);
+    tw[1] = 0x200;
+    c_drawmode716textbg(0, 0);
+    ZT_CHECK_INT(destbuf[0], 0x80);
+    ZT_CHECK_INT(destbuf[1], (0x90 + 0x200) >> 1);
+
+    /* windowing masks pixels and advances the global cwinptr */
+    reset();
+    winon = 1;
+    winbuf[2] = 1;
+    c_drawmode716textbg(0, 0);
+    ZT_CHECK_INT(destbuf[1], 0x4000 ^ (0x90 >> 1));
+    ZT_CHECK_INT(destbuf[2], 0xCCCC);
+    ZT_CHECK_INT(((u1*)destbuf)[576 + 4], 10); /* byte still stashed */
+    ZT_CHECK_INT((int)(cwinptr - winbuf), 256);
+    ZT_CHECK_INT(winptrref == winbuf, 1);
+}
+
+static void test_extbg2(void)
+{
+    ZT_SECTION("extbg pass 2: draws stashed high-priority pixels");
+
+    reset();
+    memset((u1*)destbuf + 576, 0, 512);
+    ((u1*)destbuf)[576] = 0x85;
+    ((u1*)destbuf)[576 + 2] = 0x05; /* no priority bit: skipped */
+    c_drawmode716textbg2(0);
+    ZT_CHECK_INT(destbuf[0], 0x4000 ^ (0x50 >> 1)); /* pal16bcl[5] full add */
+    ZT_CHECK_INT(destbuf[1], 0xCCCC);
+
+    /* half add here ignores scrnon, unlike pass 1 */
+    reset();
+    memset((u1*)destbuf + 576, 0, 512);
+    ((u1*)destbuf)[576] = 0x85;
+    scaddtype = 0x40;
+    scrnon = 0;
+    u2* const tw = (u2*)(transpbuf + 32);
+    tw[0] = 0x200;
+    c_drawmode716textbg2(0);
+    ZT_CHECK_INT(destbuf[0], (0x50 + 0x200) >> 1);
+
+    /* windowed: stray CL byte lands in pixel 0, cwinptr stays put */
+    reset();
+    memset((u1*)destbuf + 576, 0, 512);
+    ((u1*)destbuf)[576 + 6] = 0x90;
+    winon = 1;
+    winbuf[3] = 1;
+    c_drawmode716textbg2(0xAB);
+    ZT_CHECK_INT(destbuf[0], 0xCCAB);
+    ZT_CHECK_INT(destbuf[3], 0xCCCC); /* blocked by the window */
+    ZT_CHECK_INT(cwinptr == winbuf, 1);
+}
+
 int main(void)
 {
     tileleft16b = 0;
@@ -338,6 +408,8 @@ int main(void)
     test_domosaic();
     test_transp();
     test_mainsub();
+    test_extbg();
+    test_extbg2();
 
     printf("mode 7 16-bit renderer port tests\n");
     ZT_RESULTS();

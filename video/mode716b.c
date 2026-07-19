@@ -1,6 +1,6 @@
 /*
  * Mode 7 16-bit background renderers, ported from mode716b.asm,
- * mode716d.asm, mode716t.asm, and makev16b.asm.
+ * mode716d.asm, mode716t.asm, m716text.asm, and makev16b.asm.
  *
  * The drawmode7 entry points keep the legacy register ABI (y scroll
  * in AX, x scroll in DX) through i386 trampolines; the asm renderers
@@ -20,6 +20,7 @@
 #include "../ui.h"
 #include "../vcache.h"
 #include "c_newgfx16.h"
+#include "m716text.h"
 #include "makev16b.h"
 #include "makev16t.h"
 #include "makevid.h"
@@ -44,6 +45,7 @@ enum m7mode {
 
 /* mode 7 line state, mirrors the asm scratch words */
 static u1 m7mode;
+static u1 m7xwin; // extbg: gate pixels on the window, advancing cwinptr
 static u2* m7transp; // sub screen pixel cursor, in step with dest
 static u4 m7xpos;
 static u4 m7ypos;
@@ -103,38 +105,42 @@ static void mode7calculate(u2 y, u2 x)
     }
 }
 
+/* color one pixel slot; transp is the matching sub screen slot */
+static void colorpix(u2* dest, u2* transp, u1 pix)
+{
+    switch (m7mode) {
+    case M7_PAL:
+        *dest = (u2)pal16b[pix];
+        break;
+    case M7_DCOLOR:
+        *dest = dcolortab[0][pix];
+        break;
+    case M7_HALFADD: {
+        u4 c = pal16bcl[pix];
+        if (*transp != 0)
+            c = ((c & vesa2_clbit) + (*transp & vesa2_clbit)) >> 1;
+        *dest = (u2)c;
+        break;
+    }
+    case M7_FULLADD:
+        *dest = fulladdtab[(pal16bcl[pix] + (*transp & vesa2_clbit)) >> 1];
+        break;
+    case M7_FULLSUB:
+        *dest = (u2)(fulladdtab[(pal16bxcl[pix] + (*transp & vesa2_clbit)) >> 1]
+            ^ 0xFFFF);
+        break;
+    case M7_MAINSUB:
+        *transp = *dest = (u2)pal16b[pix];
+        break;
+    }
+}
+
 /* win and transp move only when a pixel slot is consumed here,
    matching the asm */
 static void plot(u2** dest, u1 const** win, u1 pix)
 {
-    if (pix != 0 && (*win == NULL || **win == 0)) {
-        switch (m7mode) {
-        case M7_PAL:
-            **dest = (u2)pal16b[pix];
-            break;
-        case M7_DCOLOR:
-            **dest = dcolortab[0][pix];
-            break;
-        case M7_HALFADD: {
-            u4 c = pal16bcl[pix];
-            if (*m7transp != 0)
-                c = ((c & vesa2_clbit) + (*m7transp & vesa2_clbit)) >> 1;
-            **dest = (u2)c;
-            break;
-        }
-        case M7_FULLADD:
-            **dest
-                = fulladdtab[(pal16bcl[pix] + (*m7transp & vesa2_clbit)) >> 1];
-            break;
-        case M7_FULLSUB:
-            **dest = (u2)(fulladdtab[(pal16bxcl[pix] + (*m7transp & vesa2_clbit)) >> 1]
-                ^ 0xFFFF);
-            break;
-        case M7_MAINSUB:
-            *m7transp = **dest = (u2)pal16b[pix];
-            break;
-        }
-    }
+    if (pix != 0 && (*win == NULL || **win == 0))
+        colorpix(*dest, m7transp, pix);
     ++*dest;
     ++m7transp;
     if (*win != NULL)
@@ -421,6 +427,204 @@ static void renderline(u2 ypos, u2 xpos)
     }
 }
 
+/* extbg pixel: stash the raw byte at dest+576 for the second pass and
+   draw only low-priority pixels */
+static void plotx(u2* dest, u2* transp, u1 pix)
+{
+    ((u1*)dest)[576] = pix;
+    if (m7xwin) {
+        u1 const blocked = *cwinptr;
+        ++cwinptr;
+        if (blocked != 0)
+            return;
+    }
+    if (pix == 0 || (pix & 0x80) != 0)
+        return;
+    colorpix(dest, transp, pix);
+}
+
+/* extbg line, adders within +/-0x7F0; unlike process(), the transp
+   cursor advances every slot and off-map is checked against both edges */
+static void processx(u2* dest)
+{
+    u2* transp = (u2*)(transpbuf + 32);
+    u4 count = 256;
+
+    if (!(mode7set & 0x80)) { // repeating map
+        u4 xr = m7xpos & 0x7FF;
+        u4 yr = m7ypos & 0x7FF;
+        u4 ptr = tileptr();
+        u1 const* tiled = vram + vram[ptr] * 128;
+
+        for (;;) {
+            if ((xr >> 8) & 0x08) {
+                ptr = (ptr & ~0xFFu) | ((ptr + m7xinc) & 0xFF);
+                tiled = vram + vram[ptr] * 128;
+                xr -= (u4)m7xadd2;
+            }
+            if ((yr >> 8) & 0x08) {
+                ptr = (ptr & ~0xFF00u)
+                    | ((((ptr >> 8) - m7yinc) & 0x7F) << 8);
+                tiled = vram + vram[ptr] * 128;
+                yr += (u4)m7yadd2;
+            }
+            u1 const pix
+                = tiled[mode7tab[(((xr >> 8) & 0xFF) << 8) | ((yr >> 8) & 0xFF)]];
+            xr += (u4)m7xadder;
+            yr -= (u4)m7yadder;
+            plotx(dest, transp, pix);
+            ++dest;
+            ++transp;
+            if (--count == 0)
+                return;
+        }
+    }
+
+    // non-repeating map: skip or tile-0-fill until the map is entered
+    for (;;) {
+        if (((m7ypos >> 16) & 0xFF) <= 3 && ((m7xpos >> 16) & 0xFF) <= 3)
+            break;
+        if (mode7set & 0x40) {
+            u4 const idx
+                = (((m7xpos >> 8) & 0xFF) << 8) | ((m7ypos >> 8) & 0xFF);
+            u1 const pix = vrama[mode7tab[idx]];
+            m7xpos += (u4)m7xadder;
+            m7ypos -= (u4)m7yadder;
+            plotx(dest, transp, pix);
+        } else {
+            m7xpos += (u4)m7xadder;
+            m7ypos -= (u4)m7yadder;
+        }
+        ++dest;
+        ++transp;
+        if (--count == 0)
+            return;
+    }
+
+    u4 xr = m7xpos & 0x7FF;
+    u4 yr = m7ypos & 0x7FF;
+    u4 ptr = tileptr();
+    u1 const* tiled = vram + vram[ptr] * 128;
+
+    for (;;) {
+        if ((xr >> 8) & 0x08) {
+            u1 const lo = (u1)(ptr + m7xinc);
+            ptr = (ptr & ~0xFFu) | lo;
+            if (lo == 0 || lo == 0xFE)
+                goto offmap;
+            tiled = vram + vram[ptr] * 128;
+            xr -= (u4)m7xadd2;
+        }
+        if ((yr >> 8) & 0x08) {
+            u1 const row = (u1)((ptr >> 8) - m7yinc);
+            ptr = (ptr & ~0xFF00u) | ((u4)row << 8);
+            if (row & 0x80)
+                goto offmap;
+            tiled = vram + vram[ptr] * 128;
+            yr += (u4)m7yadd2;
+        }
+        u4 const idx = (((xr >> 8) & 0xFF) << 8) | ((yr >> 8) & 0xFF);
+        u1 const pix = tiled[mode7tab[idx]];
+        xr += (u4)m7xadder;
+        yr -= (u4)m7yadder;
+        plotx(dest, transp, pix);
+        ++dest;
+        ++transp;
+        if (--count == 0)
+            return;
+    }
+
+offmap:
+    if (mode7set & 0x40) {
+        do { // tile 0 repeats outside the map
+            xr &= 0xFFFF07FFu;
+            yr &= 0xFFFF07FFu;
+            u4 const idx = (((xr >> 8) & 0xFF) << 8) | ((yr >> 8) & 0xFF);
+            u1 const pix = vrama[mode7tab[idx]];
+            xr += (u4)m7xadder;
+            yr -= (u4)m7yadder;
+            plotx(dest, transp, pix);
+            ++dest;
+            ++transp;
+        } while (--count != 0);
+    }
+}
+
+/* extbg line, larger adders: full tile lookup for every pixel */
+static void processx_b(u2* dest)
+{
+    u2* transp = (u2*)(transpbuf + 32);
+    u4 count = 256;
+
+    if (!(mode7set & 0x80)) { // repeating map
+        do {
+            u4 const idx
+                = (((m7xpos >> 8) & 0xFF) << 8) | ((m7ypos >> 8) & 0xFF);
+            u1 const pix = vram[vram[tileptr()] * 128 + mode7tab[idx]];
+            m7xpos += (u4)m7xadder;
+            m7ypos -= (u4)m7yadder;
+            plotx(dest, transp, pix);
+            ++dest;
+            ++transp;
+        } while (--count != 0);
+        return;
+    }
+
+    do { // non-repeating: per-pixel bounds check
+        if (((m7ypos >> 16) & 0xFF) <= 3 && ((m7xpos >> 16) & 0xFF) <= 3) {
+            u4 const idx
+                = (((m7xpos >> 8) & 0xFF) << 8) | ((m7ypos >> 8) & 0xFF);
+            u1 const pix = vram[vram[tileptr()] * 128 + mode7tab[idx]];
+            m7xpos += (u4)m7xadder;
+            m7ypos -= (u4)m7yadder;
+            plotx(dest, transp, pix);
+        } else if (mode7set & 0x40) {
+            u4 const idx
+                = (((m7xpos >> 8) & 0xFF) << 8) | ((m7ypos >> 8) & 0xFF);
+            u1 const pix = vrama[mode7tab[idx]];
+            m7xpos += (u4)m7xadder;
+            m7ypos -= (u4)m7yadder;
+            plotx(dest, transp, pix);
+        } else {
+            m7xpos += (u4)m7xadder;
+            m7ypos -= (u4)m7yadder;
+        }
+        ++dest;
+        ++transp;
+    } while (--count != 0);
+}
+
+static void renderlinex(u2 ypos, u2 xpos)
+{
+    mode7calculate(ypos, xpos);
+
+    u2* dest = (u2*)curvidoffset;
+    if (curmosaicsz != 1) {
+        memset((u1*)xtravbuf + 32, 0, 512);
+        dest = xtravbuf + 16;
+    }
+
+    m7xadd2 = 0x800;
+    m7xinc = 2;
+    if (m7xadder < 0) {
+        m7xadd2 = -0x800;
+        m7xinc = 0xFE;
+    }
+    m7yadd2 = 0x800;
+    m7yinc = 1;
+    if (m7yadder < 0) {
+        m7yadd2 = -0x800;
+        m7yinc = 0xFF;
+    }
+
+    if (m7xadder > 0x7F0 || m7xadder < -0x7F0 || m7yadder > 0x7F0
+        || m7yadder < -0x7F0)
+        processx_b(dest);
+    else
+        processx(dest);
+    finishline();
+}
+
 void c_drawmode7dcolor(u4 ypos, u4 xpos)
 {
     if (scrndis & 0x01)
@@ -473,6 +677,62 @@ void c_drawmode716tb(u4 ypos, u4 xpos)
         return;
     m7mode = M7_MAINSUB;
     renderline((u2)ypos, (u2)xpos);
+}
+
+void c_drawmode716textbg(u4 ypos, u4 xpos)
+{
+    if (scrndis & 0x01)
+        return;
+    winptrref = cwinptr;
+    m7xwin = curmosaicsz == 1 && winon != 0;
+    if (scaddtype & 0x80)
+        m7mode = M7_FULLSUB;
+    else if ((scaddtype & 0x40) && (u1)(scrnon >> 8) != 0
+        && (coladdr | coladdg | coladdb | colnull) == 0)
+        m7mode = M7_HALFADD;
+    else
+        m7mode = M7_FULLADD;
+    renderlinex((u2)ypos, (u2)xpos);
+    m7xwin = 0;
+}
+
+/* second extbg pass: blend the high-priority pixels stashed at dest+576 */
+void c_drawmode716textbg2(u4 craw)
+{
+    if (scrndis & 0x01)
+        return;
+    winptrref = cwinptr;
+
+    u2* dest = (u2*)curvidoffset;
+    if (curmosaicsz != 1) {
+        memset((u1*)xtravbuf + 32, 0, 512);
+        dest = xtravbuf + 16;
+    }
+    u2* transp = (u2*)(transpbuf + 32);
+
+    if (scaddtype & 0x80)
+        m7mode = M7_FULLSUB;
+    else if (scaddtype & 0x40)
+        m7mode = M7_HALFADD;
+    else
+        m7mode = M7_FULLADD;
+
+    u1 const* win = NULL;
+    if (curmosaicsz == 1 && winon != 0) {
+        win = cwinptr;
+        *(u1*)dest = (u1)craw; // stray write of the caller's CL, as in the asm
+    }
+
+    for (u4 count = 256; count != 0; --count) {
+        u1 const pix = ((u1 const*)dest)[576];
+        if ((win == NULL || *win == 0) && (pix & 0x80) != 0)
+            colorpix(dest, transp, pix & 0x7F);
+        ++dest;
+        ++transp;
+        if (win != NULL)
+            ++win;
+    }
+    finishline();
 }
 
 /* expand the first pixel of each block; the first 0x200 bytes of the
@@ -540,5 +800,20 @@ __asm__(
                                                            "call " CSYM(c_drawmode716tb) "\n"
                                                                                          "addl $8, %esp\n"
                                                                                          "ret\n");
+
+__asm__(
+    ".globl " CSYM(drawmode716textbg) "\n" CSYM(drawmode716textbg) ":\n"
+                                                                   "pushl %edx\n"
+                                                                   "pushl %eax\n"
+                                                                   "call " CSYM(c_drawmode716textbg) "\n"
+                                                                                                     "addl $8, %esp\n"
+                                                                                                     "ret\n");
+
+__asm__(
+    ".globl " CSYM(drawmode716textbg2) "\n" CSYM(drawmode716textbg2) ":\n"
+                                                                     "pushl %ecx\n"
+                                                                     "call " CSYM(c_drawmode716textbg2) "\n"
+                                                                                                        "addl $4, %esp\n"
+                                                                                                        "ret\n");
 
 #endif
