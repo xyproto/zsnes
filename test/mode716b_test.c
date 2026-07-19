@@ -18,6 +18,8 @@ typedef uint32_t u4;
 
 void c_drawmode716b(u4 ypos, u4 xpos);
 void c_drawmode7dcolor(u4 ypos, u4 xpos);
+void c_drawmode716t(u4 ypos, u4 xpos);
+void c_drawmode716tb(u4 ypos, u4 xpos);
 void domosaic16b(void);
 extern u1 tileleft16b;
 
@@ -40,6 +42,15 @@ u2 m7starty;
 u2 dcolortab[2][256];
 u1 vidbright;
 u1 prevbrightdc;
+u4 pal16bcl[256];
+u4 pal16bxcl[256];
+u2 fulladdtab[65536];
+u4 vesa2_clbit;
+u1 transpbuf[576 + 16 + 288 * 2];
+u1 DoTransp;
+u1 scaddtype;
+u2 scrnon;
+u1 coladdr, coladdg, coladdb, colnull;
 
 static u4 gen_calls;
 void Gendcolortable(void)
@@ -94,6 +105,20 @@ static void reset(void)
     vidbright = 15;
     prevbrightdc = 15;
     gen_calls = 0;
+
+    /* transparency state: even table values stay clean under the mask */
+    for (u4 i = 0; i != 256; ++i) {
+        pal16bcl[i] = i << 4;
+        pal16bxcl[i] = 0xF000 - (i << 4);
+    }
+    for (u4 i = 0; i != 65536; ++i)
+        fulladdtab[i] = (u2)(0x4000 ^ i);
+    vesa2_clbit = 0xFFFE;
+    memset(transpbuf, 0, sizeof transpbuf);
+    DoTransp = 0;
+    scaddtype = 0;
+    scrnon = 0x0100;
+    coladdr = coladdg = coladdb = colnull = 0;
 }
 
 static void test_earlyouts(void)
@@ -218,6 +243,89 @@ static void test_domosaic(void)
     ZT_CHECK_INT(destbuf[1], 0xCCCC);
 }
 
+static void test_transp(void)
+{
+    ZT_SECTION("transparency renderer color math and dispatch");
+
+    /* half add: pixel 0 sees transp 0, pixel 1 averages with 0x200 */
+    reset();
+    scaddtype = 0x40;
+    u2* const tw = (u2*)(transpbuf + 32);
+    tw[1] = 0x200;
+    c_drawmode716t(0, 0);
+    ZT_CHECK_INT(destbuf[0], 0x80); /* pal16bcl[8] as-is */
+    ZT_CHECK_INT(destbuf[1], (0x90 + 0x200) >> 1);
+
+    /* full add when the sub screen high byte is off */
+    reset();
+    scaddtype = 0x40;
+    scrnon = 0;
+    c_drawmode716t(0, 0);
+    ZT_CHECK_INT(destbuf[0], 0x4000 ^ (0x80 >> 1));
+
+    /* full add when a color constant is added */
+    reset();
+    scaddtype = 0x40;
+    coladdg = 1;
+    c_drawmode716t(0, 0);
+    ZT_CHECK_INT(destbuf[0], 0x4000 ^ (0x80 >> 1));
+
+    /* full add by default, blending with the transp pixel */
+    reset();
+    tw[1] = 0x200;
+    c_drawmode716t(0, 0);
+    ZT_CHECK_INT(destbuf[0], 0x4000 ^ (0x80 >> 1));
+    ZT_CHECK_INT(destbuf[1], 0x4000 ^ ((0x90 + 0x200) >> 1));
+
+    /* full subtract */
+    reset();
+    scaddtype = 0x80;
+    c_drawmode716t(0, 0);
+    ZT_CHECK_INT(destbuf[0], (0x4000 ^ (0xEF80 >> 1)) ^ 0xFFFF);
+
+    /* DoTransp == 1 falls back to the plain renderer */
+    reset();
+    DoTransp = 1;
+    c_drawmode716t(0, 0);
+    ZT_CHECK_INT(destbuf[0], 0x8000 | 8);
+
+    /* scaddset routes to direct color, scrndis disables */
+    reset();
+    scaddset = 1;
+    c_drawmode716t(0, 0);
+    ZT_CHECK_INT(destbuf[0], 0x2000 | 8);
+    reset();
+    scrndis = 1;
+    c_drawmode716t(0, 0);
+    ZT_CHECK_INT(destbuf[0], 0xCCCC);
+}
+
+static void test_mainsub(void)
+{
+    ZT_SECTION("main & sub renderer writes both buffers");
+
+    reset();
+    memset(transpbuf, 0xEE, sizeof transpbuf);
+    u2* const tw = (u2*)(transpbuf + 32);
+    vrama[1 * 128 + 0 * 16 + 3 * 2 + 1] = 0; /* transparent pixel 3 */
+    c_drawmode716tb(0, 0);
+    ZT_CHECK_INT(destbuf[0], 0x8000 | 8);
+    ZT_CHECK_INT(tw[0], 0x8000 | 8);
+    ZT_CHECK_INT(destbuf[3], 0xCCCC);
+    ZT_CHECK_INT(tw[3], 0xEEEE); /* untouched but cursor advanced */
+    ZT_CHECK_INT(tw[4], 0x8000 | 12);
+
+    /* window blocks the write, cursor still keeps step */
+    reset();
+    memset(transpbuf, 0xEE, sizeof transpbuf);
+    winon = 1;
+    winbuf[2] = 1;
+    c_drawmode716tb(0, 0);
+    ZT_CHECK_INT(destbuf[2], 0xCCCC);
+    ZT_CHECK_INT(tw[2], 0xEEEE);
+    ZT_CHECK_INT(tw[3], 0x8000 | 11);
+}
+
 int main(void)
 {
     tileleft16b = 0;
@@ -228,6 +336,8 @@ int main(void)
     test_window();
     test_mosaic();
     test_domosaic();
+    test_transp();
+    test_mainsub();
 
     printf("mode 7 16-bit renderer port tests\n");
     ZT_RESULTS();

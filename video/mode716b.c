@@ -1,11 +1,11 @@
 /*
  * Mode 7 16-bit background renderers, ported from mode716b.asm,
- * mode716d.asm, and makev16b.asm.
+ * mode716d.asm, mode716t.asm, and makev16b.asm.
  *
- * drawmode716b and drawmode7dcolor keep the legacy register ABI
- * (y scroll in AX, x scroll in DX) through i386 trampolines; the asm
- * renderers tail-jump to domosaic16b with DH holding curmosaicsz, so
- * the C version reads the global instead.
+ * The drawmode7 entry points keep the legacy register ABI (y scroll
+ * in AX, x scroll in DX) through i386 trampolines; the asm renderers
+ * tail-jump to domosaic16b with DH holding curmosaicsz, so the C
+ * version reads the global instead.
  *
  * Positions are 24.8 fixed point kept in 32-bit words.  The asm mixed
  * byte, word, and dword accesses into those words; the masked helpers
@@ -21,16 +21,30 @@
 #include "../vcache.h"
 #include "c_newgfx16.h"
 #include "makev16b.h"
+#include "makev16t.h"
 #include "makevid.h"
 #include "mode716.h"
 #include "mode716b.h"
 #include "mode716d.h"
+#include "mode716t.h"
 #include "newgfx16.h"
 
 u1 tileleft16b;
 
+/* how plot() colors a pixel; the transp modes blend with the sub
+   screen previously rendered into transpbuf */
+enum m7mode {
+    M7_PAL,
+    M7_DCOLOR,
+    M7_HALFADD,
+    M7_FULLADD,
+    M7_FULLSUB,
+    M7_MAINSUB,
+};
+
 /* mode 7 line state, mirrors the asm scratch words */
-static u1 m7dcolor; // pixels look up dcolortab instead of pal16b
+static u1 m7mode;
+static u2* m7transp; // sub screen pixel cursor, in step with dest
 static u4 m7xpos;
 static u4 m7ypos;
 static s4 m7xadder;
@@ -89,12 +103,40 @@ static void mode7calculate(u2 y, u2 x)
     }
 }
 
-/* win moves only when a pixel slot is consumed here, matching the asm */
+/* win and transp move only when a pixel slot is consumed here,
+   matching the asm */
 static void plot(u2** dest, u1 const** win, u1 pix)
 {
-    if (pix != 0 && (*win == NULL || **win == 0))
-        **dest = m7dcolor ? dcolortab[0][pix] : (u2)pal16b[pix];
+    if (pix != 0 && (*win == NULL || **win == 0)) {
+        switch (m7mode) {
+        case M7_PAL:
+            **dest = (u2)pal16b[pix];
+            break;
+        case M7_DCOLOR:
+            **dest = dcolortab[0][pix];
+            break;
+        case M7_HALFADD: {
+            u4 c = pal16bcl[pix];
+            if (*m7transp != 0)
+                c = ((c & vesa2_clbit) + (*m7transp & vesa2_clbit)) >> 1;
+            **dest = (u2)c;
+            break;
+        }
+        case M7_FULLADD:
+            **dest
+                = fulladdtab[(pal16bcl[pix] + (*m7transp & vesa2_clbit)) >> 1];
+            break;
+        case M7_FULLSUB:
+            **dest = (u2)(fulladdtab[(pal16bxcl[pix] + (*m7transp & vesa2_clbit)) >> 1]
+                ^ 0xFFFF);
+            break;
+        case M7_MAINSUB:
+            *m7transp = **dest = (u2)pal16b[pix];
+            break;
+        }
+    }
     ++*dest;
+    ++m7transp;
     if (*win != NULL)
         ++*win;
 }
@@ -346,6 +388,7 @@ static void renderline(u2 ypos, u2 xpos)
 {
     winptrref = cwinptr;
     mode7calculate(ypos, xpos);
+    m7transp = (u2*)(transpbuf + 32);
 
     u2* dest = (u2*)curvidoffset;
     if (curmosaicsz != 1) {
@@ -386,7 +429,7 @@ void c_drawmode7dcolor(u4 ypos, u4 xpos)
         prevbrightdc = vidbright;
         Gendcolortable();
     }
-    m7dcolor = 1;
+    m7mode = M7_DCOLOR;
     renderline((u2)ypos, (u2)xpos);
 }
 
@@ -398,7 +441,37 @@ void c_drawmode716b(u4 ypos, u4 xpos)
         c_drawmode7dcolor(ypos, xpos);
         return;
     }
-    m7dcolor = 0;
+    m7mode = M7_PAL;
+    renderline((u2)ypos, (u2)xpos);
+}
+
+void c_drawmode716t(u4 ypos, u4 xpos)
+{
+    if (scrndis & 0x01)
+        return;
+    if (scaddset & 0x01) {
+        c_drawmode7dcolor(ypos, xpos);
+        return;
+    }
+    if (DoTransp == 1) {
+        c_drawmode716b(ypos, xpos);
+        return;
+    }
+    if (scaddtype & 0x80)
+        m7mode = M7_FULLSUB;
+    else if ((scaddtype & 0x40) && (u1)(scrnon >> 8) != 0
+        && (coladdr | coladdg | coladdb | colnull) == 0)
+        m7mode = M7_HALFADD; // the asm checks coladdr..colnull as one dword
+    else
+        m7mode = M7_FULLADD;
+    renderline((u2)ypos, (u2)xpos);
+}
+
+void c_drawmode716tb(u4 ypos, u4 xpos)
+{
+    if (scrndis & 0x01)
+        return;
+    m7mode = M7_MAINSUB;
     renderline((u2)ypos, (u2)xpos);
 }
 
@@ -451,5 +524,21 @@ __asm__(
                                                                "call " CSYM(c_drawmode7dcolor) "\n"
                                                                                                "addl $8, %esp\n"
                                                                                                "ret\n");
+
+__asm__(
+    ".globl " CSYM(drawmode716t) "\n" CSYM(drawmode716t) ":\n"
+                                                         "pushl %edx\n"
+                                                         "pushl %eax\n"
+                                                         "call " CSYM(c_drawmode716t) "\n"
+                                                                                      "addl $8, %esp\n"
+                                                                                      "ret\n");
+
+__asm__(
+    ".globl " CSYM(drawmode716tb) "\n" CSYM(drawmode716tb) ":\n"
+                                                           "pushl %edx\n"
+                                                           "pushl %eax\n"
+                                                           "call " CSYM(c_drawmode716tb) "\n"
+                                                                                         "addl $8, %esp\n"
+                                                                                         "ret\n");
 
 #endif

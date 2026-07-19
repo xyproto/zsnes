@@ -401,7 +401,6 @@ SRCS += video/makevid.asm
 SRCS += video/mode716.asm
 SRCS += video/mode716b.c
 SRCS += video/mode716e.asm
-SRCS += video/mode716t.asm
 SRCS += video/mv16tms.asm
 SRCS += video/newg162.asm
 SRCS += video/newgfx.asm
