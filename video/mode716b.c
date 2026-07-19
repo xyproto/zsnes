@@ -1,6 +1,7 @@
 /*
  * Mode 7 16-bit background renderers, ported from mode716b.asm,
- * mode716d.asm, mode716t.asm, m716text.asm, and makev16b.asm.
+ * mode716d.asm, mode716t.asm, m716text.asm, mode716e.asm, and
+ * makev16b.asm.
  *
  * The drawmode7 entry points keep the legacy register ABI (y scroll
  * in AX, x scroll in DX) through i386 trampolines; the asm renderers
@@ -27,6 +28,7 @@
 #include "mode716.h"
 #include "mode716b.h"
 #include "mode716d.h"
+#include "mode716e.h"
 #include "mode716t.h"
 #include "newgfx16.h"
 
@@ -158,6 +160,32 @@ static void finishline(void)
 {
     if (curmosaicsz != 1)
         domosaic16b();
+}
+
+/* per-line stepping constants derived from the adder signs */
+static void setsteps(void)
+{
+    m7xadd2 = 0x800;
+    m7xinc = 2;
+    m7xincc = 0;
+    if (m7xadder < 0) {
+        m7xadd2 = -0x800;
+        m7xinc = 0xFE;
+        m7xincc = 0xFE;
+    }
+    m7yadd2 = 0x800;
+    m7yinc = 1;
+    if (m7yadder < 0) {
+        m7yadd2 = -0x800;
+        m7yinc = 0xFF;
+    }
+}
+
+/* steps that can cross more than one tile per pixel */
+static int bigsteps(void)
+{
+    return m7xadder > 0x7F0 || m7xadder < -0x7F0 || m7yadder > 0x7F0
+        || m7yadder < -0x7F0;
 }
 
 /* per-pixel steps stay within one tile: adders are within +/-0x7F0 */
@@ -402,23 +430,9 @@ static void renderline(u2 ypos, u2 xpos)
         dest = xtravbuf + 16;
     }
 
-    m7xadd2 = 0x800;
-    m7xinc = 2;
-    m7xincc = 0;
-    if (m7xadder < 0) {
-        m7xadd2 = -0x800;
-        m7xinc = 0xFE;
-        m7xincc = 0xFE;
-    }
-    m7yadd2 = 0x800;
-    m7yinc = 1;
-    if (m7yadder < 0) {
-        m7yadd2 = -0x800;
-        m7yinc = 0xFF;
-    }
+    setsteps();
 
-    if (m7xadder > 0x7F0 || m7xadder < -0x7F0 || m7yadder > 0x7F0
-        || m7yadder < -0x7F0) {
+    if (bigsteps()) {
         process_b(dest, NULL); // windowing skipped here, as in the asm
     } else if (curmosaicsz == 1 && winon != 0) {
         process(dest, cwinptr);
@@ -604,21 +618,9 @@ static void renderlinex(u2 ypos, u2 xpos)
         dest = xtravbuf + 16;
     }
 
-    m7xadd2 = 0x800;
-    m7xinc = 2;
-    if (m7xadder < 0) {
-        m7xadd2 = -0x800;
-        m7xinc = 0xFE;
-    }
-    m7yadd2 = 0x800;
-    m7yinc = 1;
-    if (m7yadder < 0) {
-        m7yadd2 = -0x800;
-        m7yinc = 0xFF;
-    }
+    setsteps();
 
-    if (m7xadder > 0x7F0 || m7xadder < -0x7F0 || m7yadder > 0x7F0
-        || m7yadder < -0x7F0)
+    if (bigsteps())
         processx_b(dest);
     else
         processx(dest);
@@ -735,6 +737,227 @@ void c_drawmode716textbg2(u4 craw)
     finishline();
 }
 
+/* extbg pixel without the transparency engine: stash the raw byte for
+   the second pass and draw low-priority pixels straight through pal16b;
+   win only advances on stash slots */
+static void plote(u2* dest, u1 const** win, u1 pix)
+{
+    ((u1*)dest)[576] = pix;
+    u1 blocked = 0;
+    if (*win != NULL) {
+        blocked = **win;
+        ++*win;
+    }
+    if (pix != 0 && (pix & 0x80) == 0 && blocked == 0)
+        *dest = (u2)pal16b[pix];
+}
+
+/* extbg pass 1 line, adders within +/-0x7F0; unlike processx(), off-map
+   is checked against the single direction-dependent sentinel */
+static void processe(u2* dest, u1 const* win)
+{
+    u4 count = 256;
+
+    if (!(mode7set & 0x80)) { // repeating map
+        u4 xr = m7xpos & 0x7FF;
+        u4 yr = m7ypos & 0x7FF;
+        u4 ptr = tileptr();
+        u1 const* tiled = vram + vram[ptr] * 128;
+
+        for (;;) {
+            if ((xr >> 8) & 0x08) {
+                ptr = (ptr & ~0xFFu) | ((ptr + m7xinc) & 0xFF);
+                tiled = vram + vram[ptr] * 128;
+                xr -= (u4)m7xadd2;
+            }
+            if ((yr >> 8) & 0x08) {
+                ptr = (ptr & ~0xFF00u)
+                    | ((((ptr >> 8) - m7yinc) & 0x7F) << 8);
+                tiled = vram + vram[ptr] * 128;
+                yr += (u4)m7yadd2;
+            }
+            u1 const pix
+                = tiled[mode7tab[(((xr >> 8) & 0xFF) << 8) | ((yr >> 8) & 0xFF)]];
+            xr += (u4)m7xadder;
+            yr -= (u4)m7yadder;
+            plote(dest, &win, pix);
+            ++dest;
+            if (--count == 0)
+                return;
+        }
+    }
+
+    // non-repeating map: skip or tile-0-fill until the map is entered
+    for (;;) {
+        if (((m7ypos >> 16) & 0xFF) <= 3 && ((m7xpos >> 16) & 0xFF) <= 3)
+            break;
+        if (mode7set & 0x40) {
+            u4 const idx
+                = (((m7xpos >> 8) & 0xFF) << 8) | ((m7ypos >> 8) & 0xFF);
+            u1 const pix = vrama[mode7tab[idx]];
+            m7xpos += (u4)m7xadder;
+            m7ypos -= (u4)m7yadder;
+            plote(dest, &win, pix);
+        } else {
+            m7xpos += (u4)m7xadder;
+            m7ypos -= (u4)m7yadder;
+        }
+        ++dest;
+        if (--count == 0)
+            return;
+    }
+
+    u4 xr = m7xpos & 0x7FF;
+    u4 yr = m7ypos & 0x7FF;
+    u4 ptr = tileptr();
+    u1 const* tiled = vram + vram[ptr] * 128;
+
+    for (;;) {
+        if ((xr >> 8) & 0x08) {
+            ptr = (ptr & ~0xFFu) | ((ptr + m7xinc) & 0xFF);
+            if ((ptr & 0xFF) == m7xincc)
+                goto offmap;
+            tiled = vram + vram[ptr] * 128;
+            xr -= (u4)m7xadd2;
+        }
+        if ((yr >> 8) & 0x08) {
+            u1 const row = (u1)((ptr >> 8) - m7yinc);
+            ptr = (ptr & ~0xFF00u) | ((u4)row << 8);
+            if (row & 0x80)
+                goto offmap;
+            tiled = vram + vram[ptr] * 128;
+            yr += (u4)m7yadd2;
+        }
+        u4 const idx = (((xr >> 8) & 0xFF) << 8) | ((yr >> 8) & 0xFF);
+        u1 const pix = tiled[mode7tab[idx]];
+        xr += (u4)m7xadder;
+        yr -= (u4)m7yadder;
+        plote(dest, &win, pix);
+        ++dest;
+        if (--count == 0)
+            return;
+    }
+
+offmap:
+    if (mode7set & 0x40) {
+        do { // tile 0 repeats outside the map
+            xr &= 0xFFFF07FFu;
+            yr &= 0xFFFF07FFu;
+            u4 const idx = (((xr >> 8) & 0xFF) << 8) | ((yr >> 8) & 0xFF);
+            u1 const pix = vrama[mode7tab[idx]];
+            xr += (u4)m7xadder;
+            yr -= (u4)m7yadder;
+            plote(dest, &win, pix);
+            ++dest;
+        } while (--count != 0);
+    }
+}
+
+/* extbg pass 1 line, larger adders: full tile lookup for every pixel */
+static void processe_b(u2* dest, u1 const* win)
+{
+    u4 count = 256;
+
+    if (!(mode7set & 0x80)) { // repeating map
+        do {
+            u4 const idx
+                = (((m7xpos >> 8) & 0xFF) << 8) | ((m7ypos >> 8) & 0xFF);
+            u1 const pix = vram[vram[tileptr()] * 128 + mode7tab[idx]];
+            m7xpos += (u4)m7xadder;
+            m7ypos -= (u4)m7yadder;
+            plote(dest, &win, pix);
+            ++dest;
+        } while (--count != 0);
+        return;
+    }
+
+    do { // non-repeating: per-pixel bounds check
+        if (((m7ypos >> 16) & 0xFF) <= 3 && ((m7xpos >> 16) & 0xFF) <= 3) {
+            u4 const idx
+                = (((m7xpos >> 8) & 0xFF) << 8) | ((m7ypos >> 8) & 0xFF);
+            u1 const pix = vram[vram[tileptr()] * 128 + mode7tab[idx]];
+            m7xpos += (u4)m7xadder;
+            m7ypos -= (u4)m7yadder;
+            plote(dest, &win, pix);
+        } else if (mode7set & 0x40) {
+            u4 const idx
+                = (((m7xpos >> 8) & 0xFF) << 8) | ((m7ypos >> 8) & 0xFF);
+            u1 const pix = vrama[mode7tab[idx]];
+            m7xpos += (u4)m7xadder;
+            m7ypos -= (u4)m7yadder;
+            plote(dest, &win, pix);
+        } else {
+            m7xpos += (u4)m7xadder;
+            m7ypos -= (u4)m7yadder;
+        }
+        ++dest;
+    } while (--count != 0);
+}
+
+/* extbg first pass without the transparency engine */
+void c_drawmode716extbg(u4 ypos, u4 xpos)
+{
+    if (scrndis & 0x01)
+        return;
+    winptrref = cwinptr;
+
+    if (curmosaicsz == 1 && winon != 0) {
+        // windowed variant: straight to the screen, never domosaic16b
+        mode7calculate((u2)ypos, (u2)xpos);
+        setsteps();
+        u2* const dest = (u2*)curvidoffset;
+        if (bigsteps())
+            processe_b(dest, cwinptr);
+        else
+            processe(dest, cwinptr);
+        return;
+    }
+
+    mode7calculate((u2)ypos, (u2)xpos);
+    u2* dest = (u2*)curvidoffset;
+    if (curmosaicsz != 1) {
+        memset((u1*)xtravbuf + 32, 0, 512);
+        dest = xtravbuf + 16;
+    }
+    setsteps();
+    if (bigsteps())
+        processe_b(dest, NULL);
+    else
+        processe(dest, NULL);
+    finishline();
+}
+
+/* second extbg pass: draw the stashed high-priority pixels through
+   pal16b */
+void c_drawmode716extbg2(u4 craw)
+{
+    if (scrndis & 0x01)
+        return;
+    winptrref = cwinptr;
+
+    u2* dest = (u2*)curvidoffset;
+    if (curmosaicsz != 1) {
+        memset((u1*)xtravbuf + 32, 0, 512);
+        dest = xtravbuf + 16;
+    }
+
+    u1 const* win = NULL;
+    if (curmosaicsz == 1 && winon != 0) {
+        win = cwinptr;
+        *(u1*)dest = (u1)craw; // stray write of the caller's CL, as in the asm
+    }
+
+    for (u4 count = 256; count != 0; --count) {
+        u1 const pix = ((u1 const*)dest)[576];
+        if ((win == NULL || *win == 0) && (pix & 0x80) != 0)
+            *dest = (u2)pal16b[pix & 0x7F];
+        ++dest;
+        if (win != NULL)
+            ++win;
+    }
+    finishline();
+}
+
 /* expand the first pixel of each block; the first 0x200 bytes of the
    line were rendered into xtravbuf */
 void domosaic16b(void)
@@ -815,5 +1038,20 @@ __asm__(
                                                                      "call " CSYM(c_drawmode716textbg2) "\n"
                                                                                                         "addl $4, %esp\n"
                                                                                                         "ret\n");
+
+__asm__(
+    ".globl " CSYM(drawmode716extbg) "\n" CSYM(drawmode716extbg) ":\n"
+                                                                 "pushl %edx\n"
+                                                                 "pushl %eax\n"
+                                                                 "call " CSYM(c_drawmode716extbg) "\n"
+                                                                                                  "addl $8, %esp\n"
+                                                                                                  "ret\n");
+
+__asm__(
+    ".globl " CSYM(drawmode716extbg2) "\n" CSYM(drawmode716extbg2) ":\n"
+                                                                   "pushl %ecx\n"
+                                                                   "call " CSYM(c_drawmode716extbg2) "\n"
+                                                                                                     "addl $4, %esp\n"
+                                                                                                     "ret\n");
 
 #endif

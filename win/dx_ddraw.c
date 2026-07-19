@@ -138,8 +138,47 @@ void DDDrawScreen()
                 DDrawError();
             }
         }
-        // Windowed: clipper handles dest, leave rcWindow.
-        IDirectDrawSurface7_Blt(DD_Primary, &rcWindow, AltSurface == 0 ? DD_CFB : DD_CFB16, &BlitArea, DDBLT_WAIT, NULL);
+        // Windowed: track the window and clip to the screen; wine rejects
+        // dest rects that reach outside the primary surface.
+        RECT src = BlitArea;
+        GetClientRect(hMainWindow, &rcWindow);
+        ClientToScreen(hMainWindow, (LPPOINT)&rcWindow);
+        ClientToScreen(hMainWindow, (LPPOINT)&rcWindow + 1);
+        dst = rcWindow;
+        LONG dw = dst.right - dst.left;
+        LONG dh = dst.bottom - dst.top;
+        LONG sw = src.right - src.left;
+        LONG sh = src.bottom - src.top;
+        if (dw > 0 && dh > 0 && sw > 0 && sh > 0) {
+            LONG scr_w = GetSystemMetrics(SM_CXSCREEN);
+            LONG scr_h = GetSystemMetrics(SM_CYSCREEN);
+            if (dst.left < 0) {
+                src.left += (-dst.left * sw) / dw;
+                dst.left = 0;
+            }
+            if (dst.top < 0) {
+                src.top += (-dst.top * sh) / dh;
+                dst.top = 0;
+            }
+            if (dst.right > scr_w) {
+                src.right -= ((dst.right - scr_w) * sw) / dw;
+                dst.right = scr_w;
+            }
+            if (dst.bottom > scr_h) {
+                src.bottom -= ((dst.bottom - scr_h) * sh) / dh;
+                dst.bottom = scr_h;
+            }
+            if (dst.left < dst.right && dst.top < dst.bottom && src.left < src.right && src.top < src.bottom) {
+                HRESULT br = IDirectDrawSurface7_Blt(DD_Primary, &dst, AltSurface == 0 ? DD_CFB : DD_CFB16, &src, DDBLT_WAIT, NULL);
+                static int zn;
+                if (++zn % 64 == 1)
+                    fprintf(stderr, "ZSDBG blt#%d=%08lx dst=(%ld,%ld,%ld,%ld) src=(%ld,%ld,%ld,%ld)\n", zn, (unsigned long)br, dst.left, dst.top, dst.right, dst.bottom, src.left, src.top, src.right, src.bottom);
+            } else {
+                static int ze;
+                if (++ze % 64 == 1)
+                    fprintf(stderr, "ZSDBG empty rect#%d\n", ze);
+            }
+        }
     }
 }
 
@@ -360,7 +399,9 @@ int InitDirectDraw()
         }
     }
 
+    fprintf(stderr, "ZSDBG init fs=%d mode=%d win=%dx%d surf=%dx%d res=%d\n", (int)FullScreen, (int)cvidmode, (int)WindowWidth, (int)WindowHeight, (int)SurfaceX, (int)SurfaceY, (int)resolutn);
     if (pDirectDrawCreateEx(NULL, (void**)&lpDD, &IID_IDirectDraw7, NULL) != DD_OK) {
+        fprintf(stderr, "ZSDBG CreateEx failed\n");
         MessageBox(NULL, "DirectDrawCreateEx failed.", "DirectDraw Error", MB_ICONERROR);
         return FALSE;
     }
@@ -374,20 +415,16 @@ int InitDirectDraw()
             return FALSE;
         }
         if (IDirectDraw7_SetDisplayMode(lpDD, WindowWidth, WindowHeight, 16, Refresh, 0) != DD_OK) {
-            if (IDirectDraw7_SetDisplayMode(lpDD, WindowWidth, WindowHeight, 16, 0, 0) != DD_OK) {
-                MessageBox(
-                    NULL,
-                    "IDirectDraw7::SetDisplayMode failed.\nMake sure your video card supports this mode.",
-                    "DirectDraw Error", MB_ICONERROR);
-                return FALSE;
-            } else {
-                KitchenSync = 0;
-                KitchenSyncPAL = 0;
-                Refresh = 0;
-            }
+            // Mode switching can fail under wine; keep the current display
+            // mode and letterbox into it instead of giving up.
+            IDirectDraw7_SetDisplayMode(lpDD, WindowWidth, WindowHeight, 16, 0, 0);
+            KitchenSync = 0;
+            KitchenSyncPAL = 0;
+            Refresh = 0;
         }
     } else {
         if (IDirectDraw7_SetCooperativeLevel(lpDD, hMainWindow, DDSCL_NORMAL) != DD_OK) {
+            fprintf(stderr, "ZSDBG SetCoop windowed failed\n");
             MessageBox(NULL, "IDirectDraw7::SetCooperativeLevel failed.", "DirectDraw Error",
                 MB_ICONERROR);
             return FALSE;
@@ -429,18 +466,21 @@ int InitDirectDraw()
         }
     } else {
         if (IDirectDraw7_CreateClipper(lpDD, 0, &lpDDClipper, NULL) != DD_OK) {
+            fprintf(stderr, "ZSDBG CreateClipper failed\n");
             IDirectDraw7_Release(lpDD);
             lpDD = NULL;
             return FALSE;
         }
 
         if (IDirectDrawClipper_SetHWnd(lpDDClipper, 0, hMainWindow) != DD_OK) {
+            fprintf(stderr, "ZSDBG SetHWnd failed\n");
             IDirectDraw7_Release(lpDD);
             lpDD = NULL;
             return FALSE;
         }
 
         if (IDirectDrawSurface7_SetClipper(DD_Primary, lpDDClipper) != DD_OK) {
+            fprintf(stderr, "ZSDBG SetClipper failed\n");
             return FALSE;
         }
     }
@@ -474,6 +514,7 @@ int InitDirectDraw()
 
     // create drawing surface
     if (IDirectDraw7_CreateSurface(lpDD, &ddsd2, &DD_CFB, NULL) != DD_OK) {
+        fprintf(stderr, "ZSDBG CFB CreateSurface failed %ux%u\n", (unsigned)ddsd2.dwWidth, (unsigned)ddsd2.dwHeight);
         MessageBox(NULL, "IDirectDraw7::CreateSurface failed.", "DirectDraw Error", MB_ICONERROR);
         return FALSE;
     }
@@ -506,6 +547,7 @@ int InitDirectDraw()
         }
     }
 
+    fprintf(stderr, "ZSDBG init OK depth=%d alt=%d\n", (int)BitDepth, (int)AltSurface);
     return TRUE;
 }
 

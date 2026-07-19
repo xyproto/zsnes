@@ -22,6 +22,8 @@ void c_drawmode716t(u4 ypos, u4 xpos);
 void c_drawmode716tb(u4 ypos, u4 xpos);
 void c_drawmode716textbg(u4 ypos, u4 xpos);
 void c_drawmode716textbg2(u4 craw);
+void c_drawmode716extbg(u4 ypos, u4 xpos);
+void c_drawmode716extbg2(u4 craw);
 void domosaic16b(void);
 extern u1 tileleft16b;
 
@@ -396,6 +398,70 @@ static void test_extbg2(void)
     ZT_CHECK_INT(cwinptr == winbuf, 1);
 }
 
+static void test_eextbg(void)
+{
+    ZT_SECTION("mode716e pass 1: plain palette, no transparency engine");
+
+    /* pixel p is p+8, so slots 120..247 carry the priority bit */
+    reset();
+    c_drawmode716extbg(0, 0);
+    ZT_CHECK_INT(((u1*)destbuf)[576], 8); /* raw byte stashed */
+    ZT_CHECK_INT(((u1*)destbuf)[576 + 240], 128);
+    ZT_CHECK_INT(destbuf[0], 0x8000 | 8); /* pal16b, no color math */
+    ZT_CHECK_INT(destbuf[120], 0xCCCC); /* high priority skipped */
+    ZT_CHECK_INT(winptrref == winbuf, 1);
+
+    /* windowed variant keeps a local cursor and never touches cwinptr */
+    reset();
+    winon = 1;
+    winbuf[2] = 1;
+    c_drawmode716extbg(0, 0);
+    ZT_CHECK_INT(destbuf[1], 0x8000 | 9);
+    ZT_CHECK_INT(destbuf[2], 0xCCCC);
+    ZT_CHECK_INT(((u1*)destbuf)[576 + 4], 10); /* byte still stashed */
+    ZT_CHECK_INT(cwinptr == winbuf, 1);
+
+    /* mosaic renders via xtravbuf and expands blocks */
+    reset();
+    curmosaicsz = 2;
+    c_drawmode716extbg(0, 0);
+    ZT_CHECK_INT(xtravbuf[16], 0x8000 | 8);
+    ZT_CHECK_INT(destbuf[0], 0x8000 | 8);
+    ZT_CHECK_INT(destbuf[1], 0x8000 | 8);
+
+    reset();
+    scrndis = 1;
+    c_drawmode716extbg(0, 0);
+    ZT_CHECK_INT(destbuf[0], 0xCCCC);
+}
+
+static void test_eextbg2(void)
+{
+    ZT_SECTION("mode716e pass 2: stashed high-priority pixels via pal16b");
+
+    reset();
+    memset((u1*)destbuf + 576, 0, 512);
+    ((u1*)destbuf)[576] = 0x85;
+    ((u1*)destbuf)[576 + 2] = 0x05; /* no priority bit: skipped */
+    c_drawmode716extbg2(0);
+    ZT_CHECK_INT(destbuf[0], 0x8000 | 5); /* pal16b, no color math */
+    ZT_CHECK_INT(destbuf[1], 0xCCCC);
+    ZT_CHECK_INT(winptrref == winbuf, 1);
+
+    /* windowed: stray CL byte lands in pixel 0, cwinptr stays put */
+    reset();
+    memset((u1*)destbuf + 576, 0, 512);
+    ((u1*)destbuf)[576 + 6] = 0x90;
+    ((u1*)destbuf)[576 + 8] = 0x91;
+    winon = 1;
+    winbuf[3] = 1;
+    c_drawmode716extbg2(0xAB);
+    ZT_CHECK_INT(destbuf[0], 0xCCAB);
+    ZT_CHECK_INT(destbuf[3], 0xCCCC); /* blocked by the window */
+    ZT_CHECK_INT(destbuf[4], 0x8000 | 0x11);
+    ZT_CHECK_INT(cwinptr == winbuf, 1);
+}
+
 int main(void)
 {
     tileleft16b = 0;
@@ -410,6 +476,8 @@ int main(void)
     test_mainsub();
     test_extbg();
     test_extbg2();
+    test_eextbg();
+    test_eextbg2();
 
     printf("mode 7 16-bit renderer port tests\n");
     ZT_RESULTS();

@@ -1861,11 +1861,19 @@ void drawscreenwin(void)
                     //  for ZSNES' current transparency code)
 
     UpdateVFrame();
+    {
+        static int zc;
+        if (++zc % 64 == 1)
+            fprintf(stderr, "ZSDBG dsw#%d curblank=%02x res=%d prevres=%d surf=%dx%d\n", zc, (unsigned)curblank, (int)resolutn, (int)PrevRes, (int)SurfaceX, (int)SurfaceY);
+    }
     if (curblank != 0) {
         return;
     }
 
     if (!(pitch = LockSurface())) {
+        static int zl;
+        if (++zl % 64 == 1)
+            fprintf(stderr, "ZSDBG lock fail#%d\n", zl);
         return;
     }
 
@@ -2015,7 +2023,7 @@ void drawscreenwin(void)
 
                     for (i = 32; i < (256 + 32); i++) {
                         color32 = (((*(WORD*)(ScreenPtr)) & 0xF800) << 8) + (((*(WORD*)(ScreenPtr)) & 0x07E0) << 5) + (((*(WORD*)(ScreenPtr)) & 0x001F) << 3) + 0xFF000000;
-                        // SURFDW[i]=color32;
+                        SURFDW[i] = color32;
                         ScreenPtr += 2;
                     }
 
