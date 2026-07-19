@@ -501,7 +501,7 @@ NEWSYM reg213Br
 
 ; H counter data by external or software latch.
 ; First read returns low byte; second read returns bit 0 of high byte
-; with upper 7 bits from open bus (PPU2 MDR).
+; (the rest is open bus on real hardware).
 NEWSYM reg213Cr
     cmp byte[latchxr],1
     je .highv
@@ -509,15 +509,13 @@ NEWSYM reg213Cr
     mov byte[latchxr],1
     ret
 .highv
-    mov bl,byte[latchx+1]
-    and bl,01h
-    mov al,[cpu_mdr]
-    and al,0FEh
-    or al,bl
+    mov al,byte[latchx+1]
+    and al,01h
     mov byte[latchxr],0
     ret
 
 ; V counter data by external or software latch.
+; First read returns low byte; second read returns bit 0 of high byte.
 NEWSYM reg213Dr
     cmp byte[latchyr],1
     je .highv
@@ -525,19 +523,14 @@ NEWSYM reg213Dr
     mov byte[latchyr],1
     ret
 .highv
-    mov bl,byte[latchy+1]
-    and bl,01h
-    mov al,[cpu_mdr]
-    and al,0FEh
-    or al,bl
+    mov al,byte[latchy+1]
+    and al,01h
     mov byte[latchyr],0
     ret
 
-; PPU Status Flag & Version number (OBJ over flags); bits 0-3 are open bus
+; PPU Status Flag & Version number (OBJ over flags)
 NEWSYM reg213Er
-    mov al,[cpu_mdr]
-    and al,0Fh
-    or al,01h
+    mov al,01h
     or al,[rtoflags]
     ret
 
@@ -811,17 +804,14 @@ NEWSYM reg420Fr
     xor al,al
     ret
 
-; NMI Check Register; bit 7 is NMI flag, bits 4-6 open bus, bits 0-3 CPU rev
+; NMI Check Register
 NEWSYM reg4210r
-    mov al,[cpu_mdr]
-    and al,70h
-    or al,02h
+    mov al,[NMIEnab]
     cmp byte[curnmi],0
-    je .noflag
-    or al,80h
-.noflag
-    mov byte[curnmi],0
+    jne .nmi
     mov byte[NMIEnab],01h
+.nmi
+    mov byte[curnmi],0
     ret
 
 ; Video IRQ Register
@@ -839,26 +829,23 @@ NEWSYM hblank, resb 1
 SECTION .text
 
 ; H/V Blank Flag & Joystick Controller Enable Flag
-; bit 7 = vblank, 0=out,1=in, bit 6 = hblank, 0=out,1=in, bit 0 = auto-joy busy
+; bit 7 = vblank, 0=out,1=in, bit 6 = hblank, 0=out,1=in, bit 0 = joystick on
 NEWSYM reg4212r
     xor al,al
+    cmp byte[joycontren],25
+    jb .nojoyc
+.yesjoy
+    mov al,1
+.nojoyc
+    inc byte[joycontren]
+    cmp byte[joycontren],50
+    jne .n
+    mov byte[joycontren],0
+.n
 %ifndef NO_DEBUGGER
     cmp byte[debuggeron],1
     je .debugger
 %endif
-    ; bit 0: auto-joypad poll busy. Active for ~3 scanlines starting at the
-    ; first vblank line when auto-poll is enabled via $4200 bit 0.
-    test byte[INTEnab],01h
-    jz .nojoyb
-    mov bx,[resolutn]
-    inc bx
-    cmp word[curypos],bx
-    jb .nojoyb
-    add bx,3
-    cmp word[curypos],bx
-    jae .nojoyb
-    or al,01h
-.nojoyb
     mov bx,[resolutn]
     cmp word[curypos],bx
     jne .notres
@@ -874,6 +861,7 @@ NEWSYM reg4212r
     jae .novbl
 .vblank
     or al,80h
+;    jmp .nohblank
 .novbl
     mov byte[hblank],0
     cmp dh,[cycphb]
@@ -881,43 +869,79 @@ NEWSYM reg4212r
     mov byte[hblank],1
     or al,40h
 .nohblank
+    test byte[INTEnab],01h
+    jz .nojoy
+    mov bx,[resolutn]
+    add bx,2
+    cmp word[curypos],bx
+    jne .nojoy
+    cmp dh,5
+    ja .nojoy
+    ret
+.nojoy
     ret
 .debugger
 debblah2:
     push edx
     mov dh,[pdh]
-    test byte[INTEnab],01h
-    jz .dnojoyb
-    mov bx,[resolutn]
-    inc bx
-    cmp word[curypos],bx
-    jb .dnojoyb
-    add bx,3
-    cmp word[curypos],bx
-    jae .dnojoyb
-    or al,01h
-.dnojoyb
     mov bx,[resolutn]
     cmp word[curypos],bx
-    jne .dnotres
+    jne .notres
     cmp byte[nmistatus],2
-    je .dvblank
-.dnotres
+    je .vblank
+.notres
     inc bx
     cmp word[curypos],bx
-    jb .dnovbl
+    jb .novbl
     mov bx,[totlines]
     dec bx
     cmp word[curypos],bx
-    jae .dnovbl
-.dvblank
+    jae .novbl
+.vblank
     or al,80h
-.dnovbl
+;    jmp .nohblank
+.novbl
     cmp dh,[cycphb]
-    jae .dnohblank
+    jae .nohblank
     or al,40h
-.dnohblank
+.nohblank
+    test byte[INTEnab],01h
+    jz .nojoy
+    mov bx,[resolutn]
+    add bx,2
+    cmp word[curypos],bx
+    jne .nojoy
+    cmp dh,5
+    ja .nojoy
     pop edx
+    ret
+.nojoy
+    pop edx
+    ret
+
+    mov bx,[resolutn]
+    inc bx
+    cmp word[curypos],bx
+    jb .novbl2
+    or al,80h
+    jmp .nohblank2
+.novbl2
+    mov bl,[pdh]
+    cmp bl,[cycphb]
+    jae .nohblank2
+    or al,40h
+.nohblank2
+    test byte[INTEnab],01h
+    jz .nojoy2
+    mov bx,[resolutn]
+    add bx,2
+    cmp word[curypos],bx
+    jne .nojoy2
+    cmp byte[pdh],5
+    ja .nojoy
+;    or al,01h
+    ret
+.nojoy2
     ret
 
 ; Programmable I/O port
@@ -945,56 +969,46 @@ NEWSYM reg4217r
     mov al,[multres+1]
     ret
 
-; Joypad snapshots latched at start of vblank by exechdma init in execute.asm.
-; The $4218-$421F regs return these latched values (not live input).
-SECTION .data
-NEWSYM JoyARead, dd 0
-NEWSYM JoyBRead, dd 0
-NEWSYM JoyCRead2, dd 0
-NEWSYM JoyDRead, dd 0
-NEWSYM JoyERead, dd 0
-SECTION .text
-
 ; Joystick 1 Low
 ; bit7=X,bit6=Y,bit5=L,bit4=R
 NEWSYM reg4218r
-    mov al,[JoyARead+2]
+    mov al,[JoyAOrig+2]
     ret
 
 ; Joystick 1 High
 ; bit7=A,bit6=B,bit5=Sel,bit4=Start,bit3=up,bit2=down,bit1=left,bit0=right
 NEWSYM reg4219r
-    mov al,[JoyARead+3]
+    mov al,[JoyAOrig+3]
     ret
 
 ; Joystick 2 Low
 NEWSYM reg421Ar
-    mov al,[JoyBRead+2]
+    mov al,[JoyBOrig+2]
     ret
 
 ; Joystick 2 High
 NEWSYM reg421Br
-    mov al,[JoyBRead+3]
+    mov al,[JoyBOrig+3]
     ret
 
 ; Joystick 3 Low
 NEWSYM reg421Cr
-    mov al,[JoyDRead+2]
+    mov al,[JoyDOrig+2]
     ret
 
 ; Joystick 3 High
 NEWSYM reg421Dr
-    mov al,[JoyDRead+3]
+    mov al,[JoyDOrig+3]
     ret
 
 ; Joystick 4 Low
 NEWSYM reg421Er
-    mov al,[JoyCRead2+2]
+    mov al,[JoyCOrig+2]
     ret
 
 ; Joystick 4 High
 NEWSYM reg421Fr
-    mov al,[JoyCRead2+3]
+    mov al,[JoyCOrig+3]
     ret
 
 ; DMA Reader
@@ -1008,7 +1022,7 @@ NEWSYM reg43XXr
 NEWSYM regINVALID ; Invalid Register
     cmp cx,2100h
     jb .cleared
-    mov al,[cpu_mdr]
+    mov al,ch
     cmp byte[SPC7110Enable],0
     je .nospc7110
 .cleared
@@ -1016,7 +1030,3 @@ NEWSYM regINVALID ; Invalid Register
 .nospc7110
 ;    mov byte[debstop3],1
     ret
-
-SECTION .bss
-NEWSYM cpu_mdr, resb 1
-SECTION .text

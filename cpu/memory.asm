@@ -108,7 +108,6 @@ section .note.GNU-stack noalloc noexec nowrite progbits
 %endmacro
 EXTSYM romdata,sramb4save,curromspace,SA1Overflow
 EXTSYM SFXEnable,regptra,sfxramdata,snesmmap,wramdataa
-EXTSYM cpu_mdr
 EXTSYM DSP1Write8b,regptwa,writeon,DSP1Read16b
 EXTSYM DSP1Read8b,DSP1Type,SA1Enable,DSP1Write16b
 EXTSYM ramsize,ramsizeand,sram,sram2,ram7fa
@@ -141,7 +140,6 @@ NEWSYM regaccessbankr8
     cmp ecx,48FFh
     ja .invaccess
     call dword near regptr(ecx)
-    mov [cpu_mdr],al
     xor ebx,ebx
     ret
 .invaccess
@@ -209,11 +207,9 @@ NEWSYM regaccessbankr16
     cmp ecx,48FFh
     ja .invaccess
     call dword near regptr(ecx)
-    mov [cpu_mdr],al
     inc ecx
     mov ah,al
     call dword near regptr(ecx)
-    mov [cpu_mdr],al
     mov bl,al
     dec ecx
     mov al,ah
@@ -792,7 +788,6 @@ NEWSYM membank0r8ram             ; 0000-1FFF
 NEWSYM membank0r8reg             ; 2000-48FF
     add ecx,ebx
     call dword near regptr(ecx)
-    mov [cpu_mdr],al
     xor ebx,ebx
     ret
 NEWSYM membank0r8inv             ; 4800-5FFF
@@ -862,11 +857,9 @@ NEWSYM membank0r16ramh            ; 1F00-1FFF
 NEWSYM membank0r16reg             ; 2000-48FF
     add ecx,ebx
     call dword near regptr(ecx)
-    mov [cpu_mdr],al
     inc ecx
     mov ah,al
     call dword near regptr(ecx)
-    mov [cpu_mdr],al
     mov bl,al
     dec ecx
     mov al,ah
@@ -1053,7 +1046,6 @@ NEWSYM membank0r8
     cmp ecx,48FFh
     ja .invaccess
     call dword near regptr(ecx)
-    mov [cpu_mdr],al
     xor ebx,ebx
     ret
 .invaccess
@@ -1099,11 +1091,9 @@ NEWSYM membank0r16
     cmp ecx,48FFh
     ja .invaccess
     call dword near regptr(ecx)
-    mov [cpu_mdr],al
     inc ecx
     mov ah,al
     call dword near regptr(ecx)
-    mov [cpu_mdr],al
     mov bl,al
     dec ecx
     mov al,ah
@@ -1254,7 +1244,6 @@ NEWSYM membank0r8SA1
     cmp ecx,48FFh
     ja .invaccess
     call dword near regptr(ecx)
-    mov [cpu_mdr],al
     xor ebx,ebx
     ret
 .invaccess
@@ -1293,11 +1282,9 @@ NEWSYM membank0r16SA1
     cmp ecx,48FFh
     ja .invaccess
     call dword near regptr(ecx)
-    mov [cpu_mdr],al
     inc ecx
     mov ah,al
     call dword near regptr(ecx)
-    mov [cpu_mdr],al
     mov bl,al
     dec ecx
     mov al,ah
@@ -1796,7 +1783,6 @@ NEWSYM regaccessbankr8SA1
     cmp ecx,48FFh
     ja .invaccess
     call dword near regptr(ecx)
-    mov [cpu_mdr],al
     xor ebx,ebx
     ret
 .invaccess
@@ -1835,11 +1821,9 @@ NEWSYM regaccessbankr16SA1
     cmp ecx,48FFh
     ja .invaccess
     call dword near regptr(ecx)
-    mov [cpu_mdr],al
     inc ecx
     mov ah,al
     call dword near regptr(ecx)
-    mov [cpu_mdr],al
     mov bl,al
     dec ecx
     mov al,ah
