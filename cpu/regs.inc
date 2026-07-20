@@ -506,14 +506,16 @@ NEWSYM reg213Cr
     cmp byte[latchxr],1
     je .highv
     mov al,[latchx]
+    mov [ppu2_mdr],al
     mov byte[latchxr],1
     ret
 .highv
     mov bl,byte[latchx+1]
     and bl,01h
-    mov al,[cpu_mdr]
+    mov al,[ppu2_mdr]
     and al,0FEh
     or al,bl
+    mov [ppu2_mdr],al
     mov byte[latchxr],0
     ret
 
@@ -522,14 +524,16 @@ NEWSYM reg213Dr
     cmp byte[latchyr],1
     je .highv
     mov al,[latchy]
+    mov [ppu2_mdr],al
     mov byte[latchyr],1
     ret
 .highv
     mov bl,byte[latchy+1]
     and bl,01h
-    mov al,[cpu_mdr]
+    mov al,[ppu2_mdr]
     and al,0FEh
     or al,bl
+    mov [ppu2_mdr],al
     mov byte[latchyr],0
     ret
 
@@ -549,6 +553,7 @@ NEWSYM reg213Fr
     mov byte[latchxr],0
     mov byte[latchyr],0
     or al,[extlatch]
+    mov [ppu2_mdr],al
     ret
 
 ; Sound Reg #1
@@ -824,14 +829,13 @@ NEWSYM reg4210r
     mov byte[curnmi],0
     ret
 
-; Video IRQ Register
+; Video IRQ Register; bit 7 is the IRQ flag, bits 0-6 open bus
 NEWSYM reg4211r
-    mov al,[irqon]
+    mov bl,[irqon]
+    mov al,[cpu_mdr]
+    and al,7Fh
+    or al,bl
     mov byte[irqon],0
-    cmp dh,[cycphb]
-    jae .nohblank
-    or al,40h
-.nohblank
     ret
 
 SECTION .bss
@@ -1019,4 +1023,6 @@ NEWSYM regINVALID ; Invalid Register
 
 SECTION .bss
 NEWSYM cpu_mdr, resb 1
+; PPU2 has its own bus latch, updated by the $213C-$213F reads.
+NEWSYM ppu2_mdr, resb 1
 SECTION .text
