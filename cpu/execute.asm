@@ -130,6 +130,7 @@ EXTSYM curypos,cycpl,doirqnext,drawline,exechdma,hdmadelay,intrset,newengen
 EXTSYM oamaddr,oamaddrs,resolutn,showvideo,starthdma,switchtonmi
 EXTSYM switchtovirq,totlines,updatetimer,SA1Swap,SA1DoIRQ,JoyAOrig,JoyANow
 EXTSYM JoyBOrig,JoyBNow,JoyCOrig,JoyCNow,JoyDOrig,JoyDNow,JoyEOrig,JoyENow
+EXTSYM JoyARead,JoyBRead,JoyCRead2,JoyDRead,JoyERead
 EXTSYM SA1Message,MultiTapStat,idledetectspc,SA1Control,SA1Enable,SA1IRQEnable
 EXTSYM SPC700read,SPC700write,numspcvblleft,spc700idle,SA1IRQExec,ForceNewGfxOff
 EXTSYM GUIQuit,IRAM,SA1Ptr,SA1BWPtr,outofmemfix
@@ -950,17 +951,22 @@ NEWSYM cpuover
     test byte[INTEnab],1
     jz .noresetjoy
     mov eax,[JoyAOrig]
+    mov [JoyARead],eax
     rol eax,16
     mov [JoyANow],eax
     mov eax,[JoyBOrig]
+    mov [JoyBRead],eax
     rol eax,16
     mov [JoyBNow],eax
     mov eax,[JoyCOrig]
+    mov [JoyCRead2],eax
     rol eax,16
     mov [JoyCNow],eax
     mov eax,[JoyDOrig]
+    mov [JoyDRead],eax
     mov [JoyDNow],eax
     mov eax,[JoyEOrig]
+    mov [JoyERead],eax
     mov [JoyENow],eax
     mov byte[JoyCRead],0
 .noresetjoy
@@ -1403,15 +1409,19 @@ NEWSYM execsingle
     test byte[INTEnab],1
     jz .noresetjoy
     mov eax,[JoyAOrig]
+    mov [JoyARead],eax
     rol eax,16
     mov [JoyANow],eax
     mov eax,[JoyBOrig]
+    mov [JoyBRead],eax
     rol eax,16
     mov [JoyBNow],eax
     mov eax,[JoyCOrig]
+    mov [JoyCRead2],eax
     rol eax,16
     mov [JoyCNow],eax
     mov eax,[JoyDOrig]
+    mov [JoyDRead],eax
     mov [JoyDNow],eax
     mov byte[JoyCRead],0
 .noresetjoy
