@@ -72,6 +72,29 @@ EXTSYM SA1Ptr,SNSPtr,snesmap2,SA1tablead,SA1xpb,SA1RegP,wramdataa,SA1TimerVal
 EXTSYM SA1RegPCS,SA1BWPtr,SNSBWPtr,CurBWPtr,SA1NMIV,SA1IRQV
 EXTSYM membank0w8,SA1LBound,SA1UBound,SA1SH,SA1SHb,stackor,stackand,snesmmap
 EXTSYM SA1xs,SA1IRQExec,SA1Message,Sflagnz,Sflagc,Sflago
+EXTSYM SA1switchtonmi,SA1switchtovirq
+
+%macro ccall 1-*
+	push ecx
+	push edx
+%rep %0 - 1
+%rotate -1
+	push dword %1
+%endrep
+%rotate -1
+	call %1
+%if %0 != 1
+	add esp, (%0 - 1) * 4
+%endif
+	pop edx
+	pop ecx
+%endmacro
+
+%macro ccallv 1-*
+	push eax
+	ccall %1
+	pop eax
+%endmacro
 
 ; In exec loop, jump to execloop if SA1Status != 0
 ; *** Disable spc700 if possible ***
@@ -261,11 +284,23 @@ NEWSYM SA1Swap
     test dword[SA1DoIRQ],1
     jz .nmi
     and byte[SA1DoIRQ],0FEh
-    call SA1switchtovirq
+    push edx
+    mov edx, esp
+    push esi
+    mov esi, esp
+    ccallv SA1switchtovirq, edx, esi
+    pop esi
+    pop edx
     jmp .returnirq
 .nmi
     and byte[SA1DoIRQ],0FDh
-    call SA1switchtonmi
+    push edx
+    mov edx, esp
+    push esi
+    mov esi, esp
+    ccallv SA1switchtonmi, edx, esi
+    pop esi
+    pop edx
     jmp .returnirq
 .notirq
     dec byte[SA1DoIRQ+3]
@@ -279,131 +314,5 @@ SECTION .bss
 NEWSYM SA1xpc, resd 1
 SECTION .text
 
-%macro makedl 0
-   and dl,00111100b
-   test dword[Sflagnz],18000h
-   jz %%noneg
-   or dl,80h
-%%noneg
-   test dword[Sflagnz],0FFFFh
-   jnz %%nozero
-   or dl,02h
-%%nozero
-   test dword[Sflagc],0FFh
-   jz %%nocarry
-   or dl,01h
-%%nocarry
-   test dword[Sflago],0FFh
-   jz %%nov
-   or dl,40h
-%%nov
-%endmacro
-
-NEWSYM SA1switchtonmi
-    mov al,[SA1Message]
-    mov [SA1Message+2],al
-    mov byte[SA1IRQExec+2],1
-    mov ebx,esi
-    sub ebx,[initaddrl]
-    mov [SA1xpc],bx
-
-    xor ecx,ecx
-    mov cx,[SA1xs]
-    mov al,[SA1xpb]
-    call membank0w8
-
-    dec cx
-    and cx,word[stackand]
-    or cx,word[stackor]
-    mov al,[SA1xpc+1]
-    call membank0w8
-
-    dec cx
-    and cx,word[stackand]
-    or cx,word[stackor]
-    mov al,[SA1xpc]
-    call membank0w8
-
-    dec cx
-    and cx,word[stackand]
-    or cx,word[stackor]
-    makedl
-    mov al,dl
-    call membank0w8
-
-    dec cx
-    and cx,word[stackand]
-    or cx,word[stackor]
-    mov [SA1xs],cx
-
-    xor ebx,ebx
-    mov [SA1xpb],bl
-    xor eax,eax
-    mov ax,[SA1NMIV]
-    and dl,11110011b
-    or dl,00000100b
-    test ax,8000h
-    jz .loweraddr
-    mov esi,[snesmmap+ebx*4]
-    mov [initaddrl],esi
-    add esi,eax
-    ret
-.loweraddr
-    mov esi,[snesmap2+ebx*4]
-    mov [initaddrl],esi
-    add esi,eax
-    ret
-
-NEWSYM SA1switchtovirq
-    mov al,[SA1Message]
-    mov [SA1Message+2],al
-    mov byte[SA1IRQExec+1],1
-    mov ebx,esi
-    sub ebx,[initaddrl]
-    mov [SA1xpc],bx
-
-    xor ecx,ecx
-    mov cx,[SA1xs]
-    mov al,[SA1xpb]
-    call membank0w8
-
-    dec cx
-    and cx,word[stackand]
-    or cx,word[stackor]
-    mov al,[SA1xpc+1]
-    call membank0w8
-
-    dec cx
-    and cx,word[stackand]
-    or cx,word[stackor]
-    mov al,[SA1xpc]
-    call membank0w8
-
-    dec cx
-    and cx,word[stackand]
-    or cx,word[stackor]
-    makedl
-    mov al,dl
-    call membank0w8
-
-    dec cx
-    and cx,word[stackand]
-    or cx,word[stackor]
-    mov [SA1xs],cx
-    xor ebx,ebx
-    mov [SA1xpb],bl
-    xor eax,eax
-    mov ax,[SA1IRQV]
-    and dl,11110011b
-    or dl,00000100b
-    test ax,8000h
-    jz .loweraddr
-    mov esi,[snesmmap+ebx*4]
-    mov [initaddrl],esi
-    add esi,eax
-    ret
-.loweraddr
-    mov esi,[snesmap2+ebx*4]
-    mov [initaddrl],esi
-    add esi,eax
-    ret
+; SA1switchtonmi and SA1switchtovirq (and the makedl macro) have been ported
+; to C (chips/c_sa1proc.c).

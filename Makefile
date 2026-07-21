@@ -351,6 +351,7 @@ SRCS += chips/obc1emu.c
 SRCS += chips/obc1proc.c
 SRCS += chips/sa1emu.c
 SRCS += chips/sa1proc.asm
+SRCS += chips/c_sa1proc.c
 SRCS += chips/sa1regs.c
 SRCS += chips/sdd1emu.c
 SRCS += chips/seta10.c
