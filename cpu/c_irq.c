@@ -101,3 +101,79 @@ void switchtovirq(u4* const pedx, u1** const pesi)
 		*pesi = esi + ax;
 	}
 }
+
+
+void NMIemulmode(u4* const pedx, u1** const pesi)
+{
+	xpc = *pesi - initaddrl;
+
+	u2 cx = xs;
+
+	call_membank0w8(cx, (u1)(xpc >> 8));
+	cx = (cx - 1) & stackand | stackor;
+
+	call_membank0w8(cx, (u1)xpc);
+	cx = (cx - 1) & stackand | stackor;
+
+	u4 const edx = makedl(*pedx);
+	call_membank0w8(cx, (u1)edx);
+	cx = (cx - 1) & stackand | stackor;
+
+	xs = cx;
+
+	u2 const ax = nmiv8;
+	xpb = 0;
+	xpc = ax;
+	u1* const esi = ax & 0x8000 ? snesmmap[0] : snesmap2[0];
+	initaddrl = esi;
+
+	*pedx = edx & 0xFFFFFFF3 | 0x00000004;
+	*pesi = esi + ax;
+}
+
+
+void switchtonmi(u4* const pedx, u1** const pesi)
+{
+	curnmi = 1;
+
+	// Clamp the scanline cycle counter (dh) to a floor of 130.
+	u1 dh = (u1)(*pedx >> 8);
+	dh = dh >= 130 ? (u1)(dh - 130) : 130;
+	*pedx = *pedx & 0xFFFF00FF | (u4)dh << 8;
+
+	if (xe & 0x01)
+	{ // NMI emulation mode.
+		NMIemulmode(pedx, pesi);
+	}
+	else
+	{
+		xpc = *pesi - initaddrl;
+
+		u2 cx = xs;
+
+		call_membank0w8(cx, xpb);
+		cx = (cx - 1) & stackand | stackor;
+
+		call_membank0w8(cx, (u1)(xpc >> 8));
+		cx = (cx - 1) & stackand | stackor;
+
+		call_membank0w8(cx, (u1)xpc);
+		cx = (cx - 1) & stackand | stackor;
+
+		u4 const edx = makedl(*pedx);
+		call_membank0w8(cx, (u1)edx);
+		cx = (cx - 1) & stackand | stackor;
+
+		xs = cx;
+
+		u1 const bl = xirqb;
+		u2 const ax = nmiv;
+		xpb = bl;
+		xpc = ax;
+		u1* const esi = ax & 0x8000 ? snesmmap[bl] : snesmap2[bl];
+		initaddrl = esi;
+
+		*pedx = edx & 0xFFFFFFF3 | 0x00000004;
+		*pesi = esi + ax;
+	}
+}

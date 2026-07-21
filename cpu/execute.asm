@@ -1017,7 +1017,15 @@ NEWSYM cpuover
     mov dword[nmiprevaddrh],0
     mov byte[nmirept],1
     mov byte[doirqnext],0
-    jmp switchtonmi
+    push edx
+    mov edx, esp
+    push esi
+    mov esi, esp
+    ccallv switchtonmi, edx, esi
+    pop esi
+    pop edx
+    xor ebx, ebx
+    jmp execloop
 .nocheck
     cmp byte[nmirept],10
     je .nextcheck
@@ -1030,7 +1038,15 @@ NEWSYM cpuover
     mov [nmiprevaddrh],esi
 .notgreater
     inc byte[nmirept]
-    jmp switchtonmi
+    push edx
+    mov edx, esp
+    push esi
+    mov esi, esp
+    ccallv switchtonmi, edx, esi
+    pop esi
+    pop edx
+    xor ebx, ebx
+    jmp execloop
 .nextcheck
     mov eax,[nmiprevaddrh]
     sub eax,[nmiprevaddrl]
@@ -1041,13 +1057,29 @@ NEWSYM cpuover
     cmp esi,[nmiprevaddrh]
     ja .failcheck
     mov byte[doirqnext],0
-    jmp switchtonmi
+    push edx
+    mov edx, esp
+    push esi
+    mov esi, esp
+    ccallv switchtonmi, edx, esi
+    pop esi
+    pop edx
+    xor ebx, ebx
+    jmp execloop
 .failcheck
     mov byte[nmirept],0
     mov dword[nmiprevaddrl],0FFFFFFFFh
     mov dword[nmiprevaddrh],0
     mov byte[doirqnext],0
-    jmp switchtonmi
+    push edx
+    mov edx, esp
+    push esi
+    mov esi, esp
+    ccallv switchtonmi, edx, esi
+    pop esi
+    pop edx
+    xor ebx, ebx
+    jmp execloop
 .nonmi
     cmp byte[intrset],1
     jne .nointrset2w
@@ -1445,7 +1477,15 @@ NEWSYM execsingle
     jne .nointrset
     mov byte[intrset],2
 .nointrset
-    jmp switchtonmideb
+    push edx
+    mov edx, esp
+    push esi
+    mov esi, esp
+    ccallv switchtonmi, edx, esi
+    pop esi
+    pop edx
+    xor ebx, ebx
+    jmp execloopdeb
 .nonmi
     cmp byte[intrset],1
     jne .nointrset2w

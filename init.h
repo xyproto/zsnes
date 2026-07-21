@@ -10,6 +10,7 @@ extern u1 autoloadstate; // auto load state slot number
 extern u1 cacheud; // update cache every ? frames
 extern u1 ccud; // current cache increment
 extern u1 curcyc; // cycles left in scanline
+extern u1 curnmi; // currently inside the NMI handler (1=yes,0=no)
 extern u1 debugger; // Start with debugger (1=yes,0=no)
 extern u1 forceromtype;
 extern u1 regsbackup[3019];
@@ -21,6 +22,7 @@ extern u2 irqv2; // IRQ vector
 extern u2 irqv8; // irq vector emulation mode
 extern u2 irqv; // IRQ vector
 extern u2 nmiv2; // NMI vector
+extern u2 nmiv8; // NMI vector emulation mode
 extern u2 nmiv; // NMI vector
 extern u2 resetv; // reset vector
 extern u2 xpc;
