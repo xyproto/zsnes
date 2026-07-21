@@ -1,6 +1,5 @@
 #include <string.h>
 
-#include "../asm_call.h"
 #include "../c_vcache.h"
 #include "../cpu/regs.h"
 #include "../endmem.h"
@@ -131,6 +130,32 @@ void makewindow(u1 al, Layer const ebp)
     }
 }
 
+static void makedualwinsp(u1 const al)
+{
+    u1 const cl = winlogicb & 0x03;
+
+    if (cl == dualwinsp && al == pwinspenab && winl1 == pwinsptype) { // data matches previous data
+        cwinptr = winspdata + 16;
+        winonsp = winonstype;
+        return;
+    }
+
+    dualwinsp = cl;
+    pwinspenab = al;
+    pwinsptype = winl1;
+    dwinptrproc = winspdata + 16;
+    cwinptr = winspdata + 16;
+    winonsp = 1;
+    winonstype = 1;
+
+    u1 al_ = al;
+    u1 cl_ = cl;
+    __asm__ volatile("call %P2"
+        : "+a"(al_), "+c"(cl_)
+        : "X"(dualstartprocess)
+        : "cc", "memory", "edx", "edi");
+}
+
 void makewindowsp(void)
 {
     winonsp = 0;
@@ -146,7 +171,7 @@ void makewindowsp(void)
     case 0x00:
         return;
     case 0x0A:
-        asm_call(makedualwinsp);
+        makedualwinsp(al);
         return;
     }
 

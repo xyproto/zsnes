@@ -620,37 +620,7 @@ SECTION .bss
 NEWSYM winonsp, resb 1
 SECTION .text
 
-NEWSYM makedualwinsp
-    mov ecx,ebp
-    shl cl,1
-    mov dl,[winlogicb]
-    and dl,03h
-    mov cl,dl
-    mov byte[winonsp],1
-    ; check if data matches previous data
-    cmp cl,[dualwinsp]
-    jne .skipenab3
-    cmp al,[pwinspenab]
-    jne .skipenab
-    mov ebx,[winl1]
-    cmp ebx,[pwinsptype]
-    jne .skipenab2
-    mov dword[cwinptr],winspdata+16
-    mov al,[winonstype]
-    mov [winonsp],al
-    ret
-.skipenab3
-    mov [dualwinsp],cl
-.skipenab
-    mov [pwinspenab],al
-    mov ebx,[winl1]
-.skipenab2
-    mov [pwinsptype],ebx
-    mov dword[dwinptrproc],winspdata+16
-    mov dword[cwinptr],winspdata+16
-    mov byte[winonsp],1
-    mov byte[winonstype],1
-    jmp dualstartprocess
+; makedualwinsp has been ported to C (video/c_makevid.c).
 
 ; window logic data
 SECTION .bss

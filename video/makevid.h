@@ -12,7 +12,6 @@ typedef struct SpriteInfo {
 _Static_assert(sizeof(SpriteInfo) == 8, "SpriteInfo size mismatch");
 
 extern void dualstartprocess();
-extern void makedualwinsp();
 
 extern SpriteInfo* currentobjptr;
 extern u1 a16x16xinc;

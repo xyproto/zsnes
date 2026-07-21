@@ -133,6 +133,7 @@ extern u1 winen[6]; // Win1 on (IN/OUT) or Win2 on (IN/OUT) on BG1/BG2/BG3/BG4/s
 extern u1 winenabm; // Window logic enable for main screen
 extern u1 winenabs; // Window logic enable for sub screen
 extern u1 winlogica; // Window logic type for BG1 to 4
+extern u1 winlogicb; // Window logic type for Sprites and Backarea
 extern u2 HIRQLoc; // HIRQ X location
 extern u2 bg1objptr[4]; // pointer to tiles in background1/2/3/4
 extern u2 bg1ptr[4]; // pointer to background1/2/3/4
