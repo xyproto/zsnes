@@ -156,6 +156,49 @@ static void adjustMouseYScale()
     MouseYScale = (MouseMaxY - MouseMinY) / ((float)WindowHeight);
 }
 
+#ifdef __OPENGL__
+// Point the GL viewport at a w*h drawable and set up the projection, applying
+// aspect-ratio correction for the variable (20) and custom (21/22) video modes.
+// Pass the actual drawable size in pixels (which, in fullscreen, differs from
+// WindowWidth/WindowHeight and must be read via SDL_GetWindowSizeInPixels after
+// the window change has settled).
+static void SetGLViewport(int w, int h)
+{
+    glViewport(0, 0, w, h);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+
+    if (cvidmode == 20) {
+        if (224 * w > 256 * h && h) {
+            glOrtho(-((float)224 * w) / ((float)256 * h),
+                ((float)224 * w) / ((float)256 * h), -1, 1, -1, 1);
+        } else if (224 * w < 256 * h && w) {
+            glOrtho(-1, 1, -((float)256 * h) / ((float)224 * w),
+                ((float)256 * h) / ((float)224 * w), -1, 1);
+        } else {
+            glOrtho(-1, 1, -1, 1, -1, 1);
+        }
+    }
+
+    if (Keep4_3Ratio && ((cvidmode == 21) || (cvidmode == 22))) {
+        if (3 * w > 4 * h && h) {
+            glOrtho(-((float)3 * w) / ((float)4 * h),
+                ((float)3 * w) / ((float)4 * h), -1, 1, -1, 1);
+        } else if (3 * w < 4 * h && w) {
+            glOrtho(-1, 1, -((float)4 * h) / ((float)3 * w),
+                ((float)4 * h) / ((float)3 * w), -1, 1);
+        } else {
+            glOrtho(-1, 1, -1, 1, -1, 1);
+        }
+    }
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glDisable(GL_DEPTH_TEST);
+    glFlush();
+}
+#endif
+
 void SetHQx(unsigned int ResX, unsigned int ResY)
 {
     int maxHQ;
@@ -221,38 +264,19 @@ int Main_Proc()
                 SetHiresOpt(SurfaceX, SurfaceY);
                 adjustMouseXScale();
                 adjustMouseYScale();
-                glViewport(0, 0, WindowWidth, WindowHeight);
-                glMatrixMode(GL_PROJECTION);
-                glLoadIdentity();
-
-                if (cvidmode == 20) {
-                    if (224 * WindowWidth > 256 * WindowHeight && WindowHeight) {
-                        glOrtho(-((float)224 * WindowWidth) / ((float)256 * WindowHeight),
-                            ((float)224 * WindowWidth) / ((float)256 * WindowHeight), -1, 1, -1, 1);
-                    } else if (224 * WindowWidth < 256 * WindowHeight && WindowWidth) {
-                        glOrtho(-1, 1, -((float)256 * WindowHeight) / ((float)224 * WindowWidth),
-                            ((float)256 * WindowHeight) / ((float)224 * WindowWidth), -1, 1);
-                    } else {
-                        glOrtho(-1, 1, -1, 1, -1, 1);
-                    }
-                }
-
-                if (Keep4_3Ratio && ((cvidmode == 21) || (cvidmode == 22))) {
-                    if (3 * WindowWidth > 4 * WindowHeight && WindowHeight) {
-                        glOrtho(-((float)3 * WindowWidth) / ((float)4 * WindowHeight),
-                            ((float)3 * WindowWidth) / ((float)4 * WindowHeight), -1, 1, -1, 1);
-                    } else if (3 * WindowWidth < 4 * WindowHeight && WindowWidth) {
-                        glOrtho(-1, 1, -((float)4 * WindowHeight) / ((float)3 * WindowWidth),
-                            ((float)4 * WindowHeight) / ((float)3 * WindowWidth), -1, 1);
-                    } else {
-                        glOrtho(-1, 1, -1, 1, -1, 1);
-                    }
-                }
-
-                glMatrixMode(GL_MODELVIEW);
-                glLoadIdentity();
-                glDisable(GL_DEPTH_TEST);
-                glFlush();
+                SetGLViewport(WindowWidth, WindowHeight);
+                gl_clearwin();
+                Clear2xSaIBuffer();
+            }
+            break;
+        case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED:
+            // On Wayland the fullscreen drawable size is applied asynchronously
+            // (and may be animated by the compositor), so re-fit the GL viewport
+            // whenever the pixel size actually changes. This keeps fullscreen
+            // scaling correct without relying on the size queried right after the
+            // toggle, which can still be stale. data1/data2 are in pixels here.
+            if (FullScreen) {
+                SetGLViewport(event.window.data1, event.window.data2);
                 gl_clearwin();
                 Clear2xSaIBuffer();
             }
@@ -1256,48 +1280,17 @@ void initwinvideo(void)
             SetGLAttributes();
             if (sdl_window) {
                 SDL_SetWindowSize(sdl_window, WindowWidth, WindowHeight);
+                SDL_SyncWindow(sdl_window); // settle the new size before querying it
             }
             adjustMouseXScale();
             adjustMouseYScale();
-            {
-                int vp_w = (int)WindowWidth;
-                int vp_h = (int)WindowHeight;
-                if (FullScreen && sdl_window) {
-                    SDL_GetWindowSizeInPixels(sdl_window, &vp_w, &vp_h);
-                }
-                glViewport(0, 0, vp_w, vp_h);
-                glMatrixMode(GL_PROJECTION);
-                glLoadIdentity();
 
-                if (cvidmode == 20) {
-                    if (224 * vp_w > 256 * vp_h && vp_h) {
-                        glOrtho(-((float)224 * vp_w) / ((float)256 * vp_h),
-                            ((float)224 * vp_w) / ((float)256 * vp_h), -1, 1, -1, 1);
-                    } else if (224 * vp_w < 256 * vp_h && vp_w) {
-                        glOrtho(-1, 1, -((float)256 * vp_h) / ((float)224 * vp_w),
-                            ((float)256 * vp_h) / ((float)224 * vp_w), -1, 1);
-                    } else {
-                        glOrtho(-1, 1, -1, 1, -1, 1);
-                    }
-                }
-
-                if (Keep4_3Ratio && ((cvidmode == 21) || (cvidmode == 22))) {
-                    if (3 * vp_w > 4 * vp_h && vp_h) {
-                        glOrtho(-((float)3 * vp_w) / ((float)4 * vp_h),
-                            ((float)3 * vp_w) / ((float)4 * vp_h), -1, 1, -1, 1);
-                    } else if (3 * vp_w < 4 * vp_h && vp_w) {
-                        glOrtho(-1, 1, -((float)4 * vp_h) / ((float)3 * vp_w),
-                            ((float)4 * vp_h) / ((float)3 * vp_w), -1, 1);
-                    } else {
-                        glOrtho(-1, 1, -1, 1, -1, 1);
-                    }
-                }
+            int vp_w = (int)WindowWidth;
+            int vp_h = (int)WindowHeight;
+            if (FullScreen && sdl_window) {
+                SDL_GetWindowSizeInPixels(sdl_window, &vp_w, &vp_h);
             }
-
-            glMatrixMode(GL_MODELVIEW);
-            glLoadIdentity();
-            glDisable(GL_DEPTH_TEST);
-            glFlush();
+            SetGLViewport(vp_w, vp_h);
         }
 #endif
         clearwin();
@@ -1325,6 +1318,18 @@ int TryToggleFullScreen(void)
     }
 
     FullScreen = GUIWFVID[cvidmode];
+
+    // Resizing the GL surface in place across a fullscreen transition is
+    // unreliable on Wayland compositors (flickering, and the frame drawn both
+    // at the top and bottom of the screen), because the surface is resized
+    // rather than recreated. Whenever the fullscreen state actually changes,
+    // fall back to a full window + context reinit, which builds a fresh
+    // surface at the correct size. The cheap in-place path is kept only for
+    // mode changes that stay within the same fullscreen/windowed state.
+    bool const wasFullScreen = (SDL_GetWindowFlags(sdl_window) & SDL_WINDOW_FULLSCREEN) != 0;
+    if (wasFullScreen != (FullScreen != 0)) {
+        return 0;
+    }
 
 #ifdef __OPENGL__
     // Fall back to full reinit if the backend would change
@@ -1413,6 +1418,11 @@ int TryToggleFullScreen(void)
         SDL_SetWindowSize(sdl_window, WindowWidth, WindowHeight);
     }
 
+    // The fullscreen/size change is asynchronous in SDL3; settle it before
+    // reading the drawable size, otherwise the viewport gets sized from the
+    // stale (pre-toggle) dimensions and fullscreen scaling comes out wrong.
+    SDL_SyncWindow(sdl_window);
+
     SDL_SetWindowMouseGrab(sdl_window, FullScreen ? true : false);
 
     adjustMouseXScale();
@@ -1425,38 +1435,7 @@ int TryToggleFullScreen(void)
         if (FullScreen) {
             SDL_GetWindowSizeInPixels(sdl_window, &vp_w, &vp_h);
         }
-        glViewport(0, 0, vp_w, vp_h);
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
-
-        if (cvidmode == 20) {
-            if (224 * vp_w > 256 * vp_h && vp_h) {
-                glOrtho(-((float)224 * vp_w) / ((float)256 * vp_h),
-                    ((float)224 * vp_w) / ((float)256 * vp_h), -1, 1, -1, 1);
-            } else if (224 * vp_w < 256 * vp_h && vp_w) {
-                glOrtho(-1, 1, -((float)256 * vp_h) / ((float)224 * vp_w),
-                    ((float)256 * vp_h) / ((float)224 * vp_w), -1, 1);
-            } else {
-                glOrtho(-1, 1, -1, 1, -1, 1);
-            }
-        }
-
-        if (Keep4_3Ratio && ((cvidmode == 21) || (cvidmode == 22))) {
-            if (3 * vp_w > 4 * vp_h && vp_h) {
-                glOrtho(-((float)3 * vp_w) / ((float)4 * vp_h),
-                    ((float)3 * vp_w) / ((float)4 * vp_h), -1, 1, -1, 1);
-            } else if (3 * vp_w < 4 * vp_h && vp_w) {
-                glOrtho(-1, 1, -((float)4 * vp_h) / ((float)3 * vp_w),
-                    ((float)4 * vp_h) / ((float)3 * vp_w), -1, 1);
-            } else {
-                glOrtho(-1, 1, -1, 1, -1, 1);
-            }
-        }
-
-        glMatrixMode(GL_MODELVIEW);
-        glLoadIdentity();
-        glDisable(GL_DEPTH_TEST);
-        glFlush();
+        SetGLViewport(vp_w, vp_h);
     }
 #endif
 
