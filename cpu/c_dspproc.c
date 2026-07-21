@@ -1621,7 +1621,9 @@ static void brr_dynamic_lowpass(u4 const voice, s2* edi)
         hist[18] = edi[14];
         hist[19] = edi[15];
 
-        u1 const sel = (u1)(Voice0Freq[voice] >> 24);
+        // The original dispatch compares the frequency's top byte as *signed*
+        // (cmp dl,N / jle), so a top byte >= 128 falls into the 2-tap path.
+        s1 const sel = (s1)(Voice0Freq[voice] >> 24);
         if (sel <= 2) {
             s4 t0 = hist[4];
             for (int i = 0; i < 16; i++) {
