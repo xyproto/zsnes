@@ -781,7 +781,7 @@ NEWSYM newengine16b
     mov ebx,4*256
     add ebx,eax
     mov dword[ngwinen],0
-    call BuildWindow2
+    ccallv BuildWindow2, eax, ebx
     cmp dword[ngwinen],0
     je near .disablesprwin
     mov ecx,[CSprWinPtr]
@@ -945,7 +945,7 @@ NEWSYM newengine16b
     mov [nglogicval],bl
     mov ebx,5*256
     add ebx,eax
-    call BuildWindow2
+    ccallv BuildWindow2, eax, ebx
 .nowindowb
     mov dword[BackAreaAdd],0
 
@@ -2817,7 +2817,7 @@ section .text
     mov [nglogicval],al
     mov eax,ebx
     add ebx,5*256
-    call BuildWindow
+    ccallv BuildWindow, eax, ebx
 ;ngwintable
     pop ebx
     pop eax

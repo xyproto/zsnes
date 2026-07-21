@@ -36,6 +36,306 @@ void preparesprpr(void)
     sprsingle = (eax == 0x00000001 || eax == 0x00000100 || eax == 0x00010000 || eax == 0x01000000) ? 1 : 0;
 }
 
+// --- New-gfx window builder (ported from video/newgfx.asm) ------------------
+//
+// Builds the per-scanline window displacement table ngwintable[] (two parallel
+// 16-dword rows: bytes 0-63 and 64-127) for the new graphics engine. For a
+// single window it fills both rows directly; for two windows it builds two
+// boundary lists, merges them with the layer's logic operator, and converts
+// back to displacement form. eax indexes winboundary[], ebx indexes
+// winbg1enval[]. Sentinels: 0xEE00 ends a list. The table walking uses raw
+// byte offsets exactly as the assembly did.
+
+extern u4 nglogicval;
+extern u4 WindowRedraw;
+extern u4 ngwinen;
+extern u1 winbg1enval[]; // indexed past 256 into the contiguous sibling arrays
+extern u4 winboundary[256];
+
+// OrLogicTable / AndLogicTable / XorLogicTable / XNorLogicTable, contiguous,
+// selected by (nglogicval & 3).
+static const u1 ng_logictab[16] = { 0, 1, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0 };
+
+// Persistent cache + scratch, only ever touched by BuildWindow.
+static u4 ng_pwinen = 0xFFFF;
+static u4 ng_pwinbound;
+static u4 ng_pngwinen = 0xFFFF;
+static u4 ngwintablec[32];
+
+// Build one window's boundary list at *pesi (raw byte pointer into ngwintable).
+static void ng_proc1dual(u1** const pesi, u1 const ch, u4 lo, u4 hi)
+{
+    u1* esi = *pesi;
+    if (ch & 1) { // outside window
+        if (hi < lo) { // nothing inside: whole line on
+            *(u4*)esi = 0;
+            *(u4*)(esi + 4) = 0xEE00;
+            esi += 8;
+        } else {
+            if (lo != 0) {
+                lo++;
+                *(u4*)esi = 0;
+                *(u4*)(esi + 4) = lo;
+                esi += 8;
+            }
+            hi = hi - lo + 2;
+            *(u4*)esi = hi;
+            *(u4*)(esi + 4) = 0xEE00;
+            esi += 8;
+        }
+    } else { // inside window
+        if (hi < lo) { // empty
+            *(u4*)esi = 0xEE00;
+            esi += 4;
+        } else {
+            lo++;
+            *(u4*)esi = lo;
+            hi = hi - lo + 2;
+            *(u4*)(esi + 4) = hi;
+            *(u4*)(esi + 8) = 0xEE00;
+            esi += 12;
+        }
+    }
+    *pesi = esi;
+}
+
+static void ng_bw_dualwin(u4 const eax, u4 const ebx, u1 const ch0)
+{
+    u1* esi = (u1*)ngwintable;
+
+    // Build window 1's list, then window 2's list right after it.
+    ng_proc1dual(&esi, ch0, winboundary[eax] & 0xFF, (winboundary[eax] >> 8) & 0xFF);
+    u1* const winPtrA = esi;
+    ng_proc1dual(&esi, (u1)(winbg1enval[ebx] >> 2), (winboundary[eax] >> 16) & 0xFF, (winboundary[eax] >> 24) & 0xFF);
+    u1* const winPtrB = esi;
+
+    // Displacement -> cumulative, each list separately.
+    u4 acc = 0;
+    for (u1* p = (u1*)ngwintable; p != winPtrA; p += 4) {
+        acc += *(u4*)p;
+        *(u4*)p = acc;
+    }
+    acc = 0;
+    for (u1* p = winPtrA; p != winPtrB; p += 4) {
+        acc += *(u4*)p;
+        *(u4*)p = acc;
+    }
+
+    // Merge both sorted lists into ngwintablec, tracking each window's parity.
+    u1 cl = 1;
+    u1 chp = 1;
+    u1* edx = (u1*)ngwintablec;
+    u1* esiw = (u1*)ngwintable;
+    u1* ediw = winPtrA;
+    *(u4*)edx = 0;
+    *(u4*)(edx + 64) = 0;
+    if (*(u4*)esiw == 0) {
+        esiw += 4;
+        (*(u4*)(edx + 64))++;
+        cl = (u1)-cl;
+    }
+    if (*(u4*)ediw == 0) {
+        ediw += 4;
+        (*(u4*)(edx + 64))++;
+        chp = (u1)-chp;
+    }
+    edx += 4;
+    for (;;) {
+        u4 v = *(u4*)esiw;
+        int take_edi = (v >= 0xEE00);
+        if (!take_edi) {
+            if (v == *(u4*)ediw) { // equal: consume both
+                *(u4*)edx = v;
+                edx[64] = (u1)(cl + chp);
+                cl = (u1)-cl;
+                chp = (u1)-chp;
+                edx += 4;
+                esiw += 4;
+                ediw += 4;
+                if (v >= 0xEE00)
+                    break;
+                continue;
+            }
+            if (v < *(u4*)ediw) { // take win1
+                *(u4*)edx = v;
+                edx[64] = cl;
+                cl = (u1)-cl;
+                edx += 4;
+                esiw += 4;
+                continue;
+            }
+        }
+        // take win2
+        v = *(u4*)ediw;
+        if (v >= 0xEE00) {
+            v = *(u4*)esiw;
+            if (v >= 0xEE00) { // both lists ended
+                *(u4*)edx = 0xEE00;
+                edx += 4;
+                break;
+            }
+            // win1 still has entries
+            *(u4*)edx = v;
+            edx[64] = cl;
+            cl = (u1)-cl;
+            edx += 4;
+            esiw += 4;
+            continue;
+        }
+        *(u4*)edx = v;
+        edx[64] = chp;
+        chp = (u1)-chp;
+        edx += 4;
+        ediw += 4;
+    }
+    u1* const winPtrAc = edx;
+
+    // Convert the running parity to on/off via the logic table.
+    u1 const* const lt = &ng_logictab[(nglogicval & 3) << 2];
+    u1 acc2 = 0;
+    for (u1* p = (u1*)ngwintablec; p != winPtrAc; p += 4) {
+        acc2 = (u1)(acc2 + p[64]);
+        p[64] = lt[acc2];
+    }
+
+    // Shorten & convert back to displacement format in both rows.
+    u1 want = 1;
+    u4 prev = 0;
+    esi = (u1*)ngwintable;
+    for (u1* p = (u1*)ngwintablec; p != winPtrAc; p += 4) {
+        if (p[64] == want) {
+            u4 const disp = *(u4*)p - prev;
+            prev += disp;
+            *(u4*)esi = disp;
+            *(u4*)(esi + 64) = disp;
+            esi += 4;
+            want ^= 1;
+        }
+    }
+    *(u4*)esi = 0xEE00;
+    *(u4*)(esi + 64) = 0xEE00;
+
+    ngwinen = 1;
+    ng_pngwinen = 1;
+}
+
+static void ng_bw_ns(u4 const eax, u4 const ebx)
+{
+    u1 const enval = winbg1enval[ebx];
+    if ((enval & 0x0A) == 0x0A) {
+        ng_bw_dualwin(eax, ebx, enval);
+        return;
+    }
+
+    u4 lo, hi;
+    u1 ch = enval;
+    if ((enval & 0x0A) == 2) {
+        lo = winboundary[eax] & 0xFF;
+        hi = (winboundary[eax] >> 8) & 0xFF;
+    } else {
+        lo = (winboundary[eax] >> 16) & 0xFF;
+        hi = (winboundary[eax] >> 24) & 0xFF;
+        ch >>= 2;
+    }
+
+    u1* esi = (u1*)ngwintable;
+    if (ch & 1) { // outside window
+        if (hi < lo) {
+            *(u4*)esi = 0;
+            *(u4*)(esi + 4) = 0xEE00;
+            *(u4*)(esi + 64) = 0;
+            *(u4*)(esi + 4 + 64) = 0xEE00;
+            ngwinen = 1;
+        } else {
+            u4 e = lo;
+            if (lo != 0) {
+                e = lo + 1;
+                *(u4*)esi = 0;
+                *(u4*)(esi + 4) = e;
+                *(u4*)(esi + 64) = 0;
+                *(u4*)(esi + 4 + 64) = e;
+                esi += 8;
+            }
+            if (hi == 255) {
+                if (e != 0) {
+                    *(u4*)esi = 0xEE00;
+                    *(u4*)(esi + 64) = 0xEE00;
+                    ngwinen = 1;
+                }
+            } else {
+                u4 const h = hi - e + 2;
+                *(u4*)esi = h;
+                *(u4*)(esi + 64) = h;
+                *(u4*)(esi + 4) = 0xEE00;
+                *(u4*)(esi + 4 + 64) = 0xEE00;
+                ngwinen = 1;
+            }
+        }
+    } else { // inside window
+        if (hi >= lo) {
+            lo++;
+            *(u4*)esi = lo;
+            *(u4*)(esi + 64) = lo;
+            hi = hi - lo + 2;
+            *(u4*)(esi + 4) = hi;
+            *(u4*)(esi + 8) = 0xEE00;
+            *(u4*)(esi + 4 + 64) = hi;
+            *(u4*)(esi + 8 + 64) = 0xEE00;
+            ngwinen = 1;
+        }
+    }
+    ng_pngwinen = ngwinen;
+}
+
+static void ng_bw_notsimilarb(u4 const eax, u4 const ebx)
+{
+    ng_pwinbound = winboundary[eax];
+    ng_bw_ns(eax, ebx);
+}
+
+static void ng_bw_notsimilar(u4 const eax, u4 const ebx, u4 const sig)
+{
+    ng_pwinen = sig;
+    ng_bw_notsimilarb(eax, ebx);
+}
+
+void BuildWindow2(u4 eax, u4 ebx)
+{
+    WindowRedraw = 0;
+    ng_bw_notsimilar(eax, ebx, nglogicval << 16 | winbg1enval[ebx]);
+}
+
+void BuildWindow(u4 eax, u4 ebx)
+{
+    if (WindowRedraw == 1) {
+        BuildWindow2(eax, ebx);
+        return;
+    }
+
+    u4 const sig = nglogicval << 16 | winbg1enval[ebx];
+    if (sig != ng_pwinen) {
+        ng_bw_notsimilar(eax, ebx, sig);
+        return;
+    }
+    if (winboundary[eax] != ng_pwinbound) {
+        ng_bw_notsimilarb(eax, ebx);
+        return;
+    }
+
+    // Identical enable/boundary as last time: reuse the cached second row.
+    u1* ecx = (u1*)ngwintable;
+    for (;;) {
+        u4 const v = *(u4*)(ecx + 64);
+        *(u4*)ecx = v;
+        ecx += 4;
+        if (v > 0xD000)
+            break;
+        if (ecx == (u1*)ngwintable + 64)
+            break;
+    }
+    ngwinen = ng_pngwinen;
+}
+
 static void blanker16b(void)
 {
     // calculate current video offset
