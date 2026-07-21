@@ -9,6 +9,302 @@
 #include "c_makevid.h"
 #include "makevid.h"
 
+// --- Dual-window mask engine (ported from video/makevid.asm) ----------------
+//
+// dualstartprocess() builds a 256-byte per-pixel mask for window 1 into
+// dwinptrproc[], then combines window 2 into it with the layer's logic
+// operator (OR/AND/XOR/XNOR). Mask bytes are always 0 or 1.
+//
+// The window edges are packed into winl1 as four bytes:
+//   [0] = window 1 left   [1] = window 1 right
+//   [2] = window 2 left   [3] = window 2 right
+// The enable byte `al` selects the window "type": bit 0 for window 1 and
+// bit 2 for window 2 (set = "outside", clear = "inside").
+//
+// The exact loop bounds — the do/while forms that touch one pixel past an
+// edge, and the sides that overwrite rather than mask — are preserved
+// verbatim from the assembly. `i` is a u1 so it wraps at 256 like the 8-bit
+// index register the original used.
+
+static void dualwinand(u1 const al)
+{
+    u1* const p = dwinptrproc;
+    u1 const dl = winl1 >> 16; // window 2 left
+    u1 const dh = winl1 >> 24; // window 2 right
+    u1 i;
+
+    if (al & 0x04) { // window 2 is the "outside" type
+        if (dl >= dh) {
+            return; // AND against all-ones: leave the mask unchanged
+        }
+        if (dl <= 1 && dh >= 254) {
+            memset(p, 0, 256); // clipped
+            return;
+        }
+        i = 0;
+        do {
+            p[i] &= 1;
+        } while (++i < dl);
+        do {
+            p[i] = 0;
+        } while (++i < dh);
+        p[i] = 0;
+        if (i != 255) {
+            ++i;
+            do {
+                p[i] &= 1;
+            } while (++i != 0);
+        }
+    } else { // window 2 is the "inside" type
+        if (dl == 254 || dl >= dh) {
+            memset(p, 0, 256); // clipped
+            return;
+        }
+        i = 0;
+        if (dl != 0) {
+            do {
+                p[i] = 0;
+            } while (++i <= dl);
+        }
+        do {
+            p[i] &= 1;
+        } while (++i < dh);
+        p[i] &= 1;
+        if (dh != 255) {
+            do {
+                p[i] = 0;
+            } while (++i != 0);
+        }
+    }
+}
+
+static void dualwinor(u1 const al)
+{
+    u1* const p = dwinptrproc;
+    u1 const dl = winl1 >> 16;
+    u1 const dh = winl1 >> 24;
+    u1 i;
+
+    if (al & 0x04) { // outside
+        if (dl >= dh) {
+            memset(p, 1, 256); // OR against all-ones region
+            return;
+        }
+        if (dl <= 1 && dh >= 254) {
+            return; // clipped: OR against nothing
+        }
+        i = 0;
+        do {
+            p[i] = 1;
+        } while (++i < dl);
+        i = dh;
+        if (i != 255) {
+            ++i;
+            do {
+                p[i] = 1;
+            } while (++i != 0);
+        }
+    } else { // inside
+        if (dl == 254 || dl >= dh) {
+            return; // clipped: OR against nothing
+        }
+        i = 0;
+        if (dl != 0) {
+            i = dl + 1;
+        }
+        do {
+            p[i] = 1;
+        } while (++i < dh);
+        p[i] = 1;
+    }
+}
+
+static void dualwinxor(u1 const al)
+{
+    u1* const p = dwinptrproc;
+    u1 const dl = winl1 >> 16;
+    u1 const dh = winl1 >> 24;
+    u1 i;
+    int k;
+
+    if (al & 0x04) { // outside
+        if (dl >= dh) {
+            for (k = 0; k < 256; k++)
+                p[k] ^= 1; // XOR every pixel
+            return;
+        }
+        if (dl <= 1 && dh >= 254) {
+            return; // clipped
+        }
+        i = 0;
+        do {
+            p[i] ^= 1;
+        } while (++i < dl);
+        i = dh;
+        if (i != 255) {
+            ++i;
+            do {
+                p[i] ^= 1;
+            } while (++i != 0);
+        }
+    } else { // inside
+        if (dl == 254 || dl >= dh) {
+            return; // clipped
+        }
+        i = 0;
+        if (dl != 0) {
+            i = dl + 1;
+        }
+        do {
+            p[i] ^= 1;
+        } while (++i < dh);
+        p[i] ^= 1;
+    }
+}
+
+static void dualwinxnor(u1 const al)
+{
+    u1* const p = dwinptrproc;
+    u1 const dl = winl1 >> 16;
+    u1 const dh = winl1 >> 24;
+    u1 i;
+    int k;
+
+    // Same region walk as XOR, but every path (including the clipped ones)
+    // falls through to a final full-buffer XOR, which inverts the result.
+    if (al & 0x04) { // outside
+        if (dl >= dh) {
+            for (k = 0; k < 256; k++)
+                p[k] ^= 1;
+        } else if (dl <= 1 && dh >= 254) {
+            // clipped: straight to the final inversion
+        } else {
+            i = 0;
+            do {
+                p[i] ^= 1;
+            } while (++i < dl);
+            i = dh;
+            if (i != 255) {
+                ++i;
+                do {
+                    p[i] ^= 1;
+                } while (++i != 0);
+            }
+        }
+    } else { // inside
+        if (dl == 254 || dl >= dh) {
+            // clipped: straight to the final inversion
+        } else {
+            i = 0;
+            if (dl != 0) {
+                i = dl + 1;
+            }
+            do {
+                p[i] ^= 1;
+            } while (++i < dh);
+            p[i] ^= 1;
+        }
+    }
+
+    for (k = 0; k < 256; k++)
+        p[k] ^= 1; // xnor's trailing inversion
+}
+
+static void dualstartprocess(u1 const al, u1 const cl)
+{
+    u1* const p = dwinptrproc;
+    u1 const dl = winl1; // window 1 left
+    u1 const dh = winl1 >> 8; // window 1 right
+    u1 i;
+
+    if (al & 0x01) { // window 1 is the "outside" type
+        if (dl >= dh) {
+            memset(p, 1, 256);
+        } else if (dl <= 1 && dh >= 254) {
+            memset(p, 0, 256); // clipped
+        } else {
+            i = 0;
+            do {
+                p[i] = 1;
+            } while (++i < dl);
+            do {
+                p[i] = 0;
+            } while (++i < dh);
+            p[i] = 0;
+            if (i != 255) {
+                ++i;
+                do {
+                    p[i] = 1;
+                } while (++i != 0);
+            }
+        }
+    } else { // window 1 is the "inside" type
+        if (dl == 254 || dl >= dh) {
+            memset(p, 0, 256); // clipped
+        } else {
+            i = 0;
+            if (dl != 0) {
+                do {
+                    p[i] = 0;
+                } while (++i <= dl);
+            }
+            do {
+                p[i] = 1;
+            } while (++i < dh);
+            p[i] = 1;
+            if (dh != 255) {
+                do {
+                    p[i] = 0;
+                } while (++i != 0);
+            }
+        }
+    }
+
+    switch (cl) {
+    case 0:
+        dualwinor(al);
+        break;
+    case 2:
+        dualwinxor(al);
+        break;
+    case 3:
+        dualwinxnor(al);
+        break;
+    default:
+        dualwinand(al);
+        break; // cl == 1
+    }
+}
+
+// Colour-window variant of makedualwin, called from the procwindowback macro
+// (video/vidmacro.mac). Uses the colour window logic (winlogicb bits 2-3) and
+// checks both the sprite and background caches before rebuilding the mask.
+void makedualwincol(u1 const al)
+{
+    u1 const cl = (winlogicb >> 2) & 0x03;
+    winon = 1;
+
+    if (cl == dualwinsp && al == pwinspenab && winl1 == pwinsptype) { // sprite data matches
+        cwinptr = winspdata + 16;
+        winon = winonstype;
+        return;
+    }
+    if (cl == dualwinbg && al == pwinbgenab && winl1 == pwinbgtype) { // bg data matches
+        cwinptr = winbgdata + 16;
+        winon = winonbtype;
+        return;
+    }
+
+    dualwinbg = cl;
+    pwinbgenab = al;
+    pwinbgtype = winl1;
+    dwinptrproc = winbgdata + 16;
+    cwinptr = winbgdata + 16;
+    winon = 1;
+    winonbtype = 1;
+    dualstartprocess(al, cl);
+}
+
 static void makedualwin(u1 const al, Layer const ebp)
 {
     u1 const cl = winlogica >> (u1)(ebp * 2) & 0x03;
@@ -31,12 +327,7 @@ static void makedualwin(u1 const al, Layer const ebp)
         cwinptr = winbgdata + 16;
         winon = 1;
         winonbtype = 1;
-        u1 al_ = al;
-        u1 cl_ = cl;
-        __asm__ volatile("call %P2"
-            : "+a"(al_), "+c"(cl_)
-            : "X"(dualstartprocess)
-            : "cc", "memory", "edx", "edi");
+        dualstartprocess(al, cl);
     }
 }
 
@@ -148,12 +439,7 @@ static void makedualwinsp(u1 const al)
     winonsp = 1;
     winonstype = 1;
 
-    u1 al_ = al;
-    u1 cl_ = cl;
-    __asm__ volatile("call %P2"
-        : "+a"(al_), "+c"(cl_)
-        : "X"(dualstartprocess)
-        : "cc", "memory", "edx", "edi");
+    dualstartprocess(al, cl);
 }
 
 void makewindowsp(void)

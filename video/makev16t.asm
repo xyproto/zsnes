@@ -107,10 +107,11 @@ section .note.GNU-stack noalloc noexec nowrite progbits
 	ccall %1
 	pop eax
 %endmacro
-EXTSYM cwinptr,dualstartprocess,dualwinbg,dualwinsp,dwinptrproc,pwinbgenab
+EXTSYM cwinptr,dualwinbg,dualwinsp,dwinptrproc,pwinbgenab
 EXTSYM pwinbgtype,pwinspenab,pwinsptype,winbgdata,winlogicb,winonbtype
 EXTSYM winonstype,winspdata,interlval,bg1scrolx,bg1scroly,curmosaicsz
 EXTSYM curypos,drawmode716t,makewindow,mode7set,mosaicon,mosaicsz,scrnon
+EXTSYM makedualwincol
 EXTSYM winbg1en,winenabm,drawmode716textbg,drawmode716textbg2,extbgdone
 EXTSYM drawmode716tb,drawmode716b,drawmode716extbg,drawmode716extbg2,cursprloc
 EXTSYM drawsprites16b,scrndis,sprprifix,winonsp,bgfixer,scaddtype
@@ -144,48 +145,8 @@ EXTSYM ofsmtptrs,ofsmcptr2,ofshvaladd
 
 SECTION .text
 
-NEWSYM makedualwincol
-    mov dl,[winlogicb]
-    shr dl,2
-    and dl,03h
-    mov cl,dl
-    mov byte[winon],1
-    mov ebx,[winl1]
-    ; check if data matches previous sprite data
-    cmp cl,[dualwinsp]
-    jne .skipsprcheck
-    cmp al,[pwinspenab]
-    jne .skipsprcheck
-    cmp ebx,[pwinsptype]
-    jne .skipsprcheck
-    mov dword[cwinptr],winspdata+16
-    mov al,[winonstype]
-    mov [winon],al
-    ret
-.skipsprcheck
-    ; check if data matches previous data
-    cmp cl,[dualwinbg]
-    jne .skipenab3
-    cmp al,[pwinbgenab]
-    jne .skipenab
-    cmp ebx,[pwinbgtype]
-    jne .skipenab2
-    mov dword[cwinptr],winbgdata+16
-    mov al,[winonbtype]
-    mov [winon],al
-    ret
-.skipenab3
-    mov [dualwinbg],cl
-.skipenab
-    mov [pwinbgenab],al
-    mov ebx,[winl1]
-.skipenab2
-    mov [pwinbgtype],ebx
-    mov dword[dwinptrproc],winbgdata+16
-    mov dword[cwinptr],winbgdata+16
-    mov byte[winon],1
-    mov byte[winonbtype],1
-    jmp dualstartprocess
+; makedualwincol has been ported to C (video/c_makevid.c); it is called from
+; the procwindowback macro (video/vidmacro.mac).
 
 NEWSYM procmode716tsub
     test word[scrnon+1],01h

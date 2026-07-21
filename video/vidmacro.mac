@@ -90,14 +90,14 @@
     mov byte[winon],5
     jmp .finishwin
 .dualwin
-    mov al,[wincolen]
     mov bl,[scaddset]
     and bl,30h
     cmp bl,30h
     je .clearwin
     cmp bl,00h
     je .finishwin
-    call makedualwincol
+    movzx eax,byte[wincolen]
+    ccallv makedualwincol, eax
     mov byte[winon],3
     jmp .finishwin
 .clearwin
