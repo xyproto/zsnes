@@ -2229,7 +2229,7 @@ static void raw_audio_write(uint32_t samples)
     BufferSizeB = samples;
     BufferSizeW = samples << 1;
 
-    asm_call(ProcessSoundBuffer);
+    ProcessSoundBuffer();
 
     for (d_end = DSPBuffer + samples; d < d_end; d++) {
         if ((unsigned int)(*d + 0x7FFF) < 0xFFFF) {

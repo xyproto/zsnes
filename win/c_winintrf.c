@@ -389,7 +389,7 @@ void SoundProcess(void)
     if (soundon != 0 && DSPDisable != 1) {
         BufferSizeB = 256; // Size
         BufferSizeW = 512;
-        asm_call(ProcessSoundBuffer);
+        ProcessSoundBuffer();
         if (MSUEnable) {
             mixMSU1Audio(DSPBuffer, DSPBuffer + BufferSizeB, RATE);
         }

@@ -2219,3 +2219,92 @@ void ProcessVoiceHandler16(u4 const p1)
 
     ProcessVoiceStuff(p1);
 }
+
+extern u1 AudioLogging; // defined in zmovie.c
+extern u1 EMUPause; // defined in cpu/execute.asm
+
+// Whether the echo buffer currently holds data that must be cleared once echo
+// is switched off (kept across calls, so it stays here rather than as a local).
+static u1 echowrittento;
+
+// Top-level sound generation for one buffer: clears the mix/echo buffers, runs
+// the eight voices, mixes echo, optionally reverses stereo, and applies the
+// low-pass filter. Ported from cpu/dspproc.asm; the heavy lifting still lives
+// in the C helpers it calls (ProcessVoiceHandler16, MixEcho/MixEcho2, LPF*).
+void ProcessSoundBuffer(void)
+{
+    memset(DSPBuffer, 0, (size_t)BufferSizeB * 4);
+
+    int const echo_off = (EchoDis == 1) || (DSPMem[0x6C] & 0x20);
+    if (!echo_off) {
+        memset(EchoBuffer, 0, (size_t)BufferSizeB * 4);
+    }
+
+    if (EMUPause == 1) {
+        return;
+    }
+    if (AudioLogging == 1) { // logging enabled but skipping this pass
+        return;
+    }
+
+    for (u4 v = 0; v < 8; v++) {
+        ProcessVoiceHandler16(v);
+    }
+
+    if (EchoDis != 1) {
+        if (DSPMem[0x6C] & 0x20) { // echo writes disabled: flush any stale echo
+            if (echowrittento != 0) {
+                u4 n = MaxEcho;
+                if (StereoSound == 1) {
+                    n += n;
+                }
+                memset(echobuf, 0, (size_t)n * 4);
+                echowrittento = 0;
+            }
+        } else {
+            echowrittento = 1;
+            if (FIRTAPVal0[0] == 0x7F && FIRTAPVal0[1] == 0 && FIRTAPVal0[2] == 0
+                && FIRTAPVal0[3] == 0 && FIRTAPVal0[4] == 0 && FIRTAPVal0[5] == 0
+                && FIRTAPVal0[6] == 0 && FIRTAPVal0[7] == 0) {
+                MixEcho2(); // trivial FIR: identity echo
+            } else {
+                MixEcho();
+            }
+        }
+    }
+
+    if (RevStereo != 0) {
+        s4* p = DSPBuffer;
+        for (u4 i = BufferSizeB >> 1; i != 0; i--) {
+            s4 const l = p[0];
+            p[0] = p[1];
+            p[1] = l;
+            p += 2;
+        }
+    }
+
+    if (LowPassFilterType != 1) {
+        LPFexit();
+        return;
+    }
+
+    if (StereoSound == 1) {
+        LPFstereo(DSPBuffer);
+        return;
+    }
+
+    // Mono low-pass: a running half-sum filter over the buffer, two samples at
+    // a time (the accumulator alternates between the two locals, as in the asm).
+    s4* esi = DSPBuffer;
+    s4 ebx = LPFsample1;
+    for (u4 i = BufferSizeB >> 1; i != 0; i--) {
+        s4 eax = *esi >> 1;
+        ebx += eax;
+        *esi++ = ebx;
+        ebx = *esi >> 1;
+        eax += ebx;
+        *esi++ = eax;
+    }
+    LPFsample1 = ebx;
+    LPFexit();
+}

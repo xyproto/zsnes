@@ -16,7 +16,7 @@ extern void NonEchoMonoPM();
 extern void NonEchoStereo();
 extern void NonEchoStereoInterpolated();
 extern void NonEchoStereoPM();
-extern void ProcessSoundBuffer();
+extern void ProcessSoundBuffer(void);
 
 typedef s4 interpolatefunc(u4 edx, u4 ebp);
 extern interpolatefunc* DSPInterpolate;

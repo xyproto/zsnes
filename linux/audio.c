@@ -153,7 +153,7 @@ static void MixSoundBlock(int16_t* const out, uint32_t const samples)
     BufferSizeW = samples << 1;
 
     if (soundon && !DSPDisable) {
-        asm_call(ProcessSoundBuffer);
+        ProcessSoundBuffer();
         if (MSUEnable) {
             mixMSU1Audio(DSPBuffer, DSPBuffer + BufferSizeB, RATE);
         }
@@ -202,7 +202,7 @@ static void SoundWriteSamples_ao(uint32_t samples)
     BufferSizeB = samples;
     BufferSizeW = samples << 1;
 
-    asm_call(ProcessSoundBuffer);
+    ProcessSoundBuffer();
 
     if (MSUEnable) {
         mixMSU1Audio(DSPBuffer, DSPBuffer + BufferSizeB, RATE);
