@@ -25,6 +25,17 @@
 static u2 draw16x1616b_yadd;
 static u2 draw16x1616b_yflipadd;
 
+// Set up sprite priority for the current scanline. sprclprio takes the four
+// per-priority "sprites left" counts (one byte each) read as one dword;
+// sprsingle is set when exactly one priority is active. Ported from
+// video/newgfx.asm.
+void preparesprpr(void)
+{
+    u4 const eax = *(u4 const*)(sprleftpr + ((u4)(u1)curypos << 2));
+    *(u4*)sprclprio = eax;
+    sprsingle = (eax == 0x00000001 || eax == 0x00000100 || eax == 0x00010000 || eax == 0x01000000) ? 1 : 0;
+}
+
 static void blanker16b(void)
 {
     // calculate current video offset
@@ -1481,7 +1492,7 @@ static void processmode716b(void)
     // setup priorities
     if (sprprifix != 0) {
         cursprloc = sprlefttot;
-        asm_call(preparesprpr);
+        preparesprpr();
     }
     // calculate current video offset
     curvidoffset = vidbuffer + curypos * 576 + 32;
@@ -1599,7 +1610,7 @@ void drawline16b(void)
     // setup priorities
     if (sprprifix != 0) {
         cursprloc = sprlefttot;
-        asm_call(preparesprpr);
+        preparesprpr();
     } else {
         cursprloc = sprleftpr;
     }

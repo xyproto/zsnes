@@ -1056,7 +1056,7 @@ NEWSYM drawline16t
     cmp byte[sprprifix],0
     je .nosprprio
     mov dword[cursprloc],sprlefttot
-    call preparesprpr
+    ccallv preparesprpr
 .nosprprio
 ; process backgrounds
 ; do background 2
@@ -1321,7 +1321,7 @@ NEWSYM processmode716t
     cmp byte[sprprifix],0
     je .nosprprio
     mov dword[cursprloc],sprlefttot
-    call preparesprpr
+    ccallv preparesprpr
 .nosprprio
     mov byte[extbgdone],0
     test byte[scaddset],02h
@@ -1372,7 +1372,7 @@ NEWSYM processmode716t2
     cmp byte[sprprifix],0
     je .nosprprio
     mov dword[cursprloc],sprlefttot
-    call preparesprpr
+    ccallv preparesprpr
 .nosprprio
     ; clear back area w/ back color
     call clearback16t

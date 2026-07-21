@@ -525,25 +525,7 @@ SECTION .text
 ;*******************************************************
 ; Prepare Sprite Priorities
 ;*******************************************************
-
-NEWSYM preparesprpr
-    xor ebx,ebx
-    mov bl,[curypos]
-    mov eax,[sprleftpr+ebx*4]
-    mov [sprclprio],eax
-    cmp eax,00000001h
-    je .single
-    cmp eax,00000100h
-    je .single
-    cmp eax,00010000h
-    je .single
-    cmp eax,01000000h
-    je .single
-    mov dword[sprsingle],0
-    ret
-.single
-    mov dword[sprsingle],1
-    ret
+; preparesprpr has been ported to C (video/c_makev16b.c).
 
 SECTION .bss
 NEWSYM sprclprio,  resd 1
