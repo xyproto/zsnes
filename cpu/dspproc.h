@@ -3,7 +3,7 @@
 
 #include "../types.h"
 
-extern void BRRDecode();
+extern void BRRDecode(u4 voice, u1* esi, s2* edi);
 extern void EchoMono();
 extern void EchoMonoInterpolated();
 extern void EchoMonoPM();

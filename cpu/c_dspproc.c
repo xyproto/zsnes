@@ -1539,6 +1539,192 @@ void MixEcho2(void)
     }
 }
 
+// --- BRR sample decoder (ported from cpu/dspproc.asm) -----------------------
+//
+// A BRR block is 9 bytes: a header (range<<4 | filter<<2 | loop<<1 | end) then
+// 8 data bytes, each holding two 4-bit samples, for 16 samples per block. The
+// filter is a 2-tap IIR using the previous two output samples (prev0, prev1).
+// prev0/prev1 hold the running history and are updated per sample; the stored
+// sample is the (clamped, doubled, 16-bit-truncated) new prev0. All the shifts
+// are arithmetic, matching the original sar/imul code exactly.
+
+// filter0 coefficient key selected by the header's filter field (0..3).
+static s4 brr_filter0(u1 const hdr)
+{
+    switch ((hdr >> 2) & 0x03) {
+    case 1:  return 240;
+    case 2:  return 488;
+    case 3:  return 460;
+    default: return 0;
+    }
+}
+
+static s2 brr_next_sample(u1 const nibble, u1 const bshift, s4 const filter0)
+{
+    s4 delta = (s4)((nibble ^ 8) - 8); // sign-extend the 4-bit nibble to -8..7
+
+    if (bshift <= 12) {
+        delta = (s4)((u4)delta << bshift);
+        delta >>= 1;
+    } else {
+        delta &= ~0x7FF; // ranges 13..15 are treated as a fixed clamp
+    }
+
+    s4 const p0 = (s4)prev0;
+    s4 const p1 = (s4)prev1;
+    s4 out = delta;
+
+    if (filter0 == 240) {
+        out += (p0 >> 1) + ((-p0) >> 5);
+    } else if (filter0 == 488) {
+        out += p0 + ((-(p0 + (p0 >> 1))) >> 5) - (p1 >> 1) + (p1 >> 5);
+    } else if (filter0 == 460) {
+        out += p0 + ((-(13 * p0)) >> 7) - (p1 >> 1) + (((p1 >> 1) + p1) >> 4);
+    }
+
+    if (out < -32768) out = -32768;
+    if (out > 32767) out = 32767;
+
+    prev1 = (u4)p0;
+    out = (s2)(out << 1); // double and truncate to 16 bits
+    prev0 = (u4)out;
+    return (s2)out;
+}
+
+// Dynamic low-pass over the 16 decoded samples (only for LowPassFilterType > 1
+// and a fast enough voice). A moving average of 2..5 taps, seeded from the
+// previous block's tail kept in DLPFsamples[voice][]. The /3 and /5 use the
+// same reciprocal-multiply (high 32 bits of a signed 64-bit product) the
+// assembly used, so the rounding matches bit for bit.
+static s4 dlpf_recip_mul(s4 const sum, s4 const recip)
+{
+    return (s4)(((s8)sum * (s8)recip) >> 32);
+}
+
+static void brr_dynamic_lowpass(u4 const voice, s2* edi)
+{
+    if (Voice0Freq[voice] <= 0x800000) {
+        return;
+    }
+
+    s4* const hist = (s4*)&DLPFsamples[voice][0];
+
+    if (LowPassFilterType != 3) {
+        // "dynamic": choose the tap count from the top byte of the frequency
+        hist[0] = hist[16];
+        hist[1] = hist[17];
+        hist[2] = hist[18];
+        hist[3] = hist[19];
+        edi -= 16; // rewind to the first of the 16 samples just decoded
+        hist[16] = edi[12];
+        hist[17] = edi[13];
+        hist[18] = edi[14];
+        hist[19] = edi[15];
+
+        u1 const sel = (u1)(Voice0Freq[voice] >> 24);
+        if (sel <= 2) {
+            s4 t0 = hist[4];
+            for (int i = 0; i < 16; i++) {
+                s4 const cur = edi[i];
+                edi[i] = (s2)((t0 + cur) >> 1);
+                t0 = cur;
+            }
+            return;
+        }
+        if (sel <= 3) {
+            s4 t0 = hist[3], t1 = hist[4];
+            for (int i = 0; i < 16; i++) {
+                s4 const cur = edi[i];
+                edi[i] = (s2)dlpf_recip_mul(t0 + cur + t1, 0x55555555);
+                t0 = t1;
+                t1 = cur;
+            }
+            return;
+        }
+        if (sel <= 4) {
+            s4 t0 = hist[2], t1 = hist[3], t2 = hist[4];
+            for (int i = 0; i < 16; i++) {
+                s4 const cur = edi[i];
+                edi[i] = (s2)((t0 + cur + t1 + t2) >> 2);
+                t0 = t1;
+                t1 = t2;
+                t2 = cur;
+            }
+            return;
+        }
+        // sel >= 5 falls through to the 5-tap path below.
+    }
+
+    // 5-tap (LowPassFilterType == 3, or the dynamic sel >= 5 case).
+    s4 t0 = hist[1], t1 = hist[2], t2 = hist[3], t3 = hist[4];
+    for (int i = 0; i < 16; i++) {
+        s4 const cur = edi[i];
+        edi[i] = (s2)dlpf_recip_mul(t0 + cur + t1 + t2 + t3, 0x33333333);
+        t0 = t1;
+        t1 = t2;
+        t2 = t3;
+        t3 = cur;
+    }
+}
+
+void BRRDecode(u4 const voice, u1* esi, s2* edi)
+{
+    lastbl = 0;
+    loopbl = 0;
+
+    u1 const hdr = *esi++;
+    if (hdr & 0x01) {
+        lastbl = 1;
+        if (hdr & 0x02) {
+            loopbl = 1;
+        }
+    }
+    u1 const bshift = hdr >> 4;
+    s4 const filter0 = brr_filter0(hdr);
+
+    for (int i = 0; i < 8; i++) {
+        edi[0] = brr_next_sample(*esi >> 4, bshift, filter0);
+        edi[1] = brr_next_sample(*esi & 0x0F, bshift, filter0);
+        edi += 2;
+        esi++;
+    }
+
+    // Decode the next block's first 4 samples ahead of time when the output
+    // needs them (interpolation, or the fast-voice dynamic low pass).
+    int do_readahead = (DSPInterpolate != 0);
+    if (!do_readahead && LowPassFilterType > 2 && Voice0Freq[voice] >= 0x800000) {
+        do_readahead = 1;
+    }
+
+    if (do_readahead) {
+        if (lastbl == 1 && loopbl != 1) {
+            BRRreadahead[0] = 0;
+            BRRreadahead[1] = 0;
+            BRRreadahead[2] = 0;
+            BRRreadahead[3] = 0;
+        } else {
+            u1* rsrc = (lastbl == 1) ? SPCRAM + Voice0LoopPtr[voice] : esi;
+            u4 const save0 = prev0, save1 = prev1;
+
+            u1 const h2 = *rsrc++;
+            u1 const bs2 = h2 >> 4;
+            s4 const f2 = brr_filter0(h2);
+            BRRreadahead[0] = brr_next_sample(*rsrc >> 4, bs2, f2);
+            BRRreadahead[1] = brr_next_sample(*rsrc & 0x0F, bs2, f2);
+            rsrc++;
+            BRRreadahead[2] = brr_next_sample(*rsrc >> 4, bs2, f2);
+            BRRreadahead[3] = brr_next_sample(*rsrc & 0x0F, bs2, f2);
+
+            prev1 = save1;
+            prev0 = save0;
+        }
+    }
+
+    if (LowPassFilterType > 1) {
+        brr_dynamic_lowpass(voice, edi);
+    }
+}
+
 static void ProcessVoiceStuff(u4 const p1)
 {
     static u1 const AdsrBendData[] = {
@@ -1778,14 +1964,7 @@ SkipProcess2 : {
             u1* esi = SPCRAM + esi_;
             prev0 = Voice0Prev0[p1];
             prev1 = Voice0Prev1[p1];
-            u4 eax;
-            u4 ecx;
-            u4 edx;
-            u4 ebx;
-            __asm__ volatile("push %%ebp;  call %P6;  pop %%ebp"
-                         : "=a"(eax), "=c"(ecx), "=d"(edx), "=b"(ebx), "+S"(esi), "+D"(edi)
-                         : "X"(BRRDecode), "c"(p1)
-                         : "cc", "memory");
+            BRRDecode(p1, esi, edi);
         }
 
         edi = Voice0BufPtr[p1];
