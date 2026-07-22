@@ -1739,30 +1739,9 @@ extern u4 NoiseInc;      // defined in cpu/dspproc.asm
 extern u4 NoisePointer;
 extern u1 PModBuffer[];
 
-#include "dsp_mixers.h" // x86reg, mix_ProcessPMod, w_NonEchoMono (shared with the diff-test)
-
-// Thin wrapper marshalling the clean C mixer ABI to the asm mixers' register
-// ABI (ebp=voice, esi/ebx in-out, edi in). To port a mixer to C, replace its
-// wrapper body with the C implementation - nothing else changes.
-// Pass the target through an operand (%P[fn]) rather than hard-coding its name
-// in the asm text, so the compiler applies the platform's symbol mangling
-// (bare on ELF, leading underscore on win32/PE).
-#define MIX_WRAP(name)                                                        \
-    static void w_##name(u4 voice, u4* const pesi, u4* const pebx, s2* edi)    \
-    {                                                                         \
-        u4 eax = voice, ebx = *pebx, esi = *pesi;                             \
-        __asm__ volatile("push %%ebp; mov %%eax, %%ebp; call %P[fn]; pop %%ebp" \
-                         : "+S"(esi), "+b"(ebx), "+a"(eax)                    \
-                         : "D"(edi), [fn] "X"(name)                           \
-                         : "ecx", "edx", "cc", "memory");                     \
-        *pesi = esi;                                                          \
-        *pebx = ebx;                                                          \
-    }
-
-MIX_WRAP(NonEchoMonoInterpolated)
-MIX_WRAP(NonEchoStereoInterpolated)
-MIX_WRAP(EchoMonoInterpolated)
-MIX_WRAP(EchoStereoInterpolated)
+// All twelve voice mixers (the eight base variants plus the four interpolated
+// ones) are now C in dsp_mixers.h, shared verbatim with the diff-test.
+#include "dsp_mixers.h"
 
 static void ProcessVoiceStuff(u4 const p1)
 {

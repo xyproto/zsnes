@@ -4,18 +4,6 @@
 #include "../types.h"
 
 extern void BRRDecode(u4 voice, u1* esi, s2* edi);
-extern void EchoMono();
-extern void EchoMonoInterpolated();
-extern void EchoMonoPM();
-extern void EchoStereo();
-extern void EchoStereoInterpolated();
-extern void EchoStereoPM();
-extern void NonEchoMono();
-extern void NonEchoMonoInterpolated();
-extern void NonEchoMonoPM();
-extern void NonEchoStereo();
-extern void NonEchoStereoInterpolated();
-extern void NonEchoStereoPM();
 extern void ProcessSoundBuffer(void);
 
 typedef s4 interpolatefunc(u4 edx, u4 ebp);

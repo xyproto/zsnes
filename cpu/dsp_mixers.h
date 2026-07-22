@@ -7,9 +7,10 @@
  *
  * This is a textual include with no dependencies of its own: the includer must
  * first provide the u1/u2/u4/s2/s4 integer typedefs and declarations for the
- * globals used below - Voice0Volume, Voice0EnvInc, BRRPlace0, VolumeConvTable,
- * UniqueSoundv, powhack, DSPMem, NoiseInc, NoisePointer, NoiseData, PModBuffer,
- * DSPBuffer.
+ * globals used below - Voice0Volume, Voice0EnvInc, Voice0Freq, BRRPlace0,
+ * VolumeConvTable, UniqueSoundv, powhack, DSPMem, NoiseInc, NoisePointer,
+ * NoiseData, PModBuffer, DSPBuffer, EchoBuffer - and the DSPInterpolate
+ * function pointer (s4 (*)(u4 edx, u4 voice)) used by the interpolated mixers.
  *
  * Each w_<name> has the mixer dispatch ABI (see `mixfn` in c_dspproc.c): it
  * reads the voice, the running DSP-buffer index (*pesi), the increment (*pebx)
@@ -79,6 +80,24 @@ static inline s2 mix_sample(u4 voice, u4 esi, s2* edi, x86reg edx, x86reg ecx)
     return *(s2*)((u1*)edi + edx.e * 2);
 }
 
+/* Interpolated fetch: like mix_sample, but the sample comes from DSPInterpolate
+ * (noise still bypasses interpolation). The interpolated mixers never load cx
+ * before their ProcessPMod, so it runs with ch=0 - a defined replacement for
+ * the asm's undefined ch (dispatcher register residue). */
+static inline s2 mix_sample_interp(u4 voice, u4 esi, s2* edi, x86reg edx)
+{
+    if (UniqueSoundv != 0) {
+        if (DSPMem[0x3D] & (u1)powhack) {
+            NoisePointer += NoiseInc;
+            return *(s2*)(NoiseData + (NoisePointer >> 18) * 2);
+        }
+        x86reg ecx;
+        ecx.e = 0; /* ch = 0 */
+        mix_ProcessPMod(voice, esi, edi, edx, ecx);
+    }
+    return (s2)DSPInterpolate(edx.e, voice);
+}
+
 /* CalculatePMod ebp: the pitch-modulated increment for the next sample. */
 static inline u4 mix_CalculatePMod(u4 voice, u4 esi)
 {
@@ -101,6 +120,15 @@ static inline u4 mix_CalculatePMod(u4 voice, u4 esi)
 /* Non-pitch-mod tail: advance esi and step BRRPlace0 by the frequency. */
 #define MIX_TAIL(voice, esi)                                                 \
     esi += 2;                                                               \
+    *(u4*)((u1*)BRRPlace0 + (voice) * 8) += *pebx;                           \
+    *pesi = esi
+
+/* Frequency-reload tail: variants that clobbered ebx to hold the sample reload
+ * Voice0Freq for the BRRPlace0 step (mov ebx,[Voice0Freq+ebp*4]) and leave it
+ * in *pebx. */
+#define MIX_TAIL_FREQ(voice, esi)                                            \
+    esi += 2;                                                               \
+    *pebx = Voice0Freq[voice];                                              \
     *(u4*)((u1*)BRRPlace0 + (voice) * 8) += *pebx;                           \
     *pesi = esi
 
@@ -144,12 +172,8 @@ static inline void w_EchoStereo(u4 voice, u4* const pesi, u4* const pebx, s2* ed
     *(s4*)((u1*)EchoBuffer + esi * 4) += mix_scale(s, mix_vconv(voice, Voice0VolumeRe[voice]));
     *(s4*)((u1*)DSPBuffer + esi * 4 + 4) += mix_scale(s, mix_vconv(voice, Voice0VolumeL[voice]));
     *(s4*)((u1*)EchoBuffer + esi * 4 + 4) += mix_scale(s, mix_vconv(voice, Voice0VolumeLe[voice]));
-    esi += 2;
-    /* This variant reused ebx to hold the sample, so it reloads Voice0Freq for
-     * the increment (mov ebx,[Voice0Freq+ebp*4]); *pebx is left at that value. */
-    *pebx = Voice0Freq[voice];
-    *(u4*)((u1*)BRRPlace0 + voice * 8) += *pebx;
-    *pesi = esi;
+    /* This variant reused ebx to hold the sample, so it reloads Voice0Freq. */
+    MIX_TAIL_FREQ(voice, esi);
 }
 
 static inline void w_NonEchoMonoPM(u4 voice, u4* const pesi, u4* const pebx, s2* edi)
@@ -183,6 +207,57 @@ static inline void w_EchoStereoPM(u4 voice, u4* const pesi, u4* const pebx, s2* 
     *(s4*)((u1*)DSPBuffer + esi * 4 + 4) += mix_scale(s, mix_vconv(voice, Voice0VolumeL[voice]));
     *(s4*)((u1*)EchoBuffer + esi * 4 + 4) += mix_scale(s, mix_vconv(voice, Voice0VolumeLe[voice]));
     MIX_TAIL_PM(voice, esi);
+}
+
+/* Interpolated variants: same channel layout as the non-interpolated mixers,
+ * but the sample is interpolated (mix_sample_interp) and - because each reused
+ * ebx or reloaded Voice0Freq - all step BRRPlace0 by Voice0Freq (MIX_TAIL_FREQ).
+ * EchoMonoInterpolated's asm leaves the decoded sample in ebx instead, but that
+ * value is dead (the dispatcher reloads Voice0Freq before the next read), so we
+ * return the meaningful Voice0Freq here too. */
+static inline void w_NonEchoMonoInterpolated(u4 voice, u4* const pesi, u4* const pebx, s2* edi)
+{
+    u4 esi = *pesi;
+    x86reg edx;
+    edx.e = *(u4*)((u1*)BRRPlace0 + voice * 8 + 3);
+    s2 s = mix_sample_interp(voice, esi, edi, edx);
+    *(s4*)((u1*)DSPBuffer + esi * 2) += mix_scale(s, mix_vconv(voice, Voice0Volume[voice]));
+    MIX_TAIL_FREQ(voice, esi);
+}
+
+static inline void w_NonEchoStereoInterpolated(u4 voice, u4* const pesi, u4* const pebx, s2* edi)
+{
+    u4 esi = *pesi;
+    x86reg edx;
+    edx.e = *(u4*)((u1*)BRRPlace0 + voice * 8 + 3);
+    s2 s = mix_sample_interp(voice, esi, edi, edx);
+    *(s4*)((u1*)DSPBuffer + esi * 4) += mix_scale(s, mix_vconv(voice, Voice0VolumeR[voice]));
+    *(s4*)((u1*)DSPBuffer + esi * 4 + 4) += mix_scale(s, mix_vconv(voice, Voice0VolumeL[voice]));
+    MIX_TAIL_FREQ(voice, esi);
+}
+
+static inline void w_EchoMonoInterpolated(u4 voice, u4* const pesi, u4* const pebx, s2* edi)
+{
+    u4 esi = *pesi;
+    x86reg edx;
+    edx.e = *(u4*)((u1*)BRRPlace0 + voice * 8 + 3);
+    s2 s = mix_sample_interp(voice, esi, edi, edx);
+    *(s4*)((u1*)DSPBuffer + esi * 2) += mix_scale(s, mix_vconv(voice, Voice0Volume[voice]));
+    *(s4*)((u1*)EchoBuffer + esi * 2) += mix_scale(s, mix_vconv(voice, Voice0Volumee[voice]));
+    MIX_TAIL_FREQ(voice, esi);
+}
+
+static inline void w_EchoStereoInterpolated(u4 voice, u4* const pesi, u4* const pebx, s2* edi)
+{
+    u4 esi = *pesi;
+    x86reg edx;
+    edx.e = *(u4*)((u1*)BRRPlace0 + voice * 8 + 3);
+    s2 s = mix_sample_interp(voice, esi, edi, edx);
+    *(s4*)((u1*)DSPBuffer + esi * 4) += mix_scale(s, mix_vconv(voice, Voice0VolumeR[voice]));
+    *(s4*)((u1*)EchoBuffer + esi * 4) += mix_scale(s, mix_vconv(voice, Voice0VolumeRe[voice]));
+    *(s4*)((u1*)DSPBuffer + esi * 4 + 4) += mix_scale(s, mix_vconv(voice, Voice0VolumeL[voice]));
+    *(s4*)((u1*)EchoBuffer + esi * 4 + 4) += mix_scale(s, mix_vconv(voice, Voice0VolumeLe[voice]));
+    MIX_TAIL_FREQ(voice, esi);
 }
 
 #endif /* DSP_MIXERS_H */
