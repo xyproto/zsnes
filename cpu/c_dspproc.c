@@ -1734,6 +1734,13 @@ void BRRDecode(u4 const voice, u1* esi, s2* edi)
     }
 }
 
+extern u1 NoiseData[];   // defined in ui.c
+extern u4 NoiseInc;      // defined in cpu/dspproc.asm
+extern u4 NoisePointer;
+extern u1 PModBuffer[];
+
+#include "dsp_mixers.h" // x86reg, mix_ProcessPMod, w_NonEchoMono (shared with the diff-test)
+
 // Thin wrapper marshalling the clean C mixer ABI to the asm mixers' register
 // ABI (ebp=voice, esi/ebx in-out, edi in). To port a mixer to C, replace its
 // wrapper body with the C implementation - nothing else changes.
@@ -1750,18 +1757,10 @@ void BRRDecode(u4 const voice, u1* esi, s2* edi)
         *pebx = ebx;                                                          \
     }
 
-MIX_WRAP(NonEchoMono)
-MIX_WRAP(NonEchoStereo)
 MIX_WRAP(NonEchoMonoInterpolated)
 MIX_WRAP(NonEchoStereoInterpolated)
-MIX_WRAP(EchoMono)
-MIX_WRAP(EchoStereo)
 MIX_WRAP(EchoMonoInterpolated)
 MIX_WRAP(EchoStereoInterpolated)
-MIX_WRAP(NonEchoMonoPM)
-MIX_WRAP(NonEchoStereoPM)
-MIX_WRAP(EchoMonoPM)
-MIX_WRAP(EchoStereoPM)
 
 static void ProcessVoiceStuff(u4 const p1)
 {
