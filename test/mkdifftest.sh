@@ -7,7 +7,8 @@
 #
 #   OUT      output basename (writes OUT.o and OUT.inc in the current dir)
 #   ASM      path to the source .asm (e.g. ../cpu/dspproc.asm)
-#   ENTRY    the NEWSYM name to expose; it is renamed to  asm_ENTRY
+#   ENTRY    the NEWSYM name(s) to expose (space-separated); each `foo` is
+#            renamed to `asm_foo`
 #   EXTERNs  space-separated globals the routine references (defined by your
 #            harness .c). Bare labels used as addresses (e.g. `mov edi,foo`)
 #            count too.
@@ -31,10 +32,12 @@ for r in "$@"; do
     sed -n "${s},${e}p" "$ASM" >> "$INC"
 done
 
-# Rename the entry point (and any internal references to its local labels) so
-# the standalone object doesn't clash with the real symbol.
-sed -i -e "s/NEWSYM ${ENTRY}\b/NEWSYM asm_${ENTRY}/" \
-       -e "s/\b${ENTRY}\.\([A-Za-z0-9_]*\)/asm_${ENTRY}.\1/g" "$INC"
+# Rename the entry point(s) (and any internal references to their local labels)
+# so the standalone object doesn't clash with the real symbols.
+for e in $ENTRY; do
+    sed -i -e "s/NEWSYM ${e}\b/NEWSYM asm_${e}/" \
+           -e "s/\b${e}\.\([A-Za-z0-9_]*\)/asm_${e}.\1/g" "$INC"
+done
 
 # Build the EXTERN directives.
 EXT=""
@@ -62,4 +65,4 @@ section .text
 EOF
 
 nasm -f elf32 -w-orphan-labels -o "$OUT.o" "$OUT.asm"
-echo "wrote $OUT.o (entry: asm_${ENTRY})"
+echo "wrote $OUT.o (entries: $ENTRY)"

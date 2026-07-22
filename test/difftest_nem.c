@@ -31,68 +31,8 @@ u1 PModBuffer[8192];
 u1 DSPBuffer[8192];
 static u1 brrbuf[262144]; /* the voice's decoded-sample buffer (edi) */
 
-/* --- the C port under test (register-machine transliteration) --- */
-typedef union {
-    u4 e;
-    u2 w;
-    u1 b[4];
-} reg; /* little-endian: b[0]=al, b[1]=ah, w=ax, e=eax */
-
-static void nem_ProcessPMod(u4 ebp, u4 esi, u1* edi, reg edx, reg ecx)
-{
-    reg eax;
-    ecx.b[0] = ((u1*)&Voice0EnvInc[ebp])[2]; /* mov cl,[Voice0EnvInc+ebp*4+2] */
-    eax.w = *(u2*)(edi + edx.e * 2); /* mov ax,[edi+edx*2] */
-    { /* imul cx -> dx:ax = ax * cx */
-        s4 p = (s2)eax.w * (s2)ecx.w;
-        eax.w = (u2)p;
-        edx.w = (u2)(p >> 16);
-    }
-    eax.w >>= 7; /* shr ax,7 */
-    edx.b[0] = (u1)(edx.b[0] + edx.b[0]); /* add dl,dl */
-    eax.b[1] |= edx.b[0]; /* or ah,dl */
-    PModBuffer[esi] = eax.b[1]; /* mov [PModBuffer+esi],ah */
-}
-
-static u4 c_NonEchoMono(u4 ebp, u4 esi, u4 ebx, u1* edi)
-{
-    reg eax, ecx, edx;
-    ecx.e = 0; /* cx's high half is never read; keep it deterministic */
-
-    eax.e = Voice0Volume[ebp]; /* movzx eax,byte[Voice0Volume+ebp] */
-    eax.b[1] = ((u1*)&Voice0EnvInc[ebp])[2]; /* mov ah,[Voice0EnvInc+ebp*4+2] */
-    edx.e = *(u4*)((u1*)BRRPlace0 + ebp * 8 + 3); /* mov edx,[BRRPlace0+ebp*8+3] */
-    ecx.w = VolumeConvTable[eax.e]; /* mov cx,[VolumeConvTable+eax*2] */
-
-    if (UniqueSoundv == 0)
-        goto NotNoise1; /* cmp ...,0 / je   (ZF) */
-    eax.b[0] = (u1)powhack; /* mov al,[powhack] */
-    if ((DSPMem[0x3D] & eax.b[0]) == 0)
-        goto PMod; /* test ...,al / jz (ZF) */
-    eax.e = NoiseInc; /* mov eax,[NoiseInc] */
-    NoisePointer += eax.e; /* add [NoisePointer],eax */
-    eax.e = NoisePointer; /* mov eax,[NoisePointer] */
-    eax.e >>= 18; /* shr eax,18 */
-    eax.w = *(u2*)(NoiseData + eax.e * 2); /* mov ax,[NoiseData+eax*2] */
-    goto AfterNoise1; /* jmp .AfterNoise1 */
-PMod:
-    nem_ProcessPMod(ebp, esi, edi, edx, ecx); /* ProcessPMod ebp (falls through) */
-NotNoise1:
-    eax.w = *(u2*)(edi + edx.e * 2); /* mov ax,[edi+edx*2] */
-AfterNoise1: { /* imul cx -> dx:ax = ax * cx */
-    s4 p = (s2)eax.w * (s2)ecx.w;
-    eax.w = (u2)p;
-    edx.w = (u2)(p >> 16);
-}
-    eax.w >>= 7; /* shr ax,7 */
-    edx.b[0] = (u1)(edx.b[0] + edx.b[0]); /* add dl,dl */
-    eax.b[1] |= edx.b[0]; /* or ah,dl */
-    eax.e = (u4)(s4)(s2)eax.w; /* movsx eax,ax */
-    *(s4*)((u1*)DSPBuffer + esi * 2) += (s4)eax.e; /* add [DSPBuffer+esi*2],eax */
-    esi += 2; /* add esi,2 */
-    *(u4*)((u1*)BRRPlace0 + ebp * 8) += ebx; /* add [BRRPlace0+ebp*8],ebx */
-    return esi; /* ret (esi is the live return) */
-}
+/* --- the C port under test: the SAME source the emulator ships --- */
+#include "../cpu/dsp_mixers.h"
 
 /* --- call the standalone asm with its register ABI --- */
 extern void asm_NonEchoMono(void);
@@ -160,7 +100,8 @@ int main(void)
         memcpy(PModBuffer, pm0, sizeof pm0);
         memcpy(BRRPlace0, brr0, sizeof brr0);
         NoisePointer = np0;
-        u4 c_esi = c_NonEchoMono(ebp, esi, ebx, brrbuf);
+        u4 c_esi = esi, c_ebx = ebx;
+        w_NonEchoMono(ebp, &c_esi, &c_ebx, (s2*)brrbuf);
         memcpy(C_dsp, DSPBuffer, sizeof C_dsp);
         memcpy(C_pm, PModBuffer, sizeof C_pm);
         memcpy(C_brr, BRRPlace0, sizeof C_brr);
