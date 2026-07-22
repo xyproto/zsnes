@@ -1744,14 +1744,16 @@ extern u1 PModBuffer[];
 // Thin wrapper marshalling the clean C mixer ABI to the asm mixers' register
 // ABI (ebp=voice, esi/ebx in-out, edi in). To port a mixer to C, replace its
 // wrapper body with the C implementation - nothing else changes.
+// Pass the target through an operand (%P[fn]) rather than hard-coding its name
+// in the asm text, so the compiler applies the platform's symbol mangling
+// (bare on ELF, leading underscore on win32/PE).
 #define MIX_WRAP(name)                                                        \
     static void w_##name(u4 voice, u4* const pesi, u4* const pebx, s2* edi)    \
     {                                                                         \
         u4 eax = voice, ebx = *pebx, esi = *pesi;                             \
-        __asm__ volatile("push %%ebp; mov %%eax, %%ebp; call " #name          \
-                         "; pop %%ebp"                                        \
+        __asm__ volatile("push %%ebp; mov %%eax, %%ebp; call %P[fn]; pop %%ebp" \
                          : "+S"(esi), "+b"(ebx), "+a"(eax)                    \
-                         : "D"(edi)                                           \
+                         : "D"(edi), [fn] "X"(name)                           \
                          : "ecx", "edx", "cc", "memory");                     \
         *pesi = esi;                                                          \
         *pebx = ebx;                                                          \
