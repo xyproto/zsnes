@@ -144,7 +144,12 @@ static inline void w_EchoStereo(u4 voice, u4* const pesi, u4* const pebx, s2* ed
     *(s4*)((u1*)EchoBuffer + esi * 4) += mix_scale(s, mix_vconv(voice, Voice0VolumeRe[voice]));
     *(s4*)((u1*)DSPBuffer + esi * 4 + 4) += mix_scale(s, mix_vconv(voice, Voice0VolumeL[voice]));
     *(s4*)((u1*)EchoBuffer + esi * 4 + 4) += mix_scale(s, mix_vconv(voice, Voice0VolumeLe[voice]));
-    MIX_TAIL(voice, esi);
+    esi += 2;
+    /* This variant reused ebx to hold the sample, so it reloads Voice0Freq for
+     * the increment (mov ebx,[Voice0Freq+ebp*4]); *pebx is left at that value. */
+    *pebx = Voice0Freq[voice];
+    *(u4*)((u1*)BRRPlace0 + voice * 8) += *pebx;
+    *pesi = esi;
 }
 
 static inline void w_NonEchoMonoPM(u4 voice, u4* const pesi, u4* const pebx, s2* edi)
