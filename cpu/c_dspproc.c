@@ -20,7 +20,14 @@
 #include "regs.h"
 #include "spc700.h"
 
-static eop* paramhack[4];
+// Clean C dispatch ABI for the eight-voice mixers. A mixer reads the voice,
+// the decoded-sample buffer (edi) and the running DSP-buffer index (*pesi),
+// advances *pesi, and - for the pitch-modulation variants - updates the
+// increment *pebx. paramhack[] is filled with the w_* wrappers below, so the
+// dispatch is a plain C function-pointer table and individual mixers can be
+// migrated from asm to C one at a time without touching the dispatch.
+typedef void mixfn(u4 voice, u4* pesi, u4* pebx, s2* edi);
+static mixfn* paramhack[4];
 static u4 SBToSPC = 22050;
 
 static void conv2speed(u4 ecx, u4* esi, u4 const* edi)
@@ -1727,6 +1734,35 @@ void BRRDecode(u4 const voice, u1* esi, s2* edi)
     }
 }
 
+// Thin wrapper marshalling the clean C mixer ABI to the asm mixers' register
+// ABI (ebp=voice, esi/ebx in-out, edi in). To port a mixer to C, replace its
+// wrapper body with the C implementation - nothing else changes.
+#define MIX_WRAP(name)                                                        \
+    static void w_##name(u4 voice, u4* const pesi, u4* const pebx, s2* edi)    \
+    {                                                                         \
+        u4 eax = voice, ebx = *pebx, esi = *pesi;                             \
+        __asm__ volatile("push %%ebp; mov %%eax, %%ebp; call " #name          \
+                         "; pop %%ebp"                                        \
+                         : "+S"(esi), "+b"(ebx), "+a"(eax)                    \
+                         : "D"(edi)                                           \
+                         : "ecx", "edx", "cc", "memory");                     \
+        *pesi = esi;                                                          \
+        *pebx = ebx;                                                          \
+    }
+
+MIX_WRAP(NonEchoMono)
+MIX_WRAP(NonEchoStereo)
+MIX_WRAP(NonEchoMonoInterpolated)
+MIX_WRAP(NonEchoStereoInterpolated)
+MIX_WRAP(EchoMono)
+MIX_WRAP(EchoStereo)
+MIX_WRAP(EchoMonoInterpolated)
+MIX_WRAP(EchoStereoInterpolated)
+MIX_WRAP(NonEchoMonoPM)
+MIX_WRAP(NonEchoStereoPM)
+MIX_WRAP(EchoMonoPM)
+MIX_WRAP(EchoStereoPM)
+
 static void ProcessVoiceStuff(u4 const p1)
 {
     static u1 const AdsrBendData[] = {
@@ -1848,11 +1884,7 @@ SkipProcess2 : {
                     if (--Voice0Time[p1] == 0)
                         goto ProcessNextEnvelope;
                 EndofProcessNEnvsi:;
-                    u4 eax = p1; // XXX hack: GCC cannot handle ebp as input/output, so take the detour over eax
-                    __asm__ volatile("push %%ebp;  mov %0, %%ebp;  call %A4;  pop %%ebp"
-                                 : "+a"(eax), "+b"(ebx), "+S"(esi), "+D"(edi)
-                                 : "m"(paramhack[3])
-                                 : "cc", "memory", "ecx", "edx");
+                    paramhack[3](p1, &esi, &ebx, edi);
                 } while (esi != BufferSizeB);
             } else { // NextSamplei.
                 do {
@@ -1862,11 +1894,7 @@ SkipProcess2 : {
                     if (--Voice0Time[p1] == 0)
                         goto ProcessNextEnvelope;
                 EndofProcessNEnvi:;
-                    u4 eax = p1; // XXX hack: GCC cannot handle ebp as input/output, so take the detour over eax
-                    __asm__ volatile("push %%ebp;  mov %0, %%ebp;  call %A4;  pop %%ebp"
-                                 : "+a"(eax), "+b"(ebx), "+S"(esi), "+D"(edi)
-                                 : "m"(paramhack[2])
-                                 : "cc", "memory", "ecx", "edx");
+                    paramhack[2](p1, &esi, &ebx, edi);
                 } while (esi != BufferSizeW);
             }
         } else {
@@ -1878,11 +1906,7 @@ SkipProcess2 : {
                     if (--Voice0Time[p1] == 0)
                         goto ProcessNextEnvelope;
                 EndofProcessNEnvs:;
-                    u4 eax = p1; // XXX hack: GCC cannot handle ebp as input/output, so take the detour over eax
-                    __asm__ volatile("push %%ebp;  mov %0, %%ebp;  call %A4;  pop %%ebp"
-                                 : "+a"(eax), "+b"(ebx), "+S"(esi), "+D"(edi)
-                                 : "m"(paramhack[1])
-                                 : "cc", "memory", "ecx", "edx");
+                    paramhack[1](p1, &esi, &ebx, edi);
                 } while (esi != BufferSizeB);
             } else { // NextSample.
                 do {
@@ -1892,11 +1916,7 @@ SkipProcess2 : {
                     if (--Voice0Time[p1] == 0)
                         goto ProcessNextEnvelope;
                 EndofProcessNEnv:;
-                    u4 eax = p1; // XXX hack: GCC cannot handle ebp as input/output, so take the detour over eax
-                    __asm__ volatile("push %%ebp;  mov %0, %%ebp;  call %A4;  pop %%ebp"
-                                 : "+a"(eax), "+b"(ebx), "+S"(esi), "+D"(edi)
-                                 : "m"(paramhack[0])
-                                 : "cc", "memory", "ecx", "edx");
+                    paramhack[0](p1, &esi, &ebx, edi);
                 } while (esi != BufferSizeW);
             }
         }
@@ -2193,27 +2213,27 @@ void ProcessVoiceHandler16(u4 const p1)
 
     if (p1 == 0 || Voice0Disable[p1 - 1] != 1 || Voice0Status[p1 - 1] != 1 || !(DSPMem[0x2D] & 1U << p1) || DSPMem[16 * p1 + 4] == DSPMem[16 * (p1 - 1) + 4]) { // No pitch mod.
         if (DSPMem[0x3D] & 1U << p1 || echoon0[p1] != 1) { // No echo.
-            paramhack[0] = NonEchoMono;
-            paramhack[1] = NonEchoStereo;
-            paramhack[2] = NonEchoMonoInterpolated;
-            paramhack[3] = NonEchoStereoInterpolated;
+            paramhack[0] = w_NonEchoMono;
+            paramhack[1] = w_NonEchoStereo;
+            paramhack[2] = w_NonEchoMonoInterpolated;
+            paramhack[3] = w_NonEchoStereoInterpolated;
         } else { // Process Echo.
-            paramhack[0] = EchoMono;
-            paramhack[1] = EchoStereo;
-            paramhack[2] = EchoMonoInterpolated;
-            paramhack[3] = EchoStereoInterpolated;
+            paramhack[0] = w_EchoMono;
+            paramhack[1] = w_EchoStereo;
+            paramhack[2] = w_EchoMonoInterpolated;
+            paramhack[3] = w_EchoStereoInterpolated;
         }
     } else { // Pitch mod.
         if (DSPMem[0x3D] & 1U << p1 || echoon0[p1] != 1) { // No Echo PM.
-            paramhack[0] = NonEchoMonoPM;
-            paramhack[1] = NonEchoStereoPM;
-            paramhack[2] = NonEchoMonoPM;
-            paramhack[3] = NonEchoStereoPM;
+            paramhack[0] = w_NonEchoMonoPM;
+            paramhack[1] = w_NonEchoStereoPM;
+            paramhack[2] = w_NonEchoMonoPM;
+            paramhack[3] = w_NonEchoStereoPM;
         } else { // Echo PM
-            paramhack[0] = EchoMonoPM;
-            paramhack[1] = EchoStereoPM;
-            paramhack[2] = EchoMonoPM;
-            paramhack[3] = EchoStereoPM;
+            paramhack[0] = w_EchoMonoPM;
+            paramhack[1] = w_EchoStereoPM;
+            paramhack[2] = w_EchoMonoPM;
+            paramhack[3] = w_EchoStereoPM;
         }
     }
 
