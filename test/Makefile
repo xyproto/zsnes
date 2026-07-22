@@ -43,7 +43,7 @@ MODE7     := zsnes_mode716b_test
 MODE7_SRC := mode716b_test.c
 OBJS      := ../zpath.o
 
-.PHONY: all run clean difftest
+.PHONY: all run clean
 
 all: $(BIN) $(NETPLAY) $(ST10) $(ST11) $(OBC1) $(MSU1) $(DSP2) $(SAI) $(SA1) $(SPC7110) $(VCACHE) $(SPRITES) $(C4) $(MODE7)
 
@@ -107,18 +107,11 @@ run: all
 
 clean:
 	rm -f $(BIN) $(NETPLAY) $(ST10) $(ST11) $(OBC1) $(MSU1) $(DSP2) $(SAI) $(SA1) $(SPC7110) $(VCACHE) $(SPRITES) $(C4) $(MODE7)
-	rm -f difftest_mixers _*.o _*.asm _*.inc
+	rm -f _*.o _*.asm _*.inc
 
-# Port-time differential tests: prove a C port bit-identical to the original
-# assembly (see difftest.h). These need the original asm to still exist, so
-# each is transient - removed once its routine's asm is deleted. Kept out of
-# `all`/`run` for that reason. Requires nasm.
-difftest:
-	./mkdifftest.sh _mix ../cpu/dspproc.asm \
-	  "NonEchoMono NonEchoStereo EchoMono EchoStereo NonEchoMonoPM NonEchoStereoPM EchoMonoPM EchoStereoPM" \
-	  "Voice0Volume Voice0VolumeR Voice0VolumeL Voice0Volumee Voice0VolumeRe Voice0VolumeLe \
-	   Voice0EnvInc Voice0Freq BRRPlace0 VolumeConvTable UniqueSoundv powhack DSPMem \
-	   NoiseInc NoisePointer NoiseData PModBuffer DSPBuffer EchoBuffer" \
-	  814-837 844-1035 1248-1437
-	$(CC) $(CFLAGS) difftest_mixers.c _mix.o -no-pie -o difftest_mixers
-	./difftest_mixers
+# Port-time differential testing (difftest.h + mkdifftest.sh) proves a C port
+# bit-identical to the original assembly. It is transient by design: the oracle
+# is the original asm, so a routine's difftest is removed once its asm is
+# deleted. The DSP mixers were verified this way, then their asm and difftest
+# were retired; the reusable difftest.h and mkdifftest.sh remain for future
+# ports (see git history for difftest_mixers.c as a worked example).
