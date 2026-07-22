@@ -43,7 +43,7 @@ MODE7     := zsnes_mode716b_test
 MODE7_SRC := mode716b_test.c
 OBJS      := ../zpath.o
 
-.PHONY: all run clean
+.PHONY: all run clean difftest
 
 all: $(BIN) $(NETPLAY) $(ST10) $(ST11) $(OBC1) $(MSU1) $(DSP2) $(SAI) $(SA1) $(SPC7110) $(VCACHE) $(SPRITES) $(C4) $(MODE7)
 
@@ -107,3 +107,15 @@ run: all
 
 clean:
 	rm -f $(BIN) $(NETPLAY) $(ST10) $(ST11) $(OBC1) $(MSU1) $(DSP2) $(SAI) $(SA1) $(SPC7110) $(VCACHE) $(SPRITES) $(C4) $(MODE7)
+	rm -f difftest_nem _*.o _*.asm _*.inc
+
+# Port-time differential tests: prove a C port bit-identical to the original
+# assembly (see difftest.h). These need the original asm to still exist, so
+# each is transient - removed once its routine's asm is deleted. Kept out of
+# `all`/`run` for that reason. Requires nasm.
+difftest:
+	./mkdifftest.sh _nem ../cpu/dspproc.asm NonEchoMono \
+	  "Voice0Volume Voice0EnvInc BRRPlace0 VolumeConvTable UniqueSoundv powhack DSPMem NoiseInc NoisePointer NoiseData PModBuffer DSPBuffer" \
+	  825-837 1248-1277
+	$(CC) $(CFLAGS) difftest_nem.c _nem.o -no-pie -o difftest_nem
+	./difftest_nem
