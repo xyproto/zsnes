@@ -39,9 +39,10 @@ extern void asm_NonEchoMonoPM(void), asm_NonEchoStereoPM(void), asm_EchoMonoPM(v
 static void call_asm(void (*fn)(void), u4 voice, u4* pesi, u4* pebx, s2* edi)
 {
     u4 eax = voice, ebx = *pebx, esi = *pesi;
-    __asm__ volatile("push %%ebp; mov %%eax,%%ebp; call *%[fn]; pop %%ebp"
+    /* load fn into ecx before ebp is repurposed for the voice */
+    __asm__ volatile("mov %[fn],%%ecx; push %%ebp; mov %%eax,%%ebp; call *%%ecx; pop %%ebp"
         : "+S"(esi), "+b"(ebx), "+a"(eax)
-        : [fn] "r"(fn), "D"(edi)
+        : [fn] "m"(fn), "D"(edi)
         : "ecx", "edx", "cc", "memory");
     *pesi = esi;
     *pebx = ebx;
