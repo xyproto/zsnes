@@ -43,7 +43,7 @@ MODE7     := zsnes_mode716b_test
 MODE7_SRC := mode716b_test.c
 OBJS      := ../zpath.o
 
-.PHONY: all run clean
+.PHONY: all run clean spcio
 
 all: $(BIN) $(NETPLAY) $(ST10) $(ST11) $(OBC1) $(MSU1) $(DSP2) $(SAI) $(SA1) $(SPC7110) $(VCACHE) $(SPRITES) $(C4) $(MODE7)
 
@@ -115,3 +115,17 @@ clean:
 # deleted. The DSP mixers were verified this way, then their asm and difftest
 # were retired; the reusable difftest.h and mkdifftest.sh remain for future
 # ports (see git history for difftest_mixers.c as a worked example).
+
+# SPC700 I/O register handlers ($F0-$FF): cpu/spc_ioregs.h vs cpu/spc700.asm.
+spcio:
+	./mkdifftest.sh _spcio ../cpu/spc700.asm \
+	  "SPCRegF0 SPCRegF1 SPCRegF2 SPCRegF3 SPCRegF4 SPCRegF5 SPCRegF6 SPCRegF7 \
+	   SPCRegF8 SPCRegF9 SPCRegFA SPCRegFB SPCRegFC SPCRegFD SPCRegFE SPCRegFF \
+	   RSPCRegF0 RSPCRegF1 RSPCRegF2 RSPCRegF3 RSPCRegF4 RSPCRegF5 RSPCRegF6 RSPCRegF7 \
+	   RSPCRegF8 RSPCRegF9 RSPCRegFA RSPCRegFB RSPCRegFC RSPCRegFD RSPCRegFE RSPCRegFF" \
+	  "SPCRAM SPCROM spcextraram DSPMem dspWptr disablespcclr SPCSkipXtraROM \
+	   reg1read reg2read reg3read reg4read spc700read timeron \
+	   timincr0 timincr1 timincr2 timinl0 timinl1 timinl2 spcnumread" \
+	  353-537
+	$(CC) $(CFLAGS) difftest_spcio.c _spcio.o -no-pie -o difftest_spcio
+	./difftest_spcio
