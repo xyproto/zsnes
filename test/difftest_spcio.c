@@ -41,7 +41,10 @@ typedef void spcfn(void);
 #define AW(n) extern void asm_SPCReg##n(void);
 #define AR(n) extern void asm_RSPCReg##n(void);
 AW(F0)
-AW(F1) AW(F2) AW(F3) AW(F4) AW(F5) AW(F6) AW(F7)
+AW(F1)
+AW(F2)
+AW(F3)
+AW(F4) AW(F5) AW(F6) AW(F7)
     AW(F8) AW(F9) AW(FA) AW(FB) AW(FC) AW(FD) AW(FE) AW(FF)
         AR(F0) AR(F1) AR(F2) AR(F3) AR(F4) AR(F5) AR(F6) AR(F7)
             AR(F8) AR(F9) AR(FA) AR(FB) AR(FC) AR(FD) AR(FE) AR(FF)
