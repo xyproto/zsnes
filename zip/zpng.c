@@ -79,9 +79,8 @@ extern uint16_t resolutn;
 #ifndef NO_PNG
 
 #define PIXEL_SIZE 3
-int Png_Dump(const char* filename, unsigned short width, unsigned short height, unsigned char* image_data, bool usebgr)
+static int Png_Dump_FP(FILE* fp, unsigned short width, unsigned short height, unsigned char* image_data, bool usebgr)
 {
-    FILE* fp = fopen_dir(ZSnapPath, filename, "wb");
     if (fp) {
         // Try to create png write struct, fail if we cannot.
         png_structp png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, 0, 0, 0);
@@ -154,6 +153,11 @@ int Png_Dump(const char* filename, unsigned short width, unsigned short height, 
     return (-1);
 }
 
+int Png_Dump(const char* filename, unsigned short width, unsigned short height, unsigned char* image_data, bool usebgr)
+{
+    return Png_Dump_FP(fopen_dir(ZSnapPath, filename, "wb"), width, height, image_data, usebgr);
+}
+
 void Grab_PNG_Data(void)
 {
     char* filename = generate_image_filename("png");
@@ -175,6 +179,24 @@ void Grab_PNG_Data(void)
             free(DBits);
         }
         free(filename);
+    }
+}
+
+// Debug: write current vidbuffer as a full-resolution PNG to an absolute path.
+void Grab_PNG_Data_Path(const char* path)
+{
+    unsigned char* DBits = (unsigned char*)malloc(SNAP_HEIGHT * SNAP_WIDTH * PIXEL_SIZE);
+    if (DBits) {
+        unsigned int y = SNAP_HEIGHT, x;
+        while (y--) {
+            for (x = SNAP_WIDTH; x--;) {
+                DBits[PIXEL_SIZE * (y * SNAP_WIDTH + x)] = (PIXEL & 0xF800) >> 8;
+                DBits[PIXEL_SIZE * (y * SNAP_WIDTH + x) + 1] = (PIXEL & 0x07E0) >> 3;
+                DBits[PIXEL_SIZE * (y * SNAP_WIDTH + x) + 2] = (PIXEL & 0x001F) << 3;
+            }
+        }
+        Png_Dump_FP(fopen(path, "wb"), SNAP_WIDTH, SNAP_HEIGHT, DBits, false);
+        free(DBits);
     }
 }
 

@@ -1,4 +1,6 @@
+#include <stdlib.h>
 #include <string.h>
+#include <strings.h>
 
 #include "asm_call.h"
 #include "c_init.h"
@@ -271,6 +273,76 @@ static void PlayerDeviceFix(u4* const device)
     *device = d;
 }
 
+// Debug: scripted player-1 input, driven by the DEBUG_INPUT_SCRIPT env var.
+// Format is a comma-separated list of BUTTON,MS pairs, e.g. "A,200,B,200"
+// (hold A for 200ms, then hold B for 200ms). Buttons are case-insensitive:
+// A B X Y L R START SELECT UP DOWN LEFT RIGHT. Timing is frame-deterministic
+// (converted to NTSC 60fps frames), so it replays identically regardless of
+// host speed. Meant for headless reproduction (see ASCII_SCREENSHOT_EVERY_FIVE).
+static u4 DebugInputButtonMask(const char* name, size_t len)
+{
+    static const struct {
+        const char* n;
+        u4 mask;
+    } tbl[] = {
+        { "b", 0x80000000 }, { "y", 0x40000000 }, { "select", 0x20000000 },
+        { "start", 0x10000000 }, { "up", 0x08000000 }, { "down", 0x04000000 },
+        { "left", 0x02000000 }, { "right", 0x01000000 }, { "a", 0x00800000 },
+        { "x", 0x00400000 }, { "l", 0x00200000 }, { "r", 0x00100000 }
+    };
+    for (size_t i = 0; i < sizeof(tbl) / sizeof(tbl[0]); i++)
+        if (strlen(tbl[i].n) == len && !strncasecmp(tbl[i].n, name, len))
+            return tbl[i].mask;
+    return 0;
+}
+
+// Returns the scripted player-1 button mask for the current frame, or 0.
+static u4 DebugInputScript(void)
+{
+    static struct {
+        u4 mask;
+        u4 frames;
+    } steps[1024];
+    static u4 nsteps = 0;
+    static u4 step = 0, left = 0;
+    static int inited = 0;
+
+    if (!inited) {
+        inited = 1;
+        const char* s = getenv("DEBUG_INPUT_SCRIPT");
+        while (s && *s && nsteps < 1024) {
+            const char* tok = s;
+            while (*s && *s != ',')
+                s++;
+            u4 mask = DebugInputButtonMask(tok, (size_t)(s - tok));
+            if (*s == ',')
+                s++;
+            u4 ms = 0;
+            while (*s >= '0' && *s <= '9')
+                ms = ms * 10 + (u4)(*s++ - '0');
+            if (*s == ',')
+                s++;
+            u4 frames = (ms * 60 + 500) / 1000;
+            if (frames == 0)
+                frames = 1;
+            steps[nsteps].mask = mask;
+            steps[nsteps].frames = frames;
+            nsteps++;
+        }
+        if (nsteps) {
+            left = steps[0].frames;
+            printf("DEBUG_INPUT_SCRIPT: %u step(s) loaded\n", nsteps);
+        }
+    }
+
+    if (step >= nsteps)
+        return 0;
+    u4 mask = steps[step].mask;
+    if (--left == 0 && ++step < nsteps)
+        left = steps[step].frames;
+    return mask;
+}
+
 // Reads from Keyboard, etc.
 void ReadInputDevice(void)
 {
@@ -483,6 +555,11 @@ void ReadInputDevice(void)
         if (device2 == 0)
             JoyBOrig = JoyDOrig;
     }
+
+    // Debug scripted input (DEBUG_INPUT_SCRIPT) overrides player-1 buttons.
+    u4 scripted = DebugInputScript();
+    if (scripted)
+        JoyAOrig = (JoyAOrig & ~0xFFF00000u) | scripted | 0x00008000;
 
     // Netplay lockstep is applied after local device mapping so each peer gets
     // one local pad and one synchronized remote pad.

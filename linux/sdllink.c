@@ -1584,6 +1584,53 @@ void UpdateVFrame(void)
         }
     }
 
+    // Debug: PNG_SCREENSHOT_EVERY_N=<n> writes a full-resolution PNG
+    // /tmp/zsnes_<frame>.png every N emulated frames (filmstrip for headless
+    // debugging, e.g. driving DEBUG_INPUT_SCRIPT to reproduce a bug).
+    {
+        static int png_checked = 0;
+        static int png_every = 0;
+        static unsigned int png_frame = 0;
+        if (!png_checked) {
+            const char* e = getenv("PNG_SCREENSHOT_EVERY_N");
+            if (e && atoi(e) > 0)
+                png_every = atoi(e);
+            png_checked = 1;
+        }
+        if (png_every) {
+            if (png_frame % (unsigned)png_every == 0) {
+                char path[64];
+                snprintf(path, sizeof(path), "/tmp/zsnes_%06u.png", png_frame);
+                Grab_PNG_Data_Path(path);
+            }
+            png_frame++;
+        }
+    }
+
+    // Debug: PPU_STATE_LOG=1 appends per-frame PPU brightness/blank/layer state
+    // to /tmp/zsnes_ppu.txt (correlate with the PNG filmstrip to explain a black
+    // screen: force-blank set? brightness 0? no layers enabled?).
+    {
+        extern uint8_t vidbright, forceblnk;
+        extern uint16_t scrnon;
+        static int ppu_checked = 0, ppu_log = 0;
+        static unsigned int ppu_frame = 0;
+        static FILE* ppu_fp = NULL;
+        if (!ppu_checked) {
+            const char* e = getenv("PPU_STATE_LOG");
+            ppu_log = (e && *e == '1');
+            if (ppu_log)
+                ppu_fp = fopen("/tmp/zsnes_ppu.txt", "wb");
+            ppu_checked = 1;
+        }
+        if (ppu_log && ppu_fp) {
+            fprintf(ppu_fp, "%u bright=%u blank=%02x scrnon=%04x\n",
+                ppu_frame, vidbright, forceblnk, scrnon);
+            fflush(ppu_fp);
+        }
+        ppu_frame++;
+    }
+
     if (SNESRumble && !MultiTap) {
         DoRumble();
     } else {

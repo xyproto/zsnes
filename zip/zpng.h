@@ -3,6 +3,7 @@
 
 #ifndef NO_PNG
 void Grab_PNG_Data(void);
+void Grab_PNG_Data_Path(const char* path);
 #endif
 void Grab_BMP_Data(void);
 void Grab_ASCII_Data_Path(const char* path);
