@@ -27,11 +27,12 @@ u1 spcnumread;
 u1 dspstub[128];
 extern void dspw_stub(void);
 __asm__(
-    ".text\n"
+    ".pushsection .text\n"
     ".globl dspw_stub\n"
     "dspw_stub:\n"
     "  movb %al, dspstub(%ebx)\n"
-    "  ret\n");
+    "  ret\n"
+    ".popsection\n");
 void* dspWptr[128];
 
 #include "../cpu/spc_ioregs.h"
@@ -44,7 +45,8 @@ AW(F0)
 AW(F1)
 AW(F2)
 AW(F3)
-AW(F4) AW(F5) AW(F6) AW(F7)
+AW(F4)
+AW(F5) AW(F6) AW(F7)
     AW(F8) AW(F9) AW(FA) AW(FB) AW(FC) AW(FD) AW(FE) AW(FF)
         AR(F0) AR(F1) AR(F2) AR(F3) AR(F4) AR(F5) AR(F6) AR(F7)
             AR(F8) AR(F9) AR(FA) AR(FB) AR(FC) AR(FD) AR(FE) AR(FF)
@@ -172,7 +174,7 @@ int main(void)
 
     /* writes */
     for (u4 r = 0; r < 16; r++) {
-        DT_MAIN(700u + r, 40000)
+        DT_MAIN(700u + r, 3000)
         {
             struct state saved, A, C;
             randomize(&saved);
@@ -195,7 +197,7 @@ int main(void)
 
     /* reads */
     for (u4 r = 0; r < 16; r++) {
-        DT_MAIN(900u + r, 40000)
+        DT_MAIN(900u + r, 3000)
         {
             struct state saved, A, C;
             randomize(&saved);

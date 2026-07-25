@@ -107,7 +107,7 @@ run: all
 
 clean:
 	rm -f $(BIN) $(NETPLAY) $(ST10) $(ST11) $(OBC1) $(MSU1) $(DSP2) $(SAI) $(SA1) $(SPC7110) $(VCACHE) $(SPRITES) $(C4) $(MODE7)
-	rm -f _*.o _*.asm _*.inc
+	rm -f difftest_spcio _*.o _*.asm _*.inc
 
 # Port-time differential testing (difftest.h + mkdifftest.sh) proves a C port
 # bit-identical to the original assembly. It is transient by design: the oracle
