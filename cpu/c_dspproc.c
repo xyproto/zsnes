@@ -565,41 +565,6 @@ void InitSPC(void)
     spcRamDP = SPCRAM;
     spcX = 0;
 
-    // initialize all the SPC write registers
-    spcWptr[0x00] = SPCRegF0;
-    spcWptr[0x01] = SPCRegF1;
-    spcWptr[0x02] = SPCRegF2;
-    spcWptr[0x03] = SPCRegF3;
-    spcWptr[0x04] = SPCRegF4;
-    spcWptr[0x05] = SPCRegF5;
-    spcWptr[0x06] = SPCRegF6;
-    spcWptr[0x07] = SPCRegF7;
-    spcWptr[0x08] = SPCRegF8;
-    spcWptr[0x09] = SPCRegF9;
-    spcWptr[0x0A] = SPCRegFA;
-    spcWptr[0x0B] = SPCRegFB;
-    spcWptr[0x0C] = SPCRegFC;
-    spcWptr[0x0D] = SPCRegFD;
-    spcWptr[0x0E] = SPCRegFE;
-    spcWptr[0x0F] = SPCRegFF;
-
-    spcRptr[0x00] = RSPCRegF0;
-    spcRptr[0x01] = RSPCRegF1;
-    spcRptr[0x02] = RSPCRegF2;
-    spcRptr[0x03] = RSPCRegF3;
-    spcRptr[0x04] = RSPCRegF4;
-    spcRptr[0x05] = RSPCRegF5;
-    spcRptr[0x06] = RSPCRegF6;
-    spcRptr[0x07] = RSPCRegF7;
-    spcRptr[0x08] = RSPCRegF8;
-    spcRptr[0x09] = RSPCRegF9;
-    spcRptr[0x0A] = RSPCRegFA;
-    spcRptr[0x0B] = RSPCRegFB;
-    spcRptr[0x0C] = RSPCRegFC;
-    spcRptr[0x0D] = RSPCRegFD;
-    spcRptr[0x0E] = RSPCRegFE;
-    spcRptr[0x0F] = RSPCRegFF;
-
     dspRptr[0x00] = RDSPReg00;
     dspRptr[0x01] = RDSPReg01;
     dspRptr[0x02] = RDSPReg02;

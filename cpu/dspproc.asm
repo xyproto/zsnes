@@ -161,11 +161,6 @@ ALIGN32
 
 %include "cpu/firtable.inc"
 
-SECTION .bss
-
-NEWSYM spcWptr,  resd 16     ; SPC Write pointers (point to their own functions)
-NEWSYM spcRptr,  resd 16     ; SPC Read pointers (point to their own functions)
-
 SECTION .data
 NEWSYM dspPAdj,        dd 0
 NEWSYM NumBRRconv,     dd 0

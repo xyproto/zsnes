@@ -3,40 +3,6 @@
 
 #include "../types.h"
 
-extern void SPCRegF0();
-extern void SPCRegF1();
-extern void SPCRegF2();
-extern void SPCRegF3();
-extern void SPCRegF4();
-extern void SPCRegF5();
-extern void SPCRegF6();
-extern void SPCRegF7();
-extern void SPCRegF8();
-extern void SPCRegF9();
-extern void SPCRegFA();
-extern void SPCRegFB();
-extern void SPCRegFC();
-extern void SPCRegFD();
-extern void SPCRegFE();
-extern void SPCRegFF();
-
-extern void RSPCRegF0();
-extern void RSPCRegF1();
-extern void RSPCRegF2();
-extern void RSPCRegF3();
-extern void RSPCRegF4();
-extern void RSPCRegF5();
-extern void RSPCRegF6();
-extern void RSPCRegF7();
-extern void RSPCRegF8();
-extern void RSPCRegF9();
-extern void RSPCRegFA();
-extern void RSPCRegFB();
-extern void RSPCRegFC();
-extern void RSPCRegFD();
-extern void RSPCRegFE();
-extern void RSPCRegFF();
-
 extern void Invalidopcode();
 extern void Op00();
 extern void Op01();
