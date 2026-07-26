@@ -126,6 +126,13 @@ EXTSYM SpcOp10,SpcOp30,SpcOp50,SpcOp70,SpcOp90,SpcOpB0,SpcOpD0,SpcOpF0
 EXTSYM SpcOp2F,SpcOp01,SpcOp11,SpcOp21,SpcOp31,SpcOp41,SpcOp51,SpcOp61
 EXTSYM SpcOp71,SpcOp81,SpcOp91,SpcOpA1,SpcOpB1,SpcOpC1,SpcOpD1,SpcOpE1
 EXTSYM SpcOpF1
+EXTSYM SpcOp04,SpcOp14,SpcOp05,SpcOp15,SpcOp06,SpcOp16,SpcOp07,SpcOp17
+EXTSYM SpcOp08,SpcOp24,SpcOp34,SpcOp25,SpcOp35,SpcOp26,SpcOp36,SpcOp27
+EXTSYM SpcOp37,SpcOp28,SpcOp44,SpcOp54,SpcOp45,SpcOp55,SpcOp46,SpcOp56
+EXTSYM SpcOp47,SpcOp57,SpcOp48,SpcOp64,SpcOp74,SpcOp65,SpcOp75,SpcOp66
+EXTSYM SpcOp76,SpcOp67,SpcOp77,SpcOp68,SpcOpE4,SpcOpF4,SpcOpE5,SpcOpF5
+EXTSYM SpcOpE6,SpcOpF6,SpcOpE7,SpcOpF7,SpcOpE8,SpcOp20,SpcOp40,SpcOp60
+EXTSYM SpcOp80,SpcOpA0,SpcOpC0,SpcOpE0,SpcOpED,SpcOpBD
 EXTSYM spc700read,curexecstate,tableadc
 
 %include "cpu/regsw.mac"
@@ -567,40 +574,28 @@ NEWSYM Op2F     ; BRA rel    branch always            ...
 ;************************************************
 ;  CLRP           20    1     2   clear direct page flag    ..0.....
 NEWSYM Op20     ; CLRP Clear direct page flag
-    and byte[spcP],11011111b
-    mov dword[spcRamDP],SPCRAM
-    ret
+    spccop SpcOp20
 ;  SETP           40    1     2   set dorect page flag    ..1..0..
 NEWSYM Op40     ; SETP Set Direct Page Flag  (Also clear interupt flag?)
-    or byte[spcP],00100000b
-    and byte[spcP],11111011b
-    mov dword[spcRamDP],SPCRAM
-    add dword[spcRamDP],100h
-    ret
+    spccop SpcOp40
 ;  CLRC           60    1     2   clear carry flag        .......0
 NEWSYM Op60     ; CLRC Clear carry flag
-    and byte[spcP],11111110b
-    ret
+    spccop SpcOp60
 ;  SETC           80    1     2   set carry flag        .......1
 NEWSYM Op80     ; SETC Set carry flag
-    or byte[spcP],00000001b
-    ret
+    spccop SpcOp80
 ;  EI             A0    1     3  set interrup enable flag   .....1..
 NEWSYM OpA0     ; EI set interrupt flag
-    or byte[spcP],00000100b
-    ret
+    spccop SpcOpA0
 ;  DI             C0    1     3  clear interrup enable flag .....0..
 NEWSYM OpC0     ; DI clear interrupt flag
-    and byte[spcP],11111011b
-    ret
+    spccop SpcOpC0
 ;  CLRV           E0    1     2   clear V and H         .0..0...
 NEWSYM OpE0     ; CLRV clear V and H
-    and byte[spcP],10110111b
-    ret
+    spccop SpcOpE0
 ;  NOTC           ED    1     3   complement carry flag     .......C
 NEWSYM OpED     ; NOTC       complement carry flag     .......C
-    xor byte[spcP],00000001b
-    ret
+    spccop SpcOpED
 
 ;************************************************
 ; TCALL instructions (Verified)
@@ -722,129 +717,89 @@ NEWSYM OpF3     ; BBC direct page bit 7
 ; OR A,instructions
 ;************************************************
 NEWSYM Op04     ; OR A,dp   A <- A OR (dp)    N.....Z.
-    SPCaddr_DP
-    SPC_OR_A
+    spccop SpcOp04
 NEWSYM Op14     ; OR A,dp+X    A <- A OR (dp+X)     N.....Z.
-    SPCaddr_DP_X
-    SPC_OR_A
+    spccop SpcOp14
 NEWSYM Op05     ; OR A,labs   A <- A OR (abs)     N.....Z.
-    SPCaddr_LABS
-    SPC_OR_A
+    spccop SpcOp05
 NEWSYM Op15     ; OR A,labs+x  A <- A OR (abs+X)    N.....Z.
-    SPCaddr_LABS_X
-    SPC_OR_A
+    spccop SpcOp15
 NEWSYM Op06     ; OR A,(X)     A <- A OR (X)      N.....Z.
-    SPCaddr__X_
-    SPC_OR_A
+    spccop SpcOp06
 NEWSYM Op16     ; OR A,labs+Y  A <- A OR (abs+Y)    N......Z.
-    SPCaddr_LABS_Y
-    SPC_OR_A
+    spccop SpcOp16
 NEWSYM Op07     ; OR A,(dp+X)  A <- A OR ((dp+X+1)(dp+X))  N......Z.
-    SPCaddr_bDP_Xb
-    SPC_OR_A
+    spccop SpcOp07
 NEWSYM Op17     ; OR A,(dp)+Y  A <- A OR ((dp+1)(dp)+Y)   N......Z.
-    SPCaddr_bDPb_Y
-    SPC_OR_A
+    spccop SpcOp17
 NEWSYM Op08     ; OR A,#inm    A <- A OR inm        N......Z.
-    mov al,[ebp]
-    inc ebp
-    SPC_OR_A
+    spccop SpcOp08
 
 ;************************************************
 ; AND A, instructions
 ;************************************************
 NEWSYM Op24     ; AND A,dp     A <- A AND (dp)    N.....Z.
-    SPCaddr_DP
-    SPC_AND_A
+    spccop SpcOp24
 NEWSYM Op34     ; AND A,dp+x   A <- A AND (dp+X)    N.....Z.
-    SPCaddr_DP_X
-    SPC_AND_A
+    spccop SpcOp34
 NEWSYM Op25     ; AND A,labs   A <- A AND (abs)     N.....Z.
-    SPCaddr_LABS
-    SPC_AND_A
+    spccop SpcOp25
 NEWSYM Op35     ; AND A,labs+X A <- A AND (abs+X)   N.....Z.
-    SPCaddr_LABS_X
-    SPC_AND_A
+    spccop SpcOp35
 NEWSYM Op26     ; AND A,(X)    A <- A AND (X)     N......Z.
-    SPCaddr__X_
-    SPC_AND_A
+    spccop SpcOp26
 NEWSYM Op36     ; AND A,labs+Y A <- A AND (abs+Y)   N......Z.
-    SPCaddr_LABS_Y
-    SPC_AND_A
+    spccop SpcOp36
 NEWSYM Op27     ; AND A,(dp+X) A <- A AND ((dp+X+1)(dp+X)) N......Z.
-    SPCaddr_bDP_Xb
-    SPC_AND_A
+    spccop SpcOp27
 NEWSYM Op37     ; AND A,(dp)+Y A <- A AND ((dp+1)(dp)+Y)  N......Z.
-    SPCaddr_bDPb_Y
-    SPC_AND_A
+    spccop SpcOp37
 NEWSYM Op28     ; AND A,#inm   A <- A AND inm         N......Z.
-    mov al,[ebp]
-    inc ebp
-    SPC_AND_A
+    spccop SpcOp28
 
 ;************************************************
 ; EOR A, instructions
 ;************************************************
 NEWSYM Op44     ; EOR A,dp     A <- A EOR (dp)    N.....Z.
-    SPCaddr_DP
-    SPC_EOR_A
+    spccop SpcOp44
 NEWSYM Op54     ; EOR A,dp+x   A <- A EOR (dp+X)    N.....Z.
-    SPCaddr_DP_X
-    SPC_EOR_A
+    spccop SpcOp54
 NEWSYM Op45     ; EOR A,labs   A <- A EOR (abs)     N.....Z.
-    SPCaddr_LABS
-    SPC_EOR_A
+    spccop SpcOp45
 NEWSYM Op55     ; EOR A,labs+X A <- A EOR (abs+X)   N.....Z.
-    SPCaddr_LABS_X
-    SPC_EOR_A
+    spccop SpcOp55
 NEWSYM Op46     ; EOR A,(X)    A <- A EOR (X)     N......Z.
-    SPCaddr__X_
-    SPC_EOR_A
+    spccop SpcOp46
 NEWSYM Op56     ; EOR A,labs+Y A <- A EOR (abs+Y)   N......Z.
-    SPCaddr_LABS_Y
-    SPC_EOR_A
+    spccop SpcOp56
 NEWSYM Op47     ; EOR A,(dp+X) A <- A EOR ((dp+X+1)(dp+X)) N......Z.
-    SPCaddr_bDP_Xb
-    SPC_EOR_A
+    spccop SpcOp47
 NEWSYM Op57     ; EOR A,(dp)+Y A <- A EOR ((dp+1)(dp)+Y)  N......Z.
-    SPCaddr_bDPb_Y
-    SPC_EOR_A
+    spccop SpcOp57
 NEWSYM Op48     ; EOR A,#inm   A <- A EOR inm         N......Z.
-    mov al,[ebp]
-    inc ebp
-    SPC_EOR_A
+    spccop SpcOp48
 
 ;************************************************
 ; CMP A, instructions
 ;************************************************
 NEWSYM Op64     ; CMP A,dp     A-(dp)           N.....ZC
-    SPCaddr_DP
-    SPC_CMP_A
+    spccop SpcOp64
 NEWSYM Op74     ; CMP A,dp+x   A-(dp+X)         N.....ZC
-    SPCaddr_DP_X
-    SPC_CMP_A
+    spccop SpcOp74
 NEWSYM Op65     ; CMP A,labs   A-(abs)          N.....ZC
-    SPCaddr_LABS
-    SPC_CMP_A
+    spccop SpcOp65
 NEWSYM Op75     ; CMP A,labs+X A-(abs+X)        N.....ZC
-    SPCaddr_LABS_X
-    SPC_CMP_A
+    spccop SpcOp75
 NEWSYM Op66     ; CMP A,(X)    A-(X)            N......ZC
-    SPCaddr__X_
-    SPC_CMP_A
+    spccop SpcOp66
 NEWSYM Op76     ; CMP A,labs+Y A-(abs+Y)        N......ZC
-    SPCaddr_LABS_Y
-    SPC_CMP_A
+    spccop SpcOp76
 NEWSYM Op67     ; CMP A,(dp+X) A-((dp+X+1)(dp+X))    N......ZC
-    SPCaddr_bDP_Xb
-    SPC_CMP_A
+    spccop SpcOp67
 NEWSYM Op77     ; CMP A,(dp)+Y A-((dp+1)(dp)+Y)      N......ZC
-    SPCaddr_bDPb_Y
-    SPC_CMP_A
+    spccop SpcOp77
 NEWSYM Op68     ; CMP A,#inm   A-inm             N......ZC
-    mov al,[ebp]
-    inc ebp
-    SPC_CMP_A
+    spccop SpcOp68
 
 ;************************************************
 ; ADC A, instructions
@@ -914,33 +869,23 @@ NEWSYM OpA8     ; SBC A,#inm   A <- A-inm-!C         NV..H..ZC
 ; MOV A, instructions
 ;************************************************
 NEWSYM OpE4     ; MOV A,dp     A <- (dp)        N......Z
-    SPCaddr_DP
-    SPC_MOV_A
+    spccop SpcOpE4
 NEWSYM OpF4     ; MOV A,dp+x   A <- (dp+X)        N......Z
-    SPCaddr_DP_X
-    SPC_MOV_A
+    spccop SpcOpF4
 NEWSYM OpE5     ; MOV A,labs   A <- (abs)         N......Z
-    SPCaddr_LABS
-    SPC_MOV_A
+    spccop SpcOpE5
 NEWSYM OpF5     ; MOV A,labs+X A <- (abs+X)       N......Z
-    SPCaddr_LABS_X
-    SPC_MOV_A
+    spccop SpcOpF5
 NEWSYM OpE6     ; MOV A,(X)    A <- (X)         N......Z
-    SPCaddr__X_
-    SPC_MOV_A
+    spccop SpcOpE6
 NEWSYM OpF6     ; MOV A,labs+Y A <- (abs+Y)       N......Z
-    SPCaddr_LABS_Y
-    SPC_MOV_A
+    spccop SpcOpF6
 NEWSYM OpE7     ; MOV A,(dp+X) A <- ((dp+X+1)(dp+X))     N......Z
-    SPCaddr_bDP_Xb
-    SPC_MOV_A
+    spccop SpcOpE7
 NEWSYM OpF7     ; MOV A,(dp)+Y A <- ((dp+1)(dp)+Y)     N......Z
-    SPCaddr_bDPb_Y
-    SPC_MOV_A
+    spccop SpcOpF7
 NEWSYM OpE8     ;  MOV A,#inm  A <- inm            N......Z
-    mov al,[ebp]
-    inc ebp
-    SPC_MOV_A
+    spccop SpcOpE8
 
 ;************************************************
 ; DP,#imm instructions
@@ -1390,9 +1335,7 @@ NEWSYM Op9D     ; MOV X,SP     X <- SP            N......Z
     ret
 
 NEWSYM OpBD     ; MOV SP,X     SP <- X             ........
-    mov al,[spcX]
-    mov [spcS],al
-    ret
+    spccop SpcOpBD
 
 NEWSYM OpDD     ; MOV A,Y    A <- Y             N......Z
     mov al,[spcY]

@@ -171,4 +171,145 @@ u1* SpcOpD1(u1* const pc) { return spc_tcall(pc, 4); }
 u1* SpcOpE1(u1* const pc) { return spc_tcall(pc, 2); }
 u1* SpcOpF1(u1* const pc) { return spc_tcall(pc, 0); }
 
+/*
+ * Addressing modes (cpu/spcaddr.inc). Each fetches the operand byte and
+ * advances the PC past its operand bytes.
+ */
+typedef struct {
+    u1 val;
+    u1* pc;
+} spcaddr;
+
+static inline spcaddr spc_a_imm(u1* const pc) /* #imm */
+{
+    return (spcaddr) { *pc, pc + 1 };
+}
+static inline spcaddr spc_a_dp(u1* const pc) /* dp */
+{
+    return (spcaddr) { spc_read(spcRamDP + *pc), pc + 1 };
+}
+static inline spcaddr spc_a_dp_x(u1* const pc) /* dp+X */
+{
+    return (spcaddr) { spc_read(spcRamDP + (u1)(*pc + spcX)), pc + 1 };
+}
+static inline spcaddr spc_a_abs(u1* const pc) /* !abs */
+{
+    return (spcaddr) { spc_read(SPCRAM + (pc[0] | (u2)pc[1] << 8)), pc + 2 };
+}
+static inline spcaddr spc_a_abs_x(u1* const pc) /* !abs+X */
+{
+    return (spcaddr) { spc_read(SPCRAM + (u2)((pc[0] | (u2)pc[1] << 8) + spcX)), pc + 2 };
+}
+static inline spcaddr spc_a_abs_y(u1* const pc) /* !abs+Y */
+{
+    return (spcaddr) { spc_read(SPCRAM + (u2)((pc[0] | (u2)pc[1] << 8) + spcY)), pc + 2 };
+}
+static inline spcaddr spc_a_ind_x(u1* const pc) /* (X) */
+{
+    return (spcaddr) { spc_read(spcRamDP + spcX), pc };
+}
+static inline spcaddr spc_a_dp_x_ind(u1* const pc) /* [dp+X] */
+{
+    u1 const* const ptr = spcRamDP + (u1)(*pc + spcX);
+    return (spcaddr) { spc_read(SPCRAM + (ptr[0] | (u2)ptr[1] << 8)), pc + 1 };
+}
+static inline spcaddr spc_a_dp_ind_y(u1* const pc) /* [dp]+Y */
+{
+    u1 const* const ptr = spcRamDP + *pc;
+    return (spcaddr) { spc_read(SPCRAM + (u2)((ptr[0] | (u2)ptr[1] << 8) + spcY)), pc + 1 };
+}
+
+/*
+ * Operations on A (cpu/spcdef.inc). spcNZ carries both N (its sign bit) and
+ * Z (whether it is zero), so the logical ops just store the result there.
+ */
+static inline void spc_or_a(u1 const m) { spcNZ = spcA |= m; }
+static inline void spc_and_a(u1 const m) { spcNZ = spcA &= m; }
+static inline void spc_eor_a(u1 const m) { spcNZ = spcA ^= m; }
+static inline void spc_mov_a(u1 const m) { spcNZ = spcA = m; }
+
+/* CMP leaves N/Z from the 8-bit difference and C from the *inverted* borrow
+ * (the asm's `cmp` + `cmc`), and does not touch A. */
+static inline void spc_cmp_a(u1 const m)
+{
+    u1 const r = (u1)(spcA - m);
+    spcNZ = r & 0x80 ? 0x80 : r == 0 ? 0 : 1;
+    if (spcA >= m)
+        spcP |= 0x01;
+    else
+        spcP &= 0xFE;
+}
+
+#define SPC_ALU(hex, mode, op)                    \
+    u1* SpcOp##hex(u1* const pc)                  \
+    {                                             \
+                                           \
+        spcaddr const a = mode(pc);               \
+        op(a.val);                                \
+        return a.pc;                              \
+    }
+
+SPC_ALU(04, spc_a_dp, spc_or_a)
+SPC_ALU(14, spc_a_dp_x, spc_or_a)
+SPC_ALU(05, spc_a_abs, spc_or_a)
+SPC_ALU(15, spc_a_abs_x, spc_or_a)
+SPC_ALU(06, spc_a_ind_x, spc_or_a)
+SPC_ALU(16, spc_a_abs_y, spc_or_a)
+SPC_ALU(07, spc_a_dp_x_ind, spc_or_a)
+SPC_ALU(17, spc_a_dp_ind_y, spc_or_a)
+SPC_ALU(08, spc_a_imm, spc_or_a)
+
+SPC_ALU(24, spc_a_dp, spc_and_a)
+SPC_ALU(34, spc_a_dp_x, spc_and_a)
+SPC_ALU(25, spc_a_abs, spc_and_a)
+SPC_ALU(35, spc_a_abs_x, spc_and_a)
+SPC_ALU(26, spc_a_ind_x, spc_and_a)
+SPC_ALU(36, spc_a_abs_y, spc_and_a)
+SPC_ALU(27, spc_a_dp_x_ind, spc_and_a)
+SPC_ALU(37, spc_a_dp_ind_y, spc_and_a)
+SPC_ALU(28, spc_a_imm, spc_and_a)
+
+SPC_ALU(44, spc_a_dp, spc_eor_a)
+SPC_ALU(54, spc_a_dp_x, spc_eor_a)
+SPC_ALU(45, spc_a_abs, spc_eor_a)
+SPC_ALU(55, spc_a_abs_x, spc_eor_a)
+SPC_ALU(46, spc_a_ind_x, spc_eor_a)
+SPC_ALU(56, spc_a_abs_y, spc_eor_a)
+SPC_ALU(47, spc_a_dp_x_ind, spc_eor_a)
+SPC_ALU(57, spc_a_dp_ind_y, spc_eor_a)
+SPC_ALU(48, spc_a_imm, spc_eor_a)
+
+SPC_ALU(64, spc_a_dp, spc_cmp_a)
+SPC_ALU(74, spc_a_dp_x, spc_cmp_a)
+SPC_ALU(65, spc_a_abs, spc_cmp_a)
+SPC_ALU(75, spc_a_abs_x, spc_cmp_a)
+SPC_ALU(66, spc_a_ind_x, spc_cmp_a)
+SPC_ALU(76, spc_a_abs_y, spc_cmp_a)
+SPC_ALU(67, spc_a_dp_x_ind, spc_cmp_a)
+SPC_ALU(77, spc_a_dp_ind_y, spc_cmp_a)
+SPC_ALU(68, spc_a_imm, spc_cmp_a)
+
+SPC_ALU(E4, spc_a_dp, spc_mov_a)
+SPC_ALU(F4, spc_a_dp_x, spc_mov_a)
+SPC_ALU(E5, spc_a_abs, spc_mov_a)
+SPC_ALU(F5, spc_a_abs_x, spc_mov_a)
+SPC_ALU(E6, spc_a_ind_x, spc_mov_a)
+SPC_ALU(F6, spc_a_abs_y, spc_mov_a)
+SPC_ALU(E7, spc_a_dp_x_ind, spc_mov_a)
+SPC_ALU(F7, spc_a_dp_ind_y, spc_mov_a)
+SPC_ALU(E8, spc_a_imm, spc_mov_a)
+
+#undef SPC_ALU
+
+/* Flag setters. CLRP/SETP also move the direct-page base. */
+u1* SpcOp20(u1* const pc) { spcP &= 0xDF; spcRamDP = SPCRAM; return pc; }        /* CLRP */
+u1* SpcOp40(u1* const pc) { spcP = spcP & 0xFB | 0x20; spcRamDP = SPCRAM + 0x100; return pc; } /* SETP */
+u1* SpcOp60(u1* const pc) { spcP &= 0xFE; return pc; }                           /* CLRC */
+u1* SpcOp80(u1* const pc) { spcP |= 0x01; return pc; }                           /* SETC */
+u1* SpcOpA0(u1* const pc) { spcP |= 0x04; return pc; }                           /* EI   */
+u1* SpcOpC0(u1* const pc) { spcP &= 0xFB; return pc; }                           /* DI   */
+u1* SpcOpE0(u1* const pc) { spcP &= 0xB7; return pc; }                           /* CLRV */
+u1* SpcOpED(u1* const pc) { spcP ^= 0x01; return pc; }                           /* NOTC */
+u1* SpcOpBD(u1* const pc) { spcS = spcS & 0xFFFFFF00 | spcX; return pc; }        /* MOV SP,X */
+
 #endif /* SPC_OPS_H */
