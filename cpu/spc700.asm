@@ -133,6 +133,23 @@ EXTSYM SpcOp47,SpcOp57,SpcOp48,SpcOp64,SpcOp74,SpcOp65,SpcOp75,SpcOp66
 EXTSYM SpcOp76,SpcOp67,SpcOp77,SpcOp68,SpcOpE4,SpcOpF4,SpcOpE5,SpcOpF5
 EXTSYM SpcOpE6,SpcOpF6,SpcOpE7,SpcOpF7,SpcOpE8,SpcOp20,SpcOp40,SpcOp60
 EXTSYM SpcOp80,SpcOpA0,SpcOpC0,SpcOpE0,SpcOpED,SpcOpBD
+EXTSYM SpcOp84,SpcOp94,SpcOp85,SpcOp95,SpcOp86,SpcOp96,SpcOp87,SpcOp97
+EXTSYM SpcOp88,SpcOpA4,SpcOpB4,SpcOpA5,SpcOpB5,SpcOpA6,SpcOpB6,SpcOpA7
+EXTSYM SpcOpB7,SpcOpA8,SpcOp18,SpcOp38,SpcOp58,SpcOp98,SpcOpB8,SpcOp09
+EXTSYM SpcOp29,SpcOp49,SpcOp89,SpcOpA9,SpcOp19,SpcOp39,SpcOp59,SpcOp99
+EXTSYM SpcOpB9,SpcOp78,SpcOp69,SpcOp79,SpcOpFA,SpcOpC4,SpcOpD4,SpcOpC5
+EXTSYM SpcOpD5,SpcOpD6,SpcOpC6,SpcOpD8,SpcOpD9,SpcOpC9,SpcOpCB,SpcOpDB
+EXTSYM SpcOpCC,SpcOpC7,SpcOpD7,SpcOpF8,SpcOpF9,SpcOpE9,SpcOpEB,SpcOpFB
+EXTSYM SpcOpEC,SpcOpDD,SpcOpFD,SpcOpAF,SpcOpBF,SpcOpFE,SpcOp9F,SpcOpEF
+EXTSYM SpcOpFF,SpcOp0F
+EXTSYM SpcOp5D,SpcOp7D,SpcOp9D,SpcOp8D,SpcOpCD,SpcOp9C,SpcOpBC,SpcOpDC
+EXTSYM SpcOpFC,SpcOp1D,SpcOp3D,SpcOp8F,SpcOpC8,SpcOpAD,SpcOp3E,SpcOp7E
+EXTSYM SpcOp1E,SpcOp5E,SpcOp8B,SpcOpAB,SpcOp9B,SpcOpBB,SpcOp8C,SpcOpAC
+EXTSYM SpcOp0B,SpcOp4B,SpcOp1B,SpcOp5B,SpcOp0C,SpcOp4C,SpcOp1C,SpcOp5C
+EXTSYM SpcOp0E,SpcOp4E,SpcOp2D,SpcOp4D,SpcOp6D,SpcOpAE,SpcOpCE,SpcOpEE
+EXTSYM SpcOp0D,SpcOp5F,SpcOp1F,SpcOp3F,SpcOp4F,SpcOp6F,SpcOp7F,SpcOp2E
+EXTSYM SpcOpDE,SpcOp6E,SpcOpCF
+EXTSYM SpcOp1A,SpcOp3A,SpcOp5A,SpcOp7A,SpcOp9A,SpcOpBA,SpcOpDA,SpcOp8E
 EXTSYM spc700read,curexecstate,tableadc
 
 %include "cpu/regsw.mac"
@@ -534,17 +551,11 @@ SECTION .text
 NEWSYM Op00     ; NOP
     spccop SpcOp00
 NEWSYM OpEF     ; SLEEP      standby SLEEP mode    .........
-    dec ebp
-    ret
+    spccop SpcOpEF
 NEWSYM OpFF     ; STOP       standby STOP mode     .........
-    inc dword[spc700read]
-    dec ebp
-    ret
+    spccop SpcOpFF
 NEWSYM Op9F     ; XCN A     A(7-4) <-> A(3-0)     N......Z.
-    ror byte[spcA],4
-    mov al,[spcA]
-    mov [spcNZ],al
-    ret
+    spccop SpcOp9F
 
 ;************************************************
 ; Branch Stuff
@@ -805,65 +816,45 @@ NEWSYM Op68     ; CMP A,#inm   A-inm             N......ZC
 ; ADC A, instructions
 ;************************************************
 NEWSYM Op84     ; ADC A,dp     A <- A+(dp)+C      NV..H.ZC
-    SPCaddr_DP
-    SPC_ADC_A
+    spccop SpcOp84
 NEWSYM Op94     ; ADC A,dp+x   A <- A+(dp+X)+C    NV..H.ZC
-    SPCaddr_DP_X
-    SPC_ADC_A
+    spccop SpcOp94
 NEWSYM Op85     ; ADC A,labs   A <- A+(abs)+C     NV..H.ZC
-    SPCaddr_LABS
-    SPC_ADC_A
+    spccop SpcOp85
 NEWSYM Op95     ; ADC A,labs+X A <- A+(abs+X)+C     NV..H.ZC
-    SPCaddr_LABS_X
-    SPC_ADC_A
+    spccop SpcOp95
 NEWSYM Op86     ; ADC A,(X)    A <- A+(X)+C       NV..H..ZC
-    SPCaddr__X_
-    SPC_ADC_A
+    spccop SpcOp86
 NEWSYM Op96     ; ADC A,labs+Y A <- A+(abs+Y)+C     NV..H..ZC
-    SPCaddr_LABS_Y
-    SPC_ADC_A
+    spccop SpcOp96
 NEWSYM Op87     ; ADC A,(dp+X) A <- A+((dp+X+1)(dp+X)) NV..H..ZC
-    SPCaddr_bDP_Xb
-    SPC_ADC_A
+    spccop SpcOp87
 NEWSYM Op97     ; ADC A,(dp)+Y A <- A+((dp+1)(dp)+Y)   NV..H..ZC
-    SPCaddr_bDPb_Y
-    SPC_ADC_A
+    spccop SpcOp97
 NEWSYM Op88     ; ADC A,#inm   A <- A+inm+C        NV..H..ZC
-    mov al,[ebp]
-    inc ebp
-    SPC_ADC_A
+    spccop SpcOp88
 
 ;************************************************
 ; SBC A, instructions
 ;************************************************
 NEWSYM OpA4     ; SBC A,dp     A <- A-(dp)-!C     NV..H.ZC
-    SPCaddr_DP
-    SPC_SBC_A
+    spccop SpcOpA4
 NEWSYM OpB4     ; SBC A,dp+x   A <- A-(dp+X)-!C     NV..H.ZC
-    SPCaddr_DP_X
-    SPC_SBC_A
+    spccop SpcOpB4
 NEWSYM OpA5     ; SBC A,labs   A <- A-(abs)-!C    NV..H.ZC
-    SPCaddr_LABS
-    SPC_SBC_A
+    spccop SpcOpA5
 NEWSYM OpB5     ; SBC A,labs+x A <- A-(abs+X)-!C    NV..H.ZC
-    SPCaddr_LABS_X
-    SPC_SBC_A
+    spccop SpcOpB5
 NEWSYM OpA6     ; SBC A,(X)    A <- A-(X)-!C      NV..H..ZC
-    SPCaddr__X_
-    SPC_SBC_A
+    spccop SpcOpA6
 NEWSYM OpB6     ; SBC A,labs+Y A <- A-(abs+Y)-!C    NV..H..ZC
-    SPCaddr_LABS_Y
-    SPC_SBC_A
+    spccop SpcOpB6
 NEWSYM OpA7     ; SBC A,(dp+X) A <- A-((dp+X+1)(dp+X))-!C NV..H..ZC
-    SPCaddr_bDP_Xb
-    SPC_SBC_A
+    spccop SpcOpA7
 NEWSYM OpB7     ; SBC A,(dp)+Y A <- A-((dp+1)(dp)+Y)-!C   NV..H..ZC
-    SPCaddr_bDPb_Y
-    SPC_SBC_A
+    spccop SpcOpB7
 NEWSYM OpA8     ; SBC A,#inm   A <- A-inm-!C         NV..H..ZC
-    mov al,[ebp]
-    inc ebp
-    SPC_SBC_A
+    spccop SpcOpA8
 
 ;************************************************
 ; MOV A, instructions
@@ -900,56 +891,22 @@ NEWSYM OpE8     ;  MOV A,#inm  A <- inm            N......Z
 %endmacro
 
 NEWSYM OpB8     ; SBC dp,#inm  (dp) <- (dp)-inm-!C      NV..H..ZC
-    spcgetdp_imm ; bl<-[ebp+1], ah<-[ebp], ebx+[spcRamDP],Readbyte,ebp+2
-    mov cl,[spcP]
-    xor cl,1
-    shr cl,1
-    sbb al,ah
-    cmc
-    SPCSetFlagnvhzcnoret
-    WriteByte
-    ret
+    spccop SpcOpB8
 
 NEWSYM Op98     ; ADC dp,#inm  (dp) <- (dp)+inm+C       NV..H..ZC
-    spcgetdp_imm ; bl<-[ebp+1], ah<-[ebp], ebx+[spcRamDP],Readbyte,ebp+2
-    mov cl,[spcP]
-    shr cl,1
-    adc al,ah
-    SPCSetFlagnvhzcnoret
-    WriteByte
-    ret
+    spccop SpcOp98
 
 NEWSYM Op78     ; CMP dp,#inm  (dp)-inm            N......ZC
-    mov bl,[ebp+1]
-    mov ah,[ebp]
-    add ebx,[spcRamDP]
-    ReadByte
-    add ebp,2
-    cmp al,ah
-    cmc
-    SPCSetFlagnzcnoret
-    ret
+    spccop SpcOp78
 
 NEWSYM Op58    ; EOR dp,#inm  (dp) <- (dp) EOR inm      N......Z.
-    spcgetdp_imm ; bl<-[ebp+1], ah<-[ebp], ebx+[spcRamDP],Readbyte,ebp+2
-    xor al,ah
-    mov [spcNZ], al
-    WriteByte
-    ret
+    spccop SpcOp58
 
 NEWSYM Op38     ; AND dp,#inm  (dp) <- (dp) AND inm      N......Z.
-    spcgetdp_imm ; bl<-[ebp+1], ah<-[ebp], ebx+[spcRamDP],Readbyte,ebp+2
-    and al,ah
-    mov [spcNZ], al
-    WriteByte
-    ret
+    spccop SpcOp38
 
 NEWSYM Op18     ; OR dp,#inm   (dp) <- (dp) OR inm       N......Z.
-    spcgetdp_imm ; bl<-[ebp+1], ah<-[ebp], ebx+[spcRamDP],Readbyte,ebp+2
-    or al,ah
-    mov [spcNZ],al
-    WriteByte
-    ret
+    spccop SpcOp18
 
 ;************************************************
 ; DP(D),DP(S) instructions
@@ -973,73 +930,25 @@ NEWSYM Op18     ; OR dp,#inm   (dp) <- (dp) OR inm       N......Z.
 %endmacro
 
 NEWSYM Op09     ; OR dp(d),dp(s)  (dp(d))<-(dp(d)) OR (dp(s))  N......Z.
-    spcaddrDPbDb_DPbSb Op09b:
-    or al,ah
-    mov [spcNZ], al
-    WriteByte
-    xor ecx,ecx
-    ret
+    spccop SpcOp09
 
 NEWSYM Op29     ; AND dp(d),dp(s) (dp(d))<-(dp(d)) AND (dp(s)) N......Z.
-    spcaddrDPbDb_DPbSb Op29b:
-    and al,ah
-    mov [spcNZ], al
-    WriteByte
-    xor ecx,ecx
-    ret
+    spccop SpcOp29
 
 NEWSYM Op49     ; EOR dp(d),dp(s) (dp(d))<-(dp(d)) EOR (dp(s)) N......Z.
-    spcaddrDPbDb_DPbSb Op49b:
-    xor al,ah
-    mov [spcNZ], al
-    WriteByte
-    xor ecx,ecx
-    ret
+    spccop SpcOp49
 
 NEWSYM Op69     ; CMP dp(d),dp(s) (dp(d))-(dp(s))       N......ZC
-    spcaddrDPbDb_DPbSb Op69b:
-    cmp al,ah
-    cmc
-    SPCSetFlagnzcnoret
-    xor ecx,ecx
-    ret
+    spccop SpcOp69
 
 NEWSYM Op89     ; ADC dp(d),dp(s) (dp(d))<-(dp(d))+(dp(s))+C  NV..H..ZC
-    spcaddrDPbDb_DPbSb Op89b
-    mov cl,[spcP]
-    shr cl,1
-    adc al,ah
-    SPCSetFlagnvhzcnoret
-    WriteByte
-    xor ecx,ecx
-    ret
+    spccop SpcOp89
 
 NEWSYM OpA9     ; SBC dp(d),dp(s) (dp(d))<-(dp(d))-(dp(s))-!C NV..H..ZC
-    spcaddrDPbDb_DPbSb OpA9b
-    mov cl,[spcP]
-    xor cl,1
-    shr cl,1
-    sbb al,ah
-    cmc
-    SPCSetFlagnvhzcnoret
-    WriteByte
-    xor ecx,ecx
-    ret
+    spccop SpcOpA9
 
 NEWSYM OpFA     ; MOV dp(d),dp(s) (dp(d)) <- (dp(s))      ........
-    xor ecx,ecx
-    mov bl,[ebp+1]
-    mov cl,[ebp]
-    add ebx,[spcRamDP]
-    add ecx,[spcRamDP]
-    add ebp,2
-    push ebx
-    mov ebx,ecx
-    ReadByte
-    pop ebx
-    WriteByte
-    xor ecx,ecx
-    ret
+    spccop SpcOpFA
 
 ;************************************************
 ; (X),(Y) instructions
@@ -1057,315 +966,125 @@ NEWSYM OpFA     ; MOV dp(d),dp(s) (dp(d)) <- (dp(s))      ........
 %endmacro
 
 NEWSYM Op19     ; OR (X),(Y)   (X) <- (X) OR (Y)        N......Z.
-    spcaddrDPbXb_bYb Op19b:
-    or al, ah
-    mov [spcNZ],al
-    WriteByte
-    ret
+    spccop SpcOp19
 
 NEWSYM Op39     ; AND (X),(Y)  (X) <- (X) AND (Y)       N......Z.
-    spcaddrDPbXb_bYb Op39b:
-    and al, ah
-    mov [spcNZ],al
-    WriteByte
-    ret
+    spccop SpcOp39
 
 
 NEWSYM Op59     ; EOR (X),(Y)  (X) <- (X) EOR (Y)       N......Z.
-    spcaddrDPbXb_bYb Op59b:
-    xor al, ah
-    mov [spcNZ],al
-    WriteByte
-    ret
+    spccop SpcOp59
 
 NEWSYM Op79     ; CMP (X),(Y)  (X)-(Y)             N......ZC
-    spcaddrDPbXb_bYb Op79b:
-    cmp al, ah
-    cmc
-    SPCSetFlagnzc
+    spccop SpcOp79
 
 NEWSYM Op99     ; ADC (X),(Y)  (X) <- (X)+(Y)+C        NV..H..ZC
-    spcaddrDPbXb_bYb Op99b:
-    mov cl,[spcP]
-    shr cl,1
-    adc al,ah
-    SPCSetFlagnvhzcnoret
-    WriteByte
-    ret
+    spccop SpcOp99
 
 NEWSYM OpB9     ; SBC (X),(Y)  (X) <- (X)-(Y)-!C       NV..H..ZC
-    spcaddrDPbXb_bYb OpB9b:
-    mov cl,[spcP]
-    xor cl,1
-    shr cl,1
-    sbb al,ah
-    cmc
-    SPCSetFlagnvhzcnoret
-    WriteByte
-    ret
+    spccop SpcOpB9
 
 ;************************************************
 ; MOV ,A instructions (Verified)
 ;************************************************
 
 NEWSYM OpC4     ; MOV dp,A     A -> (dp)        ........
-    mov bl,[ebp]
-    mov al, [spcA]
-    add ebx,[spcRamDP]
-    inc ebp
-    WriteByte
-    ret
+    spccop SpcOpC4
 
 NEWSYM OpD4     ; MOV dp+x,A   A -> (dp+X)        ........
-    mov bl,[ebp]
-    add bl,[spcX]
-    mov al, [spcA]
-    add ebx,[spcRamDP]
-    inc ebp
-    WriteByte
-    ret
+    spccop SpcOpD4
 
 NEWSYM OpC5     ; MOV labs,A   A -> (abs)         ........
-    mov bx,[ebp]
-    mov al, [spcA]
-    add ebp,2
-    add ebx,SPCRAM
-    WriteByte
-    ret
+    spccop SpcOpC5
 
 NEWSYM OpD5     ; MOV labs+X,A A -> (abs+X)       ........
-    mov bl,[spcX]
-    add bx,[ebp]
-    mov al, [spcA]
-    add ebp,2
-    add ebx,SPCRAM
-    WriteByte
-    ret
+    spccop SpcOpD5
 
 NEWSYM OpC6     ; MOV (X),A    A -> (X)         ........
-    mov bl,[spcX]
-    add ebx,[spcRamDP]
-    mov al, [spcA]
-    WriteByte
-    ret
+    spccop SpcOpC6
 
 NEWSYM OpD6     ; MOV labs+Y,A A -> (abs+Y)       ........
-    mov bl,[spcY]
-    mov al, [spcA]
-    add bx,[ebp]
-    add ebp,2
-    add ebx,SPCRAM
-    WriteByte
-    ret
+    spccop SpcOpD6
 
 NEWSYM OpC7     ; MOV (dp+X),A A -> ((dp+X+1)(dp+X))     ........
-    mov bl,[ebp]
-    add bl,[spcX]
-    xor eax,eax
-    add ebx,[spcRamDP]
-    inc ebp
-    mov ax, [ebx]
-    mov ebx,eax
-    add ebx,SPCRAM
-    mov al, [spcA]
-    WriteByte
-    ret
+    spccop SpcOpC7
 
 NEWSYM OpD7     ; MOV (dp)+Y,A A -> ((dp+1)(dp)+Y)     ........
-    mov bl,[ebp]
-    xor eax,eax
-    add ebx,[spcRamDP]
-    inc ebp
-    mov ax, [ebx]
-    add ax,[spcY]
-    mov ebx,eax
-    add ebx,SPCRAM
-    mov al, [spcA]
-    WriteByte
-    ret
+    spccop SpcOpD7
 
 ;************************************************
 ; MOV instructions (Verified)
 ;************************************************
 
 NEWSYM OpD8     ; MOV dp,X     X -> (dp)             ........
-    mov bl,[ebp]
-    mov al, [spcX]
-    add ebx,[spcRamDP]
-    inc ebp
-    WriteByte
-    ret
+    spccop SpcOpD8
 
 NEWSYM OpF8     ;  MOV X,dp    X <- (dp)             N......Z
-    mov bl,[ebp]
-    inc ebp
-    add ebx,[spcRamDP]
-    ReadByte
-    mov [spcX], al
-    mov [spcNZ],al
-    ret
+    spccop SpcOpF8
 
 NEWSYM OpC9     ; MOV labs,X   X -> (abs)            ........
-    mov bx,[ebp]
-    mov al, [spcX]
-    add ebp,2
-    add ebx,SPCRAM
-    WriteByte
-    ret
+    spccop SpcOpC9
 
 NEWSYM OpE9     ; MOV X,labs   X <- (abs)            N......Z
-    mov bx,[ebp]
-    add ebx,SPCRAM
-    ReadByte
-    add ebp,2
-    mov [spcX], al
-    mov [spcNZ],al
-    ret
+    spccop SpcOpE9
 
 NEWSYM OpD9     ; MOV dp+Y,X   X -> (dp+Y)           ........
-    mov bl,[ebp]
-    mov al, [spcX]
-    add bl,[spcY]
-    inc ebp
-    add ebx,[spcRamDP]
-    WriteByte
-    ret
+    spccop SpcOpD9
 
 NEWSYM OpF9     ; MOV X,dp+Y   X <- (dp+Y)           N......Z
-    mov bl,[ebp]
-    add bl,[spcY]
-    inc ebp
-    add ebx,[spcRamDP]
-    ReadByte
-    mov [spcX], al
-    mov [spcNZ],al
-    ret
+    spccop SpcOpF9
 
 NEWSYM OpCB     ; MOV dp,Y  Y -> (dp)             ........
-    mov bl,[ebp]
-    mov al, [spcY]
-    add ebx,[spcRamDP]
-    inc ebp
-    WriteByte
-    ret
+    spccop SpcOpCB
 
 NEWSYM OpEB     ; MOV Y,dp  Y <- (dp)             N......Z
-    mov bl,[ebp]
-    add ebx,[spcRamDP]
-    inc ebp
-    ReadByte
-    mov [spcY], al
-    mov [spcNZ],al
-    ret
+    spccop SpcOpEB
 
 NEWSYM OpDB     ; MOV dp+X,Y   X -> (dp+X)           ........
-    mov bl,[ebp]
-    add bl,[spcX]
-    mov al, [spcY]
-    add ebx,[spcRamDP]
-    inc ebp
-    WriteByte
-    ret
+    spccop SpcOpDB
 
 NEWSYM OpFB     ; MOV Y,dp+X   Y <- (dp+X)           N......Z
-    mov bl,[ebp]
-    add bl,[spcX]
-    inc ebp
-    add ebx,[spcRamDP]
-    ReadByte
-    mov [spcY], al
-    mov [spcNZ],al
-    ret
+    spccop SpcOpFB
 
 NEWSYM OpCC     ; MOV labs,Y   Y -> (abs)            ........
-    mov bx,[ebp]
-    mov al, [spcY]
-    add ebp,2
-    add ebx,SPCRAM
-    WriteByte
-    ret
+    spccop SpcOpCC
 
 NEWSYM OpEC     ; MOV Y,labs   Y <- (abs)            N......Z
-    mov bx,[ebp]
-    add ebx,SPCRAM
-    ReadByte
-    add ebp,2
-    mov [spcY],al
-    mov [spcNZ],al
-    ret
+    spccop SpcOpEC
 
 NEWSYM Op5D     ; MOV X,A    X <- A             N......Z
-    mov al,[spcA]
-    mov [spcX],al
-    mov [spcNZ],al
-    ret
+    spccop SpcOp5D
 
 NEWSYM Op7D     ; MOV A,X    A <- X             N......Z
-    mov al,[spcX]
-    mov [spcA],al
-    mov [spcNZ],al
-    ret
+    spccop SpcOp7D
 
 NEWSYM Op8D     ; MOV Y,#inm   Y <- inm            N......Z
-    mov bl,[ebp]
-    mov [spcY],bl
-    inc ebp
-    mov [spcNZ],bl
-    ret
+    spccop SpcOp8D
 
 NEWSYM OpCD     ; MOV X,#inm   X <- inm            N......Z
-    mov bl,[ebp]
-    mov [spcX],bl
-    inc ebp
-    mov [spcNZ],bl
-    ret
+    spccop SpcOpCD
 
 NEWSYM Op8F     ; MOV dp,#inm  (dp) <- inm           ........
-    mov bl,[ebp+1]
-    mov al,[ebp]
-    add ebx,[spcRamDP]
-    add ebp,2
-    WriteByte
-    ret
+    spccop SpcOp8F
 
 NEWSYM Op9D     ; MOV X,SP     X <- SP            N......Z
-    mov al,[spcS]
-    mov [spcX],al
-    mov [spcNZ],al
-    ret
+    spccop SpcOp9D
 
 NEWSYM OpBD     ; MOV SP,X     SP <- X             ........
     spccop SpcOpBD
 
 NEWSYM OpDD     ; MOV A,Y    A <- Y             N......Z
-    mov al,[spcY]
-    mov [spcA],al
-    mov [spcNZ],al
-    ret
+    spccop SpcOpDD
 
 
 NEWSYM OpFD     ; MOV Y,A    Y <- A             N......Z
-    mov al,[spcA]
-    mov [spcY],al
-    mov [spcNZ],al
-    ret
+    spccop SpcOpFD
 
 NEWSYM OpAF     ; MOV (X)+,A   A -> (X) with auto inc    ........
-    mov bl,[spcX]
-    add ebx,[spcRamDP]
-    mov al, [spcA]
-    inc byte[spcX]
-    WriteByte
-    ret
+    spccop SpcOpAF
 
 NEWSYM OpBF     ; MOV A,(X)+  A <- (X) with auto inc    N......Z
-    mov bl,[spcX]
-    add ebx,[spcRamDP]
-    ReadByte
-    inc byte[spcX]
-    mov [spcA],al
-    mov [spcNZ],al
-    ret
+    spccop SpcOpBF
 
 
 ;************************************************
@@ -1373,67 +1092,29 @@ NEWSYM OpBF     ; MOV A,(X)+  A <- (X) with auto inc    N......Z
 ;************************************************
 
 NEWSYM OpC8     ; CMP X,#inm   X-inm             N......ZC
-    mov bl,[ebp]
-    inc ebp
-    cmp [spcX],bl
-    cmc
-    SPCSetFlagnzc
+    spccop SpcOpC8
 
 NEWSYM OpAD     ; CMP Y,#inm   Y-inm             N......ZC
-    mov bl,[ebp]
-    inc ebp
-    cmp [spcY],bl
-    cmc
-    SPCSetFlagnzc
+    spccop SpcOpAD
 
 NEWSYM Op1E     ; CMP X,labs   X-(abs)             N......ZC
-    mov bx,[ebp]
-    add ebp,2
-    add ebx,SPCRAM
-    ReadByte
-    cmp byte[spcX], al
-    cmc
-    SPCSetFlagnzc
+    spccop SpcOp1E
 
 NEWSYM Op3E     ; CMP X,dp     X-(dp)            N......ZC
-    mov bl,[ebp]
-    add ebx,[spcRamDP]
-    inc ebp
-    ReadByte
-    cmp byte[spcX], al
-    cmc
-    SPCSetFlagnzc
+    spccop SpcOp3E
 
 NEWSYM Op5E     ; CMP Y,labs   Y-(abs)             N......ZC
-    mov bx,[ebp]
-    add ebx,SPCRAM
-    ReadByte
-    add ebp,2
-    cmp byte[spcY], al
-    cmc
-    SPCSetFlagnzc
+    spccop SpcOp5E
 
 NEWSYM Op7E     ; CMP Y,dp     Y-(dp)            N......ZC
-    mov bl,[ebp]
-    add ebx,[spcRamDP]
-    inc ebp
-    ReadByte
-    cmp byte[spcY], al
-    cmc
-    SPCSetFlagnzc
+    spccop SpcOp7E
 
 ;************************************************
 ; Word Instructions (Verified)
 ;************************************************
 
 NEWSYM Op1A     ; DECW dp   Decrement dp memory pair  N......Z.
-    mov bl,[ebp]
-    add ebx,[spcRamDP]
-    inc ebp
-    inc ebx
-    ReadByte2
-    mov ah,al
-    dec ebx
+    spccop SpcOp1A
 NEWSYM Op1AB
     ReadByte2
     dec ax
@@ -1459,13 +1140,7 @@ NEWSYM Op1Ab
     ret
 
 NEWSYM Op3A     ; INCW dp   Increment dp memory pair  N......Z.
-    mov bl,[ebp]
-    add ebx,[spcRamDP]
-    inc ebp
-    inc ebx
-    ReadByte2
-    mov ah,al
-    dec ebx
+    spccop SpcOp3A
 NEWSYM Op3AB
     ReadByte2
     inc ax
@@ -1493,13 +1168,7 @@ NEWSYM Op3Ab
 ; looks like there is the Carry flag checked in op5a..
 
 NEWSYM Op5A     ; CMPW YA,dp   YA - (dp+1)(dp)      N......ZC
-    mov bl,[ebp]
-    add ebx,[spcRamDP]
-    inc ebp
-    inc ebx
-    ReadByte2
-    mov ah,al
-    dec ebx
+    spccop SpcOp5A
 NEWSYM Op5AB
     ReadByte
     mov bl,[spcA]
@@ -1509,13 +1178,7 @@ NEWSYM Op5AB
     SPCSetFlagnzc
 
 NEWSYM Op7A     ; ADDW YA,dp   YA  <- YA + (dp+1)(dp)   NV..H..ZC
-    mov bl,[ebp]
-    add ebx,[spcRamDP]
-    inc ebp
-    inc ebx
-    ReadByte2
-    mov ah,al
-    dec ebx
+    spccop SpcOp7A
 NEWSYM Op7AB
     ReadByte
     mov bl,[spcA]
@@ -1526,13 +1189,7 @@ NEWSYM Op7AB
     SPCSetFlagnvhzc
 
 NEWSYM Op9A     ; SUBW YA,dp   YA  <- YA - (dp+1)(dp)   NV..H..ZC
-    mov bl,[ebp]
-    add ebx,[spcRamDP]
-    inc ebp
-    inc ebx
-    ReadByte2
-    mov ah,al
-    dec ebx
+    spccop SpcOp9A
 NEWSYM Op9AB
     ReadByte
     mov bl,[spcA]
@@ -1544,43 +1201,10 @@ NEWSYM Op9AB
     SPCSetFlagnvhzc
 
 NEWSYM OpBA     ; MOVW YA,dp   YA  - (dp+1)(dp)     N......Z.
-    mov bl,[ebp]
-    add ebx,[spcRamDP]
-    inc ebp
-    inc ebx
-    ReadByte2
-    mov ah,al
-    dec ebx
-NEWSYM OpBAb
-    ReadByte
-    mov [spcA],al
-    mov [spcY],ah
-    test ax,8000h
-    jnz .YesNeg
-    cmp ax,0000h
-    je .YesZero
-    mov byte[spcNZ],1
-    ret
-.YesNeg
-    mov byte[spcNZ],80h
-    ret
-.YesZero
-    mov byte[spcNZ],0
-    ret
+    spccop SpcOpBA
 
 NEWSYM OpDA     ; MOVW dp,YA   (dp+1)(dp) - YA       .........
-    mov bl,[ebp]
-    mov al,[spcA]
-    add ebx,[spcRamDP]
-    inc ebp
-    push ebx
-    WriteByte
-    pop ebx
-    inc ebx
-    mov al,[spcY]
-NEWSYM OpDAb
-    WriteByte
-    ret
+    spccop SpcOpDA
 
 ;************************************************
 ; mem.bit instructions (Verified)
@@ -1722,74 +1346,28 @@ NEWSYM OpEA     ; NOT1 mem.bit    complement (mem.bit)    .........
 ;************************************************
 
 NEWSYM Op0B     ; ASL dp    C << (dp)   <<0     N......ZC
-    mov bl,[ebp]
-    add ebx,[spcRamDP]
-    inc ebp
-    ReadByte2
-    shl al,1
-    SPCSetFlagnzcnoret
-    WriteByte
-    ret
+    spccop SpcOp0B
 
 NEWSYM Op4B     ; LSR dp    0 >> (dp)   <<C     N......ZC
-    mov bl,[ebp]
-    add ebx,[spcRamDP]
-    inc ebp
-    ReadByte2
-    shr al,1
-    SPCSetFlagnzcnoret
-    WriteByte
-    ret
+    spccop SpcOp4B
 
 NEWSYM Op1B     ; ASL dp+X  C << (dp+X) <<0     N......ZC
-    mov bl,[ebp]
-    add bl,[spcX]
-    inc ebp
-    add ebx,[spcRamDP]
-    ReadByte2
-    shl al,1
-    SPCSetFlagnzcnoret
-    WriteByte
-    ret
+    spccop SpcOp1B
 
 NEWSYM Op5B     ; LSR dp+X  0 >> (dp+X) <<C     N......ZC
-    mov bl,[ebp]
-    add bl,[spcX]
-    inc ebp
-    add ebx,[spcRamDP]
-    ReadByte2
-    shr al,1
-    SPCSetFlagnzcnoret
-    WriteByte
-    ret
+    spccop SpcOp5B
 
 NEWSYM Op0C     ; ASL labs  C << (abs)  <<0     N......ZC
-    mov bx,[ebp]
-    add ebx,SPCRAM
-    add ebp,2
-    ReadByte2
-    shl al,1
-    SPCSetFlagnzcnoret
-    WriteByte
-    ret
+    spccop SpcOp0C
 
 NEWSYM Op4C     ; LSR labs  0 >> (abs)  <<C     N......ZC
-    mov bx,[ebp]
-    add ebx,SPCRAM
-    add ebp,2
-    ReadByte2
-    shr al,1
-    SPCSetFlagnzcnoret
-    WriteByte
-    ret
+    spccop SpcOp4C
 
 NEWSYM Op1C     ; ASL A  C << A    <<0     N......ZC
-    shl byte[spcA],1
-    SPCSetFlagnzc
+    spccop SpcOp1C
 
 NEWSYM Op5C     ; LSR A  0 >> A    <<C     N......ZC
-    shr byte[spcA],1
-    SPCSetFlagnzc
+    spccop SpcOp5C
 
 %macro spcROLstuff 0
     rcl al,1
@@ -1984,266 +1562,91 @@ NEWSYM Op7Cb
 ;************************************************
 
 NEWSYM Op8B     ;  DEC dp   -- (dp)           N......Z.
-    mov bl,[ebp]
-    add ebx,[spcRamDP]
-    inc ebp
-    ReadByte2
-    dec al
-    mov [spcNZ], al
-    WriteByte
-    ret
+    spccop SpcOp8B
 
 NEWSYM OpAB     ; INC dp    ++ (dp)           N......Z.
-    mov bl,[ebp]
-    add ebx,[spcRamDP]
-    inc ebp
-    ReadByte2
-    inc al
-    mov [spcNZ], al
-    WriteByte
-    ret
+    spccop SpcOpAB
 
 NEWSYM Op9B     ;  DEC dp+X -- (dp+X)         N......Z.
-    mov bl,[ebp]
-    add bl,[spcX]
-    add ebx,[spcRamDP]
-    inc ebp
-    ReadByte2
-    dec al
-    mov [spcNZ], al
-    WriteByte
-    ret
+    spccop SpcOp9B
 
 NEWSYM OpBB     ; INC dp+X  ++ (dp+X)         N......Z.
-    mov bl,[ebp]
-    add bl,[spcX]
-    add ebx,[spcRamDP]
-    inc ebp
-    ReadByte2
-    inc al
-    mov [spcNZ], al
-    WriteByte
-    ret
+    spccop SpcOpBB
 
 NEWSYM Op8C     ; DEC labs  -- (abs)          N......Z.
-    mov bx,[ebp]
-    add ebx,SPCRAM
-    add ebp,2
-    ReadByte2
-    dec al
-    mov [spcNZ], al
-    WriteByte
-    ret
+    spccop SpcOp8C
 
 NEWSYM OpAC     ; INC labs  ++ (abs)          N......Z.
-    mov bx,[ebp]
-    add ebx,SPCRAM
-    add ebp,2
-    ReadByte2
-    inc al
-    mov [spcNZ], al
-    WriteByte
-    ret
+    spccop SpcOpAC
 
 NEWSYM Op9C     ; DEC A  -- A            N......Z.
-    dec byte[spcA]
-    mov al,[spcA]
-    mov [spcNZ],al
-    ret
+    spccop SpcOp9C
 
 NEWSYM OpBC     ; INC A  ++ A            N......Z.
-    inc byte[spcA]
-    mov al,[spcA]
-    mov [spcNZ],al
-    ret
+    spccop SpcOpBC
 
 NEWSYM OpDC     ; DEC Y  -- Y            N......Z.
-    dec byte[spcY]
-    mov al,[spcY]
-    mov [spcNZ],al
-    ret
+    spccop SpcOpDC
 
 NEWSYM OpFC     ; INC Y  ++ Y            N......Z.
-    inc byte[spcY]
-    mov al,[spcY]
-    mov [spcNZ],al
-    ret
+    spccop SpcOpFC
 
 NEWSYM Op1D     ; DEC X     -- X            N......Z.
-    dec byte[spcX]
-    mov al,[spcX]
-    mov [spcNZ],al
-    ret
+    spccop SpcOp1D
 
 NEWSYM Op3D     ; INC X     ++ X            N......Z.
-    inc byte[spcX]
-    mov al,[spcX]
-    mov [spcNZ],al
-    ret
+    spccop SpcOp3D
 
 ;************************************************
 ; PUSH/POP instructions (Verified)
 ;************************************************
 
 NEWSYM Op0D     ; PUSH PSW     push PSW to stack     .........
-    mov eax,[spcS]
-    mov bl,[spcP]
-    and bl,01111101b
-    test byte[spcNZ],80h
-    jnz .NegSet
-    cmp byte[spcNZ],0
-    je .ZeroSet
-    dec byte[spcS]
-    mov [SPCRAM+eax],bl
-    ret
-.NegSet
-    or bl,80h
-    dec byte[spcS]
-    mov [SPCRAM+eax],bl
-    ret
-.ZeroSet
-    or bl,02h
-    dec byte[spcS]
-    mov [SPCRAM+eax],bl
-    ret
+    spccop SpcOp0D
 
 NEWSYM Op2D     ; PUSH A     push A to stack       .........
-    mov eax,[spcS]
-    mov bl,[spcA]
-    dec byte[spcS]
-    mov [SPCRAM+eax],bl
-    ret
+    spccop SpcOp2D
 
 NEWSYM Op4D     ; PUSH X     push X to stack       .........
-    mov eax,[spcS]
-    mov bl,[spcX]
-    dec byte[spcS]
-    mov [SPCRAM+eax],bl
-    ret
+    spccop SpcOp4D
 
 NEWSYM Op6D     ; PUSH Y    push Y to stack       .........
-    mov eax,[spcS]
-    mov bl,[spcY]
-    dec byte[spcS]
-    mov [SPCRAM+eax],bl
-    ret
+    spccop SpcOp6D
 
 NEWSYM Op8E     ; POP PSW   pop PSW from stack     (Restored)
-    inc byte[spcS]
-    mov eax,[spcS]
-    mov byte[spcNZ],0
-    mov bl,[SPCRAM+eax]
-    mov [spcP],bl
-    test byte[spcP],2
-    jnz .ZeroYes
-    mov byte[spcNZ],1
-    test byte[spcP],80h
-    jz .NoNeg
-    or byte[spcNZ],80h
-.NoNeg
-.ZeroYes
-    mov dword[spcRamDP],SPCRAM
-    test byte[spcP],32
-    jnz .setpage1
-    ret
-.setpage1
-    add dword[spcRamDP],100h
-    ret
+    spccop SpcOp8E
 
 NEWSYM OpAE     ; POP A     pop A from stack      .........
-    inc byte[spcS]
-    mov eax,[spcS]
-    mov bl,[SPCRAM+eax]
-    mov [spcA],bl
-    ret
+    spccop SpcOpAE
 
 NEWSYM OpCE     ; POP X     pop X from stack      .........
-    inc byte[spcS]
-    mov eax,[spcS]
-    mov bl,[SPCRAM+eax]
-    mov [spcX],bl
-    ret
+    spccop SpcOpCE
 
 NEWSYM OpEE     ; POP Y     pop Y from stack      .........
-    inc byte[spcS]
-    mov eax,[spcS]
-    mov bl,[SPCRAM+eax]
-    mov [spcY],bl
-    ret
+    spccop SpcOpEE
 
 ;************************************************
 ; Test & set bits Instructions (Verified?)
 ;************************************************
 
 NEWSYM Op0E     ; TSET1 labs   test and set bits with A   N......Z.
-    mov bx,[ebp]
-    add ebx,SPCRAM
-    add ebp,2
-    ReadByte2
-    mov ah,al
-    and ah,[spcA]
-    mov [spcNZ],ah
-    or al,[spcA]
-    WriteByte
-    ret
+    spccop SpcOp0E
 
 NEWSYM Op4E     ; TCLR1     test and clear bits with A N......Z.
-    mov bx,[ebp]
-    add ebx,[spcRamDP]
-    add ebp,2
-    ReadByte2
-    mov ah,al
-    and ah,[spcA]
-    mov [spcNZ],ah
-    mov ah,[spcA]
-    not ah
-    and al,ah
-    WriteByte
-    ret
+    spccop SpcOp4E
 
 ;************************************************
 ; Compare/Decrement & Branch Instructions (Verified)
 ;************************************************
 
 NEWSYM Op2E     ; CBNE dp,rel  compare A with (dp) then BNE   ...
-    mov bl,[ebp]
-    add ebx,[spcRamDP]
-    ReadByte2
-    cmp byte[spcA], al
-    jne .Jump
-    add ebp,2
-    ret
-.Jump
-    movsx ebx,byte[ebp+1]
-    add ebp,ebx
-    add ebp,2
-    ret
+    spccop SpcOp2E
 
 NEWSYM OpDE     ; CBNE dp+X,rel   compare A with (dp+X) then BNE ...
-    mov bl,[ebp]
-    add bl,[spcX]
-    add ebx,[spcRamDP]
-    ReadByte2
-    cmp byte[spcA], al
-    jne .Jump
-    add ebp,2
-    ret
-.Jump
-    movsx ebx,byte[ebp+1]
-    add ebp,ebx
-    add ebp,2
-    ret
+    spccop SpcOpDE
 
 NEWSYM Op6E     ; DBNZ   decrement memory (dp) then JNZ ...
-    mov bl,[ebp]
-    add ebx,[spcRamDP]
-    ReadByte2
-    dec al
-    jnz .Jump
-    add ebp,2
-    WriteByte
-    ret
-.Jump
+    spccop SpcOp6E
 NEWSYM Op6Eb
     push ebx
     movsx ebx,byte[ebp+1]
@@ -2254,130 +1657,34 @@ NEWSYM Op6Eb
     ret
 
 NEWSYM OpFE     ; DBNZ Y,rel   decrement Y then JNZ         ...
-    dec byte[spcY]
-    jnz .Jump
-    inc ebp
-    ret
-.Jump
-    movsx ebx,byte[ebp]
-    add ebp,ebx
-    inc ebp
-    ret
+    spccop SpcOpFE
 
 ;************************************************
 ; Jump/Subroutine Instructions
 ;************************************************
 
 NEWSYM Op0F     ; BRK     software interrupt     ...1.0..
-    inc dword[spc700read]
-    dec ebp
-    ret
+    spccop SpcOp0F
 
 NEWSYM Op1F     ; JMP (labs+X)    PC <- (abs+X+1)(abs+X)       ...
-    mov bx,[ebp]
-    add bx,[spcX]
-    xor eax,eax
-    add ebp,2
-    mov ax,[SPCRAM+ebx]
-    mov ebp,SPCRAM
-    add ebp,eax
-    ret
+    spccop SpcOp1F
 
 NEWSYM Op3F     ; CALL labs    subroutine call        ........
-    ; calculate PC
-    mov ecx,ebp
-    add ecx,2
-    sub ecx,SPCRAM
-    mov eax,[spcS]
-    mov [SPCRAM+eax],ch
-    dec byte[spcS]
-    mov eax,[spcS]
-    mov [SPCRAM+eax],cl
-    dec byte[spcS]
-    ; set new PC
-    mov cx,[ebp]
-    add ecx,SPCRAM
-    mov ebp,ecx
-    xor ecx,ecx
-    ret
+    spccop SpcOp3F
 
 NEWSYM Op4F     ; PCALL upage  upage call           ........
-    ; calculate PC
-    mov ecx,ebp
-    inc ecx
-    sub ecx,SPCRAM
-    mov eax,[spcS]
-    mov [SPCRAM+eax],ch
-    dec byte[spcS]
-    mov eax,[spcS]
-    mov [SPCRAM+eax],cl
-    dec byte[spcS]
-    ; set new PC
-    xor ecx,ecx
-    mov cl,[ebp]
-    add ecx,SPCRAM
-    add ecx,0ff00h
-    mov ebp,ecx
-    xor ecx,ecx
-    ret
+    spccop SpcOp4F
 
 ; I'm not sure about this one and JMP labs+X...
 
 NEWSYM Op5F     ; JMP labs     jump to new location         ...
-    mov bx,[ebp]
-    add ebp,2
-    mov ebp,SPCRAM
-    add ebp,ebx
-    ret
+    spccop SpcOp5F
 
 NEWSYM Op6F     ; ret        ret from subroutine   ........
-    xor ecx,ecx
-    inc byte[spcS]
-    mov eax,[spcS]
-    mov cl,[SPCRAM+eax]
-    inc byte[spcS]
-    mov eax,[spcS]
-    mov ch,[SPCRAM+eax]
-    add ecx,SPCRAM
-    mov ebp,ecx
-    xor ecx,ecx
-    ret
+    spccop SpcOp6F
 
 NEWSYM Op7F     ; ret1       return from interrupt   (Restored)
-    dec ebp
-    ret
-    xor ecx,ecx
-    inc byte[spcS]
-    mov eax,[spcS]
-    mov cl,[SPCRAM+eax]
-    mov [spcP],cl
-    test byte[spcP],80h
-    jz .NoNeg
-    or byte[spcNZ],80h
-.NoNeg
-    test byte[spcP],2
-    jz .NoZero
-    mov byte[spcNZ],0
-    jmp .YesZero
-.NoZero
-    or byte[spcNZ],1
-.YesZero
-    inc byte[spcS]
-    mov eax,[spcS]
-    mov cl,[SPCRAM+eax]
-    inc byte[spcS]
-    mov eax,[spcS]
-    mov ch,[SPCRAM+eax]
-    add ecx,SPCRAM
-    mov ebp,ecx
-    ; set direct page
-    mov dword[spcRamDP],SPCRAM
-    test byte[spcP],32
-    jz .nodp
-    add dword[spcRamDP],100h
-.nodp
-    xor ecx,ecx
-    ret
+    spccop SpcOp7F
 
 ;************************************************
 ; Divide/Multiply Instructions
@@ -2417,24 +1724,7 @@ NEWSYM Over
    ret
 
 NEWSYM OpCF     ; MUL YA     YA(16 bits) <- Y * A    N......Z.
-    mov al,[spcA]
-    mov bl,[spcY]
-    mul bl
-    mov [spcA],al
-    mov [spcY],ah
-    ; ??? (Is the n flag set on YA or A?)
-    test ax,8000h
-    jnz .YesNeg
-    cmp ax,0000h
-    je .YesZero
-    mov byte[spcNZ],1
-    ret
-.YesNeg
-    mov byte[spcNZ],80h
-    ret
-.YesZero
-    mov byte[spcNZ],0
-    ret
+    spccop SpcOpCF
 
 ;************************************************
 ; Decimal Operations
