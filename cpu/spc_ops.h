@@ -973,4 +973,7 @@ static inline void spc_decadj(bool const sub)
 u1* SpcOpBE(u1* const pc) { spc_decadj(true); return pc; }  /* DAS */
 u1* SpcOpDF(u1* const pc) { spc_decadj(false); return pc; } /* DAA */
 
+/* Invalid opcodes park the PC on the opcode, like SLEEP. */
+u1* SpcOpInvalid(u1* const pc) { return pc - 1; }
+
 #endif /* SPC_OPS_H */

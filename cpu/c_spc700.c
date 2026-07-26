@@ -8,6 +8,8 @@
 
 #include "../types.h"
 #include "c_dsp.h" /* DSPWriteReg */
+#include "../endmem.h" /* tableadc */
+#include "../gblvars.h" /* cycpbl, curexecstate, timer2upd */
 #include "spc700.h" /* spcRamDP */
 
 /* SPCRAM is 0xFFC0 bytes of RAM immediately followed, in cpu/spc700.asm's data
@@ -20,6 +22,7 @@ extern u1 reg1read, reg2read, reg3read, reg4read;
 extern u4 spc700read;
 extern u1 timeron, timincr0, timincr1, timincr2, timinl0, timinl1, timinl2;
 extern u1 spcnumread;
+extern u1 timrcall;
 
 
 #include "spc_ioregs.h"
@@ -34,3 +37,56 @@ u1 SPCReadReg(u4 reg)
 }
 
 #include "spc_ops.h"
+
+/* Re-arm the SPC core after a timer tick (the `reenablespc` macro): once the
+ * budget has run away, zero it and, if the SPC was disabled, switch the 65816
+ * back to the table selected by its current flags. */
+static void reenablespc(u4 const edx, eop*** const pedi)
+{
+    if (cycpbl < 0x1000000) return;
+    cycpbl = 0;
+    if (curexecstate & 0x02) return;
+    curexecstate |= 0x02;
+    *pedi = tableadc[(u1)edx];
+}
+
+/* One scanline of SPC timer service. Timers 0 and 1 run at 8 kHz (every other
+ * call, tracked by timrcall); timer 2 runs at 64 kHz, i.e. four steps per call.
+ * Every 60th call the whole body runs twice. */
+void UpdateTimer(u4 const edx, eop*** const pedi)
+{
+    for (;;) {
+        timrcall ^= 0x01;
+        if (timrcall & 0x01) {
+            if (timeron & 1 && --timinl0 == 0) {
+                SPCRAM[0xFD]++;
+                timinl0 = timincr0;
+                if (SPCRAM[0xFD] == 1) {
+                    reenablespc(edx, pedi);
+                    cycpbl = 0;
+                }
+            }
+            if (timeron & 2 && --timinl1 == 0) {
+                SPCRAM[0xFE]++;
+                timinl1 = timincr1;
+                if (SPCRAM[0xFE] == 1) {
+                    reenablespc(edx, pedi);
+                    cycpbl = 0;
+                }
+            }
+        }
+        if (timeron & 4) {
+            for (u4 i = 0; i != 4; ++i) {
+                if (--timinl2 != 0) continue;
+                SPCRAM[0xFF]++;
+                timinl2 = timincr2;
+                if (SPCRAM[0xFF] == 1) {
+                    reenablespc(edx, pedi);
+                    cycpbl = 0;
+                }
+            }
+        }
+        if (++timer2upd != 60) break;
+        timer2upd = 0;
+    }
+}

@@ -102,11 +102,6 @@ section .note.GNU-stack noalloc noexec nowrite progbits
 	pop ecx
 %endmacro
 
-%macro ccallv 1+
-	push eax
-	ccall %1
-	pop eax
-%endmacro
 
 ; Body of an opcode handler that has been ported to C (cpu/spc_ops.h). ebp is
 ; the SPC program counter; the C function takes it and returns the updated one.
@@ -116,7 +111,7 @@ section .note.GNU-stack noalloc noexec nowrite progbits
     ret
 %endmacro
 
-EXTSYM DSPMem,cycpbl,SPCWriteReg,SPCReadReg
+EXTSYM DSPMem,cycpbl,SPCWriteReg,SPCReadReg,UpdateTimer,SpcOpInvalid
 EXTSYM SpcOp00,SpcOp02,SpcOp22,SpcOp42,SpcOp62,SpcOp82,SpcOpA2,SpcOpC2
 EXTSYM SpcOpE2,SpcOp12,SpcOp32,SpcOp52,SpcOp72,SpcOp92,SpcOpB2,SpcOpD2
 EXTSYM SpcOpF2,SpcOp03,SpcOp23,SpcOp43,SpcOp63,SpcOp83,SpcOpA3,SpcOpC3
@@ -156,8 +151,6 @@ EXTSYM SpcOp9E,SpcOpBE,SpcOpDF
 EXTSYM spc700read,curexecstate,tableadc
 
 %include "cpu/regsw.mac"
-%include "cpu/spcdef.inc"
-%include "cpu/spcaddr.inc"
 
 ; SPC 700 Emulation by _Demo_
 ; Version 2.0
@@ -253,76 +246,8 @@ NEWSYM SPCROM
 
 SECTION .text
 
-%macro WriteByte 0
-  cmp ebx,0ffh+SPCRAM
-  ja %%extramem
-  cmp ebx,0f0h+SPCRAM
-  jb %%normalmem
-  sub ebx,SPCRAM
-  ccallv SPCWriteReg,ebx,eax ; ah is live across this
-  jmp %%finished
-%%extramem
-  cmp ebx,0ffc0h+SPCRAM
-  jb %%normalmem
-  mov [spcextraram+ebx-0FFC0h-SPCRAM],al
-  test byte[SPCRAM+0F1h],80h
-  jnz %%finished
-;  push ecx
-;  mov cl,[DSPMem+06Ch]
-;  test cl,20h
-;  pop ecx
-;  jz .finished
-%%normalmem
-  mov [ebx],al
-%%finished
-%endmacro
 
-%macro ReadByte 0
-  cmp ebx,0f0h+SPCRAM
-  jb %%normalmem2
-  cmp ebx,0ffh+SPCRAM
-  ja %%normalmem
-  sub ebx,SPCRAM
-  push eax                  ; only al is returned; ah is live here
-  ccall SPCReadReg,ebx
-  mov [esp],al
-  pop eax
-  jmp %%finished
-%%normalmem
-;  cmp ebx,0ffc0h+SPCRAM
-;  jb .rnormalmem2
-;  test byte[DSPMem+6Ch],10h
-;  jz .rnormalmem2
-;  mov al,[spcextraram+ebx-0FFC0h-SPCRAM]
-;  jmp .rfinished
-%%normalmem2
-   mov al,[ebx]
-%%finished
-%endmacro
 
-%macro ReadByte2 0
-  cmp ebx,0f0h+SPCRAM
-  jb %%normalmem2
-  cmp ebx,0ffh+SPCRAM
-  ja %%normalmem
-  sub ebx,SPCRAM
-  push eax                  ; only al is returned; ah is live here
-  ccall SPCReadReg,ebx
-  mov [esp],al
-  pop eax
-  add ebx,SPCRAM
-  jmp %%finished
-%%normalmem
-;  cmp ebx,0ffc0h+SPCRAM
-;  jb .rnormalmem2
-;  test byte[DSPMem+6Ch],10h
-;  jz .rnormalmem2
-;  mov al,[spcextraram+ebx-0FFC0h-SPCRAM]
-;  jmp .rfinished
-%%normalmem2
-   mov al,[ebx]
-%%finished
-%endmacro
 
 SECTION .data
 NEWSYM timer2upd, dd 0
@@ -333,220 +258,19 @@ SECTION .text
 ; 2 8khz, 1 64khz
 
 NEWSYM updatetimer
-;    inc dword[timer2upd]
-;    cmp dword[timer2upd],400
-;    jne .nowrap
-;    mov dword[timer2upd],0
-;.nowrap
-;.again
-;    mov eax,dword[timer2upd]
-;    shr eax,6
-;    shl eax,6
-;    cmp eax,dword[timer2upd]
-;    je near .noin2d
-
-
-.another
-    xor byte[timrcall],01h
-    test byte[timrcall],01h
-    jz near .notimer
-    test byte[timeron],1
-    jz .noin0
-    dec byte[timinl0]
-    jnz .noin0
-    inc byte[SPCRAM+0FDh]
-    mov al,[timincr0]
-    mov [timinl0],al
-    cmp byte[SPCRAM+0FDh],1
-    jne .noin0
-    reenablespc
-    mov dword[cycpbl],0
-.noin0
-    test byte[timeron],2
-    jz .noin1
-    dec byte[timinl1]
-    jnz .noin1
-    inc byte[SPCRAM+0FEh]
-    mov al,[timincr1]
-    mov [timinl1],al
-    cmp byte[SPCRAM+0FEh],1
-    jne .noin1
-    reenablespc
-    mov dword[cycpbl],0
-.noin1
-.notimer
-    test byte[timeron],4
-    jz near .noin2d2
-    dec byte[timinl2]
-    jnz .noin2
-    inc byte[SPCRAM+0FFh]
-    mov al,[timincr2]
-    mov [timinl2],al
-    cmp byte[SPCRAM+0FFh],1
-    jne .noin2
-    reenablespc
-    mov dword[cycpbl],0
-.noin2
-    dec byte[timinl2]
-    jnz .noin2b
-    inc byte[SPCRAM+0FFh]
-    mov al,[timincr2]
-    mov [timinl2],al
-    cmp byte[SPCRAM+0FFh],1
-    jne .noin2b
-    reenablespc
-    mov dword[cycpbl],0
-.noin2b
-    dec byte[timinl2]
-    jnz .noin2c
-    inc byte[SPCRAM+0FFh]
-    mov al,[timincr2]
-    mov [timinl2],al
-    cmp byte[SPCRAM+0FFh],1
-    jne .noin2c
-    reenablespc
-    mov dword[cycpbl],0
-.noin2c
-    dec byte[timinl2]
-    jnz .noin2d
-    inc byte[SPCRAM+0FFh]
-    mov al,[timincr2]
-    mov [timinl2],al
-    cmp byte[SPCRAM+0FFh],1
-    jne .noin2d
-    reenablespc
-    mov dword[cycpbl],0
-.noin2d
-.noin2d2
-;    inc dword[timer2upd]
-;    cmp dword[timer2upd],31
-;    jne .nowrap
-;    mov dword[timer2upd],0
-;    jmp .again
-;.nowrap
-
-    inc dword[timer2upd]
-    cmp dword[timer2upd],60
-    jne .noanother
-    mov dword[timer2upd],0
-    jmp .another
-.noanother
-
+    push edi                  ; reenablespc may retarget the 65816 opcode table
+    mov eax, esp
+    ccall UpdateTimer, edx, eax
+    pop edi
     ret
-
 
 SECTION .data
 NEWSYM spcnumread, db 0
 SECTION .text
 
-%macro SPCSetFlagnzc 0
-  js .setsignflag
-  jz .setzeroflag
-  mov byte[spcNZ],1
-  jc .setcarryflag
-  and byte[spcP],0FEh
-  ret
-.setsignflag
-  mov byte[spcNZ],80h
-  jc .setcarryflag
-  and byte[spcP],0FEh
-  ret
-.setzeroflag
-  mov byte[spcNZ],0
-  jc .setcarryflag
-  and byte[spcP],0FEh
-  ret
-.setcarryflag
-  or byte[spcP],1
-  ret
-%endmacro
 
-%macro SPCSetFlagnzcnoret 0
-  js .setsignflag
-  jz .setzeroflag
-  mov byte[spcNZ],1
-  jc .setcarryflag
-  and byte[spcP],0FEh
-  jmp .skipflags
-.setsignflag
-  mov byte[spcNZ],80h
-  jc .setcarryflag
-  and byte[spcP],0FEh
-  jmp .skipflags
-.setzeroflag
-  mov byte[spcNZ],0
-  jc .setcarryflag
-  and byte[spcP],0FEh
-  jmp .skipflags
-.setcarryflag
-  or byte[spcP],1
-.skipflags
-%endmacro
 
-%macro SPCSetFlagnvhzc 0
-  lahf
-  js .setsignflag
-  jz .setzeroflag
-  mov byte[spcNZ],1
-  jo .setoverflowflag
-  and byte[spcP],0BFh
-  jmp .skipflags
-.setsignflag
-  mov byte[spcNZ],80h
-  jo .setoverflowflag
-  and byte[spcP],0BFh
-  jmp .skipflags
-.setzeroflag
-  mov byte[spcNZ],0
-  jo .setoverflowflag
-  and byte[spcP],0BFh
-  jmp .skipflags
-.setoverflowflag
-  or byte[spcP],40h
-.skipflags
-  and byte[spcP],0F6h
-  test ah,01h
-  jz .noCarry
-  or byte[spcP],1
-.noCarry
-  test ah,10h
-  jz .nohf
-  or byte[spcP],8
-.nohf
-  ret
-%endmacro
 
-%macro SPCSetFlagnvhzcnoret 0
-  lahf
-  js .setsignflag
-  jz .setzeroflag
-  mov byte[spcNZ],1
-  jo .setoverflowflag
-  and byte[spcP],0BFh
-  jmp .skipflags
-.setsignflag
-  mov byte[spcNZ],80h
-  jo .setoverflowflag
-  and byte[spcP],0BFh
-  jmp .skipflags
-.setzeroflag
-  mov byte[spcNZ],0
-  jo .setoverflowflag
-  and byte[spcP],0BFh
-  jmp .skipflags
-.setoverflowflag
-  or byte[spcP],40h
-.skipflags
-  and byte[spcP],0F6h
-  test ah,01h
-  jz .noCarry
-  or byte[spcP],1
-.noCarry
-  test ah,10h
-  jz .nohf
-  or byte[spcP],8
-.nohf
-%endmacro
 
 ;************************************************
 ; Misc Opcodes
@@ -885,13 +609,6 @@ NEWSYM OpE8     ;  MOV A,#inm  A <- inm            N......Z
 ; DP,#imm instructions
 ;************************************************
 
-%macro spcgetdp_imm 0
-    mov bl,[ebp+1]
-    mov ah,[ebp]
-    add ebx,[spcRamDP]
-    ReadByte2
-    add ebp,2
-%endmacro
 
 NEWSYM OpB8     ; SBC dp,#inm  (dp) <- (dp)-inm-!C      NV..H..ZC
     spccop SpcOpB8
@@ -914,23 +631,6 @@ NEWSYM Op18     ; OR dp,#inm   (dp) <- (dp) OR inm       N......Z.
 ;************************************************
 ; DP(D),DP(S) instructions
 ;************************************************
-%macro spcaddrDPbDb_DPbSb 1
-    xor ecx,ecx
-    mov bl,[ebp+1]
-    mov cl,[ebp]
-    add ebx,[spcRamDP]
-    add ebp,2
-    add ecx,[spcRamDP]
-    push ebx
-    ReadByte
-    mov ebx,ecx
-    mov cl,al
-%1
-    ReadByte
-    mov ah,al
-    mov al,cl
-    pop ebx
-%endmacro
 
 NEWSYM Op09     ; OR dp(d),dp(s)  (dp(d))<-(dp(d)) OR (dp(s))  N......Z.
     spccop SpcOp09
@@ -956,17 +656,6 @@ NEWSYM OpFA     ; MOV dp(d),dp(s) (dp(d)) <- (dp(s))      ........
 ;************************************************
 ; (X),(Y) instructions
 ;************************************************
-%macro spcaddrDPbXb_bYb 1
-    mov bl,[spcY]
-    add ebx,[spcRamDP]
-    ReadByte
-    xor ebx,ebx
-    mov ah,al
-    mov bl,[spcX]
-    add ebx,[spcRamDP]
-%1
-    ReadByte
-%endmacro
 
 NEWSYM Op19     ; OR (X),(Y)   (X) <- (X) OR (Y)        N......Z.
     spccop SpcOp19
@@ -1138,24 +827,6 @@ NEWSYM OpDA     ; MOVW dp,YA   (dp+1)(dp) - YA       .........
 ; mem.bit instructions (Verified)
 ;************************************************
 
-%macro spcaddrmembit 0
-    mov bx,[ebp]
-
-    mov cl,bh
-    add ebp,2
-    shr cl,5
-    and bx,1FFFh
-
-;    mov cl,bl
-;    add ebp,2
-;    shr bx,3
-;    and cl,00000111b
-
-    add ebx,SPCRAM
-    ReadByte
-    shr al,cl
-    and al,01h
-%endmacro
 
 NEWSYM Op0A     ; OR1 C,mem.bit   C <- C OR  (mem.bit)    ........C
     spccop SpcOp0A
@@ -1166,43 +837,8 @@ NEWSYM Op2A     ; OR1 C,/mem.bit  C <- C OR  !(mem.bit)     ........C
 NEWSYM Op4A     ; AND1 C,mem.bit  C <- C AND (mem.bit)    ........C
     spccop SpcOp4A
 
-    mov cl,bh
-    add ebp,2
-    shr cl,5
-    and bx,1FFFh
-
-;    mov cl,bl
-;    add ebp,2
-;    shr bx,3
-;    and cl,00000111b
-
-    add ebx,SPCRAM
-    ReadByte
-    shr al,cl
-    or al,0FEh
-    and [spcP],al
-    ret
-
 NEWSYM Op6A     ; AND1 C,/mem.bit C <- C AND !(mem.bit)     ........C
     spccop SpcOp6A
-
-    mov cl,bh
-    add ebp,2
-    shr cl,5
-    and bx,1FFFh
-
-;    mov cl,bl
-;    add ebp,2
-;    shr bx,3
-;    and cl,00000111b
-
-    add ebx,SPCRAM
-    ReadByte
-    shr al,cl
-    or al,0FEh
-    xor al,01h
-    and [spcP],al
-    ret
 
 NEWSYM Op8A     ; EOR1 C,mem.bit  C <- C EOR (mem.bit)    ........C
     spccop SpcOp8A
@@ -1213,50 +849,8 @@ NEWSYM OpAA     ; MOV1 C,mem.bit  C <- (mem.bit)
 NEWSYM OpCA     ; MOV1 mem.bit,C  C -> (mem.bit)        .........
     spccop SpcOpCA
 
-    mov cl,bh
-    mov ah,01h
-    shr cl,5
-    and bx,1FFFh
-
-;    mov cl,bl
-;    mov ah,01h
-;    and cl,00000111b
-;    shr bx,3
-
-    shl ah,cl
-    and al,01h
-    add ebp,2
-    shl al,cl
-    add ebx,SPCRAM
-    ; al = carry flag positioned in correct location, ah = 1 positioned
-    mov cl,al
-    xor ah,0FFh
-    ReadByte2
-    and al,ah
-    or al,cl
-    WriteByte
-    ret
-
 NEWSYM OpEA     ; NOT1 mem.bit    complement (mem.bit)    .........
     spccop SpcOpEA
-
-    mov cl,bh
-    mov ah,01h
-    shr cl,5
-    and bx,1FFFh
-
-;    mov cl,bl
-;    mov ah,01h
-;    and cl,00000111b
-;    shr bx,3
-
-    shl ah,cl
-    add ebp,2
-    add ebx,SPCRAM
-    ReadByte2
-    xor al,ah
-    WriteByte
-    ret
 
 ;************************************************
 ; Shift Instructions (Verified)
@@ -1286,29 +880,7 @@ NEWSYM Op1C     ; ASL A  C << A    <<0     N......ZC
 NEWSYM Op5C     ; LSR A  0 >> A    <<C     N......ZC
     spccop SpcOp5C
 
-%macro spcROLstuff 0
-    rcl al,1
-    jc .setcarryflag
-    and byte[spcP],0FEh
-    mov [spcNZ],al
-    jmp .skipflags
-.setcarryflag
-    or byte[spcP],01h
-    mov [spcNZ],al
-.skipflags
-%endmacro
 
-%macro spcRORstuff 0
-    rcr al,1
-    jc .setcarryflag
-    and byte[spcP],0FEh
-    mov [spcNZ],al
-    jmp .skipflags
-.setcarryflag
-    or byte[spcP],01h
-    mov [spcNZ],al
-.skipflags
-%endmacro
 
 NEWSYM Op2B     ; ROL dp    C << (dp)   <<C     N......ZC
     spccop SpcOp2B
@@ -1461,19 +1033,6 @@ NEWSYM Op7F     ; ret1       return from interrupt   (Restored)
 
 NEWSYM Op9E     ; DIV YA,X     Q:A B:Y <- YA / X     NV..H..Z.
     spccop SpcOp9E
-NEWSYM NoDiv
-   mov byte[spcA],0ffh
-   mov byte[spcY],0ffh
-   or byte[spcP],16
-   and byte[spcP],255-64
-   pop edx
-   ret
-NEWSYM Over
-   or byte[spcP],64
-   and byte[spcP],255-16
-   pop edx
-   mov [spcNZ],al
-   ret
 
 NEWSYM OpCF     ; MUL YA     YA(16 bits) <- Y * A    N......Z.
     spccop SpcOpCF
@@ -1487,5 +1046,4 @@ NEWSYM OpBE     ; DAS A     decimal adjust for sub  N......ZC
 NEWSYM OpDF     ; DAA A      decimal adjust for add  N......ZC
     spccop SpcOpDF
 NEWSYM Invalidopcode ; Invalid Opcode
-    dec ebp
-    ret
+    spccop SpcOpInvalid
