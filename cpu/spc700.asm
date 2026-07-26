@@ -108,7 +108,20 @@ section .note.GNU-stack noalloc noexec nowrite progbits
 	pop eax
 %endmacro
 
+; Body of an opcode handler that has been ported to C (cpu/spc_ops.h). ebp is
+; the SPC program counter; the C function takes it and returns the updated one.
+%macro spccop 1
+    ccall %1, ebp
+    mov ebp, eax
+    ret
+%endmacro
+
 EXTSYM DSPMem,cycpbl,SPCWriteReg,SPCReadReg
+EXTSYM SpcOp00,SpcOp02,SpcOp22,SpcOp42,SpcOp62,SpcOp82,SpcOpA2,SpcOpC2
+EXTSYM SpcOpE2,SpcOp12,SpcOp32,SpcOp52,SpcOp72,SpcOp92,SpcOpB2,SpcOpD2
+EXTSYM SpcOpF2,SpcOp03,SpcOp23,SpcOp43,SpcOp63,SpcOp83,SpcOpA3,SpcOpC3
+EXTSYM SpcOpE3,SpcOp13,SpcOp33,SpcOp53,SpcOp73,SpcOp93,SpcOpB3,SpcOpD3
+EXTSYM SpcOpF3
 EXTSYM spc700read,curexecstate,tableadc
 
 %include "cpu/regsw.mac"
@@ -508,7 +521,7 @@ SECTION .text
 ; Misc Opcodes
 ;************************************************
 NEWSYM Op00     ; NOP
-    ret
+    spccop SpcOp00
 NEWSYM OpEF     ; SLEEP      standby SLEEP mode    .........
     dec ebp
     ret
@@ -644,81 +657,81 @@ NEWSYM OpF1     ; TCALL F
 ; SET1 instructions (Verified)
 ;************************************************
 NEWSYM Op02     ; SET1 direct page bit 0
-    set1 1
+    spccop SpcOp02
 NEWSYM Op22     ; SET1 direct page bit 1
-    set1 2
+    spccop SpcOp22
 NEWSYM Op42     ; SET1 direct page bit 2
-    set1 4
+    spccop SpcOp42
 NEWSYM Op62     ; SET1 direct page bit 3
-    set1 8
+    spccop SpcOp62
 NEWSYM Op82     ; SET1 direct page bit 4
-    set1 16
+    spccop SpcOp82
 NEWSYM OpA2     ; SET1 direct page bit 5
-    set1 32
+    spccop SpcOpA2
 NEWSYM OpC2     ; SET1 direct page bit 6
-    set1 64
+    spccop SpcOpC2
 NEWSYM OpE2     ; SET1 direct page bit 7
-    set1 128
+    spccop SpcOpE2
 
 ;************************************************
 ; CLR1 instructions (Verified)
 ;************************************************
 NEWSYM Op12     ; CLR1 direct page bit 0
-    clr1 255-1
+    spccop SpcOp12
 NEWSYM Op32     ; CLR1 direct page bit 1
-    clr1 255-2
+    spccop SpcOp32
 NEWSYM Op52     ; CLR1 direct page bit 2
-    clr1 255-4
+    spccop SpcOp52
 NEWSYM Op72     ; CLR1 direct page bit 3
-    clr1 255-8
+    spccop SpcOp72
 NEWSYM Op92     ; CLR1 direct page bit 4
-    clr1 255-16
+    spccop SpcOp92
 NEWSYM OpB2     ; CLR1 direct page bit 5
-    clr1 255-32
+    spccop SpcOpB2
 NEWSYM OpD2     ; CLR1 direct page bit 6
-    clr1 255-64
+    spccop SpcOpD2
 NEWSYM OpF2     ; CLR1 direct page bit 7
-    clr1 255-128
+    spccop SpcOpF2
 
 ;************************************************
 ; BBS instructions (Verified)
 ;************************************************
 NEWSYM Op03     ; BBS direct page bit 0
-    bbs 1
+    spccop SpcOp03
 NEWSYM Op23     ; BBS direct page bit 1
-    bbs 2
+    spccop SpcOp23
 NEWSYM Op43     ; BBS direct page bit 2
-    bbs 4
+    spccop SpcOp43
 NEWSYM Op63     ; BBS direct page bit 3
-    bbs 8
+    spccop SpcOp63
 NEWSYM Op83     ; BBS direct page bit 4
-    bbs 16
+    spccop SpcOp83
 NEWSYM OpA3     ; BBS direct page bit 5
-    bbs 32
+    spccop SpcOpA3
 NEWSYM OpC3     ; BBS direct page bit 6
-    bbs 64
+    spccop SpcOpC3
 NEWSYM OpE3     ; BBS direct page bit 7
-    bbs 128
+    spccop SpcOpE3
 
 ;************************************************
 ; BBC instructions (Verified)
 ;************************************************
 NEWSYM Op13     ; BBC direct page bit 0
-    bbc 1
+    spccop SpcOp13
 NEWSYM Op33     ; BBC direct page bit 1
-    bbc 2
+    spccop SpcOp33
 NEWSYM Op53     ; BBC direct page bit 2
-    bbc 4
+    spccop SpcOp53
 NEWSYM Op73     ; BBC direct page bit 3
-    bbc 8
+    spccop SpcOp73
 NEWSYM Op93     ; BBC direct page bit 4
-    bbc 16
+    spccop SpcOp93
 NEWSYM OpB3     ; BBC direct page bit 5
-    bbc 32
+    spccop SpcOpB3
 NEWSYM OpD3     ; BBC direct page bit 6
-    bbc 64
+    spccop SpcOpD3
 NEWSYM OpF3     ; BBC direct page bit 7
-    bbc 128
+    spccop SpcOpF3
 
 ;************************************************
 ; OR A,instructions

@@ -6,6 +6,7 @@
  */
 #include "../types.h"
 #include "c_dsp.h" /* DSPWriteReg */
+#include "spc700.h" /* spcRamDP */
 
 /* SPCRAM is 0xFFC0 bytes of RAM immediately followed, in cpu/spc700.asm's data
  * section, by the 64-byte IPL ROM window at $FFC0 - hence the unsized array. */
@@ -19,7 +20,6 @@ extern u1 timeron, timincr0, timincr1, timincr2, timinl0, timinl1, timinl2;
 extern u1 spcnumread;
 
 #include "spc_ioregs.h"
-
 void SPCWriteReg(u4 reg, u1 val)
 {
     spc_write_reg(reg, val);
@@ -29,3 +29,5 @@ u1 SPCReadReg(u4 reg)
 {
     return spc_read_reg(reg);
 }
+
+#include "spc_ops.h"
