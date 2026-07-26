@@ -150,6 +150,9 @@ EXTSYM SpcOp0E,SpcOp4E,SpcOp2D,SpcOp4D,SpcOp6D,SpcOpAE,SpcOpCE,SpcOpEE
 EXTSYM SpcOp0D,SpcOp5F,SpcOp1F,SpcOp3F,SpcOp4F,SpcOp6F,SpcOp7F,SpcOp2E
 EXTSYM SpcOpDE,SpcOp6E,SpcOpCF
 EXTSYM SpcOp1A,SpcOp3A,SpcOp5A,SpcOp7A,SpcOp9A,SpcOpBA,SpcOpDA,SpcOp8E
+EXTSYM SpcOp0A,SpcOp2A,SpcOp4A,SpcOp6A,SpcOp8A,SpcOpAA,SpcOpCA,SpcOpEA
+EXTSYM SpcOp2B,SpcOp3B,SpcOp2C,SpcOp6B,SpcOp7B,SpcOp6C,SpcOp3C,SpcOp7C
+EXTSYM SpcOp9E,SpcOpBE,SpcOpDF
 EXTSYM spc700read,curexecstate,tableadc
 
 %include "cpu/regsw.mac"
@@ -1115,91 +1118,16 @@ NEWSYM Op7E     ; CMP Y,dp     Y-(dp)            N......ZC
 
 NEWSYM Op1A     ; DECW dp   Decrement dp memory pair  N......Z.
     spccop SpcOp1A
-NEWSYM Op1AB
-    ReadByte2
-    dec ax
-    test ax,8000h
-    jnz .YesNeg
-    cmp ax,0000h
-    je .YesZero
-    mov byte[spcNZ],1
-    jmp .SkipFlag
-.YesNeg
-    mov byte[spcNZ],80h
-    jmp .SkipFlag
-.YesZero
-    mov byte[spcNZ],0
-.SkipFlag
-    push ebx
-    WriteByte
-    pop ebx
-NEWSYM Op1Ab
-    inc ebx
-    mov al,ah
-    WriteByte
-    ret
-
 NEWSYM Op3A     ; INCW dp   Increment dp memory pair  N......Z.
     spccop SpcOp3A
-NEWSYM Op3AB
-    ReadByte2
-    inc ax
-    test ax,8000h
-    jnz .YesNeg
-    cmp ax,0000h
-    je .YesZero
-    mov byte[spcNZ],1
-    jmp .SkipFlag
-.YesNeg
-    mov byte[spcNZ],80h
-    jmp .SkipFlag
-.YesZero
-    mov byte[spcNZ],0
-.SkipFlag
-    push ebx
-    WriteByte
-    pop ebx
-NEWSYM Op3Ab
-    inc ebx
-    mov al,ah
-    WriteByte
-    ret
-
 ; looks like there is the Carry flag checked in op5a..
 
 NEWSYM Op5A     ; CMPW YA,dp   YA - (dp+1)(dp)      N......ZC
     spccop SpcOp5A
-NEWSYM Op5AB
-    ReadByte
-    mov bl,[spcA]
-    mov bh,[spcY]
-    cmp bx,ax
-    cmc
-    SPCSetFlagnzc
-
 NEWSYM Op7A     ; ADDW YA,dp   YA  <- YA + (dp+1)(dp)   NV..H..ZC
     spccop SpcOp7A
-NEWSYM Op7AB
-    ReadByte
-    mov bl,[spcA]
-    mov bh,[spcY]
-    add bx,ax
-    mov [spcA],bl
-    mov [spcY],bh
-    SPCSetFlagnvhzc
-
 NEWSYM Op9A     ; SUBW YA,dp   YA  <- YA - (dp+1)(dp)   NV..H..ZC
     spccop SpcOp9A
-NEWSYM Op9AB
-    ReadByte
-    mov bl,[spcA]
-    mov bh,[spcY]
-    sub bx,ax
-    cmc
-    mov [spcA],bl
-    mov [spcY],bh
-    SPCSetFlagnvhzc
-
 NEWSYM OpBA     ; MOVW YA,dp   YA  - (dp+1)(dp)     N......Z.
     spccop SpcOpBA
 
@@ -1230,18 +1158,13 @@ NEWSYM OpDA     ; MOVW dp,YA   (dp+1)(dp) - YA       .........
 %endmacro
 
 NEWSYM Op0A     ; OR1 C,mem.bit   C <- C OR  (mem.bit)    ........C
-    spcaddrmembit
-    or [spcP],al
-    ret
+    spccop SpcOp0A
 
 NEWSYM Op2A     ; OR1 C,/mem.bit  C <- C OR  !(mem.bit)     ........C
-    spcaddrmembit
-    xor al,01h
-    or [spcP],al
-    ret
+    spccop SpcOp2A
 
 NEWSYM Op4A     ; AND1 C,mem.bit  C <- C AND (mem.bit)    ........C
-    mov bx,[ebp]
+    spccop SpcOp4A
 
     mov cl,bh
     add ebp,2
@@ -1261,7 +1184,7 @@ NEWSYM Op4A     ; AND1 C,mem.bit  C <- C AND (mem.bit)    ........C
     ret
 
 NEWSYM Op6A     ; AND1 C,/mem.bit C <- C AND !(mem.bit)     ........C
-    mov bx,[ebp]
+    spccop SpcOp6A
 
     mov cl,bh
     add ebp,2
@@ -1282,19 +1205,13 @@ NEWSYM Op6A     ; AND1 C,/mem.bit C <- C AND !(mem.bit)     ........C
     ret
 
 NEWSYM Op8A     ; EOR1 C,mem.bit  C <- C EOR (mem.bit)    ........C
-    spcaddrmembit
-    xor [spcP],al
-    ret
+    spccop SpcOp8A
 
 NEWSYM OpAA     ; MOV1 C,mem.bit  C <- (mem.bit)
-    spcaddrmembit
-    and byte[spcP],0FEh
-    or [spcP],al
-    ret
+    spccop SpcOpAA
 
 NEWSYM OpCA     ; MOV1 mem.bit,C  C -> (mem.bit)        .........
-    mov bx,[ebp]
-    mov al,[spcP]
+    spccop SpcOpCA
 
     mov cl,bh
     mov ah,01h
@@ -1321,7 +1238,7 @@ NEWSYM OpCA     ; MOV1 mem.bit,C  C -> (mem.bit)        .........
     ret
 
 NEWSYM OpEA     ; NOT1 mem.bit    complement (mem.bit)    .........
-    mov bx,[ebp]
+    spccop SpcOpEA
 
     mov cl,bh
     mov ah,01h
@@ -1394,168 +1311,28 @@ NEWSYM Op5C     ; LSR A  0 >> A    <<C     N......ZC
 %endmacro
 
 NEWSYM Op2B     ; ROL dp    C << (dp)   <<C     N......ZC
-    mov bl,[ebp]
-    add ebx,[spcRamDP]
-    inc ebp
-    test byte[spcP],01h
-    jnz near Op2Bb
-    ReadByte2
-    clc
-    spcROLstuff
-    WriteByte
-    ret
-NEWSYM Op2Bb
-    ReadByte2
-    stc
-    spcROLstuff
-    WriteByte
-    ret
+    spccop SpcOp2B
 
 NEWSYM Op6B     ; ROR dp    C >> (dp)   <<C     N......ZC
-    mov bl,[ebp]
-    add ebx,[spcRamDP]
-    inc ebp
-    test byte[spcP],01h
-    jnz near Op6Bb
-    ReadByte2
-    clc
-    spcRORstuff
-    WriteByte
-    ret
-NEWSYM Op6Bb
-    ReadByte2
-    stc
-    spcRORstuff
-    WriteByte
-    ret
+    spccop SpcOp6B
 
 NEWSYM Op3B     ; ROL dp+X  C << (dp+X) <<C     N......ZC
-    mov bl,[ebp]
-    add bl,[spcX]
-    add ebx,[spcRamDP]
-    inc ebp
-    test byte[spcP],01h
-    jnz near Op3Bb
-    ReadByte2
-    clc
-    spcROLstuff
-    WriteByte
-    ret
-NEWSYM Op3Bb
-    ReadByte2
-    stc
-    spcROLstuff
-    WriteByte
-    ret
+    spccop SpcOp3B
 
 NEWSYM Op7B     ; ROR dp+X  C >> (dp+X) <<C     N......ZC
-    mov bl,[ebp]
-    add bl,[spcX]
-    add ebx,[spcRamDP]
-    inc ebp
-    test byte[spcP],01h
-    jnz near Op7Bb
-    ReadByte2
-    clc
-    spcRORstuff
-    WriteByte
-    ret
-NEWSYM Op7Bb
-    ReadByte2
-    stc
-    spcRORstuff
-    WriteByte
-    ret
+    spccop SpcOp7B
 
 NEWSYM Op2C     ; ROL labs  C << (abs)  <<C     N......ZC
-    mov bx,[ebp]
-    add ebx,SPCRAM
-    add ebp,2
-    test byte[spcP],01h
-    jnz near Op2Cb
-    ReadByte2
-    clc
-    spcROLstuff
-    WriteByte
-    ret
-NEWSYM Op2Cb
-    ReadByte2
-    stc
-    spcROLstuff
-    WriteByte
-    ret
+    spccop SpcOp2C
 
 NEWSYM Op6C     ; ROR labs  C >> (abs)  <<C     N......ZC
-    mov bx,[ebp]
-    add ebx,SPCRAM
-    add ebp,2
-    test byte[spcP],01h
-    jnz near Op6Cb
-    ReadByte2
-    clc
-    spcRORstuff
-    WriteByte
-    ret
-NEWSYM Op6Cb
-    ReadByte2
-    stc
-    spcRORstuff
-    WriteByte
-    ret
+    spccop SpcOp6C
 
 NEWSYM Op3C     ; ROL A  C << A    <<C     N......ZC
-    test byte[spcP],01h
-    jnz near Op3Cb
-    clc
-    rcl byte[spcA],1
-    mov al,[spcA]
-    jc .setcarryflag
-    and byte[spcP],0FEh
-    mov [spcNZ],al
-    ret
-.setcarryflag
-    or byte[spcP],01h
-    mov [spcNZ],al
-    ret
-NEWSYM Op3Cb
-    stc
-    rcl byte[spcA],1
-    mov al,[spcA]
-    jc .setcarryflag
-    and byte[spcP],0FEh
-    mov [spcNZ],al
-    ret
-.setcarryflag
-    or byte[spcP],01h
-    mov [spcNZ],al
-    ret
+    spccop SpcOp3C
 
 NEWSYM Op7C     ; ROR A  C >> A    <<C     N......ZC
-    test byte[spcP],01h
-    jnz near Op7Cb
-    clc
-    rcr byte[spcA],1
-    mov al,[spcA]
-    jc .setcarryflag
-    and byte[spcP],0FEh
-    mov [spcNZ],al
-    ret
-.setcarryflag
-    or byte[spcP],01h
-    mov [spcNZ],al
-    ret
-NEWSYM Op7Cb
-    stc
-    rcr byte[spcA],1
-    mov al,[spcA]
-    jc .setcarryflag
-    and byte[spcP],0FEh
-    mov [spcNZ],al
-    ret
-.setcarryflag
-    or byte[spcP],01h
-    mov [spcNZ],al
-    ret
+    spccop SpcOp7C
 
 ;************************************************
 ; INC/DEC instructions (Verified)
@@ -1647,14 +1424,6 @@ NEWSYM OpDE     ; CBNE dp+X,rel   compare A with (dp+X) then BNE ...
 
 NEWSYM Op6E     ; DBNZ   decrement memory (dp) then JNZ ...
     spccop SpcOp6E
-NEWSYM Op6Eb
-    push ebx
-    movsx ebx,byte[ebp+1]
-    add ebp,ebx
-    add ebp,2
-    pop ebx
-    WriteByte
-    ret
 
 NEWSYM OpFE     ; DBNZ Y,rel   decrement Y then JNZ         ...
     spccop SpcOpFE
@@ -1691,24 +1460,7 @@ NEWSYM Op7F     ; ret1       return from interrupt   (Restored)
 ;************************************************
 
 NEWSYM Op9E     ; DIV YA,X     Q:A B:Y <- YA / X     NV..H..Z.
-   push edx
-   mov ah,[spcY]
-   mov al,[spcA]
-   xor bh,bh
-   xor dx,dx
-   mov bl,[spcX]
-   cmp bl,0
-   je NoDiv
-   div bx
-   mov [spcA],al
-   mov [spcY],dl
-   cmp ah,0
-   jne Over
-   and byte[spcP],191-16
-   pop edx
-   mov [spcNZ],al
-   ret
-
+    spccop SpcOp9E
 NEWSYM NoDiv
    mov byte[spcA],0ffh
    mov byte[spcY],0ffh
@@ -1731,55 +1483,9 @@ NEWSYM OpCF     ; MUL YA     YA(16 bits) <- Y * A    N......Z.
 ;************************************************
 
 NEWSYM OpBE     ; DAS A     decimal adjust for sub  N......ZC
-    ; copy al flags into AH
-    xor ah,ah
-    test byte[spcNZ],80h
-    jz .noneg
-    or ah,10000000b
-.noneg
-    test byte[spcP],01h
-    jz .nocarry
-    or ah,00000001b
-.nocarry
-    test byte[spcNZ],0FFh
-    jnz .nozero
-    or ah,01000000b
-.nozero
-    test byte[spcP],08h
-    jz .nohcarry
-    or ah,00010000b
-.nohcarry
-    mov al,[spcA]
-    sahf
-    das
-    mov [spcA],al
-    SPCSetFlagnzc
-
+    spccop SpcOpBE
 NEWSYM OpDF     ; DAA A      decimal adjust for add  N......ZC
-    ; copy al flags into AH
-    xor ah,ah
-    test byte[spcNZ],80h
-    jz .noneg
-    or ah,10000000b
-.noneg
-    test byte[spcP],01h
-    jz .nocarry
-    or ah,00000001b
-.nocarry
-    test byte[spcNZ],0FFh
-    jnz .nozero
-    or ah,01000000b
-.nozero
-    test byte[spcP],08h
-    jz .nohcarry
-    or ah,00010000b
-.nohcarry
-    mov al,[spcA]
-    sahf
-    daa
-    mov [spcA],al
-    SPCSetFlagnzc
-
+    spccop SpcOpDF
 NEWSYM Invalidopcode ; Invalid Opcode
     dec ebp
     ret

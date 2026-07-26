@@ -247,6 +247,7 @@ static inline void spc_cmp_a(u1 const m)
                                            \
                                            \
                                            \
+                                           \
         spcaddr const a = mode(pc);               \
         op(a.val);                                \
         return a.pc;                              \
@@ -376,6 +377,7 @@ static inline void spc_sbc_a(u1 const m) { spcA = spc_sbc(spcA, m); }
                                            \
                                            \
                                            \
+                                           \
         spcaddr const a = mode(pc);  \
         op(a.val);                   \
         return a.pc;                 \
@@ -410,6 +412,7 @@ SPC_ALU2(A8, spc_a_imm, spc_sbc_a)
 #define SPC_RMW(hex, get, comb)                     \
     u1* SpcOp##hex(u1* const pc)                    \
     {                                               \
+                                             \
                                              \
                                              \
                                              \
@@ -565,6 +568,7 @@ u1* SpcOp5E(u1* const pc) { spc_cmp(spcY, spc_read(SPCRAM + (pc[0] | (u2)pc[1] <
 #define SPC_MEM_RMW(hex, addr, adv, expr)      \
     u1* SpcOp##hex(u1* const pc)               \
     {                                          \
+                                        \
                                         \
                                         \
         u1* const m = addr;                    \
@@ -821,5 +825,152 @@ u1* SpcOp8E(u1* const pc)
     spcRamDP = SPCRAM + (p & 0x20 ? 0x100 : 0);
     return pc;
 }
+
+/* --- membit ops ------------------------------------------------------------
+ * The 16-bit operand packs a 13-bit address in the low bits and the bit index
+ * in the top three, so `mem.bit` addresses any bit of $0000-$1FFF.
+ */
+typedef struct {
+    u1* addr;
+    u1 bit;
+} spcmembit;
+
+static inline spcmembit spc_membit(u1 const* const pc)
+{
+    u2 const w = (u2)(pc[0] | (u2)pc[1] << 8);
+    return (spcmembit) { SPCRAM + (w & 0x1FFF), (u1)(w >> 13) };
+}
+
+static inline u1 spc_getbit(u1 const* const pc)
+{
+    spcmembit const m = spc_membit(pc);
+    return (u1)(spc_read(m.addr) >> m.bit & 1);
+}
+
+u1* SpcOp0A(u1* const pc) { spcP |= spc_getbit(pc); return pc + 2; }              /* OR1  C,m.b  */
+u1* SpcOp2A(u1* const pc) { spcP |= spc_getbit(pc) ^ 1; return pc + 2; }          /* OR1  C,/m.b */
+u1* SpcOp4A(u1* const pc) { spcP &= spc_getbit(pc) | 0xFE; return pc + 2; }       /* AND1 C,m.b  */
+u1* SpcOp6A(u1* const pc) { spcP &= (spc_getbit(pc) | 0xFE) ^ 1; return pc + 2; } /* AND1 C,/m.b */
+u1* SpcOp8A(u1* const pc) { spcP ^= spc_getbit(pc); return pc + 2; }              /* EOR1 C,m.b  */
+u1* SpcOpAA(u1* const pc) { spcP = spcP & 0xFE | spc_getbit(pc); return pc + 2; } /* MOV1 C,m.b  */
+
+u1* SpcOpCA(u1* const pc) /* MOV1 m.b,C */
+{
+    spcmembit const m = spc_membit(pc);
+    u1 const mask = (u1)(1 << m.bit);
+    spc_write(m.addr, (u1)(spc_read(m.addr) & ~mask | (spcP & 1) << m.bit));
+    return pc + 2;
+}
+
+u1* SpcOpEA(u1* const pc) /* NOT1 m.b */
+{
+    spcmembit const m = spc_membit(pc);
+    spc_write(m.addr, (u1)(spc_read(m.addr) ^ 1 << m.bit));
+    return pc + 2;
+}
+
+/* --- ROL / ROR -------------------------------------------------------------
+ * Rotate through carry. The carry-in is sampled before the read (the assembly
+ * branches on it to pick a `clc`/`stc` variant), and spcNZ takes the raw
+ * result byte.
+ */
+static inline u1 spc_rol(u1 const v)
+{
+    u1 const r = (u1)(v << 1 | (spcP & 1));
+    spcP = v & 0x80 ? spcP | 0x01 : spcP & 0xFE;
+    spcNZ = r;
+    return r;
+}
+static inline u1 spc_ror(u1 const v)
+{
+    u1 const r = (u1)(v >> 1 | (spcP & 1) << 7);
+    spcP = v & 0x01 ? spcP | 0x01 : spcP & 0xFE;
+    spcNZ = r;
+    return r;
+}
+
+#define SPC_ROT(hex, addr, adv, fn)                     \
+    u1* SpcOp##hex(u1* const pc)                        \
+    {                                                   \
+                                                 \
+        u1* const m = addr;                             \
+        spc_write(m, fn(spc_read(m)));                  \
+        return pc + adv;                                \
+    }
+
+SPC_ROT(2B, SPC_DP, 1, spc_rol)
+SPC_ROT(3B, SPC_DP_X, 1, spc_rol)
+SPC_ROT(2C, SPC_ABS, 2, spc_rol)
+SPC_ROT(6B, SPC_DP, 1, spc_ror)
+SPC_ROT(7B, SPC_DP_X, 1, spc_ror)
+SPC_ROT(6C, SPC_ABS, 2, spc_ror)
+
+#undef SPC_ROT
+
+u1* SpcOp3C(u1* const pc) { spcA = spc_rol(spcA); return pc; } /* ROL A */
+u1* SpcOp7C(u1* const pc) { spcA = spc_ror(spcA); return pc; } /* ROR A */
+
+/* --- DIV YA,X --------------------------------------------------------------
+ * A 16-bit divide (dx:ax / bx with dx cleared), so the quotient always fits.
+ * X = 0 is caught before the divide; a quotient wider than 8 bits takes the
+ * "overflow" path, which keeps the truncated result but sets V and clears H.
+ */
+u1* SpcOp9E(u1* const pc)
+{
+    if (spcX == 0) { /* NoDiv */
+        spcA = 0xFF;
+        spcY = 0xFF;
+        spcP = spcP | 0x10;
+        spcP = spcP & ~0x40;
+        return pc;
+    }
+    u2 const ya = (u2)(spcA | (u2)spcY << 8);
+    u2 const q = (u2)(ya / spcX);
+    spcA = (u1)q;
+    spcY = (u1)(ya % spcX);
+    if (q >> 8) { /* Over */
+        spcP = spcP | 0x40;
+        spcP = spcP & ~0x10;
+    } else {
+        spcP &= 0xAF; /* clear V and H */
+    }
+    spcNZ = (u1)q;
+    return pc;
+}
+
+/* --- DAA / DAS -------------------------------------------------------------
+ * The assembly rebuilds an x86 flags byte from spcNZ/spcP with `sahf`, runs
+ * `daa`/`das`, then re-derives N/Z/C. These reimplement the two instructions;
+ * only C and the result feed back, so AF's output value is not needed.
+ */
+static inline void spc_decadj(bool const sub)
+{
+    u1 const old = spcA;
+    bool const oldc = (spcP & 0x01) != 0;
+    bool const af = (spcP & 0x08) != 0;
+    u1 a = old;
+    bool c = false;
+
+    if ((a & 0x0F) > 9 || af) {
+        u4 const t = sub ? (u4)a - 6 : (u4)a + 6;
+        c = oldc || (sub ? t > 0xFF : t > 0xFF);
+        a = (u1)t;
+    } else {
+        c = oldc;
+    }
+    if (old > 0x99 || oldc) {
+        a = (u1)(sub ? a - 0x60 : a + 0x60);
+        c = true;
+    } else if (!((old & 0x0F) > 9 || af)) {
+        c = false;
+    }
+
+    spcA = a;
+    spc_setnz(a);
+    spcP = c ? spcP | 0x01 : spcP & 0xFE;
+}
+
+u1* SpcOpBE(u1* const pc) { spc_decadj(true); return pc; }  /* DAS */
+u1* SpcOpDF(u1* const pc) { spc_decadj(false); return pc; } /* DAA */
 
 #endif /* SPC_OPS_H */
