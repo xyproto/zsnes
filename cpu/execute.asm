@@ -774,7 +774,7 @@ NEWSYM cpuover
     jne .nonewgfx
 ;    cmp byte[NextNGDisplay],0
 ;    je .nonewgfx
-    call StartDrawNewGfx
+    ccallv StartDrawNewGfx
 .nonewgfx
     cmp byte[GUIQuit],1
     jne .notGUIQuit
@@ -907,7 +907,7 @@ NEWSYM cpuover
 .noframeincr
 
     pushad
-    call StartDrawNewGfx
+    ccallv StartDrawNewGfx
     ccallv showvideo
     ccallv cachevideo
     popad

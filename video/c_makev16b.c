@@ -2,6 +2,7 @@
 
 #include "../asm_call.h"
 #include "../c_vcache.h"
+#include "../cfg.h"
 #include "../cpu/regs.h"
 #include "../cpu/regsw.h"
 #include "../endmem.h"
@@ -48,6 +49,8 @@ void preparesprpr(void)
 
 extern u4 nglogicval;
 extern u4 WindowRedraw;
+extern u4 cfieldad;
+extern u4 reslbyl;
 extern u4 ngwinen;
 extern u1 winbg1enval[]; // indexed past 256 into the contiguous sibling arrays
 extern u4 winboundary[256];
@@ -1972,4 +1975,21 @@ void drawline16b(void)
         curbgnum = 0x04;
         drawbackgrndmain16b(LAYER_BG3);
     }
+}
+
+// Entry point for a new-graphics-engine frame. Sets up the interlace field and
+// the last-line bound, then hands over to the 16-bit renderer, which is still
+// assembly (video/newgfx16.asm) and clobbers ebx, so it needs asm_call.
+void StartDrawNewGfx(void)
+{
+    extern void StartDrawNewGfx16b(void);
+
+    WindowRedraw = 1;
+    cfieldad = 0;
+    if (res480 == 1 && scanlines == 0)
+        cfieldad = cfield;
+    // The assembly stored only the low word here.
+    reslbyl = reslbyl & 0xFFFF0000 | (u2)(resolutn - 8);
+
+    asm_call(StartDrawNewGfx16b);
 }

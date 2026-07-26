@@ -3,6 +3,7 @@
 
 #include "../types.h"
 
+void StartDrawNewGfx(void);
 void preparesprpr(void);
 
 extern u1 Mode7HiRes; // XXX always 0

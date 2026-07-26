@@ -154,21 +154,7 @@ NEWSYM Mode7HiRes, resb 1
 NEWSYM pesimpng, resd 1
 NEWSYM bgtxadd2, resd 1
 SECTION .text
-
-NEWSYM StartDrawNewGfx
-    mov byte[WindowRedraw],1
-    mov dword[cfieldad],0
-    cmp byte[res480],1
-    jne .scan2
-    cmp byte[scanlines],0
-    jne .scan2
-    mov al,[cfield]
-    mov [cfieldad],al
-.scan2
-    mov ax,[resolutn]
-    sub ax,8
-    mov [reslbyl],ax
-    jmp StartDrawNewGfx16b
+; StartDrawNewGfx has been ported to C (video/c_makev16b.c).
 
 SECTION .bss
 NEWSYM bgtxadd,  resd 1
