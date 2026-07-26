@@ -13,8 +13,6 @@ bool cycleinputdevice2(void);
 
 void DisplayBatteryStatus(void);
 
-extern eop* dspRptr[256];
-extern eop* dspWptr[256];
 extern eop* regptra[0x3000];
 extern eop* regptwa[0x3000];
 extern u1 DSPDisable; // Disable DSP emulation

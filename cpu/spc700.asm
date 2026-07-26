@@ -102,6 +102,12 @@ section .note.GNU-stack noalloc noexec nowrite progbits
 	pop ecx
 %endmacro
 
+%macro ccallv 1+
+	push eax
+	ccall %1
+	pop eax
+%endmacro
+
 EXTSYM DSPMem,cycpbl,SPCWriteReg,SPCReadReg
 EXTSYM spc700read,curexecstate,tableadc
 
@@ -209,7 +215,7 @@ SECTION .text
   cmp ebx,0f0h+SPCRAM
   jb %%normalmem
   sub ebx,SPCRAM
-  ccall SPCWriteReg,ebx,eax ; returns eax as the handler left it (ah is live)
+  ccallv SPCWriteReg,ebx,eax ; ah is live across this
   jmp %%finished
 %%extramem
   cmp ebx,0ffc0h+SPCRAM

@@ -219,8 +219,6 @@ u1 mode7tab[65536];
 
 u2 fulladdtab[65536];
 u2 VolumeConvTable[32768];
-eop* dspWptr[256];
-eop* dspRptr[256];
 
 #define deallocmemhelp(p) \
     if (p) {              \

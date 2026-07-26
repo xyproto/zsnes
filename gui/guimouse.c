@@ -26,7 +26,7 @@
 #include "../c_init.h"
 #include "../c_intrf.h"
 #include "../cfg.h"
-#include "../cpu/dsp.h"
+#include "../cpu/c_dsp.h"
 #include "../cpu/execute.h"
 #include "../cpu/regs.h"
 #include "../gblvars.h"
@@ -1289,10 +1289,8 @@ static void DisplayGUISoundClick(void)
         GUIHoldYlim = GUIwinposy[6] + 131;
         u4 const vol = MusicRelVol * 128 / 100;
         MusicVol = vol < 127 ? vol : 127;
-        __asm__ volatile("call %P0" ::"X"(WDSPReg0C), "a"(DSPMem[0x0C])
-            : "cc", "memory");
-        __asm__ volatile("call %P0" ::"X"(WDSPReg1C), "a"(DSPMem[0x1C])
-            : "cc", "memory");
+        DSPWriteReg(0x0C, DSPMem[0x0C]);
+        DSPWriteReg(0x1C, DSPMem[0x1C]);
 
         s4 const eax = GUIwinposx[6] + 15;
         GUIHoldXlimL = eax;

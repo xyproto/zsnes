@@ -7,7 +7,7 @@
 #include "c_intrf.h"
 #include "c_vcache.h"
 #include "cfg.h"
-#include "cpu/dsp.h"
+#include "cpu/c_dsp.h"
 #include "cpu/dspproc.h"
 #include "cpu/execute.h"
 #include "cpu/regs.h"
@@ -71,10 +71,8 @@ static void UpdateVolume(void)
     u4 const vol = MusicRelVol * 128 * 0xA3D70A3DULL >> 38;
     MusicVol = vol < 127 ? vol : 127;
 
-    __asm__ volatile("call %P0" ::"X"(WDSPReg0C), "a"(DSPMem[0x0C])
-        : "cc", "memory");
-    __asm__ volatile("call %P0" ::"X"(WDSPReg1C), "a"(DSPMem[0x1C])
-        : "cc", "memory");
+    DSPWriteReg(0x0C, DSPMem[0x0C]);
+    DSPWriteReg(0x1C, DSPMem[0x1C]);
 
     static char vollv[] = "VOLUME LEVEL :    ";
     sprintf(vollv + 15, "%-3d", MusicRelVol);

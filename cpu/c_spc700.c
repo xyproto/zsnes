@@ -5,7 +5,7 @@
  * core's WriteByte / ReadByte macros in cpu/spc700.asm call.
  */
 #include "../types.h"
-#include "../ui.h" /* dspWptr */
+#include "c_dsp.h" /* DSPWriteReg */
 
 /* SPCRAM is 0xFFC0 bytes of RAM immediately followed, in cpu/spc700.asm's data
  * section, by the 64-byte IPL ROM window at $FFC0 - hence the unsized array. */
@@ -20,9 +20,9 @@ extern u1 spcnumread;
 
 #include "spc_ioregs.h"
 
-u4 SPCWriteReg(u4 reg, u4 eax)
+void SPCWriteReg(u4 reg, u1 val)
 {
-    return spc_write_reg(reg, eax);
+    spc_write_reg(reg, val);
 }
 
 u1 SPCReadReg(u4 reg)
