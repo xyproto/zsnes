@@ -117,4 +117,58 @@ SPC_BITOP(BBC, F3, spc_bbc, 0x80)
 
 #undef SPC_BITOP
 
+/* Branches: the operand is a signed displacement from the byte after it. */
+static inline u1* spc_branch(u1* const pc, bool const taken)
+{
+    return taken ? pc + 1 + (s1)*pc : pc + 1;
+}
+
+u1* SpcOp10(u1* const pc) { return spc_branch(pc, !(spcNZ & 0x80)); } /* BPL */
+u1* SpcOp30(u1* const pc) { return spc_branch(pc, spcNZ & 0x80); }    /* BMI */
+u1* SpcOp50(u1* const pc) { return spc_branch(pc, !(spcP & 0x40)); }  /* BVC */
+u1* SpcOp70(u1* const pc) { return spc_branch(pc, spcP & 0x40); }     /* BVS */
+u1* SpcOp90(u1* const pc) { return spc_branch(pc, !(spcP & 0x01)); }  /* BCC */
+u1* SpcOpB0(u1* const pc) { return spc_branch(pc, spcP & 0x01); }     /* BCS */
+u1* SpcOpD0(u1* const pc) { return spc_branch(pc, spcNZ != 0); }      /* BNE */
+u1* SpcOpF0(u1* const pc) { return spc_branch(pc, spcNZ == 0); }      /* BEQ */
+u1* SpcOp2F(u1* const pc) { return spc_branch(pc, true); }            /* BRA */
+
+/* The stack lives in page 1; only the low byte of spcS moves, and pushes go
+ * straight to RAM rather than through the I/O-trapping write path. */
+static inline void spc_push(u1 const val)
+{
+    SPCRAM[spcS] = val;
+    spcS = spcS & 0xFFFFFF00 | (u1)(spcS - 1);
+}
+
+/* TCALL n - push the return address and jump through the vector table at the
+ * top of memory. The asm takes the vector from spcextraram while the IPL ROM is
+ * paged in ($F1 bit 7) and from SPC RAM otherwise. */
+static inline u1* spc_tcall(u1* const pc, u4 const off)
+{
+    u4 const ret = (u4)(pc - SPCRAM);
+    spc_push((u1)(ret >> 8));
+    spc_push((u1)ret);
+
+    u1 const* const vec = SPCRAM[0xF1] & 0x80 ? spcextraram + off : SPCRAM + 0xFFC0 + off;
+    return SPCRAM + (vec[0] | (u2)vec[1] << 8);
+}
+
+u1* SpcOp01(u1* const pc) { return spc_tcall(pc, 30); }
+u1* SpcOp11(u1* const pc) { return spc_tcall(pc, 28); }
+u1* SpcOp21(u1* const pc) { return spc_tcall(pc, 26); }
+u1* SpcOp31(u1* const pc) { return spc_tcall(pc, 24); }
+u1* SpcOp41(u1* const pc) { return spc_tcall(pc, 22); }
+u1* SpcOp51(u1* const pc) { return spc_tcall(pc, 20); }
+u1* SpcOp61(u1* const pc) { return spc_tcall(pc, 18); }
+u1* SpcOp71(u1* const pc) { return spc_tcall(pc, 16); }
+u1* SpcOp81(u1* const pc) { return spc_tcall(pc, 14); }
+u1* SpcOp91(u1* const pc) { return spc_tcall(pc, 12); }
+u1* SpcOpA1(u1* const pc) { return spc_tcall(pc, 10); }
+u1* SpcOpB1(u1* const pc) { return spc_tcall(pc, 8); }
+u1* SpcOpC1(u1* const pc) { return spc_tcall(pc, 6); }
+u1* SpcOpD1(u1* const pc) { return spc_tcall(pc, 4); }
+u1* SpcOpE1(u1* const pc) { return spc_tcall(pc, 2); }
+u1* SpcOpF1(u1* const pc) { return spc_tcall(pc, 0); }
+
 #endif /* SPC_OPS_H */

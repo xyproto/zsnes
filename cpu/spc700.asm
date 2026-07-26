@@ -122,6 +122,10 @@ EXTSYM SpcOpE2,SpcOp12,SpcOp32,SpcOp52,SpcOp72,SpcOp92,SpcOpB2,SpcOpD2
 EXTSYM SpcOpF2,SpcOp03,SpcOp23,SpcOp43,SpcOp63,SpcOp83,SpcOpA3,SpcOpC3
 EXTSYM SpcOpE3,SpcOp13,SpcOp33,SpcOp53,SpcOp73,SpcOp93,SpcOpB3,SpcOpD3
 EXTSYM SpcOpF3
+EXTSYM SpcOp10,SpcOp30,SpcOp50,SpcOp70,SpcOp90,SpcOpB0,SpcOpD0,SpcOpF0
+EXTSYM SpcOp2F,SpcOp01,SpcOp11,SpcOp21,SpcOp31,SpcOp41,SpcOp51,SpcOp61
+EXTSYM SpcOp71,SpcOp81,SpcOp91,SpcOpA1,SpcOpB1,SpcOpC1,SpcOpD1,SpcOpE1
+EXTSYM SpcOpF1
 EXTSYM spc700read,curexecstate,tableadc
 
 %include "cpu/regsw.mac"
@@ -539,42 +543,23 @@ NEWSYM Op9F     ; XCN A     A(7-4) <-> A(3-0)     N......Z.
 ; Branch Stuff
 ;************************************************
 NEWSYM Op10     ; BPL Branch on N=0
-    test byte[spcNZ],128
-    jz .branch
-    spcbrancher
+    spccop SpcOp10
 NEWSYM Op30     ; BMI Branch on N=1
-    test byte[spcNZ],128
-    jnz .branch
-    spcbrancher
+    spccop SpcOp30
 NEWSYM Op50     ; BVC Branch on V=0
-    test byte[spcP],64
-    jz .branch
-    spcbrancher
+    spccop SpcOp50
 NEWSYM Op70     ; BVS Branch on V=1
-    test byte[spcP],64
-    jnz .branch
-    spcbrancher
+    spccop SpcOp70
 NEWSYM Op90     ; BCC Branc on c=0
-    test byte[spcP],1
-    jz .branch
-    spcbrancher
+    spccop SpcOp90
 NEWSYM OpB0     ; BCS Branch on C=1
-    test byte[spcP],1
-    jnz .branch
-    spcbrancher
+    spccop SpcOpB0
 NEWSYM OpD0     ; BNE branch on Z=0
-    test byte[spcNZ],255
-    jnz .branch
-    spcbrancher
+    spccop SpcOpD0
 NEWSYM OpF0     ; BEQ Branch on Z=1
-    test byte[spcNZ],0FFh
-    jz .branch
-    spcbrancher
+    spccop SpcOpF0
 NEWSYM Op2F     ; BRA rel    branch always            ...
-    movsx ebx,byte[ebp]
-    inc ebp
-    add ebp,ebx
-    ret
+    spccop SpcOp2F
 
 
 ;************************************************
@@ -621,37 +606,37 @@ NEWSYM OpED     ; NOTC       complement carry flag     .......C
 ; TCALL instructions (Verified)
 ;************************************************
 NEWSYM Op01     ; TCALL 0
-    spctcall 30
+    spccop SpcOp01
 NEWSYM Op11     ; TCALL 1
-    spctcall 28
+    spccop SpcOp11
 NEWSYM Op21     ; TCALL 2
-    spctcall 26
+    spccop SpcOp21
 NEWSYM Op31     ; TCALL 3
-    spctcall 24
+    spccop SpcOp31
 NEWSYM Op41     ; TCALL 4
-    spctcall 22
+    spccop SpcOp41
 NEWSYM Op51     ; TCALL 5
-    spctcall 20
+    spccop SpcOp51
 NEWSYM Op61     ; TCALL 6
-    spctcall 18
+    spccop SpcOp61
 NEWSYM Op71     ; TCALL 7
-    spctcall 16
+    spccop SpcOp71
 NEWSYM Op81     ; TCALL 8
-    spctcall 14
+    spccop SpcOp81
 NEWSYM Op91     ; TCALL 9
-    spctcall 12
+    spccop SpcOp91
 NEWSYM OpA1     ; TCALL A
-    spctcall 10
+    spccop SpcOpA1
 NEWSYM OpB1     ; TCALL B
-    spctcall 08
+    spccop SpcOpB1
 NEWSYM OpC1     ; TCALL C
-    spctcall 06
+    spccop SpcOpC1
 NEWSYM OpD1     ; TCALL D
-    spctcall 04
+    spccop SpcOpD1
 NEWSYM OpE1     ; TCALL E
-    spctcall 02
+    spccop SpcOpE1
 NEWSYM OpF1     ; TCALL F
-    spctcall 00
+    spccop SpcOpF1
 
 ;************************************************
 ; SET1 instructions (Verified)

@@ -4,6 +4,8 @@
  * declares the state they touch and exposes the two functions that the SPC
  * core's WriteByte / ReadByte macros in cpu/spc700.asm call.
  */
+#include <stdbool.h>
+
 #include "../types.h"
 #include "c_dsp.h" /* DSPWriteReg */
 #include "spc700.h" /* spcRamDP */
@@ -18,6 +20,7 @@ extern u1 reg1read, reg2read, reg3read, reg4read;
 extern u4 spc700read;
 extern u1 timeron, timincr0, timincr1, timincr2, timinl0, timinl1, timinl2;
 extern u1 spcnumread;
+extern u1 spcNZ, spcP;
 
 #include "spc_ioregs.h"
 void SPCWriteReg(u4 reg, u1 val)
