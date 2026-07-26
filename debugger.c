@@ -49,7 +49,7 @@ extern uint8_t CurrentCPU;
 extern uint8_t soundon;
 extern uint32_t cycpbl;
 
-extern uint16_t xa, xx, xy, xs;
+extern uint16_t xa, xx, xy;
 extern uint8_t xdb;
 
 extern uint8_t debuggeron;

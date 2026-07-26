@@ -136,7 +136,7 @@ EXTSYM SPC700read,SPC700write,numspcvblleft,spc700idle,SA1IRQExec,ForceNewGfxOff
 EXTSYM GUIQuit,IRAM,SA1Ptr,SA1BWPtr,outofmemfix
 EXTSYM yesoutofmemory,ProcessMovies,ppustatus
 EXTSYM ReturnFromSPCStall,scanlines,MoviePassWaiting
-EXTSYM SfxSFR,nosprincr,cpucycle,switchtovirqdeb,switchtonmideb
+EXTSYM SfxSFR,nosprincr,cpucycle
 EXTSYM BackupCVFrame,RestoreCVFrame,xe
 EXTSYM KeyInsrtChap,KeyNextChap,KeyPrevChap
 EXTSYM EMUPauseKey,INCRFrameKey,MovieWaiting,NoInputRead
@@ -1541,4 +1541,12 @@ NEWSYM execsingle
     jne .nointrset2
     mov byte[intrset],2
 .nointrset2
-    jmp switchtovirqdeb
+    push edx
+    mov edx, esp
+    push esi
+    mov esi, esp
+    ccallv switchtovirq, edx, esi
+    pop esi
+    pop edx
+    xor ebx, ebx
+    jmp execloopdeb

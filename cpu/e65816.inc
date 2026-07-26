@@ -24,7 +24,7 @@ EXTSYM membank0r16,membank0r8,membank0w16,membank0w8
 EXTSYM memtabler16,memtabler8,memtablew16,memtablew8
 EXTSYM nmistatus,regaccessbankr8,snesmap2,snesmmap,stackand,stackor,tablead
 EXTSYM wramdata,xa,xd,xdb,xe,xirqb,xpb,xpc,xs,xx,xy
-EXTSYM intrset,UpdateDPage,switchtovirqret
+EXTSYM intrset,UpdateDPage,switchtovirq,execloop
 
 NEWSYM E65816IncStart
 
@@ -448,9 +448,20 @@ NEWSYM COp58   ; CLI i
     cmp byte[doirqnext],0
     je .noirqexec
     mov byte[doirqnext],0
-    call switchtovirqret
+    push edx
+    mov edx, esp
+    push esi
+    mov esi, esp
+    ccallv switchtovirq, edx, esi
+    pop esi
+    pop edx
+    test byte[xe],1
+    jnz .virqemul
 .noirqexec
     endloop
+.virqemul                 ; emulation mode restarts the loop instead of returning
+    xor ebx, ebx
+    jmp execloop
 NEWSYM COpB8   ; CLV i
     mov dword[flago],0
     endloop

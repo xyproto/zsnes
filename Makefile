@@ -375,7 +375,6 @@ SRCS += cpu/dma.c
 SRCS += cpu/dspproc.asm
 SRCS += cpu/execute.asm
 SRCS += cpu/executec.c
-SRCS += cpu/irq.asm
 SRCS += cpu/memory.asm
 SRCS += cpu/memtable.c
 SRCS += cpu/spc700.asm
