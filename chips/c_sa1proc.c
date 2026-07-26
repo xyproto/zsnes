@@ -1,8 +1,12 @@
+#include <string.h>
+
 #include "../cpu/execute.h"
 #include "../cpu/memory.h"
 #include "../endmem.h"
 #include "../gblvars.h"
 #include "../initc.h"
+#include "../ui.h" /* wramdata */
+#include "sa1proc.h"
 #include "sa1regs.h"
 
 // SA-1 65816 flag words and interrupt vectors (defined in initdata.c / sa1regs.c).
@@ -11,6 +15,17 @@ extern u4 Sflagc;
 extern u4 Sflago;
 extern u4 SA1NMIV;
 extern u4 SA1IRQV;
+
+// The rest of the swap state, from the save-state block in chips/sa1regs.c and
+// from cpu/execute.asm / chips/sa1proc.asm.
+extern u1* SA1Ptr;
+extern u1* SNSPtr;
+extern u1* SNSRegPCS;
+extern u1 SNSRegP;
+extern u4 SA1TimerVal;
+extern u1 CurrentExecSA1;
+extern u1 SA1SHb; // low byte of a dword in cpu/execute.asm
+extern u1 wramdataa[65536];
 
 // Build the SA-1 status byte (dl) from its flag words, keeping the caller's
 // bits 2-5. Mirrors the `makedl` macro in the assembly.
@@ -80,4 +95,129 @@ void SA1switchtonmi(u4* const pedx, u1** const pesi)
 void SA1switchtovirq(u4* const pedx, u1** const pesi)
 {
     SA1switch(pedx, pesi, (u2)SA1IRQV, 1);
+}
+
+//
+// SA1Swap - give the SA-1 one instruction slot.
+//
+// Split in two so the opcode itself is still dispatched from assembly, where
+// the 65816 core's register ABI (and ebp, its SPC program counter) is live:
+// chips/sa1proc.asm pushad's the register file, calls SA1SwapEnter, runs one
+// opcode if it returns nonzero, then calls SA1SwapLeave. Both halves read and
+// write the caller's registers through that pushad block.
+//
+enum { R_EDI,
+    R_ESI,
+    R_EBP,
+    R_ESP,
+    R_EBX,
+    R_EDX,
+    R_ECX,
+    R_EAX };
+
+// dh is the scanline cycle counter; the assembly's `add dh,n` wraps in 8 bits.
+static u4 add_dh(u4 const edx, u1 const n)
+{
+    return edx & 0xFFFF00FF | (u4)(u1)((u1)(edx >> 8) + n) << 8;
+}
+
+static u4 peek32(u1 const* const p)
+{
+    u4 v;
+    memcpy(&v, p, sizeof v);
+    return v;
+}
+
+// Idle-loop detection: these opcode words are the SA-1 spinning on a flag the
+// 65816 has not set yet, so the slot is skipped and only cycles are charged.
+// Returns the cycle charge for a skipped slot, or 0 to run an instruction.
+static u1 SA1IdleCharge(u1 const* const p)
+{
+    if (SA1DoIRQ & 1)
+        return 0;
+    if (IRAM[0x00] == 0 && (peek32(p) == 0xFCF000A5 || peek32(p - 2) == 0xFCF000A5))
+        return 18;
+    if (SA1SHb == 1)
+        return 15;
+    if (*(u2 const*)(SA1BWPtr + 0x72A4) == 0 && peek32(p) == 0xF072A4AD)
+        return 15;
+    if (IRAM[0x72] == 0 && peek32(p) == 0xF03072AD)
+        return 15;
+    return 0;
+}
+
+u4 SA1SwapEnter(u4* const r)
+{
+    u1* const p = SA1Ptr;
+
+    r[R_ECX] = 0;
+
+    u1 const idle = SA1IdleCharge(p);
+    if (idle != 0) {
+        r[R_EDX] = add_dh(r[R_EDX], idle);
+        r[R_EAX] = (u4)p;
+        CurrentExecSA1 += 2;
+        SA1Status = 0;
+        return 0;
+    }
+
+    // Save the 65816 context, install the SA-1's.
+    SNSRegP = (u1)r[R_EDX];
+    SNSRegPCS = initaddrl;
+    prevedi = r[R_EDI];
+    SNSPtr = (u1*)r[R_ESI];
+
+    u4 edx = r[R_EDX] & 0xFFFFFF00 | SA1RegP;
+    initaddrl = SA1RegPCS;
+    CurBWPtr = SA1BWPtr;
+    snesmap2[0] = IRAM;
+    wramdata = IRAM;
+
+    u4 const eax = (u1)edx;
+    edx = add_dh(edx, 20);
+    SA1Status = 1;
+
+    r[R_EAX] = eax;
+    r[R_EDX] = edx;
+    r[R_ESI] = (u4)SA1Ptr;
+    r[R_EDI] = (u4)SA1tablead[eax];
+
+    if (SA1DoIRQ & 0xFF000003) {
+        if (SA1DoIRQ & 3) {
+            u1* esi = (u1*)r[R_ESI];
+            if (SA1DoIRQ & 1) {
+                SA1DoIRQ &= 0xFFFFFFFE;
+                SA1switchtovirq(&r[R_EDX], &esi);
+            } else {
+                SA1DoIRQ &= 0xFFFFFFFD;
+                SA1switchtonmi(&r[R_EDX], &esi);
+            }
+            r[R_ESI] = (u4)esi;
+        } else if (--((u1*)&SA1DoIRQ)[3] == 0) {
+            ((u1*)&SA1DoIRQ)[0] |= 8;
+        }
+    }
+    return 1;
+}
+
+void SA1SwapLeave(u4* const r)
+{
+    // Save the SA-1 context, restore the 65816's.
+    SA1RegP = (u1)r[R_EDX];
+    SA1RegPCS = initaddrl;
+    SA1Ptr = (u1*)r[R_ESI];
+
+    initaddrl = SNSRegPCS;
+    CurBWPtr = SNSBWPtr;
+    wramdata = wramdataa;
+    snesmap2[0] = wramdata;
+
+    r[R_EDX] = add_dh(r[R_EDX] & 0xFFFFFF00 | SNSRegP, 11);
+    r[R_ESI] = (u4)SNSPtr;
+    r[R_EDI] = prevedi;
+    r[R_EAX] = 0;
+
+    CurrentExecSA1++;
+    SA1Status = 0;
+    SA1TimerVal += 23;
 }
