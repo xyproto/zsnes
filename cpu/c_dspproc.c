@@ -1185,7 +1185,7 @@ void BRRDecode(u4 const voice, u1* esi, s2* edi)
 }
 
 extern u1 NoiseData[];   // defined in ui.c
-extern u4 NoiseInc;      // defined in cpu/dspproc.asm
+extern u4 NoiseInc;      // defined in cpu/dspproc.c
 extern u4 NoisePointer;
 extern u1 PModBuffer[];
 
