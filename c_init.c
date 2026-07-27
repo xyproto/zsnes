@@ -148,10 +148,8 @@ void init(void)
 
         /* Most likely it isn't desirable to be checking timers under the
          * debugger anyway, but this is a much simpler fix. */
-#ifdef __WIN32__
-        // need to get "freq" set first
+        // must precede Start60HZ: sets "freq", and SDL video too
         initwinvideo();
-#endif
         Start60HZ();
         startdebugger();
     } else

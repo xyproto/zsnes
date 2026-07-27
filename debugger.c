@@ -52,7 +52,7 @@ extern uint32_t cycpbl;
 extern uint16_t xa, xx, xy;
 extern uint8_t xdb;
 
-extern uint8_t debuggeron;
+uint8_t debuggeron; // was in the deleted dos/debug.asm
 
 // should be in "zstate.h"
 void debugloadstate();
