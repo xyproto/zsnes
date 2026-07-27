@@ -43,7 +43,7 @@ MODE7     := zsnes_mode716b_test
 MODE7_SRC := mode716b_test.c
 OBJS      := ../zpath.o
 
-.PHONY: all run clean spcdec
+.PHONY: all run clean spcdec fxtable
 
 all: $(BIN) $(NETPLAY) $(ST10) $(ST11) $(OBC1) $(MSU1) $(DSP2) $(SAI) $(SA1) $(SPC7110) $(VCACHE) $(SPRITES) $(C4) $(MODE7)
 
@@ -98,6 +98,15 @@ spcdec: difftest_spcdec.c difftest.h mkdifftest.sh ../cpu/spc_ops.h
 	$(CC) $(CFLAGS) difftest_spcdec.c _spcdec.o -no-pie -o difftest_spcdec
 	@./difftest_spcdec
 
+# Differential test for the SuperFX table builder against the assembly it
+# replaced. Not part of `all` - it needs that old assembly out of git history.
+fxtable: difftest_fxtable.c mkfxtable.sh ../chips/c_fxtable.c ../endmem.o
+	./mkfxtable.sh
+	$(CC) $(CFLAGS) -fcommon -fno-pic -c difftest_fxtable.c -o _fxtest.o
+	$(CC) $(CFLAGS) -fcommon -fno-pic -c ../chips/c_fxtable.c -o _fxtable.o
+	$(CC) -m32 -no-pie -fno-pic _fxtest.o _fxtable.o _fxold.o _fxstubs.o ../endmem.o -o difftest_fxtable
+	@./difftest_fxtable
+
 run: all
 	@./$(BIN)
 	@./$(NETPLAY)
@@ -116,7 +125,7 @@ run: all
 
 clean:
 	rm -f $(BIN) $(NETPLAY) $(ST10) $(ST11) $(OBC1) $(MSU1) $(DSP2) $(SAI) $(SA1) $(SPC7110) $(VCACHE) $(SPRITES) $(C4) $(MODE7)
-	rm -f difftest_* _*.o _*.asm _*.inc
+	rm -f difftest_spcdec difftest_fxtable _*.o _*.asm _*.inc _*.raw
 
 # Port-time differential testing (difftest.h + mkdifftest.sh) proves a C port
 # bit-identical to the original assembly. It is transient by design: the oracle
