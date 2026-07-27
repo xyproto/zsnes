@@ -75,6 +75,73 @@ EXTSYM FxTable,FxTableb,FxTablec,FxTabled,SfxMemTable,flagnz,fxbit01,fxbit23
 EXTSYM fxxand,sfx128lineloc,sfx160lineloc,sfx192lineloc,sfxobjlineloc
 EXTSYM sfxramdata,fxbit45,fxbit67,SFXProc,ChangeOps,PLOTJmpa,PLOTJmpb
 
+; Seam to the handlers ported to C (chips/c_fxops.c, chips/fx_ops.h). See
+; chips/fxemu2b.asm for the other half, FxDispatch.
+EXTSYM FxSeamPC,FxSeamSrc,FxSeamDst,FxSeamCX
+EXTSYM c_FxOp50,c_FxOp51,c_FxOp52,c_FxOp53,c_FxOp54,c_FxOp55
+EXTSYM c_FxOp56,c_FxOp57,c_FxOp58,c_FxOp59,c_FxOp5A,c_FxOp5B
+EXTSYM c_FxOp5C,c_FxOp5D,c_FxOp5E,c_FxOp50A1,c_FxOp51A1,c_FxOp52A1
+EXTSYM c_FxOp53A1,c_FxOp54A1,c_FxOp55A1,c_FxOp56A1,c_FxOp57A1,c_FxOp58A1
+EXTSYM c_FxOp59A1,c_FxOp5AA1,c_FxOp5BA1,c_FxOp5CA1,c_FxOp5DA1,c_FxOp5EA1
+EXTSYM c_FxOp50A2,c_FxOp51A2,c_FxOp52A2,c_FxOp53A2,c_FxOp54A2,c_FxOp55A2
+EXTSYM c_FxOp56A2,c_FxOp57A2,c_FxOp58A2,c_FxOp59A2,c_FxOp5AA2,c_FxOp5BA2
+EXTSYM c_FxOp5CA2,c_FxOp5DA2,c_FxOp5EA2,c_FxOp5FA2,c_FxOp50A3,c_FxOp51A3
+EXTSYM c_FxOp52A3,c_FxOp53A3,c_FxOp54A3,c_FxOp55A3,c_FxOp56A3,c_FxOp57A3
+EXTSYM c_FxOp58A3,c_FxOp59A3,c_FxOp5AA3,c_FxOp5BA3,c_FxOp5CA3,c_FxOp5DA3
+EXTSYM c_FxOp5EA3,c_FxOp5FA3,c_FxOp60,c_FxOp61,c_FxOp62,c_FxOp63
+EXTSYM c_FxOp64,c_FxOp65,c_FxOp66,c_FxOp67,c_FxOp68,c_FxOp69
+EXTSYM c_FxOp6A,c_FxOp6B,c_FxOp6C,c_FxOp6D,c_FxOp6E,c_FxOp60A1
+EXTSYM c_FxOp61A1,c_FxOp62A1,c_FxOp63A1,c_FxOp64A1,c_FxOp65A1,c_FxOp66A1
+EXTSYM c_FxOp67A1,c_FxOp68A1,c_FxOp69A1,c_FxOp6AA1,c_FxOp6BA1,c_FxOp6CA1
+EXTSYM c_FxOp6DA1,c_FxOp6EA1,c_FxOp60A2,c_FxOp61A2,c_FxOp62A2,c_FxOp63A2
+EXTSYM c_FxOp64A2,c_FxOp65A2,c_FxOp66A2,c_FxOp67A2,c_FxOp68A2,c_FxOp69A2
+EXTSYM c_FxOp6AA2,c_FxOp6BA2,c_FxOp6CA2,c_FxOp6DA2,c_FxOp6EA2,c_FxOp6FA2
+EXTSYM c_FxOp60A3,c_FxOp61A3,c_FxOp62A3,c_FxOp63A3,c_FxOp64A3,c_FxOp65A3
+EXTSYM c_FxOp66A3,c_FxOp67A3,c_FxOp68A3,c_FxOp69A3,c_FxOp6AA3,c_FxOp6BA3
+EXTSYM c_FxOp6CA3,c_FxOp6DA3,c_FxOp6EA3,c_FxOp71,c_FxOp72,c_FxOp73
+EXTSYM c_FxOp74,c_FxOp75,c_FxOp76,c_FxOp77,c_FxOp78,c_FxOp79
+EXTSYM c_FxOp7A,c_FxOp7B,c_FxOp7C,c_FxOp7D,c_FxOp7E,c_FxOp71A1
+EXTSYM c_FxOp72A1,c_FxOp73A1,c_FxOp74A1,c_FxOp75A1,c_FxOp76A1,c_FxOp77A1
+EXTSYM c_FxOp78A1,c_FxOp79A1,c_FxOp7AA1,c_FxOp7BA1,c_FxOp7CA1,c_FxOp7DA1
+EXTSYM c_FxOp7EA1,c_FxOp71A2,c_FxOp72A2,c_FxOp73A2,c_FxOp74A2,c_FxOp75A2
+EXTSYM c_FxOp76A2,c_FxOp77A2,c_FxOp78A2,c_FxOp79A2,c_FxOp7AA2,c_FxOp7BA2
+EXTSYM c_FxOp7CA2,c_FxOp7DA2,c_FxOp7EA2,c_FxOp7FA2,c_FxOp71A3,c_FxOp72A3
+EXTSYM c_FxOp73A3,c_FxOp74A3,c_FxOp75A3,c_FxOp76A3,c_FxOp77A3,c_FxOp78A3
+EXTSYM c_FxOp79A3,c_FxOp7AA3,c_FxOp7BA3,c_FxOp7CA3,c_FxOp7DA3,c_FxOp7EA3
+EXTSYM c_FxOp7FA3
+
+%macro ccall 1-*
+	push ecx
+	push edx
+%rep %0 - 1
+%rotate -1
+	push dword %1
+%endrep
+%rotate -1
+	call %1
+%if %0 != 1
+	add esp, (%0 - 1) * 4
+%endif
+	pop edx
+	pop ecx
+%endmacro
+
+; Spill the core's live registers to the seam block, run a C handler body, then
+; reload them. ebp is the program counter, esi/edi the source/destination
+; register pointers, ecx the opcode byte (cl) plus the ALT mode (ch).
+%macro fxcop 1
+    mov [FxSeamPC], ebp
+    mov [FxSeamSrc], esi
+    mov [FxSeamDst], edi
+    mov [FxSeamCX], ecx
+    ccall %1
+    mov ebp, [FxSeamPC]
+    mov esi, [FxSeamSrc]
+    mov edi, [FxSeamDst]
+    mov ecx, [FxSeamCX]
+    ret
+%endmacro
+
 %include "chips/fxemu2.mac"
 
 ; * Optimise PLOT, COLOR!
@@ -1196,35 +1263,35 @@ NEWSYM FxOp4F      ; NOT    perform exclusive exor with 1 on all bits  ; V
    ret
 
 NEWSYM FxOp50      ; ADD RN add, register + register
-   ADDRN 0
+   fxcop c_FxOp50
 NEWSYM FxOp51      ; ADD RN add, register + register
-   ADDRN 1
+   fxcop c_FxOp51
 NEWSYM FxOp52      ; ADD RN add, register + register
-   ADDRN 2
+   fxcop c_FxOp52
 NEWSYM FxOp53      ; ADD RN add, register + register
-   ADDRN 3
+   fxcop c_FxOp53
 NEWSYM FxOp54      ; ADD RN add, register + register
-   ADDRN 4
+   fxcop c_FxOp54
 NEWSYM FxOp55      ; ADD RN add, register + register
-   ADDRN 5
+   fxcop c_FxOp55
 NEWSYM FxOp56      ; ADD RN add, register + register
-   ADDRN 6
+   fxcop c_FxOp56
 NEWSYM FxOp57      ; ADD RN add, register + register
-   ADDRN 7
+   fxcop c_FxOp57
 NEWSYM FxOp58      ; ADD RN add, register + register
-   ADDRN 8
+   fxcop c_FxOp58
 NEWSYM FxOp59      ; ADD RN add, register + register
-   ADDRN 9
+   fxcop c_FxOp59
 NEWSYM FxOp5A      ; ADD RN add, register + register
-   ADDRN 10
+   fxcop c_FxOp5A
 NEWSYM FxOp5B      ; ADD RN add, register + register
-   ADDRN 11
+   fxcop c_FxOp5B
 NEWSYM FxOp5C      ; ADD RN add, register + register
-   ADDRN 12
+   fxcop c_FxOp5C
 NEWSYM FxOp5D      ; ADD RN add, register + register
-   ADDRN 13
+   fxcop c_FxOp5D
 NEWSYM FxOp5E      ; ADD RN add, register + register
-   ADDRN 14
+   fxcop c_FxOp5E
 NEWSYM FxOp5F      ; ADD RN add, register + register
    FETCHPIPE
    mov eax, [esi]    ; Read Source
@@ -1240,35 +1307,35 @@ NEWSYM FxOp5F      ; ADD RN add, register + register
    ret
 
 NEWSYM FxOp50A1    ; ADC RN add with carry, register + register
-   ADCRN 0
+   fxcop c_FxOp50A1
 NEWSYM FxOp51A1    ; ADC RN add with carry, register + register
-   ADCRN 1
+   fxcop c_FxOp51A1
 NEWSYM FxOp52A1    ; ADC RN add with carry, register + register
-   ADCRN 2
+   fxcop c_FxOp52A1
 NEWSYM FxOp53A1    ; ADC RN add with carry, register + register
-   ADCRN 3
+   fxcop c_FxOp53A1
 NEWSYM FxOp54A1    ; ADC RN add with carry, register + register
-   ADCRN 4
+   fxcop c_FxOp54A1
 NEWSYM FxOp55A1    ; ADC RN add with carry, register + register
-   ADCRN 5
+   fxcop c_FxOp55A1
 NEWSYM FxOp56A1    ; ADC RN add with carry, register + register
-   ADCRN 6
+   fxcop c_FxOp56A1
 NEWSYM FxOp57A1    ; ADC RN add with carry, register + register
-   ADCRN 7
+   fxcop c_FxOp57A1
 NEWSYM FxOp58A1    ; ADC RN add with carry, register + register
-   ADCRN 8
+   fxcop c_FxOp58A1
 NEWSYM FxOp59A1    ; ADC RN add with carry, register + register
-   ADCRN 9
+   fxcop c_FxOp59A1
 NEWSYM FxOp5AA1    ; ADC RN add with carry, register + register
-   ADCRN 10
+   fxcop c_FxOp5AA1
 NEWSYM FxOp5BA1    ; ADC RN add with carry, register + register
-   ADCRN 11
+   fxcop c_FxOp5BA1
 NEWSYM FxOp5CA1    ; ADC RN add with carry, register + register
-   ADCRN 12
+   fxcop c_FxOp5CA1
 NEWSYM FxOp5DA1    ; ADC RN add with carry, register + register
-   ADCRN 13
+   fxcop c_FxOp5DA1
 NEWSYM FxOp5EA1    ; ADC RN add with carry, register + register
-   ADCRN 14
+   fxcop c_FxOp5EA1
 NEWSYM FxOp5FA1    ; ADC RN add with carry, register + register
    FETCHPIPE
    mov eax, [esi]    ; Read Source
@@ -1286,102 +1353,99 @@ NEWSYM FxOp5FA1    ; ADC RN add with carry, register + register
 
 ; Weird opcode (FxOp50A2, add 0, wow!)
 NEWSYM FxOp50A2    ; ADI RN add, register + immediate
-   ADIRN 0
+   fxcop c_FxOp50A2
 NEWSYM FxOp51A2    ; ADI RN add, register + immediate
-   ADIRN 1
+   fxcop c_FxOp51A2
 NEWSYM FxOp52A2    ; ADI RN add, register + immediate
-   ADIRN 2
+   fxcop c_FxOp52A2
 NEWSYM FxOp53A2    ; ADI RN add, register + immediate
-   ADIRN 3
+   fxcop c_FxOp53A2
 NEWSYM FxOp54A2    ; ADI RN add, register + immediate
-   ADIRN 4
+   fxcop c_FxOp54A2
 NEWSYM FxOp55A2    ; ADI RN add, register + immediate
-   ADIRN 5
+   fxcop c_FxOp55A2
 NEWSYM FxOp56A2    ; ADI RN add, register + immediate
-   ADIRN 6
+   fxcop c_FxOp56A2
 NEWSYM FxOp57A2    ; ADI RN add, register + immediate
-   ADIRN 7
+   fxcop c_FxOp57A2
 NEWSYM FxOp58A2    ; ADI RN add, register + immediate
-   ADIRN 8
+   fxcop c_FxOp58A2
 NEWSYM FxOp59A2    ; ADI RN add, register + immediate
-   ADIRN 9
+   fxcop c_FxOp59A2
 NEWSYM FxOp5AA2    ; ADI RN add, register + immediate
-   ADIRN 10
+   fxcop c_FxOp5AA2
 NEWSYM FxOp5BA2    ; ADI RN add, register + immediate
-   ADIRN 11
+   fxcop c_FxOp5BA2
 NEWSYM FxOp5CA2    ; ADI RN add, register + immediate
-   ADIRN 12
+   fxcop c_FxOp5CA2
 NEWSYM FxOp5DA2    ; ADI RN add, register + immediate
-   ADIRN 13
+   fxcop c_FxOp5DA2
 NEWSYM FxOp5EA2    ; ADI RN add, register + immediate
-   ADIRN 14
+   fxcop c_FxOp5EA2
 NEWSYM FxOp5FA2    ; ADI RN add, register + immediate
-   ADIRN 15
-
-; Another very useful opcode
+   fxcop c_FxOp5FA2
 NEWSYM FxOp50A3    ; ADCIRN add with carry, register + immediate
-   ADCIRN 0
+   fxcop c_FxOp50A3
 NEWSYM FxOp51A3    ; ADCIRN add with carry, register + immediate
-   ADCIRN 1
+   fxcop c_FxOp51A3
 NEWSYM FxOp52A3    ; ADCIRN add with carry, register + immediate
-   ADCIRN 2
+   fxcop c_FxOp52A3
 NEWSYM FxOp53A3    ; ADCIRN add with carry, register + immediate
-   ADCIRN 3
+   fxcop c_FxOp53A3
 NEWSYM FxOp54A3    ; ADCIRN add with carry, register + immediate
-   ADCIRN 4
+   fxcop c_FxOp54A3
 NEWSYM FxOp55A3    ; ADCIRN add with carry, register + immediate
-   ADCIRN 5
+   fxcop c_FxOp55A3
 NEWSYM FxOp56A3    ; ADCIRN add with carry, register + immediate
-   ADCIRN 6
+   fxcop c_FxOp56A3
 NEWSYM FxOp57A3    ; ADCIRN add with carry, register + immediate
-   ADCIRN 7
+   fxcop c_FxOp57A3
 NEWSYM FxOp58A3    ; ADCIRN add with carry, register + immediate
-   ADCIRN 8
+   fxcop c_FxOp58A3
 NEWSYM FxOp59A3    ; ADCIRN add with carry, register + immediate
-   ADCIRN 9
+   fxcop c_FxOp59A3
 NEWSYM FxOp5AA3    ; ADCIRN add with carry, register + immediate
-   ADCIRN 10
+   fxcop c_FxOp5AA3
 NEWSYM FxOp5BA3    ; ADCIRN add with carry, register + immediate
-   ADCIRN 11
+   fxcop c_FxOp5BA3
 NEWSYM FxOp5CA3    ; ADCIRN add with carry, register + immediate
-   ADCIRN 12
+   fxcop c_FxOp5CA3
 NEWSYM FxOp5DA3    ; ADCIRN add with carry, register + immediate
-   ADCIRN 13
+   fxcop c_FxOp5DA3
 NEWSYM FxOp5EA3    ; ADCIRN add with carry, register + immediate
-   ADCIRN 14
+   fxcop c_FxOp5EA3
 NEWSYM FxOp5FA3    ; ADCIRN add with carry, register + immediate
-   ADCIRN 15
-
+   fxcop c_FxOp5FA3
 NEWSYM FxOp60      ; SUBRN  subtract, register - register
-   SUBRN 0
+   fxcop c_FxOp60
 NEWSYM FxOp61      ; SUBRN  subtract, register - register
-   SUBRN 1
+   fxcop c_FxOp61
 NEWSYM FxOp62      ; SUBRN  subtract, register - register
-   SUBRN 2
+   fxcop c_FxOp62
 NEWSYM FxOp63      ; SUBRN  subtract, register - register
-   SUBRN 3
+   fxcop c_FxOp63
 NEWSYM FxOp64      ; SUBRN  subtract, register - register
-   SUBRN 4
+   fxcop c_FxOp64
 NEWSYM FxOp65      ; SUBRN  subtract, register - register
-   SUBRN 5
+   fxcop c_FxOp65
 NEWSYM FxOp66      ; SUBRN  subtract, register - register
-   SUBRN 6
+   fxcop c_FxOp66
 NEWSYM FxOp67      ; SUBRN  subtract, register - register
-   SUBRN 7
+   fxcop c_FxOp67
 NEWSYM FxOp68      ; SUBRN  subtract, register - register
-   SUBRN 8
+   fxcop c_FxOp68
 NEWSYM FxOp69      ; SUBRN  subtract, register - register
-   SUBRN 9
+   fxcop c_FxOp69
 NEWSYM FxOp6A      ; SUBRN  subtract, register - register
-   SUBRN 10
+   fxcop c_FxOp6A
 NEWSYM FxOp6B      ; SUBRN  subtract, register - register
-   SUBRN 11
+   fxcop c_FxOp6B
 NEWSYM FxOp6C      ; SUBRN  subtract, register - register
-   SUBRN 12
+   fxcop c_FxOp6C
 NEWSYM FxOp6D      ; SUBRN  subtract, register - register
-   SUBRN 13
+   fxcop c_FxOp6D
 NEWSYM FxOp6E      ; SUBRN  subtract, register - register
-   SUBRN 14
+   fxcop c_FxOp6E
 NEWSYM FxOp6F      ; SUBRN  subtract, register - register
    FETCHPIPE
    mov eax,[esi]    ; Read Source
@@ -1398,35 +1462,35 @@ NEWSYM FxOp6F      ; SUBRN  subtract, register - register
    ret
 
 NEWSYM FxOp60A1    ; SBCRN  subtract with carry, register - register
-   SBCRN 0
+   fxcop c_FxOp60A1
 NEWSYM FxOp61A1    ; SBCRN  subtract with carry, register - register
-   SBCRN 1
+   fxcop c_FxOp61A1
 NEWSYM FxOp62A1    ; SBCRN  subtract with carry, register - register
-   SBCRN 2
+   fxcop c_FxOp62A1
 NEWSYM FxOp63A1    ; SBCRN  subtract with carry, register - register
-   SBCRN 3
+   fxcop c_FxOp63A1
 NEWSYM FxOp64A1    ; SBCRN  subtract with carry, register - register
-   SBCRN 4
+   fxcop c_FxOp64A1
 NEWSYM FxOp65A1    ; SBCRN  subtract with carry, register - register
-   SBCRN 5
+   fxcop c_FxOp65A1
 NEWSYM FxOp66A1    ; SBCRN  subtract with carry, register - register
-   SBCRN 6
+   fxcop c_FxOp66A1
 NEWSYM FxOp67A1    ; SBCRN  subtract with carry, register - register
-   SBCRN 7
+   fxcop c_FxOp67A1
 NEWSYM FxOp68A1    ; SBCRN  subtract with carry, register - register
-   SBCRN 8
+   fxcop c_FxOp68A1
 NEWSYM FxOp69A1    ; SBCRN  subtract with carry, register - register
-   SBCRN 9
+   fxcop c_FxOp69A1
 NEWSYM FxOp6AA1    ; SBCRN  subtract with carry, register - register
-   SBCRN 10
+   fxcop c_FxOp6AA1
 NEWSYM FxOp6BA1    ; SBCRN  subtract with carry, register - register
-   SBCRN 11
+   fxcop c_FxOp6BA1
 NEWSYM FxOp6CA1    ; SBCRN  subtract with carry, register - register
-   SBCRN 12
+   fxcop c_FxOp6CA1
 NEWSYM FxOp6DA1    ; SBCRN  subtract with carry, register - register
-   SBCRN 13
+   fxcop c_FxOp6DA1
 NEWSYM FxOp6EA1    ; SBCRN  subtract with carry, register - register
-   SBCRN 14
+   fxcop c_FxOp6EA1
 NEWSYM FxOp6FA1    ; SBCRN  subtract with carry, register - register
    mov eax,[esi]    ; Read Source
    mov ebx,ebp
@@ -1444,68 +1508,67 @@ NEWSYM FxOp6FA1    ; SBCRN  subtract with carry, register - register
    ret
 
 NEWSYM FxOp60A2    ; SUBIRN subtract, register - immediate
-   SUBIRN 0
+   fxcop c_FxOp60A2
 NEWSYM FxOp61A2    ; SUBIRN subtract, register - immediate
-   SUBIRN 1
+   fxcop c_FxOp61A2
 NEWSYM FxOp62A2    ; SUBIRN subtract, register - immediate
-   SUBIRN 2
+   fxcop c_FxOp62A2
 NEWSYM FxOp63A2    ; SUBIRN subtract, register - immediate
-   SUBIRN 3
+   fxcop c_FxOp63A2
 NEWSYM FxOp64A2    ; SUBIRN subtract, register - immediate
-   SUBIRN 4
+   fxcop c_FxOp64A2
 NEWSYM FxOp65A2    ; SUBIRN subtract, register - immediate
-   SUBIRN 5
+   fxcop c_FxOp65A2
 NEWSYM FxOp66A2    ; SUBIRN subtract, register - immediate
-   SUBIRN 6
+   fxcop c_FxOp66A2
 NEWSYM FxOp67A2    ; SUBIRN subtract, register - immediate
-   SUBIRN 7
+   fxcop c_FxOp67A2
 NEWSYM FxOp68A2    ; SUBIRN subtract, register - immediate
-   SUBIRN 8
+   fxcop c_FxOp68A2
 NEWSYM FxOp69A2    ; SUBIRN subtract, register - immediate
-   SUBIRN 9
+   fxcop c_FxOp69A2
 NEWSYM FxOp6AA2    ; SUBIRN subtract, register - immediate
-   SUBIRN 10
+   fxcop c_FxOp6AA2
 NEWSYM FxOp6BA2    ; SUBIRN subtract, register - immediate
-   SUBIRN 11
+   fxcop c_FxOp6BA2
 NEWSYM FxOp6CA2    ; SUBIRN subtract, register - immediate
-   SUBIRN 12
+   fxcop c_FxOp6CA2
 NEWSYM FxOp6DA2    ; SUBIRN subtract, register - immediate
-   SUBIRN 13
+   fxcop c_FxOp6DA2
 NEWSYM FxOp6EA2    ; SUBIRN subtract, register - immediate
-   SUBIRN 14
+   fxcop c_FxOp6EA2
 NEWSYM FxOp6FA2    ; SUBIRN subtract, register - immediate
-   SUBIRN 15
-
+   fxcop c_FxOp6FA2
 NEWSYM FxOp60A3    ; CMPRN  compare, register, register
-   CMPRN 0
+   fxcop c_FxOp60A3
 NEWSYM FxOp61A3    ; CMPRN  compare, register, register
-   CMPRN 1
+   fxcop c_FxOp61A3
 NEWSYM FxOp62A3    ; CMPRN  compare, register, register
-   CMPRN 2
+   fxcop c_FxOp62A3
 NEWSYM FxOp63A3    ; CMPRN  compare, register, register
-   CMPRN 3
+   fxcop c_FxOp63A3
 NEWSYM FxOp64A3    ; CMPRN  compare, register, register
-   CMPRN 4
+   fxcop c_FxOp64A3
 NEWSYM FxOp65A3    ; CMPRN  compare, register, register
-   CMPRN 5
+   fxcop c_FxOp65A3
 NEWSYM FxOp66A3    ; CMPRN  compare, register, register
-   CMPRN 6
+   fxcop c_FxOp66A3
 NEWSYM FxOp67A3    ; CMPRN  compare, register, register
-   CMPRN 7
+   fxcop c_FxOp67A3
 NEWSYM FxOp68A3    ; CMPRN  compare, register, register
-   CMPRN 8
+   fxcop c_FxOp68A3
 NEWSYM FxOp69A3    ; CMPRN  compare, register, register
-   CMPRN 9
+   fxcop c_FxOp69A3
 NEWSYM FxOp6AA3    ; CMPRN  compare, register, register
-   CMPRN 10
+   fxcop c_FxOp6AA3
 NEWSYM FxOp6BA3    ; CMPRN  compare, register, register
-   CMPRN 11
+   fxcop c_FxOp6BA3
 NEWSYM FxOp6CA3    ; CMPRN  compare, register, register
-   CMPRN 12
+   fxcop c_FxOp6CA3
 NEWSYM FxOp6DA3    ; CMPRN  compare, register, register
-   CMPRN 13
+   fxcop c_FxOp6DA3
 NEWSYM FxOp6EA3    ; CMPRN  compare, register, register
-   CMPRN 14
+   fxcop c_FxOp6EA3
 NEWSYM FxOp6FA3    ; CMPRN  compare, register, register
    FETCHPIPE
    mov eax,[esi]    ; Read Source
@@ -1551,33 +1614,33 @@ NEWSYM FxOp70      ; MERGE  R7 as upper byte, R8 as lower byte (used for texture
    ret
 
 NEWSYM FxOp71      ; AND RN register & register
-   ANDRN 1
+   fxcop c_FxOp71
 NEWSYM FxOp72      ; AND RN register & register
-   ANDRN 2
+   fxcop c_FxOp72
 NEWSYM FxOp73      ; AND RN register & register
-   ANDRN 3
+   fxcop c_FxOp73
 NEWSYM FxOp74      ; AND RN register & register
-   ANDRN 4
+   fxcop c_FxOp74
 NEWSYM FxOp75      ; AND RN register & register
-   ANDRN 5
+   fxcop c_FxOp75
 NEWSYM FxOp76      ; AND RN register & register
-   ANDRN 6
+   fxcop c_FxOp76
 NEWSYM FxOp77      ; AND RN register & register
-   ANDRN 7
+   fxcop c_FxOp77
 NEWSYM FxOp78      ; AND RN register & register
-   ANDRN 8
+   fxcop c_FxOp78
 NEWSYM FxOp79      ; AND RN register & register
-   ANDRN 9
+   fxcop c_FxOp79
 NEWSYM FxOp7A      ; AND RN register & register
-   ANDRN 10
+   fxcop c_FxOp7A
 NEWSYM FxOp7B      ; AND RN register & register
-   ANDRN 11
+   fxcop c_FxOp7B
 NEWSYM FxOp7C      ; AND RN register & register
-   ANDRN 12
+   fxcop c_FxOp7C
 NEWSYM FxOp7D      ; AND RN register & register
-   ANDRN 13
+   fxcop c_FxOp7D
 NEWSYM FxOp7E      ; AND RN register & register
-   ANDRN 14
+   fxcop c_FxOp7E
 NEWSYM FxOp7F      ; AND RN register & register
    FETCHPIPE
    mov eax,[esi]            ; Read Source
@@ -1591,33 +1654,33 @@ NEWSYM FxOp7F      ; AND RN register & register
    ret
 
 NEWSYM FxOp71A1    ; BIC RN register & ~register
-   BICRN 1
+   fxcop c_FxOp71A1
 NEWSYM FxOp72A1    ; BIC RN register & ~register
-   BICRN 2
+   fxcop c_FxOp72A1
 NEWSYM FxOp73A1    ; BIC RN register & ~register
-   BICRN 3
+   fxcop c_FxOp73A1
 NEWSYM FxOp74A1    ; BIC RN register & ~register
-   BICRN 4
+   fxcop c_FxOp74A1
 NEWSYM FxOp75A1    ; BIC RN register & ~register
-   BICRN 5
+   fxcop c_FxOp75A1
 NEWSYM FxOp76A1    ; BIC RN register & ~register
-   BICRN 6
+   fxcop c_FxOp76A1
 NEWSYM FxOp77A1    ; BIC RN register & ~register
-   BICRN 7
+   fxcop c_FxOp77A1
 NEWSYM FxOp78A1    ; BIC RN register & ~register
-   BICRN 8
+   fxcop c_FxOp78A1
 NEWSYM FxOp79A1    ; BIC RN register & ~register
-   BICRN 9
+   fxcop c_FxOp79A1
 NEWSYM FxOp7AA1    ; BIC RN register & ~register
-   BICRN 10
+   fxcop c_FxOp7AA1
 NEWSYM FxOp7BA1    ; BIC RN register & ~register
-   BICRN 11
+   fxcop c_FxOp7BA1
 NEWSYM FxOp7CA1    ; BIC RN register & ~register
-   BICRN 12
+   fxcop c_FxOp7CA1
 NEWSYM FxOp7DA1    ; BIC RN register & ~register
-   BICRN 13
+   fxcop c_FxOp7DA1
 NEWSYM FxOp7EA1    ; BIC RN register & ~register
-   BICRN 14
+   fxcop c_FxOp7EA1
 NEWSYM FxOp7FA1    ; BIC RN register & ~register
    FETCHPIPE
    mov ebx,ebp
@@ -1632,67 +1695,65 @@ NEWSYM FxOp7FA1    ; BIC RN register & ~register
    ret
 
 NEWSYM FxOp71A2    ; ANDIRN and #n - register & immediate
-   ANDIRN 1
+   fxcop c_FxOp71A2
 NEWSYM FxOp72A2    ; ANDIRN and #n - register & immediate
-   ANDIRN 2
+   fxcop c_FxOp72A2
 NEWSYM FxOp73A2    ; ANDIRN and #n - register & immediate
-   ANDIRN 3
+   fxcop c_FxOp73A2
 NEWSYM FxOp74A2    ; ANDIRN and #n - register & immediate
-   ANDIRN 4
+   fxcop c_FxOp74A2
 NEWSYM FxOp75A2    ; ANDIRN and #n - register & immediate
-   ANDIRN 5
+   fxcop c_FxOp75A2
 NEWSYM FxOp76A2    ; ANDIRN and #n - register & immediate
-   ANDIRN 6
+   fxcop c_FxOp76A2
 NEWSYM FxOp77A2    ; ANDIRN and #n - register & immediate
-   ANDIRN 7
+   fxcop c_FxOp77A2
 NEWSYM FxOp78A2    ; ANDIRN and #n - register & immediate
-   ANDIRN 8
+   fxcop c_FxOp78A2
 NEWSYM FxOp79A2    ; ANDIRN and #n - register & immediate
-   ANDIRN 9
+   fxcop c_FxOp79A2
 NEWSYM FxOp7AA2    ; ANDIRN and #n - register & immediate
-   ANDIRN 10
+   fxcop c_FxOp7AA2
 NEWSYM FxOp7BA2    ; ANDIRN and #n - register & immediate
-   ANDIRN 11
+   fxcop c_FxOp7BA2
 NEWSYM FxOp7CA2    ; ANDIRN and #n - register & immediate
-   ANDIRN 12
+   fxcop c_FxOp7CA2
 NEWSYM FxOp7DA2    ; ANDIRN and #n - register & immediate
-   ANDIRN 13
+   fxcop c_FxOp7DA2
 NEWSYM FxOp7EA2    ; ANDIRN and #n - register & immediate
-   ANDIRN 14
+   fxcop c_FxOp7EA2
 NEWSYM FxOp7FA2    ; ANDIRN and #n - register & immediate
-   ANDIRN 15
-
+   fxcop c_FxOp7FA2
 NEWSYM FxOp71A3    ; BICIRN register & ~immediate
-   BICIRN 1 ^ 0FFFFh
+   fxcop c_FxOp71A3
 NEWSYM FxOp72A3    ; BICIRN register & ~immediate
-   BICIRN 2 ^ 0FFFFh
+   fxcop c_FxOp72A3
 NEWSYM FxOp73A3    ; BICIRN register & ~immediate
-   BICIRN 3 ^ 0FFFFh
+   fxcop c_FxOp73A3
 NEWSYM FxOp74A3    ; BICIRN register & ~immediate
-   BICIRN 4 ^ 0FFFFh
+   fxcop c_FxOp74A3
 NEWSYM FxOp75A3    ; BICIRN register & ~immediate
-   BICIRN 5 ^ 0FFFFh
+   fxcop c_FxOp75A3
 NEWSYM FxOp76A3    ; BICIRN register & ~immediate
-   BICIRN 6 ^ 0FFFFh
+   fxcop c_FxOp76A3
 NEWSYM FxOp77A3    ; BICIRN register & ~immediate
-   BICIRN 7 ^ 0FFFFh
+   fxcop c_FxOp77A3
 NEWSYM FxOp78A3    ; BICIRN register & ~immediate
-   BICIRN 8 ^ 0FFFFh
+   fxcop c_FxOp78A3
 NEWSYM FxOp79A3    ; BICIRN register & ~immediate
-   BICIRN 9 ^ 0FFFFh
+   fxcop c_FxOp79A3
 NEWSYM FxOp7AA3    ; BICIRN register & ~immediate
-   BICIRN 10 ^ 0FFFFh
+   fxcop c_FxOp7AA3
 NEWSYM FxOp7BA3    ; BICIRN register & ~immediate
-   BICIRN 11 ^ 0FFFFh
+   fxcop c_FxOp7BA3
 NEWSYM FxOp7CA3    ; BICIRN register & ~immediate
-   BICIRN 12 ^ 0FFFFh
+   fxcop c_FxOp7CA3
 NEWSYM FxOp7DA3    ; BICIRN register & ~immediate
-   BICIRN 13 ^ 0FFFFh
+   fxcop c_FxOp7DA3
 NEWSYM FxOp7EA3    ; BICIRN register & ~immediate
-   BICIRN 14 ^ 0FFFFh
+   fxcop c_FxOp7EA3
 NEWSYM FxOp7FA3    ; BICIRN register & ~immediate
-   BICIRN 15 ^ 0FFFFh
-
+   fxcop c_FxOp7FA3
 NEWSYM FxOp80      ; MULTRN 8 bit to 16 bit signed multiply, register * register
    MULTRN 0
 NEWSYM FxOp81      ; MULTRN 8 bit to 16 bit signed multiply, register * register

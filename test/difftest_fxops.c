@@ -1,7 +1,8 @@
 /*
- * Differential test: all 92 SuperFX opcode handlers ported out of
- * chips/fxemu2b.asm into chips/fx_ops.h - the branches, TO rN / FROM rN in
- * both the b and c table groups, and ALT1/ALT2/ALT3.
+ * Differential test: every SuperFX opcode handler ported into chips/fx_ops.h -
+ * all 92 from chips/fxemu2b.asm (branches, TO rN / FROM rN in the b and c
+ * table groups, ALT1/ALT2/ALT3) and the 181-strong ALU group from
+ * chips/fxemu2.asm (ADD/ADC/SUB/SBC/CMP/AND/BIC, register and immediate).
  *
  * Run `make fxops` in this directory. Not part of `all`: the oracle is the
  * original assembly, pulled out of git by mkfxops.sh.
@@ -74,6 +75,52 @@ extern void asm_FxOpcB0(void), asm_FxOpcB1(void), asm_FxOpcB2(void), asm_FxOpcB3
 extern void asm_FxOpcB4(void), asm_FxOpcB5(void), asm_FxOpcB6(void), asm_FxOpcB7(void);
 extern void asm_FxOpcB8(void), asm_FxOpcB9(void), asm_FxOpcBA(void), asm_FxOpcBB(void);
 extern void asm_FxOpcBC(void), asm_FxOpcBD(void), asm_FxOpcBE(void), asm_FxOpcBF(void);
+extern void asm_FxOp50(void), asm_FxOp51(void), asm_FxOp52(void), asm_FxOp53(void);
+extern void asm_FxOp54(void), asm_FxOp55(void), asm_FxOp56(void), asm_FxOp57(void);
+extern void asm_FxOp58(void), asm_FxOp59(void), asm_FxOp5A(void), asm_FxOp5B(void);
+extern void asm_FxOp5C(void), asm_FxOp5D(void), asm_FxOp5E(void), asm_FxOp50A1(void);
+extern void asm_FxOp51A1(void), asm_FxOp52A1(void), asm_FxOp53A1(void), asm_FxOp54A1(void);
+extern void asm_FxOp55A1(void), asm_FxOp56A1(void), asm_FxOp57A1(void), asm_FxOp58A1(void);
+extern void asm_FxOp59A1(void), asm_FxOp5AA1(void), asm_FxOp5BA1(void), asm_FxOp5CA1(void);
+extern void asm_FxOp5DA1(void), asm_FxOp5EA1(void), asm_FxOp50A2(void), asm_FxOp51A2(void);
+extern void asm_FxOp52A2(void), asm_FxOp53A2(void), asm_FxOp54A2(void), asm_FxOp55A2(void);
+extern void asm_FxOp56A2(void), asm_FxOp57A2(void), asm_FxOp58A2(void), asm_FxOp59A2(void);
+extern void asm_FxOp5AA2(void), asm_FxOp5BA2(void), asm_FxOp5CA2(void), asm_FxOp5DA2(void);
+extern void asm_FxOp5EA2(void), asm_FxOp5FA2(void), asm_FxOp50A3(void), asm_FxOp51A3(void);
+extern void asm_FxOp52A3(void), asm_FxOp53A3(void), asm_FxOp54A3(void), asm_FxOp55A3(void);
+extern void asm_FxOp56A3(void), asm_FxOp57A3(void), asm_FxOp58A3(void), asm_FxOp59A3(void);
+extern void asm_FxOp5AA3(void), asm_FxOp5BA3(void), asm_FxOp5CA3(void), asm_FxOp5DA3(void);
+extern void asm_FxOp5EA3(void), asm_FxOp5FA3(void), asm_FxOp60(void), asm_FxOp61(void);
+extern void asm_FxOp62(void), asm_FxOp63(void), asm_FxOp64(void), asm_FxOp65(void);
+extern void asm_FxOp66(void), asm_FxOp67(void), asm_FxOp68(void), asm_FxOp69(void);
+extern void asm_FxOp6A(void), asm_FxOp6B(void), asm_FxOp6C(void), asm_FxOp6D(void);
+extern void asm_FxOp6E(void), asm_FxOp60A1(void), asm_FxOp61A1(void), asm_FxOp62A1(void);
+extern void asm_FxOp63A1(void), asm_FxOp64A1(void), asm_FxOp65A1(void), asm_FxOp66A1(void);
+extern void asm_FxOp67A1(void), asm_FxOp68A1(void), asm_FxOp69A1(void), asm_FxOp6AA1(void);
+extern void asm_FxOp6BA1(void), asm_FxOp6CA1(void), asm_FxOp6DA1(void), asm_FxOp6EA1(void);
+extern void asm_FxOp60A2(void), asm_FxOp61A2(void), asm_FxOp62A2(void), asm_FxOp63A2(void);
+extern void asm_FxOp64A2(void), asm_FxOp65A2(void), asm_FxOp66A2(void), asm_FxOp67A2(void);
+extern void asm_FxOp68A2(void), asm_FxOp69A2(void), asm_FxOp6AA2(void), asm_FxOp6BA2(void);
+extern void asm_FxOp6CA2(void), asm_FxOp6DA2(void), asm_FxOp6EA2(void), asm_FxOp6FA2(void);
+extern void asm_FxOp60A3(void), asm_FxOp61A3(void), asm_FxOp62A3(void), asm_FxOp63A3(void);
+extern void asm_FxOp64A3(void), asm_FxOp65A3(void), asm_FxOp66A3(void), asm_FxOp67A3(void);
+extern void asm_FxOp68A3(void), asm_FxOp69A3(void), asm_FxOp6AA3(void), asm_FxOp6BA3(void);
+extern void asm_FxOp6CA3(void), asm_FxOp6DA3(void), asm_FxOp6EA3(void), asm_FxOp71(void);
+extern void asm_FxOp72(void), asm_FxOp73(void), asm_FxOp74(void), asm_FxOp75(void);
+extern void asm_FxOp76(void), asm_FxOp77(void), asm_FxOp78(void), asm_FxOp79(void);
+extern void asm_FxOp7A(void), asm_FxOp7B(void), asm_FxOp7C(void), asm_FxOp7D(void);
+extern void asm_FxOp7E(void), asm_FxOp71A1(void), asm_FxOp72A1(void), asm_FxOp73A1(void);
+extern void asm_FxOp74A1(void), asm_FxOp75A1(void), asm_FxOp76A1(void), asm_FxOp77A1(void);
+extern void asm_FxOp78A1(void), asm_FxOp79A1(void), asm_FxOp7AA1(void), asm_FxOp7BA1(void);
+extern void asm_FxOp7CA1(void), asm_FxOp7DA1(void), asm_FxOp7EA1(void), asm_FxOp71A2(void);
+extern void asm_FxOp72A2(void), asm_FxOp73A2(void), asm_FxOp74A2(void), asm_FxOp75A2(void);
+extern void asm_FxOp76A2(void), asm_FxOp77A2(void), asm_FxOp78A2(void), asm_FxOp79A2(void);
+extern void asm_FxOp7AA2(void), asm_FxOp7BA2(void), asm_FxOp7CA2(void), asm_FxOp7DA2(void);
+extern void asm_FxOp7EA2(void), asm_FxOp7FA2(void), asm_FxOp71A3(void), asm_FxOp72A3(void);
+extern void asm_FxOp73A3(void), asm_FxOp74A3(void), asm_FxOp75A3(void), asm_FxOp76A3(void);
+extern void asm_FxOp77A3(void), asm_FxOp78A3(void), asm_FxOp79A3(void), asm_FxOp7AA3(void);
+extern void asm_FxOp7BA3(void), asm_FxOp7CA3(void), asm_FxOp7DA3(void), asm_FxOp7EA3(void);
+extern void asm_FxOp7FA3(void);
 
 typedef struct {
     char const* name;
@@ -174,6 +221,187 @@ static fxcase const cases[] = {
     { "FxOpcBD FROM r13", asm_FxOpcBD, c_FxOpcBD },
     { "FxOpcBE FROM r14", asm_FxOpcBE, c_FxOpcBE },
     { "FxOpcBF FROM r15", asm_FxOpcBF, c_FxOpcBF },
+    { "FxOp50 ADD r0", asm_FxOp50, c_FxOp50 },
+    { "FxOp51 ADD r1", asm_FxOp51, c_FxOp51 },
+    { "FxOp52 ADD r2", asm_FxOp52, c_FxOp52 },
+    { "FxOp53 ADD r3", asm_FxOp53, c_FxOp53 },
+    { "FxOp54 ADD r4", asm_FxOp54, c_FxOp54 },
+    { "FxOp55 ADD r5", asm_FxOp55, c_FxOp55 },
+    { "FxOp56 ADD r6", asm_FxOp56, c_FxOp56 },
+    { "FxOp57 ADD r7", asm_FxOp57, c_FxOp57 },
+    { "FxOp58 ADD r8", asm_FxOp58, c_FxOp58 },
+    { "FxOp59 ADD r9", asm_FxOp59, c_FxOp59 },
+    { "FxOp5A ADD r10", asm_FxOp5A, c_FxOp5A },
+    { "FxOp5B ADD r11", asm_FxOp5B, c_FxOp5B },
+    { "FxOp5C ADD r12", asm_FxOp5C, c_FxOp5C },
+    { "FxOp5D ADD r13", asm_FxOp5D, c_FxOp5D },
+    { "FxOp5E ADD r14", asm_FxOp5E, c_FxOp5E },
+    { "FxOp50A1 ADC r0", asm_FxOp50A1, c_FxOp50A1 },
+    { "FxOp51A1 ADC r1", asm_FxOp51A1, c_FxOp51A1 },
+    { "FxOp52A1 ADC r2", asm_FxOp52A1, c_FxOp52A1 },
+    { "FxOp53A1 ADC r3", asm_FxOp53A1, c_FxOp53A1 },
+    { "FxOp54A1 ADC r4", asm_FxOp54A1, c_FxOp54A1 },
+    { "FxOp55A1 ADC r5", asm_FxOp55A1, c_FxOp55A1 },
+    { "FxOp56A1 ADC r6", asm_FxOp56A1, c_FxOp56A1 },
+    { "FxOp57A1 ADC r7", asm_FxOp57A1, c_FxOp57A1 },
+    { "FxOp58A1 ADC r8", asm_FxOp58A1, c_FxOp58A1 },
+    { "FxOp59A1 ADC r9", asm_FxOp59A1, c_FxOp59A1 },
+    { "FxOp5AA1 ADC r10", asm_FxOp5AA1, c_FxOp5AA1 },
+    { "FxOp5BA1 ADC r11", asm_FxOp5BA1, c_FxOp5BA1 },
+    { "FxOp5CA1 ADC r12", asm_FxOp5CA1, c_FxOp5CA1 },
+    { "FxOp5DA1 ADC r13", asm_FxOp5DA1, c_FxOp5DA1 },
+    { "FxOp5EA1 ADC r14", asm_FxOp5EA1, c_FxOp5EA1 },
+    { "FxOp50A2 ADD #0", asm_FxOp50A2, c_FxOp50A2 },
+    { "FxOp51A2 ADD #1", asm_FxOp51A2, c_FxOp51A2 },
+    { "FxOp52A2 ADD #2", asm_FxOp52A2, c_FxOp52A2 },
+    { "FxOp53A2 ADD #3", asm_FxOp53A2, c_FxOp53A2 },
+    { "FxOp54A2 ADD #4", asm_FxOp54A2, c_FxOp54A2 },
+    { "FxOp55A2 ADD #5", asm_FxOp55A2, c_FxOp55A2 },
+    { "FxOp56A2 ADD #6", asm_FxOp56A2, c_FxOp56A2 },
+    { "FxOp57A2 ADD #7", asm_FxOp57A2, c_FxOp57A2 },
+    { "FxOp58A2 ADD #8", asm_FxOp58A2, c_FxOp58A2 },
+    { "FxOp59A2 ADD #9", asm_FxOp59A2, c_FxOp59A2 },
+    { "FxOp5AA2 ADD #10", asm_FxOp5AA2, c_FxOp5AA2 },
+    { "FxOp5BA2 ADD #11", asm_FxOp5BA2, c_FxOp5BA2 },
+    { "FxOp5CA2 ADD #12", asm_FxOp5CA2, c_FxOp5CA2 },
+    { "FxOp5DA2 ADD #13", asm_FxOp5DA2, c_FxOp5DA2 },
+    { "FxOp5EA2 ADD #14", asm_FxOp5EA2, c_FxOp5EA2 },
+    { "FxOp5FA2 ADD #15", asm_FxOp5FA2, c_FxOp5FA2 },
+    { "FxOp50A3 ADC #0", asm_FxOp50A3, c_FxOp50A3 },
+    { "FxOp51A3 ADC #1", asm_FxOp51A3, c_FxOp51A3 },
+    { "FxOp52A3 ADC #2", asm_FxOp52A3, c_FxOp52A3 },
+    { "FxOp53A3 ADC #3", asm_FxOp53A3, c_FxOp53A3 },
+    { "FxOp54A3 ADC #4", asm_FxOp54A3, c_FxOp54A3 },
+    { "FxOp55A3 ADC #5", asm_FxOp55A3, c_FxOp55A3 },
+    { "FxOp56A3 ADC #6", asm_FxOp56A3, c_FxOp56A3 },
+    { "FxOp57A3 ADC #7", asm_FxOp57A3, c_FxOp57A3 },
+    { "FxOp58A3 ADC #8", asm_FxOp58A3, c_FxOp58A3 },
+    { "FxOp59A3 ADC #9", asm_FxOp59A3, c_FxOp59A3 },
+    { "FxOp5AA3 ADC #10", asm_FxOp5AA3, c_FxOp5AA3 },
+    { "FxOp5BA3 ADC #11", asm_FxOp5BA3, c_FxOp5BA3 },
+    { "FxOp5CA3 ADC #12", asm_FxOp5CA3, c_FxOp5CA3 },
+    { "FxOp5DA3 ADC #13", asm_FxOp5DA3, c_FxOp5DA3 },
+    { "FxOp5EA3 ADC #14", asm_FxOp5EA3, c_FxOp5EA3 },
+    { "FxOp5FA3 ADC #15", asm_FxOp5FA3, c_FxOp5FA3 },
+    { "FxOp60 SUB r0", asm_FxOp60, c_FxOp60 },
+    { "FxOp61 SUB r1", asm_FxOp61, c_FxOp61 },
+    { "FxOp62 SUB r2", asm_FxOp62, c_FxOp62 },
+    { "FxOp63 SUB r3", asm_FxOp63, c_FxOp63 },
+    { "FxOp64 SUB r4", asm_FxOp64, c_FxOp64 },
+    { "FxOp65 SUB r5", asm_FxOp65, c_FxOp65 },
+    { "FxOp66 SUB r6", asm_FxOp66, c_FxOp66 },
+    { "FxOp67 SUB r7", asm_FxOp67, c_FxOp67 },
+    { "FxOp68 SUB r8", asm_FxOp68, c_FxOp68 },
+    { "FxOp69 SUB r9", asm_FxOp69, c_FxOp69 },
+    { "FxOp6A SUB r10", asm_FxOp6A, c_FxOp6A },
+    { "FxOp6B SUB r11", asm_FxOp6B, c_FxOp6B },
+    { "FxOp6C SUB r12", asm_FxOp6C, c_FxOp6C },
+    { "FxOp6D SUB r13", asm_FxOp6D, c_FxOp6D },
+    { "FxOp6E SUB r14", asm_FxOp6E, c_FxOp6E },
+    { "FxOp60A1 SBC r0", asm_FxOp60A1, c_FxOp60A1 },
+    { "FxOp61A1 SBC r1", asm_FxOp61A1, c_FxOp61A1 },
+    { "FxOp62A1 SBC r2", asm_FxOp62A1, c_FxOp62A1 },
+    { "FxOp63A1 SBC r3", asm_FxOp63A1, c_FxOp63A1 },
+    { "FxOp64A1 SBC r4", asm_FxOp64A1, c_FxOp64A1 },
+    { "FxOp65A1 SBC r5", asm_FxOp65A1, c_FxOp65A1 },
+    { "FxOp66A1 SBC r6", asm_FxOp66A1, c_FxOp66A1 },
+    { "FxOp67A1 SBC r7", asm_FxOp67A1, c_FxOp67A1 },
+    { "FxOp68A1 SBC r8", asm_FxOp68A1, c_FxOp68A1 },
+    { "FxOp69A1 SBC r9", asm_FxOp69A1, c_FxOp69A1 },
+    { "FxOp6AA1 SBC r10", asm_FxOp6AA1, c_FxOp6AA1 },
+    { "FxOp6BA1 SBC r11", asm_FxOp6BA1, c_FxOp6BA1 },
+    { "FxOp6CA1 SBC r12", asm_FxOp6CA1, c_FxOp6CA1 },
+    { "FxOp6DA1 SBC r13", asm_FxOp6DA1, c_FxOp6DA1 },
+    { "FxOp6EA1 SBC r14", asm_FxOp6EA1, c_FxOp6EA1 },
+    { "FxOp60A2 SUB #0", asm_FxOp60A2, c_FxOp60A2 },
+    { "FxOp61A2 SUB #1", asm_FxOp61A2, c_FxOp61A2 },
+    { "FxOp62A2 SUB #2", asm_FxOp62A2, c_FxOp62A2 },
+    { "FxOp63A2 SUB #3", asm_FxOp63A2, c_FxOp63A2 },
+    { "FxOp64A2 SUB #4", asm_FxOp64A2, c_FxOp64A2 },
+    { "FxOp65A2 SUB #5", asm_FxOp65A2, c_FxOp65A2 },
+    { "FxOp66A2 SUB #6", asm_FxOp66A2, c_FxOp66A2 },
+    { "FxOp67A2 SUB #7", asm_FxOp67A2, c_FxOp67A2 },
+    { "FxOp68A2 SUB #8", asm_FxOp68A2, c_FxOp68A2 },
+    { "FxOp69A2 SUB #9", asm_FxOp69A2, c_FxOp69A2 },
+    { "FxOp6AA2 SUB #10", asm_FxOp6AA2, c_FxOp6AA2 },
+    { "FxOp6BA2 SUB #11", asm_FxOp6BA2, c_FxOp6BA2 },
+    { "FxOp6CA2 SUB #12", asm_FxOp6CA2, c_FxOp6CA2 },
+    { "FxOp6DA2 SUB #13", asm_FxOp6DA2, c_FxOp6DA2 },
+    { "FxOp6EA2 SUB #14", asm_FxOp6EA2, c_FxOp6EA2 },
+    { "FxOp6FA2 SUB #15", asm_FxOp6FA2, c_FxOp6FA2 },
+    { "FxOp60A3 CMP r0", asm_FxOp60A3, c_FxOp60A3 },
+    { "FxOp61A3 CMP r1", asm_FxOp61A3, c_FxOp61A3 },
+    { "FxOp62A3 CMP r2", asm_FxOp62A3, c_FxOp62A3 },
+    { "FxOp63A3 CMP r3", asm_FxOp63A3, c_FxOp63A3 },
+    { "FxOp64A3 CMP r4", asm_FxOp64A3, c_FxOp64A3 },
+    { "FxOp65A3 CMP r5", asm_FxOp65A3, c_FxOp65A3 },
+    { "FxOp66A3 CMP r6", asm_FxOp66A3, c_FxOp66A3 },
+    { "FxOp67A3 CMP r7", asm_FxOp67A3, c_FxOp67A3 },
+    { "FxOp68A3 CMP r8", asm_FxOp68A3, c_FxOp68A3 },
+    { "FxOp69A3 CMP r9", asm_FxOp69A3, c_FxOp69A3 },
+    { "FxOp6AA3 CMP r10", asm_FxOp6AA3, c_FxOp6AA3 },
+    { "FxOp6BA3 CMP r11", asm_FxOp6BA3, c_FxOp6BA3 },
+    { "FxOp6CA3 CMP r12", asm_FxOp6CA3, c_FxOp6CA3 },
+    { "FxOp6DA3 CMP r13", asm_FxOp6DA3, c_FxOp6DA3 },
+    { "FxOp6EA3 CMP r14", asm_FxOp6EA3, c_FxOp6EA3 },
+    { "FxOp71 AND r1", asm_FxOp71, c_FxOp71 },
+    { "FxOp72 AND r2", asm_FxOp72, c_FxOp72 },
+    { "FxOp73 AND r3", asm_FxOp73, c_FxOp73 },
+    { "FxOp74 AND r4", asm_FxOp74, c_FxOp74 },
+    { "FxOp75 AND r5", asm_FxOp75, c_FxOp75 },
+    { "FxOp76 AND r6", asm_FxOp76, c_FxOp76 },
+    { "FxOp77 AND r7", asm_FxOp77, c_FxOp77 },
+    { "FxOp78 AND r8", asm_FxOp78, c_FxOp78 },
+    { "FxOp79 AND r9", asm_FxOp79, c_FxOp79 },
+    { "FxOp7A AND r10", asm_FxOp7A, c_FxOp7A },
+    { "FxOp7B AND r11", asm_FxOp7B, c_FxOp7B },
+    { "FxOp7C AND r12", asm_FxOp7C, c_FxOp7C },
+    { "FxOp7D AND r13", asm_FxOp7D, c_FxOp7D },
+    { "FxOp7E AND r14", asm_FxOp7E, c_FxOp7E },
+    { "FxOp71A1 BIC r1", asm_FxOp71A1, c_FxOp71A1 },
+    { "FxOp72A1 BIC r2", asm_FxOp72A1, c_FxOp72A1 },
+    { "FxOp73A1 BIC r3", asm_FxOp73A1, c_FxOp73A1 },
+    { "FxOp74A1 BIC r4", asm_FxOp74A1, c_FxOp74A1 },
+    { "FxOp75A1 BIC r5", asm_FxOp75A1, c_FxOp75A1 },
+    { "FxOp76A1 BIC r6", asm_FxOp76A1, c_FxOp76A1 },
+    { "FxOp77A1 BIC r7", asm_FxOp77A1, c_FxOp77A1 },
+    { "FxOp78A1 BIC r8", asm_FxOp78A1, c_FxOp78A1 },
+    { "FxOp79A1 BIC r9", asm_FxOp79A1, c_FxOp79A1 },
+    { "FxOp7AA1 BIC r10", asm_FxOp7AA1, c_FxOp7AA1 },
+    { "FxOp7BA1 BIC r11", asm_FxOp7BA1, c_FxOp7BA1 },
+    { "FxOp7CA1 BIC r12", asm_FxOp7CA1, c_FxOp7CA1 },
+    { "FxOp7DA1 BIC r13", asm_FxOp7DA1, c_FxOp7DA1 },
+    { "FxOp7EA1 BIC r14", asm_FxOp7EA1, c_FxOp7EA1 },
+    { "FxOp71A2 AND #1", asm_FxOp71A2, c_FxOp71A2 },
+    { "FxOp72A2 AND #2", asm_FxOp72A2, c_FxOp72A2 },
+    { "FxOp73A2 AND #3", asm_FxOp73A2, c_FxOp73A2 },
+    { "FxOp74A2 AND #4", asm_FxOp74A2, c_FxOp74A2 },
+    { "FxOp75A2 AND #5", asm_FxOp75A2, c_FxOp75A2 },
+    { "FxOp76A2 AND #6", asm_FxOp76A2, c_FxOp76A2 },
+    { "FxOp77A2 AND #7", asm_FxOp77A2, c_FxOp77A2 },
+    { "FxOp78A2 AND #8", asm_FxOp78A2, c_FxOp78A2 },
+    { "FxOp79A2 AND #9", asm_FxOp79A2, c_FxOp79A2 },
+    { "FxOp7AA2 AND #10", asm_FxOp7AA2, c_FxOp7AA2 },
+    { "FxOp7BA2 AND #11", asm_FxOp7BA2, c_FxOp7BA2 },
+    { "FxOp7CA2 AND #12", asm_FxOp7CA2, c_FxOp7CA2 },
+    { "FxOp7DA2 AND #13", asm_FxOp7DA2, c_FxOp7DA2 },
+    { "FxOp7EA2 AND #14", asm_FxOp7EA2, c_FxOp7EA2 },
+    { "FxOp7FA2 AND #15", asm_FxOp7FA2, c_FxOp7FA2 },
+    { "FxOp71A3 BIC #1", asm_FxOp71A3, c_FxOp71A3 },
+    { "FxOp72A3 BIC #2", asm_FxOp72A3, c_FxOp72A3 },
+    { "FxOp73A3 BIC #3", asm_FxOp73A3, c_FxOp73A3 },
+    { "FxOp74A3 BIC #4", asm_FxOp74A3, c_FxOp74A3 },
+    { "FxOp75A3 BIC #5", asm_FxOp75A3, c_FxOp75A3 },
+    { "FxOp76A3 BIC #6", asm_FxOp76A3, c_FxOp76A3 },
+    { "FxOp77A3 BIC #7", asm_FxOp77A3, c_FxOp77A3 },
+    { "FxOp78A3 BIC #8", asm_FxOp78A3, c_FxOp78A3 },
+    { "FxOp79A3 BIC #9", asm_FxOp79A3, c_FxOp79A3 },
+    { "FxOp7AA3 BIC #10", asm_FxOp7AA3, c_FxOp7AA3 },
+    { "FxOp7BA3 BIC #11", asm_FxOp7BA3, c_FxOp7BA3 },
+    { "FxOp7CA3 BIC #12", asm_FxOp7CA3, c_FxOp7CA3 },
+    { "FxOp7DA3 BIC #13", asm_FxOp7DA3, c_FxOp7DA3 },
+    { "FxOp7EA3 BIC #14", asm_FxOp7EA3, c_FxOp7EA3 },
+    { "FxOp7FA3 BIC #15", asm_FxOp7FA3, c_FxOp7FA3 },
 };
 
 /* One instruction stream to branch around in. 0x100 of slack either side lets
@@ -249,7 +477,7 @@ int main(void)
         FxTablec[i] = (u4)(uintptr_t)fxstubc;
     }
 
-    DT_MAIN(20260727, 400000)
+    DT_MAIN(20260727, 600000)
     {
         fxcase const* k = &cases[dt_mod(sizeof cases / sizeof *cases)];
         snapshot a, c;
@@ -300,6 +528,9 @@ int main(void)
         DT_EQ("SfxB", a.b, c.b);
         DT_EQ("SfxRomBuffer", a.rombuffer, c.rombuffer);
         DT_EQ("withr15sk", a.r15sk, c.r15sk);
+        if (dt_bad && DT_SHOW()) {
+            printf("  ^ case %s\n", k->name);
+        }
     }
-    DT_DONE("SuperFX opcode handlers (fxemu2b)");
+    DT_DONE("SuperFX opcode handlers");
 }

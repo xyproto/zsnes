@@ -27,6 +27,24 @@
 #ifndef FX_OPS_H
 #define FX_OPS_H
 
+/* FETCHPIPE: load the next opcode byte into cl, leaving the ALT mode in ch. */
+static inline void fx_fetchpipe(void)
+{
+    FxSeamCX = (FxSeamCX & ~0xFFu) | *FxSeamPC;
+}
+
+/* R15 mirrors the program counter as a bank-relative address. */
+static inline u4 fx_pc_rel(void)
+{
+    return (u4)(uintptr_t)FxSeamPC - SfxCPB;
+}
+
+/* UpdateR14: recompute the ROM pointer R14 reads through. */
+static inline void fx_update_r14(void)
+{
+    SfxRomBuffer = SfxCROM + SfxR0[14];
+}
+
 /* The branch condition tests below are deliberately bit-for-bit what the asm
  * did, quirks included: BPL/BMI test SfxSignZero against 0x88000, not 0x8000,
  * and the sign/overflow XOR only ever looks at bit 0. */
@@ -97,6 +115,312 @@ static inline void fx_branch_always(u4 const* const table)
 FX_BRANCHES(b, FxTableb)
 FX_BRANCHES(c, FxTablec)
 
+/* --- The 16-bit ALU group (chips/fxemu2.asm, base table) ------------------
+ *
+ * ADD/ADC/SUB/SBC/CMP/AND/BIC, register and immediate forms. Two things about
+ * these are easy to get wrong:
+ *
+ *  - the arithmetic is `add ax,bx`, i.e. 16-bit, but the *whole* 32-bit
+ *    register is then written to the destination and to SfxSignZero, so the
+ *    upper half of the source value survives untouched;
+ *  - `seto`/`setc` store a single byte into SfxOverflow/SfxCarry, leaving the
+ *    upper three bytes of each alone.
+ */
+
+/* Flag writes are byte-wide, exactly as seto/setc are. */
+static inline void fx_set_overflow(int const v) { *(u1*)&SfxOverflow = (u1) !!v; }
+static inline void fx_set_carry(int const v) { *(u1*)&SfxCarry = (u1) !!v; }
+
+/* Splice a 16-bit result back into the upper half of the original value. */
+static inline u4 fx_lo16(u4 const orig, u4 const res)
+{
+    return (orig & 0xFFFF0000u) | (res & 0xFFFFu);
+}
+
+/* ADD / ADC: carry-in is bit 0 of the SfxCarry byte (`shr byte[SfxCarry],1`). */
+static inline void fx_add(u4 const rhs, u4 const carry_in)
+{
+    u4 const a = *FxSeamSrc;
+    u4 const sum = (a & 0xFFFFu) + (rhs & 0xFFFFu) + carry_in;
+    u4 const v = fx_lo16(a, sum);
+
+    fx_set_overflow((~(a ^ rhs) & (a ^ sum) & 0x8000u) != 0);
+    fx_set_carry((sum & 0x10000u) != 0);
+    SfxSignZero = v;
+    FxSeamPC++;
+    *FxSeamDst = v;
+}
+
+/* SUB / SBC / CMP: x86 leaves CF set on borrow, and the asm inverts it, so the
+ * SuperFX carry is "no borrow". CMP is the same minus the destination write. */
+static inline u4 fx_sub_flags(u4 const rhs, u4 const borrow_in)
+{
+    u4 const a = *FxSeamSrc;
+    u4 const diff = (a & 0xFFFFu) - (rhs & 0xFFFFu) - borrow_in;
+    u4 const v = fx_lo16(a, diff);
+
+    fx_set_overflow(((a ^ rhs) & (a ^ diff) & 0x8000u) != 0);
+    fx_set_carry((diff & 0x10000u) == 0); /* setc then xor 1 */
+    return v;
+}
+
+static inline void fx_sub(u4 const rhs, u4 const borrow_in)
+{
+    u4 const v = fx_sub_flags(rhs, borrow_in);
+
+    FxSeamPC++;
+    *FxSeamDst = v;
+    SfxSignZero = v;
+}
+
+static inline void fx_cmp(u4 const rhs)
+{
+    SfxSignZero = fx_sub_flags(rhs, 0);
+    FxSeamPC++;
+}
+
+/* AND / BIC operate on the full 32 bits. */
+static inline void fx_and(u4 const rhs)
+{
+    u4 const v = *FxSeamSrc & rhs;
+
+    FxSeamPC++;
+    SfxSignZero = v;
+    *FxSeamDst = v;
+}
+
+/* Register-operand forms read Rn; immediate forms use the opcode's low nibble.
+ * ALT2 gives the immediate ADD/SUB, ALT3 the immediate ADC/CMP, and the AND
+ * block follows the same shape one opcode row down. */
+#define FX_ALU(name, expr)       \
+    static void name(u4 const n) \
+    {                            \
+        fx_fetchpipe();          \
+        expr;                    \
+    }
+
+FX_ALU(fx_addrn, fx_add(SfxR0[n], 0))
+FX_ALU(fx_adcrn, fx_add(SfxR0[n], SfxCarry & 1))
+FX_ALU(fx_adirn, fx_add(n, 0))
+FX_ALU(fx_adcirn, fx_add(n, SfxCarry & 1))
+FX_ALU(fx_subrn, fx_sub(SfxR0[n], 0))
+/* `cmp byte[SfxCarry],1` sets the borrow when the carry byte is zero. */
+FX_ALU(fx_sbcrn, fx_sub(SfxR0[n], (SfxCarry & 0xFF) == 0))
+FX_ALU(fx_subirn, fx_sub(n, 0))
+FX_ALU(fx_cmprn, fx_cmp(SfxR0[n]))
+FX_ALU(fx_andrn, fx_and(SfxR0[n]))
+/* BIC rN inverts only the low 16 bits of the operand (`xor ebx,0FFFFh`). */
+FX_ALU(fx_bicrn, fx_and(SfxR0[n] ^ 0xFFFFu))
+FX_ALU(fx_andirn, fx_and(n))
+/* BIC #n complements the immediate over 16 bits, like BIC rN does its operand
+ * (the asm passes the macro `n ^ 0FFFFh` rather than n). */
+FX_ALU(fx_bicirn, fx_and(n ^ 0xFFFFu))
+
+/* ADDRN */
+void c_FxOp50(void) { fx_addrn(0); }
+void c_FxOp51(void) { fx_addrn(1); }
+void c_FxOp52(void) { fx_addrn(2); }
+void c_FxOp53(void) { fx_addrn(3); }
+void c_FxOp54(void) { fx_addrn(4); }
+void c_FxOp55(void) { fx_addrn(5); }
+void c_FxOp56(void) { fx_addrn(6); }
+void c_FxOp57(void) { fx_addrn(7); }
+void c_FxOp58(void) { fx_addrn(8); }
+void c_FxOp59(void) { fx_addrn(9); }
+void c_FxOp5A(void) { fx_addrn(10); }
+void c_FxOp5B(void) { fx_addrn(11); }
+void c_FxOp5C(void) { fx_addrn(12); }
+void c_FxOp5D(void) { fx_addrn(13); }
+void c_FxOp5E(void) { fx_addrn(14); }
+
+/* ADCRN */
+void c_FxOp50A1(void) { fx_adcrn(0); }
+void c_FxOp51A1(void) { fx_adcrn(1); }
+void c_FxOp52A1(void) { fx_adcrn(2); }
+void c_FxOp53A1(void) { fx_adcrn(3); }
+void c_FxOp54A1(void) { fx_adcrn(4); }
+void c_FxOp55A1(void) { fx_adcrn(5); }
+void c_FxOp56A1(void) { fx_adcrn(6); }
+void c_FxOp57A1(void) { fx_adcrn(7); }
+void c_FxOp58A1(void) { fx_adcrn(8); }
+void c_FxOp59A1(void) { fx_adcrn(9); }
+void c_FxOp5AA1(void) { fx_adcrn(10); }
+void c_FxOp5BA1(void) { fx_adcrn(11); }
+void c_FxOp5CA1(void) { fx_adcrn(12); }
+void c_FxOp5DA1(void) { fx_adcrn(13); }
+void c_FxOp5EA1(void) { fx_adcrn(14); }
+
+/* ADIRN */
+void c_FxOp50A2(void) { fx_adirn(0); }
+void c_FxOp51A2(void) { fx_adirn(1); }
+void c_FxOp52A2(void) { fx_adirn(2); }
+void c_FxOp53A2(void) { fx_adirn(3); }
+void c_FxOp54A2(void) { fx_adirn(4); }
+void c_FxOp55A2(void) { fx_adirn(5); }
+void c_FxOp56A2(void) { fx_adirn(6); }
+void c_FxOp57A2(void) { fx_adirn(7); }
+void c_FxOp58A2(void) { fx_adirn(8); }
+void c_FxOp59A2(void) { fx_adirn(9); }
+void c_FxOp5AA2(void) { fx_adirn(10); }
+void c_FxOp5BA2(void) { fx_adirn(11); }
+void c_FxOp5CA2(void) { fx_adirn(12); }
+void c_FxOp5DA2(void) { fx_adirn(13); }
+void c_FxOp5EA2(void) { fx_adirn(14); }
+void c_FxOp5FA2(void) { fx_adirn(15); }
+
+/* ADCIRN */
+void c_FxOp50A3(void) { fx_adcirn(0); }
+void c_FxOp51A3(void) { fx_adcirn(1); }
+void c_FxOp52A3(void) { fx_adcirn(2); }
+void c_FxOp53A3(void) { fx_adcirn(3); }
+void c_FxOp54A3(void) { fx_adcirn(4); }
+void c_FxOp55A3(void) { fx_adcirn(5); }
+void c_FxOp56A3(void) { fx_adcirn(6); }
+void c_FxOp57A3(void) { fx_adcirn(7); }
+void c_FxOp58A3(void) { fx_adcirn(8); }
+void c_FxOp59A3(void) { fx_adcirn(9); }
+void c_FxOp5AA3(void) { fx_adcirn(10); }
+void c_FxOp5BA3(void) { fx_adcirn(11); }
+void c_FxOp5CA3(void) { fx_adcirn(12); }
+void c_FxOp5DA3(void) { fx_adcirn(13); }
+void c_FxOp5EA3(void) { fx_adcirn(14); }
+void c_FxOp5FA3(void) { fx_adcirn(15); }
+
+/* SUBRN */
+void c_FxOp60(void) { fx_subrn(0); }
+void c_FxOp61(void) { fx_subrn(1); }
+void c_FxOp62(void) { fx_subrn(2); }
+void c_FxOp63(void) { fx_subrn(3); }
+void c_FxOp64(void) { fx_subrn(4); }
+void c_FxOp65(void) { fx_subrn(5); }
+void c_FxOp66(void) { fx_subrn(6); }
+void c_FxOp67(void) { fx_subrn(7); }
+void c_FxOp68(void) { fx_subrn(8); }
+void c_FxOp69(void) { fx_subrn(9); }
+void c_FxOp6A(void) { fx_subrn(10); }
+void c_FxOp6B(void) { fx_subrn(11); }
+void c_FxOp6C(void) { fx_subrn(12); }
+void c_FxOp6D(void) { fx_subrn(13); }
+void c_FxOp6E(void) { fx_subrn(14); }
+
+/* SBCRN */
+void c_FxOp60A1(void) { fx_sbcrn(0); }
+void c_FxOp61A1(void) { fx_sbcrn(1); }
+void c_FxOp62A1(void) { fx_sbcrn(2); }
+void c_FxOp63A1(void) { fx_sbcrn(3); }
+void c_FxOp64A1(void) { fx_sbcrn(4); }
+void c_FxOp65A1(void) { fx_sbcrn(5); }
+void c_FxOp66A1(void) { fx_sbcrn(6); }
+void c_FxOp67A1(void) { fx_sbcrn(7); }
+void c_FxOp68A1(void) { fx_sbcrn(8); }
+void c_FxOp69A1(void) { fx_sbcrn(9); }
+void c_FxOp6AA1(void) { fx_sbcrn(10); }
+void c_FxOp6BA1(void) { fx_sbcrn(11); }
+void c_FxOp6CA1(void) { fx_sbcrn(12); }
+void c_FxOp6DA1(void) { fx_sbcrn(13); }
+void c_FxOp6EA1(void) { fx_sbcrn(14); }
+
+/* SUBIRN */
+void c_FxOp60A2(void) { fx_subirn(0); }
+void c_FxOp61A2(void) { fx_subirn(1); }
+void c_FxOp62A2(void) { fx_subirn(2); }
+void c_FxOp63A2(void) { fx_subirn(3); }
+void c_FxOp64A2(void) { fx_subirn(4); }
+void c_FxOp65A2(void) { fx_subirn(5); }
+void c_FxOp66A2(void) { fx_subirn(6); }
+void c_FxOp67A2(void) { fx_subirn(7); }
+void c_FxOp68A2(void) { fx_subirn(8); }
+void c_FxOp69A2(void) { fx_subirn(9); }
+void c_FxOp6AA2(void) { fx_subirn(10); }
+void c_FxOp6BA2(void) { fx_subirn(11); }
+void c_FxOp6CA2(void) { fx_subirn(12); }
+void c_FxOp6DA2(void) { fx_subirn(13); }
+void c_FxOp6EA2(void) { fx_subirn(14); }
+void c_FxOp6FA2(void) { fx_subirn(15); }
+
+/* CMPRN */
+void c_FxOp60A3(void) { fx_cmprn(0); }
+void c_FxOp61A3(void) { fx_cmprn(1); }
+void c_FxOp62A3(void) { fx_cmprn(2); }
+void c_FxOp63A3(void) { fx_cmprn(3); }
+void c_FxOp64A3(void) { fx_cmprn(4); }
+void c_FxOp65A3(void) { fx_cmprn(5); }
+void c_FxOp66A3(void) { fx_cmprn(6); }
+void c_FxOp67A3(void) { fx_cmprn(7); }
+void c_FxOp68A3(void) { fx_cmprn(8); }
+void c_FxOp69A3(void) { fx_cmprn(9); }
+void c_FxOp6AA3(void) { fx_cmprn(10); }
+void c_FxOp6BA3(void) { fx_cmprn(11); }
+void c_FxOp6CA3(void) { fx_cmprn(12); }
+void c_FxOp6DA3(void) { fx_cmprn(13); }
+void c_FxOp6EA3(void) { fx_cmprn(14); }
+
+/* ANDRN */
+void c_FxOp71(void) { fx_andrn(1); }
+void c_FxOp72(void) { fx_andrn(2); }
+void c_FxOp73(void) { fx_andrn(3); }
+void c_FxOp74(void) { fx_andrn(4); }
+void c_FxOp75(void) { fx_andrn(5); }
+void c_FxOp76(void) { fx_andrn(6); }
+void c_FxOp77(void) { fx_andrn(7); }
+void c_FxOp78(void) { fx_andrn(8); }
+void c_FxOp79(void) { fx_andrn(9); }
+void c_FxOp7A(void) { fx_andrn(10); }
+void c_FxOp7B(void) { fx_andrn(11); }
+void c_FxOp7C(void) { fx_andrn(12); }
+void c_FxOp7D(void) { fx_andrn(13); }
+void c_FxOp7E(void) { fx_andrn(14); }
+
+/* BICRN */
+void c_FxOp71A1(void) { fx_bicrn(1); }
+void c_FxOp72A1(void) { fx_bicrn(2); }
+void c_FxOp73A1(void) { fx_bicrn(3); }
+void c_FxOp74A1(void) { fx_bicrn(4); }
+void c_FxOp75A1(void) { fx_bicrn(5); }
+void c_FxOp76A1(void) { fx_bicrn(6); }
+void c_FxOp77A1(void) { fx_bicrn(7); }
+void c_FxOp78A1(void) { fx_bicrn(8); }
+void c_FxOp79A1(void) { fx_bicrn(9); }
+void c_FxOp7AA1(void) { fx_bicrn(10); }
+void c_FxOp7BA1(void) { fx_bicrn(11); }
+void c_FxOp7CA1(void) { fx_bicrn(12); }
+void c_FxOp7DA1(void) { fx_bicrn(13); }
+void c_FxOp7EA1(void) { fx_bicrn(14); }
+
+/* ANDIRN */
+void c_FxOp71A2(void) { fx_andirn(1); }
+void c_FxOp72A2(void) { fx_andirn(2); }
+void c_FxOp73A2(void) { fx_andirn(3); }
+void c_FxOp74A2(void) { fx_andirn(4); }
+void c_FxOp75A2(void) { fx_andirn(5); }
+void c_FxOp76A2(void) { fx_andirn(6); }
+void c_FxOp77A2(void) { fx_andirn(7); }
+void c_FxOp78A2(void) { fx_andirn(8); }
+void c_FxOp79A2(void) { fx_andirn(9); }
+void c_FxOp7AA2(void) { fx_andirn(10); }
+void c_FxOp7BA2(void) { fx_andirn(11); }
+void c_FxOp7CA2(void) { fx_andirn(12); }
+void c_FxOp7DA2(void) { fx_andirn(13); }
+void c_FxOp7EA2(void) { fx_andirn(14); }
+void c_FxOp7FA2(void) { fx_andirn(15); }
+
+/* BICIRN */
+void c_FxOp71A3(void) { fx_bicirn(1); }
+void c_FxOp72A3(void) { fx_bicirn(2); }
+void c_FxOp73A3(void) { fx_bicirn(3); }
+void c_FxOp74A3(void) { fx_bicirn(4); }
+void c_FxOp75A3(void) { fx_bicirn(5); }
+void c_FxOp76A3(void) { fx_bicirn(6); }
+void c_FxOp77A3(void) { fx_bicirn(7); }
+void c_FxOp78A3(void) { fx_bicirn(8); }
+void c_FxOp79A3(void) { fx_bicirn(9); }
+void c_FxOp7AA3(void) { fx_bicirn(10); }
+void c_FxOp7BA3(void) { fx_bicirn(11); }
+void c_FxOp7CA3(void) { fx_bicirn(12); }
+void c_FxOp7DA3(void) { fx_bicirn(13); }
+void c_FxOp7EA3(void) { fx_bicirn(14); }
+void c_FxOp7FA3(void) { fx_bicirn(15); }
+
 /* --- TO rN / FROM rN, and the register-select opcodes ---------------------
  *
  * These come in two flavours. Outside a WITH block (SfxB clear, "version A")
@@ -107,24 +431,6 @@ FX_BRANCHES(c, FxTablec)
  *
  * Note which table each one chains through: TO uses the b table, FROM uses the
  * base table, and the c-group opcodes have no version A at all. */
-
-/* FETCHPIPE: load the next opcode byte into cl, leaving the ALT mode in ch. */
-static inline void fx_fetchpipe(void)
-{
-    FxSeamCX = (FxSeamCX & ~0xFFu) | *FxSeamPC;
-}
-
-/* R15 mirrors the program counter as a bank-relative address. */
-static inline u4 fx_pc_rel(void)
-{
-    return (u4)(uintptr_t)FxSeamPC - SfxCPB;
-}
-
-/* UpdateR14: recompute the ROM pointer R14 reads through. */
-static inline void fx_update_r14(void)
-{
-    SfxRomBuffer = SfxCROM + SfxR0[14];
-}
 
 /* The destination write shared by every FROM rN: the value sets sign/zero, and
  * `shr al,7` followed by a *byte* store means only the low byte of SfxOverflow
