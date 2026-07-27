@@ -243,11 +243,6 @@ static inline void spc_cmp_a(u1 const m)
 #define SPC_ALU(hex, mode, op)                    \
     u1* SpcOp##hex(u1* const pc)                  \
     {                                             \
-                                           \
-                                           \
-                                           \
-                                           \
-                                           \
         spcaddr const a = mode(pc);               \
         op(a.val);                                \
         return a.pc;                              \
@@ -374,10 +369,6 @@ static inline void spc_sbc_a(u1 const m) { spcA = spc_sbc(spcA, m); }
 #define SPC_ALU2(hex, mode, op)      \
     u1* SpcOp##hex(u1* const pc)     \
     {                                \
-                                           \
-                                           \
-                                           \
-                                           \
         spcaddr const a = mode(pc);  \
         op(a.val);                   \
         return a.pc;                 \
@@ -412,10 +403,6 @@ SPC_ALU2(A8, spc_a_imm, spc_sbc_a)
 #define SPC_RMW(hex, get, comb)                     \
     u1* SpcOp##hex(u1* const pc)                    \
     {                                               \
-                                             \
-                                             \
-                                             \
-                                             \
         get;                                        \
         u1 const r = comb;                          \
         spc_write(dst, r);                          \
@@ -568,9 +555,6 @@ u1* SpcOp5E(u1* const pc) { spc_cmp(spcY, spc_read(SPCRAM + (pc[0] | (u2)pc[1] <
 #define SPC_MEM_RMW(hex, addr, adv, expr)      \
     u1* SpcOp##hex(u1* const pc)               \
     {                                          \
-                                        \
-                                        \
-                                        \
         u1* const m = addr;                    \
         u1 al = spc_read(m);                   \
         expr;                                  \
@@ -892,7 +876,6 @@ static inline u1 spc_ror(u1 const v)
 #define SPC_ROT(hex, addr, adv, fn)                     \
     u1* SpcOp##hex(u1* const pc)                        \
     {                                                   \
-                                                 \
         u1* const m = addr;                             \
         spc_write(m, fn(spc_read(m)));                  \
         return pc + adv;                                \

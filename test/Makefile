@@ -43,7 +43,7 @@ MODE7     := zsnes_mode716b_test
 MODE7_SRC := mode716b_test.c
 OBJS      := ../zpath.o
 
-.PHONY: all run clean
+.PHONY: all run clean spcdec
 
 all: $(BIN) $(NETPLAY) $(ST10) $(ST11) $(OBC1) $(MSU1) $(DSP2) $(SAI) $(SA1) $(SPC7110) $(VCACHE) $(SPRITES) $(C4) $(MODE7)
 
@@ -88,6 +88,15 @@ $(VCACHE): $(VCACHE_SRC) zstest.h ../video/tilecache.c
 
 $(SPRITES): $(SPRITES_SRC) zstest.h ../video/sprites.c
 	$(CC) $(CFLAGS) -ffunction-sections -fdata-sections $(SPRITES_SRC) ../video/sprites.c -no-pie -Wl,--gc-sections -o $(SPRITES)
+
+# Differential test for the SPC700 DAA/DAS opcodes against the assembly they
+# replaced (cff2b437^). Not part of `all` - it needs that old assembly.
+spcdec: difftest_spcdec.c difftest.h mkdifftest.sh ../cpu/spc_ops.h
+	git -C .. show cff2b437^:cpu/spc700.asm > /tmp/spc_old.asm
+	./mkdifftest.sh _spcdec /tmp/spc_old.asm "OpBE OpDF" \
+	    "spcA spcNZ spcP" 439-459 1733-1781
+	$(CC) $(CFLAGS) difftest_spcdec.c _spcdec.o -no-pie -o difftest_spcdec
+	@./difftest_spcdec
 
 run: all
 	@./$(BIN)
