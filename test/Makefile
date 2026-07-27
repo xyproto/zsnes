@@ -45,7 +45,7 @@ ASMDATA   := zsnes_asmdata_test
 ASMDATA_SRC := asmdata_test.c
 OBJS      := ../zpath.o
 
-.PHONY: all run clean spcdec fxtable fxbranch
+.PHONY: all run clean spcdec fxtable fxops
 
 all: $(BIN) $(NETPLAY) $(ST10) $(ST11) $(OBC1) $(MSU1) $(DSP2) $(SAI) $(SA1) $(SPC7110) $(VCACHE) $(SPRITES) $(C4) $(MODE7) $(ASMDATA)
 
@@ -113,12 +113,12 @@ fxtable: difftest_fxtable.c mkfxtable.sh ../chips/c_fxtable.c ../endmem.o
 	$(CC) -m32 -no-pie -fno-pic _fxtest.o _fxtable.o _fxold.o _fxstubs.o ../endmem.o -o difftest_fxtable
 	@./difftest_fxtable
 
-# Differential test for the SuperFX branch handlers against the assembly they
+# Differential test for the SuperFX opcode handlers against the assembly they
 # replaced. Not part of `all` - it needs that assembly out of git history.
-fxbranch: difftest_fxbranch.c difftest.h mkfxbranch.sh ../chips/fx_ops.h
-	./mkfxbranch.sh
-	$(CC) $(CFLAGS) difftest_fxbranch.c _fxbranch.o -no-pie -o difftest_fxbranch
-	@./difftest_fxbranch
+fxops: difftest_fxops.c difftest.h mkfxops.sh ../chips/fx_ops.h
+	./mkfxops.sh
+	$(CC) $(CFLAGS) difftest_fxops.c _fxops.o -no-pie -o difftest_fxops
+	@./difftest_fxops
 
 run: all
 	@./$(BIN)
@@ -139,7 +139,7 @@ run: all
 
 clean:
 	rm -f $(BIN) $(NETPLAY) $(ST10) $(ST11) $(OBC1) $(MSU1) $(DSP2) $(SAI) $(SA1) $(SPC7110) $(VCACHE) $(SPRITES) $(C4) $(MODE7) $(ASMDATA)
-	rm -f difftest_spcdec difftest_fxtable difftest_fxbranch _*.o _*.asm _*.inc _*.raw
+	rm -f difftest_spcdec difftest_fxtable difftest_fxops _*.o _*.asm _*.inc _*.raw
 
 # Port-time differential testing (difftest.h + mkdifftest.sh) proves a C port
 # bit-identical to the original assembly. It is transient by design: the oracle
