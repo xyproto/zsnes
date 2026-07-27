@@ -446,16 +446,7 @@ NEWSYM bg3high2, resd 1
 NEWSYM cwinenabm, resd 1
 SECTION .text
 
-NEWSYM drawline
-
-    cmp byte[ForceNewGfxOff],0
-    jne .drawline16b
-    cmp byte[newengen],0
-    je .drawline16b
-    jmp newengine16b
-.drawline16b
-    ccallv drawline16b
-    ret
+; drawline is ported to C (video/c_makevid.c).
 
 ALIGN32
 SECTION .bss

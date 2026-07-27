@@ -700,7 +700,7 @@ NEWSYM cpuover
 .nocache
     cmp byte[curblank],0
     jne .nodrawlineb2
-    call drawline
+    ccallv drawline
 .nodrawlineb2
     cmp byte[curexecstate],2
     je near pexecs
@@ -1144,7 +1144,7 @@ NEWSYM cpuover
 .nocache2
     cmp byte[curblank],0
     jne .nodrawline
-    call drawline
+    ccallv drawline
 .nodrawline
     cmp byte[intrset],1
     jne .nointrset2
@@ -1392,7 +1392,7 @@ NEWSYM execsingle
 .nodohdma
     cmp byte[curblank],0
     jne .nodrawlineb
-    call drawline
+    ccallv drawline
 .nodrawlineb
     jmp dword near [edi+ebx*4]
 
@@ -1504,7 +1504,7 @@ NEWSYM execsingle
 .nodohdma2
     cmp byte[curblank],0
     jne .nodrawline
-    call drawline
+    ccallv drawline
 .nodrawline
     dec esi
     cmp byte[intrset],1

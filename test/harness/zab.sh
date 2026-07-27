@@ -50,13 +50,30 @@ if [ "$distinct" -lt 10 ]; then
     exit 3
 fi
 
-for f in zsnes_ppu.txt zsnes_hashes.txt; do
-    if [ -f "$OUT/base/$f" ] && [ -f "$OUT/cand/$f" ]; then
-        if diff -q "$OUT/base/$f" "$OUT/cand/$f" >/dev/null; then
-            echo "SAME: $f identical ($(wc -l < "$OUT/base/$f") lines)"
-        else
-            echo "DIFFER: $f - first divergence:"
-            diff "$OUT/base/$f" "$OUT/cand/$f" | head -6
-        fi
-    fi
-done
+python3 - "$OUT/base" "$OUT/cand" <<'PY'
+import sys, os
+base, cand = sys.argv[1], sys.argv[2]
+rc = 0
+for name in ("zsnes_ppu.txt", "zsnes_hashes.txt"):
+    b, c = os.path.join(base, name), os.path.join(cand, name)
+    if not (os.path.exists(b) and os.path.exists(c)):
+        continue
+    B = open(b).read().splitlines()
+    C = open(c).read().splitlines()
+    n = min(len(B), len(C))
+    if n == 0:
+        print(f"{name}: NO OVERLAP"); rc = 3; continue
+    first = next((i for i in range(n) if B[i] != C[i]), None)
+    # The runs are wall-clock capped, so differing lengths are expected and are
+    # not a divergence; only mismatching content within the overlap counts.
+    if first is None:
+        print(f"SAME: {name} identical over {n} common frames (base {len(B)}, cand {len(C)})")
+    else:
+        print(f"DIFFER: {name} diverges at frame {first+1} of {n} common")
+        print(f"   base: {B[first]}")
+        print(f"   cand: {C[first]}")
+        rc = 1
+    if n < 500:
+        print(f"   WARNING: only {n} common frames - raise -t for real coverage")
+sys.exit(rc)
+PY

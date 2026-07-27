@@ -6,6 +6,7 @@
 #include "../initc.h"
 #include "../ui.h"
 #include "../vcache.h"
+#include "c_makev16b.h" /* drawline16b */
 #include "c_makevid.h"
 #include "makevid.h"
 
@@ -810,4 +811,28 @@ void procbackgrnd(u4 const layer)
         proc16x8(y, x, edi, layer, mode, bgptrb);
     else
         proc8x8(y, x, edi, layer, mode, bgptrb);
+}
+
+// --- Per-scanline dispatch (ported from video/makevid.asm) ------------------
+//
+// drawline() picks between the new graphics engine and the 16-bit renderer.
+// newengine16b() is still assembly (video/newgfx16.asm) with the renderer's own
+// register usage, so it is entered through an inline-asm call that saves ebp and
+// declares the full clobber set - the same seam video/c_makev16b.c uses for the
+// mode 7 renderers. The assembly this replaces reached it with a tail `jmp`.
+//
+// The four call sites in cpu/execute.asm use `ccallv drawline`, which preserves
+// eax/ecx/edx across the call; two of them push edx immediately afterwards.
+extern u1 ForceNewGfxOff;
+extern u1 newengen;
+void newengine16b(void);
+
+void drawline(void)
+{
+    if (ForceNewGfxOff == 0 && newengen != 0) {
+        __asm__ volatile("push %%ebp;  call %P0;  pop %%ebp" ::"X"(newengine16b)
+            : "cc", "memory", "eax", "ecx", "edx", "ebx", "esi", "edi");
+        return;
+    }
+    drawline16b();
 }

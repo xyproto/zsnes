@@ -13,8 +13,9 @@
 #   -p N       PNG every N frames            (default 30; 0 disables)
 #   -t SECS    wall-clock cap                (default 30)
 #   -o OUTDIR  artifact directory            (required)
+#   ASCII=1    env: also write ASCII dumps + per-frame hashes (slow; off by default)
 set -u
-BIN=./zsnes; ROM=; INPUT=; SLOT=; PNGEVERY=30; SECS=30; OUT=
+BIN=./zsnes; ROM=; INPUT=; SLOT=; PNGEVERY=30; SECS=30; OUT=; ASCII=${ASCII:-}
 while getopts "b:r:i:s:p:t:o:" o; do case $o in
   b) BIN=$OPTARG;; r) ROM=$OPTARG;; i) INPUT=$OPTARG;; s) SLOT=$OPTARG;;
   p) PNGEVERY=$OPTARG;; t) SECS=$OPTARG;; o) OUT=$OPTARG;;
@@ -30,7 +31,7 @@ args=(-v 0 -m -ds)
 [ -n "$SLOT" ] && args+=(-zs "$SLOT")
 
 env PPU_STATE_LOG=1 \
-    ASCII_SCREENSHOT_EVERY_FIVE=1 ASCII_SCREENSHOT_BURST=3 \
+    ${ASCII:+ASCII_SCREENSHOT_EVERY_FIVE=1 ASCII_SCREENSHOT_BURST=3} \
     ${PNGEVERY:+PNG_SCREENSHOT_EVERY_N=$PNGEVERY} \
     ${INPUT:+DEBUG_INPUT_SCRIPT=$INPUT} \
     timeout "$SECS" "$BIN" "${args[@]}" "$ROM" </dev/null >"$OUT/stdout.log" 2>&1
