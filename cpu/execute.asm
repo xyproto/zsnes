@@ -143,6 +143,7 @@ EXTSYM EMUPauseKey,INCRFrameKey,MovieWaiting,NoInputRead
 EXTSYM AllocatedRewindStates,PauseFrameMode,RestorePauseFrame,BackupPauseFrame
 EXTSYM rtoflags,sprcnt,sprtilecnt,endprog
 EXTSYM Donextlinecache
+EXTSYM ProcessRewindC,UpdateRewindC
 EXTSYM StartSFX
 EXTSYM StartSFXdebugb
 EXTSYM SfxVblankCatchup
@@ -159,48 +160,17 @@ NEWSYM DblRewTimer, dd 0
 SECTION .text
 
 NEWSYM ProcessRewind
-    mov eax,[KeyRewind]
-    cmp byte[pressed+eax],1
-    jne near .notokay
-    mov byte[pressed+eax],2
-
-    ccallv RestoreCVFrame
-
-    cmp byte[PauseFrameMode],1
-    jne .notpauserewind
-    ccallv BackupPauseFrame
-.notpauserewind
-
-    ccallv UpdateDPage
-    mov esi,[tempesi]
-    mov edi,[tempedi]
-    mov ebp,[tempebp]
-    mov edx,[tempedx]
-
-.notokay
+    pushad
+    mov eax, esp
+    ccall ProcessRewindC, eax
+    popad
     ret
 
 NEWSYM UpdateRewind
-    cmp byte[AllocatedRewindStates],0
-    je .norewinds
-    cmp dword[KeyRewind],0
-    je .norewinds
-
-    dec dword[DblRewTimer]
-    dec dword[RewindTimer]
-    jnz .checkrewind
-
-    mov [tempedx],edx
-    mov [tempesi],esi
-    mov [tempedi],edi
-    mov [tempebp],ebp
-
-    ccallv BackupCVFrame
-
-.checkrewind
-    call ProcessRewind
-    ccallv UpdateDPage
-.norewinds
+    pushad
+    mov eax, esp
+    ccall UpdateRewindC, eax
+    popad
     ret
 
 %macro ProcessIRQStuff 0

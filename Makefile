@@ -368,6 +368,7 @@ SRCS += cpu/c_irq.c
 SRCS += cpu/c_memory.c
 SRCS += cpu/c_regs.c
 SRCS += cpu/c_regsw.c
+SRCS += cpu/c_rewind.c
 SRCS += cpu/c_spc700.c
 SRCS += cpu/c_table.c
 SRCS += cpu/c_tablec.c
