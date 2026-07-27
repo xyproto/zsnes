@@ -70,167 +70,111 @@ section .note.GNU-stack noalloc noexec nowrite progbits
 EXTSYM FxTable,FxTableb,FxTablec,SfxB,SfxCPB,SfxCROM,SfxCarry,SfxOverflow
 EXTSYM SfxR0,SfxR14,SfxR15,SfxRomBuffer,SfxSignZero,withr15sk
 
+; Seam to the handlers ported to C (chips/c_fxemu2b.c, chips/fx_ops.h).
+EXTSYM FxSeamPC,FxSeamSrc,FxSeamDst,FxSeamCX
+EXTSYM c_FxOpb05,c_FxOpb06,c_FxOpb07,c_FxOpb08,c_FxOpb09,c_FxOpb0A
+EXTSYM c_FxOpb0B,c_FxOpb0C,c_FxOpb0D,c_FxOpb0E,c_FxOpb0F
+EXTSYM c_FxOpc05,c_FxOpc06,c_FxOpc07,c_FxOpc08,c_FxOpc09,c_FxOpc0A
+EXTSYM c_FxOpc0B,c_FxOpc0C,c_FxOpc0D,c_FxOpc0E,c_FxOpc0F
+
 %include "chips/fxemu2.mac"
 %include "chips/fxemu2b.mac"
 
+%macro ccall 1-*
+	push ecx
+	push edx
+%rep %0 - 1
+%rotate -1
+	push dword %1
+%endrep
+%rotate -1
+	call %1
+%if %0 != 1
+	add esp, (%0 - 1) * 4
+%endif
+	pop edx
+	pop ecx
+%endmacro
+
+; Spill the core's live registers to the seam block, run a C handler body, then
+; reload them. ebp is the program counter, esi/edi the source/destination
+; register pointers, ecx the opcode byte (cl) plus the ALT mode (ch); the C body
+; may change any of them, exactly as an asm body could.
+%macro fxcop 1
+    mov [FxSeamPC], ebp
+    mov [FxSeamSrc], esi
+    mov [FxSeamDst], edi
+    mov [FxSeamCX], ecx
+    ccall %1
+    mov ebp, [FxSeamPC]
+    mov esi, [FxSeamSrc]
+    mov edi, [FxSeamDst]
+    mov ecx, [FxSeamCX]
+    ret
+%endmacro
+
 SECTION .text
+
+; void FxDispatch(u4 const *table) - the other half of the seam: run one opcode
+; through the given dispatch table with the register ABI live. ecx indexes the
+; table as (ALT mode << 8) | opcode, which reaches FxTable/FxTableA1/A2/A3 as
+; one adjacent block.
+NEWSYM FxDispatch
+    push ebx
+    push esi
+    push edi
+    push ebp
+    mov eax, [esp+20]
+    mov ebp, [FxSeamPC]
+    mov esi, [FxSeamSrc]
+    mov edi, [FxSeamDst]
+    mov ecx, [FxSeamCX]
+    call [eax+ecx*4]
+    mov [FxSeamPC], ebp
+    mov [FxSeamSrc], esi
+    mov [FxSeamDst], edi
+    mov [FxSeamCX], ecx
+    pop ebp
+    pop edi
+    pop esi
+    pop ebx
+    ret
 
 
 
 
 NEWSYM FxOpb05      ; BRA    branch always      ; Verified.
-   movsx eax,byte[ebp]
-   mov cl,[ebp+1]
-   inc ebp
-   add ebp,eax
-   call [FxTableb+ecx*4]
-   ret
+   fxcop c_FxOpb05
 
 NEWSYM FxOpb06      ; BGE    branch on greater or equals        ; Verified.
-   movsx eax,byte[ebp]
-   mov ebx,[SfxSignZero]
-   shr ebx,15
-   inc ebp
-   xor bl,[SfxOverflow]
-   mov cl,[ebp]
-   test bl,01h
-   jnz .nojump
-   add ebp,eax
-   call [FxTableb+ecx*4]
-   ret
-.nojump
-   inc ebp
-   call [FxTableb+ecx*4]
-   ret
+   fxcop c_FxOpb06
 
 NEWSYM FxOpb07      ; BLT    branch on lesss than       ; Verified.
-   movsx eax,byte[ebp]
-   mov ebx,[SfxSignZero]
-   shr ebx,15
-   inc ebp
-   xor bl,[SfxOverflow]
-   mov cl,[ebp]
-   test bl,01h
-   jz .nojump
-   add ebp,eax
-   call [FxTableb+ecx*4]
-   ret
-.nojump
-   inc ebp
-   call [FxTableb+ecx*4]
-   ret
+   fxcop c_FxOpb07
 
 NEWSYM FxOpb08      ; BNE    branch on not equal        ; Verified.
-   movsx eax,byte[ebp]
-   inc ebp
-   test dword[SfxSignZero],0FFFFh
-   mov cl,[ebp]
-   jz .nojump
-   add ebp,eax
-   call [FxTableb+ecx*4]
-   ret
-.nojump
-   inc ebp
-   call [FxTableb+ecx*4]
-   ret
+   fxcop c_FxOpb08
 
 NEWSYM FxOpb09      ; BEQ    branch on equal (z=1)      ; Verified.
-   movsx eax,byte[ebp]
-   inc ebp
-   test dword[SfxSignZero],0FFFFh
-   mov cl,[ebp]
-   jnz .nojump
-   add ebp,eax
-   call [FxTableb+ecx*4]
-   ret
-.nojump
-   inc ebp
-   call [FxTableb+ecx*4]
-   ret
+   fxcop c_FxOpb09
 
 NEWSYM FxOpb0A      ; BPL    branch on plus     ; Verified.
-   movsx eax,byte[ebp]
-   inc ebp
-   test dword[SfxSignZero],088000h
-   mov cl,[ebp]
-   jnz .nojump
-   add ebp,eax
-   call [FxTableb+ecx*4]
-   ret
-.nojump
-   inc ebp
-   call [FxTableb+ecx*4]
-   ret
+   fxcop c_FxOpb0A
 
 NEWSYM FxOpb0B      ; BMI    branch on minus    ; Verified.
-   movsx eax,byte[ebp]
-   inc ebp
-   test dword[SfxSignZero],088000h
-   mov cl,[ebp]
-   jz .nojump
-   add ebp,eax
-   call [FxTableb+ecx*4]
-   ret
-.nojump
-   inc ebp
-   call [FxTableb+ecx*4]
-   ret
+   fxcop c_FxOpb0B
 
 NEWSYM FxOpb0C      ; BCC    branch on carry clear      ; Verified.
-   movsx eax,byte[ebp]
-   inc ebp
-   test byte[SfxCarry],01h
-   mov cl,[ebp]
-   jnz .nojump
-   add ebp,eax
-   call [FxTableb+ecx*4]
-   ret
-.nojump
-   inc ebp
-   call [FxTableb+ecx*4]
-   ret
+   fxcop c_FxOpb0C
 
 NEWSYM FxOpb0D      ; BCS    branch on carry set        ; Verified.
-   movsx eax,byte[ebp]
-   inc ebp
-   test byte[SfxCarry],01h
-   mov cl,[ebp]
-   jz .nojump
-   add ebp,eax
-   call [FxTableb+ecx*4]
-   ret
-.nojump
-   inc ebp
-   call [FxTableb+ecx*4]
-   ret
+   fxcop c_FxOpb0D
 
 NEWSYM FxOpb0E      ; BVC    branch on overflow clear   ; Verified.
-   movsx eax,byte[ebp]
-   inc ebp
-   test byte[SfxOverflow],01h
-   mov cl,[ebp]
-   jnz .nojump
-   add ebp,eax
-   call [FxTableb+ecx*4]
-   ret
-.nojump
-   inc ebp
-   call [FxTableb+ecx*4]
-   ret
+   fxcop c_FxOpb0E
 
 NEWSYM FxOpb0F      ; BVS    branch on overflow set     ; Verified.
-   movsx eax,byte[ebp]
-   inc ebp
-   test byte[SfxOverflow],01h
-   mov cl,[ebp]
-   jz .nojump
-   add ebp,eax
-   call [FxTableb+ecx*4]
-   ret
-.nojump
-   inc ebp
-   call [FxTableb+ecx*4]
-   ret
+   fxcop c_FxOpb0F
 
 NEWSYM FxOpb10      ; TO RN  set register n as destination register
    TORNb 0
@@ -395,158 +339,37 @@ NEWSYM FxOpbBF      ; FROM rn   set source register
    ret
 
 NEWSYM FxOpc05      ; BRA    branch always      ; Verified.
-   movsx eax,byte[ebp]
-   mov cl,[ebp+1]
-   inc ebp
-   add ebp,eax
-   call [FxTablec+ecx*4]
-   ret
+   fxcop c_FxOpc05
 
 NEWSYM FxOpc06      ; BGE    branch on greater or equals        ; Verified.
-   movsx eax,byte[ebp]
-   mov ebx,[SfxSignZero]
-   shr ebx,15
-   inc ebp
-   xor bl,[SfxOverflow]
-   mov cl,[ebp]
-   test bl,01h
-   jnz .nojump
-   add ebp,eax
-   call [FxTablec+ecx*4]
-   ret
-.nojump
-   inc ebp
-   call [FxTablec+ecx*4]
-   ret
+   fxcop c_FxOpc06
 
 NEWSYM FxOpc07      ; BLT    branch on lesss than       ; Verified.
-   movsx eax,byte[ebp]
-   mov ebx,[SfxSignZero]
-   shr ebx,15
-   inc ebp
-   xor bl,[SfxOverflow]
-   mov cl,[ebp]
-   test bl,01h
-   jz .nojump
-   add ebp,eax
-   call [FxTablec+ecx*4]
-   ret
-.nojump
-   inc ebp
-   call [FxTablec+ecx*4]
-   ret
+   fxcop c_FxOpc07
 
 NEWSYM FxOpc08      ; BNE    branch on not equal        ; Verified.
-   movsx eax,byte[ebp]
-   inc ebp
-   test dword[SfxSignZero],0FFFFh
-   mov cl,[ebp]
-   jz .nojump
-   add ebp,eax
-   call [FxTablec+ecx*4]
-   ret
-.nojump
-   inc ebp
-   call [FxTablec+ecx*4]
-   ret
+   fxcop c_FxOpc08
 
 NEWSYM FxOpc09      ; BEQ    branch on equal (z=1)      ; Verified.
-   movsx eax,byte[ebp]
-   inc ebp
-   test dword[SfxSignZero],0FFFFh
-   mov cl,[ebp]
-   jnz .nojump
-   add ebp,eax
-   call [FxTablec+ecx*4]
-   ret
-.nojump
-   inc ebp
-   call [FxTablec+ecx*4]
-   ret
+   fxcop c_FxOpc09
 
 NEWSYM FxOpc0A      ; BPL    branch on plus     ; Verified.
-   movsx eax,byte[ebp]
-   inc ebp
-   test dword[SfxSignZero],088000h
-   mov cl,[ebp]
-   jnz .nojump
-   add ebp,eax
-   call [FxTablec+ecx*4]
-   ret
-.nojump
-   inc ebp
-   call [FxTablec+ecx*4]
-   ret
+   fxcop c_FxOpc0A
 
 NEWSYM FxOpc0B      ; BMI    branch on minus    ; Verified.
-   movsx eax,byte[ebp]
-   inc ebp
-   test dword[SfxSignZero],088000h
-   mov cl,[ebp]
-   jz .nojump
-   add ebp,eax
-   call [FxTablec+ecx*4]
-   ret
-.nojump
-   inc ebp
-   call [FxTablec+ecx*4]
-   ret
+   fxcop c_FxOpc0B
 
 NEWSYM FxOpc0C      ; BCC    branch on carry clear      ; Verified.
-   movsx eax,byte[ebp]
-   inc ebp
-   test byte[SfxCarry],01h
-   mov cl,[ebp]
-   jnz .nojump
-   add ebp,eax
-   call [FxTablec+ecx*4]
-   ret
-.nojump
-   inc ebp
-   call [FxTablec+ecx*4]
-   ret
+   fxcop c_FxOpc0C
 
 NEWSYM FxOpc0D      ; BCS    branch on carry set        ; Verified.
-   movsx eax,byte[ebp]
-   inc ebp
-   test byte[SfxCarry],01h
-   mov cl,[ebp]
-   jz .nojump
-   add ebp,eax
-   call [FxTablec+ecx*4]
-   ret
-.nojump
-   inc ebp
-   call [FxTablec+ecx*4]
-   ret
+   fxcop c_FxOpc0D
 
 NEWSYM FxOpc0E      ; BVC    branch on overflow clear   ; Verified.
-   movsx eax,byte[ebp]
-   inc ebp
-   test byte[SfxOverflow],01h
-   mov cl,[ebp]
-   jnz .nojump
-   add ebp,eax
-   call [FxTablec+ecx*4]
-   ret
-.nojump
-   inc ebp
-   call [FxTablec+ecx*4]
-   ret
+   fxcop c_FxOpc0E
 
 NEWSYM FxOpc0F      ; BVS    branch on overflow set     ; Verified.
-   movsx eax,byte[ebp]
-   inc ebp
-   test byte[SfxOverflow],01h
-   mov cl,[ebp]
-   jz .nojump
-   add ebp,eax
-   call [FxTablec+ecx*4]
-   ret
-.nojump
-   inc ebp
-   call [FxTablec+ecx*4]
-   ret
+   fxcop c_FxOpc0F
 
 NEWSYM FxOpc10      ; TO RN  set register n as destination register
    TORNc 0
