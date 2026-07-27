@@ -1,8 +1,9 @@
 # Porting Guide: 32-bit x86 Assembly to C11
 
-This documents how to port the remaining 29 `.asm` files (NASM, 32-bit x86) to
+This documents how to port the remaining `.asm` files (NASM, 32-bit x86) to
 portable C11, with the hard-won lessons from the ports already done
-(`vcache`, `winintrf`, `endmem`, and the in-progress `7110proc`).
+(`vcache`, `winintrf`, `endmem`, `dspproc`, `makevid`, `newgfx`, and the
+in-progress `7110proc`).
 
 ## Goal and golden rule
 
@@ -30,8 +31,10 @@ exported (`NEWSYM`/`GLOBAL`). One file maps to one `.o`.
 Classify a file before starting. Symbols are resolved by the linker by name, so:
 
 1. **Pure data symbols** (`resb/resd/resw`, `db/dd/dw`) are language-neutral:
-   ABI does not matter, no caller breaks. **Easiest, safest.** (`endmem` was
-   the last one; none remain.)
+   ABI does not matter, no caller breaks. **Easiest, safest.** A file becomes
+   one of these once its last routine is ported out, so re-check: `objdump -h
+   file.o | awk '$2==".text"'` showing size 0 means it is now pure data.
+   `endmem`, `dspproc`, `makevid` and `newgfx` were done this way; none remain.
 2. **Functions called only from C** can move to C directly (cdecl).
 3. **Functions called from asm via the register ABI** (address in ECX, value in
    AL/AX, must preserve ECX/EDX and unused EAX bits) CANNOT just become cdecl C.
@@ -80,7 +83,13 @@ callers depend on the exact register ABI.
       objdump -t old.o | awk '$2=="g"&&($3==".bss"||$3==".data"){print $1,$3,$5}' | sort
       objcopy -O binary --only-section=.data old.o old.bin   # cmp vs new.bin
 
-  `endmem.c` reproduces `endmem.o` byte-for-byte this way.
+  `endmem.c`, `cpu/dspproc.c`, `video/makevid.c` and `video/newgfx.c` each
+  reproduce their `.o` byte-for-byte this way. Watch for NASM's `ALIGN32`
+  macro: it is `times ($$-$) & 1Fh nop`, so it pads with **0x90**, not zeroes,
+  and it aligns relative to the section start. Use `.balign 32, 0x90`.
+  Relocations count too: `objdump -r` must match. To name a symbol from
+  *another* object, use `ASM_SYMREF(sym)`; the plain alias `ASM_GSYM` leaves
+  behind is file-local, so a bare name links on ELF and fails only on win32.
 - **Byte/word punning assumes little-endian x86.** The asm freely does
   `mov al,[SPCMultA+1]`; in C use `((uint8_t*)&x)[n]`. Fine here (always
   `-m32` x86), but don't "clean it up" into endian-portable code unless asked.
