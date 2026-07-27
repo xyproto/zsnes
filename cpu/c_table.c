@@ -696,3 +696,31 @@ void inittable(void)
 
     settableDm8(tableH); // Table addresses (M:1,X:1,D:1)
 }
+
+/* Ported from cpu/table.asm. Master cycle count per 65816 opcode; the opcode
+   cores subtract it from dh (cpu/65816dc.inc, cpu/s65816d.inc, cpu/execute.asm)
+   and cpu/c_execute.c reads it directly. */
+u1 cpucycle[256] = {
+     8,  6,  8,  4,  5,  3,  5,  6,  3,  2,  2,  4,  6,  4,  6,  5,
+     2,  5,  5,  7,  5,  4,  6,  6,  2,  4,  2,  2,  6,  4,  7,  5,
+     6,  6,  8,  4,  3,  3,  5,  6,  4,  2,  2,  5,  4,  4,  6,  5,
+     2,  5,  5,  7,  4,  4,  6,  6,  2,  4,  2,  2,  4,  4,  7,  5,
+     7,  6,  2,  4,  7,  3,  5,  6,  3,  2,  2,  3,  3,  4,  6,  5,
+     2,  5,  5,  7,  7,  4,  6,  6,  2,  4,  3,  2,  4,  4,  7,  5,
+     6,  6,  6,  4,  3,  3,  5,  6,  4,  2,  2,  6,  5,  4,  6,  5,
+     2,  5,  5,  7,  4,  4,  6,  6,  2,  4,  4,  2,  6,  4,  7,  5,
+     2,  6,  3,  4,  3,  3,  3,  6,  2,  2,  2,  3,  4,  4,  4,  5,
+     2,  6,  5,  7,  4,  4,  4,  6,  2,  5,  2,  2,  4,  5,  5,  5,
+     2,  6,  2,  4,  3,  3,  3,  6,  2,  2,  2,  4,  4,  4,  4,  5,
+     2,  5,  5,  7,  4,  4,  4,  6,  2,  4,  2,  2,  4,  4,  4,  5,
+     2,  6,  3,  4,  3,  3,  5,  6,  2,  2,  2,  3,  4,  4,  4,  5,
+     2,  5,  5,  7,  6,  4,  6,  6,  2,  4,  3,  3,  6,  4,  7,  5,
+     2,  6,  3,  4,  3,  3,  5,  6,  2,  2,  2,  3,  4,  4,  6,  5,
+     2,  5,  5,  7,  5,  4,  6,  6,  2,  4,  4,  2,  6,  4,  7,  5,
+};
+
+/* The invalid-opcode handler: entered from the dispatch tables with the core's
+   registers live, and does nothing but return. */
+void eopINVALID(void)
+{
+}
