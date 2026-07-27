@@ -76,9 +76,20 @@ EXTSYM c_FxOpb05,c_FxOpb06,c_FxOpb07,c_FxOpb08,c_FxOpb09,c_FxOpb0A
 EXTSYM c_FxOpb0B,c_FxOpb0C,c_FxOpb0D,c_FxOpb0E,c_FxOpb0F
 EXTSYM c_FxOpc05,c_FxOpc06,c_FxOpc07,c_FxOpc08,c_FxOpc09,c_FxOpc0A
 EXTSYM c_FxOpc0B,c_FxOpc0C,c_FxOpc0D,c_FxOpc0E,c_FxOpc0F
+EXTSYM c_FxOpb10,c_FxOpb11,c_FxOpb12,c_FxOpb13,c_FxOpb14,c_FxOpb15
+EXTSYM c_FxOpb16,c_FxOpb17,c_FxOpb18,c_FxOpb19,c_FxOpb1A,c_FxOpb1B
+EXTSYM c_FxOpb1C,c_FxOpb1D,c_FxOpb1E,c_FxOpb1F,c_FxOpb3D,c_FxOpb3E
+EXTSYM c_FxOpb3F,c_FxOpbB0,c_FxOpbB1,c_FxOpbB2,c_FxOpbB3,c_FxOpbB4
+EXTSYM c_FxOpbB5,c_FxOpbB6,c_FxOpbB7,c_FxOpbB8,c_FxOpbB9,c_FxOpbBA
+EXTSYM c_FxOpbBB,c_FxOpbBC,c_FxOpbBD,c_FxOpbBE,c_FxOpbBF,c_FxOpc10
+EXTSYM c_FxOpc11,c_FxOpc12,c_FxOpc13,c_FxOpc14,c_FxOpc15,c_FxOpc16
+EXTSYM c_FxOpc17,c_FxOpc18,c_FxOpc19,c_FxOpc1A,c_FxOpc1B,c_FxOpc1C
+EXTSYM c_FxOpc1D,c_FxOpc1E,c_FxOpc1F,c_FxOpc3D,c_FxOpc3E,c_FxOpc3F
+EXTSYM c_FxOpcB0,c_FxOpcB1,c_FxOpcB2,c_FxOpcB3,c_FxOpcB4,c_FxOpcB5
+EXTSYM c_FxOpcB6,c_FxOpcB7,c_FxOpcB8,c_FxOpcB9,c_FxOpcBA,c_FxOpcBB
+EXTSYM c_FxOpcBC,c_FxOpcBD,c_FxOpcBE,c_FxOpcBF
 
 %include "chips/fxemu2.mac"
-%include "chips/fxemu2b.mac"
 
 %macro ccall 1-*
 	push ecx
@@ -177,166 +188,109 @@ NEWSYM FxOpb0F      ; BVS    branch on overflow set     ; Verified.
    fxcop c_FxOpb0F
 
 NEWSYM FxOpb10      ; TO RN  set register n as destination register
-   TORNb 0
+   fxcop c_FxOpb10
+
 NEWSYM FxOpb11      ; TO RN  set register n as destination register
-   TORNb 1
+   fxcop c_FxOpb11
+
 NEWSYM FxOpb12      ; TO RN  set register n as destination register
-   TORNb 2
+   fxcop c_FxOpb12
+
 NEWSYM FxOpb13      ; TO RN  set register n as destination register
-   TORNb 3
+   fxcop c_FxOpb13
+
 NEWSYM FxOpb14      ; TO RN  set register n as destination register
-   TORNb 4
+   fxcop c_FxOpb14
+
 NEWSYM FxOpb15      ; TO RN  set register n as destination register
-   TORNb 5
+   fxcop c_FxOpb15
+
 NEWSYM FxOpb16      ; TO RN  set register n as destination register
-   TORNb 6
+   fxcop c_FxOpb16
+
 NEWSYM FxOpb17      ; TO RN  set register n as destination register
-   TORNb 7
+   fxcop c_FxOpb17
+
 NEWSYM FxOpb18      ; TO RN  set register n as destination register
-   TORNb 8
+   fxcop c_FxOpb18
+
 NEWSYM FxOpb19      ; TO RN  set register n as destination register
-   TORNb 9
+   fxcop c_FxOpb19
+
 NEWSYM FxOpb1A      ; TO RN  set register n as destination register
-   TORNb 10
+   fxcop c_FxOpb1A
+
 NEWSYM FxOpb1B      ; TO RN  set register n as destination register
-   TORNb 11
+   fxcop c_FxOpb1B
+
 NEWSYM FxOpb1C      ; TO RN  set register n as destination register
-   TORNb 12
+   fxcop c_FxOpb1C
+
 NEWSYM FxOpb1D      ; TO RN  set register n as destination register
-   TORNb 13
+   fxcop c_FxOpb1D
+
 NEWSYM FxOpb1E      ; TO RN  set register n as destination register
-   FETCHPIPE
-   test dword[SfxB],1
-   jnz .VersionB
-   mov edi,SfxR0+14*4
-   inc ebp
-   mov eax,ebp
-   sub eax,[SfxCPB]
-   mov dword[withr15sk],1
-   mov [SfxR15],eax
-   call [FxTableb+ecx*4]
-   mov edi,SfxR0
-   UpdateR14
-   ret
-.VersionB
-   mov eax,[esi]            ; Read Source
-   mov dword[withr15sk],1
-   mov [SfxR0+14*4],eax             ; Write
-   CLRFLAGS
-   UpdateR14
-   inc ebp                ; Increase program counter
-   ret
+   fxcop c_FxOpb1E
+
 NEWSYM FxOpb1F      ; TO RN  set register n as destination register
-   FETCHPIPE
-   test dword[SfxB],1
-   jnz .VersionB
-   mov edi,SfxR0+15*4
-   inc ebp
-   mov eax,ebp
-   sub eax,[SfxCPB]
-   mov [SfxR15],eax
-   call [FxTableb+ecx*4]
-   mov ebp,[SfxCPB]
-   mov dword[withr15sk],1
-   add ebp,[SfxR15]
-   mov edi,SfxR0
-   ret
-.VersionB
-   mov eax,[esi]            ; Read Source
-   mov ebp,[SfxCPB]
-   mov dword[withr15sk],1
-   add ebp,eax
-   CLRFLAGS
-   ret
+   fxcop c_FxOpb1F
 
 NEWSYM FxOpb3D      ; ALT1   set alt1 mode      ; Verified.
-   FETCHPIPE
-   mov dword[SfxB],0
-   or ch,01h
-   inc ebp
-   mov eax,ebp
-   sub eax,[SfxCPB]
-   mov [SfxR15],eax
-   call [FxTableb+ecx*4]
-   xor ch,ch
-   ret
+   fxcop c_FxOpb3D
 
 NEWSYM FxOpb3E      ; ALT2   set alt1 mode      ; Verified.
-   FETCHPIPE
-   mov dword[SfxB],0
-   or ch,02h
-   inc ebp
-   mov eax,ebp
-   sub eax,[SfxCPB]
-   mov [SfxR15],eax
-   call [FxTable+ecx*4]
-   xor ch,ch
-   ret
+   fxcop c_FxOpb3E
 
 NEWSYM FxOpb3F      ; ALT3   set alt3 mode      ; Verified.
-   FETCHPIPE
-   mov dword[SfxB],0
-   or ch,03h
-   inc ebp
-   mov eax,ebp
-   sub eax,[SfxCPB]
-   mov [SfxR15],eax
-   call [FxTable+ecx*4]
-   xor ch,ch
-   ret
+   fxcop c_FxOpb3F
 
 NEWSYM FxOpbB0      ; FROM rn   set source register
-   FROMRNb 0
+   fxcop c_FxOpbB0
+
 NEWSYM FxOpbB1      ; FROM rn   set source register
-   FROMRNb 1
+   fxcop c_FxOpbB1
+
 NEWSYM FxOpbB2      ; FROM rn   set source register
-   FROMRNb 2
+   fxcop c_FxOpbB2
+
 NEWSYM FxOpbB3      ; FROM rn   set source register
-   FROMRNb 3
+   fxcop c_FxOpbB3
+
 NEWSYM FxOpbB4      ; FROM rn   set source register
-   FROMRNb 4
+   fxcop c_FxOpbB4
+
 NEWSYM FxOpbB5      ; FROM rn   set source register
-   FROMRNb 5
+   fxcop c_FxOpbB5
+
 NEWSYM FxOpbB6      ; FROM rn   set source register
-   FROMRNb 6
+   fxcop c_FxOpbB6
+
 NEWSYM FxOpbB7      ; FROM rn   set source register
-   FROMRNb 7
+   fxcop c_FxOpbB7
+
 NEWSYM FxOpbB8      ; FROM rn   set source register
-   FROMRNb 8
+   fxcop c_FxOpbB8
+
 NEWSYM FxOpbB9      ; FROM rn   set source register
-   FROMRNb 9
+   fxcop c_FxOpbB9
+
 NEWSYM FxOpbBA      ; FROM rn   set source register
-   FROMRNb 10
+   fxcop c_FxOpbBA
+
 NEWSYM FxOpbBB      ; FROM rn   set source register
-   FROMRNb 11
+   fxcop c_FxOpbBB
+
 NEWSYM FxOpbBC      ; FROM rn   set source register
-   FROMRNb 12
+   fxcop c_FxOpbBC
+
 NEWSYM FxOpbBD      ; FROM rn   set source register
-   FROMRNb 13
+   fxcop c_FxOpbBD
+
 NEWSYM FxOpbBE      ; FROM rn   set source register
-   FROMRNb 14
+   fxcop c_FxOpbBE
+
 NEWSYM FxOpbBF      ; FROM rn   set source register
-   test dword[SfxB],1
-   jnz .VersionB
-   mov esi,SfxR0+15*4
-   inc ebp                ; Increase program counter
-   mov eax,ebp
-   sub eax,[SfxCPB]
-   mov [SfxR15],eax
-   call [FxTableb+ecx*4]
-   mov esi,SfxR0
-   ret
-.VersionB
-   FETCHPIPE
-   mov eax,ebp
-   sub eax,[SfxCPB]
-   inc ebp
-   mov [edi],eax        ; Write Destination
-   mov [SfxSignZero],eax
-   shr al,7
-   mov [SfxOverflow],al
-   CLRFLAGS
-   ret
+   fxcop c_FxOpbBF
 
 NEWSYM FxOpc05      ; BRA    branch always      ; Verified.
    fxcop c_FxOpc05
@@ -372,115 +326,106 @@ NEWSYM FxOpc0F      ; BVS    branch on overflow set     ; Verified.
    fxcop c_FxOpc0F
 
 NEWSYM FxOpc10      ; TO RN  set register n as destination register
-   TORNc 0
+   fxcop c_FxOpc10
+
 NEWSYM FxOpc11      ; TO RN  set register n as destination register
-   TORNc 1
+   fxcop c_FxOpc11
+
 NEWSYM FxOpc12      ; TO RN  set register n as destination register
-   TORNc 2
+   fxcop c_FxOpc12
+
 NEWSYM FxOpc13      ; TO RN  set register n as destination register
-   TORNc 3
+   fxcop c_FxOpc13
+
 NEWSYM FxOpc14      ; TO RN  set register n as destination register
-   TORNc 4
+   fxcop c_FxOpc14
+
 NEWSYM FxOpc15      ; TO RN  set register n as destination register
-   TORNc 5
+   fxcop c_FxOpc15
+
 NEWSYM FxOpc16      ; TO RN  set register n as destination register
-   TORNc 6
+   fxcop c_FxOpc16
+
 NEWSYM FxOpc17      ; TO RN  set register n as destination register
-   TORNc 7
+   fxcop c_FxOpc17
+
 NEWSYM FxOpc18      ; TO RN  set register n as destination register
-   TORNc 8
+   fxcop c_FxOpc18
+
 NEWSYM FxOpc19      ; TO RN  set register n as destination register
-   TORNc 9
+   fxcop c_FxOpc19
+
 NEWSYM FxOpc1A      ; TO RN  set register n as destination register
-   TORNc 10
+   fxcop c_FxOpc1A
+
 NEWSYM FxOpc1B      ; TO RN  set register n as destination register
-   TORNc 11
+   fxcop c_FxOpc1B
+
 NEWSYM FxOpc1C      ; TO RN  set register n as destination register
-   TORNc 12
+   fxcop c_FxOpc1C
+
 NEWSYM FxOpc1D      ; TO RN  set register n as destination register
-   TORNc 13
+   fxcop c_FxOpc1D
+
 NEWSYM FxOpc1E      ; TO RN  set register n as destination register
-   FETCHPIPE
-   mov eax,[esi]            ; Read Source
-   mov [SfxR0+14*4],eax             ; Write
-   CLRFLAGS
-   UpdateR14
-   inc ebp                ; Increase program counter
-   ret
+   fxcop c_FxOpc1E
+
 NEWSYM FxOpc1F      ; TO RN  set register n as destination register
-   FETCHPIPE
-   mov eax,[esi]            ; Read Source
-   mov ebp,[SfxCPB]
-   mov [SfxR15],eax
-   add ebp,eax
-   CLRFLAGS
-   ret
+   fxcop c_FxOpc1F
 
 NEWSYM FxOpc3D      ; ALT1   set alt1 mode      ; Verified.
-   FETCHPIPE
-   mov dword[SfxB],0
-   or ch,01h
-   inc ebp
-   call [FxTablec+ecx*4]
-   xor ch,ch
-   ret
+   fxcop c_FxOpc3D
 
 NEWSYM FxOpc3E      ; ALT2   set alt1 mode      ; Verified.
-   FETCHPIPE
-   mov dword[SfxB],0
-   or ch,02h
-   inc ebp
-   call [FxTablec+ecx*4]
-   xor ch,ch
-   ret
+   fxcop c_FxOpc3E
 
 NEWSYM FxOpc3F      ; ALT3   set alt3 mode      ; Verified.
-   FETCHPIPE
-   mov dword[SfxB],0
-   or ch,03h
-   inc ebp
-   call [FxTablec+ecx*4]
-   xor ch,ch
-   ret
+   fxcop c_FxOpc3F
 
 NEWSYM FxOpcB0      ; FROM rn   set source register
-   FROMRNc 0
+   fxcop c_FxOpcB0
+
 NEWSYM FxOpcB1      ; FROM rn   set source register
-   FROMRNc 1
+   fxcop c_FxOpcB1
+
 NEWSYM FxOpcB2      ; FROM rn   set source register
-   FROMRNc 2
+   fxcop c_FxOpcB2
+
 NEWSYM FxOpcB3      ; FROM rn   set source register
-   FROMRNc 3
+   fxcop c_FxOpcB3
+
 NEWSYM FxOpcB4      ; FROM rn   set source register
-   FROMRNc 4
+   fxcop c_FxOpcB4
+
 NEWSYM FxOpcB5      ; FROM rn   set source register
-   FROMRNc 5
+   fxcop c_FxOpcB5
+
 NEWSYM FxOpcB6      ; FROM rn   set source register
-   FROMRNc 6
+   fxcop c_FxOpcB6
+
 NEWSYM FxOpcB7      ; FROM rn   set source register
-   FROMRNc 7
+   fxcop c_FxOpcB7
+
 NEWSYM FxOpcB8      ; FROM rn   set source register
-   FROMRNc 8
+   fxcop c_FxOpcB8
+
 NEWSYM FxOpcB9      ; FROM rn   set source register
-   FROMRNc 9
+   fxcop c_FxOpcB9
+
 NEWSYM FxOpcBA      ; FROM rn   set source register
-   FROMRNc 10
+   fxcop c_FxOpcBA
+
 NEWSYM FxOpcBB      ; FROM rn   set source register
-   FROMRNc 11
+   fxcop c_FxOpcBB
+
 NEWSYM FxOpcBC      ; FROM rn   set source register
-   FROMRNc 12
+   fxcop c_FxOpcBC
+
 NEWSYM FxOpcBD      ; FROM rn   set source register
-   FROMRNc 13
+   fxcop c_FxOpcBD
+
 NEWSYM FxOpcBE      ; FROM rn   set source register
-   FROMRNc 14
+   fxcop c_FxOpcBE
+
 NEWSYM FxOpcBF      ; FROM rn   set source register
-   FETCHPIPE
-   mov eax,ebp
-   sub eax,[SfxCPB]
-   inc ebp
-   mov [edi],eax        ; Write Destination
-   mov [SfxSignZero],eax
-   shr al,7
-   mov [SfxOverflow],al
-   CLRFLAGS
-   ret
+   fxcop c_FxOpcBF
