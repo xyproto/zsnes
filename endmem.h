@@ -59,9 +59,8 @@ extern u2 prevpal[256]; // previous palette buffer
 extern u2 sprendx[256];
 extern u2 vidmemch4[2048];
 extern u2 xtravbuf[288];
-/* The sixteen FxTable* arrays are laid out back to back, in this order, by
- * endmem.c; InitFxTables() copies the four base tables into the "b" and "c"
- * blocks in one go. */
+/* The SuperFX dispatch tables. The "b" and "c" blocks start as copies of the
+ * four base tables and are then patched; see InitFxTables() in chips/c_fxtable.c. */
 extern u4 FxTable[256];
 extern u4 FxTableA1[256];
 extern u4 FxTableA2[256];
