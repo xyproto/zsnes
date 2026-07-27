@@ -1666,7 +1666,8 @@ extern uint8_t ForcePal, ForceROMTiming, MovieWaiting, DSP1Type;
 extern uint16_t totlines;
 void SetAddressingModes(), GenerateBank0Table();
 void SetAddressingModesSA1(), GenerateBank0TableSA1();
-void InitDSP(), InitDSP3(), InitDSP4(), InitOBC1(), InitFxTables();
+void InitDSP(), InitDSP3(), InitDSP4(), InitOBC1();
+void InitFxTables(void);
 
 void CheckROMType()
 {
@@ -1776,7 +1777,7 @@ void CheckROMType()
             memcpy(sfxramdata, sram, 65536); // proper SFX sram area
         }
 
-        asm_call(InitFxTables);
+        InitFxTables();
     }
 
     if (SETAEnable) {

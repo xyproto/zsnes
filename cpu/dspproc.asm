@@ -156,11 +156,6 @@ SECTION .bss
 
 NEWSYM DSPInterP, resw 1024
 
-section .data
-ALIGN32
-
-%include "cpu/firtable.inc"
-
 SECTION .data
 NEWSYM dspPAdj,        dd 0
 NEWSYM NumBRRconv,     dd 0

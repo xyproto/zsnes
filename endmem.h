@@ -59,12 +59,29 @@ extern u2 prevpal[256]; // previous palette buffer
 extern u2 sprendx[256];
 extern u2 vidmemch4[2048];
 extern u2 xtravbuf[288];
+/* The sixteen FxTable* arrays are laid out back to back, in this order, by
+ * endmem.c; InitFxTables() copies the four base tables into the "b" and "c"
+ * blocks in one go. */
 extern u4 FxTable[256];
+extern u4 FxTableA1[256];
+extern u4 FxTableA2[256];
+extern u4 FxTableA3[256];
 extern u4 FxTableb[256];
+extern u4 FxTablebA1[256];
+extern u4 FxTablebA2[256];
+extern u4 FxTablebA3[256];
 extern u4 FxTablec[256];
+extern u4 FxTablecA1[256];
+extern u4 FxTablecA2[256];
+extern u4 FxTablecA3[256];
 extern u4 FxTabled[256];
+extern u4 FxTabledA1[256];
+extern u4 FxTabledA2[256];
+extern u4 FxTabledA3[256];
+extern u4 SfxMemTable[256];
 extern u4 PLOTJmpa[64];
 extern u4 PLOTJmpb[64];
+extern u4 fxxand[256];
 extern u4 fxbit01[256];
 extern u4 fxbit23[256];
 extern u4 fxbit45[256];

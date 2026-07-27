@@ -3,6 +3,6 @@
 
 #include "../types.h"
 
-extern u2 fir_lut[];
+extern s2 fir_lut[];
 
 #endif
