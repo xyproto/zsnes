@@ -11,6 +11,7 @@ include.txt
 input.h
 md.h
 parsegen
+test/harness/out/
 test/_*
 test/difftest_*
 !test/difftest_*.c
