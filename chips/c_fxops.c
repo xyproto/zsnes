@@ -8,6 +8,8 @@
 
 extern u4 SfxCarry, SfxSignZero, SfxOverflow;
 extern u4 SfxB, SfxCPB, SfxCROM, SfxRomBuffer, withr15sk;
+extern u4 SfxRAMMem, SfxLastRamAdr;
+extern u4 SfxCBR, SfxPBR, SfxCacheActive;
 extern u4 SfxR0[16]; /* SfxR0..SfxR15 are contiguous (chips/fxemu2.asm) */
 
 /* The spill slots for the core's live registers. The asm writes them on the way

@@ -124,6 +124,55 @@ EXTSYM c_FxOpD8,c_FxOpD9,c_FxOpDA,c_FxOpDB,c_FxOpDC,c_FxOpDD
 EXTSYM c_FxOpE0,c_FxOpE1,c_FxOpE2,c_FxOpE3,c_FxOpE4,c_FxOpE5
 EXTSYM c_FxOpE6,c_FxOpE7,c_FxOpE8,c_FxOpE9,c_FxOpEA,c_FxOpEB
 EXTSYM c_FxOpEC,c_FxOpED
+EXTSYM c_FxOp80,c_FxOp81,c_FxOp82,c_FxOp83,c_FxOp84,c_FxOp85
+EXTSYM c_FxOp86,c_FxOp87,c_FxOp88,c_FxOp89,c_FxOp8A,c_FxOp8B
+EXTSYM c_FxOp8C,c_FxOp8D,c_FxOp8E,c_FxOp80A1,c_FxOp81A1,c_FxOp82A1
+EXTSYM c_FxOp83A1,c_FxOp84A1,c_FxOp85A1,c_FxOp86A1,c_FxOp87A1,c_FxOp88A1
+EXTSYM c_FxOp89A1,c_FxOp8AA1,c_FxOp8BA1,c_FxOp8CA1,c_FxOp8DA1,c_FxOp8EA1
+EXTSYM c_FxOp80A2,c_FxOp81A2,c_FxOp82A2,c_FxOp83A2,c_FxOp84A2,c_FxOp85A2
+EXTSYM c_FxOp86A2,c_FxOp87A2,c_FxOp88A2,c_FxOp89A2,c_FxOp8AA2,c_FxOp8BA2
+EXTSYM c_FxOp8CA2,c_FxOp8DA2,c_FxOp8EA2,c_FxOp8FA2,c_FxOp80A3,c_FxOp81A3
+EXTSYM c_FxOp82A3,c_FxOp83A3,c_FxOp84A3,c_FxOp85A3,c_FxOp86A3,c_FxOp87A3
+EXTSYM c_FxOp88A3,c_FxOp89A3,c_FxOp8AA3,c_FxOp8BA3,c_FxOp8CA3,c_FxOp8DA3
+EXTSYM c_FxOp8EA3,c_FxOp8FA3
+EXTSYM c_FxOp10,c_FxOp11,c_FxOp12,c_FxOp13,c_FxOp14,c_FxOp15
+EXTSYM c_FxOp16,c_FxOp17,c_FxOp18,c_FxOp19,c_FxOp1A,c_FxOp1B
+EXTSYM c_FxOp1C,c_FxOp1D,c_FxOp20,c_FxOp21,c_FxOp22,c_FxOp23
+EXTSYM c_FxOp24,c_FxOp25,c_FxOp26,c_FxOp27,c_FxOp28,c_FxOp29
+EXTSYM c_FxOp2A,c_FxOp2B,c_FxOp2C,c_FxOp2D,c_FxOpB0,c_FxOpB1
+EXTSYM c_FxOpB2,c_FxOpB3,c_FxOpB4,c_FxOpB5,c_FxOpB6,c_FxOpB7
+EXTSYM c_FxOpB8,c_FxOpB9,c_FxOpBA,c_FxOpBB,c_FxOpBC,c_FxOpBD
+EXTSYM c_FxOpBE
+EXTSYM c_FxOp30,c_FxOp31,c_FxOp32,c_FxOp33,c_FxOp34,c_FxOp35
+EXTSYM c_FxOp36,c_FxOp37,c_FxOp38,c_FxOp39,c_FxOp3A,c_FxOp3B
+EXTSYM c_FxOp30A1,c_FxOp31A1,c_FxOp32A1,c_FxOp33A1,c_FxOp34A1,c_FxOp35A1
+EXTSYM c_FxOp36A1,c_FxOp37A1,c_FxOp38A1,c_FxOp39A1,c_FxOp3AA1,c_FxOp3BA1
+EXTSYM c_FxOp40,c_FxOp41,c_FxOp42,c_FxOp43,c_FxOp44,c_FxOp45
+EXTSYM c_FxOp46,c_FxOp47,c_FxOp48,c_FxOp49,c_FxOp4A,c_FxOp4B
+EXTSYM c_FxOp40A1,c_FxOp41A1,c_FxOp42A1,c_FxOp43A1,c_FxOp44A1,c_FxOp45A1
+EXTSYM c_FxOp46A1,c_FxOp47A1,c_FxOp48A1,c_FxOp49A1,c_FxOp4AA1,c_FxOp4BA1
+EXTSYM c_FxOpA0,c_FxOpA1,c_FxOpA2,c_FxOpA3,c_FxOpA4,c_FxOpA5
+EXTSYM c_FxOpA6,c_FxOpA7,c_FxOpA8,c_FxOpA9,c_FxOpAA,c_FxOpAB
+EXTSYM c_FxOpAC,c_FxOpAD,c_FxOpA0A1,c_FxOpA1A1,c_FxOpA2A1,c_FxOpA3A1
+EXTSYM c_FxOpA4A1,c_FxOpA5A1,c_FxOpA6A1,c_FxOpA7A1,c_FxOpA8A1,c_FxOpA9A1
+EXTSYM c_FxOpAAA1,c_FxOpABA1,c_FxOpACA1,c_FxOpADA1,c_FxOpA0A2,c_FxOpA1A2
+EXTSYM c_FxOpA2A2,c_FxOpA3A2,c_FxOpA4A2,c_FxOpA5A2,c_FxOpA6A2,c_FxOpA7A2
+EXTSYM c_FxOpA8A2,c_FxOpA9A2,c_FxOpAAA2,c_FxOpABA2,c_FxOpACA2,c_FxOpADA2
+EXTSYM c_FxOpAEA2,c_FxOpF0,c_FxOpF1,c_FxOpF2,c_FxOpF3,c_FxOpF4
+EXTSYM c_FxOpF5,c_FxOpF6,c_FxOpF7,c_FxOpF8,c_FxOpF9,c_FxOpFA
+EXTSYM c_FxOpFB,c_FxOpFC,c_FxOpFD,c_FxOpF0A1,c_FxOpF1A1,c_FxOpF2A1
+EXTSYM c_FxOpF3A1,c_FxOpF4A1,c_FxOpF5A1,c_FxOpF6A1,c_FxOpF7A1,c_FxOpF8A1
+EXTSYM c_FxOpF9A1,c_FxOpFAA1,c_FxOpFBA1,c_FxOpFCA1,c_FxOpFDA1,c_FxOpF0A2
+EXTSYM c_FxOpF1A2,c_FxOpF2A2,c_FxOpF3A2,c_FxOpF4A2,c_FxOpF5A2,c_FxOpF6A2
+EXTSYM c_FxOpF7A2,c_FxOpF8A2,c_FxOpF9A2,c_FxOpFAA2,c_FxOpFBA2,c_FxOpFCA2
+EXTSYM c_FxOpFDA2,c_FxOpFEA2
+EXTSYM c_FxOp91,c_FxOp92,c_FxOp93,c_FxOp94,c_FxOp98,c_FxOp99
+EXTSYM c_FxOp9A,c_FxOp9B,c_FxOp9C,c_FxOp9D,c_FxOp98A1,c_FxOp99A1
+EXTSYM c_FxOp9AA1,c_FxOp9BA1,c_FxOp9CA1,c_FxOp9DA1,c_FxOp02
+EXTSYM c_FxOp01,c_FxOp4D,c_FxOp4F,c_FxOp95,c_FxOp96,c_FxOp96A1
+EXTSYM c_FxOp97,c_FxOp9E,c_FxOpC0
+EXTSYM c_FxOp03,c_FxOp04,c_FxOp3C,c_FxOp9F,c_FxOp9FA1,c_FxOpAE
+EXTSYM c_FxOpAF,c_FxOpDE,c_FxOpEE
 
 %macro ccall 1-*
 	push ecx
@@ -286,52 +335,13 @@ NEWSYM FxOp00     ; STOP   stop GSU execution (and maybe generate an IRQ)     ; 
    ret
 
 NEWSYM FxOp01      ; NOP    no operation       ; Verified.
-   FETCHPIPE
-   CLRFLAGS
-   inc ebp                ; Increase program counter
-   ret
-
+   fxcop c_FxOp01
 NEWSYM FxOp02      ; CACHE  reintialize GSU cache
-   mov eax,ebp
-   FETCHPIPE
-   sub eax,[SfxCPB]
-   and eax,0FFF0h
-   cmp dword[SfxCBR],eax
-   je .SkipUpdate
-   cmp byte[SfxCacheActive],1
-   je .SkipUpdate
-   mov [SfxCBR],eax
-   mov dword[SfxCacheActive],1
-   call FlushCache
-.SkipUpdate
-   CLRFLAGS
-   inc ebp                ; Increase program counter
-   ret
-
+   fxcop c_FxOp02
 NEWSYM FxOp03      ; LSR    logic shift right  ; Verified.
-   mov eax,[esi]            ; Read Source
-   FETCHPIPE
-   mov [SfxCarry],al
-   and byte[SfxCarry],1
-   shr ax,1                      ; logic shift right
-   inc ebp                ; Increase program counter
-   mov [edi],eax            ; Write Destination
-   mov [SfxSignZero],eax
-   CLRFLAGS
-   ret
-
+   fxcop c_FxOp03
 NEWSYM FxOp04      ; ROL    rotate left (RCL?) ; V
-   shr byte[SfxCarry],1
-   mov eax,[esi]            ; Read Source
-   FETCHPIPE
-   rcl ax,1
-   rcl byte[SfxCarry],1
-   inc ebp                ; Increase program counter
-   mov [edi],eax            ; Write Destination
-   mov [SfxSignZero],eax
-   CLRFLAGS
-   ret
-
+   fxcop c_FxOp04
 NEWSYM FxOp05      ; BRA    branch always      ; Verified.
    movsx eax,byte[ebp]
    mov cl,[ebp+1]
@@ -487,33 +497,33 @@ NEWSYM FxOp0F      ; BVS    branch on overflow set     ; Verified.
    ret
 
 NEWSYM FxOp10      ; TO RN  set register n as destination register
-   TORN 0
+   fxcop c_FxOp10
 NEWSYM FxOp11      ; TO RN  set register n as destination register
-   TORN 1
+   fxcop c_FxOp11
 NEWSYM FxOp12      ; TO RN  set register n as destination register
-   TORN 2
+   fxcop c_FxOp12
 NEWSYM FxOp13      ; TO RN  set register n as destination register
-   TORN 3
+   fxcop c_FxOp13
 NEWSYM FxOp14      ; TO RN  set register n as destination register
-   TORN 4
+   fxcop c_FxOp14
 NEWSYM FxOp15      ; TO RN  set register n as destination register
-   TORN 5
+   fxcop c_FxOp15
 NEWSYM FxOp16      ; TO RN  set register n as destination register
-   TORN 6
+   fxcop c_FxOp16
 NEWSYM FxOp17      ; TO RN  set register n as destination register
-   TORN 7
+   fxcop c_FxOp17
 NEWSYM FxOp18      ; TO RN  set register n as destination register
-   TORN 8
+   fxcop c_FxOp18
 NEWSYM FxOp19      ; TO RN  set register n as destination register
-   TORN 9
+   fxcop c_FxOp19
 NEWSYM FxOp1A      ; TO RN  set register n as destination register
-   TORN 10
+   fxcop c_FxOp1A
 NEWSYM FxOp1B      ; TO RN  set register n as destination register
-   TORN 11
+   fxcop c_FxOp1B
 NEWSYM FxOp1C      ; TO RN  set register n as destination register
-   TORN 12
+   fxcop c_FxOp1C
 NEWSYM FxOp1D      ; TO RN  set register n as destination register
-   TORN 13
+   fxcop c_FxOp1D
 NEWSYM FxOp1E      ; TO RN  set register n as destination register
    FETCHPIPE
    mov edi,SfxR0+14*4
@@ -533,33 +543,33 @@ NEWSYM FxOp1F      ; TO RN  set register n as destination register
    ret
 
 NEWSYM FxOp20      ; WITH  set register n as source and destination register
-   WITH 0
+   fxcop c_FxOp20
 NEWSYM FxOp21      ; WITH  set register n as source and destination register
-   WITH 1
+   fxcop c_FxOp21
 NEWSYM FxOp22      ; WITH  set register n as source and destination register
-   WITH 2
+   fxcop c_FxOp22
 NEWSYM FxOp23      ; WITH  set register n as source and destination register
-   WITH 3
+   fxcop c_FxOp23
 NEWSYM FxOp24      ; WITH  set register n as source and destination register
-   WITH 4
+   fxcop c_FxOp24
 NEWSYM FxOp25      ; WITH  set register n as source and destination register
-   WITH 5
+   fxcop c_FxOp25
 NEWSYM FxOp26      ; WITH  set register n as source and destination register
-   WITH 6
+   fxcop c_FxOp26
 NEWSYM FxOp27      ; WITH  set register n as source and destination register
-   WITH 7
+   fxcop c_FxOp27
 NEWSYM FxOp28      ; WITH  set register n as source and destination register
-   WITH 8
+   fxcop c_FxOp28
 NEWSYM FxOp29      ; WITH  set register n as source and destination register
-   WITH 9
+   fxcop c_FxOp29
 NEWSYM FxOp2A      ; WITH  set register n as source and destination register
-   WITH 10
+   fxcop c_FxOp2A
 NEWSYM FxOp2B      ; WITH  set register n as source and destination register
-   WITH 11
+   fxcop c_FxOp2B
 NEWSYM FxOp2C      ; WITH  set register n as source and destination register
-   WITH 12
+   fxcop c_FxOp2C
 NEWSYM FxOp2D      ; WITH  set register n as source and destination register
-   WITH 13
+   fxcop c_FxOp2D
 NEWSYM FxOp2E      ; WITH  set register n as source and destination register
    FETCHPIPE
    mov esi,SfxR0+14*4
@@ -594,72 +604,55 @@ NEWSYM FxOp2F      ; WITH  set register n as source and destination register
    ret
 
 NEWSYM FxOp30      ; STW RN store word
-   STWRN 0
+   fxcop c_FxOp30
 NEWSYM FxOp31      ; STW RN store word
-   STWRN 1
+   fxcop c_FxOp31
 NEWSYM FxOp32      ; STW RN store word
-   STWRN 2
+   fxcop c_FxOp32
 NEWSYM FxOp33      ; STW RN store word
-   STWRN 3
+   fxcop c_FxOp33
 NEWSYM FxOp34      ; STW RN store word
-   STWRN 4
+   fxcop c_FxOp34
 NEWSYM FxOp35      ; STW RN store word
-   STWRN 5
+   fxcop c_FxOp35
 NEWSYM FxOp36      ; STW RN store word
-   STWRN 6
+   fxcop c_FxOp36
 NEWSYM FxOp37      ; STW RN store word
-   STWRN 7
+   fxcop c_FxOp37
 NEWSYM FxOp38      ; STW RN store word
-   STWRN 8
+   fxcop c_FxOp38
 NEWSYM FxOp39      ; STW RN store word
-   STWRN 9
+   fxcop c_FxOp39
 NEWSYM FxOp3A      ; STW RN store word
-   STWRN 10
+   fxcop c_FxOp3A
 NEWSYM FxOp3B      ; STW RN store word
-   STWRN 11
-
+   fxcop c_FxOp3B
 NEWSYM FxOp30A1    ; STB RN store byte
-   STBRN 0
+   fxcop c_FxOp30A1
 NEWSYM FxOp31A1    ; STB RN store byte
-   STBRN 1
+   fxcop c_FxOp31A1
 NEWSYM FxOp32A1    ; STB RN store byte
-   STBRN 2
+   fxcop c_FxOp32A1
 NEWSYM FxOp33A1    ; STB RN store byte
-   STBRN 3
+   fxcop c_FxOp33A1
 NEWSYM FxOp34A1    ; STB RN store byte
-   STBRN 4
+   fxcop c_FxOp34A1
 NEWSYM FxOp35A1    ; STB RN store byte
-   STBRN 5
+   fxcop c_FxOp35A1
 NEWSYM FxOp36A1    ; STB RN store byte
-   STBRN 6
+   fxcop c_FxOp36A1
 NEWSYM FxOp37A1    ; STB RN store byte
-   STBRN 7
+   fxcop c_FxOp37A1
 NEWSYM FxOp38A1    ; STB RN store byte
-   STBRN 8
+   fxcop c_FxOp38A1
 NEWSYM FxOp39A1    ; STB RN store byte
-   STBRN 9
+   fxcop c_FxOp39A1
 NEWSYM FxOp3AA1    ; STB RN store byte
-   STBRN 10
+   fxcop c_FxOp3AA1
 NEWSYM FxOp3BA1    ; STB RN store byte
-   STBRN 11
-
+   fxcop c_FxOp3BA1
 NEWSYM FxOp3C      ; LOOP   decrement loop counter, and branch on not zero ; V
-   dec word[SfxR12]       ; decrement loop counter
-   FETCHPIPE
-   mov eax,[SfxR12]
-   mov [SfxSignZero],eax
-   or eax,eax
-   jz .NoBranch
-   mov eax,[SfxR13]
-   mov ebp,[SfxCPB]
-   add ebp,eax
-   CLRFLAGS
-   ret
-.NoBranch
-   inc ebp
-   CLRFLAGS
-   ret
-
+   fxcop c_FxOp3C
 NEWSYM FxOp3D      ; ALT1   set alt1 mode      ; Verified.
    FETCHPIPE
    mov dword[SfxB],0
@@ -688,55 +681,53 @@ NEWSYM FxOp3F      ; ALT3   set alt3 mode      ; Verified.
    ret
 
 NEWSYM FxOp40      ; LDW RN load word from RAM
-   LDWRN 0
+   fxcop c_FxOp40
 NEWSYM FxOp41      ; LDW RN load word from RAM
-   LDWRN 1
+   fxcop c_FxOp41
 NEWSYM FxOp42      ; LDW RN load word from RAM
-   LDWRN 2
+   fxcop c_FxOp42
 NEWSYM FxOp43      ; LDW RN load word from RAM
-   LDWRN 3
+   fxcop c_FxOp43
 NEWSYM FxOp44      ; LDW RN load word from RAM
-   LDWRN 4
+   fxcop c_FxOp44
 NEWSYM FxOp45      ; LDW RN load word from RAM
-   LDWRN 5
+   fxcop c_FxOp45
 NEWSYM FxOp46      ; LDW RN load word from RAM
-   LDWRN 6
+   fxcop c_FxOp46
 NEWSYM FxOp47      ; LDW RN load word from RAM
-   LDWRN 7
+   fxcop c_FxOp47
 NEWSYM FxOp48      ; LDW RN load word from RAM
-   LDWRN 8
+   fxcop c_FxOp48
 NEWSYM FxOp49      ; LDW RN load word from RAM
-   LDWRN 9
+   fxcop c_FxOp49
 NEWSYM FxOp4A      ; LDW RN load word from RAM
-   LDWRN 10
+   fxcop c_FxOp4A
 NEWSYM FxOp4B      ; LDW RN load word from RAM
-   LDWRN 11
-
+   fxcop c_FxOp4B
 NEWSYM FxOp40A1    ; LDB RN load byte from RAM
-   LDBRN 0
+   fxcop c_FxOp40A1
 NEWSYM FxOp41A1    ; LDB RN load byte from RAM
-   LDBRN 1
+   fxcop c_FxOp41A1
 NEWSYM FxOp42A1    ; LDB RN load byte from RAM
-   LDBRN 2
+   fxcop c_FxOp42A1
 NEWSYM FxOp43A1    ; LDB RN load byte from RAM
-   LDBRN 3
+   fxcop c_FxOp43A1
 NEWSYM FxOp44A1    ; LDB RN load byte from RAM
-   LDBRN 4
+   fxcop c_FxOp44A1
 NEWSYM FxOp45A1    ; LDB RN load byte from RAM
-   LDBRN 5
+   fxcop c_FxOp45A1
 NEWSYM FxOp46A1    ; LDB RN load byte from RAM
-   LDBRN 6
+   fxcop c_FxOp46A1
 NEWSYM FxOp47A1    ; LDB RN load byte from RAM
-   LDBRN 7
+   fxcop c_FxOp47A1
 NEWSYM FxOp48A1    ; LDB RN load byte from RAM
-   LDBRN 8
+   fxcop c_FxOp48A1
 NEWSYM FxOp49A1    ; LDB RN load byte from RAM
-   LDBRN 9
+   fxcop c_FxOp49A1
 NEWSYM FxOp4AA1    ; LDB RN load byte from RAM
-   LDBRN 10
+   fxcop c_FxOp4AA1
 NEWSYM FxOp4BA1    ; LDB RN load byte from RAM
-   LDBRN 11
-
+   fxcop c_FxOp4BA1
 NEWSYM FxOp4C1284b       ; PLOT 4bit
    plotlines4b plotb
 NEWSYM FxOp4C1284bz      ; PLOT 4bit, zero check
@@ -1160,15 +1151,7 @@ NEWSYM FxOp4CA1    ; RPIX   read color of the pixel with R1,R2 as x,y
    ret
 
 NEWSYM FxOp4D      ; SWAP   swap upper and lower byte of a register    ; V
-   mov eax,[esi]            ; Read Source
-   FETCHPIPE
-   ror ax,8
-   inc ebp                ; Increase program counter
-   mov [SfxSignZero],eax
-   mov [edi],eax            ; Write Destination
-   CLRFLAGS
-   ret
-
+   fxcop c_FxOp4D
 NEWSYM FxOp4E      ; COLOR  copy source register to color register     ; V
    FETCHPIPE
    mov eax,[esi]            ; Read Source
@@ -1268,15 +1251,7 @@ NEWSYM FxOp4EA1    ; CMODE  set plot option register ; V
    ret
 
 NEWSYM FxOp4F      ; NOT    perform exclusive exor with 1 on all bits  ; V
-   mov eax,[esi]            ; Read Source
-   FETCHPIPE
-   xor eax,0FFFFh
-   inc ebp                ; Increase program counter
-   mov [SfxSignZero],eax
-   mov [edi],eax            ; Write Destination
-   CLRFLAGS
-   ret
-
+   fxcop c_FxOp4F
 NEWSYM FxOp50      ; ADD RN add, register + register
    fxcop c_FxOp50
 NEWSYM FxOp51      ; ADD RN add, register + register
@@ -1770,35 +1745,35 @@ NEWSYM FxOp7EA3    ; BICIRN register & ~immediate
 NEWSYM FxOp7FA3    ; BICIRN register & ~immediate
    fxcop c_FxOp7FA3
 NEWSYM FxOp80      ; MULTRN 8 bit to 16 bit signed multiply, register * register
-   MULTRN 0
+   fxcop c_FxOp80
 NEWSYM FxOp81      ; MULTRN 8 bit to 16 bit signed multiply, register * register
-   MULTRN 1
+   fxcop c_FxOp81
 NEWSYM FxOp82      ; MULTRN 8 bit to 16 bit signed multiply, register * register
-   MULTRN 2
+   fxcop c_FxOp82
 NEWSYM FxOp83      ; MULTRN 8 bit to 16 bit signed multiply, register * register
-   MULTRN 3
+   fxcop c_FxOp83
 NEWSYM FxOp84      ; MULTRN 8 bit to 16 bit signed multiply, register * register
-   MULTRN 4
+   fxcop c_FxOp84
 NEWSYM FxOp85      ; MULTRN 8 bit to 16 bit signed multiply, register * register
-   MULTRN 5
+   fxcop c_FxOp85
 NEWSYM FxOp86      ; MULTRN 8 bit to 16 bit signed multiply, register * register
-   MULTRN 6
+   fxcop c_FxOp86
 NEWSYM FxOp87      ; MULTRN 8 bit to 16 bit signed multiply, register * register
-   MULTRN 7
+   fxcop c_FxOp87
 NEWSYM FxOp88      ; MULTRN 8 bit to 16 bit signed multiply, register * register
-   MULTRN 8
+   fxcop c_FxOp88
 NEWSYM FxOp89      ; MULTRN 8 bit to 16 bit signed multiply, register * register
-   MULTRN 9
+   fxcop c_FxOp89
 NEWSYM FxOp8A      ; MULTRN 8 bit to 16 bit signed multiply, register * register
-   MULTRN 10
+   fxcop c_FxOp8A
 NEWSYM FxOp8B      ; MULTRN 8 bit to 16 bit signed multiply, register * register
-   MULTRN 11
+   fxcop c_FxOp8B
 NEWSYM FxOp8C      ; MULTRN 8 bit to 16 bit signed multiply, register * register
-   MULTRN 12
+   fxcop c_FxOp8C
 NEWSYM FxOp8D      ; MULTRN 8 bit to 16 bit signed multiply, register * register
-   MULTRN 13
+   fxcop c_FxOp8D
 NEWSYM FxOp8E      ; MULTRN 8 bit to 16 bit signed multiply, register * register
-   MULTRN 14
+   fxcop c_FxOp8E
 NEWSYM FxOp8F      ; MULTRN 8 bit to 16 bit signed multiply, register * register
    FETCHPIPE
    mov ebx,ebp
@@ -1813,35 +1788,35 @@ NEWSYM FxOp8F      ; MULTRN 8 bit to 16 bit signed multiply, register * register
    ret
 
 NEWSYM FxOp80A1    ; UMULRN 8 bit to 16 bit unsigned multiply, register * register
-   UMULTRN 0
+   fxcop c_FxOp80A1
 NEWSYM FxOp81A1    ; UMULRN 8 bit to 16 bit unsigned multiply, register * register
-   UMULTRN 1
+   fxcop c_FxOp81A1
 NEWSYM FxOp82A1    ; UMULRN 8 bit to 16 bit unsigned multiply, register * register
-   UMULTRN 2
+   fxcop c_FxOp82A1
 NEWSYM FxOp83A1    ; UMULRN 8 bit to 16 bit unsigned multiply, register * register
-   UMULTRN 3
+   fxcop c_FxOp83A1
 NEWSYM FxOp84A1    ; UMULRN 8 bit to 16 bit unsigned multiply, register * register
-   UMULTRN 4
+   fxcop c_FxOp84A1
 NEWSYM FxOp85A1    ; UMULRN 8 bit to 16 bit unsigned multiply, register * register
-   UMULTRN 5
+   fxcop c_FxOp85A1
 NEWSYM FxOp86A1    ; UMULRN 8 bit to 16 bit unsigned multiply, register * register
-   UMULTRN 6
+   fxcop c_FxOp86A1
 NEWSYM FxOp87A1    ; UMULRN 8 bit to 16 bit unsigned multiply, register * register
-   UMULTRN 7
+   fxcop c_FxOp87A1
 NEWSYM FxOp88A1    ; UMULRN 8 bit to 16 bit unsigned multiply, register * register
-   UMULTRN 8
+   fxcop c_FxOp88A1
 NEWSYM FxOp89A1    ; UMULRN 8 bit to 16 bit unsigned multiply, register * register
-   UMULTRN 9
+   fxcop c_FxOp89A1
 NEWSYM FxOp8AA1    ; UMULRN 8 bit to 16 bit unsigned multiply, register * register
-   UMULTRN 10
+   fxcop c_FxOp8AA1
 NEWSYM FxOp8BA1    ; UMULRN 8 bit to 16 bit unsigned multiply, register * register
-   UMULTRN 11
+   fxcop c_FxOp8BA1
 NEWSYM FxOp8CA1    ; UMULRN 8 bit to 16 bit unsigned multiply, register * register
-   UMULTRN 12
+   fxcop c_FxOp8CA1
 NEWSYM FxOp8DA1    ; UMULRN 8 bit to 16 bit unsigned multiply, register * register
-   UMULTRN 13
+   fxcop c_FxOp8DA1
 NEWSYM FxOp8EA1    ; UMULRN 8 bit to 16 bit unsigned multiply, register * register
-   UMULTRN 14
+   fxcop c_FxOp8EA1
 NEWSYM FxOp8FA1    ; UMULRN 8 bit to 16 bit unsigned multiply, register * register
    FETCHPIPE
    mov ebx,ebp
@@ -1856,71 +1831,69 @@ NEWSYM FxOp8FA1    ; UMULRN 8 bit to 16 bit unsigned multiply, register * regist
    ret
 
 NEWSYM FxOp80A2    ; MULIRN 8 bit to 16 bit signed multiply, register * immediate
-   MULTIRN 0
+   fxcop c_FxOp80A2
 NEWSYM FxOp81A2    ; MULIRN 8 bit to 16 bit signed multiply, register * immediate
-   MULTIRN 1
+   fxcop c_FxOp81A2
 NEWSYM FxOp82A2    ; MULIRN 8 bit to 16 bit signed multiply, register * immediate
-   MULTIRN 2
+   fxcop c_FxOp82A2
 NEWSYM FxOp83A2    ; MULIRN 8 bit to 16 bit signed multiply, register * immediate
-   MULTIRN 3
+   fxcop c_FxOp83A2
 NEWSYM FxOp84A2    ; MULIRN 8 bit to 16 bit signed multiply, register * immediate
-   MULTIRN 4
+   fxcop c_FxOp84A2
 NEWSYM FxOp85A2    ; MULIRN 8 bit to 16 bit signed multiply, register * immediate
-   MULTIRN 5
+   fxcop c_FxOp85A2
 NEWSYM FxOp86A2    ; MULIRN 8 bit to 16 bit signed multiply, register * immediate
-   MULTIRN 6
+   fxcop c_FxOp86A2
 NEWSYM FxOp87A2    ; MULIRN 8 bit to 16 bit signed multiply, register * immediate
-   MULTIRN 7
+   fxcop c_FxOp87A2
 NEWSYM FxOp88A2    ; MULIRN 8 bit to 16 bit signed multiply, register * immediate
-   MULTIRN 8
+   fxcop c_FxOp88A2
 NEWSYM FxOp89A2    ; MULIRN 8 bit to 16 bit signed multiply, register * immediate
-   MULTIRN 9
+   fxcop c_FxOp89A2
 NEWSYM FxOp8AA2    ; MULIRN 8 bit to 16 bit signed multiply, register * immediate
-   MULTIRN 10
+   fxcop c_FxOp8AA2
 NEWSYM FxOp8BA2    ; MULIRN 8 bit to 16 bit signed multiply, register * immediate
-   MULTIRN 11
+   fxcop c_FxOp8BA2
 NEWSYM FxOp8CA2    ; MULIRN 8 bit to 16 bit signed multiply, register * immediate
-   MULTIRN 12
+   fxcop c_FxOp8CA2
 NEWSYM FxOp8DA2    ; MULIRN 8 bit to 16 bit signed multiply, register * immediate
-   MULTIRN 13
+   fxcop c_FxOp8DA2
 NEWSYM FxOp8EA2    ; MULIRN 8 bit to 16 bit signed multiply, register * immediate
-   MULTIRN 14
+   fxcop c_FxOp8EA2
 NEWSYM FxOp8FA2    ; MULIRN 8 bit to 16 bit signed multiply, register * immediate
-   MULTIRN 15
-
+   fxcop c_FxOp8FA2
 NEWSYM FxOp80A3    ;UMULIRN 8 bit to 16 bit unsigned multiply, register * immediate
-   UMULTIRN 0
+   fxcop c_FxOp80A3
 NEWSYM FxOp81A3    ;UMULIRN 8 bit to 16 bit unsigned multiply, register * immediate
-   UMULTIRN 1
+   fxcop c_FxOp81A3
 NEWSYM FxOp82A3    ;UMULIRN 8 bit to 16 bit unsigned multiply, register * immediate
-   UMULTIRN 2
+   fxcop c_FxOp82A3
 NEWSYM FxOp83A3    ;UMULIRN 8 bit to 16 bit unsigned multiply, register * immediate
-   UMULTIRN 3
+   fxcop c_FxOp83A3
 NEWSYM FxOp84A3    ;UMULIRN 8 bit to 16 bit unsigned multiply, register * immediate
-   UMULTIRN 4
+   fxcop c_FxOp84A3
 NEWSYM FxOp85A3    ;UMULIRN 8 bit to 16 bit unsigned multiply, register * immediate
-   UMULTIRN 5
+   fxcop c_FxOp85A3
 NEWSYM FxOp86A3    ;UMULIRN 8 bit to 16 bit unsigned multiply, register * immediate
-   UMULTIRN 6
+   fxcop c_FxOp86A3
 NEWSYM FxOp87A3    ;UMULIRN 8 bit to 16 bit unsigned multiply, register * immediate
-   UMULTIRN 7
+   fxcop c_FxOp87A3
 NEWSYM FxOp88A3    ;UMULIRN 8 bit to 16 bit unsigned multiply, register * immediate
-   UMULTIRN 8
+   fxcop c_FxOp88A3
 NEWSYM FxOp89A3    ;UMULIRN 8 bit to 16 bit unsigned multiply, register * immediate
-   UMULTIRN 9
+   fxcop c_FxOp89A3
 NEWSYM FxOp8AA3    ;UMULIRN 8 bit to 16 bit unsigned multiply, register * immediate
-   UMULTIRN 10
+   fxcop c_FxOp8AA3
 NEWSYM FxOp8BA3    ;UMULIRN 8 bit to 16 bit unsigned multiply, register * immediate
-   UMULTIRN 11
+   fxcop c_FxOp8BA3
 NEWSYM FxOp8CA3    ;UMULIRN 8 bit to 16 bit unsigned multiply, register * immediate
-   UMULTIRN 12
+   fxcop c_FxOp8CA3
 NEWSYM FxOp8DA3    ;UMULIRN 8 bit to 16 bit unsigned multiply, register * immediate
-   UMULTIRN 13
+   fxcop c_FxOp8DA3
 NEWSYM FxOp8EA3    ;UMULIRN 8 bit to 16 bit unsigned multiply, register * immediate
-   UMULTIRN 14
+   fxcop c_FxOp8EA3
 NEWSYM FxOp8FA3    ;UMULIRN 8 bit to 16 bit unsigned multiply, register * immediate
-   UMULTIRN 15
-
+   fxcop c_FxOp8FA3
 NEWSYM FxOp90      ; SBK    store word to last accessed RAM address    ; V
    mov ebx,[SfxLastRamAdr]   ; Load last ram address
    mov eax,[esi]            ; Read Source
@@ -1935,210 +1908,111 @@ NEWSYM FxOp90      ; SBK    store word to last accessed RAM address    ; V
    ret
 
 NEWSYM FxOp91      ; LINK#n R11 = R15 + immediate
-   LINK 1
+   fxcop c_FxOp91
 NEWSYM FxOp92      ; LINK#n R11 = R15 + immediate
-   LINK 2
+   fxcop c_FxOp92
 NEWSYM FxOp93      ; LINK#n R11 = R15 + immediate
-   LINK 3
+   fxcop c_FxOp93
 NEWSYM FxOp94      ; LINK#n R11 = R15 + immediate
-   LINK 4
-
+   fxcop c_FxOp94
 NEWSYM FxOp95      ; SEX    sign extend 8 bit to 16 bit        ; V
-   movsx eax, byte[esi]     ; Read Source
-   FETCHPIPE
-   and eax,0FFFFh
-   inc ebp
-   mov [edi],eax            ; Write Destination
-   mov [SfxSignZero],eax
-   CLRFLAGS
-   ret
-
+   fxcop c_FxOp95
 NEWSYM FxOp96      ; ASR    aritmethic shift right by one      ; V
-   mov eax,[esi]            ; Read Source
-   FETCHPIPE
-   mov [SfxCarry],al
-   and byte[SfxCarry],1
-   sar ax,1                      ; logic shift right
-   inc ebp                ; Increase program counter
-   mov [edi],eax            ; Write Destination
-   mov [SfxSignZero],eax
-   CLRFLAGS
-   ret
-
+   fxcop c_FxOp96
 NEWSYM FxOp96A1    ; DIV2   aritmethic shift right by one      ; V
-   mov eax,[esi]            ; Read Source
-   FETCHPIPE
-   cmp ax,-1
-   je .minusone
-   mov [SfxCarry],al
-   and byte[SfxCarry],1
-   sar ax,1                      ; logic shift right
-   inc ebp                ; Increase program counter
-   mov [edi],eax            ; Write Destination
-   mov [SfxSignZero],eax
-   CLRFLAGS
-   ret
-.minusone
-   mov byte[SfxCarry],1
-   xor eax,eax
-   inc ebp                ; Increase program counter
-   mov [edi],eax            ; Write Destination
-   mov [SfxSignZero],eax
-   CLRFLAGS
-   ret
-
+   fxcop c_FxOp96A1
 NEWSYM FxOp97      ; ROR    rotate right by one        ; V
-   FETCHPIPE
-   mov eax,[esi]            ; Read Source
-   shr byte[SfxCarry],1
-   rcr ax,1
-   setc byte[SfxCarry]
-   inc ebp                ; Increase program counter
-   mov [edi],eax            ; Write Destination
-   mov [SfxSignZero],eax
-   CLRFLAGS
-   ret
-
+   fxcop c_FxOp97
 NEWSYM FxOp98      ; JMPRN  jump to address of register
-   JMPRN 8
+   fxcop c_FxOp98
 NEWSYM FxOp99      ; JMPRN  jump to address of register
-   JMPRN 9
+   fxcop c_FxOp99
 NEWSYM FxOp9A      ; JMPRN  jump to address of register
-   JMPRN 10
+   fxcop c_FxOp9A
 NEWSYM FxOp9B      ; JMPRN  jump to address of register
-   JMPRN 11
+   fxcop c_FxOp9B
 NEWSYM FxOp9C      ; JMPRN  jump to address of register
-   JMPRN 12
+   fxcop c_FxOp9C
 NEWSYM FxOp9D      ; JMPRN  jump to address of register
-   JMPRN 13
-
+   fxcop c_FxOp9D
 NEWSYM FxOp98A1    ; LJMPRN set program bank to source register and jump to address of register
-   LJMPRN 8
+   fxcop c_FxOp98A1
 NEWSYM FxOp99A1    ; LJMPRN set program bank to source register and jump to address of register
-   LJMPRN 9
+   fxcop c_FxOp99A1
 NEWSYM FxOp9AA1    ; LJMPRN set program bank to source register and jump to address of register
-   LJMPRN 10
+   fxcop c_FxOp9AA1
 NEWSYM FxOp9BA1    ; LJMPRN set program bank to source register and jump to address of register
-   LJMPRN 11
+   fxcop c_FxOp9BA1
 NEWSYM FxOp9CA1    ; LJMPRN set program bank to source register and jump to address of register
-   LJMPRN 12
+   fxcop c_FxOp9CA1
 NEWSYM FxOp9DA1    ; LJMPRN set program bank to source register and jump to address of register
-   LJMPRN 13
-
+   fxcop c_FxOp9DA1
 NEWSYM FxOp9E      ; LOB    set upper byte to zero (keep low byte) ; V
-   mov eax,[esi]            ; Read Source
-   FETCHPIPE
-   and eax,0FFh
-   inc ebp
-   mov [edi],eax            ; Write Destination
-   shl eax,8
-   mov [SfxSignZero],eax
-   CLRFLAGS
-   ret
-
+   fxcop c_FxOp9E
 NEWSYM FxOp9F      ; FMULT  16 bit to 32 bit signed multiplication, upper 16 bits only
-            ; V
-   mov eax,[esi]             ; Read Source
-   mov ebx,[SfxR6]
-   FETCHPIPE
-   imul bx
-   inc ebp
-   and edx,0FFFFh
-   mov [SfxSignZero],edx
-   mov [edi],edx        ; Write Destination
-   shr ax,15
-   mov [SfxCarry],al
-   CLRFLAGS
-   ret
-
+   fxcop c_FxOp9F
 NEWSYM FxOp9FA1    ; LMULT  16 bit to 32 bit signed multiplication     ; V
-   mov eax,[esi]             ; Read Source
-   mov ebx,[SfxR6]
-   FETCHPIPE
-   imul bx
-   and edx,0FFFFh
-   inc ebp
-   mov [edi],edx        ; Write Destination
-   mov [SfxR4],ax
-   mov [SfxSignZero],edx
-   shr ax,15
-   mov [SfxCarry],al
-   CLRFLAGS
-   ret
-
+   fxcop c_FxOp9FA1
 NEWSYM FxOpA0      ; IBTRN,#PP immediate byte transfer
-   IBTRN 0
+   fxcop c_FxOpA0
 NEWSYM FxOpA1      ; IBTRN,#PP immediate byte transfer
-   IBTRN 1
+   fxcop c_FxOpA1
 NEWSYM FxOpA2      ; IBTRN,#PP immediate byte transfer
-   IBTRN 2
+   fxcop c_FxOpA2
 NEWSYM FxOpA3      ; IBTRN,#PP immediate byte transfer
-   IBTRN 3
+   fxcop c_FxOpA3
 NEWSYM FxOpA4      ; IBTRN,#PP immediate byte transfer
-   IBTRN 4
+   fxcop c_FxOpA4
 NEWSYM FxOpA5      ; IBTRN,#PP immediate byte transfer
-   IBTRN 5
+   fxcop c_FxOpA5
 NEWSYM FxOpA6      ; IBTRN,#PP immediate byte transfer
-   IBTRN 6
+   fxcop c_FxOpA6
 NEWSYM FxOpA7      ; IBTRN,#PP immediate byte transfer
-   IBTRN 7
+   fxcop c_FxOpA7
 NEWSYM FxOpA8      ; IBTRN,#PP immediate byte transfer
-   IBTRN 8
+   fxcop c_FxOpA8
 NEWSYM FxOpA9      ; IBTRN,#PP immediate byte transfer
-   IBTRN 9
+   fxcop c_FxOpA9
 NEWSYM FxOpAA      ; IBTRN,#PP immediate byte transfer
-   IBTRN 10
+   fxcop c_FxOpAA
 NEWSYM FxOpAB      ; IBTRN,#PP immediate byte transfer
-   IBTRN 11
+   fxcop c_FxOpAB
 NEWSYM FxOpAC      ; IBTRN,#PP immediate byte transfer
-   IBTRN 12
+   fxcop c_FxOpAC
 NEWSYM FxOpAD      ; IBTRN,#PP immediate byte transfer
-   IBTRN 13
+   fxcop c_FxOpAD
 NEWSYM FxOpAE      ; IBTRN,#PP immediate byte transfer
-   movsx eax,byte[ebp]
-   mov cl,[ebp+1]
-   add ebp,2
-   mov [SfxR0+14*4],ax
-   UpdateR14
-   CLRFLAGS
-   ret
+   fxcop c_FxOpAE
 NEWSYM FxOpAF      ; IBTRN,#PP immediate byte transfer
-   movsx eax,byte[ebp]
-   mov cl,[ebp+1]
-   and eax,0FFFFh
-   mov ebp,[SfxCPB]
-   add ebp,eax
-   CLRFLAGS
-   ret
-
+   fxcop c_FxOpAF
 NEWSYM FxOpA0A1    ; LMS rn,(yy)  load word from RAM (short address)
-   LMSRN 0
+   fxcop c_FxOpA0A1
 NEWSYM FxOpA1A1    ; LMS rn,(yy)  load word from RAM (short address)
-   LMSRN 1
+   fxcop c_FxOpA1A1
 NEWSYM FxOpA2A1    ; LMS rn,(yy)  load word from RAM (short address)
-   LMSRN 2
+   fxcop c_FxOpA2A1
 NEWSYM FxOpA3A1    ; LMS rn,(yy)  load word from RAM (short address)
-   LMSRN 3
+   fxcop c_FxOpA3A1
 NEWSYM FxOpA4A1    ; LMS rn,(yy)  load word from RAM (short address)
-   LMSRN 4
+   fxcop c_FxOpA4A1
 NEWSYM FxOpA5A1    ; LMS rn,(yy)  load word from RAM (short address)
-   LMSRN 5
+   fxcop c_FxOpA5A1
 NEWSYM FxOpA6A1    ; LMS rn,(yy)  load word from RAM (short address)
-   LMSRN 6
+   fxcop c_FxOpA6A1
 NEWSYM FxOpA7A1    ; LMS rn,(yy)  load word from RAM (short address)
-   LMSRN 7
+   fxcop c_FxOpA7A1
 NEWSYM FxOpA8A1    ; LMS rn,(yy)  load word from RAM (short address)
-   LMSRN 8
+   fxcop c_FxOpA8A1
 NEWSYM FxOpA9A1    ; LMS rn,(yy)  load word from RAM (short address)
-   LMSRN 9
+   fxcop c_FxOpA9A1
 NEWSYM FxOpAAA1    ; LMS rn,(yy)  load word from RAM (short address)
-   LMSRN 10
+   fxcop c_FxOpAAA1
 NEWSYM FxOpABA1    ; LMS rn,(yy)  load word from RAM (short address)
-   LMSRN 11
+   fxcop c_FxOpABA1
 NEWSYM FxOpACA1    ; LMS rn,(yy)  load word from RAM (short address)
-   LMSRN 12
+   fxcop c_FxOpACA1
 NEWSYM FxOpADA1    ; LMS rn,(yy)  load word from RAM (short address)
-   LMSRN 13
+   fxcop c_FxOpADA1
 NEWSYM FxOpAEA1    ; LMS rn,(yy)  load word from RAM (short address)
    xor eax,eax
    mov al,[ebp]
@@ -2169,35 +2043,35 @@ NEWSYM FxOpAFA1    ; LMS rn,(yy)  load word from RAM (short address)
    ret
 
 NEWSYM FxOpA0A2    ; SMS (yy),rn  store word in RAM (short address)
-   SMSRN 0
+   fxcop c_FxOpA0A2
 NEWSYM FxOpA1A2    ; SMS (yy),rn  store word in RAM (short address)
-   SMSRN 1
+   fxcop c_FxOpA1A2
 NEWSYM FxOpA2A2    ; SMS (yy),rn  store word in RAM (short address)
-   SMSRN 2
+   fxcop c_FxOpA2A2
 NEWSYM FxOpA3A2    ; SMS (yy),rn  store word in RAM (short address)
-   SMSRN 3
+   fxcop c_FxOpA3A2
 NEWSYM FxOpA4A2    ; SMS (yy),rn  store word in RAM (short address)
-   SMSRN 4
+   fxcop c_FxOpA4A2
 NEWSYM FxOpA5A2    ; SMS (yy),rn  store word in RAM (short address)
-   SMSRN 5
+   fxcop c_FxOpA5A2
 NEWSYM FxOpA6A2    ; SMS (yy),rn  store word in RAM (short address)
-   SMSRN 6
+   fxcop c_FxOpA6A2
 NEWSYM FxOpA7A2    ; SMS (yy),rn  store word in RAM (short address)
-   SMSRN 7
+   fxcop c_FxOpA7A2
 NEWSYM FxOpA8A2    ; SMS (yy),rn  store word in RAM (short address)
-   SMSRN 8
+   fxcop c_FxOpA8A2
 NEWSYM FxOpA9A2    ; SMS (yy),rn  store word in RAM (short address)
-   SMSRN 9
+   fxcop c_FxOpA9A2
 NEWSYM FxOpAAA2    ; SMS (yy),rn  store word in RAM (short address)
-   SMSRN 10
+   fxcop c_FxOpAAA2
 NEWSYM FxOpABA2    ; SMS (yy),rn  store word in RAM (short address)
-   SMSRN 11
+   fxcop c_FxOpABA2
 NEWSYM FxOpACA2    ; SMS (yy),rn  store word in RAM (short address)
-   SMSRN 12
+   fxcop c_FxOpACA2
 NEWSYM FxOpADA2    ; SMS (yy),rn  store word in RAM (short address)
-   SMSRN 13
+   fxcop c_FxOpADA2
 NEWSYM FxOpAEA2    ; SMS (yy),rn  store word in RAM (short address)
-   SMSRN 14
+   fxcop c_FxOpAEA2
 NEWSYM FxOpAFA2    ; SMS (yy),rn  store word in RAM (short address)
    xor eax,eax
    mov ebx,ebp
@@ -2214,35 +2088,35 @@ NEWSYM FxOpAFA2    ; SMS (yy),rn  store word in RAM (short address)
    ret
 
 NEWSYM FxOpB0      ; FROM rn   set source register
-   FROMRN 0
+   fxcop c_FxOpB0
 NEWSYM FxOpB1      ; FROM rn   set source register
-   FROMRN 1
+   fxcop c_FxOpB1
 NEWSYM FxOpB2      ; FROM rn   set source register
-   FROMRN 2
+   fxcop c_FxOpB2
 NEWSYM FxOpB3      ; FROM rn   set source register
-   FROMRN 3
+   fxcop c_FxOpB3
 NEWSYM FxOpB4      ; FROM rn   set source register
-   FROMRN 4
+   fxcop c_FxOpB4
 NEWSYM FxOpB5      ; FROM rn   set source register
-   FROMRN 5
+   fxcop c_FxOpB5
 NEWSYM FxOpB6      ; FROM rn   set source register
-   FROMRN 6
+   fxcop c_FxOpB6
 NEWSYM FxOpB7      ; FROM rn   set source register
-   FROMRN 7
+   fxcop c_FxOpB7
 NEWSYM FxOpB8      ; FROM rn   set source register
-   FROMRN 8
+   fxcop c_FxOpB8
 NEWSYM FxOpB9      ; FROM rn   set source register
-   FROMRN 9
+   fxcop c_FxOpB9
 NEWSYM FxOpBA      ; FROM rn   set source register
-   FROMRN 10
+   fxcop c_FxOpBA
 NEWSYM FxOpBB      ; FROM rn   set source register
-   FROMRN 11
+   fxcop c_FxOpBB
 NEWSYM FxOpBC      ; FROM rn   set source register
-   FROMRN 12
+   fxcop c_FxOpBC
 NEWSYM FxOpBD      ; FROM rn   set source register
-   FROMRN 13
+   fxcop c_FxOpBD
 NEWSYM FxOpBE      ; FROM rn   set source register
-   FROMRN 14
+   fxcop c_FxOpBE
 NEWSYM FxOpBF      ; FROM rn   set source register
    FETCHPIPE
    mov esi,SfxR0+15*4
@@ -2255,16 +2129,7 @@ NEWSYM FxOpBF      ; FROM rn   set source register
    ret
 
 NEWSYM FxOpC0      ; HIB       move high-byte to low-byte      ; V
-   mov eax,[esi]            ; Read Source
-   FETCHPIPE
-   and eax,0FF00h
-   mov [SfxSignZero],eax
-   shr eax,8
-   inc ebp
-   mov [edi],eax
-   CLRFLAGS
-   ret
-
+   fxcop c_FxOpC0
 NEWSYM FxOpC1      ; OR rn     or rn
    fxcop c_FxOpC1
 NEWSYM FxOpC2      ; OR rn     or rn
@@ -2434,16 +2299,7 @@ NEWSYM FxOpDC      ; INC rn    increase by one
 NEWSYM FxOpDD      ; INC rn    increase by one
    fxcop c_FxOpDD
 NEWSYM FxOpDE      ; INC rn    increase by one
-   FETCHPIPE
-   mov eax,[SfxR0+14*4]            ; Read Source
-   inc ax
-   mov [SfxR0+14*4],eax
-   mov [SfxSignZero],eax
-   CLRFLAGS
-   inc ebp
-   UpdateR14
-   ret
-
+   fxcop c_FxOpDE
 NEWSYM FxOpDF      ; GETC      transfer ROM buffer to color register
    mov eax,[SfxRomBuffer]
    FETCHPIPE
@@ -2548,15 +2404,7 @@ NEWSYM FxOpEC      ; DEC rn    decrement by one
 NEWSYM FxOpED      ; DEC rn    decrement by one
    fxcop c_FxOpED
 NEWSYM FxOpEE      ; DEC rn    decrement by one
-   dec word[SfxR0+14*4]
-   FETCHPIPE
-   mov eax,[SfxR0+14*4]            ; Read Source
-   mov [SfxSignZero],eax
-   UpdateR14
-   CLRFLAGS
-   inc ebp
-   ret
-
+   fxcop c_FxOpEE
 NEWSYM FxOpEF      ; getb      get byte from ROM at address R14        ; V
    FETCHPIPE
    mov eax,[SfxRomBuffer]
@@ -2609,33 +2457,33 @@ NEWSYM FxOpEFA3    ; getbs     get sign extended byte from ROM at address R14  ;
    ret
 
 NEWSYM FxOpF0      ; IWT RN,#xx   immediate word transfer to register
-   IWTRN 0
+   fxcop c_FxOpF0
 NEWSYM FxOpF1      ; IWT RN,#xx   immediate word transfer to register
-   IWTRN 1
+   fxcop c_FxOpF1
 NEWSYM FxOpF2      ; IWT RN,#xx   immediate word transfer to register
-   IWTRN 2
+   fxcop c_FxOpF2
 NEWSYM FxOpF3      ; IWT RN,#xx   immediate word transfer to register
-   IWTRN 3
+   fxcop c_FxOpF3
 NEWSYM FxOpF4      ; IWT RN,#xx   immediate word transfer to register
-   IWTRN 4
+   fxcop c_FxOpF4
 NEWSYM FxOpF5      ; IWT RN,#xx   immediate word transfer to register
-   IWTRN 5
+   fxcop c_FxOpF5
 NEWSYM FxOpF6      ; IWT RN,#xx   immediate word transfer to register
-   IWTRN 6
+   fxcop c_FxOpF6
 NEWSYM FxOpF7      ; IWT RN,#xx   immediate word transfer to register
-   IWTRN 7
+   fxcop c_FxOpF7
 NEWSYM FxOpF8      ; IWT RN,#xx   immediate word transfer to register
-   IWTRN 8
+   fxcop c_FxOpF8
 NEWSYM FxOpF9      ; IWT RN,#xx   immediate word transfer to register
-   IWTRN 9
+   fxcop c_FxOpF9
 NEWSYM FxOpFA      ; IWT RN,#xx   immediate word transfer to register
-   IWTRN 10
+   fxcop c_FxOpFA
 NEWSYM FxOpFB      ; IWT RN,#xx   immediate word transfer to register
-   IWTRN 11
+   fxcop c_FxOpFB
 NEWSYM FxOpFC      ; IWT RN,#xx   immediate word transfer to register
-   IWTRN 12
+   fxcop c_FxOpFC
 NEWSYM FxOpFD      ; IWT RN,#xx   immediate word transfer to register
-   IWTRN 13
+   fxcop c_FxOpFD
 NEWSYM FxOpFE      ; IWT RN,#xx   immediate word transfer to register
    mov eax,[ebp]
    mov cl,[ebp+2]
@@ -2655,33 +2503,33 @@ NEWSYM FxOpFF      ; IWT RN,#xx   immediate word transfer to register
    ret
 
 NEWSYM FxOpF0A1    ; LM RN,(XX)   load word from RAM
-   LMRN 0
+   fxcop c_FxOpF0A1
 NEWSYM FxOpF1A1    ; LM RN,(XX)   load word from RAM
-   LMRN 1
+   fxcop c_FxOpF1A1
 NEWSYM FxOpF2A1    ; LM RN,(XX)   load word from RAM
-   LMRN 2
+   fxcop c_FxOpF2A1
 NEWSYM FxOpF3A1    ; LM RN,(XX)   load word from RAM
-   LMRN 3
+   fxcop c_FxOpF3A1
 NEWSYM FxOpF4A1    ; LM RN,(XX)   load word from RAM
-   LMRN 4
+   fxcop c_FxOpF4A1
 NEWSYM FxOpF5A1    ; LM RN,(XX)   load word from RAM
-   LMRN 5
+   fxcop c_FxOpF5A1
 NEWSYM FxOpF6A1    ; LM RN,(XX)   load word from RAM
-   LMRN 6
+   fxcop c_FxOpF6A1
 NEWSYM FxOpF7A1    ; LM RN,(XX)   load word from RAM
-   LMRN 7
+   fxcop c_FxOpF7A1
 NEWSYM FxOpF8A1    ; LM RN,(XX)   load word from RAM
-   LMRN 8
+   fxcop c_FxOpF8A1
 NEWSYM FxOpF9A1    ; LM RN,(XX)   load word from RAM
-   LMRN 9
+   fxcop c_FxOpF9A1
 NEWSYM FxOpFAA1    ; LM RN,(XX)   load word from RAM
-   LMRN 10
+   fxcop c_FxOpFAA1
 NEWSYM FxOpFBA1    ; LM RN,(XX)   load word from RAM
-   LMRN 11
+   fxcop c_FxOpFBA1
 NEWSYM FxOpFCA1    ; LM RN,(XX)   load word from RAM
-   LMRN 12
+   fxcop c_FxOpFCA1
 NEWSYM FxOpFDA1    ; LM RN,(XX)   load word from RAM
-   LMRN 13
+   fxcop c_FxOpFDA1
 NEWSYM FxOpFEA1    ; LM RN,(XX)   load word from RAM
    xor eax,eax
    mov cl,[ebp+2]
@@ -2718,35 +2566,35 @@ NEWSYM FxOpFFA1    ; LM RN,(XX)   load word from RAM
    ret
 
 NEWSYM FxOpF0A2    ; SM (XX),RN   store word in RAM
-   SMRN 0
+   fxcop c_FxOpF0A2
 NEWSYM FxOpF1A2    ; SM (XX),RN   store word in RAM
-   SMRN 1
+   fxcop c_FxOpF1A2
 NEWSYM FxOpF2A2    ; SM (XX),RN   store word in RAM
-   SMRN 2
+   fxcop c_FxOpF2A2
 NEWSYM FxOpF3A2    ; SM (XX),RN   store word in RAM
-   SMRN 3
+   fxcop c_FxOpF3A2
 NEWSYM FxOpF4A2    ; SM (XX),RN   store word in RAM
-   SMRN 4
+   fxcop c_FxOpF4A2
 NEWSYM FxOpF5A2    ; SM (XX),RN   store word in RAM
-   SMRN 5
+   fxcop c_FxOpF5A2
 NEWSYM FxOpF6A2    ; SM (XX),RN   store word in RAM
-   SMRN 6
+   fxcop c_FxOpF6A2
 NEWSYM FxOpF7A2    ; SM (XX),RN   store word in RAM
-   SMRN 7
+   fxcop c_FxOpF7A2
 NEWSYM FxOpF8A2    ; SM (XX),RN   store word in RAM
-   SMRN 8
+   fxcop c_FxOpF8A2
 NEWSYM FxOpF9A2    ; SM (XX),RN   store word in RAM
-   SMRN 9
+   fxcop c_FxOpF9A2
 NEWSYM FxOpFAA2    ; SM (XX),RN   store word in RAM
-   SMRN 10
+   fxcop c_FxOpFAA2
 NEWSYM FxOpFBA2    ; SM (XX),RN   store word in RAM
-   SMRN 11
+   fxcop c_FxOpFBA2
 NEWSYM FxOpFCA2    ; SM (XX),RN   store word in RAM
-   SMRN 12
+   fxcop c_FxOpFCA2
 NEWSYM FxOpFDA2    ; SM (XX),RN   store word in RAM
-   SMRN 13
+   fxcop c_FxOpFDA2
 NEWSYM FxOpFEA2    ; SM (XX),RN   store word in RAM
-   SMRN 14
+   fxcop c_FxOpFEA2
 NEWSYM FxOpFFA2    ; SM (XX),RN   store word in RAM
    FETCHPIPE
    mov ebx,ebp

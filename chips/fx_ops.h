@@ -563,6 +563,809 @@ void c_FxOpEB(void) { fx_decrn(11); }
 void c_FxOpEC(void) { fx_decrn(12); }
 void c_FxOpED(void) { fx_decrn(13); }
 
+/* --- MULT / UMULT (chips/fxemu2.asm, base table) --------------------------
+ *
+ * 8x8 multiplies: only the low byte of each operand takes part (`mov al,[esi]`
+ * / `mov bl,...`), MULT is signed (imul) and UMULT unsigned (mul). The 16-bit
+ * product is masked with `and eax,0FFFFh` before it is stored, so unlike the
+ * add/subtract ops these zero the upper half of the destination rather than
+ * preserving it. No carry or overflow is written.
+ */
+
+static inline void fx_mult(u4 const rhs, int const sign)
+{
+    u4 const a = *FxSeamSrc & 0xFFu;
+    u4 const b = rhs & 0xFFu;
+    u4 const v = (sign ? (u4)((s4)(s1)a * (s4)(s1)b) : a * b) & 0xFFFFu;
+
+    FxSeamPC++;
+    SfxSignZero = v;
+    *FxSeamDst = v;
+}
+
+FX_ALU(fx_multrn, fx_mult(SfxR0[n], 1))
+FX_ALU(fx_umultrn, fx_mult(SfxR0[n], 0))
+FX_ALU(fx_multirn, fx_mult(n, 1))
+FX_ALU(fx_umultirn, fx_mult(n, 0))
+
+/* MULTRN */
+void c_FxOp80(void) { fx_multrn(0); }
+void c_FxOp81(void) { fx_multrn(1); }
+void c_FxOp82(void) { fx_multrn(2); }
+void c_FxOp83(void) { fx_multrn(3); }
+void c_FxOp84(void) { fx_multrn(4); }
+void c_FxOp85(void) { fx_multrn(5); }
+void c_FxOp86(void) { fx_multrn(6); }
+void c_FxOp87(void) { fx_multrn(7); }
+void c_FxOp88(void) { fx_multrn(8); }
+void c_FxOp89(void) { fx_multrn(9); }
+void c_FxOp8A(void) { fx_multrn(10); }
+void c_FxOp8B(void) { fx_multrn(11); }
+void c_FxOp8C(void) { fx_multrn(12); }
+void c_FxOp8D(void) { fx_multrn(13); }
+void c_FxOp8E(void) { fx_multrn(14); }
+
+/* UMULTRN */
+void c_FxOp80A1(void) { fx_umultrn(0); }
+void c_FxOp81A1(void) { fx_umultrn(1); }
+void c_FxOp82A1(void) { fx_umultrn(2); }
+void c_FxOp83A1(void) { fx_umultrn(3); }
+void c_FxOp84A1(void) { fx_umultrn(4); }
+void c_FxOp85A1(void) { fx_umultrn(5); }
+void c_FxOp86A1(void) { fx_umultrn(6); }
+void c_FxOp87A1(void) { fx_umultrn(7); }
+void c_FxOp88A1(void) { fx_umultrn(8); }
+void c_FxOp89A1(void) { fx_umultrn(9); }
+void c_FxOp8AA1(void) { fx_umultrn(10); }
+void c_FxOp8BA1(void) { fx_umultrn(11); }
+void c_FxOp8CA1(void) { fx_umultrn(12); }
+void c_FxOp8DA1(void) { fx_umultrn(13); }
+void c_FxOp8EA1(void) { fx_umultrn(14); }
+
+/* MULTIRN */
+void c_FxOp80A2(void) { fx_multirn(0); }
+void c_FxOp81A2(void) { fx_multirn(1); }
+void c_FxOp82A2(void) { fx_multirn(2); }
+void c_FxOp83A2(void) { fx_multirn(3); }
+void c_FxOp84A2(void) { fx_multirn(4); }
+void c_FxOp85A2(void) { fx_multirn(5); }
+void c_FxOp86A2(void) { fx_multirn(6); }
+void c_FxOp87A2(void) { fx_multirn(7); }
+void c_FxOp88A2(void) { fx_multirn(8); }
+void c_FxOp89A2(void) { fx_multirn(9); }
+void c_FxOp8AA2(void) { fx_multirn(10); }
+void c_FxOp8BA2(void) { fx_multirn(11); }
+void c_FxOp8CA2(void) { fx_multirn(12); }
+void c_FxOp8DA2(void) { fx_multirn(13); }
+void c_FxOp8EA2(void) { fx_multirn(14); }
+void c_FxOp8FA2(void) { fx_multirn(15); }
+
+/* UMULTIRN */
+void c_FxOp80A3(void) { fx_umultirn(0); }
+void c_FxOp81A3(void) { fx_umultirn(1); }
+void c_FxOp82A3(void) { fx_umultirn(2); }
+void c_FxOp83A3(void) { fx_umultirn(3); }
+void c_FxOp84A3(void) { fx_umultirn(4); }
+void c_FxOp85A3(void) { fx_umultirn(5); }
+void c_FxOp86A3(void) { fx_umultirn(6); }
+void c_FxOp87A3(void) { fx_umultirn(7); }
+void c_FxOp88A3(void) { fx_umultirn(8); }
+void c_FxOp89A3(void) { fx_umultirn(9); }
+void c_FxOp8AA3(void) { fx_umultirn(10); }
+void c_FxOp8BA3(void) { fx_umultirn(11); }
+void c_FxOp8CA3(void) { fx_umultirn(12); }
+void c_FxOp8DA3(void) { fx_umultirn(13); }
+void c_FxOp8EA3(void) { fx_umultirn(14); }
+void c_FxOp8FA3(void) { fx_umultirn(15); }
+
+/* --- TO rN / FROM rN / WITH rN (chips/fxemu2.asm, base table) -------------
+ *
+ * The plain forms: retarget the destination (TO), the source (FROM), or both
+ * plus the B flag (WITH), run the next opcode with that in place, then put the
+ * pointers back. WITH chains through the c table, the others through the base
+ * table. Compare the b-group versions above, which additionally have a
+ * version-B immediate-move path and maintain R15.
+ */
+
+static inline void fx_torn(u4 const n)
+{
+    fx_fetchpipe();
+    FxSeamDst = SfxR0 + n;
+    FxSeamPC++;
+    FxDispatch(FxTable);
+    FxSeamDst = SfxR0;
+}
+
+static inline void fx_fromrn(u4 const n)
+{
+    fx_fetchpipe();
+    FxSeamSrc = SfxR0 + n;
+    FxSeamPC++;
+    FxDispatch(FxTable);
+    FxSeamSrc = SfxR0;
+}
+
+static inline void fx_with(u4 const n)
+{
+    fx_fetchpipe();
+    FxSeamSrc = SfxR0 + n;
+    FxSeamDst = SfxR0 + n;
+    SfxB = 1;
+    FxSeamPC++;
+    FxDispatch(FxTablec);
+    FxSeamSrc = SfxR0;
+    FxSeamDst = SfxR0;
+    SfxB = 0;
+}
+
+/* TORN */
+void c_FxOp10(void) { fx_torn(0); }
+void c_FxOp11(void) { fx_torn(1); }
+void c_FxOp12(void) { fx_torn(2); }
+void c_FxOp13(void) { fx_torn(3); }
+void c_FxOp14(void) { fx_torn(4); }
+void c_FxOp15(void) { fx_torn(5); }
+void c_FxOp16(void) { fx_torn(6); }
+void c_FxOp17(void) { fx_torn(7); }
+void c_FxOp18(void) { fx_torn(8); }
+void c_FxOp19(void) { fx_torn(9); }
+void c_FxOp1A(void) { fx_torn(10); }
+void c_FxOp1B(void) { fx_torn(11); }
+void c_FxOp1C(void) { fx_torn(12); }
+void c_FxOp1D(void) { fx_torn(13); }
+
+/* WITH */
+void c_FxOp20(void) { fx_with(0); }
+void c_FxOp21(void) { fx_with(1); }
+void c_FxOp22(void) { fx_with(2); }
+void c_FxOp23(void) { fx_with(3); }
+void c_FxOp24(void) { fx_with(4); }
+void c_FxOp25(void) { fx_with(5); }
+void c_FxOp26(void) { fx_with(6); }
+void c_FxOp27(void) { fx_with(7); }
+void c_FxOp28(void) { fx_with(8); }
+void c_FxOp29(void) { fx_with(9); }
+void c_FxOp2A(void) { fx_with(10); }
+void c_FxOp2B(void) { fx_with(11); }
+void c_FxOp2C(void) { fx_with(12); }
+void c_FxOp2D(void) { fx_with(13); }
+
+/* FROMRN */
+void c_FxOpB0(void) { fx_fromrn(0); }
+void c_FxOpB1(void) { fx_fromrn(1); }
+void c_FxOpB2(void) { fx_fromrn(2); }
+void c_FxOpB3(void) { fx_fromrn(3); }
+void c_FxOpB4(void) { fx_fromrn(4); }
+void c_FxOpB5(void) { fx_fromrn(5); }
+void c_FxOpB6(void) { fx_fromrn(6); }
+void c_FxOpB7(void) { fx_fromrn(7); }
+void c_FxOpB8(void) { fx_fromrn(8); }
+void c_FxOpB9(void) { fx_fromrn(9); }
+void c_FxOpBA(void) { fx_fromrn(10); }
+void c_FxOpBB(void) { fx_fromrn(11); }
+void c_FxOpBC(void) { fx_fromrn(12); }
+void c_FxOpBD(void) { fx_fromrn(13); }
+void c_FxOpBE(void) { fx_fromrn(14); }
+
+/* --- Load / store (chips/fxemu2.asm, base table) --------------------------
+ *
+ * The address is the raw register value added to SfxRAMMem; SfxLastRamAdr
+ * records the absolute address for the caching logic elsewhere. None of these
+ * touch SfxSignZero or any flag.
+ *
+ * The word forms address the second byte as addr^1, not addr+1: SuperFX RAM is
+ * word-interleaved, so the high byte lives at the sibling even/odd offset.
+ */
+
+static inline u1* fx_ram(u4 const addr)
+{
+    return (u1*)(uintptr_t)(SfxRAMMem + addr);
+}
+
+static inline void fx_stw(u4 const n)
+{
+    u4 const addr = SfxR0[n];
+    u4 const val = *FxSeamSrc;
+
+    SfxLastRamAdr = SfxRAMMem + addr;
+    fx_fetchpipe();
+    *fx_ram(addr) = (u1)val;
+    FxSeamPC++;
+    *fx_ram(addr ^ 1) = (u1)(val >> 8);
+}
+
+static inline void fx_stb(u4 const n)
+{
+    u4 const addr = SfxR0[n];
+
+    fx_fetchpipe();
+    SfxLastRamAdr = SfxRAMMem + addr;
+    *fx_ram(addr) = (u1)*FxSeamSrc;
+    FxSeamPC++;
+}
+
+static inline void fx_ldw(u4 const n)
+{
+    u4 const addr = SfxR0[n];
+
+    SfxLastRamAdr = SfxRAMMem + addr;
+    fx_fetchpipe();
+    /* `and edx,0FFFFh` lands between the two byte loads, so the result is the
+       two bytes zero-extended, whatever edx held before. */
+    FxSeamPC++;
+    *FxSeamDst = (u4)*fx_ram(addr) | ((u4)*fx_ram(addr ^ 1) << 8);
+}
+
+static inline void fx_ldb(u4 const n)
+{
+    u4 const addr = SfxR0[n];
+
+    fx_fetchpipe();
+    SfxLastRamAdr = SfxRAMMem + addr;
+    FxSeamPC++;
+    *FxSeamDst = *fx_ram(addr);
+}
+
+/* Each of these does its own fetch at the point the macro had it, so they
+   cannot go through FX_ALU (which fetches first). */
+static void fx_stwrn(u4 const n) { fx_stw(n); }
+static void fx_stbrn(u4 const n) { fx_stb(n); }
+static void fx_ldwrn(u4 const n) { fx_ldw(n); }
+static void fx_ldbrn(u4 const n) { fx_ldb(n); }
+
+/* STWRN */
+void c_FxOp30(void) { fx_stwrn(0); }
+void c_FxOp31(void) { fx_stwrn(1); }
+void c_FxOp32(void) { fx_stwrn(2); }
+void c_FxOp33(void) { fx_stwrn(3); }
+void c_FxOp34(void) { fx_stwrn(4); }
+void c_FxOp35(void) { fx_stwrn(5); }
+void c_FxOp36(void) { fx_stwrn(6); }
+void c_FxOp37(void) { fx_stwrn(7); }
+void c_FxOp38(void) { fx_stwrn(8); }
+void c_FxOp39(void) { fx_stwrn(9); }
+void c_FxOp3A(void) { fx_stwrn(10); }
+void c_FxOp3B(void) { fx_stwrn(11); }
+
+/* STBRN */
+void c_FxOp30A1(void) { fx_stbrn(0); }
+void c_FxOp31A1(void) { fx_stbrn(1); }
+void c_FxOp32A1(void) { fx_stbrn(2); }
+void c_FxOp33A1(void) { fx_stbrn(3); }
+void c_FxOp34A1(void) { fx_stbrn(4); }
+void c_FxOp35A1(void) { fx_stbrn(5); }
+void c_FxOp36A1(void) { fx_stbrn(6); }
+void c_FxOp37A1(void) { fx_stbrn(7); }
+void c_FxOp38A1(void) { fx_stbrn(8); }
+void c_FxOp39A1(void) { fx_stbrn(9); }
+void c_FxOp3AA1(void) { fx_stbrn(10); }
+void c_FxOp3BA1(void) { fx_stbrn(11); }
+
+/* LDWRN */
+void c_FxOp40(void) { fx_ldwrn(0); }
+void c_FxOp41(void) { fx_ldwrn(1); }
+void c_FxOp42(void) { fx_ldwrn(2); }
+void c_FxOp43(void) { fx_ldwrn(3); }
+void c_FxOp44(void) { fx_ldwrn(4); }
+void c_FxOp45(void) { fx_ldwrn(5); }
+void c_FxOp46(void) { fx_ldwrn(6); }
+void c_FxOp47(void) { fx_ldwrn(7); }
+void c_FxOp48(void) { fx_ldwrn(8); }
+void c_FxOp49(void) { fx_ldwrn(9); }
+void c_FxOp4A(void) { fx_ldwrn(10); }
+void c_FxOp4B(void) { fx_ldwrn(11); }
+
+/* LDBRN */
+void c_FxOp40A1(void) { fx_ldbrn(0); }
+void c_FxOp41A1(void) { fx_ldbrn(1); }
+void c_FxOp42A1(void) { fx_ldbrn(2); }
+void c_FxOp43A1(void) { fx_ldbrn(3); }
+void c_FxOp44A1(void) { fx_ldbrn(4); }
+void c_FxOp45A1(void) { fx_ldbrn(5); }
+void c_FxOp46A1(void) { fx_ldbrn(6); }
+void c_FxOp47A1(void) { fx_ldbrn(7); }
+void c_FxOp48A1(void) { fx_ldbrn(8); }
+void c_FxOp49A1(void) { fx_ldbrn(9); }
+void c_FxOp4AA1(void) { fx_ldbrn(10); }
+void c_FxOp4BA1(void) { fx_ldbrn(11); }
+
+/* --- Immediate loads and short/long memory moves --------------------------
+ *
+ * These take their operand from the instruction stream rather than a register,
+ * so they advance the program counter by more than one and prefetch the next
+ * opcode from past the immediate.
+ *
+ * Watch the store widths, which differ across the group: IBT and the LM forms
+ * write `ax`/`dx`/`bx`, i.e. 16-bit, leaving the register's upper half intact,
+ * while IWT writes the full `eax` and so zeroes it. LM/SM address RAM
+ * word-interleaved (addr^1) like LDW/STW; LMS/SMS instead do one plain 16-bit
+ * access at 2*imm8.
+ */
+
+/* Write only the low half of a register, as `mov [SfxR0+n*4],ax` does. */
+static inline void fx_set_lo16(u4 const n, u4 const v)
+{
+    SfxR0[n] = fx_lo16(SfxR0[n], v);
+}
+
+static inline void fx_ibt(u4 const n)
+{
+    s1 const imm = (s1)*FxSeamPC;
+
+    FxSeamCX = (FxSeamCX & ~0xFFu) | FxSeamPC[1];
+    FxSeamPC += 2;
+    fx_set_lo16(n, (u4)(s4)imm);
+}
+
+static inline void fx_iwt(u4 const n)
+{
+    u4 const imm = (u4)FxSeamPC[0] | ((u4)FxSeamPC[1] << 8);
+
+    FxSeamCX = (FxSeamCX & ~0xFFu) | FxSeamPC[2];
+    FxSeamPC += 3;
+    SfxR0[n] = imm; /* full 32-bit store: the upper half is zeroed */
+}
+
+static inline void fx_lm(u4 const n)
+{
+    u4 const addr = (u4)FxSeamPC[0] | ((u4)FxSeamPC[1] << 8);
+
+    FxSeamCX = (FxSeamCX & ~0xFFu) | FxSeamPC[2];
+    SfxLastRamAdr = SfxRAMMem + addr;
+    FxSeamPC += 3;
+    fx_set_lo16(n, (u4)*fx_ram(addr) | ((u4)*fx_ram(addr ^ 1) << 8));
+}
+
+static inline void fx_sm(u4 const n)
+{
+    u4 const val = SfxR0[n];
+    u4 const addr = (u4)FxSeamPC[0] | ((u4)FxSeamPC[1] << 8);
+
+    FxSeamCX = (FxSeamCX & ~0xFFu) | FxSeamPC[2];
+    SfxLastRamAdr = SfxRAMMem + addr;
+    *fx_ram(addr) = (u1)val;
+    FxSeamPC += 3;
+    *fx_ram(addr ^ 1) = (u1)(val >> 8);
+}
+
+/* The short forms take an 8-bit offset scaled by two, and access RAM as one
+   16-bit word rather than through the addr^1 interleave. The address is always
+   even, so addr^1 and addr+1 coincide here and either spelling is correct. */
+static inline void fx_lms(u4 const n)
+{
+    u4 const addr = (u4)*FxSeamPC * 2u;
+
+    FxSeamCX = (FxSeamCX & ~0xFFu) | FxSeamPC[1];
+    SfxLastRamAdr = SfxRAMMem + addr;
+    FxSeamPC += 2;
+    fx_set_lo16(n, (u4)fx_ram(addr)[0] | ((u4)fx_ram(addr)[1] << 8));
+}
+
+static inline void fx_sms(u4 const n)
+{
+    u4 const addr = (u4)*FxSeamPC * 2u;
+    u4 const val = SfxR0[n];
+
+    FxSeamCX = (FxSeamCX & ~0xFFu) | FxSeamPC[1];
+    SfxLastRamAdr = SfxRAMMem + addr;
+    FxSeamPC += 2;
+    fx_ram(addr)[0] = (u1)val;
+    fx_ram(addr)[1] = (u1)(val >> 8);
+}
+
+/* Their own fetch is at a stream offset, so FX_ALU does not apply. */
+static void fx_ibtrn(u4 const n) { fx_ibt(n); }
+static void fx_iwtrn(u4 const n) { fx_iwt(n); }
+static void fx_lmrn(u4 const n) { fx_lm(n); }
+static void fx_smrn(u4 const n) { fx_sm(n); }
+static void fx_lmsrn(u4 const n) { fx_lms(n); }
+static void fx_smsrn(u4 const n) { fx_sms(n); }
+
+/* IBTRN */
+void c_FxOpA0(void) { fx_ibtrn(0); }
+void c_FxOpA1(void) { fx_ibtrn(1); }
+void c_FxOpA2(void) { fx_ibtrn(2); }
+void c_FxOpA3(void) { fx_ibtrn(3); }
+void c_FxOpA4(void) { fx_ibtrn(4); }
+void c_FxOpA5(void) { fx_ibtrn(5); }
+void c_FxOpA6(void) { fx_ibtrn(6); }
+void c_FxOpA7(void) { fx_ibtrn(7); }
+void c_FxOpA8(void) { fx_ibtrn(8); }
+void c_FxOpA9(void) { fx_ibtrn(9); }
+void c_FxOpAA(void) { fx_ibtrn(10); }
+void c_FxOpAB(void) { fx_ibtrn(11); }
+void c_FxOpAC(void) { fx_ibtrn(12); }
+void c_FxOpAD(void) { fx_ibtrn(13); }
+
+/* LMSRN */
+void c_FxOpA0A1(void) { fx_lmsrn(0); }
+void c_FxOpA1A1(void) { fx_lmsrn(1); }
+void c_FxOpA2A1(void) { fx_lmsrn(2); }
+void c_FxOpA3A1(void) { fx_lmsrn(3); }
+void c_FxOpA4A1(void) { fx_lmsrn(4); }
+void c_FxOpA5A1(void) { fx_lmsrn(5); }
+void c_FxOpA6A1(void) { fx_lmsrn(6); }
+void c_FxOpA7A1(void) { fx_lmsrn(7); }
+void c_FxOpA8A1(void) { fx_lmsrn(8); }
+void c_FxOpA9A1(void) { fx_lmsrn(9); }
+void c_FxOpAAA1(void) { fx_lmsrn(10); }
+void c_FxOpABA1(void) { fx_lmsrn(11); }
+void c_FxOpACA1(void) { fx_lmsrn(12); }
+void c_FxOpADA1(void) { fx_lmsrn(13); }
+
+/* SMSRN */
+void c_FxOpA0A2(void) { fx_smsrn(0); }
+void c_FxOpA1A2(void) { fx_smsrn(1); }
+void c_FxOpA2A2(void) { fx_smsrn(2); }
+void c_FxOpA3A2(void) { fx_smsrn(3); }
+void c_FxOpA4A2(void) { fx_smsrn(4); }
+void c_FxOpA5A2(void) { fx_smsrn(5); }
+void c_FxOpA6A2(void) { fx_smsrn(6); }
+void c_FxOpA7A2(void) { fx_smsrn(7); }
+void c_FxOpA8A2(void) { fx_smsrn(8); }
+void c_FxOpA9A2(void) { fx_smsrn(9); }
+void c_FxOpAAA2(void) { fx_smsrn(10); }
+void c_FxOpABA2(void) { fx_smsrn(11); }
+void c_FxOpACA2(void) { fx_smsrn(12); }
+void c_FxOpADA2(void) { fx_smsrn(13); }
+void c_FxOpAEA2(void) { fx_smsrn(14); }
+
+/* IWTRN */
+void c_FxOpF0(void) { fx_iwtrn(0); }
+void c_FxOpF1(void) { fx_iwtrn(1); }
+void c_FxOpF2(void) { fx_iwtrn(2); }
+void c_FxOpF3(void) { fx_iwtrn(3); }
+void c_FxOpF4(void) { fx_iwtrn(4); }
+void c_FxOpF5(void) { fx_iwtrn(5); }
+void c_FxOpF6(void) { fx_iwtrn(6); }
+void c_FxOpF7(void) { fx_iwtrn(7); }
+void c_FxOpF8(void) { fx_iwtrn(8); }
+void c_FxOpF9(void) { fx_iwtrn(9); }
+void c_FxOpFA(void) { fx_iwtrn(10); }
+void c_FxOpFB(void) { fx_iwtrn(11); }
+void c_FxOpFC(void) { fx_iwtrn(12); }
+void c_FxOpFD(void) { fx_iwtrn(13); }
+
+/* LMRN */
+void c_FxOpF0A1(void) { fx_lmrn(0); }
+void c_FxOpF1A1(void) { fx_lmrn(1); }
+void c_FxOpF2A1(void) { fx_lmrn(2); }
+void c_FxOpF3A1(void) { fx_lmrn(3); }
+void c_FxOpF4A1(void) { fx_lmrn(4); }
+void c_FxOpF5A1(void) { fx_lmrn(5); }
+void c_FxOpF6A1(void) { fx_lmrn(6); }
+void c_FxOpF7A1(void) { fx_lmrn(7); }
+void c_FxOpF8A1(void) { fx_lmrn(8); }
+void c_FxOpF9A1(void) { fx_lmrn(9); }
+void c_FxOpFAA1(void) { fx_lmrn(10); }
+void c_FxOpFBA1(void) { fx_lmrn(11); }
+void c_FxOpFCA1(void) { fx_lmrn(12); }
+void c_FxOpFDA1(void) { fx_lmrn(13); }
+
+/* SMRN */
+void c_FxOpF0A2(void) { fx_smrn(0); }
+void c_FxOpF1A2(void) { fx_smrn(1); }
+void c_FxOpF2A2(void) { fx_smrn(2); }
+void c_FxOpF3A2(void) { fx_smrn(3); }
+void c_FxOpF4A2(void) { fx_smrn(4); }
+void c_FxOpF5A2(void) { fx_smrn(5); }
+void c_FxOpF6A2(void) { fx_smrn(6); }
+void c_FxOpF7A2(void) { fx_smrn(7); }
+void c_FxOpF8A2(void) { fx_smrn(8); }
+void c_FxOpF9A2(void) { fx_smrn(9); }
+void c_FxOpFAA2(void) { fx_smrn(10); }
+void c_FxOpFBA2(void) { fx_smrn(11); }
+void c_FxOpFCA2(void) { fx_smrn(12); }
+void c_FxOpFDA2(void) { fx_smrn(13); }
+void c_FxOpFEA2(void) { fx_smrn(14); }
+
+/* --- CACHE, LINK and the jumps (chips/fxemu2.asm, base table) -------------
+ *
+ * LJMP switches code bank: it indexes SfxMemTable with the low 7 bits of the
+ * register to get the new bank base, then re-runs the CACHE opcode for its
+ * cache-invalidate side effect. The assembly did that with a literal
+ * `push ecx / call FxOp02 / pop ecx / dec ebp`, so the opcode byte and the
+ * program counter CACHE leaves behind are both discarded and only SfxCBR /
+ * SfxCacheActive survive.
+ */
+
+void FlushCache(void); /* chips/fxemu2.asm; currently a stub */
+
+/* CACHE: point the cache at the 16-byte-aligned block holding the program
+   counter, unless it is already there or a cache load is in progress. */
+static inline void fx_cache(void)
+{
+    u4 const base = (fx_pc_rel()) & 0xFFF0u;
+
+    fx_fetchpipe();
+    if (SfxCBR != base && (SfxCacheActive & 0xFFu) != 1) {
+        SfxCBR = base;
+        SfxCacheActive = 1;
+        FlushCache();
+    }
+    FxSeamPC++;
+}
+
+void c_FxOp02(void) { fx_cache(); }
+
+/* LINK: stash the return address, PC-relative plus the operand, in R11. The
+   store is 16-bit, so R11's upper half is left alone. */
+static inline void fx_link(u4 const n)
+{
+    u4 const ret = fx_pc_rel() + n;
+
+    fx_fetchpipe();
+    fx_set_lo16(11, ret);
+    FxSeamPC++;
+}
+
+static inline void fx_jmp(u4 const n)
+{
+    fx_fetchpipe();
+    FxSeamPC = (u1*)(uintptr_t)(SfxCPB + SfxR0[n]);
+}
+
+static inline void fx_ljmp(u4 const n)
+{
+    u4 const bank = SfxR0[n] & 0x7Fu;
+    u4 saved_cx;
+
+    fx_fetchpipe();
+    *(u1*)&SfxPBR = (u1)bank; /* byte store: the upper three are kept */
+    SfxCPB = SfxMemTable[bank];
+    FxSeamPC = (u1*)(uintptr_t)(SfxCPB + *FxSeamSrc);
+    SfxCacheActive = 0;
+
+    saved_cx = FxSeamCX;
+    fx_cache();
+    FxSeamCX = saved_cx; /* pop ecx */
+    FxSeamPC--; /* dec ebp */
+}
+
+static void fx_linkn(u4 const n) { fx_link(n); }
+static void fx_jmprn(u4 const n) { fx_jmp(n); }
+static void fx_ljmprn(u4 const n) { fx_ljmp(n); }
+
+/* LINK */
+void c_FxOp91(void) { fx_linkn(1); }
+void c_FxOp92(void) { fx_linkn(2); }
+void c_FxOp93(void) { fx_linkn(3); }
+void c_FxOp94(void) { fx_linkn(4); }
+
+/* JMPRN */
+void c_FxOp98(void) { fx_jmprn(8); }
+void c_FxOp99(void) { fx_jmprn(9); }
+void c_FxOp9A(void) { fx_jmprn(10); }
+void c_FxOp9B(void) { fx_jmprn(11); }
+void c_FxOp9C(void) { fx_jmprn(12); }
+void c_FxOp9D(void) { fx_jmprn(13); }
+
+/* LJMPRN */
+void c_FxOp98A1(void) { fx_ljmprn(8); }
+void c_FxOp99A1(void) { fx_ljmprn(9); }
+void c_FxOp9AA1(void) { fx_ljmprn(10); }
+void c_FxOp9BA1(void) { fx_ljmprn(11); }
+void c_FxOp9CA1(void) { fx_ljmprn(12); }
+void c_FxOp9DA1(void) { fx_ljmprn(13); }
+
+/* --- Single-register bit and shift ops (chips/fxemu2.asm, base table) -----
+ *
+ * All of these read the source register and write the destination, with no
+ * operand. Note how much the write widths vary: the shifts work on `ax` and so
+ * keep the register's upper half, while SEX, LOB and HIB write the full `eax`
+ * and clear it. The flag stores are byte-wide (`mov [SfxCarry],al`), leaving
+ * the upper three bytes of SfxCarry alone.
+ */
+
+void c_FxOp01(void) /* NOP */
+{
+    fx_fetchpipe();
+    FxSeamPC++;
+}
+
+void c_FxOp4D(void) /* SWAP: exchange the two bytes of the low half */
+{
+    u4 const a = *FxSeamSrc;
+    u4 const v = fx_lo16(a, ((a & 0xFFu) << 8) | ((a >> 8) & 0xFFu));
+
+    fx_fetchpipe();
+    FxSeamPC++;
+    SfxSignZero = v;
+    *FxSeamDst = v;
+}
+
+void c_FxOp4F(void) /* NOT: invert the low 16 bits only */
+{
+    u4 const v = *FxSeamSrc ^ 0xFFFFu;
+
+    fx_fetchpipe();
+    FxSeamPC++;
+    SfxSignZero = v;
+    *FxSeamDst = v;
+}
+
+void c_FxOp95(void) /* SEX: sign-extend the low byte to 16 bits */
+{
+    u4 const v = (u4)(s4)(s1)(u1)*FxSeamSrc & 0xFFFFu;
+
+    fx_fetchpipe();
+    FxSeamPC++;
+    *FxSeamDst = v;
+    SfxSignZero = v;
+}
+
+/* Arithmetic shift right of the low half; the bit shifted out becomes carry.
+   Replicating bit 15 is what `sar ax,1` does. */
+static inline void fx_asr(void)
+{
+    u4 const lo = *FxSeamSrc & 0xFFFFu;
+    u4 const v = fx_lo16(*FxSeamSrc, (lo >> 1) | (lo & 0x8000u));
+
+    fx_set_carry(lo & 1);
+    FxSeamPC++;
+    *FxSeamDst = v;
+    SfxSignZero = v;
+}
+
+void c_FxOp96(void) /* ASR */
+{
+    fx_fetchpipe();
+    fx_asr();
+}
+
+void c_FxOp96A1(void) /* DIV2: ASR, except -1 divides to 0 */
+{
+    fx_fetchpipe();
+    if ((*FxSeamSrc & 0xFFFFu) != 0xFFFFu) {
+        fx_asr();
+        return;
+    }
+    fx_set_carry(1);
+    FxSeamPC++;
+    *FxSeamDst = 0; /* `xor eax,eax`: the whole register, not just the low half */
+    SfxSignZero = 0;
+}
+
+void c_FxOp97(void) /* ROR: rotate the low half right through carry */
+{
+    u4 const a = *FxSeamSrc;
+    u4 const v = fx_lo16(a, ((SfxCarry & 1u) << 15) | ((a & 0xFFFFu) >> 1));
+
+    fx_fetchpipe();
+    fx_set_carry(a & 1);
+    FxSeamPC++;
+    *FxSeamDst = v;
+    SfxSignZero = v;
+}
+
+void c_FxOp9E(void) /* LOB: keep the low byte */
+{
+    u4 const v = *FxSeamSrc & 0xFFu;
+
+    fx_fetchpipe();
+    FxSeamPC++;
+    *FxSeamDst = v;
+    /* The flag word takes the byte shifted up, so the sign test still looks at
+       bit 15. */
+    SfxSignZero = v << 8;
+}
+
+void c_FxOpC0(void) /* HIB: move the high byte down */
+{
+    u4 const hi = *FxSeamSrc & 0xFF00u;
+
+    fx_fetchpipe();
+    SfxSignZero = hi; /* set before the shift, so it keeps bit 15 */
+    FxSeamPC++;
+    *FxSeamDst = hi >> 8;
+}
+
+/* --- Shifts, LOOP, the 16x16 multiplies and the R14 forms -----------------
+ */
+
+void c_FxOp03(void) /* LSR: logical shift right of the low half */
+{
+    u4 const lo = *FxSeamSrc & 0xFFFFu;
+    u4 const v = fx_lo16(*FxSeamSrc, lo >> 1);
+
+    fx_fetchpipe();
+    fx_set_carry(lo & 1);
+    FxSeamPC++;
+    *FxSeamDst = v;
+    SfxSignZero = v;
+}
+
+void c_FxOp04(void) /* ROL: rotate the low half left through carry */
+{
+    u4 const carry = SfxCarry;
+    u4 const a = *FxSeamSrc;
+    u4 const v = fx_lo16(a, ((a & 0xFFFFu) << 1) | (carry & 1u));
+
+    fx_fetchpipe();
+    /* `shr byte[SfxCarry],1` then `rcl byte[SfxCarry],1` puts the bit shifted
+       out of ax into bit 0 and leaves the rest of the byte as it was. */
+    *(u1*)&SfxCarry = (u1)((carry & 0xFEu) | ((a >> 15) & 1u));
+    FxSeamPC++;
+    *FxSeamDst = v;
+    SfxSignZero = v;
+}
+
+void c_FxOp3C(void) /* LOOP: decrement R12, branch to R13 while non-zero */
+{
+    u4 v;
+
+    SfxR0[12] = fx_lo16(SfxR0[12], SfxR0[12] - 1);
+    fx_fetchpipe();
+    v = SfxR0[12];
+    SfxSignZero = v;
+    /* `or eax,eax` tests all 32 bits, so a non-zero upper half keeps looping
+       even once the counter's low half reaches zero. */
+    if (v != 0) {
+        FxSeamPC = (u1*)(uintptr_t)(SfxCPB + SfxR0[13]);
+        return;
+    }
+    FxSeamPC++;
+}
+
+/* FMULT/LMULT: signed 16x16 giving a 32-bit product. The destination takes the
+   upper half; carry is bit 15 of the lower half. */
+static inline void fx_fmult(int const keep_low)
+{
+    u4 const prod = (u4)((s4)(s2)(u2)*FxSeamSrc * (s4)(s2)(u2)SfxR0[6]);
+    u4 const hi = (prod >> 16) & 0xFFFFu;
+
+    fx_fetchpipe();
+    FxSeamPC++;
+    *FxSeamDst = hi;
+    if (keep_low) {
+        fx_set_lo16(4, prod); /* LMULT also keeps the low half in R4 */
+    }
+    SfxSignZero = hi;
+    fx_set_carry((prod >> 15) & 1u);
+}
+
+void c_FxOp9F(void) { fx_fmult(0); }
+void c_FxOp9FA1(void) { fx_fmult(1); }
+
+void c_FxOpAE(void) /* IBT R14: immediate byte into R14, then refresh the pointer */
+{
+    s1 const imm = (s1)*FxSeamPC;
+
+    FxSeamCX = (FxSeamCX & ~0xFFu) | FxSeamPC[1];
+    FxSeamPC += 2;
+    fx_set_lo16(14, (u4)(s4)imm);
+    fx_update_r14();
+}
+
+void c_FxOpAF(void) /* branch to a sign-extended byte displacement from the bank base */
+{
+    u4 const imm = (u4)(s4)(s1)*FxSeamPC & 0xFFFFu;
+
+    FxSeamCX = (FxSeamCX & ~0xFFu) | FxSeamPC[1];
+    FxSeamPC = (u1*)(uintptr_t)(SfxCPB + imm);
+}
+
+void c_FxOpDE(void) /* INC R14 */
+{
+    u4 v;
+
+    fx_fetchpipe();
+    v = fx_lo16(SfxR0[14], SfxR0[14] + 1);
+    SfxR0[14] = v;
+    SfxSignZero = v;
+    FxSeamPC++;
+    fx_update_r14();
+}
+
+void c_FxOpEE(void) /* DEC R14 */
+{
+    SfxR0[14] = fx_lo16(SfxR0[14], SfxR0[14] - 1);
+    fx_fetchpipe();
+    SfxSignZero = SfxR0[14];
+    fx_update_r14();
+    FxSeamPC++;
+}
+
 /* --- TO rN / FROM rN, and the register-select opcodes ---------------------
  *
  * These come in two flavours. Outside a WITH block (SfxB clear, "version A")

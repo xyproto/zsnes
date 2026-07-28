@@ -11,7 +11,8 @@
 #                   handler, matching the real seam in chips/fxemu2b.asm)
 #   fxstub/b/c      stand in for the next opcode: record what they were
 #                   dispatched with, then return. One per table, so the test can
-#                   tell which table a handler chained through.
+#                   tell which table a handler chained through. SfxB is captured
+#                   too: WITH sets it purely so the *nested* opcode sees it.
 set -e
 
 # Default to the newest revision whose fxemu2b.asm predates the port, i.e. the
@@ -63,13 +64,17 @@ if missing:
 print('\n'.join(out))
 PYEOF
 
-# Rename every entry point so the oracle does not clash with the real symbols.
+# Rename every entry point so the oracle does not clash with the real symbols,
+# including handler-to-handler calls (LJMP calls the CACHE opcode) so the
+# oracle keeps calling its own pre-port copy rather than the ported one.
 sed -i -E 's/^NEWSYM (FxOp[A-Za-z0-9]+)/NEWSYM asm_\1/' _fxops.inc
+sed -i -E 's/\bcall (FxOp[A-Za-z0-9]+)/call asm_\1/' _fxops.inc
 
 # The TO/FROM macro bodies live in a .mac the port deleted; take it from git
 # too, along with fxemu2.mac for FETCHPIPE / UpdateR14 / CLRFLAGS.
 git -C .. show "$REV:chips/fxemu2.mac" > _fxops_m1.mac
 git -C .. show "$REV:chips/fxemu2b.mac" > _fxops_m2.mac
+sed -i -E 's/\bcall (FxOp[A-Za-z0-9]+)/call asm_\1/' _fxops_m1.mac _fxops_m2.mac
 
 cat > _fxops.asm <<'EOF'
 bits 32
@@ -91,9 +96,21 @@ EXTERN SfxCROM
 EXTERN SfxCarry
 EXTERN SfxOverflow
 EXTERN SfxR0
+EXTERN SfxR11
+EXTERN SfxR13
+EXTERN SfxR12
+EXTERN SfxR6
+EXTERN SfxR4
 EXTERN SfxR14
 EXTERN SfxR15
 EXTERN SfxRomBuffer
+EXTERN SfxRAMMem
+EXTERN SfxLastRamAdr
+EXTERN SfxCBR
+EXTERN SfxPBR
+EXTERN SfxCacheActive
+EXTERN SfxMemTable
+EXTERN FlushCache
 EXTERN SfxSignZero
 EXTERN withr15sk
 EXTERN FxSeamPC
@@ -106,6 +123,7 @@ EXTERN StubSrc
 EXTERN StubDst
 EXTERN StubHits
 EXTERN StubTable
+EXTERN StubB
 
 %include "_fxops_m1.mac"
 %include "_fxops_m2.mac"
@@ -163,6 +181,8 @@ NEWSYM %1
     mov [StubSrc],esi
     mov [StubDst],edi
     mov dword [StubTable],%2
+    mov eax,[SfxB]
+    mov [StubB],eax
     inc dword [StubHits]
     ret
 %endmacro
