@@ -1,8 +1,9 @@
 /*
  * Differential test: every SuperFX opcode handler ported into chips/fx_ops.h -
  * all 92 from chips/fxemu2b.asm (branches, TO rN / FROM rN in the b and c
- * table groups, ALT1/ALT2/ALT3) and the 181-strong ALU group from
- * chips/fxemu2.asm (ADD/ADC/SUB/SBC/CMP/AND/BIC, register and immediate).
+ * table groups, ALT1/ALT2/ALT3) and the 267-strong ALU group from
+ * chips/fxemu2.asm (ADD/ADC/SUB/SBC/CMP/AND/BIC/OR/XOR/INC/DEC, register
+ * and immediate).
  *
  * Run `make fxops` in this directory. Not part of `all`: the oracle is the
  * original assembly, pulled out of git by mkfxops.sh.
@@ -120,7 +121,28 @@ extern void asm_FxOp7EA2(void), asm_FxOp7FA2(void), asm_FxOp71A3(void), asm_FxOp
 extern void asm_FxOp73A3(void), asm_FxOp74A3(void), asm_FxOp75A3(void), asm_FxOp76A3(void);
 extern void asm_FxOp77A3(void), asm_FxOp78A3(void), asm_FxOp79A3(void), asm_FxOp7AA3(void);
 extern void asm_FxOp7BA3(void), asm_FxOp7CA3(void), asm_FxOp7DA3(void), asm_FxOp7EA3(void);
-extern void asm_FxOp7FA3(void);
+extern void asm_FxOp7FA3(void), asm_FxOpC1(void), asm_FxOpC2(void), asm_FxOpC3(void);
+extern void asm_FxOpC4(void), asm_FxOpC5(void), asm_FxOpC6(void), asm_FxOpC7(void);
+extern void asm_FxOpC8(void), asm_FxOpC9(void), asm_FxOpCA(void), asm_FxOpCB(void);
+extern void asm_FxOpCC(void), asm_FxOpCD(void), asm_FxOpCE(void), asm_FxOpC1A1(void);
+extern void asm_FxOpC2A1(void), asm_FxOpC3A1(void), asm_FxOpC4A1(void), asm_FxOpC5A1(void);
+extern void asm_FxOpC6A1(void), asm_FxOpC7A1(void), asm_FxOpC8A1(void), asm_FxOpC9A1(void);
+extern void asm_FxOpCAA1(void), asm_FxOpCBA1(void), asm_FxOpCCA1(void), asm_FxOpCDA1(void);
+extern void asm_FxOpCEA1(void), asm_FxOpC1A2(void), asm_FxOpC2A2(void), asm_FxOpC3A2(void);
+extern void asm_FxOpC4A2(void), asm_FxOpC5A2(void), asm_FxOpC6A2(void), asm_FxOpC7A2(void);
+extern void asm_FxOpC8A2(void), asm_FxOpC9A2(void), asm_FxOpCAA2(void), asm_FxOpCBA2(void);
+extern void asm_FxOpCCA2(void), asm_FxOpCDA2(void), asm_FxOpCEA2(void), asm_FxOpCFA2(void);
+extern void asm_FxOpC1A3(void), asm_FxOpC2A3(void), asm_FxOpC3A3(void), asm_FxOpC4A3(void);
+extern void asm_FxOpC5A3(void), asm_FxOpC6A3(void), asm_FxOpC7A3(void), asm_FxOpC8A3(void);
+extern void asm_FxOpC9A3(void), asm_FxOpCAA3(void), asm_FxOpCBA3(void), asm_FxOpCCA3(void);
+extern void asm_FxOpCDA3(void), asm_FxOpCEA3(void), asm_FxOpCFA3(void), asm_FxOpD0(void);
+extern void asm_FxOpD1(void), asm_FxOpD2(void), asm_FxOpD3(void), asm_FxOpD4(void);
+extern void asm_FxOpD5(void), asm_FxOpD6(void), asm_FxOpD7(void), asm_FxOpD8(void);
+extern void asm_FxOpD9(void), asm_FxOpDA(void), asm_FxOpDB(void), asm_FxOpDC(void);
+extern void asm_FxOpDD(void), asm_FxOpE0(void), asm_FxOpE1(void), asm_FxOpE2(void);
+extern void asm_FxOpE3(void), asm_FxOpE4(void), asm_FxOpE5(void), asm_FxOpE6(void);
+extern void asm_FxOpE7(void), asm_FxOpE8(void), asm_FxOpE9(void), asm_FxOpEA(void);
+extern void asm_FxOpEB(void), asm_FxOpEC(void), asm_FxOpED(void);
 
 typedef struct {
     char const* name;
@@ -402,7 +424,117 @@ static fxcase const cases[] = {
     { "FxOp7DA3 BIC #13", asm_FxOp7DA3, c_FxOp7DA3 },
     { "FxOp7EA3 BIC #14", asm_FxOp7EA3, c_FxOp7EA3 },
     { "FxOp7FA3 BIC #15", asm_FxOp7FA3, c_FxOp7FA3 },
+    { "FxOpC1 OR r1", asm_FxOpC1, c_FxOpC1 },
+    { "FxOpC2 OR r2", asm_FxOpC2, c_FxOpC2 },
+    { "FxOpC3 OR r3", asm_FxOpC3, c_FxOpC3 },
+    { "FxOpC4 OR r4", asm_FxOpC4, c_FxOpC4 },
+    { "FxOpC5 OR r5", asm_FxOpC5, c_FxOpC5 },
+    { "FxOpC6 OR r6", asm_FxOpC6, c_FxOpC6 },
+    { "FxOpC7 OR r7", asm_FxOpC7, c_FxOpC7 },
+    { "FxOpC8 OR r8", asm_FxOpC8, c_FxOpC8 },
+    { "FxOpC9 OR r9", asm_FxOpC9, c_FxOpC9 },
+    { "FxOpCA OR r10", asm_FxOpCA, c_FxOpCA },
+    { "FxOpCB OR r11", asm_FxOpCB, c_FxOpCB },
+    { "FxOpCC OR r12", asm_FxOpCC, c_FxOpCC },
+    { "FxOpCD OR r13", asm_FxOpCD, c_FxOpCD },
+    { "FxOpCE OR r14", asm_FxOpCE, c_FxOpCE },
+    { "FxOpC1A1 XOR r1", asm_FxOpC1A1, c_FxOpC1A1 },
+    { "FxOpC2A1 XOR r2", asm_FxOpC2A1, c_FxOpC2A1 },
+    { "FxOpC3A1 XOR r3", asm_FxOpC3A1, c_FxOpC3A1 },
+    { "FxOpC4A1 XOR r4", asm_FxOpC4A1, c_FxOpC4A1 },
+    { "FxOpC5A1 XOR r5", asm_FxOpC5A1, c_FxOpC5A1 },
+    { "FxOpC6A1 XOR r6", asm_FxOpC6A1, c_FxOpC6A1 },
+    { "FxOpC7A1 XOR r7", asm_FxOpC7A1, c_FxOpC7A1 },
+    { "FxOpC8A1 XOR r8", asm_FxOpC8A1, c_FxOpC8A1 },
+    { "FxOpC9A1 XOR r9", asm_FxOpC9A1, c_FxOpC9A1 },
+    { "FxOpCAA1 XOR r10", asm_FxOpCAA1, c_FxOpCAA1 },
+    { "FxOpCBA1 XOR r11", asm_FxOpCBA1, c_FxOpCBA1 },
+    { "FxOpCCA1 XOR r12", asm_FxOpCCA1, c_FxOpCCA1 },
+    { "FxOpCDA1 XOR r13", asm_FxOpCDA1, c_FxOpCDA1 },
+    { "FxOpCEA1 XOR r14", asm_FxOpCEA1, c_FxOpCEA1 },
+    { "FxOpC1A2 OR #1", asm_FxOpC1A2, c_FxOpC1A2 },
+    { "FxOpC2A2 OR #2", asm_FxOpC2A2, c_FxOpC2A2 },
+    { "FxOpC3A2 OR #3", asm_FxOpC3A2, c_FxOpC3A2 },
+    { "FxOpC4A2 OR #4", asm_FxOpC4A2, c_FxOpC4A2 },
+    { "FxOpC5A2 OR #5", asm_FxOpC5A2, c_FxOpC5A2 },
+    { "FxOpC6A2 OR #6", asm_FxOpC6A2, c_FxOpC6A2 },
+    { "FxOpC7A2 OR #7", asm_FxOpC7A2, c_FxOpC7A2 },
+    { "FxOpC8A2 OR #8", asm_FxOpC8A2, c_FxOpC8A2 },
+    { "FxOpC9A2 OR #9", asm_FxOpC9A2, c_FxOpC9A2 },
+    { "FxOpCAA2 OR #10", asm_FxOpCAA2, c_FxOpCAA2 },
+    { "FxOpCBA2 OR #11", asm_FxOpCBA2, c_FxOpCBA2 },
+    { "FxOpCCA2 OR #12", asm_FxOpCCA2, c_FxOpCCA2 },
+    { "FxOpCDA2 OR #13", asm_FxOpCDA2, c_FxOpCDA2 },
+    { "FxOpCEA2 OR #14", asm_FxOpCEA2, c_FxOpCEA2 },
+    { "FxOpCFA2 OR #15", asm_FxOpCFA2, c_FxOpCFA2 },
+    { "FxOpC1A3 XOR #1", asm_FxOpC1A3, c_FxOpC1A3 },
+    { "FxOpC2A3 XOR #2", asm_FxOpC2A3, c_FxOpC2A3 },
+    { "FxOpC3A3 XOR #3", asm_FxOpC3A3, c_FxOpC3A3 },
+    { "FxOpC4A3 XOR #4", asm_FxOpC4A3, c_FxOpC4A3 },
+    { "FxOpC5A3 XOR #5", asm_FxOpC5A3, c_FxOpC5A3 },
+    { "FxOpC6A3 XOR #6", asm_FxOpC6A3, c_FxOpC6A3 },
+    { "FxOpC7A3 XOR #7", asm_FxOpC7A3, c_FxOpC7A3 },
+    { "FxOpC8A3 XOR #8", asm_FxOpC8A3, c_FxOpC8A3 },
+    { "FxOpC9A3 XOR #9", asm_FxOpC9A3, c_FxOpC9A3 },
+    { "FxOpCAA3 XOR #10", asm_FxOpCAA3, c_FxOpCAA3 },
+    { "FxOpCBA3 XOR #11", asm_FxOpCBA3, c_FxOpCBA3 },
+    { "FxOpCCA3 XOR #12", asm_FxOpCCA3, c_FxOpCCA3 },
+    { "FxOpCDA3 XOR #13", asm_FxOpCDA3, c_FxOpCDA3 },
+    { "FxOpCEA3 XOR #14", asm_FxOpCEA3, c_FxOpCEA3 },
+    { "FxOpCFA3 XOR #15", asm_FxOpCFA3, c_FxOpCFA3 },
+    { "FxOpD0 INC r0", asm_FxOpD0, c_FxOpD0 },
+    { "FxOpD1 INC r1", asm_FxOpD1, c_FxOpD1 },
+    { "FxOpD2 INC r2", asm_FxOpD2, c_FxOpD2 },
+    { "FxOpD3 INC r3", asm_FxOpD3, c_FxOpD3 },
+    { "FxOpD4 INC r4", asm_FxOpD4, c_FxOpD4 },
+    { "FxOpD5 INC r5", asm_FxOpD5, c_FxOpD5 },
+    { "FxOpD6 INC r6", asm_FxOpD6, c_FxOpD6 },
+    { "FxOpD7 INC r7", asm_FxOpD7, c_FxOpD7 },
+    { "FxOpD8 INC r8", asm_FxOpD8, c_FxOpD8 },
+    { "FxOpD9 INC r9", asm_FxOpD9, c_FxOpD9 },
+    { "FxOpDA INC r10", asm_FxOpDA, c_FxOpDA },
+    { "FxOpDB INC r11", asm_FxOpDB, c_FxOpDB },
+    { "FxOpDC INC r12", asm_FxOpDC, c_FxOpDC },
+    { "FxOpDD INC r13", asm_FxOpDD, c_FxOpDD },
+    { "FxOpE0 DEC r0", asm_FxOpE0, c_FxOpE0 },
+    { "FxOpE1 DEC r1", asm_FxOpE1, c_FxOpE1 },
+    { "FxOpE2 DEC r2", asm_FxOpE2, c_FxOpE2 },
+    { "FxOpE3 DEC r3", asm_FxOpE3, c_FxOpE3 },
+    { "FxOpE4 DEC r4", asm_FxOpE4, c_FxOpE4 },
+    { "FxOpE5 DEC r5", asm_FxOpE5, c_FxOpE5 },
+    { "FxOpE6 DEC r6", asm_FxOpE6, c_FxOpE6 },
+    { "FxOpE7 DEC r7", asm_FxOpE7, c_FxOpE7 },
+    { "FxOpE8 DEC r8", asm_FxOpE8, c_FxOpE8 },
+    { "FxOpE9 DEC r9", asm_FxOpE9, c_FxOpE9 },
+    { "FxOpEA DEC r10", asm_FxOpEA, c_FxOpEA },
+    { "FxOpEB DEC r11", asm_FxOpEB, c_FxOpEB },
+    { "FxOpEC DEC r12", asm_FxOpEC, c_FxOpEC },
+    { "FxOpED DEC r13", asm_FxOpED, c_FxOpED },
 };
+
+/* A register value, biased towards the 16-bit boundaries. The arithmetic here
+ * is 16-bit inside a 32-bit register, so plain random values almost never carry
+ * or borrow out of the low half (1 in 65536) and would leave a wrong-width
+ * INC/DEC or ADD/SUB indistinguishable from a correct one. */
+static u4 dt_reg(void)
+{
+    u4 const hi = dt_u32() & 0xFFFF0000u;
+
+    switch (dt_mod(8)) {
+    case 0:
+        return hi | 0xFFFFu;
+    case 1:
+        return hi;
+    case 2:
+        return hi | 0x8000u;
+    case 3:
+        return hi | 0x7FFFu;
+    case 4:
+        return hi | (dt_u32() & 0xFu); /* small, like the immediate forms */
+    default:
+        return dt_u32();
+    }
+}
 
 /* One instruction stream to branch around in. 0x100 of slack either side lets
  * a full -128..+127 displacement stay inside it. */
@@ -477,7 +609,7 @@ int main(void)
         FxTablec[i] = (u4)(uintptr_t)fxstubc;
     }
 
-    DT_MAIN(20260727, 600000)
+    DT_MAIN(20260727, 800000)
     {
         fxcase const* k = &cases[dt_mod(sizeof cases / sizeof *cases)];
         snapshot a, c;
@@ -487,7 +619,7 @@ int main(void)
         in.pc_off = 0x100 + dt_mod(0x200);
         in.cx = (dt_mod(4) << 8) | dt_mod(256);
         for (int i = 0; i < 16; i++) {
-            in.regs[i] = dt_u32();
+            in.regs[i] = dt_reg();
         }
         /* Bias the flags towards the interesting bits so both arms of every
          * condition get hit, not just random noise. */

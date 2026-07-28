@@ -421,6 +421,148 @@ void c_FxOp7DA3(void) { fx_bicirn(13); }
 void c_FxOp7EA3(void) { fx_bicirn(14); }
 void c_FxOp7FA3(void) { fx_bicirn(15); }
 
+/* --- OR / XOR / INC / DEC (chips/fxemu2.asm, base table) ------------------
+ *
+ * OR and XOR are plain 32-bit logic, like AND. INC and DEC are the odd ones:
+ * they are `inc word[SfxR0+n*4]`, so they work 16-bit and *in place* on the
+ * register, never through the esi/edi source/destination pointers, and the
+ * upper half of the register survives the wrap. Neither touches carry or
+ * overflow; x86 `inc`/`dec` leave CF alone and the asm has no seto/setc.
+ */
+
+static inline void fx_or(u4 const rhs)
+{
+    u4 const v = *FxSeamSrc | rhs;
+
+    FxSeamPC++;
+    *FxSeamDst = v;
+    SfxSignZero = v;
+}
+
+static inline void fx_xor(u4 const rhs)
+{
+    u4 const v = *FxSeamSrc ^ rhs;
+
+    FxSeamPC++;
+    *FxSeamDst = v;
+    SfxSignZero = v;
+}
+
+static inline void fx_incdec(u4 const n, u4 const delta)
+{
+    SfxR0[n] = fx_lo16(SfxR0[n], SfxR0[n] + delta);
+    fx_fetchpipe();
+    SfxSignZero = SfxR0[n];
+    FxSeamPC++;
+}
+
+FX_ALU(fx_orrn, fx_or(SfxR0[n]))
+FX_ALU(fx_ori, fx_or(n))
+FX_ALU(fx_xorrn, fx_xor(SfxR0[n]))
+FX_ALU(fx_xori, fx_xor(n))
+
+/* INC/DEC do their own fetch, so they cannot go through FX_ALU. */
+static void fx_incrn(u4 const n) { fx_incdec(n, 1); }
+static void fx_decrn(u4 const n) { fx_incdec(n, (u4)-1); }
+
+/* ORRN */
+void c_FxOpC1(void) { fx_orrn(1); }
+void c_FxOpC2(void) { fx_orrn(2); }
+void c_FxOpC3(void) { fx_orrn(3); }
+void c_FxOpC4(void) { fx_orrn(4); }
+void c_FxOpC5(void) { fx_orrn(5); }
+void c_FxOpC6(void) { fx_orrn(6); }
+void c_FxOpC7(void) { fx_orrn(7); }
+void c_FxOpC8(void) { fx_orrn(8); }
+void c_FxOpC9(void) { fx_orrn(9); }
+void c_FxOpCA(void) { fx_orrn(10); }
+void c_FxOpCB(void) { fx_orrn(11); }
+void c_FxOpCC(void) { fx_orrn(12); }
+void c_FxOpCD(void) { fx_orrn(13); }
+void c_FxOpCE(void) { fx_orrn(14); }
+
+/* XORRN */
+void c_FxOpC1A1(void) { fx_xorrn(1); }
+void c_FxOpC2A1(void) { fx_xorrn(2); }
+void c_FxOpC3A1(void) { fx_xorrn(3); }
+void c_FxOpC4A1(void) { fx_xorrn(4); }
+void c_FxOpC5A1(void) { fx_xorrn(5); }
+void c_FxOpC6A1(void) { fx_xorrn(6); }
+void c_FxOpC7A1(void) { fx_xorrn(7); }
+void c_FxOpC8A1(void) { fx_xorrn(8); }
+void c_FxOpC9A1(void) { fx_xorrn(9); }
+void c_FxOpCAA1(void) { fx_xorrn(10); }
+void c_FxOpCBA1(void) { fx_xorrn(11); }
+void c_FxOpCCA1(void) { fx_xorrn(12); }
+void c_FxOpCDA1(void) { fx_xorrn(13); }
+void c_FxOpCEA1(void) { fx_xorrn(14); }
+
+/* ORI */
+void c_FxOpC1A2(void) { fx_ori(1); }
+void c_FxOpC2A2(void) { fx_ori(2); }
+void c_FxOpC3A2(void) { fx_ori(3); }
+void c_FxOpC4A2(void) { fx_ori(4); }
+void c_FxOpC5A2(void) { fx_ori(5); }
+void c_FxOpC6A2(void) { fx_ori(6); }
+void c_FxOpC7A2(void) { fx_ori(7); }
+void c_FxOpC8A2(void) { fx_ori(8); }
+void c_FxOpC9A2(void) { fx_ori(9); }
+void c_FxOpCAA2(void) { fx_ori(10); }
+void c_FxOpCBA2(void) { fx_ori(11); }
+void c_FxOpCCA2(void) { fx_ori(12); }
+void c_FxOpCDA2(void) { fx_ori(13); }
+void c_FxOpCEA2(void) { fx_ori(14); }
+void c_FxOpCFA2(void) { fx_ori(15); }
+
+/* XORI */
+void c_FxOpC1A3(void) { fx_xori(1); }
+void c_FxOpC2A3(void) { fx_xori(2); }
+void c_FxOpC3A3(void) { fx_xori(3); }
+void c_FxOpC4A3(void) { fx_xori(4); }
+void c_FxOpC5A3(void) { fx_xori(5); }
+void c_FxOpC6A3(void) { fx_xori(6); }
+void c_FxOpC7A3(void) { fx_xori(7); }
+void c_FxOpC8A3(void) { fx_xori(8); }
+void c_FxOpC9A3(void) { fx_xori(9); }
+void c_FxOpCAA3(void) { fx_xori(10); }
+void c_FxOpCBA3(void) { fx_xori(11); }
+void c_FxOpCCA3(void) { fx_xori(12); }
+void c_FxOpCDA3(void) { fx_xori(13); }
+void c_FxOpCEA3(void) { fx_xori(14); }
+void c_FxOpCFA3(void) { fx_xori(15); }
+
+/* INCRN */
+void c_FxOpD0(void) { fx_incrn(0); }
+void c_FxOpD1(void) { fx_incrn(1); }
+void c_FxOpD2(void) { fx_incrn(2); }
+void c_FxOpD3(void) { fx_incrn(3); }
+void c_FxOpD4(void) { fx_incrn(4); }
+void c_FxOpD5(void) { fx_incrn(5); }
+void c_FxOpD6(void) { fx_incrn(6); }
+void c_FxOpD7(void) { fx_incrn(7); }
+void c_FxOpD8(void) { fx_incrn(8); }
+void c_FxOpD9(void) { fx_incrn(9); }
+void c_FxOpDA(void) { fx_incrn(10); }
+void c_FxOpDB(void) { fx_incrn(11); }
+void c_FxOpDC(void) { fx_incrn(12); }
+void c_FxOpDD(void) { fx_incrn(13); }
+
+/* DECRN */
+void c_FxOpE0(void) { fx_decrn(0); }
+void c_FxOpE1(void) { fx_decrn(1); }
+void c_FxOpE2(void) { fx_decrn(2); }
+void c_FxOpE3(void) { fx_decrn(3); }
+void c_FxOpE4(void) { fx_decrn(4); }
+void c_FxOpE5(void) { fx_decrn(5); }
+void c_FxOpE6(void) { fx_decrn(6); }
+void c_FxOpE7(void) { fx_decrn(7); }
+void c_FxOpE8(void) { fx_decrn(8); }
+void c_FxOpE9(void) { fx_decrn(9); }
+void c_FxOpEA(void) { fx_decrn(10); }
+void c_FxOpEB(void) { fx_decrn(11); }
+void c_FxOpEC(void) { fx_decrn(12); }
+void c_FxOpED(void) { fx_decrn(13); }
+
 /* --- TO rN / FROM rN, and the register-select opcodes ---------------------
  *
  * These come in two flavours. Outside a WITH block (SfxB clear, "version A")

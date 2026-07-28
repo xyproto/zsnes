@@ -109,6 +109,21 @@ EXTSYM c_FxOp7CA2,c_FxOp7DA2,c_FxOp7EA2,c_FxOp7FA2,c_FxOp71A3,c_FxOp72A3
 EXTSYM c_FxOp73A3,c_FxOp74A3,c_FxOp75A3,c_FxOp76A3,c_FxOp77A3,c_FxOp78A3
 EXTSYM c_FxOp79A3,c_FxOp7AA3,c_FxOp7BA3,c_FxOp7CA3,c_FxOp7DA3,c_FxOp7EA3
 EXTSYM c_FxOp7FA3
+EXTSYM c_FxOpC1,c_FxOpC2,c_FxOpC3,c_FxOpC4,c_FxOpC5,c_FxOpC6
+EXTSYM c_FxOpC7,c_FxOpC8,c_FxOpC9,c_FxOpCA,c_FxOpCB,c_FxOpCC
+EXTSYM c_FxOpCD,c_FxOpCE,c_FxOpC1A1,c_FxOpC2A1,c_FxOpC3A1,c_FxOpC4A1
+EXTSYM c_FxOpC5A1,c_FxOpC6A1,c_FxOpC7A1,c_FxOpC8A1,c_FxOpC9A1,c_FxOpCAA1
+EXTSYM c_FxOpCBA1,c_FxOpCCA1,c_FxOpCDA1,c_FxOpCEA1,c_FxOpC1A2,c_FxOpC2A2
+EXTSYM c_FxOpC3A2,c_FxOpC4A2,c_FxOpC5A2,c_FxOpC6A2,c_FxOpC7A2,c_FxOpC8A2
+EXTSYM c_FxOpC9A2,c_FxOpCAA2,c_FxOpCBA2,c_FxOpCCA2,c_FxOpCDA2,c_FxOpCEA2
+EXTSYM c_FxOpCFA2,c_FxOpC1A3,c_FxOpC2A3,c_FxOpC3A3,c_FxOpC4A3,c_FxOpC5A3
+EXTSYM c_FxOpC6A3,c_FxOpC7A3,c_FxOpC8A3,c_FxOpC9A3,c_FxOpCAA3,c_FxOpCBA3
+EXTSYM c_FxOpCCA3,c_FxOpCDA3,c_FxOpCEA3,c_FxOpCFA3,c_FxOpD0,c_FxOpD1
+EXTSYM c_FxOpD2,c_FxOpD3,c_FxOpD4,c_FxOpD5,c_FxOpD6,c_FxOpD7
+EXTSYM c_FxOpD8,c_FxOpD9,c_FxOpDA,c_FxOpDB,c_FxOpDC,c_FxOpDD
+EXTSYM c_FxOpE0,c_FxOpE1,c_FxOpE2,c_FxOpE3,c_FxOpE4,c_FxOpE5
+EXTSYM c_FxOpE6,c_FxOpE7,c_FxOpE8,c_FxOpE9,c_FxOpEA,c_FxOpEB
+EXTSYM c_FxOpEC,c_FxOpED
 
 %macro ccall 1-*
 	push ecx
@@ -2251,33 +2266,33 @@ NEWSYM FxOpC0      ; HIB       move high-byte to low-byte      ; V
    ret
 
 NEWSYM FxOpC1      ; OR rn     or rn
-   ORRN 1
+   fxcop c_FxOpC1
 NEWSYM FxOpC2      ; OR rn     or rn
-   ORRN 2
+   fxcop c_FxOpC2
 NEWSYM FxOpC3      ; OR rn     or rn
-   ORRN 3
+   fxcop c_FxOpC3
 NEWSYM FxOpC4      ; OR rn     or rn
-   ORRN 4
+   fxcop c_FxOpC4
 NEWSYM FxOpC5      ; OR rn     or rn
-   ORRN 5
+   fxcop c_FxOpC5
 NEWSYM FxOpC6      ; OR rn     or rn
-   ORRN 6
+   fxcop c_FxOpC6
 NEWSYM FxOpC7      ; OR rn     or rn
-   ORRN 7
+   fxcop c_FxOpC7
 NEWSYM FxOpC8      ; OR rn     or rn
-   ORRN 8
+   fxcop c_FxOpC8
 NEWSYM FxOpC9      ; OR rn     or rn
-   ORRN 9
+   fxcop c_FxOpC9
 NEWSYM FxOpCA      ; OR rn     or rn
-   ORRN 10
+   fxcop c_FxOpCA
 NEWSYM FxOpCB      ; OR rn     or rn
-   ORRN 11
+   fxcop c_FxOpCB
 NEWSYM FxOpCC      ; OR rn     or rn
-   ORRN 12
+   fxcop c_FxOpCC
 NEWSYM FxOpCD      ; OR rn     or rn
-   ORRN 13
+   fxcop c_FxOpCD
 NEWSYM FxOpCE      ; OR rn     or rn
-   ORRN 14
+   fxcop c_FxOpCE
 NEWSYM FxOpCF      ; OR rn     or rn
    mov eax,[esi]            ; Read Source
    mov ebx,ebp
@@ -2291,33 +2306,33 @@ NEWSYM FxOpCF      ; OR rn     or rn
    ret
 
 NEWSYM FxOpC1A1    ; XOR rn    xor rn
-   XORRN 1
+   fxcop c_FxOpC1A1
 NEWSYM FxOpC2A1    ; XOR rn    xor rn
-   XORRN 2
+   fxcop c_FxOpC2A1
 NEWSYM FxOpC3A1    ; XOR rn    xor rn
-   XORRN 3
+   fxcop c_FxOpC3A1
 NEWSYM FxOpC4A1    ; XOR rn    xor rn
-   XORRN 4
+   fxcop c_FxOpC4A1
 NEWSYM FxOpC5A1    ; XOR rn    xor rn
-   XORRN 5
+   fxcop c_FxOpC5A1
 NEWSYM FxOpC6A1    ; XOR rn    xor rn
-   XORRN 6
+   fxcop c_FxOpC6A1
 NEWSYM FxOpC7A1    ; XOR rn    xor rn
-   XORRN 7
+   fxcop c_FxOpC7A1
 NEWSYM FxOpC8A1    ; XOR rn    xor rn
-   XORRN 8
+   fxcop c_FxOpC8A1
 NEWSYM FxOpC9A1    ; XOR rn    xor rn
-   XORRN 9
+   fxcop c_FxOpC9A1
 NEWSYM FxOpCAA1    ; XOR rn    xor rn
-   XORRN 10
+   fxcop c_FxOpCAA1
 NEWSYM FxOpCBA1    ; XOR rn    xor rn
-   XORRN 11
+   fxcop c_FxOpCBA1
 NEWSYM FxOpCCA1    ; XOR rn    xor rn
-   XORRN 12
+   fxcop c_FxOpCCA1
 NEWSYM FxOpCDA1    ; XOR rn    xor rn
-   XORRN 13
+   fxcop c_FxOpCDA1
 NEWSYM FxOpCEA1    ; XOR rn    xor rn
-   XORRN 14
+   fxcop c_FxOpCEA1
 NEWSYM FxOpCFA1    ; XOR rn    xor rn
    FETCHPIPE
    mov eax,[esi]            ; Read Source
@@ -2331,95 +2346,93 @@ NEWSYM FxOpCFA1    ; XOR rn    xor rn
    ret
 
 NEWSYM FxOpC1A2    ; OR #n     OR #n
-   ORI 1
+   fxcop c_FxOpC1A2
 NEWSYM FxOpC2A2    ; OR #n     OR #n
-   ORI 2
+   fxcop c_FxOpC2A2
 NEWSYM FxOpC3A2    ; OR #n     OR #n
-   ORI 3
+   fxcop c_FxOpC3A2
 NEWSYM FxOpC4A2    ; OR #n     OR #n
-   ORI 4
+   fxcop c_FxOpC4A2
 NEWSYM FxOpC5A2    ; OR #n     OR #n
-   ORI 5
+   fxcop c_FxOpC5A2
 NEWSYM FxOpC6A2    ; OR #n     OR #n
-   ORI 6
+   fxcop c_FxOpC6A2
 NEWSYM FxOpC7A2    ; OR #n     OR #n
-   ORI 7
+   fxcop c_FxOpC7A2
 NEWSYM FxOpC8A2    ; OR #n     OR #n
-   ORI 8
+   fxcop c_FxOpC8A2
 NEWSYM FxOpC9A2    ; OR #n     OR #n
-   ORI 9
+   fxcop c_FxOpC9A2
 NEWSYM FxOpCAA2    ; OR #n     OR #n
-   ORI 10
+   fxcop c_FxOpCAA2
 NEWSYM FxOpCBA2    ; OR #n     OR #n
-   ORI 11
+   fxcop c_FxOpCBA2
 NEWSYM FxOpCCA2    ; OR #n     OR #n
-   ORI 12
+   fxcop c_FxOpCCA2
 NEWSYM FxOpCDA2    ; OR #n     OR #n
-   ORI 13
+   fxcop c_FxOpCDA2
 NEWSYM FxOpCEA2    ; OR #n     OR #n
-   ORI 14
+   fxcop c_FxOpCEA2
 NEWSYM FxOpCFA2    ; OR #n     OR #n
-   ORI 15
-
+   fxcop c_FxOpCFA2
 NEWSYM FxOpC1A3    ; XOR #n    xor #n
-   XORI 1
+   fxcop c_FxOpC1A3
 NEWSYM FxOpC2A3    ; XOR #n    xor #n
-   XORI 2
+   fxcop c_FxOpC2A3
 NEWSYM FxOpC3A3    ; XOR #n    xor #n
-   XORI 3
+   fxcop c_FxOpC3A3
 NEWSYM FxOpC4A3    ; XOR #n    xor #n
-   XORI 4
+   fxcop c_FxOpC4A3
 NEWSYM FxOpC5A3    ; XOR #n    xor #n
-   XORI 5
+   fxcop c_FxOpC5A3
 NEWSYM FxOpC6A3    ; XOR #n    xor #n
-   XORI 6
+   fxcop c_FxOpC6A3
 NEWSYM FxOpC7A3    ; XOR #n    xor #n
-   XORI 7
+   fxcop c_FxOpC7A3
 NEWSYM FxOpC8A3    ; XOR #n    xor #n
-   XORI 8
+   fxcop c_FxOpC8A3
 NEWSYM FxOpC9A3    ; XOR #n    xor #n
-   XORI 9
+   fxcop c_FxOpC9A3
 NEWSYM FxOpCAA3    ; XOR #n    xor #n
-   XORI 10
+   fxcop c_FxOpCAA3
 NEWSYM FxOpCBA3    ; XOR #n    xor #n
-   XORI 11
+   fxcop c_FxOpCBA3
 NEWSYM FxOpCCA3    ; XOR #n    xor #n
-   XORI 12
+   fxcop c_FxOpCCA3
 NEWSYM FxOpCDA3    ; XOR #n    xor #n
-   XORI 13
+   fxcop c_FxOpCDA3
 NEWSYM FxOpCEA3    ; XOR #n    xor #n
-   XORI 14
+   fxcop c_FxOpCEA3
 NEWSYM FxOpCFA3    ; XOR #n    xor #n
-   XORI 15
-
+   fxcop c_FxOpCFA3
 NEWSYM FxOpD0      ; INC rn    increase by one
-   INCRN 0
+   fxcop c_FxOpD0
 NEWSYM FxOpD1      ; INC rn    increase by one
-   INCRN 1
+   fxcop c_FxOpD1
 NEWSYM FxOpD2      ; INC rn    increase by one
-   INCRN 2
+   fxcop c_FxOpD2
 NEWSYM FxOpD3      ; INC rn    increase by one
-   INCRN 3
+   fxcop c_FxOpD3
 NEWSYM FxOpD4      ; INC rn    increase by one
-   INCRN 4
+   fxcop c_FxOpD4
 NEWSYM FxOpD5      ; INC rn    increase by one
-   INCRN 5
+   fxcop c_FxOpD5
 NEWSYM FxOpD6      ; INC rn    increase by one
-   INCRN 6
+   fxcop c_FxOpD6
 NEWSYM FxOpD7      ; INC rn    increase by one
-   INCRN 7
+   fxcop c_FxOpD7
 NEWSYM FxOpD8      ; INC rn    increase by one
-   INCRN 8
+   fxcop c_FxOpD8
 NEWSYM FxOpD9      ; INC rn    increase by one
-   INCRN 9
+   fxcop c_FxOpD9
 NEWSYM FxOpDA      ; INC rn    increase by one
-   INCRN 10
+   fxcop c_FxOpDA
 NEWSYM FxOpDB      ; INC rn    increase by one
-   INCRN 11
+   fxcop c_FxOpDB
 NEWSYM FxOpDC      ; INC rn    increase by one
-   INCRN 12
+   fxcop c_FxOpDC
 NEWSYM FxOpDD      ; INC rn    increase by one
-   INCRN 13
+   fxcop c_FxOpDD
 NEWSYM FxOpDE      ; INC rn    increase by one
    FETCHPIPE
    mov eax,[SfxR0+14*4]            ; Read Source
@@ -2507,33 +2520,33 @@ NEWSYM FxOpDFA3    ; ROMB      set current ROM bank    ; Verified
    ret
 
 NEWSYM FxOpE0      ; DEC rn    decrement by one
-   DECRN 0
+   fxcop c_FxOpE0
 NEWSYM FxOpE1      ; DEC rn    decrement by one
-   DECRN 1
+   fxcop c_FxOpE1
 NEWSYM FxOpE2      ; DEC rn    decrement by one
-   DECRN 2
+   fxcop c_FxOpE2
 NEWSYM FxOpE3      ; DEC rn    decrement by one
-   DECRN 3
+   fxcop c_FxOpE3
 NEWSYM FxOpE4      ; DEC rn    decrement by one
-   DECRN 4
+   fxcop c_FxOpE4
 NEWSYM FxOpE5      ; DEC rn    decrement by one
-   DECRN 5
+   fxcop c_FxOpE5
 NEWSYM FxOpE6      ; DEC rn    decrement by one
-   DECRN 6
+   fxcop c_FxOpE6
 NEWSYM FxOpE7      ; DEC rn    decrement by one
-   DECRN 7
+   fxcop c_FxOpE7
 NEWSYM FxOpE8      ; DEC rn    decrement by one
-   DECRN 8
+   fxcop c_FxOpE8
 NEWSYM FxOpE9      ; DEC rn    decrement by one
-   DECRN 9
+   fxcop c_FxOpE9
 NEWSYM FxOpEA      ; DEC rn    decrement by one
-   DECRN 10
+   fxcop c_FxOpEA
 NEWSYM FxOpEB      ; DEC rn    decrement by one
-   DECRN 11
+   fxcop c_FxOpEB
 NEWSYM FxOpEC      ; DEC rn    decrement by one
-   DECRN 12
+   fxcop c_FxOpEC
 NEWSYM FxOpED      ; DEC rn    decrement by one
-   DECRN 13
+   fxcop c_FxOpED
 NEWSYM FxOpEE      ; DEC rn    decrement by one
    dec word[SfxR0+14*4]
    FETCHPIPE
