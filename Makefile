@@ -336,6 +336,7 @@ SRCS += chips/c4proc.c
 SRCS += chips/c_dsp2proc.c
 SRCS += chips/c_sa1regs.c
 SRCS += chips/c_sfxproc.c
+SRCS += chips/c_fxdata.c
 SRCS += chips/c_fxops.c
 SRCS += chips/c_fxtable.c
 SRCS += chips/dsp1emu.c
