@@ -64,20 +64,63 @@ if missing:
 print('\n'.join(out))
 PYEOF
 
+# The d table (chips/fxemu2c.asm) threads rather than calls: each handler
+# tail-jumps to the next through FXReturn. Extract those handlers too, and emit
+# a matching thunk per handler so the C side runs the real seam and tail-chain
+# rather than the bare C body.
+git -C .. show "$REV:chips/fxemu2c.asm" > _fxops_d.asm
+python3 - _fxops_d.asm >> _fxops.inc <<'PYEOF'
+import re, sys
+src = open(sys.argv[1]).read().split('\n')
+out = []
+cur = None
+for l in src:
+    m = re.match(r'NEWSYM (FxOpd[A-Za-z0-9]+)', l.strip())
+    if m:
+        cur = m.group(1)
+        out.append(l)
+        continue
+    if cur and not re.match(r'(SECTION |%)', l.strip()):
+        out.append(l)
+    elif cur:
+        cur = None
+print('\n'.join(out))
+PYEOF
+
 # Rename every entry point so the oracle does not clash with the real symbols,
-# including handler-to-handler calls (LJMP calls the CACHE opcode) so the
+# including handler-to-handler calls and jumps (LJMP calls the CACHE opcode,
+# PLOT jumps to its 4bpp variant) so the
 # oracle keeps calling its own pre-port copy rather than the ported one.
 sed -i -E 's/^NEWSYM (FxOp[A-Za-z0-9]+)/NEWSYM asm_\1/' _fxops.inc
-sed -i -E 's/\bcall (FxOp[A-Za-z0-9]+)/call asm_\1/' _fxops.inc
+sed -i -E 's/\b(call|jmp) (FxOp[A-Za-z0-9]+)/\1 asm_\2/' _fxops.inc
 
 # The TO/FROM macro bodies live in a .mac the port deleted; take it from git
 # too, along with fxemu2.mac for FETCHPIPE / UpdateR14 / CLRFLAGS.
+
 git -C .. show "$REV:chips/fxemu2.mac" > _fxops_m1.mac
 git -C .. show "$REV:chips/fxemu2b.mac" > _fxops_m2.mac
-sed -i -E 's/\bcall (FxOp[A-Za-z0-9]+)/call asm_\1/' _fxops_m1.mac _fxops_m2.mac
+git -C .. show "$REV:chips/fxemu2c.mac" > _fxops_m3.mac
+sed -i -E 's/\b(call|jmp) (FxOp[A-Za-z0-9]+)/\1 asm_\2/' _fxops_m1.mac _fxops_m2.mac _fxops_m3.mac
 
 cat > _fxops.asm <<'EOF'
 bits 32
+%define ALIGN32 align 32
+%define ALIGN16 align 16
+%macro ccall 1-*
+	push ecx
+	push edx
+%rep %0 - 1
+%rotate -1
+	push dword %1
+%endrep
+%rotate -1
+	call %1
+%if %0 != 1
+	add esp, (%0 - 1) * 4
+%endif
+	pop edx
+	pop ecx
+%endmacro
 section .note.GNU-stack noalloc noexec nowrite progbits
 %imacro newsym 1
   GLOBAL %1
@@ -105,6 +148,43 @@ EXTERN SfxR14
 EXTERN SfxR15
 EXTERN SfxRomBuffer
 EXTERN SfxRAMMem
+EXTERN SfxR2
+EXTERN SfxR1
+EXTERN flagnz
+EXTERN fxxand
+EXTERN SCBRrel
+EXTERN SfxSCBR
+EXTERN SFXProc
+EXTERN ChangeOps
+EXTERN NumberOfOpcodes
+EXTERN SfxPIPE
+EXTERN SfxCFGR
+EXTERN SfxSFR
+EXTERN SfxR8
+EXTERN SfxR7
+EXTERN FxTabled
+EXTERN PLOTJmpb
+EXTERN PLOTJmpa
+EXTERN sfxobjlineloc
+EXTERN sfx192lineloc
+EXTERN sfx160lineloc
+EXTERN sfx128lineloc
+EXTERN sfxclineloc
+EXTERN fxbit67pcal
+EXTERN fxbit45pcal
+EXTERN fxbit23pcal
+EXTERN fxbit01pcal
+EXTERN fxbit67
+EXTERN fxbit45
+EXTERN fxbit23
+EXTERN fxbit01
+EXTERN SfxSCMR
+EXTERN SfxPOR
+EXTERN SfxCOLR
+EXTERN sfxramdata
+EXTERN SfxnRamBanks
+EXTERN SfxROMBR
+EXTERN SfxRAMBR
 EXTERN SfxLastRamAdr
 EXTERN SfxCBR
 EXTERN SfxPBR
@@ -124,9 +204,17 @@ EXTERN StubDst
 EXTERN StubHits
 EXTERN StubTable
 EXTERN StubB
+EXTERN StubR15sk
+EXTERN StubEndLoop
+EXTERN StubPlotIdx
+EXTERN StubPlotHits
+EXTERN FxTabled
+EXTERN StubR15
+EXTERN StubWrR15sk
 
 %include "_fxops_m1.mac"
 %include "_fxops_m2.mac"
+%include "_fxops_m3.mac"
 
 section .text
 
@@ -183,6 +271,17 @@ NEWSYM %1
     mov dword [StubTable],%2
     mov eax,[SfxB]
     mov [StubB],eax
+    ; A real nested opcode may set R15 and claim the jump as its own; let the
+    ; test drive both, or the guards around R15 are unobservable. Only some
+    ; opcodes touch withr15sk, so leaving it alone has to be reachable too.
+    mov eax,[StubWrR15sk]
+    test eax,eax
+    jz %%nor15sk
+    mov eax,[StubR15sk]
+    mov [withr15sk],eax
+%%nor15sk:
+    mov eax,[StubR15]
+    mov [SfxR15],eax
     inc dword [StubHits]
     ret
 %endmacro
@@ -192,7 +291,72 @@ FXSTUB fxstubb, 2
 FXSTUB fxstubc, 3
 
 %include "_fxops.inc"
+
+; One thunk per d-table handler, identical to the fxdop macro in
+; chips/fxemu2c.asm, so the ported side is exercised through the real seam.
+%macro fxdop 1
+    mov [FxSeamPC], ebp
+    mov [FxSeamSrc], esi
+    mov [FxSeamDst], edi
+    mov [FxSeamCX], ecx
+    ccall %1
+    mov ebp, [FxSeamPC]
+    mov esi, [FxSeamSrc]
+    mov edi, [FxSeamDst]
+    mov ecx, [FxSeamCX]
+    FXReturn
+%endmacro
+%macro fxdopend 1
+    mov [FxSeamPC], ebp
+    mov [FxSeamSrc], esi
+    mov [FxSeamDst], edi
+    mov [FxSeamCX], ecx
+    ccall %1
+    mov ebp, [FxSeamPC]
+    mov esi, [FxSeamSrc]
+    mov edi, [FxSeamDst]
+    mov ecx, [FxSeamCX]
+    jmp FXEndLoop
+%endmacro
+
+%include "_fxops_thunks.inc"
+
+; CMODE patches a PLOTJmp entry into FxTabled[$4C] and the d table then
+; tail-jumps through it, so those entries have to be real code. 128 stubs, each
+; recording its own index, keep the jump safe while still letting the test tell
+; a wrong table or a wrong index apart.
+ALIGN 32
+NEWSYM plotstubs
+%assign plotidx 0
+%rep 128
+    mov dword [StubPlotIdx], plotidx
+    inc dword [StubPlotHits]
+    ret
+    ALIGN 32
+%assign plotidx plotidx+1
+%endrep
+
+; The real loop epilogue lives in fxemu2.asm; the difftest only needs to know
+; it was reached.
+NEWSYM FXEndLoop
+    inc dword [StubEndLoop]
+    ret
 EOF
+
+# Thunks for the C side, one per (handler, C body) pair.
+: > _fxops_thunks.inc
+while read -r d c; do
+    [ -n "$d" ] || continue
+    echo "EXTERN c_$c" >> _fxops_thunks.inc
+done < ../test/fxops_d.list
+while read -r d c; do
+    [ -n "$d" ] || continue
+    if [ "$d" = "FxOpd00" ]; then
+        printf 'NEWSYM cthunk_%s\n    fxdopend c_%s\n' "$d" "$c" >> _fxops_thunks.inc
+    else
+        printf 'NEWSYM cthunk_%s\n    fxdop c_%s\n' "$d" "$c" >> _fxops_thunks.inc
+    fi
+done < ../test/fxops_d.list
 
 nasm -f elf32 -w-orphan-labels -o _fxops.o _fxops.asm
 echo "wrote _fxops.o (oracle from $(git -C .. rev-parse --short $REV), $(grep -c '^NEWSYM asm_FxOp' _fxops.inc) handlers)"

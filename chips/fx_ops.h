@@ -1646,7 +1646,7 @@ void c_FxOp2F(void) /* WITH R15 */
     /* withr15sk lets the nested opcode say it already set the program counter
        itself, in which case R15 must not be applied a second time. */
     withr15sk = 0;
-    FxDispatch(FxTablec);
+    FxDispatch(FxTableb);
     if (withr15sk != 1) {
         FxSeamPC = (u1*)(uintptr_t)(SfxCPB + SfxR0[15]);
     }
@@ -1668,6 +1668,506 @@ void c_FxOpBF(void) /* FROM R15 */
     SfxR0[15] = fx_pc_rel();
     FxDispatch(FxTableb);
     FxSeamSrc = SfxR0;
+}
+
+/* --- The R15 operand forms and SBK ---------------------------------------
+ *
+ * $x F with the register field at 15: the second operand is the *live*
+ * program counter (`mov ebx,ebp / sub ebx,[SfxCPB]`), taken before the counter
+ * advances, rather than the stored R15.
+ */
+
+void c_FxOp5F(void) /* ADD R15 */
+{
+    fx_fetchpipe();
+    fx_add(fx_pc_rel(), 0);
+}
+
+void c_FxOp5FA1(void) /* ADC R15 */
+{
+    fx_fetchpipe();
+    fx_add(fx_pc_rel(), SfxCarry & 1);
+}
+
+void c_FxOp6F(void) /* SUB R15 */
+{
+    fx_fetchpipe();
+    fx_sub(fx_pc_rel(), 0);
+}
+
+void c_FxOp6FA1(void) /* SBC R15 */
+{
+    fx_fetchpipe();
+    fx_sub(fx_pc_rel(), (SfxCarry & 0xFFu) == 0);
+}
+
+void c_FxOp6FA3(void) /* CMP R15 */
+{
+    fx_fetchpipe();
+    fx_cmp(fx_pc_rel());
+}
+
+void c_FxOp7F(void) /* AND R15 */
+{
+    fx_fetchpipe();
+    fx_and(fx_pc_rel());
+}
+
+void c_FxOp7FA1(void) /* BIC R15 */
+{
+    fx_fetchpipe();
+    fx_and(fx_pc_rel() ^ 0xFFFFu);
+}
+
+void c_FxOp8F(void) /* MULT R15 */
+{
+    fx_fetchpipe();
+    fx_mult(fx_pc_rel(), 1);
+}
+
+void c_FxOp8FA1(void) /* UMULT R15 */
+{
+    fx_fetchpipe();
+    fx_mult(fx_pc_rel(), 0);
+}
+
+void c_FxOp90(void) /* SBK: store a word back to the last RAM address used */
+{
+    u4 const addr = SfxLastRamAdr - SfxRAMMem;
+    u4 const val = *FxSeamSrc;
+
+    fx_fetchpipe();
+    *fx_ram(addr) = (u1)val;
+    FxSeamPC++;
+    *fx_ram(addr ^ 1) = (u1)(val >> 8);
+}
+
+/* --- ROM reads, bank registers and the remaining R14/R15 forms ------------
+ */
+
+/* The byte R14 currently points at. The assembly reads a dword and masks it,
+   which on little-endian x86 is the same byte. */
+static inline u1 fx_rom_byte(void)
+{
+    return *(u1 const*)(uintptr_t)SfxRomBuffer;
+}
+
+void c_FxOpEF(void) /* GETB: zero-extended byte from ROM */
+{
+    fx_fetchpipe();
+    FxSeamPC++;
+    *FxSeamDst = fx_rom_byte();
+}
+
+void c_FxOpEFA1(void) /* GETBH: the byte becomes the high half */
+{
+    u4 const v = (*FxSeamSrc & 0xFFu) | ((u4)fx_rom_byte() << 8);
+
+    fx_fetchpipe();
+    FxSeamPC++;
+    *FxSeamDst = v;
+}
+
+void c_FxOpEFA2(void) /* GETBL: the byte becomes the low half */
+{
+    u4 const v = (*FxSeamSrc & 0xFF00u) | fx_rom_byte();
+
+    fx_fetchpipe();
+    FxSeamPC++;
+    *FxSeamDst = v;
+}
+
+void c_FxOpEFA3(void) /* GETBS: sign-extended, stored 16-bit */
+{
+    u4 const v = (u4)(s4)(s1)fx_rom_byte();
+
+    fx_fetchpipe();
+    FxSeamPC++;
+    *FxSeamDst = fx_lo16(*FxSeamDst, v); /* `mov [edi],ax` keeps the upper half */
+}
+
+void c_FxOpDFA2(void) /* RAMB: select the RAM bank */
+{
+    u4 const bank = *FxSeamSrc & (SfxnRamBanks - 1);
+
+    fx_fetchpipe();
+    SfxRAMBR = bank;
+    SfxRAMMem = (bank << 16) + (u4)(uintptr_t)sfxramdata;
+    FxSeamPC++;
+}
+
+void c_FxOpDFA3(void) /* ROMB: select the ROM bank */
+{
+    u4 const bank = *FxSeamSrc & 0x7Fu;
+
+    fx_fetchpipe();
+    SfxROMBR = bank;
+    SfxCROM = SfxMemTable[bank];
+    FxSeamPC++;
+}
+
+void c_FxOpCF(void) /* OR R15 */
+{
+    fx_fetchpipe();
+    fx_or(fx_pc_rel());
+}
+
+void c_FxOpCFA1(void) /* XOR R15 */
+{
+    fx_fetchpipe();
+    fx_xor(fx_pc_rel());
+}
+
+void c_FxOpAEA1(void) /* LMS R14 */
+{
+    fx_lms(14);
+    fx_update_r14();
+}
+
+void c_FxOpAFA1(void) /* LMS R15: the loaded word is the jump target */
+{
+    u4 const addr = (u4)*FxSeamPC * 2u;
+    u4 target;
+
+    FxSeamPC++;
+    FxSeamCX = (FxSeamCX & ~0xFFu) | *FxSeamPC;
+    SfxLastRamAdr = SfxRAMMem + addr;
+    target = ((u4)fx_ram(addr)[0] | ((u4)fx_ram(addr)[1] << 8)) & 0xFFFFu;
+    FxSeamPC = (u1*)(uintptr_t)(SfxCPB + target);
+}
+
+void c_FxOpAFA2(void) /* SMS R15: store the program counter, short address */
+{
+    u4 const val = fx_pc_rel(); /* taken before either increment */
+    u4 const addr = (u4)*FxSeamPC * 2u;
+
+    FxSeamPC++;
+    fx_fetchpipe();
+    SfxLastRamAdr = SfxRAMMem + addr;
+    FxSeamPC++;
+    fx_ram(addr)[0] = (u1)val;
+    fx_ram(addr)[1] = (u1)(val >> 8);
+}
+
+void c_FxOpFE(void) /* IWT R14 */
+{
+    u4 const imm = (u4)FxSeamPC[0] | ((u4)FxSeamPC[1] << 8);
+
+    FxSeamCX = (FxSeamCX & ~0xFFu) | FxSeamPC[2];
+    FxSeamPC += 3;
+    SfxR0[14] = imm;
+    fx_update_r14();
+}
+
+void c_FxOpFF(void) /* IWT R15: an absolute jump within the bank */
+{
+    u4 const imm = (u4)FxSeamPC[0] | ((u4)FxSeamPC[1] << 8);
+
+    FxSeamCX = (FxSeamCX & ~0xFFu) | FxSeamPC[2];
+    FxSeamPC = (u1*)(uintptr_t)(SfxCPB + imm);
+}
+
+/* --- COLOR / GETC / CMODE / MERGE and the 16-bit-address R14/R15 forms ----
+ */
+
+/* Setting the colour register also refreshes the four per-bitplane lookups the
+   plot routines use, but only when the value actually changes. */
+static inline void fx_set_color(u1 const col)
+{
+    if ((u1)SfxCOLR == col) {
+        return;
+    }
+    *(u1*)&SfxCOLR = col; /* byte store: the upper three are kept */
+    fxbit01pcal = fxbit01[col];
+    fxbit23pcal = fxbit23[col];
+    fxbit45pcal = fxbit45[col];
+    fxbit67pcal = fxbit67[col];
+}
+
+/* POR bit 2 duplicates the high nibble down; bit 3 keeps the colour register's
+   existing high nibble instead. */
+static inline void fx_color(u4 const raw)
+{
+    u1 col = (u1)raw;
+
+    if (SfxPOR & 0x04u) {
+        col = (u1)((col & 0xF0u) | (col >> 4));
+    }
+    if (SfxPOR & 0x08u) {
+        col = (u1)((col & 0x0Fu) | ((u1)SfxCOLR & 0xF0u));
+    }
+    fx_set_color(col);
+}
+
+void c_FxOp4E(void) /* COLOR */
+{
+    fx_fetchpipe();
+    fx_color(*FxSeamSrc);
+    FxSeamPC++;
+}
+
+void c_FxOpDF(void) /* GETC: colour from the ROM buffer */
+{
+    u4 const raw = fx_rom_byte();
+
+    fx_fetchpipe();
+    fx_color(raw);
+    FxSeamPC++;
+}
+
+/* Which line-location table the current screen mode uses. POR bit 4 forces
+   object mode; otherwise SCMR bits 2 and 5 give the screen height. */
+static inline u4 fx_lineloc(void)
+{
+    if (SfxPOR & 0x10u) {
+        return sfxobjlineloc;
+    }
+    switch (SfxSCMR & 0x24u) {
+    case 4:
+        return sfx160lineloc;
+    case 32:
+        return sfx192lineloc;
+    case 36:
+        return sfxobjlineloc;
+    default:
+        return sfx128lineloc;
+    }
+}
+
+void c_FxOp4EA1(void) /* CMODE: plot options, screen height and plot variant */
+{
+    u4 mode;
+
+    fx_fetchpipe();
+    FxSeamPC++;
+    SfxPOR = *FxSeamSrc;
+    sfxclineloc = fx_lineloc();
+
+    /* Screen mode and plot options together pick the PLOT variant, which is
+       patched straight into the dispatch tables at $4C. */
+    mode = (SfxSCMR & 3u) | ((SfxPOR & 0x0Fu) << 2);
+    FxTable[0x4C] = PLOTJmpa[mode];
+    FxTableb[0x4C] = PLOTJmpa[mode];
+    FxTablec[0x4C] = PLOTJmpa[mode];
+    FxTabled[0x4C] = PLOTJmpb[mode];
+}
+
+void c_FxOp70(void) /* MERGE: R7 and R8's high bytes, with hand-rolled flags */
+{
+    u4 const v = ((SfxR0[7] & 0xFF00u)) | ((SfxR0[8] >> 8) & 0xFFu);
+
+    fx_fetchpipe();
+    FxSeamPC++;
+    *FxSeamDst = v;
+    SfxSignZero = (v & 0xF0F0u) ? 0 : 1;
+    if (v & 0x8080u) {
+        SfxSignZero |= 0x80000u;
+    }
+    /* These two are full dword stores here, unlike the byte stores elsewhere. */
+    SfxOverflow = (v & 0xC0C0u) ? 1 : 0;
+    SfxCarry = (v & 0xE0E0u) ? 1 : 0;
+}
+
+void c_FxOpFEA1(void) /* LM R14 */
+{
+    fx_lm(14);
+    fx_update_r14();
+}
+
+/* The $FFA1/$FFA2 pair build their 16-bit address one opcode fetch at a time,
+   so the address inherits ecx's upper half. That is zero in the core, but keep
+   it so the port matches the assembly bit for bit. */
+static inline u4 fx_stream_addr16(void)
+{
+    u4 addr;
+
+    fx_fetchpipe();
+    addr = FxSeamCX;
+    FxSeamPC++;
+    fx_fetchpipe();
+    FxSeamPC++;
+    addr = (addr & ~0xFF00u) | ((FxSeamCX & 0xFFu) << 8);
+    fx_fetchpipe();
+    return addr;
+}
+
+void c_FxOpFFA1(void) /* LM R15: the loaded word is the jump target */
+{
+    u4 const addr = fx_stream_addr16();
+    u4 const target = ((u4)*fx_ram(addr) | ((u4)*fx_ram(addr ^ 1) << 8)) & 0xFFFFu;
+
+    SfxLastRamAdr = SfxRAMMem + addr;
+    FxSeamPC = (u1*)(uintptr_t)(SfxCPB + target);
+}
+
+void c_FxOpFFA2(void) /* SM R15: store the program counter at a 16-bit address */
+{
+    u4 const val = fx_pc_rel(); /* taken before any increment */
+    u4 const addr = fx_stream_addr16();
+
+    SfxLastRamAdr = SfxRAMMem + addr;
+    *fx_ram(addr) = (u1)val;
+    FxSeamPC++;
+    *fx_ram(addr ^ 1) = (u1)(val >> 8);
+}
+
+/* --- STOP ----------------------------------------------------------------
+ */
+
+void c_FxOp00(void) /* STOP: halt the GSU, optionally raising an IRQ */
+{
+    fx_fetchpipe();
+    *(u1*)&SfxPIPE = (u1)(FxSeamCX & 0xFFu);
+    SfxSFR &= 0xFFFFu - 32u; /* clear the Go flag */
+    if (!(SfxCFGR & 0x80u)) {
+        SfxSFR |= 0x8000u; /* IRQ not masked, so flag it */
+    }
+    FxSeamPC++;
+    /* Give back the opcode budget this line did not use, then stop. */
+    ChangeOps += NumberOfOpcodes + 0xF0000000u;
+    NumberOfOpcodes = 1;
+    SFXProc = 0;
+    FxSeamCX &= ~0xFFu; /* xor cl,cl */
+}
+
+/* --- PLOT and RPIX -------------------------------------------------------
+ *
+ * PLOT writes the colour register to the pixel at (R1, R2) and advances R1.
+ * CMODE chooses one of sixteen specialisations up front (see c_FxOp4EA1) and
+ * patches it into the dispatch tables, so the depth, the zero check and the
+ * dither are all decided before a pixel is ever drawn.
+ *
+ * The line-location table maps a packed (x, y) to a tile number, or to
+ * 0xFFFFFFFF for coordinates off the right-hand edge of the screen. The tile
+ * number scales by the depth's bits-per-tile-row shift, plus two bytes for
+ * each of the eight rows in a tile.
+ *
+ * The bitplane pairs are 16 bytes apart, and each write is 32-bit: one access
+ * covers both bytes of a pair. fxxand[x] clears the destination bit in both,
+ * and the fxbitNNpcal values (refreshed by COLOR) carry the colour already
+ * expanded to that layout.
+ */
+
+enum { FX_PLOT_2BPP,
+    FX_PLOT_4BPP,
+    FX_PLOT_8BPP };
+
+static inline u4* fx_plane(u4 const addr, u4 const n)
+{
+    return (u4*)(uintptr_t)(addr + n * 16u);
+}
+
+/* Write one pixel. The dithered form just uses the other pair of colour
+   lookups, which COLOR loaded with the high nibble. */
+static inline void fx_drawpix(u4 const addr, u4 mask, int const depth, int const dither)
+{
+    u4 const b01 = dither ? fxbit45pcal : fxbit01pcal;
+    u4 const b23 = dither ? fxbit67pcal : fxbit23pcal;
+    u4 const b45 = dither ? fxbit01pcal : fxbit45pcal;
+    u4 const b67 = dither ? fxbit23pcal : fxbit67pcal;
+    u4 const planes = depth == FX_PLOT_2BPP ? 1 : depth == FX_PLOT_4BPP ? 2
+                                                                        : 4;
+    u4 const col[4] = { b01, b23, b45, b67 };
+
+    for (u4 i = 0; i < planes; i++) {
+        *fx_plane(addr, i) &= mask;
+    }
+    mask ^= 0xFFFFFFFFu;
+    for (u4 i = 0; i < planes; i++) {
+        *fx_plane(addr, i) |= col[i] & mask;
+    }
+}
+
+static inline void fx_plot(int const depth, u4 const zmask, int const zcheck, int const dither)
+{
+    u4 const shift = depth == FX_PLOT_2BPP ? 4 : depth == FX_PLOT_4BPP ? 5
+                                                                       : 6;
+    u4 const index = (SfxR0[2] & 0xFFFF00FFu) | ((SfxR0[1] & 0xFFu) << 8);
+    u4 tile;
+
+    fx_fetchpipe();
+    FxSeamPC++;
+    tile = ((u4 const*)(uintptr_t)sfxclineloc)[index];
+    if (tile != 0xFFFFFFFFu && (!zcheck || ((u1)SfxCOLR & zmask))) {
+        u4 const addr = (tile << shift) + ((index & 7u) * 2u) + SCBRrel;
+        u4 const mask = fxxand[SfxR0[1] & 0xFFu];
+
+        fx_drawpix(addr, mask, depth,
+            dither && (((SfxR0[1] ^ SfxR0[2]) & 1u) != 0));
+    }
+    fx_set_lo16(1, SfxR0[1] + 1); /* `inc word[SfxR1]` on every path */
+}
+
+#define FX_PLOTS(name, depth, zmask)                                  \
+    void c_FxOp4C128##name##b(void) { fx_plot(depth, zmask, 0, 0); }  \
+    void c_FxOp4C128##name##bz(void) { fx_plot(depth, zmask, 1, 0); } \
+    void c_FxOp4C128##name##bd(void) { fx_plot(depth, zmask, 0, 1); } \
+    void c_FxOp4C128##name##bzd(void) { fx_plot(depth, zmask, 1, 1); }
+
+FX_PLOTS(2, FX_PLOT_2BPP, 0x03u)
+FX_PLOTS(4, FX_PLOT_4BPP, 0x0Fu)
+FX_PLOTS(8, FX_PLOT_8BPP, 0xFFu)
+
+/* The "l" set is 8bpp with the 4bpp zero-check mask. */
+void c_FxOp4C1288bl(void) { fx_plot(FX_PLOT_8BPP, 0x0Fu, 0, 0); }
+void c_FxOp4C1288bzl(void) { fx_plot(FX_PLOT_8BPP, 0x0Fu, 1, 0); }
+void c_FxOp4C1288bdl(void) { fx_plot(FX_PLOT_8BPP, 0x0Fu, 0, 1); }
+void c_FxOp4C1288bzdl(void) { fx_plot(FX_PLOT_8BPP, 0x0Fu, 1, 1); }
+
+/* The unspecialised entry, used until CMODE runs: the assembly is a bare
+   `jmp FxOp4C1284b` with a long-dead copy of the plot code behind it. */
+void c_FxOp4C(void) { c_FxOp4C1284b(); }
+
+/* RPIX reads a pixel back. It picks the line table itself rather than using
+   the one CMODE cached, and reports 0xFF for an off-screen coordinate. */
+void c_FxOp4CA1(void)
+{
+    u4 const index = (SfxR0[2] & 0xFFFF00FFu) | ((SfxR0[1] & 0xFFu) << 8);
+    u4 const lineloc = fx_lineloc();
+    u4 const tile = ((u4 const*)(uintptr_t)lineloc)[index];
+    u4 res = 0xFFu;
+
+    fx_fetchpipe();
+    if (tile != 0xFFFFFFFFu) {
+        u4 const depth = SfxSCMR & 3u;
+        u4 const shift = depth == 0 ? 4 : depth == 3 ? 6
+                                                     : 5;
+        u4 const planes = depth == 0 ? 2 : depth == 3 ? 8
+                                                      : 4;
+        u4 const addr = (SfxSCBR << 10) + (tile << shift)
+            + ((index & 7u) * 2u) + (u4)(uintptr_t)sfxramdata;
+        u1 const bit = (u1)(1u << ((SfxR0[1] & 7u) ^ 7u));
+
+        res = 0;
+        for (u4 i = 0; i < planes; i++) {
+            /* The planes alternate between the two bytes of each 16-byte pair. */
+            if (*(u1 const*)(uintptr_t)(addr + (i >> 1) * 16u + (i & 1u)) & bit) {
+                res |= 1u << i;
+            }
+        }
+    }
+    FxSeamPC++;
+    *FxSeamDst = res;
+    flagnz = res;
+}
+
+/* --- The d table's one divergent handler ---------------------------------
+ *
+ * Every other d-table opcode shares its body with the base-table one and
+ * differs only in the tail (FXReturn instead of ret), which lives in the asm
+ * thunk. STOP is the exception, in two ways: it leaves the loop directly, so it
+ * skips the SFXProc and opcode-byte clears the base-table version does, and its
+ * IRQ-flag store is commented out in chips/fxemu2c.asm, so this copy never
+ * raises the interrupt. Kept as-is; c_FxOp00 has the line the other one runs.
+ */
+void c_FxOpd00(void)
+{
+    fx_fetchpipe();
+    *(u1*)&SfxPIPE = (u1)(FxSeamCX & 0xFFu);
+    SfxSFR &= 0xFFFFu - 32u;
+    FxSeamPC++;
+    ChangeOps += NumberOfOpcodes + 0xF0000000u;
+    NumberOfOpcodes = 1;
 }
 
 #endif

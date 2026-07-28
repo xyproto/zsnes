@@ -10,6 +10,15 @@ extern u4 SfxCarry, SfxSignZero, SfxOverflow;
 extern u4 SfxB, SfxCPB, SfxCROM, SfxRomBuffer, withr15sk;
 extern u4 SfxRAMMem, SfxLastRamAdr;
 extern u4 SfxCBR, SfxPBR, SfxCacheActive;
+extern u4 SfxRAMBR, SfxROMBR, SfxnRamBanks;
+extern u1* sfxramdata; /* ui.h */
+extern u4 SfxCOLR, SfxPOR, SfxSCMR;
+extern u4 fxbit01pcal, fxbit23pcal, fxbit45pcal, fxbit67pcal;
+extern u4 sfxclineloc, sfx128lineloc, sfx160lineloc, sfx192lineloc, sfxobjlineloc;
+extern u4 SfxSFR, SfxCFGR, SfxPIPE;
+extern u4 NumberOfOpcodes, ChangeOps, SFXProc; /* cpu/execute.asm */
+extern u4 SfxSCBR, SCBRrel;
+extern u4 flagnz; /* initdata.c */
 extern u4 SfxR0[16]; /* SfxR0..SfxR15 are contiguous (chips/fxemu2.asm) */
 
 /* The spill slots for the core's live registers. The asm writes them on the way

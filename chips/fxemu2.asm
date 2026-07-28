@@ -177,6 +177,19 @@ EXTSYM c_FxOp05,c_FxOp06,c_FxOp07,c_FxOp08,c_FxOp09,c_FxOp0A
 EXTSYM c_FxOp0B,c_FxOp0C,c_FxOp0D,c_FxOp0E,c_FxOp0F,c_FxOp1E
 EXTSYM c_FxOp1F,c_FxOp2E,c_FxOp2F,c_FxOp3D,c_FxOp3E,c_FxOp3F
 EXTSYM c_FxOpBF
+EXTSYM c_FxOp5F,c_FxOp5FA1,c_FxOp6F,c_FxOp6FA1,c_FxOp6FA3,c_FxOp7F
+EXTSYM c_FxOp7FA1,c_FxOp8F,c_FxOp8FA1,c_FxOp90
+EXTSYM c_FxOpEF,c_FxOpEFA1,c_FxOpEFA2,c_FxOpEFA3,c_FxOpDFA2,c_FxOpDFA3
+EXTSYM c_FxOpCF,c_FxOpCFA1,c_FxOpAEA1,c_FxOpAFA1,c_FxOpAFA2,c_FxOpFE
+EXTSYM c_FxOpFF
+EXTSYM c_FxOp4E,c_FxOpDF,c_FxOp4EA1,c_FxOp70,c_FxOpFEA1,c_FxOpFFA1
+EXTSYM c_FxOpFFA2
+EXTSYM c_FxOp00
+EXTSYM c_FxOp4C1284b,c_FxOp4C1284bz,c_FxOp4C1284bd,c_FxOp4C1284bzd
+EXTSYM c_FxOp4C1282b,c_FxOp4C1282bz,c_FxOp4C1282bd,c_FxOp4C1282bzd
+EXTSYM c_FxOp4C1288b,c_FxOp4C1288bz,c_FxOp4C1288bd,c_FxOp4C1288bzd
+EXTSYM c_FxOp4C1288bl,c_FxOp4C1288bzl,c_FxOp4C1288bdl,c_FxOp4C1288bzdl
+EXTSYM c_FxOp4C,c_FxOp4CA1
 
 %macro ccall 1-*
 	push ecx
@@ -321,23 +334,7 @@ NEWSYM fxbit67pcal, dd 0
 
 SECTION .text
 NEWSYM FxOp00     ; STOP   stop GSU execution (and maybe generate an IRQ)     ; Verified.
-   FETCHPIPE
-   mov [SfxPIPE],cl
-   and dword[SfxSFR],0FFFFh-32     ; Clear Go flag (set to 1 when the GSU is running)
-   test dword[SfxCFGR],080h        ; Check if the interrupt generation is on
-   jnz .NoIRQ
-   or dword[SfxSFR],08000h         ; Set IRQ Flag
-.NoIRQ
-   CLRFLAGS
-   inc ebp
-   mov eax,[NumberOfOpcodes]
-   add eax,0F0000000h
-   add [ChangeOps],eax
-   mov dword[NumberOfOpcodes],1
-   mov dword[SFXProc],0
-   xor cl,cl
-   ret
-
+   fxcop c_FxOp00
 NEWSYM FxOp01      ; NOP    no operation       ; Verified.
    fxcop c_FxOp01
 NEWSYM FxOp02      ; CACHE  reintialize GSU cache
@@ -537,527 +534,47 @@ NEWSYM FxOp4AA1    ; LDB RN load byte from RAM
 NEWSYM FxOp4BA1    ; LDB RN load byte from RAM
    fxcop c_FxOp4BA1
 NEWSYM FxOp4C1284b       ; PLOT 4bit
-   plotlines4b plotb
+   fxcop c_FxOp4C1284b
 NEWSYM FxOp4C1284bz      ; PLOT 4bit, zero check
-   plotlines4b plotbz
+   fxcop c_FxOp4C1284bz
 NEWSYM FxOp4C1284bd      ; PLOT 4bit, dither
-   plotlines4b plotbd
+   fxcop c_FxOp4C1284bd
 NEWSYM FxOp4C1284bzd     ; PLOT 4bit, zero check + dither
-   plotlines4b plotbzd
-
+   fxcop c_FxOp4C1284bzd
 NEWSYM FxOp4C1282b       ; PLOT 2bit
-   plotlines2b plotb
+   fxcop c_FxOp4C1282b
 NEWSYM FxOp4C1282bz      ; PLOT 2bit, zero check
-   plotlines2b plotbz
+   fxcop c_FxOp4C1282bz
 NEWSYM FxOp4C1282bd      ; PLOT 2bit, dither
-   plotlines2b plotbd
+   fxcop c_FxOp4C1282bd
 NEWSYM FxOp4C1282bzd     ; PLOT 2bit, zero check + dither
-   plotlines2b plotbzd
-
+   fxcop c_FxOp4C1282bzd
 NEWSYM FxOp4C1288b       ; PLOT 8bit
-   plotlines8b plotb
+   fxcop c_FxOp4C1288b
 NEWSYM FxOp4C1288bz      ; PLOT 8bit, zero check
-   plotlines8b plotbz
+   fxcop c_FxOp4C1288bz
 NEWSYM FxOp4C1288bd      ; PLOT 8bit, dither
-   plotlines8b plotbd
+   fxcop c_FxOp4C1288bd
 NEWSYM FxOp4C1288bzd     ; PLOT 8bit, zero check + dither
-   plotlines8b plotbzd
-
+   fxcop c_FxOp4C1288bzd
 NEWSYM FxOp4C1288bl       ; PLOT 8bit
-   plotlines8bl plotb
+   fxcop c_FxOp4C1288bl
 NEWSYM FxOp4C1288bzl      ; PLOT 8bit, zero check
-   plotlines8bl plotbz
+   fxcop c_FxOp4C1288bzl
 NEWSYM FxOp4C1288bdl      ; PLOT 8bit, dither
-   plotlines8bl plotbd
+   fxcop c_FxOp4C1288bdl
 NEWSYM FxOp4C1288bzdl     ; PLOT 8bit, zero check + dither
-   plotlines8bl plotbzd
-
+   fxcop c_FxOp4C1288bzdl
 NEWSYM FxOp4C      ; PLOT   plot pixel with R1,R2 as x,y and the color register as the color
-   jmp FxOp4C1284b
-   FETCHPIPE
-   inc ebp
-   CLRFLAGS
-   mov ebx,[SfxR2]
-   mov bh,[SfxR1]
-   mov eax,[sfxclineloc]
-   mov ebx,[eax+ebx*4]
-   cmp ebx,0FFFFFFFFh
-   je near .nodraw
-   xor eax,eax
-   ; bits 5/2 : 00 = 128 pixels, 01 = 160 pixels, 10 = 192 pixels, 11 = obj
-   ; bits 1/0 : 00 = 4 color, 01 = 16-color, 10 = not used, 11 = 256 color
-   ; 192 pixels = 24 tiles, 160 pixels = 20 tiles, 128 pixels = 16 tiles
-   ;              16+8(4/3)              16+4(4/2)              16(4/0)
-   push ecx
-   mov al,[SfxSCMR]
-   and al,00000011b     ; 4 + 32
-   cmp al,0
-   je near .colors4
-   cmp al,3
-   je near .colors256
-
-   shl ebx,5    ; x32 (16 colors)
-   mov al,[SfxSCBR]
-   shl eax,10   ; Get SFX address
-   add eax,ebx
-   add eax,[sfxramdata]
-   mov ebx,[SfxR2]
-   and ebx,07h
-   shl ebx,1
-   add eax,ebx
-   mov cl,[SfxR1]
-   and cl,07h
-   xor cl,07h
-   mov bl,1
-   shl bl,cl
-   mov bh,bl
-   xor bh,0FFh
-   pop ecx
-   test byte[SfxPOR],01h
-   jnz .nozerocheck_16
-   test byte[SfxCOLR],0Fh
-   jz .nodraw
-.nozerocheck_16
-   mov dl,[SfxCOLR]
-   test byte[SfxPOR],02h
-   jz .nodither4b
-   mov dh,[SfxR1]
-   xor dh,[SfxR2]
-   test dh,01h
-   jz .nodither4b
-   shr dh,4
-.nodither4b
-   and byte[eax],bh
-   and byte[eax+1],bh
-   and byte[eax+16],bh
-   and byte[eax+17],bh
-   test dl,01h
-   jz .nodraw_16
-   or byte[eax],   bl
-.nodraw_16
-   test dl,02h
-   jz .nodraw2_16
-   or byte[eax+1], bl
-.nodraw2_16
-   test dl,04h
-   jz .nodraw3_16
-   or byte[eax+16],bl
-.nodraw3_16
-   test dl,08h
-   jz .nodraw4_16
-   or byte[eax+17],bl
-.nodraw4_16
-.nodraw
-   inc word[SfxR1]
-   ret
-
-.colors4
-   shl ebx,4    ; x16 (4 colors)
-   mov al,[SfxSCBR]
-   shl eax,10   ; Get SFX address
-   add eax,ebx
-   add eax,[sfxramdata]
-   mov ebx,[SfxR2]
-   and ebx,07h
-   shl ebx,1
-   add eax,ebx
-   mov cl,[SfxR1]
-   and cl,07h
-   xor cl,07h
-   mov bl,1
-   shl bl,cl
-   mov bh,bl
-   xor bh,0FFh
-   pop ecx
-   test byte[SfxPOR],01h
-   jnz .nozerocheck_4
-   test byte[SfxCOLR],03h
-   jz .noplot_4
-.nozerocheck_4
-   mov dl,[SfxCOLR]
-   test byte[SfxPOR],02h
-   jz .nodither2b
-   mov dh,[SfxR1]
-   xor dh,[SfxR2]
-   test dh,01h
-   jz .nodither2b
-   shr dh,4
-.nodither2b
-   and byte[eax],bh
-   and byte[eax+1],bh
-   test dl,01h
-   jz .nodraw_4
-   or byte[eax],   bl
-.nodraw_4
-   test dl,02h
-   jz .nodraw2_4
-   or byte[eax+1], bl
-.nodraw2_4
-.noplot_4
-   inc word[SfxR1]
-   ret
-
-.colors256
-   shl ebx,6    ; x64 (256 colors)
-   mov al,[SfxSCBR]
-   shl eax,10   ; Get SFX address
-   add eax,ebx
-   add eax,[sfxramdata]
-   mov ebx,[SfxR2]
-   and ebx,07h
-   shl ebx,1
-   add eax,ebx
-   mov cl,[SfxR1]
-   and cl,07h
-   xor cl,07h
-   mov bl,1
-   shl bl,cl
-   mov bh,bl
-   xor bh,0FFh
-   pop ecx
-   test byte[SfxPOR],01h
-   jnz .nozerocheck_256
-   mov dl,0FFh
-   test byte[SfxPOR],08h
-   jz .nozerocheckb_256
-   mov dl,0Fh
-.nozerocheckb_256
-   test byte[SfxCOLR],dl
-   jz .noplot_256
-.nozerocheck_256
-   mov dl,[SfxCOLR]
-   and byte[eax],bh
-   and byte[eax+1],bh
-   and byte[eax+16],bh
-   and byte[eax+17],bh
-   and byte[eax+32],bh
-   and byte[eax+33],bh
-   and byte[eax+48],bh
-   and byte[eax+49],bh
-   test dl,01h
-   jz .nodraw_256
-   or byte[eax],   bl
-.nodraw_256
-   test dl,02h
-   jz .nodraw2_256
-   or byte[eax+1], bl
-.nodraw2_256
-   test dl,04h
-   jz .nodraw3_256
-   or byte[eax+16],bl
-.nodraw3_256
-   test dl,08h
-   jz .nodraw4_256
-   or byte[eax+17],bl
-.nodraw4_256
-   test dl,10h
-   jz .nodraw5_256
-   or byte[eax+32],   bl
-.nodraw5_256
-   test dl,20h
-   jz .nodraw6_256
-   or byte[eax+33], bl
-.nodraw6_256
-   test dl,40h
-   jz .nodraw7_256
-   or byte[eax+48],bl
-.nodraw7_256
-   test dl,80h
-   jz .nodraw8_256
-   or byte[eax+49],bl
-.nodraw8_256
-.noplot_256
-   inc word[SfxR1]
-   ret
-
-SECTION .bss
-.prevx resw 1
-.prevy resw 1
-
-sfxwarning resb 1
-
-SECTION .text
-
+   fxcop c_FxOp4C
 NEWSYM FxOp4CA1    ; RPIX   read color of the pixel with R1,R2 as x,y
-   FETCHPIPE
-   mov ebx,[SfxR2]
-   mov bh,[SfxR1]
-   test byte[SfxPOR],10h
-   jnz .objmode
-   mov al,[SfxSCMR]
-   and al,00100100b     ; 4 + 32
-   cmp al,4
-   je .lines160
-   cmp al,32
-   je .lines192
-   cmp al,36
-   je .objmode
-   mov eax,[sfx128lineloc]
-   jmp .donelines
-.lines160
-   mov eax,[sfx160lineloc]
-   jmp .donelines
-.lines192
-   mov eax,[sfx192lineloc]
-   jmp .donelines
-.objmode
-   mov eax,[sfxobjlineloc]
-.donelines
-   mov ebx,[eax+ebx*4]
-   cmp ebx,0FFFFFFFFh
-   je .nodraw
-   xor eax,eax
-   ; bits 5/2 : 00 = 128 pixels, 01 = 160 pixels, 10 = 192 pixels, 11 = obj
-   ; bits 1/0 : 00 = 4 color, 01 = 16-color, 10 = not used, 11 = 256 color
-   ; 192 pixels = 24 tiles, 160 pixels = 20 tiles, 128 pixels = 16 tiles
-   ;              16+8(4/3)              16+4(4/2)              16(4/0)
-   push ecx
-   mov al,[SfxSCMR]
-   and al,00000011b     ; 4 + 32
-
-   cmp al,0
-   je .colors4
-   cmp al,3
-   je near .colors256
-
-   shl ebx,5    ; x32 (16 colors)
-   mov al,[SfxSCBR]
-   shl eax,10   ; Get SFX address
-   add eax,ebx
-   add eax,[sfxramdata]
-   mov ebx,[SfxR2]
-   and ebx,07h
-   shl ebx,1
-   add eax,ebx
-   mov cl,[SfxR1]
-   and cl,07h
-   xor cl,07h
-   mov bl,1
-   shl bl,cl
-   pop ecx
-   xor bh,bh
-   test byte[eax],bl
-   jz .nodraw_16
-   or bh,01h
-.nodraw_16
-   test byte[eax+1],bl
-   jz .nodraw2_16
-   or bh,02h
-.nodraw2_16
-   test byte[eax+16],bl
-   jz .nodraw3_16
-   or bh,04h
-.nodraw3_16
-   test byte[eax+17],bl
-   jz .nodraw4_16
-   or bh,08h
-.nodraw4_16
-.nodraw
-   mov bl,bh
-   and ebx,0FFh
-   inc ebp
-;   UpdateR14
-   CLRFLAGS
-   mov [edi],ebx            ; Write Destination
-   mov [flagnz],ebx
-   ret
-
-.colors4
-   shl ebx,4    ; x16 (4 colors)
-   mov al,[SfxSCBR]
-   shl eax,10   ; Get SFX address
-   add eax,ebx
-   add eax,[sfxramdata]
-   mov ebx,[SfxR2]
-   and ebx,07h
-   shl ebx,1
-   add eax,ebx
-   mov cl,[SfxR1]
-   and cl,07h
-   xor cl,07h
-   mov bl,1
-   shl bl,cl
-   mov bh,bl
-   xor bh,0FFh
-   pop ecx
-   xor bh,bh
-   test byte[eax],bl
-   jz .nodraw_4
-   or bh,01h
-.nodraw_4
-   test byte[eax+1],bl
-   jz .nodraw2_4
-   or bh,02h
-.nodraw2_4
-   mov bl,bh
-   and ebx,0FFh
-   inc ebp
-;   UpdateR14
-   CLRFLAGS
-   mov [edi],ebx            ; Write Destination
-   mov [flagnz],ebx
-   ret
-
-.colors256
-   shl ebx,6    ; x64 (256 colors)
-   mov al,[SfxSCBR]
-   shl eax,10   ; Get SFX address
-   add eax,ebx
-   add eax,[sfxramdata]
-   mov ebx,[SfxR2]
-   and ebx,07h
-   shl ebx,1
-   add eax,ebx
-   mov cl,[SfxR1]
-   and cl,07h
-   xor cl,07h
-   mov bl,1
-   shl bl,cl
-   mov bh,bl
-   xor bh,0FFh
-   pop ecx
-   xor bh,bh
-   test byte[eax],bl
-   jz .nodraw_256
-   or bh,01h
-.nodraw_256
-   test byte[eax+1],bl
-   jz .nodraw2_256
-   or bh,02h
-.nodraw2_256
-   test byte[eax+16],bl
-   jz .nodraw3_256
-   or bh,04h
-.nodraw3_256
-   test byte[eax+17],bl
-   jz .nodraw4_256
-   or bh,08h
-.nodraw4_256
-   test byte[eax+32],bl
-   jz .nodraw5_256
-   or bh,10h
-.nodraw5_256
-   test byte[eax+33],bl
-   jz .nodraw6_256
-   or bh,20h
-.nodraw6_256
-   test byte[eax+48],bl
-   jz .nodraw7_256
-   or bh,40h
-.nodraw7_256
-   test byte[eax+49],bl
-   jz .nodraw8_256
-   or bh,80h
-.nodraw8_256
-   mov bl,bh
-   and ebx,0FFh
-   inc ebp
-;   UpdateR14
-   CLRFLAGS
-   mov [edi],ebx            ; Write Destination
-   mov [flagnz],ebx
-   ret
-
+   fxcop c_FxOp4CA1
 NEWSYM FxOp4D      ; SWAP   swap upper and lower byte of a register    ; V
    fxcop c_FxOp4D
 NEWSYM FxOp4E      ; COLOR  copy source register to color register     ; V
-   FETCHPIPE
-   mov eax,[esi]            ; Read Source
-   ; if bit 3 of SfxPOR is set, then don't modify the upper 4 bits
-   test byte[SfxPOR],04h
-   jz .nohighnibble
-   mov bl,al
-   shr bl,4
-   and al,0F0h
-   or al,bl
-.nohighnibble
-   test byte[SfxPOR],08h
-   jnz .preserveupper
-   cmp [SfxCOLR],al
-   je .nocolchange
-   mov [SfxCOLR],al
-   and eax,0FFh
-   mov ebx,[fxbit01+eax*4]
-   mov [fxbit01pcal],ebx
-   mov ebx,[fxbit23+eax*4]
-   mov [fxbit23pcal],ebx
-   mov ebx,[fxbit45+eax*4]
-   mov [fxbit45pcal],ebx
-   mov ebx,[fxbit67+eax*4]
-   mov [fxbit67pcal],ebx
-.nocolchange
-   CLRFLAGS
-   inc ebp                ; Increase program counter
-   ret
-.preserveupper
-   mov bl,[SfxCOLR]
-   and al,0Fh
-   and bl,0F0h
-   or al,bl
-   cmp [SfxCOLR],al
-   je .nocolchange
-   mov [SfxCOLR],al
-   and eax,0FFh
-   mov ebx,[fxbit01+eax*4]
-   mov [fxbit01pcal],ebx
-   mov ebx,[fxbit23+eax*4]
-   mov [fxbit23pcal],ebx
-   mov ebx,[fxbit45+eax*4]
-   mov [fxbit45pcal],ebx
-   mov ebx,[fxbit67+eax*4]
-   mov [fxbit67pcal],ebx
-   CLRFLAGS
-   inc ebp                ; Increase program counter
-   ret
-
+   fxcop c_FxOp4E
 NEWSYM FxOp4EA1    ; CMODE  set plot option register ; V
-   FETCHPIPE
-   mov eax,[esi]            ; Read Source
-   inc ebp                ; Increase program counter
-   mov [SfxPOR],eax
-
-   test byte[SfxPOR],10h
-   jnz .objmode
-   mov al,[SfxSCMR]
-   and al,00100100b     ; 4 + 32
-   cmp al,4
-   je .lines160
-   cmp al,32
-   je .lines192
-   cmp al,36
-   je .objmode
-   mov eax,[sfx128lineloc]
-   jmp .donelines
-.lines160
-   mov eax,[sfx160lineloc]
-   jmp .donelines
-.lines192
-   mov eax,[sfx192lineloc]
-   jmp .donelines
-.objmode
-   mov eax,[sfxobjlineloc]
-.donelines
-   mov [sfxclineloc],eax
-
-
-   push ebx
-   mov al,[SfxSCMR]
-   and eax,00000011b
-   mov bl,[SfxPOR]
-   and bl,0Fh
-   shl bl,2
-   or al,bl
-   mov ebx,[PLOTJmpb+eax*4]
-   mov eax,[PLOTJmpa+eax*4]
-   mov [FxTable+4Ch*4],eax
-   mov [FxTableb+4Ch*4],eax
-   mov [FxTablec+4Ch*4],eax
-   mov [FxTabled+4Ch*4],ebx
-   pop ebx
-
-   CLRFLAGS
-   ret
-
+   fxcop c_FxOp4EA1
 NEWSYM FxOp4F      ; NOT    perform exclusive exor with 1 on all bits  ; V
    fxcop c_FxOp4F
 NEWSYM FxOp50      ; ADD RN add, register + register
@@ -1091,19 +608,7 @@ NEWSYM FxOp5D      ; ADD RN add, register + register
 NEWSYM FxOp5E      ; ADD RN add, register + register
    fxcop c_FxOp5E
 NEWSYM FxOp5F      ; ADD RN add, register + register
-   FETCHPIPE
-   mov eax, [esi]    ; Read Source
-   mov ebx,ebp
-   sub ebx,[SfxCPB]
-   add ax,bx
-   seto byte[SfxOverflow]
-   setc byte[SfxCarry]
-   mov [SfxSignZero],eax
-   inc ebp                ; Increase program counter
-   mov [edi],eax      ; Write Destination
-   CLRFLAGS
-   ret
-
+   fxcop c_FxOp5F
 NEWSYM FxOp50A1    ; ADC RN add with carry, register + register
    fxcop c_FxOp50A1
 NEWSYM FxOp51A1    ; ADC RN add with carry, register + register
@@ -1135,21 +640,7 @@ NEWSYM FxOp5DA1    ; ADC RN add with carry, register + register
 NEWSYM FxOp5EA1    ; ADC RN add with carry, register + register
    fxcop c_FxOp5EA1
 NEWSYM FxOp5FA1    ; ADC RN add with carry, register + register
-   FETCHPIPE
-   mov eax, [esi]    ; Read Source
-   mov ebx,ebp
-   sub ebx,[SfxCPB]
-   shr byte[SfxCarry],1
-   adc ax,bx
-   seto byte[SfxOverflow]
-   setc byte[SfxCarry]
-   mov [SfxSignZero],eax
-   inc ebp                ; Increase program counter
-   mov [edi],eax      ; Write Destination
-   CLRFLAGS
-   ret
-
-; Weird opcode (FxOp50A2, add 0, wow!)
+   fxcop c_FxOp5FA1
 NEWSYM FxOp50A2    ; ADI RN add, register + immediate
    fxcop c_FxOp50A2
 NEWSYM FxOp51A2    ; ADI RN add, register + immediate
@@ -1245,20 +736,7 @@ NEWSYM FxOp6D      ; SUBRN  subtract, register - register
 NEWSYM FxOp6E      ; SUBRN  subtract, register - register
    fxcop c_FxOp6E
 NEWSYM FxOp6F      ; SUBRN  subtract, register - register
-   FETCHPIPE
-   mov eax,[esi]    ; Read Source
-   mov ebx,ebp
-   sub ebx,[SfxCPB]
-   sub ax,bx
-   seto byte[SfxOverflow]
-   setc byte[SfxCarry]
-   xor byte[SfxCarry],1
-   inc ebp                   ; Increase program counter
-   mov [edi],eax                        ; Write Destination
-   mov [SfxSignZero],eax
-   CLRFLAGS
-   ret
-
+   fxcop c_FxOp6F
 NEWSYM FxOp60A1    ; SBCRN  subtract with carry, register - register
    fxcop c_FxOp60A1
 NEWSYM FxOp61A1    ; SBCRN  subtract with carry, register - register
@@ -1290,21 +768,7 @@ NEWSYM FxOp6DA1    ; SBCRN  subtract with carry, register - register
 NEWSYM FxOp6EA1    ; SBCRN  subtract with carry, register - register
    fxcop c_FxOp6EA1
 NEWSYM FxOp6FA1    ; SBCRN  subtract with carry, register - register
-   mov eax,[esi]    ; Read Source
-   mov ebx,ebp
-   FETCHPIPE
-   sub ebx,[SfxCPB]
-   cmp byte[SfxCarry],1
-   sbb ax,bx
-   seto byte[SfxOverflow]
-   setc byte[SfxCarry]
-   xor byte[SfxCarry],1
-   inc ebp                ; Increase program counter
-   mov [edi],eax      ; Write Destination
-   mov [SfxSignZero],eax
-   CLRFLAGS
-   ret
-
+   fxcop c_FxOp6FA1
 NEWSYM FxOp60A2    ; SUBIRN subtract, register - immediate
    fxcop c_FxOp60A2
 NEWSYM FxOp61A2    ; SUBIRN subtract, register - immediate
@@ -1368,49 +832,9 @@ NEWSYM FxOp6DA3    ; CMPRN  compare, register, register
 NEWSYM FxOp6EA3    ; CMPRN  compare, register, register
    fxcop c_FxOp6EA3
 NEWSYM FxOp6FA3    ; CMPRN  compare, register, register
-   FETCHPIPE
-   mov eax,[esi]    ; Read Source
-   mov ebx,ebp
-   sub ebx,[SfxCPB]
-   sub ax,bx
-   seto byte[SfxOverflow]
-   setc byte[SfxCarry]
-   xor byte[SfxCarry],1
-   mov [SfxSignZero],eax
-   CLRFLAGS
-   inc ebp                ; Increase program counter
-   ret
-
+   fxcop c_FxOp6FA3
 NEWSYM FxOp70      ; MERGE  R7 as upper byte, R8 as lower byte (used for texture-mapping) */
-            ; V
-   xor eax,eax
-   FETCHPIPE
-   mov ah,[SfxR7+1]
-   mov al,[SfxR8+1]
-   inc ebp
-   mov [edi],eax            ; Write Destination
-   mov dword[SfxSignZero],0001h
-   test eax,0F0F0h
-   jz .nozero
-   mov dword[SfxSignZero],0000h
-.nozero
-   test eax,08080h
-   jz .nosign
-   or dword[SfxSignZero],80000h
-.nosign
-   mov dword[SfxOverflow],1
-   test ax,0c0c0h
-   jnz .Overflow
-   mov dword[SfxOverflow],0
-.Overflow
-   mov dword[SfxCarry],1
-   test ax,0e0e0h
-   jnz .Carry
-   mov dword[SfxCarry],0
-.Carry
-   CLRFLAGS
-   ret
-
+   fxcop c_FxOp70
 NEWSYM FxOp71      ; AND RN register & register
    fxcop c_FxOp71
 NEWSYM FxOp72      ; AND RN register & register
@@ -1440,17 +864,7 @@ NEWSYM FxOp7D      ; AND RN register & register
 NEWSYM FxOp7E      ; AND RN register & register
    fxcop c_FxOp7E
 NEWSYM FxOp7F      ; AND RN register & register
-   FETCHPIPE
-   mov eax,[esi]            ; Read Source
-   mov ebx,ebp
-   sub ebx,[SfxCPB]
-   and eax,ebx
-   inc ebp
-   mov [SfxSignZero],eax
-   mov [edi],eax            ; Write Destination
-   CLRFLAGS
-   ret
-
+   fxcop c_FxOp7F
 NEWSYM FxOp71A1    ; BIC RN register & ~register
    fxcop c_FxOp71A1
 NEWSYM FxOp72A1    ; BIC RN register & ~register
@@ -1480,18 +894,7 @@ NEWSYM FxOp7DA1    ; BIC RN register & ~register
 NEWSYM FxOp7EA1    ; BIC RN register & ~register
    fxcop c_FxOp7EA1
 NEWSYM FxOp7FA1    ; BIC RN register & ~register
-   FETCHPIPE
-   mov ebx,ebp
-   sub ebx,[SfxCPB]
-   mov eax,[esi]            ; Read Source
-   xor ebx,0FFFFh
-   and eax,ebx
-   inc ebp
-   mov [SfxSignZero],eax
-   mov [edi],eax            ; Write Destination
-   CLRFLAGS
-   ret
-
+   fxcop c_FxOp7FA1
 NEWSYM FxOp71A2    ; ANDIRN and #n - register & immediate
    fxcop c_FxOp71A2
 NEWSYM FxOp72A2    ; ANDIRN and #n - register & immediate
@@ -1583,18 +986,7 @@ NEWSYM FxOp8D      ; MULTRN 8 bit to 16 bit signed multiply, register * register
 NEWSYM FxOp8E      ; MULTRN 8 bit to 16 bit signed multiply, register * register
    fxcop c_FxOp8E
 NEWSYM FxOp8F      ; MULTRN 8 bit to 16 bit signed multiply, register * register
-   FETCHPIPE
-   mov ebx,ebp
-   mov al,[esi]     ; Read Source
-   sub ebx,[SfxCPB]
-   imul bl
-   inc ebp
-   and eax,0FFFFh
-   mov [SfxSignZero],eax
-   mov [edi],eax            ; Write Destination
-   CLRFLAGS
-   ret
-
+   fxcop c_FxOp8F
 NEWSYM FxOp80A1    ; UMULRN 8 bit to 16 bit unsigned multiply, register * register
    fxcop c_FxOp80A1
 NEWSYM FxOp81A1    ; UMULRN 8 bit to 16 bit unsigned multiply, register * register
@@ -1626,18 +1018,7 @@ NEWSYM FxOp8DA1    ; UMULRN 8 bit to 16 bit unsigned multiply, register * regist
 NEWSYM FxOp8EA1    ; UMULRN 8 bit to 16 bit unsigned multiply, register * register
    fxcop c_FxOp8EA1
 NEWSYM FxOp8FA1    ; UMULRN 8 bit to 16 bit unsigned multiply, register * register
-   FETCHPIPE
-   mov ebx,ebp
-   mov al,[esi]     ; Read Source
-   sub ebx,[SfxCPB]
-   mul bl
-   inc ebp
-   and eax,0FFFFh
-   mov [SfxSignZero],eax
-   mov [edi],eax            ; Write Destination
-   CLRFLAGS
-   ret
-
+   fxcop c_FxOp8FA1
 NEWSYM FxOp80A2    ; MULIRN 8 bit to 16 bit signed multiply, register * immediate
    fxcop c_FxOp80A2
 NEWSYM FxOp81A2    ; MULIRN 8 bit to 16 bit signed multiply, register * immediate
@@ -1703,18 +1084,7 @@ NEWSYM FxOp8EA3    ;UMULIRN 8 bit to 16 bit unsigned multiply, register * immedi
 NEWSYM FxOp8FA3    ;UMULIRN 8 bit to 16 bit unsigned multiply, register * immediate
    fxcop c_FxOp8FA3
 NEWSYM FxOp90      ; SBK    store word to last accessed RAM address    ; V
-   mov ebx,[SfxLastRamAdr]   ; Load last ram address
-   mov eax,[esi]            ; Read Source
-   FETCHPIPE
-   mov [ebx],al         ; Store Word
-   sub ebx,[SfxRAMMem]
-   xor ebx,1
-   add ebx,[SfxRAMMem]
-   inc ebp                ; Increase program counter
-   mov [ebx],ah         ; Store Word
-   CLRFLAGS
-   ret
-
+   fxcop c_FxOp90
 NEWSYM FxOp91      ; LINK#n R11 = R15 + immediate
    fxcop c_FxOp91
 NEWSYM FxOp92      ; LINK#n R11 = R15 + immediate
@@ -1822,34 +1192,9 @@ NEWSYM FxOpACA1    ; LMS rn,(yy)  load word from RAM (short address)
 NEWSYM FxOpADA1    ; LMS rn,(yy)  load word from RAM (short address)
    fxcop c_FxOpADA1
 NEWSYM FxOpAEA1    ; LMS rn,(yy)  load word from RAM (short address)
-   xor eax,eax
-   mov al,[ebp]
-   add eax,eax
-   inc ebp
-   add eax,[SfxRAMMem]
-   mov cl,[ebp]
-   mov [SfxLastRamAdr],eax
-   mov ebx,[eax]              ; Read word from ram
-   inc ebp
-   mov [SfxR0+14*4],bx              ; Write data
-   UpdateR14
-   CLRFLAGS
-   ret
+   fxcop c_FxOpAEA1
 NEWSYM FxOpAFA1    ; LMS rn,(yy)  load word from RAM (short address)
-   xor eax,eax
-   mov al,[ebp]
-   add eax,eax
-   inc ebp
-   add eax,[SfxRAMMem]
-   mov cl,[ebp]
-   mov [SfxLastRamAdr],eax
-   mov ebx,[eax]              ; Read word from ram
-   and ebx,0FFFFh
-   mov ebp,[SfxCPB]
-   add ebp,ebx
-   CLRFLAGS
-   ret
-
+   fxcop c_FxOpAFA1
 NEWSYM FxOpA0A2    ; SMS (yy),rn  store word in RAM (short address)
    fxcop c_FxOpA0A2
 NEWSYM FxOpA1A2    ; SMS (yy),rn  store word in RAM (short address)
@@ -1881,20 +1226,7 @@ NEWSYM FxOpADA2    ; SMS (yy),rn  store word in RAM (short address)
 NEWSYM FxOpAEA2    ; SMS (yy),rn  store word in RAM (short address)
    fxcop c_FxOpAEA2
 NEWSYM FxOpAFA2    ; SMS (yy),rn  store word in RAM (short address)
-   xor eax,eax
-   mov ebx,ebp
-   sub ebx,[SfxCPB]
-   mov al,[ebp]
-   inc ebp
-   add eax,eax
-   FETCHPIPE
-   add eax,[SfxRAMMem]
-   mov [SfxLastRamAdr],eax
-   inc ebp
-   mov [eax],bx              ; Write word to ram
-   CLRFLAGS
-   ret
-
+   fxcop c_FxOpAFA2
 NEWSYM FxOpB0      ; FROM rn   set source register
    fxcop c_FxOpB0
 NEWSYM FxOpB1      ; FROM rn   set source register
@@ -1958,17 +1290,7 @@ NEWSYM FxOpCD      ; OR rn     or rn
 NEWSYM FxOpCE      ; OR rn     or rn
    fxcop c_FxOpCE
 NEWSYM FxOpCF      ; OR rn     or rn
-   mov eax,[esi]            ; Read Source
-   mov ebx,ebp
-   FETCHPIPE
-   sub ebx,[SfxCPB]
-   or eax,ebx
-   inc ebp
-   mov [edi],eax            ; Write DREG
-   mov [SfxSignZero],eax
-   CLRFLAGS
-   ret
-
+   fxcop c_FxOpCF
 NEWSYM FxOpC1A1    ; XOR rn    xor rn
    fxcop c_FxOpC1A1
 NEWSYM FxOpC2A1    ; XOR rn    xor rn
@@ -1998,17 +1320,7 @@ NEWSYM FxOpCDA1    ; XOR rn    xor rn
 NEWSYM FxOpCEA1    ; XOR rn    xor rn
    fxcop c_FxOpCEA1
 NEWSYM FxOpCFA1    ; XOR rn    xor rn
-   FETCHPIPE
-   mov eax,[esi]            ; Read Source
-   mov ebx,ebp
-   sub ebx,[SfxCPB]
-   xor eax,ebx
-   inc ebp
-   mov [edi],eax            ; Write DREG
-   mov [SfxSignZero],eax
-   CLRFLAGS
-   ret
-
+   fxcop c_FxOpCFA1
 NEWSYM FxOpC1A2    ; OR #n     OR #n
    fxcop c_FxOpC1A2
 NEWSYM FxOpC2A2    ; OR #n     OR #n
@@ -2100,80 +1412,11 @@ NEWSYM FxOpDD      ; INC rn    increase by one
 NEWSYM FxOpDE      ; INC rn    increase by one
    fxcop c_FxOpDE
 NEWSYM FxOpDF      ; GETC      transfer ROM buffer to color register
-   mov eax,[SfxRomBuffer]
-   FETCHPIPE
-   mov eax,[eax]
-   test byte[SfxPOR],04h
-   jz .nohighnibble
-   mov bl,al
-   shr bl,4
-   and al,0F0h
-   or al,bl
-.nohighnibble
-   test byte[SfxPOR],08h
-   jnz .preserveupper
-   cmp [SfxCOLR],al
-   je .nocolchange
-   mov [SfxCOLR],al
-   and eax,0FFh
-   mov ebx,[fxbit01+eax*4]
-   mov [fxbit01pcal],ebx
-   mov ebx,[fxbit23+eax*4]
-   mov [fxbit23pcal],ebx
-   mov ebx,[fxbit45+eax*4]
-   mov [fxbit45pcal],ebx
-   mov ebx,[fxbit67+eax*4]
-   mov [fxbit67pcal],ebx
-.nocolchange
-   CLRFLAGS
-   inc ebp                ; Increase program counter
-   ret
-.preserveupper
-   mov bl,[SfxCOLR]
-   and al,0Fh
-   and bl,0F0h
-   or al,bl
-   cmp [SfxCOLR],al
-   je .nocolchange
-   mov [SfxCOLR],al
-   and eax,0FFh
-   mov ebx,[fxbit01+eax*4]
-   mov [fxbit01pcal],ebx
-   mov ebx,[fxbit23+eax*4]
-   mov [fxbit23pcal],ebx
-   mov ebx,[fxbit45+eax*4]
-   mov [fxbit45pcal],ebx
-   mov ebx,[fxbit67+eax*4]
-   mov [fxbit67pcal],ebx
-   CLRFLAGS
-   inc ebp                ; Increase program counter
-   ret
-
+   fxcop c_FxOpDF
 NEWSYM FxOpDFA2    ; RAMB      set current RAM bank    ; Verified
-   mov eax,[esi]            ; Read Source
-   mov ebx,[SfxnRamBanks]
-   FETCHPIPE
-   dec ebx
-   and eax,ebx
-   mov [SfxRAMBR],eax
-   shl eax,16
-   add eax,[sfxramdata]
-   mov [SfxRAMMem],eax
-   CLRFLAGS
-   inc ebp
-   ret
-
+   fxcop c_FxOpDFA2
 NEWSYM FxOpDFA3    ; ROMB      set current ROM bank    ; Verified
-   mov eax,[esi]            ; Read Source
-   and eax,07Fh
-   FETCHPIPE
-   mov [SfxROMBR],eax
-   mov eax,[SfxMemTable+eax*4]
-   mov [SfxCROM],eax
-   CLRFLAGS
-   inc ebp
-   ret
-
+   fxcop c_FxOpDFA3
 NEWSYM FxOpE0      ; DEC rn    decrement by one
    fxcop c_FxOpE0
 NEWSYM FxOpE1      ; DEC rn    decrement by one
@@ -2205,56 +1448,13 @@ NEWSYM FxOpED      ; DEC rn    decrement by one
 NEWSYM FxOpEE      ; DEC rn    decrement by one
    fxcop c_FxOpEE
 NEWSYM FxOpEF      ; getb      get byte from ROM at address R14        ; V
-   FETCHPIPE
-   mov eax,[SfxRomBuffer]
-   inc ebp
-   mov eax,[eax]
-   and eax,0FFh
-;   cmp edi,SfxR15
-;   je .nor15
-   mov [edi],eax            ; Write DREG
-   CLRFLAGS
-   ret
-.nor15
-;   mov eax,ebp
-;   sub eax,[SfxCPB]
-;   mov [SfxR15],al
-   or eax,8000h
-   mov [edi],eax            ; Write DREG
-   CLRFLAGS
-   ret
-
+   fxcop c_FxOpEF
 NEWSYM FxOpEFA1    ; getbh     get high-byte from ROM at address R14   ; V
-   mov eax,[esi]            ; Read Source
-   mov ebx,[SfxRomBuffer]
-   and eax,0FFh
-   FETCHPIPE
-   mov ah,[ebx]
-   inc ebp
-   mov [edi],eax            ; Write DREG
-   CLRFLAGS
-   ret
-
+   fxcop c_FxOpEFA1
 NEWSYM FxOpEFA2    ; getbl     get low-byte from ROM at address R14    ; V
-   mov eax,[esi]            ; Read Source
-   mov ebx,[SfxRomBuffer]
-   and eax,0FF00h
-   FETCHPIPE
-   mov al,[ebx]
-   inc ebp
-   mov [edi],eax            ; Write DREG
-   CLRFLAGS
-   ret
-
+   fxcop c_FxOpEFA2
 NEWSYM FxOpEFA3    ; getbs     get sign extended byte from ROM at address R14  ; V
-   mov ebx,[SfxRomBuffer]
-   FETCHPIPE
-   movsx eax,byte[ebx]
-   inc ebp
-   mov [edi],ax            ; Write DREG
-   CLRFLAGS
-   ret
-
+   fxcop c_FxOpEFA3
 NEWSYM FxOpF0      ; IWT RN,#xx   immediate word transfer to register
    fxcop c_FxOpF0
 NEWSYM FxOpF1      ; IWT RN,#xx   immediate word transfer to register
@@ -2284,23 +1484,9 @@ NEWSYM FxOpFC      ; IWT RN,#xx   immediate word transfer to register
 NEWSYM FxOpFD      ; IWT RN,#xx   immediate word transfer to register
    fxcop c_FxOpFD
 NEWSYM FxOpFE      ; IWT RN,#xx   immediate word transfer to register
-   mov eax,[ebp]
-   mov cl,[ebp+2]
-   and eax,0FFFFh
-   add ebp,3
-   mov [SfxR0+14*4],eax
-   UpdateR14
-   CLRFLAGS
-   ret
+   fxcop c_FxOpFE
 NEWSYM FxOpFF      ; IWT RN,#xx   immediate word transfer to register
-   mov eax,[ebp]
-   mov cl,[ebp+2]
-   and eax,0FFFFh
-   mov ebp,[SfxCPB]
-   add ebp,eax
-   CLRFLAGS
-   ret
-
+   fxcop c_FxOpFF
 NEWSYM FxOpF0A1    ; LM RN,(XX)   load word from RAM
    fxcop c_FxOpF0A1
 NEWSYM FxOpF1A1    ; LM RN,(XX)   load word from RAM
@@ -2330,40 +1516,9 @@ NEWSYM FxOpFCA1    ; LM RN,(XX)   load word from RAM
 NEWSYM FxOpFDA1    ; LM RN,(XX)   load word from RAM
    fxcop c_FxOpFDA1
 NEWSYM FxOpFEA1    ; LM RN,(XX)   load word from RAM
-   xor eax,eax
-   mov cl,[ebp+2]
-   mov ax,[ebp]
-   mov ebx,[SfxRAMMem]
-   mov [SfxLastRamAdr],eax
-   add [SfxLastRamAdr],ebx
-   mov dl,[eax+ebx]
-   xor eax,1
-   add ebp,3
-   mov dh,[eax+ebx]
-   mov [SfxR0+14*4],dx         ; Store Word
-   UpdateR14
-   CLRFLAGS
-   ret
+   fxcop c_FxOpFEA1
 NEWSYM FxOpFFA1    ; LM RN,(XX)   load word from RAM
-   FETCHPIPE
-   mov eax,ecx
-   inc ebp
-   FETCHPIPE
-   inc ebp
-   mov ah,cl
-   FETCHPIPE
-   mov ebx,[SfxRAMMem]
-   mov [SfxLastRamAdr],eax
-   add [SfxLastRamAdr],ebx
-   mov dl,[eax+ebx]
-   xor eax,1
-   mov dh,[eax+ebx]
-   and edx,0FFFFh
-   mov ebp,[SfxCPB]
-   add ebp,edx
-   CLRFLAGS
-   ret
-
+   fxcop c_FxOpFFA1
 NEWSYM FxOpF0A2    ; SM (XX),RN   store word in RAM
    fxcop c_FxOpF0A2
 NEWSYM FxOpF1A2    ; SM (XX),RN   store word in RAM
@@ -2395,26 +1550,7 @@ NEWSYM FxOpFDA2    ; SM (XX),RN   store word in RAM
 NEWSYM FxOpFEA2    ; SM (XX),RN   store word in RAM
    fxcop c_FxOpFEA2
 NEWSYM FxOpFFA2    ; SM (XX),RN   store word in RAM
-   FETCHPIPE
-   mov ebx,ebp
-   sub ebx,[SfxCPB]
-   mov eax,ecx
-   inc ebp
-   FETCHPIPE
-   inc ebp
-   mov ah,cl
-   FETCHPIPE
-   mov dx,bx
-   mov ebx,[SfxRAMMem]
-   mov [SfxLastRamAdr],eax
-   add [SfxLastRamAdr],ebx
-   mov [eax+ebx],dl
-   xor eax,1
-   inc ebp
-   mov [eax+ebx],dh
-   CLRFLAGS
-   ret
-
+   fxcop c_FxOpFFA2
 SECTION .bss
 
 NEWSYM NumberOfOpcodes, resd 1    ; Number of opcodes to execute
