@@ -225,6 +225,11 @@ extern void asm_FxOp98A1(void), asm_FxOp99A1(void), asm_FxOp9AA1(void), asm_FxOp
 extern void asm_FxOp9CA1(void), asm_FxOp9DA1(void), asm_FxOp02(void);
 extern void asm_FxOp01(void), asm_FxOp4D(void), asm_FxOp4F(void), asm_FxOp95(void), asm_FxOp96(void), asm_FxOp96A1(void), asm_FxOp97(void), asm_FxOp9E(void), asm_FxOpC0(void);
 extern void asm_FxOp03(void), asm_FxOp04(void), asm_FxOp3C(void), asm_FxOp9F(void), asm_FxOp9FA1(void), asm_FxOpAE(void), asm_FxOpAF(void), asm_FxOpDE(void), asm_FxOpEE(void);
+extern void asm_FxOp05(void), asm_FxOp06(void), asm_FxOp07(void), asm_FxOp08(void);
+extern void asm_FxOp09(void), asm_FxOp0A(void), asm_FxOp0B(void), asm_FxOp0C(void);
+extern void asm_FxOp0D(void), asm_FxOp0E(void), asm_FxOp0F(void), asm_FxOp1E(void);
+extern void asm_FxOp1F(void), asm_FxOp2E(void), asm_FxOp2F(void), asm_FxOp3D(void);
+extern void asm_FxOp3E(void), asm_FxOp3F(void), asm_FxOpBF(void);
 
 typedef struct {
     char const* name;
@@ -873,6 +878,25 @@ static fxcase const cases[] = {
     { "FxOpAF JMP #d", asm_FxOpAF, c_FxOpAF, 0, 0 },
     { "FxOpDE INC R14", asm_FxOpDE, c_FxOpDE, 0, 0 },
     { "FxOpEE DEC R14", asm_FxOpEE, c_FxOpEE, 0, 0 },
+    { "FxOp05 BRA", asm_FxOp05, c_FxOp05, 0, 0 },
+    { "FxOp06 BGE", asm_FxOp06, c_FxOp06, 0, 0 },
+    { "FxOp07 BLT", asm_FxOp07, c_FxOp07, 0, 0 },
+    { "FxOp08 BNE", asm_FxOp08, c_FxOp08, 0, 0 },
+    { "FxOp09 BEQ", asm_FxOp09, c_FxOp09, 0, 0 },
+    { "FxOp0A BPL", asm_FxOp0A, c_FxOp0A, 0, 0 },
+    { "FxOp0B BMI", asm_FxOp0B, c_FxOp0B, 0, 0 },
+    { "FxOp0C BCC", asm_FxOp0C, c_FxOp0C, 0, 0 },
+    { "FxOp0D BCS", asm_FxOp0D, c_FxOp0D, 0, 0 },
+    { "FxOp0E BVC", asm_FxOp0E, c_FxOp0E, 0, 0 },
+    { "FxOp0F BVS", asm_FxOp0F, c_FxOp0F, 0, 0 },
+    { "FxOp1E TO R14", asm_FxOp1E, c_FxOp1E, 0, 0 },
+    { "FxOp1F TO R15", asm_FxOp1F, c_FxOp1F, 0, 0 },
+    { "FxOp2E WITH R14", asm_FxOp2E, c_FxOp2E, 0, 0 },
+    { "FxOp2F WITH R15", asm_FxOp2F, c_FxOp2F, 0, 0 },
+    { "FxOp3D ALT1", asm_FxOp3D, c_FxOp3D, 0, 0 },
+    { "FxOp3E ALT2", asm_FxOp3E, c_FxOp3E, 0, 0 },
+    { "FxOp3F ALT3", asm_FxOp3F, c_FxOp3F, 0, 0 },
+    { "FxOpBF FROM R15", asm_FxOpBF, c_FxOpBF, 0, 0 },
 };
 
 /* A register value, biased towards the 16-bit boundaries. The arithmetic here

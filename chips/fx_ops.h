@@ -1449,13 +1449,14 @@ static inline void fx_alt_b(u4 const mode, u4 const* const table)
     FxSeamCX &= 0xFFu;
 }
 
-static inline void fx_alt_c(u4 const mode)
+/* The plain form. Only the b group additionally stamps R15 (fx_alt_b). */
+static inline void fx_alt(u4 const mode, u4 const* const table)
 {
     fx_fetchpipe();
     SfxB = 0;
     FxSeamCX |= mode << 8;
     FxSeamPC++;
-    FxDispatch(FxTablec);
+    FxDispatch(table);
     FxSeamCX &= 0xFFu;
 }
 
@@ -1586,8 +1587,87 @@ void c_FxOpcBF(void)
     fx_from_write(v);
 }
 
-void c_FxOpc3D(void) { fx_alt_c(1); }
-void c_FxOpc3E(void) { fx_alt_c(2); }
-void c_FxOpc3F(void) { fx_alt_c(3); }
+void c_FxOpc3D(void) { fx_alt(1, FxTablec); }
+void c_FxOpc3E(void) { fx_alt(2, FxTablec); }
+void c_FxOpc3F(void) { fx_alt(3, FxTablec); }
+
+/* --- Base-table branches and register-select edge cases -------------------
+ *
+ * The same shapes as the b and c groups above, but chaining through the base
+ * table. The R14 and R15 forms are spelled out because each has a tail the
+ * plain TO/FROM/WITH do not: R14 refreshes the ROM pointer, R15 rebuilds the
+ * program counter from the register the nested opcode may have moved.
+ */
+
+FX_BRANCHES(, FxTable)
+
+void c_FxOp1E(void) /* TO R14 */
+{
+    fx_fetchpipe();
+    FxSeamDst = SfxR0 + 14;
+    FxSeamPC++;
+    FxDispatch(FxTable);
+    FxSeamDst = SfxR0;
+    fx_update_r14();
+}
+
+void c_FxOp1F(void) /* TO R15: the nested opcode's write to R15 is the jump */
+{
+    fx_fetchpipe();
+    FxSeamDst = SfxR0 + 15;
+    FxSeamPC++;
+    FxDispatch(FxTable);
+    FxSeamPC = (u1*)(uintptr_t)(SfxCPB + SfxR0[15]);
+    FxSeamDst = SfxR0;
+}
+
+void c_FxOp2E(void) /* WITH R14 */
+{
+    fx_fetchpipe();
+    FxSeamSrc = SfxR0 + 14;
+    FxSeamDst = SfxR0 + 14;
+    SfxB = 1;
+    FxSeamPC++;
+    FxDispatch(FxTablec);
+    SfxB = 0;
+    FxSeamSrc = SfxR0;
+    FxSeamDst = SfxR0;
+    fx_update_r14();
+}
+
+void c_FxOp2F(void) /* WITH R15 */
+{
+    fx_fetchpipe();
+    FxSeamSrc = SfxR0 + 15;
+    FxSeamDst = SfxR0 + 15;
+    SfxB = 1;
+    FxSeamPC++;
+    SfxR0[15] = fx_pc_rel();
+    /* withr15sk lets the nested opcode say it already set the program counter
+       itself, in which case R15 must not be applied a second time. */
+    withr15sk = 0;
+    FxDispatch(FxTablec);
+    if (withr15sk != 1) {
+        FxSeamPC = (u1*)(uintptr_t)(SfxCPB + SfxR0[15]);
+    }
+    SfxB = 0;
+    FxSeamSrc = SfxR0;
+    FxSeamDst = SfxR0;
+}
+
+/* All three chain through the base table here, and none of them stamps R15. */
+void c_FxOp3D(void) { fx_alt(1, FxTable); }
+void c_FxOp3E(void) { fx_alt(2, FxTable); }
+void c_FxOp3F(void) { fx_alt(3, FxTable); }
+
+void c_FxOpBF(void) /* FROM R15 */
+{
+    fx_fetchpipe();
+    FxSeamSrc = SfxR0 + 15;
+    FxSeamPC++;
+    SfxR0[15] = fx_pc_rel();
+    FxDispatch(FxTableb);
+    FxSeamSrc = SfxR0;
+}
 
 #endif

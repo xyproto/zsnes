@@ -173,6 +173,10 @@ EXTSYM c_FxOp01,c_FxOp4D,c_FxOp4F,c_FxOp95,c_FxOp96,c_FxOp96A1
 EXTSYM c_FxOp97,c_FxOp9E,c_FxOpC0
 EXTSYM c_FxOp03,c_FxOp04,c_FxOp3C,c_FxOp9F,c_FxOp9FA1,c_FxOpAE
 EXTSYM c_FxOpAF,c_FxOpDE,c_FxOpEE
+EXTSYM c_FxOp05,c_FxOp06,c_FxOp07,c_FxOp08,c_FxOp09,c_FxOp0A
+EXTSYM c_FxOp0B,c_FxOp0C,c_FxOp0D,c_FxOp0E,c_FxOp0F,c_FxOp1E
+EXTSYM c_FxOp1F,c_FxOp2E,c_FxOp2F,c_FxOp3D,c_FxOp3E,c_FxOp3F
+EXTSYM c_FxOpBF
 
 %macro ccall 1-*
 	push ecx
@@ -343,159 +347,27 @@ NEWSYM FxOp03      ; LSR    logic shift right  ; Verified.
 NEWSYM FxOp04      ; ROL    rotate left (RCL?) ; V
    fxcop c_FxOp04
 NEWSYM FxOp05      ; BRA    branch always      ; Verified.
-   movsx eax,byte[ebp]
-   mov cl,[ebp+1]
-   inc ebp
-   add ebp,eax
-   call [FxTable+ecx*4]
-   ret
-
+   fxcop c_FxOp05
 NEWSYM FxOp06      ; BGE    branch on greater or equals        ; Verified.
-   movsx eax,byte[ebp]
-   mov ebx,[SfxSignZero]
-   shr ebx,15
-   inc ebp
-   xor bl,[SfxOverflow]
-   mov cl,[ebp]
-   test bl,01h
-   jnz .nojump
-   add ebp,eax
-   call [FxTable+ecx*4]
-   ret
-.nojump
-   inc ebp
-   call [FxTable+ecx*4]
-   ret
-
+   fxcop c_FxOp06
 NEWSYM FxOp07      ; BLT    branch on lesss than       ; Verified.
-   movsx eax,byte[ebp]
-   mov ebx,[SfxSignZero]
-   shr ebx,15
-   inc ebp
-   xor bl,[SfxOverflow]
-   mov cl,[ebp]
-   test bl,01h
-   jz .nojump
-   add ebp,eax
-   call [FxTable+ecx*4]
-   ret
-.nojump
-   inc ebp
-   call [FxTable+ecx*4]
-   ret
-
+   fxcop c_FxOp07
 NEWSYM FxOp08      ; BNE    branch on not equal        ; Verified.
-   movsx eax,byte[ebp]
-   inc ebp
-   test dword[SfxSignZero],0FFFFh
-   mov cl,[ebp]
-   jz .nojump
-   add ebp,eax
-   call [FxTable+ecx*4]
-   ret
-.nojump
-   inc ebp
-   call [FxTable+ecx*4]
-   ret
-
+   fxcop c_FxOp08
 NEWSYM FxOp09      ; BEQ    branch on equal (z=1)      ; Verified.
-   movsx eax,byte[ebp]
-   inc ebp
-   test dword[SfxSignZero],0FFFFh
-   mov cl,[ebp]
-   jnz .nojump
-   add ebp,eax
-   call [FxTable+ecx*4]
-   ret
-.nojump
-   inc ebp
-   call [FxTable+ecx*4]
-   ret
-
+   fxcop c_FxOp09
 NEWSYM FxOp0A      ; BPL    branch on plus     ; Verified.
-   movsx eax,byte[ebp]
-   inc ebp
-   test dword[SfxSignZero],088000h
-   mov cl,[ebp]
-   jnz .nojump
-   add ebp,eax
-   call [FxTable+ecx*4]
-   ret
-.nojump
-   inc ebp
-   call [FxTable+ecx*4]
-   ret
-
+   fxcop c_FxOp0A
 NEWSYM FxOp0B      ; BMI    branch on minus    ; Verified.
-   movsx eax,byte[ebp]
-   inc ebp
-   test dword[SfxSignZero],088000h
-   mov cl,[ebp]
-   jz .nojump
-   add ebp,eax
-   call [FxTable+ecx*4]
-   ret
-.nojump
-   inc ebp
-   call [FxTable+ecx*4]
-   ret
-
+   fxcop c_FxOp0B
 NEWSYM FxOp0C      ; BCC    branch on carry clear      ; Verified.
-   movsx eax,byte[ebp]
-   inc ebp
-   test byte[SfxCarry],01h
-   mov cl,[ebp]
-   jnz .nojump
-   add ebp,eax
-   call [FxTable+ecx*4]
-   ret
-.nojump
-   inc ebp
-   call [FxTable+ecx*4]
-   ret
-
+   fxcop c_FxOp0C
 NEWSYM FxOp0D      ; BCS    branch on carry set        ; Verified.
-   movsx eax,byte[ebp]
-   inc ebp
-   test byte[SfxCarry],01h
-   mov cl,[ebp]
-   jz .nojump
-   add ebp,eax
-   call [FxTable+ecx*4]
-   ret
-.nojump
-   inc ebp
-   call [FxTable+ecx*4]
-   ret
-
+   fxcop c_FxOp0D
 NEWSYM FxOp0E      ; BVC    branch on overflow clear   ; Verified.
-   movsx eax,byte[ebp]
-   inc ebp
-   test byte[SfxOverflow],01h
-   mov cl,[ebp]
-   jnz .nojump
-   add ebp,eax
-   call [FxTable+ecx*4]
-   ret
-.nojump
-   inc ebp
-   call [FxTable+ecx*4]
-   ret
-
+   fxcop c_FxOp0E
 NEWSYM FxOp0F      ; BVS    branch on overflow set     ; Verified.
-   movsx eax,byte[ebp]
-   inc ebp
-   test byte[SfxOverflow],01h
-   mov cl,[ebp]
-   jz .nojump
-   add ebp,eax
-   call [FxTable+ecx*4]
-   ret
-.nojump
-   inc ebp
-   call [FxTable+ecx*4]
-   ret
-
+   fxcop c_FxOp0F
 NEWSYM FxOp10      ; TO RN  set register n as destination register
    fxcop c_FxOp10
 NEWSYM FxOp11      ; TO RN  set register n as destination register
@@ -525,23 +397,9 @@ NEWSYM FxOp1C      ; TO RN  set register n as destination register
 NEWSYM FxOp1D      ; TO RN  set register n as destination register
    fxcop c_FxOp1D
 NEWSYM FxOp1E      ; TO RN  set register n as destination register
-   FETCHPIPE
-   mov edi,SfxR0+14*4
-   inc ebp
-   call [FxTable+ecx*4]
-   mov edi,SfxR0
-   UpdateR14
-   ret
+   fxcop c_FxOp1E
 NEWSYM FxOp1F      ; TO RN  set register n as destination register
-   FETCHPIPE
-   mov edi,SfxR0+15*4
-   inc ebp
-   call [FxTable+ecx*4]
-   mov ebp,[SfxCPB]
-   add ebp,[SfxR15]
-   mov edi,SfxR0
-   ret
-
+   fxcop c_FxOp1F
 NEWSYM FxOp20      ; WITH  set register n as source and destination register
    fxcop c_FxOp20
 NEWSYM FxOp21      ; WITH  set register n as source and destination register
@@ -571,38 +429,9 @@ NEWSYM FxOp2C      ; WITH  set register n as source and destination register
 NEWSYM FxOp2D      ; WITH  set register n as source and destination register
    fxcop c_FxOp2D
 NEWSYM FxOp2E      ; WITH  set register n as source and destination register
-   FETCHPIPE
-   mov esi,SfxR0+14*4
-   mov edi,SfxR0+14*4
-   mov dword[SfxB],1
-   inc ebp
-   call [FxTablec+ecx*4]
-   mov dword[SfxB],0         ; Clear B Flag
-   mov esi,SfxR0
-   mov edi,SfxR0
-   UpdateR14
-   ret
+   fxcop c_FxOp2E
 NEWSYM FxOp2F      ; WITH  set register n as source and destination register
-   FETCHPIPE
-   mov esi,SfxR0+15*4
-   mov edi,SfxR0+15*4
-   mov dword[SfxB],1
-   inc ebp
-   mov eax,ebp
-   sub eax,[SfxCPB]
-   mov dword[withr15sk],0
-   mov [SfxR15],eax
-   call [FxTableb+ecx*4]
-   cmp dword[withr15sk],1
-   je .skip
-   mov ebp,[SfxCPB]
-   add ebp,[SfxR15]
-.skip
-   mov dword[SfxB],0         ; Clear B Flag
-   mov esi,SfxR0
-   mov edi,SfxR0
-   ret
-
+   fxcop c_FxOp2F
 NEWSYM FxOp30      ; STW RN store word
    fxcop c_FxOp30
 NEWSYM FxOp31      ; STW RN store word
@@ -654,32 +483,11 @@ NEWSYM FxOp3BA1    ; STB RN store byte
 NEWSYM FxOp3C      ; LOOP   decrement loop counter, and branch on not zero ; V
    fxcop c_FxOp3C
 NEWSYM FxOp3D      ; ALT1   set alt1 mode      ; Verified.
-   FETCHPIPE
-   mov dword[SfxB],0
-   or ch,01h
-   inc ebp
-   call [FxTable+ecx*4]
-   xor ch,ch
-   ret
-
+   fxcop c_FxOp3D
 NEWSYM FxOp3E      ; ALT2   set alt1 mode      ; Verified.
-   FETCHPIPE
-   mov dword[SfxB],0
-   or ch,02h
-   inc ebp
-   call [FxTable+ecx*4]
-   xor ch,ch
-   ret
-
+   fxcop c_FxOp3E
 NEWSYM FxOp3F      ; ALT3   set alt3 mode      ; Verified.
-   FETCHPIPE
-   mov dword[SfxB],0
-   or ch,03h
-   inc ebp
-   call [FxTable+ecx*4]
-   xor ch,ch
-   ret
-
+   fxcop c_FxOp3F
 NEWSYM FxOp40      ; LDW RN load word from RAM
    fxcop c_FxOp40
 NEWSYM FxOp41      ; LDW RN load word from RAM
@@ -2118,16 +1926,7 @@ NEWSYM FxOpBD      ; FROM rn   set source register
 NEWSYM FxOpBE      ; FROM rn   set source register
    fxcop c_FxOpBE
 NEWSYM FxOpBF      ; FROM rn   set source register
-   FETCHPIPE
-   mov esi,SfxR0+15*4
-   inc ebp                ; Increase program counter
-   mov eax,ebp
-   sub eax,[SfxCPB]
-   mov [SfxR15],eax
-   call [FxTableb+ecx*4]
-   mov esi,SfxR0
-   ret
-
+   fxcop c_FxOpBF
 NEWSYM FxOpC0      ; HIB       move high-byte to low-byte      ; V
    fxcop c_FxOpC0
 NEWSYM FxOpC1      ; OR rn     or rn
