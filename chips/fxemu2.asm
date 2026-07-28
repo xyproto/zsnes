@@ -231,107 +231,6 @@ NEWSYM FlushCache
    ; Copy 512 bytes from pb:eax to SfxCACHERAM
    ret
 
-SECTION .bss
-NEWSYM tempsfx, resb 3
-
-SECTION .data
-
-; FxChip emulation by _Demo_
-; Optimised by zsKnight
-; based on fxemu by lestat
-
-NEWSYM SfxR0,    dd 0     ; default source/destination register
-NEWSYM SfxR1,    dd 0     ; pixel plot X position register
-NEWSYM SfxR2,    dd 0     ; pixel plot Y position register
-NEWSYM SfxR3,    dd 0     ;
-NEWSYM SfxR4,    dd 0     ; lower 16 bit result of lmult
-NEWSYM SfxR5,    dd 0     ;
-NEWSYM SfxR6,    dd 0     ; multiplier for fmult and lmult
-NEWSYM SfxR7,    dd 0     ; fixed point texel X position for merge
-NEWSYM SfxR8,    dd 0     ; fixed point texel Y position for merge
-NEWSYM SfxR9,    dd 0     ;
-NEWSYM SfxR10,   dd 0     ;
-NEWSYM SfxR11,   dd 0     ; return address set by link
-NEWSYM SfxR12,   dd 0     ; loop counter
-NEWSYM SfxR13,   dd 0     ; loop point address
-NEWSYM SfxR14,   dd 0     ; rom address for getb, getbh, getbl, getbs
-NEWSYM SfxR15,   dd 0     ; program counter
-
-NEWSYM SfxSFR,   dd 0     ; status flag register (16bit)
-;SFR status flag register bits:
-; 0   -
-; 1   Z   Zero flag
-; 2   CY  Carry flag
-; 3   S   Sign flag
-; 4   OV  Overflow flag
-; 5   G   Go flag (set to 1 when the GSU is running)
-; 6   R   Set to 1 when reading ROM using R14 address
-; 7   -
-; 8   ALT1   Mode set-up flag for the next instruction
-; 9   ALT2   Mode set-up flag for the next instruction
-;10   IL  Immediate lower 8-bit flag
-;11   IH  Immediate higher 8-bit flag
-;12   B   Set to 1 when the WITH instruction is executed
-;13   -
-;14   -
-;15   IRQ Set to 1 when GSU caused an interrupt
-;                Set to 0 when read by 658c16
-
-NEWSYM SfxBRAMR,    dd 0  ; backup ram read only on/off (8bit)
-NEWSYM SfxPBR,      dd 0
-NEWSYM SfxROMBR,    dd 0  ; rom bank register (8bit)
-NEWSYM SfxCFGR,     dd 0  ; control flags register (8bit)
-NEWSYM SfxSCBR,     dd 0
-NEWSYM SfxCLSR,     dd 0
-NEWSYM SfxSCMR,     dd 0
-NEWSYM SfxVCR,      dd 0  ; version code register (8bit)
-NEWSYM SfxRAMBR,    dd 0  ; ram bank register (8bit)
-NEWSYM SfxCBR,      dd 0  ; cache base register (16bit)
-
-NEWSYM SfxCOLR,     dd 0
-NEWSYM SfxPOR,      dd 0
-
-NEWSYM SfxCacheFlags,  dd 0  ; Saying what parts of the cache was written to
-NEWSYM SfxLastRamAdr,  dd 0  ; Last RAM address accessed
-NEWSYM SfxDREG,        dd 0  ; Current destination register index
-NEWSYM SfxSREG,        dd 0  ; Current source register index
-NEWSYM SfxRomBuffer,   dd 0  ; Current byte read by R14
-NEWSYM SfxPIPE,        dd 0  ; Instructionset pipe
-NEWSYM SfxPipeAdr,     dd 0  ; The address of where the pipe was read from
-
-NEWSYM SfxnRamBanks,   dd 4  ; Number of 64kb-banks in FxRam (Don't confuse it with SNES-Ram!!!)
-NEWSYM SfxnRomBanks,   dd 0  ; Number of 32kb-banks in Cart-ROM
-
-NEWSYM SfxvScreenHeight, dd 0 ; 128, 160 or 192
-NEWSYM SfxvScreenSize, dd 0
-
-NEWSYM SfxCacheActive, dd 0  ; Cache Active
-
-NEWSYM SfxCarry,       dd 0  ; Carry flag
-NEWSYM SfxSignZero,    dd 0  ; Sign and Zero flag
-NEWSYM SfxB,           dd 0  ; B flag  (1 when with instruction executed)
-NEWSYM SfxOverflow,    dd 0  ; Overflow flag
-
-NEWSYM SfxCACHERAM, times 512 db 0    ; 512 bytes of GSU cache memory
-num2writesfxreg  equ $-SfxR0
-; pharos equ hack *sigh*
-NEWSYM PHnum2writesfxreg, dd num2writesfxreg
-
-NEWSYM SfxCPB,         dd 0
-NEWSYM SfxCROM,        dd 0
-NEWSYM SfxRAMMem,      dd 0
-NEWSYM withr15sk,      dd 0
-NEWSYM sfxclineloc,       dd 0
-NEWSYM SCBRrel, dd 0
-NEWSYM fxbit01pcal, dd 0
-NEWSYM fxbit23pcal, dd 0
-NEWSYM fxbit45pcal, dd 0
-NEWSYM fxbit67pcal, dd 0
-
-;SfxRAM times 256*1024 db 0
-
-; If we need this later...
-
 SECTION .text
 NEWSYM FxOp00     ; STOP   stop GSU execution (and maybe generate an IRQ)     ; Verified.
    fxcop c_FxOp00
@@ -1551,12 +1450,6 @@ NEWSYM FxOpFEA2    ; SM (XX),RN   store word in RAM
    fxcop c_FxOpFEA2
 NEWSYM FxOpFFA2    ; SM (XX),RN   store word in RAM
    fxcop c_FxOpFFA2
-SECTION .bss
-
-NEWSYM NumberOfOpcodes, resd 1    ; Number of opcodes to execute
-NEWSYM NumberOfOpcodesBU, resd 1  ; Number of opcodes to execute backup value
-NEWSYM sfxwarningb, resb 1
-
 SECTION .text
 
 NEWSYM MainLoop
@@ -1587,9 +1480,3 @@ NEWSYM FXEndLoop
    or [SfxSFR+1],ch
    UnPackEsiEdi
    ret
-
-SECTION .data
-NEWSYM fxtrace, db 0; times 65536 db 0
-
-
-
