@@ -107,9 +107,25 @@ section .note.GNU-stack noalloc noexec nowrite progbits
 	pop eax
 %endmacro
 EXTSYM romdata,sramb4save,curromspace,SA1Overflow
-EXTSYM MemSeamB,MemSeamC,MemSeamA
+EXTSYM MemSeamB,MemSeamC,MemSeamA,MemSeamD
+EXTSYM BWUsed2,BWUsed,LatestBank
 EXTSYM c_membank0r8ram,c_membank0r8inv,c_membank0r8rom,c_membank0r8romram
 EXTSYM c_membank0r8reg,c_membank0r16reg,c_membank0w8reg,c_membank0w16reg
+EXTSYM c_memaccessbankr8,c_memaccessbankr16,c_memaccessbankw8,c_memaccessbankw16
+EXTSYM c_wramaccessbankr8,c_wramaccessbankr16,c_wramaccessbankw8
+EXTSYM c_wramaccessbankw16,c_eramaccessbankr8,c_eramaccessbankr16
+EXTSYM c_eramaccessbankw8,c_eramaccessbankw16
+EXTSYM c_sramaccessbankr8b,c_sramaccessbankr16b,c_sramaccessbankw8b
+EXTSYM c_sramaccessbankw16b,c_sramaccessbankr8s,c_sramaccessbankr16s
+EXTSYM c_sramaccessbankw8s,c_sramaccessbankw16s
+EXTSYM c_stsramr8,c_stsramr16,c_stsramw8,c_stsramw16
+EXTSYM c_stsramr8b,c_stsramr16b,c_stsramw8b,c_stsramw16b
+EXTSYM c_regaccessbankr8,c_regaccessbankw8,c_regaccessbankr16,c_regaccessbankw16
+EXTSYM c_membank0r8,c_membank0r16,c_membank0w8,c_membank0w16
+EXTSYM c_membank0r8ramSA1,c_membank0r16ramSA1,c_membank0w8ramSA1,c_membank0w16ramSA1
+EXTSYM c_SA1RAMaccessbankr8,c_SA1RAMaccessbankr16,c_SA1RAMaccessbankw8,c_SA1RAMaccessbankw16
+EXTSYM c_regaccessbankr8SA1,c_regaccessbankw8SA1,c_regaccessbankr16SA1,c_regaccessbankw16SA1
+EXTSYM c_membank0r8SA1,c_membank0r16SA1,c_membank0w8SA1,c_membank0w16SA1
 EXTSYM c_membank0r16ram,c_membank0r16ramh,c_membank0r16rom,c_membank0r16romram
 EXTSYM c_membank0w8ram,c_membank0w8inv,c_membank0w8rom,c_membank0w8romram
 EXTSYM c_membank0w16ram,c_membank0w16ramh,c_membank0w16inv,c_membank0w16romram
@@ -137,296 +153,25 @@ EXTSYM SA1_in_cc1_dma,SA1_DMA_ADDR,SA1_DMA_VALUE,SA1_DMA_CC1
     mov [MemSeamB], ebx
     mov [MemSeamC], ecx
     mov [MemSeamA], eax
+    mov [MemSeamD], edx
     ccall %1
     mov ebx, [MemSeamB]
     mov ecx, [MemSeamC]
     mov eax, [MemSeamA]
+    mov edx, [MemSeamD]
     ret
 %endmacro
 
 SECTION .text
 
 NEWSYM regaccessbankr8
-    test ecx,8000h
-    jz .regacc
-    mov ebx,[snesmmap+ebx*4]
-    mov al,[ebx+ecx]
-    xor ebx,ebx
-    ret
-.regacc
-    cmp ecx,2000h
-    jae .regs
-    mov al,[wramdataa+ecx]
-    ret
-.regs
-    cmp ecx,48FFh
-    ja .invaccess
-    call dword near regptr(ecx)
-    mov [cpu_mdr],al
-    xor ebx,ebx
-    ret
-.invaccess
-    cmp ecx,6000h
-    jae .hiromsram
-    mov al,ch
-    ret
-.hiromsram
-    cmp byte[SFXEnable],1
-    je .sfxram
-    and ebx,7Fh
-    cmp bl,10h
-    jb .dsp1
-    cmp bl,30h
-    jae .hiromsramok
-    xor al,al
-    xor ebx,ebx
-    ret
-.dsp1
-    xor al,al
-    cmp byte[DSP1Type],2
-    jne .nodsp1
-    call DSP1Read8b
-.nodsp1
-    xor ebx,ebx
-    ret
-.hiromsramok
-    push ecx
-    sub ecx,6000h
-    and ecx,1fffh
-    sub bl,30h
-    shl ebx,13
-    add ecx,ebx
-    and ecx,0FFFFh
-    call sramaccessbankr8b
-    pop ecx
-    ret
-.sfxram
-    push ecx
-    sub ecx,6000h
-    and ecx,1fffh
-    mov ebx,[sfxramdata]
-    mov al,[ebx+ecx]
-    xor ebx,ebx
-    pop ecx
-    ret
-
+    memcop c_regaccessbankr8
 NEWSYM regaccessbankr16
-    test ecx,8000h
-    jz .regacc
-    mov ebx,[snesmmap+ebx*4]
-    mov ax,[ebx+ecx]
-    xor ebx,ebx
-    ret
-.regacc
-    cmp ecx,2000h
-    jae .regs
-    mov ax,[wramdataa+ecx]
-    cmp ecx,1FFFh
-    jne .notopenbus
-    mov ah,al
-.notopenbus
-    ret
-.regs
-    cmp ecx,48FFh
-    ja .invaccess
-    call dword near regptr(ecx)
-    mov [cpu_mdr],al
-    inc ecx
-    mov ah,al
-    call dword near regptr(ecx)
-    mov [cpu_mdr],al
-    mov bl,al
-    dec ecx
-    mov al,ah
-    mov ah,bl
-    xor ebx,ebx
-    ret
-.invaccess
-;    jmp regexiter
-    cmp ecx,6000h
-    jae .hiromsram
-    mov al,ch
-    mov ah,ch
-    ret
-.hiromsram
-    cmp byte[SFXEnable],1
-    je .sfxram
-    and ebx,7Fh
-    cmp bl,10h
-    jb .dsp1
-    cmp bl,30h
-    jae .hiromsramok
-    xor ax,ax
-    xor ebx,ebx
-    ret
-.dsp1
-    xor ax,ax
-    cmp byte[DSP1Type],2
-    jne .nodsp1
-    call DSP1Read16b
-.nodsp1
-    xor ebx,ebx
-    ret
-.hiromsramok
-    push ecx
-    sub ecx,6000h
-    and ecx,1fffh
-    sub bl,30h
-    shl ebx,13
-    add ecx,ebx
-    and ecx,0FFFFh
-    call sramaccessbankr16b
-    pop ecx
-    ret
-.sfxram
-    push ecx
-    sub ecx,6000h
-    and ecx,1fffh
-    mov ebx,[sfxramdata]
-    mov ax,[ebx+ecx]
-    xor ebx,ebx
-    pop ecx
-    ret
-
+    memcop c_regaccessbankr16
 NEWSYM regaccessbankw8
-    test ecx,8000h
-    jnz .romacc
-    cmp ecx,2000h
-    jae .regs
-    mov [wramdataa+ecx],al
-    ret
-.romacc
-    cmp byte[writeon],0
-    jne .modrom
-    ret
-.modrom
-    mov ebx,[snesmmap+ebx*4]
-    mov [ebx+ecx],al
-    xor ebx,ebx
-    ret
-.regs
-    cmp ecx,48FFh
-    ja .invaccess
-    call dword near regptw(ecx)
-    xor ebx,ebx
-    ret
-.invaccess
-;    jmp regexiter
-    cmp ecx,6000h
-    jae .hiromsram
-    ret
-.hiromsram
-    cmp byte[SFXEnable],1
-    je .sfxram
-    and ebx,7Fh
-    cmp bl,10h
-    jb .dsp1
-    cmp bl,30h
-    jae .hiromsramok
-    xor ebx,ebx
-    ret
-.dsp1
-    cmp byte[DSP1Type],2
-    jne .nodsp1
-    call DSP1Write8b
-.nodsp1
-    xor ebx,ebx
-    ret
-.hiromsramok
-    push ecx
-    sub ecx,6000h
-    and ecx,1fffh
-    sub bl,30h
-    shl ebx,13
-    add ecx,ebx
-    and ecx,0FFFFh
-    call sramaccessbankw8b
-    pop ecx
-    ret
-.sfxram
-    push ecx
-    sub ecx,6000h
-    and ecx,1fffh
-    mov ebx,[sfxramdata]
-    mov [ebx+ecx],al
-    xor ebx,ebx
-    pop ecx
-    ret
-
+    memcop c_regaccessbankw8
 NEWSYM regaccessbankw16
-    test ecx,8000h
-    jnz .romacc
-    cmp ecx,2000h
-    jae .regs
-    cmp ecx,1FFFh
-    je .endwram
-    mov [wramdataa+ecx],ax
-    ret
-.endwram
-    mov [wramdataa+ecx],al
-    ret
-.romacc
-    cmp byte[writeon],0
-    jne .modrom
-    ret
-.modrom
-    mov ebx,[snesmmap+ebx*4]
-    mov [ebx+ecx],ax
-    xor ebx,ebx
-    ret
-.regs
-    cmp cx,48FFh
-    ja .invaccess
-    call dword near regptw(ecx)
-    inc ecx
-    mov al,ah
-    call dword near regptw(ecx)
-    dec ecx
-    xor ebx,ebx
-    ret
-.invaccess
-;    jmp regexiter
-    cmp ecx,6000h
-    jae .hiromsram
-    ret
-.hiromsram
-    cmp byte[SFXEnable],1
-    je .sfxram
-    and ebx,7Fh
-    cmp bl,10h
-    jb .dsp1
-    cmp bl,30h
-    jae .hiromsramok
-    xor al,al
-    xor ebx,ebx
-    ret
-.dsp1
-    cmp byte[DSP1Type],2
-    jne .nodsp1
-    call DSP1Write16b
-.nodsp1
-    ret
-.hiromsramok
-    push ecx
-    sub ecx,6000h
-    and ecx,1fffh
-    sub bl,30h
-    shl ebx,13
-    add ecx,ebx
-    and ecx,0FFFFh
-    call sramaccessbankw16b
-    pop ecx
-    ret
-.sfxram
-    push ecx
-    sub ecx,6000h
-    and ecx,1fffh
-    mov ebx,[sfxramdata]
-    mov [ebx+ecx],ax
-    xor ebx,ebx
-    pop ecx
-    ret
-
+    memcop c_regaccessbankw16
 ;*******************************************************
 ; Register & Memory Bank (Bank 0)
 ;*******************************************************
@@ -439,9 +184,7 @@ NEWSYM regaccessbankw16
 .nosa1
 %endmacro
 
-section .bss
-NEWSYM BWUsed2, resb 1
-NEWSYM BWUsed, resb 1
+; BWUsed2/BWUsed and LatestBank moved to cpu/c_memops.c.
 section .text
 
 %macro BWCheck2r8 0
@@ -758,54 +501,13 @@ section .text
 
 ; SA1 Stuff
 NEWSYM membank0r8ramSA1             ; 0000-1FFF
-    cmp byte[SA1Status],0
-    jne .nowram
-    mov al,[wramdataa+ecx+ebx]
-    ret
-.nowram
-    cmp ecx,800h
-    jae .invaccess
-    mov al,[IRAM+ecx+ebx]
-    ret
-.invaccess
-    xor al,al
-    ret
+    memcop c_membank0r8ramSA1
 NEWSYM membank0r16ramSA1             ; 0000-1FFF
-    cmp byte[SA1Status],0
-    jne .nowram
-    mov ax,[wramdataa+ecx+ebx]
-    ret
-.nowram
-    cmp ecx,800h
-    jae .invaccess
-    mov ax,[IRAM+ecx+ebx]
-    ret
-.invaccess
-    xor ax,ax
-    ret
+    memcop c_membank0r16ramSA1
 NEWSYM membank0w8ramSA1             ; 0000-1FFF
-    cmp byte[SA1Status],0
-    jne .nowram
-    mov [wramdataa+ecx+ebx],al
-    ret
-.nowram
-    cmp ecx,800h
-    jae .invaccess
-    mov [IRAM+ecx+ebx],al
-.invaccess
-    ret
+    memcop c_membank0w8ramSA1
 NEWSYM membank0w16ramSA1             ; 0000-1FFF
-    cmp byte[SA1Status],0
-    jne .nowram
-    mov [wramdataa+ecx+ebx],ax
-    ret
-.nowram
-    cmp ecx,800h
-    jae .invaccess
-    mov [IRAM+ecx+ebx],ax
-.invaccess
-    ret
-
+    memcop c_membank0w16ramSA1
 ; --- 8 BIT READ STUFF ---
 NEWSYM membank0r8ram             ; 0000-1FFF
     memcop c_membank0r8ram
@@ -969,396 +671,33 @@ NEWSYM membank0w16rom             ; 8000-FFFF
 NEWSYM membank0w16romram             ; 0000-1FFF
     memcop c_membank0w16romram
 NEWSYM membank0r8
-    and ecx,0FFFFh
-    cmp byte[SA1Enable],1
-    je near membank0r8SA1
-    cmp ecx,2000h
-    jae .regs
-    mov al,[wramdataa+ecx]
-    ret
-.regs
-    test ecx,8000h
-    jz .regacc
-    mov ebx,[snesmmap]
-    mov al,[ebx+ecx]
-    xor ebx,ebx
-    ret
-.regacc
-    cmp ecx,48FFh
-    ja .invaccess
-    call dword near regptr(ecx)
-    mov [cpu_mdr],al
-    xor ebx,ebx
-    ret
-.invaccess
-    cmp ecx,6000h
-    jae .dsp1
-    mov al,ch
-    ret
-.dsp1
-    cmp byte[SFXEnable],1
-    je .sfxram
-    xor al,al
-    cmp byte[DSP1Type],2
-    jne .nodsp1
-    call DSP1Read8b
-.nodsp1
-    ret
-.sfxram
-    push ecx
-    sub ecx,6000h
-    and ecx,1fffh
-    mov ebx,[sfxramdata]
-    mov al,[ebx+ecx]
-    xor ebx,ebx
-    pop ecx
-    ret
-
+    memcop c_membank0r8
 NEWSYM membank0r16
-    and ecx,0FFFFh
-    cmp byte[SA1Enable],1
-    je near membank0r16SA1
-    cmp ecx,2000h
-    jae .regs
-    mov ax,[wramdataa+ecx]
-    ret
-.regs
-    test ecx,8000h
-    jz .regacc
-    mov ebx,[snesmmap]
-    mov ax,[ebx+ecx]
-    xor ebx,ebx
-    ret
-.regacc
-    cmp ecx,48FFh
-    ja .invaccess
-    call dword near regptr(ecx)
-    mov [cpu_mdr],al
-    inc ecx
-    mov ah,al
-    call dword near regptr(ecx)
-    mov [cpu_mdr],al
-    mov bl,al
-    dec ecx
-    mov al,ah
-    mov ah,bl
-    xor ebx,ebx
-    ret
-.invaccess
-    cmp ecx,6000h
-    jae .dsp1
-    xor ax,ax
-    ret
-.dsp1
-    cmp byte[SFXEnable],1
-    je .sfxram
-    xor ax,ax
-    cmp byte[DSP1Type],2
-    jne .nodsp1
-    call DSP1Read16b
-.nodsp1
-    ret
-.sfxram
-    push ecx
-    sub ecx,6000h
-    and ecx,1fffh
-    mov ebx,[sfxramdata]
-    mov ax,[ebx+ecx]
-    xor ebx,ebx
-    pop ecx
-    ret
-
+    memcop c_membank0r16
 NEWSYM membank0w8
-    and ecx,0FFFFh
-    cmp byte[SA1Enable],1
-    je near membank0w8SA1
-    cmp ecx,2000h
-    jae .regs
-    mov [wramdataa+ecx],al
-    ret
-.romacc
-    cmp byte[writeon],0
-    jne .modrom
-    ret
-.modrom
-    mov ebx,[snesmmap]
-    mov [ebx+ecx],al
-    xor ebx,ebx
-    ret
-.regs
-    test ecx,8000h
-    jnz .romacc
-    cmp ecx,48FFh
-    ja .invaccess
-    call dword near regptw(ecx)
-    xor ebx,ebx
-    ret
-.invaccess
-    cmp ecx,6000h
-    jae .dsp1
-    ret
-.dsp1
-    cmp byte[SFXEnable],1
-    je .sfxram
-    cmp byte[DSP1Type],2
-    jne .nodsp1
-    call DSP1Write8b
-.nodsp1
-    ret
-.sfxram
-    push ecx
-    sub cx,6000h
-    and ecx,1fffh
-    mov ebx,[sfxramdata]
-    mov [ebx+ecx],al
-    xor ebx,ebx
-    pop ecx
-    ret
+    memcop c_membank0w8
 NEWSYM membank0w16
-    and ecx,0FFFFh
-    cmp byte[SA1Enable],1
-    je near membank0w16SA1
-    cmp ecx,2000h
-    jae .regs
-    mov [wramdataa+ecx],ax
-    ret
-.romacc
-    cmp byte[writeon],0
-    jne .modrom
-    ret
-.modrom
-    mov ebx,[snesmmap]
-    mov [ebx+ecx],ax
-    xor ebx,ebx
-    ret
-.regs
-    test ecx,8000h
-    jnz .romacc
-    cmp ecx,48FFh
-    ja .invaccess
-    call dword near regptw(ecx)
-    inc ecx
-    mov al,ah
-    call dword near regptw(ecx)
-    dec ecx
-    xor ebx,ebx
-    ret
-.invaccess
-    cmp ecx,6000h
-    jae .dsp1
-    ret
-.dsp1
-    cmp byte[SFXEnable],1
-    je .sfxram
-    cmp byte[DSP1Type],2
-    jne .nodsp1
-    call DSP1Write16b
-.nodsp1
-    ret
-.sfxram
-    push ecx
-    sub ecx,6000h
-    and ecx,1fffh
-    mov ebx,[sfxramdata]
-    mov [ebx+ecx],ax
-    xor ebx,ebx
-    pop ecx
-    ret
-
+    memcop c_membank0w16
 NEWSYM membank0r8SA1
-    test ecx,8000h
-    jz .regacc
-    mov ebx,[snesmmap]
-    mov al,[ebx+ecx]
-    xor ebx,ebx
-    ret
-.regacc
-    cmp ecx,2000h
-    jae .regs
-    cmp byte[SA1Status],0
-    jne .nowram
-    mov al,[wramdataa+ecx]
-    ret
-.nowram
-    cmp ecx,800h
-    jae .invaccess
-    mov al,[IRAM+ecx]
-    ret
-.regs
-    cmp ecx,48FFh
-    ja .invaccess
-    call dword near regptr(ecx)
-    mov [cpu_mdr],al
-    xor ebx,ebx
-    ret
-.invaccess
-    cmp ecx,6000h
-    jae .bwram
-    xor al,al
-    ret
-.bwram
-    BWCheck
-    mov ebx,[CurBWPtr]
-    mov al,[ebx+ecx]
-    xor ebx,ebx
-    ret
-    BWCheck2r8
-
+    memcop c_membank0r8SA1
 NEWSYM membank0r16SA1
-    test ecx,8000h
-    jz .regacc
-    mov ebx,[snesmmap]
-    mov ax,[ebx+ecx]
-    xor ebx,ebx
-    ret
-.regacc
-    cmp ecx,2000h
-    jae .regs
-    cmp byte[SA1Status],0
-    jne .nowram
-    mov ax,[wramdataa+ecx]
-    ret
-.nowram
-    cmp ecx,800h
-    jae .invaccess
-    mov ax,[IRAM+ecx]
-    ret
-.regs
-    cmp ecx,48FFh
-    ja .invaccess
-    call dword near regptr(ecx)
-    mov [cpu_mdr],al
-    inc ecx
-    mov ah,al
-    call dword near regptr(ecx)
-    mov [cpu_mdr],al
-    mov bl,al
-    dec ecx
-    mov al,ah
-    mov ah,bl
-    xor ebx,ebx
-    ret
-.invaccess
-    cmp ecx,6000h
-    jae .bwram
-    xor ax,ax
-    ret
-.bwram
-    BWCheck
-    mov ebx,[CurBWPtr]
-    mov ax,[ebx+ecx]
-    xor ebx,ebx
-    ret
-    BWCheck2r16
-
+    memcop c_membank0r16SA1
 NEWSYM membank0w8SA1
-    test ecx,8000h
-    jnz .romacc
-    cmp ecx,2000h
-    jae .regs
-    cmp byte[SA1Status],0
-    jne .nowram
-    mov [wramdataa+ecx],al
-    ret
-.nowram
-    cmp ecx,800h
-    jae .invaccess
-    mov [IRAM+ecx],al
-    ret
-.romacc
-    ret
-.regs
-    cmp ecx,48FFh
-    ja .invaccess
-    call dword near regptw(ecx)
-    xor ebx,ebx
-    ret
-.invaccess
-    cmp ecx,6000h
-    jae .bwram
-    ret
-.bwram
-    BWCheck
-    mov ebx,[CurBWPtr]
-    mov [ebx+ecx],al
-    xor ebx,ebx
-    ret
-    BWCheck2w8
-
+    memcop c_membank0w8SA1
 NEWSYM membank0w16SA1
-    test ecx,8000h
-    jnz .romacc
-    cmp ecx,2000h
-    jae .regs
-    cmp byte[SA1Status],0
-    jne .nowram
-    mov [wramdataa+ecx],ax
-    ret
-.nowram
-    cmp ecx,800h
-    jae .invaccess
-    mov [IRAM+ecx],ax
-    ret
-.romacc
-    ret
-.regs
-    cmp cx,48FFh
-    ja .invaccess
-    call dword near regptw(ecx)
-    inc ecx
-    mov al,ah
-    call dword near regptw(ecx)
-    dec ecx
-    xor ebx,ebx
-    ret
-.invaccess
-    cmp ecx,6000h
-    jae .bwram
-    ret
-.bwram
-    BWCheck
-    mov ebx,[CurBWPtr]
-    mov [ebx+ecx],ax
-    xor ebx,ebx
-    ret
-    BWCheck2w16
-
+    memcop c_membank0w16SA1
 ;*******************************************************
 ; ROM Only Access Banks (40 - 6F) / (C0 - FF)
 ;*******************************************************
 
 NEWSYM memaccessbankr8
-    mov ebx,[snesmmap+ebx*4]
-    mov al,[ebx+ecx]
-    xor ebx,ebx
-    ret
-
+    memcop c_memaccessbankr8
 NEWSYM memaccessbankr16
-    mov ebx,[snesmmap+ebx*4]
-    mov ax,[ebx+ecx]
-    xor ebx,ebx
-    ret
-
+    memcop c_memaccessbankr16
 NEWSYM memaccessbankw8
-    cmp byte[writeon],0
-    jne .modrom
-    ret
-.modrom
-    mov ebx,[snesmmap+ebx*4]
-    mov [ebx+ecx],al
-    xor ebx,ebx
-    ret
-
+    memcop c_memaccessbankw8
 NEWSYM memaccessbankw16
-    cmp byte[writeon],0
-    jne .modrom
-    ret
-.modrom
-    mov ebx,[snesmmap+ebx*4]
-    mov [ebx+ecx],ax
-    xor ebx,ebx
-    ret
-
+    memcop c_memaccessbankw16
 ;*******************************************************
 ; SRAM Access Bank (70h)
 ;*******************************************************
@@ -1421,514 +760,85 @@ NEWSYM sramaccessbankw16
 
 
 NEWSYM sramaccessbankr8s
-    push ecx
-    sub bl,78h
-    shl ebx,15
-    add ecx,ebx
-    call sramaccessbankr8b
-    pop ecx
-    ret
+    memcop c_sramaccessbankr8s
 NEWSYM sramaccessbankr16s
-    push ecx
-    sub bl,78h
-    shl ebx,15
-    add ecx,ebx
-    call sramaccessbankr16b
-    pop ecx
-    ret
+    memcop c_sramaccessbankr16s
 NEWSYM sramaccessbankw8s
-    push ecx
-    sub bl,78h
-    shl ebx,15
-    add ecx,ebx
-    call sramaccessbankw8b
-    pop ecx
-    ret
+    memcop c_sramaccessbankw8s
 NEWSYM sramaccessbankw16s
-    push ecx
-    sub bl,78h
-    shl ebx,15
-    add ecx,ebx
-    call sramaccessbankw16b
-    pop ecx
-    ret
-
+    memcop c_sramaccessbankw16s
 NEWSYM sramaccessbankr8b
-    cmp dword[ramsize],0
-    je .noaccess
-    push ecx
-    and ecx,[ramsizeand]
-    mov ebx,[sram]
-    mov al,[ebx+ecx]
-    pop ecx
-    xor ebx,ebx
-    ret
-.noaccess
-    xor al,al
-    xor ebx,ebx
-    ret
-
+    memcop c_sramaccessbankr8b
 NEWSYM sramaccessbankr16b
-    cmp dword[ramsize],0
-    je .noaccess
-    mov ebx,[sram]
-    push ecx
-    and ecx,[ramsizeand]
-    mov al,[ebx+ecx]
-    inc ecx
-    and ecx,[ramsizeand]
-    mov ah,[ebx+ecx]
-    pop ecx
-    xor ebx,ebx
-    ret
-.noaccess
-    xor ax,ax
-    xor ebx,ebx
-    ret
-
+    memcop c_sramaccessbankr16b
 NEWSYM sramaccessbankw8b
-    cmp dword[ramsize],0
-    je .noaccess
-    mov ebx,[sram]
-    push ecx
-    and ecx,[ramsizeand]
-    mov [ebx+ecx],al
-    pop ecx
-    mov dword[sramb4save],5*60
-.noaccess
-    xor ebx,ebx
-    ret
-
+    memcop c_sramaccessbankw8b
 NEWSYM sramaccessbankw16b
-    cmp dword[ramsize],0
-    je .noaccess
-    mov ebx,[sram]
-    push ecx
-    and ecx,[ramsizeand]
-    mov [ebx+ecx],al
-    inc ecx
-    and ecx,[ramsizeand]
-    mov [ebx+ecx],ah
-    pop ecx
-    mov dword[sramb4save],5*60
-.noaccess
-    xor ebx,ebx
-    ret
-
+    memcop c_sramaccessbankw16b
 %macro STsramaccess 1
     test ecx,8000h
     jz %1
 %endmacro
 
 NEWSYM stsramr8
-    STsramaccess memaccessbankr8
-    push ecx
-    sub bl,60h
-    shl ebx,15
-    add ecx,ebx
-    mov ebx,[sram]
-    and ecx,[ramsizeand]
-    mov al,[ebx+ecx]
-    pop ecx
-    xor ebx,ebx
-    ret
-
+    memcop c_stsramr8
 NEWSYM stsramr16
-    STsramaccess memaccessbankr16
-    push ecx
-    sub bl,60h
-    shl ebx,15
-    add ecx,ebx
-    mov ebx,[sram]
-    and ecx,[ramsizeand]
-    mov al,[ebx+ecx]
-    inc ecx
-    and ecx,[ramsizeand]
-    mov ah,[ebx+ecx]
-    pop ecx
-    xor ebx,ebx
-    ret
-
+    memcop c_stsramr16
 NEWSYM stsramw8
-    STsramaccess memaccessbankw8
-    push ecx
-    sub bl,60h
-    shl ebx,15
-    add ecx,ebx
-    mov ebx,[sram]
-    and ecx,[ramsizeand]
-    mov [ebx+ecx],al
-    pop ecx
-    mov dword[sramb4save],5*60
-    xor ebx,ebx
-    ret
-
+    memcop c_stsramw8
 NEWSYM stsramw16
-    STsramaccess memaccessbankw16
-    push ecx
-    sub bl,60h
-    shl ebx,15
-    add ecx,ebx
-    mov ebx,[sram]
-    and ecx,[ramsizeand]
-    mov [ebx+ecx],al
-    inc ecx
-    and ecx,[ramsizeand]
-    mov [ebx+ecx],ah
-    pop ecx
-    mov dword[sramb4save],5*60
-    xor ebx,ebx
-    ret
-
+    memcop c_stsramw16
 NEWSYM stsramr8b
-    STsramaccess memaccessbankr8
-    push ecx
-    sub bl,70h
-    shl ebx,15
-    add ecx,ebx
-    mov ebx,[sram2]
-    and ecx,[ramsizeand]
-    mov al,[ebx+ecx]
-    pop ecx
-    xor ebx,ebx
-    ret
-
+    memcop c_stsramr8b
 NEWSYM stsramr16b
-    STsramaccess memaccessbankr16
-    push ecx
-    sub bl,70h
-    shl ebx,15
-    add ecx,ebx
-    mov ebx,[sram2]
-    and ecx,[ramsizeand]
-    mov al,[ebx+ecx]
-    inc ecx
-    and ecx,[ramsizeand]
-    mov ah,[ebx+ecx]
-    pop ecx
-    xor ebx,ebx
-    ret
-
+    memcop c_stsramr16b
 NEWSYM stsramw8b
-    STsramaccess memaccessbankw8
-    push ecx
-    sub bl,70h
-    shl ebx,15
-    add ecx,ebx
-    mov ebx,[sram2]
-    and ecx,[ramsizeand]
-    mov [ebx+ecx],al
-    pop ecx
-    mov dword[sramb4save],5*60
-    xor ebx,ebx
-    ret
-
+    memcop c_stsramw8b
 NEWSYM stsramw16b
-    STsramaccess memaccessbankw16
-    push ecx
-    sub bl,70h
-    shl ebx,15
-    add ecx,ebx
-    mov ebx,[sram2]
-    and ecx,[ramsizeand]
-    mov [ebx+ecx],al
-    inc ecx
-    and ecx,[ramsizeand]
-    mov [ebx+ecx],ah
-    pop ecx
-    mov dword[sramb4save],5*60
-    xor ebx,ebx
-    ret
-
+    memcop c_stsramw16b
 ;*******************************************************
 ; WorkRAM/ExpandRAM Access Bank (7Eh)
 ;*******************************************************
 
 NEWSYM wramaccessbankr8
-;    mov ebx,[wramdata]
-;    mov al,[ebx+ecx]
-;    xor ebx,ebx
-    mov al,[wramdataa+ecx]
-    ret
-
+    memcop c_wramaccessbankr8
 NEWSYM wramaccessbankr16
-;    mov ebx,[wramdata]
-;    mov ax,[ebx+ecx]
-;    xor ebx,ebx
-    mov ax,[wramdataa+ecx]
-    ret
-
+    memcop c_wramaccessbankr16
 NEWSYM wramaccessbankw8
-;    mov ebx,[wramdata]
-;    mov [ebx+ecx],al
-;    xor ebx,ebx
-    mov [wramdataa+ecx],al
-    ret
-
+    memcop c_wramaccessbankw8
 NEWSYM wramaccessbankw16
-;    mov ebx,[wramdata]
-;    mov [ebx+ecx],ax
-;    xor ebx,ebx
-    mov [wramdataa+ecx],ax
-    ret
-
+    memcop c_wramaccessbankw16
 ;*******************************************************
 ; ExpandRAM Access Bank (7Fh)
 ;*******************************************************
 NEWSYM eramaccessbankr8
-;    mov ebx,[ram7f]
-;    mov al,[ebx+ecx]
-;    xor ebx,ebx
-    mov al,[ram7fa+ecx]
-    ret
-
+    memcop c_eramaccessbankr8
 NEWSYM eramaccessbankr16
-;    mov ebx,[ram7f]
-;    mov ax,[ebx+ecx]
-;    xor ebx,ebx
-    mov ax,[ram7fa+ecx]
-    ret
-
+    memcop c_eramaccessbankr16
 NEWSYM eramaccessbankw8
-;    mov ebx,[ram7f]
-;    mov [ebx+ecx],al
-;    xor ebx,ebx
-    mov [ram7fa+ecx],al
-    ret
-
+    memcop c_eramaccessbankw8
 NEWSYM eramaccessbankw16
-;    mov ebx,[ram7f]
-;    mov [ebx+ecx],ax
-;    xor ebx,ebx
-    mov [ram7fa+ecx],ax
-    ret
-
+    memcop c_eramaccessbankw16
 ;*******************************************************
 ; SA-1 Bank Accesses
 ;*******************************************************
 
 NEWSYM regaccessbankr8SA1
-    test ecx,8000h
-    jz .regacc
-    mov ebx,[snesmmap+ebx*4]
-    mov al,[ebx+ecx]
-    xor ebx,ebx
-    ret
-.regacc
-    cmp ecx,2000h
-    jae .regs
-    cmp byte[SA1Status],0
-    jne .nowram
-    mov al,[wramdataa+ecx]
-    ret
-.nowram
-    cmp ecx,800h
-    jae .invaccess
-    mov al,[IRAM+ecx]
-    ret
-.regs
-    cmp ecx,48FFh
-    ja .invaccess
-    call dword near regptr(ecx)
-    mov [cpu_mdr],al
-    xor ebx,ebx
-    ret
-.invaccess
-    cmp ecx,6000h
-    jae .bwram
-    xor al,al
-    ret
-.bwram
-    BWCheck
-    mov ebx,[CurBWPtr]
-    mov al,[ebx+ecx]
-    xor ebx,ebx
-    ret
-    BWCheck2r8
-
+    memcop c_regaccessbankr8SA1
 NEWSYM regaccessbankr16SA1
-    test ecx,8000h
-    jz .regacc
-    mov ebx,[snesmmap+ebx*4]
-    mov ax,[ebx+ecx]
-    xor ebx,ebx
-    ret
-.regacc
-    cmp ecx,2000h
-    jae .regs
-    cmp byte[SA1Status],0
-    jne .nowram
-    mov ax,[wramdataa+ecx]
-    ret
-.nowram
-    cmp ecx,800h
-    jae .invaccess
-    mov ax,[IRAM+ecx]
-    ret
-.regs
-    cmp ecx,48FFh
-    ja .invaccess
-    call dword near regptr(ecx)
-    mov [cpu_mdr],al
-    inc ecx
-    mov ah,al
-    call dword near regptr(ecx)
-    mov [cpu_mdr],al
-    mov bl,al
-    dec ecx
-    mov al,ah
-    mov ah,bl
-    xor ebx,ebx
-    ret
-.invaccess
-    cmp ecx,6000h
-    jae .bwram
-    xor ax,ax
-    ret
-.bwram
-    BWCheck
-    mov ebx,[CurBWPtr]
-    mov ax,[ebx+ecx]
-    xor ebx,ebx
-    ret
-    BWCheck2r16
-
+    memcop c_regaccessbankr16SA1
 NEWSYM regaccessbankw8SA1
-    test ecx,8000h
-    jnz .romacc
-    cmp ecx,2000h
-    jae .regs
-    cmp byte[SA1Status],0
-    jne .nowram
-    mov [wramdataa+ecx],al
-    ret
-.nowram
-    cmp ecx,800h
-    jae .invaccess
-    mov [IRAM+ecx],al
-    ret
-.romacc
-    cmp byte[writeon],0
-    jne .modrom
-    ret
-.modrom
-    mov ebx,[snesmmap+ebx*4]
-    mov [ebx+ecx],al
-    xor ebx,ebx
-    ret
-.regs
-    cmp ecx,48FFh
-    ja .invaccess
-    call dword near regptw(ecx)
-    xor ebx,ebx
-    ret
-.invaccess
-    cmp ecx,6000h
-    jae .bwram
-    ret
-.bwram
-    BWCheck
-    mov ebx,[CurBWPtr]
-    mov [ebx+ecx],al
-    xor ebx,ebx
-    ret
-    BWCheck2w8
-
+    memcop c_regaccessbankw8SA1
 NEWSYM regaccessbankw16SA1
-    test ecx,8000h
-    jnz .romacc
-    cmp ecx,2000h
-    jae .regs
-    cmp byte[SA1Status],0
-    jne .nowram
-    mov [wramdataa+ecx],ax
-    ret
-.nowram
-    cmp ecx,800h
-    jae .invaccess
-    mov [IRAM+ecx],ax
-    ret
-.romacc
-    cmp byte[writeon],0
-    jne .modrom
-    ret
-.modrom
-    mov ebx,[snesmmap+ebx*4]
-    mov [ebx+ecx],ax
-    xor ebx,ebx
-    ret
-.regs
-    cmp cx,48FFh
-    ja .invaccess
-    call dword near regptw(ecx)
-    inc ecx
-    mov al,ah
-    call dword near regptw(ecx)
-    dec ecx
-    xor ebx,ebx
-    ret
-.invaccess
-    cmp ecx,6000h
-    jae .bwram
-    ret
-.bwram
-    BWCheck
-    mov ebx,[CurBWPtr]
-    mov [ebx+ecx],ax
-    xor ebx,ebx
-    ret
-    BWCheck2w16
-
+    memcop c_regaccessbankw16SA1
 NEWSYM SA1RAMaccessbankr8
-    cmp dword[SA1_in_cc1_dma],0
-    je .nocc1dma
-    mov [SA1_DMA_ADDR],cx
-    ccallv SA1_DMA_CC1
-    mov al,[SA1_DMA_VALUE]
-    ret
-.nocc1dma
-    and ebx,03h
-    shl ebx,16
-    add ebx,[SA1RAMArea]
-    mov al,[ebx+ecx]
-    xor ebx,ebx
-    ret
-
+    memcop c_SA1RAMaccessbankr8
 NEWSYM SA1RAMaccessbankr16
-    cmp dword[SA1_in_cc1_dma],0
-    je .nocc1dma
-    mov [SA1_DMA_ADDR],cx
-    ccallv SA1_DMA_CC1
-    mov al,[SA1_DMA_VALUE]
-    inc word[SA1_DMA_ADDR]
-    ccallv SA1_DMA_CC1
-    mov ah,[SA1_DMA_VALUE]
-    ret
-.nocc1dma
-    and ebx,03h
-    shl ebx,16
-    add ebx,[SA1RAMArea]
-    mov ax,[ebx+ecx]
-    xor ebx,ebx
-    ret
-
+    memcop c_SA1RAMaccessbankr16
 NEWSYM SA1RAMaccessbankw8
-    and ebx,03h
-    shl ebx,16
-    add ebx,[SA1RAMArea]
-    mov [ebx+ecx],al
-    xor ebx,ebx
-    ret
-
+    memcop c_SA1RAMaccessbankw8
 NEWSYM SA1RAMaccessbankw16
-    and ebx,03h
-    shl ebx,16
-    add ebx,[SA1RAMArea]
-    mov [ebx+ecx],ax
-    xor ebx,ebx
-    ret
-
-
+    memcop c_SA1RAMaccessbankw16
 NEWSYM SA1RAMaccessbankr8b
     test byte[SA1Overflow+1],80h
     jnz .2bit
@@ -2157,8 +1067,6 @@ SECTION .text
 %%done
 %endmacro
 
-SECTION .data
-NEWSYM LatestBank, dd 0FFFFh
 SECTION .text
 
 ; Software decompression version

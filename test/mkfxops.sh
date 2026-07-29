@@ -16,10 +16,14 @@
 set -e
 
 # Default to the newest revision whose fxemu2b.asm predates the port, i.e. the
-# last one where no handler body is an `fxcop` thunk yet.
+# last one where no handler body is an `fxcop` thunk yet. The files are deleted
+# in current revisions, so skip any where they are absent - a failed `git show`
+# is empty, which would otherwise look like a clean pre-port revision.
 REV=$1
 if [ -z "$REV" ]; then
     for r in $(git -C .. log --format=%H -- chips/fxemu2b.asm); do
+        git -C .. cat-file -e "$r:chips/fxemu2b.asm" 2>/dev/null || continue
+        git -C .. cat-file -e "$r:chips/fxemu2.asm" 2>/dev/null || continue
         if ! git -C .. show "$r:chips/fxemu2b.asm" | grep -q fxcop \
             && ! git -C .. show "$r:chips/fxemu2.asm" | grep -q fxcop; then
             REV=$r
