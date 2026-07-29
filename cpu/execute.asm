@@ -148,15 +148,20 @@ EXTSYM StartSFX
 EXTSYM StartSFXdebugb
 EXTSYM SfxVblankCatchup
 
+; The emulation-loop state block moved to cpu/c_execdata.c. Declared here
+; before first use: on PE/COFF EXTSYM is a %define, so it only applies below.
+EXTSYM tempedx,tempesi,tempedi,tempebp,RewindTimer,BackState,BackStateSize
+EXTSYM DblRewTimer,romloadskip,SSKeyPressed,SPCKeyPressed,NoSoundReinit
+EXTSYM NextNGDisplay,TempVidInfo,tempdh,invalid,invopcd,pressed,exiter
+EXTSYM oldhand9o,oldhand9s,oldhand8o,oldhand8s,opcd,pdh,pcury,timercount
+EXTSYM initaddrl,NetSent,nextframe,HIRQCycNext,HIRQNextExe,timeradj,t1cc
+EXTSYM soundcycleft,curexecstate,nmiprevaddrl,nmiprevaddrh,nmirept,nmiprevline
+EXTSYM nmistatus,joycontren,NextLineCache,ZMVZClose,ExecExitOkay,JoyABack
+EXTSYM JoyBBack,JoyCBack,JoyDBack,JoyEBack,NetCommand,spc700read,lowestspc
+EXTSYM highestspc,SA1UBound,SA1LBound,SA1SH,SA1SHb,NumberOfOpcodes2,ChangeOps
+EXTSYM SFXProc,EMUPause,INCRFrame,NoHDMALine
+
 SECTION .data
-NEWSYM tempedx, dd 0
-NEWSYM tempesi, dd 0
-NEWSYM tempedi, dd 0
-NEWSYM tempebp, dd 0
-NEWSYM RewindTimer, dd 0
-NEWSYM BackState, db 1
-NEWSYM BackStateSize, dd 6
-NEWSYM DblRewTimer, dd 0
 SECTION .text
 
 NEWSYM ProcessRewind
@@ -239,35 +244,11 @@ NEWSYM UpdateRewind
 ; *** Copy to PC whenever a non-relative jump is executed
 
 SECTION .data
-NEWSYM romloadskip, db 0
-NEWSYM SSKeyPressed, dd 0
-NEWSYM SPCKeyPressed, dd 0
-NEWSYM NoSoundReinit, dd 0
-NEWSYM NextNGDisplay, db 0
-NEWSYM TempVidInfo, dd 0
-NEWSYM tempdh, db 0
 
 ; global variables
-NEWSYM invalid, db 0
-NEWSYM invopcd, db 0
-NEWSYM pressed, times 256+128+64 db 0
-NEWSYM exiter, db 0
-NEWSYM oldhand9o, dd 0
-NEWSYM oldhand9s, dw 0
-NEWSYM oldhand8o, dd 0
-NEWSYM oldhand8s, dw 0
-NEWSYM opcd,      dd 0
-NEWSYM pdh,       dd 0
-NEWSYM pcury,     dd 0
-NEWSYM timercount, dd 0
-NEWSYM initaddrl, dd 0
-NEWSYM NetSent, dd 0
-NEWSYM nextframe, dd 0
 ;NEWSYM newgfxerror, db 'NEED MEMORY FOR GFX ENGINE',0
 ;NEWSYM newgfxerror2, db 'NEED 320x240 FOR NEW GFX 16B',0
 ;newgfxerror db 'NEW GFX IN 16BIT IS N/A',0
-NEWSYM HIRQCycNext,   dd 0
-NEWSYM HIRQNextExe,   db 0
 
 
 SECTION .text
@@ -277,8 +258,6 @@ SECTION .text
 ;*******************************************************
 
 SECTION .data
-NEWSYM timeradj, dd 65536
-NEWSYM t1cc, dw 0
 SECTION .text
 
 ;*******************************************************
@@ -286,19 +265,8 @@ SECTION .text
 ;*******************************************************
 
 SECTION .data
-ALIGN32
-NEWSYM soundcycleft, dd 0
-NEWSYM curexecstate, dd 0
 
-NEWSYM nmiprevaddrl, dd 0       ; observed address -5
-NEWSYM nmiprevaddrh, dd 0       ; observed address +5
-NEWSYM nmirept,      dd 0       ; NMI repeat check, if 6 then okay
-NEWSYM nmiprevline,  dd 224     ; previous line
-NEWSYM nmistatus,    dd 0       ; 0 = none, 1 = waiting for nmi location,
                         ; 2 = found, disable at next line
-NEWSYM joycontren,   dd 0       ; joystick read control check
-NEWSYM NextLineCache, db 0
-NEWSYM ZMVZClose, db 0
 
 ;*******************************************************
 ; 65816 execution
@@ -362,27 +330,6 @@ NEWSYM execloop
 
 
 SECTION .data
-ALIGN32
-NEWSYM ExecExitOkay, db 1
-NEWSYM JoyABack, dd 0
-NEWSYM JoyBBack, dd 0
-NEWSYM JoyCBack, dd 0
-NEWSYM JoyDBack, dd 0
-NEWSYM JoyEBack, dd 0
-NEWSYM NetCommand, dd 0
-NEWSYM spc700read, dd 0
-NEWSYM lowestspc,  dd 0
-NEWSYM highestspc, dd 0
-NEWSYM SA1UBound,  dd 0
-NEWSYM SA1LBound,  dd 0
-NEWSYM SA1SH,      dd 0
-NEWSYM SA1SHb,     dd 0
-NEWSYM NumberOfOpcodes2, dd 370
-NEWSYM ChangeOps, dd 0
-NEWSYM SFXProc,    dd 0
-NEWSYM EMUPause, db 0
-NEWSYM INCRFrame, db 0
-NEWSYM NoHDMALine, db 0
 SECTION .text
 
 NEWSYM cpuover

@@ -1,10 +1,10 @@
 /* C port of sfxproc.asm: the SuperFX (GSU) memory-mapped register handlers.
-   The GSU core stays in fxemu2*.asm; these just read/write Sfx* state.
+   The GSU core is in chips/fx_ops.h; these just read/write Sfx* state.
    Installed via REGPTR in c_sfxproc.c. */
 #include "regabi.h"
 #include <stdint.h>
 
-/* SuperFX registers/state (defined in fxemu2.asm) */
+/* SuperFX registers/state (defined in chips/c_fxdata.c) */
 extern uint32_t SfxR0, SfxR1, SfxR2, SfxR3, SfxR4, SfxR5, SfxR6, SfxR7, SfxR8, SfxR9, SfxR10, SfxR11, SfxR12, SfxR13, SfxR14, SfxR15;
 extern uint32_t SfxSFR, SfxBRAMR, SfxPBR, SfxROMBR, SfxCFGR, SfxSCBR, SfxCLSR, SfxSCMR, SfxPOR, SfxCBR, SfxRAMBR, SfxCarry, SfxSignZero, SfxOverflow, SfxB, SfxAC, SfxCPB, SfxCROM, SfxRAMMem, SfxnRamBanks, SfxPIPE, SFXProc, sfx128lineloc, sfx160lineloc, sfx192lineloc, sfxobjlineloc, sfxclineloc;
 extern uint32_t SfxMemTable[256];

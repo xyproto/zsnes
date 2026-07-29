@@ -150,6 +150,12 @@ EXTSYM SpcOp2B,SpcOp3B,SpcOp2C,SpcOp6B,SpcOp7B,SpcOp6C,SpcOp3C,SpcOp7C
 EXTSYM SpcOp9E,SpcOpBE,SpcOpDF
 EXTSYM spc700read,curexecstate,tableadc
 
+; The SPC700 state block now lives in cpu/c_spcdata.c.
+EXTSYM SPCRAM,spcPCRam,spcA,spcX,spcY,spcP,spcNZ,spcS,spcRamDP,spcCycle
+EXTSYM reg1read,reg2read,reg3read,reg4read,timeron,timincr0,timincr1
+EXTSYM timincr2,timinl0,timinl1,timinl2,timrcall,spcextraram,FutureExpandS
+EXTSYM PHspcsave,SPCROM,timer2upd,spcnumread
+
 %include "cpu/regsw.mac"
 
 ; SPC 700 Emulation by _Demo_
@@ -160,98 +166,12 @@ EXTSYM spc700read,curexecstate,tableadc
 ; Read byte : read al from [ebx]
 ; update timer : update the timers, called every scanline
 
-SECTION .data
-
-ALIGN32
-
-;spcBuffer times 65536*4 db 0    ; The buffer of brr blocks... 4 bits -> 16 bits
-;spcPrevbf times 65536   db 0    ; SPC PrevX compare buffer
-NEWSYM SPCRAM,   times 65472 db 0FFh
-; copy #1
-; THE SPC ROM :)
-   db 0CDh,0EFh,0BDh,0E8h,000h,0C6h,01Dh,0D0h,0FCh,08Fh,0AAh,0F4h,08Fh,0BBh,0F5h,078h
-   db 0CCh,0F4h,0D0h,0FBh,02Fh,019h,0EBh,0F4h,0D0h,0FCh,07Eh,0F4h,0D0h,00Bh,0E4h,0F5h
-   db 0CBh,0F4h,0D7h,000h,0FCh,0D0h,0F3h,0ABh,001h,010h,0EFh,07Eh,0F4h,010h,0EBh,0BAh
-   db 0F6h,0DAh,000h,0BAh,0F4h,0C4h,0F4h,0DDh,05Dh,0D0h,0DBh,01Fh,000h,000h,0C0h,0FFh
-   db 0AAh,0BBh,0CCh,0DDh,0EEh,0FFh,000h,011h,022h,033h,044h,055h,066h,077h,088h,099h
-
-NEWSYM spcPCRam,
-       dd 0
-NEWSYM spcA,
-       db 0
-       db 0
-       db 0
-       db 0
-NEWSYM spcX,
-       db 0
-       db 0
-       db 0
-       db 0
-NEWSYM spcY,
-       db 0
-       db 0
-       db 0
-       db 0
-NEWSYM spcP,
-       db 0
-       db 0
-       db 0
-       db 0
-NEWSYM spcNZ,
-       db 0
-       db 0
-       db 0
-       db 0
-
-
-;spcNF    db 0     ; The Negative Flag  128 or 127
-;spcOF    db 0     ; The Overflow Flag   64 or 191
-;spcDPF   db 0     ; Direct Page Flag    32 or 223
-;spcUF    db 0     ; The Unused Flag ?   16 or 239
-;spcHCF   db 0     ; The Half Carry Flag  8 or 247
-;spcIF    db 0     ; The interrupt flag   4 or 251
-;spcZF    db 0     ; The Zero Flag      2 or 253
-;spcCF    db 0     ; The Carry Flag     1 or 254
-
-NEWSYM spcS,     dd 1FFh
-NEWSYM spcRamDP, dd 0     ; The direct page pointer
-NEWSYM spcCycle, dd 0     ; The Cycle Counter
-NEWSYM reg1read, db 0     ; read from 65816
-NEWSYM reg2read, db 0     ; read from 65816
-NEWSYM reg3read, db 0     ; read from 65816
-NEWSYM reg4read, db 0     ; read from 65816
-NEWSYM timeron,  db 0     ; timer0 on
-NEWSYM timincr0, db 0     ; # of ticks before incrementing
-NEWSYM timincr1, db 0     ; # of ticks before incrementing
-NEWSYM timincr2, db 0     ; # of ticks before incrementing
-NEWSYM timinl0,  db 0     ; ticks left before incrementing
-NEWSYM timinl1,  db 0     ; ticks left before incrementing
-NEWSYM timinl2,  db 0     ; ticks left before incrementing
-NEWSYM timrcall, db 0     ; alternating bit 0 to correctly timer timer1 & 2 to 8000hz
-
-NEWSYM spcextraram, times 64 db 0 ; extra ram, used for tcall
-
-NEWSYM FutureExpandS,  times 256-64 db 0
-
-spcsave equ $-SPCRAM
-; pharos equ hack *sigh*
-NEWSYM PHspcsave, dd spcsave
-
-; copy #2
-NEWSYM SPCROM
-   db 0CDh,0EFh,0BDh,0E8h,000h,0C6h,01Dh,0D0h,0FCh,08Fh,0AAh,0F4h,08Fh,0BBh,0F5h,078h
-   db 0CCh,0F4h,0D0h,0FBh,02Fh,019h,0EBh,0F4h,0D0h,0FCh,07Eh,0F4h,0D0h,00Bh,0E4h,0F5h
-   db 0CBh,0F4h,0D7h,000h,0FCh,0D0h,0F3h,0ABh,001h,010h,0EFh,07Eh,0F4h,010h,0EBh,0BAh
-   db 0F6h,0DAh,000h,0BAh,0F4h,0C4h,0F4h,0DDh,05Dh,0D0h,0DBh,01Fh,000h,000h,0C0h,0FFh
-
+; The state block moved to cpu/c_spcdata.c. This SECTION is still needed: the
+; ELF prologue above leaves .note.GNU-stack current, and this is what switches
+; back to code.
 SECTION .text
 
 
-
-
-SECTION .data
-NEWSYM timer2upd, dd 0
-SECTION .text
 
 ; This function is called every scanline (262*60 times/sec)
 ; Make it call 0.9825 times (393/400) (skip when divisible by 64)
@@ -264,9 +184,6 @@ NEWSYM updatetimer
     pop edi
     ret
 
-SECTION .data
-NEWSYM spcnumread, db 0
-SECTION .text
 
 
 

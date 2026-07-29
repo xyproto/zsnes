@@ -1,5 +1,6 @@
-/* Layout tests for the data-only asm ports (cpu/dspproc.c, video/makevid.c,
- * video/newgfx.c).
+/* Layout tests for the data-only asm ports (cpu/dspproc.c, cpu/c_spcdata.c,
+ * video/makevid.c, video/newgfx.c, video/c_mode716data.c,
+ * cpu/c_execdata.c).
  *
  * These files are pure data blocks emitted through asmdata.h.  Nothing in
  * them is a function, so the only thing that can regress is the layout: the
@@ -8,6 +9,7 @@
  * neighbour.  The numbers below are the ones the original NASM objects had. */
 #include <stdint.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "zstest.h"
 
@@ -28,6 +30,53 @@ extern u4 MaxEcho, EchoRate[16], AttackRate[16], DecayRate[8];
 extern u4 SustainRate[32], Increase[32], IncreaseBent[32], Decrease[32];
 extern u4 DecreaseRateExp[32], useless[4], FiltLoop[16], FiltLoopR[16];
 extern u4 PHdspsave, PHdspconvb, PHdspsave2, DSPInterpolate;
+
+/* cpu/c_spcdata.c */
+extern u1 SPCRAM[], SPCROM[64], spcextraram[64], FutureExpandS[192];
+extern u1 reg1read, reg2read, reg3read, reg4read, timeron;
+extern u1 timincr0, timincr1, timincr2, timinl0, timinl1, timinl2, timrcall;
+extern u1 spcnumread;
+extern u4 spcPCRam, spcA, spcX, spcY, spcP, spcNZ, spcS, spcRamDP, spcCycle;
+extern u4 PHspcsave, timer2upd;
+
+/* video/c_mode716data.c */
+extern u4 mtemp, mmode7xpos, mtempa2, mmode7xrpos, mtempa, mmode7ypos;
+extern u4 mtempb2, mmode7yrpos, mtempb, mmode7xadder, mtempc2, mmode7xadd2;
+extern u4 mtempc, mmode7yadder, mtempd2, mmode7yadd2, mtempd, mmode7ptr;
+extern u4 mmode7xinc, mmode7xincc, mmode7yinc, mmode7xsloc, mmode7ysloc;
+extern u4 mmode7xsrl, mmode7ysrl;
+extern uint16_t mcxloc, mcyloc;
+extern u4 M7HROn, switchtorep3, m7xaddof, m7xaddof2, m7yaddof, m7yaddof2;
+extern u4 pixelsleft, mm7xaddof, mm7xaddof2, mm7yaddof, mm7yaddof2;
+extern u4 ngwleft, ngwleftb;
+extern u4 mode7xpos[2], mode7ypos[2], mode7xrpos[2], mode7yrpos[2];
+extern u4 mode7xadder[2], mode7yadder[2];
+
+/* cpu/c_execdata.c */
+extern u4 tempedx, tempesi, tempedi, tempebp, RewindTimer;
+extern u1 BackState;
+extern u4 BackStateSize, DblRewTimer;
+extern u1 romloadskip;
+extern u4 SSKeyPressed, SPCKeyPressed, NoSoundReinit;
+extern u1 NextNGDisplay;
+extern u4 TempVidInfo;
+extern u1 tempdh, invalid, invopcd, pressed[256 + 128 + 64], exiter;
+extern u4 oldhand9o;
+extern uint16_t oldhand9s;
+extern u4 oldhand8o;
+extern uint16_t oldhand8s;
+extern u4 opcd, pdh, pcury, timercount, initaddrl, NetSent, nextframe;
+extern u4 HIRQCycNext;
+extern u1 HIRQNextExe;
+extern u4 timeradj;
+extern uint16_t t1cc;
+extern u4 soundcycleft, curexecstate, nmiprevaddrl, nmiprevaddrh, nmirept;
+extern u4 nmiprevline, nmistatus, joycontren;
+extern u1 NextLineCache, ZMVZClose, ExecExitOkay;
+extern u4 JoyABack, JoyBBack, JoyCBack, JoyDBack, JoyEBack, NetCommand;
+extern u4 spc700read, lowestspc, highestspc, SA1UBound, SA1LBound, SA1SH;
+extern u4 SA1SHb, NumberOfOpcodes2, ChangeOps, SFXProc;
+extern u1 EMUPause, INCRFrame, NoHDMALine;
 
 /* video/makevid.c */
 extern u1 bgcoloradder, res512switch, pwinbgenab, windowdata[16], numwin;
@@ -230,11 +279,192 @@ static void test_newgfx(void)
     ZT_CHECK_INT(GAP(NGNumSpr, sprclprio), 1);
 }
 
+/* cpu/c_spcdata.c: the SPC700 state block. zstate.c saves PHspcsave bytes
+ * starting at SPCRAM, so the whole run from SPCRAM to FutureExpandS is one
+ * save-state record and every distance in it is load-bearing. */
+static void test_spcdata(void)
+{
+    static u1 const iplrom[] = { 0xCD, 0xEF, 0xBD, 0xE8, 0x00, 0xC6, 0x1D, 0xD0 };
+
+    ZT_SECTION("spc700: save-state block distance");
+    ZT_CHECK_INT(PHspcsave, 0x10140);
+    ZT_CHECK_INT(GAP(SPCRAM[0], PHspcsave), 0x10140);
+    /* The saved record ends where PHspcsave starts, i.e. right after the
+       expansion padding. */
+    ZT_CHECK_INT(GAP(FutureExpandS[0], PHspcsave), 192);
+
+    ZT_SECTION("spc700: 64KB address space and the boot ROM window");
+    /* SPCRAM holds the SPC700's 64KB plus the boot ROM that overlays $FFC0. */
+    ZT_CHECK_INT(GAP(SPCRAM[0], spcPCRam), 65552);
+    ZT_CHECK(SPCRAM[0] == 0xFF && SPCRAM[65471] == 0xFF);
+    ZT_CHECK(memcmp(SPCRAM + 65472, iplrom, sizeof iplrom) == 0);
+    ZT_CHECK(memcmp(SPCROM, iplrom, sizeof iplrom) == 0);
+    ZT_CHECK(memcmp(SPCRAM + 65472, SPCROM, 64) == 0);
+    /* The 16 bytes past the boot ROM are a scratch pattern, not part of it. */
+    ZT_CHECK(SPCRAM[65472 + 64] == 0xAA && SPCRAM[65472 + 79] == 0x99);
+
+    ZT_SECTION("spc700: register and timer block layout");
+    ZT_CHECK_INT(GAP(spcPCRam, spcA), 4);
+    ZT_CHECK_INT(GAP(spcA, spcX), 4);
+    ZT_CHECK_INT(GAP(spcX, spcY), 4);
+    ZT_CHECK_INT(GAP(spcY, spcP), 4);
+    ZT_CHECK_INT(GAP(spcP, spcNZ), 4);
+    ZT_CHECK_INT(GAP(spcNZ, spcS), 4);
+    ZT_CHECK_INT(GAP(spcS, spcRamDP), 4);
+    ZT_CHECK_INT(GAP(spcRamDP, spcCycle), 4);
+    ZT_CHECK_INT(spcS, 0x1FF); /* the only non-zero initialiser */
+    /* $F4-$F7 and the seven timer bytes are read as one run of bytes. */
+    ZT_CHECK_INT(GAP(spcCycle, reg1read), 4);
+    ZT_CHECK_INT(GAP(reg1read, reg2read), 1);
+    ZT_CHECK_INT(GAP(reg2read, reg3read), 1);
+    ZT_CHECK_INT(GAP(reg3read, reg4read), 1);
+    ZT_CHECK_INT(GAP(reg4read, timeron), 1);
+    ZT_CHECK_INT(GAP(timeron, timincr0), 1);
+    ZT_CHECK_INT(GAP(timincr0, timincr1), 1);
+    ZT_CHECK_INT(GAP(timincr1, timincr2), 1);
+    ZT_CHECK_INT(GAP(timincr2, timinl0), 1);
+    ZT_CHECK_INT(GAP(timinl0, timinl1), 1);
+    ZT_CHECK_INT(GAP(timinl1, timinl2), 1);
+    ZT_CHECK_INT(GAP(timinl2, timrcall), 1);
+    ZT_CHECK_INT(GAP(timrcall, spcextraram[0]), 1);
+    ZT_CHECK_INT(GAP(spcextraram[0], FutureExpandS[0]), 64);
+
+    ZT_SECTION("spc700: tail after the saved block");
+    ZT_CHECK_INT(GAP(PHspcsave, SPCROM[0]), 4);
+    ZT_CHECK_INT(GAP(SPCROM[0], timer2upd), 64);
+    ZT_CHECK_INT(GAP(timer2upd, spcnumread), 4);
+}
+
+/* video/c_mode716data.c: the Mode 7 renderer scratch block. The position and
+ * adder variables are read 8 bytes at a time, so each is followed by a spacer
+ * the assembly marked "keep this blank!". A spacer that goes missing shifts
+ * everything after it and silently changes what the renderer reads. */
+static void test_mode716data(void)
+{
+    ZT_SECTION("mode716: paired variables keep their spacers");
+    ZT_CHECK_INT(GAP(mtemp, mmode7xpos), 4);
+    ZT_CHECK_INT(GAP(mmode7xpos, mtempa2), 4);
+    ZT_CHECK_INT(GAP(mmode7xpos, mmode7xrpos), 8);
+    ZT_CHECK_INT(GAP(mmode7xrpos, mtempa), 4);
+    ZT_CHECK_INT(GAP(mmode7xrpos, mmode7ypos), 8);
+    ZT_CHECK_INT(GAP(mmode7ypos, mtempb2), 4);
+    ZT_CHECK_INT(GAP(mmode7ypos, mmode7yrpos), 8);
+    ZT_CHECK_INT(GAP(mmode7yrpos, mtempb), 4);
+    ZT_CHECK_INT(GAP(mmode7yrpos, mmode7xadder), 8);
+    ZT_CHECK_INT(GAP(mmode7xadder, mtempc2), 4);
+    ZT_CHECK_INT(GAP(mmode7xadder, mmode7xadd2), 8);
+    ZT_CHECK_INT(GAP(mmode7xadd2, mtempc), 4);
+    ZT_CHECK_INT(GAP(mmode7xadd2, mmode7yadder), 8);
+    ZT_CHECK_INT(GAP(mmode7yadder, mtempd2), 4);
+    ZT_CHECK_INT(GAP(mmode7yadder, mmode7yadd2), 8);
+    ZT_CHECK_INT(GAP(mmode7yadd2, mtempd), 4);
+    ZT_CHECK_INT(GAP(mmode7yadd2, mmode7ptr), 8);
+
+    ZT_SECTION("mode716: unpaired run after the pointer");
+    ZT_CHECK_INT(GAP(mmode7ptr, mmode7xinc), 4);
+    ZT_CHECK_INT(GAP(mmode7xinc, mmode7xincc), 4);
+    ZT_CHECK_INT(GAP(mmode7xincc, mmode7yinc), 4);
+    ZT_CHECK_INT(GAP(mmode7yinc, mmode7xsloc), 4);
+    ZT_CHECK_INT(GAP(mmode7xsloc, mmode7ysloc), 4);
+    ZT_CHECK_INT(GAP(mmode7ysloc, mmode7xsrl), 4);
+    ZT_CHECK_INT(GAP(mmode7xsrl, mmode7ysrl), 4);
+    /* The two cursor locations are words, not dwords. */
+    ZT_CHECK_INT(GAP(mmode7ysrl, mcxloc), 4);
+    ZT_CHECK_INT(GAP(mcxloc, mcyloc), 2);
+    ZT_CHECK_INT(GAP(mcyloc, M7HROn), 2);
+    ZT_CHECK_INT(GAP(M7HROn, switchtorep3), 4);
+    ZT_CHECK_INT(GAP(switchtorep3, m7xaddof), 4);
+    ZT_CHECK_INT(GAP(m7xaddof, m7xaddof2), 4);
+    ZT_CHECK_INT(GAP(m7xaddof2, m7yaddof), 4);
+    ZT_CHECK_INT(GAP(m7yaddof, m7yaddof2), 4);
+    ZT_CHECK_INT(GAP(m7yaddof2, pixelsleft), 4);
+    ZT_CHECK_INT(GAP(pixelsleft, mm7xaddof), 4);
+    ZT_CHECK_INT(GAP(mm7xaddof, mm7xaddof2), 4);
+    ZT_CHECK_INT(GAP(mm7xaddof2, mm7yaddof), 4);
+    ZT_CHECK_INT(GAP(mm7yaddof, mm7yaddof2), 4);
+
+    ZT_SECTION("mode716: exported tail");
+    ZT_CHECK_INT(GAP(mm7yaddof2, ngwleft), 4);
+    ZT_CHECK_INT(GAP(ngwleft, ngwleftb), 4);
+    /* Same pairing as above, with the spacer folded into the reservation. */
+    ZT_CHECK_INT(GAP(ngwleftb, mode7xpos[0]), 4);
+    ZT_CHECK_INT(GAP(mode7xpos[0], mode7ypos[0]), 8);
+    ZT_CHECK_INT(GAP(mode7ypos[0], mode7xrpos[0]), 8);
+    ZT_CHECK_INT(GAP(mode7xrpos[0], mode7yrpos[0]), 8);
+    ZT_CHECK_INT(GAP(mode7yrpos[0], mode7xadder[0]), 8);
+    ZT_CHECK_INT(GAP(mode7xadder[0], mode7yadder[0]), 8);
+    /* Whole block, as NASM laid it out. */
+    ZT_CHECK_INT(GAP(mtemp, mode7yadder[0]) + 8, 204);
+}
+
+/* cpu/c_execdata.c: the emulation-loop state block. Mostly ordinary scalars,
+ * but two ALIGN32 gaps sit inside it and NASM pads those with nop bytes, not
+ * zeroes - so the padding is part of the image, and the run of five JoyxBack
+ * dwords is read as a block. */
+static void test_execdata(void)
+{
+    ZT_SECTION("execute: scalar run before the first gap");
+    ZT_CHECK_INT(GAP(tempedx, tempesi), 4);
+    ZT_CHECK_INT(GAP(tempesi, tempedi), 4);
+    ZT_CHECK_INT(GAP(tempedi, tempebp), 4);
+    ZT_CHECK_INT(GAP(tempebp, RewindTimer), 4);
+    /* BackState is a byte, so everything after it is deliberately unaligned. */
+    ZT_CHECK_INT(GAP(RewindTimer, BackState), 4);
+    ZT_CHECK_INT(GAP(BackState, BackStateSize), 1);
+    ZT_CHECK_INT(GAP(BackStateSize, DblRewTimer), 4);
+    ZT_CHECK_INT(GAP(DblRewTimer, romloadskip), 4);
+    ZT_CHECK_INT(GAP(invopcd, pressed[0]), 1);
+    ZT_CHECK_INT(GAP(pressed[0], exiter), 256 + 128 + 64);
+    ZT_CHECK_INT(GAP(oldhand9o, oldhand9s), 4);
+    ZT_CHECK_INT(GAP(oldhand9s, oldhand8o), 2);
+    ZT_CHECK_INT(GAP(oldhand8o, oldhand8s), 4);
+    ZT_CHECK_INT(GAP(oldhand8s, opcd), 2);
+    ZT_CHECK_INT(GAP(HIRQCycNext, HIRQNextExe), 4);
+    ZT_CHECK_INT(GAP(HIRQNextExe, timeradj), 1);
+
+    ZT_SECTION("execute: the two ALIGN32 gaps");
+    /* t1cc is a word at 0x224; soundcycleft is realigned to 0x240. */
+    ZT_CHECK_INT(GAP(timeradj, t1cc), 4);
+    ZT_CHECK_INT(GAP(t1cc, soundcycleft), 28);
+    ZT_CHECK(((const u1*)&soundcycleft - (const u1*)&tempedx) % 32 == 0);
+    /* Same again from ZMVZClose to ExecExitOkay. */
+    ZT_CHECK_INT(GAP(NextLineCache, ZMVZClose), 1);
+    ZT_CHECK_INT(GAP(ZMVZClose, ExecExitOkay), 31);
+    ZT_CHECK(((const u1*)&ExecExitOkay - (const u1*)&tempedx) % 32 == 0);
+    /* NASM fills an ALIGN with nops; zero-filling here would change the image. */
+    ZT_CHECK_INT(((const u1*)&soundcycleft)[-1], 0x90);
+    ZT_CHECK_INT(((const u1*)&ExecExitOkay)[-1], 0x90);
+
+    ZT_SECTION("execute: block after the second gap");
+    ZT_CHECK_INT(GAP(ExecExitOkay, JoyABack), 1);
+    ZT_CHECK_INT(GAP(JoyABack, JoyBBack), 4);
+    ZT_CHECK_INT(GAP(JoyBBack, JoyCBack), 4);
+    ZT_CHECK_INT(GAP(JoyCBack, JoyDBack), 4);
+    ZT_CHECK_INT(GAP(JoyDBack, JoyEBack), 4);
+    ZT_CHECK_INT(GAP(JoyEBack, NetCommand), 4);
+    ZT_CHECK_INT(GAP(NetCommand, spc700read), 4);
+    ZT_CHECK_INT(GAP(SA1SH, SA1SHb), 4);
+    ZT_CHECK_INT(GAP(SFXProc, EMUPause), 4);
+    ZT_CHECK_INT(GAP(EMUPause, INCRFrame), 1);
+    ZT_CHECK_INT(GAP(INCRFrame, NoHDMALine), 1);
+
+    ZT_SECTION("execute: non-zero initialisers");
+    ZT_CHECK_INT(BackState, 1);
+    ZT_CHECK_INT(BackStateSize, 6);
+    ZT_CHECK_INT(timeradj, 65536);
+    ZT_CHECK_INT(nmiprevline, 224);
+    ZT_CHECK_INT(NumberOfOpcodes2, 370);
+    ZT_CHECK_INT(ExecExitOkay, 1);
+}
+
 int main(void)
 {
     test_dsp_savestate_offsets();
     test_dsp_layout();
     test_dsp_values();
+    test_spcdata();
+    test_mode716data();
+    test_execdata();
     test_makevid();
     test_newgfx();
     printf("data-only asm port layout tests\n");

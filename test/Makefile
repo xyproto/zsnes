@@ -86,8 +86,8 @@ $(MODE7): $(MODE7_SRC) zstest.h ../video/mode716b.c
 	$(CC) $(CFLAGS) $(MODE7_SRC) ../video/mode716b.c -no-pie -o $(MODE7)
 
 # ../endmem.o supplies winbgdata, which makevid's cwinptr points at.
-$(ASMDATA): $(ASMDATA_SRC) zstest.h ../cpu/dspproc.c ../video/makevid.c ../video/newgfx.c ../endmem.o
-	$(CC) $(CFLAGS) $(ASMDATA_SRC) ../cpu/dspproc.c ../video/makevid.c ../video/newgfx.c ../endmem.o -no-pie -o $(ASMDATA)
+$(ASMDATA): $(ASMDATA_SRC) zstest.h ../cpu/dspproc.c ../cpu/c_spcdata.c ../cpu/c_execdata.c ../video/c_mode716data.c ../video/makevid.c ../video/newgfx.c ../endmem.o
+	$(CC) $(CFLAGS) $(ASMDATA_SRC) ../cpu/dspproc.c ../cpu/c_spcdata.c ../cpu/c_execdata.c ../video/c_mode716data.c ../video/makevid.c ../video/newgfx.c ../endmem.o -no-pie -o $(ASMDATA)
 
 $(VCACHE): $(VCACHE_SRC) zstest.h ../video/tilecache.c
 	$(CC) $(CFLAGS) -ffunction-sections -fdata-sections $(VCACHE_SRC) ../video/tilecache.c -no-pie -Wl,--gc-sections -o $(VCACHE)
@@ -120,6 +120,13 @@ fxops: difftest_fxops.c difftest.h mkfxops.sh ../chips/fx_ops.h
 	$(CC) $(CFLAGS) difftest_fxops.c _fxops.o -no-pie -o difftest_fxops
 	@./difftest_fxops
 
+# Differential test for the direct-page memory handlers against the assembly
+# they replaced. Not part of `all` - it needs that assembly out of git history.
+memops: difftest_memops.c difftest.h mkmemops.sh memops.list ../cpu/mem_ops.h
+	./mkmemops.sh
+	$(CC) $(CFLAGS) difftest_memops.c _memops.o -no-pie -o difftest_memops
+	@./difftest_memops
+
 run: all
 	@./$(BIN)
 	@./$(NETPLAY)
@@ -139,7 +146,7 @@ run: all
 
 clean:
 	rm -f $(BIN) $(NETPLAY) $(ST10) $(ST11) $(OBC1) $(MSU1) $(DSP2) $(SAI) $(SA1) $(SPC7110) $(VCACHE) $(SPRITES) $(C4) $(MODE7) $(ASMDATA)
-	rm -f difftest_spcdec difftest_fxtable difftest_fxops _*.o _*.asm _*.inc _*.raw
+	rm -f difftest_spcdec difftest_fxtable difftest_fxops difftest_memops _*.o _*.asm _*.inc _*.raw
 
 # Port-time differential testing (difftest.h + mkdifftest.sh) proves a C port
 # bit-identical to the original assembly. It is transient by design: the oracle

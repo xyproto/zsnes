@@ -1,31 +1,39 @@
 /*
- * chips/fx_ops.h - SuperFX opcode handlers ported from chips/fxemu2b.asm.
+ * chips/fx_ops.h - the SuperFX (GSU) core, ported from chips/fxemu2*.asm.
  *
- * Textual include (chips/c_fxemu2b.c): the includer provides the u1/u2/u4/s1
+ * Textual include (chips/c_fxops.c): the includer provides the u1/u2/u4/s1
  * typedefs and the seam block declared below.
  *
- * The assembly core runs the SuperFX with its state in registers:
+ * The assembly kept the hot state in registers:
  *
  *     ebp  program counter, a host pointer into the current code bank
  *     esi  source register pointer      (&SfxR0 + n*4)
  *     edi  destination register pointer (&SfxR0 + n*4)
  *     ecx  cl = the next opcode byte, ch = the ALT1/ALT2/ALT3 mode
  *
- * ch is not just a flag: the dispatch is `call [FxTable + ecx*4]`, and
+ * Those four are now the FxSeam* variables, loaded by MainLoop and written back
+ * by its epilogue; everything in between reads and writes them directly.
+ *
+ * ch is not just a flag: the dispatch is table[(ALT << 8) | opcode], and
  * FxTable/FxTableA1/FxTableA2/FxTableA3 are laid out adjacently (endmem.c), so
  * ch selects the ALT table and cl the opcode within it. The same holds for the
- * b and c table groups.
+ * b, c and d table groups.
  *
- * A ported handler cannot take those in registers, so chips/fxemu2b.asm keeps
- * the public FxOpXX entry point and reduces its body to the `fxcop` thunk,
- * which spills the four live registers to the seam block, calls the C body,
- * and reloads them. Handlers that chain into the next opcode (nearly all of
- * them do; a SuperFX branch executes its delay slot) re-enter the dispatch
- * table through FxDispatch, which does the same in reverse. Opcodes can
- * therefore migrate one at a time.
+ * The base tables are entered with a call and return; the d table is the one
+ * MainLoop threads through, so its handlers also spend an opcode from the
+ * budget and can end the loop. Only STOP behaves differently between the two,
+ * so the d table shares the base table's bodies everywhere else.
  */
 #ifndef FX_OPS_H
 #define FX_OPS_H
+
+/* Run one opcode through a dispatch table. The four ALT sub-tables of a group
+   are adjacent, so FxSeamCX indexes all of them; this is what the assembly did
+   with `call [table + ecx*4]`. */
+static inline void FxDispatch(u4 const* const table)
+{
+    ((void (*)(void))(uintptr_t)table[FxSeamCX])();
+}
 
 /* FETCHPIPE: load the next opcode byte into cl, leaving the ALT mode in ch. */
 static inline void fx_fetchpipe(void)
@@ -1069,7 +1077,9 @@ void c_FxOpFEA2(void) { fx_smrn(14); }
  * SfxCacheActive survive.
  */
 
-void FlushCache(void); /* chips/fxemu2.asm; currently a stub */
+/* FlushCache was a bare `ret` in chips/fxemu2.asm - the cache is only ever
+   tracked, never copied - so this is a no-op too. */
+static inline void fx_flush_cache(void) { }
 
 /* CACHE: point the cache at the 16-byte-aligned block holding the program
    counter, unless it is already there or a cache load is in progress. */
@@ -1081,7 +1091,7 @@ static inline void fx_cache(void)
     if (SfxCBR != base && (SfxCacheActive & 0xFFu) != 1) {
         SfxCBR = base;
         SfxCacheActive = 1;
-        FlushCache();
+        fx_flush_cache();
     }
     FxSeamPC++;
 }
@@ -2168,6 +2178,48 @@ void c_FxOpd00(void)
     FxSeamPC++;
     ChangeOps += NumberOfOpcodes + 0xF0000000u;
     NumberOfOpcodes = 1;
+    FxLoopDone = 1;
+}
+
+/* --- The main loop -------------------------------------------------------
+ *
+ * The FXReturn tail every d-table handler used to end with: spend one opcode
+ * from the budget and say whether the loop goes on. The count is decremented
+ * before the test and the test is signed, so a budget of zero still runs one
+ * opcode. STOP skips this entirely (it jumped straight to the epilogue), which
+ * is what FxLoopDone stands for.
+ */
+static inline int fx_loop_next(void)
+{
+    if (FxLoopDone) {
+        return 0;
+    }
+    NumberOfOpcodes--;
+    return (s4)NumberOfOpcodes >= 0;
+}
+
+/* Run the GSU until it runs out of opcodes or hits STOP. The prologue and
+   epilogue are the old PackEsiEdi/UnPackEsiEdi pair plus the program counter,
+   opcode byte and ALT mode, which live in SfxR15, SfxPIPE and SfxSFR between
+   calls. */
+void MainLoop(void)
+{
+    FxSeamPC = (u1*)(uintptr_t)(SfxCPB + SfxR0[15]);
+    FxSeamCX = (SfxPIPE & 0xFFu) | (((SfxSFR >> 8) & 3u) << 8);
+    FxSeamSrc = SfxR0 + SfxSREG;
+    FxSeamDst = SfxR0 + SfxDREG;
+    SfxRAMMem = (SfxRAMBR << 16) + (u4)(uintptr_t)sfxramdata;
+
+    do {
+        FxLoopDone = 0;
+        FxDispatch(FxTabled);
+    } while (fx_loop_next());
+
+    SfxR0[15] = fx_pc_rel();
+    *(u1*)&SfxPIPE = (u1)(FxSeamCX & 0xFFu);
+    *((u1*)&SfxSFR + 1) = (u1)((*((u1*)&SfxSFR + 1) & 0xFCu) | ((FxSeamCX >> 8) & 0xFFu));
+    SfxSREG = (u4)(FxSeamSrc - SfxR0);
+    SfxDREG = (u4)(FxSeamDst - SfxR0);
 }
 
 #endif

@@ -107,6 +107,12 @@ section .note.GNU-stack noalloc noexec nowrite progbits
 	pop eax
 %endmacro
 EXTSYM romdata,sramb4save,curromspace,SA1Overflow
+EXTSYM MemSeamB,MemSeamC,MemSeamA
+EXTSYM c_membank0r8ram,c_membank0r8inv,c_membank0r8rom,c_membank0r8romram
+EXTSYM c_membank0r8reg,c_membank0r16reg,c_membank0w8reg,c_membank0w16reg
+EXTSYM c_membank0r16ram,c_membank0r16ramh,c_membank0r16rom,c_membank0r16romram
+EXTSYM c_membank0w8ram,c_membank0w8inv,c_membank0w8rom,c_membank0w8romram
+EXTSYM c_membank0w16ram,c_membank0w16ramh,c_membank0w16inv,c_membank0w16romram
 EXTSYM SFXEnable,regptra,sfxramdata,snesmmap,wramdataa
 EXTSYM cpu_mdr
 EXTSYM DSP1Write8b,regptwa,writeon,DSP1Read16b
@@ -122,6 +128,21 @@ EXTSYM SA1_in_cc1_dma,SA1_DMA_ADDR,SA1_DMA_VALUE,SA1_DMA_CC1
 ;*******************************************************
 ; enter : BL = bank number, CX = address location
 ; leave : AL = value read
+
+
+; Body of a direct-page handler that has been ported to C (cpu/mem_ops.h).
+; ebx is the direct-page offset, ecx the direct page register and al/ax the
+; value; all three are outputs as well, so spill and reload every one.
+%macro memcop 1
+    mov [MemSeamB], ebx
+    mov [MemSeamC], ecx
+    mov [MemSeamA], eax
+    ccall %1
+    mov ebx, [MemSeamB]
+    mov ecx, [MemSeamC]
+    mov eax, [MemSeamA]
+    ret
+%endmacro
 
 SECTION .text
 
@@ -787,18 +808,11 @@ NEWSYM membank0w16ramSA1             ; 0000-1FFF
 
 ; --- 8 BIT READ STUFF ---
 NEWSYM membank0r8ram             ; 0000-1FFF
-    mov al,[wramdataa+ebx+ecx]
-    ret
+    memcop c_membank0r8ram
 NEWSYM membank0r8reg             ; 2000-48FF
-    add ecx,ebx
-    call dword near regptr(ecx)
-    mov [cpu_mdr],al
-    xor ebx,ebx
-    ret
+    memcop c_membank0r8reg
 NEWSYM membank0r8inv             ; 4800-5FFF
-    add ecx,ebx
-    mov al,ch
-    ret
+    memcop c_membank0r8inv
 NEWSYM membank0r8chip            ; 6000-7FFF
     add ecx,ebx
     cmp byte[SFXEnable],1
@@ -829,50 +843,16 @@ NEWSYM membank0r8chip            ; 6000-7FFF
     BWCheck2r8
 
 NEWSYM membank0r8rom             ; 8000-FFFF
-    add ebx,[snesmmap]
-    mov al,[ebx+ecx]
-    xor ebx,ebx
-    ret
+    memcop c_membank0r8rom
 NEWSYM membank0r8romram             ; 0000-1FFF
-    add cx,bx
-    test cx,8000h
-    jnz .rom
-    mov al,[wramdataa+ecx]
-    ret
-.rom
-    mov ebx,[snesmmap]
-    mov al,[ebx+ecx]
-    xor ebx,ebx
-    ret
-
+    memcop c_membank0r8romram
 ; --- 16 BIT READ STUFF ---
 NEWSYM membank0r16ram             ; 0000-1EFF
-    mov ax,[wramdataa+ebx+ecx]
-    ret
+    memcop c_membank0r16ram
 NEWSYM membank0r16ramh            ; 1F00-1FFF
-    add ecx,ebx
-    cmp ecx,1FFFh
-    je .over
-    mov ax,[wramdataa+ecx]
-    ret
-.over
-    mov al,[wramdataa+ecx]
-    mov ah,al ;open bus
-    ret
+    memcop c_membank0r16ramh
 NEWSYM membank0r16reg             ; 2000-48FF
-    add ecx,ebx
-    call dword near regptr(ecx)
-    mov [cpu_mdr],al
-    inc ecx
-    mov ah,al
-    call dword near regptr(ecx)
-    mov [cpu_mdr],al
-    mov bl,al
-    dec ecx
-    mov al,ah
-    mov ah,bl
-    xor ebx,ebx
-    ret
+    memcop c_membank0r16reg
 NEWSYM membank0r16inv             ; 4800-5FFF
     add ecx,ebx
     mov al,ch
@@ -908,33 +888,16 @@ NEWSYM membank0r16chip            ; 6000-FFFF
     ret
     BWCheck2r16
 NEWSYM membank0r16rom             ; 8000-FFFF
-    add ebx,[snesmmap]
-    mov ax,[ebx+ecx]
-    xor ebx,ebx
-    ret
+    memcop c_membank0r16rom
 NEWSYM membank0r16romram             ; 0000-1FFF
-    add cx,bx
-    test cx,8000h
-    jnz .rom
-    mov ax,[wramdataa+ecx]
-    ret
-.rom
-    mov ebx,[snesmmap]
-    mov ax,[ebx+ecx]
-    xor ebx,ebx
-    ret
-
+    memcop c_membank0r16romram
 ; --- 8 BIT WRITE STUFF ---
 NEWSYM membank0w8ram             ; 0000-1FFF
-    mov [wramdataa+ebx+ecx],al
-    ret
+    memcop c_membank0w8ram
 NEWSYM membank0w8reg             ; 2000-48FF
-    add ecx,ebx
-    call dword near regptw(ecx)
-    xor ebx,ebx
-    ret
+    memcop c_membank0w8reg
 NEWSYM membank0w8inv             ; 4800-5FFF
-    ret
+    memcop c_membank0w8inv
 NEWSYM membank0w8chip            ; 6000-FFFF
     add ecx,ebx
     cmp byte[SFXEnable],1
@@ -963,40 +926,18 @@ NEWSYM membank0w8chip            ; 6000-FFFF
     ret
     BWCheck2w8
 NEWSYM membank0w8rom             ; 8000-FFFF
-    ret
+    memcop c_membank0w8rom
 NEWSYM membank0w8romram             ; 0000-1FFF
-    add cx,bx
-    test cx,8000h
-    jnz .rom
-    mov [wramdataa+ecx],al
-    ret
-.rom
-    ret
-
+    memcop c_membank0w8romram
 ; --- 16 BIT WRITE STUFF ---
 NEWSYM membank0w16ram             ; 0000-1EFF
-    mov [wramdataa+ebx+ecx],ax
-    ret
+    memcop c_membank0w16ram
 NEWSYM membank0w16ramh            ; 1F00-1FFF
-    add ecx,ebx
-    cmp ecx,1FFFh
-    je .over
-    mov [wramdataa+ecx],ax
-    ret
-.over
-    mov [wramdataa+ecx],al
-    ret
+    memcop c_membank0w16ramh
 NEWSYM membank0w16reg             ; 2000-48FF
-    add ecx,ebx
-    call dword near regptw(ecx)
-    inc ecx
-    mov al,ah
-    call dword near regptw(ecx)
-    dec ecx
-    xor ebx,ebx
-    ret
+    memcop c_membank0w16reg
 NEWSYM membank0w16inv             ; 4800-5FFF
-    ret
+    memcop c_membank0w16inv
 NEWSYM membank0w16chip            ; 6000-FFFF
     add ecx,ebx
 NEWSYM membank0w16rom             ; 8000-FFFF
@@ -1026,14 +967,7 @@ NEWSYM membank0w16rom             ; 8000-FFFF
     ret
     BWCheck2w16
 NEWSYM membank0w16romram             ; 0000-1FFF
-    add cx,bx
-    test cx,8000h
-    jnz .rom
-    mov [wramdataa+ecx],ax
-    ret
-.rom
-    ret
-
+    memcop c_membank0w16romram
 NEWSYM membank0r8
     and ecx,0FFFFh
     cmp byte[SA1Enable],1

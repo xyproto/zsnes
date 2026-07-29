@@ -7,12 +7,12 @@
 #
 #   asm_fxcall(fn)  load the ABI registers from the seam block, call fn, write
 #                   them back  (drives the *asm* handler)
-#   FxDispatch(tbl) same, but dispatches through tbl[ecx]  (used by the *C*
-#                   handler, matching the real seam in chips/fxemu2b.asm)
 #   fxstub/b/c      stand in for the next opcode: record what they were
 #                   dispatched with, then return. One per table, so the test can
 #                   tell which table a handler chained through. SfxB is captured
 #                   too: WITH sets it purely so the *nested* opcode sees it.
+#                   These read the register ABI, so the difftest keeps a C
+#                   twin of each for the ported side.
 set -e
 
 # Default to the newest revision whose fxemu2b.asm predates the port, i.e. the
@@ -84,6 +84,28 @@ for l in src:
         out.append(l)
     elif cur:
         cur = None
+print('\n'.join(out))
+PYEOF
+
+# MainLoop and its epilogue, for the loop test. Renamed so the d handlers'
+# FXReturn keeps reaching the difftest's own FXEndLoop stub.
+python3 - _fxops_base.asm >> _fxops.inc <<'PYEOF'
+import re, sys
+src = open(sys.argv[1]).read().split('\n')
+out = []
+cur = False
+for l in src:
+    m = re.match(r'NEWSYM (\w+)', l.strip())
+    if m:
+        cur = m.group(1) in ('MainLoop', 'FXEndLoop')
+        if cur:
+            out.append(l)
+        continue
+    if cur and not re.match(r'(SECTION |%)', l.strip()):
+        out.append(l)
+    elif cur:
+        cur = False
+out = [re.sub(r'\b(MainLoop|FXEndLoop)\b', r'asm_\1', l) for l in out]
 print('\n'.join(out))
 PYEOF
 
@@ -211,6 +233,16 @@ EXTERN StubPlotHits
 EXTERN FxTabled
 EXTERN StubR15
 EXTERN StubWrR15sk
+EXTERN SfxSREG
+EXTERN SfxDREG
+EXTERN StubSetCh
+EXTERN StubSetSrc
+EXTERN StubSetDst
+EXTERN StubIdx
+EXTERN fxstub_c
+EXTERN fxstubb_c
+EXTERN fxstubc_c
+EXTERN fxstubd_c
 
 %include "_fxops_m1.mac"
 %include "_fxops_m2.mac"
@@ -230,28 +262,6 @@ NEWSYM asm_fxcall
     mov edi,[FxSeamDst]
     mov ecx,[FxSeamCX]
     call eax
-    mov [FxSeamPC],ebp
-    mov [FxSeamSrc],esi
-    mov [FxSeamDst],edi
-    mov [FxSeamCX],ecx
-    pop ebp
-    pop edi
-    pop esi
-    pop ebx
-    ret
-
-; void FxDispatch(u4 const *table)
-NEWSYM FxDispatch
-    push ebx
-    push esi
-    push edi
-    push ebp
-    mov eax,[esp+20]
-    mov ebp,[FxSeamPC]
-    mov esi,[FxSeamSrc]
-    mov edi,[FxSeamDst]
-    mov ecx,[FxSeamCX]
-    call [eax+ecx*4]
     mov [FxSeamPC],ebp
     mov [FxSeamSrc],esi
     mov [FxSeamDst],edi
@@ -289,37 +299,35 @@ NEWSYM %1
 FXSTUB fxstub, 1
 FXSTUB fxstubb, 2
 FXSTUB fxstubc, 3
+FXSTUB fxstubd, 4
+
+; Every dispatch-table slot gets its own 16-byte trampoline, so the index a
+; handler dispatched with is observable and not just the table it came from.
+; The trampolines clobber nothing, so the same shape works for the oracle
+; (register ABI) and for the ported side (plain C call).
+%macro IDXSTUBS 2
+ALIGN 16
+NEWSYM %1
+%assign idx 0
+%rep 1024
+    mov dword [StubIdx], idx
+    jmp %2
+    ALIGN 16
+%assign idx idx+1
+%endrep
+%endmacro
+
+IDXSTUBS idxa_asm, fxstub
+IDXSTUBS idxb_asm, fxstubb
+IDXSTUBS idxc_asm, fxstubc
+IDXSTUBS idxd_asm, fxstubd
+IDXSTUBS idxa_c, fxstub_c
+IDXSTUBS idxb_c, fxstubb_c
+IDXSTUBS idxc_c, fxstubc_c
+IDXSTUBS idxd_c, fxstubd_c
 
 %include "_fxops.inc"
 
-; One thunk per d-table handler, identical to the fxdop macro in
-; chips/fxemu2c.asm, so the ported side is exercised through the real seam.
-%macro fxdop 1
-    mov [FxSeamPC], ebp
-    mov [FxSeamSrc], esi
-    mov [FxSeamDst], edi
-    mov [FxSeamCX], ecx
-    ccall %1
-    mov ebp, [FxSeamPC]
-    mov esi, [FxSeamSrc]
-    mov edi, [FxSeamDst]
-    mov ecx, [FxSeamCX]
-    FXReturn
-%endmacro
-%macro fxdopend 1
-    mov [FxSeamPC], ebp
-    mov [FxSeamSrc], esi
-    mov [FxSeamDst], edi
-    mov [FxSeamCX], ecx
-    ccall %1
-    mov ebp, [FxSeamPC]
-    mov esi, [FxSeamSrc]
-    mov edi, [FxSeamDst]
-    mov ecx, [FxSeamCX]
-    jmp FXEndLoop
-%endmacro
-
-%include "_fxops_thunks.inc"
 
 ; CMODE patches a PLOTJmp entry into FxTabled[$4C] and the d table then
 ; tail-jumps through it, so those entries have to be real code. 128 stubs, each
@@ -341,22 +349,32 @@ NEWSYM plotstubs
 NEWSYM FXEndLoop
     inc dword [StubEndLoop]
     ret
-EOF
 
-# Thunks for the C side, one per (handler, C body) pair.
-: > _fxops_thunks.inc
-while read -r d c; do
-    [ -n "$d" ] || continue
-    echo "EXTERN c_$c" >> _fxops_thunks.inc
-done < ../test/fxops_d.list
-while read -r d c; do
-    [ -n "$d" ] || continue
-    if [ "$d" = "FxOpd00" ]; then
-        printf 'NEWSYM cthunk_%s\n    fxdopend c_%s\n' "$d" "$c" >> _fxops_thunks.inc
-    else
-        printf 'NEWSYM cthunk_%s\n    fxdop c_%s\n' "$d" "$c" >> _fxops_thunks.inc
-    fi
-done < ../test/fxops_d.list
+; Stand-ins for a d-table handler, used only by the MainLoop test: consume a
+; byte, refetch the opcode, then move the things the epilogue has to write back
+; (source/destination register and ALT mode) before the FXReturn tail.
+%macro LOOPBODY 0
+    inc dword [StubHits]
+    inc ebp
+    mov cl,[ebp]
+    mov ch,[StubSetCh]
+    mov esi,[StubSetSrc]
+    mov edi,[StubSetDst]
+%endmacro
+
+NEWSYM loopstub
+    LOOPBODY
+    dec dword [NumberOfOpcodes]
+    js .end
+    jmp [FxTabled+ecx*4]
+.end
+    jmp asm_FXEndLoop
+
+; The STOP case: leaves the loop without spending an opcode.
+NEWSYM loopstop
+    LOOPBODY
+    jmp asm_FXEndLoop
+EOF
 
 nasm -f elf32 -w-orphan-labels -o _fxops.o _fxops.asm
 echo "wrote _fxops.o (oracle from $(git -C .. rev-parse --short $REV), $(grep -c '^NEWSYM asm_FxOp' _fxops.inc) handlers)"

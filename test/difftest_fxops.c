@@ -25,7 +25,7 @@ typedef int32_t s4;
 typedef uint16_t u2;
 typedef int16_t s2;
 
-/* Shared SuperFX state the handlers read (normally chips/fxemu2.asm). */
+/* Shared SuperFX state the handlers read (normally chips/c_fxdata.c). */
 u4 SfxCarry, SfxSignZero, SfxOverflow;
 u4 SfxB, SfxCPB, SfxCROM, SfxRomBuffer, withr15sk;
 u4 SfxRAMMem, SfxLastRamAdr;
@@ -84,15 +84,19 @@ __asm__(".globl SfxR1\n.set SfxR1, SfxR0+4\n"
 u4 FxTableb[1024];
 u4 FxTablec[1024];
 
-/* The seam block (normally chips/c_fxemu2b.c). */
+/* The seam block (normally chips/c_fxops.c). */
 u1* FxSeamPC;
 u4* FxSeamSrc;
 u4* FxSeamDst;
 u4 FxSeamCX;
+u4 FxLoopDone;
+u4 SfxSREG, SfxDREG;
 
 /* What the nested dispatch saw. StubTable identifies which of the three tables
  * it came through, so choosing the wrong one is a visible mismatch. */
 u4 StubPC, StubCX, StubSrc, StubDst, StubHits, StubTable, StubB;
+/* Which slot of that table the dispatch actually indexed. */
+u4 StubIdx;
 /* What the stub writes into withr15sk, standing in for a nested opcode that
  * set the program counter itself, and the R15 it leaves behind. */
 u4 StubR15sk, StubR15, StubWrR15sk;
@@ -102,11 +106,48 @@ u4 StubEndLoop;
 u4 StubPlotIdx, StubPlotHits;
 extern u1 plotstubs[]; /* _fxops.o */
 
-void FxDispatch(u4 const* table); /* _fxops.o */
 void asm_fxcall(void* fn); /* _fxops.o */
 void fxstub(void), fxstubb(void), fxstubc(void); /* _fxops.o */
 
 #include "../chips/fx_ops.h"
+
+/* The oracle's stubs read the register ABI, so they only work under
+   asm_fxcall. The ported side is entered as a plain C call and reads the seam,
+   so it needs its own stubs; run() swaps the right set into the tables. The
+   two must record exactly the same things or a real difference hides here.
+   _fxops.o reaches these through the per-slot trampolines, hence non-static. */
+#define FXSTUB_C(name, tab)                 \
+    void name(void)                         \
+    {                                       \
+        StubPC = (u4)(uintptr_t)FxSeamPC;   \
+        StubCX = FxSeamCX;                  \
+        StubSrc = (u4)(uintptr_t)FxSeamSrc; \
+        StubDst = (u4)(uintptr_t)FxSeamDst; \
+        StubTable = (tab);                  \
+        StubB = SfxB;                       \
+        if (StubWrR15sk) {                  \
+            withr15sk = StubR15sk;          \
+        }                                   \
+        SfxR0[15] = StubR15;                \
+        StubHits++;                         \
+    }
+
+FXSTUB_C(fxstub_c, 1)
+FXSTUB_C(fxstubb_c, 2)
+FXSTUB_C(fxstubc_c, 3)
+FXSTUB_C(fxstubd_c, 4)
+
+/* 1024 trampolines per table, one per slot, each 16 bytes and each recording
+   its own index before falling into the stub above. Without them every slot in
+   a table is the same address and a dispatch that indexes wrong still lands on
+   something that looks right. */
+#define IDXSTUB 16
+extern u1 idxa_asm[], idxb_asm[], idxc_asm[], idxd_asm[]; /* _fxops.o */
+extern u1 idxa_c[], idxb_c[], idxc_c[], idxd_c[]; /* _fxops.o */
+
+/* One copy of each dispatch table per side. The PLOT stubs are shared: they
+   only write memory, so they are callable either way. */
+static u4 tab_asm[4][1024], tab_c[4][1024];
 
 extern void asm_FxOpb05(void), asm_FxOpb06(void), asm_FxOpb07(void), asm_FxOpb08(void);
 extern void asm_FxOpb09(void), asm_FxOpb0A(void), asm_FxOpb0B(void), asm_FxOpb0C(void);
@@ -286,159 +327,159 @@ extern void asm_FxOp4C1288bl(void), asm_FxOp4C1288bzl(void), asm_FxOp4C1288bdl(v
 extern void asm_FxOp4C(void), asm_FxOp4CA1(void);
 /* The d table: same bodies as the base table, reached through the threaded
  * FXReturn tail. Both sides go through a real seam thunk. */
-extern void asm_FxOpd00(void), cthunk_FxOpd00(void), asm_FxOpd01(void), cthunk_FxOpd01(void), asm_FxOpd02(void), cthunk_FxOpd02(void), asm_FxOpd03(void), cthunk_FxOpd03(void);
-extern void asm_FxOpd04(void), cthunk_FxOpd04(void), asm_FxOpd05(void), cthunk_FxOpd05(void), asm_FxOpd06(void), cthunk_FxOpd06(void), asm_FxOpd07(void), cthunk_FxOpd07(void);
-extern void asm_FxOpd08(void), cthunk_FxOpd08(void), asm_FxOpd09(void), cthunk_FxOpd09(void), asm_FxOpd0A(void), cthunk_FxOpd0A(void), asm_FxOpd0B(void), cthunk_FxOpd0B(void);
-extern void asm_FxOpd0C(void), cthunk_FxOpd0C(void), asm_FxOpd0D(void), cthunk_FxOpd0D(void), asm_FxOpd0E(void), cthunk_FxOpd0E(void), asm_FxOpd0F(void), cthunk_FxOpd0F(void);
-extern void asm_FxOpd10(void), cthunk_FxOpd10(void), asm_FxOpd11(void), cthunk_FxOpd11(void), asm_FxOpd12(void), cthunk_FxOpd12(void), asm_FxOpd13(void), cthunk_FxOpd13(void);
-extern void asm_FxOpd14(void), cthunk_FxOpd14(void), asm_FxOpd15(void), cthunk_FxOpd15(void), asm_FxOpd16(void), cthunk_FxOpd16(void), asm_FxOpd17(void), cthunk_FxOpd17(void);
-extern void asm_FxOpd18(void), cthunk_FxOpd18(void), asm_FxOpd19(void), cthunk_FxOpd19(void), asm_FxOpd1A(void), cthunk_FxOpd1A(void), asm_FxOpd1B(void), cthunk_FxOpd1B(void);
-extern void asm_FxOpd1C(void), cthunk_FxOpd1C(void), asm_FxOpd1D(void), cthunk_FxOpd1D(void), asm_FxOpd1E(void), cthunk_FxOpd1E(void), asm_FxOpd1F(void), cthunk_FxOpd1F(void);
-extern void asm_FxOpd20(void), cthunk_FxOpd20(void), asm_FxOpd21(void), cthunk_FxOpd21(void), asm_FxOpd22(void), cthunk_FxOpd22(void), asm_FxOpd23(void), cthunk_FxOpd23(void);
-extern void asm_FxOpd24(void), cthunk_FxOpd24(void), asm_FxOpd25(void), cthunk_FxOpd25(void), asm_FxOpd26(void), cthunk_FxOpd26(void), asm_FxOpd27(void), cthunk_FxOpd27(void);
-extern void asm_FxOpd28(void), cthunk_FxOpd28(void), asm_FxOpd29(void), cthunk_FxOpd29(void), asm_FxOpd2A(void), cthunk_FxOpd2A(void), asm_FxOpd2B(void), cthunk_FxOpd2B(void);
-extern void asm_FxOpd2C(void), cthunk_FxOpd2C(void), asm_FxOpd2D(void), cthunk_FxOpd2D(void), asm_FxOpd2E(void), cthunk_FxOpd2E(void), asm_FxOpd2F(void), cthunk_FxOpd2F(void);
-extern void asm_FxOpd30(void), cthunk_FxOpd30(void), asm_FxOpd30A1(void), cthunk_FxOpd30A1(void), asm_FxOpd31(void), cthunk_FxOpd31(void), asm_FxOpd31A1(void), cthunk_FxOpd31A1(void);
-extern void asm_FxOpd32(void), cthunk_FxOpd32(void), asm_FxOpd32A1(void), cthunk_FxOpd32A1(void), asm_FxOpd33(void), cthunk_FxOpd33(void), asm_FxOpd33A1(void), cthunk_FxOpd33A1(void);
-extern void asm_FxOpd34(void), cthunk_FxOpd34(void), asm_FxOpd34A1(void), cthunk_FxOpd34A1(void), asm_FxOpd35(void), cthunk_FxOpd35(void), asm_FxOpd35A1(void), cthunk_FxOpd35A1(void);
-extern void asm_FxOpd36(void), cthunk_FxOpd36(void), asm_FxOpd36A1(void), cthunk_FxOpd36A1(void), asm_FxOpd37(void), cthunk_FxOpd37(void), asm_FxOpd37A1(void), cthunk_FxOpd37A1(void);
-extern void asm_FxOpd38(void), cthunk_FxOpd38(void), asm_FxOpd38A1(void), cthunk_FxOpd38A1(void), asm_FxOpd39(void), cthunk_FxOpd39(void), asm_FxOpd39A1(void), cthunk_FxOpd39A1(void);
-extern void asm_FxOpd3A(void), cthunk_FxOpd3A(void), asm_FxOpd3AA1(void), cthunk_FxOpd3AA1(void), asm_FxOpd3B(void), cthunk_FxOpd3B(void), asm_FxOpd3BA1(void), cthunk_FxOpd3BA1(void);
-extern void asm_FxOpd3C(void), cthunk_FxOpd3C(void), asm_FxOpd3D(void), cthunk_FxOpd3D(void), asm_FxOpd3E(void), cthunk_FxOpd3E(void), asm_FxOpd3F(void), cthunk_FxOpd3F(void);
-extern void asm_FxOpd40(void), cthunk_FxOpd40(void), asm_FxOpd40A1(void), cthunk_FxOpd40A1(void), asm_FxOpd41(void), cthunk_FxOpd41(void), asm_FxOpd41A1(void), cthunk_FxOpd41A1(void);
-extern void asm_FxOpd42(void), cthunk_FxOpd42(void), asm_FxOpd42A1(void), cthunk_FxOpd42A1(void), asm_FxOpd43(void), cthunk_FxOpd43(void), asm_FxOpd43A1(void), cthunk_FxOpd43A1(void);
-extern void asm_FxOpd44(void), cthunk_FxOpd44(void), asm_FxOpd44A1(void), cthunk_FxOpd44A1(void), asm_FxOpd45(void), cthunk_FxOpd45(void), asm_FxOpd45A1(void), cthunk_FxOpd45A1(void);
-extern void asm_FxOpd46(void), cthunk_FxOpd46(void), asm_FxOpd46A1(void), cthunk_FxOpd46A1(void), asm_FxOpd47(void), cthunk_FxOpd47(void), asm_FxOpd47A1(void), cthunk_FxOpd47A1(void);
-extern void asm_FxOpd48(void), cthunk_FxOpd48(void), asm_FxOpd48A1(void), cthunk_FxOpd48A1(void), asm_FxOpd49(void), cthunk_FxOpd49(void), asm_FxOpd49A1(void), cthunk_FxOpd49A1(void);
-extern void asm_FxOpd4A(void), cthunk_FxOpd4A(void), asm_FxOpd4AA1(void), cthunk_FxOpd4AA1(void), asm_FxOpd4B(void), cthunk_FxOpd4B(void), asm_FxOpd4BA1(void), cthunk_FxOpd4BA1(void);
-extern void asm_FxOpd4C(void), cthunk_FxOpd4C(void), asm_FxOpd4C1282b(void), cthunk_FxOpd4C1282b(void), asm_FxOpd4C1282bd(void), cthunk_FxOpd4C1282bd(void), asm_FxOpd4C1282bz(void), cthunk_FxOpd4C1282bz(void);
-extern void asm_FxOpd4C1282bzd(void), cthunk_FxOpd4C1282bzd(void), asm_FxOpd4C1284b(void), cthunk_FxOpd4C1284b(void), asm_FxOpd4C1284bd(void), cthunk_FxOpd4C1284bd(void), asm_FxOpd4C1284bz(void), cthunk_FxOpd4C1284bz(void);
-extern void asm_FxOpd4C1284bzd(void), cthunk_FxOpd4C1284bzd(void), asm_FxOpd4C1288b(void), cthunk_FxOpd4C1288b(void), asm_FxOpd4C1288bd(void), cthunk_FxOpd4C1288bd(void), asm_FxOpd4C1288bdl(void), cthunk_FxOpd4C1288bdl(void);
-extern void asm_FxOpd4C1288bl(void), cthunk_FxOpd4C1288bl(void), asm_FxOpd4C1288bz(void), cthunk_FxOpd4C1288bz(void), asm_FxOpd4C1288bzd(void), cthunk_FxOpd4C1288bzd(void), asm_FxOpd4C1288bzdl(void), cthunk_FxOpd4C1288bzdl(void);
-extern void asm_FxOpd4C1288bzl(void), cthunk_FxOpd4C1288bzl(void), asm_FxOpd4CA1(void), cthunk_FxOpd4CA1(void), asm_FxOpd4D(void), cthunk_FxOpd4D(void), asm_FxOpd4E(void), cthunk_FxOpd4E(void);
-extern void asm_FxOpd4EA1(void), cthunk_FxOpd4EA1(void), asm_FxOpd4F(void), cthunk_FxOpd4F(void), asm_FxOpd50(void), cthunk_FxOpd50(void), asm_FxOpd50A1(void), cthunk_FxOpd50A1(void);
-extern void asm_FxOpd50A2(void), cthunk_FxOpd50A2(void), asm_FxOpd50A3(void), cthunk_FxOpd50A3(void), asm_FxOpd51(void), cthunk_FxOpd51(void), asm_FxOpd51A1(void), cthunk_FxOpd51A1(void);
-extern void asm_FxOpd51A2(void), cthunk_FxOpd51A2(void), asm_FxOpd51A3(void), cthunk_FxOpd51A3(void), asm_FxOpd52(void), cthunk_FxOpd52(void), asm_FxOpd52A1(void), cthunk_FxOpd52A1(void);
-extern void asm_FxOpd52A2(void), cthunk_FxOpd52A2(void), asm_FxOpd52A3(void), cthunk_FxOpd52A3(void), asm_FxOpd53(void), cthunk_FxOpd53(void), asm_FxOpd53A1(void), cthunk_FxOpd53A1(void);
-extern void asm_FxOpd53A2(void), cthunk_FxOpd53A2(void), asm_FxOpd53A3(void), cthunk_FxOpd53A3(void), asm_FxOpd54(void), cthunk_FxOpd54(void), asm_FxOpd54A1(void), cthunk_FxOpd54A1(void);
-extern void asm_FxOpd54A2(void), cthunk_FxOpd54A2(void), asm_FxOpd54A3(void), cthunk_FxOpd54A3(void), asm_FxOpd55(void), cthunk_FxOpd55(void), asm_FxOpd55A1(void), cthunk_FxOpd55A1(void);
-extern void asm_FxOpd55A2(void), cthunk_FxOpd55A2(void), asm_FxOpd55A3(void), cthunk_FxOpd55A3(void), asm_FxOpd56(void), cthunk_FxOpd56(void), asm_FxOpd56A1(void), cthunk_FxOpd56A1(void);
-extern void asm_FxOpd56A2(void), cthunk_FxOpd56A2(void), asm_FxOpd56A3(void), cthunk_FxOpd56A3(void), asm_FxOpd57(void), cthunk_FxOpd57(void), asm_FxOpd57A1(void), cthunk_FxOpd57A1(void);
-extern void asm_FxOpd57A2(void), cthunk_FxOpd57A2(void), asm_FxOpd57A3(void), cthunk_FxOpd57A3(void), asm_FxOpd58(void), cthunk_FxOpd58(void), asm_FxOpd58A1(void), cthunk_FxOpd58A1(void);
-extern void asm_FxOpd58A2(void), cthunk_FxOpd58A2(void), asm_FxOpd58A3(void), cthunk_FxOpd58A3(void), asm_FxOpd59(void), cthunk_FxOpd59(void), asm_FxOpd59A1(void), cthunk_FxOpd59A1(void);
-extern void asm_FxOpd59A2(void), cthunk_FxOpd59A2(void), asm_FxOpd59A3(void), cthunk_FxOpd59A3(void), asm_FxOpd5A(void), cthunk_FxOpd5A(void), asm_FxOpd5AA1(void), cthunk_FxOpd5AA1(void);
-extern void asm_FxOpd5AA2(void), cthunk_FxOpd5AA2(void), asm_FxOpd5AA3(void), cthunk_FxOpd5AA3(void), asm_FxOpd5B(void), cthunk_FxOpd5B(void), asm_FxOpd5BA1(void), cthunk_FxOpd5BA1(void);
-extern void asm_FxOpd5BA2(void), cthunk_FxOpd5BA2(void), asm_FxOpd5BA3(void), cthunk_FxOpd5BA3(void), asm_FxOpd5C(void), cthunk_FxOpd5C(void), asm_FxOpd5CA1(void), cthunk_FxOpd5CA1(void);
-extern void asm_FxOpd5CA2(void), cthunk_FxOpd5CA2(void), asm_FxOpd5CA3(void), cthunk_FxOpd5CA3(void), asm_FxOpd5D(void), cthunk_FxOpd5D(void), asm_FxOpd5DA1(void), cthunk_FxOpd5DA1(void);
-extern void asm_FxOpd5DA2(void), cthunk_FxOpd5DA2(void), asm_FxOpd5DA3(void), cthunk_FxOpd5DA3(void), asm_FxOpd5E(void), cthunk_FxOpd5E(void), asm_FxOpd5EA1(void), cthunk_FxOpd5EA1(void);
-extern void asm_FxOpd5EA2(void), cthunk_FxOpd5EA2(void), asm_FxOpd5EA3(void), cthunk_FxOpd5EA3(void), asm_FxOpd5F(void), cthunk_FxOpd5F(void), asm_FxOpd5FA1(void), cthunk_FxOpd5FA1(void);
-extern void asm_FxOpd5FA2(void), cthunk_FxOpd5FA2(void), asm_FxOpd5FA3(void), cthunk_FxOpd5FA3(void), asm_FxOpd60(void), cthunk_FxOpd60(void), asm_FxOpd60A1(void), cthunk_FxOpd60A1(void);
-extern void asm_FxOpd60A2(void), cthunk_FxOpd60A2(void), asm_FxOpd60A3(void), cthunk_FxOpd60A3(void), asm_FxOpd61(void), cthunk_FxOpd61(void), asm_FxOpd61A1(void), cthunk_FxOpd61A1(void);
-extern void asm_FxOpd61A2(void), cthunk_FxOpd61A2(void), asm_FxOpd61A3(void), cthunk_FxOpd61A3(void), asm_FxOpd62(void), cthunk_FxOpd62(void), asm_FxOpd62A1(void), cthunk_FxOpd62A1(void);
-extern void asm_FxOpd62A2(void), cthunk_FxOpd62A2(void), asm_FxOpd62A3(void), cthunk_FxOpd62A3(void), asm_FxOpd63(void), cthunk_FxOpd63(void), asm_FxOpd63A1(void), cthunk_FxOpd63A1(void);
-extern void asm_FxOpd63A2(void), cthunk_FxOpd63A2(void), asm_FxOpd63A3(void), cthunk_FxOpd63A3(void), asm_FxOpd64(void), cthunk_FxOpd64(void), asm_FxOpd64A1(void), cthunk_FxOpd64A1(void);
-extern void asm_FxOpd64A2(void), cthunk_FxOpd64A2(void), asm_FxOpd64A3(void), cthunk_FxOpd64A3(void), asm_FxOpd65(void), cthunk_FxOpd65(void), asm_FxOpd65A1(void), cthunk_FxOpd65A1(void);
-extern void asm_FxOpd65A2(void), cthunk_FxOpd65A2(void), asm_FxOpd65A3(void), cthunk_FxOpd65A3(void), asm_FxOpd66(void), cthunk_FxOpd66(void), asm_FxOpd66A1(void), cthunk_FxOpd66A1(void);
-extern void asm_FxOpd66A2(void), cthunk_FxOpd66A2(void), asm_FxOpd66A3(void), cthunk_FxOpd66A3(void), asm_FxOpd67(void), cthunk_FxOpd67(void), asm_FxOpd67A1(void), cthunk_FxOpd67A1(void);
-extern void asm_FxOpd67A2(void), cthunk_FxOpd67A2(void), asm_FxOpd67A3(void), cthunk_FxOpd67A3(void), asm_FxOpd68(void), cthunk_FxOpd68(void), asm_FxOpd68A1(void), cthunk_FxOpd68A1(void);
-extern void asm_FxOpd68A2(void), cthunk_FxOpd68A2(void), asm_FxOpd68A3(void), cthunk_FxOpd68A3(void), asm_FxOpd69(void), cthunk_FxOpd69(void), asm_FxOpd69A1(void), cthunk_FxOpd69A1(void);
-extern void asm_FxOpd69A2(void), cthunk_FxOpd69A2(void), asm_FxOpd69A3(void), cthunk_FxOpd69A3(void), asm_FxOpd6A(void), cthunk_FxOpd6A(void), asm_FxOpd6AA1(void), cthunk_FxOpd6AA1(void);
-extern void asm_FxOpd6AA2(void), cthunk_FxOpd6AA2(void), asm_FxOpd6AA3(void), cthunk_FxOpd6AA3(void), asm_FxOpd6B(void), cthunk_FxOpd6B(void), asm_FxOpd6BA1(void), cthunk_FxOpd6BA1(void);
-extern void asm_FxOpd6BA2(void), cthunk_FxOpd6BA2(void), asm_FxOpd6BA3(void), cthunk_FxOpd6BA3(void), asm_FxOpd6C(void), cthunk_FxOpd6C(void), asm_FxOpd6CA1(void), cthunk_FxOpd6CA1(void);
-extern void asm_FxOpd6CA2(void), cthunk_FxOpd6CA2(void), asm_FxOpd6CA3(void), cthunk_FxOpd6CA3(void), asm_FxOpd6D(void), cthunk_FxOpd6D(void), asm_FxOpd6DA1(void), cthunk_FxOpd6DA1(void);
-extern void asm_FxOpd6DA2(void), cthunk_FxOpd6DA2(void), asm_FxOpd6DA3(void), cthunk_FxOpd6DA3(void), asm_FxOpd6E(void), cthunk_FxOpd6E(void), asm_FxOpd6EA1(void), cthunk_FxOpd6EA1(void);
-extern void asm_FxOpd6EA2(void), cthunk_FxOpd6EA2(void), asm_FxOpd6EA3(void), cthunk_FxOpd6EA3(void), asm_FxOpd6F(void), cthunk_FxOpd6F(void), asm_FxOpd6FA1(void), cthunk_FxOpd6FA1(void);
-extern void asm_FxOpd6FA2(void), cthunk_FxOpd6FA2(void), asm_FxOpd6FA3(void), cthunk_FxOpd6FA3(void), asm_FxOpd70(void), cthunk_FxOpd70(void), asm_FxOpd71(void), cthunk_FxOpd71(void);
-extern void asm_FxOpd71A1(void), cthunk_FxOpd71A1(void), asm_FxOpd71A2(void), cthunk_FxOpd71A2(void), asm_FxOpd71A3(void), cthunk_FxOpd71A3(void), asm_FxOpd72(void), cthunk_FxOpd72(void);
-extern void asm_FxOpd72A1(void), cthunk_FxOpd72A1(void), asm_FxOpd72A2(void), cthunk_FxOpd72A2(void), asm_FxOpd72A3(void), cthunk_FxOpd72A3(void), asm_FxOpd73(void), cthunk_FxOpd73(void);
-extern void asm_FxOpd73A1(void), cthunk_FxOpd73A1(void), asm_FxOpd73A2(void), cthunk_FxOpd73A2(void), asm_FxOpd73A3(void), cthunk_FxOpd73A3(void), asm_FxOpd74(void), cthunk_FxOpd74(void);
-extern void asm_FxOpd74A1(void), cthunk_FxOpd74A1(void), asm_FxOpd74A2(void), cthunk_FxOpd74A2(void), asm_FxOpd74A3(void), cthunk_FxOpd74A3(void), asm_FxOpd75(void), cthunk_FxOpd75(void);
-extern void asm_FxOpd75A1(void), cthunk_FxOpd75A1(void), asm_FxOpd75A2(void), cthunk_FxOpd75A2(void), asm_FxOpd75A3(void), cthunk_FxOpd75A3(void), asm_FxOpd76(void), cthunk_FxOpd76(void);
-extern void asm_FxOpd76A1(void), cthunk_FxOpd76A1(void), asm_FxOpd76A2(void), cthunk_FxOpd76A2(void), asm_FxOpd76A3(void), cthunk_FxOpd76A3(void), asm_FxOpd77(void), cthunk_FxOpd77(void);
-extern void asm_FxOpd77A1(void), cthunk_FxOpd77A1(void), asm_FxOpd77A2(void), cthunk_FxOpd77A2(void), asm_FxOpd77A3(void), cthunk_FxOpd77A3(void), asm_FxOpd78(void), cthunk_FxOpd78(void);
-extern void asm_FxOpd78A1(void), cthunk_FxOpd78A1(void), asm_FxOpd78A2(void), cthunk_FxOpd78A2(void), asm_FxOpd78A3(void), cthunk_FxOpd78A3(void), asm_FxOpd79(void), cthunk_FxOpd79(void);
-extern void asm_FxOpd79A1(void), cthunk_FxOpd79A1(void), asm_FxOpd79A2(void), cthunk_FxOpd79A2(void), asm_FxOpd79A3(void), cthunk_FxOpd79A3(void), asm_FxOpd7A(void), cthunk_FxOpd7A(void);
-extern void asm_FxOpd7AA1(void), cthunk_FxOpd7AA1(void), asm_FxOpd7AA2(void), cthunk_FxOpd7AA2(void), asm_FxOpd7AA3(void), cthunk_FxOpd7AA3(void), asm_FxOpd7B(void), cthunk_FxOpd7B(void);
-extern void asm_FxOpd7BA1(void), cthunk_FxOpd7BA1(void), asm_FxOpd7BA2(void), cthunk_FxOpd7BA2(void), asm_FxOpd7BA3(void), cthunk_FxOpd7BA3(void), asm_FxOpd7C(void), cthunk_FxOpd7C(void);
-extern void asm_FxOpd7CA1(void), cthunk_FxOpd7CA1(void), asm_FxOpd7CA2(void), cthunk_FxOpd7CA2(void), asm_FxOpd7CA3(void), cthunk_FxOpd7CA3(void), asm_FxOpd7D(void), cthunk_FxOpd7D(void);
-extern void asm_FxOpd7DA1(void), cthunk_FxOpd7DA1(void), asm_FxOpd7DA2(void), cthunk_FxOpd7DA2(void), asm_FxOpd7DA3(void), cthunk_FxOpd7DA3(void), asm_FxOpd7E(void), cthunk_FxOpd7E(void);
-extern void asm_FxOpd7EA1(void), cthunk_FxOpd7EA1(void), asm_FxOpd7EA2(void), cthunk_FxOpd7EA2(void), asm_FxOpd7EA3(void), cthunk_FxOpd7EA3(void), asm_FxOpd7F(void), cthunk_FxOpd7F(void);
-extern void asm_FxOpd7FA1(void), cthunk_FxOpd7FA1(void), asm_FxOpd7FA2(void), cthunk_FxOpd7FA2(void), asm_FxOpd7FA3(void), cthunk_FxOpd7FA3(void), asm_FxOpd80(void), cthunk_FxOpd80(void);
-extern void asm_FxOpd80A1(void), cthunk_FxOpd80A1(void), asm_FxOpd80A2(void), cthunk_FxOpd80A2(void), asm_FxOpd80A3(void), cthunk_FxOpd80A3(void), asm_FxOpd81(void), cthunk_FxOpd81(void);
-extern void asm_FxOpd81A1(void), cthunk_FxOpd81A1(void), asm_FxOpd81A2(void), cthunk_FxOpd81A2(void), asm_FxOpd81A3(void), cthunk_FxOpd81A3(void), asm_FxOpd82(void), cthunk_FxOpd82(void);
-extern void asm_FxOpd82A1(void), cthunk_FxOpd82A1(void), asm_FxOpd82A2(void), cthunk_FxOpd82A2(void), asm_FxOpd82A3(void), cthunk_FxOpd82A3(void), asm_FxOpd83(void), cthunk_FxOpd83(void);
-extern void asm_FxOpd83A1(void), cthunk_FxOpd83A1(void), asm_FxOpd83A2(void), cthunk_FxOpd83A2(void), asm_FxOpd83A3(void), cthunk_FxOpd83A3(void), asm_FxOpd84(void), cthunk_FxOpd84(void);
-extern void asm_FxOpd84A1(void), cthunk_FxOpd84A1(void), asm_FxOpd84A2(void), cthunk_FxOpd84A2(void), asm_FxOpd84A3(void), cthunk_FxOpd84A3(void), asm_FxOpd85(void), cthunk_FxOpd85(void);
-extern void asm_FxOpd85A1(void), cthunk_FxOpd85A1(void), asm_FxOpd85A2(void), cthunk_FxOpd85A2(void), asm_FxOpd85A3(void), cthunk_FxOpd85A3(void), asm_FxOpd86(void), cthunk_FxOpd86(void);
-extern void asm_FxOpd86A1(void), cthunk_FxOpd86A1(void), asm_FxOpd86A2(void), cthunk_FxOpd86A2(void), asm_FxOpd86A3(void), cthunk_FxOpd86A3(void), asm_FxOpd87(void), cthunk_FxOpd87(void);
-extern void asm_FxOpd87A1(void), cthunk_FxOpd87A1(void), asm_FxOpd87A2(void), cthunk_FxOpd87A2(void), asm_FxOpd87A3(void), cthunk_FxOpd87A3(void), asm_FxOpd88(void), cthunk_FxOpd88(void);
-extern void asm_FxOpd88A1(void), cthunk_FxOpd88A1(void), asm_FxOpd88A2(void), cthunk_FxOpd88A2(void), asm_FxOpd88A3(void), cthunk_FxOpd88A3(void), asm_FxOpd89(void), cthunk_FxOpd89(void);
-extern void asm_FxOpd89A1(void), cthunk_FxOpd89A1(void), asm_FxOpd89A2(void), cthunk_FxOpd89A2(void), asm_FxOpd89A3(void), cthunk_FxOpd89A3(void), asm_FxOpd8A(void), cthunk_FxOpd8A(void);
-extern void asm_FxOpd8AA1(void), cthunk_FxOpd8AA1(void), asm_FxOpd8AA2(void), cthunk_FxOpd8AA2(void), asm_FxOpd8AA3(void), cthunk_FxOpd8AA3(void), asm_FxOpd8B(void), cthunk_FxOpd8B(void);
-extern void asm_FxOpd8BA1(void), cthunk_FxOpd8BA1(void), asm_FxOpd8BA2(void), cthunk_FxOpd8BA2(void), asm_FxOpd8BA3(void), cthunk_FxOpd8BA3(void), asm_FxOpd8C(void), cthunk_FxOpd8C(void);
-extern void asm_FxOpd8CA1(void), cthunk_FxOpd8CA1(void), asm_FxOpd8CA2(void), cthunk_FxOpd8CA2(void), asm_FxOpd8CA3(void), cthunk_FxOpd8CA3(void), asm_FxOpd8D(void), cthunk_FxOpd8D(void);
-extern void asm_FxOpd8DA1(void), cthunk_FxOpd8DA1(void), asm_FxOpd8DA2(void), cthunk_FxOpd8DA2(void), asm_FxOpd8DA3(void), cthunk_FxOpd8DA3(void), asm_FxOpd8E(void), cthunk_FxOpd8E(void);
-extern void asm_FxOpd8EA1(void), cthunk_FxOpd8EA1(void), asm_FxOpd8EA2(void), cthunk_FxOpd8EA2(void), asm_FxOpd8EA3(void), cthunk_FxOpd8EA3(void), asm_FxOpd8F(void), cthunk_FxOpd8F(void);
-extern void asm_FxOpd8FA1(void), cthunk_FxOpd8FA1(void), asm_FxOpd8FA2(void), cthunk_FxOpd8FA2(void), asm_FxOpd8FA3(void), cthunk_FxOpd8FA3(void), asm_FxOpd90(void), cthunk_FxOpd90(void);
-extern void asm_FxOpd91(void), cthunk_FxOpd91(void), asm_FxOpd92(void), cthunk_FxOpd92(void), asm_FxOpd93(void), cthunk_FxOpd93(void), asm_FxOpd94(void), cthunk_FxOpd94(void);
-extern void asm_FxOpd95(void), cthunk_FxOpd95(void), asm_FxOpd96(void), cthunk_FxOpd96(void), asm_FxOpd96A1(void), cthunk_FxOpd96A1(void), asm_FxOpd97(void), cthunk_FxOpd97(void);
-extern void asm_FxOpd98(void), cthunk_FxOpd98(void), asm_FxOpd98A1(void), cthunk_FxOpd98A1(void), asm_FxOpd99(void), cthunk_FxOpd99(void), asm_FxOpd99A1(void), cthunk_FxOpd99A1(void);
-extern void asm_FxOpd9A(void), cthunk_FxOpd9A(void), asm_FxOpd9AA1(void), cthunk_FxOpd9AA1(void), asm_FxOpd9B(void), cthunk_FxOpd9B(void), asm_FxOpd9BA1(void), cthunk_FxOpd9BA1(void);
-extern void asm_FxOpd9C(void), cthunk_FxOpd9C(void), asm_FxOpd9CA1(void), cthunk_FxOpd9CA1(void), asm_FxOpd9D(void), cthunk_FxOpd9D(void), asm_FxOpd9DA1(void), cthunk_FxOpd9DA1(void);
-extern void asm_FxOpd9E(void), cthunk_FxOpd9E(void), asm_FxOpd9F(void), cthunk_FxOpd9F(void), asm_FxOpd9FA1(void), cthunk_FxOpd9FA1(void), asm_FxOpdA0(void), cthunk_FxOpdA0(void);
-extern void asm_FxOpdA0A1(void), cthunk_FxOpdA0A1(void), asm_FxOpdA0A2(void), cthunk_FxOpdA0A2(void), asm_FxOpdA1(void), cthunk_FxOpdA1(void), asm_FxOpdA1A1(void), cthunk_FxOpdA1A1(void);
-extern void asm_FxOpdA1A2(void), cthunk_FxOpdA1A2(void), asm_FxOpdA2(void), cthunk_FxOpdA2(void), asm_FxOpdA2A1(void), cthunk_FxOpdA2A1(void), asm_FxOpdA2A2(void), cthunk_FxOpdA2A2(void);
-extern void asm_FxOpdA3(void), cthunk_FxOpdA3(void), asm_FxOpdA3A1(void), cthunk_FxOpdA3A1(void), asm_FxOpdA3A2(void), cthunk_FxOpdA3A2(void), asm_FxOpdA4(void), cthunk_FxOpdA4(void);
-extern void asm_FxOpdA4A1(void), cthunk_FxOpdA4A1(void), asm_FxOpdA4A2(void), cthunk_FxOpdA4A2(void), asm_FxOpdA5(void), cthunk_FxOpdA5(void), asm_FxOpdA5A1(void), cthunk_FxOpdA5A1(void);
-extern void asm_FxOpdA5A2(void), cthunk_FxOpdA5A2(void), asm_FxOpdA6(void), cthunk_FxOpdA6(void), asm_FxOpdA6A1(void), cthunk_FxOpdA6A1(void), asm_FxOpdA6A2(void), cthunk_FxOpdA6A2(void);
-extern void asm_FxOpdA7(void), cthunk_FxOpdA7(void), asm_FxOpdA7A1(void), cthunk_FxOpdA7A1(void), asm_FxOpdA7A2(void), cthunk_FxOpdA7A2(void), asm_FxOpdA8(void), cthunk_FxOpdA8(void);
-extern void asm_FxOpdA8A1(void), cthunk_FxOpdA8A1(void), asm_FxOpdA8A2(void), cthunk_FxOpdA8A2(void), asm_FxOpdA9(void), cthunk_FxOpdA9(void), asm_FxOpdA9A1(void), cthunk_FxOpdA9A1(void);
-extern void asm_FxOpdA9A2(void), cthunk_FxOpdA9A2(void), asm_FxOpdAA(void), cthunk_FxOpdAA(void), asm_FxOpdAAA1(void), cthunk_FxOpdAAA1(void), asm_FxOpdAAA2(void), cthunk_FxOpdAAA2(void);
-extern void asm_FxOpdAB(void), cthunk_FxOpdAB(void), asm_FxOpdABA1(void), cthunk_FxOpdABA1(void), asm_FxOpdABA2(void), cthunk_FxOpdABA2(void), asm_FxOpdAC(void), cthunk_FxOpdAC(void);
-extern void asm_FxOpdACA1(void), cthunk_FxOpdACA1(void), asm_FxOpdACA2(void), cthunk_FxOpdACA2(void), asm_FxOpdAD(void), cthunk_FxOpdAD(void), asm_FxOpdADA1(void), cthunk_FxOpdADA1(void);
-extern void asm_FxOpdADA2(void), cthunk_FxOpdADA2(void), asm_FxOpdAE(void), cthunk_FxOpdAE(void), asm_FxOpdAEA1(void), cthunk_FxOpdAEA1(void), asm_FxOpdAEA2(void), cthunk_FxOpdAEA2(void);
-extern void asm_FxOpdAF(void), cthunk_FxOpdAF(void), asm_FxOpdAFA1(void), cthunk_FxOpdAFA1(void), asm_FxOpdAFA2(void), cthunk_FxOpdAFA2(void), asm_FxOpdB0(void), cthunk_FxOpdB0(void);
-extern void asm_FxOpdB1(void), cthunk_FxOpdB1(void), asm_FxOpdB2(void), cthunk_FxOpdB2(void), asm_FxOpdB3(void), cthunk_FxOpdB3(void), asm_FxOpdB4(void), cthunk_FxOpdB4(void);
-extern void asm_FxOpdB5(void), cthunk_FxOpdB5(void), asm_FxOpdB6(void), cthunk_FxOpdB6(void), asm_FxOpdB7(void), cthunk_FxOpdB7(void), asm_FxOpdB8(void), cthunk_FxOpdB8(void);
-extern void asm_FxOpdB9(void), cthunk_FxOpdB9(void), asm_FxOpdBA(void), cthunk_FxOpdBA(void), asm_FxOpdBB(void), cthunk_FxOpdBB(void), asm_FxOpdBC(void), cthunk_FxOpdBC(void);
-extern void asm_FxOpdBD(void), cthunk_FxOpdBD(void), asm_FxOpdBE(void), cthunk_FxOpdBE(void), asm_FxOpdBF(void), cthunk_FxOpdBF(void), asm_FxOpdC0(void), cthunk_FxOpdC0(void);
-extern void asm_FxOpdC1(void), cthunk_FxOpdC1(void), asm_FxOpdC1A1(void), cthunk_FxOpdC1A1(void), asm_FxOpdC1A2(void), cthunk_FxOpdC1A2(void), asm_FxOpdC1A3(void), cthunk_FxOpdC1A3(void);
-extern void asm_FxOpdC2(void), cthunk_FxOpdC2(void), asm_FxOpdC2A1(void), cthunk_FxOpdC2A1(void), asm_FxOpdC2A2(void), cthunk_FxOpdC2A2(void), asm_FxOpdC2A3(void), cthunk_FxOpdC2A3(void);
-extern void asm_FxOpdC3(void), cthunk_FxOpdC3(void), asm_FxOpdC3A1(void), cthunk_FxOpdC3A1(void), asm_FxOpdC3A2(void), cthunk_FxOpdC3A2(void), asm_FxOpdC3A3(void), cthunk_FxOpdC3A3(void);
-extern void asm_FxOpdC4(void), cthunk_FxOpdC4(void), asm_FxOpdC4A1(void), cthunk_FxOpdC4A1(void), asm_FxOpdC4A2(void), cthunk_FxOpdC4A2(void), asm_FxOpdC4A3(void), cthunk_FxOpdC4A3(void);
-extern void asm_FxOpdC5(void), cthunk_FxOpdC5(void), asm_FxOpdC5A1(void), cthunk_FxOpdC5A1(void), asm_FxOpdC5A2(void), cthunk_FxOpdC5A2(void), asm_FxOpdC5A3(void), cthunk_FxOpdC5A3(void);
-extern void asm_FxOpdC6(void), cthunk_FxOpdC6(void), asm_FxOpdC6A1(void), cthunk_FxOpdC6A1(void), asm_FxOpdC6A2(void), cthunk_FxOpdC6A2(void), asm_FxOpdC6A3(void), cthunk_FxOpdC6A3(void);
-extern void asm_FxOpdC7(void), cthunk_FxOpdC7(void), asm_FxOpdC7A1(void), cthunk_FxOpdC7A1(void), asm_FxOpdC7A2(void), cthunk_FxOpdC7A2(void), asm_FxOpdC7A3(void), cthunk_FxOpdC7A3(void);
-extern void asm_FxOpdC8(void), cthunk_FxOpdC8(void), asm_FxOpdC8A1(void), cthunk_FxOpdC8A1(void), asm_FxOpdC8A2(void), cthunk_FxOpdC8A2(void), asm_FxOpdC8A3(void), cthunk_FxOpdC8A3(void);
-extern void asm_FxOpdC9(void), cthunk_FxOpdC9(void), asm_FxOpdC9A1(void), cthunk_FxOpdC9A1(void), asm_FxOpdC9A2(void), cthunk_FxOpdC9A2(void), asm_FxOpdC9A3(void), cthunk_FxOpdC9A3(void);
-extern void asm_FxOpdCA(void), cthunk_FxOpdCA(void), asm_FxOpdCAA1(void), cthunk_FxOpdCAA1(void), asm_FxOpdCAA2(void), cthunk_FxOpdCAA2(void), asm_FxOpdCAA3(void), cthunk_FxOpdCAA3(void);
-extern void asm_FxOpdCB(void), cthunk_FxOpdCB(void), asm_FxOpdCBA1(void), cthunk_FxOpdCBA1(void), asm_FxOpdCBA2(void), cthunk_FxOpdCBA2(void), asm_FxOpdCBA3(void), cthunk_FxOpdCBA3(void);
-extern void asm_FxOpdCC(void), cthunk_FxOpdCC(void), asm_FxOpdCCA1(void), cthunk_FxOpdCCA1(void), asm_FxOpdCCA2(void), cthunk_FxOpdCCA2(void), asm_FxOpdCCA3(void), cthunk_FxOpdCCA3(void);
-extern void asm_FxOpdCD(void), cthunk_FxOpdCD(void), asm_FxOpdCDA1(void), cthunk_FxOpdCDA1(void), asm_FxOpdCDA2(void), cthunk_FxOpdCDA2(void), asm_FxOpdCDA3(void), cthunk_FxOpdCDA3(void);
-extern void asm_FxOpdCE(void), cthunk_FxOpdCE(void), asm_FxOpdCEA1(void), cthunk_FxOpdCEA1(void), asm_FxOpdCEA2(void), cthunk_FxOpdCEA2(void), asm_FxOpdCEA3(void), cthunk_FxOpdCEA3(void);
-extern void asm_FxOpdCF(void), cthunk_FxOpdCF(void), asm_FxOpdCFA1(void), cthunk_FxOpdCFA1(void), asm_FxOpdCFA2(void), cthunk_FxOpdCFA2(void), asm_FxOpdCFA3(void), cthunk_FxOpdCFA3(void);
-extern void asm_FxOpdD0(void), cthunk_FxOpdD0(void), asm_FxOpdD1(void), cthunk_FxOpdD1(void), asm_FxOpdD2(void), cthunk_FxOpdD2(void), asm_FxOpdD3(void), cthunk_FxOpdD3(void);
-extern void asm_FxOpdD4(void), cthunk_FxOpdD4(void), asm_FxOpdD5(void), cthunk_FxOpdD5(void), asm_FxOpdD6(void), cthunk_FxOpdD6(void), asm_FxOpdD7(void), cthunk_FxOpdD7(void);
-extern void asm_FxOpdD8(void), cthunk_FxOpdD8(void), asm_FxOpdD9(void), cthunk_FxOpdD9(void), asm_FxOpdDA(void), cthunk_FxOpdDA(void), asm_FxOpdDB(void), cthunk_FxOpdDB(void);
-extern void asm_FxOpdDC(void), cthunk_FxOpdDC(void), asm_FxOpdDD(void), cthunk_FxOpdDD(void), asm_FxOpdDE(void), cthunk_FxOpdDE(void), asm_FxOpdDF(void), cthunk_FxOpdDF(void);
-extern void asm_FxOpdDFA2(void), cthunk_FxOpdDFA2(void), asm_FxOpdDFA3(void), cthunk_FxOpdDFA3(void), asm_FxOpdE0(void), cthunk_FxOpdE0(void), asm_FxOpdE1(void), cthunk_FxOpdE1(void);
-extern void asm_FxOpdE2(void), cthunk_FxOpdE2(void), asm_FxOpdE3(void), cthunk_FxOpdE3(void), asm_FxOpdE4(void), cthunk_FxOpdE4(void), asm_FxOpdE5(void), cthunk_FxOpdE5(void);
-extern void asm_FxOpdE6(void), cthunk_FxOpdE6(void), asm_FxOpdE7(void), cthunk_FxOpdE7(void), asm_FxOpdE8(void), cthunk_FxOpdE8(void), asm_FxOpdE9(void), cthunk_FxOpdE9(void);
-extern void asm_FxOpdEA(void), cthunk_FxOpdEA(void), asm_FxOpdEB(void), cthunk_FxOpdEB(void), asm_FxOpdEC(void), cthunk_FxOpdEC(void), asm_FxOpdED(void), cthunk_FxOpdED(void);
-extern void asm_FxOpdEE(void), cthunk_FxOpdEE(void), asm_FxOpdEF(void), cthunk_FxOpdEF(void), asm_FxOpdEFA1(void), cthunk_FxOpdEFA1(void), asm_FxOpdEFA2(void), cthunk_FxOpdEFA2(void);
-extern void asm_FxOpdEFA3(void), cthunk_FxOpdEFA3(void), asm_FxOpdF0(void), cthunk_FxOpdF0(void), asm_FxOpdF0A1(void), cthunk_FxOpdF0A1(void), asm_FxOpdF0A2(void), cthunk_FxOpdF0A2(void);
-extern void asm_FxOpdF1(void), cthunk_FxOpdF1(void), asm_FxOpdF1A1(void), cthunk_FxOpdF1A1(void), asm_FxOpdF1A2(void), cthunk_FxOpdF1A2(void), asm_FxOpdF2(void), cthunk_FxOpdF2(void);
-extern void asm_FxOpdF2A1(void), cthunk_FxOpdF2A1(void), asm_FxOpdF2A2(void), cthunk_FxOpdF2A2(void), asm_FxOpdF3(void), cthunk_FxOpdF3(void), asm_FxOpdF3A1(void), cthunk_FxOpdF3A1(void);
-extern void asm_FxOpdF3A2(void), cthunk_FxOpdF3A2(void), asm_FxOpdF4(void), cthunk_FxOpdF4(void), asm_FxOpdF4A1(void), cthunk_FxOpdF4A1(void), asm_FxOpdF4A2(void), cthunk_FxOpdF4A2(void);
-extern void asm_FxOpdF5(void), cthunk_FxOpdF5(void), asm_FxOpdF5A1(void), cthunk_FxOpdF5A1(void), asm_FxOpdF5A2(void), cthunk_FxOpdF5A2(void), asm_FxOpdF6(void), cthunk_FxOpdF6(void);
-extern void asm_FxOpdF6A1(void), cthunk_FxOpdF6A1(void), asm_FxOpdF6A2(void), cthunk_FxOpdF6A2(void), asm_FxOpdF7(void), cthunk_FxOpdF7(void), asm_FxOpdF7A1(void), cthunk_FxOpdF7A1(void);
-extern void asm_FxOpdF7A2(void), cthunk_FxOpdF7A2(void), asm_FxOpdF8(void), cthunk_FxOpdF8(void), asm_FxOpdF8A1(void), cthunk_FxOpdF8A1(void), asm_FxOpdF8A2(void), cthunk_FxOpdF8A2(void);
-extern void asm_FxOpdF9(void), cthunk_FxOpdF9(void), asm_FxOpdF9A1(void), cthunk_FxOpdF9A1(void), asm_FxOpdF9A2(void), cthunk_FxOpdF9A2(void), asm_FxOpdFA(void), cthunk_FxOpdFA(void);
-extern void asm_FxOpdFAA1(void), cthunk_FxOpdFAA1(void), asm_FxOpdFAA2(void), cthunk_FxOpdFAA2(void), asm_FxOpdFB(void), cthunk_FxOpdFB(void), asm_FxOpdFBA1(void), cthunk_FxOpdFBA1(void);
-extern void asm_FxOpdFBA2(void), cthunk_FxOpdFBA2(void), asm_FxOpdFC(void), cthunk_FxOpdFC(void), asm_FxOpdFCA1(void), cthunk_FxOpdFCA1(void), asm_FxOpdFCA2(void), cthunk_FxOpdFCA2(void);
-extern void asm_FxOpdFD(void), cthunk_FxOpdFD(void), asm_FxOpdFDA1(void), cthunk_FxOpdFDA1(void), asm_FxOpdFDA2(void), cthunk_FxOpdFDA2(void), asm_FxOpdFE(void), cthunk_FxOpdFE(void);
-extern void asm_FxOpdFEA1(void), cthunk_FxOpdFEA1(void), asm_FxOpdFEA2(void), cthunk_FxOpdFEA2(void), asm_FxOpdFF(void), cthunk_FxOpdFF(void), asm_FxOpdFFA1(void), cthunk_FxOpdFFA1(void);
-extern void asm_FxOpdFFA2(void), cthunk_FxOpdFFA2(void);
+extern void asm_FxOpd00(void), asm_FxOpd01(void), asm_FxOpd02(void), asm_FxOpd03(void);
+extern void asm_FxOpd04(void), asm_FxOpd05(void), asm_FxOpd06(void), asm_FxOpd07(void);
+extern void asm_FxOpd08(void), asm_FxOpd09(void), asm_FxOpd0A(void), asm_FxOpd0B(void);
+extern void asm_FxOpd0C(void), asm_FxOpd0D(void), asm_FxOpd0E(void), asm_FxOpd0F(void);
+extern void asm_FxOpd10(void), asm_FxOpd11(void), asm_FxOpd12(void), asm_FxOpd13(void);
+extern void asm_FxOpd14(void), asm_FxOpd15(void), asm_FxOpd16(void), asm_FxOpd17(void);
+extern void asm_FxOpd18(void), asm_FxOpd19(void), asm_FxOpd1A(void), asm_FxOpd1B(void);
+extern void asm_FxOpd1C(void), asm_FxOpd1D(void), asm_FxOpd1E(void), asm_FxOpd1F(void);
+extern void asm_FxOpd20(void), asm_FxOpd21(void), asm_FxOpd22(void), asm_FxOpd23(void);
+extern void asm_FxOpd24(void), asm_FxOpd25(void), asm_FxOpd26(void), asm_FxOpd27(void);
+extern void asm_FxOpd28(void), asm_FxOpd29(void), asm_FxOpd2A(void), asm_FxOpd2B(void);
+extern void asm_FxOpd2C(void), asm_FxOpd2D(void), asm_FxOpd2E(void), asm_FxOpd2F(void);
+extern void asm_FxOpd30(void), asm_FxOpd30A1(void), asm_FxOpd31(void), asm_FxOpd31A1(void);
+extern void asm_FxOpd32(void), asm_FxOpd32A1(void), asm_FxOpd33(void), asm_FxOpd33A1(void);
+extern void asm_FxOpd34(void), asm_FxOpd34A1(void), asm_FxOpd35(void), asm_FxOpd35A1(void);
+extern void asm_FxOpd36(void), asm_FxOpd36A1(void), asm_FxOpd37(void), asm_FxOpd37A1(void);
+extern void asm_FxOpd38(void), asm_FxOpd38A1(void), asm_FxOpd39(void), asm_FxOpd39A1(void);
+extern void asm_FxOpd3A(void), asm_FxOpd3AA1(void), asm_FxOpd3B(void), asm_FxOpd3BA1(void);
+extern void asm_FxOpd3C(void), asm_FxOpd3D(void), asm_FxOpd3E(void), asm_FxOpd3F(void);
+extern void asm_FxOpd40(void), asm_FxOpd40A1(void), asm_FxOpd41(void), asm_FxOpd41A1(void);
+extern void asm_FxOpd42(void), asm_FxOpd42A1(void), asm_FxOpd43(void), asm_FxOpd43A1(void);
+extern void asm_FxOpd44(void), asm_FxOpd44A1(void), asm_FxOpd45(void), asm_FxOpd45A1(void);
+extern void asm_FxOpd46(void), asm_FxOpd46A1(void), asm_FxOpd47(void), asm_FxOpd47A1(void);
+extern void asm_FxOpd48(void), asm_FxOpd48A1(void), asm_FxOpd49(void), asm_FxOpd49A1(void);
+extern void asm_FxOpd4A(void), asm_FxOpd4AA1(void), asm_FxOpd4B(void), asm_FxOpd4BA1(void);
+extern void asm_FxOpd4C(void), asm_FxOpd4C1282b(void), asm_FxOpd4C1282bd(void), asm_FxOpd4C1282bz(void);
+extern void asm_FxOpd4C1282bzd(void), asm_FxOpd4C1284b(void), asm_FxOpd4C1284bd(void), asm_FxOpd4C1284bz(void);
+extern void asm_FxOpd4C1284bzd(void), asm_FxOpd4C1288b(void), asm_FxOpd4C1288bd(void), asm_FxOpd4C1288bdl(void);
+extern void asm_FxOpd4C1288bl(void), asm_FxOpd4C1288bz(void), asm_FxOpd4C1288bzd(void), asm_FxOpd4C1288bzdl(void);
+extern void asm_FxOpd4C1288bzl(void), asm_FxOpd4CA1(void), asm_FxOpd4D(void), asm_FxOpd4E(void);
+extern void asm_FxOpd4EA1(void), asm_FxOpd4F(void), asm_FxOpd50(void), asm_FxOpd50A1(void);
+extern void asm_FxOpd50A2(void), asm_FxOpd50A3(void), asm_FxOpd51(void), asm_FxOpd51A1(void);
+extern void asm_FxOpd51A2(void), asm_FxOpd51A3(void), asm_FxOpd52(void), asm_FxOpd52A1(void);
+extern void asm_FxOpd52A2(void), asm_FxOpd52A3(void), asm_FxOpd53(void), asm_FxOpd53A1(void);
+extern void asm_FxOpd53A2(void), asm_FxOpd53A3(void), asm_FxOpd54(void), asm_FxOpd54A1(void);
+extern void asm_FxOpd54A2(void), asm_FxOpd54A3(void), asm_FxOpd55(void), asm_FxOpd55A1(void);
+extern void asm_FxOpd55A2(void), asm_FxOpd55A3(void), asm_FxOpd56(void), asm_FxOpd56A1(void);
+extern void asm_FxOpd56A2(void), asm_FxOpd56A3(void), asm_FxOpd57(void), asm_FxOpd57A1(void);
+extern void asm_FxOpd57A2(void), asm_FxOpd57A3(void), asm_FxOpd58(void), asm_FxOpd58A1(void);
+extern void asm_FxOpd58A2(void), asm_FxOpd58A3(void), asm_FxOpd59(void), asm_FxOpd59A1(void);
+extern void asm_FxOpd59A2(void), asm_FxOpd59A3(void), asm_FxOpd5A(void), asm_FxOpd5AA1(void);
+extern void asm_FxOpd5AA2(void), asm_FxOpd5AA3(void), asm_FxOpd5B(void), asm_FxOpd5BA1(void);
+extern void asm_FxOpd5BA2(void), asm_FxOpd5BA3(void), asm_FxOpd5C(void), asm_FxOpd5CA1(void);
+extern void asm_FxOpd5CA2(void), asm_FxOpd5CA3(void), asm_FxOpd5D(void), asm_FxOpd5DA1(void);
+extern void asm_FxOpd5DA2(void), asm_FxOpd5DA3(void), asm_FxOpd5E(void), asm_FxOpd5EA1(void);
+extern void asm_FxOpd5EA2(void), asm_FxOpd5EA3(void), asm_FxOpd5F(void), asm_FxOpd5FA1(void);
+extern void asm_FxOpd5FA2(void), asm_FxOpd5FA3(void), asm_FxOpd60(void), asm_FxOpd60A1(void);
+extern void asm_FxOpd60A2(void), asm_FxOpd60A3(void), asm_FxOpd61(void), asm_FxOpd61A1(void);
+extern void asm_FxOpd61A2(void), asm_FxOpd61A3(void), asm_FxOpd62(void), asm_FxOpd62A1(void);
+extern void asm_FxOpd62A2(void), asm_FxOpd62A3(void), asm_FxOpd63(void), asm_FxOpd63A1(void);
+extern void asm_FxOpd63A2(void), asm_FxOpd63A3(void), asm_FxOpd64(void), asm_FxOpd64A1(void);
+extern void asm_FxOpd64A2(void), asm_FxOpd64A3(void), asm_FxOpd65(void), asm_FxOpd65A1(void);
+extern void asm_FxOpd65A2(void), asm_FxOpd65A3(void), asm_FxOpd66(void), asm_FxOpd66A1(void);
+extern void asm_FxOpd66A2(void), asm_FxOpd66A3(void), asm_FxOpd67(void), asm_FxOpd67A1(void);
+extern void asm_FxOpd67A2(void), asm_FxOpd67A3(void), asm_FxOpd68(void), asm_FxOpd68A1(void);
+extern void asm_FxOpd68A2(void), asm_FxOpd68A3(void), asm_FxOpd69(void), asm_FxOpd69A1(void);
+extern void asm_FxOpd69A2(void), asm_FxOpd69A3(void), asm_FxOpd6A(void), asm_FxOpd6AA1(void);
+extern void asm_FxOpd6AA2(void), asm_FxOpd6AA3(void), asm_FxOpd6B(void), asm_FxOpd6BA1(void);
+extern void asm_FxOpd6BA2(void), asm_FxOpd6BA3(void), asm_FxOpd6C(void), asm_FxOpd6CA1(void);
+extern void asm_FxOpd6CA2(void), asm_FxOpd6CA3(void), asm_FxOpd6D(void), asm_FxOpd6DA1(void);
+extern void asm_FxOpd6DA2(void), asm_FxOpd6DA3(void), asm_FxOpd6E(void), asm_FxOpd6EA1(void);
+extern void asm_FxOpd6EA2(void), asm_FxOpd6EA3(void), asm_FxOpd6F(void), asm_FxOpd6FA1(void);
+extern void asm_FxOpd6FA2(void), asm_FxOpd6FA3(void), asm_FxOpd70(void), asm_FxOpd71(void);
+extern void asm_FxOpd71A1(void), asm_FxOpd71A2(void), asm_FxOpd71A3(void), asm_FxOpd72(void);
+extern void asm_FxOpd72A1(void), asm_FxOpd72A2(void), asm_FxOpd72A3(void), asm_FxOpd73(void);
+extern void asm_FxOpd73A1(void), asm_FxOpd73A2(void), asm_FxOpd73A3(void), asm_FxOpd74(void);
+extern void asm_FxOpd74A1(void), asm_FxOpd74A2(void), asm_FxOpd74A3(void), asm_FxOpd75(void);
+extern void asm_FxOpd75A1(void), asm_FxOpd75A2(void), asm_FxOpd75A3(void), asm_FxOpd76(void);
+extern void asm_FxOpd76A1(void), asm_FxOpd76A2(void), asm_FxOpd76A3(void), asm_FxOpd77(void);
+extern void asm_FxOpd77A1(void), asm_FxOpd77A2(void), asm_FxOpd77A3(void), asm_FxOpd78(void);
+extern void asm_FxOpd78A1(void), asm_FxOpd78A2(void), asm_FxOpd78A3(void), asm_FxOpd79(void);
+extern void asm_FxOpd79A1(void), asm_FxOpd79A2(void), asm_FxOpd79A3(void), asm_FxOpd7A(void);
+extern void asm_FxOpd7AA1(void), asm_FxOpd7AA2(void), asm_FxOpd7AA3(void), asm_FxOpd7B(void);
+extern void asm_FxOpd7BA1(void), asm_FxOpd7BA2(void), asm_FxOpd7BA3(void), asm_FxOpd7C(void);
+extern void asm_FxOpd7CA1(void), asm_FxOpd7CA2(void), asm_FxOpd7CA3(void), asm_FxOpd7D(void);
+extern void asm_FxOpd7DA1(void), asm_FxOpd7DA2(void), asm_FxOpd7DA3(void), asm_FxOpd7E(void);
+extern void asm_FxOpd7EA1(void), asm_FxOpd7EA2(void), asm_FxOpd7EA3(void), asm_FxOpd7F(void);
+extern void asm_FxOpd7FA1(void), asm_FxOpd7FA2(void), asm_FxOpd7FA3(void), asm_FxOpd80(void);
+extern void asm_FxOpd80A1(void), asm_FxOpd80A2(void), asm_FxOpd80A3(void), asm_FxOpd81(void);
+extern void asm_FxOpd81A1(void), asm_FxOpd81A2(void), asm_FxOpd81A3(void), asm_FxOpd82(void);
+extern void asm_FxOpd82A1(void), asm_FxOpd82A2(void), asm_FxOpd82A3(void), asm_FxOpd83(void);
+extern void asm_FxOpd83A1(void), asm_FxOpd83A2(void), asm_FxOpd83A3(void), asm_FxOpd84(void);
+extern void asm_FxOpd84A1(void), asm_FxOpd84A2(void), asm_FxOpd84A3(void), asm_FxOpd85(void);
+extern void asm_FxOpd85A1(void), asm_FxOpd85A2(void), asm_FxOpd85A3(void), asm_FxOpd86(void);
+extern void asm_FxOpd86A1(void), asm_FxOpd86A2(void), asm_FxOpd86A3(void), asm_FxOpd87(void);
+extern void asm_FxOpd87A1(void), asm_FxOpd87A2(void), asm_FxOpd87A3(void), asm_FxOpd88(void);
+extern void asm_FxOpd88A1(void), asm_FxOpd88A2(void), asm_FxOpd88A3(void), asm_FxOpd89(void);
+extern void asm_FxOpd89A1(void), asm_FxOpd89A2(void), asm_FxOpd89A3(void), asm_FxOpd8A(void);
+extern void asm_FxOpd8AA1(void), asm_FxOpd8AA2(void), asm_FxOpd8AA3(void), asm_FxOpd8B(void);
+extern void asm_FxOpd8BA1(void), asm_FxOpd8BA2(void), asm_FxOpd8BA3(void), asm_FxOpd8C(void);
+extern void asm_FxOpd8CA1(void), asm_FxOpd8CA2(void), asm_FxOpd8CA3(void), asm_FxOpd8D(void);
+extern void asm_FxOpd8DA1(void), asm_FxOpd8DA2(void), asm_FxOpd8DA3(void), asm_FxOpd8E(void);
+extern void asm_FxOpd8EA1(void), asm_FxOpd8EA2(void), asm_FxOpd8EA3(void), asm_FxOpd8F(void);
+extern void asm_FxOpd8FA1(void), asm_FxOpd8FA2(void), asm_FxOpd8FA3(void), asm_FxOpd90(void);
+extern void asm_FxOpd91(void), asm_FxOpd92(void), asm_FxOpd93(void), asm_FxOpd94(void);
+extern void asm_FxOpd95(void), asm_FxOpd96(void), asm_FxOpd96A1(void), asm_FxOpd97(void);
+extern void asm_FxOpd98(void), asm_FxOpd98A1(void), asm_FxOpd99(void), asm_FxOpd99A1(void);
+extern void asm_FxOpd9A(void), asm_FxOpd9AA1(void), asm_FxOpd9B(void), asm_FxOpd9BA1(void);
+extern void asm_FxOpd9C(void), asm_FxOpd9CA1(void), asm_FxOpd9D(void), asm_FxOpd9DA1(void);
+extern void asm_FxOpd9E(void), asm_FxOpd9F(void), asm_FxOpd9FA1(void), asm_FxOpdA0(void);
+extern void asm_FxOpdA0A1(void), asm_FxOpdA0A2(void), asm_FxOpdA1(void), asm_FxOpdA1A1(void);
+extern void asm_FxOpdA1A2(void), asm_FxOpdA2(void), asm_FxOpdA2A1(void), asm_FxOpdA2A2(void);
+extern void asm_FxOpdA3(void), asm_FxOpdA3A1(void), asm_FxOpdA3A2(void), asm_FxOpdA4(void);
+extern void asm_FxOpdA4A1(void), asm_FxOpdA4A2(void), asm_FxOpdA5(void), asm_FxOpdA5A1(void);
+extern void asm_FxOpdA5A2(void), asm_FxOpdA6(void), asm_FxOpdA6A1(void), asm_FxOpdA6A2(void);
+extern void asm_FxOpdA7(void), asm_FxOpdA7A1(void), asm_FxOpdA7A2(void), asm_FxOpdA8(void);
+extern void asm_FxOpdA8A1(void), asm_FxOpdA8A2(void), asm_FxOpdA9(void), asm_FxOpdA9A1(void);
+extern void asm_FxOpdA9A2(void), asm_FxOpdAA(void), asm_FxOpdAAA1(void), asm_FxOpdAAA2(void);
+extern void asm_FxOpdAB(void), asm_FxOpdABA1(void), asm_FxOpdABA2(void), asm_FxOpdAC(void);
+extern void asm_FxOpdACA1(void), asm_FxOpdACA2(void), asm_FxOpdAD(void), asm_FxOpdADA1(void);
+extern void asm_FxOpdADA2(void), asm_FxOpdAE(void), asm_FxOpdAEA1(void), asm_FxOpdAEA2(void);
+extern void asm_FxOpdAF(void), asm_FxOpdAFA1(void), asm_FxOpdAFA2(void), asm_FxOpdB0(void);
+extern void asm_FxOpdB1(void), asm_FxOpdB2(void), asm_FxOpdB3(void), asm_FxOpdB4(void);
+extern void asm_FxOpdB5(void), asm_FxOpdB6(void), asm_FxOpdB7(void), asm_FxOpdB8(void);
+extern void asm_FxOpdB9(void), asm_FxOpdBA(void), asm_FxOpdBB(void), asm_FxOpdBC(void);
+extern void asm_FxOpdBD(void), asm_FxOpdBE(void), asm_FxOpdBF(void), asm_FxOpdC0(void);
+extern void asm_FxOpdC1(void), asm_FxOpdC1A1(void), asm_FxOpdC1A2(void), asm_FxOpdC1A3(void);
+extern void asm_FxOpdC2(void), asm_FxOpdC2A1(void), asm_FxOpdC2A2(void), asm_FxOpdC2A3(void);
+extern void asm_FxOpdC3(void), asm_FxOpdC3A1(void), asm_FxOpdC3A2(void), asm_FxOpdC3A3(void);
+extern void asm_FxOpdC4(void), asm_FxOpdC4A1(void), asm_FxOpdC4A2(void), asm_FxOpdC4A3(void);
+extern void asm_FxOpdC5(void), asm_FxOpdC5A1(void), asm_FxOpdC5A2(void), asm_FxOpdC5A3(void);
+extern void asm_FxOpdC6(void), asm_FxOpdC6A1(void), asm_FxOpdC6A2(void), asm_FxOpdC6A3(void);
+extern void asm_FxOpdC7(void), asm_FxOpdC7A1(void), asm_FxOpdC7A2(void), asm_FxOpdC7A3(void);
+extern void asm_FxOpdC8(void), asm_FxOpdC8A1(void), asm_FxOpdC8A2(void), asm_FxOpdC8A3(void);
+extern void asm_FxOpdC9(void), asm_FxOpdC9A1(void), asm_FxOpdC9A2(void), asm_FxOpdC9A3(void);
+extern void asm_FxOpdCA(void), asm_FxOpdCAA1(void), asm_FxOpdCAA2(void), asm_FxOpdCAA3(void);
+extern void asm_FxOpdCB(void), asm_FxOpdCBA1(void), asm_FxOpdCBA2(void), asm_FxOpdCBA3(void);
+extern void asm_FxOpdCC(void), asm_FxOpdCCA1(void), asm_FxOpdCCA2(void), asm_FxOpdCCA3(void);
+extern void asm_FxOpdCD(void), asm_FxOpdCDA1(void), asm_FxOpdCDA2(void), asm_FxOpdCDA3(void);
+extern void asm_FxOpdCE(void), asm_FxOpdCEA1(void), asm_FxOpdCEA2(void), asm_FxOpdCEA3(void);
+extern void asm_FxOpdCF(void), asm_FxOpdCFA1(void), asm_FxOpdCFA2(void), asm_FxOpdCFA3(void);
+extern void asm_FxOpdD0(void), asm_FxOpdD1(void), asm_FxOpdD2(void), asm_FxOpdD3(void);
+extern void asm_FxOpdD4(void), asm_FxOpdD5(void), asm_FxOpdD6(void), asm_FxOpdD7(void);
+extern void asm_FxOpdD8(void), asm_FxOpdD9(void), asm_FxOpdDA(void), asm_FxOpdDB(void);
+extern void asm_FxOpdDC(void), asm_FxOpdDD(void), asm_FxOpdDE(void), asm_FxOpdDF(void);
+extern void asm_FxOpdDFA2(void), asm_FxOpdDFA3(void), asm_FxOpdE0(void), asm_FxOpdE1(void);
+extern void asm_FxOpdE2(void), asm_FxOpdE3(void), asm_FxOpdE4(void), asm_FxOpdE5(void);
+extern void asm_FxOpdE6(void), asm_FxOpdE7(void), asm_FxOpdE8(void), asm_FxOpdE9(void);
+extern void asm_FxOpdEA(void), asm_FxOpdEB(void), asm_FxOpdEC(void), asm_FxOpdED(void);
+extern void asm_FxOpdEE(void), asm_FxOpdEF(void), asm_FxOpdEFA1(void), asm_FxOpdEFA2(void);
+extern void asm_FxOpdEFA3(void), asm_FxOpdF0(void), asm_FxOpdF0A1(void), asm_FxOpdF0A2(void);
+extern void asm_FxOpdF1(void), asm_FxOpdF1A1(void), asm_FxOpdF1A2(void), asm_FxOpdF2(void);
+extern void asm_FxOpdF2A1(void), asm_FxOpdF2A2(void), asm_FxOpdF3(void), asm_FxOpdF3A1(void);
+extern void asm_FxOpdF3A2(void), asm_FxOpdF4(void), asm_FxOpdF4A1(void), asm_FxOpdF4A2(void);
+extern void asm_FxOpdF5(void), asm_FxOpdF5A1(void), asm_FxOpdF5A2(void), asm_FxOpdF6(void);
+extern void asm_FxOpdF6A1(void), asm_FxOpdF6A2(void), asm_FxOpdF7(void), asm_FxOpdF7A1(void);
+extern void asm_FxOpdF7A2(void), asm_FxOpdF8(void), asm_FxOpdF8A1(void), asm_FxOpdF8A2(void);
+extern void asm_FxOpdF9(void), asm_FxOpdF9A1(void), asm_FxOpdF9A2(void), asm_FxOpdFA(void);
+extern void asm_FxOpdFAA1(void), asm_FxOpdFAA2(void), asm_FxOpdFB(void), asm_FxOpdFBA1(void);
+extern void asm_FxOpdFBA2(void), asm_FxOpdFC(void), asm_FxOpdFCA1(void), asm_FxOpdFCA2(void);
+extern void asm_FxOpdFD(void), asm_FxOpdFDA1(void), asm_FxOpdFDA2(void), asm_FxOpdFE(void);
+extern void asm_FxOpdFEA1(void), asm_FxOpdFEA2(void), asm_FxOpdFF(void), asm_FxOpdFFA1(void);
+extern void asm_FxOpdFFA2(void);
 
 typedef struct {
     char const* name;
@@ -452,9 +493,9 @@ typedef struct {
        6 = RAM via SfxLastRamAdr, which the setup already keeps in range. */
     int mem;
     u4 addr_reg;
-    /* The d table's ported side is an asm thunk, not a bare C function, so it
-       has to be entered through the register-ABI trampoline like the oracle. */
-    int c_is_thunk;
+    /* Set for the d table: the ported side is the bare body, so the caller has
+       to add the FXReturn tail the oracle's thunk still carries. */
+    int c_is_d;
 } fxcase;
 
 static fxcase const cases[] = {
@@ -1159,615 +1200,615 @@ static fxcase const cases[] = {
     { "FxOp4C1288bzdl PLOT 8bpp zdl", asm_FxOp4C1288bzdl, c_FxOp4C1288bzdl, 7, 0, 0 },
     { "FxOp4C PLOT", asm_FxOp4C, c_FxOp4C, 7, 0, 0 },
     { "FxOp4CA1 RPIX", asm_FxOp4CA1, c_FxOp4CA1, 7, 0, 0 },
-    { "FxOpd00", asm_FxOpd00, cthunk_FxOpd00, 0, 0, 1 },
-    { "FxOpd01", asm_FxOpd01, cthunk_FxOpd01, 0, 0, 1 },
-    { "FxOpd02", asm_FxOpd02, cthunk_FxOpd02, 0, 0, 1 },
-    { "FxOpd03", asm_FxOpd03, cthunk_FxOpd03, 0, 0, 1 },
-    { "FxOpd04", asm_FxOpd04, cthunk_FxOpd04, 0, 0, 1 },
-    { "FxOpd05", asm_FxOpd05, cthunk_FxOpd05, 0, 0, 1 },
-    { "FxOpd06", asm_FxOpd06, cthunk_FxOpd06, 0, 0, 1 },
-    { "FxOpd07", asm_FxOpd07, cthunk_FxOpd07, 0, 0, 1 },
-    { "FxOpd08", asm_FxOpd08, cthunk_FxOpd08, 0, 0, 1 },
-    { "FxOpd09", asm_FxOpd09, cthunk_FxOpd09, 0, 0, 1 },
-    { "FxOpd0A", asm_FxOpd0A, cthunk_FxOpd0A, 0, 0, 1 },
-    { "FxOpd0B", asm_FxOpd0B, cthunk_FxOpd0B, 0, 0, 1 },
-    { "FxOpd0C", asm_FxOpd0C, cthunk_FxOpd0C, 0, 0, 1 },
-    { "FxOpd0D", asm_FxOpd0D, cthunk_FxOpd0D, 0, 0, 1 },
-    { "FxOpd0E", asm_FxOpd0E, cthunk_FxOpd0E, 0, 0, 1 },
-    { "FxOpd0F", asm_FxOpd0F, cthunk_FxOpd0F, 0, 0, 1 },
-    { "FxOpd10", asm_FxOpd10, cthunk_FxOpd10, 0, 0, 1 },
-    { "FxOpd11", asm_FxOpd11, cthunk_FxOpd11, 0, 0, 1 },
-    { "FxOpd12", asm_FxOpd12, cthunk_FxOpd12, 0, 0, 1 },
-    { "FxOpd13", asm_FxOpd13, cthunk_FxOpd13, 0, 0, 1 },
-    { "FxOpd14", asm_FxOpd14, cthunk_FxOpd14, 0, 0, 1 },
-    { "FxOpd15", asm_FxOpd15, cthunk_FxOpd15, 0, 0, 1 },
-    { "FxOpd16", asm_FxOpd16, cthunk_FxOpd16, 0, 0, 1 },
-    { "FxOpd17", asm_FxOpd17, cthunk_FxOpd17, 0, 0, 1 },
-    { "FxOpd18", asm_FxOpd18, cthunk_FxOpd18, 0, 0, 1 },
-    { "FxOpd19", asm_FxOpd19, cthunk_FxOpd19, 0, 0, 1 },
-    { "FxOpd1A", asm_FxOpd1A, cthunk_FxOpd1A, 0, 0, 1 },
-    { "FxOpd1B", asm_FxOpd1B, cthunk_FxOpd1B, 0, 0, 1 },
-    { "FxOpd1C", asm_FxOpd1C, cthunk_FxOpd1C, 0, 0, 1 },
-    { "FxOpd1D", asm_FxOpd1D, cthunk_FxOpd1D, 0, 0, 1 },
-    { "FxOpd1E", asm_FxOpd1E, cthunk_FxOpd1E, 0, 0, 1 },
-    { "FxOpd1F", asm_FxOpd1F, cthunk_FxOpd1F, 0, 0, 1 },
-    { "FxOpd20", asm_FxOpd20, cthunk_FxOpd20, 0, 0, 1 },
-    { "FxOpd21", asm_FxOpd21, cthunk_FxOpd21, 0, 0, 1 },
-    { "FxOpd22", asm_FxOpd22, cthunk_FxOpd22, 0, 0, 1 },
-    { "FxOpd23", asm_FxOpd23, cthunk_FxOpd23, 0, 0, 1 },
-    { "FxOpd24", asm_FxOpd24, cthunk_FxOpd24, 0, 0, 1 },
-    { "FxOpd25", asm_FxOpd25, cthunk_FxOpd25, 0, 0, 1 },
-    { "FxOpd26", asm_FxOpd26, cthunk_FxOpd26, 0, 0, 1 },
-    { "FxOpd27", asm_FxOpd27, cthunk_FxOpd27, 0, 0, 1 },
-    { "FxOpd28", asm_FxOpd28, cthunk_FxOpd28, 0, 0, 1 },
-    { "FxOpd29", asm_FxOpd29, cthunk_FxOpd29, 0, 0, 1 },
-    { "FxOpd2A", asm_FxOpd2A, cthunk_FxOpd2A, 0, 0, 1 },
-    { "FxOpd2B", asm_FxOpd2B, cthunk_FxOpd2B, 0, 0, 1 },
-    { "FxOpd2C", asm_FxOpd2C, cthunk_FxOpd2C, 0, 0, 1 },
-    { "FxOpd2D", asm_FxOpd2D, cthunk_FxOpd2D, 0, 0, 1 },
-    { "FxOpd2E", asm_FxOpd2E, cthunk_FxOpd2E, 0, 0, 1 },
-    { "FxOpd2F", asm_FxOpd2F, cthunk_FxOpd2F, 0, 0, 1 },
-    { "FxOpd30", asm_FxOpd30, cthunk_FxOpd30, 1, 0, 1 },
-    { "FxOpd30A1", asm_FxOpd30A1, cthunk_FxOpd30A1, 1, 0, 1 },
-    { "FxOpd31", asm_FxOpd31, cthunk_FxOpd31, 1, 1, 1 },
-    { "FxOpd31A1", asm_FxOpd31A1, cthunk_FxOpd31A1, 1, 1, 1 },
-    { "FxOpd32", asm_FxOpd32, cthunk_FxOpd32, 1, 2, 1 },
-    { "FxOpd32A1", asm_FxOpd32A1, cthunk_FxOpd32A1, 1, 2, 1 },
-    { "FxOpd33", asm_FxOpd33, cthunk_FxOpd33, 1, 3, 1 },
-    { "FxOpd33A1", asm_FxOpd33A1, cthunk_FxOpd33A1, 1, 3, 1 },
-    { "FxOpd34", asm_FxOpd34, cthunk_FxOpd34, 1, 4, 1 },
-    { "FxOpd34A1", asm_FxOpd34A1, cthunk_FxOpd34A1, 1, 4, 1 },
-    { "FxOpd35", asm_FxOpd35, cthunk_FxOpd35, 1, 5, 1 },
-    { "FxOpd35A1", asm_FxOpd35A1, cthunk_FxOpd35A1, 1, 5, 1 },
-    { "FxOpd36", asm_FxOpd36, cthunk_FxOpd36, 1, 6, 1 },
-    { "FxOpd36A1", asm_FxOpd36A1, cthunk_FxOpd36A1, 1, 6, 1 },
-    { "FxOpd37", asm_FxOpd37, cthunk_FxOpd37, 1, 7, 1 },
-    { "FxOpd37A1", asm_FxOpd37A1, cthunk_FxOpd37A1, 1, 7, 1 },
-    { "FxOpd38", asm_FxOpd38, cthunk_FxOpd38, 1, 8, 1 },
-    { "FxOpd38A1", asm_FxOpd38A1, cthunk_FxOpd38A1, 1, 8, 1 },
-    { "FxOpd39", asm_FxOpd39, cthunk_FxOpd39, 1, 9, 1 },
-    { "FxOpd39A1", asm_FxOpd39A1, cthunk_FxOpd39A1, 1, 9, 1 },
-    { "FxOpd3A", asm_FxOpd3A, cthunk_FxOpd3A, 1, 10, 1 },
-    { "FxOpd3AA1", asm_FxOpd3AA1, cthunk_FxOpd3AA1, 1, 10, 1 },
-    { "FxOpd3B", asm_FxOpd3B, cthunk_FxOpd3B, 1, 11, 1 },
-    { "FxOpd3BA1", asm_FxOpd3BA1, cthunk_FxOpd3BA1, 1, 11, 1 },
-    { "FxOpd3C", asm_FxOpd3C, cthunk_FxOpd3C, 4, 13, 1 },
-    { "FxOpd3D", asm_FxOpd3D, cthunk_FxOpd3D, 0, 0, 1 },
-    { "FxOpd3E", asm_FxOpd3E, cthunk_FxOpd3E, 0, 0, 1 },
-    { "FxOpd3F", asm_FxOpd3F, cthunk_FxOpd3F, 0, 0, 1 },
-    { "FxOpd40", asm_FxOpd40, cthunk_FxOpd40, 1, 0, 1 },
-    { "FxOpd40A1", asm_FxOpd40A1, cthunk_FxOpd40A1, 1, 0, 1 },
-    { "FxOpd41", asm_FxOpd41, cthunk_FxOpd41, 1, 1, 1 },
-    { "FxOpd41A1", asm_FxOpd41A1, cthunk_FxOpd41A1, 1, 1, 1 },
-    { "FxOpd42", asm_FxOpd42, cthunk_FxOpd42, 1, 2, 1 },
-    { "FxOpd42A1", asm_FxOpd42A1, cthunk_FxOpd42A1, 1, 2, 1 },
-    { "FxOpd43", asm_FxOpd43, cthunk_FxOpd43, 1, 3, 1 },
-    { "FxOpd43A1", asm_FxOpd43A1, cthunk_FxOpd43A1, 1, 3, 1 },
-    { "FxOpd44", asm_FxOpd44, cthunk_FxOpd44, 1, 4, 1 },
-    { "FxOpd44A1", asm_FxOpd44A1, cthunk_FxOpd44A1, 1, 4, 1 },
-    { "FxOpd45", asm_FxOpd45, cthunk_FxOpd45, 1, 5, 1 },
-    { "FxOpd45A1", asm_FxOpd45A1, cthunk_FxOpd45A1, 1, 5, 1 },
-    { "FxOpd46", asm_FxOpd46, cthunk_FxOpd46, 1, 6, 1 },
-    { "FxOpd46A1", asm_FxOpd46A1, cthunk_FxOpd46A1, 1, 6, 1 },
-    { "FxOpd47", asm_FxOpd47, cthunk_FxOpd47, 1, 7, 1 },
-    { "FxOpd47A1", asm_FxOpd47A1, cthunk_FxOpd47A1, 1, 7, 1 },
-    { "FxOpd48", asm_FxOpd48, cthunk_FxOpd48, 1, 8, 1 },
-    { "FxOpd48A1", asm_FxOpd48A1, cthunk_FxOpd48A1, 1, 8, 1 },
-    { "FxOpd49", asm_FxOpd49, cthunk_FxOpd49, 1, 9, 1 },
-    { "FxOpd49A1", asm_FxOpd49A1, cthunk_FxOpd49A1, 1, 9, 1 },
-    { "FxOpd4A", asm_FxOpd4A, cthunk_FxOpd4A, 1, 10, 1 },
-    { "FxOpd4AA1", asm_FxOpd4AA1, cthunk_FxOpd4AA1, 1, 10, 1 },
-    { "FxOpd4B", asm_FxOpd4B, cthunk_FxOpd4B, 1, 11, 1 },
-    { "FxOpd4BA1", asm_FxOpd4BA1, cthunk_FxOpd4BA1, 1, 11, 1 },
-    { "FxOpd4C", asm_FxOpd4C, cthunk_FxOpd4C, 7, 0, 1 },
-    { "FxOpd4C1282b", asm_FxOpd4C1282b, cthunk_FxOpd4C1282b, 7, 0, 1 },
-    { "FxOpd4C1282bd", asm_FxOpd4C1282bd, cthunk_FxOpd4C1282bd, 7, 0, 1 },
-    { "FxOpd4C1282bz", asm_FxOpd4C1282bz, cthunk_FxOpd4C1282bz, 7, 0, 1 },
-    { "FxOpd4C1282bzd", asm_FxOpd4C1282bzd, cthunk_FxOpd4C1282bzd, 7, 0, 1 },
-    { "FxOpd4C1284b", asm_FxOpd4C1284b, cthunk_FxOpd4C1284b, 7, 0, 1 },
-    { "FxOpd4C1284bd", asm_FxOpd4C1284bd, cthunk_FxOpd4C1284bd, 7, 0, 1 },
-    { "FxOpd4C1284bz", asm_FxOpd4C1284bz, cthunk_FxOpd4C1284bz, 7, 0, 1 },
-    { "FxOpd4C1284bzd", asm_FxOpd4C1284bzd, cthunk_FxOpd4C1284bzd, 7, 0, 1 },
-    { "FxOpd4C1288b", asm_FxOpd4C1288b, cthunk_FxOpd4C1288b, 7, 0, 1 },
-    { "FxOpd4C1288bd", asm_FxOpd4C1288bd, cthunk_FxOpd4C1288bd, 7, 0, 1 },
-    { "FxOpd4C1288bdl", asm_FxOpd4C1288bdl, cthunk_FxOpd4C1288bdl, 7, 0, 1 },
-    { "FxOpd4C1288bl", asm_FxOpd4C1288bl, cthunk_FxOpd4C1288bl, 7, 0, 1 },
-    { "FxOpd4C1288bz", asm_FxOpd4C1288bz, cthunk_FxOpd4C1288bz, 7, 0, 1 },
-    { "FxOpd4C1288bzd", asm_FxOpd4C1288bzd, cthunk_FxOpd4C1288bzd, 7, 0, 1 },
-    { "FxOpd4C1288bzdl", asm_FxOpd4C1288bzdl, cthunk_FxOpd4C1288bzdl, 7, 0, 1 },
-    { "FxOpd4C1288bzl", asm_FxOpd4C1288bzl, cthunk_FxOpd4C1288bzl, 7, 0, 1 },
-    { "FxOpd4CA1", asm_FxOpd4CA1, cthunk_FxOpd4CA1, 7, 0, 1 },
-    { "FxOpd4D", asm_FxOpd4D, cthunk_FxOpd4D, 0, 0, 1 },
-    { "FxOpd4E", asm_FxOpd4E, cthunk_FxOpd4E, 0, 0, 1 },
-    { "FxOpd4EA1", asm_FxOpd4EA1, cthunk_FxOpd4EA1, 0, 0, 1 },
-    { "FxOpd4F", asm_FxOpd4F, cthunk_FxOpd4F, 0, 0, 1 },
-    { "FxOpd50", asm_FxOpd50, cthunk_FxOpd50, 0, 0, 1 },
-    { "FxOpd50A1", asm_FxOpd50A1, cthunk_FxOpd50A1, 0, 0, 1 },
-    { "FxOpd50A2", asm_FxOpd50A2, cthunk_FxOpd50A2, 0, 0, 1 },
-    { "FxOpd50A3", asm_FxOpd50A3, cthunk_FxOpd50A3, 0, 0, 1 },
-    { "FxOpd51", asm_FxOpd51, cthunk_FxOpd51, 0, 0, 1 },
-    { "FxOpd51A1", asm_FxOpd51A1, cthunk_FxOpd51A1, 0, 0, 1 },
-    { "FxOpd51A2", asm_FxOpd51A2, cthunk_FxOpd51A2, 0, 0, 1 },
-    { "FxOpd51A3", asm_FxOpd51A3, cthunk_FxOpd51A3, 0, 0, 1 },
-    { "FxOpd52", asm_FxOpd52, cthunk_FxOpd52, 0, 0, 1 },
-    { "FxOpd52A1", asm_FxOpd52A1, cthunk_FxOpd52A1, 0, 0, 1 },
-    { "FxOpd52A2", asm_FxOpd52A2, cthunk_FxOpd52A2, 0, 0, 1 },
-    { "FxOpd52A3", asm_FxOpd52A3, cthunk_FxOpd52A3, 0, 0, 1 },
-    { "FxOpd53", asm_FxOpd53, cthunk_FxOpd53, 0, 0, 1 },
-    { "FxOpd53A1", asm_FxOpd53A1, cthunk_FxOpd53A1, 0, 0, 1 },
-    { "FxOpd53A2", asm_FxOpd53A2, cthunk_FxOpd53A2, 0, 0, 1 },
-    { "FxOpd53A3", asm_FxOpd53A3, cthunk_FxOpd53A3, 0, 0, 1 },
-    { "FxOpd54", asm_FxOpd54, cthunk_FxOpd54, 0, 0, 1 },
-    { "FxOpd54A1", asm_FxOpd54A1, cthunk_FxOpd54A1, 0, 0, 1 },
-    { "FxOpd54A2", asm_FxOpd54A2, cthunk_FxOpd54A2, 0, 0, 1 },
-    { "FxOpd54A3", asm_FxOpd54A3, cthunk_FxOpd54A3, 0, 0, 1 },
-    { "FxOpd55", asm_FxOpd55, cthunk_FxOpd55, 0, 0, 1 },
-    { "FxOpd55A1", asm_FxOpd55A1, cthunk_FxOpd55A1, 0, 0, 1 },
-    { "FxOpd55A2", asm_FxOpd55A2, cthunk_FxOpd55A2, 0, 0, 1 },
-    { "FxOpd55A3", asm_FxOpd55A3, cthunk_FxOpd55A3, 0, 0, 1 },
-    { "FxOpd56", asm_FxOpd56, cthunk_FxOpd56, 0, 0, 1 },
-    { "FxOpd56A1", asm_FxOpd56A1, cthunk_FxOpd56A1, 0, 0, 1 },
-    { "FxOpd56A2", asm_FxOpd56A2, cthunk_FxOpd56A2, 0, 0, 1 },
-    { "FxOpd56A3", asm_FxOpd56A3, cthunk_FxOpd56A3, 0, 0, 1 },
-    { "FxOpd57", asm_FxOpd57, cthunk_FxOpd57, 0, 0, 1 },
-    { "FxOpd57A1", asm_FxOpd57A1, cthunk_FxOpd57A1, 0, 0, 1 },
-    { "FxOpd57A2", asm_FxOpd57A2, cthunk_FxOpd57A2, 0, 0, 1 },
-    { "FxOpd57A3", asm_FxOpd57A3, cthunk_FxOpd57A3, 0, 0, 1 },
-    { "FxOpd58", asm_FxOpd58, cthunk_FxOpd58, 0, 0, 1 },
-    { "FxOpd58A1", asm_FxOpd58A1, cthunk_FxOpd58A1, 0, 0, 1 },
-    { "FxOpd58A2", asm_FxOpd58A2, cthunk_FxOpd58A2, 0, 0, 1 },
-    { "FxOpd58A3", asm_FxOpd58A3, cthunk_FxOpd58A3, 0, 0, 1 },
-    { "FxOpd59", asm_FxOpd59, cthunk_FxOpd59, 0, 0, 1 },
-    { "FxOpd59A1", asm_FxOpd59A1, cthunk_FxOpd59A1, 0, 0, 1 },
-    { "FxOpd59A2", asm_FxOpd59A2, cthunk_FxOpd59A2, 0, 0, 1 },
-    { "FxOpd59A3", asm_FxOpd59A3, cthunk_FxOpd59A3, 0, 0, 1 },
-    { "FxOpd5A", asm_FxOpd5A, cthunk_FxOpd5A, 0, 0, 1 },
-    { "FxOpd5AA1", asm_FxOpd5AA1, cthunk_FxOpd5AA1, 0, 0, 1 },
-    { "FxOpd5AA2", asm_FxOpd5AA2, cthunk_FxOpd5AA2, 0, 0, 1 },
-    { "FxOpd5AA3", asm_FxOpd5AA3, cthunk_FxOpd5AA3, 0, 0, 1 },
-    { "FxOpd5B", asm_FxOpd5B, cthunk_FxOpd5B, 0, 0, 1 },
-    { "FxOpd5BA1", asm_FxOpd5BA1, cthunk_FxOpd5BA1, 0, 0, 1 },
-    { "FxOpd5BA2", asm_FxOpd5BA2, cthunk_FxOpd5BA2, 0, 0, 1 },
-    { "FxOpd5BA3", asm_FxOpd5BA3, cthunk_FxOpd5BA3, 0, 0, 1 },
-    { "FxOpd5C", asm_FxOpd5C, cthunk_FxOpd5C, 0, 0, 1 },
-    { "FxOpd5CA1", asm_FxOpd5CA1, cthunk_FxOpd5CA1, 0, 0, 1 },
-    { "FxOpd5CA2", asm_FxOpd5CA2, cthunk_FxOpd5CA2, 0, 0, 1 },
-    { "FxOpd5CA3", asm_FxOpd5CA3, cthunk_FxOpd5CA3, 0, 0, 1 },
-    { "FxOpd5D", asm_FxOpd5D, cthunk_FxOpd5D, 0, 0, 1 },
-    { "FxOpd5DA1", asm_FxOpd5DA1, cthunk_FxOpd5DA1, 0, 0, 1 },
-    { "FxOpd5DA2", asm_FxOpd5DA2, cthunk_FxOpd5DA2, 0, 0, 1 },
-    { "FxOpd5DA3", asm_FxOpd5DA3, cthunk_FxOpd5DA3, 0, 0, 1 },
-    { "FxOpd5E", asm_FxOpd5E, cthunk_FxOpd5E, 0, 0, 1 },
-    { "FxOpd5EA1", asm_FxOpd5EA1, cthunk_FxOpd5EA1, 0, 0, 1 },
-    { "FxOpd5EA2", asm_FxOpd5EA2, cthunk_FxOpd5EA2, 0, 0, 1 },
-    { "FxOpd5EA3", asm_FxOpd5EA3, cthunk_FxOpd5EA3, 0, 0, 1 },
-    { "FxOpd5F", asm_FxOpd5F, cthunk_FxOpd5F, 0, 0, 1 },
-    { "FxOpd5FA1", asm_FxOpd5FA1, cthunk_FxOpd5FA1, 0, 0, 1 },
-    { "FxOpd5FA2", asm_FxOpd5FA2, cthunk_FxOpd5FA2, 0, 0, 1 },
-    { "FxOpd5FA3", asm_FxOpd5FA3, cthunk_FxOpd5FA3, 0, 0, 1 },
-    { "FxOpd60", asm_FxOpd60, cthunk_FxOpd60, 0, 0, 1 },
-    { "FxOpd60A1", asm_FxOpd60A1, cthunk_FxOpd60A1, 0, 0, 1 },
-    { "FxOpd60A2", asm_FxOpd60A2, cthunk_FxOpd60A2, 0, 0, 1 },
-    { "FxOpd60A3", asm_FxOpd60A3, cthunk_FxOpd60A3, 0, 0, 1 },
-    { "FxOpd61", asm_FxOpd61, cthunk_FxOpd61, 0, 0, 1 },
-    { "FxOpd61A1", asm_FxOpd61A1, cthunk_FxOpd61A1, 0, 0, 1 },
-    { "FxOpd61A2", asm_FxOpd61A2, cthunk_FxOpd61A2, 0, 0, 1 },
-    { "FxOpd61A3", asm_FxOpd61A3, cthunk_FxOpd61A3, 0, 0, 1 },
-    { "FxOpd62", asm_FxOpd62, cthunk_FxOpd62, 0, 0, 1 },
-    { "FxOpd62A1", asm_FxOpd62A1, cthunk_FxOpd62A1, 0, 0, 1 },
-    { "FxOpd62A2", asm_FxOpd62A2, cthunk_FxOpd62A2, 0, 0, 1 },
-    { "FxOpd62A3", asm_FxOpd62A3, cthunk_FxOpd62A3, 0, 0, 1 },
-    { "FxOpd63", asm_FxOpd63, cthunk_FxOpd63, 0, 0, 1 },
-    { "FxOpd63A1", asm_FxOpd63A1, cthunk_FxOpd63A1, 0, 0, 1 },
-    { "FxOpd63A2", asm_FxOpd63A2, cthunk_FxOpd63A2, 0, 0, 1 },
-    { "FxOpd63A3", asm_FxOpd63A3, cthunk_FxOpd63A3, 0, 0, 1 },
-    { "FxOpd64", asm_FxOpd64, cthunk_FxOpd64, 0, 0, 1 },
-    { "FxOpd64A1", asm_FxOpd64A1, cthunk_FxOpd64A1, 0, 0, 1 },
-    { "FxOpd64A2", asm_FxOpd64A2, cthunk_FxOpd64A2, 0, 0, 1 },
-    { "FxOpd64A3", asm_FxOpd64A3, cthunk_FxOpd64A3, 0, 0, 1 },
-    { "FxOpd65", asm_FxOpd65, cthunk_FxOpd65, 0, 0, 1 },
-    { "FxOpd65A1", asm_FxOpd65A1, cthunk_FxOpd65A1, 0, 0, 1 },
-    { "FxOpd65A2", asm_FxOpd65A2, cthunk_FxOpd65A2, 0, 0, 1 },
-    { "FxOpd65A3", asm_FxOpd65A3, cthunk_FxOpd65A3, 0, 0, 1 },
-    { "FxOpd66", asm_FxOpd66, cthunk_FxOpd66, 0, 0, 1 },
-    { "FxOpd66A1", asm_FxOpd66A1, cthunk_FxOpd66A1, 0, 0, 1 },
-    { "FxOpd66A2", asm_FxOpd66A2, cthunk_FxOpd66A2, 0, 0, 1 },
-    { "FxOpd66A3", asm_FxOpd66A3, cthunk_FxOpd66A3, 0, 0, 1 },
-    { "FxOpd67", asm_FxOpd67, cthunk_FxOpd67, 0, 0, 1 },
-    { "FxOpd67A1", asm_FxOpd67A1, cthunk_FxOpd67A1, 0, 0, 1 },
-    { "FxOpd67A2", asm_FxOpd67A2, cthunk_FxOpd67A2, 0, 0, 1 },
-    { "FxOpd67A3", asm_FxOpd67A3, cthunk_FxOpd67A3, 0, 0, 1 },
-    { "FxOpd68", asm_FxOpd68, cthunk_FxOpd68, 0, 0, 1 },
-    { "FxOpd68A1", asm_FxOpd68A1, cthunk_FxOpd68A1, 0, 0, 1 },
-    { "FxOpd68A2", asm_FxOpd68A2, cthunk_FxOpd68A2, 0, 0, 1 },
-    { "FxOpd68A3", asm_FxOpd68A3, cthunk_FxOpd68A3, 0, 0, 1 },
-    { "FxOpd69", asm_FxOpd69, cthunk_FxOpd69, 0, 0, 1 },
-    { "FxOpd69A1", asm_FxOpd69A1, cthunk_FxOpd69A1, 0, 0, 1 },
-    { "FxOpd69A2", asm_FxOpd69A2, cthunk_FxOpd69A2, 0, 0, 1 },
-    { "FxOpd69A3", asm_FxOpd69A3, cthunk_FxOpd69A3, 0, 0, 1 },
-    { "FxOpd6A", asm_FxOpd6A, cthunk_FxOpd6A, 0, 0, 1 },
-    { "FxOpd6AA1", asm_FxOpd6AA1, cthunk_FxOpd6AA1, 0, 0, 1 },
-    { "FxOpd6AA2", asm_FxOpd6AA2, cthunk_FxOpd6AA2, 0, 0, 1 },
-    { "FxOpd6AA3", asm_FxOpd6AA3, cthunk_FxOpd6AA3, 0, 0, 1 },
-    { "FxOpd6B", asm_FxOpd6B, cthunk_FxOpd6B, 0, 0, 1 },
-    { "FxOpd6BA1", asm_FxOpd6BA1, cthunk_FxOpd6BA1, 0, 0, 1 },
-    { "FxOpd6BA2", asm_FxOpd6BA2, cthunk_FxOpd6BA2, 0, 0, 1 },
-    { "FxOpd6BA3", asm_FxOpd6BA3, cthunk_FxOpd6BA3, 0, 0, 1 },
-    { "FxOpd6C", asm_FxOpd6C, cthunk_FxOpd6C, 0, 0, 1 },
-    { "FxOpd6CA1", asm_FxOpd6CA1, cthunk_FxOpd6CA1, 0, 0, 1 },
-    { "FxOpd6CA2", asm_FxOpd6CA2, cthunk_FxOpd6CA2, 0, 0, 1 },
-    { "FxOpd6CA3", asm_FxOpd6CA3, cthunk_FxOpd6CA3, 0, 0, 1 },
-    { "FxOpd6D", asm_FxOpd6D, cthunk_FxOpd6D, 0, 0, 1 },
-    { "FxOpd6DA1", asm_FxOpd6DA1, cthunk_FxOpd6DA1, 0, 0, 1 },
-    { "FxOpd6DA2", asm_FxOpd6DA2, cthunk_FxOpd6DA2, 0, 0, 1 },
-    { "FxOpd6DA3", asm_FxOpd6DA3, cthunk_FxOpd6DA3, 0, 0, 1 },
-    { "FxOpd6E", asm_FxOpd6E, cthunk_FxOpd6E, 0, 0, 1 },
-    { "FxOpd6EA1", asm_FxOpd6EA1, cthunk_FxOpd6EA1, 0, 0, 1 },
-    { "FxOpd6EA2", asm_FxOpd6EA2, cthunk_FxOpd6EA2, 0, 0, 1 },
-    { "FxOpd6EA3", asm_FxOpd6EA3, cthunk_FxOpd6EA3, 0, 0, 1 },
-    { "FxOpd6F", asm_FxOpd6F, cthunk_FxOpd6F, 0, 0, 1 },
-    { "FxOpd6FA1", asm_FxOpd6FA1, cthunk_FxOpd6FA1, 0, 0, 1 },
-    { "FxOpd6FA2", asm_FxOpd6FA2, cthunk_FxOpd6FA2, 0, 0, 1 },
-    { "FxOpd6FA3", asm_FxOpd6FA3, cthunk_FxOpd6FA3, 0, 0, 1 },
-    { "FxOpd70", asm_FxOpd70, cthunk_FxOpd70, 0, 0, 1 },
-    { "FxOpd71", asm_FxOpd71, cthunk_FxOpd71, 0, 0, 1 },
-    { "FxOpd71A1", asm_FxOpd71A1, cthunk_FxOpd71A1, 0, 0, 1 },
-    { "FxOpd71A2", asm_FxOpd71A2, cthunk_FxOpd71A2, 0, 0, 1 },
-    { "FxOpd71A3", asm_FxOpd71A3, cthunk_FxOpd71A3, 0, 0, 1 },
-    { "FxOpd72", asm_FxOpd72, cthunk_FxOpd72, 0, 0, 1 },
-    { "FxOpd72A1", asm_FxOpd72A1, cthunk_FxOpd72A1, 0, 0, 1 },
-    { "FxOpd72A2", asm_FxOpd72A2, cthunk_FxOpd72A2, 0, 0, 1 },
-    { "FxOpd72A3", asm_FxOpd72A3, cthunk_FxOpd72A3, 0, 0, 1 },
-    { "FxOpd73", asm_FxOpd73, cthunk_FxOpd73, 0, 0, 1 },
-    { "FxOpd73A1", asm_FxOpd73A1, cthunk_FxOpd73A1, 0, 0, 1 },
-    { "FxOpd73A2", asm_FxOpd73A2, cthunk_FxOpd73A2, 0, 0, 1 },
-    { "FxOpd73A3", asm_FxOpd73A3, cthunk_FxOpd73A3, 0, 0, 1 },
-    { "FxOpd74", asm_FxOpd74, cthunk_FxOpd74, 0, 0, 1 },
-    { "FxOpd74A1", asm_FxOpd74A1, cthunk_FxOpd74A1, 0, 0, 1 },
-    { "FxOpd74A2", asm_FxOpd74A2, cthunk_FxOpd74A2, 0, 0, 1 },
-    { "FxOpd74A3", asm_FxOpd74A3, cthunk_FxOpd74A3, 0, 0, 1 },
-    { "FxOpd75", asm_FxOpd75, cthunk_FxOpd75, 0, 0, 1 },
-    { "FxOpd75A1", asm_FxOpd75A1, cthunk_FxOpd75A1, 0, 0, 1 },
-    { "FxOpd75A2", asm_FxOpd75A2, cthunk_FxOpd75A2, 0, 0, 1 },
-    { "FxOpd75A3", asm_FxOpd75A3, cthunk_FxOpd75A3, 0, 0, 1 },
-    { "FxOpd76", asm_FxOpd76, cthunk_FxOpd76, 0, 0, 1 },
-    { "FxOpd76A1", asm_FxOpd76A1, cthunk_FxOpd76A1, 0, 0, 1 },
-    { "FxOpd76A2", asm_FxOpd76A2, cthunk_FxOpd76A2, 0, 0, 1 },
-    { "FxOpd76A3", asm_FxOpd76A3, cthunk_FxOpd76A3, 0, 0, 1 },
-    { "FxOpd77", asm_FxOpd77, cthunk_FxOpd77, 0, 0, 1 },
-    { "FxOpd77A1", asm_FxOpd77A1, cthunk_FxOpd77A1, 0, 0, 1 },
-    { "FxOpd77A2", asm_FxOpd77A2, cthunk_FxOpd77A2, 0, 0, 1 },
-    { "FxOpd77A3", asm_FxOpd77A3, cthunk_FxOpd77A3, 0, 0, 1 },
-    { "FxOpd78", asm_FxOpd78, cthunk_FxOpd78, 0, 0, 1 },
-    { "FxOpd78A1", asm_FxOpd78A1, cthunk_FxOpd78A1, 0, 0, 1 },
-    { "FxOpd78A2", asm_FxOpd78A2, cthunk_FxOpd78A2, 0, 0, 1 },
-    { "FxOpd78A3", asm_FxOpd78A3, cthunk_FxOpd78A3, 0, 0, 1 },
-    { "FxOpd79", asm_FxOpd79, cthunk_FxOpd79, 0, 0, 1 },
-    { "FxOpd79A1", asm_FxOpd79A1, cthunk_FxOpd79A1, 0, 0, 1 },
-    { "FxOpd79A2", asm_FxOpd79A2, cthunk_FxOpd79A2, 0, 0, 1 },
-    { "FxOpd79A3", asm_FxOpd79A3, cthunk_FxOpd79A3, 0, 0, 1 },
-    { "FxOpd7A", asm_FxOpd7A, cthunk_FxOpd7A, 0, 0, 1 },
-    { "FxOpd7AA1", asm_FxOpd7AA1, cthunk_FxOpd7AA1, 0, 0, 1 },
-    { "FxOpd7AA2", asm_FxOpd7AA2, cthunk_FxOpd7AA2, 0, 0, 1 },
-    { "FxOpd7AA3", asm_FxOpd7AA3, cthunk_FxOpd7AA3, 0, 0, 1 },
-    { "FxOpd7B", asm_FxOpd7B, cthunk_FxOpd7B, 0, 0, 1 },
-    { "FxOpd7BA1", asm_FxOpd7BA1, cthunk_FxOpd7BA1, 0, 0, 1 },
-    { "FxOpd7BA2", asm_FxOpd7BA2, cthunk_FxOpd7BA2, 0, 0, 1 },
-    { "FxOpd7BA3", asm_FxOpd7BA3, cthunk_FxOpd7BA3, 0, 0, 1 },
-    { "FxOpd7C", asm_FxOpd7C, cthunk_FxOpd7C, 0, 0, 1 },
-    { "FxOpd7CA1", asm_FxOpd7CA1, cthunk_FxOpd7CA1, 0, 0, 1 },
-    { "FxOpd7CA2", asm_FxOpd7CA2, cthunk_FxOpd7CA2, 0, 0, 1 },
-    { "FxOpd7CA3", asm_FxOpd7CA3, cthunk_FxOpd7CA3, 0, 0, 1 },
-    { "FxOpd7D", asm_FxOpd7D, cthunk_FxOpd7D, 0, 0, 1 },
-    { "FxOpd7DA1", asm_FxOpd7DA1, cthunk_FxOpd7DA1, 0, 0, 1 },
-    { "FxOpd7DA2", asm_FxOpd7DA2, cthunk_FxOpd7DA2, 0, 0, 1 },
-    { "FxOpd7DA3", asm_FxOpd7DA3, cthunk_FxOpd7DA3, 0, 0, 1 },
-    { "FxOpd7E", asm_FxOpd7E, cthunk_FxOpd7E, 0, 0, 1 },
-    { "FxOpd7EA1", asm_FxOpd7EA1, cthunk_FxOpd7EA1, 0, 0, 1 },
-    { "FxOpd7EA2", asm_FxOpd7EA2, cthunk_FxOpd7EA2, 0, 0, 1 },
-    { "FxOpd7EA3", asm_FxOpd7EA3, cthunk_FxOpd7EA3, 0, 0, 1 },
-    { "FxOpd7F", asm_FxOpd7F, cthunk_FxOpd7F, 0, 0, 1 },
-    { "FxOpd7FA1", asm_FxOpd7FA1, cthunk_FxOpd7FA1, 0, 0, 1 },
-    { "FxOpd7FA2", asm_FxOpd7FA2, cthunk_FxOpd7FA2, 0, 0, 1 },
-    { "FxOpd7FA3", asm_FxOpd7FA3, cthunk_FxOpd7FA3, 0, 0, 1 },
-    { "FxOpd80", asm_FxOpd80, cthunk_FxOpd80, 0, 0, 1 },
-    { "FxOpd80A1", asm_FxOpd80A1, cthunk_FxOpd80A1, 0, 0, 1 },
-    { "FxOpd80A2", asm_FxOpd80A2, cthunk_FxOpd80A2, 0, 0, 1 },
-    { "FxOpd80A3", asm_FxOpd80A3, cthunk_FxOpd80A3, 0, 0, 1 },
-    { "FxOpd81", asm_FxOpd81, cthunk_FxOpd81, 0, 0, 1 },
-    { "FxOpd81A1", asm_FxOpd81A1, cthunk_FxOpd81A1, 0, 0, 1 },
-    { "FxOpd81A2", asm_FxOpd81A2, cthunk_FxOpd81A2, 0, 0, 1 },
-    { "FxOpd81A3", asm_FxOpd81A3, cthunk_FxOpd81A3, 0, 0, 1 },
-    { "FxOpd82", asm_FxOpd82, cthunk_FxOpd82, 0, 0, 1 },
-    { "FxOpd82A1", asm_FxOpd82A1, cthunk_FxOpd82A1, 0, 0, 1 },
-    { "FxOpd82A2", asm_FxOpd82A2, cthunk_FxOpd82A2, 0, 0, 1 },
-    { "FxOpd82A3", asm_FxOpd82A3, cthunk_FxOpd82A3, 0, 0, 1 },
-    { "FxOpd83", asm_FxOpd83, cthunk_FxOpd83, 0, 0, 1 },
-    { "FxOpd83A1", asm_FxOpd83A1, cthunk_FxOpd83A1, 0, 0, 1 },
-    { "FxOpd83A2", asm_FxOpd83A2, cthunk_FxOpd83A2, 0, 0, 1 },
-    { "FxOpd83A3", asm_FxOpd83A3, cthunk_FxOpd83A3, 0, 0, 1 },
-    { "FxOpd84", asm_FxOpd84, cthunk_FxOpd84, 0, 0, 1 },
-    { "FxOpd84A1", asm_FxOpd84A1, cthunk_FxOpd84A1, 0, 0, 1 },
-    { "FxOpd84A2", asm_FxOpd84A2, cthunk_FxOpd84A2, 0, 0, 1 },
-    { "FxOpd84A3", asm_FxOpd84A3, cthunk_FxOpd84A3, 0, 0, 1 },
-    { "FxOpd85", asm_FxOpd85, cthunk_FxOpd85, 0, 0, 1 },
-    { "FxOpd85A1", asm_FxOpd85A1, cthunk_FxOpd85A1, 0, 0, 1 },
-    { "FxOpd85A2", asm_FxOpd85A2, cthunk_FxOpd85A2, 0, 0, 1 },
-    { "FxOpd85A3", asm_FxOpd85A3, cthunk_FxOpd85A3, 0, 0, 1 },
-    { "FxOpd86", asm_FxOpd86, cthunk_FxOpd86, 0, 0, 1 },
-    { "FxOpd86A1", asm_FxOpd86A1, cthunk_FxOpd86A1, 0, 0, 1 },
-    { "FxOpd86A2", asm_FxOpd86A2, cthunk_FxOpd86A2, 0, 0, 1 },
-    { "FxOpd86A3", asm_FxOpd86A3, cthunk_FxOpd86A3, 0, 0, 1 },
-    { "FxOpd87", asm_FxOpd87, cthunk_FxOpd87, 0, 0, 1 },
-    { "FxOpd87A1", asm_FxOpd87A1, cthunk_FxOpd87A1, 0, 0, 1 },
-    { "FxOpd87A2", asm_FxOpd87A2, cthunk_FxOpd87A2, 0, 0, 1 },
-    { "FxOpd87A3", asm_FxOpd87A3, cthunk_FxOpd87A3, 0, 0, 1 },
-    { "FxOpd88", asm_FxOpd88, cthunk_FxOpd88, 0, 0, 1 },
-    { "FxOpd88A1", asm_FxOpd88A1, cthunk_FxOpd88A1, 0, 0, 1 },
-    { "FxOpd88A2", asm_FxOpd88A2, cthunk_FxOpd88A2, 0, 0, 1 },
-    { "FxOpd88A3", asm_FxOpd88A3, cthunk_FxOpd88A3, 0, 0, 1 },
-    { "FxOpd89", asm_FxOpd89, cthunk_FxOpd89, 0, 0, 1 },
-    { "FxOpd89A1", asm_FxOpd89A1, cthunk_FxOpd89A1, 0, 0, 1 },
-    { "FxOpd89A2", asm_FxOpd89A2, cthunk_FxOpd89A2, 0, 0, 1 },
-    { "FxOpd89A3", asm_FxOpd89A3, cthunk_FxOpd89A3, 0, 0, 1 },
-    { "FxOpd8A", asm_FxOpd8A, cthunk_FxOpd8A, 0, 0, 1 },
-    { "FxOpd8AA1", asm_FxOpd8AA1, cthunk_FxOpd8AA1, 0, 0, 1 },
-    { "FxOpd8AA2", asm_FxOpd8AA2, cthunk_FxOpd8AA2, 0, 0, 1 },
-    { "FxOpd8AA3", asm_FxOpd8AA3, cthunk_FxOpd8AA3, 0, 0, 1 },
-    { "FxOpd8B", asm_FxOpd8B, cthunk_FxOpd8B, 0, 0, 1 },
-    { "FxOpd8BA1", asm_FxOpd8BA1, cthunk_FxOpd8BA1, 0, 0, 1 },
-    { "FxOpd8BA2", asm_FxOpd8BA2, cthunk_FxOpd8BA2, 0, 0, 1 },
-    { "FxOpd8BA3", asm_FxOpd8BA3, cthunk_FxOpd8BA3, 0, 0, 1 },
-    { "FxOpd8C", asm_FxOpd8C, cthunk_FxOpd8C, 0, 0, 1 },
-    { "FxOpd8CA1", asm_FxOpd8CA1, cthunk_FxOpd8CA1, 0, 0, 1 },
-    { "FxOpd8CA2", asm_FxOpd8CA2, cthunk_FxOpd8CA2, 0, 0, 1 },
-    { "FxOpd8CA3", asm_FxOpd8CA3, cthunk_FxOpd8CA3, 0, 0, 1 },
-    { "FxOpd8D", asm_FxOpd8D, cthunk_FxOpd8D, 0, 0, 1 },
-    { "FxOpd8DA1", asm_FxOpd8DA1, cthunk_FxOpd8DA1, 0, 0, 1 },
-    { "FxOpd8DA2", asm_FxOpd8DA2, cthunk_FxOpd8DA2, 0, 0, 1 },
-    { "FxOpd8DA3", asm_FxOpd8DA3, cthunk_FxOpd8DA3, 0, 0, 1 },
-    { "FxOpd8E", asm_FxOpd8E, cthunk_FxOpd8E, 0, 0, 1 },
-    { "FxOpd8EA1", asm_FxOpd8EA1, cthunk_FxOpd8EA1, 0, 0, 1 },
-    { "FxOpd8EA2", asm_FxOpd8EA2, cthunk_FxOpd8EA2, 0, 0, 1 },
-    { "FxOpd8EA3", asm_FxOpd8EA3, cthunk_FxOpd8EA3, 0, 0, 1 },
-    { "FxOpd8F", asm_FxOpd8F, cthunk_FxOpd8F, 0, 0, 1 },
-    { "FxOpd8FA1", asm_FxOpd8FA1, cthunk_FxOpd8FA1, 0, 0, 1 },
-    { "FxOpd8FA2", asm_FxOpd8FA2, cthunk_FxOpd8FA2, 0, 0, 1 },
-    { "FxOpd8FA3", asm_FxOpd8FA3, cthunk_FxOpd8FA3, 0, 0, 1 },
-    { "FxOpd90", asm_FxOpd90, cthunk_FxOpd90, 6, 0, 1 },
-    { "FxOpd91", asm_FxOpd91, cthunk_FxOpd91, 0, 1, 1 },
-    { "FxOpd92", asm_FxOpd92, cthunk_FxOpd92, 0, 2, 1 },
-    { "FxOpd93", asm_FxOpd93, cthunk_FxOpd93, 0, 3, 1 },
-    { "FxOpd94", asm_FxOpd94, cthunk_FxOpd94, 0, 4, 1 },
-    { "FxOpd95", asm_FxOpd95, cthunk_FxOpd95, 0, 0, 1 },
-    { "FxOpd96", asm_FxOpd96, cthunk_FxOpd96, 0, 0, 1 },
-    { "FxOpd96A1", asm_FxOpd96A1, cthunk_FxOpd96A1, 0, 0, 1 },
-    { "FxOpd97", asm_FxOpd97, cthunk_FxOpd97, 0, 0, 1 },
-    { "FxOpd98", asm_FxOpd98, cthunk_FxOpd98, 4, 8, 1 },
-    { "FxOpd98A1", asm_FxOpd98A1, cthunk_FxOpd98A1, 5, 8, 1 },
-    { "FxOpd99", asm_FxOpd99, cthunk_FxOpd99, 4, 9, 1 },
-    { "FxOpd99A1", asm_FxOpd99A1, cthunk_FxOpd99A1, 5, 9, 1 },
-    { "FxOpd9A", asm_FxOpd9A, cthunk_FxOpd9A, 4, 10, 1 },
-    { "FxOpd9AA1", asm_FxOpd9AA1, cthunk_FxOpd9AA1, 5, 10, 1 },
-    { "FxOpd9B", asm_FxOpd9B, cthunk_FxOpd9B, 4, 11, 1 },
-    { "FxOpd9BA1", asm_FxOpd9BA1, cthunk_FxOpd9BA1, 5, 11, 1 },
-    { "FxOpd9C", asm_FxOpd9C, cthunk_FxOpd9C, 4, 12, 1 },
-    { "FxOpd9CA1", asm_FxOpd9CA1, cthunk_FxOpd9CA1, 5, 12, 1 },
-    { "FxOpd9D", asm_FxOpd9D, cthunk_FxOpd9D, 4, 13, 1 },
-    { "FxOpd9DA1", asm_FxOpd9DA1, cthunk_FxOpd9DA1, 5, 13, 1 },
-    { "FxOpd9E", asm_FxOpd9E, cthunk_FxOpd9E, 0, 0, 1 },
-    { "FxOpd9F", asm_FxOpd9F, cthunk_FxOpd9F, 0, 0, 1 },
-    { "FxOpd9FA1", asm_FxOpd9FA1, cthunk_FxOpd9FA1, 0, 0, 1 },
-    { "FxOpdA0", asm_FxOpdA0, cthunk_FxOpdA0, 0, 0, 1 },
-    { "FxOpdA0A1", asm_FxOpdA0A1, cthunk_FxOpdA0A1, 3, 0, 1 },
-    { "FxOpdA0A2", asm_FxOpdA0A2, cthunk_FxOpdA0A2, 3, 0, 1 },
-    { "FxOpdA1", asm_FxOpdA1, cthunk_FxOpdA1, 0, 0, 1 },
-    { "FxOpdA1A1", asm_FxOpdA1A1, cthunk_FxOpdA1A1, 3, 0, 1 },
-    { "FxOpdA1A2", asm_FxOpdA1A2, cthunk_FxOpdA1A2, 3, 0, 1 },
-    { "FxOpdA2", asm_FxOpdA2, cthunk_FxOpdA2, 0, 0, 1 },
-    { "FxOpdA2A1", asm_FxOpdA2A1, cthunk_FxOpdA2A1, 3, 0, 1 },
-    { "FxOpdA2A2", asm_FxOpdA2A2, cthunk_FxOpdA2A2, 3, 0, 1 },
-    { "FxOpdA3", asm_FxOpdA3, cthunk_FxOpdA3, 0, 0, 1 },
-    { "FxOpdA3A1", asm_FxOpdA3A1, cthunk_FxOpdA3A1, 3, 0, 1 },
-    { "FxOpdA3A2", asm_FxOpdA3A2, cthunk_FxOpdA3A2, 3, 0, 1 },
-    { "FxOpdA4", asm_FxOpdA4, cthunk_FxOpdA4, 0, 0, 1 },
-    { "FxOpdA4A1", asm_FxOpdA4A1, cthunk_FxOpdA4A1, 3, 0, 1 },
-    { "FxOpdA4A2", asm_FxOpdA4A2, cthunk_FxOpdA4A2, 3, 0, 1 },
-    { "FxOpdA5", asm_FxOpdA5, cthunk_FxOpdA5, 0, 0, 1 },
-    { "FxOpdA5A1", asm_FxOpdA5A1, cthunk_FxOpdA5A1, 3, 0, 1 },
-    { "FxOpdA5A2", asm_FxOpdA5A2, cthunk_FxOpdA5A2, 3, 0, 1 },
-    { "FxOpdA6", asm_FxOpdA6, cthunk_FxOpdA6, 0, 0, 1 },
-    { "FxOpdA6A1", asm_FxOpdA6A1, cthunk_FxOpdA6A1, 3, 0, 1 },
-    { "FxOpdA6A2", asm_FxOpdA6A2, cthunk_FxOpdA6A2, 3, 0, 1 },
-    { "FxOpdA7", asm_FxOpdA7, cthunk_FxOpdA7, 0, 0, 1 },
-    { "FxOpdA7A1", asm_FxOpdA7A1, cthunk_FxOpdA7A1, 3, 0, 1 },
-    { "FxOpdA7A2", asm_FxOpdA7A2, cthunk_FxOpdA7A2, 3, 0, 1 },
-    { "FxOpdA8", asm_FxOpdA8, cthunk_FxOpdA8, 0, 0, 1 },
-    { "FxOpdA8A1", asm_FxOpdA8A1, cthunk_FxOpdA8A1, 3, 0, 1 },
-    { "FxOpdA8A2", asm_FxOpdA8A2, cthunk_FxOpdA8A2, 3, 0, 1 },
-    { "FxOpdA9", asm_FxOpdA9, cthunk_FxOpdA9, 0, 0, 1 },
-    { "FxOpdA9A1", asm_FxOpdA9A1, cthunk_FxOpdA9A1, 3, 0, 1 },
-    { "FxOpdA9A2", asm_FxOpdA9A2, cthunk_FxOpdA9A2, 3, 0, 1 },
-    { "FxOpdAA", asm_FxOpdAA, cthunk_FxOpdAA, 0, 0, 1 },
-    { "FxOpdAAA1", asm_FxOpdAAA1, cthunk_FxOpdAAA1, 3, 0, 1 },
-    { "FxOpdAAA2", asm_FxOpdAAA2, cthunk_FxOpdAAA2, 3, 0, 1 },
-    { "FxOpdAB", asm_FxOpdAB, cthunk_FxOpdAB, 0, 0, 1 },
-    { "FxOpdABA1", asm_FxOpdABA1, cthunk_FxOpdABA1, 3, 0, 1 },
-    { "FxOpdABA2", asm_FxOpdABA2, cthunk_FxOpdABA2, 3, 0, 1 },
-    { "FxOpdAC", asm_FxOpdAC, cthunk_FxOpdAC, 0, 0, 1 },
-    { "FxOpdACA1", asm_FxOpdACA1, cthunk_FxOpdACA1, 3, 0, 1 },
-    { "FxOpdACA2", asm_FxOpdACA2, cthunk_FxOpdACA2, 3, 0, 1 },
-    { "FxOpdAD", asm_FxOpdAD, cthunk_FxOpdAD, 0, 0, 1 },
-    { "FxOpdADA1", asm_FxOpdADA1, cthunk_FxOpdADA1, 3, 0, 1 },
-    { "FxOpdADA2", asm_FxOpdADA2, cthunk_FxOpdADA2, 3, 0, 1 },
-    { "FxOpdAE", asm_FxOpdAE, cthunk_FxOpdAE, 0, 0, 1 },
-    { "FxOpdAEA1", asm_FxOpdAEA1, cthunk_FxOpdAEA1, 3, 0, 1 },
-    { "FxOpdAEA2", asm_FxOpdAEA2, cthunk_FxOpdAEA2, 3, 0, 1 },
-    { "FxOpdAF", asm_FxOpdAF, cthunk_FxOpdAF, 0, 0, 1 },
-    { "FxOpdAFA1", asm_FxOpdAFA1, cthunk_FxOpdAFA1, 3, 0, 1 },
-    { "FxOpdAFA2", asm_FxOpdAFA2, cthunk_FxOpdAFA2, 3, 0, 1 },
-    { "FxOpdB0", asm_FxOpdB0, cthunk_FxOpdB0, 0, 0, 1 },
-    { "FxOpdB1", asm_FxOpdB1, cthunk_FxOpdB1, 0, 0, 1 },
-    { "FxOpdB2", asm_FxOpdB2, cthunk_FxOpdB2, 0, 0, 1 },
-    { "FxOpdB3", asm_FxOpdB3, cthunk_FxOpdB3, 0, 0, 1 },
-    { "FxOpdB4", asm_FxOpdB4, cthunk_FxOpdB4, 0, 0, 1 },
-    { "FxOpdB5", asm_FxOpdB5, cthunk_FxOpdB5, 0, 0, 1 },
-    { "FxOpdB6", asm_FxOpdB6, cthunk_FxOpdB6, 0, 0, 1 },
-    { "FxOpdB7", asm_FxOpdB7, cthunk_FxOpdB7, 0, 0, 1 },
-    { "FxOpdB8", asm_FxOpdB8, cthunk_FxOpdB8, 0, 0, 1 },
-    { "FxOpdB9", asm_FxOpdB9, cthunk_FxOpdB9, 0, 0, 1 },
-    { "FxOpdBA", asm_FxOpdBA, cthunk_FxOpdBA, 0, 0, 1 },
-    { "FxOpdBB", asm_FxOpdBB, cthunk_FxOpdBB, 0, 0, 1 },
-    { "FxOpdBC", asm_FxOpdBC, cthunk_FxOpdBC, 0, 0, 1 },
-    { "FxOpdBD", asm_FxOpdBD, cthunk_FxOpdBD, 0, 0, 1 },
-    { "FxOpdBE", asm_FxOpdBE, cthunk_FxOpdBE, 0, 0, 1 },
-    { "FxOpdBF", asm_FxOpdBF, cthunk_FxOpdBF, 0, 0, 1 },
-    { "FxOpdC0", asm_FxOpdC0, cthunk_FxOpdC0, 0, 0, 1 },
-    { "FxOpdC1", asm_FxOpdC1, cthunk_FxOpdC1, 0, 0, 1 },
-    { "FxOpdC1A1", asm_FxOpdC1A1, cthunk_FxOpdC1A1, 0, 0, 1 },
-    { "FxOpdC1A2", asm_FxOpdC1A2, cthunk_FxOpdC1A2, 0, 0, 1 },
-    { "FxOpdC1A3", asm_FxOpdC1A3, cthunk_FxOpdC1A3, 0, 0, 1 },
-    { "FxOpdC2", asm_FxOpdC2, cthunk_FxOpdC2, 0, 0, 1 },
-    { "FxOpdC2A1", asm_FxOpdC2A1, cthunk_FxOpdC2A1, 0, 0, 1 },
-    { "FxOpdC2A2", asm_FxOpdC2A2, cthunk_FxOpdC2A2, 0, 0, 1 },
-    { "FxOpdC2A3", asm_FxOpdC2A3, cthunk_FxOpdC2A3, 0, 0, 1 },
-    { "FxOpdC3", asm_FxOpdC3, cthunk_FxOpdC3, 0, 0, 1 },
-    { "FxOpdC3A1", asm_FxOpdC3A1, cthunk_FxOpdC3A1, 0, 0, 1 },
-    { "FxOpdC3A2", asm_FxOpdC3A2, cthunk_FxOpdC3A2, 0, 0, 1 },
-    { "FxOpdC3A3", asm_FxOpdC3A3, cthunk_FxOpdC3A3, 0, 0, 1 },
-    { "FxOpdC4", asm_FxOpdC4, cthunk_FxOpdC4, 0, 0, 1 },
-    { "FxOpdC4A1", asm_FxOpdC4A1, cthunk_FxOpdC4A1, 0, 0, 1 },
-    { "FxOpdC4A2", asm_FxOpdC4A2, cthunk_FxOpdC4A2, 0, 0, 1 },
-    { "FxOpdC4A3", asm_FxOpdC4A3, cthunk_FxOpdC4A3, 0, 0, 1 },
-    { "FxOpdC5", asm_FxOpdC5, cthunk_FxOpdC5, 0, 0, 1 },
-    { "FxOpdC5A1", asm_FxOpdC5A1, cthunk_FxOpdC5A1, 0, 0, 1 },
-    { "FxOpdC5A2", asm_FxOpdC5A2, cthunk_FxOpdC5A2, 0, 0, 1 },
-    { "FxOpdC5A3", asm_FxOpdC5A3, cthunk_FxOpdC5A3, 0, 0, 1 },
-    { "FxOpdC6", asm_FxOpdC6, cthunk_FxOpdC6, 0, 0, 1 },
-    { "FxOpdC6A1", asm_FxOpdC6A1, cthunk_FxOpdC6A1, 0, 0, 1 },
-    { "FxOpdC6A2", asm_FxOpdC6A2, cthunk_FxOpdC6A2, 0, 0, 1 },
-    { "FxOpdC6A3", asm_FxOpdC6A3, cthunk_FxOpdC6A3, 0, 0, 1 },
-    { "FxOpdC7", asm_FxOpdC7, cthunk_FxOpdC7, 0, 0, 1 },
-    { "FxOpdC7A1", asm_FxOpdC7A1, cthunk_FxOpdC7A1, 0, 0, 1 },
-    { "FxOpdC7A2", asm_FxOpdC7A2, cthunk_FxOpdC7A2, 0, 0, 1 },
-    { "FxOpdC7A3", asm_FxOpdC7A3, cthunk_FxOpdC7A3, 0, 0, 1 },
-    { "FxOpdC8", asm_FxOpdC8, cthunk_FxOpdC8, 0, 0, 1 },
-    { "FxOpdC8A1", asm_FxOpdC8A1, cthunk_FxOpdC8A1, 0, 0, 1 },
-    { "FxOpdC8A2", asm_FxOpdC8A2, cthunk_FxOpdC8A2, 0, 0, 1 },
-    { "FxOpdC8A3", asm_FxOpdC8A3, cthunk_FxOpdC8A3, 0, 0, 1 },
-    { "FxOpdC9", asm_FxOpdC9, cthunk_FxOpdC9, 0, 0, 1 },
-    { "FxOpdC9A1", asm_FxOpdC9A1, cthunk_FxOpdC9A1, 0, 0, 1 },
-    { "FxOpdC9A2", asm_FxOpdC9A2, cthunk_FxOpdC9A2, 0, 0, 1 },
-    { "FxOpdC9A3", asm_FxOpdC9A3, cthunk_FxOpdC9A3, 0, 0, 1 },
-    { "FxOpdCA", asm_FxOpdCA, cthunk_FxOpdCA, 0, 0, 1 },
-    { "FxOpdCAA1", asm_FxOpdCAA1, cthunk_FxOpdCAA1, 0, 0, 1 },
-    { "FxOpdCAA2", asm_FxOpdCAA2, cthunk_FxOpdCAA2, 0, 0, 1 },
-    { "FxOpdCAA3", asm_FxOpdCAA3, cthunk_FxOpdCAA3, 0, 0, 1 },
-    { "FxOpdCB", asm_FxOpdCB, cthunk_FxOpdCB, 0, 0, 1 },
-    { "FxOpdCBA1", asm_FxOpdCBA1, cthunk_FxOpdCBA1, 0, 0, 1 },
-    { "FxOpdCBA2", asm_FxOpdCBA2, cthunk_FxOpdCBA2, 0, 0, 1 },
-    { "FxOpdCBA3", asm_FxOpdCBA3, cthunk_FxOpdCBA3, 0, 0, 1 },
-    { "FxOpdCC", asm_FxOpdCC, cthunk_FxOpdCC, 0, 0, 1 },
-    { "FxOpdCCA1", asm_FxOpdCCA1, cthunk_FxOpdCCA1, 0, 0, 1 },
-    { "FxOpdCCA2", asm_FxOpdCCA2, cthunk_FxOpdCCA2, 0, 0, 1 },
-    { "FxOpdCCA3", asm_FxOpdCCA3, cthunk_FxOpdCCA3, 0, 0, 1 },
-    { "FxOpdCD", asm_FxOpdCD, cthunk_FxOpdCD, 0, 0, 1 },
-    { "FxOpdCDA1", asm_FxOpdCDA1, cthunk_FxOpdCDA1, 0, 0, 1 },
-    { "FxOpdCDA2", asm_FxOpdCDA2, cthunk_FxOpdCDA2, 0, 0, 1 },
-    { "FxOpdCDA3", asm_FxOpdCDA3, cthunk_FxOpdCDA3, 0, 0, 1 },
-    { "FxOpdCE", asm_FxOpdCE, cthunk_FxOpdCE, 0, 0, 1 },
-    { "FxOpdCEA1", asm_FxOpdCEA1, cthunk_FxOpdCEA1, 0, 0, 1 },
-    { "FxOpdCEA2", asm_FxOpdCEA2, cthunk_FxOpdCEA2, 0, 0, 1 },
-    { "FxOpdCEA3", asm_FxOpdCEA3, cthunk_FxOpdCEA3, 0, 0, 1 },
-    { "FxOpdCF", asm_FxOpdCF, cthunk_FxOpdCF, 0, 0, 1 },
-    { "FxOpdCFA1", asm_FxOpdCFA1, cthunk_FxOpdCFA1, 0, 0, 1 },
-    { "FxOpdCFA2", asm_FxOpdCFA2, cthunk_FxOpdCFA2, 0, 0, 1 },
-    { "FxOpdCFA3", asm_FxOpdCFA3, cthunk_FxOpdCFA3, 0, 0, 1 },
-    { "FxOpdD0", asm_FxOpdD0, cthunk_FxOpdD0, 0, 0, 1 },
-    { "FxOpdD1", asm_FxOpdD1, cthunk_FxOpdD1, 0, 0, 1 },
-    { "FxOpdD2", asm_FxOpdD2, cthunk_FxOpdD2, 0, 0, 1 },
-    { "FxOpdD3", asm_FxOpdD3, cthunk_FxOpdD3, 0, 0, 1 },
-    { "FxOpdD4", asm_FxOpdD4, cthunk_FxOpdD4, 0, 0, 1 },
-    { "FxOpdD5", asm_FxOpdD5, cthunk_FxOpdD5, 0, 0, 1 },
-    { "FxOpdD6", asm_FxOpdD6, cthunk_FxOpdD6, 0, 0, 1 },
-    { "FxOpdD7", asm_FxOpdD7, cthunk_FxOpdD7, 0, 0, 1 },
-    { "FxOpdD8", asm_FxOpdD8, cthunk_FxOpdD8, 0, 0, 1 },
-    { "FxOpdD9", asm_FxOpdD9, cthunk_FxOpdD9, 0, 0, 1 },
-    { "FxOpdDA", asm_FxOpdDA, cthunk_FxOpdDA, 0, 0, 1 },
-    { "FxOpdDB", asm_FxOpdDB, cthunk_FxOpdDB, 0, 0, 1 },
-    { "FxOpdDC", asm_FxOpdDC, cthunk_FxOpdDC, 0, 0, 1 },
-    { "FxOpdDD", asm_FxOpdDD, cthunk_FxOpdDD, 0, 0, 1 },
-    { "FxOpdDE", asm_FxOpdDE, cthunk_FxOpdDE, 0, 0, 1 },
-    { "FxOpdDF", asm_FxOpdDF, cthunk_FxOpdDF, 0, 0, 1 },
-    { "FxOpdDFA2", asm_FxOpdDFA2, cthunk_FxOpdDFA2, 0, 0, 1 },
-    { "FxOpdDFA3", asm_FxOpdDFA3, cthunk_FxOpdDFA3, 0, 0, 1 },
-    { "FxOpdE0", asm_FxOpdE0, cthunk_FxOpdE0, 0, 0, 1 },
-    { "FxOpdE1", asm_FxOpdE1, cthunk_FxOpdE1, 0, 0, 1 },
-    { "FxOpdE2", asm_FxOpdE2, cthunk_FxOpdE2, 0, 0, 1 },
-    { "FxOpdE3", asm_FxOpdE3, cthunk_FxOpdE3, 0, 0, 1 },
-    { "FxOpdE4", asm_FxOpdE4, cthunk_FxOpdE4, 0, 0, 1 },
-    { "FxOpdE5", asm_FxOpdE5, cthunk_FxOpdE5, 0, 0, 1 },
-    { "FxOpdE6", asm_FxOpdE6, cthunk_FxOpdE6, 0, 0, 1 },
-    { "FxOpdE7", asm_FxOpdE7, cthunk_FxOpdE7, 0, 0, 1 },
-    { "FxOpdE8", asm_FxOpdE8, cthunk_FxOpdE8, 0, 0, 1 },
-    { "FxOpdE9", asm_FxOpdE9, cthunk_FxOpdE9, 0, 0, 1 },
-    { "FxOpdEA", asm_FxOpdEA, cthunk_FxOpdEA, 0, 0, 1 },
-    { "FxOpdEB", asm_FxOpdEB, cthunk_FxOpdEB, 0, 0, 1 },
-    { "FxOpdEC", asm_FxOpdEC, cthunk_FxOpdEC, 0, 0, 1 },
-    { "FxOpdED", asm_FxOpdED, cthunk_FxOpdED, 0, 0, 1 },
-    { "FxOpdEE", asm_FxOpdEE, cthunk_FxOpdEE, 0, 0, 1 },
-    { "FxOpdEF", asm_FxOpdEF, cthunk_FxOpdEF, 0, 0, 1 },
-    { "FxOpdEFA1", asm_FxOpdEFA1, cthunk_FxOpdEFA1, 0, 0, 1 },
-    { "FxOpdEFA2", asm_FxOpdEFA2, cthunk_FxOpdEFA2, 0, 0, 1 },
-    { "FxOpdEFA3", asm_FxOpdEFA3, cthunk_FxOpdEFA3, 0, 0, 1 },
-    { "FxOpdF0", asm_FxOpdF0, cthunk_FxOpdF0, 0, 0, 1 },
-    { "FxOpdF0A1", asm_FxOpdF0A1, cthunk_FxOpdF0A1, 2, 0, 1 },
-    { "FxOpdF0A2", asm_FxOpdF0A2, cthunk_FxOpdF0A2, 2, 0, 1 },
-    { "FxOpdF1", asm_FxOpdF1, cthunk_FxOpdF1, 0, 0, 1 },
-    { "FxOpdF1A1", asm_FxOpdF1A1, cthunk_FxOpdF1A1, 2, 0, 1 },
-    { "FxOpdF1A2", asm_FxOpdF1A2, cthunk_FxOpdF1A2, 2, 0, 1 },
-    { "FxOpdF2", asm_FxOpdF2, cthunk_FxOpdF2, 0, 0, 1 },
-    { "FxOpdF2A1", asm_FxOpdF2A1, cthunk_FxOpdF2A1, 2, 0, 1 },
-    { "FxOpdF2A2", asm_FxOpdF2A2, cthunk_FxOpdF2A2, 2, 0, 1 },
-    { "FxOpdF3", asm_FxOpdF3, cthunk_FxOpdF3, 0, 0, 1 },
-    { "FxOpdF3A1", asm_FxOpdF3A1, cthunk_FxOpdF3A1, 2, 0, 1 },
-    { "FxOpdF3A2", asm_FxOpdF3A2, cthunk_FxOpdF3A2, 2, 0, 1 },
-    { "FxOpdF4", asm_FxOpdF4, cthunk_FxOpdF4, 0, 0, 1 },
-    { "FxOpdF4A1", asm_FxOpdF4A1, cthunk_FxOpdF4A1, 2, 0, 1 },
-    { "FxOpdF4A2", asm_FxOpdF4A2, cthunk_FxOpdF4A2, 2, 0, 1 },
-    { "FxOpdF5", asm_FxOpdF5, cthunk_FxOpdF5, 0, 0, 1 },
-    { "FxOpdF5A1", asm_FxOpdF5A1, cthunk_FxOpdF5A1, 2, 0, 1 },
-    { "FxOpdF5A2", asm_FxOpdF5A2, cthunk_FxOpdF5A2, 2, 0, 1 },
-    { "FxOpdF6", asm_FxOpdF6, cthunk_FxOpdF6, 0, 0, 1 },
-    { "FxOpdF6A1", asm_FxOpdF6A1, cthunk_FxOpdF6A1, 2, 0, 1 },
-    { "FxOpdF6A2", asm_FxOpdF6A2, cthunk_FxOpdF6A2, 2, 0, 1 },
-    { "FxOpdF7", asm_FxOpdF7, cthunk_FxOpdF7, 0, 0, 1 },
-    { "FxOpdF7A1", asm_FxOpdF7A1, cthunk_FxOpdF7A1, 2, 0, 1 },
-    { "FxOpdF7A2", asm_FxOpdF7A2, cthunk_FxOpdF7A2, 2, 0, 1 },
-    { "FxOpdF8", asm_FxOpdF8, cthunk_FxOpdF8, 0, 0, 1 },
-    { "FxOpdF8A1", asm_FxOpdF8A1, cthunk_FxOpdF8A1, 2, 0, 1 },
-    { "FxOpdF8A2", asm_FxOpdF8A2, cthunk_FxOpdF8A2, 2, 0, 1 },
-    { "FxOpdF9", asm_FxOpdF9, cthunk_FxOpdF9, 0, 0, 1 },
-    { "FxOpdF9A1", asm_FxOpdF9A1, cthunk_FxOpdF9A1, 2, 0, 1 },
-    { "FxOpdF9A2", asm_FxOpdF9A2, cthunk_FxOpdF9A2, 2, 0, 1 },
-    { "FxOpdFA", asm_FxOpdFA, cthunk_FxOpdFA, 0, 0, 1 },
-    { "FxOpdFAA1", asm_FxOpdFAA1, cthunk_FxOpdFAA1, 2, 0, 1 },
-    { "FxOpdFAA2", asm_FxOpdFAA2, cthunk_FxOpdFAA2, 2, 0, 1 },
-    { "FxOpdFB", asm_FxOpdFB, cthunk_FxOpdFB, 0, 0, 1 },
-    { "FxOpdFBA1", asm_FxOpdFBA1, cthunk_FxOpdFBA1, 2, 0, 1 },
-    { "FxOpdFBA2", asm_FxOpdFBA2, cthunk_FxOpdFBA2, 2, 0, 1 },
-    { "FxOpdFC", asm_FxOpdFC, cthunk_FxOpdFC, 0, 0, 1 },
-    { "FxOpdFCA1", asm_FxOpdFCA1, cthunk_FxOpdFCA1, 2, 0, 1 },
-    { "FxOpdFCA2", asm_FxOpdFCA2, cthunk_FxOpdFCA2, 2, 0, 1 },
-    { "FxOpdFD", asm_FxOpdFD, cthunk_FxOpdFD, 0, 0, 1 },
-    { "FxOpdFDA1", asm_FxOpdFDA1, cthunk_FxOpdFDA1, 2, 0, 1 },
-    { "FxOpdFDA2", asm_FxOpdFDA2, cthunk_FxOpdFDA2, 2, 0, 1 },
-    { "FxOpdFE", asm_FxOpdFE, cthunk_FxOpdFE, 0, 0, 1 },
-    { "FxOpdFEA1", asm_FxOpdFEA1, cthunk_FxOpdFEA1, 2, 0, 1 },
-    { "FxOpdFEA2", asm_FxOpdFEA2, cthunk_FxOpdFEA2, 2, 0, 1 },
-    { "FxOpdFF", asm_FxOpdFF, cthunk_FxOpdFF, 0, 0, 1 },
-    { "FxOpdFFA1", asm_FxOpdFFA1, cthunk_FxOpdFFA1, 2, 0, 1 },
-    { "FxOpdFFA2", asm_FxOpdFFA2, cthunk_FxOpdFFA2, 2, 0, 1 },
+    { "FxOpd00", asm_FxOpd00, c_FxOpd00, 0, 0, 1 },
+    { "FxOpd01", asm_FxOpd01, c_FxOp01, 0, 0, 1 },
+    { "FxOpd02", asm_FxOpd02, c_FxOp02, 0, 0, 1 },
+    { "FxOpd03", asm_FxOpd03, c_FxOp03, 0, 0, 1 },
+    { "FxOpd04", asm_FxOpd04, c_FxOp04, 0, 0, 1 },
+    { "FxOpd05", asm_FxOpd05, c_FxOp05, 0, 0, 1 },
+    { "FxOpd06", asm_FxOpd06, c_FxOp06, 0, 0, 1 },
+    { "FxOpd07", asm_FxOpd07, c_FxOp07, 0, 0, 1 },
+    { "FxOpd08", asm_FxOpd08, c_FxOp08, 0, 0, 1 },
+    { "FxOpd09", asm_FxOpd09, c_FxOp09, 0, 0, 1 },
+    { "FxOpd0A", asm_FxOpd0A, c_FxOp0A, 0, 0, 1 },
+    { "FxOpd0B", asm_FxOpd0B, c_FxOp0B, 0, 0, 1 },
+    { "FxOpd0C", asm_FxOpd0C, c_FxOp0C, 0, 0, 1 },
+    { "FxOpd0D", asm_FxOpd0D, c_FxOp0D, 0, 0, 1 },
+    { "FxOpd0E", asm_FxOpd0E, c_FxOp0E, 0, 0, 1 },
+    { "FxOpd0F", asm_FxOpd0F, c_FxOp0F, 0, 0, 1 },
+    { "FxOpd10", asm_FxOpd10, c_FxOp10, 0, 0, 1 },
+    { "FxOpd11", asm_FxOpd11, c_FxOp11, 0, 0, 1 },
+    { "FxOpd12", asm_FxOpd12, c_FxOp12, 0, 0, 1 },
+    { "FxOpd13", asm_FxOpd13, c_FxOp13, 0, 0, 1 },
+    { "FxOpd14", asm_FxOpd14, c_FxOp14, 0, 0, 1 },
+    { "FxOpd15", asm_FxOpd15, c_FxOp15, 0, 0, 1 },
+    { "FxOpd16", asm_FxOpd16, c_FxOp16, 0, 0, 1 },
+    { "FxOpd17", asm_FxOpd17, c_FxOp17, 0, 0, 1 },
+    { "FxOpd18", asm_FxOpd18, c_FxOp18, 0, 0, 1 },
+    { "FxOpd19", asm_FxOpd19, c_FxOp19, 0, 0, 1 },
+    { "FxOpd1A", asm_FxOpd1A, c_FxOp1A, 0, 0, 1 },
+    { "FxOpd1B", asm_FxOpd1B, c_FxOp1B, 0, 0, 1 },
+    { "FxOpd1C", asm_FxOpd1C, c_FxOp1C, 0, 0, 1 },
+    { "FxOpd1D", asm_FxOpd1D, c_FxOp1D, 0, 0, 1 },
+    { "FxOpd1E", asm_FxOpd1E, c_FxOp1E, 0, 0, 1 },
+    { "FxOpd1F", asm_FxOpd1F, c_FxOp1F, 0, 0, 1 },
+    { "FxOpd20", asm_FxOpd20, c_FxOp20, 0, 0, 1 },
+    { "FxOpd21", asm_FxOpd21, c_FxOp21, 0, 0, 1 },
+    { "FxOpd22", asm_FxOpd22, c_FxOp22, 0, 0, 1 },
+    { "FxOpd23", asm_FxOpd23, c_FxOp23, 0, 0, 1 },
+    { "FxOpd24", asm_FxOpd24, c_FxOp24, 0, 0, 1 },
+    { "FxOpd25", asm_FxOpd25, c_FxOp25, 0, 0, 1 },
+    { "FxOpd26", asm_FxOpd26, c_FxOp26, 0, 0, 1 },
+    { "FxOpd27", asm_FxOpd27, c_FxOp27, 0, 0, 1 },
+    { "FxOpd28", asm_FxOpd28, c_FxOp28, 0, 0, 1 },
+    { "FxOpd29", asm_FxOpd29, c_FxOp29, 0, 0, 1 },
+    { "FxOpd2A", asm_FxOpd2A, c_FxOp2A, 0, 0, 1 },
+    { "FxOpd2B", asm_FxOpd2B, c_FxOp2B, 0, 0, 1 },
+    { "FxOpd2C", asm_FxOpd2C, c_FxOp2C, 0, 0, 1 },
+    { "FxOpd2D", asm_FxOpd2D, c_FxOp2D, 0, 0, 1 },
+    { "FxOpd2E", asm_FxOpd2E, c_FxOp2E, 0, 0, 1 },
+    { "FxOpd2F", asm_FxOpd2F, c_FxOp2F, 0, 0, 1 },
+    { "FxOpd30", asm_FxOpd30, c_FxOp30, 1, 0, 1 },
+    { "FxOpd30A1", asm_FxOpd30A1, c_FxOp30A1, 1, 0, 1 },
+    { "FxOpd31", asm_FxOpd31, c_FxOp31, 1, 1, 1 },
+    { "FxOpd31A1", asm_FxOpd31A1, c_FxOp31A1, 1, 1, 1 },
+    { "FxOpd32", asm_FxOpd32, c_FxOp32, 1, 2, 1 },
+    { "FxOpd32A1", asm_FxOpd32A1, c_FxOp32A1, 1, 2, 1 },
+    { "FxOpd33", asm_FxOpd33, c_FxOp33, 1, 3, 1 },
+    { "FxOpd33A1", asm_FxOpd33A1, c_FxOp33A1, 1, 3, 1 },
+    { "FxOpd34", asm_FxOpd34, c_FxOp34, 1, 4, 1 },
+    { "FxOpd34A1", asm_FxOpd34A1, c_FxOp34A1, 1, 4, 1 },
+    { "FxOpd35", asm_FxOpd35, c_FxOp35, 1, 5, 1 },
+    { "FxOpd35A1", asm_FxOpd35A1, c_FxOp35A1, 1, 5, 1 },
+    { "FxOpd36", asm_FxOpd36, c_FxOp36, 1, 6, 1 },
+    { "FxOpd36A1", asm_FxOpd36A1, c_FxOp36A1, 1, 6, 1 },
+    { "FxOpd37", asm_FxOpd37, c_FxOp37, 1, 7, 1 },
+    { "FxOpd37A1", asm_FxOpd37A1, c_FxOp37A1, 1, 7, 1 },
+    { "FxOpd38", asm_FxOpd38, c_FxOp38, 1, 8, 1 },
+    { "FxOpd38A1", asm_FxOpd38A1, c_FxOp38A1, 1, 8, 1 },
+    { "FxOpd39", asm_FxOpd39, c_FxOp39, 1, 9, 1 },
+    { "FxOpd39A1", asm_FxOpd39A1, c_FxOp39A1, 1, 9, 1 },
+    { "FxOpd3A", asm_FxOpd3A, c_FxOp3A, 1, 10, 1 },
+    { "FxOpd3AA1", asm_FxOpd3AA1, c_FxOp3AA1, 1, 10, 1 },
+    { "FxOpd3B", asm_FxOpd3B, c_FxOp3B, 1, 11, 1 },
+    { "FxOpd3BA1", asm_FxOpd3BA1, c_FxOp3BA1, 1, 11, 1 },
+    { "FxOpd3C", asm_FxOpd3C, c_FxOp3C, 4, 13, 1 },
+    { "FxOpd3D", asm_FxOpd3D, c_FxOp3D, 0, 0, 1 },
+    { "FxOpd3E", asm_FxOpd3E, c_FxOp3E, 0, 0, 1 },
+    { "FxOpd3F", asm_FxOpd3F, c_FxOp3F, 0, 0, 1 },
+    { "FxOpd40", asm_FxOpd40, c_FxOp40, 1, 0, 1 },
+    { "FxOpd40A1", asm_FxOpd40A1, c_FxOp40A1, 1, 0, 1 },
+    { "FxOpd41", asm_FxOpd41, c_FxOp41, 1, 1, 1 },
+    { "FxOpd41A1", asm_FxOpd41A1, c_FxOp41A1, 1, 1, 1 },
+    { "FxOpd42", asm_FxOpd42, c_FxOp42, 1, 2, 1 },
+    { "FxOpd42A1", asm_FxOpd42A1, c_FxOp42A1, 1, 2, 1 },
+    { "FxOpd43", asm_FxOpd43, c_FxOp43, 1, 3, 1 },
+    { "FxOpd43A1", asm_FxOpd43A1, c_FxOp43A1, 1, 3, 1 },
+    { "FxOpd44", asm_FxOpd44, c_FxOp44, 1, 4, 1 },
+    { "FxOpd44A1", asm_FxOpd44A1, c_FxOp44A1, 1, 4, 1 },
+    { "FxOpd45", asm_FxOpd45, c_FxOp45, 1, 5, 1 },
+    { "FxOpd45A1", asm_FxOpd45A1, c_FxOp45A1, 1, 5, 1 },
+    { "FxOpd46", asm_FxOpd46, c_FxOp46, 1, 6, 1 },
+    { "FxOpd46A1", asm_FxOpd46A1, c_FxOp46A1, 1, 6, 1 },
+    { "FxOpd47", asm_FxOpd47, c_FxOp47, 1, 7, 1 },
+    { "FxOpd47A1", asm_FxOpd47A1, c_FxOp47A1, 1, 7, 1 },
+    { "FxOpd48", asm_FxOpd48, c_FxOp48, 1, 8, 1 },
+    { "FxOpd48A1", asm_FxOpd48A1, c_FxOp48A1, 1, 8, 1 },
+    { "FxOpd49", asm_FxOpd49, c_FxOp49, 1, 9, 1 },
+    { "FxOpd49A1", asm_FxOpd49A1, c_FxOp49A1, 1, 9, 1 },
+    { "FxOpd4A", asm_FxOpd4A, c_FxOp4A, 1, 10, 1 },
+    { "FxOpd4AA1", asm_FxOpd4AA1, c_FxOp4AA1, 1, 10, 1 },
+    { "FxOpd4B", asm_FxOpd4B, c_FxOp4B, 1, 11, 1 },
+    { "FxOpd4BA1", asm_FxOpd4BA1, c_FxOp4BA1, 1, 11, 1 },
+    { "FxOpd4C", asm_FxOpd4C, c_FxOp4C1284b, 7, 0, 1 },
+    { "FxOpd4C1282b", asm_FxOpd4C1282b, c_FxOp4C1282b, 7, 0, 1 },
+    { "FxOpd4C1282bd", asm_FxOpd4C1282bd, c_FxOp4C1282bd, 7, 0, 1 },
+    { "FxOpd4C1282bz", asm_FxOpd4C1282bz, c_FxOp4C1282bz, 7, 0, 1 },
+    { "FxOpd4C1282bzd", asm_FxOpd4C1282bzd, c_FxOp4C1282bzd, 7, 0, 1 },
+    { "FxOpd4C1284b", asm_FxOpd4C1284b, c_FxOp4C1284b, 7, 0, 1 },
+    { "FxOpd4C1284bd", asm_FxOpd4C1284bd, c_FxOp4C1284bd, 7, 0, 1 },
+    { "FxOpd4C1284bz", asm_FxOpd4C1284bz, c_FxOp4C1284bz, 7, 0, 1 },
+    { "FxOpd4C1284bzd", asm_FxOpd4C1284bzd, c_FxOp4C1284bzd, 7, 0, 1 },
+    { "FxOpd4C1288b", asm_FxOpd4C1288b, c_FxOp4C1288b, 7, 0, 1 },
+    { "FxOpd4C1288bd", asm_FxOpd4C1288bd, c_FxOp4C1288b, 7, 0, 1 },
+    { "FxOpd4C1288bdl", asm_FxOpd4C1288bdl, c_FxOp4C1288bl, 7, 0, 1 },
+    { "FxOpd4C1288bl", asm_FxOpd4C1288bl, c_FxOp4C1288bl, 7, 0, 1 },
+    { "FxOpd4C1288bz", asm_FxOpd4C1288bz, c_FxOp4C1288bz, 7, 0, 1 },
+    { "FxOpd4C1288bzd", asm_FxOpd4C1288bzd, c_FxOp4C1288bz, 7, 0, 1 },
+    { "FxOpd4C1288bzdl", asm_FxOpd4C1288bzdl, c_FxOp4C1288bzl, 7, 0, 1 },
+    { "FxOpd4C1288bzl", asm_FxOpd4C1288bzl, c_FxOp4C1288bzl, 7, 0, 1 },
+    { "FxOpd4CA1", asm_FxOpd4CA1, c_FxOp4CA1, 7, 0, 1 },
+    { "FxOpd4D", asm_FxOpd4D, c_FxOp4D, 0, 0, 1 },
+    { "FxOpd4E", asm_FxOpd4E, c_FxOp4E, 0, 0, 1 },
+    { "FxOpd4EA1", asm_FxOpd4EA1, c_FxOp4EA1, 0, 0, 1 },
+    { "FxOpd4F", asm_FxOpd4F, c_FxOp4F, 0, 0, 1 },
+    { "FxOpd50", asm_FxOpd50, c_FxOp50, 0, 0, 1 },
+    { "FxOpd50A1", asm_FxOpd50A1, c_FxOp50A1, 0, 0, 1 },
+    { "FxOpd50A2", asm_FxOpd50A2, c_FxOp50A2, 0, 0, 1 },
+    { "FxOpd50A3", asm_FxOpd50A3, c_FxOp50A3, 0, 0, 1 },
+    { "FxOpd51", asm_FxOpd51, c_FxOp51, 0, 0, 1 },
+    { "FxOpd51A1", asm_FxOpd51A1, c_FxOp51A1, 0, 0, 1 },
+    { "FxOpd51A2", asm_FxOpd51A2, c_FxOp51A2, 0, 0, 1 },
+    { "FxOpd51A3", asm_FxOpd51A3, c_FxOp51A3, 0, 0, 1 },
+    { "FxOpd52", asm_FxOpd52, c_FxOp52, 0, 0, 1 },
+    { "FxOpd52A1", asm_FxOpd52A1, c_FxOp52A1, 0, 0, 1 },
+    { "FxOpd52A2", asm_FxOpd52A2, c_FxOp52A2, 0, 0, 1 },
+    { "FxOpd52A3", asm_FxOpd52A3, c_FxOp52A3, 0, 0, 1 },
+    { "FxOpd53", asm_FxOpd53, c_FxOp53, 0, 0, 1 },
+    { "FxOpd53A1", asm_FxOpd53A1, c_FxOp53A1, 0, 0, 1 },
+    { "FxOpd53A2", asm_FxOpd53A2, c_FxOp53A2, 0, 0, 1 },
+    { "FxOpd53A3", asm_FxOpd53A3, c_FxOp53A3, 0, 0, 1 },
+    { "FxOpd54", asm_FxOpd54, c_FxOp54, 0, 0, 1 },
+    { "FxOpd54A1", asm_FxOpd54A1, c_FxOp54A1, 0, 0, 1 },
+    { "FxOpd54A2", asm_FxOpd54A2, c_FxOp54A2, 0, 0, 1 },
+    { "FxOpd54A3", asm_FxOpd54A3, c_FxOp54A3, 0, 0, 1 },
+    { "FxOpd55", asm_FxOpd55, c_FxOp55, 0, 0, 1 },
+    { "FxOpd55A1", asm_FxOpd55A1, c_FxOp55A1, 0, 0, 1 },
+    { "FxOpd55A2", asm_FxOpd55A2, c_FxOp55A2, 0, 0, 1 },
+    { "FxOpd55A3", asm_FxOpd55A3, c_FxOp55A3, 0, 0, 1 },
+    { "FxOpd56", asm_FxOpd56, c_FxOp56, 0, 0, 1 },
+    { "FxOpd56A1", asm_FxOpd56A1, c_FxOp56A1, 0, 0, 1 },
+    { "FxOpd56A2", asm_FxOpd56A2, c_FxOp56A2, 0, 0, 1 },
+    { "FxOpd56A3", asm_FxOpd56A3, c_FxOp56A3, 0, 0, 1 },
+    { "FxOpd57", asm_FxOpd57, c_FxOp57, 0, 0, 1 },
+    { "FxOpd57A1", asm_FxOpd57A1, c_FxOp57A1, 0, 0, 1 },
+    { "FxOpd57A2", asm_FxOpd57A2, c_FxOp57A2, 0, 0, 1 },
+    { "FxOpd57A3", asm_FxOpd57A3, c_FxOp57A3, 0, 0, 1 },
+    { "FxOpd58", asm_FxOpd58, c_FxOp58, 0, 0, 1 },
+    { "FxOpd58A1", asm_FxOpd58A1, c_FxOp58A1, 0, 0, 1 },
+    { "FxOpd58A2", asm_FxOpd58A2, c_FxOp58A2, 0, 0, 1 },
+    { "FxOpd58A3", asm_FxOpd58A3, c_FxOp58A3, 0, 0, 1 },
+    { "FxOpd59", asm_FxOpd59, c_FxOp59, 0, 0, 1 },
+    { "FxOpd59A1", asm_FxOpd59A1, c_FxOp59A1, 0, 0, 1 },
+    { "FxOpd59A2", asm_FxOpd59A2, c_FxOp59A2, 0, 0, 1 },
+    { "FxOpd59A3", asm_FxOpd59A3, c_FxOp59A3, 0, 0, 1 },
+    { "FxOpd5A", asm_FxOpd5A, c_FxOp5A, 0, 0, 1 },
+    { "FxOpd5AA1", asm_FxOpd5AA1, c_FxOp5AA1, 0, 0, 1 },
+    { "FxOpd5AA2", asm_FxOpd5AA2, c_FxOp5AA2, 0, 0, 1 },
+    { "FxOpd5AA3", asm_FxOpd5AA3, c_FxOp5AA3, 0, 0, 1 },
+    { "FxOpd5B", asm_FxOpd5B, c_FxOp5B, 0, 0, 1 },
+    { "FxOpd5BA1", asm_FxOpd5BA1, c_FxOp5BA1, 0, 0, 1 },
+    { "FxOpd5BA2", asm_FxOpd5BA2, c_FxOp5BA2, 0, 0, 1 },
+    { "FxOpd5BA3", asm_FxOpd5BA3, c_FxOp5BA3, 0, 0, 1 },
+    { "FxOpd5C", asm_FxOpd5C, c_FxOp5C, 0, 0, 1 },
+    { "FxOpd5CA1", asm_FxOpd5CA1, c_FxOp5CA1, 0, 0, 1 },
+    { "FxOpd5CA2", asm_FxOpd5CA2, c_FxOp5CA2, 0, 0, 1 },
+    { "FxOpd5CA3", asm_FxOpd5CA3, c_FxOp5CA3, 0, 0, 1 },
+    { "FxOpd5D", asm_FxOpd5D, c_FxOp5D, 0, 0, 1 },
+    { "FxOpd5DA1", asm_FxOpd5DA1, c_FxOp5DA1, 0, 0, 1 },
+    { "FxOpd5DA2", asm_FxOpd5DA2, c_FxOp5DA2, 0, 0, 1 },
+    { "FxOpd5DA3", asm_FxOpd5DA3, c_FxOp5DA3, 0, 0, 1 },
+    { "FxOpd5E", asm_FxOpd5E, c_FxOp5E, 0, 0, 1 },
+    { "FxOpd5EA1", asm_FxOpd5EA1, c_FxOp5EA1, 0, 0, 1 },
+    { "FxOpd5EA2", asm_FxOpd5EA2, c_FxOp5EA2, 0, 0, 1 },
+    { "FxOpd5EA3", asm_FxOpd5EA3, c_FxOp5EA3, 0, 0, 1 },
+    { "FxOpd5F", asm_FxOpd5F, c_FxOp5F, 0, 0, 1 },
+    { "FxOpd5FA1", asm_FxOpd5FA1, c_FxOp5FA1, 0, 0, 1 },
+    { "FxOpd5FA2", asm_FxOpd5FA2, c_FxOp5FA2, 0, 0, 1 },
+    { "FxOpd5FA3", asm_FxOpd5FA3, c_FxOp5FA3, 0, 0, 1 },
+    { "FxOpd60", asm_FxOpd60, c_FxOp60, 0, 0, 1 },
+    { "FxOpd60A1", asm_FxOpd60A1, c_FxOp60A1, 0, 0, 1 },
+    { "FxOpd60A2", asm_FxOpd60A2, c_FxOp60A2, 0, 0, 1 },
+    { "FxOpd60A3", asm_FxOpd60A3, c_FxOp60A3, 0, 0, 1 },
+    { "FxOpd61", asm_FxOpd61, c_FxOp61, 0, 0, 1 },
+    { "FxOpd61A1", asm_FxOpd61A1, c_FxOp61A1, 0, 0, 1 },
+    { "FxOpd61A2", asm_FxOpd61A2, c_FxOp61A2, 0, 0, 1 },
+    { "FxOpd61A3", asm_FxOpd61A3, c_FxOp61A3, 0, 0, 1 },
+    { "FxOpd62", asm_FxOpd62, c_FxOp62, 0, 0, 1 },
+    { "FxOpd62A1", asm_FxOpd62A1, c_FxOp62A1, 0, 0, 1 },
+    { "FxOpd62A2", asm_FxOpd62A2, c_FxOp62A2, 0, 0, 1 },
+    { "FxOpd62A3", asm_FxOpd62A3, c_FxOp62A3, 0, 0, 1 },
+    { "FxOpd63", asm_FxOpd63, c_FxOp63, 0, 0, 1 },
+    { "FxOpd63A1", asm_FxOpd63A1, c_FxOp63A1, 0, 0, 1 },
+    { "FxOpd63A2", asm_FxOpd63A2, c_FxOp63A2, 0, 0, 1 },
+    { "FxOpd63A3", asm_FxOpd63A3, c_FxOp63A3, 0, 0, 1 },
+    { "FxOpd64", asm_FxOpd64, c_FxOp64, 0, 0, 1 },
+    { "FxOpd64A1", asm_FxOpd64A1, c_FxOp64A1, 0, 0, 1 },
+    { "FxOpd64A2", asm_FxOpd64A2, c_FxOp64A2, 0, 0, 1 },
+    { "FxOpd64A3", asm_FxOpd64A3, c_FxOp64A3, 0, 0, 1 },
+    { "FxOpd65", asm_FxOpd65, c_FxOp65, 0, 0, 1 },
+    { "FxOpd65A1", asm_FxOpd65A1, c_FxOp65A1, 0, 0, 1 },
+    { "FxOpd65A2", asm_FxOpd65A2, c_FxOp65A2, 0, 0, 1 },
+    { "FxOpd65A3", asm_FxOpd65A3, c_FxOp65A3, 0, 0, 1 },
+    { "FxOpd66", asm_FxOpd66, c_FxOp66, 0, 0, 1 },
+    { "FxOpd66A1", asm_FxOpd66A1, c_FxOp66A1, 0, 0, 1 },
+    { "FxOpd66A2", asm_FxOpd66A2, c_FxOp66A2, 0, 0, 1 },
+    { "FxOpd66A3", asm_FxOpd66A3, c_FxOp66A3, 0, 0, 1 },
+    { "FxOpd67", asm_FxOpd67, c_FxOp67, 0, 0, 1 },
+    { "FxOpd67A1", asm_FxOpd67A1, c_FxOp67A1, 0, 0, 1 },
+    { "FxOpd67A2", asm_FxOpd67A2, c_FxOp67A2, 0, 0, 1 },
+    { "FxOpd67A3", asm_FxOpd67A3, c_FxOp67A3, 0, 0, 1 },
+    { "FxOpd68", asm_FxOpd68, c_FxOp68, 0, 0, 1 },
+    { "FxOpd68A1", asm_FxOpd68A1, c_FxOp68A1, 0, 0, 1 },
+    { "FxOpd68A2", asm_FxOpd68A2, c_FxOp68A2, 0, 0, 1 },
+    { "FxOpd68A3", asm_FxOpd68A3, c_FxOp68A3, 0, 0, 1 },
+    { "FxOpd69", asm_FxOpd69, c_FxOp69, 0, 0, 1 },
+    { "FxOpd69A1", asm_FxOpd69A1, c_FxOp69A1, 0, 0, 1 },
+    { "FxOpd69A2", asm_FxOpd69A2, c_FxOp69A2, 0, 0, 1 },
+    { "FxOpd69A3", asm_FxOpd69A3, c_FxOp69A3, 0, 0, 1 },
+    { "FxOpd6A", asm_FxOpd6A, c_FxOp6A, 0, 0, 1 },
+    { "FxOpd6AA1", asm_FxOpd6AA1, c_FxOp6AA1, 0, 0, 1 },
+    { "FxOpd6AA2", asm_FxOpd6AA2, c_FxOp6AA2, 0, 0, 1 },
+    { "FxOpd6AA3", asm_FxOpd6AA3, c_FxOp6AA3, 0, 0, 1 },
+    { "FxOpd6B", asm_FxOpd6B, c_FxOp6B, 0, 0, 1 },
+    { "FxOpd6BA1", asm_FxOpd6BA1, c_FxOp6BA1, 0, 0, 1 },
+    { "FxOpd6BA2", asm_FxOpd6BA2, c_FxOp6BA2, 0, 0, 1 },
+    { "FxOpd6BA3", asm_FxOpd6BA3, c_FxOp6BA3, 0, 0, 1 },
+    { "FxOpd6C", asm_FxOpd6C, c_FxOp6C, 0, 0, 1 },
+    { "FxOpd6CA1", asm_FxOpd6CA1, c_FxOp6CA1, 0, 0, 1 },
+    { "FxOpd6CA2", asm_FxOpd6CA2, c_FxOp6CA2, 0, 0, 1 },
+    { "FxOpd6CA3", asm_FxOpd6CA3, c_FxOp6CA3, 0, 0, 1 },
+    { "FxOpd6D", asm_FxOpd6D, c_FxOp6D, 0, 0, 1 },
+    { "FxOpd6DA1", asm_FxOpd6DA1, c_FxOp6DA1, 0, 0, 1 },
+    { "FxOpd6DA2", asm_FxOpd6DA2, c_FxOp6DA2, 0, 0, 1 },
+    { "FxOpd6DA3", asm_FxOpd6DA3, c_FxOp6DA3, 0, 0, 1 },
+    { "FxOpd6E", asm_FxOpd6E, c_FxOp6E, 0, 0, 1 },
+    { "FxOpd6EA1", asm_FxOpd6EA1, c_FxOp6EA1, 0, 0, 1 },
+    { "FxOpd6EA2", asm_FxOpd6EA2, c_FxOp6EA2, 0, 0, 1 },
+    { "FxOpd6EA3", asm_FxOpd6EA3, c_FxOp6EA3, 0, 0, 1 },
+    { "FxOpd6F", asm_FxOpd6F, c_FxOp6F, 0, 0, 1 },
+    { "FxOpd6FA1", asm_FxOpd6FA1, c_FxOp6FA1, 0, 0, 1 },
+    { "FxOpd6FA2", asm_FxOpd6FA2, c_FxOp6FA2, 0, 0, 1 },
+    { "FxOpd6FA3", asm_FxOpd6FA3, c_FxOp6FA3, 0, 0, 1 },
+    { "FxOpd70", asm_FxOpd70, c_FxOp70, 0, 0, 1 },
+    { "FxOpd71", asm_FxOpd71, c_FxOp71, 0, 0, 1 },
+    { "FxOpd71A1", asm_FxOpd71A1, c_FxOp71A1, 0, 0, 1 },
+    { "FxOpd71A2", asm_FxOpd71A2, c_FxOp71A2, 0, 0, 1 },
+    { "FxOpd71A3", asm_FxOpd71A3, c_FxOp71A3, 0, 0, 1 },
+    { "FxOpd72", asm_FxOpd72, c_FxOp72, 0, 0, 1 },
+    { "FxOpd72A1", asm_FxOpd72A1, c_FxOp72A1, 0, 0, 1 },
+    { "FxOpd72A2", asm_FxOpd72A2, c_FxOp72A2, 0, 0, 1 },
+    { "FxOpd72A3", asm_FxOpd72A3, c_FxOp72A3, 0, 0, 1 },
+    { "FxOpd73", asm_FxOpd73, c_FxOp73, 0, 0, 1 },
+    { "FxOpd73A1", asm_FxOpd73A1, c_FxOp73A1, 0, 0, 1 },
+    { "FxOpd73A2", asm_FxOpd73A2, c_FxOp73A2, 0, 0, 1 },
+    { "FxOpd73A3", asm_FxOpd73A3, c_FxOp73A3, 0, 0, 1 },
+    { "FxOpd74", asm_FxOpd74, c_FxOp74, 0, 0, 1 },
+    { "FxOpd74A1", asm_FxOpd74A1, c_FxOp74A1, 0, 0, 1 },
+    { "FxOpd74A2", asm_FxOpd74A2, c_FxOp74A2, 0, 0, 1 },
+    { "FxOpd74A3", asm_FxOpd74A3, c_FxOp74A3, 0, 0, 1 },
+    { "FxOpd75", asm_FxOpd75, c_FxOp75, 0, 0, 1 },
+    { "FxOpd75A1", asm_FxOpd75A1, c_FxOp75A1, 0, 0, 1 },
+    { "FxOpd75A2", asm_FxOpd75A2, c_FxOp75A2, 0, 0, 1 },
+    { "FxOpd75A3", asm_FxOpd75A3, c_FxOp75A3, 0, 0, 1 },
+    { "FxOpd76", asm_FxOpd76, c_FxOp76, 0, 0, 1 },
+    { "FxOpd76A1", asm_FxOpd76A1, c_FxOp76A1, 0, 0, 1 },
+    { "FxOpd76A2", asm_FxOpd76A2, c_FxOp76A2, 0, 0, 1 },
+    { "FxOpd76A3", asm_FxOpd76A3, c_FxOp76A3, 0, 0, 1 },
+    { "FxOpd77", asm_FxOpd77, c_FxOp77, 0, 0, 1 },
+    { "FxOpd77A1", asm_FxOpd77A1, c_FxOp77A1, 0, 0, 1 },
+    { "FxOpd77A2", asm_FxOpd77A2, c_FxOp77A2, 0, 0, 1 },
+    { "FxOpd77A3", asm_FxOpd77A3, c_FxOp77A3, 0, 0, 1 },
+    { "FxOpd78", asm_FxOpd78, c_FxOp78, 0, 0, 1 },
+    { "FxOpd78A1", asm_FxOpd78A1, c_FxOp78A1, 0, 0, 1 },
+    { "FxOpd78A2", asm_FxOpd78A2, c_FxOp78A2, 0, 0, 1 },
+    { "FxOpd78A3", asm_FxOpd78A3, c_FxOp78A3, 0, 0, 1 },
+    { "FxOpd79", asm_FxOpd79, c_FxOp79, 0, 0, 1 },
+    { "FxOpd79A1", asm_FxOpd79A1, c_FxOp79A1, 0, 0, 1 },
+    { "FxOpd79A2", asm_FxOpd79A2, c_FxOp79A2, 0, 0, 1 },
+    { "FxOpd79A3", asm_FxOpd79A3, c_FxOp79A3, 0, 0, 1 },
+    { "FxOpd7A", asm_FxOpd7A, c_FxOp7A, 0, 0, 1 },
+    { "FxOpd7AA1", asm_FxOpd7AA1, c_FxOp7AA1, 0, 0, 1 },
+    { "FxOpd7AA2", asm_FxOpd7AA2, c_FxOp7AA2, 0, 0, 1 },
+    { "FxOpd7AA3", asm_FxOpd7AA3, c_FxOp7AA3, 0, 0, 1 },
+    { "FxOpd7B", asm_FxOpd7B, c_FxOp7B, 0, 0, 1 },
+    { "FxOpd7BA1", asm_FxOpd7BA1, c_FxOp7BA1, 0, 0, 1 },
+    { "FxOpd7BA2", asm_FxOpd7BA2, c_FxOp7BA2, 0, 0, 1 },
+    { "FxOpd7BA3", asm_FxOpd7BA3, c_FxOp7BA3, 0, 0, 1 },
+    { "FxOpd7C", asm_FxOpd7C, c_FxOp7C, 0, 0, 1 },
+    { "FxOpd7CA1", asm_FxOpd7CA1, c_FxOp7CA1, 0, 0, 1 },
+    { "FxOpd7CA2", asm_FxOpd7CA2, c_FxOp7CA2, 0, 0, 1 },
+    { "FxOpd7CA3", asm_FxOpd7CA3, c_FxOp7CA3, 0, 0, 1 },
+    { "FxOpd7D", asm_FxOpd7D, c_FxOp7D, 0, 0, 1 },
+    { "FxOpd7DA1", asm_FxOpd7DA1, c_FxOp7DA1, 0, 0, 1 },
+    { "FxOpd7DA2", asm_FxOpd7DA2, c_FxOp7DA2, 0, 0, 1 },
+    { "FxOpd7DA3", asm_FxOpd7DA3, c_FxOp7DA3, 0, 0, 1 },
+    { "FxOpd7E", asm_FxOpd7E, c_FxOp7E, 0, 0, 1 },
+    { "FxOpd7EA1", asm_FxOpd7EA1, c_FxOp7EA1, 0, 0, 1 },
+    { "FxOpd7EA2", asm_FxOpd7EA2, c_FxOp7EA2, 0, 0, 1 },
+    { "FxOpd7EA3", asm_FxOpd7EA3, c_FxOp7EA3, 0, 0, 1 },
+    { "FxOpd7F", asm_FxOpd7F, c_FxOp7F, 0, 0, 1 },
+    { "FxOpd7FA1", asm_FxOpd7FA1, c_FxOp7FA1, 0, 0, 1 },
+    { "FxOpd7FA2", asm_FxOpd7FA2, c_FxOp7FA2, 0, 0, 1 },
+    { "FxOpd7FA3", asm_FxOpd7FA3, c_FxOp7FA3, 0, 0, 1 },
+    { "FxOpd80", asm_FxOpd80, c_FxOp80, 0, 0, 1 },
+    { "FxOpd80A1", asm_FxOpd80A1, c_FxOp80A1, 0, 0, 1 },
+    { "FxOpd80A2", asm_FxOpd80A2, c_FxOp80A2, 0, 0, 1 },
+    { "FxOpd80A3", asm_FxOpd80A3, c_FxOp80A3, 0, 0, 1 },
+    { "FxOpd81", asm_FxOpd81, c_FxOp81, 0, 0, 1 },
+    { "FxOpd81A1", asm_FxOpd81A1, c_FxOp81A1, 0, 0, 1 },
+    { "FxOpd81A2", asm_FxOpd81A2, c_FxOp81A2, 0, 0, 1 },
+    { "FxOpd81A3", asm_FxOpd81A3, c_FxOp81A3, 0, 0, 1 },
+    { "FxOpd82", asm_FxOpd82, c_FxOp82, 0, 0, 1 },
+    { "FxOpd82A1", asm_FxOpd82A1, c_FxOp82A1, 0, 0, 1 },
+    { "FxOpd82A2", asm_FxOpd82A2, c_FxOp82A2, 0, 0, 1 },
+    { "FxOpd82A3", asm_FxOpd82A3, c_FxOp82A3, 0, 0, 1 },
+    { "FxOpd83", asm_FxOpd83, c_FxOp83, 0, 0, 1 },
+    { "FxOpd83A1", asm_FxOpd83A1, c_FxOp83A1, 0, 0, 1 },
+    { "FxOpd83A2", asm_FxOpd83A2, c_FxOp83A2, 0, 0, 1 },
+    { "FxOpd83A3", asm_FxOpd83A3, c_FxOp83A3, 0, 0, 1 },
+    { "FxOpd84", asm_FxOpd84, c_FxOp84, 0, 0, 1 },
+    { "FxOpd84A1", asm_FxOpd84A1, c_FxOp84A1, 0, 0, 1 },
+    { "FxOpd84A2", asm_FxOpd84A2, c_FxOp84A2, 0, 0, 1 },
+    { "FxOpd84A3", asm_FxOpd84A3, c_FxOp84A3, 0, 0, 1 },
+    { "FxOpd85", asm_FxOpd85, c_FxOp85, 0, 0, 1 },
+    { "FxOpd85A1", asm_FxOpd85A1, c_FxOp85A1, 0, 0, 1 },
+    { "FxOpd85A2", asm_FxOpd85A2, c_FxOp85A2, 0, 0, 1 },
+    { "FxOpd85A3", asm_FxOpd85A3, c_FxOp85A3, 0, 0, 1 },
+    { "FxOpd86", asm_FxOpd86, c_FxOp86, 0, 0, 1 },
+    { "FxOpd86A1", asm_FxOpd86A1, c_FxOp86A1, 0, 0, 1 },
+    { "FxOpd86A2", asm_FxOpd86A2, c_FxOp86A2, 0, 0, 1 },
+    { "FxOpd86A3", asm_FxOpd86A3, c_FxOp86A3, 0, 0, 1 },
+    { "FxOpd87", asm_FxOpd87, c_FxOp87, 0, 0, 1 },
+    { "FxOpd87A1", asm_FxOpd87A1, c_FxOp87A1, 0, 0, 1 },
+    { "FxOpd87A2", asm_FxOpd87A2, c_FxOp87A2, 0, 0, 1 },
+    { "FxOpd87A3", asm_FxOpd87A3, c_FxOp87A3, 0, 0, 1 },
+    { "FxOpd88", asm_FxOpd88, c_FxOp88, 0, 0, 1 },
+    { "FxOpd88A1", asm_FxOpd88A1, c_FxOp88A1, 0, 0, 1 },
+    { "FxOpd88A2", asm_FxOpd88A2, c_FxOp88A2, 0, 0, 1 },
+    { "FxOpd88A3", asm_FxOpd88A3, c_FxOp88A3, 0, 0, 1 },
+    { "FxOpd89", asm_FxOpd89, c_FxOp89, 0, 0, 1 },
+    { "FxOpd89A1", asm_FxOpd89A1, c_FxOp89A1, 0, 0, 1 },
+    { "FxOpd89A2", asm_FxOpd89A2, c_FxOp89A2, 0, 0, 1 },
+    { "FxOpd89A3", asm_FxOpd89A3, c_FxOp89A3, 0, 0, 1 },
+    { "FxOpd8A", asm_FxOpd8A, c_FxOp8A, 0, 0, 1 },
+    { "FxOpd8AA1", asm_FxOpd8AA1, c_FxOp8AA1, 0, 0, 1 },
+    { "FxOpd8AA2", asm_FxOpd8AA2, c_FxOp8AA2, 0, 0, 1 },
+    { "FxOpd8AA3", asm_FxOpd8AA3, c_FxOp8AA3, 0, 0, 1 },
+    { "FxOpd8B", asm_FxOpd8B, c_FxOp8B, 0, 0, 1 },
+    { "FxOpd8BA1", asm_FxOpd8BA1, c_FxOp8BA1, 0, 0, 1 },
+    { "FxOpd8BA2", asm_FxOpd8BA2, c_FxOp8BA2, 0, 0, 1 },
+    { "FxOpd8BA3", asm_FxOpd8BA3, c_FxOp8BA3, 0, 0, 1 },
+    { "FxOpd8C", asm_FxOpd8C, c_FxOp8C, 0, 0, 1 },
+    { "FxOpd8CA1", asm_FxOpd8CA1, c_FxOp8CA1, 0, 0, 1 },
+    { "FxOpd8CA2", asm_FxOpd8CA2, c_FxOp8CA2, 0, 0, 1 },
+    { "FxOpd8CA3", asm_FxOpd8CA3, c_FxOp8CA3, 0, 0, 1 },
+    { "FxOpd8D", asm_FxOpd8D, c_FxOp8D, 0, 0, 1 },
+    { "FxOpd8DA1", asm_FxOpd8DA1, c_FxOp8DA1, 0, 0, 1 },
+    { "FxOpd8DA2", asm_FxOpd8DA2, c_FxOp8DA2, 0, 0, 1 },
+    { "FxOpd8DA3", asm_FxOpd8DA3, c_FxOp8DA3, 0, 0, 1 },
+    { "FxOpd8E", asm_FxOpd8E, c_FxOp8E, 0, 0, 1 },
+    { "FxOpd8EA1", asm_FxOpd8EA1, c_FxOp8EA1, 0, 0, 1 },
+    { "FxOpd8EA2", asm_FxOpd8EA2, c_FxOp8EA2, 0, 0, 1 },
+    { "FxOpd8EA3", asm_FxOpd8EA3, c_FxOp8EA3, 0, 0, 1 },
+    { "FxOpd8F", asm_FxOpd8F, c_FxOp8F, 0, 0, 1 },
+    { "FxOpd8FA1", asm_FxOpd8FA1, c_FxOp8FA1, 0, 0, 1 },
+    { "FxOpd8FA2", asm_FxOpd8FA2, c_FxOp8FA2, 0, 0, 1 },
+    { "FxOpd8FA3", asm_FxOpd8FA3, c_FxOp8FA3, 0, 0, 1 },
+    { "FxOpd90", asm_FxOpd90, c_FxOp90, 6, 0, 1 },
+    { "FxOpd91", asm_FxOpd91, c_FxOp91, 0, 1, 1 },
+    { "FxOpd92", asm_FxOpd92, c_FxOp92, 0, 2, 1 },
+    { "FxOpd93", asm_FxOpd93, c_FxOp93, 0, 3, 1 },
+    { "FxOpd94", asm_FxOpd94, c_FxOp94, 0, 4, 1 },
+    { "FxOpd95", asm_FxOpd95, c_FxOp95, 0, 0, 1 },
+    { "FxOpd96", asm_FxOpd96, c_FxOp96, 0, 0, 1 },
+    { "FxOpd96A1", asm_FxOpd96A1, c_FxOp96A1, 0, 0, 1 },
+    { "FxOpd97", asm_FxOpd97, c_FxOp97, 0, 0, 1 },
+    { "FxOpd98", asm_FxOpd98, c_FxOp98, 4, 8, 1 },
+    { "FxOpd98A1", asm_FxOpd98A1, c_FxOp98A1, 5, 8, 1 },
+    { "FxOpd99", asm_FxOpd99, c_FxOp99, 4, 9, 1 },
+    { "FxOpd99A1", asm_FxOpd99A1, c_FxOp99A1, 5, 9, 1 },
+    { "FxOpd9A", asm_FxOpd9A, c_FxOp9A, 4, 10, 1 },
+    { "FxOpd9AA1", asm_FxOpd9AA1, c_FxOp9AA1, 5, 10, 1 },
+    { "FxOpd9B", asm_FxOpd9B, c_FxOp9B, 4, 11, 1 },
+    { "FxOpd9BA1", asm_FxOpd9BA1, c_FxOp9BA1, 5, 11, 1 },
+    { "FxOpd9C", asm_FxOpd9C, c_FxOp9C, 4, 12, 1 },
+    { "FxOpd9CA1", asm_FxOpd9CA1, c_FxOp9CA1, 5, 12, 1 },
+    { "FxOpd9D", asm_FxOpd9D, c_FxOp9D, 4, 13, 1 },
+    { "FxOpd9DA1", asm_FxOpd9DA1, c_FxOp9DA1, 5, 13, 1 },
+    { "FxOpd9E", asm_FxOpd9E, c_FxOp9E, 0, 0, 1 },
+    { "FxOpd9F", asm_FxOpd9F, c_FxOp9F, 0, 0, 1 },
+    { "FxOpd9FA1", asm_FxOpd9FA1, c_FxOp9FA1, 0, 0, 1 },
+    { "FxOpdA0", asm_FxOpdA0, c_FxOpA0, 0, 0, 1 },
+    { "FxOpdA0A1", asm_FxOpdA0A1, c_FxOpA0A1, 3, 0, 1 },
+    { "FxOpdA0A2", asm_FxOpdA0A2, c_FxOpA0A2, 3, 0, 1 },
+    { "FxOpdA1", asm_FxOpdA1, c_FxOpA1, 0, 0, 1 },
+    { "FxOpdA1A1", asm_FxOpdA1A1, c_FxOpA1A1, 3, 0, 1 },
+    { "FxOpdA1A2", asm_FxOpdA1A2, c_FxOpA1A2, 3, 0, 1 },
+    { "FxOpdA2", asm_FxOpdA2, c_FxOpA2, 0, 0, 1 },
+    { "FxOpdA2A1", asm_FxOpdA2A1, c_FxOpA2A1, 3, 0, 1 },
+    { "FxOpdA2A2", asm_FxOpdA2A2, c_FxOpA2A2, 3, 0, 1 },
+    { "FxOpdA3", asm_FxOpdA3, c_FxOpA3, 0, 0, 1 },
+    { "FxOpdA3A1", asm_FxOpdA3A1, c_FxOpA3A1, 3, 0, 1 },
+    { "FxOpdA3A2", asm_FxOpdA3A2, c_FxOpA3A2, 3, 0, 1 },
+    { "FxOpdA4", asm_FxOpdA4, c_FxOpA4, 0, 0, 1 },
+    { "FxOpdA4A1", asm_FxOpdA4A1, c_FxOpA4A1, 3, 0, 1 },
+    { "FxOpdA4A2", asm_FxOpdA4A2, c_FxOpA4A2, 3, 0, 1 },
+    { "FxOpdA5", asm_FxOpdA5, c_FxOpA5, 0, 0, 1 },
+    { "FxOpdA5A1", asm_FxOpdA5A1, c_FxOpA5A1, 3, 0, 1 },
+    { "FxOpdA5A2", asm_FxOpdA5A2, c_FxOpA5A2, 3, 0, 1 },
+    { "FxOpdA6", asm_FxOpdA6, c_FxOpA6, 0, 0, 1 },
+    { "FxOpdA6A1", asm_FxOpdA6A1, c_FxOpA6A1, 3, 0, 1 },
+    { "FxOpdA6A2", asm_FxOpdA6A2, c_FxOpA6A2, 3, 0, 1 },
+    { "FxOpdA7", asm_FxOpdA7, c_FxOpA7, 0, 0, 1 },
+    { "FxOpdA7A1", asm_FxOpdA7A1, c_FxOpA7A1, 3, 0, 1 },
+    { "FxOpdA7A2", asm_FxOpdA7A2, c_FxOpA7A2, 3, 0, 1 },
+    { "FxOpdA8", asm_FxOpdA8, c_FxOpA8, 0, 0, 1 },
+    { "FxOpdA8A1", asm_FxOpdA8A1, c_FxOpA8A1, 3, 0, 1 },
+    { "FxOpdA8A2", asm_FxOpdA8A2, c_FxOpA8A2, 3, 0, 1 },
+    { "FxOpdA9", asm_FxOpdA9, c_FxOpA9, 0, 0, 1 },
+    { "FxOpdA9A1", asm_FxOpdA9A1, c_FxOpA9A1, 3, 0, 1 },
+    { "FxOpdA9A2", asm_FxOpdA9A2, c_FxOpA9A2, 3, 0, 1 },
+    { "FxOpdAA", asm_FxOpdAA, c_FxOpAA, 0, 0, 1 },
+    { "FxOpdAAA1", asm_FxOpdAAA1, c_FxOpAAA1, 3, 0, 1 },
+    { "FxOpdAAA2", asm_FxOpdAAA2, c_FxOpAAA2, 3, 0, 1 },
+    { "FxOpdAB", asm_FxOpdAB, c_FxOpAB, 0, 0, 1 },
+    { "FxOpdABA1", asm_FxOpdABA1, c_FxOpABA1, 3, 0, 1 },
+    { "FxOpdABA2", asm_FxOpdABA2, c_FxOpABA2, 3, 0, 1 },
+    { "FxOpdAC", asm_FxOpdAC, c_FxOpAC, 0, 0, 1 },
+    { "FxOpdACA1", asm_FxOpdACA1, c_FxOpACA1, 3, 0, 1 },
+    { "FxOpdACA2", asm_FxOpdACA2, c_FxOpACA2, 3, 0, 1 },
+    { "FxOpdAD", asm_FxOpdAD, c_FxOpAD, 0, 0, 1 },
+    { "FxOpdADA1", asm_FxOpdADA1, c_FxOpADA1, 3, 0, 1 },
+    { "FxOpdADA2", asm_FxOpdADA2, c_FxOpADA2, 3, 0, 1 },
+    { "FxOpdAE", asm_FxOpdAE, c_FxOpAE, 0, 0, 1 },
+    { "FxOpdAEA1", asm_FxOpdAEA1, c_FxOpAEA1, 3, 0, 1 },
+    { "FxOpdAEA2", asm_FxOpdAEA2, c_FxOpAEA2, 3, 0, 1 },
+    { "FxOpdAF", asm_FxOpdAF, c_FxOpAF, 0, 0, 1 },
+    { "FxOpdAFA1", asm_FxOpdAFA1, c_FxOpAFA1, 3, 0, 1 },
+    { "FxOpdAFA2", asm_FxOpdAFA2, c_FxOpAFA2, 3, 0, 1 },
+    { "FxOpdB0", asm_FxOpdB0, c_FxOpB0, 0, 0, 1 },
+    { "FxOpdB1", asm_FxOpdB1, c_FxOpB1, 0, 0, 1 },
+    { "FxOpdB2", asm_FxOpdB2, c_FxOpB2, 0, 0, 1 },
+    { "FxOpdB3", asm_FxOpdB3, c_FxOpB3, 0, 0, 1 },
+    { "FxOpdB4", asm_FxOpdB4, c_FxOpB4, 0, 0, 1 },
+    { "FxOpdB5", asm_FxOpdB5, c_FxOpB5, 0, 0, 1 },
+    { "FxOpdB6", asm_FxOpdB6, c_FxOpB6, 0, 0, 1 },
+    { "FxOpdB7", asm_FxOpdB7, c_FxOpB7, 0, 0, 1 },
+    { "FxOpdB8", asm_FxOpdB8, c_FxOpB8, 0, 0, 1 },
+    { "FxOpdB9", asm_FxOpdB9, c_FxOpB9, 0, 0, 1 },
+    { "FxOpdBA", asm_FxOpdBA, c_FxOpBA, 0, 0, 1 },
+    { "FxOpdBB", asm_FxOpdBB, c_FxOpBB, 0, 0, 1 },
+    { "FxOpdBC", asm_FxOpdBC, c_FxOpBC, 0, 0, 1 },
+    { "FxOpdBD", asm_FxOpdBD, c_FxOpBD, 0, 0, 1 },
+    { "FxOpdBE", asm_FxOpdBE, c_FxOpBE, 0, 0, 1 },
+    { "FxOpdBF", asm_FxOpdBF, c_FxOpBF, 0, 0, 1 },
+    { "FxOpdC0", asm_FxOpdC0, c_FxOpC0, 0, 0, 1 },
+    { "FxOpdC1", asm_FxOpdC1, c_FxOpC1, 0, 0, 1 },
+    { "FxOpdC1A1", asm_FxOpdC1A1, c_FxOpC1A1, 0, 0, 1 },
+    { "FxOpdC1A2", asm_FxOpdC1A2, c_FxOpC1A2, 0, 0, 1 },
+    { "FxOpdC1A3", asm_FxOpdC1A3, c_FxOpC1A3, 0, 0, 1 },
+    { "FxOpdC2", asm_FxOpdC2, c_FxOpC2, 0, 0, 1 },
+    { "FxOpdC2A1", asm_FxOpdC2A1, c_FxOpC2A1, 0, 0, 1 },
+    { "FxOpdC2A2", asm_FxOpdC2A2, c_FxOpC2A2, 0, 0, 1 },
+    { "FxOpdC2A3", asm_FxOpdC2A3, c_FxOpC2A3, 0, 0, 1 },
+    { "FxOpdC3", asm_FxOpdC3, c_FxOpC3, 0, 0, 1 },
+    { "FxOpdC3A1", asm_FxOpdC3A1, c_FxOpC3A1, 0, 0, 1 },
+    { "FxOpdC3A2", asm_FxOpdC3A2, c_FxOpC3A2, 0, 0, 1 },
+    { "FxOpdC3A3", asm_FxOpdC3A3, c_FxOpC3A3, 0, 0, 1 },
+    { "FxOpdC4", asm_FxOpdC4, c_FxOpC4, 0, 0, 1 },
+    { "FxOpdC4A1", asm_FxOpdC4A1, c_FxOpC4A1, 0, 0, 1 },
+    { "FxOpdC4A2", asm_FxOpdC4A2, c_FxOpC4A2, 0, 0, 1 },
+    { "FxOpdC4A3", asm_FxOpdC4A3, c_FxOpC4A3, 0, 0, 1 },
+    { "FxOpdC5", asm_FxOpdC5, c_FxOpC5, 0, 0, 1 },
+    { "FxOpdC5A1", asm_FxOpdC5A1, c_FxOpC5A1, 0, 0, 1 },
+    { "FxOpdC5A2", asm_FxOpdC5A2, c_FxOpC5A2, 0, 0, 1 },
+    { "FxOpdC5A3", asm_FxOpdC5A3, c_FxOpC5A3, 0, 0, 1 },
+    { "FxOpdC6", asm_FxOpdC6, c_FxOpC6, 0, 0, 1 },
+    { "FxOpdC6A1", asm_FxOpdC6A1, c_FxOpC6A1, 0, 0, 1 },
+    { "FxOpdC6A2", asm_FxOpdC6A2, c_FxOpC6A2, 0, 0, 1 },
+    { "FxOpdC6A3", asm_FxOpdC6A3, c_FxOpC6A3, 0, 0, 1 },
+    { "FxOpdC7", asm_FxOpdC7, c_FxOpC7, 0, 0, 1 },
+    { "FxOpdC7A1", asm_FxOpdC7A1, c_FxOpC7A1, 0, 0, 1 },
+    { "FxOpdC7A2", asm_FxOpdC7A2, c_FxOpC7A2, 0, 0, 1 },
+    { "FxOpdC7A3", asm_FxOpdC7A3, c_FxOpC7A3, 0, 0, 1 },
+    { "FxOpdC8", asm_FxOpdC8, c_FxOpC8, 0, 0, 1 },
+    { "FxOpdC8A1", asm_FxOpdC8A1, c_FxOpC8A1, 0, 0, 1 },
+    { "FxOpdC8A2", asm_FxOpdC8A2, c_FxOpC8A2, 0, 0, 1 },
+    { "FxOpdC8A3", asm_FxOpdC8A3, c_FxOpC8A3, 0, 0, 1 },
+    { "FxOpdC9", asm_FxOpdC9, c_FxOpC9, 0, 0, 1 },
+    { "FxOpdC9A1", asm_FxOpdC9A1, c_FxOpC9A1, 0, 0, 1 },
+    { "FxOpdC9A2", asm_FxOpdC9A2, c_FxOpC9A2, 0, 0, 1 },
+    { "FxOpdC9A3", asm_FxOpdC9A3, c_FxOpC9A3, 0, 0, 1 },
+    { "FxOpdCA", asm_FxOpdCA, c_FxOpCA, 0, 0, 1 },
+    { "FxOpdCAA1", asm_FxOpdCAA1, c_FxOpCAA1, 0, 0, 1 },
+    { "FxOpdCAA2", asm_FxOpdCAA2, c_FxOpCAA2, 0, 0, 1 },
+    { "FxOpdCAA3", asm_FxOpdCAA3, c_FxOpCAA3, 0, 0, 1 },
+    { "FxOpdCB", asm_FxOpdCB, c_FxOpCB, 0, 0, 1 },
+    { "FxOpdCBA1", asm_FxOpdCBA1, c_FxOpCBA1, 0, 0, 1 },
+    { "FxOpdCBA2", asm_FxOpdCBA2, c_FxOpCBA2, 0, 0, 1 },
+    { "FxOpdCBA3", asm_FxOpdCBA3, c_FxOpCBA3, 0, 0, 1 },
+    { "FxOpdCC", asm_FxOpdCC, c_FxOpCC, 0, 0, 1 },
+    { "FxOpdCCA1", asm_FxOpdCCA1, c_FxOpCCA1, 0, 0, 1 },
+    { "FxOpdCCA2", asm_FxOpdCCA2, c_FxOpCCA2, 0, 0, 1 },
+    { "FxOpdCCA3", asm_FxOpdCCA3, c_FxOpCCA3, 0, 0, 1 },
+    { "FxOpdCD", asm_FxOpdCD, c_FxOpCD, 0, 0, 1 },
+    { "FxOpdCDA1", asm_FxOpdCDA1, c_FxOpCDA1, 0, 0, 1 },
+    { "FxOpdCDA2", asm_FxOpdCDA2, c_FxOpCDA2, 0, 0, 1 },
+    { "FxOpdCDA3", asm_FxOpdCDA3, c_FxOpCDA3, 0, 0, 1 },
+    { "FxOpdCE", asm_FxOpdCE, c_FxOpCE, 0, 0, 1 },
+    { "FxOpdCEA1", asm_FxOpdCEA1, c_FxOpCEA1, 0, 0, 1 },
+    { "FxOpdCEA2", asm_FxOpdCEA2, c_FxOpCEA2, 0, 0, 1 },
+    { "FxOpdCEA3", asm_FxOpdCEA3, c_FxOpCEA3, 0, 0, 1 },
+    { "FxOpdCF", asm_FxOpdCF, c_FxOpCF, 0, 0, 1 },
+    { "FxOpdCFA1", asm_FxOpdCFA1, c_FxOpCFA1, 0, 0, 1 },
+    { "FxOpdCFA2", asm_FxOpdCFA2, c_FxOpCFA2, 0, 0, 1 },
+    { "FxOpdCFA3", asm_FxOpdCFA3, c_FxOpCFA3, 0, 0, 1 },
+    { "FxOpdD0", asm_FxOpdD0, c_FxOpD0, 0, 0, 1 },
+    { "FxOpdD1", asm_FxOpdD1, c_FxOpD1, 0, 0, 1 },
+    { "FxOpdD2", asm_FxOpdD2, c_FxOpD2, 0, 0, 1 },
+    { "FxOpdD3", asm_FxOpdD3, c_FxOpD3, 0, 0, 1 },
+    { "FxOpdD4", asm_FxOpdD4, c_FxOpD4, 0, 0, 1 },
+    { "FxOpdD5", asm_FxOpdD5, c_FxOpD5, 0, 0, 1 },
+    { "FxOpdD6", asm_FxOpdD6, c_FxOpD6, 0, 0, 1 },
+    { "FxOpdD7", asm_FxOpdD7, c_FxOpD7, 0, 0, 1 },
+    { "FxOpdD8", asm_FxOpdD8, c_FxOpD8, 0, 0, 1 },
+    { "FxOpdD9", asm_FxOpdD9, c_FxOpD9, 0, 0, 1 },
+    { "FxOpdDA", asm_FxOpdDA, c_FxOpDA, 0, 0, 1 },
+    { "FxOpdDB", asm_FxOpdDB, c_FxOpDB, 0, 0, 1 },
+    { "FxOpdDC", asm_FxOpdDC, c_FxOpDC, 0, 0, 1 },
+    { "FxOpdDD", asm_FxOpdDD, c_FxOpDD, 0, 0, 1 },
+    { "FxOpdDE", asm_FxOpdDE, c_FxOpDE, 0, 0, 1 },
+    { "FxOpdDF", asm_FxOpdDF, c_FxOpDF, 0, 0, 1 },
+    { "FxOpdDFA2", asm_FxOpdDFA2, c_FxOpDFA2, 0, 0, 1 },
+    { "FxOpdDFA3", asm_FxOpdDFA3, c_FxOpDFA3, 0, 0, 1 },
+    { "FxOpdE0", asm_FxOpdE0, c_FxOpE0, 0, 0, 1 },
+    { "FxOpdE1", asm_FxOpdE1, c_FxOpE1, 0, 0, 1 },
+    { "FxOpdE2", asm_FxOpdE2, c_FxOpE2, 0, 0, 1 },
+    { "FxOpdE3", asm_FxOpdE3, c_FxOpE3, 0, 0, 1 },
+    { "FxOpdE4", asm_FxOpdE4, c_FxOpE4, 0, 0, 1 },
+    { "FxOpdE5", asm_FxOpdE5, c_FxOpE5, 0, 0, 1 },
+    { "FxOpdE6", asm_FxOpdE6, c_FxOpE6, 0, 0, 1 },
+    { "FxOpdE7", asm_FxOpdE7, c_FxOpE7, 0, 0, 1 },
+    { "FxOpdE8", asm_FxOpdE8, c_FxOpE8, 0, 0, 1 },
+    { "FxOpdE9", asm_FxOpdE9, c_FxOpE9, 0, 0, 1 },
+    { "FxOpdEA", asm_FxOpdEA, c_FxOpEA, 0, 0, 1 },
+    { "FxOpdEB", asm_FxOpdEB, c_FxOpEB, 0, 0, 1 },
+    { "FxOpdEC", asm_FxOpdEC, c_FxOpEC, 0, 0, 1 },
+    { "FxOpdED", asm_FxOpdED, c_FxOpED, 0, 0, 1 },
+    { "FxOpdEE", asm_FxOpdEE, c_FxOpEE, 0, 0, 1 },
+    { "FxOpdEF", asm_FxOpdEF, c_FxOpEF, 0, 0, 1 },
+    { "FxOpdEFA1", asm_FxOpdEFA1, c_FxOpEFA1, 0, 0, 1 },
+    { "FxOpdEFA2", asm_FxOpdEFA2, c_FxOpEFA2, 0, 0, 1 },
+    { "FxOpdEFA3", asm_FxOpdEFA3, c_FxOpEFA3, 0, 0, 1 },
+    { "FxOpdF0", asm_FxOpdF0, c_FxOpF0, 0, 0, 1 },
+    { "FxOpdF0A1", asm_FxOpdF0A1, c_FxOpF0A1, 2, 0, 1 },
+    { "FxOpdF0A2", asm_FxOpdF0A2, c_FxOpF0A2, 2, 0, 1 },
+    { "FxOpdF1", asm_FxOpdF1, c_FxOpF1, 0, 0, 1 },
+    { "FxOpdF1A1", asm_FxOpdF1A1, c_FxOpF1A1, 2, 0, 1 },
+    { "FxOpdF1A2", asm_FxOpdF1A2, c_FxOpF1A2, 2, 0, 1 },
+    { "FxOpdF2", asm_FxOpdF2, c_FxOpF2, 0, 0, 1 },
+    { "FxOpdF2A1", asm_FxOpdF2A1, c_FxOpF2A1, 2, 0, 1 },
+    { "FxOpdF2A2", asm_FxOpdF2A2, c_FxOpF2A2, 2, 0, 1 },
+    { "FxOpdF3", asm_FxOpdF3, c_FxOpF3, 0, 0, 1 },
+    { "FxOpdF3A1", asm_FxOpdF3A1, c_FxOpF3A1, 2, 0, 1 },
+    { "FxOpdF3A2", asm_FxOpdF3A2, c_FxOpF3A2, 2, 0, 1 },
+    { "FxOpdF4", asm_FxOpdF4, c_FxOpF4, 0, 0, 1 },
+    { "FxOpdF4A1", asm_FxOpdF4A1, c_FxOpF4A1, 2, 0, 1 },
+    { "FxOpdF4A2", asm_FxOpdF4A2, c_FxOpF4A2, 2, 0, 1 },
+    { "FxOpdF5", asm_FxOpdF5, c_FxOpF5, 0, 0, 1 },
+    { "FxOpdF5A1", asm_FxOpdF5A1, c_FxOpF5A1, 2, 0, 1 },
+    { "FxOpdF5A2", asm_FxOpdF5A2, c_FxOpF5A2, 2, 0, 1 },
+    { "FxOpdF6", asm_FxOpdF6, c_FxOpF6, 0, 0, 1 },
+    { "FxOpdF6A1", asm_FxOpdF6A1, c_FxOpF6A1, 2, 0, 1 },
+    { "FxOpdF6A2", asm_FxOpdF6A2, c_FxOpF6A2, 2, 0, 1 },
+    { "FxOpdF7", asm_FxOpdF7, c_FxOpF7, 0, 0, 1 },
+    { "FxOpdF7A1", asm_FxOpdF7A1, c_FxOpF7A1, 2, 0, 1 },
+    { "FxOpdF7A2", asm_FxOpdF7A2, c_FxOpF7A2, 2, 0, 1 },
+    { "FxOpdF8", asm_FxOpdF8, c_FxOpF8, 0, 0, 1 },
+    { "FxOpdF8A1", asm_FxOpdF8A1, c_FxOpF8A1, 2, 0, 1 },
+    { "FxOpdF8A2", asm_FxOpdF8A2, c_FxOpF8A2, 2, 0, 1 },
+    { "FxOpdF9", asm_FxOpdF9, c_FxOpF9, 0, 0, 1 },
+    { "FxOpdF9A1", asm_FxOpdF9A1, c_FxOpF9A1, 2, 0, 1 },
+    { "FxOpdF9A2", asm_FxOpdF9A2, c_FxOpF9A2, 2, 0, 1 },
+    { "FxOpdFA", asm_FxOpdFA, c_FxOpFA, 0, 0, 1 },
+    { "FxOpdFAA1", asm_FxOpdFAA1, c_FxOpFAA1, 2, 0, 1 },
+    { "FxOpdFAA2", asm_FxOpdFAA2, c_FxOpFAA2, 2, 0, 1 },
+    { "FxOpdFB", asm_FxOpdFB, c_FxOpFB, 0, 0, 1 },
+    { "FxOpdFBA1", asm_FxOpdFBA1, c_FxOpFBA1, 2, 0, 1 },
+    { "FxOpdFBA2", asm_FxOpdFBA2, c_FxOpFBA2, 2, 0, 1 },
+    { "FxOpdFC", asm_FxOpdFC, c_FxOpFC, 0, 0, 1 },
+    { "FxOpdFCA1", asm_FxOpdFCA1, c_FxOpFCA1, 2, 0, 1 },
+    { "FxOpdFCA2", asm_FxOpdFCA2, c_FxOpFCA2, 2, 0, 1 },
+    { "FxOpdFD", asm_FxOpdFD, c_FxOpFD, 0, 0, 1 },
+    { "FxOpdFDA1", asm_FxOpdFDA1, c_FxOpFDA1, 2, 0, 1 },
+    { "FxOpdFDA2", asm_FxOpdFDA2, c_FxOpFDA2, 2, 0, 1 },
+    { "FxOpdFE", asm_FxOpdFE, c_FxOpFE, 0, 0, 1 },
+    { "FxOpdFEA1", asm_FxOpdFEA1, c_FxOpFEA1, 2, 0, 1 },
+    { "FxOpdFEA2", asm_FxOpdFEA2, c_FxOpFEA2, 2, 0, 1 },
+    { "FxOpdFF", asm_FxOpdFF, c_FxOpFF, 0, 0, 1 },
+    { "FxOpdFFA1", asm_FxOpdFFA1, c_FxOpFFA1, 2, 0, 1 },
+    { "FxOpdFFA2", asm_FxOpdFFA2, c_FxOpFFA2, 2, 0, 1 },
 };
 
 /* A register value, biased towards the 16-bit boundaries. The arithmetic here
@@ -1812,7 +1853,7 @@ typedef struct {
     u4 spc, scx, ssrc, sdst, hits;
     u4 regs[16];
     u4 signzero, overflow, carry, b, rombuffer, r15sk;
-    u4 table, stub_b;
+    u4 table, idx, stub_b;
     u4 cbr, pbr, cacheactive, cpb;
     u4 rambr, rombr, rammem;
     u4 colr, por, clineloc;
@@ -1840,9 +1881,11 @@ typedef struct {
     int mem;
 } setup;
 
-static void run(void (*fn)(void), setup const* in, int via_trampoline, snapshot* out)
+static void run(void (*fn)(void), setup const* in, int asm_side, int is_d, snapshot* out)
 {
-    StubPC = StubCX = StubSrc = StubDst = StubHits = StubTable = StubB = StubEndLoop = StubPlotIdx = StubPlotHits = 0;
+    u4(*const tab)[1024] = asm_side ? tab_asm : tab_c;
+
+    StubPC = StubCX = StubSrc = StubDst = StubHits = StubTable = StubB = StubEndLoop = StubPlotIdx = StubPlotHits = StubIdx = 0;
     if (in->mem) {
         memcpy(fxram, fxram_init, sizeof fxram);
     }
@@ -1885,19 +1928,30 @@ static void run(void (*fn)(void), setup const* in, int via_trampoline, snapshot*
     if (in->plot) {
         memcpy(fxplot, fxplot_init, sizeof fxplot);
     }
-    /* CMODE patches $4C in all four tables, so put the stubs back each run. */
-    FxTable[0x4C] = (u4)(uintptr_t)fxstub;
-    FxTableb[0x4C] = (u4)(uintptr_t)fxstubb;
-    FxTablec[0x4C] = (u4)(uintptr_t)fxstubc;
-    FxTabled[0x4C] = (u4)(uintptr_t)fxstub;
+    /* Put this side's stubs back: CMODE patches $4C in all four tables. */
+    memcpy(FxTable, tab[0], sizeof FxTable);
+    memcpy(FxTableb, tab[1], sizeof FxTableb);
+    memcpy(FxTablec, tab[2], sizeof FxTablec);
+    memcpy(FxTabled, tab[3], sizeof FxTabled);
 
     FxSeamPC = code + in->pc_off;
     FxSeamSrc = SfxR0 + in->src_reg;
     FxSeamDst = SfxR0 + in->dst_reg;
     FxSeamCX = in->cx;
 
-    if (via_trampoline) {
+    if (asm_side) {
         asm_fxcall((void*)fn);
+    } else if (is_d) {
+        /* What the fxdop thunk and its FXReturn tail used to do around the
+           body, and what MainLoop does now: run it, spend an opcode, then
+           either chain to the next handler or leave the loop. */
+        FxLoopDone = 0;
+        fn();
+        if (fx_loop_next()) {
+            FxDispatch(FxTabled);
+        } else {
+            StubEndLoop++;
+        }
     } else {
         fn();
     }
@@ -1912,6 +1966,7 @@ static void run(void (*fn)(void), setup const* in, int via_trampoline, snapshot*
     out->sdst = StubDst ? StubDst - (u4)(uintptr_t)SfxR0 : 0;
     out->hits = StubHits;
     out->table = StubTable;
+    out->idx = StubIdx;
     out->stub_b = StubB;
     /* Store as an offset: the absolute pointer is the same for both runs, but
      * an offset is what a reader can actually interpret. */
@@ -1952,10 +2007,89 @@ static void run(void (*fn)(void), setup const* in, int via_trampoline, snapshot*
     out->pcal[1] = fxbit23pcal;
     out->pcal[2] = fxbit45pcal;
     out->pcal[3] = fxbit67pcal;
-    out->plottab[0] = FxTable[0x4C];
-    out->plottab[1] = FxTableb[0x4C];
-    out->plottab[2] = FxTablec[0x4C];
-    out->plottab[3] = FxTabled[0x4C];
+    /* Report zero when CMODE left the entry alone: the two sides start from
+       different stubs, so only the PLOTJmp entry it picks is comparable. */
+    out->plottab[0] = FxTable[0x4C] == tab[0][0x4C] ? 0 : FxTable[0x4C];
+    out->plottab[1] = FxTableb[0x4C] == tab[1][0x4C] ? 0 : FxTableb[0x4C];
+    out->plottab[2] = FxTablec[0x4C] == tab[2][0x4C] ? 0 : FxTablec[0x4C];
+    out->plottab[3] = FxTabled[0x4C] == tab[3][0x4C] ? 0 : FxTabled[0x4C];
+}
+
+/* --- MainLoop -------------------------------------------------------------
+ *
+ * The loop is tested on its own, with stub handlers in the d table: each stub
+ * eats one byte of the instruction stream, refetches the opcode byte, and
+ * moves the source/destination register and the ALT mode, which is exactly the
+ * state the prologue loads and the epilogue writes back. One opcode byte is
+ * wired to a stub that ends the loop the way STOP does.
+ */
+u4 StubSetCh, StubSetSrc, StubSetDst;
+extern void asm_MainLoop(void); /* _fxops.o */
+extern void loopstub(void), loopstop(void); /* _fxops.o */
+
+static void loopbody_c(void)
+{
+    StubHits++;
+    FxSeamPC++;
+    FxSeamCX = (StubSetCh << 8) | *FxSeamPC;
+    FxSeamSrc = (u4*)(uintptr_t)StubSetSrc;
+    FxSeamDst = (u4*)(uintptr_t)StubSetDst;
+}
+
+static void loopstub_c(void) { loopbody_c(); }
+
+static void loopstop_c(void)
+{
+    loopbody_c();
+    FxLoopDone = 1;
+}
+
+typedef struct {
+    u4 pc, pipe, sfr, sreg, dreg, rambr, numops;
+    u4 setch, setsrc, setdst, stopop;
+} mainloop_setup;
+
+typedef struct {
+    u4 r15, pipe, sfr, sreg, dreg, rammem, numops, hits;
+} mainloop_snapshot;
+
+static void run_mainloop(mainloop_setup const* in, int asm_side, mainloop_snapshot* out)
+{
+    u4 const stub = (u4)(uintptr_t)(asm_side ? loopstub : loopstub_c);
+    u4 const stop = (u4)(uintptr_t)(asm_side ? loopstop : loopstop_c);
+
+    for (int i = 0; i < 1024; i++) {
+        FxTabled[i] = (i & 0xFF) == in->stopop ? stop : stub;
+    }
+    StubHits = 0;
+    SfxCPB = (u4)(uintptr_t)code;
+    SfxR0[15] = in->pc;
+    SfxPIPE = in->pipe;
+    SfxSFR = in->sfr;
+    SfxSREG = in->sreg;
+    SfxDREG = in->dreg;
+    SfxRAMBR = in->rambr;
+    SfxRAMMem = 0;
+    NumberOfOpcodes = in->numops;
+    sfxramdata = fxplot;
+    StubSetCh = in->setch;
+    StubSetSrc = (u4)(uintptr_t)(SfxR0 + in->setsrc);
+    StubSetDst = (u4)(uintptr_t)(SfxR0 + in->setdst);
+
+    if (asm_side) {
+        asm_fxcall((void*)asm_MainLoop);
+    } else {
+        MainLoop();
+    }
+
+    out->r15 = SfxR0[15];
+    out->pipe = SfxPIPE;
+    out->sfr = SfxSFR;
+    out->sreg = SfxSREG;
+    out->dreg = SfxDREG;
+    out->rammem = SfxRAMMem;
+    out->numops = NumberOfOpcodes;
+    out->hits = StubHits;
 }
 
 int main(void)
@@ -1987,10 +2121,14 @@ int main(void)
     sfxobjlineloc = (u4)(uintptr_t)fxlines;
 
     for (int i = 0; i < 1024; i++) {
-        FxTabled[i] = (u4)(uintptr_t)fxstub;
-        FxTable[i] = (u4)(uintptr_t)fxstub;
-        FxTableb[i] = (u4)(uintptr_t)fxstubb;
-        FxTablec[i] = (u4)(uintptr_t)fxstubc;
+        tab_asm[0][i] = (u4)(uintptr_t)(idxa_asm + i * IDXSTUB);
+        tab_asm[1][i] = (u4)(uintptr_t)(idxb_asm + i * IDXSTUB);
+        tab_asm[2][i] = (u4)(uintptr_t)(idxc_asm + i * IDXSTUB);
+        tab_asm[3][i] = (u4)(uintptr_t)(idxd_asm + i * IDXSTUB);
+        tab_c[0][i] = (u4)(uintptr_t)(idxa_c + i * IDXSTUB);
+        tab_c[1][i] = (u4)(uintptr_t)(idxb_c + i * IDXSTUB);
+        tab_c[2][i] = (u4)(uintptr_t)(idxc_c + i * IDXSTUB);
+        tab_c[3][i] = (u4)(uintptr_t)(idxd_c + i * IDXSTUB);
     }
 
     DT_MAIN(20260727, 1000000)
@@ -2098,8 +2236,8 @@ int main(void)
 
         if (getenv("DTRACE"))
             fprintf(stderr, "it=%ld %s cx=%x\n", dt_it, k->name, in.cx);
-        run(k->asm_fn, &in, 1, &a);
-        run(k->c_fn, &in, k->c_is_thunk, &c);
+        run(k->asm_fn, &in, 1, 0, &a);
+        run(k->c_fn, &in, 0, k->c_is_d, &c);
 
         DT_EQ(k->name, a.pc, c.pc);
         DT_EQ("ecx", a.cx, c.cx);
@@ -2107,6 +2245,7 @@ int main(void)
         DT_EQ("edi", a.dst, c.dst);
         DT_EQ("next-opcode dispatch count", a.hits, c.hits);
         DT_EQ("next-opcode table", a.table, c.table);
+        DT_EQ("next-opcode table index", a.idx, c.idx);
         DT_EQ("next-opcode SfxB", a.stub_b, c.stub_b);
         DT_EQ("next-opcode pc", a.spc, c.spc);
         DT_EQ("next-opcode ecx", a.scx, c.scx);
@@ -2151,5 +2290,48 @@ int main(void)
             printf("  ^ case %s\n", k->name);
         }
     }
-    DT_DONE("SuperFX opcode handlers");
+    if (dt_fails) {
+        printf("SuperFX opcode handlers: FAIL (%d/%ld iterations mismatched)\n",
+            dt_fails, dt_iters);
+        return 1;
+    }
+    printf("SuperFX opcode handlers: PASS (%ld iterations bit-identical to asm)\n",
+        dt_iters);
+
+    /* Second phase: the loop itself. The handlers are replaced by stubs that
+       walk the program counter and move the state the epilogue writes back, so
+       what is under test is MainLoop's prologue, threading and epilogue. */
+    DT_MAIN(20260729, 200000)
+    {
+        mainloop_setup m;
+        mainloop_snapshot a, c;
+
+        dt_fill(code, sizeof code);
+        m.pc = 0x100 + dt_mod(0x100);
+        m.pipe = dt_u32();
+        m.sfr = dt_u32();
+        m.sreg = dt_mod(16);
+        m.dreg = dt_mod(16);
+        m.rambr = dt_u32();
+        /* Bounded: every stub consumes one byte of the instruction stream. */
+        m.numops = dt_mod(64);
+        m.setch = dt_mod(4);
+        m.setsrc = dt_mod(16);
+        m.setdst = dt_mod(16);
+        /* Which opcode byte ends the loop the way STOP does. */
+        m.stopop = dt_mod(256);
+
+        run_mainloop(&m, 1, &a);
+        run_mainloop(&m, 0, &c);
+
+        DT_EQ("MainLoop SfxR15", a.r15, c.r15);
+        DT_EQ("MainLoop SfxPIPE", a.pipe, c.pipe);
+        DT_EQ("MainLoop SfxSFR", a.sfr, c.sfr);
+        DT_EQ("MainLoop SfxSREG", a.sreg, c.sreg);
+        DT_EQ("MainLoop SfxDREG", a.dreg, c.dreg);
+        DT_EQ("MainLoop SfxRAMMem", a.rammem, c.rammem);
+        DT_EQ("MainLoop NumberOfOpcodes", a.numops, c.numops);
+        DT_EQ("MainLoop opcodes run", a.hits, c.hits);
+    }
+    DT_DONE("SuperFX MainLoop");
 }

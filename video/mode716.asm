@@ -80,6 +80,17 @@ EXTSYM cwinptr,mode7A,mode7B,mode7C,mode7D,mode7X0,mode7Y0,mode7set,vram,vrama
 EXTSYM xtravbuf,mode7hr,UnusedBitXor,UnusedBit,scrndis
 EXTSYM mode7ab,mode7cd,BGMA,BG1SXl,BG1SYl
 
+; The scratch block moved to video/c_mode716data.c; the spacers between the
+; entries are part of its contract, so see that file before adding anything.
+EXTSYM mtemp,mmode7xpos,mtempa2,mmode7xrpos,mtempa,mmode7ypos,mtempb2
+EXTSYM mmode7yrpos,mtempb,mmode7xadder,mtempc2,mmode7xadd2,mtempc
+EXTSYM mmode7yadder,mtempd2,mmode7yadd2,mtempd,mmode7ptr,mmode7xinc
+EXTSYM mmode7xincc,mmode7yinc,mmode7xsloc,mmode7ysloc,mmode7xsrl,mmode7ysrl
+EXTSYM mcxloc,mcyloc,M7HROn,switchtorep3,m7xaddof,m7xaddof2,m7yaddof
+EXTSYM m7yaddof2,pixelsleft,mm7xaddof,mm7xaddof2,mm7yaddof,mm7yaddof2
+EXTSYM ngwleft,ngwleftb,mode7xpos,mode7ypos,mode7xrpos,mode7yrpos
+EXTSYM mode7xadder,mode7yadder
+
 %include "video/mode716.mac"
 
 ;*******************************************************
@@ -468,56 +479,6 @@ drawmode7ngextbg216bsnt:
     ExtBG2 ExtBGNormalsnt
 
 ALIGN32
-SECTION .bss
-mtemp        resd 1       ; for byte move left
-mmode7xpos   resd 1       ; x position
-mtempa2      resd 1       ; keep this blank!
-mmode7xrpos  resd 1       ; x position
-mtempa       resd 1       ; keep this blank!
-mmode7ypos   resd 1       ; y position
-mtempb2      resd 1       ; keep this blank!
-mmode7yrpos  resd 1       ; y position
-mtempb       resd 1       ; keep this blank!
-mmode7xadder resd 1       ; number to add for x
-mtempc2      resd 1       ; keep this blank!
-mmode7xadd2  resd 1       ; number to add for x
-mtempc       resd 1       ; keep this blank!
-mmode7yadder resd 1       ; number to add for y
-mtempd2      resd 1       ; keep this blank!
-mmode7yadd2  resd 1       ; number to add for y
-mtempd       resd 1       ; keep this blank!
-mmode7ptr    resd 1       ; pointer value
-mmode7xinc   resd 1       ; number to add for x
-mmode7xincc  resd 1       ; range check for x
-mmode7yinc   resd 1       ; number to add for y
-mmode7xsloc  resd 1       ; which screen x
-mmode7ysloc  resd 1       ; which screen y
-mmode7xsrl   resd 1       ; which relative screen x
-mmode7ysrl   resd 1       ; which relative screen y
-mcxloc       resw 1       ; cx location
-mcyloc       resw 1       ; cy location
-M7HROn       resd 1       ; High Resolution On
-switchtorep3 resd 1
-
-m7xaddof resd 1
-m7xaddof2 resd 1
-m7yaddof resd 1
-m7yaddof2 resd 1
-pixelsleft resd 1
-mm7xaddof resd 1
-mm7xaddof2 resd 1
-mm7yaddof resd 1
-mm7yaddof2 resd 1
-
-;ALIGN32
-NEWSYM ngwleft,       resd 1       ; for byte move left
-NEWSYM ngwleftb,      resd 1       ; for byte move left
-NEWSYM mode7xpos,   resd 2         ; x position
-NEWSYM mode7ypos,   resd 2         ; x position
-NEWSYM mode7xrpos,  resd 2         ; x position, relative
-NEWSYM mode7yrpos,  resd 2         ; y position, relative
-NEWSYM mode7xadder, resd 2         ; number to add for x
-NEWSYM mode7yadder, resd 2         ; number to add for y
 
 SECTION .text
 
