@@ -29,224 +29,7 @@ EXTSYM debuggeron
 %endif
 
 ; global variables
-SECTION .data
-NEWSYM invreg,    dw 0
-NEWSYM sndrot,    db 0
-NEWSYM sndrot2,   db 0             ; rotates a random value for sound skip
-NEWSYM INTEnab,   db 0
-NEWSYM NMIEnab,   db 1             ; controlled in e65816 loop.  Sets to 81h
-NEWSYM VIRQLoc,   dw 0             ; VIRQ Y location
-NEWSYM vidbright, db 0
-NEWSYM previdbr,  db 0             ; previous screen brightness
-NEWSYM forceblnk, db 80h
-NEWSYM objptr,    dd 0             ; pointer to object data in VRAM
-NEWSYM objptrn,   dd 0             ; pointer2 to object data in VRAM
-NEWSYM objsize1,  db 1             ; 1 = 8dot, 4=16 dot, 16=32 dot, 64=64dot
-NEWSYM objsize2,  db 4             ; large object size
-NEWSYM objmovs1,  db 2             ; number of bytes to move/paragraph
-NEWSYM objadds1,  dw 14            ; number of bytes to add/paragraph
-NEWSYM objmovs2,  db 2             ; number of bytes to move/paragraph
-NEWSYM objadds2,  dw 14            ; number of bytes to add/paragraph
-NEWSYM oamaddrt,  dw 0             ; oam address
-NEWSYM oamaddrs,  dw 0             ; oam address at beginning of vblank
-NEWSYM objhipr,   db 0             ; highest priority object #
-NEWSYM bgmode,    db 0
-NEWSYM bg3highst, db 0
-NEWSYM bgtilesz,  db 0
-NEWSYM mosaicon,  db 0
-NEWSYM mosaicsz,  db 0
-NEWSYM bg1ptr,    dw 0
-NEWSYM bg2ptr,    dw 0
-NEWSYM bg3ptr,    dw 0
-NEWSYM bg4ptr,    dw 0
-NEWSYM bg1ptrb,   dw 0
-NEWSYM bg2ptrb,   dw 0
-NEWSYM bg3ptrb,   dw 0
-NEWSYM bg4ptrb,   dw 0
-NEWSYM bg1ptrc,   dw 0
-NEWSYM bg2ptrc,   dw 0
-NEWSYM bg3ptrc,   dw 0
-NEWSYM bg4ptrc,   dw 0
-NEWSYM bg1ptrd,   dw 0
-NEWSYM bg2ptrd,   dw 0
-NEWSYM bg3ptrd,   dw 0
-NEWSYM bg4ptrd,   dw 0
-NEWSYM bg1scsize, db 0             ; bg #1 screen size (0=1x1,1=1x2,2=2x1,3=2x2)
-NEWSYM bg2scsize, db 0             ; bg #2 screen size (0=1x1,1=1x2,2=2x1,3=2x2)
-NEWSYM bg3scsize, db 0             ; bg #3 screen size (0=1x1,1=1x2,2=2x1,3=2x2)
-NEWSYM bg4scsize, db 0             ; bg #4 screen size (0=1x1,1=1x2,2=2x1,3=2x2)
-NEWSYM bg1objptr, dw 0
-NEWSYM bg2objptr, dw 0
-NEWSYM bg3objptr, dw 0
-NEWSYM bg4objptr, dw 0
-NEWSYM bg1scrolx, dw 0
-NEWSYM bg2scrolx, dw 0
-NEWSYM bg3scrolx, dw 0
-NEWSYM bg4scrolx, dw 0
-NEWSYM bg1sx,     dw 0             ; Temporary Variable for Debugging purposes
-NEWSYM bg1scroly, dw 0
-NEWSYM bg2scroly, dw 0
-NEWSYM bg3scroly, dw 0
-NEWSYM bg4scroly, dw 0
-NEWSYM addrincr,  dw 2             ; vram increment (2,64,128,256)
-NEWSYM vramincr,  db 0             ; 0 = inrement at 2118/2139, 1 = 2119,213A
-NEWSYM vramread,  db 0             ; previous character for vram read
-NEWSYM vramaddr,  dd 0             ; vram address
-NEWSYM cgaddr,    dw 0             ; cg (palette) address
-NEWSYM cgmod,     db 0
-NEWSYM scrnon,    dw 0
-NEWSYM scrndist,  db 0             ; which background is disabled
-NEWSYM resolutn,  dw 224           ; screen resolution
-NEWSYM multa,     db 0             ; multiplier A
-NEWSYM diva,      dw 0             ; divisor C
-NEWSYM divres,    dw 0             ; quotent of divc/divb
-NEWSYM multres,   dw 0             ; result of multa * multb/remainder of divc/divb
-NEWSYM latchx,    dw 0
-NEWSYM latchy,    dw 0
-NEWSYM latchxr,   db 0             ; low or high byte read for x value
-NEWSYM latchyr,   db 0             ; low or high byte read for y value
-NEWSYM frskipper, db 0
-NEWSYM winl1,     db 0
-NEWSYM winr1,     db 0
-NEWSYM winl2,     db 0
-NEWSYM winr2,     db 0
-NEWSYM winen
-NEWSYM winbg1en,  db 0
-NEWSYM winbg2en,  db 0
-NEWSYM winbg3en,  db 0
-NEWSYM winbg4en,  db 0
-NEWSYM winobjen,  db 0
-NEWSYM wincolen,  db 0
-NEWSYM winlogica, db 0
-NEWSYM winlogicb, db 0             ; Window logic type for Sprites and Backarea
-NEWSYM winenabm,  db 0
-NEWSYM winenabs,  db 0
-NEWSYM mode7set,  db 0
-NEWSYM mode7A,    dw 0             ; A value for Mode 7
-NEWSYM mode7B,    dw 0             ; B value for Mode 7
-NEWSYM mode7C,    dw 0             ; C value for Mode 7
-NEWSYM mode7D,    dw 0             ; D value for Mode 7
-NEWSYM mode7X0,   dw 0             ; Center X for Mode 7
-NEWSYM mode7Y0,   dw 0             ; Center Y for Mode 7
-NEWSYM JoyAPos,   db 0             ; Old-Style Joystick Read Position for Joy 1 & 3
-NEWSYM JoyBPos,   db 0             ; Old-Style Joystick Read Position for Joy 2 & 4
-NEWSYM compmult,  dd 0             ; Complement Multiplication for Mode 7
-NEWSYM joyalt,    db 0             ; temporary joystick alternation
-
-NEWSYM wramrwadr, dd 0             ; continuous read/write to wram address
-NEWSYM dmadata, times 129 db 0FFh
-ALIGN32
-NEWSYM irqon,     db 0
-NEWSYM nexthdma,  db 0
-NEWSYM curhdma,   db 0
-NEWSYM hdmadata, times 8*19 db 0
-ALIGN32
-NEWSYM hdmatype,  db 0
-NEWSYM coladdr,   db 0
-NEWSYM coladdg,   db 0
-NEWSYM coladdb,   db 0
-NEWSYM colnull,   db 0
-NEWSYM scaddset,  db 0
-NEWSYM scaddtype, db 0
-NEWSYM Voice0Disabl2, db 1         ; Disable Voice 0
-NEWSYM Voice1Disabl2, db 1         ; Disable Voice 1
-NEWSYM Voice2Disabl2, db 1         ; Disable Voice 2
-NEWSYM Voice3Disabl2, db 1         ; Disable Voice 3
-NEWSYM Voice4Disabl2, db 1         ; Disable Voice 4
-NEWSYM Voice5Disabl2, db 1         ; Disable Voice 5
-NEWSYM Voice6Disabl2, db 1         ; Disable Voice 6
-NEWSYM Voice7Disabl2, db 1         ; Disable Voice 7
-
-NEWSYM oamram,  times 1024 db 0    ; OAMRAM (544 bytes)
-NEWSYM cgram,   times 512 db 0
-NEWSYM pcgram,  times 512 db 0     ; Previous CGRAM
-
-NEWSYM vraminctype,  db 0
-
-; New variables
-NEWSYM vramincby8on,   db 0        ; if increment by 8 is on
-NEWSYM vramincby8left, db 0        ; how many left
-NEWSYM vramincby8totl, db 0        ; how many in total (32,64,128)
-NEWSYM vramincby8rowl, db 0        ; how many left in that row (start at 8)
-NEWSYM vramincby8ptri, dw 0        ; increment by how many when rowl = 0
-
-NEWSYM nexthprior,     db 0
-NEWSYM doirqnext,      db 0
-
-NEWSYM vramincby8var,  dw 0
-NEWSYM screstype,      db 0
-NEWSYM extlatch,       db 0
-NEWSYM cfield,         db 0
-NEWSYM interlval,      db 0
-
-NEWSYM HIRQLoc,   dw 0
-
-NEWSYM KeyOnStA, db 0
-NEWSYM KeyOnStB, db 0
-
-NEWSYM SDD1BankA, db 0
-NEWSYM SDD1BankB, db 1
-NEWSYM SDD1BankC, db 2
-NEWSYM SDD1BankD, db 3
-NEWSYM vramread2, db 0             ; previous character for vram read
-NEWSYM nosprincr, db 0
-NEWSYM poamaddrs, dw 0
-NEWSYM ioportval, db 255
-NEWSYM iohvlatch, db 0
-NEWSYM ppustatus, db 0
-NEWSYM hdmastartsc, db 0
-NEWSYM hdmarestart, db 0
-NEWSYM hdmadelay, db 0
-NEWSYM nohdmaframe, db 0
-NEWSYM rtoflags, db 0
-NEWSYM h_dot_counter, dd 0
-
-NEWSYM tempdat, times 473 db 0     ; expandable area
-
-num2writeppureg equ $-sndrot
-; pharos equ hack *sigh*
-NEWSYM PHnum2writeppureg, dd num2writeppureg
-
-NEWSYM scrndis,   db 0
-
-ALIGN32
-NEWSYM oamaddr,   dd 0             ; oam address
-
-NEWSYM bg1ptrx,   dd 0
-NEWSYM bg2ptrx,   dd 0
-NEWSYM bg3ptrx,   dd 0
-NEWSYM bg4ptrx,   dd 0
-
-NEWSYM bg1ptry,   dd 0
-NEWSYM bg2ptry,   dd 0
-NEWSYM bg3ptry,   dd 0
-NEWSYM bg4ptry,   dd 0
-
-NEWSYM Voice0Disable, db 1
-NEWSYM Voice1Disable, db 1
-NEWSYM Voice2Disable, db 1
-NEWSYM Voice3Disable, db 1
-NEWSYM Voice4Disable, db 1
-NEWSYM Voice5Disable, db 1
-NEWSYM Voice6Disable, db 1
-NEWSYM Voice7Disable, db 1
-
-NEWSYM BG116x16t, db 0
-NEWSYM BG216x16t, db 0
-NEWSYM BG316x16t, db 0
-NEWSYM BG416x16t, db 0
-NEWSYM SPC700read, dd 0
-NEWSYM SPC700write, dd 0
-
-NEWSYM JoyCRead, db 0
-
-NEWSYM nssdip1, db 0
-NEWSYM nssdip2, db 0
-NEWSYM nssdip3, db 0
-NEWSYM nssdip4, db 0
-NEWSYM nssdip5, db 0
-NEWSYM nssdip6, db 0
-
+; The .data and .bss blocks that were here are in cpu/c_regsdata.c.
 SECTION .text
 
 NEWSYM ClearRegs
@@ -278,29 +61,9 @@ NEWSYM ClearRegs
     mov byte[hdmadelay],0
     ret
 
-NEWSYM reg2100r
-    ;Should be Openbus
-    mov al,[vidbright]
-    or al,[forceblnk]
-    ret
 
-; Multiply Result Low
-NEWSYM reg2134r
-    checkmultchange
-    mov al,[compmult]
-    ret
 
-; Multiply Result Middle
-NEWSYM reg2135r
-    checkmultchange
-    mov al,[compmult+1]
-    ret
 
-; Multiply Result High
-NEWSYM reg2136r
-    checkmultchange
-    mov al,[compmult+2]
-    ret
 
 ; Software latch for horizontal/vertical counter.
 ; zsnes lacks an accurate dot-level H counter, so we synthesize latchx
@@ -538,23 +301,8 @@ NEWSYM reg213Dr
     ret
 
 ; PPU Status Flag & Version number (OBJ over flags)
-NEWSYM reg213Er
-    mov al,01h
-    or al,[rtoflags]
-    ret
 
 ; PPU Status Flag & Version number (NTSC/PAL/EXTRN Latch flag)
-NEWSYM reg213Fr
-;    mov byte[debstop3],1
-    mov al,[romispal]
-    shl al,4
-    or al,[ppustatus]
-    or al,[cfield]
-    mov byte[latchxr],0
-    mov byte[latchyr],0
-    or al,[extlatch]
-    mov [ppu2_mdr],al
-    ret
 
 ; Sound Reg #1
 NEWSYM reg2140r
@@ -683,20 +431,9 @@ NEWSYM reg2143r
     ret
 
 ; WRAM Read
-NEWSYM reg2180r
-    mov ebx,[wramrwadr]
-    add ebx,[wramdata]
-    mov al,[ebx]
-    inc dword[wramrwadr]
-    and dword[wramrwadr],01FFFFh
-    ret
 
 ; Unknown register, used by test cart
 
-NEWSYM reg21C2r
-NEWSYM reg21C3r
-    mov al,21h
-    ret
 
 ; Joystick Data for controller 1 and 2
 
@@ -720,8 +457,6 @@ NEWSYM reg4016r
     rol dword[JoyANow],1
     ret
 
-SECTION .bss
-NEWSYM MultiTap, resb 1
 SECTION .text
 
 ; Joystick Data for controller 2 and 4
@@ -804,42 +539,11 @@ NEWSYM reg4100r
 .nodip6
    ret
 
-NEWSYM reg420Ar
-NEWSYM reg420Br
-NEWSYM reg420Cr
-NEWSYM reg420Dr
-NEWSYM reg420Er
-NEWSYM reg420Fr
-    ;Should be Openbus
-    xor al,al
-    ret
 
 ; NMI Check Register; bit 7 is NMI flag, bits 4-6 open bus, bits 0-3 CPU rev
-NEWSYM reg4210r
-    mov bl,[NMIEnab]
-    mov al,[cpu_mdr]
-    and al,70h
-    or al,02h
-    and bl,80h
-    or al,bl
-    cmp byte[curnmi],0
-    jne .nmi
-    mov byte[NMIEnab],01h
-.nmi
-    mov byte[curnmi],0
-    ret
 
 ; Video IRQ Register; bit 7 is the IRQ flag, bits 0-6 open bus
-NEWSYM reg4211r
-    mov bl,[irqon]
-    mov al,[cpu_mdr]
-    and al,7Fh
-    or al,bl
-    mov byte[irqon],0
-    ret
 
-SECTION .bss
-NEWSYM hblank, resb 1
 SECTION .text
 
 ; H/V Blank Flag & Joystick Controller Enable Flag
@@ -925,81 +629,36 @@ debblah2:
     ret
 
 ; Programmable I/O port
-NEWSYM reg4213r
-    mov al,[ioportval]
-    ret
 
 ; Quotent of Divide Result (Low)
-NEWSYM reg4214r
-    mov al,[divres]
-    ret
 
 ; Quotent of Divide Result (High)
-NEWSYM reg4215r
-    mov al,[divres+1]
-    ret
 
 ; Product of Multiplication Result or Remainder of Divide Result (Low)
-NEWSYM reg4216r
-    mov al,[multres]
-    ret
 
 ; Product of Multiplication Result or Remainder of Divide Result (High)
-NEWSYM reg4217r
-    mov al,[multres+1]
-    ret
 
 ; Joypad snapshots latched at start of vblank by exechdma init in execute.asm.
 ; The $4218-$421F regs return these latched values (not live input).
-SECTION .data
-NEWSYM JoyARead, dd 0
-NEWSYM JoyBRead, dd 0
-NEWSYM JoyCRead2, dd 0
-NEWSYM JoyDRead, dd 0
-NEWSYM JoyERead, dd 0
 SECTION .text
 
 ; Joystick 1 Low
 ; bit7=X,bit6=Y,bit5=L,bit4=R
-NEWSYM reg4218r
-    mov al,[JoyARead+2]
-    ret
 
 ; Joystick 1 High
 ; bit7=A,bit6=B,bit5=Sel,bit4=Start,bit3=up,bit2=down,bit1=left,bit0=right
-NEWSYM reg4219r
-    mov al,[JoyARead+3]
-    ret
 
 ; Joystick 2 Low
-NEWSYM reg421Ar
-    mov al,[JoyBRead+2]
-    ret
 
 ; Joystick 2 High
-NEWSYM reg421Br
-    mov al,[JoyBRead+3]
-    ret
 
 ; Joystick 3 Low
-NEWSYM reg421Cr
-    mov al,[JoyDRead+2]
-    ret
 
 ; Joystick 3 High
-NEWSYM reg421Dr
-    mov al,[JoyDRead+3]
-    ret
 
 ; Joystick 4 Low
-NEWSYM reg421Er
-    mov al,[JoyCRead2+2]
-    ret
 
 ; Joystick 4 High
-NEWSYM reg421Fr
-    mov al,[JoyCRead2+3]
-    ret
 
 ; DMA Reader
 NEWSYM reg43XXr
@@ -1021,8 +680,4 @@ NEWSYM regINVALID ; Invalid Register
 ;    mov byte[debstop3],1
     ret
 
-SECTION .bss
-NEWSYM cpu_mdr, resb 1
-; PPU2 has its own bus latch, updated by the $213C-$213F reads.
-NEWSYM ppu2_mdr, resb 1
 SECTION .text

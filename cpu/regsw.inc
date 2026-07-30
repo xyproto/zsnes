@@ -44,8 +44,6 @@ NEWSYM reg2100w
     and byte[forceblnk],80h
     ret
 
-SECTION .bss
-NEWSYM prevoamptr, resb 1
 SECTION .text
 
 ; OAM size register
@@ -73,32 +71,22 @@ NEWSYM reg2101w
     shr bl,5
     push eax
     mov byte[NextLineCache],1
-    mov al,[.objsize1+ebx]
+    mov al,[reg2101w_objsize1+ebx]
     mov [objsize1],al
-    mov al,[.objsize2+ebx]
+    mov al,[reg2101w_objsize2+ebx]
     mov [objsize2],al
-    mov al,[.objmovs1+ebx]
+    mov al,[reg2101w_objmovs1+ebx]
     mov [objmovs1],al
-    mov al,[.objmovs2+ebx]
+    mov al,[reg2101w_objmovs2+ebx]
     mov [objmovs2],al
-    mov ax,[.objadds1+ebx*2]
+    mov ax,[reg2101w_objadds1+ebx*2]
     mov [objadds1],ax
-    mov ax,[.objadds2+ebx*2]
+    mov ax,[reg2101w_objadds2+ebx*2]
     mov [objadds2],ax
     pop eax
 .noproc
     ret
 
-SECTION .data
-.objsize1 db 1,1,1,4,4,16,2*4,2*4
-.objsize2 db 4,16,64,16,64,64,2*16,16
-.objmovs1 db 2,2,2,2,2,4,2,2
-.objmovs2 db 2,4,8,4,8,8,4,4
-.objadds1 dw 14,14,14,14,14,12,14,14
-.objadds2 dw 14,12,8,12,8,8,12,12
-
-SECTION .bss
-NEWSYM oamlow, resb 1
 SECTION .text
 
 ; OAM address register
@@ -397,11 +385,6 @@ NEWSYM reg210Cw
     shl bx,13
     mov [bg4objptr],bx
     ret
-
-section .data
-NEWSYM bgscrolPrev, db 0
-NEWSYM bg1scrolx_m7, dw 0
-NEWSYM bg1scroly_m7, dw 0
 
 section .text
 %macro UpdateScrollRegX 1
@@ -741,9 +724,6 @@ NEWSYM reg211Aw
     mov [mode7set],al
     ret
 
-SECTION .data
-NEWSYM multchange, db 1
-NEWSYM m7byte, db 0
 SECTION .text
 
 %macro Mode7Regs 1
@@ -1038,8 +1018,6 @@ NEWSYM reg2183w
     ret
 
 ; Joystick 1 & 2 status bytes
-SECTION .bss
-NEWSYM MultiTapStat, resb 1
 SECTION .text
 
 NEWSYM reg4016w

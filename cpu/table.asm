@@ -127,8 +127,66 @@ EXTSYM mosdraw916bntms
 EXTSYM tableA,tableB,tableC,tableD,tableE,tableF,tableG,tableH
 EXTSYM DPageR8,DPageW8,DPageR16,DPageW16
 EXTSYM cpucycle,eopINVALID
+; The register file moved to cpu/c_regsdata.c. These have to be declared
+; here, above the %includes: on PE/COFF EXTSYM also emits a %define, which
+; only applies below the line it appears on, and cpu/e65816.inc references
+; some of them.
+EXTSYM invreg,sndrot,sndrot2,INTEnab
+EXTSYM NMIEnab,VIRQLoc,vidbright,previdbr
+EXTSYM forceblnk,objptr,objptrn,objsize1
+EXTSYM objsize2,objmovs1,objadds1,objmovs2
+EXTSYM objadds2,oamaddrt,oamaddrs,objhipr
+EXTSYM bgmode,bg3highst,bgtilesz,mosaicon
+EXTSYM mosaicsz,bg1ptr,bg2ptr,bg3ptr
+EXTSYM bg4ptr,bg1ptrb,bg2ptrb,bg3ptrb
+EXTSYM bg4ptrb,bg1ptrc,bg2ptrc,bg3ptrc
+EXTSYM bg4ptrc,bg1ptrd,bg2ptrd,bg3ptrd
+EXTSYM bg4ptrd,bg1scsize,bg2scsize,bg3scsize
+EXTSYM bg4scsize,bg1objptr,bg2objptr,bg3objptr
+EXTSYM bg4objptr,bg1scrolx,bg2scrolx,bg3scrolx
+EXTSYM bg4scrolx,bg1sx,bg1scroly,bg2scroly
+EXTSYM bg3scroly,bg4scroly,addrincr,vramincr
+EXTSYM vramread,vramaddr,cgaddr,cgmod
+EXTSYM scrnon,scrndist,resolutn,multa
+EXTSYM diva,divres,multres,latchx
+EXTSYM latchy,latchxr,latchyr,frskipper
+EXTSYM winl1,winr1,winl2,winr2
+EXTSYM winen,winbg1en,winbg2en,winbg3en
+EXTSYM winbg4en,winobjen,wincolen,winlogica
+EXTSYM winlogicb,winenabm,winenabs,mode7set
+EXTSYM mode7A,mode7B,mode7C,mode7D
+EXTSYM mode7X0,mode7Y0,JoyAPos,JoyBPos
+EXTSYM compmult,joyalt,wramrwadr,dmadata
+EXTSYM irqon,nexthdma,curhdma,hdmadata
+EXTSYM hdmatype,coladdr,coladdg,coladdb
+EXTSYM colnull,scaddset,scaddtype,Voice0Disabl2
+EXTSYM Voice1Disabl2,Voice2Disabl2,Voice3Disabl2,Voice4Disabl2
+EXTSYM Voice5Disabl2,Voice6Disabl2,Voice7Disabl2,oamram
+EXTSYM cgram,pcgram,vraminctype,vramincby8on
+EXTSYM vramincby8left,vramincby8totl,vramincby8rowl,vramincby8ptri
+EXTSYM nexthprior,doirqnext,vramincby8var,screstype
+EXTSYM extlatch,cfield,interlval,HIRQLoc
+EXTSYM KeyOnStA,KeyOnStB,SDD1BankA,SDD1BankB
+EXTSYM SDD1BankC,SDD1BankD,vramread2,nosprincr
+EXTSYM poamaddrs,ioportval,iohvlatch,ppustatus
+EXTSYM hdmastartsc,hdmarestart,hdmadelay,nohdmaframe
+EXTSYM rtoflags,h_dot_counter,tempdat,PHnum2writeppureg
+EXTSYM scrndis,oamaddr,bg1ptrx,bg2ptrx
+EXTSYM bg3ptrx,bg4ptrx,bg1ptry,bg2ptry
+EXTSYM bg3ptry,bg4ptry,Voice0Disable,Voice1Disable
+EXTSYM Voice2Disable,Voice3Disable,Voice4Disable,Voice5Disable
+EXTSYM Voice6Disable,Voice7Disable,BG116x16t,BG216x16t
+EXTSYM BG316x16t,BG416x16t,SPC700read,SPC700write
+EXTSYM JoyCRead,nssdip1,nssdip2,nssdip3
+EXTSYM nssdip4,nssdip5,nssdip6,MultiTap
+EXTSYM hblank,JoyARead,JoyBRead,JoyCRead2
+EXTSYM JoyDRead,JoyERead,cpu_mdr,ppu2_mdr
 EXTSYM SDD1Enable
 EXTSYM JoyAOrig,JoyANow,JoyBOrig,JoyBNow,JoyCOrig,JoyCNow,JoyDOrig,JoyDNow
+EXTSYM reg2101w_objsize1,reg2101w_objsize2,reg2101w_objmovs1,reg2101w_objmovs2
+EXTSYM reg2101w_objadds1,reg2101w_objadds2,bgscrolPrev,bg1scrolx_m7
+EXTSYM bg1scroly_m7,multchange,m7byte,prevoamptr
+EXTSYM oamlow,MultiTapStat
 
 %include "cpu/65816d.inc"
 %include "cpu/address.inc"

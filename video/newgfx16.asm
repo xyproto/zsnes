@@ -144,6 +144,16 @@ EXTSYM bg1change,bg2change,bg3change,bg4change,ngwinptr,objwlrpos,objwen
 EXTSYM objclineptr,CSprWinPtr,BuildWindow2,NGNumSpr,fulladdtab
 EXTSYM bgtxadd2,drawmode7ngextbg16b,processmode7hires16b
 EXTSYM drawmode7ngextbg216b,osm2dis,ofsmtptrs,ofsmcptr2
+EXTSYM prevbrightdc,mosstart,moscountdown,BackAreaAdd
+EXTSYM BackAreaUnFillCol,BackAreaFillCol,clinemainsub,cpalptrng
+EXTSYM ngmsdraw,CMainWinScr,CSubWinScr,Prevcoladdr
+EXTSYM ColResult,CPalPtrng,WindowRedraw,mostranspval
+EXTSYM mosclineval,startlinet,endlinet,palchanged
+EXTSYM ng16bbgval,ng16bprval,mosjmptab16b,mosjmptab16bt
+EXTSYM mosjmptab16btms,mosjmptab16bntms,UnusedBit,HalfTrans
+EXTSYM UnusedBitXor,ngrposng,nggposng,ngbposng
+EXTSYM HiResDone,FullBitAnd,HalfTransB,HalfTransC
+EXTSYM NGNoTransp
 EXTSYM dcolortab,setpalallng,setpalette16bng,BackAreaFill
 
 %include "video/vidmacro.mac"
@@ -167,8 +177,7 @@ EXTSYM dcolortab,setpalallng,setpalette16bng,BackAreaFill
 ;   3 = All of subscreen added to specific mainscreens
 ;   4 = Add+Sub enabled
 
-section .data
-NEWSYM prevbrightdc, db 16
+; This file's .data is in video/c_newgfx16data.c.
 section .text
 
 %macro WinBGCheck 1
@@ -320,13 +329,6 @@ section .text
     mov [winbg1enval+eax+%1*256],bl
 %endmacro
 
-section .data
-mosstart times 4 dd 0
-moscountdown db 0
-NEWSYM BackAreaAdd, dd 0
-NEWSYM BackAreaUnFillCol, dd 0
-NEWSYM BackAreaFillCol, dd 0
-clinemainsub    dd 0
 section .text
 
 NEWSYM newengine16b
@@ -1132,29 +1134,6 @@ NEWSYM newengine16b
     xor ebx,ebx
     ret
 
-section .data
-align 32
-NEWSYM cpalptrng,     dd 0
-NEWSYM ngmsdraw,      dd 0
-NEWSYM CMainWinScr,   dd 0
-NEWSYM CSubWinScr,    dd 0
-NEWSYM Prevcoladdr,   dd 0
-NEWSYM ColResult,     dd 0
-NEWSYM CPalPtrng,     dd 0
-NEWSYM WindowRedraw,  dd 0
-NEWSYM mostranspval,  dd 0
-NEWSYM mosclineval,   dd 0
-NEWSYM startlinet,    dd 0
-NEWSYM endlinet,      dd 0
-NEWSYM palchanged,    dd 0
-
-NEWSYM ng16bbgval, dd 0         ; bg # (mov dword[ng16bbgval],%1)
-NEWSYM ng16bprval, dd 0         ; 0 = pr0, 2000h = pr1
-
-NEWSYM mosjmptab16b, times 15 dd 0
-NEWSYM mosjmptab16bt, times 15 dd 0
-NEWSYM mosjmptab16btms, times 15 dd 0
-NEWSYM mosjmptab16bntms, times 15 dd 0
 section .text
 
 NEWSYM StartDrawNewGfx16b
@@ -2740,19 +2719,6 @@ ProcessTransparencies:
     jae near .nextline
     ret
 
-section .data
-ALIGN32
-NEWSYM UnusedBit, dd 00000000001000000000000000100000b,00000000001000000000000000100000b
-NEWSYM HalfTrans, dd 11110111110111101111011111011110b,11110111110111101111011111011110b,0,0
-NEWSYM UnusedBitXor, dd 11111111110111111111111111011111b,11111111110111111111111111011111b
-NEWSYM ngrposng, dd 11,0
-NEWSYM nggposng, dd 6,0
-NEWSYM ngbposng, dd 0,0
-NEWSYM HiResDone, dd 0,0
-NEWSYM FullBitAnd, dd 0F800F800h,0F800F800h
-NEWSYM HalfTransB, dd 00001000010000010000100001000001b,00001000010000010000100001000001b
-NEWSYM HalfTransC, dd 11110111100111101111011110011110b,11110111100111101111011110011110b
-NEWSYM NGNoTransp, dd 0
 section .text
 
 %macro SCMainA 0
