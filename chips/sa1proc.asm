@@ -67,12 +67,7 @@ section .note.GNU-stack noalloc noexec nowrite progbits
 %endrep
 %endmacro
 %endif
-EXTSYM initaddrl,wramdata,IRAM,SA1DoIRQ,SNSRegP,SNSRegPCS
-EXTSYM SA1Ptr,SNSPtr,snesmap2,SA1tablead,SA1xpb,SA1RegP,wramdataa,SA1TimerVal
-EXTSYM SA1RegPCS,SA1BWPtr,SNSBWPtr,CurBWPtr,SA1NMIV,SA1IRQV
-EXTSYM membank0w8,SA1LBound,SA1UBound,SA1SH,SA1SHb,stackor,stackand,snesmmap
-EXTSYM SA1xs,SA1IRQExec,SA1Message,Sflagnz,Sflagc,Sflago
-EXTSYM SA1switchtonmi,SA1switchtovirq,SA1SwapEnter,SA1SwapLeave
+EXTSYM SA1SwapEnter,SA1SwapLeave
 
 %macro ccall 1-*
 	push ecx
@@ -99,15 +94,10 @@ EXTSYM SA1switchtonmi,SA1switchtovirq,SA1SwapEnter,SA1SwapLeave
 ; In exec loop, jump to execloop if SA1Status != 0
 ; *** Disable spc700 if possible ***
 
-SECTION .bss
-NEWSYM SA1Status, resb 1
-
-NEWSYM CurrentExecSA1, resb 1
-NEWSYM CurrentCPU, resb 1
-
-;ALIGN32
-NEWSYM prevedi, resd 1
-
+; The prologue above leaves .note.GNU-stack current, and the .bss block that
+; used to switch back went to chips/c_sa1proc.c - so say it here, or the code
+; below assembles and links into the note section and segfaults on the first
+; call.
 SECTION .text
 
 ; SA1Swap gives the SA-1 one instruction slot. The decision logic and the
@@ -133,9 +123,5 @@ NEWSYM SA1Swap
     popad
     ret
 
-SECTION .bss
-NEWSYM SA1xpc, resd 1
-SECTION .text
-
-; SA1switchtonmi and SA1switchtovirq (and the makedl macro) have been ported
-; to C (chips/c_sa1proc.c).
+; Everything else in this file - SA1switchtonmi, SA1switchtovirq, the makedl
+; macro and the .bss block - is in chips/c_sa1proc.c.

@@ -10,7 +10,7 @@
 #include "../types.h"
 #include "../chips/sa1proc.h" /* SA1Status */
 #include "../chips/sa1regs.h" /* IRAM, SA1RAMArea, SA1_in_cc1_dma */
-#include "../ui.h" /* regptra, regptwa, sfxramdata */
+#include "../ui.h" /* regptra, regptwa, sfxramdata, romdata */
 
 extern u1 wramdataa[65536], ram7fa[65536]; /* ui.c */
 extern u1* snesmmap[256]; /* endmem.h */
@@ -30,6 +30,15 @@ void SA1_DMA_CC1(void);
 
 /* SA-1 BW-RAM: the window pointer, the bit-map source and the mode bits. */
 extern u4 BWShift; /* chips/sa1regs.c; the asm tests its low byte only */
+
+/* S-DD1 software decompression (chips/sdd1emu.c, chips/sa1regs.c). */
+extern u1 SDD1BankA[4];
+extern u1 AddrNoIncr; /* cpu/c_dma.c: the DMA holds its address still */
+extern void (*memtabler8[256])(); /* cpu/memtable.h */
+extern u4 Sdd1Mode, Sdd1Bank, Sdd1Addr, Sdd1NewAddr;
+void SDD1_init(u1* in);
+u1 SDD1_get_byte(void);
+void memaccessbankr8(void); /* cpu/memory.asm: what the table goes back to */
 
 /* The DSP1 entry points already have cdecl halves (chips/dsp1proc.c). */
 u1 c_DSP1Read8b(u4 addr);

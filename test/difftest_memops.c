@@ -154,6 +154,32 @@ static u1 rom[ROM_SIZE + 0x200];
 u1* snesmmap[MMAP_ENTRIES];
 u1 writeon;
 
+/* S-DD1 state. The decompressor itself is stubbed - what matters here is which
+   calls the handler makes and what it leaves in memtabler8, which is how it
+   takes itself out of the picture. */
+u1 AddrNoIncr, SDD1BankA[4];
+u4 Sdd1Mode, Sdd1Bank, Sdd1Addr, Sdd1NewAddr;
+u1* romdata;
+void (*memtabler8[256])();
+static u4 sdd1_init_hits, sdd1_init_arg, sdd1_byte_hits;
+
+/* The plain accessor the handler puts back in the table. Only its address is
+   ever used, and both sides have to store the same one, so it is a real symbol
+   rather than the asm or C body. */
+void memaccessbankr8(void) { }
+
+void SDD1_init(u1* in)
+{
+    sdd1_init_hits++;
+    sdd1_init_arg = (u4)(uintptr_t)in;
+}
+
+u1 SDD1_get_byte(void)
+{
+    sdd1_byte_hits++;
+    return (u1)(0xA5u + sdd1_byte_hits);
+}
+
 static u1 wram_init[65536], eram_init[65536];
 static u1 rom_init[ROM_SIZE + 0x200];
 
@@ -221,6 +247,7 @@ extern void asm_membank0w8chip(void), asm_membank0w16chip(void);
 extern void asm_membank0r16inv(void), asm_membank0w16rom(void);
 extern void asm_SA1RAMaccessbankr8b(void), asm_SA1RAMaccessbankr16b(void);
 extern void asm_SA1RAMaccessbankw8b(void), asm_SA1RAMaccessbankw16b(void);
+extern void asm_memaccessbankr8sdd1(void);
 
 typedef struct {
     char const* name;
@@ -326,12 +353,14 @@ static memcase const cases[] = {
     { "SA1RAMaccessbankr16b", asm_SA1RAMaccessbankr16b, c_SA1RAMaccessbankr16b, 16 },
     { "SA1RAMaccessbankw8b", asm_SA1RAMaccessbankw8b, c_SA1RAMaccessbankw8b, 16 },
     { "SA1RAMaccessbankw16b", asm_SA1RAMaccessbankw16b, c_SA1RAMaccessbankw16b, 16 },
+    { "memaccessbankr8sdd1", asm_memaccessbankr8sdd1, c_memaccessbankr8sdd1, 18 },
 };
 
 typedef struct {
     u4 b, c, a, d, writeon, ramsize, ramsizeand, sfxen, dsp1, reenter, sa1st;
     u4 curromspace;
     u4 ccdma, ccaddr, bwshift, bwover;
+    u4 noincr, sdd1mode, sdd1bank, sdd1addr, banka;
 } setup;
 
 typedef struct {
@@ -350,6 +379,9 @@ typedef struct {
     u1 ccvalue;
     u4 dsp1addr, dsp1val, dsp1hits;
     u4 sramb4save;
+    u4 sdd1mode, sdd1bank, sdd1addr, sdd1newaddr;
+    u4 sdd1inithits, sdd1initarg, sdd1bytehits;
+    void (*memtab[256])();
     u1 rom[ROM_SIZE + 0x200];
 } snapshot;
 
@@ -381,6 +413,20 @@ static void run(void (*fn)(void), setup const* in, int asm_side, snapshot* out)
         snesmmap[i] = rom + (i & 0x1FF);
     }
     writeon = in->writeon;
+    AddrNoIncr = (u1)in->noincr;
+    Sdd1Mode = in->sdd1mode;
+    Sdd1Bank = in->sdd1bank;
+    Sdd1Addr = in->sdd1addr;
+    Sdd1NewAddr = 0;
+    for (int i = 0; i < 4; i++) {
+        SDD1BankA[i] = (u1)(in->banka >> (i * 8));
+    }
+    /* Distinct sentinels, so a loop that runs over the wrong 64 entries
+       shows up rather than overwriting a value that was equal anyway. */
+    for (int i = 0; i < 256; i++) {
+        memtabler8[i] = (void (*)())(uintptr_t)(0x100000u + (u4)i * 4);
+    }
+    sdd1_init_hits = sdd1_init_arg = sdd1_byte_hits = 0;
     MemSeamB = in->b;
     MemSeamC = in->c;
     MemSeamA = in->a;
@@ -423,6 +469,14 @@ static void run(void (*fn)(void), setup const* in, int asm_side, snapshot* out)
     out->dsp1val = dsp1_last_val;
     out->dsp1hits = dsp1_hits;
     out->sramb4save = sramb4save;
+    out->sdd1mode = Sdd1Mode;
+    out->sdd1bank = Sdd1Bank;
+    out->sdd1addr = Sdd1Addr;
+    out->sdd1newaddr = Sdd1NewAddr;
+    out->sdd1inithits = sdd1_init_hits;
+    out->sdd1initarg = sdd1_init_arg;
+    out->sdd1bytehits = sdd1_byte_hits;
+    memcpy(out->memtab, memtabler8, sizeof out->memtab);
     memcpy(out->rom, rom, sizeof out->rom);
 }
 
@@ -473,6 +527,11 @@ int main(void)
         in.reenter = dt_mod(2);
         /* Sits either side of the 2Mb threshold the 70-7D banks check. */
         in.curromspace = dt_mod(2) ? 0x200000u + dt_mod(2) : dt_mod(0x400001);
+        /* The S-DD1 stream only continues while the DMA holds its address
+           still and the bank and address still match the open stream. */
+        in.noincr = dt_mod(4) != 0;
+        in.sdd1mode = dt_mod(3);
+        in.banka = dt_u32();
         /* 0 = the 65816 owns the low window, 1/2 = the SA-1 does. */
         in.sa1st = dt_mod(3);
         SA1Enable = (u1)dt_mod(2);
@@ -586,6 +645,29 @@ int main(void)
             in.b = dt_mod(2) ? dt_mod(4) : dt_mod(256);
             in.c = dt_mod(2) ? 0xFFFEu + dt_mod(2) : dt_mod(0x10000);
             break;
+        case 18:
+            /* Banks C0-FF, one logical 1Mb bank per group of 16; below C0
+               there is no mapping at all, which the bank log reports as 0Fh.
+               Half the streams are already open on this exact address, so
+               both the decompress and the give-up paths get exercised. */
+            in.b = dt_mod(2) ? 0xC0u + dt_mod(0x40)
+                             : (u4)(u1[]) { 0xBF, 0xC0, 0xCF, 0xD0, 0xDF,
+                                   0xE0, 0xEF, 0xF0, 0xFF }[dt_mod(9)];
+            /* The bank log reads bl, not ebx, so drive the index past a
+               byte - the ROM map is wide enough to take it. */
+            if (dt_mod(4) == 0) {
+                in.b |= dt_mod(0x10) << 8;
+            }
+            in.c = dt_mod(0x10000);
+            /* The SDD1_init pointer masks the address to 16 bits. That is
+               only visible while opening a stream, and that path never
+               reads ROM, so a dirty high half stays in bounds there. */
+            if (in.noincr != 0 && in.sdd1mode != 2 && dt_mod(2)) {
+                in.c |= dt_u32() & 0xFFFF0000u;
+            }
+            in.sdd1bank = dt_mod(2) ? in.b : dt_u32();
+            in.sdd1addr = dt_mod(2) ? in.c : dt_u32();
+            break;
         case 17:
             /* Bit 15 picks the half of the bank, and on a large cart the top
                half is ROM instead of the SRAM mirror - drive both sides of
@@ -689,6 +771,14 @@ int main(void)
         DT_EQ("DSP1 address", a.dsp1addr, c.dsp1addr);
         DT_EQ("DSP1 value", a.dsp1val, c.dsp1val);
         DT_EQ("sramb4save", a.sramb4save, c.sramb4save);
+        DT_EQ("Sdd1Mode", a.sdd1mode, c.sdd1mode);
+        DT_EQ("Sdd1Bank", a.sdd1bank, c.sdd1bank);
+        DT_EQ("Sdd1Addr", a.sdd1addr, c.sdd1addr);
+        DT_EQ("Sdd1NewAddr", a.sdd1newaddr, c.sdd1newaddr);
+        DT_EQ("SDD1_init calls", a.sdd1inithits, c.sdd1inithits);
+        DT_EQ("SDD1_init pointer", a.sdd1initarg, c.sdd1initarg);
+        DT_EQ("SDD1_get_byte calls", a.sdd1bytehits, c.sdd1bytehits);
+        DT_MEM("memtabler8", a.memtab, c.memtab, sizeof a.memtab);
         DT_MEM("ROM window", a.rom, c.rom, sizeof a.rom);
         DT_EQ("edx", a.d, c.d);
         DT_EQ("register handler calls", a.reghits, c.reghits);

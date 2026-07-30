@@ -106,7 +106,6 @@ section .note.GNU-stack noalloc noexec nowrite progbits
 	ccall %1
 	pop eax
 %endmacro
-EXTSYM romdata
 EXTSYM MemSeamB,MemSeamC,MemSeamA,MemSeamD
 EXTSYM c_membank0r8ram,c_membank0r8inv,c_membank0r8rom,c_membank0r8romram
 EXTSYM c_membank0r8reg,c_membank0r16reg,c_membank0w8reg,c_membank0w16reg
@@ -132,9 +131,7 @@ EXTSYM c_membank0w8ram,c_membank0w8inv,c_membank0w8rom,c_membank0w8romram
 EXTSYM c_membank0w16ram,c_membank0w16ramh,c_membank0w16inv,c_membank0w16romram
 EXTSYM c_membank0r8chip,c_membank0r16inv,c_membank0r16chip
 EXTSYM c_membank0w8chip,c_membank0w16chip,c_membank0w16rom
-EXTSYM snesmmap
-EXTSYM Sdd1Mode,Sdd1Bank,Sdd1Addr,Sdd1NewAddr,memtabler8,AddrNoIncr,SDD1BankA
-EXTSYM SDD1_init,SDD1_get_byte
+EXTSYM c_memaccessbankr8sdd1
 
 ;*******************************************************
 ; Register & Memory Access Banks (0 - 3F) / (80 - BF)
@@ -373,95 +370,6 @@ NEWSYM SA1RAMaccessbankw16b
     memcop c_SA1RAMaccessbankw16b
 SECTION .text
 
-%macro GetBankLog 1
-    cmp bl,0C0h
-    jb %%illegal
-    cmp bl,0D0h
-    jb %%firstbank
-    cmp bl,0E0h
-    jb %%secondbank
-    cmp bl,0F0h
-    jb %%thirdbank
-    mov %1,[SDD1BankA+3]
-    jmp %%done
-%%firstbank
-    mov %1,[SDD1BankA]
-    jmp %%done
-%%secondbank
-    mov %1,[SDD1BankA+1]
-    jmp %%done
-%%thirdbank
-    mov %1,[SDD1BankA+2]
-    jmp %%done
-%%illegal
-    mov %1,0Fh
-%%done
-%endmacro
-
-SECTION .text
-
 ; Software decompression version
 NEWSYM memaccessbankr8sdd1
-    cmp byte[AddrNoIncr],0
-    je near .failed
-
-    cmp dword[Sdd1Mode],2
-    je near .decompress
-
-    mov [Sdd1Bank],ebx
-    mov [Sdd1Addr],ecx
-    mov [Sdd1NewAddr],ecx
-
-    mov dword[Sdd1Mode],2
-    push edx
-    push eax
-    push ecx
-
-    and ecx,0FFFFh
-    xor eax,eax
-    GetBankLog al
-    shl eax, 20
-    mov edx, [Sdd1Bank]
-    and edx, 0Fh
-    shl edx, 16
-    add eax, edx
-    add eax, [romdata]
-    add eax, ecx
-
-    ccallv SDD1_init, eax
-
-    pop ecx
-    pop eax
-    pop edx
-
-.decompress
-    cmp [Sdd1Bank],ebx
-    jne .nomoredec
-    cmp [Sdd1Addr],ecx
-    je .yesdec
-.nomoredec
-    mov ebx,[snesmmap+ebx*4]
-    mov al,[ebx+ecx]
-    push eax
-    mov eax,memtabler8+0C0h*4
-    mov ebx,40h
-.loopb
-    mov dword[eax],memaccessbankr8
-    add eax,4
-    dec ebx
-    jnz .loopb
-    pop eax
-    xor ebx,ebx
-    ret
-.yesdec
-    push eax
-    ccall SDD1_get_byte
-    mov [esp], al
-    pop eax
-    ret
-
-.failed
-    push ebx
-    call .nomoredec
-    pop ebx
-    jmp memaccessbankr8
+    memcop c_memaccessbankr8sdd1

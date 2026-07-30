@@ -16,6 +16,15 @@
 typedef uint8_t u1;
 typedef uint32_t u4;
 
+/* chips/c_sa1data.c */
+extern u1 SA1Status, CurrentExecSA1, CurrentCPU;
+extern u4 prevedi, SA1xpc;
+
+/* video/c_makev16tdata.c */
+extern u1 transpbuf[], DoTransp;
+extern u4 prevrgbcol, prevrgbpal, coadder16;
+extern uint16_t yadd, yflipadd;
+
 /* cpu/dspproc.c */
 extern u1 SBHDMA, BRRBuffer[32], VolumeTableb[256], AdsrSustLevLoc[8];
 extern u1 echoon0, Voice7FirstBlock, Voice0Volume, Voice7Volume;
@@ -457,6 +466,37 @@ static void test_execdata(void)
     ZT_CHECK_INT(ExecExitOkay, 1);
 }
 
+/* chips/c_sa1proc.c: the block that was left in chips/sa1proc.asm. zstate.c
+ * saves three bytes from &SA1Status, so those three must stay adjacent and in
+ * order; prevedi followed the assembly's commented-out ALIGN32, so it sits at
+ * an odd offset on purpose. */
+static void test_sa1proc(void)
+{
+    ZT_SECTION("sa1proc: the three save-state bytes");
+    ZT_CHECK_INT(GAP(SA1Status, CurrentExecSA1), 1);
+    ZT_CHECK_INT(GAP(CurrentExecSA1, CurrentCPU), 1);
+
+    ZT_SECTION("sa1proc: unaligned tail");
+    ZT_CHECK_INT(GAP(CurrentCPU, prevedi), 1);
+    ZT_CHECK_INT(GAP(prevedi, SA1xpc), 4);
+}
+
+/* video/c_makev16tdata.c: the .bss blocks from video/makev16t.asm. The
+ * transparency buffer is indexed with signed displacements off its middle, so
+ * what follows it is part of the shape; coadder16 is deliberately unaligned. */
+static void test_makev16t(void)
+{
+    ZT_SECTION("makev16t: transparency buffer and its tail");
+    ZT_CHECK_INT(GAP(transpbuf[0], prevrgbcol), 576 + 16 + 288 * 2);
+    ZT_CHECK_INT(GAP(prevrgbcol, prevrgbpal), 4);
+    ZT_CHECK_INT(GAP(prevrgbpal, DoTransp), 4);
+
+    ZT_SECTION("makev16t: unaligned run after DoTransp");
+    ZT_CHECK_INT(GAP(DoTransp, coadder16), 1);
+    ZT_CHECK_INT(GAP(coadder16, yadd), 4);
+    ZT_CHECK_INT(GAP(yadd, yflipadd), 2);
+}
+
 int main(void)
 {
     test_dsp_savestate_offsets();
@@ -467,6 +507,8 @@ int main(void)
     test_execdata();
     test_makevid();
     test_newgfx();
+    test_sa1proc();
+    test_makev16t();
     printf("data-only asm port layout tests\n");
     ZT_RESULTS();
 }

@@ -111,4 +111,13 @@ __asm__(
     ".skip 8\n"
     ASM_SEC_END);
 
+/* m7starty was the last of video/mode716.mac's own data: a lone word, in
+   .data rather than .bss because the assembly declared it `dw 0`. */
+
+__asm__(
+    ASM_SEC_DATA(".data")
+    ASM_GSYM(m7starty)
+    ".word 0\n"
+    ASM_SEC_END);
+
 /* clang-format on */

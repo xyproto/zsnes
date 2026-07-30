@@ -56,6 +56,10 @@ sed -i -E 's/\b(call|jmp) (SA1RAMaccessbank[A-Za-z0-9]+)/\1 asm_\2/' _memops.inc
 sed -i -E 's/\b(je|jmp) near (membank0[A-Za-z0-9]+SA1)/\1 near asm_\2/' _memops.inc
 sed -i -E 's/^( *STsramaccess )(memaccessbank[A-Za-z0-9]+)/\1asm_\2/' _memops.inc
 sed -i -E 's/^( *SRAMAccess )(memaccessbank[A-Za-z0-9]+)/\1asm_\2/' _memops.inc
+# The S-DD1 handler tail-jumps to the plain accessor, but also *stores* its
+# address into memtabler8 - only the jump may be redirected, or the two sides
+# would put different pointers in the table.
+sed -i -E 's/\b(call|jmp) (memaccessbank[A-Za-z0-9]+)$/\1 asm_\2/' _memops.inc
 
 # The extracted handlers reach the register tables through the macros in
 # cpu/regs.mac and cpu/regsw.mac; take those from the same revision.
@@ -120,6 +124,17 @@ EXTERN regptwa
 EXTERN cpu_mdr
 EXTERN writeon
 EXTERN curromspace
+EXTERN romdata
+EXTERN memtabler8
+EXTERN memaccessbankr8
+EXTERN AddrNoIncr
+EXTERN SDD1BankA
+EXTERN Sdd1Mode
+EXTERN Sdd1Bank
+EXTERN Sdd1Addr
+EXTERN Sdd1NewAddr
+EXTERN SDD1_init
+EXTERN SDD1_get_byte
 EXTERN snesmmap
 EXTERN MemSeamB
 EXTERN MemSeamC
@@ -147,6 +162,32 @@ EXTERN StubRegEdx
     test ecx,8000h
     jnz %1
 .notlarge
+%endmacro
+
+; The S-DD1 logical bank map, as cpu/memory.asm defines it.
+%macro GetBankLog 1
+    cmp bl,0C0h
+    jb %%illegal
+    cmp bl,0D0h
+    jb %%firstbank
+    cmp bl,0E0h
+    jb %%secondbank
+    cmp bl,0F0h
+    jb %%thirdbank
+    mov %1,[SDD1BankA+3]
+    jmp %%done
+%%firstbank
+    mov %1,[SDD1BankA]
+    jmp %%done
+%%secondbank
+    mov %1,[SDD1BankA+1]
+    jmp %%done
+%%thirdbank
+    mov %1,[SDD1BankA+2]
+    jmp %%done
+%%illegal
+    mov %1,0Fh
+%%done
 %endmacro
 
 ; BW-RAM byte view or bit map, as cpu/memory.asm defines it.

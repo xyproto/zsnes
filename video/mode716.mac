@@ -66,9 +66,7 @@ EXTSYM pesimpng
     mov esi,winbg1enval
 %endmacro
 
-SECTION .data
-NEWSYM m7starty, dw 0
-
+; m7starty moved to video/c_mode716data.c.
 SECTION .text
 
 %macro CLIP 1

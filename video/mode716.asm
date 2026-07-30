@@ -89,7 +89,9 @@ EXTSYM mmode7xincc,mmode7yinc,mmode7xsloc,mmode7ysloc,mmode7xsrl,mmode7ysrl
 EXTSYM mcxloc,mcyloc,M7HROn,switchtorep3,m7xaddof,m7xaddof2,m7yaddof
 EXTSYM m7yaddof2,pixelsleft,mm7xaddof,mm7xaddof2,mm7yaddof,mm7yaddof2
 EXTSYM ngwleft,ngwleftb,mode7xpos,mode7ypos,mode7xrpos,mode7yrpos
-EXTSYM mode7xadder,mode7yadder
+EXTSYM mode7xadder,mode7yadder,m7starty
+EXTSYM M7SeamA,M7SeamB,M7SeamC,M7SeamD,c_CalculateNewValues
+EXTSYM M7SeamSI,M7SeamDI,M7SeamBP,c_processmode7hires16b
 
 %include "video/mode716.mac"
 
@@ -482,81 +484,34 @@ ALIGN32
 
 SECTION .text
 
-%macro newvaluepred 2
-    mov dx,[%1+ebx*4+8]
-    cmp dx,word[%1+ebx*4]
-    je %%nodivide
-    cmp byte[BGMA+ebx+2],7
-    je %%mode7scaleb
-%%nodivide
-    movsx edx,word[%1+ebx*4+4]
-    movsx ecx,word[%1+ebx*4]
-    add ecx,edx
-    sar ecx,1
-    mov [%2],cx
-    jmp %%mode7scalend
-%%mode7scaleb
-    mov esi,ebx
-    movsx ebx,word[%1+esi*4+8]
-    movsx edx,word[%1+esi*4]
-    sub ebx,edx
-    movsx ecx,word[%1+esi*4+4]
-    sub ecx,edx
-    mov eax,ecx
-    imul ecx
-    idiv ebx
-    add ax,word[%1+esi*4]
-    mov ebx,esi
-    mov [%2],ax
-%%mode7scalend
-%endmacro
-
+; CalculateNewValues moved to video/c_mode716calc.c. The seam carries the
+; registers it reads and the three it hands back; a plain call is enough
+; because the C half takes no arguments and cdecl keeps esi, edi and ebp.
 CalculateNewValues:
-    ; predict new values
-    push eax
-    push edx
-    push ebx
-    push esi
-    newvaluepred mode7ab,mode7A
-    newvaluepred mode7ab+2,mode7B
-    newvaluepred mode7cd,mode7C
-    newvaluepred mode7cd+2,mode7D
-    pop esi
-    pop ebx
-    pop edx
-    pop eax
-
-    mov ecx,edx
-    xor edx,edx
-    mov dx,[BG1SXl+ebx*2+2]
-    add edx,ecx
-    shr edx,1
-
-    mov ecx,eax
-    mov eax,ebx
-    inc eax
-    test byte[mode7set],02h
-    jz .noflip
-    mov eax,255
-    sub eax,ebx
-.noflip
-    mov [m7starty],ax
-    mov ax,[BG1SYl+ebx*2+2]
-    add eax,ecx
+    mov [M7SeamA], eax
+    mov [M7SeamB], ebx
+    mov [M7SeamD], edx
+    call c_CalculateNewValues
+    mov eax, [M7SeamA]
+    mov ebx, [M7SeamB]
+    mov ecx, [M7SeamC]
+    mov edx, [M7SeamD]
     ret
 
 NEWSYM processmode7hires16b
-    cmp byte[BGMA+ebx+1],7
-    jne near .nogo
-    push esi
-    push ebx
-    call CalculateNewValues
-    add esi,75036*4
-    mov [curvidoffset],esi
-    mov dword[M7HROn],1
-    call drawmode7win16b
-    mov dword[M7HROn],0
-    pop ebx
-    pop esi
-.nogo
+    mov [M7SeamA], eax
+    mov [M7SeamB], ebx
+    mov [M7SeamC], ecx
+    mov [M7SeamD], edx
+    mov [M7SeamSI], esi
+    mov [M7SeamDI], edi
+    mov [M7SeamBP], ebp
+    call c_processmode7hires16b
+    mov eax, [M7SeamA]
+    mov ebx, [M7SeamB]
+    mov ecx, [M7SeamC]
+    mov edx, [M7SeamD]
+    mov esi, [M7SeamSI]
+    mov edi, [M7SeamDI]
+    mov ebp, [M7SeamBP]
     ret

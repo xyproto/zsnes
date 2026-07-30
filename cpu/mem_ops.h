@@ -1784,4 +1784,83 @@ void c_membank0w16SA1(void)
     MemSeamB = 0;
 }
 
+/* --- S-DD1, software decompression --------------------------------------- *
+ *
+ * Writing 4801 points all of C0-FF at this handler (chips/sa1regs.c). It
+ * decompresses one byte per read, but only for the exact bank and address the
+ * stream was opened on - the DMA that drives it holds the address still
+ * (AddrNoIncr), so every read lands on the same one. Anything else means the
+ * transfer is over: hand the byte back from ROM and put the plain accessor
+ * back in the table, which is what takes the S-DD1 out of the picture until
+ * 4801 is written again.
+ */
+
+/* Which of the four 1Mb logical banks C0-FF is mapped where. Below C0 there is
+   nothing to map, and the assembly uses 0Fh for that. */
+static inline u1 mem_sdd1_banklog(void)
+{
+    u4 const b = MemSeamB & 0xFFu;
+
+    if (b < 0xC0u) {
+        return 0x0Fu;
+    }
+    if (b < 0xD0u) {
+        return SDD1BankA[0];
+    }
+    if (b < 0xE0u) {
+        return SDD1BankA[1];
+    }
+    if (b < 0xF0u) {
+        return SDD1BankA[2];
+    }
+    return SDD1BankA[3];
+}
+
+/* Read straight from ROM and retire the handler. */
+static inline void mem_sdd1_stop(void)
+{
+    int i;
+
+    MemSeamB = (u4)(uintptr_t)mem_bank();
+    mem_set_al(*(u1*)(uintptr_t)(MemSeamB + MemSeamC));
+    for (i = 0xC0; i < 0x100; i++) {
+        memtabler8[i] = memaccessbankr8;
+    }
+    MemSeamB = 0;
+}
+
+void c_memaccessbankr8sdd1(void)
+{
+    /* A moving address is not a decompression stream at all: retire the
+       handler and let the plain accessor do the read again. The second read is
+       redundant - it lands on the same map entry and the same byte - but the
+       assembly does it, so it stays. */
+    if (AddrNoIncr == 0) {
+        u4 const bank = MemSeamB;
+
+        mem_sdd1_stop();
+        MemSeamB = bank;
+        c_memaccessbankr8();
+        return;
+    }
+    if (Sdd1Mode != 2) {
+        u4 p;
+
+        Sdd1Bank = MemSeamB;
+        Sdd1Addr = MemSeamC;
+        Sdd1NewAddr = MemSeamC;
+        Sdd1Mode = 2;
+        /* Kept as 32-bit arithmetic, as the assembly has it: a bank log byte
+           of 0Fh puts the result far outside the ROM allocation. */
+        p = (u4)(uintptr_t)romdata + ((u4)mem_sdd1_banklog() << 20)
+            + ((Sdd1Bank & 0x0Fu) << 16) + (MemSeamC & 0xFFFFu);
+        SDD1_init((u1*)(uintptr_t)p);
+    }
+    if (Sdd1Bank == MemSeamB && Sdd1Addr == MemSeamC) {
+        mem_set_al(SDD1_get_byte());
+        return;
+    }
+    mem_sdd1_stop();
+}
+
 #endif

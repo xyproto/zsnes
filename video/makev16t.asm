@@ -131,6 +131,7 @@ EXTSYM vidmemch4,vram,ofsmcptr,ofsmady,ofsmadx,yposngom,flipyposngom,ofsmtptr
 EXTSYM ofsmmptr,ofsmcyps,bgtxadd,bg1ptrx,bg1ptry,a16x16xinc,a16x16yinc
 EXTSYM bg1scrolx_m7,bg1scroly_m7,OMBGTestVal,cachesingle4bng,m7starty
 EXTSYM ofsmtptrs,ofsmcptr2,ofshvaladd
+EXTSYM transpbuf,prevrgbcol,prevrgbpal,DoTransp,coadder16,yadd,yflipadd
 
 %include "video/vidmacro.mac"
 
@@ -1010,8 +1011,7 @@ NEWSYM drawbackgrndmain16tfix
 
 ALIGN32
 
-SECTION .bss
-NEWSYM transpbuf, resb 576+16+288*2        ; Transparent buffer
+; transpbuf and the rest of this file's .bss are in video/c_makev16tdata.c.
 SECTION .text
 
 NEWSYM drawline16t
@@ -1415,9 +1415,6 @@ NEWSYM processmode716t2
 ; Clear Backarea, with 0s
 ;*******************************************************
 
-SECTION .bss
-NEWSYM prevrgbcol, resd 1
-NEWSYM prevrgbpal, resd 1
 SECTION .text
 
 NEWSYM clearback16bts
@@ -1939,8 +1936,6 @@ NEWSYM clearback16bdualrev2
 .findraw
     ret
 
-SECTION .bss
-NEWSYM DoTransp, resb 1
 SECTION .text
 
 ;*******************************************************
@@ -3142,8 +3137,6 @@ NEWSYM draw8x816ts
     ret
 
 ALIGN32
-SECTION .bss
-NEWSYM coadder16, resd 1
 SECTION .text
 
 NEWSYM draw8x816twinon
@@ -4737,9 +4730,6 @@ NEWSYM draw16x1616t
     jne near domosaic16b
     ret
 
-SECTION .bss
-NEWSYM yadd,   resw 1
-NEWSYM yflipadd,  resw 1
 SECTION .text
 
 NEWSYM draw16x16fulladd
