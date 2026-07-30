@@ -19,8 +19,7 @@
  *
  * The reg variants call an I/O register handler, which still wants the legacy
  * ABI, so they go through the trampolines below; the includer must have
- * included chips/regabi.h for REGABI_ENTRY/REGABI_SYM. The chip and SA-1
- * variants need BWCheck and the DSP1 entry points and are still assembly.
+ * included chips/regabi.h for REGABI_ENTRY/REGABI_SYM.
  */
 #ifndef MEM_OPS_H
 #define MEM_OPS_H
@@ -207,6 +206,15 @@ void c_membank0r16reg(void) /* 2000-48FF */
     MemSeamC += MemSeamB;
     mem_reg_read16();
     MemSeamB = 0;
+}
+
+/* Open bus, but the 16-bit read hands back a fixed 8080h rather than the
+   address high byte - the two moves that build one in ax are overwritten
+   before the return. */
+void c_membank0r16inv(void) /* 4800-5FFF */
+{
+    MemSeamC += MemSeamB;
+    mem_set_ax(0x8080u);
 }
 
 void c_membank0r16rom(void) /* 8000-FFFF */
@@ -469,6 +477,60 @@ static inline void mem_sram_slice(u4 const base, void (*body)(void))
     MemSeamC += MemSeamB;
     body();
     MemSeamC = saved;
+}
+
+/* Banks 70-7D. `and bl,7Fh` masks the low byte only, so anything the caller
+   left above it survives into the shift. Like the 78-7D form above, none of
+   this is observable today: initc.c caps ramsize at 0x20000, so ramsizeand
+   never reaches past bit 16, while the bank only contributes bits 18 and up.
+   Kept faithful anyway. */
+static inline void mem_sram_bank70(void (*body)(void))
+{
+    MemSeamB &= ~0x80u;
+    mem_sram_slice(0x70, body);
+}
+
+/* On a cart with more than 2Mb of ROM or more than 32K of SRAM the top half of
+   these banks is ROM, not the SRAM mirror. */
+static inline int mem_sram_large(void)
+{
+    return curromspace > 0x200000u || ramsize > 0x8000u;
+}
+
+void c_sramaccessbankr8(void)
+{
+    if (mem_sram_large() && (MemSeamC & 0x8000u)) {
+        c_memaccessbankr8();
+        return;
+    }
+    mem_sram_bank70(c_sramaccessbankr8b);
+}
+
+void c_sramaccessbankr16(void)
+{
+    if (mem_sram_large() && (MemSeamC & 0x8000u)) {
+        c_memaccessbankr16();
+        return;
+    }
+    mem_sram_bank70(c_sramaccessbankr16b);
+}
+
+void c_sramaccessbankw8(void)
+{
+    if (mem_sram_large() && (MemSeamC & 0x8000u)) {
+        c_memaccessbankw8();
+        return;
+    }
+    mem_sram_bank70(c_sramaccessbankw8b);
+}
+
+void c_sramaccessbankw16(void)
+{
+    if (mem_sram_large() && (MemSeamC & 0x8000u)) {
+        c_memaccessbankw16();
+        return;
+    }
+    mem_sram_bank70(c_sramaccessbankw16b);
 }
 
 void c_sramaccessbankr8s(void) { mem_sram_slice(0x78, c_sramaccessbankr8b); }
@@ -1110,6 +1172,101 @@ void c_SA1RAMaccessbankw16(void)
     MemSeamB = 0;
 }
 
+/* --- the SA-1's RAM seen as a bit map ------------------------------------ *
+ *
+ * Banks 60-6F: the same RAM as above, but addressed one pixel at a time -
+ * 4 bits each, or 2 when SA1Overflow's bit 15 is set, which also widens the
+ * bank field from 3 to 4 bits because a slice then covers half as much. The
+ * address is a pixel index, so it is shifted down to a byte index and left
+ * that way: the caller sees the shifted ecx, and ebx comes back zero.
+ */
+static inline u4 mem_bm_2bit(void)
+{
+    return SA1Overflow & 0x8000u;
+}
+
+/* Byte index of the pixel ecx addresses, folding ebx's slice in. Shifts ecx
+   down as the assembly does, so call it once per access. */
+static inline u1* mem_bm_byte(void)
+{
+    u4 const slice = mem_bm_2bit() ? ((MemSeamB & 0x0Fu) << 14)
+                                   : ((MemSeamB & 0x07u) << 15);
+    u4 const idx = MemSeamC >> (mem_bm_2bit() ? 2 : 1);
+
+    MemSeamC = idx;
+    return SA1RAMArea + slice + idx;
+}
+
+static inline u4 mem_bm_shift(u4 const addr)
+{
+    return mem_bm_2bit() ? ((addr & 3u) << 1) : ((addr & 1u) << 2);
+}
+
+static inline u4 mem_bm_mask(void)
+{
+    return mem_bm_2bit() ? 3u : 0x0Fu;
+}
+
+void c_SA1RAMaccessbankr8b(void)
+{
+    u4 const sh = mem_bm_shift(MemSeamC);
+    u1 const* const p = mem_bm_byte();
+
+    mem_set_al((u1)((*p >> sh) & mem_bm_mask()));
+    MemSeamB = 0;
+}
+
+/* Two pixels: the addressed field and the next one along, which is in the
+   following byte only when the first was the last field of this one. */
+void c_SA1RAMaccessbankr16b(void)
+{
+    u4 const addr = MemSeamC;
+    u4 const sh = mem_bm_shift(addr);
+    u4 const step = mem_bm_2bit() ? 2u : 4u;
+    u4 const mask = mem_bm_mask();
+    u1 const* const p = mem_bm_byte();
+    u1 lo = (u1)((*p >> sh) & mask);
+    u1 const hi = sh + step > 7u ? (u1)(p[1] & mask)
+                                 : (u1)((*p >> (sh + step)) & mask);
+
+    /* At 2 bits per pixel the second field masks with 2 rather than 3, so a
+       colour read from there loses its bottom bit. That is what the assembly
+       does; do not "fix" it without a reason to. */
+    if (mem_bm_2bit() && (addr & 3u) == 1u) {
+        lo = (u1)(lo & 2u);
+    }
+    mem_set_ax((u2)(lo | (hi << 8)));
+    MemSeamB = 0;
+}
+
+/* The write leaves the shifted field in al, not the caller's value. */
+void c_SA1RAMaccessbankw8b(void)
+{
+    u4 const sh = mem_bm_shift(MemSeamC);
+    u4 const mask = mem_bm_mask();
+    u1* const p = mem_bm_byte();
+    u1 const field = (u1)(((MemSeamA & mask) << sh) & 0xFFu);
+
+    *p = (u1)((*p & (u1)~(u1)(mask << sh)) | field);
+    mem_set_al(field);
+    MemSeamB = 0;
+}
+
+/* Two byte writes at consecutive pixels; ebx and ecx are restored in between,
+   so the second one indexes from the original address plus one, and ah moves
+   into al for it. */
+void c_SA1RAMaccessbankw16b(void)
+{
+    u4 const b = MemSeamB;
+    u4 const c = MemSeamC;
+
+    c_SA1RAMaccessbankw8b();
+    MemSeamB = b;
+    MemSeamC = c + 1;
+    mem_set_al((u1)((MemSeamA >> 8) & 0xFFu));
+    c_SA1RAMaccessbankw8b();
+}
+
 /* --- SA-1 BW-RAM, byte view or bit map ----------------------------------- *
  *
  * With BWShift set and the SA-1 holding the bus, the 6000-7FFF window is a
@@ -1190,6 +1347,123 @@ static inline void mem_bw_write16(void)
     (void)mem_bw_put(off, (u1)(MemSeamA & 0xFFu));
     hi = mem_bw_put(off + 1, (u1)((MemSeamA >> 8) & 0xFFu));
     MemSeamA = (MemSeamA & ~0xFF00u) | ((u4)hi << 8);
+}
+
+/* --- the 6000-FFFF cartridge window -------------------------------------- *
+ *
+ * Whatever the cart puts there: an 8K SuperFX RAM mirror, SA-1 BW-RAM (a byte
+ * window through CurBWPtr, or the bit map once BWShift is set) or the DSP1,
+ * and nothing at all otherwise - a read is then zero, not open bus. Note the
+ * address add is a full 32-bit one, unlike the `add cx,bx` the ram and romram
+ * handlers use, and that only the two cartridge RAM paths clear ebx.
+ */
+static inline u4 mem_sfx_off(void)
+{
+    return (MemSeamC - 0x6000u) & 0x1FFFu;
+}
+
+void c_membank0r8chip(void) /* 6000-7FFF */
+{
+    MemSeamC += MemSeamB;
+    if (SFXEnable) {
+        mem_set_al(sfxramdata[mem_sfx_off()]);
+        MemSeamB = 0;
+        return;
+    }
+    if (SA1Enable) {
+        if (mem_bw_mapped()) {
+            mem_set_al(mem_bw_read8());
+            return;
+        }
+        mem_set_al(CurBWPtr[MemSeamC]);
+        MemSeamB = 0;
+        return;
+    }
+    mem_set_al(0);
+    if (DSP1Type == 2) {
+        mem_set_al(c_DSP1Read8b(MemSeamC));
+    }
+}
+
+void c_membank0r16chip(void) /* 6000-FFFF */
+{
+    MemSeamC += MemSeamB;
+    if (SFXEnable) {
+        u4 const a = mem_sfx_off();
+
+        mem_set_ax((u2)(sfxramdata[a] | (sfxramdata[a + 1] << 8)));
+        MemSeamB = 0;
+        return;
+    }
+    if (SA1Enable) {
+        if (mem_bw_mapped()) {
+            mem_bw_read16();
+            return;
+        }
+        mem_set_ax((u2)(CurBWPtr[MemSeamC] | (CurBWPtr[MemSeamC + 1] << 8)));
+        MemSeamB = 0;
+        return;
+    }
+    mem_set_ax(0);
+    if (DSP1Type == 2) {
+        mem_set_ax(c_DSP1Read16b(MemSeamC));
+    }
+}
+
+void c_membank0w8chip(void) /* 6000-FFFF */
+{
+    MemSeamC += MemSeamB;
+    if (SFXEnable) {
+        sfxramdata[mem_sfx_off()] = (u1)(MemSeamA & 0xFFu);
+        MemSeamB = 0;
+        return;
+    }
+    if (SA1Enable) {
+        if (mem_bw_mapped()) {
+            mem_bw_write8();
+            return;
+        }
+        CurBWPtr[MemSeamC] = (u1)(MemSeamA & 0xFFu);
+        MemSeamB = 0;
+        return;
+    }
+    if (DSP1Type == 2) {
+        c_DSP1Write8b(MemSeamC, (u1)(MemSeamA & 0xFFu));
+    }
+}
+
+/* The 16-bit write reaches the same body twice over: membank0w16chip folds ebx
+   into the address and falls through into membank0w16rom, which is installed
+   for 8000-FFFF and so uses the direct page register on its own. */
+void c_membank0w16rom(void) /* 8000-FFFF */
+{
+    if (SFXEnable) {
+        u4 const a = mem_sfx_off();
+
+        sfxramdata[a] = (u1)(MemSeamA & 0xFFu);
+        sfxramdata[a + 1] = (u1)((MemSeamA >> 8) & 0xFFu);
+        MemSeamB = 0;
+        return;
+    }
+    if (SA1Enable) {
+        if (mem_bw_mapped()) {
+            mem_bw_write16();
+            return;
+        }
+        CurBWPtr[MemSeamC] = (u1)(MemSeamA & 0xFFu);
+        CurBWPtr[MemSeamC + 1] = (u1)((MemSeamA >> 8) & 0xFFu);
+        MemSeamB = 0;
+        return;
+    }
+    if (DSP1Type == 2) {
+        c_DSP1Write16b(MemSeamC, (u2)(MemSeamA & 0xFFFFu));
+    }
+}
+
+void c_membank0w16chip(void) /* 6000-FFFF */
+{
+    MemSeamC += MemSeamB;
+    c_membank0w16rom();
 }
 
 void c_regaccessbankr8SA1(void)

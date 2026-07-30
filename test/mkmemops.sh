@@ -50,10 +50,12 @@ PYEOF
 
 sed -i -E 's/^NEWSYM ((membank0|memaccessbank|wramaccessbank|eramaccessbank|sramaccessbank|stsram|regaccessbank|SA1RAMaccessbank)[A-Za-z0-9]+)/NEWSYM asm_\1/' _memops.inc
 sed -i -E 's/\b(call|jmp) (sramaccessbank[A-Za-z0-9]+)/\1 asm_\2/' _memops.inc
+sed -i -E 's/\b(call|jmp) (SA1RAMaccessbank[A-Za-z0-9]+)/\1 asm_\2/' _memops.inc
 # The general dispatchers tail-jump to the SA-1 variants; keep the oracle on
 # its own copies rather than letting it fall into the ported ones.
 sed -i -E 's/\b(je|jmp) near (membank0[A-Za-z0-9]+SA1)/\1 near asm_\2/' _memops.inc
 sed -i -E 's/^( *STsramaccess )(memaccessbank[A-Za-z0-9]+)/\1asm_\2/' _memops.inc
+sed -i -E 's/^( *SRAMAccess )(memaccessbank[A-Za-z0-9]+)/\1asm_\2/' _memops.inc
 
 # The extracted handlers reach the register tables through the macros in
 # cpu/regs.mac and cpu/regsw.mac; take those from the same revision.
@@ -117,6 +119,7 @@ EXTERN regptra
 EXTERN regptwa
 EXTERN cpu_mdr
 EXTERN writeon
+EXTERN curromspace
 EXTERN snesmmap
 EXTERN MemSeamB
 EXTERN MemSeamC
@@ -131,6 +134,19 @@ EXTERN StubRegEdx
 %macro STsramaccess 1
     test ecx,8000h
     jz %1
+%endmacro
+
+; The large-cart guard, as cpu/memory.asm defines it.
+%macro SRAMAccess 1
+    cmp dword[curromspace],0x200000
+    ja .large
+    cmp  dword[ramsize],0x8000
+    ja .large
+    jmp .notlarge
+.large
+    test ecx,8000h
+    jnz %1
+.notlarge
 %endmacro
 
 ; BW-RAM byte view or bit map, as cpu/memory.asm defines it.

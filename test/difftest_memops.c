@@ -39,6 +39,9 @@ static u1 sram_init[SRAM_SIZE + 0x20000];
 u1* sram = sram_store;
 u1* sram2 = sram_store + 65536;
 u4 ramsize, ramsizeand, sramb4save;
+/* How much ROM the cart holds; with ramsize it picks whether the top half of
+   a 70-7D bank is SRAM or ROM. */
+u4 curromspace;
 
 /* Cartridge window state for the regaccessbank* handlers. The mirror is 8K,
    but a 16-bit access at its last byte writes one past it - in the emulator
@@ -192,6 +195,8 @@ extern void asm_wramaccessbankr8(void), asm_wramaccessbankr16(void);
 extern void asm_wramaccessbankw8(void), asm_wramaccessbankw16(void);
 extern void asm_eramaccessbankr8(void), asm_eramaccessbankr16(void);
 extern void asm_eramaccessbankw8(void), asm_eramaccessbankw16(void);
+extern void asm_sramaccessbankr8(void), asm_sramaccessbankr16(void);
+extern void asm_sramaccessbankw8(void), asm_sramaccessbankw16(void);
 extern void asm_sramaccessbankr8b(void), asm_sramaccessbankr16b(void);
 extern void asm_sramaccessbankw8b(void), asm_sramaccessbankw16b(void);
 extern void asm_sramaccessbankr8s(void), asm_sramaccessbankr16s(void);
@@ -211,6 +216,11 @@ extern void asm_regaccessbankr8SA1(void), asm_regaccessbankw8SA1(void);
 extern void asm_regaccessbankr16SA1(void), asm_regaccessbankw16SA1(void);
 extern void asm_membank0r8SA1(void), asm_membank0r16SA1(void);
 extern void asm_membank0w8SA1(void), asm_membank0w16SA1(void);
+extern void asm_membank0r8chip(void), asm_membank0r16chip(void);
+extern void asm_membank0w8chip(void), asm_membank0w16chip(void);
+extern void asm_membank0r16inv(void), asm_membank0w16rom(void);
+extern void asm_SA1RAMaccessbankr8b(void), asm_SA1RAMaccessbankr16b(void);
+extern void asm_SA1RAMaccessbankw8b(void), asm_SA1RAMaccessbankw16b(void);
 
 typedef struct {
     char const* name;
@@ -262,6 +272,10 @@ static memcase const cases[] = {
     { "eramaccessbankr16", asm_eramaccessbankr16, c_eramaccessbankr16, 7 },
     { "eramaccessbankw8", asm_eramaccessbankw8, c_eramaccessbankw8, 7 },
     { "eramaccessbankw16", asm_eramaccessbankw16, c_eramaccessbankw16, 7 },
+    { "sramaccessbankr8", asm_sramaccessbankr8, c_sramaccessbankr8, 17 },
+    { "sramaccessbankr16", asm_sramaccessbankr16, c_sramaccessbankr16, 17 },
+    { "sramaccessbankw8", asm_sramaccessbankw8, c_sramaccessbankw8, 17 },
+    { "sramaccessbankw16", asm_sramaccessbankw16, c_sramaccessbankw16, 17 },
     { "sramaccessbankr8b", asm_sramaccessbankr8b, c_sramaccessbankr8b, 8 },
     { "sramaccessbankr16b", asm_sramaccessbankr16b, c_sramaccessbankr16b, 8 },
     { "sramaccessbankw8b", asm_sramaccessbankw8b, c_sramaccessbankw8b, 8 },
@@ -302,10 +316,21 @@ static memcase const cases[] = {
     { "membank0r16SA1", asm_membank0r16SA1, c_membank0r16SA1, 14 },
     { "membank0w8SA1", asm_membank0w8SA1, c_membank0w8SA1, 14 },
     { "membank0w16SA1", asm_membank0w16SA1, c_membank0w16SA1, 14 },
+    { "membank0r8chip", asm_membank0r8chip, c_membank0r8chip, 15 },
+    { "membank0r16chip", asm_membank0r16chip, c_membank0r16chip, 15 },
+    { "membank0w8chip", asm_membank0w8chip, c_membank0w8chip, 15 },
+    { "membank0w16chip", asm_membank0w16chip, c_membank0w16chip, 15 },
+    { "membank0w16rom", asm_membank0w16rom, c_membank0w16rom, 15 },
+    { "membank0r16inv", asm_membank0r16inv, c_membank0r16inv, 4 },
+    { "SA1RAMaccessbankr8b", asm_SA1RAMaccessbankr8b, c_SA1RAMaccessbankr8b, 16 },
+    { "SA1RAMaccessbankr16b", asm_SA1RAMaccessbankr16b, c_SA1RAMaccessbankr16b, 16 },
+    { "SA1RAMaccessbankw8b", asm_SA1RAMaccessbankw8b, c_SA1RAMaccessbankw8b, 16 },
+    { "SA1RAMaccessbankw16b", asm_SA1RAMaccessbankw16b, c_SA1RAMaccessbankw16b, 16 },
 };
 
 typedef struct {
     u4 b, c, a, d, writeon, ramsize, ramsizeand, sfxen, dsp1, reenter, sa1st;
+    u4 curromspace;
     u4 ccdma, ccaddr, bwshift, bwover;
 } setup;
 
@@ -348,6 +373,7 @@ static void run(void (*fn)(void), setup const* in, int asm_side, snapshot* out)
     DSP1Type = (u1)in->dsp1;
     dsp1_last_addr = dsp1_last_val = dsp1_hits = 0;
     ramsize = in->ramsize;
+    curromspace = in->curromspace;
     ramsizeand = in->ramsizeand;
     sramb4save = 0;
     memcpy(rom, rom_init, sizeof rom);
@@ -445,6 +471,8 @@ int main(void)
         in.sfxen = dt_mod(2);
         in.dsp1 = dt_mod(2) ? 2 : dt_mod(3);
         in.reenter = dt_mod(2);
+        /* Sits either side of the 2Mb threshold the 70-7D banks check. */
+        in.curromspace = dt_mod(2) ? 0x200000u + dt_mod(2) : dt_mod(0x400001);
         /* 0 = the 65816 owns the low window, 1/2 = the SA-1 does. */
         in.sa1st = dt_mod(3);
         SA1Enable = (u1)dt_mod(2);
@@ -557,6 +585,44 @@ int main(void)
                advancing it, so the word wrap is reachable only from here. */
             in.b = dt_mod(2) ? dt_mod(4) : dt_mod(256);
             in.c = dt_mod(2) ? 0xFFFEu + dt_mod(2) : dt_mod(0x10000);
+            break;
+        case 17:
+            /* Bit 15 picks the half of the bank, and on a large cart the top
+               half is ROM instead of the SRAM mirror - drive both sides of
+               each threshold. The bank is masked to 7Fh and rebased at 70h,
+               so straddle that too. */
+            in.c = dt_mod(2) ? 0x8000u | dt_mod(0x8000) : dt_mod(0x8000);
+            in.b = dt_mod(2) ? 0x70u + dt_mod(0x10) : dt_mod(256);
+            if (dt_mod(2)) {
+                in.ramsize = 0x8000u + dt_mod(2);
+                in.ramsizeand = in.ramsize - 1;
+            }
+            break;
+        case 16:
+            /* A pixel index, not an address: ebx picks a 32K slice (16K in
+               the 2-bit mode, where the bank field is a bit wider) and the
+               low bits of ecx pick the field inside the byte, so every
+               alignment matters. Bias the top of the window too - the 16-bit
+               forms read or write the next byte from there. */
+            in.b = dt_mod(256);
+            in.c = dt_mod(2) ? (0xFFFCu | dt_mod(4)) : dt_mod(0x10000);
+            break;
+        case 15:
+            /* The cartridge window. Both the BW-RAM byte view and the bit map
+               index off the address itself, so keep it inside 6000-FFFF as
+               the emulator's tables do - below that the bit-map offset goes
+               negative and lands outside the buffer. The edges are where the
+               8K SuperFX mirror wraps; ebx is added with a full 32-bit add,
+               so it can carry the address past FFFFh. */
+            in.b = dt_mod(256);
+            if (dt_mod(2)) {
+                static u4 const edges[] = { 0x6000, 0x6001, 0x7FFE, 0x7FFF,
+                    0x8000, 0x8001, 0x9FFF, 0xA000, 0xFFFE, 0xFFFF };
+
+                in.c = edges[dt_mod(sizeof edges / sizeof *edges)];
+            } else {
+                in.c = 0x6000u + dt_mod(0xA000);
+            }
             break;
         case 12:
             /* ebx + ecx must stay inside the 2K window plus its slack, and the

@@ -18,6 +18,7 @@ extern u1 cpu_mdr; /* cpu/regs.inc */
 extern u1 writeon; /* cpu/regs.inc: ROM patching enabled */
 extern u1 *sram, *sram2; /* ui.h, initc.c */
 extern u4 ramsize, ramsizeand; /* initc.c */
+extern u4 curromspace; /* initc.c: bytes of ROM the cart actually holds */
 extern u4 sramb4save; /* frames left before the SRAM is flushed to disk */
 extern u1 DSP1Type; /* initc.c */
 extern bool SFXEnable, SA1Enable; /* initc.c */
