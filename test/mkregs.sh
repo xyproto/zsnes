@@ -9,7 +9,8 @@ REV=$1
 if [ -z "$REV" ]; then
     for r in $(git -C .. log --format=%H -- cpu/regs.inc); do
         git -C .. cat-file -e "$r:cpu/regs.inc" 2>/dev/null || continue
-        if git -C .. show "$r:cpu/regs.inc" | grep -q '^NEWSYM reg2134r'; then
+        if git -C .. show "$r:cpu/regs.inc" | grep -q '^NEWSYM reg2134r' \
+       && git -C .. show "$r:cpu/regsw.inc" | grep -q '^NEWSYM reg2126w'; then
             REV=$r
             break
         fi
@@ -18,6 +19,7 @@ fi
 [ -n "$REV" ] || { echo "mkregs.sh: no pre-port revision of cpu/regs.inc found" >&2; exit 1; }
 
 git -C .. show "$REV:cpu/regs.inc" > _regs_src.inc
+git -C .. show "$REV:cpu/regsw.inc" >> _regs_src.inc
 
 python3 - _regs_src.inc ../test/regs.list > _regs.inc <<'PYEOF'
 import re, sys
@@ -52,7 +54,25 @@ if missing:
 print('\n'.join(out))
 PYEOF
 
+# UpdateScrollRegX/Y, Mode7Regs and friends are defined inside the .inc files
+# themselves, not the .mac ones, and the handler extractor drops %-lines - so
+# lift the macro definitions across as well.
+python3 - _regs_src.inc > _regs_inline.mac <<'PYEOF2'
+import re, sys
+src = open(sys.argv[1]).read().split('\n')
+out, on = [], False
+for l in src:
+    if re.match(r'%macro ', l):
+        on = True
+    if on:
+        out.append(l)
+    if on and l.strip() == '%endmacro':
+        on = False
+print('\n'.join(out))
+PYEOF2
+
 git -C .. show "$REV:cpu/regs.mac" > _regs.mac
+git -C .. show "$REV:cpu/regsw.mac" >> _regs.mac
 
 cat > _regs.asm <<'EOF'
 bits 32
@@ -99,8 +119,47 @@ EXTERN oamaddr
 EXTERN cgaddr
 EXTERN latchx
 EXTERN latchy
+EXTERN winl1
+EXTERN winr1
+EXTERN winl2
+EXTERN winr2
+EXTERN winlogica
+EXTERN winlogicb
+EXTERN scrnon
+EXTERN winenabm
+EXTERN winenabs
+EXTERN scaddset
+EXTERN scaddtype
+EXTERN INTEnab
+EXTERN multa
+EXTERN diva
+EXTERN regptwa
+EXTERN bgscrolPrev
+EXTERN vramread
+EXTERN bg1scrolx
+EXTERN bg2scrolx
+EXTERN bg3scrolx
+EXTERN bg4scrolx
+EXTERN bg1scroly
+EXTERN bg2scroly
+EXTERN bg3scroly
+EXTERN bg4scroly
+EXTERN bg1scrolx_m7
+EXTERN bg1scroly_m7
+EXTERN mode7C
+EXTERN mode7D
+EXTERN mode7X0
+EXTERN mode7Y0
+EXTERN dmadata
+EXTERN hdmarestart
+EXTERN nohdmaframe
+EXTERN hdmadelay
+EXTERN SPC7110Enable
+EXTERN resolutn
+EXTERN curypos
 
 %include "_regs.mac"
+%include "_regs_inline.mac"
 
 section .text
 %include "_regs.inc"

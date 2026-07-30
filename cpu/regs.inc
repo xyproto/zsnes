@@ -596,23 +596,3 @@ SECTION .text
 ; Joystick 4 High
 
 ; DMA Reader
-NEWSYM reg43XXr
-    xor ebx,ebx
-    mov bx,cx
-    sub bx,4300h
-    mov al,[dmadata+ebx]
-    ret
-
-NEWSYM regINVALID ; Invalid Register
-    cmp cx,2100h
-    jb .cleared
-    mov al,[cpu_mdr]
-    cmp byte[SPC7110Enable],0
-    je .nospc7110
-.cleared
-    xor al,al
-.nospc7110
-;    mov byte[debstop3],1
-    ret
-
-SECTION .text
