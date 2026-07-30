@@ -174,20 +174,6 @@ debblah:
     ret
 
 ; Read OAM Data (Low, High)
-NEWSYM reg2138r
-    xor ebx,ebx
-    mov bx,[oamaddr]
-    add ebx,oamram
-    mov al,[ebx]
-    inc word[oamaddr]
-    cmp word[oamaddr],543
-    ja .wrapoam
-    ret
-.wrapoam
-    mov word[oamaddr],0
-    ret
-
-; Read VRAM Data (Low)
 NEWSYM reg2139r
     mov al,[vramread]
 
@@ -254,57 +240,6 @@ NEWSYM reg213Ar
     ret
 
 ; Read CGRAM Data
-NEWSYM reg213Br
-    xor ebx,ebx
-    mov bx,[cgaddr]
-    mov al,[cgram+ebx]
-    inc word[cgaddr]
-    and word[cgaddr],01FFh
-    ret
-
-; H counter data by external or software latch.
-; First read returns low byte; second read returns bit 0 of high byte
-; with upper 7 bits from open bus (PPU2 MDR).
-NEWSYM reg213Cr
-    cmp byte[latchxr],1
-    je .highv
-    mov al,[latchx]
-    mov [ppu2_mdr],al
-    mov byte[latchxr],1
-    ret
-.highv
-    mov bl,byte[latchx+1]
-    and bl,01h
-    mov al,[ppu2_mdr]
-    and al,0FEh
-    or al,bl
-    mov [ppu2_mdr],al
-    mov byte[latchxr],0
-    ret
-
-; V counter data by external or software latch.
-NEWSYM reg213Dr
-    cmp byte[latchyr],1
-    je .highv
-    mov al,[latchy]
-    mov [ppu2_mdr],al
-    mov byte[latchyr],1
-    ret
-.highv
-    mov bl,byte[latchy+1]
-    and bl,01h
-    mov al,[ppu2_mdr]
-    and al,0FEh
-    or al,bl
-    mov [ppu2_mdr],al
-    mov byte[latchyr],0
-    ret
-
-; PPU Status Flag & Version number (OBJ over flags)
-
-; PPU Status Flag & Version number (NTSC/PAL/EXTRN Latch flag)
-
-; Sound Reg #1
 NEWSYM reg2140r
     cmp byte[spcon],0
     je .nosound

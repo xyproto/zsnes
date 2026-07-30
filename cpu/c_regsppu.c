@@ -22,6 +22,10 @@ extern u4 wramrwadr;
 extern u1 ioportval;
 extern u2 divres, multres;
 extern u4 JoyARead, JoyBRead, JoyCRead2, JoyDRead;
+extern u1 oamram[1024];
+extern u2 cgram[256];
+extern u4 oamaddr;
+extern u2 cgaddr, latchx, latchy;
 extern u1* wramdata;
 
 /* The mode 7 multiply is deferred until a result register is read. mode7B's
@@ -185,3 +189,49 @@ u1 c_reg421Er(void) { return (u1)(JoyCRead2 >> 16); }
 
 REGABI_REG_READ8(reg421Fr);
 u1 c_reg421Fr(void) { return (u1)(JoyCRead2 >> 24); }
+
+/* OAM read port. The address is a word inside a dword, and OAM is 544 bytes,
+   so it wraps one past the end rather than at a power of two. */
+REGABI_REG_READ8(reg2138r);
+u1 c_reg2138r(void)
+{
+    u1 const al = oamram[oamaddr & 0xFFFFu];
+    u2 const next = (u2)((oamaddr & 0xFFFFu) + 1u);
+
+    oamaddr = (oamaddr & ~0xFFFFu) | (next > 543u ? 0u : next);
+    return al;
+}
+
+/* CGRAM read port; the address is 9 bits, indexing bytes of the palette. */
+REGABI_REG_READ8(reg213Br);
+u1 c_reg213Br(void)
+{
+    u1 const al = ((u1 const*)cgram)[cgaddr];
+
+    cgaddr = (u2)((cgaddr + 1u) & 0x1FFu);
+    return al;
+}
+
+/* H and V counter latches. The first read returns the low byte, the second
+   bit 0 of the high byte with the other seven from PPU2's bus latch; either
+   way the latch value becomes the new bus latch. */
+static u1 counter_latch(u2 const v, u1* const phase)
+{
+    u1 al;
+
+    if (*phase == 1) {
+        al = (u1)((ppu2_mdr & 0xFEu) | ((v >> 8) & 1u));
+        *phase = 0;
+    } else {
+        al = (u1)v;
+        *phase = 1;
+    }
+    ppu2_mdr = al;
+    return al;
+}
+
+REGABI_REG_READ8(reg213Cr);
+u1 c_reg213Cr(void) { return counter_latch(latchx, &latchxr); }
+
+REGABI_REG_READ8(reg213Dr);
+u1 c_reg213Dr(void) { return counter_latch(latchy, &latchyr); }

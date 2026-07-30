@@ -27,6 +27,12 @@ u4 wramrwadr;
 u1 ioportval;
 u2 divres, multres;
 u4 JoyARead, JoyBRead, JoyCRead2, JoyDRead;
+u1 oamram[1024];
+u2 cgram[256];
+u4 oamaddr;
+u2 cgaddr, latchx, latchy;
+static u1 oam_init[1024];
+static u2 cg_init[256];
 /* The $2180 port walks a 128K window, so the buffer has to cover the wrap. */
 static u1 wram_store[0x20000], wram_init[0x20000];
 u1* wramdata = wram_store;
@@ -65,6 +71,10 @@ DECL(reg421Cr);
 DECL(reg421Dr);
 DECL(reg421Er);
 DECL(reg421Fr);
+DECL(reg2138r);
+DECL(reg213Br);
+DECL(reg213Cr);
+DECL(reg213Dr);
 #undef DECL
 
 /* Call a handler with eax, ecx and edx set, and report what came back.
@@ -134,6 +144,10 @@ static regcase const cases[] = {
     CASE(reg421Dr),
     CASE(reg421Er),
     CASE(reg421Fr),
+    CASE(reg2138r),
+    CASE(reg213Br),
+    CASE(reg213Cr),
+    CASE(reg213Dr),
 };
 #undef CASE
 
@@ -141,15 +155,17 @@ typedef struct {
     u4 eax, ecx, edx;
     u1 mult[3], change;
     u1 lx, ly, mdr2, nmi, cur, irq;
-    u4 wadr;
+    u4 wadr, oaddr;
+    u2 caddr;
     u1 wram[0x20000];
 } snapshot;
 
 typedef struct {
     u1 vb, fb, mc, rto, pal, pst, cf, ext, lx, ly, nmien, mdr, cur, irq;
-    u1 iop;
+    u1 iop, mdr2in;
     u2 dv, mr;
-    u4 wadr, ja, jb, jc, jd;
+    u4 wadr, ja, jb, jc, jd, oaddr;
+    u2 caddr, lx16, ly16;
 } state;
 
 static void run(void (*fn)(void), u4 a, u4 c, u4 d, state const* in,
@@ -169,7 +185,7 @@ static void run(void (*fn)(void), u4 a, u4 c, u4 d, state const* in,
     cpu_mdr = in->mdr;
     curnmi = in->cur;
     irqon = in->irq;
-    ppu2_mdr = 0;
+    ppu2_mdr = in->mdr2in;
     wramrwadr = in->wadr;
     ioportval = in->iop;
     divres = in->dv;
@@ -178,6 +194,12 @@ static void run(void (*fn)(void), u4 a, u4 c, u4 d, state const* in,
     JoyBRead = in->jb;
     JoyCRead2 = in->jc;
     JoyDRead = in->jd;
+    memcpy(oamram, oam_init, sizeof oamram);
+    memcpy(cgram, cg_init, sizeof cgram);
+    oamaddr = in->oaddr;
+    cgaddr = in->caddr;
+    latchx = in->lx16;
+    latchy = in->ly16;
     vidbright = vb;
     forceblnk = fb;
     multchange = mc;
@@ -199,12 +221,16 @@ static void run(void (*fn)(void), u4 a, u4 c, u4 d, state const* in,
     out->cur = curnmi;
     out->irq = irqon;
     out->wadr = wramrwadr;
+    out->oaddr = oamaddr;
+    out->caddr = cgaddr;
     memcpy(out->wram, wram_store, sizeof out->wram);
 }
 
 int main(void)
 {
     dt_fill(wram_init, sizeof wram_init);
+    dt_fill(oam_init, sizeof oam_init);
+    dt_fill(cg_init, sizeof cg_init);
     DT_MAIN(20260730, 200000)
     {
         regcase const* k = &cases[dt_mod(sizeof cases / sizeof *cases)];
@@ -241,12 +267,20 @@ int main(void)
         /* Sit on the 128K wrap half the time. */
         in.wadr = dt_mod(2) ? 0x1FFFFu - dt_mod(2) : dt_u32() & 0x1FFFFu;
         in.iop = (u1)dt_u32();
+        /* PPU2's bus latch is what the second counter read keeps 7 bits of. */
+        in.mdr2in = (u1)dt_u32();
         in.dv = (u2)dt_u32();
         in.mr = (u2)dt_u32();
         in.ja = dt_u32();
         in.jb = dt_u32();
         in.jc = dt_u32();
         in.jd = dt_u32();
+        /* OAM wraps one past 543, so sit on that edge; CGRAM's is 9 bits. */
+        in.oaddr = dt_mod(2) ? (dt_u32() & ~0xFFFFu) | (542u + dt_mod(4))
+                             : (dt_u32() & ~0xFFFFu) | dt_mod(544);
+        in.caddr = (u2)(dt_mod(2) ? 0x1FEu + dt_mod(3) : dt_mod(0x200));
+        in.lx16 = (u2)dt_u32();
+        in.ly16 = (u2)dt_u32();
 
         run(k->asm_fn, a, c, d, &in, m7a, m7b, mult, &x);
         run(k->c_fn, a, c, d, &in, m7a, m7b, mult, &y);
@@ -263,6 +297,8 @@ int main(void)
         DT_EQ("curnmi", x.cur, y.cur);
         DT_EQ("irqon", x.irq, y.irq);
         DT_EQ("wramrwadr", x.wadr, y.wadr);
+        DT_EQ("oamaddr", x.oaddr, y.oaddr);
+        DT_EQ("cgaddr", x.caddr, y.caddr);
         DT_MEM("wramdata", x.wram, y.wram, sizeof x.wram);
         if (dt_bad && DT_SHOW()) {
             printf("  ^ %s eax=%x mult=%d A=%04x B=%04x\n", k->name, a, mc, m7a, m7b);

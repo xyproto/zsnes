@@ -23,23 +23,28 @@ python3 - _regs_src.inc ../test/regs.list > _regs.inc <<'PYEOF'
 import re, sys
 src = open(sys.argv[1]).read().split('\n')
 want = set(open(sys.argv[2]).read().split())
-# Several handlers are stacked aliases sharing one body (reg21C2r/reg21C3r,
-# reg420Ar..reg420Fr). A NEWSYM seen *while* capturing is such an alias, so
-# keep going - stopping there would let the label fall into the next handler.
-out, cur = [], None
+# Two shapes to get right. Several handlers are stacked aliases sharing one
+# body (reg21C2r/reg21C3r, reg420Ar..reg420Fr), and several have more than one
+# `ret`. So: a NEWSYM seen before any instruction has been emitted for the
+# current handler is an alias - keep going; a NEWSYM seen after one ends the
+# handler. Stopping at the first `ret` instead would silently truncate a body
+# and let the label fall into the next handler.
+out, cur, emitted = [], None, False
 for l in src:
     m = re.match(r'NEWSYM (\w+)', l.strip())
     if m:
-        if cur:
+        if cur and not emitted:
             out.append('NEWSYM asm_' + m.group(1))
-        elif m.group(1) in want:
-            cur = m.group(1)
+            continue
+        cur = m.group(1) if m.group(1) in want else None
+        emitted = False
+        if cur:
             out.append('NEWSYM asm_' + m.group(1))
         continue
     if cur and not re.match(r'(SECTION |%)', l.strip()):
         out.append(l)
-        if l.strip() == 'ret':
-            cur = None
+        if l.strip():
+            emitted = True
 missing = want - {re.match(r'NEWSYM asm_(\w+)', l.strip()).group(1)
                   for l in out if l.strip().startswith('NEWSYM asm_')}
 if missing:
@@ -88,6 +93,12 @@ EXTERN JoyARead
 EXTERN JoyBRead
 EXTERN JoyCRead2
 EXTERN JoyDRead
+EXTERN oamram
+EXTERN cgram
+EXTERN oamaddr
+EXTERN cgaddr
+EXTERN latchx
+EXTERN latchy
 
 %include "_regs.mac"
 
