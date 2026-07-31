@@ -24,7 +24,12 @@ git -C .. show "$REV:cpu/regsw.inc" >> _regs_src.inc
 python3 - _regs_src.inc ../test/regs.list > _regs.inc <<'PYEOF'
 import re, sys
 src = open(sys.argv[1]).read().split('\n')
-want = set(open(sys.argv[2]).read().split())
+names = open(sys.argv[2]).read().split()
+# A leading '=' marks a bare-label helper that the handlers jump to rather than
+# a handler itself: it is carried across under its own name, not renamed, so
+# the `je near DetermineHIRQExec` inside $4207/$4208 still resolves.
+helpers = {n[1:] for n in names if n.startswith('=')}
+want = {n for n in names if not n.startswith('=')}
 # Two shapes to get right. Several handlers are stacked aliases sharing one
 # body (reg21C2r/reg21C3r, reg420Ar..reg420Fr), and several have more than one
 # `ret`. So: a NEWSYM seen before any instruction has been emitted for the
@@ -43,7 +48,26 @@ for l in src:
         if cur:
             out.append('NEWSYM asm_' + m.group(1))
         continue
-    if cur and not re.match(r'(SECTION |%)', l.strip()):
+    # Not every handler boundary is a NEWSYM. DetermineHIRQExec is a bare
+    # unindented label, and swallowing it into the handler above drags in a
+    # whole extra body plus its externs. Instructions are always indented in
+    # these files, so a *global* label at column 0 ends the handler - but not a
+    # local one, which is how the multi-exit bodies mark their branch targets.
+    lm = re.match(r'([A-Za-z_]\w*)\s*$', l)
+    if lm and not re.match(r'(section |%)', l, re.I):
+        if lm.group(1) in helpers:
+            out.append(l)
+            cur, emitted = lm.group(1), True
+        else:
+            cur = None
+        continue
+    if re.match(r'[A-Za-z_]', l) and not re.match(r'(section |%)', l, re.I):
+        cur = None
+        continue
+    # The section directives are written in both cases in the .inc files; a
+    # stray `section .data` inside a body silently assembles the rest of the
+    # oracle into .data, where it links but faults when called.
+    if cur and not re.match(r'(section |%)', l.strip(), re.I):
         out.append(l)
         if l.strip():
             emitted = True
@@ -157,6 +181,97 @@ EXTERN hdmadelay
 EXTERN SPC7110Enable
 EXTERN resolutn
 EXTERN curypos
+EXTERN HIRQLoc
+EXTERN VIRQLoc
+EXTERN HIRQCycNext
+EXTERN HIRQNextExe
+EXTERN totlines
+EXTERN iohvlatch
+EXTERN MultiTapStat
+EXTERN cycpl
+EXTERN cycphb
+EXTERN xirqb
+EXTERN cycpblt
+EXTERN opexec268
+EXTERN opexec268cph
+EXTERN opexec358
+EXTERN opexec358cph
+EXTERN cycpb268
+EXTERN cycpb358
+EXTERN cgmod
+EXTERN winbg1en
+EXTERN winbg2en
+EXTERN winbg3en
+EXTERN winbg4en
+EXTERN winobjen
+EXTERN wincolen
+EXTERN coladdr
+EXTERN coladdg
+EXTERN coladdb
+EXTERN interlval
+EXTERN NextLineCache
+EXTERN prevoamptr
+EXTERN oamlow
+EXTERN nexthprior
+EXTERN nosprincr
+EXTERN objhipr
+EXTERN objptr
+EXTERN objptrn
+EXTERN objsize1
+EXTERN objsize2
+EXTERN objmovs1
+EXTERN objmovs2
+EXTERN objadds1
+EXTERN objadds2
+EXTERN reg2101w_objsize1
+EXTERN reg2101w_objsize2
+EXTERN reg2101w_objmovs1
+EXTERN reg2101w_objmovs2
+EXTERN reg2101w_objadds1
+EXTERN reg2101w_objadds2
+EXTERN oamaddrs
+EXTERN poamaddrs
+EXTERN bgmode
+EXTERN bg3highst
+EXTERN bgtilesz
+EXTERN mosaicon
+EXTERN mosaicsz
+EXTERN BG116x16t
+EXTERN BG216x16t
+EXTERN BG316x16t
+EXTERN BG416x16t
+EXTERN bg1ptr
+EXTERN bg1ptrb
+EXTERN bg1ptrc
+EXTERN bg1ptrd
+EXTERN bg1ptrx
+EXTERN bg1ptry
+EXTERN bg1scsize
+EXTERN bg1objptr
+EXTERN bg2ptr
+EXTERN bg2ptrb
+EXTERN bg2ptrc
+EXTERN bg2ptrd
+EXTERN bg2ptrx
+EXTERN bg2ptry
+EXTERN bg2scsize
+EXTERN bg2objptr
+EXTERN bg3ptr
+EXTERN bg3ptrb
+EXTERN bg3ptrc
+EXTERN bg3ptrd
+EXTERN bg3ptrx
+EXTERN bg3ptry
+EXTERN bg3scsize
+EXTERN bg3objptr
+EXTERN bg4ptr
+EXTERN bg4ptrb
+EXTERN bg4ptrc
+EXTERN bg4ptrd
+EXTERN bg4ptrx
+EXTERN bg4ptry
+EXTERN bg4scsize
+EXTERN bg4objptr
 
 %include "_regs.mac"
 %include "_regs_inline.mac"

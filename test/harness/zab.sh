@@ -37,8 +37,12 @@ H=$ROOT/test/harness/zrun.sh
 common=(-r "$ROM" -t "$SECS" -p 0)
 [ -n "$INPUT" ] && common+=(-i "$INPUT")
 [ -n "$SLOT" ]  && common+=(-s "$SLOT")
-"$H" -b "$WT/zsnes"   "${common[@]}" -o "$OUT/base" >/dev/null
-"$H" -b "$ROOT/zsnes" "${common[@]}" -o "$OUT/cand" >/dev/null
+# zrun.sh bails before it clears its output directory, so a run that never
+# started leaves the previous game's artifacts behind and the diff below would
+# compare those and report SAME. Stop instead.
+rm -rf "$OUT/base" "$OUT/cand"
+"$H" -b "$WT/zsnes"   "${common[@]}" -o "$OUT/base" >/dev/null || exit 2
+"$H" -b "$ROOT/zsnes" "${common[@]}" -o "$OUT/cand" >/dev/null || exit 2
 
 # A baseline that never booted produces one repeated frame; that is a broken
 # measurement, not a passing comparison.

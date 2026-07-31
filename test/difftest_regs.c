@@ -41,6 +41,35 @@ u2 bg1scrolx_m7, bg1scroly_m7;
 u2 mode7C, mode7D, mode7X0, mode7Y0;
 u1 dmadata[129], hdmarestart, nohdmaframe, hdmadelay, SPC7110Enable;
 u2 resolutn, curypos;
+u1 NextLineCache, prevoamptr, oamlow, nexthprior, nosprincr, objhipr;
+u4 objptr, objptrn;
+u1 objsize1, objsize2, objmovs1, objmovs2;
+u2 objadds1, objadds2, oamaddrs, poamaddrs;
+/* The sprite tables reg2101w indexes; same contents as cpu/c_regswdata.c. */
+u1 reg2101w_objsize1[8] = { 1, 1, 1, 4, 4, 16, 8, 8 };
+u1 reg2101w_objsize2[8] = { 4, 16, 64, 16, 64, 64, 32, 16 };
+u1 reg2101w_objmovs1[8] = { 2, 2, 2, 2, 2, 4, 2, 2 };
+u1 reg2101w_objmovs2[8] = { 2, 4, 8, 4, 8, 8, 4, 4 };
+u2 reg2101w_objadds1[8] = { 14, 14, 14, 14, 14, 12, 14, 14 };
+u2 reg2101w_objadds2[8] = { 14, 12, 8, 12, 8, 8, 12, 12 };
+u1 bgmode, bg3highst, bgtilesz, mosaicon, mosaicsz;
+u1 BG116x16t, BG216x16t, BG316x16t, BG416x16t;
+u2 bg1ptr, bg2ptr, bg3ptr, bg4ptr;
+u2 bg1ptrb, bg2ptrb, bg3ptrb, bg4ptrb;
+u2 bg1ptrc, bg2ptrc, bg3ptrc, bg4ptrc;
+u2 bg1ptrd, bg2ptrd, bg3ptrd, bg4ptrd;
+u4 bg1ptrx, bg2ptrx, bg3ptrx, bg4ptrx;
+u4 bg1ptry, bg2ptry, bg3ptry, bg4ptry;
+u1 bg1scsize, bg2scsize, bg3scsize, bg4scsize;
+u2 bg1objptr, bg2objptr, bg3objptr, bg4objptr;
+u1 cgmod, winbg1en, winbg2en, winbg3en, winbg4en, winobjen, wincolen;
+u1 coladdr, coladdg, coladdb, interlval;
+u1 iohvlatch, MultiTapStat;
+u1 cycpl, cycphb, xirqb, cycpblt;
+u1 opexec268, opexec268cph, opexec358, opexec358cph, cycpb268, cycpb358;
+u2 HIRQLoc, VIRQLoc, totlines;
+u4 HIRQCycNext;
+u1 HIRQNextExe;
 static u1 dma_init[129];
 /* The write table; the oracle's cpu/regsw.mac names it. */
 void (*regptwa[0x3000])(void);
@@ -137,6 +166,34 @@ DECL(reg43XBw);
 DECL(regINVALIDw);
 DECL(reg43XXr);
 DECL(regINVALID);
+DECL(reg2100w);
+DECL(reg2101w);
+DECL(reg2102w);
+DECL(reg2103w);
+DECL(reg2104w);
+DECL(reg2105w);
+DECL(reg2106w);
+DECL(reg2107w);
+DECL(reg2108w);
+DECL(reg2109w);
+DECL(reg210Aw);
+DECL(reg210Bw);
+DECL(reg210Cw);
+DECL(reg2122w);
+DECL(reg2123w);
+DECL(reg2124w);
+DECL(reg2125w);
+DECL(reg2132w);
+DECL(reg2133w);
+DECL(reg2183w);
+DECL(reg4201w);
+DECL(reg4203w);
+DECL(reg4206w);
+DECL(reg420Dw);
+DECL(reg4207w);
+DECL(reg4208w);
+DECL(reg4209w);
+DECL(reg420Aw);
 #undef DECL
 
 /* Call a handler with eax, ecx and edx set, and report what came back.
@@ -179,10 +236,16 @@ typedef struct {
     /* 1 = the handler reads cx and indexes dmadata with it, so the address has
        to stay inside $4300..$4380 or both sides walk off the table. */
     int dma;
+    /* 1 = the assembly clobbers al, so eax is not comparable. */
+    int noax;
 } regcase;
 
-#define CASE(n) { #n, asm_##n, n, 0 }
-#define CASE_DMA(n) { #n, asm_##n, n, 1 }
+#define CASE(n) { #n, asm_##n, n, 0, 0 }
+#define CASE_DMA(n) { #n, asm_##n, n, 1, 0 }
+/* The assembly leaves its loaded value in al. The write ABI does not
+   promise al - the header lists AH, ECX, ESI, EDI, *S and DX - so the
+   trampoline preserving it is a widening, not a divergence. */
+#define CASE_NOAX(n) { #n, asm_##n, n, 0, 1 }
 static regcase const cases[] = {
     CASE(reg2100r),
     CASE(reg2134r),
@@ -266,9 +329,38 @@ static regcase const cases[] = {
     CASE_DMA(reg43XXr),
     CASE(regINVALIDw),
     CASE_DMA(regINVALID),
+    CASE(reg2100w),
+    CASE(reg2101w),
+    CASE(reg2102w),
+    CASE(reg2103w),
+    CASE(reg2104w),
+    CASE(reg2105w),
+    CASE(reg2106w),
+    CASE(reg2107w),
+    CASE(reg2108w),
+    CASE(reg2109w),
+    CASE(reg210Aw),
+    CASE(reg210Bw),
+    CASE(reg210Cw),
+    CASE(reg2122w),
+    CASE(reg2123w),
+    CASE(reg2124w),
+    CASE(reg2125w),
+    CASE(reg2132w),
+    CASE(reg2133w),
+    CASE(reg2183w),
+    CASE(reg4201w),
+    CASE(reg4203w),
+    CASE(reg4206w),
+    CASE_NOAX(reg420Dw),
+    CASE(reg4207w),
+    CASE(reg4208w),
+    CASE(reg4209w),
+    CASE_NOAX(reg420Aw), /* `and al,01h` clobbers al, like reg420Dw */
 };
 #undef CASE
 #undef CASE_DMA
+#undef CASE_NOAX
 
 typedef struct {
     u4 eax, ecx, edx;
@@ -280,6 +372,25 @@ typedef struct {
     u2 sc[12];
     u2 m7[6];
     u1 dma[129], hres, nohd, hdel;
+    u1 vbo, fbo;
+    u1 cgm, win[7], cola[3], intl;
+    u1 iohv, mtap, iop, spd[4];
+    u2 hirql, virql;
+    u4 hirqc;
+    u1 hirqx;
+    u2 dvr, mr2;
+    u2 res;
+    u1 cgr[512];
+    u1 nlc, poam, olow, nhp, nospr, ohipr;
+    u4 optr[2];
+    u1 objb[4];
+    u2 obja[2];
+    u2 oams[2];
+    u1 modeb[9];
+    u2 bgp[16], bgo[4];
+    u4 bgxy[8];
+    u1 bgsc[4];
+    u1 oam[1024];
     u1 wram[0x20000];
 } snapshot;
 
@@ -293,6 +404,18 @@ typedef struct {
     u2 scr0, dv0, sc0, res0, cury0;
     u1 prev0, hres0, nohd0, hdel0, spc7110;
     u2 caddr, lx16, ly16;
+    u1 poam0, olow0, nhp0, nospr0, ohipr0, nlc0;
+    u1 cgm0, win0, cola0, intl0;
+    u1 iohv0, mtap0, spd0, cphb0, xirq0, cpblt0;
+    u2 hirql0, virql0, totl0;
+    u4 hirqc0;
+    u1 hirqx0;
+    u1 ox268, ox268c, ox358, ox358c, cb268, cb358;
+    u4 optr0;
+    u2 oams0, poams0;
+    u1 bgb0;
+    u2 bgp0;
+    u4 bgxy0;
 } state;
 
 static void run(void (*fn)(void), u4 a, u4 c, u4 d, state const* in,
@@ -321,7 +444,6 @@ static void run(void (*fn)(void), u4 a, u4 c, u4 d, state const* in,
     JoyBRead = in->jb;
     JoyCRead2 = in->jc;
     JoyDRead = in->jd;
-    memcpy(oamram, oam_init, sizeof oamram);
     memcpy(cgram, cg_init, sizeof cgram);
     oamaddr = in->oaddr;
     cgaddr = in->caddr;
@@ -353,6 +475,50 @@ static void run(void (*fn)(void), u4 a, u4 c, u4 d, state const* in,
     SPC7110Enable = in->spc7110;
     resolutn = in->res0;
     curypos = in->cury0;
+    memcpy(oamram, oam_init, sizeof oamram);
+    cgmod = in->cgm0;
+    iohvlatch = in->iohv0;
+    HIRQLoc = in->hirql0;
+    VIRQLoc = in->virql0;
+    HIRQCycNext = in->hirqc0;
+    HIRQNextExe = in->hirqx0;
+    totlines = in->totl0;
+    MultiTapStat = in->mtap0;
+    cycpl = in->spd0;
+    cycphb = in->cphb0;
+    xirqb = in->xirq0;
+    cycpblt = in->cpblt0;
+    opexec268 = in->ox268;
+    opexec268cph = in->ox268c;
+    opexec358 = in->ox358;
+    opexec358cph = in->ox358c;
+    cycpb268 = in->cb268;
+    cycpb358 = in->cb358;
+    winbg1en = winbg2en = winbg3en = winbg4en = in->win0;
+    winobjen = wincolen = in->win0;
+    coladdr = coladdg = coladdb = in->cola0;
+    interlval = in->intl0;
+    NextLineCache = in->nlc0;
+    prevoamptr = in->poam0;
+    oamlow = in->olow0;
+    nexthprior = in->nhp0;
+    nosprincr = in->nospr0;
+    objhipr = in->ohipr0;
+    objptr = objptrn = in->optr0;
+    objsize1 = objsize2 = objmovs1 = objmovs2 = in->bgb0;
+    objadds1 = objadds2 = in->bgp0;
+    oamaddrs = in->oams0;
+    poamaddrs = in->poams0;
+    bgmode = bg3highst = bgtilesz = mosaicon = mosaicsz = in->bgb0;
+    BG116x16t = BG216x16t = BG316x16t = BG416x16t = in->bgb0;
+    bg1ptr = bg2ptr = bg3ptr = bg4ptr = in->bgp0;
+    bg1ptrb = bg2ptrb = bg3ptrb = bg4ptrb = in->bgp0;
+    bg1ptrc = bg2ptrc = bg3ptrc = bg4ptrc = in->bgp0;
+    bg1ptrd = bg2ptrd = bg3ptrd = bg4ptrd = in->bgp0;
+    bg1ptrx = bg2ptrx = bg3ptrx = bg4ptrx = in->bgxy0;
+    bg1ptry = bg2ptry = bg3ptry = bg4ptry = in->bgxy0;
+    bg1scsize = bg2scsize = bg3scsize = bg4scsize = in->bgb0;
+    bg1objptr = bg2objptr = bg3objptr = bg4objptr = in->bgp0;
     vidbright = vb;
     forceblnk = fb;
     multchange = mc;
@@ -397,6 +563,66 @@ static void run(void (*fn)(void), u4 a, u4 c, u4 d, state const* in,
     out->nohd = nohdmaframe;
     out->hdel = hdmadelay;
     memcpy(out->wram, wram_store, sizeof out->wram);
+    memcpy(out->oam, oamram, sizeof out->oam);
+    out->vbo = vidbright;
+    out->cgm = cgmod;
+    out->iohv = iohvlatch;
+    out->hirql = HIRQLoc;
+    out->virql = VIRQLoc;
+    out->hirqc = HIRQCycNext;
+    out->hirqx = HIRQNextExe;
+    out->iop = ioportval;
+    out->mtap = MultiTapStat;
+    out->dvr = divres;
+    out->mr2 = multres;
+    {
+        u1 const sp[4] = { cycpl, cycphb, xirqb, cycpblt };
+
+        memcpy(out->spd, sp, sizeof out->spd);
+    }
+    out->intl = interlval;
+    out->res = resolutn;
+    memcpy(out->cgr, cgram, sizeof out->cgr);
+    {
+        u1 const w[7] = { winbg1en, winbg2en, winbg3en, winbg4en, winobjen,
+            wincolen, 0 };
+        u1 const c[3] = { coladdr, coladdg, coladdb };
+
+        memcpy(out->win, w, sizeof out->win);
+        memcpy(out->cola, c, sizeof out->cola);
+    }
+    out->fbo = forceblnk;
+    out->nlc = NextLineCache;
+    out->poam = prevoamptr;
+    out->olow = oamlow;
+    out->nhp = nexthprior;
+    out->nospr = nosprincr;
+    out->ohipr = objhipr;
+    out->optr[0] = objptr;
+    out->optr[1] = objptrn;
+    {
+        u1 const ob[4] = { objsize1, objsize2, objmovs1, objmovs2 };
+        u2 const oa[2] = { objadds1, objadds2 };
+        u2 const os[2] = { oamaddrs, poamaddrs };
+        u1 const mb[9] = { bgmode, bg3highst, bgtilesz, mosaicon, mosaicsz,
+            BG116x16t, BG216x16t, BG316x16t, BG416x16t };
+        u2 const bp[16] = { bg1ptr, bg2ptr, bg3ptr, bg4ptr, bg1ptrb, bg2ptrb,
+            bg3ptrb, bg4ptrb, bg1ptrc, bg2ptrc, bg3ptrc, bg4ptrc, bg1ptrd,
+            bg2ptrd, bg3ptrd, bg4ptrd };
+        u4 const bxy[8] = { bg1ptrx, bg2ptrx, bg3ptrx, bg4ptrx, bg1ptry,
+            bg2ptry, bg3ptry, bg4ptry };
+        u1 const bs[4] = { bg1scsize, bg2scsize, bg3scsize, bg4scsize };
+        u2 const bo[4] = { bg1objptr, bg2objptr, bg3objptr, bg4objptr };
+
+        memcpy(out->objb, ob, sizeof out->objb);
+        memcpy(out->obja, oa, sizeof out->obja);
+        memcpy(out->oams, os, sizeof out->oams);
+        memcpy(out->modeb, mb, sizeof out->modeb);
+        memcpy(out->bgp, bp, sizeof out->bgp);
+        memcpy(out->bgxy, bxy, sizeof out->bgxy);
+        memcpy(out->bgsc, bs, sizeof out->bgsc);
+        memcpy(out->bgo, bo, sizeof out->bgo);
+    }
 }
 
 int main(void)
@@ -409,7 +635,8 @@ int main(void)
     {
         regcase const* k = &cases[dt_mod(sizeof cases / sizeof *cases)];
         snapshot x, y;
-        u4 const a = dt_u32(), d = dt_u32();
+        u4 a = dt_u32();
+        u4 d = dt_u32();
         u4 c = dt_u32();
         state in;
         /* The deferred multiply only runs when the flag is set, so hit both;
@@ -441,7 +668,8 @@ int main(void)
         in.irq = (u1)dt_u32();
         /* Sit on the 128K wrap half the time. */
         in.wadr = dt_mod(2) ? 0x1FFFFu - dt_mod(2) : dt_u32() & 0x1FFFFu;
-        in.iop = (u1)dt_u32();
+        /* $4206 divides diva by al; the by-zero path needs hitting properly. */
+        in.iop = (u1)(dt_mod(2) ? 0x80u | dt_u32() : dt_u32());
         /* PPU2's bus latch is what the second counter read keeps 7 bits of. */
         in.mdr2in = (u1)dt_u32();
         in.dv = (u2)dt_u32();
@@ -458,6 +686,9 @@ int main(void)
         in.ly16 = (u2)dt_u32();
         in.w0 = (u1)dt_u32();
         in.ebxin = dt_u32();
+        if (k->c_fn == reg4206w && dt_mod(4) == 0) {
+            a &= ~0xFFu; /* the divide-by-zero branch */
+        }
         if (k->dma) {
             /* Inside the DMA window; regINVALID also wants the $2100 edge. */
             c = dt_mod(2) ? 0x4300u + dt_mod(129)
@@ -469,6 +700,70 @@ int main(void)
                dirty: anything that forgets the 16-bit truncation indexes far
                outside the 129-byte table. */
             c |= dt_u32() & 0xFFFF0000u;
+        }
+        in.cgm0 = (u1)dt_u32();
+        /* $4201 arms the counter latch on a bit-7 edge, so both the old latch
+           state and the old port value have to straddle 1 and 0x80. */
+        in.iohv0 = (u1)(dt_mod(2) ? 1 : dt_u32());
+        /* $4207/$4208 only act when the value changes, and $4209/$420A only
+           when the beam has left the V-IRQ line - so curypos and VIRQLoc have
+           to collide often, and HIRQLoc has to match al often. */
+        in.hirql0 = (u2)(dt_mod(2) ? (dt_u32() & 0xFF00u) | (a & 0xFFu)
+                                   : dt_u32());
+        in.virql0 = (u2)(dt_mod(2) ? in.cury0 : dt_u32());
+        in.hirqc0 = dt_u32();
+        in.hirqx0 = (u1)(dt_mod(2) ? 1 : dt_u32());
+        /* $420A parks VIRQLoc out of range at totlines - 1; straddle it. */
+        in.totl0 = (u2)(dt_mod(2) ? 262 : dt_u32());
+        in.mtap0 = (u1)dt_u32();
+        /* Four separate values: driving them from one made cycpl and cycphb
+           indistinguishable, and $4207's position maths reads only cycpl. */
+        in.spd0 = (u1)dt_u32();
+        in.cphb0 = (u1)dt_u32();
+        in.xirq0 = (u1)dt_u32();
+        in.cpblt0 = (u1)dt_u32();
+        /* determine_hirq_exec branches on `dh > cycpl - pos`, and both sides
+           are otherwise uniform bytes - a 1-in-256 collision the run would
+           mostly miss. HIRQLoc of 0 makes pos 0, so left is cycpl; the compare
+           is against dh *after* HIRQCycNext has been added to it, so back that
+           out to land exactly on the boundary. */
+        if (dt_mod(4) == 0) {
+            u1 const dh = (u1)(in.spd0 - (u1)in.hirqc0);
+
+            in.hirql0 = 0;
+            d = (d & ~0xFF00u) | ((u4)dh << 8);
+        }
+        in.ox268 = (u1)dt_u32();
+        in.ox268c = (u1)dt_u32();
+        in.ox358 = (u1)dt_u32();
+        in.ox358c = (u1)dt_u32();
+        in.cb268 = (u1)dt_u32();
+        in.cb358 = (u1)dt_u32();
+        in.win0 = (u1)dt_u32();
+        in.cola0 = (u1)dt_u32();
+        in.intl0 = (u1)dt_u32();
+        in.nlc0 = (u1)dt_u32();
+        in.olow0 = (u1)dt_u32();
+        in.ohipr0 = (u1)dt_u32();
+        /* $2101 skips a repeated write unless the previous value was 0xFF. */
+        in.poam0 = (u1)(dt_mod(3) == 0 ? 0xFFu : dt_mod(2) ? a
+                                                           : dt_u32());
+        /* Both of these gate a whole branch, so hit the live value often. */
+        in.nhp0 = (u1)(dt_mod(2) ? 1 : dt_u32());
+        in.nospr0 = (u1)(dt_mod(2) ? 1 : dt_u32());
+        in.optr0 = dt_u32();
+        /* $2103 keeps the previous address when the new one lands on 0x200 and
+           the old one was past the sprite table. Reaching 0x200 needs
+           oamaddrs & 0x1FE clear, which random values almost never are. */
+        in.oams0 = (u2)(dt_mod(2) ? (dt_mod(8) << 9) | dt_mod(2) : dt_u32());
+        in.poams0 = (u2)(dt_mod(2) ? 0x1FFu + dt_mod(4) : dt_u32());
+        in.bgb0 = (u1)dt_u32();
+        in.bgp0 = (u2)dt_u32();
+        in.bgxy0 = dt_u32();
+        /* $2104 indexes oamram with the whole dword, so the high half has to
+           be clean here or both sides walk off the array. */
+        if (k->c_fn == reg2104w) {
+            in.oaddr &= 0xFFFFu;
         }
         /* The high halves must survive a byte store. */
         in.scr0 = (u2)dt_u32();
@@ -487,7 +782,9 @@ int main(void)
         run(k->asm_fn, a, c, d, &in, m7a, m7b, mult, &x);
         run(k->c_fn, a, c, d, &in, m7a, m7b, mult, &y);
 
-        DT_EQ(k->name, x.eax, y.eax);
+        if (!k->noax) {
+            DT_EQ(k->name, x.eax, y.eax);
+        }
         DT_EQ("ecx", x.ecx, y.ecx);
         DT_EQ("edx", x.edx, y.edx);
         DT_MEM("compmult", x.mult, y.mult, sizeof x.mult);
@@ -512,6 +809,40 @@ int main(void)
         DT_EQ("nohdmaframe", x.nohd, y.nohd);
         DT_EQ("hdmadelay", x.hdel, y.hdel);
         DT_MEM("wramdata", x.wram, y.wram, sizeof x.wram);
+        DT_MEM("oamram", x.oam, y.oam, sizeof x.oam);
+        DT_EQ("vidbright", x.vbo, y.vbo);
+        DT_EQ("cgmod", x.cgm, y.cgm);
+        DT_EQ("iohvlatch", x.iohv, y.iohv);
+        DT_EQ("HIRQLoc", x.hirql, y.hirql);
+        DT_EQ("VIRQLoc", x.virql, y.virql);
+        DT_EQ("HIRQCycNext", x.hirqc, y.hirqc);
+        DT_EQ("HIRQNextExe", x.hirqx, y.hirqx);
+        DT_EQ("ioportval", x.iop, y.iop);
+        DT_EQ("MultiTapStat", x.mtap, y.mtap);
+        DT_EQ("divres", x.dvr, y.dvr);
+        DT_EQ("multres", x.mr2, y.mr2);
+        DT_MEM("cycle speed", x.spd, y.spd, sizeof x.spd);
+        DT_MEM("cgram", x.cgr, y.cgr, sizeof x.cgr);
+        DT_MEM("window selects", x.win, y.win, sizeof x.win);
+        DT_MEM("fixed colour", x.cola, y.cola, sizeof x.cola);
+        DT_EQ("interlval", x.intl, y.intl);
+        DT_EQ("resolutn", x.res, y.res);
+        DT_EQ("forceblnk", x.fbo, y.fbo);
+        DT_EQ("NextLineCache", x.nlc, y.nlc);
+        DT_EQ("prevoamptr", x.poam, y.poam);
+        DT_EQ("oamlow", x.olow, y.olow);
+        DT_EQ("nexthprior", x.nhp, y.nhp);
+        DT_EQ("nosprincr", x.nospr, y.nospr);
+        DT_EQ("objhipr", x.ohipr, y.ohipr);
+        DT_MEM("objptr/objptrn", x.optr, y.optr, sizeof x.optr);
+        DT_MEM("sprite sizes", x.objb, y.objb, sizeof x.objb);
+        DT_MEM("sprite adds", x.obja, y.obja, sizeof x.obja);
+        DT_MEM("oamaddrs", x.oams, y.oams, sizeof x.oams);
+        DT_MEM("mode/mosaic", x.modeb, y.modeb, sizeof x.modeb);
+        DT_MEM("BG tilemap ptrs", x.bgp, y.bgp, sizeof x.bgp);
+        DT_MEM("BG tilemap offsets", x.bgxy, y.bgxy, sizeof x.bgxy);
+        DT_MEM("BG screen sizes", x.bgsc, y.bgsc, sizeof x.bgsc);
+        DT_MEM("BG char ptrs", x.bgo, y.bgo, sizeof x.bgo);
         if (dt_bad && DT_SHOW()) {
             printf("  ^ %s eax=%x mult=%d A=%04x B=%04x\n", k->name, a, mc, m7a, m7b);
         }

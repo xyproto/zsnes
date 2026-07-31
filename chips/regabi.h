@@ -10,6 +10,8 @@
  * Legacy ABI: address in ECX, value in AL (8-bit) or AX (16-bit); handlers
  * must preserve ECX, EDX and the unused upper bits of EAX.  BANK handlers
  * receive an address, REG handlers (I/O register table entries) do not.
+ * The _DX variant is the exception: it passes EDX through instead, for the
+ * handlers that carry the running cycle count in DH.
  *
  * Each macro emits the trampoline under the public name plus a prototype
  * for the cdecl implementation.  On non-i386 builds only the prototype
@@ -101,6 +103,24 @@
                                                             "ret\n");         \
     void c_##name(uint8_t)
 
+/*
+ * Same as REGABI_REG_WRITE8 but EDX is in/out rather than preserved: the IRQ
+ * beam-position registers carry the running cycle count in DH and adjust it.
+ * The implementation takes the incoming EDX and returns the outgoing one.
+ */
+#define REGABI_REG_WRITE8_DX(name)                                              \
+    __asm__(REGABI_ENTRY(name) "pushl %eax\n"                                   \
+                               "pushl %ecx\n"                                   \
+                               "pushl %edx\n"                                   \
+                               "pushl %eax\n"                                   \
+                               "call " REGABI_SYM(c_##name) "\n"                \
+                                                            "addl $8, %esp\n"   \
+                                                            "movl %eax, %edx\n" \
+                                                            "popl %ecx\n"       \
+                                                            "popl %eax\n"       \
+                                                            "ret\n");           \
+    uint32_t c_##name(uint8_t, uint32_t)
+
 #else
 
 #define REGABI_BANK_READ8(name) uint8_t c_##name(uint32_t)
@@ -109,6 +129,7 @@
 #define REGABI_BANK_WRITE16(name) void c_##name(uint32_t, uint16_t)
 #define REGABI_REG_READ8(name) uint8_t c_##name(void)
 #define REGABI_REG_WRITE8(name) void c_##name(uint8_t)
+#define REGABI_REG_WRITE8_DX(name) uint32_t c_##name(uint8_t, uint32_t)
 
 #endif
 
