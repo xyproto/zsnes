@@ -174,72 +174,6 @@ debblah:
     ret
 
 ; Read OAM Data (Low, High)
-NEWSYM reg2139r
-    mov al,[vramread]
-
-    xor ebx,ebx
-    mov bx,[vramaddr]
-    add ebx,[vram]
-    mov bl,[ebx]
-    mov [vramread],bl
-
-    cmp byte[vramincr],0
-    je near .noincr
-    mov bx,[addrincr]
-    add [vramaddr],bx
-    cmp byte[vramincby8on],1
-    jne .noincr
-    dec byte[vramincby8left]
-    jnz .noincr
-
-    add word[vramaddr],2
-    mov bl,[vramincby8totl]
-    mov [vramincby8left],bl
-    dec byte[vramincby8rowl]
-    jz .nextrow
-    mov bx,[vramincby8ptri]
-    sub [vramaddr],bx
-    jmp .noincr
-.nextrow
-    mov byte[vramincby8rowl],8
-    sub word[vramaddr],16
-.noincr
-    ret
-
-; Read VRAM Data (High)
-NEWSYM reg213Ar
-    mov al,[vramread2]
-
-    xor ebx,ebx
-    mov bx,[vramaddr]
-    add ebx,[vram]
-    mov bl,[ebx+1]
-    mov [vramread2],bl
-
-    cmp byte[vramincr],1
-    je near .noincr
-    mov bx,[addrincr]
-    add [vramaddr],bx
-    cmp byte[vramincby8on],1
-    jne .noincr
-    dec byte[vramincby8left]
-    jnz .noincr
-
-    add word[vramaddr],2
-    mov bl,[vramincby8totl]
-    mov [vramincby8left],bl
-    dec byte[vramincby8rowl]
-    jz .nextrow
-    mov bx,[vramincby8ptri]
-    sub [vramaddr],bx
-    jmp .noincr
-.nextrow
-    mov byte[vramincby8rowl],8
-    sub word[vramaddr],16
-.noincr
-    ret
-
-; Read CGRAM Data
 NEWSYM reg2140r
     cmp byte[spcon],0
     je .nosound
@@ -372,119 +306,13 @@ NEWSYM reg2143r
 
 ; Joystick Data for controller 1 and 2
 
-NEWSYM reg4016r
-    mov al,[ioportval]          ; Get IO port value
-    cmp al,0FFh                 ; is it set to $FF?
-    je .donerumble              ; if yes, skip all this
-    and al,040h                 ; isolate IO bit 6 (controller 1 I/O)
-    shr al,6                    ; shift into bit 0
-    or  [RumbleData],al         ; insert bit
-    cmp byte[RumbleData+1],072h ; is hi byte == rumble sentry?
-    je .donerumble              ; yes, don't rotate any further 
-    rol word[RumbleData],1      ; rotate left
-.donerumble
-
-    xor al,al
-    test dword[JoyANow],80000000h
-    jz .noal
-    mov al,1
-.noal
-    rol dword[JoyANow],1
-    ret
-
 SECTION .text
 
 ; Joystick Data for controller 2 and 4
-NEWSYM reg4017r
-    mov al,28
-    cmp byte[device2],0
-    jne .nomultitap
-    cmp byte[MultiTap],1
-    je .multitap
-.nomultitap
-;    cmp byte[device2],1
-;    je .mouse2
-;    test byte[JoyBNow],0FFh
-;    jnz .reset
-;.mouse2
-    test dword[JoyBNow],80000000h
-    jz .noal
-;.reset
-    or al,1
-.noal
-    rol dword[JoyBNow],1
-    ret
-.multitap
-    test byte[MultiTapStat],1
-    jz .no1
-    or al,3
-    ret
-.no1
-    test byte[MultiTapStat],80h
-    jz .contr45
-    test dword[JoyBNow],80000000h
-    jz .nojb
-    or al,1
-.nojb
-    test dword[JoyCNow],80000000h
-    jz .nojc
-    or al,2
-.nojc
-    rol dword[JoyBNow],1
-    rol dword[JoyCNow],1
-    ret
-.contr45
-    test dword[JoyDNow],80000000h
-    jz .nojd
-    or al,1
-.nojd
-    test dword[JoyENow],80000000h
-    jz .noje
-    or al,2
-.noje
-    rol dword[JoyDNow],1
-    rol dword[JoyENow],1
-    ret
-
-NEWSYM reg4100r
-   xor al,al
-   cmp byte[nssdip1],1
-   jne .nodip1
-   mov al,1
-.nodip1
-   cmp byte[nssdip2],1
-   jne .nodip2
-   or al,02h
-.nodip2
-   cmp byte[nssdip3],1
-   jne .nodip3
-   or al,04h
-.nodip3
-   cmp byte[nssdip4],1
-   jne .nodip4
-   or al,08h
-.nodip4
-   cmp byte[nssdip5],1
-   jne .nodip5
-   or al,10h
-.nodip5
-   cmp byte[nssdip6],1
-   jne .nodip6
-   or al,20h
-.nodip6
-   ret
-
-
-; NMI Check Register; bit 7 is NMI flag, bits 4-6 open bus, bits 0-3 CPU rev
-
-; Video IRQ Register; bit 7 is the IRQ flag, bits 0-6 open bus
-
 SECTION .text
 
 ; H/V Blank Flag & Joystick Controller Enable Flag
 ; bit 7 = vblank, 0=out,1=in, bit 6 = hblank, 0=out,1=in, bit 0 = auto-joy busy
-NEWSYM reg4212r
-    xor al,al
 %ifndef NO_DEBUGGER
     cmp byte[debuggeron],1
     je .debugger

@@ -56,13 +56,23 @@ extern u1 bg1scsize, bg2scsize, bg3scsize, bg4scsize;
 extern u2 bg1objptr, bg2objptr, bg3objptr, bg4objptr;
 extern u1 cgmod, winbg1en, winbg2en, winbg3en, winbg4en, winobjen, wincolen;
 extern u1 coladdr, coladdg, coladdb, interlval;
-extern u1 iohvlatch, MultiTapStat;
+extern u1 iohvlatch, MultiTapStat, JoyCRead;
+extern u4 JoyAOrig, JoyBOrig, JoyCOrig, JoyDOrig, JoyEOrig;
+extern u4 JoyANow, JoyBNow, JoyCNow, JoyDNow, JoyENow;
 extern u4 vramaddr;
 extern u1 vramread2, mode7set;
 extern u1* vram;
 extern u1 vrama[65536];
 extern u1 vidmemch2[4096], vidmemch4[4096], vidmemch8[4096];
-extern u1 vramincby8left, vramincby8totl;
+extern u1 vramincby8left, vramincby8totl, vraminctype, vramincby8on, vramincr;
+extern u1 vramincby8rowl;
+extern u1 nssdip1, nssdip2, nssdip3, nssdip4, nssdip5, nssdip6;
+extern u2 RumbleData;
+extern u1 MultiTap, device2, hblank;
+extern u4 nmistatus;
+extern void (*regptwa[0x3000])(void);
+void reg2118(void), reg2118inc(void), reg2118inc8(void), reg2118inc8inc(void);
+void reg2119(void), reg2119inc(void), reg2119inc8(void), reg2119inc8inc(void);
 extern u2 vramincby8var, vramincby8ptri, addrincr;
 extern u2 HIRQLoc, VIRQLoc, totlines;
 extern u4 HIRQCycNext;
@@ -816,6 +826,209 @@ REG_VRAM_DATA(reg2119inc8, vram_inc8_off(), 1, )
 REG_VRAM_DATA(reg2119inc8inc, vram_inc8_off(), 1, vram_bump();)
 
 #undef REG_VRAM_DATA
+
+/* VRAM increment control. Bits 0-1 pick the step, bits 2-3 the address
+   remapping, and bit 7 whether $2118 or $2119 is the one that increments -
+   which is done by swapping the table entries rather than branching. */
+REGABI_REG_WRITE8(reg2115w);
+void c_reg2115w(u1 const al)
+{
+    static u2 const step[4] = { 2, 64, 256, 256 };
+    u1 const remap = (u1)(al & 0x0Cu);
+
+    vraminctype = al;
+    addrincr = step[al & 3u];
+
+    vramincby8on = (u1)(remap ? 1 : 0);
+    if (remap == 4) {
+        vramincby8left = 64 - 1;
+        vramincby8totl = 5;
+        vramincby8ptri = 65535 - 511;
+        vramincby8var = 256 + 128 + 64;
+    } else if (remap == 8) {
+        vramincby8left = 128 - 1;
+        vramincby8totl = 6;
+        vramincby8ptri = 65535 - 1023;
+        vramincby8var = 512 + 256 + 128;
+    } else if (remap == 12) {
+        vramincby8left = 256 - 1;
+        vramincby8totl = 7;
+        vramincby8ptri = 65535 - 2047;
+        vramincby8var = 1024 + 512 + 256;
+    }
+
+    vramincr = (u1)((al & 0x80u) ? 0 : 1);
+    if (remap) {
+        regptwa[0x118] = (al & 0x80u) ? reg2118inc8 : reg2118inc8inc;
+        regptwa[0x119] = (al & 0x80u) ? reg2119inc8inc : reg2119inc8;
+    } else {
+        regptwa[0x118] = (al & 0x80u) ? reg2118 : reg2118inc;
+        regptwa[0x119] = (al & 0x80u) ? reg2119inc : reg2119;
+    }
+}
+
+/* Joypad strobe. The low 16 bits are forced high - the shift register reads
+   as all ones once the real data has been clocked out. */
+static void joy_latch_ports(void)
+{
+    JoyANow = JoyAOrig | 0xFFFFu;
+    JoyBNow = JoyBOrig | 0xFFFFu;
+    JoyCNow = JoyCOrig | 0xFFFFu;
+    JoyDNow = JoyDOrig | 0xFFFFu;
+    JoyENow = JoyEOrig | 0xFFFFu;
+}
+
+/* With auto-read off the strobe latches immediately; with it on the ports are
+   only re-latched once both halves of the 1-then-0 sequence have been seen. */
+REGABI_REG_WRITE8(reg4016w);
+void c_reg4016w(u1 const al)
+{
+    if (!(INTEnab & 1u)) {
+        joy_latch_ports();
+        MultiTapStat = (u1)(al == 1 ? (MultiTapStat | 1u) : (MultiTapStat & 0xFEu));
+        return;
+    }
+    if (al == 1) {
+        MultiTapStat |= 1u;
+        JoyCRead |= 2u;
+        return;
+    }
+    MultiTapStat &= 0xFEu;
+    if (al == 0) {
+        JoyCRead |= 1u;
+        if (JoyCRead == 3) {
+            joy_latch_ports();
+        }
+    }
+}
+
+/* $2139/$213A hand back the latched byte, prefetch the next, then advance -
+   but only on the port that owns the increment ($2115 bit 7). */
+static void vram_addr_add(u2 const d)
+{
+    vramaddr = (vramaddr & ~0xFFFFu) | (u2)((u2)vramaddr + d);
+}
+
+static void vram_read_advance(void)
+{
+    vram_addr_add(addrincr);
+    if (vramincby8on != 1 || --vramincby8left != 0) {
+        return;
+    }
+    vram_addr_add(2);
+    vramincby8left = vramincby8totl;
+    if (--vramincby8rowl == 0) {
+        vramincby8rowl = 8;
+        vram_addr_add((u2)-16);
+    } else {
+        vram_addr_add((u2)-vramincby8ptri);
+    }
+}
+
+REGABI_REG_READ8(reg2139r);
+u1 c_reg2139r(void)
+{
+    u1 const al = vramread;
+
+    vramread = vram[(u2)vramaddr];
+    if (vramincr != 0) {
+        vram_read_advance();
+    }
+    return al;
+}
+
+REGABI_REG_READ8(reg213Ar);
+u1 c_reg213Ar(void)
+{
+    u1 const al = vramread2;
+
+    vramread2 = vram[(u2)vramaddr + 1u];
+    if (vramincr != 1) {
+        vram_read_advance();
+    }
+    return al;
+}
+
+/* NSS DIP switches: each contributes its bit only when set to exactly 1. */
+REGABI_REG_READ8(reg4100r);
+u1 c_reg4100r(void)
+{
+    return (u1)((nssdip1 == 1 ? 0x01u : 0u) | (nssdip2 == 1 ? 0x02u : 0u)
+        | (nssdip3 == 1 ? 0x04u : 0u) | (nssdip4 == 1 ? 0x08u : 0u)
+        | (nssdip5 == 1 ? 0x10u : 0u) | (nssdip6 == 1 ? 0x20u : 0u));
+}
+
+/* Joypad serial read: one bit per read out of the top of JoyANow, which
+   rotates so 16 reads return the shift register and leave it as it was. The
+   rumble sentry 0x72 in the high byte freezes the pattern. */
+REGABI_REG_READ8(reg4016r);
+u1 c_reg4016r(void)
+{
+    u1 const al = (u1)((JoyANow & 0x80000000u) ? 1u : 0u);
+
+    if (ioportval != 0xFFu) {
+        RumbleData = (u2)((RumbleData & 0xFF00u)
+            | (u1)((u1)RumbleData | (u1)((ioportval & 0x40u) >> 6)));
+        if ((u1)(RumbleData >> 8) != 0x72u) {
+            RumbleData = (u2)((RumbleData << 1) | (RumbleData >> 15));
+        }
+    }
+    JoyANow = (JoyANow << 1) | (JoyANow >> 31);
+    return al;
+}
+
+/* Port 2 serial read. Bit 0 is the pad; with a multitap, MultiTapStat bit 7
+   selects which pair of the four is being clocked out, and bit 0 means the tap
+   is idle. The base 28 is the open-bus pattern the port reads back. */
+REGABI_REG_READ8(reg4017r);
+u1 c_reg4017r(void)
+{
+    u1 al = 28;
+
+    if (device2 != 0 || MultiTap != 1) {
+        al |= (u1)((JoyBNow & 0x80000000u) ? 1u : 0u);
+        JoyBNow = (JoyBNow << 1) | (JoyBNow >> 31);
+        return al;
+    }
+    if (MultiTapStat & 1u) {
+        return (u1)(al | 3u);
+    }
+    if (MultiTapStat & 0x80u) {
+        al |= (u1)((JoyBNow & 0x80000000u) ? 1u : 0u);
+        al |= (u1)((JoyCNow & 0x80000000u) ? 2u : 0u);
+        JoyBNow = (JoyBNow << 1) | (JoyBNow >> 31);
+        JoyCNow = (JoyCNow << 1) | (JoyCNow >> 31);
+    } else {
+        al |= (u1)((JoyDNow & 0x80000000u) ? 1u : 0u);
+        al |= (u1)((JoyENow & 0x80000000u) ? 2u : 0u);
+        JoyDNow = (JoyDNow << 1) | (JoyDNow >> 31);
+        JoyENow = (JoyENow << 1) | (JoyENow >> 31);
+    }
+    return al;
+}
+
+/* Bit 0 is the auto-joypad poll, busy for three lines from the first vblank
+   line; bit 7 is vblank; bit 6 is hblank, which needs the caller's DH. */
+REGABI_REG_READ8_DX(reg4212r);
+u1 c_reg4212r(u4 const edx)
+{
+    u2 const first = (u2)(resolutn + 1u);
+    u1 al = 0;
+
+    if ((INTEnab & 1u) && curypos >= first && curypos < (u2)(first + 3u)) {
+        al |= 0x01u;
+    }
+    if ((curypos == resolutn && (u1)nmistatus == 2)
+        || (curypos >= first && curypos < (u2)(totlines - 1u))) {
+        al |= 0x80u;
+    }
+    hblank = 0;
+    if ((u1)(edx >> 8) < cycphb) {
+        hblank = 1;
+        al |= 0x40u;
+    }
+    return al;
+}
 
 /* --- the IRQ beam-position registers -------------------------------------- *
  *

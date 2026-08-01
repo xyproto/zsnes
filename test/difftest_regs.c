@@ -64,7 +64,9 @@ u1 bg1scsize, bg2scsize, bg3scsize, bg4scsize;
 u2 bg1objptr, bg2objptr, bg3objptr, bg4objptr;
 u1 cgmod, winbg1en, winbg2en, winbg3en, winbg4en, winobjen, wincolen;
 u1 coladdr, coladdg, coladdb, interlval;
-u1 iohvlatch, MultiTapStat;
+u1 iohvlatch, MultiTapStat, JoyCRead;
+u4 JoyAOrig, JoyBOrig, JoyCOrig, JoyDOrig, JoyEOrig;
+u4 JoyANow, JoyBNow, JoyCNow, JoyDNow, JoyENow;
 u1 cycpl, cycphb, xirqb, cycpblt;
 u1 opexec268, opexec268cph, opexec358, opexec358cph, cycpb268, cycpb358;
 u2 HIRQLoc, VIRQLoc, totlines;
@@ -79,7 +81,12 @@ u1 vrama[0x10002];
 static u1 vram_init[0x10002];
 u1* vram = vrama;
 u1 vidmemch2[4096], vidmemch4[4096], vidmemch8[4096];
-u1 vramincby8left, vramincby8totl;
+u1 vramincby8left, vramincby8totl, vraminctype, vramincby8on, vramincr;
+u1 vramincby8rowl;
+u1 nssdip1, nssdip2, nssdip3, nssdip4, nssdip5, nssdip6;
+u2 RumbleData;
+u1 MultiTap, device2, hblank;
+u4 nmistatus;
 u2 vramincby8var, vramincby8ptri, addrincr;
 static u1 vmc_init[4096];
 static u1 dma_init[129];
@@ -209,6 +216,14 @@ DECL(reg420Aw);
 DECL(reg2116w);
 DECL(reg2117w);
 DECL(reg211Aw);
+DECL(reg4016r);
+DECL(reg4017r);
+DECL(reg4212r);
+DECL(reg4100r);
+DECL(reg2139r);
+DECL(reg213Ar);
+DECL(reg4016w);
+DECL(reg2115w);
 DECL(reg2118);
 DECL(reg2118inc);
 DECL(reg2118inc8);
@@ -383,6 +398,14 @@ static regcase const cases[] = {
     CASE(reg2116w),
     CASE(reg2117w),
     CASE(reg211Aw),
+    CASE(reg4016r),
+    CASE(reg4017r),
+    CASE(reg4212r),
+    CASE(reg4100r),
+    CASE(reg2139r),
+    CASE(reg213Ar),
+    CASE(reg4016w),
+    CASE(reg2115w),
     CASE(reg2118),
     CASE(reg2118inc),
     CASE(reg2118inc8),
@@ -409,9 +432,17 @@ typedef struct {
     u1 vbo, fbo;
     u1 cgm, win[7], cola[3], intl;
     u1 iohv, mtap, iop, spd[4];
+    u1 jcr;
+    u4 jnow[5];
     u2 hirql, virql;
     u4 vaddr;
     u1 vrd, vrd2, m7set;
+    u1 vinct, vb8on, vincr, vb8l, vb8t, vb8r;
+    u1 dip;
+    u2 rumble;
+    u1 hbl;
+    u2 vb8v, vb8p, ainc;
+    void (*tbl[2])(void);
     u1 vmc[3 * 4096];
     u1 vr[0x10002];
     u4 hirqc;
@@ -445,10 +476,16 @@ typedef struct {
     u1 poam0, olow0, nhp0, nospr0, ohipr0, nlc0;
     u1 cgm0, win0, cola0, intl0;
     u1 iohv0, mtap0, spd0, cphb0, xirq0, cpblt0;
+    u1 jcr0;
+    u4 jorig[5], jnow0[5];
     u2 hirql0, virql0, totl0;
     u4 vaddr0;
     u1 vrd0, vrd20, m7set0;
-    u1 vb8l, vb8t;
+    u1 vb8l, vb8t, vinct, vb8on, vincr, vb8r0;
+    u1 dips[6];
+    u2 rumble0;
+    u1 mtap2, dev2;
+    u4 nmist;
     u2 vb8v, vb8p, aincr;
     u4 hirqc0;
     u1 hirqx0;
@@ -525,6 +562,21 @@ static void run(void (*fn)(void), u4 a, u4 c, u4 d, state const* in,
     memcpy(vidmemch2, vmc_init, 4096);
     memcpy(vidmemch4, vmc_init, 4096);
     memcpy(vidmemch8, vmc_init, 4096);
+    vraminctype = in->vinct;
+    vramincby8on = in->vb8on;
+    vramincr = in->vincr;
+    RumbleData = in->rumble0;
+    MultiTap = in->mtap2;
+    nmistatus = in->nmist;
+    hblank = 0;
+    device2 = in->dev2;
+    nssdip1 = in->dips[0];
+    nssdip2 = in->dips[1];
+    nssdip3 = in->dips[2];
+    nssdip4 = in->dips[3];
+    nssdip5 = in->dips[4];
+    nssdip6 = in->dips[5];
+    vramincby8rowl = in->vb8r0;
     vramincby8left = in->vb8l;
     vramincby8totl = in->vb8t;
     vramincby8var = in->vb8v;
@@ -539,6 +591,17 @@ static void run(void (*fn)(void), u4 a, u4 c, u4 d, state const* in,
     HIRQNextExe = in->hirqx0;
     totlines = in->totl0;
     MultiTapStat = in->mtap0;
+    JoyCRead = in->jcr0;
+    JoyAOrig = in->jorig[0];
+    JoyBOrig = in->jorig[1];
+    JoyCOrig = in->jorig[2];
+    JoyDOrig = in->jorig[3];
+    JoyEOrig = in->jorig[4];
+    JoyANow = in->jnow0[0];
+    JoyBNow = in->jnow0[1];
+    JoyCNow = in->jnow0[2];
+    JoyDNow = in->jnow0[3];
+    JoyENow = in->jnow0[4];
     cycpl = in->spd0;
     cycphb = in->cphb0;
     xirqb = in->xirq0;
@@ -623,6 +686,16 @@ static void run(void (*fn)(void), u4 a, u4 c, u4 d, state const* in,
     out->cgm = cgmod;
     out->iohv = iohvlatch;
     out->vaddr = vramaddr;
+    out->vinct = vraminctype;
+    out->vb8on = vramincby8on;
+    out->vincr = vramincr;
+    out->vb8r = vramincby8rowl;
+    out->vb8l = vramincby8left;
+    out->vb8t = vramincby8totl;
+    out->vb8v = vramincby8var;
+    out->vb8p = vramincby8ptri;
+    out->ainc = addrincr;
+    memcpy(out->tbl, regptwa + 0x118, sizeof out->tbl);
     memcpy(out->vmc, vidmemch2, 4096);
     memcpy(out->vmc + 4096, vidmemch4, 4096);
     memcpy(out->vmc + 8192, vidmemch8, 4096);
@@ -636,6 +709,14 @@ static void run(void (*fn)(void), u4 a, u4 c, u4 d, state const* in,
     out->hirqx = HIRQNextExe;
     out->iop = ioportval;
     out->mtap = MultiTapStat;
+    out->jcr = JoyCRead;
+    out->rumble = RumbleData;
+    out->hbl = hblank;
+    out->jnow[0] = JoyANow;
+    out->jnow[1] = JoyBNow;
+    out->jnow[2] = JoyCNow;
+    out->jnow[3] = JoyDNow;
+    out->jnow[4] = JoyENow;
     out->dvr = divres;
     out->mr2 = multres;
     {
@@ -781,7 +862,25 @@ int main(void)
         /* The inc8 address is (addr & left) << 3 plus two masked terms; the
            asm has no bound check, so keep the sum inside VRAM the way the
            emulator's own field split does. */
-        in.vb8l = (u1)(dt_u32() & 0x1Fu);
+        in.vinct = (u1)dt_u32();
+        /* Exactly 1 enables the remap path; uniform bytes reach it 1 in
+           256, which is not enough to exercise the row wrap. */
+        /* 0x72 in the high byte is the sentry that freezes the rotate. */
+        /* The multitap path needs device2 == 0 and MultiTap == 1. */
+        /* $4212 gates vblank on nmistatus == 2 at exactly resolutn. */
+        in.nmist = dt_mod(2) ? 2u : dt_u32();
+        in.mtap2 = (u1)(dt_mod(2) ? 1 : dt_u32());
+        in.dev2 = (u1)(dt_mod(2) ? 0 : dt_u32());
+        in.rumble0 = (u2)(dt_mod(2) ? 0x7200u | (dt_u32() & 0xFFu) : dt_u32());
+        for (int j = 0; j < 6; j++) {
+            in.dips[j] = (u1)(dt_mod(2) ? 1 : dt_u32());
+        }
+        in.vb8on = (u1)(dt_mod(2) ? 1 : dt_u32());
+        in.vincr = (u1)dt_u32();
+        /* Both counters gate a branch each time they hit zero, so keep
+           them small enough to actually get there. */
+        in.vb8r0 = (u1)(dt_mod(2) ? 1 : dt_u32());
+        in.vb8l = (u1)(dt_mod(2) ? 1 : dt_u32() & 0x1Fu);
         in.vb8t = (u1)dt_u32();
         in.vb8v = (u2)(dt_u32() & 0x1FFFu);
         in.vb8p = (u2)(dt_u32() & 0x1FFFu);
@@ -795,7 +894,14 @@ int main(void)
         in.hirqx0 = (u1)(dt_mod(2) ? 1 : dt_u32());
         /* $420A parks VIRQLoc out of range at totlines - 1; straddle it. */
         in.totl0 = (u2)(dt_mod(2) ? 262 : dt_u32());
-        in.mtap0 = (u1)dt_u32();
+        in.mtap0 = (u1)(dt_mod(2) ? (u1)(dt_mod(2) ? 0x80u : 0u) : dt_u32());
+        /* $4016 re-latches only when JoyCRead reaches 3, so bias it onto
+           the 1/2 bits rather than leaving it uniform. */
+        in.jcr0 = (u1)(dt_mod(2) ? dt_mod(4) : dt_u32());
+        for (int j = 0; j < 5; j++) {
+            in.jorig[j] = dt_u32();
+            in.jnow0[j] = dt_u32();
+        }
         /* Four separate values: driving them from one made cycpl and cycphb
            indistinguishable, and $4207's position maths reads only cycpl. */
         in.spd0 = (u1)dt_u32();
@@ -915,6 +1021,16 @@ int main(void)
         DT_EQ("cgmod", x.cgm, y.cgm);
         DT_EQ("iohvlatch", x.iohv, y.iohv);
         DT_EQ("vramaddr", x.vaddr, y.vaddr);
+        DT_EQ("vraminctype", x.vinct, y.vinct);
+        DT_EQ("vramincby8on", x.vb8on, y.vb8on);
+        DT_EQ("vramincr", x.vincr, y.vincr);
+        DT_EQ("vramincby8left", x.vb8l, y.vb8l);
+        DT_EQ("vramincby8rowl", x.vb8r, y.vb8r);
+        DT_EQ("vramincby8totl", x.vb8t, y.vb8t);
+        DT_EQ("vramincby8var", x.vb8v, y.vb8v);
+        DT_EQ("vramincby8ptri", x.vb8p, y.vb8p);
+        DT_EQ("addrincr", x.ainc, y.ainc);
+        DT_MEM("regptw 2118/2119", x.tbl, y.tbl, sizeof x.tbl);
         DT_MEM("vidmemch", x.vmc, y.vmc, sizeof x.vmc);
         DT_MEM("vrama", x.vr, y.vr, sizeof x.vr);
         DT_EQ("vramread", x.vrd, y.vrd);
@@ -926,6 +1042,10 @@ int main(void)
         DT_EQ("HIRQNextExe", x.hirqx, y.hirqx);
         DT_EQ("ioportval", x.iop, y.iop);
         DT_EQ("MultiTapStat", x.mtap, y.mtap);
+        DT_EQ("JoyCRead", x.jcr, y.jcr);
+        DT_EQ("RumbleData", x.rumble, y.rumble);
+        DT_EQ("hblank", x.hbl, y.hbl);
+        DT_MEM("Joy?Now", x.jnow, y.jnow, sizeof x.jnow);
         DT_EQ("divres", x.dvr, y.dvr);
         DT_EQ("multres", x.mr2, y.mr2);
         DT_MEM("cycle speed", x.spd, y.spd, sizeof x.spd);

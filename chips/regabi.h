@@ -89,6 +89,22 @@
                                                             "ret\n");            \
     uint8_t c_##name(void)
 
+/* As REGABI_REG_READ8, but EDX is passed in: $4212's hblank flag compares DH
+ * against the cycles-per-hblank count. */
+#define REGABI_REG_READ8_DX(name)                                                \
+    __asm__(REGABI_ENTRY(name) "pushl %ecx\n"                                    \
+                               "pushl %edx\n"                                    \
+                               "pushl %eax\n"                                    \
+                               "pushl %edx\n"                                    \
+                               "call " REGABI_SYM(c_##name) "\n"                 \
+                                                            "addl $4, %esp\n"    \
+                                                            "movb %al, (%esp)\n" \
+                                                            "popl %eax\n"        \
+                                                            "popl %edx\n"        \
+                                                            "popl %ecx\n"        \
+                                                            "ret\n");            \
+    uint8_t c_##name(uint32_t)
+
 #define REGABI_REG_WRITE8(name)                                               \
     __asm__(REGABI_ENTRY(name) "pushl %eax\n"                                 \
                                "pushl %ecx\n"                                 \
@@ -124,6 +140,7 @@
 #define REGABI_BANK_WRITE8(name) void c_##name(uint32_t, uint8_t)
 #define REGABI_BANK_WRITE16(name) void c_##name(uint32_t, uint16_t)
 #define REGABI_REG_READ8(name) uint8_t c_##name(void)
+#define REGABI_REG_READ8_DX(name) uint8_t c_##name(uint32_t)
 #define REGABI_REG_WRITE8(name) void c_##name(uint8_t)
 #define REGABI_REG_WRITE8_DX(name) uint32_t c_##name(uint8_t, uint32_t)
 
