@@ -60,6 +60,10 @@ extern u1 iohvlatch, MultiTapStat;
 extern u4 vramaddr;
 extern u1 vramread2, mode7set;
 extern u1* vram;
+extern u1 vrama[65536];
+extern u1 vidmemch2[4096], vidmemch4[4096], vidmemch8[4096];
+extern u1 vramincby8left, vramincby8totl;
+extern u2 vramincby8var, vramincby8ptri, addrincr;
 extern u2 HIRQLoc, VIRQLoc, totlines;
 extern u4 HIRQCycNext;
 extern u1 HIRQNextExe;
@@ -765,6 +769,53 @@ void c_reg2117w(u1 const al)
 
 REGABI_REG_WRITE8(reg211Aw); /* mode 7 settings */
 void c_reg211Aw(u1 const al) { mode7set = al; }
+
+/* VRAM data. vram points at vrama (ui.c), so the asm's two addressing routes
+   are the same buffer. */
+static void vram_dirty(u4 const off)
+{
+    u4 const i = off >> 4;
+
+    vidmemch2[i] = 1;
+    vidmemch4[i] = 1;
+    vidmemch8[i] = 1;
+}
+
+static void vram_bump(void)
+{
+    vramaddr = (vramaddr & ~0xFFFFu) | (u2)((u2)vramaddr + addrincr);
+}
+
+/* The masks are 16-bit but the shift is 32-bit, so the top half of vramaddr
+   survives the AND and takes part in the shift. Untestable: a non-zero top
+   half puts the unshifted ptri term past 64K, which the asm reads OOB too. */
+static u4 vram_inc8_off(void)
+{
+    u4 off = (vramaddr & vramincby8left) << 3;
+
+    off += ((vramaddr & ~0xFFFFu) | (u2)(vramaddr & vramincby8var))
+        >> (vramincby8totl & 31u);
+    return off + ((vramaddr & ~0xFFFFu) | (u2)(vramaddr & vramincby8ptri));
+}
+
+static void vram_write(u4 const off, u4 const lohi, u1 const al)
+{
+    vrama[off + lohi] = al;
+    vram_dirty(off);
+}
+
+#define REG_VRAM_DATA(reg, offexpr, lohi, bump)                                   REGABI_REG_WRITE8(reg);                                                       void c_##reg(u1 const al)                                                     {                                                                                 vram_write((offexpr), (lohi), al);                                            bump                                                                      }
+
+REG_VRAM_DATA(reg2118, vramaddr, 0, )
+REG_VRAM_DATA(reg2118inc, vramaddr, 0, vram_bump();)
+REG_VRAM_DATA(reg2118inc8, vram_inc8_off(), 0, )
+REG_VRAM_DATA(reg2118inc8inc, vram_inc8_off(), 0, vram_bump();)
+REG_VRAM_DATA(reg2119, vramaddr, 1, )
+REG_VRAM_DATA(reg2119inc, vramaddr, 1, vram_bump();)
+REG_VRAM_DATA(reg2119inc8, vram_inc8_off(), 1, )
+REG_VRAM_DATA(reg2119inc8inc, vram_inc8_off(), 1, vram_bump();)
+
+#undef REG_VRAM_DATA
 
 /* --- the IRQ beam-position registers -------------------------------------- *
  *

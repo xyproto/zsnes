@@ -19,6 +19,8 @@
 
 
 
+EXTSYM reg2118,reg2118inc,reg2118inc8,reg2118inc8inc
+EXTSYM reg2119,reg2119inc,reg2119inc8,reg2119inc8inc
 EXTSYM reg420Bw,reg420Cw,regptwa,NextLineCache,vidmemch2,vidmemch4
 EXTSYM vidmemch8,vrama,nmirept,SPCRAM,HIRQCycNext,HIRQNextExe,tableadc
 EXTSYM cycpb268,cycpb358,cycpbl,cycpblt,opexec268,opexec268cph,opexec358
@@ -131,89 +133,6 @@ NEWSYM reg2115w
 
 
 ; Video port data (Low)
-NEWSYM reg2118
-    mov ebx,[vramaddr]
-    mov [vrama+ebx],al
-    shr ebx,4
-    mov byte[vidmemch2+ebx],1
-    mov byte[vidmemch4+ebx],1
-    mov byte[vidmemch8+ebx],1
-    ret
-
-NEWSYM reg2118inc
-    mov ebx,[vramaddr]
-    mov [vrama+ebx],al
-    shr ebx,4
-    mov byte[vidmemch2+ebx],1
-    mov byte[vidmemch4+ebx],1
-    mov byte[vidmemch8+ebx],1
-    mov ebx,[addrincr]
-    add [vramaddr],bx
-    ret
-
-NEWSYM reg2118inc8
-    push ecx
-    mov ebx,[vramaddr]
-    movzx ecx,byte[vramincby8left]
-    and ebx,ecx
-    shl ebx,3
-    push eax
-    mov eax,[vramaddr]
-    and ax,[vramincby8var]
-    mov cl,[vramincby8totl]
-    shr eax,cl
-    add ebx,eax
-    mov eax,[vramaddr]
-    and ax,[vramincby8ptri]
-    add ebx,eax
-    pop eax
-    pop ecx
-    add ebx,[vram]
-;    cmp [ebx],al
-;    je .nochange2
-    mov [ebx],al
-    sub ebx,[vram]
-    shr ebx,4
-    mov byte[vidmemch2+ebx],1
-    mov byte[vidmemch4+ebx],1
-    mov byte[vidmemch8+ebx],1
-.nochange2
-    ret
-
-NEWSYM reg2118inc8inc
-    push ecx
-    mov ebx,[vramaddr]
-    movzx ecx,byte[vramincby8left]
-    and ebx,ecx
-    shl ebx,3
-    push eax
-    mov eax,[vramaddr]
-    and ax,[vramincby8var]
-    mov cl,[vramincby8totl]
-    shr eax,cl
-    add ebx,eax
-    mov eax,[vramaddr]
-    and ax,[vramincby8ptri]
-    add ebx,eax
-    pop eax
-    pop ecx
-    add ebx,[vram]
-;    cmp [ebx],al
-;    je .nochange2
-    mov [ebx],al
-    sub ebx,[vram]
-    shr ebx,4
-    mov byte[vidmemch2+ebx],1
-    mov byte[vidmemch4+ebx],1
-    mov byte[vidmemch8+ebx],1
-.nochange2
-    mov ebx,[addrincr]
-    add [vramaddr],bx
-    ret
-
-NEWSYM reg2119
-    cmp dword[vramaddr],0E000h
-    jb .skip
 %ifndef NO_DEBUGGER
     mov byte[debstop],1
 %endif
@@ -227,76 +146,6 @@ NEWSYM reg2119
     mov byte[vidmemch4+ebx],1
     mov byte[vidmemch8+ebx],1
 .nochange
-    ret
-
-NEWSYM reg2119inc
-    mov ebx,[vramaddr]
-;    cmp [vrama+ebx+1],al
-;    je .nochange
-    mov [vrama+ebx+1],al
-    shr ebx,4
-    mov byte[vidmemch2+ebx],1
-    mov byte[vidmemch4+ebx],1
-    mov byte[vidmemch8+ebx],1
-.nochange
-    mov ebx,[addrincr]
-    add [vramaddr],bx
-    ret
-
-NEWSYM reg2119inc8
-    push ecx
-    mov ebx,[vramaddr]
-    movzx ecx,byte[vramincby8left]
-    and ebx,ecx
-    shl ebx,3
-    push eax
-    mov eax,[vramaddr]
-    and ax,[vramincby8var]
-    mov cl,[vramincby8totl]
-    shr eax,cl
-    add ebx,eax
-    mov eax,[vramaddr]
-    and ax,[vramincby8ptri]
-    add ebx,eax
-    pop eax
-    pop ecx
-;    cmp [vrama+ebx+1],al
-;    je .nochange2
-    mov [vrama+ebx+1],al
-    shr ebx,4
-    mov byte[vidmemch2+ebx],1
-    mov byte[vidmemch4+ebx],1
-    mov byte[vidmemch8+ebx],1
-.nochange2
-    ret
-
-NEWSYM reg2119inc8inc
-    push ecx
-    mov ebx,[vramaddr]
-    movzx ecx,byte[vramincby8left]
-    and ebx,ecx
-    shl ebx,3
-    push eax
-    mov eax,[vramaddr]
-    and ax,[vramincby8var]
-    mov cl,[vramincby8totl]
-    shr eax,cl
-    add ebx,eax
-    mov eax,[vramaddr]
-    and ax,[vramincby8ptri]
-    add ebx,eax
-    pop eax
-    pop ecx
-;    cmp [vrama+ebx+1],al
-;    je .nochange2
-    mov [vrama+ebx+1],al
-    shr ebx,4
-    mov byte[vidmemch2+ebx],1
-    mov byte[vidmemch4+ebx],1
-    mov byte[vidmemch8+ebx],1
-.nochange2
-    mov ebx,[addrincr]
-    add [vramaddr],bx
     ret
 
 SECTION .text
