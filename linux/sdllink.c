@@ -257,7 +257,9 @@ int Main_Proc()
             break;
 #ifdef __OPENGL__
         case SDL_EVENT_WINDOW_RESIZED:
-            if (GUIRESIZE[cvidmode]) {
+            // UseOpenGL, not just the mode flags: these call into GL, and the
+            // build having OpenGL says nothing about the mode currently running.
+            if (UseOpenGL && GUIRESIZE[cvidmode]) {
                 WindowWidth = SurfaceX = event.window.data1;
                 WindowHeight = SurfaceY = event.window.data2;
                 SetHQx(SurfaceX, SurfaceY);
@@ -275,7 +277,10 @@ int Main_Proc()
             // whenever the pixel size actually changes. This keeps fullscreen
             // scaling correct without relying on the size queried right after the
             // toggle, which can still be stale. data1/data2 are in pixels here.
-            if (FullScreen) {
+            // Modes 1, 3 and 4 are fullscreen *software* modes, so FullScreen
+            // alone is not enough - without the UseOpenGL test this crashes in
+            // gl_clearwin() the moment the compositor reports a size.
+            if (UseOpenGL && FullScreen) {
                 SetGLViewport(event.window.data1, event.window.data2);
                 gl_clearwin();
                 Clear2xSaIBuffer();
@@ -1076,6 +1081,10 @@ int startgame()
     }
 
     if (!status) {
+        // The old window was torn down above, so there is no longer a surface
+        // to draw into. Say so rather than leaving the previous state in
+        // place, which would claim a window that is already gone.
+        sdl_state = vid_none;
         return FALSE;
     }
     sdl_state = (UseOpenGL ? vid_gl : vid_soft);
@@ -1158,6 +1167,10 @@ char CheckOGLMode();
 
 void initwinvideo(void)
 {
+    // The last mode that actually started. A failed mode change leaves no
+    // window at all (startgame() ends the old one before starting the new),
+    // so there has to be something to go back to.
+    static uint32_t lastGoodMode = ~0u;
     uint32_t newmode = 0;
 
     init_hqNx();
@@ -1269,10 +1282,24 @@ void initwinvideo(void)
         /* Exit zsnes if SDL could not be initialized */
         if (sdl_state == vid_null) {
             zexit_error();
-        } else {
+        }
+        /* Returning here used to hand control back to the render path with the
+           old window already destroyed, which segfaults on the next frame -
+           the usual way to hit it is alt+return into a mode the display cannot
+           give us. Drop back to the last mode that worked instead. The retry
+           cannot loop: it runs with cvidmode already equal to lastGoodMode. */
+        if (lastGoodMode != ~0u && cvidmode != lastGoodMode) {
+            fprintf(stderr, "Video mode %u failed to start, reverting to %u\n",
+                (unsigned)cvidmode, (unsigned)lastGoodMode);
+            cvidmode = lastGoodMode;
+            CurMode = ~0u; /* force the size recompute above to run again */
+            initwinvideo();
             return;
         }
+        fprintf(stderr, "Could not start any video mode: %s\n", SDL_GetError());
+        zexit_error();
     }
+    lastGoodMode = cvidmode;
 
     if (newmode == 1) {
 #ifdef __OPENGL__
