@@ -1,0 +1,6 @@
+# Files clang-format must leave alone. Patterns are relative to this file.
+#
+# cpu/ is hand-laid-out against the assembly it replaces - the tables and the
+# register-ABI trampolines are aligned to read against the original listings,
+# and reformatting them loses that.
+cpu/*
