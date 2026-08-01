@@ -421,9 +421,8 @@ struct backup_cmdline_vars saved_cmdline_vars;
 #endif
 
 /* Every saved setting the command line can override belongs here, or a one-off
-   flag becomes permanent: the config is rewritten on exit from the *running*
-   values, so `-ds` once left sound off for good. backup_all_vars() snapshots
-   these before the options are parsed and the writer swaps them back in. */
+   flag becomes permanent - the config is rewritten on exit from the running
+   values. */
 #define BACKUP_HELP(func)                                     \
     func(guioff)                                              \
         func(per2exec)                                        \
@@ -442,10 +441,8 @@ static void backup_all_vars() {
     BACKUP_HELP(BACKUP_VAR)
 }
 
-/* Which of them the command line actually changed. Only those are reverted for
-   the write - otherwise a setting the user changes in the GUI would be thrown
-   away on exit, because the snapshot predates the whole session. Comparing
-   after parsing means the option handlers need no bookkeeping of their own. */
+/* Only what the command line actually changed is reverted; otherwise a GUI
+   change would be thrown away, since the snapshot predates the session. */
 #define MARK_VAR(var) cmdline_var_set._##var = (var != saved_cmdline_vars._##var);
 static struct backup_cmdline_vars cmdline_var_set;
 static void mark_overridden_vars() {

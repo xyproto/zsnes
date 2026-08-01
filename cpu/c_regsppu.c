@@ -627,8 +627,7 @@ void c_reg210Cw(u1 const al)
     bg4objptr = (u2)((u2)(al >> 4) << 13);
 }
 
-/* CGRAM data port. Writing the value already there does not dirty the palette
-   cache, but the address still advances. */
+/* Rewriting the same value does not dirty the cache; the address still moves. */
 REGABI_REG_WRITE8(reg2122w);
 void c_reg2122w(u1 const al)
 {
@@ -641,9 +640,8 @@ void c_reg2122w(u1 const al)
     cgaddr = (u2)((cgaddr + 1u) & 0x1FFu);
 }
 
-/* Window mask settings: one nibble per layer. The assembly tests bits 1 and 3
-   of each nibble and branches, but both arms are the same - the `or bl,02h`
-   they were meant to guard is commented out - so this is a plain split. */
+/* One nibble per layer. The asm branches on bits 1 and 3, but both arms are
+   the same - the `or bl,02h` they guarded is commented out. */
 #define REG_WIN_SEL(reg, lo, hi)                                               \
     REGABI_REG_WRITE8(reg);                                                    \
     void c_##reg(u1 const al)                                                  \
@@ -658,8 +656,7 @@ REG_WIN_SEL(reg2125w, winobjen, wincolen)
 
 #undef REG_WIN_SEL
 
-/* Fixed colour data: bits 5-7 say which of the three channels the 5-bit
-   intensity in bits 0-4 applies to, so one write can set several. */
+/* Bits 5-7 pick which channels take the intensity in bits 0-4. */
 REGABI_REG_WRITE8(reg2132w);
 void c_reg2132w(u1 const al)
 {
@@ -676,8 +673,7 @@ void c_reg2132w(u1 const al)
     }
 }
 
-/* Screen mode select. Only the interlace and pseudo-hires bits are kept; bit 2
-   is the 239-line overscan switch. */
+/* Keeps only interlace and pseudo-hires; bit 2 is the 239-line switch. */
 REGABI_REG_WRITE8(reg2133w);
 void c_reg2133w(u1 const al)
 {
@@ -691,8 +687,7 @@ void c_reg2183w(u1 const al)
     wramrwadr = (wramrwadr & ~0x00FF0000u) | ((u4)(al & 0x01u) << 16);
 }
 
-/* Programmable I/O port. Bit 7 drives the H/V counter latch: a 1-to-0 edge on
-   the port arms it, a 0-to-1 edge clears it. Bit 7 also reaches the multitap. */
+/* Bit 7 edges drive the H/V counter latch, and reach the multitap. */
 REGABI_REG_WRITE8(reg4201w);
 void c_reg4201w(u1 const al)
 {
@@ -706,14 +701,12 @@ void c_reg4201w(u1 const al)
     MultiTapStat = (u1)((MultiTapStat & 0x7Fu) | (al & 0x80u));
 }
 
-/* Multiplicand B: writing it runs the 8x8 multiply straight away. The result
-   is the low half of the product; the assembly discards dx. */
+/* Writing runs the 8x8 multiply; only the low half is kept. */
 REGABI_REG_WRITE8(reg4203w);
 void c_reg4203w(u1 const al) { multres = (u2)((u2)al * (u2)multa); }
 
-/* Divisor: the 16/8 divide also runs on the write. The quotient always fits
-   because the assembly zeroes dx first, so there is no divide overflow - only
-   the by-zero case, which the hardware answers with all ones. */
+/* The 16/8 divide runs on the write. The quotient always fits; only the
+   by-zero case is special. */
 REGABI_REG_WRITE8(reg4206w);
 void c_reg4206w(u1 const al)
 {
@@ -726,9 +719,8 @@ void c_reg4206w(u1 const al)
     }
 }
 
-/* Cycle speed. Bit 0 picks the 3.58MHz timings; xirqb bit 7 is the bank the
-   IRQs start at. Note the assembly leaves the chosen value in al - the write
-   ABI does not promise al, so the trampoline restoring it is harmless. */
+/* Bit 0 picks the 3.58MHz timings; xirqb bit 7 is the IRQ start bank. The asm
+   leaves its value in al, which the write ABI does not promise. */
 REGABI_REG_WRITE8(reg420Dw);
 void c_reg420Dw(u1 const al)
 {
@@ -745,10 +737,8 @@ void c_reg420Dw(u1 const al)
     }
 }
 
-/* VRAM address. The register counts words but the address is kept doubled, so
-   it is halved, the byte patched in, and doubled again - the low bit is not
-   part of the register and must not survive. Only the low 16 bits are the
-   address; the rest of the dword belongs to the caller. */
+/* The address is kept doubled, so halve it, patch the byte in, double again.
+   Only the low 16 bits are the address. */
 static void vram_addr_byte(u2 const mask, u2 const bits)
 {
     u2 v = (u2)((u2)vramaddr >> 1);
@@ -761,8 +751,7 @@ static void vram_addr_byte(u2 const mask, u2 const bits)
 REGABI_REG_WRITE8(reg2116w);
 void c_reg2116w(u1 const al) { vram_addr_byte(0xFF00u, al); }
 
-/* The high byte also prefetches the word at the new address into the read
-   latches - $2139/$213A hand those back before the fetch catches up. */
+/* Also prefetches into the read latches that $2139/$213A hand back. */
 REGABI_REG_WRITE8(reg2117w);
 void c_reg2117w(u1 const al)
 {
@@ -779,11 +768,8 @@ void c_reg211Aw(u1 const al) { mode7set = al; }
 
 /* --- the IRQ beam-position registers -------------------------------------- *
  *
- * These four carry the running cycle count in DH and adjust it, so they use
- * REGABI_REG_WRITE8_DX: edx comes in and the new one goes back out.
- *
- * HIRQCycNext is a dword but only its low byte is ever touched, so the rest
- * has to survive - it is part of the save state.
+ * EDX carries the cycle count in DH, hence REGABI_REG_WRITE8_DX. Only the low
+ * byte of the HIRQCycNext dword is used; the rest is part of the save state.
  */
 static u1 hirq_cyc(void) { return (u1)HIRQCycNext; }
 
@@ -792,10 +778,7 @@ static void hirq_cyc_set(u1 const v)
     HIRQCycNext = (HIRQCycNext & ~0xFFu) | v;
 }
 
-/* Work out where on the line the H-IRQ lands and whether it still fits in what
-   is left of the current scanline. The 16-bit multiply's high half is thrown
-   away by the following divide, and only the low byte of the quotient is used.
-   Not reached when the beam is not on the V-IRQ line. */
+/* Where the H-IRQ lands, and whether it still fits in the rest of the line. */
 static u1 determine_hirq_exec(u1 dh)
 {
     u1 const pos = (u1)(((u4)HIRQLoc * cycpl) / 340u);
@@ -812,8 +795,8 @@ static u1 determine_hirq_exec(u1 dh)
     return dh;
 }
 
-/* A pending H-IRQ is cancelled when the beam has moved off the V-IRQ line;
-   its unspent cycles go back to the caller's count. $4209 and $420A share it. */
+/* Cancel a pending H-IRQ once the beam leaves the V-IRQ line, returning its
+   unspent cycles. */
 static u1 cancel_hirq(u1 dh)
 {
     if (HIRQNextExe == 1 && curypos != VIRQLoc) {
@@ -829,8 +812,7 @@ static u4 dx_with_dh(u4 const edx, u1 const dh)
     return (edx & ~0xFF00u) | ((u4)dh << 8);
 }
 
-/* $4207/$4208 only recompute when the value actually changes, and only while
-   the beam sits on the V-IRQ line. Both compare and store a single byte. */
+/* Recompute only on a real change, and only on the V-IRQ line. */
 REGABI_REG_WRITE8_DX(reg4207w);
 u4 c_reg4207w(u1 const al, u4 const edx)
 {
@@ -864,8 +846,7 @@ u4 c_reg4209w(u1 const al, u4 const edx)
     return dx_with_dh(edx, cancel_hirq((u1)(edx >> 8)));
 }
 
-/* V-IRQ beam position, high: only bit 0 is real. A position at or past the
-   last line can never be reached, so it is parked out of range instead. */
+/* Only bit 0 is real; a position past the last line is parked out of range. */
 REGABI_REG_WRITE8_DX(reg420Aw);
 u4 c_reg420Aw(u1 const al, u4 const edx)
 {

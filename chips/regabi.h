@@ -10,8 +10,7 @@
  * Legacy ABI: address in ECX, value in AL (8-bit) or AX (16-bit); handlers
  * must preserve ECX, EDX and the unused upper bits of EAX.  BANK handlers
  * receive an address, REG handlers (I/O register table entries) do not.
- * The _DX variant is the exception: it passes EDX through instead, for the
- * handlers that carry the running cycle count in DH.
+ * The _DX variant passes EDX through instead.
  *
  * Each macro emits the trampoline under the public name plus a prototype
  * for the cdecl implementation.  On non-i386 builds only the prototype
@@ -103,11 +102,8 @@
                                                             "ret\n");         \
     void c_##name(uint8_t)
 
-/*
- * Same as REGABI_REG_WRITE8 but EDX is in/out rather than preserved: the IRQ
- * beam-position registers carry the running cycle count in DH and adjust it.
- * The implementation takes the incoming EDX and returns the outgoing one.
- */
+/* As REGABI_REG_WRITE8, but EDX is in/out: the IRQ beam registers carry the
+ * running cycle count in DH. */
 #define REGABI_REG_WRITE8_DX(name)                                              \
     __asm__(REGABI_ENTRY(name) "pushl %eax\n"                                   \
                                "pushl %ecx\n"                                   \

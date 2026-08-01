@@ -257,8 +257,6 @@ int Main_Proc()
             break;
 #ifdef __OPENGL__
         case SDL_EVENT_WINDOW_RESIZED:
-            // UseOpenGL, not just the mode flags: these call into GL, and the
-            // build having OpenGL says nothing about the mode currently running.
             if (UseOpenGL && GUIRESIZE[cvidmode]) {
                 WindowWidth = SurfaceX = event.window.data1;
                 WindowHeight = SurfaceY = event.window.data2;
@@ -278,8 +276,7 @@ int Main_Proc()
             // scaling correct without relying on the size queried right after the
             // toggle, which can still be stale. data1/data2 are in pixels here.
             // Modes 1, 3 and 4 are fullscreen *software* modes, so FullScreen
-            // alone is not enough - without the UseOpenGL test this crashes in
-            // gl_clearwin() the moment the compositor reports a size.
+            // alone would call gl_clearwin() with no context.
             if (UseOpenGL && FullScreen) {
                 SetGLViewport(event.window.data1, event.window.data2);
                 gl_clearwin();
@@ -1081,9 +1078,7 @@ int startgame()
     }
 
     if (!status) {
-        // The old window was torn down above, so there is no longer a surface
-        // to draw into. Say so rather than leaving the previous state in
-        // place, which would claim a window that is already gone.
+        // The old window was torn down above; do not claim it is still there.
         sdl_state = vid_none;
         return FALSE;
     }
@@ -1167,9 +1162,8 @@ char CheckOGLMode();
 
 void initwinvideo(void)
 {
-    // The last mode that actually started. A failed mode change leaves no
-    // window at all (startgame() ends the old one before starting the new),
-    // so there has to be something to go back to.
+    // A failed mode change leaves no window at all, so keep somewhere to
+    // fall back to.
     static uint32_t lastGoodMode = ~0u;
     uint32_t newmode = 0;
 
@@ -1283,11 +1277,8 @@ void initwinvideo(void)
         if (sdl_state == vid_null) {
             zexit_error();
         }
-        /* Returning here used to hand control back to the render path with the
-           old window already destroyed, which segfaults on the next frame -
-           the usual way to hit it is alt+return into a mode the display cannot
-           give us. Drop back to the last mode that worked instead. The retry
-           cannot loop: it runs with cvidmode already equal to lastGoodMode. */
+        /* Returning here would resume drawing into the destroyed window.
+           The retry cannot loop: cvidmode is then already lastGoodMode. */
         if (lastGoodMode != ~0u && cvidmode != lastGoodMode) {
             fprintf(stderr, "Video mode %u failed to start, reverting to %u\n",
                 (unsigned)cvidmode, (unsigned)lastGoodMode);
