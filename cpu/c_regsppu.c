@@ -57,6 +57,9 @@ extern u2 bg1objptr, bg2objptr, bg3objptr, bg4objptr;
 extern u1 cgmod, winbg1en, winbg2en, winbg3en, winbg4en, winobjen, wincolen;
 extern u1 coladdr, coladdg, coladdb, interlval;
 extern u1 iohvlatch, MultiTapStat;
+extern u4 vramaddr;
+extern u1 vramread2, mode7set;
+extern u1* vram;
 extern u2 HIRQLoc, VIRQLoc, totlines;
 extern u4 HIRQCycNext;
 extern u1 HIRQNextExe;
@@ -741,6 +744,38 @@ void c_reg420Dw(u1 const al)
         cycpblt = cycpb268;
     }
 }
+
+/* VRAM address. The register counts words but the address is kept doubled, so
+   it is halved, the byte patched in, and doubled again - the low bit is not
+   part of the register and must not survive. Only the low 16 bits are the
+   address; the rest of the dword belongs to the caller. */
+static void vram_addr_byte(u2 const mask, u2 const bits)
+{
+    u2 v = (u2)((u2)vramaddr >> 1);
+
+    v = (u2)((v & mask) | bits);
+    vramaddr = (vramaddr & ~0xFFFFu) | (u2)(v << 1);
+    vramread = 0;
+}
+
+REGABI_REG_WRITE8(reg2116w);
+void c_reg2116w(u1 const al) { vram_addr_byte(0xFF00u, al); }
+
+/* The high byte also prefetches the word at the new address into the read
+   latches - $2139/$213A hand those back before the fetch catches up. */
+REGABI_REG_WRITE8(reg2117w);
+void c_reg2117w(u1 const al)
+{
+    u2 a;
+
+    vram_addr_byte(0x00FFu, (u2)((u2)al << 8));
+    a = (u2)vramaddr;
+    vramread = vram[a];
+    vramread2 = vram[a + 1u];
+}
+
+REGABI_REG_WRITE8(reg211Aw); /* mode 7 settings */
+void c_reg211Aw(u1 const al) { mode7set = al; }
 
 /* --- the IRQ beam-position registers -------------------------------------- *
  *

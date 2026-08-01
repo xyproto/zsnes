@@ -129,30 +129,6 @@ NEWSYM reg2115w
 .from2119b
     ret
 
-; Video port address (Low)
-NEWSYM reg2116w
-    shr word[vramaddr],1
-    mov [vramaddr],al
-    shl word[vramaddr],1
-    mov byte[vramread],0
-    ret
-
-; Video port address (High)
-NEWSYM reg2117w
-    shr word[vramaddr],1
-    mov [vramaddr+1],al
-    shl word[vramaddr],1
-    mov byte[vramread],0
-
-    movzx ebx,word[vramaddr]
-    add ebx,[vram]
-    mov bl,[ebx]
-    mov [vramread],bl
-    movzx ebx,word[vramaddr]
-    add ebx,[vram]
-    mov bl,[ebx+1]
-    mov [vramread2],bl
-    ret
 
 ; Video port data (Low)
 NEWSYM reg2118
@@ -321,11 +297,6 @@ NEWSYM reg2119inc8inc
 .nochange2
     mov ebx,[addrincr]
     add [vramaddr],bx
-    ret
-
-; MODE7 settings register
-NEWSYM reg211Aw
-    mov [mode7set],al
     ret
 
 SECTION .text
