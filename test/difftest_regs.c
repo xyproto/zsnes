@@ -72,8 +72,16 @@ u4 HIRQCycNext;
 u1 HIRQNextExe;
 u4 vramaddr;
 u1 vramread2, mode7set;
-static u1 vram_store[0x10002], vram_init[0x10002];
-u1* vram = vram_store;
+/* vram points at vrama in the emulator (ui.c); the asm reaches VRAM by both
+   routes, so the test has to keep them the same object. Two bytes of slack:
+   the $2119 handlers store at offset + 1. */
+u1 vrama[0x10002];
+static u1 vram_init[0x10002];
+u1* vram = vrama;
+u1 vidmemch2[4096], vidmemch4[4096], vidmemch8[4096];
+u1 vramincby8left, vramincby8totl;
+u2 vramincby8var, vramincby8ptri, addrincr;
+static u1 vmc_init[4096];
 static u1 dma_init[129];
 /* The write table; the oracle's cpu/regsw.mac names it. */
 void (*regptwa[0x3000])(void);
@@ -201,6 +209,14 @@ DECL(reg420Aw);
 DECL(reg2116w);
 DECL(reg2117w);
 DECL(reg211Aw);
+DECL(reg2118);
+DECL(reg2118inc);
+DECL(reg2118inc8);
+DECL(reg2118inc8inc);
+DECL(reg2119);
+DECL(reg2119inc);
+DECL(reg2119inc8);
+DECL(reg2119inc8inc);
 #undef DECL
 
 /* Call a handler with eax, ecx and edx set, and report what came back.
@@ -367,6 +383,14 @@ static regcase const cases[] = {
     CASE(reg2116w),
     CASE(reg2117w),
     CASE(reg211Aw),
+    CASE(reg2118),
+    CASE(reg2118inc),
+    CASE(reg2118inc8),
+    CASE(reg2118inc8inc),
+    CASE(reg2119),
+    CASE(reg2119inc),
+    CASE(reg2119inc8),
+    CASE(reg2119inc8inc),
 };
 #undef CASE
 #undef CASE_DMA
@@ -388,6 +412,8 @@ typedef struct {
     u2 hirql, virql;
     u4 vaddr;
     u1 vrd, vrd2, m7set;
+    u1 vmc[3 * 4096];
+    u1 vr[0x10002];
     u4 hirqc;
     u1 hirqx;
     u2 dvr, mr2;
@@ -422,6 +448,8 @@ typedef struct {
     u2 hirql0, virql0, totl0;
     u4 vaddr0;
     u1 vrd0, vrd20, m7set0;
+    u1 vb8l, vb8t;
+    u2 vb8v, vb8p, aincr;
     u4 hirqc0;
     u1 hirqx0;
     u1 ox268, ox268c, ox358, ox358c, cb268, cb358;
@@ -492,8 +520,16 @@ static void run(void (*fn)(void), u4 a, u4 c, u4 d, state const* in,
     memcpy(oamram, oam_init, sizeof oamram);
     cgmod = in->cgm0;
     iohvlatch = in->iohv0;
-    memcpy(vram_store, vram_init, sizeof vram_store);
+    memcpy(vrama, vram_init, sizeof vrama);
     vramaddr = in->vaddr0;
+    memcpy(vidmemch2, vmc_init, 4096);
+    memcpy(vidmemch4, vmc_init, 4096);
+    memcpy(vidmemch8, vmc_init, 4096);
+    vramincby8left = in->vb8l;
+    vramincby8totl = in->vb8t;
+    vramincby8var = in->vb8v;
+    vramincby8ptri = in->vb8p;
+    addrincr = in->aincr;
     vramread = in->vrd0;
     vramread2 = in->vrd20;
     mode7set = in->m7set0;
@@ -587,6 +623,10 @@ static void run(void (*fn)(void), u4 a, u4 c, u4 d, state const* in,
     out->cgm = cgmod;
     out->iohv = iohvlatch;
     out->vaddr = vramaddr;
+    memcpy(out->vmc, vidmemch2, 4096);
+    memcpy(out->vmc + 4096, vidmemch4, 4096);
+    memcpy(out->vmc + 8192, vidmemch8, 4096);
+    memcpy(out->vr, vrama, sizeof out->vr);
     out->vrd = vramread;
     out->vrd2 = vramread2;
     out->m7set = mode7set;
@@ -655,6 +695,7 @@ int main(void)
     dt_fill(cg_init, sizeof cg_init);
     dt_fill(dma_init, sizeof dma_init);
     dt_fill(vram_init, sizeof vram_init);
+    dt_fill(vmc_init, sizeof vmc_init);
     DT_MAIN(20260730, 200000)
     {
         regcase const* k = &cases[dt_mod(sizeof cases / sizeof *cases)];
@@ -737,6 +778,14 @@ int main(void)
         in.vaddr0 = (dt_u32() & ~0xFFFFu)
             | (dt_mod(2) ? 0xFFFCu + dt_mod(4) : dt_u32() & 0xFFFFu);
         in.vrd0 = (u1)dt_u32();
+        /* The inc8 address is (addr & left) << 3 plus two masked terms; the
+           asm has no bound check, so keep the sum inside VRAM the way the
+           emulator's own field split does. */
+        in.vb8l = (u1)(dt_u32() & 0x1Fu);
+        in.vb8t = (u1)dt_u32();
+        in.vb8v = (u2)(dt_u32() & 0x1FFFu);
+        in.vb8p = (u2)(dt_u32() & 0x1FFFu);
+        in.aincr = (u2)(dt_mod(2) ? 2 : dt_u32());
         in.vrd20 = (u1)dt_u32();
         in.m7set0 = (u1)dt_u32();
         in.hirql0 = (u2)(dt_mod(2) ? (dt_u32() & 0xFF00u) | (a & 0xFFu)
@@ -795,6 +844,14 @@ int main(void)
            be clean here or both sides walk off the array. */
         if (k->c_fn == reg2104w) {
             in.oaddr &= 0xFFFFu;
+        }
+        /* Same for the VRAM data ports: a dirty high half in vramaddr walks
+           the inc8 offset straight off the end of the buffer. */
+        if (k->c_fn == reg2118 || k->c_fn == reg2118inc
+            || k->c_fn == reg2118inc8 || k->c_fn == reg2118inc8inc
+            || k->c_fn == reg2119 || k->c_fn == reg2119inc
+            || k->c_fn == reg2119inc8 || k->c_fn == reg2119inc8inc) {
+            in.vaddr0 &= 0xFFFEu;
         }
         /* The high halves must survive a byte store. */
         in.scr0 = (u2)dt_u32();
@@ -858,6 +915,8 @@ int main(void)
         DT_EQ("cgmod", x.cgm, y.cgm);
         DT_EQ("iohvlatch", x.iohv, y.iohv);
         DT_EQ("vramaddr", x.vaddr, y.vaddr);
+        DT_MEM("vidmemch", x.vmc, y.vmc, sizeof x.vmc);
+        DT_MEM("vrama", x.vr, y.vr, sizeof x.vr);
         DT_EQ("vramread", x.vrd, y.vrd);
         DT_EQ("vramread2", x.vrd2, y.vrd2);
         DT_EQ("mode7set", x.m7set, y.m7set);

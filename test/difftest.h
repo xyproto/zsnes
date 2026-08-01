@@ -57,10 +57,17 @@ static long dt_iters; /* total iterations                              */
  * Seeds the RNG and loops `iters` times, resetting the per-iteration flag each
  * time. Put the setup / run-asm / run-c / compare in the body.
  */
+/* DT_ITER overrides the count: a mutation sweep only needs enough iterations
+   to trip, and the full run is far too slow to do 100 times. */
 #define DT_MAIN(seed, iters)                         \
     srand(seed);                                     \
     dt_fails = 0;                                    \
     dt_iters = (long)(iters);                        \
+    {                                                \
+        const char* dt_e = getenv("DT_ITER");        \
+        if (dt_e && *dt_e)                           \
+            dt_iters = atol(dt_e);                   \
+    }                                                \
     for (dt_it = 0; dt_it < dt_iters; dt_it++)       \
         for (int dt_once = (dt_bad = 0, 1); dt_once; \
             dt_once = 0, dt_fails += dt_bad)

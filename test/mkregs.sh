@@ -67,7 +67,12 @@ for l in src:
     # The section directives are written in both cases in the .inc files; a
     # stray `section .data` inside a body silently assembles the rest of the
     # oracle into .data, where it links but faults when called.
-    if cur and not re.match(r'(section |%)', l.strip(), re.I):
+    # Keep %if/%else/%endif: dropping the guard but not its body leaves
+    # reg2119's debugger-only debstop write unconditional.
+    body_drop = (re.match(r'section ', l.strip(), re.I)
+                 or (l.strip().startswith('%')
+                     and not re.match(r'%(if|else|elif|endif)', l.strip(), re.I)))
+    if cur and not body_drop:
         out.append(l)
         if l.strip():
             emitted = True
@@ -181,6 +186,15 @@ EXTERN hdmadelay
 EXTERN SPC7110Enable
 EXTERN resolutn
 EXTERN curypos
+EXTERN vrama
+EXTERN vidmemch2
+EXTERN vidmemch4
+EXTERN vidmemch8
+EXTERN vramincby8left
+EXTERN vramincby8totl
+EXTERN vramincby8var
+EXTERN vramincby8ptri
+EXTERN addrincr
 EXTERN vramaddr
 EXTERN vramread2
 EXTERN mode7set
@@ -284,5 +298,6 @@ section .text
 %include "_regs.inc"
 EOF
 
-nasm -O1 -f elf32 -w-orphan-labels -o _regs.o _regs.asm
+# Match the build: reg2119's debugger branch references debstop otherwise.
+nasm -O1 -f elf32 -DNO_DEBUGGER -w-orphan-labels -o _regs.o _regs.asm
 echo "wrote _regs.o (oracle from $(git -C .. rev-parse --short $REV), $(grep -c '^NEWSYM asm_' _regs.inc) handlers)"
