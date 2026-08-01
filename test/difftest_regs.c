@@ -70,6 +70,10 @@ u1 opexec268, opexec268cph, opexec358, opexec358cph, cycpb268, cycpb358;
 u2 HIRQLoc, VIRQLoc, totlines;
 u4 HIRQCycNext;
 u1 HIRQNextExe;
+u4 vramaddr;
+u1 vramread2, mode7set;
+static u1 vram_store[0x10002], vram_init[0x10002];
+u1* vram = vram_store;
 static u1 dma_init[129];
 /* The write table; the oracle's cpu/regsw.mac names it. */
 void (*regptwa[0x3000])(void);
@@ -194,6 +198,9 @@ DECL(reg4207w);
 DECL(reg4208w);
 DECL(reg4209w);
 DECL(reg420Aw);
+DECL(reg2116w);
+DECL(reg2117w);
+DECL(reg211Aw);
 #undef DECL
 
 /* Call a handler with eax, ecx and edx set, and report what came back.
@@ -357,6 +364,9 @@ static regcase const cases[] = {
     CASE(reg4208w),
     CASE(reg4209w),
     CASE_NOAX(reg420Aw), /* `and al,01h` clobbers al, like reg420Dw */
+    CASE(reg2116w),
+    CASE(reg2117w),
+    CASE(reg211Aw),
 };
 #undef CASE
 #undef CASE_DMA
@@ -376,6 +386,8 @@ typedef struct {
     u1 cgm, win[7], cola[3], intl;
     u1 iohv, mtap, iop, spd[4];
     u2 hirql, virql;
+    u4 vaddr;
+    u1 vrd, vrd2, m7set;
     u4 hirqc;
     u1 hirqx;
     u2 dvr, mr2;
@@ -408,6 +420,8 @@ typedef struct {
     u1 cgm0, win0, cola0, intl0;
     u1 iohv0, mtap0, spd0, cphb0, xirq0, cpblt0;
     u2 hirql0, virql0, totl0;
+    u4 vaddr0;
+    u1 vrd0, vrd20, m7set0;
     u4 hirqc0;
     u1 hirqx0;
     u1 ox268, ox268c, ox358, ox358c, cb268, cb358;
@@ -478,6 +492,11 @@ static void run(void (*fn)(void), u4 a, u4 c, u4 d, state const* in,
     memcpy(oamram, oam_init, sizeof oamram);
     cgmod = in->cgm0;
     iohvlatch = in->iohv0;
+    memcpy(vram_store, vram_init, sizeof vram_store);
+    vramaddr = in->vaddr0;
+    vramread = in->vrd0;
+    vramread2 = in->vrd20;
+    mode7set = in->m7set0;
     HIRQLoc = in->hirql0;
     VIRQLoc = in->virql0;
     HIRQCycNext = in->hirqc0;
@@ -567,6 +586,10 @@ static void run(void (*fn)(void), u4 a, u4 c, u4 d, state const* in,
     out->vbo = vidbright;
     out->cgm = cgmod;
     out->iohv = iohvlatch;
+    out->vaddr = vramaddr;
+    out->vrd = vramread;
+    out->vrd2 = vramread2;
+    out->m7set = mode7set;
     out->hirql = HIRQLoc;
     out->virql = VIRQLoc;
     out->hirqc = HIRQCycNext;
@@ -631,6 +654,7 @@ int main(void)
     dt_fill(oam_init, sizeof oam_init);
     dt_fill(cg_init, sizeof cg_init);
     dt_fill(dma_init, sizeof dma_init);
+    dt_fill(vram_init, sizeof vram_init);
     DT_MAIN(20260730, 200000)
     {
         regcase const* k = &cases[dt_mod(sizeof cases / sizeof *cases)];
@@ -708,9 +732,16 @@ int main(void)
         /* $4207/$4208 only act when the value changes, and $4209/$420A only
            when the beam has left the V-IRQ line - so curypos and VIRQLoc have
            to collide often, and HIRQLoc has to match al often. */
+        /* The high half of vramaddr is not the address and must survive; the
+           low half wraps, so sit on the top of the range too. */
+        in.vaddr0 = (dt_u32() & ~0xFFFFu)
+            | (dt_mod(2) ? 0xFFFCu + dt_mod(4) : dt_u32() & 0xFFFFu);
+        in.vrd0 = (u1)dt_u32();
+        in.vrd20 = (u1)dt_u32();
+        in.m7set0 = (u1)dt_u32();
         in.hirql0 = (u2)(dt_mod(2) ? (dt_u32() & 0xFF00u) | (a & 0xFFu)
                                    : dt_u32());
-        in.virql0 = (u2)(dt_mod(2) ? in.cury0 : dt_u32());
+        in.virql0 = (u2)dt_u32(); /* re-pointed at curypos below */
         in.hirqc0 = dt_u32();
         in.hirqx0 = (u1)(dt_mod(2) ? 1 : dt_u32());
         /* $420A parks VIRQLoc out of range at totlines - 1; straddle it. */
@@ -778,6 +809,19 @@ int main(void)
            straddle that boundary rather than sampling it by luck. */
         in.res0 = (u2)(dt_mod(2) ? 224 : dt_u32() & 0x1FF);
         in.cury0 = (u2)(dt_mod(2) ? in.res0 + dt_mod(3) - 1 : dt_u32() & 0x1FF);
+        /* $4207/$4208 only recompute while the beam sits on the V-IRQ line, and
+           $4209/$420A only cancel once it has left. curypos is not known until
+           here, so pair them up now rather than earlier with a stale value. */
+        if (dt_mod(2)) {
+            in.virql0 = in.cury0;
+        }
+        /* $420A parks VIRQLoc when it reaches totlines - 1. Both sides are
+           otherwise independent, so pin totlines to the value that puts the
+           write exactly on that edge - VIRQLoc keeps its low byte and takes
+           bit 8 from al. */
+        if (dt_mod(4) == 0) {
+            in.totl0 = (u2)(((in.virql0 & 0x00FFu) | ((a & 1u) << 8)) + 1u);
+        }
 
         run(k->asm_fn, a, c, d, &in, m7a, m7b, mult, &x);
         run(k->c_fn, a, c, d, &in, m7a, m7b, mult, &y);
@@ -813,6 +857,10 @@ int main(void)
         DT_EQ("vidbright", x.vbo, y.vbo);
         DT_EQ("cgmod", x.cgm, y.cgm);
         DT_EQ("iohvlatch", x.iohv, y.iohv);
+        DT_EQ("vramaddr", x.vaddr, y.vaddr);
+        DT_EQ("vramread", x.vrd, y.vrd);
+        DT_EQ("vramread2", x.vrd2, y.vrd2);
+        DT_EQ("mode7set", x.m7set, y.m7set);
         DT_EQ("HIRQLoc", x.hirql, y.hirql);
         DT_EQ("VIRQLoc", x.virql, y.virql);
         DT_EQ("HIRQCycNext", x.hirqc, y.hirqc);

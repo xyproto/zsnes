@@ -181,6 +181,10 @@ EXTERN hdmadelay
 EXTERN SPC7110Enable
 EXTERN resolutn
 EXTERN curypos
+EXTERN vramaddr
+EXTERN vramread2
+EXTERN mode7set
+EXTERN vram
 EXTERN HIRQLoc
 EXTERN VIRQLoc
 EXTERN HIRQCycNext

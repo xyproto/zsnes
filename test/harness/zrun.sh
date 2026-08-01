@@ -30,7 +30,14 @@ rm -f /tmp/zsnes_*.png /tmp/zsnes_*.txt /tmp/zsnes_ppu.txt /tmp/zsnes_hashes.txt
 args=(-v 0 -m -ds)
 [ -n "$SLOT" ] && args+=(-zs "$SLOT")
 
-env PPU_STATE_LOG=1 \
+# The emulator writes its config back on exit *including* whatever the command
+# line overrode, so running the harness against the real $HOME permanently
+# disables the user's sound (-ds) and drops them into video mode 0 (-v 0).
+# Give every run its own throwaway HOME so it cannot touch real settings.
+RUNHOME=$OUT/home
+mkdir -p "$RUNHOME"
+
+env HOME="$RUNHOME" PPU_STATE_LOG=1 \
     ${ASCII:+ASCII_SCREENSHOT_EVERY_FIVE=1 ASCII_SCREENSHOT_BURST=3} \
     ${PNGEVERY:+PNG_SCREENSHOT_EVERY_N=$PNGEVERY} \
     ${INPUT:+DEBUG_INPUT_SCRIPT=$INPUT} \
