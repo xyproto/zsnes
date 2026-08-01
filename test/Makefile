@@ -45,7 +45,7 @@ ASMDATA   := zsnes_asmdata_test
 ASMDATA_SRC := asmdata_test.c
 OBJS      := ../zpath.o
 
-.PHONY: all run clean spcdec fxtable fxops memops m7calc regs
+.PHONY: all run clean spcdec fxtable fxops memops m7calc m7ext2 m7start regs
 
 all: $(BIN) $(NETPLAY) $(ST10) $(ST11) $(OBC1) $(MSU1) $(DSP2) $(SAI) $(SA1) $(SPC7110) $(VCACHE) $(SPRITES) $(C4) $(MODE7) $(ASMDATA)
 
@@ -127,6 +127,16 @@ memops: difftest_memops.c difftest.h mkmemops.sh memops.list ../cpu/mem_ops.h
 	$(CC) $(CFLAGS) difftest_memops.c _memops.o -no-pie -o difftest_memops
 	@./difftest_memops
 
+m7start: difftest_m7start.c difftest.h mkm7start.sh ../video/c_mode716start.c
+	./mkm7start.sh
+	$(CC) $(CFLAGS) difftest_m7start.c ../video/c_mode716start.c _m7start.o -no-pie -o difftest_m7start
+	@./difftest_m7start
+
+m7ext2: difftest_m7ext2.c difftest.h mkm7ext2.sh ../video/c_mode716ext2.c
+	./mkm7ext2.sh
+	$(CC) $(CFLAGS) difftest_m7ext2.c ../video/c_mode716ext2.c _m7ext2.o -no-pie -o difftest_m7ext2
+	@./difftest_m7ext2
+
 m7calc: difftest_m7calc.c difftest.h mkm7calc.sh ../video/c_mode716calc.c
 	./mkm7calc.sh
 	$(CC) $(CFLAGS) difftest_m7calc.c ../video/c_mode716calc.c _m7calc.o -no-pie -o difftest_m7calc
@@ -156,7 +166,7 @@ run: all
 
 clean:
 	rm -f $(BIN) $(NETPLAY) $(ST10) $(ST11) $(OBC1) $(MSU1) $(DSP2) $(SAI) $(SA1) $(SPC7110) $(VCACHE) $(SPRITES) $(C4) $(MODE7) $(ASMDATA)
-	rm -f difftest_spcdec difftest_fxtable difftest_fxops difftest_memops difftest_m7calc difftest_regs _*.o _*.asm _*.inc _*.raw
+	rm -f difftest_spcdec difftest_fxtable difftest_fxops difftest_memops difftest_m7calc difftest_m7ext2 difftest_m7start difftest_regs _*.o _*.asm _*.inc _*.raw
 
 # Port-time differential testing (difftest.h + mkdifftest.sh) proves a C port
 # bit-identical to the original assembly. It is transient by design: the oracle

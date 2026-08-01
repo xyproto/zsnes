@@ -92,6 +92,7 @@ EXTSYM ngwleft,ngwleftb,mode7xpos,mode7ypos,mode7xrpos,mode7yrpos
 EXTSYM mode7xadder,mode7yadder,m7starty
 EXTSYM M7SeamA,M7SeamB,M7SeamC,M7SeamD,c_CalculateNewValues
 EXTSYM M7SeamSI,M7SeamDI,M7SeamBP,c_processmode7hires16b
+EXTSYM c_drawmode7ngextbg216b
 
 %include "video/mode716.mac"
 
@@ -390,95 +391,21 @@ drawmode7w16bmnte
 drawmode7w16bsnte
     Mode7MainSube Mode7ExtBGmsnt,Mode7ExtBGnt
 
-%macro ExtBG2 1
-    mov esi,[curvidoffset]       ; esi = [vidbuffer] + curypos * 288 + 16
-    mov ecx,256
-    xor eax,eax
-.loop
-    mov al,[esi+75036*8]
-    test al,80h
-    jz .nopr2
-    and al,7Fh
-    %1
-.nopr2
-    add esi,2
-    dec ecx
-    jnz .loop
-    xor eax,eax
-    ret
-%endmacro
-
-%macro ExtBGNormal 0
-    mov dx,[ebp+eax*2]
-    mov [esi],dx
-%endmacro
-%macro ExtBGNormalt 0
-    mov dx,[ebp+eax*2+512]
-    mov [esi],dx
-%endmacro
-%macro ExtBGNormalnt 0
-    mov dx,[ebp+eax*2]
-    mov [esi],dx
-%endmacro
-%macro ExtBGNormalst 0
-    mov dx,[ebp+eax*2]
-    mov [esi+75036*2],dx
-%endmacro
-%macro ExtBGNormalsnt 0
-    mov dx,[ebp+eax*2]
-    mov [esi+75036*2],dx
-%endmacro
-%macro ExtBGNormalmst 0
-    mov dx,[ebp+eax*2+512]
-    mov [esi],dx
-    and dx,[UnusedBitXor]
-    mov [esi+75036*2],dx
-%endmacro
-%macro ExtBGNormalmsnt 0
-    mov dx,[ebp+eax*2]
-    mov [esi],dx
-    mov [esi+75036*2],dx
-%endmacro
-
 NEWSYM drawmode7ngextbg216b
-    test byte[scrndis],1
-    jz .notdisabled
+    mov [M7SeamA], eax
+    mov [M7SeamB], ebx
+    mov [M7SeamC], ecx
+    mov [M7SeamD], edx
+    mov [M7SeamSI], esi
+    mov [M7SeamBP], ebp
+    call c_drawmode7ngextbg216b
+    mov eax, [M7SeamA]
+    mov ebx, [M7SeamB]
+    mov ecx, [M7SeamC]
+    mov edx, [M7SeamD]
+    mov esi, [M7SeamSI]
+    mov ebp, [M7SeamBP]
     ret
-.notdisabled
-    cmp byte[mode7hr+ebx],1
-;    je near drawmode7winextbg2hr16b
-    ; esi = pointer to video buffer
-    CheckTransparency 01h,drawmode7ngextbg216bt
-    CheckTransparency 02h,drawmode7ngextbg216bt
-    test byte[FillSubScr+ebx],1
-    jz .main
-    test byte[BGMS1+ebx*2],01h
-    jnz .main
-    add esi,75036*2
-.main
-    ExtBG2 ExtBGNormal
-drawmode7ngextbg216bt:
-    test byte[scadtng+ebx],1h
-    jz near drawmode7ngextbg216bnt
-    test byte[BGMS1+ebx*2+1],1h
-    jnz near drawmode7ngextbg216bmst
-    ExtBG2 ExtBGNormalt
-drawmode7ngextbg216bmst
-    test byte[BGMS1+ebx*2],1h
-    jz near drawmode7ngextbg216bst
-    ExtBG2 ExtBGNormalmst
-drawmode7ngextbg216bst:
-    ExtBG2 ExtBGNormalst
-drawmode7ngextbg216bnt:
-    test byte[BGMS1+ebx*2+1],1h
-    jnz near drawmode7ngextbg216bmsnt
-    ExtBG2 ExtBGNormalnt
-drawmode7ngextbg216bmsnt
-    test byte[BGMS1+ebx*2],1h
-    jz near drawmode7ngextbg216bsnt
-    ExtBG2 ExtBGNormalmsnt
-drawmode7ngextbg216bsnt:
-    ExtBG2 ExtBGNormalsnt
 
 ALIGN32
 

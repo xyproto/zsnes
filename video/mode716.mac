@@ -21,6 +21,7 @@
 EXTSYM BGMS1,FillSubScr,CMainWinScr,CSubWinScr,scadtng
 EXTSYM ngwinen,winbg1enval,BuildWindow,ngwintable,ngcwinptr,domosaicng16b
 EXTSYM pesimpng
+EXTSYM M7StartAX,M7StartDX,M7StartSI,M7StartDI,c_Mode7Startup16b
 
 ;Skip transparency if the bg is just a sub-screen or there are no sub-screens
 ;for that line:
@@ -69,252 +70,22 @@ EXTSYM pesimpng
 ; m7starty moved to video/c_mode716data.c.
 SECTION .text
 
-%macro CLIP 1
-    test word[%1],2000h
-    jz %%zero
-    or word[%1],~3ffh
-    jmp %%notzero
-%%zero
-    and word[%1],3ffh
-%%notzero
-%endmacro
-
-%macro Convert13Bit 0
-    and bx,0001111111111111b    ; 13 -> 16 bit signed value
-    test bx,0001000000000000b
-    jz %%noneg
-    or bx,1110000000000000b
-%%noneg
-%endmacro
-
-%macro Mode7Calculate16b 0
-    ; mode 7, ax = curyposition, dx = curxposition (left side)
-    ; draw center map coordinates at (X0-bg1scrolx,Y0-bg1scroly) on screen
-    ; center map coordinates = (X0,Y0)
-    ; 1.) cx=X0-bg1scrolx, cy =Y0-ax
-
-    cmp byte[M7HROn],1
-    je near .calculateb
-
-    mov bx,dx
-    Convert13Bit
-    mov [mcxloc],bx
-    mov bx,[mode7X0]
-    Convert13Bit
-    sub [mcxloc],bx
-    CLIP mcxloc
-    mov bx,ax
-    Convert13Bit
-    mov [mcyloc],bx
-    mov bx,[mode7Y0]
-    Convert13Bit
-    sub word[mcyloc],bx
-    CLIP mcyloc
-
-    ; 2.) Find position at scaled y, centered x at SCX=X0-(cy*C),SCY=Y0-(cy*D)
-
-    movsx eax,word[mode7B]
-    movsx ebx,word[mcyloc]
-    imul eax,ebx
-    and eax,~63
-    mov [mmode7xpos],eax
-    mov bx,[mode7X0]
-    Convert13Bit
-    add [mmode7xpos+1],bx
-
-    movsx eax,word[mode7B]
-    movzx ebx,word[m7starty]
-    imul eax,ebx
-    and eax,~63
-    add [mmode7xpos],eax
-
-    movsx ebx,word[mcyloc]
-    movsx eax,word[mode7D]
-    imul eax,ebx
-    and eax,~63
-    mov [mmode7ypos],eax
-    mov bx,[mode7Y0]
-    Convert13Bit
-    add [mmode7ypos+1],bx
-
-    movsx eax,word[mode7D]
-    movzx ebx,word[m7starty]
-    imul eax,ebx
-    and eax,~63
-    add [mmode7ypos],eax
-
-    ; 3.) Find left scaled location : SCX=SCX-(cx*A),SCY=SCY-(cx*B)
-
-    movsx ebx,word[mcxloc]
-    movsx eax,word[mode7A]
-    mov [mmode7xadder],eax
-    imul eax,ebx
-    and eax,~63
-    add [mmode7xpos],eax
-
-    movsx eax,word[mode7C]
-    movsx ebx,word[mcxloc]
-    neg eax
-    mov [mmode7yadder],eax
-    neg eax
-    imul eax,ebx
-    and eax,~63
-    add [mmode7ypos],eax
-
-    test byte[mode7set],1
-    jz .nohflip
-    mov eax,[mmode7xadder]
-    shl eax,8
-    add [mmode7xpos],eax
-    neg dword[mmode7xadder]
-    mov eax,[mmode7yadder]
-    shl eax,8
-    sub [mmode7ypos],eax
-    neg dword[mmode7yadder]
-.nohflip
-    jmp .calculatea
-.calculateb
-
-    ; mode 7, ax = curyposition, dx = curxposition (left side)
-    ; draw center map coordinates at (X0-bg1scrolx,Y0-bg1scroly) on screen
-    ; center map coordinates = (X0,Y0)
-    ; 1.) cx=X0-bg1scrolx, cy =Y0-ax
-
-    mov bx,dx
-    Convert13Bit
-    mov [mcxloc],bx
-    mov bx,[mode7X0]
-    Convert13Bit
-    sub [mcxloc],bx
-    CLIP mcxloc
-    mov bx,ax
-    and bx,0011111111111111b    ; 13 -> 16 bit signed value
-    test bx,0010000000000000b
-    jz .nonegccb
-    or bx,1100000000000000b
-.nonegccb
-    mov [mcyloc],bx
-    mov bx,[mode7Y0]
-    Convert13Bit
-    add bx,bx
-    sub word[mcyloc],bx
-    test word[mcyloc],4000h
-    jz %%zero
-    or word[mcyloc],~7ffh
-    jmp %%notzero
-%%zero
-    and word[mcyloc],7ffh
-%%notzero
-
-    ; 2.) Find position at scaled y, centered x at SCX=X0-(cy*C),SCY=Y0-(cy*D)
-
-    movsx eax,word[mode7B]
-    movsx ebx,word[mcyloc]
-    imul eax,ebx
-    sar eax,1
-    and eax,~63
-    mov [mmode7xpos],eax
-    mov bx,[mode7X0]
-    Convert13Bit
-    add [mmode7xpos+1],bx
-
-    movsx eax,word[mode7B]
-    movzx ebx,word[m7starty]
-    imul eax,ebx
-    and eax,~63
-    add [mmode7xpos],eax
-
-    movsx ebx,word[mcyloc]
-    movsx eax,word[mode7D]
-    imul eax,ebx
-    sar eax,1
-    and eax,~63
-    mov [mmode7ypos],eax
-    mov bx,[mode7Y0]
-    Convert13Bit
-    add [mmode7ypos+1],bx
-
-    movsx eax,word[mode7D]
-    movzx ebx,word[m7starty]
-    imul eax,ebx
-    and eax,~63
-    add [mmode7ypos],eax
-
-    ; 3.) Find left scaled location : SCX=SCX-(cx*A),SCY=SCY-(cx*B)
-
-    movsx ebx,word[mcxloc]
-    movsx eax,word[mode7A]
-    mov [mmode7xadder],eax
-    imul eax,ebx
-    and eax,~63
-    ;neg eax
-    add [mmode7xpos],eax
-
-    movsx eax,word[mode7C]
-    movsx ebx,word[mcxloc]
-    neg eax
-    mov [mmode7yadder],eax
-    neg eax
-    imul eax,ebx
-    and eax,~63
-    add [mmode7ypos],eax
-
-    test byte[mode7set],1
-    jz .nohflipcb
-    mov eax,[mmode7xadder]
-    shl eax,8
-    add [mmode7xpos],eax
-    neg dword[mmode7xadder]
-    mov eax,[mmode7yadder]
-    shl eax,8
-    sub [mmode7ypos],eax
-    neg dword[mmode7yadder]
-.nohflipcb
-.calculatea
-%endmacro
-
-SECTION .text
-
+; Mode7Startup16b moved to video/c_mode716start.c, along with the CLIP,
+; Convert13Bit and Mode7Calculate16b macros it was the only user of. The seam
+; carries ax (current y), dx (current x) and esi in, and eax, esi and edi back;
+; ebx, ecx and edx are zero on every path out, so the thunk just clears them.
 Mode7Startup16b:
-    Mode7Calculate16b
-    ; esi = pointer to video buffer
-    mov [pesimpng],esi
-    cmp byte[curmosaicsz],1
-    je .nomosaic
-    mov esi,xtravbuf+32
-    mov edi,esi
-    mov eax,0FFFFFFFFh
-    mov ecx,128
-    rep stosd
-.nomosaic
-
-    ; esi = pointer to video buffer
-    ; edi = pointer to vram
-    ; [.mode7xadder] = dword value to add to x value (decimal between 7 & 8bit)
-    ; [.mode7yadder] = dword value to add to y value (decimal between 7 & 8bit)
-    ; [.mode7xpos]   = dword value of x position, decimal between 7 & 8bit
-    ; [.mode7xpos+1] = word value of x position
-    ; [.mode7ypos]   = dword value of y position, decimal between 7 & 8bit
-    ; [.mode7ypos+1] = word value of y position
-    xor ebx,ebx
-    xor edx,edx
-    xor ecx,ecx
-    mov dword[mmode7xadd2],800h
-    mov byte[mmode7xinc],2
-    mov byte[mmode7xincc],0
-    test dword[mmode7xadder],80000000h
-    jz .noneg
-    mov dword[mmode7xadd2],-800h
-    mov byte[mmode7xinc],-2
-    mov byte[mmode7xincc],0FEh
-.noneg
-    mov dword[mmode7yadd2],800h
-    mov byte[mmode7yinc],1
-    test dword[mmode7yadder],80000000h
-    jz .noneg2
-    mov dword[mmode7yadd2],-800h
-    mov byte[mmode7yinc],-1
-.noneg2
+    mov [M7StartAX], eax
+    mov [M7StartDX], edx
+    mov [M7StartSI], esi
+    mov [M7StartDI], edi
+    call c_Mode7Startup16b
+    mov eax, [M7StartAX]
+    mov esi, [M7StartSI]
+    mov edi, [M7StartDI]
+    xor ebx, ebx
+    xor ecx, ecx
+    xor edx, edx
     ret
 
 %macro Mode7Startup 0
