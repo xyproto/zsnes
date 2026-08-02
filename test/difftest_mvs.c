@@ -17,6 +17,9 @@ typedef uint16_t u2;
 typedef uint32_t u4;
 
 u1 tileleft16b, drawn, temp, bshifter, curbgpr, bgcoloradder, coadder16;
+/* Read by the 'a' variant's mosaic tail, which this test does not drive. */
+u1 curmosaicsz;
+u4 pal16b[256];
 static u1 winmask[512];
 u1* winptrref = winmask;
 u4 tempcach, temptile, bgofwptr, bgsubby, yadder, yrevadder;
