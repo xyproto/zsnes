@@ -22,6 +22,12 @@ EXTSYM BGMS1,FillSubScr,CMainWinScr,CSubWinScr,scadtng
 EXTSYM ngwinen,winbg1enval,BuildWindow,ngwintable,ngcwinptr,domosaicng16b
 EXTSYM pesimpng
 EXTSYM M7StartAX,M7StartDX,M7StartSI,M7StartDI,c_Mode7Startup16b
+EXTSYM M7WinAX,M7WinBX,M7WinCX,M7WinSI,M7WinDI
+EXTSYM M7BWBX,c_ProcessMode7BuildWindow
+EXTSYM M7PAX,M7PBX,M7PCX,M7PDX,M7PSI,M7PDI,M7PBP,M7PWriter,c_Mode7Process,c_Mode7ProcessB,c_Mode7Processngw16b
+EXTSYM M7PWriter2,c_Mode7Processngw216b
+EXTSYM c_ProcessMode7ngwin16b,c_ProcessMode7ngwinB16b,c_ProcessMode7ngwinC16b
+EXTSYM c_ProcessMode7ngwinD16b,c_ProcessMode7ngwinE16b
 
 ;Skip transparency if the bg is just a sub-screen or there are no sub-screens
 ;for that line:
@@ -124,1589 +130,240 @@ Mode7Startup16b:
 %endmacro
 
 
+; The ProcessMode7ngwin*16b cluster moved to video/c_mode716win.c. Each is
+; reached with eax, ebx, esi and edi live and hands all four back, so the
+; seam carries whole registers; ecx is scratch the callers reload. edx is
+; pushed because the original cluster never touched it and the callers rely on
+; that - cdecl would let the C half clobber it.
 NEWSYM ProcessMode7ngwin16b
-    mov ecx,[ngcwinptr]
-    mov ecx,[ecx]
-    or ecx,ecx
-    jz near .winb
-    cmp ecx,[ngwleft]
-    jae .alldisplay
-    sub [ngwleft],ecx
-    mov [ngwleftb],ecx
-    xor ecx,ecx
-    mov eax,[mode7xrpos]
+    push edx
+    mov [M7WinAX], eax
+    mov [M7WinBX], ebx
+    mov [M7WinCX], ecx
+    mov [M7WinSI], esi
+    mov [M7WinDI], edi
+    call c_ProcessMode7ngwin16b
+    mov eax, [M7WinAX]
+    mov ebx, [M7WinBX]
+    mov ecx, [M7WinCX]
+    mov esi, [M7WinSI]
+    mov edi, [M7WinDI]
+    pop edx
     ret
-.alldisplay
-    mov ecx,[ngwleft]
-    mov [ngwleftb],ecx
-    mov dword[ngwleft],0
-    xor ecx,ecx
-    mov eax,[mode7xrpos]
-    ret
-.winb
+
 NEWSYM ProcessMode7ngwinB16b
-    add dword[ngcwinptr],4
-    mov ecx,[ngcwinptr]
-    mov ecx,[ecx]
-    cmp ecx,[ngwleft]
-    jae near .finishmode7
-
-;    mov ecx,[ngwleft]
-;    mov dword[ngwleftb],ecx
-;    mov dword[ngwleft],0
-;    xor ecx,ecx
-;    mov eax,[mode7xrpos]
-;    ret
-
-    sub [ngwleft],ecx
-    or ecx,ecx
-    jz .noclip
-    mov [pixelsleft],ecx
-.nextvalngw
-    test byte[mode7xrpos+1],0F8h
-    jnz near .rposoffx
-.nextposx
-    test byte[mode7yrpos+1],0F8h
-    jnz near .rposoffy
-.nextposy
-
-    mov eax,[mode7xadder]
-    add [mode7xrpos],eax
-    mov eax,[mode7yadder]
-    sub [mode7yrpos],eax
-    add esi,2
-    dec dword[pixelsleft]
-    jnz near .nextvalngw
-.noclip
-    add dword[ngcwinptr],4
-    jmp ProcessMode7ngwin16b
-.finishmode7
-    mov dword[ngwleft],0
-    mov dword[ngwleftb],0
+    push edx
+    mov [M7WinAX], eax
+    mov [M7WinBX], ebx
+    mov [M7WinCX], ecx
+    mov [M7WinSI], esi
+    mov [M7WinDI], edi
+    call c_ProcessMode7ngwinB16b
+    mov eax, [M7WinAX]
+    mov ebx, [M7WinBX]
+    mov ecx, [M7WinCX]
+    mov esi, [M7WinSI]
+    mov edi, [M7WinDI]
+    pop edx
     ret
-
-.rposoffx
-    mov eax,[m7xaddof]
-    sub [mode7xrpos],eax
-    add bl,[m7xaddof2]
-    test byte[mode7xrpos+1],0F8h
-    jz .noaddstuff
-    add bl,[mmode7xinc]
-    mov eax,[mmode7xadd2]
-    sub [mode7xrpos],eax
-.noaddstuff
-    xor ecx,ecx
-    mov cl,[vrama+ebx]
-    shl ecx,7
-    lea edi,[ecx+vrama]
-    jmp .nextposx
-.rposoffy
-    mov eax,[m7yaddof]
-    add dword[mode7yrpos],eax
-    sub bh,[m7yaddof2]
-    test byte[mode7yrpos+1],0F8h
-    jz .noaddstuff2
-    sub bh,[mmode7yinc]
-    mov eax,[mmode7yadd2]
-    add dword[mode7yrpos],eax
-.noaddstuff2
-    and ebx,07FFFh
-    xor ecx,ecx
-    mov cl,[vrama+ebx]
-    shl ecx,7
-    lea edi,[ecx+vrama]
-    jmp .nextposy
 
 NEWSYM ProcessMode7ngwinC16b
-    mov ecx,[ngcwinptr]
-    mov ecx,[ecx]
-    or ecx,ecx
-    jz near .winb
-    cmp ecx,[ngwleft]
-    jae .alldisplay
-    sub [ngwleft],ecx
-    mov [ngwleftb],ecx
-    xor ecx,ecx
-    mov eax,[mode7xpos]
+    push edx
+    mov [M7WinAX], eax
+    mov [M7WinBX], ebx
+    mov [M7WinCX], ecx
+    mov [M7WinSI], esi
+    mov [M7WinDI], edi
+    call c_ProcessMode7ngwinC16b
+    mov eax, [M7WinAX]
+    mov ebx, [M7WinBX]
+    mov ecx, [M7WinCX]
+    mov esi, [M7WinSI]
+    mov edi, [M7WinDI]
+    pop edx
     ret
-.alldisplay
-    mov ecx,[ngwleft]
-    mov [ngwleftb],ecx
-    mov dword[ngwleft],0
-    xor ecx,ecx
-    mov eax,[mode7xpos]
-    ret
-.winb
+
 NEWSYM ProcessMode7ngwinD16b
-    add dword[ngcwinptr],4
-    mov ecx,[ngcwinptr]
-    mov ecx,[ecx]
-    cmp ecx,[ngwleft]
-    jae near .finishmode7
-    sub [ngwleft],ecx
-    or ecx,ecx
-    jz .noclip
-.nextvalngw
-.nextvalr
-;    cmp byte[switchtorep3],1
-;    je .nextposy
-;    test byte[mode7xpos+1],0F8h
-;    jnz near .rposoffx
-.nextposx
-;    test byte[mode7ypos+1],0F8h
-;    jnz near .rposoffy
-.nextposy
-    mov eax,[mode7xadder]
-    add [mode7xpos],eax
-    mov eax,[mode7yadder]
-    sub [mode7ypos],eax
-    add esi,2
-    dec ecx
-    jnz near .nextvalngw
-.noclip
-    add dword[ngcwinptr],4
-    jmp ProcessMode7ngwin16b
-.finishmode7
-    mov dword[ngwleft],0
-    mov dword[ngwleftb],0
+    push edx
+    mov [M7WinAX], eax
+    mov [M7WinBX], ebx
+    mov [M7WinCX], ecx
+    mov [M7WinSI], esi
+    mov [M7WinDI], edi
+    call c_ProcessMode7ngwinD16b
+    mov eax, [M7WinAX]
+    mov ebx, [M7WinBX]
+    mov ecx, [M7WinCX]
+    mov esi, [M7WinSI]
+    mov edi, [M7WinDI]
+    pop edx
     ret
-.rposoffx
-    mov al,[mmode7xinc]
-    mov edi,[vram]
-    add [mmode7ptr],al
-    mov cl,[mmode7xincc]
-    cmp byte[mmode7ptr],cl
-    je .roffx
-.roffxretb
-    mov ebx,[mmode7ptr]
-    xor ecx,ecx
-    mov cl,[edi+ebx]
-    mov eax,[mmode7xadd2]
-    shl ecx,7
-    sub [mode7xrpos],eax
-    add edi,ecx
-    jmp .nextvalr
-.roffx
-    mov byte[switchtorep3],1
-    jmp .roffxretb
-.rposoffy
-    mov al,[mmode7yinc]
-    mov edi,[vram]
-    sub [mmode7ptr+1],al
-    js .roffy
-.roffyretb
-    mov ebx,[mmode7ptr]
-    xor ecx,ecx
-    mov cl,[edi+ebx]
-    mov eax,[mmode7yadd2]
-    shl ecx,7
-    add [mode7yrpos],eax
-    add edi,ecx
-    jmp .nextposx
-.roffy
-    mov byte[switchtorep3],1
-    jmp .roffyretb
 
 NEWSYM ProcessMode7ngwinE16b
-    add dword[ngcwinptr],4
-    mov ecx,[ngcwinptr]
-    mov ecx,[ecx]
-    cmp ecx,[ngwleft]
-    jae near .finishmode7
-    sub [ngwleft],ecx
-    or ecx,ecx
-    jz .noclip
-    mov [pixelsleft],ecx
-.nextvalr
-    test byte[mode7xrpos+1],0F8h
-    jnz near .rposoffxr
-.nextposxr
-    test byte[mode7yrpos+1],0F8h
-    jnz near .rposoffyr
-.nextposyr
-    mov eax,[mode7xadder]
-    add [mode7xrpos],eax
-    mov eax,[mode7yadder]
-    sub [mode7yrpos],eax
-    add esi,2
-    dec dword[pixelsleft]
-    jnz near .nextvalr
-.noclip
-    add dword[ngcwinptr],4
-    jmp ProcessMode7ngwin16b
-.finishmode7
-    mov dword[ngwleft],0
-    mov dword[ngwleftb],0
+    push edx
+    mov [M7WinAX], eax
+    mov [M7WinBX], ebx
+    mov [M7WinCX], ecx
+    mov [M7WinSI], esi
+    mov [M7WinDI], edi
+    call c_ProcessMode7ngwinE16b
+    mov eax, [M7WinAX]
+    mov ebx, [M7WinBX]
+    mov ecx, [M7WinCX]
+    mov esi, [M7WinSI]
+    mov edi, [M7WinDI]
+    pop edx
     ret
 
-.rposoffxr
-    mov al,[mmode7xinc]
-    mov edi,[vram]
-    add [mmode7ptr],al
-    mov cl,[mmode7xincc]
-    cmp byte[mmode7ptr],cl
-    je .roff
-.roffxretb
-    mov ebx,[mmode7ptr]
-    xor ecx,ecx
-    mov cl,[edi+ebx]
-    mov eax,[mmode7xadd2]
-    shl ecx,7
-    sub [mode7xrpos],eax
-    add edi,ecx
-    jmp .nextvalr
-.rposoffyr
-    mov al,[mmode7yinc]
-    mov edi,[vram]
-    sub [mmode7ptr+1],al
-    js .roff
-.roffyretb
-    mov ebx,[mmode7ptr]
-    xor ecx,ecx
-    mov cl,[edi+ebx]
-    mov eax,[mmode7yadd2]
-    shl ecx,7
-    add [mode7yrpos],eax
-    add edi,ecx
-    jmp .nextposxr
-.roff
-    test byte[mode7set],40h
-    jnz .tilerep3
-    jmp .finishmode7
-.tilerep3
-    and byte[mode7yrpos+1],07h
-    and byte[mode7xrpos+1],07h
-    mov eax,[mode7xadder]
-    add [mode7xrpos],eax
-    mov eax,[mode7yadder]
-    sub [mode7yrpos],eax
-    add esi,2
-    dec dword[pixelsleft]
-    jnz near .tilerep3
-    mov [mode7xrpos],eax
-    ret
 
+; The body of ProcessBuildWindow moved to video/c_mode716bw.c; every call site
+; passed 0, so the layer offset went with it. The gate stays here on purpose:
+; the original left every register alone when it did not window, and eax and
+; edx are the coordinates Mode7Startup16b reads next - edx survives because
+; BuildWindow has a register-preserving shim again (video/c_makev16b.c).
 %macro ProcessBuildWindow 1
+%if %1 != 0
+  %error "ProcessBuildWindow: only the 0 form was ported"
+%endif
     mov dword[ngwinen],0
     test byte[esi+ebx+%1*256],0Ah
     jz %%nowindowing
     push eax
     push ebx
-    mov al,[winlogicaval+ebx*2]
-    shr al,%1*2
-    and al,03h
-    mov [nglogicval],al
-    mov eax,ebx
-    add ebx,%1*256
-    call BuildWindow
-    cmp dword[ngwintable],0
-    je %%zero
-    dec dword[ngwintable]
-    jmp %%notzero
-%%zero
-    dec dword[ngwintable+4]
-%%notzero
+    mov [M7BWBX], ebx
+    call c_ProcessMode7BuildWindow
     pop ebx
     pop eax
-    mov dword[ngcwinptr],ngwintable
 %%nowindowing
 %endmacro
 
+; The pixel writers are a table in video/c_mode716write.h; these ids are its
+; enum, in order. Keep the two in step - there is no way to check it here.
+%define m7w_Mode7Normal     0
+%define m7w_Mode7Normalnt   0
+%define m7w_Mode7Normalt    1
+%define m7w_Mode7Normalmsnt 2
+%define m7w_Mode7Normalmst  3
+%define m7w_Mode7Normalsnt  4
+%define m7w_Mode7Normalst   4
+%define m7w_Mode7ExtBG      5
+%define m7w_Mode7ExtBGnt    5
+%define m7w_Mode7ExtBGt     6
+%define m7w_Mode7ExtBGmsnt  7
+%define m7w_Mode7ExtBGmst   8
+%define m7w_Mode7ExtBGsnt   9
+%define m7w_Mode7ExtBGst    9
+
+; Mode7Process moved to video/c_mode716proc.c. Its finishmode7 tail stays here:
+; it is a tail-jump into domosaicng16b with dh carrying curmosaicsz, which is
+; not something a C return can express. %3 was 2 at every call site.
 %macro Mode7Process 3
-    mov dword[mtemp],256
-    test byte[mode7set],80h
-    jnz near %%norep2
-
-    mov eax,[mmode7xpos]
-    and eax,7FFh
-    mov [mmode7xrpos],eax
-    mov eax,[mmode7ypos]
-    and eax,7FFh
-    mov [mmode7yrpos],eax
-
-    ; get tile data offset into edi
-    mov ebx,[mmode7ypos+1]
-    mov eax,[mmode7xpos+1]
-    shl ebx,5
-    shr eax,3
-    and ebx,07FF8h
-    shl al,1
-    mov bl,al
-    mov edi,[vram]
-    xor ch,ch
-    mov [mmode7ptr],ebx
-    mov cl,[edi+ebx]
-    shl ecx,7
-    add edi,ecx
-
-    mov eax,[mmode7xrpos]
-    mov ebx,[mmode7ptr]
-    jmp %%nextval
-    ALIGN16
-%%nextval
-    test ah,08h
-    jnz near %%rposoffx
-%%nextposx
-    test byte[mmode7yrpos+1],08h
-    jnz near %%rposoffy
-%%nextposy
-    mov ch,ah
-    mov edx,[mmode7yadder]
-    mov cl,[mmode7yrpos+1]
-    sub dword[mmode7yrpos],edx
-    xor edx,edx
-    mov dl,[mode7tab+ecx]
-    add eax,[mmode7xadder]
-    mov dl,[edi+edx]
-    %1
-    dec dword[mtemp]
-    jnz near %%nextval
-    jmp %%finishmode7
-
-%%rposoffx
-    add bl,[mmode7xinc]
-    xor ecx,ecx
-    mov cl,[vrama+ebx]
-    shl ecx,7
-    sub eax,[mmode7xadd2]
-    lea edi,[ecx+vrama]
-    jmp %%nextposx
-
-%%rposoffy
-    sub bh,[mmode7yinc]
-    and ebx,07FFFh
-    xor ecx,ecx
-    mov cl,[vrama+ebx]
-    mov edx,[mmode7yadd2]
-    shl ecx,7
-    add dword[mmode7yrpos],edx
-    lea edi,[ecx+vrama]
-    jmp %%nextposy
-
-%%finishmode7
+%if %3 != 2
+  %error "Mode7Process: only the 2-byte pixel step was ported"
+%endif
+    mov dword[M7PWriter], m7w_%1
+    mov [M7PAX], eax
+    mov [M7PBX], ebx
+    mov [M7PCX], ecx
+    mov [M7PDX], edx
+    mov [M7PSI], esi
+    mov [M7PDI], edi
+    mov [M7PBP], ebp
+    call c_Mode7Process
+    mov eax, [M7PAX]
+    mov ebx, [M7PBX]
+    mov ecx, [M7PCX]
+    mov edx, [M7PDX]
+    mov esi, [M7PSI]
+    mov edi, [M7PDI]
     xor eax,eax
     mov dh,[curmosaicsz]
     cmp dh,1
     jne near %2
     ret
-
-;**********************************************************
-; Mode 7, no repetition mode
-;**********************************************************
-
-%%norep2
-    test byte[mode7set],40h
-    jnz %%tilerep2
-    jmp %%nextvalb2
-    ALIGN16
-%%nextvalb2
-    cmp byte[mmode7ypos+2],3
-    ja %%offscr2
-    cmp byte[mmode7xpos+2],3
-    jbe near %%offscr3
-%%offscr2
-    mov eax,[mmode7xadder]
-    mov ebx,[mmode7yadder]
-    add [mmode7xpos],eax
-    sub [mmode7ypos],ebx
-    add esi,%3
-    dec dword[mtemp]
-    jnz near %%nextvalb2
-    jmp %%finishmode7
-%%tilerep2
-%%nextvalb3
-    cmp byte[mmode7ypos+2],3
-    ja %%offscr2b
-    cmp byte[mmode7xpos+2],3
-    jbe near %%offscr3
-%%offscr2b
-    mov ch,[mmode7xpos+1]
-    mov eax,[mmode7xadder]
-    mov cl,[mmode7ypos+1]
-    mov ebx,[mmode7yadder]
-    mov dl,[mode7tab+ecx]
-    add [mmode7xpos],eax
-    mov dl,[vrama+edx]
-    sub [mmode7ypos],ebx
-    %1
-    dec dword[mtemp]
-    jnz near %%nextvalb3
-    jmp %%finishmode7
-%%offscr3
-    mov eax,[mmode7xpos]
-    and eax,7FFh
-    mov [mmode7xrpos],eax
-    mov eax,[mmode7ypos]
-    and eax,7FFh
-    mov [mmode7yrpos],eax
-
-    ; get tile data offset into edi
-    mov ebx,[mmode7ypos+1]
-    mov eax,[mmode7xpos+1]
-    shl ebx,5
-    shr eax,3
-    and ebx,07FF8h
-    shl al,1
-    mov bl,al
-    mov edi,[vram]
-    xor ch,ch
-    mov [mmode7ptr],ebx
-    mov cl,[edi+ebx]
-    shl ecx,7
-    add edi,ecx
-
-    jmp %%nextvalr
-    ALIGN16
-%%nodr2
-    add esi,%3
-    dec dword[mtemp]
-    jz near %%fin2
-%%nextvalr
-    test byte[mmode7xrpos+1],08h
-    jnz near %%rposoffxr
-%%nextposxr
-    test byte[mmode7yrpos+1],08h
-    jnz near %%rposoffyr
-%%nextposyr
-    mov cl,[mmode7yrpos+1]
-    mov ch,[mmode7xrpos+1]
-    mov edx,[mmode7xadder]
-    add dword[mmode7xrpos],edx
-    mov edx,[mmode7yadder]
-    sub dword[mmode7yrpos],edx
-    xor edx,edx
-    mov dl,[mode7tab+ecx]
-%%m7yrpa2
-    mov dl,[edi+edx]
-    %1
-    dec dword[mtemp]
-    jnz near %%nextvalr
-%%fin2
-    jmp %%finishmode7
-%%rposoffxr
-    mov al,[mmode7xinc]
-    mov edi,[vram]
-    add [mmode7ptr],al
-    mov cl,[mmode7xincc]
-    cmp byte[mmode7ptr],cl
-    je %%roff
-%%roffxretb
-    mov ebx,[mmode7ptr]
-    xor ecx,ecx
-    mov cl,[edi+ebx]
-    mov eax,[mmode7xadd2]
-    shl ecx,7
-    sub [mmode7xrpos],eax
-    add edi,ecx
-    jmp %%nextposxr
-%%rposoffyr
-    mov al,[mmode7yinc]
-    mov edi,[vram]
-    sub [mmode7ptr+1],al
-    js %%roff
-%%roffyretb
-    mov ebx,[mmode7ptr]
-    xor ecx,ecx
-    mov cl,[edi+ebx]
-    mov eax,[mmode7yadd2]
-    shl ecx,7
-    add [mmode7yrpos],eax
-    add edi,ecx
-    jmp %%nextposyr
-%%roff
-    test byte[mode7set],40h
-    jnz %%tilerep3
-    jmp %%finishmode7
-%%tilerep3
-    and byte[mmode7yrpos+1],07h
-    and byte[mmode7xrpos+1],07h
-    mov cl,[mmode7yrpos+1]
-    mov eax,[mmode7xadder]
-    mov ch,[mmode7xrpos+1]
-    add [mmode7xrpos],eax
-    mov dl,[mode7tab+ecx]
-    mov eax,[mmode7yadder]
-    mov dl,[vrama+edx]
-    sub [mmode7yrpos],eax
-    %1
-    dec dword[mtemp]
-    jnz near %%tilerep3
-    jmp %%finishmode7
 %endmacro
 
+; Mode7ProcessB moved to video/c_mode716proc.c; same tail as Mode7Process.
 %macro Mode7ProcessB 3
-    mov dword[mtemp],256
-    test byte[mode7set],80h
-    jnz near %%norep2
-
-    mov eax,[mmode7xpos]
-    and eax,7FFh
-    mov [mmode7xrpos],eax
-    mov eax,[mmode7ypos]
-    and eax,7FFh
-    mov [mmode7yrpos],eax
-
-    ; get tile data offset into edi
-    mov ebx,[mmode7ypos+1]
-    mov eax,[mmode7xpos+1]
-    shl ebx,5
-    shr eax,3
-    and ebx,07FF8h
-    shl al,1
-    mov bl,al
-    mov edi,[vram]
-    xor ch,ch
-    mov [mmode7ptr],ebx
-    mov cl,[edi+ebx]
-    shl ecx,7
-    add edi,ecx
-
-    xor dl,dl
-    xor ecx,ecx
-    mov ebx,[mmode7xadder]
-    test ebx,80000000h
-    jz %%nexta
-    neg ebx
-%%nexta
-    cmp ebx,0800h
-    jl %%skipx
-    sub ebx,800h
-    add ecx,[mmode7xadd2]
-    add dl,[mmode7xinc]
-    jmp %%nexta
-%%skipx
-    mov [mm7xaddof],ecx
-    mov [mm7xaddof2],dl
-
-    xor dl,dl
-    xor ecx,ecx
-    mov ebx,[mmode7yadder]
-    test ebx,80000000h
-    jz %%nextay
-    neg ebx
-%%nextay
-    cmp ebx,0800h
-    jl %%skipy
-    sub ebx,800h
-    add ecx,[mmode7yadd2]
-    add dl,[mmode7yinc]
-    jmp %%nextay
-%%skipy
-    mov [mm7yaddof],ecx
-    mov [mm7yaddof2],dl
-
-    xor ecx,ecx
-
-    mov eax,[mmode7xrpos]
-    mov ebx,[mmode7ptr]
-    jmp %%nextval
-    ALIGN16
-%%nextval
-    test ah,0F8h
-    jnz near %%rposoffx
-%%nextposx
-    test byte[mmode7yrpos+1],0F8h
-    jnz near %%rposoffy
-%%nextposy
-    mov ch,ah
-    mov cl,[mmode7yrpos+1]
-    mov edx,[mmode7yadder]
-    sub dword[mmode7yrpos],edx
-    xor edx,edx
-    mov dl,[mode7tab+ecx]
-    add eax,[mmode7xadder]
-    mov dl,[edi+edx]
-    %1
-    dec dword[mtemp]
-    jnz near %%nextval
-    jmp %%finishmode7
-
-%%rposoffx
-    sub eax,[mm7xaddof]
-    add bl,[mm7xaddof2]
-    test ah,0F8h
-    jz %%noaddstuff
-    add bl,[mmode7xinc]
-    sub eax,[mmode7xadd2]
-%%noaddstuff
-    xor ecx,ecx
-    mov cl,[vrama+ebx]
-    shl ecx,7
-    lea edi,[ecx+vrama]
-    jmp %%nextposx
-
-%%rposoffy
-    mov edx,[mm7yaddof]
-    add dword[mmode7yrpos],edx
-    sub bh,[mm7yaddof2]
-    test byte[mmode7yrpos+1],0F8h
-    jz %%noaddstuff2
-    mov edx,[mmode7yadd2]
-    sub bh,[mmode7yinc]
-    add dword[mmode7yrpos],edx
-%%noaddstuff2
-    and ebx,07FFFh
-    xor ecx,ecx
-    mov cl,[vrama+ebx]
-    shl ecx,7
-    lea edi,[ecx+vrama]
-    jmp %%nextposy
-
-%%finishmode7
+%if %3 != 2
+  %error "Mode7ProcessB: only the 2-byte pixel step was ported"
+%endif
+    mov dword[M7PWriter], m7w_%1
+    mov [M7PAX], eax
+    mov [M7PBX], ebx
+    mov [M7PCX], ecx
+    mov [M7PDX], edx
+    mov [M7PSI], esi
+    mov [M7PDI], edi
+    mov [M7PBP], ebp
+    call c_Mode7ProcessB
+    mov eax, [M7PAX]
+    mov ebx, [M7PBX]
+    mov ecx, [M7PCX]
+    mov edx, [M7PDX]
+    mov esi, [M7PSI]
+    mov edi, [M7PDI]
     xor eax,eax
     mov dh,[curmosaicsz]
     cmp dh,1
     jne near %2
     ret
-
-;**********************************************************
-; Mode 7, no repetition mode
-;**********************************************************
-
-%%norep2
-    test byte[mode7set],40h
-    jnz %%tilerep2
-    jmp %%nextvalb2
-    ALIGN16
-%%nextvalb2
-    cmp byte[mmode7ypos+2],3
-    ja %%offscr2
-    cmp byte[mmode7xpos+2],3
-    jbe near %%offscr3
-%%offscr2
-    mov eax,[mmode7xadder]
-    mov ebx,[mmode7yadder]
-    add [mmode7xpos],eax
-    sub [mmode7ypos],ebx
-    add esi,%3
-    dec dword[mtemp]
-    jnz near %%nextvalb2
-    jmp %%finishmode7
-%%tilerep2
-%%nextvalb3
-    cmp byte[mmode7ypos+2],3
-    ja %%offscr2b
-    cmp byte[mmode7xpos+2],3
-    jbe near %%offscr3
-%%offscr2b
-    mov ch,[mmode7xpos+1]
-    mov eax,[mmode7xadder]
-    mov cl,[mmode7ypos+1]
-    mov ebx,[mmode7yadder]
-    mov dl,[mode7tab+ecx]
-    add [mmode7xpos],eax
-    mov dl,[vrama+edx]
-    sub [mmode7ypos],ebx
-    %1
-    dec dword[mtemp]
-    jnz near %%nextvalb3
-    jmp %%finishmode7
-%%offscr3
-    mov eax,[mmode7xpos]
-    and eax,7FFh
-    mov [mmode7xrpos],eax
-    mov eax,[mmode7ypos]
-    and eax,7FFh
-    mov [mmode7yrpos],eax
-
-    ; get tile data offset into edi
-    mov ebx,[mmode7ypos+1]
-    mov eax,[mmode7xpos+1]
-    shl ebx,5
-    shr eax,3
-    and ebx,07FF8h
-    shl al,1
-    mov bl,al
-    mov edi,[vram]
-    xor ch,ch
-    mov [mmode7ptr],ebx
-    mov cl,[edi+ebx]
-    shl ecx,7
-    add edi,ecx
-
-    jmp %%nextvalr
-    ALIGN16
-%%nodr2
-    add esi,%3
-    dec dword[mtemp]
-    jz near %%fin2
-%%nextvalr
-    test byte[mmode7xrpos+1],0F8h
-    jnz near %%rposoffxr
-%%nextposxr
-    test byte[mmode7yrpos+1],0F8h
-    jnz near %%rposoffyr
-%%nextposyr
-    mov cl,[mmode7yrpos+1]
-    mov ch,[mmode7xrpos+1]
-    mov edx,[mmode7xadder]
-    add dword[mmode7xrpos],edx
-    mov edx,[mmode7yadder]
-    sub dword[mmode7yrpos],edx
-    xor edx,edx
-    mov dl,[mode7tab+ecx]
-    mov dl,[edi+edx]
-    %1
-    dec dword[mtemp]
-    jnz near %%nextvalr
-%%fin2
-    jmp %%finishmode7
-%%rposoffxr
-    mov al,[mmode7xinc]
-    mov edi,[vram]
-    add [mmode7ptr],al
-    mov cl,[mmode7xincc]
-    cmp byte[mmode7ptr],cl
-    je %%roff
-%%roffxretb
-    mov ebx,[mmode7ptr]
-    xor ecx,ecx
-    mov cl,[edi+ebx]
-    mov eax,[mmode7xadd2]
-    shl ecx,7
-    sub [mmode7xrpos],eax
-    add edi,ecx
-    jmp %%nextvalr
-%%rposoffyr
-    mov al,[mmode7yinc]
-    mov edi,[vram]
-    sub [mmode7ptr+1],al
-    js %%roff
-%%roffyretb
-    mov ebx,[mmode7ptr]
-    xor ecx,ecx
-    mov cl,[edi+ebx]
-    mov eax,[mmode7yadd2]
-    shl ecx,7
-    add [mmode7yrpos],eax
-    add edi,ecx
-    jmp %%nextposxr
-%%roff
-    test byte[mode7set],40h
-    jnz %%tilerep3
-    jmp %%finishmode7
-%%tilerep3
-    and byte[mmode7yrpos+1],07h
-    and byte[mmode7xrpos+1],07h
-    mov cl,[mmode7yrpos+1]
-    mov eax,[mmode7xadder]
-    mov ch,[mmode7xrpos+1]
-    add [mmode7xrpos],eax
-    mov dl,[mode7tab+ecx]
-    mov eax,[mmode7yadder]
-    mov dl,[vrama+edx]
-    sub [mmode7yrpos],eax
-    %1
-    dec dword[mtemp]
-    jnz near %%tilerep3
-    jmp %%finishmode7
 %endmacro
 
+; Mode7Processngw16b moved to video/c_mode716proc.c; same tail as the others.
 %macro Mode7Processngw16b 3
-    mov dword[ngwleftb],256
-    mov dword[ngwleft],256
-    test byte[mode7set],80h
-    jnz near %%norep2
-
-    mov eax,[mmode7xpos]
-    and eax,7FFh
-    mov [mode7xrpos],eax
-    mov eax,[mmode7ypos]
-    and eax,7FFh
-    mov [mode7yrpos],eax
-
-    ; get tile data offset into edi
-    mov ebx,[mmode7ypos+1]
-    mov eax,[mmode7xpos+1]
-    shl ebx,5
-    shr eax,3
-    and ebx,07FF8h
-    shl al,1
-    mov bl,al
-    mov edi,[vram]
-    xor ch,ch
-    mov [mmode7ptr],ebx
-    mov cl,[edi+ebx]
-    shl ecx,7
-    add edi,ecx
-
-    xor dl,dl
-    xor ecx,ecx
-    mov ebx,[mmode7xadder]
-    test ebx,80000000h
-    jz %%nexta
-    neg ebx
-%%nexta
-    cmp ebx,0800h
-    jl %%skipx
-    sub ebx,800h
-    add ecx,[mmode7xadd2]
-    add dl,[mmode7xinc]
-    jmp %%nexta
-%%skipx
-    mov [mm7xaddof],ecx
-    mov [mm7xaddof2],dl
-    mov [m7xaddof],ecx
-    mov [m7xaddof2],dl
-
-    xor dl,dl
-    xor ecx,ecx
-    mov ebx,[mmode7yadder]
-    test ebx,80000000h
-    jz %%nextay
-    neg ebx
-%%nextay
-    cmp ebx,0800h
-    jl %%skipy
-    sub ebx,800h
-    add ecx,[mmode7yadd2]
-    add dl,[mmode7yinc]
-    jmp %%nextay
-%%skipy
-    mov [mm7yaddof],ecx
-    mov [mm7yaddof2],dl
-    mov [m7yaddof],ecx
-    mov [m7yaddof2],dl
-
-    xor ecx,ecx
-
-    mov eax,[mode7xrpos]
-    mov ebx,[mmode7ptr]
-
-    call ProcessMode7ngwin16b
-
-    cmp dword[ngwleftb],0
-    jne near %%nextval
-    jmp %%finishmode7
-    ALIGN16
-%%nextval
-    test ah,0F8h
-    jnz near %%rposoffx
-%%nextposx
-    test byte[mode7yrpos+1],0F8h
-    jnz near %%rposoffy
-%%nextposy
-    mov ch,ah
-    mov cl,[mode7yrpos+1]
-    mov edx,[mode7yadder]
-    sub dword[mode7yrpos],edx
-    xor edx,edx
-    mov dl,[mode7tab+ecx]
-    add eax,[mode7xadder]
-    mov dl,[edi+edx]
-    %1
-    dec dword[ngwleftb]
-    jnz near %%nextval
-    mov [mode7xrpos],eax
-    cmp dword[ngwleft],0
-    je %%notskipvalues
-    call ProcessMode7ngwinB16b
-    cmp dword[ngwleftb],0
-    jne near %%nextval
-%%notskipvalues
-    jmp %%finishmode7
-
-%%rposoffx
-    sub eax,[mm7xaddof]
-    add bl,[mm7xaddof2]
-    test ah,0F8h
-    jz %%noaddstuff
-    add bl,[mmode7xinc]
-    sub eax,[mmode7xadd2]
-%%noaddstuff
-    xor ecx,ecx
-    mov cl,[vrama+ebx]
-    shl ecx,7
-    lea edi,[ecx+vrama]
-    jmp %%nextposx
-
-%%rposoffy
-    mov edx,[mm7yaddof]
-    add dword[mode7yrpos],edx
-    sub bh,[mm7yaddof2]
-    test byte[mode7yrpos+1],0F8h
-    jz %%noaddstuff2
-    mov edx,[mmode7yadd2]
-    sub bh,[mmode7yinc]
-    add dword[mode7yrpos],edx
-%%noaddstuff2
-    and ebx,07FFFh
-    xor ecx,ecx
-    mov cl,[vrama+ebx]
-    shl ecx,7
-    lea edi,[ecx+vrama]
-    jmp %%nextposy
-
-%%finishmode7
+%if %3 != 2
+  %error "Mode7Processngw16b: only the 2-byte pixel step was ported"
+%endif
+    mov dword[M7PWriter], m7w_%1
+    mov [M7PAX], eax
+    mov [M7PBX], ebx
+    mov [M7PCX], ecx
+    mov [M7PDX], edx
+    mov [M7PSI], esi
+    mov [M7PDI], edi
+    mov [M7PBP], ebp
+    call c_Mode7Processngw16b
+    mov eax, [M7PAX]
+    mov ebx, [M7PBX]
+    mov ecx, [M7PCX]
+    mov edx, [M7PDX]
+    mov esi, [M7PSI]
+    mov edi, [M7PDI]
     xor eax,eax
     mov dh,[curmosaicsz]
     cmp dh,1
     jne near %2
     ret
-
-;**********************************************************
-; Mode 7, no repetition mode
-;**********************************************************
-
-%%norep2
-    mov byte[switchtorep3],0
-
-;    mov dword[ngcwinptr],ngwintable blahblah
-;    mov ebx,dword[ngcwinptr]
-;    mov dword[ebx],900
-    ;ngwintable
-;    jmp %%finishmode7
-
-    call ProcessMode7ngwinC16b
-    cmp dword[ngwleftb],0
-    jne near %%nextvald
-    jmp %%finishmode7
-%%nextvald
-    ;mov dword[ngwleft],0
-
-    test byte[mode7set],40h
-    jnz near %%tilerep2
-    jmp %%nextvalb2
-    ALIGN16
-%%nextvalb2
-    cmp byte[mode7ypos+2],3
-    ja %%offscr2
-    cmp byte[mode7xpos+2],3
-    jbe near %%offscr3
-%%offscr2
-    mov eax,[mode7xadder]
-    mov ebx,[mode7yadder]
-    add [mode7xpos],eax
-    sub [mode7ypos],ebx
-    add esi,%3
-    dec dword[ngwleftb]
-    jnz near %%nextvalb2
-
-    cmp dword[ngwleft],0
-    je %%notskipvalues3b
-    call ProcessMode7ngwinD16b
-    cmp dword[ngwleftb],0
-    jne near %%nextvalb2
-%%notskipvalues3b
-
-    jmp %%finishmode7
-%%tilerep2
-%%nextvalb3
-    cmp byte[mode7ypos+2],3
-    ja %%offscr2b
-    cmp byte[mode7xpos+2],3
-    jbe near %%offscr3
-%%offscr2b
-    mov ch,[mode7xpos+1]
-    mov eax,[mode7xadder]
-    mov cl,[mode7ypos+1]
-    mov ebx,[mode7yadder]
-    mov dl,[mode7tab+ecx]
-    add [mode7xpos],eax
-    mov dl,[vrama+edx]
-    sub [mode7ypos],ebx
-    %1
-    dec dword[ngwleftb]
-    jnz near %%nextvalb3
-
-    cmp dword[ngwleft],0
-    je %%notskipvalues3
-    call ProcessMode7ngwinD16b
-    cmp dword[ngwleftb],0
-    jne near %%nextvalb3
-%%notskipvalues3
-
-    jmp %%finishmode7
-%%offscr3
-    mov eax,[mode7xpos]
-    and eax,7FFh
-    mov [mode7xrpos],eax
-    mov eax,[mode7ypos]
-    and eax,7FFh
-    mov [mode7yrpos],eax
-
-    ; get tile data offset into edi
-    mov ebx,[mode7ypos+1]
-    mov eax,[mode7xpos+1]
-    shl ebx,5
-    shr eax,3
-    and ebx,07FF8h
-    shl al,1
-    mov bl,al
-    mov edi,[vram]
-    xor ch,ch
-    mov [mmode7ptr],ebx
-    mov cl,[edi+ebx]
-    shl ecx,7
-    add edi,ecx
-
-    jmp %%nextvalr
-    ALIGN16
-%%nodr2
-    add esi,%3
-    dec dword[ngwleftb]
-    jz near %%fin2
-%%nextvalr
-    test byte[mode7xrpos+1],0F8h
-    jnz near %%rposoffxr
-%%nextposxr
-    test byte[mode7yrpos+1],0F8h
-    jnz near %%rposoffyr
-%%nextposyr
-    mov cl,[mode7yrpos+1]
-    mov ch,[mode7xrpos+1]
-    mov edx,[mode7xadder]
-    add dword[mode7xrpos],edx
-    mov edx,[mode7yadder]
-    sub dword[mode7yrpos],edx
-    xor edx,edx
-    mov dl,[mode7tab+ecx]
-    mov dl,[edi+edx]
-    %1
-    dec dword[ngwleftb]
-    jnz near %%nextvalr
-%%fin2
-
-    cmp dword[ngwleft],0
-    je %%notskipvalues4
-    call ProcessMode7ngwinE16b
-    cmp byte[switchtorep3],0
-    jne near %%tilerep3
-    cmp dword[ngwleftb],0
-    jne near %%nextvalr
-%%notskipvalues4
-
-    jmp %%finishmode7
-%%rposoffxr
-    mov al,[mmode7xinc]
-    mov edi,[vram]
-    add [mmode7ptr],al
-    mov cl,[mmode7xincc]
-    cmp byte[mmode7ptr],cl
-    je %%roff
-%%roffxretb
-    mov ebx,[mmode7ptr]
-    xor ecx,ecx
-    mov cl,[edi+ebx]
-    mov eax,[mmode7xadd2]
-    shl ecx,7
-    sub [mode7xrpos],eax
-    add edi,ecx
-    jmp %%nextvalr
-%%rposoffyr
-    mov al,[mmode7yinc]
-    mov edi,[vram]
-    sub [mmode7ptr+1],al
-    js %%roff
-%%roffyretb
-    mov ebx,[mmode7ptr]
-    xor ecx,ecx
-    mov cl,[edi+ebx]
-    mov eax,[mmode7yadd2]
-    shl ecx,7
-    add [mode7yrpos],eax
-    add edi,ecx
-    jmp %%nextposxr
-%%roff
-    test byte[mode7set],40h
-    jnz %%tilerep3
-    jmp %%finishmode7
-%%tilerep3
-    and byte[mode7yrpos+1],07h
-    and byte[mode7xrpos+1],07h
-    mov cl,[mode7yrpos+1]
-    mov eax,[mode7xadder]
-    mov ch,[mode7xrpos+1]
-    add [mode7xrpos],eax
-    mov dl,[mode7tab+ecx]
-    mov eax,[mode7yadder]
-    mov dl,[vrama+edx]
-    sub [mode7yrpos],eax
-    %1
-    dec dword[ngwleftb]
-    jnz near %%tilerep3
-
-    mov [mode7xrpos],eax
-    cmp dword[ngwleft],0
-    je %%notskipvalues5
-    call ProcessMode7ngwinB16b
-    cmp dword[ngwleftb],0
-    jne near %%tilerep3
-%%notskipvalues5
-
-    jmp %%finishmode7
 %endmacro
 
+; Mode7Processngw216b moved to video/c_mode716proc.c. It alternates between
+; two writers as the window runs toggle, hence the fourth argument.
 %macro Mode7Processngw216b 4
-    mov eax,[ngcwinptr]
-    mov eax,[eax]
-    mov [ngwleft],eax
-
-    mov dword[mtemp],256
-    test byte[mode7set],80h
-    jnz near %%norep2start
-
-    mov eax,[mmode7xpos]
-    and eax,7FFh
-    mov [mmode7xrpos],eax
-    mov eax,[mmode7ypos]
-    and eax,7FFh
-    mov [mmode7yrpos],eax
-
-    ; get tile data offset into edi
-    mov ebx,[mmode7ypos+1]
-    mov eax,[mmode7xpos+1]
-    shl ebx,5
-    shr eax,3
-    and ebx,07FF8h
-    shl al,1
-    mov bl,al
-    mov edi,[vram]
-    xor ch,ch
-    mov [mmode7ptr],ebx
-    mov cl,[edi+ebx]
-    shl ecx,7
-    add edi,ecx
-
-    mov eax,[mmode7xrpos]
-    mov ebx,[mmode7ptr]
-
-    cmp dword[ngwleft],0
-    jne %%nextvalwb
-    jmp %%nextvalwc
-%%nextvalw
-    add dword[ngcwinptr],4
-    mov edx,[ngcwinptr]
-    mov edx,[edx]
-    mov [ngwleft],edx
-    xor edx,edx
-%%nextvalwb
-
-    test ah,08h
-    jnz near %%rposoffxw
-%%nextposxw
-    test byte[mmode7yrpos+1],08h
-    jnz near %%rposoffyw
-%%nextposyw
-    mov ch,ah
-    mov cl,[mmode7yrpos+1]
-    mov edx,[mmode7yadder]
-    sub dword[mmode7yrpos],edx
-    xor edx,edx
-    mov dl,[mode7tab+ecx]
-    add eax,[mmode7xadder]
-    mov dl,[edi+edx]
-    %1
-    dec dword[mtemp]
-    jz near %%finishmode7
-    dec dword[ngwleft]
-    jnz near %%nextvalwb
-    jmp %%nextvalwc
-
-%%rposoffxw
-    add bl,[mmode7xinc]
-    xor ecx,ecx
-    mov cl,[vrama+ebx]
-    shl ecx,7
-    sub eax,[mmode7xadd2]
-    lea edi,[ecx+vrama]
-    jmp %%nextposxw
-%%rposoffyw
-    sub bh,[mmode7yinc]
-    and ebx,07FFFh
-    xor ecx,ecx
-    mov cl,[vrama+ebx]
-    mov edx,[mmode7yadd2]
-    shl ecx,7
-    add dword[mmode7yrpos],edx
-    lea edi,[ecx+vrama]
-    jmp %%nextposyw
-
-%%nextvalwc
-    add dword[ngcwinptr],4
-    mov edx,[ngcwinptr]
-    mov edx,[edx]
-    mov [ngwleft],edx
-    xor edx,edx
-%%nextval
-    test ah,08h
-    jnz near %%rposoffx
-%%nextposx
-    test byte[mmode7yrpos+1],08h
-    jnz near %%rposoffy
-%%nextposy
-    mov ch,ah
-    mov cl,[mmode7yrpos+1]
-    mov edx,[mmode7yadder]
-    sub dword[mmode7yrpos],edx
-    xor edx,edx
-    mov dl,[mode7tab+ecx]
-    add eax,[mmode7xadder]
-    mov dl,[edi+edx]
-    %4
-    dec dword[mtemp]
-    jz near %%finishmode7
-    dec dword[ngwleft]
-    jnz near %%nextval
-    jmp %%nextvalw
-%%rposoffx
-    add bl,[mmode7xinc]
-    xor ecx,ecx
-    mov cl,[vrama+ebx]
-    shl ecx,7
-    sub eax,[mmode7xadd2]
-    lea edi,[ecx+vrama]
-    jmp %%nextposx
-%%rposoffy
-    sub bh,[mmode7yinc]
-    and ebx,07FFFh
-    xor ecx,ecx
-    mov cl,[vrama+ebx]
-    mov edx,[mmode7yadd2]
-    shl ecx,7
-    add dword[mmode7yrpos],edx
-    lea edi,[ecx+vrama]
-    jmp %%nextposy
-%%finishmode7
+%if %3 != 2
+  %error "Mode7Processngw216b: only the 2-byte pixel step was ported"
+%endif
+    mov dword[M7PWriter], m7w_%1
+    mov dword[M7PWriter2], m7w_%4
+    mov [M7PAX], eax
+    mov [M7PBX], ebx
+    mov [M7PCX], ecx
+    mov [M7PDX], edx
+    mov [M7PSI], esi
+    mov [M7PDI], edi
+    mov [M7PBP], ebp
+    call c_Mode7Processngw216b
+    mov eax, [M7PAX]
+    mov ebx, [M7PBX]
+    mov ecx, [M7PCX]
+    mov edx, [M7PDX]
+    mov esi, [M7PSI]
+    mov edi, [M7PDI]
     xor eax,eax
     mov dh,[curmosaicsz]
     cmp dh,1
     jne near %2
     ret
-
-; *******************************************
-
-%%norep2start
-    cmp dword[ngwleft],0
-    jne %%firstsetwb
-    jmp %%firstsetww
-%%firstsetw
-    add dword[ngcwinptr],4
-    mov edx,[ngcwinptr]
-    mov edx,[edx]
-    mov [ngwleft],edx
-    xor edx,edx
-%%firstsetwb
-%%norep2
-    test byte[mode7set],40h
-    jnz %%tilerep2
-%%nextvalb2
-    cmp byte[mmode7ypos+2],3
-    ja %%offscr2
-    cmp byte[mmode7xpos+2],3
-    jbe near %%offscr3
-%%offscr2
-    mov eax,[mmode7xadder]
-    mov ebx,[mmode7yadder]
-    add [mmode7xpos],eax
-    sub [mmode7ypos],ebx
-    add esi,%3
-    dec dword[mtemp]
-    jz near %%finishmode7
-    dec dword[ngwleft]
-    jnz near %%nextvalb2
-    jmp %%firstsetww
-%%tilerep2
-%%nextvalb3
-    cmp byte[mmode7ypos+2],3
-    ja %%offscr2b
-    cmp byte[mmode7xpos+2],3
-    jbe near %%offscr3
-%%offscr2b
-    mov ch,[mmode7xpos+1]
-    mov eax,[mmode7xadder]
-    mov cl,[mmode7ypos+1]
-    mov ebx,[mmode7yadder]
-    mov dl,[mode7tab+ecx]
-    add [mmode7xpos],eax
-    mov dl,[vrama+edx]
-    sub [mmode7ypos],ebx
-    %1
-    dec dword[mtemp]
-    jz near %%finishmode7
-    dec dword[ngwleft]
-    jnz near %%nextvalb3
-    jmp %%firstsetw
-
-%%offscr3
-    mov eax,[mmode7xpos]
-    and eax,7FFh
-    mov [mmode7xrpos],eax
-    mov eax,[mmode7ypos]
-    and eax,7FFh
-    mov [mmode7yrpos],eax
-    ; get tile data offset into edi
-    mov ebx,[mmode7ypos+1]
-    mov eax,[mmode7xpos+1]
-    shl ebx,5
-    shr eax,3
-    and ebx,07FF8h
-    shl al,1
-    mov bl,al
-    mov edi,[vram]
-    xor ch,ch
-    mov [mmode7ptr],ebx
-    mov cl,[edi+ebx]
-    shl ecx,7
-    add edi,ecx
-    jmp %%nextvalr
-%%nodr2
-    add esi,%3
-
-    dec dword[mtemp]
-    jz near %%finishmode7
-    dec dword[ngwleft]
-    jnz %%nextvalr
-%%secondsetw
-    add dword[ngcwinptr],4
-    mov edx,[ngcwinptr]
-    mov edx,[edx]
-    mov [ngwleft],edx
-    xor edx,edx
-%%nextvalr
-    test byte[mmode7xrpos+1],08h
-    jnz near %%rposoffxr
-%%nextposxr
-    test byte[mmode7yrpos+1],08h
-    jnz near %%rposoffyr
-%%nextposyr
-    mov cl,[mmode7yrpos+1]
-    mov ch,[mmode7xrpos+1]
-    mov edx,[mmode7xadder]
-    add dword[mmode7xrpos],edx
-    mov edx,[mmode7yadder]
-    sub dword[mmode7yrpos],edx
-    xor edx,edx
-    mov dl,[mode7tab+ecx]
-    mov dl,[edi+edx]
-    %1
-    dec dword[mtemp]
-    jz near %%finishmode7
-    dec dword[ngwleft]
-    jnz near %%nextvalr
-    jmp %%secondsetww
-%%rposoffxr
-    mov al,[mmode7xinc]
-    mov edi,[vram]
-    add [mmode7ptr],al
-    mov cl,[mmode7xincc]
-    cmp byte[mmode7ptr],cl
-    je %%roff
-%%roffxretb
-    mov ebx,[mmode7ptr]
-    xor ecx,ecx
-    mov cl,[edi+ebx]
-    mov eax,[mmode7xadd2]
-    shl ecx,7
-    sub [mmode7xrpos],eax
-    add edi,ecx
-    jmp %%nextposxr
-%%rposoffyr
-    mov al,[mmode7yinc]
-    mov edi,[vram]
-    sub [mmode7ptr+1],al
-    js %%roff
-%%roffyretb
-    mov ebx,[mmode7ptr]
-    xor ecx,ecx
-    mov cl,[edi+ebx]
-    mov eax,[mmode7yadd2]
-    shl ecx,7
-    add [mmode7yrpos],eax
-    add edi,ecx
-    jmp %%nextposyr
-
-%%roff
-    test byte[mode7set],40h
-    jnz %%tilerep3
-    jmp %%finishmode7
-%%thirdsetw
-    add dword[ngcwinptr],4
-    mov edx,[ngcwinptr]
-    mov edx,[edx]
-    mov [ngwleft],edx
-    xor edx,edx
-%%tilerep3
-    and byte[mmode7yrpos+1],07h
-    and byte[mmode7xrpos+1],07h
-    mov cl,[mmode7yrpos+1]
-    mov eax,[mmode7xadder]
-    mov ch,[mmode7xrpos+1]
-    add [mmode7xrpos],eax
-    mov dl,[mode7tab+ecx]
-    mov eax,[mmode7yadder]
-    mov dl,[vrama+edx]
-    sub [mmode7yrpos],eax
-    %1
-    dec dword[mtemp]
-    jz near %%finishmode7
-    dec dword[ngwleft]
-    jnz near %%tilerep3
-    jmp %%thirdsetww
-
-; *************************************
-%%firstsetww
-    add dword[ngcwinptr],4
-    mov edx,[ngcwinptr]
-    mov edx,[edx]
-    mov [ngwleft],edx
-    xor edx,edx
-%%norep2w
-    test byte[mode7set],40h
-    jnz %%tilerep2w
-%%nextvalb2w
-    cmp byte[mmode7ypos+2],3
-    ja %%offscr2w
-    cmp byte[mmode7xpos+2],3
-    jbe near %%offscr3w
-%%offscr2w
-    mov eax,[mmode7xadder]
-    mov ebx,[mmode7yadder]
-    add [mmode7xpos],eax
-    sub [mmode7ypos],ebx
-    add esi,%3
-    dec dword[mtemp]
-    jz near %%finishmode7
-    dec dword[ngwleft]
-    jnz near %%nextvalb2w
-    jmp %%firstsetw
-%%tilerep2w
-%%nextvalb3w
-    cmp byte[mmode7ypos+2],3
-    ja %%offscr2bw
-    cmp byte[mmode7xpos+2],3
-    jbe near %%offscr3w
-%%offscr2bw
-    mov ch,[mmode7xpos+1]
-    mov eax,[mmode7xadder]
-    mov cl,[mmode7ypos+1]
-    mov ebx,[mmode7yadder]
-    mov dl,[mode7tab+ecx]
-    add [mmode7xpos],eax
-    mov dl,[vrama+edx]
-    sub [mmode7ypos],ebx
-    %4
-    dec dword[mtemp]
-    jz near %%finishmode7
-    dec dword[ngwleft]
-    jnz near %%nextvalb3w
-    jmp %%firstsetw
-
-%%offscr3w
-    mov eax,[mmode7xpos]
-    and eax,7FFh
-    mov [mmode7xrpos],eax
-    mov eax,[mmode7ypos]
-    and eax,7FFh
-    mov [mmode7yrpos],eax
-    ; get tile data offset into edi
-    mov ebx,[mmode7ypos+1]
-    mov eax,[mmode7xpos+1]
-    shl ebx,5
-    shr eax,3
-    and ebx,07FF8h
-    shl al,1
-    mov bl,al
-    mov edi,[vram]
-    xor ch,ch
-    mov [mmode7ptr],ebx
-    mov cl,[edi+ebx]
-    shl ecx,7
-    add edi,ecx
-    jmp %%nextvalrw
-%%nodr2w
-    add esi,%3
-
-    dec dword[mtemp]
-    jz near %%finishmode7
-    dec dword[ngwleft]
-    jnz %%nextvalrw
-%%secondsetww
-    add dword[ngcwinptr],4
-    mov edx,[ngcwinptr]
-    mov edx,[edx]
-    mov [ngwleft],edx
-    xor edx,edx
-%%nextvalrw
-    test byte[mmode7xrpos+1],08h
-    jnz near %%rposoffxrw
-%%nextposxrw
-    test byte[mmode7yrpos+1],08h
-    jnz near %%rposoffyrw
-%%nextposyrw
-    mov cl,[mmode7yrpos+1]
-    mov ch,[mmode7xrpos+1]
-    mov edx,[mmode7xadder]
-    add dword[mmode7xrpos],edx
-    mov edx,[mmode7yadder]
-    sub dword[mmode7yrpos],edx
-    xor edx,edx
-    mov dl,[mode7tab+ecx]
-    mov dl,[edi+edx]
-    %4
-    dec dword[mtemp]
-    jz near %%finishmode7
-    dec dword[ngwleft]
-    jnz near %%nextvalrw
-    jmp %%secondsetw
-%%rposoffxrw
-    mov al,[mmode7xinc]
-    mov edi,[vram]
-    add [mmode7ptr],al
-    mov cl,[mmode7xincc]
-    cmp byte[mmode7ptr],cl
-    je %%roffw
-%%roffxretbw
-    mov ebx,[mmode7ptr]
-    xor ecx,ecx
-    mov cl,[edi+ebx]
-    mov eax,[mmode7xadd2]
-    shl ecx,7
-    sub [mmode7xrpos],eax
-    add edi,ecx
-    jmp %%nextposxrw
-%%rposoffyrw
-    mov al,[mmode7yinc]
-    mov edi,[vram]
-    sub [mmode7ptr+1],al
-    js %%roffw
-%%roffyretbw
-    mov ebx,[mmode7ptr]
-    xor ecx,ecx
-    mov cl,[edi+ebx]
-    mov eax,[mmode7yadd2]
-    shl ecx,7
-    add [mmode7yrpos],eax
-    add edi,ecx
-    jmp %%nextposyrw
-
-%%roffw
-    test byte[mode7set],40h
-    jnz %%tilerep3w
-    jmp %%finishmode7
-%%thirdsetww
-    add dword[ngcwinptr],4
-    mov edx,[ngcwinptr]
-    mov edx,[edx]
-    mov [ngwleft],edx
-    xor edx,edx
-%%tilerep3w
-    and byte[mmode7yrpos+1],07h
-    and byte[mmode7xrpos+1],07h
-    mov cl,[mmode7yrpos+1]
-    mov eax,[mmode7xadder]
-    mov ch,[mmode7xrpos+1]
-    add [mmode7xrpos],eax
-    mov dl,[mode7tab+ecx]
-    mov eax,[mmode7yadder]
-    mov dl,[vrama+edx]
-    sub [mmode7yrpos],eax
-    %4
-    dec dword[mtemp]
-    jz near %%finishmode7
-    dec dword[ngwleft]
-    jnz near %%tilerep3w
-    jmp %%thirdsetw
 %endmacro
 
 ; *********************************************************************

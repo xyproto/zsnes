@@ -1687,7 +1687,10 @@ EXTSYM Gendcolortable
     mov [nglogicval],al
     mov eax,ebx
     add ebx,%1*256
-    call BuildWindow
+    ; BuildWindow became a cdecl C function (video/c_makev16b.c); the register
+    ; ABI this used to reach it by is gone, and the surrounding push eax/push
+    ; ebx would otherwise be picked up as its arguments in the wrong order.
+    ccallv BuildWindow, eax, ebx
     mov eax,edi
     sub eax,esi
     sar eax,1

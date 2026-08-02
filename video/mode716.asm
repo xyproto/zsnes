@@ -93,6 +93,10 @@ EXTSYM mode7xadder,mode7yadder,m7starty
 EXTSYM M7SeamA,M7SeamB,M7SeamC,M7SeamD,c_CalculateNewValues
 EXTSYM M7SeamSI,M7SeamDI,M7SeamBP,c_processmode7hires16b
 EXTSYM c_drawmode7ngextbg216b
+; Only the genuinely new names: M7P* and domosaicng16b are already declared in
+; video/mode716.mac, and EXTSYM'ing a symbol twice re-prefixes it on PE/COFF.
+EXTSYM M7DrawAX,M7DrawDX,M7DrawBX,M7DrawSI,M7DrawDI,M7DrawBP,M7DrawMosaic
+EXTSYM c_drawmode7win16b,c_drawmode7ngextbg16b
 
 %include "video/mode716.mac"
 
@@ -269,127 +273,38 @@ EXTSYM c_drawmode7ngextbg216b
 
 SECTION .text
 
-NEWSYM drawmode7win16b
-    test byte[scrndis],1
-    jz .notdisabled
+; drawmode7win16b and drawmode7ngextbg16b moved to video/c_mode716draw.c,
+; along with the four Mode7*Sub wrappers they were built from. Only the mosaic
+; tail stays here: it is a tail-jump into domosaicng16b with dh live, which a
+; C return cannot express.
+%macro M7DRAW 1
+NEWSYM %1
+    mov [M7DrawAX], eax
+    mov [M7DrawDX], edx
+    mov [M7DrawBX], ebx
+    mov [M7DrawSI], esi
+    mov [M7DrawDI], edi
+    mov [M7DrawBP], ebp
+    call c_%1
+    mov eax, [M7PAX]
+    mov ebx, [M7PBX]
+    mov ecx, [M7PCX]
+    mov edx, [M7PDX]
+    mov esi, [M7PSI]
+    mov edi, [M7PDI]
+    cmp dword[M7DrawMosaic], 0
+    je %%nomosaic
+    xor eax,eax
+    mov dh,[curmosaicsz]
+    jmp near domosaicng16b
+%%nomosaic
+    xor eax,eax
+    mov dh,[curmosaicsz]
     ret
-.notdisabled
-    CheckTransparency 01h,drawmode7win16bt
-normal
-    Mode7NonMainSub Mode7Normal
-drawmode7win16bt
-    test byte[scadtng+ebx],1h
-    jz near drawmode7win16bnt
-    test byte[BGMS1+ebx*2+1],1h
-    jnz near drawmode716bmst
-    Mode7NonMainSub Mode7Normalt
-drawmode716bmst:
-    mov edi,[CMainWinScr]
-    cmp byte[edi+ebx],0
-    jne near drawmode7w16bmt
-    mov edi,[CSubWinScr]
-    cmp byte[edi+ebx],0
-    jne near drawmode7w16bst
-drawmode7w16bmst
-    Mode7NonMainSub Mode7Normalmst
-drawmode7w16bmt
-    mov edi,[CSubWinScr]
-    cmp byte[edi+ebx],0
-    jne near drawmode7w16bmst
-    Mode7MainSub Mode7Normalmst,Mode7Normalst
-drawmode7w16bst
-    Mode7MainSub Mode7Normalmst,Mode7Normalt
-drawmode7win16bnt:
-    test byte[BGMS1+ebx*2+1],1h
-    jnz near drawsprngm716bmsnt
-    Mode7NonMainSub Mode7Normalnt
-drawsprngm716bmsnt:
-    cmp dword[ngwinen],0
-    je drawmode7w16bmsnt
-    mov edi,[CMainWinScr]
-    cmp byte[edi+ebx],0
-    jne near drawmode7w16bmnt
-    mov edi,[CSubWinScr]
-    cmp byte[edi+ebx],0
-    jne near drawmode7w16bsnt
-drawmode7w16bmsnt
-    Mode7NonMainSub Mode7Normalmsnt
-drawmode7w16bmnt
-    mov edi,[CSubWinScr]
-    cmp byte[edi+ebx],0
-    jne near drawmode7w16bmsnt
-    Mode7MainSub Mode7Normalmsnt,Mode7Normalsnt
-drawmode7w16bsnt
-    Mode7MainSub Mode7Normalmsnt,Mode7Normalnt
+%endmacro
 
-NEWSYM drawmode7ngextbg16b
-    test byte[scrndis],1
-    jz .notdisabled
-    ret
-.notdisabled
-    mov byte[curmosaicsz],1
-    push ecx
-    mov esi,[curvidoffset]       ; esi = [vidbuffer] + curypos * 288 + 16
-    mov ecx,256
-.loop
-    mov byte[esi+75036*8],0
-    add esi,2
-    dec ecx
-    jnz .loop
-    pop ecx
-
-    cmp byte[mode7hr+ebx],1
-;    je near drawmode7winextbghr16e
-    CheckTransparency 01h,drawmode7win16bte
-    CheckTransparency 02h,drawmode7win16bte
-    mov esi,[cwinptr]
-    mov [winptrref],esi
-    mov esi,[curvidoffset]
-    Mode7NonMainSube Mode7ExtBG
-drawmode7win16bte
-    test byte[scadtng+ebx],1h
-    jz near drawmode7win16bnte
-    test byte[BGMS1+ebx*2+1],1h
-    jnz near drawmode716bmste
-    Mode7NonMainSube Mode7ExtBGt
-drawmode716bmste:
-    mov edi,[CMainWinScr]
-    cmp byte[edi+ebx],0
-    jne near drawmode7w16bmte
-    mov edi,[CSubWinScr]
-    cmp byte[edi+ebx],0
-    jne near drawmode7w16bste
-drawmode7w16bmste
-    Mode7NonMainSube Mode7ExtBGmst
-drawmode7w16bmte
-    mov edi,[CSubWinScr]
-    cmp byte[edi+ebx],0
-    jne near drawmode7w16bmste
-    Mode7MainSube Mode7ExtBGmst,Mode7ExtBGst
-drawmode7w16bste
-    Mode7MainSube Mode7ExtBGmst,Mode7ExtBGt
-drawmode7win16bnte:
-    test byte[BGMS1+ebx*2+1],1h
-    jnz near drawsprngm716bmsnte
-    Mode7NonMainSube Mode7ExtBGnt
-drawsprngm716bmsnte:
-    cmp dword[ngwinen],0
-    je drawmode7w16bmsnte
-    mov edi,[CMainWinScr]
-    cmp byte[edi+ebx],0
-    jne near drawmode7w16bmnte
-    mov edi,[CSubWinScr]
-    cmp byte[edi+ebx],0
-    jne near drawmode7w16bsnte
-drawmode7w16bmsnte
-    Mode7NonMainSube Mode7ExtBGmsnt
-drawmode7w16bmnte
-    mov edi,[CSubWinScr]
-    cmp byte[edi+ebx],0
-    jne near drawmode7w16bmsnte
-    Mode7MainSube Mode7ExtBGmsnt,Mode7ExtBGsnt
-drawmode7w16bsnte
-    Mode7MainSube Mode7ExtBGmsnt,Mode7ExtBGnt
+M7DRAW drawmode7win16b
+M7DRAW drawmode7ngextbg16b
 
 NEWSYM drawmode7ngextbg216b
     mov [M7SeamA], eax

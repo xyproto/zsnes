@@ -92,9 +92,11 @@ void c_drawmode7ngextbg216b(void)
         u4 const sub = BGMS1[bx * 2 + 1] & 1u;
         u4 const main = BGMS1[bx * 2] & 1u;
         if (scadtng[bx] & 1u) {
-            mode = !sub ? EXT2_MAIN_T : main ? EXT2_BOTH_T : EXT2_SUB;
+            mode = !sub ? EXT2_MAIN_T : main ? EXT2_BOTH_T
+                                             : EXT2_SUB;
         } else {
-            mode = !sub ? EXT2_MAIN : main ? EXT2_BOTH : EXT2_SUB;
+            mode = !sub ? EXT2_MAIN : main ? EXT2_BOTH
+                                           : EXT2_SUB;
         }
     } else {
         /* The assembly adds a buffer to esi before this arm, which ExtBG2 then

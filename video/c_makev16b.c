@@ -302,16 +302,16 @@ static void ng_bw_notsimilar(u4 const eax, u4 const ebx, u4 const sig)
     ng_bw_notsimilarb(eax, ebx);
 }
 
-void BuildWindow2(u4 eax, u4 ebx)
+void c_BuildWindow2(u4 eax, u4 ebx)
 {
     WindowRedraw = 0;
     ng_bw_notsimilar(eax, ebx, nglogicval << 16 | winbg1enval[ebx]);
 }
 
-void BuildWindow(u4 eax, u4 ebx)
+void c_BuildWindow(u4 eax, u4 ebx)
 {
     if (WindowRedraw == 1) {
-        BuildWindow2(eax, ebx);
+        c_BuildWindow2(eax, ebx);
         return;
     }
 
@@ -338,6 +338,40 @@ void BuildWindow(u4 eax, u4 ebx)
     }
     ngwinen = ng_pngwinen;
 }
+
+/* The assembly BuildWindow/BuildWindow2 pushed ecx and edx on every return
+   path, and callers rely on it: Mode7NonMainSub keeps the Mode 7 x coordinate
+   in edx across ProcessBuildWindow. Porting them to C dropped that, because
+   cdecl lets the callee clobber both. These shims put the contract back, so
+   every call site gets it rather than each having to remember.
+
+   Delete them once the last assembly caller is gone. */
+/* clang-format off */
+#if defined(__GNUC__) && defined(__i386__)
+
+#if defined(__APPLE__) || defined(__MINGW32__)
+#define BW_SYM(x) "_" #x
+#else
+#define BW_SYM(x) #x
+#endif
+
+#define BW_SHIM(name)                                                        \
+    __asm__(".globl " BW_SYM(name) "\n" BW_SYM(name) ":\n"                   \
+            "pushl %ecx\n"                                                   \
+            "pushl %edx\n"                                                   \
+            "pushl 16(%esp)\n"                                               \
+            "pushl 16(%esp)\n"                                               \
+            "call " BW_SYM(c_##name) "\n"                                    \
+            "addl $8, %esp\n"                                                \
+            "popl %edx\n"                                                    \
+            "popl %ecx\n"                                                    \
+            "ret\n")
+
+BW_SHIM(BuildWindow);
+BW_SHIM(BuildWindow2);
+
+#endif
+/* clang-format on */
 
 static void blanker16b(void)
 {

@@ -73,6 +73,9 @@ EXTSYM tileleft16b,transpbuf,winon,winptrref,xtravbuf,yadd,yadder,yrevadder
 EXTSYM draw16x816t,bgmode,vcache2b,vcache4b,vcache8b,fulladdtab,pal16bcl
 EXTSYM pal16bxcl,coadder16,a16x16xinc,a16x16yinc,curypos,yflipadd
 
+EXTSYM MVAX,MVBX,MVCX,MVDX,MVSI,c_draw16tms_setup
+EXTSYM MVSAX,MVSBX,MVSCX,MVSDX,MVSSI,MVSDI,MVSBP,c_draw8x816tsms,c_draw8x816tswinonms
+
 %include "video/vidmacro.mac"
 
 ;*******************************************************
@@ -256,54 +259,19 @@ NEWSYM draw8x816tms
     cmp byte[bgmode],5
     je near draw16x816t
 
-    mov [temp],al
-    mov [bshifter],ah
-    mov eax,esi
-    mov [yadder],ecx
-    mov [tempcach],ebx
-    mov ebx,56
-    sub ebx,ecx
-    mov [yrevadder],ebx
-    ; esi = pointer to video buffer
-    mov esi,[cwinptr]
-    sub esi,eax
-    mov [winptrref],esi
-    mov esi,[curvidoffset]
-    sub esi,eax           ; esi = [vidbuffer] + curypos * 288 + 16 - HOfs
-    sub esi,eax
-    cmp byte[curmosaicsz],1
-    je .nomosaic
-    mov esi,xtravbuf+32
-    mov ecx,128
-.clearnext
-    mov dword[esi],0
-    add esi,4
-    dec ecx
-    jnz .clearnext
-    mov esi,xtravbuf+32
-    sub esi,eax
-    sub esi,eax
-.nomosaic
-    mov [temptile],edx
-    push ecx
-    mov dword[bgsubby],262144
-    mov ecx,[vcache2b]
-    add ecx,262144
-    mov [bgofwptr],ecx
-    cmp dword[tempcach],ecx
-    jb .nobit
-    mov dword[bgsubby],131072
-    mov ecx,[vcache4b]
-    add ecx,131072
-    mov [bgofwptr],ecx
-    cmp dword[tempcach],ecx
-    jb .nobit
-    mov ecx,[vcache8b]
-    add ecx,65536
-    mov [bgofwptr],ecx
-    mov dword[bgsubby],65536
-.nobit
-    pop ecx
+    ; The shared setup moved to video/c_mv16tms.c; edi and ebp are not touched
+    ; by it, so the seam only carries the five that are.
+    mov [MVAX], eax
+    mov [MVBX], ebx
+    mov [MVCX], ecx
+    mov [MVDX], edx
+    mov [MVSI], esi
+    call c_draw16tms_setup
+    mov eax, [MVAX]
+    mov ebx, [MVBX]
+    mov ecx, [MVCX]
+    mov edx, [MVDX]
+    mov esi, [MVSI]
 ; tile value : bit 15 = flipy, bit 14 = flipx, bit 13 = priority value
 ;              bit 10-12 = palette, 0-9=tile#
     cmp byte[curmosaicsz],1
@@ -488,78 +456,24 @@ NEWSYM draw8x8fulladdms
 .nodraw2
     ret
 
+; draw8x816tsms moved to video/c_mv16tsms.c. edi, esi, ebp and dl are the
+; live registers; eax, ebx and ecx are scratch the routine already destroys.
 NEWSYM draw8x816tsms
-    mov byte[tileleft16b],33
-    mov byte[drawn],0
-    mov dl,[temp]
-.loopa
-    mov ax,[edi]
-    mov dh,ah
-    add edi,2
-    push edi
-    xor dh,[curbgpr]
-    test dh,20h
-    jnz near .hprior
-    inc byte[drawn]
-    and eax,03FFh                ; filter out tile #
-    mov edi,[tempcach]
-    shl eax,6
-    add edi,eax
-    cmp edi,[bgofwptr]
-    jb .noclip
-    sub edi,[bgsubby]
-.noclip
-    test dh,80h
-    jz .normadd
-    add edi,[yrevadder]
-    jmp .skipadd
-.normadd
-    add edi,[yadder]
-.skipadd
-    test dh,40h
-    jnz near .rloop
-
-    ; Begin Normal Loop
-    mov cl,[bshifter]
-    and dh,1Ch
-    shl dh,cl                    ; process palette # (bits 10-12)
-    add dh,[bgcoloradder]
-    xor eax,eax
-    xor ecx,ecx
-    ; Start loop
-    drawtilegrpfull draw8x816tcms
-.hprior
-    pop edi
-    add esi,16
-    add ebp,16
-    inc dl
-    cmp dl,20h
-    jne .loopc2
-    mov edi,[temptile]
-.loopc2
-    dec byte[tileleft16b]
-    jnz near .loopa
-    ret
-
-    ; reversed loop
-.rloop
-    mov cl,[bshifter]
-    and dh,1Ch
-    shl dh,cl                    ; process palette # (bits 10-12)
-    add dh,[bgcoloradder]
-    xor eax,eax
-    xor ecx,ecx
-    drawtilegrpfullf draw8x816tcms
-    pop edi
-    add esi,16
-    add ebp,16
-    inc dl
-    cmp dl,20h
-    jne .loopc
-    mov edi,[temptile]
-.loopc
-    dec byte[tileleft16b]
-    jnz near .loopa
+    mov [MVSAX], eax
+    mov [MVSBX], ebx
+    mov [MVSCX], ecx
+    mov [MVSDX], edx
+    mov [MVSSI], esi
+    mov [MVSDI], edi
+    mov [MVSBP], ebp
+    call c_draw8x816tsms
+    mov eax, [MVSAX]
+    mov ebx, [MVSBX]
+    mov ecx, [MVSCX]
+    mov edx, [MVSDX]
+    mov esi, [MVSSI]
+    mov edi, [MVSDI]
+    mov ebp, [MVSBP]
     ret
 
 NEWSYM draw8x816twinonms
@@ -728,84 +642,23 @@ NEWSYM draw8x8fulladdwinonms
     jnz near .loopa
     ret
 
+; draw8x816tswinonms moved to video/c_mv16tsms.c, alongside its unmasked twin.
 NEWSYM draw8x816tswinonms
-    mov byte[tileleft16b],33
-    mov edx,[winptrref]
-    mov byte[drawn],0
-.loopa
-    mov ax,[edi]
-    mov cl,ah
-    add edi,2
-    push edi
-    xor cl,[curbgpr]
-    test cl,20h
-    jnz near .hprior
-    inc byte[drawn]
-    and eax,03FFh                ; filter out tile #
-    mov edi,[tempcach]
-    shl eax,6
-    add edi,eax
-    cmp edi,[bgofwptr]
-    jb .noclip
-    sub edi,[bgsubby]
-.noclip
-    test cl,80h
-    jz .normadd
-    add edi,[yrevadder]
-    jmp .skipadd
-.normadd
-    add edi,[yadder]
-.skipadd
-    test cl,40h
-    jnz near .rloop
-
-    ; Begin Normal Loop
-    mov al,cl
-    mov cl,[bshifter]
-    and al,1Ch
-    shl al,cl                    ; process palette # (bits 10-12)
-    add al,[bgcoloradder]
-    mov [coadder16],al
-    xor eax,eax
-    xor ecx,ecx
-    ; Start loop
-    drawtilegrpfull draw8x816tcwinonms
-.hprior
-    pop edi
-    add esi,16
-    add edx,8
-    add ebp,16
-    inc byte[temp]
-    cmp byte[temp],20h
-    jne .loopc2
-    mov edi,[temptile]
-.loopc2
-    dec byte[tileleft16b]
-    jnz near .loopa
-    ret
-
-    ; reversed loop
-.rloop
-    mov al,cl
-    mov cl,[bshifter]
-    and al,1Ch
-    shl al,cl                    ; process palette # (bits 10-12)
-    add al,[bgcoloradder]
-    mov [coadder16],al
-    xor eax,eax
-    xor ecx,ecx
-    drawtilegrpfullf draw8x816tcwinonbms
-    pop edi
-    add esi,16
-    add edx,8
-    add ebp,16
-    inc byte[temp]
-    cmp byte[temp],20h
-    jne .loopc
-    mov edi,[temptile]
-.loopc
-    dec byte[tileleft16b]
-    jnz near .loopa
+    mov [MVSAX], eax
+    mov [MVSBX], ebx
+    mov [MVSCX], ecx
+    mov [MVSDX], edx
+    mov [MVSSI], esi
+    mov [MVSDI], edi
+    mov [MVSBP], ebp
+    call c_draw8x816tswinonms
+    mov eax, [MVSAX]
+    mov ebx, [MVSBX]
+    mov ecx, [MVSCX]
+    mov edx, [MVSDX]
+    mov esi, [MVSSI]
+    mov edi, [MVSDI]
+    mov ebp, [MVSBP]
     ret
 
 ;*******************************************************

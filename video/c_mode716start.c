@@ -110,16 +110,16 @@ static s4 calculate(int const hires, u4 const ax, u4 const dx)
     mmode7xadder = (u4)(s4)(s2)mode7A;
     mmode7xpos += (u4)scaled(mode7A, (s2)mcxloc, 0);
 
-    mmode7yadder = (u4)-(s4)(s2)mode7C;
+    mmode7yadder = (u4)(-(s4)(s2)mode7C);
     eax = scaled(mode7C, (s2)mcxloc, 0);
     mmode7ypos += (u4)eax;
 
     if (mode7set & 1u) {
         mmode7xpos += mmode7xadder << 8;
-        mmode7xadder = (u4)-(s4)mmode7xadder;
+        mmode7xadder = (u4)(-(s4)mmode7xadder);
         eax = (s4)(mmode7yadder << 8);
         mmode7ypos -= (u4)eax;
-        mmode7yadder = (u4)-(s4)mmode7yadder;
+        mmode7yadder = (u4)(-(s4)mmode7yadder);
     }
     return eax;
 }
