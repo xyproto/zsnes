@@ -1,0 +1,33 @@
+# Mutants for video/c_mv16tsms.c, checked by test/difftest_mvall.c.
+# Format: name<TAB>old<TAB>new   (\n for a newline)
+# Each one breaks a single decision the port had to get right.
+writer palette	(sub ? pal16bxcl : pal16bcl)	(sub ? pal16bcl : pal16bxcl)
+writer invert	    if (sub) {\n        r->ecx ^= 0xFFFFu;\n    }	    r->ecx ^= 0xFFFFu;
+writer never inverts	    if (sub) {\n        r->ecx ^= 0xFFFFu;\n    }	    if (0) {\n        r->ecx ^= 0xFFFFu;\n    }
+8x8 sub flag	                (flags & 0x40u) != 0, sub);	                (flags & 0x40u) != 0, 1);
+8x8 mosaic drawn gate	    if (mosaic && drawn != 0) {	    if (mosaic) {
+8x8 mosaic always	    if (mosaic && drawn != 0) {	    if (drawn != 0) {
+8x8 mosaic compare	    if (mosaic && drawn != 0) {\n        dh = curmosaicsz;\n        MVSMosaic = dh != 1 ? 1u : 0u;	    if (mosaic && drawn != 0) {\n        dh = curmosaicsz;\n        MVSMosaic = dh != 0 ? 1u : 0u;
+a-writer mosaic dh	    if (drawn != 0) {\n        dh = curmosaicsz;	    if (0) {\n        dh = curmosaicsz;
+a-writer mosaic gate	    MVSMosaic = 0;\n    if (drawn != 0) {	    MVSMosaic = 0;\n    if (1) {
+16x16 xinc toggle	        a16x16xinc ^= 1u;	        a16x16xinc ^= 0u;
+16x16 xinc polarity	        if (!(raw & 0x40u)) {\n            if (!(a16x16xinc & 1u)) {	        if (!(raw & 0x40u)) {\n            if ((a16x16xinc & 1u)) {
+16x16 flip uses flags	        if (!(raw & 0x40u)) {	        if (!(flags & 0x40u)) {
+16x16 flip swap	        } else if (!(a16x16xinc & 1u)) {\n            edi += 2;\n        } else {\n            r.eax = set_lo16(r.eax, (u2)((u2)r.eax + 1u));\n        }	        } else if (!(a16x16xinc & 1u)) {\n            r.eax = set_lo16(r.eax, (u2)((u2)r.eax + 1u));\n        } else {\n            edi += 2;\n        }
+16x16 yadd swap	((flags & 0x80u) ? yflipadd : yadd)	((flags & 0x80u) ? yadd : yflipadd)
+16x16 tile mask	            r.eax = set_lo16(r.eax, (u2)((u2)r.eax & 0x03FFu));	            r.eax = set_lo16(r.eax, (u2)((u2)r.eax & 0x07FFu));
+16x16 tile shift 32-bit	            r.eax = set_lo16(r.eax, (u2)((u2)r.eax << 6));	            r.eax = r.eax << 6;
+16x16 tile shift amount	            r.eax = set_lo16(r.eax, (u2)((u2)r.eax << 6));	            r.eax = set_lo16(r.eax, (u2)((u2)r.eax << 5));
+16x16 tile add 32-bit	                r.eax, (u2)((u2)r.eax + ((flags & 0x80u) ? yflipadd : yadd)));	                r.eax, (u2)(r.eax + ((flags & 0x80u) ? yflipadd : yadd)));
+16x16 a-writer ebx	                r.ebx = tile; /* the a writer reads the tile through ebx */	                /* mutant: ebx not set */
+16x16 writer variant	                    winon ? 0 : dh, (flags & 0x40u) != 0, var == MV16_C);	                    winon ? 0 : dh, (flags & 0x40u) != 0, var != MV16_C);
+16x16 palette source	                    winon ? 0 : dh, (flags & 0x40u) != 0);	                    dh, (flags & 0x40u) != 0);
+16x16 column reset (winon)	            if (temp == 0x20u) {\n                temp = 0;	            if (temp == 0x20u) {
+16x16 column reset (plain)	            if (dl == 0x20u) {\n                dl = 0;	            if (dl == 0x20u) {
+16x16 column gate	            if (!(a16x16xinc & 1u)) {\n                dl++;\n            }	            dl++;
+16x16 window step	            edx += 8;\n            if (!(a16x16xinc & 1u)) {	            edx += 16;\n            if (!(a16x16xinc & 1u)) {
+16x16 mosaic on winon	    if (!winon) {\n        dh = curmosaicsz;	    if (1) {\n        dh = curmosaicsz;
+16x16 priority bit	        if (!(flags & 0x20u)) {\n            u4 tile;\n\n            drawn++;\n            r.eax = set_lo16(	        if (!(flags & 0x10u)) {\n            u4 tile;\n\n            drawn++;\n            r.eax = set_lo16(
+16x16 clip compare	            if (tile >= bgofwptr) {\n                tile -= bgsubby;\n            }\n            tile += (flags & 0x80u) ? yrevadder : yadder;\n\n            if (winon) {	            if (tile > bgofwptr) {\n                tile -= bgsubby;\n            }\n            tile += (flags & 0x80u) ? yrevadder : yadder;\n\n            if (winon) {
+16x16 y adder swap	            tile += (flags & 0x80u) ? yrevadder : yadder;\n\n            if (winon) {	            tile += (flags & 0x80u) ? yadder : yrevadder;\n\n            if (winon) {
+16x16 tile count	    tileleft16b = 33;\n\n    do {\n        u2 const entry = *(u2 const*)edi;\n        u1 const raw	    tileleft16b = 32;\n\n    do {\n        u2 const entry = *(u2 const*)edi;\n        u1 const raw

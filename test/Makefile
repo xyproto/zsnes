@@ -45,7 +45,7 @@ ASMDATA   := zsnes_asmdata_test
 ASMDATA_SRC := asmdata_test.c
 OBJS      := ../zpath.o
 
-.PHONY: all run clean spcdec fxtable fxops memops m7calc m7ext2 m7start m7win m7bw m7proc m7draw mv16 mvs regs
+.PHONY: all run clean spcdec fxtable fxops memops m7calc m7ext2 m7start m7win m7bw m7proc m7draw mv16 mvs mvall regs
 
 all: $(BIN) $(NETPLAY) $(ST10) $(ST11) $(OBC1) $(MSU1) $(DSP2) $(SAI) $(SA1) $(SPC7110) $(VCACHE) $(SPRITES) $(C4) $(MODE7) $(ASMDATA)
 
@@ -131,6 +131,14 @@ mvs: difftest_mvs.c difftest.h mkmvs.sh ../video/c_mv16tsms.c
 	./mkmvs.sh
 	$(CC) $(CFLAGS) difftest_mvs.c ../video/c_mv16tsms.c _mvs.o -no-pie -o difftest_mvs
 	@./difftest_mvs
+
+# The oracle is the whole pre-port file, so this one covers every routine in it
+# and needs no extraction script; see tools/mkoracle.py.
+mvall: difftest_mvall.c difftest.h ../video/c_mv16tsms.c ../video/c_mv16tms.c
+	python3 ../tools/mkoracle.py video/mv16tms.asm -o _mvall.o
+	$(CC) $(CFLAGS) difftest_mvall.c ../video/c_mv16tsms.c ../video/c_mv16tms.c \
+	    ../video/mv16tms.o _mvall.o -no-pie -o difftest_mvall
+	@./difftest_mvall
 
 mv16: difftest_mv16.c difftest.h mkmv16.sh ../video/c_mv16tms.c
 	./mkmv16.sh

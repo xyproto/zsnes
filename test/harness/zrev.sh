@@ -3,7 +3,11 @@
 set -u
 REV=$1; shift
 ROOT=$(git rev-parse --show-toplevel)
-WT=$ROOT/.claude/worktrees/_rev
+# Outside the checkout; see the note in zab.sh.
+WTBASE=${TMPDIR:-/tmp}/zsnes-harness-$(id -u)
+WT=$WTBASE/rev
+mkdir -p "$WTBASE"
+git -C "$ROOT" worktree prune
 git -C "$ROOT" worktree remove --force "$WT" >/dev/null 2>&1
 git -C "$ROOT" worktree add --detach "$WT" "$REV" >/dev/null 2>&1 || { echo "$REV: WORKTREE-FAIL"; exit 2; }
 if ! make -C "$WT" -j"$(nproc)" >/tmp/zrev_build_$$.log 2>&1; then

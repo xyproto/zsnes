@@ -19,7 +19,13 @@ esac; done
 [ -n "$ROM" ] || { echo "usage: zab.sh -r ROM [-R REV] [-i SCRIPT] [-s SLOT] [-t SECS]" >&2; exit 2; }
 
 ROOT=$(git rev-parse --show-toplevel) || exit 2
-WT=$ROOT/.claude/worktrees/_ab_baseline
+# Scratch worktrees live outside the checkout: a second build tree inside it
+# shows up as untracked files and gets picked up by tools that walk the repo.
+# Keyed by user so two people on one machine do not collide.
+WTBASE=${TMPDIR:-/tmp}/zsnes-harness-$(id -u)
+WT=$WTBASE/ab_baseline
+mkdir -p "$WTBASE"
+git -C "$ROOT" worktree prune
 OUT=$ROOT/test/harness/out; mkdir -p "$OUT"
 
 echo "=== building baseline $REV ==="
