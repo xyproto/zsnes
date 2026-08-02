@@ -106,12 +106,22 @@ int main(void)
         /* The cache test is a chain of unsigned compares against three fixed
            bases; land the pointer in each region often, not by chance. */
         switch (dt_mod(5)) {
-        case 0: bx = (u4)(uintptr_t)cache + dt_mod(C2SZ); break;
-        case 1: bx = (u4)(uintptr_t)cache + C2SZ + dt_mod(C4SZ); break;
-        case 2: bx = (u4)(uintptr_t)cache + C2SZ + C4SZ + dt_mod(C8SZ); break;
+        case 0:
+            bx = (u4)(uintptr_t)cache + dt_mod(C2SZ);
+            break;
+        case 1:
+            bx = (u4)(uintptr_t)cache + C2SZ + dt_mod(C4SZ);
+            break;
+        case 2:
+            bx = (u4)(uintptr_t)cache + C2SZ + C4SZ + dt_mod(C8SZ);
+            break;
         /* Straddle each boundary exactly, so the >= compares are pinned. */
-        case 3: bx = (u4)(uintptr_t)cache + C2SZ - 2u + dt_mod(4); break;
-        default: bx = (u4)(uintptr_t)cache + C2SZ + C4SZ - 2u + dt_mod(4); break;
+        case 3:
+            bx = (u4)(uintptr_t)cache + C2SZ - 2u + dt_mod(4);
+            break;
+        default:
+            bx = (u4)(uintptr_t)cache + C2SZ + C4SZ - 2u + dt_mod(4);
+            break;
         }
         curmosaicsz = (u1)(dt_mod(2) ? 1 : dt_mod(16));
 

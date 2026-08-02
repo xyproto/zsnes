@@ -74,19 +74,39 @@ static void run(int const asm_side, int const which, u4 const bx, u4 const si,
     asm_winedx = 0xD1D10000u;
     if (asm_side) {
         switch (which) {
-        case 0: asm_m7wina(); break;
-        case 1: asm_m7winb(); break;
-        case 2: asm_m7winc(); break;
-        case 3: asm_m7wind(); break;
-        default: asm_m7wine(); break;
+        case 0:
+            asm_m7wina();
+            break;
+        case 1:
+            asm_m7winb();
+            break;
+        case 2:
+            asm_m7winc();
+            break;
+        case 3:
+            asm_m7wind();
+            break;
+        default:
+            asm_m7wine();
+            break;
         }
     } else {
         switch (which) {
-        case 0: c_ProcessMode7ngwin16b(); break;
-        case 1: c_ProcessMode7ngwinB16b(); break;
-        case 2: c_ProcessMode7ngwinC16b(); break;
-        case 3: c_ProcessMode7ngwinD16b(); break;
-        default: c_ProcessMode7ngwinE16b(); break;
+        case 0:
+            c_ProcessMode7ngwin16b();
+            break;
+        case 1:
+            c_ProcessMode7ngwinB16b();
+            break;
+        case 2:
+            c_ProcessMode7ngwinC16b();
+            break;
+        case 3:
+            c_ProcessMode7ngwinD16b();
+            break;
+        default:
+            c_ProcessMode7ngwinE16b();
+            break;
         }
     }
 

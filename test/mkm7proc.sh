@@ -10,7 +10,9 @@ REV=$1
 if [ -z "$REV" ]; then
     for r in $(git -C .. log --format=%H -- video/mode716.mac); do
         git -C .. cat-file -e "${r}:video/mode716.mac" 2>/dev/null || continue
-        if git -C .. show "${r}:video/mode716.mac" | grep -q '^%macro Mode7Process 3'; then
+        # The macro *names* survive the port as thunks, so key off a line only
+        # the original bodies have - otherwise the oracle becomes the port.
+        if git -C .. show "${r}:video/mode716.mac" | grep -q '^    mov dword\[mtemp\],256'; then
             REV=$r
             break
         fi

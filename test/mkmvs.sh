@@ -5,7 +5,11 @@ REV=$1
 if [ -z "$REV" ]; then
     for r in $(git -C .. log --format=%H -- video/mv16tms.asm); do
         git -C .. cat-file -e "${r}:video/mv16tms.asm" 2>/dev/null || continue
-        if git -C .. show "${r}:video/mv16tms.asm" | grep -q '^    drawtilegrpfull draw8x816tcms'; then
+        # Must still have the original bodies: once a port is committed the
+        # newest revision has the thunks, and an oracle built from those would
+        # call the very code it is meant to check.
+        if git -C .. show "${r}:video/mv16tms.asm" | grep -q '^    drawtilegrpfull draw8x816tcms' \
+           && ! git -C .. show "${r}:video/mv16tms.asm" | grep -q 'call c_draw8x8'; then
             REV=$r; break
         fi
     done
