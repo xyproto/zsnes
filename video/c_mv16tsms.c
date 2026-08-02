@@ -173,3 +173,140 @@ static void draw_row(int const winon)
 
 void c_draw8x816tsms(void) { draw_row(0); }
 void c_draw8x816tswinonms(void) { draw_row(1); }
+
+/* --- the 'a' writer: main screen with a conditional average ---------------- *
+ *
+ * draw8x816tams and its two windowed forms. Unlike the b/c writers this one
+ * keeps the colour in eax and the transparency value in ecx, reads the tile
+ * through ebx rather than edi, and only averages when the transparency buffer
+ * already holds something.
+ */
+extern u4 pal16b[256];
+extern u1 curmosaicsz;
+extern u1 drawn;
+
+static void write_a(struct mvregs* const r, u1 const* const src, u4 const n,
+    u1 const* const win, u4 const wn, u4 const off, u1* const esi,
+    u1* const ebp, u1 const dh)
+{
+    u1 const al = src[n];
+
+    r->eax = (r->eax & ~0xFFu) | al;
+    if (al == 0 || (win != 0 && win[wn] != 0)) {
+        return;
+    }
+    r->eax = (r->eax & ~0xFFu) | (u1)(al + (win ? coadder16 : dh));
+    r->ecx = *(u4*)(ebp + off);
+    r->eax = pal16b[(u1)r->eax];
+    *(u2*)(ebp + off) = (u2)r->eax;
+    if ((r->ecx & 0xFFFFu) != 0) {
+        r->eax &= CLBIT;
+        r->ecx &= CLBIT;
+        r->eax += r->ecx;
+        r->eax >>= 1;
+    }
+    *(u2*)(esi + off) = (u2)r->eax;
+    r->eax = 0;
+}
+
+/* drawtilegrp / drawtilegrpf: as the full forms, but the zero test is on the
+   tile pointer in ebx. */
+static void draw_group_a(struct mvregs* const r, u1 const* const src,
+    u1 const* const win, u1* const esi, u1* const ebp, u1 const dh,
+    int const flip)
+{
+    static u1 const fwd[8] = { 0, 1, 2, 3, 4, 5, 6, 7 };
+    static u1 const rev[8] = { 7, 6, 5, 4, 3, 2, 1, 0 };
+    u1 const* const ix = flip ? rev : fwd;
+
+    r->eax = 0;
+    r->ecx = 0;
+    for (u4 g = 0; g < 2; g++) {
+        u4 const test = g == 0 ? (flip ? 4u : 0u) : (flip ? 0u : 4u);
+        if (*(u4 const*)(src + test) == 0) {
+            continue;
+        }
+        for (u4 i = g * 4u; i < g * 4u + 4u; i++) {
+            write_a(r, src, ix[i], win, flip ? (u4)(7u - ix[i]) : ix[i],
+                i * 2, esi, ebp, dh);
+        }
+    }
+}
+
+/* Non-zero when the caller must tail-jump to domosaic16b, which the assembly
+   does with dh carrying curmosaicsz. */
+u4 MVSMosaic;
+
+static void draw_row_a(int const winon)
+{
+    struct mvregs r = { MVSAX, MVSBX, MVSCX };
+    u1* esi = (u1*)(uintptr_t)MVSSI;
+    u1* ebp = (u1*)(uintptr_t)MVSBP;
+    u1 const* edi = (u1 const*)(uintptr_t)MVSDI;
+    u1 const* edx = winon ? winptrref : 0;
+    u1 dl = temp;
+    u1 dh = (u1)(MVSDX >> 8);
+
+    tileleft16b = 33;
+    drawn = 0;
+
+    do {
+        u2 const entry = *(u2 const*)edi;
+        u1 const flags = (u1)((entry >> 8) ^ curbgpr);
+
+        r.eax = (r.eax & ~0xFFFFu) | entry;
+        if (winon) {
+            r.ecx = (r.ecx & ~0xFFu) | flags;
+        } else {
+            dh = flags;
+        }
+        edi += 2;
+
+        if (!(flags & 0x20u)) {
+            u4 tile;
+
+            drawn++;
+            r.eax &= 0x03FFu;
+            tile = tempcach + (r.eax << 6);
+            if (tile >= bgofwptr) {
+                tile -= bgsubby;
+            }
+            tile += (flags & 0x80u) ? yrevadder : yadder;
+            r.ebx = tile;
+            r.ecx = (r.ecx & ~0xFFu) | bshifter;
+            if (winon) {
+                r.eax = (r.eax & ~0xFFu) | flags;
+                coadder16 = (u1)((u1)((flags & 0x1Cu) << (bshifter & 31u))
+                    + bgcoloradder);
+            } else {
+                dh = (u1)((u1)((flags & 0x1Cu) << (bshifter & 31u))
+                    + bgcoloradder);
+            }
+            draw_group_a(&r, (u1 const*)(uintptr_t)tile, edx, esi, ebp, dh,
+                (flags & 0x40u) != 0);
+        }
+        esi += 16;
+        ebp += 16;
+        if (winon) {
+            edx += 8;
+            if (++temp == 0x20u) {
+                edi = (u1 const*)(uintptr_t)temptile;
+            }
+        } else if (++dl == 0x20u) {
+            edi = (u1 const*)(uintptr_t)temptile;
+        }
+    } while (--tileleft16b != 0);
+
+    MVSMosaic = (drawn != 0 && curmosaicsz != 1) ? 1u : 0u;
+    MVSAX = r.eax;
+    MVSBX = r.ebx;
+    MVSCX = r.ecx;
+    MVSDX = winon ? (u4)(uintptr_t)edx
+                  : ((MVSDX & ~0xFFFFu) | ((u4)dh << 8) | dl);
+    MVSSI = (u4)(uintptr_t)esi;
+    MVSBP = (u4)(uintptr_t)ebp;
+    MVSDI = (u4)(uintptr_t)edi;
+}
+
+void c_draw8x816tms_body(void) { draw_row_a(0); }
+void c_draw8x816twinonms_body(void) { draw_row_a(1); }

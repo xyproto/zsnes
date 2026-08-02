@@ -75,6 +75,9 @@ EXTSYM pal16bxcl,coadder16,a16x16xinc,a16x16yinc,curypos,yflipadd
 
 EXTSYM MVAX,MVBX,MVCX,MVDX,MVSI,c_draw16tms_setup
 EXTSYM MVSAX,MVSBX,MVSCX,MVSDX,MVSSI,MVSDI,MVSBP,c_draw8x816tsms,c_draw8x816tswinonms
+; domosaic16b and curmosaicsz are already declared above - EXTSYM'ing a symbol
+; twice re-prefixes it on PE/COFF and only the win32 link notices.
+EXTSYM MVSMosaic,c_draw8x816tms_body,c_draw8x816twinonms_body
 
 %include "video/vidmacro.mac"
 
@@ -288,86 +291,28 @@ NEWSYM draw8x816tms
     jz near draw8x8fulladdms
     cmp byte[scrnon+1],0
     jz near draw8x8fulladdms
-    mov byte[tileleft16b],33
-    mov byte[drawn],0
-    mov dl,[temp]
-.loopa
-    mov ax,[edi]
-    mov dh,ah
-    add edi,2
-    xor dh,[curbgpr]
-    test dh,20h
-    jnz near .hprior
-    inc byte[drawn]
-    and eax,03FFh                ; filter out tile #
-    mov ebx,[tempcach]
-    shl eax,6
-    add ebx,eax
-    cmp ebx,[bgofwptr]
-    jb .noclip
-    sub ebx,[bgsubby]
-.noclip
-    test dh,80h
-    jz .normadd
-    add ebx,[yrevadder]
-    jmp .skipadd
-.normadd
-    add ebx,[yadder]
-.skipadd
-    test dh,40h
-    jnz near .rloop
-
-    ; Begin Normal Loop
-    mov cl,[bshifter]
-    and dh,1Ch
-    shl dh,cl                    ; process palette # (bits 10-12)
-    add dh,[bgcoloradder]
-    xor eax,eax
-    xor ecx,ecx
-    ; Start loop
-    drawtilegrp draw8x816tams
-.hprior
-    add esi,16
-    add ebp,16
-    inc dl
-    cmp dl,20h
-    jne .loopc2
-    mov edi,[temptile]
-.loopc2
-    dec byte[tileleft16b]
-    jnz near .loopa
-    cmp byte[drawn],0
+    ; The loop moved to video/c_mv16tsms.c; the mosaic tail stays here because
+    ; it is a tail-jump into domosaic16b with dh carrying curmosaicsz.
+    mov [MVSAX], eax
+    mov [MVSBX], ebx
+    mov [MVSCX], ecx
+    mov [MVSDX], edx
+    mov [MVSSI], esi
+    mov [MVSDI], edi
+    mov [MVSBP], ebp
+    call c_draw8x816tms_body
+    mov eax, [MVSAX]
+    mov ebx, [MVSBX]
+    mov ecx, [MVSCX]
+    mov edx, [MVSDX]
+    mov esi, [MVSSI]
+    mov edi, [MVSDI]
+    mov ebp, [MVSBP]
+    cmp dword[MVSMosaic],0
     je .nodraw
     mov dh,[curmosaicsz]
-    cmp dh,1
-    jne near domosaic16b
+    jmp near domosaic16b
 .nodraw
-    ret
-
-    ; reversed loop
-.rloop
-    mov cl,[bshifter]
-    and dh,1Ch
-    shl dh,cl                    ; process palette # (bits 10-12)
-    add dh,[bgcoloradder]
-    xor eax,eax
-    xor ecx,ecx
-    drawtilegrpf draw8x816tams
-    add esi,16
-    add ebp,16
-    inc dl
-    cmp dl,20h
-    jne .loopc
-    mov edi,[temptile]
-.loopc
-    dec byte[tileleft16b]
-    jnz near .loopa
-    cmp byte[drawn],0
-    je .nodraw2
-    mov dh,[curmosaicsz]
-    cmp dh,1
-    jne near domosaic16b
-.nodraw2
     ret
 
 NEWSYM draw8x8fulladdms
@@ -486,80 +431,28 @@ NEWSYM draw8x816twinonms
     jz near draw8x8fulladdwinonms
     cmp byte[scrnon+1],0
     jz near draw8x8fulladdwinonms
-    mov byte[tileleft16b],33
-    mov edx,[winptrref]
-    mov byte[drawn],0
-.loopa
-    mov ax,[edi]
-    mov cl,ah
-    add edi,2
-    xor cl,[curbgpr]
-    test cl,20h
-    jnz near .hprior
-    inc byte[drawn]
-    and eax,03FFh                ; filter out tile #
-    mov ebx,[tempcach]
-    shl eax,6
-    add ebx,eax
-    cmp ebx,[bgofwptr]
-    jb .noclip
-    sub ebx,[bgsubby]
-.noclip
-    test cl,80h
-    jz .normadd
-    add ebx,[yrevadder]
-    jmp .skipadd
-.normadd
-    add ebx,[yadder]
-.skipadd
-    test cl,40h
-    jnz near .rloop
-
-    ; Begin Normal Loop
-    mov al,cl
-    mov cl,[bshifter]
-    and al,1Ch
-    shl al,cl                    ; process palette # (bits 10-12)
-    add al,[bgcoloradder]
-    mov [coadder16],al
-    xor eax,eax
-    xor ecx,ecx
-    ; Start loop
-    drawtilegrp draw8x816tawinonms
-.hprior
-    add esi,16
-    add edx,8
-    add ebp,16
-    inc byte[temp]
-    cmp byte[temp],20h
-    jne .loopc2
-    mov edi,[temptile]
-.loopc2
-    dec byte[tileleft16b]
-    jnz near .loopa
-    ret
-
-    ; reversed loop
-.rloop
-    mov al,cl
-    mov cl,[bshifter]
-    and al,1Ch
-    shl al,cl                    ; process palette # (bits 10-12)
-    add al,[bgcoloradder]
-    mov [coadder16],al
-    xor eax,eax
-    xor ecx,ecx
-    drawtilegrpf draw8x816tawinonbms
-    add esi,16
-    add edx,8
-    add ebp,16
-    inc byte[temp]
-    cmp byte[temp],20h
-    jne .loopc
-    mov edi,[temptile]
-.loopc
-    dec byte[tileleft16b]
-    jnz near .loopa
+    ; The loop moved to video/c_mv16tsms.c; the mosaic tail stays here because
+    ; it is a tail-jump into domosaic16b with dh carrying curmosaicsz.
+    mov [MVSAX], eax
+    mov [MVSBX], ebx
+    mov [MVSCX], ecx
+    mov [MVSDX], edx
+    mov [MVSSI], esi
+    mov [MVSDI], edi
+    mov [MVSBP], ebp
+    call c_draw8x816twinonms_body
+    mov eax, [MVSAX]
+    mov ebx, [MVSBX]
+    mov ecx, [MVSCX]
+    mov edx, [MVSDX]
+    mov esi, [MVSSI]
+    mov edi, [MVSDI]
+    mov ebp, [MVSBP]
+    cmp dword[MVSMosaic],0
+    je .nodrawb
+    mov dh,[curmosaicsz]
+    jmp near domosaic16b
+.nodrawb
     ret
 
 NEWSYM draw8x8fulladdwinonms
