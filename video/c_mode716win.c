@@ -55,7 +55,11 @@ static u4 set_hi(u4 const r, u1 const v)
     return (r & ~0xFF00u) | ((u4)v << 8);
 }
 
-enum entry { NGWIN_A, NGWIN_B, NGWIN_C, NGWIN_D, NGWIN_E };
+enum entry { NGWIN_A,
+    NGWIN_B,
+    NGWIN_C,
+    NGWIN_D,
+    NGWIN_E };
 
 /* Shared head of ngwin16b and ngwinC16b: claim the next run. Returns 0 when
    the run is empty, which drops into the matching skip routine. */
