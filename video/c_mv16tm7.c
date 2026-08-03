@@ -401,6 +401,9 @@ static void bg(int const sub, int const fix)
         }
     }
 
+    /* Everything below writes bl only to have it overwritten by bg1cachloc a
+       few lines down - kept because it is what the assembly does, but nothing
+       can observe it, which is why two mutants here are unkillable. */
     BGBX = (BGBX & ~0xFFu) | bg;
     curmosaicsz = 1;
     if (mosaicon & bg) {

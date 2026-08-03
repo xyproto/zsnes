@@ -122,6 +122,8 @@ EXTSYM c_procspritessub16tfix,c_procspritesmain16tfix
 EXTSYM BGAX,BGBX,BGCX,BGDX,BGSI,BGDI,BGBP,BGTail,c_bg_mark_drawn
 EXTSYM c_drawbackgrndsub16t,c_drawbackgrndmain16t
 EXTSYM c_drawbackgrndsub16tfix,c_drawbackgrndmain16tfix
+EXTSYM CBAX,CBBX,CBCX,CBDX,CBSI,CBDI,CBBP
+EXTSYM c_clearback16t,c_clearback16ts
 EXTSYM winbg1en,winenabm,drawmode716textbg,drawmode716textbg2,extbgdone
 EXTSYM drawmode716tb,drawmode716b,drawmode716extbg,drawmode716extbg2,cursprloc
 EXTSYM drawsprites16b,scrndis,sprprifix,winonsp,bgfixer,scaddtype
@@ -1591,109 +1593,42 @@ SECTION .text
 ; Clear Backarea, 16-bit mode w/ transparency
 ;*******************************************************
 NEWSYM clearback16t
-    test byte[scaddtype],20h
-    jz near .backcopy
-    test byte[scaddtype],80h
-    jnz near clearback16ts
-    mov eax,[pal16b]
-    mov esi,[curvidoffset]
-    mov ebp,transpbuf+32
-    mov dx,ax
-    and eax,[vesa2_clbit]
-    shr eax,1
-    test byte[scaddtype],40h
-    jz .fulladd
-    cmp byte[scrnon+1],0
-    je .fulladd
-    mov ecx,128
-.loopa
-    mov ebx,[ebp]
-    or bx,bx
-    jz .noadd
-    and bx,[vesa2_clbit]
-    shr bx,1
-    add bx,ax
-    mov [esi],bx
-    jmp .skip
-.noadd
-    mov [esi],dx
-.skip
-    shr ebx,16
-    or bx,bx
-    je .noadd2
-    and bx,word[vesa2_clbit]
-    shr bx,1
-    add bx,ax
-    mov [esi+2],bx
-    jmp .skip2
-.noadd2
-    mov [esi+2],dx
-.skip2
-    add ebp,4
-    add esi,4
-    dec ecx
-    jnz .loopa
-    xor eax,eax
-    ret
-.fulladd
-    cmp eax,0
-    je .subcopy
-    mov ecx,256
-    xor ebx,ebx
-.loopc
-    mov ebx,[ebp]
-    and ebx,[vesa2_clbit]
-    shr ebx,1
-    add ebx,eax
-    add ebp,2
-    mov ebx,[fulladdtab+ebx*2]
-    mov [esi],bx
-    add esi,2
-    dec ecx
-    jnz .loopc
-    xor eax,eax
-    ret
-.subcopy
-    mov ecx,128
-    xor ebx,ebx
-    mov edi,esi
-    mov esi,ebp
-    rep movsd
-    xor eax,eax
-    ret
-.backcopy
-    mov edi,[curvidoffset]
-    mov ecx,128
-    mov ax,[pal16b]
-    shl eax,16
-    mov ax,[pal16b]
-    rep stosd
-    xor eax,eax
+    mov [CBAX], eax
+    mov [CBBX], ebx
+    mov [CBCX], ecx
+    mov [CBDX], edx
+    mov [CBSI], esi
+    mov [CBDI], edi
+    mov [CBBP], ebp
+    call c_clearback16t
+    mov eax, [CBAX]
+    mov ebx, [CBBX]
+    mov ecx, [CBCX]
+    mov edx, [CBDX]
+    mov esi, [CBSI]
+    mov edi, [CBDI]
+    mov ebp, [CBBP]
     ret
 
+
 NEWSYM clearback16ts
-    mov eax,[pal16b]
-    mov esi,[curvidoffset]
-    mov ebp,transpbuf+32
-    xor eax,0FFFFh
-    and eax,[vesa2_clbit]
-    shr eax,1
-    mov ecx,256
-    xor ebx,ebx
-.loopc
-    mov ebx,[ebp]
-    and ebx,[vesa2_clbit]
-    shr ebx,1
-    add ebx,eax
-    add ebp,2
-    mov ebx,[fulladdtab+ebx*2]
-    xor ebx,0FFFFh
-    mov [esi],bx
-    add esi,2
-    dec ecx
-    jnz .loopc
-    xor eax,eax
+    mov [CBAX], eax
+    mov [CBBX], ebx
+    mov [CBCX], ecx
+    mov [CBDX], edx
+    mov [CBSI], esi
+    mov [CBDI], edi
+    mov [CBBP], ebp
+    call c_clearback16ts
+    mov eax, [CBAX]
+    mov ebx, [CBBX]
+    mov ecx, [CBCX]
+    mov edx, [CBDX]
+    mov esi, [CBSI]
+    mov edi, [CBDI]
+    mov ebp, [CBBP]
     ret
+
 
 NEWSYM drawsprites16bt
     cmp byte[sprprifix],1

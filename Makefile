@@ -430,6 +430,7 @@ SRCS += video/c_mode716draw.c
 SRCS += video/c_mv16tms.c
 SRCS += video/c_mv16tsms.c
 SRCS += video/c_mv16tm7.c
+SRCS += video/c_mv16tclr.c
 SRCS += video/c_makev16tdata.c
 SRCS += video/c_newgfx16data.c
 SRCS += video/c_hqx.c
