@@ -112,6 +112,13 @@ EXTSYM pwinbgtype,pwinspenab,pwinsptype,winbgdata,winlogicb,winonbtype
 EXTSYM winonstype,winspdata,interlval,bg1scrolx,bg1scroly,curmosaicsz
 EXTSYM curypos,drawmode716t,makewindow,mode7set,mosaicon,mosaicsz,scrnon
 EXTSYM makedualwincol
+EXTSYM M7TAX,M7TBX,M7TDX,M7TBP,M7TTail
+EXTSYM c_procmode716tsub,c_procmode716tsubextbg,c_procmode716tsubextbgb
+EXTSYM c_procmode716tsubextbg2,c_procmode716tmain,c_procmode716tmainextbg
+EXTSYM c_procmode716tmainextbgb,c_procmode716tmainextbg2
+EXTSYM SPRAX,SPRBX,SPRCX,SPRBP,SPRDX,SPRTail
+EXTSYM c_procspritessub16t,c_procspritesmain16t
+EXTSYM c_procspritessub16tfix,c_procspritesmain16tfix
 EXTSYM winbg1en,winenabm,drawmode716textbg,drawmode716textbg2,extbgdone
 EXTSYM drawmode716tb,drawmode716b,drawmode716extbg,drawmode716extbg2,cursprloc
 EXTSYM drawsprites16b,scrndis,sprprifix,winonsp,bgfixer,scaddtype
@@ -149,445 +156,211 @@ SECTION .text
 ; makedualwincol has been ported to C (video/c_makevid.c); it is called from
 ; the procwindowback macro (video/vidmacro.mac).
 
-NEWSYM procmode716tsub
-    test word[scrnon+1],01h
-    jz near .noback1
-    test word[scrnon],01h
-    jnz near .noback1
-    mov byte[winon],0
-    test word[winenabm],0001h
-    jz near .nobackwin1
-    test word[winenabm],0100h
-    jnz near .nobackwin1
-;    procwindow [winbg1en]
-    mov al,[winbg1en]
-    mov ebp,0
-    ccallv makewindow, eax, ebp
-    cmp byte[winon],0FFh
-    je near .noback1
-.nobackwin1
-    xor eax,eax
-    xor edx,edx
-    mov ax,[curypos]
-    test byte[mode7set],02h
-    jz .noflip
-    neg ax
-    add ax,255
-.noflip
-    mov byte[curmosaicsz],1
-    test byte[mosaicon],1
-    jz .nomos
-    mov bl,[mosaicsz]
-    cmp bl,0
-    je .nomos
-    inc bl
-    mov [curmosaicsz],bl
-    xor bh,bh
-    div bx
-    xor edx,edx
-    mul bx
-.nomos
-    mov [m7starty],ax
-    mov ax,[bg1scroly_m7]
-    mov dx,[bg1scrolx_m7]
-    call drawmode716t
-.noback1
+; The eight procmode716t* bodies are video/c_mv16tm7.c; each returns which
+; renderer to run in M7TTail (0 = the layer is off). Tail-jumping is what the
+; originals did - a call followed by ret.
+m716t_tail:
+    cmp dword[M7TTail],0
+    je .off
+    cmp dword[M7TTail],1
+    je near drawmode716t
+    cmp dword[M7TTail],2
+    je near drawmode716b
+    cmp dword[M7TTail],3
+    je near drawmode716tb
+    cmp dword[M7TTail],4
+    je near drawmode716extbg
+    cmp dword[M7TTail],5
+    je near drawmode716textbg
+    cmp dword[M7TTail],6
+    je near drawmode716extbg2
+    jmp near drawmode716textbg2
+.off
     ret
+
+NEWSYM procmode716tsub
+    mov [M7TAX], eax
+    mov [M7TBX], ebx
+    mov [M7TDX], edx
+    mov [M7TBP], ebp
+    ; The originals never touch ecx unless makewindow does, so callers may
+    ; rely on it; cdecl would let the C half clobber it.
+    push ecx
+    call c_procmode716tsub
+    mov eax, [M7TAX]
+    mov ebx, [M7TBX]
+    mov edx, [M7TDX]
+    pop ecx
+    mov ebp, [M7TBP]
+    jmp near m716t_tail
+
 
 
 
 NEWSYM procmode716tsubextbg
-    test word[scrnon+1],02h
-    jz near .noback1
-    test word[scrnon],02h
-    jnz near .noback1
-    mov byte[winon],0
-    test word[winenabm],0001h
-    jz near .nobackwin1
-    test word[winenabm],0100h
-    jnz near .nobackwin1
-;    procwindow [winbg1en]
-    mov al,[winbg1en]
-    mov ebp,0
-    ccallv makewindow, eax, ebp
-    cmp byte[winon],0FFh
-    je near .noback1
-.nobackwin1
-    xor eax,eax
-    xor edx,edx
-    mov ax,[curypos]
-    test byte[mode7set],02h
-    jz .noflip
-    neg ax
-    add ax,255
-.noflip
-    mov byte[curmosaicsz],1
-    test byte[mosaicon],1
-    jz .nomos
-    mov bl,[mosaicsz]
-    cmp bl,0
-    je .nomos
-    inc bl
-    mov [curmosaicsz],bl
-    xor bh,bh
-    div bx
-    xor edx,edx
-    mul bx
-.nomos
-    mov [m7starty],ax
-    mov ax,[bg1scroly_m7]
-    mov dx,[bg1scrolx_m7]
-    mov byte[extbgdone],1
-    call drawmode716extbg
-.noback1
-    ret
+    mov [M7TAX], eax
+    mov [M7TBX], ebx
+    mov [M7TDX], edx
+    mov [M7TBP], ebp
+    ; The originals never touch ecx unless makewindow does, so callers may
+    ; rely on it; cdecl would let the C half clobber it.
+    push ecx
+    call c_procmode716tsubextbg
+    mov eax, [M7TAX]
+    mov ebx, [M7TBX]
+    mov edx, [M7TDX]
+    pop ecx
+    mov ebp, [M7TBP]
+    jmp near m716t_tail
+
 
 NEWSYM procmode716tsubextbgb
-    cmp byte[extbgdone],0
-    jne near .noback1
-    test word[scrnon+1],01h
-    jz near .noback1
-    test word[scrnon],01h
-    jnz near .noback1
-    mov byte[winon],0
-    test word[winenabm],0001h
-    jz near .nobackwin1
-    test word[winenabm],0100h
-    jnz near .nobackwin1
-;    procwindow [winbg1en]
-    mov al,[winbg1en]
-    mov ebp,0
-    ccallv makewindow, eax, ebp
-    cmp byte[winon],0FFh
-    je near .noback1
-.nobackwin1
-    xor eax,eax
-    xor edx,edx
-    mov ax,[curypos]
-    test byte[mode7set],02h
-    jz .noflip
-    neg ax
-    add ax,255
-.noflip
-    mov byte[curmosaicsz],1
-    test byte[mosaicon],1
-    jz .nomos
-    mov bl,[mosaicsz]
-    cmp bl,0
-    je .nomos
-    inc bl
-    mov [curmosaicsz],bl
-    xor bh,bh
-    div bx
-    xor edx,edx
-    mul bx
-.nomos
-    mov [m7starty],ax
-    mov ax,[bg1scroly_m7]
-    mov dx,[bg1scrolx_m7]
-    mov byte[extbgdone],1
-    call drawmode716textbg
-.noback1
-    ret
+    mov [M7TAX], eax
+    mov [M7TBX], ebx
+    mov [M7TDX], edx
+    mov [M7TBP], ebp
+    ; The originals never touch ecx unless makewindow does, so callers may
+    ; rely on it; cdecl would let the C half clobber it.
+    push ecx
+    call c_procmode716tsubextbgb
+    mov eax, [M7TAX]
+    mov ebx, [M7TBX]
+    mov edx, [M7TDX]
+    pop ecx
+    mov ebp, [M7TBP]
+    jmp near m716t_tail
+
 
 NEWSYM procmode716tsubextbg2
-    cmp byte[extbgdone],0
-    je near .noback1
-    mov byte[winon],0
-    test word[winenabm],0001h
-    jz near .nobackwin1
-    test word[winenabm],0100h
-    jnz near .nobackwin1
-    mov al,[winbg1en]
-    mov ebp,0
-    ccallv makewindow, eax, ebp
-    cmp byte[winon],0FFh
-    je near .noback1
-.nobackwin1
-    xor eax,eax
-    xor edx,edx
-    mov ax,[curypos]
-    mov byte[curmosaicsz],1
-    test byte[mosaicon],1
-    jz .nomos
-    mov bl,[mosaicsz]
-    cmp bl,0
-    je .nomos
-    inc bl
-    mov [curmosaicsz],bl
-    xor bh,bh
-    div bx
-    xor edx,edx
-    mul bx
-.nomos
-    call drawmode716extbg2
-.noback1
-    ret
+    mov [M7TAX], eax
+    mov [M7TBX], ebx
+    mov [M7TDX], edx
+    mov [M7TBP], ebp
+    ; The originals never touch ecx unless makewindow does, so callers may
+    ; rely on it; cdecl would let the C half clobber it.
+    push ecx
+    call c_procmode716tsubextbg2
+    mov eax, [M7TAX]
+    mov ebx, [M7TBX]
+    mov edx, [M7TDX]
+    pop ecx
+    mov ebp, [M7TBP]
+    jmp near m716t_tail
+
 
 NEWSYM procmode716tmain
-    test word[scrnon],01h
-    jz near .noback1
-    mov byte[winon],0
-    test word[winenabm],0001h
-    jz near .nobackwin1
-    test word[winenabm],0100h
-    jnz near .nobackwin1
-;    procwindow [winbg1en]
-    mov al,[winbg1en]
-    mov ebp,0
-    ccallv makewindow, eax, ebp
-    cmp byte[winon],0FFh
-    je near .noback1
-.nobackwin1
-    xor eax,eax
-    xor edx,edx
-    mov ax,[curypos]
-    test byte[mode7set],02h
-    jz .noflip
-    neg ax
-    add ax,255
-.noflip
-    mov byte[curmosaicsz],1
-    test byte[mosaicon],1
-    jz .nomos
-    mov bl,[mosaicsz]
-    cmp bl,0
-    je .nomos
-    inc bl
-    mov [curmosaicsz],bl
-    xor bh,bh
-    div bx
-    xor edx,edx
-    mul bx
-.nomos
-    mov [m7starty],ax
-    mov ax,[bg1scroly_m7]
-    mov dx,[bg1scrolx_m7]
-    test byte[scaddset],02h
-    jz .noscrnadd
-    test word[scrnon+1],01h
-    jnz near .mode7b
-.noscrnadd
-    test byte[scaddtype],01h
-    jz .notransp
-    call drawmode716t
-.noback1
-    ret
-.notransp
-    call drawmode716b
-    ret
-.mode7b
-    call drawmode716tb
-    ret
+    mov [M7TAX], eax
+    mov [M7TBX], ebx
+    mov [M7TDX], edx
+    mov [M7TBP], ebp
+    ; The originals never touch ecx unless makewindow does, so callers may
+    ; rely on it; cdecl would let the C half clobber it.
+    push ecx
+    call c_procmode716tmain
+    mov eax, [M7TAX]
+    mov ebx, [M7TBX]
+    mov edx, [M7TDX]
+    pop ecx
+    mov ebp, [M7TBP]
+    jmp near m716t_tail
+
 
 NEWSYM procmode716tmainextbg
-    test word[scrnon],02h
-    jz near .noback1
-    mov byte[winon],0
-    test word[winenabm],0001h
-    jz near .nobackwin1
-    test word[winenabm],0100h
-    jnz near .nobackwin1
-;    procwindow [winbg1en]
-    mov al,[winbg1en]
-    mov ebp,0
-    ccallv makewindow, eax, ebp
-    cmp byte[winon],0FFh
-    je near .noback1
-.nobackwin1
-    xor eax,eax
-    xor edx,edx
-    mov ax,[curypos]
-    test byte[mode7set],02h
-    jz .noflip
-    neg ax
-    add ax,255
-.noflip
-    mov byte[curmosaicsz],1
-    test byte[mosaicon],1
-    jz .nomos
-    mov bl,[mosaicsz]
-    cmp bl,0
-    je .nomos
-    inc bl
-    mov [curmosaicsz],bl
-    xor bh,bh
-    div bx
-    xor edx,edx
-    mul bx
-.nomos
-    mov [m7starty],ax
-    mov ax,[bg1scroly_m7]
-    mov dx,[bg1scrolx_m7]
-    test byte[scaddtype],01h
-    jz .notransp
-    mov byte[extbgdone],1
-    call drawmode716textbg
-.noback1
-    ret
-.notransp
-    mov byte[extbgdone],1
-    call drawmode716extbg
-    ret
+    mov [M7TAX], eax
+    mov [M7TBX], ebx
+    mov [M7TDX], edx
+    mov [M7TBP], ebp
+    ; The originals never touch ecx unless makewindow does, so callers may
+    ; rely on it; cdecl would let the C half clobber it.
+    push ecx
+    call c_procmode716tmainextbg
+    mov eax, [M7TAX]
+    mov ebx, [M7TBX]
+    mov edx, [M7TDX]
+    pop ecx
+    mov ebp, [M7TBP]
+    jmp near m716t_tail
+
 
 NEWSYM procmode716tmainextbgb
-    cmp byte[extbgdone],0
-    jne near .noback1
-    test word[scrnon],01h
-    jz near .noback1
-    mov byte[winon],0
-    test word[winenabm],0001h
-    jz near .nobackwin1
-    test word[winenabm],0100h
-    jnz near .nobackwin1
-;    procwindow [winbg1en]
-    mov al,[winbg1en]
-    mov ebp,0
-    ccallv makewindow, eax, ebp
-    cmp byte[winon],0FFh
-    je near .noback1
-.nobackwin1
-    xor eax,eax
-    xor edx,edx
-    mov ax,[curypos]
-    test byte[mode7set],02h
-    jz .noflip
-    neg ax
-    add ax,255
-.noflip
-    mov byte[curmosaicsz],1
-    test byte[mosaicon],1
-    jz .nomos
-    mov bl,[mosaicsz]
-    cmp bl,0
-    je .nomos
-    inc bl
-    mov [curmosaicsz],bl
-    xor bh,bh
-    div bx
-    xor edx,edx
-    mul bx
-.nomos
-    mov [m7starty],ax
-    mov ax,[bg1scroly_m7]
-    mov dx,[bg1scrolx_m7]
-    test byte[scaddtype],01h
-    jz .notransp
-    mov byte[extbgdone],1
-    call drawmode716textbg
-.noback1
-    ret
-.notransp
-    mov byte[extbgdone],1
-    call drawmode716extbg
-    ret
+    mov [M7TAX], eax
+    mov [M7TBX], ebx
+    mov [M7TDX], edx
+    mov [M7TBP], ebp
+    ; The originals never touch ecx unless makewindow does, so callers may
+    ; rely on it; cdecl would let the C half clobber it.
+    push ecx
+    call c_procmode716tmainextbgb
+    mov eax, [M7TAX]
+    mov ebx, [M7TBX]
+    mov edx, [M7TDX]
+    pop ecx
+    mov ebp, [M7TBP]
+    jmp near m716t_tail
+
 
 NEWSYM procmode716tmainextbg2
-    cmp byte[extbgdone],0
-    je near .noback1
-    mov byte[winon],0
-    test word[winenabm],0001h
-    jz near .nobackwin1
-    test word[winenabm],0100h
-    jnz near .nobackwin1
-;    procwindow [winbg1en]
-    mov al,[winbg1en]
-    mov ebp,0
-    ccallv makewindow, eax, ebp
-    cmp byte[winon],0FFh
-    je near .noback1
-.nobackwin1
-    xor eax,eax
-    xor edx,edx
-    mov ax,[curypos]
-    test byte[mode7set],02h
-    jz .noflip
-    neg ax
-    add ax,255
-.noflip
-    mov byte[curmosaicsz],1
-    test byte[mosaicon],1
-    jz .nomos
-    mov bl,[mosaicsz]
-    cmp bl,0
-    je .nomos
-    inc bl
-    mov [curmosaicsz],bl
-    xor bh,bh
-    div bx
-    xor edx,edx
-    mul bx
-.nomos
-    mov [m7starty],ax
-    mov ax,[bg1scroly_m7]
-    mov dx,[bg1scrolx_m7]
-    test byte[scaddtype],01h
-    jz .notransp
-    call drawmode716textbg2
-.noback1
-    ret
-.notransp
-    call drawmode716extbg2
-    ret
+    mov [M7TAX], eax
+    mov [M7TBX], ebx
+    mov [M7TDX], edx
+    mov [M7TBP], ebp
+    ; The originals never touch ecx unless makewindow does, so callers may
+    ; rely on it; cdecl would let the C half clobber it.
+    push ecx
+    call c_procmode716tmainextbg2
+    mov eax, [M7TAX]
+    mov ebx, [M7TBX]
+    mov edx, [M7TDX]
+    pop ecx
+    mov ebp, [M7TBP]
+    jmp near m716t_tail
+
 
 NEWSYM procspritessub16t
     cmp byte[bgfixer],1
     je near procspritessub16tfix
-    test byte[scrndis],10h
-    jnz .nosprites
-    test byte[scrnon+1],10h
-    jz .nosprites
-    test byte[scrnon],10h
-    jnz .nosprites
-    cmp byte[winonsp],0FFh
-    je .nosprites
-    xor ebx,ebx
-    mov bl,[curypos]
-    add ebx,[cursprloc]
-    mov cl,[ebx]
-    cmp byte[sprprifix],0
-    jne .sprprio
-    add dword[cursprloc],256
-.sprprio
-    cmp cl,0
-    je .nosprites
-    ccallv drawsprites16b, ecx, ebp
-.nosprites
+    mov [SPRAX], eax
+    mov [SPRBX], ebx
+    mov [SPRCX], ecx
+    mov [SPRBP], ebp
+    mov [SPRDX], edx
+    call c_procspritessub16t
+    mov eax, [SPRAX]
+    mov ebx, [SPRBX]
+    mov ecx, [SPRCX]
+    mov ebp, [SPRBP]
+    mov edx, [SPRDX]
+    cmp dword[SPRTail],0
+    je .done
+    cmp dword[SPRTail],1
+    je near drawsprites16t
+    jmp near drawsprites16bt
+.done
     ret
+
 
 NEWSYM procspritesmain16t
     cmp byte[bgfixer],1
     je near procspritesmain16tfix
-    test byte[scrndis],10h
-    jnz .nosprites
-    test byte[scrnon],10h
-    jz .nosprites
-    cmp byte[winonsp],0FFh
-    je .nosprites
-    xor ebx,ebx
-    mov bl,[curypos]
-    add ebx,[cursprloc]
-    mov cl,[ebx]
-    cmp byte[sprprifix],0
-    jne .sprprio
-    add dword[cursprloc],256
-.sprprio
-    cmp cl,0
-    je .nosprites
-    test byte[scrnon+1],10h
-    jnz .spritesubmain
-    test byte[scaddtype],10h
-    jz .nospriteadd
-    call drawsprites16t
-.nosprites
+    mov [SPRAX], eax
+    mov [SPRBX], ebx
+    mov [SPRCX], ecx
+    mov [SPRBP], ebp
+    mov [SPRDX], edx
+    call c_procspritesmain16t
+    mov eax, [SPRAX]
+    mov ebx, [SPRBX]
+    mov ecx, [SPRCX]
+    mov ebp, [SPRBP]
+    mov edx, [SPRDX]
+    cmp dword[SPRTail],0
+    je .done
+    cmp dword[SPRTail],1
+    je near drawsprites16t
+    jmp near drawsprites16bt
+.done
     ret
-.nospriteadd
-    ccallv drawsprites16b, ecx, ebp
-    xor eax,eax
-    ret
-.spritesubmain
-    call drawsprites16bt
-    ret
+
 
 NEWSYM drawbackgrndsub16t
     cmp byte[bgfixer],1
@@ -804,52 +577,46 @@ NEWSYM drawbackgrndmain16t
     ret
 
 NEWSYM procspritessub16tfix
-    test byte[scrndis],10h
-    jnz .nosprites
-    test byte[scrnon+1],10h
-    jz .nosprites
-    cmp byte[winonsp],0FFh
-    je .nosprites
-    xor ebx,ebx
-    mov bl,[curypos]
-    add ebx,[cursprloc]
-    mov cl,[ebx]
-    cmp byte[sprprifix],0
-    jne .sprprio
-    add dword[cursprloc],256
-.sprprio
-    cmp cl,0
-    je .nosprites
-    ccallv drawsprites16b, ecx, ebp
-.nosprites
+    mov [SPRAX], eax
+    mov [SPRBX], ebx
+    mov [SPRCX], ecx
+    mov [SPRBP], ebp
+    mov [SPRDX], edx
+    call c_procspritessub16tfix
+    mov eax, [SPRAX]
+    mov ebx, [SPRBX]
+    mov ecx, [SPRCX]
+    mov ebp, [SPRBP]
+    mov edx, [SPRDX]
+    cmp dword[SPRTail],0
+    je .done
+    cmp dword[SPRTail],1
+    je near drawsprites16t
+    jmp near drawsprites16bt
+.done
     ret
 
+
 NEWSYM procspritesmain16tfix
-    test byte[scrndis],10h
-    jnz .nosprites
-    test byte[scrnon],10h
-    jz .nosprites
-    cmp byte[winonsp],0FFh
-    je .nosprites
-    xor ebx,ebx
-    mov bl,[curypos]
-    add ebx,[cursprloc]
-    mov cl,[ebx]
-    cmp byte[sprprifix],0
-    jne .sprprio
-    add dword[cursprloc],256
-.sprprio
-    cmp cl,0
-    je .nosprites
-    test byte[scaddtype],10h
-    jz .nospriteadd
-    call drawsprites16t
-.nosprites
+    mov [SPRAX], eax
+    mov [SPRBX], ebx
+    mov [SPRCX], ecx
+    mov [SPRBP], ebp
+    mov [SPRDX], edx
+    call c_procspritesmain16tfix
+    mov eax, [SPRAX]
+    mov ebx, [SPRBX]
+    mov ecx, [SPRCX]
+    mov ebp, [SPRBP]
+    mov edx, [SPRDX]
+    cmp dword[SPRTail],0
+    je .done
+    cmp dword[SPRTail],1
+    je near drawsprites16t
+    jmp near drawsprites16bt
+.done
     ret
-.nospriteadd
-    ccallv drawsprites16b, ecx, ebp
-    xor eax,eax
-    ret
+
 
 NEWSYM drawbackgrndsub16tfix
     mov esi,[colormodeofs]
