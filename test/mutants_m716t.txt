@@ -32,3 +32,44 @@ mode7b override	    if (M7TTail != T_NONE && (scaddset & 0x02u) && SUB_ON(0x01u)
 mode7b scaddset	    if (M7TTail != T_NONE && (scaddset & 0x02u) && SUB_ON(0x01u)) {	    if (M7TTail != T_NONE && (scaddset & 0x01u) && SUB_ON(0x01u)) {
 extbg2 flip	    run(G_DONE, 0, 0, T_M716EXTBG2, T_NONE, 0);	    run(G_DONE, 1, 0, T_M716EXTBG2, T_NONE, 0);
 extbg2 m7start	    run(G_DONE, 0, 0, T_M716EXTBG2, T_NONE, 0);	    run(G_DONE, 0, 1, T_M716EXTBG2, T_NONE, 0);
+# --- the sprite gates ---
+spr scrndis mask	    if (scrndis & 0x10u) {	    if (scrndis & 0x20u) {
+spr sub enable	        if (!SUB_ON(0x10u)) {	        if (!MAIN_ON(0x10u)) {
+spr sub main term	        if (!fix && MAIN_ON(0x10u)) {	        if (MAIN_ON(0x10u)) {
+spr sub main drop	        if (!fix && MAIN_ON(0x10u)) {	        if (0) {
+spr main enable	    } else if (!MAIN_ON(0x10u)) {	    } else if (!SUB_ON(0x10u)) {
+spr winonsp	    if (winonsp == 0xFFu) {	    if (winonsp == 0x00u) {
+spr count index	    SPRBX = (u1)curypos + (u4)(uintptr_t)cursprloc;	    SPRBX = curypos + (u4)(uintptr_t)cursprloc;
+spr prifix	    if (sprprifix == 0) {	    if (sprprifix != 0) {
+spr advance	        cursprloc += 256;	        cursprloc += 128;
+spr count zero	    if (count == 0) {	    if (count == 1) {
+spr subsub route	    if (!sub && !fix && SUB_ON(0x10u)) {	    if (!sub && SUB_ON(0x10u)) {
+spr subsub drop	    if (!sub && !fix && SUB_ON(0x10u)) {	    if (0) {
+spr scaddtype	    if (scaddtype & 0x10u) {	    if (scaddtype & 0x20u) {
+spr eax zero	    SPRAX = 0;	    /* mutant: eax not zeroed */
+# --- the background gates ---
+bg colormode zero	    if ((u1)BGBX == 0) {	    if ((u1)BGBX == 1) {
+bg sub enable	        if (!((scrnon >> 8) & bg)) {	        if (!(scrnon & bg)) {
+bg sub main term	        if (!fix && (scrnon & bg)) {	        if (scrnon & bg) {
+bg sub main drop	        if (!fix && (scrnon & bg)) {	        if (0) {
+bg main enable	    } else if (!(scrnon & bg)) {	    } else if (!((scrnon >> 8) & bg)) {
+bg alreadydrawn	    if ((alreadydrawn & bg) && !(!sub && fix)) {	    if (alreadydrawn & bg) {
+bg alreadydrawn drop	    if ((alreadydrawn & bg) && !(!sub && fix)) {	    if (0) {
+bg scrndis	    if (scrndis & bg) {	    if (scrndis & (u1)~bg) {
+bg window enable	    if ((sub ? winenabs : winenabm) & bg) {	    if ((sub ? winenabm : winenabs) & bg) {
+bg window al	        BGAX = (BGAX & ~0xFFu) | al;	        /* mutant: al not set */
+bg mosaic bl early	        BGBX = (BGBX & ~0xFFu) | sz;\n        if (sz != 0) {	        if (sz != 0) {
+bg mosaic size	            curmosaicsz = (u1)(sz + 1u);	            curmosaicsz = (u1)(sz + 2u);
+bg mode0 test	    if (bgmode == 0) {	    if (bgmode == 1) {
+bg coloradder	        bgcoloradder = (u1)(ebp * 32u);	        bgcoloradder = (u1)(ebp * 16u);
+bg mul bl leftover	            BGBX = (BGBX & ~0xFFu) | 0x20u; /* mov bl,20h, left behind */	            /* mutant: bl not left behind */
+bg mainandsub gate	        if (!fix && (scaddset & 0x02u) && ((scrnon >> 8) & bg)) {	        if ((scaddset & 0x02u) && ((scrnon >> 8) & bg)) {
+bg mainandsub drop	        if (!fix && (scaddset & 0x02u) && ((scrnon >> 8) & bg)) {	        if (0) {
+bg curbgpr	            if (!(curbgpr & 0x20u) && (scaddtype & bg)) {	            if ((curbgpr & 0x20u) && (scaddtype & bg)) {
+bg tms tilesz	                BGTail = (bgtilesz & bg) ? B_16TMS : B_8TMS;	                BGTail = (bgtilesz & bg) ? B_8TMS : B_16TMS;
+bg bt tilesz	            BGTail = (bgtilesz & bg) ? B_16BT : B_8BT;	            BGTail = B_8BT;
+bg transp gate	        if (scaddtype & bg) {	        if (scaddtype & (u1)~bg) {
+bg t tilesz	            BGTail = (bgtilesz & bg) ? B_16T : B_8T;	            BGTail = B_16T;
+bg plain tilesz	    if (bgtilesz & bg) {	    if (!(bgtilesz & bg)) {
+bg mark drawn	    if (drawn == 33) {	    if (drawn == 32) {
+bg mark al	        BGAX = (BGAX & ~0xFFu) | curbgnum;	        /* mutant: al not set */

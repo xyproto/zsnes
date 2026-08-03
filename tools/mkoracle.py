@@ -136,6 +136,9 @@ def main():
                          "leaves undefined that --provided-by does not")
     ap.add_argument("--provided-by", nargs="*", default=[],
                     help="objects whose definitions the test links for real")
+    ap.add_argument("-v", "--verbose", action="store_true",
+                    help="list the entry points and undefined symbols; the "
+                         "counts alone are enough once a target builds")
     ap.add_argument("--exclude", nargs="*", default=[],
                     help="symbols the difftest itself defines")
     ap.add_argument("--stub-routine", nargs="*", default=[],
@@ -177,9 +180,11 @@ def main():
         und = subprocess.run(["nm", "-u", a.output],
                              capture_output=True, text=True, check=True)
         undef = sorted(l.split()[-1] for l in und.stdout.splitlines() if l.strip())
-        print("oracle %s from %s (%s)" % (a.output, a.source, rev[:8]))
-        print("  %d entry points: %s" % (len(defined), " ".join(defined)))
-        print("  %d symbols to define: %s" % (len(undef), " ".join(undef)))
+        print("oracle %s from %s (%s): %d entry points, %d undefined"
+              % (a.output, a.source, rev[:8], len(defined), len(undef)))
+        if a.verbose:
+            print("  entry points: %s" % " ".join(defined))
+            print("  to define:    %s" % " ".join(undef))
 
         if a.stubs:
             have = set()
