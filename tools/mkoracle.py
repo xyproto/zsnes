@@ -73,6 +73,50 @@ def extract(rev, path, dest, seen):
         extract(rev, inc, dest, seen)
 
 
+def copy_tree(path, dest, seen):
+    """Like extract(), but from the working tree."""
+    if path in seen:
+        return
+    seen.add(path)
+    src = os.path.join(ROOT, path)
+    out = os.path.join(dest, path)
+    os.makedirs(os.path.dirname(out), exist_ok=True)
+    text = open(src).read()
+    with open(out, "w") as f:
+        f.write(text)
+    for inc in re.findall(r'^\s*%include\s+"([^"]+)"', text, re.M):
+        copy_tree(inc, dest, seen)
+
+
+def stub_out(path, names):
+    """Replace each named routine's body with `jmp <name>_stub`.
+
+    A call between two routines in the same file assembles to a PC-relative
+    displacement with no relocation, so no amount of linker work can point it
+    somewhere else. Rewriting the callee before assembly is the only way for a
+    difftest to see that the call happened.
+    """
+    lines = open(path).read().split("\n")
+    starts = {}
+    for i, line in enumerate(lines):
+        m = re.match(r"NEWSYM\s+(\w+)\s*$", line)
+        if m:
+            starts[m.group(1)] = i
+    order = sorted(starts.values())
+    out, missing = list(lines), [n for n in names if n not in starts]
+    if missing:
+        sys.exit("mkoracle: no such routine: %s" % " ".join(missing))
+    for name in sorted(names, key=lambda n: -starts[n]):
+        i = starts[name]
+        j = next((p for p in order if p > i), len(out))
+        out[i:j] = ["EXTERN %s_stub" % name,
+                    "NEWSYM %s" % name,
+                    "    jmp %s_stub" % name,
+                    ""]
+    with open(path, "w") as f:
+        f.write("\n".join(out))
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("source", help="repo-relative path, e.g. video/mv16tms.asm")
@@ -80,6 +124,9 @@ def main():
     ap.add_argument("--prefix", default="asm_",
                     help="prepended to every symbol the file defines")
     ap.add_argument("--rev", help="revision to take the source from")
+    ap.add_argument("--worktree", action="store_true",
+                    help="take the source from the working tree instead of "
+                         "git, to build a 'current' object to compare against")
     ap.add_argument("--ported-marker", default=r"call c_",
                     help="regex the ported file has and the original does not")
     ap.add_argument("--define", action="append", default=["ELF"],
@@ -91,12 +138,23 @@ def main():
                     help="objects whose definitions the test links for real")
     ap.add_argument("--exclude", nargs="*", default=[],
                     help="symbols the difftest itself defines")
+    ap.add_argument("--stub-routine", nargs="*", default=[],
+                    help="replace these routines' bodies with a jump to an "
+                         "external <name>_stub, so a difftest can observe a "
+                         "call that would otherwise be PC-relative and "
+                         "impossible to intercept")
     a = ap.parse_args()
 
-    rev = a.rev or find_rev(a.source, a.ported_marker)
+    rev = "worktree" if a.worktree else (a.rev
+                                        or find_rev(a.source, a.ported_marker))
     tmp = tempfile.mkdtemp(prefix="mkoracle.")
     try:
-        extract(rev, a.source, tmp, set())
+        if a.worktree:
+            copy_tree(a.source, tmp, set())
+        else:
+            extract(rev, a.source, tmp, set())
+        if a.stub_routine:
+            stub_out(os.path.join(tmp, a.source), a.stub_routine)
         raw = os.path.join(tmp, "raw.o")
         cmd = ["nasm", "-Ox", "-f", "elf32", "-w-orphan-labels", "-i", tmp + "/"]
         cmd += ["-D" + d for d in a.define]

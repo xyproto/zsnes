@@ -26,8 +26,16 @@ extern u1 scaddtype, extbgdone, winbg1en, winenabm, winenabs;
 extern u2 scrnon, m7starty, curypos, bg1scrolx_m7, bg1scroly_m7;
 extern u4 M7TAX, M7TBX, M7TDX, M7TBP, M7TTail;
 extern u1 scrndis, winonsp, sprprifix, bgfixer;
+extern u1 alreadydrawn, curbgnum, curbgpr, bgmode, bgtilesz, drawn;
+extern u1 bgcoloradder, winen[6];
+extern u1* colormodeofs;
+extern u4 bg1vbufloc[4], bg1xposloc[4], bg1yaddval[4];
+extern u2* bg1tdatloc[4];
+extern u2* bg1tdabloc[4];
+extern u1* bg1cachloc[4];
 extern u1* cursprloc;
 extern u4 SPRAX, SPRBX, SPRCX, SPRBP, SPRDX, SPRTail;
+extern u4 BGAX, BGBX, BGCX, BGDX, BGSI, BGDI, BGBP, BGTail;
 
 /* Which renderer ran, and what it was handed. Both sides reach the same stub,
    so this is the whole observable: the routines' only job is to choose one. */
@@ -54,6 +62,16 @@ RENDERER(drawmode716extbg, 4);
 RENDERER(drawmode716textbg, 5);
 RENDERER(drawmode716extbg2, 6);
 RENDERER(drawmode716textbg2, 7);
+/* The background and sprite renderers. The *_stub names are what mkoracle
+   --stub-routine rewrote the file-internal ones into. */
+RENDERER(draw8x816t_stub, 11);
+RENDERER(draw16x1616t_stub, 12);
+RENDERER(draw8x816bt_stub, 13);
+RENDERER(draw16x1616bt_stub, 14);
+RENDERER(draw8x816tms, 15);
+RENDERER(draw16x1616tms, 16);
+RENDERER(drawsprites16t_stub, 17);
+RENDERER(drawsprites16bt_stub, 18);
 /* drawsprites16t and drawsprites16bt live inside makev16t.asm, so the oracle
    has its own copies of them and they cannot be stubbed. The generator keeps
    the scanline's sprite count at zero on the paths that would reach them, so
@@ -69,6 +87,32 @@ RENDERER(drawmode716textbg2, 7);
    themselves do with it. Pinning it here makes that testable. */
 /* drawsprites16b is C in the emulator too; same ecx treatment as makewindow. */
 u4 ds_calls, ds_cl, ds_ebp;
+/* The two background renderers that are already C. */
+u4 bgb_calls, bgb_which;
+void draw8x816b(u4 eax, u4 ecx, u2* edx, u1* ebx, u4 layer, u4 esi,
+    u2 const* edi)
+{
+    (void)eax;
+    (void)ecx;
+    (void)edx;
+    (void)ebx;
+    (void)layer;
+    (void)esi;
+    (void)edi;
+    bgb_calls++;
+    bgb_which = 19;
+}
+void draw16x1616b(u4 eax, u4 ecx, u2* edx, u1* ebx, u4 esi, u2 const* edi)
+{
+    (void)eax;
+    (void)ecx;
+    (void)edx;
+    (void)ebx;
+    (void)esi;
+    (void)edi;
+    bgb_calls++;
+    bgb_which = 20;
+}
 void c_drawsprites16b(u1 cl, u4 ebp)
 {
     ds_calls++;
@@ -133,15 +177,22 @@ __asm__(".pushsection .text\n"
         ".popsection\n");
 void dt_call(void);
 
-#define ROUTINES 12
+#define ROUTINES 16
 static char const* const names[ROUTINES] = { "procmode716tsub",
     "procmode716tsubextbg", "procmode716tsubextbgb", "procmode716tsubextbg2",
     "procmode716tmain", "procmode716tmainextbg", "procmode716tmainextbgb",
     "procmode716tmainextbg2", "procspritessub16t", "procspritesmain16t",
-    "procspritessub16tfix", "procspritesmain16tfix" };
+    "procspritessub16tfix", "procspritesmain16tfix", "drawbackgrndsub16t",
+    "drawbackgrndmain16t", "drawbackgrndsub16tfix", "drawbackgrndmain16tfix" };
 
-#define DECL(n)   \
-    void n(void); \
+/* Both sides are the real assembly: the oracle from the pre-port revision
+   (asm_*) and the current file from the working tree (cur_*), each built by
+   tools/mkoracle.py with the file-internal renderers rewritten into jumps to
+   the stubs below. Without that rewrite a call between two routines in one
+   file is a PC-relative displacement with no relocation, and nothing can
+   intercept it. */
+#define DECL(n)         \
+    void cur_##n(void); \
     void asm_##n(void)
 DECL(procmode716tsub);
 DECL(procmode716tsubextbg);
@@ -155,19 +206,27 @@ DECL(procspritessub16t);
 DECL(procspritesmain16t);
 DECL(procspritessub16tfix);
 DECL(procspritesmain16tfix);
+DECL(drawbackgrndsub16t);
+DECL(drawbackgrndmain16t);
+DECL(drawbackgrndsub16tfix);
+DECL(drawbackgrndmain16tfix);
 
-static void (*const c_side[ROUTINES])(void) = { procmode716tsub,
-    procmode716tsubextbg, procmode716tsubextbgb, procmode716tsubextbg2,
-    procmode716tmain, procmode716tmainextbg, procmode716tmainextbgb,
-    procmode716tmainextbg2, procspritessub16t, procspritesmain16t,
-    procspritessub16tfix, procspritesmain16tfix };
+static void (*const c_side[ROUTINES])(void) = { cur_procmode716tsub,
+    cur_procmode716tsubextbg, cur_procmode716tsubextbgb, cur_procmode716tsubextbg2,
+    cur_procmode716tmain, cur_procmode716tmainextbg, cur_procmode716tmainextbgb,
+    cur_procmode716tmainextbg2, cur_procspritessub16t, cur_procspritesmain16t,
+    cur_procspritessub16tfix, cur_procspritesmain16tfix,
+    cur_drawbackgrndsub16t, cur_drawbackgrndmain16t,
+    cur_drawbackgrndsub16tfix, cur_drawbackgrndmain16tfix };
 static void (*const a_side[ROUTINES])(void) = { asm_procmode716tsub,
     asm_procmode716tsubextbg, asm_procmode716tsubextbgb,
     asm_procmode716tsubextbg2, asm_procmode716tmain,
     asm_procmode716tmainextbg, asm_procmode716tmainextbgb,
     asm_procmode716tmainextbg2, asm_procspritessub16t,
     asm_procspritesmain16t, asm_procspritessub16tfix,
-    asm_procspritesmain16tfix };
+    asm_procspritesmain16tfix,
+    asm_drawbackgrndsub16t, asm_drawbackgrndmain16t,
+    asm_drawbackgrndsub16tfix, asm_drawbackgrndmain16tfix };
 
 typedef struct {
     u4 which, eax, ebx, ecx, edx, esi, edi, ebp;
@@ -176,9 +235,12 @@ typedef struct {
     u1 winon, curmos, done;
     u2 starty;
     u4 dscalls, dscl, dsebp, sprloc;
+    u4 bgbcalls, bgbwhich, tail;
+    u1 adrawn, coladd;
 } snapshot;
 
 static u1* sprloc0;
+static u1 adrawn0, drawn0;
 
 static void run(void (*fn)(void), u4 const* const in, u1 const done0,
     snapshot* const out)
@@ -186,6 +248,9 @@ static void run(void (*fn)(void), u4 const* const in, u1 const done0,
     rn_which = rn_eax = rn_ebx = rn_ecx = rn_edx = rn_esi = rn_edi = rn_ebp = 0;
     mw_calls = mw_al = mw_layer = 0;
     ds_calls = ds_cl = ds_ebp = 0;
+    bgb_calls = bgb_which = 0;
+    alreadydrawn = adrawn0;
+    drawn = drawn0;
     extbgdone = done0;
     /* The routines advance this, so it has to be put back before the second
        run or that side reads a different scanline's count byte. */
@@ -208,7 +273,7 @@ static void run(void (*fn)(void), u4 const* const in, u1 const done0,
     rg_fn = (u4)(uintptr_t)fn;
     dt_call();
 
-    out->which = rn_which;
+    out->which = rn_which ? rn_which : bgb_which;
     out->eax = rn_eax;
     out->ebx = rn_ebx;
     out->ecx = rn_ecx;
@@ -234,12 +299,20 @@ static void run(void (*fn)(void), u4 const* const in, u1 const done0,
     out->dscl = ds_cl;
     out->dsebp = ds_ebp;
     out->sprloc = (u4)(uintptr_t)cursprloc;
+    out->tail = BGTail;
+    out->bgbcalls = bgb_calls;
+    out->bgbwhich = bgb_which;
+    out->adrawn = alreadydrawn;
+    out->coladd = bgcoloradder;
 }
 
 int main(void)
 {
     static u1 sprbuf[512];
-    long cov[ROUTINES][9];
+    static u1 colmode[8];
+    /* Wide enough for every renderer id, including the background and sprite
+       ones - a short row here overran into the next and crashed. */
+    long cov[ROUTINES][24];
     long drew[ROUTINES];
     memset(cov, 0, sizeof cov);
     memset(drew, 0, sizeof drew);
@@ -279,23 +352,39 @@ int main(void)
         memset(sprbuf, 0, sizeof sprbuf);
         if (dt_mod(2)) {
             sprbuf[(u1)curypos] = (u1)(1u + dt_mod(255));
-            /* Only the two main forms can tail-jump into real sprite code, so
-               only they need steering onto the drawsprites16b route. Clearing
-               the sub-sprite bit for the sub forms would disable them
-               outright, which is how they went uncovered the first time. */
-            if (r == 9 || r == 11) {
-                scaddtype = (u1)(scaddtype & ~0x10u);
-                scrnon = (u2)(scrnon & ~0x1000u);
-            }
+            /* drawsprites16t and drawsprites16bt are stubbed by
+               mkoracle --stub-routine now, so both tails are reachable. */
         }
 
-        for (u4 i = 0; i < 7; i++) {
-            in[i] = dt_u32();
+        /* Background inputs. ebp is the layer, and curbgnum is its bit. */
+        {
+            u4 const layer = dt_mod(4);
+            curbgnum = (u1)(1u << layer);
+            curbgpr = (u1)(dt_mod(2) ? 0x00u : 0x20u);
+            bgmode = (u1)dt_mod(8);
+            bgtilesz = (u1)dt_u32();
+            adrawn0 = (u1)(dt_mod(2) ? 0 : dt_u32());
+            drawn0 = (u1)(dt_mod(2) ? 33 : dt_mod(40));
+            colormodeofs = colmode;
+            for (u4 i = 0; i < 4; i++) {
+                colmode[i] = (u1)(dt_mod(3) ? (1u + dt_mod(255)) : 0);
+                winen[i] = (u1)dt_u32();
+                bg1vbufloc[i] = dt_u32();
+                bg1xposloc[i] = dt_u32();
+                bg1yaddval[i] = dt_u32();
+                bg1tdatloc[i] = (u2*)(uintptr_t)dt_u32();
+                bg1tdabloc[i] = (u2*)(uintptr_t)dt_u32();
+                bg1cachloc[i] = (u1*)(uintptr_t)dt_u32();
+            }
+            for (u4 i = 0; i < 7; i++) {
+                in[i] = dt_u32();
+            }
+            in[6] = layer; /* ebp */
         }
 
         run(a_side[r], in, done0, &x);
         run(c_side[r], in, done0, &y);
-        cov[r][x.which]++;
+        cov[r][x.which < 24 ? x.which : 0]++;
         if (x.dscalls) {
             drew[r]++;
         }
@@ -326,11 +415,19 @@ int main(void)
         DT_EQ("drawsprites16b cl", x.dscl, y.dscl);
         DT_EQ("drawsprites16b ebp", x.dsebp, y.dsebp);
         DT_EQ("cursprloc", x.sprloc, y.sprloc);
+        DT_EQ("bg renderer calls", x.bgbcalls, y.bgbcalls);
+        DT_EQ("bg renderer which", x.bgbwhich, y.bgbwhich);
+        DT_EQ("alreadydrawn", x.adrawn, y.adrawn);
+        DT_EQ("bgcoloradder", x.coladd, y.coladd);
         if (dt_bad && DT_SHOW()) {
             printf("  ^ %s scrnon=%04x winm=%u wins=%u mos=%u/%u y=%u "
                    "m7set=%02x scadd=%02x/%02x done0=%u\n",
                 names[r], scrnon, winenabm, winenabs, mosaicon, mosaicsz,
                 curypos, mode7set, scaddset, scaddtype, done0);
+            printf("    BGTail a=%u c=%u bgn=%02x tilesz=%02x mode=%u "
+                   "adrawn0=%02x colmode=%02x\n",
+                x.tail, y.tail, curbgnum,
+                bgtilesz, bgmode, adrawn0, colmode[in[6] & 3u]);
             printf("    in eax=%08x mw_next=%02x calls a=%u c=%u winon a=%02x "
                    "c=%02x which a=%u c=%u\n",
                 in[0], mw_next, x.calls,
@@ -339,10 +436,12 @@ int main(void)
     }
     for (u4 i = 0; i < ROUTINES; i++) {
         printf("  %-24s off=%ld", names[i], cov[i][0]);
-        for (u4 j = 1; j < 9; j++) {
-            printf(" r%u=%ld", j, cov[i][j]);
+        for (u4 j = 1; j < 24; j++) {
+            if (cov[i][j]) {
+                printf(" r%u=%ld", j, cov[i][j]);
+            }
         }
         printf(" drew=%ld\n", drew[i]);
     }
-    DT_DONE("makev16t scanline gates (8 mode7 + 4 sprite)");
+    DT_DONE("makev16t scanline gates (8 mode7, 4 sprite, 4 background)");
 }

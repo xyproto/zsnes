@@ -140,18 +140,30 @@ mvall: difftest_mvall.c difftest.h ../video/c_mv16tsms.c ../video/c_mv16tms.c
 	    ../video/mv16tms.o _mvall.o -no-pie -o difftest_mvall
 	@./difftest_mvall
 
+# Routines that are only reachable by a PC-relative call from inside the file,
+# so a difftest cannot see them without mkoracle rewriting them first.
+M716T_STUBBED := draw8x816t draw16x1616t draw8x816bt draw16x1616bt \
+                 drawsprites16t drawsprites16bt
+# Symbols difftest_m716t.c defines itself, so they must not get a blanket stub.
+M716T_TAILS := makewindow drawsprites16b draw8x816b draw16x1616b \
+               $(addsuffix _stub,$(M716T_STUBBED)) \
+               draw8x816tms draw16x1616tms \
+               drawmode716t drawmode716b drawmode716tb drawmode716extbg \
+               drawmode716textbg drawmode716extbg2 drawmode716textbg2
+
 # Oracle is the whole pre-port makev16t.asm; the emulator's own data objects
 # supply the globals, because several of these routines read them wider than
 # their declared type and only the real layout makes that agree.
 m716t: difftest_m716t.c difftest.h ../video/c_mv16tm7.c
 	python3 ../tools/mkoracle.py video/makev16t.asm -o _m716t.o \
+	    --stub-routine $(M716T_STUBBED) \
 	    --stubs _m716t_stubs.c --provided-by ../cpu/c_regsdata.o \
 	    ../cpu/c_regswdata.o ../video/c_mode716data.o ../video/makevid.o \
-	    ../endmem.o \
-	    --exclude makewindow drawsprites16b drawmode716t drawmode716b drawmode716tb \
-	    drawmode716extbg drawmode716textbg drawmode716extbg2 drawmode716textbg2
+	    ../endmem.o --exclude $(M716T_TAILS)
+	python3 ../tools/mkoracle.py video/makev16t.asm -o _m716tcur.o \
+	    --worktree --prefix cur_ --stub-routine $(M716T_STUBBED)
 	$(CC) $(CFLAGS) difftest_m716t.c ../video/c_mv16tm7.c _m716t.o \
-	    _m716t_stubs.c ../video/makev16t.o ../cpu/c_regsdata.o \
+	    _m716tcur.o _m716t_stubs.c ../cpu/c_regsdata.o \
 	    ../cpu/c_regswdata.o ../video/c_mode716data.o ../video/makevid.o \
 	    ../endmem.o -no-pie -o difftest_m716t
 	@./difftest_m716t
