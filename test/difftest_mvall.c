@@ -22,8 +22,26 @@ typedef uint16_t u2;
 typedef uint32_t u4;
 
 /* --- the globals the oracle leaves undefined ------------------------------ */
-u1 a16x16xinc, a16x16yinc, bgcoloradder, bgmode, bshifter, curbgpr;
-u1 curmosaicsz, coadder16, drawn, temp, tileleft16b, winon, scaddtype, curypos;
+u1 bgcoloradder, bgmode, curbgpr;
+u1 curmosaicsz, coadder16, drawn, tileleft16b, winon, scaddtype, curypos;
+
+/* The 16x16 prologue stores a whole dword to `temp`, which in the emulator is
+   a byte with bshifter, a16x16xinc and a16x16yinc packed right after it
+   (video/makevid.c) - so that one instruction writes all four, and the
+   prologue then reads a16x16yinc back as bits 24-31 of the caller's eax.
+   Declaring them as ordinary C globals lets the compiler reorder them, and
+   the write lands on whatever happens to follow. Lay them out by hand. */
+__asm__(".pushsection .bss\n"
+        ".globl temp\n"
+        "temp: .skip 1\n"
+        ".globl bshifter\n"
+        "bshifter: .skip 1\n"
+        ".globl a16x16xinc\n"
+        "a16x16xinc: .skip 1\n"
+        ".globl a16x16yinc\n"
+        "a16x16yinc: .skip 1\n"
+        ".popsection\n");
+extern u1 temp, bshifter, a16x16xinc, a16x16yinc;
 u1 scrnon[4];
 u4 bgofwptr, bgsubby, tempcach, temptile, yadder, yrevadder;
 u2 yadd, yflipadd;
@@ -214,9 +232,12 @@ static void run(void (*fn)(void), u4 const* const in, snapshot* const out)
     memcpy(out->xtra, xtravbuf, BUFSZ);
 }
 
-/* Which routine the dispatch picks, mirrored here so the run can report that
-   it actually reached all eleven - a difftest that never enters a routine
-   passes just as loudly as one that does. */
+/* Which routine the dispatch picks. This is a MODEL of the assembly's dispatch,
+   not a measurement, and it lied once already: the flags it reads were being
+   clobbered before the dispatch saw them, so it reported routines that never
+   ran. Treat the numbers as a smoke test, and when it matters, measure - copy
+   video/c_mv16tsms.c, add a counter to each c_draw* entry, and link that copy
+   instead. */
 static char const* const names[12] = { "draw16x816t (stub)", "draw8x816twinonms",
     "draw8x816tsms", "draw8x8fulladdms", "draw8x816tms body",
     "draw16x1616twinonms", "draw16x1616tsms", "draw16x16fulladdms",
@@ -280,7 +301,10 @@ int main(void)
         a16x16xinc = (u1)dt_mod(2);
         a16x16yinc = (u1)dt_mod(2);
         bshifter = (u1)(dt_mod(2) ? dt_mod(8) : dt_u32());
-        curbgpr = (u1)(dt_mod(2) ? 0x00u : 0x20u);
+        /* Bits 6 and 7 matter: the entry's flip bits are read both raw (the
+           16x16 half-tile step) and xored with this (everything else), so a
+           curbgpr that never sets them hides the difference. */
+        curbgpr = (u1)(dt_mod(2) ? (dt_mod(2) ? 0x00u : 0x20u) : dt_u32());
         bgcoloradder = (u1)dt_u32();
 
         /* Non-zero bytes drop a pixel, so keep zeros common. */
@@ -291,10 +315,22 @@ int main(void)
         for (u4 i = 0; i < sizeof cache; i++) {
             cache[i] = (u1)(dt_mod(3) ? 0 : dt_u32());
         }
-        for (u4 i = 0; i < sizeof tilemap; i += 2) {
-            u2 e = (u2)dt_u32();
-            /* Bound the tile number so tempcach + tile*64 stays in the cache. */
-            *(u2*)(tilemap + i) = (u2)((e & 0xFC00u) | dt_mod(1024));
+        /* Now and then make the whole row skip on priority, so the tails that
+           only run when drawn == 0 are reached at all. */
+        {
+            int const allskip = dt_mod(12) == 0;
+            u2 const pri = (u2)(((curbgpr & 0x20u) ^ 0x20u) << 8);
+            for (u4 i = 0; i < sizeof tilemap; i += 2) {
+                u2 e = (u2)dt_u32();
+                /* Bound the tile number so tempcach + tile*64 stays in the
+                   cache; bits 10-15 stay random - bit 10 is the low palette
+                   bit and the tile mask has to drop it. */
+                e = (u2)((e & 0xFC00u) | dt_mod(1024));
+                if (allskip) {
+                    e = (u2)((e & ~0x2000u) | pri);
+                }
+                *(u2*)(tilemap + i) = e;
+            }
         }
         dt_fill(vidbuf, BUFSZ);
         dt_fill(transpbuf, BUFSZ);
@@ -305,11 +341,22 @@ int main(void)
         temp = (u1)(dt_mod(2) ? (0x1Cu + dt_mod(8)) : dt_u32());
         /* Straddle each cache boundary: which one the prologue picks is the
            whole point of its compare chain. */
+        /* Straddle each cache boundary - which cache the prologue picks is the
+           point of its compare chain - and keep the offset a multiple of a
+           tile, so tempcach + tile*64 can land exactly on bgofwptr and the
+           clip's >= is distinguishable from >. */
         tileoff = dt_mod(3) == 0 ? C2SZ - dt_mod(0x2000u)
             : dt_mod(2) == 0     ? C2SZ + C4SZ - dt_mod(0x2000u)
                                  : dt_mod(C2SZ + C4SZ);
+        tileoff &= ~63u;
 
-        in[0] = hofs;
+        /* eax is stored to `temp` as a whole dword, so its four bytes are the
+           column seed, bshifter, a16x16xinc and a16x16yinc - the separate
+           assignments above are overwritten on the 16x16 path. Seed the column
+           near 0x20 often, or the wrap that resets it is never reached. */
+        in[0] = (u4)(dt_mod(2) ? (0x18u + dt_mod(12)) : dt_mod(256))
+            | ((u4)bshifter << 8) | ((u4)a16x16xinc << 16)
+            | ((u4)a16x16yinc << 24);
         in[1] = (u4)(uintptr_t)(cache + tileoff);
         in[2] = dt_mod(56); /* the y adder */
         in[3] = (u4)(uintptr_t)tilemap;
