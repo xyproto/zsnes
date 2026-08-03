@@ -302,3 +302,170 @@ void c_procspritessub16t(void) { sprites(1, 0); }
 void c_procspritesmain16t(void) { sprites(0, 0); }
 void c_procspritessub16tfix(void) { sprites(1, 1); }
 void c_procspritesmain16tfix(void) { sprites(0, 1); }
+
+/* --- the background gates ------------------------------------------------- *
+ *
+ * drawbackgrnd{sub,main}16t and their *fix twins, one per background layer
+ * (ebp). Same shape again: colour-mode check, screen enables, window, mosaic,
+ * then the tile renderer for this layer's size and colour-maths mode.
+ *
+ * draw8x816b and draw16x1616b are already C and are called from here;
+ * the other six renderers are still assembly and come back through BGTail.
+ * The `drawn == 33` check that marks a layer fully drawn happens *after* the
+ * renderer returns, so the caller does it for the assembly ones.
+ *
+ * Every early return leaves registers behind that the assembly set on the way:
+ * esi is colormodeofs from the first instruction, bl is the colour-mode byte,
+ * and al is curbgnum or - once the window has been built - winbg1en[ebp].
+ */
+/* alreadydrawn, curbgnum, curbgpr, drawn, bgcoloradder and the bg1*loc
+   tables come from video/makevid.h; bgmode/bgtilesz/winen from cpu/regs.h.
+   `winbg1en+ebp` in the assembly is winen[ebp] - they are the same address,
+   the per-layer window enables. */
+extern u1* colormodeofs; /* c_vcache.h */
+void draw8x816b(u4 eax, u4 ecx, u2* edx, u1* ebx, u4 layer, u4 esi,
+    u2 const* edi);
+void draw16x1616b(u4 eax, u4 ecx, u2* edx, u1* ebx, u4 esi, u2 const* edi);
+
+u4 BGAX;
+u4 BGBX;
+u4 BGCX;
+u4 BGDX;
+u4 BGSI;
+u4 BGDI;
+u4 BGBP;
+
+/* 0 = done; otherwise the assembly renderer the caller must call, after which
+   it does the drawn==33 bookkeeping. */
+enum bgtail { B_NONE = 0,
+    B_8T,
+    B_16T,
+    B_8BT,
+    B_16BT,
+    B_8TMS,
+    B_16TMS };
+u4 BGTail;
+
+static void mark_drawn(void)
+{
+    if (drawn == 33) {
+        BGAX = (BGAX & ~0xFFu) | curbgnum;
+        alreadydrawn = (u1)(alreadydrawn | curbgnum);
+    }
+}
+
+static void bg(int const sub, int const fix)
+{
+    u4 const ebp = BGBP;
+    u1 const bg = curbgnum;
+    u1 sz;
+
+    BGTail = B_NONE;
+
+    /* mov esi,[colormodeofs] / mov bl,[esi+ebp] - both survive every return
+       below. */
+    BGSI = (u4)(uintptr_t)colormodeofs;
+    BGBX = (BGBX & ~0xFFu) | colormodeofs[ebp];
+    if ((u1)BGBX == 0) {
+        return;
+    }
+    BGAX = (BGAX & ~0xFFu) | bg;
+    if (sub) {
+        if (!((scrnon >> 8) & bg)) {
+            return;
+        }
+        /* The fix form drops the "and not on the main screen" exclusion. */
+        if (!fix && (scrnon & bg)) {
+            return;
+        }
+    } else if (!(scrnon & bg)) {
+        return;
+    }
+    /* drawbackgrndmain16tfix still tests alreadydrawn but its branch is
+       commented out in the assembly, so the layer is drawn again. */
+    if ((alreadydrawn & bg) && !(!sub && fix)) {
+        return;
+    }
+    if (scrndis & bg) {
+        return;
+    }
+
+    winon = 0;
+    if ((sub ? winenabs : winenabm) & bg) {
+        u1 const al = winen[ebp];
+
+        BGAX = (BGAX & ~0xFFu) | al;
+        makewindow(al, ebp);
+        if (winon == 0xFFu) {
+            return;
+        }
+    }
+
+    BGBX = (BGBX & ~0xFFu) | bg;
+    curmosaicsz = 1;
+    if (mosaicon & bg) {
+        sz = mosaicsz;
+        BGBX = (BGBX & ~0xFFu) | sz;
+        if (sz != 0) {
+            curmosaicsz = (u1)(sz + 1u);
+            BGBX = (BGBX & ~0xFFu) | (u1)(sz + 1u);
+        }
+    }
+
+    /* Mode 0 gives each layer its own 32-entry palette slice. The two forms
+       compute it differently - an 8-bit `mul bl` against a 32-bit `shl` - but
+       only the low byte is kept, so they agree. */
+    bgcoloradder = 0;
+    if (bgmode == 0) {
+        bgcoloradder = (u1)(ebp * 32u);
+        if (sub) {
+            BGBX = (BGBX & ~0xFFu) | 0x20u; /* mov bl,20h, left behind */
+        }
+    }
+
+    BGSI = bg1vbufloc[ebp];
+    BGDI = (u4)(uintptr_t)bg1tdatloc[ebp];
+    BGDX = (u4)(uintptr_t)bg1tdabloc[ebp];
+    BGBX = (u4)(uintptr_t)bg1cachloc[ebp];
+    BGAX = bg1xposloc[ebp];
+    BGCX = (BGCX & ~0xFFu) | bg;
+
+    if (!sub) {
+        /* Main screen: colour maths can send this to a different writer, and
+           a layer that is on both screens goes to the *bt pair - which the
+           fix form does not have. */
+        if (!fix && (scaddset & 0x02u) && ((scrnon >> 8) & bg)) {
+            if (!(curbgpr & 0x20u) && (scaddtype & bg)) {
+                BGCX = bg1yaddval[ebp];
+                BGTail = (bgtilesz & bg) ? B_16TMS : B_8TMS;
+                return;
+            }
+            BGCX = bg1yaddval[ebp];
+            BGTail = (bgtilesz & bg) ? B_16BT : B_8BT;
+            return;
+        }
+        if (scaddtype & bg) {
+            BGCX = bg1yaddval[ebp];
+            BGTail = (bgtilesz & bg) ? B_16T : B_8T;
+            return;
+        }
+    }
+
+    BGCX = bg1yaddval[ebp];
+    if (bgtilesz & bg) {
+        draw16x1616b(BGAX, BGCX, (u2*)(uintptr_t)BGDX, (u1*)(uintptr_t)BGBX,
+            BGSI, (u2 const*)(uintptr_t)BGDI);
+    } else {
+        draw8x816b(BGAX, BGCX, (u2*)(uintptr_t)BGDX, (u1*)(uintptr_t)BGBX, ebp,
+            BGSI, (u2 const*)(uintptr_t)BGDI);
+    }
+    mark_drawn();
+}
+
+void c_drawbackgrndsub16t(void) { bg(1, 0); }
+void c_drawbackgrndmain16t(void) { bg(0, 0); }
+void c_drawbackgrndsub16tfix(void) { bg(1, 1); }
+void c_drawbackgrndmain16tfix(void) { bg(0, 1); }
+
+/* Called by the thunk after an assembly renderer returns. */
+void c_bg_mark_drawn(void) { mark_drawn(); }

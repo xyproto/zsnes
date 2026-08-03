@@ -119,6 +119,9 @@ EXTSYM c_procmode716tmainextbgb,c_procmode716tmainextbg2
 EXTSYM SPRAX,SPRBX,SPRCX,SPRBP,SPRDX,SPRTail
 EXTSYM c_procspritessub16t,c_procspritesmain16t
 EXTSYM c_procspritessub16tfix,c_procspritesmain16tfix
+EXTSYM BGAX,BGBX,BGCX,BGDX,BGSI,BGDI,BGBP,BGTail,c_bg_mark_drawn
+EXTSYM c_drawbackgrndsub16t,c_drawbackgrndmain16t
+EXTSYM c_drawbackgrndsub16tfix,c_drawbackgrndmain16tfix
 EXTSYM winbg1en,winenabm,drawmode716textbg,drawmode716textbg2,extbgdone
 EXTSYM drawmode716tb,drawmode716b,drawmode716extbg,drawmode716extbg2,cursprloc
 EXTSYM drawsprites16b,scrndis,sprprifix,winonsp,bgfixer,scaddtype
@@ -365,216 +368,132 @@ NEWSYM procspritesmain16t
 NEWSYM drawbackgrndsub16t
     cmp byte[bgfixer],1
     je near drawbackgrndsub16tfix
-    mov esi,[colormodeofs]
-    mov bl,[esi+ebp]
-    cmp bl,0
-    je near .noback
-    mov al,[curbgnum]
-    test byte[scrnon+1],al
-    jz near .noback
-    test byte[scrnon],al
-    jnz near .noback
-    test byte[alreadydrawn],al
-    jnz near .noback
-    test byte[scrndis],al
-    jnz near .noback
-    mov byte[winon],0
-    test byte[winenabs],al
-    jz near .nobackwin
-;    procwindow [winbg1en+ebp]
-    mov al,[winbg1en+ebp]
-    ccallv makewindow, eax, ebp
-    cmp byte[winon],0FFh
-    je near .noback
-.nobackwin
-    mov bl,[curbgnum]
-    mov byte[curmosaicsz],1
-    test byte[mosaicon],bl
-    jz .nomos
-    mov bl,[mosaicsz]
-    cmp bl,0
-    je .nomos
-    inc bl
-    mov [curmosaicsz],bl
-.nomos
-    mov byte[bgcoloradder],0
-    cmp byte[bgmode],0
-    jne .nomode0
-    mov eax,ebp
-    mov bl,20h
-    mul bl
-    mov [bgcoloradder],al
-.nomode0
-    mov esi,[bg1vbufloc+ebp*4]
-    mov edi,[bg1tdatloc+ebp*4]
-    mov edx,[bg1tdabloc+ebp*4]
-    mov ebx,[bg1cachloc+ebp*4]
-    mov eax,[bg1xposloc+ebp*4]
-    mov cl,[curbgnum]
-    test byte[bgtilesz],cl
-    jnz .16x16
-    mov ecx,[bg1yaddval+ebp*4]
-    ccallv draw8x816b, eax, ecx, edx, ebx, ebp, esi, edi
-    cmp byte[drawn],33
-    jne .notalldrawn
-    mov al,[curbgnum]
-    or [alreadydrawn],al
-.notalldrawn
-.noback
+    mov [BGAX], eax
+    mov [BGBX], ebx
+    mov [BGCX], ecx
+    mov [BGDX], edx
+    mov [BGSI], esi
+    mov [BGDI], edi
+    mov [BGBP], ebp
+    call c_drawbackgrndsub16t
+    mov eax, [BGAX]
+    mov ebx, [BGBX]
+    mov ecx, [BGCX]
+    mov edx, [BGDX]
+    mov esi, [BGSI]
+    mov edi, [BGDI]
+    mov ebp, [BGBP]
+    cmp dword[BGTail],0
+    je .done
+    cmp dword[BGTail],1
+    jne .n1
+    call draw8x816t
+    jmp .after
+.n1
+    cmp dword[BGTail],2
+    jne .n2
+    call draw16x1616t
+    jmp .after
+.n2
+    cmp dword[BGTail],3
+    jne .n3
+    call draw8x816bt
+    jmp .after
+.n3
+    cmp dword[BGTail],4
+    jne .n4
+    call draw16x1616bt
+    jmp .after
+.n4
+    cmp dword[BGTail],5
+    jne .n5
+    call draw8x816tms
+    jmp .after
+.n5
+    cmp dword[BGTail],6
+    jne .n6
+    call draw16x1616tms
+    jmp .after
+.n6
+.after
+    ; the renderers are called, not jumped to: the drawn==33 mark happens after
+    ; the renderers leave ecx/edx live for the caller; cdecl would let the
+    ; drawn==33 bookkeeping clobber them
+    push ecx
+    push edx
+    mov [BGAX], eax
+    call c_bg_mark_drawn
+    mov eax, [BGAX]
+    pop edx
+    pop ecx
+.done
     ret
-.16x16
-    mov ecx,[bg1yaddval+ebp*4]
-    ccallv draw16x1616b, eax, ecx, edx, ebx, esi, edi
-    cmp byte[drawn],33
-    jne .notalldrawnb
-    mov al,[curbgnum]
-    or [alreadydrawn],al
-.notalldrawnb
-    ret
+
 
 NEWSYM drawbackgrndmain16t
     cmp byte[bgfixer],1
     je near drawbackgrndmain16tfix
-    mov esi,[colormodeofs]
-    mov bl,[esi+ebp]
-    cmp bl,0
-    je near .noback
-    mov al,[curbgnum]
-    test byte[scrnon],al
-    jz near .noback
-    test byte[alreadydrawn],al
-    jnz near .noback
-    test byte[scrndis],al
-    jnz near .noback
-    mov byte[winon],0
-    test byte[winenabm],al
-    jz near .nobackwin
-;    procwindow [winbg1en+ebp]
-    mov al,[winbg1en+ebp]
-    ccallv makewindow, eax, ebp
-    cmp byte[winon],0FFh
-    je near .noback
-.nobackwin
-    mov bl,[curbgnum]
-    mov byte[curmosaicsz],1
-    test byte[mosaicon],bl
-    jz .nomos
-    mov bl,[mosaicsz]
-    cmp bl,0
-    je .nomos
-    inc bl
-    mov [curmosaicsz],bl
-.nomos
-    mov byte[bgcoloradder],0
-    cmp byte[bgmode],0
-    jne .nomode0
-    mov eax,ebp
-    shl eax,5
-    mov [bgcoloradder],al
-.nomode0
-    mov esi,[bg1vbufloc+ebp*4]
-    mov edi,[bg1tdatloc+ebp*4]
-    mov edx,[bg1tdabloc+ebp*4]
-    mov ebx,[bg1cachloc+ebp*4]
-    mov eax,[bg1xposloc+ebp*4]
-    mov cl,[curbgnum]
-    cmp byte[curbgpr],0h
-    jne .test2
-;    test byte[scaddtype],cl
-;    jnz .transp
-.test2
-    test byte[scaddset],02h
-    jz .noscrnadd
-    test byte[scrnon+1],cl
-    jnz near .mainandsub
-.noscrnadd
-    test byte[scaddtype],cl
-    jnz .transp
-    test byte[bgtilesz],cl
-    jnz .16x16
-    mov ecx,[bg1yaddval+ebp*4]
-    ccallv draw8x816b, eax, ecx, edx, ebx, ebp, esi, edi
-    cmp byte[drawn],33
-    jne .notalldrawn
-    mov al,[curbgnum]
-    or [alreadydrawn],al
-.notalldrawn
-.noback
-    ret
-.16x16
-    mov ecx,[bg1yaddval+ebp*4]
-    ccallv draw16x1616b, eax, ecx, edx, ebx, esi, edi
-    cmp byte[drawn],33
-    jne .notalldrawnb
-    mov al,[curbgnum]
-    or [alreadydrawn],al
-.notalldrawnb
-    ret
-.transp
-    test byte[bgtilesz],cl
-    jnz .16x16b
-    mov ecx,[bg1yaddval+ebp*4]
+    mov [BGAX], eax
+    mov [BGBX], ebx
+    mov [BGCX], ecx
+    mov [BGDX], edx
+    mov [BGSI], esi
+    mov [BGDI], edi
+    mov [BGBP], ebp
+    call c_drawbackgrndmain16t
+    mov eax, [BGAX]
+    mov ebx, [BGBX]
+    mov ecx, [BGCX]
+    mov edx, [BGDX]
+    mov esi, [BGSI]
+    mov edi, [BGDI]
+    mov ebp, [BGBP]
+    cmp dword[BGTail],0
+    je .done
+    cmp dword[BGTail],1
+    jne .n1
     call draw8x816t
-    cmp byte[drawn],33
-    jne .notalldrawnc
-    mov al,[curbgnum]
-    or [alreadydrawn],al
-.notalldrawnc
-    ret
-.16x16b
-    mov ecx,[bg1yaddval+ebp*4]
+    jmp .after
+.n1
+    cmp dword[BGTail],2
+    jne .n2
     call draw16x1616t
-    cmp byte[drawn],33
-    jne .notalldrawnd
-    mov al,[curbgnum]
-    or [alreadydrawn],al
-.notalldrawnd
-    ret
-.mainandsub
-    test byte[curbgpr],20h
-    jnz .firstpr
-    test byte[scaddtype],cl
-    jnz .transpb
-.firstpr
-    test byte[bgtilesz],cl
-    jnz .16x16c
-    mov ecx,[bg1yaddval+ebp*4]
+    jmp .after
+.n2
+    cmp dword[BGTail],3
+    jne .n3
     call draw8x816bt
-    cmp byte[drawn],33
-    jne .notalldrawne
-    mov al,[curbgnum]
-    or [alreadydrawn],al
-.notalldrawne
-    ret
-.16x16c
-    mov ecx,[bg1yaddval+ebp*4]
+    jmp .after
+.n3
+    cmp dword[BGTail],4
+    jne .n4
     call draw16x1616bt
-    cmp byte[drawn],33
-    jne .notalldrawnf
-    mov al,[curbgnum]
-    or [alreadydrawn],al
-.notalldrawnf
-    ret
-.transpb
-    test byte[bgtilesz],cl
-    jnz .16x16d
-    mov ecx,[bg1yaddval+ebp*4]
+    jmp .after
+.n4
+    cmp dword[BGTail],5
+    jne .n5
     call draw8x816tms
-    cmp byte[drawn],33
-    jne .notalldrawng
-    mov al,[curbgnum]
-    or [alreadydrawn],al
-.notalldrawng
-    ret
-.16x16d
-    mov ecx,[bg1yaddval+ebp*4]
+    jmp .after
+.n5
+    cmp dword[BGTail],6
+    jne .n6
     call draw16x1616tms
-    cmp byte[drawn],33
-    jne .notalldrawnh
-    mov al,[curbgnum]
-    or [alreadydrawn],al
-.notalldrawnh
+    jmp .after
+.n6
+.after
+    ; the renderers are called, not jumped to: the drawn==33 mark happens after
+    ; the renderers leave ecx/edx live for the caller; cdecl would let the
+    ; drawn==33 bookkeeping clobber them
+    push ecx
+    push edx
+    mov [BGAX], eax
+    call c_bg_mark_drawn
+    mov eax, [BGAX]
+    pop edx
+    pop ecx
+.done
     ret
+
 
 NEWSYM procspritessub16tfix
     mov [SPRAX], eax
@@ -619,167 +538,130 @@ NEWSYM procspritesmain16tfix
 
 
 NEWSYM drawbackgrndsub16tfix
-    mov esi,[colormodeofs]
-    mov bl,[esi+ebp]
-    cmp bl,0
-    je near .noback
-    mov al,[curbgnum]
-    test byte[scrnon+1],al
-    jz near .noback
-    test byte[alreadydrawn],al
-    jnz near .noback
-    test byte[scrndis],al
-    jnz near .noback
-    mov byte[winon],0
-    test byte[winenabs],al
-    jz near .nobackwin
-;    procwindow [winbg1en+ebp]
-    mov al,[winbg1en+ebp]
-    ccallv makewindow, eax, ebp
-    cmp byte[winon],0FFh
-    je near .noback
-.nobackwin
-    mov bl,[curbgnum]
-    mov byte[curmosaicsz],1
-    test byte[mosaicon],bl
-    jz .nomos
-    mov bl,[mosaicsz]
-    cmp bl,0
-    je .nomos
-    inc bl
-    mov [curmosaicsz],bl
-.nomos
-    mov byte[bgcoloradder],0
-    cmp byte[bgmode],0
-    jne .nomode0
-    mov eax,ebp
-    mov bl,20h
-    mul bl
-    mov [bgcoloradder],al
-.nomode0
-    mov esi,[bg1vbufloc+ebp*4]
-    mov edi,[bg1tdatloc+ebp*4]
-    mov edx,[bg1tdabloc+ebp*4]
-    mov ebx,[bg1cachloc+ebp*4]
-    mov eax,[bg1xposloc+ebp*4]
-    mov cl,[curbgnum]
-    test byte[bgtilesz],cl
-    jnz .16x16
-    mov ecx,[bg1yaddval+ebp*4]
-    ccallv draw8x816b, eax, ecx, edx, ebx, ebp, esi, edi
-    cmp byte[drawn],33
-    jne .notalldrawn
-    mov al,[curbgnum]
-    or [alreadydrawn],al
-.notalldrawn
-.noback
+    mov [BGAX], eax
+    mov [BGBX], ebx
+    mov [BGCX], ecx
+    mov [BGDX], edx
+    mov [BGSI], esi
+    mov [BGDI], edi
+    mov [BGBP], ebp
+    call c_drawbackgrndsub16tfix
+    mov eax, [BGAX]
+    mov ebx, [BGBX]
+    mov ecx, [BGCX]
+    mov edx, [BGDX]
+    mov esi, [BGSI]
+    mov edi, [BGDI]
+    mov ebp, [BGBP]
+    cmp dword[BGTail],0
+    je .done
+    cmp dword[BGTail],1
+    jne .n1
+    call draw8x816t
+    jmp .after
+.n1
+    cmp dword[BGTail],2
+    jne .n2
+    call draw16x1616t
+    jmp .after
+.n2
+    cmp dword[BGTail],3
+    jne .n3
+    call draw8x816bt
+    jmp .after
+.n3
+    cmp dword[BGTail],4
+    jne .n4
+    call draw16x1616bt
+    jmp .after
+.n4
+    cmp dword[BGTail],5
+    jne .n5
+    call draw8x816tms
+    jmp .after
+.n5
+    cmp dword[BGTail],6
+    jne .n6
+    call draw16x1616tms
+    jmp .after
+.n6
+.after
+    ; the renderers are called, not jumped to: the drawn==33 mark happens after
+    ; the renderers leave ecx/edx live for the caller; cdecl would let the
+    ; drawn==33 bookkeeping clobber them
+    push ecx
+    push edx
+    mov [BGAX], eax
+    call c_bg_mark_drawn
+    mov eax, [BGAX]
+    pop edx
+    pop ecx
+.done
     ret
-.16x16
-    mov ecx,[bg1yaddval+ebp*4]
-    ccallv draw16x1616b, eax, ecx, edx, ebx, esi, edi
-    cmp byte[drawn],33
-    jne .notalldrawnb
-    mov al,[curbgnum]
-    or [alreadydrawn],al
-.notalldrawnb
-    ret
+
 
 NEWSYM drawbackgrndmain16tfix
-    mov esi,[colormodeofs]
-    mov bl,[esi+ebp]
-    cmp bl,0
-    je near .noback
-    mov al,[curbgnum]
-    test byte[scrnon],al
-    jz near .noback
-    test byte[alreadydrawn],al
-;    jnz near .noback
-    test byte[scrndis],al
-    jnz near .noback
-    mov byte[winon],0
-    test byte[winenabm],al
-    jz near .nobackwin
-;    procwindow [winbg1en+ebp]
-    mov al,[winbg1en+ebp]
-    ccallv makewindow, eax, ebp
-    cmp byte[winon],0FFh
-    je near .noback
-.nobackwin
-    mov bl,[curbgnum]
-    mov byte[curmosaicsz],1
-    test byte[mosaicon],bl
-    jz .nomos
-    mov bl,[mosaicsz]
-    cmp bl,0
-    je .nomos
-    inc bl
-    mov [curmosaicsz],bl
-.nomos
-    mov byte[bgcoloradder],0
-    cmp byte[bgmode],0
-    jne .nomode0
-    mov eax,ebp
-    shl eax,5
-    mov [bgcoloradder],al
-.nomode0
-    mov esi,[bg1vbufloc+ebp*4]
-    mov edi,[bg1tdatloc+ebp*4]
-    mov edx,[bg1tdabloc+ebp*4]
-    mov ebx,[bg1cachloc+ebp*4]
-    mov eax,[bg1xposloc+ebp*4]
-    mov cl,[curbgnum]
-    cmp byte[curbgpr],0h
-    jne .test2
-;    test byte[scaddtype],cl
-;    jnz .transp
-.test2
-    test byte[scaddtype],cl
-    jnz .transp
-    test byte[bgtilesz],cl
-    jnz .16x16
-    mov ecx,[bg1yaddval+ebp*4]
-    ccallv draw8x816b, eax, ecx, edx, ebx, ebp, esi, edi
-    cmp byte[drawn],33
-    jne .notalldrawn
-    mov al,[curbgnum]
-    or [alreadydrawn],al
-.notalldrawn
-.noback
-    ret
-.16x16
-    mov ecx,[bg1yaddval+ebp*4]
-    ccallv draw16x1616b, eax, ecx, edx, ebx, esi, edi
-    cmp byte[drawn],33
-    jne .notalldrawnb
-    mov al,[curbgnum]
-    or [alreadydrawn],al
-.notalldrawnb
-    ret
-.transp
-    test byte[bgtilesz],cl
-    jnz .16x16b
-    mov ecx,[bg1yaddval+ebp*4]
+    mov [BGAX], eax
+    mov [BGBX], ebx
+    mov [BGCX], ecx
+    mov [BGDX], edx
+    mov [BGSI], esi
+    mov [BGDI], edi
+    mov [BGBP], ebp
+    call c_drawbackgrndmain16tfix
+    mov eax, [BGAX]
+    mov ebx, [BGBX]
+    mov ecx, [BGCX]
+    mov edx, [BGDX]
+    mov esi, [BGSI]
+    mov edi, [BGDI]
+    mov ebp, [BGBP]
+    cmp dword[BGTail],0
+    je .done
+    cmp dword[BGTail],1
+    jne .n1
     call draw8x816t
-    cmp byte[drawn],33
-    jne .notalldrawnc
-    mov al,[curbgnum]
-    or [alreadydrawn],al
-.notalldrawnc
-    ret
-.16x16b
-    mov ecx,[bg1yaddval+ebp*4]
+    jmp .after
+.n1
+    cmp dword[BGTail],2
+    jne .n2
     call draw16x1616t
-    cmp byte[drawn],33
-    jne .notalldrawnd
-    mov al,[curbgnum]
-    or [alreadydrawn],al
-.notalldrawnd
+    jmp .after
+.n2
+    cmp dword[BGTail],3
+    jne .n3
+    call draw8x816bt
+    jmp .after
+.n3
+    cmp dword[BGTail],4
+    jne .n4
+    call draw16x1616bt
+    jmp .after
+.n4
+    cmp dword[BGTail],5
+    jne .n5
+    call draw8x816tms
+    jmp .after
+.n5
+    cmp dword[BGTail],6
+    jne .n6
+    call draw16x1616tms
+    jmp .after
+.n6
+.after
+    ; the renderers are called, not jumped to: the drawn==33 mark happens after
+    ; the renderers leave ecx/edx live for the caller; cdecl would let the
+    ; drawn==33 bookkeeping clobber them
+    push ecx
+    push edx
+    mov [BGAX], eax
+    call c_bg_mark_drawn
+    mov eax, [BGAX]
+    pop edx
+    pop ecx
+.done
     ret
 
-ALIGN32
-
-; transpbuf and the rest of this file's .bss are in video/c_makev16tdata.c.
-SECTION .text
 
 NEWSYM drawline16t
     cmp byte[bgmode],7
