@@ -45,7 +45,7 @@ ASMDATA   := zsnes_asmdata_test
 ASMDATA_SRC := asmdata_test.c
 OBJS      := ../zpath.o
 
-.PHONY: all run clean spcdec fxtable fxops memops m7calc m7ext2 m7start m7win m7bw m7proc m7draw mv16 mvs mvall regs
+.PHONY: all run clean spcdec fxtable fxops memops m7calc m7ext2 m7start m7win m7bw m7proc m7draw mv16 mvs mvall m716t regs
 
 all: $(BIN) $(NETPLAY) $(ST10) $(ST11) $(OBC1) $(MSU1) $(DSP2) $(SAI) $(SA1) $(SPC7110) $(VCACHE) $(SPRITES) $(C4) $(MODE7) $(ASMDATA)
 
@@ -139,6 +139,22 @@ mvall: difftest_mvall.c difftest.h ../video/c_mv16tsms.c ../video/c_mv16tms.c
 	$(CC) $(CFLAGS) difftest_mvall.c ../video/c_mv16tsms.c ../video/c_mv16tms.c \
 	    ../video/mv16tms.o _mvall.o -no-pie -o difftest_mvall
 	@./difftest_mvall
+
+# Oracle is the whole pre-port makev16t.asm; the emulator's own data objects
+# supply the globals, because several of these routines read them wider than
+# their declared type and only the real layout makes that agree.
+m716t: difftest_m716t.c difftest.h ../video/c_mv16tm7.c
+	python3 ../tools/mkoracle.py video/makev16t.asm -o _m716t.o \
+	    --stubs _m716t_stubs.c --provided-by ../cpu/c_regsdata.o \
+	    ../cpu/c_regswdata.o ../video/c_mode716data.o ../video/makevid.o \
+	    ../endmem.o \
+	    --exclude makewindow drawsprites16b drawmode716t drawmode716b drawmode716tb \
+	    drawmode716extbg drawmode716textbg drawmode716extbg2 drawmode716textbg2
+	$(CC) $(CFLAGS) difftest_m716t.c ../video/c_mv16tm7.c _m716t.o \
+	    _m716t_stubs.c ../video/makev16t.o ../cpu/c_regsdata.o \
+	    ../cpu/c_regswdata.o ../video/c_mode716data.o ../video/makevid.o \
+	    ../endmem.o -no-pie -o difftest_m716t
+	@./difftest_m716t
 
 mv16: difftest_mv16.c difftest.h mkmv16.sh ../video/c_mv16tms.c
 	./mkmv16.sh

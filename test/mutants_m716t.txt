@@ -1,0 +1,34 @@
+# Mutants for video/c_mv16tm7.c, checked by test/difftest_m716t.c.
+# Format: name<TAB>old<TAB>new   (\n for a newline)
+sub1 mask	    case G_SUB1:\n        return SUB_ON(0x01u) && !MAIN_ON(0x01u);	    case G_SUB1:\n        return SUB_ON(0x02u) && !MAIN_ON(0x01u);
+sub1 main term	    case G_SUB1:\n        return SUB_ON(0x01u) && !MAIN_ON(0x01u);	    case G_SUB1:\n        return SUB_ON(0x01u);
+sub2 mask	    case G_SUB2:\n        return SUB_ON(0x02u) && !MAIN_ON(0x02u);	    case G_SUB2:\n        return SUB_ON(0x02u) && !MAIN_ON(0x01u);
+sub/main swap	#define MAIN_ON(bit) ((scrnon & (bit)) != 0)\n#define SUB_ON(bit) (((scrnon >> 8) & (bit)) != 0)	#define MAIN_ON(bit) (((scrnon >> 8) & (bit)) != 0)\n#define SUB_ON(bit) ((scrnon & (bit)) != 0)
+sub1first done	    case G_SUB1_FIRST:\n        return extbgdone == 0 &&	    case G_SUB1_FIRST:\n        return extbgdone != 0 &&
+main1 mask	    case G_MAIN1:\n        return MAIN_ON(0x01u);	    case G_MAIN1:\n        return MAIN_ON(0x02u);
+main1first done	    case G_MAIN1_FIRST:\n        return extbgdone == 0 && MAIN_ON(0x01u);	    case G_MAIN1_FIRST:\n        return MAIN_ON(0x01u);
+done gate	    case G_DONE:\n        return extbgdone != 0;	    case G_DONE:\n        return extbgdone == 0;
+window enable	    if (WIN_M && !WIN_S) {	    if (WIN_M) {
+window sub term	#define WIN_S (winenabs & 0x01u)	#define WIN_S (winenabs & 0x02u)
+window abandon	        if (winon == 0xFFu) {	        if (winon == 0x00u) {
+window al	        M7TAX = (M7TAX & ~0xFFu) | winbg1en;	        /* mutant: al not set */
+window ebp	        M7TBP = 0; /* mov ebp,0 - only on this path, and it survives the call */	        /* mutant: ebp not set */
+flip test	    if (flip && (mode7set & 0x02u)) {	    if (flip && (mode7set & 0x01u)) {
+flip value	        y = (u2)(-(int)y + 255);	        y = (u2)(-(int)y + 256);
+flip always	    if (flip && (mode7set & 0x02u)) {	    if ((mode7set & 0x02u)) {
+mosaic enable	    if (!(mosaicon & 1u)) {	    if (!(mosaicon & 2u)) {
+mosaic bl early	    sz = mosaicsz;\n    *ebx = (*ebx & ~0xFFu) | sz;	    sz = mosaicsz;
+mosaic size	    sz = (u1)(sz + 1u);	    sz = (u1)(sz + 2u);
+mosaic bh	    *ebx = (*ebx & ~0xFFFFu) | sz;	    *ebx = (*ebx & ~0xFFu) | sz;
+mosaic snap	    return (u2)((u2)(y / sz) * sz);	    return (u2)(y / sz);
+curmosaicsz default	    curmosaicsz = 1;	    curmosaicsz = 0;
+m7starty	    m7starty = y;	    m7starty = (u2)(y + 1u);
+no-m7start ax	        M7TAX = y;\n        M7TDX = 0;	        M7TAX = y;\n        M7TDX = y;
+scroll swap	    M7TAX = bg1scroly_m7;\n    M7TDX = bg1scrolx_m7;	    M7TAX = bg1scrolx_m7;\n    M7TDX = bg1scroly_m7;
+setdone	    if (setdone) {\n        extbgdone = 1;\n    }	    if (!setdone) {\n        extbgdone = 1;\n    }
+transp pick	    M7TTail = (scaddtype & 0x01u) ? plain : transp;	    M7TTail = (scaddtype & 0x01u) ? transp : plain;
+transp mask	    M7TTail = (scaddtype & 0x01u) ? plain : transp;	    M7TTail = (scaddtype & 0x02u) ? plain : transp;
+mode7b override	    if (M7TTail != T_NONE && (scaddset & 0x02u) && SUB_ON(0x01u)) {	    if (M7TTail != T_NONE && (scaddset & 0x02u)) {
+mode7b scaddset	    if (M7TTail != T_NONE && (scaddset & 0x02u) && SUB_ON(0x01u)) {	    if (M7TTail != T_NONE && (scaddset & 0x01u) && SUB_ON(0x01u)) {
+extbg2 flip	    run(G_DONE, 0, 0, T_M716EXTBG2, T_NONE, 0);	    run(G_DONE, 1, 0, T_M716EXTBG2, T_NONE, 0);
+extbg2 m7start	    run(G_DONE, 0, 0, T_M716EXTBG2, T_NONE, 0);	    run(G_DONE, 0, 1, T_M716EXTBG2, T_NONE, 0);
