@@ -1,0 +1,76 @@
+# Mutants for video/c_mv16tsprt.c, checked by test/difftest_spr16t.c.
+# Format: name<TAB>old<TAB>new   (\n for a newline)
+t zero test	    r->ax = eax;\n    if (eax == 0) {\n        return;\n    }\n    if (win && winspdata	    r->ax = eax;\n    if ((eax & 0x0Fu) == 0) {\n        return;\n    }\n    if (win && winspdata
+t ax on skip	    r->ax = eax;\n    if (eax == 0) {\n        return;\n    }\n    if (win && winspdata	    if (eax == 0) {\n        return;\n    }\n    r->ax = eax;\n    if (win && winspdata
+t win index	    if (win && winspdata[ebx - 8 + pos + 16] != 0) {	    if (win && winspdata[ebx - 8 + pos] != 0) {
+t win sense	    if (win && winspdata[ebx - 8 + pos + 16] != 0) {	    if (win && winspdata[ebx - 8 + pos + 16] == 0) {
+t win always	    if (win && winspdata[ebx - 8 + pos + 16] != 0) {	    if (winspdata[ebx - 8 + pos + 16] != 0) {
+t pal wrap	    r->ax = (u1)(eax + ch);\n    if (mode == W_PLAIN) {	    r->ax = eax + ch;\n    if (mode == W_PLAIN) {
+t offset	    u4 const n = 16 - pos * 2;	    u4 const n = 16 - pos;
+t offset base	    u4 const n = 16 - pos * 2;	    u4 const n = 18 - pos * 2;
+t plain store	        r->dx = pal16b[r->ax];\n        *(u2*)(dst - n) = (u2)r->dx;	        r->dx = pal16b[r->ax];\n        *(u2*)(dst + n) = (u2)r->dx;
+t plain width	        r->dx = pal16b[r->ax];\n        *(u2*)(dst - n) = (u2)r->dx;	        r->dx = pal16b[r->ax];\n        *(u4*)(dst - n) = r->dx;
+half transp test	        if ((u2)t != 0) {	        if (t != 0) {
+half transp sense	        if ((u2)t != 0) {	        if ((u2)t == 0) {
+half col mask	            col &= vesa2_clbit;\n            t &= vesa2_clbit;	            t &= vesa2_clbit;
+half t mask	            col &= vesa2_clbit;\n            t &= vesa2_clbit;	            col &= vesa2_clbit;
+half shift	            col += t;\n            col >>= 1;	            col += t;
+half pal table	        u4 col = pal16b[r->ax];\n\n        /* A transparent pixel	        u4 col = pal16bcl[r->ax];\n\n        /* A transparent pixel
+fa pal choice	        u4 const* const pal = mode == W_ADD ? pal16bcl : pal16bxcl;	        u4 const* const pal = mode == W_ADD ? pal16bxcl : pal16bcl;
+fa pal plain	        u4 const* const pal = mode == W_ADD ? pal16bcl : pal16bxcl;	        u4 const* const pal = pal16b;
+fa t mask	        t &= vesa2_clbit;\n        col += t;	        col += t;
+fa col mask	        t &= vesa2_clbit;\n        col += t;	        t &= vesa2_clbit;\n        col &= vesa2_clbit;\n        col += t;
+fa shift	        col += t;\n        col >>= 1;	        col += t;
+fa sub xor	        if (mode == W_SUB) {\n            col ^= 0xFFFFu;\n        }	        /* mutant: no invert */
+fa sub always	        if (mode == W_SUB) {\n            col ^= 0xFFFFu;\n        }	        col ^= 0xFFFFu;
+fa xor order	        if (mode == W_SUB) {\n            col ^= 0xFFFFu;\n        }\n        *(u2*)(dst - n) = (u2)col;	        *(u2*)(dst - n) = (u2)col;\n        if (mode == W_SUB) {\n            col ^= 0xFFFFu;\n        }
+loop tmode half	    int const tmode = !fulladd ? W_HALF : sub_mode();	    int const tmode = sub_mode();
+loop tmode sub	    return (scaddtype & 0x80u) ? W_SUB : W_ADD;	    return (scaddtype & 0x40u) ? W_SUB : W_ADD;
+loop x double	        ebx = win ? esi->x : (u2)(esi->x * 2u);	        ebx = win ? esi->x : (u4)(esi->x * 2u);
+loop x swap	        ebx = win ? esi->x : (u2)(esi->x * 2u);	        ebx = win ? (u2)(esi->x * 2u) : esi->x;
+loop dst	        dst = cvo + (win ? ebx * 2u : ebx);	        dst = cvo + ebx;
+loop pal threshold	        if (ch >= 12 * 16) {	        if (ch >= 11 * 16) {
+loop pal sense	        if (ch >= 12 * 16) {	        if (ch < 12 * 16) {
+loop transp bias	            u1 const* const ebp = (u1*)TRANSP + ebx;	            u1 const* const ebp = (u1*)TRANSP + (win ? ebx * 2u : ebx);
+loop transp base	            u1 const* const ebp = (u1*)TRANSP + ebx;	            u1 const* const ebp = transpbuf + ebx;
+loop dx pre	            r->dx = 0;\n            r->bp = (u4)(uintptr_t)ebp;	            r->bp = (u4)(uintptr_t)ebp;
+loop bp out	            r->dx = 0;\n            r->bp = (u4)(uintptr_t)ebp;	            r->dx = 0;
+loop dx post	            r->dx = 0;\n            ebx = 0;\n        } else {	            ebx = 0;\n        } else {
+loop dx both	            r->dx = 0;\n            r->bp = (u4)(uintptr_t)ebp;\n            for (u4 pos = 0; pos < 8; pos++) {\n                spr_t(r, src, ch, ebx, dst, ebp, flip ? 7 - pos : pos, pos,\n                    win, tmode);\n            }\n            r->dx = 0;\n            ebx = 0;	            r->bp = (u4)(uintptr_t)ebp;\n            for (u4 pos = 0; pos < 8; pos++) {\n                spr_t(r, src, ch, ebx, dst, ebp, flip ? 7 - pos : pos, pos,\n                    win, tmode);\n            }\n            ebx = 0;
+loop bx post	            r->dx = 0;\n            ebx = 0;\n        } else {	            r->dx = 0;\n        } else {
+loop plain clear	            if (clear) {\n                r->dx = 0;\n                ebx = 0;\n            }	            /* mutant: plain arm never clears */
+loop plain clear all	            if (clear) {\n                r->dx = 0;\n                ebx = 0;\n            }	            r->dx = 0;\n            ebx = 0;
+loop clear flag	        int const clear = fulladd;	        int const clear = !fulladd;
+loop flip	                spr_t(r, src, ch, ebx, dst, ebp, flip ? 7 - pos : pos, pos,\n                    win, tmode);	                spr_t(r, src, ch, ebx, dst, ebp, pos, pos,\n                    win, tmode);
+loop flip plain	                spr_t(r, src, ch, ebx, dst, 0, flip ? 7 - pos : pos, pos, win,\n                    W_PLAIN);	                spr_t(r, src, ch, ebx, dst, 0, pos, pos, win,\n                    W_PLAIN);
+loop flip bit	        int const flip = (esi->status & 0x20u) != 0;\n        u1 const* const src = esi->obj;\n        int const clear	        int const flip = (esi->status & 0x40u) != 0;\n        u1 const* const src = esi->obj;\n        int const clear
+loop ax init	    r->ax = 0;\n    r->di = (u4)(uintptr_t)cvo;	    r->di = (u4)(uintptr_t)cvo;
+loop di init	    r->ax = 0;\n    r->di = (u4)(uintptr_t)cvo;	    r->ax = 0;
+loop objptr	    currentobjptr = esi;	    /* mutant: object pointer not advanced */
+loop bx out	    r->bx = ebx;\n    r->cx = (r->cx & 0xFFFF0000u) | (u4)ch << 8;	    r->cx = (r->cx & 0xFFFF0000u) | (u4)ch << 8;
+loop cx out	    r->bx = ebx;\n    r->cx = (r->cx & 0xFFFF0000u) | (u4)ch << 8;	    r->bx = ebx;\n    r->cx = (r->cx & 0xFFFF0000u) | (u4)ch << 8 | 1;
+top win	    int const win = (cwinenabm & 0x10u) && winonsp != 0;	    int const win = (cwinenabm & 0x20u) && winonsp != 0;
+top win sp	    int const win = (cwinenabm & 0x10u) && winonsp != 0;	    int const win = (cwinenabm & 0x10u) != 0;
+top half maths	    int const half = (scaddtype & 0x40u) && (scrnon >> 8) != 0\n        && !(scaddtype & 0x80u);	    int const half = (scrnon >> 8) != 0 && !(scaddtype & 0x80u);
+top half scrnon	    int const half = (scaddtype & 0x40u) && (scrnon >> 8) != 0\n        && !(scaddtype & 0x80u);	    int const half = (scaddtype & 0x40u) && (scrnon & 0xFFu) != 0\n        && !(scaddtype & 0x80u);
+top half sub	    int const half = (scaddtype & 0x40u) && (scrnon >> 8) != 0\n        && !(scaddtype & 0x80u);	    int const half = (scaddtype & 0x40u) && (scrnon >> 8) != 0;
+top invert	    sprites_t(&r, win, !half);	    sprites_t(&r, win, half);
+half win ax	        if (win) {\n            r->ax = 0;\n        }\n        return;	        if (!win) {\n            r->ax = 0;\n        }\n        return;
+fa win ax	        if (win) {\n            r->ax = 0;\n        }\n    }\n}	        if (!win) {\n            r->ax = 0;\n        }\n    }\n}
+half width	        u4 t = *(u4 const*)(ebp - n);\n        u4 col = pal16b[r->ax];	        u4 t = *(u4 const*)(ebp - n);\n        u2 col = pal16b[r->ax];
+fa width	        u4 t = *(u4 const*)(ebp - n);\n        u4 col = pal[r->ax];	        u4 t = *(u4 const*)(ebp - n);\n        u2 col = pal[r->ax];
+#
+# Four survive:
+#
+#   loop x double  the plain forms' `shl bx,1` truncates to 16 bits, which
+#                  only shows for a sprite past x = 0x8000 - and both sides
+#                  would then read 64K past a fixed-size transpbuf. Not
+#                  equivalent, just unreachable from here.
+#   loop dx pre    the assembly clears edx both before and after the pixel
+#   loop dx post   group. Since the C's blend writers no longer touch edx -
+#                  the arm overwrites it either way - the two clears are
+#                  redundant with each other, so removing one is invisible.
+#                  `loop dx both`, which removes both, is killed.
+#   loop ax init   the `xor eax,eax` above the loop is redundant because the
+#                  writer assigns the whole of eax on every pixel and the loop
+#                  always runs at least once.

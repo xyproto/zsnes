@@ -1,0 +1,86 @@
+# Mutants for video/c_mv16tspr.c, checked by test/difftest_spr16bt.c.
+# Format: name<TAB>old<TAB>new   (\n for a newline)
+plain nibble test	    if ((eax & 0x0Fu) == 0) {	    if (eax == 0) {
+plain nibble mask	    if ((eax & 0x0Fu) == 0) {	    if ((eax & 0xF0u) == 0) {
+plain pal wrap	    r->ax = (u1)(eax + ch);\n    r->dx = pal16b[r->ax];\n    *(u2*)(edi - n)	    r->ax = eax + ch;\n    r->dx = pal16b[r->ax];\n    *(u2*)(edi - n)
+plain pal add	    r->ax = (u1)(eax + ch);\n    r->dx = pal16b[r->ax];\n    *(u2*)(edi - n)	    r->ax = (u1)eax;\n    r->dx = pal16b[r->ax];\n    *(u2*)(edi - n)
+plain offset	    u4 const n = 16 - pos * 2;	    u4 const n = 16 - pos;
+plain offset base	    u4 const n = 16 - pos * 2;	    u4 const n = 14 - pos * 2;
+plain no transp	    *(u2*)(edi - n) = (u2)r->dx;\n    *(u2*)(ebp - n) = (u2)r->dx;	    *(u2*)(edi - n) = (u2)r->dx;
+plain transp only	    *(u2*)(edi - n) = (u2)r->dx;\n    *(u2*)(ebp - n) = (u2)r->dx;	    *(u2*)(ebp - n) = (u2)r->dx;
+plain store width	    *(u2*)(edi - n) = (u2)r->dx;	    *(u4*)(edi - n) = r->dx;
+plain ax skip	    r->ax = eax;\n    if ((eax & 0x0Fu) == 0) {	    if ((eax & 0x0Fu) == 0) {
+win index bias	    if (win && winspdata[ebx - 8 + pos + 16] != 0) {	    if (win && winspdata[ebx - 8 + pos] != 0) {
+win index pos	    if (win && winspdata[ebx - 8 + pos + 16] != 0) {	    if (win && winspdata[ebx + 16] != 0) {
+win index sense	    if (win && winspdata[ebx - 8 + pos + 16] != 0) {	    if (win && winspdata[ebx - 8 + pos + 16] == 0) {
+plain x double	        ebx = (u2)(esi->x * 2u);	        ebx = esi->x * 2u;
+plain x wide	        ebx = (u2)(esi->x * 2u);	        ebx = (u4)esi->x;
+plain halve	        if (win) {\n            ebx >>= 1;\n        }	        /* mutant: window form keeps the doubled x */
+plain halve always	        if (win) {\n            ebx >>= 1;\n        }	        ebx >>= 1;
+plain flip order	            spr_plain(r, src, ch, ebx, edi, ebp, flip ? 7 - pos : pos, pos,	            spr_plain(r, src, ch, ebx, edi, ebp, pos, pos,
+plain flip screen	            spr_plain(r, src, ch, ebx, edi, ebp, flip ? 7 - pos : pos, pos,	            spr_plain(r, src, ch, ebx, edi, ebp, flip ? 7 - pos : pos, flip ? 7 - pos : pos,
+plain flip bit	        int const flip = (esi->status & 0x20u) != 0;\n        u1 const* const src = esi->obj;	        int const flip = (esi->status & 0x10u) != 0;\n        u1 const* const src = esi->obj;
+plain transp bias	        ebp = (u1*)TRANSP + ebx;	        ebp = (u1*)TRANSP;
+plain objptr	    currentobjptr = esi;	    /* mutant: object pointer not advanced */
+plain ecx out	    currentobjptr = esi;\n    r->bx = ebx;\n    r->cx = (r->cx & 0xFFFF0000u) | (u4)ch << 8;	    currentobjptr = esi;\n    r->bx = ebx;\n    r->cx = (r->cx & 0xFFFF0000u) | (u4)ch << 8 | 1;
+plain ch source	        ch = esi->pal;\n        /* mov bx,[esi] then shl bx,1	        ch = esi->status;\n        /* mov bx,[esi] then shl bx,1
+plain di out	        r->di = (u4)(uintptr_t)edi;\n        r->bp = (u4)(uintptr_t)ebp;	        r->bp = (u4)(uintptr_t)ebp;
+plain bp out	        r->di = (u4)(uintptr_t)edi;\n        r->bp = (u4)(uintptr_t)ebp;	        r->di = (u4)(uintptr_t)edi;
+pixel zero test	    r->ax = eax;\n    if (eax == 0) {	    r->ax = eax;\n    if ((eax & 0x0Fu) == 0) {
+pixel mask test	    if (!prb && (sprpriodata[ebx - p1 + 16] & cl)) {	    if (!prb && (sprpriodata[ebx - p1 + 16] != 0)) {
+pixel mask gate	    if (!prb && (sprpriodata[ebx - p1 + 16] & cl)) {	    if (prb && (sprpriodata[ebx - p1 + 16] & cl)) {
+pixel mask bias	    if (!prb && (sprpriodata[ebx - p1 + 16] & cl)) {	    if (!prb && (sprpriodata[ebx - p1] & cl)) {
+pixel claim	    if (!prb) {\n        sprpriodata[ebx - p1 + 16] |= cl;\n    }	    /* mutant: pixel not claimed */
+pixel claim always	    if (!prb) {\n        sprpriodata[ebx - p1 + 16] |= cl;\n    }	    sprpriodata[ebx - p1 + 16] |= cl;
+pixel claim value	        sprpriodata[ebx - p1 + 16] |= cl;	        sprpriodata[ebx - p1 + 16] = cl;
+pixel no transp	    edi[ebx - p1] = (u2)r->dx;\n    TRANSP[ebx - p1] = (u2)r->dx;	    edi[ebx - p1] = (u2)r->dx;
+pixel transp bias	    TRANSP[ebx - p1] = (u2)r->dx;	    TRANSP[ebx - p1 + 16] = (u2)r->dx;
+pixel pal wrap	    r->ax = (u1)(eax + ch);\n    r->dx = pal16b[r->ax];\n    edi	    r->ax = eax + ch;\n    r->dx = pal16b[r->ax];\n    edi
+row flip	        spr_pixel(r, src[k], cl, ch, ebx, edi, flip ? k + 1 : 8 - k, prb);	        spr_pixel(r, src[k], cl, ch, ebx, edi, 8 - k, prb);
+row flip rev	        spr_pixel(r, src[k], cl, ch, ebx, edi, flip ? k + 1 : 8 - k, prb);	        spr_pixel(r, src[k], cl, ch, ebx, edi, flip ? 8 - k : k + 1, prb);
+row ax clear	    r->ax = 0;\n    for (u4 k = 0; k < 8; k++) {\n        spr_pixel	    for (u4 k = 0; k < 8; k++) {\n        spr_pixel
+mark pair load	        if (k % 2 == 0) {\n            r->ax = src[k] | (u4)src[k + 1] << 8;\n        }	        r->ax = src[k];
+mark ax high	            r->ax = src[k] | (u4)src[k + 1] << 8;	            r->ax = src[k];
+mark test	        if (src[k] != 0) {	        if ((src[k] & 0x0Fu) != 0) {
+mark flip	            sprpriodata[ebx - (flip ? k + 1 : 8 - k) + 16] |= dl;	            sprpriodata[ebx - (8 - k) + 16] |= dl;
+mark value	            sprpriodata[ebx - (flip ? k + 1 : 8 - k) + 16] |= dl;	            sprpriodata[ebx - (flip ? k + 1 : 8 - k) + 16] |= 1;
+single start	    r->dx = (u4)(uintptr_t)esi + (u4)cl * 8u - 8u;	    r->dx = (u4)(uintptr_t)esi + (u4)cl * 8u;
+single edx out	    r->dx = (u4)(uintptr_t)esi + (u4)cl * 8u - 8u;\n    esi = (SpriteInfo const*)(uintptr_t)r->dx;	    esi = (SpriteInfo const*)((uintptr_t)esi + (u4)cl * 8u - 8u);
+single direction	        esi--;\n    } while (--cl != 0);	        esi++;\n    } while (--cl != 0);
+single prb	        spr_row(r, cl, ch, ebx, esi->obj, edi, flip, 1);	        spr_row(r, cl, ch, ebx, esi->obj, edi, flip, 0);
+single cl	        spr_row(r, cl, ch, ebx, esi->obj, edi, flip, 1);	        spr_row(r, csprbit, ch, ebx, esi->obj, edi, flip, 1);
+single objptr	    r->si = (u4)(uintptr_t)esi;\n}\n\n/* sprprioritydrawbt proper	    currentobjptr = (SpriteInfo*)esi;\n    r->si = (u4)(uintptr_t)esi;\n}\n\n/* sprprioritydrawbt proper
+prio left init	    csprprlft = cl;	    csprprlft = (u1)(cl + 1);
+prio prio mask	        r->dx = esi->status & 0x03u;	        r->dx = esi->status & 0x07u;
+prio compare	        if (r->dx == ebp) {	        if (r->dx != ebp) {
+prio cl	            cl = csprbit;	            cl = (u1)r->cx;
+prio mark dl	            r->dx = csprbit;\n            spr_mark(r, csprbit,	            spr_mark(r, csprbit,
+prio ax clear	        r->ax = 0;\n        if (r->dx == ebp) {	        if (r->dx == ebp) {
+prio rol	    csprbit = (u1)(csprbit << 1 | csprbit >> 7);	    csprbit = (u1)(csprbit << 1);
+prio rol dir	    csprbit = (u1)(csprbit << 1 | csprbit >> 7);	    csprbit = (u1)(csprbit >> 1 | csprbit << 7);
+prio wrap test	    if (csprbit == 1) {	    if (csprbit == 0) {
+prio clear size	        memset(sprpriodata + 16, 0, 256);	        memset(sprpriodata + 16, 0, 128);
+prio clear bias	        memset(sprpriodata + 16, 0, 256);	        memset(sprpriodata, 0, 256);
+prio clear regs	        r->ax = 0;\n        r->cx = 0;\n        r->di	        r->ax = 0;\n        r->di
+prio clear di	        r->di = (u4)(uintptr_t)(sprpriodata + 16 + 256);	        r->di = (u4)(uintptr_t)(sprpriodata + 16);
+prio si out	    r->si = (u4)(uintptr_t)esi;\n    csprbit	    csprbit
+prio bx out	    r->bx = ebx;\n    r->cx = (r->cx & 0xFFFF0000u) | (u4)ch << 8 | cl;	    r->cx = (r->cx & 0xFFFF0000u) | (u4)ch << 8 | cl;
+top prifix	    if (sprprifix == 1) {	    if (sprprifix != 0) {
+top clprio	        if (sprclprio[r.bp] != 0) {	        if (sprclprio[0] != 0) {
+top clprio gate	        if (sprclprio[r.bp] != 0) {	        if (1) {
+top single	            if (sprsingle == 1) {	            if (sprsingle != 0) {
+top winon	    } else if ((cwinenabm & 0x10u) && winonsp != 0) {	    } else if ((cwinenabm & 0x20u) && winonsp != 0) {
+top winon sp	    } else if ((cwinenabm & 0x10u) && winonsp != 0) {	    } else if ((cwinenabm & 0x10u)) {
+#
+# Four survive and cannot be killed here:
+#
+#   plain x double  `shl bx,1` truncates to 16 bits, so it differs only for a
+#                   sprite past x = 0x8000 - and both sides would then write
+#                   ~64K past the line. transpbuf is a real fixed-size symbol,
+#                   so the harness cannot go there. Not equivalent, unreachable.
+#   row ax clear    the assembly's `xor eax,eax` matters because only al (or
+#   prio ax clear   ax) is written after it; in C the pixel writers assign the
+#                   whole of eax every time, so the explicit zeroing is
+#                   redundant. Kept because the assembly has it.
+#   single cl       sprdrawprb16bt has no priority mask, so the cl the shared
+#                   row writer takes is unused on the single-sprite path.

@@ -45,7 +45,7 @@ ASMDATA   := zsnes_asmdata_test
 ASMDATA_SRC := asmdata_test.c
 OBJS      := ../zpath.o
 
-.PHONY: all run clean spcdec fxtable fxops memops m7calc m7ext2 m7start m7win m7bw m7proc m7draw mv16 mvs mvall m716t cb16t cb16b regs
+.PHONY: all run clean spcdec fxtable fxops memops m7calc m7ext2 m7start m7win m7bw m7proc m7draw mv16 mvs mvall m716t cb16t cb16b spr16bt spr16t regs
 
 all: $(BIN) $(NETPLAY) $(ST10) $(ST11) $(OBC1) $(MSU1) $(DSP2) $(SAI) $(SA1) $(SPC7110) $(VCACHE) $(SPRITES) $(C4) $(MODE7) $(ASMDATA)
 
@@ -154,48 +154,70 @@ M716T_TAILS := makewindow drawsprites16b draw8x816b draw16x1616b \
 # Oracle is the whole pre-port makev16t.asm; the emulator's own data objects
 # supply the globals, because several of these routines read them wider than
 # their declared type and only the real layout makes that agree.
-m716t: difftest_m716t.c difftest.h ../video/c_mv16tm7.c
+# Every difftest against makev16t.asm builds a `cur_` object from the whole
+# working-tree file, so it needs *all* of that file's seam globals - adding a
+# ported cluster used to break the other targets' links until its C file was
+# added to each of them by hand. One list instead.
+M16T_SEAM := ../video/c_mv16tm7.c ../video/c_mv16tclr.c \
+             ../video/c_mv16bclr.c ../video/c_mv16tspr.c \
+             ../video/c_mv16tsprt.c
+M16T_OBJS := ../cpu/c_regsdata.o ../cpu/c_regswdata.o \
+             ../video/c_mode716data.o ../video/makevid.o ../endmem.o
+M16T_BSS  := ../video/c_makev16tdata.o
+
+m716t: difftest_m716t.c difftest.h $(M16T_SEAM)
 	python3 ../tools/mkoracle.py video/makev16t.asm -o _m716t.o \
 	    --stub-routine $(M716T_STUBBED) \
-	    --stubs _m716t_stubs.c --provided-by ../cpu/c_regsdata.o \
-	    ../cpu/c_regswdata.o ../video/c_mode716data.o ../video/makevid.o \
-	    ../endmem.o --exclude $(M716T_TAILS)
+	    --stubs _m716t_stubs.c --provided-by $(M16T_OBJS) \
+	    --exclude $(M716T_TAILS)
 	python3 ../tools/mkoracle.py video/makev16t.asm -o _m716tcur.o \
 	    --worktree --prefix cur_ --stub-routine $(M716T_STUBBED)
-	$(CC) $(CFLAGS) difftest_m716t.c ../video/c_mv16tm7.c \
-	    ../video/c_mv16tclr.c ../video/c_mv16bclr.c _m716t.o \
-	    _m716tcur.o _m716t_stubs.c ../cpu/c_regsdata.o \
-	    ../cpu/c_regswdata.o ../video/c_mode716data.o ../video/makevid.o \
-	    ../endmem.o -no-pie -o difftest_m716t
+	$(CC) $(CFLAGS) difftest_m716t.c $(M16T_SEAM) \
+	    _m716t.o _m716tcur.o _m716t_stubs.c $(M16T_OBJS) \
+	    -no-pie -o difftest_m716t
 	@./difftest_m716t
 
-cb16t: difftest_cb16t.c difftest.h ../video/c_mv16tclr.c
+cb16t: difftest_cb16t.c difftest.h $(M16T_SEAM)
 	python3 ../tools/mkoracle.py video/makev16t.asm -o _cb16t.o \
-	    --stubs _cb16t_stubs.c --provided-by ../cpu/c_regsdata.o \
-	    ../cpu/c_regswdata.o ../video/c_mode716data.o ../video/makevid.o \
-	    ../endmem.o --exclude transpbuf fulladdtab
+	    --stubs _cb16t_stubs.c --provided-by $(M16T_OBJS) \
+	    --exclude transpbuf fulladdtab
 	python3 ../tools/mkoracle.py video/makev16t.asm -o _cb16tcur.o \
 	    --worktree --prefix cur_
-	$(CC) $(CFLAGS) difftest_cb16t.c ../video/c_mv16tclr.c \
-	    ../video/c_mv16tm7.c ../video/c_mv16bclr.c _cb16t.o \
-	    _cb16tcur.o _cb16t_stubs.c ../cpu/c_regsdata.o ../cpu/c_regswdata.o \
-	    ../video/c_mode716data.o ../video/makevid.o ../endmem.o \
+	$(CC) $(CFLAGS) difftest_cb16t.c $(M16T_SEAM) \
+	    _cb16t.o _cb16tcur.o _cb16t_stubs.c $(M16T_OBJS) \
 	    -no-pie -o difftest_cb16t
 	@./difftest_cb16t
 
-cb16b: difftest_cb16b.c difftest.h ../video/c_mv16bclr.c
+cb16b: difftest_cb16b.c difftest.h $(M16T_SEAM)
 	python3 ../tools/mkoracle.py video/makev16t.asm -o _cb16b.o \
-	    --stubs _cb16b_stubs.c --provided-by ../cpu/c_regsdata.o \
-	    ../cpu/c_regswdata.o ../video/c_mode716data.o ../video/makevid.o \
-	    ../video/c_makev16tdata.o ../endmem.o
+	    --stubs _cb16b_stubs.c --provided-by $(M16T_OBJS) $(M16T_BSS)
 	python3 ../tools/mkoracle.py video/makev16t.asm -o _cb16bcur.o \
 	    --worktree --prefix cur_
-	$(CC) $(CFLAGS) difftest_cb16b.c ../video/c_mv16bclr.c \
-	    ../video/c_mv16tclr.c ../video/c_mv16tm7.c _cb16b.o \
-	    _cb16bcur.o _cb16b_stubs.c ../cpu/c_regsdata.o ../cpu/c_regswdata.o \
-	    ../video/c_mode716data.o ../video/makevid.o \
-	    ../video/c_makev16tdata.o ../endmem.o -no-pie -o difftest_cb16b
+	$(CC) $(CFLAGS) difftest_cb16b.c $(M16T_SEAM) \
+	    _cb16b.o _cb16bcur.o _cb16b_stubs.c $(M16T_OBJS) $(M16T_BSS) \
+	    -no-pie -o difftest_cb16b
 	@./difftest_cb16b
+
+spr16bt: difftest_spr16bt.c difftest.h $(M16T_SEAM)
+	python3 ../tools/mkoracle.py video/makev16t.asm -o _spr.o \
+	    --stubs _spr_stubs.c --provided-by $(M16T_OBJS) $(M16T_BSS)
+	python3 ../tools/mkoracle.py video/makev16t.asm -o _sprcur.o \
+	    --worktree --prefix cur_
+	$(CC) $(CFLAGS) difftest_spr16bt.c $(M16T_SEAM) \
+	    _spr.o _sprcur.o _spr_stubs.c $(M16T_OBJS) $(M16T_BSS) \
+	    -no-pie -o difftest_spr16bt
+	@./difftest_spr16bt
+
+spr16t: difftest_spr16t.c difftest.h $(M16T_SEAM)
+	python3 ../tools/mkoracle.py video/makev16t.asm -o _spt.o \
+	    --stubs _spt_stubs.c --provided-by $(M16T_OBJS) $(M16T_BSS) \
+	    --exclude fulladdtab
+	python3 ../tools/mkoracle.py video/makev16t.asm -o _sptcur.o \
+	    --worktree --prefix cur_
+	$(CC) $(CFLAGS) difftest_spr16t.c $(M16T_SEAM) \
+	    _spt.o _sptcur.o _spt_stubs.c $(M16T_OBJS) $(M16T_BSS) \
+	    -no-pie -o difftest_spr16t
+	@./difftest_spr16t
 
 mv16: difftest_mv16.c difftest.h mkmv16.sh ../video/c_mv16tms.c
 	./mkmv16.sh
