@@ -118,9 +118,12 @@ void c_clearback16t(void)
         for (u4 n = 128; n != 0; n--) {
             u4 ebx = *(u4 const*)ebp;
 
-            /* The arms rewrite bx in place, so the shift below moves the
-               *modified* register and what is left in ebx at the end is the
-               second pixel's result, not the byte that was read. */
+            /* The arms rewrite bx in place. Only the second one is
+               observable - what is left in ebx at the end is that pixel's
+               result rather than the byte that was read - because the shift
+               below throws the first one's low half away. Kept on both for
+               symmetry with the assembly; a mutant that drops the first is
+               unkillable for that reason. */
             if ((u2)ebx != 0) {
                 ebx = (ebx & ~0xFFFFu)
                     | (u2)((u2)(((u2)ebx & (u2)vesa2_clbit) >> 1) + (u2)eax);
