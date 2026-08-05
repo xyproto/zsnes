@@ -92,7 +92,8 @@ ENT(30)
 ENT(31)
 ENT(32)
 ENT(33)
-ENT(34) ENT(35) ENT(36) ENT(37) ENT(38) ENT(39) void c_Mode7Process(void);
+ENT(34)
+ENT(35) ENT(36) ENT(37) ENT(38) ENT(39) void c_Mode7Process(void);
 void c_Mode7ProcessB(void);
 void c_Mode7Processngw16b(void);
 void c_Mode7Processngw216b(void);
