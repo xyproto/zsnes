@@ -16,6 +16,7 @@ gcc = "gcc"
 cflags = ""
 family_name = "cfg"
 
+
 class CType(Enum):
     NT = 0
     UC = 1
@@ -25,12 +26,14 @@ class CType(Enum):
     SS = 5
     SD = 6
 
+
 @dataclass
 class TypeInfo:
     space: str
     underscore: str
     format_char: str
     signed: bool
+
 
 TYPE_INFO = {
     CType.NT: TypeInfo("", "", "", False),
@@ -39,8 +42,9 @@ TYPE_INFO = {
     CType.UD: TypeInfo("unsigned int", "unsigned_int", "u", False),
     CType.SC: TypeInfo("signed char", "signed_char", "d", True),
     CType.SS: TypeInfo("short", "short", "d", True),
-    CType.SD: TypeInfo("int", "int", "d", True)
+    CType.SD: TypeInfo("int", "int", "d", True),
 }
+
 
 class StorageFormat(Enum):
     NONE = 0
@@ -49,6 +53,7 @@ class StorageFormat(Enum):
     MULT = 3
     MULT_PACKED = 4
     PTR = 5
+
 
 @dataclass
 class ConfigDataElement:
@@ -59,6 +64,7 @@ class ConfigDataElement:
     dependancy: str = ""
     comment: str = ""
 
+
 class ConfigData:
     def __init__(self):
         self.data_array: List[ConfigDataElement] = []
@@ -66,7 +72,10 @@ class ConfigData:
 
     def duplicate_name(self, name: str) -> bool:
         if name in self.duplicate_names:
-            print(f"Duplicate definition of \"{name}\" found on line {current_location.line_number}.", file=sys.stderr)
+            print(
+                f'Duplicate definition of "{name}" found on line {current_location.line_number}.',
+                file=sys.stderr,
+            )
             return True
         self.duplicate_names.add(name)
         return False
@@ -78,33 +87,70 @@ class ConfigData:
         if not self.duplicate_name(name):
             if isinstance(type_val, str):
                 type_val = get_c_type(type_val)
-            self.data_array.append(ConfigDataElement(name, StorageFormat.SINGLE, type_val, 0, dependancy, comment))
+            self.data_array.append(
+                ConfigDataElement(
+                    name, StorageFormat.SINGLE, type_val, 0, dependancy, comment
+                )
+            )
 
     def add_var_quoted(self, name: str, dependancy: str, comment: str = ""):
         if not self.duplicate_name(name):
-            self.data_array.append(ConfigDataElement(name, StorageFormat.QUOTED, CType.NT, 0, dependancy, comment))
+            self.data_array.append(
+                ConfigDataElement(
+                    name, StorageFormat.QUOTED, CType.NT, 0, dependancy, comment
+                )
+            )
 
-    def add_var_mult(self, name: str, type_val, length: int, dependancy: str, comment: str = ""):
+    def add_var_mult(
+        self, name: str, type_val, length: int, dependancy: str, comment: str = ""
+    ):
         if not self.duplicate_name(name):
             if isinstance(type_val, str):
                 type_val = get_c_type(type_val)
-            self.data_array.append(ConfigDataElement(name, StorageFormat.MULT, type_val, length, dependancy, comment))
+            self.data_array.append(
+                ConfigDataElement(
+                    name, StorageFormat.MULT, type_val, length, dependancy, comment
+                )
+            )
 
-    def add_var_packed(self, name: str, length: int, dependancy: str, comment: str = ""):
+    def add_var_packed(
+        self, name: str, length: int, dependancy: str, comment: str = ""
+    ):
         if not self.duplicate_name(name):
-            self.data_array.append(ConfigDataElement(name, StorageFormat.MULT_PACKED, CType.NT, length, dependancy, comment))
+            self.data_array.append(
+                ConfigDataElement(
+                    name,
+                    StorageFormat.MULT_PACKED,
+                    CType.NT,
+                    length,
+                    dependancy,
+                    comment,
+                )
+            )
 
-    def add_var_ptr(self, name: str, type_val, length: int, dependancy: str, comment: str = ""):
+    def add_var_ptr(
+        self, name: str, type_val, length: int, dependancy: str, comment: str = ""
+    ):
         if not self.duplicate_name(name):
             if isinstance(type_val, str):
                 type_val = get_c_type(type_val)
-            self.data_array.append(ConfigDataElement(name, StorageFormat.PTR, type_val, length, dependancy, comment))
+            self.data_array.append(
+                ConfigDataElement(
+                    name, StorageFormat.PTR, type_val, length, dependancy, comment
+                )
+            )
 
     def ctype_mult_used(self, type_val: CType) -> bool:
-        return any(elem.format == StorageFormat.MULT and elem.type == type_val for elem in self.data_array)
+        return any(
+            elem.format == StorageFormat.MULT and elem.type == type_val
+            for elem in self.data_array
+        )
 
     def ctype_ptr_used(self, type_val: CType) -> bool:
-        return any(elem.format == StorageFormat.PTR and elem.type == type_val for elem in self.data_array)
+        return any(
+            elem.format == StorageFormat.PTR and elem.type == type_val
+            for elem in self.data_array
+        )
 
     def packed_used(self) -> bool:
         return any(elem.format == StorageFormat.MULT_PACKED for elem in self.data_array)
@@ -115,13 +161,18 @@ class ConfigData:
     def unsigned_used(self) -> bool:
         return any(not TYPE_INFO[elem.type].signed for elem in self.data_array)
 
+
 class LocationTracker:
     def __init__(self):
         self.line_number = 0
         self.column_number = 0
 
     def error(self, msg: str):
-        print(f"Error: parse problem occured at {self.line_number}:{self.column_number}. {msg}.", file=sys.stderr)
+        print(
+            f"Error: parse problem occured at {self.line_number}:{self.column_number}. {msg}.",
+            file=sys.stderr,
+        )
+
 
 defines: Set[str] = set()
 dependancies: Set[str] = set()
@@ -130,12 +181,17 @@ memsets: List[str] = []
 config_data = ConfigData()
 current_location = LocationTracker()
 
+
 def get_c_type(type_str: str) -> CType:
     for ctype, info in TYPE_INFO.items():
         if info.space == type_str:
             return ctype
-    print(f"Invalid C type \"{type_str}\" when parsing line {current_location.line_number}.", file=sys.stderr)
+    print(
+        f'Invalid C type "{type_str}" when parsing line {current_location.line_number}.',
+        file=sys.stderr,
+    )
     return CType.NT
+
 
 def find_next_match(s: str, match_char: str) -> int:
     pos = -1
@@ -144,10 +200,11 @@ def find_next_match(s: str, match_char: str) -> int:
         if s[i] == match_char:
             pos = i
             break
-        if s[i] == '\\' and i + 1 < len(s):
+        if s[i] == "\\" and i + 1 < len(s):
             i += 1
         i += 1
     return pos
+
 
 def find_chr(s: str, match_char: str) -> int:
     pos = -1
@@ -157,22 +214,26 @@ def find_chr(s: str, match_char: str) -> int:
             pos = i
             break
         if s[i] in ['"', "'"]:
-            match_pos = find_next_match(s[i+1:], s[i])
+            match_pos = find_next_match(s[i + 1 :], s[i])
             if match_pos >= 0:
                 i += match_pos + 1
         i += 1
     return pos
 
+
 def asm2c_hex_convert(s: str) -> str:
-    s = re.sub(r'\$([0-9A-Fa-f]+)', r'0x\1', s)
-    s = re.sub(r'([0-9][0-9A-Fa-f]*)[hH]', r'0x\1', s)
+    s = re.sub(r"\$([0-9A-Fa-f]+)", r"0x\1", s)
+    s = re.sub(r"([0-9][0-9A-Fa-f]*)[hH]", r"0x\1", s)
     return s
+
 
 def c_hex_convert(s: str) -> str:
     def hex_to_dec(match):
         hex_val = match.group(1)
         return str(int(hex_val, 16))
-    return re.sub(r'0x([0-9A-Fa-f]+)', hex_to_dec, s)
+
+    return re.sub(r"0x([0-9A-Fa-f]+)", hex_to_dec, s)
+
 
 def enhanced_atoi(s: str) -> int:
     try:
@@ -183,34 +244,39 @@ def enhanced_atoi(s: str) -> int:
         current_location.error("Invalid number expression")
         return 0
 
+
 def safe_atoi(s: str) -> int:
     if not s:
         s = "X"
 
-    test_s = s[1:] if s.startswith('-') else s
+    test_s = s[1:] if s.startswith("-") else s
     if not test_s.isdigit():
         current_location.error("Not a number")
         return 0
 
     return int(s)
 
+
 def all_spaces(s: str) -> bool:
     return s.strip() == ""
+
 
 def encode_string(s: str, quotes: bool = True) -> str:
     result = ""
     if quotes:
         result += '"'
     for char in s:
-        if char in ['\\', '"', "'", '\n', '\t']:
-            result += '\\'
+        if char in ["\\", '"', "'", "\n", "\t"]:
+            result += "\\"
         result += char
     if quotes:
         result += '"'
     return result
 
+
 def all_true(lst: List[bool]) -> bool:
     return all(lst) if lst else True
+
 
 def get_token(line: str, delimiters: str) -> List[str]:
     tokens = []
@@ -242,6 +308,7 @@ def get_token(line: str, delimiters: str) -> List[str]:
 
     return tokens
 
+
 def convert_asm_type(type_str: str, unsigned_var: bool = True) -> Optional[str]:
     type_map = {
         "dd": "unsigned int",
@@ -249,7 +316,7 @@ def convert_asm_type(type_str: str, unsigned_var: bool = True) -> Optional[str]:
         "db": "unsigned char",
         "sd": "int",
         "sw": "short",
-        "sb": "signed char"
+        "sb": "signed char",
     }
 
     var_type = type_map.get(type_str.lower())
@@ -261,6 +328,7 @@ def convert_asm_type(type_str: str, unsigned_var: bool = True) -> Optional[str]:
         var_type = var_type[9:]
 
     return var_type
+
 
 class CodeGenerator:
     def __init__(self, c_stream: TextIO, cheader_file: str = ""):
@@ -422,7 +490,9 @@ static void init_{family_name}_vars()
         self.c_stream.write("  }\n}\n")
 
     def write_array_function(self, ctype: CType, operation: str):
-        if not (config_data.ctype_mult_used(ctype) or config_data.ctype_ptr_used(ctype)):
+        if not (
+            config_data.ctype_mult_used(ctype) or config_data.ctype_ptr_used(ctype)
+        ):
             return
 
         info = TYPE_INFO[ctype]
@@ -623,7 +693,9 @@ static void write_{family_name}_vars_internal(void *fp, int (*outf)(void *, cons
             self._write_element(elem)
 
         if "PSR_HASH" in defines:
-            hash_output = "\\n\\n\\n;Do not modify the following, for internal use only.\\n"
+            hash_output = (
+                "\\n\\n\\n;Do not modify the following, for internal use only.\\n"
+            )
             self.c_stream.write(f'  outf(fp, "{hash_output}");\n')
             self.c_stream.write(f'  outf(fp, "PSR_HASH=%u\\n", PSR_HASH);\n')
 
@@ -717,56 +789,82 @@ unsigned char read_{family_name}_vars(const char *file)
 
         if elem.format == StorageFormat.NONE:
             if elem.comment:
-                self.c_stream.write(f'  outf(fp, ";%s\\n", {encode_string(elem.comment)});\n')
+                self.c_stream.write(
+                    f'  outf(fp, ";%s\\n", {encode_string(elem.comment)});\n'
+                )
             else:
                 self.c_stream.write('  outf(fp, "\\n");\n')
         elif elem.format in [StorageFormat.MULT, StorageFormat.PTR]:
             info = TYPE_INFO[elem.type]
             comment_str = encode_string(elem.comment) if elem.comment else "0"
-            self.c_stream.write(f'  {dependancy_prefix}write_{info.underscore}_array(outf, fp, "{elem.dependancy}{elem.name}", {elem.name}, {elem.length}, {comment_str});{dependancy_suffix}\n')
+            self.c_stream.write(
+                f'  {dependancy_prefix}write_{info.underscore}_array(outf, fp, "{elem.dependancy}{elem.name}", {elem.name}, {elem.length}, {comment_str});{dependancy_suffix}\n'
+            )
         else:
-            config_comment = f" ;{encode_string(elem.comment, False)}" if elem.comment else ""
-            self.c_stream.write(f'  {dependancy_prefix}outf(fp, "{elem.dependancy}{elem.name}=')
+            config_comment = (
+                f" ;{encode_string(elem.comment, False)}" if elem.comment else ""
+            )
+            self.c_stream.write(
+                f'  {dependancy_prefix}outf(fp, "{elem.dependancy}{elem.name}='
+            )
             if elem.format == StorageFormat.SINGLE:
                 info = TYPE_INFO[elem.type]
-                self.c_stream.write(f'%{info.format_char}{config_comment}\\n", {elem.name}')
+                self.c_stream.write(
+                    f'%{info.format_char}{config_comment}\\n", {elem.name}'
+                )
             elif elem.format == StorageFormat.QUOTED:
-                self.c_stream.write(f'%s{config_comment}\\n", encode_string({elem.name})')
+                self.c_stream.write(
+                    f'%s{config_comment}\\n", encode_string({elem.name})'
+                )
             elif elem.format == StorageFormat.MULT_PACKED:
-                self.c_stream.write(f'%s{config_comment}\\n", char_array_pack((char *){elem.name}, {elem.length})')
-            self.c_stream.write(f');{dependancy_suffix}\n')
+                self.c_stream.write(
+                    f'%s{config_comment}\\n", char_array_pack((char *){elem.name}, {elem.length})'
+                )
+            self.c_stream.write(f");{dependancy_suffix}\n")
 
     def _read_element(self, elem: ConfigDataElement):
         if elem.format == StorageFormat.NONE:
             return
 
-        self.c_stream.write(f'    if (!strcmp(var, "{elem.dependancy}{elem.name}")) {{ ')
+        self.c_stream.write(
+            f'    if (!strcmp(var, "{elem.dependancy}{elem.name}")) {{ '
+        )
         if elem.format == StorageFormat.SINGLE:
             info = TYPE_INFO[elem.type]
             atoi_func = "atoi" if info.signed else "atoui"
-            self.c_stream.write(f'{elem.name} = ({info.space}){atoi_func}(value);')
+            self.c_stream.write(f"{elem.name} = ({info.space}){atoi_func}(value);")
         elif elem.format in [StorageFormat.MULT, StorageFormat.PTR]:
             info = TYPE_INFO[elem.type]
-            self.c_stream.write(f'read_{info.underscore}_array(value, {elem.name}, {elem.length});')
+            self.c_stream.write(
+                f"read_{info.underscore}_array(value, {elem.name}, {elem.length});"
+            )
         elif elem.format == StorageFormat.QUOTED:
-            self.c_stream.write(f'*{elem.name} = 0; strncat({elem.name}, decode_string(value), sizeof({elem.name})-1);')
+            self.c_stream.write(
+                f"*{elem.name} = 0; strncat({elem.name}, decode_string(value), sizeof({elem.name})-1);"
+            )
         elif elem.format == StorageFormat.MULT_PACKED:
-            self.c_stream.write(f'memcpy({elem.name}, char_array_unpack(value), {elem.length});')
-        self.c_stream.write(' continue; }\n')
+            self.c_stream.write(
+                f"memcpy({elem.name}, char_array_unpack(value), {elem.length});"
+            )
+        self.c_stream.write(" continue; }\n")
 
     def _write_dependancy_checks(self):
         # Extract search and replace patterns for f-string
         search_pattern = " \\t\\r\\n"
         backslash_t_r_n = " \\t\\r\\n"
-        
+
         self.c_stream.write(f"""      if ((p = strchr(var, ':')))
       {{
         if (!strlen(p+1)) {{ continue; }}
 """)
         deps = list(dependancies)
-        self.c_stream.write(f'        if (!strncmp(var, "{deps[0]}:", (p-var)+1)) {{ if (!{deps[0]}) {{ continue; }} }}\n')
+        self.c_stream.write(
+            f'        if (!strncmp(var, "{deps[0]}:", (p-var)+1)) {{ if (!{deps[0]}) {{ continue; }} }}\n'
+        )
         for dep in deps[1:]:
-            self.c_stream.write(f'        else if (!strncmp(var, "{dep}:", (p-var)+1)) {{ if (!{dep}) {{ continue; }} }}\n')
+            self.c_stream.write(
+                f'        else if (!strncmp(var, "{dep}:", (p-var)+1)) {{ if (!{dep}) {{ continue; }} }}\n'
+            )
         self.c_stream.write("""        else { continue; }
       }
 """)
@@ -795,7 +893,9 @@ unsigned char read_{family_name}_vars(const char *file)
   }}
 """)
 
-    def _write_file_io(self, operation: str, mode: str, func: str, end_func: str = None):
+    def _write_file_io(
+        self, operation: str, mode: str, func: str, end_func: str = None
+    ):
         self.c_stream.write(f"""  if ((fp = fopen(file, "{mode}")))
   {{
     {operation}_{family_name}_vars_internal(fp, (""")
@@ -803,7 +903,9 @@ unsigned char read_{family_name}_vars(const char *file)
         if operation == "write":
             self.c_stream.write(f"int (*)(void *, const char *, ...)){func}")
         else:
-            self.c_stream.write(f"char *(*)(char *, int, void *)){func}, (int (*)(void *)){end_func}")
+            self.c_stream.write(
+                f"char *(*)(char *, int, void *)){func}, (int (*)(void *)){end_func}"
+            )
 
         self.c_stream.write(""");
     fclose(fp);
@@ -826,7 +928,7 @@ unsigned char read_{family_name}_vars(const char *file)
         gzgets_fix = ""
         if operation == "read":
             gzgets_fix = "static char *gzgets_fix(char *buf, int len, void *file)\n{\n  return(gzgets(file, buf, len));\n}\n"
-        
+
         self.c_stream.write(f"""
 {gzgets_fix}unsigned char {operation}_{family_name}_vars_compressed(const char *file)
 {{
@@ -868,10 +970,14 @@ static unsigned int {family_name}_vars_memory(unsigned char *buffer, void *(*cpy
 
             if elem.format == StorageFormat.PTR:
                 info = TYPE_INFO[elem.type]
-                self.c_stream.write(f'  {dependancy_prefix}cpy(p, {elem.name}, sizeof({info.space})*{elem.length}); p += sizeof({info.space})*{elem.length};{dependancy_suffix}\n')
+                self.c_stream.write(
+                    f"  {dependancy_prefix}cpy(p, {elem.name}, sizeof({info.space})*{elem.length}); p += sizeof({info.space})*{elem.length};{dependancy_suffix}\n"
+                )
             elif elem.format != StorageFormat.NONE:
                 prefix = "&" if elem.format == StorageFormat.SINGLE else ""
-                self.c_stream.write(f'  {dependancy_prefix}cpy(p, {prefix}{elem.name}, sizeof({elem.name})); p += sizeof({elem.name});{dependancy_suffix}\n')
+                self.c_stream.write(
+                    f"  {dependancy_prefix}cpy(p, {prefix}{elem.name}, sizeof({elem.name})); p += sizeof({elem.name});{dependancy_suffix}\n"
+                )
 
         self.c_stream.write(f"""  return(p-buffer);
 }}
@@ -900,6 +1006,7 @@ void read_{family_name}_vars_memory(unsigned char *buffer)
 }}
 """)
 
+
 def output_cheader_start(cheader_stream: TextIO):
     cheader_stream.write(f"""/*
 Config file handler header generated by Nach's Config file handler creator.
@@ -926,6 +1033,7 @@ unsigned int size_{family_name}_vars_memory();
 
     cheader_stream.write("\n")
 
+
 def output_cheader_end(cheader_stream: TextIO):
     cheader_stream.write("""
 #ifdef __cplusplus
@@ -933,6 +1041,7 @@ def output_cheader_end(cheader_stream: TextIO):
 #endif
 
 """)
+
 
 def handle_directive(instruction: str, label: Optional[str]):
     global ifs
@@ -987,17 +1096,21 @@ def handle_directive(instruction: str, label: Optional[str]):
     else:
         current_location.error("Unknown processor directive")
 
+
 def get_comment(line: str, comment_separator: str) -> Tuple[str, Optional[str]]:
     pos = find_chr(line, comment_separator)
     if pos >= 0:
-        comment = line[pos+1:].strip()
+        comment = line[pos + 1 :].strip()
         if comment and comment[-1].isspace():
             comment = comment.rstrip()
         line = line[:pos]
         return line, comment
     return line, None
 
-def output_header_conditional(hvars_lines: List[str], instruction: str, label: Optional[str]):
+
+def output_header_conditional(
+    hvars_lines: List[str], instruction: str, label: Optional[str]
+):
     if instruction.lower() in ["elifdef", "elseifdef"] and label:
         hvars_lines.append(f"#elif defined({label})")
     else:
@@ -1006,7 +1119,13 @@ def output_header_conditional(hvars_lines: List[str], instruction: str, label: O
             line += f" {label}"
         hvars_lines.append(line)
 
-def parser_generate(psr_stream: TextIO, c_stream: TextIO, cheader_stream: Optional[TextIO], cheader_file: str = ""):
+
+def parser_generate(
+    psr_stream: TextIO,
+    c_stream: TextIO,
+    cheader_stream: Optional[TextIO],
+    cheader_file: str = "",
+):
     global current_location
     current_location.line_number = 0
     current_location.column_number = 0
@@ -1016,11 +1135,11 @@ def parser_generate(psr_stream: TextIO, c_stream: TextIO, cheader_stream: Option
     psr_file_hash = zlib.crc32(b"")
 
     for line in psr_stream:
-        line = line.rstrip('\n\r')
+        line = line.rstrip("\n\r")
         current_location.line_number += 1
-        psr_file_hash = zlib.crc32(line.encode('utf-8'), psr_file_hash)
+        psr_file_hash = zlib.crc32(line.encode("utf-8"), psr_file_hash)
 
-        line, parser_comment = get_comment(line, ';')
+        line, parser_comment = get_comment(line, ";")
 
         if all_spaces(line):
             if all_true(ifs):
@@ -1028,7 +1147,7 @@ def parser_generate(psr_stream: TextIO, c_stream: TextIO, cheader_stream: Option
                 cvars_lines.append(comment_line)
             continue
 
-        line, config_comment = get_comment(line, '@')
+        line, config_comment = get_comment(line, "@")
 
         if all_spaces(line) and config_comment:
             if all_true(ifs):
@@ -1044,23 +1163,25 @@ def parser_generate(psr_stream: TextIO, c_stream: TextIO, cheader_stream: Option
             token = tokens[1]
             tokens = tokens[1:]
 
-        if token.startswith('#') or token.startswith('%'):
+        if token.startswith("#") or token.startswith("%"):
             next_token = tokens[1] if len(tokens) > 1 else None
             handle_directive(token[1:], next_token)
 
-            if cheader_stream and (not next_token or not next_token.upper().startswith("PSR_")):
+            if cheader_stream and (
+                not next_token or not next_token.upper().startswith("PSR_")
+            ):
                 output_header_conditional(hvars_lines, token[1:], next_token)
             continue
 
         varname = ""
         dependancy = ""
 
-        if ':' in token:
-            parts = token.split(':', 1)
+        if ":" in token:
+            parts = token.split(":", 1)
             dependancy = parts[0]
             varname = parts[1]
             dependancies.add(dependancy)
-            dependancy += ':'
+            dependancy += ":"
         else:
             varname = token
 
@@ -1068,7 +1189,9 @@ def parser_generate(psr_stream: TextIO, c_stream: TextIO, cheader_stream: Option
             current_location.error("Could not get type")
             continue
 
-        var_init = parse_variable_declaration(tokens, varname, dependancy, config_comment)
+        var_init = parse_variable_declaration(
+            tokens, varname, dependancy, config_comment
+        )
         if not var_init:
             continue
 
@@ -1094,10 +1217,14 @@ def parser_generate(psr_stream: TextIO, c_stream: TextIO, cheader_stream: Option
             c_stream.write(line + "\n")
         generator.write_init_function()
     elif not cheader_file:
-        print("Error: Requested PSR_EXTERN yet no header file specified.", file=sys.stderr)
+        print(
+            "Error: Requested PSR_EXTERN yet no header file specified.", file=sys.stderr
+        )
 
     if "PSR_HASH" in defines:
-        c_stream.write(f"static unsigned int PSR_HASH = 0x{psr_file_hash & 0xffffffff:x};\n")
+        c_stream.write(
+            f"static unsigned int PSR_HASH = 0x{psr_file_hash & 0xFFFFFFFF:x};\n"
+        )
 
     generator.write_io_functions("write")
     generator.write_io_functions("read")
@@ -1112,7 +1239,10 @@ def parser_generate(psr_stream: TextIO, c_stream: TextIO, cheader_stream: Option
     if ifs:
         print(f"Error: {len(ifs)} ifdef segments have no endif.", file=sys.stderr)
 
-def parse_variable_declaration(tokens: List[str], varname: str, dependancy: str, config_comment: Optional[str]) -> Optional[str]:
+
+def parse_variable_declaration(
+    tokens: List[str], varname: str, dependancy: str, config_comment: Optional[str]
+) -> Optional[str]:
     array = 0
     is_array = False
     is_packed = False
@@ -1151,19 +1281,40 @@ def parse_variable_declaration(tokens: List[str], varname: str, dependancy: str,
         return None
 
     if is_string_literal(initial_value):
-        return handle_string_variable(varname, dependancy, config_comment, initial_value, array)
+        return handle_string_variable(
+            varname, dependancy, config_comment, initial_value, array
+        )
     elif is_ptr:
-        return handle_pointer_variable(varname, dependancy, config_comment, var_type, array)
+        return handle_pointer_variable(
+            varname, dependancy, config_comment, var_type, array
+        )
     else:
-        return handle_numeric_variable(tokens, varname, dependancy, config_comment, var_type,
-                                     initial_value, array, is_array, is_packed)
+        return handle_numeric_variable(
+            tokens,
+            varname,
+            dependancy,
+            config_comment,
+            var_type,
+            initial_value,
+            array,
+            is_array,
+            is_packed,
+        )
+
 
 def is_string_literal(value: str) -> bool:
-    return ((value.startswith('"') and value.endswith('"')) or
-            (value.startswith("'") and value.endswith("'")))
+    return (value.startswith('"') and value.endswith('"')) or (
+        value.startswith("'") and value.endswith("'")
+    )
 
-def handle_string_variable(varname: str, dependancy: str, config_comment: Optional[str],
-                          initial_value: str, array: int) -> str:
+
+def handle_string_variable(
+    varname: str,
+    dependancy: str,
+    config_comment: Optional[str],
+    initial_value: str,
+    array: int,
+) -> str:
     initial_value = f'"{initial_value[1:-1]}"'
 
     if not array:
@@ -1173,21 +1324,39 @@ def handle_string_variable(varname: str, dependancy: str, config_comment: Option
         if len(initial_value) - 2 < array:
             memset_line = f"strcpy({varname}, {initial_value});"
         else:
-            memset_line = f"strncpy({varname}, {initial_value}, {array-1}); {varname}[{array}] = 0;"
+            memset_line = f"strncpy({varname}, {initial_value}, {array - 1}); {varname}[{array}] = 0;"
         memsets.append(memset_line)
         config_data.add_var_quoted(varname, dependancy, config_comment or "")
 
     return f"char {varname}[{array}];"
 
-def handle_pointer_variable(varname: str, dependancy: str, config_comment: Optional[str],
-                           var_type: str, array: int) -> str:
+
+def handle_pointer_variable(
+    varname: str,
+    dependancy: str,
+    config_comment: Optional[str],
+    var_type: str,
+    array: int,
+) -> str:
     if all_true(ifs):
-        config_data.add_var_ptr(varname, var_type, array, dependancy, config_comment or "")
+        config_data.add_var_ptr(
+            varname, var_type, array, dependancy, config_comment or ""
+        )
 
     return f"{var_type} *{varname};"
 
-def handle_numeric_variable(tokens: List[str], varname: str, dependancy: str, config_comment: Optional[str],
-                           var_type: str, initial_value: str, array: int, is_array: bool, is_packed: bool) -> str:
+
+def handle_numeric_variable(
+    tokens: List[str],
+    varname: str,
+    dependancy: str,
+    config_comment: Optional[str],
+    var_type: str,
+    initial_value: str,
+    array: int,
+    is_array: bool,
+    is_packed: bool,
+) -> str:
     init_value_num = safe_atoi(c_hex_convert(asm2c_hex_convert(initial_value)))
 
     if init_value_num < 0 and var_type.startswith("unsigned "):
@@ -1198,16 +1367,34 @@ def handle_numeric_variable(tokens: List[str], varname: str, dependancy: str, co
     var_init = f"{var_type} {varname}"
 
     if array:
-        var_init += handle_array_initialization(varname, dependancy, config_comment, var_type,
-                                               init_value_num, array, is_array, is_packed)
+        var_init += handle_array_initialization(
+            varname,
+            dependancy,
+            config_comment,
+            var_type,
+            init_value_num,
+            array,
+            is_array,
+            is_packed,
+        )
     else:
-        var_init += handle_scalar_initialization(tokens, varname, dependancy, config_comment,
-                                                var_type, init_value_num)
+        var_init += handle_scalar_initialization(
+            tokens, varname, dependancy, config_comment, var_type, init_value_num
+        )
 
     return var_init + ";"
 
-def handle_array_initialization(varname: str, dependancy: str, config_comment: Optional[str],
-                               var_type: str, init_value_num: int, array: int, is_array: bool, is_packed: bool) -> str:
+
+def handle_array_initialization(
+    varname: str,
+    dependancy: str,
+    config_comment: Optional[str],
+    var_type: str,
+    init_value_num: int,
+    array: int,
+    is_array: bool,
+    is_packed: bool,
+) -> str:
     var_type_is_char = var_type.endswith("char")
     var_type_is_short = var_type.endswith("short")
     var_type_is_int = var_type.endswith("int")
@@ -1229,29 +1416,46 @@ def handle_array_initialization(varname: str, dependancy: str, config_comment: O
 
     if all_true(ifs):
         if is_array:
-            config_data.add_var_mult(varname, var_type, array, dependancy, config_comment or "")
+            config_data.add_var_mult(
+                varname, var_type, array, dependancy, config_comment or ""
+            )
         elif is_packed:
             config_data.add_var_packed(varname, array, dependancy, config_comment or "")
 
     return var_init
 
-def handle_scalar_initialization(tokens: List[str], varname: str, dependancy: str, config_comment: Optional[str],
-                                var_type: str, init_value_num: int) -> str:
+
+def handle_scalar_initialization(
+    tokens: List[str],
+    varname: str,
+    dependancy: str,
+    config_comment: Optional[str],
+    var_type: str,
+    init_value_num: int,
+) -> str:
     remaining_tokens = tokens[3:] if len(tokens) > 3 else []
     if remaining_tokens:
         array = 1 + len(remaining_tokens)
-        values = [str(init_value_num)] + [str(safe_atoi(c_hex_convert(asm2c_hex_convert(t)))) for t in remaining_tokens]
+        values = [str(init_value_num)] + [
+            str(safe_atoi(c_hex_convert(asm2c_hex_convert(t))))
+            for t in remaining_tokens
+        ]
         var_init = f"[] = {{{', '.join(values)}}}"
 
         if all_true(ifs):
-            config_data.add_var_mult(varname, var_type, array, dependancy, config_comment or "")
+            config_data.add_var_mult(
+                varname, var_type, array, dependancy, config_comment or ""
+            )
     else:
         var_init = f" = {init_value_num}"
 
         if all_true(ifs):
-            config_data.add_var_single(varname, var_type, dependancy, config_comment or "")
+            config_data.add_var_single(
+                varname, var_type, dependancy, config_comment or ""
+            )
 
     return var_init
+
 
 def main():
     global gcc, cflags, family_name
@@ -1295,7 +1499,8 @@ def main():
         param_pos += 1
 
     if len(sys.argv) - param_pos != 2:
-        print("""Config file handler creator by Nach (C) 2005-2007
+        print(
+            """Config file handler creator by Nach (C) 2005-2007
 
 Usage:
 parsegen [options] <output> <input>
@@ -1324,7 +1529,9 @@ Options:
              are passed to the C compiler.
              Example: -flags "-O3 -march=pentium3 -ggdb3"
 
-""", file=sys.stderr)
+""",
+            file=sys.stderr,
+        )
         return 1
 
     psr_file = sys.argv[param_pos + 1]
@@ -1347,17 +1554,24 @@ Options:
     cheader_tmp = None
 
     try:
-        with open(psr_file, 'r') as psr_stream:
-            with open(c_file, 'w') as c_stream:
+        with open(psr_file, "r") as psr_stream:
+            with open(c_file, "w") as c_stream:
                 cheader_stream = None
                 if cheader_file:
                     ch_dir = os.path.dirname(cheader_file) or "."
-                    ch_fd, cheader_tmp = tempfile.mkstemp(prefix=".psrh.", suffix=".h", dir=ch_dir)
+                    ch_fd, cheader_tmp = tempfile.mkstemp(
+                        prefix=".psrh.", suffix=".h", dir=ch_dir
+                    )
                     try:
-                        cheader_stream = os.fdopen(ch_fd, 'w')
-                        parser_generate(psr_stream, c_stream, cheader_stream, cheader_file)
+                        cheader_stream = os.fdopen(ch_fd, "w")
+                        parser_generate(
+                            psr_stream, c_stream, cheader_stream, cheader_file
+                        )
                     except IOError:
-                        print(f"Error opening {cheader_file} for writing.", file=sys.stderr)
+                        print(
+                            f"Error opening {cheader_file} for writing.",
+                            file=sys.stderr,
+                        )
                         ret_val |= 8
                     finally:
                         if cheader_stream:
@@ -1405,6 +1619,7 @@ Options:
             pass
 
     return ret_val
+
 
 if __name__ == "__main__":
     sys.exit(main())
