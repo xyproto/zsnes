@@ -1,0 +1,32 @@
+# Mutants for video/c_mv16tclr.c, checked by test/difftest_cb16t.c.
+# Format: name<TAB>old<TAB>new   (\n for a newline)
+route backarea	    if (!(scaddtype & 0x20u)) {	    if (!(scaddtype & 0x40u)) {
+route subtractive	    if (scaddtype & 0x80u) {	    if (scaddtype & 0x40u) {
+route mainsub gate	    if ((scaddtype & 0x40u) && (scrnon >> 8) != 0) {	    if ((scaddtype & 0x40u)) {
+route mainsub scrnon	    if ((scaddtype & 0x40u) && (scrnon >> 8) != 0) {	    if ((scaddtype & 0x40u) && (scrnon & 0xFFu) != 0) {
+route subcopy gate	    if (eax == 0) {	    if (eax != 0) {
+backcopy count	        for (u4 n = 128; n != 0; n--) {\n            *edi++ = ((u4)col << 16) | col;	        for (u4 n = 127; n != 0; n--) {\n            *edi++ = ((u4)col << 16) | col;
+backcopy pack	            *edi++ = ((u4)col << 16) | col;	            *edi++ = (u4)col;
+backcopy esi	        CBDI = (u4)(uintptr_t)edi;	        CBSI = (u4)(uintptr_t)edi;
+prepare mask	    eax &= vesa2_clbit;\n    eax >>= 1;\n\n    if ((scaddtype & 0x40u)	    eax &= vesa2_clbit;\n\n    if ((scaddtype & 0x40u)
+prepare shift	    eax &= vesa2_clbit;\n    eax >>= 1;\n\n    if ((scaddtype & 0x40u)	    eax &= vesa2_clbit;\n    eax >>= 2;\n\n    if ((scaddtype & 0x40u)
+dx capture	    CBDX = (CBDX & ~0xFFFFu) | (u2)eax; /* mov dx,ax */	    CBDX = (u2)eax;
+avg count	        for (u4 n = 128; n != 0; n--) {\n            u4 ebx = *(u4 const*)ebp;	        for (u4 n = 256; n != 0; n--) {\n            u4 ebx = *(u4 const*)ebp;
+avg lo test	            u4 ebx = *(u4 const*)ebp;\n\n            /* The arms rewrite bx in place, so the shift below moves the\n               *modified* register and what is left in ebx at the end is the\n               second pixel's result, not the byte that was read. */\n            if ((u2)ebx != 0) {	            u4 ebx = *(u4 const*)ebp;\n\n            /* The arms rewrite bx in place, so the shift below moves the\n               *modified* register and what is left in ebx at the end is the\n               second pixel's result, not the byte that was read. */\n            if ((u2)ebx == 0) {
+avg lo inplace	                ebx = (ebx & ~0xFFFFu)\n                    | (u2)((u2)(((u2)ebx & (u2)vesa2_clbit) >> 1) + (u2)eax);\n                *(u2*)esi = (u2)ebx;	                *(u2*)esi = (u2)((u2)(((u2)ebx & (u2)vesa2_clbit) >> 1) + (u2)eax);
+avg shift	            ebx >>= 16;	            ebx >>= 8;
+avg step	            ebp += 4;\n            esi += 4;	            ebp += 2;\n            esi += 4;
+avg transparent	                *(u2*)esi = (u2)CBDX;	                *(u2*)esi = 0;
+subcopy size	        memcpy(esi, ebp, 512);	        memcpy(esi, ebp, 256);
+subcopy dir	        memcpy(esi, ebp, 512);	        memcpy((u1*)ebp, esi, 512);
+subcopy esi out	        CBSI = (u4)(uintptr_t)(ebp + 512);	        CBSI = (u4)(uintptr_t)ebp;
+subcopy ebx	        CBBX = 0;	        /* mutant: ebx not zeroed */
+fulladd count	    for (u4 n = 256; n != 0; n--) {	    for (u4 n = 128; n != 0; n--) {
+fulladd mask	        ebx &= vesa2_clbit;	        ebx &= 0xFFFFu;
+fulladd shift	        ebx >>= 1;\n        ebx += eax;	        ebx += eax;
+fulladd step	        ebp += 2; /* two bytes, though four were read */	        ebp += 4; /* two bytes, though four were read */
+fulladd dword	        memcpy(&ebx, fulladdtab + ebx, 4);	        ebx = fulladdtab[ebx];
+fulladd invert	        if (sub) {\n            ebx ^= 0xFFFFu;\n        }	        /* mutant: no invert */
+fulladd always invert	        if (sub) {\n            ebx ^= 0xFFFFu;\n        }	        ebx ^= 0xFFFFu;
+ts invert in	    eax ^= 0xFFFFu;	    /* mutant: no input invert */
+ts prepare order	    eax ^= 0xFFFFu;\n    eax &= vesa2_clbit;	    eax &= vesa2_clbit;\n    eax ^= 0xFFFFu;

@@ -105,7 +105,7 @@ int main(void)
         int route;
 
         scaddtype = (u1)(dt_mod(4) ? (u1)(0x20u | (dt_mod(2) ? 0x40u : 0)
-                             | (dt_mod(4) == 0 ? 0x80u : 0))
+                                         | (dt_mod(4) == 0 ? 0x80u : 0))
                                    : (u1)dt_u32());
         scrnon = (u2)(dt_mod(2) ? 0 : dt_u32());
         /* pal16b[0] is the backdrop; zero picks the straight-copy route, so
@@ -126,12 +126,12 @@ int main(void)
         run(ts ? asm_clearback16ts : asm_clearback16t, in, vseed, &x);
         run(ts ? cur_clearback16ts : cur_clearback16t, in, vseed, &y);
 
-        route = ts ? 4
-            : !(scaddtype & 0x20u) ? 0
-            : (scaddtype & 0x80u)  ? 4
+        route = ts                                        ? 4
+            : !(scaddtype & 0x20u)                        ? 0
+            : (scaddtype & 0x80u)                         ? 4
             : ((scaddtype & 0x40u) && (scrnon >> 8) != 0) ? 1
-            : pal16b[0] == 0 ? 2
-                             : 3;
+            : pal16b[0] == 0                              ? 2
+                                                          : 3;
         cov[ts][route < 5 ? route : 0]++;
 
         DT_EQ("eax", x.ax, y.ax);

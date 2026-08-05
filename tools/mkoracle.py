@@ -191,8 +191,17 @@ def main():
             for obj in a.provided_by:
                 out = subprocess.run(["nm", "-g", "--defined-only", obj],
                                      capture_output=True, text=True)
-                have |= {l.split()[-1] for l in out.stdout.splitlines()
-                         if l.strip()}
+                syms = {l.split()[-1] for l in out.stdout.splitlines()
+                        if l.strip()}
+                # A `make win32` leaves PE objects in the tree, where every
+                # symbol carries a leading underscore. They then look like they
+                # provide nothing, everything gets a stub instead of the real
+                # definition, and the link fails far from the cause.
+                if syms and all(x.startswith("_") for x in syms):
+                    sys.exit("mkoracle: %s has only _-prefixed symbols - it is "
+                             "a win32 object. Run `make` to rebuild native."
+                             % obj)
+                have |= syms
             have |= set(a.exclude)
             need = [s for s in undef if s not in have]
             with open(a.stubs, "w") as f:

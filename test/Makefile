@@ -45,7 +45,7 @@ ASMDATA   := zsnes_asmdata_test
 ASMDATA_SRC := asmdata_test.c
 OBJS      := ../zpath.o
 
-.PHONY: all run clean spcdec fxtable fxops memops m7calc m7ext2 m7start m7win m7bw m7proc m7draw mv16 mvs mvall m716t cb16t regs
+.PHONY: all run clean spcdec fxtable fxops memops m7calc m7ext2 m7start m7win m7bw m7proc m7draw mv16 mvs mvall m716t cb16t cb16b regs
 
 all: $(BIN) $(NETPLAY) $(ST10) $(ST11) $(OBC1) $(MSU1) $(DSP2) $(SAI) $(SA1) $(SPC7110) $(VCACHE) $(SPRITES) $(C4) $(MODE7) $(ASMDATA)
 
@@ -163,7 +163,7 @@ m716t: difftest_m716t.c difftest.h ../video/c_mv16tm7.c
 	python3 ../tools/mkoracle.py video/makev16t.asm -o _m716tcur.o \
 	    --worktree --prefix cur_ --stub-routine $(M716T_STUBBED)
 	$(CC) $(CFLAGS) difftest_m716t.c ../video/c_mv16tm7.c \
-	    ../video/c_mv16tclr.c _m716t.o \
+	    ../video/c_mv16tclr.c ../video/c_mv16bclr.c _m716t.o \
 	    _m716tcur.o _m716t_stubs.c ../cpu/c_regsdata.o \
 	    ../cpu/c_regswdata.o ../video/c_mode716data.o ../video/makevid.o \
 	    ../endmem.o -no-pie -o difftest_m716t
@@ -177,11 +177,25 @@ cb16t: difftest_cb16t.c difftest.h ../video/c_mv16tclr.c
 	python3 ../tools/mkoracle.py video/makev16t.asm -o _cb16tcur.o \
 	    --worktree --prefix cur_
 	$(CC) $(CFLAGS) difftest_cb16t.c ../video/c_mv16tclr.c \
-	    ../video/c_mv16tm7.c _cb16t.o \
+	    ../video/c_mv16tm7.c ../video/c_mv16bclr.c _cb16t.o \
 	    _cb16tcur.o _cb16t_stubs.c ../cpu/c_regsdata.o ../cpu/c_regswdata.o \
 	    ../video/c_mode716data.o ../video/makevid.o ../endmem.o \
 	    -no-pie -o difftest_cb16t
 	@./difftest_cb16t
+
+cb16b: difftest_cb16b.c difftest.h ../video/c_mv16bclr.c
+	python3 ../tools/mkoracle.py video/makev16t.asm -o _cb16b.o \
+	    --stubs _cb16b_stubs.c --provided-by ../cpu/c_regsdata.o \
+	    ../cpu/c_regswdata.o ../video/c_mode716data.o ../video/makevid.o \
+	    ../video/c_makev16tdata.o ../endmem.o
+	python3 ../tools/mkoracle.py video/makev16t.asm -o _cb16bcur.o \
+	    --worktree --prefix cur_
+	$(CC) $(CFLAGS) difftest_cb16b.c ../video/c_mv16bclr.c \
+	    ../video/c_mv16tclr.c ../video/c_mv16tm7.c _cb16b.o \
+	    _cb16bcur.o _cb16b_stubs.c ../cpu/c_regsdata.o ../cpu/c_regswdata.o \
+	    ../video/c_mode716data.o ../video/makevid.o \
+	    ../video/c_makev16tdata.o ../endmem.o -no-pie -o difftest_cb16b
+	@./difftest_cb16b
 
 mv16: difftest_mv16.c difftest.h mkmv16.sh ../video/c_mv16tms.c
 	./mkmv16.sh

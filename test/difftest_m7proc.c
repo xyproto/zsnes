@@ -78,8 +78,15 @@ ENT(16)
 ENT(17)
 ENT(18)
 ENT(19)
-    ENT(20) ENT(21) ENT(22) ENT(23) ENT(24) ENT(25) ENT(26) ENT(27) ENT(28) ENT(29)
-        ENT(30) ENT(31) ENT(32) ENT(33) ENT(34) ENT(35) ENT(36) ENT(37) ENT(38) ENT(39) void c_Mode7Process(void);
+ENT(20)
+ENT(21)
+ENT(22)
+ENT(23)
+ENT(24)
+ENT(25)
+ENT(26)
+ENT(27) ENT(28) ENT(29)
+    ENT(30) ENT(31) ENT(32) ENT(33) ENT(34) ENT(35) ENT(36) ENT(37) ENT(38) ENT(39) void c_Mode7Process(void);
 void c_Mode7ProcessB(void);
 void c_Mode7Processngw16b(void);
 void c_Mode7Processngw216b(void);

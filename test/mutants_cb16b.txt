@@ -1,0 +1,91 @@
+# Mutants for video/c_mv16bclr.c, checked by test/difftest_cb16b.c.
+# Format: name<TAB>old<TAB>new   (\n for a newline)
+chan divisor	    u1 const q = (u1)((u2)(v * vidbright) / 15u);	    u1 const q = (u1)((u2)(v * vidbright) / 16u);
+chan byte trunc	    u1 const q = (u1)((u2)(v * vidbright) / 15u);	    u2 const q = (u2)((u2)(v * vidbright) / 15u);
+chan shift mask	    u4 const n = (u1)pos & 31u;	    u4 const n = (u1)pos & 15u;
+chan shift byte	    u4 const n = (u1)pos & 31u;	    u4 const n = pos & 31u;
+chan wide shift	    return n < 16 ? (u2)(q << n) : 0;	    return n < 16 ? (u2)(q << n) : (u2)(q << (n - 16));
+key vidbright	    return (u4)coladdr << 8 | (u4)coladdg << 16 | (u4)coladdb << 24 | vidbright;	    return (u4)coladdr << 8 | (u4)coladdg << 16 | (u4)coladdb << 24;
+key colnull	    return (u4)coladdr << 8 | (u4)coladdg << 16 | (u4)coladdb << 24 | vidbright;	    return (u4)coladdr | (u4)coladdg << 8 | (u4)coladdb << 16 | vidbright;
+key blue	    return (u4)coladdr << 8 | (u4)coladdg << 16 | (u4)coladdb << 24 | vidbright;	    return (u4)coladdr << 8 | (u4)coladdg << 16 | vidbright;
+backdrop preload	    r->bx = (r->bx & ~0xFFFFu) | prevrgbpal;\n    if (key == prevrgbcol) {	    if (key == prevrgbcol) {
+backdrop cache test	    if (key == prevrgbcol) {	    if (key != prevrgbcol) {
+backdrop no store	    prevrgbcol = key;	    /* mutant: cache key not stored */
+backdrop pal store	    prevrgbpal = bx;	    /* mutant: cache colour not stored */
+backdrop chan order	    bx = chan(coladdr, vesa2_rpos);\n    bx += chan(coladdg, vesa2_gpos);	    bx = chan(coladdr, vesa2_gpos);\n    bx += chan(coladdg, vesa2_rpos);
+backdrop sum	    bx += chan(coladdb, vesa2_bpos);	    bx |= chan(coladdb, vesa2_bpos);
+clearing transp gate	    if (!((scrnon >> 8) & 0x10u)) {\n        DoTransp = 1;\n    }\n    for (u4 n = 128; n != 0; n--) {	    if (((scrnon >> 8) & 0x10u)) {\n        DoTransp = 1;\n    }\n    for (u4 n = 128; n != 0; n--) {
+clearing transp bit	    if (!((scrnon >> 8) & 0x10u)) {\n        DoTransp = 1;\n    }\n    for (u4 n = 128; n != 0; n--) {	    if (!((scrnon >> 8) & 0x20u)) {\n        DoTransp = 1;\n    }\n    for (u4 n = 128; n != 0; n--) {
+clearing count	    for (u4 n = 128; n != 0; n--) {\n        *edi++ = 0;	    for (u4 n = 127; n != 0; n--) {\n        *edi++ = 0;
+clearing ecx	        *edi++ = 0;\n    }\n    r->ax = 0;\n    r->cx = 0;	        *edi++ = 0;\n    }\n    r->ax = 0;
+clearing eax	        *edi++ = 0;\n    }\n    r->ax = 0;\n    r->cx = 0;	        *edi++ = 0;\n    }\n    r->cx = 0;
+dowindow skip test	        run = (u1)edx != cl;	        run = (u1)edx == cl;
+dowindow draw side	                int const draw = rev ? ch != 0 : ch == 0;	                int const draw = rev ? ch == 0 : ch != 0;
+dowindow depth test	                int const draw = rev ? ch != 0 : ch == 0;	                int const draw = rev ? (s1)ch > 0 : (s1)ch <= 0;
+dowindow sub order	                cl -= (u1)edx;	                cl = (u1)edx - cl;
+dowindow run width	                cl -= (u1)edx;	                cl -= (u1)(edx & 0x7Fu);
+dowindow transp	                if (draw) {\n                    DoTransp = 0;\n                }	                DoTransp = 0;
+dowindow dl wrap	                    edx = (u1)(edx + 1);	                    edx = edx + 1;
+dowindow while	                } while (--cl != 0);	                } while (cl-- > 1);
+dowindow ch add	            ch += ebx[1];	            ch += ebx[0];
+dowindow step	            ebx += 2;	            ebx += 1;
+dowindow numwin pre	            if (numwin == 0) {\n                done = 1;	            if (numwin == 1) {\n                done = 1;
+dowindow tail run	            cl = 0;\n            run = 1;	            cl = 0;\n            run = 0;
+dowindow ecx high	    r->cx = (r->cx & 0xFFFF0000u) | (u4)ch << 8 | cl;	    r->cx = (u4)ch << 8 | cl;
+dowindow ecx ch	    r->cx = (r->cx & 0xFFFF0000u) | (u4)ch << 8 | cl;	    r->cx = (r->cx & 0xFFFF0000u) | cl;
+dowindow edx	    r->dx = edx;	    /* mutant: edx not returned */
+dowindow eax	    r->ax = 0;\n    r->bx = (u4)(uintptr_t)ebx;	    r->bx = (u4)(uintptr_t)ebx;
+dowindowback rev	    dowindow(r, (scaddset & 0x30u) == 0x20u);	    dowindow(r, (scaddset & 0x30u) == 0x10u);
+dowindowback transp	    if (!((scrnon >> 8) & 0x10u)) {\n        DoTransp = 1;\n    }\n    dowindow	    if (0) {\n        DoTransp = 1;\n    }\n    dowindow
+dual polarity	    u4 const vall = rev ? 0x01010101u : 0u;\n    u4 const vnone = rev ? 0u : 0x01010101u;	    u4 const vall = rev ? 0u : 0x01010101u;\n    u4 const vnone = rev ? 0x01010101u : 0u;
+dual entry state	    int state = P_PART; /* the entry tests are the per-pixel head's tests */	    int state = P_ALL; /* the entry tests are the per-pixel head's tests */
+dual entry transp	    if (b2 && *(u4 const*)esi != vnone) {	    if (b2 && *(u4 const*)esi == vnone) {
+dual head all	            kind = w != vall ? P_PART : P_ALL;	            kind = w == vnone ? P_NONE : w != vall ? P_PART : P_ALL;
+dual head none	            kind = w != vnone ? P_PART : P_NONE;	            kind = w == vall ? P_ALL : w != vnone ? P_PART : P_NONE;
+dual all store	            *(u4*)edi = eax;\n            *(u4*)(edi + 4) = eax;	            *(u2*)edi = (u2)eax;\n            *(u4*)(edi + 4) = eax;
+dual none store	            *(u4*)edi = 0;\n            *(u4*)(edi + 4) = 0;	            *(u4*)edi = 0;
+dual part transp	            if (b2) {\n                DoTransp = 0;\n            }	            /* mutant: per-pixel group does not clear DoTransp */
+dual part sense	                ebx = (esi[k] == 1) == (rev != 0) ? eax : 0;	                ebx = (esi[k] == 1) != (rev != 0) ? eax : 0;
+dual part byte	                ebx = (esi[k] == 1) == (rev != 0) ? eax : 0;	                ebx = (esi[k] != 0) == (rev != 0) ? eax : 0;
+dual part width	                *(u2*)(edi + k * 2) = (u2)ebx;	                *(u4*)(edi + k * 2) = ebx;
+dual ebx out	    r->bx = ebx;	    /* mutant: ebx not returned */
+dual count	    for (u4 ecx = 64; ecx != 0; ecx--) {	    for (u4 ecx = 63; ecx != 0; ecx--) {
+dual state carry	        state = kind;	        state = P_PART;
+dual esi out	    r->si = (u4)(uintptr_t)esi;	    r->si = (u4)(uintptr_t)cwinptr;
+dualback mode7	    int const b2 = bgmode == 7 && !((scrnon >> 8) & 0x10u);	    int const b2 = bgmode == 7;
+dualback mode7 num	    int const b2 = bgmode == 7 && !((scrnon >> 8) & 0x10u);	    int const b2 = bgmode == 6 && !((scrnon >> 8) & 0x10u);
+dualback transp1	    if (b2) {\n        DoTransp = 1;\n    }	    /* mutant: b2 does not preset DoTransp */
+dualback bl	    r->bx = (r->bx & ~0xFFu) | (scaddset & 0x30u);\n    dual	    dual
+dualback rev	    dual(r, (scaddset & 0x30u) == 0x10u, b2);	    dual(r, (scaddset & 0x30u) == 0x20u, b2);
+ts0b dup	    r->ax = (u4)(u2)r->bx * 0x00010001u;	    r->ax = (u4)(u2)r->bx;
+ts0b keep high	    r->ax = (u4)(u2)r->bx * 0x00010001u;	    r->ax = (r->ax & 0xFFFF0000u) | (u2)r->bx;
+ts0b winon	    if (winon == 3) {	    if (winon == 5) {
+ts0b zero test	    if (r->ax == 0) {	    if ((u2)r->ax == 0) {
+ts0b fill	        *edi++ = r->ax;	        *edi++ = (u2)r->ax;
+ts0b eax out	    r->ax = 0;\n    r->cx = 0;\n    r->di = (u4)(uintptr_t)edi;\n}\n\nstatic void ts0	    r->cx = 0;\n    r->di = (u4)(uintptr_t)edi;\n}\n\nstatic void ts0
+ts0 bl	    r->bx = (r->bx & ~0xFFu) | (scaddset & 0x30u);\n    if ((scaddset & 0x30u) == 0x20u) {\n        ts0b(r);	    if ((scaddset & 0x30u) == 0x20u) {\n        ts0b(r);
+ts0 mask	    if ((scaddset & 0x30u) == 0x20u) {\n        ts0b(r);\n        return;\n    }\n    clearing(r);	    if ((scaddset & 0x30u) == 0x10u) {\n        ts0b(r);\n        return;\n    }\n    clearing(r);
+top rpos gate	    if (vesa2_rpos == 0) {	    if (vesa2_rpos != 0) {
+top winon0	    } else if (winon == 0) {\n        ts0b(&r);	    } else if (winon == 0) {\n        ts0(&r);
+top winon2	    } else if (winon == 2) {\n        ts0(&r);	    } else if (winon == 2) {\n        ts0b(&r);
+top winon4	    } else if (winon == 4) {\n        clearing(&r);	    } else if (winon == 4) {\n        ts0(&r);
+top bl	        r.bx = (r.bx & ~0xFFu) | (scaddset & 0x30u);\n        if ((scaddset	        if ((scaddset
+top noclear	        if ((scaddset & 0x30u) == 0x20u && winon == 5) {	        if ((scaddset & 0x30u) == 0x20u) {
+top noclear mask	        if ((scaddset & 0x30u) == 0x20u && winon == 5) {	        if ((scaddset & 0x30u) == 0x10u && winon == 5) {
+top dontclear	        } else if (winon == 5 || winon == 3) {	        } else if (winon == 5) {
+top dontclear3	        } else if (winon == 5 || winon == 3) {	        } else if (winon == 3) {
+top hit high	            r.ax = (hit ? key & 0xFFFF0000u : 0u) | (u2)r.bx;	            r.ax = (u2)r.bx;
+top hit always	            r.ax = (hit ? key & 0xFFFF0000u : 0u) | (u2)r.bx;	            r.ax = (key & 0xFFFF0000u) | (u2)r.bx;
+top zero route	            if (r.ax == 0) {	            if ((u2)r.ax == 0) {
+top dotransp	    DoTransp = 0;\n    if (vesa2_rpos == 0) {	    if (vesa2_rpos == 0) {
+#
+# Three of these survive and cannot be killed:
+#
+#   chan byte trunc   the byte truncation only bites when (v * vidbright) / 15
+#                     exceeds 255, and the assembly's 8-bit div traps there, so
+#                     no oracle exists. Inside the PPU's range - coladd* is 5
+#                     bits, vidbright 4 - the product never reaches 3825.
+#   chan shift byte   (x & 0xFF) & 0x1F is x & 0x1F for every x. The cast is
+#                     there to say the assembly loads a byte, not to mask.
+#   ts0b zero test    eax holds the colour in both halves at that point, so the
+#                     word and the dword test agree by construction.
