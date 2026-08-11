@@ -45,7 +45,7 @@ ASMDATA   := zsnes_asmdata_test
 ASMDATA_SRC := asmdata_test.c
 OBJS      := ../zpath.o
 
-.PHONY: all run clean spcdec fxtable fxops memops m7calc m7ext2 m7start m7win m7bw m7proc m7draw mv16 mvs mvall m716t cb16t cb16b spr16bt spr16t spr16p t8bt t16bt regs
+.PHONY: all run clean spcdec fxtable fxops memops m7calc m7ext2 m7start m7win m7bw m7proc m7draw mv16 mvs mvall m716t cb16t cb16b spr16bt spr16t spr16p t8bt t16bt t8t regs
 
 all: $(BIN) $(NETPLAY) $(ST10) $(ST11) $(OBC1) $(MSU1) $(DSP2) $(SAI) $(SA1) $(SPC7110) $(VCACHE) $(SPRITES) $(C4) $(MODE7) $(ASMDATA)
 
@@ -161,7 +161,8 @@ M716T_TAILS := makewindow drawsprites16b draw8x816b draw16x1616b \
 M16T_SEAM := ../video/c_mv16tm7.c ../video/c_mv16tclr.c \
              ../video/c_mv16bclr.c ../video/c_mv16tspr.c \
              ../video/c_mv16tsprt.c ../video/c_mv16tsprp.c \
-             ../video/c_mv16t8bt.c ../video/c_mv16t16bt.c
+             ../video/c_mv16t8bt.c ../video/c_mv16t16bt.c \
+             ../video/c_mv16t8t.c
 M16T_OBJS := ../cpu/c_regsdata.o ../cpu/c_regswdata.o \
              ../video/c_mode716data.o ../video/makevid.o ../endmem.o
 M16T_BSS  := ../video/c_makev16tdata.o
@@ -255,6 +256,20 @@ t16bt: difftest_t16bt.c difftest.h $(M16T_SEAM)
 	    _t16bt.o _t16btcur.o _t16bt_stubs.c $(M16T_OBJS) $(M16T_BSS) \
 	    -no-pie -o difftest_t16bt
 	@./difftest_t16bt
+
+t8t: difftest_t8t.c difftest.h $(M16T_SEAM)
+	python3 ../tools/mkoracle.py video/makev16t.asm -o _t8t.o \
+	    --stub-routine draw16x816t draw8x816toffset \
+	    --stubs _t8t_stubs.c --provided-by $(M16T_OBJS) $(M16T_BSS) \
+	    --exclude domosaic16b draw16x816t_stub draw8x816toffset_stub \
+	    fulladdtab xtravbuf transpbuf vcache2b vcache4b vcache8b
+	python3 ../tools/mkoracle.py video/makev16t.asm -o _t8tcur.o \
+	    --worktree --prefix cur_ \
+	    --stub-routine draw16x816t draw8x816toffset
+	$(CC) $(CFLAGS) difftest_t8t.c $(M16T_SEAM) \
+	    _t8t.o _t8tcur.o _t8t_stubs.c $(M16T_OBJS) $(M16T_BSS) \
+	    -no-pie -o difftest_t8t
+	@./difftest_t8t
 
 mv16: difftest_mv16.c difftest.h mkmv16.sh ../video/c_mv16tms.c
 	./mkmv16.sh
