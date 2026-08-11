@@ -97,12 +97,19 @@ def stub_out(path, names):
     difftest to see that the call happened.
     """
     lines = open(path).read().split("\n")
-    starts = {}
+    starts, order = {}, []
     for i, line in enumerate(lines):
         m = re.match(r"NEWSYM\s+(\w+)\s*$", line)
         if m:
             starts[m.group(1)] = i
-    order = sorted(starts.values())
+            order.append(i)
+        # A routine's body ends at the next NEWSYM *or* at the next macro
+        # definition. Once a cluster is ported to C its thunk can be followed
+        # by macros that the routines further down still use, and deleting
+        # those leaves their invocations looking like instructions.
+        elif re.match(r"%i?macro\s", line):
+            order.append(i)
+    order.sort()
     out, missing = list(lines), [n for n in names if n not in starts]
     if missing:
         sys.exit("mkoracle: no such routine: %s" % " ".join(missing))
