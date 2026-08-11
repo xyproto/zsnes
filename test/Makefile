@@ -45,7 +45,7 @@ ASMDATA   := zsnes_asmdata_test
 ASMDATA_SRC := asmdata_test.c
 OBJS      := ../zpath.o
 
-.PHONY: all run clean spcdec fxtable fxops memops m7calc m7ext2 m7start m7win m7bw m7proc m7draw mv16 mvs mvall m716t cb16t cb16b spr16bt spr16t regs
+.PHONY: all run clean spcdec fxtable fxops memops m7calc m7ext2 m7start m7win m7bw m7proc m7draw mv16 mvs mvall m716t cb16t cb16b spr16bt spr16t spr16p regs
 
 all: $(BIN) $(NETPLAY) $(ST10) $(ST11) $(OBC1) $(MSU1) $(DSP2) $(SAI) $(SA1) $(SPC7110) $(VCACHE) $(SPRITES) $(C4) $(MODE7) $(ASMDATA)
 
@@ -160,7 +160,7 @@ M716T_TAILS := makewindow drawsprites16b draw8x816b draw16x1616b \
 # added to each of them by hand. One list instead.
 M16T_SEAM := ../video/c_mv16tm7.c ../video/c_mv16tclr.c \
              ../video/c_mv16bclr.c ../video/c_mv16tspr.c \
-             ../video/c_mv16tsprt.c
+             ../video/c_mv16tsprt.c ../video/c_mv16tsprp.c
 M16T_OBJS := ../cpu/c_regsdata.o ../cpu/c_regswdata.o \
              ../video/c_mode716data.o ../video/makevid.o ../endmem.o
 M16T_BSS  := ../video/c_makev16tdata.o
@@ -218,6 +218,17 @@ spr16t: difftest_spr16t.c difftest.h $(M16T_SEAM)
 	    _spt.o _sptcur.o _spt_stubs.c $(M16T_OBJS) $(M16T_BSS) \
 	    -no-pie -o difftest_spr16t
 	@./difftest_spr16t
+
+spr16p: difftest_spr16p.c difftest.h $(M16T_SEAM)
+	python3 ../tools/mkoracle.py video/makev16t.asm -o _spp.o \
+	    --stubs _spp_stubs.c --provided-by $(M16T_OBJS) $(M16T_BSS) \
+	    --exclude fulladdtab
+	python3 ../tools/mkoracle.py video/makev16t.asm -o _sppcur.o \
+	    --worktree --prefix cur_
+	$(CC) $(CFLAGS) difftest_spr16p.c $(M16T_SEAM) \
+	    _spp.o _sppcur.o _spp_stubs.c $(M16T_OBJS) $(M16T_BSS) \
+	    -no-pie -o difftest_spr16p
+	@./difftest_spr16p
 
 mv16: difftest_mv16.c difftest.h mkmv16.sh ../video/c_mv16tms.c
 	./mkmv16.sh

@@ -1,0 +1,101 @@
+# Mutants for video/c_mv16tsprp.c, checked by test/difftest_spr16p.c.
+# Format: name<TAB>old<TAB>new   (\n for a newline)
+px zero test	    r->ax = eax;\n    if (eax == 0) {	    r->ax = eax;\n    if ((eax & 0x0Fu) == 0) {
+px ax on skip	    r->ax = eax;\n    if (eax == 0) {\n        return;\n    }\n    if (mask	    if (eax == 0) {\n        return;\n    }\n    r->ax = eax;\n    if (mask
+px mask test	    if (mask && (sprpriodata[idx + 16] & cl)) {	    if (mask && (sprpriodata[idx + 16] & ~cl)) {
+px mask sense	    if (mask && (sprpriodata[idx + 16] & cl)) {	    if (mask && !(sprpriodata[idx + 16] & cl)) {
+px mask always	    if (mask && (sprpriodata[idx + 16] & cl)) {	    if ((sprpriodata[idx + 16] & cl)) {
+px mask never	    if (mask && (sprpriodata[idx + 16] & cl)) {	    if (0 && (sprpriodata[idx + 16] & cl)) {
+px mask bias	    if (mask && (sprpriodata[idx + 16] & cl)) {	    if (mask && (sprpriodata[idx] & cl)) {
+px win test	    if (win && winspdata[idx + 16] != 0) {	    if (win && winspdata[idx + 16] == 0) {
+px win always	    if (win && winspdata[idx + 16] != 0) {	    if (winspdata[idx + 16] != 0) {
+px win never	    if (win && winspdata[idx + 16] != 0) {	    if (0 && winspdata[idx + 16] != 0) {
+px win bias	    if (win && winspdata[idx + 16] != 0) {	    if (win && winspdata[idx] != 0) {
+px order	    if (mask && (sprpriodata[idx + 16] & cl)) {\n        return;\n    }\n    if (win && winspdata[idx + 16] != 0) {\n        return;\n    }\n    r->ax = (u1)(eax + ch);	    if (win && winspdata[idx + 16] != 0) {\n        return;\n    }\n    if (mask && (sprpriodata[idx + 16] & cl)) {\n        return;\n    }\n    r->ax = (u1)(eax + ch);
+px pal wrap	    r->ax = (u1)(eax + ch);\n    if (mode == W_PLAIN) {	    r->ax = eax + ch;\n    if (mode == W_PLAIN) {
+px claim	    if (mask) {\n        sprpriodata[idx + 16] |= cl;\n    }	    /* mutant: never claims the pixel */
+px claim always	    if (mask) {\n        sprpriodata[idx + 16] |= cl;\n    }	    sprpriodata[idx + 16] |= cl;
+px claim bias	    if (mask) {\n        sprpriodata[idx + 16] |= cl;\n    }	    if (mask) {\n        sprpriodata[idx] |= cl;\n    }
+plain pal	        r->dx = pal16b[r->ax];\n        edi[idx] = (u2)r->dx;	        r->dx = pal16bcl[r->ax];\n        edi[idx] = (u2)r->dx;
+plain store	        r->dx = pal16b[r->ax];\n        edi[idx] = (u2)r->dx;	        r->dx = pal16b[r->ax];\n        edi[idx + 1] = (u2)r->dx;
+plain width	        r->dx = pal16b[r->ax];\n        edi[idx] = (u2)r->dx;	        r->dx = pal16b[r->ax];\n        *(u4*)(edi + idx) = r->dx;
+plain dx	        r->dx = pal16b[r->ax];\n        edi[idx] = (u2)r->dx;	        u4 const c = pal16b[r->ax];\n        edi[idx] = (u2)c;
+half transp test	        if ((u2)r->dx != 0) {	        if (r->dx != 0) {
+half transp sense	        if ((u2)r->dx != 0) {	        if ((u2)r->dx == 0) {
+half transp always	        if ((u2)r->dx != 0) {	        if (1) {
+half dx mask	            r->dx &= vesa2_clbit;\n            col &= vesa2_clbit;	            col &= vesa2_clbit;
+half col mask	            r->dx &= vesa2_clbit;\n            col &= vesa2_clbit;	            r->dx &= vesa2_clbit;
+half shift	            col += r->dx;\n            col >>= 1;	            col += r->dx;
+half pal	        u4 col = pal16b[r->ax];\n\n        r->dx	        u4 col = pal16bcl[r->ax];\n\n        r->dx
+half dx keep	        r->dx = *(u4 const*)(TRANSP + idx);	        r->dx = (u2) * (u4 const*)(TRANSP + idx);
+half transp bias	        r->dx = *(u4 const*)(TRANSP + idx);	        r->dx = *(u4 const*)(TRANSP + idx + 1);
+half ax clear	        edi[idx] = (u2)col;\n        r->ax = 0;	        edi[idx] = (u2)col;
+half store	        edi[idx] = (u2)col;\n        r->ax = 0;	        edi[idx + 1] = (u2)col;\n        r->ax = 0;
+fa pal choice	        u4 const* const pal = mode == W_ADD ? pal16bcl : pal16bxcl;	        u4 const* const pal = mode == W_ADD ? pal16bxcl : pal16bcl;
+fa pal plain	        u4 const* const pal = mode == W_ADD ? pal16bcl : pal16bxcl;	        u4 const* const pal = pal16b;
+fa t mask	        t &= vesa2_clbit;\n        t += pal[r->ax];	        t += pal[r->ax];
+fa pal mask	        t &= vesa2_clbit;\n        t += pal[r->ax];	        t &= vesa2_clbit;\n        t += pal[r->ax] & vesa2_clbit;
+fa shift	        t >>= 1;\n        r->ax = 0;	        r->ax = 0;
+fa table	        memcpy(&t, fulladdtab + t, 4);	        t = fulladdtab[t];
+fa table index	        memcpy(&t, fulladdtab + t, 4);	        memcpy(&t, fulladdtab + t * 2, 4);
+fa sub xor	        if (mode == W_SUB) {\n            t ^= 0xFFFFu;\n        }	        /* mutant: no invert */
+fa sub always	        if (mode == W_SUB) {\n            t ^= 0xFFFFu;\n        }	        t ^= 0xFFFFu;
+fa xor order	        if (mode == W_SUB) {\n            t ^= 0xFFFFu;\n        }\n        r->dx = t;	        r->dx = t;\n        if (mode == W_SUB) {\n            t ^= 0xFFFFu;\n        }
+fa ax clear	        t >>= 1;\n        r->ax = 0;	        t >>= 1;
+fa dx out	        r->dx = t;\n        edi[idx] = (u2)t;	        edi[idx] = (u2)t;
+fa store	        r->dx = t;\n        edi[idx] = (u2)t;	        r->dx = t;\n        edi[idx + 1] = (u2)t;
+row flip	        spr_pixel(r, src[k], cl, ch, ebx - (flip ? k + 1 : 8 - k), edi, mode,	        spr_pixel(r, src[k], cl, ch, ebx - (8 - k), edi, mode,
+row order	        spr_pixel(r, src[k], cl, ch, ebx - (flip ? k + 1 : 8 - k), edi, mode,	        spr_pixel(r, src[k], cl, ch, ebx - (flip ? 8 - k : k + 1), edi, mode,
+row base	        spr_pixel(r, src[k], cl, ch, ebx - (flip ? k + 1 : 8 - k), edi, mode,	        spr_pixel(r, src[k], cl, ch, ebx - (flip ? k : 7 - k), edi, mode,
+mark pair	        if (k % 2 == 0) {\n            r->ax = src[k] | (u4)src[k + 1] << 8;	        if (1) {\n            r->ax = src[k] | (u4)src[k + 1] << 8;
+mark ax	            r->ax = src[k] | (u4)src[k + 1] << 8;	            r->ax = src[k];
+mark test	        if (src[k] != 0) {\n            sprpriodata	        if (src[k] == 0) {\n            sprpriodata
+mark bias	            sprpriodata[ebx - (flip ? k + 1 : 8 - k) + 16] |= dl;	            sprpriodata[ebx - (flip ? k + 1 : 8 - k)] |= dl;
+mark flip	            sprpriodata[ebx - (flip ? k + 1 : 8 - k) + 16] |= dl;	            sprpriodata[ebx - (8 - k) + 16] |= dl;
+prio left init	    csprprlft = cl;\n    r->di	    csprprlft = (u1)(cl + 1);\n    r->di
+prio di init	    csprprlft = cl;\n    r->di = (u4)(uintptr_t)edi;\n    for (;;) {	    csprprlft = cl;\n    for (;;) {
+prio dx mask	        r->dx = esi->status & 0x03u;	        r->dx = esi->status & 0x07u;
+prio match	        if (r->dx == ebp) {	        if (r->dx != ebp) {
+prio cl	            cl = csprbit;\n            spr_row	            spr_row
+prio threshold	                ch >= 12 * 16 ? mode : W_PLAIN, 1, win);	                ch >= 11 * 16 ? mode : W_PLAIN, 1, win);
+prio threshold sense	                ch >= 12 * 16 ? mode : W_PLAIN, 1, win);	                ch < 12 * 16 ? mode : W_PLAIN, 1, win);
+prio mask flag	                ch >= 12 * 16 ? mode : W_PLAIN, 1, win);	                ch >= 12 * 16 ? mode : W_PLAIN, 0, win);
+prio win flag	                ch >= 12 * 16 ? mode : W_PLAIN, 1, win);	                ch >= 12 * 16 ? mode : W_PLAIN, 1, 0);
+prio mark bit	            r->dx = csprbit;\n            spr_mark(r, csprbit, ebx, esi->obj, flip);	            r->dx = csprbit;\n            spr_mark(r, cl, ebx, esi->obj, flip);
+prio mark dx	            r->dx = csprbit;\n            spr_mark(r, csprbit, ebx, esi->obj, flip);	            spr_mark(r, csprbit, ebx, esi->obj, flip);
+prio bx out	    r->bx = ebx;\n    r->cx = (r->cx & 0xFFFF0000u) | (u4)ch << 8 | cl;	    r->cx = (r->cx & 0xFFFF0000u) | (u4)ch << 8 | cl;
+prio cx out	    r->cx = (r->cx & 0xFFFF0000u) | (u4)ch << 8 | cl;	    r->cx = (r->cx & 0xFFFF0000u) | (u4)ch << 8;
+prio si out	    r->si = (u4)(uintptr_t)esi;\n    csprbit	    csprbit
+prio rotate	    csprbit = (u1)(csprbit << 1 | csprbit >> 7);	    csprbit = (u1)(csprbit >> 1 | csprbit << 7);
+prio wrap test	    if (csprbit == 1) {	    if (csprbit == 0) {
+prio wipe size	        memset(sprpriodata + 16, 0, 256);	        memset(sprpriodata + 16, 0, 255);
+prio wipe base	        memset(sprpriodata + 16, 0, 256);	        memset(sprpriodata, 0, 256);
+prio wipe regs	        r->ax = 0;\n        r->cx = 0;\n        r->di	        r->di
+prio wipe di	        r->di = (u4)(uintptr_t)(sprpriodata + 16 + 256);	        r->di = (u4)(uintptr_t)(sprpriodata + 16);
+single start	    r->dx = (u4)(uintptr_t)esi + (u4)cl * 8u - 8u;	    r->dx = (u4)(uintptr_t)esi + (u4)cl * 8u;
+single dx out	    r->dx = (u4)(uintptr_t)esi + (u4)cl * 8u - 8u;\n    esi = (SpriteInfo const*)(uintptr_t)r->dx;	    esi = (SpriteInfo const*)((uintptr_t)esi + (u4)cl * 8u - 8u);
+single walk	        esi--;\n    } while (--cl != 0);	        esi++;\n    } while (--cl != 0);
+single mask flag	            ch >= 12 * 16 ? mode : W_PLAIN, 0, win);	            ch >= 12 * 16 ? mode : W_PLAIN, 1, win);
+single win flag	            ch >= 12 * 16 ? mode : W_PLAIN, 0, win);	            ch >= 12 * 16 ? mode : W_PLAIN, 0, 0);
+single threshold	            ch >= 12 * 16 ? mode : W_PLAIN, 0, win);	            ch >= 11 * 16 ? mode : W_PLAIN, 0, win);
+single di init	    r->di = (u4)(uintptr_t)edi;\n    /* edx is the walk	    /* edx is the walk
+single cx out	    r->cx = (r->cx & 0xFFFF0000u) | (u4)ch << 8;\n    r->si	    r->cx = (r->cx & 0xFFFF0000u) | (u4)ch << 8 | 1;\n    r->si
+single bx out	    r->bx = ebx;\n    r->cx = (r->cx & 0xFFFF0000u) | (u4)ch << 8;\n    r->si	    r->cx = (r->cx & 0xFFFF0000u) | (u4)ch << 8;\n    r->si
+top half maths	    int const half = (scaddtype & 0x40u) && (scrnon >> 8) != 0	    int const half = (scrnon >> 8) != 0
+top half scrnon	(scaddtype & 0x40u) && (scrnon >> 8) != 0\n        && !(scaddtype & 0x80u);	(scaddtype & 0x40u) && (scrnon & 0xFFu) != 0\n        && !(scaddtype & 0x80u);
+top half sub	(scaddtype & 0x40u) && (scrnon >> 8) != 0\n        && !(scaddtype & 0x80u);	(scaddtype & 0x40u) && (scrnon >> 8) != 0;
+top sub bit	    } else if (scaddtype & 0x80u) {	    } else if (scaddtype & 0x40u) {
+top mode swap	    } else if (scaddtype & 0x80u) {\n        mode = W_SUB;\n    } else {\n        mode = W_ADD;	    } else if (scaddtype & 0x80u) {\n        mode = W_ADD;\n    } else {\n        mode = W_SUB;
+top clprio	    if (sprclprio[r.bp] != 0) {	    if (1) {
+top clprio index	    if (sprclprio[r.bp] != 0) {	    if (sprclprio[0] != 0) {
+top win	        int const win = (cwinenabm & 0x10u) && winonsp != 0;	        int const win = (cwinenabm & 0x20u) && winonsp != 0;
+top win sp	        int const win = (cwinenabm & 0x10u) && winonsp != 0;	        int const win = (cwinenabm & 0x10u) != 0;
+top single	        if (sprsingle == 1) {	        if (sprsingle != 1) {
+top single always	        if (sprsingle == 1) {	        if (1) {
+#
+# One survives:
+#
+#   px order  the priority-mask test and the window test are both side-effect
+#             free and both skip the pixel outright, so swapping them cannot
+#             be seen. Equivalent, not merely unreachable; the C keeps the
+#             assembly's order.

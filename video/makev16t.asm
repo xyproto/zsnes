@@ -130,6 +130,8 @@ EXTSYM SPBAX,SPBBX,SPBCX,SPBDX,SPBSI,SPBDI,SPBBP
 EXTSYM c_drawsprites16bt
 EXTSYM SPTAX,SPTBX,SPTCX,SPTDX,SPTSI,SPTDI,SPTBP
 EXTSYM c_drawsprites16t
+EXTSYM SPPAX,SPPBX,SPPCX,SPPDX,SPPSI,SPPDI,SPPBP
+EXTSYM c_drawsprites16tprio
 EXTSYM winbg1en,winenabm,drawmode716textbg,drawmode716textbg2,extbgdone
 EXTSYM drawmode716tb,drawmode716b,drawmode716extbg,drawmode716extbg2,cursprloc
 EXTSYM drawsprites16b,scrndis,sprprifix,winonsp,bgfixer,scaddtype
@@ -1170,36 +1172,22 @@ NEWSYM drawsprites16t
     ret
 
 NEWSYM drawsprites16tprio
-    test byte[scaddtype],40h
-    jz near drawspritesfulladdprio
-    cmp byte[scrnon+1],0
-    je near drawspritesfulladdprio
-    test byte[scaddtype],80h
-    jnz near drawspritesfulladdprio
-    ; half add
-    sprpriorityinit drawsprites16tpriow
-    sprprioritydrawt16b sprdrawpra16bha, sprdrawprb16bha, sprdrawpra16b, sprdrawprb16b
-
-NEWSYM drawsprites16tpriow
-    sprprioritydrawt16b sprdrawpraw16bha, sprdrawprbw16bha, sprdrawpraw16b, sprdrawprbw16b
-
-NEWSYM drawspritesfulladdprio
-    test byte[scaddtype],80h
-    jnz near drawspritesfullsubprio
-    ; full add
-    sprpriorityinit drawspritesfulladdpriow
-    sprprioritydrawt16b sprdrawpra16bfa, sprdrawprb16bfa, sprdrawpra16b, sprdrawprb16b
-
-NEWSYM drawspritesfulladdpriow
-    sprprioritydrawt16b sprdrawpraw16bfa, sprdrawprbw16bfa, sprdrawpraw16b, sprdrawprbw16b
-
-NEWSYM drawspritesfullsubprio
-    ; full sub
-    sprpriorityinit drawspritesfullsubpriow
-    sprprioritydrawt16b sprdrawpra16bfs, sprdrawprb16bfs, sprdrawpra16b, sprdrawprb16b
-
-NEWSYM drawspritesfullsubpriow
-    sprprioritydrawt16b sprdrawpraw16bfs, sprdrawprbw16bfs, sprdrawpraw16b, sprdrawprbw16b
+    mov [SPPAX], eax
+    mov [SPPBX], ebx
+    mov [SPPCX], ecx
+    mov [SPPDX], edx
+    mov [SPPSI], esi
+    mov [SPPDI], edi
+    mov [SPPBP], ebp
+    call c_drawsprites16tprio
+    mov eax, [SPPAX]
+    mov ebx, [SPPBX]
+    mov ecx, [SPPCX]
+    mov edx, [SPPDX]
+    mov esi, [SPPSI]
+    mov edi, [SPPDI]
+    mov ebp, [SPPBP]
+    ret
 
 
 NEWSYM draw8x816bt
