@@ -1,0 +1,91 @@
+# Mutants for video/c_mv16t8bt.c, checked by test/difftest_t8bt.c.
+# Format: name<TAB>old<TAB>new   (\n for a newline)
+loop left	    tileleft16b = 33;\n    drawn = 0;	    tileleft16b = 32;\n    drawn = 0;
+loop drawn init	    tileleft16b = 33;\n    drawn = 0;	    tileleft16b = 33;
+loop dl init	    edx = (edx & 0xFFFFFF00u) | temp;	    edx = (edx & 0xFFFFFF00u) | bshifter;
+loop dl width	    edx = (edx & 0xFFFFFF00u) | temp;	    edx = temp;
+loop prio bit	        if (!(dh & 0x20u)) {	        if (!(dh & 0x40u)) {
+loop prio sense	        if (!(dh & 0x20u)) {	        if ((dh & 0x20u)) {
+loop prio xor	        u1 const dh = (u1)((ax >> 8) ^ curbgpr);	        u1 const dh = (u1)(ax >> 8);
+loop dh out	        edx = (edx & 0xFFFF00FFu) | (u4)dh << 8;\n        /* `mov ax,	        /* `mov ax,
+loop ax word	        r->ax = (r->ax & 0xFFFF0000u) | ax;	        r->ax = ax;
+loop tile mask	            u4 const t = ax & 0x03FFu; /* filter out tile # */	            u4 const t = ax & 0x07FFu; /* filter out tile # */
+loop tile scale	            u1 const* tile = tempcach + t * 64u;	            u1 const* tile = tempcach + t * 32u;
+loop drawn inc	            drawn++;\n            if (tile >= bgofwptr) {	            if (tile >= bgofwptr) {
+loop clip test	            if (tile >= bgofwptr) {	            if (tile > bgofwptr) {
+loop clip none	            if (tile >= bgofwptr) {\n                tile -= bgsubby;\n            }	            /* mutant: never clips */
+loop clip always	            if (tile >= bgofwptr) {\n                tile -= bgsubby;\n            }	            tile -= bgsubby;
+loop flipy bit	            tile += (dh & 0x80u) ? yrevadder : yadder;	            tile += (dh & 0x40u) ? yrevadder : yadder;
+loop flipy swap	            tile += (dh & 0x80u) ? yrevadder : yadder;	            tile += (dh & 0x80u) ? yadder : yrevadder;
+loop bx out	            r->bx = (u4)(uintptr_t)tile;\n            if (!winon_) {	            if (!winon_) {
+loop cx shifter	            if (!winon_) {\n                r->cx = (r->cx & 0xFFFFFF00u) | bshifter;\n            }	            if (winon_) {\n                r->cx = (r->cx & 0xFFFFFF00u) | bshifter;\n            }
+loop cx width	                r->cx = (r->cx & 0xFFFFFF00u) | bshifter;	                r->cx = bshifter;
+loop pal mask	            pal = (u1)((((u4)dh & 0x1Cu) << (bshifter & 31u)) + bgcoloradder);	            pal = (u1)((((u4)dh & 0x3Cu) << (bshifter & 31u)) + bgcoloradder);
+loop pal shift	            pal = (u1)((((u4)dh & 0x1Cu) << (bshifter & 31u)) + bgcoloradder);	            pal = (u1)((((u4)dh & 0x1Cu) >> (bshifter & 31u)) + bgcoloradder);
+loop pal adder	            pal = (u1)((((u4)dh & 0x1Cu) << (bshifter & 31u)) + bgcoloradder);	            pal = (u1)(((u4)dh & 0x1Cu) << (bshifter & 31u));
+loop pal width	            pal = (u1)((((u4)dh & 0x1Cu) << (bshifter & 31u)) + bgcoloradder);	            pal = (u1)((((u4)dh & 0x1Cu) << (bshifter & 7u)) + bgcoloradder);
+loop pal dh	            edx = (edx & 0xFFFF00FFu) | (u4)pal << 8;\n            r->ax = 0;	            r->ax = 0;
+loop ax zero	            edx = (edx & 0xFFFF00FFu) | (u4)pal << 8;\n            r->ax = 0;	            edx = (edx & 0xFFFF00FFu) | (u4)pal << 8;
+loop flipx bit	                (dh & 0x40u) != 0, 0);	                (dh & 0x80u) != 0, 0);
+loop flipx sense	                (dh & 0x40u) != 0, 0);	                (dh & 0x40u) == 0, 0);
+loop win arg	            bt_row(r, tile, winon_ ? win : 0, pal, esi, ebp,	            bt_row(r, tile, win, pal, esi, ebp,
+loop esi step	        esi += 16;\n        ebp += 16;	        esi += 8;\n        ebp += 16;
+loop ebp step	        esi += 16;\n        ebp += 16;	        esi += 16;\n        ebp += 8;
+loop win step	        win += 8;	        win += 16;
+loop dl inc	        edx = (edx & 0xFFFFFF00u) | (u1)(edx + 1);	        edx = edx + 1;
+loop wrap value	        if ((u1)edx == 0x20) {	        if ((u1)edx == 0x21) {
+loop wrap none	        if ((u1)edx == 0x20) {\n            edi = temptile;\n        }	        /* mutant: no column wrap */
+loop wrap width	        if ((u1)edx == 0x20) {	        if (edx == 0x20) {
+loop dx out	    r->dx = edx;\n    r->si	    r->si
+loop si out	    r->si = (u4)(uintptr_t)esi;\n    r->di	    r->di
+loop di out	    r->di = (u4)(uintptr_t)edi;\n    r->bp	    r->bp
+loop bp out	    r->bp = (u4)(uintptr_t)ebp;\n    if (winon_) {	    if (winon_) {
+loop cx out	    if (winon_) {\n        r->cx = (u4)(uintptr_t)win;\n    }	    r->cx = (u4)(uintptr_t)win;
+loop cx out none	    if (winon_) {\n        r->cx = (u4)(uintptr_t)win;\n    }	    /* mutant: windowed ecx not returned */
+pro temp	    temp = (u1)r.ax;\n    bshifter = (u1)(r.ax >> 8);	    temp = (u1)(r.ax >> 8);\n    bshifter = (u1)r.ax;
+pro yadder	    yadder = r.cx;\n    tempcach	    yadder = r.bx;\n    tempcach
+pro yrev	    yrevadder = 56u - r.cx;	    yrevadder = 56u + r.cx;
+pro ax out	    r.ax = hofs;\n    r.bx = 56u - r.cx;	    r.bx = 56u - r.cx;
+pro bx out	    r.ax = hofs;\n    r.bx = 56u - r.cx;	    r.ax = hofs;
+pro winptr	    winptrref = cwinptr - hofs;	    winptrref = cwinptr - hofs * 2u;
+pro vid bias	    esi = curvidoffset - hofs * 2u;	    esi = curvidoffset - hofs;
+pro mosaic test	    if (curmosaicsz != 1) {	    if (curmosaicsz == 1) {
+pro mosaic size	        memset(xtravbuf + 32, 0, 512);	        memset(xtravbuf + 32, 0, 256);
+pro mosaic base	        memset(xtravbuf + 32, 0, 512);	        memset(xtravbuf, 0, 512);
+pro mosaic cx	        r.cx = 0;\n        esi = xtravbuf + 32 - hofs * 2u;	        esi = xtravbuf + 32 - hofs * 2u;
+pro mosaic esi	        r.cx = 0;\n        esi = xtravbuf + 32 - hofs * 2u;	        r.cx = 0;
+pro temptile	    temptile = (u2*)(uintptr_t)r.dx;	    temptile = (u2*)(uintptr_t)r.di;
+pro cache first	    bgofwptr = vcache2b + 262144u;	    bgofwptr = vcache2b + 131072u;
+pro cache sub	    bgsubby = 262144u;\n    bgofwptr = vcache2b + 262144u;	    bgsubby = 131072u;\n    bgofwptr = vcache2b + 262144u;
+pro cache chain	    if (tempcach >= bgofwptr) {\n        bgsubby = 131072u;	    if (tempcach > bgofwptr) {\n        bgsubby = 131072u;
+pro cache second	        bgofwptr = vcache4b + 131072u;\n        if (tempcach >= bgofwptr) {	        bgofwptr = vcache4b + 65536u;\n        if (tempcach >= bgofwptr) {
+pro cache third	            bgofwptr = vcache8b + 65536u;\n            bgsubby = 65536u;	            bgofwptr = vcache8b + 131072u;\n            bgsubby = 65536u;
+pro cache third sub	            bgofwptr = vcache8b + 65536u;\n            bgsubby = 65536u;	            bgofwptr = vcache8b + 65536u;\n            bgsubby = 131072u;
+top winon mosaic	    if (curmosaicsz == 1 && winon != 0) {	    if (winon != 0) {
+top winon flag	    if (curmosaicsz == 1 && winon != 0) {	    if (curmosaicsz == 1) {
+top winon sense	    if (curmosaicsz == 1 && winon != 0) {	    if (curmosaicsz != 1 && winon != 0) {
+top tail drawn	        if (drawn != 0) {	        if (1) {
+top tail dh	            r.dx = (r.dx & 0xFFFF00FFu) | (u4)curmosaicsz << 8;\n            T8Tail	            T8Tail
+top tail flag	            T8Tail = curmosaicsz != 1;	            T8Tail = 1;
+top tail sense	            T8Tail = curmosaicsz != 1;	            T8Tail = curmosaicsz == 1;
+top tail reset	    T8Tail = 0;\n    temp	    temp
+#
+# Two survive, both equivalent rather than merely unreached:
+#
+#   loop ax word   `mov ax,[edi]` keeps the top half of eax, which is still the
+#                  horizontal offset until the first tile draws. An offset that
+#                  fits the three pointers it biases fits 16 bits, so the top
+#                  half is always zero and the masking cannot be seen.
+#   loop pal mask  0x1C vs 0x3C on the palette bits: bit 5 is the priority bit,
+#                  and the arm that computes the palette is only reached when
+#                  it is clear.
+#
+# Two survive, both equivalent rather than merely unreached:
+#
+#   loop ax word   `mov ax,[edi]` keeps the top half of eax, which is still the
+#                  horizontal offset until the first tile draws. An offset that
+#                  fits the three pointers it biases fits 16 bits, so the top
+#                  half is always zero and the masking cannot be seen.
+#   loop pal mask  0x1C vs 0x3C on the palette bits: bit 5 is the priority bit,
+#                  and the arm that computes the palette is only reached when
+#                  it is clear.

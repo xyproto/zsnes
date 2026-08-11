@@ -132,6 +132,10 @@ EXTSYM SPTAX,SPTBX,SPTCX,SPTDX,SPTSI,SPTDI,SPTBP
 EXTSYM c_drawsprites16t
 EXTSYM SPPAX,SPPBX,SPPCX,SPPDX,SPPSI,SPPDI,SPPBP
 EXTSYM c_drawsprites16tprio
+EXTSYM T8AX,T8BX,T8CX,T8DX,T8SI,T8DI,T8BP,T8Tail
+EXTSYM c_draw8x816bt
+EXTSYM T16AX,T16BX,T16CX,T16DX,T16SI,T16DI,T16BP,T16Tail
+EXTSYM c_draw16x1616bt
 EXTSYM winbg1en,winenabm,drawmode716textbg,drawmode716textbg2,extbgdone
 EXTSYM drawmode716tb,drawmode716b,drawmode716extbg,drawmode716extbg2,cursprloc
 EXTSYM drawsprites16b,scrndis,sprprifix,winonsp,bgfixer,scaddtype
@@ -1197,222 +1201,26 @@ NEWSYM draw8x816bt
 .nodraw8x816boffset
     cmp byte[bgmode],5
     je near draw16x816t
-    mov [temp],al
-    mov [bshifter],ah
-    mov eax,esi
-    mov [yadder],ecx
-    mov [tempcach],ebx
-    mov ebx,56
-    sub ebx,ecx
-    mov [yrevadder],ebx
-    ; esi = pointer to video buffer
-    mov esi,[cwinptr]
-    sub esi,eax
-    mov [winptrref],esi
-    mov esi,[curvidoffset]
-    sub esi,eax           ; esi = [vidbuffer] + curypos * 288 + 16 - HOfs
-    sub esi,eax
-    cmp byte[curmosaicsz],1
-    je .nomosaic
-    mov esi,xtravbuf+32
-    mov ecx,128
-.clearnext
-    mov dword[esi],0
-    add esi,4
-    dec ecx
-    jnz .clearnext
-    mov esi,xtravbuf+32
-    sub esi,eax
-    sub esi,eax
-.nomosaic
-    mov [temptile],edx
-    push ecx
-    mov dword[bgsubby],262144
-    mov ecx,[vcache2b]
-    add ecx,262144
-    mov [bgofwptr],ecx
-    cmp dword[tempcach],ecx
-    jb .nobit
-    mov dword[bgsubby],131072
-    mov ecx,[vcache4b]
-    add ecx,131072
-    mov [bgofwptr],ecx
-    cmp dword[tempcach],ecx
-    jb .nobit
-    mov ecx,[vcache8b]
-    add ecx,65536
-    mov [bgofwptr],ecx
-    mov dword[bgsubby],65536
-.nobit
-    pop ecx
-; tile value : bit 15 = flipy, bit 14 = flipx, bit 13 = priority value
-;              bit 10-12 = palette, 0-9=tile#
-    cmp byte[curmosaicsz],1
-    jne .domosaic
-    cmp byte[winon],0
-    jne near draw8x816btwinon
-.domosaic
-    mov ebp,transpbuf+32
-    sub ebp,eax
-    sub ebp,eax
-    mov byte[tileleft16b],33
-    mov byte[drawn],0
-    mov dl,[temp]
-.loopa
-    mov ax,[edi]
-    mov dh,ah
-    add edi,2
-    xor dh,[curbgpr]
-    test dh,20h
-    jnz near .hprior
-    inc byte[drawn]
-    and eax,03FFh                ; filter out tile #
-    mov ebx,[tempcach]
-    shl eax,6
-    add ebx,eax
-    cmp ebx,[bgofwptr]
-    jb .noclip
-    sub ebx,[bgsubby]
-.noclip
-    test dh,80h
-    jz .normadd
-    add ebx,[yrevadder]
-    jmp .skipadd
-.normadd
-    add ebx,[yadder]
-.skipadd
-    test dh,40h
-    jnz near .rloop
-
-    ; Begin Normal Loop
-    mov cl,[bshifter]
-    and dh,1Ch
-    shl dh,cl                    ; process palette # (bits 10-12)
-    add dh,[bgcoloradder]
-    xor eax,eax
-    ; Start loop
-    drawtilegrp draw8x816bta
-.hprior
-    add esi,16
-    add ebp,16
-    inc dl
-    cmp dl,20h
-    jne .loopc2
-    mov edi,[temptile]
-.loopc2
-    dec byte[tileleft16b]
-    jnz near .loopa
-    cmp byte[drawn],0
-    je .nodraw
-    mov dh,[curmosaicsz]
-    cmp dh,1
+    mov [T8AX], eax
+    mov [T8BX], ebx
+    mov [T8CX], ecx
+    mov [T8DX], edx
+    mov [T8SI], esi
+    mov [T8DI], edi
+    mov [T8BP], ebp
+    call c_draw8x816bt
+    mov eax, [T8AX]
+    mov ebx, [T8BX]
+    mov ecx, [T8CX]
+    mov edx, [T8DX]
+    mov esi, [T8SI]
+    mov edi, [T8DI]
+    mov ebp, [T8BP]
+    ; the mosaic tail is a jump, not a call: domosaic16b returns to our caller
+    cmp dword[T8Tail],0
     jne near domosaic16b
-.nodraw
     ret
 
-    ; reversed loop
-.rloop
-    mov cl,[bshifter]
-    and dh,1Ch
-    shl dh,cl                    ; process palette # (bits 10-12)
-    add dh,[bgcoloradder]
-    xor eax,eax
-    drawtilegrpf draw8x816bta
-    add esi,16
-    add ebp,16
-    inc dl
-    cmp dl,20h
-    jne .loopc
-    mov edi,[temptile]
-.loopc
-    dec byte[tileleft16b]
-    jnz near .loopa
-    cmp byte[drawn],0
-    je .nodraw2
-    mov dh,[curmosaicsz]
-    cmp dh,1
-    jne near domosaic16b
-.nodraw2
-    ret
-
-NEWSYM draw8x816btwinon
-    mov ebp,transpbuf+32
-    sub ebp,eax
-    sub ebp,eax
-    mov byte[tileleft16b],33
-    mov ecx,[winptrref]
-    mov byte[drawn],0
-    mov dl,[temp]
-.loopa
-    mov ax,[edi]
-    mov dh,ah
-    add edi,2
-    xor dh,[curbgpr]
-    test dh,20h
-    jnz near .hprior
-    inc byte[drawn]
-    and eax,03FFh                ; filter out tile #
-    mov ebx,[tempcach]
-    shl eax,6
-    add ebx,eax
-    cmp ebx,[bgofwptr]
-    jb .noclip
-    sub ebx,[bgsubby]
-.noclip
-    test dh,80h
-    jz .normadd
-    add ebx,[yrevadder]
-    jmp .skipadd
-.normadd
-    add ebx,[yadder]
-.skipadd
-    test dh,40h
-    jnz near .rloop
-
-    ; Begin Normal Loop
-    mov eax,ecx
-    mov cl,[bshifter]
-    and dh,1Ch
-    shl dh,cl                    ; process palette # (bits 10-12)
-    add dh,[bgcoloradder]
-    mov ecx,eax
-    xor eax,eax
-    ; Start loop
-    drawtilegrp draw8x816btawinon
-.hprior
-    add esi,16
-    add ecx,8
-    add ebp,16
-    inc dl
-    cmp dl,20h
-    jne .loopc2
-    mov edi,[temptile]
-.loopc2
-    dec byte[tileleft16b]
-    jnz near .loopa
-    ret
-
-    ; reversed loop
-.rloop
-    mov eax,ecx
-    mov cl,[bshifter]
-    and dh,1Ch
-    shl dh,cl                    ; process palette # (bits 10-12)
-    add dh,[bgcoloradder]
-    mov ecx,eax
-    xor eax,eax
-    drawtilegrpf draw8x816btawinonb
-    add esi,16
-    add ecx,8
-    add ebp,16
-    inc dl
-    cmp dl,20h
-    jne .loopc
-    mov edi,[temptile]
-.loopc
-    dec byte[tileleft16b]
-    jnz near .loopa
-    ret
 
 NEWSYM draw8x816t
     cmp byte[osm2dis],1
@@ -2847,294 +2655,24 @@ NEWSYM draw8x816tswinonoffset
 ; Processes & Draws 16x16 tiles in main and sub screen
 ;*******************************************************
 NEWSYM draw16x1616bt
-    mov byte[drawn],0
-    mov [temp],eax
-    mov eax,esi
-    mov [yadder],ecx
-    mov [tempcach],ebx
-    mov ebx,56
-    sub ebx,ecx
-    mov [yrevadder],ebx
-    xor ebx,ebx
-    mov bl,[curypos]
-    mov [temptile],edx
-    ; set up y adders
-    test byte[a16x16yinc],01h
-    jz .noincrc
-    mov word[yadd],16
-    mov word[yflipadd],0
-    jmp .yesincrc
-.noincrc
-    mov word[yadd],0
-    mov word[yflipadd],16
-.yesincrc
-    ; esi = pointer to video buffer
-    mov esi,[cwinptr]
-    sub esi,eax
-    mov [winptrref],esi
-    mov esi,[curvidoffset]
-    sub esi,eax           ; esi = [vidbuffer] + curypos * 288 + 16 - HOfs
-    sub esi,eax
-    cmp byte[curmosaicsz],1
-    je .nomosaic
-    mov esi,xtravbuf+32
-    mov ecx,128
-.clearnext
-    mov dword[esi],0
-    add esi,4
-    dec ecx
-    jnz .clearnext
-    mov esi,xtravbuf+32
-    sub esi,eax
-    sub esi,eax
-.nomosaic
-    mov [temptile],edx
-    push ecx
-    mov dword[bgsubby],262144
-    mov ecx,[vcache2b]
-    add ecx,262144
-    mov [bgofwptr],ecx
-    cmp dword[tempcach],ecx
-    jb .nobit
-    mov dword[bgsubby],131072
-    mov ecx,[vcache4b]
-    add ecx,131072
-    mov [bgofwptr],ecx
-    cmp dword[tempcach],ecx
-    jb .nobit
-    mov ecx,[vcache8b]
-    add ecx,65536
-    mov [bgofwptr],ecx
-    mov dword[bgsubby],65536
-.nobit
-    pop ecx
-    cmp byte[curmosaicsz],1
-    jne .domosaic
-    cmp byte[winon],0
-    jne near draw16x1616btwinon
-.domosaic
-    mov ebp,transpbuf+32
-    sub ebp,eax
-    sub ebp,eax
-    mov byte[tileleft16b],33
-    mov dl,[temp]
-.loopa
-    mov ax,[edi]
-    mov dh,ah
-    xor byte[a16x16xinc],1
-
-    test dh,40h
-    jnz .noxflip
-    test byte[a16x16xinc],01h
-    jnz .noincr2
-    inc ax
-    add edi,2
-.noincr2
-    jmp .yesxflip
-.noxflip
-    test byte[a16x16xinc],01h
-    jnz .noincr
-    add edi,2
-    jmp .yesincr
-.noincr
-    inc ax
-.yesincr
-.yesxflip
-    xor dh,[curbgpr]
-    test dh,20h
-    jnz near .hprior
-    inc byte[drawn]
-
-    test dh,80h
-    jnz .noyflip
-    add ax,word[yadd]
-    jmp .yesyflip
-.noyflip
-    add ax,word[yflipadd]
-.yesyflip
-
-    and ax,03FFh                ; filter out tile #
-    mov ebx,[tempcach]
-    shl ax,6
-    add ebx,eax
-    cmp ebx,[bgofwptr]
-    jb .noclip
-    sub ebx,[bgsubby]
-.noclip
-    test dh,80h
-    jz .normadd
-    add ebx,[yrevadder]
-    jmp .skipadd
-.normadd
-    add ebx,[yadder]
-.skipadd
-    test dh,40h
-    jnz near .rloop
-    mov cl,[bshifter]
-    and dh,1Ch
-    shl dh,cl                    ; process palette # (bits 10-12)
-    add dh,[bgcoloradder]
-    xor eax,eax
-
-    ; Start loop
-    drawtilegrp draw8x816bta
-.hprior
-    add esi,16
-    add ebp,16
-    test byte[a16x16xinc],01h
-    jnz .noincrb2
-    inc dl
-.noincrb2
-    cmp dl,20h
-    jne .loopc2
-    xor dl,dl
-    mov edi,[temptile]
-.loopc2
-    dec byte[tileleft16b]
-    jnz near .loopa
-    mov dh,[curmosaicsz]
-    cmp dh,1
+    mov [T16AX], eax
+    mov [T16BX], ebx
+    mov [T16CX], ecx
+    mov [T16DX], edx
+    mov [T16SI], esi
+    mov [T16DI], edi
+    mov [T16BP], ebp
+    call c_draw16x1616bt
+    mov eax, [T16AX]
+    mov ebx, [T16BX]
+    mov ecx, [T16CX]
+    mov edx, [T16DX]
+    mov esi, [T16SI]
+    mov edi, [T16DI]
+    mov ebp, [T16BP]
+    ; the mosaic tail is a jump, not a call: domosaic16b returns to our caller
+    cmp dword[T16Tail],0
     jne near domosaic16b
-    ret
-
-    ; reversed loop
-.rloop
-    mov cl,[bshifter]
-    and dh,1Ch
-    shl dh,cl                    ; process palette # (bits 10-12)
-    add dh,[bgcoloradder]
-    xor eax,eax
-    drawtilegrpf draw8x816bta
-.skiploop2b
-    add esi,16
-    add ebp,16
-    test byte[a16x16xinc],01h
-    jnz .noincrb
-    inc dl
-.noincrb
-    cmp dl,20h
-    jne .loopc
-    xor dl,dl
-    mov edi,[temptile]
-.loopc
-    dec byte[tileleft16b]
-    jnz near .loopa
-    mov dh,[curmosaicsz]
-    cmp dh,1
-    jne near domosaic16b
-    ret
-
-NEWSYM draw16x1616btwinon
-    mov ebp,transpbuf+32
-    sub ebp,eax
-    sub ebp,eax
-    mov byte[tileleft16b],33
-    mov ecx,[winptrref]
-    mov dl,[temp]
-.loopa
-    mov ax,[edi]
-    mov dh,ah
-    xor byte[a16x16xinc],1
-
-    test dh,40h
-    jnz .noxflip
-    test byte[a16x16xinc],01h
-    jnz .noincr2
-    inc ax
-    add edi,2
-.noincr2
-    jmp .yesxflip
-.noxflip
-    test byte[a16x16xinc],01h
-    jnz .noincr
-    add edi,2
-    jmp .yesincr
-.noincr
-    inc ax
-.yesincr
-.yesxflip
-    xor dh,[curbgpr]
-    test dh,20h
-    jnz near .hprior
-    inc byte[drawn]
-
-    test dh,80h
-    jnz .noyflip
-    add ax,word[yadd]
-    jmp .yesyflip
-.noyflip
-    add ax,word[yflipadd]
-.yesyflip
-
-    and ax,03FFh                ; filter out tile #
-    mov ebx,[tempcach]
-    shl ax,6
-    add ebx,eax
-    cmp ebx,[bgofwptr]
-    jb .noclip
-    sub ebx,[bgsubby]
-.noclip
-    test dh,80h
-    jz .normadd
-    add ebx,[yrevadder]
-    jmp .skipadd
-.normadd
-    add ebx,[yadder]
-.skipadd
-    test dh,40h
-    jnz near .rloop
-    mov eax,ecx
-    mov cl,[bshifter]
-    and dh,1Ch
-    shl dh,cl                    ; process palette # (bits 10-12)
-    add dh,[bgcoloradder]
-    mov ecx,eax
-    xor eax,eax
-
-    ; Start loop
-    drawtilegrp draw8x816btawinon
-.hprior
-    add esi,16
-    add ecx,8
-    add ebp,16
-    test byte[a16x16xinc],01h
-    jnz .noincrb2
-    inc dl
-.noincrb2
-    cmp dl,20h
-    jne .loopc2
-    xor dl,dl
-    mov edi,[temptile]
-.loopc2
-    dec byte[tileleft16b]
-    jnz near .loopa
-    ret
-
-    ; reversed loop
-.rloop
-    mov eax,ecx
-    mov cl,[bshifter]
-    and dh,1Ch
-    shl dh,cl                    ; process palette # (bits 10-12)
-    add dh,[bgcoloradder]
-    mov ecx,eax
-    xor eax,eax
-    drawtilegrpf draw8x816btawinon
-.skiploop2b
-    add esi,16
-    add ecx,8
-    add ebp,16
-    test byte[a16x16xinc],01h
-    jnz .noincrb
-    inc dl
-.noincrb
-    cmp dl,20h
-    jne .loopc
-    xor dl,dl
-    mov edi,[temptile]
-.loopc
-    dec byte[tileleft16b]
-    jnz near .loopa
     ret
 
 ;*******************************************************

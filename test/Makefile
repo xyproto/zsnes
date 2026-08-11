@@ -45,7 +45,7 @@ ASMDATA   := zsnes_asmdata_test
 ASMDATA_SRC := asmdata_test.c
 OBJS      := ../zpath.o
 
-.PHONY: all run clean spcdec fxtable fxops memops m7calc m7ext2 m7start m7win m7bw m7proc m7draw mv16 mvs mvall m716t cb16t cb16b spr16bt spr16t spr16p regs
+.PHONY: all run clean spcdec fxtable fxops memops m7calc m7ext2 m7start m7win m7bw m7proc m7draw mv16 mvs mvall m716t cb16t cb16b spr16bt spr16t spr16p t8bt t16bt regs
 
 all: $(BIN) $(NETPLAY) $(ST10) $(ST11) $(OBC1) $(MSU1) $(DSP2) $(SAI) $(SA1) $(SPC7110) $(VCACHE) $(SPRITES) $(C4) $(MODE7) $(ASMDATA)
 
@@ -160,7 +160,8 @@ M716T_TAILS := makewindow drawsprites16b draw8x816b draw16x1616b \
 # added to each of them by hand. One list instead.
 M16T_SEAM := ../video/c_mv16tm7.c ../video/c_mv16tclr.c \
              ../video/c_mv16bclr.c ../video/c_mv16tspr.c \
-             ../video/c_mv16tsprt.c ../video/c_mv16tsprp.c
+             ../video/c_mv16tsprt.c ../video/c_mv16tsprp.c \
+             ../video/c_mv16t8bt.c ../video/c_mv16t16bt.c
 M16T_OBJS := ../cpu/c_regsdata.o ../cpu/c_regswdata.o \
              ../video/c_mode716data.o ../video/makevid.o ../endmem.o
 M16T_BSS  := ../video/c_makev16tdata.o
@@ -229,6 +230,31 @@ spr16p: difftest_spr16p.c difftest.h $(M16T_SEAM)
 	    _spp.o _sppcur.o _spp_stubs.c $(M16T_OBJS) $(M16T_BSS) \
 	    -no-pie -o difftest_spr16p
 	@./difftest_spr16p
+
+t8bt: difftest_t8bt.c difftest.h $(M16T_SEAM)
+	python3 ../tools/mkoracle.py video/makev16t.asm -o _t8bt.o \
+	    --stub-routine draw16x816t \
+	    --stubs _t8bt_stubs.c --provided-by $(M16T_OBJS) $(M16T_BSS) \
+	    --exclude domosaic16b draw8x816boffset draw16x816t_stub \
+	    xtravbuf transpbuf vcache2b vcache4b vcache8b
+	python3 ../tools/mkoracle.py video/makev16t.asm -o _t8btcur.o \
+	    --worktree --prefix cur_ --stub-routine draw16x816t
+	$(CC) $(CFLAGS) difftest_t8bt.c $(M16T_SEAM) \
+	    _t8bt.o _t8btcur.o _t8bt_stubs.c $(M16T_OBJS) $(M16T_BSS) \
+	    -no-pie -o difftest_t8bt
+	@./difftest_t8bt
+
+t16bt: difftest_t16bt.c difftest.h $(M16T_SEAM)
+	python3 ../tools/mkoracle.py video/makev16t.asm -o _t16bt.o \
+	    --stubs _t16bt_stubs.c --provided-by $(M16T_OBJS) $(M16T_BSS) \
+	    --exclude domosaic16b xtravbuf transpbuf \
+	    vcache2b vcache4b vcache8b
+	python3 ../tools/mkoracle.py video/makev16t.asm -o _t16btcur.o \
+	    --worktree --prefix cur_
+	$(CC) $(CFLAGS) difftest_t16bt.c $(M16T_SEAM) \
+	    _t16bt.o _t16btcur.o _t16bt_stubs.c $(M16T_OBJS) $(M16T_BSS) \
+	    -no-pie -o difftest_t16bt
+	@./difftest_t16bt
 
 mv16: difftest_mv16.c difftest.h mkmv16.sh ../video/c_mv16tms.c
 	./mkmv16.sh
