@@ -14,6 +14,7 @@
 #include "../vcache.h"
 #include "c_makev16b.h"
 #include "c_makevid.h"
+#include "c_mv16toffs.h"
 #include "makev16b.h"
 #include "makev16t.h"
 #include "makevid.h"
@@ -1048,101 +1049,20 @@ static void Draw8x816bflipmacro(u1 const dh, u1 const* const ebx, u2* const esi,
 }
 
 // Processes & Draws 8x8 offset mode in Mode 2/4
+/* initoffsetmode, offsetmcachechk and procoffsetmode live in
+   video/c_mv16toffs.h now. The copies that used to be here diverged from the
+   assembly in three places - `& 0x3FF + ofsmcyps` binding as
+   `& (0x3FF + ofsmcyps)`, the ofsmtptr/ofsmtptrs terms carrying the wrong
+   signs, and ngptrdat2's value being written to bgsubby - and the shared ones
+   are checked against the original by `make -C test t8to`. */
 static void initoffsetmode(u4 const ebp, u2 const* const edi)
 {
-    u4 ebx = 0x2000 << ebp;
-    OMBGTestVal = ebx;
-    u4 ecx = bg1scroly[ebp] + ebx;
-    u4 edx = bg1scroly[2];
-    if (edx != 0xFFFF)
-        edx &= 0x01FF;
-    u4 eax = (bg1ptr[2] + (edx >> 3 << 6)) & 0x0000FFFF;
-    ebx = 0;
-    ebx = *(u4*)&curypos; // XXX cast makes no sense, variable defined in .c
-    ofsmcyps = ebx;
-    eax = (eax + ((bg1scrolx[2] & 0x00F8) >> 3 << 1)) & 0x0000FFFF;
-    if (bg1scroly[2] > 0xFFF7)
-        eax = (eax + 0x0780) & 0x0000FFFF;
-    eax += 0x40;
-    ofsmcptr = vram + (eax & 0xFFFFFFC0);
-    ofsmcptr2 = eax & 0x3F;
-    ofsmady = bg1ptry[ebp];
-    ofsmadx = bg1ptrx[ebp];
-    eax = *(u4*)&bg1ptr[ebp]; // XXX strange cast
-    ofsmtptr = eax;
-    ofsmtptrs = eax;
-    if (ecx & 0x0100)
-        eax += bg1ptry[ebp];
-    eax += (ecx * 8) & 0x07C0; // 0x1F * 0x40
-    yposngom = yadder;
-    flipyposngom = yrevadder;
-    ecx = *(u4*)&bg1scrolx[ebp]; // XXX strange cast
-    edx = bg1ptrx[ebp];
-    if (ecx & 0x0100) {
-        eax += edx;
-        ofsmtptr += edx;
-        edx = edx & 0xFFFF0000 | -edx & 0x0000FFFF;
-    }
-    edx = edx & 0xFFFF0000 | (edx - 64) & 0x0000FFFF;
-    ecx = (ecx & 0x00F8) >> 2;
-    bgtxadd = edx;
-    ofsmtptr += ecx;
-    ofsmmptr = ecx + (eax & 0xFFFF);
-    bgsubby = bg1objptr[ebp] >> 5;
-    ofsmmptr = (u1 const*)edi - vram;
-    ofshvaladd = 0;
+    offs_init(ebp, (u1 const*)edi);
 }
 
-static void offsetmcachechk(u4 const eax)
-{ // Cache check
-    u4 const ecx = (eax + ngptrdat2) & 0x07FF;
-    if (vidmemch4[ecx] == 0)
-        return;
-    c_cachesingle4bng(ecx);
-}
+static void offsetmcachechk(u4 const eax) { offs_cachechk(eax); }
 
-static u2* procoffsetmode(void)
-{
-    // TODO most/all of the upper halfword preservation probably is pointless
-    ofsmmptr = ofsmmptr & 0xFFFF0000 | (ofsmmptr + 2) & 0x0000FFFF;
-    ofsmtptr = ofsmtptr & 0xFFFF0000 | (ofsmtptr + 2) & 0x0000FFFF;
-    u4 eax = flipyposngom;
-    yadder = yposngom;
-    yrevadder = eax;
-    eax = eax & 0xFFFF0000 | ofsmmptr & 0x0000FFFF;
-    if ((eax & 0x3F) == 0) {
-        u4 const ebx = bgtxadd;
-        eax = eax & 0xFFFF0000 | (eax + ebx) & 0x0000FFFF;
-        ofsmmptr = ofsmmptr & 0xFFFF0000 | (ofsmmptr + ebx) & 0x0000FFFF;
-        ofsmtptr = ofsmtptr & 0xFFFF0000 | (ofsmtptr + ebx) & 0x0000FFFF;
-    }
-    u1* edi = vram + eax;
-    u4* const ebx_ = (u4*)(ofsmcptr + ofsmcptr2);
-    eax = OMBGTestVal;
-    if (*ebx_ & eax) {
-        u4 const ebx = *ebx_ & 0x003FF + ofsmcyps;
-        eax = eax & 0xFFFF0000 | ofsmtptr & 0x0000FFFF;
-        if (ebx & 0x100)
-            eax = eax & 0xFFFF0000 | (eax + ofsmady) & 0x0000FFFF;
-        u4 const edx = (ebx & 0x07) << 3;
-        eax = eax & 0xFFFF0000 | (eax + ((ebx & 0xF8) << 3)) & 0x0000FFFF;
-        yadder = edx;
-        yrevadder = edx ^ 0x38;
-        edi = vram + eax;
-    }
-    ofshvaladd += 8;
-    ofsmcptr2 = (ofsmcptr2 + 2) & 0x3F;
-    if (ebx_[-16] & OMBGTestVal) {
-        u4 eax = edi - vram;
-        u4 const ebx = ebx_[-16] + ofshvaladd;
-        eax = eax & 0xFFFF0000 | (eax + ofsmtptr - ofsmtptrs) & 0x0000FFFF;
-        if (ebx & 0x100)
-            eax = eax & 0xFFFF0000 | (eax + ofsmadx) & 0x0000FFFF;
-        eax = eax & 0xFFFF0000 | (eax + ((ebx & 0xF8) >> 2)) & 0x0000FFFF;
-        edi = vram + eax;
-    }
-    return (u2*)edi;
-}
+static u2* procoffsetmode(void) { return (u2*)offs_proc(); }
 
 static void Draw8x816bwinmacro(u1 const dh, u1 const* const ebx, u1 const* const ebp, u2* const esi, u4 const p1)
 {
