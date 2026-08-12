@@ -144,6 +144,7 @@ EXTSYM TOAX,TOBX,TOCX,TODX,TOSI,TODI,TOBP,TOTail
 EXTSYM c_draw8x816toffset
 EXTSYM THAX,THBX,THCX,THDX,THSI,THDI,THBP,THTail
 EXTSYM c_draw16x816t
+EXTSYM DLR,DLFN
 EXTSYM winbg1en,winenabm,drawmode716textbg,drawmode716textbg2,extbgdone
 EXTSYM drawmode716tb,drawmode716b,drawmode716extbg,drawmode716extbg2,cursprloc
 EXTSYM drawsprites16b,scrndis,sprprifix,winonsp,bgfixer,scaddtype
@@ -683,401 +684,42 @@ NEWSYM drawbackgrndmain16tfix
     ret
 
 
-NEWSYM drawline16t
-    cmp byte[bgmode],7
-    je near processmode716t
-    mov al,[scrnon]
-    test [scrnon+1],al
-    jz .nomainsub
-    test byte[scrnon],10h
-    jnz .nomainsub
-    test byte[scrnon+1],10h
-    jz .nomainsub
-    mov al,[scrnon+1]
-    xor al,0FFh
-    and [scrnon],al
-.nomainsub
-    push esi
-    push edi
-    push ebx
-    push edx
-    push ebp
-    ; current video offset
-    mov dword[curvidoffset],transpbuf+32
-    ; set palette
-    ccallv setpalette16b
-    ; clear back area w/ back color
+; The window-colour set-up, which used to be a macro instantiated by
+; drawline16t and processmode716t. Both are C now, so it is a routine they
+; reach through calldl16t - that way its register effects stay in assembly and
+; the port does not have to model them.
+NEWSYM procwindowback16t
     procwindowback
-    call clearback16bts
-    ; do sprite windowing
-    ccallv makewindowsp
-    ; clear registers
-    xor eax,eax
-    xor ecx,ecx
-    ; get current sprite table
-    xor ebx,ebx
-    mov bl,[curypos]
-    shl ebx,9
-    add ebx,[spritetablea]
-    mov [currentobjptr],ebx
-    mov dword[cursprloc],sprleftpr
-    ; setup priorities
-    cmp byte[sprprifix],0
-    je .nosprprio
-    mov dword[cursprloc],sprlefttot
-    ccallv preparesprpr
-.nosprprio
-; process backgrounds
-; do background 2
-    mov byte[curbgnum],02h
-    ccallv procbackgrnd, 0x01
-; do background 1
-    mov byte[curbgnum],01h
-    ccallv procbackgrnd, 0x00
-; do background 4
-    mov byte[curbgnum],08h
-    ccallv procbackgrnd, 0x03
-; do background 3
-    mov byte[curbgnum],04h
-    ccallv procbackgrnd, 0x02
-
-    cmp byte[bgmode],1
-    ja near priority216t
-    test byte[scaddset],02h
-    jz near .noscrnadd
-; draw backgrounds
-    mov byte[curbgpr],0h
-; do background 4
-    mov byte[curbgnum],08h
-    mov ebp,03h
-    call drawbackgrndsub16t
-; do background 3
-    mov byte[curbgnum],04h
-    mov ebp,02h
-    call drawbackgrndsub16t
-    mov ebp,0
-    call procspritessub16t
-; do background 4
-    mov byte[curbgnum],08h
-    mov ebp,03h
-    call drawbackgrndsub16t
-; do background 3
-    mov byte[curbgpr],20h
-    cmp byte[bg3high2],1
-    je .bg3nothigh
-    mov byte[curbgnum],04h
-    mov ebp,02h
-    call drawbackgrndsub16t
-.bg3nothigh
-    mov ebp,1
-    call procspritessub16t
-; do background 2
-    mov byte[curbgpr],0h
-    mov byte[curbgnum],02h
-    mov ebp,01h
-    call drawbackgrndsub16t
-; do background 1
-    mov byte[curbgnum],01h
-    mov ebp,00h
-    call drawbackgrndsub16t
-    mov ebp,2
-    call procspritessub16t
-; do background 2
-    mov byte[curbgpr],20h
-    mov byte[curbgnum],02h
-    mov ebp,01h
-    call drawbackgrndsub16t
-; do background 1
-    mov byte[curbgnum],01h
-    mov ebp,00h
-    call drawbackgrndsub16t
-    mov ebp,3
-    call procspritessub16t
-; do background 3
-    cmp byte[bg3high2],1
-    jne .bg3high
-    mov byte[curbgnum],04h
-    mov ebp,02h
-    call drawbackgrndsub16t
-.bg3high
-.noscrnadd
-    mov al,[winenabm]
-    mov [cwinenabm],al
-
-NEWSYM NextDrawLine16bt
-    ; calculate current video offset
-    xor ebx,ebx
-    mov bx,[curypos]
-    mov esi,ebx
-    shl esi,9
-    shl ebx,6
-    add esi,ebx
-    add esi,32
-    add esi,[vidbuffer]
-    mov [curvidoffset],esi
-    ; clear back area w/ back color
-    call clearback16t
-    mov byte[curbgpr],0h
-; do background 4
-    mov byte[curbgnum],08h
-    mov ebp,03h
-    call drawbackgrndmain16t
-; do background 3
-    mov byte[curbgnum],04h
-    mov ebp,02h
-    call drawbackgrndmain16t
-    mov ebp,0
-    call procspritesmain16t
-; do background 4
-    mov byte[curbgnum],08h
-    mov ebp,03h
-    call drawbackgrndmain16t
-; do background 3
-    mov byte[curbgpr],20h
-    cmp byte[bg3high2],1
-    je .bg3nothighb
-    mov byte[curbgnum],04h
-    mov ebp,02h
-    call drawbackgrndmain16t
-.bg3nothighb
-    mov ebp,1
-    call procspritesmain16t
-; do background 2
-    mov byte[curbgpr],0h
-    mov byte[curbgnum],02h
-    mov ebp,01h
-    call drawbackgrndmain16t
-; do background 1
-    mov byte[curbgnum],01h
-    mov ebp,00h
-    call drawbackgrndmain16t
-    mov ebp,2
-    call procspritesmain16t
-; do background 2
-    mov byte[curbgpr],20h
-    mov byte[curbgnum],02h
-    mov ebp,01h
-    call drawbackgrndmain16t
-; do background 1
-    mov byte[curbgnum],01h
-    mov ebp,00h
-    call drawbackgrndmain16t
-    mov ebp,3
-    call procspritesmain16t
-    cmp byte[bg3high2],1
-    jne .bg3highb
-; do background 3
-    mov byte[curbgpr],20h
-    mov byte[curbgnum],04h
-    mov ebp,02h
-    call drawbackgrndmain16t
-.bg3highb
-    pop ebp
-    pop edx
-    pop ebx
-    pop edi
-    pop esi
-    xor eax,eax
-    xor ecx,ecx
     ret
 
-NEWSYM priority216t
-    test byte[scaddset],02h
-    jz near .noscrnadd
-; do background 2
-    mov byte[curbgpr],0h
-    mov byte[curbgnum],02h
-    mov ebp,01h
-    call drawbackgrndsub16t
-    mov ebp,0
-    call procspritessub16t
-; do background 1
-    mov byte[curbgnum],01h
-    mov ebp,00h
-    call drawbackgrndsub16t
-    mov ebp,1
-    call procspritessub16t
-; do background 2
-    mov byte[curbgpr],20h
-    mov byte[curbgnum],02h
-    mov ebp,01h
-    call drawbackgrndsub16t
-    mov ebp,2
-    call procspritessub16t
-; do background 1
-    mov byte[curbgnum],01h
-    mov ebp,00h
-    call drawbackgrndsub16t
-    mov ebp,3
-    call procspritessub16t
-.noscrnadd
-    mov al,[winenabm]
-    mov [cwinenabm],al
-NEWSYM Priority2NextDrawLine16bt
-    ; calculate current video offset
-    xor ebx,ebx
-    mov bx,[curypos]
-    mov esi,ebx
-    shl esi,9
-    shl ebx,6
-    add esi,ebx
-    add esi,32
-    add esi,[vidbuffer]
-    mov [curvidoffset],esi
-    ; clear back area w/ back color
-    call clearback16t
-; do background 2
-    mov byte[curbgpr],0h
-    mov byte[curbgnum],02h
-    mov ebp,01h
-    call drawbackgrndmain16t
-    mov ebp,0
-    call procspritesmain16t
-; do background 1
-    mov byte[curbgnum],01h
-    mov ebp,00h
-    call drawbackgrndmain16t
-    mov ebp,1
-    call procspritesmain16t
-; do background 2
-    mov byte[curbgpr],20h
-    mov byte[curbgnum],02h
-    mov ebp,01h
-    call drawbackgrndmain16t
-    mov ebp,2
-    call procspritesmain16t
-; do background 1
-    mov byte[curbgnum],01h
-    mov ebp,00h
-    call drawbackgrndmain16t
-    mov ebp,3
-    call procspritesmain16t
-    pop ebp
-    pop edx
-    pop ebx
-    pop edi
-    pop esi
-    xor eax,eax
-    xor ecx,ecx
-    ret
-
-NEWSYM processmode716t
+; Call an assembly routine that takes and returns its arguments in registers,
+; from C. The inverse of the seam thunks: DLR is the register block, DLFN the
+; target. Used by video/c_mv16tline.c, which drives the whole scanline from C
+; but still reaches the ported clusters through their own thunks.
+NEWSYM calldl16t
+    push ebx
     push esi
     push edi
-    push ebx
-    push edx
     push ebp
-    ; current video offset
-    mov dword[curvidoffset],transpbuf+32
-    ; set palette
-    ccallv setpalette16b
-    ; clear back area w/ back color
-    procwindowback
-    call clearback16bts
-    ; do sprite windowing
-    ccallv makewindowsp
-    ; clear registers
-    xor eax,eax
-    xor ecx,ecx
-    ; get current sprite table
-    xor ebx,ebx
-    mov bl,[curypos]
-    shl ebx,9
-    add ebx,[spritetablea]
-    mov [currentobjptr],ebx
-    mov dword[cursprloc],sprleftpr
-    ; setup priorities
-    cmp byte[sprprifix],0
-    je .nosprprio
-    mov dword[cursprloc],sprlefttot
-    ccallv preparesprpr
-.nosprprio
-    mov byte[extbgdone],0
-    test byte[scaddset],02h
-    jz .nosubscr
-    test byte[interlval],40h
-    jz .noback0s
-    call procmode716tsubextbg
-.noback0s
-    mov ebp,0
-    call procspritessub16t
-    test byte[interlval],40h
-    jnz .noback1s
-    call procmode716tsub
-.noback1s
-    mov ebp,1
-    call procspritessub16t
-    test byte[interlval],40h
-    jz .noback2s
-    call procmode716tsubextbgb
-    call procmode716tsubextbg2
-.noback2s
-    mov ebp,2
-    call procspritessub16t
-    mov ebp,3
-    call procspritessub16t
-.nosubscr
-    mov al,[winenabm]
-    mov [cwinenabm],al
-NEWSYM processmode716t2
-    ; calculate current video offset
-    xor ebx,ebx
-    mov bx,[curypos]
-    mov esi,ebx
-    shl esi,9
-    shl ebx,6
-    add esi,ebx
-    add esi,32
-    add esi,[vidbuffer]
-    mov [curvidoffset],esi
-    ; get current sprite table
-    xor ebx,ebx
-    mov bl,[curypos]
-    shl ebx,9
-    add ebx,[spritetablea]
-    mov [currentobjptr],ebx
-    mov dword[cursprloc],sprleftpr
-    ; setup priorities
-    cmp byte[sprprifix],0
-    je .nosprprio
-    mov dword[cursprloc],sprlefttot
-    ccallv preparesprpr
-.nosprprio
-    ; clear back area w/ back color
-    call clearback16t
-    ; clear registers
-    xor eax,eax
-    xor ecx,ecx
-    mov byte[extbgdone],0
-    test byte[interlval],40h
-    jz .noback0m
-    call procmode716tmainextbg
-.noback0m
-    mov ebp,0
-    call procspritesmain16t
-    ; do background 1
-    test byte[interlval],40h
-    jnz .noback1m
-    call procmode716tmain
-.noback1m
-    mov ebp,1
-    call procspritesmain16t
-    test byte[interlval],40h
-    jz .noback2m
-    call procmode716tmainextbgb
-    call procmode716tmainextbg2
-.noback2m
-    mov ebp,2
-    call procspritesmain16t
-    mov ebp,3
-    call procspritesmain16t
+    mov ebx, [DLR+4]
+    mov ecx, [DLR+8]
+    mov edx, [DLR+12]
+    mov esi, [DLR+16]
+    mov edi, [DLR+20]
+    mov ebp, [DLR+24]
+    mov eax, [DLR]
+    call dword[DLFN]
+    mov [DLR], eax
+    mov [DLR+4], ebx
+    mov [DLR+8], ecx
+    mov [DLR+12], edx
+    mov [DLR+16], esi
+    mov [DLR+20], edi
+    mov [DLR+24], ebp
     pop ebp
-    pop edx
-    pop ebx
     pop edi
     pop esi
-    xor eax,eax
-    xor ecx,ecx
+    pop ebx
     ret
 
 ;*******************************************************

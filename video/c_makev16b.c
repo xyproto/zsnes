@@ -1847,7 +1847,7 @@ void drawline16b(void)
         scrnon = 0x0116;
 
     if (scaddset & 0x02 || (scaddtype & 0x3F && (coladdr != 0 || coladdg != 0 || coladdb != 0 || colnull != 0))) {
-        asm_call(drawline16t);
+        drawline16t();
         return;
     }
     if (bgmode == 7) {
