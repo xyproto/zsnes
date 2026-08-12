@@ -1,0 +1,94 @@
+# Mutants for video/c_mv16toffs.h, the offset-per-tile helpers, checked by
+# test/difftest_t8to.c. The three named "c_makev16b divergence" reproduce what
+# that file's static copies of these do differently.
+# Format: name<TAB>old<TAB>new   (\n for a newline)
+init testval	    ebx = 0x2000u << (ebp & 31u);	    ebx = 0x2000u << ((ebp + 1u) & 31u);
+init scroly	    ecx = bg1scroly[ebp] + ebx;	    ecx = bg1scroly[ebp];
+init bg3 sentinel	    if ((u2)edx != 0xFFFFu) {\n        edx &= 0x01FFu;\n    }	    edx &= 0x01FFu;
+init bg3 mask	    if ((u2)edx != 0xFFFFu) {\n        edx &= 0x01FFu;\n    }	    if ((u2)edx != 0xFFFFu) {\n        edx &= 0x00FFu;\n    }
+init bg3 shift	    edx = (edx >> 3) << 6;	    edx = (edx >> 3) << 5;
+init ptr add	    eax = bg3ptr;\n    eax = (u2)(eax + edx);	    eax = bg3ptr;\n    eax = eax + edx;
+init scrolx mask	    edx = bg3scrolx & 0xF8u;	    edx = bg3scrolx & 0xFFu;
+init cyps width	    ebx = *(u4 const*)&curypos;	    ebx = curypos;
+init scrolx shift	    edx = (edx >> 3) << 1;	    edx = (edx >> 3) << 2;
+init scrolx add	    eax = (u2)(eax + edx);\n    if (bg3scroly > 0xFFF7u) {	    eax = eax + edx;\n    if (bg3scroly > 0xFFF7u) {
+init oma test	    if (bg3scroly > 0xFFF7u) {	    if (bg3scroly >= 0xFFF7u) {
+init oma add	    if (bg3scroly > 0xFFF7u) {\n        eax = (u2)(eax + 0x0780u);\n    }	    /* mutant: no oma bias */
+init oma width	        eax = (u2)(eax + 0x0780u);	        eax = eax + 0x0780u;
+init cptr bias	    eax += 0x40u;	    eax += 0x80u;
+init cptr mask	    ofsmcptr = vram + (eax & 0xFFFFFFC0u);	    ofsmcptr = vram + (eax & 0xFFFFFF80u);
+init cptr2 mask	    ofsmcptr2 = eax & 0x3Fu;	    ofsmcptr2 = eax & 0x1Fu;
+init ady	    ofsmady = bg1ptry[ebp];\n    ofsmadx = bg1ptrx[ebp];	    ofsmady = bg1ptrx[ebp];\n    ofsmadx = bg1ptry[ebp];
+init tptr width	    eax = *(u4 const*)&bg1ptr[ebp];	    eax = bg1ptr[ebp];
+init tptrs	    ofsmtptr = eax;\n    ofsmtptrs = eax;	    ofsmtptr = eax;
+init yinc test	    if (ecx & 0x0100u) {\n        eax += bg1ptry[ebp];\n    }	    /* mutant: no y increment */
+init yinc bit	    if (ecx & 0x0100u) {\n        eax += bg1ptry[ebp];\n    }	    if (ecx & 0x0200u) {\n        eax += bg1ptry[ebp];\n    }
+init row scale	    ecx = (ecx * 8u) & 0x07C0u;	    ecx = (ecx * 8u) & 0x0FC0u;
+init yposngom	    yposngom = yadder;\n    flipyposngom = yrevadder;	    yposngom = yrevadder;\n    flipyposngom = yadder;
+init xinc bit	    if (ecx & 0x0100u) {\n        eax += edx;	    if (ecx & 0x0200u) {\n        eax += edx;
+init xinc tptr	        eax += edx;\n        ofsmtptr += edx;	        eax += edx;
+init neg	        edx = (edx & 0xFFFF0000u) | (u2)(0u - edx); /* neg dx */	        edx = 0u - edx; /* neg dx */
+init sub64	    edx = (edx & 0xFFFF0000u) | (u2)(edx - 64u);	    edx = edx - 64u;
+init sub64 value	    edx = (edx & 0xFFFF0000u) | (u2)(edx - 64u);	    edx = (edx & 0xFFFF0000u) | (u2)(edx - 32u);
+init col mask	    ecx &= 0xF8u;	    ecx &= 0xFCu;
+init eax trunc	    eax &= 0xFFFFu;	    eax &= 0xFFFFFFFFu;
+init col shift	    ecx >>= 2;	    ecx >>= 3;
+init tptr col	    eax += ecx;\n    ofsmtptr += ecx;	    eax += ecx;
+init ngptrdat2	    ngptrdat2 = (u4)bg1objptr[ebp] >> 5;	    ngptrdat2 = (u4)bg1objptr[ebp] >> 4;
+init ngptrdat2 var	    ngptrdat2 = (u4)bg1objptr[ebp] >> 5;	    bgsubby = (u4)bg1objptr[ebp] >> 5;
+init mmptr	    ofsmmptr = (u4)(uintptr_t)edi - (u4)(uintptr_t)vram;	    ofsmmptr = (u4)(uintptr_t)edi;
+init hvaladd	    ofshvaladd = 0;	    ofshvaladd = 8;
+proc mmptr step	    ofsmmptr = (ofsmmptr & 0xFFFF0000u) | (u2)(ofsmmptr + 2u);	    ofsmmptr = (ofsmmptr & 0xFFFF0000u) | (u2)(ofsmmptr + 4u);
+proc mmptr width	    ofsmmptr = (ofsmmptr & 0xFFFF0000u) | (u2)(ofsmmptr + 2u);	    ofsmmptr = ofsmmptr + 2u;
+proc tptr step	    ofsmtptr = (ofsmtptr & 0xFFFF0000u) | (u2)(ofsmtptr + 2u);	    ofsmtptr = (ofsmtptr & 0xFFFF0000u) | (u2)(ofsmtptr + 4u);
+proc yadder	    yadder = ebx;\n    yrevadder = eax;	    yadder = eax;\n    yrevadder = ebx;
+proc mm low	    eax = (eax & 0xFFFF0000u) | (u2)ofsmmptr;	    eax = (u2)ofsmmptr;
+proc wrap test	    if ((eax & 0x3Fu) == 0) {	    if ((eax & 0x1Fu) == 0) {
+proc wrap sense	    if ((eax & 0x3Fu) == 0) {	    if ((eax & 0x3Fu) != 0) {
+proc txadd	        ebx = (ebx & 0xFFFF0000u) | (u2)bgtxadd;	        ebx = bgtxadd;
+proc wrap mm	        ofsmmptr = (ofsmmptr & 0xFFFF0000u) | (u2)(ofsmmptr + ebx);\n        ofsmtptr	        ofsmtptr
+proc wrap tp	        ofsmtptr = (ofsmtptr & 0xFFFF0000u) | (u2)(ofsmtptr + ebx);\n    }	    }
+proc vram	    eax += (u4)(uintptr_t)vram;\n    edi = (u1*)(uintptr_t)eax;\n\n    /* The vertical	    edi = (u1*)(uintptr_t)eax;\n\n    /* The vertical
+proc vtest	    if (*(u4 const*)(uintptr_t)ebx & eax) {	    if (*(u2 const*)(uintptr_t)ebx & eax) {
+proc vtest sense	    if (*(u4 const*)(uintptr_t)ebx & eax) {	    if (!(*(u4 const*)(uintptr_t)ebx & eax)) {
+proc vmask	        ebx &= 0x03FFu;\n        ebx += ofsmcyps;	        ebx &= 0x07FFu;\n        ebx += ofsmcyps;
+proc vprec	        ebx &= 0x03FFu;\n        ebx += ofsmcyps;	        ebx &= 0x03FFu + ofsmcyps;
+proc vupper	        if (ebx & 0x0100u) {\n            eax = (eax & 0xFFFF0000u) | (u2)(eax + ofsmady);\n        }	        /* mutant: no upper bias */
+proc vupper width	            eax = (eax & 0xFFFF0000u) | (u2)(eax + ofsmady);	            eax = eax + ofsmady;
+proc vlow mask	        ebx &= 0xFFu;	        ebx &= 0x1FFu;
+proc vedx	        edx = (ebx & 0x07u) << 3;	        edx = (ebx & 0x07u) << 2;
+proc vebx	        ebx = (ebx >> 3) << 6;	        ebx = (ebx >> 3) << 5;
+proc vyadder	        yadder = edx;\n        yrevadder = edx ^ 0x38u;	        yadder = edx ^ 0x38u;\n        yrevadder = edx;
+proc vflip	        yrevadder = edx ^ 0x38u;	        yrevadder = edx ^ 0x3Fu;
+proc hptr	    ebx = (u4)(uintptr_t)ofsmcptr + ofsmcptr2;\n    ofshvaladd += 8;	    ofshvaladd += 8;\n    ebx = (u4)(uintptr_t)ofsmcptr + ofsmcptr2;
+proc hval step	    ofshvaladd += 8;	    ofshvaladd += 16;
+proc cptr2 step	    ofsmcptr2 = (ofsmcptr2 + 2u) & 0x3Fu;	    ofsmcptr2 = (ofsmcptr2 + 4u) & 0x3Fu;
+proc cptr2 mask	    ofsmcptr2 = (ofsmcptr2 + 2u) & 0x3Fu;	    ofsmcptr2 = (ofsmcptr2 + 2u) & 0x1Fu;
+proc htest offset	    if (*(u4 const*)(uintptr_t)(ebx - 0x40u) & eax) {	    if (*(u4 const*)(uintptr_t)ebx & eax) {
+proc htptr sign	        eax = (eax & 0xFFFF0000u) | (u2)(eax - ofsmtptr);\n        eax = (eax & 0xFFFF0000u) | (u2)(eax + ofsmtptrs);	        eax = (eax & 0xFFFF0000u) | (u2)(eax + ofsmtptr);\n        eax = (eax & 0xFFFF0000u) | (u2)(eax - ofsmtptrs);
+proc hvaladd	        ebx += ofshvaladd;	        ebx += ofsmcyps;
+proc hleft	        if (ebx & 0x0100u) {\n            eax = (eax & 0xFFFF0000u) | (u2)(eax + ofsmadx);\n        }	        /* mutant: no left bias */
+proc hmask	        ebx = (ebx & 0xF8u) >> 2;	        ebx = (ebx & 0xF8u) >> 3;
+proc hadd width	        eax = (eax & 0xFFFF0000u) | (u2)(eax + ebx);\n        eax += (u4)(uintptr_t)vram;\n        edi	        eax = eax + ebx;\n        eax += (u4)(uintptr_t)vram;\n        edi
+chk index	    u4 const ecx = (eax + ngptrdat2) & 2047u;	    u4 const ecx = (eax + ngptrdat2) & 4095u;
+chk base	    u4 const ecx = (eax + ngptrdat2) & 2047u;	    u4 const ecx = eax & 2047u;
+chk sense	    if (vidmemch4[ecx] != 0) {	    if (vidmemch4[ecx] == 0) {
+#
+# Ten survive; 65 of 75 killed. All ten are equivalent, and seven share one
+# cause: initoffsetmode builds a map offset in eax across most of its body and
+# then throws it away - `mov [ofsmmptr],eax` is overwritten two instructions
+# later by `edi - vram`. Only the bg3 half of that chain is live, through
+# ofsmcptr and ofsmcptr2, and only ofsmtptr and bgtxadd survive the second
+# half.
+#
+#   init scroly      \
+#   init yinc test    | all feed the dead half of the eax chain
+#   init yinc bit     |
+#   init row scale    |
+#   init eax trunc   /
+#   init ptr add     the truncation is redone by the next (u2) add
+#   init scrolx mask (x & 0xFF) >> 3 and (x & 0xF8) >> 3 are the same
+#   init cyps width  the dword read of curypos only adds bits above 15, and
+#                    the value is masked to 0xFF before it is used
+#   proc mm low      the high half is flipyposngom, i.e. 56 - the y adder
+#   proc txadd       bgtxadd's high half is only ever added 16-bit
