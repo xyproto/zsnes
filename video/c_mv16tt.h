@@ -37,16 +37,17 @@ typedef struct {
     u4 ax, bx, cx, dx, si, di, bp;
 } tt_regs;
 
-/* One pixel. `n` is its place on screen and `k` its place in the tile; the
-   window mask is read at n either way, because the flipped writers index it
-   with 7-k. `adder` is the palette base, which reaches the plain forms in dh
+/* One pixel. `n` is its place on screen, `k` its place in the tile and `w` the
+   place the window mask is read at - the 8x8 and 16x16 forms pass n, because
+   their flipped writers index it with 7-k, and the 16x8 one passes its own
+   counter. `adder` is the palette base, which reaches the plain forms in dh
    and the windowed ones through the coadder16 global.
 
    The half-add form works in eax and leaves it zero; the other two work in ebx
    and ecx and leave the palette index in eax. */
 static void tt_px(tt_regs* const r, u1 const* const tile, u1 const* const win,
     u1 const adder, u1* const esi, u1 const* const ebp, u4 const k,
-    u4 const n, int const mode)
+    u4 const n, u4 const w, int const mode)
 {
     u4 eax = tile[k];
 
@@ -54,7 +55,7 @@ static void tt_px(tt_regs* const r, u1 const* const tile, u1 const* const win,
     if (eax == 0) {
         return;
     }
-    if (win != 0 && win[n] != 0) {
+    if (win != 0 && win[w] != 0) {
         return;
     }
     eax = (u1)(eax + adder);
@@ -109,7 +110,8 @@ static void tt_row(tt_regs* const r, u1 const* const tile, u1 const* const win,
             continue;
         }
         for (u4 n = g; n < g + 4; n++) {
-            tt_px(r, tile, win, adder, esi, ebp, flip ? 7 - n : n, n, mode);
+            tt_px(r, tile, win, adder, esi, ebp, flip ? 7 - n : n, n, n,
+                mode);
         }
     }
 }
