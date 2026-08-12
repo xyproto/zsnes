@@ -45,7 +45,7 @@ ASMDATA   := zsnes_asmdata_test
 ASMDATA_SRC := asmdata_test.c
 OBJS      := ../zpath.o
 
-.PHONY: all run clean spcdec fxtable fxops memops m7calc m7ext2 m7start m7win m7bw m7proc m7draw mv16 mvs mvall m716t cb16t cb16b spr16bt spr16t spr16p t8bt t16bt t8t t16t t8to regs
+.PHONY: all run clean spcdec fxtable fxops memops m7calc m7ext2 m7start m7win m7bw m7proc m7draw mv16 mvs mvall m716t cb16t cb16b spr16bt spr16t spr16p t8bt t16bt t8t t16t t8to thi regs
 
 all: $(BIN) $(NETPLAY) $(ST10) $(ST11) $(OBC1) $(MSU1) $(DSP2) $(SAI) $(SA1) $(SPC7110) $(VCACHE) $(SPRITES) $(C4) $(MODE7) $(ASMDATA)
 
@@ -163,7 +163,7 @@ M16T_SEAM := ../video/c_mv16tm7.c ../video/c_mv16tclr.c \
              ../video/c_mv16tsprt.c ../video/c_mv16tsprp.c \
              ../video/c_mv16t8bt.c ../video/c_mv16t16bt.c \
              ../video/c_mv16t8t.c ../video/c_mv16t16t.c \
-             ../video/c_mv16t8to.c m16t_extra.c
+             ../video/c_mv16t8to.c ../video/c_mv16thi.c m16t_extra.c
 M16T_OBJS := ../cpu/c_regsdata.o ../cpu/c_regswdata.o \
              ../video/c_mode716data.o ../video/makevid.o ../endmem.o
 M16T_BSS  := ../video/c_makev16tdata.o
@@ -297,6 +297,18 @@ t8to: difftest_t8to.c difftest.h $(M16T_SEAM)
 	    _t8to.o _t8tocur.o _t8to_stubs.c $(M16T_OBJS) $(M16T_BSS) \
 	    -no-pie -o difftest_t8to
 	@./difftest_t8to
+
+thi: difftest_thi.c difftest.h $(M16T_SEAM)
+	python3 ../tools/mkoracle.py video/makev16t.asm -o _thi.o \
+	    --stubs _thi_stubs.c --provided-by $(M16T_OBJS) $(M16T_BSS) \
+	    --exclude vram domosaic16b fulladdtab xtravbuf transpbuf \
+	    vcache2b vcache4b vcache8b
+	python3 ../tools/mkoracle.py video/makev16t.asm -o _thicur.o \
+	    --worktree --prefix cur_
+	$(CC) $(CFLAGS) difftest_thi.c $(M16T_SEAM) \
+	    _thi.o _thicur.o _thi_stubs.c $(M16T_OBJS) $(M16T_BSS) \
+	    -no-pie -o difftest_thi
+	@./difftest_thi
 
 mv16: difftest_mv16.c difftest.h mkmv16.sh ../video/c_mv16tms.c
 	./mkmv16.sh

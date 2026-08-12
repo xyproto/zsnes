@@ -1,0 +1,104 @@
+# Mutants for video/c_mv16thi.c, checked by test/difftest_thi.c.
+# The shared colour-maths writers live in test/mutants_ttpx.txt.
+# Format: name<TAB>old<TAB>new   (\n for a newline)
+loop left	    tileleft16b = 33;\n    drawn = 0;	    tileleft16b = 32;\n    drawn = 0;
+loop drawn init	    tileleft16b = 33;\n    drawn = 0;	    tileleft16b = 33;
+loop ax word	        eax = (eax & 0xFFFF0000u) | *edi++;	        eax = *edi++;
+loop bgpr	        attr = (u1)((eax >> 8) ^ curbgpr);	        attr = (u1)(eax >> 8);
+loop attr reg	        if (winon_) {\n            ecx = (ecx & 0xFFFFFF00u) | attr;\n        } else {\n            edx = (edx & 0xFFFF00FFu) | (u4)attr << 8;\n        }	        if (!winon_) {\n            ecx = (ecx & 0xFFFFFF00u) | attr;\n        } else {\n            edx = (edx & 0xFFFF00FFu) | (u4)attr << 8;\n        }
+loop attr cx	            ecx = (ecx & 0xFFFFFF00u) | attr;	            ecx = attr;
+loop attr dh	            edx = (edx & 0xFFFF00FFu) | (u4)attr << 8;\n        }	            edx = (edx & 0xFFFF0000u) | (u4)attr << 8;\n        }
+loop prio bit	        if (!(attr & 0x20u)) {	        if (!(attr & 0x10u)) {
+loop prio sense	        if (!(attr & 0x20u)) {	        if ((attr & 0x20u)) {
+loop drawn inc	            drawn++;\n            eax &= 0x03FFu;	            eax &= 0x03FFu;
+loop tile mask	            eax &= 0x03FFu; /* filter out tile # */	            eax &= 0x07FFu; /* filter out tile # */
+loop tile mask word	            eax &= 0x03FFu; /* filter out tile # */	            eax = (eax & 0xFFFF0000u) | (eax & 0x03FFu); /* filter out tile # */
+loop tile scale	            tile = tempcach + eax * 64u;	            tile = tempcach + eax * 32u;
+loop clip test	            if (tile >= bgofwptr) {	            if (tile > bgofwptr) {
+loop clip none	            if (tile >= bgofwptr) {\n                tile -= bgsubby;\n            }	            /* mutant: never clips */
+loop yadder bit	            tile += (attr & 0x80u) ? yrevadder : yadder;	            tile += (attr & 0x40u) ? yrevadder : yadder;
+loop yadder swap	            tile += (attr & 0x80u) ? yrevadder : yadder;	            tile += (attr & 0x80u) ? yadder : yrevadder;
+loop pal mask	            adder = (u1)((u1)((attr & 0x1Cu) << (bshifter & 31u))\n                + bgcoloradder);	            adder = (u1)((u1)((attr & 0x0Cu) << (bshifter & 31u))\n                + bgcoloradder);
+loop pal shift	            adder = (u1)((u1)((attr & 0x1Cu) << (bshifter & 31u))\n                + bgcoloradder);	            adder = (u1)((u1)((attr & 0x1Cu) << (bshifter & 7u))\n                + bgcoloradder);
+loop pal adder	            adder = (u1)((u1)((attr & 0x1Cu) << (bshifter & 31u))\n                + bgcoloradder);	            adder = (u1)((u1)((attr & 0x1Cu) << (bshifter & 31u)));
+loop coadder	            if (winon_) {\n                coadder16 = adder;\n            } else {	            if (0) {\n                coadder16 = adder;\n            } else {
+loop coadder always	            if (winon_) {\n                coadder16 = adder;\n            } else {\n                edx = (edx & 0xFFFF00FFu) | (u4)adder << 8;\n            }	            coadder16 = adder;\n            {\n                edx = (edx & 0xFFFF00FFu) | (u4)adder << 8;\n            }
+loop pal dh	                edx = (edx & 0xFFFF00FFu) | (u4)adder << 8;\n            }\n            r->ax = 0;	            }\n            r->ax = 0;
+loop cx zero	            r->ax = 0;\n            r->cx = 0;	            r->ax = 0;
+loop esi step	        esi += 16;\n        ebp += 16;	        esi += 8;\n        ebp += 16;
+loop ebp step	        esi += 16;\n        ebp += 16;	        esi += 16;\n        ebp += 8;
+loop win step	        win += 8;	        win += 16;
+loop temp count	            temp = (u1)(temp + 1);	            temp = (u1)(temp + 2);
+loop temp wrap	            if (temp == 0x20) {\n                edi = temptile;\n            }	            /* mutant: windowed column never wraps */
+loop dl count	            edx = (edx & 0xFFFFFF00u) | (u1)(edx + 1);	            edx = edx + 1;
+loop dl wrap	            if ((u1)edx == 0x20) {\n                edi = temptile;\n            }	            /* mutant: plain column never wraps */
+loop wrap value	            if ((u1)edx == 0x20) {	            if ((u1)edx == 0x21) {
+loop counters swapped	        if (winon_) {\n            temp = (u1)(temp + 1);	        if (!winon_) {\n            temp = (u1)(temp + 1);
+loop ax out	    r->ax = eax;\n    r->cx = ecx;	    r->cx = ecx;
+loop cx out	    r->ax = eax;\n    r->cx = ecx;	    r->ax = eax;
+loop dx out	    r->dx = winon_ ? (u4)(uintptr_t)win : edx;	    r->dx = edx;
+loop dx win	    r->dx = winon_ ? (u4)(uintptr_t)win : edx;	    r->dx = (u4)(uintptr_t)win;
+loop si out	    r->si = (u4)(uintptr_t)esi;\n    r->di	    r->di
+loop di out	    r->di = (u4)(uintptr_t)edi;\n    r->bp	    r->bp
+loop bp out	    r->bp = (u4)(uintptr_t)ebp;\n}	}
+pro temp	    temp = (u1)r.ax;\n    bshifter = (u1)(r.ax >> 8);	    temp = (u1)(r.ax >> 8);\n    bshifter = (u1)r.ax;
+pro ax out	    r.ax = hofs;\n    yadder = r.cx;	    yadder = r.cx;
+pro yadder	    yadder = r.cx;\n    tempcach	    yadder = r.bx;\n    tempcach
+pro yrev	    yrevadder = 56u - r.cx;\n    r.bx = 56u - r.cx;	    yrevadder = 56u + r.cx;\n    r.bx = 56u - r.cx;
+pro bx out	    yrevadder = 56u - r.cx;\n    r.bx = 56u - r.cx;	    yrevadder = 56u - r.cx;
+pro winptr	    winptrref = cwinptr - hofs;	    winptrref = cwinptr - hofs * 2u;
+pro vid bias	    esi = curvidoffset - hofs * 2u;	    esi = curvidoffset - hofs;
+pro mosaic test	    if (curmosaicsz != 1) {	    if (curmosaicsz == 1) {
+pro mosaic size	        memset(xtravbuf + 32, 0, 512);	        memset(xtravbuf + 32, 0, 256);
+pro mosaic base	        memset(xtravbuf + 32, 0, 512);	        memset(xtravbuf, 0, 512);
+pro mosaic cx	        r.cx = 0;\n        esi = xtravbuf + 32 - hofs * 2u;	        esi = xtravbuf + 32 - hofs * 2u;
+pro mosaic esi	        r.cx = 0;\n        esi = xtravbuf + 32 - hofs * 2u;	        r.cx = 0;
+pro temptile	    temptile = (u2*)(uintptr_t)r.dx;	    temptile = (u2*)(uintptr_t)r.di;
+pro cache first	    bgofwptr = vcache2b + 262144u;	    bgofwptr = vcache2b + 131072u;
+pro cache sub	    bgsubby = 262144u;\n    bgofwptr = vcache2b + 262144u;	    bgsubby = 131072u;\n    bgofwptr = vcache2b + 262144u;
+pro cache chain	    if (tempcach >= bgofwptr) {\n        bgsubby = 131072u;	    if (tempcach > bgofwptr) {\n        bgsubby = 131072u;
+pro cache second	        bgofwptr = vcache4b + 131072u;\n        if (tempcach >= bgofwptr) {	        bgofwptr = vcache4b + 65536u;\n        if (tempcach >= bgofwptr) {
+pro cache third	            bgofwptr = vcache8b + 65536u;\n            bgsubby = 65536u;	            bgofwptr = vcache8b + 131072u;\n            bgsubby = 65536u;
+top win mosaic	    win = curmosaicsz == 1 && winon != 0;	    win = winon != 0;
+top win flag	    win = curmosaicsz == 1 && winon != 0;	    win = curmosaicsz == 1;
+top sub bit	    if (scaddtype & 0x80u) {	    if (scaddtype & 0x40u) {
+top half bit	    } else if (!(scaddtype & 0x40u) || (scrnon >> 8) == 0) {	    } else if (!(scaddtype & 0x20u) || (scrnon >> 8) == 0) {
+top half scrnon	    } else if (!(scaddtype & 0x40u) || (scrnon >> 8) == 0) {	    } else if (!(scaddtype & 0x40u) || (scrnon & 0xFFu) == 0) {
+top half only	    } else if (!(scaddtype & 0x40u) || (scrnon >> 8) == 0) {	    } else if (!(scaddtype & 0x40u)) {
+top mode swap	        mode = T_SUB;\n    } else if (!(scaddtype & 0x40u) || (scrnon >> 8) == 0) {\n        mode = T_ADD;	        mode = T_ADD;\n    } else if (!(scaddtype & 0x40u) || (scrnon >> 8) == 0) {\n        mode = T_SUB;
+hi half zero	    r->ax = eax;\n    if (eax == 0) {\n        return;\n    }\n    if (win != 0 && win[w] != 0) {	    r->ax = eax;\n    if ((eax & 0x0Fu) == 0) {\n        return;\n    }\n    if (win != 0 && win[w] != 0) {
+hi half win	    if (win != 0 && win[w] != 0) {\n        return;\n    }\n    eax = (u1)(eax + adder);	    if (win != 0 && win[n] != 0) {\n        return;\n    }\n    eax = (u1)(eax + adder);
+hi half transp	    if ((u2)t != 0) {	    if (t != 0) {
+hi half sense	    if ((u2)t != 0) {	    if ((u2)t == 0) {
+hi half mask	        t &= TT_CLBIT;\n        col = ((col & TT_CLBIT) + t) >> 1;	        col = ((col & TT_CLBIT) + t) >> 1;
+hi half shift	        col = ((col & TT_CLBIT) + t) >> 1;	        col = ((col & TT_CLBIT) + t);
+hi half store	    *(u2*)(esi + n * 2) = (u2)col;\n    if (win != 0) {	    *(u2*)(esi + n * 2 + 2) = (u2)col;\n    if (win != 0) {
+hi half regs	    if (win != 0) {\n        r->cx = t;\n        r->bx = col;\n    } else {\n        r->bx = t;\n        r->cx = col;\n    }	    if (win == 0) {\n        r->cx = t;\n        r->bx = col;\n    } else {\n        r->bx = t;\n        r->cx = col;\n    }
+hi half ax	    eax = (u1)(eax + adder);\n    r->ax = eax;\n    memcpy(&t	    eax = (u1)(eax + adder);\n    r->ax = 0;\n    memcpy(&t
+row second tile	        u1 const* const t = tile + (i >= 4 ? 64u : 0u);	        u1 const* const t = tile + (i >= 4 ? 32u : 0u);
+row second none	        u1 const* const t = tile + (i >= 4 ? 64u : 0u);	        u1 const* const t = tile;
+row byte step	        u4 const k = 2u * (i & 3u) + (u4)(flip ? 1 - half : half);	        u4 const k = (i & 3u) + (u4)(flip ? 1 - half : half);
+row half	        u4 const k = 2u * (i & 3u) + (u4)(flip ? 1 - half : half);	        u4 const k = 2u * (i & 3u) + (u4)(flip ? half : 1 - half);
+row half none	        u4 const k = 2u * (i & 3u) + (u4)(flip ? 1 - half : half);	        u4 const k = 2u * (i & 3u);
+row screen flip	        u4 const n = flip ? 7u - i : i;	        u4 const n = i;
+row win index	            tt_px(r, t, win, adder, esi, ebp, k, n, i, mode);	            tt_px(r, t, win, adder, esi, ebp, k, n, n, mode);
+row mode	        if (mode == T_HALF) {	        if (mode == T_ADD) {
+win ptr bug	        edx = ((u4)(uintptr_t)winptrref & 0xFFFFFF00u) | temp;\n        win = (u1 const*)(uintptr_t)edx;	        win = winptrref;
+win ptr mask	        edx = ((u4)(uintptr_t)winptrref & 0xFFFFFF00u) | temp;	        edx = ((u4)(uintptr_t)winptrref & 0xFFFF0000u) | temp;
+hires mark	    hirestiledat[(u1)curypos] = 1;	    hirestiledat[(u1)curypos] = 0;
+hires index	    hirestiledat[(u1)curypos] = 1;	    hirestiledat[(u1)(curypos >> 1)] = 1;
+hires none	    hirestiledat[(u1)curypos] = 1;	
+top half sel	    tiles(&r, hofs, esi, mode, win, res512switch != 0);	    tiles(&r, hofs, esi, mode, win, res512switch == 0);
+top tail drawn	    if (!win && drawn != 0) {	    if (!win) {
+top tail win	    if (!win && drawn != 0) {	    if (drawn != 0) {
+#
+# Three survive, all equivalent:
+#
+#   loop ax word         the top half of eax is the horizontal offset until
+#   loop tile mask word  the first tile draws, and an offset that fits the
+#                        pointers it biases fits 16 bits.
+#   loop pal dh          the palette is only written into edx's high byte when
+#                        a tile draws, and the mosaic tail then overwrites it
+#                        whenever drawn is non-zero - which is exactly when it
+#                        was written. Unlike the 8x8 family, every plain form
+#                        here carries that tail, so nothing can observe it.
