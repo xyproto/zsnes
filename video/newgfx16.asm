@@ -149,6 +149,7 @@ EXTSYM BackAreaUnFillCol,BackAreaFillCol,clinemainsub,cpalptrng
 EXTSYM ngmsdraw,CMainWinScr,CSubWinScr,Prevcoladdr
 EXTSYM ColResult,CPalPtrng,WindowRedraw,mostranspval
 EXTSYM mosclineval,startlinet,endlinet,palchanged
+EXTSYM c_procbg16b
 EXTSYM MOSAX,MOSBX,MOSCX,MOSDX,MOSSI,MOSDI,MOSBP,c_domosaicng16b
 EXTSYM ng16bbgval,ng16bprval,mosjmptab16b,mosjmptab16bt
 EXTSYM mosjmptab16btms,mosjmptab16bntms,UnusedBit,HalfTrans
@@ -1192,14 +1193,14 @@ NEWSYM StartDrawNewGfx16b
     test dword[bgcmsung],800h
     jz near .nodobg4s
     mov dword[mode0ads],60606060h
-    Procbgpr016b 3, drawbg4line16b, drawbg4tile16b, ngsub, 8h
+    ccallv c_procbg16b, 3, drawbg4line16b, drawbg4tile16b, 0, 0, 8h, 0
 .nodobg4s
     test byte[scrndis],4h
     jnz near .nodobg3s
     test dword[bgcmsung],400h
     jz near .nodobg3s
     mov dword[mode0ads],40404040h
-    Procbg3pr016b 2, drawbg3line16b, drawbg3tile16b, ngsub, 4h
+    ccallv c_procbg16b, 2, drawbg3line16b, drawbg3tile16b, 0, 0, 4h, 1
 .nodobg3s
 
     ; draw sprites mode 0-1
@@ -1220,7 +1221,7 @@ NEWSYM StartDrawNewGfx16b
     cmp eax,[bg4drwng]
     je near .nodobg4sb
     mov dword[mode0ads],60606060h
-    Procbgpr116b 3, drawbg4linepr116b, drawbg4tilepr116b, prdata, ngsub, 8h
+    ccallv c_procbg16b, 3, drawbg4linepr116b, drawbg4tilepr116b, prdata, 0, 8h, 2
 .nodobg4sb
     test byte[scrndis],4h
     jnz near .nodobg3sb
@@ -1230,7 +1231,7 @@ NEWSYM StartDrawNewGfx16b
     cmp eax,[bg3drwng]
     je near .nodobg3sb
     mov dword[mode0ads],40404040h
-    Procbg3pr116b 2, drawbg3linepr116b, drawbg3tilepr116b, prdatc, ngsub, 4h
+    ccallv c_procbg16b, 2, drawbg3linepr116b, drawbg3tilepr116b, prdatc, 0, 4h, 3
 .nodobg3sb
 
     ; draw sprites mode 0-1
@@ -1248,7 +1249,7 @@ NEWSYM StartDrawNewGfx16b
     test dword[bgcmsung],200h
     jz near .nodobg2s
     mov dword[mode0ads],20202020h
-    Procbgpr016b 1, drawbg2line16b, drawbg2tile16b, ngsub, 2h
+    ccallv c_procbg16b, 1, drawbg2line16b, drawbg2tile16b, 0, 0, 2h, 0
 .nodobg2s
 
     ; draw mode 7 extbg pr 0
@@ -1277,7 +1278,7 @@ NEWSYM StartDrawNewGfx16b
     test dword[bgcmsung],100h
     jz near .nodobg1s
     mov dword[mode0ads],00000000h
-    Procbgpr016b 0, drawbg1line16b, drawbg1tile16b, ngsub, 1h
+    ccallv c_procbg16b, 0, drawbg1line16b, drawbg1tile16b, 0, 0, 1h, 0
 .nodobg1s
 
     ; draw mode 7, priority 0
@@ -1304,7 +1305,7 @@ NEWSYM StartDrawNewGfx16b
     cmp eax,[bg2drwng]
     je near .nodobg2sb
     mov dword[mode0ads],20202020h
-    Procbgpr116b 1, drawbg2linepr116b, drawbg2tilepr116b, prdata, ngsub, 2h
+    ccallv c_procbg16b, 1, drawbg2linepr116b, drawbg2tilepr116b, prdata, 0, 2h, 2
 .nodobg2sb
 
     ; draw mode 7 extbg pr 1
@@ -1336,7 +1337,7 @@ NEWSYM StartDrawNewGfx16b
     cmp eax,[bg1drwng]
     je near .nodobg1sb
     mov dword[mode0ads],00000000h
-    Procbgpr116b 0, drawbg1linepr116b, drawbg1tilepr116b, prdatb, ngsub, 1h
+    ccallv c_procbg16b, 0, drawbg1linepr116b, drawbg1tilepr116b, prdatb, 0, 1h, 2
 .nodobg1sb
 
     ; draw sprites mode 0-7
@@ -1357,7 +1358,7 @@ NEWSYM StartDrawNewGfx16b
     cmp eax,[bg3drwng]
     je near .nodobg3sb2
     mov dword[mode0ads],40404040h
-    Procbg3pr1b16b 2, drawbg3linepr116b, drawbg3tilepr116b, prdatc, ngsub, 4h
+    ccallv c_procbg16b, 2, drawbg3linepr116b, drawbg3tilepr116b, prdatc, 0, 4h, 4
 .nodobg3sb2
 
     mov dword[bg1totng],0
@@ -1379,14 +1380,14 @@ NEWSYM StartDrawNewGfx16b
     test dword[bgcmsung],808h
     jz near .nodobg4m
     mov dword[mode0ads],60606060h
-    Procbgpr016b 3, drawbg4line16b, drawbg4tile16b, ngmain, 8h
+    ccallv c_procbg16b, 3, drawbg4line16b, drawbg4tile16b, 0, 1, 8h, 0
 .nodobg4m
     test byte[scrndis],4h
     jnz near .nodobg3m
     test dword[bgcmsung],404h
     jz near .nodobg3m
     mov dword[mode0ads],40404040h
-    Procbg3pr016b 2, drawbg3line16b, drawbg3tile16b, ngmain, 4h
+    ccallv c_procbg16b, 2, drawbg3line16b, drawbg3tile16b, 0, 1, 4h, 1
 .nodobg3m
 
     ; draw sprites mode 0-1
@@ -1407,7 +1408,7 @@ NEWSYM StartDrawNewGfx16b
     cmp eax,[bg4drwng]
     je near .nodobg4mb
     mov dword[mode0ads],60606060h
-    Procbgpr116b 3, drawbg4linepr116b, drawbg4tilepr116b, prdata, ngmain, 8h
+    ccallv c_procbg16b, 3, drawbg4linepr116b, drawbg4tilepr116b, prdata, 1, 8h, 2
 .nodobg4mb
     test byte[scrndis],4h
     jnz near .nodobg3mb
@@ -1417,7 +1418,7 @@ NEWSYM StartDrawNewGfx16b
     cmp eax,[bg3drwng]
     je near .nodobg3mb
     mov dword[mode0ads],40404040h
-    Procbg3pr116b 2, drawbg3linepr116b, drawbg3tilepr116b, prdatc, ngmain, 4h
+    ccallv c_procbg16b, 2, drawbg3linepr116b, drawbg3tilepr116b, prdatc, 1, 4h, 3
 .nodobg3mb
 
     ; draw sprites mode 0-1
@@ -1435,7 +1436,7 @@ NEWSYM StartDrawNewGfx16b
     test dword[bgcmsung],202h
     jz near .nodobg2m
     mov dword[mode0ads],20202020h
-    Procbgpr016b 1, drawbg2line16b, drawbg2tile16b, ngmain, 2h
+    ccallv c_procbg16b, 1, drawbg2line16b, drawbg2tile16b, 0, 1, 2h, 0
 .nodobg2m
 
     ; draw mode 7 extbg pr 0
@@ -1464,7 +1465,7 @@ NEWSYM StartDrawNewGfx16b
     test dword[bgcmsung],101h
     jz near .nodobg1m
     mov dword[mode0ads],00000000h
-    Procbgpr016b 0, drawbg1line16b, drawbg1tile16b, ngmain,  1h
+    ccallv c_procbg16b, 0, drawbg1line16b, drawbg1tile16b, 0, 1, 1h, 0
 .nodobg1m
 
     ; draw mode 7, priority 0
@@ -1499,7 +1500,7 @@ NEWSYM StartDrawNewGfx16b
     cmp eax,[bg2drwng]
     je near .nodobg2mb
     mov dword[mode0ads],20202020h
-    Procbgpr116b 1, drawbg2linepr116b, drawbg2tilepr116b, prdata, ngmain, 2h
+    ccallv c_procbg16b, 1, drawbg2linepr116b, drawbg2tilepr116b, prdata, 1, 2h, 2
 .nodobg2mb
 
     ; draw sprites mode 2-7
@@ -1523,7 +1524,7 @@ NEWSYM StartDrawNewGfx16b
     cmp eax,[bg1drwng]
     je near .nodobg1mb
     mov dword[mode0ads],00000000h
-    Procbgpr116b 0, drawbg1linepr116b, drawbg1tilepr116b, prdatb, ngmain, 1h
+    ccallv c_procbg16b, 0, drawbg1linepr116b, drawbg1tilepr116b, prdatb, 1, 1h, 2
 .nodobg1mb
 
     ; draw sprites mode 0-7
@@ -1544,7 +1545,7 @@ NEWSYM StartDrawNewGfx16b
     cmp eax,[bg3drwng]
     je near .nodobg3mb2
     mov dword[mode0ads],40404040h
-    Procbg3pr1b16b 2, drawbg3linepr116b, drawbg3tilepr116b, prdatc, ngmain, 4h
+    ccallv c_procbg16b, 2, drawbg3linepr116b, drawbg3tilepr116b, prdatc, 1, 4h, 4
 .nodobg3mb2
     call MainScreenClip
     call ProcessTransparencies
