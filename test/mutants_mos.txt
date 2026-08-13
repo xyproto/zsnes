@@ -1,0 +1,55 @@
+# Mutants for video/c_ngmosaic.c, checked by test/difftest_mos.c.
+# Format: name<TAB>old<TAB>new   (\n for a newline)
+size upper	    if (n > 16 || n <= 1) {	    if (n > 17 || n <= 1) {
+size lower	    if (n > 16 || n <= 1) {	    if (n > 16 || n < 1) {
+size none	    if (n > 16 || n <= 1) {\n        return;\n    }	    if (0) {\n        return;\n    }
+early ax	    MOSAX = n;	    MOSAX = 0;
+early si	    MOSSI = (u4)(uintptr_t)pesimpng;\n    MOSDI	    MOSDI
+early di	    MOSDI = (u4)(uintptr_t)(xtravbuf + 16);	    MOSDI = (u4)(uintptr_t)xtravbuf;
+mode7 test	    if (BGMA[line] != 7) {	    if (BGMA[line] != 6) {
+mode7 sense	    if (BGMA[line] != 7) {	    if (BGMA[line] == 7) {
+mode7 none	    if (BGMA[line] != 7) {	    if (1) {
+ms1 main	        if (BGMS1[line * 2] & cl) {	        if (BGMS1[line * 2 + 1] & cl) {
+ms1 sense	        if (BGMS1[line * 2] & cl) {	        if (!(BGMS1[line * 2] & cl)) {
+fill test	            if (FillSubScr[line] & 1) {	            if (FillSubScr[line] & 2) {
+fill sense	            if (FillSubScr[line] & 1) {	            if (!(FillSubScr[line] & 1)) {
+ms1 sub	                if (BGMS1[line * 2 + 1] & cl) {	                if (BGMS1[line * 2] & cl) {
+ms1 sub sense	                if (BGMS1[line * 2 + 1] & cl) {	                if (!(BGMS1[line * 2 + 1] & cl)) {
+tms pick	                    mode = (scadtng[line] & cl) ? M_TMS : M_NTMS;	                    mode = (scadtng[line] & cl) ? M_NTMS : M_TMS;
+tms always	                    mode = (scadtng[line] & cl) ? M_TMS : M_NTMS;	                    mode = M_TMS;
+t pick	                } else if (scadtng[line] & cl) {\n                    mode = M_T;\n                }	                } else {\n                    mode = M_T;\n                }
+t none	                } else if (scadtng[line] & cl) {\n                    mode = M_T;\n                }	                }
+bias test	        } else if (FillSubScr[line] & 1) {\n            MOSSI += MOS_SUB * 2u;	        } else if (!(FillSubScr[line] & 1)) {\n            MOSSI += MOS_SUB * 2u;
+bias none	        } else if (FillSubScr[line] & 1) {\n            MOSSI += MOS_SUB * 2u;\n        }	        }
+bias amount	            MOSSI += MOS_SUB * 2u;	            MOSSI += MOS_SUB;
+cl width	    u1 const cl = (u1)mostranspval;	    u4 const cl = mostranspval;
+count table	    u4 count = mos_count[n - 2];	    u4 count = mos_count[n - 1];
+count value	    = { 128, 86, 64, 52, 43, 37, 32, 29, 26, 24, 22, 20, 19, 18, 16 };	    = { 128, 86, 64, 52, 43, 37, 32, 29, 26, 24, 22, 20, 19, 18, 15 };
+loop word	        eax = (eax & 0xFFFF0000u) | *edi;	        eax = *edi;
+skip test	        if ((u2)eax != 0xFFFFu) {	        if ((u2)eax != 0xFFFEu) {
+skip sense	        if ((u2)eax != 0xFFFFu) {	        if ((u2)eax == 0xFFFFu) {
+skip width	        if ((u2)eax != 0xFFFFu) {	        if (eax != 0xFFFFu) {
+unused set	            if (mode == M_T || mode == M_TMS) {	            if (mode == M_T) {
+unused all	            if (mode == M_T || mode == M_TMS) {	            if (1) {
+unused word	                eax = (eax & 0xFFFF0000u) | (u2)(eax | UnusedBit[0]);	                eax = eax | UnusedBit[0];
+main run	            for (u4 i = 0; i < n; i++) {\n                esi[i] = (u2)eax;\n            }	            for (u4 i = 0; i + 1 < n; i++) {\n                esi[i] = (u2)eax;\n            }
+xor set	            if (mode == M_TMS) {\n                eax = (eax & 0xFFFF0000u) | (u2)(eax & UnusedBitXor[0]);\n            }	            /* mutant: sub copy keeps the bit */
+xor all	            if (mode == M_TMS) {\n                eax = (eax & 0xFFFF0000u) | (u2)(eax & UnusedBitXor[0]);\n            }	            eax = (eax & 0xFFFF0000u) | (u2)(eax & UnusedBitXor[0]);
+sub test	            if (mode == M_TMS || mode == M_NTMS) {	            if (mode == M_NTMS) {
+sub none	            if (mode == M_TMS || mode == M_NTMS) {	            if (0) {
+sub offset	                    esi[MOS_SUB + i] = (u2)eax;	                    esi[MOS_SUB + i + 1] = (u2)eax;
+step edi	        edi += n;\n        esi += n;	        edi += n + 1;\n        esi += n;
+step esi	        edi += n;\n        esi += n;	        edi += n;\n        esi += n + 1;
+out ax	    MOSAX = eax;\n    MOSCX = 0;	    MOSCX = 0;
+out cx	    MOSAX = eax;\n    MOSCX = 0;	    MOSAX = eax;
+out di	    MOSDI = (u4)(uintptr_t)edi;	    MOSDI = (u4)(uintptr_t)(edi + 1);
+out si	    MOSSI = (u4)(uintptr_t)pesimpng;\n}	    MOSSI = (u4)(uintptr_t)esi;\n}
+#
+# Three survive, all the same equivalence: the routine starts with
+# `xor eax,eax` / `mov al,[curmosaicsz]`, so the top half of eax is zero for
+# the whole pass and nothing can tell a 16-bit operation on it from a 32-bit
+# one.
+#
+#   cl width    mostranspval is only ever ANDed with a byte from a u1 array
+#   loop word   the word load's preserved top half is already zero
+#   skip width  the 0xFFFF compare sees the same either way

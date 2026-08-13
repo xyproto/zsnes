@@ -45,7 +45,7 @@ ASMDATA   := zsnes_asmdata_test
 ASMDATA_SRC := asmdata_test.c
 OBJS      := ../zpath.o
 
-.PHONY: all run clean spcdec fxtable fxops memops m7calc m7ext2 m7start m7win m7bw m7proc m7draw mv16 mvs mvall m716t cb16t cb16b spr16bt spr16t spr16p t8bt t16bt t8t t16t t8to thi regs
+.PHONY: all run clean spcdec fxtable fxops memops m7calc m7ext2 m7start m7win m7bw m7proc m7draw mv16 mvs mvall m716t cb16t cb16b spr16bt spr16t spr16p t8bt t16bt t8t t16t t8to thi mos regs
 
 all: $(BIN) $(NETPLAY) $(ST10) $(ST11) $(OBC1) $(MSU1) $(DSP2) $(SAI) $(SA1) $(SPC7110) $(VCACHE) $(SPRITES) $(C4) $(MODE7) $(ASMDATA)
 
@@ -309,6 +309,21 @@ thi: difftest_thi.c difftest.h $(M16T_SEAM)
 	    _thi.o _thicur.o _thi_stubs.c $(M16T_OBJS) $(M16T_BSS) \
 	    -no-pie -o difftest_thi
 	@./difftest_thi
+
+# newgfx16.asm - the *new* graphics engine, the one that runs by default.
+NG_OBJS := ../endmem.o ../video/c_newgfx16data.o ../video/newgfx.o \
+           ../video/makevid.o ../cpu/c_regsdata.o ../cpu/c_regswdata.o
+
+mos: difftest_mos.c difftest.h ../video/c_ngmosaic.c
+	python3 ../tools/mkoracle.py video/newgfx16.asm -o _mos.o \
+	    --stubs _mos_stubs.c --provided-by $(NG_OBJS) \
+	    --exclude xtravbuf pesimpng
+	python3 ../tools/mkoracle.py video/newgfx16.asm -o _moscur.o \
+	    --worktree --prefix cur_
+	$(CC) $(CFLAGS) difftest_mos.c ../video/c_ngmosaic.c \
+	    _mos.o _moscur.o _mos_stubs.c $(NG_OBJS) \
+	    -no-pie -o difftest_mos
+	@./difftest_mos
 
 mv16: difftest_mv16.c difftest.h mkmv16.sh ../video/c_mv16tms.c
 	./mkmv16.sh
