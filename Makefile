@@ -442,6 +442,7 @@ SRCS += video/c_mv16t16t.c
 SRCS += video/c_mv16t8to.c
 SRCS += video/c_mv16thi.c
 SRCS += video/c_mv16tline.c
+SRCS += video/c_ngmosaic.c
 SRCS += video/c_makev16tdata.c
 SRCS += video/c_newgfx16data.c
 SRCS += video/c_hqx.c

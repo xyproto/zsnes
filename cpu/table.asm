@@ -108,22 +108,10 @@ section .note.GNU-stack noalloc noexec nowrite progbits
 	pop eax
 %endmacro
 EXTSYM ngpalcon2b,ngpalcon4b
-EXTSYM mosjmptab16b,mosdraw1016b,mosdraw1116b,mosdraw1216b,mosdraw1316b
-EXTSYM mosdraw1416b,mosdraw1516b,mosdraw1616b,mosdraw216b,mosdraw316b
-EXTSYM mosdraw416b,mosdraw516b,mosdraw616b,mosdraw716b,mosdraw816b
-EXTSYM mosdraw916b
-EXTSYM mosjmptab16bt,mosdraw1016bt,mosdraw1116bt,mosdraw1216bt,mosdraw1316bt
-EXTSYM mosdraw1416bt,mosdraw1516bt,mosdraw1616bt,mosdraw216bt,mosdraw316bt
-EXTSYM mosdraw416bt,mosdraw516bt,mosdraw616bt,mosdraw716bt,mosdraw816bt
-EXTSYM mosdraw916bt
-EXTSYM mosjmptab16btms,mosdraw1016btms,mosdraw1116btms,mosdraw1216btms,mosdraw1316btms
-EXTSYM mosdraw1416btms,mosdraw1516btms,mosdraw1616btms,mosdraw216btms,mosdraw316btms
-EXTSYM mosdraw416btms,mosdraw516btms,mosdraw616btms,mosdraw716btms,mosdraw816btms
-EXTSYM mosdraw916btms
-EXTSYM mosjmptab16bntms,mosdraw1016bntms,mosdraw1116bntms,mosdraw1216bntms,mosdraw1316bntms
-EXTSYM mosdraw1416bntms,mosdraw1516bntms,mosdraw1616bntms,mosdraw216bntms,mosdraw316bntms
-EXTSYM mosdraw416bntms,mosdraw516bntms,mosdraw616bntms,mosdraw716bntms,mosdraw816bntms
-EXTSYM mosdraw916bntms
+EXTSYM mosjmptab16b
+EXTSYM mosjmptab16bt
+EXTSYM mosjmptab16btms
+EXTSYM mosjmptab16bntms
 EXTSYM tableA,tableB,tableC,tableD,tableE,tableF,tableG,tableH
 EXTSYM DPageR8,DPageW8,DPageR16,DPageW16
 EXTSYM cpucycle,eopINVALID
