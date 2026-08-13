@@ -52,3 +52,13 @@ void c_cachesingle4bng(u4 ecx)
     cs4_last = ecx;
     cs4_hits++;
 }
+
+/* video/c_ngprocbg.c calls these by name. mkoracle renames every symbol the
+   oracle defines, so the bare names do not exist in a difftest link - and
+   unlike c_mv16tline.c this file has to be in the seam list, because the cur_
+   object needs its entry points. No difftest reaches them, so a no-op is
+   enough; a test that did would define its own recorder instead. */
+void drawsprng16b(void);
+void drawsprng16bhr(void);
+void drawsprng16b(void) { }
+void drawsprng16bhr(void) { }

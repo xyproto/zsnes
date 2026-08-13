@@ -149,7 +149,7 @@ EXTSYM BackAreaUnFillCol,BackAreaFillCol,clinemainsub,cpalptrng
 EXTSYM ngmsdraw,CMainWinScr,CSubWinScr,Prevcoladdr
 EXTSYM ColResult,CPalPtrng,WindowRedraw,mostranspval
 EXTSYM mosclineval,startlinet,endlinet,palchanged
-EXTSYM c_procbg16b
+EXTSYM c_procbg16b,c_procspr16b
 EXTSYM MOSAX,MOSBX,MOSCX,MOSDX,MOSSI,MOSDI,MOSBP,c_domosaicng16b
 EXTSYM ng16bbgval,ng16bprval,mosjmptab16b,mosjmptab16bt
 EXTSYM mosjmptab16btms,mosjmptab16bntms,UnusedBit,HalfTrans
@@ -1210,7 +1210,7 @@ NEWSYM StartDrawNewGfx16b
     jz near .nosprpra
     test dword[bgcmsung],1000h
     jz near .nosprpra
-    Procsprng0116b ngsub, 10h
+    ccallv c_procspr16b, 0, 10h, 0
 .nosprpra
 
     test byte[scrndis],8h
@@ -1241,7 +1241,7 @@ NEWSYM StartDrawNewGfx16b
     jz near .nosprprb
     test dword[bgcmsung],1000h
     jz near .nosprprb
-    Procsprng0116b ngsub, 10h
+    ccallv c_procspr16b, 0, 10h, 0
 .nosprprb
 
     test byte[scrndis],2h
@@ -1270,7 +1270,7 @@ NEWSYM StartDrawNewGfx16b
 .yessprprc
     test dword[bgcmsung],1000h
     jz near .nosprprc
-    Procsprng23456716b ngsub, 10h
+    ccallv c_procspr16b, 0, 10h, 1
 .nosprprc
 
     test byte[scrndis],1h
@@ -1294,7 +1294,7 @@ NEWSYM StartDrawNewGfx16b
     jnz near .nosprprd
     test dword[bgcmsung],1000h
     jz near .nosprprd
-    Procsprng16b ngsub, 10h
+    ccallv c_procspr16b, 0, 10h, 2
 .nosprprd
 
     test byte[scrndis],2h
@@ -1326,7 +1326,7 @@ NEWSYM StartDrawNewGfx16b
 .yessprpre
     test dword[bgcmsung],1000h
     jz near .nosprpre
-    Procsprng23456716b ngsub, 10h
+    ccallv c_procspr16b, 0, 10h, 1
 .nosprpre
 
     test byte[scrndis],1h
@@ -1345,7 +1345,7 @@ NEWSYM StartDrawNewGfx16b
     jnz near .nosprprf
     test dword[bgcmsung],1000h
     jz near .nosprprf
-    Procsprng16b ngsub, 10h
+    ccallv c_procspr16b, 0, 10h, 2
 .nosprprf
 
     test byte[scrndis],4h
@@ -1397,7 +1397,7 @@ NEWSYM StartDrawNewGfx16b
     jz near .nosprprma
     test dword[bgcmsung],1010h
     jz near .nosprprma
-    Procsprng0116b ngmain, 10h
+    ccallv c_procspr16b, 1, 10h, 0
 .nosprprma
 
     test byte[scrndis],8h
@@ -1428,7 +1428,7 @@ NEWSYM StartDrawNewGfx16b
     jz near .nosprprmb
     test dword[bgcmsung],1010h
     jz near .nosprprmb
-    Procsprng0116b ngmain, 10h
+    ccallv c_procspr16b, 1, 10h, 0
 .nosprprmb
 
     test byte[scrndis],2h
@@ -1457,7 +1457,7 @@ NEWSYM StartDrawNewGfx16b
 .yessprprmc
     test dword[bgcmsung],1010h
     jz near .nosprprmc
-    Procsprng23456716b ngmain ,10h
+    ccallv c_procspr16b, 1, 10h, 1
 .nosprprmc
 
     test byte[scrndis],1h
@@ -1481,7 +1481,7 @@ NEWSYM StartDrawNewGfx16b
     jnz near .nosprprmd
     test dword[bgcmsung],1010h
     jz near .nosprprmd
-    Procsprng16b ngmain ,10h
+    ccallv c_procspr16b, 1, 10h, 2
 .nosprprmd
 
     ; draw mode 7 extbg pr 1
@@ -1513,7 +1513,7 @@ NEWSYM StartDrawNewGfx16b
 .yessprprme
     test dword[bgcmsung],1010h
     jz near .nosprprme
-    Procsprng23456716b ngmain ,10h
+    ccallv c_procspr16b, 1, 10h, 1
 .nosprprme
 
     test byte[scrndis],1h
@@ -1532,7 +1532,7 @@ NEWSYM StartDrawNewGfx16b
     jnz near .nosprprmf
     test dword[bgcmsung],1010h
     jz near .nosprprmf
-    Procsprng16b ngmain, 10h
+    ccallv c_procspr16b, 1, 10h, 2
 .nosprprmf
 
     test byte[scrndis],4h

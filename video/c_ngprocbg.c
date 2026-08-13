@@ -1,6 +1,6 @@
 /*
- * video/c_ngprocbg.c - the background passes of StartDrawNewGfx16b in
- * video/newgfx16.asm.
+ * video/c_ngprocbg.c - the background and sprite passes of
+ * StartDrawNewGfx16b in video/newgfx16.asm.
  *
  * Five macros - Procbgpr016b, Procbg3pr016b, Procbgpr116b, Procbg3pr116b and
  * Procbg3pr1b16b - instantiated sixteen times between them, once per layer per
@@ -31,6 +31,10 @@ extern void (*DLFN)(void);
 extern void calldl16t(void);
 
 extern u1 BGFB[256], BGMA[256], BG3PRI[256];
+extern u1 sprtlng[256], sprlefttot[256], sprleftpr[], SpecialLine[256];
+extern u4 csprival;
+extern void drawsprng16b(void);
+extern void drawsprng16bhr(void);
 extern u1 BGMS1[], FillSubScr[256];
 extern u1 bgwinchange[256], bgallchange[256], bg1change[256];
 extern u1 winbg1enval[256], mosenng[256], mosszng[256];
@@ -199,6 +203,51 @@ void c_procbg16b(u4 const layer, void (*const lineproc)(void),
         }
         y += adv;
         esi += 576u * adv;
+        if (resolutn < (u2)y) {
+            return;
+        }
+    }
+}
+
+/* Procsprng0116b, Procsprng23456716b and Procsprng16b: one sprite priority
+   pass down the scanlines, from line 1. The three are the same walk and differ
+   only in which background modes they run on.
+
+   csprival and the sprtlng bump happen for every line that passes the screen
+   test, whether or not a sprite is then drawn. The renderer takes the scanline
+   in ebx, the video pointer in esi and the sprite count in cl. */
+enum {
+    S_MODE01,
+    S_MODE27,
+    S_ALL
+};
+
+void c_procspr16b(int main_, u4 mask, int modes);
+
+void c_procspr16b(int const main_, u4 const mask, int const modes)
+{
+    u1 const* esi = vidbuffer + 32 + 576;
+    u4 y = 1;
+
+    for (;;) {
+        int mode_ok = modes == S_ALL || (modes == S_MODE01 ? BGMA[y] <= 1 : BGMA[y] > 1);
+
+        if (BGFB[y] == 0 && on_screen(main_, mask, y) && mode_ok) {
+            u4 const pri = sprtlng[y];
+            u1 const count = sprlefttot[y];
+
+            csprival = pri;
+            sprtlng[y]++;
+            if ((sprleftpr[y * 4 + pri] & 1) && count != 0) {
+                DLR[1] = y;
+                DLR[2] = (DLR[2] & ~0xFFu) | count;
+                DLR[4] = (u4)(uintptr_t)esi;
+                DLFN = (SpecialLine[y] & 2) ? drawsprng16bhr : drawsprng16b;
+                calldl16t();
+            }
+        }
+        y++;
+        esi += 576u;
         if (resolutn < (u2)y) {
             return;
         }
