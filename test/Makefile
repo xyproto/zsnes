@@ -314,13 +314,18 @@ thi: difftest_thi.c difftest.h $(M16T_SEAM)
 NG_OBJS := ../endmem.o ../video/c_newgfx16data.o ../video/newgfx.o \
            ../video/makevid.o ../cpu/c_regsdata.o ../cpu/c_regswdata.o
 
-mos: difftest_mos.c difftest.h ../video/c_ngmosaic.c
+# Every newgfx16 difftest links a cur_ object built from the whole worktree
+# file, so it needs all of that file's C entry points - the same rule as
+# M16T_SEAM. c_ngprocbg.c also needs calldl16t's block, which m16t_extra.c has.
+NG_SEAM := ../video/c_ngmosaic.c ../video/c_ngprocbg.c m16t_extra.c
+
+mos: difftest_mos.c difftest.h $(NG_SEAM)
 	python3 ../tools/mkoracle.py video/newgfx16.asm -o _mos.o \
 	    --stubs _mos_stubs.c --provided-by $(NG_OBJS) \
-	    --exclude xtravbuf pesimpng
+	    --exclude vram xtravbuf pesimpng
 	python3 ../tools/mkoracle.py video/newgfx16.asm -o _moscur.o \
 	    --worktree --prefix cur_
-	$(CC) $(CFLAGS) difftest_mos.c ../video/c_ngmosaic.c \
+	$(CC) $(CFLAGS) difftest_mos.c $(NG_SEAM) \
 	    _mos.o _moscur.o _mos_stubs.c $(NG_OBJS) \
 	    -no-pie -o difftest_mos
 	@./difftest_mos

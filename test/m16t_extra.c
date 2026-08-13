@@ -18,6 +18,32 @@ u1* vram;
    instead. */
 u4 DLR[7];
 void (*DLFN)(void);
+
+/* calldl16t itself, which lives in video/makev16t.asm in the real build. A
+   difftest that links a ported file calling it needs a working one, not a
+   stub - this is the same shim written where C can see it. */
+__asm__(".pushsection .text\n"
+        ".globl calldl16t\n"
+        "calldl16t:\n"
+        "  pushl %ebx\n  pushl %esi\n  pushl %edi\n  pushl %ebp\n"
+        "  movl DLR+4, %ebx\n"
+        "  movl DLR+8, %ecx\n"
+        "  movl DLR+12, %edx\n"
+        "  movl DLR+16, %esi\n"
+        "  movl DLR+20, %edi\n"
+        "  movl DLR+24, %ebp\n"
+        "  movl DLR, %eax\n"
+        "  call *DLFN\n"
+        "  movl %eax, DLR\n"
+        "  movl %ebx, DLR+4\n"
+        "  movl %ecx, DLR+8\n"
+        "  movl %edx, DLR+12\n"
+        "  movl %esi, DLR+16\n"
+        "  movl %edi, DLR+20\n"
+        "  movl %ebp, DLR+24\n"
+        "  popl %ebp\n  popl %edi\n  popl %esi\n  popl %ebx\n"
+        "  ret\n"
+        ".popsection\n");
 u4 cs4_hits, cs4_last;
 
 void c_cachesingle4bng(u4 ecx);
