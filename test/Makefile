@@ -317,7 +317,8 @@ NG_OBJS := ../endmem.o ../video/c_newgfx16data.o ../video/newgfx.o \
 # Every newgfx16 difftest links a cur_ object built from the whole worktree
 # file, so it needs all of that file's C entry points - the same rule as
 # M16T_SEAM. c_ngprocbg.c also needs calldl16t's block, which m16t_extra.c has.
-NG_SEAM := ../video/c_ngmosaic.c ../video/c_ngprocbg.c m16t_extra.c
+NG_SEAM := ../video/c_ngmosaic.c ../video/c_ngprocbg.c \
+           ../video/c_ngline.c m16t_extra.c
 
 mos: difftest_mos.c difftest.h $(NG_SEAM)
 	python3 ../tools/mkoracle.py video/newgfx16.asm -o _mos.o \
