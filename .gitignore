@@ -25,3 +25,4 @@ zsnes.exe
 zsnesl.cfg
 zcfgloc.cfg
 unused-report.txt
+tools/__pycache__
