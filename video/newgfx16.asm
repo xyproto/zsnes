@@ -149,7 +149,8 @@ EXTSYM BackAreaUnFillCol,BackAreaFillCol,clinemainsub,cpalptrng
 EXTSYM ngmsdraw,CMainWinScr,CSubWinScr,Prevcoladdr
 EXTSYM ColResult,CPalPtrng,WindowRedraw,mostranspval
 EXTSYM mosclineval,startlinet,endlinet,palchanged
-EXTSYM c_procbg16b,c_procspr16b
+EXTSYM c_procbg16b,c_procspr16b,c_procmode7ng16b
+EXTSYM newengine16b_lines,newengine16b_windows
 EXTSYM MOSAX,MOSBX,MOSCX,MOSDX,MOSSI,MOSDI,MOSBP,c_domosaicng16b
 EXTSYM ng16bbgval,ng16bprval,mosjmptab16b,mosjmptab16bt
 EXTSYM mosjmptab16btms,mosjmptab16bntms,UnusedBit,HalfTrans
@@ -182,514 +183,20 @@ EXTSYM dcolortab,setpalallng,setpalette16bng,BackAreaFill
 ; This file's .data is in video/c_newgfx16data.c.
 section .text
 
-%macro WinBGCheck 1
-    mov bl,[winbg1en+%1]
-    mov bh,bl
-    test bl,0Ah
-    jz %%disable
 
-    test byte[scrnon],1 << %1
-    jz %%nomainbg
-    test byte[scrnon+1],1 << %1
-    jnz %%bg
-    xor bh,bh
-    jmp %%bg
-%%nomainbg
-    xor bl,bl
-    test byte[scrnon+1],1 << %1
-    jnz %%bg
-    xor bh,bh
-    jmp %%skip
-%%disable
-    xor bl,bl
-    xor bh,bh
-    jmp %%skip
-%%bg
-    test byte[winenabs],1 << %1
-    jnz %%nbgs
-    xor bh,bh
-%%nbgs
-    test byte[winenabm],1 << %1
-    jnz %%nbgm
-    xor bl,bl
-%%nbgm
-    jmp %%skip
-    mov cl,bl
-    or cl,bh
-    and cl,0Ah
-    cmp cl,0Ah
-    je %%skip
-    mov ch,bl
-    or ch,bh
-    mov edx,[winl1]
-    cmp cl,02h
-    je %%bg1
-    shr ch,2
-    shr edx,16
-%%bg1
-    test ch,01h
-    jnz %%outside
-    cmp dl,dh
-    jbe %%skip
-    xor bl,bl
-    xor bh,bh
-    jmp %%skip
-%%outside
-    cmp dl,0
-    ja %%skip
-    cmp dh,255
-    jb %%skip
-    xor bl,bl
-    xor bh,bh
-%%skip
-    mov [winbg1envalm+eax+%1*256],bl
-    mov [winbg1envals+eax+%1*256],bh
-    or bl,bh
-    mov [winbg1enval+eax+%1*256],bl
-%endmacro
 
-%macro WinBGCheckb 1
-    mov bl,[winbg1en+%1]
-    test bl,0Ah
-    jz %%disable
-    test byte[scrnon],1 << %1
-    jnz %%nbgen
-    test byte[winenabs],1 << %1
-    jnz %%bg
-    jmp %%disable
-%%nbgen
-    test byte[winenabm],1 << %1
-    jnz %%bg
-%%disable
-    xor bl,bl
-    jmp %%skip
-%%bg
-    mov cl,bl
-    and cl,0Ah
-    cmp cl,0Ah
-    je %%skip
-;    jne %%notskip
-;    and bl,03h
-;    and cl,03h
-;%%notskip
-    mov ch,bl
-    mov edx,[winl1]
-    cmp cl,02h
-    je %%bg1
-    shr ch,2
-    shr edx,16
-%%bg1
-    test ch,01h
-    jnz %%outside
-    cmp dl,dh
-    jbe %%skip
-    xor bl,bl
-    jmp %%skip
-%%outside
-    cmp dl,0
-    ja %%skip
-    cmp dh,255
-    jb %%skip
-    xor bl,bl
-%%skip
-    mov [winbg1enval+eax+%1*256],bl
-    mov [winbg1envalm+eax+%1*256],bl
-    mov [winbg1envals+eax+%1*256],bl
-%endmacro
-
-%macro WinBGCheck2 1
-    mov bl,[winbg1en+%1]
-    test bl,0Ah
-    jnz %%nodisable
-    xor bl,bl
-    jmp %%skip
-%%nodisable
-    mov cl,bl
-    and cl,0Ah
-    cmp cl,0Ah
-    je %%skip
-    mov ch,bl
-    mov edx,[winl1]
-    cmp cl,02h
-    je %%bg1
-    shr ch,2
-    shr edx,16
-%%bg1
-    test ch,01h
-    jnz %%outside
-    cmp dl,dh
-    jbe %%skip
-    xor bl,bl
-    jmp %%skip
-%%outside
-    cmp dl,0
-    ja %%skip
-    cmp dh,255
-    jb %%skip
-    xor bl,bl
-%%skip
-    mov [winbg1enval+eax+%1*256],bl
-%endmacro
 
 section .text
 
 NEWSYM newengine16b
-    ; store line by line data
-    ; BGMode, BGxScrollX, BGxScrollY, both BGPtrs
+    ; Everything up to the windowing section - the per-line state tables - is
+    ; video/c_ngline.c. It takes and returns nothing in registers, so a plain
+    ; ccallv is the whole seam; eax is re-established below because the rest of
+    ; this routine indexes the same line with it.
+    ccallv newengine16b_lines
     mov eax,[curypos]
     and eax,0FFh
-
-    cmp eax,1
-    jne .noclearcache
-    push eax
-    push ecx
-    mov ebx,vidmemch2s
-    mov ecx,1024+512+256
-    mov eax,0FFFFFFFFh
-.loopcc
-    mov [ebx],eax
-    add ebx,4
-    dec ecx
-    jnz .loopcc
-    pop ecx
-    pop eax
-    mov dword[startlinet],0
-    mov dword[endlinet],255
     xor ebx,ebx
-.noclearcache
-
-    mov byte[bgallchange+eax],0
-    mov byte[bgallchange+eax+1],0FFh
-    mov byte[bg1change+eax],0
-    mov byte[bg2change+eax],0
-    mov byte[bg3change+eax],0
-    mov byte[bg4change+eax],0
-    mov dword[palchanged],0
-
-    ; BG3 Priority
-    mov bl,[bg3highst]
-    mov [BG3PRI+eax],bl
-    cmp [BG3PRI+eax-1],bl
-    je .nosbg3pr
-    mov byte[bgallchange+eax],1
-.nosbg3pr
-
-    mov ebx,[scrnon]
-    ; clear
-    push ecx
-    mov cl,[scrnon]
-    and cl,1Fh
-    or cl,20h
-    and cl,[scaddtype]
-    and cl,3Fh
-    mov byte[FillSubScr+eax],1
-    or cl,cl
-    jnz .yessub
-    xor bh,bh
-    mov byte[FillSubScr+eax],0
-.yessub
-    pop ecx
-    test byte[scaddset],2
-    jnz .subscrnon
-    xor bh,bh
-.subscrnon
-    or [bgcmsung],ebx
-    mov [BGMS1+eax*2],ebx
-    cmp [BGMS1+eax*2-2],bx
-    je .nosbgms1
-    mov byte[bgallchange+eax],1
-.nosbgms1
-
-    ; if palette[0] = 0 and transparency is just add to back area,
-    ;   set ngmsdraw to 1
-    mov byte[clinemainsub],0
-    cmp word[cgram],0
-    jne .ngmsdraw0
-    test byte[scaddset],2
-    jnz .ngmsdraw0
-    mov bl,[scrnon]
-    and bl,1Fh
-    or bl,0E0h
-    and bl,[scaddtype]
-    cmp bl,20h
-    jne .ngmsdraw0
-    mov byte[ngmsdraw],1
-    mov byte[FillSubScr+eax],0
-    mov byte[clinemainsub],1
-.ngmsdraw0
-
-    ; Scroll Values
-    mov bx,[bg1scrolx]
-    mov [BG1SXl+eax*2],bx
-    cmp [BG1SXl+eax*2-2],bx
-    je .nosbgx1
-    mov byte[bg1change+eax],1
-.nosbgx1
-    mov bx,[bg2scrolx]
-    mov [BG2SXl+eax*2],bx
-    cmp [BG2SXl+eax*2-2],bx
-    je .nosbgx2
-    mov byte[bg2change+eax],1
-.nosbgx2
-    mov bx,[bg3scrolx]
-    mov [BG3SXl+eax*2],bx
-    cmp [BG3SXl+eax*2-2],bx
-    je .nosbgx3
-    mov byte[bg3change+eax],1
-.nosbgx3
-    mov bx,[bg4scrolx]
-    mov [BG4SXl+eax*2],bx
-    cmp [BG4SXl+eax*2-2],bx
-    je .nosbgx4
-    mov byte[bg4change+eax],1
-.nosbgx4
-
-    mov bx,[bg1scroly]
-    mov [BG1SYl+eax*2],bx
-    cmp [BG1SYl+eax*2-2],bx
-    je .nosbgy1
-    mov byte[bg1change+eax],1
-.nosbgy1
-    mov bx,[bg2scroly]
-    mov [BG2SYl+eax*2],bx
-    cmp [BG2SYl+eax*2-2],bx
-    je .nosbgy2
-    mov byte[bg2change+eax],1
-.nosbgy2
-    mov bx,[bg3scroly]
-    mov [BG3SYl+eax*2],bx
-    cmp [BG3SYl+eax*2-2],bx
-    je .nosbgy3
-    mov byte[bg3change+eax],1
-.nosbgy3
-    mov bx,[bg4scroly]
-    mov [BG4SYl+eax*2],bx
-    cmp [BG4SYl+eax*2-2],bx
-    je .nosbgy4
-    mov byte[bg4change+eax],1
-.nosbgy4
-
-    ; Background Mode
-    mov bl,[bgmode]
-    and bl,07h
-    mov [BGMA+eax],bl
-    cmp [BGMA+eax-1],bl
-    je .nobgma
-    mov byte[bgallchange+eax],1
-.nobgma
-
-    ; new graphics fix, thanks to TRAC
-    and ebx,07h
-    mov byte[modeused+ebx],1
-
-    ; Pointer to OBJ tile data
-    mov ebx,[bg1objptr]
-    mov [BGOPT1+eax*2],ebx
-    cmp [BGOPT1+eax*2-2],bx
-    je .nosbgo1
-    mov byte[bg1change+eax],1
-.nosbgo1
-    mov ebx,[bg2objptr]
-    mov [BGOPT2+eax*2],ebx
-    cmp [BGOPT2+eax*2-2],bx
-    je .nosbgo2
-    mov byte[bg2change+eax],1
-.nosbgo2
-    mov ebx,[bg3objptr]
-    mov [BGOPT3+eax*2],ebx
-    cmp [BGOPT3+eax*2-2],bx
-    je .nosbgo3
-    mov byte[bg3change+eax],1
-.nosbgo3
-    mov ebx,[bg4objptr]
-    mov [BGOPT4+eax*2],ebx
-    cmp [BGOPT4+eax*2-2],bx
-    je .nosbgo4
-    mov byte[bg4change+eax],1
-.nosbgo4
-
-    ; Pointer to tile status data
-    mov ebx,[bg1ptr]
-    mov [BGPT1+eax*2],ebx
-    cmp [BGPT1+eax*2-2],bx
-    je .nosbgp1
-    mov byte[bg1change+eax],1
-.nosbgp1
-    mov ebx,[bg2ptr]
-    mov [BGPT2+eax*2],ebx
-    cmp [BGPT2+eax*2-2],bx
-    je .nosbgp2
-    mov byte[bg2change+eax],1
-.nosbgp2
-    mov ebx,[bg3ptr]
-    mov [BGPT3+eax*2],ebx
-    cmp [BGPT3+eax*2-2],bx
-    je .nosbgp3
-    mov byte[bg3change+eax],1
-.nosbgp3
-    mov ebx,[bg4ptr]
-    mov [BGPT4+eax*2],ebx
-    cmp [BGPT4+eax*2-2],bx
-    je .nosbgp4
-    mov byte[bg4change+eax],1
-.nosbgp4
-
-    mov ebx,[bg1ptrx]
-    mov [BGPT1X+eax*2],ebx
-    cmp [BGPT1X+eax*2-2],bx
-    je .nosbgpx1
-    mov byte[bg1change+eax],1
-.nosbgpx1
-    mov ebx,[bg2ptrx]
-    mov [BGPT2X+eax*2],ebx
-    cmp [BGPT2X+eax*2-2],bx
-    je .nosbgpx2
-    mov byte[bg2change+eax],1
-.nosbgpx2
-    mov ebx,[bg3ptrx]
-    mov [BGPT3X+eax*2],ebx
-    cmp [BGPT3X+eax*2-2],bx
-    je .nosbgpx3
-    mov byte[bg3change+eax],1
-.nosbgpx3
-    mov ebx,[bg4ptrx]
-    mov [BGPT4X+eax*2],ebx
-    cmp [BGPT4X+eax*2-2],bx
-    je .nosbgpx4
-    mov byte[bg4change+eax],1
-.nosbgpx4
-
-    mov ebx,[bg1ptry]
-    mov [BGPT1Y+eax*2],ebx
-    cmp [BGPT1Y+eax*2-2],bx
-    je .nosbgpy1
-    mov byte[bg1change+eax],1
-.nosbgpy1
-    mov ebx,[bg2ptry]
-    mov [BGPT2Y+eax*2],ebx
-    cmp [BGPT2Y+eax*2-2],bx
-    je .nosbgpy2
-    mov byte[bg2change+eax],1
-.nosbgpy2
-    mov ebx,[bg3ptry]
-    mov [BGPT3Y+eax*2],ebx
-    cmp [BGPT3Y+eax*2-2],bx
-    je .nosbgpy3
-    mov byte[bg3change+eax],1
-.nosbgpy3
-    mov ebx,[bg4ptry]
-    mov [BGPT4Y+eax*2],ebx
-    cmp [BGPT4Y+eax*2-2],bx
-    je .nosbgpy4
-    mov byte[bg4change+eax],1
-.nosbgpy4
-    mov ebx,[forceblnk]
-    or bl,bl
-    jne .dontdraw
-    mov dword[scfbl],0
-.dontdraw
-    ; Variable size write error fix [TRAC]
-    mov [BGFB+eax],bl
-    cmp [BGFB+eax-1],bl
-    je .nosbgfb
-    mov byte[bgallchange+eax],1
-.nosbgfb
-
-    test byte[interlval],40h
-    jz .nointrl
-    mov byte[bgallchange+eax],1
-.nointrl
-
-    mov ebx,[mode7A]
-    mov [mode7ab+eax*4],ebx
-    mov ebx,[mode7C]
-    mov [mode7cd+eax*4],ebx
-    mov ebx,[mode7X0]
-    mov [mode7xy+eax*4],ebx
-    mov ebx,[mode7set]
-    mov [mode7st+eax],ebx
-
-    ; 16x16 tiles
-    mov ebx,[BG116x16t]
-    mov [t16x161+eax],ebx
-    cmp [t16x161+eax-1],bl
-    je .not16x161
-    mov byte[bg1change+eax],1
-.not16x161
-    mov ebx,[BG216x16t]
-    mov [t16x162+eax],ebx
-    cmp [t16x162+eax-1],bl
-    je .not16x162
-    mov byte[bg2change+eax],1
-.not16x162
-    mov ebx,[BG316x16t]
-    mov [t16x163+eax],ebx
-    cmp [t16x163+eax-1],bl
-    je .not16x163
-    mov byte[bg3change+eax],1
-.not16x163
-    mov ebx,[BG416x16t]
-    mov [t16x164+eax],ebx
-    cmp [t16x164+eax-1],bl
-    je .not16x164
-    mov byte[bg4change+eax],1
-.not16x164
-
-;    mov byte[mode7hr+eax],0
-    cmp byte[bgmode],7
-    jne .noextbg
-;    cmp byte[res640],0
-;    je .nomode7512
-;    mov byte[mode7hr+eax],1
-;.nomode7512
-    test byte[interlval],40h
-    jz .noextbg
-    mov byte[ngextbg],1
-.noextbg
-
-    ; mosaic
-    mov ebx,[mosaicon]
-    mov [mosenng+eax],ebx
-    mov ebx,[mosaicsz]
-    mov [mosszng+eax],ebx
-
-    ; Interlaced
-    mov ebx,[interlval]
-    mov [intrlng+eax],ebx
-
-    ; Set palette
-    ccallv setpalette16bng
-
-    cmp dword[palchanged],1
-    jne .notpchanged
-    cmp eax,112
-    jae .endl
-    mov [startlinet],eax
-    jmp .notpchanged
-.endl
-    cmp dword[endlinet],255
-    jb .notpchanged
-    mov [endlinet],eax
-.notpchanged
-
-    mov ebx,[cpalptrng]
-    add ebx,[vbufdptr]
-    mov [cpalval+eax*4],ebx
-
-    ; Set Transparency
-    mov bl,[scaddtype]
-    mov [scadtng+eax],bl
-    cmp [scadtng+eax-1],bl
-    je .noscadt
-    mov byte[bgallchange+eax],1
-.noscadt
-
-    mov bl,[scaddset]
-    mov [scadsng+eax],bl
-    cmp [scadsng+eax-1],bl
-    je .noscads
-    mov byte[bgallchange+eax],1
-.noscads
 
 ; Windowing Stuff
 ;NEWSYM winl1,      0             ; window 1 left position
@@ -712,43 +219,7 @@ NEWSYM newengine16b
     je near .finishwin
     push ecx
     push edx
-    WinBGCheck 0
-    WinBGCheck 1
-    WinBGCheck 2
-    WinBGCheck 3
-    WinBGCheck 4
-    WinBGCheck2 5
-
-    mov ebx,[winlogica]
-    mov [winlogicaval+eax*2],ebx
-    cmp [winlogicaval+eax*2-2],bx
-    je .winnchangedb
-    mov byte[bgwinchange+eax],1
-.winnchangedb
-    mov ebx,[winl1]
-    mov [winboundary+eax*4],ebx
-    cmp [winboundary+eax*4-4],ebx
-    je .winnchanged
-    mov byte[bgwinchange+eax],1
-.winnchanged
-    mov bl,[winbg1enval+eax]
-    cmp [winbg1enval+eax-1],bl
-    je .winnchanged1
-    mov byte[bgwinchange+eax],1
-.winnchanged1
-    mov bl,[winbg2enval+eax]
-    cmp [winbg2enval+eax-1],bl
-    je .winnchanged2
-    mov byte[bgwinchange+eax],1
-.winnchanged2
-    mov bl,[winbg3enval+eax]
-    cmp [winbg3enval+eax-1],bl
-    je .winnchanged3
-    mov byte[bgwinchange+eax],1
-.winnchanged3
-    mov bl,[winbg4enval+eax]
-    cmp [winbg4enval+eax-1],bl
-    je .winnchanged4
+    ccallv newengine16b_windows
     mov byte[bgwinchange+eax],1
 .winnchanged4
 
@@ -1257,7 +728,7 @@ NEWSYM StartDrawNewGfx16b
     je near .noextbgsc
     test dword[bgcmsung],300h
     jz near .noextbgsc
-    ProcMode7ngextbg16b ngsub, 3h
+    ccallv c_procmode7ng16b, 0, 3h, 1
 .noextbgsc
 
     ; draw sprites mode 2-7
@@ -1286,7 +757,7 @@ NEWSYM StartDrawNewGfx16b
     je near .nomode7
     test dword[bgcmsung],300h
     jz near .nomode7
-    ProcMode7ng16b ngsub, 1h
+    ccallv c_procmode7ng16b, 0, 1h, 0
 .nomode7
 
     ; draw sprites mode 0-7
@@ -1313,7 +784,7 @@ NEWSYM StartDrawNewGfx16b
     je near .noextbgscb
     test dword[bgcmsung],300h
     jz near .noextbgscb
-    ProcMode7ngextbg216b ngsub, 2h
+    ccallv c_procmode7ng16b, 0, 2h, 2
 .noextbgscb
 
     ; draw sprites mode 2-7
@@ -1444,7 +915,7 @@ NEWSYM StartDrawNewGfx16b
     je near .noextbgmn
     test dword[bgcmsung],303h
     jz near .noextbgmn
-    ProcMode7ngextbg16b ngmain ,3h
+    ccallv c_procmode7ng16b, 1, 3h, 1
 .noextbgmn
 
     ; draw sprites mode 2-7
@@ -1473,7 +944,7 @@ NEWSYM StartDrawNewGfx16b
     je near .nomode7m
     test dword[bgcmsung],101h
     jz near .nomode7m
-    ProcMode7ng16b ngmain ,1h
+    ccallv c_procmode7ng16b, 1, 1h, 0
 .nomode7m
 
     ; draw sprites mode 0-7
@@ -1489,7 +960,7 @@ NEWSYM StartDrawNewGfx16b
     je near .noextbgmn2
     test dword[bgcmsung],303h
     jz near .noextbgmn2
-    ProcMode7ngextbg216b ngmain ,2h
+    ccallv c_procmode7ng16b, 1, 2h, 2
 .noextbgmn2
 
     test byte[scrndis],2h

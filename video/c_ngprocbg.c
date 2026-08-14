@@ -1,5 +1,5 @@
 /*
- * video/c_ngprocbg.c - the background and sprite passes of
+ * video/c_ngprocbg.c - the background, sprite and Mode 7 passes of
  * StartDrawNewGfx16b in video/newgfx16.asm.
  *
  * Five macros - Procbgpr016b, Procbg3pr016b, Procbgpr116b, Procbg3pr116b and
@@ -33,6 +33,19 @@ extern void calldl16t(void);
 extern u1 BGFB[256], BGMA[256], BG3PRI[256];
 extern u1 sprtlng[256], sprlefttot[256], sprleftpr[], SpecialLine[256];
 extern u4 csprival;
+extern u1 winon, intrlng[256], scadsng[256], vidbright, prevbrightdc;
+extern u1 Mode7HiRes16b, scanlines, mode7set;
+extern u2 BG1SXl[256], m7starty;
+extern u4 mode7A, mode7C, mode7X0;
+extern u4 Mode7BackA, Mode7BackC, Mode7BackX0, Mode7BackSet;
+extern u4 mode7ab[256], mode7cd[256], mode7xy[256];
+extern u1 mode7st[256];
+extern u4 dcolortab[];
+extern void Gendcolortable(void);
+extern void drawmode7win16b(void);
+extern void drawmode7ngextbg16b(void);
+extern void drawmode7ngextbg216b(void);
+extern void processmode7hires16b(void);
 extern void drawsprng16b(void);
 extern void drawsprng16bhr(void);
 extern u1 BGMS1[], FillSubScr[256];
@@ -252,4 +265,111 @@ void c_procspr16b(int const main_, u4 const mask, int const modes)
             return;
         }
     }
+}
+
+/* ProcMode7ng16b, ProcMode7ngextbg16b and ProcMode7ngextbg216b: the Mode 7
+   line pass. All three save the matrix, walk the lines feeding it the
+   per-line values, and put it back; they differ in which renderer they call,
+   whether they want the interlace bit set or clear, and one flag byte.
+
+   Note the renderers are handed ebx = the *unsnapped* line for the plain form
+   but the mosaic-snapped one for the two extbg forms - the plain form pops it
+   back before the call and they do not. */
+enum {
+    M7_PLAIN,
+    M7_EXTBG,
+    M7_EXTBG2
+};
+
+void c_procmode7ng16b(int main_, u4 mask, int kind);
+
+void c_procmode7ng16b(int const main_, u4 const mask, int const kind)
+{
+    u1* esi = vidbuffer + 32 + 576;
+    u4 y = 1;
+
+    winon = 0;
+    Mode7BackA = mode7A;
+    Mode7BackC = mode7C;
+    Mode7BackX0 = mode7X0;
+    Mode7BackSet = mode7set;
+    for (;;) {
+        if (kind == M7_EXTBG) {
+            /* A per-line flag parked in the line's left margin. Only the
+               dead half of ProcMode7ngextbg216b ever read it. */
+            esi[-1] = 0;
+        }
+        if (BGFB[y] == 0 && BGMA[y] == 7 && on_screen(main_, mask, y)
+            && (kind == M7_PLAIN ? !(intrlng[y] & 0x40u)
+                                 : (intrlng[y] & 0x40u) != 0)) {
+            u4 line = y;
+            u4 eax, edx;
+
+            if (kind == M7_EXTBG) {
+                esi[-1] = 1;
+            }
+            DLR[6] = cpalval[y];
+            mode7A = mode7ab[y];
+            mode7C = mode7cd[y];
+            mode7X0 = mode7xy[y];
+            mode7set = mode7st[y];
+            curmosaicsz = 1;
+            if (mosenng[y] & 1u) {
+                u1 const sz = mosszng[y];
+
+                if (sz != 0) {
+                    u1 const n = (u1)(sz + 1u);
+
+                    curmosaicsz = n;
+                    /* 8-bit divide then multiply: the start of this mosaic
+                       block, and never line 0. */
+                    line = (u1)((u1)(y / n) * n);
+                    if (line == 0) {
+                        line = 1;
+                    }
+                }
+            }
+            eax = (mode7set & 0x02u) ? 255u - line : line;
+            edx = BG1SXl[line];
+            m7starty = (u2)eax;
+            eax = (eax & 0xFFFF0000u) | BG1SYl[line];
+            curvidoffset = esi;
+
+            DLR[0] = eax;
+            DLR[3] = edx;
+            DLR[4] = (u4)(uintptr_t)esi;
+            DLR[1] = kind == M7_PLAIN ? y : line;
+            if (kind == M7_PLAIN) {
+                if (scadsng[y] & 1u) {
+                    if (vidbright != prevbrightdc) {
+                        prevbrightdc = vidbright;
+                        Gendcolortable();
+                    }
+                    DLR[6] = (u4)(uintptr_t)dcolortab;
+                }
+                DLFN = drawmode7win16b;
+            } else if (kind == M7_EXTBG) {
+                DLFN = drawmode7ngextbg16b;
+            } else {
+                DLFN = drawmode7ngextbg216b;
+            }
+            calldl16t();
+
+            if (kind == M7_PLAIN && Mode7HiRes16b != 0 && scanlines == 0) {
+                DLR[1] = y;
+                DLR[4] = (u4)(uintptr_t)esi;
+                DLFN = processmode7hires16b;
+                calldl16t();
+            }
+        }
+        y++;
+        esi += 576u;
+        if (resolutn < (u2)y) {
+            break;
+        }
+    }
+    mode7A = Mode7BackA;
+    mode7C = Mode7BackC;
+    mode7X0 = Mode7BackX0;
+    mode7set = (u1)Mode7BackSet;
 }
