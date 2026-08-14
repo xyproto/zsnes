@@ -150,7 +150,7 @@ EXTSYM ngmsdraw,CMainWinScr,CSubWinScr,Prevcoladdr
 EXTSYM ColResult,CPalPtrng,WindowRedraw,mostranspval
 EXTSYM mosclineval,startlinet,endlinet,palchanged
 EXTSYM c_procbg16b,c_procspr16b,c_procmode7ng16b
-EXTSYM newengine16b_lines,newengine16b_windows
+EXTSYM newengine16b_lines,newengine16b_windows,newengine16b_sprwin
 EXTSYM MOSAX,MOSBX,MOSCX,MOSDX,MOSSI,MOSDI,MOSBP,c_domosaicng16b
 EXTSYM ng16bbgval,ng16bprval,mosjmptab16b,mosjmptab16bt
 EXTSYM mosjmptab16btms,mosjmptab16bntms,UnusedBit,HalfTrans
@@ -223,111 +223,8 @@ NEWSYM newengine16b
     mov byte[bgwinchange+eax],1
 .winnchanged4
 
-    ; generate sprite window
-    cmp byte[winbg1enval+eax+4*256],0
-    je near .windisable
-
-    mov ebx,[winl1]
-    mov dl,[winbg1enval+eax+4*256]
-    mov dh,[winlogicb]
-    and dh,03h
-    ; Same as previous line?
-    cmp dword[objwlrpos+eax*4-4],0FFFFFFFFh
-    je .changed
-    cmp [objwlrpos+eax*4-4],ebx
-    jne .changedb
-    cmp [objwen+eax*2-2],dx
-    je near .notchanged
-.changedb
-    cmp [objwlrpos+eax*4],ebx
-    jne .changed
-    cmp [objwen+eax*2],dx
-    jne .changed
-    mov ecx,[CSprWinPtr]
-    cmp [objclineptr+eax*4],ecx
-    ja near .usecurrent
-.changed
-    mov [objwlrpos+eax*4],ebx
-    mov [objwen+eax*2],dx
-
-    mov bl,[winlogicb]
-    and bl,03h
-    mov [nglogicval],bl
-    mov ebx,4*256
-    add ebx,eax
-    mov dword[ngwinen],0
-    ccallv BuildWindow2, eax, ebx
-    cmp dword[ngwinen],0
-    je near .disablesprwin
-    mov ecx,[CSprWinPtr]
-    add ecx,260
-    mov [CSprWinPtr],ecx
-    mov [objclineptr+eax*4],ecx
-    add ecx,[ngwinptr]
-    ; Construct Window in ecx
-    push eax
-    mov ebx,ngwintable
-    dec ecx
-    mov eax,256
-.procnotempty
-    mov edx,[ebx]
-    add ebx,4
-    or edx,edx
-    jz .procempty
-    dec edx
-.swloop
-    mov dword[ecx],0
-    add ecx,4
-    sub eax,4
-    jc .done
-    sub edx,4
-    jnc .swloop
-    sub eax,edx
-    add ecx,edx
-    dec eax
-    inc ecx
-.procempty
-    mov edx,[ebx]
-    dec edx
-    add ebx,4
-.swloop2
-    mov dword[ecx],01010101h
-    add ecx,4
-    sub eax,4
-    jc .done
-    sub edx,4
-    jnc .swloop2
-    sub eax,edx
-    add ecx,edx
-    dec eax
-    inc ecx
-    jmp .procnotempty
-.done
-    pop eax
-    jmp .skipobjw
-.usecurrent
-    mov ecx,[objclineptr+eax*4]
-    cmp ecx,0FFFFFFFFh
-    je .disablesprwin
-    mov [CSprWinPtr],ecx
-    jmp .skipobjw
-    ; copy over if it's the same
-.notchanged
-    mov [objwlrpos+eax*4],ebx
-    mov [objwen+eax*2],dx
-    mov ebx,[objclineptr+eax*4-4]
-    mov [objclineptr+eax*4],ebx
-    cmp ebx,0FFFFFFFFh
-    jne .skipobjw
-.disablesprwin
-    mov dword[objclineptr+eax*4],0FFFFFFFFh
-    mov byte[winbg1enval+eax+4*256],0
-    mov byte[winbg1envals+eax+4*256],0
-    mov byte[winbg1envalm+eax+4*256],0
-    jmp .skipobjw
-.windisable
-    ;mov dword[objclineptr+eax*4],0FFFFFFFFh
-    mov dword[objwlrpos+eax*4],0FFFFFFFFh
+    ; The whole sprite-window build is video/c_ngline.c.
+    ccallv newengine16b_sprwin
 .skipobjw
     pop edx
     pop ecx

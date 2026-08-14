@@ -56,7 +56,11 @@ extern void setpalette16bng(void);
 extern u1 winbg1en[6], winenabm, winenabs, disableeffects;
 extern u1 winbg1enval[], winbg1envalm[], winbg1envals[];
 extern u1 winbg2enval[], winbg3enval[], winbg4enval[];
-extern u1 winlogica, winl1;
+extern u1 winlogica, winl1, winlogicb, nglogicval;
+extern u4 objwlrpos[256], objclineptr[256], ngwinen, ngwinptr;
+extern u4 ngwintable[32], CSprWinPtr;
+extern u2 objwen[256];
+extern void BuildWindow2(u4 y, u4 idx);
 extern u2 winlogicaval[256];
 extern u4 winboundary[256];
 
@@ -353,4 +357,127 @@ void newengine16b_windows(void)
     if (winbg4enval[y - 1] != winbg4enval[y]) {
         bgwinchange[y] = 1;
     }
+}
+
+/* One alternating run of the sprite window mask.
+
+   The writes are dword-wide and overshoot the end of the run; the correction
+   afterwards backs both the pointer and the pixel count up by exactly the
+   overshoot, so a run of length L advances ecx by L and consumes L pixels no
+   matter how it lands. Both `sub`s are *unsigned* borrows, which is why edx
+   goes on being used after it has gone negative - hence the u4 arithmetic and
+   the signed cast where it becomes a pointer offset.
+
+   Returns 1 when the 256 pixels are used up, at which point the last dword's
+   overshoot is left in the buffer - that is what the assembly leaves too. */
+static int win_run(u1** const pecx, u4* const peax, u4 edx, u4 const val)
+{
+    u1* ecx = *pecx;
+    u4 eax = *peax;
+
+    for (;;) {
+        memcpy(ecx, &val, 4);
+        ecx += 4;
+        if (eax < 4u) { /* sub eax,4 / jc .done */
+            *pecx = ecx;
+            *peax = eax - 4u;
+            return 1;
+        }
+        eax -= 4u;
+        if (edx < 4u) { /* sub edx,4 / jnc .swloop */
+            edx -= 4u;
+            break;
+        }
+        edx -= 4u;
+    }
+    eax -= edx;
+    ecx += (s4)edx;
+    eax--;
+    ecx++;
+    *pecx = ecx;
+    *peax = eax;
+    return 0;
+}
+
+/* ngwintable holds alternating run lengths - covered, then not - and the mask
+   is written from one byte *before* the line's buffer, which the first dword
+   store then covers. Not static: test/difftest_sprwin.c compares it against a
+   verbatim transcription of the assembly it replaced. */
+void ng_build_sprite_window(u1* dest);
+
+void ng_build_sprite_window(u1* const dest)
+{
+    u4 const* tab = ngwintable;
+    u4 eax = 256;
+    u1* ecx = dest - 1;
+
+    for (;;) {
+        u4 edx = *tab++;
+
+        /* A zero-length run is skipped rather than written. */
+        if (edx != 0 && win_run(&ecx, &eax, edx - 1u, 0x00000000u)) {
+            return;
+        }
+        edx = *tab++ - 1u;
+        if (win_run(&ecx, &eax, edx, 0x01010101u)) {
+            return;
+        }
+    }
+}
+
+void newengine16b_sprwin(void);
+
+void newengine16b_sprwin(void)
+{
+    u4 const y = curypos & 0xFFu;
+    u4 const ebx = dwr(&winl1);
+    u2 dx;
+
+    if (winbg1enval[y + 4u * 256u] == 0) {
+        objwlrpos[y] = 0xFFFFFFFFu;
+        return;
+    }
+    dx = (u2)(winbg1enval[y + 4u * 256u] | (u4)(winlogicb & 3u) << 8);
+
+    /* Nothing to rebuild if this line's window matches the one above, or the
+       one already built for this line. */
+    if (objwlrpos[y - 1] != 0xFFFFFFFFu) {
+        if (objwlrpos[y - 1] == ebx && objwen[y - 1] == dx) {
+            objwlrpos[y] = ebx;
+            objwen[y] = dx;
+            objclineptr[y] = objclineptr[y - 1];
+            if (objclineptr[y] != 0xFFFFFFFFu) {
+                return;
+            }
+            goto disable;
+        }
+        if (objwlrpos[y] == ebx && objwen[y] == dx
+            && objclineptr[y] > CSprWinPtr) {
+            /* Already built earlier this frame - point at it again. */
+            if (objclineptr[y] == 0xFFFFFFFFu) {
+                goto disable;
+            }
+            CSprWinPtr = objclineptr[y];
+            return;
+        }
+    }
+
+    objwlrpos[y] = ebx;
+    objwen[y] = dx;
+    nglogicval = (u1)(winlogicb & 3u);
+    ngwinen = 0;
+    BuildWindow2(y, 4u * 256u + y);
+    if (ngwinen == 0) {
+        goto disable;
+    }
+    CSprWinPtr += 260u;
+    objclineptr[y] = CSprWinPtr;
+    ng_build_sprite_window((u1*)(uintptr_t)(CSprWinPtr + ngwinptr));
+    return;
+
+disable:
+    objclineptr[y] = 0xFFFFFFFFu;
+    winbg1enval[y + 4u * 256u] = 0;
+    winbg1envals[y + 4u * 256u] = 0;
+    winbg1envalm[y + 4u * 256u] = 0;
 }
