@@ -45,7 +45,7 @@ ASMDATA   := zsnes_asmdata_test
 ASMDATA_SRC := asmdata_test.c
 OBJS      := ../zpath.o
 
-.PHONY: all run clean spcdec fxtable fxops memops m7calc m7ext2 m7start m7win m7bw m7proc m7draw mv16 mvs mvall m716t cb16t cb16b spr16bt spr16t spr16p t8bt t16bt t8t t16t t8to thi mos regs
+.PHONY: all run clean spcdec fxtable fxops memops m7calc m7ext2 m7start m7win m7bw m7proc m7draw mv16 mvs mvall m716t cb16t cb16b spr16bt spr16t spr16p t8bt t16bt t8t t16t t8to thi mos sprwin regs
 
 all: $(BIN) $(NETPLAY) $(ST10) $(ST11) $(OBC1) $(MSU1) $(DSP2) $(SAI) $(SA1) $(SPC7110) $(VCACHE) $(SPRITES) $(C4) $(MODE7) $(ASMDATA)
 
@@ -319,6 +319,13 @@ NG_OBJS := ../endmem.o ../video/c_newgfx16data.o ../video/newgfx.o \
 # M16T_SEAM. c_ngprocbg.c also needs calldl16t's block, which m16t_extra.c has.
 NG_SEAM := ../video/c_ngmosaic.c ../video/c_ngprocbg.c \
            ../video/c_ngline.c m16t_extra.c
+
+# No oracle: the loop has no symbol of its own, so difftest_sprwin.c carries a
+# verbatim transcription of the assembly instead.
+sprwin: difftest_sprwin.c difftest.h ../video/c_ngline.c
+	$(CC) $(CFLAGS) difftest_sprwin.c ../video/c_ngline.c \
+	    $(NG_OBJS) -no-pie -o difftest_sprwin
+	@./difftest_sprwin
 
 mos: difftest_mos.c difftest.h $(NG_SEAM)
 	python3 ../tools/mkoracle.py video/newgfx16.asm -o _mos.o \
