@@ -124,6 +124,44 @@ def stub_out(path, names):
         f.write("\n".join(out))
 
 
+def rewrite_macro(root, specs):
+    """Replace the body of `%macro NAME 0` wherever it is defined under root.
+
+    The 65816 opcodes end in `endloop`, which dispatches straight into the next
+    one. Rewriting that macro to `ret` is what makes a single opcode callable,
+    and so what lets a difftest drive one at a time instead of a whole ROM.
+    """
+    want = {}
+    for spec in specs:
+        name, _, body = spec.partition("=")
+        want[name] = body.replace("\\n", "\n").split("\n")
+    seen = set()
+    for dirpath, _, files in os.walk(root):
+        for fn in files:
+            path = os.path.join(dirpath, fn)
+            lines = open(path).read().split("\n")
+            out, i, hit = [], 0, False
+            while i < len(lines):
+                m = re.match(r"%i?macro\s+(\w+)\s+0\s*$", lines[i])
+                if m and m.group(1) in want:
+                    j = i
+                    while j < len(lines) and not re.match(r"%endmacro",
+                                                          lines[j]):
+                        j += 1
+                    out += [lines[i]] + want[m.group(1)] + ["%endmacro"]
+                    seen.add(m.group(1))
+                    i, hit = j + 1, True
+                    continue
+                out.append(lines[i])
+                i += 1
+            if hit:
+                with open(path, "w") as f:
+                    f.write("\n".join(out))
+    missing = [n for n in want if n not in seen]
+    if missing:
+        sys.exit("mkoracle: no such macro: %s" % " ".join(missing))
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("source", help="repo-relative path, e.g. video/mv16tms.asm")
@@ -153,6 +191,10 @@ def main():
                          "external <name>_stub, so a difftest can observe a "
                          "call that would otherwise be PC-relative and "
                          "impossible to intercept")
+    ap.add_argument("--rewrite-macro", nargs="*", default=[], metavar="NAME=BODY",
+                    help="replace a nullary macro's body before assembly, "
+                         r"\n separating lines; endloop=ret makes each 65816 "
+                         "opcode return instead of dispatching the next")
     a = ap.parse_args()
 
     rev = "worktree" if a.worktree else (a.rev
@@ -163,13 +205,18 @@ def main():
             copy_tree(a.source, tmp, set())
         else:
             extract(rev, a.source, tmp, set())
+        if a.rewrite_macro:
+            rewrite_macro(tmp, a.rewrite_macro)
         if a.stub_routine:
             stub_out(os.path.join(tmp, a.source), a.stub_routine)
         raw = os.path.join(tmp, "raw.o")
         cmd = ["nasm", "-Ox", "-f", "elf32", "-w-orphan-labels", "-i", tmp + "/"]
         cmd += ["-D" + d for d in a.define]
         cmd += ["-o", raw, os.path.join(tmp, a.source)]
-        r = subprocess.run(cmd, capture_output=True, text=True)
+        # From tmp, so `%include "cpu/foo.inc"` picks up the extracted copy.
+        # NASM searches the current directory before -i, and running from the
+        # repo root silently gave the oracle the working tree's includes.
+        r = subprocess.run(cmd, capture_output=True, text=True, cwd=tmp)
         if r.returncode != 0:
             sys.stderr.write(r.stderr)
             sys.exit("mkoracle: assembly failed")

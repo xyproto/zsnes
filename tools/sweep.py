@@ -15,6 +15,10 @@ behind and it got committed.
                  {root}/video/mv16tms.o {root}/test/_mvall.o \\
                  {root}/test/difftest_mvall.c -no-pie -o {bin}'
 
+Mutating a header only bites if the difftest is compiled from {tree}: a
+`#include "../cpu/foo.h"` in {root} resolves to the unmutated original, and
+the sweep then reports every mutant as a survivor.
+
 Mutants file: `name<TAB>old<TAB>new`, with \\n for newlines. A mutant whose
 `old` does not appear exactly once is reported as UNANCHORED rather than
 silently skipped - a stale anchor is how a sweep starts testing nothing.
@@ -77,7 +81,7 @@ def run_one(src_text, mut, tmp, build, iters, rel):
         f.write(src_text.replace(old, new))
     binary = os.path.join(tmp, "m")
     try:
-        cmd = build.format(root=ROOT, src=src, bin=binary)
+        cmd = build.format(root=ROOT, src=src, tree=scratch, bin=binary)
         r = subprocess.run(cmd, shell=True, capture_output=True, text=True)
         if r.returncode != 0:
             return "BUILD FAILED: " + (r.stderr.strip().splitlines() or [""])[-1][:60]
@@ -95,7 +99,10 @@ def main():
     ap.add_argument("--source", required=True, help="repo-relative file to mutate")
     ap.add_argument("--mutants", required=True)
     ap.add_argument("--build", required=True,
-                    help="shell command; {root} {src} {bin} are substituted")
+                    help="shell command; {root} {src} {tree} {bin} are "
+                         "substituted ({tree} is the scratch tree - compile "
+                         "the difftest from there when the mutated file is a "
+                         "header it reaches by a relative include)")
     ap.add_argument("--fast", type=int, default=2000)
     ap.add_argument("--full", type=int, default=20000)
     ap.add_argument("--only", nargs="*", default=None,
