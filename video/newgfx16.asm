@@ -150,6 +150,8 @@ EXTSYM ngmsdraw,CMainWinScr,CSubWinScr,Prevcoladdr
 EXTSYM ColResult,CPalPtrng,WindowRedraw,mostranspval
 EXTSYM mosclineval,startlinet,endlinet,palchanged
 EXTSYM c_procbg16b,c_procspr16b,c_procmode7ng16b
+EXTSYM NGSAX,NGSBX,NGSCX,NGSDX,NGSSI,NGSDI,NGSBP
+EXTSYM c_drawsprng16b,c_drawsprng16bhr
 EXTSYM newengine16b_lines,newengine16b_windows,newengine16b_sprwin
 EXTSYM MOSAX,MOSBX,MOSCX,MOSDX,MOSSI,MOSDI,MOSBP,c_domosaicng16b
 EXTSYM ng16bbgval,ng16bprval,mosjmptab16b,mosjmptab16bt
@@ -1014,512 +1016,48 @@ NEWSYM drawbg3linepr116b
 NEWSYM drawbg4linepr116b
     drawbglinengpr116b 3,3
 
-%macro normalsprng16b 2
-    test dword[sprleftpr+ebx*4],80000000h
-    jnz near .drawsingle
-    push esi
-    push ebx
-    add edi,esi
-    mov esi,[sprtbng+ebx*4]
-    mov edx,esi
-    xor ebx,ebx
-.loopobj
-    test byte[esi+7],20h
-    jnz near .drawspriteflipx
-    mov bx,[esi]
-    push edx
-    mov ch,[esi+6]
-    mov dl,[esi+7]
-    and edx,03h
-    cmp edx,[csprival]
-    jne near .notprio
-    mov esi,[esi+2]
-    mov dl,[csprbit]
-    sprdrawa16b %1
-    pop edx
-.nodrawspr
-    add edx,8
-    mov esi,edx
-    dec cl
-    jnz near .loopobj
-    rol byte[csprbit],1
-    cmp byte[csprbit],1
-    je near .clearcsprmem
-    pop ebx
-    pop esi
-    ret
-.notprio
-    mov esi,[esi+2]
-    mov dl,[csprbit]
-    sprdrawa sprdrawpra2
-    pop edx
-    add edx,8
-    mov esi,edx
-    dec cl
-    jnz near .loopobj
-    rol byte[csprbit],1
-    cmp byte[csprbit],1
-    je near .clearcsprmem
-    pop ebx
-    pop esi
-    ret
-.drawspriteflipx
-    mov bx,[esi]
-    push edx
-    mov ch,[esi+6]
-    mov dl,[esi+7]
-    and edx,03h
-    cmp edx,[csprival]
-    jne near .notpriof
-    mov esi,[esi+2]
-    mov dl,[csprbit]
-    sprdrawaf16b %1
-    pop edx
-    add edx,8
-    mov esi,edx
-    dec cl
-    jnz near .loopobj
-    rol byte[csprbit],1
-    cmp byte[csprbit],1
-    je near .clearcsprmem
-.endobj
-    pop ebx
-    pop esi
-    ret
-.notpriof
-    mov esi,[esi+2]
-    mov dl,[csprbit]
-    sprdrawaf sprdrawpra2
-    pop edx
-    add edx,8
-    mov esi,edx
-    dec cl
-    jnz near .loopobj
-    rol byte[csprbit],1
-    cmp byte[csprbit],1
-    je near .clearcsprmem
-    pop ebx
-    pop esi
-    ret
-.clearcsprmem
-    xor eax,eax
-    mov ecx,64
-    mov edi,sprpriodata+16
-    rep stosd
-    pop ebx
-    pop esi
-    ret
-
-.drawsingle
-    push esi
-    push ebx
-    mov edi,esi
-    mov esi,[sprtbng+ebx*4]
-    mov edx,ecx
-    and edx,0FFh
-    shl edx,3
-    sub edx,8
-    add edx,esi
-    mov esi,edx
-    xor ebx,ebx
-.loopobj2
-    test byte[esi+7],20h
-    jnz near .drawspriteflipx2
-    mov bx,[esi]
-    mov ch,[esi+6]
-    mov esi,[esi+2]
-    sprdrawa16b %2
-    sub edx,8
-    mov esi,edx
-    dec cl
-    jnz near .loopobj2
-    pop ebx
-    pop esi
-    ret
-.drawspriteflipx2
-    mov bx,[esi]
-    mov ch,[esi+6]
-    mov esi,[esi+2]
-    sprdrawaf16b %2
-    sub edx,8
-    mov esi,edx
-    dec cl
-    jnz near .loopobj2
-    pop ebx
-    pop esi
-    ret
-%endmacro
 
 
-%macro normalwsprng16b 2
-;    cmp byte[winbg1enval+eax+4*256],0
-;    je near .skipobjw
-    xor eax,eax
-    mov [NGNumSpr],cl
-    mov ecx,[objclineptr+ebx*4]
-    add ecx,[ngwinptr]
-    test dword[sprleftpr+ebx*4],80000000h
-    jnz near .drawsingle
-    push esi
-    push ebx
-    add edi,esi
-    mov esi,[sprtbng+ebx*4]
-    mov edx,esi
-    xor ebx,ebx
-.loopobj
-    test byte[esi+7],20h
-    jnz near .drawspriteflipx
-    mov bx,[esi]
-    push edx
-    mov dl,[esi+7]
-    and edx,03h
-    cmp edx,[csprival]
-    jne near .notprio
-    mov dh,[esi+6]
-    mov esi,[esi+2]
-    mov dl,[csprbit]
-    sprdrawa16b %1
-    pop edx
-.nodrawspr
-    add edx,8
-    mov esi,edx
-    dec byte[NGNumSpr]
-    jnz near .loopobj
-    rol byte[csprbit],1
-    cmp byte[csprbit],1
-    je near .clearcsprmem
-    pop ebx
-    pop esi
-    xor ecx,ecx
-    ret
-.notprio
-    mov esi,[esi+2]
-    mov dl,[csprbit]
-    sprdrawa sprdrawpra2
-    pop edx
-    add edx,8
-    mov esi,edx
-    dec byte[NGNumSpr]
-    jnz near .loopobj
-    rol byte[csprbit],1
-    cmp byte[csprbit],1
-    je near .clearcsprmem
-    pop ebx
-    pop esi
-    xor ecx,ecx
-    ret
-.drawspriteflipx
-    mov bx,[esi]
-    push edx
-    mov dl,[esi+7]
-    and edx,03h
-    cmp edx,[csprival]
-    jne near .notpriof
-    mov dh,[esi+6]
-    mov esi,[esi+2]
-    mov dl,[csprbit]
-    sprdrawaf16b %1
-    pop edx
-    add edx,8
-    mov esi,edx
-    dec byte[NGNumSpr]
-    jnz near .loopobj
-    rol byte[csprbit],1
-    cmp byte[csprbit],1
-    je near .clearcsprmem
-.endobj
-    pop ebx
-    pop esi
-    xor ecx,ecx
-    ret
-.notpriof
-    mov esi,[esi+2]
-    mov dl,[csprbit]
-    sprdrawaf sprdrawpra2
-    pop edx
-    add edx,8
-    mov esi,edx
-    dec byte[NGNumSpr]
-    jnz near .loopobj
-    rol byte[csprbit],1
-    cmp byte[csprbit],1
-    je near .clearcsprmem
-    pop ebx
-    pop esi
-    xor ecx,ecx
-    xor ecx,ecx
-    ret
-.clearcsprmem
-    xor eax,eax
-    mov ecx,64
-    mov edi,sprpriodata+16
-    rep stosd
-    pop ebx
-    pop esi
-    ret
-
-.drawsingle
-    push esi
-    push ebx
-    mov edi,esi
-    mov esi,[sprtbng+ebx*4]
-    xor edx,edx
-    mov dl,[NGNumSpr]
-    and edx,0FFh
-    shl edx,3
-    sub edx,8
-    add edx,esi
-    mov esi,edx
-    xor ebx,ebx
-.loopobj2
-    test byte[esi+7],20h
-    jnz near .drawspriteflipx2
-    push edx
-    mov bx,[esi]
-    mov dh,[esi+6]
-    mov esi,[esi+2]
-    sprdrawa16b %2
-    pop edx
-    sub edx,8
-    mov esi,edx
-    dec byte[NGNumSpr]
-    jnz near .loopobj2
-    pop ebx
-    pop esi
-    xor ecx,ecx
-    ret
-.drawspriteflipx2
-    push edx
-    mov bx,[esi]
-    mov dh,[esi+6]
-    mov esi,[esi+2]
-    sprdrawaf16b %2
-    pop edx
-    sub edx,8
-    mov esi,edx
-    dec byte[NGNumSpr]
-    jnz near .loopobj2
-    pop ebx
-    pop esi
-    xor ecx,ecx
-    ret
-%endmacro
 
 ; FillSubScr bit 0 sets to 1 if there is no subscreen present
 ; ms,wms,wm,ws
 ; FillSubScr scadtng
+; The whole sprite cluster - both entry points, the fourteen arms they
+; dispatch into and the 58 writer macros - is video/c_ngspr.c.
 NEWSYM drawsprng16b
-    test byte[BGMS1+ebx*2],10h
-    jz .nosubmain
-    test byte[FillSubScr+ebx],1
-    jnz near drawsprng16bt
-.nosubmain
-    mov ebp,[cpalval+ebx*4]
-    xor eax,eax
-    mov edi,[CMainWinScr]
-    test byte[FillSubScr+ebx],1
-    jz .main2
-    test byte[BGMS1+ebx*2],10h
-    jnz .main2
-    mov edi,[CSubWinScr]
-.main2
-    cmp byte[edi+ebx+4*256],0
-    jne near drawsprngw16b
-    test byte[FillSubScr+ebx],1
-    jz .main
-    test byte[BGMS1+ebx*2],10h
-    jnz .main
-    add esi,75036*2
-.main
-    xor edi,edi
-    normalsprng16b sprdrawpra16bng,sprdrawprb16bng
-NEWSYM drawsprngw16b
-    xor edi,edi
-    test byte[FillSubScr+ebx],1
-    jz .main
-    test byte[BGMS1+ebx*2],10h
-    jnz .main
-    add esi,75036*2
-.main
-    normalwsprng16b sprdrawprawb16bng,sprdrawprbwb16bng
-
-drawsprng16bt:
-    test byte[scadtng+ebx],10h
-    jz near drawsprng16bnt
-    mov ebp,[cpalval+ebx*4]
-    xor eax,eax
-    test byte[BGMS1+ebx*2+1],10h
-    jnz near drawsprng16bmst
-    mov edi,[CMainWinScr]
-    cmp byte[edi+ebx+4*256],0
-    jne near drawsprngw16bt
-    xor edi,edi
-    normalsprng16b sprdrawpra16bngt,sprdrawprb16bngt
-NEWSYM drawsprngw16bt
-    xor edi,edi
-    normalwsprng16b sprdrawprawb16bngt,sprdrawprbwb16bngt
-drawsprng16bmst:
-    mov edi,[CMainWinScr]
-    cmp byte[edi+ebx+4*256],0
-    jne near drawsprngw16bmt
-    mov edi,[CSubWinScr]
-    cmp byte[edi+ebx+4*256],0
-    jne near drawsprngw16bst
-    xor edi,edi
-    normalsprng16b sprdrawpra16bngmst,sprdrawprb16bngmst
-drawsprngw16bst:
-    xor edi,edi
-    normalwsprng16b sprdrawprawb16bngst,sprdrawprbwb16bngst
-drawsprngw16bmt:
-    mov edi,[CSubWinScr]
-    cmp byte[edi+ebx+4*256],0
-    jne near drawsprngw16bmst
-    xor edi,edi
-    normalwsprng16b sprdrawprawb16bngmt,sprdrawprbwb16bngmt
-drawsprngw16bmst:
-    xor edi,edi
-    normalwsprng16b sprdrawprawb16bngmst,sprdrawprbwb16bngmst
-
-drawsprng16bnt:
-    mov ebp,[cpalval+ebx*4]
-    xor eax,eax
-    test byte[BGMS1+ebx*2+1],10h
-    jnz near drawsprng16bmsnt
-    mov edi,[CMainWinScr]
-    cmp byte[edi+ebx+4*256],0
-    jne near drawsprngw16b
-    xor edi,edi
-    normalsprng16b sprdrawpra16bngnt,sprdrawprb16bngnt
-drawsprngw16bnt
-    xor edi,edi
-    normalwsprng16b sprdrawprawb16bngnt,sprdrawprbwb16bngnt
-drawsprng16bmsnt:
-    mov edi,[CMainWinScr]
-    cmp byte[edi+ebx+4*256],0
-    jne near drawsprngw16bmnt
-    mov edi,[CSubWinScr]
-    cmp byte[edi+ebx+4*256],0
-    jne near drawsprngw16bsnt
-    xor edi,edi
-    normalsprng16b sprdrawpra16bngmsnt,sprdrawprb16bngmsnt
-drawsprngw16bsnt:
-    xor edi,edi
-    normalwsprng16b sprdrawprawb16bngsnt,sprdrawprbwb16bngsnt
-drawsprngw16bmnt:
-    mov edi,[CSubWinScr]
-    cmp byte[edi+ebx+4*256],0
-    jne near drawsprngw16bmsnt
-    xor edi,edi
-    normalwsprng16b sprdrawprawb16bngmnt,sprdrawprbwb16bngmnt
-drawsprngw16bmsnt:
-    xor edi,edi
-    normalwsprng16b sprdrawprawb16bngmsnt,sprdrawprbwb16bngmsnt
-
+    mov [NGSAX], eax
+    mov [NGSBX], ebx
+    mov [NGSCX], ecx
+    mov [NGSDX], edx
+    mov [NGSSI], esi
+    mov [NGSDI], edi
+    mov [NGSBP], ebp
+    call c_drawsprng16b
+    mov eax, [NGSAX]
+    mov ebx, [NGSBX]
+    mov ecx, [NGSCX]
+    mov edx, [NGSDX]
+    mov esi, [NGSSI]
+    mov edi, [NGSDI]
+    mov ebp, [NGSBP]
+    ret
 NEWSYM drawsprng16bhr
-    test byte[BGMS1+ebx*2],10h
-    jz .nosubmain
-    test byte[FillSubScr+ebx],1
-    jnz near drawsprng16bthr
-.nosubmain
-    mov ebp,[cpalval+ebx*4]
-    xor eax,eax
-    mov edi,[CMainWinScr]
-    test byte[FillSubScr+ebx],1
-    jz .main2
-    test byte[BGMS1+ebx*2],10h
-    jnz .main2
-    mov edi,[CSubWinScr]
-.main2
-    cmp byte[edi+ebx+4*256],0
-    jne near drawsprngw16bhr
-    test byte[FillSubScr+ebx],1
-    jz .main
-    test byte[BGMS1+ebx*2],10h
-    jnz .main
-    add esi,75036*2
-.main
-    xor edi,edi
-    normalsprng16b sprdrawpra16bnghr,sprdrawprb16bnghr
-NEWSYM drawsprngw16bhr
-    xor edi,edi
-    test byte[FillSubScr+ebx],1
-    jz .main
-    test byte[BGMS1+ebx*2],10h
-    jnz .main
-    add esi,75036*2
-.main
-    normalwsprng16b sprdrawprawb16bnghr,sprdrawprbwb16bnghr
-drawsprng16bthr:
-    test byte[scadtng+ebx],10h
-    jz near drawsprng16bnthr
-    mov ebp,[cpalval+ebx*4]
-    xor eax,eax
-    test byte[BGMS1+ebx*2+1],10h
-    jnz near drawsprng16bmsthr
-    mov edi,[CMainWinScr]
-    cmp byte[edi+ebx+4*256],0
-    jne near drawsprngw16bthr
-    xor edi,edi
-    normalsprng16b sprdrawpra16bngthr,sprdrawprb16bngthr
-NEWSYM drawsprngw16bthr
-    xor edi,edi
-    normalwsprng16b sprdrawprawb16bngthr,sprdrawprbwb16bngthr
-drawsprng16bmsthr:
-    mov edi,[CMainWinScr]
-    cmp byte[edi+ebx+4*256],0
-    jne near drawsprngw16bmthr
-    mov edi,[CSubWinScr]
-    cmp byte[edi+ebx+4*256],0
-    jne near drawsprngw16bsthr
-    xor edi,edi
-    normalsprng16b sprdrawpra16bngmsthr,sprdrawprb16bngmsthr
-drawsprngw16bsthr:
-    xor edi,edi
-    normalwsprng16b sprdrawprawb16bngsthr,sprdrawprbwb16bngsthr
-drawsprngw16bmthr:
-    mov edi,[CSubWinScr]
-    cmp byte[edi+ebx+4*256],0
-    jne near drawsprngw16bmsthr
-    xor edi,edi
-    normalwsprng16b sprdrawprawb16bngmthr,sprdrawprbwb16bngmthr
-drawsprngw16bmsthr:
-    xor edi,edi
-    normalwsprng16b sprdrawprawb16bngmsthr,sprdrawprbwb16bngmsthr
-drawsprng16bnthr:
-    mov ebp,[cpalval+ebx*4]
-    xor eax,eax
-    test byte[BGMS1+ebx*2+1],10h
-    jnz near drawsprng16bmsnthr
-    mov edi,[CMainWinScr]
-    cmp byte[edi+ebx+4*256],0
-    jne near drawsprngw16bhr
-    xor edi,edi
-    normalsprng16b sprdrawpra16bngnthr,sprdrawprb16bngnthr
-drawsprngw16bnthr
-    xor edi,edi
-    normalwsprng16b sprdrawprawb16bngnthr,sprdrawprbwb16bngnthr
-drawsprng16bmsnthr:
-    mov edi,[CMainWinScr]
-    cmp byte[edi+ebx+4*256],0
-    jne near drawsprngw16bmnthr
-    mov edi,[CSubWinScr]
-    cmp byte[edi+ebx+4*256],0
-    jne near drawsprngw16bsnthr
-    xor edi,edi
-    normalsprng16b sprdrawpra16bngmsnthr,sprdrawprb16bngmsnthr
-drawsprngw16bsnthr:
-    xor edi,edi
-    normalwsprng16b sprdrawprawb16bngsnthr,sprdrawprbwb16bngsnthr
-drawsprngw16bmnthr:
-    mov edi,[CSubWinScr]
-    cmp byte[edi+ebx+4*256],0
-    jne near drawsprngw16bmsnthr
-    xor edi,edi
-    normalwsprng16b sprdrawprawb16bngmnthr,sprdrawprbwb16bngmnthr
-drawsprngw16bmsnthr:
-    xor edi,edi
-    normalwsprng16b sprdrawprawb16bngmsnthr,sprdrawprbwb16bngmsnthr
-
+    mov [NGSAX], eax
+    mov [NGSBX], ebx
+    mov [NGSCX], ecx
+    mov [NGSDX], edx
+    mov [NGSSI], esi
+    mov [NGSDI], edi
+    mov [NGSBP], ebp
+    call c_drawsprng16bhr
+    mov eax, [NGSAX]
+    mov ebx, [NGSBX]
+    mov ecx, [NGSCX]
+    mov edx, [NGSDX]
+    mov esi, [NGSSI]
+    mov edi, [NGSDI]
+    mov ebp, [NGSBP]
+    ret
 
 ProcessTransparencies:
     cmp byte[NGNoTransp],0
