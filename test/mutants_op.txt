@@ -1,0 +1,48 @@
+setnz8-shift	flagnz = (u4)al << 8;	flagnz = (u4)al << 7;
+setnz16-keep-ecx	r[R_ECX] = (r[R_ECX] & 0xFFFF0000u) | ax;	r[R_ECX] = ax;
+set8-full-store	#define SET8(v, b) ((v) = ((v) & 0xFFFFFF00u) | (u1)(b))	#define SET8(v, b) ((v) = (u1)(b))
+set16-full-store	#define SET16(v, w) ((v) = ((v) & 0xFFFF0000u) | (u2)(w))	#define SET16(v, w) ((v) = (u2)(w))
+reload-table-ebx	r[R_EBX] = (r[R_EBX] & 0xFFFFFF00u) | (u1)r[R_EDX];	r[R_EBX] = (u1)r[R_EDX];
+cld-mask	r[R_EDX] &= ~0x08u;	r[R_EDX] &= ~0x04u;
+sec-value	void c_COp38(u4* const r) /* SEC i */\n{\n    (void)r;\n    flagc = 0xFF;	void c_COp38(u4* const r) /* SEC i */\n{\n    (void)r;\n    flagc = 1;
+bra-offset	            r[R_ESI] += (u4)rel;	            r[R_ESI] += (u4)rel + 1;
+bra-eax	r[R_EAX] = (u4)rel;	r[R_EAX] = (u4)(u1)rel;
+txs-emul	    SET16(xs, GET16(r[R_EAX]));\n    if (xe & 1) {\n        xs = (xs & 0xFFFF00FFu) | 0x0100u;	    SET16(xs, GET16(r[R_EAX]));\n    if (xe & 1) {\n        xs = (xs & 0xFFFF0000u) | 0x0100u;
+tcs-emul-width	SET8(xs, GET8(r[R_EAX]));	SET16(xs, GET16(r[R_EAX]));
+xba-swap	AX(r, (u2)((GET8(xa) << 8) | ((xa >> 8) & 0xFFu)));	AX(r, (u2)GET16(xa));
+xba-flags	    SET16(xa, GET16(r[R_EAX]));\n    setnz8(GET8(r[R_EAX]));	    SET16(xa, GET16(r[R_EAX]));\n    setnz16(r, GET16(r[R_EAX]));
+sei-bit	r[R_EDX] |= 0x04u;	r[R_EDX] |= 0x08u;
+stp-dir	r[R_ESI]--;	r[R_ESI]++;
+bcc-sense	BRANCH(c_COp90, (flagc & 0x01u) == 0)	BRANCH(c_COp90, (flagc & 0x01u) != 0)
+beq-mask	BRANCH(c_COpF0, (flagnz & 0xFFFFu) == 0)	BRANCH(c_COpF0, (flagnz & 0xFFFFFFFFu) == 0)
+bmi-mask	BRANCH(c_COp30, (flagnz & 0x18000u) != 0)	BRANCH(c_COp30, (flagnz & 0x8000u) != 0)
+bvs-mask	BRANCH(c_COp70, (flago & 0xFFu) != 0)	BRANCH(c_COp70, (flago & 0xFFFFu) != 0)
+branch-eax-untaken	        if (taken) {                                       \	        if (1) {                                           \
+branch-pc	        r[R_ESI]++;	        r[R_ESI] += 2;
+rep-not	    AL(r, (u1)~imm);	    AL(r, imm);
+rep-extra-mask	    int const extra = (imm & 0xC3u) != 0;\n\n    AL(r, imm);\n    r[R_ESI]++;\n    AL(r, (u1)~imm);	    int const extra = (imm & 0xC0u) != 0;\n\n    AL(r, imm);\n    r[R_ESI]++;\n    AL(r, (u1)~imm);
+rep-emul	    if (xe & 1)\n        r[R_EDX] |= 0x30u;	    if (xe & 1)\n        r[R_EDX] |= 0x20u;
+sep-narrow	        xx &= 0xFFFF00FFu; /* an 8-bit index register drops its high byte */	        xx &= 0xFFFF0000u;
+sep-testbit	    reload_table(r);\n    if (r[R_EDX] & 0x10u) {\n        xx &= 0xFFFF00FFu; /* an 8-bit index register drops its high byte */	    reload_table(r);\n    if (r[R_EDX] & 0x20u) {\n        xx &= 0xFFFF00FFu; /* an 8-bit index register drops its high byte */
+xce-early-out	    if (xe == GET8(r[R_EAX]))\n        return;	    if (xe != GET8(r[R_EAX]))\n        return;
+xce-carry	    if (xe != 0)\n        flagc = 0xFF;	    if (xe == 0)\n        flagc = 0xFF;
+xce-native-noreload	        r[R_EDX] |= 0x20u; /* native mode, and no table reload here */	        r[R_EDX] |= 0x20u; reload_table(r);
+xce-stackand	        stackand = 0x01FF; /* emulation mode pins the stack to page one */	        stackand = 0xFFFF;
+tcd-flags	    UpdateDPage(); /* the direct page moved; the access tables follow it */\n    setnz16(r, GET16(r[R_EAX]));	    UpdateDPage();\n    setnz8(GET8(r[R_EAX]));
+push8-stackor	    SET16(r[R_ECX], (u2)(GET16(r[R_ECX]) - 1) | stackor);\n}\n\nstatic inline u1 pop8	    SET16(r[R_ECX], (u2)(GET16(r[R_ECX]) - 1) & stackor);\n}\n\nstatic inline u1 pop8
+pop8-stackand	    SET16(r[R_ECX], (u2)(GET16(r[R_ECX]) + 1) & stackand);	    SET16(r[R_ECX], (u2)(GET16(r[R_ECX]) + 1) | stackand);
+push16-order	        push8(r, (u1)((src) >> 8));        \\n        push8(r, GET8(src));               \	        push8(r, GET8(src));               \\n        push8(r, (u1)((src) >> 8));        \
+membank-noebx	    r[R_EBX] = MemSeamB;	    (void)MemSeamB;
+membank-noecx	    r[R_ECX] = MemSeamC;	    (void)MemSeamC;
+pop16-lowbyte	        AX(r, (u2)((u2)hi << 8 | GET8(dst)));                \	        AX(r, (u2)((u2)hi << 8 | GET8(r[R_EAX])));           \
+php-makedl	void c_COp08(u4* const r) /* PHP s */\n{\n    r[R_EDX] = makedl(r[R_EDX]);	void c_COp08(u4* const r) /* PHP s */\n{
+plp-bh	    r[R_EBX] &= 0xFFFF00FFu; /* xor bh,bh */	    r[R_EBX] &= 0xFFFFFFFFu;
+plp-emul-narrow	    if (xe & 1) {\n        r[R_EDX] |= 0x30u;\n        reload_table(r);\n        return;\n    }	    if (xe & 1) {\n        r[R_EDX] |= 0x30u;\n        reload_table(r);\n        xx &= 0xFFFF00FFu;\n        return;\n    }
+pea-order	    push8(r, p[1]);\n    push8(r, p[0]);	    push8(r, p[0]);\n    push8(r, p[1]);
+pea-pc	    SET16(xs, GET16(r[R_ECX]));\n    r[R_ESI] += 2;	    SET16(xs, GET16(r[R_ECX]));\n    r[R_ESI] += 1;
+pei-ah	    r[R_EAX] &= 0xFFFF00FFu; /* xor ah,ah */	    r[R_EAX] &= 0xFFFFFFFFu;
+pei-dp	    SET16(r[R_ECX], GET16(xd));	    SET16(r[R_ECX], GET16(xa));
+per-map	    map = (r[R_EAX] & 0x8000u) ? snesmmap : snesmap2;	    map = (r[R_EAX] & 0x8000u) ? snesmap2 : snesmmap;
+per-plus2	    AX(r, (u2)(GET16(r[R_EAX]) + 2));	    AX(r, (u2)(GET16(r[R_EAX]) + 1));
+per-clearebx	    push16_ax(r);\n    r[R_EBX] = 0;	    push16_ax(r);
+push16ax-saved	    r[R_EAX] = saved;	    r[R_EAX] = r[R_EAX];

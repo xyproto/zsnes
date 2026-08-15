@@ -417,3 +417,13 @@ clean:
 # ports (see git history for difftest_mixers.c and difftest_spcio.c as worked
 # examples).
 
+
+op: difftest_op.c difftest.h ../cpu/ops65816.h
+	python3 ../tools/mkoracle.py cpu/table.asm -o _op.o \
+	    --ported-marker 'EXTSYM c_COp' --rewrite-macro 'endloop=    ret' \
+	    --stubs _op_stubs.c \
+	    --exclude xa xx xy xs xd xdb xpb xpc xe flagnz flago flagc \
+	            tablead stackand stackor UpdateDPage snesmmap snesmap2 \
+	            membank0r8 membank0r16 membank0w8
+	$(CC) $(CFLAGS) -I../cpu difftest_op.c _op.o _op_stubs.c -no-pie -o difftest_op
+	@./difftest_op

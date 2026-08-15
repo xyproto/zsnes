@@ -42,18 +42,18 @@ static u1 win[512];
    dh = the palette adder, ebp = the palette, edi = the video line. The
    palette arrives in esi and moves to ebp inside, because clobbering ebp
    before gcc has read its own operands is a segfault. */
-#define WRITER(name, body)                                                    \
-    static void name(u4 pixel, u4 x, u2* edi, u2 const* p, u1 const* w,       \
-        u1 adder, u1 dl, u4* out)                                             \
-    {                                                                         \
-        u4 eax = pixel;                                                       \
-        u4 edx = ((u4)adder << 8) | dl;                                       \
-        __asm__ volatile("pushl %%ebp\n  movl %5, %%ebp\n" body              \
-                         "  popl %%ebp\n"                                     \
-                         : "+a"(eax)                                          \
-                         : "b"(x), "c"(w), "d"(edx), "D"(edi), "S"(p)         \
-                         : "memory", "cc");                                   \
-        *out = eax;                                                           \
+#define WRITER(name, body)                                              \
+    static void name(u4 pixel, u4 x, u2* edi, u2 const* p, u1 const* w, \
+        u1 adder, u1 dl, u4* out)                                       \
+    {                                                                   \
+        u4 eax = pixel;                                                 \
+        u4 edx = ((u4)adder << 8) | dl;                                 \
+        __asm__ volatile("pushl %%ebp\n  movl %5, %%ebp\n" body         \
+                         "  popl %%ebp\n"                               \
+            : "+a"(eax)                                                 \
+            : "b"(x), "c"(w), "d"(edx), "D"(edi), "S"(p)                \
+            : "memory", "cc");                                          \
+        *out = eax;                                                     \
     }
 
 /* sprdrawpra16bngmst - skeleton A */
