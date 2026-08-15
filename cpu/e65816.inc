@@ -359,45 +359,23 @@ NEWSYM COp1Em16; ASL a,x
    endloop
 
 NEWSYM COp90   ; BCC r
-    test byte[flagc],01h
-    jnz .skip
-    JumpMacro
+    cop c_COp90
 NEWSYM COpB0   ; BCS r
-    test byte[flagc],01h
-    jz .skip
-    JumpMacro
+    cop c_COpB0
 NEWSYM COpF0   ; BEQ r
-    test dword[flagnz],0FFFFh
-    jnz .skip
-    JumpMacro
+    cop c_COpF0
 NEWSYM COp30   ; BMI r
-    test dword[flagnz],018000h
-    jz .skip
-    JumpMacro
+    cop c_COp30
 NEWSYM COpD0   ; BNE r
-    test dword[flagnz],0FFFFh
-    jz .skip
-    JumpMacro
+    cop c_COpD0
 NEWSYM COp10   ; BPL r
-    test dword[flagnz],018000h
-    jnz .skip
-    JumpMacro
+    cop c_COp10
 NEWSYM COp80   ; BRA r
-    movsx eax,byte[esi]
-    inc esi
-    add esi,eax
-    endloop
+    cop c_COp80
 NEWSYM COp50   ; BVC r
-    test dword[flago],0FFh
-    jnz .skip
-    JumpMacro
+    cop c_COp50
 NEWSYM COp70   ; BVS r
-    test dword[flago],0FFh
-    jz .skip
-    JumpMacro
-
-;  BIT instruction does not affect N and V flags when using immediate
-;  addressing mode. When using other addressing modes, the N and V flags
+    cop c_COp70
 
 NEWSYM COp89m8 ; BIT #
    BITMacroim8b
@@ -436,13 +414,9 @@ NEWSYM COp82   ; BRL rl
    BRLMacro
 
 NEWSYM COp18   ; CLC i
-    mov dword[flagc],0
-    endloop
+    cop c_COp18
 NEWSYM COpD8  ; CLD i
-    and dl,0F7h
-    mov bl,dl
-    mov edi,[tablead+ebx*4]
-    endloop
+    cop c_COpD8
 NEWSYM COp58   ; CLI i
     and dl,0FBh
     cmp byte[doirqnext],0
@@ -463,8 +437,7 @@ NEWSYM COp58   ; CLI i
     xor ebx, ebx
     jmp execloop
 NEWSYM COpB8   ; CLV i
-    mov dword[flago],0
-    endloop
+    cop c_COpB8
 
 NEWSYM COpC1m8 ; CMP(d,x)
    addr_BdCxB_8br
@@ -599,17 +572,9 @@ NEWSYM COpCCx16; CPY a
    CPYMacro16b
 
 NEWSYM COp3Am8 ; DEC A
-    addr_A_8brni
-    dec al
-    flagsetnz8bnel
-    addr_A_8bw
-    endloop
+    cop c_COp3Am8
 NEWSYM COp3Am16; DEC A
-    addr_A_16brni
-    dec ax
-    flagsetnz16bnel
-    addr_A_16bw
-    endloop
+    cop c_COp3Am16
 NEWSYM COpCEm8 ; DEC a
     addr_a_8brni
     dec al
@@ -660,25 +625,13 @@ NEWSYM COpDEm16; DEC a,x
     endloop
 
 NEWSYM COpCAx8 ; DEX i
-    dec byte[xx]
-    mov al,[xx]
-    flagsetnz8b
-    endloop
+    cop c_COpCAx8
 NEWSYM COpCAx16; DEX i
-    dec word[xx]
-    mov ax,[xx]
-    flagsetnz16b
-    endloop
+    cop c_COpCAx16
 NEWSYM COp88x8 ; DEY i
-    dec byte[xy]
-    mov al,[xy]
-    flagsetnz8b
-    endloop
+    cop c_COp88x8
 NEWSYM COp88x16; DEY i
-    dec word[xy]
-    mov ax,[xy]
-    flagsetnz16b
-    endloop
+    cop c_COp88x16
 
 NEWSYM COp41m8 ; EOR(d,x)
    addr_BdCxB_8br
@@ -773,17 +726,9 @@ NEWSYM COp5Fm16; EOR al,x
 
 
 NEWSYM COp1Am8 ; INC A
-    addr_A_8brni
-    inc al
-    flagsetnz8bnel
-    addr_A_8bw
-    endloop
+    cop c_COp1Am8
 NEWSYM COp1Am16; INC A
-    addr_A_16brni
-    inc ax
-    flagsetnz16bnel
-    addr_A_16bw
-    endloop
+    cop c_COp1Am16
 NEWSYM COpEEm8 ; INC a
     addr_a_8brni
     inc al
@@ -835,25 +780,13 @@ NEWSYM COpFEm16; INC a,x
 
 
 NEWSYM COpE8x8 ; INX i
-    inc byte[xx]
-    mov al,[xx]
-    flagsetnz8b
-    endloop
+    cop c_COpE8x8
 NEWSYM COpE8x16; INX i
-    inc word[xx]
-    mov ax,[xx]
-    flagsetnz16b
-    endloop
+    cop c_COpE8x16
 NEWSYM COpC8x8 ; INY i
-    inc byte[xy]
-    mov al,[xy]
-    flagsetnz8b
-    endloop
+    cop c_COpC8x8
 NEWSYM COpC8x16; INY i
-    inc word[xy]
-    mov ax,[xy]
-    flagsetnz16b
-    endloop
+    cop c_COpC8x16
 
 NEWSYM COpDC   ; JML (a)
     JMLMacro
@@ -1083,7 +1016,7 @@ NEWSYM COp44   ; MVP xya
    MVPMacro
 
 NEWSYM COpEA   ; NOP i
-   endloop
+    cop c_COpEA
 
 NEWSYM COp01m8 ; ORA(d,x)
    addr_BdCxB_8br
@@ -1177,54 +1110,54 @@ NEWSYM COp1Fm16; ORA al,x
    ORAMacro16b
 
 NEWSYM COpF4   ; PEA s
-   PEAMacro
+    cop c_COpF4
 NEWSYM COpD4   ; PEI s
-   PEIMacro
+    cop c_COpD4
 NEWSYM COp62   ; PER s
-   PERMacro
+    cop c_COp62
 
 NEWSYM COp48m8 ; PHA s
-   PUSHMacro8b [xa]
+    cop c_COp48m8
 NEWSYM COp48m16; PHA s
-   PUSHMacro16b [xa], [xa+1]
+    cop c_COp48m16
 NEWSYM COp8B   ; PHB s
-   PUSHMacro8b [xdb]
+    cop c_COp8B
 NEWSYM COp0B   ; PHD s
-   PUSHMacro16b [xd], [xd+1]
+    cop c_COp0B
 NEWSYM COp4B   ; PHK s
-   PUSHMacro8b [xpb]
+    cop c_COp4B
 NEWSYM COp08   ; PHP s
-   PUSHMacro8bp
+    cop c_COp08
 NEWSYM COpDAx8 ; PHX s
-   PUSHMacro8b [xx]
+    cop c_COpDAx8
 NEWSYM COpDAx16; PHX s
-   PUSHMacro16b [xx], [xx+1]
+    cop c_COpDAx16
 NEWSYM COp5Ax8 ; PHY s
-   PUSHMacro8b [xy]
+    cop c_COp5Ax8
 NEWSYM COp5Ax16; PHY s
-   PUSHMacro16b [xy], [xy+1]
+    cop c_COp5Ax16
 
 NEWSYM COp68m8 ; PLA s
-   POPMacro8b [xa]
+    cop c_COp68m8
 NEWSYM COp68m16; PLA s
-   POPMacro16b [xa], [xa+1]
+    cop c_COp68m16
 NEWSYM COpAB   ; PLB s
-   POPMacro8b [xdb]
+    cop c_COpAB
 NEWSYM COp2B   ; PLD s
-   POPMacro16bd [xd], [xd+1]
+    cop c_COp2B
 NEWSYM COp28   ; PLP s
-   POPMacroP
+    cop c_COp28
 NEWSYM COpFAx8 ; PLX s
-   POPMacro8b [xx]
+    cop c_COpFAx8
 NEWSYM COpFAx16; PLX s
-   POPMacro16b [xx], [xx+1]
+    cop c_COpFAx16
 NEWSYM COp7Ax8 ; PLY s
-   POPMacro8b [xy]
+    cop c_COp7Ax8
 NEWSYM COp7Ax16; PLY s
-   POPMacro16b [xy], [xy+1]
+    cop c_COp7Ax16
 
 NEWSYM COpC2   ; REP #
-   REPMacro
+    cop c_COpC2
 
 NEWSYM COp26m8 ; ROL d
    addr_d_8brni
@@ -1517,19 +1450,14 @@ NEWSYM COpFFm16d  ; SBC al,x
    SBCMacro16bd
 
 NEWSYM COp38   ; SEC i
-    mov dword[flagc],0FFh
-    endloop
+    cop c_COp38
 NEWSYM COpF8   ; SED i
-    or dl,08h
-    mov bl,dl
-    mov edi,[tablead+ebx*4]
-    endloop
+    cop c_COpF8
 NEWSYM COp78   ; SEI i
-    or dl,04h
-    endloop
+    cop c_COp78
 
 NEWSYM COpE2   ; SEP #
-    SEPMacro
+    cop c_COpE2
 
 NEWSYM COp81m8 ; STA(d,x)
    STAMacro8b
@@ -1695,8 +1623,7 @@ NEWSYM COp94x16; STYd,x
    endloop
 
 NEWSYM COpDB   ; STP i
-    dec esi
-    endloop
+    cop c_COpDB
 
 NEWSYM COp64m8 ; STZ d
    xor al,al
@@ -1886,127 +1813,54 @@ NEWSYM COp0Cm16; TSB a
     endloop
 
 NEWSYM COpAAx8 ; TAX i
-    mov al,[xa]
-    mov [xx],al
-    flagsetnz8b
-    endloop
+    cop c_COpAAx8
 NEWSYM COpAAx16; TAX i
-    mov ax,[xa]
-    mov [xx],ax
-    flagsetnz16b
-    endloop
+    cop c_COpAAx16
 NEWSYM COpA8x8 ; TAY i
-    mov al,[xa]
-    mov [xy],al
-    flagsetnz8b
-    endloop
+    cop c_COpA8x8
 NEWSYM COpA8x16; TAY i
-    mov ax,[xa]
-    mov [xy],ax
-    flagsetnz16b
-    endloop
+    cop c_COpA8x16
 NEWSYM COp5B   ; TCD i
-    mov ax,[xa]
-    mov [xd],ax
-    ccallv UpdateDPage
-    flagsetnz16b
-    endloop
+    cop c_COp5B
 NEWSYM COp1B   ; TCS i
-    mov ax,[xa]
-    test byte[xe],1
-    jnz .emul
-    mov [xs],ax
-    endloop
-.emul
-    mov [xs],al
-    endloop
+    cop c_COp1B
 NEWSYM COp7B   ; TDC i
-    mov ax,[xd]
-    mov [xa],ax
-    flagsetnz16b
-    endloop
+    cop c_COp7B
 NEWSYM COp3B   ; TSC i
-    mov ax,[xs]
-    mov [xa],ax
-    flagsetnz16b
-    endloop
+    cop c_COp3B
 NEWSYM COpBAx8 ; TSX i
-    mov al,[xs]
-    mov [xx],al
-    flagsetnz8b
-    endloop
+    cop c_COpBAx8
 NEWSYM COpBAx16; TSX i
-    mov ax,[xs]
-    mov [xx],ax
-    flagsetnz16b
-    endloop
+    cop c_COpBAx16
 NEWSYM COp8Am8 ; TXA i
-    mov al,[xx]
-    mov [xa],al
-    flagsetnz8b
-    endloop
+    cop c_COp8Am8
 NEWSYM COp8Am16; TXA i
-    mov ax,[xx]
-    mov [xa],ax
-    flagsetnz16b
-    endloop
+    cop c_COp8Am16
 NEWSYM COp9A   ; TXS i
-    mov ax,[xx]
-    mov [xs],ax
-    test byte[xe],1
-    jnz .emul
-    endloop
-.emul
-    mov byte[xs+1],1
-    endloop
+    cop c_COp9A
 NEWSYM COp9Bx8 ; TXY i
-    mov al,[xx]
-    mov [xy],al
-    flagsetnz8b
-    endloop
+    cop c_COp9Bx8
 NEWSYM COp9Bx16; TXY i
-    mov ax,[xx]
-    mov [xy],ax
-    flagsetnz16b
-    endloop
+    cop c_COp9Bx16
 NEWSYM COp98m8 ; TYA i
-    mov al,[xy]
-    mov [xa],al
-    flagsetnz8b
-    endloop
+    cop c_COp98m8
 NEWSYM COp98m16; TYA i
-    mov ax,[xy]
-    mov [xa],ax
-    flagsetnz16b
-    endloop
+    cop c_COp98m16
 NEWSYM COpBBx8 ; TYX i
-    mov al,[xy]
-    mov [xx],al
-    flagsetnz8b
-    endloop
+    cop c_COpBBx8
 NEWSYM COpBBx16; TYX i
-    mov ax,[xy]
-    mov [xx],ax
-    flagsetnz16b
-    endloop
+    cop c_COpBBx16
 
 NEWSYM COpCB   ; WAI i
     WAIMacro
 
 NEWSYM COpEB   ; XBA i
-    mov ah,[xa]
-    mov al,[xa+1]
-    mov [xa],ax
-    flagsetnz8b
-    endloop
+    cop c_COpEB
 
 NEWSYM COpFB   ; XCE i
-    XCEMacro
+    cop c_COpFB
 
 NEWSYM COp42   ; WDM
-    inc esi
-    endloop
-
-NEWSYM E65816IncEnd
+    cop c_COp42
 
 

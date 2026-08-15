@@ -107,6 +107,19 @@ section .note.GNU-stack noalloc noexec nowrite progbits
 	ccall %1
 	pop eax
 %endmacro
+
+; Body of a 65816 opcode ported to C (cpu/ops65816.h). The core runs with its
+; state in registers - esi is the program counter, dl the flags, dh the cycle
+; count, edi the opcode table and ebp the SPC program counter - so pushad hands
+; the whole file to the C, which reads and writes it in place.
+%macro cop 1
+    pushad
+    mov eax, esp
+    ccall %1, eax
+    popad
+    endloop
+%endmacro
+
 EXTSYM ngpalcon2b,ngpalcon4b
 EXTSYM mosjmptab16b
 EXTSYM mosjmptab16bt
@@ -175,6 +188,27 @@ EXTSYM reg2101w_objsize1,reg2101w_objsize2,reg2101w_objmovs1,reg2101w_objmovs2
 EXTSYM reg2101w_objadds1,reg2101w_objadds2,bgscrolPrev,bg1scrolx_m7
 EXTSYM bg1scroly_m7,multchange,m7byte,prevoamptr
 EXTSYM oamlow,MultiTapStat
+; 65816 opcodes ported to cpu/ops65816.h.
+EXTSYM c_COp80,c_COp18,c_COpD8,c_COpB8
+EXTSYM c_COpCAx8,c_COpCAx16,c_COp88x8,c_COp88x16
+EXTSYM c_COpE8x8,c_COpE8x16,c_COpC8x8,c_COpC8x16
+EXTSYM c_COpEA,c_COp38,c_COpF8,c_COp78
+EXTSYM c_COpDB,c_COpAAx8,c_COpAAx16,c_COpA8x8
+EXTSYM c_COpA8x16,c_COp1B,c_COp7B,c_COp3B
+EXTSYM c_COpBAx8,c_COpBAx16,c_COp8Am8,c_COp8Am16
+EXTSYM c_COp9A,c_COp9Bx8,c_COp9Bx16,c_COp98m8
+EXTSYM c_COp98m16,c_COpBBx8,c_COpBBx16,c_COpEB
+EXTSYM c_COp42
+EXTSYM c_COp90,c_COpB0,c_COpF0,c_COpD0
+EXTSYM c_COp30,c_COp10,c_COp50,c_COp70
+EXTSYM c_COp1Am8,c_COp1Am16,c_COp3Am8,c_COp3Am16
+EXTSYM c_COp5B,c_COpC2,c_COpE2,c_COpFB
+EXTSYM c_COp48m8,c_COp48m16,c_COp8B,c_COp0B
+EXTSYM c_COp4B,c_COpDAx8,c_COpDAx16,c_COp5Ax8
+EXTSYM c_COp5Ax16,c_COp08,c_COp68m8,c_COp68m16
+EXTSYM c_COpAB,c_COpFAx8,c_COpFAx16,c_COp7Ax8
+EXTSYM c_COp7Ax16,c_COp2B,c_COp28,c_COpF4
+EXTSYM c_COpD4,c_COp62
 
 %include "cpu/65816d.inc"
 %include "cpu/address.inc"
