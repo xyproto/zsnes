@@ -1,4 +1,4 @@
-setnz8-shift	flagnz = (u4)al << 8;	flagnz = (u4)al << 7;
+setnz8-shift	static inline void setnz8(u1 const al) { flagnz = (u4)al << 8; }	static inline void setnz8(u1 const al) { flagnz = (u4)al << 7; }
 setnz16-keep-ecx	r[R_ECX] = (r[R_ECX] & 0xFFFF0000u) | ax;	r[R_ECX] = ax;
 set8-full-store	#define SET8(v, b) ((v) = ((v) & 0xFFFFFF00u) | (u1)(b))	#define SET8(v, b) ((v) = (u1)(b))
 set16-full-store	#define SET16(v, w) ((v) = ((v) & 0xFFFF0000u) | (u2)(w))	#define SET16(v, w) ((v) = (u2)(w))
@@ -12,7 +12,7 @@ tcs-emul-width	SET8(xs, GET8(r[R_EAX]));	SET16(xs, GET16(r[R_EAX]));
 xba-swap	AX(r, (u2)((GET8(xa) << 8) | ((xa >> 8) & 0xFFu)));	AX(r, (u2)GET16(xa));
 xba-flags	    SET16(xa, GET16(r[R_EAX]));\n    setnz8(GET8(r[R_EAX]));	    SET16(xa, GET16(r[R_EAX]));\n    setnz16(r, GET16(r[R_EAX]));
 sei-bit	r[R_EDX] |= 0x04u;	r[R_EDX] |= 0x08u;
-stp-dir	r[R_ESI]--;	r[R_ESI]++;
+stp-dir	void c_COpDB(u4* const r) /* STP i */\n{\n    r[R_ESI]--;\n}	void c_COpDB(u4* const r) /* STP i */\n{\n    r[R_ESI]++;\n}
 bcc-sense	BRANCH(c_COp90, (flagc & 0x01u) == 0)	BRANCH(c_COp90, (flagc & 0x01u) != 0)
 beq-mask	BRANCH(c_COpF0, (flagnz & 0xFFFFu) == 0)	BRANCH(c_COpF0, (flagnz & 0xFFFFFFFFu) == 0)
 bmi-mask	BRANCH(c_COp30, (flagnz & 0x18000u) != 0)	BRANCH(c_COp30, (flagnz & 0x8000u) != 0)
@@ -45,7 +45,7 @@ pei-dp	    SET16(r[R_ECX], GET16(xd));	    SET16(r[R_ECX], GET16(xa));
 per-map	    map = (r[R_EAX] & 0x8000u) ? snesmmap : snesmap2;	    map = (r[R_EAX] & 0x8000u) ? snesmap2 : snesmmap;
 per-plus2	    AX(r, (u2)(GET16(r[R_EAX]) + 2));	    AX(r, (u2)(GET16(r[R_EAX]) + 1));
 per-clearebx	    push16_ax(r);\n    r[R_EBX] = 0;	    push16_ax(r);
-push16ax-saved	    r[R_EAX] = saved;	    r[R_EAX] = r[R_EAX];
+push16ax-saved	    AL(r, (u1)(GET16(r[R_EAX]) >> 8));\n    bank0_call(r, c_membank0w8);\n    r[R_EAX] = saved;	    AL(r, (u1)(GET16(r[R_EAX]) >> 8));\n    bank0_call(r, c_membank0w8);\n    r[R_EAX] = r[R_EAX];
 idx-bank-carry	    if (sum > 0xFFFFu)\n        SET8(r[R_EBX], (u1)(GET8(r[R_EBX]) + 1));	    if (sum > 0xFFFFFu)\n        SET8(r[R_EBX], (u1)(GET8(r[R_EBX]) + 1));
 imm16-dword	    r[R_EAX] = *(u4 const*)(uintptr_t)r[R_ESI];	    SET16(r[R_EAX], *(u2 const*)(uintptr_t)r[R_ESI]);
 imm16-pc	    r[R_EAX] = *(u4 const*)(uintptr_t)r[R_ESI];\n    r[R_ESI] += 2;	    r[R_EAX] = *(u4 const*)(uintptr_t)r[R_ESI];\n    r[R_ESI] += 4;
@@ -57,8 +57,8 @@ dpidx-bx	        r[R_ECX] = xd;                                            \\n  
 sprel-base	    SET8(r[R_EBX], *(u1 const*)(uintptr_t)r[R_ESI]);\n    SET16(r[R_ECX], GET16(xs));	    SET8(r[R_EBX], *(u1 const*)(uintptr_t)r[R_ESI]);\n    SET16(r[R_ECX], GET16(xd));
 longind-plus2	    SET16(r[R_ECX], (u2)(addr + 2));	    SET16(r[R_ECX], (u2)(addr + 1));
 longind-bank	        SET8(r[R_EBX], GET8(r[R_EAX]));	        SET8(r[R_EBX], GET8(xdb));
-dind-bank	        SET8(r[R_EBX], GET8(xdb));       \	        SET8(r[R_EBX], GET8(xpb));       \
-dindx-index	        SET16(r[R_ECX], (u2)(GET16(r[R_ECX]) + GET16(xx)));       \	        SET16(r[R_ECX], (u2)(GET16(r[R_ECX]) + GET16(xy)));       \
+dind-bank	#define DIND(name, tab, idx, save)        \\n    static void name(u4* const r)         \\n    {                                     \\n        u2 const keep = GET16(r[R_EAX]);  \\n        (void)keep;                       \\n        dp_operand(r);                    \\n        mem_call(r, DPageR16);            \\n        SET16(r[R_ECX], GET16(r[R_EAX])); \\n        SET8(r[R_EBX], GET8(xdb));        \\n        idx;                              \\n        if (save)                         \\n            SET16(r[R_EAX], keep);        \\n        tab(r);                           \\n    }	#define DIND(name, tab, idx, save)        \\n    static void name(u4* const r)         \\n    {                                     \\n        u2 const keep = GET16(r[R_EAX]);  \\n        (void)keep;                       \\n        dp_operand(r);                    \\n        mem_call(r, DPageR16);            \\n        SET16(r[R_ECX], GET16(r[R_EAX])); \\n        SET8(r[R_EBX], GET8(xpb));        \\n        idx;                              \\n        if (save)                         \\n            SET16(r[R_EAX], keep);        \\n        tab(r);                           \\n    }
+dindx-index	#define DINDX(name, tab, save)                                    \\n    static void name(u4* const r)                                 \\n    {                                                             \\n        u2 const keep = GET16(r[R_EAX]);                          \\n        (void)keep;                                               \\n        r[R_ECX] = xd;                                            \\n        SET8(r[R_EBX], *(u1 const*)(uintptr_t)r[R_ESI]);          \\n        SET16(r[R_ECX], (u2)(GET16(r[R_ECX]) + GET16(r[R_EBX]))); \\n        r[R_ESI]++;                                               \\n        SET16(r[R_ECX], (u2)(GET16(r[R_ECX]) + GET16(xx)));       \\n        bank0_call(r, c_membank0r16);                             \\n        SET16(r[R_ECX], GET16(r[R_EAX]));                         \\n        SET8(r[R_EBX], GET8(xdb));                                \\n        if (save)                                                 \\n            SET16(r[R_EAX], keep);                                \\n        tab(r);                                                   \\n    }	#define DINDX(name, tab, save)                                    \\n    static void name(u4* const r)                                 \\n    {                                                             \\n        u2 const keep = GET16(r[R_EAX]);                          \\n        (void)keep;                                               \\n        r[R_ECX] = xd;                                            \\n        SET8(r[R_EBX], *(u1 const*)(uintptr_t)r[R_ESI]);          \\n        SET16(r[R_ECX], (u2)(GET16(r[R_ECX]) + GET16(r[R_EBX]))); \\n        r[R_ESI]++;                                               \\n        SET16(r[R_ECX], (u2)(GET16(r[R_ECX]) + GET16(xy)));       \\n        bank0_call(r, c_membank0r16);                             \\n        SET16(r[R_ECX], GET16(r[R_EAX]));                         \\n        SET8(r[R_EBX], GET8(xdb));                                \\n        if (save)                                                 \\n            SET16(r[R_EAX], keep);                                \\n        tab(r);                                                   \\n    }
 lda8-flag	        flagnz = (u4)GET8(r[R_EAX]) << 8; \	        flagnz = (u4)GET8(r[R_EAX]) << 7; \
 lda16-store	        SET16(xa, GET16(r[R_EAX]));    \	        xa = GET16(r[R_EAX]);          \
 memcall-noebx	    r[R_EBX] = ebx;	    (void)ebx;
@@ -109,3 +109,29 @@ daa-af	    af = ((a ^ v ^ s) & 0x10u) != 0;\n    AL(r, daa_adj(s, &cf, af));	   
 decimal-v	    nvzc8(r, 0, cf);	    nvzc8(r, 1, cf);
 adc16d-bytes	        cf = sum > 0xFFu;\n        AL(r, daa_adj(s, &cf, af));	        AL(r, daa_adj(s, &cf, af));\n        cf = sum > 0xFFu;
 sbc16d-cmc	    nvzc16(r, 0, !cf); /* the `cmc` before the flag store */	    nvzc16(r, 0, cf);
+bankbase-map	    if (eax & 0x8000u)\n        return snesmmap[ebx];	    if (eax & 0x8000u)\n        return snesmap2[ebx];
+bankbase-dma-thresh	    if (dma && eax >= 0x4300u && memtabler8[ebx] == regaccessbankr8)	    if (dma && eax >= 0x4200u && memtabler8[ebx] == regaccessbankr8)
+bankbase-dma-off	    if (dma && eax >= 0x4300u && memtabler8[ebx] == regaccessbankr8)\n        return dmadata - 0x4300;	    if (0)\n        return dmadata - 0x4300;
+jumpto-initaddrl	    initaddrl = base;\n    r[R_ESI] = (u4)(uintptr_t)base + r[R_EAX];	    r[R_ESI] = (u4)(uintptr_t)base + r[R_EAX];
+jmp4C-dma	    xpc = GET16(r[R_EAX]);\n    jump_to(r, 1);\n}\n\nvoid c_COp6C	    xpc = GET16(r[R_EAX]);\n    jump_to(r, 0);\n}\n\nvoid c_COp6C
+brl-plus2	    SET16(r[R_EBX], (u2)(GET16(r[R_EBX]) + 2));\n    r[R_EAX] = 0;	    SET16(r[R_EBX], (u2)(GET16(r[R_EBX]) + 1));\n    r[R_EAX] = 0;
+rts-plus1	    AX(r, (u2)(GET16(r[R_EAX]) + 1));\n    xpc = GET16(r[R_EAX]);\n    SET8(r[R_EBX], GET8(xpb));\n    jump_to(r, 0);\n}\n\nvoid c_COp6B	    xpc = GET16(r[R_EAX]);\n    SET8(r[R_EBX], GET8(xpb));\n    jump_to(r, 0);\n}\n\nvoid c_COp6B
+jsr-retaddr	    SET16(r[R_EBX], (u2)(GET16(r[R_EBX]) + 1));\n    xpc = GET16(r[R_EBX]);\n    push_pc(r);\n    r[R_EAX] = 0;\n    SET16(xs, GET16(r[R_ECX]));\n    AX(r, *(u2 const*)(uintptr_t)r[R_ESI]);	    SET16(r[R_EBX], (u2)(GET16(r[R_EBX]) + 2));\n    xpc = GET16(r[R_EBX]);\n    push_pc(r);\n    r[R_EAX] = 0;\n    SET16(xs, GET16(r[R_ECX]));\n    AX(r, *(u2 const*)(uintptr_t)r[R_ESI]);
+pushpc-order	    push8(r, (u1)(xpc >> 8));\n    push8(r, (u1)xpc);\n}	    push8(r, (u1)xpc);\n    push8(r, (u1)(xpc >> 8));\n}
+jsl-plus2	    SET16(r[R_EBX], (u2)(GET16(r[R_EBX]) + 2));\n    xpc = GET16(r[R_EBX]);\n    SET16(r[R_ECX], GET16(xs));	    SET16(r[R_EBX], (u2)(GET16(r[R_EBX]) + 1));\n    xpc = GET16(r[R_EBX]);\n    SET16(r[R_ECX], GET16(xs));
+mvn-index-width	    if (r[R_EDX] & 0x10u) { /* 8-bit index: only the low byte steps */\n        SET8(xx, (u1)(GET8(xx) + dir));	    if (r[R_EDX] & 0x20u) { /* 8-bit index: only the low byte steps */\n        SET8(xx, (u1)(GET8(xx) + dir));
+mvn-end	    if (GET16(xa) == 0xFFFFu)\n        r[R_ESI] += 2;\n    else\n        r[R_ESI]--;	    if (GET16(xa) == 0u)\n        r[R_ESI] += 2;\n    else\n        r[R_ESI]--;
+mvn-dir	void c_COp54(u4* const r) { block_move(r, +1); } /* MVN xyc */	void c_COp54(u4* const r) { block_move(r, -1); } /* MVN xyc */
+wai-arm	    intrset = 1;\n    r[R_ESI]--;	    intrset = 2;\n    r[R_ESI]--;
+bitim-nofold	    if (flagnz & 0x18000u)\n        flagnz |= 0x10000u;\n    r[R_ESI]++;	    r[R_ESI]++;
+brk-emul-nobank	    if (!emul)\n        PUSHRAM(GET8(xpb));	    PUSHRAM(GET8(xpb));
+brk-vector	    AX(r, emul ? vec8 : vec);	    AX(r, emul ? vec : vec8);
+brk-flagbits	    SET8(r[R_EDX], (u1)((r[R_EDX] & 0xF3u) | (emul ? setbits8 : 0x04u)));	    SET8(r[R_EDX], (u1)((r[R_EDX] & 0xF3u) | 0x04u));
+brk-irqbank	    SET8(r[R_EBX], emul ? GET8(xpb) : GET8(xirqb));	    SET8(r[R_EBX], GET8(xpb));
+rti-emul-bank0	    SET8(r[R_EBX], emul ? 0 : GET8(xpb));	    SET8(r[R_EBX], GET8(xpb));
+rti-wai	            && *(u1 const*)(uintptr_t)r[R_ESI] == 0xCBu)\n            intrset = 2;	            && *(u1 const*)(uintptr_t)r[R_ESI] == 0xCCu)\n            intrset = 2;
+rti-table	    SET8(r[R_EBX], (u1)r[R_EDX]);\n    r[R_EDI] = (u4)(uintptr_t)tablead[r[R_EBX]];	    SET8(r[R_EBX], (u1)r[R_EDX]);
+rti-curnmi	    curnmi = 0;	    curnmi = 1;
+rti-narrow	    if (r[R_EDX] & 0x10u) {\n        xx &= 0xFFFF00FFu;\n        xy &= 0xFFFF00FFu;\n    }\n}\n\n/*\n * CLI	    if (0) {\n        xx &= 0xFFFF00FFu;\n        xy &= 0xFFFF00FFu;\n    }\n}\n\n/*\n * CLI
+cli-bit	    r[R_EDX] &= ~0x04u;	    r[R_EDX] &= ~0x08u;
+cli-return	    return (xe & 1) != 0;	    return 0;

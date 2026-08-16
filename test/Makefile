@@ -425,6 +425,9 @@ op: difftest_op.c difftest.h ../cpu/ops65816.h
 	    --exclude xa xx xy xs xd xdb xpb xpc xe flagnz flago flagc \
 	            tablead stackand stackor UpdateDPage snesmmap snesmap2 \
 	            membank0r8 membank0r16 membank0w8 membank0w16 memtabler8 memtabler16 \
-	            DPageR8 DPageR16 memtablew8 memtablew16 DPageW8 DPageW16
+	            DPageR8 DPageR16 memtablew8 memtablew16 DPageW8 DPageW16 \
+	            brkv brkv8 copv copv8 xirqb intrset doirqnext curnmi \
+	            nmistatus curexecstate initaddrl wramdata dmadata \
+	            regaccessbankr8 execloop switchtovirq
 	$(CC) $(CFLAGS) -I../cpu difftest_op.c _op.o _op_stubs.c -no-pie -o difftest_op
 	@./difftest_op
