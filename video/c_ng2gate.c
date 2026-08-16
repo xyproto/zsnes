@@ -13,7 +13,14 @@
 
 #include "../types.h"
 
-enum { R_EDI, R_ESI, R_EBP, R_ESP, R_EBX, R_EDX, R_ECX, R_EAX };
+enum { R_EDI,
+    R_ESI,
+    R_EBP,
+    R_ESP,
+    R_EBX,
+    R_EDX,
+    R_ECX,
+    R_EAX };
 
 extern u1 BGMS1[], FillSubScr[], curmosaicsz, ngwinen;
 extern u4 CMainWinScr, CSubWinScr, mosclineval, mostranspval;
