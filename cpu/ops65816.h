@@ -557,6 +557,8 @@ static inline void mem_call(u4* const r, eop* const fn)
 
 #define TABR8(r) mem_call((r), memtabler8[(r)[R_EBX]])
 #define TABR16(r) mem_call((r), memtabler16[(r)[R_EBX]])
+#define TABW8(r) mem_call((r), memtablew8[(r)[R_EBX]])
+#define TABW16(r) mem_call((r), memtablew16[(r)[R_EBX]])
 
 /* `add cx,idx` / `jnc .np` / `inc bl` */
 static inline void idx_bank(u4* const r, u2 const idx)
@@ -622,6 +624,12 @@ ABS(a_aCx_8, TABR8, idx_bank(r, GET16(xx)))
 ABS(a_aCx_16, TABR16, idx_bank(r, GET16(xx)))
 ABS(a_aCy_8, TABR8, idx_bank(r, GET16(xy)))
 ABS(a_aCy_16, TABR16, idx_bank(r, GET16(xy)))
+ABS(a_a_8w, TABW8, (void)0)
+ABS(a_a_16w, TABW16, (void)0)
+ABS(a_aCx_8w, TABW8, idx_bank(r, GET16(xx)))
+ABS(a_aCx_16w, TABW16, idx_bank(r, GET16(xx)))
+ABS(a_aCy_8w, TABW8, idx_bank(r, GET16(xy)))
+ABS(a_aCy_16w, TABW16, idx_bank(r, GET16(xy)))
 
 /* al, al,x - absolute long, bank from the third operand byte. */
 #define ABSL(name, tab, idx)                                    \
@@ -637,6 +645,10 @@ ABSL(a_al_8, TABR8, (void)0)
 ABSL(a_al_16, TABR16, (void)0)
 ABSL(a_alCx_8, TABR8, idx_bank(r, GET16(xx)))
 ABSL(a_alCx_16, TABR16, idx_bank(r, GET16(xx)))
+ABSL(a_al_8w, TABW8, (void)0)
+ABSL(a_al_16w, TABW16, (void)0)
+ABSL(a_alCx_8w, TABW8, idx_bank(r, GET16(xx)))
+ABSL(a_alCx_16w, TABW16, idx_bank(r, GET16(xx)))
 
 /* d - direct page, through the pointer the page's base selects. */
 static void a_d_8(u4* const r)
@@ -648,6 +660,16 @@ static void a_d_16(u4* const r)
 {
     dp_operand(r);
     mem_call(r, DPageR16);
+}
+static void a_d_8w(u4* const r)
+{
+    dp_operand(r);
+    mem_call(r, DPageW8);
+}
+static void a_d_16w(u4* const r)
+{
+    dp_operand(r);
+    mem_call(r, DPageW16);
 }
 
 /* d,x and d,y wrap inside the bank rather than the page, so they go the long
@@ -684,6 +706,26 @@ static void a_dCy_16(u4* const r)
     dpidx_y(r);
     bank0_call(r, c_membank0r16);
 }
+static void a_dCx_8w(u4* const r)
+{
+    dpidx_x(r);
+    bank0_call(r, c_membank0w8);
+}
+static void a_dCx_16w(u4* const r)
+{
+    dpidx_x(r);
+    bank0_call(r, c_membank0w16);
+}
+static void a_dCy_8w(u4* const r)
+{
+    dpidx_y(r);
+    bank0_call(r, c_membank0w8);
+}
+static void a_dCy_16w(u4* const r)
+{
+    dpidx_y(r);
+    bank0_call(r, c_membank0w16);
+}
 
 /* d,s - stack relative. */
 static inline void sp_rel(u4* const r)
@@ -703,81 +745,130 @@ static void a_dCs_16(u4* const r)
     sp_rel(r);
     bank0_call(r, c_membank0r16);
 }
+static void a_dCs_8w(u4* const r)
+{
+    sp_rel(r);
+    bank0_call(r, c_membank0w8);
+}
+static void a_dCs_16w(u4* const r)
+{
+    sp_rel(r);
+    bank0_call(r, c_membank0w16);
+}
 
 /* (d) and (d),y - a 16-bit pointer from the direct page, data bank. */
-#define DIND(name, tab, idx)             \
-    static void name(u4* const r)        \
-    {                                    \
-        dp_operand(r);                   \
-        mem_call(r, DPageR16);           \
+/*
+ * A write form is its read form with the value in ax saved across the pointer
+ * fetch. The assembly does that with `push ax` / `pop ax` - 16-bit, so only the
+ * low half comes back and whatever the fetch left above it stays put. Modes
+ * with no intermediate read need no save, which is exactly the split between
+ * the families below that take a `save` flag and the ones that do not.
+ */
+#define DIND(name, tab, idx, save)        \
+    static void name(u4* const r)         \
+    {                                     \
+        u2 const keep = GET16(r[R_EAX]);  \
+        (void)keep;                       \
+        dp_operand(r);                    \
+        mem_call(r, DPageR16);            \
         SET16(r[R_ECX], GET16(r[R_EAX])); \
-        SET8(r[R_EBX], GET8(xdb));       \
-        idx;                             \
-        tab(r);                          \
+        SET8(r[R_EBX], GET8(xdb));        \
+        idx;                              \
+        if (save)                         \
+            SET16(r[R_EAX], keep);        \
+        tab(r);                           \
     }
-DIND(a_BdB_8, TABR8, (void)0)
-DIND(a_BdB_16, TABR16, (void)0)
-DIND(a_BdBCy_8, TABR8, idx_bank(r, GET16(xy)))
-DIND(a_BdBCy_16, TABR16, idx_bank(r, GET16(xy)))
+DIND(a_BdB_8, TABR8, (void)0, 0)
+DIND(a_BdB_16, TABR16, (void)0, 0)
+DIND(a_BdBCy_8, TABR8, idx_bank(r, GET16(xy)), 0)
+DIND(a_BdBCy_16, TABR16, idx_bank(r, GET16(xy)), 0)
+DIND(a_BdB_8w, TABW8, (void)0, 1)
+DIND(a_BdB_16w, TABW16, (void)0, 1)
+DIND(a_BdBCy_8w, TABW8, idx_bank(r, GET16(xy)), 1)
+DIND(a_BdBCy_16w, TABW16, idx_bank(r, GET16(xy)), 1)
 
 /* (d,x) - the direct page is indexed before the pointer is read. */
-#define DINDX(name, tab)                                          \
+#define DINDX(name, tab, save)                                    \
     static void name(u4* const r)                                 \
     {                                                             \
+        u2 const keep = GET16(r[R_EAX]);                          \
+        (void)keep;                                               \
         r[R_ECX] = xd;                                            \
         SET8(r[R_EBX], *(u1 const*)(uintptr_t)r[R_ESI]);          \
         SET16(r[R_ECX], (u2)(GET16(r[R_ECX]) + GET16(r[R_EBX]))); \
         r[R_ESI]++;                                               \
         SET16(r[R_ECX], (u2)(GET16(r[R_ECX]) + GET16(xx)));       \
-        bank0_call(r, c_membank0r16);                                \
+        bank0_call(r, c_membank0r16);                             \
         SET16(r[R_ECX], GET16(r[R_EAX]));                         \
         SET8(r[R_EBX], GET8(xdb));                                \
+        if (save)                                                 \
+            SET16(r[R_EAX], keep);                                \
         tab(r);                                                   \
     }
-DINDX(a_BdCxB_8, TABR8)
-DINDX(a_BdCxB_16, TABR16)
+DINDX(a_BdCxB_8, TABR8, 0)
+DINDX(a_BdCxB_16, TABR16, 0)
+DINDX(a_BdCxB_8w, TABW8, 1)
+DINDX(a_BdCxB_16w, TABW16, 1)
 
 /* (d,s),y - stack relative, then indirect, then indexed. */
-#define SIND(name, tab)                   \
+#define SIND(name, tab, save)             \
     static void name(u4* const r)         \
     {                                     \
+        u2 const keep = GET16(r[R_EAX]);  \
+        (void)keep;                       \
         sp_rel(r);                        \
-        bank0_call(r, c_membank0r16);        \
+        bank0_call(r, c_membank0r16);     \
         SET16(r[R_ECX], GET16(r[R_EAX])); \
         SET8(r[R_EBX], GET8(xdb));        \
+        if (save)                         \
+            SET16(r[R_EAX], keep);        \
         idx_bank(r, GET16(xy));           \
         tab(r);                           \
     }
-SIND(a_BdCsBCy_8, TABR8)
-SIND(a_BdCsBCy_16, TABR16)
+SIND(a_BdCsBCy_8, TABR8, 0)
+SIND(a_BdCsBCy_16, TABR16, 0)
+SIND(a_BdCsBCy_8w, TABW8, 1)
+SIND(a_BdCsBCy_16w, TABW16, 1)
 
 /* [d] and [d],y - long indirect, bank from the pointer itself. */
-#define LIND(name, tab, idx)                                      \
+#define LIND(name, tab, idx, save)                                \
     static void name(u4* const r)                                 \
     {                                                             \
+        u2 const keep = GET16(r[R_EAX]);                          \
+        (void)keep;                                               \
         SET8(r[R_EBX], *(u1 const*)(uintptr_t)r[R_ESI]);          \
         r[R_ECX] = xd;                                            \
         r[R_ESI]++;                                               \
         long_indirect(r);                                         \
         idx;                                                      \
+        if (save)                                                 \
+            SET16(r[R_EAX], keep);                                \
         tab(r);                                                   \
     }
-LIND(a_LdL_8, TABR8, (void)0)
-LIND(a_LdL_16, TABR16, (void)0)
+LIND(a_LdL_8, TABR8, (void)0, 0)
+LIND(a_LdL_16, TABR16, (void)0, 0)
+LIND(a_LdL_8w, TABW8, (void)0, 1)
+LIND(a_LdL_16w, TABW16, (void)0, 1)
 
 /* The ,y form reads its operand before the direct page, not after. */
-#define LINDY(name, tab)                                          \
+#define LINDY(name, tab, save)                                    \
     static void name(u4* const r)                                 \
     {                                                             \
+        u2 const keep = GET16(r[R_EAX]);                          \
+        (void)keep;                                               \
         r[R_ECX] = xd;                                            \
         SET8(r[R_EBX], *(u1 const*)(uintptr_t)r[R_ESI]);          \
         r[R_ESI]++;                                               \
         long_indirect(r);                                         \
         idx_bank(r, GET16(xy));                                   \
+        if (save)                                                 \
+            SET16(r[R_EAX], keep);                                \
         tab(r);                                                   \
     }
-LINDY(a_LdLCy_8, TABR8)
-LINDY(a_LdLCy_16, TABR16)
+LINDY(a_LdLCy_8, TABR8, 0)
+LINDY(a_LdLCy_16, TABR16, 0)
+LINDY(a_LdLCy_8w, TABW8, 1)
+LINDY(a_LdLCy_16w, TABW16, 1)
 
 /*
  * LDA over every addressing mode. The 8-bit form writes flagnz directly rather
@@ -1128,5 +1219,682 @@ OPMODE(c_COp1Dm8, a_aCx_8, o_ORA8)
 OPMODE(c_COp1Dm16, a_aCx_16, o_ORA16)
 OPMODE(c_COp1Fm8, a_alCx_8, o_ORA8)
 OPMODE(c_COp1Fm16, a_alCx_16, o_ORA16)
+
+
+/*
+ * Stores. These run the other way round from the loads: the operation puts the
+ * value in al/ax first and the addressing mode writes it. The 16-bit forms load
+ * the whole of eax, and STZ's 16-bit form clears all of it, so the upper half
+ * differs between the widths - that is `mov eax,[xa]` versus `mov al,[xa]`.
+ */
+static void o_STA8(u4* const r) { AL(r, GET8(xa)); }
+static void o_STA16(u4* const r) { r[R_EAX] = xa; }
+static void o_STX8(u4* const r) { AL(r, GET8(xx)); }
+static void o_STX16(u4* const r) { r[R_EAX] = xx; }
+static void o_STY8(u4* const r) { AL(r, GET8(xy)); }
+static void o_STY16(u4* const r) { r[R_EAX] = xy; }
+static void o_STZ8(u4* const r) { AL(r, 0); }
+static void o_STZ16(u4* const r) { r[R_EAX] = 0; }
+
+/* A store is an operation followed by an addressing mode, not the reverse. */
+#define STMODE(name, op, mode) \
+    void name(u4* const r)     \
+    {                          \
+        op(r);                 \
+        mode(r);               \
+    }
+
+/* STA */
+STMODE(c_COp81m8, o_STA8, a_BdCxB_8w)
+STMODE(c_COp81m16, o_STA16, a_BdCxB_16w)
+STMODE(c_COp83m8, o_STA8, a_dCs_8w)
+STMODE(c_COp83m16, o_STA16, a_dCs_16w)
+STMODE(c_COp85m8, o_STA8, a_d_8w)
+STMODE(c_COp85m16, o_STA16, a_d_16w)
+STMODE(c_COp87m8, o_STA8, a_LdL_8w)
+STMODE(c_COp87m16, o_STA16, a_LdL_16w)
+STMODE(c_COp8Dm8, o_STA8, a_a_8w)
+STMODE(c_COp8Dm16, o_STA16, a_a_16w)
+STMODE(c_COp8Fm8, o_STA8, a_al_8w)
+STMODE(c_COp8Fm16, o_STA16, a_al_16w)
+STMODE(c_COp91m8, o_STA8, a_BdBCy_8w)
+STMODE(c_COp91m16, o_STA16, a_BdBCy_16w)
+STMODE(c_COp92m8, o_STA8, a_BdB_8w)
+STMODE(c_COp92m16, o_STA16, a_BdB_16w)
+STMODE(c_COp93m8, o_STA8, a_BdCsBCy_8w)
+STMODE(c_COp93m16, o_STA16, a_BdCsBCy_16w)
+STMODE(c_COp95m8, o_STA8, a_dCx_8w)
+STMODE(c_COp95m16, o_STA16, a_dCx_16w)
+STMODE(c_COp97m8, o_STA8, a_LdLCy_8w)
+STMODE(c_COp97m16, o_STA16, a_LdLCy_16w)
+STMODE(c_COp99m8, o_STA8, a_aCy_8w)
+STMODE(c_COp99m16, o_STA16, a_aCy_16w)
+STMODE(c_COp9Dm8, o_STA8, a_aCx_8w)
+STMODE(c_COp9Dm16, o_STA16, a_aCx_16w)
+STMODE(c_COp9Fm8, o_STA8, a_alCx_8w)
+STMODE(c_COp9Fm16, o_STA16, a_alCx_16w)
+
+/* STX */
+STMODE(c_COp86x8, o_STX8, a_d_8w)
+STMODE(c_COp86x16, o_STX16, a_d_16w)
+STMODE(c_COp8Ex8, o_STX8, a_a_8w)
+STMODE(c_COp8Ex16, o_STX16, a_a_16w)
+STMODE(c_COp96x8, o_STX8, a_dCy_8w)
+STMODE(c_COp96x16, o_STX16, a_dCy_16w)
+
+/* STY */
+STMODE(c_COp84x8, o_STY8, a_d_8w)
+STMODE(c_COp84x16, o_STY16, a_d_16w)
+STMODE(c_COp8Cx8, o_STY8, a_a_8w)
+STMODE(c_COp8Cx16, o_STY16, a_a_16w)
+STMODE(c_COp94x8, o_STY8, a_dCx_8w)
+STMODE(c_COp94x16, o_STY16, a_dCx_16w)
+
+/* STZ */
+STMODE(c_COp64m8, o_STZ8, a_d_8w)
+STMODE(c_COp64m16, o_STZ16, a_d_16w)
+STMODE(c_COp74m8, o_STZ8, a_dCx_8w)
+STMODE(c_COp74m16, o_STZ16, a_dCx_16w)
+STMODE(c_COp9Cm8, o_STZ8, a_a_8w)
+STMODE(c_COp9Cm16, o_STZ16, a_a_16w)
+STMODE(c_COp9Em8, o_STZ8, a_aCx_8w)
+STMODE(c_COp9Em16, o_STZ16, a_aCx_16w)
+
+
+/*
+ * Read-modify-write.
+ *
+ * The read half leaves esi where it is - that is all `brni` means - because the
+ * write half re-reads the same operand bytes and does the advancing. Only four
+ * modes are ever used this way.
+ */
+/* The no-advance form of A is `mov ax,[xa]`, a word, where the plain read form
+   is `mov eax,[xa]`, a dword. The widths really do differ. */
+static void a_A_8ni(u4* const r) { AL(r, GET8(xa)); }
+static void a_A_16ni(u4* const r) { AX(r, GET16(xa)); }
+static void a_A_8w(u4* const r) { SET8(xa, GET8(r[R_EAX])); }
+static void a_A_16w(u4* const r) { SET16(xa, GET16(r[R_EAX])); }
+
+#define ABSNI(name, tab, idx)                             \
+    static void name(u4* const r)                         \
+    {                                                     \
+        SET16(r[R_ECX], *(u2 const*)(uintptr_t)r[R_ESI]); \
+        SET8(r[R_EBX], GET8(xdb));                        \
+        idx;                                              \
+        tab(r);                                           \
+    }
+ABSNI(a_a_8ni, TABR8, (void)0)
+ABSNI(a_a_16ni, TABR16, (void)0)
+ABSNI(a_aCx_8ni, TABR8, idx_bank(r, GET16(xx)))
+ABSNI(a_aCx_16ni, TABR16, idx_bank(r, GET16(xx)))
+
+static void a_d_8ni(u4* const r)
+{
+    SET8(r[R_EBX], *(u1 const*)(uintptr_t)r[R_ESI]);
+    r[R_ECX] = xd;
+    mem_call(r, DPageR8);
+}
+static void a_d_16ni(u4* const r)
+{
+    SET8(r[R_EBX], *(u1 const*)(uintptr_t)r[R_ESI]);
+    r[R_ECX] = xd;
+    mem_call(r, DPageR16);
+}
+
+#define DPIDXNI(name, fn)                                         \
+    static void name(u4* const r)                                 \
+    {                                                             \
+        r[R_ECX] = xd;                                            \
+        SET8(r[R_EBX], *(u1 const*)(uintptr_t)r[R_ESI]);          \
+        SET16(r[R_ECX], (u2)(GET16(r[R_ECX]) + GET16(r[R_EBX]))); \
+        SET16(r[R_ECX], (u2)(GET16(r[R_ECX]) + GET16(xx)));       \
+        bank0_call(r, fn);                                        \
+    }
+DPIDXNI(a_dCx_8ni, c_membank0r8)
+DPIDXNI(a_dCx_16ni, c_membank0r16)
+
+/* `mov cl,[flagc]` / `add cl,cl` puts bit 7 of flagc into the carry and leaves
+   the doubled byte in cl, which the 8-bit flag store does not overwrite. */
+static inline int carry_in(u4* const r)
+{
+    u1 const cl = GET8(flagc);
+    SET8(r[R_ECX], (u1)(cl + cl));
+    return (cl & 0x80u) != 0;
+}
+static inline void setnzc8(u1 const al, int const cf)
+{
+    flagnz = (u4)al << 8;
+    flagc = cf ? 0xFF : 0;
+}
+static inline void setnzc16(u4* const r, u2 const ax, int const cf)
+{
+    SET16(r[R_ECX], ax);
+    flagnz = r[R_ECX];
+    flagc = cf ? 0xFF : 0;
+}
+
+static void o_ASL8(u4* const r)
+{
+    u1 const v = GET8(r[R_EAX]);
+    AL(r, (u1)(v << 1));
+    setnzc8(GET8(r[R_EAX]), (v & 0x80u) != 0);
+}
+static void o_ASL16(u4* const r)
+{
+    u2 const v = GET16(r[R_EAX]);
+    AX(r, (u2)(v << 1));
+    setnzc16(r, GET16(r[R_EAX]), (v & 0x8000u) != 0);
+}
+static void o_LSR8(u4* const r)
+{
+    u1 const v = GET8(r[R_EAX]);
+    AL(r, (u1)(v >> 1));
+    setnzc8(GET8(r[R_EAX]), (v & 1u) != 0);
+}
+static void o_LSR16(u4* const r)
+{
+    u2 const v = GET16(r[R_EAX]);
+    AX(r, (u2)(v >> 1));
+    setnzc16(r, GET16(r[R_EAX]), (v & 1u) != 0);
+}
+static void o_ROL8(u4* const r)
+{
+    int const ci = carry_in(r);
+    u1 const v = GET8(r[R_EAX]);
+    AL(r, (u1)((u1)(v << 1) | (u1)ci));
+    setnzc8(GET8(r[R_EAX]), (v & 0x80u) != 0);
+}
+static void o_ROL16(u4* const r)
+{
+    int const ci = carry_in(r);
+    u2 const v = GET16(r[R_EAX]);
+    AX(r, (u2)((u2)(v << 1) | (u2)ci));
+    setnzc16(r, GET16(r[R_EAX]), (v & 0x8000u) != 0);
+}
+static void o_ROR8(u4* const r)
+{
+    int const ci = carry_in(r);
+    u1 const v = GET8(r[R_EAX]);
+    AL(r, (u1)((v >> 1) | (u1)(ci << 7)));
+    setnzc8(GET8(r[R_EAX]), (v & 1u) != 0);
+}
+static void o_ROR16(u4* const r)
+{
+    int const ci = carry_in(r);
+    u2 const v = GET16(r[R_EAX]);
+    AX(r, (u2)((v >> 1) | (u2)(ci << 15)));
+    setnzc16(r, GET16(r[R_EAX]), (v & 1u) != 0);
+}
+
+/* INC and DEC of memory set N and Z only. */
+static void o_INCm8(u4* const r)
+{
+    AL(r, (u1)(GET8(r[R_EAX]) + 1));
+    flagnz = (u4)GET8(r[R_EAX]) << 8;
+}
+static void o_INCm16(u4* const r)
+{
+    AX(r, (u2)(GET16(r[R_EAX]) + 1));
+    setnz16(r, GET16(r[R_EAX]));
+}
+static void o_DECm8(u4* const r)
+{
+    AL(r, (u1)(GET8(r[R_EAX]) - 1));
+    flagnz = (u4)GET8(r[R_EAX]) << 8;
+}
+static void o_DECm16(u4* const r)
+{
+    AX(r, (u2)(GET16(r[R_EAX]) - 1));
+    setnz16(r, GET16(r[R_EAX]));
+}
+
+/* TSB and TRB fold an existing bit-15 N up into bit 16 first, so that the word
+   store of Z below it cannot wipe N out. */
+static inline void tsb_flags(u4 const nz)
+{
+    if (flagnz & 0x18000u)
+        flagnz |= 0x10000u;
+    flagnz = (flagnz & 0xFFFF0000u) | (nz ? 1u : 0u);
+}
+static void o_TSB8(u4* const r)
+{
+    u1 const cl = GET8(xa);
+    SET8(r[R_ECX], cl);
+    tsb_flags(GET8(r[R_EAX]) & cl);
+    AL(r, (u1)(GET8(r[R_EAX]) | cl));
+}
+static void o_TSB16(u4* const r)
+{
+    u2 const cx = GET16(xa);
+    SET16(r[R_ECX], cx);
+    tsb_flags(GET16(r[R_EAX]) & cx);
+    AX(r, (u2)(GET16(r[R_EAX]) | cx));
+}
+static void o_TRB8(u4* const r)
+{
+    u1 const cl = GET8(xa);
+    SET8(r[R_ECX], cl);
+    tsb_flags(cl & GET8(r[R_EAX]));
+    SET8(r[R_ECX], (u1)~cl);
+    AL(r, (u1)(GET8(r[R_EAX]) & GET8(r[R_ECX])));
+}
+static void o_TRB16(u4* const r)
+{
+    u2 const cx = GET16(xa);
+    SET16(r[R_ECX], cx);
+    tsb_flags(cx & GET16(r[R_EAX]));
+    SET16(r[R_ECX], (u2)~cx);
+    AX(r, (u2)(GET16(r[R_EAX]) & GET16(r[R_ECX])));
+}
+
+/* Read without advancing, operate, then write - the write re-reads the operand
+   and moves esi on. */
+#define RMW(name, mode_ni, op, mode_w) \
+    void name(u4* const r)             \
+    {                                  \
+        mode_ni(r);                    \
+        op(r);                         \
+        mode_w(r);                     \
+    }
+
+/* ASL */
+RMW(c_COp06m8, a_d_8ni, o_ASL8, a_d_8w)
+RMW(c_COp06m16, a_d_16ni, o_ASL16, a_d_16w)
+RMW(c_COp0Am8, a_A_8ni, o_ASL8, a_A_8w)
+RMW(c_COp0Am16, a_A_16ni, o_ASL16, a_A_16w)
+RMW(c_COp0Em8, a_a_8ni, o_ASL8, a_a_8w)
+RMW(c_COp0Em16, a_a_16ni, o_ASL16, a_a_16w)
+RMW(c_COp16m8, a_dCx_8ni, o_ASL8, a_dCx_8w)
+RMW(c_COp16m16, a_dCx_16ni, o_ASL16, a_dCx_16w)
+RMW(c_COp1Em8, a_aCx_8ni, o_ASL8, a_aCx_8w)
+RMW(c_COp1Em16, a_aCx_16ni, o_ASL16, a_aCx_16w)
+
+/* DECm */
+RMW(c_COpCEm8, a_a_8ni, o_DECm8, a_a_8w)
+RMW(c_COpCEm16, a_a_16ni, o_DECm16, a_a_16w)
+RMW(c_COpC6m8, a_d_8ni, o_DECm8, a_d_8w)
+RMW(c_COpC6m16, a_d_16ni, o_DECm16, a_d_16w)
+RMW(c_COpD6m8, a_dCx_8ni, o_DECm8, a_dCx_8w)
+RMW(c_COpD6m16, a_dCx_16ni, o_DECm16, a_dCx_16w)
+RMW(c_COpDEm8, a_aCx_8ni, o_DECm8, a_aCx_8w)
+RMW(c_COpDEm16, a_aCx_16ni, o_DECm16, a_aCx_16w)
+
+/* INCm */
+RMW(c_COpEEm8, a_a_8ni, o_INCm8, a_a_8w)
+RMW(c_COpEEm16, a_a_16ni, o_INCm16, a_a_16w)
+RMW(c_COpE6m8, a_d_8ni, o_INCm8, a_d_8w)
+RMW(c_COpE6m16, a_d_16ni, o_INCm16, a_d_16w)
+RMW(c_COpF6m8, a_dCx_8ni, o_INCm8, a_dCx_8w)
+RMW(c_COpF6m16, a_dCx_16ni, o_INCm16, a_dCx_16w)
+RMW(c_COpFEm8, a_aCx_8ni, o_INCm8, a_aCx_8w)
+RMW(c_COpFEm16, a_aCx_16ni, o_INCm16, a_aCx_16w)
+
+/* LSR */
+RMW(c_COp46m8, a_d_8ni, o_LSR8, a_d_8w)
+RMW(c_COp46m16, a_d_16ni, o_LSR16, a_d_16w)
+RMW(c_COp4Am8, a_A_8ni, o_LSR8, a_A_8w)
+RMW(c_COp4Am16, a_A_16ni, o_LSR16, a_A_16w)
+RMW(c_COp4Em8, a_a_8ni, o_LSR8, a_a_8w)
+RMW(c_COp4Em16, a_a_16ni, o_LSR16, a_a_16w)
+RMW(c_COp56m8, a_dCx_8ni, o_LSR8, a_dCx_8w)
+RMW(c_COp56m16, a_dCx_16ni, o_LSR16, a_dCx_16w)
+RMW(c_COp5Em8, a_aCx_8ni, o_LSR8, a_aCx_8w)
+RMW(c_COp5Em16, a_aCx_16ni, o_LSR16, a_aCx_16w)
+
+/* ROL */
+RMW(c_COp26m8, a_d_8ni, o_ROL8, a_d_8w)
+RMW(c_COp26m16, a_d_16ni, o_ROL16, a_d_16w)
+RMW(c_COp2Am8, a_A_8ni, o_ROL8, a_A_8w)
+RMW(c_COp2Am16, a_A_16ni, o_ROL16, a_A_16w)
+RMW(c_COp2Em8, a_a_8ni, o_ROL8, a_a_8w)
+RMW(c_COp2Em16, a_a_16ni, o_ROL16, a_a_16w)
+RMW(c_COp36m8, a_dCx_8ni, o_ROL8, a_dCx_8w)
+RMW(c_COp36m16, a_dCx_16ni, o_ROL16, a_dCx_16w)
+RMW(c_COp3Em8, a_aCx_8ni, o_ROL8, a_aCx_8w)
+RMW(c_COp3Em16, a_aCx_16ni, o_ROL16, a_aCx_16w)
+
+/* ROR */
+RMW(c_COp66m8, a_d_8ni, o_ROR8, a_d_8w)
+RMW(c_COp66m16, a_d_16ni, o_ROR16, a_d_16w)
+RMW(c_COp6Am8, a_A_8ni, o_ROR8, a_A_8w)
+RMW(c_COp6Am16, a_A_16ni, o_ROR16, a_A_16w)
+RMW(c_COp6Em8, a_a_8ni, o_ROR8, a_a_8w)
+RMW(c_COp6Em16, a_a_16ni, o_ROR16, a_a_16w)
+RMW(c_COp76m8, a_dCx_8ni, o_ROR8, a_dCx_8w)
+RMW(c_COp76m16, a_dCx_16ni, o_ROR16, a_dCx_16w)
+RMW(c_COp7Em8, a_aCx_8ni, o_ROR8, a_aCx_8w)
+RMW(c_COp7Em16, a_aCx_16ni, o_ROR16, a_aCx_16w)
+
+/* TRB */
+RMW(c_COp14m8, a_d_8ni, o_TRB8, a_d_8w)
+RMW(c_COp14m16, a_d_16ni, o_TRB16, a_d_16w)
+RMW(c_COp1Cm8, a_a_8ni, o_TRB8, a_a_8w)
+RMW(c_COp1Cm16, a_a_16ni, o_TRB16, a_a_16w)
+
+/* TSB */
+RMW(c_COp04m8, a_d_8ni, o_TSB8, a_d_8w)
+RMW(c_COp04m16, a_d_16ni, o_TSB16, a_d_16w)
+RMW(c_COp0Cm8, a_a_8ni, o_TSB8, a_a_8w)
+RMW(c_COp0Cm16, a_a_16ni, o_TSB16, a_a_16w)
+
+/*
+ * ADC and SBC.
+ *
+ * The binary forms are a plain x86 add/subtract-with-carry. The decimal forms
+ * follow it with DAA or DAS, and there the port has to make a decision the
+ * assembly did not: Intel documents both instructions as leaving OF undefined,
+ * yet the core reads OF immediately afterwards with `seto byte[flago]`. So the
+ * emulator's V flag in decimal mode has always been whatever the host CPU
+ * happened to do. Measured over all 131072 inputs on an i7-9750H, DAA and DAS
+ * both clear OF every time, and the 65816 itself leaves V undefined in decimal
+ * mode - so this clears V there. AL and the carry follow the documented
+ * algorithm, which reproduces the hardware exactly (also checked exhaustively).
+ *
+ * Carry in differs between the two: ADC does `add cl,cl` and takes bit 7 of
+ * flagc, SBC does `sub cl,1` and borrows when flagc's low byte is zero. Both
+ * leave the modified byte behind in cl.
+ */
+static inline int borrow_in(u4* const r)
+{
+    u1 const cl = GET8(flagc);
+    SET8(r[R_ECX], (u1)(cl - 1));
+    return cl == 0;
+}
+
+/* `seto` writes one byte, so flago's upper three survive. */
+static inline void nvzc8(u4* const r, int const of, int const cf)
+{
+    flagnz = 0;
+    AL(r, GET8(xa));
+    SET8(flago, of ? 1 : 0);
+    flagnz = (u4)GET8(r[R_EAX]) << 8;
+    flagc = cf ? 0xFF : 0;
+}
+static inline void nvzc16(u4* const r, int const of, int const cf)
+{
+    SET16(r[R_ECX], GET16(xa));
+    SET8(flago, of ? 1 : 0);
+    flagnz = r[R_ECX];
+    flagc = cf ? 0xFF : 0;
+}
+
+/* Intel's DAA and DAS, verbatim. The second adjustment tests the values from
+   before the first one, and DAS - unlike DAA - leaves CF alone when it is not
+   taken. */
+static inline u1 daa_adj(u1 al, int* const cf, int const af)
+{
+    u1 const old = al;
+    int const oldcf = *cf;
+    if ((al & 0x0Fu) > 9 || af) {
+        *cf = oldcf || ((u4)al + 6u > 0xFFu);
+        al = (u1)(al + 6u);
+    }
+    if (old > 0x99u || oldcf) {
+        al = (u1)(al + 0x60u);
+        *cf = 1;
+    } else {
+        *cf = 0;
+    }
+    return al;
+}
+static inline u1 das_adj(u1 al, int* const cf, int const af)
+{
+    u1 const old = al;
+    int const oldcf = *cf;
+    if ((al & 0x0Fu) > 9 || af) {
+        *cf = oldcf || (al < 6u);
+        al = (u1)(al - 6u);
+    }
+    if (old > 0x99u || oldcf) {
+        al = (u1)(al - 0x60u);
+        *cf = 1;
+    }
+    return al;
+}
+
+static void o_ADC8nd(u4* const r)
+{
+    int const ci = carry_in(r);
+    u1 const a = GET8(xa), v = GET8(r[R_EAX]);
+    u4 const sum = (u4)a + v + (u4)ci;
+    SET8(xa, (u1)sum);
+    nvzc8(r, ((a ^ (u1)sum) & (v ^ (u1)sum) & 0x80u) != 0, sum > 0xFFu);
+}
+static void o_ADC16nd(u4* const r)
+{
+    int const ci = carry_in(r);
+    u2 const a = GET16(xa), v = GET16(r[R_EAX]);
+    u4 const sum = (u4)a + v + (u4)ci;
+    SET16(xa, (u2)sum);
+    nvzc16(r, ((a ^ (u2)sum) & (v ^ (u2)sum) & 0x8000u) != 0, sum > 0xFFFFu);
+}
+static void o_SBC8nd(u4* const r)
+{
+    int const bi = borrow_in(r);
+    u1 const a = GET8(xa), v = GET8(r[R_EAX]);
+    u4 const dif = (u4)a - v - (u4)bi;
+    SET8(xa, (u1)dif);
+    nvzc8(r, ((a ^ v) & (a ^ (u1)dif) & 0x80u) != 0, (dif & 0x100u) == 0);
+}
+static void o_SBC16nd(u4* const r)
+{
+    int const bi = borrow_in(r);
+    u2 const a = GET16(xa), v = GET16(r[R_EAX]);
+    u4 const dif = (u4)a - v - (u4)bi;
+    SET16(xa, (u2)dif);
+    nvzc16(r, ((a ^ v) & (a ^ (u2)dif) & 0x8000u) != 0, (dif & 0x10000u) == 0);
+}
+
+static void o_ADC8d(u4* const r)
+{
+    int const ci = carry_in(r);
+    u1 const v = GET8(r[R_EAX]);
+    u1 a, s;
+    u4 sum;
+    int cf, af;
+    SET8(r[R_ECX], v); /* mov cl,al */
+    AL(r, GET8(xa));
+    a = GET8(r[R_EAX]);
+    sum = (u4)a + v + (u4)ci;
+    s = (u1)sum;
+    cf = sum > 0xFFu;
+    af = ((a ^ v ^ s) & 0x10u) != 0;
+    AL(r, daa_adj(s, &cf, af));
+    SET8(xa, GET8(r[R_EAX]));
+    nvzc8(r, 0, cf);
+}
+static void o_SBC8d(u4* const r)
+{
+    int const bi = borrow_in(r);
+    u1 const v = GET8(r[R_EAX]);
+    u1 a, s;
+    u4 dif;
+    int cf, af;
+    SET8(r[R_ECX], v);
+    AL(r, GET8(xa));
+    a = GET8(r[R_EAX]);
+    dif = (u4)a - v - (u4)bi;
+    s = (u1)dif;
+    cf = (dif & 0x100u) != 0;
+    af = ((a ^ v ^ s) & 0x10u) != 0;
+    AL(r, das_adj(s, &cf, af));
+    SET8(xa, GET8(r[R_EAX]));
+    nvzc8(r, 0, !cf);
+}
+
+/* The 16-bit decimal forms work a byte at a time, adjusting after each, with
+   the carry running from one into the next. */
+static void o_ADC16d(u4* const r)
+{
+    int cf = carry_in(r);
+    u2 const v = GET16(r[R_EAX]);
+    int i;
+    SET16(r[R_ECX], v); /* mov cx,ax */
+    for (i = 0; i < 2; i++) {
+        u1 const a = (u1)(xa >> (8 * i));
+        u1 const b = (u1)(GET16(r[R_ECX]) >> (8 * i));
+        u4 const sum = (u4)a + b + (u4)cf;
+        u1 const s = (u1)sum;
+        int const af = ((a ^ b ^ s) & 0x10u) != 0;
+        cf = sum > 0xFFu;
+        AL(r, daa_adj(s, &cf, af));
+        xa = (xa & ~(0xFFu << (8 * i))) | (u4)GET8(r[R_EAX]) << (8 * i);
+    }
+    nvzc16(r, 0, cf);
+}
+static void o_SBC16d(u4* const r)
+{
+    int cf = borrow_in(r);
+    u2 const v = GET16(r[R_EAX]);
+    int i;
+    SET16(r[R_ECX], v);
+    for (i = 0; i < 2; i++) {
+        u1 const a = (u1)(xa >> (8 * i));
+        u1 const b = (u1)(GET16(r[R_ECX]) >> (8 * i));
+        u4 const dif = (u4)a - b - (u4)cf;
+        u1 const s = (u1)dif;
+        int const af = ((a ^ b ^ s) & 0x10u) != 0;
+        cf = (dif & 0x100u) != 0;
+        AL(r, das_adj(s, &cf, af));
+        xa = (xa & ~(0xFFu << (8 * i))) | (u4)GET8(r[R_EAX]) << (8 * i);
+    }
+    nvzc16(r, 0, !cf); /* the `cmc` before the flag store */
+}
+
+/* ADC8nd */
+OPMODE(c_COp61m8nd, a_BdCxB_8, o_ADC8nd)
+OPMODE(c_COp63m8nd, a_dCs_8, o_ADC8nd)
+OPMODE(c_COp65m8nd, a_d_8, o_ADC8nd)
+OPMODE(c_COp67m8nd, a_LdL_8, o_ADC8nd)
+OPMODE(c_COp69m8nd, a_I_8, o_ADC8nd)
+OPMODE(c_COp6Dm8nd, a_a_8, o_ADC8nd)
+OPMODE(c_COp6Fm8nd, a_al_8, o_ADC8nd)
+OPMODE(c_COp71m8nd, a_BdBCy_8, o_ADC8nd)
+OPMODE(c_COp72m8nd, a_BdB_8, o_ADC8nd)
+OPMODE(c_COp73m8nd, a_BdCsBCy_8, o_ADC8nd)
+OPMODE(c_COp75m8nd, a_dCx_8, o_ADC8nd)
+OPMODE(c_COp77m8nd, a_LdLCy_8, o_ADC8nd)
+OPMODE(c_COp79m8nd, a_aCy_8, o_ADC8nd)
+OPMODE(c_COp7Dm8nd, a_aCx_8, o_ADC8nd)
+OPMODE(c_COp7Fm8nd, a_alCx_8, o_ADC8nd)
+
+/* ADC16nd */
+OPMODE(c_COp61m16nd, a_BdCxB_16, o_ADC16nd)
+OPMODE(c_COp63m16nd, a_dCs_16, o_ADC16nd)
+OPMODE(c_COp65m16nd, a_d_16, o_ADC16nd)
+OPMODE(c_COp67m16nd, a_LdL_16, o_ADC16nd)
+OPMODE(c_COp69m16nd, a_I_16, o_ADC16nd)
+OPMODE(c_COp6Dm16nd, a_a_16, o_ADC16nd)
+OPMODE(c_COp6Fm16nd, a_al_16, o_ADC16nd)
+OPMODE(c_COp71m16nd, a_BdBCy_16, o_ADC16nd)
+OPMODE(c_COp72m16nd, a_BdB_16, o_ADC16nd)
+OPMODE(c_COp73m16nd, a_BdCsBCy_16, o_ADC16nd)
+OPMODE(c_COp75m16nd, a_dCx_16, o_ADC16nd)
+OPMODE(c_COp77m16nd, a_LdLCy_16, o_ADC16nd)
+OPMODE(c_COp79m16nd, a_aCy_16, o_ADC16nd)
+OPMODE(c_COp7Dm16nd, a_aCx_16, o_ADC16nd)
+OPMODE(c_COp7Fm16nd, a_alCx_16, o_ADC16nd)
+
+/* ADC8d */
+OPMODE(c_COp61m8d, a_BdCxB_8, o_ADC8d)
+OPMODE(c_COp63m8d, a_dCs_8, o_ADC8d)
+OPMODE(c_COp65m8d, a_d_8, o_ADC8d)
+OPMODE(c_COp67m8d, a_LdL_8, o_ADC8d)
+OPMODE(c_COp69m8d, a_I_8, o_ADC8d)
+OPMODE(c_COp6Dm8d, a_a_8, o_ADC8d)
+OPMODE(c_COp6Fm8d, a_al_8, o_ADC8d)
+OPMODE(c_COp71m8d, a_BdBCy_8, o_ADC8d)
+OPMODE(c_COp72m8d, a_BdB_8, o_ADC8d)
+OPMODE(c_COp73m8d, a_BdCsBCy_8, o_ADC8d)
+OPMODE(c_COp75m8d, a_dCx_8, o_ADC8d)
+OPMODE(c_COp77m8d, a_LdLCy_8, o_ADC8d)
+OPMODE(c_COp79m8d, a_aCy_8, o_ADC8d)
+OPMODE(c_COp7Dm8d, a_aCx_8, o_ADC8d)
+OPMODE(c_COp7Fm8d, a_alCx_8, o_ADC8d)
+
+/* ADC16d */
+OPMODE(c_COp61m16d, a_BdCxB_16, o_ADC16d)
+OPMODE(c_COp63m16d, a_dCs_16, o_ADC16d)
+OPMODE(c_COp65m16d, a_d_16, o_ADC16d)
+OPMODE(c_COp67m16d, a_LdL_16, o_ADC16d)
+OPMODE(c_COp69m16d, a_I_16, o_ADC16d)
+OPMODE(c_COp6Dm16d, a_a_16, o_ADC16d)
+OPMODE(c_COp6Fm16d, a_al_16, o_ADC16d)
+OPMODE(c_COp71m16d, a_BdBCy_16, o_ADC16d)
+OPMODE(c_COp72m16d, a_BdB_16, o_ADC16d)
+OPMODE(c_COp73m16d, a_BdCsBCy_16, o_ADC16d)
+OPMODE(c_COp75m16d, a_dCx_16, o_ADC16d)
+OPMODE(c_COp77m16d, a_LdLCy_16, o_ADC16d)
+OPMODE(c_COp79m16d, a_aCy_16, o_ADC16d)
+OPMODE(c_COp7Dm16d, a_aCx_16, o_ADC16d)
+OPMODE(c_COp7Fm16d, a_alCx_16, o_ADC16d)
+
+/* SBC8nd */
+OPMODE(c_COpE1m8nd, a_BdCxB_8, o_SBC8nd)
+OPMODE(c_COpE3m8nd, a_dCs_8, o_SBC8nd)
+OPMODE(c_COpE5m8nd, a_d_8, o_SBC8nd)
+OPMODE(c_COpE7m8nd, a_LdL_8, o_SBC8nd)
+OPMODE(c_COpE9m8nd, a_I_8, o_SBC8nd)
+OPMODE(c_COpEDm8nd, a_a_8, o_SBC8nd)
+OPMODE(c_COpEFm8nd, a_al_8, o_SBC8nd)
+OPMODE(c_COpF1m8nd, a_BdBCy_8, o_SBC8nd)
+OPMODE(c_COpF2m8nd, a_BdB_8, o_SBC8nd)
+OPMODE(c_COpF3m8nd, a_BdCsBCy_8, o_SBC8nd)
+OPMODE(c_COpF5m8nd, a_dCx_8, o_SBC8nd)
+OPMODE(c_COpF7m8nd, a_LdLCy_8, o_SBC8nd)
+OPMODE(c_COpF9m8nd, a_aCy_8, o_SBC8nd)
+OPMODE(c_COpFDm8nd, a_aCx_8, o_SBC8nd)
+OPMODE(c_COpFFm8nd, a_alCx_8, o_SBC8nd)
+
+/* SBC16nd */
+OPMODE(c_COpE1m16nd, a_BdCxB_16, o_SBC16nd)
+OPMODE(c_COpE3m16nd, a_dCs_16, o_SBC16nd)
+OPMODE(c_COpE5m16nd, a_d_16, o_SBC16nd)
+OPMODE(c_COpE7m16nd, a_LdL_16, o_SBC16nd)
+OPMODE(c_COpE9m16nd, a_I_16, o_SBC16nd)
+OPMODE(c_COpEDm16nd, a_a_16, o_SBC16nd)
+OPMODE(c_COpEFm16nd, a_al_16, o_SBC16nd)
+OPMODE(c_COpF1m16nd, a_BdBCy_16, o_SBC16nd)
+OPMODE(c_COpF2m16nd, a_BdB_16, o_SBC16nd)
+OPMODE(c_COpF3m16nd, a_BdCsBCy_16, o_SBC16nd)
+OPMODE(c_COpF5m16nd, a_dCx_16, o_SBC16nd)
+OPMODE(c_COpF7m16nd, a_LdLCy_16, o_SBC16nd)
+OPMODE(c_COpF9m16nd, a_aCy_16, o_SBC16nd)
+OPMODE(c_COpFDm16nd, a_aCx_16, o_SBC16nd)
+OPMODE(c_COpFFm16nd, a_alCx_16, o_SBC16nd)
+
+/* SBC8d */
+OPMODE(c_COpE1m8d, a_BdCxB_8, o_SBC8d)
+OPMODE(c_COpE3m8d, a_dCs_8, o_SBC8d)
+OPMODE(c_COpE5m8d, a_d_8, o_SBC8d)
+OPMODE(c_COpE7m8d, a_LdL_8, o_SBC8d)
+OPMODE(c_COpE9m8d, a_I_8, o_SBC8d)
+OPMODE(c_COpEDm8d, a_a_8, o_SBC8d)
+OPMODE(c_COpEFm8d, a_al_8, o_SBC8d)
+OPMODE(c_COpF1m8d, a_BdBCy_8, o_SBC8d)
+OPMODE(c_COpF2m8d, a_BdB_8, o_SBC8d)
+OPMODE(c_COpF3m8d, a_BdCsBCy_8, o_SBC8d)
+OPMODE(c_COpF5m8d, a_dCx_8, o_SBC8d)
+OPMODE(c_COpF7m8d, a_LdLCy_8, o_SBC8d)
+OPMODE(c_COpF9m8d, a_aCy_8, o_SBC8d)
+OPMODE(c_COpFDm8d, a_aCx_8, o_SBC8d)
+OPMODE(c_COpFFm8d, a_alCx_8, o_SBC8d)
+
+/* SBC16d */
+OPMODE(c_COpE1m16d, a_BdCxB_16, o_SBC16d)
+OPMODE(c_COpE3m16d, a_dCs_16, o_SBC16d)
+OPMODE(c_COpE5m16d, a_d_16, o_SBC16d)
+OPMODE(c_COpE7m16d, a_LdL_16, o_SBC16d)
+OPMODE(c_COpE9m16d, a_I_16, o_SBC16d)
+OPMODE(c_COpEDm16d, a_a_16, o_SBC16d)
+OPMODE(c_COpEFm16d, a_al_16, o_SBC16d)
+OPMODE(c_COpF1m16d, a_BdBCy_16, o_SBC16d)
+OPMODE(c_COpF2m16d, a_BdB_16, o_SBC16d)
+OPMODE(c_COpF3m16d, a_BdCsBCy_16, o_SBC16d)
+OPMODE(c_COpF5m16d, a_dCx_16, o_SBC16d)
+OPMODE(c_COpF7m16d, a_LdLCy_16, o_SBC16d)
+OPMODE(c_COpF9m16d, a_aCy_16, o_SBC16d)
+OPMODE(c_COpFDm16d, a_aCx_16, o_SBC16d)
+OPMODE(c_COpFFm16d, a_alCx_16, o_SBC16d)
 
 #endif /* OPS65816_H */

@@ -22,5 +22,6 @@ extern u4 MemSeamA, MemSeamB, MemSeamC, MemSeamD;
 extern void c_membank0r8(void);
 extern void c_membank0r16(void);
 extern void c_membank0w8(void);
+extern void c_membank0w16(void);
 
 #include "ops65816.h"

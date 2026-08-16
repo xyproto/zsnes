@@ -36,185 +36,125 @@ NEWSYM E65816IncStart
 SECTION .text
 
 NEWSYM COp61m8nd  ; ADC(d,x)
-   addr_BdCxB_8br
-   ADCMacro8bnd
+    cop c_COp61m8nd
 NEWSYM COp61m16nd ; ADC(d,x)
-   addr_BdCxB_16br
-   ADCMacro16bnd
+    cop c_COp61m16nd
 NEWSYM COp61m8d   ; ADC(d,x)
-   addr_BdCxB_8br
-   ADCMacro8bd
+    cop c_COp61m8d
 NEWSYM COp61m16d  ; ADC(d,x)
-   addr_BdCxB_16br
-   ADCMacro16bd
+    cop c_COp61m16d
 NEWSYM COp63m8nd  ; ADC d,s
-   addr_dCs_8br
-   ADCMacro8bnd
+    cop c_COp63m8nd
 NEWSYM COp63m16nd ; ADC d,s
-   addr_dCs_16br
-   ADCMacro16bnd
+    cop c_COp63m16nd
 NEWSYM COp63m8d   ; ADC d,s
-   addr_dCs_8br
-   ADCMacro8bd
+    cop c_COp63m8d
 NEWSYM COp63m16d  ; ADC d,s
-   addr_dCs_16br
-   ADCMacro16bd
+    cop c_COp63m16d
 NEWSYM COp65m8nd  ; ADC d
-   addr_d_8br
-   ADCMacro8bnd
+    cop c_COp65m8nd
 NEWSYM COp65m16nd ; ADC d
-   addr_d_16br
-   ADCMacro16bnd
+    cop c_COp65m16nd
 NEWSYM COp65m8d   ; ADC d
-   addr_d_8br
-   ADCMacro8bd
+    cop c_COp65m8d
 NEWSYM COp65m16d  ; ADC d
-   addr_d_16br
-   ADCMacro16bd
+    cop c_COp65m16d
 NEWSYM COp67m8nd  ; ADC [d]
-   addr_LdL_8br
-   ADCMacro8bnd
+    cop c_COp67m8nd
 NEWSYM COp67m16nd ; ADC [d]
-   addr_LdL_16br
-   ADCMacro16bnd
+    cop c_COp67m16nd
 NEWSYM COp67m8d   ; ADC [d]
-   addr_LdL_8br
-   ADCMacro8bd
+    cop c_COp67m8d
 NEWSYM COp67m16d  ; ADC [d]
-   addr_LdL_16br
-   ADCMacro16bd
+    cop c_COp67m16d
 NEWSYM COp69m8nd  ; ADC #
-   addr_I_8br
-   ADCMacro8bnd
+    cop c_COp69m8nd
 NEWSYM COp69m16nd ; ADC #
-   addr_I_16br
-   ADCMacro16bnd
+    cop c_COp69m16nd
 NEWSYM COp69m8d   ; ADC #
-   addr_I_8br
-   ADCMacro8bd
+    cop c_COp69m8d
 NEWSYM COp69m16d  ; ADC #
-   addr_I_16br
-   ADCMacro16bd
+    cop c_COp69m16d
 NEWSYM COp6Dm8nd  ; ADC a
-   addr_a_8br
-   ADCMacro8bnd
+    cop c_COp6Dm8nd
 NEWSYM COp6Dm16nd ; ADC a
-   addr_a_16br
-   ADCMacro16bnd
+    cop c_COp6Dm16nd
 NEWSYM COp6Dm8d   ; ADC a
-   addr_a_8br
-   ADCMacro8bd
+    cop c_COp6Dm8d
 NEWSYM COp6Dm16d  ; ADC a
-   addr_a_16br
-   ADCMacro16bd
+    cop c_COp6Dm16d
 NEWSYM COp6Fm8nd  ; ADC al
-   addr_al_8br
-   ADCMacro8bnd
+    cop c_COp6Fm8nd
 NEWSYM COp6Fm16nd ; ADC al
-   addr_al_16br
-   ADCMacro16bnd
+    cop c_COp6Fm16nd
 NEWSYM COp6Fm8d   ; ADC al
-   addr_al_8br
-   ADCMacro8bd
+    cop c_COp6Fm8d
 NEWSYM COp6Fm16d  ; ADC al
-   addr_al_16br
-   ADCMacro16bd
+    cop c_COp6Fm16d
 NEWSYM COp71m8nd  ; ADC(d),y
-   addr_BdBCy_8br
-   ADCMacro8bnd
+    cop c_COp71m8nd
 NEWSYM COp71m16nd ; ADC(d),y
-   addr_BdBCy_16br
-   ADCMacro16bnd
+    cop c_COp71m16nd
 NEWSYM COp71m8d   ; ADC(d),y
-   addr_BdBCy_8br
-   ADCMacro8bd
+    cop c_COp71m8d
 NEWSYM COp71m16d  ; ADC(d),y
-   addr_BdBCy_16br
-   ADCMacro16bd
+    cop c_COp71m16d
 NEWSYM COp72m8nd  ; ADC (d)
-   addr_BdB_8br
-   ADCMacro8bnd
+    cop c_COp72m8nd
 NEWSYM COp72m16nd ; ADC (d)
-   addr_BdB_16br
-   ADCMacro16bnd
+    cop c_COp72m16nd
 NEWSYM COp72m8d   ; ADC (d)
-   addr_BdB_8br
-   ADCMacro8bd
+    cop c_COp72m8d
 NEWSYM COp72m16d  ; ADC (d)
-   addr_BdB_16br
-   ADCMacro16bd
+    cop c_COp72m16d
 NEWSYM COp73m8nd  ; ADC(d,s),y
-   addr_BdCsBCy_8br
-   ADCMacro8bnd
+    cop c_COp73m8nd
 NEWSYM COp73m16nd ; ADC(d,s),y
-   addr_BdCsBCy_16br
-   ADCMacro16bnd
+    cop c_COp73m16nd
 NEWSYM COp73m8d   ; ADC(d,s),y
-   addr_BdCsBCy_8br
-   ADCMacro8bd
+    cop c_COp73m8d
 NEWSYM COp73m16d  ; ADC(d,s),y
-   addr_BdCsBCy_16br
-   ADCMacro16bd
+    cop c_COp73m16d
 NEWSYM COp75m8nd  ; ADC d,x
-   addr_dCx_8br
-   ADCMacro8bnd
+    cop c_COp75m8nd
 NEWSYM COp75m16nd ; ADC d,x
-   addr_dCx_16br
-   ADCMacro16bnd
+    cop c_COp75m16nd
 NEWSYM COp75m8d   ; ADC d,x
-   addr_dCx_8br
-   ADCMacro8bd
+    cop c_COp75m8d
 NEWSYM COp75m16d  ; ADC d,x
-   addr_dCx_16br
-   ADCMacro16bd
+    cop c_COp75m16d
 NEWSYM COp77m8nd  ; ADC [d],y
-   addr_LdLCy_8br
-   ADCMacro8bnd
+    cop c_COp77m8nd
 NEWSYM COp77m16nd ; ADC [d],y
-   addr_LdLCy_16br
-   ADCMacro16bnd
+    cop c_COp77m16nd
 NEWSYM COp77m8d   ; ADC [d],y
-   addr_LdLCy_8br
-   ADCMacro8bd
+    cop c_COp77m8d
 NEWSYM COp77m16d  ; ADC [d],y
-   addr_LdLCy_16br
-   ADCMacro16bd
+    cop c_COp77m16d
 NEWSYM COp79m8nd  ; ADC a,y
-   addr_aCy_8br
-   ADCMacro8bnd
+    cop c_COp79m8nd
 NEWSYM COp79m16nd ; ADC a,y
-   addr_aCy_16br
-   ADCMacro16bnd
+    cop c_COp79m16nd
 NEWSYM COp79m8d   ; ADC a,y
-   addr_aCy_8br
-   ADCMacro8bd
+    cop c_COp79m8d
 NEWSYM COp79m16d  ; ADC a,y
-   addr_aCy_16br
-   ADCMacro16bd
+    cop c_COp79m16d
 NEWSYM COp7Dm8nd  ; ADC a,x
-   addr_aCx_8br
-   ADCMacro8bnd
+    cop c_COp7Dm8nd
 NEWSYM COp7Dm16nd ; ADC a,x
-   addr_aCx_16br
-   ADCMacro16bnd
+    cop c_COp7Dm16nd
 NEWSYM COp7Dm8d   ; ADC a,x
-   addr_aCx_8br
-   ADCMacro8bd
+    cop c_COp7Dm8d
 NEWSYM COp7Dm16d  ; ADC a,x
-   addr_aCx_16br
-   ADCMacro16bd
+    cop c_COp7Dm16d
 NEWSYM COp7Fm8nd  ; ADC al,x
-   addr_alCx_8br
-   ADCMacro8bnd
+    cop c_COp7Fm8nd
 NEWSYM COp7Fm16nd ; ADC al,x
-   addr_alCx_16br
-   ADCMacro16bnd
+    cop c_COp7Fm16nd
 NEWSYM COp7Fm8d   ; ADC al,x
-   addr_alCx_8br
-   ADCMacro8bd
+    cop c_COp7Fm8d
 NEWSYM COp7Fm16d  ; ADC al,x
-   addr_alCx_16br
-   ADCMacro16bd
+    cop c_COp7Fm16d
 
 NEWSYM COp21m8 ; AND(d,x)
     cop c_COp21m8
@@ -278,55 +218,25 @@ NEWSYM COp3Fm16; AND al,x
     cop c_COp3Fm16
 
 NEWSYM COp06m8 ; ASL d
-   addr_d_8brni
-   ASLMacro8b
-   addr_d_8bw
-   endloop
+    cop c_COp06m8
 NEWSYM COp06m16; ASL d
-   addr_d_16brni
-   ASLMacro16b
-   addr_d_16bw
-   endloop
+    cop c_COp06m16
 NEWSYM COp0Am8 ; ASL A
-   addr_A_8brni
-   ASLMacro8b
-   addr_A_8bw
-   endloop
+    cop c_COp0Am8
 NEWSYM COp0Am16; ASL A
-   addr_A_16brni
-   ASLMacro16b
-   addr_A_16bw
-   endloop
+    cop c_COp0Am16
 NEWSYM COp0Em8 ; ASL a
-   addr_a_8brni
-   ASLMacro8b
-   addr_a_8bw
-   endloop
+    cop c_COp0Em8
 NEWSYM COp0Em16; ASL a
-   addr_a_16brni
-   ASLMacro16b
-   addr_a_16bw
-   endloop
+    cop c_COp0Em16
 NEWSYM COp16m8 ; ASL d,x
-   addr_dCx_8brni
-   ASLMacro8b
-   addr_dCx_8bw
-   endloop
+    cop c_COp16m8
 NEWSYM COp16m16; ASL d,x
-   addr_dCx_16brni
-   ASLMacro16b
-   addr_dCx_16bw
-   endloop
+    cop c_COp16m16
 NEWSYM COp1Em8 ; ASL a,x
-   addr_aCx_8brni
-   ASLMacro8b
-   addr_aCx_8bw
-   endloop
+    cop c_COp1Em8
 NEWSYM COp1Em16; ASL a,x
-   addr_aCx_16brni
-   ASLMacro16b
-   addr_aCx_16bw
-   endloop
+    cop c_COp1Em16
 
 NEWSYM COp90   ; BCC r
     cop c_COp90
@@ -496,53 +406,21 @@ NEWSYM COp3Am8 ; DEC A
 NEWSYM COp3Am16; DEC A
     cop c_COp3Am16
 NEWSYM COpCEm8 ; DEC a
-    addr_a_8brni
-    dec al
-    flagsetnz8bnel
-    addr_a_8bw
-    endloop
+    cop c_COpCEm8
 NEWSYM COpCEm16; DEC a
-    addr_a_16brni
-    dec ax
-    flagsetnz16bnel
-    addr_a_16bw
-    endloop
+    cop c_COpCEm16
 NEWSYM COpC6m8 ; DEC d
-    addr_d_8brni
-    dec al
-    flagsetnz8bnel
-    addr_d_8bw
-    endloop
+    cop c_COpC6m8
 NEWSYM COpC6m16; DEC d
-    addr_d_16brni
-    dec ax
-    flagsetnz16bnel
-    addr_d_16bw
-    endloop
+    cop c_COpC6m16
 NEWSYM COpD6m8 ; DEC d,x
-    addr_dCx_8brni
-    dec al
-    flagsetnz8bnel
-    addr_dCx_8bw
-    endloop
+    cop c_COpD6m8
 NEWSYM COpD6m16; DEC d,x
-    addr_dCx_16brni
-    dec ax
-    flagsetnz16bnel
-    addr_dCx_16bw
-    endloop
+    cop c_COpD6m16
 NEWSYM COpDEm8 ; DEC a,x
-    addr_aCx_8brni
-    dec al
-    flagsetnz8bnel
-    addr_aCx_8bw
-    endloop
+    cop c_COpDEm8
 NEWSYM COpDEm16; DEC a,x
-    addr_aCx_16brni
-    dec ax
-    flagsetnz16bnel
-    addr_aCx_16bw
-    endloop
+    cop c_COpDEm16
 
 NEWSYM COpCAx8 ; DEX i
     cop c_COpCAx8
@@ -620,53 +498,21 @@ NEWSYM COp1Am8 ; INC A
 NEWSYM COp1Am16; INC A
     cop c_COp1Am16
 NEWSYM COpEEm8 ; INC a
-    addr_a_8brni
-    inc al
-    flagsetnz8bnel
-    addr_a_8bw
-    endloop
+    cop c_COpEEm8
 NEWSYM COpEEm16; INC a
-    addr_a_16brni
-    inc ax
-    flagsetnz16bnel
-    addr_a_16bw
-    endloop
+    cop c_COpEEm16
 NEWSYM COpE6m8 ; INC d
-    addr_d_8brni
-    inc al
-    flagsetnz8bnel
-    addr_d_8bw
-    endloop
+    cop c_COpE6m8
 NEWSYM COpE6m16; INC d
-    addr_d_16brni
-    inc ax
-    flagsetnz16bnel
-    addr_d_16bw
-    endloop
+    cop c_COpE6m16
 NEWSYM COpF6m8 ; INC d,x
-    addr_dCx_8brni
-    inc al
-    flagsetnz8bnel
-    addr_dCx_8bw
-    endloop
+    cop c_COpF6m8
 NEWSYM COpF6m16; INC d,x
-    addr_dCx_16brni
-    inc ax
-    flagsetnz16bnel
-    addr_dCx_16bw
-    endloop
+    cop c_COpF6m16
 NEWSYM COpFEm8 ; INC a,x
-    addr_aCx_8brni
-    inc al
-    flagsetnz8bnel
-    addr_aCx_8bw
-    endloop
+    cop c_COpFEm8
 NEWSYM COpFEm16; INC a,x
-    addr_aCx_16brni
-    inc ax
-    flagsetnz16bnel
-    addr_aCx_16bw
-    endloop
+    cop c_COpFEm16
 
 
 NEWSYM COpE8x8 ; INX i
@@ -800,55 +646,25 @@ NEWSYM COpBCx16; LDY a,x
     cop c_COpBCx16
 
 NEWSYM COp46m8 ; LSR d
-   addr_d_8brni
-   LSRMacro8b
-   addr_d_8bw
-   endloop
+    cop c_COp46m8
 NEWSYM COp46m16; LSR d
-   addr_d_16brni
-   LSRMacro16b
-   addr_d_16bw
-   endloop
+    cop c_COp46m16
 NEWSYM COp4Am8 ; LSR A
-   addr_A_8brni
-   LSRMacro8b
-   addr_A_8bw
-   endloop
+    cop c_COp4Am8
 NEWSYM COp4Am16; LSR A
-   addr_A_16brni
-   LSRMacro16b
-   addr_A_16bw
-   endloop
+    cop c_COp4Am16
 NEWSYM COp4Em8 ; LSR a
-   addr_a_8brni
-   LSRMacro8b
-   addr_a_8bw
-   endloop
+    cop c_COp4Em8
 NEWSYM COp4Em16; LSR a
-   addr_a_16brni
-   LSRMacro16b
-   addr_a_16bw
-   endloop
+    cop c_COp4Em16
 NEWSYM COp56m8 ; LSR d,x
-   addr_dCx_8brni
-   LSRMacro8b
-   addr_dCx_8bw
-   endloop
+    cop c_COp56m8
 NEWSYM COp56m16; LSR d,x
-   addr_dCx_16brni
-   LSRMacro16b
-   addr_dCx_16bw
-   endloop
+    cop c_COp56m16
 NEWSYM COp5Em8 ; LSRa,x
-   addr_aCx_8brni
-   LSRMacro8b
-   addr_aCx_8bw
-   endloop
+    cop c_COp5Em8
 NEWSYM COp5Em16; LSRa,x
-   addr_aCx_16brni
-   LSRMacro16b
-   addr_aCx_16bw
-   endloop
+    cop c_COp5Em16
 
 NEWSYM COp54   ; MVN xya
    MVNMacro
@@ -970,106 +786,46 @@ NEWSYM COpC2   ; REP #
     cop c_COpC2
 
 NEWSYM COp26m8 ; ROL d
-   addr_d_8brni
-   ROLMacro8b
-   addr_d_8bw
-   endloop
+    cop c_COp26m8
 NEWSYM COp26m16; ROL d
-   addr_d_16brni
-   ROLMacro16b
-   addr_d_16bw
-   endloop
+    cop c_COp26m16
 NEWSYM COp2Am8 ; ROL A
-   addr_A_8brni
-   ROLMacro8b
-   addr_A_8bw
-   endloop
+    cop c_COp2Am8
 NEWSYM COp2Am16; ROL A
-   addr_A_16brni
-   ROLMacro16b
-   addr_A_16bw
-   endloop
+    cop c_COp2Am16
 NEWSYM COp2Em8 ; ROL a
-   addr_a_8brni
-   ROLMacro8b
-   addr_a_8bw
-   endloop
+    cop c_COp2Em8
 NEWSYM COp2Em16; ROL a
-   addr_a_16brni
-   ROLMacro16b
-   addr_a_16bw
-   endloop
+    cop c_COp2Em16
 NEWSYM COp36m8 ; ROL d,x
-   addr_dCx_8brni
-   ROLMacro8b
-   addr_dCx_8bw
-   endloop
+    cop c_COp36m8
 NEWSYM COp36m16; ROL d,x
-   addr_dCx_16brni
-   ROLMacro16b
-   addr_dCx_16bw
-   endloop
+    cop c_COp36m16
 NEWSYM COp3Em8 ; ROL a,x
-   addr_aCx_8brni
-   ROLMacro8b
-   addr_aCx_8bw
-   endloop
+    cop c_COp3Em8
 NEWSYM COp3Em16; ROL a,x
-   addr_aCx_16brni
-   ROLMacro16b
-   addr_aCx_16bw
-   endloop
+    cop c_COp3Em16
 
 NEWSYM COp66m8 ; ROR d
-   addr_d_8brni
-   RORMacro8b
-   addr_d_8bw
-   endloop
+    cop c_COp66m8
 NEWSYM COp66m16; ROR d
-   addr_d_16brni
-   RORMacro16b
-   addr_d_16bw
-   endloop
+    cop c_COp66m16
 NEWSYM COp6Am8 ; ROR A
-   addr_A_8brni
-   RORMacro8b
-   addr_A_8bw
-   endloop
+    cop c_COp6Am8
 NEWSYM COp6Am16; ROR A
-   addr_A_16brni
-   RORMacro16b
-   addr_A_16bw
-   endloop
+    cop c_COp6Am16
 NEWSYM COp6Em8 ; ROR a
-   addr_a_8brni
-   RORMacro8b
-   addr_a_8bw
-   endloop
+    cop c_COp6Em8
 NEWSYM COp6Em16; ROR a
-   addr_a_16brni
-   RORMacro16b
-   addr_a_16bw
-   endloop
+    cop c_COp6Em16
 NEWSYM COp76m8 ; ROR d,x
-   addr_dCx_8brni
-   RORMacro8b
-   addr_dCx_8bw
-   endloop
+    cop c_COp76m8
 NEWSYM COp76m16; ROR d,x
-   addr_dCx_16brni
-   RORMacro16b
-   addr_dCx_16bw
-   endloop
+    cop c_COp76m16
 NEWSYM COp7Em8 ; ROR a,x
-   addr_aCx_8brni
-   RORMacro8b
-   addr_aCx_8bw
-   endloop
+    cop c_COp7Em8
 NEWSYM COp7Em16; ROR a,x
-   addr_aCx_16brni
-   RORMacro16b
-   addr_aCx_16bw
-   endloop
+    cop c_COp7Em16
 
 NEWSYM COp40   ; RTI s
    RTIMacro
@@ -1079,185 +835,125 @@ NEWSYM COp60   ; RTS s
    RTSMacro
 
 NEWSYM COpE1m8nd  ; SBC(d,x)
-   addr_BdCxB_8br
-   SBCMacro8bnd
+    cop c_COpE1m8nd
 NEWSYM COpE1m16nd ; SBC(d,x)
-   addr_BdCxB_16br
-   SBCMacro16bnd
+    cop c_COpE1m16nd
 NEWSYM COpE1m8d   ; SBC(d,x)
-   addr_BdCxB_8br
-   SBCMacro8bd
+    cop c_COpE1m8d
 NEWSYM COpE1m16d  ; SBC(d,x)
-   addr_BdCxB_16br
-   SBCMacro16bd
+    cop c_COpE1m16d
 NEWSYM COpE3m8nd  ; SBC d,s
-   addr_dCs_8br
-   SBCMacro8bnd
+    cop c_COpE3m8nd
 NEWSYM COpE3m16nd ; SBC d,s
-   addr_dCs_16br
-   SBCMacro16bnd
+    cop c_COpE3m16nd
 NEWSYM COpE3m8d   ; SBC d,s
-   addr_dCs_8br
-   SBCMacro8bd
+    cop c_COpE3m8d
 NEWSYM COpE3m16d  ; SBC d,s
-   addr_dCs_16br
-   SBCMacro16bd
+    cop c_COpE3m16d
 NEWSYM COpE5m8nd  ; SBC d
-   addr_d_8br
-   SBCMacro8bnd
+    cop c_COpE5m8nd
 NEWSYM COpE5m16nd ; SBC d
-   addr_d_16br
-   SBCMacro16bnd
+    cop c_COpE5m16nd
 NEWSYM COpE5m8d   ; SBC d
-   addr_d_8br
-   SBCMacro8bd
+    cop c_COpE5m8d
 NEWSYM COpE5m16d  ; SBC d
-   addr_d_16br
-   SBCMacro16bd
+    cop c_COpE5m16d
 NEWSYM COpE7m8nd  ; SBC [d]
-   addr_LdL_8br
-   SBCMacro8bnd
+    cop c_COpE7m8nd
 NEWSYM COpE7m16nd ; SBC [d]
-   addr_LdL_16br
-   SBCMacro16bnd
+    cop c_COpE7m16nd
 NEWSYM COpE7m8d   ; SBC [d]
-   addr_LdL_8br
-   SBCMacro8bd
+    cop c_COpE7m8d
 NEWSYM COpE7m16d  ; SBC [d]
-   addr_LdL_16br
-   SBCMacro16bd
+    cop c_COpE7m16d
 NEWSYM COpE9m8nd  ; SBC #
-   addr_I_8br
-   SBCMacro8bnd
+    cop c_COpE9m8nd
 NEWSYM COpE9m16nd ; SBC #
-   addr_I_16br
-   SBCMacro16bnd
+    cop c_COpE9m16nd
 NEWSYM COpE9m8d   ; SBC #
-   addr_I_8br
-   SBCMacro8bd
+    cop c_COpE9m8d
 NEWSYM COpE9m16d  ; SBC #
-   addr_I_16br
-   SBCMacro16bd
+    cop c_COpE9m16d
 NEWSYM COpEDm8nd  ; SBC a
-   addr_a_8br
-   SBCMacro8bnd
+    cop c_COpEDm8nd
 NEWSYM COpEDm16nd ; SBC a
-   addr_a_16br
-   SBCMacro16bnd
+    cop c_COpEDm16nd
 NEWSYM COpEDm8d   ; SBC a
-   addr_a_8br
-   SBCMacro8bd
+    cop c_COpEDm8d
 NEWSYM COpEDm16d  ; SBC a
-   addr_a_16br
-   SBCMacro16bd
+    cop c_COpEDm16d
 NEWSYM COpEFm8nd  ; SBC al
-   addr_al_8br
-   SBCMacro8bnd
+    cop c_COpEFm8nd
 NEWSYM COpEFm16nd ; SBC al
-   addr_al_16br
-   SBCMacro16bnd
+    cop c_COpEFm16nd
 NEWSYM COpEFm8d   ; SBC al
-   addr_al_8br
-   SBCMacro8bd
+    cop c_COpEFm8d
 NEWSYM COpEFm16d  ; SBC al
-   addr_al_16br
-   SBCMacro16bd
+    cop c_COpEFm16d
 NEWSYM COpF1m8nd  ; SBC(d),y
-   addr_BdBCy_8br
-   SBCMacro8bnd
+    cop c_COpF1m8nd
 NEWSYM COpF1m16nd ; SBC(d),y
-   addr_BdBCy_16br
-   SBCMacro16bnd
+    cop c_COpF1m16nd
 NEWSYM COpF1m8d   ; SBC(d),y
-   addr_BdBCy_8br
-   SBCMacro8bd
+    cop c_COpF1m8d
 NEWSYM COpF1m16d  ; SBC(d),y
-   addr_BdBCy_16br
-   SBCMacro16bd
+    cop c_COpF1m16d
 NEWSYM COpF2m8nd  ; SBC (d)
-   addr_BdB_8br
-   SBCMacro8bnd
+    cop c_COpF2m8nd
 NEWSYM COpF2m16nd ; SBC (d)
-   addr_BdB_16br
-   SBCMacro16bnd
+    cop c_COpF2m16nd
 NEWSYM COpF2m8d   ; SBC (d)
-   addr_BdB_8br
-   SBCMacro8bd
+    cop c_COpF2m8d
 NEWSYM COpF2m16d  ; SBC (d)
-   addr_BdB_16br
-   SBCMacro16bd
+    cop c_COpF2m16d
 NEWSYM COpF3m8nd  ; SBC(d,s),y
-   addr_BdCsBCy_8br
-   SBCMacro8bnd
+    cop c_COpF3m8nd
 NEWSYM COpF3m16nd ; SBC(d,s),y
-   addr_BdCsBCy_16br
-   SBCMacro16bnd
+    cop c_COpF3m16nd
 NEWSYM COpF3m8d   ; SBC(d,s),y
-   addr_BdCsBCy_8br
-   SBCMacro8bd
+    cop c_COpF3m8d
 NEWSYM COpF3m16d  ; SBC(d,s),y
-   addr_BdCsBCy_16br
-   SBCMacro16bd
+    cop c_COpF3m16d
 NEWSYM COpF5m8nd  ; SBC d,x
-   addr_dCx_8br
-   SBCMacro8bnd
+    cop c_COpF5m8nd
 NEWSYM COpF5m16nd ; SBC d,x
-   addr_dCx_16br
-   SBCMacro16bnd
+    cop c_COpF5m16nd
 NEWSYM COpF5m8d   ; SBC d,x
-   addr_dCx_8br
-   SBCMacro8bd
+    cop c_COpF5m8d
 NEWSYM COpF5m16d  ; SBC d,x
-   addr_dCx_16br
-   SBCMacro16bd
+    cop c_COpF5m16d
 NEWSYM COpF7m8nd  ; SBC [d],y
-   addr_LdLCy_8br
-   SBCMacro8bnd
+    cop c_COpF7m8nd
 NEWSYM COpF7m16nd ; SBC [d],y
-   addr_LdLCy_16br
-   SBCMacro16bnd
+    cop c_COpF7m16nd
 NEWSYM COpF7m8d   ; SBC [d],y
-   addr_LdLCy_8br
-   SBCMacro8bd
+    cop c_COpF7m8d
 NEWSYM COpF7m16d  ; SBC [d],y
-   addr_LdLCy_16br
-   SBCMacro16bd
+    cop c_COpF7m16d
 NEWSYM COpF9m8nd  ; SBC a,y
-   addr_aCy_8br
-   SBCMacro8bnd
+    cop c_COpF9m8nd
 NEWSYM COpF9m16nd ; SBC a,y
-   addr_aCy_16br
-   SBCMacro16bnd
+    cop c_COpF9m16nd
 NEWSYM COpF9m8d   ; SBC a,y
-   addr_aCy_8br
-   SBCMacro8bd
+    cop c_COpF9m8d
 NEWSYM COpF9m16d  ; SBC a,y
-   addr_aCy_16br
-   SBCMacro16bd
+    cop c_COpF9m16d
 NEWSYM COpFDm8nd  ; SBC a,x
-   addr_aCx_8br
-   SBCMacro8bnd
+    cop c_COpFDm8nd
 NEWSYM COpFDm16nd ; SBC a,x
-   addr_aCx_16br
-   SBCMacro16bnd
+    cop c_COpFDm16nd
 NEWSYM COpFDm8d   ; SBC a,x
-   addr_aCx_8br
-   SBCMacro8bd
+    cop c_COpFDm8d
 NEWSYM COpFDm16d  ; SBC a,x
-   addr_aCx_16br
-   SBCMacro16bd
+    cop c_COpFDm16d
 NEWSYM COpFFm8nd  ; SBC al,x
-   addr_alCx_8br
-   SBCMacro8bnd
+    cop c_COpFFm8nd
 NEWSYM COpFFm16nd ; SBC al,x
-   addr_alCx_16br
-   SBCMacro16bnd
+    cop c_COpFFm16nd
 NEWSYM COpFFm8d   ; SBC al,x
-   addr_alCx_8br
-   SBCMacro8bd
+    cop c_COpFFm8d
 NEWSYM COpFFm16d  ; SBC al,x
-   addr_alCx_16br
-   SBCMacro16bd
+    cop c_COpFFm16d
 
 NEWSYM COp38   ; SEC i
     cop c_COp38
@@ -1270,357 +966,125 @@ NEWSYM COpE2   ; SEP #
     cop c_COpE2
 
 NEWSYM COp81m8 ; STA(d,x)
-   STAMacro8b
-   addr_BdCxB_8bw
-   endloop
+    cop c_COp81m8
 NEWSYM COp81m16; STA(d,x)
-   STAMacro16b
-   addr_BdCxB_16bw
-   endloop
+    cop c_COp81m16
 NEWSYM COp83m8 ; STA d,s
-   STAMacro8b
-   addr_dCs_8bw
-   endloop
+    cop c_COp83m8
 NEWSYM COp83m16; STA d,s
-   STAMacro16b
-   addr_dCs_16bw
-   endloop
+    cop c_COp83m16
 NEWSYM COp85m8 ; STA d
-   STAMacro8b
-   addr_d_8bw
-   endloop
+    cop c_COp85m8
 NEWSYM COp85m16; STA d
-   STAMacro16b
-   addr_d_16bw
-   endloop
+    cop c_COp85m16
 NEWSYM COp87m8 ; STA [d]
-   STAMacro8b
-   addr_LdL_8bw
-   endloop
+    cop c_COp87m8
 NEWSYM COp87m16; STA [d]
-   STAMacro16b
-   addr_LdL_16bw
-   endloop
+    cop c_COp87m16
 NEWSYM COp8Dm8 ; STA a
-   STAMacro8b
-   addr_a_8bw
-   endloop
+    cop c_COp8Dm8
 NEWSYM COp8Dm16; STA a
-   STAMacro16b
-   addr_a_16bw
-   endloop
+    cop c_COp8Dm16
 NEWSYM COp8Fm8 ; STA al
-   STAMacro8b
-   addr_al_8bw
-   endloop
+    cop c_COp8Fm8
 NEWSYM COp8Fm16; STA al
-   STAMacro16b
-   addr_al_16bw
-   endloop
+    cop c_COp8Fm16
 NEWSYM COp91m8 ; STA(d),y
-   STAMacro8b
-   addr_BdBCy_8bw
-   endloop
+    cop c_COp91m8
 NEWSYM COp91m16; STA(d),y
-   STAMacro16b
-   addr_BdBCy_16bw
-   endloop
+    cop c_COp91m16
 NEWSYM COp92m8 ; STA (d)
-   STAMacro8b
-   addr_BdB_8bw
-   endloop
+    cop c_COp92m8
 NEWSYM COp92m16; STA (d)
-   STAMacro16b
-   addr_BdB_16bw
-   endloop
+    cop c_COp92m16
 NEWSYM COp93m8 ; STA(d,s),y
-   STAMacro8b
-   addr_BdCsBCy_8bw
-   endloop
+    cop c_COp93m8
 NEWSYM COp93m16; STA(d,s),y
-   STAMacro16b
-   addr_BdCsBCy_16bw
-   endloop
+    cop c_COp93m16
 NEWSYM COp95m8 ; STA d,x
-   STAMacro8b
-   addr_dCx_8bw
-   endloop
+    cop c_COp95m8
 NEWSYM COp95m16; STA d,x
-   STAMacro16b
-   addr_dCx_16bw
-   endloop
+    cop c_COp95m16
 NEWSYM COp97m8 ; STA [d],y
-   STAMacro8b
-   addr_LdLCy_8bw
-   endloop
+    cop c_COp97m8
 NEWSYM COp97m16; STA [d],y
-   STAMacro16b
-   addr_LdLCy_16bw
-   endloop
+    cop c_COp97m16
 NEWSYM COp99m8 ; STA a,y
-   STAMacro8b
-   addr_aCy_8bw
-   endloop
+    cop c_COp99m8
 NEWSYM COp99m16; STA a,y
-   STAMacro16b
-   addr_aCy_16bw
-   endloop
+    cop c_COp99m16
 NEWSYM COp9Dm8 ; STA a,x
-   STAMacro8b
-   addr_aCx_8bw
-   endloop
+    cop c_COp9Dm8
 NEWSYM COp9Dm16; STA a,x
-   STAMacro16b
-   addr_aCx_16bw
-   endloop
+    cop c_COp9Dm16
 NEWSYM COp9Fm8 ; STA al,x
-   STAMacro8b
-   addr_alCx_8bw
-   endloop
+    cop c_COp9Fm8
 NEWSYM COp9Fm16; STA al,x
-   STAMacro16b
-   addr_alCx_16bw
-   endloop
+    cop c_COp9Fm16
 
 NEWSYM COp86x8 ; STX d
-   STXMacro8b
-   addr_d_8bw
-   endloop
+    cop c_COp86x8
 NEWSYM COp86x16; STX d
-   STXMacro16b
-   addr_d_16bw
-   endloop
+    cop c_COp86x16
 NEWSYM COp8Ex8 ; STX a
-   STXMacro8b
-   addr_a_8bw
-   endloop
+    cop c_COp8Ex8
 NEWSYM COp8Ex16; STX a
-   STXMacro16b
-   addr_a_16bw
-   endloop
+    cop c_COp8Ex16
 NEWSYM COp96x8 ; STX d,y
-   STXMacro8b
-   addr_dCy_8bw
-   endloop
+    cop c_COp96x8
 NEWSYM COp96x16; STX d,y
-   STXMacro16b
-   addr_dCy_16bw
-   endloop
+    cop c_COp96x16
 
 NEWSYM COp84x8 ; STY d
-   STYMacro8b
-   addr_d_8bw
-   endloop
+    cop c_COp84x8
 NEWSYM COp84x16; STY d
-   STYMacro16b
-   addr_d_16bw
-   endloop
+    cop c_COp84x16
 NEWSYM COp8Cx8 ; STY a
-   STYMacro8b
-   addr_a_8bw
-   endloop
+    cop c_COp8Cx8
 NEWSYM COp8Cx16; STY a
-   STYMacro16b
-   addr_a_16bw
-   endloop
+    cop c_COp8Cx16
 NEWSYM COp94x8 ; STYd,x
-   STYMacro8b
-   addr_dCx_8bw
-   endloop
+    cop c_COp94x8
 NEWSYM COp94x16; STYd,x
-   STYMacro16b
-   addr_dCx_16bw
-   endloop
+    cop c_COp94x16
 
 NEWSYM COpDB   ; STP i
     cop c_COpDB
 
 NEWSYM COp64m8 ; STZ d
-   xor al,al
-   addr_d_8bw
-   endloop
+    cop c_COp64m8
 NEWSYM COp64m16; STZ d
-   xor eax,eax
-   addr_d_16bw
-   endloop
+    cop c_COp64m16
 NEWSYM COp74m8 ; STZ d,x
-   xor al,al
-   addr_dCx_8bw
-   endloop
+    cop c_COp74m8
 NEWSYM COp74m16; STZ d,x
-   xor eax,eax
-   addr_dCx_16bw
-   endloop
+    cop c_COp74m16
 NEWSYM COp9Cm8 ; STZ a
-   xor al,al
-   addr_a_8bw
-   endloop
+    cop c_COp9Cm8
 NEWSYM COp9Cm16; STZ a
-   xor eax,eax
-   addr_a_16bw
-   endloop
+    cop c_COp9Cm16
 NEWSYM COp9Em8 ; STZ a,x
-   xor al,al
-   addr_aCx_8bw
-   endloop
+    cop c_COp9Em8
 NEWSYM COp9Em16; STZ a,x
-   xor eax,eax
-   addr_aCx_16bw
-   endloop
+    cop c_COp9Em16
 
 NEWSYM COp14m8 ; TRB d
-    addr_d_8brni
-    mov cl,[xa]
-    test dword[flagnz],18000h
-    jz .notflags
-    or dword[flagnz],10000h
-.notflags
-    test cl,al
-    jz .zero
-    mov word[flagnz],1
-    not cl
-    and al,cl
-    addr_d_8bw
-    endloop
-.zero
-    mov word[flagnz],0
-    not cl
-    and al,cl
-    addr_d_8bw
-    endloop
+    cop c_COp14m8
 NEWSYM COp14m16; TRB d
-    addr_d_16brni
-    mov cx,[xa]
-    test dword[flagnz],18000h
-    jz .notflags
-    or dword[flagnz],10000h
-.notflags
-    test cx,ax
-    jz .zero
-    mov word[flagnz],1
-    not cx
-    and ax,cx
-    addr_d_16bw
-    endloop
-.zero
-    mov word[flagnz],0
-    not cx
-    and ax,cx
-    addr_d_16bw
-    endloop
+    cop c_COp14m16
 NEWSYM COp1Cm8 ; TRB a
-    addr_a_8brni
-    mov cl,[xa]
-    test dword[flagnz],18000h
-    jz .notflags
-    or dword[flagnz],10000h
-.notflags
-    test cl,al
-    jz .zero
-    mov word[flagnz],1
-    not cl
-    and al,cl
-    addr_a_8bw
-    endloop
-.zero
-    mov word[flagnz],0
-    not cl
-    and al,cl
-    addr_a_8bw
-    endloop
+    cop c_COp1Cm8
 NEWSYM COp1Cm16; TRB a
-    addr_a_16brni
-    mov cx,[xa]
-    test dword[flagnz],18000h
-    jz .notflags
-    or dword[flagnz],10000h
-.notflags
-    test cx,ax
-    jz .zero
-    mov word[flagnz],1
-    not cx
-    and ax,cx
-    addr_a_16bw
-    endloop
-.zero
-    mov word[flagnz],0
-    not cx
-    and ax,cx
-    addr_a_16bw
-    endloop
+    cop c_COp1Cm16
 
 NEWSYM COp04m8 ; TSB d
-    addr_d_8brni
-    mov cl,[xa]
-    test dword[flagnz],18000h
-    jz .notflags
-    or dword[flagnz],10000h
-.notflags
-    test al,cl
-    jz .zero
-    mov word[flagnz],1
-    or al,cl
-    addr_d_8bw
-    endloop
-.zero
-    mov word[flagnz],0
-    or al,cl
-    addr_d_8bw
-    endloop
+    cop c_COp04m8
 NEWSYM COp04m16; TSB d
-    addr_d_16brni
-    mov cx,[xa]
-    test dword[flagnz],18000h
-    jz .notflags
-    or dword[flagnz],10000h
-.notflags
-    test ax,cx
-    jz .zero
-    mov word[flagnz],1
-    or ax,cx
-    addr_d_16bw
-    endloop
-.zero
-    mov word[flagnz],0
-    or ax,cx
-    addr_d_16bw
-    endloop
+    cop c_COp04m16
 NEWSYM COp0Cm8 ; TSB a
-    addr_a_8brni
-    mov cl,[xa]
-    test dword[flagnz],18000h
-    jz .notflags
-    or dword[flagnz],10000h
-.notflags
-    test al,cl
-    jz .zero
-    mov word[flagnz],1
-    or al,cl
-    addr_a_8bw
-    endloop
-.zero
-    mov word[flagnz],0
-    or al,cl
-    addr_a_8bw
-    endloop
+    cop c_COp0Cm8
 NEWSYM COp0Cm16; TSB a
-    addr_a_16brni
-    mov cx,[xa]
-    test dword[flagnz],18000h
-    jz .notflags
-    or dword[flagnz],10000h
-.notflags
-    test ax,cx
-    jz .zero
-    mov word[flagnz],1
-    or ax,cx
-    addr_a_16bw
-    endloop
-.zero
-    mov word[flagnz],0
-    or ax,cx
-    addr_a_16bw
-    endloop
+    cop c_COp0Cm16
 
 NEWSYM COpAAx8 ; TAX i
     cop c_COpAAx8
