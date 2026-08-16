@@ -424,6 +424,7 @@ op: difftest_op.c difftest.h ../cpu/ops65816.h
 	    --stubs _op_stubs.c \
 	    --exclude xa xx xy xs xd xdb xpb xpc xe flagnz flago flagc \
 	            tablead stackand stackor UpdateDPage snesmmap snesmap2 \
-	            membank0r8 membank0r16 membank0w8
+	            membank0r8 membank0r16 membank0w8 memtabler8 memtabler16 \
+	            DPageR8 DPageR16
 	$(CC) $(CFLAGS) -I../cpu difftest_op.c _op.o _op_stubs.c -no-pie -o difftest_op
 	@./difftest_op

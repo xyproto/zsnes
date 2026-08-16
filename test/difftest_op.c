@@ -19,6 +19,7 @@ typedef uint16_t u2;
 typedef uint32_t u4;
 typedef int8_t s1;
 typedef int32_t s4;
+typedef void eop();
 
 /* The 65816 register file, normally initdata.c's. */
 u4 xa, xx, xy, xs, xd;
@@ -44,10 +45,16 @@ u1* snesmap2[1024];
  * `memcop` thunk turns that into a call into C through MemSeam*, so the port
  * calls the C half directly while the assembly still goes via the thunk. Both
  * are pointed at the same flat 64K here: the memory system is out of scope,
- * only the stack arithmetic around it is being compared. Each access also stirs
- * the low byte of MemSeamB, so a port that forgets to carry ebx back out is
- * caught - only the low byte, because PLP indexes the opcode table with ebx
- * after the access and a wide value would run off the end of it.
+ * only the address arithmetic that picks a location is being compared.
+ *
+ * The perturbations of MemSeamB and MemSeamC are deliberate and deliberately
+ * injective. They have to change something, or a port that forgot to carry ebx
+ * or ecx back out of the seam would agree by doing nothing; but an overwrite
+ * would hide the bank the addressing mode just computed, which is exactly what
+ * happened first time round - six bank-arithmetic mutants survived. Toggling a
+ * bit keeps the computed value recoverable and still fails a port that drops
+ * the register. Only the low byte of ebx is in play, because the table index is
+ * taken from it and this test's tables are 1024 entries.
  */
 u4 MemSeamA, MemSeamB, MemSeamC, MemSeamD;
 
@@ -59,25 +66,41 @@ u1 fakeram[RAMSZ];
 
 void c_membank0r8(void)
 {
-    MemSeamC &= 0xFFFFu;
-    MemSeamA = (MemSeamA & 0xFFFFFF00u) | fakeram[MemSeamC % RAMSZ];
-    MemSeamB = (MemSeamB & 0xFFFFFF00u) | (u1)MemSeamC;
+    u2 const a = (u2)MemSeamC;
+    MemSeamA = (MemSeamA & 0xFFFFFF00u) | fakeram[a % RAMSZ];
+    MemSeamB ^= 0x80u;
+    MemSeamC ^= 0x00010000u;
 }
 
 void c_membank0r16(void)
 {
-    MemSeamC &= 0xFFFFu;
-    MemSeamA = (MemSeamA & 0xFFFF0000u) | fakeram[MemSeamC % RAMSZ]
-        | (u4)fakeram[(MemSeamC + 1u) % RAMSZ] << 8;
-    MemSeamB = (MemSeamB & 0xFFFFFF00u) | (u1)~MemSeamC;
+    u2 const a = (u2)MemSeamC;
+    MemSeamA = (MemSeamA & 0xFFFF0000u) | fakeram[a % RAMSZ]
+        | (u4)fakeram[(u2)(a + 1u) % RAMSZ] << 8;
+    MemSeamB ^= 0x80u;
+    MemSeamC ^= 0x00010000u;
 }
 
 void c_membank0w8(void)
 {
-    MemSeamC &= 0xFFFFu;
-    fakeram[MemSeamC % RAMSZ] = (u1)MemSeamA;
-    MemSeamB = (MemSeamB & 0xFFFFFF00u) | (u1)(MemSeamC >> 3);
+    u2 const a = (u2)MemSeamC;
+    fakeram[a % RAMSZ] = (u1)MemSeamA;
+    MemSeamB ^= 0x40u;
+    MemSeamC ^= 0x00020000u;
 }
+
+/*
+ * The addressing modes reach memory through per-bank tables of routines with
+ * the same register ABI, plus the two direct-page pointers. All of them are
+ * pointed at the stand-ins above, so which bank an address lands in does not
+ * matter here - what is being compared is the address arithmetic that picks it.
+ */
+eop* memtabler8[1024];
+eop* memtabler16[1024];
+eop* DPageR8;
+eop* DPageR16;
+
+extern void membank0r8(void), membank0r16(void), membank0w8(void);
 
 /* The assembly side's entry points: the memcop spill, by hand. */
 __asm__(".text\n"
@@ -143,28 +166,79 @@ static void run_asm(void)
  * random one. Either way the upper bits are non-zero, so a port that drops them
  * instead of preserving them shows up.
  */
-#define OPS(X)                                                                                                                        \
-    X(COp80, 0)                                                                                                                       \
-    X(COp18, 0)                                                                                                                       \
-    X(COp38, 0)                                                                                                                       \
-    X(COpB8, 0) X(COpD8, 1)                                                                                                           \
-        X(COpF8, 1) X(COp78, 0) X(COpEA, 0) X(COpDB, 0) X(COp42, 0)                                                                   \
-            X(COpCAx8, 0) X(COpCAx16, 0) X(COpE8x8, 0) X(COpE8x16, 0)                                                                 \
-                X(COp88x8, 0) X(COp88x16, 0) X(COpC8x8, 0) X(COpC8x16, 0)                                                             \
-                    X(COpAAx8, 0) X(COpAAx16, 0) X(COpA8x8, 0) X(COpA8x16, 0)                                                         \
-                        X(COpBAx8, 0) X(COpBAx16, 0) X(COp8Am8, 0) X(COp8Am16, 0)                                                     \
-                            X(COp98m8, 0) X(COp98m16, 0) X(COp9Bx8, 0) X(COp9Bx16, 0)                                                 \
-                                X(COpBBx8, 0) X(COpBBx16, 0) X(COp1B, 0) X(COp7B, 0) X(COp3B, 0)                                      \
-                                    X(COp9A, 0) X(COpEB, 0)                                                                           \
-                                        X(COp90, 0) X(COpB0, 0) X(COpF0, 0) X(COpD0, 0) X(COp30, 0)                                   \
-                                            X(COp10, 0) X(COp50, 0) X(COp70, 0)                                                       \
-                                                X(COp1Am8, 0) X(COp1Am16, 0) X(COp3Am8, 0) X(COp3Am16, 0)                             \
-                                                    X(COp5B, 0) X(COpC2, 1) X(COpE2, 1) X(COpFB, 1)                                   \
-                                                        X(COp48m8, 0) X(COp48m16, 0) X(COp8B, 0) X(COp0B, 0) X(COp4B, 0)              \
-                                                            X(COpDAx8, 0) X(COpDAx16, 0) X(COp5Ax8, 0) X(COp5Ax16, 0) X(COp08, 0)     \
-                                                                X(COp68m8, 0) X(COp68m16, 0) X(COpAB, 0) X(COpFAx8, 0) X(COpFAx16, 0) \
-                                                                    X(COp7Ax8, 0) X(COp7Ax16, 0) X(COp2B, 0) X(COp28, 1)              \
-                                                                        X(COpF4, 0) X(COpD4, 0) X(COp62, 1)
+#define OPS(X)                                                                                                                                                                                                                                                                                                            \
+    X(COp80, 0)                                                                                                                                                                                                                                                                                                           \
+    X(COp18, 0)                                                                                                                                                                                                                                                                                                           \
+    X(COp38, 0)                                                                                                                                                                                                                                                                                                           \
+    X(COpB8, 0)                                                                                                                                                                                                                                                                                                           \
+    X(COpD8, 1)                                                                                                                                                                                                                                                                                                           \
+    X(COpF8, 1)                                                                                                                                                                                                                                                                                                           \
+    X(COp78, 0)                                                                                                                                                                                                                                                                                                           \
+    X(COpEA, 0) X(COpDB, 0) X(COp42, 0)                                                                                                                                                                                                                                                                                   \
+        X(COpCAx8, 0) X(COpCAx16, 0) X(COpE8x8, 0) X(COpE8x16, 0)                                                                                                                                                                                                                                                         \
+            X(COp88x8, 0) X(COp88x16, 0) X(COpC8x8, 0) X(COpC8x16, 0)                                                                                                                                                                                                                                                     \
+                X(COpAAx8, 0) X(COpAAx16, 0) X(COpA8x8, 0) X(COpA8x16, 0)                                                                                                                                                                                                                                                 \
+                    X(COpBAx8, 0) X(COpBAx16, 0) X(COp8Am8, 0) X(COp8Am16, 0)                                                                                                                                                                                                                                             \
+                        X(COp98m8, 0) X(COp98m16, 0) X(COp9Bx8, 0) X(COp9Bx16, 0)                                                                                                                                                                                                                                         \
+                            X(COpBBx8, 0) X(COpBBx16, 0) X(COp1B, 0) X(COp7B, 0) X(COp3B, 0)                                                                                                                                                                                                                              \
+                                X(COp9A, 0) X(COpEB, 0)                                                                                                                                                                                                                                                                   \
+                                    X(COp90, 0) X(COpB0, 0) X(COpF0, 0) X(COpD0, 0) X(COp30, 0)                                                                                                                                                                                                                           \
+                                        X(COp10, 0) X(COp50, 0) X(COp70, 0)                                                                                                                                                                                                                                               \
+                                            X(COp1Am8, 0) X(COp1Am16, 0) X(COp3Am8, 0) X(COp3Am16, 0)                                                                                                                                                                                                                     \
+                                                X(COp5B, 0) X(COpC2, 1) X(COpE2, 1) X(COpFB, 1)                                                                                                                                                                                                                           \
+                                                    X(COp48m8, 0) X(COp48m16, 0) X(COp8B, 0) X(COp0B, 0) X(COp4B, 0)                                                                                                                                                                                                      \
+                                                        X(COpDAx8, 0) X(COpDAx16, 0) X(COp5Ax8, 0) X(COp5Ax16, 0) X(COp08, 0)                                                                                                                                                                                             \
+                                                            X(COp68m8, 0) X(COp68m16, 0) X(COpAB, 0) X(COpFAx8, 0) X(COpFAx16, 0)                                                                                                                                                                                         \
+                                                                X(COp7Ax8, 0) X(COp7Ax16, 0) X(COp2B, 0) X(COp28, 1)                                                                                                                                                                                                      \
+                                                                    X(COpF4, 0) X(COpD4, 0) X(COp62, 1)                                                                                                                                                                                                                   \
+                                                                        X(COpA9m8, 0) X(COpA9m16, 0) X(COpADm8, 1) X(COpADm16, 1)                                                                                                                                                                                         \
+                                                                            X(COpBDm8, 1) X(COpBDm16, 1) X(COpB9m8, 1) X(COpB9m16, 1)                                                                                                                                                                                     \
+                                                                                X(COpAFm8, 1) X(COpAFm16, 1) X(COpBFm8, 1) X(COpBFm16, 1)                                                                                                                                                                                 \
+                                                                                    X(COpA5m8, 1) X(COpA5m16, 1) X(COpB5m8, 1) X(COpB5m16, 1)                                                                                                                                                                             \
+                                                                                        X(COpA3m8, 1) X(COpA3m16, 1) X(COpB2m8, 1) X(COpB2m16, 1)                                                                                                                                                                         \
+                                                                                            X(COpB1m8, 1) X(COpB1m16, 1) X(COpA1m8, 1) X(COpA1m16, 1)                                                                                                                                                                     \
+                                                                                                X(COpB3m8, 1) X(COpB3m16, 1) X(COpA7m8, 1) X(COpA7m16, 1)                                                                                                                                                                 \
+                                                                                                    X(COpB7m8, 1) X(COpB7m16, 1)                                                                                                                                                                                          \
+                                                                                                        X(COp21m8, 1) X(COp21m16, 1) X(COp23m8, 1) X(COp23m16, 1)                                                                                                                                                         \
+                                                                                                            X(COp25m8, 1) X(COp25m16, 1) X(COp27m8, 1) X(COp27m16, 1)                                                                                                                                                     \
+                                                                                                                X(COp29m8, 1) X(COp29m16, 1) X(COp2Dm8, 1) X(COp2Dm16, 1)                                                                                                                                                 \
+                                                                                                                    X(COp2Fm8, 1) X(COp2Fm16, 1) X(COp31m8, 1) X(COp31m16, 1)                                                                                                                                             \
+                                                                                                                        X(COp32m8, 1) X(COp32m16, 1) X(COp33m8, 1) X(COp33m16, 1)                                                                                                                                         \
+                                                                                                                            X(COp35m8, 1) X(COp35m16, 1) X(COp37m8, 1) X(COp37m16, 1)                                                                                                                                     \
+                                                                                                                                X(COp39m8, 1) X(COp39m16, 1) X(COp3Dm8, 1) X(COp3Dm16, 1)                                                                                                                                 \
+                                                                                                                                    X(COp3Fm8, 1) X(COp3Fm16, 1) X(COp24m8, 1) X(COp24m16, 1)                                                                                                                             \
+                                                                                                                                        X(COp2Cm8, 1) X(COp2Cm16, 1) X(COp34m8, 1) X(COp34m16, 1)                                                                                                                         \
+                                                                                                                                            X(COp3Cm8, 1) X(COp3Cm16, 1) X(COpC1m8, 1) X(COpC1m16, 1)                                                                                                                     \
+                                                                                                                                                X(COpC3m8, 1) X(COpC3m16, 1) X(COpC5m8, 1) X(COpC5m16, 1)                                                                                                                 \
+                                                                                                                                                    X(COpC7m8, 1) X(COpC7m16, 1) X(COpC9m8, 1) X(COpC9m16, 1)                                                                                                             \
+                                                                                                                                                        X(COpCDm8, 1) X(COpCDm16, 1) X(COpCFm8, 1) X(COpCFm16, 1)                                                                                                         \
+                                                                                                                                                            X(COpD1m8, 1) X(COpD1m16, 1) X(COpD2m8, 1) X(COpD2m16, 1)                                                                                                     \
+                                                                                                                                                                X(COpD3m8, 1) X(COpD3m16, 1) X(COpD5m8, 1) X(COpD5m16, 1)                                                                                                 \
+                                                                                                                                                                    X(COpD7m8, 1) X(COpD7m16, 1) X(COpD9m8, 1) X(COpD9m16, 1)                                                                                             \
+                                                                                                                                                                        X(COpDDm8, 1) X(COpDDm16, 1) X(COpDFm8, 1) X(COpDFm16, 1)                                                                                         \
+                                                                                                                                                                            X(COpE0x8, 1) X(COpE0x16, 1) X(COpE4x8, 1) X(COpE4x16, 1)                                                                                     \
+                                                                                                                                                                                X(COpECx8, 1) X(COpECx16, 1) X(COpC0x8, 1) X(COpC0x16, 1)                                                                                 \
+                                                                                                                                                                                    X(COpC4x8, 1) X(COpC4x16, 1) X(COpCCx8, 1) X(COpCCx16, 1)                                                                             \
+                                                                                                                                                                                        X(COp41m8, 1) X(COp41m16, 1) X(COp43m8, 1) X(COp43m16, 1)                                                                         \
+                                                                                                                                                                                            X(COp45m8, 1) X(COp45m16, 1) X(COp47m8, 1) X(COp47m16, 1)                                                                     \
+                                                                                                                                                                                                X(COp49m8, 1) X(COp49m16, 1) X(COp4Dm8, 1) X(COp4Dm16, 1)                                                                 \
+                                                                                                                                                                                                    X(COp4Fm8, 1) X(COp4Fm16, 1) X(COp51m8, 1) X(COp51m16, 1)                                                             \
+                                                                                                                                                                                                        X(COp52m8, 1) X(COp52m16, 1) X(COp53m8, 1) X(COp53m16, 1)                                                         \
+                                                                                                                                                                                                            X(COp55m8, 1) X(COp55m16, 1) X(COp57m8, 1) X(COp57m16, 1)                                                     \
+                                                                                                                                                                                                                X(COp59m8, 1) X(COp59m16, 1) X(COp5Dm8, 1) X(COp5Dm16, 1)                                                 \
+                                                                                                                                                                                                                    X(COp5Fm8, 1) X(COp5Fm16, 1) X(COpA2x8, 1) X(COpA2x16, 1)                                             \
+                                                                                                                                                                                                                        X(COpA6x8, 1) X(COpA6x16, 1) X(COpAEx8, 1) X(COpAEx16, 1)                                         \
+                                                                                                                                                                                                                            X(COpB6x8, 1) X(COpB6x16, 1) X(COpBEx8, 1) X(COpBEx16, 1)                                     \
+                                                                                                                                                                                                                                X(COpA0x8, 1) X(COpA0x16, 1) X(COpA4x8, 1) X(COpA4x16, 1)                                 \
+                                                                                                                                                                                                                                    X(COpACx8, 1) X(COpACx16, 1) X(COpB4x8, 1) X(COpB4x16, 1)                             \
+                                                                                                                                                                                                                                        X(COpBCx8, 1) X(COpBCx16, 1) X(COp01m8, 1) X(COp01m16, 1)                         \
+                                                                                                                                                                                                                                            X(COp03m8, 1) X(COp03m16, 1) X(COp05m8, 1) X(COp05m16, 1)                     \
+                                                                                                                                                                                                                                                X(COp07m8, 1) X(COp07m16, 1) X(COp09m8, 1) X(COp09m16, 1)                 \
+                                                                                                                                                                                                                                                    X(COp0Dm8, 1) X(COp0Dm16, 1) X(COp0Fm8, 1) X(COp0Fm16, 1)             \
+                                                                                                                                                                                                                                                        X(COp11m8, 1) X(COp11m16, 1) X(COp12m8, 1) X(COp12m16, 1)         \
+                                                                                                                                                                                                                                                            X(COp13m8, 1) X(COp13m16, 1) X(COp15m8, 1) X(COp15m16, 1)     \
+                                                                                                                                                                                                                                                                X(COp17m8, 1) X(COp17m16, 1) X(COp19m8, 1) X(COp19m16, 1) \
+                                                                                                                                                                                                                                                                    X(COp1Dm8, 1) X(COp1Dm16, 1) X(COp1Fm8, 1) X(COp1Fm16, 1)
 
 #define DECL(n, b) extern void asm_##n(void);
 OPS(DECL)
@@ -274,7 +348,20 @@ int main(void)
     static u4 tab[1024];
     int fails = 0;
 
+    /* Set up once, not per iteration: every entry is the same stand-in, and
+       filling 1024 of them inside the loop dominated the whole run. */
+    for (size_t i = 0; i < 1024; i++) {
+        memtabler8[i] = membank0r8;
+        memtabler16[i] = membank0r16;
+    }
+    DPageR8 = membank0r8;
+    DPageR16 = membank0r16;
+
     for (size_t o = 0; o < sizeof ops / sizeof ops[0]; o++) {
+        for (size_t i = 0; i < 1024; i++) {
+            snesmmap[i] = code + (dt_u32() & 7u);
+            snesmap2[i] = code + (dt_u32() & 7u);
+        }
         DT_MAIN(12345 + (int)o, 20000)
         {
             struct state in, a, c;
@@ -282,10 +369,6 @@ int main(void)
             dt_fill(code, sizeof code);
             dt_fill(tab, sizeof tab);
             memcpy(tablead, tab, sizeof tablead);
-            for (size_t i = 0; i < 1024; i++) {
-                snesmmap[i] = code + (dt_u32() & 7u);
-                snesmap2[i] = code + (dt_u32() & 7u);
-            }
 
             for (int i = 0; i < 8; i++)
                 in.r[i] = dt_u32();

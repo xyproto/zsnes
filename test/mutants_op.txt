@@ -18,7 +18,7 @@ beq-mask	BRANCH(c_COpF0, (flagnz & 0xFFFFu) == 0)	BRANCH(c_COpF0, (flagnz & 0xFF
 bmi-mask	BRANCH(c_COp30, (flagnz & 0x18000u) != 0)	BRANCH(c_COp30, (flagnz & 0x8000u) != 0)
 bvs-mask	BRANCH(c_COp70, (flago & 0xFFu) != 0)	BRANCH(c_COp70, (flago & 0xFFFFu) != 0)
 branch-eax-untaken	        if (taken) {                                       \	        if (1) {                                           \
-branch-pc	        r[R_ESI]++;	        r[R_ESI] += 2;
+branch-pc	        }                                                  \\n        r[R_ESI]++;                                        \	        }                                                  \\n        r[R_ESI] += 2;                                     \
 rep-not	    AL(r, (u1)~imm);	    AL(r, imm);
 rep-extra-mask	    int const extra = (imm & 0xC3u) != 0;\n\n    AL(r, imm);\n    r[R_ESI]++;\n    AL(r, (u1)~imm);	    int const extra = (imm & 0xC0u) != 0;\n\n    AL(r, imm);\n    r[R_ESI]++;\n    AL(r, (u1)~imm);
 rep-emul	    if (xe & 1)\n        r[R_EDX] |= 0x30u;	    if (xe & 1)\n        r[R_EDX] |= 0x20u;
@@ -46,3 +46,33 @@ per-map	    map = (r[R_EAX] & 0x8000u) ? snesmmap : snesmap2;	    map = (r[R_EAX
 per-plus2	    AX(r, (u2)(GET16(r[R_EAX]) + 2));	    AX(r, (u2)(GET16(r[R_EAX]) + 1));
 per-clearebx	    push16_ax(r);\n    r[R_EBX] = 0;	    push16_ax(r);
 push16ax-saved	    r[R_EAX] = saved;	    r[R_EAX] = r[R_EAX];
+idx-bank-carry	    if (sum > 0xFFFFu)\n        SET8(r[R_EBX], (u1)(GET8(r[R_EBX]) + 1));	    if (sum > 0xFFFFFu)\n        SET8(r[R_EBX], (u1)(GET8(r[R_EBX]) + 1));
+imm16-dword	    r[R_EAX] = *(u4 const*)(uintptr_t)r[R_ESI];	    SET16(r[R_EAX], *(u2 const*)(uintptr_t)r[R_ESI]);
+imm16-pc	    r[R_EAX] = *(u4 const*)(uintptr_t)r[R_ESI];\n    r[R_ESI] += 2;	    r[R_EAX] = *(u4 const*)(uintptr_t)r[R_ESI];\n    r[R_ESI] += 4;
+abs-bank	        SET8(r[R_EBX], GET8(xdb));                              \\n        r[R_ESI] += 2;                                          \	        SET8(r[R_EBX], GET8(xpb));                              \\n        r[R_ESI] += 2;                                          \
+absl-bank	        SET8(r[R_EBX], *(u1 const*)(uintptr_t)(r[R_ESI] + 2));  \	        SET8(r[R_EBX], GET8(xdb));                              \
+absl-pc	        r[R_ESI] += 3;	        r[R_ESI] += 2;
+dp-operand-esi	    SET8(r[R_EBX], *(u1 const*)(uintptr_t)r[R_ESI]);\n    r[R_ECX] = xd;\n    r[R_ESI]++;	    SET8(r[R_EBX], *(u1 const*)(uintptr_t)r[R_ESI]);\n    SET16(r[R_ECX], GET16(xd));\n    r[R_ESI]++;
+dpidx-bx	        r[R_ECX] = xd;                                            \\n        SET8(r[R_EBX], *(u1 const*)(uintptr_t)r[R_ESI]);          \\n        SET16(r[R_ECX], (u2)(GET16(r[R_ECX]) + GET16(r[R_EBX]))); \\n        r[R_ESI]++;                                               \\n        SET16(r[R_ECX], (u2)(GET16(r[R_ECX]) + GET16(idx)));      \	        r[R_ECX] = xd;                                            \\n        SET8(r[R_EBX], *(u1 const*)(uintptr_t)r[R_ESI]);          \\n        SET16(r[R_ECX], (u2)(GET16(r[R_ECX]) + GET8(r[R_EBX])));  \\n        r[R_ESI]++;                                               \\n        SET16(r[R_ECX], (u2)(GET16(r[R_ECX]) + GET16(idx)));      \
+sprel-base	    SET8(r[R_EBX], *(u1 const*)(uintptr_t)r[R_ESI]);\n    SET16(r[R_ECX], GET16(xs));	    SET8(r[R_EBX], *(u1 const*)(uintptr_t)r[R_ESI]);\n    SET16(r[R_ECX], GET16(xd));
+longind-plus2	    SET16(r[R_ECX], (u2)(addr + 2));	    SET16(r[R_ECX], (u2)(addr + 1));
+longind-bank	        SET8(r[R_EBX], GET8(r[R_EAX]));	        SET8(r[R_EBX], GET8(xdb));
+dind-bank	        SET8(r[R_EBX], GET8(xdb));       \	        SET8(r[R_EBX], GET8(xpb));       \
+dindx-index	        SET16(r[R_ECX], (u2)(GET16(r[R_ECX]) + GET16(xx)));       \	        SET16(r[R_ECX], (u2)(GET16(r[R_ECX]) + GET16(xy)));       \
+lda8-flag	        flagnz = (u4)GET8(r[R_EAX]) << 8; \	        flagnz = (u4)GET8(r[R_EAX]) << 7; \
+lda16-store	        SET16(xa, GET16(r[R_EAX]));    \	        xa = GET16(r[R_EAX]);          \
+memcall-noebx	    r[R_EBX] = ebx;	    (void)ebx;
+and16-width	    r[R_EAX] &= xa;	    AX(r, (u2)(GET16(r[R_EAX]) & GET16(xa)));
+eor16-width	    r[R_EAX] ^= xa;	    AX(r, (u2)(GET16(r[R_EAX]) ^ GET16(xa)));
+ora16-width	    AX(r, (u2)(GET16(r[R_EAX]) | GET16(xa)));	    r[R_EAX] |= xa;
+ora8-store	    AL(r, (u1)(GET8(r[R_EAX]) | GET8(xa)));\n    flagnz = 0;\n    SET8(xa, GET8(r[R_EAX]));	    AL(r, (u1)(GET8(r[R_EAX]) | GET8(xa)));\n    flagnz = 0;\n    xa = GET8(r[R_EAX]);
+cmp8-carry	    flagc = lhs < rhs ? 0 : 0xFF;\n}\nstatic inline void cmp16	    flagc = lhs < rhs ? 0xFF : 0;\n}\nstatic inline void cmp16
+cmp16-carry	    flagnz = r[R_ECX];\n    flagc = lhs < rhs ? 0 : 0xFF;	    flagnz = r[R_ECX];\n    flagc = lhs < rhs ? 0xFF : 0;
+cmp16-flagnz	    SET16(r[R_ECX], (u2)(lhs - rhs));\n    flagnz = r[R_ECX];	    SET16(r[R_ECX], (u2)(lhs - rhs));\n    flagnz = (u4)GET16(r[R_ECX]);
+cmp8-width	    SET8(r[R_ECX], (u1)(lhs - rhs));	    SET16(r[R_ECX], (u2)(lhs - rhs));
+cmp-lhs	static void o_CPX8(u4* const r) { cmp8(r, xx); }	static void o_CPX8(u4* const r) { cmp8(r, xa); }
+ldx8-target	    SET8(xx, GET8(r[R_EAX]));\n    flagnz = (u4)GET8(r[R_EAX]) << 8;\n}\nstatic void o_LDX16	    SET8(xy, GET8(r[R_EAX]));\n    flagnz = (u4)GET8(r[R_EAX]) << 8;\n}\nstatic void o_LDX16
+bit8-n	    flagnz = (v & 0x80u) ? 0x10000u : 0;	    flagnz = (v & 0x80u) ? 0x8000u : 0;
+bit8-v	    flago = (v & 0x40u) ? 1u : 0;\n    flagnz = (flagnz & 0xFFFF0000u) | ((GET8(xa) & v) ? 1u : 0u);	    flago = (v & 0x20u) ? 1u : 0;\n    flagnz = (flagnz & 0xFFFF0000u) | ((GET8(xa) & v) ? 1u : 0u);
+bit8-keepn	    flagnz = (flagnz & 0xFFFF0000u) | ((GET8(xa) & v) ? 1u : 0u);	    flagnz = ((GET8(xa) & v) ? 1u : 0u);
+bit16-z	    flagnz = (flagnz & 0xFFFF0000u) | ((GET16(xa) & v) ? 1u : 0u);	    flagnz = (flagnz & 0xFFFF0000u) | ((GET16(xa) & v) ? 0u : 1u);
