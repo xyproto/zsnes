@@ -317,6 +317,11 @@ EXTSYM c_COpF7m8nd,c_COpF7m16nd,c_COpF7m8d,c_COpF7m16d
 EXTSYM c_COpF9m8nd,c_COpF9m16nd,c_COpF9m8d,c_COpF9m16d
 EXTSYM c_COpFDm8nd,c_COpFDm16nd,c_COpFDm8d,c_COpFDm16d
 EXTSYM c_COpFFm8nd,c_COpFFm16nd,c_COpFFm8d,c_COpFFm16d
+EXTSYM c_COp4C,c_COp6C,c_COp7C,c_COp5C
+EXTSYM c_COpDC,c_COp82,c_COp60,c_COp6B
+EXTSYM c_COp20,c_COpFC,c_COp22,c_COp54
+EXTSYM c_COp44,c_COpCB,c_COp89m8,c_COp89m16
+EXTSYM c_COp00,c_COp02,c_COp40,c_COp58
 %include "cpu/65816d.inc"
 %include "cpu/address.inc"
 %include "cpu/addrni.inc"

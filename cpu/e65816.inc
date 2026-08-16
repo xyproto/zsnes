@@ -258,9 +258,9 @@ NEWSYM COp70   ; BVS r
     cop c_COp70
 
 NEWSYM COp89m8 ; BIT #
-   BITMacroim8b
+    cop c_COp89m8
 NEWSYM COp89m16; BIT #
-   BITMacroim16b
+    cop c_COp89m16
 
 NEWSYM COp24m8 ; BIT d
     cop c_COp24m8
@@ -280,32 +280,27 @@ NEWSYM COp3Cm16; BIT a,x
     cop c_COp3Cm16
 
 NEWSYM COp00   ; BRK s
-   BRKMacro
+    cop c_COp00
 
 NEWSYM COp82   ; BRL rl
-   BRLMacro
+    cop c_COp82
 
 NEWSYM COp18   ; CLC i
     cop c_COp18
 NEWSYM COpD8  ; CLD i
     cop c_COpD8
 NEWSYM COp58   ; CLI i
-    and dl,0FBh
-    cmp byte[doirqnext],0
-    je .noirqexec
-    mov byte[doirqnext],0
-    push edx
-    mov edx, esp
-    push esi
-    mov esi, esp
-    ccallv switchtovirq, edx, esi
-    pop esi
-    pop edx
-    test byte[xe],1
+    ; CLI is the one ported opcode that can restart the dispatch loop
+    ; rather than return into it, so it needs its own thunk. popad leaves
+    ; the flags from the test alone.
+    pushad
+    mov eax, esp
+    ccall c_COp58, eax
+    test eax, eax
+    popad
     jnz .virqemul
-.noirqexec
     endloop
-.virqemul                 ; emulation mode restarts the loop instead of returning
+.virqemul
     xor ebx, ebx
     jmp execloop
 NEWSYM COpB8   ; CLV i
@@ -373,7 +368,7 @@ NEWSYM COpDFm16; CMP al,x
     cop c_COpDFm16
 
 NEWSYM COp02   ; COP s
-   COPMacro
+    cop c_COp02
 
 NEWSYM COpE0x8 ; CPX #
     cop c_COpE0x8
@@ -525,22 +520,22 @@ NEWSYM COpC8x16; INY i
     cop c_COpC8x16
 
 NEWSYM COpDC   ; JML (a)
-    JMLMacro
+    cop c_COpDC
 NEWSYM COp4C   ; JMP a
-    JMPMacro4C
+    cop c_COp4C
 NEWSYM COp6C   ; JMP (a)
-    JMPMacro6C
+    cop c_COp6C
 NEWSYM COp7C   ; JMP(a,x)
-    JMPMacro7C
+    cop c_COp7C
 NEWSYM COp5C   ; JMP al
-    JMPMacro5C
+    cop c_COp5C
 
 NEWSYM COp22   ; JSL al
-   JSLMacro
+    cop c_COp22
 NEWSYM COp20   ; JSR a
-   JSRMacro20
+    cop c_COp20
 NEWSYM COpFC   ; JSR(a,x)
-   JSRMacroFC
+    cop c_COpFC
 
 NEWSYM COpA1m8 ; LDA(d,x)
     cop c_COpA1m8
@@ -667,9 +662,9 @@ NEWSYM COp5Em16; LSRa,x
     cop c_COp5Em16
 
 NEWSYM COp54   ; MVN xya
-   MVNMacro
+    cop c_COp54
 NEWSYM COp44   ; MVP xya
-   MVPMacro
+    cop c_COp44
 
 NEWSYM COpEA   ; NOP i
     cop c_COpEA
@@ -828,11 +823,11 @@ NEWSYM COp7Em16; ROR a,x
     cop c_COp7Em16
 
 NEWSYM COp40   ; RTI s
-   RTIMacro
+    cop c_COp40
 NEWSYM COp6B   ; RTL s
-   RTLMacro
+    cop c_COp6B
 NEWSYM COp60   ; RTS s
-   RTSMacro
+    cop c_COp60
 
 NEWSYM COpE1m8nd  ; SBC(d,x)
     cop c_COpE1m8nd
@@ -1126,7 +1121,7 @@ NEWSYM COpBBx16; TYX i
     cop c_COpBBx16
 
 NEWSYM COpCB   ; WAI i
-    WAIMacro
+    cop c_COpCB
 
 NEWSYM COpEB   ; XBA i
     cop c_COpEB

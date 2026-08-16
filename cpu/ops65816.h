@@ -1897,4 +1897,411 @@ OPMODE(c_COpF9m16d, a_aCy_16, o_SBC16d)
 OPMODE(c_COpFDm16d, a_aCx_16, o_SBC16d)
 OPMODE(c_COpFFm16d, a_alCx_16, o_SBC16d)
 
+/*
+ * Control flow.
+ *
+ * esi is a host pointer into the mapped bank, not a 65816 address, so every
+ * jump has to go back through the memory map: pick snesmmap or snesmap2 by
+ * where in the bank the target is, remember that bank's base in initaddrl, and
+ * add the offset. Recovering the current PC runs the same thing backwards,
+ * which is what `sub ebx,[initaddrl]` does.
+ *
+ * The `dma` flag is the odd corner: the absolute jumps and JSR also route
+ * $4300 and up in the low half of a register bank at dmadata, and the indirect
+ * ones do not.
+ */
+static inline u1* bank_base(u4 const eax, u4 const ebx, int const dma)
+{
+    if (eax & 0x8000u)
+        return snesmmap[ebx];
+    if (dma && eax >= 0x4300u && memtabler8[ebx] == regaccessbankr8)
+        return dmadata - 0x4300;
+    return snesmap2[ebx];
+}
+static inline void jump_to(u4* const r, int const dma)
+{
+    u1* const base = bank_base(r[R_EAX], r[R_EBX], dma);
+    initaddrl = base;
+    r[R_ESI] = (u4)(uintptr_t)base + r[R_EAX];
+}
+
+/* The 65816 PC that esi currently stands for. */
+static inline u2 pc_now(u4 const esi) { return (u2)(esi - (u4)(uintptr_t)initaddrl); }
+
+void c_COp4C(u4* const r) /* JMP a */
+{
+    r[R_EAX] = 0;
+    AX(r, *(u2 const*)(uintptr_t)r[R_ESI]);
+    SET8(r[R_EBX], GET8(xpb));
+    xpc = GET16(r[R_EAX]);
+    jump_to(r, 1);
+}
+
+void c_COp6C(u4* const r) /* JMP (a) */
+{
+    SET16(r[R_ECX], *(u2 const*)(uintptr_t)r[R_ESI]);
+    r[R_EAX] = 0;
+    bank0_call(r, c_membank0r16);
+    xpc = GET16(r[R_EAX]);
+    SET8(r[R_EBX], GET8(xpb));
+    jump_to(r, 0);
+}
+
+void c_COp7C(u4* const r) /* JMP (a,x) */
+{
+    SET16(r[R_ECX], *(u2 const*)(uintptr_t)r[R_ESI]);
+    r[R_EAX] = 0;
+    SET16(r[R_ECX], (u2)(GET16(r[R_ECX]) + GET16(xx)));
+    SET8(r[R_EBX], GET8(xpb));
+    TABR16(r);
+    xpc = GET16(r[R_EAX]);
+    SET8(r[R_EBX], GET8(xpb));
+    jump_to(r, 0);
+}
+
+void c_COp5C(u4* const r) /* JMP al */
+{
+    r[R_EAX] = 0;
+    SET8(r[R_EBX], *(u1 const*)(uintptr_t)(r[R_ESI] + 2));
+    AX(r, *(u2 const*)(uintptr_t)r[R_ESI]);
+    SET8(xpb, GET8(r[R_EBX]));
+    xpc = GET16(r[R_EAX]);
+    jump_to(r, 0);
+}
+
+void c_COpDC(u4* const r) /* JML (a) */
+{
+    u4 saved;
+    SET16(r[R_ECX], *(u2 const*)(uintptr_t)r[R_ESI]);
+    r[R_EAX] = 0;
+    bank0_call(r, c_membank0r16);
+    SET16(r[R_ECX], (u2)(GET16(r[R_ECX]) + 2));
+    saved = r[R_EAX]; /* `push eax` here really is 32-bit */
+    bank0_call(r, c_membank0r8);
+    SET8(r[R_EBX], GET8(r[R_EAX]));
+    r[R_EAX] = saved;
+    xpc = GET16(r[R_EAX]);
+    SET8(xpb, GET8(r[R_EBX]));
+    jump_to(r, 0);
+}
+
+void c_COp82(u4* const r) /* BRL rl */
+{
+    r[R_EBX] = r[R_ESI] - (u4)(uintptr_t)initaddrl;
+    SET16(r[R_EBX], (u2)(GET16(r[R_EBX]) + 2));
+    r[R_EAX] = 0;
+    SET16(r[R_EBX], (u2)(GET16(r[R_EBX]) + *(u2 const*)(uintptr_t)r[R_ESI]));
+    AX(r, GET16(r[R_EBX]));
+    r[R_EBX] = 0;
+    xpc = GET16(r[R_EAX]);
+    SET8(r[R_EBX], GET8(xpb));
+    jump_to(r, 0);
+}
+
+void c_COp60(u4* const r) /* RTS s */
+{
+    SET16(r[R_ECX], GET16(xs));
+    xpc = (u2)((xpc & 0xFF00u) | pop8(r));
+    xpc = (u2)((xpc & 0x00FFu) | (u2)pop8(r) << 8);
+    SET16(xs, GET16(r[R_ECX]));
+    r[R_EBX] &= 0xFFFF00FFu;
+    r[R_EAX] = 0;
+    AX(r, xpc);
+    AX(r, (u2)(GET16(r[R_EAX]) + 1));
+    xpc = GET16(r[R_EAX]);
+    SET8(r[R_EBX], GET8(xpb));
+    jump_to(r, 0);
+}
+
+void c_COp6B(u4* const r) /* RTL s */
+{
+    SET16(r[R_ECX], GET16(xs));
+    r[R_EAX] = 0;
+    xpc = (u2)((xpc & 0xFF00u) | pop8(r));
+    r[R_EAX] = 0;
+    xpc = (u2)((xpc & 0x00FFu) | (u2)pop8(r) << 8);
+    r[R_EAX] = 0;
+    SET8(xpb, pop8(r));
+    SET16(xs, GET16(r[R_ECX]));
+    r[R_EBX] &= 0xFFFF00FFu;
+    r[R_EAX] = 0;
+    AX(r, xpc);
+    AX(r, (u2)(GET16(r[R_EAX]) + 1));
+    SET8(r[R_EBX], GET8(xpb));
+    xpc = GET16(r[R_EAX]);
+    jump_to(r, 0);
+}
+
+/* The return address a JSR pushes is the last byte of the instruction, not the
+   next one, which is why RTS adds one on the way back. */
+static inline void push_pc(u4* const r)
+{
+    SET16(r[R_ECX], GET16(xs));
+    push8(r, (u1)(xpc >> 8));
+    push8(r, (u1)xpc);
+}
+
+void c_COp20(u4* const r) /* JSR a */
+{
+    r[R_EBX] = r[R_ESI] - (u4)(uintptr_t)initaddrl;
+    SET16(r[R_EBX], (u2)(GET16(r[R_EBX]) + 1));
+    xpc = GET16(r[R_EBX]);
+    push_pc(r);
+    r[R_EAX] = 0;
+    SET16(xs, GET16(r[R_ECX]));
+    AX(r, *(u2 const*)(uintptr_t)r[R_ESI]);
+    r[R_EBX] &= 0xFFFF00FFu;
+    xpc = GET16(r[R_EAX]);
+    SET8(r[R_EBX], GET8(xpb));
+    jump_to(r, 1);
+}
+
+void c_COpFC(u4* const r) /* JSR (a,x) */
+{
+    r[R_EBX] = r[R_ESI] - (u4)(uintptr_t)initaddrl;
+    SET16(r[R_EBX], (u2)(GET16(r[R_EBX]) + 1));
+    xpc = GET16(r[R_EBX]);
+    push_pc(r);
+    r[R_EAX] = 0;
+    SET16(xs, GET16(r[R_ECX]));
+    r[R_EAX] = 0;
+    r[R_EBX] &= 0xFFFF00FFu;
+    SET16(r[R_ECX], *(u2 const*)(uintptr_t)r[R_ESI]);
+    SET8(r[R_EBX], GET8(xpb));
+    SET16(r[R_ECX], (u2)(GET16(r[R_ECX]) + GET16(xx)));
+    TABR16(r);
+    xpc = GET16(r[R_EAX]);
+    SET8(r[R_EBX], GET8(xpb));
+    jump_to(r, 0);
+}
+
+void c_COp22(u4* const r) /* JSL al */
+{
+    r[R_EBX] = r[R_ESI] - (u4)(uintptr_t)initaddrl;
+    SET16(r[R_EBX], (u2)(GET16(r[R_EBX]) + 2));
+    xpc = GET16(r[R_EBX]);
+    SET16(r[R_ECX], GET16(xs));
+    push8(r, GET8(xpb));
+    push8(r, (u1)(xpc >> 8));
+    push8(r, (u1)xpc);
+    SET16(xs, GET16(r[R_ECX]));
+    r[R_EAX] = 0;
+    r[R_EBX] &= 0xFFFF00FFu;
+    AX(r, *(u2 const*)(uintptr_t)r[R_ESI]);
+    SET8(r[R_EBX], *(u1 const*)(uintptr_t)(r[R_ESI] + 2));
+    xpc = GET16(r[R_EAX]);
+    SET8(xpb, GET8(r[R_EBX]));
+    jump_to(r, 0);
+}
+
+/* Block move. One byte per execution: the opcode backs esi up over itself and
+   runs again until A underflows, so the loop lives in the dispatcher. */
+static void block_move(u4* const r, int const dir)
+{
+    AX(r, *(u2 const*)(uintptr_t)r[R_ESI]);
+    SET8(xdb, GET8(r[R_EAX]));
+    SET8(r[R_EBX], (u1)(GET16(r[R_EAX]) >> 8));
+    SET16(r[R_ECX], GET16(xx));
+    TABR8(r);
+    SET8(r[R_EBX], GET8(xdb));
+    SET16(r[R_ECX], GET16(xy));
+    TABW8(r);
+    if (r[R_EDX] & 0x10u) { /* 8-bit index: only the low byte steps */
+        SET8(xx, (u1)(GET8(xx) + dir));
+        SET8(xy, (u1)(GET8(xy) + dir));
+    } else {
+        SET16(xx, (u2)(GET16(xx) + dir));
+        SET16(xy, (u2)(GET16(xy) + dir));
+    }
+    SET16(xa, (u2)(GET16(xa) - 1));
+    if (GET16(xa) == 0xFFFFu)
+        r[R_ESI] += 2;
+    else
+        r[R_ESI]--;
+}
+
+void c_COp54(u4* const r) { block_move(r, +1); } /* MVN xyc */
+void c_COp44(u4* const r) { block_move(r, -1); } /* MVP xyc */
+
+void c_COpCB(u4* const r) /* WAI i */
+{
+    if (intrset == 1) {
+        r[R_ESI]--;
+        return;
+    }
+    if (intrset != 0) {
+        if (intrset == 2) {
+            intrset = 0;
+            doirqnext = 0;
+            return;
+        }
+        r[R_ESI]--;
+        return;
+    }
+    intrset = 1;
+    r[R_ESI]--;
+}
+
+void c_COp89m8(u4* const r) /* BIT # - immediate does not touch N or V */
+{
+    AL(r, *(u1 const*)(uintptr_t)r[R_ESI]);
+    if (flagnz & 0x18000u)
+        flagnz |= 0x10000u;
+    r[R_ESI]++;
+    flagnz = (flagnz & 0xFFFF0000u) | ((GET8(xa) & GET8(r[R_EAX])) ? 1u : 0u);
+}
+
+void c_COp89m16(u4* const r) /* BIT # */
+{
+    AX(r, *(u2 const*)(uintptr_t)r[R_ESI]);
+    if (flagnz & 0x18000u)
+        flagnz |= 0x10000u;
+    r[R_ESI] += 2;
+    flagnz = (flagnz & 0xFFFF0000u) | ((GET16(xa) & GET16(r[R_EAX])) ? 1u : 0u);
+}
+
+/*
+ * BRK and COP push the return context straight into work RAM rather than
+ * through the memory tables, then vector through brkv / copv. Emulation mode
+ * pushes no bank and uses the 8-bit vectors.
+ */
+static void brk_cop(u4* const r, u2 const vec, u2 const vec8, u4 const setbits8)
+{
+    u1* ram;
+    u2 sp;
+    int const emul = (xe & 1) != 0;
+
+    r[R_ESI]++;
+    SET8(r[R_EBX], GET8(xpb));
+    AX(r, xpc);
+    r[R_EAX] = (u4)(uintptr_t)((r[R_EAX] & 0x8000u) ? snesmmap[r[R_EBX]]
+                                                    : snesmap2[r[R_EBX]]);
+    r[R_EBX] = r[R_ESI] - r[R_EAX];
+    xpc = GET16(r[R_EBX]);
+
+    ram = wramdata;
+    r[R_EBX] = 0;
+    SET16(r[R_EBX], GET16(xs));
+    sp = GET16(r[R_EBX]);
+#define PUSHRAM(v)                                    \
+    do {                                              \
+        SET8(r[R_ECX], (v));                          \
+        ram[sp] = GET8(r[R_ECX]);                     \
+        sp = (u2)(((sp - 1) & stackand) | stackor);   \
+    } while (0)
+    if (!emul)
+        PUSHRAM(GET8(xpb));
+    PUSHRAM((u1)(xpc >> 8));
+    PUSHRAM((u1)xpc);
+#undef PUSHRAM
+    /* The flags go straight out of dl - unlike the address bytes above, they do
+       not pass through cl, so cl is left holding the low byte of the PC. */
+    r[R_EDX] = makedl(r[R_EDX]);
+    ram[sp] = (u1)r[R_EDX];
+    sp = (u2)(((sp - 1) & stackand) | stackor);
+    SET16(r[R_EBX], sp);
+    SET16(xs, sp);
+    r[R_EBX] &= 0xFFFF00FFu;
+
+    SET8(r[R_EBX], emul ? GET8(xpb) : GET8(xirqb));
+    if (!emul)
+        SET8(xpb, GET8(r[R_EBX]));
+    r[R_EAX] = 0;
+    AX(r, emul ? vec8 : vec);
+    xpc = GET16(r[R_EAX]);
+    SET8(r[R_EDX], (u1)((r[R_EDX] & 0xF3u) | (emul ? setbits8 : 0x04u)));
+    jump_to(r, 0);
+}
+
+void c_COp00(u4* const r) { brk_cop(r, brkv, brkv8, 0x0Cu); } /* BRK s */
+void c_COp02(u4* const r) { brk_cop(r, copv, copv8, 0x04u); } /* COP s */
+
+/*
+ * RTI. Pulls P, then the return address, then re-enters wherever that lands.
+ * Three details are easy to miss: the opcode table is reloaded from the *pulled*
+ * flags, landing on a WAI ($CB) re-arms intrset, and emulation mode returns to
+ * bank zero regardless of what was pushed.
+ */
+void c_COp40(u4* const r) /* RTI s */
+{
+    int const emul = (xe & 1) != 0;
+
+    if (nmistatus == 3) {
+        if (curexecstate & 0x01u)
+            curexecstate &= 0xFEu;
+        if (curexecstate == 0)
+            r[R_EDX] &= 0xFFFF00FFu; /* xor dh,dh - the cycle count */
+    }
+    curnmi = 0;
+
+    SET16(r[R_ECX], GET16(xs));
+    SET8(r[R_EDX], pop8(r));
+    SET16(xs, GET16(r[R_ECX]));
+    if (emul)
+        r[R_EDX] |= 0x30u;
+    restoredl(r[R_EDX]);
+
+    SET16(r[R_ECX], GET16(xs));
+    r[R_EAX] = 0;
+    xpc = (u2)((xpc & 0xFF00u) | pop8(r));
+    r[R_EAX] = 0;
+    xpc = (u2)((xpc & 0x00FFu) | (u2)pop8(r) << 8);
+    if (!emul) {
+        r[R_EAX] = 0;
+        SET8(xpb, pop8(r));
+    }
+    SET16(xs, GET16(r[R_ECX]));
+
+    r[R_EBX] &= 0xFFFF00FFu;
+    r[R_EAX] = 0;
+    AX(r, xpc);
+    SET8(r[R_EBX], (u1)r[R_EDX]);
+    r[R_EDI] = (u4)(uintptr_t)tablead[r[R_EBX]];
+    SET8(r[R_EBX], emul ? 0 : GET8(xpb));
+    xpc = GET16(r[R_EAX]);
+
+    if (emul) {
+        jump_to(r, 0);
+        return;
+    }
+    {
+        u1* const base = bank_base(r[R_EAX], r[R_EBX], 1);
+        int const low = (r[R_EAX] & 0x8000u) == 0;
+        int const dma = low && r[R_EAX] >= 0x4300u;
+        if (dma && memtabler8[r[R_EBX]] != regaccessbankr8)
+            doirqnext = 0;
+        initaddrl = base;
+        r[R_ESI] = (u4)(uintptr_t)base + r[R_EAX];
+        /* Returning onto a WAI means the wait is still in force. */
+        if (low && !(dma && memtabler8[r[R_EBX]] == regaccessbankr8)
+            && *(u1 const*)(uintptr_t)r[R_ESI] == 0xCBu)
+            intrset = 2;
+    }
+    if (r[R_EDX] & 0x10u) {
+        xx &= 0xFFFF00FFu;
+        xy &= 0xFFFF00FFu;
+    }
+}
+
+/*
+ * CLI. Unlike every other ported opcode this one can restart the dispatch loop
+ * instead of returning into it, so cpu/e65816.inc keeps a thunk of its own that
+ * branches on what this returns: non-zero means "re-enter execloop".
+ */
+int c_COp58(u4* const r) /* CLI i */
+{
+    r[R_EDX] &= ~0x04u;
+    if (doirqnext == 0)
+        return 0;
+    doirqnext = 0;
+    {
+        u4 edx = r[R_EDX];
+        u1* esi = (u1*)(uintptr_t)r[R_ESI];
+        switchtovirq(&edx, &esi);
+        r[R_EDX] = edx;
+        r[R_ESI] = (u4)(uintptr_t)esi;
+    }
+    return (xe & 1) != 0;
+}
+
 #endif /* OPS65816_H */
