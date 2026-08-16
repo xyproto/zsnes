@@ -76,3 +76,36 @@ bit8-n	    flagnz = (v & 0x80u) ? 0x10000u : 0;	    flagnz = (v & 0x80u) ? 0x800
 bit8-v	    flago = (v & 0x40u) ? 1u : 0;\n    flagnz = (flagnz & 0xFFFF0000u) | ((GET8(xa) & v) ? 1u : 0u);	    flago = (v & 0x20u) ? 1u : 0;\n    flagnz = (flagnz & 0xFFFF0000u) | ((GET8(xa) & v) ? 1u : 0u);
 bit8-keepn	    flagnz = (flagnz & 0xFFFF0000u) | ((GET8(xa) & v) ? 1u : 0u);	    flagnz = ((GET8(xa) & v) ? 1u : 0u);
 bit16-z	    flagnz = (flagnz & 0xFFFF0000u) | ((GET16(xa) & v) ? 1u : 0u);	    flagnz = (flagnz & 0xFFFF0000u) | ((GET16(xa) & v) ? 0u : 1u);
+write-saveax	        if (save)                         \\n            SET16(r[R_EAX], keep);        \\n        tab(r);                           \\n	        if (0)                             \\n            SET16(r[R_EAX], keep);        \\n        tab(r);                           \\n
+sta16-width	static void o_STA16(u4* const r) { r[R_EAX] = xa; }	static void o_STA16(u4* const r) { AX(r, GET16(xa)); }
+stz16-width	static void o_STZ16(u4* const r) { r[R_EAX] = 0; }	static void o_STZ16(u4* const r) { AX(r, 0); }
+stz8-width	static void o_STZ8(u4* const r) { AL(r, 0); }	static void o_STZ8(u4* const r) { r[R_EAX] = 0; }
+accA-ni-width	static void a_A_16ni(u4* const r) { AX(r, GET16(xa)); }	static void a_A_16ni(u4* const r) { r[R_EAX] = xa; }
+absni-advances	#define ABSNI(name, tab, idx)                             \\n    static void name(u4* const r)                         \\n    {                                                     \\n        SET16(r[R_ECX], *(u2 const*)(uintptr_t)r[R_ESI]); \\n        SET8(r[R_EBX], GET8(xdb));                        \\n        idx;                                              \\n        tab(r);                                           \\n	#define ABSNI(name, tab, idx)                             \\n    static void name(u4* const r)                         \\n    {                                                     \\n        SET16(r[R_ECX], *(u2 const*)(uintptr_t)r[R_ESI]); \\n        SET8(r[R_EBX], GET8(xdb));                        \\n        r[R_ESI] += 2;                                    \\n        idx;                                              \\n        tab(r);                                           \\n
+dni-advances	    SET8(r[R_EBX], *(u1 const*)(uintptr_t)r[R_ESI]);\n    r[R_ECX] = xd;\n    mem_call(r, DPageR8);	    SET8(r[R_EBX], *(u1 const*)(uintptr_t)r[R_ESI]);\n    r[R_ECX] = xd;\n    r[R_ESI]++;\n    mem_call(r, DPageR8);
+carryin-cl	    SET8(r[R_ECX], (u1)(cl + cl));	    (void)cl;
+carryin-bit	    return (cl & 0x80u) != 0;	    return (cl & 0x01u) != 0;
+asl8-carry	    setnzc8(GET8(r[R_EAX]), (v & 0x80u) != 0);\n}\nstatic void o_ASL16	    setnzc8(GET8(r[R_EAX]), (v & 0x01u) != 0);\n}\nstatic void o_ASL16
+lsr8-carry	    setnzc8(GET8(r[R_EAX]), (v & 1u) != 0);\n}\nstatic void o_LSR16	    setnzc8(GET8(r[R_EAX]), (v & 0x80u) != 0);\n}\nstatic void o_LSR16
+rol8-in	    AL(r, (u1)((u1)(v << 1) | (u1)ci));	    AL(r, (u1)(v << 1));
+ror8-in	    AL(r, (u1)((v >> 1) | (u1)(ci << 7)));	    AL(r, (u1)(v >> 1));
+ror16-in	    AX(r, (u2)((v >> 1) | (u2)(ci << 15)));	    AX(r, (u2)((v >> 1) | (u2)(ci << 7)));
+setnzc-polarity	    flagc = cf ? 0xFF : 0;\n}\nstatic inline void setnzc16	    flagc = cf ? 0 : 0xFF;\n}\nstatic inline void setnzc16
+incm8-flags	    AL(r, (u1)(GET8(r[R_EAX]) + 1));\n    flagnz = (u4)GET8(r[R_EAX]) << 8;	    AL(r, (u1)(GET8(r[R_EAX]) + 1));\n    flagnz = (u4)GET8(r[R_EAX]);
+tsb-keepn	    flagnz = (flagnz & 0xFFFF0000u) | (nz ? 1u : 0u);	    flagnz = (nz ? 1u : 0u);
+trb-not	    SET8(r[R_ECX], (u1)~cl);\n    AL(r, (u1)(GET8(r[R_EAX]) & GET8(r[R_ECX])));	    AL(r, (u1)(GET8(r[R_EAX]) & GET8(r[R_ECX])));
+adc8-overflow	    nvzc8(r, ((a ^ (u1)sum) & (v ^ (u1)sum) & 0x80u) != 0, sum > 0xFFu);	    nvzc8(r, ((a ^ v) & (a ^ (u1)sum) & 0x80u) != 0, sum > 0xFFu);
+sbc8-overflow	    nvzc8(r, ((a ^ v) & (a ^ (u1)dif) & 0x80u) != 0, (dif & 0x100u) == 0);	    nvzc8(r, ((a ^ (u1)dif) & (v ^ (u1)dif) & 0x80u) != 0, (dif & 0x100u) == 0);
+sbc8-carry	    nvzc8(r, ((a ^ v) & (a ^ (u1)dif) & 0x80u) != 0, (dif & 0x100u) == 0);	    nvzc8(r, ((a ^ v) & (a ^ (u1)dif) & 0x80u) != 0, (dif & 0x100u) != 0);
+borrowin-cond	    return cl == 0;	    return cl != 0;
+borrowin-cl	    SET8(r[R_ECX], (u1)(cl - 1));	    (void)cl;
+nvzc8-flagobyte	    SET8(flago, of ? 1 : 0);\n    flagnz = (u4)GET8(r[R_EAX]) << 8;	    flago = of ? 1 : 0;\n    flagnz = (u4)GET8(r[R_EAX]) << 8;
+nvzc8-reloadal	    flagnz = 0;\n    AL(r, GET8(xa));	    flagnz = 0;
+nvzc16-cx	    SET16(r[R_ECX], GET16(xa));\n    SET8(flago, of ? 1 : 0);	    SET8(flago, of ? 1 : 0);
+daa-lownib	    if ((al & 0x0Fu) > 9 || af) {\n        *cf = oldcf || ((u4)al + 6u > 0xFFu);	    if ((al & 0x0Fu) > 8 || af) {\n        *cf = oldcf || ((u4)al + 6u > 0xFFu);
+daa-highnib	    if (old > 0x99u || oldcf) {\n        al = (u1)(al + 0x60u);	    if (old > 0x9Au || oldcf) {\n        al = (u1)(al + 0x60u);
+das-no-else	    if (old > 0x99u || oldcf) {\n        al = (u1)(al - 0x60u);\n        *cf = 1;\n    }\n    return al;	    if (old > 0x99u || oldcf) {\n        al = (u1)(al - 0x60u);\n        *cf = 1;\n    } else {\n        *cf = 0;\n    }\n    return al;
+daa-af	    af = ((a ^ v ^ s) & 0x10u) != 0;\n    AL(r, daa_adj(s, &cf, af));	    af = 0;\n    AL(r, daa_adj(s, &cf, af));
+decimal-v	    nvzc8(r, 0, cf);	    nvzc8(r, 1, cf);
+adc16d-bytes	        cf = sum > 0xFFu;\n        AL(r, daa_adj(s, &cf, af));	        AL(r, daa_adj(s, &cf, af));\n        cf = sum > 0xFFu;
+sbc16d-cmc	    nvzc16(r, 0, !cf); /* the `cmc` before the flag store */	    nvzc16(r, 0, cf);
