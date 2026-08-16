@@ -324,6 +324,7 @@ void OP(COpE2)(u4* const r) /* SEP # */
     }
 }
 
+#ifndef OPS_OWN_COpFB
 void OP(COpFB)(u4* const r) /* XCE i */
 {
     AL(r, (u1)(flagc & 1u));
@@ -347,6 +348,7 @@ void OP(COpFB)(u4* const r) /* XCE i */
         stackor = 0x0000;
     }
 }
+#endif
 
 /*
  * Stack operations.
@@ -403,16 +405,27 @@ static inline u1 pop8(u4* const r)
         SET16(xs, GET16(r[R_ECX]));        \
     }
 
+#ifndef OPS_OWN_COp48m8
 PUSH8(OP(COp48m8), xa) /* PHA s */
+#endif
 PUSH16(OP(COp48m16), xa)
+#ifndef OPS_OWN_COp8B
 PUSH8(OP(COp8B), xdb) /* PHB s */
+#endif
 PUSH16(OP(COp0B), xd) /* PHD s */
+#ifndef OPS_OWN_COp4B
 PUSH8(OP(COp4B), xpb) /* PHK s */
+#endif
+#ifndef OPS_OWN_COpDAx8
 PUSH8(OP(COpDAx8), xx) /* PHX s */
+#endif
 PUSH16(OP(COpDAx16), xx)
+#ifndef OPS_OWN_COp5Ax8
 PUSH8(OP(COp5Ax8), xy) /* PHY s */
+#endif
 PUSH16(OP(COp5Ax16), xy)
 
+#ifndef OPS_OWN_COp08
 void OP(COp08)(u4* const r) /* PHP s */
 {
     r[R_EDX] = makedl(r[R_EDX]);
@@ -420,6 +433,7 @@ void OP(COp08)(u4* const r) /* PHP s */
     push8(r, (u1)r[R_EDX]);
     SET16(xs, GET16(r[R_ECX]));
 }
+#endif
 
 #define POP8(name, dst)                    \
     void name(u4* const r)                 \
@@ -448,14 +462,29 @@ void OP(COp08)(u4* const r) /* PHP s */
         setnz16(r, GET16(r[R_EAX]));                         \
     }
 
+#ifndef OPS_OWN_COp68m8
 POP8(OP(COp68m8), xa) /* PLA s */
+#endif
+#ifndef OPS_OWN_COp68m16
 POP16(OP(COp68m16), xa)
+#endif
+#ifndef OPS_OWN_COpAB
 POP8(OP(COpAB), xdb) /* PLB s */
+#endif
+#ifndef OPS_OWN_COpFAx8
 POP8(OP(COpFAx8), xx) /* PLX s */
+#endif
+#ifndef OPS_OWN_COpFAx16
 POP16(OP(COpFAx16), xx)
+#endif
+#ifndef OPS_OWN_COp7Ax8
 POP8(OP(COp7Ax8), xy) /* PLY s */
+#endif
+#ifndef OPS_OWN_COp7Ax16
 POP16(OP(COp7Ax16), xy)
+#endif
 
+#ifndef OPS_OWN_COp2B
 void OP(COp2B)(u4* const r) /* PLD s */
 {
     u1 hi;
@@ -469,7 +498,9 @@ void OP(COp2B)(u4* const r) /* PLD s */
     AX(r, (u2)((u2)hi << 8 | GET8(xd)));
     setnz16(r, GET16(r[R_EAX]));
 }
+#endif
 
+#ifndef OPS_OWN_COp28
 void OP(COp28)(u4* const r) /* PLP s */
 {
     u1 p;
@@ -490,6 +521,7 @@ void OP(COp28)(u4* const r) /* PLP s */
         xy &= 0xFFFF00FFu;
     }
 }
+#endif
 
 void OP(COpF4)(u4* const r) /* PEA s */
 {
@@ -1948,6 +1980,7 @@ static inline void jump_to(u4* const r, int const dma)
 /* The 65816 PC that esi currently stands for. */
 static inline u2 pc_now(u4 const esi) { return (u2)(esi - (u4)(uintptr_t)initaddrl); }
 
+#ifndef OPS_OWN_COp4C
 void OP(COp4C)(u4* const r) /* JMP a */
 {
     r[R_EAX] = 0;
@@ -1956,6 +1989,7 @@ void OP(COp4C)(u4* const r) /* JMP a */
     xpc = GET16(r[R_EAX]);
     jump_to(r, 1);
 }
+#endif
 
 void OP(COp6C)(u4* const r) /* JMP (a) */
 {
@@ -2005,6 +2039,7 @@ void OP(COpDC)(u4* const r) /* JML (a) */
     jump_to(r, 0);
 }
 
+#ifndef OPS_OWN_COp82
 void OP(COp82)(u4* const r) /* BRL rl */
 {
     r[R_EBX] = r[R_ESI] - (u4)(uintptr_t)initaddrl;
@@ -2017,6 +2052,7 @@ void OP(COp82)(u4* const r) /* BRL rl */
     SET8(r[R_EBX], GET8(xpb));
     jump_to(r, 0);
 }
+#endif
 
 void OP(COp60)(u4* const r) /* RTS s */
 {
@@ -2061,6 +2097,7 @@ static inline void push_pc(u4* const r)
     push8(r, (u1)xpc);
 }
 
+#ifndef OPS_OWN_COp20
 void OP(COp20)(u4* const r) /* JSR a */
 {
     r[R_EBX] = r[R_ESI] - (u4)(uintptr_t)initaddrl;
@@ -2075,7 +2112,9 @@ void OP(COp20)(u4* const r) /* JSR a */
     SET8(r[R_EBX], GET8(xpb));
     jump_to(r, 1);
 }
+#endif
 
+#ifndef OPS_OWN_COpFC
 void OP(COpFC)(u4* const r) /* JSR (a,x) */
 {
     r[R_EBX] = r[R_ESI] - (u4)(uintptr_t)initaddrl;
@@ -2094,7 +2133,9 @@ void OP(COpFC)(u4* const r) /* JSR (a,x) */
     SET8(r[R_EBX], GET8(xpb));
     jump_to(r, 0);
 }
+#endif
 
+#ifndef OPS_OWN_COp22
 void OP(COp22)(u4* const r) /* JSL al */
 {
     r[R_EBX] = r[R_ESI] - (u4)(uintptr_t)initaddrl;
@@ -2113,6 +2154,7 @@ void OP(COp22)(u4* const r) /* JSL al */
     SET8(xpb, GET8(r[R_EBX]));
     jump_to(r, 0);
 }
+#endif
 
 /* Block move. One byte per execution: the opcode backs esi up over itself and
    runs again until A underflows, so the loop lives in the dispatcher. */
@@ -2143,6 +2185,7 @@ static void block_move(u4* const r, int const dir)
 void OP(COp54)(u4* const r) { block_move(r, +1); } /* MVN xyc */
 void OP(COp44)(u4* const r) { block_move(r, -1); } /* MVP xyc */
 
+#ifndef OPS_OWN_COpCB
 void OP(COpCB)(u4* const r) /* WAI i */
 {
     if (intrset == 1) {
@@ -2161,6 +2204,7 @@ void OP(COpCB)(u4* const r) /* WAI i */
     intrset = 1;
     r[R_ESI]--;
 }
+#endif
 
 void OP(COp89m8)(u4* const r) /* BIT # - immediate does not touch N or V */
 {
@@ -2236,6 +2280,7 @@ static void brk_cop(u4* const r, u2 const vec, u2 const vec8, u4 const setbits8)
 #ifndef OPS_OWN_COp00
 void OP(COp00)(u4* const r) { brk_cop(r, brkv, brkv8, 0x0Cu); } /* BRK s */
 #endif
+#ifndef OPS_OWN_COp02
 void OP(COp02)(u4* const r) { brk_cop(r, copv, copv8, 0x04u); } /* COP s */
 
 /*
@@ -2304,6 +2349,7 @@ static void rti_body(u4* const r)
         xy &= 0xFFFF00FFu;
     }
 }
+#endif
 
 #ifndef OPS_OWN_COp40
 void OP(COp40)(u4* const r) { rti_body(r); } /* RTI s */
@@ -2331,5 +2377,45 @@ int OP(COp58)(u4* const r) /* CLI i */
     return (xe & 1) != 0;
 }
 #endif
+
+/*
+ * Both the SA-1 and the debug core start their stack macros with
+ * `mov eax,[wramdata]`, so that pointer's upper three bytes survive into the
+ * handler's result. The 65816 itself does not, hence these live here as macros
+ * for the two instantiations that need them rather than in either one.
+ */
+#define WRAM_PUSH8(name, src)                    \
+    void OP(name)(u4* const r)                  \
+    {                                           \
+        r[R_EAX] = (u4)(uintptr_t)wramdata;     \
+        SET16(r[R_ECX], GET16(xs));             \
+        push8(r, GET8(src));                    \
+        SET16(xs, GET16(r[R_ECX]));             \
+    }
+#define WRAM_POP8(name, dst)                     \
+    void OP(name)(u4* const r)                  \
+    {                                           \
+        u1 v;                                   \
+        r[R_EAX] = (u4)(uintptr_t)wramdata;     \
+        SET16(r[R_ECX], GET16(xs));             \
+        v = pop8(r);                            \
+        SET16(xs, GET16(r[R_ECX]));             \
+        SET8(dst, v);                           \
+        setnz8(v);                              \
+    }
+#define WRAM_POP16(name, dst)                        \
+    void OP(name)(u4* const r)                      \
+    {                                               \
+        u1 hi;                                      \
+        r[R_EAX] = (u4)(uintptr_t)wramdata;         \
+        SET16(r[R_ECX], GET16(xs));                 \
+        SET8(dst, pop8(r));                         \
+        SET16(xs, GET16(r[R_ECX]));                 \
+        hi = pop8(r);                               \
+        (dst) = ((dst) & 0xFFFF00FFu) | (u4)hi << 8; \
+        SET16(xs, GET16(r[R_ECX]));                 \
+        AX(r, (u2)((u2)hi << 8 | GET8(dst)));       \
+        setnz16(r, GET16(r[R_EAX]));                \
+    }
 
 #endif /* OPS65816_H */

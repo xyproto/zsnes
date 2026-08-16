@@ -5,19 +5,18 @@
 
 #include "flags65816.h"
 
+u4 Sjoinflags_c(u4 edx);
+void Ssplitflags_c(u4 edx);
+
 void splitflags(u4 const edx)
 {
-    __asm__ volatile("call %P0" ::"X"(Ssplitflags), "d"(SA1RegP)
-                 : "cc", "memory");
+    Ssplitflags_c(SA1RegP);
     restoredl(edx);
 }
 
 u4 joinflags(u4 edx)
 {
     edx = makedl(edx);
-    __asm__ volatile("call %P1"
-                 : "+d"(SA1RegP)
-                 : "X"(Sjoinflags)
-                 : "cc", "memory");
+    SA1RegP = Sjoinflags_c(SA1RegP);
     return edx;
 }

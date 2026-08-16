@@ -31,47 +31,10 @@ EXTSYM c_ProcessMode7ngwinD16b,c_ProcessMode7ngwinE16b
 
 ;Skip transparency if the bg is just a sub-screen or there are no sub-screens
 ;for that line:
-%macro CheckTransparency 2
-;    cmp byte[curmosaicsz],1
-;    jne %%nosubmain
-    test byte[BGMS1+ebx*2],%1
-    jz %%nosubmain
-    test byte[FillSubScr+ebx],1
-    jnz near %2
-%%nosubmain
-%endmacro
 
-%macro Mode7NoTranspPreStartUp 0
-    mov esi,[cwinptr]
-    mov [winptrref],esi
-    mov esi,[curvidoffset]
-    test byte[FillSubScr+ebx],1
-    jz %%main
-    test byte[BGMS1+ebx*2],01h
-    jnz %%main
-    add esi,75036*2
-%%main
-%endmacro
 
-%macro Mode7NoTranspPreStartUp2 0
-    mov esi,[cwinptr]
-    mov [winptrref],esi
-    mov esi,[curvidoffset]
-%endmacro
 
-%macro WinEnCheck 0
-    mov esi,[CMainWinScr]
-    test byte[FillSubScr+ebx],1
-    jz %%main2
-    test byte[BGMS1+ebx*2],01h
-    jnz %%main2
-    mov esi,[CSubWinScr]
-%%main2
-%endmacro
 
-%macro WinEnCheckMS 0
-    mov esi,winbg1enval
-%endmacro
 
 ; m7starty moved to video/c_mode716data.c.
 SECTION .text
@@ -94,40 +57,7 @@ Mode7Startup16b:
     xor edx, edx
     ret
 
-%macro Mode7Startup 0
-    call Mode7Startup16b
 
-    cmp byte[ngwinen],1
-    je near .drawmode7win
-
-    mov edi,[vram]
-    cmp dword[mmode7xadder],7F0h
-    jg near .nextval3
-    cmp dword[mmode7xadder],-7F0h
-    jl near .nextval3
-    cmp dword[mmode7yadder],7F0h
-    jg near .nextval3
-    cmp dword[mmode7yadder],-7F0h
-    jl near .nextval3
-%endmacro
-
-%macro Mode7MidRoutines 0
-
-.drawmode7win
-.domosaicw
-    mov ebx,[mmode7xrpos]
-    mov [mode7xrpos],ebx
-    mov ebx,[mmode7yrpos]
-    mov [mode7yrpos],ebx
-    mov ebx,[mmode7xadder]
-    mov [mode7xadder],ebx
-    mov ebx,[mmode7yadder]
-    mov [mode7yadder],ebx
-    mov ebx,[mmode7xpos]
-    mov [mode7xpos],ebx
-    mov ebx,[mmode7ypos]
-    mov [mode7ypos],ebx
-%endmacro
 
 
 ; The ProcessMode7ngwin*16b cluster moved to video/c_mode716win.c. Each is
@@ -257,166 +187,12 @@ NEWSYM ProcessMode7ngwinE16b
 ; Mode7Process moved to video/c_mode716proc.c. Its finishmode7 tail stays here:
 ; it is a tail-jump into domosaicng16b with dh carrying curmosaicsz, which is
 ; not something a C return can express. %3 was 2 at every call site.
-%macro Mode7Process 3
-%if %3 != 2
-  %error "Mode7Process: only the 2-byte pixel step was ported"
-%endif
-    mov dword[M7PWriter], m7w_%1
-    mov [M7PAX], eax
-    mov [M7PBX], ebx
-    mov [M7PCX], ecx
-    mov [M7PDX], edx
-    mov [M7PSI], esi
-    mov [M7PDI], edi
-    mov [M7PBP], ebp
-    call c_Mode7Process
-    mov eax, [M7PAX]
-    mov ebx, [M7PBX]
-    mov ecx, [M7PCX]
-    mov edx, [M7PDX]
-    mov esi, [M7PSI]
-    mov edi, [M7PDI]
-    xor eax,eax
-    mov dh,[curmosaicsz]
-    cmp dh,1
-    jne near %2
-    ret
-%endmacro
 
 ; Mode7ProcessB moved to video/c_mode716proc.c; same tail as Mode7Process.
-%macro Mode7ProcessB 3
-%if %3 != 2
-  %error "Mode7ProcessB: only the 2-byte pixel step was ported"
-%endif
-    mov dword[M7PWriter], m7w_%1
-    mov [M7PAX], eax
-    mov [M7PBX], ebx
-    mov [M7PCX], ecx
-    mov [M7PDX], edx
-    mov [M7PSI], esi
-    mov [M7PDI], edi
-    mov [M7PBP], ebp
-    call c_Mode7ProcessB
-    mov eax, [M7PAX]
-    mov ebx, [M7PBX]
-    mov ecx, [M7PCX]
-    mov edx, [M7PDX]
-    mov esi, [M7PSI]
-    mov edi, [M7PDI]
-    xor eax,eax
-    mov dh,[curmosaicsz]
-    cmp dh,1
-    jne near %2
-    ret
-%endmacro
 
 ; Mode7Processngw16b moved to video/c_mode716proc.c; same tail as the others.
-%macro Mode7Processngw16b 3
-%if %3 != 2
-  %error "Mode7Processngw16b: only the 2-byte pixel step was ported"
-%endif
-    mov dword[M7PWriter], m7w_%1
-    mov [M7PAX], eax
-    mov [M7PBX], ebx
-    mov [M7PCX], ecx
-    mov [M7PDX], edx
-    mov [M7PSI], esi
-    mov [M7PDI], edi
-    mov [M7PBP], ebp
-    call c_Mode7Processngw16b
-    mov eax, [M7PAX]
-    mov ebx, [M7PBX]
-    mov ecx, [M7PCX]
-    mov edx, [M7PDX]
-    mov esi, [M7PSI]
-    mov edi, [M7PDI]
-    xor eax,eax
-    mov dh,[curmosaicsz]
-    cmp dh,1
-    jne near %2
-    ret
-%endmacro
 
 ; Mode7Processngw216b moved to video/c_mode716proc.c. It alternates between
 ; two writers as the window runs toggle, hence the fourth argument.
-%macro Mode7Processngw216b 4
-%if %3 != 2
-  %error "Mode7Processngw216b: only the 2-byte pixel step was ported"
-%endif
-    mov dword[M7PWriter], m7w_%1
-    mov dword[M7PWriter2], m7w_%4
-    mov [M7PAX], eax
-    mov [M7PBX], ebx
-    mov [M7PCX], ecx
-    mov [M7PDX], edx
-    mov [M7PSI], esi
-    mov [M7PDI], edi
-    mov [M7PBP], ebp
-    call c_Mode7Processngw216b
-    mov eax, [M7PAX]
-    mov ebx, [M7PBX]
-    mov ecx, [M7PCX]
-    mov edx, [M7PDX]
-    mov esi, [M7PSI]
-    mov edi, [M7PDI]
-    xor eax,eax
-    mov dh,[curmosaicsz]
-    cmp dh,1
-    jne near %2
-    ret
-%endmacro
 
 ; *********************************************************************
-
-%macro Mode7NonMainSub 1
-    WinEnCheck
-    ProcessBuildWindow 0
-.nohr
-    Mode7NoTranspPreStartUp
-    Mode7Startup
-    Mode7Process %1, domosaicng16b, 2
-.nextval3
-    Mode7ProcessB %1, domosaicng16b, 2
-    Mode7MidRoutines
-    mov edi,[vram]
-    Mode7Processngw16b %1, domosaicng16b, 2
-%endmacro
-
-%macro Mode7NonMainSube 1
-    WinEnCheck
-    ProcessBuildWindow 0
-.nohr
-    Mode7NoTranspPreStartUp2
-    Mode7Startup
-    Mode7Process %1, domosaicng16b, 2
-.nextval3
-    Mode7ProcessB %1, domosaicng16b, 2
-    Mode7MidRoutines
-    mov edi,[vram]
-    Mode7Processngw16b %1, domosaicng16b, 2
-%endmacro
-
-%macro Mode7MainSub 2
-    WinEnCheckMS
-    ProcessBuildWindow 0
-.nohr
-    Mode7NoTranspPreStartUp
-    call Mode7Startup16b
-    Mode7MidRoutines
-    mov edi,[vram]
-    Mode7Processngw216b %1, domosaicng16b, 2, %2
-%endmacro
-
-%macro Mode7MainSube 2
-    WinEnCheckMS
-    ProcessBuildWindow 0
-.nohr
-    Mode7NoTranspPreStartUp2
-    call Mode7Startup16b
-    Mode7MidRoutines
-    mov edi,[vram]
-    Mode7Processngw216b %1, domosaicng16b, 2, %2
-%endmacro
-
-
-

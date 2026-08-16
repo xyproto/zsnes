@@ -323,8 +323,6 @@ EXTSYM c_COp20,c_COpFC,c_COp22,c_COp54
 EXTSYM c_COp44,c_COpCB,c_COp89m8,c_COp89m16
 EXTSYM c_COp00,c_COp02,c_COp40,c_COp58
 %include "cpu/65816d.inc"
-%include "cpu/address.inc"
-%include "cpu/addrni.inc"
 %include "cpu/e65816.inc"
 %include "cpu/regs.mac"
 %include "cpu/regsw.mac"

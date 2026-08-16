@@ -143,6 +143,7 @@ EXTSYM EMUPauseKey,INCRFrameKey,MovieWaiting,NoInputRead
 EXTSYM AllocatedRewindStates,PauseFrameMode,RestorePauseFrame,BackupPauseFrame
 EXTSYM rtoflags,sprcnt,sprtilecnt,endprog
 EXTSYM Donextlinecache
+EXTSYM c_process_irq
 EXTSYM ProcessRewindC,UpdateRewindC
 EXTSYM StartSFX
 EXTSYM StartSFXdebugb
@@ -178,63 +179,15 @@ NEWSYM UpdateRewind
     popad
     ret
 
+; Ported to cpu/c_execirq.c. The C returns the decision this used to take by
+; jumping: non-zero means the caller should go to its own .virq.
 %macro ProcessIRQStuff 0
-    ; check for VIRQ/HIRQ
-    test dl,04h
-    jnz %%virqdo
-    cmp byte[doirqnext],1
-    je near .virq
-%%virqdo
-    test byte[INTEnab],20h
-    jz near %%novirq
-    mov ax,[VIRQLoc]
-    cmp ax,[resolutn]
-    jne %%notres
-    dec ax
-;    inc ax
-%%notres
-    cmp ax,0FFFFh
-    jne %%notzero
-    xor ax,ax
-%%notzero
-    cmp word[curypos],ax
-    jne near %%noirq
-    test byte[INTEnab],10h
-    jnz %%tryhirq
-%%startirq
-    cmp byte[intrset],1
-    jne %%nointrseta
-    mov byte[intrset],2
-%%nointrseta
-    mov byte[irqon],80h
-    test dl,04h
-    jnz %%irqd
-    mov byte[doirqnext],1
-    jmp .virq
-%%novirq
-    test byte[INTEnab],10h
-    jz %%noirq
-%%setagain
-    cmp byte[intrset],2
-    jbe %%nointrseta3
-    dec byte[intrset]
-    cmp byte[intrset],2
-    ja %%noirq
-%%nointrseta3
-    cmp byte[intrset],1
-    jne %%nointrseta2
-    test byte[INTEnab],80h
-    jz %%tryhirq
-    mov byte[intrset],8
-    jmp %%noirq
-%%nointrseta2
-    test dl,04h
-    jnz %%noirq
-%%tryhirq
-    jmp %%startirq
-%%irqd
-    mov byte[doirqnext],1
-%%noirq
+    pushad
+    mov eax, esp
+    ccall c_process_irq, eax
+    test eax, eax
+    popad
+    jnz near .virq
 %endmacro
 
 
