@@ -67,6 +67,7 @@ section .note.GNU-stack noalloc noexec nowrite progbits
 %endrep
 %endmacro
 %endif
+EXTSYM c_determinetransp,c_checkwindowing,c_determinewindow,ng_branch
 EXTSYM ngwintable,ngwinen,ngcwinptr,ngcpixleft,ngcwinmode,tleftn,ng16bprval
 EXTSYM vrama,bg1drwng,ng16bbgval,bg1totng,bgtxadd,taddnfy16x16,taddfy16x16
 EXTSYM switch16x16,curmosaicsz,domosaicng16b,vidmemch2,vidmemch4,vidmemch8
@@ -186,53 +187,73 @@ cache8b16b:
     jnz near .finline
 %endmacro
 
+; Ported to video/c_ng2gate.c. The C reports which branch to take in ng_branch;
+; its writes to ecx and edi land in the pushad block, so popad keeps them.
+%macro ccall 1-*
+	push ecx
+	push edx
+%ifdef MACHO
+	mov edx, esp
+	sub esp, %0 * 4
+	and esp, 0xFFFFFFF0 ; Align the stack pointer
+%if %0 != 1
+	add esp, %0 * 4
+	push edx
+	mov edx, [edx]
+%else
+	mov [esp], edx
+%endif
+%endif
+%rep %0 - 1
+%rotate -1
+	push dword %1
+%endrep
+%rotate -1
+	call %1
+%ifdef MACHO
+	mov esp, [esp + (%0 - 1) * 4]
+%elif %0 != 1
+	add esp, (%0 - 1) * 4
+%endif
+	pop edx
+	pop ecx
+%endmacro
+
+%macro ccallv 1+
+	push eax
+	ccall %1
+	pop eax
+%endmacro
+
 %macro determinetransp 1
-    mov [mostranspval],dl
-    mov [mosclineval],ebx
-    add ecx,[CMainWinScr]
-    cmp byte[curmosaicsz],1
-    jne .mosaic
-    test byte[BGMS1+ebx*2],dl
-    jz short .nosubmain
-    test byte[FillSubScr+ebx],1
-    jnz near %1
-    jmp .main
-.nosubmain
-    test byte[FillSubScr+ebx],1
-    jz .main
-    sub ecx,[CMainWinScr]
-    add ecx,[CSubWinScr]
-    add edi,75036*2
-    jmp .main
-.mosaic
-    test byte[BGMS1+ebx*2],dl
-    jnz short .main
-    test byte[FillSubScr+ebx],1
-    jz short .main
-    sub ecx,[CMainWinScr]
-    add ecx,[CSubWinScr]
-.main
+    pushad
+    mov eax, esp
+    ccall c_determinetransp, eax
+    popad
+    cmp dword[ng_branch],1
+    je near %1
 %endmacro
 
 %macro CheckWindowing 1
-    cmp byte[ngwinen],0
-    je short %%nowindowing
-    cmp byte[ecx],0
-    jne near %1
-%%nowindowing
+    pushad
+    mov eax, esp
+    ccall c_checkwindowing, eax
+    popad
+    cmp dword[ng_branch],1
+    je near %1
 %endmacro
 
 %macro DetermineWindow 3        ; both,main,sub
-    cmp byte[ngwinen],0
-    je short %%nowindow
-    cmp byte[ecx],0
-    jz near %3
-    sub ecx,[CMainWinScr]
-    add ecx,[CSubWinScr]
-    cmp byte[ecx],0
-    jnz near %1
-    jmp %2
-%%nowindow
+    pushad
+    mov eax, esp
+    ccall c_determinewindow, eax
+    popad
+    cmp dword[ng_branch],1
+    je near %1
+    cmp dword[ng_branch],2
+    je near %2
+    cmp dword[ng_branch],3
+    je near %3
 %endmacro
 
 %macro drawtile16b 10

@@ -23,24 +23,6 @@ EXTSYM Gendcolortable
 
 ; drawtileng16b
 
-%macro ngsub 2
-    test dword[BGMS1+ebx*2+1],%1
-    jz near %2
-    test dword[BGMS1+ebx*2],%1
-    jnz near %2
-    test byte[FillSubScr+ebx],1
-    jnz near %2
-%endmacro
-
-%macro ngmain 2
-    test dword[BGMS1+ebx*2],%1
-    jnz %%yesmain
-    test byte[FillSubScr+ebx],1
-    jz near %2
-    test dword[BGMS1+ebx*2+1],%1
-    jz near %2
-%%yesmain
-%endmacro
 
 
 
@@ -100,19 +82,7 @@ EXTSYM Gendcolortable
 
 
 
-%macro mosaic_countdown 1
-    cmp byte[moscountdown],0
-    je %%doit
-    cmp ebx,1
-    jne %%nofirstline
-%%doit
-    mov [mosstart+%1*4],ebx
-    mov al,[mosszng+ebx]
-    inc al
-    mov [moscountdown],al
-%%nofirstline
-    dec byte[moscountdown]
-%endmacro
+
 
 
 
@@ -1203,15 +1173,6 @@ EXTSYM Gendcolortable
     ret
 %endmacro
 
-%macro mosender 1
-.nodraw
-    add edi,%1*2
-    add esi,%1*2
-    dec ecx
-    jnz near .next
-    pop esi
-    ret
-%endmacro
 
 %macro drawbglinengpr116b 2
     mov dword[ng16bprval],2000h

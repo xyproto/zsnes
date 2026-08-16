@@ -51,21 +51,6 @@
 %%nodraw
 %endmacro
 
-%macro procpixelstwnt 3
-    dec dword[ngcpixleft]
-    jnz short %%notzero
-    call Nextwinmode
-%%notzero
-    cmp dword[ngcwinmode],1
-    je short %%nodraw
-    mov bl,[esi+%1]
-    add bl,dl
-    test bl,%3
-    jz short %%nodraw
-    mov cx,[eax+ebx*2]
-    mov [edi+%2],cx
-%%nodraw
-%endmacro
 
 %macro procpixelstwmst 3
     dec dword[ngcpixleft]
@@ -184,18 +169,6 @@ Nextwinmode:
     pop ebx
     ret
 
-%macro processnextdrawwin 3
-    dec dword[ngcpixleft]
-    jnz short %%notzero
-    call Nextwinmode
-%%notzero
-    cmp dword[ngcwinmode],1
-    je short %%nodraw
-    test %1,%3
-    jz short %%nodraw
-    mov [edi+%2],%1
-%%nodraw
-%endmacro
 
 %macro processwinpixel 0
     dec dword[ngcpixleft]
@@ -541,16 +514,6 @@ Nextwinmode:
     jmp %%next
 %endmacro
 
-%macro parttilewin 2
-    cmp dword[ngcwinmode],1
-    je short %%nodraw
-    mov bl,[ecx+%1*8]
-    or bl,bl
-    jz short %%nodraw
-    add bl,dl
-    mov [edi+%2*288*2],bl
-%%nodraw
-%endmacro
 
 %macro tilenormalw 2
     cmp dword[ngcwinmode],1
@@ -590,23 +553,7 @@ Nextwinmode:
 %%nodraw
 %endmacro
 
-%macro tilenormalwnt 2
-    cmp dword[ngcwinmode],1
-    je short %%nodraw
-    mov bx,[ecx+%2]
-    mov [edi+%1],bx
-%%nodraw
-%endmacro
 
-%macro tilenormalwbnt 2
-    cmp dword[ngcwinmode],1
-    je short %%nodraw
-    mov bx,[ecx+%2]
-    cmp bx,0FFFFh
-    je short %%nodraw
-    mov [edi+%1],bx
-%%nodraw
-%endmacro
 
 %macro tilenormalwmst 2
     cmp dword[ngcwinmode],1
