@@ -342,7 +342,7 @@ void c_COpFB(u4* const r) /* XCE i */
  * S wraps inside a page in emulation mode and across the bank in native mode;
  * stackor / stackand carry that, and XCE sets them.
  */
-static inline void membank(u4* const r, void (*const fn)(void))
+static inline void bank0_call(u4* const r, void (*const fn)(void))
 {
     MemSeamA = r[R_EAX];
     MemSeamB = r[R_EBX];
@@ -358,14 +358,14 @@ static inline void membank(u4* const r, void (*const fn)(void))
 static inline void push8(u4* const r, u1 const al)
 {
     AL(r, al);
-    membank(r, c_membank0w8);
+    bank0_call(r, c_membank0w8);
     SET16(r[R_ECX], (u2)(GET16(r[R_ECX]) - 1) | stackor);
 }
 
 static inline u1 pop8(u4* const r)
 {
     SET16(r[R_ECX], (u2)(GET16(r[R_ECX]) + 1) & stackand);
-    membank(r, c_membank0r8);
+    bank0_call(r, c_membank0r8);
     return GET8(r[R_EAX]);
 }
 
@@ -490,10 +490,10 @@ static void push16_ax(u4* const r)
     u4 const saved = r[R_EAX];
     SET16(r[R_ECX], GET16(xs));
     AL(r, (u1)(GET16(r[R_EAX]) >> 8));
-    membank(r, c_membank0w8);
+    bank0_call(r, c_membank0w8);
     r[R_EAX] = saved;
     SET16(r[R_ECX], (u2)(GET16(r[R_ECX]) - 1) | stackor);
-    membank(r, c_membank0w8);
+    bank0_call(r, c_membank0w8);
     SET16(r[R_ECX], (u2)(GET16(r[R_ECX]) - 1) | stackor);
     SET16(xs, GET16(r[R_ECX]));
 }
@@ -505,7 +505,7 @@ void c_COpD4(u4* const r) /* PEI s */
     SET16(r[R_ECX], GET16(xd));
     r[R_ESI]++;
     SET16(r[R_ECX], (u2)(GET16(r[R_ECX]) + GET16(r[R_EAX])));
-    membank(r, c_membank0r16);
+    bank0_call(r, c_membank0r16);
     push16_ax(r);
 }
 
@@ -528,5 +528,605 @@ void c_COp62(u4* const r) /* PER s */
     push16_ax(r);
     r[R_EBX] = 0;
 }
+
+/*
+ * Addressing modes.
+ *
+ * Each one advances esi past its operand bytes and leaves the value in al or
+ * ax. They reach memory through per-bank tables of routines that take the bank
+ * in bl and the address in cx, so unlike the stack code there is no C half to
+ * call directly - the table entries are the assembly thunks themselves.
+ *
+ * Two details are easy to lose. `add cx,bx` adds the whole of bx, not just the
+ * operand byte in bl, which is only safe because the dispatcher keeps bh zero.
+ * And after `add cx,<index>` a 16-bit carry steps the bank: that is the
+ * page-crossing behaviour, not an optimisation to drop.
+ */
+static inline void mem_call(u4* const r, eop* const fn)
+{
+    u4 eax = r[R_EAX], ebx = r[R_EBX], ecx = r[R_ECX], edx = r[R_EDX];
+    __asm__ volatile("call *%4"
+                     : "+a"(eax), "+b"(ebx), "+c"(ecx), "+d"(edx)
+                     : "rm"(fn)
+                     : "cc", "memory");
+    r[R_EAX] = eax;
+    r[R_EBX] = ebx;
+    r[R_ECX] = ecx;
+    r[R_EDX] = edx;
+}
+
+#define TABR8(r) mem_call((r), memtabler8[(r)[R_EBX]])
+#define TABR16(r) mem_call((r), memtabler16[(r)[R_EBX]])
+
+/* `add cx,idx` / `jnc .np` / `inc bl` */
+static inline void idx_bank(u4* const r, u2 const idx)
+{
+    u4 const sum = GET16(r[R_ECX]) + idx;
+    SET16(r[R_ECX], (u2)sum);
+    if (sum > 0xFFFFu)
+        SET8(r[R_EBX], (u1)(GET8(r[R_EBX]) + 1));
+}
+
+/* The operand byte, and the direct page it indexes. */
+static inline void dp_operand(u4* const r)
+{
+    SET8(r[R_EBX], *(u1 const*)(uintptr_t)r[R_ESI]);
+    r[R_ECX] = xd;
+    r[R_ESI]++;
+}
+
+/* [d],l: a 24-bit pointer read out of the direct page, low word then bank. */
+static inline void long_indirect(u4* const r)
+{
+    u2 addr;
+    SET16(r[R_ECX], (u2)(GET16(r[R_ECX]) + GET16(r[R_EBX])));
+    addr = GET16(r[R_ECX]);
+    bank0_call(r, c_membank0r16);
+    SET16(r[R_ECX], (u2)(addr + 2));
+    {
+        /* `push ax` / `pop ax`, so only the low half is put back - the top of
+           eax stays as the bank read left it. */
+        u2 const saved = GET16(r[R_EAX]);
+        bank0_call(r, c_membank0r8);
+        SET8(r[R_EBX], GET8(r[R_EAX]));
+        SET16(r[R_EAX], saved);
+    }
+    SET16(r[R_ECX], GET16(r[R_EAX]));
+}
+
+/* Immediate. The 16-bit form loads a full dword into eax, not a word. */
+static void a_I_8(u4* const r)
+{
+    AL(r, *(u1 const*)(uintptr_t)r[R_ESI]);
+    r[R_ESI]++;
+}
+static void a_I_16(u4* const r)
+{
+    r[R_EAX] = *(u4 const*)(uintptr_t)r[R_ESI];
+    r[R_ESI] += 2;
+}
+
+/* a, a,x, a,y - absolute in the data bank. */
+#define ABS(name, tab, idx)                                     \
+    static void name(u4* const r)                               \
+    {                                                           \
+        SET16(r[R_ECX], *(u2 const*)(uintptr_t)r[R_ESI]);       \
+        SET8(r[R_EBX], GET8(xdb));                              \
+        r[R_ESI] += 2;                                          \
+        idx;                                                    \
+        tab(r);                                                 \
+    }
+ABS(a_a_8, TABR8, (void)0)
+ABS(a_a_16, TABR16, (void)0)
+ABS(a_aCx_8, TABR8, idx_bank(r, GET16(xx)))
+ABS(a_aCx_16, TABR16, idx_bank(r, GET16(xx)))
+ABS(a_aCy_8, TABR8, idx_bank(r, GET16(xy)))
+ABS(a_aCy_16, TABR16, idx_bank(r, GET16(xy)))
+
+/* al, al,x - absolute long, bank from the third operand byte. */
+#define ABSL(name, tab, idx)                                    \
+    static void name(u4* const r)                               \
+    {                                                           \
+        SET16(r[R_ECX], *(u2 const*)(uintptr_t)r[R_ESI]);       \
+        SET8(r[R_EBX], *(u1 const*)(uintptr_t)(r[R_ESI] + 2));  \
+        r[R_ESI] += 3;                                          \
+        idx;                                                    \
+        tab(r);                                                 \
+    }
+ABSL(a_al_8, TABR8, (void)0)
+ABSL(a_al_16, TABR16, (void)0)
+ABSL(a_alCx_8, TABR8, idx_bank(r, GET16(xx)))
+ABSL(a_alCx_16, TABR16, idx_bank(r, GET16(xx)))
+
+/* d - direct page, through the pointer the page's base selects. */
+static void a_d_8(u4* const r)
+{
+    dp_operand(r);
+    mem_call(r, DPageR8);
+}
+static void a_d_16(u4* const r)
+{
+    dp_operand(r);
+    mem_call(r, DPageR16);
+}
+
+/* d,x and d,y wrap inside the bank rather than the page, so they go the long
+   way round instead of through the direct-page pointer. */
+#define DPIDX(name, idx)                                          \
+    static void name(u4* const r)                                 \
+    {                                                             \
+        r[R_ECX] = xd;                                            \
+        SET8(r[R_EBX], *(u1 const*)(uintptr_t)r[R_ESI]);          \
+        SET16(r[R_ECX], (u2)(GET16(r[R_ECX]) + GET16(r[R_EBX]))); \
+        r[R_ESI]++;                                               \
+        SET16(r[R_ECX], (u2)(GET16(r[R_ECX]) + GET16(idx)));      \
+    }
+DPIDX(dpidx_x, xx)
+DPIDX(dpidx_y, xy)
+
+static void a_dCx_8(u4* const r)
+{
+    dpidx_x(r);
+    bank0_call(r, c_membank0r8);
+}
+static void a_dCx_16(u4* const r)
+{
+    dpidx_x(r);
+    bank0_call(r, c_membank0r16);
+}
+static void a_dCy_8(u4* const r)
+{
+    dpidx_y(r);
+    bank0_call(r, c_membank0r8);
+}
+static void a_dCy_16(u4* const r)
+{
+    dpidx_y(r);
+    bank0_call(r, c_membank0r16);
+}
+
+/* d,s - stack relative. */
+static inline void sp_rel(u4* const r)
+{
+    SET8(r[R_EBX], *(u1 const*)(uintptr_t)r[R_ESI]);
+    SET16(r[R_ECX], GET16(xs));
+    r[R_ESI]++;
+    SET16(r[R_ECX], (u2)(GET16(r[R_ECX]) + GET16(r[R_EBX])));
+}
+static void a_dCs_8(u4* const r)
+{
+    sp_rel(r);
+    bank0_call(r, c_membank0r8);
+}
+static void a_dCs_16(u4* const r)
+{
+    sp_rel(r);
+    bank0_call(r, c_membank0r16);
+}
+
+/* (d) and (d),y - a 16-bit pointer from the direct page, data bank. */
+#define DIND(name, tab, idx)             \
+    static void name(u4* const r)        \
+    {                                    \
+        dp_operand(r);                   \
+        mem_call(r, DPageR16);           \
+        SET16(r[R_ECX], GET16(r[R_EAX])); \
+        SET8(r[R_EBX], GET8(xdb));       \
+        idx;                             \
+        tab(r);                          \
+    }
+DIND(a_BdB_8, TABR8, (void)0)
+DIND(a_BdB_16, TABR16, (void)0)
+DIND(a_BdBCy_8, TABR8, idx_bank(r, GET16(xy)))
+DIND(a_BdBCy_16, TABR16, idx_bank(r, GET16(xy)))
+
+/* (d,x) - the direct page is indexed before the pointer is read. */
+#define DINDX(name, tab)                                          \
+    static void name(u4* const r)                                 \
+    {                                                             \
+        r[R_ECX] = xd;                                            \
+        SET8(r[R_EBX], *(u1 const*)(uintptr_t)r[R_ESI]);          \
+        SET16(r[R_ECX], (u2)(GET16(r[R_ECX]) + GET16(r[R_EBX]))); \
+        r[R_ESI]++;                                               \
+        SET16(r[R_ECX], (u2)(GET16(r[R_ECX]) + GET16(xx)));       \
+        bank0_call(r, c_membank0r16);                                \
+        SET16(r[R_ECX], GET16(r[R_EAX]));                         \
+        SET8(r[R_EBX], GET8(xdb));                                \
+        tab(r);                                                   \
+    }
+DINDX(a_BdCxB_8, TABR8)
+DINDX(a_BdCxB_16, TABR16)
+
+/* (d,s),y - stack relative, then indirect, then indexed. */
+#define SIND(name, tab)                   \
+    static void name(u4* const r)         \
+    {                                     \
+        sp_rel(r);                        \
+        bank0_call(r, c_membank0r16);        \
+        SET16(r[R_ECX], GET16(r[R_EAX])); \
+        SET8(r[R_EBX], GET8(xdb));        \
+        idx_bank(r, GET16(xy));           \
+        tab(r);                           \
+    }
+SIND(a_BdCsBCy_8, TABR8)
+SIND(a_BdCsBCy_16, TABR16)
+
+/* [d] and [d],y - long indirect, bank from the pointer itself. */
+#define LIND(name, tab, idx)                                      \
+    static void name(u4* const r)                                 \
+    {                                                             \
+        SET8(r[R_EBX], *(u1 const*)(uintptr_t)r[R_ESI]);          \
+        r[R_ECX] = xd;                                            \
+        r[R_ESI]++;                                               \
+        long_indirect(r);                                         \
+        idx;                                                      \
+        tab(r);                                                   \
+    }
+LIND(a_LdL_8, TABR8, (void)0)
+LIND(a_LdL_16, TABR16, (void)0)
+
+/* The ,y form reads its operand before the direct page, not after. */
+#define LINDY(name, tab)                                          \
+    static void name(u4* const r)                                 \
+    {                                                             \
+        r[R_ECX] = xd;                                            \
+        SET8(r[R_EBX], *(u1 const*)(uintptr_t)r[R_ESI]);          \
+        r[R_ESI]++;                                               \
+        long_indirect(r);                                         \
+        idx_bank(r, GET16(xy));                                   \
+        tab(r);                                                   \
+    }
+LINDY(a_LdLCy_8, TABR8)
+LINDY(a_LdLCy_16, TABR16)
+
+/*
+ * LDA over every addressing mode. The 8-bit form writes flagnz directly rather
+ * than going through setnz8 - same result, and it is what the assembly does.
+ */
+#define LDA8(name, mode)               \
+    void name(u4* const r)             \
+    {                                  \
+        mode(r);                       \
+        flagnz = 0;                    \
+        SET8(xa, GET8(r[R_EAX]));      \
+        flagnz = (u4)GET8(r[R_EAX]) << 8; \
+    }
+#define LDA16(name, mode)              \
+    void name(u4* const r)             \
+    {                                  \
+        mode(r);                       \
+        SET16(xa, GET16(r[R_EAX]));    \
+        setnz16(r, GET16(r[R_EAX]));   \
+    }
+
+LDA8(c_COpA9m8, a_I_8) /* LDA # */
+LDA16(c_COpA9m16, a_I_16)
+LDA8(c_COpADm8, a_a_8) /* LDA a */
+LDA16(c_COpADm16, a_a_16)
+LDA8(c_COpBDm8, a_aCx_8) /* LDA a,x */
+LDA16(c_COpBDm16, a_aCx_16)
+LDA8(c_COpB9m8, a_aCy_8) /* LDA a,y */
+LDA16(c_COpB9m16, a_aCy_16)
+LDA8(c_COpAFm8, a_al_8) /* LDA al */
+LDA16(c_COpAFm16, a_al_16)
+LDA8(c_COpBFm8, a_alCx_8) /* LDA al,x */
+LDA16(c_COpBFm16, a_alCx_16)
+LDA8(c_COpA5m8, a_d_8) /* LDA d */
+LDA16(c_COpA5m16, a_d_16)
+LDA8(c_COpB5m8, a_dCx_8) /* LDA d,x */
+LDA16(c_COpB5m16, a_dCx_16)
+LDA8(c_COpA3m8, a_dCs_8) /* LDA d,s */
+LDA16(c_COpA3m16, a_dCs_16)
+LDA8(c_COpB2m8, a_BdB_8) /* LDA (d) */
+LDA16(c_COpB2m16, a_BdB_16)
+LDA8(c_COpB1m8, a_BdBCy_8) /* LDA (d),y */
+LDA16(c_COpB1m16, a_BdBCy_16)
+LDA8(c_COpA1m8, a_BdCxB_8) /* LDA (d,x) */
+LDA16(c_COpA1m16, a_BdCxB_16)
+LDA8(c_COpB3m8, a_BdCsBCy_8) /* LDA (d,s),y */
+LDA16(c_COpB3m16, a_BdCsBCy_16)
+LDA8(c_COpA7m8, a_LdL_8) /* LDA [d] */
+LDA16(c_COpA7m16, a_LdL_16)
+LDA8(c_COpB7m8, a_LdLCy_8) /* LDA [d],y */
+LDA16(c_COpB7m16, a_LdLCy_16)
+
+/*
+ * Operations. Each takes the value an addressing mode left in al or ax and is
+ * composed with one by OPMODE below.
+ *
+ * The three logical operations are not written alike: ORA is a 16-bit `or ax`
+ * but AND and EOR are 32-bit on eax, so those two carry the top half of the
+ * register out of the handler changed and ORA does not.
+ */
+static void o_ORA8(u4* const r)
+{
+    AL(r, (u1)(GET8(r[R_EAX]) | GET8(xa)));
+    flagnz = 0;
+    SET8(xa, GET8(r[R_EAX]));
+    flagnz = (u4)GET8(r[R_EAX]) << 8;
+}
+static void o_ORA16(u4* const r)
+{
+    AX(r, (u2)(GET16(r[R_EAX]) | GET16(xa)));
+    SET16(xa, GET16(r[R_EAX]));
+    setnz16(r, GET16(r[R_EAX]));
+}
+static void o_AND8(u4* const r)
+{
+    AL(r, (u1)(GET8(r[R_EAX]) & GET8(xa)));
+    flagnz = 0;
+    SET8(xa, GET8(r[R_EAX]));
+    flagnz = (u4)GET8(r[R_EAX]) << 8;
+}
+static void o_AND16(u4* const r)
+{
+    r[R_EAX] &= xa;
+    SET16(xa, GET16(r[R_EAX]));
+    setnz16(r, GET16(r[R_EAX]));
+}
+static void o_EOR8(u4* const r)
+{
+    AL(r, (u1)(GET8(r[R_EAX]) ^ GET8(xa)));
+    flagnz = 0;
+    SET8(xa, GET8(r[R_EAX]));
+    flagnz = (u4)GET8(r[R_EAX]) << 8;
+}
+static void o_EOR16(u4* const r)
+{
+    r[R_EAX] ^= xa;
+    SET16(xa, GET16(r[R_EAX]));
+    setnz16(r, GET16(r[R_EAX]));
+}
+
+static void o_LDX8(u4* const r)
+{
+    flagnz = 0;
+    SET8(xx, GET8(r[R_EAX]));
+    flagnz = (u4)GET8(r[R_EAX]) << 8;
+}
+static void o_LDX16(u4* const r)
+{
+    SET16(xx, GET16(r[R_EAX]));
+    setnz16(r, GET16(r[R_EAX]));
+}
+static void o_LDY8(u4* const r)
+{
+    flagnz = 0;
+    SET8(xy, GET8(r[R_EAX]));
+    flagnz = (u4)GET8(r[R_EAX]) << 8;
+}
+static void o_LDY16(u4* const r)
+{
+    SET16(xy, GET16(r[R_EAX]));
+    setnz16(r, GET16(r[R_EAX]));
+}
+
+/* The comparisons subtract into cl/cx and leave the result there. The x86 carry
+   out of a subtract is a borrow, so C is its inverse; and the 16-bit form
+   writes the whole of ecx into flagnz rather than zeroing it first. */
+static inline void cmp8(u4* const r, u4 const reg)
+{
+    u4 const lhs = GET8(reg), rhs = GET8(r[R_EAX]);
+    SET8(r[R_ECX], (u1)(lhs - rhs));
+    flagnz = (u4)GET8(r[R_ECX]) << 8;
+    flagc = lhs < rhs ? 0 : 0xFF;
+}
+static inline void cmp16(u4* const r, u4 const reg)
+{
+    u4 const lhs = GET16(reg), rhs = GET16(r[R_EAX]);
+    SET16(r[R_ECX], (u2)(lhs - rhs));
+    flagnz = r[R_ECX];
+    flagc = lhs < rhs ? 0 : 0xFF;
+}
+
+static void o_CMP8(u4* const r) { cmp8(r, xa); }
+static void o_CMP16(u4* const r) { cmp16(r, xa); }
+static void o_CPX8(u4* const r) { cmp8(r, xx); }
+static void o_CPX16(u4* const r) { cmp16(r, xx); }
+static void o_CPY8(u4* const r) { cmp8(r, xy); }
+static void o_CPY16(u4* const r) { cmp16(r, xy); }
+
+/* BIT takes N and V straight from the operand's top two bits and Z from the
+   test against A. The Z store is a word, so the N bit above it survives. */
+static void o_BIT8(u4* const r)
+{
+    u1 const v = GET8(r[R_EAX]);
+    flagnz = (v & 0x80u) ? 0x10000u : 0;
+    flago = (v & 0x40u) ? 1u : 0;
+    flagnz = (flagnz & 0xFFFF0000u) | ((GET8(xa) & v) ? 1u : 0u);
+}
+static void o_BIT16(u4* const r)
+{
+    u2 const v = GET16(r[R_EAX]);
+    flagnz = (v & 0x8000u) ? 0x10000u : 0;
+    flago = (v & 0x4000u) ? 1u : 0;
+    flagnz = (flagnz & 0xFFFF0000u) | ((GET16(xa) & v) ? 1u : 0u);
+}
+
+/* An opcode is an addressing mode followed by an operation. */
+#define OPMODE(name, mode, op) \
+    void name(u4* const r)     \
+    {                          \
+        mode(r);               \
+        op(r);                 \
+    }
+
+/* AND */
+OPMODE(c_COp21m8, a_BdCxB_8, o_AND8)
+OPMODE(c_COp21m16, a_BdCxB_16, o_AND16)
+OPMODE(c_COp23m8, a_dCs_8, o_AND8)
+OPMODE(c_COp23m16, a_dCs_16, o_AND16)
+OPMODE(c_COp25m8, a_d_8, o_AND8)
+OPMODE(c_COp25m16, a_d_16, o_AND16)
+OPMODE(c_COp27m8, a_LdL_8, o_AND8)
+OPMODE(c_COp27m16, a_LdL_16, o_AND16)
+OPMODE(c_COp29m8, a_I_8, o_AND8)
+OPMODE(c_COp29m16, a_I_16, o_AND16)
+OPMODE(c_COp2Dm8, a_a_8, o_AND8)
+OPMODE(c_COp2Dm16, a_a_16, o_AND16)
+OPMODE(c_COp2Fm8, a_al_8, o_AND8)
+OPMODE(c_COp2Fm16, a_al_16, o_AND16)
+OPMODE(c_COp31m8, a_BdBCy_8, o_AND8)
+OPMODE(c_COp31m16, a_BdBCy_16, o_AND16)
+OPMODE(c_COp32m8, a_BdB_8, o_AND8)
+OPMODE(c_COp32m16, a_BdB_16, o_AND16)
+OPMODE(c_COp33m8, a_BdCsBCy_8, o_AND8)
+OPMODE(c_COp33m16, a_BdCsBCy_16, o_AND16)
+OPMODE(c_COp35m8, a_dCx_8, o_AND8)
+OPMODE(c_COp35m16, a_dCx_16, o_AND16)
+OPMODE(c_COp37m8, a_LdLCy_8, o_AND8)
+OPMODE(c_COp37m16, a_LdLCy_16, o_AND16)
+OPMODE(c_COp39m8, a_aCy_8, o_AND8)
+OPMODE(c_COp39m16, a_aCy_16, o_AND16)
+OPMODE(c_COp3Dm8, a_aCx_8, o_AND8)
+OPMODE(c_COp3Dm16, a_aCx_16, o_AND16)
+OPMODE(c_COp3Fm8, a_alCx_8, o_AND8)
+OPMODE(c_COp3Fm16, a_alCx_16, o_AND16)
+
+/* BIT */
+OPMODE(c_COp24m8, a_d_8, o_BIT8)
+OPMODE(c_COp24m16, a_d_16, o_BIT16)
+OPMODE(c_COp2Cm8, a_a_8, o_BIT8)
+OPMODE(c_COp2Cm16, a_a_16, o_BIT16)
+OPMODE(c_COp34m8, a_dCx_8, o_BIT8)
+OPMODE(c_COp34m16, a_dCx_16, o_BIT16)
+OPMODE(c_COp3Cm8, a_aCx_8, o_BIT8)
+OPMODE(c_COp3Cm16, a_aCx_16, o_BIT16)
+
+/* CMP */
+OPMODE(c_COpC1m8, a_BdCxB_8, o_CMP8)
+OPMODE(c_COpC1m16, a_BdCxB_16, o_CMP16)
+OPMODE(c_COpC3m8, a_dCs_8, o_CMP8)
+OPMODE(c_COpC3m16, a_dCs_16, o_CMP16)
+OPMODE(c_COpC5m8, a_d_8, o_CMP8)
+OPMODE(c_COpC5m16, a_d_16, o_CMP16)
+OPMODE(c_COpC7m8, a_LdL_8, o_CMP8)
+OPMODE(c_COpC7m16, a_LdL_16, o_CMP16)
+OPMODE(c_COpC9m8, a_I_8, o_CMP8)
+OPMODE(c_COpC9m16, a_I_16, o_CMP16)
+OPMODE(c_COpCDm8, a_a_8, o_CMP8)
+OPMODE(c_COpCDm16, a_a_16, o_CMP16)
+OPMODE(c_COpCFm8, a_al_8, o_CMP8)
+OPMODE(c_COpCFm16, a_al_16, o_CMP16)
+OPMODE(c_COpD1m8, a_BdBCy_8, o_CMP8)
+OPMODE(c_COpD1m16, a_BdBCy_16, o_CMP16)
+OPMODE(c_COpD2m8, a_BdB_8, o_CMP8)
+OPMODE(c_COpD2m16, a_BdB_16, o_CMP16)
+OPMODE(c_COpD3m8, a_BdCsBCy_8, o_CMP8)
+OPMODE(c_COpD3m16, a_BdCsBCy_16, o_CMP16)
+OPMODE(c_COpD5m8, a_dCx_8, o_CMP8)
+OPMODE(c_COpD5m16, a_dCx_16, o_CMP16)
+OPMODE(c_COpD7m8, a_LdLCy_8, o_CMP8)
+OPMODE(c_COpD7m16, a_LdLCy_16, o_CMP16)
+OPMODE(c_COpD9m8, a_aCy_8, o_CMP8)
+OPMODE(c_COpD9m16, a_aCy_16, o_CMP16)
+OPMODE(c_COpDDm8, a_aCx_8, o_CMP8)
+OPMODE(c_COpDDm16, a_aCx_16, o_CMP16)
+OPMODE(c_COpDFm8, a_alCx_8, o_CMP8)
+OPMODE(c_COpDFm16, a_alCx_16, o_CMP16)
+
+/* CPX */
+OPMODE(c_COpE0x8, a_I_8, o_CPX8)
+OPMODE(c_COpE0x16, a_I_16, o_CPX16)
+OPMODE(c_COpE4x8, a_d_8, o_CPX8)
+OPMODE(c_COpE4x16, a_d_16, o_CPX16)
+OPMODE(c_COpECx8, a_a_8, o_CPX8)
+OPMODE(c_COpECx16, a_a_16, o_CPX16)
+
+/* CPY */
+OPMODE(c_COpC0x8, a_I_8, o_CPY8)
+OPMODE(c_COpC0x16, a_I_16, o_CPY16)
+OPMODE(c_COpC4x8, a_d_8, o_CPY8)
+OPMODE(c_COpC4x16, a_d_16, o_CPY16)
+OPMODE(c_COpCCx8, a_a_8, o_CPY8)
+OPMODE(c_COpCCx16, a_a_16, o_CPY16)
+
+/* EOR */
+OPMODE(c_COp41m8, a_BdCxB_8, o_EOR8)
+OPMODE(c_COp41m16, a_BdCxB_16, o_EOR16)
+OPMODE(c_COp43m8, a_dCs_8, o_EOR8)
+OPMODE(c_COp43m16, a_dCs_16, o_EOR16)
+OPMODE(c_COp45m8, a_d_8, o_EOR8)
+OPMODE(c_COp45m16, a_d_16, o_EOR16)
+OPMODE(c_COp47m8, a_LdL_8, o_EOR8)
+OPMODE(c_COp47m16, a_LdL_16, o_EOR16)
+OPMODE(c_COp49m8, a_I_8, o_EOR8)
+OPMODE(c_COp49m16, a_I_16, o_EOR16)
+OPMODE(c_COp4Dm8, a_a_8, o_EOR8)
+OPMODE(c_COp4Dm16, a_a_16, o_EOR16)
+OPMODE(c_COp4Fm8, a_al_8, o_EOR8)
+OPMODE(c_COp4Fm16, a_al_16, o_EOR16)
+OPMODE(c_COp51m8, a_BdBCy_8, o_EOR8)
+OPMODE(c_COp51m16, a_BdBCy_16, o_EOR16)
+OPMODE(c_COp52m8, a_BdB_8, o_EOR8)
+OPMODE(c_COp52m16, a_BdB_16, o_EOR16)
+OPMODE(c_COp53m8, a_BdCsBCy_8, o_EOR8)
+OPMODE(c_COp53m16, a_BdCsBCy_16, o_EOR16)
+OPMODE(c_COp55m8, a_dCx_8, o_EOR8)
+OPMODE(c_COp55m16, a_dCx_16, o_EOR16)
+OPMODE(c_COp57m8, a_LdLCy_8, o_EOR8)
+OPMODE(c_COp57m16, a_LdLCy_16, o_EOR16)
+OPMODE(c_COp59m8, a_aCy_8, o_EOR8)
+OPMODE(c_COp59m16, a_aCy_16, o_EOR16)
+OPMODE(c_COp5Dm8, a_aCx_8, o_EOR8)
+OPMODE(c_COp5Dm16, a_aCx_16, o_EOR16)
+OPMODE(c_COp5Fm8, a_alCx_8, o_EOR8)
+OPMODE(c_COp5Fm16, a_alCx_16, o_EOR16)
+
+/* LDX */
+OPMODE(c_COpA2x8, a_I_8, o_LDX8)
+OPMODE(c_COpA2x16, a_I_16, o_LDX16)
+OPMODE(c_COpA6x8, a_d_8, o_LDX8)
+OPMODE(c_COpA6x16, a_d_16, o_LDX16)
+OPMODE(c_COpAEx8, a_a_8, o_LDX8)
+OPMODE(c_COpAEx16, a_a_16, o_LDX16)
+OPMODE(c_COpB6x8, a_dCy_8, o_LDX8)
+OPMODE(c_COpB6x16, a_dCy_16, o_LDX16)
+OPMODE(c_COpBEx8, a_aCy_8, o_LDX8)
+OPMODE(c_COpBEx16, a_aCy_16, o_LDX16)
+
+/* LDY */
+OPMODE(c_COpA0x8, a_I_8, o_LDY8)
+OPMODE(c_COpA0x16, a_I_16, o_LDY16)
+OPMODE(c_COpA4x8, a_d_8, o_LDY8)
+OPMODE(c_COpA4x16, a_d_16, o_LDY16)
+OPMODE(c_COpACx8, a_a_8, o_LDY8)
+OPMODE(c_COpACx16, a_a_16, o_LDY16)
+OPMODE(c_COpB4x8, a_dCx_8, o_LDY8)
+OPMODE(c_COpB4x16, a_dCx_16, o_LDY16)
+OPMODE(c_COpBCx8, a_aCx_8, o_LDY8)
+OPMODE(c_COpBCx16, a_aCx_16, o_LDY16)
+
+/* ORA */
+OPMODE(c_COp01m8, a_BdCxB_8, o_ORA8)
+OPMODE(c_COp01m16, a_BdCxB_16, o_ORA16)
+OPMODE(c_COp03m8, a_dCs_8, o_ORA8)
+OPMODE(c_COp03m16, a_dCs_16, o_ORA16)
+OPMODE(c_COp05m8, a_d_8, o_ORA8)
+OPMODE(c_COp05m16, a_d_16, o_ORA16)
+OPMODE(c_COp07m8, a_LdL_8, o_ORA8)
+OPMODE(c_COp07m16, a_LdL_16, o_ORA16)
+OPMODE(c_COp09m8, a_I_8, o_ORA8)
+OPMODE(c_COp09m16, a_I_16, o_ORA16)
+OPMODE(c_COp0Dm8, a_a_8, o_ORA8)
+OPMODE(c_COp0Dm16, a_a_16, o_ORA16)
+OPMODE(c_COp0Fm8, a_al_8, o_ORA8)
+OPMODE(c_COp0Fm16, a_al_16, o_ORA16)
+OPMODE(c_COp11m8, a_BdBCy_8, o_ORA8)
+OPMODE(c_COp11m16, a_BdBCy_16, o_ORA16)
+OPMODE(c_COp12m8, a_BdB_8, o_ORA8)
+OPMODE(c_COp12m16, a_BdB_16, o_ORA16)
+OPMODE(c_COp13m8, a_BdCsBCy_8, o_ORA8)
+OPMODE(c_COp13m16, a_BdCsBCy_16, o_ORA16)
+OPMODE(c_COp15m8, a_dCx_8, o_ORA8)
+OPMODE(c_COp15m16, a_dCx_16, o_ORA16)
+OPMODE(c_COp17m8, a_LdLCy_8, o_ORA8)
+OPMODE(c_COp17m16, a_LdLCy_16, o_ORA16)
+OPMODE(c_COp19m8, a_aCy_8, o_ORA8)
+OPMODE(c_COp19m16, a_aCy_16, o_ORA16)
+OPMODE(c_COp1Dm8, a_aCx_8, o_ORA8)
+OPMODE(c_COp1Dm16, a_aCx_16, o_ORA16)
+OPMODE(c_COp1Fm8, a_alCx_8, o_ORA8)
+OPMODE(c_COp1Fm16, a_alCx_16, o_ORA16)
 
 #endif /* OPS65816_H */

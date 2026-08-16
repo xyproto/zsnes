@@ -6,6 +6,8 @@
 
 #include "../endmem.h"
 #include "../types.h"
+#include "c_memory.h"
+#include "memtable.h"
 
 extern u4 xa, xx, xy, xs, xd, xdb, xpb;
 extern u2 xpc;
