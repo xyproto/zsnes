@@ -23,6 +23,22 @@
 #ifndef OPS65816_H
 #define OPS65816_H
 
+/*
+ * The entry points are named through OP() so this file can be included twice:
+ * once for the 65816 and once for the SA-1's copy of it, which cpu/se65816.inc
+ * shows is the same core over a different register file. The SA-1 instantiation
+ * (cpu/c_ops65816_sa1.c) defines OP and macros the renamed globals away; there
+ * are about a dozen, and everything else - xpc, xe, the memory tables, the
+ * stack masks - really is shared between the two.
+ */
+#ifndef OP
+#define OP(n) c_##n
+#endif
+
+/* An instantiation that needs a handler of its own defines OPS_OWN_<opcode> and
+   writes it after including this file. The SA-1 needs six; every other one of
+   the 517 bodies is byte-identical between the two cores. */
+
 #include "flags65816.h"
 
 /* pushad pushes eax first and edi last, so the block reads in this order. */
@@ -116,95 +132,96 @@ static inline void reload_table(u4* const r)
         r[R_ESI]++;                                        \
     }
 
-BRANCH(c_COp80, 1) /* BRA r */
-BRANCH(c_COp90, (flagc & 0x01u) == 0) /* BCC r */
-BRANCH(c_COpB0, (flagc & 0x01u) != 0) /* BCS r */
-BRANCH(c_COpF0, (flagnz & 0xFFFFu) == 0) /* BEQ r */
-BRANCH(c_COpD0, (flagnz & 0xFFFFu) != 0) /* BNE r */
-BRANCH(c_COp30, (flagnz & 0x18000u) != 0) /* BMI r */
-BRANCH(c_COp10, (flagnz & 0x18000u) == 0) /* BPL r */
-BRANCH(c_COp50, (flago & 0xFFu) == 0) /* BVC r */
-BRANCH(c_COp70, (flago & 0xFFu) != 0) /* BVS r */
+BRANCH(OP(COp80), 1) /* BRA r */
+BRANCH(OP(COp90), (flagc & 0x01u) == 0) /* BCC r */
+BRANCH(OP(COpB0), (flagc & 0x01u) != 0) /* BCS r */
+BRANCH(OP(COpF0), (flagnz & 0xFFFFu) == 0) /* BEQ r */
+BRANCH(OP(COpD0), (flagnz & 0xFFFFu) != 0) /* BNE r */
+BRANCH(OP(COp30), (flagnz & 0x18000u) != 0) /* BMI r */
+BRANCH(OP(COp10), (flagnz & 0x18000u) == 0) /* BPL r */
+BRANCH(OP(COp50), (flago & 0xFFu) == 0) /* BVC r */
+BRANCH(OP(COp70), (flago & 0xFFu) != 0) /* BVS r */
 
-void c_COp18(u4* const r) /* CLC i */
+void OP(COp18)(u4* const r) /* CLC i */
 {
     (void)r;
     flagc = 0;
 }
 
-void c_COp38(u4* const r) /* SEC i */
+void OP(COp38)(u4* const r) /* SEC i */
 {
     (void)r;
     flagc = 0xFF;
 }
 
-void c_COpB8(u4* const r) /* CLV i */
+void OP(COpB8)(u4* const r) /* CLV i */
 {
     (void)r;
     flago = 0;
 }
 
-void c_COpD8(u4* const r) /* CLD i */
+void OP(COpD8)(u4* const r) /* CLD i */
 {
     r[R_EDX] &= ~0x08u;
     reload_table(r);
 }
 
-void c_COpF8(u4* const r) /* SED i */
+void OP(COpF8)(u4* const r) /* SED i */
 {
     r[R_EDX] |= 0x08u;
     reload_table(r);
 }
 
-void c_COp78(u4* const r) /* SEI i */
+void OP(COp78)(u4* const r) /* SEI i */
 {
     r[R_EDX] |= 0x04u;
 }
 
-void c_COpEA(u4* const r) /* NOP i */
+void OP(COpEA)(u4* const r) /* NOP i */
 {
     (void)r;
 }
 
-void c_COpDB(u4* const r) /* STP i */
+void OP(COpDB)(u4* const r) /* STP i */
 {
     r[R_ESI]--;
 }
 
-void c_COp42(u4* const r) /* WDM */
+void OP(COp42)(u4* const r) /* WDM */
 {
     r[R_ESI]++;
 }
 
-INCDEC8(c_COpCAx8, xx, -) /* DEX i */
-INCDEC16(c_COpCAx16, xx, -)
-INCDEC8(c_COpE8x8, xx, +) /* INX i */
-INCDEC16(c_COpE8x16, xx, +)
-INCDEC8(c_COp88x8, xy, -) /* DEY i */
-INCDEC16(c_COp88x16, xy, -)
-INCDEC8(c_COpC8x8, xy, +) /* INY i */
-INCDEC16(c_COpC8x16, xy, +)
+INCDEC8(OP(COpCAx8), xx, -) /* DEX i */
+INCDEC16(OP(COpCAx16), xx, -)
+INCDEC8(OP(COpE8x8), xx, +) /* INX i */
+INCDEC16(OP(COpE8x16), xx, +)
+INCDEC8(OP(COp88x8), xy, -) /* DEY i */
+INCDEC16(OP(COp88x16), xy, -)
+INCDEC8(OP(COpC8x8), xy, +) /* INY i */
+INCDEC16(OP(COpC8x16), xy, +)
 
-TRANSFER8(c_COpAAx8, xa, xx) /* TAX i */
-TRANSFER16(c_COpAAx16, xa, xx)
-TRANSFER8(c_COpA8x8, xa, xy) /* TAY i */
-TRANSFER16(c_COpA8x16, xa, xy)
-TRANSFER8(c_COpBAx8, xs, xx) /* TSX i */
-TRANSFER16(c_COpBAx16, xs, xx)
-TRANSFER8(c_COp8Am8, xx, xa) /* TXA i */
-TRANSFER16(c_COp8Am16, xx, xa)
-TRANSFER8(c_COp98m8, xy, xa) /* TYA i */
-TRANSFER16(c_COp98m16, xy, xa)
-TRANSFER8(c_COp9Bx8, xx, xy) /* TXY i */
-TRANSFER16(c_COp9Bx16, xx, xy)
-TRANSFER8(c_COpBBx8, xy, xx) /* TYX i */
-TRANSFER16(c_COpBBx16, xy, xx)
+TRANSFER8(OP(COpAAx8), xa, xx) /* TAX i */
+TRANSFER16(OP(COpAAx16), xa, xx)
+TRANSFER8(OP(COpA8x8), xa, xy) /* TAY i */
+TRANSFER16(OP(COpA8x16), xa, xy)
+TRANSFER8(OP(COpBAx8), xs, xx) /* TSX i */
+TRANSFER16(OP(COpBAx16), xs, xx)
+TRANSFER8(OP(COp8Am8), xx, xa) /* TXA i */
+TRANSFER16(OP(COp8Am16), xx, xa)
+TRANSFER8(OP(COp98m8), xy, xa) /* TYA i */
+TRANSFER16(OP(COp98m16), xy, xa)
+TRANSFER8(OP(COp9Bx8), xx, xy) /* TXY i */
+TRANSFER16(OP(COp9Bx16), xx, xy)
+TRANSFER8(OP(COpBBx8), xy, xx) /* TYX i */
+TRANSFER16(OP(COpBBx16), xy, xx)
 
 /* TDC and TSC are 16-bit whatever the M flag says. */
-TRANSFER16(c_COp7B, xd, xa) /* TDC i */
-TRANSFER16(c_COp3B, xs, xa) /* TSC i */
+TRANSFER16(OP(COp7B), xd, xa) /* TDC i */
+TRANSFER16(OP(COp3B), xs, xa) /* TSC i */
 
-void c_COp1B(u4* const r) /* TCS i */
+#ifndef OPS_OWN_COp1B
+void OP(COp1B)(u4* const r) /* TCS i */
 {
     AX(r, GET16(xa));
     if (xe & 1) {
@@ -213,8 +230,9 @@ void c_COp1B(u4* const r) /* TCS i */
         SET16(xs, GET16(r[R_EAX]));
     }
 }
+#endif
 
-void c_COp9A(u4* const r) /* TXS i */
+void OP(COp9A)(u4* const r) /* TXS i */
 {
     AX(r, GET16(xx));
     SET16(xs, GET16(r[R_EAX]));
@@ -223,7 +241,7 @@ void c_COp9A(u4* const r) /* TXS i */
     }
 }
 
-void c_COpEB(u4* const r) /* XBA i */
+void OP(COpEB)(u4* const r) /* XBA i */
 {
     AX(r, (u2)((GET8(xa) << 8) | ((xa >> 8) & 0xFFu)));
     SET16(xa, GET16(r[R_EAX]));
@@ -249,12 +267,12 @@ void c_COpEB(u4* const r) /* XBA i */
         SET16(xa, GET16(r[R_EAX]));        \
     }
 
-INCDECA8(c_COp1Am8, +) /* INC A */
-INCDECA16(c_COp1Am16, +)
-INCDECA8(c_COp3Am8, -) /* DEC A */
-INCDECA16(c_COp3Am16, -)
+INCDECA8(OP(COp1Am8), +) /* INC A */
+INCDECA16(OP(COp1Am16), +)
+INCDECA8(OP(COp3Am8), -) /* DEC A */
+INCDECA16(OP(COp3Am16), -)
 
-void c_COp5B(u4* const r) /* TCD i */
+void OP(COp5B)(u4* const r) /* TCD i */
 {
     AX(r, GET16(xa));
     SET16(xd, GET16(r[R_EAX]));
@@ -269,7 +287,7 @@ void c_COp5B(u4* const r) /* TCD i */
  * join / edit / split. Only REP re-forces the emulation-mode bits, and only SEP
  * narrows X and Y - the assembly is asymmetric here and the port keeps it.
  */
-void c_COpC2(u4* const r) /* REP # */
+void OP(COpC2)(u4* const r) /* REP # */
 {
     u1 const imm = *(u1 const*)(uintptr_t)r[R_ESI];
     int const extra = (imm & 0xC3u) != 0;
@@ -287,7 +305,7 @@ void c_COpC2(u4* const r) /* REP # */
     reload_table(r);
 }
 
-void c_COpE2(u4* const r) /* SEP # */
+void OP(COpE2)(u4* const r) /* SEP # */
 {
     u1 const imm = *(u1 const*)(uintptr_t)r[R_ESI];
     int const extra = (imm & 0xC3u) != 0;
@@ -306,7 +324,7 @@ void c_COpE2(u4* const r) /* SEP # */
     }
 }
 
-void c_COpFB(u4* const r) /* XCE i */
+void OP(COpFB)(u4* const r) /* XCE i */
 {
     AL(r, (u1)(flagc & 1u));
     flagc = 0;
@@ -385,17 +403,17 @@ static inline u1 pop8(u4* const r)
         SET16(xs, GET16(r[R_ECX]));        \
     }
 
-PUSH8(c_COp48m8, xa) /* PHA s */
-PUSH16(c_COp48m16, xa)
-PUSH8(c_COp8B, xdb) /* PHB s */
-PUSH16(c_COp0B, xd) /* PHD s */
-PUSH8(c_COp4B, xpb) /* PHK s */
-PUSH8(c_COpDAx8, xx) /* PHX s */
-PUSH16(c_COpDAx16, xx)
-PUSH8(c_COp5Ax8, xy) /* PHY s */
-PUSH16(c_COp5Ax16, xy)
+PUSH8(OP(COp48m8), xa) /* PHA s */
+PUSH16(OP(COp48m16), xa)
+PUSH8(OP(COp8B), xdb) /* PHB s */
+PUSH16(OP(COp0B), xd) /* PHD s */
+PUSH8(OP(COp4B), xpb) /* PHK s */
+PUSH8(OP(COpDAx8), xx) /* PHX s */
+PUSH16(OP(COpDAx16), xx)
+PUSH8(OP(COp5Ax8), xy) /* PHY s */
+PUSH16(OP(COp5Ax16), xy)
 
-void c_COp08(u4* const r) /* PHP s */
+void OP(COp08)(u4* const r) /* PHP s */
 {
     r[R_EDX] = makedl(r[R_EDX]);
     SET16(r[R_ECX], GET16(xs));
@@ -430,15 +448,15 @@ void c_COp08(u4* const r) /* PHP s */
         setnz16(r, GET16(r[R_EAX]));                         \
     }
 
-POP8(c_COp68m8, xa) /* PLA s */
-POP16(c_COp68m16, xa)
-POP8(c_COpAB, xdb) /* PLB s */
-POP8(c_COpFAx8, xx) /* PLX s */
-POP16(c_COpFAx16, xx)
-POP8(c_COp7Ax8, xy) /* PLY s */
-POP16(c_COp7Ax16, xy)
+POP8(OP(COp68m8), xa) /* PLA s */
+POP16(OP(COp68m16), xa)
+POP8(OP(COpAB), xdb) /* PLB s */
+POP8(OP(COpFAx8), xx) /* PLX s */
+POP16(OP(COpFAx16), xx)
+POP8(OP(COp7Ax8), xy) /* PLY s */
+POP16(OP(COp7Ax16), xy)
 
-void c_COp2B(u4* const r) /* PLD s */
+void OP(COp2B)(u4* const r) /* PLD s */
 {
     u1 hi;
     SET16(r[R_ECX], GET16(xs));
@@ -452,7 +470,7 @@ void c_COp2B(u4* const r) /* PLD s */
     setnz16(r, GET16(r[R_EAX]));
 }
 
-void c_COp28(u4* const r) /* PLP s */
+void OP(COp28)(u4* const r) /* PLP s */
 {
     u1 p;
     SET16(r[R_ECX], GET16(xs));
@@ -473,7 +491,7 @@ void c_COp28(u4* const r) /* PLP s */
     }
 }
 
-void c_COpF4(u4* const r) /* PEA s */
+void OP(COpF4)(u4* const r) /* PEA s */
 {
     u1 const* const p = (u1 const*)(uintptr_t)r[R_ESI];
     SET16(r[R_ECX], GET16(xs));
@@ -498,7 +516,7 @@ static void push16_ax(u4* const r)
     SET16(xs, GET16(r[R_ECX]));
 }
 
-void c_COpD4(u4* const r) /* PEI s */
+void OP(COpD4)(u4* const r) /* PEI s */
 {
     r[R_EAX] &= 0xFFFF00FFu; /* xor ah,ah */
     AL(r, *(u1 const*)(uintptr_t)r[R_ESI]);
@@ -509,7 +527,7 @@ void c_COpD4(u4* const r) /* PEI s */
     push16_ax(r);
 }
 
-void c_COp62(u4* const r) /* PER s */
+void OP(COp62)(u4* const r) /* PER s */
 {
     /* The operand is relative to the 65816 PC, but esi is a host pointer, so
        the bank's base has to come back out of the memory map to recover it.
@@ -890,36 +908,36 @@ LINDY(a_LdLCy_16w, TABW16, 1)
         setnz16(r, GET16(r[R_EAX]));   \
     }
 
-LDA8(c_COpA9m8, a_I_8) /* LDA # */
-LDA16(c_COpA9m16, a_I_16)
-LDA8(c_COpADm8, a_a_8) /* LDA a */
-LDA16(c_COpADm16, a_a_16)
-LDA8(c_COpBDm8, a_aCx_8) /* LDA a,x */
-LDA16(c_COpBDm16, a_aCx_16)
-LDA8(c_COpB9m8, a_aCy_8) /* LDA a,y */
-LDA16(c_COpB9m16, a_aCy_16)
-LDA8(c_COpAFm8, a_al_8) /* LDA al */
-LDA16(c_COpAFm16, a_al_16)
-LDA8(c_COpBFm8, a_alCx_8) /* LDA al,x */
-LDA16(c_COpBFm16, a_alCx_16)
-LDA8(c_COpA5m8, a_d_8) /* LDA d */
-LDA16(c_COpA5m16, a_d_16)
-LDA8(c_COpB5m8, a_dCx_8) /* LDA d,x */
-LDA16(c_COpB5m16, a_dCx_16)
-LDA8(c_COpA3m8, a_dCs_8) /* LDA d,s */
-LDA16(c_COpA3m16, a_dCs_16)
-LDA8(c_COpB2m8, a_BdB_8) /* LDA (d) */
-LDA16(c_COpB2m16, a_BdB_16)
-LDA8(c_COpB1m8, a_BdBCy_8) /* LDA (d),y */
-LDA16(c_COpB1m16, a_BdBCy_16)
-LDA8(c_COpA1m8, a_BdCxB_8) /* LDA (d,x) */
-LDA16(c_COpA1m16, a_BdCxB_16)
-LDA8(c_COpB3m8, a_BdCsBCy_8) /* LDA (d,s),y */
-LDA16(c_COpB3m16, a_BdCsBCy_16)
-LDA8(c_COpA7m8, a_LdL_8) /* LDA [d] */
-LDA16(c_COpA7m16, a_LdL_16)
-LDA8(c_COpB7m8, a_LdLCy_8) /* LDA [d],y */
-LDA16(c_COpB7m16, a_LdLCy_16)
+LDA8(OP(COpA9m8), a_I_8) /* LDA # */
+LDA16(OP(COpA9m16), a_I_16)
+LDA8(OP(COpADm8), a_a_8) /* LDA a */
+LDA16(OP(COpADm16), a_a_16)
+LDA8(OP(COpBDm8), a_aCx_8) /* LDA a,x */
+LDA16(OP(COpBDm16), a_aCx_16)
+LDA8(OP(COpB9m8), a_aCy_8) /* LDA a,y */
+LDA16(OP(COpB9m16), a_aCy_16)
+LDA8(OP(COpAFm8), a_al_8) /* LDA al */
+LDA16(OP(COpAFm16), a_al_16)
+LDA8(OP(COpBFm8), a_alCx_8) /* LDA al,x */
+LDA16(OP(COpBFm16), a_alCx_16)
+LDA8(OP(COpA5m8), a_d_8) /* LDA d */
+LDA16(OP(COpA5m16), a_d_16)
+LDA8(OP(COpB5m8), a_dCx_8) /* LDA d,x */
+LDA16(OP(COpB5m16), a_dCx_16)
+LDA8(OP(COpA3m8), a_dCs_8) /* LDA d,s */
+LDA16(OP(COpA3m16), a_dCs_16)
+LDA8(OP(COpB2m8), a_BdB_8) /* LDA (d) */
+LDA16(OP(COpB2m16), a_BdB_16)
+LDA8(OP(COpB1m8), a_BdBCy_8) /* LDA (d),y */
+LDA16(OP(COpB1m16), a_BdBCy_16)
+LDA8(OP(COpA1m8), a_BdCxB_8) /* LDA (d,x) */
+LDA16(OP(COpA1m16), a_BdCxB_16)
+LDA8(OP(COpB3m8), a_BdCsBCy_8) /* LDA (d,s),y */
+LDA16(OP(COpB3m16), a_BdCsBCy_16)
+LDA8(OP(COpA7m8), a_LdL_8) /* LDA [d] */
+LDA16(OP(COpA7m16), a_LdL_16)
+LDA8(OP(COpB7m8), a_LdLCy_8) /* LDA [d],y */
+LDA16(OP(COpB7m16), a_LdLCy_16)
 
 /*
  * Operations. Each takes the value an addressing mode left in al or ax and is
@@ -1043,182 +1061,182 @@ static void o_BIT16(u4* const r)
     }
 
 /* AND */
-OPMODE(c_COp21m8, a_BdCxB_8, o_AND8)
-OPMODE(c_COp21m16, a_BdCxB_16, o_AND16)
-OPMODE(c_COp23m8, a_dCs_8, o_AND8)
-OPMODE(c_COp23m16, a_dCs_16, o_AND16)
-OPMODE(c_COp25m8, a_d_8, o_AND8)
-OPMODE(c_COp25m16, a_d_16, o_AND16)
-OPMODE(c_COp27m8, a_LdL_8, o_AND8)
-OPMODE(c_COp27m16, a_LdL_16, o_AND16)
-OPMODE(c_COp29m8, a_I_8, o_AND8)
-OPMODE(c_COp29m16, a_I_16, o_AND16)
-OPMODE(c_COp2Dm8, a_a_8, o_AND8)
-OPMODE(c_COp2Dm16, a_a_16, o_AND16)
-OPMODE(c_COp2Fm8, a_al_8, o_AND8)
-OPMODE(c_COp2Fm16, a_al_16, o_AND16)
-OPMODE(c_COp31m8, a_BdBCy_8, o_AND8)
-OPMODE(c_COp31m16, a_BdBCy_16, o_AND16)
-OPMODE(c_COp32m8, a_BdB_8, o_AND8)
-OPMODE(c_COp32m16, a_BdB_16, o_AND16)
-OPMODE(c_COp33m8, a_BdCsBCy_8, o_AND8)
-OPMODE(c_COp33m16, a_BdCsBCy_16, o_AND16)
-OPMODE(c_COp35m8, a_dCx_8, o_AND8)
-OPMODE(c_COp35m16, a_dCx_16, o_AND16)
-OPMODE(c_COp37m8, a_LdLCy_8, o_AND8)
-OPMODE(c_COp37m16, a_LdLCy_16, o_AND16)
-OPMODE(c_COp39m8, a_aCy_8, o_AND8)
-OPMODE(c_COp39m16, a_aCy_16, o_AND16)
-OPMODE(c_COp3Dm8, a_aCx_8, o_AND8)
-OPMODE(c_COp3Dm16, a_aCx_16, o_AND16)
-OPMODE(c_COp3Fm8, a_alCx_8, o_AND8)
-OPMODE(c_COp3Fm16, a_alCx_16, o_AND16)
+OPMODE(OP(COp21m8), a_BdCxB_8, o_AND8)
+OPMODE(OP(COp21m16), a_BdCxB_16, o_AND16)
+OPMODE(OP(COp23m8), a_dCs_8, o_AND8)
+OPMODE(OP(COp23m16), a_dCs_16, o_AND16)
+OPMODE(OP(COp25m8), a_d_8, o_AND8)
+OPMODE(OP(COp25m16), a_d_16, o_AND16)
+OPMODE(OP(COp27m8), a_LdL_8, o_AND8)
+OPMODE(OP(COp27m16), a_LdL_16, o_AND16)
+OPMODE(OP(COp29m8), a_I_8, o_AND8)
+OPMODE(OP(COp29m16), a_I_16, o_AND16)
+OPMODE(OP(COp2Dm8), a_a_8, o_AND8)
+OPMODE(OP(COp2Dm16), a_a_16, o_AND16)
+OPMODE(OP(COp2Fm8), a_al_8, o_AND8)
+OPMODE(OP(COp2Fm16), a_al_16, o_AND16)
+OPMODE(OP(COp31m8), a_BdBCy_8, o_AND8)
+OPMODE(OP(COp31m16), a_BdBCy_16, o_AND16)
+OPMODE(OP(COp32m8), a_BdB_8, o_AND8)
+OPMODE(OP(COp32m16), a_BdB_16, o_AND16)
+OPMODE(OP(COp33m8), a_BdCsBCy_8, o_AND8)
+OPMODE(OP(COp33m16), a_BdCsBCy_16, o_AND16)
+OPMODE(OP(COp35m8), a_dCx_8, o_AND8)
+OPMODE(OP(COp35m16), a_dCx_16, o_AND16)
+OPMODE(OP(COp37m8), a_LdLCy_8, o_AND8)
+OPMODE(OP(COp37m16), a_LdLCy_16, o_AND16)
+OPMODE(OP(COp39m8), a_aCy_8, o_AND8)
+OPMODE(OP(COp39m16), a_aCy_16, o_AND16)
+OPMODE(OP(COp3Dm8), a_aCx_8, o_AND8)
+OPMODE(OP(COp3Dm16), a_aCx_16, o_AND16)
+OPMODE(OP(COp3Fm8), a_alCx_8, o_AND8)
+OPMODE(OP(COp3Fm16), a_alCx_16, o_AND16)
 
 /* BIT */
-OPMODE(c_COp24m8, a_d_8, o_BIT8)
-OPMODE(c_COp24m16, a_d_16, o_BIT16)
-OPMODE(c_COp2Cm8, a_a_8, o_BIT8)
-OPMODE(c_COp2Cm16, a_a_16, o_BIT16)
-OPMODE(c_COp34m8, a_dCx_8, o_BIT8)
-OPMODE(c_COp34m16, a_dCx_16, o_BIT16)
-OPMODE(c_COp3Cm8, a_aCx_8, o_BIT8)
-OPMODE(c_COp3Cm16, a_aCx_16, o_BIT16)
+OPMODE(OP(COp24m8), a_d_8, o_BIT8)
+OPMODE(OP(COp24m16), a_d_16, o_BIT16)
+OPMODE(OP(COp2Cm8), a_a_8, o_BIT8)
+OPMODE(OP(COp2Cm16), a_a_16, o_BIT16)
+OPMODE(OP(COp34m8), a_dCx_8, o_BIT8)
+OPMODE(OP(COp34m16), a_dCx_16, o_BIT16)
+OPMODE(OP(COp3Cm8), a_aCx_8, o_BIT8)
+OPMODE(OP(COp3Cm16), a_aCx_16, o_BIT16)
 
 /* CMP */
-OPMODE(c_COpC1m8, a_BdCxB_8, o_CMP8)
-OPMODE(c_COpC1m16, a_BdCxB_16, o_CMP16)
-OPMODE(c_COpC3m8, a_dCs_8, o_CMP8)
-OPMODE(c_COpC3m16, a_dCs_16, o_CMP16)
-OPMODE(c_COpC5m8, a_d_8, o_CMP8)
-OPMODE(c_COpC5m16, a_d_16, o_CMP16)
-OPMODE(c_COpC7m8, a_LdL_8, o_CMP8)
-OPMODE(c_COpC7m16, a_LdL_16, o_CMP16)
-OPMODE(c_COpC9m8, a_I_8, o_CMP8)
-OPMODE(c_COpC9m16, a_I_16, o_CMP16)
-OPMODE(c_COpCDm8, a_a_8, o_CMP8)
-OPMODE(c_COpCDm16, a_a_16, o_CMP16)
-OPMODE(c_COpCFm8, a_al_8, o_CMP8)
-OPMODE(c_COpCFm16, a_al_16, o_CMP16)
-OPMODE(c_COpD1m8, a_BdBCy_8, o_CMP8)
-OPMODE(c_COpD1m16, a_BdBCy_16, o_CMP16)
-OPMODE(c_COpD2m8, a_BdB_8, o_CMP8)
-OPMODE(c_COpD2m16, a_BdB_16, o_CMP16)
-OPMODE(c_COpD3m8, a_BdCsBCy_8, o_CMP8)
-OPMODE(c_COpD3m16, a_BdCsBCy_16, o_CMP16)
-OPMODE(c_COpD5m8, a_dCx_8, o_CMP8)
-OPMODE(c_COpD5m16, a_dCx_16, o_CMP16)
-OPMODE(c_COpD7m8, a_LdLCy_8, o_CMP8)
-OPMODE(c_COpD7m16, a_LdLCy_16, o_CMP16)
-OPMODE(c_COpD9m8, a_aCy_8, o_CMP8)
-OPMODE(c_COpD9m16, a_aCy_16, o_CMP16)
-OPMODE(c_COpDDm8, a_aCx_8, o_CMP8)
-OPMODE(c_COpDDm16, a_aCx_16, o_CMP16)
-OPMODE(c_COpDFm8, a_alCx_8, o_CMP8)
-OPMODE(c_COpDFm16, a_alCx_16, o_CMP16)
+OPMODE(OP(COpC1m8), a_BdCxB_8, o_CMP8)
+OPMODE(OP(COpC1m16), a_BdCxB_16, o_CMP16)
+OPMODE(OP(COpC3m8), a_dCs_8, o_CMP8)
+OPMODE(OP(COpC3m16), a_dCs_16, o_CMP16)
+OPMODE(OP(COpC5m8), a_d_8, o_CMP8)
+OPMODE(OP(COpC5m16), a_d_16, o_CMP16)
+OPMODE(OP(COpC7m8), a_LdL_8, o_CMP8)
+OPMODE(OP(COpC7m16), a_LdL_16, o_CMP16)
+OPMODE(OP(COpC9m8), a_I_8, o_CMP8)
+OPMODE(OP(COpC9m16), a_I_16, o_CMP16)
+OPMODE(OP(COpCDm8), a_a_8, o_CMP8)
+OPMODE(OP(COpCDm16), a_a_16, o_CMP16)
+OPMODE(OP(COpCFm8), a_al_8, o_CMP8)
+OPMODE(OP(COpCFm16), a_al_16, o_CMP16)
+OPMODE(OP(COpD1m8), a_BdBCy_8, o_CMP8)
+OPMODE(OP(COpD1m16), a_BdBCy_16, o_CMP16)
+OPMODE(OP(COpD2m8), a_BdB_8, o_CMP8)
+OPMODE(OP(COpD2m16), a_BdB_16, o_CMP16)
+OPMODE(OP(COpD3m8), a_BdCsBCy_8, o_CMP8)
+OPMODE(OP(COpD3m16), a_BdCsBCy_16, o_CMP16)
+OPMODE(OP(COpD5m8), a_dCx_8, o_CMP8)
+OPMODE(OP(COpD5m16), a_dCx_16, o_CMP16)
+OPMODE(OP(COpD7m8), a_LdLCy_8, o_CMP8)
+OPMODE(OP(COpD7m16), a_LdLCy_16, o_CMP16)
+OPMODE(OP(COpD9m8), a_aCy_8, o_CMP8)
+OPMODE(OP(COpD9m16), a_aCy_16, o_CMP16)
+OPMODE(OP(COpDDm8), a_aCx_8, o_CMP8)
+OPMODE(OP(COpDDm16), a_aCx_16, o_CMP16)
+OPMODE(OP(COpDFm8), a_alCx_8, o_CMP8)
+OPMODE(OP(COpDFm16), a_alCx_16, o_CMP16)
 
 /* CPX */
-OPMODE(c_COpE0x8, a_I_8, o_CPX8)
-OPMODE(c_COpE0x16, a_I_16, o_CPX16)
-OPMODE(c_COpE4x8, a_d_8, o_CPX8)
-OPMODE(c_COpE4x16, a_d_16, o_CPX16)
-OPMODE(c_COpECx8, a_a_8, o_CPX8)
-OPMODE(c_COpECx16, a_a_16, o_CPX16)
+OPMODE(OP(COpE0x8), a_I_8, o_CPX8)
+OPMODE(OP(COpE0x16), a_I_16, o_CPX16)
+OPMODE(OP(COpE4x8), a_d_8, o_CPX8)
+OPMODE(OP(COpE4x16), a_d_16, o_CPX16)
+OPMODE(OP(COpECx8), a_a_8, o_CPX8)
+OPMODE(OP(COpECx16), a_a_16, o_CPX16)
 
 /* CPY */
-OPMODE(c_COpC0x8, a_I_8, o_CPY8)
-OPMODE(c_COpC0x16, a_I_16, o_CPY16)
-OPMODE(c_COpC4x8, a_d_8, o_CPY8)
-OPMODE(c_COpC4x16, a_d_16, o_CPY16)
-OPMODE(c_COpCCx8, a_a_8, o_CPY8)
-OPMODE(c_COpCCx16, a_a_16, o_CPY16)
+OPMODE(OP(COpC0x8), a_I_8, o_CPY8)
+OPMODE(OP(COpC0x16), a_I_16, o_CPY16)
+OPMODE(OP(COpC4x8), a_d_8, o_CPY8)
+OPMODE(OP(COpC4x16), a_d_16, o_CPY16)
+OPMODE(OP(COpCCx8), a_a_8, o_CPY8)
+OPMODE(OP(COpCCx16), a_a_16, o_CPY16)
 
 /* EOR */
-OPMODE(c_COp41m8, a_BdCxB_8, o_EOR8)
-OPMODE(c_COp41m16, a_BdCxB_16, o_EOR16)
-OPMODE(c_COp43m8, a_dCs_8, o_EOR8)
-OPMODE(c_COp43m16, a_dCs_16, o_EOR16)
-OPMODE(c_COp45m8, a_d_8, o_EOR8)
-OPMODE(c_COp45m16, a_d_16, o_EOR16)
-OPMODE(c_COp47m8, a_LdL_8, o_EOR8)
-OPMODE(c_COp47m16, a_LdL_16, o_EOR16)
-OPMODE(c_COp49m8, a_I_8, o_EOR8)
-OPMODE(c_COp49m16, a_I_16, o_EOR16)
-OPMODE(c_COp4Dm8, a_a_8, o_EOR8)
-OPMODE(c_COp4Dm16, a_a_16, o_EOR16)
-OPMODE(c_COp4Fm8, a_al_8, o_EOR8)
-OPMODE(c_COp4Fm16, a_al_16, o_EOR16)
-OPMODE(c_COp51m8, a_BdBCy_8, o_EOR8)
-OPMODE(c_COp51m16, a_BdBCy_16, o_EOR16)
-OPMODE(c_COp52m8, a_BdB_8, o_EOR8)
-OPMODE(c_COp52m16, a_BdB_16, o_EOR16)
-OPMODE(c_COp53m8, a_BdCsBCy_8, o_EOR8)
-OPMODE(c_COp53m16, a_BdCsBCy_16, o_EOR16)
-OPMODE(c_COp55m8, a_dCx_8, o_EOR8)
-OPMODE(c_COp55m16, a_dCx_16, o_EOR16)
-OPMODE(c_COp57m8, a_LdLCy_8, o_EOR8)
-OPMODE(c_COp57m16, a_LdLCy_16, o_EOR16)
-OPMODE(c_COp59m8, a_aCy_8, o_EOR8)
-OPMODE(c_COp59m16, a_aCy_16, o_EOR16)
-OPMODE(c_COp5Dm8, a_aCx_8, o_EOR8)
-OPMODE(c_COp5Dm16, a_aCx_16, o_EOR16)
-OPMODE(c_COp5Fm8, a_alCx_8, o_EOR8)
-OPMODE(c_COp5Fm16, a_alCx_16, o_EOR16)
+OPMODE(OP(COp41m8), a_BdCxB_8, o_EOR8)
+OPMODE(OP(COp41m16), a_BdCxB_16, o_EOR16)
+OPMODE(OP(COp43m8), a_dCs_8, o_EOR8)
+OPMODE(OP(COp43m16), a_dCs_16, o_EOR16)
+OPMODE(OP(COp45m8), a_d_8, o_EOR8)
+OPMODE(OP(COp45m16), a_d_16, o_EOR16)
+OPMODE(OP(COp47m8), a_LdL_8, o_EOR8)
+OPMODE(OP(COp47m16), a_LdL_16, o_EOR16)
+OPMODE(OP(COp49m8), a_I_8, o_EOR8)
+OPMODE(OP(COp49m16), a_I_16, o_EOR16)
+OPMODE(OP(COp4Dm8), a_a_8, o_EOR8)
+OPMODE(OP(COp4Dm16), a_a_16, o_EOR16)
+OPMODE(OP(COp4Fm8), a_al_8, o_EOR8)
+OPMODE(OP(COp4Fm16), a_al_16, o_EOR16)
+OPMODE(OP(COp51m8), a_BdBCy_8, o_EOR8)
+OPMODE(OP(COp51m16), a_BdBCy_16, o_EOR16)
+OPMODE(OP(COp52m8), a_BdB_8, o_EOR8)
+OPMODE(OP(COp52m16), a_BdB_16, o_EOR16)
+OPMODE(OP(COp53m8), a_BdCsBCy_8, o_EOR8)
+OPMODE(OP(COp53m16), a_BdCsBCy_16, o_EOR16)
+OPMODE(OP(COp55m8), a_dCx_8, o_EOR8)
+OPMODE(OP(COp55m16), a_dCx_16, o_EOR16)
+OPMODE(OP(COp57m8), a_LdLCy_8, o_EOR8)
+OPMODE(OP(COp57m16), a_LdLCy_16, o_EOR16)
+OPMODE(OP(COp59m8), a_aCy_8, o_EOR8)
+OPMODE(OP(COp59m16), a_aCy_16, o_EOR16)
+OPMODE(OP(COp5Dm8), a_aCx_8, o_EOR8)
+OPMODE(OP(COp5Dm16), a_aCx_16, o_EOR16)
+OPMODE(OP(COp5Fm8), a_alCx_8, o_EOR8)
+OPMODE(OP(COp5Fm16), a_alCx_16, o_EOR16)
 
 /* LDX */
-OPMODE(c_COpA2x8, a_I_8, o_LDX8)
-OPMODE(c_COpA2x16, a_I_16, o_LDX16)
-OPMODE(c_COpA6x8, a_d_8, o_LDX8)
-OPMODE(c_COpA6x16, a_d_16, o_LDX16)
-OPMODE(c_COpAEx8, a_a_8, o_LDX8)
-OPMODE(c_COpAEx16, a_a_16, o_LDX16)
-OPMODE(c_COpB6x8, a_dCy_8, o_LDX8)
-OPMODE(c_COpB6x16, a_dCy_16, o_LDX16)
-OPMODE(c_COpBEx8, a_aCy_8, o_LDX8)
-OPMODE(c_COpBEx16, a_aCy_16, o_LDX16)
+OPMODE(OP(COpA2x8), a_I_8, o_LDX8)
+OPMODE(OP(COpA2x16), a_I_16, o_LDX16)
+OPMODE(OP(COpA6x8), a_d_8, o_LDX8)
+OPMODE(OP(COpA6x16), a_d_16, o_LDX16)
+OPMODE(OP(COpAEx8), a_a_8, o_LDX8)
+OPMODE(OP(COpAEx16), a_a_16, o_LDX16)
+OPMODE(OP(COpB6x8), a_dCy_8, o_LDX8)
+OPMODE(OP(COpB6x16), a_dCy_16, o_LDX16)
+OPMODE(OP(COpBEx8), a_aCy_8, o_LDX8)
+OPMODE(OP(COpBEx16), a_aCy_16, o_LDX16)
 
 /* LDY */
-OPMODE(c_COpA0x8, a_I_8, o_LDY8)
-OPMODE(c_COpA0x16, a_I_16, o_LDY16)
-OPMODE(c_COpA4x8, a_d_8, o_LDY8)
-OPMODE(c_COpA4x16, a_d_16, o_LDY16)
-OPMODE(c_COpACx8, a_a_8, o_LDY8)
-OPMODE(c_COpACx16, a_a_16, o_LDY16)
-OPMODE(c_COpB4x8, a_dCx_8, o_LDY8)
-OPMODE(c_COpB4x16, a_dCx_16, o_LDY16)
-OPMODE(c_COpBCx8, a_aCx_8, o_LDY8)
-OPMODE(c_COpBCx16, a_aCx_16, o_LDY16)
+OPMODE(OP(COpA0x8), a_I_8, o_LDY8)
+OPMODE(OP(COpA0x16), a_I_16, o_LDY16)
+OPMODE(OP(COpA4x8), a_d_8, o_LDY8)
+OPMODE(OP(COpA4x16), a_d_16, o_LDY16)
+OPMODE(OP(COpACx8), a_a_8, o_LDY8)
+OPMODE(OP(COpACx16), a_a_16, o_LDY16)
+OPMODE(OP(COpB4x8), a_dCx_8, o_LDY8)
+OPMODE(OP(COpB4x16), a_dCx_16, o_LDY16)
+OPMODE(OP(COpBCx8), a_aCx_8, o_LDY8)
+OPMODE(OP(COpBCx16), a_aCx_16, o_LDY16)
 
 /* ORA */
-OPMODE(c_COp01m8, a_BdCxB_8, o_ORA8)
-OPMODE(c_COp01m16, a_BdCxB_16, o_ORA16)
-OPMODE(c_COp03m8, a_dCs_8, o_ORA8)
-OPMODE(c_COp03m16, a_dCs_16, o_ORA16)
-OPMODE(c_COp05m8, a_d_8, o_ORA8)
-OPMODE(c_COp05m16, a_d_16, o_ORA16)
-OPMODE(c_COp07m8, a_LdL_8, o_ORA8)
-OPMODE(c_COp07m16, a_LdL_16, o_ORA16)
-OPMODE(c_COp09m8, a_I_8, o_ORA8)
-OPMODE(c_COp09m16, a_I_16, o_ORA16)
-OPMODE(c_COp0Dm8, a_a_8, o_ORA8)
-OPMODE(c_COp0Dm16, a_a_16, o_ORA16)
-OPMODE(c_COp0Fm8, a_al_8, o_ORA8)
-OPMODE(c_COp0Fm16, a_al_16, o_ORA16)
-OPMODE(c_COp11m8, a_BdBCy_8, o_ORA8)
-OPMODE(c_COp11m16, a_BdBCy_16, o_ORA16)
-OPMODE(c_COp12m8, a_BdB_8, o_ORA8)
-OPMODE(c_COp12m16, a_BdB_16, o_ORA16)
-OPMODE(c_COp13m8, a_BdCsBCy_8, o_ORA8)
-OPMODE(c_COp13m16, a_BdCsBCy_16, o_ORA16)
-OPMODE(c_COp15m8, a_dCx_8, o_ORA8)
-OPMODE(c_COp15m16, a_dCx_16, o_ORA16)
-OPMODE(c_COp17m8, a_LdLCy_8, o_ORA8)
-OPMODE(c_COp17m16, a_LdLCy_16, o_ORA16)
-OPMODE(c_COp19m8, a_aCy_8, o_ORA8)
-OPMODE(c_COp19m16, a_aCy_16, o_ORA16)
-OPMODE(c_COp1Dm8, a_aCx_8, o_ORA8)
-OPMODE(c_COp1Dm16, a_aCx_16, o_ORA16)
-OPMODE(c_COp1Fm8, a_alCx_8, o_ORA8)
-OPMODE(c_COp1Fm16, a_alCx_16, o_ORA16)
+OPMODE(OP(COp01m8), a_BdCxB_8, o_ORA8)
+OPMODE(OP(COp01m16), a_BdCxB_16, o_ORA16)
+OPMODE(OP(COp03m8), a_dCs_8, o_ORA8)
+OPMODE(OP(COp03m16), a_dCs_16, o_ORA16)
+OPMODE(OP(COp05m8), a_d_8, o_ORA8)
+OPMODE(OP(COp05m16), a_d_16, o_ORA16)
+OPMODE(OP(COp07m8), a_LdL_8, o_ORA8)
+OPMODE(OP(COp07m16), a_LdL_16, o_ORA16)
+OPMODE(OP(COp09m8), a_I_8, o_ORA8)
+OPMODE(OP(COp09m16), a_I_16, o_ORA16)
+OPMODE(OP(COp0Dm8), a_a_8, o_ORA8)
+OPMODE(OP(COp0Dm16), a_a_16, o_ORA16)
+OPMODE(OP(COp0Fm8), a_al_8, o_ORA8)
+OPMODE(OP(COp0Fm16), a_al_16, o_ORA16)
+OPMODE(OP(COp11m8), a_BdBCy_8, o_ORA8)
+OPMODE(OP(COp11m16), a_BdBCy_16, o_ORA16)
+OPMODE(OP(COp12m8), a_BdB_8, o_ORA8)
+OPMODE(OP(COp12m16), a_BdB_16, o_ORA16)
+OPMODE(OP(COp13m8), a_BdCsBCy_8, o_ORA8)
+OPMODE(OP(COp13m16), a_BdCsBCy_16, o_ORA16)
+OPMODE(OP(COp15m8), a_dCx_8, o_ORA8)
+OPMODE(OP(COp15m16), a_dCx_16, o_ORA16)
+OPMODE(OP(COp17m8), a_LdLCy_8, o_ORA8)
+OPMODE(OP(COp17m16), a_LdLCy_16, o_ORA16)
+OPMODE(OP(COp19m8), a_aCy_8, o_ORA8)
+OPMODE(OP(COp19m16), a_aCy_16, o_ORA16)
+OPMODE(OP(COp1Dm8), a_aCx_8, o_ORA8)
+OPMODE(OP(COp1Dm16), a_aCx_16, o_ORA16)
+OPMODE(OP(COp1Fm8), a_alCx_8, o_ORA8)
+OPMODE(OP(COp1Fm16), a_alCx_16, o_ORA16)
 
 
 /*
@@ -1245,60 +1263,60 @@ static void o_STZ16(u4* const r) { r[R_EAX] = 0; }
     }
 
 /* STA */
-STMODE(c_COp81m8, o_STA8, a_BdCxB_8w)
-STMODE(c_COp81m16, o_STA16, a_BdCxB_16w)
-STMODE(c_COp83m8, o_STA8, a_dCs_8w)
-STMODE(c_COp83m16, o_STA16, a_dCs_16w)
-STMODE(c_COp85m8, o_STA8, a_d_8w)
-STMODE(c_COp85m16, o_STA16, a_d_16w)
-STMODE(c_COp87m8, o_STA8, a_LdL_8w)
-STMODE(c_COp87m16, o_STA16, a_LdL_16w)
-STMODE(c_COp8Dm8, o_STA8, a_a_8w)
-STMODE(c_COp8Dm16, o_STA16, a_a_16w)
-STMODE(c_COp8Fm8, o_STA8, a_al_8w)
-STMODE(c_COp8Fm16, o_STA16, a_al_16w)
-STMODE(c_COp91m8, o_STA8, a_BdBCy_8w)
-STMODE(c_COp91m16, o_STA16, a_BdBCy_16w)
-STMODE(c_COp92m8, o_STA8, a_BdB_8w)
-STMODE(c_COp92m16, o_STA16, a_BdB_16w)
-STMODE(c_COp93m8, o_STA8, a_BdCsBCy_8w)
-STMODE(c_COp93m16, o_STA16, a_BdCsBCy_16w)
-STMODE(c_COp95m8, o_STA8, a_dCx_8w)
-STMODE(c_COp95m16, o_STA16, a_dCx_16w)
-STMODE(c_COp97m8, o_STA8, a_LdLCy_8w)
-STMODE(c_COp97m16, o_STA16, a_LdLCy_16w)
-STMODE(c_COp99m8, o_STA8, a_aCy_8w)
-STMODE(c_COp99m16, o_STA16, a_aCy_16w)
-STMODE(c_COp9Dm8, o_STA8, a_aCx_8w)
-STMODE(c_COp9Dm16, o_STA16, a_aCx_16w)
-STMODE(c_COp9Fm8, o_STA8, a_alCx_8w)
-STMODE(c_COp9Fm16, o_STA16, a_alCx_16w)
+STMODE(OP(COp81m8), o_STA8, a_BdCxB_8w)
+STMODE(OP(COp81m16), o_STA16, a_BdCxB_16w)
+STMODE(OP(COp83m8), o_STA8, a_dCs_8w)
+STMODE(OP(COp83m16), o_STA16, a_dCs_16w)
+STMODE(OP(COp85m8), o_STA8, a_d_8w)
+STMODE(OP(COp85m16), o_STA16, a_d_16w)
+STMODE(OP(COp87m8), o_STA8, a_LdL_8w)
+STMODE(OP(COp87m16), o_STA16, a_LdL_16w)
+STMODE(OP(COp8Dm8), o_STA8, a_a_8w)
+STMODE(OP(COp8Dm16), o_STA16, a_a_16w)
+STMODE(OP(COp8Fm8), o_STA8, a_al_8w)
+STMODE(OP(COp8Fm16), o_STA16, a_al_16w)
+STMODE(OP(COp91m8), o_STA8, a_BdBCy_8w)
+STMODE(OP(COp91m16), o_STA16, a_BdBCy_16w)
+STMODE(OP(COp92m8), o_STA8, a_BdB_8w)
+STMODE(OP(COp92m16), o_STA16, a_BdB_16w)
+STMODE(OP(COp93m8), o_STA8, a_BdCsBCy_8w)
+STMODE(OP(COp93m16), o_STA16, a_BdCsBCy_16w)
+STMODE(OP(COp95m8), o_STA8, a_dCx_8w)
+STMODE(OP(COp95m16), o_STA16, a_dCx_16w)
+STMODE(OP(COp97m8), o_STA8, a_LdLCy_8w)
+STMODE(OP(COp97m16), o_STA16, a_LdLCy_16w)
+STMODE(OP(COp99m8), o_STA8, a_aCy_8w)
+STMODE(OP(COp99m16), o_STA16, a_aCy_16w)
+STMODE(OP(COp9Dm8), o_STA8, a_aCx_8w)
+STMODE(OP(COp9Dm16), o_STA16, a_aCx_16w)
+STMODE(OP(COp9Fm8), o_STA8, a_alCx_8w)
+STMODE(OP(COp9Fm16), o_STA16, a_alCx_16w)
 
 /* STX */
-STMODE(c_COp86x8, o_STX8, a_d_8w)
-STMODE(c_COp86x16, o_STX16, a_d_16w)
-STMODE(c_COp8Ex8, o_STX8, a_a_8w)
-STMODE(c_COp8Ex16, o_STX16, a_a_16w)
-STMODE(c_COp96x8, o_STX8, a_dCy_8w)
-STMODE(c_COp96x16, o_STX16, a_dCy_16w)
+STMODE(OP(COp86x8), o_STX8, a_d_8w)
+STMODE(OP(COp86x16), o_STX16, a_d_16w)
+STMODE(OP(COp8Ex8), o_STX8, a_a_8w)
+STMODE(OP(COp8Ex16), o_STX16, a_a_16w)
+STMODE(OP(COp96x8), o_STX8, a_dCy_8w)
+STMODE(OP(COp96x16), o_STX16, a_dCy_16w)
 
 /* STY */
-STMODE(c_COp84x8, o_STY8, a_d_8w)
-STMODE(c_COp84x16, o_STY16, a_d_16w)
-STMODE(c_COp8Cx8, o_STY8, a_a_8w)
-STMODE(c_COp8Cx16, o_STY16, a_a_16w)
-STMODE(c_COp94x8, o_STY8, a_dCx_8w)
-STMODE(c_COp94x16, o_STY16, a_dCx_16w)
+STMODE(OP(COp84x8), o_STY8, a_d_8w)
+STMODE(OP(COp84x16), o_STY16, a_d_16w)
+STMODE(OP(COp8Cx8), o_STY8, a_a_8w)
+STMODE(OP(COp8Cx16), o_STY16, a_a_16w)
+STMODE(OP(COp94x8), o_STY8, a_dCx_8w)
+STMODE(OP(COp94x16), o_STY16, a_dCx_16w)
 
 /* STZ */
-STMODE(c_COp64m8, o_STZ8, a_d_8w)
-STMODE(c_COp64m16, o_STZ16, a_d_16w)
-STMODE(c_COp74m8, o_STZ8, a_dCx_8w)
-STMODE(c_COp74m16, o_STZ16, a_dCx_16w)
-STMODE(c_COp9Cm8, o_STZ8, a_a_8w)
-STMODE(c_COp9Cm16, o_STZ16, a_a_16w)
-STMODE(c_COp9Em8, o_STZ8, a_aCx_8w)
-STMODE(c_COp9Em16, o_STZ16, a_aCx_16w)
+STMODE(OP(COp64m8), o_STZ8, a_d_8w)
+STMODE(OP(COp64m16), o_STZ16, a_d_16w)
+STMODE(OP(COp74m8), o_STZ8, a_dCx_8w)
+STMODE(OP(COp74m16), o_STZ16, a_dCx_16w)
+STMODE(OP(COp9Cm8), o_STZ8, a_a_8w)
+STMODE(OP(COp9Cm16), o_STZ16, a_a_16w)
+STMODE(OP(COp9Em8), o_STZ8, a_aCx_8w)
+STMODE(OP(COp9Em16), o_STZ16, a_aCx_16w)
 
 
 /*
@@ -1498,84 +1516,86 @@ static void o_TRB16(u4* const r)
     }
 
 /* ASL */
-RMW(c_COp06m8, a_d_8ni, o_ASL8, a_d_8w)
-RMW(c_COp06m16, a_d_16ni, o_ASL16, a_d_16w)
-RMW(c_COp0Am8, a_A_8ni, o_ASL8, a_A_8w)
-RMW(c_COp0Am16, a_A_16ni, o_ASL16, a_A_16w)
-RMW(c_COp0Em8, a_a_8ni, o_ASL8, a_a_8w)
-RMW(c_COp0Em16, a_a_16ni, o_ASL16, a_a_16w)
-RMW(c_COp16m8, a_dCx_8ni, o_ASL8, a_dCx_8w)
-RMW(c_COp16m16, a_dCx_16ni, o_ASL16, a_dCx_16w)
-RMW(c_COp1Em8, a_aCx_8ni, o_ASL8, a_aCx_8w)
-RMW(c_COp1Em16, a_aCx_16ni, o_ASL16, a_aCx_16w)
+RMW(OP(COp06m8), a_d_8ni, o_ASL8, a_d_8w)
+RMW(OP(COp06m16), a_d_16ni, o_ASL16, a_d_16w)
+RMW(OP(COp0Am8), a_A_8ni, o_ASL8, a_A_8w)
+RMW(OP(COp0Am16), a_A_16ni, o_ASL16, a_A_16w)
+RMW(OP(COp0Em8), a_a_8ni, o_ASL8, a_a_8w)
+RMW(OP(COp0Em16), a_a_16ni, o_ASL16, a_a_16w)
+RMW(OP(COp16m8), a_dCx_8ni, o_ASL8, a_dCx_8w)
+RMW(OP(COp16m16), a_dCx_16ni, o_ASL16, a_dCx_16w)
+RMW(OP(COp1Em8), a_aCx_8ni, o_ASL8, a_aCx_8w)
+RMW(OP(COp1Em16), a_aCx_16ni, o_ASL16, a_aCx_16w)
 
 /* DECm */
-RMW(c_COpCEm8, a_a_8ni, o_DECm8, a_a_8w)
-RMW(c_COpCEm16, a_a_16ni, o_DECm16, a_a_16w)
-RMW(c_COpC6m8, a_d_8ni, o_DECm8, a_d_8w)
-RMW(c_COpC6m16, a_d_16ni, o_DECm16, a_d_16w)
-RMW(c_COpD6m8, a_dCx_8ni, o_DECm8, a_dCx_8w)
-RMW(c_COpD6m16, a_dCx_16ni, o_DECm16, a_dCx_16w)
-RMW(c_COpDEm8, a_aCx_8ni, o_DECm8, a_aCx_8w)
-RMW(c_COpDEm16, a_aCx_16ni, o_DECm16, a_aCx_16w)
+RMW(OP(COpCEm8), a_a_8ni, o_DECm8, a_a_8w)
+RMW(OP(COpCEm16), a_a_16ni, o_DECm16, a_a_16w)
+RMW(OP(COpC6m8), a_d_8ni, o_DECm8, a_d_8w)
+RMW(OP(COpC6m16), a_d_16ni, o_DECm16, a_d_16w)
+#ifndef OPS_OWN_COpD6m8
+RMW(OP(COpD6m8), a_dCx_8ni, o_DECm8, a_dCx_8w)
+#endif
+RMW(OP(COpD6m16), a_dCx_16ni, o_DECm16, a_dCx_16w)
+RMW(OP(COpDEm8), a_aCx_8ni, o_DECm8, a_aCx_8w)
+RMW(OP(COpDEm16), a_aCx_16ni, o_DECm16, a_aCx_16w)
 
 /* INCm */
-RMW(c_COpEEm8, a_a_8ni, o_INCm8, a_a_8w)
-RMW(c_COpEEm16, a_a_16ni, o_INCm16, a_a_16w)
-RMW(c_COpE6m8, a_d_8ni, o_INCm8, a_d_8w)
-RMW(c_COpE6m16, a_d_16ni, o_INCm16, a_d_16w)
-RMW(c_COpF6m8, a_dCx_8ni, o_INCm8, a_dCx_8w)
-RMW(c_COpF6m16, a_dCx_16ni, o_INCm16, a_dCx_16w)
-RMW(c_COpFEm8, a_aCx_8ni, o_INCm8, a_aCx_8w)
-RMW(c_COpFEm16, a_aCx_16ni, o_INCm16, a_aCx_16w)
+RMW(OP(COpEEm8), a_a_8ni, o_INCm8, a_a_8w)
+RMW(OP(COpEEm16), a_a_16ni, o_INCm16, a_a_16w)
+RMW(OP(COpE6m8), a_d_8ni, o_INCm8, a_d_8w)
+RMW(OP(COpE6m16), a_d_16ni, o_INCm16, a_d_16w)
+RMW(OP(COpF6m8), a_dCx_8ni, o_INCm8, a_dCx_8w)
+RMW(OP(COpF6m16), a_dCx_16ni, o_INCm16, a_dCx_16w)
+RMW(OP(COpFEm8), a_aCx_8ni, o_INCm8, a_aCx_8w)
+RMW(OP(COpFEm16), a_aCx_16ni, o_INCm16, a_aCx_16w)
 
 /* LSR */
-RMW(c_COp46m8, a_d_8ni, o_LSR8, a_d_8w)
-RMW(c_COp46m16, a_d_16ni, o_LSR16, a_d_16w)
-RMW(c_COp4Am8, a_A_8ni, o_LSR8, a_A_8w)
-RMW(c_COp4Am16, a_A_16ni, o_LSR16, a_A_16w)
-RMW(c_COp4Em8, a_a_8ni, o_LSR8, a_a_8w)
-RMW(c_COp4Em16, a_a_16ni, o_LSR16, a_a_16w)
-RMW(c_COp56m8, a_dCx_8ni, o_LSR8, a_dCx_8w)
-RMW(c_COp56m16, a_dCx_16ni, o_LSR16, a_dCx_16w)
-RMW(c_COp5Em8, a_aCx_8ni, o_LSR8, a_aCx_8w)
-RMW(c_COp5Em16, a_aCx_16ni, o_LSR16, a_aCx_16w)
+RMW(OP(COp46m8), a_d_8ni, o_LSR8, a_d_8w)
+RMW(OP(COp46m16), a_d_16ni, o_LSR16, a_d_16w)
+RMW(OP(COp4Am8), a_A_8ni, o_LSR8, a_A_8w)
+RMW(OP(COp4Am16), a_A_16ni, o_LSR16, a_A_16w)
+RMW(OP(COp4Em8), a_a_8ni, o_LSR8, a_a_8w)
+RMW(OP(COp4Em16), a_a_16ni, o_LSR16, a_a_16w)
+RMW(OP(COp56m8), a_dCx_8ni, o_LSR8, a_dCx_8w)
+RMW(OP(COp56m16), a_dCx_16ni, o_LSR16, a_dCx_16w)
+RMW(OP(COp5Em8), a_aCx_8ni, o_LSR8, a_aCx_8w)
+RMW(OP(COp5Em16), a_aCx_16ni, o_LSR16, a_aCx_16w)
 
 /* ROL */
-RMW(c_COp26m8, a_d_8ni, o_ROL8, a_d_8w)
-RMW(c_COp26m16, a_d_16ni, o_ROL16, a_d_16w)
-RMW(c_COp2Am8, a_A_8ni, o_ROL8, a_A_8w)
-RMW(c_COp2Am16, a_A_16ni, o_ROL16, a_A_16w)
-RMW(c_COp2Em8, a_a_8ni, o_ROL8, a_a_8w)
-RMW(c_COp2Em16, a_a_16ni, o_ROL16, a_a_16w)
-RMW(c_COp36m8, a_dCx_8ni, o_ROL8, a_dCx_8w)
-RMW(c_COp36m16, a_dCx_16ni, o_ROL16, a_dCx_16w)
-RMW(c_COp3Em8, a_aCx_8ni, o_ROL8, a_aCx_8w)
-RMW(c_COp3Em16, a_aCx_16ni, o_ROL16, a_aCx_16w)
+RMW(OP(COp26m8), a_d_8ni, o_ROL8, a_d_8w)
+RMW(OP(COp26m16), a_d_16ni, o_ROL16, a_d_16w)
+RMW(OP(COp2Am8), a_A_8ni, o_ROL8, a_A_8w)
+RMW(OP(COp2Am16), a_A_16ni, o_ROL16, a_A_16w)
+RMW(OP(COp2Em8), a_a_8ni, o_ROL8, a_a_8w)
+RMW(OP(COp2Em16), a_a_16ni, o_ROL16, a_a_16w)
+RMW(OP(COp36m8), a_dCx_8ni, o_ROL8, a_dCx_8w)
+RMW(OP(COp36m16), a_dCx_16ni, o_ROL16, a_dCx_16w)
+RMW(OP(COp3Em8), a_aCx_8ni, o_ROL8, a_aCx_8w)
+RMW(OP(COp3Em16), a_aCx_16ni, o_ROL16, a_aCx_16w)
 
 /* ROR */
-RMW(c_COp66m8, a_d_8ni, o_ROR8, a_d_8w)
-RMW(c_COp66m16, a_d_16ni, o_ROR16, a_d_16w)
-RMW(c_COp6Am8, a_A_8ni, o_ROR8, a_A_8w)
-RMW(c_COp6Am16, a_A_16ni, o_ROR16, a_A_16w)
-RMW(c_COp6Em8, a_a_8ni, o_ROR8, a_a_8w)
-RMW(c_COp6Em16, a_a_16ni, o_ROR16, a_a_16w)
-RMW(c_COp76m8, a_dCx_8ni, o_ROR8, a_dCx_8w)
-RMW(c_COp76m16, a_dCx_16ni, o_ROR16, a_dCx_16w)
-RMW(c_COp7Em8, a_aCx_8ni, o_ROR8, a_aCx_8w)
-RMW(c_COp7Em16, a_aCx_16ni, o_ROR16, a_aCx_16w)
+RMW(OP(COp66m8), a_d_8ni, o_ROR8, a_d_8w)
+RMW(OP(COp66m16), a_d_16ni, o_ROR16, a_d_16w)
+RMW(OP(COp6Am8), a_A_8ni, o_ROR8, a_A_8w)
+RMW(OP(COp6Am16), a_A_16ni, o_ROR16, a_A_16w)
+RMW(OP(COp6Em8), a_a_8ni, o_ROR8, a_a_8w)
+RMW(OP(COp6Em16), a_a_16ni, o_ROR16, a_a_16w)
+RMW(OP(COp76m8), a_dCx_8ni, o_ROR8, a_dCx_8w)
+RMW(OP(COp76m16), a_dCx_16ni, o_ROR16, a_dCx_16w)
+RMW(OP(COp7Em8), a_aCx_8ni, o_ROR8, a_aCx_8w)
+RMW(OP(COp7Em16), a_aCx_16ni, o_ROR16, a_aCx_16w)
 
 /* TRB */
-RMW(c_COp14m8, a_d_8ni, o_TRB8, a_d_8w)
-RMW(c_COp14m16, a_d_16ni, o_TRB16, a_d_16w)
-RMW(c_COp1Cm8, a_a_8ni, o_TRB8, a_a_8w)
-RMW(c_COp1Cm16, a_a_16ni, o_TRB16, a_a_16w)
+RMW(OP(COp14m8), a_d_8ni, o_TRB8, a_d_8w)
+RMW(OP(COp14m16), a_d_16ni, o_TRB16, a_d_16w)
+RMW(OP(COp1Cm8), a_a_8ni, o_TRB8, a_a_8w)
+RMW(OP(COp1Cm16), a_a_16ni, o_TRB16, a_a_16w)
 
 /* TSB */
-RMW(c_COp04m8, a_d_8ni, o_TSB8, a_d_8w)
-RMW(c_COp04m16, a_d_16ni, o_TSB16, a_d_16w)
-RMW(c_COp0Cm8, a_a_8ni, o_TSB8, a_a_8w)
-RMW(c_COp0Cm16, a_a_16ni, o_TSB16, a_a_16w)
+RMW(OP(COp04m8), a_d_8ni, o_TSB8, a_d_8w)
+RMW(OP(COp04m16), a_d_16ni, o_TSB16, a_d_16w)
+RMW(OP(COp0Cm8), a_a_8ni, o_TSB8, a_a_8w)
+RMW(OP(COp0Cm16), a_a_16ni, o_TSB16, a_a_16w)
 
 /*
  * ADC and SBC.
@@ -1762,140 +1782,140 @@ static void o_SBC16d(u4* const r)
 }
 
 /* ADC8nd */
-OPMODE(c_COp61m8nd, a_BdCxB_8, o_ADC8nd)
-OPMODE(c_COp63m8nd, a_dCs_8, o_ADC8nd)
-OPMODE(c_COp65m8nd, a_d_8, o_ADC8nd)
-OPMODE(c_COp67m8nd, a_LdL_8, o_ADC8nd)
-OPMODE(c_COp69m8nd, a_I_8, o_ADC8nd)
-OPMODE(c_COp6Dm8nd, a_a_8, o_ADC8nd)
-OPMODE(c_COp6Fm8nd, a_al_8, o_ADC8nd)
-OPMODE(c_COp71m8nd, a_BdBCy_8, o_ADC8nd)
-OPMODE(c_COp72m8nd, a_BdB_8, o_ADC8nd)
-OPMODE(c_COp73m8nd, a_BdCsBCy_8, o_ADC8nd)
-OPMODE(c_COp75m8nd, a_dCx_8, o_ADC8nd)
-OPMODE(c_COp77m8nd, a_LdLCy_8, o_ADC8nd)
-OPMODE(c_COp79m8nd, a_aCy_8, o_ADC8nd)
-OPMODE(c_COp7Dm8nd, a_aCx_8, o_ADC8nd)
-OPMODE(c_COp7Fm8nd, a_alCx_8, o_ADC8nd)
+OPMODE(OP(COp61m8nd), a_BdCxB_8, o_ADC8nd)
+OPMODE(OP(COp63m8nd), a_dCs_8, o_ADC8nd)
+OPMODE(OP(COp65m8nd), a_d_8, o_ADC8nd)
+OPMODE(OP(COp67m8nd), a_LdL_8, o_ADC8nd)
+OPMODE(OP(COp69m8nd), a_I_8, o_ADC8nd)
+OPMODE(OP(COp6Dm8nd), a_a_8, o_ADC8nd)
+OPMODE(OP(COp6Fm8nd), a_al_8, o_ADC8nd)
+OPMODE(OP(COp71m8nd), a_BdBCy_8, o_ADC8nd)
+OPMODE(OP(COp72m8nd), a_BdB_8, o_ADC8nd)
+OPMODE(OP(COp73m8nd), a_BdCsBCy_8, o_ADC8nd)
+OPMODE(OP(COp75m8nd), a_dCx_8, o_ADC8nd)
+OPMODE(OP(COp77m8nd), a_LdLCy_8, o_ADC8nd)
+OPMODE(OP(COp79m8nd), a_aCy_8, o_ADC8nd)
+OPMODE(OP(COp7Dm8nd), a_aCx_8, o_ADC8nd)
+OPMODE(OP(COp7Fm8nd), a_alCx_8, o_ADC8nd)
 
 /* ADC16nd */
-OPMODE(c_COp61m16nd, a_BdCxB_16, o_ADC16nd)
-OPMODE(c_COp63m16nd, a_dCs_16, o_ADC16nd)
-OPMODE(c_COp65m16nd, a_d_16, o_ADC16nd)
-OPMODE(c_COp67m16nd, a_LdL_16, o_ADC16nd)
-OPMODE(c_COp69m16nd, a_I_16, o_ADC16nd)
-OPMODE(c_COp6Dm16nd, a_a_16, o_ADC16nd)
-OPMODE(c_COp6Fm16nd, a_al_16, o_ADC16nd)
-OPMODE(c_COp71m16nd, a_BdBCy_16, o_ADC16nd)
-OPMODE(c_COp72m16nd, a_BdB_16, o_ADC16nd)
-OPMODE(c_COp73m16nd, a_BdCsBCy_16, o_ADC16nd)
-OPMODE(c_COp75m16nd, a_dCx_16, o_ADC16nd)
-OPMODE(c_COp77m16nd, a_LdLCy_16, o_ADC16nd)
-OPMODE(c_COp79m16nd, a_aCy_16, o_ADC16nd)
-OPMODE(c_COp7Dm16nd, a_aCx_16, o_ADC16nd)
-OPMODE(c_COp7Fm16nd, a_alCx_16, o_ADC16nd)
+OPMODE(OP(COp61m16nd), a_BdCxB_16, o_ADC16nd)
+OPMODE(OP(COp63m16nd), a_dCs_16, o_ADC16nd)
+OPMODE(OP(COp65m16nd), a_d_16, o_ADC16nd)
+OPMODE(OP(COp67m16nd), a_LdL_16, o_ADC16nd)
+OPMODE(OP(COp69m16nd), a_I_16, o_ADC16nd)
+OPMODE(OP(COp6Dm16nd), a_a_16, o_ADC16nd)
+OPMODE(OP(COp6Fm16nd), a_al_16, o_ADC16nd)
+OPMODE(OP(COp71m16nd), a_BdBCy_16, o_ADC16nd)
+OPMODE(OP(COp72m16nd), a_BdB_16, o_ADC16nd)
+OPMODE(OP(COp73m16nd), a_BdCsBCy_16, o_ADC16nd)
+OPMODE(OP(COp75m16nd), a_dCx_16, o_ADC16nd)
+OPMODE(OP(COp77m16nd), a_LdLCy_16, o_ADC16nd)
+OPMODE(OP(COp79m16nd), a_aCy_16, o_ADC16nd)
+OPMODE(OP(COp7Dm16nd), a_aCx_16, o_ADC16nd)
+OPMODE(OP(COp7Fm16nd), a_alCx_16, o_ADC16nd)
 
 /* ADC8d */
-OPMODE(c_COp61m8d, a_BdCxB_8, o_ADC8d)
-OPMODE(c_COp63m8d, a_dCs_8, o_ADC8d)
-OPMODE(c_COp65m8d, a_d_8, o_ADC8d)
-OPMODE(c_COp67m8d, a_LdL_8, o_ADC8d)
-OPMODE(c_COp69m8d, a_I_8, o_ADC8d)
-OPMODE(c_COp6Dm8d, a_a_8, o_ADC8d)
-OPMODE(c_COp6Fm8d, a_al_8, o_ADC8d)
-OPMODE(c_COp71m8d, a_BdBCy_8, o_ADC8d)
-OPMODE(c_COp72m8d, a_BdB_8, o_ADC8d)
-OPMODE(c_COp73m8d, a_BdCsBCy_8, o_ADC8d)
-OPMODE(c_COp75m8d, a_dCx_8, o_ADC8d)
-OPMODE(c_COp77m8d, a_LdLCy_8, o_ADC8d)
-OPMODE(c_COp79m8d, a_aCy_8, o_ADC8d)
-OPMODE(c_COp7Dm8d, a_aCx_8, o_ADC8d)
-OPMODE(c_COp7Fm8d, a_alCx_8, o_ADC8d)
+OPMODE(OP(COp61m8d), a_BdCxB_8, o_ADC8d)
+OPMODE(OP(COp63m8d), a_dCs_8, o_ADC8d)
+OPMODE(OP(COp65m8d), a_d_8, o_ADC8d)
+OPMODE(OP(COp67m8d), a_LdL_8, o_ADC8d)
+OPMODE(OP(COp69m8d), a_I_8, o_ADC8d)
+OPMODE(OP(COp6Dm8d), a_a_8, o_ADC8d)
+OPMODE(OP(COp6Fm8d), a_al_8, o_ADC8d)
+OPMODE(OP(COp71m8d), a_BdBCy_8, o_ADC8d)
+OPMODE(OP(COp72m8d), a_BdB_8, o_ADC8d)
+OPMODE(OP(COp73m8d), a_BdCsBCy_8, o_ADC8d)
+OPMODE(OP(COp75m8d), a_dCx_8, o_ADC8d)
+OPMODE(OP(COp77m8d), a_LdLCy_8, o_ADC8d)
+OPMODE(OP(COp79m8d), a_aCy_8, o_ADC8d)
+OPMODE(OP(COp7Dm8d), a_aCx_8, o_ADC8d)
+OPMODE(OP(COp7Fm8d), a_alCx_8, o_ADC8d)
 
 /* ADC16d */
-OPMODE(c_COp61m16d, a_BdCxB_16, o_ADC16d)
-OPMODE(c_COp63m16d, a_dCs_16, o_ADC16d)
-OPMODE(c_COp65m16d, a_d_16, o_ADC16d)
-OPMODE(c_COp67m16d, a_LdL_16, o_ADC16d)
-OPMODE(c_COp69m16d, a_I_16, o_ADC16d)
-OPMODE(c_COp6Dm16d, a_a_16, o_ADC16d)
-OPMODE(c_COp6Fm16d, a_al_16, o_ADC16d)
-OPMODE(c_COp71m16d, a_BdBCy_16, o_ADC16d)
-OPMODE(c_COp72m16d, a_BdB_16, o_ADC16d)
-OPMODE(c_COp73m16d, a_BdCsBCy_16, o_ADC16d)
-OPMODE(c_COp75m16d, a_dCx_16, o_ADC16d)
-OPMODE(c_COp77m16d, a_LdLCy_16, o_ADC16d)
-OPMODE(c_COp79m16d, a_aCy_16, o_ADC16d)
-OPMODE(c_COp7Dm16d, a_aCx_16, o_ADC16d)
-OPMODE(c_COp7Fm16d, a_alCx_16, o_ADC16d)
+OPMODE(OP(COp61m16d), a_BdCxB_16, o_ADC16d)
+OPMODE(OP(COp63m16d), a_dCs_16, o_ADC16d)
+OPMODE(OP(COp65m16d), a_d_16, o_ADC16d)
+OPMODE(OP(COp67m16d), a_LdL_16, o_ADC16d)
+OPMODE(OP(COp69m16d), a_I_16, o_ADC16d)
+OPMODE(OP(COp6Dm16d), a_a_16, o_ADC16d)
+OPMODE(OP(COp6Fm16d), a_al_16, o_ADC16d)
+OPMODE(OP(COp71m16d), a_BdBCy_16, o_ADC16d)
+OPMODE(OP(COp72m16d), a_BdB_16, o_ADC16d)
+OPMODE(OP(COp73m16d), a_BdCsBCy_16, o_ADC16d)
+OPMODE(OP(COp75m16d), a_dCx_16, o_ADC16d)
+OPMODE(OP(COp77m16d), a_LdLCy_16, o_ADC16d)
+OPMODE(OP(COp79m16d), a_aCy_16, o_ADC16d)
+OPMODE(OP(COp7Dm16d), a_aCx_16, o_ADC16d)
+OPMODE(OP(COp7Fm16d), a_alCx_16, o_ADC16d)
 
 /* SBC8nd */
-OPMODE(c_COpE1m8nd, a_BdCxB_8, o_SBC8nd)
-OPMODE(c_COpE3m8nd, a_dCs_8, o_SBC8nd)
-OPMODE(c_COpE5m8nd, a_d_8, o_SBC8nd)
-OPMODE(c_COpE7m8nd, a_LdL_8, o_SBC8nd)
-OPMODE(c_COpE9m8nd, a_I_8, o_SBC8nd)
-OPMODE(c_COpEDm8nd, a_a_8, o_SBC8nd)
-OPMODE(c_COpEFm8nd, a_al_8, o_SBC8nd)
-OPMODE(c_COpF1m8nd, a_BdBCy_8, o_SBC8nd)
-OPMODE(c_COpF2m8nd, a_BdB_8, o_SBC8nd)
-OPMODE(c_COpF3m8nd, a_BdCsBCy_8, o_SBC8nd)
-OPMODE(c_COpF5m8nd, a_dCx_8, o_SBC8nd)
-OPMODE(c_COpF7m8nd, a_LdLCy_8, o_SBC8nd)
-OPMODE(c_COpF9m8nd, a_aCy_8, o_SBC8nd)
-OPMODE(c_COpFDm8nd, a_aCx_8, o_SBC8nd)
-OPMODE(c_COpFFm8nd, a_alCx_8, o_SBC8nd)
+OPMODE(OP(COpE1m8nd), a_BdCxB_8, o_SBC8nd)
+OPMODE(OP(COpE3m8nd), a_dCs_8, o_SBC8nd)
+OPMODE(OP(COpE5m8nd), a_d_8, o_SBC8nd)
+OPMODE(OP(COpE7m8nd), a_LdL_8, o_SBC8nd)
+OPMODE(OP(COpE9m8nd), a_I_8, o_SBC8nd)
+OPMODE(OP(COpEDm8nd), a_a_8, o_SBC8nd)
+OPMODE(OP(COpEFm8nd), a_al_8, o_SBC8nd)
+OPMODE(OP(COpF1m8nd), a_BdBCy_8, o_SBC8nd)
+OPMODE(OP(COpF2m8nd), a_BdB_8, o_SBC8nd)
+OPMODE(OP(COpF3m8nd), a_BdCsBCy_8, o_SBC8nd)
+OPMODE(OP(COpF5m8nd), a_dCx_8, o_SBC8nd)
+OPMODE(OP(COpF7m8nd), a_LdLCy_8, o_SBC8nd)
+OPMODE(OP(COpF9m8nd), a_aCy_8, o_SBC8nd)
+OPMODE(OP(COpFDm8nd), a_aCx_8, o_SBC8nd)
+OPMODE(OP(COpFFm8nd), a_alCx_8, o_SBC8nd)
 
 /* SBC16nd */
-OPMODE(c_COpE1m16nd, a_BdCxB_16, o_SBC16nd)
-OPMODE(c_COpE3m16nd, a_dCs_16, o_SBC16nd)
-OPMODE(c_COpE5m16nd, a_d_16, o_SBC16nd)
-OPMODE(c_COpE7m16nd, a_LdL_16, o_SBC16nd)
-OPMODE(c_COpE9m16nd, a_I_16, o_SBC16nd)
-OPMODE(c_COpEDm16nd, a_a_16, o_SBC16nd)
-OPMODE(c_COpEFm16nd, a_al_16, o_SBC16nd)
-OPMODE(c_COpF1m16nd, a_BdBCy_16, o_SBC16nd)
-OPMODE(c_COpF2m16nd, a_BdB_16, o_SBC16nd)
-OPMODE(c_COpF3m16nd, a_BdCsBCy_16, o_SBC16nd)
-OPMODE(c_COpF5m16nd, a_dCx_16, o_SBC16nd)
-OPMODE(c_COpF7m16nd, a_LdLCy_16, o_SBC16nd)
-OPMODE(c_COpF9m16nd, a_aCy_16, o_SBC16nd)
-OPMODE(c_COpFDm16nd, a_aCx_16, o_SBC16nd)
-OPMODE(c_COpFFm16nd, a_alCx_16, o_SBC16nd)
+OPMODE(OP(COpE1m16nd), a_BdCxB_16, o_SBC16nd)
+OPMODE(OP(COpE3m16nd), a_dCs_16, o_SBC16nd)
+OPMODE(OP(COpE5m16nd), a_d_16, o_SBC16nd)
+OPMODE(OP(COpE7m16nd), a_LdL_16, o_SBC16nd)
+OPMODE(OP(COpE9m16nd), a_I_16, o_SBC16nd)
+OPMODE(OP(COpEDm16nd), a_a_16, o_SBC16nd)
+OPMODE(OP(COpEFm16nd), a_al_16, o_SBC16nd)
+OPMODE(OP(COpF1m16nd), a_BdBCy_16, o_SBC16nd)
+OPMODE(OP(COpF2m16nd), a_BdB_16, o_SBC16nd)
+OPMODE(OP(COpF3m16nd), a_BdCsBCy_16, o_SBC16nd)
+OPMODE(OP(COpF5m16nd), a_dCx_16, o_SBC16nd)
+OPMODE(OP(COpF7m16nd), a_LdLCy_16, o_SBC16nd)
+OPMODE(OP(COpF9m16nd), a_aCy_16, o_SBC16nd)
+OPMODE(OP(COpFDm16nd), a_aCx_16, o_SBC16nd)
+OPMODE(OP(COpFFm16nd), a_alCx_16, o_SBC16nd)
 
 /* SBC8d */
-OPMODE(c_COpE1m8d, a_BdCxB_8, o_SBC8d)
-OPMODE(c_COpE3m8d, a_dCs_8, o_SBC8d)
-OPMODE(c_COpE5m8d, a_d_8, o_SBC8d)
-OPMODE(c_COpE7m8d, a_LdL_8, o_SBC8d)
-OPMODE(c_COpE9m8d, a_I_8, o_SBC8d)
-OPMODE(c_COpEDm8d, a_a_8, o_SBC8d)
-OPMODE(c_COpEFm8d, a_al_8, o_SBC8d)
-OPMODE(c_COpF1m8d, a_BdBCy_8, o_SBC8d)
-OPMODE(c_COpF2m8d, a_BdB_8, o_SBC8d)
-OPMODE(c_COpF3m8d, a_BdCsBCy_8, o_SBC8d)
-OPMODE(c_COpF5m8d, a_dCx_8, o_SBC8d)
-OPMODE(c_COpF7m8d, a_LdLCy_8, o_SBC8d)
-OPMODE(c_COpF9m8d, a_aCy_8, o_SBC8d)
-OPMODE(c_COpFDm8d, a_aCx_8, o_SBC8d)
-OPMODE(c_COpFFm8d, a_alCx_8, o_SBC8d)
+OPMODE(OP(COpE1m8d), a_BdCxB_8, o_SBC8d)
+OPMODE(OP(COpE3m8d), a_dCs_8, o_SBC8d)
+OPMODE(OP(COpE5m8d), a_d_8, o_SBC8d)
+OPMODE(OP(COpE7m8d), a_LdL_8, o_SBC8d)
+OPMODE(OP(COpE9m8d), a_I_8, o_SBC8d)
+OPMODE(OP(COpEDm8d), a_a_8, o_SBC8d)
+OPMODE(OP(COpEFm8d), a_al_8, o_SBC8d)
+OPMODE(OP(COpF1m8d), a_BdBCy_8, o_SBC8d)
+OPMODE(OP(COpF2m8d), a_BdB_8, o_SBC8d)
+OPMODE(OP(COpF3m8d), a_BdCsBCy_8, o_SBC8d)
+OPMODE(OP(COpF5m8d), a_dCx_8, o_SBC8d)
+OPMODE(OP(COpF7m8d), a_LdLCy_8, o_SBC8d)
+OPMODE(OP(COpF9m8d), a_aCy_8, o_SBC8d)
+OPMODE(OP(COpFDm8d), a_aCx_8, o_SBC8d)
+OPMODE(OP(COpFFm8d), a_alCx_8, o_SBC8d)
 
 /* SBC16d */
-OPMODE(c_COpE1m16d, a_BdCxB_16, o_SBC16d)
-OPMODE(c_COpE3m16d, a_dCs_16, o_SBC16d)
-OPMODE(c_COpE5m16d, a_d_16, o_SBC16d)
-OPMODE(c_COpE7m16d, a_LdL_16, o_SBC16d)
-OPMODE(c_COpE9m16d, a_I_16, o_SBC16d)
-OPMODE(c_COpEDm16d, a_a_16, o_SBC16d)
-OPMODE(c_COpEFm16d, a_al_16, o_SBC16d)
-OPMODE(c_COpF1m16d, a_BdBCy_16, o_SBC16d)
-OPMODE(c_COpF2m16d, a_BdB_16, o_SBC16d)
-OPMODE(c_COpF3m16d, a_BdCsBCy_16, o_SBC16d)
-OPMODE(c_COpF5m16d, a_dCx_16, o_SBC16d)
-OPMODE(c_COpF7m16d, a_LdLCy_16, o_SBC16d)
-OPMODE(c_COpF9m16d, a_aCy_16, o_SBC16d)
-OPMODE(c_COpFDm16d, a_aCx_16, o_SBC16d)
-OPMODE(c_COpFFm16d, a_alCx_16, o_SBC16d)
+OPMODE(OP(COpE1m16d), a_BdCxB_16, o_SBC16d)
+OPMODE(OP(COpE3m16d), a_dCs_16, o_SBC16d)
+OPMODE(OP(COpE5m16d), a_d_16, o_SBC16d)
+OPMODE(OP(COpE7m16d), a_LdL_16, o_SBC16d)
+OPMODE(OP(COpE9m16d), a_I_16, o_SBC16d)
+OPMODE(OP(COpEDm16d), a_a_16, o_SBC16d)
+OPMODE(OP(COpEFm16d), a_al_16, o_SBC16d)
+OPMODE(OP(COpF1m16d), a_BdBCy_16, o_SBC16d)
+OPMODE(OP(COpF2m16d), a_BdB_16, o_SBC16d)
+OPMODE(OP(COpF3m16d), a_BdCsBCy_16, o_SBC16d)
+OPMODE(OP(COpF5m16d), a_dCx_16, o_SBC16d)
+OPMODE(OP(COpF7m16d), a_LdLCy_16, o_SBC16d)
+OPMODE(OP(COpF9m16d), a_aCy_16, o_SBC16d)
+OPMODE(OP(COpFDm16d), a_aCx_16, o_SBC16d)
+OPMODE(OP(COpFFm16d), a_alCx_16, o_SBC16d)
 
 /*
  * Control flow.
@@ -1928,7 +1948,7 @@ static inline void jump_to(u4* const r, int const dma)
 /* The 65816 PC that esi currently stands for. */
 static inline u2 pc_now(u4 const esi) { return (u2)(esi - (u4)(uintptr_t)initaddrl); }
 
-void c_COp4C(u4* const r) /* JMP a */
+void OP(COp4C)(u4* const r) /* JMP a */
 {
     r[R_EAX] = 0;
     AX(r, *(u2 const*)(uintptr_t)r[R_ESI]);
@@ -1937,7 +1957,7 @@ void c_COp4C(u4* const r) /* JMP a */
     jump_to(r, 1);
 }
 
-void c_COp6C(u4* const r) /* JMP (a) */
+void OP(COp6C)(u4* const r) /* JMP (a) */
 {
     SET16(r[R_ECX], *(u2 const*)(uintptr_t)r[R_ESI]);
     r[R_EAX] = 0;
@@ -1947,7 +1967,7 @@ void c_COp6C(u4* const r) /* JMP (a) */
     jump_to(r, 0);
 }
 
-void c_COp7C(u4* const r) /* JMP (a,x) */
+void OP(COp7C)(u4* const r) /* JMP (a,x) */
 {
     SET16(r[R_ECX], *(u2 const*)(uintptr_t)r[R_ESI]);
     r[R_EAX] = 0;
@@ -1959,7 +1979,7 @@ void c_COp7C(u4* const r) /* JMP (a,x) */
     jump_to(r, 0);
 }
 
-void c_COp5C(u4* const r) /* JMP al */
+void OP(COp5C)(u4* const r) /* JMP al */
 {
     r[R_EAX] = 0;
     SET8(r[R_EBX], *(u1 const*)(uintptr_t)(r[R_ESI] + 2));
@@ -1969,7 +1989,7 @@ void c_COp5C(u4* const r) /* JMP al */
     jump_to(r, 0);
 }
 
-void c_COpDC(u4* const r) /* JML (a) */
+void OP(COpDC)(u4* const r) /* JML (a) */
 {
     u4 saved;
     SET16(r[R_ECX], *(u2 const*)(uintptr_t)r[R_ESI]);
@@ -1985,7 +2005,7 @@ void c_COpDC(u4* const r) /* JML (a) */
     jump_to(r, 0);
 }
 
-void c_COp82(u4* const r) /* BRL rl */
+void OP(COp82)(u4* const r) /* BRL rl */
 {
     r[R_EBX] = r[R_ESI] - (u4)(uintptr_t)initaddrl;
     SET16(r[R_EBX], (u2)(GET16(r[R_EBX]) + 2));
@@ -1998,7 +2018,7 @@ void c_COp82(u4* const r) /* BRL rl */
     jump_to(r, 0);
 }
 
-void c_COp60(u4* const r) /* RTS s */
+void OP(COp60)(u4* const r) /* RTS s */
 {
     SET16(r[R_ECX], GET16(xs));
     xpc = (u2)((xpc & 0xFF00u) | pop8(r));
@@ -2013,7 +2033,7 @@ void c_COp60(u4* const r) /* RTS s */
     jump_to(r, 0);
 }
 
-void c_COp6B(u4* const r) /* RTL s */
+void OP(COp6B)(u4* const r) /* RTL s */
 {
     SET16(r[R_ECX], GET16(xs));
     r[R_EAX] = 0;
@@ -2041,7 +2061,7 @@ static inline void push_pc(u4* const r)
     push8(r, (u1)xpc);
 }
 
-void c_COp20(u4* const r) /* JSR a */
+void OP(COp20)(u4* const r) /* JSR a */
 {
     r[R_EBX] = r[R_ESI] - (u4)(uintptr_t)initaddrl;
     SET16(r[R_EBX], (u2)(GET16(r[R_EBX]) + 1));
@@ -2056,7 +2076,7 @@ void c_COp20(u4* const r) /* JSR a */
     jump_to(r, 1);
 }
 
-void c_COpFC(u4* const r) /* JSR (a,x) */
+void OP(COpFC)(u4* const r) /* JSR (a,x) */
 {
     r[R_EBX] = r[R_ESI] - (u4)(uintptr_t)initaddrl;
     SET16(r[R_EBX], (u2)(GET16(r[R_EBX]) + 1));
@@ -2075,7 +2095,7 @@ void c_COpFC(u4* const r) /* JSR (a,x) */
     jump_to(r, 0);
 }
 
-void c_COp22(u4* const r) /* JSL al */
+void OP(COp22)(u4* const r) /* JSL al */
 {
     r[R_EBX] = r[R_ESI] - (u4)(uintptr_t)initaddrl;
     SET16(r[R_EBX], (u2)(GET16(r[R_EBX]) + 2));
@@ -2120,10 +2140,10 @@ static void block_move(u4* const r, int const dir)
         r[R_ESI]--;
 }
 
-void c_COp54(u4* const r) { block_move(r, +1); } /* MVN xyc */
-void c_COp44(u4* const r) { block_move(r, -1); } /* MVP xyc */
+void OP(COp54)(u4* const r) { block_move(r, +1); } /* MVN xyc */
+void OP(COp44)(u4* const r) { block_move(r, -1); } /* MVP xyc */
 
-void c_COpCB(u4* const r) /* WAI i */
+void OP(COpCB)(u4* const r) /* WAI i */
 {
     if (intrset == 1) {
         r[R_ESI]--;
@@ -2142,7 +2162,7 @@ void c_COpCB(u4* const r) /* WAI i */
     r[R_ESI]--;
 }
 
-void c_COp89m8(u4* const r) /* BIT # - immediate does not touch N or V */
+void OP(COp89m8)(u4* const r) /* BIT # - immediate does not touch N or V */
 {
     AL(r, *(u1 const*)(uintptr_t)r[R_ESI]);
     if (flagnz & 0x18000u)
@@ -2151,7 +2171,7 @@ void c_COp89m8(u4* const r) /* BIT # - immediate does not touch N or V */
     flagnz = (flagnz & 0xFFFF0000u) | ((GET8(xa) & GET8(r[R_EAX])) ? 1u : 0u);
 }
 
-void c_COp89m16(u4* const r) /* BIT # */
+void OP(COp89m16)(u4* const r) /* BIT # */
 {
     AX(r, *(u2 const*)(uintptr_t)r[R_ESI]);
     if (flagnz & 0x18000u)
@@ -2213,8 +2233,10 @@ static void brk_cop(u4* const r, u2 const vec, u2 const vec8, u4 const setbits8)
     jump_to(r, 0);
 }
 
-void c_COp00(u4* const r) { brk_cop(r, brkv, brkv8, 0x0Cu); } /* BRK s */
-void c_COp02(u4* const r) { brk_cop(r, copv, copv8, 0x04u); } /* COP s */
+#ifndef OPS_OWN_COp00
+void OP(COp00)(u4* const r) { brk_cop(r, brkv, brkv8, 0x0Cu); } /* BRK s */
+#endif
+void OP(COp02)(u4* const r) { brk_cop(r, copv, copv8, 0x04u); } /* COP s */
 
 /*
  * RTI. Pulls P, then the return address, then re-enters wherever that lands.
@@ -2222,7 +2244,7 @@ void c_COp02(u4* const r) { brk_cop(r, copv, copv8, 0x04u); } /* COP s */
  * flags, landing on a WAI ($CB) re-arms intrset, and emulation mode returns to
  * bank zero regardless of what was pushed.
  */
-void c_COp40(u4* const r) /* RTI s */
+static void rti_body(u4* const r)
 {
     int const emul = (xe & 1) != 0;
 
@@ -2283,12 +2305,17 @@ void c_COp40(u4* const r) /* RTI s */
     }
 }
 
+#ifndef OPS_OWN_COp40
+void OP(COp40)(u4* const r) { rti_body(r); } /* RTI s */
+#endif
+
 /*
  * CLI. Unlike every other ported opcode this one can restart the dispatch loop
  * instead of returning into it, so cpu/e65816.inc keeps a thunk of its own that
  * branches on what this returns: non-zero means "re-enter execloop".
  */
-int c_COp58(u4* const r) /* CLI i */
+#ifndef OPS_OWN_COp58
+int OP(COp58)(u4* const r) /* CLI i */
 {
     r[R_EDX] &= ~0x04u;
     if (doirqnext == 0)
@@ -2303,5 +2330,6 @@ int c_COp58(u4* const r) /* CLI i */
     }
     return (xe & 1) != 0;
 }
+#endif
 
 #endif /* OPS65816_H */
