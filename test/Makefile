@@ -431,3 +431,18 @@ op: difftest_op.c difftest.h ../cpu/ops65816.h
 	            regaccessbankr8 execloop switchtovirq
 	$(CC) $(CFLAGS) -I../cpu difftest_op.c _op.o _op_stubs.c -no-pie -o difftest_op
 	@./difftest_op
+
+sa1op: difftest_sa1.c difftest_op.c difftest.h ../cpu/ops65816.h
+	python3 ../tools/mkoracle.py cpu/stable.asm -o _sa1.o \
+	    --ported-marker 'EXTSYM c_SA1COp' --rewrite-macro 'endloop=    ret' \
+	    --stubs _sa1_stubs.c \
+	    --exclude SA1xa SA1xx SA1xy SA1xs SA1xd SA1xdb SA1xpb xpc xe \
+	            Sflagnz Sflago Sflagc SA1tablead stackand stackor \
+	            SA1UpdateDPage snesmmap snesmap2 membank0r8 membank0r16 \
+	            membank0w8 membank0w16 memtabler8 memtabler16 memtablew8 \
+	            memtablew16 SA1DPageR8 SA1DPageR16 SA1DPageW8 SA1DPageW16 \
+	            brkv brkv8 copv copv8 xirqb intrset doirqnext curnmi \
+	            nmistatus curexecstate initaddrl wramdata dmadata \
+	            regaccessbankr8 execloop switchtovirq
+	$(CC) $(CFLAGS) -I../cpu difftest_sa1.c _sa1.o _sa1_stubs.c -no-pie -o difftest_sa1
+	@./difftest_sa1

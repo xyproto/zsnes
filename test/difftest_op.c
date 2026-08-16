@@ -12,6 +12,20 @@
  * bytes above it alone, so a C port that stores the whole 32 bits looks right
  * on the emulator and wrong here.
  */
+/*
+ * Parameterised the same way cpu/ops65816.h is, so test/difftest_sa1.c can
+ * include this file to check the SA-1 instantiation against cpu/se65816.inc.
+ */
+#ifndef OP
+#define OP(n) c_##n
+#endif
+#ifndef ASMOP
+#define ASMOP(n) asm_##n
+#endif
+#ifndef CORENAME
+#define CORENAME "65816"
+#endif
+
 #include "difftest.h"
 
 typedef uint8_t u1;
@@ -191,7 +205,11 @@ __asm__(".text\n"
 /* By -I, not "../cpu/...": a mutation sweep compiles this from a scratch
    tree whose test/ is a symlink, and there `../cpu` traverses back out to
    the real header, so every mutant would survive. */
-#include "ops65816.h"
+/* The SA-1 test swaps in its own instantiation here. */
+#ifndef OPS_IMPL
+#define OPS_IMPL "ops65816.h"
+#endif
+#include OPS_IMPL
 
 /* Set for BRK and COP, the only opcodes that write work RAM directly. */
 static int dt_wram;
@@ -248,7 +266,8 @@ static void run_asm(void)
     X(COp42, 0)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              \
     X(COpCAx8, 0)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            \
     X(COpCAx16, 0)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           \
-    X(COpE8x8, 0) X(COpE8x16, 0)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             \
+    X(COpE8x8, 0)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            \
+    X(COpE8x16, 0)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           \
         X(COp88x8, 0) X(COp88x16, 0) X(COpC8x8, 0) X(COpC8x16, 0)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            \
             X(COpAAx8, 0) X(COpAAx16, 0) X(COpA8x8, 0) X(COpA8x16, 0)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        \
                 X(COpBAx8, 0) X(COpBAx16, 0) X(COp8Am8, 0) X(COp8Am16, 0)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    \
@@ -376,18 +395,22 @@ static void run_asm(void)
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         X(COp44, 1) X(COpCB, 1) X(COp89m8, 1) X(COp89m16, 1) \
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             X(COp00, 1) X(COp02, 1) X(COp40, 1)
 
-#define DECL(n, b) extern void asm_##n(void);
+#define DECL(n, b) extern void ASMOP(n)(void);
 OPS(DECL)
 #undef DECL
 
 /* CLI's C half returns "restart the dispatch loop", which its thunk in
    cpu/e65816.inc turns into `xor ebx,ebx; jmp execloop`. The oracle's opcode
    contains that branch, so the test has to model the thunk too. */
-extern void asm_COp58(void);
+extern void ASMOP(COp58)(void);
 static void cli_c(u4* const r)
 {
-    if (c_COp58(r))
+#ifdef CLI_RETURNS_VOID
+    OP(COp58)(r); /* the SA-1 has no IRQ to switch to, so no restart path */
+#else
+    if (OP(COp58)(r))
         r[R_EBX] = 0;
+#endif
 }
 
 static const struct {
@@ -396,10 +419,10 @@ static const struct {
     void (*c)(u4*);
     int bytebx;
 } ops[] = {
-#define ENT(n, b) { #n, asm_##n, c_##n, b },
+#define ENT(n, b) { #n, ASMOP(n), OP(n), b },
     OPS(ENT)
 #undef ENT
-        { "COp58", asm_COp58, cli_c, 1 },
+        { "COp58", ASMOP(COp58), cli_c, 1 },
 };
 
 /* Everything both sides may read or write. */
@@ -669,12 +692,12 @@ int main(void)
     }
 
     if (fails) {
-        printf("65816 opcodes: FAIL (%d of %zu opcodes mismatched)\n", fails,
+        printf(CORENAME " opcodes: FAIL (%d of %zu opcodes mismatched)\n", fails,
             sizeof ops / sizeof ops[0]);
         return 1;
     }
-    printf("65816 opcodes: PASS (%zu opcodes x %ld iterations bit-identical "
-           "to asm)\n",
+    printf(CORENAME " opcodes: PASS (%zu opcodes x %ld iterations bit-identical "
+                    "to asm)\n",
         sizeof ops / sizeof ops[0], dt_iters);
     return 0;
 }
