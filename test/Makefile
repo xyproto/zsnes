@@ -446,3 +446,17 @@ sa1op: difftest_sa1.c difftest_op.c difftest.h ../cpu/ops65816.h
 	            regaccessbankr8 execloop switchtovirq
 	$(CC) $(CFLAGS) -I../cpu difftest_sa1.c _sa1.o _sa1_stubs.c -no-pie -o difftest_sa1
 	@./difftest_sa1
+
+dbgop: difftest_dbg.c difftest_op.c difftest.h ../cpu/ops65816_dbg.h
+	python3 ../tools/mkoracle.py cpu/tablec.asm -o _dbg.o \
+	    --ported-marker 'EXTSYM c_dbgCOp' --rewrite-macro 'endloop=    ret' \
+	    --stubs _dbg_stubs.c \
+	    --exclude xa xx xy xs xd xdb xpb xpc xe flagnz flago flagc \
+	            tableadc stackand stackor UpdateDPage snesmmap snesmap2 \
+	            membank0r8 membank0r16 membank0w8 membank0w16 memtabler8 \
+	            memtabler16 memtablew8 memtablew16 DPageR8 DPageR16 DPageW8 \
+	            DPageW16 brkv brkv8 copv copv8 xirqb intrset doirqnext curnmi \
+	            nmistatus curexecstate initaddrl wramdata dmadata \
+	            regaccessbankr8 execloop switchtovirq
+	$(CC) $(CFLAGS) -I../cpu difftest_dbg.c _dbg.o _dbg_stubs.c -no-pie -o difftest_dbg
+	@./difftest_dbg
