@@ -1960,6 +1960,7 @@ void preparesfx()
 {
     char* ROM = (char*)romdata;
     int_fast16_t i;
+    uint32_t const rom_buffer_size = (uint32_t)(sfxramdata - romdata);
 
     SfxAC = 0;
 
@@ -1968,6 +1969,9 @@ void preparesfx()
     }
 
     // [sneed]: bigger rom support
+    // Keep the expanded ROM below the reserved SuperFX RAM area.
+    if (NumofBanks > rom_buffer_size / 0x10000)
+        return;
     for (i = (NumofBanks - 1); i >= 0; i--) {
         memcpy((int32_t*)romdata + i * 0x4000, (int32_t*)romdata + i * 0x2000, 0x8000);
         memcpy((int32_t*)romdata + i * 0x4000 + 0x2000, (int32_t*)romdata + i * 0x2000, 0x8000);
