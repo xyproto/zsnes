@@ -199,13 +199,13 @@ void SwapData(uint32_t* loc1, uint32_t* loc2, uint32_t amount)
     }
 }
 
-void swapBlocks(uint8_t* blocks)
+void swapBlocks(uint32_t* blocks)
 {
     uint_fast32_t i, j;
     for (i = 0; i < NumofBanks; i++) {
         for (j = 0; j < NumofBanks; j++) {
-            if (blocks[j] == (int8_t)i) {
-                int8_t b;
+            if (blocks[j] == i) {
+                uint32_t b;
                 SwapData(((uint32_t*)romdata + blocks[i] * 0x2000), ((uint32_t*)romdata + blocks[j] * 0x2000), 0x2000);
                 b = blocks[j];
                 blocks[j] = blocks[i];
@@ -218,14 +218,19 @@ void swapBlocks(uint8_t* blocks)
 
 void deintlv1()
 {
-    uint8_t blocks[256];
+    uint32_t* blocks;
     int_fast32_t i;
     int32_t numblocks = NumofBanks / 2;
+
+    blocks = malloc(sizeof(*blocks) * NumofBanks);
+    if (!blocks)
+        return;
     for (i = 0; i < numblocks; i++) {
         blocks[i * 2] = i + numblocks;
         blocks[i * 2 + 1] = i;
     }
     swapBlocks(blocks);
+    free(blocks);
 }
 
 void CheckIntl1(uint8_t* ROM)
