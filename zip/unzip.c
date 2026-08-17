@@ -565,13 +565,17 @@ uLong commentBufferSize;
     lSeek += file_info.size_filename;
     if ((err == UNZ_OK) && (szFileName != NULL)) {
         uLong uSizeRead;
-        if (file_info.size_filename < fileNameBufferSize) {
-            *(szFileName + file_info.size_filename) = '\0';
-            uSizeRead = file_info.size_filename;
-        } else
-            uSizeRead = fileNameBufferSize;
+        if (fileNameBufferSize > 0) {
+            if (file_info.size_filename < fileNameBufferSize)
+                uSizeRead = file_info.size_filename;
+            else
+                uSizeRead = fileNameBufferSize - 1;
+            *(szFileName + uSizeRead) = '\0';
+        } else {
+            uSizeRead = 0;
+        }
 
-        if ((file_info.size_filename > 0) && (fileNameBufferSize > 0))
+        if ((file_info.size_filename > 0) && (uSizeRead > 0))
             if (fread(szFileName, (uInt)uSizeRead, 1, s->file) != 1)
                 err = UNZ_ERRNO;
         lSeek -= uSizeRead;
