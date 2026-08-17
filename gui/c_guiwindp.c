@@ -5,11 +5,14 @@
 #include <arpa/inet.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <limits.h>
 #include <netdb.h>
 #include <netinet/tcp.h>
 #include <pthread.h>
+#include <stdint.h>
 #include <sys/select.h>
 #include <sys/socket.h>
+#include <time.h>
 #include <unistd.h>
 #endif
 
@@ -1759,6 +1762,26 @@ static int NetplayWaitFD(int const fd, int const want_write, int timeout_ms)
     return select(fd + 1, &fds, NULL, NULL, &timeout);
 }
 
+static uint64_t NetplayNowMS(void)
+{
+    struct timespec now;
+    clock_gettime(CLOCK_MONOTONIC, &now);
+    return (uint64_t)now.tv_sec * 1000 + (uint64_t)now.tv_nsec / 1000000;
+}
+
+static int NetplayWaitFDDeadline(int const fd, int const want_write, uint64_t deadline)
+{
+    uint64_t now = NetplayNowMS();
+    uint64_t remaining;
+
+    if (now >= deadline)
+        return 0;
+    remaining = deadline - now;
+    if (remaining > INT_MAX)
+        remaining = INT_MAX;
+    return NetplayWaitFD(fd, want_write, (int)remaining);
+}
+
 static void NetplayPacketHton(NetplayInputPacket* const p)
 {
     p->magic = htonl(p->magic);
@@ -1779,8 +1802,9 @@ static int NetplaySendExact(int const fd, void const* const data, size_t size, i
 {
     size_t sent = 0;
     char const* ptr = (char const*)data;
+    uint64_t const deadline = NetplayNowMS() + (uint64_t)(timeout_ms > 0 ? timeout_ms : 0);
     while (sent < size) {
-        if (NetplayWaitFD(fd, 1, timeout_ms) <= 0)
+        if (NetplayWaitFDDeadline(fd, 1, deadline) <= 0)
             return 0;
         int flags = 0;
 #ifdef MSG_NOSIGNAL
@@ -1802,8 +1826,9 @@ static int NetplayRecvExact(int const fd, void* const data, size_t size, int tim
 {
     size_t recvd = 0;
     char* ptr = (char*)data;
+    uint64_t const deadline = NetplayNowMS() + (uint64_t)(timeout_ms > 0 ? timeout_ms : 0);
     while (recvd < size) {
-        if (NetplayWaitFD(fd, 0, timeout_ms) <= 0)
+        if (NetplayWaitFDDeadline(fd, 0, deadline) <= 0)
             return 0;
         ssize_t n = recv(fd, ptr + recvd, size - recvd, 0);
         if (n > 0) {
@@ -1843,8 +1868,9 @@ static int NetplayRecvPacket(int const fd, NetplayInputPacket* const packet, int
         NetplayPacketNtoh(packet);
         return 1;
     }
+    uint64_t const deadline = NetplayNowMS() + (uint64_t)(timeout_ms > 0 ? timeout_ms : 0);
     for (;;) {
-        if (NetplayWaitFD(fd, 0, timeout_ms) <= 0)
+        if (NetplayWaitFDDeadline(fd, 0, deadline) <= 0)
             return 0;
         NetplayInputPacket tmp;
         ssize_t n = recv(fd, &tmp, sizeof(tmp), 0);
