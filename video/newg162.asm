@@ -67,6 +67,7 @@ section .note.GNU-stack noalloc noexec nowrite progbits
 %endrep
 %endmacro
 %endif
+EXTSYM c_drawtile2b_nt,c_drawtile2b_t,c_drawtile2b_mst,c_drawtile2b_msnt
 EXTSYM c_determinetransp,c_checkwindowing,c_determinewindow,ng_branch
 EXTSYM ngwintable,ngwinen,ngcwinptr,ngcpixleft,ngcwinmode,tleftn,ng16bprval
 EXTSYM vrama,bg1drwng,ng16bbgval,bg1totng,bgtxadd,taddnfy16x16,taddfy16x16
@@ -343,7 +344,13 @@ NEWSYM drawtileng2b16b
     determinetransp drawtileng2b16bt
 drawtileng2b16bnt
     CheckWindowing drawtileng2bwin
-    drawtile16b tltype2b, preparet2batile, cachesingle2bng,ngpalcon2b,test2ba,03h,vidmemch2s,cache2b16b,tilenormal,tilenormalb
+    ; plain leaf (no transparency, no window): video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile2b_nt, eax
+    popad
+    pop ebx
+    ret
 drawtileng2bwin:
     drawtile16bw tltype2b, preparet2batile, cachesingle2bng,ngpalcon2b,test2ba,03h,vidmemch2s,cache2b16b,tilenormal,tilenormalb,tilenormalw,tilenormalwb
 drawtileng2b16bt
@@ -352,14 +359,26 @@ drawtileng2b16bt
     test byte[scadtng+ebx],dl
     jz near drawtileng2b16bnt
     CheckWindowing drawtileng2bwint
-    drawtile16b tltype2b, preparet2batile, cachesingle2bng,ngpalcon2b,test2ba,03h,vidmemch2s,cache2b16b,tilenormalt,tilenormalbt
+    ; transparent leaf: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile2b_t, eax
+    popad
+    pop ebx
+    ret
 drawtileng2bwint:
     drawtile16bw tltype2b, preparet2batile, cachesingle2bng,ngpalcon2b,test2ba,03h,vidmemch2s,cache2b16b,tilenormalt,tilenormalbt,tilenormalwt,tilenormalwbt
 drawtileng2b16bms:
     test byte[scadtng+ebx],dl
     jz near drawtileng2b16bmsnt
     DetermineWindow drawtileng2b16bmstmsw, drawtileng2b16bmstmw, drawtileng2b16bmstsw
-    drawtile16b tltype2b, preparet2batile, cachesingle2bng,ngpalcon2b,test2ba,03h,vidmemch2s,cache2b16b,tilenormalmst,tilenormalbmst
+    ; transparent + sub screen leaf: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile2b_mst, eax
+    popad
+    pop ebx
+    ret
 drawtileng2b16bmstmsw:
     drawtile16bw tltype2b, preparet2batile, cachesingle2bng,ngpalcon2b,test2ba,03h,vidmemch2s,cache2b16b,tilenormalmst,tilenormalbmst,tilenormalwmst,tilenormalwbmst
 drawtileng2b16bmstmw:
@@ -368,7 +387,13 @@ drawtileng2b16bmstsw:
     drawtile16bw2 tltype2b, preparet2batile, cachesingle2bng,ngpalcon2b,test2ba,03h,vidmemch2s,cache2b16b,tilenormalmst,tilenormalbmst,tilenormalwmsbt,tilenormalwbmsbt,tilenormalt,tilenormalbt
 drawtileng2b16bmsnt
     DetermineWindow drawtileng2b16bmsntmsw, drawtileng2b16bmsntmw, drawtileng2b16bmsntsw
-    drawtile16b tltype2b, preparet2batile, cachesingle2bng,ngpalcon2b,test2ba,03h,vidmemch2s,cache2b16b,tilenormalmsnt,tilenormalbmsnt
+    ; sub screen leaf: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile2b_msnt, eax
+    popad
+    pop ebx
+    ret
 drawtileng2b16bmsntmsw:
     drawtile16bw tltype2b, preparet2batile, cachesingle2bng,ngpalcon2b,test2ba,03h,vidmemch2s,cache2b16b,tilenormalmsnt,tilenormalbmsnt,tilenormalwmsnt,tilenormalwbmsnt
 drawtileng2b16bmsntmw:

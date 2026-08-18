@@ -20,7 +20,14 @@
 
 #include "../types.h"
 
-enum { R_EDI, R_ESI, R_EBP, R_ESP, R_EBX, R_EDX, R_ECX, R_EAX };
+enum { R_EDI,
+    R_ESI,
+    R_EBP,
+    R_ESP,
+    R_EBX,
+    R_EDX,
+    R_ECX,
+    R_EAX };
 
 extern u1 vrama[], tltype2b[], vidmemch2[], vidmemch2s[];
 extern u4 UnusedBit[2], ngwintable[];
@@ -37,7 +44,10 @@ extern void c_cachesingle2bng(u4 ecx);
 #define SUB (75036u * 2u)
 
 /* Writer flags. */
-enum { W_T = 1, W_MS = 2, W_S = 4, W_W = 8 };
+enum { W_T = 1,
+    W_MS = 2,
+    W_S = 4,
+    W_W = 8 };
 
 /* cacheloopstuff / DoCache: decode one tile into the cache, forwards and
    mirrored, taking colours from the palette ebp points at. */
@@ -229,4 +239,41 @@ static void drawtile_line(u4* const r, leaf const* const lf)
         if (--tleftn == 0)
             return;
     }
+}
+
+/* Leaf-entry counts, so a test can tell which leaves it actually reaches
+   rather than inferring it from a mutation that may never run. */
+u4 ng2_leafhits[4];
+
+/* The plain leaf: no transparency, no windowing. Entered by jmp with one word
+   pushed, so the assembly seam ends `pop ebx / ret`. */
+void c_drawtile2b_nt(u4* const r)
+{
+    static leaf const lf = { 0, 0, 0 };
+    ng2_leafhits[0]++;
+    drawtile_line(r, &lf);
+}
+
+/* The other three leaves that need no window handling. msnt writes the main
+   screen before the sub one and mst the other way round; the addresses differ,
+   so the order does not. */
+void c_drawtile2b_t(u4* const r)
+{
+    static leaf const lf = { W_T, 0, 0 };
+    ng2_leafhits[1]++;
+    drawtile_line(r, &lf);
+}
+
+void c_drawtile2b_mst(u4* const r)
+{
+    static leaf const lf = { W_T | W_MS, 0, 0 };
+    ng2_leafhits[2]++;
+    drawtile_line(r, &lf);
+}
+
+void c_drawtile2b_msnt(u4* const r)
+{
+    static leaf const lf = { W_MS, 0, 0 };
+    ng2_leafhits[3]++;
+    drawtile_line(r, &lf);
 }

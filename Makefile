@@ -452,6 +452,7 @@ SRCS += video/c_ngprocbg.c
 SRCS += video/c_ngline.c
 SRCS += video/c_ngspr.c
 SRCS += video/c_ng2gate.c
+SRCS += video/c_ng2tile.c
 SRCS += video/c_ngtransp.c
 SRCS += video/c_makev16tdata.c
 SRCS += video/c_newgfx16data.c
