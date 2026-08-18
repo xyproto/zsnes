@@ -80,6 +80,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #define MB_bytes 0x100000
 #define Mbit_bytes 0x20000
+#define MaxInterleaveBanks (0xC00000 / 0x8000)
 
 // Offsets to add to infoloc start to reach particular variable
 #define BankOffset 21 // Contains Speed as well
@@ -218,19 +219,20 @@ void swapBlocks(uint32_t* blocks)
 
 void deintlv1()
 {
-    uint32_t* blocks;
+    uint32_t blocks[MaxInterleaveBanks];
     int_fast32_t i;
     int32_t numblocks = NumofBanks / 2;
 
-    blocks = malloc(sizeof(*blocks) * NumofBanks);
-    if (!blocks)
+    if (NumofBanks > MaxInterleaveBanks)
         return;
+    for (i = 0; i < NumofBanks; i++) {
+        blocks[i] = i;
+    }
     for (i = 0; i < numblocks; i++) {
         blocks[i * 2] = i + numblocks;
         blocks[i * 2 + 1] = i;
     }
     swapBlocks(blocks);
-    free(blocks);
 }
 
 void CheckIntl1(uint8_t* ROM)
