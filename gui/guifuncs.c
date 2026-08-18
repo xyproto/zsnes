@@ -549,6 +549,10 @@ void GUIRestoreVars()
 
         if (ComboBlHeader[22]) {
             NumComboGlob = ComboBlHeader[22];
+
+            if (NumComboGlob > lengthof(CombinDataGlob))
+                NumComboGlob = lengthof(CombinDataGlob);
+
             fread(CombinDataGlob, sizeof(*CombinDataGlob), NumComboGlob, cfg_fp);
         }
 

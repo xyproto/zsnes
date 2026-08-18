@@ -1952,6 +1952,9 @@ void OpenCombFile()
         fread(ComboHeader, 1, 23, fp);
         NumComboLocl = ComboHeader[22];
 
+        if (NumComboLocl > lengthof(CombinDataLocl))
+            NumComboLocl = lengthof(CombinDataLocl);
+
         if (NumComboLocl) {
             fread(CombinDataLocl, sizeof(*CombinDataLocl), NumComboLocl, fp);
         }
