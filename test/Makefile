@@ -460,3 +460,7 @@ dbgop: difftest_dbg.c difftest_op.c difftest.h ../cpu/ops65816_dbg.h
 	            regaccessbankr8 execloop switchtovirq
 	$(CC) $(CFLAGS) -I../cpu difftest_dbg.c _dbg.o _dbg_stubs.c -no-pie -o difftest_dbg
 	@./difftest_dbg
+
+transp: difftest_transp.c difftest.h ../video/c_ngtransp.c
+	$(CC) $(CFLAGS) difftest_transp.c -no-pie -o difftest_transp
+	@./difftest_transp
