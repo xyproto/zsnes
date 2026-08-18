@@ -90,6 +90,13 @@ jobs:
             sudo ldconfig
             echo 'PKG_CONFIG_PATH=/usr/local/lib/pkgconfig' >> "$GITHUB_ENV"
           fi
+      - name: Check formatting
+        run: |
+          make fmt
+          if ! git diff --quiet; then
+            git --no-pager diff --name-only
+            exit 1
+          fi
       - name: Build
         run: |
           make clean
@@ -100,13 +107,6 @@ jobs:
           ldd ./zsnes | tee ldd.txt
           grep -E 'libSDL3|SDL3' ldd.txt
           grep -E 'libpipewire-0\.3' ldd.txt
-      - name: Check formatting
-        run: |
-          make fmt
-          if ! git diff --quiet; then
-            git --no-pager diff --name-only
-            exit 1
-          fi
 
   windows:
     name: win
