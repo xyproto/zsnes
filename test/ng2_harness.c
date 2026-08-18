@@ -32,6 +32,12 @@ extern u1 vcache2bs[], vcache4bs[], vcache8bs[];
 #define NG2_CACHE (8u << 20)
 static u1 cache2[NG2_CACHE], cache4[NG2_CACHE], cache8[NG2_CACHE];
 
+/* vcache*  is the raw tile source and vcache*s the decoded cache - two
+   different buffers. Pointing both at the same one leaves the source all
+   zeros, so every decoded pixel comes out 0xFFFF and colour bugs become
+   invisible. */
+u1 ng2_src2[NG2_CACHE], ng2_src4[NG2_CACHE], ng2_src8[NG2_CACHE];
+
 /* inittable() in cpu/c_table.c fills these; the two loops are replicated
    rather than linked, because inittable also builds the opcode tables. */
 extern u4 ngpalcon2b[32], ngpalcon4b[32];
@@ -73,9 +79,9 @@ void ng2_init(void)
     curtileptr = tilebuf;
     bgptr = bgptrc = bgptrd = ng2_vram;
 
-    *(u1**)vcache2b = cache2;
-    *(u1**)vcache4b = cache4;
-    *(u1**)vcache8b = cache8;
+    *(u1**)vcache2b = ng2_src2;
+    *(u1**)vcache4b = ng2_src4;
+    *(u1**)vcache8b = ng2_src8;
     *(u1**)vcache2bs = cache2;
     *(u1**)vcache4bs = cache4;
     *(u1**)vcache8bs = cache8;

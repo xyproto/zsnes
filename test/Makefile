@@ -466,11 +466,15 @@ transp: difftest_transp.c difftest.h ../video/c_ngtransp.c
 	$(CC) $(CFLAGS) difftest_transp.c -no-pie -o difftest_transp
 	@./difftest_transp
 
-ng2: difftest_ng2.c ng2_harness.c ng2_harness.h difftest.h
+ng2: difftest_ng2.c ng2_harness.c ng2_harness.h difftest.h \
+     ../video/c_ng2tile.c ../video/c_ng2gate.c ../video/newg162.asm
 	python3 ../tools/mkoracle.py video/newg162.asm -o _ng2.o \
 	    --ported-marker 'ccall c_determinetransp' --stubs _ng2_stubs.c \
 	    --provided-by ../video/tilecache.o ../endmem.o \
 	    --exclude domosaicng16b
-	$(CC) $(CFLAGS) difftest_ng2.c ng2_harness.c _ng2.o _ng2_stubs.c \
-	    ../video/tilecache.o ../endmem.o -no-pie -o difftest_ng2
+	python3 ../tools/mkoracle.py video/newg162.asm -o _ng2cur.o \
+	    --worktree --prefix cur_
+	$(CC) $(CFLAGS) difftest_ng2.c ng2_harness.c _ng2.o _ng2cur.o \
+	    _ng2_stubs.c ../video/tilecache.o ../endmem.o ../video/c_ng2tile.o \
+	    ../video/c_ng2gate.o -no-pie -o difftest_ng2
 	@./difftest_ng2
