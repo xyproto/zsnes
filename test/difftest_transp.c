@@ -25,6 +25,13 @@ typedef uint32_t u4;
 u2 fulladdtab[65536];
 u4 UnusedBit[2], HalfTrans[2];
 
+/* The dispatch half of the routine needs these; only the five colour-maths
+   loops are under test here, so they just have to exist and be quiet. */
+u1* vidbuffer;
+u1 FillSubScr[256], scadtng[256], SpecialLine[256];
+u2 resolutn;
+u4 HiResDone, NGNoTransp = 1;
+
 #include "../video/c_ngtransp.c"
 
 static u2 bufC[SUBOFF + LINE * 2], bufA[SUBOFF + LINE * 2];

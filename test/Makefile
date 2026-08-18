@@ -336,7 +336,7 @@ ngspr: difftest_ngspr.c difftest.h ../video/c_ngspr.c
 mos: difftest_mos.c difftest.h $(NG_SEAM)
 	python3 ../tools/mkoracle.py video/newgfx16.asm -o _mos.o \
 	    --stubs _mos_stubs.c --provided-by $(NG_OBJS) \
-	    --exclude vram xtravbuf pesimpng fulladdtab
+	    --exclude vram xtravbuf pesimpng fulladdtab vidbuffer
 	python3 ../tools/mkoracle.py video/newgfx16.asm -o _moscur.o \
 	    --worktree --prefix cur_
 	$(CC) $(CFLAGS) difftest_mos.c $(NG_SEAM) \
@@ -465,3 +465,11 @@ dbgop: difftest_dbg.c difftest_op.c difftest.h ../cpu/ops65816_dbg.h
 transp: difftest_transp.c difftest.h ../video/c_ngtransp.c
 	$(CC) $(CFLAGS) difftest_transp.c -no-pie -o difftest_transp
 	@./difftest_transp
+
+ng2: difftest_ng2.c ng2_harness.c ng2_harness.h difftest.h
+	python3 ../tools/mkoracle.py video/newg162.asm -o _ng2.o \
+	    --ported-marker 'ccall c_determinetransp' --stubs _ng2_stubs.c \
+	    --provided-by ../video/tilecache.o ../endmem.o
+	$(CC) $(CFLAGS) difftest_ng2.c ng2_harness.c _ng2.o _ng2_stubs.c \
+	    ../video/tilecache.o ../endmem.o -no-pie -o difftest_ng2
+	@./difftest_ng2
