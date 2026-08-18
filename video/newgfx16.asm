@@ -146,6 +146,7 @@ EXTSYM bgtxadd2,drawmode7ngextbg16b,processmode7hires16b
 EXTSYM drawmode7ngextbg216b,osm2dis,ofsmtptrs,ofsmcptr2
 EXTSYM prevbrightdc,mosstart,moscountdown,BackAreaAdd
 EXTSYM BackAreaUnFillCol,BackAreaFillCol,clinemainsub,cpalptrng
+EXTSYM c_transp_fulladd
 EXTSYM ngmsdraw,CMainWinScr,CSubWinScr,Prevcoladdr
 EXTSYM ColResult,CPalPtrng,WindowRedraw,mostranspval
 EXTSYM mosclineval,startlinet,endlinet,palchanged
@@ -1191,28 +1192,14 @@ ProcessTransparencies:
 .fulltransp
     test byte[scadtng+ebx],80h
     jnz near .fullsubtract
+    ; Full add is video/c_ngtransp.c. The push/pop stay: the C leaves esi and
+    ; ebx alone and lets them be restored here, as the assembly did.
     push ebx
     push esi
-    mov ecx,256
-    mov ebp,[HalfTrans]
-    xor edx,edx
-    xor eax,eax
-    mov bx,[UnusedBit]
-.nextfa
-    mov ax,[esi]
-    test ax,bx
-    jz .notranspfa
-    mov dx,[esi+75036*2]
-    and eax,ebp
-    and edx,ebp
-    add edx,eax
-    shr edx,1
-    mov dx,[fulladdtab+edx*2]
-    mov [esi],dx
-.notranspfa
-    add esi,2
-    dec ecx
-    jnz .nextfa
+    pushad
+    mov eax, esp
+    ccall c_transp_fulladd, eax
+    popad
     pop esi
     pop ebx
     jmp .donetransp
