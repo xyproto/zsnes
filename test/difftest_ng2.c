@@ -17,6 +17,7 @@
  * set up yet (the 16x16 line drawers and every offset-mode variant). The lower
  * number is the honest one; do not "fix" it by pinning tltype* back to zero.
  */
+#include <sys/mman.h>
 #include <sys/wait.h>
 #include <unistd.h>
 
@@ -28,6 +29,8 @@ typedef uint32_t u4;
 
 extern u1 BGMS1[], FillSubScr[], scadtng[], curmosaicsz, ngwinen;
 extern u4 CMainWinScr, CSubWinScr;
+/* The windowed leaves walk this table; WinClipMacro seeds ngcwinptr from it. */
+extern u4 ngwintable[];
 
 extern void asm_drawtileng2b16b(void);
 extern void asm_drawtileng4b16b(void);
@@ -50,8 +53,13 @@ extern void asm_drawlinengom16x162b16b(void);
 extern void asm_drawlinengom16x164b16b(void);
 extern void asm_drawlinengom16x168b16b(void);
 
-#define OUTSZ 16384u
-static u1 out_a[OUTSZ], out_b[OUTSZ];
+/* The ms writers also store to edi+75036*2, so the buffer has to cover the sub
+   screen as well - a short one puts those writes in whatever follows, which is
+   different memory in each forked child and reads as non-determinism. */
+#define OUTSZ (75036u * 2u + 32768u)
+/* Shared so a forked child's result reaches the parent. */
+static u1* out_a;
+static u1* out_b;
 static u1 winbuf[8192];
 
 extern u1 ng2_vram[];
@@ -60,16 +68,21 @@ extern u1 ng2_palette[];
    but leaving it to do so means only one of the three paths ever runs, so it
    is randomised here - both sides see the same values. */
 extern u1 tltype2b[], tltype4b[], tltype8b[];
-
+/* The gating tree keys off these, so leaving them zero pins every routine to
+   one leaf. */
 static void setup(void)
 {
-    curmosaicsz = 1;
-    ngwinen = 0;
+    curmosaicsz = (u1)(dt_mod(2) ? 1 : 2);
+    /* Windows on for half the runs: the gating tree has windowed leaves with
+       their own writers, and leaving ngwinen at zero never reaches them. */
+    ngwinen = (u1)dt_mod(2);
+    for (u4 k = 0; k < 64; k++)
+        ngwintable[k] = dt_mod(2) ? 0 : (dt_mod(200) + 1);
     CMainWinScr = CSubWinScr = 0;
-    memset(BGMS1, 0, 512);
-    memset(FillSubScr, 0, 256);
-    memset(scadtng, 0, 256);
-    memset(winbuf, 0, sizeof winbuf);
+    dt_fill(BGMS1, 512);
+    dt_fill(FillSubScr, 256);
+    dt_fill(scadtng, 256);
+    dt_fill(winbuf, sizeof winbuf);
 }
 
 static void call_drawtileng2b16b(void) { NG2_CALL(asm_drawtileng2b16b); }
@@ -96,6 +109,7 @@ static void call_drawlinengom16x168b16b(void) { NG2_CALL(asm_drawlinengom16x168b
 static void run(void (*thunk)(void), u1* out)
 {
     memset(out, 0xAA, OUTSZ);
+    ng2_reset();
     NG2_EAX = 0;
     NG2_EBX = 1;
     NG2_ECX = (u4)(uintptr_t)winbuf;
@@ -135,6 +149,8 @@ int main(void)
     };
     int bad = 0;
 
+    out_a = mmap(0, OUTSZ, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+    out_b = mmap(0, OUTSZ, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
     ng2_init();
     srand(99);
     /* Each routine runs in a child: one that still needs state the harness
@@ -152,8 +168,19 @@ int main(void)
                     tltype2b[k] = tltype4b[k] = tltype8b[k] = t;
                 }
                 setup();
-                run(routines[i].thunk, out_a);
-                run(routines[i].thunk, out_b);
+                /* One run per child, both forked from the same parent state:
+                   these routines mutate the tile cache, the vidmemch maps and
+                   several counters, so running twice in one process compares
+                   the second run against the first one's leftovers. Forking
+                   makes the starting state identical by construction. */
+                for (int k = 0; k < 2; k++) {
+                    pid_t const c = fork();
+                    if (c == 0) {
+                        run(routines[i].thunk, k ? out_b : out_a);
+                        _exit(0);
+                    }
+                    waitpid(c, NULL, 0);
+                }
                 if (memcmp(out_a, out_b, OUTSZ))
                     _exit(2);
             }

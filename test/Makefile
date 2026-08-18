@@ -469,7 +469,8 @@ transp: difftest_transp.c difftest.h ../video/c_ngtransp.c
 ng2: difftest_ng2.c ng2_harness.c ng2_harness.h difftest.h
 	python3 ../tools/mkoracle.py video/newg162.asm -o _ng2.o \
 	    --ported-marker 'ccall c_determinetransp' --stubs _ng2_stubs.c \
-	    --provided-by ../video/tilecache.o ../endmem.o
+	    --provided-by ../video/tilecache.o ../endmem.o \
+	    --exclude domosaicng16b
 	$(CC) $(CFLAGS) difftest_ng2.c ng2_harness.c _ng2.o _ng2_stubs.c \
 	    ../video/tilecache.o ../endmem.o -no-pie -o difftest_ng2
 	@./difftest_ng2
