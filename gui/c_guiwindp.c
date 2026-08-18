@@ -1678,11 +1678,13 @@ enum {
     NETPLAY_WAITING = 1,
     NETPLAY_CONNECTING = 2,
     NETPLAY_CONNECTED = 3,
-    NETPLAY_JOINING = 4
+    NETPLAY_JOINING = 4,
+    NETPLAY_HANDSHAKING = 5
 };
 
 typedef struct {
     u4 magic;
+    u4 session;
     u4 seq;
     u4 joy;
     u4 crc;
@@ -1697,10 +1699,13 @@ static uint16_t const NetplayDefaultPort = 7845;
 static u1 NetplayHostRole = 0;
 static u4 NetplayLocalSeq = 0;
 static u4 NetplayRemoteSeq = 0;
+static u1 NetplayRemoteSeqValid = 0;
 static u4 NetplayRemoteJoy = 0x00008000;
+static u4 NetplaySessionToken = 0;
 char NetplayHostName[32] = "127.0.0.1";
 char* GUINetplayTextPtr[1] = { NetplayHostName };
 static u1 NetplayPendingRemoteValid = 0;
+static u1 NetplayHandshakePending = 0;
 static NetplayInputPacket NetplayPendingRemote;
 static u4 const NetplayMagic = 0x4E455450; // "NETP"
 
@@ -1719,6 +1724,7 @@ static int NetplayJoinFd = -1;
 static int NetplayJoinResult = 0;
 static int NetplayJoinIsUDP = 0;
 static char NetplayJoinHostCopy[32] = "";
+static uint64_t NetplayHandshakeDeadline = 0;
 
 static void NetplaySetNonBlocking(int const fd)
 {
@@ -1769,6 +1775,20 @@ static uint64_t NetplayNowMS(void)
     return (uint64_t)now.tv_sec * 1000 + (uint64_t)now.tv_nsec / 1000000;
 }
 
+static u4 NetplayGenerateSessionToken(void)
+{
+    u4 token = 0;
+    FILE* fp = fopen("/dev/urandom", "rb");
+
+    if (fp != NULL) {
+        fread(&token, sizeof(token), 1, fp);
+        fclose(fp);
+    }
+    if (token == 0)
+        token = (u4)NetplayNowMS() ^ (u4)(uintptr_t)&token ^ (u4)getpid();
+    return token != 0 ? token : 1;
+}
+
 static int NetplayWaitFDDeadline(int const fd, int const want_write, uint64_t deadline)
 {
     uint64_t now = NetplayNowMS();
@@ -1785,6 +1805,7 @@ static int NetplayWaitFDDeadline(int const fd, int const want_write, uint64_t de
 static void NetplayPacketHton(NetplayInputPacket* const p)
 {
     p->magic = htonl(p->magic);
+    p->session = htonl(p->session);
     p->seq = htonl(p->seq);
     p->joy = htonl(p->joy);
     p->crc = htonl(p->crc);
@@ -1793,6 +1814,7 @@ static void NetplayPacketHton(NetplayInputPacket* const p)
 static void NetplayPacketNtoh(NetplayInputPacket* const p)
 {
     p->magic = ntohl(p->magic);
+    p->session = ntohl(p->session);
     p->seq = ntohl(p->seq);
     p->joy = ntohl(p->joy);
     p->crc = ntohl(p->crc);
@@ -1858,6 +1880,23 @@ static int NetplaySendPacket(int const fd, NetplayInputPacket const* const packe
 #endif
     ssize_t n = send(fd, &wire, sizeof(wire), flags);
     return n == (ssize_t)sizeof(wire);
+}
+
+static int NetplaySendPacketTo(int const fd, NetplayInputPacket const* const packet, struct sockaddr const* const address, socklen_t address_len)
+{
+    NetplayInputPacket wire = *packet;
+    NetplayPacketHton(&wire);
+    int flags = 0;
+#ifdef MSG_NOSIGNAL
+    flags = MSG_NOSIGNAL;
+#endif
+    ssize_t n = sendto(fd, &wire, sizeof(wire), flags, address, address_len);
+    return n == (ssize_t)sizeof(wire);
+}
+
+static int NetplayIsHandshakePacket(NetplayInputPacket const* const packet, u4 const session)
+{
+    return packet->magic == NetplayMagic && packet->session == session && packet->seq == 0 && packet->joy == 0x00008000u && packet->crc == 0;
 }
 
 static int NetplayRecvPacket(int const fd, NetplayInputPacket* const packet, int timeout_ms)
@@ -2056,21 +2095,34 @@ static void* NetplayJoinThreadFunc(void* arg)
             NetplayJoinActive = 0;
             return NULL;
         }
-        NetplayInputPacket hello;
-        memset(&hello, 0, sizeof(hello));
-        hello.magic = NetplayMagic;
-        hello.joy = 0x00008000u;
-        int flags = 0;
-#ifdef MSG_NOSIGNAL
-        flags = MSG_NOSIGNAL;
-#endif
-        NetplayInputPacket wire = hello;
-        NetplayPacketHton(&wire);
-        for (int i = 0; i < 3 && NetplayJoinCancel == 0; i++) {
-            send(fd, &wire, sizeof(wire), flags);
-            if (i < 2)
-                usleep(50000);
+    }
+
+    NetplayInputPacket hello;
+    NetplayInputPacket challenge;
+    memset(&hello, 0, sizeof(hello));
+    hello.magic = NetplayMagic;
+    hello.joy = 0x00008000u;
+    if (type == SOCK_DGRAM) {
+        if (!NetplaySendPacket(fd, &hello, 1000)) {
+            close(fd);
+            NetplayJoinResult = 0;
+            NetplayJoinActive = 0;
+            return NULL;
         }
+    }
+    if (!NetplayRecvPacket(fd, &challenge, 1000) || challenge.magic != NetplayMagic || challenge.session == 0 || challenge.seq != 0 || challenge.joy != 0x00008000u || challenge.crc != 0) {
+        close(fd);
+        NetplayJoinResult = 0;
+        NetplayJoinActive = 0;
+        return NULL;
+    }
+    NetplaySessionToken = challenge.session;
+    hello.session = NetplaySessionToken;
+    if (!NetplaySendPacket(fd, &hello, 1000)) {
+        close(fd);
+        NetplayJoinResult = 0;
+        NetplayJoinActive = 0;
+        return NULL;
     }
 
     if (NetplayJoinCancel != 0) {
@@ -2112,8 +2164,11 @@ void NetplayDisconnectSession(void)
     NetplayHostRole = 0;
     NetplayLocalSeq = 0;
     NetplayRemoteSeq = 0;
+    NetplayRemoteSeqValid = 0;
     NetplayRemoteJoy = 0x00008000;
+    NetplaySessionToken = 0;
     NetplayPendingRemoteValid = 0;
+    NetplayHandshakePending = 0;
 }
 
 void NetplayHostSession(void)
@@ -2146,6 +2201,7 @@ void NetplayHostSession(void)
 
     NetplayDisconnectSession();
     NetplayHostRole = 1;
+    NetplaySessionToken = NetplayGenerateSessionToken();
     NetplaySetNonBlocking(fd);
     if (type == SOCK_STREAM) {
         if (listen(fd, 1) != 0) {
@@ -2198,15 +2254,48 @@ static void NetplayAdvanceState(int timeout_ms)
         if (NetplayWaitFD(NetplayServerSocket, 0, timeout_ms) > 0) {
             int fd = accept(NetplayServerSocket, NULL, NULL);
             if (fd >= 0) {
-                NetplayClientSocket = fd;
-                NetplaySetNonBlocking(fd);
-                NetplaySetTCPOptions(fd);
-                close(NetplayServerSocket);
-                NetplayServerSocket = -1;
+                NetplayInputPacket challenge;
+                memset(&challenge, 0, sizeof(challenge));
+                challenge.magic = NetplayMagic;
+                challenge.session = NetplaySessionToken;
+                challenge.joy = 0x00008000u;
+                if (NetplaySendPacket(fd, &challenge, 1000)) {
+                    NetplayClientSocket = fd;
+                    NetplaySetNonBlocking(fd);
+                    NetplaySetTCPOptions(fd);
+                    NetplayHandshakeDeadline = NetplayNowMS() + 1000;
+                    NetplaySessionState = NETPLAY_HANDSHAKING;
+                    strcpy(NetplayLastEvent, "TCP CLIENT HANDSHAKING");
+                } else {
+                    close(fd);
+                }
+            }
+        }
+    }
+
+    if (NetplaySessionState == NETPLAY_HANDSHAKING && NetplayClientSocket >= 0) {
+        if (NetplayNowMS() >= NetplayHandshakeDeadline) {
+            close(NetplayClientSocket);
+            NetplayClientSocket = -1;
+            NetplaySessionState = NETPLAY_WAITING;
+            strcpy(NetplayLastEvent, "TCP HANDSHAKE TIMEOUT");
+        } else if (NetplayWaitFD(NetplayClientSocket, 0, timeout_ms) > 0) {
+            NetplayInputPacket handshake;
+            if (NetplayRecvPacket(NetplayClientSocket, &handshake, 1000) && NetplayIsHandshakePacket(&handshake, NetplaySessionToken)) {
+                NetplayPendingRemote = handshake;
+                NetplayPendingRemoteValid = 1;
+                NetplayHandshakePending = 1;
                 NetplayInputQueuePos = 0;
                 NetplayInputQueueFilled = 0;
+                close(NetplayServerSocket);
+                NetplayServerSocket = -1;
                 NetplaySessionState = NETPLAY_CONNECTED;
                 strcpy(NetplayLastEvent, "TCP CLIENT CONNECTED");
+            } else {
+                close(NetplayClientSocket);
+                NetplayClientSocket = -1;
+                NetplaySessionState = NETPLAY_WAITING;
+                strcpy(NetplayLastEvent, "TCP HANDSHAKE FAILED");
             }
         }
     }
@@ -2219,10 +2308,17 @@ static void NetplayAdvanceState(int timeout_ms)
             ssize_t n = recvfrom(NetplayClientSocket, &packet, sizeof(packet), 0, (struct sockaddr*)&peer, &peer_len);
             if (n == (ssize_t)sizeof(packet)) {
                 NetplayPacketNtoh(&packet);
-                if (packet.magic == NetplayMagic) {
-                    connect(NetplayClientSocket, (struct sockaddr*)&peer, peer_len);
+                if (packet.magic == NetplayMagic && packet.session == 0 && packet.seq == 0 && packet.joy == 0x00008000u && packet.crc == 0) {
+                    NetplayInputPacket challenge;
+                    memset(&challenge, 0, sizeof(challenge));
+                    challenge.magic = NetplayMagic;
+                    challenge.session = NetplaySessionToken;
+                    challenge.joy = 0x00008000u;
+                    NetplaySendPacketTo(NetplayClientSocket, &challenge, (struct sockaddr*)&peer, peer_len);
+                } else if (NetplayIsHandshakePacket(&packet, NetplaySessionToken) && connect(NetplayClientSocket, (struct sockaddr*)&peer, peer_len) == 0) {
                     NetplayPendingRemote = packet;
                     NetplayPendingRemoteValid = 1;
+                    NetplayHandshakePending = 1;
                     NetplayInputQueuePos = 0;
                     NetplayInputQueueFilled = 0;
                     NetplaySessionState = NETPLAY_CONNECTED;
@@ -2301,6 +2397,7 @@ void NetplaySyncInputs(unsigned int* joy_a, unsigned int* joy_b)
 
     NetplayInputPacket local;
     local.magic = NetplayMagic;
+    local.session = NetplaySessionToken;
     local.seq = NetplayLocalSeq++;
     local.joy = delayed;
     local.crc = local_crc;
@@ -2310,13 +2407,23 @@ void NetplaySyncInputs(unsigned int* joy_a, unsigned int* joy_b)
     NetplayInputPacket remote;
     int ok = 0;
     if (NetplayHostRole != 0) {
-        if (NetplayPendingRemoteValid != 0) {
-            remote = NetplayPendingRemote;
-            NetplayPendingRemoteValid = 0;
-            ok = 1;
-        } else {
-            ok = NetplayRecvPacket(NetplayClientSocket, &remote, timeout);
+        if (NetplayHandshakePending != 0) {
+            NetplayInputPacket handshake;
+            if (NetplayPendingRemoteValid != 0) {
+                handshake = NetplayPendingRemote;
+                NetplayPendingRemoteValid = 0;
+                ok = 1;
+            } else {
+                ok = NetplayRecvPacket(NetplayClientSocket, &handshake, timeout);
+            }
+            if (ok == 0 || !NetplayIsHandshakePacket(&handshake, NetplaySessionToken)) {
+                NetplayDisconnectSession();
+                strcpy(NetplayLastEvent, "INVALID HANDSHAKE");
+                return;
+            }
+            NetplayHandshakePending = 0;
         }
+        ok = NetplayRecvPacket(NetplayClientSocket, &remote, timeout);
         if (ok != 0)
             ok = NetplaySendPacket(NetplayClientSocket, &local, timeout);
     } else {
@@ -2331,10 +2438,17 @@ void NetplaySyncInputs(unsigned int* joy_a, unsigned int* joy_b)
         return;
     }
 
+    if (remote.magic != NetplayMagic || remote.session != NetplaySessionToken || (NetplayRemoteSeqValid != 0 && remote.seq != NetplayRemoteSeq + 1)) {
+        NetplayDisconnectSession();
+        strcpy(NetplayLastEvent, "INVALID PEER PACKET");
+        return;
+    }
+
     if (local_crc != 0 && remote.crc != 0 && remote.crc != local_crc && NetplayLocalSeq > NETPLAY_INPUT_DELAY + 2)
         strcpy(NetplayLastEvent, "DESYNC DETECTED");
 
     NetplayRemoteSeq = remote.seq;
+    NetplayRemoteSeqValid = 1;
     NetplayRemoteJoy = remote.joy;
     if (NetplayHostRole != 0)
         *joy_b = NetplayRemoteJoy;
@@ -2365,6 +2479,9 @@ static void NetplayUpdateStatus(void)
         return;
     case NETPLAY_CONNECTING:
         snprintf(NetplayStatusLine, sizeof(NetplayStatusLine), "CONNECTING (TCP)");
+        return;
+    case NETPLAY_HANDSHAKING:
+        snprintf(NetplayStatusLine, sizeof(NetplayStatusLine), "HANDSHAKING (TCP)");
         return;
     case NETPLAY_JOINING:
         snprintf(NetplayStatusLine, sizeof(NetplayStatusLine), "RESOLVING %s...", NetplayJoinHostCopy);
