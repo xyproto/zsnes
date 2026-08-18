@@ -656,17 +656,21 @@ void CheatCodeLoad(void)
             NumCheats = cheat_file_size / 28;
         else {
             NumCheats = cheat_file_size / 18;
-            i = 28 * NumCheats;
-            j = cheat_file_size - (cheat_file_size % 18);
+            if (NumCheats > 255) {
+                NumCheats = 0;
+            } else {
+                i = 28 * NumCheats;
+                j = cheat_file_size - (cheat_file_size % 18);
 
-            do {
-                i -= 28;
-                j -= 18;
+                do {
+                    i -= 28;
+                    j -= 18;
 
-                memset(&cheatdata[i + 20], 0, 8);
-                memmove(&cheatdata[i + 8], &cheatdata[j + 6], 12);
-                memmove(&cheatdata[i], &cheatdata[j], 6);
-            } while (i > 0);
+                    memset(&cheatdata[i + 20], 0, 8);
+                    memmove(&cheatdata[i + 8], &cheatdata[j + 6], 12);
+                    memmove(&cheatdata[i], &cheatdata[j], 6);
+                } while (i > 0);
+            }
         }
 
         EnableCheatsOnLoad();
