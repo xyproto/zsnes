@@ -146,7 +146,8 @@ EXTSYM bgtxadd2,drawmode7ngextbg16b,processmode7hires16b
 EXTSYM drawmode7ngextbg216b,osm2dis,ofsmtptrs,ofsmcptr2
 EXTSYM prevbrightdc,mosstart,moscountdown,BackAreaAdd
 EXTSYM BackAreaUnFillCol,BackAreaFillCol,clinemainsub,cpalptrng
-EXTSYM c_transp_fulladd
+EXTSYM c_transp_fulladd,c_transp_fullsub,c_transp_halfsub
+EXTSYM c_transp_halfadd,c_transp_halfaddfix
 EXTSYM ngmsdraw,CMainWinScr,CSubWinScr,Prevcoladdr
 EXTSYM ColResult,CPalPtrng,WindowRedraw,mostranspval
 EXTSYM mosclineval,startlinet,endlinet,palchanged
@@ -1084,74 +1085,20 @@ ProcessTransparencies:
     ; filter out all fixed color sub-screen
     test byte[FillSubScr+ebx],2
     jnz .halfaddcomb
-    mov ecx,256
-    mov ebx,[UnusedBit]
-    mov edi,[HalfTrans]
-    xor eax,eax
-    jmp .next2
-.notranspha
-    add esi,2
-    dec ecx
-    jz .done
-.next2
-    mov ax,[esi]
-    test ax,bx
-    jz .notranspha
-    mov dx,[esi+75036*2]
-    test dx,bx
-    jnz .notranspha
-    and eax,edi
-    and edx,edi
-    add eax,edx
-    shr eax,1
-    mov [esi],ax
-    add esi,2
-    dec ecx
-    jnz .next2
-.done
+    ; Plain half add is video/c_ngtransp.c.
+    pushad
+    mov eax, esp
+    ccall c_transp_halfadd, eax
+    popad
     pop ebx
     pop esi
     jmp .donetransp
 .halfaddcomb
-    mov ecx,256
-    mov ebx,[UnusedBit]
-    mov edi,[HalfTrans]
-    xor eax,eax
-    xor edx,edx
-    jmp .next2c
-.notransphac
-    add esi,2
-    dec ecx
-    jz .donec
-.next2c
-    mov ax,[esi]
-    test ax,bx
-    jz .notransphac
-    mov dx,[esi+75036*2]
-    test dx,bx
-    jnz .fulladdtranspc
-    and eax,edi
-    and edx,edi
-    add eax,edx
-    shr eax,1
-    mov [esi],ax
-    add esi,2
-    dec ecx
-    jnz .next2c
-.donec
-    pop ebx
-    pop esi
-    jmp .donetransp
-.fulladdtranspc
-    and eax,edi
-    and edx,edi
-    add eax,edx
-    shr eax,1
-    mov ax,[fulladdtab+eax*2]
-    mov [esi],ax
-    add esi,2
-    dec ecx
-    jnz .next2c
+    ; Half add, fixed-colour sub screen is video/c_ngtransp.c.
+    pushad
+    mov eax, esp
+    ccall c_transp_halfaddfix, eax
+    popad
     pop ebx
     pop esi
     jmp .donetransp
@@ -1159,33 +1106,11 @@ ProcessTransparencies:
 .subtract
     push ebx
     push esi
-    ; half adder
-    mov ecx,256
-    mov ebp,[HalfTrans]
-    xor edx,edx
-    mov bx,[UnusedBit]
-.nextfshs
-    mov ax,[esi]
-    test ax,bx
-    je .notranspfshs
-    mov dx,[esi+75036*2]
-    xor ax,0FFFFh
-    and edx,ebp
-    and eax,ebp
-    add edx,eax
-    shr edx,1
-    mov dx,[fulladdtab+edx*2]
-    xor dx,0FFFFh
-    test word[esi+75036*2],bx
-    jnz .nothalfhs
-    and edx,ebp
-    shr edx,1
-.nothalfhs
-    mov [esi],dx
-.notranspfshs
-    add esi,2
-    dec ecx
-    jnz .nextfshs
+    ; Half subtract is video/c_ngtransp.c.
+    pushad
+    mov eax, esp
+    ccall c_transp_halfsub, eax
+    popad
     pop esi
     pop ebx
     jmp .donetransp
@@ -1204,31 +1129,13 @@ ProcessTransparencies:
     pop ebx
     jmp .donetransp
 .fullsubtract
+    ; Full subtract is video/c_ngtransp.c.
     push ebx
     push esi
-    ; half adder
-    mov ecx,256
-    mov ebp,[HalfTrans]
-    xor edx,edx
-    xor eax,eax
-    mov bx,[UnusedBit]
-.nextfs
-    mov ax,[esi]
-    test ax,bx
-    jz .notranspfs
-    mov dx,[esi+75036*2]
-    xor ax,0FFFFh
-    and edx,ebp
-    and eax,ebp
-    add edx,eax
-    shr edx,1
-    mov dx,[fulladdtab+edx*2]
-    xor dx,0FFFFh
-    mov [esi],dx
-.notranspfs
-    add esi,2
-    dec ecx
-    jnz .nextfs
+    pushad
+    mov eax, esp
+    ccall c_transp_fullsub, eax
+    popad
     pop esi
     pop ebx
 .donetransp
