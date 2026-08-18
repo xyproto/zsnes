@@ -146,8 +146,7 @@ EXTSYM bgtxadd2,drawmode7ngextbg16b,processmode7hires16b
 EXTSYM drawmode7ngextbg216b,osm2dis,ofsmtptrs,ofsmcptr2
 EXTSYM prevbrightdc,mosstart,moscountdown,BackAreaAdd
 EXTSYM BackAreaUnFillCol,BackAreaFillCol,clinemainsub,cpalptrng
-EXTSYM c_transp_fulladd,c_transp_fullsub,c_transp_halfsub
-EXTSYM c_transp_halfadd,c_transp_halfaddfix
+EXTSYM c_process_transparencies
 EXTSYM ngmsdraw,CMainWinScr,CSubWinScr,Prevcoladdr
 EXTSYM ColResult,CPalPtrng,WindowRedraw,mostranspval
 EXTSYM mosclineval,startlinet,endlinet,palchanged
@@ -1062,97 +1061,13 @@ NEWSYM drawsprng16bhr
     ret
 
 ProcessTransparencies:
-    cmp byte[NGNoTransp],0
-    je .yestransp
-    ret
-.yestransp
-    mov esi,[vidbuffer]
-    add esi,16*2+288*2
-    mov ebx,1
-.nextline
-    test byte[FillSubScr+ebx],1
-    jz near .notransp
-    mov dword[HiResDone],0
-.againtransp
-    test byte[scadtng+ebx],40h
-    jz near .fulltransp
-    test byte[scadtng+ebx],80h
-    jnz near .subtract
-
-    ; Half Add
-    push esi
-    push ebx
-    ; filter out all fixed color sub-screen
-    test byte[FillSubScr+ebx],2
-    jnz .halfaddcomb
-    ; Plain half add is video/c_ngtransp.c.
+    ; The whole colour-maths pass is video/c_ngtransp.c. It runs with the
+    ; caller's registers live - the plain half-add path never clears the top
+    ; of edx - so the seam hands over the whole file.
     pushad
     mov eax, esp
-    ccall c_transp_halfadd, eax
+    ccall c_process_transparencies, eax
     popad
-    pop ebx
-    pop esi
-    jmp .donetransp
-.halfaddcomb
-    ; Half add, fixed-colour sub screen is video/c_ngtransp.c.
-    pushad
-    mov eax, esp
-    ccall c_transp_halfaddfix, eax
-    popad
-    pop ebx
-    pop esi
-    jmp .donetransp
-
-.subtract
-    push ebx
-    push esi
-    ; Half subtract is video/c_ngtransp.c.
-    pushad
-    mov eax, esp
-    ccall c_transp_halfsub, eax
-    popad
-    pop esi
-    pop ebx
-    jmp .donetransp
-.fulltransp
-    test byte[scadtng+ebx],80h
-    jnz near .fullsubtract
-    ; Full add is video/c_ngtransp.c. The push/pop stay: the C leaves esi and
-    ; ebx alone and lets them be restored here, as the assembly did.
-    push ebx
-    push esi
-    pushad
-    mov eax, esp
-    ccall c_transp_fulladd, eax
-    popad
-    pop esi
-    pop ebx
-    jmp .donetransp
-.fullsubtract
-    ; Full subtract is video/c_ngtransp.c.
-    push ebx
-    push esi
-    pushad
-    mov eax, esp
-    ccall c_transp_fullsub, eax
-    popad
-    pop esi
-    pop ebx
-.donetransp
-    test byte[SpecialLine+ebx],3
-    jz .notransp
-    xor dword[HiResDone],1
-    cmp dword[HiResDone],0
-    je .okaytransp
-    add esi,75036*4
-    jmp .againtransp
-.okaytransp
-    sub esi,75036*4
-.notransp
-    inc ebx
-    add esi,288*2
-    cmp [resolutn],bx
-    jae near .nextline
     ret
 
 section .text

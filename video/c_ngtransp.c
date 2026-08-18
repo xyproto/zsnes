@@ -192,3 +192,69 @@ void c_transp_halfaddfix(u4* const r)
     r[R_EDX] = edx;
     r[R_EDI] = edi;
 }
+
+/*
+ * ProcessTransparencies itself: walk the lines, pick a variant per line, and
+ * handle the hi-res second field.
+ *
+ * Each variant used to be wrapped in push/pop of esi and ebx, so their writes
+ * to those two never escaped - hence esi is a local here and ebx is put back
+ * after every call (the half-add variants leave UnusedBit in it). Everything
+ * else they clobber is meant to escape, which is why they share the caller's
+ * register block rather than getting a fresh one.
+ */
+extern u1* vidbuffer;
+extern u1 FillSubScr[], scadtng[], SpecialLine[];
+extern u2 resolutn;
+extern u4 HiResDone, NGNoTransp;
+
+void c_process_transparencies(u4* const r)
+{
+    u2* esi;
+
+    if (NGNoTransp != 0)
+        return;
+
+    esi = (u2*)(vidbuffer + 16 * 2 + 288 * 2);
+    r[R_EBX] = 1;
+    for (;;) {
+        u4 const bx = r[R_EBX];
+
+        if (FillSubScr[bx] & 1) {
+            HiResDone = 0;
+            for (;;) {
+                u1 const sc = scadtng[bx];
+
+                r[R_ESI] = (u4)(uintptr_t)esi;
+                if (!(sc & 0x40)) {
+                    if (sc & 0x80)
+                        c_transp_fullsub(r);
+                    else
+                        c_transp_fulladd(r);
+                } else if (sc & 0x80) {
+                    c_transp_halfsub(r);
+                } else if (FillSubScr[bx] & 2) {
+                    c_transp_halfaddfix(r);
+                } else {
+                    c_transp_halfadd(r);
+                }
+                r[R_EBX] = bx; /* the pop that followed each variant */
+
+                if (!(SpecialLine[bx] & 3))
+                    break;
+                HiResDone ^= 1;
+                if (HiResDone == 0) {
+                    esi -= SUBOFF * 2;
+                    break;
+                }
+                esi += SUBOFF * 2;
+            }
+        }
+
+        r[R_EBX] = bx + 1;
+        esi += 288;
+        if (resolutn < (u2)(bx + 1))
+            break;
+    }
+    r[R_ESI] = (u4)(uintptr_t)esi;
+}
