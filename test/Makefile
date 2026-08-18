@@ -312,7 +312,8 @@ thi: difftest_thi.c difftest.h $(M16T_SEAM)
 
 # newgfx16.asm - the *new* graphics engine, the one that runs by default.
 NG_OBJS := ../endmem.o ../video/c_newgfx16data.o ../video/newgfx.o \
-           ../video/makevid.o ../cpu/c_regsdata.o ../cpu/c_regswdata.o
+           ../video/makevid.o ../cpu/c_regsdata.o ../cpu/c_regswdata.o \
+           ../video/c_ngtransp.o ../video/c_ng2gate.o _ngtransp_extra.c
 
 # Every newgfx16 difftest links a cur_ object built from the whole worktree
 # file, so it needs all of that file's C entry points - the same rule as
@@ -335,7 +336,7 @@ ngspr: difftest_ngspr.c difftest.h ../video/c_ngspr.c
 mos: difftest_mos.c difftest.h $(NG_SEAM)
 	python3 ../tools/mkoracle.py video/newgfx16.asm -o _mos.o \
 	    --stubs _mos_stubs.c --provided-by $(NG_OBJS) \
-	    --exclude vram xtravbuf pesimpng
+	    --exclude vram xtravbuf pesimpng fulladdtab
 	python3 ../tools/mkoracle.py video/newgfx16.asm -o _moscur.o \
 	    --worktree --prefix cur_
 	$(CC) $(CFLAGS) difftest_mos.c $(NG_SEAM) \
