@@ -52,21 +52,15 @@ void breakops(void)
                                                                                                    : (u1*)dmadata - 0x4300; // XXX ugly cast
     initaddrl = addr;
 
-    u4 ecx = 0;
     u4 edx = curcyc /* cycles */ << 8 | xp /* flags */;
     u1* ebp = spcPCRam;
     u1* esi = addr + pc; // add program counter to address
-    eop** edi = Curtableaddr;
+    opfn** edi = Curtableaddr;
     UpdateDPage();
     // execute
     do {
         splitflags(edx);
-        u4 ebx;
-        // XXX hack: GCC cannot handle ebp as input/output, so take the detour over eax
-        __asm__ volatile("push %%ebp;  mov %0, %%ebp;  call %P6;  mov %%ebp, %0;  pop %%ebp"
-            : "+a"(ebp), "+c"(ecx), "+d"(edx), "=b"(ebx), "+S"(esi), "+D"(edi)
-            : "X"(execsingle)
-            : "cc", "memory");
+        execsingle(&edx, &ebp, &esi, &edi);
         edx = joinflags(edx);
         edx = edx & 0xFFFF00FF | pdh << 8;
         if ((++numinst & 0xFF) == 0 && getch() == 27)
@@ -88,20 +82,14 @@ void execnextop(void)
                                                                                                    : (u1*)dmadata - 0x4300; // XXX ugly cast
     initaddrl = addr;
 
-    u4 ecx = 0;
     u4 edx = curcyc /* cycles */ << 8 | xp /* flags */;
     u1* ebp = spcPCRam;
     u1* esi = addr + pc; // add program counter to address
-    eop** edi = Curtableaddr;
+    opfn** edi = Curtableaddr;
 
     // execute
     splitflags(edx);
-    u4 ebx;
-    // XXX hack: GCC cannot handle ebp as input/output, so take the detour over eax
-    __asm__ volatile("push %%ebp;  mov %0, %%ebp;  call %P6;  mov %%ebp, %0;  pop %%ebp"
-        : "+a"(ebp), "+c"(ecx), "+d"(edx), "=b"(ebx), "+S"(esi), "+D"(edi)
-        : "X"(execsingle)
-        : "cc", "memory");
+    execsingle(&edx, &ebp, &esi, &edi);
     edx = joinflags(edx);
     UpdateDPage();
 

@@ -13,4 +13,12 @@ typedef unsigned long long u8;
 
 typedef void eop();
 
+/* A ported 65816 opcode body. It reads and writes the caller's register block,
+   which the dispatch loop keeps in pushad order (see cpu/c_dispatch.h). */
+typedef void opfn(u4* r);
+
+/* An SPC700 opcode handler: takes the program counter just past the opcode
+   byte and returns the updated one. */
+typedef u1* spcop(u1* pc);
+
 #endif

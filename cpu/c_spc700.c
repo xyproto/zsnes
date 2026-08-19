@@ -41,7 +41,7 @@ u1 SPCReadReg(u4 reg)
 /* Re-arm the SPC core after a timer tick (the `reenablespc` macro): once the
  * budget has run away, zero it and, if the SPC was disabled, switch the 65816
  * back to the table selected by its current flags. */
-static void reenablespc(u4 const edx, eop*** const pedi)
+static void reenablespc(u4 const edx, opfn*** const pedi)
 {
     if (cycpbl < 0x1000000) return;
     cycpbl = 0;
@@ -53,7 +53,7 @@ static void reenablespc(u4 const edx, eop*** const pedi)
 /* One scanline of SPC timer service. Timers 0 and 1 run at 8 kHz (every other
  * call, tracked by timrcall); timer 2 runs at 64 kHz, i.e. four steps per call.
  * Every 60th call the whole body runs twice. */
-void UpdateTimer(u4 const edx, eop*** const pedi)
+void UpdateTimer(u4 const edx, opfn*** const pedi)
 {
     for (;;) {
         timrcall ^= 0x01;

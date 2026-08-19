@@ -2355,17 +2355,12 @@ static void rti_body(u4* const r)
 void OP(COp40)(u4* const r) { rti_body(r); } /* RTI s */
 #endif
 
-/*
- * CLI. Unlike every other ported opcode this one can restart the dispatch loop
- * instead of returning into it, so cpu/e65816.inc keeps a thunk of its own that
- * branches on what this returns: non-zero means "re-enter execloop".
- */
 #ifndef OPS_OWN_COp58
-int OP(COp58)(u4* const r) /* CLI i */
+void OP(COp58)(u4* const r) /* CLI i */
 {
     r[R_EDX] &= ~0x04u;
     if (doirqnext == 0)
-        return 0;
+        return;
     doirqnext = 0;
     {
         u4 edx = r[R_EDX];
@@ -2374,7 +2369,6 @@ int OP(COp58)(u4* const r) /* CLI i */
         r[R_EDX] = edx;
         r[R_ESI] = (u4)(uintptr_t)esi;
     }
-    return (xe & 1) != 0;
 }
 #endif
 

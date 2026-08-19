@@ -31,6 +31,8 @@
 #include "../zmovie.h"
 #include "../zstate.h"
 #include "c_65816d.h"
+#include "c_dispatch.h"
+#include "c_execloop.h"
 #include "c_execute.h"
 #include "c_memory.h"
 #include "execute.h"
@@ -88,7 +90,7 @@ static void reexecuteb2(void)
     u4 edx = curcyc /* cycles */ << 8 | xp /* flags */;
     u1* ebp = spcPCRam;
     u1* esi = addr + pc; // add program counter to address
-    eop** edi = tableadc[xp];
+    opfn** edi = tableadc[xp];
 
     splitflags(edx);
     execute(&edx, &ebp, &esi, &edi);
@@ -250,73 +252,127 @@ void Donextlinecache(void)
     NextLineCache = 0;
 }
 
-void execute(u4* const pedx, u1** const pebp, u1** const pesi, eop*** const pedi)
+/* The `endloop` macro from cpu/65816dc.inc: step the SPC700 when its share of
+   the cycles has run out, fetch the next opcode and charge it. Returns zero
+   where the assembly returned out of the run, the scanline's budget spent. */
+static int endloop(u4* const r)
 {
-    u4 edx = *pedx;
-    u1* ebp = *pebp;
-    u1* esi = *pesi;
-    eop** edi = *pedi;
+    u4 const dspcyc = cycpbl;
 
-    u1 p = edx;
-    if (!(curexecstate & 0x02)) {
-        // startagain: // XXX from asm
-        if (xe != 1 && edx & 0x01 && !(INTEnab & 0xC0)) {
-            edx = edx & 0xFFFF00FF | (edx - (0x50 << 8)) & 0x0000FF00;
-        }
-        if (doirqnext != 1 && SA1IRQEnable != 0 && irqon != 0) {
-            edx = edx & 0xFFFF00FF | (edx - (12 << 8)) & 0x0000FF00;
-        }
-    } else {
-        edi = tableadc[p];
+    cycpbl = dspcyc - 55;
+    if (dspcyc < 55) {
+        cycpbl += cycpblt;
+        // 1260, 10000/12625
+        u4 const sop = *(u1*)r[R_EBP];
+        r[R_EBP]++;
+        spc_step(r, sop);
+    }
 
+    set_bl(r, *(u1*)r[R_ESI]);
+    r[R_ESI]++;
+
+    {
+        u1 const c = cpucycle[r[R_EBX]];
+        u1 const dh = DH(r);
+        set_dh(r, (u1)(dh - c));
+        return dh >= c;
+    }
+}
+
+/* A run of opcodes. In the assembly each body tail-jumped to the next through
+   `endloop`, so a whole run went by without returning; the loop is the same
+   shape. Every body leaves the table for the current flag state in edi, so it
+   is re-read each time round. */
+static void run_chain(u4* const r)
+{
+    do {
+        ((opfn**)r[R_EDI])[r[R_EBX]](r);
+    } while (endloop(r));
+}
+
+/* The dispatch loop from cpu/execute.asm. */
+void exec_loop(u4* const r, int const at_cpuover)
+{
+    if (at_cpuover)
+        goto cpuover;
+
+    r[R_EBX] = (u1)r[R_EDX];
+    if (curexecstate & 2)
+        goto sound;
+
+startagain:
+    if (xe != 1 && r[R_EDX] & 0x01 && !(INTEnab & 0xC0))
+        add_dh(r, (u1)-0x50);
+    if (doirqnext != 1 && SA1IRQEnable != 0 && irqon != 0)
+        add_dh(r, (u1)-12);
+    run_chain(r);
+    goto cpuover;
+
+sound:
+    r[R_EDI] = (u4)tableadc[r[R_EBX]];
+    {
         u4 const dspcyc = cycpbl;
         cycpbl = dspcyc - 55;
         if (dspcyc < 55) {
             cycpbl += cycpblt;
             // 1260, 10000/12625
-            // XXX hack: GCC cannot handle ebp as input/output, so take the detour over eax
-            u4 ecx;
-            u4 ebx = 0;
-            u4 const op = *ebp++;
-            __asm__ volatile("push %%ebp;  mov %0, %%ebp;  call *%5;  mov %%ebp, %0;  pop %%ebp"
-                         : "+a"(ebp), "=c"(ecx), "+b"(ebx), "+S"(esi), "+D"(edi)
-                         : "c"(opcjmptab[op])
-                         : "cc", "memory");
+            u4 const sop = *(u1*)r[R_EBP];
+            r[R_EBP]++;
+            spc_step(r, sop);
         }
-
-        p = *esi++;
-        u1 const c = cpucycle[p];
-        u1 const cpucyc = edx >> 8;
-        edx = edx & 0xFFFF00FF | (cpucyc - c) << 8 & 0x0000FF00;
-        if (cpucyc < c)
+    }
+    set_bl(r, *(u1*)r[R_ESI]);
+    r[R_ESI]++;
+    {
+        u1 const c = cpucycle[r[R_EBX]];
+        u1 const dh = DH(r);
+        set_dh(r, (u1)(dh - c));
+        if (dh < c)
             goto cpuover;
     }
+    run_chain(r);
 
-    {
-        u4 ecx = 0;
-        u4 ebx = p; // XXX HACK: We run out of registers.  p is guaranteed to have only the lower 8 bits set, which is sufficient
-        // XXX hack: GCC cannot handle ebp as input/output, so take the detour over eax
-        __asm__ volatile("push %%ebp;  mov %0, %%ebp;  call *(%5, %3, %c6);  mov %%ebp, %0;  pop %%ebp"
-                     : "+a"(ebp), "+c"(ecx), "+d"(edx), "+b"(ebx), "+S"(esi), "+D"(edi)
-                     : "n"(sizeof(*edi))
-                     : "cc", "memory");
+cpuover:
+    switch (c_cpuover(r)) {
+    case EXEC_SOUND:
+        // pexecs: let the SPC700 catch up in one burst.
+        soundcycleft = 30;
+        do {
+            u4 const sop = *(u1*)r[R_EBP];
+            r[R_EBP]++;
+            spc_step(r, sop);
+        } while (--soundcycleft != 0);
+        set_dh(r, 0);
+        // fall through
+    case EXEC_NEXT:
+        r[R_EBX] = *(u1*)r[R_ESI];
+        r[R_ESI]++;
+        goto startagain;
+    case EXEC_RELOAD:
+        r[R_EBX] = (u1)r[R_EDX];
+        if (curexecstate & 2)
+            goto sound;
+        goto startagain;
+    case EXEC_EXIT:
+        break;
     }
-cpuover :
-
-{
-    u4 ecx = 0;
-    u4 ebx = 0;
-    // XXX hack: GCC cannot handle ebp as input/output, so take the detour over eax
-    __asm__ volatile("push %%ebp;  mov %0, %%ebp;  call %P6;  mov %%ebp, %0;  pop %%ebp"
-                 : "+a"(ebp), "+c"(ecx), "+d"(edx), "+b"(ebx), "+S"(esi), "+D"(edi)
-                 : "X"(cpuover)
-                 : "cc", "memory");
 }
 
-    *pedx = edx;
-    *pebp = ebp;
-    *pesi = esi;
-    *pedi = edi;
+void execute(u4* const pedx, u1** const pebp, u1** const pesi, opfn*** const pedi)
+{
+    u4 r[8] = { 0 };
+
+    r[R_EDX] = *pedx;
+    r[R_EBP] = (u4)*pebp;
+    r[R_ESI] = (u4)*pesi;
+    r[R_EDI] = (u4)*pedi;
+
+    exec_loop(r, 0);
+
+    *pedx = r[R_EDX];
+    *pebp = (u1*)r[R_EBP];
+    *pesi = (u1*)r[R_ESI];
+    *pedi = (opfn**)r[R_EDI];
 }
 
 // Raise a 65816 IRQ only when the GSU has stopped (Go clear, IRQ flag

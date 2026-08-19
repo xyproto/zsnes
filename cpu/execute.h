@@ -3,8 +3,7 @@
 
 #include "../types.h"
 
-extern void cpuover();
-extern void execsingle();
+void execsingle(u4* pedx, u1** pebp, u1** pesi, opfn*** pedi);
 
 extern u1 EMUPause;
 extern u1 ExecExitOkay;

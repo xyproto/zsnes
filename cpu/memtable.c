@@ -34,17 +34,17 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "regs.h"
 #include <stdint.h>
 
-extern eop** Curtableaddr;
-extern eop* tableA[256];
+extern opfn** Curtableaddr;
+extern opfn* tableA[256];
 
 void PrepareOffset()
 {
-    Curtableaddr = (eop**)((uintptr_t)Curtableaddr - (uintptr_t)tableA);
+    Curtableaddr = (opfn**)((uintptr_t)Curtableaddr - (uintptr_t)tableA);
 }
 
 void ResetOffset()
 {
-    Curtableaddr = (eop**)((uintptr_t)Curtableaddr + (uintptr_t)tableA);
+    Curtableaddr = (opfn**)((uintptr_t)Curtableaddr + (uintptr_t)tableA);
 }
 
 extern uint8_t *snesmmap[256], *snesmap2[256];

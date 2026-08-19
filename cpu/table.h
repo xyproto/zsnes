@@ -3,7 +3,7 @@
 
 #include "../types.h"
 
-extern void eopINVALID();
+void eopINVALID(u4* r);
 
 extern u1 cpucycle[256];
 

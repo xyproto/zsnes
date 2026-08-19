@@ -206,7 +206,7 @@ static void breakatsignb(void)
     esi += eax; // add program counter to address
     u1* ebp = spcPCRam;
     u4 edx = curcyc /* cycles */ << 8 | xp /* flags */;
-    eop** edi = Curtableaddr;
+    opfn** edi = Curtableaddr;
     UpdateDPage();
     // execute
     do {

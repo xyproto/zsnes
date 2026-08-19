@@ -5,4 +5,6 @@
 
 extern u1 SA1Status; // 0 = 65816, 1 = SA1A, 2 = SA1B
 
+void SA1Swap(u4* r);
+
 #endif

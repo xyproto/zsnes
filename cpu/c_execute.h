@@ -18,9 +18,11 @@ _Noreturn void interror(void);
 
 void Donextlinecache(void);
 
-void execute(u4* pedx, u1** pebp, u1** pesi, eop*** pedi);
+void execute(u4* pedx, u1** pebp, u1** pesi, opfn*** pedi);
 
 void StartSFXdebugb(void);
+
+void SfxVblankCatchup(void);
 
 void UpdatePORSCMR(void);
 

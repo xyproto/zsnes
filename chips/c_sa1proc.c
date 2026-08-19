@@ -1,7 +1,9 @@
 #include <string.h>
 
+#include "../cpu/c_dispatch.h"
 #include "../cpu/execute.h"
 #include "../cpu/memory.h"
+#include "../cpu/table.h"
 #include "../endmem.h"
 #include "../gblvars.h"
 #include "../initc.h"
@@ -97,26 +99,8 @@ void SA1switchtovirq(u4* const pedx, u1** const pesi)
     SA1switch(pedx, pesi, (u2)SA1IRQV, 1);
 }
 
-//
-// SA1Swap - give the SA-1 one instruction slot.
-//
-// Split in two so the opcode itself is still dispatched from assembly, where
-// the 65816 core's register ABI (and ebp, its SPC program counter) is live:
-// chips/sa1proc.asm pushad's the register file, calls SA1SwapEnter, runs one
-// opcode if it returns nonzero, then calls SA1SwapLeave. Both halves read and
-// write the caller's registers through that pushad block.
-//
-enum { R_EDI,
-    R_ESI,
-    R_EBP,
-    R_ESP,
-    R_EBX,
-    R_EDX,
-    R_ECX,
-    R_EAX };
-
 // dh is the scanline cycle counter; the assembly's `add dh,n` wraps in 8 bits.
-static u4 add_dh(u4 const edx, u1 const n)
+static u4 dh_plus(u4 const edx, u1 const n)
 {
     return edx & 0xFFFF00FF | (u4)(u1)((u1)(edx >> 8) + n) << 8;
 }
@@ -146,7 +130,7 @@ static u1 SA1IdleCharge(u1 const* const p)
     return 0;
 }
 
-u4 SA1SwapEnter(u4* const r)
+static u4 SA1SwapEnter(u4* const r)
 {
     u1* const p = SA1Ptr;
 
@@ -154,7 +138,7 @@ u4 SA1SwapEnter(u4* const r)
 
     u1 const idle = SA1IdleCharge(p);
     if (idle != 0) {
-        r[R_EDX] = add_dh(r[R_EDX], idle);
+        r[R_EDX] = dh_plus(r[R_EDX], idle);
         r[R_EAX] = (u4)p;
         CurrentExecSA1 += 2;
         SA1Status = 0;
@@ -174,7 +158,7 @@ u4 SA1SwapEnter(u4* const r)
     wramdata = IRAM;
 
     u4 const eax = (u1)edx;
-    edx = add_dh(edx, 20);
+    edx = dh_plus(edx, 20);
     SA1Status = 1;
 
     r[R_EAX] = eax;
@@ -200,7 +184,7 @@ u4 SA1SwapEnter(u4* const r)
     return 1;
 }
 
-void SA1SwapLeave(u4* const r)
+static void SA1SwapLeave(u4* const r)
 {
     // Save the SA-1 context, restore the 65816's.
     SA1RegP = (u1)r[R_EDX];
@@ -212,7 +196,7 @@ void SA1SwapLeave(u4* const r)
     wramdata = wramdataa;
     snesmap2[0] = wramdata;
 
-    r[R_EDX] = add_dh(r[R_EDX] & 0xFFFFFF00 | SNSRegP, 11);
+    r[R_EDX] = dh_plus(r[R_EDX] & 0xFFFFFF00 | SNSRegP, 11);
     r[R_ESI] = (u4)SNSPtr;
     r[R_EDI] = prevedi;
     r[R_EAX] = 0;
@@ -220,4 +204,35 @@ void SA1SwapLeave(u4* const r)
     CurrentExecSA1++;
     SA1Status = 0;
     SA1TimerVal += 23;
+}
+
+// SA1Swap - give the SA-1 one instruction slot.
+//
+// Install the SA-1's context, run a chain of its instructions until the
+// scanline's cycles are spent, then hand the 65816 its context back. The SA-1
+// core's opcode tails jumped to one another through their own `endloop`, which
+// unlike the 65816's does not step the SPC700; the loop here is that macro.
+void SA1Swap(u4* const r)
+{
+    if (SA1SwapEnter(r) == 0)
+        return;
+
+    set_bl(r, *(u1*)r[R_ESI]);
+    r[R_ESI]++;
+
+    for (;;) {
+        ((opfn**)r[R_EDI])[r[R_EBX]](r);
+
+        set_bl(r, *(u1*)r[R_ESI]);
+        r[R_ESI]++;
+
+        u1 const c = cpucycle[r[R_EBX]];
+        u1 const dh = DH(r);
+        set_dh(r, (u1)(dh - c));
+        if (dh < c)
+            break;
+    }
+
+    r[R_ESI]--;
+    SA1SwapLeave(r);
 }
