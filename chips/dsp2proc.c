@@ -12,6 +12,7 @@
 #include <stdint.h>
 #include <string.h>
 
+#include "../cpu/memseam.h"
 #include "regabi.h"
 
 #define DSP2F_HALT 1u
@@ -845,7 +846,7 @@ void c_DSP2Write16b(uint32_t addr, uint16_t val)
     (void)val;
 }
 
-REGABI_BANK_READ8(DSP2Read8b);
-REGABI_BANK_READ16(DSP2Read16b);
-REGABI_BANK_WRITE8(DSP2Write8b);
-REGABI_BANK_WRITE16(DSP2Write16b);
+MEMBANK_READ8(DSP2Read8b);
+MEMBANK_READ16(DSP2Read16b);
+MEMBANK_WRITE8(DSP2Write8b);
+MEMBANK_WRITE16(DSP2Write16b);

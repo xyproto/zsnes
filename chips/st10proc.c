@@ -26,6 +26,7 @@
 
 #include <stdint.h>
 
+#include "../cpu/memseam.h"
 #include "regabi.h"
 
 extern uint8_t* setaramdata;
@@ -118,11 +119,11 @@ void c_setaaccessbankw16a(uint32_t addr, uint16_t val)
     SetaCmdEnable[(a + 1) & 3] = (uint8_t)val;
 }
 
-REGABI_BANK_READ8(setaaccessbankr8);
-REGABI_BANK_WRITE8(setaaccessbankw8);
-REGABI_BANK_READ16(setaaccessbankr16);
-REGABI_BANK_WRITE16(setaaccessbankw16);
-REGABI_BANK_READ8(setaaccessbankr8a);
-REGABI_BANK_WRITE8(setaaccessbankw8a);
-REGABI_BANK_READ16(setaaccessbankr16a);
-REGABI_BANK_WRITE16(setaaccessbankw16a);
+MEMBANK_READ8(setaaccessbankr8);
+MEMBANK_WRITE8(setaaccessbankw8);
+MEMBANK_READ16(setaaccessbankr16);
+MEMBANK_WRITE16(setaaccessbankw16);
+MEMBANK_READ8(setaaccessbankr8a);
+MEMBANK_WRITE8(setaaccessbankw8a);
+MEMBANK_READ16(setaaccessbankr16a);
+MEMBANK_WRITE16(setaaccessbankw16a);

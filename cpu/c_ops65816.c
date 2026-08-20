@@ -20,13 +20,13 @@ extern u2 xpc;
 extern u1 xe;
 extern u4 flagnz, flago, flagc;
 extern u2 stackand, stackor;
-extern void UpdateDPage(void); /* cpu/memory.asm */
+extern void UpdateDPage(void); /* cpu/c_memory.c */
 extern u1 dmadata[129];
 extern u2 brkv, brkv8, copv, copv8;
 extern u1 intrset, doirqnext, curnmi;
 
-/* Memory accesses go through the same seam cpu/memory.asm's memcop thunk uses,
- * so the handlers here call the C halves directly (cpu/c_memops.c). */
+/* Memory accesses go through the seam in cpu/memseam.h, so the handlers here
+ * call the bodies directly (cpu/c_memops.c). */
 extern u4 MemSeamA, MemSeamB, MemSeamC, MemSeamD;
 extern void c_membank0r8(void);
 extern void c_membank0r16(void);

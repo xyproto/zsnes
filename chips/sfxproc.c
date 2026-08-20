@@ -1,6 +1,7 @@
 /* C port of sfxproc.asm: the SuperFX (GSU) memory-mapped register handlers.
    The GSU core is in chips/fx_ops.h; these just read/write Sfx* state.
    Installed via REGPTR in c_sfxproc.c. */
+#include "../cpu/memseam.h"
 #include "regabi.h"
 #include <stdint.h>
 
@@ -378,35 +379,35 @@ void c_cacheregw(uint8_t v)
 }
 
 /* SuperFX RAM access: sfxramdata[addr + bank*64K], banks 0..3 = ""/b/c/d */
-REGABI_BANK_READ8(sfxaccessbankr8);
+MEMBANK_READ8(sfxaccessbankr8);
 uint8_t c_sfxaccessbankr8(uint32_t a) { return sfxramdata[a + 0]; }
-REGABI_BANK_WRITE8(sfxaccessbankw8);
+MEMBANK_WRITE8(sfxaccessbankw8);
 void c_sfxaccessbankw8(uint32_t a, uint8_t v) { sfxramdata[a + 0] = v; }
-REGABI_BANK_READ16(sfxaccessbankr16);
+MEMBANK_READ16(sfxaccessbankr16);
 uint16_t c_sfxaccessbankr16(uint32_t a) { return *(uint16_t*)(sfxramdata + a + 0); }
-REGABI_BANK_WRITE16(sfxaccessbankw16);
+MEMBANK_WRITE16(sfxaccessbankw16);
 void c_sfxaccessbankw16(uint32_t a, uint16_t v) { *(uint16_t*)(sfxramdata + a + 0) = v; }
-REGABI_BANK_READ8(sfxaccessbankr8b);
+MEMBANK_READ8(sfxaccessbankr8b);
 uint8_t c_sfxaccessbankr8b(uint32_t a) { return sfxramdata[a + 65536]; }
-REGABI_BANK_WRITE8(sfxaccessbankw8b);
+MEMBANK_WRITE8(sfxaccessbankw8b);
 void c_sfxaccessbankw8b(uint32_t a, uint8_t v) { sfxramdata[a + 65536] = v; }
-REGABI_BANK_READ16(sfxaccessbankr16b);
+MEMBANK_READ16(sfxaccessbankr16b);
 uint16_t c_sfxaccessbankr16b(uint32_t a) { return *(uint16_t*)(sfxramdata + a + 65536); }
-REGABI_BANK_WRITE16(sfxaccessbankw16b);
+MEMBANK_WRITE16(sfxaccessbankw16b);
 void c_sfxaccessbankw16b(uint32_t a, uint16_t v) { *(uint16_t*)(sfxramdata + a + 65536) = v; }
-REGABI_BANK_READ8(sfxaccessbankr8c);
+MEMBANK_READ8(sfxaccessbankr8c);
 uint8_t c_sfxaccessbankr8c(uint32_t a) { return sfxramdata[a + 131072]; }
-REGABI_BANK_WRITE8(sfxaccessbankw8c);
+MEMBANK_WRITE8(sfxaccessbankw8c);
 void c_sfxaccessbankw8c(uint32_t a, uint8_t v) { sfxramdata[a + 131072] = v; }
-REGABI_BANK_READ16(sfxaccessbankr16c);
+MEMBANK_READ16(sfxaccessbankr16c);
 uint16_t c_sfxaccessbankr16c(uint32_t a) { return *(uint16_t*)(sfxramdata + a + 131072); }
-REGABI_BANK_WRITE16(sfxaccessbankw16c);
+MEMBANK_WRITE16(sfxaccessbankw16c);
 void c_sfxaccessbankw16c(uint32_t a, uint16_t v) { *(uint16_t*)(sfxramdata + a + 131072) = v; }
-REGABI_BANK_READ8(sfxaccessbankr8d);
+MEMBANK_READ8(sfxaccessbankr8d);
 uint8_t c_sfxaccessbankr8d(uint32_t a) { return sfxramdata[a + 196608]; }
-REGABI_BANK_WRITE8(sfxaccessbankw8d);
+MEMBANK_WRITE8(sfxaccessbankw8d);
 void c_sfxaccessbankw8d(uint32_t a, uint8_t v) { sfxramdata[a + 196608] = v; }
-REGABI_BANK_READ16(sfxaccessbankr16d);
+MEMBANK_READ16(sfxaccessbankr16d);
 uint16_t c_sfxaccessbankr16d(uint32_t a) { return *(uint16_t*)(sfxramdata + a + 196608); }
-REGABI_BANK_WRITE16(sfxaccessbankw16d);
+MEMBANK_WRITE16(sfxaccessbankw16d);
 void c_sfxaccessbankw16d(uint32_t a, uint16_t v) { *(uint16_t*)(sfxramdata + a + 196608) = v; }

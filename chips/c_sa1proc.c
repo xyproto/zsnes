@@ -3,6 +3,7 @@
 #include "../cpu/c_dispatch.h"
 #include "../cpu/execute.h"
 #include "../cpu/memory.h"
+#include "../cpu/memseam.h"
 #include "../cpu/table.h"
 #include "../endmem.h"
 #include "../gblvars.h"
@@ -47,10 +48,15 @@ static u4 SA1makedl(u4 edx)
 
 static void call_membank0w8(u2 const cx, u1 const al)
 {
-    u4 eax;
-    u4 ecx;
-    u4 ebx;
-    __asm__ volatile("call %P3" : "=a"(eax), "=c"(ecx), "=b"(ebx) : "X"(membank0w8), "a"(al), "c"(cx) : "cc", "memory");
+    u4 const b = MemSeamB, c = MemSeamC, a = MemSeamA, d = MemSeamD;
+
+    MemSeamC = cx;
+    MemSeamA = al;
+    membank0w8();
+    MemSeamB = b;
+    MemSeamC = c;
+    MemSeamA = a;
+    MemSeamD = d;
 }
 
 // Push the SA-1 return context onto its stack and jump to the NMI/IRQ vector.

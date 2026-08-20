@@ -23,4 +23,9 @@
 #define ASM_SYMREF(sym) #sym
 #endif
 
+/* Spell a macro's value into the asm text, for sizes that follow the target
+   (pointer width, mainly) rather than being literals. */
+#define ASM_STR_(x) #x
+#define ASM_STR(x) ASM_STR_(x)
+
 #endif

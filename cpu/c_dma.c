@@ -4,17 +4,28 @@
 #include "c_dma.h"
 #include "../initc.h"
 #include "../ui.h"
+#include "memseam.h"
 #include "memtable.h"
 
 u1 AddrNoIncr = 0;
 
+/* An I/O register handler takes the address through the seam (cpu/memseam.h).
+   The seam is put back around the call: a DMA runs inside the register write
+   that started it, and the handler that is still on the stack out there reads
+   its own value back out afterwards. A read leaves MemSeamA alone on the way
+   in, which is what the assembly did with eax. */
 static u1 read_reg(eop* const reg, u2 const address)
 {
+    u4 const b = MemSeamB, c = MemSeamC, a = MemSeamA, d = MemSeamD;
     u1 al;
-    __asm__ volatile("call %A1"
-                 : "=a"(al)
-                 : "rm"(reg), "c"(address)
-                 : "cc", "memory", "ebx");
+
+    MemSeamC = address;
+    reg();
+    al = (u1)MemSeamA;
+    MemSeamB = b;
+    MemSeamC = c;
+    MemSeamA = a;
+    MemSeamD = d;
     return al;
 }
 
@@ -86,8 +97,15 @@ static void transdmappu2cpu(u1 const al, DMAInfo* const esi)
 
 static inline void write_reg(eop* const reg, u2 const address, u1 const val)
 {
-    __asm__ volatile("call %A0" ::"rm"(reg), "c"(address), "a"(val)
-                 : "cc", "memory", "ebx");
+    u4 const b = MemSeamB, c = MemSeamC, a = MemSeamA, d = MemSeamD;
+
+    MemSeamC = address;
+    MemSeamA = val;
+    reg();
+    MemSeamB = b;
+    MemSeamC = c;
+    MemSeamA = a;
+    MemSeamD = d;
 }
 
 static void transdma(DMAInfo* const esi)
@@ -167,10 +185,10 @@ static void transdma(DMAInfo* const esi)
     AddrNoIncr = 0;
 }
 
-void c_reg420Bw(u4 eax)
+void c_reg420Bw(u1 const al)
 {
     DMAInfo* esi = dmadata;
-    for (eax &= 0xFF; eax != 0; ++esi, eax >>= 1) {
+    for (u4 eax = al; eax != 0; ++esi, eax >>= 1) {
         if (eax & 0x01)
             transdma(esi);
     }
@@ -214,9 +232,8 @@ void setuphdma(u4 const ah, HDMAInfo* const edx, DMAInfo* const esi)
     hdmatype |= ah;
 }
 
-void c_reg420Cw(u4 eax)
+void c_reg420Cw(u1 const al)
 {
-    u1 const al = eax;
     curhdma = al;
     // [sneed] fix games that use double HDMA.
     if (curypos < resolutn && (!(INTEnab & 0x10) || (80 <= HIRQLoc && HIRQLoc <= 176))) {

@@ -81,7 +81,9 @@ typedef struct HDMAInfo {
     u1 count; // # of bytes to transfer/line
     u2 addr_inc; // Address increment
 } __attribute__((packed)) HDMAInfo;
-_Static_assert(sizeof(HDMAInfo) == 19, "HDMAInfo size mismatch");
+/* Four host pointers plus three bytes: 19 on a 32-bit build, and the reserve
+   for hdmadata in cpu/c_regsdata.c is sized from the same expression. */
+_Static_assert(sizeof(HDMAInfo) == 4 * sizeof(eop*) + 3, "HDMAInfo size mismatch");
 
 extern HDMAInfo hdmadata[8];
 

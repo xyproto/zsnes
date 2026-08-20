@@ -1,103 +1,71 @@
+/*
+ * DSP3 bank access, ported from the i386 trampolines that stood in for
+ * chips/dsp3proc.asm.
+ *
+ * The DSP3 answers in the top half of the bank; anything below $8000 belongs
+ * to the I/O registers, which the assembly reached by tail-jumping into
+ * regaccessbank*.  A 16-bit access is two byte transfers with the address
+ * stepped in between, low byte first.
+ */
+
 #include <stdint.h>
 
-#if !defined(__GNUC__) || !defined(__i386__)
-#error "chips/dsp3proc.c requires GCC-compatible inline assembly on i386"
-#endif
-
-#if defined(__APPLE__) || defined(__MINGW32__)
-#define CSYM(x) "_" #x
-#else
-#define CSYM(x) #x
-#endif
+#include "../cpu/memseam.h"
 
 extern uint8_t dsp3_byte;
 extern uint16_t dsp3_address;
 extern void DSP3GetByte(void);
 extern void DSP3SetByte(void);
-extern void regaccessbankr8(void);
-extern void regaccessbankw8(void);
-extern void regaccessbankr16(void);
-extern void regaccessbankw16(void);
+extern memfn regaccessbankr8, regaccessbankw8, regaccessbankr16, regaccessbankw16;
 
-/*
- * Preserve register-based ABI used by eop handlers:
- * - address in ECX
- * - write value in AL (or AX for 16-bit)
- */
-__asm__(
-    ".globl " CSYM(DSP3Read8b) "\n" CSYM(DSP3Read8b) ":\n"
-                                                     "testw $0x8000, %cx\n"
-                                                     "jz " CSYM(regaccessbankr8) "\n"
-                                                                                 "movw %cx, " CSYM(dsp3_address) "\n"
-                                                                                                                 "pushl %eax\n"
-                                                                                                                 "pushl %ecx\n"
-                                                                                                                 "pushl %edx\n"
-                                                                                                                 "call " CSYM(DSP3GetByte) "\n"
-                                                                                                                                           "popl %edx\n"
-                                                                                                                                           "popl %ecx\n"
-                                                                                                                                           "popl %eax\n"
-                                                                                                                                           "movb " CSYM(dsp3_byte) ", %al\n"
-                                                                                                                                                                   "ret\n");
+void DSP3Read8b(void)
+{
+    if (!(MemSeamC & 0x8000)) {
+        regaccessbankr8();
+        return;
+    }
+    dsp3_address = (uint16_t)MemSeamC;
+    DSP3GetByte();
+    mem_set_al(dsp3_byte);
+}
 
-__asm__(
-    ".globl " CSYM(DSP3Write8b) "\n" CSYM(DSP3Write8b) ":\n"
-                                                       "testw $0x8000, %cx\n"
-                                                       "jz " CSYM(regaccessbankw8) "\n"
-                                                                                   "movw %cx, " CSYM(dsp3_address) "\n"
-                                                                                                                   "movb %al, " CSYM(dsp3_byte) "\n"
-                                                                                                                                                "pushl %eax\n"
-                                                                                                                                                "pushl %ecx\n"
-                                                                                                                                                "pushl %edx\n"
-                                                                                                                                                "call " CSYM(DSP3SetByte) "\n"
-                                                                                                                                                                          "popl %edx\n"
-                                                                                                                                                                          "popl %ecx\n"
-                                                                                                                                                                          "popl %eax\n"
-                                                                                                                                                                          "ret\n");
+void DSP3Write8b(void)
+{
+    if (!(MemSeamC & 0x8000)) {
+        regaccessbankw8();
+        return;
+    }
+    dsp3_address = (uint16_t)MemSeamC;
+    dsp3_byte = (uint8_t)MemSeamA;
+    DSP3SetByte();
+}
 
-__asm__(
-    ".globl " CSYM(DSP3Read16b) "\n" CSYM(DSP3Read16b) ":\n"
-                                                       "testw $0x8000, %cx\n"
-                                                       "jz " CSYM(regaccessbankr16) "\n"
-                                                                                    "movw %cx, " CSYM(dsp3_address) "\n"
-                                                                                                                    "pushl %eax\n"
-                                                                                                                    "pushl %ecx\n"
-                                                                                                                    "pushl %edx\n"
-                                                                                                                    "call " CSYM(DSP3GetByte) "\n"
-                                                                                                                                              "popl %edx\n"
-                                                                                                                                              "popl %ecx\n"
-                                                                                                                                              "popl %eax\n"
-                                                                                                                                              "movb " CSYM(dsp3_byte) ", %al\n"
-                                                                                                                                                                      "incw " CSYM(dsp3_address) "\n"
-                                                                                                                                                                                                 "pushl %eax\n"
-                                                                                                                                                                                                 "pushl %ecx\n"
-                                                                                                                                                                                                 "pushl %edx\n"
-                                                                                                                                                                                                 "call " CSYM(DSP3GetByte) "\n"
-                                                                                                                                                                                                                           "popl %edx\n"
-                                                                                                                                                                                                                           "popl %ecx\n"
-                                                                                                                                                                                                                           "popl %eax\n"
-                                                                                                                                                                                                                           "movb " CSYM(dsp3_byte) ", %ah\n"
-                                                                                                                                                                                                                                                   "ret\n");
+void DSP3Read16b(void)
+{
+    uint8_t lo;
 
-__asm__(
-    ".globl " CSYM(DSP3Write16b) "\n" CSYM(DSP3Write16b) ":\n"
-                                                         "testw $0x8000, %cx\n"
-                                                         "jz " CSYM(regaccessbankw16) "\n"
-                                                                                      "movw %cx, " CSYM(dsp3_address) "\n"
-                                                                                                                      "movb %al, " CSYM(dsp3_byte) "\n"
-                                                                                                                                                   "pushl %eax\n"
-                                                                                                                                                   "pushl %ecx\n"
-                                                                                                                                                   "pushl %edx\n"
-                                                                                                                                                   "call " CSYM(DSP3SetByte) "\n"
-                                                                                                                                                                             "popl %edx\n"
-                                                                                                                                                                             "popl %ecx\n"
-                                                                                                                                                                             "popl %eax\n"
-                                                                                                                                                                             "movb %ah, " CSYM(dsp3_byte) "\n"
-                                                                                                                                                                                                          "incw " CSYM(dsp3_address) "\n"
-                                                                                                                                                                                                                                     "pushl %eax\n"
-                                                                                                                                                                                                                                     "pushl %ecx\n"
-                                                                                                                                                                                                                                     "pushl %edx\n"
-                                                                                                                                                                                                                                     "call " CSYM(DSP3SetByte) "\n"
-                                                                                                                                                                                                                                                               "popl %edx\n"
-                                                                                                                                                                                                                                                               "popl %ecx\n"
-                                                                                                                                                                                                                                                               "popl %eax\n"
-                                                                                                                                                                                                                                                               "ret\n");
+    if (!(MemSeamC & 0x8000)) {
+        regaccessbankr16();
+        return;
+    }
+    dsp3_address = (uint16_t)MemSeamC;
+    DSP3GetByte();
+    lo = dsp3_byte;
+    dsp3_address++;
+    DSP3GetByte();
+    mem_set_ax((uint16_t)(lo | dsp3_byte << 8));
+}
+
+void DSP3Write16b(void)
+{
+    if (!(MemSeamC & 0x8000)) {
+        regaccessbankw16();
+        return;
+    }
+    dsp3_address = (uint16_t)MemSeamC;
+    dsp3_byte = (uint8_t)MemSeamA;
+    DSP3SetByte();
+    dsp3_byte = (uint8_t)(MemSeamA >> 8);
+    dsp3_address++;
+    DSP3SetByte();
+}

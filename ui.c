@@ -37,6 +37,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "input.h"
 #include "mmlib/mm.h"
 #include "ui.h"
+#include "video/makevid.h"
 #include "video/procvid.h"
 #include "zpath.h"
 
@@ -255,7 +256,8 @@ static void allocmem()
     AllocmemFail(BitConv32Ptr, 4096 + 65536 * 16);
     AllocmemFail(RGBtoYUVPtr, 65536 * 4 + 4096);
     AllocmemFail(spcBuffera, 65536 * 4 + 4096);
-    AllocmemFail(spritetablea, 256 * 512 + 4096);
+    /* 256 scanlines of 64 sprites; the GUI also borrows the tail as scratch. */
+    AllocmemFail(spritetablea, 256 * 64 * sizeof(SpriteInfo) + 4096);
     AllocmemFail(vbufaptr, 512 * 296 * 4 + 4096 + 512 * 296);
     AllocmemFail(vbufeptr, 288 * 2 * 256 + 4096);
     AllocmemFail(ngwinptrb, 256 * 224 + 4096);

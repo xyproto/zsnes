@@ -1,4 +1,4 @@
-.PHONY: clean distclean fmt info test win32 w32 unused
+.PHONY: clean distclean fmt info test win32 w32 unused portcheck
 
 # Supported ARCH values:
 #   LINUX, FREEBSD, OPENBSD, NETBSD, DARWIN, WIN
@@ -387,10 +387,8 @@ SRCS += cpu/dma.c
 SRCS += cpu/dspproc.c
 SRCS += cpu/firtable.c
 SRCS += cpu/executec.c
-SRCS += cpu/memory.asm
 SRCS += cpu/memtable.c
 SRCS += cpu/c_stable.c
-SRCS += cpu/table.asm
 SRCS += effects/burn.c
 SRCS += effects/smoke.c
 SRCS += effects/water.c
@@ -722,6 +720,29 @@ install:
 	install -Dm755 linux/zsnes.desktop '$(DESTDIR)$(PREFIX)/share/applications/io.github.xyproto.zsnes.desktop'
 	install -Dm755 linux/io.github.xyproto.zsnes.metainfo.xml -t '$(DESTDIR)$(PREFIX)/share/metainfo'
 	install -Dm644 man/zsnes.1 '$(DESTDIR)$(PREFIX)/share/man/man1/zsnes.1'
+
+# 64-bit portability gate. Compiles every C source for x86-64 and reports what
+# is left. The build itself is still -m32 (video/*.asm), but cpu/ and chips/ are
+# assembly-free now, so this is the measure of how far the port has to go.
+# A file listed here either has i386 inline assembly bridging into video/*.asm,
+# or a layout that still assumes 4-byte pointers.
+PORTCHECK_CC     ?= gcc
+PORTCHECK_CFLAGS ?= -m64 -std=c11 -D_DEFAULT_SOURCE -D_POSIX_C_SOURCE=200809L \
+                    -O1 -fcommon -I. $(CFGDEFS)
+.PHONY: portcheck
+portcheck: $(HDRS)
+	@echo '===> PORTCHECK: compiling every C source for x86-64'
+	@ok=0; bad=0; \
+	for f in $(filter %.c,$(SRCS)); do \
+	  if $(PORTCHECK_CC) $(PORTCHECK_CFLAGS) -c -o /dev/null $$f 2>/tmp/zs_portcheck.$$$$; then \
+	    ok=$$((ok+1)); \
+	  else \
+	    bad=$$((bad+1)); echo "  FAIL $$f"; \
+	    grep -iE 'error' /tmp/zs_portcheck.$$$$ | head -2 | sed 's/^/        /'; \
+	  fi; \
+	  rm -f /tmp/zs_portcheck.$$$$; \
+	done; \
+	echo; echo "===> PORTCHECK: $$ok built for x86-64, $$bad still 32-bit only"
 
 # Detect likely-unused C/ASM code via -Wunused* + linker --gc-sections reports.
 # The build already uses -ffunction-sections/-fdata-sections, so each dropped

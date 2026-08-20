@@ -1605,6 +1605,8 @@ void UpdateVFrame(void)
     // Debug: PNG_SCREENSHOT_EVERY_N=<n> writes a full-resolution PNG
     // /tmp/zsnes_<frame>.png every N emulated frames (filmstrip for headless
     // debugging, e.g. driving DEBUG_INPUT_SCRIPT to reproduce a bug).
+    // zip/zpng.h only declares the writer when the build has libpng.
+#ifndef NO_PNG
     {
         static int png_checked = 0;
         static int png_every = 0;
@@ -1624,6 +1626,7 @@ void UpdateVFrame(void)
             png_frame++;
         }
     }
+#endif
 
     // Debug: PPU_STATE_LOG=1 appends per-frame PPU brightness/blank/layer state
     // to /tmp/zsnes_ppu.txt (correlate with the PNG filmstrip to explain a black

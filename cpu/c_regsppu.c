@@ -5,6 +5,7 @@
  */
 #include "../chips/regabi.h"
 #include "../types.h"
+#include "memseam.h"
 
 /* --- PPU reads ported from cpu/regs.inc ---------------------------------- *
  *
@@ -1190,3 +1191,162 @@ u1 c_regINVALID(u4 const addr)
 
 REGABI_REG_WRITE8(regINVALIDw);
 void c_regINVALIDw(u1 const al) { (void)al; }
+
+/* --- the H/V latch and the APU I/O ports ---------------------------------- */
+
+extern u1 spcon, spcnumread, sndrot, sndrot2;
+extern u1 reg1read, reg2read, reg3read, reg4read;
+extern u1 SPCRAM[];
+extern u4 SPC700read, SPC700write, h_dot_counter, xa;
+extern u4 nmirept, cycpbl, curexecstate;
+
+/* $2137: software H/V counter latch. zsnes has no dot-level H counter, so
+   latchx is synthesised by stepping a 0-339 dot value on every read; games
+   that poll $213C for a particular hdot (Star Fox and other Super FX titles)
+   then make progress instead of looping forever. DH carries the cycle count. */
+REGABI_REG_READ8_DX(reg2137r);
+u1 c_reg2137r(u4 const edx)
+{
+    h_dot_counter++;
+    if (iohvlatch == 1 || (ioportval & 0x80u)) {
+        latchx = (u2)(h_dot_counter % 340u);
+        latchy = curypos;
+        /* With both beam IRQs armed the latched line is the next one, unless
+           the H-IRQ sits early in the line and this read is late in it. */
+        if ((INTEnab & 0x30u) == 0x30u
+            && (HIRQLoc > 0xF0u || (u1)(edx >> 8) < 30u)) {
+            latchy++;
+        }
+    }
+    extlatch = 0;
+    return 0;
+}
+
+/* With SPC emulation off the $2140-$2143 reads answer out of the 65816's own
+   accumulator, and patch the wait loop the game is sitting in out of its
+   instruction stream: the first BNE in the next few bytes becomes two NOPs.
+   The assembly took the program counter straight out of esi, which stopped
+   holding it when the opcode core became C; the seam carries it now. */
+static void spc_skip_wait(int const scan)
+{
+    u1* const pc = (u1*)(uintptr_t)MemSeamS;
+    int i;
+
+    for (i = 0; i < scan; i++) {
+        if (pc[i] == 0xD0) {
+            pc[i] = 0xEA;
+            pc[i + 1] = 0xEA;
+            return;
+        }
+    }
+}
+
+REGABI_REG_READ8(reg2140r);
+u1 c_reg2140r(void)
+{
+    u1* pc;
+
+    if (spcon) {
+        SPC700read++;
+        spcnumread = 0;
+        return reg1read;
+    }
+    /* A BPL back over itself is the other shape of the same wait loop. */
+    pc = (u1*)(uintptr_t)MemSeamS;
+    if (pc[0] == 0x10 && pc[1] == 0xFB) {
+        pc[0] = 0xEA;
+        pc[1] = 0xEA;
+    }
+    spc_skip_wait(5);
+    if (++sndrot2 == 3)
+        sndrot2 = 0;
+    return sndrot2 & 1u ? (u1)xa : 0;
+}
+
+REGABI_REG_READ8(reg2141r);
+u1 c_reg2141r(void)
+{
+    if (spcon) {
+        SPC700read++;
+        spcnumread = 0;
+        return reg2read;
+    }
+    spc_skip_wait(3);
+    sndrot ^= 1u;
+    return sndrot & 1u ? (u1)xa : (u1)(xa >> 8);
+}
+
+REGABI_REG_READ8(reg2142r);
+u1 c_reg2142r(void)
+{
+    if (spcon) {
+        SPC700read++;
+        spcnumread = 0;
+        return reg3read;
+    }
+    spc_skip_wait(3);
+    return sndrot & 1u ? (u1)(xa >> 8) : (u1)xa;
+}
+
+REGABI_REG_READ8(reg2143r);
+u1 c_reg2143r(void)
+{
+    if (spcon) {
+        SPC700read++;
+        spcnumread = 0;
+        return reg4read;
+    }
+    spc_skip_wait(3);
+    return (u1)(xa >> 8);
+}
+
+/* The `reenablespc` macro: once the SPC budget has run away, zero it and mark
+   the 65816 as running again. The assembly also reloaded edi, the opcode table
+   pointer, from tableadc[dl] - but every caller of a register handler restores
+   edi around the call, so that write never reached the core. cpu/c_spc700.c
+   does the table switch on the path that can. */
+static void reenable_spc(void)
+{
+    if (cycpbl < 0x1000000u)
+        return;
+    cycpbl = 0;
+    if (curexecstate & 0x02u)
+        return;
+    curexecstate |= 0x02u;
+}
+
+/* $2140-$2143: the CPU side of the APU I/O ports, mirrored every four bytes
+   up to $217F. The assembly writes only the low byte of nmirept. */
+REGABI_REG_WRITE8(reg2140w);
+void c_reg2140w(u1 const al)
+{
+    if ((u1)nmistatus == 2)
+        nmirept &= ~0xFFu;
+    SPCRAM[0xF4] = al;
+    SPC700write++;
+    reenable_spc();
+}
+
+REGABI_REG_WRITE8(reg2141w);
+void c_reg2141w(u1 const al)
+{
+    SPCRAM[0xF5] = al;
+    SPC700write++;
+    reenable_spc();
+}
+
+REGABI_REG_WRITE8(reg2142w);
+void c_reg2142w(u1 const al)
+{
+    SPCRAM[0xF6] = al;
+    SPC700write++;
+    reenable_spc();
+}
+
+REGABI_REG_WRITE8(reg2143w);
+void c_reg2143w(u1 const al)
+{
+    SPCRAM[0xF7] = al;
+    SPC700write++;
+    reenable_spc();
+}

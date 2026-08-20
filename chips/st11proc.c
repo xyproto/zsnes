@@ -24,6 +24,7 @@
 
 #include <stdint.h>
 
+#include "../cpu/memseam.h"
 #include "regabi.h"
 
 extern uint8_t* setaramdata;
@@ -121,11 +122,11 @@ void c_Seta11Write16_60(uint32_t addr, uint16_t val)
     ST011_MapW_60();
 }
 
-REGABI_BANK_READ8(Seta11Read8_68);
-REGABI_BANK_WRITE8(Seta11Write8_68);
-REGABI_BANK_READ16(Seta11Read16_68);
-REGABI_BANK_WRITE16(Seta11Write16_68);
-REGABI_BANK_READ8(Seta11Read8_60);
-REGABI_BANK_WRITE8(Seta11Write8_60);
-REGABI_BANK_READ16(Seta11Read16_60);
-REGABI_BANK_WRITE16(Seta11Write16_60);
+MEMBANK_READ8(Seta11Read8_68);
+MEMBANK_WRITE8(Seta11Write8_68);
+MEMBANK_READ16(Seta11Read16_68);
+MEMBANK_WRITE16(Seta11Write16_68);
+MEMBANK_READ8(Seta11Read8_60);
+MEMBANK_WRITE8(Seta11Write8_60);
+MEMBANK_READ16(Seta11Read16_60);
+MEMBANK_WRITE16(Seta11Write16_60);

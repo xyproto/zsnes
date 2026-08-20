@@ -1,28 +1,28 @@
 /*
- * cpu/mem_ops.h - direct-page memory accessors ported from cpu/memory.asm.
+ * cpu/mem_ops.h - the memory access handlers ported from cpu/memory.asm.
  *
  * Textual include (cpu/c_memops.c): the includer provides the u1/u2/u4
  * typedefs and the seam block declared below.
  *
- * These are the Bank0dat* handlers, reached through DPageR8/DPageR16/DPageW8/
- * DPageW16 (cpu/memtable.c picks one per direct-page high byte). The assembly
- * calls them with:
+ * The bank handlers and the Bank0dat* direct-page ones, the latter reached
+ * through DPageR8/DPageR16/DPageW8/DPageW16 (cpu/memtable.c picks one per
+ * direct-page high byte). They take everything through the seam:
  *
- *     ebx  the direct-page offset byte just fetched from the opcode stream
- *     ecx  the direct page register, xd
- *     eax  al/ax carries the value on a write, and takes it on a read
+ *     MemSeamB  the direct-page offset byte just fetched from the opcode stream
+ *     MemSeamC  the direct page register, xd
+ *     MemSeamA  al/ax carries the value on a write, and takes it on a read
  *
- * and the caller keeps whatever the handler leaves in ebx and ecx, so those
- * are outputs too - the "inv" and "romram" ones deliberately advance ecx and
- * some zero ebx. cpu/memory.asm spills all three to the seam around the call
- * (the memcop macro), so a body just reads and writes MemSeam*.
+ * and the caller keeps whatever the handler leaves in all of them - the "inv"
+ * and "romram" ones deliberately advance the address and some zero the bank.
+ * cpu/c_memops.c wraps each body in its public name.
  *
- * The reg variants call an I/O register handler, which still wants the legacy
- * ABI, so they go through the trampolines below; the includer must have
- * included chips/regabi.h for REGABI_ENTRY/REGABI_SYM.
+ * The reg variants hand the access to an I/O register handler, which takes it
+ * through the same seam; MEM_REG_DISPATCH below is the indexing.
  */
 #ifndef MEM_OPS_H
 #define MEM_OPS_H
+
+#include "memseam.h" /* the seam block, mem_set_al/mem_set_ax */
 
 /* wramdataa is the 64K WRAM window the assembly indexes as a flat array. */
 static inline u1* mem_wram(u4 const off)
@@ -32,22 +32,10 @@ static inline u1* mem_wram(u4 const off)
 
 /* The ROM map base the 8000-FFFF handlers add to the address. The assembly
    writes `[snesmmap]`, i.e. entry 0; the per-bank entries belong to the
-   regaccessbank* handlers, which are still assembly. */
+   regaccessbank* handlers. */
 static inline u1* mem_rom(void)
 {
     return snesmmap[0];
-}
-
-/* Reads return in al/ax, leaving the rest of eax alone: the 65816 core keeps
-   live values in the upper half. */
-static inline void mem_set_al(u1 const v)
-{
-    MemSeamA = (MemSeamA & ~0xFFu) | v;
-}
-
-static inline void mem_set_ax(u2 const v)
-{
-    MemSeamA = (MemSeamA & ~0xFFFFu) | v;
 }
 
 /* `add cx,bx`: 16-bit add, so it wraps inside cx and leaves ecx's top half. */
@@ -57,65 +45,26 @@ static inline void mem_add_cx_bx(void)
         | ((MemSeamC + MemSeamB) & 0xFFFFu);
 }
 
-/* Call one I/O register handler: address in ecx, value in al, and it keeps
-   ecx and edx. Naked like the trampolines in chips/regabi.h - a constrained
-   asm cannot promise to preserve everything a legacy handler may touch, and
-   the tables are indexed regptra[addr - 0x2000], i.e. base - 0x8000 + ecx*4
-   exactly as cpu/regs.mac writes it.
+/* Call one I/O register handler. The tables are indexed regptra[addr - 0x2000]
+   exactly as cpu/regs.mac used to write it.
 
-   The seam is restored around the call. A register write can start a DMA, and
-   the transfer runs through these same handlers, so without this the nested
-   access would overwrite the outer one's address - the assembly had no such
-   problem because it kept the address in ecx, which the callee preserves. */
-#define MEM_REG_TRAMPOLINE(name, table)                                       \
-    __asm__(REGABI_ENTRY(name) "pushl %ebx\n"                                 \
-                               "pushl %esi\n"                                 \
-                               "pushl %edi\n"                                 \
-                               "movl " REGABI_SYM(MemSeamC) ", %ecx\n"        \
-                               "movl " REGABI_SYM(MemSeamA) ", %eax\n"        \
-                               "movl " REGABI_SYM(MemSeamD) ", %edx\n"        \
-                               "pushl " REGABI_SYM(MemSeamB) "\n"            \
-                               "pushl %ecx\n"                                 \
-                               "call *" REGABI_SYM(table) "-0x8000(,%ecx,4)\n" \
-                               "movl %eax, " REGABI_SYM(MemSeamA) "\n"        \
-                               "movl %edx, " REGABI_SYM(MemSeamD) "\n"        \
-                               "popl %ecx\n"                                  \
-                               "movl %ecx, " REGABI_SYM(MemSeamC) "\n"        \
-                               "popl %ecx\n"                                  \
-                               "movl %ecx, " REGABI_SYM(MemSeamB) "\n"        \
-                               "popl %edi\n"                                  \
-                               "popl %esi\n"                                  \
-                               "popl %ebx\n"                                  \
-                               "ret\n");                                      \
-    void name(void)
+   The bank and the address are put back around the call. A register write can
+   start a DMA, and the transfer runs through these same handlers, so without
+   this the nested access would overwrite the outer one's address - the
+   assembly had no such problem because it kept the address in ecx, which the
+   callee preserved. */
+#define MEM_REG_DISPATCH(name, table)                     \
+    static void name(void)                                \
+    {                                                     \
+        u4 const b = MemSeamB, c = MemSeamC;              \
+                                                          \
+        (table)[MemSeamC - 0x2000]();                     \
+        MemSeamC = c;                                     \
+        MemSeamB = b;                                     \
+    }
 
-/* Call a handler that is still assembly, with the register ABI live. Lets a
-   ported handler keep a tail-call into one that has not moved yet; the seam
-   goes in and comes back out, so the caller sees exactly what the assembly
-   would have left in the registers. */
-__asm__(REGABI_ENTRY(MemCallAsm) "pushl %ebx\n"
-                                 "pushl %esi\n"
-                                 "pushl %edi\n"
-                                 "movl 16(%esp), %eax\n"
-                                 "pushl %eax\n"
-                                 "movl " REGABI_SYM(MemSeamB) ", %ebx\n"
-                                 "movl " REGABI_SYM(MemSeamC) ", %ecx\n"
-                                 "movl " REGABI_SYM(MemSeamD) ", %edx\n"
-                                 "movl " REGABI_SYM(MemSeamA) ", %eax\n"
-                                 "call *(%esp)\n"
-                                 "movl %eax, " REGABI_SYM(MemSeamA) "\n"
-                                 "addl $4, %esp\n"
-                                 "movl %ebx, " REGABI_SYM(MemSeamB) "\n"
-                                 "movl %ecx, " REGABI_SYM(MemSeamC) "\n"
-                                 "movl %edx, " REGABI_SYM(MemSeamD) "\n"
-                                 "popl %edi\n"
-                                 "popl %esi\n"
-                                 "popl %ebx\n"
-                                 "ret\n");
-void MemCallAsm(void* fn);
-
-MEM_REG_TRAMPOLINE(MemRegRead, regptra);
-MEM_REG_TRAMPOLINE(MemRegWrite, regptwa);
+MEM_REG_DISPATCH(MemRegRead, regptra)
+MEM_REG_DISPATCH(MemRegWrite, regptwa)
 
 /* --- 8-bit reads --------------------------------------------------------- */
 

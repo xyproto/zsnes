@@ -18,6 +18,7 @@
 #include <stdint.h>
 #include <string.h>
 
+#include "../cpu/memseam.h"
 #include "c4proc.h"
 
 extern uint8_t* romdata;
@@ -37,15 +38,10 @@ void C4Op15(void);
 void C4Op1F(void);
 void C4Op22(void);
 
-/* routed bank handlers (cdecl in tests, asm register-ABI in the build) */
-extern uint8_t regaccessbankr8(uint32_t addr);
-extern void regaccessbankw8(uint32_t addr, uint8_t val);
-extern uint16_t regaccessbankr16(uint32_t addr);
-extern void regaccessbankw16(uint32_t addr, uint16_t val);
-extern uint8_t memaccessbankr8(uint32_t addr);
-extern void memaccessbankw8(uint32_t addr, uint8_t val);
-extern uint16_t memaccessbankr16(uint32_t addr);
-extern void memaccessbankw16(uint32_t addr, uint16_t val);
+/* Routed bank handlers: the access is handed to another memtable handler,
+   which reads the bank straight out of MemSeamB as the asm tail-jump did. */
+extern memfn regaccessbankr8, regaccessbankw8, regaccessbankr16, regaccessbankw16;
+extern memfn memaccessbankr8, memaccessbankw8, memaccessbankr16, memaccessbankw16;
 
 u1* C4Ram;
 uint8_t C4ObjSelec, C4SObjSelec, C4Pause;
@@ -859,10 +855,10 @@ static void c4ram_write(uint32_t off, uint8_t val)
 uint8_t c_C4Read8b(uint32_t addr)
 {
     if (addr & 0x8000) {
-        return memaccessbankr8(addr);
+        return mem_bank_read8(memaccessbankr8, addr);
     }
     if (addr < 0x6000) {
-        return regaccessbankr8(addr);
+        return mem_bank_read8(regaccessbankr8, addr);
     }
     return C4Ram[(addr - 0x6000) & 0x1FFF];
 }
@@ -870,10 +866,10 @@ uint8_t c_C4Read8b(uint32_t addr)
 uint16_t c_C4Read16b(uint32_t addr)
 {
     if (addr & 0x8000) {
-        return memaccessbankr16(addr);
+        return mem_bank_read16(memaccessbankr16, addr);
     }
     if (addr < 0x6000) {
-        return regaccessbankr16(addr);
+        return mem_bank_read16(regaccessbankr16, addr);
     }
     uint32_t off = (addr - 0x6000) & 0x1FFF;
     return (uint16_t)(C4Ram[off] | C4Ram[off + 1] << 8);
@@ -882,11 +878,11 @@ uint16_t c_C4Read16b(uint32_t addr)
 void c_C4Write8b(uint32_t addr, uint8_t val)
 {
     if (addr & 0x8000) {
-        memaccessbankw8(addr, val);
+        mem_bank_write8(memaccessbankw8, addr, val);
         return;
     }
     if (addr < 0x6000) {
-        regaccessbankw8(addr, val);
+        mem_bank_write8(regaccessbankw8, addr, val);
         return;
     }
     c4ram_write((addr - 0x6000) & 0x1FFF, val);
@@ -895,11 +891,11 @@ void c_C4Write8b(uint32_t addr, uint8_t val)
 void c_C4Write16b(uint32_t addr, uint16_t val)
 {
     if (addr & 0x8000) {
-        memaccessbankw16(addr, val);
+        mem_bank_write16(memaccessbankw16, addr, val);
         return;
     }
     if (addr < 0x6000) {
-        regaccessbankw16(addr, val);
+        mem_bank_write16(regaccessbankw16, addr, val);
         return;
     }
     uint32_t off = (addr - 0x6000) & 0x1FFF;
@@ -907,84 +903,23 @@ void c_C4Write16b(uint32_t addr, uint16_t val)
     c4ram_write(off + 1, (uint8_t)(val >> 8));
 }
 
-#if defined(__GNUC__) && defined(__i386__)
+/* The memtable entry points. */
+void C4Read8b(void)
+{
+    mem_set_al(c_C4Read8b(MemSeamC));
+}
 
-#if defined(__APPLE__) || defined(__MINGW32__)
-#define CSYM(x) "_" #x
-#else
-#define CSYM(x) #x
-#endif
+void C4Write8b(void)
+{
+    c_C4Write8b(MemSeamC, (uint8_t)MemSeamA);
+}
 
-__asm__(
-    ".globl " CSYM(C4Read8b) "\n" CSYM(C4Read8b) ":\n"
-                                                 "testw $0x8000, %cx\n"
-                                                 "jnz " CSYM(memaccessbankr8) "\n"
-                                                                              "cmpl $0x6000, %ecx\n"
-                                                                              "jb " CSYM(regaccessbankr8) "\n"
-                                                                                                          "pushl %ecx\n"
-                                                                                                          "pushl %edx\n"
-                                                                                                          "pushl %eax\n"
-                                                                                                          "pushl %ecx\n"
-                                                                                                          "call " CSYM(c_C4Read8b) "\n"
-                                                                                                                                   "addl $4, %esp\n"
-                                                                                                                                   "movb %al, (%esp)\n"
-                                                                                                                                   "popl %eax\n"
-                                                                                                                                   "popl %edx\n"
-                                                                                                                                   "popl %ecx\n"
-                                                                                                                                   "ret\n");
+void C4Read16b(void)
+{
+    mem_set_ax(c_C4Read16b(MemSeamC));
+}
 
-__asm__(
-    ".globl " CSYM(C4Write8b) "\n" CSYM(C4Write8b) ":\n"
-                                                   "testw $0x8000, %cx\n"
-                                                   "jnz " CSYM(memaccessbankw8) "\n"
-                                                                                "cmpl $0x6000, %ecx\n"
-                                                                                "jb " CSYM(regaccessbankw8) "\n"
-                                                                                                            "pushl %eax\n"
-                                                                                                            "pushl %ecx\n"
-                                                                                                            "pushl %edx\n"
-                                                                                                            "pushl %eax\n"
-                                                                                                            "pushl %ecx\n"
-                                                                                                            "call " CSYM(c_C4Write8b) "\n"
-                                                                                                                                      "addl $8, %esp\n"
-                                                                                                                                      "popl %edx\n"
-                                                                                                                                      "popl %ecx\n"
-                                                                                                                                      "popl %eax\n"
-                                                                                                                                      "ret\n");
-
-__asm__(
-    ".globl " CSYM(C4Read16b) "\n" CSYM(C4Read16b) ":\n"
-                                                   "testw $0x8000, %cx\n"
-                                                   "jnz " CSYM(memaccessbankr16) "\n"
-                                                                                 "cmpl $0x6000, %ecx\n"
-                                                                                 "jb " CSYM(regaccessbankr16) "\n"
-                                                                                                              "pushl %ecx\n"
-                                                                                                              "pushl %edx\n"
-                                                                                                              "pushl %eax\n"
-                                                                                                              "pushl %ecx\n"
-                                                                                                              "call " CSYM(c_C4Read16b) "\n"
-                                                                                                                                        "addl $4, %esp\n"
-                                                                                                                                        "movw %ax, (%esp)\n"
-                                                                                                                                        "popl %eax\n"
-                                                                                                                                        "popl %edx\n"
-                                                                                                                                        "popl %ecx\n"
-                                                                                                                                        "ret\n");
-
-__asm__(
-    ".globl " CSYM(C4Write16b) "\n" CSYM(C4Write16b) ":\n"
-                                                     "testw $0x8000, %cx\n"
-                                                     "jnz " CSYM(memaccessbankw16) "\n"
-                                                                                   "cmpl $0x6000, %ecx\n"
-                                                                                   "jb " CSYM(regaccessbankw16) "\n"
-                                                                                                                "pushl %eax\n"
-                                                                                                                "pushl %ecx\n"
-                                                                                                                "pushl %edx\n"
-                                                                                                                "pushl %eax\n"
-                                                                                                                "pushl %ecx\n"
-                                                                                                                "call " CSYM(c_C4Write16b) "\n"
-                                                                                                                                           "addl $8, %esp\n"
-                                                                                                                                           "popl %edx\n"
-                                                                                                                                           "popl %ecx\n"
-                                                                                                                                           "popl %eax\n"
-                                                                                                                                           "ret\n");
-
-#endif
+void C4Write16b(void)
+{
+    c_C4Write16b(MemSeamC, (uint16_t)MemSeamA);
+}

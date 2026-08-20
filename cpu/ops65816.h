@@ -40,6 +40,7 @@
    the 517 bodies is byte-identical between the two cores. */
 
 #include "flags65816.h"
+#include "memseam.h"
 
 /* pushad pushes eax first and edi last, so the block reads in this order. */
 enum { R_EDI,
@@ -353,11 +354,9 @@ void OP(COpFB)(u4* const r) /* XCE i */
 /*
  * Stack operations.
  *
- * The core reaches memory through cpu/memory.asm's `memcop` thunk, which spills
- * eax/ebx/ecx/edx to MemSeam* around a call into C. Calling that C directly
- * from here has the same effect and skips the trip through assembly - but it
- * means all four registers come back possibly changed, which is why cx is
- * always re-read after an access rather than kept in a local.
+ * The core reaches memory by spilling eax/ebx/ecx/edx into the seam
+ * (cpu/memseam.h) around the call. All four come back possibly changed, which
+ * is why cx is always re-read after an access rather than kept in a local.
  *
  * S wraps inside a page in emulation mode and across the bank in native mode;
  * stackor / stackand carry that, and XCE sets them.
@@ -368,6 +367,7 @@ static inline void bank0_call(u4* const r, void (*const fn)(void))
     MemSeamB = r[R_EBX];
     MemSeamC = r[R_ECX];
     MemSeamD = r[R_EDX];
+    MemSeamS = r[R_ESI];
     fn();
     r[R_EAX] = MemSeamA;
     r[R_EBX] = MemSeamB;
@@ -583,9 +583,9 @@ void OP(COp62)(u4* const r) /* PER s */
  * Addressing modes.
  *
  * Each one advances esi past its operand bytes and leaves the value in al or
- * ax. They reach memory through per-bank tables of routines that take the bank
- * in bl and the address in cx, so unlike the stack code there is no C half to
- * call directly - the table entries are the assembly thunks themselves.
+ * ax. They reach memory through per-bank tables of handlers that take the bank
+ * and the address through the seam block (cpu/memseam.h), which mem_call
+ * marshals the core's register block in and out of.
  *
  * Two details are easy to lose. `add cx,bx` adds the whole of bx, not just the
  * operand byte in bl, which is only safe because the dispatcher keeps bh zero.
@@ -594,15 +594,24 @@ void OP(COp62)(u4* const r) /* PER s */
  */
 static inline void mem_call(u4* const r, eop* const fn)
 {
-    u4 eax = r[R_EAX], ebx = r[R_EBX], ecx = r[R_ECX], edx = r[R_EDX];
-    __asm__ volatile("call *%4"
-                     : "+a"(eax), "+b"(ebx), "+c"(ecx), "+d"(edx)
-                     : "rm"(fn)
-                     : "cc", "memory");
-    r[R_EAX] = eax;
-    r[R_EBX] = ebx;
-    r[R_ECX] = ecx;
-    r[R_EDX] = edx;
+    u4 const b = MemSeamB, c = MemSeamC, a = MemSeamA, d = MemSeamD;
+
+    MemSeamA = r[R_EAX];
+    MemSeamB = r[R_EBX];
+    MemSeamC = r[R_ECX];
+    MemSeamD = r[R_EDX];
+    MemSeamS = r[R_ESI];
+    fn();
+    r[R_EAX] = MemSeamA;
+    r[R_EBX] = MemSeamB;
+    r[R_ECX] = MemSeamC;
+    r[R_EDX] = MemSeamD;
+    /* Restore, so an access nested inside a handler leaves the outer one's
+       seam alone; the register ABI this replaces got that for free. */
+    MemSeamB = b;
+    MemSeamC = c;
+    MemSeamA = a;
+    MemSeamD = d;
 }
 
 #define TABR8(r) mem_call((r), memtabler8[(r)[R_EBX]])

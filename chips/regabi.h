@@ -3,21 +3,26 @@
 
 #include <stdint.h>
 
-/*
- * Trampolines bridging the legacy register ABI of the 65816 asm core to
- * portable cdecl implementations named with a c_ prefix.
- *
- * Legacy ABI: address in ECX, value in AL (8-bit) or AX (16-bit); handlers
- * must preserve ECX, EDX and the unused upper bits of EAX.  BANK handlers
- * receive an address, REG handlers (I/O register table entries) do not.
- * The _DX variant passes EDX through instead.
- *
- * Each macro emits the trampoline under the public name plus a prototype
- * for the cdecl implementation.  On non-i386 builds only the prototype
- * remains.  Delete this header once the 65816 core itself is C.
- */
+#include "../cpu/memseam.h"
 
-#if defined(__GNUC__) && defined(__i386__)
+/*
+ * The I/O register handlers ($2100-$437F, reached through regptra/regptwa).
+ *
+ * These used to be trampolines: the 65816 core was assembly and called a
+ * handler with the address in ECX, the value in AL/AX and EDX live, so a C
+ * body had to be wrapped in hand-written x86.  Nothing in assembly calls a
+ * handler any more, so the wrappers are plain C over the seam in
+ * cpu/memseam.h - the same convention the memtable uses.  The macro names and
+ * the c_<name> signatures are unchanged, so the ~300 handlers that use them
+ * did not have to move.
+ *
+ *   REG   handlers take no address (the table index already is one)
+ *   BANK  handlers take the address, out of MemSeamC
+ *   _DX   passes MemSeamD through, for the beam and hblank registers
+ *
+ * REGABI_SYM/REGABI_ENTRY remain because video/c_mode716calc.c still has to
+ * name a symbol in video/mode716.asm; they go when that file does.
+ */
 
 #if defined(__APPLE__) || defined(__MINGW32__)
 #define REGABI_SYM(x) "_" #x
@@ -28,122 +33,70 @@
 #define REGABI_ENTRY(name) \
     ".globl " REGABI_SYM(name) "\n" REGABI_SYM(name) ":\n"
 
-#define REGABI_BANK_READ8(name)                                                  \
-    __asm__(REGABI_ENTRY(name) "pushl %ecx\n"                                    \
-                               "pushl %edx\n"                                    \
-                               "pushl %eax\n"                                    \
-                               "pushl %ecx\n"                                    \
-                               "call " REGABI_SYM(c_##name) "\n"                 \
-                                                            "addl $4, %esp\n"    \
-                                                            "movb %al, (%esp)\n" \
-                                                            "popl %eax\n"        \
-                                                            "popl %edx\n"        \
-                                                            "popl %ecx\n"        \
-                                                            "ret\n");            \
+#define REGABI_BANK_READ8(name)         \
+    uint8_t c_##name(uint32_t);         \
+    void name(void)                     \
+    {                                   \
+        mem_set_al(c_##name(MemSeamC)); \
+    }                                   \
     uint8_t c_##name(uint32_t)
 
-#define REGABI_BANK_READ16(name)                                                 \
-    __asm__(REGABI_ENTRY(name) "pushl %ecx\n"                                    \
-                               "pushl %edx\n"                                    \
-                               "pushl %eax\n"                                    \
-                               "pushl %ecx\n"                                    \
-                               "call " REGABI_SYM(c_##name) "\n"                 \
-                                                            "addl $4, %esp\n"    \
-                                                            "movw %ax, (%esp)\n" \
-                                                            "popl %eax\n"        \
-                                                            "popl %edx\n"        \
-                                                            "popl %ecx\n"        \
-                                                            "ret\n");            \
+#define REGABI_BANK_READ16(name)        \
+    uint16_t c_##name(uint32_t);        \
+    void name(void)                     \
+    {                                   \
+        mem_set_ax(c_##name(MemSeamC)); \
+    }                                   \
     uint16_t c_##name(uint32_t)
 
-#define REGABI_BANK_WRITE_BODY(name)                                          \
-    __asm__(REGABI_ENTRY(name) "pushl %eax\n"                                 \
-                               "pushl %ecx\n"                                 \
-                               "pushl %edx\n"                                 \
-                               "pushl %eax\n"                                 \
-                               "pushl %ecx\n"                                 \
-                               "call " REGABI_SYM(c_##name) "\n"              \
-                                                            "addl $8, %esp\n" \
-                                                            "popl %edx\n"     \
-                                                            "popl %ecx\n"     \
-                                                            "popl %eax\n"     \
-                                                            "ret\n")
-
-#define REGABI_BANK_WRITE8(name)  \
-    REGABI_BANK_WRITE_BODY(name); \
+#define REGABI_BANK_WRITE8(name)               \
+    void c_##name(uint32_t, uint8_t);          \
+    void name(void)                            \
+    {                                          \
+        c_##name(MemSeamC, (uint8_t)MemSeamA); \
+    }                                          \
     void c_##name(uint32_t, uint8_t)
 
-#define REGABI_BANK_WRITE16(name) \
-    REGABI_BANK_WRITE_BODY(name); \
+#define REGABI_BANK_WRITE16(name)               \
+    void c_##name(uint32_t, uint16_t);          \
+    void name(void)                             \
+    {                                           \
+        c_##name(MemSeamC, (uint16_t)MemSeamA); \
+    }                                           \
     void c_##name(uint32_t, uint16_t)
 
-#define REGABI_REG_READ8(name)                                                   \
-    __asm__(REGABI_ENTRY(name) "pushl %ecx\n"                                    \
-                               "pushl %edx\n"                                    \
-                               "pushl %eax\n"                                    \
-                               "call " REGABI_SYM(c_##name) "\n"                 \
-                                                            "movb %al, (%esp)\n" \
-                                                            "popl %eax\n"        \
-                                                            "popl %edx\n"        \
-                                                            "popl %ecx\n"        \
-                                                            "ret\n");            \
+#define REGABI_REG_READ8(name)  \
+    uint8_t c_##name(void);     \
+    void name(void)             \
+    {                           \
+        mem_set_al(c_##name()); \
+    }                           \
     uint8_t c_##name(void)
 
-/* As REGABI_REG_READ8, but EDX is passed in: $4212's hblank flag compares DH
- * against the cycles-per-hblank count. */
-#define REGABI_REG_READ8_DX(name)                                                \
-    __asm__(REGABI_ENTRY(name) "pushl %ecx\n"                                    \
-                               "pushl %edx\n"                                    \
-                               "pushl %eax\n"                                    \
-                               "pushl %edx\n"                                    \
-                               "call " REGABI_SYM(c_##name) "\n"                 \
-                                                            "addl $4, %esp\n"    \
-                                                            "movb %al, (%esp)\n" \
-                                                            "popl %eax\n"        \
-                                                            "popl %edx\n"        \
-                                                            "popl %ecx\n"        \
-                                                            "ret\n");            \
+/* $4212's hblank flag compares DH against the cycles-per-hblank count. */
+#define REGABI_REG_READ8_DX(name)       \
+    uint8_t c_##name(uint32_t);         \
+    void name(void)                     \
+    {                                   \
+        mem_set_al(c_##name(MemSeamD)); \
+    }                                   \
     uint8_t c_##name(uint32_t)
 
-#define REGABI_REG_WRITE8(name)                                               \
-    __asm__(REGABI_ENTRY(name) "pushl %eax\n"                                 \
-                               "pushl %ecx\n"                                 \
-                               "pushl %edx\n"                                 \
-                               "pushl %eax\n"                                 \
-                               "call " REGABI_SYM(c_##name) "\n"              \
-                                                            "addl $4, %esp\n" \
-                                                            "popl %edx\n"     \
-                                                            "popl %ecx\n"     \
-                                                            "popl %eax\n"     \
-                                                            "ret\n");         \
+#define REGABI_REG_WRITE8(name)      \
+    void c_##name(uint8_t);          \
+    void name(void)                  \
+    {                                \
+        c_##name((uint8_t)MemSeamA); \
+    }                                \
     void c_##name(uint8_t)
 
-/* As REGABI_REG_WRITE8, but EDX is in/out: the IRQ beam registers carry the
- * running cycle count in DH. */
-#define REGABI_REG_WRITE8_DX(name)                                              \
-    __asm__(REGABI_ENTRY(name) "pushl %eax\n"                                   \
-                               "pushl %ecx\n"                                   \
-                               "pushl %edx\n"                                   \
-                               "pushl %eax\n"                                   \
-                               "call " REGABI_SYM(c_##name) "\n"                \
-                                                            "addl $8, %esp\n"   \
-                                                            "movl %eax, %edx\n" \
-                                                            "popl %ecx\n"       \
-                                                            "popl %eax\n"       \
-                                                            "ret\n");           \
+/* The IRQ beam registers carry the running cycle count in DH, in and out. */
+#define REGABI_REG_WRITE8_DX(name)                        \
+    uint32_t c_##name(uint8_t, uint32_t);                 \
+    void name(void)                                       \
+    {                                                     \
+        MemSeamD = c_##name((uint8_t)MemSeamA, MemSeamD); \
+    }                                                     \
     uint32_t c_##name(uint8_t, uint32_t)
-
-#else
-
-#define REGABI_BANK_READ8(name) uint8_t c_##name(uint32_t)
-#define REGABI_BANK_READ16(name) uint16_t c_##name(uint32_t)
-#define REGABI_BANK_WRITE8(name) void c_##name(uint32_t, uint8_t)
-#define REGABI_BANK_WRITE16(name) void c_##name(uint32_t, uint16_t)
-#define REGABI_REG_READ8(name) uint8_t c_##name(void)
-#define REGABI_REG_READ8_DX(name) uint8_t c_##name(uint32_t)
-#define REGABI_REG_WRITE8(name) void c_##name(uint8_t)
-#define REGABI_REG_WRITE8_DX(name) uint32_t c_##name(uint8_t, uint32_t)
-
-#endif
 
 #endif

@@ -1,119 +1,82 @@
+/*
+ * DSP4 bank access, ported from the i386 trampolines that stood in for
+ * chips/dsp4proc.asm.
+ *
+ * Address routing, as in the legacy assembly:
+ *   $0000-$7FFF  tail into regaccessbank*
+ *   $8000-$BFFF  DSP4 transfer
+ *   $C000-$FFFF  nothing at all, the value is left as the caller had it
+ *
+ * A 16-bit access is two byte transfers with the address stepped in between,
+ * low byte first.
+ */
+
 #include <stdint.h>
 
-#if !defined(__GNUC__) || !defined(__i386__)
-#error "chips/dsp4proc.c requires GCC-compatible inline assembly on i386"
-#endif
-
-#if defined(__APPLE__) || defined(__MINGW32__)
-#define CSYM(x) "_" #x
-#else
-#define CSYM(x) #x
-#endif
+#include "../cpu/memseam.h"
 
 extern uint8_t dsp4_byte;
 extern uint16_t dsp4_address;
 extern void DSP4GetByte(void);
 extern void DSP4SetByte(void);
-extern void regaccessbankr8(void);
-extern void regaccessbankw8(void);
-extern void regaccessbankr16(void);
-extern void regaccessbankw16(void);
+extern memfn regaccessbankr8, regaccessbankw8, regaccessbankr16, regaccessbankw16;
 
-/*
- * Preserve register-based ABI used by eop handlers:
- * - address in ECX
- * - write value in AL (or AX for 16-bit)
- * Route behavior matches legacy asm:
- * - 0x0000-0x7FFF: jump to regaccessbank*
- * - 0x8000-0xBFFF: DSP4 handling
- * - 0xC000-0xFFFF: immediate return
- */
-__asm__(
-    ".globl " CSYM(DSP4Read8b) "\n" CSYM(DSP4Read8b) ":\n"
-                                                     "testw $0x8000, %cx\n"
-                                                     "jz " CSYM(regaccessbankr8) "\n"
-                                                                                 "testw $0x4000, %cx\n"
-                                                                                 "jnz 1f\n"
-                                                                                 "movw %cx, " CSYM(dsp4_address) "\n"
-                                                                                                                 "pushl %eax\n"
-                                                                                                                 "pushl %ecx\n"
-                                                                                                                 "pushl %edx\n"
-                                                                                                                 "call " CSYM(DSP4GetByte) "\n"
-                                                                                                                                           "popl %edx\n"
-                                                                                                                                           "popl %ecx\n"
-                                                                                                                                           "popl %eax\n"
-                                                                                                                                           "movb " CSYM(dsp4_byte) ", %al\n"
-                                                                                                                                                                   "1:\n"
-                                                                                                                                                                   "ret\n");
+void DSP4Read8b(void)
+{
+    if (!(MemSeamC & 0x8000)) {
+        regaccessbankr8();
+        return;
+    }
+    if (MemSeamC & 0x4000)
+        return;
+    dsp4_address = (uint16_t)MemSeamC;
+    DSP4GetByte();
+    mem_set_al(dsp4_byte);
+}
 
-__asm__(
-    ".globl " CSYM(DSP4Write8b) "\n" CSYM(DSP4Write8b) ":\n"
-                                                       "testw $0x8000, %cx\n"
-                                                       "jz " CSYM(regaccessbankw8) "\n"
-                                                                                   "testw $0x4000, %cx\n"
-                                                                                   "jnz 1f\n"
-                                                                                   "movw %cx, " CSYM(dsp4_address) "\n"
-                                                                                                                   "movb %al, " CSYM(dsp4_byte) "\n"
-                                                                                                                                                "pushl %eax\n"
-                                                                                                                                                "pushl %ecx\n"
-                                                                                                                                                "pushl %edx\n"
-                                                                                                                                                "call " CSYM(DSP4SetByte) "\n"
-                                                                                                                                                                          "popl %edx\n"
-                                                                                                                                                                          "popl %ecx\n"
-                                                                                                                                                                          "popl %eax\n"
-                                                                                                                                                                          "1:\n"
-                                                                                                                                                                          "ret\n");
+void DSP4Write8b(void)
+{
+    if (!(MemSeamC & 0x8000)) {
+        regaccessbankw8();
+        return;
+    }
+    if (MemSeamC & 0x4000)
+        return;
+    dsp4_address = (uint16_t)MemSeamC;
+    dsp4_byte = (uint8_t)MemSeamA;
+    DSP4SetByte();
+}
 
-__asm__(
-    ".globl " CSYM(DSP4Read16b) "\n" CSYM(DSP4Read16b) ":\n"
-                                                       "testw $0x8000, %cx\n"
-                                                       "jz " CSYM(regaccessbankr16) "\n"
-                                                                                    "testw $0x4000, %cx\n"
-                                                                                    "jnz 1f\n"
-                                                                                    "movw %cx, " CSYM(dsp4_address) "\n"
-                                                                                                                    "pushl %eax\n"
-                                                                                                                    "pushl %ecx\n"
-                                                                                                                    "pushl %edx\n"
-                                                                                                                    "call " CSYM(DSP4GetByte) "\n"
-                                                                                                                                              "popl %edx\n"
-                                                                                                                                              "popl %ecx\n"
-                                                                                                                                              "popl %eax\n"
-                                                                                                                                              "movb " CSYM(dsp4_byte) ", %al\n"
-                                                                                                                                                                      "incw " CSYM(dsp4_address) "\n"
-                                                                                                                                                                                                 "pushl %eax\n"
-                                                                                                                                                                                                 "pushl %ecx\n"
-                                                                                                                                                                                                 "pushl %edx\n"
-                                                                                                                                                                                                 "call " CSYM(DSP4GetByte) "\n"
-                                                                                                                                                                                                                           "popl %edx\n"
-                                                                                                                                                                                                                           "popl %ecx\n"
-                                                                                                                                                                                                                           "popl %eax\n"
-                                                                                                                                                                                                                           "movb " CSYM(dsp4_byte) ", %ah\n"
-                                                                                                                                                                                                                                                   "1:\n"
-                                                                                                                                                                                                                                                   "ret\n");
+void DSP4Read16b(void)
+{
+    uint8_t lo;
 
-__asm__(
-    ".globl " CSYM(DSP4Write16b) "\n" CSYM(DSP4Write16b) ":\n"
-                                                         "testw $0x8000, %cx\n"
-                                                         "jz " CSYM(regaccessbankw16) "\n"
-                                                                                      "testw $0x4000, %cx\n"
-                                                                                      "jnz 1f\n"
-                                                                                      "movw %cx, " CSYM(dsp4_address) "\n"
-                                                                                                                      "movb %al, " CSYM(dsp4_byte) "\n"
-                                                                                                                                                   "pushl %eax\n"
-                                                                                                                                                   "pushl %ecx\n"
-                                                                                                                                                   "pushl %edx\n"
-                                                                                                                                                   "call " CSYM(DSP4SetByte) "\n"
-                                                                                                                                                                             "popl %edx\n"
-                                                                                                                                                                             "popl %ecx\n"
-                                                                                                                                                                             "popl %eax\n"
-                                                                                                                                                                             "movb %ah, " CSYM(dsp4_byte) "\n"
-                                                                                                                                                                                                          "incw " CSYM(dsp4_address) "\n"
-                                                                                                                                                                                                                                     "pushl %eax\n"
-                                                                                                                                                                                                                                     "pushl %ecx\n"
-                                                                                                                                                                                                                                     "pushl %edx\n"
-                                                                                                                                                                                                                                     "call " CSYM(DSP4SetByte) "\n"
-                                                                                                                                                                                                                                                               "popl %edx\n"
-                                                                                                                                                                                                                                                               "popl %ecx\n"
-                                                                                                                                                                                                                                                               "popl %eax\n"
-                                                                                                                                                                                                                                                               "1:\n"
-                                                                                                                                                                                                                                                               "ret\n");
+    if (!(MemSeamC & 0x8000)) {
+        regaccessbankr16();
+        return;
+    }
+    if (MemSeamC & 0x4000)
+        return;
+    dsp4_address = (uint16_t)MemSeamC;
+    DSP4GetByte();
+    lo = dsp4_byte;
+    dsp4_address++;
+    DSP4GetByte();
+    mem_set_ax((uint16_t)(lo | dsp4_byte << 8));
+}
+
+void DSP4Write16b(void)
+{
+    if (!(MemSeamC & 0x8000)) {
+        regaccessbankw16();
+        return;
+    }
+    if (MemSeamC & 0x4000)
+        return;
+    dsp4_address = (uint16_t)MemSeamC;
+    dsp4_byte = (uint8_t)MemSeamA;
+    DSP4SetByte();
+    dsp4_byte = (uint8_t)(MemSeamA >> 8);
+    dsp4_address++;
+    DSP4SetByte();
+}

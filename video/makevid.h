@@ -9,7 +9,10 @@ typedef struct SpriteInfo {
     u1 pal;
     u1 status;
 } SpriteInfo;
-_Static_assert(sizeof(SpriteInfo) == 8, "SpriteInfo size mismatch");
+/* Two bytes of x, a host pointer, and two more bytes: 8 on a 32-bit build,
+   which is the stride the video assembly indexes spritetablea by. ui.c sizes
+   the allocation from the same sizeof. */
+_Static_assert(sizeof(SpriteInfo) == 4 + sizeof(u1*), "SpriteInfo size mismatch");
 
 extern SpriteInfo* currentobjptr;
 extern u1 a16x16xinc;

@@ -229,7 +229,10 @@ __asm__(
     ASM_GSYM(curhdma)
     ".byte 0\n"
     ASM_GSYM(hdmadata)
-    ".fill 152, 1, 0\n"
+    /* 8 * sizeof(HDMAInfo), which holds four host pointers: 152 bytes on a
+       32-bit build. The assembler does the arithmetic, so the reserve tracks
+       the struct instead of the struct having to match a literal. */
+    ".fill 8 * (4 * " ASM_STR(__SIZEOF_POINTER__) " + 3), 1, 0\n"
     ".balign 32, 0x90\n"
     ASM_GSYM(hdmatype)
     ".byte 0\n"
