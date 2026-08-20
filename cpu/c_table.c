@@ -654,7 +654,7 @@ u1 cpucycle[256] = {
 
 /* Invalid-opcode handler: the assembly was a bare `ret`, so this does nothing
    but take the register block the dispatcher hands every opcode body. */
-void eopINVALID(u4* const r)
+void eopINVALID(zreg* const r)
 {
     (void)r;
 }

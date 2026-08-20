@@ -255,7 +255,7 @@ void Donextlinecache(void)
 /* The `endloop` macro from cpu/65816dc.inc: step the SPC700 when its share of
    the cycles has run out, fetch the next opcode and charge it. Returns zero
    where the assembly returned out of the run, the scanline's budget spent. */
-static int endloop(u4* const r)
+static int endloop(zreg* const r)
 {
     u4 const dspcyc = cycpbl;
 
@@ -283,7 +283,7 @@ static int endloop(u4* const r)
    `endloop`, so a whole run went by without returning; the loop is the same
    shape. Every body leaves the table for the current flag state in edi, so it
    is re-read each time round. */
-static void run_chain(u4* const r)
+static void run_chain(zreg* const r)
 {
     do {
         ((opfn**)r[R_EDI])[r[R_EBX]](r);
@@ -291,7 +291,7 @@ static void run_chain(u4* const r)
 }
 
 /* The dispatch loop from cpu/execute.asm. */
-void exec_loop(u4* const r, int const at_cpuover)
+void exec_loop(zreg* const r, int const at_cpuover)
 {
     if (at_cpuover)
         goto cpuover;
@@ -309,7 +309,7 @@ startagain:
     goto cpuover;
 
 sound:
-    r[R_EDI] = (u4)tableadc[r[R_EBX]];
+    r[R_EDI] = (zreg)tableadc[r[R_EBX]];
     {
         u4 const dspcyc = cycpbl;
         cycpbl = dspcyc - 55;
@@ -360,12 +360,12 @@ cpuover:
 
 void execute(u4* const pedx, u1** const pebp, u1** const pesi, opfn*** const pedi)
 {
-    u4 r[8] = { 0 };
+    zreg r[8] = { 0 };
 
     r[R_EDX] = *pedx;
-    r[R_EBP] = (u4)*pebp;
-    r[R_ESI] = (u4)*pesi;
-    r[R_EDI] = (u4)*pedi;
+    r[R_EBP] = (zreg)*pebp;
+    r[R_ESI] = (zreg)*pesi;
+    r[R_EDI] = (zreg)*pedi;
 
     exec_loop(r, 0);
 

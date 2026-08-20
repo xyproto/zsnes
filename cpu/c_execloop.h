@@ -11,7 +11,7 @@ enum exec_act {
     EXEC_EXIT /* leave the dispatch loop */
 };
 
-enum exec_act c_cpuover(u4* r);
-void exec_loop(u4* r, int at_cpuover);
+enum exec_act c_cpuover(zreg* r);
+void exec_loop(zreg* r, int at_cpuover);
 
 #endif

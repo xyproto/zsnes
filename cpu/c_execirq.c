@@ -16,7 +16,7 @@ enum { R_EDI, R_ESI, R_EBP, R_ESP, R_EBX, R_EDX, R_ECX, R_EAX };
 extern u1 INTEnab, intrset, doirqnext, irqon;
 extern u2 VIRQLoc, resolutn, curypos;
 
-int c_process_irq(u4* const r)
+int c_process_irq(zreg* const r)
 {
     /* dl bit 2 is the I flag: interrupts already disabled. */
     int const idis = (r[R_EDX] & 0x04u) != 0;

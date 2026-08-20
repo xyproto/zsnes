@@ -62,7 +62,7 @@ extern u1 KeyOnStA, KeyOnStB;
 extern u1 INCRFrame;
 extern u1 ZMVZClose;
 
-int c_process_irq(u4* r);
+int c_process_irq(zreg* r);
 void drawline(void); /* video/c_makevid.c */
 void ProcessMovies(void);
 void BackupPauseFrame(void);
@@ -102,7 +102,7 @@ static u4 rol16(u4 const v)
 /* Per-game patterns where the SA-1 is known to be spinning. Recognising one
    lets the emulator hand the slot straight back to the 65816. The addresses
    are ROM and I-RAM offsets, so each test is a signature, not a heuristic. */
-static void sa1speedhacks(u4* const r)
+static void sa1speedhacks(zreg* const r)
 {
     SA1SHb = 0;
 
@@ -132,8 +132,14 @@ static void sa1speedhacks(u4* const r)
             SA1SHb = 1;
     }
 
-    /* The 65816's own program counter, as a WRAM then a ROM offset. */
-    u4 const woff = r[R_ESI] - (u4)wramdata;
+    /* The 65816's own program counter, as a WRAM then a ROM offset. Both bases
+       are host pointers, so the subtraction is pointer-wide; the difference is
+       an offset and fits a u4 anywhere.
+
+       SA1LBound and SA1UBound are written below and read nowhere - the
+       assembly that consumed them is gone - so the narrowing on those stores
+       is harmless. They are kept because cpu/c_execdata.c pins the layout. */
+    u4 const woff = (u4)(r[R_ESI] - (zreg)wramdata);
     if (woff >= 0x224 && woff <= 0x22E) {
         SA1LBound = 0x224 + (u4)wramdata;
         SA1UBound = 0x22E + (u4)wramdata;
@@ -150,7 +156,7 @@ static void sa1speedhacks(u4* const r)
         SETB(SA1SH, 1);
     }
 
-    u4 const roff = r[R_ESI] - (u4)romdata;
+    u4 const roff = (u4)(r[R_ESI] - (zreg)romdata);
     if (roff >= 0xA56 && roff <= 0xA59) {
         SA1LBound = 0xA56 + (u4)romdata;
         SA1UBound = 0xA59 + (u4)romdata;
@@ -190,7 +196,7 @@ static void applycheats(void)
     } while (--numcheat != 0);
 }
 
-enum exec_act c_cpuover(u4* const r)
+enum exec_act c_cpuover(zreg* const r)
 {
     if (curypos == 0)
         rtoflags = 0;
@@ -620,13 +626,13 @@ hirq:
 
 /* Execute a single 65816 instruction (debugging purpose). Called from the
    debugger, which keeps the core state in ordinary variables between steps. */
-void execsingle(u4* const pedx, u1** const pebp, u1** const pesi, opfn*** const pedi)
+void execsingle(zreg* const pedx, u1** const pebp, u1** const pesi, opfn*** const pedi)
 {
-    u4 r[8] = { 0 };
+    zreg r[8] = { 0 };
     r[R_EDX] = *pedx;
-    r[R_EBP] = (u4)*pebp;
-    r[R_ESI] = (u4)*pesi;
-    r[R_EDI] = (u4)*pedi;
+    r[R_EBP] = (zreg)*pebp;
+    r[R_ESI] = (zreg)*pesi;
+    r[R_EDI] = (zreg)*pedi;
 
     if (curexecstate & 2) {
         u4 const dspcyc = cycpbl;
@@ -640,7 +646,7 @@ void execsingle(u4* const pedx, u1** const pebp, u1** const pesi, opfn*** const 
     }
 
     exiter = 0x01;
-    r[R_EDI] = (u4)tablead[(u1)r[R_EDX]];
+    r[R_EDI] = (zreg)tablead[(u1)r[R_EDX]];
 
     u4 op = *(u1*)r[R_ESI];
     r[R_ESI]++;
@@ -694,7 +700,7 @@ void execsingle(u4* const pedx, u1** const pebp, u1** const pesi, opfn*** const 
 
     if (spcon != 0) {
         UpdateTimer(r[R_EDX], (opfn***)&r[R_EDI]);
-        r[R_EDI] = (u4)tablead[(u1)r[R_EDX]];
+        r[R_EDI] = (zreg)tablead[(u1)r[R_EDX]];
     }
     set_dh(r, 0);
     curypos++;

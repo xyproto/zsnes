@@ -58,7 +58,7 @@ extern u1 IRAM[2049];
 
 #include "ops65816.h"
 
-void OP(COp00)(u4* const r) /* BRK s - backs up and stops */
+void OP(COp00)(zreg* const r) /* BRK s - backs up and stops */
 {
 #ifndef NO_DEBUGGER
     debstop4 = 1;
@@ -66,13 +66,13 @@ void OP(COp00)(u4* const r) /* BRK s - backs up and stops */
     r[R_ESI]--;
 }
 
-void OP(COp1B)(u4* const r) /* TCS i - the SA-1 is always native */
+void OP(COp1B)(zreg* const r) /* TCS i - the SA-1 is always native */
 {
     AX(r, GET16(xa));
     SET16(xs, GET16(r[R_EAX]));
 }
 
-void OP(COp58)(u4* const r) /* CLI i - nothing to switch to */
+void OP(COp58)(zreg* const r) /* CLI i - nothing to switch to */
 {
     r[R_EDX] &= ~0x04u;
 }
@@ -94,19 +94,19 @@ WRAM_POP16(COp68m16, xa)
 WRAM_POP16(COpFAx16, xx)
 WRAM_POP16(COp7Ax16, xy)
 
-void OP(COp08)(u4* const r) /* PHP s */
+void OP(COp08)(zreg* const r) /* PHP s */
 {
-    r[R_EAX] = (u4)(uintptr_t)wramdata;
+    r[R_EAX] = (zreg)(uintptr_t)wramdata;
     r[R_EDX] = makedl(r[R_EDX]);
     SET16(r[R_ECX], GET16(xs));
     push8(r, (u1)r[R_EDX]);
     SET16(xs, GET16(r[R_ECX]));
 }
 
-void OP(COp2B)(u4* const r) /* PLD s */
+void OP(COp2B)(zreg* const r) /* PLD s */
 {
     u1 hi;
-    r[R_EAX] = (u4)(uintptr_t)wramdata;
+    r[R_EAX] = (zreg)(uintptr_t)wramdata;
     SET16(r[R_ECX], GET16(xs));
     SET8(xd, pop8(r));
     SET16(xs, GET16(r[R_ECX]));
@@ -118,7 +118,7 @@ void OP(COp2B)(u4* const r) /* PLD s */
     setnz16(r, GET16(r[R_EAX]));
 }
 
-void OP(COp28)(u4* const r) /* PLP s - no `xor bh,bh` here */
+void OP(COp28)(zreg* const r) /* PLP s - no `xor bh,bh` here */
 {
     u1 p;
     SET16(r[R_ECX], GET16(xs));
@@ -138,7 +138,7 @@ void OP(COp28)(u4* const r) /* PLP s - no `xor bh,bh` here */
     }
 }
 
-void OP(COpFB)(u4* const r) /* XCE i - always swaps, no early-out */
+void OP(COpFB)(zreg* const r) /* XCE i - always swaps, no early-out */
 {
     AL(r, (u1)(flagc & 1u));
     flagc = 0;
@@ -160,7 +160,7 @@ void OP(COpFB)(u4* const r) /* XCE i - always swaps, no early-out */
     }
 }
 
-void OP(COpCB)(u4* const r) /* WAI i - does not clear doirqnext */
+void OP(COpCB)(zreg* const r) /* WAI i - does not clear doirqnext */
 {
     if (intrset == 1) {
         r[R_ESI]--;
@@ -178,40 +178,40 @@ void OP(COpCB)(u4* const r) /* WAI i - does not clear doirqnext */
     r[R_ESI]--;
 }
 
-void OP(COp4C)(u4* const r) /* JMP a - no $4300 routing */
+void OP(COp4C)(zreg* const r) /* JMP a - no $4300 routing */
 {
     r[R_EAX] = 0;
-    AX(r, *(u2 const*)(uintptr_t)r[R_ESI]);
+    AX(r, *(u2 const*)r[R_ESI]);
     SET8(r[R_EBX], GET8(xpb));
     xpc = GET16(r[R_EAX]);
     jump_to(r, 0);
 }
 
-void OP(COp20)(u4* const r) /* JSR a - no $4300 routing */
+void OP(COp20)(zreg* const r) /* JSR a - no $4300 routing */
 {
-    r[R_EBX] = r[R_ESI] - (u4)(uintptr_t)initaddrl;
+    r[R_EBX] = r[R_ESI] - (zreg)(uintptr_t)initaddrl;
     SET16(r[R_EBX], (u2)(GET16(r[R_EBX]) + 1));
     xpc = GET16(r[R_EBX]);
     push_pc(r);
     SET16(xs, GET16(r[R_ECX]));
     r[R_EAX] = 0;
-    AX(r, *(u2 const*)(uintptr_t)r[R_ESI]);
+    AX(r, *(u2 const*)r[R_ESI]);
     r[R_EBX] &= 0xFFFF00FFu;
     xpc = GET16(r[R_EAX]);
     SET8(r[R_EBX], GET8(xpb));
     jump_to(r, 0);
 }
 
-void OP(COpFC)(u4* const r) /* JSR (a,x) */
+void OP(COpFC)(zreg* const r) /* JSR (a,x) */
 {
-    r[R_EBX] = r[R_ESI] - (u4)(uintptr_t)initaddrl;
+    r[R_EBX] = r[R_ESI] - (zreg)(uintptr_t)initaddrl;
     SET16(r[R_EBX], (u2)(GET16(r[R_EBX]) + 1));
     xpc = GET16(r[R_EBX]);
     push_pc(r);
     SET16(xs, GET16(r[R_ECX]));
     r[R_EAX] = 0;
     r[R_EBX] &= 0xFFFF00FFu;
-    SET16(r[R_ECX], *(u2 const*)(uintptr_t)r[R_ESI]);
+    SET16(r[R_ECX], *(u2 const*)r[R_ESI]);
     SET8(r[R_EBX], GET8(xpb));
     SET16(r[R_ECX], (u2)(GET16(r[R_ECX]) + GET16(xx)));
     TABR16(r);
@@ -222,9 +222,9 @@ void OP(COpFC)(u4* const r) /* JSR (a,x) */
 
 /* JSL reaches a window of IRAM that the 65816 has no equivalent of, and it
    omits the stackor fixup after pushing the bank. */
-void OP(COp22)(u4* const r) /* JSL al */
+void OP(COp22)(zreg* const r) /* JSL al */
 {
-    r[R_EBX] = r[R_ESI] - (u4)(uintptr_t)initaddrl;
+    r[R_EBX] = r[R_ESI] - (zreg)(uintptr_t)initaddrl;
     SET16(r[R_EBX], (u2)(GET16(r[R_EBX]) + 2));
     xpc = GET16(r[R_EBX]);
     SET16(r[R_ECX], GET16(xs));
@@ -236,7 +236,7 @@ void OP(COp22)(u4* const r) /* JSL al */
     SET16(xs, GET16(r[R_ECX]));
     r[R_EAX] = 0;
     r[R_EBX] &= 0xFFFF00FFu;
-    AX(r, *(u2 const*)(uintptr_t)r[R_ESI]);
+    AX(r, *(u2 const*)r[R_ESI]);
     SET8(r[R_EBX], *(u1 const*)(uintptr_t)(r[R_ESI] + 2));
     xpc = GET16(r[R_EAX]);
     SET8(xpb, GET8(r[R_EBX]));
@@ -247,11 +247,11 @@ void OP(COp22)(u4* const r) /* JSL al */
     if (r[R_EBX] == 0 && r[R_EAX] > 0x2000u) {
         initaddrl = IRAM - 0x3000;
         r[R_EAX] = (r[R_EAX] & 0x7FFu) + 0x3000u;
-        r[R_ESI] = (u4)(uintptr_t)initaddrl + r[R_EAX];
+        r[R_ESI] = (zreg)(uintptr_t)initaddrl + r[R_EAX];
         return;
     }
     initaddrl = snesmap2[r[R_EBX]];
-    r[R_ESI] = (u4)(uintptr_t)initaddrl + r[R_EAX];
+    r[R_ESI] = (zreg)(uintptr_t)initaddrl + r[R_EAX];
 }
 
 /*
@@ -260,14 +260,14 @@ void OP(COp22)(u4* const r) /* JSL al */
  * emulation half also omits `xor ebx,ebx` before loading S, which is safe only
  * because the preceding subtraction leaves the top of ebx clear.
  */
-void OP(COp02)(u4* const r) /* COP s */
+void OP(COp02)(zreg* const r) /* COP s */
 {
     int const emul = (xe & 1) != 0;
 
     r[R_ESI]++;
     SET8(r[R_EBX], GET8(xpb));
     AX(r, xpc);
-    r[R_EAX] = (u4)(uintptr_t)((r[R_EAX] & 0x8000u) ? snesmmap[r[R_EBX]]
+    r[R_EAX] = (zreg)(uintptr_t)((r[R_EAX] & 0x8000u) ? snesmmap[r[R_EBX]]
                                                     : snesmap2[r[R_EBX]]);
     r[R_EBX] = r[R_ESI] - r[R_EAX];
     xpc = GET16(r[R_EBX]);
@@ -275,7 +275,7 @@ void OP(COp02)(u4* const r) /* COP s */
     if (emul) {
         u1* const ram = wramdata;
         u2 sp;
-        r[R_EAX] = (u4)(uintptr_t)ram;
+        r[R_EAX] = (zreg)(uintptr_t)ram;
         SET16(r[R_EBX], GET16(xs));
         sp = GET16(r[R_EBX]);
 #define SA1_PUSHRAM(v)                              \
@@ -317,7 +317,7 @@ void OP(COp02)(u4* const r) /* COP s */
 
 /* The SA-1's RTI is much shorter: no emulation path, no NMI bookkeeping and no
    WAI re-arm, but it does keep the $4300 routing. */
-void OP(COp40)(u4* const r) /* RTI s */
+void OP(COp40)(zreg* const r) /* RTI s */
 {
     intrset = 2;
     if (curexecstate == 0)
@@ -335,7 +335,7 @@ void OP(COp40)(u4* const r) /* RTI s */
     r[R_EBX] &= 0xFFFF00FFu;
     r[R_EAX] = 0;
     SET8(r[R_EBX], (u1)r[R_EDX]);
-    r[R_EDI] = (u4)(uintptr_t)tablead[r[R_EBX]];
+    r[R_EDI] = (zreg)(uintptr_t)tablead[r[R_EBX]];
     SET8(r[R_EBX], GET8(xpb));
     AX(r, xpc);
     jump_to(r, 1);

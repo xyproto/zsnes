@@ -34,7 +34,7 @@ static void call_membank0w8(u2 const cx, u1 const al)
 }
 
 
-void IRQemulmode(u4* const pedx, u1** const pesi)
+void IRQemulmode(zreg* const pedx, u1** const pesi)
 {
 	xpc = *pesi - initaddrl;
 
@@ -63,7 +63,7 @@ void IRQemulmode(u4* const pedx, u1** const pesi)
 }
 
 
-void switchtovirq(u4* const pedx, u1** const pesi)
+void switchtovirq(zreg* const pedx, u1** const pesi)
 {
 	irqon = 0x80;
 
@@ -109,7 +109,7 @@ void switchtovirq(u4* const pedx, u1** const pesi)
 }
 
 
-void NMIemulmode(u4* const pedx, u1** const pesi)
+void NMIemulmode(zreg* const pedx, u1** const pesi)
 {
 	xpc = *pesi - initaddrl;
 
@@ -138,7 +138,7 @@ void NMIemulmode(u4* const pedx, u1** const pesi)
 }
 
 
-void switchtonmi(u4* const pedx, u1** const pesi)
+void switchtonmi(zreg* const pedx, u1** const pesi)
 {
 	curnmi = 1;
 

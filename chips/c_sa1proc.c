@@ -62,7 +62,7 @@ static void call_membank0w8(u2 const cx, u1 const al)
 // Push the SA-1 return context onto its stack and jump to the NMI/IRQ vector.
 // vec is the vector (SA1NMIV or SA1IRQV); irqexec_off selects which SA1IRQExec
 // byte is flagged (2 = NMI, 1 = IRQ).
-static void SA1switch(u4* const pedx, u1** const pesi, u2 const vec, int const irqexec_off)
+static void SA1switch(zreg* const pedx, u1** const pesi, u2 const vec, int const irqexec_off)
 {
     ((u1*)&SA1Message)[2] = (u1)SA1Message;
     ((u1*)&SA1IRQExec)[irqexec_off] = 1;
@@ -95,12 +95,12 @@ static void SA1switch(u4* const pedx, u1** const pesi, u2 const vec, int const i
     *pesi = esi + vec;
 }
 
-void SA1switchtonmi(u4* const pedx, u1** const pesi)
+void SA1switchtonmi(zreg* const pedx, u1** const pesi)
 {
     SA1switch(pedx, pesi, (u2)SA1NMIV, 2);
 }
 
-void SA1switchtovirq(u4* const pedx, u1** const pesi)
+void SA1switchtovirq(zreg* const pedx, u1** const pesi)
 {
     SA1switch(pedx, pesi, (u2)SA1IRQV, 1);
 }
@@ -136,7 +136,7 @@ static u1 SA1IdleCharge(u1 const* const p)
     return 0;
 }
 
-static u4 SA1SwapEnter(u4* const r)
+static u4 SA1SwapEnter(zreg* const r)
 {
     u1* const p = SA1Ptr;
 
@@ -170,7 +170,7 @@ static u4 SA1SwapEnter(u4* const r)
     r[R_EAX] = eax;
     r[R_EDX] = edx;
     r[R_ESI] = (u4)SA1Ptr;
-    r[R_EDI] = (u4)SA1tablead[eax];
+    r[R_EDI] = (zreg)SA1tablead[eax];
 
     if (SA1DoIRQ & 0xFF000003) {
         if (SA1DoIRQ & 3) {
@@ -190,7 +190,7 @@ static u4 SA1SwapEnter(u4* const r)
     return 1;
 }
 
-static void SA1SwapLeave(u4* const r)
+static void SA1SwapLeave(zreg* const r)
 {
     // Save the SA-1 context, restore the 65816's.
     SA1RegP = (u1)r[R_EDX];
@@ -218,7 +218,7 @@ static void SA1SwapLeave(u4* const r)
 // scanline's cycles are spent, then hand the 65816 its context back. The SA-1
 // core's opcode tails jumped to one another through their own `endloop`, which
 // unlike the 65816's does not step the SPC700; the loop here is that macro.
-void SA1Swap(u4* const r)
+void SA1Swap(zreg* const r)
 {
     if (SA1SwapEnter(r) == 0)
         return;

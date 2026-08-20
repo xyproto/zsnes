@@ -40,21 +40,53 @@ def git(*args):
                           capture_output=True, text=True)
 
 
-def find_rev(path, ported_marker):
+def find_rev(path, ported_marker, requires):
     """Newest revision of `path` from before the port.
 
-    Keyed on a pattern the *port* introduces, not one the original has: a port
-    leaves thunks behind that keep plenty of the original's lines, so "still
-    looks like the original" is not a safe test. Absence of the thunk is.
+    Two ways to say which one that is, and neither is enough alone.
+
+    --ported-marker is a pattern the *port* introduces, and the newest revision
+    without it is taken to be pre-port. The trap: once the port finishes it
+    deletes its own scaffolding too, so the marker is absent at both ends of
+    the history and this picks the *finished* file. The 65816 targets hit
+    exactly that - the oracle came back with no opcodes in it at all.
+
+    --requires is a pattern only the original has, usually the %include of the
+    code under test. On its own it lands on a half-ported revision, where the
+    routines are already thunks into the C.
+
+    Give both. The newest revision that still includes the code and has not
+    started thunking it out is the last one where the oracle is really the
+    original.
     """
     revs = git("log", "--format=%H", "--", path).stdout.split()
-    for rev in revs:
+    chosen, marked = None, None
+    for i, rev in enumerate(revs):
         blob = git("show", "%s:%s" % (rev, path))
         if blob.returncode != 0:
             continue
-        if not re.search(ported_marker, blob.stdout):
-            return rev
-    sys.exit("mkoracle: no revision of %s without /%s/" % (path, ported_marker))
+        if ported_marker and re.search(ported_marker, blob.stdout):
+            if marked is None:
+                marked = i
+            continue
+        if requires and not re.search(requires, blob.stdout):
+            continue
+        if chosen is None:
+            chosen = i
+    if chosen is None:
+        sys.exit("mkoracle: no revision of %s matching /%s/ without /%s/"
+                 % (path, requires or ".", ported_marker or "."))
+    # The marker is absent at both ends of a finished port, so "newest without
+    # it" can land *after* the port instead of before it. If some revision does
+    # carry the marker and the one picked is newer than all of them, that is
+    # what happened - refuse rather than hand back an oracle that is the port.
+    if marked is not None and chosen < marked:
+        sys.exit(
+            "mkoracle: %s at %s is newer than every revision carrying /%s/, so "
+            "it is the finished port, not the original. Add --requires with a "
+            "pattern only the original has (usually the %%include of the code "
+            "under test)." % (path, revs[chosen][:8], ported_marker))
+    return revs[chosen]
 
 
 def extract(rev, path, dest, seen):
@@ -191,14 +223,20 @@ def main():
                          "external <name>_stub, so a difftest can observe a "
                          "call that would otherwise be PC-relative and "
                          "impossible to intercept")
+    ap.add_argument("--requires", metavar="PATTERN",
+                    help="pick the newest revision of the source that still "
+                         "matches this - a pattern only the original has, such "
+                         "as the %%include of the code under test. Safer than "
+                         "--ported-marker, which also matches the finished "
+                         "port once it drops its own scaffolding")
     ap.add_argument("--rewrite-macro", nargs="*", default=[], metavar="NAME=BODY",
                     help="replace a nullary macro's body before assembly, "
                          r"\n separating lines; endloop=ret makes each 65816 "
                          "opcode return instead of dispatching the next")
     a = ap.parse_args()
 
-    rev = "worktree" if a.worktree else (a.rev
-                                        or find_rev(a.source, a.ported_marker))
+    rev = "worktree" if a.worktree else (
+        a.rev or find_rev(a.source, a.ported_marker, a.requires))
     tmp = tempfile.mkdtemp(prefix="mkoracle.")
     try:
         if a.worktree:

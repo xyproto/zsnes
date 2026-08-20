@@ -49,19 +49,19 @@ WRAM_POP16(COp68m16, xa)
 WRAM_POP16(COpFAx16, xx)
 WRAM_POP16(COp7Ax16, xy)
 
-void OP(COp08)(u4* const r) /* PHP s */
+void OP(COp08)(zreg* const r) /* PHP s */
 {
-    r[R_EAX] = (u4)(uintptr_t)wramdata;
+    r[R_EAX] = (zreg)(uintptr_t)wramdata;
     r[R_EDX] = makedl(r[R_EDX]);
     SET16(r[R_ECX], GET16(xs));
     push8(r, (u1)r[R_EDX]);
     SET16(xs, GET16(r[R_ECX]));
 }
 
-void OP(COp2B)(u4* const r) /* PLD s */
+void OP(COp2B)(zreg* const r) /* PLD s */
 {
     u1 hi;
-    r[R_EAX] = (u4)(uintptr_t)wramdata;
+    r[R_EAX] = (zreg)(uintptr_t)wramdata;
     SET16(r[R_ECX], GET16(xs));
     SET8(xd, pop8(r));
     SET16(xs, GET16(r[R_ECX]));
@@ -73,28 +73,28 @@ void OP(COp2B)(u4* const r) /* PLD s */
     setnz16(r, GET16(r[R_EAX]));
 }
 
-void OP(COp00)(u4* const r) /* BRK s - one flag bit apart from the 65816's */
+void OP(COp00)(zreg* const r) /* BRK s - one flag bit apart from the 65816's */
 {
     brk_cop(r, brkv, brkv8, 0x04u);
 }
 
-void OP(COp58)(u4* const r) /* CLI i - nothing to switch to */
+void OP(COp58)(zreg* const r) /* CLI i - nothing to switch to */
 {
     r[R_EDX] &= ~0x04u;
 }
 
 /* BRL works the displacement out from the bank base it recomputes here, rather
    than from initaddrl as the 65816's does. */
-void OP(COp82)(u4* const r) /* BRL rl */
+void OP(COp82)(zreg* const r) /* BRL rl */
 {
     AX(r, xpc);
     SET8(r[R_EBX], GET8(xpb));
-    r[R_EAX] = (u4)(uintptr_t)((r[R_EAX] & 0x8000u) ? snesmmap[r[R_EBX]]
+    r[R_EAX] = (zreg)(uintptr_t)((r[R_EAX] & 0x8000u) ? snesmmap[r[R_EBX]]
                                                     : snesmap2[r[R_EBX]]);
     r[R_EBX] = r[R_ESI] - r[R_EAX];
     SET16(r[R_EBX], (u2)(GET16(r[R_EBX]) + 2));
     r[R_EAX] = 0;
-    SET16(r[R_EBX], (u2)(GET16(r[R_EBX]) + *(u2 const*)(uintptr_t)r[R_ESI]));
+    SET16(r[R_EBX], (u2)(GET16(r[R_EBX]) + *(u2 const*)r[R_ESI]));
     AX(r, GET16(r[R_EBX]));
     r[R_EBX] = 0;
     xpc = GET16(r[R_EAX]);
@@ -103,7 +103,7 @@ void OP(COp82)(u4* const r) /* BRL rl */
 }
 
 /* RTI, with the WAI re-arm in the high branch as well as the low one. */
-void OP(COp40)(u4* const r) /* RTI s */
+void OP(COp40)(zreg* const r) /* RTI s */
 {
     int const emul = (xe & 1) != 0;
 
@@ -137,7 +137,7 @@ void OP(COp40)(u4* const r) /* RTI s */
     r[R_EAX] = 0;
     AX(r, xpc);
     SET8(r[R_EBX], (u1)r[R_EDX]);
-    r[R_EDI] = (u4)(uintptr_t)tablead[r[R_EBX]];
+    r[R_EDI] = (zreg)(uintptr_t)tablead[r[R_EBX]];
     SET8(r[R_EBX], emul ? 0 : GET8(xpb));
     xpc = GET16(r[R_EAX]);
 
@@ -152,10 +152,10 @@ void OP(COp40)(u4* const r) /* RTI s */
         if (dma && memtabler8[r[R_EBX]] != regaccessbankr8)
             doirqnext = 0;
         initaddrl = base;
-        r[R_ESI] = (u4)(uintptr_t)base + r[R_EAX];
+        r[R_ESI] = (zreg)(uintptr_t)base + r[R_EAX];
         /* The WAI re-arm happens in the high branch and below $4300, but in
            neither of the two branches above it. */
-        if (!dma && *(u1 const*)(uintptr_t)r[R_ESI] == 0xCBu)
+        if (!dma && *(u1 const*)r[R_ESI] == 0xCBu)
             intrset = 2;
     }
     if (r[R_EDX] & 0x10u) {

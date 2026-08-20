@@ -41,7 +41,7 @@ void BackupCVFrame(void);
 void RestoreCVFrame(void);
 void BackupPauseFrame(void);
 
-void ProcessRewindC(u4* const r)
+void ProcessRewindC(zreg* const r)
 {
     u4 const key = KeyRewind;
     if (pressed[key] != 1)
@@ -62,7 +62,7 @@ void ProcessRewindC(u4* const r)
     r[R_EDX] = tempedx;
 }
 
-void UpdateRewindC(u4* const r)
+void UpdateRewindC(zreg* const r)
 {
     if (AllocatedRewindStates == 0 || KeyRewind == 0)
         return;

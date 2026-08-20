@@ -1,9 +1,9 @@
 #ifndef C_IRQ_H
 #define C_IRQ_H
 
-void IRQemulmode(u4* pedx, u1** pesi);
-void switchtovirq(u4* pedx, u1** pesi);
-void NMIemulmode(u4* pedx, u1** pesi);
-void switchtonmi(u4* pedx, u1** pesi);
+void IRQemulmode(zreg* pedx, u1** pesi);
+void switchtovirq(zreg* pedx, u1** pesi);
+void NMIemulmode(zreg* pedx, u1** pesi);
+void switchtonmi(zreg* pedx, u1** pesi);
 
 #endif
