@@ -16,8 +16,11 @@
 
 /* DEC d,x: the assembly does an 8-bit decrement through 16-bit accesses.
    bsnes and snes9x both do a single byte, so the port is deliberately
-   right rather than bit-identical here. */
-#define KNOWN_DIVERGENCE(n) (strcmp((n), "COpD6m8") == 0)
+   right rather than bit-identical here. The SA-1 shares the 65816's opcode
+   bodies, so it inherits that core's divergence list too. */
+static int known_65816_divergence(char const* n);
+#define KNOWN_DIVERGENCE(n) \
+    (strcmp((n), "COpD6m8") == 0 || known_65816_divergence(n))
 
 #define xa SA1xa
 #define xx SA1xx

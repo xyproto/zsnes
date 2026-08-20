@@ -28,8 +28,25 @@
 /* An instantiation may deliberately not reproduce the assembly - the SA-1 has
    one opcode where the original is wrong. Named here so it is reported rather
    than silently skipped. */
+#include <string.h>
+
+/*
+ * One divergence in the 65816 core itself. (The decimal ADC/SBC overflow flag
+ * used to be listed here; cpu/ops65816.h reproduces the x86 DAA/DAS rule now,
+ * so those 60 opcodes match bit-for-bit.)
+ *
+ * CLI: the assembly's emulation-mode restart is `xor ebx,ebx; jmp execloop` and
+ * the port returns without clearing ebx. The dispatcher only ever loads bl and
+ * starts from a zero ebx, so in the emulator those upper bits are always zero
+ * anyway; this test seeds them non-zero on purpose, which is why it shows up
+ * here and nowhere else.
+ */
+static int known_65816_divergence(char const* n)
+{
+    return strcmp(n, "COp58") == 0;
+}
 #ifndef KNOWN_DIVERGENCE
-#define KNOWN_DIVERGENCE(name) 0
+#define KNOWN_DIVERGENCE(name) known_65816_divergence(name)
 #endif
 
 #include "difftest.h"
@@ -37,6 +54,8 @@
 typedef uint8_t u1;
 typedef uint16_t u2;
 typedef uint32_t u4;
+/* The register block is pointer-wide; see types.h. On i386 that is u4. */
+typedef uintptr_t zreg;
 typedef int8_t s1;
 typedef int32_t s4;
 typedef void eop();
@@ -111,7 +130,7 @@ u1* snesmap2[1024];
  * the register. Only the low byte of ebx is in play, because the table index is
  * taken from it and this test's tables are 1024 entries.
  */
-u4 MemSeamA, MemSeamB, MemSeamC, MemSeamD;
+u4 MemSeamA, MemSeamB, MemSeamC, MemSeamD, MemSeamS;
 
 /* Small, because it is saved and restored around both runs - without that a
    port that never writes memory would agree with the assembly by inheriting
@@ -183,23 +202,36 @@ eop* DPageW16;
 extern void membank0r8(void), membank0r16(void);
 extern void membank0w8(void), membank0w16(void);
 
-/* The assembly side's entry points: the memcop spill, by hand. */
+/* The memtable entry points, which both sides reach through the same table.
+   The oracle is pre-port assembly and calls them with the register ABI; the
+   ported core calls them as plain C with the seam already loaded. One entry
+   point cannot tell those apart on its own, so dt_asm_side says which is
+   running and the spill is skipped for the C side. Rewriting 4096 table
+   entries between the two runs would cost more than the opcodes do.
+
+   Flags are not preserved, and were not before: the callee is a C function. */
+int dt_asm_side;
+
 __asm__(".text\n"
         ".globl membank0r8\n"
         ".globl membank0r16\n"
         ".globl membank0w8\n"
         ".globl membank0w16\n"
         ".macro memcop fn\n"
+        "    cmpl $0, dt_asm_side\n"
+        "    je 1f\n"
         "    movl %ebx, MemSeamB\n"
         "    movl %ecx, MemSeamC\n"
         "    movl %eax, MemSeamA\n"
         "    movl %edx, MemSeamD\n"
-        "    call \\fn\n"
+        "1:  call \\fn\n"
+        "    cmpl $0, dt_asm_side\n"
+        "    je 2f\n"
         "    movl MemSeamB, %ebx\n"
         "    movl MemSeamC, %ecx\n"
         "    movl MemSeamA, %eax\n"
         "    movl MemSeamD, %edx\n"
-        "    ret\n"
+        "2:  ret\n"
         ".endm\n"
         "membank0r8:  memcop c_membank0r8\n"
         "membank0r16: memcop c_membank0r16\n"
@@ -222,7 +254,7 @@ static int dt_wram;
 static char const* dt_only;
 
 /* pushad block, shared by both sides; op_fn is called with it loaded. */
-u4 R[8];
+zreg R[8];
 void (*op_fn)(void);
 
 /* Load the register file, call the assembly, read the file back. ebp is the
@@ -417,24 +449,20 @@ static void run_asm(void)
 OPS(DECL)
 #undef DECL
 
-/* CLI's C half returns "restart the dispatch loop", which its thunk in
-   cpu/e65816.inc turns into `xor ebx,ebx; jmp execloop`. The oracle's opcode
-   contains that branch, so the test has to model the thunk too. */
+/* CLI used to return "restart the dispatch loop" and the test modelled the
+   thunk that turned that into `xor ebx,ebx; jmp execloop`. Every instantiation
+   returns void now, so the C half is called plainly and whatever it does about
+   the restart is what the comparison sees. */
 extern void ASMOP(COp58)(void);
-static void cli_c(u4* const r)
+static void cli_c(zreg* const r)
 {
-#ifdef CLI_RETURNS_VOID
-    OP(COp58)(r); /* the SA-1 has no IRQ to switch to, so no restart path */
-#else
-    if (OP(COp58)(r))
-        r[R_EBX] = 0;
-#endif
+    OP(COp58)(r);
 }
 
 static const struct {
     char const* name;
     void (*a)(void);
-    void (*c)(u4*);
+    void (*c)(zreg*);
     int bytebx;
 } ops[] = {
 #define ENT(n, b) { #n, ASMOP(n), OP(n), b },
@@ -670,7 +698,9 @@ int main(void)
 
             load(&in);
             op_fn = ops[o].a;
+            dt_asm_side = 1;
             run_asm();
+            dt_asm_side = 0;
             save(&a);
 
             load(&in);

@@ -421,7 +421,7 @@ clean:
 
 op: difftest_op.c difftest.h ../cpu/ops65816.h
 	python3 ../tools/mkoracle.py cpu/table.asm -o _op.o \
-	    --ported-marker 'EXTSYM c_COp' --rewrite-macro 'endloop=    ret' \
+	    --requires 'e65816.inc' --ported-marker 'EXTSYM c_COp' --rewrite-macro 'endloop=    ret' \
 	    --stubs _op_stubs.c \
 	    --exclude xa xx xy xs xd xdb xpb xpc xe flagnz flago flagc \
 	            tablead stackand stackor UpdateDPage snesmmap snesmap2 \
@@ -435,7 +435,7 @@ op: difftest_op.c difftest.h ../cpu/ops65816.h
 
 sa1op: difftest_sa1.c difftest_op.c difftest.h ../cpu/ops65816.h
 	python3 ../tools/mkoracle.py cpu/stable.asm -o _sa1.o \
-	    --ported-marker 'EXTSYM c_SA1COp' --rewrite-macro 'endloop=    ret' \
+	    --requires 'se65816.inc' --ported-marker 'EXTSYM c_SA1COp' --rewrite-macro 'endloop=    ret' \
 	    --stubs _sa1_stubs.c \
 	    --exclude SA1xa SA1xx SA1xy SA1xs SA1xd SA1xdb SA1xpb xpc xe \
 	            Sflagnz Sflago Sflagc SA1tablead stackand stackor \
@@ -450,7 +450,7 @@ sa1op: difftest_sa1.c difftest_op.c difftest.h ../cpu/ops65816.h
 
 dbgop: difftest_dbg.c difftest_op.c difftest.h ../cpu/ops65816_dbg.h
 	python3 ../tools/mkoracle.py cpu/tablec.asm -o _dbg.o \
-	    --ported-marker 'EXTSYM c_dbgCOp' --rewrite-macro 'endloop=    ret' \
+	    --requires 'e65816c.inc' --ported-marker 'EXTSYM c_dbgCOp' --rewrite-macro 'endloop=    ret' \
 	    --stubs _dbg_stubs.c \
 	    --exclude xa xx xy xs xd xdb xpb xpc xe flagnz flago flagc \
 	            tableadc stackand stackor UpdateDPage snesmmap snesmap2 \
