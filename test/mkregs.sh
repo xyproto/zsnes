@@ -324,6 +324,23 @@ EXTERN bg4ptrx
 EXTERN bg4ptry
 EXTERN bg4scsize
 EXTERN bg4objptr
+EXTERN h_dot_counter
+EXTERN spcon
+EXTERN spcnumread
+EXTERN sndrot
+EXTERN sndrot2
+EXTERN reg1read
+EXTERN reg2read
+EXTERN reg3read
+EXTERN reg4read
+EXTERN SPCRAM
+EXTERN SPC700read
+EXTERN SPC700write
+EXTERN xa
+EXTERN nmirept
+EXTERN cycpbl
+EXTERN curexecstate
+EXTERN tableadc
 
 %include "_regs.mac"
 %include "_regs_inline.mac"

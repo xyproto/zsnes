@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "memseam_stub.h"
 #include "zstest.h"
 
 /* --- Exported globals from chips/dsp2proc.c -------------------------------- */

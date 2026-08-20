@@ -97,6 +97,24 @@ static u2 cg_init[256];
 /* The $2180 port walks a 128K window, so the buffer has to cover the wrap. */
 static u1 wram_store[0x20000], wram_init[0x20000];
 u1* wramdata = wram_store;
+
+/* The APU I/O ports ($2140-$2143) and the $2137 latch. */
+u1 spcon, spcnumread, sndrot, sndrot2;
+u1 reg1read, reg2read, reg3read, reg4read;
+u1 SPCRAM[0x10000];
+u4 SPC700read, SPC700write, h_dot_counter, xa;
+u4 nmirept, cycpbl, curexecstate;
+/* The opcode tables reenablespc reloads edi from; only its address matters,
+   and regs_call discards edi exactly as the real callers do. */
+void* tableadc[256];
+/* The seam the ported handlers take their arguments through and leave their
+   results in; the oracle is assembly and still uses the registers, so run()
+   sets both up and reads each side back its own way. MemSeamS is esi, which
+   the $2140-$2143 sound-skip hack wants as the program counter. */
+u4 MemSeamA, MemSeamB, MemSeamC, MemSeamD, MemSeamS;
+/* The instruction stream the sound-skip hack patches. Eight bytes is two more
+   than the longest scan plus the pair it writes. */
+static u1 pc_store[8], pc_init[8];
 /* The table the handlers are installed in; unused here but the oracle's
    cpu/regs.mac references it. */
 void (*regptra[0x3000])(void);
@@ -232,6 +250,15 @@ DECL(reg2119);
 DECL(reg2119inc);
 DECL(reg2119inc8);
 DECL(reg2119inc8inc);
+DECL(reg2137r);
+DECL(reg2140r);
+DECL(reg2141r);
+DECL(reg2142r);
+DECL(reg2143r);
+DECL(reg2140w);
+DECL(reg2141w);
+DECL(reg2142w);
+DECL(reg2143w);
 #undef DECL
 
 /* Call a handler with eax, ecx and edx set, and report what came back.
@@ -251,6 +278,7 @@ __asm__(".text\n"
         "movl 28(%esp), %eax\n"
         "movl 32(%esp), %ecx\n"
         "movl 36(%esp), %edx\n"
+        "movl 44(%esp), %esi\n"
         "call *(%esp)\n"
         "movl %eax, regs_out\n"
         "movl %ecx, regs_out+4\n"
@@ -265,7 +293,7 @@ __asm__(".text\n"
         ".text\n");
 /* ebx too: UpdateScrollRegX shifts the whole 32-bit register, so drive its
    upper half to prove the caller's bits cannot leak into the result. */
-void regs_call(void* fn, u4 eax, u4 ecx, u4 edx, u4 ebx);
+void regs_call(void* fn, u4 eax, u4 ecx, u4 edx, u4 ebx, u4 esi);
 
 typedef struct {
     char const* name;
@@ -414,6 +442,17 @@ static regcase const cases[] = {
     CASE(reg2119inc),
     CASE(reg2119inc8),
     CASE(reg2119inc8inc),
+    /* $2137 takes the cycle count in dh; the APU ports read the program
+       counter out of esi, which regs_call points at pc_store. */
+    CASE(reg2137r),
+    CASE(reg2140r),
+    CASE(reg2141r),
+    CASE(reg2142r),
+    CASE(reg2143r),
+    CASE_NOAX(reg2140w),
+    CASE_NOAX(reg2141w),
+    CASE_NOAX(reg2142w),
+    CASE_NOAX(reg2143w),
 };
 #undef CASE
 #undef CASE_DMA
@@ -461,6 +500,12 @@ typedef struct {
     u1 bgsc[4];
     u1 oam[1024];
     u1 wram[0x20000];
+    /* $2137 and the APU I/O ports. */
+    u4 hdot, spcrd, spcwr, xa_, nmirept_, cycpbl_, cxs;
+    u1 spcnr, srot, srot2, apu[4];
+    u1 pc[8];
+    /* The 16-bit H/V latches $2137 writes and $213C/$213D read out. */
+    u2 lx16o, ly16o;
 } snapshot;
 
 typedef struct {
@@ -495,14 +540,37 @@ typedef struct {
     u1 bgb0;
     u2 bgp0;
     u4 bgxy0;
+    /* $2137 and the APU I/O ports. */
+    u1 spcon0, spcnr0, srot0, srot20, apurd[4], apu0[4];
+    u4 hdot0, spcrd0, spcwr0, xa0, nmirept0, cycpbl0, cxs0;
+    u1 pc0[8];
 } state;
 
 static void run(void (*fn)(void), u4 a, u4 c, u4 d, state const* in,
-    u2 m7a, u2 m7b, u1 const* mult, snapshot* out)
+    u2 m7a, u2 m7b, u1 const* mult, int seam, snapshot* out)
 {
     u1 const vb = in->vb, fb = in->fb, mc = in->mc;
 
     memcpy(wram_store, wram_init, sizeof wram_store);
+    memcpy(pc_store, in->pc0, sizeof pc_store);
+    memcpy(pc_init, in->pc0, sizeof pc_init);
+    MemSeamS = (u4)(uintptr_t)pc_store;
+    spcon = in->spcon0;
+    spcnumread = in->spcnr0;
+    sndrot = in->srot0;
+    sndrot2 = in->srot20;
+    reg1read = in->apurd[0];
+    reg2read = in->apurd[1];
+    reg3read = in->apurd[2];
+    reg4read = in->apurd[3];
+    memcpy(SPCRAM + 0xF4, in->apu0, 4);
+    h_dot_counter = in->hdot0;
+    SPC700read = in->spcrd0;
+    SPC700write = in->spcwr0;
+    xa = in->xa0;
+    nmirept = in->nmirept0;
+    cycpbl = in->cycpbl0;
+    curexecstate = in->cxs0;
     rtoflags = in->rto;
     romispal = in->pal;
     ppustatus = in->pst;
@@ -644,15 +712,23 @@ static void run(void (*fn)(void), u4 a, u4 c, u4 d, state const* in,
     mode7B = m7b;
     memcpy(compmult, mult, 3);
 
-    regs_call((void*)fn, a, c, d, in->ebxin);
+    MemSeamA = a;
+    MemSeamB = in->ebxin;
+    MemSeamC = c;
+    MemSeamD = d;
+    regs_call((void*)fn, a, c, d, in->ebxin, (u4)(uintptr_t)pc_store);
 
-    out->eax = regs_out[0];
-    out->ecx = regs_out[1];
-    out->edx = regs_out[2];
+    /* A ported handler leaves everything in the seam; the oracle in the
+       registers regs_call captured. */
+    out->eax = seam ? MemSeamA : regs_out[0];
+    out->ecx = seam ? MemSeamC : regs_out[1];
+    out->edx = seam ? MemSeamD : regs_out[2];
     memcpy(out->mult, compmult, 3);
     out->change = multchange;
     out->lx = latchxr;
     out->ly = latchyr;
+    out->lx16o = latchx;
+    out->ly16o = latchy;
     out->mdr2 = ppu2_mdr;
     out->nmi = NMIEnab;
     out->cur = curnmi;
@@ -681,6 +757,18 @@ static void run(void (*fn)(void), u4 a, u4 c, u4 d, state const* in,
     out->nohd = nohdmaframe;
     out->hdel = hdmadelay;
     memcpy(out->wram, wram_store, sizeof out->wram);
+    memcpy(out->pc, pc_store, sizeof out->pc);
+    memcpy(out->apu, SPCRAM + 0xF4, 4);
+    out->hdot = h_dot_counter;
+    out->spcrd = SPC700read;
+    out->spcwr = SPC700write;
+    out->xa_ = xa;
+    out->nmirept_ = nmirept;
+    out->cycpbl_ = cycpbl;
+    out->cxs = curexecstate;
+    out->spcnr = spcnumread;
+    out->srot = sndrot;
+    out->srot2 = sndrot2;
     memcpy(out->oam, oamram, sizeof out->oam);
     out->vbo = vidbright;
     out->cgm = cgmod;
@@ -943,6 +1031,35 @@ int main(void)
            oamaddrs & 0x1FE clear, which random values almost never are. */
         in.oams0 = (u2)(dt_mod(2) ? (dt_mod(8) << 9) | dt_mod(2) : dt_u32());
         in.poams0 = (u2)(dt_mod(2) ? 0x1FFu + dt_mod(4) : dt_u32());
+        /* The APU ports split on spcon, and both halves matter: keep SPC
+           emulation on half the time and off the other half. */
+        in.spcon0 = (u1)(dt_mod(2) ? 0 : 1);
+        in.spcnr0 = (u1)dt_u32();
+        in.srot0 = (u1)dt_u32();
+        /* sndrot2 wraps at 3, so bias it onto the values that reach the wrap. */
+        in.srot20 = (u1)(dt_mod(2) ? dt_mod(4) : dt_u32());
+        for (int j = 0; j < 4; j++) {
+            in.apurd[j] = (u1)dt_u32();
+            in.apu0[j] = (u1)dt_u32();
+        }
+        in.hdot0 = dt_u32();
+        in.spcrd0 = dt_u32();
+        in.spcwr0 = dt_u32();
+        in.xa0 = dt_u32();
+        in.nmirept0 = dt_u32();
+        /* reenablespc only fires past 0x1000000; straddle the edge. */
+        in.cycpbl0 = dt_mod(2) ? 0x1000000u + dt_mod(4) - 2u : dt_u32();
+        in.cxs0 = dt_mod(2) ? (dt_u32() & ~0x02u) : dt_u32();
+        /* The sound-skip hack looks for a BNE in the next few bytes, and
+           $2140 first checks for the BPL that starts the other wait loop.
+           Uniform bytes would hit either about once in fifty. */
+        for (int j = 0; j < 8; j++) {
+            in.pc0[j] = (u1)(dt_mod(3) == 0 ? 0xD0u : dt_u32());
+        }
+        if (dt_mod(3) == 0) {
+            in.pc0[0] = 0x10;
+            in.pc0[1] = 0xFB;
+        }
         in.bgb0 = (u1)dt_u32();
         in.bgp0 = (u2)dt_u32();
         in.bgxy0 = dt_u32();
@@ -986,8 +1103,8 @@ int main(void)
             in.totl0 = (u2)(((in.virql0 & 0x00FFu) | ((a & 1u) << 8)) + 1u);
         }
 
-        run(k->asm_fn, a, c, d, &in, m7a, m7b, mult, &x);
-        run(k->c_fn, a, c, d, &in, m7a, m7b, mult, &y);
+        run(k->asm_fn, a, c, d, &in, m7a, m7b, mult, 0, &x);
+        run(k->c_fn, a, c, d, &in, m7a, m7b, mult, 1, &y);
 
         if (!k->noax) {
             DT_EQ(k->name, x.eax, y.eax);
@@ -998,6 +1115,8 @@ int main(void)
         DT_EQ("multchange", x.change, y.change);
         DT_EQ("latchxr", x.lx, y.lx);
         DT_EQ("latchyr", x.ly, y.ly);
+        DT_EQ("latchx", x.lx16o, y.lx16o);
+        DT_EQ("latchy", x.ly16o, y.ly16o);
         DT_EQ("ppu2_mdr", x.mdr2, y.mdr2);
         DT_EQ("NMIEnab", x.nmi, y.nmi);
         DT_EQ("curnmi", x.cur, y.cur);
@@ -1016,6 +1135,18 @@ int main(void)
         DT_EQ("nohdmaframe", x.nohd, y.nohd);
         DT_EQ("hdmadelay", x.hdel, y.hdel);
         DT_MEM("wramdata", x.wram, y.wram, sizeof x.wram);
+        DT_MEM("instruction stream", x.pc, y.pc, sizeof x.pc);
+        DT_MEM("SPCRAM F4-F7", x.apu, y.apu, sizeof x.apu);
+        DT_EQ("h_dot_counter", x.hdot, y.hdot);
+        DT_EQ("SPC700read", x.spcrd, y.spcrd);
+        DT_EQ("SPC700write", x.spcwr, y.spcwr);
+        DT_EQ("xa", x.xa_, y.xa_);
+        DT_EQ("nmirept", x.nmirept_, y.nmirept_);
+        DT_EQ("cycpbl", x.cycpbl_, y.cycpbl_);
+        DT_EQ("curexecstate", x.cxs, y.cxs);
+        DT_EQ("spcnumread", x.spcnr, y.spcnr);
+        DT_EQ("sndrot", x.srot, y.srot);
+        DT_EQ("sndrot2", x.srot2, y.srot2);
         DT_MEM("oamram", x.oam, y.oam, sizeof x.oam);
         DT_EQ("vidbright", x.vbo, y.vbo);
         DT_EQ("cgmod", x.cgm, y.cgm);

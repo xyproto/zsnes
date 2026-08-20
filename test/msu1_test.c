@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "memseam_stub.h"
 #include "zstest.h"
 
 #define MSU_STATUS_DATA_BUSY 0x80

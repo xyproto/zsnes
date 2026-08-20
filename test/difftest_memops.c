@@ -139,11 +139,39 @@ void c_DSP1Write16b(u4 addr, u2 val)
     dsp1_hits++;
 }
 
-/* The legacy-ABI faces the oracle calls. */
-REGABI_BANK_READ8(DSP1Read8b);
-REGABI_BANK_WRITE8(DSP1Write8b);
-REGABI_BANK_READ16(DSP1Read16b);
-REGABI_BANK_WRITE16(DSP1Write16b);
+/* The legacy-ABI faces the oracle calls. The ported side reaches the DSP1
+   through the c_ halves directly, so only the assembly needs these - which is
+   why they are spelt out here rather than taken from chips/regabi.h, whose
+   macros are plain C now that nothing in the emulator is assembly. */
+#define ORACLE_BANK_READ(name, mov)                                               \
+    __asm__(REGABI_ENTRY(name) "pushl %ecx\n"                                     \
+                               "pushl %edx\n"                                     \
+                               "pushl %eax\n"                                     \
+                               "pushl %ecx\n"                                     \
+                               "call " REGABI_SYM(c_##name) "\n"                  \
+                                                            "addl $4, %esp\n" mov \
+                                                            "popl %eax\n"         \
+                                                            "popl %edx\n"         \
+                                                            "popl %ecx\n"         \
+                                                            "ret\n")
+
+#define ORACLE_BANK_WRITE(name)                                               \
+    __asm__(REGABI_ENTRY(name) "pushl %eax\n"                                 \
+                               "pushl %ecx\n"                                 \
+                               "pushl %edx\n"                                 \
+                               "pushl %eax\n"                                 \
+                               "pushl %ecx\n"                                 \
+                               "call " REGABI_SYM(c_##name) "\n"              \
+                                                            "addl $8, %esp\n" \
+                                                            "popl %edx\n"     \
+                                                            "popl %ecx\n"     \
+                                                            "popl %eax\n"     \
+                                                            "ret\n")
+
+ORACLE_BANK_READ(DSP1Read8b, "movb %al, (%esp)\n");
+ORACLE_BANK_READ(DSP1Read16b, "movw %ax, (%esp)\n");
+ORACLE_BANK_WRITE(DSP1Write8b);
+ORACLE_BANK_WRITE(DSP1Write16b);
 /* The memaccessbank* handlers pick a ROM map entry by bank, so give every bank
    a different base - a wrong bank then reads a different byte. The extra slack
    covers the largest base plus a 16-bit read at the top of the window. */
@@ -199,7 +227,45 @@ u4 StubRegAddr[4], StubRegVal[4], StubRegHits;
 u4 StubRegEdx[4];
 /* Drives the stub's nested-access model; see mkmemops.sh. */
 u4 StubReenter;
-extern void regstub_r(void), regstub_w(void); /* _memops.o */
+extern void regstub_r(void), regstub_w(void); /* _memops.o, register ABI */
+
+/* The C face of regstub_r/regstub_w. A ported handler reaches an I/O register
+   through the seam now, so the stub reads the address out of there instead of
+   ecx - and has to put eax and edx back the way a real callee's registers
+   would have survived the call, because the reentry model below deliberately
+   scribbles on the seam mid-handler. */
+static void reglog_c(void)
+{
+    u4 const i = StubRegHits & 3u;
+
+    StubRegAddr[i] = MemSeamC;
+    StubRegVal[i] = MemSeamA;
+    StubRegEdx[i] = MemSeamD;
+    StubRegHits++;
+    if (StubReenter) {
+        MemSeamB = 0xDEAD0000u;
+        MemSeamC = 0xDEAD0001u;
+        MemSeamA = 0xDEAD0002u;
+    }
+}
+
+static void regstub_r_c(void)
+{
+    u4 const cx = MemSeamC, a = MemSeamA, d = MemSeamD;
+
+    reglog_c();
+    MemSeamA = (a & ~0xFFu) | (u1)((u1)cx ^ (u1)(cx >> 8));
+    MemSeamD = d;
+}
+
+static void regstub_w_c(void)
+{
+    u4 const a = MemSeamA, d = MemSeamD;
+
+    reglog_c();
+    MemSeamA = a;
+    MemSeamD = d;
+}
 
 void asm_memcall(void* fn); /* _memops.o */
 
@@ -431,6 +497,12 @@ static void run(void (*fn)(void), setup const* in, int asm_side, snapshot* out)
     MemSeamC = in->c;
     MemSeamA = in->a;
     MemSeamD = in->d;
+    /* The oracle calls a register handler with the register ABI, the ported
+       side through the seam, so each gets the stub that speaks its own. */
+    for (int i = 0; i < 0x3000; i++) {
+        regptra[i] = asm_side ? regstub_r : regstub_r_c;
+        regptwa[i] = asm_side ? regstub_w : regstub_w_c;
+    }
     StubRegHits = 0;
     StubReenter = in->reenter;
     memset(StubRegAddr, 0, sizeof StubRegAddr);
@@ -493,10 +565,6 @@ int main(void)
     dt_fill(iram_init, sizeof iram_init);
     dt_fill(sa1ram_init, sizeof sa1ram_init);
     dt_fill(bwram_init, sizeof bwram_init);
-    for (int i = 0; i < 0x3000; i++) {
-        regptra[i] = regstub_r;
-        regptwa[i] = regstub_w;
-    }
 
     DT_MAIN(20260729, 200000)
     {

@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "memseam_stub.h"
 #include "zstest.h"
 
 /* --- SA-1 state block (chips/sa1regs.c) ----------------------------------- */

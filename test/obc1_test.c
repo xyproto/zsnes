@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "memseam_stub.h"
 #include "zstest.h"
 
 /* --- Mock state ---------------------------------------------------------- */
@@ -40,7 +41,9 @@ void SetOBC1(void)
     setobc1_n++;
 }
 
-/* Fallthrough delegates — distinctive sentinels make mis-routing obvious */
+/* Fallthrough delegates - distinctive sentinels make mis-routing obvious.
+   These are memtable handlers, so they read the address out of the seam and
+   leave a read's value in al/ax; see cpu/memseam.h. */
 static uint32_t reg_r8_addr, mem_r8_addr;
 static uint32_t reg_w8_addr, mem_w8_addr;
 static uint8_t reg_w8_val, mem_w8_val;
@@ -50,52 +53,52 @@ static uint16_t reg_w16_val, mem_w16_val;
 static int reg_r8_n, mem_r8_n, reg_w8_n, mem_w8_n;
 static int reg_r16_n, mem_r16_n, reg_w16_n, mem_w16_n;
 
-uint8_t regaccessbankr8(uint32_t a)
+void regaccessbankr8(void)
 {
-    reg_r8_addr = a;
+    reg_r8_addr = MemSeamC;
     reg_r8_n++;
-    return 0xAD;
+    MemSeamA = (MemSeamA & ~0xFFu) | 0xAD;
 }
-uint8_t memaccessbankr8(uint32_t a)
+void memaccessbankr8(void)
 {
-    mem_r8_addr = a;
+    mem_r8_addr = MemSeamC;
     mem_r8_n++;
-    return 0xDE;
+    MemSeamA = (MemSeamA & ~0xFFu) | 0xDE;
 }
-void regaccessbankw8(uint32_t a, uint8_t v)
+void regaccessbankw8(void)
 {
-    reg_w8_addr = a;
-    reg_w8_val = v;
+    reg_w8_addr = MemSeamC;
+    reg_w8_val = (uint8_t)MemSeamA;
     reg_w8_n++;
 }
-void memaccessbankw8(uint32_t a, uint8_t v)
+void memaccessbankw8(void)
 {
-    mem_w8_addr = a;
-    mem_w8_val = v;
+    mem_w8_addr = MemSeamC;
+    mem_w8_val = (uint8_t)MemSeamA;
     mem_w8_n++;
 }
-uint16_t regaccessbankr16(uint32_t a)
+void regaccessbankr16(void)
 {
-    reg_r16_addr = a;
+    reg_r16_addr = MemSeamC;
     reg_r16_n++;
-    return 0xBEEF;
+    MemSeamA = (MemSeamA & ~0xFFFFu) | 0xBEEF;
 }
-uint16_t memaccessbankr16(uint32_t a)
+void memaccessbankr16(void)
 {
-    mem_r16_addr = a;
+    mem_r16_addr = MemSeamC;
     mem_r16_n++;
-    return 0xDEAD;
+    MemSeamA = (MemSeamA & ~0xFFFFu) | 0xDEAD;
 }
-void regaccessbankw16(uint32_t a, uint16_t v)
+void regaccessbankw16(void)
 {
-    reg_w16_addr = a;
-    reg_w16_val = v;
+    reg_w16_addr = MemSeamC;
+    reg_w16_val = (uint16_t)MemSeamA;
     reg_w16_n++;
 }
-void memaccessbankw16(uint32_t a, uint16_t v)
+void memaccessbankw16(void)
 {
-    mem_w16_addr = a;
-    mem_w16_val = v;
+    mem_w16_addr = MemSeamC;
+    mem_w16_val = (uint16_t)MemSeamA;
     mem_w16_n++;
 }
 

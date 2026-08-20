@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "memseam_stub.h"
 #include "zstest.h"
 
 /* --- Mock state ---------------------------------------------------------- */

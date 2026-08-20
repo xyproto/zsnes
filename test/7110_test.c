@@ -10,6 +10,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#include "memseam_stub.h"
 #include "zstest.h"
 
 /* --- SPC7110 state block (chips/7110proc.c) ------------------------------- */

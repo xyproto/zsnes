@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "memseam_stub.h"
 #include "zstest.h"
 
 extern uint8_t* C4Ram;
@@ -28,59 +29,61 @@ uint8_t* romdata;
 uint8_t* snesmmap[256];
 static uint8_t rombuf[8 * 1024 * 1024];
 
-/* routed handler stubs recording the last delegated access */
+/* Routed handler stubs recording the last delegated access. These are memtable
+   handlers: the address comes out of the seam and a read leaves its value in
+   al/ax; see cpu/memseam.h. */
 static uint32_t last_addr;
 static uint8_t last_val8;
 static uint16_t last_val16;
 static const char* last_route;
 
-uint8_t regaccessbankr8(uint32_t a)
+void regaccessbankr8(void)
 {
     last_route = "regr8";
-    last_addr = a;
-    return 0x11;
+    last_addr = MemSeamC;
+    MemSeamA = (MemSeamA & ~0xFFu) | 0x11;
 }
-uint8_t memaccessbankr8(uint32_t a)
+void memaccessbankr8(void)
 {
     last_route = "memr8";
-    last_addr = a;
-    return 0x22;
+    last_addr = MemSeamC;
+    MemSeamA = (MemSeamA & ~0xFFu) | 0x22;
 }
-void regaccessbankw8(uint32_t a, uint8_t v)
+void regaccessbankw8(void)
 {
     last_route = "regw8";
-    last_addr = a;
-    last_val8 = v;
+    last_addr = MemSeamC;
+    last_val8 = (uint8_t)MemSeamA;
 }
-void memaccessbankw8(uint32_t a, uint8_t v)
+void memaccessbankw8(void)
 {
     last_route = "memw8";
-    last_addr = a;
-    last_val8 = v;
+    last_addr = MemSeamC;
+    last_val8 = (uint8_t)MemSeamA;
 }
-uint16_t regaccessbankr16(uint32_t a)
+void regaccessbankr16(void)
 {
     last_route = "regr16";
-    last_addr = a;
-    return 0x3344;
+    last_addr = MemSeamC;
+    MemSeamA = (MemSeamA & ~0xFFFFu) | 0x3344;
 }
-uint16_t memaccessbankr16(uint32_t a)
+void memaccessbankr16(void)
 {
     last_route = "memr16";
-    last_addr = a;
-    return 0x5566;
+    last_addr = MemSeamC;
+    MemSeamA = (MemSeamA & ~0xFFFFu) | 0x5566;
 }
-void regaccessbankw16(uint32_t a, uint16_t v)
+void regaccessbankw16(void)
 {
     last_route = "regw16";
-    last_addr = a;
-    last_val16 = v;
+    last_addr = MemSeamC;
+    last_val16 = (uint16_t)MemSeamA;
 }
-void memaccessbankw16(uint32_t a, uint16_t v)
+void memaccessbankw16(void)
 {
     last_route = "memw16";
-    last_addr = a;
-    last_val16 = v;
+    last_addr = MemSeamC;
+    last_val16 = (uint16_t)MemSeamA;
 }
 
 static uint16_t ramw(uint32_t off)
