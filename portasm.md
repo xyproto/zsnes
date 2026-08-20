@@ -19,6 +19,19 @@ exported (`NEWSYM`/`GLOBAL`). One file maps to one `.o`.
     make clean && make win32 -j4     # i686-w64-mingw32 cross build (PE/COFF)
     make portcheck                   # how much of the tree builds for x86-64
 
+- The oracle for a difftest is the original assembly, pulled from git by
+  `tools/mkoracle.py`. Give it **both** `--requires` (a pattern only the
+  original has, usually the `%include` of the code under test) and
+  `--ported-marker` (a pattern the port introduces). Either alone picks the
+  wrong revision: the marker's absence also matches the *finished* port once it
+  deletes its own scaffolding, and `--requires` alone lands on a half-ported
+  revision whose routines are already thunks. The three 65816 targets were
+  silently broken this way - `make op` built an oracle with no opcodes in it.
+  Check the revision it prints. `mkoracle.py` now refuses when the revision it
+  picked is newer than every revision carrying the marker, which is exactly the
+  post-port case, and says to add `--requires`. Most video targets rely on the
+  default marker (`call c_`) and are fine until their file is ported out - at
+  which point the guard fires rather than the oracle going quietly wrong.
 - `portcheck` is the cross-CPU scoreboard: 149 of 153 sources build for x86-64,
   and the four that do not are exactly the files with i386 inline assembly
   bridging into `video/*.asm` (`c_makev16b`, `c_makevid`, `c_mode716calc`,
@@ -56,9 +69,12 @@ Classify a file before starting. Symbols are resolved by the linker by name, so:
    If a *new* register-ABI caller turns up in `video/`, `REGABI_ENTRY`/
    `REGABI_SYM` are still there to write a trampoline with.
 4. **The 65816/SPC700 opcode core** is done: `cpu/` has no assembly left. What
-   survives of that era is the pushad register block (`u4 r[8]`, see
-   `cpu/c_dispatch.h`), which is C but still models x86 - and still stores host
-   pointers in 32-bit slots, which is what pins the build to `-m32`.
+   survives of that era is the pushad register block (see `cpu/c_dispatch.h`),
+   which is C but still models x86. Its slots are `zreg` (`uintptr_t`, see
+   `types.h`), not `u4`: four hold 32-bit registers whose upper bits are part of
+   the behaviour, and esi, ebp, edi and transiently eax hold host pointers. On
+   i386 the two types are identical, so the change was a no-op there - the
+   difftests prove it - and the slots are wide enough elsewhere.
 
 Cross-asm coupling (how many symbols a file needs from another `.asm`) is the
 difficulty proxy, because those callers depend on the exact register ABI. Five
@@ -161,6 +177,54 @@ Recompute it rather than trusting the table:
    ROM smoke test; cross-check snes9x/bsnes.
 5. Swap `SRCS += file.asm` to `file.c` in the `Makefile`; `git rm file.asm`.
 6. Run all three builds + tests. Leave changes uncommitted unless asked.
+
+## Known divergences from the assembly
+
+Recorded in the difftests themselves via `KNOWN_DIVERGENCE`, so they are
+reported rather than silently skipped, and so a *new* divergence still fails.
+
+- **CLI.** The assembly's emulation-mode restart is `xor ebx,ebx; jmp execloop`;
+  the port returns without clearing ebx. The dispatcher only ever loads bl from
+  a zero ebx, so the upper bits are always zero in the emulator - the difftest
+  seeds them non-zero deliberately, which is why it only shows there.
+- **SA-1 `DEC d,x`.** The assembly does an 8-bit decrement through 16-bit
+  accesses; bsnes and snes9x both do a single byte, so the port is deliberately
+  right rather than bit-identical.
+
+## When the assembly's behaviour is the host CPU's, not the SNES's
+
+Reproduce it. ZSNES was written for 32-bit x86 and never ran on anything else,
+so an instruction whose result the ISA calls "undefined" was still, in practice,
+one fixed value everywhere the emulator ever executed. Treat that as part of the
+behaviour being ported, not as licence to pick something else.
+
+The worked example is the overflow flag after decimal ADC/SBC. The assembly ends
+`daa` / `seto byte[flago]`, and Intel documents OF after `daa`/`das` as
+undefined - so the port had been writing V = 0, which matched neither the
+assembly nor hardware. Measuring it settled the question: OF is the signed
+overflow of the one *combined* adjustment (0, 6, 60h or 66h) applied to the
+entering AL, clear when there is no adjustment, and independent of the incoming
+OF. Exhaustive over all 1024 (AL, CF, AF) states for both instructions.
+`decimal_of()` in `cpu/ops65816.h` is that rule, in portable C; it took 60
+opcodes from "known divergence" to bit-identical.
+
+### Widening a register slot
+
+`zreg` is what makes the block portable, and the work is not the typedef - it is
+what the typedef then exposes. On i386 `zreg` and `u4` are the same type, so
+every latent width bug is invisible until `make portcheck` compiles for x86-64:
+a helper taking `u4* pedx` that is handed `&r[R_EDX]`, a local `u4 edx` passed
+by address, a `(u4)(uintptr_t)ptr` on the way into a slot. Work down the
+portcheck errors, and be careful in the other direction too - `execute()` takes
+a real 32-bit edx by pointer and must stay `u4*`, not follow the rename.
+
+Nothing in the shipped build changes, which is the point: run the three opcode
+difftests after and they must still be bit-identical.
+
+Measure before you ask. A model fitted to hardware and checked over the whole
+input space turns a judgement call into a fact, and the difftest then proves it:
+
+    gcc -m32 ... /* drive the instruction, popf the inputs, pushf the outputs */
 
 ## Style
 
