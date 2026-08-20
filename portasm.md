@@ -2,8 +2,8 @@
 
 This documents how to port the remaining `.asm` files (NASM, 32-bit x86) to
 portable C11, with the hard-won lessons from the ports already done
-(`vcache`, `winintrf`, `endmem`, `dspproc`, `makevid`, `newgfx`, and the
-in-progress `7110proc`).
+(`vcache`, `winintrf`, `endmem`, `dspproc`, `makevid`, `newgfx`, `7110proc`,
+`memory` and `table`). Only `video/` still has assembly.
 
 ## Goal and golden rule
 
@@ -17,7 +17,19 @@ exported (`NEWSYM`/`GLOBAL`). One file maps to one `.o`.
     make clean && make -j4           # native ELF build (Linux/SDL3)
     cd test && make run              # unit tests (must stay all-green)
     make clean && make win32 -j4     # i686-w64-mingw32 cross build (PE/COFF)
+    make portcheck                   # how much of the tree builds for x86-64
 
+- `portcheck` is the cross-CPU scoreboard: 149 of 153 sources build for x86-64,
+  and the four that do not are exactly the files with i386 inline assembly
+  bridging into `video/*.asm` (`c_makev16b`, `c_makevid`, `c_mode716calc`,
+  `tilecache`). Three more compile only because their asm is behind an
+  `__i386__` guard and would fail to link (`asm_call.h`, `video/mode716b.c`,
+  `video/c_makev16b.c`). Keep it at 149 or better.
+- A struct that reaches assembly must size itself from `sizeof(void*)`, not a
+  literal: `HDMAInfo` and `SpriteInfo` hold host pointers, and their reserves
+  (`cpu/c_regsdata.c`'s `hdmadata`, `ui.c`'s `spritetablea`) are computed from
+  the same expression. `ASM_STR()` in `asmdata.h` spells `__SIZEOF_POINTER__`
+  into an inline-asm `.fill`. Both are byte-identical at `-m32`; verify that.
 - Native and win32 share `.o` paths; **always `make clean` when switching**.
 - The build auto-adds `-j` (Makefile ~34-36), so build-rule races surface by
   default. Keep generated temp files unique.
@@ -38,24 +50,36 @@ Classify a file before starting. Symbols are resolved by the linker by name, so:
 2. **Functions called only from C** can move to C directly (cdecl).
 3. **Functions called from asm via the register ABI** (address in ECX, value in
    AL/AX, must preserve ECX/EDX and unused EAX bits) CANNOT just become cdecl C.
-   Wrap them with the trampolines in `chips/regabi.h` (`REGABI_REG_READ8/WRITE8`,
-   `REGABI_BANK_READ8/READ16/WRITE8/WRITE16`): the macro emits an asm trampoline
-   under the public name that calls your `c_<name>` cdecl impl. Delete the
-   trampolines only once the asm callers are also C.
-4. **The 65816/SPC700 opcode core** (`cpu/table.asm`, `stable.asm`, `tablec.asm`
-   `%include` the full opcode set; `execute.asm`, `spc700.asm`, `memory.asm`)
-   is the deepest coupling. Do not attempt piecemeal; these go last.
+   This is now history for `cpu/` and `chips/`: nothing in assembly calls a
+   memory or I/O register handler any more, so the `chips/regabi.h` macros
+   (`REGABI_REG_*`, `REGABI_BANK_*`) are plain C over the seam described below.
+   If a *new* register-ABI caller turns up in `video/`, `REGABI_ENTRY`/
+   `REGABI_SYM` are still there to write a trampoline with.
+4. **The 65816/SPC700 opcode core** is done: `cpu/` has no assembly left. What
+   survives of that era is the pushad register block (`u4 r[8]`, see
+   `cpu/c_dispatch.h`), which is C but still models x86 - and still stores host
+   pointers in 32-bit slots, which is what pins the build to `-m32`.
 
-Cross-asm coupling count (how many *other* asm files reference a file's
-exports) is the difficulty proxy: 0 (`7110proc`, `c4proc`) is most tractable;
-high counts (`makev16b`'s `domosaic16b`/`tileleft16b`, `fxemu2*`) mean many asm
-callers depend on the exact register ABI.
+Cross-asm coupling (how many symbols a file needs from another `.asm`) is the
+difficulty proxy, because those callers depend on the exact register ABI. Five
+files are left, in three independent clusters, all in `video/`:
+
+| cluster | asm->asm symbols | note |
+| --- | --- | --- |
+| `video/mode716.asm` | 1 (`domosaicng16b`) | smallest; bridged from `video/c_mode716calc.c` |
+| `video/mv16tms.asm` + `video/makev16t.asm` | 3, mutual | port as one unit |
+| `video/newgfx16.asm` + `video/newg162.asm` | 21, mutual | port as one unit; `newg162.o` alone is 664KB of macro-expanded `.text` |
+
+Recompute it rather than trusting the table:
+
+    nm -u a.o | awk '{print $2}' | sort -u > /tmp/und
+    nm --defined-only -g b.o | awk '{print $3}' | sort -u | comm -12 - /tmp/und
 
 > Note: a built `.asm` and a sibling `c_*.c` usually **coexist** with *disjoint*
 > symbols (a partial, complementary port), not as replacements. Check symbols
 > before assuming a `c_*.c` already replaces its `.asm`.
 
-## The three reusable patterns
+## The four reusable patterns
 
 - **`asmdata.h`** - force exact data layout/order/adjacency from C via one
   inline-asm block (`ASM_SEC_BSS/DATA`, `ASM_GSYM`, `ASM_SEC_END`). Use whenever
@@ -64,6 +88,30 @@ callers depend on the exact register ABI.
   `.fill`/`.rept ... .endr`.
 - **`chips/regabi.h`** - register-ABI trampolines (see #3 above). `7110proc.c`
   (compression + math registers) is the worked example.
+- **`cpu/memseam.h`** - the seam convention that replaced the register ABI on
+  the memory *and* I/O register paths, and the pattern to reach for when a whole
+  table of handlers has to change ABI at once. A memtable/`Bank0dat` handler is `void f(void)`:
+  the bank is in `MemSeamB`, the address in `MemSeamC`, the value in `MemSeamA`
+  (al/ax) and the core's edx in `MemSeamD`, and the caller reads all four back.
+  Call sites (`mem_call` in `cpu/ops65816.h`, `mem_dispatch` in
+  `cpu/memtable.h`) save and restore the seam, so it behaves like the
+  callee-saved register set it replaces even when a register write starts a DMA
+  that reenters. `MEMBANK_READ8/READ16/WRITE8/WRITE16` wrap a cdecl `c_<name>`
+  body in it. `cpu/mem_ops.h` + `cpu/c_memops.c` are the worked example: they
+  took over all 87 of `cpu/memory.asm`'s exports, and the chip bank handlers
+  (`obc1proc`, `c4proc`, `dsp1proc`, `dsp3proc`, `dsp4proc`, `7110proc`)
+  followed, which is what let their hand-written i386 dispatch shims become
+  plain C. `chips/regabi.h` then followed for the ~300 I/O register handlers,
+  which took `cpu/mem_ops.h`'s dispatch, `cpu/dma.c` and `cpu/c_dma.c` with it.
+  The move is only safe once *no* `.asm` calls any entry in the table: check
+  with `grep -w <sym>` over `*.asm`/`*.inc`/`*.mac` first.
+
+  Two things the difftests need when a table changes ABI. The oracle is still
+  assembly, so it needs its own register-ABI face for anything it calls into
+  (`ORACLE_BANK_*` in `test/difftest_memops.c`), and where both sides share a
+  stub table the two faces have to be swapped in per side. And the harness has
+  to read each side back its own way - registers for the oracle, seam for the
+  port (the `seam` flag on `run()` in `test/difftest_regs.c`).
 - **`CSYM(x)`** - per-file macro for symbol naming when you only need a couple of
   inline-asm bridges (see `video/tilecache.c`, `chips/dsp1proc.c`).
 
