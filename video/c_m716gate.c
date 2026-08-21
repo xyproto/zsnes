@@ -66,10 +66,10 @@ static u4 gate(void (*const body)(void), m7regs* const r)
     return M7TTail;
 }
 
-#define GATE(name)                             \
-    u4 name(m7regs* const r)                   \
-    {                                          \
-        return gate(c_##name, r);              \
+#define GATE(name)                \
+    u4 name(m7regs* const r)      \
+    {                             \
+        return gate(c_##name, r); \
     }
 
 GATE(procmode716tsub)
@@ -199,26 +199,26 @@ void drawbackgrnd_mark(m7regs* const r)
    its own, called its body and reloaded - no tail, so nothing comes back but
    the registers. drawsprites16t branches to the prio form up front, the way
    the assembly did. */
-#define SPRITE_DRAW(name, P, body)   \
-    void name(m7regs* const r)       \
-    {                                \
-        P##AX = r->ax;               \
-        P##BX = r->bx;               \
-        P##CX = r->cx;               \
-        P##DX = r->dx;               \
-        P##SI = r->si;               \
-        P##DI = r->di;               \
-        P##BP = r->bp;               \
-                                     \
-        body();                      \
-                                     \
-        r->ax = P##AX;               \
-        r->bx = P##BX;               \
-        r->cx = P##CX;               \
-        r->dx = P##DX;               \
-        r->si = P##SI;               \
-        r->di = P##DI;               \
-        r->bp = P##BP;               \
+#define SPRITE_DRAW(name, P, body) \
+    void name(m7regs* const r)     \
+    {                              \
+        P##AX = r->ax;             \
+        P##BX = r->bx;             \
+        P##CX = r->cx;             \
+        P##DX = r->dx;             \
+        P##SI = r->si;             \
+        P##DI = r->di;             \
+        P##BP = r->bp;             \
+                                   \
+        body();                    \
+                                   \
+        r->ax = P##AX;             \
+        r->bx = P##BX;             \
+        r->cx = P##CX;             \
+        r->dx = P##DX;             \
+        r->si = P##SI;             \
+        r->di = P##DI;             \
+        r->bp = P##BP;             \
     }
 
 SPRITE_DRAW(drawsprites16bt, SPB, c_drawsprites16bt)
@@ -239,27 +239,27 @@ void drawsprites16t(m7regs* const r)
    to the gate's caller. That is handed back rather than taken here, for the
    same reason the gates hand back an id: the caller then reaches domosaic16b
    the way the jump did, with the registers this routine ended on. */
-#define TILE_DRAW(name, P, body)     \
-    u4 name(m7regs* const r)         \
-    {                                \
-        P##AX = r->ax;               \
-        P##BX = r->bx;               \
-        P##CX = r->cx;               \
-        P##DX = r->dx;               \
-        P##SI = r->si;               \
-        P##DI = r->di;               \
-        P##BP = r->bp;               \
-                                     \
-        body();                      \
-                                     \
-        r->ax = P##AX;               \
-        r->bx = P##BX;               \
-        r->cx = P##CX;               \
-        r->dx = P##DX;               \
-        r->si = P##SI;               \
-        r->di = P##DI;               \
-        r->bp = P##BP;               \
-        return P##Tail;              \
+#define TILE_DRAW(name, P, body) \
+    u4 name(m7regs* const r)     \
+    {                            \
+        P##AX = r->ax;           \
+        P##BX = r->bx;           \
+        P##CX = r->cx;           \
+        P##DX = r->dx;           \
+        P##SI = r->si;           \
+        P##DI = r->di;           \
+        P##BP = r->bp;           \
+                                 \
+        body();                  \
+                                 \
+        r->ax = P##AX;           \
+        r->bx = P##BX;           \
+        r->cx = P##CX;           \
+        r->dx = P##DX;           \
+        r->si = P##SI;           \
+        r->di = P##DI;           \
+        r->bp = P##BP;           \
+        return P##Tail;          \
     }
 
 TILE_DRAW(draw16x1616t, TX, c_draw16x1616t)

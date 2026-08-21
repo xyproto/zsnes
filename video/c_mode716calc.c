@@ -102,6 +102,8 @@ void drawmode7win16b(void); /* video/mode716.asm */
    back afterwards; keep it, so the next caller is not surprised.) */
 /* clang-format off */
 
+#if defined(__GNUC__) && defined(__i386__)
+/* Register-ABI bridges into the video assembly; nothing to emit without it. */
 __asm__(REGABI_ENTRY(M7CallDraw)
     "pushl %ebx\n"
     "pushl %esi\n"
@@ -127,6 +129,7 @@ __asm__(REGABI_ENTRY(M7CallDraw)
     "popl %esi\n"
     "popl %ebx\n"
     "ret\n");
+#endif
 
 /* clang-format on */
 

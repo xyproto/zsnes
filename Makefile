@@ -1,4 +1,4 @@
-.PHONY: clean distclean fmt info test win32 w32 unused portcheck
+.PHONY: clean distclean fmt info test unused portcheck
 
 # Supported ARCH values:
 #   LINUX, FREEBSD, OPENBSD, NETBSD, DARWIN, WIN
@@ -75,9 +75,48 @@ $(error ARCH=WIN requested, but required win/ source files are missing in this t
 endif
 endif
 
+# Target word size and instruction set, separate from the OS above. The
+# emulator was written for 32-bit x86 and video/*.asm still is, so only
+# BITS=32 CPU=x86 can build the renderers; everything else substitutes the
+# stand-ins from tools/mkstub64.py and cannot draw. See "make help".
+BITS ?= 32
+CPU  ?= x86
+
+ifeq ($(filter $(BITS),32 64),)
+$(error Unsupported BITS '$(BITS)'. Supported values: 32 64)
+endif
+ifeq ($(filter $(CPU),x86 arm64),)
+$(error Unsupported CPU '$(CPU)'. Supported values: x86 arm64)
+endif
+ifeq ($(CPU),arm64)
+override BITS := 64
+endif
+
 ARCH_CFLAGS :=
+ifeq ($(CPU),x86)
 ifneq ($(filter $(ARCH),LINUX WIN),)
-ARCH_CFLAGS += -m32
+ARCH_CFLAGS += -m$(BITS)
+endif
+endif
+ifeq ($(CPU),arm64)
+ARCH_CFLAGS += $(ARM64_CFLAGS)
+endif
+
+# video/*.asm is 32-bit x86 NASM, so nothing else can link. Say so up front
+# rather than at the end of a wall of undefined references.
+X86_ASM := $(if $(and $(filter x86,$(CPU)),$(filter 32,$(BITS))),yes,)
+REMAINING_ASM := $(strip $(wildcard video/*.asm))
+ifneq ($(X86_ASM),yes)
+ifneq ($(REMAINING_ASM),)
+$(info )
+$(info ERROR: this target is CPU=$(CPU) BITS=$(BITS), and the tree still has)
+$(info 32-bit x86 assembly that only a BITS=32 CPU=x86 build can link:)
+$(info   $(REMAINING_ASM))
+$(info Port it to C11 first - see portasm.md. Everything else already builds)
+$(info for x86-64 and should for arm64; check with "make portcheck".)
+$(info )
+$(error Cannot build $(CPU)/$(BITS) while video/*.asm remains)
+endif
 endif
 
 IS_FEDORA       := $(if $(wildcard /etc/fedora-release),yes)
@@ -427,6 +466,9 @@ SRCS += video/c_mode716bw.c
 SRCS += video/c_mode716proc.c
 SRCS += video/c_procwin.c
 SRCS += video/c_m716gate.c
+SRCS += video/c_mv16draw.c
+SRCS += video/c_mv16msgate.c
+SRCS += video/c_mv16leaf.c
 SRCS += video/c_mode716draw.c
 SRCS += video/c_mv16tms.c
 SRCS += video/c_mv16tsms.c
@@ -630,14 +672,66 @@ endif
 
 all: $(BINARY)
 
-# Cross-build the Windows executable from Linux using the mingw32 toolchain.
+# Named targets, one per platform the port is aiming at. Each is a thin
+# wrapper that picks the OS, the word size, the instruction set and the
+# toolchain; the build itself is the same. Only linux32 and win32 can be built
+# today, because video/*.asm is still 32-bit x86 - the rest fail with that
+# message until it is ported (portasm.md).
+define need_tool
+@command -v $(1) >/dev/null 2>&1 || { \
+  echo "error: $(1) not found; install $(2)" >&2; exit 1; }
+endef
+
 MINGW32_PREFIX ?= i686-w64-mingw32
-w32:
+MINGW64_PREFIX ?= x86_64-w64-mingw32
+ARM64_PREFIX   ?= aarch64-linux-gnu
+
+.PHONY: linux32 linux64 linux_arm64 linux_pi4 win32 w32 win64 help
+
+linux32:
+	$(MAKE) ARCH=LINUX BITS=32 CPU=x86
+
+linux64:
+	$(MAKE) ARCH=LINUX BITS=64 CPU=x86
+
+# Generic ARMv8-A, for any 64-bit ARM Linux.
+linux_arm64:
+	$(call need_tool,$(ARM64_PREFIX)-gcc,the aarch64 cross toolchain)
+	$(MAKE) ARCH=LINUX CPU=arm64 \
+	  CC=$(ARM64_PREFIX)-gcc CC_TARGET=$(ARM64_PREFIX)-gcc \
+	  PKG_CONFIG=$(ARM64_PREFIX)-pkg-config
+
+# A Raspberry Pi 4 is a Cortex-A72; same target as linux_arm64, tuned for it.
+linux_pi4:
+	$(call need_tool,$(ARM64_PREFIX)-gcc,the aarch64 cross toolchain)
+	$(MAKE) ARCH=LINUX CPU=arm64 ARM64_CFLAGS='-mcpu=cortex-a72 -mtune=cortex-a72' \
+	  CC=$(ARM64_PREFIX)-gcc CC_TARGET=$(ARM64_PREFIX)-gcc \
+	  PKG_CONFIG=$(ARM64_PREFIX)-pkg-config
+
+w32: win32
 win32:
-	@command -v $(MINGW32_PREFIX)-gcc >/dev/null 2>&1 || { \
-	  echo "error: $(MINGW32_PREFIX)-gcc not found; install the mingw32 toolchain" >&2; exit 1; }
-	$(MAKE) ARCH=WIN CC=$(MINGW32_PREFIX)-gcc CC_TARGET=$(MINGW32_PREFIX)-gcc \
+	$(call need_tool,$(MINGW32_PREFIX)-gcc,the mingw32 toolchain)
+	$(MAKE) ARCH=WIN BITS=32 CPU=x86 CC=$(MINGW32_PREFIX)-gcc CC_TARGET=$(MINGW32_PREFIX)-gcc \
 	  WINDRES=$(MINGW32_PREFIX)-windres PKG_CONFIG=$(MINGW32_PREFIX)-pkg-config
+
+win64:
+	$(call need_tool,$(MINGW64_PREFIX)-gcc,the mingw-w64 toolchain)
+	$(MAKE) ARCH=WIN BITS=64 CPU=x86 CC=$(MINGW64_PREFIX)-gcc CC_TARGET=$(MINGW64_PREFIX)-gcc \
+	  WINDRES=$(MINGW64_PREFIX)-windres PKG_CONFIG=$(MINGW64_PREFIX)-pkg-config
+
+help:
+	@echo 'Targets:'
+	@echo '  linux32       32-bit x86 Linux   (the only complete build today)'
+	@echo '  linux64       64-bit x86 Linux'
+	@echo '  linux_arm64   64-bit ARM Linux'
+	@echo '  linux_pi4     64-bit ARM Linux, tuned for a Cortex-A72'
+	@echo '  win32         32-bit Windows, cross-built with mingw32'
+	@echo '  win64         64-bit Windows, cross-built with mingw-w64'
+	@echo '  portcheck     how much of the tree builds for a 64-bit target'
+	@echo '  test          run the unit tests'
+	@echo
+	@echo 'Everything but linux32 and win32 needs video/*.asm ported to C11'
+	@echo 'first: it is 32-bit x86 and nothing else can link it.'
 
 debug: DEBUGFLAGS += -g
 debug: $(BINARY)

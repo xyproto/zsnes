@@ -139,6 +139,8 @@ void c_cachesingle8bng(u4 const ecx) { cachesingle_ng(ecx, 8); }
 // Register-preserving trampolines for the asm render inner loops, which call
 // cachesingle*bng with the tile index in ecx and expect all registers intact.
 // cdecl only preserves ebx/esi/edi/ebp, so save the caller-saved eax/ecx/edx.
+#if defined(__GNUC__) && defined(__i386__)
+/* Register-ABI bridges into the video assembly; nothing to emit without it. */
 __asm__(
     ".text\n"
     ".globl " CSYM(cachesingle2bng) "\n" CSYM(cachesingle2bng) ":\n"
@@ -153,3 +155,4 @@ __asm__(
                                                                                                                                                                                                                                                                                            "    push %eax\n    push %ecx\n    push %edx\n"
                                                                                                                                                                                                                                                                                            "    push %ecx\n    call " CSYM(c_cachesingle8bng) "\n    add $4, %esp\n"
                                                                                                                                                                                                                                                                                                                                               "    pop %edx\n    pop %ecx\n    pop %eax\n    ret\n");
+#endif

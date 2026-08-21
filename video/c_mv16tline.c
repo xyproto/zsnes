@@ -41,6 +41,7 @@ extern u4 CLBAX, CLBBX, CLBCX, CLBDX, CLBSI, CLBDI;
 void c_clearback16t(void);
 void c_clearback16bts(void);
 #include "c_m716gate.h"
+#include "c_mv16draw.h"
 
 /* The renderers a mode 7 gate can pick, indexed by the tail id it returns.
    Still assembly, so they are reached the same way as before. */
@@ -86,11 +87,33 @@ static void (*const m7_renderer[])(void) = { 0, drawmode716t, drawmode716b,
    assembly, so still reached through calldl16t. */
 /* Ids 2 and 4 are C (video/c_m716gate.c); the rest are still assembly and go
    through calldl16t, so the two kinds are dispatched apart. */
-extern void draw8x816t(void), draw8x816bt(void);
 void domosaic16b(void); /* video/mode716b.c */
-extern void draw8x816tms(void), draw16x1616tms(void);
-static void (*const bg_asm[])(void) = { 0, draw8x816t, 0, draw8x816bt, 0,
-    draw8x816tms, draw16x1616tms };
+/* Only the 16x16 mosaic drawer is still assembly. */
+extern void draw16x1616tms(void);
+
+/* DLR is the register set calldl16t passes to what assembly is left; r is what
+   the ported drawers use. These two are the only places the two meet. */
+static void dlr_get(m7regs* const r)
+{
+    r->ax = DLR[0];
+    r->bx = DLR[1];
+    r->cx = DLR[2];
+    r->dx = DLR[3];
+    r->si = DLR[4];
+    r->di = DLR[5];
+    r->bp = DLR[6];
+}
+
+static void dlr_put(m7regs const* const r)
+{
+    DLR[0] = r->ax;
+    DLR[1] = r->bx;
+    DLR[2] = r->cx;
+    DLR[3] = r->dx;
+    DLR[4] = r->si;
+    DLR[5] = r->di;
+    DLR[6] = r->bp;
+}
 
 static void bggate(u4 (*const g)(m7regs*), u4 const layer)
 {
@@ -98,66 +121,48 @@ static void bggate(u4 (*const g)(m7regs*), u4 const layer)
     u4 tail, mosaic = 0;
 
     DLR[6] = layer;
-    r.ax = DLR[0];
-    r.bx = DLR[1];
-    r.cx = DLR[2];
-    r.dx = DLR[3];
-    r.si = DLR[4];
-    r.di = DLR[5];
-    r.bp = DLR[6];
+    dlr_get(&r);
 
     tail = g(&r);
-
-    DLR[0] = r.ax;
-    DLR[1] = r.bx;
-    DLR[2] = r.cx;
-    DLR[3] = r.dx;
-    DLR[4] = r.si;
-    DLR[5] = r.di;
-    DLR[6] = r.bp;
     if (tail == 0) {
+        dlr_put(&r);
         return;
     }
-    /* Ids past the table fall through to the bookkeeping with no renderer. */
-    if (tail == 2) {
+
+    /* The renderer the gate picked. All but the 16x16 mosaic drawer are C, so
+       they work on r directly; that one still goes through calldl16t. Ids past
+       the table reach the bookkeeping with no renderer at all. */
+    switch (tail) {
+    case 1:
+        mosaic = draw8x816t(&r);
+        break;
+    case 2:
         mosaic = draw16x1616t(&r);
-        DLR[0] = r.ax;
-        DLR[1] = r.bx;
-        DLR[2] = r.cx;
-        DLR[3] = r.dx;
-        DLR[4] = r.si;
-        DLR[5] = r.di;
-        DLR[6] = r.bp;
-    } else if (tail == 4) {
+        break;
+    case 3:
+        mosaic = draw8x816bt(&r);
+        break;
+    case 4:
         mosaic = draw16x1616bt(&r);
-        DLR[0] = r.ax;
-        DLR[1] = r.bx;
-        DLR[2] = r.cx;
-        DLR[3] = r.dx;
-        DLR[4] = r.si;
-        DLR[5] = r.di;
-        DLR[6] = r.bp;
-    } else if (tail <= 6) {
-        call_asm(bg_asm[tail]);
+        break;
+    case 5:
+        mosaic = draw8x816tms(&r);
+        break;
+    case 6:
+        dlr_put(&r);
+        call_asm(draw16x1616tms);
+        dlr_get(&r);
+        break;
+    default:
+        break;
     }
+
+    /* The mosaic tail was a jump, so it returns to the gate's caller. */
     if (mosaic != 0) {
         domosaic16b();
     }
-    r.ax = DLR[0];
-    r.bx = DLR[1];
-    r.cx = DLR[2];
-    r.dx = DLR[3];
-    r.si = DLR[4];
-    r.di = DLR[5];
-    r.bp = DLR[6];
     drawbackgrnd_mark(&r);
-    DLR[0] = r.ax;
-    DLR[1] = r.bx;
-    DLR[2] = r.cx;
-    DLR[3] = r.dx;
-    DLR[4] = r.si;
-    DLR[5] = r.di;
-    DLR[6] = r.bp;
+    dlr_put(&r);
 }
 
 static void sprgate(u4 (*const g)(m7regs*), u4 const layer)
@@ -267,11 +272,6 @@ static void procwindowback(void)
 }
 
 /* `mov ebp,N` before the call is the only register any of these reads. */
-static void call_layer(void (*fn)(void), u4 const layer)
-{
-    DLR[6] = layer;
-    call_asm(fn);
-}
 
 /* The sprite table for this scanline, and the priority list the sprite passes
    walk. Shared by the two sub-screen drivers. */

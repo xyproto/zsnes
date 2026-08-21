@@ -4,10 +4,14 @@
 #include "../types.h"
 
 /* The register set a mode 7 gate is entered with and hands to its renderer.
-   See video/c_m716gate.c. */
+   See video/c_m716gate.c.
+
+   Pointer-wide, not u4: the tile drawers compute ebp as transpbuf + 32 - 2*eax
+   and hand it on, so a slot has to hold a host pointer. On i386 zreg is u4 and
+   nothing changes. */
 typedef struct
 {
-    u4 ax, bx, cx, dx, si, di, bp;
+    zreg ax, bx, cx, dx, si, di, bp;
 } m7regs;
 
 /* Each returns the tail id the caller has to dispatch on: 0 none, then

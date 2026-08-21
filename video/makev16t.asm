@@ -132,26 +132,18 @@ EXTSYM SPTAX,SPTBX,SPTCX,SPTDX,SPTSI,SPTDI,SPTBP
 EXTSYM c_drawsprites16t
 EXTSYM SPPAX,SPPBX,SPPCX,SPPDX,SPPSI,SPPDI,SPPBP
 EXTSYM c_drawsprites16tprio
-EXTSYM T8AX,T8BX,T8CX,T8DX,T8SI,T8DI,T8BP,T8Tail
-EXTSYM c_draw8x816bt
 EXTSYM T16AX,T16BX,T16CX,T16DX,T16SI,T16DI,T16BP,T16Tail
 EXTSYM c_draw16x1616bt
-EXTSYM TTAX,TTBX,TTCX,TTDX,TTSI,TTDI,TTBP,TTTail
-EXTSYM c_draw8x816t
 EXTSYM TXAX,TXBX,TXCX,TXDX,TXSI,TXDI,TXBP,TXTail
 EXTSYM c_draw16x1616t
-EXTSYM TOAX,TOBX,TOCX,TODX,TOSI,TODI,TOBP,TOTail
-EXTSYM c_draw8x816toffset
-EXTSYM THAX,THBX,THCX,THDX,THSI,THDI,THBP,THTail
-EXTSYM c_draw16x816t
 EXTSYM DLR,DLFN
 EXTSYM winbg1en,winenabm,drawmode716textbg,drawmode716textbg2,extbgdone
 EXTSYM drawmode716tb,drawmode716b,drawmode716extbg,drawmode716extbg2,cursprloc
 EXTSYM drawsprites16b,scrndis,sprprifix,winonsp,bgfixer,scaddtype
 EXTSYM alreadydrawn,bg1cachloc,bg1tdabloc,bg1tdatloc,bg1vbufloc,bg1xposloc
 EXTSYM bg1yaddval,bgcoloradder,bgmode,bgtilesz,colormodeofs,curbgnum
-EXTSYM draw16x1616b,draw8x816b,drawn,winenabs,curbgpr,draw16x1616tms,ngptrdat2
-EXTSYM draw8x816tms,bg3high2,currentobjptr,curvidoffset,cwinenabm,makewindowsp
+EXTSYM draw16x1616b,draw8x816b,drawn,winenabs,curbgpr,ngptrdat2
+EXTSYM bg3high2,currentobjptr,curvidoffset,cwinenabm,makewindowsp
 EXTSYM preparesprpr,procbackgrnd,setpalette16b,spritetablea,sprleftpr,sprlefttot
 EXTSYM numwin,scaddset,wincolen,windowdata,winl1,winl2,winon,winr1,winr2
 EXTSYM vidbuffer,coladdb,coladdg,coladdr,vesa2_bpos,vesa2_gpos,vesa2_rpos
@@ -243,111 +235,4 @@ SECTION .text
 
 
 
-
-NEWSYM draw8x816bt
-    cmp byte[bgmode],2
-    jne .nodraw8x816boffset
-    ccallv draw8x816boffset, eax, ecx, edx, ebx, ebp, esi, edi
-.nodraw8x816boffset
-    cmp byte[bgmode],5
-    je near draw16x816t
-    mov [T8AX], eax
-    mov [T8BX], ebx
-    mov [T8CX], ecx
-    mov [T8DX], edx
-    mov [T8SI], esi
-    mov [T8DI], edi
-    mov [T8BP], ebp
-    call c_draw8x816bt
-    mov eax, [T8AX]
-    mov ebx, [T8BX]
-    mov ecx, [T8CX]
-    mov edx, [T8DX]
-    mov esi, [T8SI]
-    mov edi, [T8DI]
-    mov ebp, [T8BP]
-    ; the mosaic tail is a jump, not a call: domosaic16b returns to our caller
-    cmp dword[T8Tail],0
-    jne near domosaic16b
-    ret
-
-
-NEWSYM draw8x816t
-    cmp byte[osm2dis],1
-    je .osm2dis
-    cmp byte[bgmode],2
-    je near draw8x816toffset
-.osm2dis
-    cmp byte[bgmode],5
-    je near draw16x816t
-    mov [TTAX], eax
-    mov [TTBX], ebx
-    mov [TTCX], ecx
-    mov [TTDX], edx
-    mov [TTSI], esi
-    mov [TTDI], edi
-    mov [TTBP], ebp
-    call c_draw8x816t
-    mov eax, [TTAX]
-    mov ebx, [TTBX]
-    mov ecx, [TTCX]
-    mov edx, [TTDX]
-    mov esi, [TTSI]
-    mov edi, [TTDI]
-    mov ebp, [TTBP]
-    ; the mosaic tail is a jump, not a call: domosaic16b returns to our caller
-    cmp dword[TTTail],0
-    jne near domosaic16b
-    ret
-
-;*******************************************************
-; Processes & Draws 16x8 tiles
-;*******************************************************
-
-NEWSYM draw16x816t
-    mov [THAX], eax
-    mov [THBX], ebx
-    mov [THCX], ecx
-    mov [THDX], edx
-    mov [THSI], esi
-    mov [THDI], edi
-    mov [THBP], ebp
-    call c_draw16x816t
-    mov eax, [THAX]
-    mov ebx, [THBX]
-    mov ecx, [THCX]
-    mov edx, [THDX]
-    mov esi, [THSI]
-    mov edi, [THDI]
-    mov ebp, [THBP]
-    ; the mosaic tail is a jump, not a call: domosaic16b returns to our caller
-    cmp dword[THTail],0
-    jne near domosaic16b
-    ret
-
-;*******************************************************
-; Processes & Draws 8x8 tiles, offset mode
-;*******************************************************
-
-
-NEWSYM draw8x816toffset
-    mov [TOAX], eax
-    mov [TOBX], ebx
-    mov [TOCX], ecx
-    mov [TODX], edx
-    mov [TOSI], esi
-    mov [TODI], edi
-    mov [TOBP], ebp
-    call c_draw8x816toffset
-    mov eax, [TOAX]
-    mov ebx, [TOBX]
-    mov ecx, [TOCX]
-    mov edx, [TODX]
-    mov esi, [TOSI]
-    mov edi, [TODI]
-    mov ebp, [TOBP]
-    ; the mosaic tail is a jump, not a call: domosaic16b returns to our caller
-    cmp dword[TOTail],0
-    jne near domosaic16b
-    ret
 

@@ -1703,13 +1703,22 @@ static void procmode716bextbg(u2 const* const p1, u2 const* const p2, u1 const p
         }
     }
     m7starty = ax;
+#if defined(__GNUC__) && defined(__i386__)
     u4 eax;
     u4 edx;
     __asm__ volatile("push %%ebp;  call %P2;  pop %%ebp"
         : "=a"(eax), "=d"(edx)
         : "X"(drawmode716extbg), "a"(*p1), "d"(*p2)
         : "cc", "memory", "ecx", "ebx", "esi", "edi");
+#else
+    /* drawmode716extbg is a trampoline that pushes edx then eax; those are its
+       two arguments, so off i386 the body is reached directly. */
+    c_drawmode716extbg(*p1, *p2);
+#endif
 }
+
+void c_drawmode716extbg(u4 ypos, u4 xpos); /* video/mode716b.c */
+void c_drawmode716extbg2(u4 craw);
 
 static void procmode716bextbg2(u1 const p3)
 {
@@ -1719,8 +1728,15 @@ static void procmode716bextbg2(u1 const p3)
         if (bl != 0)
             curmosaicsz = bl + 1;
     }
+#if defined(__GNUC__) && defined(__i386__)
     __asm__ volatile("push %%ebp;  call %P0;  pop %%ebp" ::"X"(drawmode716extbg2)
         : "cc", "memory", "eax", "ecx", "edx", "ebx", "esi", "edi");
+#else
+    /* Its trampoline passes ecx, which this call site never sets - the value
+       is whatever was left there. Nothing portable to reproduce, so off i386
+       it goes in as zero. */
+    c_drawmode716extbg2(0);
+#endif
 }
 
 static void procmode716b(u2 const* const p1, u2 const* const p2, u1 const p3)
