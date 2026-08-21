@@ -32,21 +32,21 @@ void (*DLFN)(void);
 extern void calldl16t(void);
 
 /* The ported clusters, still reached through their seam thunks. */
-extern void procwindowback16t(void);
-extern void clearback16bts(void);
-extern void clearback16t(void);
-extern void drawbackgrndsub16t(void);
-extern void drawbackgrndmain16t(void);
-extern void procspritessub16t(void);
-extern void procspritesmain16t(void);
-extern void procmode716tsub(void);
-extern void procmode716tsubextbg(void);
-extern void procmode716tsubextbgb(void);
-extern void procmode716tsubextbg2(void);
-extern void procmode716tmain(void);
-extern void procmode716tmainextbg(void);
-extern void procmode716tmainextbgb(void);
-extern void procmode716tmainextbg2(void);
+#include "c_procwin.h"
+/* The clearback seams (video/c_mv16tclr.c, video/c_mv16bclr.c). Their
+   trampolines used to spill the registers into these; the call sites below do
+   it now, and the seams go when calldl16t does. */
+extern u4 CBAX, CBBX, CBCX, CBDX, CBSI, CBDI, CBBP;
+extern u4 CLBAX, CLBBX, CLBCX, CLBDX, CLBSI, CLBDI;
+void c_clearback16t(void);
+void c_clearback16bts(void);
+#include "c_m716gate.h"
+
+/* The renderers a mode 7 gate can pick, indexed by the tail id it returns.
+   Still assembly, so they are reached the same way as before. */
+extern void drawmode716t(void), drawmode716b(void), drawmode716tb(void);
+extern void drawmode716extbg(void), drawmode716textbg(void);
+extern void drawmode716extbg2(void), drawmode716textbg2(void);
 
 /* cdecl already, so they need no seam of their own; the assembly reached them
    through ccallv, which preserves every register. */
@@ -69,6 +69,201 @@ static void call_asm(void (*fn)(void))
 {
     DLFN = fn;
     calldl16t();
+}
+
+static void (*const m7_renderer[])(void) = { 0, drawmode716t, drawmode716b,
+    drawmode716tb, drawmode716extbg, drawmode716textbg, drawmode716extbg2,
+    drawmode716textbg2 };
+
+/* A gate used to tail-jump into its renderer, so the renderer returned to
+   whoever called the gate. Calling it here is the same thing: the registers
+   go in through DLR either way, and the gate leaves the caller's own ecx, esi
+   and edi alone. */
+/* Same idea for the sprite gates, whose tail picks between two renderers.
+   Both are C now (video/c_m716gate.c), so they are called straight. */
+
+/* The six renderers a background gate can call, indexed by its id. Still
+   assembly, so still reached through calldl16t. */
+/* Ids 2 and 4 are C (video/c_m716gate.c); the rest are still assembly and go
+   through calldl16t, so the two kinds are dispatched apart. */
+extern void draw8x816t(void), draw8x816bt(void);
+void domosaic16b(void); /* video/mode716b.c */
+extern void draw8x816tms(void), draw16x1616tms(void);
+static void (*const bg_asm[])(void) = { 0, draw8x816t, 0, draw8x816bt, 0,
+    draw8x816tms, draw16x1616tms };
+
+static void bggate(u4 (*const g)(m7regs*), u4 const layer)
+{
+    m7regs r;
+    u4 tail, mosaic = 0;
+
+    DLR[6] = layer;
+    r.ax = DLR[0];
+    r.bx = DLR[1];
+    r.cx = DLR[2];
+    r.dx = DLR[3];
+    r.si = DLR[4];
+    r.di = DLR[5];
+    r.bp = DLR[6];
+
+    tail = g(&r);
+
+    DLR[0] = r.ax;
+    DLR[1] = r.bx;
+    DLR[2] = r.cx;
+    DLR[3] = r.dx;
+    DLR[4] = r.si;
+    DLR[5] = r.di;
+    DLR[6] = r.bp;
+    if (tail == 0) {
+        return;
+    }
+    /* Ids past the table fall through to the bookkeeping with no renderer. */
+    if (tail == 2) {
+        mosaic = draw16x1616t(&r);
+        DLR[0] = r.ax;
+        DLR[1] = r.bx;
+        DLR[2] = r.cx;
+        DLR[3] = r.dx;
+        DLR[4] = r.si;
+        DLR[5] = r.di;
+        DLR[6] = r.bp;
+    } else if (tail == 4) {
+        mosaic = draw16x1616bt(&r);
+        DLR[0] = r.ax;
+        DLR[1] = r.bx;
+        DLR[2] = r.cx;
+        DLR[3] = r.dx;
+        DLR[4] = r.si;
+        DLR[5] = r.di;
+        DLR[6] = r.bp;
+    } else if (tail <= 6) {
+        call_asm(bg_asm[tail]);
+    }
+    if (mosaic != 0) {
+        domosaic16b();
+    }
+    r.ax = DLR[0];
+    r.bx = DLR[1];
+    r.cx = DLR[2];
+    r.dx = DLR[3];
+    r.si = DLR[4];
+    r.di = DLR[5];
+    r.bp = DLR[6];
+    drawbackgrnd_mark(&r);
+    DLR[0] = r.ax;
+    DLR[1] = r.bx;
+    DLR[2] = r.cx;
+    DLR[3] = r.dx;
+    DLR[4] = r.si;
+    DLR[5] = r.di;
+    DLR[6] = r.bp;
+}
+
+static void sprgate(u4 (*const g)(m7regs*), u4 const layer)
+{
+    m7regs r;
+    u4 tail;
+
+    DLR[6] = layer;
+    r.ax = DLR[0];
+    r.bx = DLR[1];
+    r.cx = DLR[2];
+    r.dx = DLR[3];
+    r.si = DLR[4];
+    r.di = DLR[5];
+    r.bp = DLR[6];
+
+    tail = g(&r);
+
+    DLR[0] = r.ax;
+    DLR[1] = r.bx;
+    DLR[2] = r.cx;
+    DLR[3] = r.dx;
+    DLR[4] = r.si;
+    DLR[5] = r.di;
+    DLR[6] = r.bp;
+    if (tail == 1) {
+        drawsprites16t(&r);
+    } else if (tail != 0) {
+        drawsprites16bt(&r);
+    }
+    if (tail != 0) {
+        DLR[0] = r.ax;
+        DLR[1] = r.bx;
+        DLR[2] = r.cx;
+        DLR[3] = r.dx;
+        DLR[4] = r.si;
+        DLR[5] = r.di;
+        DLR[6] = r.bp;
+    }
+}
+
+static void m7gate(u4 (*const g)(m7regs*))
+{
+    m7regs r = { DLR[0], DLR[1], DLR[2], DLR[3], DLR[4], DLR[5], DLR[6] };
+    u4 const tail = g(&r);
+
+    DLR[0] = r.ax;
+    DLR[1] = r.bx;
+    DLR[2] = r.cx;
+    DLR[3] = r.dx;
+    DLR[4] = r.si;
+    DLR[5] = r.di;
+    DLR[6] = r.bp;
+    if (tail != 0) {
+        call_asm(m7_renderer[tail]);
+    }
+}
+
+static void clearback_t(void)
+{
+    CBAX = DLR[0];
+    CBBX = DLR[1];
+    CBCX = DLR[2];
+    CBDX = DLR[3];
+    CBSI = DLR[4];
+    CBDI = DLR[5];
+    CBBP = DLR[6];
+    c_clearback16t();
+    DLR[0] = CBAX;
+    DLR[1] = CBBX;
+    DLR[2] = CBCX;
+    DLR[3] = CBDX;
+    DLR[4] = CBSI;
+    DLR[5] = CBDI;
+    DLR[6] = CBBP;
+}
+
+/* The sub-screen one never took ebp. */
+static void clearback_bts(void)
+{
+    CLBAX = DLR[0];
+    CLBBX = DLR[1];
+    CLBCX = DLR[2];
+    CLBDX = DLR[3];
+    CLBSI = DLR[4];
+    CLBDI = DLR[5];
+    c_clearback16bts();
+    DLR[0] = CLBAX;
+    DLR[1] = CLBBX;
+    DLR[2] = CLBCX;
+    DLR[3] = CLBDX;
+    DLR[4] = CLBSI;
+    DLR[5] = CLBDI;
+}
+
+/* clearback16bts runs straight after this and reads the registers it leaves,
+   which is why the four come back through DLR rather than being dropped. */
+static void procwindowback(void)
+{
+    pwregs pw = { DLR[0], DLR[1], DLR[2], DLR[4] };
+
+    c_procwindowback16t(&pw);
+    DLR[0] = pw.ax;
+    DLR[1] = pw.bx;
+    DLR[2] = pw.cx;
+    DLR[4] = pw.si;
 }
 
 /* `mov ebp,N` before the call is the only register any of these reads. */
@@ -105,37 +300,37 @@ static void main_line(void)
 static void next_draw_line(void)
 {
     main_line();
-    call_asm(clearback16t);
+    clearback_t();
     curbgpr = 0x00;
     curbgnum = 0x08;
-    call_layer(drawbackgrndmain16t, 3);
+    bggate(drawbackgrndmain16t, 3);
     curbgnum = 0x04;
-    call_layer(drawbackgrndmain16t, 2);
-    call_layer(procspritesmain16t, 0);
+    bggate(drawbackgrndmain16t, 2);
+    sprgate(procspritesmain16t, 0);
     curbgnum = 0x08;
-    call_layer(drawbackgrndmain16t, 3);
+    bggate(drawbackgrndmain16t, 3);
     curbgpr = 0x20;
     if (bg3high2 != 1) {
         curbgnum = 0x04;
-        call_layer(drawbackgrndmain16t, 2);
+        bggate(drawbackgrndmain16t, 2);
     }
-    call_layer(procspritesmain16t, 1);
+    sprgate(procspritesmain16t, 1);
     curbgpr = 0x00;
     curbgnum = 0x02;
-    call_layer(drawbackgrndmain16t, 1);
+    bggate(drawbackgrndmain16t, 1);
     curbgnum = 0x01;
-    call_layer(drawbackgrndmain16t, 0);
-    call_layer(procspritesmain16t, 2);
+    bggate(drawbackgrndmain16t, 0);
+    sprgate(procspritesmain16t, 2);
     curbgpr = 0x20;
     curbgnum = 0x02;
-    call_layer(drawbackgrndmain16t, 1);
+    bggate(drawbackgrndmain16t, 1);
     curbgnum = 0x01;
-    call_layer(drawbackgrndmain16t, 0);
-    call_layer(procspritesmain16t, 3);
+    bggate(drawbackgrndmain16t, 0);
+    sprgate(procspritesmain16t, 3);
     if (bg3high2 == 1) {
         curbgpr = 0x20;
         curbgnum = 0x04;
-        call_layer(drawbackgrndmain16t, 2);
+        bggate(drawbackgrndmain16t, 2);
     }
 }
 
@@ -144,21 +339,21 @@ static void next_draw_line(void)
 static void priority2_next_draw_line(void)
 {
     main_line();
-    call_asm(clearback16t);
+    clearback_t();
     curbgpr = 0x00;
     curbgnum = 0x02;
-    call_layer(drawbackgrndmain16t, 1);
-    call_layer(procspritesmain16t, 0);
+    bggate(drawbackgrndmain16t, 1);
+    sprgate(procspritesmain16t, 0);
     curbgnum = 0x01;
-    call_layer(drawbackgrndmain16t, 0);
-    call_layer(procspritesmain16t, 1);
+    bggate(drawbackgrndmain16t, 0);
+    sprgate(procspritesmain16t, 1);
     curbgpr = 0x20;
     curbgnum = 0x02;
-    call_layer(drawbackgrndmain16t, 1);
-    call_layer(procspritesmain16t, 2);
+    bggate(drawbackgrndmain16t, 1);
+    sprgate(procspritesmain16t, 2);
     curbgnum = 0x01;
-    call_layer(drawbackgrndmain16t, 0);
-    call_layer(procspritesmain16t, 3);
+    bggate(drawbackgrndmain16t, 0);
+    sprgate(procspritesmain16t, 3);
 }
 
 /* priority216t: the sub-screen pass for modes 2 and up. */
@@ -167,18 +362,18 @@ static void priority2(void)
     if (scaddset & 0x02u) {
         curbgpr = 0x00;
         curbgnum = 0x02;
-        call_layer(drawbackgrndsub16t, 1);
-        call_layer(procspritessub16t, 0);
+        bggate(drawbackgrndsub16t, 1);
+        sprgate(procspritessub16t, 0);
         curbgnum = 0x01;
-        call_layer(drawbackgrndsub16t, 0);
-        call_layer(procspritessub16t, 1);
+        bggate(drawbackgrndsub16t, 0);
+        sprgate(procspritessub16t, 1);
         curbgpr = 0x20;
         curbgnum = 0x02;
-        call_layer(drawbackgrndsub16t, 1);
-        call_layer(procspritessub16t, 2);
+        bggate(drawbackgrndsub16t, 1);
+        sprgate(procspritessub16t, 2);
         curbgnum = 0x01;
-        call_layer(drawbackgrndsub16t, 0);
-        call_layer(procspritessub16t, 3);
+        bggate(drawbackgrndsub16t, 0);
+        sprgate(procspritessub16t, 3);
     }
     cwinenabm = winenabm;
     priority2_next_draw_line();
@@ -189,8 +384,8 @@ static void process_mode7(void)
 {
     curvidoffset = transpbuf + 32;
     setpalette16b();
-    call_asm(procwindowback16t);
-    call_asm(clearback16bts);
+    procwindowback();
+    clearback_bts();
     makewindowsp();
     DLR[0] = 0;
     DLR[2] = 0;
@@ -198,43 +393,43 @@ static void process_mode7(void)
     extbgdone = 0;
     if (scaddset & 0x02u) {
         if (interlval & 0x40u) {
-            call_asm(procmode716tsubextbg);
+            m7gate(procmode716tsubextbg);
         }
-        call_layer(procspritessub16t, 0);
+        sprgate(procspritessub16t, 0);
         if (!(interlval & 0x40u)) {
-            call_asm(procmode716tsub);
+            m7gate(procmode716tsub);
         }
-        call_layer(procspritessub16t, 1);
+        sprgate(procspritessub16t, 1);
         if (interlval & 0x40u) {
-            call_asm(procmode716tsubextbgb);
-            call_asm(procmode716tsubextbg2);
+            m7gate(procmode716tsubextbgb);
+            m7gate(procmode716tsubextbg2);
         }
-        call_layer(procspritessub16t, 2);
-        call_layer(procspritessub16t, 3);
+        sprgate(procspritessub16t, 2);
+        sprgate(procspritessub16t, 3);
     }
     cwinenabm = winenabm;
 
     /* processmode716t2 */
     main_line();
     sprite_setup();
-    call_asm(clearback16t);
+    clearback_t();
     DLR[0] = 0;
     DLR[2] = 0;
     extbgdone = 0;
     if (interlval & 0x40u) {
-        call_asm(procmode716tmainextbg);
+        m7gate(procmode716tmainextbg);
     }
-    call_layer(procspritesmain16t, 0);
+    sprgate(procspritesmain16t, 0);
     if (!(interlval & 0x40u)) {
-        call_asm(procmode716tmain);
+        m7gate(procmode716tmain);
     }
-    call_layer(procspritesmain16t, 1);
+    sprgate(procspritesmain16t, 1);
     if (interlval & 0x40u) {
-        call_asm(procmode716tmainextbgb);
-        call_asm(procmode716tmainextbg2);
+        m7gate(procmode716tmainextbgb);
+        m7gate(procmode716tmainextbg2);
     }
-    call_layer(procspritesmain16t, 2);
-    call_layer(procspritesmain16t, 3);
+    sprgate(procspritesmain16t, 2);
+    sprgate(procspritesmain16t, 3);
 }
 
 void drawline16t(void)
@@ -251,8 +446,8 @@ void drawline16t(void)
     }
     curvidoffset = transpbuf + 32;
     setpalette16b();
-    call_asm(procwindowback16t);
-    call_asm(clearback16bts);
+    procwindowback();
+    clearback_bts();
     makewindowsp();
     DLR[0] = 0;
     DLR[2] = 0;
@@ -274,33 +469,33 @@ void drawline16t(void)
     if (scaddset & 0x02u) {
         curbgpr = 0x00;
         curbgnum = 0x08;
-        call_layer(drawbackgrndsub16t, 3);
+        bggate(drawbackgrndsub16t, 3);
         curbgnum = 0x04;
-        call_layer(drawbackgrndsub16t, 2);
-        call_layer(procspritessub16t, 0);
+        bggate(drawbackgrndsub16t, 2);
+        sprgate(procspritessub16t, 0);
         curbgnum = 0x08;
-        call_layer(drawbackgrndsub16t, 3);
+        bggate(drawbackgrndsub16t, 3);
         curbgpr = 0x20;
         if (bg3high2 != 1) {
             curbgnum = 0x04;
-            call_layer(drawbackgrndsub16t, 2);
+            bggate(drawbackgrndsub16t, 2);
         }
-        call_layer(procspritessub16t, 1);
+        sprgate(procspritessub16t, 1);
         curbgpr = 0x00;
         curbgnum = 0x02;
-        call_layer(drawbackgrndsub16t, 1);
+        bggate(drawbackgrndsub16t, 1);
         curbgnum = 0x01;
-        call_layer(drawbackgrndsub16t, 0);
-        call_layer(procspritessub16t, 2);
+        bggate(drawbackgrndsub16t, 0);
+        sprgate(procspritessub16t, 2);
         curbgpr = 0x20;
         curbgnum = 0x02;
-        call_layer(drawbackgrndsub16t, 1);
+        bggate(drawbackgrndsub16t, 1);
         curbgnum = 0x01;
-        call_layer(drawbackgrndsub16t, 0);
-        call_layer(procspritessub16t, 3);
+        bggate(drawbackgrndsub16t, 0);
+        sprgate(procspritessub16t, 3);
         if (bg3high2 == 1) {
             curbgnum = 0x04;
-            call_layer(drawbackgrndsub16t, 2);
+            bggate(drawbackgrndsub16t, 2);
         }
     }
     cwinenabm = winenabm;
