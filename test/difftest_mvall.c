@@ -1,5 +1,5 @@
 /* Differential test: every draw*ms routine in video/mv16tms.asm against the C
- * port in video/c_mv16tms.c + video/c_mv16tsms.c.
+ * port in video/c_mv16tms.c + video/c_mv16tsms.c + video/c_mv16msgate.c.
  *
  * The oracle here is the *whole* pre-port file (tools/mkoracle.py), not a cut
  * of one routine, so this drives the two top-level entries and lets their own
@@ -77,6 +77,7 @@ static u1 tilemap[512];
 /* Both sides jump here identically; the point is to capture the registers at
    the jump, which is where the mosaic tail hands over dh = curmosaicsz. */
 u4 dm_hit, dm_eax, dm_ebx, dm_ecx, dm_edx, dm_esi, dm_edi, dm_ebp;
+void domosaic16b(void);
 __asm__(ASM_TEXT ".globl domosaic16b\n"
                  "domosaic16b:\n"
                  "  movl %eax, dm_eax\n"
@@ -88,11 +89,15 @@ __asm__(ASM_TEXT ".globl domosaic16b\n"
                  "  movl %ebp, dm_ebp\n"
                  "  incl dm_hit\n"
                  "  ret\n" ASM_END);
+/* The oracle jumps to draw16x816t, which is external to mv16tms.asm - so it
+   cannot be rewritten by --stub-routine. nasm's -D renames the reference
+   instead, leaving the name free for the port's own C stand-in below. */
 u4 d16_hit;
-__asm__(ASM_TEXT ".globl draw16x816t\n"
-                 "draw16x816t:\n"
+__asm__(ASM_TEXT ".globl draw16x816t_stub\n"
+                 "draw16x816t_stub:\n"
                  "  incl d16_hit\n"
                  "  ret\n" ASM_END);
+void draw16x816t_stub(void);
 
 /* --- calling a routine with a full register set --------------------------- */
 u4 rg_eax, rg_ebx, rg_ecx, rg_edx, rg_esi, rg_edi, rg_ebp;
@@ -119,8 +124,40 @@ __asm__(ASM_TEXT ".globl dt_call\n"
                  "  ret\n" ASM_END);
 void dt_call(void);
 
+#include "../video/c_mv16draw.h"
+
 void asm_draw8x816tms(void), asm_draw16x1616tms(void);
-void draw8x816tms(void), draw16x1616tms(void);
+void draw16x1616tms(void); /* still assembly */
+
+static void call_regs(m7regs* r, void (*fn)(void));
+
+/* Reached by a jump, so the registers at the call are what the stub sees and
+   what the dispatcher returns with - hence the round trip. */
+u4 draw16x816t(m7regs* const r)
+{
+    call_regs(r, draw16x816t_stub);
+    return 0;
+}
+
+static void call_regs(m7regs* const r, void (*const fn)(void))
+{
+    rg_eax = r->ax;
+    rg_ebx = r->bx;
+    rg_ecx = r->cx;
+    rg_edx = r->dx;
+    rg_esi = r->si;
+    rg_edi = r->di;
+    rg_ebp = r->bp;
+    rg_fn = (u4)(uintptr_t)fn;
+    dt_call();
+    r->ax = rg_eax;
+    r->bx = rg_ebx;
+    r->cx = rg_ecx;
+    r->dx = rg_edx;
+    r->si = rg_esi;
+    r->di = rg_edi;
+    r->bp = rg_ebp;
+}
 
 /* Everything either side may write. */
 typedef struct {
@@ -181,29 +218,22 @@ static void restore(state const* const s)
     memcpy(xtravbuf, s->xtra, BUFSZ);
 }
 
-static void run(void (*fn)(void), u4 const* const in, snapshot* const out)
+static void reset(void)
 {
     dm_hit = dm_eax = dm_ebx = dm_ecx = dm_edx = dm_esi = dm_edi = dm_ebp = 0;
     d16_hit = 0;
     winptrref = 0;
+}
 
-    rg_eax = in[0];
-    rg_ebx = in[1];
-    rg_ecx = in[2];
-    rg_edx = in[3];
-    rg_esi = in[4];
-    rg_edi = in[5];
-    rg_ebp = in[6];
-    rg_fn = (u4)(uintptr_t)fn;
-    dt_call();
-
-    out->ax = rg_eax;
-    out->bx = rg_ebx;
-    out->cx = rg_ecx;
-    out->dx = rg_edx;
-    out->si = rg_esi;
-    out->di = rg_edi;
-    out->bp = rg_ebp;
+static void finish(m7regs const* const r, snapshot* const out)
+{
+    out->ax = r->ax;
+    out->bx = r->bx;
+    out->cx = r->cx;
+    out->dx = r->dx;
+    out->si = r->si;
+    out->di = r->di;
+    out->bp = r->bp;
     out->ofw = bgofwptr;
     out->subby = bgsubby;
     out->cach = tempcach;
@@ -230,6 +260,48 @@ static void run(void (*fn)(void), u4 const* const in, snapshot* const out)
     memcpy(out->vid, vidbuf, BUFSZ);
     memcpy(out->tr, transpbuf, BUFSZ);
     memcpy(out->xtra, xtravbuf, BUFSZ);
+}
+
+static void regs_in(m7regs* const r, u4 const* const in)
+{
+    r->ax = in[0];
+    r->bx = in[1];
+    r->cx = in[2];
+    r->dx = in[3];
+    r->si = in[4];
+    r->di = in[5];
+    r->bp = in[6];
+}
+
+static void run(void (*const fn)(void), u4 const* const in,
+    snapshot* const out)
+{
+    m7regs r;
+
+    reset();
+    regs_in(&r, in);
+    call_regs(&r, fn);
+    finish(&r, out);
+}
+
+/* The 8x8 entry is C now; the 16x16 one is still assembly. */
+static void run_port(int const big, u4 const* const in, snapshot* const out)
+{
+    m7regs r;
+
+    if (big) {
+        run(draw16x1616tms, in, out);
+        return;
+    }
+
+    reset();
+    regs_in(&r, in);
+    if (draw8x816tms(&r) != 0) {
+        /* The mosaic tail was a jump: run it with the registers the drawer
+           ended on, which is what the stub records. */
+        call_regs(&r, domosaic16b);
+    }
+    finish(&r, out);
 }
 
 /* Which routine the dispatch picks. This is a MODEL of the assembly's dispatch,
@@ -368,7 +440,7 @@ int main(void)
         save(&s);
         run(big ? asm_draw16x1616tms : asm_draw8x816tms, in, &x);
         restore(&s);
-        run(big ? draw16x1616tms : draw8x816tms, in, &y);
+        run_port(big, in, &y);
 
         DT_EQ("eax", x.ax, y.ax);
         DT_EQ("ebx", x.bx, y.bx);

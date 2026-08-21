@@ -1,20 +1,22 @@
 /* Differential test: draw8x816bt / draw8x816btwinon in video/makev16t.asm
  * against the C port in video/c_mv16t8bt.c.
  *
- * Two routines behind one entry point, so one comparison covers both. Both
- * sides are real assembly - the oracle from the pre-port revision and the
- * current file from the working tree - so the seam thunk is tested too.
+ * Two routines behind one entry point, so one comparison covers both. The
+ * oracle is the pre-port assembly; the port is video/c_mv16draw.c, whose
+ * dispatcher is C and whose leaf still goes through the T8 seam.
  *
  * Three exits leave the routine other than by returning, and all three are
  * caught here rather than stubbed blind: the bgmode 2 call into
- * draw8x816boffset, the bgmode 5 jump into draw16x816t (rewritten by
- * mkoracle's --stub-routine, since a call inside the file carries no
- * relocation), and the mosaic tail-jump into domosaic16b. Each records the
+ * draw8x816boffset, the bgmode 5 jump into draw16x816t (rewritten in the
+ * oracle by mkoracle's --stub-routine, since a call inside the file carries no
+ * relocation; substituted for the port by linking c_mv16draw.c without
+ * c_mv16leaf.c), and the mosaic tail-jump into domosaic16b. Each records the
  * register state it was reached with, because that contract is exactly what a
  * seam can get wrong.
  */
 #include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "difftest.h"
@@ -48,8 +50,9 @@ static u1 winbuf[WINSZ];
 static u1 mapbuf[MAPSZ];
 static u1 cache2[C2SZ], cache4[C4SZ], cache8[C8SZ];
 
+#include "../video/c_mv16draw.h"
+
 void asm_draw8x816bt(void);
-void cur_draw8x816bt(void);
 
 /* The three ways out. `hit` counts them so a route that stops being taken is
    visible, and the registers are compared like any other output. */
@@ -107,6 +110,26 @@ void draw8x816boffset(u4 a, u4 c, u4 d, u4 b, u4 bp, u4 si, u4 di)
     ex.arg[6] = di;
 }
 
+static void call_regs(m7regs* r, void (*fn)(void));
+
+/* The port's stand-in for the routine c_mv16leaf.c defines. It was reached by
+   a jump, so the registers at the call are what the stub sees and what the
+   dispatcher returns with - hence the round trip. */
+u4 draw16x816t(m7regs* const r)
+{
+    call_regs(r, draw16x816t_stub);
+    return 0;
+}
+
+/* Reachable only from draw8x816t, which this test does not drive - but that
+   dispatcher shares c_mv16draw.c with this one, so the link still wants it. */
+u4 draw8x816toffset(m7regs* r);
+u4 draw8x816toffset(m7regs* const r)
+{
+    (void)r;
+    abort();
+}
+
 u4 rg_eax, rg_ebx, rg_ecx, rg_edx, rg_esi, rg_edi, rg_ebp, rg_fn;
 __asm__(".pushsection .text\n"
         ".globl dt_call\n"
@@ -132,6 +155,26 @@ __asm__(".pushsection .text\n"
         ".popsection\n");
 void dt_call(void);
 
+static void call_regs(m7regs* const r, void (*const fn)(void))
+{
+    rg_eax = r->ax;
+    rg_ebx = r->bx;
+    rg_ecx = r->cx;
+    rg_edx = r->dx;
+    rg_esi = r->si;
+    rg_edi = r->di;
+    rg_ebp = r->bp;
+    rg_fn = (u4)(uintptr_t)fn;
+    dt_call();
+    r->ax = rg_eax;
+    r->bx = rg_ebx;
+    r->cx = rg_ecx;
+    r->dx = rg_edx;
+    r->si = rg_esi;
+    r->di = rg_edi;
+    r->bp = rg_ebp;
+}
+
 typedef struct {
     u4 reg[7];
     u4 glob[9];
@@ -142,8 +185,7 @@ typedef struct {
     u1 xv[576];
 } snapshot;
 
-static void run(void (*fn)(void), snapshot const* const in,
-    snapshot* const out)
+static void setup(snapshot const* const in)
 {
     memcpy(vidbuf, in->vid, VIDSZ);
     memcpy(transpbuf, in->tb, TBSZ);
@@ -156,24 +198,10 @@ static void run(void (*fn)(void), snapshot const* const in,
     cwinptr = winbuf + 64;
     memset(&ex, 0, sizeof ex);
     xr_which = bgmode == 5 ? 1 : 0;
+}
 
-    rg_eax = in->reg[0];
-    rg_ebx = in->reg[1];
-    rg_ecx = in->reg[2];
-    rg_edx = in->reg[3];
-    rg_esi = in->reg[4];
-    rg_edi = in->reg[5];
-    rg_ebp = in->reg[6];
-    rg_fn = (u4)(uintptr_t)fn;
-    dt_call();
-
-    out->reg[0] = rg_eax;
-    out->reg[1] = rg_ebx;
-    out->reg[2] = rg_ecx;
-    out->reg[3] = rg_edx;
-    out->reg[4] = rg_esi;
-    out->reg[5] = rg_edi;
-    out->reg[6] = rg_ebp;
+static void finish(snapshot* const out)
+{
     out->glob[0] = yadder;
     out->glob[1] = yrevadder;
     out->glob[2] = bgsubby;
@@ -190,6 +218,54 @@ static void run(void (*fn)(void), snapshot const* const in,
     memcpy(out->vid, vidbuf, VIDSZ);
     memcpy(out->tb, transpbuf, TBSZ);
     memcpy(out->xv, xtravbuf, 576);
+}
+
+static void regs_in(m7regs* const r, snapshot const* const in)
+{
+    r->ax = in->reg[0];
+    r->bx = in->reg[1];
+    r->cx = in->reg[2];
+    r->dx = in->reg[3];
+    r->si = in->reg[4];
+    r->di = in->reg[5];
+    r->bp = in->reg[6];
+}
+
+static void regs_out(m7regs const* const r, snapshot* const out)
+{
+    out->reg[0] = r->ax;
+    out->reg[1] = r->bx;
+    out->reg[2] = r->cx;
+    out->reg[3] = r->dx;
+    out->reg[4] = r->si;
+    out->reg[5] = r->di;
+    out->reg[6] = r->bp;
+}
+
+static void run_asm(snapshot const* const in, snapshot* const out)
+{
+    m7regs r;
+
+    setup(in);
+    regs_in(&r, in);
+    call_regs(&r, asm_draw8x816bt);
+    regs_out(&r, out);
+    finish(out);
+}
+
+static void run_port(snapshot const* const in, snapshot* const out)
+{
+    m7regs r;
+
+    setup(in);
+    regs_in(&r, in);
+    if (draw8x816bt(&r) != 0) {
+        /* The mosaic tail was a jump: run it with the registers the drawer
+           ended on, which is what the stub records. */
+        call_regs(&r, domosaic16b);
+    }
+    regs_out(&r, out);
+    finish(out);
 }
 
 int main(void)
@@ -300,8 +376,8 @@ int main(void)
         dt_fill(in.tb, TBSZ);
         dt_fill(in.xv, 576);
 
-        run(asm_draw8x816bt, &in, &x);
-        run(cur_draw8x816bt, &in, &y);
+        run_asm(&in, &x);
+        run_port(&in, &y);
 
         if (bgmode == 5) {
             route = 4;

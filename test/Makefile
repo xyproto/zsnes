@@ -134,9 +134,12 @@ mvs: difftest_mvs.c difftest.h mkmvs.sh ../video/c_mv16tsms.c
 
 # The oracle is the whole pre-port file, so this one covers every routine in it
 # and needs no extraction script; see tools/mkoracle.py.
-mvall: difftest_mvall.c difftest.h ../video/c_mv16tsms.c ../video/c_mv16tms.c
-	python3 ../tools/mkoracle.py video/mv16tms.asm -o _mvall.o
+mvall: difftest_mvall.c difftest.h ../video/c_mv16tsms.c ../video/c_mv16tms.c \
+       ../video/c_mv16msgate.c
+	python3 ../tools/mkoracle.py video/mv16tms.asm -o _mvall.o \
+	    --define draw16x816t=draw16x816t_stub
 	$(CC) $(CFLAGS) difftest_mvall.c ../video/c_mv16tsms.c ../video/c_mv16tms.c \
+	    ../video/c_mv16msgate.c \
 	    ../video/mv16tms.o _mvall.o -no-pie -o difftest_mvall
 	@./difftest_mvall
 
@@ -223,16 +226,14 @@ spr16p: difftest_spr16p.c difftest.h $(M16T_SEAM)
 	    -no-pie -o difftest_spr16p
 	@./difftest_spr16p
 
-t8bt: difftest_t8bt.c difftest.h $(M16T_SEAM)
+t8bt: difftest_t8bt.c difftest.h $(M16T_SEAM) ../video/c_mv16draw.c
 	python3 ../tools/mkoracle.py video/makev16t.asm -o _t8bt.o \
 	    --stub-routine draw16x816t \
 	    --stubs _t8bt_stubs.c --provided-by $(M16T_OBJS) $(M16T_BSS) \
 	    --exclude vram domosaic16b draw8x816boffset draw16x816t_stub \
 	    xtravbuf transpbuf vcache2b vcache4b vcache8b
-	python3 ../tools/mkoracle.py video/makev16t.asm -o _t8btcur.o \
-	    --worktree --prefix cur_ --stub-routine draw16x816t
-	$(CC) $(CFLAGS) difftest_t8bt.c $(M16T_SEAM) \
-	    _t8bt.o _t8btcur.o _t8bt_stubs.c $(M16T_OBJS) $(M16T_BSS) \
+	$(CC) $(CFLAGS) difftest_t8bt.c $(M16T_SEAM) ../video/c_mv16draw.c \
+	    _t8bt.o _t8bt_stubs.c $(M16T_OBJS) $(M16T_BSS) \
 	    -no-pie -o difftest_t8bt
 	@./difftest_t8bt
 
@@ -246,17 +247,16 @@ t16bt: difftest_t16bt.c difftest.h $(M16T_SEAM)
 	    -no-pie -o difftest_t16bt
 	@./difftest_t16bt
 
-t8t: difftest_t8t.c difftest.h $(M16T_SEAM)
+# c_mv16draw.c but not c_mv16leaf.c: the test defines draw16x816t and
+# draw8x816toffset itself, to see which way the dispatch went.
+t8t: difftest_t8t.c difftest.h $(M16T_SEAM) ../video/c_mv16draw.c
 	python3 ../tools/mkoracle.py video/makev16t.asm -o _t8t.o \
 	    --stub-routine draw16x816t draw8x816toffset \
 	    --stubs _t8t_stubs.c --provided-by $(M16T_OBJS) $(M16T_BSS) \
 	    --exclude vram domosaic16b draw16x816t_stub draw8x816toffset_stub \
 	    fulladdtab xtravbuf transpbuf vcache2b vcache4b vcache8b
-	python3 ../tools/mkoracle.py video/makev16t.asm -o _t8tcur.o \
-	    --worktree --prefix cur_ \
-	    --stub-routine draw16x816t draw8x816toffset
-	$(CC) $(CFLAGS) difftest_t8t.c $(M16T_SEAM) \
-	    _t8t.o _t8tcur.o _t8t_stubs.c $(M16T_OBJS) $(M16T_BSS) \
+	$(CC) $(CFLAGS) difftest_t8t.c $(M16T_SEAM) ../video/c_mv16draw.c \
+	    _t8t.o _t8t_stubs.c $(M16T_OBJS) $(M16T_BSS) \
 	    -no-pie -o difftest_t8t
 	@./difftest_t8t
 
@@ -270,27 +270,23 @@ t16t: difftest_t16t.c difftest.h $(M16T_SEAM)
 	    -no-pie -o difftest_t16t
 	@./difftest_t16t
 
-t8to: difftest_t8to.c difftest.h $(M16T_SEAM)
+t8to: difftest_t8to.c difftest.h $(M16T_SEAM) ../video/c_mv16leaf.c
 	python3 ../tools/mkoracle.py video/makev16t.asm -o _t8to.o \
 	    --stubs _t8to_stubs.c --provided-by $(M16T_OBJS) $(M16T_BSS) \
 	    --exclude vram domosaic16b cachesingle4bng fulladdtab xtravbuf transpbuf \
 	    vcache2b vcache4b vcache8b
-	python3 ../tools/mkoracle.py video/makev16t.asm -o _t8tocur.o \
-	    --worktree --prefix cur_
-	$(CC) $(CFLAGS) difftest_t8to.c $(M16T_SEAM) \
-	    _t8to.o _t8tocur.o _t8to_stubs.c $(M16T_OBJS) $(M16T_BSS) \
+	$(CC) $(CFLAGS) difftest_t8to.c $(M16T_SEAM) ../video/c_mv16leaf.c \
+	    _t8to.o _t8to_stubs.c $(M16T_OBJS) $(M16T_BSS) \
 	    -no-pie -o difftest_t8to
 	@./difftest_t8to
 
-thi: difftest_thi.c difftest.h $(M16T_SEAM)
+thi: difftest_thi.c difftest.h $(M16T_SEAM) ../video/c_mv16leaf.c
 	python3 ../tools/mkoracle.py video/makev16t.asm -o _thi.o \
 	    --stubs _thi_stubs.c --provided-by $(M16T_OBJS) $(M16T_BSS) \
 	    --exclude vram domosaic16b fulladdtab xtravbuf transpbuf \
 	    vcache2b vcache4b vcache8b
-	python3 ../tools/mkoracle.py video/makev16t.asm -o _thicur.o \
-	    --worktree --prefix cur_
-	$(CC) $(CFLAGS) difftest_thi.c $(M16T_SEAM) \
-	    _thi.o _thicur.o _thi_stubs.c $(M16T_OBJS) $(M16T_BSS) \
+	$(CC) $(CFLAGS) difftest_thi.c $(M16T_SEAM) ../video/c_mv16leaf.c \
+	    _thi.o _thi_stubs.c $(M16T_OBJS) $(M16T_BSS) \
 	    -no-pie -o difftest_thi
 	@./difftest_thi
 
