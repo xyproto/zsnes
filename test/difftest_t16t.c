@@ -57,7 +57,9 @@ static u1 mapbuf[MAPSZ];
 static u1 cache2[C2SZ], cache4[C4SZ], cache8[C8SZ];
 
 void asm_draw16x1616t(void);
-void cur_draw16x1616t(void);
+/* The port is C now (video/c_m716gate.c): registers go in a struct, so it
+   is driven directly rather than through dt_call. */
+#include "../video/c_m716gate.h"
 
 /* The one way out that is not a return. `hit` counts it so a route that stops
    being taken is visible, and the registers are compared like any other
@@ -130,6 +132,85 @@ typedef struct {
     u1 tb[TBSZ];
     u1 xv[576];
 } snapshot;
+
+static void run_port(snapshot const* const in, snapshot* const out)
+{
+    m7regs r;
+
+    memcpy(vidbuf, in->vid, VIDSZ);
+    memcpy(transpbuf, in->tb, TBSZ);
+    memcpy(xtravbuf, in->xv, 576);
+    /* The routine writes all four of these; poison them first, or a port that
+       fails to write one still agrees because the previous run left the right
+       value behind. */
+    temp = bshifter = a16x16xinc = a16x16yinc = coadder16 = 0xA5;
+    curvidoffset = vidbuf + 64;
+    cwinptr = winbuf + 64;
+    memset(&ex, 0, sizeof ex);
+    r.ax = in->reg[0];
+    r.bx = in->reg[1];
+    r.cx = in->reg[2];
+    r.dx = in->reg[3];
+    r.si = in->reg[4];
+    r.di = in->reg[5];
+    r.bp = in->reg[6];
+
+    if (draw16x1616t(&r) != 0) {
+        /* The mosaic tail was a jump: run it with the registers the renderer
+           ended on, which is what the stub records. */
+        rg_eax = r.ax;
+        rg_ebx = r.bx;
+        rg_ecx = r.cx;
+        rg_edx = r.dx;
+        rg_esi = r.si;
+        rg_edi = r.di;
+        rg_ebp = r.bp;
+        rg_fn = (u4)(uintptr_t)domosaic16b;
+        dt_call();
+        r.ax = rg_eax;
+        r.bx = rg_ebx;
+        r.cx = rg_ecx;
+        r.dx = rg_edx;
+        r.si = rg_esi;
+        r.di = rg_edi;
+        r.bp = rg_ebp;
+    }
+
+    rg_eax = r.ax;
+    rg_ebx = r.bx;
+    rg_ecx = r.cx;
+    rg_edx = r.dx;
+    rg_esi = r.si;
+    rg_edi = r.di;
+    rg_ebp = r.bp;
+
+    out->reg[0] = rg_eax;
+    out->reg[1] = rg_ebx;
+    out->reg[2] = rg_ecx;
+    out->reg[3] = rg_edx;
+    out->reg[4] = rg_esi;
+    out->reg[5] = rg_edi;
+    out->reg[6] = rg_ebp;
+    out->glob[0] = yadder;
+    out->glob[1] = yrevadder;
+    out->glob[2] = bgsubby;
+    out->glob[3] = (u4)(uintptr_t)tempcach;
+    out->glob[4] = (u4)(uintptr_t)bgofwptr;
+    out->glob[5] = (u4)(uintptr_t)winptrref;
+    out->glob[6] = (u4)(uintptr_t)temptile;
+    out->glob[7] = yadd;
+    out->glob[8] = yflipadd;
+    out->glob[9] = a16x16xinc;
+    out->glob[10] = a16x16yinc;
+    out->glob[11] = coadder16;
+    out->mem[0] = temp;
+    out->mem[1] = bshifter;
+    out->mem[2] = drawn;
+    out->ex = ex;
+    memcpy(out->vid, vidbuf, VIDSZ);
+    memcpy(out->tb, transpbuf, TBSZ);
+    memcpy(out->xv, xtravbuf, 576);
+}
 
 static void run(void (*fn)(void), snapshot const* const in,
     snapshot* const out)
@@ -313,7 +394,7 @@ int main(void)
         dt_fill(in.xv, 576);
 
         run(asm_draw16x1616t, &in, &x);
-        run(cur_draw16x1616t, &in, &y);
+        run_port(&in, &y);
 
         if (scaddtype & 0x80u) {
             route = 4;

@@ -33,7 +33,12 @@ static u1 vidbuf[VIDSZ];
 static u1 maskbuf[MASKSZ];
 
 void asm_clearback16bts(void);
-void cur_clearback16bts(void);
+
+/* The port's side. Its trampoline is gone - video/c_mv16tline.c spills into
+   the CLB seam at the call site now - so the test drives the C body through
+   that seam while the oracle still goes through dt_call with registers. */
+extern u4 CLBAX, CLBBX, CLBCX, CLBDX, CLBSI, CLBDI;
+void c_clearback16bts(void);
 
 u4 rg_eax, rg_ebx, rg_ecx, rg_edx, rg_esi, rg_edi, rg_ebp, rg_fn;
 __asm__(".pushsection .text\n"
@@ -75,6 +80,38 @@ typedef struct {
     u1 transp, nwin;
     u1 vid[VIDSZ];
 } seed;
+
+/* Same shape as run(), but through the seam the C body reads. It never took
+   ebp, so that one is passed straight through. */
+static void run_port(seed const* const s, snapshot* const out)
+{
+    memcpy(vidbuf, s->vid, VIDSZ);
+    prevrgbcol = s->prevcol;
+    prevrgbpal = s->prevpal;
+    DoTransp = s->transp;
+    numwin = s->nwin;
+    CLBAX = s->reg[0];
+    CLBBX = s->reg[1];
+    CLBCX = s->reg[2];
+    CLBDX = s->reg[3];
+    CLBSI = s->reg[4];
+    CLBDI = s->reg[5];
+
+    c_clearback16bts();
+
+    out->ax = CLBAX;
+    out->bx = CLBBX;
+    out->cx = CLBCX;
+    out->dx = CLBDX;
+    out->si = CLBSI;
+    out->di = CLBDI;
+    out->bp = s->reg[6];
+    out->prevcol = prevrgbcol;
+    out->prevpal = prevrgbpal;
+    out->transp = DoTransp;
+    out->nwin = numwin;
+    memcpy(out->vid, vidbuf, VIDSZ);
+}
 
 static void run(void (*fn)(void), seed const* const s, snapshot* const out)
 {
@@ -200,7 +237,7 @@ int main(void)
         }
 
         run(asm_clearback16bts, &s, &x);
-        run(cur_clearback16bts, &s, &y);
+        run_port(&s, &y);
 
         cov[winon < 8 ? winon : 7]++;
 

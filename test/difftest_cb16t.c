@@ -31,7 +31,13 @@ static u1 vidbuf[VIDSZ];
 u2 fulladdtab[65537];
 
 void asm_clearback16t(void), asm_clearback16ts(void);
-void cur_clearback16t(void), cur_clearback16ts(void);
+
+/* The port's side. The trampolines that used to spill the registers into the
+   CB seam are gone - video/c_mv16tline.c does it at the call site now - so the
+   test does the same and drives the C bodies through the seam directly, while
+   the oracle still goes through dt_call with the registers loaded. */
+extern u4 CBAX, CBBX, CBCX, CBDX, CBSI, CBDI, CBBP;
+void c_clearback16t(void), c_clearback16ts(void);
 
 u4 rg_eax, rg_ebx, rg_ecx, rg_edx, rg_esi, rg_edi, rg_ebp, rg_fn;
 __asm__(".pushsection .text\n"
@@ -62,6 +68,35 @@ typedef struct {
     u4 ax, bx, cx, dx, si, di, bp;
     u1 vid[VIDSZ];
 } snapshot;
+
+/* Same shape as run(), but through the seam the C bodies read. */
+static void run_port(int const ts, u4 const* const in, u1 const* const vseed,
+    snapshot* const out)
+{
+    memcpy(vidbuf, vseed, VIDSZ);
+    CBAX = in[0];
+    CBBX = in[1];
+    CBCX = in[2];
+    CBDX = in[3];
+    CBSI = in[4];
+    CBDI = in[5];
+    CBBP = in[6];
+
+    if (ts) {
+        c_clearback16ts();
+    } else {
+        c_clearback16t();
+    }
+
+    out->ax = CBAX;
+    out->bx = CBBX;
+    out->cx = CBCX;
+    out->dx = CBDX;
+    out->si = CBSI;
+    out->di = CBDI;
+    out->bp = CBBP;
+    memcpy(out->vid, vidbuf, VIDSZ);
+}
 
 static void run(void (*fn)(void), u4 const* const in, u1 const* const vseed,
     snapshot* const out)
@@ -124,7 +159,7 @@ int main(void)
         }
 
         run(ts ? asm_clearback16ts : asm_clearback16t, in, vseed, &x);
-        run(ts ? cur_clearback16ts : cur_clearback16t, in, vseed, &y);
+        run_port(ts, in, vseed, &y);
 
         route = ts                                        ? 4
             : !(scaddtype & 0x20u)                        ? 0

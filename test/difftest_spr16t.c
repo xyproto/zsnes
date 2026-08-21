@@ -48,7 +48,9 @@ static SpriteInfo objtab[NSPR];
 static u1 pixels[NSPR][8];
 
 void asm_drawsprites16t(void);
-void cur_drawsprites16t(void);
+/* The port is C now (video/c_m716gate.c): it takes the registers in a
+   struct, so it is driven directly rather than through dt_call. */
+#include "../video/c_m716gate.h"
 
 u4 rg_eax, rg_ebx, rg_ecx, rg_edx, rg_esi, rg_edi, rg_ebp, rg_fn;
 __asm__(".pushsection .text\n"
@@ -83,6 +85,50 @@ typedef struct {
     u1 vid[VIDSZ];
     u1 tb[TBSZ];
 } snapshot;
+
+static void run_port(snapshot const* const in, snapshot* const out)
+{
+    m7regs r;
+
+    memcpy(vidbuf, in->vid, VIDSZ);
+    memcpy(transpbuf, in->tb, TBSZ);
+    memcpy(sprpriodata, in->prio, sizeof sprpriodata);
+    csprbit = in->bit;
+    csprprlft = in->left;
+    currentobjptr = objtab;
+    curvidoffset = vidbuf;
+    r.ax = in->reg[0];
+    r.bx = in->reg[1];
+    r.cx = in->reg[2];
+    r.dx = in->reg[3];
+    r.si = in->reg[4];
+    r.di = in->reg[5];
+    r.bp = in->reg[6];
+
+    drawsprites16t(&r);
+
+    rg_eax = r.ax;
+    rg_ebx = r.bx;
+    rg_ecx = r.cx;
+    rg_edx = r.dx;
+    rg_esi = r.si;
+    rg_edi = r.di;
+    rg_ebp = r.bp;
+
+    out->reg[0] = rg_eax;
+    out->reg[1] = rg_ebx;
+    out->reg[2] = rg_ecx;
+    out->reg[3] = rg_edx;
+    out->reg[4] = rg_esi;
+    out->reg[5] = rg_edi;
+    out->reg[6] = rg_ebp;
+    out->obj = (u4)(uintptr_t)currentobjptr - (u4)(uintptr_t)objtab;
+    out->bit = csprbit;
+    out->left = csprprlft;
+    memcpy(out->prio, sprpriodata, sizeof sprpriodata);
+    memcpy(out->vid, vidbuf, VIDSZ);
+    memcpy(out->tb, transpbuf, TBSZ);
+}
 
 static void run(void (*fn)(void), snapshot const* const in,
     snapshot* const out)
@@ -193,7 +239,7 @@ int main(void)
         in.reg[6] = dt_mod(4);
 
         run(asm_drawsprites16t, &in, &x);
-        run(cur_drawsprites16t, &in, &y);
+        run_port(&in, &y);
 
         win = (cwinenabm & 0x10u) && winonsp != 0;
         half = (scaddtype & 0x40u) && (scrnon >> 8) != 0

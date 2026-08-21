@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "../video/c_m716gate.h"
 #include "difftest.h"
 
 typedef uint8_t u1;
@@ -72,7 +73,13 @@ RENDERER(draw8x816tms, 15);
 RENDERER(draw16x1616tms, 16);
 RENDERER(drawsprites16t_stub, 17);
 RENDERER(drawsprites16bt_stub, 18);
-/* drawsprites16t and drawsprites16bt live inside makev16t.asm, so the oracle
+/* SPRTail is deliberately not compared: it is a port-era variable and the
+   pre-port assembly has no such thing - it makes the choice inline and jumps.
+   Which also means the sprite tail dispatch in video/c_mv16tline.c is a
+   transcription this test does not check; see the note below on why the sprite
+   renderers are never reached here.
+
+   drawsprites16t and drawsprites16bt live inside makev16t.asm, so the oracle
    has its own copies of them and they cannot be stubbed. The generator keeps
    the scanline's sprite count at zero on the paths that would reach them, so
    neither side runs real sprite code - which means those two tail choices are
@@ -191,9 +198,8 @@ static char const* const names[ROUTINES] = { "procmode716tsub",
    the stubs below. Without that rewrite a call between two routines in one
    file is a PC-relative displacement with no relocation, and nothing can
    intercept it. */
-#define DECL(n)         \
-    void cur_##n(void); \
-    void asm_##n(void)
+/* Only the oracle now: every gate on the port's side is C. */
+#define DECL(n) void asm_##n(void)
 DECL(procmode716tsub);
 DECL(procmode716tsubextbg);
 DECL(procmode716tsubextbgb);
@@ -211,13 +217,34 @@ DECL(drawbackgrndmain16t);
 DECL(drawbackgrndsub16tfix);
 DECL(drawbackgrndmain16tfix);
 
-static void (*const c_side[ROUTINES])(void) = { cur_procmode716tsub,
-    cur_procmode716tsubextbg, cur_procmode716tsubextbgb, cur_procmode716tsubextbg2,
-    cur_procmode716tmain, cur_procmode716tmainextbg, cur_procmode716tmainextbgb,
-    cur_procmode716tmainextbg2, cur_procspritessub16t, cur_procspritesmain16t,
-    cur_procspritessub16tfix, cur_procspritesmain16tfix,
-    cur_drawbackgrndsub16t, cur_drawbackgrndmain16t,
-    cur_drawbackgrndsub16tfix, cur_drawbackgrndmain16tfix };
+/* The first eight are C now (video/c_m716gate.c): they take the registers in a
+   struct and hand back the tail id instead of jumping, so the driver calls
+   them directly and then reaches the renderer itself. The renderers are the
+   same RENDERER stubs either way, entered with the same seven registers, so
+   the comparison below is unchanged. The other eight are still assembly. */
+#define GATES 16u
+static u4 (*const port_gate[GATES])(m7regs*) = { procmode716tsub,
+    procmode716tsubextbg, procmode716tsubextbgb, procmode716tsubextbg2,
+    procmode716tmain, procmode716tmainextbg, procmode716tmainextbgb,
+    procmode716tmainextbg2, procspritessub16t, procspritesmain16t,
+    procspritessub16tfix, procspritesmain16tfix, drawbackgrndsub16t,
+    drawbackgrndmain16t, drawbackgrndsub16tfix, drawbackgrndmain16tfix };
+/* RENDERER emits the symbol in assembly, so C needs telling it exists. */
+void drawmode716t(void), drawmode716b(void), drawmode716tb(void);
+void drawmode716extbg(void), drawmode716textbg(void);
+void drawmode716extbg2(void), drawmode716textbg2(void);
+void drawsprites16t_stub(void), drawsprites16bt_stub(void);
+void draw8x816t_stub(void), draw16x1616t_stub(void), draw8x816bt_stub(void);
+void draw16x1616bt_stub(void), draw8x816tms(void), draw16x1616tms(void);
+static void (*const bg_renderer[])(void) = { 0, draw8x816t_stub,
+    draw16x1616t_stub, draw8x816bt_stub, draw16x1616bt_stub, draw8x816tms,
+    draw16x1616tms };
+
+static void (*const m7_renderer[])(void) = { 0, drawmode716t, drawmode716b,
+    drawmode716tb, drawmode716extbg, drawmode716textbg, drawmode716extbg2,
+    drawmode716textbg2 };
+
+/* Every gate is C now; c_side is gone with them. */
 static void (*const a_side[ROUTINES])(void) = { asm_procmode716tsub,
     asm_procmode716tsubextbg, asm_procmode716tsubextbgb,
     asm_procmode716tsubextbg2, asm_procmode716tmain,
@@ -242,8 +269,7 @@ typedef struct {
 static u1* sprloc0;
 static u1 adrawn0, drawn0;
 
-static void run(void (*fn)(void), u4 const* const in, u1 const done0,
-    snapshot* const out)
+static void reset(u4 const* const in, u1 const done0)
 {
     rn_which = rn_eax = rn_ebx = rn_ecx = rn_edx = rn_esi = rn_edi = rn_ebp = 0;
     mw_calls = mw_al = mw_layer = 0;
@@ -266,13 +292,82 @@ static void run(void (*fn)(void), u4 const* const in, u1 const done0,
     rg_esi = in[4];
     rg_edi = in[5];
     rg_ebp = in[6];
+}
+
+static void snap(snapshot* const out);
+
+static void run(void (*fn)(void), u4 const* const in, u1 const done0,
+    snapshot* const out)
+{
+    reset(in, done0);
     if (fn == 0) { /* a short initialiser list left a hole here once */
         fprintf(stderr, "difftest: routine table has a hole\n");
         exit(1);
     }
     rg_fn = (u4)(uintptr_t)fn;
     dt_call();
+    snap(out);
+}
 
+/* The ported gates: same reset, but they take the registers as a struct and
+   return the tail id, so the renderer is reached from here. */
+static void run_port(u4 const idx, u4 const* const in, u1 const done0,
+    snapshot* const out)
+{
+    m7regs r;
+    u4 tail;
+
+    reset(in, done0);
+    r.ax = in[0];
+    r.bx = in[1];
+    r.cx = in[2];
+    r.dx = in[3];
+    r.si = in[4];
+    r.di = in[5];
+    r.bp = in[6];
+
+    tail = port_gate[idx](&r);
+
+    rg_eax = r.ax;
+    rg_ebx = r.bx;
+    rg_ecx = r.cx;
+    rg_edx = r.dx;
+    rg_esi = r.si;
+    rg_edi = r.di;
+    rg_ebp = r.bp;
+    if (idx >= 12u) { /* background: call the renderer, then the second half */
+        if (tail != 0) {
+            if (tail <= 6u) {
+                rg_fn = (u4)(uintptr_t)bg_renderer[tail];
+                dt_call();
+            }
+            r.ax = rg_eax;
+            r.bx = rg_ebx;
+            r.cx = rg_ecx;
+            r.dx = rg_edx;
+            r.si = rg_esi;
+            r.di = rg_edi;
+            r.bp = rg_ebp;
+            drawbackgrnd_mark(&r);
+            rg_eax = r.ax;
+            rg_ebx = r.bx;
+            rg_ecx = r.cx;
+            rg_edx = r.dx;
+            rg_esi = r.si;
+            rg_edi = r.di;
+            rg_ebp = r.bp;
+        }
+    } else if (tail != 0) {
+        rg_fn = (u4)(uintptr_t)(idx < 8u
+                ? m7_renderer[tail]
+                : (tail == 1u ? drawsprites16t_stub : drawsprites16bt_stub));
+        dt_call();
+    }
+    snap(out);
+}
+
+static void snap(snapshot* const out)
+{
     out->which = rn_which ? rn_which : bgb_which;
     out->eax = rn_eax;
     out->ebx = rn_ebx;
@@ -383,7 +478,7 @@ int main(void)
         }
 
         run(a_side[r], in, done0, &x);
-        run(c_side[r], in, done0, &y);
+        run_port(r, in, done0, &y);
         cov[r][x.which < 24 ? x.which : 0]++;
         if (x.dscalls) {
             drew[r]++;
