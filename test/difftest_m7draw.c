@@ -1,5 +1,6 @@
-/* Differential test: drawmode7win16b / drawmode7ngextbg16b in video/mode716.asm
- * against the C port in video/c_mode716draw.c.
+/* Differential test: drawmode7win16b / drawmode7ngextbg16b, as video/mode716.asm
+ * had them, against the C port in video/c_mode716draw.c and the seam around it
+ * in video/c_mode716gate.c.
  *
  * The top of the Mode 7 renderer: the transparency test, the writer-selection
  * tree over the main/sub window tables, the four Mode7*Sub wrappers, and the
@@ -14,12 +15,13 @@
  * deliberately passes different ones (see difftest_m7bw.c, which pins that),
  * and letting it through would swamp everything else.
  *
- * domosaicng16b is stubbed as a recorder, since the assembly tail-jumps to it
- * rather than returning. */
+ * domosaicng16b is stubbed as a recorder on both sides: the oracle tail-jumps
+ * to it, and the ported seam in video/c_mode716gate.c calls it. */
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 
+#include "../video/c_mode716gate.h"
 #include "difftest.h"
 
 typedef uint8_t u1;
@@ -100,9 +102,15 @@ void BuildWindow(u4, u4);
 extern u4 asm_mosaic, asm_regs[7]; /* _m7draw.o */
 void asm_m7draw0(void), asm_m7draw1(void);
 
-extern u4 M7DrawAX, M7DrawDX, M7DrawBX, M7DrawSI, M7DrawDI, M7DrawBP;
-extern u4 M7DrawMosaic;
 extern u4 M7PAX, M7PBX, M7PCX, M7PDX, M7PSI, M7PDI;
+
+/* The mosaic recorder the seam reaches, and the M7Seam half of that file,
+   which nothing here drives. */
+u4 MOSAX, MOSBX, MOSCX, MOSDX, MOSSI, MOSDI, MOSBP;
+u4 M7SeamA, M7SeamB, M7SeamC, M7SeamD, M7SeamSI, M7SeamDI, M7SeamBP;
+void c_domosaicng16b(void) { asm_mosaic = 1; }
+void c_processmode7hires16b(void) { }
+void c_drawmode7ngextbg216b(void) { }
 void c_drawmode7win16b(void);
 void c_drawmode7ngextbg16b(void);
 
@@ -179,28 +187,36 @@ static void run(int const asm_side, int const which, u4 const ax, u4 const dx,
         asm_mosaic = 0;
         which ? asm_m7draw1() : asm_m7draw0();
     } else {
-        M7DrawAX = ax;
-        M7DrawBX = bx;
-        M7DrawDX = dx;
-        M7DrawSI = (u4)(uintptr_t)vbuf;
-        M7DrawDI = 0xD1D1D1D1u;
-        M7DrawBP = (u4)(uintptr_t)pal;
+        m7regs r;
+
+        r.ax = ax;
+        r.bx = bx;
+        r.cx = 0xC0000000u;
+        r.dx = dx;
+        r.si = (u4)(uintptr_t)vbuf;
+        r.di = 0xD1D1D1D1u;
+        r.bp = (u4)(uintptr_t)pal;
+        /* The seam's tail hands back M7P*, which a body that returns early
+           never writes; start them at the registers it was entered with. */
         M7PAX = ax;
         M7PBX = bx;
         M7PCX = 0xC0000000u;
         M7PDX = dx;
         M7PSI = (u4)(uintptr_t)vbuf;
         M7PDI = 0xD1D1D1D1u;
-        which ? c_drawmode7ngextbg16b() : c_drawmode7win16b();
-        /* The thunk's tail, which stayed in assembly. */
-        asm_regs[0] = 0;
-        asm_regs[1] = M7PBX;
-        asm_regs[2] = M7PCX;
-        asm_regs[3] = (M7PDX & ~0xFF00u) | ((u4)curmosaicsz << 8);
-        asm_regs[4] = M7PSI;
-        asm_regs[5] = M7PDI;
-        asm_regs[6] = M7DrawBP;
-        asm_mosaic = M7DrawMosaic != 0;
+        asm_mosaic = 0;
+        if (which) {
+            drawmode7ngextbg16b(&r);
+        } else {
+            drawmode7win16b(&r);
+        }
+        asm_regs[0] = (u4)r.ax;
+        asm_regs[1] = (u4)r.bx;
+        asm_regs[2] = (u4)r.cx;
+        asm_regs[3] = (u4)r.dx;
+        asm_regs[4] = (u4)r.si;
+        asm_regs[5] = (u4)r.di;
+        asm_regs[6] = (u4)r.bp;
         if (scrndis & 1u) {
             /* The assembly returns before the tail on this path. */
             asm_regs[0] = ax;

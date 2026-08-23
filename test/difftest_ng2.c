@@ -5,13 +5,20 @@
  * thing that can verify them. See test/ng2_harness.h for the calling sequence
  * and the state they need.
  *
- * KNOWN DEFECT (2026-08-18): comparing identical code against itself reports
- * six of the twenty routines - exactly the tile drawers - as differing, and
- * does so reproducibly, with or without ASLR, with a private draw buffer, and
- * with the same symbol called both times. Until that is explained this harness
- * cannot certify anything; treat every result from it as unverified. The
- * control to re-run is: `git stash` video/newg162.asm so both oracles are the
- * same assembly, and check for 20/20.
+ * FIXED (2026-08-22), was: comparing identical code against itself reported six
+ * of the twenty routines - exactly the tile drawers - as differing. NG2_CALL
+ * saved and restored %ebp but never loaded NG2_EBP into it, so those six read
+ * their palette through [ebp+ebx*2] with ebp still holding the harness's own
+ * frame pointer. That address differs between the asm_ and cur_ call sites, so
+ * the two runs read different stack bytes as colours - reproducibly, and only
+ * in the routines that dereference ebp, which is why it looked like a property
+ * of the tile drawers. The line drawers load ebp themselves before using it.
+ *
+ * Keep the control: point both oracles at the same assembly (check out the
+ * pre-port revision of video/newg162.asm over the worktree copy, run, then
+ * restore) and confirm 20/20 before trusting a real comparison. Watch the
+ * `leaf hits` line too - all zeros means no ported C ran and the 20/20 is only
+ * the harness checking itself.
  *
  * Compares the pre-port assembly (asm_) against the current worktree (cur_),
  * which routes whichever leaves have been ported through C. A routine with no
@@ -93,8 +100,25 @@ static u1* out_b;
 static u4* hits_shared;
 static u1 winbuf[8192];
 
+/* The window tables are mostly-zero in practice, and the gate branches on a
+   byte being zero: filled with uniform random bytes, "no window here" comes up
+   one time in 256, and the main-only and sub-only leaves are never reached at
+   all. Half and half gets all four branches. */
+static void fill_win(void)
+{
+    for (size_t k = 0; k < sizeof winbuf; k++)
+        winbuf[k] = (u1)(dt_mod(2) ? 0 : (dt_mod(255) + 1));
+}
+
 extern u1 ng2_vram[];
 extern u4 ng2_leafhits[4];
+extern u4 ng2_winhits[8];
+extern u4 ng2_bighits[4];
+extern u4 ng2_bigwinhits[8];
+extern u4 ng2_linehits[4];
+extern u4 ng2_linewinhits[8];
+extern u4 ng2_line16hits[4];
+extern u4 ng2_line16winhits[8];
 extern u1 ng2_src2[], ng2_src4[], ng2_src8[];
 extern u1 ng2_palette[];
 /* tltype* selects full tile / partial tile / skip. The tile cache fills it,
@@ -114,7 +138,7 @@ static void setup_gated(u4 sel)
     dt_fill(BGMS1, 512);
     dt_fill(FillSubScr, 256);
     dt_fill(scadtng, 256);
-    dt_fill(winbuf, sizeof winbuf);
+    fill_win();
     curmosaicsz = (u1)((sel & 1u) ? 1 : 2);
     BGMS1[2] = (u1)((BGMS1[2] & ~1u) | ((sel >> 1) & 1u));
     BGMS1[3] = (u1)((BGMS1[3] & ~1u) | ((sel >> 2) & 1u));
@@ -123,7 +147,12 @@ static void setup_gated(u4 sel)
     ngwinen = (u1)((sel >> 5) & 1u);
     for (u4 k = 0; k < 64; k++)
         ngwintable[k] = dt_mod(2) ? 0 : (dt_mod(200) + 1);
-    CMainWinScr = CSubWinScr = 0;
+    /* Two distinct tables, as the emulator has. Pointing both at the same
+       byte makes c_determinewindow's second probe re-read its first, so it can
+       only ever answer "both windows" and the main-only and sub-only leaves
+       are unreachable - they showed zero hits until this split. */
+    CMainWinScr = 0;
+    CSubWinScr = 4096;
 }
 
 static void setup(void)
@@ -134,11 +163,16 @@ static void setup(void)
     ngwinen = (u1)dt_mod(2);
     for (u4 k = 0; k < 64; k++)
         ngwintable[k] = dt_mod(2) ? 0 : (dt_mod(200) + 1);
-    CMainWinScr = CSubWinScr = 0;
+    /* Two distinct tables, as the emulator has. Pointing both at the same
+       byte makes c_determinewindow's second probe re-read its first, so it can
+       only ever answer "both windows" and the main-only and sub-only leaves
+       are unreachable - they showed zero hits until this split. */
+    CMainWinScr = 0;
+    CSubWinScr = 4096;
     dt_fill(BGMS1, 512);
     dt_fill(FillSubScr, 256);
     dt_fill(scadtng, 256);
-    dt_fill(winbuf, sizeof winbuf);
+    fill_win();
 }
 
 static void call_drawtileng2b16b(void) { NG2_CALL(asm_drawtileng2b16b); }
@@ -262,7 +296,11 @@ int main(void)
         pid_t const pid = fork();
         int status = 0;
         if (pid == 0) {
-            for (int it = 0; it < 256; it++) {
+            /* 1024, not 256: setup_gated cycles 32 gating combinations, and
+               the windowed leaves below them need enough repeats of each to
+               land on all three DetermineWindow answers. At 256 two of the
+               eight came up empty from run to run. */
+            for (int it = 0; it < 1024; it++) {
                 dt_fill(ng2_vram, 4096);
                 /* the raw tile bitmaps the cache decodes from */
                 dt_fill(ng2_src2, 65536);
@@ -289,11 +327,46 @@ int main(void)
                         run(k ? routines[i].curthunk : routines[i].thunk, out_a);
                         for (int q = 0; q < 4; q++)
                             hits_shared[q] += ng2_leafhits[q];
+                        for (int q = 0; q < 8; q++)
+                            hits_shared[9 + q] += ng2_winhits[q];
+                        for (int q = 0; q < 4; q++)
+                            hits_shared[17 + q] += ng2_bighits[q];
+                        for (int q = 0; q < 8; q++)
+                            hits_shared[21 + q] += ng2_bigwinhits[q];
+                        for (int q = 0; q < 4; q++)
+                            hits_shared[30 + q] += ng2_linehits[q];
+                        for (int q = 0; q < 8; q++)
+                            hits_shared[34 + q] += ng2_linewinhits[q];
+                        for (int q = 0; q < 4; q++)
+                            hits_shared[42 + q] += ng2_line16hits[q];
+                        for (int q = 0; q < 8; q++)
+                            hits_shared[46 + q] += ng2_line16winhits[q];
+                        if (k == 0) {
+                            /* How much of the line the routine actually
+                               painted. Zero means the harness never got it
+                               drawing, and comparing it against itself proves
+                               nothing - see the leaf-hit note above. */
+                            u4 painted = 0, q;
+                            for (q = 0; q < OUTSZ; q++)
+                                if (out_a[q] != 0xAAu)
+                                    painted++;
+                            if (painted > hits_shared[29])
+                                hits_shared[29] = painted;
+                        }
+                        hits_shared[6 + k] = ng2_mosaic_hits;
+                        hits_shared[8] += ng2_mosaic_hits;
                         _exit(0);
                     }
                     waitpid(c, NULL, 0);
                     if (k == 0)
                         memcpy(out_b, out_a, OUTSZ);
+                }
+                /* The mosaic tail writes nothing here, so an unequal count
+                   is a divergence the buffers cannot show. */
+                if (hits_shared[6] != hits_shared[7]) {
+                    hits_shared[4] = 0;
+                    hits_shared[5] = (u4)it;
+                    _exit(3);
                 }
                 if (memcmp(out_a, out_b, OUTSZ)) {
                     u4 o = 0;
@@ -314,14 +387,43 @@ int main(void)
         } else if (WEXITSTATUS(status) == 2) {
             printf("  %-18s DIFFERS from the assembly\n", routines[i].name);
             bad++;
+        } else if (WEXITSTATUS(status) == 3) {
+            printf("  %-18s DIFFERS: mosaic tail taken %u vs %u times\n",
+                routines[i].name, hits_shared[6], hits_shared[7]);
+            bad++;
         } else {
-            printf("  %-18s asm == worktree\n", routines[i].name);
+            printf("  %-18s asm == worktree (max %u bytes painted)\n",
+                routines[i].name, hits_shared[29]);
         }
+        hits_shared[29] = 0;
     }
     printf("  first diff at byte %u (SUB is %u), iteration %u\n",
         hits_shared[4], (unsigned)SUB_OFF, hits_shared[5]);
-    printf("  leaf hits: nt=%u t=%u mst=%u msnt=%u\n", hits_shared[0],
-        hits_shared[1], hits_shared[2], hits_shared[3]);
+    printf("  leaf hits: nt=%u t=%u mst=%u msnt=%u; mosaic tail %u\n",
+        hits_shared[0], hits_shared[1], hits_shared[2], hits_shared[3],
+        hits_shared[8]);
+    printf("  windowed leaf hits: win=%u wint=%u mstmsw=%u msntmsw=%u "
+           "mstmw=%u mstsw=%u msntmw=%u msntsw=%u\n",
+        hits_shared[9], hits_shared[10], hits_shared[11], hits_shared[12],
+        hits_shared[13], hits_shared[14], hits_shared[15], hits_shared[16]);
+    printf("  16x16 leaf hits: nt=%u t=%u mst=%u msnt=%u\n", hits_shared[17],
+        hits_shared[18], hits_shared[19], hits_shared[20]);
+    printf("  16x16 windowed hits: win=%u wint=%u mstmsw=%u msntmsw=%u "
+           "mstmw=%u mstsw=%u msntmw=%u msntsw=%u\n",
+        hits_shared[21], hits_shared[22], hits_shared[23], hits_shared[24],
+        hits_shared[25], hits_shared[26], hits_shared[27], hits_shared[28]);
+    printf("  line leaf hits: nt=%u t=%u mst=%u msnt=%u\n", hits_shared[30],
+        hits_shared[31], hits_shared[32], hits_shared[33]);
+    printf("  line windowed hits: win=%u wint=%u mstmsw=%u msntmsw=%u "
+           "mstmw=%u mstsw=%u msntmw=%u msntsw=%u\n",
+        hits_shared[34], hits_shared[35], hits_shared[36], hits_shared[37],
+        hits_shared[38], hits_shared[39], hits_shared[40], hits_shared[41]);
+    printf("  16x16 line hits: nt=%u t=%u mst=%u msnt=%u\n", hits_shared[42],
+        hits_shared[43], hits_shared[44], hits_shared[45]);
+    printf("  16x16 line windowed: win=%u wint=%u mstmsw=%u msntmsw=%u "
+           "mstmw=%u mstsw=%u msntmw=%u msntsw=%u\n",
+        hits_shared[46], hits_shared[47], hits_shared[48], hits_shared[49],
+        hits_shared[50], hits_shared[51], hits_shared[52], hits_shared[53]);
     printf("newg162: %zu/%zu routines match the assembly\n",
         sizeof routines / sizeof routines[0] - (size_t)bad,
         sizeof routines / sizeof routines[0]);

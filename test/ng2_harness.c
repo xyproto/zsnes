@@ -54,8 +54,15 @@ extern u4 tleftnb;
 static u1 ofsbuf[1 << 18];
 
 /* The mosaic pass is a separate routine the line drawers tail-jump to; the
-   oracle only has it as a stub. A bare ret matches its real exit. */
-__asm__(".text\n.globl domosaicng16b\ndomosaicng16b: ret\n");
+   oracle only has it as a stub. A bare ret matches its real exit.
+
+   It counts, though: the windowed loop takes this exit only when every tile on
+   the line was clipped away, so a port that gets that condition wrong writes
+   an identical buffer and would otherwise pass. Recording the hit is what
+   makes the tail-jump itself observable. */
+u4 ng2_mosaic_hits;
+__asm__(".text\n.globl domosaicng16b\n"
+        "domosaicng16b: incl ng2_mosaic_hits\n    ret\n");
 
 void ng2_reset(void)
 {
@@ -72,6 +79,7 @@ void ng2_reset(void)
     ngcpixleft = 0;
     tleftn = 0;
     tleftnb = 0;
+    ng2_mosaic_hits = 0;
 }
 
 void ng2_init(void)

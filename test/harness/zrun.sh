@@ -36,11 +36,15 @@ RUNHOME=$OUT/home
 mkdir -p "$RUNHOME"
 
 # Run on a throwaway X server so the emulator window does not pop up over
-# whatever the user is doing. Falls back to the real display if Xvfb is absent.
+# whatever the user is doing. Without Xvfb, fall back to SDL's dummy video
+# driver - on a headless box the real display is not there at all, and SDL_Init
+# fails before a single frame is logged.
 if command -v xvfb-run >/dev/null 2>&1; then
   XVFB=(xvfb-run -a -s "-screen 0 640x480x24")
 else
   XVFB=()
+  export SDL_VIDEODRIVER=${SDL_VIDEODRIVER:-dummy}
+  export SDL_AUDIODRIVER=${SDL_AUDIODRIVER:-dummy}
 fi
 
 env HOME="$RUNHOME" PPU_STATE_LOG=1 \

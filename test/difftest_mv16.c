@@ -17,6 +17,11 @@ typedef uint16_t u2;
 typedef uint32_t u4;
 
 u1 temp, bshifter, curmosaicsz;
+/* The 16x16 prologue in the same file wants these; only the 8x8 one runs
+   here, so plain globals are enough - see difftest_mvall.c for the layout
+   that one depends on. */
+u1 a16x16xinc, a16x16yinc, drawn, curypos;
+u2 yadd, yflipadd;
 u4 yadder, yrevadder, tempcach, temptile, bgsubby, bgofwptr;
 u1 *cwinptr, *winptrref, *curvidoffset;
 u1 *vcache2b, *vcache4b, *vcache8b;

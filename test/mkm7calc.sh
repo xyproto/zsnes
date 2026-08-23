@@ -108,6 +108,9 @@ NEWSYM asm_m7call
 
 ; The renderer, stubbed. Logs the registers, curvidoffset and M7HROn as it was
 ; reached with them, then clobbers every register the way a real one would.
+; The name is taken by the C port's seam, which the C side of the test calls
+; instead; this define renames the oracle's call as well as the stub itself.
+%define drawmode7win16b asm_drawmode7win16b
 SECTION .bss
 NEWSYM DrawHits, resd 1
 NEWSYM DrawRegs, resd 7

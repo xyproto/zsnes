@@ -140,7 +140,7 @@ mvall: difftest_mvall.c difftest.h ../video/c_mv16tsms.c ../video/c_mv16tms.c \
 	    --define draw16x816t=draw16x816t_stub
 	$(CC) $(CFLAGS) difftest_mvall.c ../video/c_mv16tsms.c ../video/c_mv16tms.c \
 	    ../video/c_mv16msgate.c \
-	    ../video/mv16tms.o _mvall.o -no-pie -o difftest_mvall
+	    _mvall.o -no-pie -o difftest_mvall
 	@./difftest_mvall
 
 # Routines that are only reachable by a PC-relative call from inside the file,
@@ -167,12 +167,18 @@ M16T_SEAM := ../video/c_m716gate.c ../video/c_mv16tm7.c ../video/c_mv16tclr.c \
              ../video/c_mv16t8bt.c ../video/c_mv16t16bt.c \
              ../video/c_mv16t8t.c ../video/c_mv16t16t.c \
              ../video/c_mv16t8to.c ../video/c_mv16thi.c m16t_extra.c
+# makev16t.asm no longer contains a single `call c_`, so mkoracle's default
+# "newest revision without the port marker" lands on the finished file. Pin it
+# with a routine the port removed for good: the newest revision that still
+# defines draw16x816t and has no thunks is the last fully original one.
+M16T_ORIG := --requires 'NEWSYM draw16x816t'
+
 M16T_OBJS := ../cpu/c_regsdata.o ../cpu/c_regswdata.o \
              ../video/c_mode716data.o ../video/makevid.o ../endmem.o
 M16T_BSS  := ../video/c_makev16tdata.o
 
 m716t: difftest_m716t.c difftest.h $(M16T_SEAM)
-	python3 ../tools/mkoracle.py video/makev16t.asm -o _m716t.o \
+	python3 ../tools/mkoracle.py video/makev16t.asm -o _m716t.o $(M16T_ORIG) \
 	    --stub-routine $(M716T_STUBBED) \
 	    --stubs _m716t_stubs.c --provided-by $(M16T_OBJS) \
 	    --exclude vram $(M716T_TAILS)
@@ -182,7 +188,7 @@ m716t: difftest_m716t.c difftest.h $(M16T_SEAM)
 	@./difftest_m716t
 
 cb16t: difftest_cb16t.c difftest.h $(M16T_SEAM)
-	python3 ../tools/mkoracle.py video/makev16t.asm -o _cb16t.o \
+	python3 ../tools/mkoracle.py video/makev16t.asm -o _cb16t.o $(M16T_ORIG) \
 	    --stubs _cb16t_stubs.c --provided-by $(M16T_OBJS) \
 	    --exclude vram transpbuf fulladdtab
 	$(CC) $(CFLAGS) difftest_cb16t.c $(M16T_SEAM) \
@@ -191,7 +197,7 @@ cb16t: difftest_cb16t.c difftest.h $(M16T_SEAM)
 	@./difftest_cb16t
 
 cb16b: difftest_cb16b.c difftest.h $(M16T_SEAM)
-	python3 ../tools/mkoracle.py video/makev16t.asm -o _cb16b.o \
+	python3 ../tools/mkoracle.py video/makev16t.asm -o _cb16b.o $(M16T_ORIG) \
 	    --stubs _cb16b_stubs.c --provided-by $(M16T_OBJS) $(M16T_BSS) \
 	    --exclude vram
 	$(CC) $(CFLAGS) difftest_cb16b.c $(M16T_SEAM) \
@@ -200,7 +206,7 @@ cb16b: difftest_cb16b.c difftest.h $(M16T_SEAM)
 	@./difftest_cb16b
 
 spr16bt: difftest_spr16bt.c difftest.h $(M16T_SEAM)
-	python3 ../tools/mkoracle.py video/makev16t.asm -o _spr.o \
+	python3 ../tools/mkoracle.py video/makev16t.asm -o _spr.o $(M16T_ORIG) \
 	    --stubs _spr_stubs.c --provided-by $(M16T_OBJS) $(M16T_BSS) \
 	    --exclude vram
 	$(CC) $(CFLAGS) difftest_spr16bt.c $(M16T_SEAM) \
@@ -209,7 +215,7 @@ spr16bt: difftest_spr16bt.c difftest.h $(M16T_SEAM)
 	@./difftest_spr16bt
 
 spr16t: difftest_spr16t.c difftest.h $(M16T_SEAM)
-	python3 ../tools/mkoracle.py video/makev16t.asm -o _spt.o \
+	python3 ../tools/mkoracle.py video/makev16t.asm -o _spt.o $(M16T_ORIG) \
 	    --stubs _spt_stubs.c --provided-by $(M16T_OBJS) $(M16T_BSS) \
 	    --exclude vram fulladdtab
 	$(CC) $(CFLAGS) difftest_spr16t.c $(M16T_SEAM) \
@@ -218,7 +224,7 @@ spr16t: difftest_spr16t.c difftest.h $(M16T_SEAM)
 	@./difftest_spr16t
 
 spr16p: difftest_spr16p.c difftest.h $(M16T_SEAM)
-	python3 ../tools/mkoracle.py video/makev16t.asm -o _spp.o \
+	python3 ../tools/mkoracle.py video/makev16t.asm -o _spp.o $(M16T_ORIG) \
 	    --stubs _spp_stubs.c --provided-by $(M16T_OBJS) $(M16T_BSS) \
 	    --exclude vram fulladdtab
 	$(CC) $(CFLAGS) difftest_spr16p.c $(M16T_SEAM) \
@@ -227,7 +233,7 @@ spr16p: difftest_spr16p.c difftest.h $(M16T_SEAM)
 	@./difftest_spr16p
 
 t8bt: difftest_t8bt.c difftest.h $(M16T_SEAM) ../video/c_mv16draw.c
-	python3 ../tools/mkoracle.py video/makev16t.asm -o _t8bt.o \
+	python3 ../tools/mkoracle.py video/makev16t.asm -o _t8bt.o $(M16T_ORIG) \
 	    --stub-routine draw16x816t \
 	    --stubs _t8bt_stubs.c --provided-by $(M16T_OBJS) $(M16T_BSS) \
 	    --exclude vram domosaic16b draw8x816boffset draw16x816t_stub \
@@ -238,7 +244,7 @@ t8bt: difftest_t8bt.c difftest.h $(M16T_SEAM) ../video/c_mv16draw.c
 	@./difftest_t8bt
 
 t16bt: difftest_t16bt.c difftest.h $(M16T_SEAM)
-	python3 ../tools/mkoracle.py video/makev16t.asm -o _t16bt.o \
+	python3 ../tools/mkoracle.py video/makev16t.asm -o _t16bt.o $(M16T_ORIG) \
 	    --stubs _t16bt_stubs.c --provided-by $(M16T_OBJS) $(M16T_BSS) \
 	    --exclude vram domosaic16b xtravbuf transpbuf \
 	    vcache2b vcache4b vcache8b
@@ -250,7 +256,7 @@ t16bt: difftest_t16bt.c difftest.h $(M16T_SEAM)
 # c_mv16draw.c but not c_mv16leaf.c: the test defines draw16x816t and
 # draw8x816toffset itself, to see which way the dispatch went.
 t8t: difftest_t8t.c difftest.h $(M16T_SEAM) ../video/c_mv16draw.c
-	python3 ../tools/mkoracle.py video/makev16t.asm -o _t8t.o \
+	python3 ../tools/mkoracle.py video/makev16t.asm -o _t8t.o $(M16T_ORIG) \
 	    --stub-routine draw16x816t draw8x816toffset \
 	    --stubs _t8t_stubs.c --provided-by $(M16T_OBJS) $(M16T_BSS) \
 	    --exclude vram domosaic16b draw16x816t_stub draw8x816toffset_stub \
@@ -261,7 +267,7 @@ t8t: difftest_t8t.c difftest.h $(M16T_SEAM) ../video/c_mv16draw.c
 	@./difftest_t8t
 
 t16t: difftest_t16t.c difftest.h $(M16T_SEAM)
-	python3 ../tools/mkoracle.py video/makev16t.asm -o _t16t.o \
+	python3 ../tools/mkoracle.py video/makev16t.asm -o _t16t.o $(M16T_ORIG) \
 	    --stubs _t16t_stubs.c --provided-by $(M16T_OBJS) $(M16T_BSS) \
 	    --exclude vram domosaic16b fulladdtab xtravbuf transpbuf \
 	    vcache2b vcache4b vcache8b
@@ -271,7 +277,7 @@ t16t: difftest_t16t.c difftest.h $(M16T_SEAM)
 	@./difftest_t16t
 
 t8to: difftest_t8to.c difftest.h $(M16T_SEAM) ../video/c_mv16leaf.c
-	python3 ../tools/mkoracle.py video/makev16t.asm -o _t8to.o \
+	python3 ../tools/mkoracle.py video/makev16t.asm -o _t8to.o $(M16T_ORIG) \
 	    --stubs _t8to_stubs.c --provided-by $(M16T_OBJS) $(M16T_BSS) \
 	    --exclude vram domosaic16b cachesingle4bng fulladdtab xtravbuf transpbuf \
 	    vcache2b vcache4b vcache8b
@@ -281,7 +287,7 @@ t8to: difftest_t8to.c difftest.h $(M16T_SEAM) ../video/c_mv16leaf.c
 	@./difftest_t8to
 
 thi: difftest_thi.c difftest.h $(M16T_SEAM) ../video/c_mv16leaf.c
-	python3 ../tools/mkoracle.py video/makev16t.asm -o _thi.o \
+	python3 ../tools/mkoracle.py video/makev16t.asm -o _thi.o $(M16T_ORIG) \
 	    --stubs _thi_stubs.c --provided-by $(M16T_OBJS) $(M16T_BSS) \
 	    --exclude vram domosaic16b fulladdtab xtravbuf transpbuf \
 	    vcache2b vcache4b vcache8b
@@ -293,7 +299,7 @@ thi: difftest_thi.c difftest.h $(M16T_SEAM) ../video/c_mv16leaf.c
 # newgfx16.asm - the *new* graphics engine, the one that runs by default.
 NG_OBJS := ../endmem.o ../video/c_newgfx16data.o ../video/newgfx.o \
            ../video/makevid.o ../cpu/c_regsdata.o ../cpu/c_regswdata.o \
-           ../video/c_ngtransp.o ../video/c_ng2gate.o _ngtransp_extra.c
+           ../video/c_ngtransp.o ../video/c_ng2gate.o ngtransp_extra.c
 
 # Every newgfx16 difftest links a cur_ object built from the whole worktree
 # file, so it needs all of that file's C entry points - the same rule as
@@ -324,7 +330,7 @@ ngspr: difftest_ngspr.c difftest.h ../video/c_ngspr.c
 # and a --requires naming the label instead. That picks the last revision where
 # the body was still assembly, which is what an oracle has to be.
 procwin: difftest_procwin.c difftest.h ../video/c_procwin.c
-	python3 ../tools/mkoracle.py video/makev16t.asm -o _procwin.o \
+	python3 ../tools/mkoracle.py video/makev16t.asm -o _procwin.o $(M16T_ORIG) \
 	    --requires 'NEWSYM procwindowback16t' --ported-marker '' \
 	    --stubs _procwin_stubs.c \
 	    --exclude winon numwin windowdata wincolen scaddset \
@@ -349,9 +355,10 @@ mv16: difftest_mv16.c difftest.h mkmv16.sh ../video/c_mv16tms.c
 	$(CC) $(CFLAGS) difftest_mv16.c ../video/c_mv16tms.c _mv16.o -no-pie -o difftest_mv16
 	@./difftest_mv16
 
-m7draw: difftest_m7draw.c difftest.h mkm7draw.sh ../video/c_mode716draw.c
+m7draw: difftest_m7draw.c difftest.h mkm7draw.sh ../video/c_mode716draw.c \
+       ../video/c_mode716gate.c
 	./mkm7draw.sh
-	$(CC) $(CFLAGS) difftest_m7draw.c ../video/c_mode716draw.c ../video/c_mode716proc.c ../video/c_mode716win.c ../video/c_mode716bw.c ../video/c_mode716start.c _m7draw.o -no-pie -o difftest_m7draw
+	$(CC) $(CFLAGS) difftest_m7draw.c ../video/c_mode716draw.c ../video/c_mode716gate.c ../video/c_mode716proc.c ../video/c_mode716win.c ../video/c_mode716bw.c ../video/c_mode716start.c _m7draw.o -no-pie -o difftest_m7draw
 	@./difftest_m7draw
 
 m7proc: difftest_m7proc.c difftest.h mkm7proc.sh ../video/c_mode716proc.c

@@ -41,7 +41,10 @@ extern unsigned int NG2_EAX, NG2_EBX, NG2_ECX, NG2_EDX, NG2_EDI, NG2_ESI,
                      "movl NG2_ECX, %%ecx\n\t"                                                         \
                      "movl NG2_EAX, %%eax\n\t"                                                         \
                      "movl NG2_EBX, %%ebx\n\t"                                                         \
-                     "movl NG2_EDX, %%edx\n\t" /* Two exits with different stack contracts: a drawer   \
+                     "movl NG2_EDX, %%edx\n\t" /* ebp is loaded last: it is this function's frame      \
+                                                  pointer, so nothing ebp-relative may follow. The     \
+                                                  pushl above saves it and 1: puts it back. */         \
+                     "movl NG2_EBP, %%ebp\n\t" /* Two exits with different stack contracts: a drawer   \
                                                   ends "pop ebx; ret", but a tail-jump to              \
                                                   domosaicng16b ends in a bare "ret". Pushing the same \
                                                   address twice satisfies both. */                     \
@@ -54,6 +57,9 @@ extern unsigned int NG2_EAX, NG2_EBX, NG2_ECX, NG2_EDX, NG2_EDI, NG2_ESI,
         "edi", "memory", "cc")
 
 void ng2_init(void);
+
+/* Times the run tail-jumped into the mosaic pass. Zeroed by ng2_reset. */
+extern unsigned int ng2_mosaic_hits;
 
 /* The routines mutate ngcwinptr/ngcwinmode/ofsmcptr2 and the tile counters, so
    two calls with "the same" inputs otherwise start from different states - the

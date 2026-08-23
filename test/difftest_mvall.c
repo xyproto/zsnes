@@ -127,7 +127,6 @@ void dt_call(void);
 #include "../video/c_mv16draw.h"
 
 void asm_draw8x816tms(void), asm_draw16x1616tms(void);
-void draw16x1616tms(void); /* still assembly */
 
 static void call_regs(m7regs* r, void (*fn)(void));
 
@@ -284,19 +283,13 @@ static void run(void (*const fn)(void), u4 const* const in,
     finish(&r, out);
 }
 
-/* The 8x8 entry is C now; the 16x16 one is still assembly. */
 static void run_port(int const big, u4 const* const in, snapshot* const out)
 {
     m7regs r;
 
-    if (big) {
-        run(draw16x1616tms, in, out);
-        return;
-    }
-
     reset();
     regs_in(&r, in);
-    if (draw8x816tms(&r) != 0) {
+    if ((big ? draw16x1616tms(&r) : draw8x816tms(&r)) != 0) {
         /* The mosaic tail was a jump: run it with the registers the drawer
            ended on, which is what the stub records. */
         call_regs(&r, domosaic16b);

@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "../video/c_mode716gate.h"
 #include "difftest.h"
 
 typedef uint8_t u1;
@@ -48,6 +49,28 @@ extern u4 M7SeamSI, M7SeamDI, M7SeamBP;
 u1* curvidoffset;
 u4 M7HROn;
 extern u4 DrawHits, DrawRegs[7], DrawVid, DrawHRon; /* _m7calc.o */
+
+/* The C side's renderer, recording into the same block the oracle's does. */
+void drawmode7win16b(m7regs* const r)
+{
+    DrawRegs[0] = (u4)r->ax;
+    DrawRegs[1] = (u4)r->bx;
+    DrawRegs[2] = (u4)r->cx;
+    DrawRegs[3] = (u4)r->dx;
+    DrawRegs[4] = (u4)r->si;
+    DrawRegs[5] = (u4)r->di;
+    DrawRegs[6] = (u4)r->bp;
+    DrawVid = (u4)(uintptr_t)curvidoffset;
+    DrawHRon = M7HROn;
+    DrawHits++;
+    r->ax = 0xA5A50001u;
+    r->bx = 0xA5A50002u;
+    r->cx = 0xA5A50003u;
+    r->dx = 0xA5A50004u;
+    r->si = 0xA5A50005u;
+    r->di = 0xA5A50006u;
+    r->bp = 0xA5A50007u;
+}
 
 typedef struct {
     u4 a, b, c, d;

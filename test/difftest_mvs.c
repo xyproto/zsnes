@@ -23,7 +23,11 @@ u4 pal16b[256];
 static u1 winmask[512];
 u1* winptrref = winmask;
 u4 tempcach, temptile, bgofwptr, bgsubby, yadder, yrevadder;
+/* The 16x16 writer in the same file wants these; nothing here reaches it. */
+u1 a16x16xinc;
+u2 yadd, yflipadd;
 u4 pal16bxcl[256];
+u4 pal16bcl[256];
 /* One entry of slack: the writer's dword load reads past the last index. */
 u2 fulladdtab[65537];
 
