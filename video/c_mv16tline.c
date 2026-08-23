@@ -88,8 +88,6 @@ static void (*const m7_renderer[])(void) = { 0, drawmode716t, drawmode716b,
 /* Ids 2 and 4 are C (video/c_m716gate.c); the rest are still assembly and go
    through calldl16t, so the two kinds are dispatched apart. */
 void domosaic16b(void); /* video/mode716b.c */
-/* Only the 16x16 mosaic drawer is still assembly. */
-extern void draw16x1616tms(void);
 
 /* DLR is the register set calldl16t passes to what assembly is left; r is what
    the ported drawers use. These two are the only places the two meet. */
@@ -129,9 +127,8 @@ static void bggate(u4 (*const g)(m7regs*), u4 const layer)
         return;
     }
 
-    /* The renderer the gate picked. All but the 16x16 mosaic drawer are C, so
-       they work on r directly; that one still goes through calldl16t. Ids past
-       the table reach the bookkeeping with no renderer at all. */
+    /* The renderer the gate picked; ids past the table reach the bookkeeping
+       with no renderer at all. */
     switch (tail) {
     case 1:
         mosaic = draw8x816t(&r);
@@ -149,9 +146,7 @@ static void bggate(u4 (*const g)(m7regs*), u4 const layer)
         mosaic = draw8x816tms(&r);
         break;
     case 6:
-        dlr_put(&r);
-        call_asm(draw16x1616tms);
-        dlr_get(&r);
+        mosaic = draw16x1616tms(&r);
         break;
     default:
         break;

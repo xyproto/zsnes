@@ -133,7 +133,7 @@ EXTSYM drawlineng16x162b16b,drawlineng16x164b16b,drawlineng16x168b16b,winenabm
 EXTSYM disableeffects,winl1,winbg1enval,winbg1envalm,winlogica,winlogicaval
 EXTSYM winboundary,winobjen,winlogicb,nglogicval,ngwintable,winbg2enval
 EXTSYM winbg3enval,winbg4enval,winbgobjenval,Mode7HiRes16b,res640,hiresstuff
-EXTSYM Mode7BackA,Mode7BackC,Mode7BackX0,Mode7BackSet,drawmode7win16b,ngwinen
+EXTSYM Mode7BackA,Mode7BackC,Mode7BackX0,Mode7BackSet,ngwinen
 EXTSYM drawlineng16x84b16b,drawlineng16x82b16b,ofsmcyps,vram,ofsmcptr,ofsmady
 EXTSYM ofsmadx,ofsmtptr,yposngom,flipyposngom,ofsmmptr,ofsmval,ofsmvalh
 EXTSYM winbg1envals,m7starty,bgallchange
@@ -142,8 +142,7 @@ EXTSYM drawlinengom2b16b,drawlinengom4b16b,drawlinengom8b16b
 EXTSYM drawlinengom16x162b16b,drawlinengom16x164b16b,drawlinengom16x168b16b
 EXTSYM bg1change,bg2change,bg3change,bg4change,ngwinptr,objwlrpos,objwen
 EXTSYM objclineptr,CSprWinPtr,BuildWindow2,NGNumSpr,fulladdtab
-EXTSYM bgtxadd2,drawmode7ngextbg16b,processmode7hires16b
-EXTSYM drawmode7ngextbg216b,osm2dis,ofsmtptrs,ofsmcptr2
+EXTSYM bgtxadd2,osm2dis,ofsmtptrs,ofsmcptr2
 EXTSYM prevbrightdc,mosstart,moscountdown,BackAreaAdd
 EXTSYM BackAreaUnFillCol,BackAreaFillCol,clinemainsub,cpalptrng
 EXTSYM c_process_transparencies

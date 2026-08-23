@@ -23,6 +23,7 @@
 #include <string.h>
 
 #include "../types.h"
+#include "c_mode716gate.h"
 #include "makevid.h"
 
 /* calldl16t's register block, defined in video/c_mv16tline.c. */
@@ -42,10 +43,31 @@ extern u4 mode7ab[256], mode7cd[256], mode7xy[256];
 extern u1 mode7st[256];
 extern u4 dcolortab[];
 extern void Gendcolortable(void);
-extern void drawmode7win16b(void);
-extern void drawmode7ngextbg16b(void);
-extern void drawmode7ngextbg216b(void);
-extern void processmode7hires16b(void);
+
+/* The mode 7 renderers are C now, so they take the register block instead of
+   the registers themselves - but they still ride on DLR, which carries the
+   scanline loop's edi and ebp from one call to the next the way the assembly
+   did. */
+static void m7call(void (*const g)(m7regs*))
+{
+    m7regs r;
+
+    r.ax = DLR[0];
+    r.bx = DLR[1];
+    r.cx = DLR[2];
+    r.dx = DLR[3];
+    r.si = DLR[4];
+    r.di = DLR[5];
+    r.bp = DLR[6];
+    g(&r);
+    DLR[0] = (u4)r.ax;
+    DLR[1] = (u4)r.bx;
+    DLR[2] = (u4)r.cx;
+    DLR[3] = (u4)r.dx;
+    DLR[4] = (u4)r.si;
+    DLR[5] = (u4)r.di;
+    DLR[6] = (u4)r.bp;
+}
 extern void drawsprng16b(void);
 extern void drawsprng16bhr(void);
 extern u1 BGMS1[], FillSubScr[256];
@@ -347,19 +369,17 @@ void c_procmode7ng16b(int const main_, u4 const mask, int const kind)
                     }
                     DLR[6] = (u4)(uintptr_t)dcolortab;
                 }
-                DLFN = drawmode7win16b;
+                m7call(drawmode7win16b);
             } else if (kind == M7_EXTBG) {
-                DLFN = drawmode7ngextbg16b;
+                m7call(drawmode7ngextbg16b);
             } else {
-                DLFN = drawmode7ngextbg216b;
+                m7call(drawmode7ngextbg216b);
             }
-            calldl16t();
 
             if (kind == M7_PLAIN && Mode7HiRes16b != 0 && scanlines == 0) {
                 DLR[1] = y;
                 DLR[4] = (u4)(uintptr_t)esi;
-                DLFN = processmode7hires16b;
-                calldl16t();
+                m7call(processmode7hires16b);
             }
         }
         y++;

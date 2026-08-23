@@ -19,6 +19,8 @@ u4 draw8x816bt(m7regs* r);
 u4 draw8x816tms(m7regs* r); /* video/c_mv16msgate.c */
 u4 draw8x816twinonms(m7regs* r);
 
+u4 draw16x1616tms(m7regs* r); /* video/c_mv16msgate.c */
+
 extern u1 curmosaicsz;
 
 /* dh = curmosaicsz, which the *ms tails set before jumping. The leaves do not. */

@@ -1,18 +1,18 @@
 /*
  * video/c_mode716calc.c - CalculateNewValues, ported from video/mode716.asm.
  *
- * Called once per scanline from processmode7hires16b, which is still assembly
- * and reaches it with the renderer's registers live:
+ * Called once per scanline from processmode7hires16b, which reaches it with
+ * the renderer's registers live:
  *
  *     ebx  the scanline
  *     eax  the Y scroll accumulator
  *     edx  the X scroll accumulator
  *
  * and takes back eax, ecx and edx. The M7Seam* block below is what the
- * assembly spills them into; see the thunk in video/mode716.asm.
+ * assembly spilled them into; see the seam in video/c_mode716gate.c.
  */
-#include "../chips/regabi.h" /* REGABI_ENTRY/REGABI_SYM for the trampoline */
 #include "../types.h"
+#include "c_mode716gate.h"
 
 extern u4 mode7ab[256], mode7cd[256]; /* endmem.c: A|B and C|D per scanline */
 extern u2 mode7A, mode7B, mode7C, mode7D; /* cpu/regs.inc */
@@ -92,48 +92,30 @@ void c_CalculateNewValues(void)
  */
 extern u1* curvidoffset; /* video/makevid.c */
 extern u4 M7HROn; /* video/c_mode716data.c */
-void drawmode7win16b(void); /* video/mode716.asm */
+/* Hand the renderer the whole register file the seam is carrying; it does not
+   restore any of it, and neither did the assembly. (The esi write-back is the
+   one part nothing can currently observe, because the only caller puts its own
+   esi back afterwards; keep it, so the next caller is not surprised.) */
+static void M7CallDraw(void)
+{
+    m7regs r;
 
-/* Call drawmode7win16b, which is still assembly and wants the renderer's whole
-   register file - ebp included, so this has to be naked rather than a
-   constrained asm. Everything the renderer leaves is written back: the
-   assembly does not restore it either. (The esi write-back is the one part
-   nothing can currently observe, because the only caller puts its own esi
-   back afterwards; keep it, so the next caller is not surprised.) */
-/* clang-format off */
-
-#if defined(__GNUC__) && defined(__i386__)
-/* Register-ABI bridges into the video assembly; nothing to emit without it. */
-__asm__(REGABI_ENTRY(M7CallDraw)
-    "pushl %ebx\n"
-    "pushl %esi\n"
-    "pushl %edi\n"
-    "pushl %ebp\n"
-    "movl " REGABI_SYM(M7SeamA) ", %eax\n"
-    "movl " REGABI_SYM(M7SeamB) ", %ebx\n"
-    "movl " REGABI_SYM(M7SeamC) ", %ecx\n"
-    "movl " REGABI_SYM(M7SeamD) ", %edx\n"
-    "movl " REGABI_SYM(M7SeamSI) ", %esi\n"
-    "movl " REGABI_SYM(M7SeamDI) ", %edi\n"
-    "movl " REGABI_SYM(M7SeamBP) ", %ebp\n"
-    "call " REGABI_SYM(drawmode7win16b) "\n"
-    "movl %eax, " REGABI_SYM(M7SeamA) "\n"
-    "movl %ebx, " REGABI_SYM(M7SeamB) "\n"
-    "movl %ecx, " REGABI_SYM(M7SeamC) "\n"
-    "movl %edx, " REGABI_SYM(M7SeamD) "\n"
-    "movl %esi, " REGABI_SYM(M7SeamSI) "\n"
-    "movl %edi, " REGABI_SYM(M7SeamDI) "\n"
-    "movl %ebp, " REGABI_SYM(M7SeamBP) "\n"
-    "popl %ebp\n"
-    "popl %edi\n"
-    "popl %esi\n"
-    "popl %ebx\n"
-    "ret\n");
-#endif
-
-/* clang-format on */
-
-void M7CallDraw(void);
+    r.ax = M7SeamA;
+    r.bx = M7SeamB;
+    r.cx = M7SeamC;
+    r.dx = M7SeamD;
+    r.si = M7SeamSI;
+    r.di = M7SeamDI;
+    r.bp = M7SeamBP;
+    drawmode7win16b(&r);
+    M7SeamA = (u4)r.ax;
+    M7SeamB = (u4)r.bx;
+    M7SeamC = (u4)r.cx;
+    M7SeamD = (u4)r.dx;
+    M7SeamSI = (u4)r.si;
+    M7SeamDI = (u4)r.di;
+    M7SeamBP = (u4)r.bp;
+}
 
 void c_processmode7hires16b(void)
 {

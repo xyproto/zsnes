@@ -1,5 +1,5 @@
 /*
- * The 8x8 mosaic dispatchers and their leaves, ported from video/mv16tms.asm.
+ * The mosaic dispatchers and their leaves, ported from video/mv16tms.asm.
  *
  * A leaf spills the whole register file into the shared MVS seam, calls its C
  * body and reloads; a dispatcher picks one on the colour-maths registers and
@@ -31,6 +31,13 @@ void c_draw8x8fulladdms(void);
 void c_draw8x816tsms(void);
 void c_draw8x8fulladdwinonms(void);
 void c_draw8x816tswinonms(void);
+void c_draw16x16tms_setup(void);
+void c_draw16x1616tms_body(void);
+void c_draw16x1616twinonms(void);
+void c_draw16x16fulladdms(void);
+void c_draw16x1616tsms(void);
+void c_draw16x16fulladdwinonms(void);
+void c_draw16x1616tswinonms(void);
 void c_draw8x816t(void);
 void c_draw8x816bt(void);
 /* Seven arguments, in the order the ccallv pushed them. */
@@ -115,4 +122,48 @@ u4 draw8x816tms(m7regs* const r)
     if (curmosaicsz == 1 && winon != 0)
         return draw8x816twinonms(r);
     return pick_8x8(r, 0);
+}
+
+/* --- the 16x16 half ------------------------------------------------------ *
+ *
+ * Same three-way pick, but every tail here tests MVSMosaic as a byte and jumps
+ * without setting dh, and the windowed branch has no mosaic tail at all.
+ */
+MVS_LEAF_MOSAIC(leaf_16x16fulladdms, c_draw16x16fulladdms)
+MVS_LEAF_MOSAIC(leaf_16x1616tsms, c_draw16x1616tsms)
+MVS_LEAF_MOSAIC(body_16x1616tms, c_draw16x1616tms_body)
+MVS_LEAF(leaf_16x16fulladdwinonms, c_draw16x16fulladdwinonms)
+MVS_LEAF(leaf_16x1616tswinonms, c_draw16x1616tswinonms)
+MVS_LEAF(body_16x1616twinonms, c_draw16x1616twinonms)
+
+static u4 pick_16x16(m7regs* const r, int const windowed)
+{
+    r->bp = (zreg)(uintptr_t)(transpbuf + 32) - r->ax - r->ax;
+
+    if (scaddtype & 0x80u)
+        return windowed ? leaf_16x1616tswinonms(r) : leaf_16x1616tsms(r);
+    if (!(scaddtype & 0x40u) || (scrnon >> 8) == 0)
+        return windowed ? leaf_16x16fulladdwinonms(r) : leaf_16x16fulladdms(r);
+    return windowed ? body_16x1616twinonms(r) : body_16x1616tms(r);
+}
+
+u4 draw16x1616tms(m7regs* const r)
+{
+    /* This half's setup carries the same five registers, but hands ebx back as
+       curypos instead of the reverse adder. */
+    MVAX = r->ax;
+    MVBX = r->bx;
+    MVCX = r->cx;
+    MVDX = r->dx;
+    MVSI = r->si;
+    c_draw16x16tms_setup();
+    r->ax = MVAX;
+    r->bx = MVBX;
+    r->cx = MVCX;
+    r->dx = MVDX;
+    r->si = MVSI;
+
+    if (curmosaicsz == 1 && winon != 0)
+        return pick_16x16(r, 1);
+    return pick_16x16(r, 0);
 }

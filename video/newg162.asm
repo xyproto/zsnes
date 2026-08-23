@@ -68,6 +68,42 @@ section .note.GNU-stack noalloc noexec nowrite progbits
 %endmacro
 %endif
 EXTSYM c_drawtile2b_nt,c_drawtile2b_t,c_drawtile2b_mst,c_drawtile2b_msnt
+EXTSYM c_drawtile4b_nt,c_drawtile4b_t,c_drawtile4b_mst,c_drawtile4b_msnt
+EXTSYM c_drawtile8b_nt,c_drawtile8b_t,c_drawtile8b_mst,c_drawtile8b_msnt
+EXTSYM c_drawtile2b_win,c_drawtile2b_wint,c_drawtile2b_mstmsw,c_drawtile2b_msntmsw
+EXTSYM c_drawtile2b_mstmw,c_drawtile2b_mstsw,c_drawtile2b_msntmw,c_drawtile2b_msntsw
+EXTSYM c_drawtile4b_win,c_drawtile4b_wint,c_drawtile4b_mstmsw,c_drawtile4b_msntmsw
+EXTSYM c_drawtile4b_mstmw,c_drawtile4b_mstsw,c_drawtile4b_msntmw,c_drawtile4b_msntsw
+EXTSYM c_drawtile8b_win,c_drawtile8b_wint,c_drawtile8b_mstmsw,c_drawtile8b_msntmsw
+EXTSYM c_drawtile8b_mstmw,c_drawtile8b_mstsw,c_drawtile8b_msntmw,c_drawtile8b_msntsw
+EXTSYM c_drawtile16x162b_nt,c_drawtile16x162b_t,c_drawtile16x162b_mst,c_drawtile16x162b_msnt
+EXTSYM c_drawtile16x164b_nt,c_drawtile16x164b_t,c_drawtile16x164b_mst,c_drawtile16x164b_msnt
+EXTSYM c_drawtile16x168b_nt,c_drawtile16x168b_t,c_drawtile16x168b_mst,c_drawtile16x168b_msnt
+EXTSYM c_drawtile16x162b_win,c_drawtile16x162b_wint,c_drawtile16x162b_mstmsw,c_drawtile16x162b_msntmsw
+EXTSYM c_drawtile16x162b_mstmw,c_drawtile16x162b_mstsw,c_drawtile16x162b_msntmw,c_drawtile16x162b_msntsw
+EXTSYM c_drawtile16x164b_win,c_drawtile16x164b_wint,c_drawtile16x164b_mstmsw,c_drawtile16x164b_msntmsw
+EXTSYM c_drawtile16x164b_mstmw,c_drawtile16x164b_mstsw,c_drawtile16x164b_msntmw,c_drawtile16x164b_msntsw
+EXTSYM c_drawtile16x168b_win,c_drawtile16x168b_wint,c_drawtile16x168b_mstmsw,c_drawtile16x168b_msntmsw
+EXTSYM c_drawtile16x168b_mstmw,c_drawtile16x168b_mstsw,c_drawtile16x168b_msntmw,c_drawtile16x168b_msntsw
+EXTSYM c_drawline2b_nt,c_drawline2b_t,c_drawline2b_mst,c_drawline2b_msnt
+EXTSYM c_drawline4b_nt,c_drawline4b_t,c_drawline4b_mst,c_drawline4b_msnt
+EXTSYM c_drawline8b_nt,c_drawline8b_t,c_drawline8b_mst,c_drawline8b_msnt
+EXTSYM c_drawline2b_win,c_drawline2b_wint,c_drawline2b_mstmsw,c_drawline2b_msntmsw
+EXTSYM c_drawline2b_mstmw,c_drawline2b_mstsw,c_drawline2b_msntmw,c_drawline2b_msntsw
+EXTSYM c_drawline4b_win,c_drawline4b_wint,c_drawline4b_mstmsw,c_drawline4b_msntmsw
+EXTSYM c_drawline4b_mstmw,c_drawline4b_mstsw,c_drawline4b_msntmw,c_drawline4b_msntsw
+EXTSYM c_drawline8b_win,c_drawline8b_wint,c_drawline8b_mstmsw,c_drawline8b_msntmsw
+EXTSYM c_drawline8b_mstmw,c_drawline8b_mstsw,c_drawline8b_msntmw,c_drawline8b_msntsw
+EXTSYM c_drawline16x162b_nt,c_drawline16x162b_t,c_drawline16x162b_mst,c_drawline16x162b_msnt
+EXTSYM c_drawline16x164b_nt,c_drawline16x164b_t,c_drawline16x164b_mst,c_drawline16x164b_msnt
+EXTSYM c_drawline16x168b_nt,c_drawline16x168b_t,c_drawline16x168b_mst,c_drawline16x168b_msnt
+EXTSYM c_drawline16x162b_win,c_drawline16x162b_wint,c_drawline16x162b_mstmsw,c_drawline16x162b_msntmsw
+EXTSYM c_drawline16x162b_mstmw,c_drawline16x162b_mstsw,c_drawline16x162b_msntmw,c_drawline16x162b_msntsw
+EXTSYM c_drawline16x164b_win,c_drawline16x164b_wint,c_drawline16x164b_mstmsw,c_drawline16x164b_msntmsw
+EXTSYM c_drawline16x164b_mstmw,c_drawline16x164b_mstsw,c_drawline16x164b_msntmw,c_drawline16x164b_msntsw
+EXTSYM c_drawline16x168b_win,c_drawline16x168b_wint,c_drawline16x168b_mstmsw,c_drawline16x168b_msntmsw
+EXTSYM c_drawline16x168b_mstmw,c_drawline16x168b_mstsw,c_drawline16x168b_msntmw,c_drawline16x168b_msntsw
+EXTSYM ng2_mosaic
 EXTSYM c_determinetransp,c_checkwindowing,c_determinewindow,ng_branch
 EXTSYM ngwintable,ngwinen,ngcwinptr,ngcpixleft,ngcwinmode,tleftn,ng16bprval
 EXTSYM vrama,bg1drwng,ng16bbgval,bg1totng,bgtxadd,taddnfy16x16,taddfy16x16
@@ -352,7 +388,15 @@ drawtileng2b16bnt
     pop ebx
     ret
 drawtileng2bwin:
-    drawtile16bw tltype2b, preparet2batile, cachesingle2bng,ngpalcon2b,test2ba,03h,vidmemch2s,cache2b16b,tilenormal,tilenormalb,tilenormalw,tilenormalwb
+    ; windowed, plain: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile2b_win, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawtileng2b16bt
     test byte[BGMS1+ebx*2+1],dl
     jnz near drawtileng2b16bms
@@ -367,7 +411,15 @@ drawtileng2b16bt
     pop ebx
     ret
 drawtileng2bwint:
-    drawtile16bw tltype2b, preparet2batile, cachesingle2bng,ngpalcon2b,test2ba,03h,vidmemch2s,cache2b16b,tilenormalt,tilenormalbt,tilenormalwt,tilenormalwbt
+    ; windowed, transparent: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile2b_wint, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawtileng2b16bms:
     test byte[scadtng+ebx],dl
     jz near drawtileng2b16bmsnt
@@ -380,11 +432,35 @@ drawtileng2b16bms:
     pop ebx
     ret
 drawtileng2b16bmstmsw:
-    drawtile16bw tltype2b, preparet2batile, cachesingle2bng,ngpalcon2b,test2ba,03h,vidmemch2s,cache2b16b,tilenormalmst,tilenormalbmst,tilenormalwmst,tilenormalwbmst
+    ; windowed on both screens, transparent + sub: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile2b_mstmsw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawtileng2b16bmstmw:
-    drawtile16bw2 tltype2b, preparet2batile, cachesingle2bng,ngpalcon2b,test2ba,03h,vidmemch2s,cache2b16b,tilenormalmst,tilenormalbmst,tilenormalwsmt,tilenormalwbsmt,tilenormals,tilenormalbs
+    ; main-screen window only, transparent + sub: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile2b_mstmw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawtileng2b16bmstsw:
-    drawtile16bw2 tltype2b, preparet2batile, cachesingle2bng,ngpalcon2b,test2ba,03h,vidmemch2s,cache2b16b,tilenormalmst,tilenormalbmst,tilenormalwmsbt,tilenormalwbmsbt,tilenormalt,tilenormalbt
+    ; sub-screen window only, transparent + sub: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile2b_mstsw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawtileng2b16bmsnt
     DetermineWindow drawtileng2b16bmsntmsw, drawtileng2b16bmsntmw, drawtileng2b16bmsntsw
     ; sub screen leaf: video/c_ng2tile.c
@@ -395,85 +471,285 @@ drawtileng2b16bmsnt
     pop ebx
     ret
 drawtileng2b16bmsntmsw:
-    drawtile16bw tltype2b, preparet2batile, cachesingle2bng,ngpalcon2b,test2ba,03h,vidmemch2s,cache2b16b,tilenormalmsnt,tilenormalbmsnt,tilenormalwmsnt,tilenormalwbmsnt
+    ; windowed on both screens, sub: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile2b_msntmsw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawtileng2b16bmsntmw:
-    drawtile16bw2 tltype2b, preparet2batile, cachesingle2bng,ngpalcon2b,test2ba,03h,vidmemch2s,cache2b16b,tilenormalmsnt,tilenormalbmsnt,tilenormalwsmnt,tilenormalwbsmnt,tilenormals,tilenormalbs
+    ; main-screen window only, sub: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile2b_msntmw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawtileng2b16bmsntsw:
-    drawtile16bw2 tltype2b, preparet2batile, cachesingle2bng,ngpalcon2b,test2ba,03h,vidmemch2s,cache2b16b,tilenormalmsnt,tilenormalbmsnt,tilenormalwmsbnt,tilenormalwbmsbnt,tilenormal,tilenormalb
+    ; sub-screen window only, sub: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile2b_msntsw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 
 NEWSYM drawtileng4b16b
     determinetransp drawtileng4b16bt
 drawtileng4b16bnt
     CheckWindowing drawtileng4bwin
-    drawtile16b tltype4b, preparet4batile, cachesingle4bng,ngpalcon4b,test4ba,0Fh,vidmemch4s,cache4b16b,tilenormal,tilenormalb
+    ; plain leaf (no transparency, no window) leaf: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile4b_nt, eax
+    popad
+    pop ebx
+    ret
 drawtileng4bwin:
-    drawtile16bw tltype4b, preparet4batile, cachesingle4bng,ngpalcon4b,test4ba,0Fh,vidmemch4s,cache4b16b,tilenormal,tilenormalb,tilenormalw,tilenormalwb
+    ; windowed, plain: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile4b_win, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawtileng4b16bt
     test byte[BGMS1+ebx*2+1],dl
     jnz near drawtileng4b16bms
     test byte[scadtng+ebx],dl
     jz near drawtileng4b16bnt
     CheckWindowing drawtileng4bwint
-    drawtile16b tltype4b, preparet4batile, cachesingle4bng,ngpalcon4b,test4ba,0Fh,vidmemch4s,cache4b16b,tilenormalt,tilenormalbt
+    ; transparent leaf leaf: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile4b_t, eax
+    popad
+    pop ebx
+    ret
 drawtileng4bwint:
-    drawtile16bw tltype4b, preparet4batile, cachesingle4bng,ngpalcon4b,test4ba,0Fh,vidmemch4s,cache4b16b,tilenormalt,tilenormalbt,tilenormalwt,tilenormalwbt
+    ; windowed, transparent: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile4b_wint, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawtileng4b16bms:
     test byte[scadtng+ebx],dl
     jz near drawtileng4b16bmsnt
     DetermineWindow drawtileng4b16bmstmsw, drawtileng4b16bmstmw, drawtileng4b16bmstsw
-    drawtile16b tltype4b, preparet4batile, cachesingle4bng,ngpalcon4b,test4ba,0Fh,vidmemch4s,cache4b16b,tilenormalmst,tilenormalbmst
+    ; transparent + sub screen leaf leaf: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile4b_mst, eax
+    popad
+    pop ebx
+    ret
 drawtileng4b16bmstmsw:
-    drawtile16bw tltype4b, preparet4batile, cachesingle4bng,ngpalcon4b,test4ba,0Fh,vidmemch4s,cache4b16b,tilenormalmst,tilenormalbmst,tilenormalwmst,tilenormalwbmst
+    ; windowed on both screens, transparent + sub: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile4b_mstmsw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawtileng4b16bmstmw:
-    drawtile16bw2 tltype4b, preparet4batile, cachesingle4bng,ngpalcon4b,test4ba,0Fh,vidmemch4s,cache4b16b,tilenormalmst,tilenormalbmst,tilenormalwsmt,tilenormalwbsmt,tilenormals,tilenormalbs
+    ; main-screen window only, transparent + sub: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile4b_mstmw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawtileng4b16bmstsw:
-    drawtile16bw2 tltype4b, preparet4batile, cachesingle4bng,ngpalcon4b,test4ba,0Fh,vidmemch4s,cache4b16b,tilenormalmst,tilenormalbmst,tilenormalwmsbt,tilenormalwbmsbt,tilenormalt,tilenormalbt
+    ; sub-screen window only, transparent + sub: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile4b_mstsw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawtileng4b16bmsnt
     DetermineWindow drawtileng4b16bmsntmsw, drawtileng4b16bmsntmw, drawtileng4b16bmsntsw
-    drawtile16b tltype4b, preparet4batile, cachesingle4bng,ngpalcon4b,test4ba,0Fh,vidmemch4s,cache4b16b,tilenormalmsnt,tilenormalbmsnt
+    ; sub screen leaf leaf: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile4b_msnt, eax
+    popad
+    pop ebx
+    ret
 drawtileng4b16bmsntmsw:
-    drawtile16bw tltype4b, preparet4batile, cachesingle4bng,ngpalcon4b,test4ba,0Fh,vidmemch4s,cache4b16b,tilenormalmsnt,tilenormalbmsnt,tilenormalwmsnt,tilenormalwbmsnt
+    ; windowed on both screens, sub: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile4b_msntmsw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawtileng4b16bmsntmw:
-    drawtile16bw2 tltype4b, preparet4batile, cachesingle4bng,ngpalcon4b,test4ba,0Fh,vidmemch4s,cache4b16b,tilenormalmsnt,tilenormalbmsnt,tilenormalwsmnt,tilenormalwbsmnt,tilenormals,tilenormalbs
+    ; main-screen window only, sub: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile4b_msntmw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawtileng4b16bmsntsw:
-    drawtile16bw2 tltype4b, preparet4batile, cachesingle4bng,ngpalcon4b,test4ba,0Fh,vidmemch4s,cache4b16b,tilenormalmsnt,tilenormalbmsnt,tilenormalwmsbnt,tilenormalwbmsbnt,tilenormal,tilenormalb
+    ; sub-screen window only, sub: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile4b_msntsw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 
 NEWSYM drawtileng8b16b
     determinetransp drawtileng8b16bt
 drawtileng8b16bnt
     CheckWindowing drawtileng8bwin
-    drawtile16b tltype8b, preparet8batile, cachesingle8bng,ngpalcon8b,test8ba,0FFh,vidmemch8s,cache8b16b,tilenormal,tilenormalb
+    ; plain leaf (no transparency, no window) leaf: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile8b_nt, eax
+    popad
+    pop ebx
+    ret
 drawtileng8bwin:
-    drawtile16bw tltype8b, preparet8batile, cachesingle8bng,ngpalcon8b,test8ba,0FFh,vidmemch8s,cache8b16b,tilenormal,tilenormalb,tilenormalw,tilenormalwb
+    ; windowed, plain: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile8b_win, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawtileng8b16bt
     test byte[BGMS1+ebx*2+1],dl
     jnz near drawtileng8b16bms
     test byte[scadtng+ebx],dl
     jz near drawtileng8b16bnt
     CheckWindowing drawtileng8bwint
-    drawtile16b tltype8b, preparet8batile, cachesingle8bng,ngpalcon8b,test8ba,0FFh,vidmemch8s,cache8b16b,tilenormalt,tilenormalbt
+    ; transparent leaf leaf: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile8b_t, eax
+    popad
+    pop ebx
+    ret
 drawtileng8bwint:
-    drawtile16bw tltype8b, preparet8batile, cachesingle8bng,ngpalcon8b,test8ba,0FFh,vidmemch8s,cache8b16b,tilenormalt,tilenormalbt,tilenormalwt,tilenormalwbt
+    ; windowed, transparent: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile8b_wint, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawtileng8b16bms:
     test byte[scadtng+ebx],dl
     jz near drawtileng8b16bmsnt
     DetermineWindow drawtileng8b16bmstmsw, drawtileng8b16bmstmw, drawtileng8b16bmstsw
-    drawtile16b tltype8b, preparet8batile, cachesingle8bng,ngpalcon8b,test8ba,0FFh,vidmemch8s,cache8b16b,tilenormalmst,tilenormalbmst
+    ; transparent + sub screen leaf leaf: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile8b_mst, eax
+    popad
+    pop ebx
+    ret
 drawtileng8b16bmstmsw:
-    drawtile16bw tltype8b, preparet8batile, cachesingle8bng,ngpalcon8b,test8ba,0FFh,vidmemch8s,cache8b16b,tilenormalmst,tilenormalbmst,tilenormalwmst,tilenormalwbmst
+    ; windowed on both screens, transparent + sub: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile8b_mstmsw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawtileng8b16bmstmw:
-    drawtile16bw2 tltype8b, preparet8batile, cachesingle8bng,ngpalcon8b,test8ba,0FFh,vidmemch8s,cache8b16b,tilenormalmst,tilenormalbmst,tilenormalwsmt,tilenormalwbsmt,tilenormals,tilenormalbs
+    ; main-screen window only, transparent + sub: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile8b_mstmw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawtileng8b16bmstsw:
-    drawtile16bw2 tltype8b, preparet8batile, cachesingle8bng,ngpalcon8b,test8ba,0FFh,vidmemch8s,cache8b16b,tilenormalmst,tilenormalbmst,tilenormalwmsbt,tilenormalwbmsbt,tilenormalt,tilenormalbt
+    ; sub-screen window only, transparent + sub: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile8b_mstsw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawtileng8b16bmsnt
     DetermineWindow drawtileng8b16bmsntmsw, drawtileng8b16bmsntmw, drawtileng8b16bmsntsw
-    drawtile16b tltype8b, preparet8batile, cachesingle8bng,ngpalcon8b,test8ba,0FFh,vidmemch8s,cache8b16b,tilenormalmsnt,tilenormalbmsnt
+    ; sub screen leaf leaf: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile8b_msnt, eax
+    popad
+    pop ebx
+    ret
 drawtileng8b16bmsntmsw:
-    drawtile16bw tltype8b, preparet8batile, cachesingle8bng,ngpalcon8b,test8ba,0FFh,vidmemch8s,cache8b16b,tilenormalmsnt,tilenormalbmsnt,tilenormalwmsnt,tilenormalwbmsnt
+    ; windowed on both screens, sub: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile8b_msntmsw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawtileng8b16bmsntmw:
-    drawtile16bw2 tltype8b, preparet8batile, cachesingle8bng,ngpalcon8b,test8ba,0FFh,vidmemch8s,cache8b16b,tilenormalmsnt,tilenormalbmsnt,tilenormalwsmnt,tilenormalwbsmnt,tilenormals,tilenormalbs
+    ; main-screen window only, sub: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile8b_msntmw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawtileng8b16bmsntsw:
-    drawtile16bw2 tltype8b, preparet8batile, cachesingle8bng,ngpalcon8b,test8ba,0FFh,vidmemch8s,cache8b16b,tilenormalmsnt,tilenormalbmsnt,tilenormalwmsbnt,tilenormalwbmsbnt,tilenormal,tilenormalb
+    ; sub-screen window only, sub: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile8b_msntsw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 
 ;******************************************
 ; 16x16 tiles - tile engine
@@ -604,112 +880,376 @@ NEWSYM drawtileng16x162b16b
     determinetransp drawtileng2b16bt16x16
 drawtileng2b16bnt16x16
     CheckWindowing drawtileng2bwin16x16
-    drawtile16b16x16 tltype2b, preparet2batile, cachesingle2bng,ngpalcon2b,test2ba,03h,vidmemch2s,cache2b16b,tilenormal,tilenormalb
+    ; plain (no transparency, no window) leaf, 16x16: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile16x162b_nt, eax
+    popad
+    pop ebx
+    ret
 drawtileng2bwin16x16:
-    drawtile16bw16x16 tltype2b, preparet2batile, cachesingle2bng,ngpalcon2b,test2ba,03h,vidmemch2s,cache2b16b,tilenormal,tilenormalb,tilenormalw,tilenormalwb
+    ; windowed, plain, 16x16: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile16x162b_win, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawtileng2b16bt16x16
     test byte[BGMS1+ebx*2+1],dl
     jnz near drawtileng2b16bms16x16
     test byte[scadtng+ebx],dl
     jz near drawtileng2b16bnt16x16
     CheckWindowing drawtileng2bwint16x16
-    drawtile16b16x16 tltype2b, preparet2batile, cachesingle2bng,ngpalcon2b,test2ba,03h,vidmemch2s,cache2b16b,tilenormalt,tilenormalbt
+    ; transparent leaf, 16x16: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile16x162b_t, eax
+    popad
+    pop ebx
+    ret
 drawtileng2bwint16x16:
-    drawtile16bw16x16 tltype2b, preparet2batile, cachesingle2bng,ngpalcon2b,test2ba,03h,vidmemch2s,cache2b16b,tilenormalt,tilenormalbt,tilenormalwt,tilenormalwbt
+    ; windowed, transparent, 16x16: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile16x162b_wint, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawtileng2b16bms16x16:
     test byte[scadtng+ebx],dl
     jz near drawtileng2b16bmsnt16x16
     DetermineWindow drawtileng2b16bmstmsw16x16, drawtileng2b16bmstmw16x16, drawtileng2b16bmstsw16x16
-    drawtile16b16x16 tltype2b, preparet2batile, cachesingle2bng,ngpalcon2b,test2ba,03h,vidmemch2s,cache2b16b,tilenormalmst,tilenormalbmst
+    ; transparent + sub screen leaf, 16x16: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile16x162b_mst, eax
+    popad
+    pop ebx
+    ret
 drawtileng2b16bmstmsw16x16:
-    drawtile16bw16x16 tltype2b, preparet2batile, cachesingle2bng,ngpalcon2b,test2ba,03h,vidmemch2s,cache2b16b,tilenormalmst,tilenormalbmst,tilenormalwmst,tilenormalwbmst
+    ; windowed on both screens, transparent + sub, 16x16: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile16x162b_mstmsw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawtileng2b16bmstmw16x16:
-    drawtile16bw216x16 tltype2b, preparet2batile, cachesingle2bng,ngpalcon2b,test2ba,03h,vidmemch2s,cache2b16b,tilenormalmst,tilenormalbmst,tilenormalwsmt,tilenormalwbsmt,tilenormals,tilenormalbs
+    ; main-screen window only, transparent + sub, 16x16: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile16x162b_mstmw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawtileng2b16bmstsw16x16:
-    drawtile16bw216x16 tltype2b, preparet2batile, cachesingle2bng,ngpalcon2b,test2ba,03h,vidmemch2s,cache2b16b,tilenormalmst,tilenormalbmst,tilenormalwmsbt,tilenormalwbmsbt,tilenormalt,tilenormalbt
+    ; sub-screen window only, transparent + sub, 16x16: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile16x162b_mstsw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawtileng2b16bmsnt16x16
     DetermineWindow drawtileng2b16bmsntmsw16x16, drawtileng2b16bmsntmw16x16, drawtileng2b16bmsntsw16x16
-    drawtile16b16x16 tltype2b, preparet2batile, cachesingle2bng,ngpalcon2b,test2ba,03h,vidmemch2s,cache2b16b,tilenormalmsnt,tilenormalbmsnt
+    ; sub screen leaf, 16x16: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile16x162b_msnt, eax
+    popad
+    pop ebx
+    ret
 drawtileng2b16bmsntmsw16x16:
-    drawtile16bw16x16 tltype2b, preparet2batile, cachesingle2bng,ngpalcon2b,test2ba,03h,vidmemch2s,cache2b16b,tilenormalmsnt,tilenormalbmsnt,tilenormalwmsnt,tilenormalwbmsnt
+    ; windowed on both screens, sub, 16x16: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile16x162b_msntmsw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawtileng2b16bmsntmw16x16:
-    drawtile16bw216x16 tltype2b, preparet2batile, cachesingle2bng,ngpalcon2b,test2ba,03h,vidmemch2s,cache2b16b,tilenormalmsnt,tilenormalbmsnt,tilenormalwsmnt,tilenormalwbsmnt,tilenormals,tilenormalbs
+    ; main-screen window only, sub, 16x16: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile16x162b_msntmw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawtileng2b16bmsntsw16x16:
-    drawtile16bw216x16 tltype2b, preparet2batile, cachesingle2bng,ngpalcon2b,test2ba,03h,vidmemch2s,cache2b16b,tilenormalmsnt,tilenormalbmsnt,tilenormalwmsbnt,tilenormalwbmsbnt,tilenormal,tilenormalb
+    ; sub-screen window only, sub, 16x16: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile16x162b_msntsw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 
 NEWSYM drawtileng16x164b16b
     determinetransp drawtileng4b16bt16x16
 drawtileng4b16bnt16x16
     CheckWindowing drawtileng4bwin16x16
-    drawtile16b16x16 tltype4b, preparet4batile, cachesingle4bng,ngpalcon4b,test4ba,0Fh,vidmemch4s,cache4b16b,tilenormal,tilenormalb
+    ; plain (no transparency, no window) leaf, 16x16: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile16x164b_nt, eax
+    popad
+    pop ebx
+    ret
 drawtileng4bwin16x16:
-    drawtile16bw16x16 tltype4b, preparet4batile, cachesingle4bng,ngpalcon4b,test4ba,0Fh,vidmemch4s,cache4b16b,tilenormal,tilenormalb,tilenormalw,tilenormalwb
+    ; windowed, plain, 16x16: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile16x164b_win, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawtileng4b16bt16x16
     test byte[BGMS1+ebx*2+1],dl
     jnz near drawtileng4b16bms16x16
     test byte[scadtng+ebx],dl
     jz near drawtileng4b16bnt16x16
     CheckWindowing drawtileng4bwint16x16
-    drawtile16b16x16 tltype4b, preparet4batile, cachesingle4bng,ngpalcon4b,test4ba,0Fh,vidmemch4s,cache4b16b,tilenormalt,tilenormalbt
+    ; transparent leaf, 16x16: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile16x164b_t, eax
+    popad
+    pop ebx
+    ret
 drawtileng4bwint16x16:
-    drawtile16bw16x16 tltype4b, preparet4batile, cachesingle4bng,ngpalcon4b,test4ba,0Fh,vidmemch4s,cache4b16b,tilenormalt,tilenormalbt,tilenormalwt,tilenormalwbt
+    ; windowed, transparent, 16x16: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile16x164b_wint, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawtileng4b16bms16x16:
     test byte[scadtng+ebx],dl
     jz near drawtileng4b16bmsnt16x16
     DetermineWindow drawtileng4b16bmstmsw16x16, drawtileng4b16bmstmw16x16, drawtileng4b16bmstsw16x16
-    drawtile16b16x16 tltype4b, preparet4batile, cachesingle4bng,ngpalcon4b,test4ba,0Fh,vidmemch4s,cache4b16b,tilenormalmst,tilenormalbmst
+    ; transparent + sub screen leaf, 16x16: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile16x164b_mst, eax
+    popad
+    pop ebx
+    ret
 drawtileng4b16bmstmsw16x16:
-    drawtile16bw16x16 tltype4b, preparet4batile, cachesingle4bng,ngpalcon4b,test4ba,0Fh,vidmemch4s,cache4b16b,tilenormalmst,tilenormalbmst,tilenormalwmst,tilenormalwbmst
+    ; windowed on both screens, transparent + sub, 16x16: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile16x164b_mstmsw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawtileng4b16bmstmw16x16:
-    drawtile16bw216x16 tltype4b, preparet4batile, cachesingle4bng,ngpalcon4b,test4ba,0Fh,vidmemch4s,cache4b16b,tilenormalmst,tilenormalbmst,tilenormalwsmt,tilenormalwbsmt,tilenormals,tilenormalbs
+    ; main-screen window only, transparent + sub, 16x16: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile16x164b_mstmw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawtileng4b16bmstsw16x16:
-    drawtile16bw216x16 tltype4b, preparet4batile, cachesingle4bng,ngpalcon4b,test4ba,0Fh,vidmemch4s,cache4b16b,tilenormalmst,tilenormalbmst,tilenormalwmsbt,tilenormalwbmsbt,tilenormalt,tilenormalbt
+    ; sub-screen window only, transparent + sub, 16x16: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile16x164b_mstsw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawtileng4b16bmsnt16x16
     DetermineWindow drawtileng4b16bmsntmsw16x16, drawtileng4b16bmsntmw16x16, drawtileng4b16bmsntsw16x16
-    drawtile16b16x16 tltype4b, preparet4batile, cachesingle4bng,ngpalcon4b,test4ba,0Fh,vidmemch4s,cache4b16b,tilenormalmsnt,tilenormalbmsnt
+    ; sub screen leaf, 16x16: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile16x164b_msnt, eax
+    popad
+    pop ebx
+    ret
 drawtileng4b16bmsntmsw16x16:
-    drawtile16bw16x16 tltype4b, preparet4batile, cachesingle4bng,ngpalcon4b,test4ba,0Fh,vidmemch4s,cache4b16b,tilenormalmsnt,tilenormalbmsnt,tilenormalwmsnt,tilenormalwbmsnt
+    ; windowed on both screens, sub, 16x16: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile16x164b_msntmsw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawtileng4b16bmsntmw16x16:
-    drawtile16bw216x16 tltype4b, preparet4batile, cachesingle4bng,ngpalcon4b,test4ba,0Fh,vidmemch4s,cache4b16b,tilenormalmsnt,tilenormalbmsnt,tilenormalwsmnt,tilenormalwbsmnt,tilenormals,tilenormalbs
+    ; main-screen window only, sub, 16x16: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile16x164b_msntmw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawtileng4b16bmsntsw16x16:
-    drawtile16bw216x16 tltype4b, preparet4batile, cachesingle4bng,ngpalcon4b,test4ba,0Fh,vidmemch4s,cache4b16b,tilenormalmsnt,tilenormalbmsnt,tilenormalwmsbnt,tilenormalwbmsbnt,tilenormal,tilenormalb
+    ; sub-screen window only, sub, 16x16: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile16x164b_msntsw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 
 NEWSYM drawtileng16x168b16b
     determinetransp drawtileng8b16bt16x16
 drawtileng8b16bnt16x16
     CheckWindowing drawtileng8bwin16x16
-    drawtile16b16x16 tltype8b, preparet8batile, cachesingle8bng,ngpalcon8b,test8ba,0FFh,vidmemch8s,cache8b16b,tilenormal,tilenormalb
+    ; plain (no transparency, no window) leaf, 16x16: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile16x168b_nt, eax
+    popad
+    pop ebx
+    ret
 drawtileng8bwin16x16:
-    drawtile16bw16x16 tltype8b, preparet8batile, cachesingle8bng,ngpalcon8b,test8ba,0FFh,vidmemch8s,cache8b16b,tilenormal,tilenormalb,tilenormalw,tilenormalwb
+    ; windowed, plain, 16x16: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile16x168b_win, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawtileng8b16bt16x16
     test byte[BGMS1+ebx*2+1],dl
     jnz near drawtileng8b16bms16x16
     test byte[scadtng+ebx],dl
     jz near drawtileng8b16bnt16x16
     CheckWindowing drawtileng8bwint16x16
-    drawtile16b16x16 tltype8b, preparet8batile, cachesingle8bng,ngpalcon8b,test8ba,0FFh,vidmemch8s,cache8b16b,tilenormalt,tilenormalbt
+    ; transparent leaf, 16x16: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile16x168b_t, eax
+    popad
+    pop ebx
+    ret
 drawtileng8bwint16x16:
-    drawtile16bw16x16 tltype8b, preparet8batile, cachesingle8bng,ngpalcon8b,test8ba,0FFh,vidmemch8s,cache8b16b,tilenormalt,tilenormalbt,tilenormalwt,tilenormalwbt
+    ; windowed, transparent, 16x16: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile16x168b_wint, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawtileng8b16bms16x16:
     test byte[scadtng+ebx],dl
     jz near drawtileng8b16bmsnt16x16
     DetermineWindow drawtileng8b16bmstmsw16x16, drawtileng8b16bmstmw16x16, drawtileng8b16bmstsw16x16
-    drawtile16b16x16 tltype8b, preparet8batile, cachesingle8bng,ngpalcon8b,test8ba,0FFh,vidmemch8s,cache8b16b,tilenormalmst,tilenormalbmst
+    ; transparent + sub screen leaf, 16x16: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile16x168b_mst, eax
+    popad
+    pop ebx
+    ret
 drawtileng8b16bmstmsw16x16:
-    drawtile16bw16x16 tltype8b, preparet8batile, cachesingle8bng,ngpalcon8b,test8ba,0FFh,vidmemch8s,cache8b16b,tilenormalmst,tilenormalbmst,tilenormalwmst,tilenormalwbmst
+    ; windowed on both screens, transparent + sub, 16x16: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile16x168b_mstmsw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawtileng8b16bmstmw16x16:
-    drawtile16bw216x16 tltype8b, preparet8batile, cachesingle8bng,ngpalcon8b,test8ba,0FFh,vidmemch8s,cache8b16b,tilenormalmst,tilenormalbmst,tilenormalwsmt,tilenormalwbsmt,tilenormals,tilenormalbs
+    ; main-screen window only, transparent + sub, 16x16: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile16x168b_mstmw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawtileng8b16bmstsw16x16:
-    drawtile16bw216x16 tltype8b, preparet8batile, cachesingle8bng,ngpalcon8b,test8ba,0FFh,vidmemch8s,cache8b16b,tilenormalmst,tilenormalbmst,tilenormalwmsbt,tilenormalwbmsbt,tilenormalt,tilenormalbt
+    ; sub-screen window only, transparent + sub, 16x16: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile16x168b_mstsw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawtileng8b16bmsnt16x16
     DetermineWindow drawtileng8b16bmsntmsw16x16, drawtileng8b16bmsntmw16x16, drawtileng8b16bmsntsw16x16
-    drawtile16b16x16 tltype8b, preparet8batile, cachesingle8bng,ngpalcon8b,test8ba,0FFh,vidmemch8s,cache8b16b,tilenormalmsnt,tilenormalbmsnt
+    ; sub screen leaf, 16x16: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile16x168b_msnt, eax
+    popad
+    pop ebx
+    ret
 drawtileng8b16bmsntmsw16x16:
-    drawtile16bw16x16 tltype8b, preparet8batile, cachesingle8bng,ngpalcon8b,test8ba,0FFh,vidmemch8s,cache8b16b,tilenormalmsnt,tilenormalbmsnt,tilenormalwmsnt,tilenormalwbmsnt
+    ; windowed on both screens, sub, 16x16: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile16x168b_msntmsw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawtileng8b16bmsntmw16x16:
-    drawtile16bw216x16 tltype8b, preparet8batile, cachesingle8bng,ngpalcon8b,test8ba,0FFh,vidmemch8s,cache8b16b,tilenormalmsnt,tilenormalbmsnt,tilenormalwsmnt,tilenormalwbsmnt,tilenormals,tilenormalbs
+    ; main-screen window only, sub, 16x16: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile16x168b_msntmw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawtileng8b16bmsntsw16x16:
-    drawtile16bw216x16 tltype8b, preparet8batile, cachesingle8bng,ngpalcon8b,test8ba,0FFh,vidmemch8s,cache8b16b,tilenormalmsnt,tilenormalbmsnt,tilenormalwmsbnt,tilenormalwbmsbnt,tilenormal,tilenormalb
+    ; sub-screen window only, sub, 16x16: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawtile16x168b_msntsw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 
 ;******************************************
 ; 8x8 tiles - line by line engine
@@ -801,112 +1341,400 @@ NEWSYM drawlineng2b16b
     determinetransp drawlineng2b16bt
 drawlineng2b16bnt
     CheckWindowing drawlineng2bwin
-    drawline16bmacro tltype2b,preparet2ba,cachesingle2bng,ngpalcon2b,test2ba,03h,procpixels,procpixelst
+    ; plain line leaf: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline2b_nt, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng2bwin:
-    drawline16bwmacro tltype2b,preparet2ba,cachesingle2bng,ngpalcon2b,test2ba,03h,procpixels,procpixelst,procpixelstw
+    ; windowed, plain line: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline2b_win, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng2b16bt
     test byte[BGMS1+ebx*2+1],dl
     jnz near drawlineng2b16bms
     test byte[scadtng+ebx],dl
     jz near drawlineng2b16bnt
     CheckWindowing drawlineng2bwint
-    drawline16bmacro tltype2b,preparet2ba,cachesingle2bng,ngpalcon2b,test2ba,03h,procpixelstr,procpixelstt
+    ; transparent line leaf: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline2b_t, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng2bwint:
-    drawline16bwmacro tltype2b,preparet2ba,cachesingle2bng,ngpalcon2b,test2ba,03h,procpixelstr,procpixelstt,procpixelstwt
+    ; windowed, transparent line: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline2b_wint, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng2b16bms:
     test byte[scadtng+ebx],dl
     jz near drawlineng2b16bmsnt
     DetermineWindow drawlineng2b16bmstmsw, drawlineng2b16bmstmw, drawlineng2b16bmstsw
-    drawline16bmacro tltype2b,preparet2ba,cachesingle2bng,ngpalcon2b,test2ba,03h,procpixelsmst,procpixelstmst
+    ; transparent + sub screen line leaf: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline2b_mst, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng2b16bmstmsw:
-    drawline16bwmacro tltype2b,preparet2ba,cachesingle2bng,ngpalcon2b,test2ba,03h,procpixelsmst,procpixelstmst,procpixelstwmst
+    ; windowed on both screens, transparent + sub line: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline2b_mstmsw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng2b16bmstmw:
-    drawline16bw2macro tltype2b,preparet2ba,cachesingle2bng,ngpalcon2b,test2ba,03h,procpixelsmst,procpixelstmst,procpixelstwsmt,procpixelss,procpixelsts
+    ; main-screen window only, transparent + sub line: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline2b_mstmw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng2b16bmstsw:
-    drawline16bw2macro tltype2b,preparet2ba,cachesingle2bng,ngpalcon2b,test2ba,03h,procpixelsmst,procpixelstmst,procpixelstwmsbt,procpixelstr,procpixelstt
+    ; sub-screen window only, transparent + sub line: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline2b_mstsw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng2b16bmsnt
     DetermineWindow drawlineng2b16bmsntmsw, drawlineng2b16bmsntmw, drawlineng2b16bmsntsw
-    drawline16bmacro tltype2b,preparet2ba,cachesingle2bng,ngpalcon2b,test2ba,03h,procpixelsmsnt,procpixelstmsnt
+    ; sub screen line leaf: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline2b_msnt, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng2b16bmsntmsw:
-    drawline16bwmacro tltype2b,preparet2ba,cachesingle2bng,ngpalcon2b,test2ba,03h,procpixelsmsnt,procpixelstmsnt,procpixelstwmsnt
+    ; windowed on both screens, sub line: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline2b_msntmsw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng2b16bmsntmw:
-    drawline16bw2macro tltype2b,preparet2ba,cachesingle2bng,ngpalcon2b,test2ba,03h,procpixelsmsnt,procpixelstmsnt,procpixelstwsmnt,procpixelss,procpixelsts
+    ; main-screen window only, sub line: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline2b_msntmw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng2b16bmsntsw:
-    drawline16bw2macro tltype2b,preparet2ba,cachesingle2bng,ngpalcon2b,test2ba,03h,procpixelsmsnt,procpixelstmsnt,procpixelstwmsbnt,procpixels,procpixelst
+    ; sub-screen window only, sub line: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline2b_msntsw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 
 NEWSYM drawlineng4b16b
     determinetransp drawlineng4b16bt
 drawlineng4b16bnt
     CheckWindowing drawlineng4bwin
-    drawline16bmacro tltype4b,preparet4ba,cachesingle4bng,ngpalcon4b,test4ba,0Fh,procpixels,procpixelst
+    ; plain line leaf: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline4b_nt, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng4bwin:
-    drawline16bwmacro tltype4b,preparet4ba,cachesingle4bng,ngpalcon4b,test4ba,0Fh,procpixels,procpixelst,procpixelstw
+    ; windowed, plain line: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline4b_win, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng4b16bt
     test byte[BGMS1+ebx*2+1],dl
     jnz near drawlineng4b16bms
     test byte[scadtng+ebx],dl
     jz near drawlineng4b16bnt
     CheckWindowing drawlineng4bwint
-    drawline16bmacro tltype4b,preparet4ba,cachesingle4bng,ngpalcon4b,test4ba,0Fh,procpixelstr,procpixelstt
+    ; transparent line leaf: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline4b_t, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng4bwint:
-    drawline16bwmacro tltype4b,preparet4ba,cachesingle4bng,ngpalcon4b,test4ba,0Fh,procpixelstr,procpixelstt,procpixelstwt
+    ; windowed, transparent line: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline4b_wint, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng4b16bms:
     test byte[scadtng+ebx],dl
     jz near drawlineng4b16bmsnt
     DetermineWindow drawlineng4b16bmstmsw, drawlineng4b16bmstmw, drawlineng4b16bmstsw
-    drawline16bmacro tltype4b,preparet4ba,cachesingle4bng,ngpalcon4b,test4ba,0Fh,procpixelsmst,procpixelstmst
+    ; transparent + sub screen line leaf: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline4b_mst, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng4b16bmstmsw:
-    drawline16bwmacro tltype4b,preparet4ba,cachesingle4bng,ngpalcon4b,test4ba,0Fh,procpixelsmst,procpixelstmst,procpixelstwmst
+    ; windowed on both screens, transparent + sub line: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline4b_mstmsw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng4b16bmstmw:
-    drawline16bw2macro tltype4b,preparet4ba,cachesingle4bng,ngpalcon4b,test4ba,0Fh,procpixelsmst,procpixelstmst,procpixelstwsmt,procpixelss,procpixelsts
+    ; main-screen window only, transparent + sub line: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline4b_mstmw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng4b16bmstsw:
-    drawline16bw2macro tltype4b,preparet4ba,cachesingle4bng,ngpalcon4b,test4ba,0Fh,procpixelsmst,procpixelstmst,procpixelstwmsbt,procpixelstr,procpixelstt
+    ; sub-screen window only, transparent + sub line: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline4b_mstsw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng4b16bmsnt
     DetermineWindow drawlineng4b16bmsntmsw, drawlineng4b16bmsntmw, drawlineng4b16bmsntsw
-    drawline16bmacro tltype4b,preparet4ba,cachesingle4bng,ngpalcon4b,test4ba,0Fh,procpixelsmsnt,procpixelstmsnt
+    ; sub screen line leaf: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline4b_msnt, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng4b16bmsntmsw:
-    drawline16bwmacro tltype4b,preparet4ba,cachesingle4bng,ngpalcon4b,test4ba,0Fh,procpixelsmsnt,procpixelstmsnt,procpixelstwmsnt
+    ; windowed on both screens, sub line: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline4b_msntmsw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng4b16bmsntmw:
-    drawline16bw2macro tltype4b,preparet4ba,cachesingle4bng,ngpalcon4b,test4ba,0Fh,procpixelsmsnt,procpixelstmsnt,procpixelstwsmnt,procpixelss,procpixelsts
+    ; main-screen window only, sub line: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline4b_msntmw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng4b16bmsntsw:
-    drawline16bw2macro tltype4b,preparet4ba,cachesingle4bng,ngpalcon4b,test4ba,0Fh,procpixelsmsnt,procpixelstmsnt,procpixelstwmsbnt,procpixels,procpixelst
+    ; sub-screen window only, sub line: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline4b_msntsw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 
 NEWSYM drawlineng8b16b
     determinetransp drawlineng8b16bt
 drawlineng8b16bnt
     CheckWindowing drawlineng8bwin
-    drawline16bmacro tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixels,procpixelst
+    ; plain line leaf: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline8b_nt, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng8bwin:
-    drawline16bwmacro tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixels,procpixelst,procpixelstw
+    ; windowed, plain line: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline8b_win, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng8b16bt
     test byte[BGMS1+ebx*2+1],dl
     jnz near drawlineng8b16bms
     test byte[scadtng+ebx],dl
     jz near drawlineng8b16bnt
     CheckWindowing drawlineng8bwint
-    drawline16bmacro tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelstr,procpixelstt
+    ; transparent line leaf: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline8b_t, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng8bwint:
-    drawline16bwmacro tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelstr,procpixelstt,procpixelstwt
+    ; windowed, transparent line: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline8b_wint, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng8b16bms:
     test byte[scadtng+ebx],dl
     jz near drawlineng8b16bmsnt
     DetermineWindow drawlineng8b16bmstmsw, drawlineng8b16bmstmw, drawlineng8b16bmstsw
-    drawline16bmacro tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmst,procpixelstmst
+    ; transparent + sub screen line leaf: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline8b_mst, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng8b16bmstmsw:
-    drawline16bwmacro tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmst,procpixelstmst,procpixelstwmst
+    ; windowed on both screens, transparent + sub line: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline8b_mstmsw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng8b16bmstmw:
-    drawline16bw2macro tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmst,procpixelstmst,procpixelstwsmt,procpixelss,procpixelsts
+    ; main-screen window only, transparent + sub line: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline8b_mstmw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng8b16bmstsw:
-    drawline16bw2macro tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmst,procpixelstmst,procpixelstwmsbt,procpixelstr,procpixelstt
+    ; sub-screen window only, transparent + sub line: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline8b_mstsw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng8b16bmsnt
     DetermineWindow drawlineng8b16bmsntmsw, drawlineng8b16bmsntmw, drawlineng8b16bmsntsw
-    drawline16bmacro tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmsnt,procpixelstmsnt
+    ; sub screen line leaf: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline8b_msnt, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng8b16bmsntmsw:
-    drawline16bwmacro tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmsnt,procpixelstmsnt,procpixelstwmsnt
+    ; windowed on both screens, sub line: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline8b_msntmsw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng8b16bmsntmw:
-    drawline16bw2macro tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmsnt,procpixelstmsnt,procpixelstwsmnt,procpixelss,procpixelsts
+    ; main-screen window only, sub line: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline8b_msntmw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng8b16bmsntsw:
-    drawline16bw2macro tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmsnt,procpixelstmsnt,procpixelstwmsbnt,procpixels,procpixelst
+    ; sub-screen window only, sub line: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline8b_msntsw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 
 ;******************************************
 ; 16x16 tiles - line by line engine
@@ -999,112 +1827,400 @@ NEWSYM drawlineng16x162b16b
     determinetransp drawlineng2b16bt16x16
 drawlineng2b16bnt16x16
     CheckWindowing drawlineng2bwin16x16
-    drawline16bmacro16x16 tltype2b,preparet2ba,cachesingle2bng,ngpalcon2b,test2ba,03h,procpixels,procpixelst
+    ; plain 16x16 line leaf: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline16x162b_nt, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng2bwin16x16:
-    drawline16bwmacro16x16 tltype2b,preparet2ba,cachesingle2bng,ngpalcon2b,test2ba,03h,procpixels,procpixelst,procpixelstw
+    ; windowed, plain 16x16 line: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline16x162b_win, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng2b16bt16x16
     test byte[BGMS1+ebx*2+1],dl
     jnz near drawlineng2b16bms16x16
     test byte[scadtng+ebx],dl
     jz near drawlineng2b16bnt16x16
     CheckWindowing drawlineng2bwint16x16
-    drawline16bmacro16x16 tltype2b,preparet2ba,cachesingle2bng,ngpalcon2b,test2ba,03h,procpixelstr,procpixelstt
+    ; transparent 16x16 line leaf: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline16x162b_t, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng2bwint16x16:
-    drawline16bwmacro16x16 tltype2b,preparet2ba,cachesingle2bng,ngpalcon2b,test2ba,03h,procpixelstr,procpixelstt,procpixelstwt
+    ; windowed, transparent 16x16 line: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline16x162b_wint, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng2b16bms16x16:
     test byte[scadtng+ebx],dl
     jz near drawlineng2b16bmsnt16x16
     DetermineWindow drawlineng2b16bmstmsw16x16, drawlineng2b16bmstmw16x16, drawlineng2b16bmstsw16x16
-    drawline16bmacro16x16 tltype2b,preparet2ba,cachesingle2bng,ngpalcon2b,test2ba,03h,procpixelsmst,procpixelstmst
+    ; transparent + sub screen 16x16 line leaf: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline16x162b_mst, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng2b16bmstmsw16x16:
-    drawline16bwmacro16x16 tltype2b,preparet2ba,cachesingle2bng,ngpalcon2b,test2ba,03h,procpixelsmst,procpixelstmst,procpixelstwmst
+    ; windowed on both screens, transparent + sub 16x16 line: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline16x162b_mstmsw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng2b16bmstmw16x16:
-    drawline16bw2macro16x16 tltype2b,preparet2ba,cachesingle2bng,ngpalcon2b,test2ba,03h,procpixelsmst,procpixelstmst,procpixelstwsmt,procpixelss,procpixelsts
+    ; main-screen window only, transparent + sub 16x16 line: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline16x162b_mstmw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng2b16bmstsw16x16:
-    drawline16bw2macro16x16 tltype2b,preparet2ba,cachesingle2bng,ngpalcon2b,test2ba,03h,procpixelsmst,procpixelstmst,procpixelstwmsbt,procpixelstr,procpixelstt
+    ; sub-screen window only, transparent + sub 16x16 line: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline16x162b_mstsw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng2b16bmsnt16x16
     DetermineWindow drawlineng2b16bmsntmsw16x16, drawlineng2b16bmsntmw16x16, drawlineng2b16bmsntsw16x16
-    drawline16bmacro16x16 tltype2b,preparet2ba,cachesingle2bng,ngpalcon2b,test2ba,03h,procpixelsmsnt,procpixelstmsnt
+    ; sub screen 16x16 line leaf: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline16x162b_msnt, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng2b16bmsntmsw16x16:
-    drawline16bwmacro16x16 tltype2b,preparet2ba,cachesingle2bng,ngpalcon2b,test2ba,03h,procpixelsmsnt,procpixelstmsnt,procpixelstwmsnt
+    ; windowed on both screens, sub 16x16 line: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline16x162b_msntmsw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng2b16bmsntmw16x16:
-    drawline16bw2macro16x16 tltype2b,preparet2ba,cachesingle2bng,ngpalcon2b,test2ba,03h,procpixelsmsnt,procpixelstmsnt,procpixelstwsmnt,procpixelss,procpixelsts
+    ; main-screen window only, sub 16x16 line: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline16x162b_msntmw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng2b16bmsntsw16x16:
-    drawline16bw2macro16x16 tltype2b,preparet2ba,cachesingle2bng,ngpalcon2b,test2ba,03h,procpixelsmsnt,procpixelstmsnt,procpixelstwmsbnt,procpixels,procpixelst
+    ; sub-screen window only, sub 16x16 line: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline16x162b_msntsw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 
 NEWSYM drawlineng16x164b16b
     determinetransp drawlineng4b16bt16x16
 drawlineng4b16bnt16x16
     CheckWindowing drawlineng4bwin16x16
-    drawline16bmacro16x16 tltype4b,preparet4ba,cachesingle4bng,ngpalcon4b,test4ba,0Fh,procpixels,procpixelst
+    ; plain 16x16 line leaf: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline16x164b_nt, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng4bwin16x16:
-    drawline16bwmacro16x16 tltype4b,preparet4ba,cachesingle4bng,ngpalcon4b,test4ba,0Fh,procpixels,procpixelst,procpixelstw
+    ; windowed, plain 16x16 line: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline16x164b_win, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng4b16bt16x16
     test byte[BGMS1+ebx*2+1],dl
     jnz near drawlineng4b16bms16x16
     test byte[scadtng+ebx],dl
     jz near drawlineng4b16bnt16x16
     CheckWindowing drawlineng4bwint16x16
-    drawline16bmacro16x16 tltype4b,preparet4ba,cachesingle4bng,ngpalcon4b,test4ba,0Fh,procpixelstr,procpixelstt
+    ; transparent 16x16 line leaf: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline16x164b_t, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng4bwint16x16:
-    drawline16bwmacro16x16 tltype4b,preparet4ba,cachesingle4bng,ngpalcon4b,test4ba,0Fh,procpixelstr,procpixelstt,procpixelstwt
+    ; windowed, transparent 16x16 line: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline16x164b_wint, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng4b16bms16x16:
     test byte[scadtng+ebx],dl
     jz near drawlineng4b16bmsnt16x16
     DetermineWindow drawlineng4b16bmstmsw16x16, drawlineng4b16bmstmw16x16, drawlineng4b16bmstsw16x16
-    drawline16bmacro16x16 tltype4b,preparet4ba,cachesingle4bng,ngpalcon4b,test4ba,0Fh,procpixelsmst,procpixelstmst
+    ; transparent + sub screen 16x16 line leaf: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline16x164b_mst, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng4b16bmstmsw16x16:
-    drawline16bwmacro16x16 tltype4b,preparet4ba,cachesingle4bng,ngpalcon4b,test4ba,0Fh,procpixelsmst,procpixelstmst,procpixelstwmst
+    ; windowed on both screens, transparent + sub 16x16 line: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline16x164b_mstmsw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng4b16bmstmw16x16:
-    drawline16bw2macro16x16 tltype4b,preparet4ba,cachesingle4bng,ngpalcon4b,test4ba,0Fh,procpixelsmst,procpixelstmst,procpixelstwsmt,procpixelss,procpixelsts
+    ; main-screen window only, transparent + sub 16x16 line: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline16x164b_mstmw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng4b16bmstsw16x16:
-    drawline16bw2macro16x16 tltype4b,preparet4ba,cachesingle4bng,ngpalcon4b,test4ba,0Fh,procpixelsmst,procpixelstmst,procpixelstwmsbt,procpixelstr,procpixelstt
+    ; sub-screen window only, transparent + sub 16x16 line: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline16x164b_mstsw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng4b16bmsnt16x16
     DetermineWindow drawlineng4b16bmsntmsw16x16, drawlineng4b16bmsntmw16x16, drawlineng4b16bmsntsw16x16
-    drawline16bmacro16x16 tltype4b,preparet4ba,cachesingle4bng,ngpalcon4b,test4ba,0Fh,procpixelsmsnt,procpixelstmsnt
+    ; sub screen 16x16 line leaf: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline16x164b_msnt, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng4b16bmsntmsw16x16:
-    drawline16bwmacro16x16 tltype4b,preparet4ba,cachesingle4bng,ngpalcon4b,test4ba,0Fh,procpixelsmsnt,procpixelstmsnt,procpixelstwmsnt
+    ; windowed on both screens, sub 16x16 line: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline16x164b_msntmsw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng4b16bmsntmw16x16:
-    drawline16bw2macro16x16 tltype4b,preparet4ba,cachesingle4bng,ngpalcon4b,test4ba,0Fh,procpixelsmsnt,procpixelstmsnt,procpixelstwsmnt,procpixelss,procpixelsts
+    ; main-screen window only, sub 16x16 line: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline16x164b_msntmw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng4b16bmsntsw16x16:
-    drawline16bw2macro16x16 tltype4b,preparet4ba,cachesingle4bng,ngpalcon4b,test4ba,0Fh,procpixelsmsnt,procpixelstmsnt,procpixelstwmsbnt,procpixels,procpixelst
+    ; sub-screen window only, sub 16x16 line: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline16x164b_msntsw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 
 NEWSYM drawlineng16x168b16b
     determinetransp drawlineng8b16bt16x16
 drawlineng8b16bnt16x16
     CheckWindowing drawlineng8bwin16x16
-    drawline16bmacro16x16 tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixels,procpixelst
+    ; plain 16x16 line leaf: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline16x168b_nt, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng8bwin16x16:
-    drawline16bwmacro16x16 tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixels,procpixelst,procpixelstw
+    ; windowed, plain 16x16 line: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline16x168b_win, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng8b16bt16x16
     test byte[BGMS1+ebx*2+1],dl
     jnz near drawlineng8b16bms16x16
     test byte[scadtng+ebx],dl
     jz near drawlineng8b16bnt16x16
     CheckWindowing drawlineng8bwint16x16
-    drawline16bmacro16x16 tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelstr,procpixelstt
+    ; transparent 16x16 line leaf: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline16x168b_t, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng8bwint16x16:
-    drawline16bwmacro16x16 tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelstr,procpixelstt,procpixelstwt
+    ; windowed, transparent 16x16 line: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline16x168b_wint, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng8b16bms16x16:
     test byte[scadtng+ebx],dl
     jz near drawlineng8b16bmsnt16x16
     DetermineWindow drawlineng8b16bmstmsw16x16, drawlineng8b16bmstmw16x16, drawlineng8b16bmstsw16x16
-    drawline16bmacro16x16 tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmst,procpixelstmst
+    ; transparent + sub screen 16x16 line leaf: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline16x168b_mst, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng8b16bmstmsw16x16:
-    drawline16bwmacro16x16 tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmst,procpixelstmst,procpixelstwmst
+    ; windowed on both screens, transparent + sub 16x16 line: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline16x168b_mstmsw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng8b16bmstmw16x16:
-    drawline16bw2macro16x16 tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmst,procpixelstmst,procpixelstwsmt,procpixelss,procpixelsts
+    ; main-screen window only, transparent + sub 16x16 line: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline16x168b_mstmw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng8b16bmstsw16x16:
-    drawline16bw2macro16x16 tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmst,procpixelstmst,procpixelstwmsbt,procpixelstr,procpixelstt
+    ; sub-screen window only, transparent + sub 16x16 line: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline16x168b_mstsw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng8b16bmsnt16x16
     DetermineWindow drawlineng8b16bmsntmsw16x16, drawlineng8b16bmsntmw16x16, drawlineng8b16bmsntsw16x16
-    drawline16bmacro16x16 tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmsnt,procpixelstmsnt
+    ; sub screen 16x16 line leaf: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline16x168b_msnt, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng8b16bmsntmsw16x16:
-    drawline16bwmacro16x16 tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmsnt,procpixelstmsnt,procpixelstwmsnt
+    ; windowed on both screens, sub 16x16 line: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline16x168b_msntmsw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng8b16bmsntmw16x16:
-    drawline16bw2macro16x16 tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmsnt,procpixelstmsnt,procpixelstwsmnt,procpixelss,procpixelsts
+    ; main-screen window only, sub 16x16 line: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline16x168b_msntmw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 drawlineng8b16bmsntsw16x16:
-    drawline16bw2macro16x16 tltype8b,preparet8ba,cachesingle8bng,ngpalcon8b,test8ba,0FFh,procpixelsmsnt,procpixelstmsnt,procpixelstwmsbnt,procpixels,procpixelst
+    ; sub-screen window only, sub 16x16 line: video/c_ng2tile.c
+    pushad
+    mov eax, esp
+    ccall c_drawline16x168b_msntsw, eax
+    popad
+    pop ebx
+    cmp dword[ng2_mosaic],0
+    jne near domosaicng16b
+    ret
 
 %macro drawline16bmacro16x8 10
     cmp byte[curmosaicsz],1
