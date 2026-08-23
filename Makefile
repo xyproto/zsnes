@@ -106,14 +106,14 @@ endif
 # rather than at the end of a wall of undefined references.
 X86_ASM := $(if $(and $(filter x86,$(CPU)),$(filter 32,$(BITS))),yes,)
 REMAINING_ASM := $(strip $(wildcard video/*.asm))
+
 ifneq ($(X86_ASM),yes)
 ifneq ($(REMAINING_ASM),)
 $(info )
 $(info ERROR: this target is CPU=$(CPU) BITS=$(BITS), and the tree still has)
 $(info 32-bit x86 assembly that only a BITS=32 CPU=x86 build can link:)
 $(info   $(REMAINING_ASM))
-$(info Port it to C11 first - see portasm.md. Everything else already builds)
-$(info for x86-64 and should for arm64; check with "make portcheck".)
+$(info This is a work in progress.)
 $(info )
 $(error Cannot build $(CPU)/$(BITS) while video/*.asm remains)
 endif
