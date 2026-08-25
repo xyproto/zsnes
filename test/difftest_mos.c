@@ -35,7 +35,31 @@ extern u2 xtravbuf[288];
 static u1 vbuf[VBSZ];
 
 void asm_domosaicng16b(void);
-void cur_domosaicng16b(void);
+
+/* The current side is C. The thunk it used to be reached through spilled the
+   registers into MOS* and put them back afterwards; that is all this is. */
+extern u4 MOSAX, MOSBX, MOSCX, MOSDX, MOSSI, MOSDI, MOSBP;
+void c_domosaicng16b(void); /* video/c_ngmosaic.c */
+static u4 cur_regs[7];
+
+static void cur_domosaicng16b(void)
+{
+    MOSAX = cur_regs[0];
+    MOSBX = cur_regs[1];
+    MOSCX = cur_regs[2];
+    MOSDX = cur_regs[3];
+    MOSSI = cur_regs[4];
+    MOSDI = cur_regs[5];
+    MOSBP = cur_regs[6];
+    c_domosaicng16b();
+    cur_regs[0] = MOSAX;
+    cur_regs[1] = MOSBX;
+    cur_regs[2] = MOSCX;
+    cur_regs[3] = MOSDX;
+    cur_regs[4] = MOSSI;
+    cur_regs[5] = MOSDI;
+    cur_regs[6] = MOSBP;
+}
 
 /* The oracle still dispatches through the four jump tables, which cpu/table.c
    used to fill and no longer does - nothing reads them now that the pass is C.
@@ -213,6 +237,10 @@ static u4 checksum(void)
     return s;
 }
 
+/* The ported side takes no registers, so it is driven through the block
+   above rather than through dt_call. */
+static void run_c(snapshot const* const in, snapshot* const out);
+
 static void run(void (*fn)(void), snapshot const* const in,
     snapshot* const out)
 {
@@ -239,6 +267,24 @@ static void run(void (*fn)(void), snapshot const* const in,
     out->reg[4] = rg_esi;
     out->reg[5] = rg_edi;
     out->reg[6] = rg_ebp;
+    out->sum = checksum();
+    memcpy(out->main, vbuf, WIN);
+    memcpy(out->sub, vbuf + MOS_SUB * 2u, WIN);
+    memcpy(out->scratch, xtravbuf, 576);
+}
+
+static void run_c(snapshot const* const in, snapshot* const out)
+{
+    memset(vbuf, 0xCC, VBSZ);
+    memcpy(vbuf, in->main, WIN);
+    memcpy(vbuf + MOS_SUB * 2u, in->sub, WIN);
+    memcpy(xtravbuf, in->scratch, 576);
+    pesimpng = vbuf;
+
+    memcpy(cur_regs, in->reg, sizeof cur_regs);
+    cur_domosaicng16b();
+    memcpy(out->reg, cur_regs, sizeof cur_regs);
+
     out->sum = checksum();
     memcpy(out->main, vbuf, WIN);
     memcpy(out->sub, vbuf + MOS_SUB * 2u, WIN);
@@ -296,7 +342,7 @@ int main(void)
         }
 
         run(asm_domosaicng16b, &in, &x);
-        run(cur_domosaicng16b, &in, &y);
+        run_c(&in, &y);
 
         if (curmosaicsz > 16 || curmosaicsz <= 1) {
             route = 5;

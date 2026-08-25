@@ -49,45 +49,45 @@ extern u4 CMainWinScr, CSubWinScr;
 extern u4 ngwintable[];
 
 extern void asm_drawtileng2b16b(void);
-extern void cur_drawtileng2b16b(void);
+void c_ng_drawtileng2b16b(u4* r);
 extern void asm_drawtileng4b16b(void);
-extern void cur_drawtileng4b16b(void);
+void c_ng_drawtileng4b16b(u4* r);
 extern void asm_drawtileng8b16b(void);
-extern void cur_drawtileng8b16b(void);
+void c_ng_drawtileng8b16b(u4* r);
 extern void asm_drawtileng16x162b16b(void);
-extern void cur_drawtileng16x162b16b(void);
+void c_ng_drawtileng16x162b16b(u4* r);
 extern void asm_drawtileng16x164b16b(void);
-extern void cur_drawtileng16x164b16b(void);
+void c_ng_drawtileng16x164b16b(u4* r);
 extern void asm_drawtileng16x168b16b(void);
-extern void cur_drawtileng16x168b16b(void);
+void c_ng_drawtileng16x168b16b(u4* r);
 extern void asm_drawlineng2b16b(void);
-extern void cur_drawlineng2b16b(void);
+void c_ng_drawlineng2b16b(u4* r);
 extern void asm_drawlineng4b16b(void);
-extern void cur_drawlineng4b16b(void);
+void c_ng_drawlineng4b16b(u4* r);
 extern void asm_drawlineng8b16b(void);
-extern void cur_drawlineng8b16b(void);
+void c_ng_drawlineng8b16b(u4* r);
 extern void asm_drawlineng16x162b16b(void);
-extern void cur_drawlineng16x162b16b(void);
+void c_ng_drawlineng16x162b16b(u4* r);
 extern void asm_drawlineng16x164b16b(void);
-extern void cur_drawlineng16x164b16b(void);
+void c_ng_drawlineng16x164b16b(u4* r);
 extern void asm_drawlineng16x168b16b(void);
-extern void cur_drawlineng16x168b16b(void);
+void c_ng_drawlineng16x168b16b(u4* r);
 extern void asm_drawlineng16x84b16b(void);
-extern void cur_drawlineng16x84b16b(void);
+void c_ng_drawlineng16x84b16b(u4* r);
 extern void asm_drawlineng16x82b16b(void);
-extern void cur_drawlineng16x82b16b(void);
+void c_ng_drawlineng16x82b16b(u4* r);
 extern void asm_drawlinengom2b16b(void);
-extern void cur_drawlinengom2b16b(void);
+void c_ng_drawlinengom2b16b(u4* r);
 extern void asm_drawlinengom4b16b(void);
-extern void cur_drawlinengom4b16b(void);
+void c_ng_drawlinengom4b16b(u4* r);
 extern void asm_drawlinengom8b16b(void);
-extern void cur_drawlinengom8b16b(void);
+void c_ng_drawlinengom8b16b(u4* r);
 extern void asm_drawlinengom16x162b16b(void);
-extern void cur_drawlinengom16x162b16b(void);
+void c_ng_drawlinengom16x162b16b(u4* r);
 extern void asm_drawlinengom16x164b16b(void);
-extern void cur_drawlinengom16x164b16b(void);
+void c_ng_drawlinengom16x164b16b(u4* r);
 extern void asm_drawlinengom16x168b16b(void);
-extern void cur_drawlinengom16x168b16b(void);
+void c_ng_drawlinengom16x168b16b(u4* r);
 
 /* The ms writers also store to edi+75036*2, so the buffer has to cover the sub
    screen as well - a short one puts those writes in whatever follows, which is
@@ -206,26 +206,59 @@ static void call_drawlinengom16x162b16b(void) { NG2_CALL(asm_drawlinengom16x162b
 static void call_drawlinengom16x164b16b(void) { NG2_CALL(asm_drawlinengom16x164b16b); }
 static void call_drawlinengom16x168b16b(void) { NG2_CALL(asm_drawlinengom16x168b16b); }
 
-static void curcall_drawtileng2b16b(void) { NG2_CALL(cur_drawtileng2b16b); }
-static void curcall_drawtileng4b16b(void) { NG2_CALL(cur_drawtileng4b16b); }
-static void curcall_drawtileng8b16b(void) { NG2_CALL(cur_drawtileng8b16b); }
-static void curcall_drawtileng16x162b16b(void) { NG2_CALL(cur_drawtileng16x162b16b); }
-static void curcall_drawtileng16x164b16b(void) { NG2_CALL(cur_drawtileng16x164b16b); }
-static void curcall_drawtileng16x168b16b(void) { NG2_CALL(cur_drawtileng16x168b16b); }
-static void curcall_drawlineng2b16b(void) { NG2_CALL(cur_drawlineng2b16b); }
-static void curcall_drawlineng4b16b(void) { NG2_CALL(cur_drawlineng4b16b); }
-static void curcall_drawlineng8b16b(void) { NG2_CALL(cur_drawlineng8b16b); }
-static void curcall_drawlineng16x162b16b(void) { NG2_CALL(cur_drawlineng16x162b16b); }
-static void curcall_drawlineng16x164b16b(void) { NG2_CALL(cur_drawlineng16x164b16b); }
-static void curcall_drawlineng16x168b16b(void) { NG2_CALL(cur_drawlineng16x168b16b); }
-static void curcall_drawlineng16x84b16b(void) { NG2_CALL(cur_drawlineng16x84b16b); }
-static void curcall_drawlineng16x82b16b(void) { NG2_CALL(cur_drawlineng16x82b16b); }
-static void curcall_drawlinengom2b16b(void) { NG2_CALL(cur_drawlinengom2b16b); }
-static void curcall_drawlinengom4b16b(void) { NG2_CALL(cur_drawlinengom4b16b); }
-static void curcall_drawlinengom8b16b(void) { NG2_CALL(cur_drawlinengom8b16b); }
-static void curcall_drawlinengom16x162b16b(void) { NG2_CALL(cur_drawlinengom16x162b16b); }
-static void curcall_drawlinengom16x164b16b(void) { NG2_CALL(cur_drawlinengom16x164b16b); }
-static void curcall_drawlinengom16x168b16b(void) { NG2_CALL(cur_drawlinengom16x168b16b); }
+/* The current side is C: the seam it used to go through in
+   video/newg162.asm built this block with pushad, and took the mosaic tail
+   afterwards - which video/c_ngbg.c does for itself now. */
+enum { R_EDI,
+    R_ESI,
+    R_EBP,
+    R_ESP,
+    R_EBX,
+    R_EDX,
+    R_ECX,
+    R_EAX };
+
+extern u4 ng2_mosaic;
+void domosaicng16b(void);
+
+static void cur_call(void (*const fn)(u4*))
+{
+    u4 r[8];
+
+    r[R_EAX] = NG2_EAX;
+    r[R_EBX] = NG2_EBX;
+    r[R_ECX] = NG2_ECX;
+    r[R_EDX] = NG2_EDX;
+    r[R_ESI] = NG2_ESI;
+    r[R_EDI] = NG2_EDI;
+    r[R_EBP] = NG2_EBP;
+    r[R_ESP] = 0;
+    fn(r);
+    if (ng2_mosaic != 0) {
+        domosaicng16b();
+    }
+}
+
+static void curcall_drawtileng2b16b(void) { cur_call(c_ng_drawtileng2b16b); }
+static void curcall_drawtileng4b16b(void) { cur_call(c_ng_drawtileng4b16b); }
+static void curcall_drawtileng8b16b(void) { cur_call(c_ng_drawtileng8b16b); }
+static void curcall_drawtileng16x162b16b(void) { cur_call(c_ng_drawtileng16x162b16b); }
+static void curcall_drawtileng16x164b16b(void) { cur_call(c_ng_drawtileng16x164b16b); }
+static void curcall_drawtileng16x168b16b(void) { cur_call(c_ng_drawtileng16x168b16b); }
+static void curcall_drawlineng2b16b(void) { cur_call(c_ng_drawlineng2b16b); }
+static void curcall_drawlineng4b16b(void) { cur_call(c_ng_drawlineng4b16b); }
+static void curcall_drawlineng8b16b(void) { cur_call(c_ng_drawlineng8b16b); }
+static void curcall_drawlineng16x162b16b(void) { cur_call(c_ng_drawlineng16x162b16b); }
+static void curcall_drawlineng16x164b16b(void) { cur_call(c_ng_drawlineng16x164b16b); }
+static void curcall_drawlineng16x168b16b(void) { cur_call(c_ng_drawlineng16x168b16b); }
+static void curcall_drawlineng16x84b16b(void) { cur_call(c_ng_drawlineng16x84b16b); }
+static void curcall_drawlineng16x82b16b(void) { cur_call(c_ng_drawlineng16x82b16b); }
+static void curcall_drawlinengom2b16b(void) { cur_call(c_ng_drawlinengom2b16b); }
+static void curcall_drawlinengom4b16b(void) { cur_call(c_ng_drawlinengom4b16b); }
+static void curcall_drawlinengom8b16b(void) { cur_call(c_ng_drawlinengom8b16b); }
+static void curcall_drawlinengom16x162b16b(void) { cur_call(c_ng_drawlinengom16x162b16b); }
+static void curcall_drawlinengom16x164b16b(void) { cur_call(c_ng_drawlinengom16x164b16b); }
+static void curcall_drawlinengom16x168b16b(void) { cur_call(c_ng_drawlinengom16x168b16b); }
 
 /* The routine draws into a private buffer, and the child copies the result to
    shared memory afterwards. Letting it write MAP_SHARED memory directly made

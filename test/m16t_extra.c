@@ -12,38 +12,45 @@ typedef uint32_t u4;
 
 u1* vram;
 
-/* calldl16t's register block. video/c_mv16tline.c owns these in the real
-   build, but that file calls the seam thunks by name and mkoracle renames
-   every one of them, so no difftest can link it - the globals come from here
-   instead. */
+/* The video pass's register file, and the call that hands it to a ported
+   entry point. video/c_mv16tline.c owns both in the real build; a difftest
+   that links a file calling dl_call needs a working one, not a stub, and
+   linking c_mv16tline.c itself would drag in the whole scanline driver. */
 u4 DLR[7];
-void (*DLFN)(void);
 
-/* calldl16t itself, which lives in video/makev16t.asm in the real build. A
-   difftest that links a ported file calling it needs a working one, not a
-   stub - this is the same shim written where C can see it. */
-__asm__(".pushsection .text\n"
-        ".globl calldl16t\n"
-        "calldl16t:\n"
-        "  pushl %ebx\n  pushl %esi\n  pushl %edi\n  pushl %ebp\n"
-        "  movl DLR+4, %ebx\n"
-        "  movl DLR+8, %ecx\n"
-        "  movl DLR+12, %edx\n"
-        "  movl DLR+16, %esi\n"
-        "  movl DLR+20, %edi\n"
-        "  movl DLR+24, %ebp\n"
-        "  movl DLR, %eax\n"
-        "  call *DLFN\n"
-        "  movl %eax, DLR\n"
-        "  movl %ebx, DLR+4\n"
-        "  movl %ecx, DLR+8\n"
-        "  movl %edx, DLR+12\n"
-        "  movl %esi, DLR+16\n"
-        "  movl %edi, DLR+20\n"
-        "  movl %ebp, DLR+24\n"
-        "  popl %ebp\n  popl %edi\n  popl %esi\n  popl %ebx\n"
-        "  ret\n"
-        ".popsection\n");
+enum { R_EDI,
+    R_ESI,
+    R_EBP,
+    R_ESP,
+    R_EBX,
+    R_EDX,
+    R_ECX,
+    R_EAX };
+
+void dl_call(void (*fn)(u4*));
+
+void dl_call(void (*const fn)(u4*))
+{
+    u4 r[8];
+
+    r[R_EAX] = DLR[0];
+    r[R_EBX] = DLR[1];
+    r[R_ECX] = DLR[2];
+    r[R_EDX] = DLR[3];
+    r[R_ESI] = DLR[4];
+    r[R_EDI] = DLR[5];
+    r[R_EBP] = DLR[6];
+    r[R_ESP] = 0;
+    fn(r);
+    DLR[0] = r[R_EAX];
+    DLR[1] = r[R_EBX];
+    DLR[2] = r[R_ECX];
+    DLR[3] = r[R_EDX];
+    DLR[4] = r[R_ESI];
+    DLR[5] = r[R_EDI];
+    DLR[6] = r[R_EBP];
+}
+
 u4 cs4_hits, cs4_last;
 
 void c_cachesingle4bng(u4 ecx);

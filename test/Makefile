@@ -344,10 +344,10 @@ mos: difftest_mos.c difftest.h $(NG_SEAM)
 	python3 ../tools/mkoracle.py video/newgfx16.asm -o _mos.o \
 	    --stubs _mos_stubs.c --provided-by $(NG_OBJS) \
 	    --exclude vram xtravbuf pesimpng fulladdtab vidbuffer
-	python3 ../tools/mkoracle.py video/newgfx16.asm -o _moscur.o \
-	    --worktree --prefix cur_
+	# No second oracle: the current side is C, and difftest_mos.c drives it
+	# through the same MOS* block the thunk used to fill.
 	$(CC) $(CFLAGS) difftest_mos.c $(NG_SEAM) \
-	    _mos.o _moscur.o _mos_stubs.c $(NG_OBJS) \
+	    _mos.o _mos_stubs.c $(NG_OBJS) \
 	    -no-pie -o difftest_mos
 	@./difftest_mos
 
@@ -355,7 +355,7 @@ mos: difftest_mos.c difftest.h $(NG_SEAM)
 # revision: the first two thirds of the routine are already C and the assembly
 # reaches them by ccallv there, so both sides share those three and this
 # compares only what was ported last - see difftest_ngeng.c.
-ngeng: difftest_ngeng.c difftest.h ../video/c_ngline.c ../video/newgfx16.asm
+ngeng: difftest_ngeng.c difftest.h ../video/c_ngline.c
 	python3 ../tools/mkoracle.py video/newgfx16.asm -o _ngeng.o \
 	    --requires 'ccallv newengine16b_lines' --ported-marker '' \
 	    --stubs _ngeng_stubs.c --provided-by $(NG_OBJS) \
@@ -369,7 +369,7 @@ ngeng: difftest_ngeng.c difftest.h ../video/c_ngline.c ../video/newgfx16.asm
 
 # StartDrawNewGfx16b and the screen clip. The three workers it calls are
 # recorded, so video/c_ngprocbg.c is not linked - see difftest_ngframe.c.
-ngframe: difftest_ngframe.c difftest.h ../video/c_ngframe.c ../video/newgfx16.asm
+ngframe: difftest_ngframe.c difftest.h ../video/c_ngframe.c
 	python3 ../tools/mkoracle.py video/newgfx16.asm -o _ngframe.o \
 	    --requires 'ccallv c_procbg16b' --ported-marker '' \
 	    --stubs _ngframe_stubs.c --provided-by $(NG_OBJS) \
@@ -517,7 +517,7 @@ transp: difftest_transp.c difftest.h ../video/c_ngtransp.c
 # The four background tile dispatchers. The renderers they tail-jump into are
 # recorded rather than run, so what this compares is the register state at the
 # jump plus everything the dispatcher wrote - see difftest_bgt.c.
-bgt: difftest_bgt.c difftest.h ../video/c_ngbg.c ../video/newgfx16.asm
+bgt: difftest_bgt.c difftest.h ../video/c_ngbg.c
 	python3 ../tools/mkoracle.py video/newgfx16.asm -o _bgt.o \
 	    --stubs _bgt_stubs.c --provided-by $(NG_OBJS) \
 	    --define BuildWindow=BuildWindow_reg \
@@ -536,19 +536,26 @@ bgt: difftest_bgt.c difftest.h ../video/c_ngbg.c ../video/newgfx16.asm
 	    $(NG_OBJS) -no-pie -o difftest_bgt
 	@./difftest_bgt
 
+# The worktree side is no longer assembly: video/newg162.asm is gone and the
+# entry points are C, so difftest_ng2.c calls them directly and there is only
+# one oracle here now.
 ng2: difftest_ng2.c ng2_harness.c ng2_harness.h difftest.h \
-     ../video/c_ng2tile.c ../video/c_ng2gate.c ../video/newg162.asm
+     ../video/c_ng2tile.c ../video/c_ng2gate.c
+	# --requires bounds the search from above now that the file is deleted:
+	# the finished port has neither the .mac include nor the gate macros'
+	# ccall, so the marker alone would select it. The include is the thing
+	# only a revision with the renderers still in it has.
 	python3 ../tools/mkoracle.py video/newg162.asm -o _ng2.o \
-	    --ported-marker 'ccall c_determinetransp' --stubs _ng2_stubs.c \
+	    --requires '%include "video/newg162.mac"' \
+	    --ported-marker 'ccall c_determinetransp' \
+	    --stubs _ng2_stubs.c \
 	    --provided-by ../video/tilecache.o ../endmem.o \
 	    --exclude domosaicng16b vrama
-	python3 ../tools/mkoracle.py video/newg162.asm -o _ng2cur.o \
-	    --worktree --prefix cur_
 	# The two ported files go in as *sources*. Linking the objects the main
 	# build leaves behind means an edit to either can be tested against a
 	# stale one - which happened, and showed up as an extern of the wrong
 	# length reading whatever global followed it.
-	$(CC) $(CFLAGS) difftest_ng2.c ng2_harness.c _ng2.o _ng2cur.o \
+	$(CC) $(CFLAGS) difftest_ng2.c ng2_harness.c _ng2.o \
 	    _ng2_stubs.c ../video/tilecache.o ../endmem.o ../video/c_ng2tile.c \
 	    ../video/c_ng2gate.c -no-pie -o difftest_ng2
 	@./difftest_ng2

@@ -26,11 +26,19 @@ typedef uint16_t u2;
 typedef uint32_t u4;
 typedef int32_t s4;
 
-enum { R_EDI, R_ESI, R_EBP, R_ESP, R_EBX, R_EDX, R_ECX, R_EAX };
+enum { R_EDI,
+    R_ESI,
+    R_EBP,
+    R_ESP,
+    R_EBX,
+    R_EDX,
+    R_ECX,
+    R_EAX };
 
 /* --- the state the dispatchers read and write ---------------------------- */
 extern u1 curmosaicsz, BGMA[], t16x161[], scadsng[], vidbright, prevbrightdc;
 extern u1 winbg1enval[], winlogicaval[];
+extern u1 prdata[], prdatb[], prdatc[];
 extern u2 BGPT1[], BGPT1X[], BGPT1Y[], BG1SXl[], BG1SYl[], BGOPT1[];
 extern u2 bgtxad[];
 extern u4 ng16bprval, ng16bbgval, bgtxadd, ngptrdat[], ngptrdat2;
@@ -107,7 +115,13 @@ __asm__(".text\n"
         ".globl drawlineng16x164b16b\n drawlineng16x164b16b: movl $11, rec_which\n jmp rec_common\n"
         ".globl drawlineng16x168b16b\n drawlineng16x168b16b: movl $12, rec_which\n jmp rec_common\n"
         ".globl drawlineng16x82b16b\n drawlineng16x82b16b: movl $13, rec_which\n jmp rec_common\n"
-        ".globl drawlineng16x84b16b\n drawlineng16x84b16b: movl $14, rec_which\n jmp rec_common\n"        ".globl drawlinengom2b16b\n drawlinengom2b16b: movl $15, rec_which\n jmp rec_common\n"        ".globl drawlinengom4b16b\n drawlinengom4b16b: movl $16, rec_which\n jmp rec_common\n"        ".globl drawlinengom8b16b\n drawlinengom8b16b: movl $17, rec_which\n jmp rec_common\n"        ".globl drawlinengom16x162b16b\n drawlinengom16x162b16b: movl $18, rec_which\n jmp rec_common\n"        ".globl drawlinengom16x164b16b\n drawlinengom16x164b16b: movl $19, rec_which\n jmp rec_common\n"        ".globl drawlinengom16x168b16b\n drawlinengom16x168b16b: movl $20, rec_which\n jmp rec_common\n"
+        ".globl drawlineng16x84b16b\n drawlineng16x84b16b: movl $14, rec_which\n jmp rec_common\n"
+        ".globl drawlinengom2b16b\n drawlinengom2b16b: movl $15, rec_which\n jmp rec_common\n"
+        ".globl drawlinengom4b16b\n drawlinengom4b16b: movl $16, rec_which\n jmp rec_common\n"
+        ".globl drawlinengom8b16b\n drawlinengom8b16b: movl $17, rec_which\n jmp rec_common\n"
+        ".globl drawlinengom16x162b16b\n drawlinengom16x162b16b: movl $18, rec_which\n jmp rec_common\n"
+        ".globl drawlinengom16x164b16b\n drawlinengom16x164b16b: movl $19, rec_which\n jmp rec_common\n"
+        ".globl drawlinengom16x168b16b\n drawlinengom16x168b16b: movl $20, rec_which\n jmp rec_common\n"
         "rec_common:\n"
         "  movl %eax, rec_regs+0\n  movl %ebx, rec_regs+4\n"
         "  movl %ecx, rec_regs+8\n  movl %edx, rec_regs+12\n"
@@ -249,21 +263,42 @@ typedef struct {
     u2 bgtxad;
     u4 ngptrdat, ngceax, ngcedi;
     u1 mosaic, prevbright;
+    /* The per-layer priority flag. The assembly wrote it in the entry thunk,
+       before it spilled the registers, so it is easy to leave behind when the
+       thunk goes - and nothing else in this snapshot would notice. */
+    u1 prd[3];
 } snap;
+
+/* Both sides start each run from this, and it is *not* zero. Most of these are
+   written only on some paths - mode0add on 2bpp, the flip pair on 16x16,
+   bgtxadd's upper half never - so clearing them first hides every one of those
+   conditions: the value read back is 0 whether the dispatcher wrote it or not.
+   Seeding it makes "does not write" different from "writes 0". */
+static u4 rst[20];
 
 static void reset(void)
 {
     memset(rec_regs, 0, sizeof rec_regs);
     rec_which = rec_bw_hits = rec_bw_a = rec_bw_b = rec_gdc_hits = 0;
-    bgtxadd = ngptrdat2 = mode0add = 0;
-    taddnfy16x16 = taddfy16x16 = 0;
-    ng16bbgval = ng16bprval = ngwinen = nglogicval = 0;
-    curmosaicsz = 0;
+    bgtxadd = rst[0];
+    ngptrdat2 = rst[1];
+    mode0add = rst[2];
+    taddnfy16x16 = rst[3];
+    taddfy16x16 = rst[4];
+    ng16bbgval = rst[5];
+    ng16bprval = rst[6];
+    ngwinen = rst[7];
+    nglogicval = (u1)rst[8];
+    curmosaicsz = (u1)rst[9];
     memset(ngwintable, 0, 16);
-    yposng = flipyposng = yposngom = flipyposngom = 0;
+    yposng = rst[10];
+    flipyposng = rst[11];
+    yposngom = rst[12];
+    flipyposngom = rst[13];
     ofsmcptr = ofsmcptr2 = ofsmady = ofsmadx = ofsmtptr = ofsmtptrs = 0;
-    ofsmmptr = ofsmcyps = ofshvaladd = ofsmval = ofsmvalh = bgtxadd2 = 0;
-    CPalPtrng = 0;
+    ofsmmptr = ofsmcyps = ofshvaladd = ofsmval = ofsmvalh = 0;
+    bgtxadd2 = rst[14];
+    CPalPtrng = rst[15];
     pesimpng = 0;
     memset(xtravbuf, 0, 576);
     /* ngptrdat / ngceax / ngcedi / bgtxad are outputs of pass 0 and *inputs*
@@ -312,12 +347,15 @@ static void grab(snap* const s, u4 const i)
     s->om[9] = ofsmval;
     s->om[10] = ofsmvalh;
     s->btx2 = bgtxadd2;
-    {   /* the mosaic scratch line, as a checksum */
+    { /* the mosaic scratch line, as a checksum */
         u4 q, h = 0;
         for (q = 0; q < 544u; q++)
             h = h * 31u + xtravbuf[q];
         s->xtsum = h;
     }
+    s->prd[0] = prdata[i & 0xFFu];
+    s->prd[1] = prdatb[i & 0xFFu];
+    s->prd[2] = prdatc[i & 0xFFu];
 }
 
 int main(void)
@@ -364,9 +402,15 @@ int main(void)
         /* 0 or 1, not a random byte: the 16x16 path is taken on exactly 1,
            so random bytes reach it once in 256 and it was getting 68 of
            40000 runs. */
+        /* 0 or 1, and once in eight something else: the dispatch takes the
+           16x16 path on a value of exactly 1, so a table that only ever holds
+           0 or 1 cannot tell "== 1" from "!= 0". */
         for (u4 q = 0; q < 1024; q++)
-            t16x161[q] = (u1)dt_mod(2);
+            t16x161[q] = (u1)(dt_mod(8) == 0 ? dt_mod(256) : dt_mod(2));
         dt_fill(scadsng, 256);
+        dt_fill(prdata, 256);
+        dt_fill(prdatb, 256);
+        dt_fill(prdatc, 256);
         dt_fill(winbg1enval, 1024);
         dt_fill(winlogicaval, 512);
         dt_fill((u1*)cpalval, 1024);
@@ -391,6 +435,9 @@ int main(void)
         dt_fill((u1*)BGPT3X, 512);
         vram = vidbuf;
 
+        for (u4 q = 0; q < 20u; q++)
+            rst[q] = dt_u32();
+
         IN_EAX = dt_u32();
         IN_EBX = bx;
         IN_ECX = dt_u32();
@@ -401,11 +448,16 @@ int main(void)
 
         {
             u1 const pb = prevbrightdc;
+            u1 const pd[3] = { prdata[bx], prdatb[bx], prdatc[bx] };
+
             reset();
             asmside[pass][bg]();
             grab(&a, i);
 
             prevbrightdc = pb;
+            prdata[bx] = pd[0];
+            prdatb[bx] = pd[1];
+            prdatc[bx] = pd[2];
             reset();
             {
                 u4 r[8];
@@ -471,6 +523,9 @@ int main(void)
         DT_EQ("pesimpng", a.pesim, b.pesim);
         DT_EQ("bgtxadd2", a.btx2, b.btx2);
         DT_EQ("xtravbuf", a.xtsum, b.xtsum);
+        DT_EQ("prdata", a.prd[0], b.prd[0]);
+        DT_EQ("prdatb", a.prd[1], b.prd[1]);
+        DT_EQ("prdatc", a.prd[2], b.prd[2]);
         {
             static char const* const on[11] = { "ofsmcptr", "ofsmcptr2",
                 "ofsmady", "ofsmadx", "ofsmtptr", "ofsmtptrs", "ofsmmptr",

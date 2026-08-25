@@ -23,7 +23,14 @@ typedef uint8_t u1;
 typedef uint16_t u2;
 typedef uint32_t u4;
 
-enum { R_EDI, R_ESI, R_EBP, R_ESP, R_EBX, R_EDX, R_ECX, R_EAX };
+enum { R_EDI,
+    R_ESI,
+    R_EBP,
+    R_ESP,
+    R_EBX,
+    R_EDX,
+    R_ECX,
+    R_EAX };
 
 extern u1 WindowRedraw, ngmsdraw, ngextbg, scrndis;
 extern u1 modeused[], scadsng[], winbg1enval[], nglogicval;
@@ -74,12 +81,12 @@ static void put(u4 const what, u4 const a, u4 const b, u4 const c, u4 const d,
     rec.n++;
 }
 
-static u4 proc_id(void (*fn)(void));
+static u4 proc_id(void const* fn);
 
-void c_procbg16b(u4 layer, void (*lineproc)(void), void (*tileproc)(void),
+void c_procbg16b(u4 layer, void (*lineproc)(u4*), void (*tileproc)(u4*),
     u1 const* prdat, int main_, u4 mask, int kind);
-void c_procbg16b(u4 const layer, void (*const lineproc)(void),
-    void (*const tileproc)(void), u1 const* const prdat, int const main_,
+void c_procbg16b(u4 const layer, void (*const lineproc)(u4*),
+    void (*const tileproc)(u4*), u1 const* const prdat, int const main_,
     u4 const mask, int const kind)
 {
     static u4* const tot[4] = { &bg1totng, &bg2totng, &bg3totng, &bg4totng };
@@ -157,25 +164,25 @@ void c_process_transparencies(u4* const r)
 }
 
 /* The sixteen dispatchers are only ever passed along as pointers here. */
-#define STUB(n) \
-    void n(void); \
-    void n(void) { }
-STUB(drawbg1line16b)
-STUB(drawbg2line16b)
-STUB(drawbg3line16b)
-STUB(drawbg4line16b)
-STUB(drawbg1tile16b)
-STUB(drawbg2tile16b)
-STUB(drawbg3tile16b)
-STUB(drawbg4tile16b)
-STUB(drawbg1linepr116b)
-STUB(drawbg2linepr116b)
-STUB(drawbg3linepr116b)
-STUB(drawbg4linepr116b)
-STUB(drawbg1tilepr116b)
-STUB(drawbg2tilepr116b)
-STUB(drawbg3tilepr116b)
-STUB(drawbg4tilepr116b)
+#define STUB(n)    \
+    void n(u4* r); \
+    void n(u4* r) { (void)r; }
+STUB(c_drawbg1line16b)
+STUB(c_drawbg2line16b)
+STUB(c_drawbg3line16b)
+STUB(c_drawbg4line16b)
+STUB(c_drawbg1tile16b)
+STUB(c_drawbg2tile16b)
+STUB(c_drawbg3tile16b)
+STUB(c_drawbg4tile16b)
+STUB(c_drawbg1linepr116b)
+STUB(c_drawbg2linepr116b)
+STUB(c_drawbg3linepr116b)
+STUB(c_drawbg4linepr116b)
+STUB(c_drawbg1tilepr116b)
+STUB(c_drawbg2tilepr116b)
+STUB(c_drawbg3tilepr116b)
+STUB(c_drawbg4tilepr116b)
 
 void asm_drawbg1line16b(void), asm_drawbg2line16b(void);
 void asm_drawbg3line16b(void), asm_drawbg4line16b(void);
@@ -189,13 +196,14 @@ void asm_drawbg3tilepr116b(void), asm_drawbg4tilepr116b(void);
 /* The oracle carries its own copies of the sixteen dispatchers under an asm_
    prefix, so the two sides pass different addresses for the same routine.
    Compare which one, not where it is. */
-static u4 proc_id(void (*const fn)(void))
+static u4 proc_id(void const* const fn)
 {
-    static void (*const c[16])(void) = { drawbg1line16b, drawbg2line16b,
-        drawbg3line16b, drawbg4line16b, drawbg1tile16b, drawbg2tile16b,
-        drawbg3tile16b, drawbg4tile16b, drawbg1linepr116b, drawbg2linepr116b,
-        drawbg3linepr116b, drawbg4linepr116b, drawbg1tilepr116b,
-        drawbg2tilepr116b, drawbg3tilepr116b, drawbg4tilepr116b };
+    static void (*const c[16])(u4*) = { c_drawbg1line16b, c_drawbg2line16b,
+        c_drawbg3line16b, c_drawbg4line16b, c_drawbg1tile16b,
+        c_drawbg2tile16b, c_drawbg3tile16b, c_drawbg4tile16b,
+        c_drawbg1linepr116b, c_drawbg2linepr116b, c_drawbg3linepr116b,
+        c_drawbg4linepr116b, c_drawbg1tilepr116b, c_drawbg2tilepr116b,
+        c_drawbg3tilepr116b, c_drawbg4tilepr116b };
     static void (*const a[16])(void) = { asm_drawbg1line16b,
         asm_drawbg2line16b, asm_drawbg3line16b, asm_drawbg4line16b,
         asm_drawbg1tile16b, asm_drawbg2tile16b, asm_drawbg3tile16b,
@@ -205,7 +213,7 @@ static u4 proc_id(void (*const fn)(void))
     int k;
 
     for (k = 0; k < 16; k++)
-        if (fn == c[k] || fn == a[k])
+        if (fn == (void const*)c[k] || fn == (void const*)a[k])
             return (u4)k + 1u;
     return 0xDEAD;
 }
@@ -286,7 +294,8 @@ static region const state[] = {
     { "bg4drwng", &bg4drwng, 4 },
 };
 
-enum { NSNAP = (int)(sizeof state / sizeof state[0]), SNAP = 1500 };
+enum { NSNAP = (int)(sizeof state / sizeof state[0]),
+    SNAP = 1500 };
 
 static void snap(u1* const dest)
 {

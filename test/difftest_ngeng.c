@@ -132,7 +132,7 @@ void newengine16b(void); /* video/c_ngline.c */
 static void call_asm(void)
 {
     __asm__ volatile("push %%ebp\n\t call %P0\n\t pop %%ebp" ::"X"(
-                         asm_newengine16b)
+        asm_newengine16b)
         : "cc", "memory", "eax", "ecx", "edx", "ebx", "esi", "edi");
 }
 

@@ -1,0 +1,51 @@
+# Mutants for video/c_ngbg.c, checked by test/difftest_bgt.c.
+# Format: name<TAB>old<TAB>new   (\\n for a newline)
+prdat tile value	        bg_prdat[bg][r[R_EBX]] = 1;	        bg_prdat[bg][r[R_EBX]] = 0;
+prdat line value	        bg_prdat[(n) -1u][r[R_EBX]] = 0;	        bg_prdat[(n) -1u][r[R_EBX]] = 1;
+prdat table	static u1* const bg_prdat[4] = { prdatb, prdata, prdatc, prdata };	static u1* const bg_prdat[4] = { prdata, prdatb, prdatc, prdata };
+prdat bg4 shares	static u1* const bg_prdat[4] = { prdatb, prdata, prdatc, prdata };	static u1* const bg_prdat[4] = { prdatb, prdata, prdatc, prdatc };
+prdat index	        bg_prdat[bg][r[R_EBX]] = 1;	        bg_prdat[bg][r[R_ECX]] = 1;
+dword read width	    memcpy(&v, p, 4);\n    return v;	    memcpy(&v, p, 2);\n    return v;
+depth zero	    if (depth == 0 || depth > 3)\n        return; /* .no8bit	    if (depth > 3)\n        return; /* .no8bit
+depth upper	    if (depth == 0 || depth > 3)\n        return; /* .no8bit	    if (depth == 0 || depth > 2)\n        return; /* .no8bit
+direct bit	    } else if (depth == 3 && (scadsng[bx] & 1u)) {	    } else if (depth == 3 && (scadsng[bx] & 2u)) {
+direct depth	    } else if (depth == 3 && (scadsng[bx] & 1u)) {	    } else if (depth == 2 && (scadsng[bx] & 1u)) {
+bright compare	        if (vidbright != prevbrightdc) {\n            prevbrightdc = vidbright;	        if (vidbright == prevbrightdc) {\n            prevbrightdc = vidbright;
+bright store	            prevbrightdc = vidbright;\n            Gendcolortable();	            Gendcolortable();
+mode0 clear	    if (depth == 1) {\n        mode0add = 0;\n    } else if (depth == 3	    if (depth == 2) {\n        mode0add = 0;\n    } else if (depth == 3
+mode0 gate	    if (depth == 1 && BGMA[bx] == 0)\n        mode0add = mode0ads;	    if (depth == 1 && BGMA[bx] == 1)\n        mode0add = mode0ads;
+tile 4bpp big	        (big ? c_ng_drawtileng16x164b16b : c_ng_drawtileng4b16b)(r);	        (big ? c_ng_drawtileng4b16b : c_ng_drawtileng16x164b16b)(r);
+tile depth order	    if (depth == 2)\n        (big ? c_ng_drawtileng16x164b16b	    if (depth == 1)\n        (big ? c_ng_drawtileng16x164b16b
+ecx layer	    r[R_ECX] = bx + bg * 256u;\n    r[R_EDX] = (edx & 0xFFFFFF00u) | (1u << bg);\n\n    if (depth == 2)	    r[R_ECX] = bx;\n    r[R_EDX] = (edx & 0xFFFFFF00u) | (1u << bg);\n\n    if (depth == 2)
+edx mask	    r[R_EDX] = (edx & 0xFFFFFF00u) | (1u << bg);\n\n    if (depth == 2)	    r[R_EDX] = (1u << bg);\n\n    if (depth == 2)
+edx bit	    r[R_EDX] = (edx & 0xFFFFFF00u) | (1u << bg);\n\n    if (depth == 2)	    r[R_EDX] = (edx & 0xFFFFFF00u) | (1u << (bg + 1u));\n\n    if (depth == 2)
+window enable bits	    if (!(winbg1enval[bx + bg * 256u] & 0x0Au))\n        return;	    if (!(winbg1enval[bx + bg * 256u] & 0x05u))\n        return;
+window logic shift	    *(u1*)&nglogicval = (u1)((winlogicaval[bx * 2u] >> (bg * 2u)) & 3u);	    *(u1*)&nglogicval = (u1)((winlogicaval[bx * 2u] >> (bg * 3u)) & 3u);
+window logic index	    *(u1*)&nglogicval = (u1)((winlogicaval[bx * 2u] >> (bg * 2u)) & 3u);	    *(u1*)&nglogicval = (u1)((winlogicaval[bx * 2u + 1u] >> (bg * 2u)) & 3u);
+window trim sign	    adj = (u4)(((s4)(r[R_EDI] - r[R_ESI])) >> 1);	    adj = (u4)(((s4)(r[R_ESI] - r[R_EDI])) >> 1);
+window trim shift	    adj = (u4)(((s4)(r[R_EDI] - r[R_ESI])) >> 1);	    adj = (u4)(r[R_EDI] - r[R_ESI]);
+window trim which	    if (ngwintable[0] == 0)\n        ngwintable[1] -= adj;\n    else\n        ngwintable[0] -= adj;	    if (ngwintable[0] != 0)\n        ngwintable[1] -= adj;\n    else\n        ngwintable[0] -= adj;
+ngwinen clear	    ngwinen = 0;\n    if (!(winbg1enval[bx + bg * 256u] & 0x0Au))	    if (!(winbg1enval[bx + bg * 256u] & 0x0Au))
+yinc bit	    if (ecx & (big ? 0x200u : 0x100u))\n        eax += dword_at(&BGPT1Y[i]);\n    eax += (ecx * (big ? 4u : 8u)) & 0x7C0u;	    if (ecx & (big ? 0x100u : 0x200u))\n        eax += dword_at(&BGPT1Y[i]);\n    eax += (ecx * (big ? 4u : 8u)) & 0x7C0u;
+col shift	    ecx >>= big ? 3 : 2;	    ecx >>= big ? 2 : 3;
+edi mask	    edi &= big ? 0xFu : 7u;	    edi &= big ? 0x7u : 0xFu;
+shift 4bpp	    case 2: /* 4bpp */\n        ecx >>= 5;	    case 2: /* 4bpp */\n        ecx >>= 6;
+shift 2bpp	    case 1: /* 2bpp */\n        ecx >>= 4;	    case 1: /* 2bpp */\n        ecx >>= 5;
+shift 8bpp	    case 3: /* 8bpp */\n        ecx >>= 6;	    case 3: /* 8bpp */\n        ecx >>= 7;
+pr1 16x16 flip	        if (ecx & 8u) {\n            taddnfy16x16 = 16;\n            taddfy16x16 = (u4)-16;\n        }\n    }\n\n    bgtxadd = (bgtxadd	        if (ecx & 4u) {\n            taddnfy16x16 = 16;\n            taddfy16x16 = (u4)-16;\n        }\n    }\n\n    bgtxadd = (bgtxadd
+pr1 row source	        u4 const ecx = (dword_at(&BG1SYl[i]) & 0xFFFFu) + bx;	        u4 const ecx = dword_at(&BG1SYl[i]) & 0xFFFFu;
+pr1 palette	    bg_finish(r, bg, big, edx, ngceax[i], ngcedi[i], cpalval[bx]);	    bg_finish(r, bg, big, edx, ngceax[i], ngcedi[i], cpalval[0]);
+big test	        bg_tile(r, bg, t16x161[r[R_EBX] + bg * 256u] == 1);	        bg_tile(r, bg, t16x161[r[R_EBX] + bg * 256u] != 0);
+
+col mask	    ecx &= big ? 0x1F0u : 0xF8u;\n    eax &= 0xFFFFu;\n    ecx >>= big ? 3 : 2;	    ecx &= big ? 0x1F0u : 0xF0u;\n    eax &= 0xFFFFu;\n    ecx >>= big ? 3 : 2;
+col shift line	    ecx >>= (big || kind == LK_HR) ? 3 : 2;	    ecx >>= (big || kind == LK_HR) ? 2 : 3;
+bgtxadd offset	    edx = (edx & 0xFFFF0000u) | (u2)((u2)edx - 64u);\n    ecx &= big ? 0x1F0u : 0xF8u;	    edx = (edx & 0xFFFF0000u) | (u2)((u2)edx - 32u);\n    ecx &= big ? 0x1F0u : 0xF8u;
+bgtxad word	    ecx >>= big ? 3 : 2;\n    bgtxadd = edx;\n    bgtxad[i] = (u2)edx;	    ecx >>= big ? 3 : 2;\n    bgtxadd = edx;\n    bgtxad[i] = (u2)(edx >> 16);
+eax truncate	    eax &= 0xFFFFu;\n    ecx >>= big ? 3 : 2;	    eax &= 0xFFFFFFu;\n    ecx >>= big ? 3 : 2;
+neg dx tile	        eax += edx;\n        /* neg dx: the low word only, the high half rides along untouched. */\n        edx = (edx & 0xFFFF0000u) | (u2)(-(s2)(u2)edx);	        eax += edx;\n        /* neg dx: the low word only, the high half rides along untouched. */\n        edx = (edx & 0xFFFF0000u) | (u2)((s2)(u2)edx);
+esi add tile	    edi += r[R_ESI];\n    ngptrdat[i] = ecx;\n    ngptrdat2 = ecx;\n    ngceax[i] = eax;\n    ngcedi[i] = edi;\n\n    bg_finish(r, bg, big, edx, eax, edi, ebp);	    ngptrdat[i] = ecx;\n    ngptrdat2 = ecx;\n    ngceax[i] = eax;\n    ngcedi[i] = edi;\n\n    bg_finish(r, bg, big, edx, eax, edi, ebp);
+pr1 bgtxadd word	    bgtxadd = (bgtxadd & 0xFFFF0000u) | bgtxad[i];\n    ngptrdat2 = ngptrdat[i];\n    memcpy(&edx, (u1 const*)colormodedef + (BGMA[bx] & 7u) * 4u + bg, 4);\n    bg_finish	    bgtxadd = bgtxad[i];\n    ngptrdat2 = ngptrdat[i];\n    memcpy(&edx, (u1 const*)colormodedef + (BGMA[bx] & 7u) * 4u + bg, 4);\n    bg_finish
+row scale tile	    eax = dword_at(&BGPT1[i]);\n    if (ecx & (big ? 0x200u : 0x100u))\n        eax += dword_at(&BGPT1Y[i]);\n    eax += (ecx * (big ? 4u : 8u)) & 0x7C0u;	    eax = dword_at(&BGPT1[i]);\n    if (ecx & (big ? 0x200u : 0x100u))\n        eax += dword_at(&BGPT1Y[i]);\n    eax += (ecx * (big ? 8u : 4u)) & 0x7C0u;
+row scale line	    eax += (ecx * (big ? 4u : 8u)) & 0x7C0u;\n\n    ecx = dword_at(&BG1SXl[i]);\n    if (kind == LK_HR)	    eax += (ecx * (big ? 8u : 4u)) & 0x7C0u;\n\n    ecx = dword_at(&BG1SXl[i]);\n    if (kind == LK_HR)
+prval line	    ng16bprval = 0;\n    pesimpng =	    ng16bprval = 0x2000u;\n    pesimpng =
+prval linepr1	    ng16bprval = 0x2000u;\n    pesimpng =	    ng16bprval = 0;\n    pesimpng =
