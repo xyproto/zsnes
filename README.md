@@ -8,7 +8,7 @@ The last release of [ZSNES](http://zsnes.sourceforge.net/) was around 18 years a
 
 This is a fork of ZSNES that aims to solve this.
 
-Running `make` produces a 32-bit x86 ELF executable that can be run on an 64-bit x86 system. The remaining 32-bit x86 Assembly is five files under `video/`; everything else, including the 65816/SPC700 core and every coprocessor, is C. `make portcheck` reports how much of the tree already builds for x86-64.
+Running `make` produces a 32-bit x86 ELF executable that can be run on a 64-bit x86 system. The remaining 32-bit x86 Assembly is three files under `video/`; everything else, including the 65816/SPC700 core and every coprocessor, is C.
 
 Goals and non-goals:
 
