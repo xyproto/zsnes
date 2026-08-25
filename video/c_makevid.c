@@ -821,13 +821,7 @@ void newengine16b(void);
 void drawline(void)
 {
     if (ForceNewGfxOff == 0 && newengen != 0) {
-#if defined(__GNUC__) && defined(__i386__)
-        // newengine16b is asm; save ebp and declare its clobbers
-        __asm__ volatile("push %%ebp;  call %P0;  pop %%ebp" ::"X"(newengine16b)
-            : "cc", "memory", "eax", "ecx", "edx", "ebx", "esi", "edi");
-#else
-        newengine16b(); /* still assembly; a C build needs it ported */
-#endif
+        newengine16b(); /* video/c_ngline.c */
         return;
     }
     drawline16b();

@@ -151,7 +151,7 @@ void newengine16b_lines(void)
     }
     bgcmsung |= ebx;
     memcpy(&BGMS1[y * 2], &ebx, 4);
-    if (*(u2*)&BGMS1[y * 2 - 2] != (u2)ebx) {
+    if ((u2)dwr(&BGMS1[y * 2 - 2]) != (u2)ebx) {
         bgallchange[y] = 1;
     }
 
@@ -177,15 +177,15 @@ void newengine16b_lines(void)
     recb(BGMA, y, (u1)(bgmode & 7u), bgallchange);
     modeused[bgmode & 7u] = 1;
 
-    recd(BGOPT1, y, *(u4*)&bg1objptr[0], bg1change);
-    recd(BGOPT2, y, *(u4*)&bg1objptr[1], bg2change);
-    recd(BGOPT3, y, *(u4*)&bg1objptr[2], bg3change);
-    recd(BGOPT4, y, *(u4*)&bg1objptr[3], bg4change);
+    recd(BGOPT1, y, dwr(&bg1objptr[0]), bg1change);
+    recd(BGOPT2, y, dwr(&bg1objptr[1]), bg2change);
+    recd(BGOPT3, y, dwr(&bg1objptr[2]), bg3change);
+    recd(BGOPT4, y, dwr(&bg1objptr[3]), bg4change);
 
-    recd(BGPT1, y, *(u4*)&bg1ptr[0], bg1change);
-    recd(BGPT2, y, *(u4*)&bg1ptr[1], bg2change);
-    recd(BGPT3, y, *(u4*)&bg1ptr[2], bg3change);
-    recd(BGPT4, y, *(u4*)&bg1ptr[3], bg4change);
+    recd(BGPT1, y, dwr(&bg1ptr[0]), bg1change);
+    recd(BGPT2, y, dwr(&bg1ptr[1]), bg2change);
+    recd(BGPT3, y, dwr(&bg1ptr[2]), bg3change);
+    recd(BGPT4, y, dwr(&bg1ptr[3]), bg4change);
 
     recd(BGPT1X, y, bg1ptrx[0], bg1change);
     recd(BGPT2X, y, bg1ptrx[1], bg2change);
@@ -480,4 +480,186 @@ disable:
     winbg1enval[y + 4u * 256u] = 0;
     winbg1envals[y + 4u * 256u] = 0;
     winbg1envalm[y + 4u * 256u] = 0;
+}
+
+/* --- the rest of newengine16b -------------------------------------------- *
+ *
+ * What follows the two builders above: the colour-add cache, the back area,
+ * the hi-res line duplication and the sprite-priority flag. Nothing here is
+ * passed in registers either - the assembly ended `xor ebx,ebx / ret` and its
+ * one caller declared every register clobbered - so the whole routine is a
+ * plain C function now and video/newgfx16.asm has no entry point for it.
+ */
+extern u1 coladdr, coladdg, coladdb, vidbright;
+extern u4 Prevcoladdr, ColResult;
+extern u4 ngrposng, nggposng, ngbposng;
+extern u1 winbgobjenval[];
+extern u4 BackAreaAdd, BackAreaUnFillCol, BackAreaFillCol, UnusedBit[2];
+extern u1 SpecialLine[256], Mode7HiRes16b, scanlines, hiresstuff, res640;
+extern u4 sprleftpr[256];
+extern u1* vidbuffer;
+extern void BackAreaFill(u4 y);
+
+/* One colour component scaled by the brightness and shifted into place. The
+   assembly does this with a byte mul and a byte div, so the quotient has to
+   fit in al - it does: the component is five bits and the brightness four. */
+static u2 coladd_part(u4 const c, u4 const shift)
+{
+    u2 const q = (u2)((c * vidbright) / 15u);
+
+    return (u2)((u4)q << (shift & 31u)); /* shl ax,cl - sixteen bits wide */
+}
+
+/* The fixed colour for this line, rebuilt only when a component or the
+   brightness moved. The key is a dword read starting one byte before coladdr
+   whose low byte is then replaced by the brightness. */
+static void col_result(void)
+{
+    u4 const key = (u4)vidbright | (u4)coladdr << 8 | (u4)coladdg << 16
+        | (u4)coladdb << 24;
+    u2 bx;
+
+    if (key == Prevcoladdr)
+        return;
+    Prevcoladdr = key;
+
+    bx = coladd_part(coladdr, ngrposng);
+    bx = (u2)(bx + coladd_part(coladdg, nggposng));
+    bx = (u2)(bx + coladd_part(coladdb, ngbposng));
+    ColResult = (u4)bx | (u4)bx << 16; /* two word stores, not one dword */
+}
+
+/* Which of the two colours the filled and unfilled halves of the back area
+   get. `filled` hands both halves the second one. */
+static void back_area_cols(u4 const ebx, u4 const edx, u1 const cl)
+{
+    if (cl & 0x10u) {
+        BackAreaUnFillCol = edx;
+        BackAreaFillCol = (cl & 0x20u) ? edx : ebx;
+    } else {
+        BackAreaUnFillCol = ebx;
+        BackAreaFillCol = (cl & 0x20u) ? edx : ebx;
+    }
+}
+
+static void back_area(u4 const y)
+{
+    u4 ebx, edx;
+    u1 cl;
+
+    ngwinen = 0;
+    if (winbg1enval[y + 5u * 256u] != 0) {
+        nglogicval = (u1)((winlogicb >> 2) & 3u);
+        BuildWindow2(y, 5u * 256u + y);
+    }
+    BackAreaAdd = 0;
+
+    if (clinemainsub == 1) {
+        ebx = ColResult | UnusedBit[0];
+        edx = UnusedBit[0];
+        cl = scaddset;
+    } else {
+        u2 v;
+
+        /* The back colour is the palette entry the line is pointing at,
+           doubled into both halves of the dword. */
+        memcpy(&v, vbufdptr + cpalptrng, 2);
+        ebx = (u4)v | (u4)v << 16;
+        edx = 0;
+        cl = (u1)(scaddset >> 2); /* the main screen reads two bits higher */
+        if (scaddtype & 0x20u) {
+            ebx |= UnusedBit[0];
+            edx = UnusedBit[0];
+        }
+    }
+    back_area_cols(ebx, edx, cl);
+
+    if (ngwinen == 0)
+        BackAreaFillCol = BackAreaUnFillCol;
+    if (forceblnk != 0) {
+        BackAreaUnFillCol = 0;
+        BackAreaFillCol = 0;
+    }
+    BackAreaFill(y);
+
+    if (!(FillSubScr[y] & 1u))
+        return;
+
+    BackAreaAdd = 75036u * 2u;
+    ebx = ColResult;
+    edx = UnusedBit[0];
+    if (scaddset & 2u)
+        ebx |= UnusedBit[0];
+    back_area_cols(ebx, edx, scaddset);
+    if (ngwinen == 0)
+        BackAreaFillCol = BackAreaUnFillCol;
+    BackAreaFill(y);
+}
+
+/* A hi-res line is drawn once and copied to the second field. */
+static void special_line(u4 const y)
+{
+    u1* base;
+
+    SpecialLine[y] = 0;
+    if (scanlines != 0)
+        return;
+    if (bgmode >= 7 && ((interlval & 0x40u) || Mode7HiRes16b != 1))
+        goto interlace;
+    if (res640 == 0 || bgmode < 5)
+        goto interlace;
+
+    SpecialLine[y] = (u1)(bgmode == 7 ? 3 : 2);
+    hiresstuff = 1;
+    base = vidbuffer + 16u * 2u + (y << 9) + (y << 6);
+    memcpy(base + 75036u * 4u, base, 512u);
+    if (FillSubScr[y] & 1u)
+        memcpy(base + 75036u * 6u, base + 75036u * 2u, 512u);
+
+interlace:
+    if (interlval & 1u)
+        SpecialLine[y] |= 4u;
+}
+
+void newengine16b(void);
+
+void newengine16b(void)
+{
+    u4 y, p;
+
+    newengine16b_lines();
+    y = curypos & 0xFFu;
+
+    bgwinchange[y] = 0;
+    if (disableeffects == 1) {
+        u4 q;
+
+        winbg1enval[y] = 0;
+        winbg2enval[y] = 0;
+        winbg3enval[y] = 0;
+        winbg4enval[y] = 0;
+        winbgobjenval[y] = 0;
+        for (q = 0; q < 5u; q++) {
+            winbg1envalm[y + q * 256u] = 0;
+            winbg1envals[y + q * 256u] = 0;
+        }
+    } else {
+        newengine16b_windows();
+        bgwinchange[y] = 1;
+        newengine16b_sprwin();
+    }
+
+    col_result();
+    /* A black fixed colour leaves the sub screen alone. */
+    if ((u2)ColResult != 0 && FillSubScr[y] != 0)
+        FillSubScr[y] |= 2u;
+
+    back_area(y);
+    special_line(y);
+
+    /* One priority left on this line and nothing else: mark it so the sprite
+       pass can take the short route. */
+    p = sprleftpr[y];
+    if (p == 1u || p == 0x100u || p == 0x10000u || p == 0x1000000u)
+        sprleftpr[y] |= 0x80000000u;
 }
