@@ -76,9 +76,8 @@ endif
 endif
 
 # Target word size and instruction set, separate from the OS above. The
-# emulator was written for 32-bit x86 and video/*.asm still is, so only
-# BITS=32 CPU=x86 can build the renderers; everything else substitutes the
-# stand-ins from tools/mkstub64.py and cannot draw. See "make help".
+# emulator was written for 32-bit x86, but nothing in the tree is any more:
+# every combination below builds the same C. See "make help".
 BITS ?= 32
 CPU  ?= x86
 
@@ -102,37 +101,22 @@ ifeq ($(CPU),arm64)
 ARCH_CFLAGS += $(ARM64_CFLAGS)
 endif
 
-# video/*.asm is 32-bit x86 NASM, so nothing else can link. Say so up front
-# rather than at the end of a wall of undefined references.
-X86_ASM := $(if $(and $(filter x86,$(CPU)),$(filter 32,$(BITS))),yes,)
-REMAINING_ASM := $(strip $(wildcard video/*.asm))
-
-ifneq ($(X86_ASM),yes)
-ifneq ($(REMAINING_ASM),)
-$(info )
-$(info ERROR: this target is CPU=$(CPU) BITS=$(BITS), and the tree still has)
-$(info 32-bit x86 assembly that only a BITS=32 CPU=x86 build can link:)
-$(info   $(REMAINING_ASM))
-$(info This is a work in progress.)
-$(info )
-$(error Cannot build $(CPU)/$(BITS) while video/*.asm remains)
-endif
-endif
-
 IS_FEDORA       := $(if $(wildcard /etc/fedora-release),yes)
 IS_DEBIAN_BASED := $(if $(wildcard /etc/debian_version),yes)
 
 WARN_FLAGS ?= -Wall -Wno-address-of-packed-member
-COMMON_FLAGS = $(ARCH_CFLAGS) -pthread -no-pie -std=c11 -D_DEFAULT_SOURCE -D_POSIX_C_SOURCE=200809L -O3 -fno-gcse -fno-inline -fno-pic -D_FORTIFY_SOURCE=2 -ffunction-sections -fdata-sections -Wfatal-errors $(WARN_FLAGS)
+COMMON_FLAGS = $(ARCH_CFLAGS) -pthread -std=c11 -D_DEFAULT_SOURCE -D_POSIX_C_SOURCE=200809L -O3 -D_FORTIFY_SOURCE=2 -ffunction-sections -fdata-sections -Wfatal-errors $(WARN_FLAGS)
 
-# TODO: FreeBSD has a patch for being able to build without -fcommon
-CFLAGS += $(COMMON_FLAGS) -fcommon
+CFLAGS += $(COMMON_FLAGS)
+# x87-only maths, to keep the 32-bit build's floating point exactly what the
+# assembly assumed. Not available on x86-64, where SSE is the ABI for returning
+# a float, nor on ARM.
+ifeq ($(CPU)/$(BITS),x86/32)
 ifneq ($(ARCH),DARWIN)
 CFLAGS += -mno-sse -mno-sse2
 endif
-LDFLAGS += -Wl,--as-needed -no-pie -Wl,--gc-sections -lz -lm
-# -O1 is mandatory for Assembly, for now
-ASMFLAGS += -O1 -w-orphan-labels -w-number-deprecated-hex -w-pp-macro-params-legacy
+endif
+LDFLAGS += -Wl,--as-needed -Wl,--gc-sections -lz -lm
 
 #WITH_DEBUGGER := yes
 WITH_OPENGL   := yes
@@ -176,6 +160,24 @@ endif
 
 SKIP_AUDIO_BACKEND_CHECK := $(if $(filter clean distclean,$(MAKECMDGOALS)),yes)
 
+# A cross build cannot expect the host's libraries: pkg-config finds nothing
+# for the target unless a sysroot is installed. Compile without them rather
+# than refusing - the point of those targets is to build the tree for another
+# CPU, and the binary is not runnable on this machine anyway. A native build
+# really is missing a package, so it still stops and says which.
+# -m32 on an x86-64 host is not "cross" here: multilib is the normal way to
+# get those libraries, and the advice below is right for it.
+CROSS_BUILD := $(if $(or $(filter arm64,$(CPU)),$(filter WIN,$(ARCH))),yes,)
+
+ifeq ($(SKIP_AUDIO_BACKEND_CHECK),)
+ifeq ($(CROSS_BUILD),yes)
+ifeq ($(SDL_BACKEND_AVAILABLE),)
+$(info ===> no SDL for $(CPU)/$(ARCH); building without a video backend)
+WITH_SDL :=
+endif
+endif
+endif
+
 ifeq ($(WITH_PIPEWIRE),)
   ifeq ($(ARCH),LINUX)
     ifeq ($(PIPEWIRE_AVAILABLE),yes)
@@ -195,7 +197,7 @@ ifeq ($(SKIP_AUDIO_BACKEND_CHECK),)
     ifeq ($(SDL_BACKEND_AVAILABLE),)
       ifeq ($(ARCH),LINUX)
         $(info )
-        $(info ERROR: No 32-bit SDL library found. This is a 32-bit build (-m32).)
+        $(info ERROR: No SDL library found for this target ($(CPU)/$(BITS)).)
         ifeq ($(IS_FEDORA),yes)
         $(info Install the 32-bit SDL3 package (note the .i686 suffix, NOT the x86_64 package):)
         $(info   sudo dnf install SDL3-devel.i686)
@@ -214,10 +216,11 @@ ifeq ($(SKIP_AUDIO_BACKEND_CHECK),)
     endif
   endif
   ifneq ($(ARCH),WIN)
+  ifneq ($(CROSS_BUILD),yes)
   ifeq ($(if $(or $(PIPEWIRE_AVAILABLE),$(AO_AVAILABLE),$(if $(WITH_SDL),$(SDL_BACKEND_AVAILABLE),)),yes),)
     ifeq ($(ARCH),LINUX)
       $(info )
-      $(info ERROR: No 32-bit audio backend found. This is a 32-bit build (-m32).)
+      $(info ERROR: No audio backend found for this target ($(CPU)/$(BITS)).)
       ifeq ($(IS_FEDORA),yes)
       $(info Install one of the following 32-bit packages (note the .i686 suffix, NOT the x86_64 packages):)
       $(info   sudo dnf install pipewire-devel.i686)
@@ -239,6 +242,7 @@ ifeq ($(SKIP_AUDIO_BACKEND_CHECK),)
     endif
   endif
   endif
+  endif
 endif
 
 BINARY     ?= zsnes
@@ -246,7 +250,6 @@ ifeq ($(ARCH),WIN)
 BINARY := zsnes.exe
 endif
 PSR        ?= parsegen.py
-ASM        ?= nasm
 PYTHON     ?= python3
 
 DESTDIR ?=
@@ -500,12 +503,9 @@ SRCS += video/c_newgfx16data.c
 SRCS += video/c_hqx.c
 SRCS += video/c_newgfx16.c
 SRCS += video/copyvwin.c
-SRCS += video/makev16t.asm
 SRCS += video/makevid.c
 SRCS += video/mode716b.c
-SRCS += video/newg162.asm
 SRCS += video/newgfx.c
-SRCS += video/newgfx16.asm
 SRCS += video/ntsc.c
 SRCS += video/procvid.c
 SRCS += video/procvidc.c
@@ -577,7 +577,6 @@ CFGDEFS += -D__ZSNES_PLATFORM_DARWIN__
 ifeq ($(HOST_OS),DARWIN)
 SRCS += mmlib/osx.c
 
-ASMFLAGS += -fmacho -DMACHO
 
 CFGDEFS += -D__ZSNES_PLATFORM_DARWIN__
 
@@ -590,7 +589,6 @@ endif
 else
 SRCS += mmlib/linux.c
 
-ASMFLAGS += -felf32 -DELF
 ifdef WITH_OPENGL
 LDFLAGS += -lGL
 endif
@@ -598,7 +596,6 @@ endif
 else
 SRCS += mmlib/linux.c
 
-ASMFLAGS += -felf32 -DELF
 
 ifdef WITH_OPENGL
 LDFLAGS += -lGL
@@ -629,22 +626,19 @@ LDFLAGS += -lwinpthread
 
 PSRS += win/confloc.psr
 
-ASMFLAGS += -fwin32
 
 CFGDEFS += -D__WIN32__
 CFGDEFS += -D__ZSNES_PLATFORM_WINDOWS__
 endif
 
-ASMFLAGS += $(CFGDEFS)
 CFLAGS += $(CFGDEFS)
 # Append hooks for layered flags.
 CFLAGS   += $(EXTRA_CFLAGS)
-ASMFLAGS += $(EXTRA_ASMFLAGS)
 LDFLAGS  += $(EXTRA_LDFLAGS)
 DEPFLAGS_C = -MMD -MP -MF $(@:.o=.d) -MT $@
 
 HDRS := $(PSRS:.psr=.h)
-OBJS := $(filter %.o, $(SRCS:.asm=.o) $(SRCS:.c=.o) $(SRCS:.rc=.o) $(PSRS:.psr=.o))
+OBJS := $(filter %.o, $(SRCS:.c=.o) $(SRCS:.rc=.o) $(PSRS:.psr=.o))
 DEPS := $(OBJS:.o=.d)
 
 # Auto-clean on build-target switch.  Native (ELF) and win32 (PE/COFF) builds
@@ -673,11 +667,10 @@ endif
 
 all: $(BINARY)
 
-# Named targets, one per platform the port is aiming at. Each is a thin
-# wrapper that picks the OS, the word size, the instruction set and the
-# toolchain; the build itself is the same. Only linux32 and win32 can be built
-# today, because video/*.asm is still 32-bit x86 - the rest fail with that
-# message until it is ported (portasm.md).
+# Named targets, one per platform. Each is a thin wrapper that picks the OS,
+# the word size, the instruction set and the toolchain; the build itself is
+# the same C for all of them. The cross targets need their toolchain
+# installed, and say which one if it is missing.
 define need_tool
 @command -v $(1) >/dev/null 2>&1 || { \
   echo "error: $(1) not found; install $(2)" >&2; exit 1; }
@@ -722,17 +715,69 @@ win64:
 
 help:
 	@echo 'Targets:'
-	@echo '  linux32       32-bit x86 Linux   (the only complete build today)'
+	@echo '  linux32       32-bit x86 Linux'
 	@echo '  linux64       64-bit x86 Linux'
 	@echo '  linux_arm64   64-bit ARM Linux'
 	@echo '  linux_pi4     64-bit ARM Linux, tuned for a Cortex-A72'
 	@echo '  win32         32-bit Windows, cross-built with mingw32'
 	@echo '  win64         64-bit Windows, cross-built with mingw-w64'
-	@echo '  portcheck     how much of the tree builds for a 64-bit target'
+	@echo '  portcheck     compile every source for x86-64 and aarch64'
+	@echo '  portasm       what the Assembly port left behind, and its rules'
 	@echo '  test          run the unit tests'
 	@echo
-	@echo 'Everything but linux32 and win32 needs video/*.asm ported to C11'
-	@echo 'first: it is 32-bit x86 and nothing else can link it.'
+	@echo 'The tree is C11 throughout; the cross targets need their'
+	@echo 'toolchain installed and will name it if it is missing.'
+
+.PHONY: portasm
+portasm:
+	@echo 'What the Assembly port left behind, and the rules that keep it honest.'
+	@echo 'The full write-up is portasm.md in the git history.'
+	@echo
+	@echo 'Difftests'
+	@echo '  Every test/difftest_*.c compares the C against the original Assembly,'
+	@echo '  which tools/mkoracle.py pulls out of git. Give mkoracle BOTH:'
+	@echo '    --requires        a pattern only the pre-port revision has'
+	@echo '    --ported-marker   a pattern the port introduces'
+	@echo '  Either alone picks the wrong revision - the marker is also absent from'
+	@echo '  the finished port, and --requires alone lands on a half-ported one.'
+	@echo '  Check the revision it prints. make op once built an oracle with no'
+	@echo '  opcodes in it and passed.'
+	@echo
+	@echo '  A dispatcher and a branch target the test records must not share a'
+	@echo '  translation unit, or the recorder cannot stand in for the real one.'
+	@echo
+	@echo '  Seed state, do not zero it. Anything the Assembly writes only on some'
+	@echo '  paths reads back as 0 either way if the harness cleared it first, so'
+	@echo '  the condition goes untested. Same for a field that is always 0 or 1'
+	@echo '  when the Assembly compares it against exactly 1.'
+	@echo
+	@echo '  A hit counter that reads zero is a test that never ran the code. Watch'
+	@echo '  the small ones too, and mutate the C (tools/sweep.py) to prove the'
+	@echo '  difftest bites.'
+	@echo
+	@echo 'ROM A/B'
+	@echo '  test/harness/zab.sh builds a baseline revision and compares frames.'
+	@echo '  Read the "identical at matching emulated frame numbers" line. The hash'
+	@echo '  and PPU streams are written per *displayed* frame, so two builds of'
+	@echo '  different speed drift apart and report a difference that is not one.'
+	@echo '  A real fault lands on the same frame every run; a moving one is the clock.'
+	@echo
+	@echo 'Host behaviour is part of the spec'
+	@echo '  ZSNES only ever ran on 32-bit x86, so an instruction the ISA calls'
+	@echo '  undefined still had one fixed result in practice. Reproduce it, do not'
+	@echo '  pick your own. Decimal ADC/SBC overflow is the worked example: measured'
+	@echo '  over all 1024 (AL, CF, AF) states, it is decimal_of() in cpu/ops65816.h,'
+	@echo '  and it took 60 opcodes from "known divergence" to bit-identical.'
+	@echo
+	@echo 'Known divergences'
+	@echo '  Deliberate, and marked KNOWN_DIVERGENCE in the difftests so a new one'
+	@echo '  still fails: CLI leaves ebx alone where the Assembly cleared it, and'
+	@echo '  SA-1 DEC d,x does a byte where the Assembly did 8 bits through 16-bit'
+	@echo '  accesses - bsnes and snes9x agree with the port.'
+	@echo
+	@echo 'Style'
+	@echo '  Brief one-line ASCII comments. Return boolean conditions directly.'
+	@echo '  Match the surrounding code. Comment only what needs it.'
 
 debug: DEBUGFLAGS += -g
 debug: $(BINARY)
@@ -743,11 +788,6 @@ debug: $(BINARY)
 $(BINARY): $(OBJS)
 	@echo '===> LD $@'
 	$(Q)$(CC_TARGET) $(CFLAGS) $(OBJS) $(LDFLAGS) $(DEBUGFLAGS) -o $@
-
-%.o: %.asm
-	@echo '===> ASM $<'
-	$(Q)$(ASM) $(ASMFLAGS) $(DEBUGFLAGS) -M -o $@ $< > $(@:.o=.d) || rm -f $(@:.o=.d)
-	$(Q)$(ASM) $(ASMFLAGS) $(DEBUGFLAGS) -o $@ $<
 
 $(filter %.o, $(SRCS:.c=.o)): $(HDRS)
 
@@ -818,28 +858,40 @@ install:
 	install -Dm755 linux/io.github.xyproto.zsnes.metainfo.xml -t '$(DESTDIR)$(PREFIX)/share/metainfo'
 	install -Dm644 man/zsnes.1 '$(DESTDIR)$(PREFIX)/share/man/man1/zsnes.1'
 
-# 64-bit portability gate. Compiles every C source for x86-64 and reports what
-# is left. The build itself is still -m32 (video/*.asm), but cpu/ and chips/ are
-# assembly-free now, so this is the measure of how far the port has to go.
-# A file listed here either has i386 inline assembly bridging into video/*.asm,
-# or a layout that still assumes 4-byte pointers.
+# Portability gate. Compiles every C source for each target below, on its own,
+# which catches a layout assuming 4-byte pointers in a file the current build
+# does not happen to touch. Compiling is all it checks - linux64 is what proves
+# the tree links and runs.
+#
+# aarch64 is the one target with no x86 in it at all, and it is skipped when
+# the cross compiler is not installed. It uses the host's headers on purpose:
+# zlib.h and png.h are architecture independent, and there is no aarch64 build
+# of either here, so this asks "does it compile for ARM" without a sysroot.
 PORTCHECK_CC     ?= gcc
-PORTCHECK_CFLAGS ?= -m64 -std=c11 -D_DEFAULT_SOURCE -D_POSIX_C_SOURCE=200809L \
-                    -O1 -fcommon -I. $(CFGDEFS)
+PORTCHECK_CFLAGS ?= -std=c11 -D_DEFAULT_SOURCE -D_POSIX_C_SOURCE=200809L \
+                    -O1 -I. $(CFGDEFS)
+PORTCHECK_ARM_CC ?= aarch64-linux-gnu-gcc
 .PHONY: portcheck
 portcheck: $(HDRS)
-	@echo '===> PORTCHECK: compiling every C source for x86-64'
-	@ok=0; bad=0; \
-	for f in $(filter %.c,$(SRCS)); do \
-	  if $(PORTCHECK_CC) $(PORTCHECK_CFLAGS) -c -o /dev/null $$f 2>/tmp/zs_portcheck.$$$$; then \
-	    ok=$$((ok+1)); \
-	  else \
-	    bad=$$((bad+1)); echo "  FAIL $$f"; \
-	    grep -iE 'error' /tmp/zs_portcheck.$$$$ | head -2 | sed 's/^/        /'; \
-	  fi; \
-	  rm -f /tmp/zs_portcheck.$$$$; \
-	done; \
-	echo; echo "===> PORTCHECK: $$ok built for x86-64, $$bad still 32-bit only"
+	@rc=0; \
+	for t in "x86-64:$(PORTCHECK_CC):-m64" "aarch64:$(PORTCHECK_ARM_CC):-I/usr/include"; do \
+	  name=$${t%%:*}; rest=$${t#*:}; cc=$${rest%%:*}; extra=$${rest#*:}; \
+	  command -v $$cc >/dev/null 2>&1 || { \
+	    echo "===> PORTCHECK: $$name skipped, $$cc not installed"; continue; }; \
+	  echo "===> PORTCHECK: compiling every C source for $$name"; \
+	  ok=0; bad=0; \
+	  for f in $(filter %.c,$(SRCS)); do \
+	    if $$cc $(PORTCHECK_CFLAGS) $$extra -c -o /dev/null $$f 2>/tmp/zs_portcheck.$$$$; then \
+	      ok=$$((ok+1)); \
+	    else \
+	      bad=$$((bad+1)); echo "  FAIL $$f"; \
+	      grep -iE 'error' /tmp/zs_portcheck.$$$$ | head -2 | sed 's/^/        /'; \
+	    fi; \
+	    rm -f /tmp/zs_portcheck.$$$$; \
+	  done; \
+	  echo "===> PORTCHECK: $$name $$ok built, $$bad failed"; echo; \
+	  [ $$bad = 0 ] || rc=1; \
+	done; exit $$rc
 
 # Detect likely-unused C/ASM code via -Wunused* + linker --gc-sections reports.
 # The build already uses -ffunction-sections/-fdata-sections, so each dropped
