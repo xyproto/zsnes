@@ -8,13 +8,13 @@ The last release of [ZSNES](http://zsnes.sourceforge.net/) was around 18 years a
 
 This is a fork of ZSNES that aims to solve this.
 
-Running `make` produces a 32-bit x86 ELF executable that can be run on a 64-bit x86 system. The remaining 32-bit x86 Assembly is three files under `video/`; everything else, including the 65816/SPC700 core and every coprocessor, is C.
+The tree is C11 throughout: no Assembly is left. `make` produces a 32-bit x86 ELF executable, `make linux64` a 64-bit one; `make help` lists the rest.
 
 Goals and non-goals:
 
 * Compiling ZSNES so that it works on 64-bit x86 is a goal (that has been reached).
 * Supporting 32-bit platforms is not a goal, but pull requests are welcome.
-* Porting the remaining Assembly files to C to support more platforms and CPUs is a long term goal, but better tests are needed first.
+* Porting the Assembly to C to support more platforms and CPUs was a long term goal, and is done.
 * Supporting Windows and DOS are not goals.
 * Supporting modern Linux distros (and FreeBSD, if possible) is a goal.
 * To be like an LTS release of ZSNES is a goal.
@@ -24,7 +24,8 @@ Pull requests that fixes inaccuracies with the emulation are welcome, as well as
 
 ### Requirements
 
-* `nasm`, `python3`, `sdl3`, `pipewire` (or `libao`), and a C compiler like `gcc`.
+* `python3`, `sdl3`, `pipewire` (or `libao`), and a C compiler like `gcc`.
+* `nasm` is only needed for the differential tests in `test/`, which assemble the original Assembly out of git history and compare the C against it.
 
 Tested on Arch Linux, Fedora and Debian 12 on x86_64.
 
@@ -60,7 +61,7 @@ Try installing ZSNES from [this flatpak](https://flathub.org/apps/io.github.xypr
 ```sh
 dpkg --add-architecture i386
 apt update
-apt install -y git make nasm pkg-config python3 zlib1g-dev build-essential
+apt install -y git make pkg-config python3 zlib1g-dev build-essential
 git clone https://github.com/xyproto/zsnes
 cd zsnes
 make
@@ -76,7 +77,7 @@ Tested on Windows with WSL installed running Ubuntu 24.04.3 LTS on x86_64.
 
 ```sh
 apt update
-apt install -y git make mingw-w64 libz-mingw-w64-dev nasm python3 pkg-config build-essential
+apt install -y git make mingw-w64 libz-mingw-w64-dev python3 pkg-config build-essential
 git clone https://github.com/xyproto/zsnes
 cd zsnes
 make ARCH=win WITH_PNG= CC_TARGET=i686-w64-mingw32-gcc CC=i686-w64-mingw32-gcc WINDRES=i686-w64-mingw32-windres
@@ -94,7 +95,7 @@ Tested on MSYS2 x86_64 version 20260322.
 
 ```sh
 pacman -Syu
-pacman -Sy git make pkg-config nasm python3 mingw-w64-i686-gcc mingw-w64-i686-libpng mingw-w64-i686-zlib mingw-w64-i686-SDL3
+pacman -Sy git make pkg-config python3 mingw-w64-i686-gcc mingw-w64-i686-libpng mingw-w64-i686-zlib mingw-w64-i686-SDL3
 make ARCH=win
 ```
 
