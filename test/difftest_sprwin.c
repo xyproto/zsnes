@@ -89,6 +89,12 @@ void BuildWindow2(u4 y, u4 idx)
 void setpalette16bng(void);
 void setpalette16bng(void) { }
 
+/* The rest of newengine16b came into the same file. Only the sprite-window
+   builder is exercised here, so these exist to link. */
+void BackAreaFill(u4 y);
+void BackAreaFill(u4 const y) { (void)y; }
+u1 scanlines, Mode7HiRes16b, res640, hiresstuff, disableeffects;
+
 static u1 abuf[BUFSZ], cbuf[BUFSZ];
 
 int main(void)

@@ -1,0 +1,50 @@
+# Mutants for video/c_ngframe.c, checked by test/difftest_ngframe.c.
+# Format: name<TAB>old<TAB>new   (\\n for a newline)
+endlinet step	    endlinet -= 8;	    endlinet -= 4;
+blank test	    if (scfbl != 0)\n        goto done;	    if (scfbl == 0)\n        goto done;
+sprite stride	        eax += 512u;	        eax += 256u;
+sprite base	    eax = (u4)(uintptr_t)spritetablea;	    eax = 0;
+sprtlng clear	    memset(sprtlng, 0, sizeof sprtlng);	    memset(sprtlng, 0, sizeof sprtlng / 2u);
+eax after setup	    eax = 0;\n    t[R_EBX]	    eax = 0x10000u;\n    t[R_EBX]
+edi after setup	    t[R_EDI] = (u4)(uintptr_t)sprtlng + 256u;	    t[R_EDI] = (u4)(uintptr_t)sprtlng;
+sub screen gate	    if (ngmsdraw != 0)\n        sub_screen(&eax);	    if (ngmsdraw == 0)\n        sub_screen(&eax);
+counters not cleared	    clear_counters();\n\n    if (ngmsdraw != 0)	    if (ngmsdraw != 0)
+sub tail clear	                0x40404040u);\n    }\n    clear_counters();\n}	                0x40404040u);\n    }\n}
+sub CMainWinScr	    CMainWinScr = (u4)(uintptr_t)winbg1envals;	    CMainWinScr = (u4)(uintptr_t)winbg1envalm;
+main CMainWinScr	    CMainWinScr = (u4)(uintptr_t)winbg1envalm;	    CMainWinScr = (u4)(uintptr_t)winbg1envals;
+sub bg4 mask	        bg_pass(3, drawbg4line16b, drawbg4tile16b, 0, 0, 8u, 0, 0x60606060u);	        bg_pass(3, drawbg4line16b, drawbg4tile16b, 0, 0, 4u, 0, 0x60606060u);
+sub bg4 ads	        bg_pass(3, drawbg4line16b, drawbg4tile16b, 0, 0, 8u, 0, 0x60606060u);	        bg_pass(3, drawbg4line16b, drawbg4tile16b, 0, 0, 8u, 0, 0x60606040u);
+sub bg3 kind	        bg_pass(2, drawbg3line16b, drawbg3tile16b, 0, 0, 4u, 1, 0x40404040u);	        bg_pass(2, drawbg3line16b, drawbg3tile16b, 0, 0, 4u, 0, 0x40404040u);
+main bg3 kind	        bg_pass(2, drawbg3line16b, drawbg3tile16b, 0, 1, 4u, 1, 0x40404040u);	        bg_pass(2, drawbg3line16b, drawbg3tile16b, 0, 1, 4u, 2, 0x40404040u);
+sub mode7 mask	    if (modeused[7] != 0 && (bgcmsung & 0x300u))\n        c_procmode7ng16b(0, 1u, 0);	    if (modeused[7] != 0 && (bgcmsung & 0x100u))\n        c_procmode7ng16b(0, 1u, 0);
+main mode7 mask	    if (modeused[7] != 0 && (bgcmsung & 0x101u))\n        c_procmode7ng16b(1, 1u, 0);	    if (modeused[7] != 0 && (bgcmsung & 0x303u))\n        c_procmode7ng16b(1, 1u, 0);
+main extbg order	    if (ngextbg != 0 && (bgcmsung & 0x303u))\n        c_procmode7ng16b(1, 2u, 2);\n\n    if (!(scrndis & 2u) && (bgcmsung & 0x202u)) {	    if (!(scrndis & 2u) && (bgcmsung & 0x202u)) {
+sprites01 mask	static int sprites_01(void) { return (rdd(modeused) & 0x00000101u) != 0; }	static int sprites_01(void) { return (rdd(modeused) & 0x00010001u) != 0; }
+sprites27 low	    return (rdd(modeused) & 0x01010000u) != 0	    return (rdd(modeused) & 0x00010100u) != 0
+sprites27 high	        || (rdd(modeused + 4) & 0x01010101u) != 0;	        || (rdd(modeused + 4) & 0x01010100u) != 0;
+bg3 last modeused	    if (!(scrndis & 4u) && modeused[1] != 0 && (bgcmsung & 0x404u)) {	    if (!(scrndis & 4u) && modeused[2] != 0 && (bgcmsung & 0x404u)) {
+pr1 counter test	        *eax = bg4totng;\n        if (*eax != bg4drwng)\n            bg_pass(3, drawbg4linepr116b, drawbg4tilepr116b, prdata, 0, 8u, 2,	        *eax = bg4totng;\n        if (*eax == bg4drwng)\n            bg_pass(3, drawbg4linepr116b, drawbg4tilepr116b, prdata, 0, 8u, 2,
+pr1 eax leak	        *eax = bg1totng;\n        if (*eax != bg1drwng)\n            bg_pass(0, drawbg1linepr116b, drawbg1tilepr116b, prdatb, 1, 1u, 2,	        if (bg1totng != bg1drwng)\n            bg_pass(0, drawbg1linepr116b, drawbg1tilepr116b, prdatb, 1, 1u, 2,
+prdat pick	drawbg1tilepr116b, prdatb, 1, 1u, 2,	drawbg1tilepr116b, prdata, 1, 1u, 2,
+clip start	    u1* base = vidbuffer + 16u * 2u + 288u * 2u;	    u1* base = vidbuffer + 16u * 2u;
+clip stride	        base += 288u * 2u;	        base += 288u;
+clip sub shift	            eax = (eax & 0xFFFFFF00u) | (u1)((u1)eax << 2);	            eax = (eax & 0xFFFFFF00u) | (u1)((u1)eax << 1);
+clip enable bits	        if (((u1)eax & 0xC0u) == 0)\n            goto next;	        if (((u1)eax & 0x30u) == 0)\n            goto next;
+clip entire	        if (al == 0xC0u)\n            goto full;	        if (al == 0x40u)\n            goto full;
+clip window enable	        if (winbg1enval[bx + 5u * 256u] & 0x0Au) {	        if (winbg1enval[bx + 4u * 256u] & 0x0Au) {
+clip logic byte	[bx * 2u + 1u] >> 2) & 3u);	[bx * 2u] >> 2) & 3u);
+clip nowin outside	            if (al == 0x80u)\n                goto next; /* outside a window that is not there */	            if (al == 0x40u)\n                goto next; /* outside a window that is not there */
+clip zero run	            (*(u4*)(uintptr_t)edi)--; /* a zero run steals from the next */	            ecx--;
+clip outside first	        if (al == 0x80u) {\n            if (ecx != 0)\n                goto noclipping;	        if (al == 0x80u) {\n            if (ecx == 0)\n                goto noclipping;
+clip wide threshold	        if (ecx >= 256u)\n            goto full;	        if (ecx >= 128u)\n            goto full;
+clip pixel budget	        edx = 256;	        edx = 255;
+clip advance	        p += ecx * 2u;	        p += ecx;
+clip borrow	            if (before <= ecx)\n                goto next;	            if (before < ecx)\n                goto next;
+clip full count	        for (ecx = 128; ecx != 0; ecx--) {	        for (ecx = 64; ecx != 0; ecx--) {
+clip mask xor	        ebx = sub ? UnusedBitXor[0] : UnusedBit[0];\n        if (al == 0xC0u)	        ebx = sub ? UnusedBit[0] : UnusedBitXor[0];\n        if (al == 0xC0u)
+clip sub does main	    if (!sub)\n        wrw(p + SUBOFF, (u2)(rdw(p + SUBOFF) | (u2)ebx));	    wrw(p + SUBOFF, (u2)(rdw(p + SUBOFF) | (u2)ebx));
+clip dword sub	    wrd(p, rdd(p) & ebx);\n    if (!sub)	    wrd(p, rdd(p) | ebx);\n    if (!sub)
+clip pass order	    screen_clip(t, 0);\n    screen_clip(t, 1);	    screen_clip(t, 1);\n    screen_clip(t, 0);
+clip resolutn	        if (resolutn < (u2)bx)\n            break;	        if (resolutn <= (u2)bx)\n            break;
+exit eax	    r[R_EAX] = 0;\n    r[R_EBX] = 0;	    r[R_EAX] = 1;\n    r[R_EBX] = 0;
+transp block	    t[R_EAX] = eax;\n    screen_clip(t, 0);	    screen_clip(t, 0);

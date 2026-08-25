@@ -45,7 +45,7 @@ ASMDATA   := zsnes_asmdata_test
 ASMDATA_SRC := asmdata_test.c
 OBJS      := ../zpath.o
 
-.PHONY: all run clean procwin spcdec fxtable fxops memops m7calc m7ext2 m7start m7win m7bw m7proc m7draw mv16 mvs mvall m716t cb16t cb16b spr16bt spr16t spr16p t8bt t16bt t8t t16t t8to thi mos sprwin ngspr regs
+.PHONY: all run clean bgt procwin spcdec fxtable fxops memops m7calc m7ext2 m7start m7win m7bw m7proc m7draw mv16 mvs mvall m716t cb16t cb16b spr16bt spr16t spr16p t8bt t16bt t8t t16t t8to thi mos sprwin ngspr regs ngeng ngframe
 
 all: $(BIN) $(NETPLAY) $(ST10) $(ST11) $(OBC1) $(MSU1) $(DSP2) $(SAI) $(SA1) $(SPC7110) $(VCACHE) $(SPRITES) $(C4) $(MODE7) $(ASMDATA)
 
@@ -305,7 +305,8 @@ NG_OBJS := ../endmem.o ../video/c_newgfx16data.o ../video/newgfx.o \
 # file, so it needs all of that file's C entry points - the same rule as
 # M16T_SEAM. c_ngprocbg.c also needs calldl16t's block, which m16t_extra.c has.
 NG_SEAM := ../video/c_ngmosaic.c ../video/c_ngprocbg.c \
-           ../video/c_ngline.c ../video/c_ngspr.c m16t_extra.c
+           ../video/c_ngline.c ../video/c_ngspr.c ../video/c_ngbg.c \
+           ../video/c_ngframe.c m16t_extra.c
 
 # No oracle: the loop has no symbol of its own, so difftest_sprwin.c carries a
 # verbatim transcription of the assembly instead.
@@ -349,6 +350,46 @@ mos: difftest_mos.c difftest.h $(NG_SEAM)
 	    _mos.o _moscur.o _mos_stubs.c $(NG_OBJS) \
 	    -no-pie -o difftest_mos
 	@./difftest_mos
+
+# The tail of newengine16b. The oracle is HEAD rather than the pre-port
+# revision: the first two thirds of the routine are already C and the assembly
+# reaches them by ccallv there, so both sides share those three and this
+# compares only what was ported last - see difftest_ngeng.c.
+ngeng: difftest_ngeng.c difftest.h ../video/c_ngline.c ../video/newgfx16.asm
+	python3 ../tools/mkoracle.py video/newgfx16.asm -o _ngeng.o \
+	    --requires 'ccallv newengine16b_lines' --ported-marker '' \
+	    --stubs _ngeng_stubs.c --provided-by $(NG_OBJS) \
+	    --exclude BackAreaFill BuildWindow2 setpalette16bng vram \
+	            vbufdptr res640 scanlines hiresstuff Mode7HiRes16b \
+	            ngwinptr CSprWinPtr fulladdtab vidbuffer \
+	            newengine16b_lines newengine16b_windows newengine16b_sprwin
+	$(CC) $(CFLAGS) difftest_ngeng.c ../video/c_ngline.c \
+	    _ngeng.o _ngeng_stubs.c $(NG_OBJS) -no-pie -o difftest_ngeng
+	@./difftest_ngeng
+
+# StartDrawNewGfx16b and the screen clip. The three workers it calls are
+# recorded, so video/c_ngprocbg.c is not linked - see difftest_ngframe.c.
+ngframe: difftest_ngframe.c difftest.h ../video/c_ngframe.c ../video/newgfx16.asm
+	python3 ../tools/mkoracle.py video/newgfx16.asm -o _ngframe.o \
+	    --requires 'ccallv c_procbg16b' --ported-marker '' \
+	    --stubs _ngframe_stubs.c --provided-by $(NG_OBJS) \
+	    --exclude c_procbg16b c_procspr16b c_procmode7ng16b BuildWindow \
+	            c_process_transparencies vidbuffer spritetablea \
+	            fulladdtab prdata prdatb prdatc \
+	            drawbg1line16b drawbg2line16b drawbg3line16b \
+	            drawbg4line16b drawbg1tile16b drawbg2tile16b \
+	            drawbg3tile16b drawbg4tile16b drawbg1linepr116b \
+	            drawbg2linepr116b drawbg3linepr116b drawbg4linepr116b \
+	            drawbg1tilepr116b drawbg2tilepr116b drawbg3tilepr116b \
+	            drawbg4tilepr116b
+	# video/c_ngtransp.o is deliberately not here: its
+	# c_process_transparencies is one of the recorded targets.
+	$(CC) $(CFLAGS) difftest_ngframe.c ../video/c_ngframe.c \
+	    _ngframe.o _ngframe_stubs.c ../endmem.o \
+	    ../video/c_newgfx16data.o ../video/newgfx.o ../video/makevid.o \
+	    ../cpu/c_regsdata.o ../cpu/c_regswdata.o ../video/c_ng2gate.o \
+	    ngtransp_extra.c -no-pie -o difftest_ngframe
+	@./difftest_ngframe
 
 mv16: difftest_mv16.c difftest.h mkmv16.sh ../video/c_mv16tms.c
 	./mkmv16.sh
@@ -473,15 +514,41 @@ transp: difftest_transp.c difftest.h ../video/c_ngtransp.c
 	$(CC) $(CFLAGS) difftest_transp.c -no-pie -o difftest_transp
 	@./difftest_transp
 
+# The four background tile dispatchers. The renderers they tail-jump into are
+# recorded rather than run, so what this compares is the register state at the
+# jump plus everything the dispatcher wrote - see difftest_bgt.c.
+bgt: difftest_bgt.c difftest.h ../video/c_ngbg.c ../video/newgfx16.asm
+	python3 ../tools/mkoracle.py video/newgfx16.asm -o _bgt.o \
+	    --stubs _bgt_stubs.c --provided-by $(NG_OBJS) \
+	    --define BuildWindow=BuildWindow_reg \
+	    --exclude drawtileng2b16b drawtileng4b16b drawtileng8b16b \
+	            drawtileng16x162b16b drawtileng16x164b16b \
+	            drawtileng16x168b16b BuildWindow_reg Gendcolortable \
+	            colormodedef dcolortab vram fulladdtab vidbuffer \
+	            drawlineng2b16b drawlineng4b16b \
+	            drawlineng8b16b drawlineng16x162b16b \
+	            drawlineng16x164b16b drawlineng16x168b16b \
+	            drawlineng16x82b16b drawlineng16x84b16b \
+	            drawlinengom2b16b drawlinengom4b16b \
+	            drawlinengom8b16b drawlinengom16x162b16b \
+	            drawlinengom16x164b16b drawlinengom16x168b16b
+	$(CC) $(CFLAGS) difftest_bgt.c ../video/c_ngbg.c _bgt.o _bgt_stubs.c \
+	    $(NG_OBJS) -no-pie -o difftest_bgt
+	@./difftest_bgt
+
 ng2: difftest_ng2.c ng2_harness.c ng2_harness.h difftest.h \
      ../video/c_ng2tile.c ../video/c_ng2gate.c ../video/newg162.asm
 	python3 ../tools/mkoracle.py video/newg162.asm -o _ng2.o \
 	    --ported-marker 'ccall c_determinetransp' --stubs _ng2_stubs.c \
 	    --provided-by ../video/tilecache.o ../endmem.o \
-	    --exclude domosaicng16b
+	    --exclude domosaicng16b vrama
 	python3 ../tools/mkoracle.py video/newg162.asm -o _ng2cur.o \
 	    --worktree --prefix cur_
+	# The two ported files go in as *sources*. Linking the objects the main
+	# build leaves behind means an edit to either can be tested against a
+	# stale one - which happened, and showed up as an extern of the wrong
+	# length reading whatever global followed it.
 	$(CC) $(CFLAGS) difftest_ng2.c ng2_harness.c _ng2.o _ng2cur.o \
-	    _ng2_stubs.c ../video/tilecache.o ../endmem.o ../video/c_ng2tile.o \
-	    ../video/c_ng2gate.o -no-pie -o difftest_ng2
+	    _ng2_stubs.c ../video/tilecache.o ../endmem.o ../video/c_ng2tile.c \
+	    ../video/c_ng2gate.c -no-pie -o difftest_ng2
 	@./difftest_ng2

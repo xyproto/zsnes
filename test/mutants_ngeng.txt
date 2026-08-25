@@ -1,0 +1,50 @@
+# Mutants for the newengine16b tail in video/c_ngline.c, checked by
+# test/difftest_ngeng.c. Format: name<TAB>old<TAB>new   (\\n for a newline)
+bright divisor	(c * vidbright) / 15u	(c * vidbright) / 16u
+bright none	(c * vidbright) / 15u	(c * 15u) / 15u
+shift width	(u4)q << (shift & 31u)	(u4)q << (shift & 15u)
+shift off	(u4)q << (shift & 31u)	(u4)q << 0
+key bright	(u4)vidbright | (u4)coladdr << 8	(u4)vidbright | (u4)coladdr << 9
+key blue	| (u4)coladdb << 24;	| (u4)coladdb << 23;
+cache always	    if (key == Prevcoladdr)\n        return;	    if (0)\n        return;
+cache never	    if (key == Prevcoladdr)\n        return;	    if (1)\n        return;
+colresult half	ColResult = (u4)bx | (u4)bx << 16;	ColResult = (u4)bx;
+col g order	    bx = (u2)(bx + coladd_part(coladdg, nggposng));	    bx = (u2)(bx + coladd_part(coladdg, ngbposng));
+back inside bit	    if (cl & 0x10u) {\n        BackAreaUnFillCol = edx;	    if (cl & 0x08u) {\n        BackAreaUnFillCol = edx;
+back filled bit	        BackAreaFillCol = (cl & 0x20u) ? edx : ebx;\n    } else {	        BackAreaFillCol = (cl & 0x40u) ? edx : ebx;\n    } else {
+back outside	        BackAreaFillCol = (cl & 0x20u) ? edx : ebx;\n    }\n}	        BackAreaFillCol = (cl & 0x20u) ? ebx : edx;\n    }\n}
+back window idx	    if (winbg1enval[y + 5u * 256u] != 0) {	    if (winbg1enval[y + 4u * 256u] != 0) {
+back logic shift	nglogicval = (u1)((winlogicb >> 2) & 3u);	nglogicval = (u1)((winlogicb >> 1) & 3u);
+main screen shift	        cl = (u1)(scaddset >> 2);	        cl = (u1)(scaddset >> 3);
+main unused bit	        if (scaddtype & 0x20u) {	        if (scaddtype & 0x10u) {
+main colour dup	        ebx = (u4)v | (u4)v << 16;	        ebx = (u4)v;
+main sub swap	    if (clinemainsub == 1) {	    if (clinemainsub != 1) {
+no window fill	    if (ngwinen == 0)\n        BackAreaFillCol = BackAreaUnFillCol;\n    if (forceblnk != 0) {	    if (ngwinen != 0)\n        BackAreaFillCol = BackAreaUnFillCol;\n    if (forceblnk != 0) {
+forceblnk	    if (forceblnk != 0) {	    if (forceblnk == 0) {
+sub screen test	    if (!(FillSubScr[y] & 1u))\n        return;	    if (!(FillSubScr[y] & 2u))\n        return;
+sub back add	    BackAreaAdd = 75036u * 2u;	    BackAreaAdd = 75036u * 4u;
+sub fixed bit	    if (scaddset & 2u)\n        ebx |= UnusedBit[0];	    if (scaddset & 1u)\n        ebx |= UnusedBit[0];
+sub window fill	    if (ngwinen == 0)\n        BackAreaFillCol = BackAreaUnFillCol;\n    BackAreaFill(y);\n}	    if (ngwinen != 0)\n        BackAreaFillCol = BackAreaUnFillCol;\n    BackAreaFill(y);\n}
+scanlines gate	    if (scanlines != 0)\n        return;	    if (scanlines == 0)\n        return;
+mode7 interl bit	    if (bgmode >= 7 && ((interlval & 0x40u) || Mode7HiRes16b != 1))	    if (bgmode >= 7 && ((interlval & 0x20u) || Mode7HiRes16b != 1))
+mode7 hires	    if (bgmode >= 7 && ((interlval & 0x40u) || Mode7HiRes16b != 1))	    if (bgmode >= 7 && ((interlval & 0x40u) || Mode7HiRes16b == 1))
+hires mode floor	    if (res640 == 0 || bgmode < 5)	    if (res640 == 0 || bgmode < 6)
+special line value	SpecialLine[y] = (u1)(bgmode == 7 ? 3 : 2);	SpecialLine[y] = (u1)(bgmode == 7 ? 2 : 3);
+hires base	base = vidbuffer + 16u * 2u + (y << 9) + (y << 6);	base = vidbuffer + 16u * 2u + (y << 9);
+hires field	    memcpy(base + 75036u * 4u, base, 512u);	    memcpy(base + 75036u * 2u, base, 512u);
+hires length	    memcpy(base + 75036u * 4u, base, 512u);	    memcpy(base + 75036u * 4u, base, 256u);
+hires sub test	    if (FillSubScr[y] & 1u)\n        memcpy(base + 75036u * 6u	    if (FillSubScr[y] & 4u)\n        memcpy(base + 75036u * 6u
+hires sub src	        memcpy(base + 75036u * 6u, base + 75036u * 2u, 512u);	        memcpy(base + 75036u * 6u, base, 512u);
+interlace bit	    if (interlval & 1u)\n        SpecialLine[y] |= 4u;	    if (interlval & 2u)\n        SpecialLine[y] |= 4u;
+interlace value	        SpecialLine[y] |= 4u;	        SpecialLine[y] |= 8u;
+disableeffects	    if (disableeffects == 1) {	    if (disableeffects != 1) {
+winchange flag	        newengine16b_windows();\n        bgwinchange[y] = 1;	        newengine16b_windows();\n        bgwinchange[y] = 0;
+winchange clear	    bgwinchange[y] = 0;\n    if (disableeffects == 1) {	    bgwinchange[y] = 1;\n    if (disableeffects == 1) {
+finishwin rows	        for (q = 0; q < 5u; q++) {	        for (q = 0; q < 4u; q++) {
+finishwin obj	        winbgobjenval[y] = 0;	        winbg4enval[y] = 0;
+fillsub colour	    if ((u2)ColResult != 0 && FillSubScr[y] != 0)	    if ((u2)ColResult == 0 && FillSubScr[y] != 0)
+fillsub bit	        FillSubScr[y] |= 2u;	        FillSubScr[y] |= 1u;
+sprpri one	    if (p == 1u || p == 0x100u	    if (p == 2u || p == 0x100u
+sprpri top	|| p == 0x1000000u)	|| p == 0x10000000u)
+sprpri flag	        sprleftpr[y] |= 0x80000000u;	        sprleftpr[y] |= 0x40000000u;
+y mask	    y = curypos & 0xFFu;	    y = curypos & 0x7Fu;

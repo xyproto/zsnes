@@ -16,6 +16,13 @@ static u1 palconv[1 << 17];
 
 /* video/tilecache.o wants these; the newg162 stubs do not provide them. */
 u1 ng2_vram[65536 * 2];
+
+/* The tile map. mkoracle would stub this at 4096 bytes and leave it zero, so
+   every tile value would be zero - no flip bits, one palette, one tile index -
+   and the whole difftest would compare one narrow path. The offset-mode
+   drawers index it with the low word of a pointer, so it has to span the full
+   64K, plus slack for the word read at the top. */
+u1 vrama[65536 + 64];
 u1* vram = ng2_vram;
 u1* curtileptr;
 u1* bgptr;
@@ -47,11 +54,22 @@ extern u4 ngpalcon2b[32], ngpalcon4b[32];
    value, so those stay zero. The base is offset into the buffer because the
    code reads [ebx-0x40], i.e. behind it. */
 extern u1 ofsmcptr[], ofsmcptr2[], ofsmmptr[], ofsmtptrs[];
+extern u1 ofsmcyps[], ofsmady[], ofsmadx[];
 extern u1 ofsmtptr[], ofsmval[], ofsmvalh[], ofshvaladd[];
 extern u4 ngcwinptr, ngcwinmode, ngcpixleft, ngwintable[];
+/* The offset-mode drawers step ofsmcptr by this every time ofsmcptr2 comes
+   back round to zero. Left at zero the step is a no-op, so the wrap - which
+   only one of the three offset-mode tails performs - is never tested. Two
+   keeps the pointer inside ofsbuf; note the assembly adds it to the *low word*
+   of a pointer, so a large value here would fabricate a wild one. */
+extern u4 bgtxadd2;
 extern u1 tleftn;
 extern u4 tleftnb;
-static u1 ofsbuf[1 << 18];
+/* The offset-per-tile table. Zero here means every entry fails the ofsmval
+   test and the whole offset computation - the point of these six routines - is
+   dead; difftest_ng2.c fills it. */
+u1 ng2_ofsbuf[1 << 18];
+#define ofsbuf ng2_ofsbuf
 
 /* The mosaic pass is a separate routine the line drawers tail-jump to; the
    oracle only has it as a stub. A bare ret matches its real exit.
@@ -71,8 +89,13 @@ void ng2_reset(void)
     *(u1**)ofsmmptr = ofsbuf + 4096;
     *(u1**)ofsmtptrs = ofsbuf + 4096;
     *(u4*)ofsmtptr = 0;
-    *(u4*)ofsmval = 0;
-    *(u4*)ofsmvalh = 0;
+    /* The bits an offset entry is tested against. Zero disables the entire
+       offset path, so these are the layer-select bits a real line would use. */
+    *(u4*)ofsmval = 0x2000;
+    *(u4*)ofsmvalh = 0x4000;
+    *(u4*)ofsmcyps = 0x40;
+    *(u4*)ofsmady = 0x20;
+    *(u4*)ofsmadx = 0x10;
     *(u4*)ofshvaladd = 0;
     ngcwinptr = (unsigned)(unsigned long)ngwintable;
     ngcwinmode = 0;
@@ -80,6 +103,7 @@ void ng2_reset(void)
     tleftn = 0;
     tleftnb = 0;
     ng2_mosaic_hits = 0;
+    bgtxadd2 = 2;
 }
 
 void ng2_init(void)

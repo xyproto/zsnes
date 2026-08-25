@@ -43,7 +43,7 @@
 typedef uint8_t u1;
 typedef uint32_t u4;
 
-extern u1 BGMS1[], FillSubScr[], scadtng[], curmosaicsz, ngwinen;
+extern u1 BGMS1[], FillSubScr[], scadtng[], curmosaicsz, ngwinen, res640;
 extern u4 CMainWinScr, CSubWinScr;
 /* The windowed leaves walk this table; WinClipMacro seeds ngcwinptr from it. */
 extern u4 ngwintable[];
@@ -111,6 +111,8 @@ static void fill_win(void)
 }
 
 extern u1 ng2_vram[];
+extern u1 vrama[]; /* the tile map, ng2_harness.c */
+extern u1 ng2_ofsbuf[]; /* the offset-per-tile table */
 extern u4 ng2_leafhits[4];
 extern u4 ng2_winhits[8];
 extern u4 ng2_bighits[4];
@@ -119,6 +121,11 @@ extern u4 ng2_linehits[4];
 extern u4 ng2_linewinhits[8];
 extern u4 ng2_line16hits[4];
 extern u4 ng2_line16winhits[8];
+extern u4 ng2_line168hits[6];
+extern u4 ng2_lineomhits[4];
+extern u4 ng2_lineomwinhits[8];
+extern u4 ng2_lineom16hits[4];
+extern u4 ng2_lineom16winhits[8];
 extern u1 ng2_src2[], ng2_src4[], ng2_src8[];
 extern u1 ng2_palette[];
 /* tltype* selects full tile / partial tile / skip. The tile cache fills it,
@@ -145,6 +152,8 @@ static void setup_gated(u4 sel)
     scadtng[1] = (u1)((scadtng[1] & ~1u) | ((sel >> 3) & 1u));
     FillSubScr[1] = (u1)((FillSubScr[1] & ~1u) | ((sel >> 4) & 1u));
     ngwinen = (u1)((sel >> 5) & 1u);
+    /* Gates the 16x8 drawer's two-field path; left at zero it never runs. */
+    res640 = (u1)((sel >> 6) & 1u);
     for (u4 k = 0; k < 64; k++)
         ngwintable[k] = dt_mod(2) ? 0 : (dt_mod(200) + 1);
     /* Two distinct tables, as the emulator has. Pointing both at the same
@@ -161,6 +170,7 @@ static void setup(void)
     /* Windows on for half the runs: the gating tree has windowed leaves with
        their own writers, and leaving ngwinen at zero never reaches them. */
     ngwinen = (u1)dt_mod(2);
+    res640 = (u1)dt_mod(2);
     for (u4 k = 0; k < 64; k++)
         ngwintable[k] = dt_mod(2) ? 0 : (dt_mod(200) + 1);
     /* Two distinct tables, as the emulator has. Pointing both at the same
@@ -302,6 +312,11 @@ int main(void)
                eight came up empty from run to run. */
             for (int it = 0; it < 1024; it++) {
                 dt_fill(ng2_vram, 4096);
+                /* The tile map. Left zero this is one tile value repeated,
+                   which is no flip bits and a single palette and tile index. */
+                dt_fill(vrama, 65536);
+                /* The offset table the om drawers walk. */
+                dt_fill(ng2_ofsbuf, 1 << 16);
                 /* the raw tile bitmaps the cache decodes from */
                 dt_fill(ng2_src2, 65536);
                 dt_fill(ng2_src4, 65536);
@@ -341,6 +356,16 @@ int main(void)
                             hits_shared[42 + q] += ng2_line16hits[q];
                         for (int q = 0; q < 8; q++)
                             hits_shared[46 + q] += ng2_line16winhits[q];
+                        for (int q = 0; q < 6; q++)
+                            hits_shared[54 + q] += ng2_line168hits[q];
+                        for (int q = 0; q < 4; q++)
+                            hits_shared[60 + q] += ng2_lineomhits[q];
+                        for (int q = 0; q < 8; q++)
+                            hits_shared[64 + q] += ng2_lineomwinhits[q];
+                        for (int q = 0; q < 4; q++)
+                            hits_shared[72 + q] += ng2_lineom16hits[q];
+                        for (int q = 0; q < 8; q++)
+                            hits_shared[76 + q] += ng2_lineom16winhits[q];
                         if (k == 0) {
                             /* How much of the line the routine actually
                                painted. Zero means the harness never got it
@@ -424,6 +449,21 @@ int main(void)
            "mstmw=%u mstsw=%u msntmw=%u msntsw=%u\n",
         hits_shared[46], hits_shared[47], hits_shared[48], hits_shared[49],
         hits_shared[50], hits_shared[51], hits_shared[52], hits_shared[53]);
+    printf("  16x8 line hits: nt=%u t=%u mst=%u msnt=%u; hi-res %u, plain %u\n",
+        hits_shared[54], hits_shared[55], hits_shared[56], hits_shared[57],
+        hits_shared[58], hits_shared[59]);
+    printf("  offset-mode line hits: nt=%u t=%u mst=%u msnt=%u\n",
+        hits_shared[60], hits_shared[61], hits_shared[62], hits_shared[63]);
+    printf("  offset-mode windowed: win=%u wint=%u mstmsw=%u msntmsw=%u "
+           "mstmw=%u mstsw=%u msntmw=%u msntsw=%u\n",
+        hits_shared[64], hits_shared[65], hits_shared[66], hits_shared[67],
+        hits_shared[68], hits_shared[69], hits_shared[70], hits_shared[71]);
+    printf("  16x16 offset-mode hits: nt=%u t=%u mst=%u msnt=%u\n",
+        hits_shared[72], hits_shared[73], hits_shared[74], hits_shared[75]);
+    printf("  16x16 om windowed: win=%u wint=%u mstmsw=%u msntmsw=%u "
+           "mstmw=%u mstsw=%u msntmw=%u msntsw=%u\n",
+        hits_shared[76], hits_shared[77], hits_shared[78], hits_shared[79],
+        hits_shared[80], hits_shared[81], hits_shared[82], hits_shared[83]);
     printf("newg162: %zu/%zu routines match the assembly\n",
         sizeof routines / sizeof routines[0] - (size_t)bad,
         sizeof routines / sizeof routines[0]);

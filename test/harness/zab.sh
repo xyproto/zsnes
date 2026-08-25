@@ -40,7 +40,9 @@ if ! make -C "$ROOT" -j"$(nproc)" >"$OUT/candidate_build.log" 2>&1; then
 fi
 
 H=$ROOT/test/harness/zrun.sh
-common=(-r "$ROM" -t "$SECS" -p 0)
+# -p 30: a PNG every 30 *emulated* frames. That is the only comparison here
+# that is not paced by the host clock - see the frame-indexed check below.
+common=(-r "$ROM" -t "$SECS" -p 30)
 [ -n "$INPUT" ] && common+=(-i "$INPUT")
 [ -n "$SLOT" ]  && common+=(-s "$SLOT")
 # zrun.sh bails before it clears its output directory, so a run that never
@@ -59,6 +61,32 @@ if [ "$distinct" -lt 10 ]; then
     echo "INCONCLUSIVE: baseline produced $distinct distinct states (<10) - it likely never booted. Re-run."
     exit 3
 fi
+
+# The authoritative comparison. zsnes_ppu.txt and zsnes_hashes.txt are written
+# once per *displayed* frame, so their line numbers are paced by the host clock;
+# two binaries of different speed - which a port always is - drift against each
+# other and report a difference that is not one. The PNGs are named for the
+# emulated frame that produced them, so matching names really are the same
+# point in the run. Compare those, and treat the streams below as a smoke test.
+python3 - "$OUT/base/png" "$OUT/cand/png" <<'PY'
+import sys, os, hashlib
+base, cand = sys.argv[1], sys.argv[2]
+if not (os.path.isdir(base) and os.path.isdir(cand)):
+    print("frames: NO PNGs (built without libpng?)")
+    raise SystemExit(0)
+def digest(d, n):
+    with open(os.path.join(d, n), "rb") as f:
+        return hashlib.md5(f.read()).hexdigest()
+common = sorted(set(os.listdir(base)) & set(os.listdir(cand)))
+bad = [n for n in common if digest(base, n) != digest(cand, n)]
+if not common:
+    print("frames: NO OVERLAP")
+elif bad:
+    print("FRAMES DIFFER: %d of %d, first %s" % (len(bad), len(common), bad[0]))
+else:
+    print("SAME: %d frames identical at matching emulated frame numbers"
+          % len(common))
+PY
 
 python3 - "$OUT/base" "$OUT/cand" <<'PY'
 import sys, os
