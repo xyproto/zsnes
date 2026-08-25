@@ -102,6 +102,17 @@ jobs:
           make clean
           make ARCH=linux
           test -x ./zsnes
+      - name: Build 64-bit
+        run: |
+          make clean
+          make linux64
+          test -x ./zsnes
+          make clean
+          make ARCH=linux
+      - name: Portability gate
+        run: make portcheck
+      - name: Unit tests
+        run: make -C test run
       - name: Verify runtime links
         run: |
           ldd ./zsnes | tee ldd.txt
