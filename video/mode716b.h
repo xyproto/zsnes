@@ -3,7 +3,7 @@
 
 #include "../types.h"
 
-extern void drawmode716b();
+extern void drawmode716b(void);
 
 void c_drawmode716b(u4 ypos, u4 xpos);
 

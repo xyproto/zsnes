@@ -10,7 +10,6 @@
 
 #include "../types.h"
 
-#include "../asm_call.h"
 #include "../c_init.h"
 #include "../c_vcache.h"
 #include "../chips/sa1proc.h"

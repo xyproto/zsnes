@@ -33,7 +33,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <unistd.h>
 #endif
 #endif
-#include "asm_call.h"
 #include "c_vcache.h"
 #include "cfg.h"
 #include "chips/c4proc.h"

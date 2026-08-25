@@ -48,21 +48,21 @@ void BuildWindow(u4 line, u4 which); /* video/c_makev16b.c */
 void c_process_transparencies(u4* r); /* video/c_ngtransp.c */
 
 /* video/c_ngprocbg.c */
-void c_procbg16b(u4 layer, void (*lineproc)(void), void (*tileproc)(void),
+void c_procbg16b(u4 layer, void (*lineproc)(u4*), void (*tileproc)(u4*),
     u1 const* prdat, int main_, u4 mask, int kind);
 void c_procspr16b(int main_, u4 mask, int modes);
 void c_procmode7ng16b(int main_, u4 mask, int kind);
 
-/* The sixteen dispatchers, still reached by their register-ABI seams in
-   video/newgfx16.asm - c_procbg16b calls them through calldl16t. */
-void drawbg1line16b(void), drawbg2line16b(void);
-void drawbg3line16b(void), drawbg4line16b(void);
-void drawbg1tile16b(void), drawbg2tile16b(void);
-void drawbg3tile16b(void), drawbg4tile16b(void);
-void drawbg1linepr116b(void), drawbg2linepr116b(void);
-void drawbg3linepr116b(void), drawbg4linepr116b(void);
-void drawbg1tilepr116b(void), drawbg2tilepr116b(void);
-void drawbg3tilepr116b(void), drawbg4tilepr116b(void);
+/* The sixteen dispatchers, video/c_ngbg.c. c_procbg16b hands each of them the
+   pass's register file. */
+void c_drawbg1line16b(u4* r), c_drawbg2line16b(u4* r);
+void c_drawbg3line16b(u4* r), c_drawbg4line16b(u4* r);
+void c_drawbg1tile16b(u4* r), c_drawbg2tile16b(u4* r);
+void c_drawbg3tile16b(u4* r), c_drawbg4tile16b(u4* r);
+void c_drawbg1linepr116b(u4* r), c_drawbg2linepr116b(u4* r);
+void c_drawbg3linepr116b(u4* r), c_drawbg4linepr116b(u4* r);
+void c_drawbg1tilepr116b(u4* r), c_drawbg2tilepr116b(u4* r);
+void c_drawbg3tilepr116b(u4* r), c_drawbg4tilepr116b(u4* r);
 
 /* The sub screen sits 75036 words past the main one. */
 #define SUBOFF (75036u * 2u)
@@ -189,15 +189,14 @@ static void screen_clip(u4* const r, int const sub)
         }
     skipclipping:
         ecx = *edi++;
-    noclipping:
-        {   /* sub edx,ecx sets the flags *and* keeps the result, so edx is
-               left decremented even on the way out. */
-            u4 const before = edx;
+    noclipping: { /* sub edx,ecx sets the flags *and* keeps the result, so edx is
+                     left decremented even on the way out. */
+        u4 const before = edx;
 
-            edx -= ecx;
-            if (before <= ecx)
-                goto next;
-        }
+        edx -= ecx;
+        if (before <= ecx)
+            goto next;
+    }
         p += ecx * 2u;
         ecx = *edi++;
         goto clipc;
@@ -225,8 +224,8 @@ static void screen_clip(u4* const r, int const sub)
 
 /* One background layer's pass. The mode-0 palette block is set for every
    layer whether or not it is used, as the assembly does. */
-static void bg_pass(u4 const layer, void (*const lineproc)(void),
-    void (*const tileproc)(void), u1 const* const prdat, int const main_,
+static void bg_pass(u4 const layer, void (*const lineproc)(u4*),
+    void (*const tileproc)(u4*), u1 const* const prdat, int const main_,
     u4 const mask, int const kind, u4 const ads)
 {
     mode0ads = ads;
@@ -259,36 +258,36 @@ static void sub_screen(u4* const eax)
     CSubWinScr = (u4)(uintptr_t)winbg1envals;
 
     if (!(scrndis & 8u) && (bgcmsung & 0x800u))
-        bg_pass(3, drawbg4line16b, drawbg4tile16b, 0, 0, 8u, 0, 0x60606060u);
+        bg_pass(3, c_drawbg4line16b, c_drawbg4tile16b, 0, 0, 8u, 0, 0x60606060u);
     if (!(scrndis & 4u) && (bgcmsung & 0x400u))
-        bg_pass(2, drawbg3line16b, drawbg3tile16b, 0, 0, 4u, 1, 0x40404040u);
+        bg_pass(2, c_drawbg3line16b, c_drawbg3tile16b, 0, 0, 4u, 1, 0x40404040u);
     if (!(scrndis & 0x10u) && sprites_01() && (bgcmsung & 0x1000u))
         c_procspr16b(0, 0x10u, 0);
 
     if (!(scrndis & 8u) && (bgcmsung & 0x800u)) {
         *eax = bg4totng;
         if (*eax != bg4drwng)
-            bg_pass(3, drawbg4linepr116b, drawbg4tilepr116b, prdata, 0, 8u, 2,
+            bg_pass(3, c_drawbg4linepr116b, c_drawbg4tilepr116b, prdata, 0, 8u, 2,
                 0x60606060u);
     }
     if (!(scrndis & 4u) && (bgcmsung & 0x400u)) {
         *eax = bg3totng;
         if (*eax != bg3drwng)
-            bg_pass(2, drawbg3linepr116b, drawbg3tilepr116b, prdatc, 0, 4u, 3,
+            bg_pass(2, c_drawbg3linepr116b, c_drawbg3tilepr116b, prdatc, 0, 4u, 3,
                 0x40404040u);
     }
     if (!(scrndis & 0x10u) && sprites_01() && (bgcmsung & 0x1000u))
         c_procspr16b(0, 0x10u, 0);
 
     if (!(scrndis & 2u) && (bgcmsung & 0x200u))
-        bg_pass(1, drawbg2line16b, drawbg2tile16b, 0, 0, 2u, 0, 0x20202020u);
+        bg_pass(1, c_drawbg2line16b, c_drawbg2tile16b, 0, 0, 2u, 0, 0x20202020u);
     if (ngextbg != 0 && (bgcmsung & 0x300u))
         c_procmode7ng16b(0, 3u, 1);
     if (!(scrndis & 0x10u) && sprites_27() && (bgcmsung & 0x1000u))
         c_procspr16b(0, 0x10u, 1);
 
     if (!(scrndis & 1u) && (bgcmsung & 0x100u))
-        bg_pass(0, drawbg1line16b, drawbg1tile16b, 0, 0, 1u, 0, 0);
+        bg_pass(0, c_drawbg1line16b, c_drawbg1tile16b, 0, 0, 1u, 0, 0);
     if (modeused[7] != 0 && (bgcmsung & 0x300u))
         c_procmode7ng16b(0, 1u, 0);
     if (!(scrndis & 0x10u) && (bgcmsung & 0x1000u))
@@ -297,7 +296,7 @@ static void sub_screen(u4* const eax)
     if (!(scrndis & 2u) && (bgcmsung & 0x200u)) {
         *eax = bg2totng;
         if (*eax != bg2drwng)
-            bg_pass(1, drawbg2linepr116b, drawbg2tilepr116b, prdata, 0, 2u, 2,
+            bg_pass(1, c_drawbg2linepr116b, c_drawbg2tilepr116b, prdata, 0, 2u, 2,
                 0x20202020u);
     }
     if (ngextbg != 0 && (bgcmsung & 0x300u))
@@ -308,7 +307,7 @@ static void sub_screen(u4* const eax)
     if (!(scrndis & 1u) && (bgcmsung & 0x100u)) {
         *eax = bg1totng;
         if (*eax != bg1drwng)
-            bg_pass(0, drawbg1linepr116b, drawbg1tilepr116b, prdatb, 0, 1u, 2,
+            bg_pass(0, c_drawbg1linepr116b, c_drawbg1tilepr116b, prdatb, 0, 1u, 2,
                 0);
     }
     if (!(scrndis & 0x10u) && (bgcmsung & 0x1000u))
@@ -317,7 +316,7 @@ static void sub_screen(u4* const eax)
     if (!(scrndis & 4u) && modeused[1] != 0 && (bgcmsung & 0x400u)) {
         *eax = bg3totng;
         if (*eax != bg3drwng)
-            bg_pass(2, drawbg3linepr116b, drawbg3tilepr116b, prdatc, 0, 4u, 4,
+            bg_pass(2, c_drawbg3linepr116b, c_drawbg3tilepr116b, prdatc, 0, 4u, 4,
                 0x40404040u);
     }
     clear_counters();
@@ -329,36 +328,36 @@ static void main_screen(u4* const eax)
     CSubWinScr = (u4)(uintptr_t)winbg1envals;
 
     if (!(scrndis & 8u) && (bgcmsung & 0x808u))
-        bg_pass(3, drawbg4line16b, drawbg4tile16b, 0, 1, 8u, 0, 0x60606060u);
+        bg_pass(3, c_drawbg4line16b, c_drawbg4tile16b, 0, 1, 8u, 0, 0x60606060u);
     if (!(scrndis & 4u) && (bgcmsung & 0x404u))
-        bg_pass(2, drawbg3line16b, drawbg3tile16b, 0, 1, 4u, 1, 0x40404040u);
+        bg_pass(2, c_drawbg3line16b, c_drawbg3tile16b, 0, 1, 4u, 1, 0x40404040u);
     if (!(scrndis & 0x10u) && sprites_01() && (bgcmsung & 0x1010u))
         c_procspr16b(1, 0x10u, 0);
 
     if (!(scrndis & 8u) && (bgcmsung & 0x808u)) {
         *eax = bg4totng;
         if (*eax != bg4drwng)
-            bg_pass(3, drawbg4linepr116b, drawbg4tilepr116b, prdata, 1, 8u, 2,
+            bg_pass(3, c_drawbg4linepr116b, c_drawbg4tilepr116b, prdata, 1, 8u, 2,
                 0x60606060u);
     }
     if (!(scrndis & 4u) && (bgcmsung & 0x404u)) {
         *eax = bg3totng;
         if (*eax != bg3drwng)
-            bg_pass(2, drawbg3linepr116b, drawbg3tilepr116b, prdatc, 1, 4u, 3,
+            bg_pass(2, c_drawbg3linepr116b, c_drawbg3tilepr116b, prdatc, 1, 4u, 3,
                 0x40404040u);
     }
     if (!(scrndis & 0x10u) && sprites_01() && (bgcmsung & 0x1010u))
         c_procspr16b(1, 0x10u, 0);
 
     if (!(scrndis & 2u) && (bgcmsung & 0x202u))
-        bg_pass(1, drawbg2line16b, drawbg2tile16b, 0, 1, 2u, 0, 0x20202020u);
+        bg_pass(1, c_drawbg2line16b, c_drawbg2tile16b, 0, 1, 2u, 0, 0x20202020u);
     if (ngextbg != 0 && (bgcmsung & 0x303u))
         c_procmode7ng16b(1, 3u, 1);
     if (!(scrndis & 0x10u) && sprites_27() && (bgcmsung & 0x1010u))
         c_procspr16b(1, 0x10u, 1);
 
     if (!(scrndis & 1u) && (bgcmsung & 0x101u))
-        bg_pass(0, drawbg1line16b, drawbg1tile16b, 0, 1, 1u, 0, 0);
+        bg_pass(0, c_drawbg1line16b, c_drawbg1tile16b, 0, 1, 1u, 0, 0);
     /* 101h here where the sub screen's mode 7 pass tests 300h - the two are
        not each other's mirror, and neither is a typo to tidy up. */
     if (modeused[7] != 0 && (bgcmsung & 0x101u))
@@ -374,7 +373,7 @@ static void main_screen(u4* const eax)
     if (!(scrndis & 2u) && (bgcmsung & 0x202u)) {
         *eax = bg2totng;
         if (*eax != bg2drwng)
-            bg_pass(1, drawbg2linepr116b, drawbg2tilepr116b, prdata, 1, 2u, 2,
+            bg_pass(1, c_drawbg2linepr116b, c_drawbg2tilepr116b, prdata, 1, 2u, 2,
                 0x20202020u);
     }
     if (!(scrndis & 0x10u) && sprites_27() && (bgcmsung & 0x1010u))
@@ -383,7 +382,7 @@ static void main_screen(u4* const eax)
     if (!(scrndis & 1u) && (bgcmsung & 0x101u)) {
         *eax = bg1totng;
         if (*eax != bg1drwng)
-            bg_pass(0, drawbg1linepr116b, drawbg1tilepr116b, prdatb, 1, 1u, 2,
+            bg_pass(0, c_drawbg1linepr116b, c_drawbg1tilepr116b, prdatb, 1, 1u, 2,
                 0);
     }
     if (!(scrndis & 0x10u) && (bgcmsung & 0x1010u))
@@ -392,7 +391,7 @@ static void main_screen(u4* const eax)
     if (!(scrndis & 4u) && modeused[1] != 0 && (bgcmsung & 0x404u)) {
         *eax = bg3totng;
         if (*eax != bg3drwng)
-            bg_pass(2, drawbg3linepr116b, drawbg3tilepr116b, prdatc, 1, 4u, 4,
+            bg_pass(2, c_drawbg3linepr116b, c_drawbg3tilepr116b, prdatc, 1, 4u, 4,
                 0x40404040u);
     }
 }

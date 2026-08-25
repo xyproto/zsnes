@@ -1,6 +1,5 @@
 #include <string.h>
 
-#include "../asm_call.h"
 #include "../c_vcache.h"
 #include "../cfg.h"
 #include "../cpu/regs.h"
@@ -341,38 +340,16 @@ void c_BuildWindow(u4 eax, u4 ebx)
 }
 
 /* The assembly BuildWindow/BuildWindow2 pushed ecx and edx on every return
-   path, and callers rely on it: Mode7NonMainSub keeps the Mode 7 x coordinate
-   in edx across ProcessBuildWindow. Porting them to C dropped that, because
-   cdecl lets the callee clobber both. These shims put the contract back, so
-   every call site gets it rather than each having to remember.
+   path, and its callers relied on it: Mode7NonMainSub kept the Mode 7 x
+   coordinate in edx across ProcessBuildWindow. That contract used to need an
+   inline-asm shim in front of the C. Every caller is C now and keeps its own
+   values in locals, so the shim is gone and these are the entry points. */
+void BuildWindow(u4 eax, u4 ebx);
+void BuildWindow2(u4 eax, u4 ebx);
 
-   Delete them once the last assembly caller is gone. */
-/* clang-format off */
-#if defined(__GNUC__) && defined(__i386__)
+void BuildWindow(u4 const eax, u4 const ebx) { c_BuildWindow(eax, ebx); }
 
-#if defined(__APPLE__) || defined(__MINGW32__)
-#define BW_SYM(x) "_" #x
-#else
-#define BW_SYM(x) #x
-#endif
-
-#define BW_SHIM(name)                                                        \
-    __asm__(".globl " BW_SYM(name) "\n" BW_SYM(name) ":\n"                   \
-            "pushl %ecx\n"                                                   \
-            "pushl %edx\n"                                                   \
-            "pushl 16(%esp)\n"                                               \
-            "pushl 16(%esp)\n"                                               \
-            "call " BW_SYM(c_##name) "\n"                                    \
-            "addl $8, %esp\n"                                                \
-            "popl %edx\n"                                                    \
-            "popl %ecx\n"                                                    \
-            "ret\n")
-
-BW_SHIM(BuildWindow);
-BW_SHIM(BuildWindow2);
-
-#endif
-/* clang-format on */
+void BuildWindow2(u4 const eax, u4 const ebx) { c_BuildWindow2(eax, ebx); }
 
 static void blanker16b(void)
 {
@@ -1703,18 +1680,9 @@ static void procmode716bextbg(u2 const* const p1, u2 const* const p2, u1 const p
         }
     }
     m7starty = ax;
-#if defined(__GNUC__) && defined(__i386__)
-    u4 eax;
-    u4 edx;
-    __asm__ volatile("push %%ebp;  call %P2;  pop %%ebp"
-        : "=a"(eax), "=d"(edx)
-        : "X"(drawmode716extbg), "a"(*p1), "d"(*p2)
-        : "cc", "memory", "ecx", "ebx", "esi", "edi");
-#else
-    /* drawmode716extbg is a trampoline that pushes edx then eax; those are its
-       two arguments, so off i386 the body is reached directly. */
+    /* drawmode716extbg was a trampoline that pushed edx then eax; those were
+       its two arguments, so the body takes them directly. */
     c_drawmode716extbg(*p1, *p2);
-#endif
 }
 
 void c_drawmode716extbg(u4 ypos, u4 xpos); /* video/mode716b.c */
@@ -1728,15 +1696,11 @@ static void procmode716bextbg2(u1 const p3)
         if (bl != 0)
             curmosaicsz = bl + 1;
     }
-#if defined(__GNUC__) && defined(__i386__)
-    __asm__ volatile("push %%ebp;  call %P0;  pop %%ebp" ::"X"(drawmode716extbg2)
-        : "cc", "memory", "eax", "ecx", "edx", "ebx", "esi", "edi");
-#else
-    /* Its trampoline passes ecx, which this call site never sets - the value
-       is whatever was left there. Nothing portable to reproduce, so off i386
-       it goes in as zero. */
+    /* Its trampoline passed ecx, which this call site never set - the value
+       was whatever happened to be left there, and it reaches the drawer only
+       as a stray one-byte write off the left edge of the line. Nothing to
+       reproduce, so it goes in as zero. */
     c_drawmode716extbg2(0);
-#endif
 }
 
 static void procmode716b(u2 const* const p1, u2 const* const p2, u1 const p3)
@@ -1948,11 +1912,11 @@ void drawline16b(void)
 }
 
 // Entry point for a new-graphics-engine frame. Sets up the interlace field and
-// the last-line bound, then hands over to the 16-bit renderer, which is still
-// assembly (video/newgfx16.asm) and clobbers ebx, so it needs asm_call.
+// the last-line bound, then hands over to the 16-bit renderer.
 void StartDrawNewGfx(void)
 {
-    extern void StartDrawNewGfx16b(void);
+    extern void c_startdrawnewgfx16b(u4 * r);
+    u4 r[8] = { 0 };
 
     WindowRedraw = 1;
     cfieldad = 0;
@@ -1961,5 +1925,10 @@ void StartDrawNewGfx(void)
     // The assembly stored only the low word here.
     reslbyl = reslbyl & 0xFFFF0000 | (u2)(resolutn - 8);
 
-    asm_call(StartDrawNewGfx16b);
+    // The frame driver runs on a register block because the colour-maths pass
+    // it ends with reads two of them. It used to be reached by a call that
+    // declared every register clobbered, so what it inherited there was
+    // whatever the compiler had left; zero is the same amount of meaning and
+    // does not move with the codegen.
+    c_startdrawnewgfx16b(r);
 }

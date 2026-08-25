@@ -15,9 +15,8 @@
  *   bg3pr1   the same, plus: skip the line in mode 1 when BG3 has priority
  *   bg3pr1b  the same, but draw *only* those lines
  *
- * The line and tile renderers are still assembly and take the scanline in ebx
- * and the video pointer in esi, so they are reached through calldl16t, the
- * register-block shim in video/makev16t.asm.
+ * The line and tile renderers take the scanline in ebx and the video pointer
+ * in esi, so they are handed the pass's register file rather than arguments.
  */
 #include <stdint.h>
 #include <string.h>
@@ -26,10 +25,10 @@
 #include "c_mode716gate.h"
 #include "makevid.h"
 
-/* calldl16t's register block, defined in video/c_mv16tline.c. */
+/* The video pass's register file and the call that hands it to a ported entry
+   point, both video/c_mv16tline.c. */
 extern u4 DLR[7];
-extern void (*DLFN)(void);
-extern void calldl16t(void);
+extern void dl_call(void (*fn)(u4*));
 
 extern u1 BGFB[256], BGMA[256], BG3PRI[256];
 extern u1 sprtlng[256], sprlefttot[256], sprleftpr[], SpecialLine[256];
@@ -68,8 +67,11 @@ static void m7call(void (*const g)(m7regs*))
     DLR[5] = (u4)r.di;
     DLR[6] = (u4)r.bp;
 }
-extern void drawsprng16b(void);
-extern void drawsprng16bhr(void);
+/* video/c_ngspr.c, which takes its registers in NGS* rather than a block -
+   the thunk these were reached through spilled them there. */
+extern void c_drawsprng16b(void);
+extern void c_drawsprng16bhr(void);
+extern u4 NGSAX, NGSBX, NGSCX, NGSDX, NGSSI, NGSDI, NGSBP;
 extern u1 BGMS1[], FillSubScr[256];
 extern u1 bgwinchange[256], bgallchange[256], bg1change[256];
 extern u1 winbg1enval[256], mosenng[256], mosszng[256];
@@ -191,21 +193,20 @@ static int line_wanted(u4 const y, int const kind)
 /* The renderers take the scanline in ebx and the video pointer in esi, and the
    priority-0 pair also read ecx - it still holds the scroll-plus-line value the
    tile-alignment test computed. The priority-1 pair never look at it. */
-static void call_proc(void (*fn)(void), u1 const* const esi, u4 const y,
+static void call_proc(void (*const fn)(u4*), u1 const* const esi, u4 const y,
     u4 const ecx)
 {
     DLR[1] = y;
     DLR[2] = ecx;
     DLR[4] = (u4)(uintptr_t)esi;
-    DLFN = fn;
-    calldl16t();
+    dl_call(fn);
 }
 
-void c_procbg16b(u4 layer, void (*lineproc)(void), void (*tileproc)(void),
+void c_procbg16b(u4 layer, void (*lineproc)(u4*), void (*tileproc)(u4*),
     u1 const* prdat, int main_, u4 mask, int kind);
 
-void c_procbg16b(u4 const layer, void (*const lineproc)(void),
-    void (*const tileproc)(void), u1 const* const prdat, int const main_,
+void c_procbg16b(u4 const layer, void (*const lineproc)(u4*),
+    void (*const tileproc)(u4*), u1 const* const prdat, int const main_,
     u4 const mask, int const kind)
 {
     u1 const* esi = vidbuffer + 32;
@@ -277,8 +278,25 @@ void c_procspr16b(int const main_, u4 const mask, int const modes)
                 DLR[1] = y;
                 DLR[2] = (DLR[2] & ~0xFFu) | count;
                 DLR[4] = (u4)(uintptr_t)esi;
-                DLFN = (SpecialLine[y] & 2) ? drawsprng16bhr : drawsprng16b;
-                calldl16t();
+                NGSAX = DLR[0];
+                NGSBX = DLR[1];
+                NGSCX = DLR[2];
+                NGSDX = DLR[3];
+                NGSSI = DLR[4];
+                NGSDI = DLR[5];
+                NGSBP = DLR[6];
+                if (SpecialLine[y] & 2) {
+                    c_drawsprng16bhr();
+                } else {
+                    c_drawsprng16b();
+                }
+                DLR[0] = NGSAX;
+                DLR[1] = NGSBX;
+                DLR[2] = NGSCX;
+                DLR[3] = NGSDX;
+                DLR[4] = NGSSI;
+                DLR[5] = NGSDI;
+                DLR[6] = NGSBP;
             }
         }
         y++;

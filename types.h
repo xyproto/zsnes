@@ -13,7 +13,7 @@ typedef unsigned short u2;
 typedef unsigned int u4;
 typedef unsigned long long u8;
 
-typedef void eop();
+typedef void eop(void);
 
 /* One slot of the 65816 core's register block.
  *

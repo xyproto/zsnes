@@ -553,7 +553,7 @@ void inittablec(void)
 {
     // set tablead  (NVMXDIZC) (  MXD   )
     for (u4 i = 0; i != lengthof(tableadc); ++i) {
-        static eop** const tableXc[] = {
+        static opfn** const tableXc[] = {
             tableAc, // ---
             tableEc, // --D
             tableCc, // -X-

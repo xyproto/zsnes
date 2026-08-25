@@ -9,11 +9,9 @@
  * 3 the dual-window colour maths, 4 clear, 5 everything masked.
  *
  * It also has to report what it leaves in eax, ebx, ecx and esi. Both call
- * sites in video/c_mv16tline.c run it and then clearback16bts back to back
- * through calldl16t, and clearback16bts opens by spilling those registers into
- * its own seam - so what this routine incidentally leaves in them is the next
- * one's input. pwregs carries them until clearback16bts is C at the call site
- * too, at which point the hand-off goes away with the trampolines.
+ * sites in video/c_mv16tline.c run it and then clearback16bts back to back,
+ * and clearback16bts reads those same registers - so what this routine
+ * incidentally leaves in them is the next one's input. pwregs carries them.
  *
  * The writes are partial-width on purpose: the assembly touches bl, al, cx and
  * esi, so the rest of each register has to survive.

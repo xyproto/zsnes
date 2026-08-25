@@ -25,35 +25,35 @@ extern u1 MSU_AudioVolume;
 extern int MSU_Track_Position;
 extern int MSU_Resume_Track_Position;
 extern char MSU_BasePath[4096];
-int readMSU();
+int readMSU(void);
 
 // Registers
-extern void initMSU1regsRead();
-extern void initMSU1regsWrite();
+extern void initMSU1regsRead(void);
+extern void initMSU1regsWrite(void);
 
 // Read Registers
-extern void msuid1();
-extern void msuid2();
-extern void msuid3();
-extern void msuid4();
-extern void msuid5();
-extern void msuid6();
-extern void msudataread();
-extern void msustatusread();
+extern void msuid1(void);
+extern void msuid2(void);
+extern void msuid3(void);
+extern void msuid4(void);
+extern void msuid5(void);
+extern void msuid6(void);
+extern void msudataread(void);
+extern void msustatusread(void);
 
 // Write Registers
-extern void msudataseek0();
-extern void msudataseek1();
-extern void msudataseek2();
-extern void msudataseek3();
-extern void msu1track0();
-extern void msu1track1();
-extern void msu1volume();
-extern void msu1statecontrol();
+extern void msudataseek0(void);
+extern void msudataseek1(void);
+extern void msudataseek2(void);
+extern void msudataseek3(void);
+extern void msu1track0(void);
+extern void msu1track1(void);
+extern void msu1volume(void);
+extern void msu1statecontrol(void);
 
 // Misc. Functions
 extern void mixMSU1Audio(int* start, int* end, int rate);
-extern void MSU1HandleTrackChange();
-extern void MSU1HandleControlBits();
+extern void MSU1HandleTrackChange(void);
+extern void MSU1HandleControlBits(void);
 
 #endif

@@ -37,7 +37,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <winuser.h>
 #include <xinput.h>
 
-#include "../asm_call.h"
 #include "../c_init.h"
 #include "../c_intrf.h"
 #include "../cfg.h"

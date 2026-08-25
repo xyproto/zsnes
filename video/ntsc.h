@@ -30,7 +30,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 extern u1 NTSCPresetVar; /* 0 to 3 */
 
 /* (Re)initialize filter with new NTSC settings above */
-void NTSCFilterInit();
+void NTSCFilterInit(void);
 
 /* Draw current image to specified output pixels */
 void NTSCFilterDraw(int out_width, int out_height, int out_pitch, unsigned char* rgb16_out);

@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "asm_call.h"
 #include "c_init.h"
 #include "c_intrf.h"
 #include "c_vcache.h"
@@ -203,8 +202,8 @@ static void docache(void)
 
     // do sprites
     if (!(scrndis & 0x10)) {
-        asm_call(cachesprites);
-        asm_call(processsprites);
+        cachesprites();
+        processsprites();
     }
 }
 

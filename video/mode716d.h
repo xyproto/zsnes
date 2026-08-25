@@ -3,7 +3,7 @@
 
 #include "../types.h"
 
-extern void drawmode7dcolor();
+extern void drawmode7dcolor(void);
 
 void c_drawmode7dcolor(u4 ypos, u4 xpos);
 

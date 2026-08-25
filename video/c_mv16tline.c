@@ -15,27 +15,61 @@
  * pair - drawline16t pushes and NextDrawLine16bt pops - which is why they read
  * as one function here.
  *
- * Everything this calls is already C behind a register seam, so the calls go
- * back out through those thunks. calldl16t (video/makev16t.asm) is the inverse
- * of a seam: it loads the register block, calls, and stores it back, so the
- * registers thread between the calls exactly as they did.
+ * Everything this calls is C, but the assembly threaded values between those
+ * calls in the registers, so a register file (DLR) threads them here. dl_call
+ * hands it to an entry point that takes a pushad-ordered block; the rest are
+ * called with the block spilled into whatever globals they read.
  */
 #include <stdint.h>
 
 #include "../types.h"
 #include "makevid.h"
 
-/* The register block calldl16t moves in and out, in eax..ebp order. */
+/* The video pass's register file, in eax..ebp order. A shim used to move it in
+   and out of the real registers around each call into the assembly; every
+   callee is C now, so dl_call hands the block over and there are no registers
+   in it any more. The file stays because these routines still pass values to
+   each other through it - edi and ebp carry from one scanline call to the
+   next, exactly as they did. */
 u4 DLR[7];
-void (*DLFN)(void);
 
-extern void calldl16t(void);
+/* The pushad order the ported entry points use, which is not DLR's. */
+enum { R_EDI,
+    R_ESI,
+    R_EBP,
+    R_ESP,
+    R_EBX,
+    R_EDX,
+    R_ECX,
+    R_EAX };
 
-/* The ported clusters, still reached through their seam thunks. */
+void dl_call(void (*fn)(u4*));
+
+void dl_call(void (*const fn)(u4*))
+{
+    u4 r[8];
+
+    r[R_EAX] = DLR[0];
+    r[R_EBX] = DLR[1];
+    r[R_ECX] = DLR[2];
+    r[R_EDX] = DLR[3];
+    r[R_ESI] = DLR[4];
+    r[R_EDI] = DLR[5];
+    r[R_EBP] = DLR[6];
+    r[R_ESP] = 0;
+    fn(r);
+    DLR[0] = r[R_EAX];
+    DLR[1] = r[R_EBX];
+    DLR[2] = r[R_ECX];
+    DLR[3] = r[R_EDX];
+    DLR[4] = r[R_ESI];
+    DLR[5] = r[R_EDI];
+    DLR[6] = r[R_EBP];
+}
+
 #include "c_procwin.h"
-/* The clearback seams (video/c_mv16tclr.c, video/c_mv16bclr.c). Their
-   trampolines used to spill the registers into these; the call sites below do
-   it now, and the seams go when calldl16t does. */
+/* video/c_mv16tclr.c and video/c_mv16bclr.c take their registers in these.
+   A trampoline used to spill them; the call sites below do it. */
 extern u4 CBAX, CBBX, CBCX, CBDX, CBSI, CBDI, CBBP;
 extern u4 CLBAX, CLBBX, CLBCX, CLBDX, CLBSI, CLBDI;
 void c_clearback16t(void);
@@ -43,11 +77,10 @@ void c_clearback16bts(void);
 #include "c_m716gate.h"
 #include "c_mv16draw.h"
 
-/* The renderers a mode 7 gate can pick, indexed by the tail id it returns.
-   Still assembly, so they are reached the same way as before. */
-extern void drawmode716t(void), drawmode716b(void), drawmode716tb(void);
-extern void drawmode716extbg(void), drawmode716textbg(void);
-extern void drawmode716extbg2(void), drawmode716textbg2(void);
+#include "m716text.h"
+#include "mode716b.h"
+#include "mode716e.h"
+#include "mode716t.h"
 
 /* cdecl already, so they need no seam of their own; the assembly reached them
    through ccallv, which preserves every register. */
@@ -66,31 +99,49 @@ extern u1* vidbuffer;
 extern u1* cursprloc;
 extern SpriteInfo* currentobjptr;
 
-static void call_asm(void (*fn)(void))
+/* The renderer a mode 7 gate picked, by the tail id it returned. All C, and
+   the two shapes differ only in what the assembly passed them: a scanline in
+   eax and edx, or the raw colour in ecx for the two second-pass EXTBG ones.
+   They return nothing, so DLR keeps what the gate left in it - the thunk they
+   used to be reached through discarded the registers too. */
+static void m7_render(u4 const tail)
 {
-    DLFN = fn;
-    calldl16t();
+    switch (tail) {
+    case 1:
+        c_drawmode716t(DLR[0], DLR[3]);
+        break;
+    case 2:
+        c_drawmode716b(DLR[0], DLR[3]);
+        break;
+    case 3:
+        c_drawmode716tb(DLR[0], DLR[3]);
+        break;
+    case 4:
+        c_drawmode716extbg(DLR[0], DLR[3]);
+        break;
+    case 5:
+        c_drawmode716textbg(DLR[0], DLR[3]);
+        break;
+    case 6:
+        c_drawmode716extbg2(DLR[2]);
+        break;
+    case 7:
+        c_drawmode716textbg2(DLR[2]);
+        break;
+    }
 }
-
-static void (*const m7_renderer[])(void) = { 0, drawmode716t, drawmode716b,
-    drawmode716tb, drawmode716extbg, drawmode716textbg, drawmode716extbg2,
-    drawmode716textbg2 };
 
 /* A gate used to tail-jump into its renderer, so the renderer returned to
    whoever called the gate. Calling it here is the same thing: the registers
    go in through DLR either way, and the gate leaves the caller's own ecx, esi
    and edi alone. */
-/* Same idea for the sprite gates, whose tail picks between two renderers.
-   Both are C now (video/c_m716gate.c), so they are called straight. */
+/* Same idea for the sprite gates, whose tail picks between two renderers. */
 
-/* The six renderers a background gate can call, indexed by its id. Still
-   assembly, so still reached through calldl16t. */
-/* Ids 2 and 4 are C (video/c_m716gate.c); the rest are still assembly and go
-   through calldl16t, so the two kinds are dispatched apart. */
+/* The six renderers a background gate can call, indexed by its id. */
 void domosaic16b(void); /* video/mode716b.c */
 
-/* DLR is the register set calldl16t passes to what assembly is left; r is what
-   the ported drawers use. These two are the only places the two meet. */
+/* DLR is the register file the pass threads values through; r is what the
+   ported drawers take. These two are the only places the two meet. */
 static void dlr_get(m7regs* const r)
 {
     r->ax = DLR[0];
@@ -211,9 +262,7 @@ static void m7gate(u4 (*const g)(m7regs*))
     DLR[4] = r.si;
     DLR[5] = r.di;
     DLR[6] = r.bp;
-    if (tail != 0) {
-        call_asm(m7_renderer[tail]);
-    }
+    m7_render(tail);
 }
 
 static void clearback_t(void)

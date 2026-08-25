@@ -2,7 +2,7 @@
  * The two 8x8 tile dispatchers, ported from the tail of video/makev16t.asm.
  *
  * Each spills the register file into a seam, calls its C body and reloads,
- * then hands back the mosaic tail rather than taking it - see portasm.md: the
+ * then hands back the mosaic tail rather than taking it - see the mosaic tail note in git history: the
  * assembly reached domosaic16b by a jump, and test/difftest_t8t.c records the
  * register state there.
  *

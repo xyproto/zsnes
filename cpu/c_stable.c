@@ -568,7 +568,7 @@ void SA1inittable(void)
 
     // set SA1tablead  (NVMXDIZC) (  MXD   )
     for (u4 i = 0; i != lengthof(SA1tablead); ++i) {
-        static eop** const tableX[] = {
+        static opfn** const tableX[] = {
             SA1tableA, // ---
             SA1tableE, // --D
             SA1tableC, // -X-

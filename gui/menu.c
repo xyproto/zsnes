@@ -24,7 +24,6 @@
 #endif
 #include <string.h>
 
-#include "../asm_call.h"
 #include "../c_intrf.h"
 #include "../c_vcache.h"
 #include "../cfg.h"

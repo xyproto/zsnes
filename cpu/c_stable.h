@@ -1,6 +1,6 @@
 #ifndef STABLE_H
 #define STABLE_H
 
-extern void SA1inittable();
+extern void SA1inittable(void);
 
 #endif

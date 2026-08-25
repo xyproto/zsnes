@@ -16,7 +16,6 @@
 #include <unistd.h>
 #endif
 
-#include "../asm_call.h"
 #include "../c_init.h"
 #include "../c_intrf.h"
 #include "../cfg.h"

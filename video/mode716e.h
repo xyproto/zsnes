@@ -3,8 +3,8 @@
 
 #include "../types.h"
 
-extern void drawmode716extbg();
-extern void drawmode716extbg2();
+extern void drawmode716extbg(void);
+extern void drawmode716extbg2(void);
 
 void c_drawmode716extbg(u4 ypos, u4 xpos);
 void c_drawmode716extbg2(u4 craw);

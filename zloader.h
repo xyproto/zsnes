@@ -45,6 +45,6 @@ struct backup_cmdline_vars {
 
 extern struct backup_cmdline_vars saved_cmdline_vars;
 
-void swap_backup_vars();
+void swap_backup_vars(void);
 
 #endif

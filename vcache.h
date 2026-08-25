@@ -6,14 +6,14 @@
 extern void c_cachesingle2bng(u4 ecx);
 extern void c_cachesingle4bng(u4 ecx);
 extern void c_cachesingle8bng(u4 ecx);
-extern void cachesprites();
+extern void cachesprites(void);
 extern void cachetile2b(u4 eax);
 extern void cachetile2b16x16(u4 eax);
 extern void cachetile4b(u4 eax);
 extern void cachetile4b16x16(u4 eax);
 extern void cachetile8b(u4 eax);
 extern void cachetile8b16x16(u4 eax);
-extern void processsprites();
+extern void processsprites(void);
 
 extern u4 lineleft;
 extern u1 res480;

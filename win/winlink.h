@@ -66,11 +66,11 @@ extern DWORD newmode;
 extern WINDOWPLACEMENT wndpl;
 extern RECT rc1;
 
-void Clear2xSaIBuffer();
+void Clear2xSaIBuffer(void);
 void FrameSemaphore(void);
-void clear_display();
-char CheckTVRatioReq();
-void KeepTVRatio();
+void clear_display(void);
+char CheckTVRatioReq(void);
+void KeepTVRatio(void);
 
 void CheckAlwaysOnTop(void);
 void CheckPriority(void);

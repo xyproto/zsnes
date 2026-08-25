@@ -5,7 +5,7 @@
  * body and reloads; a dispatcher picks one on the colour-maths registers and
  * jumps to it, so the leaf returns to the dispatcher's caller.
  *
- * The mosaic tail is handed back rather than taken - see portasm.md - because
+ * The mosaic tail is handed back rather than taken - see the mosaic tail note in git history - because
  * test/difftest_mvall.c records the register state at the jump into
  * domosaic16b, which a call from in here could not reproduce.
  *

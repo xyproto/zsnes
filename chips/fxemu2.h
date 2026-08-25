@@ -3,7 +3,7 @@
 
 #include "../types.h"
 
-extern void MainLoop();
+extern void MainLoop(void);
 
 extern u1* SCBRrel;
 extern u4 NumberOfOpcodes; // Number of opcodes to execute

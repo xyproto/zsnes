@@ -25,17 +25,17 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <stdbool.h>
 #include <stdint.h>
 
-void InitSampleControl();
-int InitSound();
-void DeinitSound();
+void InitSampleControl(void);
+int InitSound(void);
+void DeinitSound(void);
 
 #ifdef __LIBAO__
-void SoundWrite_ao();
+void SoundWrite_ao(void);
 #endif
 #ifdef __PIPEWIRE__
-void SoundWrite_pipewire();
+void SoundWrite_pipewire(void);
 #endif
-void SoundWrite_sdl();
+void SoundWrite_sdl(void);
 
 extern int SoundEnabled;
 extern uint8_t PrevStereoSound;

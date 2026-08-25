@@ -47,7 +47,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #endif // __UNIXSDL__
 
-#include "asm_call.h"
 #include "c_intrf.h"
 #include "cfg.h"
 #include "gui/c_gui.h"

@@ -41,7 +41,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <spa/pod/builder.h>
 #endif
 
-#include "../asm_call.h"
 #include "../cfg.h"
 #include "../chips/msu1emu.h"
 #include "../cpu/dspproc.h"

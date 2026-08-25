@@ -29,7 +29,6 @@
 #include <stdbool.h>
 #include <string.h>
 
-#include "../asm_call.h"
 #include "../c_init.h"
 #include "../c_intrf.h"
 #include "../cfg.h"
@@ -803,10 +802,10 @@ static void GUICheatKeys(char dh, char al)
             CheatCodeToggle();
             return;
         case 'S':
-            asm_call(CheatCodeSave);
+            CheatCodeSave();
             return;
         case 'L':
-            asm_call(CheatCodeLoad);
+            CheatCodeLoad();
             return;
         case 'F':
             CheatCodeFix();

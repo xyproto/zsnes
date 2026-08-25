@@ -48,7 +48,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #ifndef _MSC_VER
 #include <unistd.h>
 #endif
-#include "asm_call.h"
 #include "c_init.h"
 #include "cfg.h"
 #include "cpu/dspproc.h"

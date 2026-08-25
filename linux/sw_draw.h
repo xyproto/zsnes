@@ -23,8 +23,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define SW_DRAW_h 1
 
 int sw_start(int width, int height, int req_depth, int FullScreen);
-void sw_end();
-void sw_clearwin();
-void sw_drawwin();
+void sw_end(void);
+void sw_clearwin(void);
+void sw_drawwin(void);
 
 #endif

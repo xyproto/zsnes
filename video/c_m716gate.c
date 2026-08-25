@@ -8,9 +8,8 @@
  * rely on that; esi and edi were never touched at all.
  *
  * In C the choice comes back as a tail id and the caller dispatches, which is
- * what keeps the register hand-off out of here: video/c_mv16tline.c already
- * reaches the renderers through calldl16t, so it just does that once more.
- * When the renderers are C too, the id and the marshalling both go away.
+ * what keeps the register hand-off out of here - video/c_mv16tline.c takes the
+ * id and calls the renderer with the arguments its trampoline used to pass.
  */
 
 #include "c_m716gate.h"

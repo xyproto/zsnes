@@ -27,18 +27,18 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <stdbool.h>
 #include <stdint.h>
 
-void mzt_chdir_up();
-void mzt_chdir_down();
+void mzt_chdir_up(void);
+void mzt_chdir_down(void);
 bool mzt_save(int, bool, bool);
 bool mzt_load(int, bool);
 
 void GetMovieFrameStr(void);
-void MovieRecord();
-void MoviePlay();
-void MovieStop();
-void MovieAppend();
+void MovieRecord(void);
+void MoviePlay(void);
+void MovieStop(void);
+void MovieAppend(void);
 void MovieDumpRaw(void);
-bool MovieInProgress();
+bool MovieInProgress(void);
 void MovieInsertChapter(void);
 void MovieSeekAhead(void);
 void MovieSeekBehind(void);

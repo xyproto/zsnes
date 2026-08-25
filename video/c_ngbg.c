@@ -40,6 +40,13 @@ extern u4 ngceax[], ngcedi[], mode0add, mode0ads, cpalval[256];
 extern u4 taddnfy16x16, taddfy16x16, ngwinen, nglogicval, ngwintable[];
 extern u4 dcolortab[];
 void BuildWindow(u4 line, u4 which); /* video/c_makev16b.c */
+extern u1 prdata[], prdatb[], prdatc[];
+
+/* Which priority-flag table each layer marks - BG2 and BG4 share one. The
+   entry thunk did this before it spilled the registers, and the priority-1
+   pass reads it back to choose a tile row or a single line, so it has to
+   happen whether or not the layer then draws anything. */
+static u1* const bg_prdat[4] = { prdatb, prdata, prdatc, prdata };
 void Gendcolortable(void);
 extern u4 ng2_mosaic; /* video/c_ng2tile.c: the renderer wants the mosaic pass */
 void c_domosaicng16b(void); /* video/c_ngmosaic.c */
@@ -233,24 +240,25 @@ static void bg_tile(u4* const r, u4 const bg, int const big)
     bg_finish(r, bg, big, edx, eax, edi, ebp);
 }
 
-#define NG_BG_TILE(n)                                            \
-    void c_drawbg##n##tile16b(u4* const r)                       \
-    {                                                            \
-        u4 const bg = (n) -1u;                                   \
-                                                                 \
-        curmosaicsz = 1;                                         \
-        ng16bprval = 0;                                          \
-        ng16bbgval = bg;                                         \
-        bg_tile(r, bg, t16x161[r[R_EBX] + bg * 256u] == 1);      \
-    }                                                            \
-    void c_drawbg##n##tilepr116b(u4* const r)                    \
-    {                                                            \
-        u4 const bg = (n) -1u;                                   \
-                                                                 \
-        curmosaicsz = 1;                                         \
-        ng16bprval = 0x2000u;                                    \
-        ng16bbgval = bg;                                         \
-        bg_tile_pr1(r, bg, t16x161[r[R_EBX] + bg * 256u] == 1);  \
+#define NG_BG_TILE(n)                                           \
+    void c_drawbg##n##tile16b(u4* const r)                      \
+    {                                                           \
+        u4 const bg = (n) - 1u;                                 \
+                                                                \
+        bg_prdat[bg][r[R_EBX]] = 1;                             \
+        curmosaicsz = 1;                                        \
+        ng16bprval = 0;                                         \
+        ng16bbgval = bg;                                        \
+        bg_tile(r, bg, t16x161[r[R_EBX] + bg * 256u] == 1);     \
+    }                                                           \
+    void c_drawbg##n##tilepr116b(u4* const r)                   \
+    {                                                           \
+        u4 const bg = (n) - 1u;                                 \
+                                                                \
+        curmosaicsz = 1;                                        \
+        ng16bprval = 0x2000u;                                   \
+        ng16bbgval = bg;                                        \
+        bg_tile_pr1(r, bg, t16x161[r[R_EBX] + bg * 256u] == 1); \
     }
 
 NG_BG_TILE(1)
@@ -550,10 +558,11 @@ static void bg_line(u4* const r, u4 const bg)
     line_finish(r, bg, kind, big, edx, eax, edi, ecx);
 }
 
-#define NG_BG_LINE(n)                        \
-    void c_drawbg##n##line16b(u4* const r)   \
-    {                                        \
-        bg_line(r, (n) -1u);                 \
+#define NG_BG_LINE(n)                      \
+    void c_drawbg##n##line16b(u4* const r) \
+    {                                      \
+        bg_prdat[(n) - 1u][r[R_EBX]] = 0;  \
+        bg_line(r, (n) - 1u);              \
     }
 
 NG_BG_LINE(1)
@@ -703,10 +712,10 @@ static void bg_line_pr1(u4* const r, u4 const bg)
     line_pr1_finish(r, bg, kind, big);
 }
 
-#define NG_BG_LINE_PR1(n)                       \
-    void c_drawbg##n##linepr116b(u4* const r)   \
-    {                                           \
-        bg_line_pr1(r, (n) -1u);                \
+#define NG_BG_LINE_PR1(n)                     \
+    void c_drawbg##n##linepr116b(u4* const r) \
+    {                                         \
+        bg_line_pr1(r, (n) - 1u);             \
     }
 
 NG_BG_LINE_PR1(1)

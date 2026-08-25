@@ -1,7 +1,6 @@
 #include <string.h>
 
 #include "../types.h"
-#include "../asm_call.h"
 #include "../c_init.h"
 #include "../c_intrf.h"
 #include "../c_vcache.h"
@@ -246,8 +245,8 @@ void Donextlinecache(void)
             sprend[ecx] = 0;
             sprendx[ecx] = 0;
         } while (++ecx != 0);
-        asm_call(processsprites);
-        asm_call(cachesprites);
+        processsprites();
+        cachesprites();
     }
     NextLineCache = 0;
 }
@@ -407,7 +406,7 @@ void StartSFXdebugb(void)
 
     if (SfxSCMR & ((SfxPBR & 0x7F) < 0x70 ? /* noram */ 0x10 : /* ram */ 0x08)) {
         NumberOfOpcodes = SfxOpcodesPerLine();
-        asm_call(MainLoop);
+        MainLoop();
         SfxIRQpoll();
     }
 }
@@ -473,7 +472,7 @@ void StartSFX(void)
     if (SfxSCMR & ((SfxPBR & 0x7F) < 0x70 ? /* noram */ 0x10 : /* ram */ 0x08)) {
         NumberOfOpcodes = NumberOfOpcodes2 + SfxOwedOps;
         SfxOwedOps = 0;
-        asm_call(MainLoop);
+        MainLoop();
         SfxIRQpoll();
     } else {
         // The gate only pauses the GSU briefly on hardware, not for whole
@@ -491,7 +490,7 @@ void SfxExecOnStart(void)
 {
     if (SfxSCMR & ((SfxPBR & 0x7F) < 0x70 ? /* noram */ 0x10 : /* ram */ 0x08)) {
         NumberOfOpcodes = NumberOfOpcodes2;
-        asm_call(MainLoop);
+        MainLoop();
         SfxIRQpoll();
         SfxRanThisLine = 1;
     }
@@ -505,7 +504,7 @@ void SfxVblankCatchup(void)
 
     if ((SfxSFR & 0x20) && (SfxSCMR & ((SfxPBR & 0x7F) < 0x70 ? /* noram */ 0x10 : /* ram */ 0x08))) {
         NumberOfOpcodes = NumberOfOpcodes2 * 240;
-        asm_call(MainLoop);
+        MainLoop();
         SfxIRQpoll();
     }
 }

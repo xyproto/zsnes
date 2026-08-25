@@ -3,8 +3,8 @@
 
 #include "../types.h"
 
-extern void drawmode716textbg();
-extern void drawmode716textbg2();
+extern void drawmode716textbg(void);
+extern void drawmode716textbg2(void);
 
 void c_drawmode716textbg(u4 ypos, u4 xpos);
 void c_drawmode716textbg2(u4 craw);
