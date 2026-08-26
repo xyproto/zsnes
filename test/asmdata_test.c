@@ -18,7 +18,8 @@ typedef uint32_t u4;
 
 /* chips/c_sa1data.c */
 extern u1 SA1Status, CurrentExecSA1, CurrentCPU;
-extern u4 prevedi, SA1xpc;
+extern u4 SA1xpc;
+extern void* prevedi;
 
 /* video/c_makev16tdata.c */
 extern u1 transpbuf[], DoTransp;
@@ -68,7 +69,7 @@ extern u1 SPCRAM[], SPCROM[64], spcextraram[64], FutureExpandS[192];
 extern u1 reg1read, reg2read, reg3read, reg4read, timeron;
 extern u1 timincr0, timincr1, timincr2, timinl0, timinl1, timinl2, timrcall;
 extern u1 spcnumread;
-extern u4 spcPCRam, spcA, spcX, spcY, spcP, spcNZ, spcS, spcRamDP, spcCycle;
+extern u4 spcPCRamSt, spcA, spcX, spcY, spcP, spcNZ, spcS, spcRamDPSt, spcCycle;
 extern u4 PHspcsave, timer2upd;
 
 /* video/c_mode716data.c */
@@ -327,7 +328,7 @@ static void test_spcdata(void)
 
     ZT_SECTION("spc700: 64KB address space and the boot ROM window");
     /* SPCRAM holds the SPC700's 64KB plus the boot ROM that overlays $FFC0. */
-    ZT_CHECK_INT(GAP(SPCRAM[0], spcPCRam), 65552);
+    ZT_CHECK_INT(GAP(SPCRAM[0], spcPCRamSt), 65552);
     ZT_CHECK(SPCRAM[0] == 0xFF && SPCRAM[65471] == 0xFF);
     ZT_CHECK(memcmp(SPCRAM + 65472, iplrom, sizeof iplrom) == 0);
     ZT_CHECK(memcmp(SPCROM, iplrom, sizeof iplrom) == 0);
@@ -336,14 +337,16 @@ static void test_spcdata(void)
     ZT_CHECK(SPCRAM[65472 + 64] == 0xAA && SPCRAM[65472 + 79] == 0x99);
 
     ZT_SECTION("spc700: register and timer block layout");
-    ZT_CHECK_INT(GAP(spcPCRam, spcA), 4);
+    /* spcPCRam and spcRamDP hold host pointers, so the live variables sit
+       outside this block and a dword shadow keeps the save-state layout. */
+    ZT_CHECK_INT(GAP(spcPCRamSt, spcA), 4);
     ZT_CHECK_INT(GAP(spcA, spcX), 4);
     ZT_CHECK_INT(GAP(spcX, spcY), 4);
     ZT_CHECK_INT(GAP(spcY, spcP), 4);
     ZT_CHECK_INT(GAP(spcP, spcNZ), 4);
     ZT_CHECK_INT(GAP(spcNZ, spcS), 4);
-    ZT_CHECK_INT(GAP(spcS, spcRamDP), 4);
-    ZT_CHECK_INT(GAP(spcRamDP, spcCycle), 4);
+    ZT_CHECK_INT(GAP(spcS, spcRamDPSt), 4);
+    ZT_CHECK_INT(GAP(spcRamDPSt, spcCycle), 4);
     ZT_CHECK_INT(spcS, 0x1FF); /* the only non-zero initialiser */
     /* $F4-$F7 and the seven timer bytes are read as one run of bytes. */
     ZT_CHECK_INT(GAP(spcCycle, reg1read), 4);
@@ -491,8 +494,7 @@ static void test_execdata(void)
 
 /* chips/c_sa1proc.c: the block that was left in chips/sa1proc.asm. zstate.c
  * saves three bytes from &SA1Status, so those three must stay adjacent and in
- * order; prevedi followed the assembly's commented-out ALIGN32, so it sits at
- * an odd offset on purpose. */
+ * order; prevedi holds a host pointer, so it is pointer-sized and aligned. */
 static void test_sa1proc(void)
 {
     ZT_SECTION("sa1proc: the three save-state bytes");
@@ -500,8 +502,11 @@ static void test_sa1proc(void)
     ZT_CHECK_INT(GAP(CurrentExecSA1, CurrentCPU), 1);
 
     ZT_SECTION("sa1proc: unaligned tail");
-    ZT_CHECK_INT(GAP(CurrentCPU, prevedi), 1);
-    ZT_CHECK_INT(GAP(prevedi, SA1xpc), 4);
+    /* prevedi holds a host pointer now, so it is pointer-sized and aligned
+       rather than following the assembly's commented-out ALIGN32. Only the
+       three bytes above it are saved, so nothing depends on where it lands. */
+    ZT_CHECK_INT(GAP(CurrentCPU, prevedi), (int)sizeof(void*) - 2);
+    ZT_CHECK_INT(GAP(prevedi, SA1xpc), (int)sizeof(void*));
 }
 
 /* video/c_makev16tdata.c: the .bss blocks from video/makev16t.asm. The

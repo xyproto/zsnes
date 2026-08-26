@@ -19,6 +19,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "../types.h"
 #include "difftest.h"
 
 typedef uint8_t u1;

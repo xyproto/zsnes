@@ -16,6 +16,7 @@
  * the whole SuperFX register file, the flag words, and what the nested dispatch
  * saw.
  */
+#include "../types.h"
 #include "difftest.h"
 
 typedef uint8_t u1;

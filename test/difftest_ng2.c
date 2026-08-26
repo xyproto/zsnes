@@ -37,6 +37,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
+#include "../types.h"
 #include "difftest.h"
 #include "ng2_harness.h"
 

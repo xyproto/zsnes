@@ -7,8 +7,7 @@
  */
 #include <stdint.h>
 
-typedef uint8_t u1;
-typedef uint32_t u4;
+#include "../types.h"
 
 u1* vram;
 
@@ -16,7 +15,7 @@ u1* vram;
    entry point. video/c_mv16tline.c owns both in the real build; a difftest
    that links a file calling dl_call needs a working one, not a stub, and
    linking c_mv16tline.c itself would drag in the whole scanline driver. */
-u4 DLR[7];
+zreg DLR[7];
 
 enum { R_EDI,
     R_ESI,
