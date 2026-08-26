@@ -39,9 +39,11 @@ RUNHOME=$OUT/home
 mkdir -p "$RUNHOME"
 
 # Run on a throwaway X server so the emulator window does not pop up over
-# whatever the user is doing. Without Xvfb, fall back to SDL's dummy video
-# driver - on a headless box the real display is not there at all, and SDL_Init
-# fails before a single frame is logged.
+# whatever the user is doing. Without Xvfb - macOS, or a box without it - fall
+# back to SDL's dummy video driver; on a headless box the real display is not
+# there at all, and SDL_Init fails before a single frame is logged.
+# XVFB is expanded as ${XVFB[@]+...} below: macOS ships bash 3.2, where an
+# empty array under set -u is an unbound variable.
 if command -v xvfb-run >/dev/null 2>&1; then
   XVFB=(xvfb-run -a -s "-screen 0 640x480x24")
 else
@@ -50,13 +52,35 @@ else
   export SDL_AUDIODRIVER=${SDL_AUDIODRIVER:-dummy}
 fi
 
-env HOME="$RUNHOME" PPU_STATE_LOG=1 \
+# -k: zsnes installs a SIGTERM handler and does not always act on it, so the
+# cap needs a SIGKILL behind it or a run can sit there forever. macOS ships
+# neither timeout nor gtimeout unless coreutils is installed, so fall back to
+# doing the same thing with a background watchdog.
+run_capped()
+{
+    if [ -n "$TIMEOUT_BIN" ]; then
+        ${XVFB[@]+"${XVFB[@]}"} "$TIMEOUT_BIN" -k 5 "$SECS" "$@" </dev/null >"$OUT/stdout.log" 2>&1
+        return $?
+    fi
+    ${XVFB[@]+"${XVFB[@]}"} "$@" </dev/null >"$OUT/stdout.log" 2>&1 &
+    child=$!
+    ( sleep "$SECS"; kill -TERM $child 2>/dev/null; sleep 5; kill -KILL $child 2>/dev/null ) &
+    watchdog=$!
+    wait $child; rc=$?
+    kill $watchdog 2>/dev/null; wait $watchdog 2>/dev/null
+    # Report the cap the same way timeout(1) does, so callers need not care
+    # which branch ran.
+    [ $rc -gt 128 ] && rc=124
+    return $rc
+}
+
+TIMEOUT_BIN=$(command -v timeout || command -v gtimeout || true)
+
+run_capped env HOME="$RUNHOME" PPU_STATE_LOG=1 \
     ${ASCII:+ASCII_SCREENSHOT_EVERY_FIVE=1 ASCII_SCREENSHOT_BURST=3} \
     ${PNGEVERY:+PNG_SCREENSHOT_EVERY_N=$PNGEVERY} \
     ${INPUT:+DEBUG_INPUT_SCRIPT=$INPUT} \
-    "${XVFB[@]}" timeout -k 5 "$SECS" "$BIN" "${args[@]}" "$ROM" </dev/null >"$OUT/stdout.log" 2>&1
-# -k: zsnes installs a SIGTERM handler and does not always act on it, so the
-# cap needs a SIGKILL behind it or a run can sit there forever.
+    "$BIN" "${args[@]}" "$ROM"
 echo "exit=$? (124 = hit the time cap, which is the normal way a run ends)" | tee "$OUT/result.txt"
 
 for f in /tmp/zsnes_ppu.txt /tmp/zsnes_hashes.txt; do

@@ -10,7 +10,7 @@ mkdir -p "$WTBASE"
 git -C "$ROOT" worktree prune
 git -C "$ROOT" worktree remove --force "$WT" >/dev/null 2>&1
 git -C "$ROOT" worktree add --detach "$WT" "$REV" >/dev/null 2>&1 || { echo "$REV: WORKTREE-FAIL"; exit 2; }
-if ! make -C "$WT" WITH_DEBUG_HOOKS=1 -j"$(nproc)" >/tmp/zrev_build_$$.log 2>&1; then
+if ! make -C "$WT" WITH_DEBUG_HOOKS=1 -j"$(getconf _NPROCESSORS_ONLN 2>/dev/null || nproc 2>/dev/null || echo 4)" >/tmp/zrev_build_$$.log 2>&1; then
     echo "$REV: BUILD-FAIL"; tail -3 /tmp/zrev_build_$$.log; exit 2
 fi
 printf '%s: ' "$REV"

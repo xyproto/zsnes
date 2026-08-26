@@ -31,11 +31,11 @@ OUT=$ROOT/test/harness/out; mkdir -p "$OUT"
 echo "=== building baseline $REV ==="
 git -C "$ROOT" worktree remove --force "$WT" 2>/dev/null
 git -C "$ROOT" worktree add --detach "$WT" "$REV" >/dev/null 2>&1 || { echo "worktree add failed"; exit 1; }
-if ! make -C "$WT" WITH_DEBUG_HOOKS=1 -j"$(nproc)" >"$OUT/baseline_build.log" 2>&1; then
+if ! make -C "$WT" WITH_DEBUG_HOOKS=1 -j"$(getconf _NPROCESSORS_ONLN 2>/dev/null || nproc 2>/dev/null || echo 4)" >"$OUT/baseline_build.log" 2>&1; then
     echo "BASELINE BUILD FAILED - see $OUT/baseline_build.log"; exit 1
 fi
 echo "=== building candidate (working tree) ==="
-if ! make -C "$ROOT" WITH_DEBUG_HOOKS=1 -j"$(nproc)" >"$OUT/candidate_build.log" 2>&1; then
+if ! make -C "$ROOT" WITH_DEBUG_HOOKS=1 -j"$(getconf _NPROCESSORS_ONLN 2>/dev/null || nproc 2>/dev/null || echo 4)" >"$OUT/candidate_build.log" 2>&1; then
     echo "CANDIDATE BUILD FAILED - see $OUT/candidate_build.log"; exit 1
 fi
 
