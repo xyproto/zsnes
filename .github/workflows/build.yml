@@ -159,19 +159,27 @@ jobs:
           make win64 WITH_PNG=
           test -f ./zsnes.exe
 
-#  darwin:
-#    name: darwin
-#    runs-on: macos-14
-#    steps:
-#      - uses: actions/checkout@v6
-#      - name: Install dependencies
-#        run: |
-#          brew update
-#          brew install nasm pkg-config sdl3 libpng
-#      - name: Build
-#        run: |
-#          make clean
-#          make ARCH=darwin WITH_AO= WITH_PIPEWIRE=
+  macos:
+    name: macos
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Install dependencies
+        run: |
+          brew update
+          brew install pkgconf sdl3 libpng libao
+      - name: Build
+        # No ARCH needed: the default is the host, and on a Mac that is a
+        # native Mach-O build, Apple Silicon or Intel.
+        run: |
+          make clean
+          make
+          test -x ./zsnes
+      - name: Unit tests
+        # The difftests are 32-bit x86 only - they assemble the original
+        # Assembly out of git history - so only the unit tests run here.
+        run: make -C test run
+
 #  freebsd:
 #    name: freebsd (optional)
 #    continue-on-error: true
