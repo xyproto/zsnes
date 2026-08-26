@@ -113,6 +113,23 @@ jobs:
         run: make portcheck
       - name: Unit tests
         run: make -C test run
+      - name: Cross-word-size check
+        # Every difftest builds -m32, where zreg and u4 are the same type, so a
+        # 64-bit width bug cannot show up in one. This runs a core at both
+        # widths and compares.
+        run: make -C test spc64
+      - name: Differential tests
+        # These prove each ported routine still bit-identical to the assembly
+        # it replaced; they are what catches a porting regression.
+        run: |
+          for t in spcdec fxtable fxops memops mvs mvall m716t cb16t cb16b \
+                   spr16bt spr16t spr16p t8bt t16bt t8t t16t t8to thi \
+                   sprwin ngspr procwin mos ngeng ngframe mv16 m7draw \
+                   m7proc m7bw m7win m7start m7ext2 m7calc regs op sa1op \
+                   dbgop transp bgt ng2; do
+            echo "=== $t"
+            make -C test "$t" || exit 1
+          done
       - name: Verify runtime links
         run: |
           ldd ./zsnes | tee ldd.txt
@@ -131,16 +148,16 @@ jobs:
             mingw-w64 \
             libz-mingw-w64-dev \
             nasm python3 pkg-config
-      - name: Build
+      - name: Build 32-bit
         run: |
           make clean
-          make ARCH=win \
-            WITH_PNG= \
-            CC_TARGET=i686-w64-mingw32-gcc \
-            CXX_TARGET=i686-w64-mingw32-g++ \
-            CC=i686-w64-mingw32-gcc \
-            CXX=i686-w64-mingw32-g++ \
-            WINDRES=i686-w64-mingw32-windres
+          make win32 WITH_PNG=
+          test -f ./zsnes.exe
+      - name: Build 64-bit
+        run: |
+          make clean
+          make win64 WITH_PNG=
+          test -f ./zsnes.exe
 
 #  darwin:
 #    name: darwin
