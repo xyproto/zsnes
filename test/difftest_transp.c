@@ -23,7 +23,7 @@ typedef uint32_t u4;
 #define LINE 256u
 
 u2 fulladdtab[65536];
-u4 UnusedBit[2], HalfTrans[2];
+u4 UnusedBit[2], HalfTrans[4];
 
 /* The dispatch half of the routine needs these; only the five colour-maths
    loops are under test here, so they just have to exist and be quiet. */

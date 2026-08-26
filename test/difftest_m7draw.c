@@ -37,12 +37,20 @@ typedef int32_t s4;
 
 /* The Mode 7 scratch block. */
 u4 mtemp;
-u4 mmode7xpos, mmode7ypos, mmode7xrpos, mmode7yrpos;
+/* The emulator's data block puts a four-byte spacer after each of these,
+   because video/c_mode716proc.c reads a dword one byte in and that has to stay
+   inside one object. Mirror the shape here so the same names line up. */
+u4 mmode7xpos8[2], mmode7ypos8[2], mode7xpos8[2], mode7ypos8[2];
+extern u4 mmode7xpos __attribute__((alias("mmode7xpos8")));
+extern u4 mmode7ypos __attribute__((alias("mmode7ypos8")));
+extern u4 mode7xpos __attribute__((alias("mode7xpos8")));
+extern u4 mode7ypos __attribute__((alias("mode7ypos8")));
+u4 mmode7xrpos, mmode7yrpos;
 u4 mmode7xadder, mmode7yadder, mmode7xadd2, mmode7yadd2;
 u4 mmode7ptr, mmode7xinc, mmode7xincc, mmode7yinc;
 u4 mm7xaddof, mm7xaddof2, mm7yaddof, mm7yaddof2;
 u4 m7xaddof, m7xaddof2, m7yaddof, m7yaddof2;
-u4 mode7xpos, mode7ypos, mode7xrpos, mode7yrpos, mode7xadder, mode7yadder;
+u4 mode7xrpos, mode7yrpos, mode7xadder, mode7yadder;
 u4 ngwleft, ngwleftb, pixelsleft, switchtorep3, M7HROn;
 u2 mcxloc, mcyloc, m7starty;
 u2 mode7A, mode7B, mode7C, mode7D, mode7X0, mode7Y0;
