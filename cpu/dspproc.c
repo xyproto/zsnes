@@ -18,8 +18,13 @@
 /* resd in the assembly, but these hold host pointers, so the slot has to
    follow the pointer width. On i386 it is the same four bytes. */
 /* Holds a host pointer, so the slot follows the pointer width. */
-#define PTRSLOT ".balign " ASM_STR(__SIZEOF_POINTER__) "\n"      \
-                ".skip " ASM_STR(__SIZEOF_POINTER__) "\n"
+/* A pointer-sized slot. The .balign belongs before the label: emitted after
+   it, the symbol names the padding rather than its own storage - four bytes
+   low on a 64-bit build, which aarch64 then cannot even address. */
+#define PTRSYM(sym)                              \
+    ".balign " ASM_STR(__SIZEOF_POINTER__) "\n"  \
+    ASM_GSYM(sym)                                \
+    ".skip " ASM_STR(__SIZEOF_POINTER__) "\n"
 
 #define BSSP(sym, n) \
     ASM_GSYM(sym)    \
@@ -532,8 +537,7 @@ __asm__(
     ASM_SEC_END
     ASM_SEC_DATA(".data")
     ".balign 16, 0x90\n"
-    ASM_GSYM(DSPInterpolate)
-    PTRSLOT
+    PTRSYM(DSPInterpolate)
     ASM_SEC_END);
 
 /* clang-format on */

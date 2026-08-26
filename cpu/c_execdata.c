@@ -9,8 +9,13 @@
 #include "../asmdata.h"
 
 /* Holds a host pointer, so the slot follows the pointer width. */
-#define PTRSLOT ".balign " ASM_STR(__SIZEOF_POINTER__) "\n"      \
-                ".skip " ASM_STR(__SIZEOF_POINTER__) "\n"
+/* A pointer-sized slot. The .balign belongs before the label: emitted after
+   it, the symbol names the padding rather than its own storage - four bytes
+   low on a 64-bit build, which aarch64 then cannot even address. */
+#define PTRSYM(sym)                              \
+    ".balign " ASM_STR(__SIZEOF_POINTER__) "\n"  \
+    ASM_GSYM(sym)                                \
+    ".skip " ASM_STR(__SIZEOF_POINTER__) "\n"
 
 /* clang-format off */
 
@@ -92,10 +97,14 @@ __asm__(
     ".long 0\n"
     ASM_GSYM(curexecstate)
     ".long 0\n"
+    /* These hold the 65816 program counter, which is a host pointer, so they
+       follow the pointer width. zstate.c copies four bytes of each, which is
+       the low half and all the save-state format ever carried. */
+    ".balign " ASM_STR(__SIZEOF_POINTER__) "\n"
     ASM_GSYM(nmiprevaddrl)   /* observed address -5 */
-    ".long 0\n"
+    ".skip " ASM_STR(__SIZEOF_POINTER__) "\n"
     ASM_GSYM(nmiprevaddrh)   /* observed address +5 */
-    ".long 0\n"
+    ".skip " ASM_STR(__SIZEOF_POINTER__) "\n"
     ASM_GSYM(nmirept)   /* NMI repeat check, if 6 then okay */
     ".long 0\n"
     ASM_GSYM(nmiprevline)   /* previous line */
@@ -158,6 +167,5 @@ __asm__(
 
 __asm__(
     ASM_SEC_BSS(".bss")
-    ASM_GSYM(initaddrl)
-    PTRSLOT
+    PTRSYM(initaddrl)
     ASM_SEC_END);

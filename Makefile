@@ -105,7 +105,14 @@ IS_FEDORA       := $(if $(wildcard /etc/fedora-release),yes)
 IS_DEBIAN_BASED := $(if $(wildcard /etc/debian_version),yes)
 
 WARN_FLAGS ?= -Wall -Wno-address-of-packed-member
-COMMON_FLAGS = $(ARCH_CFLAGS) -pthread -no-pie -std=c11 -D_DEFAULT_SOURCE -D_POSIX_C_SOURCE=200809L -O3 -fno-pic -D_FORTIFY_SOURCE=2 -ffunction-sections -fdata-sections -Wfatal-errors $(WARN_FLAGS)
+# -fno-pic exists for the x86 assembly, which addresses its data absolutely.
+# aarch64 has no assembly left, and absolute addressing there is actively
+# wrong for this tree: the hand-packed data blocks reproduce the assembly's
+# byte layout, so a variable can sit at any offset, and a non-PIC load encodes
+# the low bits of the address scaled by the access size - the linker cannot
+# represent an unaligned symbol at all. PIC addressing has no such limit.
+PIC_FLAGS := $(if $(filter arm64,$(CPU)),,-no-pie -fno-pic)
+COMMON_FLAGS = $(ARCH_CFLAGS) -pthread $(PIC_FLAGS) -std=c11 -D_DEFAULT_SOURCE -D_POSIX_C_SOURCE=200809L -O3 -D_FORTIFY_SOURCE=2 -ffunction-sections -fdata-sections -Wfatal-errors $(WARN_FLAGS)
 
 CFLAGS += $(COMMON_FLAGS)
 # x87-only maths, to keep the 32-bit build's floating point exactly what the
@@ -116,7 +123,7 @@ ifneq ($(ARCH),DARWIN)
 CFLAGS += -mno-sse -mno-sse2
 endif
 endif
-LDFLAGS += -Wl,--as-needed -no-pie -Wl,--gc-sections -lz -lm
+LDFLAGS += -Wl,--as-needed $(if $(filter arm64,$(CPU)),,-no-pie) -Wl,--gc-sections -lz -lm
 
 #WITH_DEBUGGER := yes
 WITH_OPENGL   := yes
@@ -124,6 +131,39 @@ WITH_PNG      := yes
 WITH_SDL      := $(if $(filter $(ARCH),$(UNIXSDL_ARCHES)),yes,)
 WITH_PIPEWIRE :=
 WITH_AO       :=
+
+# A cross build cannot expect the host's libraries: pkg-config finds nothing
+# for the target unless a sysroot is installed. Compile without them rather
+# than refusing - the point of those targets is to build the tree for another
+# CPU, and the binary is not runnable on this machine anyway. A native build
+# really is missing a package, so it still stops and says which.
+# -m32 on an x86-64 host is not "cross" here: multilib is the normal way to
+# get those libraries, and the advice below is right for it.
+CROSS_BUILD := $(if $(or $(filter arm64,$(CPU)),$(filter WIN,$(ARCH))),yes,)
+
+# Every library probe has to ask the *target's* pkg-config: the wrapper targets
+# pass a prefixed one, and the host's would happily report its own x86 SDL for
+# an aarch64 build. Defined here because the probes below already use it.
+PKG_CONFIG ?= pkg-config
+
+# Not every distribution ships a prefixed wrapper - mingw-w64 has one, the
+# aarch64 toolchain on Arch does not. Fall back to the plain pkg-config aimed
+# at the target's sysroot: PKG_CONFIG_LIBDIR replaces the search path rather
+# than extending it, so the host's .pc files still cannot leak in.
+ifeq ($(CROSS_BUILD),yes)
+ifeq ($(shell command -v $(PKG_CONFIG) >/dev/null 2>&1 && echo yes),)
+CROSS_SYSROOT := $(shell $(or $(CC_TARGET),$(CC)) -print-sysroot 2>/dev/null)
+ifneq ($(and $(strip $(CROSS_SYSROOT)),$(wildcard $(CROSS_SYSROOT)/lib/pkgconfig)),)
+$(info ===> no $(PKG_CONFIG); using pkg-config under $(CROSS_SYSROOT))
+export PKG_CONFIG_LIBDIR := $(CROSS_SYSROOT)/lib/pkgconfig
+# PKG_CONFIG_PATH is searched *in addition* to PKG_CONFIG_LIBDIR, and the outer
+# make exports a host one for 32-bit builds, so leaving it set would let the
+# host's .pc files back in through the side door.
+export PKG_CONFIG_PATH :=
+override PKG_CONFIG := pkg-config
+endif
+endif
+endif
 
 # Add more pkg-config paths, with Fedora and Debian/Ubuntu in mind
 ifneq ($(filter $(ARCH),LINUX),)
@@ -135,9 +175,9 @@ endif
 # Check that pkg-config deps are also linkable with the current target flags (for example, -m32).
 define detect_pkg_for_target
 $(shell \
-  if pkg-config --exists $(1) >/dev/null 2>&1; then \
+  if $(PKG_CONFIG) --exists $(1) >/dev/null 2>&1; then \
     printf 'int main(void){return 0;}\n' | \
-      $(or $(CC_TARGET),$(CC)) $(COMMON_FLAGS) -x c - -o /dev/null $$(pkg-config --libs $(1)) >/dev/null 2>&1 && \
+      $(or $(CC_TARGET),$(CC)) $(COMMON_FLAGS) -x c - -o /dev/null $$($(PKG_CONFIG) --libs $(1)) >/dev/null 2>&1 && \
       echo yes; \
   fi)
 endef
@@ -171,20 +211,25 @@ BACKENDS_OPTOUT := $(if $(filter command line,$(origin WITH_SDL) \
 SKIP_AUDIO_BACKEND_CHECK := $(if $(or \
     $(filter $(WRAPPER_GOALS),$(MAKECMDGOALS)),$(BACKENDS_OPTOUT)),yes)
 
-# A cross build cannot expect the host's libraries: pkg-config finds nothing
-# for the target unless a sysroot is installed. Compile without them rather
-# than refusing - the point of those targets is to build the tree for another
-# CPU, and the binary is not runnable on this machine anyway. A native build
-# really is missing a package, so it still stops and says which.
-# -m32 on an x86-64 host is not "cross" here: multilib is the normal way to
-# get those libraries, and the advice below is right for it.
-CROSS_BUILD := $(if $(or $(filter arm64,$(CPU)),$(filter WIN,$(ARCH))),yes,)
-
 ifeq ($(SKIP_AUDIO_BACKEND_CHECK),)
 ifeq ($(CROSS_BUILD),yes)
 ifeq ($(SDL_BACKEND_AVAILABLE),)
 $(info ===> no SDL for $(CPU)/$(ARCH); building without a video backend)
 WITH_SDL :=
+endif
+endif
+endif
+
+# Same for OpenGL. mingw ships GL/gl.h, but a bare cross sysroot usually has
+# neither the header nor libGL, so probe instead of assuming. The SDL software
+# path is a complete video backend on its own.
+ifeq ($(CROSS_BUILD),yes)
+ifdef WITH_OPENGL
+GL_HEADER_AVAILABLE := $(shell $(or $(CC_TARGET),$(CC)) $(ARCH_CFLAGS) \
+  -E -include GL/gl.h -x c /dev/null >/dev/null 2>&1 && echo yes)
+ifeq ($(GL_HEADER_AVAILABLE),)
+$(info ===> no GL/gl.h for $(CPU)/$(ARCH); building without OpenGL)
+WITH_OPENGL :=
 endif
 endif
 endif
@@ -292,7 +337,10 @@ ifneq ($(HOST_OS),DARWIN)
   LDFLAGS += -ldl
 endif
 endif
-ifeq ($(ARCH),LINUX)
+# Where a multilib distribution keeps its 32-bit x86 libraries. Nothing to do
+# with an aarch64 cross build, which would otherwise pick x86 objects out of it
+# and only find out at link time.
+ifeq ($(ARCH)/$(CPU)/$(BITS),LINUX/x86/32)
   CFLAGS += -L/usr/lib32
   LDFLAGS += -L/usr/lib32
 endif
@@ -300,7 +348,7 @@ endif
 ifeq ($(WITH_SDL),yes)
   ifeq ($(strip $(SDL_CONFIG)),)
     ifeq ($(SDL3_AVAILABLE),yes)
-      SDL_CONFIG := pkg-config sdl3
+      SDL_CONFIG := $(PKG_CONFIG) sdl3
       SDL_PKG := sdl3
     endif
   else
@@ -320,7 +368,6 @@ endif
 
 # libpng must come from the target's pkg-config (the mingw32 one for
 # "make win32"); fall back to a PNG-less build when the target lacks it.
-PKG_CONFIG ?= pkg-config
 ifdef WITH_PNG
   ifeq ($(origin PNG_CONFIG),undefined)
     ifneq ($(shell $(PKG_CONFIG) --exists libpng >/dev/null 2>&1 && echo yes),yes)
@@ -352,7 +399,7 @@ else
 endif
 
 ifeq ($(WITH_AO),yes)
-  AO_CONFIG ?= pkg-config ao
+  AO_CONFIG ?= $(PKG_CONFIG) ao
   ifndef CFLAGS_AO
     CFLAGS_AO := $(shell $(AO_CONFIG) --cflags)
   endif
@@ -369,7 +416,7 @@ endif
 
 ifeq ($(WITH_PIPEWIRE),yes)
   ifeq ($(PIPEWIRE_AVAILABLE),yes)
-    PIPEWIRE_CONFIG ?= pkg-config libpipewire-0.3
+    PIPEWIRE_CONFIG ?= $(PKG_CONFIG) libpipewire-0.3
     ifndef CFLAGS_PIPEWIRE
       CFLAGS_PIPEWIRE := $(shell $(PIPEWIRE_CONFIG) --cflags)
     endif
@@ -387,7 +434,8 @@ ifeq ($(WITH_PIPEWIRE),yes)
   endif
 endif
 
-ifeq ($(ARCH),LINUX)
+# Debian/Ubuntu multiarch include directory, again x86-only.
+ifeq ($(ARCH)/$(CPU),LINUX/x86)
 ifeq ($(wildcard /usr/lib/i386-linux-gnu/.),)
   CFLAGS += -I/usr/include/x86_64-linux-gnu
 endif
@@ -560,6 +608,16 @@ CFGDEFS += -DNO_DEBUGGER
 endif
 
 DEBUGFLAGS :=
+
+# WITH_DEBUG_HOOKS=1 compiles in the diagnostic hooks: the save-state
+# round-trip checker (ZST_ROUNDTRIP, ZST_LOADONLY), the per-frame PPU state log
+# (PPU_STATE_LOG, PPU_DUMP_FRAME) and the interrupt log (IRQ_LOG). Each is then
+# still off until its environment variable is set. They live in the frame and
+# interrupt paths, so a normal build leaves them out entirely.
+# The per-opcode logger is separate and heavier: EXTRA_CFLAGS=-DSCANLINE_PC_LOG.
+ifdef WITH_DEBUG_HOOKS
+CFGDEFS += -DZSNES_DEBUG_HOOKS
+endif
 
 ifdef WITH_OPENGL
 CFGDEFS += -D__OPENGL__
@@ -799,6 +857,7 @@ info:
 	@echo "WITH_SDL      = $(WITH_SDL)"
 	@echo "WITH_PIPEWIRE = $(WITH_PIPEWIRE)"
 	@echo "WITH_AO       = $(WITH_AO)"
+	@echo "WITH_DEBUG_HOOKS = $(WITH_DEBUG_HOOKS)"
 	@echo "SDL3_AVAILABLE = $(SDL3_AVAILABLE)"
 	@echo "PIPEWIRE_AVAILABLE = $(PIPEWIRE_AVAILABLE)"
 	@echo "AO_AVAILABLE  = $(AO_AVAILABLE)"

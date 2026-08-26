@@ -214,14 +214,17 @@ __asm__(
     ASM_GSYM(mode7set_dw)
     ASM_GSYM(mode7set)
     ".byte 0\n"
+    ASM_GSYM(mode7A_dw)
     ASM_GSYM(mode7A)
     ".word 0\n"
     ASM_GSYM(mode7B)
     ".word 0\n"
+    ASM_GSYM(mode7C_dw)
     ASM_GSYM(mode7C)
     ".word 0\n"
     ASM_GSYM(mode7D)
     ".word 0\n"
+    ASM_GSYM(mode7X0_dw)
     ASM_GSYM(mode7X0)
     ".word 0\n"
     ASM_GSYM(mode7Y0)

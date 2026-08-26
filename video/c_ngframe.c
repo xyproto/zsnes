@@ -30,8 +30,10 @@ enum { R_EDI,
     R_ECX,
     R_EAX };
 
-extern u1 WindowRedraw, ngmsdraw, ngextbg, scrndis;
-extern u1 modeused[8], scadsng[256], winbg1enval[], nglogicval;
+extern u4 WindowRedraw, ngmsdraw, ngextbg; /* dwords where they are defined */
+extern u1 scrndis;
+extern u1 modeused[8], scadsng[256], winbg1enval[];
+extern u4 nglogicval; /* a dword where it is defined (video/newgfx.c) */
 extern u1 prdata[256], prdatb[256], prdatc[256];
 extern u1 winbg1envals[], winbg1envalm[];
 extern u1* vidbuffer;

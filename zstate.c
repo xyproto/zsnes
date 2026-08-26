@@ -19,6 +19,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+#include "types.h" /* IGNORE_RESULT */
+
 #ifdef __UNIXSDL__
 #include "gblhdr.h"
 #else
@@ -121,6 +123,18 @@ static void copy_spc_data(uint8_t** buffer, void (*copy_func)(uint8_t**, void*, 
    inside one object; the layout is pinned by the ASM_GSYM block that
    defines it. */
 extern uint8_t spc700read_run[40], opcd_run[24], oamaddr_run[56], SA1Status_run[3];
+extern uint8_t DSP1_run[6 + 32 + 32 + 1 + 256];
+void DSP1_copy_state(uint8_t** buffer, void (*copy_func)(uint8_t**, void*, size_t));
+
+/* How much room the DSP1 section took in a V143 state, written the way the
+   old code spelled it so the two can be compared. Only somewhere to put the
+   bytes while parsing past them. */
+static uint8_t dsp1_v143_discard[(70 + 128)
+    + (3 * 4 + 128) + (4 * 4 + 128) + (4 * 4 + 128) + (5 * 4 + 128)
+    + (5 * 4 + 128) + (4 * 4 + 128) + (5 * 4 + 128)
+    + (11 * 4 + 3 * 4 + 28 * 8 + 128) + (5 * 4 + 14 * 8 + 128)
+    + (6 * 4 + 10 * 8 + 4 + 128) + (4 * 4 + 128) + (6 * 4 + 128)
+    + (6 * 4 + 128) + (9 * 4 + 128) + (4 * 4 + 128)];
 
 static void copy_extra_data(uint8_t** buffer, void (*copy_func)(uint8_t**, void*, size_t))
 {
@@ -164,20 +178,34 @@ static size_t load_save_size;
 
 enum copy_state_method { csm_save_zst_new,
     csm_load_zst_new,
+    csm_load_zst_143,
     csm_load_zst_old,
     csm_save_rewind,
     csm_load_rewind };
 
+/* The section map is only wanted when the round-trip checker is running, and
+   these marks sit inside the copy loop, so a normal build compiles them out.
+   See WITH_DEBUG_HOOKS in the Makefile. */
+#ifdef ZSNES_DEBUG_HOOKS
+void zst_mark(char const* label);
+#else
+#define zst_mark(label) ((void)0)
+#endif
+
 static void copy_state_data(uint8_t* buffer, void (*copy_func)(uint8_t**, void*, size_t), enum copy_state_method method)
 {
     copy_snes_data(&buffer, copy_func);
+    zst_mark("snes");
 
     // WRAM (128k), VRAM (64k)
     copy_func(&buffer, wramdata, 8192 * 16);
+    zst_mark("wram");
     copy_func(&buffer, vram, 4096 * 16);
+    zst_mark("vram");
 
     if (spcon) {
         copy_spc_data(&buffer, copy_func);
+        zst_mark("spc");
         /*
     if (buffer) //Rewind stuff
     {
@@ -206,22 +234,19 @@ static void copy_state_data(uint8_t* buffer, void (*copy_func)(uint8_t**, void*,
     }
 
     if (DSP1Enable && (method != csm_load_zst_old)) {
-        copy_func(&buffer, &DSP1COp, 70 + 128);
-        copy_func(&buffer, &Op00Multiplicand, 3 * 4 + 128);
-        copy_func(&buffer, &Op10Coefficient, 4 * 4 + 128);
-        copy_func(&buffer, &Op04Angle, 4 * 4 + 128);
-        copy_func(&buffer, &Op08X, 5 * 4 + 128);
-        copy_func(&buffer, &Op18X, 5 * 4 + 128);
-        copy_func(&buffer, &Op28X, 4 * 4 + 128);
-        copy_func(&buffer, &Op0CA, 5 * 4 + 128);
-        copy_func(&buffer, &Op02FX, 11 * 4 + 3 * 4 + 28 * 8 + 128);
-        copy_func(&buffer, &Op0AVS, 5 * 4 + 14 * 8 + 128);
-        copy_func(&buffer, &Op06X, 6 * 4 + 10 * 8 + 4 + 128);
-        copy_func(&buffer, &Op01m, 4 * 4 + 128);
-        copy_func(&buffer, &Op0DX, 6 * 4 + 128);
-        copy_func(&buffer, &Op03F, 6 * 4 + 128);
-        copy_func(&buffer, &Op14Zr, 9 * 4 + 128);
-        copy_func(&buffer, &Op0EH, 4 * 4 + 128);
+        if (method == csm_load_zst_143) {
+            /* A V143 state's DSP1 section is a set of fixed-length runs that
+               start at one variable of a group and read on past it - a layout
+               no compiler guarantees and this one does not produce, so
+               replaying it would write hundreds of bytes over two-byte
+               objects. Read the bytes and drop them. Nothing carries over:
+               the game issues a DSP1 command before it uses a result again,
+               and every command sets its own inputs first. */
+            copy_func(&buffer, dsp1_v143_discard, sizeof dsp1_v143_discard);
+        } else {
+            copy_func(&buffer, DSP1_run, sizeof DSP1_run);
+            DSP1_copy_state(&buffer, copy_func);
+        }
     }
 
     if (SETAEnable) {
@@ -342,7 +367,7 @@ uint8_t* StateBackup = 0;
 uint8_t AllocatedRewindStates, LatestRewindPos, EarliestRewindPos;
 bool RewindPosPassed;
 
-size_t rewind_state_size, cur_zst_size, old_zst_size;
+size_t rewind_state_size, cur_zst_size, v143_zst_size, old_zst_size;
 
 void zmv_rewind_save(size_t, bool);
 void zmv_rewind_load(size_t, bool);
@@ -653,19 +678,44 @@ extern uint32_t SfxRomBufferSt, SfxLastRamAdrSt;
 static FILE* fhandle;
 void CapturePicture();
 
+#ifdef ZSNES_DEBUG_HOOKS
+/* Set while ZST_ROUNDTRIP is mapping which section a differing byte falls in. */
+size_t zst_dbg_off;
+int zst_dbg_on;
+#endif
+
 static void write_save_state_data(uint8_t** dest, void* data, size_t len)
 {
     fwrite(data, 1, len, fhandle);
+#ifdef ZSNES_DEBUG_HOOKS
+    zst_dbg_off += len;
+#endif
 }
 
+#ifdef ZSNES_DEBUG_HOOKS
+void zst_mark(char const* label);
+void zst_mark(char const* const label)
+{
+    if (zst_dbg_on)
+        fprintf(stderr, "ZST section %-16s ends at %zu\n", label, zst_dbg_off);
+}
+#endif
+
 static const char zst_header_old[] = "ZSNES Save State File V0.6\x1a\x3c";
-static const char zst_header_cur[] = "ZSNES Save State File V143\x1a\x8f";
+/* V144 differs from V143 only in the DSP1 section, which V143 described by a
+   memory layout no compiler guarantees. Both older formats still load. */
+static const char zst_header_143[] = "ZSNES Save State File V143\x1a\x8f";
+static const char zst_header_cur[] = "ZSNES Save State File V144\x1a\x8f";
 
 void calculate_state_sizes()
 {
     state_size = 0;
     copy_state_data(0, state_size_tally, csm_save_zst_new);
     cur_zst_size = state_size + sizeof(zst_header_cur) - 1;
+
+    state_size = 0;
+    copy_state_data(0, state_size_tally, csm_load_zst_143);
+    v143_zst_size = state_size + sizeof(zst_header_143) - 1;
 
     state_size = 0;
     copy_state_data(0, state_size_tally, csm_load_zst_old);
@@ -965,7 +1015,11 @@ bool zst_load(FILE* fp, size_t Compressed)
         Totalbyteloaded += fread(zst_header_check, 1, sizeof(zst_header_check), fp);
 
         if (!memcmp(zst_header_check, zst_header_cur, sizeof(zst_header_check) - 2)) {
-            zst_version = 143; // v1.43+
+            zst_version = 144; // ZSNES2
+        }
+
+        if (!memcmp(zst_header_check, zst_header_143, sizeof(zst_header_check) - 2)) {
+            zst_version = 143; // v1.43 - v1.51
         }
 
         if (!memcmp(zst_header_check, zst_header_old, sizeof(zst_header_check) - 2)) {
@@ -978,7 +1032,10 @@ bool zst_load(FILE* fp, size_t Compressed)
 
         load_save_size = 0;
         fhandle = fp; // Set global file handle
-        copy_state_data(0, read_save_state_data, (zst_version == 143) ? csm_load_zst_new : csm_load_zst_old);
+        copy_state_data(0, read_save_state_data,
+            (zst_version == 144)       ? csm_load_zst_new
+                : (zst_version == 143) ? csm_load_zst_143
+                                       : csm_load_zst_old);
         Totalbyteloaded += load_save_size;
     }
 
@@ -1022,6 +1079,88 @@ bool zst_load(FILE* fp, size_t Compressed)
 
     return (true);
 }
+
+#ifdef ZSNES_DEBUG_HOOKS
+/* ZST_ROUNDTRIP=N self-checks the save-state path at frame N: save, load that
+   state back, save again, and compare the two files. A faithful round trip
+   makes them byte-identical, so any field the loader drops or restores wrongly
+   shows up as a mismatch - without having to enumerate the machine's state.
+   Reports to stderr and to /tmp/zsnes_zst.txt. */
+void zst_roundtrip_check(void);
+void zst_roundtrip_check(void)
+{
+    char const* const pa = "/tmp/zsnes_zst_a.zst";
+    char const* const pb = "/tmp/zsnes_zst_b.zst";
+    FILE* f;
+    long na = 0, nb = 0;
+    int ok = 0, loaded = 0;
+
+    if (getenv("ZST_LOADONLY")) {
+        /* Compatibility check: load a state written by another build and
+           report whether it was accepted. */
+        FILE* g = fopen(pa, "rb");
+        int got = g && zst_load(g, 0);
+        if (g)
+            fclose(g);
+        fprintf(stderr, "ZST LOADONLY: %s\n", got ? "ACCEPTED" : "REJECTED");
+        {
+            FILE* r = fopen("/tmp/zsnes_zst.txt", "wb");
+            if (r) {
+                fprintf(r, "LOADONLY %s\n", got ? "ACCEPTED" : "REJECTED");
+                fclose(r);
+            }
+        }
+        return;
+    }
+    zst_dbg_on = 1;
+    zst_dbg_off = 0;
+    if ((f = fopen(pa, "wb")) != NULL) {
+        zst_save(f, false, false);
+        na = ftell(f);
+        fclose(f);
+    }
+    if ((f = fopen(pa, "rb")) != NULL) {
+        loaded = zst_load(f, 0);
+        fclose(f);
+    }
+    zst_dbg_on = 0;
+    if (loaded && (f = fopen(pb, "wb")) != NULL) {
+        zst_save(f, false, false);
+        nb = ftell(f);
+        fclose(f);
+    }
+    if (loaded && na > 0 && na == nb) {
+        FILE* a = fopen(pa, "rb");
+        FILE* b = fopen(pb, "rb");
+        ok = a && b;
+        if (ok) {
+            long i;
+            for (i = 0; i < na; i++)
+                if (fgetc(a) != fgetc(b)) {
+                    ok = 0;
+                    fprintf(stderr, "ZST ROUNDTRIP: first difference at byte %ld\n", i);
+                    break;
+                }
+        }
+        if (a)
+            fclose(a);
+        if (b)
+            fclose(b);
+    }
+    {
+        FILE* r = fopen("/tmp/zsnes_zst.txt", "wb");
+        char const* verdict = !loaded ? "FAIL (load rejected the state)"
+            : na != nb                ? "FAIL (sizes differ)"
+            : ok                      ? "PASS"
+                                      : "FAIL (contents differ)";
+        fprintf(stderr, "ZST ROUNDTRIP: %s (%ld vs %ld bytes)\n", verdict, na, nb);
+        if (r) {
+            fprintf(r, "%s %ld %ld\n", verdict, na, nb);
+            fclose(r);
+        }
+    }
+}
+#endif
 
 // Wrapper for above
 bool zst_compressed_loader(FILE* fp)

@@ -12,8 +12,11 @@
 #include <stdlib.h>
 
 /* IRQ_LOG=1 records every interrupt entry, so two builds can be diffed to find
-   the first one taken at a different point in the instruction stream. */
-
+   the first one taken at a different point in the instruction stream. Off
+   unless the tree is built with WITH_DEBUG_HOOKS=1. */
+#ifndef ZSNES_DEBUG_HOOKS
+#define irq_log(kind, pc) ((void)0)
+#else
 static void irq_log(char const* const kind, u4 const pc)
 {
     static int checked = 0;
@@ -32,6 +35,7 @@ static void irq_log(char const* const kind, u4 const pc)
     }
     n++;
 }
+#endif
 
 
 static u4 makedl(u4 edx)

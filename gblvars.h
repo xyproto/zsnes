@@ -32,9 +32,11 @@ extern uint32_t soundcycleft, spc700read, timer2upd, xa, PHnum2writesfxreg;
    and the savestate writes it. */
 extern uint32_t xdb, xpb, xs, xd, xx, xy, flagnz, flago, flagc, bankkp;
 extern uint32_t Sflagnz, Sflago, Sflagc;
-extern uint32_t opcd, HIRQCycNext, oamaddr, curexecstate, nmiprevaddrl;
+extern uint32_t opcd, HIRQCycNext, oamaddr, curexecstate;
+extern zreg nmiprevaddrl; /* the 65816 PC: pointer-wide */
 extern uint32_t nmirept, nmiprevline, nmistatus, joycontren;
-extern uint32_t SfxR0, ramsize, nmiprevaddrh;
+extern uint32_t SfxR0, ramsize;
+extern zreg nmiprevaddrh;
 extern uint32_t tempesi, tempedi, tempedx, tempebp;
 extern uint32_t SPCMultA, PHnum2writespc7110reg, PHdspsave2;
 extern uint32_t PHnum2writeppureg;

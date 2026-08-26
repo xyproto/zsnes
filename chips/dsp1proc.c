@@ -2,6 +2,7 @@
    The math lives in dsp1emu.c; this marshals parameters/results. */
 #include <stdint.h>
 
+#include "../asmdata.h"
 #include "../cpu/memseam.h"
 #include "regabi.h"
 
@@ -168,10 +169,31 @@ void DSPOp2B(void);
 void DSPOp2D(void);
 void DSPOp0A(void);
 
-/* DSP1 register state (was .bss in dsp1proc.asm) */
-uint8_t DSP1COp, DSP1RLeft, DSP1WLeft, DSP1CPtrW, DSP1CPtrR, DSPDet;
-uint8_t DSPFuncUsed[256];
-uint16_t DSP1VARS[16], DSP1RET[16];
+/* DSP1 register state (was .bss in dsp1proc.asm).
+ *
+ * zstate.c saves 70+128 bytes from &DSP1COp, so this is one run whose order and
+ * adjacency are the save-state format: the 70 is DSP1COp through DSPDet and the
+ * 128 is half of DSPFuncUsed. Plain C definitions cannot express that - under
+ * -fdata-sections each global is its own section and the linker ordered them
+ * freely, which put unrelated DSP-2 state inside the saved span - so the run is
+ * emitted through one inline-asm block, as elsewhere in this tree. The order
+ * below is the original dsp1proc.asm's. */
+__asm__(
+    ASM_SEC_BSS(".bss")
+    /* Names the whole saved run, so the copy in zstate.c is in bounds of a
+       real object rather than of DSP1COp's single byte - same idiom as
+       opcd_run and SA1Status_run. */
+    /* V144 defines this run, so the two 16-bit arrays below can start on an
+       even offset instead of inheriting the five bytes ahead of them. */
+    ".balign 2\n" ASM_GSYM(DSP1_run)
+        ASM_GSYM(DSP1COp) ".skip 1\n" ASM_GSYM(DSP1RLeft) ".skip 1\n" ASM_GSYM(DSP1WLeft) ".skip 1\n" ASM_GSYM(DSP1CPtrW) ".skip 1\n" ASM_GSYM(DSP1CPtrR) ".skip 1\n"
+                                                                                                                                                          ".balign 2\n" ASM_GSYM(DSP1VARS) ".skip 32\n" ASM_GSYM(DSP1RET) ".skip 32\n" ASM_GSYM(DSPDet) ".skip 1\n" ASM_GSYM(DSPFuncUsed) ".skip 256\n" ASM_SEC_END);
+
+/* 5 command bytes, a pad byte, two 32-byte arrays, DSPDet, DSPFuncUsed. */
+extern uint8_t DSP1_run[6 + 32 + 32 + 1 + 256];
+extern uint8_t DSP1COp, DSP1RLeft, DSP1WLeft, DSP1CPtrW, DSP1CPtrR, DSPDet;
+extern uint8_t DSPFuncUsed[256];
+extern uint16_t DSP1VARS[16], DSP1RET[16];
 uint32_t dsp1ptr;
 uint8_t dsp1array[4096];
 

@@ -138,7 +138,7 @@ static void UnlockSurface()
     }
 }
 
-extern uint8_t NGNoTransp;
+extern uint32_t NGNoTransp; /* a dword where it is defined (video/c_newgfx16data.c) */
 extern uint16_t resolutn;
 void hq2x_16b();
 void hq3x_16b();

@@ -19,6 +19,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+#include "../types.h" /* IGNORE_RESULT */
+
 #ifdef __UNIXSDL__
 #include "../gblhdr.h"
 #else
@@ -73,7 +75,8 @@ void CapturePicture()
     }
 }
 
-extern uint32_t cur_zst_size, old_zst_size;
+/* size_t in zstate.c, so it has to be size_t here too. */
+extern size_t cur_zst_size, v143_zst_size, old_zst_size;
 
 char* zst_name();
 
@@ -100,7 +103,8 @@ void LoadPicture(void)
         fseek(fp, 0, SEEK_END);
         file_size = ftell(fp);
 
-        if ((file_size - pic_size == cur_zst_size) || (file_size - pic_size == old_zst_size)) {
+        if ((file_size - pic_size == cur_zst_size) || (file_size - pic_size == v143_zst_size)
+            || (file_size - pic_size == old_zst_size)) {
             fseek(fp, -((signed)pic_size), SEEK_END);
             IGNORE_RESULT(fread(PrevPicture, 1, pic_size, fp));
         }

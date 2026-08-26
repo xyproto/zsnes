@@ -1631,6 +1631,8 @@ void UpdateVFrame(void)
     // Debug: PPU_STATE_LOG=1 appends per-frame PPU brightness/blank/layer state
     // to /tmp/zsnes_ppu.txt (correlate with the PNG filmstrip to explain a black
     // screen: force-blank set? brightness 0? no layers enabled?).
+    // Built only with WITH_DEBUG_HOOKS=1; a release build has no frame hook.
+#ifdef ZSNES_DEBUG_HOOKS
     {
         extern uint8_t vidbright, forceblnk;
         extern uint16_t scrnon;
@@ -1695,8 +1697,21 @@ void UpdateVFrame(void)
             }
             fflush(ppu_fp);
         }
+        {
+            /* ZST_ROUNDTRIP=N: check the save-state path once, at frame N. */
+            static int zst_at = -2;
+            if (zst_at == -2) {
+                char const* z = getenv("ZST_ROUNDTRIP");
+                zst_at = z ? atoi(z) : -1;
+            }
+            if (zst_at >= 0 && (int)ppu_frame == zst_at) {
+                extern void zst_roundtrip_check(void);
+                zst_roundtrip_check();
+            }
+        }
         ppu_frame++;
     }
+#endif
 
     if (SNESRumble && !MultiTap) {
         DoRumble();

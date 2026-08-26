@@ -22,6 +22,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #ifndef GBLHDR_H
 #define GBLHDR_H
 
+#include "types.h" /* IGNORE_RESULT */
+
 /*************************************\
 * Global Definitions and Headers File *
 \*************************************/
@@ -121,16 +123,5 @@ however it's a static value that we can just define */
 #include <sys/filio.h>
 #endif
 #endif
-
-/* Deliberately ignoring a result the compiler wants checked.
- *
- * The call still happens; this only records that nothing here acts on a short
- * read or a failed write. Most of these are loaders that validate the data
- * afterwards, or best-effort writes to a pipe. Grep for IGNORE_RESULT to find
- * the places that should grow real error handling. */
-#define IGNORE_RESULT(call) \
-    do {                    \
-        if (call) { }       \
-    } while (0)
 
 #endif

@@ -13,8 +13,15 @@
 #define ASM_SEC_DATA(name) ".section " name ",\"dw\"\n"
 #define ASM_SEC_BSS(name) ".section " name ",\"bw\"\n"
 #define ASM_SEC_END ".text\n"
+/* Mach-O and 32-bit PE/COFF prefix an underscore; x86-64 Windows does not,
+   and mingw-w64 defines __MINGW32__ for both word sizes. */
+#ifdef _WIN64
+#define ASM_GSYM(sym) ".global " #sym "\n" #sym ":\n"
+#define ASM_SYMREF(sym) #sym
+#else
 #define ASM_GSYM(sym) ".global _" #sym "\n_" #sym ":\n" #sym ":\n"
 #define ASM_SYMREF(sym) "_" #sym
+#endif
 #else
 #define ASM_SEC_DATA(name) ".pushsection " name ",\"aw\",@progbits\n"
 #define ASM_SEC_BSS(name) ".pushsection " name ",\"aw\",@nobits\n"

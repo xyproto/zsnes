@@ -85,7 +85,8 @@ void c_draw16tms_setup(void)
    adders are then picked on the a16x16yinc byte it just wrote; ebx comes out
    holding curypos rather than the reverse adder; and the cache walk runs with
    ecx pushed, so the mosaic clear's zero survives it. */
-extern u1 a16x16xinc, a16x16yinc, drawn, curypos; /* video/makevid.c */
+extern u1 a16x16xinc, a16x16yinc, drawn; /* video/makevid.c */
+extern u2 curypos; /* u2 where it is defined; the asm reads the low byte */
 extern u2 yadd, yflipadd; /* video/c_makev16tdata.c */
 
 void c_draw16x16tms_setup(void)
@@ -135,7 +136,7 @@ void c_draw16x16tms_setup(void)
     }
 
     MVAX = hofs;
-    MVBX = curypos;
+    MVBX = (u1)curypos;
     MVCX = ecx;
     MVSI = (zreg)(uintptr_t)esi;
 }

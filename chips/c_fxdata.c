@@ -11,8 +11,11 @@
    assembly reserved. All of them sit after PHnum2writesfxreg, so the
    save-state block above keeps its layout. On i386 this is the same four
    bytes. */
-#define PTRSLOT ".balign " ASM_STR(__SIZEOF_POINTER__) "\n" \
-                                                       ".skip " ASM_STR(__SIZEOF_POINTER__) "\n"
+/* A pointer-sized slot. The .balign belongs before the label: emitted after
+   it, the symbol names the padding rather than its own storage - four bytes
+   low on a 64-bit build, which aarch64 then cannot even address. */
+#define PTRSYM(sym) \
+    ".balign " ASM_STR(__SIZEOF_POINTER__) "\n" ASM_GSYM(sym) ".skip " ASM_STR(__SIZEOF_POINTER__) "\n"
 
 /* clang-format off */
 
@@ -116,22 +119,15 @@ __asm__(
     ".fill 512,1,0\n"
     ASM_GSYM(PHnum2writesfxreg)
     ".long . - " ASM_SYMREF(SfxR0) "\n"
-    ASM_GSYM(SfxCPB)
-    PTRSLOT
-    ASM_GSYM(SfxCROM)
-    PTRSLOT
-    ASM_GSYM(SfxRAMMem)
-    PTRSLOT
+    PTRSYM(SfxCPB)
+    PTRSYM(SfxCROM)
+    PTRSYM(SfxRAMMem)
     ASM_GSYM(withr15sk)
     ".long 0\n"
-    ASM_GSYM(sfxclineloc)
-    PTRSLOT
-    ASM_GSYM(SCBRrel)
-    PTRSLOT
-    ASM_GSYM(SfxLastRamAdr)
-    PTRSLOT
-    ASM_GSYM(SfxRomBuffer)
-    PTRSLOT
+    PTRSYM(sfxclineloc)
+    PTRSYM(SCBRrel)
+    PTRSYM(SfxLastRamAdr)
+    PTRSYM(SfxRomBuffer)
     ASM_GSYM(fxbit01pcal)
     ".long 0\n"
     ASM_GSYM(fxbit23pcal)

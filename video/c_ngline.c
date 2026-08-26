@@ -30,7 +30,8 @@ extern u1 bgallchange[256], bg1change[256], bg2change[256], bg3change[256];
 extern u1 bg4change[256];
 extern u4 palchanged, startlinet, endlinet, scfbl, bgcmsung;
 extern u1 bg3highst, BG3PRI[256], BGMA[256], BGFB[256], modeused[8];
-extern u1 FillSubScr[256], clinemainsub, ngmsdraw, ngextbg;
+extern u1 FillSubScr[256], clinemainsub;
+extern u4 ngmsdraw, ngextbg; /* dwords where they are defined */
 extern u1 scaddtype, scaddset, scadtng[256], scadsng[256];
 extern u1 bgmode, forceblnk, interlval, intrlng[256];
 extern u1 mosaicon, mosaicsz, mosenng[256], mosszng[256];
@@ -46,7 +47,9 @@ extern u2 BGOPT1[256], BGOPT2[256], BGOPT3[256], BGOPT4[256];
 extern u2 BGPT1[256], BGPT2[256], BGPT3[256], BGPT4[256];
 extern u2 BGPT1X[256], BGPT2X[256], BGPT3X[256], BGPT4X[256];
 extern u2 BGPT1Y[256], BGPT2Y[256], BGPT3Y[256], BGPT4Y[256];
-extern u4 mode7A, mode7C, mode7X0;
+/* Read a dword at a time: the pairs A+B, C+D and X0+Y0 are adjacent words
+   and the tables below are named for holding both. */
+extern u1 mode7A_dw[4], mode7C_dw[4], mode7X0_dw[4];
 extern u1 mode7set;
 extern u4 mode7ab[256], mode7cd[256], mode7xy[256];
 extern u4 cpalptrng;
@@ -57,7 +60,8 @@ extern void setpalette16bng(void);
 extern u1 winbg1en[6], winenabm, winenabs, disableeffects;
 extern u1 winbg1enval[], winbg1envalm[], winbg1envals[];
 extern u1 winbg2enval[], winbg3enval[], winbg4enval[];
-extern u1 winlogica, winl1, winlogicb, nglogicval;
+extern u1 winlogica, winl1, winlogicb;
+extern u4 nglogicval; /* a dword where it is defined (video/newgfx.c) */
 extern u4 objwlrpos[256], objclineptr[256], ngwinen;
 extern u1* ngwinptr;
 extern u4 ngwintable[32], CSprWinPtr;
@@ -220,9 +224,9 @@ void newengine16b_lines(void)
         bgallchange[y] = 1;
     }
 
-    mode7ab[y] = mode7A;
-    mode7cd[y] = mode7C;
-    mode7xy[y] = mode7X0;
+    mode7ab[y] = dwr(mode7A_dw);
+    mode7cd[y] = dwr(mode7C_dw);
+    mode7xy[y] = dwr(mode7X0_dw);
     wide(mode7st, y, dwr(mode7set_dw));
 
     wide(t16x161, y, dwr(BG116x16t_dw));

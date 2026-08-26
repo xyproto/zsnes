@@ -9,16 +9,28 @@
 extern void SPC7110initC(void); /* 7110emu.c */
 void SPC7110RTCReset(void); /* Stage 4: seed the Epson RTC from the host clock */
 
-/* Save-state block (101 bytes). SPCROMtoI initialises to &SPCROMPtr, so the
-   whole run is laid out via inline asm to keep it contiguous and self-exact
-   under -fdata-sections. */
+/* Save-state block (101 bytes), laid out via inline asm to keep it contiguous
+   and self-exact under -fdata-sections.
+   SPCROMtoI selects one of the two pointers below, so it holds an address and
+   has to be pointer-wide - which it cannot be inside this block without moving
+   the save-state layout. It lives just after, still initialised to &SPCROMPtr;
+   the block keeps the dword the file format expects. As a 32-bit slot the
+   initialiser was also an unrelocatable address on Win64. */
 __asm__(
     ASM_SEC_DATA(".data.spc7110state")
-        ASM_GSYM(SPCMultA) ".long 0\n" ASM_GSYM(SPCMultB) ".long 0\n" ASM_GSYM(SPCDivEnd) ".long 0\n" ASM_GSYM(SPCMulRes) ".long 0\n" ASM_GSYM(SPCDivRes) ".long 0\n" ASM_GSYM(SPC7110BankA) ".long 0x020100\n" ASM_GSYM(SPC7110RTCStat) ".long 0\n" ASM_GSYM(SPC7110RTC) ".byte 0,0,0,0,0,0,1,0,1,0,0,0,0,0,0x0F,0\n" ASM_GSYM(SPC7110RTCB) ".byte 0,0,0,0,0,0,1,0,1,0,0,0,0,1,0x0F,6\n" ASM_GSYM(SPCROMPtr) ".long 0\n" ASM_GSYM(SPCROMtoI) ".long SPCROMPtr\n" ASM_GSYM(SPCROMAdj) ".long 0\n" ASM_GSYM(SPCROMInc) ".long 0\n" ASM_GSYM(SPCROMCom) ".long 0\n" ASM_GSYM(SPCCheckFix) ".long 0\n" ASM_GSYM(SPCSignedVal) ".long 0\n" ASM_GSYM(SPCCompressionRegs) ".zero 13\n" ASM_GSYM(PHnum2writespc7110reg) ".long . - SPCMultA\n" ASM_SEC_END);
+    /* The section holds dwords at fixed offsets, so it has to start on a
+       dword boundary: aarch64 scales the 12-bit immediate of a 32-bit
+       load by four, and the linker cannot encode an odd address at all.
+       Aligning the start leaves every offset inside the run unchanged. */
+    ".balign 4\n" ASM_GSYM(SPCMultA) ".long 0\n" ASM_GSYM(SPCMultB) ".long 0\n" ASM_GSYM(SPCDivEnd) ".long 0\n" ASM_GSYM(SPCMulRes) ".long 0\n" ASM_GSYM(SPCDivRes) ".long 0\n" ASM_GSYM(SPC7110BankA) ".long 0x020100\n" ASM_GSYM(SPC7110RTCStat) ".long 0\n" ASM_GSYM(SPC7110RTC) ".byte 0,0,0,0,0,0,1,0,1,0,0,0,0,0,0x0F,0\n" ASM_GSYM(SPC7110RTCB) ".byte 0,0,0,0,0,0,1,0,1,0,0,0,0,1,0x0F,6\n" ASM_GSYM(SPCROMPtr) ".long 0\n" ASM_GSYM(SPCROMtoISt) ".long 0\n" ASM_GSYM(SPCROMAdj) ".long 0\n" ASM_GSYM(SPCROMInc) ".long 0\n" ASM_GSYM(SPCROMCom) ".long 0\n" ASM_GSYM(SPCCheckFix) ".long 0\n" ASM_GSYM(SPCSignedVal) ".long 0\n" ASM_GSYM(SPCCompressionRegs) ".zero 13\n" ASM_GSYM(PHnum2writespc7110reg) ".long . - SPCMultA\n" ASM_SEC_END);
+
+__asm__(
+    ASM_SEC_DATA(".data.spc7110ptr") ".balign " ASM_STR(__SIZEOF_POINTER__) "\n" ASM_GSYM(SPCROMtoI) "." ASM_STR(__SIZEOF_POINTER__) "byte " ASM_SYMREF(SPCROMPtr) "\n" ASM_SEC_END);
 
 extern uint32_t SPCMultA, SPCMultB, SPCDivEnd, SPCMulRes, SPCDivRes;
 extern uint32_t SPC7110BankA, SPC7110RTCStat;
-extern uint32_t SPCROMPtr, SPCROMtoI, SPCROMAdj, SPCROMInc, SPCROMCom, SPCCheckFix;
+extern uint32_t SPCROMPtr, SPCROMtoISt, SPCROMAdj, SPCROMInc, SPCROMCom, SPCCheckFix;
+extern uintptr_t SPCROMtoI; /* points at SPCROMPtr or SPCROMAdj */
 
 void SPC7110init(void)
 {
@@ -31,7 +43,7 @@ void SPC7110init(void)
     SPC7110BankA = 0x020100;
     SPC7110RTCStat = 0;
     SPCROMPtr = 0;
-    SPCROMtoI = (uint32_t)(uintptr_t)&SPCROMPtr;
+    SPCROMtoI = (uintptr_t)&SPCROMPtr;
     SPCROMAdj = 0;
     SPCROMInc = 0;
     SPCROMCom = 0;
@@ -970,7 +982,7 @@ void c_SPC4818w(uint8_t al)
     com[0] = al;
     *(uint16_t*)&adj[2] = ((com[0] & 0x08) && (adj[1] & 0x80)) ? 0xFFFF : 0;
     *(uint16_t*)&inc[2] = ((com[0] & 0x04) && (inc[1] & 0x40)) ? 0xFFFF : 0;
-    SPCROMtoI = (uint32_t)(uintptr_t)((com[0] & 0x10) ? &SPCROMAdj : &SPCROMPtr);
+    SPCROMtoI = (uintptr_t)((com[0] & 0x10) ? &SPCROMAdj : &SPCROMPtr);
     if (al & 0x02) {
         if (al & 0x40)
             com[1] = (al & 0x20) ? 4 : 3; /* 16-bit 4814 (after 481A / direct) */

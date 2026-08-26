@@ -19,6 +19,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+#include "types.h" /* IGNORE_RESULT */
+
 #ifdef __UNIXSDL__
 #include "gblhdr.h"
 #include "linux/audio.h"
@@ -1660,7 +1662,8 @@ uint32_t showinfogui(void)
     return (MsgCount);
 }
 
-extern uint32_t nmiprevaddrl, nmiprevaddrh, nmirept, nmiprevline, nmistatus;
+extern zreg nmiprevaddrl, nmiprevaddrh;
+extern uint32_t nmirept, nmiprevline, nmistatus;
 extern uint8_t spcnumread;
 extern uint8_t NextLineCache;
 extern uint32_t Voice0Freq[8]; // Frequency of Voice (Delta Freq)
@@ -1672,8 +1675,23 @@ void initpitch()
     int i;
 
     for (i = 0; i < 8; i++) {
-        Voice0Pitch[i] = DSPMem[2 + i * 0x10];
-        Voice0Freq[i] = ((((Voice0Pitch[i] & 0x3FFF) * dspPAdj) >> 8) & 0xFFFFFFFF);
+        /* The state restored Voice0Pitch; only the frequency has to be rebuilt,
+           because it is scaled by dspPAdj, which follows the output sample rate
+           of the machine doing the loading rather than the one that wrote the
+           state. Pitch is 14 bits, so mask before scaling - as the DSP write
+           handler in cpu/c_dspproc.c does.
+
+           0xFFFE is the "nothing written here yet" marker DSPStart puts in
+           Voice0Pitch, chosen because no real 14-bit pitch can equal it. Such
+           a voice has no frequency yet, and scaling the marker would invent
+           one, so leave it alone.
+
+           Deriving the pitch from DSPMem here, as this used to, went wrong
+           twice over: it kept only VxPITCHL, which detuned every voice until
+           the game next wrote the register, and it overwrote a value the state
+           had just restored correctly. */
+        if (Voice0Pitch[i] != 0xFFFE)
+            Voice0Freq[i] = (uint32_t)((uint64_t)(Voice0Pitch[i] & 0x3FFF) * dspPAdj >> 8);
     }
 }
 

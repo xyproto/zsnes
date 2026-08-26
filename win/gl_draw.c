@@ -116,7 +116,7 @@ void gl_end()
     free(glvidbuffer);
 }
 
-extern uint8_t NGNoTransp;
+extern uint32_t NGNoTransp; /* a dword where it is defined (video/c_newgfx16data.c) */
 extern uint8_t SpecialLine[256]; /* 0 if lo-res, > 0 if hi-res; real size (see endmem) */
 
 void gl_clearwin()

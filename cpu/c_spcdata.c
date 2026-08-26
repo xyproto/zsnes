@@ -23,8 +23,13 @@
     ".byte 0x5D,0xD0,0xDB,0x1F,0x00,0x00,0xC0,0xFF\n"
 
 /* Holds a host pointer, so the slot follows the pointer width. */
-#define PTRSLOT ".balign " ASM_STR(__SIZEOF_POINTER__) "\n"      \
-                ".skip " ASM_STR(__SIZEOF_POINTER__) "\n"
+/* A pointer-sized slot. The .balign belongs before the label: emitted after
+   it, the symbol names the padding rather than its own storage - four bytes
+   low on a 64-bit build, which aarch64 then cannot even address. */
+#define PTRSYM(sym)                              \
+    ".balign " ASM_STR(__SIZEOF_POINTER__) "\n"  \
+    ASM_GSYM(sym)                                \
+    ".skip " ASM_STR(__SIZEOF_POINTER__) "\n"
 
 /* clang-format off */
 
@@ -98,8 +103,6 @@ __asm__(
 
 __asm__(
     ASM_SEC_BSS(".bss")
-    ASM_GSYM(spcPCRam)
-    PTRSLOT
-    ASM_GSYM(spcRamDP)
-    PTRSLOT
+    PTRSYM(spcPCRam)
+    PTRSYM(spcRamDP)
     ASM_SEC_END);

@@ -19,6 +19,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+#include "types.h" /* IGNORE_RESULT */
+
 #ifdef __UNIXSDL__
 #include "gblhdr.h"
 #include "linux/safelib.h"

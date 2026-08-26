@@ -557,7 +557,7 @@ noprocmovie:
 
     if (GETB(nmirept) == 0) {
         SETB(nmiprevline, (u1)(resolutn - 2));
-        nmiprevaddrl = 0xFFFFFFFFu;
+        nmiprevaddrl = (zreg)-1; /* "no minimum yet", at the slot width */
         nmiprevaddrh = 0;
         SETB(nmirept, 1);
         doirqnext = 0;
@@ -571,7 +571,7 @@ noprocmovie:
         doirqnext = 0;
     } else {
         SETB(nmirept, 0);
-        nmiprevaddrl = 0xFFFFFFFFu;
+        nmiprevaddrl = (zreg)-1; /* "no minimum yet", at the slot width */
         nmiprevaddrh = 0;
         doirqnext = 0;
     }

@@ -151,6 +151,6 @@ extern u2 resolutn; // screen resolution
 extern u2 scrnon; // main & sub screen on
 extern u4 bg1ptrx[4]; // pointer to background1/2/3/4
 extern u4 bg1ptry[4]; // pointer to background1/2/3/4
-extern u4 winl1; // window 1/2 left/right position
+extern u1 winl1; // window 1/2 left/right position
 
 #endif

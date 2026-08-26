@@ -19,6 +19,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+#include "types.h" /* IGNORE_RESULT */
+
 #ifdef __UNIXSDL__
 #include "gblhdr.h"
 #include <signal.h>
@@ -71,7 +73,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define NUMCONV_FW4
 #include "numconv.h"
 
-extern uint32_t versionNumber, CRC32, cur_zst_size;
+extern uint32_t versionNumber, CRC32;
+extern size_t cur_zst_size; /* size_t in zstate.c */
 extern uint8_t GUIReset, GUIQuit;
 bool MovieWaiting = false;
 

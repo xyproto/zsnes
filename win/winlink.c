@@ -1797,7 +1797,7 @@ void hq3x_16b();
 void hq3x_32b();
 void hq4x_16b();
 void hq4x_32b();
-extern unsigned char NGNoTransp;
+extern uint32_t NGNoTransp; /* a dword where it is defined (video/c_newgfx16data.c) */
 
 void clearwin(void)
 {
