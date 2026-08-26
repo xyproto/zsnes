@@ -97,9 +97,17 @@ static void setup(int t)
 
 int main(void)
 {
-    // Golden checksums captured from the asm-verified port.
+    // Golden checksums captured from the asm-verified port. One pair per
+    // pointer size: spritetablea holds SpriteInfo records with a host pointer
+    // in them, so the stride, and every byte hashed out of the table, depends
+    // on it. The 64-bit pair is the same on x86-64 and aarch64.
+#if UINTPTR_MAX > 0xffffffffu
+    const u4 PROC_GOLDEN = 0xad7f9bbdu;
+    const u4 CACHE_GOLDEN = 0xd8237b01u;
+#else
     const u4 PROC_GOLDEN = 0x99cfdaf2u;
     const u4 CACHE_GOLDEN = 0x4b5fb5bcu;
+#endif
 
     u4 hp = 2166136261u, hc = 2166136261u;
     for (int t = 0; t < 64; t++) {

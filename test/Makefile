@@ -10,8 +10,24 @@
 # linker's --gc-sections drops every function not reachable from main, so no
 # SDL, zlib, or audio symbols are pulled in.
 
-CC     := gcc
-CFLAGS := -m32 -std=gnu99 -I.. -Wall -Wextra -Wno-unused-parameter
+# The difftest targets assemble the original x86 Assembly out of git history,
+# so they are 32-bit x86 only. The plain unit tests are portable C, and macOS
+# has had no 32-bit userland since 10.15 and no GNU linker at all, so build
+# those for the host there instead of not at all.
+HOST_OS := $(shell uname -s)
+ifeq ($(HOST_OS),Darwin)
+CC      := cc
+BITFLAG :=
+NOPIE   :=
+GCSECT  := -Wl,-dead_strip
+else
+CC      := gcc
+BITFLAG := -m32
+NOPIE   := -no-pie
+GCSECT  := -Wl,--gc-sections
+endif
+
+CFLAGS := $(BITFLAG) -std=gnu99 -I.. -Wall -Wextra -Wno-unused-parameter
 
 BIN       := zsnes_test
 NETPLAY   := zsnes_netplay_test
@@ -50,50 +66,50 @@ OBJS      := ../zpath.o
 all: $(BIN) $(NETPLAY) $(ST10) $(ST11) $(OBC1) $(MSU1) $(DSP2) $(SAI) $(SA1) $(SPC7110) $(VCACHE) $(SPRITES) $(C4) $(MODE7) $(ASMDATA)
 
 $(BIN): $(SRC) zstest.h $(OBJS)
-	$(CC) $(CFLAGS) $(SRC) $(OBJS) -no-pie -Wl,--gc-sections -o $(BIN)
+	$(CC) $(CFLAGS) $(SRC) $(OBJS) $(NOPIE) $(GCSECT) -o $(BIN)
 
 $(NETPLAY): $(NETPLAY_SRC) zstest.h
-	$(CC) $(CFLAGS) $(NETPLAY_SRC) -no-pie -lpthread -o $(NETPLAY)
+	$(CC) $(CFLAGS) $(NETPLAY_SRC) $(NOPIE) -lpthread -o $(NETPLAY)
 
 $(ST10): $(ST10_SRC) zstest.h ../chips/st10proc.c
-	$(CC) $(CFLAGS) $(ST10_SRC) ../chips/st10proc.c -no-pie -o $(ST10)
+	$(CC) $(CFLAGS) $(ST10_SRC) ../chips/st10proc.c $(NOPIE) -o $(ST10)
 
 $(ST11): $(ST11_SRC) zstest.h ../chips/st11proc.c
-	$(CC) $(CFLAGS) $(ST11_SRC) ../chips/st11proc.c -no-pie -o $(ST11)
+	$(CC) $(CFLAGS) $(ST11_SRC) ../chips/st11proc.c $(NOPIE) -o $(ST11)
 
 $(OBC1): $(OBC1_SRC) zstest.h ../chips/obc1proc.c
-	$(CC) $(CFLAGS) $(OBC1_SRC) ../chips/obc1proc.c -no-pie -o $(OBC1)
+	$(CC) $(CFLAGS) $(OBC1_SRC) ../chips/obc1proc.c $(NOPIE) -o $(OBC1)
 
 $(MSU1): $(MSU1_SRC) zstest.h ../chips/msu1regs.c
-	$(CC) $(CFLAGS) $(MSU1_SRC) ../chips/msu1regs.c -no-pie -o $(MSU1)
+	$(CC) $(CFLAGS) $(MSU1_SRC) ../chips/msu1regs.c $(NOPIE) -o $(MSU1)
 
 $(DSP2): $(DSP2_SRC) zstest.h ../chips/dsp2proc.c
-	$(CC) $(CFLAGS) $(DSP2_SRC) ../chips/dsp2proc.c -no-pie -o $(DSP2)
+	$(CC) $(CFLAGS) $(DSP2_SRC) ../chips/dsp2proc.c $(NOPIE) -o $(DSP2)
 
 $(SAI): $(SAI_SRC) zstest.h ../video/2xsaiw.c
-	$(CC) $(CFLAGS) $(SAI_SRC) ../video/2xsaiw.c -no-pie -o $(SAI)
+	$(CC) $(CFLAGS) $(SAI_SRC) ../video/2xsaiw.c $(NOPIE) -o $(SAI)
 
 $(SA1): $(SA1_SRC) zstest.h ../chips/sa1regs.c
-	$(CC) $(CFLAGS) $(SA1_SRC) ../chips/sa1regs.c -no-pie -o $(SA1)
+	$(CC) $(CFLAGS) $(SA1_SRC) ../chips/sa1regs.c $(NOPIE) -o $(SA1)
 
 $(SPC7110): $(SPC7110_SRC) zstest.h ../chips/7110proc.c
-	$(CC) $(CFLAGS) $(SPC7110_SRC) ../chips/7110proc.c -no-pie -o $(SPC7110)
+	$(CC) $(CFLAGS) $(SPC7110_SRC) ../chips/7110proc.c $(NOPIE) -o $(SPC7110)
 
 $(C4): $(C4_SRC) zstest.h ../chips/c4proc.c ../chips/c4emu.c
-	$(CC) $(CFLAGS) $(C4_SRC) ../chips/c4proc.c ../chips/c4emu.c -no-pie -lm -o $(C4)
+	$(CC) $(CFLAGS) $(C4_SRC) ../chips/c4proc.c ../chips/c4emu.c $(NOPIE) -lm -o $(C4)
 
 $(MODE7): $(MODE7_SRC) zstest.h ../video/mode716b.c
-	$(CC) $(CFLAGS) $(MODE7_SRC) ../video/mode716b.c -no-pie -o $(MODE7)
+	$(CC) $(CFLAGS) $(MODE7_SRC) ../video/mode716b.c $(NOPIE) -o $(MODE7)
 
 # ../endmem.o supplies winbgdata, which makevid's cwinptr points at.
 $(ASMDATA): $(ASMDATA_SRC) zstest.h ../cpu/dspproc.c ../cpu/c_spcdata.c ../cpu/c_execdata.c ../cpu/c_regsdata.c ../cpu/c_regswdata.c ../video/c_mode716data.c ../chips/c_sa1data.c ../video/c_makev16tdata.c ../video/c_newgfx16data.c ../video/makevid.c ../video/newgfx.c ../endmem.o
-	$(CC) $(CFLAGS) $(ASMDATA_SRC) ../cpu/dspproc.c ../cpu/c_spcdata.c ../cpu/c_execdata.c ../cpu/c_regsdata.c ../cpu/c_regswdata.c ../video/c_mode716data.c ../chips/c_sa1data.c ../video/c_makev16tdata.c ../video/c_newgfx16data.c ../video/makevid.c ../video/newgfx.c ../endmem.o -no-pie -o $(ASMDATA)
+	$(CC) $(CFLAGS) $(ASMDATA_SRC) ../cpu/dspproc.c ../cpu/c_spcdata.c ../cpu/c_execdata.c ../cpu/c_regsdata.c ../cpu/c_regswdata.c ../video/c_mode716data.c ../chips/c_sa1data.c ../video/c_makev16tdata.c ../video/c_newgfx16data.c ../video/makevid.c ../video/newgfx.c ../endmem.o $(NOPIE) -o $(ASMDATA)
 
 $(VCACHE): $(VCACHE_SRC) zstest.h ../video/tilecache.c
-	$(CC) $(CFLAGS) -ffunction-sections -fdata-sections $(VCACHE_SRC) ../video/tilecache.c -no-pie -Wl,--gc-sections -o $(VCACHE)
+	$(CC) $(CFLAGS) -ffunction-sections -fdata-sections $(VCACHE_SRC) ../video/tilecache.c $(NOPIE) $(GCSECT) -o $(VCACHE)
 
 $(SPRITES): $(SPRITES_SRC) zstest.h ../video/sprites.c
-	$(CC) $(CFLAGS) -ffunction-sections -fdata-sections $(SPRITES_SRC) ../video/sprites.c -no-pie -Wl,--gc-sections -o $(SPRITES)
+	$(CC) $(CFLAGS) -ffunction-sections -fdata-sections $(SPRITES_SRC) ../video/sprites.c $(NOPIE) $(GCSECT) -o $(SPRITES)
 
 # Differential test for the SPC700 DAA/DAS opcodes against the assembly they
 # replaced (cff2b437^). Not part of `all` - it needs that old assembly.
@@ -101,7 +117,7 @@ spcdec: difftest_spcdec.c difftest.h mkdifftest.sh ../cpu/spc_ops.h
 	git -C .. show cff2b437^:cpu/spc700.asm > /tmp/spc_old.asm
 	./mkdifftest.sh _spcdec /tmp/spc_old.asm "OpBE OpDF" \
 	    "spcA spcNZ spcP" 439-459 1733-1781
-	$(CC) $(CFLAGS) difftest_spcdec.c _spcdec.o -no-pie -o difftest_spcdec
+	$(CC) $(CFLAGS) difftest_spcdec.c _spcdec.o $(NOPIE) -o difftest_spcdec
 	@./difftest_spcdec
 
 # Differential test for the SuperFX table builder against the assembly it
@@ -110,26 +126,26 @@ fxtable: difftest_fxtable.c mkfxtable.sh ../chips/c_fxtable.c ../endmem.o
 	./mkfxtable.sh
 	$(CC) $(CFLAGS) -fcommon -fno-pic -c difftest_fxtable.c -o _fxtest.o
 	$(CC) $(CFLAGS) -fcommon -fno-pic -c ../chips/c_fxtable.c -o _fxtable.o
-	$(CC) -m32 -no-pie -fno-pic _fxtest.o _fxtable.o _fxold.o _fxstubs.o ../endmem.o -o difftest_fxtable
+	$(CC) -m32 $(NOPIE) -fno-pic _fxtest.o _fxtable.o _fxold.o _fxstubs.o ../endmem.o -o difftest_fxtable
 	@./difftest_fxtable
 
 # Differential test for the SuperFX opcode handlers against the assembly they
 # replaced. Not part of `all` - it needs that assembly out of git history.
 fxops: difftest_fxops.c difftest.h mkfxops.sh ../chips/fx_ops.h
 	./mkfxops.sh
-	$(CC) $(CFLAGS) difftest_fxops.c _fxops.o -no-pie -o difftest_fxops
+	$(CC) $(CFLAGS) difftest_fxops.c _fxops.o $(NOPIE) -o difftest_fxops
 	@./difftest_fxops
 
 # Differential test for the direct-page memory handlers against the assembly
 # they replaced. Not part of `all` - it needs that assembly out of git history.
 memops: difftest_memops.c difftest.h mkmemops.sh memops.list ../cpu/mem_ops.h
 	./mkmemops.sh
-	$(CC) $(CFLAGS) difftest_memops.c _memops.o -no-pie -o difftest_memops
+	$(CC) $(CFLAGS) difftest_memops.c _memops.o $(NOPIE) -o difftest_memops
 	@./difftest_memops
 
 mvs: difftest_mvs.c difftest.h mkmvs.sh ../video/c_mv16tsms.c
 	./mkmvs.sh
-	$(CC) $(CFLAGS) difftest_mvs.c ../video/c_mv16tsms.c _mvs.o -no-pie -o difftest_mvs
+	$(CC) $(CFLAGS) difftest_mvs.c ../video/c_mv16tsms.c _mvs.o $(NOPIE) -o difftest_mvs
 	@./difftest_mvs
 
 # The oracle is the whole pre-port file, so this one covers every routine in it
@@ -140,7 +156,7 @@ mvall: difftest_mvall.c difftest.h ../video/c_mv16tsms.c ../video/c_mv16tms.c \
 	    --define draw16x816t=draw16x816t_stub
 	$(CC) $(CFLAGS) difftest_mvall.c ../video/c_mv16tsms.c ../video/c_mv16tms.c \
 	    ../video/c_mv16msgate.c \
-	    _mvall.o -no-pie -o difftest_mvall
+	    _mvall.o $(NOPIE) -o difftest_mvall
 	@./difftest_mvall
 
 # Routines that are only reachable by a PC-relative call from inside the file,
@@ -184,7 +200,7 @@ m716t: difftest_m716t.c difftest.h $(M16T_SEAM)
 	    --exclude vram $(M716T_TAILS)
 	$(CC) $(CFLAGS) difftest_m716t.c $(M16T_SEAM) \
 	    _m716t.o _m716t_stubs.c $(M16T_OBJS) \
-	    -no-pie -o difftest_m716t
+	    $(NOPIE) -o difftest_m716t
 	@./difftest_m716t
 
 cb16t: difftest_cb16t.c difftest.h $(M16T_SEAM)
@@ -193,7 +209,7 @@ cb16t: difftest_cb16t.c difftest.h $(M16T_SEAM)
 	    --exclude vram transpbuf fulladdtab
 	$(CC) $(CFLAGS) difftest_cb16t.c $(M16T_SEAM) \
 	    _cb16t.o _cb16t_stubs.c $(M16T_OBJS) \
-	    -no-pie -o difftest_cb16t
+	    $(NOPIE) -o difftest_cb16t
 	@./difftest_cb16t
 
 cb16b: difftest_cb16b.c difftest.h $(M16T_SEAM)
@@ -202,7 +218,7 @@ cb16b: difftest_cb16b.c difftest.h $(M16T_SEAM)
 	    --exclude vram
 	$(CC) $(CFLAGS) difftest_cb16b.c $(M16T_SEAM) \
 	    _cb16b.o _cb16b_stubs.c $(M16T_OBJS) $(M16T_BSS) \
-	    -no-pie -o difftest_cb16b
+	    $(NOPIE) -o difftest_cb16b
 	@./difftest_cb16b
 
 spr16bt: difftest_spr16bt.c difftest.h $(M16T_SEAM)
@@ -211,7 +227,7 @@ spr16bt: difftest_spr16bt.c difftest.h $(M16T_SEAM)
 	    --exclude vram
 	$(CC) $(CFLAGS) difftest_spr16bt.c $(M16T_SEAM) \
 	    _spr.o _spr_stubs.c $(M16T_OBJS) $(M16T_BSS) \
-	    -no-pie -o difftest_spr16bt
+	    $(NOPIE) -o difftest_spr16bt
 	@./difftest_spr16bt
 
 spr16t: difftest_spr16t.c difftest.h $(M16T_SEAM)
@@ -220,7 +236,7 @@ spr16t: difftest_spr16t.c difftest.h $(M16T_SEAM)
 	    --exclude vram fulladdtab
 	$(CC) $(CFLAGS) difftest_spr16t.c $(M16T_SEAM) \
 	    _spt.o _spt_stubs.c $(M16T_OBJS) $(M16T_BSS) \
-	    -no-pie -o difftest_spr16t
+	    $(NOPIE) -o difftest_spr16t
 	@./difftest_spr16t
 
 spr16p: difftest_spr16p.c difftest.h $(M16T_SEAM)
@@ -229,7 +245,7 @@ spr16p: difftest_spr16p.c difftest.h $(M16T_SEAM)
 	    --exclude vram fulladdtab
 	$(CC) $(CFLAGS) difftest_spr16p.c $(M16T_SEAM) \
 	    _spp.o _spp_stubs.c $(M16T_OBJS) $(M16T_BSS) \
-	    -no-pie -o difftest_spr16p
+	    $(NOPIE) -o difftest_spr16p
 	@./difftest_spr16p
 
 t8bt: difftest_t8bt.c difftest.h $(M16T_SEAM) ../video/c_mv16draw.c
@@ -240,7 +256,7 @@ t8bt: difftest_t8bt.c difftest.h $(M16T_SEAM) ../video/c_mv16draw.c
 	    xtravbuf transpbuf vcache2b vcache4b vcache8b
 	$(CC) $(CFLAGS) difftest_t8bt.c $(M16T_SEAM) ../video/c_mv16draw.c \
 	    _t8bt.o _t8bt_stubs.c $(M16T_OBJS) $(M16T_BSS) \
-	    -no-pie -o difftest_t8bt
+	    $(NOPIE) -o difftest_t8bt
 	@./difftest_t8bt
 
 t16bt: difftest_t16bt.c difftest.h $(M16T_SEAM)
@@ -250,7 +266,7 @@ t16bt: difftest_t16bt.c difftest.h $(M16T_SEAM)
 	    vcache2b vcache4b vcache8b
 	$(CC) $(CFLAGS) difftest_t16bt.c $(M16T_SEAM) \
 	    _t16bt.o _t16bt_stubs.c $(M16T_OBJS) $(M16T_BSS) \
-	    -no-pie -o difftest_t16bt
+	    $(NOPIE) -o difftest_t16bt
 	@./difftest_t16bt
 
 # c_mv16draw.c but not c_mv16leaf.c: the test defines draw16x816t and
@@ -263,7 +279,7 @@ t8t: difftest_t8t.c difftest.h $(M16T_SEAM) ../video/c_mv16draw.c
 	    fulladdtab xtravbuf transpbuf vcache2b vcache4b vcache8b
 	$(CC) $(CFLAGS) difftest_t8t.c $(M16T_SEAM) ../video/c_mv16draw.c \
 	    _t8t.o _t8t_stubs.c $(M16T_OBJS) $(M16T_BSS) \
-	    -no-pie -o difftest_t8t
+	    $(NOPIE) -o difftest_t8t
 	@./difftest_t8t
 
 t16t: difftest_t16t.c difftest.h $(M16T_SEAM)
@@ -273,7 +289,7 @@ t16t: difftest_t16t.c difftest.h $(M16T_SEAM)
 	    vcache2b vcache4b vcache8b
 	$(CC) $(CFLAGS) difftest_t16t.c $(M16T_SEAM) \
 	    _t16t.o _t16t_stubs.c $(M16T_OBJS) $(M16T_BSS) \
-	    -no-pie -o difftest_t16t
+	    $(NOPIE) -o difftest_t16t
 	@./difftest_t16t
 
 t8to: difftest_t8to.c difftest.h $(M16T_SEAM) ../video/c_mv16leaf.c
@@ -283,7 +299,7 @@ t8to: difftest_t8to.c difftest.h $(M16T_SEAM) ../video/c_mv16leaf.c
 	    vcache2b vcache4b vcache8b
 	$(CC) $(CFLAGS) difftest_t8to.c $(M16T_SEAM) ../video/c_mv16leaf.c \
 	    _t8to.o _t8to_stubs.c $(M16T_OBJS) $(M16T_BSS) \
-	    -no-pie -o difftest_t8to
+	    $(NOPIE) -o difftest_t8to
 	@./difftest_t8to
 
 thi: difftest_thi.c difftest.h $(M16T_SEAM) ../video/c_mv16leaf.c
@@ -293,7 +309,7 @@ thi: difftest_thi.c difftest.h $(M16T_SEAM) ../video/c_mv16leaf.c
 	    vcache2b vcache4b vcache8b
 	$(CC) $(CFLAGS) difftest_thi.c $(M16T_SEAM) ../video/c_mv16leaf.c \
 	    _thi.o _thi_stubs.c $(M16T_OBJS) $(M16T_BSS) \
-	    -no-pie -o difftest_thi
+	    $(NOPIE) -o difftest_thi
 	@./difftest_thi
 
 # newgfx16.asm - the *new* graphics engine, the one that runs by default.
@@ -312,12 +328,12 @@ NG_SEAM := ../video/c_ngmosaic.c ../video/c_ngprocbg.c \
 # verbatim transcription of the assembly instead.
 sprwin: difftest_sprwin.c difftest.h ../video/c_ngline.c
 	$(CC) $(CFLAGS) difftest_sprwin.c ../video/c_ngline.c \
-	    $(NG_OBJS) -no-pie -o difftest_sprwin
+	    $(NG_OBJS) $(NOPIE) -o difftest_sprwin
 	@./difftest_sprwin
 
 ngspr: difftest_ngspr.c difftest.h ../video/c_ngspr.c
 	$(CC) $(CFLAGS) difftest_ngspr.c ../video/c_ngspr.c \
-	    $(NG_OBJS) -no-pie -o difftest_ngspr
+	    $(NG_OBJS) $(NOPIE) -o difftest_ngspr
 	@./difftest_ngspr
 
 # procwindowback16t is a leaf: no arguments, and everything it touches is a
@@ -337,7 +353,7 @@ procwin: difftest_procwin.c difftest.h ../video/c_procwin.c
 	    --exclude winon numwin windowdata wincolen scaddset \
 	            winl1 winr1 winl2 winr2 makedualwincol
 	$(CC) $(CFLAGS) difftest_procwin.c ../video/c_procwin.c \
-	    _procwin.o _procwin_stubs.c -no-pie -o difftest_procwin
+	    _procwin.o _procwin_stubs.c $(NOPIE) -o difftest_procwin
 	@./difftest_procwin
 
 mos: difftest_mos.c difftest.h $(NG_SEAM)
@@ -348,7 +364,7 @@ mos: difftest_mos.c difftest.h $(NG_SEAM)
 	# through the same MOS* block the thunk used to fill.
 	$(CC) $(CFLAGS) difftest_mos.c $(NG_SEAM) \
 	    _mos.o _mos_stubs.c $(NG_OBJS) \
-	    -no-pie -o difftest_mos
+	    $(NOPIE) -o difftest_mos
 	@./difftest_mos
 
 # The tail of newengine16b. The oracle is HEAD rather than the pre-port
@@ -364,7 +380,7 @@ ngeng: difftest_ngeng.c difftest.h ../video/c_ngline.c
 	            ngwinptr CSprWinPtr fulladdtab vidbuffer \
 	            newengine16b_lines newengine16b_windows newengine16b_sprwin
 	$(CC) $(CFLAGS) difftest_ngeng.c ../video/c_ngline.c \
-	    _ngeng.o _ngeng_stubs.c $(NG_OBJS) -no-pie -o difftest_ngeng
+	    _ngeng.o _ngeng_stubs.c $(NG_OBJS) $(NOPIE) -o difftest_ngeng
 	@./difftest_ngeng
 
 # StartDrawNewGfx16b and the screen clip. The three workers it calls are
@@ -388,53 +404,53 @@ ngframe: difftest_ngframe.c difftest.h ../video/c_ngframe.c
 	    _ngframe.o _ngframe_stubs.c ../endmem.o \
 	    ../video/c_newgfx16data.o ../video/newgfx.o ../video/makevid.o \
 	    ../cpu/c_regsdata.o ../cpu/c_regswdata.o ../video/c_ng2gate.o \
-	    ngtransp_extra.c -no-pie -o difftest_ngframe
+	    ngtransp_extra.c $(NOPIE) -o difftest_ngframe
 	@./difftest_ngframe
 
 mv16: difftest_mv16.c difftest.h mkmv16.sh ../video/c_mv16tms.c
 	./mkmv16.sh
-	$(CC) $(CFLAGS) difftest_mv16.c ../video/c_mv16tms.c _mv16.o -no-pie -o difftest_mv16
+	$(CC) $(CFLAGS) difftest_mv16.c ../video/c_mv16tms.c _mv16.o $(NOPIE) -o difftest_mv16
 	@./difftest_mv16
 
 m7draw: difftest_m7draw.c difftest.h mkm7draw.sh ../video/c_mode716draw.c \
        ../video/c_mode716gate.c
 	./mkm7draw.sh
-	$(CC) $(CFLAGS) difftest_m7draw.c ../video/c_mode716draw.c ../video/c_mode716gate.c ../video/c_mode716proc.c ../video/c_mode716win.c ../video/c_mode716bw.c ../video/c_mode716start.c _m7draw.o -no-pie -o difftest_m7draw
+	$(CC) $(CFLAGS) difftest_m7draw.c ../video/c_mode716draw.c ../video/c_mode716gate.c ../video/c_mode716proc.c ../video/c_mode716win.c ../video/c_mode716bw.c ../video/c_mode716start.c _m7draw.o $(NOPIE) -o difftest_m7draw
 	@./difftest_m7draw
 
 m7proc: difftest_m7proc.c difftest.h mkm7proc.sh ../video/c_mode716proc.c
 	./mkm7proc.sh
-	$(CC) $(CFLAGS) difftest_m7proc.c ../video/c_mode716proc.c ../video/c_mode716win.c _m7proc.o -no-pie -o difftest_m7proc
+	$(CC) $(CFLAGS) difftest_m7proc.c ../video/c_mode716proc.c ../video/c_mode716win.c _m7proc.o $(NOPIE) -o difftest_m7proc
 	@./difftest_m7proc
 
 m7bw: difftest_m7bw.c difftest.h mkm7bw.sh ../video/c_mode716bw.c
 	./mkm7bw.sh
-	$(CC) $(CFLAGS) difftest_m7bw.c ../video/c_mode716bw.c _m7bw.o -no-pie -o difftest_m7bw
+	$(CC) $(CFLAGS) difftest_m7bw.c ../video/c_mode716bw.c _m7bw.o $(NOPIE) -o difftest_m7bw
 	@./difftest_m7bw
 
 m7win: difftest_m7win.c difftest.h mkm7win.sh ../video/c_mode716win.c
 	./mkm7win.sh
-	$(CC) $(CFLAGS) difftest_m7win.c ../video/c_mode716win.c _m7win.o -no-pie -o difftest_m7win
+	$(CC) $(CFLAGS) difftest_m7win.c ../video/c_mode716win.c _m7win.o $(NOPIE) -o difftest_m7win
 	@./difftest_m7win
 
 m7start: difftest_m7start.c difftest.h mkm7start.sh ../video/c_mode716start.c
 	./mkm7start.sh
-	$(CC) $(CFLAGS) difftest_m7start.c ../video/c_mode716start.c _m7start.o -no-pie -o difftest_m7start
+	$(CC) $(CFLAGS) difftest_m7start.c ../video/c_mode716start.c _m7start.o $(NOPIE) -o difftest_m7start
 	@./difftest_m7start
 
 m7ext2: difftest_m7ext2.c difftest.h mkm7ext2.sh ../video/c_mode716ext2.c
 	./mkm7ext2.sh
-	$(CC) $(CFLAGS) difftest_m7ext2.c ../video/c_mode716ext2.c _m7ext2.o -no-pie -o difftest_m7ext2
+	$(CC) $(CFLAGS) difftest_m7ext2.c ../video/c_mode716ext2.c _m7ext2.o $(NOPIE) -o difftest_m7ext2
 	@./difftest_m7ext2
 
 m7calc: difftest_m7calc.c difftest.h mkm7calc.sh ../video/c_mode716calc.c
 	./mkm7calc.sh
-	$(CC) $(CFLAGS) difftest_m7calc.c ../video/c_mode716calc.c _m7calc.o -no-pie -o difftest_m7calc
+	$(CC) $(CFLAGS) difftest_m7calc.c ../video/c_mode716calc.c _m7calc.o $(NOPIE) -o difftest_m7calc
 	@./difftest_m7calc
 
 regs: difftest_regs.c difftest.h mkregs.sh regs.list ../cpu/c_regsppu.c
 	./mkregs.sh
-	$(CC) $(CFLAGS) difftest_regs.c ../cpu/c_regsppu.c _regs.o -no-pie -o difftest_regs
+	$(CC) $(CFLAGS) difftest_regs.c ../cpu/c_regsppu.c _regs.o $(NOPIE) -o difftest_regs
 	@./difftest_regs
 
 run: all
@@ -489,7 +505,7 @@ op: difftest_op.c difftest.h ../cpu/ops65816.h
 	            brkv brkv8 copv copv8 xirqb intrset doirqnext curnmi \
 	            nmistatus curexecstate initaddrl wramdata dmadata \
 	            regaccessbankr8 execloop switchtovirq
-	$(CC) $(CFLAGS) -I../cpu difftest_op.c _op.o _op_stubs.c -no-pie -o difftest_op
+	$(CC) $(CFLAGS) -I../cpu difftest_op.c _op.o _op_stubs.c $(NOPIE) -o difftest_op
 	@./difftest_op
 
 sa1op: difftest_sa1.c difftest_op.c difftest.h ../cpu/ops65816.h
@@ -504,7 +520,7 @@ sa1op: difftest_sa1.c difftest_op.c difftest.h ../cpu/ops65816.h
 	            brkv brkv8 copv copv8 xirqb intrset doirqnext curnmi \
 	            nmistatus curexecstate initaddrl wramdata dmadata \
 	            regaccessbankr8 execloop switchtovirq
-	$(CC) $(CFLAGS) -I../cpu difftest_sa1.c _sa1.o _sa1_stubs.c -no-pie -o difftest_sa1
+	$(CC) $(CFLAGS) -I../cpu difftest_sa1.c _sa1.o _sa1_stubs.c $(NOPIE) -o difftest_sa1
 	@./difftest_sa1
 
 dbgop: difftest_dbg.c difftest_op.c difftest.h ../cpu/ops65816_dbg.h
@@ -518,11 +534,11 @@ dbgop: difftest_dbg.c difftest_op.c difftest.h ../cpu/ops65816_dbg.h
 	            DPageW16 brkv brkv8 copv copv8 xirqb intrset doirqnext curnmi \
 	            nmistatus curexecstate initaddrl wramdata dmadata \
 	            regaccessbankr8 execloop switchtovirq
-	$(CC) $(CFLAGS) -I../cpu difftest_dbg.c _dbg.o _dbg_stubs.c -no-pie -o difftest_dbg
+	$(CC) $(CFLAGS) -I../cpu difftest_dbg.c _dbg.o _dbg_stubs.c $(NOPIE) -o difftest_dbg
 	@./difftest_dbg
 
 transp: difftest_transp.c difftest.h ../video/c_ngtransp.c
-	$(CC) $(CFLAGS) difftest_transp.c -no-pie -o difftest_transp
+	$(CC) $(CFLAGS) difftest_transp.c $(NOPIE) -o difftest_transp
 	@./difftest_transp
 
 # The four background tile dispatchers. The renderers they tail-jump into are
@@ -544,7 +560,7 @@ bgt: difftest_bgt.c difftest.h ../video/c_ngbg.c
 	            drawlinengom8b16b drawlinengom16x162b16b \
 	            drawlinengom16x164b16b drawlinengom16x168b16b
 	$(CC) $(CFLAGS) difftest_bgt.c ../video/c_ngbg.c _bgt.o _bgt_stubs.c \
-	    $(NG_OBJS) -no-pie -o difftest_bgt
+	    $(NG_OBJS) $(NOPIE) -o difftest_bgt
 	@./difftest_bgt
 
 # The worktree side is no longer assembly: video/newg162.asm is gone and the
@@ -568,5 +584,5 @@ ng2: difftest_ng2.c ng2_harness.c ng2_harness.h difftest.h \
 	# length reading whatever global followed it.
 	$(CC) $(CFLAGS) difftest_ng2.c ng2_harness.c _ng2.o \
 	    _ng2_stubs.c ../video/tilecache.o ../endmem.o ../video/c_ng2tile.c \
-	    ../video/c_ng2gate.c -no-pie -o difftest_ng2
+	    ../video/c_ng2gate.c $(NOPIE) -o difftest_ng2
 	@./difftest_ng2

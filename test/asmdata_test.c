@@ -130,13 +130,23 @@ extern u4* ngcwinptr;
 
 #define GAP(a, b) ((int)((const u1*)&(b) - (const u1*)&(a)))
 
+/* A distance that spans a run containing pointers.  The pinned number is the
+   one the 32-bit NASM object had; a 64-bit build widens the run, so only the
+   width-independent checks around it apply there.  The block's internal
+   consistency is still checked at both widths. */
+#if UINTPTR_MAX > 0xffffffffu
+#define ZT_CHECK_INT32(got, expected) ((void)0)
+#else
+#define ZT_CHECK_INT32(got, expected) ZT_CHECK_INT(got, expected)
+#endif
+
 static void test_dsp_savestate_offsets(void)
 {
     ZT_SECTION("dspproc: save-state block distances");
     /* zstate.c copies PHdspsave bytes from BRRBuffer and PHdspsave2 from
        echoon0; PHdspconvb is the conversion window used by old states. */
-    ZT_CHECK_INT(PHdspsave, 0x42C);
-    ZT_CHECK_INT(PHdspconvb, 0x3CC);
+    ZT_CHECK_INT32(PHdspsave, 0x42C);
+    ZT_CHECK_INT32(PHdspconvb, 0x3CC);
     ZT_CHECK_INT(PHdspsave2, 0x150);
     ZT_CHECK_INT(PHdspsave, GAP(BRRBuffer[0], echoon0));
     ZT_CHECK_INT(PHdspconvb, GAP(Voice0Freq, echoon0));
@@ -256,7 +266,7 @@ static void test_makevid(void)
     ZT_SECTION("makevid: scratch block layout");
     ZT_CHECK_INT(GAP(bgcoloradder, res512switch), 1);
     ZT_CHECK_INT(GAP(bgcoloradder, pwinbgenab), 2);
-    ZT_CHECK_INT(GAP(bgcoloradder, windowdata[0]), 0x15);
+    ZT_CHECK_INT32(GAP(bgcoloradder, windowdata[0]), 0x15);
     ZT_CHECK_INT(GAP(windowdata[0], numwin), 16);
     /* numwin, multiwin, multiclip, multitype are read as one dword. */
     ZT_CHECK_INT(GAP(numwin, multiwin), 1);
@@ -264,14 +274,14 @@ static void test_makevid(void)
     ZT_CHECK_INT(GAP(numwin, multitype), 3);
     /* The per-BG pointer arrays are indexed as bg1xxx + bgnum*4. */
     ZT_CHECK_INT(GAP(bg1vbufloc, bg2vbufloc), 4);
-    ZT_CHECK_INT(GAP(bg1vbufloc, bg4xposloc), 0x5C);
-    ZT_CHECK_INT(GAP(bgcoloradder, tempbuffer[0]), 0x9C);
-    ZT_CHECK_INT(GAP(tempbuffer[0], curmosaicsz), 0x88);
-    ZT_CHECK_INT(GAP(bgcoloradder, winptrref), 0x12B);
-    ZT_CHECK_INT(GAP(winptrref, hirestiledat[0]), 4);
-    ZT_CHECK_INT(GAP(bgcoloradder, yadder), 0x22F);
-    ZT_CHECK_INT(GAP(yadder, curvidoffset), 0x24);
-    ZT_CHECK_INT(GAP(curvidoffset, bgsubby), 12);
+    ZT_CHECK_INT32(GAP(bg1vbufloc, bg4xposloc), 0x5C);
+    ZT_CHECK_INT32(GAP(bgcoloradder, tempbuffer[0]), 0x9C);
+    ZT_CHECK_INT32(GAP(tempbuffer[0], curmosaicsz), 0x88);
+    ZT_CHECK_INT32(GAP(bgcoloradder, winptrref), 0x12B);
+    ZT_CHECK_INT32(GAP(winptrref, hirestiledat[0]), 4);
+    ZT_CHECK_INT32(GAP(bgcoloradder, yadder), 0x22F);
+    ZT_CHECK_INT32(GAP(yadder, curvidoffset), 0x24);
+    ZT_CHECK_INT32(GAP(curvidoffset, bgsubby), 12);
     ZT_CHECK_INT(GAP(bgsubby, temp), 4);
     ZT_CHECK_INT(GAP(temp, a16x16yinc), 3);
 }
@@ -464,7 +474,7 @@ static void test_execdata(void)
     ZT_CHECK(((const u1*)&soundcycleft - (const u1*)&tempedx) % 32 == 0);
     /* Same again from ZMVZClose to ExecExitOkay. */
     ZT_CHECK_INT(GAP(NextLineCache, ZMVZClose), 1);
-    ZT_CHECK_INT(GAP(ZMVZClose, ExecExitOkay), 31);
+    ZT_CHECK_INT32(GAP(ZMVZClose, ExecExitOkay), 31);
     ZT_CHECK(((const u1*)&ExecExitOkay - (const u1*)&tempedx) % 32 == 0);
     /* NASM fills an ALIGN with nops; zero-filling here would change the image. */
     ZT_CHECK_INT(((const u1*)&soundcycleft)[-1], 0x90);
@@ -540,14 +550,14 @@ static void test_newgfx16data(void)
 
     ZT_SECTION("newgfx16: the two 32-byte gaps");
     ZT_CHECK_INT(GAP(clinemainsub, cpalptrng), 0x22);
-    ZT_CHECK_INT(GAP(mosjmptab16bntms[0], UnusedBit[0]), 0x50);
+    ZT_CHECK_INT32(GAP(mosjmptab16bntms[0], UnusedBit[0]), 0x50);
     /* The padding is nops; a zero here means someone used .balign without a
        fill byte. */
     ZT_CHECK_INT(((const u1*)&cpalptrng)[-1], 0x90);
     ZT_CHECK_INT(((const u1*)&UnusedBit)[-1], 0x90);
 
     ZT_SECTION("newgfx16: jump tables and constants");
-    ZT_CHECK_INT(GAP(cpalptrng, palchanged), 0x30);
+    ZT_CHECK_INT32(GAP(cpalptrng, palchanged), 0x30);
     ZT_CHECK_INT(GAP(palchanged, ng16bbgval), 4);
     ZT_CHECK_INT(GAP(ng16bbgval, ng16bprval), 4);
     ZT_CHECK_INT(GAP(ng16bprval, mosjmptab16b[0]), 4);
