@@ -105,7 +105,7 @@ IS_FEDORA       := $(if $(wildcard /etc/fedora-release),yes)
 IS_DEBIAN_BASED := $(if $(wildcard /etc/debian_version),yes)
 
 WARN_FLAGS ?= -Wall -Wno-address-of-packed-member
-COMMON_FLAGS = $(ARCH_CFLAGS) -pthread -std=c11 -D_DEFAULT_SOURCE -D_POSIX_C_SOURCE=200809L -O3 -D_FORTIFY_SOURCE=2 -ffunction-sections -fdata-sections -Wfatal-errors $(WARN_FLAGS)
+COMMON_FLAGS = $(ARCH_CFLAGS) -pthread -no-pie -std=c11 -D_DEFAULT_SOURCE -D_POSIX_C_SOURCE=200809L -O3 -fno-pic -D_FORTIFY_SOURCE=2 -ffunction-sections -fdata-sections -Wfatal-errors $(WARN_FLAGS)
 
 CFLAGS += $(COMMON_FLAGS)
 # x87-only maths, to keep the 32-bit build's floating point exactly what the
@@ -116,7 +116,7 @@ ifneq ($(ARCH),DARWIN)
 CFLAGS += -mno-sse -mno-sse2
 endif
 endif
-LDFLAGS += -Wl,--as-needed -Wl,--gc-sections -lz -lm
+LDFLAGS += -Wl,--as-needed -no-pie -Wl,--gc-sections -lz -lm
 
 #WITH_DEBUGGER := yes
 WITH_OPENGL   := yes
