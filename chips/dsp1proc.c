@@ -171,9 +171,8 @@ void DSPOp0A(void);
 
 /* DSP1 register state (was .bss in dsp1proc.asm).
  *
- * zstate.c saves 70+128 bytes from &DSP1COp, so this is one run whose order and
- * adjacency are the save-state format: the 70 is DSP1COp through DSPDet and the
- * 128 is half of DSPFuncUsed. Plain C definitions cannot express that - under
+ * zstate.c saves this whole run, so its order and adjacency are the save-state
+ * format from V144 onwards. Plain C definitions cannot express that - under
  * -fdata-sections each global is its own section and the linker ordered them
  * freely, which put unrelated DSP-2 state inside the saved span - so the run is
  * emitted through one inline-asm block, as elsewhere in this tree. The order
@@ -584,7 +583,12 @@ static const uint8_t dsp1_pcount[256] = { 2, 4, 7, 3, 2, 0, 3, 0, 3, 0, 1, 3, 3,
 
 static uint16_t dsp1_read_data(void)
 {
-    uint16_t r = DSP1RET[DSP1CPtrR++];
+    /* The buffer holds 16 words and the pointer is a byte, so a host that
+       reads more results than the command produced used to walk off the end
+       of the array - an out-of-bounds write, in the parameter case. No
+       command has more than seven parameters, so masking changes nothing that
+       a working transaction does. */
+    uint16_t r = DSP1RET[DSP1CPtrR++ & 15];
     if (--DSP1RLeft == 0 && DSP1COp == 0x0A) {
         DSPOp0A();
         DSP1RET[0] = (uint16_t)Op0AA;
@@ -631,7 +635,7 @@ void c_DSP1Write16b(uint32_t addr, uint16_t val)
     (void)addr;
     if (DSP1WLeft == 0)
         return;
-    DSP1VARS[DSP1CPtrW++] = val;
+    DSP1VARS[DSP1CPtrW++ & 15] = val;
     if (--DSP1WLeft == 0)
         dsp1_process();
 }
