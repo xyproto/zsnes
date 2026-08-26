@@ -28,8 +28,10 @@ __asm__(
     ".balign 4\n"
     ASM_GSYM(MosaicYAdder)
     ".short 0,0,0,1,0,2,1,0,0,4,2,2,3,1,0,7\n"
+    /* A host pointer, so pointer-sized; the same four bytes on i386. */
+    ".balign " ASM_STR(__SIZEOF_POINTER__) "\n"
     ASM_GSYM(cwinptr)
-    ".long " ASM_SYMREF(winbgdata) "\n"
+    "." ASM_STR(__SIZEOF_POINTER__) "byte " ASM_SYMREF(winbgdata) "\n"
     ASM_SEC_END
     ASM_SEC_BSS(".bss")
     BSSB(pwinbgenab, 1)

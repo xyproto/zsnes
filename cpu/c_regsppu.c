@@ -78,7 +78,8 @@ extern u2 vramincby8var, vramincby8ptri, addrincr;
 extern u2 HIRQLoc, VIRQLoc, totlines;
 extern u4 HIRQCycNext;
 extern u1 HIRQNextExe;
-extern u1 cycpl, cycphb, xirqb, cycpblt;
+extern u1 cycpl, cycphb, xirqb;
+extern u4 cycpblt; /* u4 where it is defined (initdata.c) */
 extern u1 opexec268, opexec268cph, opexec358, opexec358cph, cycpb268, cycpb358;
 
 /* The mode 7 multiply is deferred until a result register is read. mode7B's

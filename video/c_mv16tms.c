@@ -22,8 +22,10 @@ u4 MVDX;
 zreg MVSI;
 
 extern u1 temp, bshifter; /* video/makevid.c */
-extern u4 yadder, yrevadder, tempcach, temptile;
-extern u4 bgsubby, bgofwptr;
+extern u4 yadder, yrevadder;
+extern zreg tempcach, temptile; /* host pointers (video/makevid.c) */
+extern u4 bgsubby;
+extern zreg bgofwptr;
 extern u1 *cwinptr, *winptrref, *curvidoffset;
 extern u1 *vcache2b, *vcache4b, *vcache8b;
 extern u1 curmosaicsz;

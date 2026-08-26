@@ -66,7 +66,7 @@ void drawline(void); /* video/c_makevid.c */
 void ProcessMovies(void);
 void BackupPauseFrame(void);
 void RestorePauseFrame(void);
-void UpdateTimer(u4 edx, opfn*** pedi);
+void UpdateTimer(u4 edx, zreg* pedi);
 void SfxVblankCatchup(void);
 
 /* Byte-wide access to a dword cell, as the assembly had it. */
@@ -195,12 +195,50 @@ static void applycheats(void)
     } while (--numcheat != 0);
 }
 
+#include <stdlib.h>
+#ifdef SCANLINE_PC_LOG
+#include <stdio.h>
+unsigned long scanline_pc_n = 0;
+void scanline_pc_log(zreg const* const r)
+{
+    static FILE* fp = NULL;
+#define n scanline_pc_n
+    if (!fp) {
+        char const* e = getenv("SCANLINE_PC_LOG");
+        if (!(e && *e == '1')) { n++; return; }
+        fp = fopen("/tmp/zsnes_scan.txt", "wb");
+        if (!fp) return;
+    }
+    {
+        extern u1 SPCRAM[];
+        extern uint32_t cycpblt;
+        fprintf(fp,
+            "%lu ypos=%u cyc=%u pc=%04x dh=%02x cycpbl=%08x cycpblt=%08x spcpc=%04x dl=%02x\n",
+            n++, (unsigned)curypos, (unsigned)curcyc,
+            (unsigned)(u2)((u1*)(uintptr_t)r[R_ESI] - initaddrl),
+            (unsigned)DH(r), (unsigned)cycpbl, (unsigned)cycpblt,
+            (unsigned)(u2)((u1*)(uintptr_t)r[R_EBP] - SPCRAM),
+            (unsigned)(u1)r[R_EDX]);
+    }
+#undef n
+}
+#endif
+
 enum exec_act c_cpuover(zreg* const r)
 {
     if (curypos == 0)
         rtoflags = 0;
 
     r[R_ESI]--;
+
+#ifdef SCANLINE_PC_LOG
+    /* One line per scanline: the point in the instruction stream the scanline
+       boundary fell on. Two builds diverge first at one of these. */
+    {
+        extern void scanline_pc_log(zreg const*);
+        scanline_pc_log(r);
+    }
+#endif
 
     if (HIRQNextExe != 0) {
         add_dh(r, (u1)HIRQCycNext);
@@ -279,7 +317,7 @@ nosa1b:
         goto overy;
 
     if (spcon != 0)
-        UpdateTimer(r[R_EDX], (opfn***)&r[R_EDI]);
+        UpdateTimer(r[R_EDX], &r[R_EDI]);
 
     if (curypos == (u2)(resolutn + 1))
         goto nmi;
@@ -537,7 +575,7 @@ noprocmovie:
         nmiprevaddrh = 0;
         doirqnext = 0;
     }
-    switchtonmi(&r[R_EDX], (u1**)&r[R_ESI]);
+    switchtonmi(&r[R_EDX], &r[R_ESI]);
     r[R_EBX] = 0;
     return EXEC_RELOAD;
 
@@ -601,7 +639,7 @@ virq:
     }
     if (intrset == 1)
         intrset = 2;
-    switchtovirq(&r[R_EDX], (u1**)&r[R_ESI]);
+    switchtovirq(&r[R_EDX], &r[R_ESI]);
     r[R_EBX] = 0;
     return EXEC_RELOAD;
 
@@ -613,7 +651,7 @@ hirq:
         if (intrset == 1)
             intrset = 2;
         if (!(r[R_EDX] & 0x04)) {
-            switchtovirq(&r[R_EDX], (u1**)&r[R_ESI]);
+            switchtovirq(&r[R_EDX], &r[R_ESI]);
             r[R_EBX] = 0;
             return EXEC_RELOAD;
         }
@@ -698,7 +736,7 @@ void execsingle(zreg* const pedx, u1** const pebp, u1** const pesi, opfn*** cons
     pdh = DH(r);
 
     if (spcon != 0) {
-        UpdateTimer(r[R_EDX], (opfn***)&r[R_EDI]);
+        UpdateTimer(r[R_EDX], &r[R_EDI]);
         r[R_EDI] = (zreg)tablead[(u1)r[R_EDX]];
     }
     set_dh(r, 0);
@@ -755,7 +793,7 @@ nmi:
         r[R_ESI]--;
         if (intrset == 1)
             intrset = 2;
-        switchtonmi(&r[R_EDX], (u1**)&r[R_ESI]);
+        switchtonmi(&r[R_EDX], &r[R_ESI]);
         ExecExitOkay = 0;
         goto done;
     }
@@ -789,7 +827,7 @@ virq:
     r[R_ESI]--;
     if (intrset == 1)
         intrset = 2;
-    switchtovirq(&r[R_EDX], (u1**)&r[R_ESI]);
+    switchtovirq(&r[R_EDX], &r[R_ESI]);
     ExecExitOkay = 0;
     goto done;
 

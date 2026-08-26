@@ -44,7 +44,8 @@ extern u4 taddnfy16x16, taddfy16x16, switch16x16; /* video/newgfx.c */
 extern u4 yposng, flipyposng; /* video/newgfx.c: the row within the tile */
 /* The offset-per-tile block: BG3's per-column scroll offsets and the walk over
    them. video/newgfx.c and video/vcache_data.c. */
-extern u4 ofsmcptr, ofsmcptr2, ofsmtptr, ofsmtptrs, ofsmmptr, ofsmcyps;
+extern zreg ofsmcptr; /* a host pointer (video/newgfx.c) */
+extern u4 ofsmcptr2, ofsmtptr, ofsmtptrs, ofsmmptr, ofsmcyps;
 extern u4 ofsmady, ofsmadx, ofsmval, ofsmvalh, ofshvaladd;
 extern u4 yposngom, flipyposngom, bgtxadd2;
 extern zreg CPalPtrng; /* video/c_ngprocbg.c: the converted palette */

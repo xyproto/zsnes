@@ -282,10 +282,41 @@ static int endloop(zreg* const r)
    `endloop`, so a whole run went by without returning; the loop is the same
    shape. Every body leaves the table for the current flag state in edi, so it
    is re-read each time round. */
+#ifdef SCANLINE_PC_LOG
+#include <stdio.h>
+#include <stdlib.h>
+extern unsigned long scanline_pc_n;
+extern u1 SPCRAM[];
+/* OPLOG_SCAN=N logs every opcode of scanline N, which is how the last
+   identical scanline is narrowed down to the instruction that diverges. */
+static void oplog(zreg const* const r, char const* const when)
+{
+    static FILE* fp = NULL;
+    static long target = -2;
+    if (target == -2) {
+        char const* e = getenv("OPLOG_SCAN");
+        target = e ? atol(e) : -1;
+        if (target >= 0)
+            fp = fopen("/tmp/zsnes_op.txt", "wb");
+    }
+    if (fp && (long)scanline_pc_n == target)
+        fprintf(fp, "%s pc=%04x op=%02x dh=%02x cycpbl=%08x spcpc=%04x\n", when,
+            (unsigned)(u2)((u1*)(uintptr_t)r[R_ESI] - initaddrl),
+            (unsigned)(u1)r[R_EBX], (unsigned)DH(r), (unsigned)cycpbl,
+            (unsigned)(u2)((u1*)(uintptr_t)r[R_EBP] - SPCRAM));
+}
+#endif
+
 static void run_chain(zreg* const r)
 {
     do {
+#ifdef SCANLINE_PC_LOG
+        oplog(r, "pre ");
+#endif
         ((opfn**)r[R_EDI])[r[R_EBX]](r);
+#ifdef SCANLINE_PC_LOG
+        oplog(r, "post");
+#endif
     } while (endloop(r));
 }
 

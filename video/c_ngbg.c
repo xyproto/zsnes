@@ -288,7 +288,8 @@ extern u1* pesimpng;
 extern u1* vram;
 extern u2 BG3SXl[], BG3SYl[], BGPT3[], BGPT3X[];
 extern u4 cfieldad, mosstart[4], yposng, flipyposng, yposngom, flipyposngom;
-extern u4 ofsmcptr, ofsmcptr2, ofsmady, ofsmadx, ofsmtptr, ofsmtptrs;
+extern zreg ofsmcptr; /* a host pointer (video/newgfx.c) */
+extern u4 ofsmcptr2, ofsmady, ofsmadx, ofsmtptr, ofsmtptrs;
 extern u4 ofsmmptr, ofsmcyps, ofshvaladd, ofsmval, ofsmvalh, bgtxadd2;
 extern zreg CPalPtrng;
 

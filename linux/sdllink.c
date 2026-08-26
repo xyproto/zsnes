@@ -1639,14 +1639,60 @@ void UpdateVFrame(void)
         static FILE* ppu_fp = NULL;
         if (!ppu_checked) {
             const char* e = getenv("PPU_STATE_LOG");
-            ppu_log = (e && *e == '1');
+            ppu_log = (e && *e == '1') ? 1 : ((e && *e == '2') ? 2 : 0);
             if (ppu_log)
                 ppu_fp = fopen("/tmp/zsnes_ppu.txt", "wb");
             ppu_checked = 1;
         }
         if (ppu_log && ppu_fp) {
-            fprintf(ppu_fp, "%u bright=%u blank=%02x scrnon=%04x\n",
-                ppu_frame, vidbright, forceblnk, scrnon);
+            if (ppu_log == 2) {
+                /* PPU_STATE_LOG=2 adds emulated machine state, so a run can be
+                   compared against another build frame by frame and the first
+                   divergence located. The sums are order-independent on
+                   purpose - they only have to change when the memory does. */
+                extern uint8_t wramdataa[65536], ram7fa[65536];
+                extern uint8_t SPCRAM[];
+                uint32_t w = 0, r = 0, a = 0;
+                unsigned i;
+                for (i = 0; i < 65536; i++) {
+                    w = w * 31u + wramdataa[i];
+                    r = r * 31u + ram7fa[i];
+                    a = a * 31u + SPCRAM[i];
+                }
+                {
+                    extern u1* spcPCRam;
+                    extern u1 spcA, spcX, spcY, spcP, spcNZ;
+                    extern uint32_t spcS, spcCycle;
+                    fprintf(ppu_fp,
+                        "%u bright=%u blank=%02x scrnon=%04x wram=%08x ram7f=%08x spc=%08x "
+                        "spcpc=%04x a=%02x x=%02x y=%02x p=%02x nz=%08x s=%04x cyc=%08x\n",
+                        ppu_frame, vidbright, forceblnk, scrnon, w, r, a,
+                        (unsigned)(spcPCRam - SPCRAM), (unsigned)spcA,
+                        (unsigned)spcX, (unsigned)spcY,
+                        (unsigned)spcP, (unsigned)spcNZ,
+                        (unsigned)(spcS & 0xFFFF), (unsigned)spcCycle);
+                }
+                {
+                    /* PPU_DUMP_FRAME=N writes work RAM at frame N, so two
+                       builds can be diffed byte for byte at the frame the
+                       checksums first disagree. */
+                    static int dump_at = -2;
+                    if (dump_at == -2) {
+                        const char* d = getenv("PPU_DUMP_FRAME");
+                        dump_at = d ? atoi(d) : -1;
+                    }
+                    if (dump_at >= 0 && (int)ppu_frame == dump_at) {
+                        FILE* wf = fopen("/tmp/zsnes_wram.bin", "wb");
+                        if (wf) {
+                            fwrite(wramdataa, 1, 65536, wf);
+                            fclose(wf);
+                        }
+                    }
+                }
+            } else {
+                fprintf(ppu_fp, "%u bright=%u blank=%02x scrnon=%04x\n",
+                    ppu_frame, vidbright, forceblnk, scrnon);
+            }
             fflush(ppu_fp);
         }
         ppu_frame++;

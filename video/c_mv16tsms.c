@@ -35,7 +35,8 @@ extern u1 tileleft16b, drawn, temp, bshifter, curbgpr, bgcoloradder;
 extern u1 curmosaicsz;
 extern u1 coadder16; /* the palette adder, in memory for the winon writers */
 extern u1* winptrref;
-extern u4 tempcach, temptile, bgofwptr, bgsubby, yadder, yrevadder;
+extern zreg tempcach, temptile, bgofwptr; /* host pointers */
+extern u4 bgsubby, yadder, yrevadder;
 extern u4 pal16bcl[256], pal16bxcl[256];
 extern u2 fulladdtab[65536]; /* the dword load above reads one past */
 

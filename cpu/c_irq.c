@@ -8,6 +8,31 @@
 #include "memseam.h"
 #include "regs.h"
 
+#include <stdio.h>
+#include <stdlib.h>
+
+/* IRQ_LOG=1 records every interrupt entry, so two builds can be diffed to find
+   the first one taken at a different point in the instruction stream. */
+
+static void irq_log(char const* const kind, u4 const pc)
+{
+    static int checked = 0;
+    static FILE* fp = NULL;
+    static unsigned long n = 0;
+    if (!checked) {
+        char const* e = getenv("IRQ_LOG");
+        if (e && *e == '1')
+            fp = fopen("/tmp/zsnes_irq.txt", "wb");
+        checked = 1;
+    }
+    if (fp) {
+        fprintf(fp, "%lu %s pc=%04x ypos=%u cyc=%u\n", n, kind, pc,
+            (unsigned)curypos, (unsigned)curcyc);
+        fflush(fp);
+    }
+    n++;
+}
+
 
 static u4 makedl(u4 edx)
 {
@@ -34,9 +59,9 @@ static void call_membank0w8(u2 const cx, u1 const al)
 }
 
 
-void IRQemulmode(zreg* const pedx, u1** const pesi)
+void IRQemulmode(zreg* const pedx, zreg* const pesi)
 {
-	xpc = *pesi - initaddrl;
+	xpc = (u2)((u1*)(uintptr_t)*pesi - initaddrl);
 
 	u2 cx = xs;
 
@@ -59,11 +84,11 @@ void IRQemulmode(zreg* const pedx, u1** const pesi)
 	initaddrl = esi;
 
 	*pedx = (edx & 0xFFFFFFF3) | 0x00000004;
-	*pesi = esi + ax;
+	*pesi = (zreg)(uintptr_t)(esi + ax);
 }
 
 
-void switchtovirq(zreg* const pedx, u1** const pesi)
+void switchtovirq(zreg* const pedx, zreg* const pesi)
 {
 	irqon = 0x80;
 
@@ -77,7 +102,8 @@ void switchtovirq(zreg* const pedx, u1** const pesi)
 	}
 	else
 	{
-		xpc = *pesi - initaddrl;
+		xpc = (u2)((u1*)(uintptr_t)*pesi - initaddrl);
+		irq_log("irq", xpc);
 
 		u2 cx = xs;
 
@@ -104,14 +130,14 @@ void switchtovirq(zreg* const pedx, u1** const pesi)
 		initaddrl = esi;
 
 		*pedx = (edx & 0xFFFFFFF3) | 0x00000004;
-		*pesi = esi + ax;
+		*pesi = (zreg)(uintptr_t)(esi + ax);
 	}
 }
 
 
-void NMIemulmode(zreg* const pedx, u1** const pesi)
+void NMIemulmode(zreg* const pedx, zreg* const pesi)
 {
-	xpc = *pesi - initaddrl;
+	xpc = (u2)((u1*)(uintptr_t)*pesi - initaddrl);
 
 	u2 cx = xs;
 
@@ -134,11 +160,11 @@ void NMIemulmode(zreg* const pedx, u1** const pesi)
 	initaddrl = esi;
 
 	*pedx = (edx & 0xFFFFFFF3) | 0x00000004;
-	*pesi = esi + ax;
+	*pesi = (zreg)(uintptr_t)(esi + ax);
 }
 
 
-void switchtonmi(zreg* const pedx, u1** const pesi)
+void switchtonmi(zreg* const pedx, zreg* const pesi)
 {
 	curnmi = 1;
 
@@ -153,7 +179,8 @@ void switchtonmi(zreg* const pedx, u1** const pesi)
 	}
 	else
 	{
-		xpc = *pesi - initaddrl;
+		xpc = (u2)((u1*)(uintptr_t)*pesi - initaddrl);
+		irq_log("irq", xpc);
 
 		u2 cx = xs;
 
@@ -180,6 +207,6 @@ void switchtonmi(zreg* const pedx, u1** const pesi)
 		initaddrl = esi;
 
 		*pedx = (edx & 0xFFFFFFF3) | 0x00000004;
-		*pesi = esi + ax;
+		*pesi = (zreg)(uintptr_t)(esi + ax);
 	}
 }

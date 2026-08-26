@@ -2414,10 +2414,10 @@ void OP(COp58)(zreg* const r) /* CLI i */
     doirqnext = 0;
     {
         zreg edx = r[R_EDX];
-        u1* esi = (u1*)r[R_ESI];
+        zreg esi = r[R_ESI];
         switchtovirq(&edx, &esi);
         r[R_EDX] = edx;
-        r[R_ESI] = (zreg)(uintptr_t)esi;
+        r[R_ESI] = esi;
     }
 }
 #endif
