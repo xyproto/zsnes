@@ -1675,21 +1675,10 @@ void initpitch()
     int i;
 
     for (i = 0; i < 8; i++) {
-        /* The state restored Voice0Pitch; only the frequency has to be rebuilt,
-           because it is scaled by dspPAdj, which follows the output sample rate
-           of the machine doing the loading rather than the one that wrote the
-           state. Pitch is 14 bits, so mask before scaling - as the DSP write
-           handler in cpu/c_dspproc.c does.
-
-           0xFFFE is the "nothing written here yet" marker DSPStart puts in
-           Voice0Pitch, chosen because no real 14-bit pitch can equal it. Such
-           a voice has no frequency yet, and scaling the marker would invent
-           one, so leave it alone.
-
-           Deriving the pitch from DSPMem here, as this used to, went wrong
-           twice over: it kept only VxPITCHL, which detuned every voice until
-           the game next wrote the register, and it overwrote a value the state
-           had just restored correctly. */
+        /* Only the frequency needs rebuilding: it scales by dspPAdj, which
+           follows the loading machine's sample rate. Pitch is 14 bits.
+           0xFFFE is DSPStart's "never written" marker, so scaling it would
+           invent a note. */
         if (Voice0Pitch[i] != 0xFFFE)
             Voice0Freq[i] = (uint32_t)((uint64_t)(Voice0Pitch[i] & 0x3FFF) * dspPAdj >> 8);
     }

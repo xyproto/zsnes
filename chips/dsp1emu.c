@@ -1232,16 +1232,10 @@ void DSPOp2F()
     Op2FSize = 0x100;
 }
 
-/* Save-state image of the DSP1 emulator.
-
-   The old format copied fixed-length runs starting at one variable of each
-   group - "&Op00Multiplicand, 3 * 4 + 128" and so on. That only ever worked
-   because one compiler happened to lay those groups out contiguously, in
-   order, four bytes apiece; the variables are shorts, so most of every run was
-   unrelated memory, and loading one wrote 140 bytes over a two-byte object.
-   With -fdata-sections the linker places each global on its own and the runs
-   describe nothing at all. Naming the variables is the only layout that is
-   actually guaranteed, so that is what V144 states carry. */
+/* Save-state image of the DSP1 emulator. V143 copied fixed-length runs from
+   one variable of each group, which under -fdata-sections describes nothing
+   and overran the variables it named. Naming them all is the only guaranteed
+   layout. */
 #define S(v) { &(v), sizeof(v) }
 static const struct {
     void* p;

@@ -1150,22 +1150,11 @@ static u4 drawline_line_16x16(zreg* const r, int const f, depth const* const d)
     }
 }
 
-/* --- the 16x8 hi-res line drawers ---------------------------------------- *
- *
- * Two routines, 2bpp and 4bpp, and no windowed arms at all. A 16-pixel-wide
- * tile is split across two interlace fields: field 1 sits 75036*4 bytes on,
- * and each field's sub screen is the usual SUB from its own main. So a half
- * covers four screen pixels per field out of eight source pixels, and edi
- * advances eight per half rather than sixteen.
- *
- * When the mode is not actually hi-res - curmosaicsz above 1, or res640 clear
- * - the drawer switches to a second writer set that keeps one field and drops
- * the other. Those writers disagree about which source pixel survives: the
- * full path keeps the *odd* one and the partial path the *even* one (the
- * partial writers are `%if %2<8`, which drops the field-1 calls and leaves the
- * even indices). That is what the assembly does; it is not a symmetry to
- * tidy up.
- */
+/* 16x8 hi-res line drawers, 2bpp and 4bpp, no windowed arms. A 16-pixel tile
+ * splits across two interlace fields, field 1 at FIELD1, so edi advances eight
+ * per half. When not actually hi-res the partial writers keep one field, and
+ * they keep the *even* source pixel where the full path keeps the odd one -
+ * the assembly's asymmetry, not one to tidy up. */
 #define FIELD1 (75036u * 4u)
 
 /* A pixel with no transparency test - the full paths never had one. */
@@ -1295,33 +1284,12 @@ static u4 drawline_line_16x8(zreg* const r, int const f, depth const* const d)
     }
 }
 
-/* --- the offset-per-tile line drawers ------------------------------------ *
- *
- * Modes 2, 4 and 6, where BG3 supplies a per-column scroll offset. The tile
- * address and the row inside the tile are recomputed for every tile instead of
- * being walked, and that computation *is* the per-tile tail here - where the
- * other line drawers only step ax and edi.
- *
- * ax is the low word of the map pointer. The walk keeps the pointer in
- * ofsmmptr and copies its low word back into ax each tile, so every step is a
- * 16-bit add and the high half of eax is never touched. Getting that wrong
- * shows up only once a line crosses a 64KB boundary.
- *
- * `mode` is 4 for the modes that pack the horizontal and vertical offsets into
- * one word - the 8000h bit picks which one the entry carries - and 2 for the
- * mode that keeps them in separate words. It is a per-routine constant: 2bpp
- * and 8bpp pass 4, 4bpp passes 2.
- *
- * The three call sites disagree in two small ways, and nothing but reading
- * them side by side reveals it:
- *
- *   OM_WRAP    the body macro advances ofsmcptr by bgtxadd2 when ofsmcptr2
- *              comes back round to zero. WinClipMacroom does not, and neither
- *              does the windowed body.
- *   OM_HV_ALT  the windowed body tests the horizontal entry against ofsmval,
- *              where the other two use ofsmvalh. Whether that was meant is
- *              another question; it is what runs.
- */
+/* Offset-per-tile line drawers: modes 2, 4 and 6, where BG3 supplies a
+ * per-column scroll offset, recomputed per tile. ax is the map pointer's low
+ * word only, so every step is a 16-bit add; wrong only once a line crosses
+ * 64KB. `mode` is 4 where one word packs both offsets, 2 where they are
+ * separate. The three call sites differ as the flags below describe; that is
+ * the assembly's behaviour, not an oversight. */
 enum { OM_WRAP = 1, /* step ofsmcptr by bgtxadd2 when ofsmcptr2 wraps */
     OM_HV_ALT = 2, /* the horizontal entry is tested against ofsmval */
     /* The 16x16 family only. Its three tails disagree about the width of the
@@ -2315,18 +2283,10 @@ NG2_LINEOM16_WIN_LEAVES(2b, 4)
 NG2_LINEOM16_WIN_LEAVES(4b, 2)
 NG2_LINEOM16_WIN_LEAVES(8b, 4)
 
-/* --- the gating trees ----------------------------------------------------- *
- *
- * What each of the twenty entry points in video/newg162.asm was, once the
- * renderers below it became C. The tree picks one of twelve leaves from the
- * layer's transparency and window settings; the 16x8 pair has no windowed arms
- * and uses four.
- *
- * It runs on the register block rather than on plain values because the three
- * decisions are not pure: c_determinetransp moves ecx and edi onto the sub
- * screen, and c_determinewindow moves ecx between the two window tables. The
- * leaf that follows reads both.
- */
+/* The gating trees: what newg162.asm's twenty entry points became. The tree
+ * picks one of twelve leaves from transparency and window settings (four for
+ * the 16x8 pair). It works on the register block because the decisions are not
+ * pure; both determine steps move ecx, and the leaf reads it. */
 extern u1 BGMS1[], scadtng[];
 extern u4 ng_branch;
 void c_determinetransp(zreg* r); /* video/c_ng2gate.c */

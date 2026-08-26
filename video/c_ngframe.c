@@ -108,19 +108,10 @@ static void clip_dword(int const sub, u1* const p, u4 const ebx)
         wrd(p + SUBOFF, rdd(p + SUBOFF) | ebx);
 }
 
-/*
- * MainScreenClip and SubScreenClip. In the assembly the first falls straight
- * into the second, so `call MainScreenClip` runs both and nothing ever calls
- * the second on its own.
- *
- * Two bits of scadsng say whether the line is clipped and which side of the
- * window survives - the sub pass reads the pair two bits higher, by shifting
- * al. Both set means the whole line goes through the wide writer; otherwise
- * the window is built and its run list walked, 256 pixels at a time.
- *
- * Transcribed with its labels intact rather than restructured: the run walk
- * has four entries and shares its tail with the "outside" case.
- */
+/* MainScreenClip falls straight into SubScreenClip in the assembly, so the
+ * second is never called alone. Two bits of scadsng say whether the line is
+ * clipped and which side survives; the sub pass reads the pair two bits
+ * higher. Both set sends the whole line through the wide writer. */
 static void screen_clip(zreg* const r, int const sub)
 {
     u1* base = vidbuffer + 16u * 2u + 288u * 2u;

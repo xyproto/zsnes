@@ -271,18 +271,10 @@ NG_BG_TILE(2)
 NG_BG_TILE(3)
 NG_BG_TILE(4)
 
-/* --- the line dispatchers ------------------------------------------------ *
- *
- * The same job as the tile ones for a single scanline, with three extra
- * branches on top: hi-res (BGMA >= 5), offset-per-tile (BGMA 2 or 4, unless
- * osm2dis or bgmode 4 rules it out), and 16x16 tiles. yposng/flipyposng carry
- * the row inside the tile, which the tile dispatchers never needed.
- *
- * Two things the tile version does not do. Mosaic replaces the output pointer:
- * the line is drawn into xtravbuf instead, so *esi changes* and the later
- * `add edi,esi` picks the new one up. And the palette for direct colour goes
- * into CPalPtrng rather than ebp, because a line drawer looks it up per pixel.
- */
+/* Line dispatchers: the tile ones' job for one scanline, plus branches for
+ * hi-res, offset-per-tile and 16x16. Unlike the tile version, mosaic redirects
+ * output to xtravbuf; esi changes and the later `add edi,esi` picks it up -
+ * and the direct-colour palette goes in CPalPtrng, looked up per pixel. */
 extern u1 bgmode, intrlng[], mosenng[], mosszng[], osm2dis, xtravbuf[];
 extern u1* pesimpng;
 extern u1* vram;
@@ -580,26 +572,11 @@ NG_BG_LINE(2)
 NG_BG_LINE(3)
 NG_BG_LINE(4)
 
-/* --- the priority-1 line dispatchers ------------------------------------- *
- *
- * Like the priority-1 tile pass, these read back what pass 0 cached in
- * ngceax/ngcedi/ngptrdat/bgtxad rather than working the addresses out again.
- * The row inside the tile is not cached, so every branch recomputes it - and
- * from BG1SYl with the mosaic and interlace adjustments folded in, not from
- * the caller's ecx the way pass 0 does.
- *
- * Three places where this is not pass 0 with the arithmetic removed, all of
- * them the assembly's rather than mistakes to tidy away:
- *
- * - offset-per-tile is taken on BGMA 2 only. The test for 4 is commented out,
- *   so mode 4 draws through the plain path here and through the offset one on
- *   pass 0;
- * - its 8x8 form masks the map cursor with 0FFC0h, sixteen bits, where pass 0
- *   and the 16x16 form use 0FFFFFFC0h;
- * - on an interlaced mosaic line the mosaic start lands in the row twice,
- *   because the same subtract-and-add is applied on both sides of the field
- *   offset.
- */
+/* Priority-1 line dispatchers: like the priority-1 tile pass, reading back
+ * what pass 0 cached, but recomputing the row from BG1SYl. Three deliberate
+ * differences from pass 0, all the assembly's: offset-per-tile is taken on
+ * BGMA 2 only; the 8x8 form masks the map cursor with 16 bits, not 32; and an
+ * interlaced mosaic line applies the mosaic start twice. */
 
 /* The scanline's row: the layer's vertical scroll, replaced by the mosaic
    block's start when mosaic is on, plus the interlace field. */
