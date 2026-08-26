@@ -734,7 +734,14 @@ DEPS := $(OBJS:.o=.d)
 # win32 wrapper goal (its recursive "make ARCH=WIN" does the real build) and for
 # maintenance goals like clean/info/fmt.
 BUILDSTAMP := .buildmode
-BUILD_TAG := $(ARCH)|$(CC_TARGET_TRIPLE)
+# Everything that changes how a .o is compiled. ARCH and the toolchain alone
+# were not enough: linux32 and linux64 share both, so switching between them
+# silently relinked objects of the wrong word size, and toggling any WITH_
+# flag left objects built without it. Changing a define does not make anything
+# out of date by itself, so the configuration has to be part of the stamp.
+BUILD_TAG := $(ARCH)|$(BITS)|$(CPU)|$(CC_TARGET_TRIPLE)|\
+$(WITH_SDL)|$(WITH_OPENGL)|$(WITH_PNG)|$(WITH_AO)|$(WITH_PIPEWIRE)|\
+$(WITH_DEBUGGER)|$(WITH_DEBUG_HOOKS)|$(EXTRA_CFLAGS)|$(ARM64_CFLAGS)
 ifneq ($(filter all debug test,$(or $(MAKECMDGOALS),all)),)
 PREV_BUILD_TAG := $(shell cat $(BUILDSTAMP) 2>/dev/null)
 ifneq ($(PREV_BUILD_TAG),)
