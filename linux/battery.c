@@ -270,7 +270,7 @@ int CheckBatteryPercent()
 }
 
 /*
-Functions for battery on Mac OS X by drizztbsd, Nach
+Functions for battery on macOS by drizztbsd, Nach
 
 If you have issues, please report.
 */
@@ -377,7 +377,7 @@ int CheckBatteryPercent()
     return (BatteryLifePercent);
 }
 
-#else // Not Linux, FreeBSD/DragonFlyBSD, NetBSD/OpenBSD, Mac OS X
+#else // Not Linux, FreeBSD/DragonFlyBSD, NetBSD/OpenBSD, macOS
 
 int CheckBattery()
 {

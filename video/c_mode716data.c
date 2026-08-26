@@ -133,7 +133,7 @@ __asm__(
 __asm__(
     ASM_SEC_DATA(".data")
     ASM_GSYM(m7starty)
-    ".word 0\n"
+    ".short 0\n"
     ASM_SEC_END);
 
 /* clang-format on */

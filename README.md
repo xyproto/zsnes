@@ -8,7 +8,7 @@ The last release of [ZSNES](http://zsnes.sourceforge.net/) was around 18 years a
 
 This is a fork of ZSNES that aims to solve this.
 
-The tree is C11 throughout: no Assembly is left. `make` produces a 32-bit x86 ELF executable, `make linux64` a 64-bit one; `make help` lists the rest.
+The tree is C11 throughout: no Assembly is left. On Linux, `make` produces a 32-bit x86 ELF executable and `make linux64` a 64-bit one. On macOS it produces a native Mach-O binary, Apple Silicon or Intel. `make help` lists the rest.
 
 Goals and non-goals:
 
@@ -16,7 +16,7 @@ Goals and non-goals:
 * Supporting 32-bit platforms is not a goal, but pull requests are welcome.
 * Porting the Assembly to C to support more platforms and CPUs was a long term goal, and is done.
 * Supporting Windows and DOS are not goals.
-* Supporting modern Linux distros (and FreeBSD, if possible) is a goal.
+* Supporting modern Linux distros (and FreeBSD and macOS, if possible) is a goal.
 * To be like an LTS release of ZSNES is a goal.
 * Improving the net-play code is a long term goal.
 
@@ -24,20 +24,20 @@ Pull requests that fixes inaccuracies with the emulation are welcome, as well as
 
 ### Requirements
 
-* `python3`, `sdl3`, `pipewire` (or `libao`), and a C compiler like `gcc`.
+* `python3`, `sdl3`, `pipewire` (or `libao`), and a C compiler like `gcc` or Apple `clang`.
 * `nasm` is only needed for the differential tests in `test/`, which assemble the original Assembly out of git history and compare the C against it.
 
-Tested on Arch Linux, Fedora and Debian 12 on x86_64.
+Tested on Arch Linux, Fedora and Debian 12 on x86_64, and on macOS on Apple Silicon.
 
 ### Build
 
     make
 
-For other platforms than Linux, adjust the first 70 (!) lines of the `Makefile` as needed.
+This builds for the host. `make help` lists the named targets for the other platforms; anything not listed there may need the first 70 (!) lines of the `Makefile` adjusted.
 
 ### Debug build
 
-Make sure that `gdb` is installed. Then:
+Make sure that `gdb` is installed (`lldb` is used instead on macOS). Then:
 
     make clean debug
 
@@ -53,6 +53,19 @@ Installing a desktop shortcut is possible. A `zsnes.desktop` file is included in
     install -Dm644 zsnes.desktop /usr/share/applications/zsnes.desktop
 
 For other platforms than Linux, different flags may apply. ZSNES is primarily one executable, but for UNIX-inspired operating systems, the man page (`man/zsnes.1`) can be installed as ie. `/usr/share/man/man1/zsnes.1` (this is handled by `make install`, though).
+
+### macOS
+
+Both Apple Silicon and Intel. Install the dependencies with [Homebrew](https://brew.sh/), then build:
+
+```sh
+brew install sdl3 libpng libao pkgconf python3
+git clone https://github.com/xyproto/zsnes
+cd zsnes
+make
+```
+
+`make` builds for the host, so no flags are needed. `make macos` is the same thing spelled out. The unit tests (`make test`) run natively; the differential tests in `test/` assemble the original x86 Assembly out of git history and are 32-bit x86 only.
 
 ### Debian and Ubuntu
 

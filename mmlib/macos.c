@@ -24,7 +24,7 @@ misrepresented as being the original software.
     Ryan C. Gordon <icculus@icculus.org>
 */
 
-// Support for MacOS X via the HID Manager APIs.
+// Support for macOS via the HID Manager APIs.
 
 #include "mm.h"
 
@@ -91,7 +91,7 @@ struct recElement {
     unsigned long type; // the type defined by IOHIDElementType in IOHIDKeys.h
     long usagePage; // usage page from IOUSBHIDParser.h which defines general usage
     long usage; // usage within above page from IOUSBHIDParser.h which defines specific usage
-    void* cookie; // unique value (within device of specific vendorID and productID) which identifies element, will NOT change
+    IOHIDElementCookie cookie; // unique value (within device of specific vendorID and productID) which identifies element, will NOT change
     long min; // reported min value possible
     long max; // reported max value possible
     long scaledMin; // reported scaled min value possible
@@ -133,7 +133,7 @@ struct recDevice {
     void* queue; // device queue, NULL = no queue
     void* queueRunLoopSource; // device queue run loop source, NULL == no source
     void* transaction; // output transaction interface, NULL == no interface
-    void* notification; // notifications
+    io_object_t notification; // notifications
     char transport[256]; // device transport (c string)
     long vendorID; // id for device vendor, unique across all devices
     long productID; // id for particular product, unique across all of a vendors devices
@@ -264,11 +264,7 @@ static void hid_GetElementInfo(CFTypeRef refElement, pRecElement pElement)
     else
         pElement->wrapping = false;
 
-#ifdef kIOHIDElementHasPreferredStateKey
     refType = CFDictionaryGetValue(refElement, CFSTR(kIOHIDElementHasPreferredStateKey));
-#else // Mac OS X 10.0 has spelling error
-    refType = CFDictionaryGetValue(refElement, CFSTR(kIOHIDElementHasPreferedStateKey));
-#endif
     if (refType)
         pElement->preferredState = CFBooleanGetValue(refType);
     else
@@ -517,7 +513,7 @@ static void hid_GetDeviceInfo(io_object_t hidDevice, CFMutableDictionaryRef hidP
     CFMutableDictionaryRef usbProperties = 0;
     io_registry_entry_t parent1, parent2;
 
-    // Mac OS X currently is not mirroring all USB properties to HID page so need to look at USB device page also
+    // macOS does not mirror all USB properties to the HID page, so look at the USB device page too
     // get dictionary for usb properties: step up two levels and get CF dictionary for USB properties
     if ((KERN_SUCCESS == IORegistryEntryGetParentEntry(hidDevice, kIOServicePlane, &parent1)) && (KERN_SUCCESS == IORegistryEntryGetParentEntry(parent1, kIOServicePlane, &parent2)) && (KERN_SUCCESS == IORegistryEntryCreateCFProperties(parent2, &usbProperties, kCFAllocatorDefault, kNilOptions))) {
         if (usbProperties) {
@@ -734,7 +730,7 @@ static pRecDevice hid_DisposeDevice(pRecDevice pDevice)
         }
 
         if (pDevice->notification) {
-            result = IOObjectRelease((io_object_t)pDevice->notification);
+            result = IOObjectRelease(pDevice->notification);
             if (kIOReturnSuccess != result)
                 HIDReportErrorNum("hid_DisposeDevice: IOObjectRelease error: 0x%8.8X.", result);
         }
@@ -1071,7 +1067,7 @@ static void hid_AddDevices(void* refCon, io_iterator_t iterator)
             kIOGeneralInterest, // interestType
             hid_DeviceNotification, // callback
             pNewDevice, // refCon
-            (io_object_t*)&pNewDevice->notification); // notification
+            &pNewDevice->notification); // notification
         if (KERN_SUCCESS != result)
             HIDReportErrorNum("hid_AddDevices: IOServiceAddInterestNotification error: x0%8.8lX.", result);
 #else
@@ -1093,7 +1089,11 @@ static Boolean HIDBuildDeviceList(UInt32 usagePage, UInt32 usage)
     if (NULL != gpDeviceList)
         HIDReleaseDeviceList();
 
+#ifdef MAC_OS_VERSION_12_0 /* IOMasterPort was renamed in macOS 12 */
+    result = IOMainPort(bootstrap_port, &masterPort);
+#else
     result = IOMasterPort(bootstrap_port, &masterPort);
+#endif
     if (kIOReturnSuccess != result)
         HIDReportErrorNum("IOMasterPort error with bootstrap_port.", result);
     else {
@@ -1451,18 +1451,18 @@ static int poll_mouse(pRecDevice mouse, ManyMouseEvent* outevent)
     return (1); /* got a valid event */
 } /* poll_mouse */
 
-static void macosx_hidmanager_quit(void)
+static void macos_hidmanager_quit(void)
 {
     HIDReleaseAllDeviceQueues();
     HIDReleaseDeviceList();
     free(devices);
     devices = NULL;
     available_mice = 0;
-} /* macosx_hidmanager_quit */
+} /* macos_hidmanager_quit */
 
-static int macosx_hidmanager_init(void)
+static int macos_hidmanager_init(void)
 {
-    macosx_hidmanager_quit(); /* just in case... */
+    macos_hidmanager_quit(); /* just in case... */
 
     if (!HIDBuildDeviceList(kHIDPage_GenericDesktop, kHIDUsage_GD_Mouse))
         return (-1);
@@ -1475,7 +1475,7 @@ static int macosx_hidmanager_init(void)
         dev = HIDGetFirstDevice();
         devices = (pRecDevice*)malloc(sizeof(pRecDevice) * available_mice);
         if ((devices == NULL) || (dev == NULL)) {
-            macosx_hidmanager_quit();
+            macos_hidmanager_quit();
             return (-1);
         } /* if */
 
@@ -1496,17 +1496,17 @@ static int macosx_hidmanager_init(void)
     } /* if */
 
     return (available_mice);
-} /* macosx_hidmanager_init */
+} /* macos_hidmanager_init */
 
-static const char* macosx_hidmanager_name(unsigned int index)
+static const char* macos_hidmanager_name(unsigned int index)
 {
     if (index >= available_mice)
         return (NULL);
 
     return ((const char*)devices[index]->product);
-} /* macosx_hidmanager_name */
+} /* macos_hidmanager_name */
 
-static int macosx_hidmanager_poll(ManyMouseEvent* event)
+static int macos_hidmanager_poll(ManyMouseEvent* event)
 {
     /*
      * (i) is static so we iterate through all mice round-robin. This
@@ -1538,22 +1538,22 @@ static int macosx_hidmanager_poll(ManyMouseEvent* event)
     } /* if */
 
     return (0); /* no new events */
-} /* macosx_hidmanager_poll */
+} /* macos_hidmanager_poll */
 
 #else
 
-static int macosx_hidmanager_init(void) { return (-1); }
-static void macosx_hidmanager_quit(void) { }
-static const char* macosx_hidmanager_name(unsigned int index) { return (0); }
-static int macosx_hidmanager_poll(ManyMouseEvent* event) { return (0); }
+static int macos_hidmanager_init(void) { return (-1); }
+static void macos_hidmanager_quit(void) { }
+static const char* macos_hidmanager_name(unsigned int index) { return (0); }
+static int macos_hidmanager_poll(ManyMouseEvent* event) { return (0); }
 
-#endif /* MacOSX blocker */
+#endif /* macOS blocker */
 
 ManyMouseDriver ManyMouseDriver_hidmanager = {
-    macosx_hidmanager_init,
-    macosx_hidmanager_quit,
-    macosx_hidmanager_name,
-    macosx_hidmanager_poll
+    macos_hidmanager_init,
+    macos_hidmanager_quit,
+    macos_hidmanager_name,
+    macos_hidmanager_poll
 };
 
-/* end of macosx_hidmanager.c ... */
+/* end of macos_hidmanager.c ... */

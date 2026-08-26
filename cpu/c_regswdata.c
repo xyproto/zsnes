@@ -21,15 +21,15 @@ __asm__(
     ASM_GSYM(reg2101w_objmovs2)
     ".byte 2, 4, 8, 4, 8, 8, 4, 4\n"
     ASM_GSYM(reg2101w_objadds1)
-    ".word 14, 14, 14, 14, 14, 12, 14, 14\n"
+    ".short 14, 14, 14, 14, 14, 12, 14, 14\n"
     ASM_GSYM(reg2101w_objadds2)
-    ".word 14, 12, 8, 12, 8, 8, 12, 12\n"
+    ".short 14, 12, 8, 12, 8, 8, 12, 12\n"
     ASM_GSYM(bgscrolPrev)
     ".byte 0\n"
     ASM_GSYM(bg1scrolx_m7)
-    ".word 0\n"
+    ".short 0\n"
     ASM_GSYM(bg1scroly_m7)
-    ".word 0\n"
+    ".short 0\n"
     ASM_GSYM(multchange)
     ".byte 1\n"
     ASM_GSYM(m7byte)

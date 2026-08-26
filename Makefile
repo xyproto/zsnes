@@ -3,7 +3,7 @@
 # Supported ARCH values:
 #   LINUX, FREEBSD, OPENBSD, NETBSD, DARWIN, WIN
 # Backward-compatible aliases:
-#   OSX -> DARWIN
+#   MACOS, OSX -> DARWIN
 #   WINDOWS -> WIN
 SUPPORTED_ARCHES := LINUX FREEBSD OPENBSD NETBSD DARWIN WIN
 UNIXSDL_ARCHES := LINUX FREEBSD OPENBSD NETBSD DARWIN
@@ -13,14 +13,14 @@ HOST_OS := $(shell uname -s 2>/dev/null | tr '[:lower:]' '[:upper:]')
 ARCH ?= $(shell uname -s 2>/dev/null | tr '[:lower:]' '[:upper:]')
 override ARCH := $(shell printf '%s' "$(ARCH)" | tr '[:lower:]' '[:upper:]')
 
-ifeq ($(ARCH),OSX)
-ARCH := DARWIN
+# The uppercasing above is an override directive, so these have to be too:
+# an ordinary assignment to an overridden variable is silently ignored, which
+# is why none of these aliases used to resolve.
+ifneq ($(filter $(ARCH),MACOS OSX),)
+override ARCH := DARWIN
 endif
-ifeq ($(ARCH),WINDOWS)
-ARCH := WIN
-endif
-ifeq ($(ARCH),WIN32)
-ARCH := WIN
+ifneq ($(filter $(ARCH),WINDOWS WIN32),)
+override ARCH := WIN
 endif
 
 ifneq ($(filter $(ARCH),$(LEGACY_UNSUPPORTED_ARCHES)),)
@@ -78,6 +78,15 @@ endif
 # Target word size and instruction set, separate from the OS above. The
 # emulator was written for 32-bit x86, but nothing in the tree is any more:
 # every combination below builds the same C. See "make help".
+# macOS dropped its 32-bit userland in 10.15 and half the Macs are aarch64, so
+# a native Darwin build defaults to whatever the host is instead.
+HOST_CPU := $(shell uname -m 2>/dev/null)
+ifeq ($(ARCH)/$(HOST_OS),DARWIN/DARWIN)
+ifeq ($(HOST_CPU),arm64)
+CPU  ?= arm64
+endif
+BITS ?= 64
+endif
 BITS ?= 32
 CPU  ?= x86
 
@@ -111,8 +120,19 @@ WARN_FLAGS ?= -Wall -Wno-address-of-packed-member
 # byte layout, so a variable can sit at any offset, and a non-PIC load encodes
 # the low bits of the address scaled by the access size - the linker cannot
 # represent an unaligned symbol at all. PIC addressing has no such limit.
-PIC_FLAGS := $(if $(filter arm64,$(CPU)),,-no-pie -fno-pic)
-COMMON_FLAGS = $(ARCH_CFLAGS) -pthread $(PIC_FLAGS) -std=c11 -D_DEFAULT_SOURCE -D_POSIX_C_SOURCE=200809L -O3 -D_FORTIFY_SOURCE=2 -ffunction-sections -fdata-sections -Wfatal-errors $(WARN_FLAGS)
+# Darwin is the same story: its aarch64 ABI has no non-PIC form at all, and
+# even x86-64 macOS wants PIE, so absolute addressing is off the table there.
+PIC_FLAGS := $(if $(or $(filter arm64,$(CPU)),$(filter DARWIN,$(ARCH))),,-no-pie -fno-pic)
+FEATURE_FLAGS := -D_DEFAULT_SOURCE -D_POSIX_C_SOURCE=200809L
+ifeq ($(ARCH),DARWIN)
+# Darwin reads _POSIX_C_SOURCE as a restriction rather than an addition: with
+# it set, unistd.h hides getdtablesize, getpagesize and the rest of the BSD
+# side. _DARWIN_C_SOURCE alone is the superset glibc needs both macros for.
+# GL_SILENCE_DEPRECATION is for the OpenGL 1.x entry points, which Apple
+# deprecated wholesale in 10.14 and still ships.
+FEATURE_FLAGS := -D_DARWIN_C_SOURCE -DGL_SILENCE_DEPRECATION
+endif
+COMMON_FLAGS = $(ARCH_CFLAGS) -pthread $(PIC_FLAGS) -std=c11 $(FEATURE_FLAGS) -O3 -D_FORTIFY_SOURCE=2 -ffunction-sections -fdata-sections -Wfatal-errors $(WARN_FLAGS)
 
 CFLAGS += $(COMMON_FLAGS)
 # x87-only maths, to keep the 32-bit build's floating point exactly what the
@@ -123,7 +143,13 @@ ifneq ($(ARCH),DARWIN)
 CFLAGS += -mno-sse -mno-sse2
 endif
 endif
+# Apple's linker spells all three of these differently, and rejects the GNU
+# names outright; -dead_strip is its equivalent of --gc-sections.
+ifeq ($(ARCH),DARWIN)
+LDFLAGS += -Wl,-dead_strip -lz -lm
+else
 LDFLAGS += -Wl,--as-needed $(if $(filter arm64,$(CPU)),,-no-pie) -Wl,--gc-sections -lz -lm
+endif
 
 #WITH_DEBUGGER := yes
 WITH_OPENGL   := yes
@@ -138,8 +164,13 @@ WITH_AO       :=
 # CPU, and the binary is not runnable on this machine anyway. A native build
 # really is missing a package, so it still stops and says which.
 # -m32 on an x86-64 host is not "cross" here: multilib is the normal way to
-# get those libraries, and the advice below is right for it.
-CROSS_BUILD := $(if $(or $(filter arm64,$(CPU)),$(filter WIN,$(ARCH))),yes,)
+# get those libraries, and the advice below is right for it. Neither is aarch64
+# on an aarch64 host - an Apple Silicon Mac has its own SDL and OpenGL, and
+# demanding a sysroot there would drop the video backend on the one machine
+# that actually has one.
+HOST_CPU_NORM := $(if $(filter arm64 aarch64,$(HOST_CPU)),arm64,x86)
+CROSS_BUILD := $(if $(or $(filter WIN,$(ARCH)),$(filter-out $(HOST_OS),$(ARCH)),\
+                    $(filter-out $(HOST_CPU_NORM),$(CPU))),yes,)
 
 # Every library probe has to ask the *target's* pkg-config: the wrapper targets
 # pass a prefixed one, and the host's would happily report its own x86 SDL for
@@ -203,7 +234,7 @@ endif
 # wrong: it is what made "make linux64" demand a 32-bit SDL. They build nothing
 # themselves, so skip the checks and let the sub-make do them.
 WRAPPER_GOALS := clean distclean linux32 linux64 linux_arm64 linux_pi4 \
-                 win32 w32 win64 portcheck portasm help test fmt unused
+                 macos win32 w32 win64 portcheck portasm help test fmt unused
 # An explicit WITH_SDL=/WITH_PIPEWIRE=/WITH_AO= on the command line is a
 # deliberate "link it without that backend", not a missing package.
 BACKENDS_OPTOUT := $(if $(filter command line,$(origin WITH_SDL) \
@@ -660,12 +691,7 @@ endif
 ifeq ($(ARCH),DARWIN)
 CFGDEFS += -D__ZSNES_PLATFORM_DARWIN__
 ifeq ($(HOST_OS),DARWIN)
-SRCS += mmlib/osx.c
-
-
-CFGDEFS += -D__ZSNES_PLATFORM_DARWIN__
-
-CFLAGS += -fno-pic
+SRCS += mmlib/macos.c
 
 LDFLAGS += -framework Carbon -framework IOKit -framework Foundation
 ifdef WITH_OPENGL
@@ -772,7 +798,7 @@ MINGW32_PREFIX ?= i686-w64-mingw32
 MINGW64_PREFIX ?= x86_64-w64-mingw32
 ARM64_PREFIX   ?= aarch64-linux-gnu
 
-.PHONY: linux32 linux64 linux_arm64 linux_pi4 win32 w32 win64 help
+.PHONY: linux32 linux64 linux_arm64 linux_pi4 macos win32 w32 win64 help
 
 linux32:
 	$(MAKE) ARCH=LINUX BITS=32 CPU=x86
@@ -794,6 +820,10 @@ linux_pi4:
 	  CC=$(ARM64_PREFIX)-gcc CC_TARGET=$(ARM64_PREFIX)-gcc \
 	  PKG_CONFIG=$(ARM64_PREFIX)-pkg-config
 
+# Native macOS, Apple Silicon or Intel. Plain "make" on a Mac does the same.
+macos:
+	$(MAKE) ARCH=DARWIN
+
 w32: win32
 win32:
 	$(call need_tool,$(MINGW32_PREFIX)-gcc,the mingw32 toolchain)
@@ -811,6 +841,7 @@ help:
 	@echo '  linux64       64-bit x86 Linux'
 	@echo '  linux_arm64   64-bit ARM Linux'
 	@echo '  linux_pi4     64-bit ARM Linux, tuned for a Cortex-A72'
+	@echo '  macos         native macOS, Apple Silicon or Intel'
 	@echo '  win32         32-bit Windows, cross-built with mingw32'
 	@echo '  win64         64-bit Windows, cross-built with mingw-w64'
 	@echo '  portcheck     compile every source for x86-64 and aarch64'
@@ -819,9 +850,16 @@ help:
 	@echo 'The tree is C11 throughout; the cross targets need their'
 	@echo 'toolchain installed and will name it if it is missing.'
 
+# macOS ships lldb and no gdb; its argument order differs.
+ifeq ($(ARCH),DARWIN)
+DEBUG_CMD = lldb -- ./$(BINARY) ~/roms/snes/example.sfc
+else
+DEBUG_CMD = gdb $(BINARY) --args zsnes ~/roms/snes/example.sfc
+endif
+
 debug: DEBUGFLAGS += -g
 debug: $(BINARY)
-	gdb $(BINARY) --args zsnes ~/roms/snes/example.sfc
+	$(DEBUG_CMD)
 
 -include $(wildcard $(DEPS))
 

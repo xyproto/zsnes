@@ -37,6 +37,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
+#include <strings.h> /* strcasecmp: glibc leaks it through string.h, Darwin does not */
 
 // General time.h checking
 
@@ -85,7 +86,11 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 // opengl stuff
 
 #ifdef __OPENGL__
+#ifdef __APPLE__
+#include <OpenGL/gl.h>
+#else
 #include <GL/gl.h>
+#endif
 #endif
 
 // os specific stuff

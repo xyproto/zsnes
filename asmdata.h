@@ -8,6 +8,9 @@
 // ASM_GSYM exports _sym and keeps a plain sym alias for intra-block references.
 // That alias is file-local, so use ASM_SYMREF to name a symbol from another
 // object (e.g. a pointer initialised to someone else's array).
+// Sizes must mean the same thing on every target, so spell them
+// .byte/.short/.long: aarch64 reads .word as four bytes where x86 reads two,
+// and these blocks came from NASM's dw.
 
 #if defined(__APPLE__) || defined(__MINGW32__)
 #define ASM_SEC_DATA(name) ".section " name ",\"dw\"\n"

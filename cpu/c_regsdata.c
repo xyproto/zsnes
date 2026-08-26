@@ -15,7 +15,7 @@
 __asm__(
     ASM_SEC_DATA(".data")
     ASM_GSYM(invreg)
-    ".word 0\n"
+    ".short 0\n"
     ASM_GSYM(sndrot)
     ".byte 0\n"
     ASM_GSYM(sndrot2)
@@ -25,7 +25,7 @@ __asm__(
     ASM_GSYM(NMIEnab)
     ".byte 1\n"
     ASM_GSYM(VIRQLoc)
-    ".word 0\n"
+    ".short 0\n"
     ASM_GSYM(vidbright)
     ".byte 0\n"
     ASM_GSYM(previdbr)
@@ -44,15 +44,15 @@ __asm__(
     ASM_GSYM(objmovs1)
     ".byte 2\n"
     ASM_GSYM(objadds1)
-    ".word 14\n"
+    ".short 14\n"
     ASM_GSYM(objmovs2)
     ".byte 2\n"
     ASM_GSYM(objadds2)
-    ".word 14\n"
+    ".short 14\n"
     ASM_GSYM(oamaddrt)
-    ".word 0\n"
+    ".short 0\n"
     ASM_GSYM(oamaddrs)
-    ".word 0\n"
+    ".short 0\n"
     ASM_GSYM(objhipr)
     ".byte 0\n"
     ASM_GSYM(bgmode)
@@ -72,38 +72,38 @@ __asm__(
        bytes past the last word. */
     ASM_GSYM(bg1ptr_b)
     ASM_GSYM(bg1ptr)
-    ".word 0\n"
+    ".short 0\n"
     ASM_GSYM(bg2ptr)
-    ".word 0\n"
+    ".short 0\n"
     ASM_GSYM(bg3ptr)
-    ".word 0\n"
+    ".short 0\n"
     ASM_GSYM(bg4ptr_dw)
     ASM_GSYM(bg4ptr)
-    ".word 0\n"
+    ".short 0\n"
     ASM_GSYM(bg1ptrb)
-    ".word 0\n"
+    ".short 0\n"
     ASM_GSYM(bg2ptrb)
-    ".word 0\n"
+    ".short 0\n"
     ASM_GSYM(bg3ptrb)
-    ".word 0\n"
+    ".short 0\n"
     ASM_GSYM(bg4ptrb)
-    ".word 0\n"
+    ".short 0\n"
     ASM_GSYM(bg1ptrc)
-    ".word 0\n"
+    ".short 0\n"
     ASM_GSYM(bg2ptrc)
-    ".word 0\n"
+    ".short 0\n"
     ASM_GSYM(bg3ptrc)
-    ".word 0\n"
+    ".short 0\n"
     ASM_GSYM(bg4ptrc)
-    ".word 0\n"
+    ".short 0\n"
     ASM_GSYM(bg1ptrd)
-    ".word 0\n"
+    ".short 0\n"
     ASM_GSYM(bg2ptrd)
-    ".word 0\n"
+    ".short 0\n"
     ASM_GSYM(bg3ptrd)
-    ".word 0\n"
+    ".short 0\n"
     ASM_GSYM(bg4ptrd)
-    ".word 0\n"
+    ".short 0\n"
     ASM_GSYM(bg1scsize)
     ".byte 0\n"
     ASM_GSYM(bg2scsize)
@@ -113,38 +113,38 @@ __asm__(
     ASM_GSYM(bg4scsize)
     ".byte 0\n"
     ASM_GSYM(bg1objptr)
-    ".word 0\n"
+    ".short 0\n"
     ASM_GSYM(bg2objptr)
-    ".word 0\n"
+    ".short 0\n"
     ASM_GSYM(bg3objptr)
-    ".word 0\n"
+    ".short 0\n"
     ASM_GSYM(bg4objptr_dw)
     ASM_GSYM(bg4objptr)
-    ".word 0\n"
+    ".short 0\n"
     /* The four layers plus two bytes, as one object: video/c_mv16toffs.h
        reads a dword at a runtime layer index, and at layer 3 that runs two
        bytes past the last word. */
     ASM_GSYM(bg1scrolx_b)
     ASM_GSYM(bg1scrolx)
-    ".word 0\n"
+    ".short 0\n"
     ASM_GSYM(bg2scrolx)
-    ".word 0\n"
+    ".short 0\n"
     ASM_GSYM(bg3scrolx)
-    ".word 0\n"
+    ".short 0\n"
     ASM_GSYM(bg4scrolx)
-    ".word 0\n"
+    ".short 0\n"
     ASM_GSYM(bg1sx)
-    ".word 0\n"
+    ".short 0\n"
     ASM_GSYM(bg1scroly)
-    ".word 0\n"
+    ".short 0\n"
     ASM_GSYM(bg2scroly)
-    ".word 0\n"
+    ".short 0\n"
     ASM_GSYM(bg3scroly)
-    ".word 0\n"
+    ".short 0\n"
     ASM_GSYM(bg4scroly)
-    ".word 0\n"
+    ".short 0\n"
     ASM_GSYM(addrincr)
-    ".word 2\n"
+    ".short 2\n"
     ASM_GSYM(vramincr)
     ".byte 0\n"
     ASM_GSYM(vramread)
@@ -152,28 +152,28 @@ __asm__(
     ASM_GSYM(vramaddr)
     ".long 0\n"
     ASM_GSYM(cgaddr)
-    ".word 0\n"
+    ".short 0\n"
     ASM_GSYM(cgmod)
     ".byte 0\n"
     ASM_GSYM(scrnon_dw)
     ASM_GSYM(scrnon)
-    ".word 0\n"
+    ".short 0\n"
     ASM_GSYM(scrndist)
     ".byte 0\n"
     ASM_GSYM(resolutn)
-    ".word 224\n"
+    ".short 224\n"
     ASM_GSYM(multa)
     ".byte 0\n"
     ASM_GSYM(diva)
-    ".word 0\n"
+    ".short 0\n"
     ASM_GSYM(divres)
-    ".word 0\n"
+    ".short 0\n"
     ASM_GSYM(multres)
-    ".word 0\n"
+    ".short 0\n"
     ASM_GSYM(latchx)
-    ".word 0\n"
+    ".short 0\n"
     ASM_GSYM(latchy)
-    ".word 0\n"
+    ".short 0\n"
     ASM_GSYM(latchxr)
     ".byte 0\n"
     ASM_GSYM(latchyr)
@@ -216,19 +216,19 @@ __asm__(
     ".byte 0\n"
     ASM_GSYM(mode7A_dw)
     ASM_GSYM(mode7A)
-    ".word 0\n"
+    ".short 0\n"
     ASM_GSYM(mode7B)
-    ".word 0\n"
+    ".short 0\n"
     ASM_GSYM(mode7C_dw)
     ASM_GSYM(mode7C)
-    ".word 0\n"
+    ".short 0\n"
     ASM_GSYM(mode7D)
-    ".word 0\n"
+    ".short 0\n"
     ASM_GSYM(mode7X0_dw)
     ASM_GSYM(mode7X0)
-    ".word 0\n"
+    ".short 0\n"
     ASM_GSYM(mode7Y0)
-    ".word 0\n"
+    ".short 0\n"
     ASM_GSYM(JoyAPos)
     ".byte 0\n"
     ASM_GSYM(JoyBPos)
@@ -301,13 +301,13 @@ __asm__(
     ASM_GSYM(vramincby8rowl)
     ".byte 0\n"
     ASM_GSYM(vramincby8ptri)
-    ".word 0\n"
+    ".short 0\n"
     ASM_GSYM(nexthprior)
     ".byte 0\n"
     ASM_GSYM(doirqnext)
     ".byte 0\n"
     ASM_GSYM(vramincby8var)
-    ".word 0\n"
+    ".short 0\n"
     ASM_GSYM(screstype)
     ".byte 0\n"
     ASM_GSYM(extlatch)
@@ -318,7 +318,7 @@ __asm__(
     ASM_GSYM(interlval)
     ".byte 0\n"
     ASM_GSYM(HIRQLoc)
-    ".word 0\n"
+    ".short 0\n"
     ASM_GSYM(KeyOnStA)
     ".byte 0\n"
     ASM_GSYM(KeyOnStB)
@@ -336,7 +336,7 @@ __asm__(
     ASM_GSYM(nosprincr)
     ".byte 0\n"
     ASM_GSYM(poamaddrs)
-    ".word 0\n"
+    ".short 0\n"
     ASM_GSYM(ioportval)
     ".byte 255\n"
     ASM_GSYM(iohvlatch)
