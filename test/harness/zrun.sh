@@ -51,7 +51,9 @@ env HOME="$RUNHOME" PPU_STATE_LOG=1 \
     ${ASCII:+ASCII_SCREENSHOT_EVERY_FIVE=1 ASCII_SCREENSHOT_BURST=3} \
     ${PNGEVERY:+PNG_SCREENSHOT_EVERY_N=$PNGEVERY} \
     ${INPUT:+DEBUG_INPUT_SCRIPT=$INPUT} \
-    "${XVFB[@]}" timeout "$SECS" "$BIN" "${args[@]}" "$ROM" </dev/null >"$OUT/stdout.log" 2>&1
+    "${XVFB[@]}" timeout -k 5 "$SECS" "$BIN" "${args[@]}" "$ROM" </dev/null >"$OUT/stdout.log" 2>&1
+# -k: zsnes installs a SIGTERM handler and does not always act on it, so the
+# cap needs a SIGKILL behind it or a run can sit there forever.
 echo "exit=$? (124 = hit the time cap, which is the normal way a run ends)" | tee "$OUT/result.txt"
 
 for f in /tmp/zsnes_ppu.txt /tmp/zsnes_hashes.txt; do

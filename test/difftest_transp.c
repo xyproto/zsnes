@@ -200,7 +200,7 @@ static void asm_halfaddfix(u2* p, u4 ebx, u4 edi, u4* pa, u4* pd)
 
 int main(void)
 {
-    u4 r[8];
+    zreg r[8];
     for (u4 i = 0; i < 65536u; i++)
         fulladdtab[i] = (u2)(i * 7919u + (i >> 3));
 

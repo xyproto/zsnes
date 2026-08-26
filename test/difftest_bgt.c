@@ -460,7 +460,7 @@ int main(void)
             prdatc[bx] = pd[2];
             reset();
             {
-                u4 r[8];
+                zreg r[8];
                 r[R_EAX] = IN_EAX;
                 r[R_EBX] = IN_EBX;
                 r[R_ECX] = IN_ECX;

@@ -223,7 +223,7 @@ void domosaicng16b(void);
 
 static void cur_call(void (*const fn)(u4*))
 {
-    u4 r[8];
+    zreg r[8];
 
     r[R_EAX] = NG2_EAX;
     r[R_EBX] = NG2_EBX;

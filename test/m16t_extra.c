@@ -31,7 +31,7 @@ void dl_call(void (*fn)(u4*));
 
 void dl_call(void (*const fn)(u4*))
 {
-    u4 r[8];
+    zreg r[8];
 
     r[R_EAX] = DLR[0];
     r[R_EBX] = DLR[1];

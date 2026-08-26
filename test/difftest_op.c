@@ -473,7 +473,7 @@ static const struct {
 
 /* Everything both sides may read or write. */
 struct state {
-    u4 r[8];
+    zreg r[8];
     u2 brkv_, brkv8_, copv_, copv8_;
     u1 xirqb_, intrset_, doirqnext_, curnmi_;
     u4 nmistatus_, curexecstate_;
