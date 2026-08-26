@@ -30,6 +30,7 @@ __asm__(
     ".byte 0\n"
     ASM_GSYM(previdbr)
     ".byte 0\n"
+    ASM_GSYM(forceblnk_dw)
     ASM_GSYM(forceblnk)
     ".byte 0x80\n"
     ASM_GSYM(objptr)
@@ -60,16 +61,23 @@ __asm__(
     ".byte 0\n"
     ASM_GSYM(bgtilesz)
     ".byte 0\n"
+    ASM_GSYM(mosaicon_dw)
     ASM_GSYM(mosaicon)
     ".byte 0\n"
+    ASM_GSYM(mosaicsz_dw)
     ASM_GSYM(mosaicsz)
     ".byte 0\n"
+    /* The four layers plus two bytes, as one object: video/c_mv16toffs.h
+       reads a dword at a runtime layer index, and at layer 3 that runs two
+       bytes past the last word. */
+    ASM_GSYM(bg1ptr_b)
     ASM_GSYM(bg1ptr)
     ".word 0\n"
     ASM_GSYM(bg2ptr)
     ".word 0\n"
     ASM_GSYM(bg3ptr)
     ".word 0\n"
+    ASM_GSYM(bg4ptr_dw)
     ASM_GSYM(bg4ptr)
     ".word 0\n"
     ASM_GSYM(bg1ptrb)
@@ -110,8 +118,13 @@ __asm__(
     ".word 0\n"
     ASM_GSYM(bg3objptr)
     ".word 0\n"
+    ASM_GSYM(bg4objptr_dw)
     ASM_GSYM(bg4objptr)
     ".word 0\n"
+    /* The four layers plus two bytes, as one object: video/c_mv16toffs.h
+       reads a dword at a runtime layer index, and at layer 3 that runs two
+       bytes past the last word. */
+    ASM_GSYM(bg1scrolx_b)
     ASM_GSYM(bg1scrolx)
     ".word 0\n"
     ASM_GSYM(bg2scrolx)
@@ -142,6 +155,7 @@ __asm__(
     ".word 0\n"
     ASM_GSYM(cgmod)
     ".byte 0\n"
+    ASM_GSYM(scrnon_dw)
     ASM_GSYM(scrnon)
     ".word 0\n"
     ASM_GSYM(scrndist)
@@ -166,6 +180,7 @@ __asm__(
     ".byte 0\n"
     ASM_GSYM(frskipper)
     ".byte 0\n"
+    ASM_GSYM(winl1_dw)
     ASM_GSYM(winl1)
     ".byte 0\n"
     ASM_GSYM(winr1)
@@ -187,6 +202,7 @@ __asm__(
     ".byte 0\n"
     ASM_GSYM(wincolen)
     ".byte 0\n"
+    ASM_GSYM(winlogica_dw)
     ASM_GSYM(winlogica)
     ".byte 0\n"
     ASM_GSYM(winlogicb)
@@ -195,6 +211,7 @@ __asm__(
     ".byte 0\n"
     ASM_GSYM(winenabs)
     ".byte 0\n"
+    ASM_GSYM(mode7set_dw)
     ASM_GSYM(mode7set)
     ".byte 0\n"
     ASM_GSYM(mode7A)
@@ -294,6 +311,7 @@ __asm__(
     ".byte 0\n"
     ASM_GSYM(cfield)
     ".byte 0\n"
+    ASM_GSYM(interlval_dw)
     ASM_GSYM(interlval)
     ".byte 0\n"
     ASM_GSYM(HIRQLoc)
@@ -343,6 +361,8 @@ __asm__(
     ASM_GSYM(scrndis)
     ".byte 0\n"
     ".balign 32, 0x90\n"
+    /* 56 bytes from here are saved as one run; see zstate.c. */
+    ASM_GSYM(oamaddr_run)
     ASM_GSYM(oamaddr)
     ".long 0\n"
     ASM_GSYM(bg1ptrx)
@@ -377,12 +397,16 @@ __asm__(
     ".byte 1\n"
     ASM_GSYM(Voice7Disable)
     ".byte 1\n"
+    ASM_GSYM(BG116x16t_dw)
     ASM_GSYM(BG116x16t)
     ".byte 0\n"
+    ASM_GSYM(BG216x16t_dw)
     ASM_GSYM(BG216x16t)
     ".byte 0\n"
+    ASM_GSYM(BG316x16t_dw)
     ASM_GSYM(BG316x16t)
     ".byte 0\n"
+    ASM_GSYM(BG416x16t_dw)
     ASM_GSYM(BG416x16t)
     ".byte 0\n"
     ASM_GSYM(SPC700read)

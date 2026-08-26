@@ -33,6 +33,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <unistd.h>
 #endif
 #endif
+#include "../ignore.h"
 #include "../zmovie.h"
 #include "../zpath.h"
 #include "procvidc.h"
@@ -102,7 +103,7 @@ void LoadPicture(void)
 
         if ((file_size - pic_size == cur_zst_size) || (file_size - pic_size == old_zst_size)) {
             fseek(fp, -((signed)pic_size), SEEK_END);
-            fread(PrevPicture, 1, pic_size, fp);
+            IGNORE_RESULT(fread(PrevPicture, 1, pic_size, fp));
         }
 
         fclose(fp);

@@ -782,14 +782,14 @@ void procbackgrnd(u4 const layer)
 
     curtileptr = bg1objptr[layer];
     u2 const ax = bg1ptr[layer];
-    bgptr = bgptr & 0xFFFF0000 | ax;
+    bgptr = (bgptr & 0xFFFF0000) | ax;
     if (ax != curbgofs[layer]) { // clear cache
         curbgofs[layer] = ax;
         fillwithnothing(edi);
     }
     u4 const bgptrb = bg1ptrb[layer];
-    bgptrc = bgptrc & 0xFFFF0000 | bg1ptrc[layer];
-    bgptrd = bgptrd & 0xFFFF0000 | bg1ptrd[layer];
+    bgptrc = (bgptrc & 0xFFFF0000) | bg1ptrc[layer];
+    bgptrd = (bgptrd & 0xFFFF0000) | bg1ptrd[layer];
 
     u2 y = curypos;
     curmosaicsz = 1;

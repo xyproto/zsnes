@@ -32,7 +32,7 @@ enum m7_writer {
 extern u4 UnusedBit[2], UnusedBitXor[2]; /* video/newgfx16.asm */
 
 /* Writes one pixel at *p, advances it by 2, and returns the new edx. */
-static u4 m7_write(enum m7_writer const w, u1** const p, u2 const* const pal,
+static inline u4 m7_write(enum m7_writer const w, u1** const p, u2 const* const pal,
     u4 edx)
 {
     u1* const s = *p;

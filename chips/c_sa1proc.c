@@ -68,22 +68,22 @@ static void SA1switch(zreg* const pedx, u1** const pesi, u2 const vec, int const
     ((u1*)&SA1IRQExec)[irqexec_off] = 1;
 
     u2 const xpc = (u2)(*pesi - initaddrl);
-    SA1xpc = SA1xpc & 0xFFFF0000 | xpc;
+    SA1xpc = (SA1xpc & 0xFFFF0000) | xpc;
 
     u2 cx = SA1xs;
 
     call_membank0w8(cx, (u1)SA1xpb);
-    cx = (cx - 1) & stackand | stackor;
+    cx = ((cx - 1) & stackand) | stackor;
 
     call_membank0w8(cx, (u1)(xpc >> 8));
-    cx = (cx - 1) & stackand | stackor;
+    cx = ((cx - 1) & stackand) | stackor;
 
     call_membank0w8(cx, (u1)xpc);
-    cx = (cx - 1) & stackand | stackor;
+    cx = ((cx - 1) & stackand) | stackor;
 
     u4 const edx = SA1makedl(*pedx);
     call_membank0w8(cx, (u1)edx);
-    cx = (cx - 1) & stackand | stackor;
+    cx = ((cx - 1) & stackand) | stackor;
 
     SA1xs = cx;
 
@@ -91,7 +91,7 @@ static void SA1switch(zreg* const pedx, u1** const pesi, u2 const vec, int const
     u1* const esi = vec & 0x8000 ? snesmmap[0] : snesmap2[0];
     initaddrl = esi;
 
-    *pedx = edx & 0xFFFFFFF3 | 0x00000004;
+    *pedx = (edx & 0xFFFFFFF3) | 0x00000004;
     *pesi = esi + vec;
 }
 
@@ -108,7 +108,7 @@ void SA1switchtovirq(zreg* const pedx, u1** const pesi)
 // dh is the scanline cycle counter; the assembly's `add dh,n` wraps in 8 bits.
 static u4 dh_plus(u4 const edx, u1 const n)
 {
-    return edx & 0xFFFF00FF | (u4)(u1)((u1)(edx >> 8) + n) << 8;
+    return (edx & 0xFFFF00FF) | (u4)(u1)((u1)(edx >> 8) + n) << 8;
 }
 
 static u4 peek32(u1 const* const p)
@@ -157,7 +157,7 @@ static u4 SA1SwapEnter(zreg* const r)
     prevedi = r[R_EDI];
     SNSPtr = (u1*)r[R_ESI];
 
-    u4 edx = r[R_EDX] & 0xFFFFFF00 | SA1RegP;
+    u4 edx = (r[R_EDX] & 0xFFFFFF00) | SA1RegP;
     initaddrl = SA1RegPCS;
     CurBWPtr = SA1BWPtr;
     snesmap2[0] = IRAM;
@@ -202,7 +202,7 @@ static void SA1SwapLeave(zreg* const r)
     wramdata = wramdataa;
     snesmap2[0] = wramdata;
 
-    r[R_EDX] = dh_plus(r[R_EDX] & 0xFFFFFF00 | SNSRegP, 11);
+    r[R_EDX] = dh_plus((r[R_EDX] & 0xFFFFFF00) | SNSRegP, 11);
     r[R_ESI] = (u4)SNSPtr;
     r[R_EDI] = prevedi;
     r[R_EAX] = 0;

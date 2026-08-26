@@ -28,7 +28,7 @@ enum { R_EDI,
     R_EAX };
 
 extern u2 fulladdtab[65536];
-extern u4 UnusedBit[2], HalfTrans[2];
+extern u4 UnusedBit[2], HalfTrans[4];
 
 /* The sub screen, in u2 units from the main one. */
 #define SUBOFF 75036u

@@ -26,6 +26,10 @@ extern uint32_t cycpbl;
 extern uint32_t PHspcsave, PHdspsave;
 extern uint32_t PHnum2writesa1reg, SA1Mode, prevedi, SA1xpc;
 extern uint32_t soundcycleft, spc700read, timer2upd, xa, PHnum2writesfxreg;
+/* The rest of the 65816 register block, in the order initdata.c defines it
+   and the savestate writes it. */
+extern uint32_t xdb, xpb, xs, xd, xx, xy, flagnz, flago, flagc, bankkp;
+extern uint32_t Sflagnz, Sflago, Sflagc;
 extern uint32_t opcd, HIRQCycNext, oamaddr, curexecstate, nmiprevaddrl;
 extern uint32_t nmirept, nmiprevline, nmistatus, joycontren;
 extern uint32_t SfxR0, ramsize, nmiprevaddrh;

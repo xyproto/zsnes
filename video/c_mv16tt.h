@@ -99,7 +99,7 @@ static void tt_px(tt_regs* const r, u1 const* const tile, u1 const* const win,
    zero. The flipped form walks the tile backwards, so it tests the second
    dword first - each half tests the one holding the pixels it is about to
    draw. */
-static void tt_row(tt_regs* const r, u1 const* const tile, u1 const* const win,
+static inline void tt_row(tt_regs* const r, u1 const* const tile, u1 const* const win,
     u1 const adder, u1* const esi, u1 const* const ebp, int const flip,
     int const mode)
 {

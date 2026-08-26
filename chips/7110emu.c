@@ -19,6 +19,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
 #include "../cfg.h"
+#include "../ignore.h"
 #include "../zpath.h"
 #include <stdbool.h>
 #include <stdint.h>
@@ -575,9 +576,9 @@ static void load_decompression_state()
                 bool valid = true;
 
                 for (;;) {
-                    fread(&address, 3, 1, fp_idx);
-                    fread(&entry, 1, 1, fp_idx);
-                    fread(&length, 2, 1, fp_idx);
+                    IGNORE_RESULT(fread(&address, 3, 1, fp_idx));
+                    IGNORE_RESULT(fread(&entry, 1, 1, fp_idx));
+                    IGNORE_RESULT(fread(&length, 2, 1, fp_idx));
 
                     if (feof(fp_idx)) {
                         break;

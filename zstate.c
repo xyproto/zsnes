@@ -58,6 +58,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #define NUMCONV_FR3
 #define NUMCONV_FW3
+#include "ignore.h"
 #include "numconv.h"
 
 #define clim()
@@ -117,6 +118,11 @@ static void copy_spc_data(uint8_t** buffer, void (*copy_func)(uint8_t**, void*, 
     copy_func(buffer, &DSPMem, sizeof(DSPMem));
 }
 
+/* Each of these names the whole run the savestate copies, so the copy stays
+   inside one object; the layout is pinned by the ASM_GSYM block that
+   defines it. */
+extern uint8_t spc700read_run[40], opcd_run[24], oamaddr_run[56], SA1Status_run[3];
+
 static void copy_extra_data(uint8_t** buffer, void (*copy_func)(uint8_t**, void*, size_t))
 {
     copy_func(buffer, &soundcycleft, 4);
@@ -128,14 +134,30 @@ static void copy_extra_data(uint8_t** buffer, void (*copy_func)(uint8_t**, void*
     copy_func(buffer, &nmistatus, 4);
     copy_func(buffer, &joycontren, 4);
     copy_func(buffer, &NextLineCache, 1);
-    copy_func(buffer, &spc700read, 10 * 4);
+    copy_func(buffer, spc700read_run, 10 * 4);
     copy_func(buffer, &timer2upd, 4);
-    copy_func(buffer, &xa, 14 * 4);
+    /* The 65816 register block, one dword at a time: these are separate C
+       globals in initdata.c, so copying 56 bytes from &xa assumed a layout
+       nothing guarantees. Same bytes, same order. */
+    copy_func(buffer, &xa, 4);
+    copy_func(buffer, &xdb, 4);
+    copy_func(buffer, &xpb, 4);
+    copy_func(buffer, &xs, 4);
+    copy_func(buffer, &xd, 4);
+    copy_func(buffer, &xx, 4);
+    copy_func(buffer, &xy, 4);
+    copy_func(buffer, &flagnz, 4);
+    copy_func(buffer, &flago, 4);
+    copy_func(buffer, &flagc, 4);
+    copy_func(buffer, &bankkp, 4);
+    copy_func(buffer, &Sflagnz, 4);
+    copy_func(buffer, &Sflago, 4);
+    copy_func(buffer, &Sflagc, 4);
     copy_func(buffer, &spcnumread, 1);
-    copy_func(buffer, &opcd, 6 * 4);
+    copy_func(buffer, opcd_run, 6 * 4);
     copy_func(buffer, &HIRQCycNext, 4);
     copy_func(buffer, &HIRQNextExe, 1);
-    copy_func(buffer, &oamaddr, 14 * 4);
+    copy_func(buffer, oamaddr_run, 14 * 4);
     copy_func(buffer, &prevoamptr, 1);
 }
 
@@ -178,7 +200,7 @@ static void copy_state_data(uint8_t* buffer, void (*copy_func)(uint8_t**, void*,
         copy_func(&buffer, &SA1Mode, PHnum2writesa1reg);
         copy_func(&buffer, SA1RAMArea, 8192 * 16);
         if (method != csm_load_zst_old) {
-            copy_func(&buffer, &SA1Status, 3);
+            copy_func(&buffer, SA1Status_run, 3);
             copy_func(&buffer, &SA1xpc, 1 * 4);
             copy_func(&buffer, &sa1dmaptr, 2 * 4);
         }
@@ -564,7 +586,7 @@ void SaveSA1()
         SA1Stat = (SA1Stat & 0xFFFFFF00) + 1;
     }
 
-    if (SA1RegPCS == IRAM - 0x3000) {
+    if (SA1RegPCS == (uint8_t*)((uintptr_t)IRAM - 0x3000u)) {
         SA1Stat = (SA1Stat & 0xFFFFFF00) + 2;
     }
 
@@ -586,7 +608,7 @@ void RestoreSA1()
     }
 
     if ((SA1Stat & 0xFF) == 2) {
-        SA1RegPCS = IRAM - 0x3000;
+        SA1RegPCS = (uint8_t*)((uintptr_t)IRAM - 0x3000u);
     }
 
     SA1Ptr += (uintptr_t)SA1RegPCS;
@@ -905,7 +927,7 @@ static bool zst_load_compressed(FILE* fp, size_t compressed_size)
         uint8_t* compressed_buffer = 0;
 
         if ((compressed_buffer = (uint8_t*)malloc(compressed_size))) {
-            fread(compressed_buffer, 1, compressed_size, fp);
+            IGNORE_RESULT(fread(compressed_buffer, 1, compressed_size, fp));
             if (uncompress(buffer, &data_size, compressed_buffer, compressed_size) == Z_OK) {
                 copy_state_data(buffer, memcpyrinc, csm_load_zst_new);
                 worked = true;
@@ -1011,14 +1033,14 @@ void zst_sram_load(FILE* fp)
     }
     if (SA1Enable) {
         fseek(fp, PHnum2writesa1reg, SEEK_CUR);
-        fread(SA1RAMArea, 1, 131072, fp); // SA-1 sram
+        IGNORE_RESULT(fread(SA1RAMArea, 1, 131072, fp)); // SA-1 sram
         fseek(fp, 15, SEEK_CUR);
     }
     if (DSP1Enable) {
         fseek(fp, 2874, SEEK_CUR);
     }
     if (SETAEnable) {
-        fread(setaramdata, 1, 4096, fp);
+        IGNORE_RESULT(fread(setaramdata, 1, 4096, fp));
     } // SETA sram
     if (SPC7110Enable) {
         fseek(fp, PHnum2writespc7110reg + 6, SEEK_CUR);
@@ -1031,7 +1053,7 @@ void zst_sram_load(FILE* fp)
     }
     fseek(fp, 220, SEEK_CUR);
     if (ramsize) {
-        fread(sram, 1, ramsize, fp);
+        IGNORE_RESULT(fread(sram, 1, ramsize, fp));
     } // normal sram
 }
 
@@ -1048,7 +1070,7 @@ void zst_sram_load_compressed(FILE* fp)
         if ((buffer = (uint8_t*)malloc(data_size))) {
             uint8_t* compressed_buffer = 0;
             if ((compressed_buffer = (uint8_t*)malloc(compressed_size))) {
-                fread(compressed_buffer, 1, compressed_size, fp);
+                IGNORE_RESULT(fread(compressed_buffer, 1, compressed_size, fp));
                 if (uncompress(buffer, &data_size, compressed_buffer, compressed_size) == Z_OK) {
                     uint8_t* data = buffer + PH65816regsize + 199635;
                     if (spcon) {
@@ -1254,13 +1276,13 @@ void OpenSramFile()
 
     setextension(ZSaveName, "srm");
     if ((fp = fopen_dir(ZSramPath, ZSaveName, "rb"))) {
-        fread(sram, 1, ramsize, fp);
+        IGNORE_RESULT(fread(sram, 1, ramsize, fp));
         fclose(fp);
 
         SramExists = true;
 
         if (*ZSaveST2Name && (fp = fopen_dir(ZSramPath, ZSaveST2Name, "rb"))) {
-            fread(sram2, 1, ramsize, fp);
+            IGNORE_RESULT(fread(sram2, 1, ramsize, fp));
             fclose(fp);
         }
     } else {

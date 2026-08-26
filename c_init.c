@@ -171,7 +171,7 @@ static void ProcSNESMouse(u4* const device)
         d |= 0x00100000;
     if (mousebuttons & 0x01)
         d |= 0x00400000;
-    d = d & 0xFFFF0000 | 0x00010000 | (mouseypos & 0x7F) << 8 | (mousexpos & 0x7F);
+    d = (d & 0xFFFF0000) | 0x00010000 | (mouseypos & 0x7F) << 8 | (mousexpos & 0x7F);
     if (mouseydir & 0x01)
         d |= 0x00008000;
     if (mousexdir & 0x01)
@@ -401,7 +401,7 @@ void ReadInputDevice(void)
         ProcSNESMouse(&JoyBOrig);
     } else if (device2 == 2) {
         processmouse2();
-        u4 j = JoyBOrig & 0x0000FFFF | 0x00FF0000 | ssautosw << 24;
+        u4 j = (JoyBOrig & 0x0000FFFF) | 0x00FF0000 | ssautosw << 24;
         if (mousebuttons & 0x01)
             j |= 0x80000000;
         if (pressed[SSPause] != 0)

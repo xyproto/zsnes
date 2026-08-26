@@ -19,6 +19,10 @@ __asm__(
     ".balign 4\n"
     ASM_GSYM(mtemp)
     ".skip 4\n"
+    /* The same eight bytes under a second name: the map coordinate is
+       read as a dword one byte in, which needs the spacer to be part of
+       the object. */
+    ASM_GSYM(mmode7xpos8)
     ASM_GSYM(mmode7xpos)        /* x position */
     ".skip 4\n"
     ASM_GSYM(mtempa2)           /* spacer */
@@ -27,6 +31,10 @@ __asm__(
     ".skip 4\n"
     ASM_GSYM(mtempa)            /* spacer */
     ".skip 4\n"
+    /* The same eight bytes under a second name: the map coordinate is
+       read as a dword one byte in, which needs the spacer to be part of
+       the object. */
+    ASM_GSYM(mmode7ypos8)
     ASM_GSYM(mmode7ypos)        /* y position */
     ".skip 4\n"
     ASM_GSYM(mtempb2)           /* spacer */
@@ -97,8 +105,16 @@ __asm__(
     ".skip 4\n"
     ASM_GSYM(ngwleftb)
     ".skip 4\n"
+    /* The same eight bytes under a second name: the map coordinate is
+       read as a dword one byte in, which needs the spacer to be part of
+       the object. */
+    ASM_GSYM(mode7xpos8)
     ASM_GSYM(mode7xpos)         /* dword plus its spacer, as above */
     ".skip 8\n"
+    /* The same eight bytes under a second name: the map coordinate is
+       read as a dword one byte in, which needs the spacer to be part of
+       the object. */
+    ASM_GSYM(mode7ypos8)
     ASM_GSYM(mode7ypos)
     ".skip 8\n"
     ASM_GSYM(mode7xrpos)

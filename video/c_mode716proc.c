@@ -60,7 +60,11 @@ extern u1 vrama[65536];
 extern u1* vram;
 
 /* A dword read one byte into a position; the map coordinate straddles the
-   byte boundary, so this is deliberately unaligned. */
+   byte boundary, so this is deliberately unaligned. The argument is the
+   position *and the spacer that follows it* under one name - see
+   video/c_mode716data.c - so the four bytes are inside one object. */
+extern u4 mmode7xpos8[2], mmode7ypos8[2], mode7xpos8[2], mode7ypos8[2];
+
 static u4 dword_at1(u4 const* const p)
 {
     u4 v;
@@ -95,8 +99,8 @@ static u4 set_hi(u4 const r, u1 const v)
 static void seek_tile(u4* const eax, u4* const ebx, u4* const ecx,
     u1** const edi)
 {
-    u4 bx = dword_at1(&mmode7ypos) << 5;
-    u4 ax = dword_at1(&mmode7xpos) >> 3;
+    u4 bx = dword_at1(mmode7ypos8) << 5;
+    u4 ax = dword_at1(mmode7xpos8) >> 3;
 
     bx &= 0x7FF8u;
     ax = set_lo(ax, (u1)((u1)ax << 1)); /* shl al,1 - the byte only */
@@ -416,8 +420,8 @@ static void call_ngwin(void (*const fn)(void), struct m7regs* const r)
 /* seek_tile off the unprefixed positions, for the on-map re-entry. */
 static void seek_tile_ng(struct m7regs* const r)
 {
-    u4 bx = dword_at1(&mode7ypos) << 5;
-    u4 ax = dword_at1(&mode7xpos) >> 3;
+    u4 bx = dword_at1(mode7ypos8) << 5;
+    u4 ax = dword_at1(mode7xpos8) >> 3;
 
     bx &= 0x7FF8u;
     ax = set_lo(ax, (u1)((u1)ax << 1));

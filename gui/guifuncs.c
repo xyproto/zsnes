@@ -51,6 +51,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #ifndef lengthof
 #define lengthof(x) (sizeof(x) / sizeof *(x))
 #endif
+#include "../ignore.h"
 #include "../md.h"
 #include "../ui.h"
 #include "../zdir.h"
@@ -100,19 +101,19 @@ void LoadCustomFont()
     fp = fopen_dir(ZCfgPath, "zfont.txt", "r");
     if (fp) {
         while (fgets(data, 100, fp) && strcmp(data, "EOF\n") && x < 141) {
-            fgets(data, 10, fp); // get first line
+            IGNORE_RESULT(fgets(data, 10, fp)); // get first line
             InsertFontChar(data, x, 0);
 
-            fgets(data, 10, fp); // get second line
+            IGNORE_RESULT(fgets(data, 10, fp)); // get second line
             InsertFontChar(data, x, 1);
 
-            fgets(data, 10, fp); // get third line
+            IGNORE_RESULT(fgets(data, 10, fp)); // get third line
             InsertFontChar(data, x, 2);
 
-            fgets(data, 10, fp); // get fourth line
+            IGNORE_RESULT(fgets(data, 10, fp)); // get fourth line
             InsertFontChar(data, x, 3);
 
-            fgets(data, 10, fp); // get fifth line
+            IGNORE_RESULT(fgets(data, 10, fp)); // get fifth line
             InsertFontChar(data, x, 4);
         }
     } else {
@@ -544,7 +545,7 @@ void GUIRestoreVars()
 
     if ((cfg_fp = fopen_dir(ZCfgPath, "data.cmb", "rb"))) {
         u1 ComboBlHeader[23];
-        fread(ComboBlHeader, 1, 23, cfg_fp);
+        IGNORE_RESULT(fread(ComboBlHeader, 1, 23, cfg_fp));
 
         if (ComboBlHeader[22]) {
             NumComboGlob = ComboBlHeader[22];
@@ -552,7 +553,7 @@ void GUIRestoreVars()
             if (NumComboGlob > lengthof(CombinDataGlob))
                 NumComboGlob = lengthof(CombinDataGlob);
 
-            fread(CombinDataGlob, sizeof(*CombinDataGlob), NumComboGlob, cfg_fp);
+            IGNORE_RESULT(fread(CombinDataGlob, sizeof(*CombinDataGlob), NumComboGlob, cfg_fp));
         }
 
         fclose(cfg_fp);
@@ -702,7 +703,7 @@ void LoadCheatSearchFile(void)
     FILE* fp = 0;
 
     if ((fp = fopen_dir(ZCfgPath, "tmpchtsr.___", "rb"))) {
-        fread(vidbuffer + 129600, 1, 65536 * 2 + 32768, fp);
+        IGNORE_RESULT(fread(vidbuffer + 129600, 1, 65536 * 2 + 32768, fp));
         fclose(fp);
     }
 }
@@ -756,7 +757,7 @@ static const char* get_rom_name(struct dirent_info* entry, char* namebuffer)
                     break;
                 }
 
-                fread(HeaderBuffer, 1, HEADER_SIZE, fp);
+                IGNORE_RESULT(fread(HeaderBuffer, 1, HEADER_SIZE, fp));
 
                 if (sum(HeaderBuffer, HEADER_SIZE) < 2500) {
                     HasHeadScore += 2;
@@ -777,7 +778,7 @@ static const char* get_rom_name(struct dirent_info* entry, char* namebuffer)
 
                 if (entry->size - HeaderSize >= 0x500000) {
                     fseek(fp, 0x40FFC0 + HeaderSize, SEEK_SET);
-                    fread(HeaderBuffer, 1, INFO_LEN, fp);
+                    IGNORE_RESULT(fread(HeaderBuffer, 1, INFO_LEN, fp));
                     if (InfoScore((char*)HeaderBuffer) > 1) {
                         EHi = true;
                         memcpy(namebuffer, HeaderBuffer, INAME_LEN);
@@ -790,11 +791,11 @@ static const char* get_rom_name(struct dirent_info* entry, char* namebuffer)
                         int LoScore, HiScore;
 
                         fseek(fp, 0x7FC0 + HeaderSize, SEEK_SET);
-                        fread(LoHead, 1, INFO_LEN, fp);
+                        IGNORE_RESULT(fread(LoHead, 1, INFO_LEN, fp));
                         LoScore = InfoScore(LoHead);
 
                         fseek(fp, 0xFFC0 + HeaderSize, SEEK_SET);
-                        fread(HiHead, 1, INFO_LEN, fp);
+                        IGNORE_RESULT(fread(HiHead, 1, INFO_LEN, fp));
                         HiScore = InfoScore(HiHead);
 
                         memcpy(namebuffer, LoScore > HiScore ? LoHead : HiHead, INAME_LEN);
@@ -802,7 +803,7 @@ static const char* get_rom_name(struct dirent_info* entry, char* namebuffer)
                         if (entry->size - HeaderSize >= 0x20000) {
                             int IntLScore;
                             fseek(fp, (entry->size - HeaderSize) / 2 + 0x7FC0 + HeaderSize, SEEK_SET);
-                            fread(LoHead, 1, INFO_LEN, fp);
+                            IGNORE_RESULT(fread(LoHead, 1, INFO_LEN, fp));
                             IntLScore = InfoScore(LoHead) / 2;
 
                             if (IntLScore > LoScore && IntLScore > HiScore) {
@@ -812,7 +813,7 @@ static const char* get_rom_name(struct dirent_info* entry, char* namebuffer)
                     } else // ROM only has one block
                     {
                         fseek(fp, 0x7FC0 + HeaderSize, SEEK_SET);
-                        fread(namebuffer, INAME_LEN, 1, fp);
+                        IGNORE_RESULT(fread(namebuffer, INAME_LEN, 1, fp));
                     }
                 }
                 fclose(fp);

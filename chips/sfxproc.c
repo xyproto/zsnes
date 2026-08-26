@@ -150,7 +150,7 @@ void c_reg301Fw(uint8_t v)
     /* start execution; the IRQ flag is only set when the GSU stops */
     uint8_t* p = (uint8_t*)(uintptr_t)SfxMemTable[(uint8_t)SfxPBR] + (uint16_t)SfxR15;
     BYTE(SfxPIPE, 0) = *p;
-    *(uint16_t*)&SfxR15 += 1;
+    SfxR15 = (SfxR15 & 0xFFFF0000u) | (uint16_t)(SfxR15 + 1);
     BYTE(SfxSFR, 0) |= 0x20;
     SFXProc = 1;
     SfxExecOnStart();

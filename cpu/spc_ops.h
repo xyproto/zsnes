@@ -138,7 +138,7 @@ u1* SpcOp2F(u1* const pc) { return spc_branch(pc, true); }            /* BRA */
 static inline void spc_push(u1 const val)
 {
     SPCRAM[spcS] = val;
-    spcS = spcS & 0xFFFFFF00 | (u1)(spcS - 1);
+    spcS = (spcS & 0xFFFFFF00) | (u1)(spcS - 1);
 }
 
 /* TCALL n - push the return address and jump through the vector table at the
@@ -302,14 +302,14 @@ SPC_ALU(E8, spc_a_imm, spc_mov_a)
 
 /* Flag setters. CLRP/SETP also move the direct-page base. */
 u1* SpcOp20(u1* const pc) { spcP &= 0xDF; spcRamDP = SPCRAM; return pc; }        /* CLRP */
-u1* SpcOp40(u1* const pc) { spcP = spcP & 0xFB | 0x20; spcRamDP = SPCRAM + 0x100; return pc; } /* SETP */
+u1* SpcOp40(u1* const pc) { spcP = (spcP & 0xFB) | 0x20; spcRamDP = SPCRAM + 0x100; return pc; } /* SETP */
 u1* SpcOp60(u1* const pc) { spcP &= 0xFE; return pc; }                           /* CLRC */
 u1* SpcOp80(u1* const pc) { spcP |= 0x01; return pc; }                           /* SETC */
 u1* SpcOpA0(u1* const pc) { spcP |= 0x04; return pc; }                           /* EI   */
 u1* SpcOpC0(u1* const pc) { spcP &= 0xFB; return pc; }                           /* DI   */
 u1* SpcOpE0(u1* const pc) { spcP &= 0xB7; return pc; }                           /* CLRV */
 u1* SpcOpED(u1* const pc) { spcP ^= 0x01; return pc; }                           /* NOTC */
-u1* SpcOpBD(u1* const pc) { spcS = spcS & 0xFFFFFF00 | spcX; return pc; }        /* MOV SP,X */
+u1* SpcOpBD(u1* const pc) { spcS = (spcS & 0xFFFFFF00) | spcX; return pc; }        /* MOV SP,X */
 
 /* --- 8-bit arithmetic ------------------------------------------------------
  * The asm gets N/Z/V/C/H straight out of x86 `adc`/`sbb` + `lahf`, so the C
@@ -611,7 +611,7 @@ SPC_MEM_RMW(4E, (spcRamDP + (pc[0] | (u2)pc[1] << 8)), 2, spcNZ = al & spcA; al 
 /* --- stack ----------------------------------------------------------------- */
 static inline u1 spc_pop(void)
 {
-    spcS = spcS & 0xFFFFFF00 | (u1)(spcS + 1);
+    spcS = (spcS & 0xFFFFFF00) | (u1)(spcS + 1);
     return SPCRAM[spcS];
 }
 
@@ -836,13 +836,13 @@ u1* SpcOp2A(u1* const pc) { spcP |= spc_getbit(pc) ^ 1; return pc + 2; }        
 u1* SpcOp4A(u1* const pc) { spcP &= spc_getbit(pc) | 0xFE; return pc + 2; }       /* AND1 C,m.b  */
 u1* SpcOp6A(u1* const pc) { spcP &= (spc_getbit(pc) | 0xFE) ^ 1; return pc + 2; } /* AND1 C,/m.b */
 u1* SpcOp8A(u1* const pc) { spcP ^= spc_getbit(pc); return pc + 2; }              /* EOR1 C,m.b  */
-u1* SpcOpAA(u1* const pc) { spcP = spcP & 0xFE | spc_getbit(pc); return pc + 2; } /* MOV1 C,m.b  */
+u1* SpcOpAA(u1* const pc) { spcP = (spcP & 0xFE) | spc_getbit(pc); return pc + 2; } /* MOV1 C,m.b  */
 
 u1* SpcOpCA(u1* const pc) /* MOV1 m.b,C */
 {
     spcmembit const m = spc_membit(pc);
     u1 const mask = (u1)(1 << m.bit);
-    spc_write(m.addr, (u1)(spc_read(m.addr) & ~mask | (spcP & 1) << m.bit));
+    spc_write(m.addr, (u1)((spc_read(m.addr) & ~mask) | (spcP & 1) << m.bit));
     return pc + 2;
 }
 

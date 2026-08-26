@@ -440,7 +440,7 @@ fastforb:
         show_gamma:;
             u1 const al = gammalevel;
             gammalevel16b = al / 2;
-            static char gammamsg[] = "GAMMA LEVEL:   ";
+            static char gammamsg[20] = "GAMMA LEVEL:   ";
             sprintf(gammamsg + 13, "%2d", al);
             SetMessage(gammamsg);
         }
@@ -515,11 +515,11 @@ void genfulladdtab(void)
         for (u4 i = 0; i != lengthof(fulladdtab); ++i) {
             u2 v = i;
             if (i & vesa2_rtrcl)
-                v = v & vesa2_rtrcla | vesa2_rfull;
+                v = (v & vesa2_rtrcla) | vesa2_rfull;
             if (i & vesa2_gtrcl)
-                v = v & vesa2_gtrcla | vesa2_gfull;
+                v = (v & vesa2_gtrcla) | vesa2_gfull;
             if (i & vesa2_btrcl)
-                v = v & vesa2_btrcla | vesa2_bfull;
+                v = (v & vesa2_btrcla) | vesa2_bfull;
             fulladdtab[i] = v << 1;
         }
     }
@@ -537,7 +537,7 @@ void ConvertToAFormat(void)
         u4 w = 128;
         do {
             u4 const val = *b;
-            *b++ = (val & 0xFFC0FFC0) >> 1 | val & 0x001F001F;
+            *b++ = (val & 0xFFC0FFC0) >> 1 | (val & 0x001F001F);
         } while (--w != 0);
         b += 16;
     } while (--h != 0);

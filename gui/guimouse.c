@@ -799,8 +799,12 @@ static void DisplayGUIMovieClick(s4 const eax, s4 const edx)
 #define GUIInputSetIndKey(p1, keycontrolval)                                            \
     do {                                                                                \
         /* Check if controller is set */                                                \
-        if (*(u4 const*)(keycontrolval) == 0)                                           \
-            return; /* XXX cast makes no sense */                                       \
+        /* Was a dword read of a single byte, which picked up whatever three            \
+           globals the linker put after it - undefined, and it made the test            \
+           depend on the *other* players' flags. It asks whether this                   \
+           controller is set, so read the byte. */                                      \
+        if (*(keycontrolval) == 0)                                                      \
+            return;                                                                     \
                                                                                         \
         DGOptnsProcBox(eax, edx, 45, 102, &p1##upk, (keycontrolval)); /* Up */          \
         DGOptnsProcBox(eax, edx, 45, 112, &p1##downk, (keycontrolval)); /* Down */      \

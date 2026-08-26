@@ -2277,7 +2277,7 @@ void OP(COp89m16)(zreg* const r) /* BIT # */
  * through the memory tables, then vector through brkv / copv. Emulation mode
  * pushes no bank and uses the 8-bit vectors.
  */
-static void brk_cop(zreg* const r, u2 const vec, u2 const vec8, u4 const setbits8)
+static inline void brk_cop(zreg* const r, u2 const vec, u2 const vec8, u4 const setbits8)
 {
     u1* ram;
     u2 sp;
@@ -2337,7 +2337,7 @@ void OP(COp02)(zreg* const r) { brk_cop(r, copv, copv8, 0x04u); } /* COP s */
  * flags, landing on a WAI ($CB) re-arms intrset, and emulation mode returns to
  * bank zero regardless of what was pushed.
  */
-static void rti_body(zreg* const r)
+static inline void rti_body(zreg* const r)
 {
     int const emul = (xe & 1) != 0;
 

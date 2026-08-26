@@ -245,7 +245,10 @@ void OP(COp22)(zreg* const r) /* JSL al */
         return;
     }
     if (r[R_EBX] == 0 && r[R_EAX] > 0x2000u) {
-        initaddrl = IRAM - 0x3000;
+        /* The SA-1 maps IRAM at $3000, so the base is biased down by that
+           and the mapped address is used as the index. Done on the integer,
+           because IRAM - 0x3000 is a pointer outside its own object. */
+        initaddrl = (u1*)((uintptr_t)IRAM - 0x3000u);
         r[R_EAX] = (r[R_EAX] & 0x7FFu) + 0x3000u;
         r[R_ESI] = (zreg)(uintptr_t)initaddrl + r[R_EAX];
         return;

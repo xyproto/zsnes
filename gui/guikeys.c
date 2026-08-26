@@ -683,7 +683,7 @@ static void GUISoundKeys(char dh)
 
     if (dh == 'R') { // Sampling Rate
         static u1 const sampratenext[] = { 1, 4, 5, 6, 2, 3, 0, 0 };
-        SoundQuality = SoundQuality & 0xFFFFFF00 | sampratenext[SoundQuality & 0xFF];
+        SoundQuality = (SoundQuality & 0xFFFFFF00) | sampratenext[SoundQuality & 0xFF];
     }
 
     GUIKeyButtonHole(&SoundInterpType, 0, 'N', dh);
@@ -714,7 +714,7 @@ static void GUICheatKeys(char dh, char al)
                     u1 const al = digit2num(GUICheatTextZ1[0]);
                     u1 const ah = digit2num(GUICheatTextZ1[1]);
                     u1* esi = cheatdata + GUIcurrentcheatcursloc * 28;
-                    esi[1] = al << 4 | ah & 0x0F;
+                    esi[1] = al << 4 | (ah & 0x0F);
                     GUICheatTextZ1[0] = '\0';
                     EnableCheatCodeNoPrevMod(esi);
                 } else {
@@ -978,7 +978,7 @@ static void InsertSearchCharacter(char const dh)
         if (ecx == CSInputDisplay + 10)
             return;
         // Add character if necessary
-        if ('0' <= dh && dh <= '9' || (CheatSrcByteBase != 0 && 'A' <= dh && dh <= 'F')) {
+        if (('0' <= dh && dh <= '9') || (CheatSrcByteBase != 0 && 'A' <= dh && dh <= 'F')) {
             *ecx++ = dh;
         } else {
             return;

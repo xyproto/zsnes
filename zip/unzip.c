@@ -154,7 +154,7 @@ FILE* fin;
 uLong* pX;
 {
     uLong x;
-    int i;
+    int i = 0; /* a failed read leaves it alone, and the caller sees err */
     int err;
 
     err = unzlocal_getByte(fin, &i);
@@ -176,7 +176,7 @@ FILE* fin;
 uLong* pX;
 {
     uLong x;
-    int i;
+    int i = 0; /* a failed read leaves it alone, and the caller sees err */
     int err;
 
     err = unzlocal_getByte(fin, &i);

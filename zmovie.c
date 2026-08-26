@@ -69,6 +69,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define NUMCONV_FW2
 #define NUMCONV_FW3
 #define NUMCONV_FW4
+#include "ignore.h"
 #include "numconv.h"
 
 extern uint32_t versionNumber, CRC32, cur_zst_size;
@@ -361,20 +362,20 @@ static bool zmv_header_read(struct zmv_header* zmv_head, FILE* fp)
 {
     uint8_t flag;
 
-    fread(zmv_head->magic, 3, 1, fp);
+    IGNORE_RESULT(fread(zmv_head->magic, 3, 1, fp));
     zmv_head->zsnes_version = fread2(fp);
     zmv_head->rom_crc32 = fread4(fp);
     zmv_head->frames = fread4(fp);
     zmv_head->rerecords = fread4(fp);
     zmv_head->removed_frames = fread4(fp);
     zmv_head->incr_frames = fread4(fp);
-    fread(&zmv_head->average_fps, 1, 1, fp);
+    IGNORE_RESULT(fread(&zmv_head->average_fps, 1, 1, fp));
     zmv_head->key_combos = fread4(fp);
     zmv_head->internal_chapters = fread2(fp);
     zmv_head->author_len = fread2(fp);
     zmv_head->zst_size = fread3(fp);
     zmv_head->initial_input = fread2(fp);
-    fread(&flag, 1, 1, fp);
+    IGNORE_RESULT(fread(&flag, 1, 1, fp));
 
     if (feof(fp)) {
         return (false);
@@ -829,7 +830,7 @@ static void write_last_joy_state(FILE* fp)
 
 static void read_last_joy_state(FILE* fp)
 {
-    fread(zmv_vars.write_buffer, 11, 1, fp);
+    IGNORE_RESULT(fread(zmv_vars.write_buffer, 11, 1, fp));
     load_last_joy_state(zmv_vars.write_buffer);
 }
 
@@ -1275,7 +1276,7 @@ static void replay_pad(uint8_t pad, uint8_t flag, uint8_t* buffer, size_t* skip_
             size_t leftover_bits = (8 - (*skip_bits & 7)) & 7;
             bits_needed -= leftover_bits;
 
-            fread(buffer + (*skip_bits >> 3) + ((*skip_bits & 7) ? 1 : 0), 1, (bits_needed >> 3) + ((bits_needed & 7) ? 1 : 0), zmv_vars.fp);
+            IGNORE_RESULT(fread(buffer + (*skip_bits >> 3) + ((*skip_bits & 7) ? 1 : 0), 1, (bits_needed >> 3) + ((bits_needed & 7) ? 1 : 0), zmv_vars.fp));
             *skip_bits = pad_bit_decoder(pad, buffer, *skip_bits);
         }
     }
@@ -1302,7 +1303,7 @@ static bool zmv_replay()
             uint8_t flag = 0;
             zmv_vars.rle_count = 0;
 
-            fread(&flag, 1, 1, zmv_vars.fp);
+            IGNORE_RESULT(fread(&flag, 1, 1, zmv_vars.fp));
 
             if (flag & BIT(0)) // Command
             {
@@ -1478,7 +1479,7 @@ static void zmv_add_chapter()
         if ((internal_chapter_pos(&zmv_open_vars.external_chapters, current_loc)) == 0xFFFFFFFF) {
             // Check if we have internal right here
             uint8_t flag;
-            fread(&flag, 1, 1, zmv_vars.fp);
+            IGNORE_RESULT(fread(&flag, 1, 1, zmv_vars.fp));
 
             if (!(flag & BIT(2))) {
                 char* author = 0;
@@ -1489,7 +1490,7 @@ static void zmv_add_chapter()
                 if (zmv_vars.header.author_len) {
                     if ((author = (char*)malloc(zmv_vars.header.author_len))) {
                         fseek(zmv_vars.fp, -(zmv_vars.header.author_len), SEEK_END);
-                        fread(author, zmv_vars.header.author_len, 1, zmv_vars.fp);
+                        IGNORE_RESULT(fread(author, zmv_vars.header.author_len, 1, zmv_vars.fp));
                     }
                 }
 
@@ -1545,7 +1546,7 @@ static void zmv_replay_to_record()
         zmv_vars.rle_count = 0;
     }
 
-    ftruncate(fileno(zmv_vars.fp), ftell(zmv_vars.fp));
+    IGNORE_RESULT(ftruncate(fileno(zmv_vars.fp), ftell(zmv_vars.fp)));
 }
 
 static size_t zmv_frames_replayed()
@@ -1636,7 +1637,7 @@ void zmv_rewind_load(size_t state, bool playback)
         zmv_vars.rle_count = zmv_rewind_buffer[state].rle_count;
 
         fseek(zmv_vars.fp, file_pos, SEEK_SET);
-        ftruncate(fileno(zmv_vars.fp), file_pos);
+        IGNORE_RESULT(ftruncate(fileno(zmv_vars.fp), file_pos));
 
         zmv_vars.header.internal_chapters = internal_chapter_delete_after(&zmv_vars.internal_chapters, file_pos);
         zmv_vars.last_internal_chapter_offset = internal_chapter_lesser(&zmv_vars.internal_chapters, ~0);
@@ -1837,7 +1838,7 @@ bool mzt_load(int position, bool playback)
 
                     fseek(zmv_vars.fp, rewind_point, SEEK_SET);
                     zmv_vars.last_internal_chapter_offset = internal_chapter_lesser(&zmv_vars.internal_chapters, ~0);
-                    ftruncate(fileno(zmv_vars.fp), ftell(zmv_vars.fp));
+                    IGNORE_RESULT(ftruncate(fileno(zmv_vars.fp), ftell(zmv_vars.fp)));
                 }
             } else {
                 zmv_open_vars.frames_replayed = current_frame;
@@ -2450,11 +2451,11 @@ static void OldMovieReplay()
 
             if (byte == 0) // 0 means the input has changed
             {
-                fread(&old_movie.last_joy_state.A, 1, 4, old_movie.fp);
-                fread(&old_movie.last_joy_state.B, 1, 4, old_movie.fp);
-                fread(&old_movie.last_joy_state.C, 1, 4, old_movie.fp);
-                fread(&old_movie.last_joy_state.D, 1, 4, old_movie.fp);
-                fread(&old_movie.last_joy_state.E, 1, 4, old_movie.fp);
+                IGNORE_RESULT(fread(&old_movie.last_joy_state.A, 1, 4, old_movie.fp));
+                IGNORE_RESULT(fread(&old_movie.last_joy_state.B, 1, 4, old_movie.fp));
+                IGNORE_RESULT(fread(&old_movie.last_joy_state.C, 1, 4, old_movie.fp));
+                IGNORE_RESULT(fread(&old_movie.last_joy_state.D, 1, 4, old_movie.fp));
+                IGNORE_RESULT(fread(&old_movie.last_joy_state.E, 1, 4, old_movie.fp));
             }
 
             JoyAOrig = old_movie.last_joy_state.A;
@@ -2511,7 +2512,7 @@ static void OldMoviePlay(FILE* fp)
     SetMovieMode(MOVIE_OFF);
 
     fseek(fp, Totalbyteloaded, SEEK_SET);
-    fread(RecData, 1, 16, fp);
+    IGNORE_RESULT(fread(RecData, 1, 16, fp));
     printf("Movie made with version: %d\n", RecData[1]);
 
     if (RecData[2] == 1) {
@@ -2528,7 +2529,7 @@ static void OldMoviePlay(FILE* fp)
 
     if (soundon == RecData[0]) {
         if (ramsize) {
-            fread(sram, 1, ramsize, fp);
+            IGNORE_RESULT(fread(sram, 1, ramsize, fp));
         }
 
         SetMovieMode(MOVIE_OLD_PLAY);
@@ -2752,7 +2753,7 @@ void MoviePlay()
 
         if ((fp = fopen_dir(ZMoviePath, ZSaveName, "rb"))) {
             char header_buf[3];
-            fread(header_buf, 3, 1, fp);
+            IGNORE_RESULT(fread(header_buf, 3, 1, fp));
 
             if (!strncmp("ZMV", header_buf, 3)) // New Enhanced Format
             {

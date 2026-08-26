@@ -35,6 +35,7 @@ extern u2 bg1objptr[4], bg1ptr[4], bg1scrolx[4], bg1scroly[4];
 extern u4 bg1ptrx[4], bg1ptry[4];
 extern u2 bg3ptr, bg3scrolx, bg3scroly;
 extern u2 curypos;
+extern u1 bg1ptr_b[10], bg1scrolx_b[10];
 extern u2 vidmemch4[2048];
 extern u4 yadder, yrevadder;
 
@@ -56,9 +57,12 @@ static void offs_init(u4 const ebp, u1 const* const edi)
     eax = bg3ptr;
     eax = (u2)(eax + edx);
     edx = bg3scrolx & 0xF8u;
-    /* `mov ebx,[curypos]` is a dword read of a u2 scanline counter, so the
-       value stashed here carries whatever follows it in memory. */
-    ebx = *(u4 const*)&curypos;
+    /* `mov ebx,[curypos]` was a dword read of a u2 scanline counter, so it
+       carried whatever the linker happened to put after it. Only the low nine
+       bits of ofsmcyps are ever looked at - the users add it to a value under
+       0x400, test bit 8 and mask to 0xFF - and curypos never exceeds 261, so
+       the rest was never observable. Read the counter itself. */
+    ebx = curypos;
     ofsmcyps = ebx;
     edx = (edx >> 3) << 1;
     eax = (u2)(eax + edx);
@@ -71,8 +75,9 @@ static void offs_init(u4 const ebp, u1 const* const edi)
     ofsmady = bg1ptry[ebp];
     ofsmadx = bg1ptrx[ebp];
     /* A dword read of a word array: the next layer's pointer rides in the top
-       half and reaches ofsmtptr with it. */
-    eax = *(u4 const*)&bg1ptr[ebp];
+       half and reaches ofsmtptr with it. bg1ptr_b names those bytes plus the
+       two that follow the last layer, so the read stays in one object. */
+    memcpy(&eax, bg1ptr_b + ebp * 2u, 4);
     ofsmtptr = eax;
     ofsmtptrs = eax;
     if (ecx & 0x0100u) {
@@ -82,7 +87,7 @@ static void offs_init(u4 const ebp, u1 const* const edi)
     eax += ecx;
     yposngom = yadder;
     flipyposngom = yrevadder;
-    ecx = *(u4 const*)&bg1scrolx[ebp];
+    memcpy(&ecx, bg1scrolx_b + ebp * 2u, 4);
     edx = bg1ptrx[ebp];
     if (ecx & 0x0100u) {
         eax += edx;

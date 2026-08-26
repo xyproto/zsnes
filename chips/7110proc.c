@@ -878,7 +878,8 @@ uint8_t c_SPC4810(void)
     p = romdata + 0x100000 + SPCROMPtr;
     if (com[0] & 2) {
         p = (uint8_t*)((uintptr_t)p + SPCROMAdj);
-        *(uint16_t*)&SPCROMAdj += 1;
+        /* a 16-bit increment of a 32-bit slot: the high half must not carry */
+        SPCROMAdj = (SPCROMAdj & 0xFFFF0000u) | (uint16_t)(SPCROMAdj + 1);
         return *p;
     }
     al = *p;
@@ -896,7 +897,7 @@ uint8_t c_SPC481A(void)
     uint8_t al;
     if (SPCCheckFix == 0)
         return 0;
-    al = romdata[0x100000 + SPCROMPtr + *(uint16_t*)&SPCROMAdj];
+    al = romdata[0x100000 + SPCROMPtr + (uint16_t)SPCROMAdj];
     if (com[1] == 4)
         ROM_INDIRECT += SPCROMAdj; /* 16-bit 4814 add after 481A */
     return al;

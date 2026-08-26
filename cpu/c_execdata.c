@@ -58,6 +58,8 @@ __asm__(
     ".long 0\n"
     ASM_GSYM(oldhand8s)
     ".short 0\n"
+    /* 24 bytes from here are saved as one run; see zstate.c. */
+    ASM_GSYM(opcd_run)
     ASM_GSYM(opcd)
     ".long 0\n"
     ASM_GSYM(pdh)
@@ -118,6 +120,8 @@ __asm__(
     ".long 0\n"
     ASM_GSYM(NetCommand)
     ".long 0\n"
+    /* 40 bytes from here are saved as one run; see zstate.c. */
+    ASM_GSYM(spc700read_run)
     ASM_GSYM(spc700read)
     ".long 0\n"
     ASM_GSYM(lowestspc)

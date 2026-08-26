@@ -37,6 +37,7 @@
 #include "guiwindp.h"
 
 #if defined __UNIXSDL__ && defined __OPENGL__
+#include "../ignore.h"
 #include "../linux/gl_draw.h"
 #endif
 
@@ -1017,7 +1018,7 @@ void DisplayGUIVideo(void)
         NTSCFilter = 0;
         GUIVntscTab[0] = 0;
         if ((GUIVideoTabs[0] & 0xFF) == 0)
-            GUIVideoTabs[0] = GUIVideoTabs[0] & 0xFFFFFF00 | 1;
+            GUIVideoTabs[0] = (GUIVideoTabs[0] & 0xFFFFFF00) | 1;
     }
 
     {
@@ -1780,7 +1781,7 @@ static u4 NetplayGenerateSessionToken(void)
     FILE* fp = fopen("/dev/urandom", "rb");
 
     if (fp != NULL) {
-        fread(&token, sizeof(token), 1, fp);
+        IGNORE_RESULT(fread(&token, sizeof(token), 1, fp));
         fclose(fp);
     }
     if (token == 0)
@@ -2608,7 +2609,7 @@ static u1 GUICslidSet(void const* const p1) // slider var
 
 static char const* GUICslidText(void const* p1) // slider var, text
 {
-    static char GUIGUIOptnsTextD2[3];
+    static char GUIGUIOptnsTextD2[12];
     sprintf(GUIGUIOptnsTextD2, "%2u", *(u1 const*)p1);
     return GUIGUIOptnsTextD2;
 }
@@ -2911,7 +2912,7 @@ void DisplayGUICombo(void)
         ComboData const* const esi = &(GUIComboGameSpec == 0 ? CombinDataGlob : CombinDataLocl)[GUIccombcursloc];
         memcpy(GUIComboTextH, esi->name, sizeof(esi->name));
         memcpy(GUIComboData, esi->combo, sizeof(esi->combo));
-        GUIComboKey = GUIComboKey & 0xFFFF0000 | esi->key;
+        GUIComboKey = (GUIComboKey & 0xFFFF0000) | (esi->key);
         GUIComboPNum = esi->player;
         GUIComboLHorz = esi->ff;
         // determine length of combo data
@@ -3429,7 +3430,7 @@ void DisplayGUISave(void)
     GUIDisplayCheckboxu(20, 11, 98, &PauseLoad, "PAUSE AFTER LOADING STATE", 0);
     GUIDisplayCheckboxu(20, 11, 108, &PauseRewind, "PAUSE AFTER REWIND", 12);
 
-    char GUISaveTextZ3[3];
+    char GUISaveTextZ3[12];
 
     GUIDisplayBBox(20, 150, 17, 165, 24, 167); // Rewind States Box
     sprintf(GUISaveTextZ3, "%02u", RewindStates);
@@ -3469,7 +3470,7 @@ static u1 SpdslidSet(void const* const p1) // slider var
 
 static char const* SpdslidText(void const* const p1) // slider var, text
 {
-    static char GUISpeedTextD1[4];
+    static char GUISpeedTextD1[12];
     u4 const al = *(u1 const*)p1; // currently emuspeed ranges from 0 to 58
     if (al >= 29) // this will turn it into '/30' to '30x'
     { // ff
@@ -3521,7 +3522,7 @@ void DisplayGUISpeed(void)
     GUIDisplayCheckboxu(21, 11, 135, &FastFwdToggle, "TOGGLED FFWD/SLWDWN", 0);
     GUIDisplayCheckboxun(21, 11, 145, &frameskip, 0, "AUTO FRAME RATE", 0);
 
-    char GUISpeedTextZ3[3];
+    char GUISpeedTextZ3[12];
 
     GUIDisplayBBox(21, 96, 24, 114, 31, 167); // FF Ratio Box
     sprintf(GUISpeedTextZ3, "%2u", FFRatio + 2);

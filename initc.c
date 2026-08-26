@@ -64,6 +64,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #endif
 
 #define NUMCONV_FR4
+#include "ignore.h"
 #include "numconv.h"
 
 #ifndef __GNUC__
@@ -492,9 +493,23 @@ void chip_detect()
 {
     uint8_t* ROM = romdata;
 
-    C4Enable = RTCEnable = SA1Enable = SDD1Enable = OBCEnable = CHIPBATT = false;
-    SGBEnable = ST18Enable = DSP1Enable = DSP2Enable = DSP3Enable = false;
-    DSP4Enable = SPC7110Enable = BSEnable = SFXEnable = SETAEnable = MSUEnable = false;
+    C4Enable = false;
+    RTCEnable = false;
+    SA1Enable = false;
+    SDD1Enable = false;
+    OBCEnable = false;
+    CHIPBATT = false;
+    SGBEnable = false;
+    ST18Enable = false;
+    DSP1Enable = false;
+    DSP2Enable = false;
+    DSP3Enable = false;
+    DSP4Enable = false;
+    SPC7110Enable = false;
+    BSEnable = false;
+    SFXEnable = false;
+    SETAEnable = false;
+    MSUEnable = false;
 
     // DSP Family
     if (ROM[infoloc + TypeOffset] == 3) {
@@ -820,7 +835,7 @@ void loadFile(char* filename)
                 fseek(fp, 512, SEEK_SET);
             }
 
-            fread(ROM + curromspace, stat_results.st_size, 1, fp);
+            IGNORE_RESULT(fread(ROM + curromspace, stat_results.st_size, 1, fp));
             fclose(fp);
 
             curromspace += stat_results.st_size;
@@ -1948,14 +1963,14 @@ void OpenCombFile()
     NumComboLocl = 0;
 
     if ((fp = fopen_dir(ZComboPath, ZSaveName, "rb"))) {
-        fread(ComboHeader, 1, 23, fp);
+        IGNORE_RESULT(fread(ComboHeader, 1, 23, fp));
         NumComboLocl = ComboHeader[22];
 
         if (NumComboLocl > lengthof(CombinDataLocl))
             NumComboLocl = lengthof(CombinDataLocl);
 
         if (NumComboLocl) {
-            fread(CombinDataLocl, sizeof(*CombinDataLocl), NumComboLocl, fp);
+            IGNORE_RESULT(fread(CombinDataLocl, sizeof(*CombinDataLocl), NumComboLocl, fp));
         }
 
         fclose(fp);

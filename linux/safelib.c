@@ -35,6 +35,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "safelib.h"
 
 #include "../argv.h"
+#include "../ignore.h"
 
 // Introducing secure forking ;) -Nach
 
@@ -178,7 +179,7 @@ pid_t safe_fork(int* a, size_t size)
         if (childpid) // Parent Process
         {
             close(filedes[1]); // Close writing
-            read(filedes[0], &success, 1);
+            IGNORE_RESULT(read(filedes[0], &success, 1));
             close(filedes[0]);
             if (success) {
                 return (childpid);
@@ -192,13 +193,13 @@ pid_t safe_fork(int* a, size_t size)
         close(filedes[0]); // Close reading
 
         if (!spc_sanitize_files(a, size, filedes[1]) || !spc_drop_privileges()) {
-            write(filedes[1], &success, 1);
+            IGNORE_RESULT(write(filedes[1], &success, 1));
             close(filedes[1]);
             _exit(0);
         }
 
         success = 1;
-        write(filedes[1], &success, 1);
+        IGNORE_RESULT(write(filedes[1], &success, 1));
         close(filedes[1]);
         return (0);
     }
@@ -221,7 +222,7 @@ static pid_t parent_pause_fork()
         {
             char success = 1;
             close(filedes[1]);
-            read(filedes[0], &success, 1);
+            IGNORE_RESULT(read(filedes[0], &success, 1));
             close(filedes[0]);
             if (success) {
                 return (pid);
@@ -240,7 +241,7 @@ static pid_t parent_pause_fork()
 static void close_child(pid_t pid)
 {
     char success = 0;
-    write(-pid, &success, 1);
+    IGNORE_RESULT(write(-pid, &success, 1));
     close(-pid);
     _exit(0);
 }

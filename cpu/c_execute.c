@@ -436,7 +436,7 @@ void UpdatePORSCMR(void)
         sfxclineloc = eax;
     }
 
-    u4 const eax_ = (SfxPOR & 0x0F) << 2 | SfxSCMR & 0x03;
+    u4 const eax_ = (SfxPOR & 0x0F) << 2 | (SfxSCMR & 0x03);
     u4 const ebx = PLOTJmpb[eax_];
     u4 const eax = PLOTJmpa[eax_];
     FxTable[0x4C] = eax;

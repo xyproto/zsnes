@@ -264,7 +264,10 @@ u1* SpcOpFD(u1* pc);
 u1* SpcOpFE(u1* pc);
 u1* SpcOpFF(u1* pc);
 
-extern u1 SPCRAM[65472]; // Pointer to the SPC's RAM
+// The SPC's whole 64K address space. The declaration used to stop at the
+// .fill in cpu/c_spcdata.c, leaving the 64-byte boot ROM at $FFC0 - which
+// follows it in the same block, and which the handlers do index - outside it.
+extern u1 SPCRAM[65536];
 extern u1 spcA; // The A register (general purpose)
 extern u1 spcNZ; // The processor NZ flag (little speed up hack :) )
 extern u1 spcP; // The processor status byte (Removed for each flags), NZ are not always processed...

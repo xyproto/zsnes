@@ -11,6 +11,8 @@
 
 __asm__(
     ASM_SEC_BSS(".bss")
+    /* 3 bytes from here are saved as one run; see zstate.c. */
+    ASM_GSYM(SA1Status_run)
     ASM_GSYM(SA1Status)
     ".skip 1\n"
     ASM_GSYM(CurrentExecSA1)

@@ -212,7 +212,7 @@ static void breakatsignb(void)
         splitflags(edx);
         execute(&edx, &ebp, &esi, &edi);
         edx = joinflags(edx);
-        edx = edx & 0xFFFF00FF | pdh << 8;
+        edx = (edx & 0xFFFF00FF) | pdh << 8;
 
 #ifndef NO_DEBUGGER
         if ((++numinst & 0xFF) == 0 && Check_Key() != 0 && Get_Key() == 27)

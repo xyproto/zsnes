@@ -24,6 +24,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include "../ignore.h"
 #include "lib.h"
 
 #ifndef HAVE_AT_FUNCTIONS
@@ -39,7 +40,7 @@ int fstatat(int dirfd, const char* pathname, struct stat* buf, int flags)
         }
 
         if (cwdfd != -1) {
-            fchdir(cwdfd);
+            IGNORE_RESULT(fchdir(cwdfd));
             close(cwdfd);
         }
     } else {

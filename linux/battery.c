@@ -52,7 +52,7 @@ int CheckBattery()
                 continue;
             }
 
-            snprintf(fnbuf, 284, "%s%s/state", ac, ent->d_name);
+            snprintf(fnbuf, sizeof fnbuf, "%s%s/state", ac, ent->d_name);
             fp = fopen(fnbuf, "r");
             if (fp) {
                 while (fgets(line, 80, fp) && sscanf(line, pattern, key, arg) == 2) {
@@ -83,7 +83,7 @@ static void update_battery_info()
     // Check batteries
     DIR* batt_dir = opendir(batt);
     if (batt_dir) {
-        char fnbuf[40]; // longer than len(ac)+len(HEXDIGIT*4)+len({state|info})
+        char fnbuf[284]; // longer than len(ac)+len(d_name)+len({state|info})
         FILE* fp;
         const char* pattern = " %39[^:]: %39[ -~]"; // for sscanf
         char line[80], key[40], arg[40];
@@ -95,7 +95,7 @@ static void update_battery_info()
             if (ent->d_name[0] == '.') {
                 continue;
             }
-            snprintf(fnbuf, 40, "%s%s/info", batt, ent->d_name);
+            snprintf(fnbuf, sizeof fnbuf, "%s%s/info", batt, ent->d_name);
             fp = fopen(fnbuf, "r");
             if (fp) {
                 while (fgets(line, 80, fp) && sscanf(line, pattern, key, arg) == 2) {
@@ -107,7 +107,7 @@ static void update_battery_info()
                 }
                 fclose(fp);
             }
-            snprintf(fnbuf, 40, "%s%s/state", batt, ent->d_name);
+            snprintf(fnbuf, sizeof fnbuf, "%s%s/state", batt, ent->d_name);
             fp = fopen(fnbuf, "r");
             if (fp) {
                 int charging = 0;

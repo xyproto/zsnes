@@ -132,7 +132,7 @@ void c_sa12200w(uint8_t al) /* SA-1 CPU control */
         SA1BankPtr = (uint32_t)(uintptr_t)romdata;
         SA1Ptr = romdata + (uint16_t)SA1ResetV - 0x8000;
         BYTE(SA1xpb, 0) = 0;
-        *(uint16_t*)&SA1xs = 0x1FF;
+        SA1xs = (SA1xs & 0xFFFF0000u) | 0x1FFu;
         SA1RegPCS = romdata - 0x8000;
     }
 }

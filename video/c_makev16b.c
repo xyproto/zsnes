@@ -382,9 +382,9 @@ static void setpalallgamma(void)
         u2 c = r + g + b;
         if (c == 0 && vidbright != 0)
             c |= 0x0020;
-        pal16b[i] = pal16b[i] & 0xFFFF0000 | c;
-        pal16bcl[i] = pal16bcl[i] & 0xFFFF0000 | c & vesa2_clbit;
-        pal16bxcl[i] = pal16bxcl[i] & 0xFFFF0000 | (c ^ 0xFFFF) & vesa2_clbit;
+        pal16b[i] = (pal16b[i] & 0xFFFF0000) | c;
+        pal16bcl[i] = (pal16bcl[i] & 0xFFFF0000) | (c & vesa2_clbit);
+        pal16bxcl[i] = (pal16bxcl[i] & 0xFFFF0000) | ((c ^ 0xFFFF) & vesa2_clbit);
     } while (++i != 256);
     prevbright = vidbright;
 }
@@ -425,9 +425,9 @@ static void setpalette16bgamma(void)
         u2 c = r + g + b;
         if (c == 0 && vidbright != 0)
             c |= 0x0020;
-        pal16b[i] = pal16b[i] & 0xFFFF0000 | c;
-        pal16bcl[i] = pal16bcl[i] & 0xFFFF0000 | c & vesa2_clbit;
-        pal16bxcl[i] = pal16bxcl[i] & 0xFFFF0000 | (c ^ 0xFFFF) & vesa2_clbit;
+        pal16b[i] = (pal16b[i] & 0xFFFF0000) | c;
+        pal16bcl[i] = (pal16bcl[i] & 0xFFFF0000) | (c & vesa2_clbit);
+        pal16bxcl[i] = (pal16bxcl[i] & 0xFFFF0000) | ((c ^ 0xFFFF) & vesa2_clbit);
     } while (++i != 256);
 }
 
@@ -446,9 +446,9 @@ static void setpalall(void)
         u2 c = r + g + b;
         if (c == 0 && vidbright != 0)
             c |= 0x0020;
-        pal16b[i] = pal16b[i] & 0xFFFF0000 | c;
-        pal16bcl[i] = pal16bcl[i] & 0xFFFF0000 | c & vesa2_clbit;
-        pal16bxcl[i] = pal16bxcl[i] & 0xFFFF0000 | (c ^ 0xFFFF) & vesa2_clbit;
+        pal16b[i] = (pal16b[i] & 0xFFFF0000) | c;
+        pal16bcl[i] = (pal16bcl[i] & 0xFFFF0000) | (c & vesa2_clbit);
+        pal16bxcl[i] = (pal16bxcl[i] & 0xFFFF0000) | ((c ^ 0xFFFF) & vesa2_clbit);
     } while (++i != 256);
     prevbright = vidbright;
     if (V8Mode == 1)
@@ -482,9 +482,9 @@ void setpalette16b(void)
             u2 c = r + g + b;
             if (c == 0 && vidbright != 0)
                 c |= 0x0020;
-            pal16b[i] = pal16b[i] & 0xFFFF0000 | c;
-            pal16bcl[i] = pal16bcl[i] & 0xFFFF0000 | c & vesa2_clbit;
-            pal16bxcl[i] = pal16bxcl[i] & 0xFFFF0000 | (c ^ 0xFFFF) & vesa2_clbit;
+            pal16b[i] = (pal16b[i] & 0xFFFF0000) | c;
+            pal16bcl[i] = (pal16bcl[i] & 0xFFFF0000) | (c & vesa2_clbit);
+            pal16bxcl[i] = (pal16bxcl[i] & 0xFFFF0000) | ((c ^ 0xFFFF) & vesa2_clbit);
         } while (++i != 256);
     }
     if (V8Mode == 1)
@@ -1923,7 +1923,7 @@ void StartDrawNewGfx(void)
     if (res480 == 1 && scanlines == 0)
         cfieldad = cfield;
     // The assembly stored only the low word here.
-    reslbyl = reslbyl & 0xFFFF0000 | (u2)(resolutn - 8);
+    reslbyl = (reslbyl & 0xFFFF0000) | (u2)(resolutn - 8);
 
     // The frame driver runs on a register block because the colour-maths pass
     // it ends with reads two of them. It used to be reached by a call that

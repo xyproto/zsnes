@@ -64,6 +64,13 @@ extern void BuildWindow2(u4 y, u4 idx);
 extern u2 winlogicaval[256];
 extern u4 winboundary[256];
 
+/* The four bytes starting at each of these, under a name that covers all
+   four - see cpu/c_regsdata.c. The dword reads below are deliberate: the
+   assembly loaded a register from the byte and got its neighbours with it,
+   and the wide stores below pass them on. */
+extern u1 bg4ptr_dw[4], bg4objptr_dw[4];
+extern u1 scrnon_dw[4], forceblnk_dw[4], mode7set_dw[4], BG116x16t_dw[4], BG216x16t_dw[4], BG316x16t_dw[4], BG416x16t_dw[4], mosaicon_dw[4], mosaicsz_dw[4], interlval_dw[4], winl1_dw[4], winlogica_dw[4];
+
 /* Store a word and flag the layer if the line above held something else. */
 static void recw(u2* const tab, u4 const y, u2 const v, u1* const chg)
 {
@@ -136,7 +143,7 @@ void newengine16b_lines(void)
 
     /* Which screens this line is on. The sub screen counts as filled unless
        colour maths has something to add to it. */
-    ebx = dwr(&scrnon);
+    ebx = dwr(scrnon_dw);
     {
         u1 const cl = (u1)((((scrnon & 0x1Fu) | 0x20u) & scaddtype) & 0x3Fu);
 
@@ -180,12 +187,12 @@ void newengine16b_lines(void)
     recd(BGOPT1, y, dwr(&bg1objptr[0]), bg1change);
     recd(BGOPT2, y, dwr(&bg1objptr[1]), bg2change);
     recd(BGOPT3, y, dwr(&bg1objptr[2]), bg3change);
-    recd(BGOPT4, y, dwr(&bg1objptr[3]), bg4change);
+    recd(BGOPT4, y, dwr(bg4objptr_dw), bg4change);
 
     recd(BGPT1, y, dwr(&bg1ptr[0]), bg1change);
     recd(BGPT2, y, dwr(&bg1ptr[1]), bg2change);
     recd(BGPT3, y, dwr(&bg1ptr[2]), bg3change);
-    recd(BGPT4, y, dwr(&bg1ptr[3]), bg4change);
+    recd(BGPT4, y, dwr(bg4ptr_dw), bg4change);
 
     recd(BGPT1X, y, bg1ptrx[0], bg1change);
     recd(BGPT2X, y, bg1ptrx[1], bg2change);
@@ -197,7 +204,7 @@ void newengine16b_lines(void)
     recd(BGPT3Y, y, bg1ptry[2], bg3change);
     recd(BGPT4Y, y, bg1ptry[3], bg4change);
 
-    ebx = dwr(&forceblnk);
+    ebx = dwr(forceblnk_dw);
     if ((u1)ebx == 0) {
         scfbl = 0;
     }
@@ -210,21 +217,21 @@ void newengine16b_lines(void)
     mode7ab[y] = mode7A;
     mode7cd[y] = mode7C;
     mode7xy[y] = mode7X0;
-    wide(mode7st, y, dwr(&mode7set));
+    wide(mode7st, y, dwr(mode7set_dw));
 
-    wide(t16x161, y, dwr(&BG116x16t));
+    wide(t16x161, y, dwr(BG116x16t_dw));
     if (t16x161[y - 1] != (u1)BG116x16t) {
         bg1change[y] = 1;
     }
-    wide(t16x162, y, dwr(&BG216x16t));
+    wide(t16x162, y, dwr(BG216x16t_dw));
     if (t16x162[y - 1] != (u1)BG216x16t) {
         bg2change[y] = 1;
     }
-    wide(t16x163, y, dwr(&BG316x16t));
+    wide(t16x163, y, dwr(BG316x16t_dw));
     if (t16x163[y - 1] != (u1)BG316x16t) {
         bg3change[y] = 1;
     }
-    wide(t16x164, y, dwr(&BG416x16t));
+    wide(t16x164, y, dwr(BG416x16t_dw));
     if (t16x164[y - 1] != (u1)BG416x16t) {
         bg4change[y] = 1;
     }
@@ -233,9 +240,9 @@ void newengine16b_lines(void)
         ngextbg = 1;
     }
 
-    wide(mosenng, y, dwr(&mosaicon));
-    wide(mosszng, y, dwr(&mosaicsz));
-    wide(intrlng, y, dwr(&interlval));
+    wide(mosenng, y, dwr(mosaicon_dw));
+    wide(mosszng, y, dwr(mosaicsz_dw));
+    wide(intrlng, y, dwr(interlval_dw));
 
     setpalette16bng();
 
@@ -304,7 +311,7 @@ static void winback(u4 const y, u4 const n)
     if (!(bl & 0x0Au)) {
         bl = 0;
     } else if ((bl & 0x0Au) != 0x0Au) {
-        u4 edx = dwr(&winl1);
+        u4 edx = dwr(winl1_dw);
         u1 ch = bl;
 
         if ((bl & 0x0Au) != 0x02u) {
@@ -335,12 +342,12 @@ void newengine16b_windows(void)
     }
     winback(y, 5);
 
-    ebx = dwr(&winlogica);
+    ebx = dwr(winlogica_dw);
     memcpy(&winlogicaval[y], &ebx, 4);
     if (winlogicaval[y - 1] != (u2)ebx) {
         bgwinchange[y] = 1;
     }
-    ebx = dwr(&winl1);
+    ebx = dwr(winl1_dw);
     winboundary[y] = ebx;
     if (winboundary[y - 1] != ebx) {
         bgwinchange[y] = 1;
@@ -430,7 +437,7 @@ void newengine16b_sprwin(void);
 void newengine16b_sprwin(void)
 {
     u4 const y = curypos & 0xFFu;
-    u4 const ebx = dwr(&winl1);
+    u4 const ebx = dwr(winl1_dw);
     u2 dx;
 
     if (winbg1enval[y + 4u * 256u] == 0) {

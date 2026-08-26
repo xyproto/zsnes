@@ -916,7 +916,7 @@ static void ClockOutput(void)
             h += 12;
     }
 
-    char buf[9];
+    char buf[32];
     sprintf(buf, "%02d:%02d:%02d", h, m, s);
     OutputGraphicString16b5x5((u2*)vidbuffer + 216 * 288 + 32 + 192, buf);
 }

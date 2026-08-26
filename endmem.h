@@ -60,20 +60,26 @@ extern u2 sprendx[256];
 extern u2 vidmemch4[2048];
 extern u2 xtravbuf[288];
 /* The SuperFX dispatch tables. The "b" and "c" blocks start as copies of the
- * four base tables and are then patched; see InitFxTables() in chips/c_fxtable.c. */
-extern u4 FxTable[256];
+ * four base tables and are then patched; see InitFxTables() in chips/c_fxtable.c.
+ *
+ * Each base is declared 1024 long because that is what the dispatch indexes:
+ * table[(ALT << 8) | opcode], with ALT picking one of the four adjacent 256-
+ * entry tables endmem.c lays out back to back. The A1/A2/A3 names are the same
+ * memory under a second name, so InitFxTables and the difftest can address one
+ * ALT table at a time. */
+extern u4 FxTable[1024];
 extern u4 FxTableA1[256];
 extern u4 FxTableA2[256];
 extern u4 FxTableA3[256];
-extern u4 FxTableb[256];
+extern u4 FxTableb[1024];
 extern u4 FxTablebA1[256];
 extern u4 FxTablebA2[256];
 extern u4 FxTablebA3[256];
-extern u4 FxTablec[256];
+extern u4 FxTablec[1024];
 extern u4 FxTablecA1[256];
 extern u4 FxTablecA2[256];
 extern u4 FxTablecA3[256];
-extern u4 FxTabled[256];
+extern u4 FxTabled[1024];
 extern u4 FxTabledA1[256];
 extern u4 FxTabledA2[256];
 extern u4 FxTabledA3[256];

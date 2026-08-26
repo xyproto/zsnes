@@ -22,6 +22,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #ifndef NUMCONV_H
 #define NUMCONV_H
 
+#include "ignore.h"
 #include <stdio.h>
 
 // Get correct mask for particular bit
@@ -125,7 +126,7 @@ static unsigned short bytes_to_uint16(const unsigned char buffer[2])
 static unsigned short fread2(FILE* fp)
 {
     unsigned char uint16buf[2];
-    fread(uint16buf, 2, 1, fp);
+    IGNORE_RESULT(fread(uint16buf, 2, 1, fp));
     return (bytes_to_uint16(uint16buf));
 }
 #endif
@@ -134,7 +135,7 @@ static unsigned short fread2(FILE* fp)
 static unsigned int fread3(FILE* fp)
 {
     unsigned char uint24buf[3];
-    fread(uint24buf, 3, 1, fp);
+    IGNORE_RESULT(fread(uint24buf, 3, 1, fp));
     return (bytes_to_uint24(uint24buf));
 }
 #endif
@@ -143,7 +144,7 @@ static unsigned int fread3(FILE* fp)
 static unsigned int fread4(FILE* fp)
 {
     unsigned char uint32buf[4];
-    fread(uint32buf, 4, 1, fp);
+    IGNORE_RESULT(fread(uint32buf, 4, 1, fp));
     return (bytes_to_uint32(uint32buf));
 }
 #endif

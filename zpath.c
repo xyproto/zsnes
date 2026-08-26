@@ -40,6 +40,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <string.h>
 
 #include "cfg.h"
+#include "ignore.h"
 #include "zpath.h"
 
 #ifdef __WIN32__
@@ -413,7 +414,7 @@ static const char* strdupcat_internal(const char* path, const char* file)
     return (buffer_dir);
 }
 
-#define chdir_dir(path) chdir(path);
+#define chdir_dir(path) IGNORE_RESULT(chdir(path))
 
 #else
 
@@ -536,7 +537,7 @@ int system_dir(const char* path, const char* command)
     int ret_val;
     chdir_dir(path);
     ret_val = system(command);
-    chdir(ZStartPath);
+    IGNORE_RESULT(chdir(ZStartPath));
     return (ret_val);
 }
 
@@ -545,7 +546,7 @@ FILE* popen_dir(const char* path, char* command, const char* type)
     FILE* ret_val;
     chdir_dir(path);
     ret_val = popen(command, type);
-    chdir(ZStartPath);
+    IGNORE_RESULT(chdir(ZStartPath));
     return (ret_val);
 }
 

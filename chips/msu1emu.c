@@ -17,6 +17,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #include "msu1emu.h"
 #include "../cfg.h"
+#include "../ignore.h"
 #include "../ui.h"
 #include <ctype.h>
 #include <stdio.h>
@@ -105,7 +106,7 @@ int readMSU()
 
         MSU_DATA = (u1*)malloc(filelen);
         if (MSU_DATA) {
-            fread(MSU_DATA, filelen, 1, MSUBinary);
+            IGNORE_RESULT(fread(MSU_DATA, filelen, 1, MSUBinary));
             fclose(MSUBinary);
             return 1;
         } else {
@@ -173,8 +174,8 @@ void MSU1HandleTrackChange()
         TRACK_DATA = (short*)malloc(filelen);
         if (TRACK_DATA) {
             fseek(TrackFileReader, 4, SEEK_SET);
-            fread(&MSU_Loop_Point, sizeof(int), 1, TrackFileReader);
-            fread(TRACK_DATA, filelen, 1, TrackFileReader);
+            IGNORE_RESULT(fread(&MSU_Loop_Point, sizeof(int), 1, TrackFileReader));
+            IGNORE_RESULT(fread(TRACK_DATA, filelen, 1, TrackFileReader));
             fclose(TrackFileReader);
 #ifdef DEBUG
             printf("Succesfully loaded Track %lu with length %lu\n", MSU_Track, filelen);
