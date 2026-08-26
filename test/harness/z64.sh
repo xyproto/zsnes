@@ -25,11 +25,11 @@ OUT=$ROOT/test/harness/out64; mkdir -p "$OUT"
 if [ -z "$REUSE" ]; then
     echo "=== building 32-bit ==="
     make -C "$ROOT" clean >/dev/null 2>&1
-    make -C "$ROOT" linux32 >"$OUT/build32.log" 2>&1 || { echo "32-bit BUILD FAILED"; exit 1; }
+    make -C "$ROOT" WITH_DEBUG_HOOKS=1 linux32 >"$OUT/build32.log" 2>&1 || { echo "32-bit BUILD FAILED"; exit 1; }
     cp "$ROOT/zsnes" "$OUT/zsnes32"
     echo "=== building 64-bit ==="
     make -C "$ROOT" clean >/dev/null 2>&1
-    make -C "$ROOT" linux64 >"$OUT/build64.log" 2>&1 || { echo "64-bit BUILD FAILED"; exit 1; }
+    make -C "$ROOT" WITH_DEBUG_HOOKS=1 linux64 >"$OUT/build64.log" 2>&1 || { echo "64-bit BUILD FAILED"; exit 1; }
     cp "$ROOT/zsnes" "$OUT/zsnes64"
 fi
 

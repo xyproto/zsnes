@@ -15,7 +15,8 @@
 
 /* --- SPC7110 state block (chips/7110proc.c) ------------------------------- */
 extern uint32_t SPCMultA, SPCMultB, SPCDivEnd, SPCMulRes, SPCDivRes;
-extern uint32_t SPC7110BankA, SPC7110RTCStat, SPCROMPtr, SPCROMtoI;
+extern uint32_t SPC7110BankA, SPC7110RTCStat, SPCROMPtr, SPCROMtoISt;
+extern uintptr_t SPCROMtoI;
 extern uint8_t SPC7110RTC[16], SPC7110RTCB[16], SPCCompressionRegs[13];
 extern uint32_t PHnum2writespc7110reg;
 
@@ -57,7 +58,7 @@ uint32_t GetDate(void) { return test_date; }
 void SPC7110RTCReset(void);
 
 /* Stage 5 data-port / bank-map externs the test owns */
-extern uint32_t SPCROMPtr, SPCROMtoI, SPCROMAdj, SPCROMInc, SPCROMCom, SPCCheckFix;
+extern uint32_t SPCROMPtr, SPCROMtoISt, SPCROMAdj, SPCROMInc, SPCROMCom, SPCCheckFix;
 uint8_t* romdata;
 uint8_t curromsize;
 uint8_t *snesmmap[256], *snesmap2[256];
@@ -106,7 +107,9 @@ int main(void)
     ZT_CHECK_INT(OFF(SPC7110RTC), 28);
     ZT_CHECK_INT(OFF(SPC7110RTCB), 44);
     ZT_CHECK_INT(OFF(SPCROMPtr), 60);
-    ZT_CHECK_INT(OFF(SPCROMtoI), 64);
+    /* The block carries a dword here; the live pointer is SPCROMtoI, which
+       holds an address and so sits outside at the pointer width. */
+    ZT_CHECK_INT(OFF(SPCROMtoISt), 64);
     ZT_CHECK_INT(OFF(SPCCompressionRegs), 88);
     /* zstate.c saves this many bytes starting at &SPCMultA. */
     ZT_CHECK_INT(PHnum2writespc7110reg, 101);
@@ -119,7 +122,7 @@ int main(void)
     ZT_CHECK_INT(SPC7110RTCB[13], 1);
     ZT_CHECK_INT(SPC7110RTCB[15], 6);
     /* SPCROMtoI is a self-referential pointer to SPCROMPtr */
-    ZT_CHECK(SPCROMtoI == (uint32_t)(uintptr_t)&SPCROMPtr);
+    ZT_CHECK(SPCROMtoI == (uintptr_t)&SPCROMPtr);
 
     ZT_SECTION("SPC7110init");
     SPCMultA = 0xDEAD;
@@ -130,7 +133,7 @@ int main(void)
     ZT_CHECK_INT(spc7110initc_calls, 1); /* delegates to the C decompressor */
     ZT_CHECK_INT(SPCMultA, 0);
     ZT_CHECK_INT(SPC7110BankA, 0x020100);
-    ZT_CHECK(SPCROMtoI == (uint32_t)(uintptr_t)&SPCROMPtr);
+    ZT_CHECK(SPCROMtoI == (uintptr_t)&SPCROMPtr);
 
     ZT_SECTION("compression registers (0x4800-0x480C)");
     SPCCompressionRegs[0] = 0xA0;
