@@ -19,12 +19,14 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+#include "types.h"
 #include <stdbool.h>
 #include <stdint.h>
 
 extern uint32_t cycpbl;
 extern uint32_t PHspcsave, PHdspsave;
-extern uint32_t PHnum2writesa1reg, SA1Mode, prevedi, SA1xpc;
+extern uint32_t PHnum2writesa1reg, SA1Mode, SA1xpc;
+extern zreg prevedi;
 extern uint32_t soundcycleft, spc700read, timer2upd, xa, PHnum2writesfxreg;
 /* The rest of the 65816 register block, in the order initdata.c defines it
    and the savestate writes it. */

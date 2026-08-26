@@ -22,7 +22,7 @@
 
 #include "../types.h"
 
-u4 M7BWBX;
+zreg M7BWBX;
 
 extern u4 nglogicval; /* video/c_makev16b.c */
 extern u4 ngwintable[];

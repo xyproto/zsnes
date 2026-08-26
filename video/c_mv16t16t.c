@@ -25,14 +25,14 @@
 #include "c_mv16tt.h"
 #include "makevid.h"
 
-u4 TXAX;
-u4 TXBX;
-u4 TXCX;
-u4 TXDX;
-u4 TXSI;
-u4 TXDI;
-u4 TXBP;
-u4 TXTail; /* 1 = tail-jump to domosaic16b */
+zreg TXAX;
+zreg TXBX;
+zreg TXCX;
+zreg TXDX;
+zreg TXSI;
+zreg TXDI;
+zreg TXBP;
+zreg TXTail; /* 1 = tail-jump to domosaic16b */
 
 extern u1 tileleft16b, scaddtype, coadder16;
 extern u2 scrnon;
@@ -101,7 +101,7 @@ static void tiles(tt_regs* const r, u4 const hofs, u1* esi, int const mode,
             }
             tile += (attr & 0x80u) ? yrevadder : yadder;
             if (mode == T_HALF) {
-                r->bx = (u4)(uintptr_t)tile;
+                r->bx = (zreg)(uintptr_t)tile;
             }
             /* process palette # (bits 10-12) */
             adder = (u1)((u1)((attr & 0x1Cu) << (bshifter & 31u))
@@ -143,9 +143,9 @@ static void tiles(tt_regs* const r, u4 const hofs, u1* esi, int const mode,
     r->ax = eax;
     r->cx = ecx;
     r->dx = winon_ ? (u4)(uintptr_t)win : edx;
-    r->si = (u4)(uintptr_t)esi;
-    r->di = (u4)(uintptr_t)edi;
-    r->bp = (u4)(uintptr_t)ebp;
+    r->si = (zreg)(uintptr_t)esi;
+    r->di = (zreg)(uintptr_t)edi;
+    r->bp = (zreg)(uintptr_t)ebp;
 }
 
 void c_draw16x1616t(void)

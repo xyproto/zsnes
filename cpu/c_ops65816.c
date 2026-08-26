@@ -27,7 +27,7 @@ extern u1 intrset, doirqnext, curnmi;
 
 /* Memory accesses go through the seam in cpu/memseam.h, so the handlers here
  * call the bodies directly (cpu/c_memops.c). */
-extern u4 MemSeamA, MemSeamB, MemSeamC, MemSeamD;
+extern uintptr_t MemSeamA, MemSeamB, MemSeamC, MemSeamD;
 extern void c_membank0r8(void);
 extern void c_membank0r16(void);
 extern void c_membank0w8(void);

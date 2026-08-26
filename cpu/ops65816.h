@@ -128,7 +128,9 @@ static inline void reload_table(zreg* const r)
         if (taken) {                                       \
             s4 const rel = *(s1 const*)(uintptr_t)r[R_ESI]; \
             r[R_EAX] = (u4)rel;                            \
-            r[R_ESI] += (u4)rel;                           \
+            /* Sign-extend to the slot width: a backward branch relies on the \
+               add wrapping, which a (u4) cast only does when zreg is 32 bits. */ \
+            r[R_ESI] += (zreg)rel;                         \
         }                                                  \
         r[R_ESI]++;                                        \
     }
@@ -594,7 +596,7 @@ void OP(COp62)(zreg* const r) /* PER s */
  */
 static inline void mem_call(zreg* const r, eop* const fn)
 {
-    u4 const b = MemSeamB, c = MemSeamC, a = MemSeamA, d = MemSeamD;
+    uintptr_t const b = MemSeamB, c = MemSeamC, a = MemSeamA, d = MemSeamD;
 
     MemSeamA = r[R_EAX];
     MemSeamB = r[R_EBX];

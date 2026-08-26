@@ -32,7 +32,7 @@ extern u1 dmadata[129];
 extern u2 brkv, brkv8, copv, copv8;
 extern u1 intrset, doirqnext, curnmi;
 
-extern u4 MemSeamA, MemSeamB, MemSeamC, MemSeamD;
+extern uintptr_t MemSeamA, MemSeamB, MemSeamC, MemSeamD;
 extern void c_membank0r8(void);
 extern void c_membank0r16(void);
 extern void c_membank0w8(void);

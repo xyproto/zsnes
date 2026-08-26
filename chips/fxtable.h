@@ -3,9 +3,9 @@
 
 #include "../types.h"
 
-extern u4 sfx128lineloc;
-extern u4 sfx160lineloc;
-extern u4 sfx192lineloc;
-extern u4 sfxobjlineloc;
+extern zreg sfx128lineloc;
+extern zreg sfx160lineloc;
+extern zreg sfx192lineloc;
+extern zreg sfxobjlineloc;
 
 #endif

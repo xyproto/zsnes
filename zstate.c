@@ -58,7 +58,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #define NUMCONV_FR3
 #define NUMCONV_FW3
-#include "ignore.h"
 #include "numconv.h"
 
 #define clim()
@@ -566,8 +565,12 @@ void PrepareSaveState()
 {
     int i;
 
-    spcPCRam -= (uintptr_t)SPCRAM;
-    spcRamDP -= (uintptr_t)SPCRAM;
+    spcPCRamSt = (uint32_t)(spcPCRam - SPCRAM);
+    /* initaddrl used to be a dword in the opcd run and was written straight
+       out. It is a host pointer, so it now lives in its own pointer-sized
+       slot and the run keeps the dword the file format expects. */
+    initaddrlSt = (uint32_t)(uintptr_t)initaddrl;
+    spcRamDPSt = (uint32_t)(spcRamDP - SPCRAM);
 
     for (i = 0; i < 8; i++) {
         Voice0BufPtr[i] = (s2*)((uintptr_t)Voice0BufPtr[i] - (uintptr_t)spcBuffera);
@@ -576,11 +579,16 @@ void PrepareSaveState()
 
 extern uintptr_t SA1Stat;
 extern uint8_t IRAM[2049], *SA1Ptr, *SA1RegPCS, *CurBWPtr, *SA1BWPtr, *SNSBWPtr;
+extern uint8_t *SNSPtr, *SNSRegPCS;
+/* The save-state block carries a dword for each SA-1 pointer; the live ones are
+   pointer-wide and live outside it (chips/sa1regs.c). */
+extern uint32_t SA1PtrSt, SA1RegPCSSt, CurBWPtrSt, SA1BWPtrSt, SNSBWPtrSt;
+extern uint32_t SNSPtrSt, SNSRegPCSSt;
 
 void SaveSA1()
 {
     SA1Stat &= 0xFFFFFF00;
-    SA1Ptr -= (uintptr_t)SA1RegPCS;
+    SA1PtrSt = (uint32_t)(SA1Ptr - SA1RegPCS);
 
     if (SA1RegPCS == IRAM) {
         SA1Stat = (SA1Stat & 0xFFFFFF00) + 1;
@@ -590,18 +598,22 @@ void SaveSA1()
         SA1Stat = (SA1Stat & 0xFFFFFF00) + 2;
     }
 
-    SA1RegPCS -= (uintptr_t)romdata;
-    CurBWPtr -= (uintptr_t)romdata;
-    SA1BWPtr -= (uintptr_t)romdata;
-    SNSBWPtr -= (uintptr_t)romdata;
+    SA1RegPCSSt = (uint32_t)(SA1RegPCS - romdata);
+    CurBWPtrSt = (uint32_t)(CurBWPtr - romdata);
+    SA1BWPtrSt = (uint32_t)(SA1BWPtr - romdata);
+    SNSBWPtrSt = (uint32_t)(SNSBWPtr - romdata);
+    SNSPtrSt = (uint32_t)(uintptr_t)SNSPtr;
+    SNSRegPCSSt = (uint32_t)(uintptr_t)SNSRegPCS;
 }
 
 void RestoreSA1()
 {
-    SA1RegPCS += (uintptr_t)romdata;
-    CurBWPtr += (uintptr_t)romdata;
-    SA1BWPtr += (uintptr_t)romdata;
-    SNSBWPtr += (uintptr_t)romdata;
+    SA1RegPCS = romdata + SA1RegPCSSt;
+    CurBWPtr = romdata + CurBWPtrSt;
+    SA1BWPtr = romdata + SA1BWPtrSt;
+    SNSBWPtr = romdata + SNSBWPtrSt;
+    SNSPtr = (uint8_t*)(uintptr_t)SNSPtrSt;
+    SNSRegPCS = (uint8_t*)(uintptr_t)SNSRegPCSSt;
 
     if ((SA1Stat & 0xFF) == 1) {
         SA1RegPCS = IRAM;
@@ -611,15 +623,16 @@ void RestoreSA1()
         SA1RegPCS = (uint8_t*)((uintptr_t)IRAM - 0x3000u);
     }
 
-    SA1Ptr += (uintptr_t)SA1RegPCS;
+    SA1Ptr = SA1RegPCS + SA1PtrSt;
 }
 
 void ResetState()
 {
     int i;
 
-    spcPCRam += (uintptr_t)SPCRAM;
-    spcRamDP += (uintptr_t)SPCRAM;
+    spcPCRam = SPCRAM + spcPCRamSt;
+    initaddrl = (u1*)(uintptr_t)initaddrlSt;
+    spcRamDP = SPCRAM + spcRamDPSt;
 
     for (i = 0; i < 8; i++) {
         uintptr_t p = (uintptr_t)Voice0BufPtr[i] + (uintptr_t)spcBuffera;
@@ -630,8 +643,12 @@ void ResetState()
     }
 }
 
-extern uint32_t SfxRomBuffer, SfxCROM;
-extern uint32_t SfxLastRamAdr, SfxRAMMem;
+/* SfxRomBuffer and SfxLastRamAdr are host pointers, so they are pointer-wide.
+   The save-state block still carries the dword the file format expects, and
+   the two *St slots hold it: an offset from SfxCROM and SfxRAMMem. */
+extern zreg SfxRomBuffer, SfxCROM;
+extern zreg SfxLastRamAdr, SfxRAMMem;
+extern uint32_t SfxRomBufferSt, SfxLastRamAdrSt;
 
 static FILE* fhandle;
 void CapturePicture();
@@ -769,8 +786,8 @@ void zst_save(FILE* fp, bool Thumbnail, bool Compress)
     unpackfunct();
 
     if (SFXEnable) {
-        SfxRomBuffer -= SfxCROM;
-        SfxLastRamAdr -= SfxRAMMem;
+        SfxRomBufferSt = (uint32_t)(SfxRomBuffer - SfxCROM);
+        SfxLastRamAdrSt = (uint32_t)(SfxLastRamAdr - SfxRAMMem);
     }
 
     if (SA1Enable) {
@@ -788,11 +805,6 @@ void zst_save(FILE* fp, bool Thumbnail, bool Compress)
             CapturePicture();
             fwrite(PrevPicture, 1, sizeof(PrevPicture), fp);
         }
-    }
-
-    if (SFXEnable) {
-        SfxRomBuffer += SfxCROM;
-        SfxLastRamAdr += SfxRAMMem;
     }
 
     if (SA1Enable) {
@@ -906,7 +918,7 @@ void statesaver(void)
     stim();
 }
 
-extern uint32_t SfxMemTable[256], SfxCPB;
+extern zreg SfxMemTable[256], SfxCPB;
 extern uint32_t SfxPBR, SfxROMBR, SfxRAMBR, SfxSCBR;
 extern u1* SCBRrel;
 extern uint8_t ioportval;
@@ -974,8 +986,8 @@ bool zst_load(FILE* fp, size_t Compressed)
         SfxCPB = SfxMemTable[(SfxPBR & 0xFF)];
         SfxCROM = SfxMemTable[(SfxROMBR & 0xFF)];
         SfxRAMMem = (uintptr_t)sfxramdata + ((SfxRAMBR & 0xFF) << 16);
-        SfxRomBuffer += SfxCROM;
-        SfxLastRamAdr += SfxRAMMem;
+        SfxRomBuffer = SfxCROM + SfxRomBufferSt;
+        SfxLastRamAdr = SfxRAMMem + SfxLastRamAdrSt;
         SCBRrel = sfxramdata + (SfxSCBR << 10);
     }
 

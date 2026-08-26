@@ -1,9 +1,9 @@
 /* The .bss block that was left in chips/sa1proc.asm.
  *
  * zstate.c saves three bytes starting at SA1Status, so those three have to
- * stay adjacent and in this order. prevedi follows unaligned, as the assembly
- * had it - its ALIGN32 was commented out. Kept in its own file so the layout
- * test can link it on its own.
+ * stay adjacent and in this order. prevedi holds a host pointer, so it is
+ * pointer-wide and aligned; it is not part of the saved run. Kept in its own
+ * file so the layout test can link it on its own.
  */
 #include "../asmdata.h"
 
@@ -19,8 +19,10 @@ __asm__(
     ".skip 1\n"
     ASM_GSYM(CurrentCPU)
     ".skip 1\n"
+    /* The 65816 program counter across an SA-1 switch: a host pointer. */
+    ".balign " ASM_STR(__SIZEOF_POINTER__) "\n"
     ASM_GSYM(prevedi)
-    ".skip 4\n"
+    ".skip " ASM_STR(__SIZEOF_POINTER__) "\n"
     ASM_GSYM(SA1xpc)
     ".skip 4\n"
     ASM_SEC_END);

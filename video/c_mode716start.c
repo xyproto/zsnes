@@ -21,10 +21,10 @@
 
 #include "../types.h"
 
-u4 M7StartAX;
-u4 M7StartDX;
-u4 M7StartSI;
-u4 M7StartDI;
+zreg M7StartAX;
+zreg M7StartDX;
+zreg M7StartSI;
+zreg M7StartDI;
 
 extern u4 M7HROn; /* video/c_mode716data.c */
 extern u2 mcxloc, mcyloc;
@@ -136,8 +136,8 @@ void c_Mode7Startup16b(void)
            that pointer back and leave edi past the block rep stosd cleared. */
         memset(xtravbuf + 32, 0xFF, 512);
         M7StartAX = 0xFFFFFFFFu;
-        M7StartSI = (u4)(uintptr_t)(xtravbuf + 32);
-        M7StartDI = (u4)(uintptr_t)(xtravbuf + 32 + 512);
+        M7StartSI = (zreg)(uintptr_t)(xtravbuf + 32);
+        M7StartDI = (zreg)(uintptr_t)(xtravbuf + 32 + 512);
     }
 
     /* Which way the per-pixel walk runs. */

@@ -25,13 +25,13 @@
 #include "../types.h"
 #include "c_mode716write.h"
 
-u4 M7PAX;
-u4 M7PBX;
-u4 M7PCX;
-u4 M7PDX;
-u4 M7PSI;
-u4 M7PDI;
-u4 M7PBP;
+zreg M7PAX;
+zreg M7PBX;
+zreg M7PCX;
+zreg M7PDX;
+zreg M7PSI;
+zreg M7PDI;
+zreg M7PBP;
 u4 M7PWriter;
 u4 M7PWriter2; /* Mode7Processngw216b alternates between the two */
 
@@ -54,7 +54,7 @@ void c_ProcessMode7ngwinB16b(void);
 void c_ProcessMode7ngwinC16b(void);
 void c_ProcessMode7ngwinD16b(void);
 void c_ProcessMode7ngwinE16b(void);
-extern u4 M7WinAX, M7WinBX, M7WinCX, M7WinSI, M7WinDI;
+extern zreg M7WinAX, M7WinBX, M7WinCX, M7WinSI, M7WinDI;
 extern u1 mode7tab[65536]; /* ui.h */
 extern u1 vrama[65536];
 extern u1* vram;
@@ -247,8 +247,8 @@ static void m7_store(struct m7regs const* const r)
     M7PBX = r->ebx;
     M7PCX = r->ecx;
     M7PDX = r->edx;
-    M7PSI = (u4)(uintptr_t)r->esi;
-    M7PDI = (u4)(uintptr_t)r->edi;
+    M7PSI = (zreg)(uintptr_t)r->esi;
+    M7PDI = (zreg)(uintptr_t)r->edi;
 }
 
 void c_Mode7Process(void)
@@ -407,8 +407,8 @@ static void call_ngwin(void (*const fn)(void), struct m7regs* const r)
     M7WinAX = r->eax;
     M7WinBX = r->ebx;
     M7WinCX = r->ecx;
-    M7WinSI = (u4)(uintptr_t)r->esi;
-    M7WinDI = (u4)(uintptr_t)r->edi;
+    M7WinSI = (zreg)(uintptr_t)r->esi;
+    M7WinDI = (zreg)(uintptr_t)r->edi;
     fn();
     r->eax = M7WinAX;
     r->ebx = M7WinBX;

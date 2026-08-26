@@ -37,16 +37,19 @@ __asm__(
     ".long 0\n"
     ASM_GSYM(ngmsdraw)
     ".long 0\n"
+    /* These hold the address of a window table, so they are pointer-sized,
+       not a dword. */
     ASM_GSYM(CMainWinScr)
-    ".long 0\n"
+    ".zero " ASM_STR(__SIZEOF_POINTER__) "\n"
     ASM_GSYM(CSubWinScr)
-    ".long 0\n"
+    ".zero " ASM_STR(__SIZEOF_POINTER__) "\n"
     ASM_GSYM(Prevcoladdr)
     ".long 0\n"
     ASM_GSYM(ColResult)
     ".long 0\n"
+    /* A palette address, so pointer-sized. */
     ASM_GSYM(CPalPtrng)
-    ".long 0\n"
+    ".zero " ASM_STR(__SIZEOF_POINTER__) "\n"
     ASM_GSYM(WindowRedraw)
     ".long 0\n"
     ASM_GSYM(mostranspval)

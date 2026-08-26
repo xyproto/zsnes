@@ -19,8 +19,8 @@ extern u1 bgmode, scaddtype, winon;
 extern u2 scrnon;
 extern u1 transpbuf[];
 
-extern u4 MVSAX, MVSBX, MVSCX, MVSDX, MVSSI, MVSDI, MVSBP, MVSMosaic;
-extern u4 MVAX, MVBX, MVCX, MVDX, MVSI;
+extern zreg MVSAX, MVSBX, MVSCX, MVSDX, MVSSI, MVSDI, MVSBP, MVSMosaic;
+extern zreg MVAX, MVBX, MVCX, MVDX, MVSI;
 extern u4 TTAX, TTBX, TTCX, TTDX, TTSI, TTDI, TTBP, TTTail;
 extern u4 T8AX, T8BX, T8CX, T8DX, T8SI, T8DI, T8BP, T8Tail;
 

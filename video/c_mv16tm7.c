@@ -21,10 +21,10 @@
 #include "c_makevid.h"
 #include "makevid.h"
 
-u4 M7TAX;
-u4 M7TBX;
-u4 M7TDX;
-u4 M7TBP;
+zreg M7TAX;
+zreg M7TBX;
+zreg M7TDX;
+zreg M7TBP;
 
 /* Which renderer the caller must tail-jump to; 0 means the layer is off. */
 u4 M7TTail;
@@ -237,14 +237,14 @@ void c_procmode716tmainextbg2(void)
 extern u1 scrndis, winonsp, sprprifix; /* video/makevid.h, cpu/regs.h */
 void drawsprites16b(u1 cl, u4 ebp); /* video/c_makev16b.h */
 
-u4 SPRAX;
-u4 SPRBX;
-u4 SPRCX;
-u4 SPRBP;
-u4 SPRDX;
+zreg SPRAX;
+zreg SPRBX;
+zreg SPRCX;
+zreg SPRBP;
+zreg SPRDX;
 
 /* 0 = nothing more to do, 1 = drawsprites16t, 2 = drawsprites16bt. */
-u4 SPRTail;
+zreg SPRTail;
 
 static void sprites(int const sub, int const fix)
 {
@@ -327,13 +327,13 @@ void draw8x816b(u4 eax, u4 ecx, u2* edx, u1* ebx, u4 layer, u4 esi,
     u2 const* edi);
 void draw16x1616b(u4 eax, u4 ecx, u2* edx, u1* ebx, u4 esi, u2 const* edi);
 
-u4 BGAX;
-u4 BGBX;
-u4 BGCX;
-u4 BGDX;
-u4 BGSI;
-u4 BGDI;
-u4 BGBP;
+zreg BGAX;
+zreg BGBX;
+zreg BGCX;
+zreg BGDX;
+zreg BGSI;
+zreg BGDI;
+zreg BGBP;
 
 /* 0 = done; otherwise the assembly renderer the caller must call, after which
    it does the drawn==33 bookkeeping. */
@@ -364,7 +364,7 @@ static void bg(int const sub, int const fix)
 
     /* mov esi,[colormodeofs] / mov bl,[esi+ebp] - both survive every return
        below. */
-    BGSI = (u4)(uintptr_t)colormodeofs;
+    BGSI = (zreg)(uintptr_t)colormodeofs;
     BGBX = (BGBX & ~0xFFu) | colormodeofs[ebp];
     if ((u1)BGBX == 0) {
         return;
@@ -427,9 +427,9 @@ static void bg(int const sub, int const fix)
     }
 
     BGSI = bg1vbufloc[ebp];
-    BGDI = (u4)(uintptr_t)bg1tdatloc[ebp];
-    BGDX = (u4)(uintptr_t)bg1tdabloc[ebp];
-    BGBX = (u4)(uintptr_t)bg1cachloc[ebp];
+    BGDI = (zreg)(uintptr_t)bg1tdatloc[ebp];
+    BGDX = (zreg)(uintptr_t)bg1tdabloc[ebp];
+    BGBX = (zreg)(uintptr_t)bg1cachloc[ebp];
     BGAX = bg1xposloc[ebp];
     BGCX = (BGCX & ~0xFFu) | bg;
 

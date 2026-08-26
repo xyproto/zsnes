@@ -50,12 +50,12 @@ void c_DSP1Write16b(u4 addr, u2 val);
    cpu/memseam.h describes the convention. edx is carried too: these bodies
    never read it, but the I/O handlers they call run with the core's registers
    live, and some look at more than ecx and al. */
-u4 MemSeamB;
-u4 MemSeamC;
-u4 MemSeamA;
-u4 MemSeamD;
+uintptr_t MemSeamB;
+uintptr_t MemSeamC;
+uintptr_t MemSeamA;
+uintptr_t MemSeamD;
 /* esi, for the $2140-$2143 sound-skip hack. */
-u4 MemSeamS;
+uintptr_t MemSeamS;
 
 #include "mem_ops.h"
 

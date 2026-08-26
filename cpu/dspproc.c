@@ -15,6 +15,15 @@
 #define BSSB(sym, n) ASM_GSYM(sym) ".skip (" #n ")\n"
 #define BSSW(sym, n) ASM_GSYM(sym) ".skip (" #n ")*2\n"
 #define BSSD(sym, n) ASM_GSYM(sym) ".skip (" #n ")*4\n"
+/* resd in the assembly, but these hold host pointers, so the slot has to
+   follow the pointer width. On i386 it is the same four bytes. */
+/* Holds a host pointer, so the slot follows the pointer width. */
+#define PTRSLOT ".balign " ASM_STR(__SIZEOF_POINTER__) "\n"      \
+                ".skip " ASM_STR(__SIZEOF_POINTER__) "\n"
+
+#define BSSP(sym, n) \
+    ASM_GSYM(sym)    \
+    ".skip (" #n ")*" ASM_STR(__SIZEOF_POINTER__) "\n"
 #define BSSB_L(sym, n) ASM_LSYM(sym) ".skip (" #n ")\n"
 
 __asm__(
@@ -137,14 +146,14 @@ __asm__(
     BSSD(Voice5LoopPtr, 1)
     BSSD(Voice6LoopPtr, 1)
     BSSD(Voice7LoopPtr, 1)
-    BSSD(Voice0BufPtr, 1)
-    BSSD(Voice1BufPtr, 1)
-    BSSD(Voice2BufPtr, 1)
-    BSSD(Voice3BufPtr, 1)
-    BSSD(Voice4BufPtr, 1)
-    BSSD(Voice5BufPtr, 1)
-    BSSD(Voice6BufPtr, 1)
-    BSSD(Voice7BufPtr, 1)
+    BSSP(Voice0BufPtr, 1)
+    BSSP(Voice1BufPtr, 1)
+    BSSP(Voice2BufPtr, 1)
+    BSSP(Voice3BufPtr, 1)
+    BSSP(Voice4BufPtr, 1)
+    BSSP(Voice5BufPtr, 1)
+    BSSP(Voice6BufPtr, 1)
+    BSSP(Voice7BufPtr, 1)
     BSSD(SoundCounter, 1)
     BSSD(SoundCounter2, 1)
     BSSD(Voice0Prev0, 1)
@@ -524,7 +533,7 @@ __asm__(
     ASM_SEC_DATA(".data")
     ".balign 16, 0x90\n"
     ASM_GSYM(DSPInterpolate)
-    ".long 0\n"
+    PTRSLOT
     ASM_SEC_END);
 
 /* clang-format on */

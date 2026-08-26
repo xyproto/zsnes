@@ -8,6 +8,10 @@
    (see asmdata.h) to pin the layout. */
 #include "../asmdata.h"
 
+/* Holds a host pointer, so the slot follows the pointer width. */
+#define PTRSLOT ".balign " ASM_STR(__SIZEOF_POINTER__) "\n"      \
+                ".skip " ASM_STR(__SIZEOF_POINTER__) "\n"
+
 /* clang-format off */
 
 __asm__(
@@ -68,7 +72,7 @@ __asm__(
     ".long 0\n"
     ASM_GSYM(timercount)
     ".long 0\n"
-    ASM_GSYM(initaddrl)
+    ASM_GSYM(initaddrlSt)
     ".long 0\n"
     ASM_GSYM(NetSent)
     ".long 0\n"
@@ -151,3 +155,9 @@ __asm__(
     ASM_SEC_END);
 
 /* clang-format on */
+
+__asm__(
+    ASM_SEC_BSS(".bss")
+    ASM_GSYM(initaddrl)
+    PTRSLOT
+    ASM_SEC_END);

@@ -1915,8 +1915,8 @@ void drawline16b(void)
 // the last-line bound, then hands over to the 16-bit renderer.
 void StartDrawNewGfx(void)
 {
-    extern void c_startdrawnewgfx16b(u4 * r);
-    u4 r[8] = { 0 };
+    extern void c_startdrawnewgfx16b(zreg * r);
+    zreg r[8] = { 0 };
 
     WindowRedraw = 1;
     cfieldad = 0;

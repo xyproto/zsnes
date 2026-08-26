@@ -20,6 +20,7 @@
 #include "../c_intrf.h"
 #include "../cfg.h"
 #include "../cpu/regs.h"
+#include "../gblhdr.h"
 #include "../input.h"
 #include "../ui.h"
 #include "../ver.h"
@@ -37,7 +38,6 @@
 #include "guiwindp.h"
 
 #if defined __UNIXSDL__ && defined __OPENGL__
-#include "../ignore.h"
 #include "../linux/gl_draw.h"
 #endif
 

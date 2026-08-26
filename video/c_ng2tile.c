@@ -47,11 +47,12 @@ extern u4 yposng, flipyposng; /* video/newgfx.c: the row within the tile */
 extern u4 ofsmcptr, ofsmcptr2, ofsmtptr, ofsmtptrs, ofsmmptr, ofsmcyps;
 extern u4 ofsmady, ofsmadx, ofsmval, ofsmvalh, ofshvaladd;
 extern u4 yposngom, flipyposngom, bgtxadd2;
-extern u4 CPalPtrng; /* video/c_ngprocbg.c: the converted palette */
+extern zreg CPalPtrng; /* video/c_ngprocbg.c: the converted palette */
 extern u1 res640, SpecialLine[256];
 extern u4 bg1drwng[], bg1totng[];
 extern u4 ngpalcon2b[], ngpalcon4b[], ngpalcon8b[];
-extern u4 ngcwinptr, ngcwinmode, ngcpixleft;
+extern zreg ngcwinptr;
+extern u4 ngcwinmode, ngcpixleft;
 extern u1 tleftn, curmosaicsz;
 extern u4 tleftnb;
 extern u1 *vcache2b, *vcache4b, *vcache8b;
@@ -232,7 +233,7 @@ static void draw_half(depth const* const d, u4 const idx, u4 const edx,
     }
 }
 
-static void tile_body(u4* const r, int const f, depth const* const d)
+static void tile_body(zreg* const r, int const f, depth const* const d)
 {
     u4 ecx = r[R_ECX], edx;
 
@@ -255,7 +256,7 @@ static void tile_body(u4* const r, int const f, depth const* const d)
 }
 
 /* %5 - the tail every path falls into, including the priority-bit skip. */
-static void finline(u4* const r)
+static void finline(zreg* const r)
 {
     bg1totng[ng16bbgval]++;
     r[R_EAX] = (r[R_EAX] & 0xFFFF0000u) | (u2)((u2)r[R_EAX] + 2u);
@@ -266,7 +267,7 @@ static void finline(u4* const r)
 
 /* drawtile16b: thirty-three tiles across a line. A tile whose priority bit
    does not match this pass is skipped straight to the tail. */
-static void drawtile_line(u4* const r, int const f, depth const* const d)
+static void drawtile_line(zreg* const r, int const f, depth const* const d)
 {
     tleftn = 33;
     for (;;) {
@@ -347,7 +348,7 @@ static void line_half(depth const* const d, u4 const idx, u1 const dl,
     }
 }
 
-static void line_body(u4* const r, int const f, depth const* const d)
+static void line_body(zreg* const r, int const f, depth const* const d)
 {
     u4 ecx = r[R_ECX], edx;
 
@@ -373,7 +374,7 @@ static void line_body(u4* const r, int const f, depth const* const d)
 
 /* drawline16bmacro. Unlike the tile drawers, every exit here takes the mosaic
    tail when one is due. */
-static u4 drawline_line(u4* const r, int const f, depth const* const d)
+static u4 drawline_line(zreg* const r, int const f, depth const* const d)
 {
     tleftn = 33;
     for (;;) {
@@ -403,7 +404,7 @@ static u4 drawline_line(u4* const r, int const f, depth const* const d)
  * set draws one half, not two - that is the assembly's behaviour, not a bug to
  * round off.
  */
-static void tile_body_16x16(u4* const r, int const f, depth const* const d)
+static void tile_body_16x16(zreg* const r, int const f, depth const* const d)
 {
     u4 const eax = r[R_EAX];
     u4 const tile = *(u4 const*)(vrama + eax);
@@ -439,12 +440,12 @@ static void tile_body_16x16(u4* const r, int const f, depth const* const d)
 
     r[R_ECX] = ecx;
     r[R_EDX] = edx;
-    r[R_EDI] = (u4)(uintptr_t)edi;
+    r[R_EDI] = (zreg)(uintptr_t)edi;
 }
 
 /* %%ntile: the 16x16 tail. Unlike finline it leaves edi alone - the two halves
    advanced it by 32 between them, and the skipped path adds that itself. */
-static void finline_16x16(u4* const r)
+static void finline_16x16(zreg* const r)
 {
     bg1totng[ng16bbgval]++;
     r[R_EAX] = (r[R_EAX] & 0xFFFF0000u) | (u2)((u2)r[R_EAX] + 2u);
@@ -453,7 +454,7 @@ static void finline_16x16(u4* const r)
 }
 
 /* drawtile16b16x16: seventeen entries across a line, not thirty-three. */
-static void drawtile_line_16x16(u4* const r, int const f, depth const* const d)
+static void drawtile_line_16x16(zreg* const r, int const f, depth const* const d)
 {
     tleftn = 17;
     for (;;) {
@@ -483,25 +484,25 @@ u4 ng2_leafhits[4];
    Entered by jmp with one word pushed, so the assembly seam ends
    `pop ebx / ret`. */
 #define NG2_TILE_LEAVES(bits)                   \
-    void c_drawtile##bits##_nt(u4* const r)     \
+    void c_drawtile##bits##_nt(zreg* const r)   \
     {                                           \
         ng2_mosaic = 0;                         \
         ng2_leafhits[0]++;                      \
         drawtile_line(r, 0, &d##bits);          \
     }                                           \
-    void c_drawtile##bits##_t(u4* const r)      \
+    void c_drawtile##bits##_t(zreg* const r)    \
     {                                           \
         ng2_mosaic = 0;                         \
         ng2_leafhits[1]++;                      \
         drawtile_line(r, W_T, &d##bits);        \
     }                                           \
-    void c_drawtile##bits##_mst(u4* const r)    \
+    void c_drawtile##bits##_mst(zreg* const r)  \
     {                                           \
         ng2_mosaic = 0;                         \
         ng2_leafhits[2]++;                      \
         drawtile_line(r, W_T | W_MS, &d##bits); \
     }                                           \
-    void c_drawtile##bits##_msnt(u4* const r)   \
+    void c_drawtile##bits##_msnt(zreg* const r) \
     {                                           \
         ng2_mosaic = 0;                         \
         ng2_leafhits[3]++;                      \
@@ -516,25 +517,25 @@ NG2_TILE_LEAVES(8b)
 u4 ng2_bighits[4];
 
 #define NG2_TILE16_LEAVES(bits)                       \
-    void c_drawtile16x16##bits##_nt(u4* const r)      \
+    void c_drawtile16x16##bits##_nt(zreg* const r)    \
     {                                                 \
         ng2_mosaic = 0;                               \
         ng2_bighits[0]++;                             \
         drawtile_line_16x16(r, 0, &d##bits);          \
     }                                                 \
-    void c_drawtile16x16##bits##_t(u4* const r)       \
+    void c_drawtile16x16##bits##_t(zreg* const r)     \
     {                                                 \
         ng2_mosaic = 0;                               \
         ng2_bighits[1]++;                             \
         drawtile_line_16x16(r, W_T, &d##bits);        \
     }                                                 \
-    void c_drawtile16x16##bits##_mst(u4* const r)     \
+    void c_drawtile16x16##bits##_mst(zreg* const r)   \
     {                                                 \
         ng2_mosaic = 0;                               \
         ng2_bighits[2]++;                             \
         drawtile_line_16x16(r, W_T | W_MS, &d##bits); \
     }                                                 \
-    void c_drawtile16x16##bits##_msnt(u4* const r)    \
+    void c_drawtile16x16##bits##_msnt(zreg* const r)  \
     {                                                 \
         ng2_mosaic = 0;                               \
         ng2_bighits[3]++;                             \
@@ -675,7 +676,7 @@ static void draw_half_win(depth const* const d, u4 const idx, u4 const edx,
 }
 
 /* drawtilengwin16b. */
-static void tile_body_win(u4* const r, int const f, depth const* const d)
+static void tile_body_win(zreg* const r, int const f, depth const* const d)
 {
     u4 ecx = r[R_ECX], edx;
 
@@ -698,7 +699,7 @@ static void tile_body_win(u4* const r, int const f, depth const* const d)
 /* drawtileng16x16win16b: the two-half walk of tile_body_16x16 with the
    windowed half, so a map entry consumes sixteen pixels of the run whichever
    way it goes. */
-static void tile_body_win_16x16(u4* const r, int const f, depth const* const d)
+static void tile_body_win_16x16(zreg* const r, int const f, depth const* const d)
 {
     u4 const eax = r[R_EAX];
     u4 const tile = *(u4 const*)(vrama + eax);
@@ -732,7 +733,7 @@ static void tile_body_win_16x16(u4* const r, int const f, depth const* const d)
 
     r[R_ECX] = ecx;
     r[R_EDX] = edx;
-    r[R_EDI] = (u4)(uintptr_t)edi;
+    r[R_EDI] = (zreg)(uintptr_t)edi;
 }
 
 /* What a windowed arm draws in each of the three states a tile can be in. */
@@ -748,7 +749,7 @@ typedef struct {
    goes through the per-pixel writer and the run counter is handed back
    afterwards - unless this was the last tile, which returns without writing
    it back, exactly as the assembly's tleftn test does. */
-static int straddle(u4* const r, wleaf const* const lf, depth const* const d)
+static int straddle(zreg* const r, wleaf const* const lf, depth const* const d)
 {
     u4* const run = (u4*)(uintptr_t)ngcwinptr;
 
@@ -770,13 +771,13 @@ static int straddle(u4* const r, wleaf const* const lf, depth const* const d)
    without drawing, and if the line runs out while skipping, this is the one
    path in the file that tail-jumps into the mosaic pass - which is why it
    returns a flag rather than just ending. */
-static u4 drawtile_line_win(u4* const r, wleaf const* const lf,
+static u4 drawtile_line_win(zreg* const r, wleaf const* const lf,
     depth const* const d)
 {
     int clip;
 
     tleftn = 33;
-    ngcwinptr = (u4)(uintptr_t)ngwintable;
+    ngcwinptr = (zreg)(uintptr_t)ngwintable;
     ngcwinmode = 0;
     clip = 0;
     if (ngwintable[0] == 0) {
@@ -818,13 +819,13 @@ static u4 drawtile_line_win(u4* const r, wleaf const* const lf,
 
 /* drawtile16bw2: the same walk, but a tile inside the window draws with a
    second writer instead of being skipped, and there is no mosaic exit. */
-static void drawtile_line_win2(u4* const r, wleaf const* const lf,
+static void drawtile_line_win2(zreg* const r, wleaf const* const lf,
     depth const* const d)
 {
     int clip;
 
     tleftn = 33;
-    ngcwinptr = (u4)(uintptr_t)ngwintable;
+    ngcwinptr = (zreg)(uintptr_t)ngwintable;
     ngcwinmode = 0;
     clip = 0;
     if (ngwintable[0] == 0) {
@@ -856,7 +857,7 @@ static void drawtile_line_win2(u4* const r, wleaf const* const lf,
 
 /* The 16x16 windowed loops. Same walk, but seventeen entries of sixteen
    pixels each, and a clipped entry skips a double-width tile. */
-static int straddle_16x16(u4* const r, wleaf const* const lf,
+static int straddle_16x16(zreg* const r, wleaf const* const lf,
     depth const* const d)
 {
     u4* const run = (u4*)(uintptr_t)ngcwinptr;
@@ -879,13 +880,13 @@ static int straddle_16x16(u4* const r, wleaf const* const lf,
     return 0;
 }
 
-static u4 drawtile_line_win_16x16(u4* const r, wleaf const* const lf,
+static u4 drawtile_line_win_16x16(zreg* const r, wleaf const* const lf,
     depth const* const d)
 {
     int clip;
 
     tleftn = 17;
-    ngcwinptr = (u4)(uintptr_t)ngwintable;
+    ngcwinptr = (zreg)(uintptr_t)ngwintable;
     ngcwinmode = 0;
     clip = 0;
     if (ngwintable[0] == 0) {
@@ -926,13 +927,13 @@ static u4 drawtile_line_win_16x16(u4* const r, wleaf const* const lf,
     }
 }
 
-static void drawtile_line_win2_16x16(u4* const r, wleaf const* const lf,
+static void drawtile_line_win2_16x16(zreg* const r, wleaf const* const lf,
     depth const* const d)
 {
     int clip;
 
     tleftn = 17;
-    ngcwinptr = (u4)(uintptr_t)ngwintable;
+    ngcwinptr = (zreg)(uintptr_t)ngwintable;
     ngcwinmode = 0;
     clip = 0;
     if (ngwintable[0] == 0) {
@@ -973,20 +974,20 @@ static void drawtile_line_win2_16x16(u4* const r, wleaf const* const lf,
 u4 ng2_winhits[8];
 
 #define NG2_WIN_LEAF(bits, name, n, v, c, w)              \
-    void c_drawtile##bits##_##name(u4* const r)           \
+    void c_drawtile##bits##_##name(zreg* const r)         \
     {                                                     \
         static wleaf const lf = { v, c, w };              \
         ng2_winhits[n]++;                                 \
         ng2_mosaic = drawtile_line_win(r, &lf, &d##bits); \
     }
 
-#define NG2_WIN2_LEAF(bits, name, n, v, c, w)   \
-    void c_drawtile##bits##_##name(u4* const r) \
-    {                                           \
-        static wleaf const lf = { v, c, w };    \
-        ng2_winhits[n]++;                       \
-        ng2_mosaic = 0;                         \
-        drawtile_line_win2(r, &lf, &d##bits);   \
+#define NG2_WIN2_LEAF(bits, name, n, v, c, w)     \
+    void c_drawtile##bits##_##name(zreg* const r) \
+    {                                             \
+        static wleaf const lf = { v, c, w };      \
+        ng2_winhits[n]++;                         \
+        ng2_mosaic = 0;                           \
+        drawtile_line_win2(r, &lf, &d##bits);     \
     }
 
 #define NG2_TILE_WIN_LEAVES(bits)                                        \
@@ -1007,20 +1008,20 @@ NG2_TILE_WIN_LEAVES(8b)
 u4 ng2_bigwinhits[8];
 
 #define NG2_BWIN_LEAF(bits, name, n, v, c, w)                   \
-    void c_drawtile16x16##bits##_##name(u4* const r)            \
+    void c_drawtile16x16##bits##_##name(zreg* const r)          \
     {                                                           \
         static wleaf const lf = { v, c, w };                    \
         ng2_bigwinhits[n]++;                                    \
         ng2_mosaic = drawtile_line_win_16x16(r, &lf, &d##bits); \
     }
 
-#define NG2_BWIN2_LEAF(bits, name, n, v, c, w)       \
-    void c_drawtile16x16##bits##_##name(u4* const r) \
-    {                                                \
-        static wleaf const lf = { v, c, w };         \
-        ng2_bigwinhits[n]++;                         \
-        ng2_mosaic = 0;                              \
-        drawtile_line_win2_16x16(r, &lf, &d##bits);  \
+#define NG2_BWIN2_LEAF(bits, name, n, v, c, w)         \
+    void c_drawtile16x16##bits##_##name(zreg* const r) \
+    {                                                  \
+        static wleaf const lf = { v, c, w };           \
+        ng2_bigwinhits[n]++;                           \
+        ng2_mosaic = 0;                                \
+        drawtile_line_win2_16x16(r, &lf, &d##bits);    \
     }
 
 #define NG2_TILE16_WIN_LEAVES(bits)                                       \
@@ -1090,7 +1091,7 @@ static void line_half_full(depth const* const d, u4 const idx, u1 const dl,
         l_pix(edi, src, flipx ? 7u - i : i, i * 2u, dl, pal, d->lmask, f);
 }
 
-static void line_body_16x16(u4* const r, int const f, depth const* const d)
+static void line_body_16x16(zreg* const r, int const f, depth const* const d)
 {
     u4 const eax = r[R_EAX];
     u4 const tile = *(u4 const*)(vrama + eax);
@@ -1126,10 +1127,10 @@ static void line_body_16x16(u4* const r, int const f, depth const* const d)
 
     r[R_ECX] = ecx;
     r[R_EDX] = edx;
-    r[R_EDI] = (u4)(uintptr_t)edi;
+    r[R_EDI] = (zreg)(uintptr_t)edi;
 }
 
-static u4 drawline_line_16x16(u4* const r, int const f, depth const* const d)
+static u4 drawline_line_16x16(zreg* const r, int const f, depth const* const d)
 {
     tleftn = 17;
     for (;;) {
@@ -1213,7 +1214,7 @@ static void line_half_16x8(depth const* const d, u4 const idx, u1 const dl,
     }
 }
 
-static void line_body_16x8(u4* const r, int const f, depth const* const d,
+static void line_body_16x8(zreg* const r, int const f, depth const* const d,
     int const hires)
 {
     u4 const eax = r[R_EAX];
@@ -1250,7 +1251,7 @@ static void line_body_16x8(u4* const r, int const f, depth const* const d,
 
     r[R_ECX] = ecx;
     r[R_EDX] = edx;
-    r[R_EDI] = (u4)(uintptr_t)edi;
+    r[R_EDI] = (zreg)(uintptr_t)edi;
 }
 
 /* [0..3] are the leaves, [4] and [5] count hi-res versus plain entries: the
@@ -1260,7 +1261,7 @@ u4 ng2_line168hits[6];
 
 /* %%ntile for the 16x8 drawer: the halves advanced edi by sixteen between
    them, and the skipped path adds that itself. */
-static u4 drawline_line_16x8(u4* const r, int const f, depth const* const d)
+static u4 drawline_line_16x8(zreg* const r, int const f, depth const* const d)
 {
     int const hires = curmosaicsz <= 1 && res640 != 0;
 
@@ -1328,7 +1329,7 @@ enum { OM_WRAP = 1, /* step ofsmcptr by bgtxadd2 when ofsmcptr2 wraps */
     OM_SHR4 = 8, /* the row index shifts down four, not three */
     OM_TADD = 16 }; /* bit 3 selects a flip, into tadd{n,}fy16x16 */
 
-static void om_advance(u4* const r, int const mode, int const opts)
+static void om_advance(zreg* const r, int const mode, int const opts)
 {
     u4 eax = r[R_EAX];
     u4 ebx, ecx, edx;
@@ -1399,7 +1400,7 @@ static void om_advance(u4* const r, int const mode, int const opts)
 
 /* drawlinengom16b. The drawing is drawlineng16b's, except that the full-tile
    path is live here - only drawlineng16b disabled it. */
-static void line_body_om(u4* const r, int const f, depth const* const d)
+static void line_body_om(zreg* const r, int const f, depth const* const d)
 {
     u4 ecx = r[R_ECX], edx;
 
@@ -1421,7 +1422,7 @@ static void line_body_om(u4* const r, int const f, depth const* const d)
     r[R_EDX] = edx;
 }
 
-static u4 drawline_line_om(u4* const r, int const f, depth const* const d,
+static u4 drawline_line_om(zreg* const r, int const f, depth const* const d,
     int const mode)
 {
     tleftn = 33;
@@ -1447,7 +1448,7 @@ static void line_half_win(depth const* d, u4 idx, u1 dl, u1* edi, u4 eax,
    round for the second, so switch16x16 gates three separate things here: which
    half the prologue starts on, whether the map pointers step, and whether
    tleftn counts down. The offset walk itself runs on every half. */
-static void om_advance_16x16(u4* const r, int const mode, int const opts)
+static void om_advance_16x16(zreg* const r, int const mode, int const opts)
 {
     u4 eax = r[R_EAX];
     u4 ebx, ecx, edx;
@@ -1532,7 +1533,7 @@ static void om_advance_16x16(u4* const r, int const mode, int const opts)
 
 /* One half of a 16x16 offset-mode entry. The prologue picks which half from
    switch16x16, since the caller comes back round rather than looping here. */
-static void line_body_om_16x16(u4* const r, int const f, depth const* const d,
+static void line_body_om_16x16(zreg* const r, int const f, depth const* const d,
     int const win)
 {
     u4 const eax = r[R_EAX];
@@ -1571,7 +1572,7 @@ static void line_body_om_16x16(u4* const r, int const f, depth const* const d,
     r[R_EDX] = edx;
 }
 
-static u4 drawline_line_om_16x16(u4* const r, int const f,
+static u4 drawline_line_om_16x16(zreg* const r, int const f,
     depth const* const d, int const mode)
 {
     tleftn = 17;
@@ -1665,7 +1666,7 @@ static void line_half_win(depth const* const d, u4 const idx, u1 const dl,
 }
 
 /* drawlinengwin16b. */
-static void line_body_win(u4* const r, int const f, depth const* const d)
+static void line_body_win(zreg* const r, int const f, depth const* const d)
 {
     u4 ecx = r[R_ECX], edx;
 
@@ -1688,7 +1689,7 @@ static void line_body_win(u4* const r, int const f, depth const* const d)
 
 /* drawlineng16x16win16b: the two-half walk with the windowed half, so a map
    entry consumes sixteen pixels of the run either way. */
-static void line_body_win_16x16(u4* const r, int const f, depth const* const d)
+static void line_body_win_16x16(zreg* const r, int const f, depth const* const d)
 {
     u4 const eax = r[R_EAX];
     u4 const tile = *(u4 const*)(vrama + eax);
@@ -1724,13 +1725,13 @@ static void line_body_win_16x16(u4* const r, int const f, depth const* const d)
 
     r[R_ECX] = ecx;
     r[R_EDX] = edx;
-    r[R_EDI] = (u4)(uintptr_t)edi;
+    r[R_EDI] = (zreg)(uintptr_t)edi;
 }
 
 /* The straddling tile, shared by both windowed line loops. Every exit in the
    line drawers takes the mosaic tail, so unlike the tile version this one
    reports it too. */
-static int straddle_line(u4* const r, wleaf const* const lf,
+static int straddle_line(zreg* const r, wleaf const* const lf,
     depth const* const d)
 {
     u4* const run = (u4*)(uintptr_t)ngcwinptr;
@@ -1749,13 +1750,13 @@ static int straddle_line(u4* const r, wleaf const* const lf,
     return 0;
 }
 
-static u4 drawline_line_win(u4* const r, wleaf const* const lf,
+static u4 drawline_line_win(zreg* const r, wleaf const* const lf,
     depth const* const d)
 {
     int clip;
 
     tleftn = 33;
-    ngcwinptr = (u4)(uintptr_t)ngwintable;
+    ngcwinptr = (zreg)(uintptr_t)ngwintable;
     ngcwinmode = 0;
     clip = 0;
     if (ngwintable[0] == 0) {
@@ -1793,13 +1794,13 @@ static u4 drawline_line_win(u4* const r, wleaf const* const lf,
     }
 }
 
-static u4 drawline_line_win2(u4* const r, wleaf const* const lf,
+static u4 drawline_line_win2(zreg* const r, wleaf const* const lf,
     depth const* const d)
 {
     int clip;
 
     tleftn = 33;
-    ngcwinptr = (u4)(uintptr_t)ngwintable;
+    ngcwinptr = (zreg)(uintptr_t)ngwintable;
     ngcwinmode = 0;
     clip = 0;
     if (ngwintable[0] == 0) {
@@ -1833,22 +1834,22 @@ static u4 drawline_line_win2(u4* const r, wleaf const* const lf,
 u4 ng2_linehits[4];
 
 #define NG2_LINE_LEAVES(bits)                                \
-    void c_drawline##bits##_nt(u4* const r)                  \
+    void c_drawline##bits##_nt(zreg* const r)                \
     {                                                        \
         ng2_linehits[0]++;                                   \
         ng2_mosaic = drawline_line(r, 0, &d##bits);          \
     }                                                        \
-    void c_drawline##bits##_t(u4* const r)                   \
+    void c_drawline##bits##_t(zreg* const r)                 \
     {                                                        \
         ng2_linehits[1]++;                                   \
         ng2_mosaic = drawline_line(r, L_T, &d##bits);        \
     }                                                        \
-    void c_drawline##bits##_mst(u4* const r)                 \
+    void c_drawline##bits##_mst(zreg* const r)               \
     {                                                        \
         ng2_linehits[2]++;                                   \
         ng2_mosaic = drawline_line(r, L_T | L_MS, &d##bits); \
     }                                                        \
-    void c_drawline##bits##_msnt(u4* const r)                \
+    void c_drawline##bits##_msnt(zreg* const r)              \
     {                                                        \
         ng2_linehits[3]++;                                   \
         ng2_mosaic = drawline_line(r, L_MS, &d##bits);       \
@@ -1862,7 +1863,7 @@ NG2_LINE_LEAVES(8b)
 u4 ng2_linewinhits[8];
 
 #define NG2_LWIN_LEAF(bits, name, n, v, c, w)             \
-    void c_drawline##bits##_##name(u4* const r)           \
+    void c_drawline##bits##_##name(zreg* const r)         \
     {                                                     \
         static wleaf const lf = { v, c, w };              \
         ng2_linewinhits[n]++;                             \
@@ -1870,7 +1871,7 @@ u4 ng2_linewinhits[8];
     }
 
 #define NG2_LWIN2_LEAF(bits, name, n, v, c, w)             \
-    void c_drawline##bits##_##name(u4* const r)            \
+    void c_drawline##bits##_##name(zreg* const r)          \
     {                                                      \
         static wleaf const lf = { v, c, w };               \
         ng2_linewinhits[n]++;                              \
@@ -1895,22 +1896,22 @@ NG2_LINE_WIN_LEAVES(8b)
 u4 ng2_line16hits[4];
 
 #define NG2_LINE16_LEAVES(bits)                                    \
-    void c_drawline16x16##bits##_nt(u4* const r)                   \
+    void c_drawline16x16##bits##_nt(zreg* const r)                 \
     {                                                              \
         ng2_line16hits[0]++;                                       \
         ng2_mosaic = drawline_line_16x16(r, 0, &d##bits);          \
     }                                                              \
-    void c_drawline16x16##bits##_t(u4* const r)                    \
+    void c_drawline16x16##bits##_t(zreg* const r)                  \
     {                                                              \
         ng2_line16hits[1]++;                                       \
         ng2_mosaic = drawline_line_16x16(r, L_T, &d##bits);        \
     }                                                              \
-    void c_drawline16x16##bits##_mst(u4* const r)                  \
+    void c_drawline16x16##bits##_mst(zreg* const r)                \
     {                                                              \
         ng2_line16hits[2]++;                                       \
         ng2_mosaic = drawline_line_16x16(r, L_T | L_MS, &d##bits); \
     }                                                              \
-    void c_drawline16x16##bits##_msnt(u4* const r)                 \
+    void c_drawline16x16##bits##_msnt(zreg* const r)               \
     {                                                              \
         ng2_line16hits[3]++;                                       \
         ng2_mosaic = drawline_line_16x16(r, L_MS, &d##bits);       \
@@ -1922,7 +1923,7 @@ NG2_LINE16_LEAVES(8b)
 
 /* The 16x16 windowed line loops: seventeen entries of sixteen pixels, and
    every exit takes the mosaic tail the way the 8x8 line drawers do. */
-static int straddle_line_16(u4* const r, wleaf const* const lf,
+static int straddle_line_16(zreg* const r, wleaf const* const lf,
     depth const* const d)
 {
     u4* const run = (u4*)(uintptr_t)ngcwinptr;
@@ -1945,13 +1946,13 @@ static int straddle_line_16(u4* const r, wleaf const* const lf,
     return 0;
 }
 
-static u4 drawline_line_win_16x16(u4* const r, wleaf const* const lf,
+static u4 drawline_line_win_16x16(zreg* const r, wleaf const* const lf,
     depth const* const d)
 {
     int clip;
 
     tleftn = 17;
-    ngcwinptr = (u4)(uintptr_t)ngwintable;
+    ngcwinptr = (zreg)(uintptr_t)ngwintable;
     ngcwinmode = 0;
     clip = 0;
     if (ngwintable[0] == 0) {
@@ -1996,7 +1997,7 @@ static u4 drawline_line_win_16x16(u4* const r, wleaf const* const lf,
 u4 ng2_line16winhits[8];
 
 #define NG2_L16WIN_LEAF(bits, name, n, v, c, w)                 \
-    void c_drawline16x16##bits##_##name(u4* const r)            \
+    void c_drawline16x16##bits##_##name(zreg* const r)          \
     {                                                           \
         static wleaf const lf = { v, c, w };                    \
         ng2_line16winhits[n]++;                                 \
@@ -2021,22 +2022,22 @@ NG2_LINE16_WIN_LEAVES(8b)
    and no windowed arm in this family. */
 
 #define NG2_LINE168_LEAVES(bits)                                  \
-    void c_drawline16x8##bits##_nt(u4* const r)                   \
+    void c_drawline16x8##bits##_nt(zreg* const r)                 \
     {                                                             \
         ng2_line168hits[0]++;                                     \
         ng2_mosaic = drawline_line_16x8(r, 0, &d##bits);          \
     }                                                             \
-    void c_drawline16x8##bits##_t(u4* const r)                    \
+    void c_drawline16x8##bits##_t(zreg* const r)                  \
     {                                                             \
         ng2_line168hits[1]++;                                     \
         ng2_mosaic = drawline_line_16x8(r, L_T, &d##bits);        \
     }                                                             \
-    void c_drawline16x8##bits##_mst(u4* const r)                  \
+    void c_drawline16x8##bits##_mst(zreg* const r)                \
     {                                                             \
         ng2_line168hits[2]++;                                     \
         ng2_mosaic = drawline_line_16x8(r, L_T | L_MS, &d##bits); \
     }                                                             \
-    void c_drawline16x8##bits##_msnt(u4* const r)                 \
+    void c_drawline16x8##bits##_msnt(zreg* const r)               \
     {                                                             \
         ng2_line168hits[3]++;                                     \
         ng2_mosaic = drawline_line_16x8(r, L_MS, &d##bits);       \
@@ -2049,23 +2050,23 @@ NG2_LINE168_LEAVES(4b)
 u4 ng2_lineomhits[4];
 
 #define NG2_LINEOM_LEAVES(bits, mode)                           \
-    void c_drawlineom##bits##_nt(u4* const r)                   \
+    void c_drawlineom##bits##_nt(zreg* const r)                 \
     {                                                           \
         ng2_lineomhits[0]++;                                    \
         ng2_mosaic = drawline_line_om(r, 0, &d##bits, mode);    \
     }                                                           \
-    void c_drawlineom##bits##_t(u4* const r)                    \
+    void c_drawlineom##bits##_t(zreg* const r)                  \
     {                                                           \
         ng2_lineomhits[1]++;                                    \
         ng2_mosaic = drawline_line_om(r, L_T, &d##bits, mode);  \
     }                                                           \
-    void c_drawlineom##bits##_mst(u4* const r)                  \
+    void c_drawlineom##bits##_mst(zreg* const r)                \
     {                                                           \
         ng2_lineomhits[2]++;                                    \
         ng2_mosaic                                              \
             = drawline_line_om(r, L_T | L_MS, &d##bits, mode);  \
     }                                                           \
-    void c_drawlineom##bits##_msnt(u4* const r)                 \
+    void c_drawlineom##bits##_msnt(zreg* const r)               \
     {                                                           \
         ng2_lineomhits[3]++;                                    \
         ng2_mosaic = drawline_line_om(r, L_MS, &d##bits, mode); \
@@ -2078,7 +2079,7 @@ NG2_LINEOM_LEAVES(8b, 4)
 /* The windowed offset-mode loops. The straddling body is drawlinengomwin16b,
    whose tail is the offset walk with OM_HV_ALT; the clipped path is
    WinClipMacroom's, which takes neither option. */
-static void line_body_win_om(u4* const r, int const f, depth const* const d)
+static void line_body_win_om(zreg* const r, int const f, depth const* const d)
 {
     u4 ecx = r[R_ECX], edx;
 
@@ -2099,7 +2100,7 @@ static void line_body_win_om(u4* const r, int const f, depth const* const d)
     line_half_win(d, ecx, (u1)edx, (u1*)(uintptr_t)r[R_EDI], r[R_EAX], f);
 }
 
-static int straddle_om(u4* const r, wleaf const* const lf,
+static int straddle_om(zreg* const r, wleaf const* const lf,
     depth const* const d, int const mode)
 {
     u4* const run = (u4*)(uintptr_t)ngcwinptr;
@@ -2118,13 +2119,13 @@ static int straddle_om(u4* const r, wleaf const* const lf,
     return 0;
 }
 
-static u4 drawline_line_win_om(u4* const r, wleaf const* const lf,
+static u4 drawline_line_win_om(zreg* const r, wleaf const* const lf,
     depth const* const d, int const mode)
 {
     int clip;
 
     tleftn = 33;
-    ngcwinptr = (u4)(uintptr_t)ngwintable;
+    ngcwinptr = (zreg)(uintptr_t)ngwintable;
     ngcwinmode = 0;
     clip = 0;
     if (ngwintable[0] == 0) {
@@ -2166,7 +2167,7 @@ static u4 drawline_line_win_om(u4* const r, wleaf const* const lf,
 u4 ng2_lineomwinhits[8];
 
 #define NG2_LOMWIN_LEAF(bits, mode, name, n, v, c, w)              \
-    void c_drawlineom##bits##_##name(u4* const r)                  \
+    void c_drawlineom##bits##_##name(zreg* const r)                \
     {                                                              \
         static wleaf const lf = { v, c, w };                       \
         ng2_lineomwinhits[n]++;                                    \
@@ -2194,23 +2195,23 @@ NG2_LINEOM_WIN_LEAVES(8b, 4)
 u4 ng2_lineom16hits[4];
 
 #define NG2_LINEOM16_LEAVES(bits, mode)                               \
-    void c_drawlineom16x16##bits##_nt(u4* const r)                    \
+    void c_drawlineom16x16##bits##_nt(zreg* const r)                  \
     {                                                                 \
         ng2_lineom16hits[0]++;                                        \
         ng2_mosaic = drawline_line_om_16x16(r, 0, &d##bits, mode);    \
     }                                                                 \
-    void c_drawlineom16x16##bits##_t(u4* const r)                     \
+    void c_drawlineom16x16##bits##_t(zreg* const r)                   \
     {                                                                 \
         ng2_lineom16hits[1]++;                                        \
         ng2_mosaic = drawline_line_om_16x16(r, L_T, &d##bits, mode);  \
     }                                                                 \
-    void c_drawlineom16x16##bits##_mst(u4* const r)                   \
+    void c_drawlineom16x16##bits##_mst(zreg* const r)                 \
     {                                                                 \
         ng2_lineom16hits[2]++;                                        \
         ng2_mosaic                                                    \
             = drawline_line_om_16x16(r, L_T | L_MS, &d##bits, mode);  \
     }                                                                 \
-    void c_drawlineom16x16##bits##_msnt(u4* const r)                  \
+    void c_drawlineom16x16##bits##_msnt(zreg* const r)                \
     {                                                                 \
         ng2_lineom16hits[3]++;                                        \
         ng2_mosaic = drawline_line_om_16x16(r, L_MS, &d##bits, mode); \
@@ -2225,13 +2226,13 @@ NG2_LINEOM16_LEAVES(8b, 4)
    it counts tleftn. The three tails each want their own flags - see the
    OM_WIDE/OM_SHR4/OM_TADD note above; deriving one from another is what the
    difftest caught. */
-static u4 drawline_line_win_om_16x16(u4* const r, wleaf const* const lf,
+static u4 drawline_line_win_om_16x16(zreg* const r, wleaf const* const lf,
     depth const* const d, int const mode)
 {
     int clip;
 
     tleftn = 17;
-    ngcwinptr = (u4)(uintptr_t)ngwintable;
+    ngcwinptr = (zreg)(uintptr_t)ngwintable;
     ngcwinmode = 0;
     clip = 0;
     if (ngwintable[0] == 0) {
@@ -2288,7 +2289,7 @@ static u4 drawline_line_win_om_16x16(u4* const r, wleaf const* const lf,
 u4 ng2_lineom16winhits[8];
 
 #define NG2_LOM16WIN_LEAF(bits, mode, name, n, v, c, w)           \
-    void c_drawlineom16x16##bits##_##name(u4* const r)            \
+    void c_drawlineom16x16##bits##_##name(zreg* const r)          \
     {                                                             \
         static wleaf const lf = { v, c, w };                      \
         ng2_lineom16winhits[n]++;                                 \
@@ -2327,11 +2328,11 @@ NG2_LINEOM16_WIN_LEAVES(8b, 4)
  */
 extern u1 BGMS1[], scadtng[];
 extern u4 ng_branch;
-void c_determinetransp(u4* r); /* video/c_ng2gate.c */
-void c_checkwindowing(u4* r);
-void c_determinewindow(u4* r);
+void c_determinetransp(zreg* r); /* video/c_ng2gate.c */
+void c_checkwindowing(zreg* r);
+void c_determinewindow(zreg* r);
 
-typedef void (*ng_leaf)(u4*);
+typedef void (*ng_leaf)(zreg*);
 
 typedef struct {
     ng_leaf nt, t, mst, msnt; /* no window on this layer */
@@ -2356,7 +2357,7 @@ static ng_leaf pick_win(ng_leaf const both, ng_leaf const main,
     }
 }
 
-static void ng_gate(u4* const r, ng_tree const* const t)
+static void ng_gate(zreg* const r, ng_tree const* const t)
 {
     u4 const bx = r[R_EBX];
     u1 const dl = (u1)r[R_EDX];
@@ -2385,7 +2386,7 @@ static void ng_gate(u4* const r, ng_tree const* const t)
 }
 
 /* The 16x8 pair: same tree with the window decisions taken out. */
-static void ng_gate_16x8(u4* const r, ng_tree const* const t)
+static void ng_gate_16x8(zreg* const r, ng_tree const* const t)
 {
     u4 const bx = r[R_EBX];
     u1 const dl = (u1)r[R_EDX];
@@ -2409,12 +2410,12 @@ static void ng_gate_16x8(u4* const r, ng_tree const* const t)
         c_##pfx##_mst, c_##pfx##_msnt, c_##pfx##_win, c_##pfx##_wint, \
         c_##pfx##_mstmsw, c_##pfx##_mstmw, c_##pfx##_mstsw,           \
         c_##pfx##_msntmsw, c_##pfx##_msntmw, c_##pfx##_msntsw };      \
-    void c_ng_##entry(u4* const r) { ng_gate(r, &entry##_tree); }
+    void c_ng_##entry(zreg* const r) { ng_gate(r, &entry##_tree); }
 
 #define NG_TREE_16X8(entry, pfx)                                     \
     static ng_tree const entry##_tree = { c_##pfx##_nt, c_##pfx##_t, \
         c_##pfx##_mst, c_##pfx##_msnt, 0, 0, 0, 0, 0, 0, 0, 0 };     \
-    void c_ng_##entry(u4* const r) { ng_gate_16x8(r, &entry##_tree); }
+    void c_ng_##entry(zreg* const r) { ng_gate_16x8(r, &entry##_tree); }
 
 NG_TREE(drawtileng2b16b, drawtile2b)
 NG_TREE(drawtileng4b16b, drawtile4b)

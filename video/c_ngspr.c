@@ -25,13 +25,13 @@
 
 #include "../types.h"
 
-u4 NGSAX;
-u4 NGSBX;
-u4 NGSCX;
-u4 NGSDX;
-u4 NGSSI;
-u4 NGSDI;
-u4 NGSBP;
+zreg NGSAX;
+zreg NGSBX;
+zreg NGSCX;
+zreg NGSDX;
+zreg NGSSI;
+zreg NGSDI;
+zreg NGSBP;
 
 typedef struct SpriteInfo {
     u2 x;
@@ -43,8 +43,14 @@ typedef struct SpriteInfo {
 extern u1 sprpriodata[288], csprbit, NGNumSpr;
 extern u1 BGMS1[], FillSubScr[256], scadtng[256];
 extern u1 winbg1enval[];
-extern u4 csprival, sprtbng[256], sprleftpr[256], cpalval[256];
-extern u4 CMainWinScr, CSubWinScr, objclineptr[256], ngwinptr;
+/* sprtbng holds host pointers into the sprite table, so it is pointer-wide. */
+extern u4 csprival, sprleftpr[256];
+extern zreg cpalval[256];
+extern zreg sprtbng[256];
+/* ngwinptr is a real pointer in ui.c; objclineptr holds byte offsets into it. */
+extern zreg CMainWinScr, CSubWinScr;
+extern u4 objclineptr[256];
+extern u1* ngwinptr;
 extern u4 UnusedBit[2], UnusedBitXor[2];
 
 /* The second field of a hi-res frame, in 16-bit pixels. */
@@ -67,7 +73,7 @@ typedef struct {
 } sform;
 
 typedef struct {
-    u4 ax, bx, cx, dx, si, di, bp;
+    zreg ax, bx, cx, dx, si, di, bp;
 } regs;
 
 /* One pixel. `mask` is the a-form/b-form split: the a-forms skip a pixel a
@@ -77,7 +83,9 @@ static void spr_px(regs* const r, u1 const* const src, u4 const k,
     u1 const adder, u1 const dl, sform const f, int const mask,
     int const hires)
 {
-    u4 const i = r->bx - n;
+    /* A sprite hanging off the left edge makes this negative, and the
+       assembly then stepped back off the line - keep it signed. */
+    s4 const i = (s4)((u4)r->bx - n);
     u4 eax = src[k];
     u4 col;
 
@@ -179,7 +187,7 @@ static void spr_mark(regs* const r, u1 const* const src, u1 const dl,
             r->ax = src[k] | (u4)src[k + 1] << 8;
         }
         if (src[k] != 0) {
-            sprpriodata[r->bx - (flip ? k + 1 : 8 - k) + 16] |= dl;
+            sprpriodata[(s4)((u4)r->bx - (flip ? k + 1u : 8u - k)) + 16] |= dl;
         }
     }
 }
@@ -191,7 +199,7 @@ static void clear_prio(regs* const r)
         memset(sprpriodata + 16, 0, 256);
         r->ax = 0;
         r->cx = 0;
-        r->di = (u4)(uintptr_t)(sprpriodata + 16 + 256);
+        r->di = (zreg)(uintptr_t)(sprpriodata + 16 + 256);
     }
 }
 
@@ -214,7 +222,8 @@ static void spr_loop(regs* const r, u2* edi, u2 const* const pal,
     if (sprleftpr[y] & 0x80000000u) {
         /* .drawsingle: one sprite's worth of pixels, walked backwards, with no
            priority mask to consult or set. */
-        u4 edx = sprtbng[y] + (u4)count * 8u - 8u;
+        zreg edx = sprtbng[y] + (zreg)count * sizeof(SpriteInfo)
+            - sizeof(SpriteInfo);
 
         esi = (SpriteInfo const*)(uintptr_t)edx;
         r->bx = 0;
@@ -224,7 +233,7 @@ static void spr_loop(regs* const r, u2* edi, u2 const* const pal,
             r->bx = esi->x;
             ch = esi->pal;
             spr_row(r, esi->obj, edi, pal, win, ch, 0, f, 0, hires, flip);
-            edx -= 8;
+            edx -= sizeof(SpriteInfo);
             esi = (SpriteInfo const*)(uintptr_t)edx;
         } while (--count != 0);
         r->cx = (r->cx & 0xFFFF0000u) | (u4)ch << 8;
@@ -233,7 +242,7 @@ static void spr_loop(regs* const r, u2* edi, u2 const* const pal,
     }
 
     {
-        u4 edx = sprtbng[y];
+        zreg edx = sprtbng[y];
 
         esi = (SpriteInfo const*)(uintptr_t)edx;
         r->bx = 0;
@@ -255,7 +264,7 @@ static void spr_loop(regs* const r, u2* edi, u2 const* const pal,
             } else {
                 spr_mark(r, esi->obj, csprbit, flip);
             }
-            edx += 8;
+            edx += sizeof(SpriteInfo);
             esi = (SpriteInfo const*)(uintptr_t)edx;
             if (win != 0) {
                 if (--NGNumSpr == 0) {
@@ -282,7 +291,8 @@ static void dispatch(regs* const r, u4 const y, int const hires)
     u1 const* const wsub = (u1 const*)(uintptr_t)CSubWinScr;
     int const submain = (BGMS1[y * 2] & 0x10u) != 0;
     int const fill = (FillSubScr[y] & 1u) != 0;
-    u1 const* const line = (u1 const*)(uintptr_t)(objclineptr[y] + ngwinptr);
+    /* 0xFFFFFFFF is the "no window" sentinel, and the assembly let it wrap. */
+    u1 const* const line = ngwinptr + (s4)objclineptr[y];
     sform f;
 
     memset(&f, 0, sizeof f);

@@ -49,7 +49,8 @@ extern u2 BGPT1Y[256], BGPT2Y[256], BGPT3Y[256], BGPT4Y[256];
 extern u4 mode7A, mode7C, mode7X0;
 extern u1 mode7set;
 extern u4 mode7ab[256], mode7cd[256], mode7xy[256];
-extern u4 cpalptrng, cpalval[256];
+extern u4 cpalptrng;
+extern zreg cpalval[256];
 extern u1* vbufdptr;
 extern u1 vidmemch2s[];
 extern void setpalette16bng(void);
@@ -57,7 +58,8 @@ extern u1 winbg1en[6], winenabm, winenabs, disableeffects;
 extern u1 winbg1enval[], winbg1envalm[], winbg1envals[];
 extern u1 winbg2enval[], winbg3enval[], winbg4enval[];
 extern u1 winlogica, winl1, winlogicb, nglogicval;
-extern u4 objwlrpos[256], objclineptr[256], ngwinen, ngwinptr;
+extern u4 objwlrpos[256], objclineptr[256], ngwinen;
+extern u1* ngwinptr;
 extern u4 ngwintable[32], CSprWinPtr;
 extern u2 objwen[256];
 extern void BuildWindow2(u4 y, u4 idx);
@@ -71,11 +73,15 @@ extern u4 winboundary[256];
 extern u1 bg4ptr_dw[4], bg4objptr_dw[4];
 extern u1 scrnon_dw[4], forceblnk_dw[4], mode7set_dw[4], BG116x16t_dw[4], BG216x16t_dw[4], BG316x16t_dw[4], BG416x16t_dw[4], mosaicon_dw[4], mosaicsz_dw[4], interlval_dw[4], winl1_dw[4], winlogica_dw[4];
 
-/* Store a word and flag the layer if the line above held something else. */
+/* Store a word and flag the layer if the line above held something else.
+
+   The "line above" index is signed on purpose: on line 0 the assembly read
+   the dword before the table and compared against that, which a u4 y - 1
+   only reproduces while the slot is 32 bits wide. */
 static void recw(u2* const tab, u4 const y, u2 const v, u1* const chg)
 {
     tab[y] = v;
-    if (tab[y - 1] != v) {
+    if (tab[(s4)y - 1] != v) {
         chg[y] = 1;
     }
 }
@@ -85,7 +91,7 @@ static void recw(u2* const tab, u4 const y, u2 const v, u1* const chg)
 static void recd(u2* const tab, u4 const y, u4 const v, u1* const chg)
 {
     memcpy(&tab[y], &v, 4);
-    if (tab[y - 1] != (u2)v) {
+    if (tab[(s4)y - 1] != (u2)v) {
         chg[y] = 1;
     }
 }
@@ -93,7 +99,7 @@ static void recd(u2* const tab, u4 const y, u4 const v, u1* const chg)
 static void recb(u1* const tab, u4 const y, u1 const v, u1* const chg)
 {
     tab[y] = v;
-    if (tab[y - 1] != v) {
+    if (tab[(s4)y - 1] != v) {
         chg[y] = 1;
     }
 }
@@ -158,7 +164,7 @@ void newengine16b_lines(void)
     }
     bgcmsung |= ebx;
     memcpy(&BGMS1[y * 2], &ebx, 4);
-    if ((u2)dwr(&BGMS1[y * 2 - 2]) != (u2)ebx) {
+    if ((u2)dwr(&BGMS1[(s4)(y * 2u) - 2]) != (u2)ebx) {
         bgallchange[y] = 1;
     }
 
@@ -220,19 +226,19 @@ void newengine16b_lines(void)
     wide(mode7st, y, dwr(mode7set_dw));
 
     wide(t16x161, y, dwr(BG116x16t_dw));
-    if (t16x161[y - 1] != (u1)BG116x16t) {
+    if (t16x161[(s4)y - 1] != (u1)BG116x16t) {
         bg1change[y] = 1;
     }
     wide(t16x162, y, dwr(BG216x16t_dw));
-    if (t16x162[y - 1] != (u1)BG216x16t) {
+    if (t16x162[(s4)y - 1] != (u1)BG216x16t) {
         bg2change[y] = 1;
     }
     wide(t16x163, y, dwr(BG316x16t_dw));
-    if (t16x163[y - 1] != (u1)BG316x16t) {
+    if (t16x163[(s4)y - 1] != (u1)BG316x16t) {
         bg3change[y] = 1;
     }
     wide(t16x164, y, dwr(BG416x16t_dw));
-    if (t16x164[y - 1] != (u1)BG416x16t) {
+    if (t16x164[(s4)y - 1] != (u1)BG416x16t) {
         bg4change[y] = 1;
     }
 
@@ -256,7 +262,7 @@ void newengine16b_lines(void)
         }
     }
 
-    cpalval[y] = cpalptrng + (u4)(uintptr_t)vbufdptr;
+    cpalval[y] = cpalptrng + (zreg)(uintptr_t)vbufdptr;
 
     recb(scadtng, y, scaddtype, bgallchange);
     recb(scadsng, y, scaddset, bgallchange);
@@ -344,24 +350,24 @@ void newengine16b_windows(void)
 
     ebx = dwr(winlogica_dw);
     memcpy(&winlogicaval[y], &ebx, 4);
-    if (winlogicaval[y - 1] != (u2)ebx) {
+    if (winlogicaval[(s4)y - 1] != (u2)ebx) {
         bgwinchange[y] = 1;
     }
     ebx = dwr(winl1_dw);
     winboundary[y] = ebx;
-    if (winboundary[y - 1] != ebx) {
+    if (winboundary[(s4)y - 1] != ebx) {
         bgwinchange[y] = 1;
     }
-    if (winbg1enval[y - 1] != winbg1enval[y]) {
+    if (winbg1enval[(s4)y - 1] != winbg1enval[y]) {
         bgwinchange[y] = 1;
     }
-    if (winbg2enval[y - 1] != winbg2enval[y]) {
+    if (winbg2enval[(s4)y - 1] != winbg2enval[y]) {
         bgwinchange[y] = 1;
     }
-    if (winbg3enval[y - 1] != winbg3enval[y]) {
+    if (winbg3enval[(s4)y - 1] != winbg3enval[y]) {
         bgwinchange[y] = 1;
     }
-    if (winbg4enval[y - 1] != winbg4enval[y]) {
+    if (winbg4enval[(s4)y - 1] != winbg4enval[y]) {
         bgwinchange[y] = 1;
     }
 }
@@ -448,11 +454,11 @@ void newengine16b_sprwin(void)
 
     /* Nothing to rebuild if this line's window matches the one above, or the
        one already built for this line. */
-    if (objwlrpos[y - 1] != 0xFFFFFFFFu) {
-        if (objwlrpos[y - 1] == ebx && objwen[y - 1] == dx) {
+    if (objwlrpos[(s4)y - 1] != 0xFFFFFFFFu) {
+        if (objwlrpos[(s4)y - 1] == ebx && objwen[(s4)y - 1] == dx) {
             objwlrpos[y] = ebx;
             objwen[y] = dx;
-            objclineptr[y] = objclineptr[y - 1];
+            objclineptr[y] = objclineptr[(s4)y - 1];
             if (objclineptr[y] != 0xFFFFFFFFu) {
                 return;
             }
@@ -479,7 +485,7 @@ void newengine16b_sprwin(void)
     }
     CSprWinPtr += 260u;
     objclineptr[y] = CSprWinPtr;
-    ng_build_sprite_window((u1*)(uintptr_t)(CSprWinPtr + ngwinptr));
+    ng_build_sprite_window(ngwinptr + CSprWinPtr);
     return;
 
 disable:

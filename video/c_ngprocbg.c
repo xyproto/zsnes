@@ -27,8 +27,8 @@
 
 /* The video pass's register file and the call that hands it to a ported entry
    point, both video/c_mv16tline.c. */
-extern u4 DLR[7];
-extern void dl_call(void (*fn)(u4*));
+extern zreg DLR[7];
+extern void dl_call(void (*fn)(zreg*));
 
 extern u1 BGFB[256], BGMA[256], BG3PRI[256];
 extern u1 sprtlng[256], sprlefttot[256], sprleftpr[], SpecialLine[256];
@@ -59,24 +59,25 @@ static void m7call(void (*const g)(m7regs*))
     r.di = DLR[5];
     r.bp = DLR[6];
     g(&r);
-    DLR[0] = (u4)r.ax;
-    DLR[1] = (u4)r.bx;
-    DLR[2] = (u4)r.cx;
-    DLR[3] = (u4)r.dx;
-    DLR[4] = (u4)r.si;
-    DLR[5] = (u4)r.di;
-    DLR[6] = (u4)r.bp;
+    DLR[0] = r.ax;
+    DLR[1] = r.bx;
+    DLR[2] = r.cx;
+    DLR[3] = r.dx;
+    DLR[4] = r.si;
+    DLR[5] = r.di;
+    DLR[6] = r.bp;
 }
 /* video/c_ngspr.c, which takes its registers in NGS* rather than a block -
    the thunk these were reached through spilled them there. */
 extern void c_drawsprng16b(void);
 extern void c_drawsprng16bhr(void);
-extern u4 NGSAX, NGSBX, NGSCX, NGSDX, NGSSI, NGSDI, NGSBP;
+extern zreg NGSAX, NGSBX, NGSCX, NGSDX, NGSSI, NGSDI, NGSBP;
 extern u1 BGMS1[], FillSubScr[256];
 extern u1 bgwinchange[256], bgallchange[256], bg1change[256];
 extern u1 winbg1enval[256], mosenng[256], mosszng[256];
 extern u2 BG1SYl[256];
-extern u4 cpalval[256], CPalPtrng;
+extern zreg cpalval[256];
+extern zreg CPalPtrng;
 extern u4 startlinet, endlinet, reslbyl;
 extern u1 moscountdown;
 extern u4 mosstart[4];
@@ -193,20 +194,20 @@ static int line_wanted(u4 const y, int const kind)
 /* The renderers take the scanline in ebx and the video pointer in esi, and the
    priority-0 pair also read ecx - it still holds the scroll-plus-line value the
    tile-alignment test computed. The priority-1 pair never look at it. */
-static void call_proc(void (*const fn)(u4*), u1 const* const esi, u4 const y,
+static void call_proc(void (*const fn)(zreg*), u1 const* const esi, u4 const y,
     u4 const ecx)
 {
     DLR[1] = y;
     DLR[2] = ecx;
-    DLR[4] = (u4)(uintptr_t)esi;
+    DLR[4] = (zreg)(uintptr_t)esi;
     dl_call(fn);
 }
 
-void c_procbg16b(u4 layer, void (*lineproc)(u4*), void (*tileproc)(u4*),
+void c_procbg16b(u4 layer, void (*lineproc)(zreg*), void (*tileproc)(zreg*),
     u1 const* prdat, int main_, u4 mask, int kind);
 
-void c_procbg16b(u4 const layer, void (*const lineproc)(u4*),
-    void (*const tileproc)(u4*), u1 const* const prdat, int const main_,
+void c_procbg16b(u4 const layer, void (*const lineproc)(zreg*),
+    void (*const tileproc)(zreg*), u1 const* const prdat, int const main_,
     u4 const mask, int const kind)
 {
     u1 const* esi = vidbuffer + 32;
@@ -277,7 +278,7 @@ void c_procspr16b(int const main_, u4 const mask, int const modes)
             if ((sprleftpr[y * 4 + pri] & 1) && count != 0) {
                 DLR[1] = y;
                 DLR[2] = (DLR[2] & ~0xFFu) | count;
-                DLR[4] = (u4)(uintptr_t)esi;
+                DLR[4] = (zreg)(uintptr_t)esi;
                 NGSAX = DLR[0];
                 NGSBX = DLR[1];
                 NGSCX = DLR[2];
@@ -377,7 +378,7 @@ void c_procmode7ng16b(int const main_, u4 const mask, int const kind)
 
             DLR[0] = eax;
             DLR[3] = edx;
-            DLR[4] = (u4)(uintptr_t)esi;
+            DLR[4] = (zreg)(uintptr_t)esi;
             DLR[1] = kind == M7_PLAIN ? y : line;
             if (kind == M7_PLAIN) {
                 if (scadsng[y] & 1u) {
@@ -385,7 +386,7 @@ void c_procmode7ng16b(int const main_, u4 const mask, int const kind)
                         prevbrightdc = vidbright;
                         Gendcolortable();
                     }
-                    DLR[6] = (u4)(uintptr_t)dcolortab;
+                    DLR[6] = (zreg)(uintptr_t)dcolortab;
                 }
                 m7call(drawmode7win16b);
             } else if (kind == M7_EXTBG) {
@@ -396,7 +397,7 @@ void c_procmode7ng16b(int const main_, u4 const mask, int const kind)
 
             if (kind == M7_PLAIN && Mode7HiRes16b != 0 && scanlines == 0) {
                 DLR[1] = y;
-                DLR[4] = (u4)(uintptr_t)esi;
+                DLR[4] = (zreg)(uintptr_t)esi;
                 m7call(processmode7hires16b);
             }
         }

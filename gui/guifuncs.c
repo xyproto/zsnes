@@ -51,7 +51,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #ifndef lengthof
 #define lengthof(x) (sizeof(x) / sizeof *(x))
 #endif
-#include "../ignore.h"
 #include "../md.h"
 #include "../ui.h"
 #include "../zdir.h"

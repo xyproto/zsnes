@@ -30,7 +30,7 @@
 /* Run one opcode through a dispatch table. The four ALT sub-tables of a group
    are adjacent, so FxSeamCX indexes all of them; this is what the assembly did
    with `call [table + ecx*4]`. */
-static inline void FxDispatch(u4 const* const table)
+static inline void FxDispatch(zreg const* const table)
 {
     ((void (*)(void))(uintptr_t)table[FxSeamCX])();
 }
@@ -44,7 +44,7 @@ static inline void fx_fetchpipe(void)
 /* R15 mirrors the program counter as a bank-relative address. */
 static inline u4 fx_pc_rel(void)
 {
-    return (u4)(uintptr_t)FxSeamPC - SfxCPB;
+    return (u4)((uintptr_t)FxSeamPC - SfxCPB);
 }
 
 /* UpdateR14: recompute the ROM pointer R14 reads through. */
@@ -85,7 +85,7 @@ static inline int fx_cond_overflow(void)
 /* Shared body of the eleven conditional branches. The displacement is the
  * signed byte at the program counter; the opcode byte that follows it is the
  * delay slot, which runs either way. */
-static inline void fx_branch(u4 const* const table, int const taken)
+static inline void fx_branch(zreg const* const table, int const taken)
 {
     s1 const disp = (s1)*FxSeamPC;
 
@@ -97,7 +97,7 @@ static inline void fx_branch(u4 const* const table, int const taken)
 
 /* BRA reads the delay slot at ebp+1 before advancing, which lands on the same
  * byte the conditional branches read after their `inc ebp`. */
-static inline void fx_branch_always(u4 const* const table)
+static inline void fx_branch_always(zreg const* const table)
 {
     s1 const disp = (s1)*FxSeamPC;
 
@@ -1448,7 +1448,7 @@ static inline void fx_fromrn_c(u4 const n)
 
 /* ALT1/ALT2/ALT3 set the mode bits in ch for exactly one instruction, which
  * steers the dispatch into the matching ALT sub-table, then clear them. */
-static inline void fx_alt_b(u4 const mode, u4 const* const table)
+static inline void fx_alt_b(u4 const mode, zreg const* const table)
 {
     fx_fetchpipe();
     SfxB = 0;
@@ -1460,7 +1460,7 @@ static inline void fx_alt_b(u4 const mode, u4 const* const table)
 }
 
 /* The plain form. Only the b group additionally stamps R15 (fx_alt_b). */
-static inline void fx_alt(u4 const mode, u4 const* const table)
+static inline void fx_alt(u4 const mode, zreg const* const table)
 {
     fx_fetchpipe();
     SfxB = 0;
@@ -1802,7 +1802,7 @@ void c_FxOpDFA2(void) /* RAMB: select the RAM bank */
 
     fx_fetchpipe();
     SfxRAMBR = bank;
-    SfxRAMMem = (bank << 16) + (u4)(uintptr_t)sfxramdata;
+    SfxRAMMem = (bank << 16) + (uintptr_t)sfxramdata;
     FxSeamPC++;
 }
 
@@ -1927,7 +1927,7 @@ void c_FxOpDF(void) /* GETC: colour from the ROM buffer */
 
 /* Which line-location table the current screen mode uses. POR bit 4 forces
    object mode; otherwise SCMR bits 2 and 5 give the screen height. */
-static inline u4 fx_lineloc(void)
+static inline zreg fx_lineloc(void)
 {
     if (SfxPOR & 0x10u) {
         return sfxobjlineloc;
@@ -2062,14 +2062,14 @@ enum { FX_PLOT_2BPP,
     FX_PLOT_4BPP,
     FX_PLOT_8BPP };
 
-static inline u4* fx_plane(u4 const addr, u4 const n)
+static inline u4* fx_plane(zreg const addr, u4 const n)
 {
     return (u4*)(uintptr_t)(addr + n * 16u);
 }
 
 /* Write one pixel. The dithered form just uses the other pair of colour
    lookups, which COLOR loaded with the high nibble. */
-static inline void fx_drawpix(u4 const addr, u4 mask, int const depth, int const dither)
+static inline void fx_drawpix(zreg const addr, u4 mask, int const depth, int const dither)
 {
     u4 const b01 = dither ? fxbit45pcal : fxbit01pcal;
     u4 const b23 = dither ? fxbit67pcal : fxbit23pcal;
@@ -2099,7 +2099,7 @@ static inline void fx_plot(int const depth, u4 const zmask, int const zcheck, in
     FxSeamPC++;
     tile = ((u4 const*)(uintptr_t)sfxclineloc)[index];
     if (tile != 0xFFFFFFFFu && (!zcheck || ((u1)SfxCOLR & zmask))) {
-        u4 const addr = (tile << shift) + ((index & 7u) * 2u) + SCBRrel;
+        zreg const addr = (tile << shift) + ((index & 7u) * 2u) + (uintptr_t)SCBRrel;
         u4 const mask = fxxand[SfxR0[1] & 0xFFu];
 
         fx_drawpix(addr, mask, depth,
@@ -2133,7 +2133,7 @@ void c_FxOp4C(void) { c_FxOp4C1284b(); }
 void c_FxOp4CA1(void)
 {
     u4 const index = (SfxR0[2] & 0xFFFF00FFu) | ((SfxR0[1] & 0xFFu) << 8);
-    u4 const lineloc = fx_lineloc();
+    zreg const lineloc = fx_lineloc();
     u4 const tile = ((u4 const*)(uintptr_t)lineloc)[index];
     u4 res = 0xFFu;
 
@@ -2144,8 +2144,8 @@ void c_FxOp4CA1(void)
                                                      : 5;
         u4 const planes = depth == 0 ? 2 : depth == 3 ? 8
                                                       : 4;
-        u4 const addr = (SfxSCBR << 10) + (tile << shift)
-            + ((index & 7u) * 2u) + (u4)(uintptr_t)sfxramdata;
+        zreg const addr = (SfxSCBR << 10) + (tile << shift)
+            + ((index & 7u) * 2u) + (uintptr_t)sfxramdata;
         u1 const bit = (u1)(1u << ((SfxR0[1] & 7u) ^ 7u));
 
         res = 0;
@@ -2208,7 +2208,7 @@ void MainLoop(void)
     FxSeamCX = (SfxPIPE & 0xFFu) | (((SfxSFR >> 8) & 3u) << 8);
     FxSeamSrc = SfxR0 + SfxSREG;
     FxSeamDst = SfxR0 + SfxDREG;
-    SfxRAMMem = (SfxRAMBR << 16) + (u4)(uintptr_t)sfxramdata;
+    SfxRAMMem = (SfxRAMBR << 16) + (uintptr_t)sfxramdata;
 
     do {
         FxLoopDone = 0;

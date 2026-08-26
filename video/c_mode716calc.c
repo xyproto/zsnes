@@ -21,15 +21,15 @@ extern u1 BGMA[256]; /* endmem.c: BG mode per scanline */
 extern u1 mode7set; /* cpu/regs.inc */
 extern u2 m7starty; /* video/c_mode716data.c */
 
-u4 M7SeamA;
-u4 M7SeamB;
-u4 M7SeamC;
-u4 M7SeamD;
+zreg M7SeamA;
+zreg M7SeamB;
+zreg M7SeamC;
+zreg M7SeamD;
 /* processmode7hires16b also has esi, edi and ebp live across the renderer it
    calls, and does not restore them. */
-u4 M7SeamSI;
-u4 M7SeamDI;
-u4 M7SeamBP;
+zreg M7SeamSI;
+zreg M7SeamDI;
+zreg M7SeamBP;
 
 /* Predict this scanline's matrix entry. The tables hold two words per
    scanline, so `half` picks A or B (C or D); the entries read are this
@@ -108,13 +108,13 @@ static void M7CallDraw(void)
     r.di = M7SeamDI;
     r.bp = M7SeamBP;
     drawmode7win16b(&r);
-    M7SeamA = (u4)r.ax;
-    M7SeamB = (u4)r.bx;
-    M7SeamC = (u4)r.cx;
-    M7SeamD = (u4)r.dx;
-    M7SeamSI = (u4)r.si;
-    M7SeamDI = (u4)r.di;
-    M7SeamBP = (u4)r.bp;
+    M7SeamA = r.ax;
+    M7SeamB = r.bx;
+    M7SeamC = r.cx;
+    M7SeamD = r.dx;
+    M7SeamSI = r.si;
+    M7SeamDI = r.di;
+    M7SeamBP = r.bp;
 }
 
 void c_processmode7hires16b(void)

@@ -304,7 +304,7 @@ unsigned char txtfailedalignc[] = "Code Alignment Failure : ";
 
 void zstart()
 {
-    unsigned int ptr;
+    uintptr_t ptr;
 
     CPUFeatureCheck();
     StartUp();
@@ -338,9 +338,9 @@ void zstart()
 
     gammalevel16b = gammalevel >> 1;
 
-    ptr = (unsigned int)&xa;
+    ptr = (uintptr_t)&xa;
     if ((ptr & 3)) {
-        printf("%s%d", txtfailedalignd, (ptr & 0x1F));
+        printf("%s%d", txtfailedalignd, (unsigned)(ptr & 0x1F));
         WaitForKey();
     }
 

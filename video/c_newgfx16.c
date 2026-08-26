@@ -388,7 +388,7 @@ void BackAreaFill(u4 const eax)
                     }
                     edx -= 4;
                     eax -= edx + 1;
-                    buf += edx * 2 + 2;
+                    buf += (s4)(edx * 2u + 2u); /* edx just went negative: step back */
                 }
             }
 
@@ -408,7 +408,7 @@ void BackAreaFill(u4 const eax)
                 }
                 edx -= 4;
                 eax -= edx + 1;
-                buf += edx * 2 + 2;
+                buf += (s4)(edx * 2u + 2u); /* edx just went negative: step back */
             }
         }
     } else {

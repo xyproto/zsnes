@@ -23,7 +23,8 @@ enum { R_EDI,
     R_EAX };
 
 extern u1 BGMS1[], FillSubScr[], curmosaicsz, ngwinen;
-extern u4 CMainWinScr, CSubWinScr, mosclineval, mostranspval;
+extern zreg CMainWinScr, CSubWinScr;
+extern u4 mosclineval, mostranspval;
 
 /* 0 = fall through; otherwise which of the caller's labels to jump to. */
 u4 ng_branch;
@@ -31,7 +32,7 @@ u4 ng_branch;
 /* The sub screen sits this far into the same buffer, in pixels. */
 #define NG_SUB (75036u * 2u)
 
-void c_determinetransp(u4* const r)
+void c_determinetransp(zreg* const r)
 {
     u4 const bx = r[R_EBX];
     u1 const dl = (u1)r[R_EDX];
@@ -61,13 +62,13 @@ void c_determinetransp(u4* const r)
     r[R_ECX] += CSubWinScr - CMainWinScr;
 }
 
-void c_checkwindowing(u4* const r)
+void c_checkwindowing(zreg* const r)
 {
     ng_branch = (ngwinen != 0 && *(u1 const*)(uintptr_t)r[R_ECX] != 0) ? 1 : 0;
 }
 
 /* 1 = both windows, 2 = main only, 3 = sub only, 0 = no windowing. */
-void c_determinewindow(u4* const r)
+void c_determinewindow(zreg* const r)
 {
     if (ngwinen == 0) {
         ng_branch = 0;

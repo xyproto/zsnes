@@ -22,7 +22,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #ifndef NUMCONV_H
 #define NUMCONV_H
 
-#include "ignore.h"
+#include "gblhdr.h"
+
 #include <stdio.h>
 
 // Get correct mask for particular bit

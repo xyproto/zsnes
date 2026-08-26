@@ -7,6 +7,13 @@
    block (see asmdata.h) to pin that layout. */
 #include "../asmdata.h"
 
+/* Slots holding a host address: pointer-sized rather than the dword the
+   assembly reserved. All of them sit after PHnum2writesfxreg, so the
+   save-state block above keeps its layout. On i386 this is the same four
+   bytes. */
+#define PTRSLOT ".balign " ASM_STR(__SIZEOF_POINTER__) "\n" \
+                                                       ".skip " ASM_STR(__SIZEOF_POINTER__) "\n"
+
 /* clang-format off */
 
 __asm__(
@@ -75,13 +82,13 @@ __asm__(
     ".long 0\n"
     ASM_GSYM(SfxCacheFlags)
     ".long 0\n"
-    ASM_GSYM(SfxLastRamAdr)
+    ASM_GSYM(SfxLastRamAdrSt)
     ".long 0\n"
     ASM_GSYM(SfxDREG)
     ".long 0\n"
     ASM_GSYM(SfxSREG)
     ".long 0\n"
-    ASM_GSYM(SfxRomBuffer)
+    ASM_GSYM(SfxRomBufferSt)
     ".long 0\n"
     ASM_GSYM(SfxPIPE)
     ".long 0\n"
@@ -110,17 +117,21 @@ __asm__(
     ASM_GSYM(PHnum2writesfxreg)
     ".long . - " ASM_SYMREF(SfxR0) "\n"
     ASM_GSYM(SfxCPB)
-    ".long 0\n"
+    PTRSLOT
     ASM_GSYM(SfxCROM)
-    ".long 0\n"
+    PTRSLOT
     ASM_GSYM(SfxRAMMem)
-    ".long 0\n"
+    PTRSLOT
     ASM_GSYM(withr15sk)
     ".long 0\n"
     ASM_GSYM(sfxclineloc)
-    ".long 0\n"
+    PTRSLOT
     ASM_GSYM(SCBRrel)
-    ".long 0\n"
+    PTRSLOT
+    ASM_GSYM(SfxLastRamAdr)
+    PTRSLOT
+    ASM_GSYM(SfxRomBuffer)
+    PTRSLOT
     ASM_GSYM(fxbit01pcal)
     ".long 0\n"
     ASM_GSYM(fxbit23pcal)

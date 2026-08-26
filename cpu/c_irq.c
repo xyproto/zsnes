@@ -22,7 +22,7 @@ static u4 makedl(u4 edx)
 
 static void call_membank0w8(u2 const cx, u1 const al)
 {
-    u4 const b = MemSeamB, c = MemSeamC, a = MemSeamA, d = MemSeamD;
+    uintptr_t const b = MemSeamB, c = MemSeamC, a = MemSeamA, d = MemSeamD;
 
     MemSeamC = cx;
     MemSeamA = al;

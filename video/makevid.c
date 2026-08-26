@@ -12,6 +12,11 @@
 #define BSSB(sym, n) ASM_GSYM(sym) ".skip (" #n ")\n"
 #define BSSW(sym, n) ASM_GSYM(sym) ".skip (" #n ")*2\n"
 #define BSSD(sym, n) ASM_GSYM(sym) ".skip (" #n ")*4\n"
+/* resd in the assembly, but these hold host pointers, so the slot has to
+   follow the pointer width. On i386 it is the same four bytes. */
+#define BSSP(sym, n) \
+    ASM_GSYM(sym)    \
+    ".skip (" #n ")*" ASM_STR(__SIZEOF_POINTER__) "\n"
 
 __asm__(
     ASM_SEC_BSS(".bss")
@@ -35,7 +40,7 @@ __asm__(
     BSSD(pwinsptype, 1)
     BSSB(winonstype, 1)
     BSSB(dualwinsp, 1)
-    BSSD(dwinptrproc, 1)
+    BSSP(dwinptrproc, 1)
     ASM_SEC_END
     ASM_SEC_BSS(".bss")
     BSSB(winonsp, 1)
@@ -52,24 +57,24 @@ __asm__(
     ASM_SEC_END
     ASM_SEC_BSS(".bss")
     BSSB(nextprimode, 1)
-    BSSD(cursprloc, 1)
+    BSSP(cursprloc, 1)
     BSSW(curtileptr, 1)
     BSSD(bg1vbufloc, 1)
     BSSD(bg2vbufloc, 1)
     BSSD(bg3vbufloc, 1)
     BSSD(bg4vbufloc, 1)
-    BSSD(bg1tdatloc, 1)
-    BSSD(bg2tdatloc, 1)
-    BSSD(bg3tdatloc, 1)
-    BSSD(bg4tdatloc, 1)
-    BSSD(bg1tdabloc, 1)
-    BSSD(bg2tdabloc, 1)
-    BSSD(bg3tdabloc, 1)
-    BSSD(bg4tdabloc, 1)
-    BSSD(bg1cachloc, 1)
-    BSSD(bg2cachloc, 1)
-    BSSD(bg3cachloc, 1)
-    BSSD(bg4cachloc, 1)
+    BSSP(bg1tdatloc, 1)
+    BSSP(bg2tdatloc, 1)
+    BSSP(bg3tdatloc, 1)
+    BSSP(bg4tdatloc, 1)
+    BSSP(bg1tdabloc, 1)
+    BSSP(bg2tdabloc, 1)
+    BSSP(bg3tdabloc, 1)
+    BSSP(bg4tdabloc, 1)
+    BSSP(bg1cachloc, 1)
+    BSSP(bg2cachloc, 1)
+    BSSP(bg3cachloc, 1)
+    BSSP(bg4cachloc, 1)
     BSSD(bg1yaddval, 1)
     BSSD(bg2yaddval, 1)
     BSSD(bg3yaddval, 1)
@@ -88,7 +93,7 @@ __asm__(
     ASM_SEC_END
     ASM_SEC_BSS(".bss")
     BSSD(tempbuffer, 33)
-    BSSD(currentobjptr, 1)
+    BSSP(currentobjptr, 1)
     BSSD(curmosaicsz, 1)
     BSSB(extbgdone, 1)
     ASM_SEC_END
@@ -103,7 +108,7 @@ __asm__(
     BSSB(curbgpr, 1)
     ASM_SEC_END
     ASM_SEC_BSS(".bss")
-    BSSD(winptrref, 1)
+    BSSP(winptrref, 1)
     ASM_SEC_END
     ASM_SEC_BSS(".bss")
     BSSB(hirestiledat, 256)
@@ -111,16 +116,16 @@ __asm__(
     ASM_SEC_BSS(".bss")
     BSSD(yadder, 1)
     BSSD(yrevadder, 1)
-    BSSD(tempcach, 1)
-    BSSD(temptile, 1)
+    BSSP(tempcach, 1)
+    BSSP(temptile, 1)
     BSSD(bgptr, 1)
     BSSD(bgptrc, 1)
     BSSD(bgptrd, 1)
     BSSD(bgptrx1, 1)
     BSSD(bgptrx2, 1)
-    BSSD(curvidoffset, 1)
+    BSSP(curvidoffset, 1)
     BSSD(winon, 1)
-    BSSD(bgofwptr, 1)
+    BSSP(bgofwptr, 1)
     BSSD(bgsubby, 1)
     ASM_SEC_END
     ASM_SEC_BSS(".bss")

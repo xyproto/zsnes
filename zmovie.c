@@ -69,7 +69,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define NUMCONV_FW2
 #define NUMCONV_FW3
 #define NUMCONV_FW4
-#include "ignore.h"
 #include "numconv.h"
 
 extern uint32_t versionNumber, CRC32, cur_zst_size;

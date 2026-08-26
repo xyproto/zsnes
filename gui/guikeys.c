@@ -657,7 +657,7 @@ static void GUIVideoKeys(char dh, char const dl)
         }
     }
 
-    if ((s4)GUIVntscTab >= 1) {
+    if ((s4)GUIVntscTab[0] >= 1) {
         GUIKeyCheckbox(&NTSCBlend, 'B', dh);
         GUIKeyCheckbox(&NTSCRef, 'R', dh);
     }

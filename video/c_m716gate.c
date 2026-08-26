@@ -14,15 +14,16 @@
 
 #include "c_m716gate.h"
 
-extern u4 M7TAX, M7TBX, M7TDX, M7TBP, M7TTail;
-extern u4 SPRAX, SPRBX, SPRCX, SPRBP, SPRDX, SPRTail;
-extern u4 BGAX, BGBX, BGCX, BGDX, BGSI, BGDI, BGBP, BGTail;
-extern u4 SPTAX, SPTBX, SPTCX, SPTDX, SPTSI, SPTDI, SPTBP;
-extern u4 SPBAX, SPBBX, SPBCX, SPBDX, SPBSI, SPBDI, SPBBP;
-extern u4 SPPAX, SPPBX, SPPCX, SPPDX, SPPSI, SPPDI, SPPBP;
+extern zreg M7TAX, M7TBX, M7TDX, M7TBP;
+extern u4 M7TTail;
+extern zreg SPRAX, SPRBX, SPRCX, SPRBP, SPRDX, SPRTail;
+extern zreg BGAX, BGBX, BGCX, BGDX, BGSI, BGDI, BGBP, BGTail;
+extern zreg SPTAX, SPTBX, SPTCX, SPTDX, SPTSI, SPTDI, SPTBP;
+extern zreg SPBAX, SPBBX, SPBCX, SPBDX, SPBSI, SPBDI, SPBBP;
+extern zreg SPPAX, SPPBX, SPPCX, SPPDX, SPPSI, SPPDI, SPPBP;
 extern u1 sprprifix;
-extern u4 TXAX, TXBX, TXCX, TXDX, TXSI, TXDI, TXBP, TXTail;
-extern u4 T16AX, T16BX, T16CX, T16DX, T16SI, T16DI, T16BP, T16Tail;
+extern zreg TXAX, TXBX, TXCX, TXDX, TXSI, TXDI, TXBP, TXTail;
+extern zreg T16AX, T16BX, T16CX, T16DX, T16SI, T16DI, T16BP, T16Tail;
 extern u1 bgfixer;
 
 void c_procmode716tsub(void);

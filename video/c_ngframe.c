@@ -19,6 +19,7 @@
 #include <string.h>
 
 #include "../types.h"
+#include "makevid.h" /* SpriteInfo */
 
 enum { R_EDI,
     R_ESI,
@@ -36,33 +37,35 @@ extern u1 winbg1envals[], winbg1envalm[];
 extern u1* vidbuffer;
 extern u2 winlogicaval[256], resolutn;
 extern u4 endlinet, scfbl, bgcmsung, mode0ads;
-extern u4 CMainWinScr, CSubWinScr, ngwinen, ngwintable[32];
+extern zreg CMainWinScr, CSubWinScr;
+extern u4 ngwinen, ngwintable[32];
 extern u4 bg1totng, bg2totng, bg3totng, bg4totng;
 extern u4 bg1drwng, bg2drwng, bg3drwng, bg4drwng;
 extern u4 UnusedBit[2], UnusedBitXor[2];
-extern u4 sprtbng[256], sprtlng[64];
+extern zreg sprtbng[256];
+extern u4 sprtlng[64];
 extern u1 sprlefttot[256];
 extern u1* spritetablea;
 
 void BuildWindow(u4 line, u4 which); /* video/c_makev16b.c */
-void c_process_transparencies(u4* r); /* video/c_ngtransp.c */
+void c_process_transparencies(zreg* r); /* video/c_ngtransp.c */
 
 /* video/c_ngprocbg.c */
-void c_procbg16b(u4 layer, void (*lineproc)(u4*), void (*tileproc)(u4*),
+void c_procbg16b(u4 layer, void (*lineproc)(zreg*), void (*tileproc)(zreg*),
     u1 const* prdat, int main_, u4 mask, int kind);
 void c_procspr16b(int main_, u4 mask, int modes);
 void c_procmode7ng16b(int main_, u4 mask, int kind);
 
 /* The sixteen dispatchers, video/c_ngbg.c. c_procbg16b hands each of them the
    pass's register file. */
-void c_drawbg1line16b(u4* r), c_drawbg2line16b(u4* r);
-void c_drawbg3line16b(u4* r), c_drawbg4line16b(u4* r);
-void c_drawbg1tile16b(u4* r), c_drawbg2tile16b(u4* r);
-void c_drawbg3tile16b(u4* r), c_drawbg4tile16b(u4* r);
-void c_drawbg1linepr116b(u4* r), c_drawbg2linepr116b(u4* r);
-void c_drawbg3linepr116b(u4* r), c_drawbg4linepr116b(u4* r);
-void c_drawbg1tilepr116b(u4* r), c_drawbg2tilepr116b(u4* r);
-void c_drawbg3tilepr116b(u4* r), c_drawbg4tilepr116b(u4* r);
+void c_drawbg1line16b(zreg* r), c_drawbg2line16b(zreg* r);
+void c_drawbg3line16b(zreg* r), c_drawbg4line16b(zreg* r);
+void c_drawbg1tile16b(zreg* r), c_drawbg2tile16b(zreg* r);
+void c_drawbg3tile16b(zreg* r), c_drawbg4tile16b(zreg* r);
+void c_drawbg1linepr116b(zreg* r), c_drawbg2linepr116b(zreg* r);
+void c_drawbg3linepr116b(zreg* r), c_drawbg4linepr116b(zreg* r);
+void c_drawbg1tilepr116b(zreg* r), c_drawbg2tilepr116b(zreg* r);
+void c_drawbg3tilepr116b(zreg* r), c_drawbg4tilepr116b(zreg* r);
 
 /* The sub screen sits 75036 words past the main one. */
 #define SUBOFF (75036u * 2u)
@@ -116,7 +119,7 @@ static void clip_dword(int const sub, u1* const p, u4 const ebx)
  * Transcribed with its labels intact rather than restructured: the run walk
  * has four entries and shares its tail with the "outside" case.
  */
-static void screen_clip(u4* const r, int const sub)
+static void screen_clip(zreg* const r, int const sub)
 {
     u1* base = vidbuffer + 16u * 2u + 288u * 2u;
     u4 eax = r[R_EAX];
@@ -218,14 +221,14 @@ static void screen_clip(u4* const r, int const sub)
     r[R_EBX] = bx;
     r[R_ECX] = ecx;
     r[R_EDX] = edx;
-    r[R_ESI] = (u4)(uintptr_t)base;
-    r[R_EDI] = (u4)(uintptr_t)edi;
+    r[R_ESI] = (zreg)(uintptr_t)base;
+    r[R_EDI] = (zreg)(uintptr_t)edi;
 }
 
 /* One background layer's pass. The mode-0 palette block is set for every
    layer whether or not it is used, as the assembly does. */
-static void bg_pass(u4 const layer, void (*const lineproc)(u4*),
-    void (*const tileproc)(u4*), u1 const* const prdat, int const main_,
+static void bg_pass(u4 const layer, void (*const lineproc)(zreg*),
+    void (*const tileproc)(zreg*), u1 const* const prdat, int const main_,
     u4 const mask, int const kind, u4 const ads)
 {
     mode0ads = ads;
@@ -252,10 +255,10 @@ static void clear_counters(void)
 /* The sub screen, then the main one. The two differ in the bgcmsung bits they
    test - the sub screen looks at the high nibble pair only, the main screen at
    both - and in which window table CMainWinScr points at. */
-static void sub_screen(u4* const eax)
+static void sub_screen(zreg* const eax)
 {
-    CMainWinScr = (u4)(uintptr_t)winbg1envals;
-    CSubWinScr = (u4)(uintptr_t)winbg1envals;
+    CMainWinScr = (zreg)(uintptr_t)winbg1envals;
+    CSubWinScr = (zreg)(uintptr_t)winbg1envals;
 
     if (!(scrndis & 8u) && (bgcmsung & 0x800u))
         bg_pass(3, c_drawbg4line16b, c_drawbg4tile16b, 0, 0, 8u, 0, 0x60606060u);
@@ -322,10 +325,10 @@ static void sub_screen(u4* const eax)
     clear_counters();
 }
 
-static void main_screen(u4* const eax)
+static void main_screen(zreg* const eax)
 {
-    CMainWinScr = (u4)(uintptr_t)winbg1envalm;
-    CSubWinScr = (u4)(uintptr_t)winbg1envals;
+    CMainWinScr = (zreg)(uintptr_t)winbg1envalm;
+    CSubWinScr = (zreg)(uintptr_t)winbg1envals;
 
     if (!(scrndis & 8u) && (bgcmsung & 0x808u))
         bg_pass(3, c_drawbg4line16b, c_drawbg4tile16b, 0, 1, 8u, 0, 0x60606060u);
@@ -396,12 +399,12 @@ static void main_screen(u4* const eax)
     }
 }
 
-void c_startdrawnewgfx16b(u4* r);
+void c_startdrawnewgfx16b(zreg* r);
 
-void c_startdrawnewgfx16b(u4* const r)
+void c_startdrawnewgfx16b(zreg* const r)
 {
-    u4 t[8]; /* the live registers; r keeps what the pops put back */
-    u4 eax;
+    zreg t[8]; /* the live registers; r keeps what the pops put back */
+    zreg eax;
     u4 q;
 
     WindowRedraw = 1;
@@ -414,19 +417,19 @@ void c_startdrawnewgfx16b(u4* const r)
     /* Each of the 256 sprite table slots is 512 bytes on from the last. The
        assembly walked a second pointer over sprlefttot at the same time and
        never read it. */
-    eax = (u4)(uintptr_t)spritetablea;
+    eax = (zreg)(uintptr_t)spritetablea;
     for (q = 0; q < 256u; q++) {
         sprtbng[q] = eax;
-        eax += 512u;
+        eax += 64u * sizeof(SpriteInfo);
     }
     memset(sprtlng, 0, sizeof sprtlng);
     /* What the two loops leave behind. Nothing here reads them, but the colour
        maths pass at the end runs on this block and the clip only overwrites
        some of it. */
     eax = 0;
-    t[R_EBX] = (u4)(uintptr_t)(sprlefttot + 256);
+    t[R_EBX] = (zreg)(uintptr_t)(sprlefttot + 256);
     t[R_ECX] = 0;
-    t[R_EDI] = (u4)(uintptr_t)sprtlng + 256u;
+    t[R_EDI] = (zreg)(uintptr_t)sprtlng + 256u;
 
     clear_counters();
 

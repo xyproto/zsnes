@@ -72,7 +72,7 @@ static void tiles(bt_regs* const r, u4 const hofs, u1* esi, int const winon_)
                 tile -= bgsubby;
             }
             tile += (dh & 0x80u) ? yrevadder : yadder;
-            r->bx = (u4)(uintptr_t)tile;
+            r->bx = (zreg)(uintptr_t)tile;
             if (!winon_) {
                 r->cx = (r->cx & 0xFFFFFF00u) | bshifter;
             }
@@ -95,11 +95,11 @@ static void tiles(bt_regs* const r, u4 const hofs, u1* esi, int const winon_)
         }
     } while (--tileleft16b != 0);
     r->dx = edx;
-    r->si = (u4)(uintptr_t)esi;
-    r->di = (u4)(uintptr_t)edi;
-    r->bp = (u4)(uintptr_t)ebp;
+    r->si = (zreg)(uintptr_t)esi;
+    r->di = (zreg)(uintptr_t)edi;
+    r->bp = (zreg)(uintptr_t)ebp;
     if (winon_) {
-        r->cx = (u4)(uintptr_t)win;
+        r->cx = (zreg)(uintptr_t)win;
     }
 }
 

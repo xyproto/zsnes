@@ -64,7 +64,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #endif
 
 #define NUMCONV_FR4
-#include "ignore.h"
 #include "numconv.h"
 
 #ifndef __GNUC__

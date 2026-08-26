@@ -23,13 +23,13 @@
 #include "makevid.h"
 #include "newgfx16.h"
 
-u4 MOSAX;
-u4 MOSBX;
-u4 MOSCX;
-u4 MOSDX;
-u4 MOSSI;
-u4 MOSDI;
-u4 MOSBP;
+zreg MOSAX;
+zreg MOSBX;
+zreg MOSCX;
+zreg MOSDX;
+zreg MOSSI;
+zreg MOSDI;
+zreg MOSBP;
 
 extern u1 BGMA[256], BGMS1[], FillSubScr[256], scadtng[256];
 extern u4 mosclineval, mostranspval;
@@ -82,10 +82,10 @@ static void mosaic(u4 const n, int const mode)
     } while (--count != 0);
     MOSAX = eax;
     MOSCX = 0;
-    MOSDI = (u4)(uintptr_t)edi;
+    MOSDI = (zreg)(uintptr_t)edi;
     /* `pop esi` at the end of every mosdraw* undoes both the push and the
        sub-screen bias below, so the caller gets the scratch pointer back. */
-    MOSSI = (u4)(uintptr_t)pesimpng;
+    MOSSI = (zreg)(uintptr_t)pesimpng;
 }
 
 void c_domosaicng16b(void)
@@ -96,8 +96,8 @@ void c_domosaicng16b(void)
     int mode = M_PLAIN;
 
     MOSAX = n;
-    MOSSI = (u4)(uintptr_t)pesimpng;
-    MOSDI = (u4)(uintptr_t)(xtravbuf + 16);
+    MOSSI = (zreg)(uintptr_t)pesimpng;
+    MOSDI = (zreg)(uintptr_t)(xtravbuf + 16);
     if (n > 16 || n <= 1) {
         return;
     }

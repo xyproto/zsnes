@@ -140,25 +140,25 @@ static void sa1speedhacks(zreg* const r)
        is harmless. They are kept because cpu/c_execdata.c pins the layout. */
     u4 const woff = (u4)(r[R_ESI] - (zreg)wramdata);
     if (woff >= 0x224 && woff <= 0x22E) {
-        SA1LBound = 0x224 + (u4)wramdata;
-        SA1UBound = 0x22E + (u4)wramdata;
+        SA1LBound = 0x224 + (u4)(uintptr_t)wramdata;
+        SA1UBound = 0x22E + (u4)(uintptr_t)wramdata;
         SETB(SA1SH, 1);
     }
     if (woff >= 0x1F7C6 && woff <= 0x1F7CC) {
-        SA1LBound = 0x1F7C6 + (u4)wramdata;
-        SA1UBound = 0x1F7CC + (u4)wramdata;
+        SA1LBound = 0x1F7C6 + (u4)(uintptr_t)wramdata;
+        SA1UBound = 0x1F7CC + (u4)(uintptr_t)wramdata;
         SETB(SA1SH, 1);
     }
     if (woff >= 0x14 && woff <= 0x1C && peek32(wramdata + 0x14) == 0xF023002C) {
-        SA1LBound = 0x14 + (u4)wramdata;
-        SA1UBound = 0x1C + (u4)wramdata;
+        SA1LBound = 0x14 + (u4)(uintptr_t)wramdata;
+        SA1UBound = 0x1C + (u4)(uintptr_t)wramdata;
         SETB(SA1SH, 1);
     }
 
     u4 const roff = (u4)(r[R_ESI] - (zreg)romdata);
     if (roff >= 0xA56 && roff <= 0xA59) {
-        SA1LBound = 0xA56 + (u4)romdata;
-        SA1UBound = 0xA59 + (u4)romdata;
+        SA1LBound = 0xA56 + (u4)(uintptr_t)romdata;
+        SA1UBound = 0xA59 + (u4)(uintptr_t)romdata;
         SETB(SA1SH, 1);
     }
 

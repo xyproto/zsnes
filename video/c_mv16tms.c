@@ -19,7 +19,7 @@ u4 MVAX;
 u4 MVBX;
 u4 MVCX;
 u4 MVDX;
-u4 MVSI;
+zreg MVSI;
 
 extern u1 temp, bshifter; /* video/makevid.c */
 extern u4 yadder, yrevadder, tempcach, temptile;
@@ -74,7 +74,7 @@ void c_draw16tms_setup(void)
     MVAX = hofs;
     MVBX = 56u - MVCX;
     MVCX = ecx;
-    MVSI = (u4)(uintptr_t)esi;
+    MVSI = (zreg)(uintptr_t)esi;
 }
 
 /* The 16x16 prologue. Same shape, three differences: the caller's eax is
@@ -135,5 +135,5 @@ void c_draw16x16tms_setup(void)
     MVAX = hofs;
     MVBX = curypos;
     MVCX = ecx;
-    MVSI = (u4)(uintptr_t)esi;
+    MVSI = (zreg)(uintptr_t)esi;
 }

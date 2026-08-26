@@ -2,13 +2,15 @@
    The GSU core is in chips/fx_ops.h; these just read/write Sfx* state.
    Installed via REGPTR in c_sfxproc.c. */
 #include "../cpu/memseam.h"
+#include "../types.h"
 #include "regabi.h"
 #include <stdint.h>
 
 /* SuperFX registers/state (defined in chips/c_fxdata.c) */
 extern uint32_t SfxR0, SfxR1, SfxR2, SfxR3, SfxR4, SfxR5, SfxR6, SfxR7, SfxR8, SfxR9, SfxR10, SfxR11, SfxR12, SfxR13, SfxR14, SfxR15;
-extern uint32_t SfxSFR, SfxBRAMR, SfxPBR, SfxROMBR, SfxCFGR, SfxSCBR, SfxCLSR, SfxSCMR, SfxPOR, SfxCBR, SfxRAMBR, SfxCarry, SfxSignZero, SfxOverflow, SfxB, SfxAC, SfxCPB, SfxCROM, SfxRAMMem, SfxnRamBanks, SfxPIPE, SFXProc, sfx128lineloc, sfx160lineloc, sfx192lineloc, sfxobjlineloc, sfxclineloc;
-extern uint32_t SfxMemTable[256];
+extern zreg SfxCPB, SfxCROM, SfxRAMMem, sfx128lineloc, sfx160lineloc, sfx192lineloc, sfxobjlineloc, sfxclineloc;
+extern uint32_t SfxSFR, SfxBRAMR, SfxPBR, SfxROMBR, SfxCFGR, SfxSCBR, SfxCLSR, SfxSCMR, SfxPOR, SfxCBR, SfxRAMBR, SfxCarry, SfxSignZero, SfxOverflow, SfxB, SfxAC, SfxnRamBanks, SfxPIPE, SFXProc;
+extern zreg SfxMemTable[256];
 extern uint8_t* sfxramdata;
 void UpdatePORSCMR(void);
 void UpdateSCBRCOLR(void);
@@ -225,7 +227,7 @@ REGABI_REG_READ8(reg303Ar);
 uint8_t c_reg303Ar(void)
 {
     uint8_t r = BYTE(SfxSCMR, 0);
-    uint32_t loc;
+    zreg loc;
     if (SfxPOR & 0x10)
         loc = sfxobjlineloc;
     else

@@ -11,6 +11,11 @@
 
 #define BSSB(sym, n) ASM_GSYM(sym) ".skip (" #n ")\n"
 #define BSSD(sym, n) ASM_GSYM(sym) ".skip (" #n ")*4\n"
+/* resd in the assembly, but these hold host pointers, so the slot has to
+   follow the pointer width. On i386 it is the same four bytes. */
+#define BSSP(sym, n) \
+    ASM_GSYM(sym)    \
+    ".skip (" #n ")*" ASM_STR(__SIZEOF_POINTER__) "\n"
 
 __asm__(
     ASM_SEC_BSS(".bss")
@@ -20,7 +25,7 @@ __asm__(
     BSSD(reslbyl, 1)
     BSSD(csprival, 1)
     BSSD(cfieldad, 1)
-    BSSD(ofsmcptr, 1)
+    BSSP(ofsmcptr, 1)
     BSSD(ofsmtptr, 1)
     BSSD(ofsmmptr, 1)
     BSSD(ofsmcyps, 1)
@@ -34,7 +39,9 @@ __asm__(
     ASM_GSYM(ngwintablec)
     ".fill 32,4,0xEE00\n"
     ASM_GSYM(ngcwinptr)
-    ".long ngwintable\n"
+    /* A host pointer: pointer-sized, and the same four bytes on i386. */
+    ".balign " ASM_STR(__SIZEOF_POINTER__) "\n"
+    "." ASM_STR(__SIZEOF_POINTER__) "byte ngwintable\n"
     ASM_SEC_END
     ASM_SEC_BSS(".bss")
     BSSD(ngwinen, 1)
@@ -73,7 +80,7 @@ __asm__(
     BSSD(nglogicval, 1)
     BSSD(mosjmptab, 15)
     BSSB(Mode7HiRes, 1)
-    BSSD(pesimpng, 1)
+    BSSP(pesimpng, 1)
     BSSD(bgtxadd2, 1)
     ASM_SEC_END
     ASM_SEC_BSS(".bss")

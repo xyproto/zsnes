@@ -274,7 +274,9 @@ extern u1 spcP; // The processor status byte (Removed for each flags), NZ are no
 extern u1 spcX; // The X register (general purpose)
 extern u1 spcY; // The Y register (general purpose)
 extern u1* spcPCRam; // Program Counter (with SPCRAM added)
+extern uint32_t spcPCRamSt; // the save-state slot: spcPCRam - SPCRAM
 extern u1* spcRamDP; // The direct page pointer
+extern uint32_t spcRamDPSt; // the save-state slot: spcRamDP - SPCRAM
 extern u4 spcS; // The stack pointer (always from 100 to 1FF) (added Ram)
 
 #endif

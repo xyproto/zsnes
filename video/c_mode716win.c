@@ -22,11 +22,11 @@
 
 #include "../types.h"
 
-u4 M7WinAX;
-u4 M7WinBX;
-u4 M7WinCX;
-u4 M7WinSI;
-u4 M7WinDI;
+zreg M7WinAX;
+zreg M7WinBX;
+zreg M7WinCX;
+zreg M7WinSI;
+zreg M7WinDI;
 
 extern u4 *ngcwinptr, ngwleft, ngwleftb, pixelsleft; /* video/c_mode716data.c */
 extern u4 mode7xpos, mode7ypos, mode7xrpos, mode7yrpos;
@@ -114,7 +114,7 @@ static void skip_b(void)
                 mode7xrpos -= mmode7xadd2;
             }
             M7WinCX = (u4)vrama[M7WinBX] << 7;
-            M7WinDI = (u4)(uintptr_t)(vrama + M7WinCX);
+            M7WinDI = (zreg)(uintptr_t)(vrama + M7WinCX);
             break; /* .rposoffx falls through to the y test, it does not retry */
         }
         while (off_tile(mode7yrpos)) {
@@ -126,7 +126,7 @@ static void skip_b(void)
             }
             M7WinBX &= 0x7FFFu;
             M7WinCX = (u4)vrama[M7WinBX] << 7;
-            M7WinDI = (u4)(uintptr_t)(vrama + M7WinCX);
+            M7WinDI = (zreg)(uintptr_t)(vrama + M7WinCX);
             break;
         }
         M7WinAX = mode7xadder;
@@ -147,7 +147,7 @@ static int skip_e(void)
         for (;;) {
             if (off_tile(mode7xrpos)) {
                 M7WinAX = set_lo(M7WinAX, mmode7xinc);
-                M7WinDI = (u4)(uintptr_t)vram;
+                M7WinDI = (zreg)(uintptr_t)vram;
                 mmode7ptr = set_lo(mmode7ptr, (u1)((u1)mmode7ptr + mmode7xinc));
                 M7WinCX = set_lo(M7WinCX, mmode7xincc);
                 if ((u1)mmode7ptr == mmode7xincc) {
@@ -164,7 +164,7 @@ static int skip_e(void)
                 break;
             }
             M7WinAX = set_lo(M7WinAX, mmode7yinc);
-            M7WinDI = (u4)(uintptr_t)vram;
+            M7WinDI = (zreg)(uintptr_t)vram;
             mmode7ptr = set_hi(mmode7ptr, (u1)((u1)(mmode7ptr >> 8) - mmode7yinc));
             if ((u1)(mmode7ptr >> 8) & 0x80u) { /* js */
                 return 0;

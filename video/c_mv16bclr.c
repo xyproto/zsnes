@@ -20,12 +20,12 @@
 #include "../types.h"
 #include "../vcache.h"
 
-u4 CLBAX;
-u4 CLBBX;
-u4 CLBCX;
-u4 CLBDX;
-u4 CLBSI;
-u4 CLBDI;
+zreg CLBAX;
+zreg CLBBX;
+zreg CLBCX;
+zreg CLBDX;
+zreg CLBSI;
+zreg CLBDI;
 
 extern u1 DoTransp, winon, scaddset, bgmode, numwin, vidbright;
 extern u1 coladdr, coladdg, coladdb;
@@ -95,7 +95,7 @@ static void clearing(regs* const r)
     }
     r->ax = 0;
     r->cx = 0;
-    r->di = (u4)(uintptr_t)edi;
+    r->di = (zreg)(uintptr_t)edi;
 }
 
 /* dowindowback16b and dowindowback16brev: windowdata is a list of (column,
@@ -148,10 +148,10 @@ static void dowindow(regs* const r, int const rev)
         }
     }
     r->ax = 0;
-    r->bx = (u4)(uintptr_t)ebx;
+    r->bx = (zreg)(uintptr_t)ebx;
     r->cx = (r->cx & 0xFFFF0000u) | (u4)ch << 8 | cl;
     r->dx = edx;
-    r->di = (u4)(uintptr_t)edi;
+    r->di = (zreg)(uintptr_t)edi;
 }
 
 static void dowindowback(regs* const r)
@@ -233,8 +233,8 @@ static void dual(regs* const r, int const rev, int const b2)
     }
     r->bx = ebx;
     r->cx = 0;
-    r->si = (u4)(uintptr_t)esi;
-    r->di = (u4)(uintptr_t)edi;
+    r->si = (zreg)(uintptr_t)esi;
+    r->di = (zreg)(uintptr_t)edi;
 }
 
 static void dualback(regs* const r)
@@ -270,7 +270,7 @@ static void ts0b(regs* const r)
     }
     r->ax = 0;
     r->cx = 0;
-    r->di = (u4)(uintptr_t)edi;
+    r->di = (zreg)(uintptr_t)edi;
 }
 
 static void ts0(regs* const r)

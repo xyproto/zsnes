@@ -56,7 +56,7 @@ static inline void mem_add_cx_bx(void)
 #define MEM_REG_DISPATCH(name, table)                     \
     static void name(void)                                \
     {                                                     \
-        u4 const b = MemSeamB, c = MemSeamC;              \
+        uintptr_t const b = MemSeamB, c = MemSeamC;              \
                                                           \
         (table)[MemSeamC - 0x2000]();                     \
         MemSeamC = c;                                     \
@@ -92,7 +92,7 @@ void c_membank0r8inv(void) /* 4800-5FFF */
 
 void c_membank0r8rom(void) /* 8000-FFFF */
 {
-    MemSeamB += (u4)(uintptr_t)mem_rom();
+    MemSeamB += (uintptr_t)mem_rom();
     mem_set_al(*(u1*)(uintptr_t)(MemSeamB + MemSeamC));
     MemSeamB = 0;
 }
@@ -101,7 +101,7 @@ void c_membank0r8romram(void) /* 0000-1FFF */
 {
     mem_add_cx_bx();
     if (MemSeamC & 0x8000u) {
-        MemSeamB = (u4)(uintptr_t)mem_rom();
+        MemSeamB = (uintptr_t)mem_rom();
         mem_set_al(*(u1*)(uintptr_t)(MemSeamB + MemSeamC));
         MemSeamB = 0;
     } else {
@@ -168,7 +168,7 @@ void c_membank0r16inv(void) /* 4800-5FFF */
 
 void c_membank0r16rom(void) /* 8000-FFFF */
 {
-    MemSeamB += (u4)(uintptr_t)mem_rom();
+    MemSeamB += (uintptr_t)mem_rom();
     mem_set_ax((u2)(*(u1*)(uintptr_t)(MemSeamB + MemSeamC)
         | (*(u1*)(uintptr_t)(MemSeamB + MemSeamC + 1) << 8)));
     MemSeamB = 0;
@@ -178,7 +178,7 @@ void c_membank0r16romram(void) /* 0000-1FFF */
 {
     mem_add_cx_bx();
     if (MemSeamC & 0x8000u) {
-        MemSeamB = (u4)(uintptr_t)mem_rom();
+        MemSeamB = (uintptr_t)mem_rom();
         mem_set_ax((u2)(*(u1*)(uintptr_t)(MemSeamB + MemSeamC)
             | (*(u1*)(uintptr_t)(MemSeamB + MemSeamC + 1) << 8)));
         MemSeamB = 0;
@@ -277,14 +277,14 @@ static inline u1* mem_bank(void)
 
 void c_memaccessbankr8(void)
 {
-    MemSeamB = (u4)(uintptr_t)mem_bank();
+    MemSeamB = (uintptr_t)mem_bank();
     mem_set_al(*(u1*)(uintptr_t)(MemSeamB + MemSeamC));
     MemSeamB = 0;
 }
 
 void c_memaccessbankr16(void)
 {
-    MemSeamB = (u4)(uintptr_t)mem_bank();
+    MemSeamB = (uintptr_t)mem_bank();
     mem_set_ax((u2)(*(u1*)(uintptr_t)(MemSeamB + MemSeamC)
         | (*(u1*)(uintptr_t)(MemSeamB + MemSeamC + 1) << 8)));
     MemSeamB = 0;
@@ -297,7 +297,7 @@ void c_memaccessbankw8(void)
     if (!writeon) {
         return;
     }
-    MemSeamB = (u4)(uintptr_t)mem_bank();
+    MemSeamB = (uintptr_t)mem_bank();
     *(u1*)(uintptr_t)(MemSeamB + MemSeamC) = (u1)(MemSeamA & 0xFFu);
     MemSeamB = 0;
 }
@@ -307,7 +307,7 @@ void c_memaccessbankw16(void)
     if (!writeon) {
         return;
     }
-    MemSeamB = (u4)(uintptr_t)mem_bank();
+    MemSeamB = (uintptr_t)mem_bank();
     *(u1*)(uintptr_t)(MemSeamB + MemSeamC) = (u1)(MemSeamA & 0xFFu);
     *(u1*)(uintptr_t)(MemSeamB + MemSeamC + 1) = (u1)((MemSeamA >> 8) & 0xFFu);
     MemSeamB = 0;
@@ -580,7 +580,7 @@ MEM_ST_WRITE16(c_stsramw16b, 0x70, sram2)
 void c_regaccessbankr8(void)
 {
     if (MemSeamC & 0x8000u) { /* ROM */
-        MemSeamB = (u4)(uintptr_t)mem_bank();
+        MemSeamB = (uintptr_t)mem_bank();
         mem_set_al(*(u1*)(uintptr_t)(MemSeamB + MemSeamC));
         MemSeamB = 0;
         return;
@@ -642,7 +642,7 @@ void c_regaccessbankw8(void)
         if (!writeon) {
             return;
         }
-        MemSeamB = (u4)(uintptr_t)mem_bank();
+        MemSeamB = (uintptr_t)mem_bank();
         *(u1*)(uintptr_t)(MemSeamB + MemSeamC) = (u1)(MemSeamA & 0xFFu);
         MemSeamB = 0;
         return;
@@ -697,7 +697,7 @@ void c_regaccessbankw8(void)
 void c_regaccessbankr16(void)
 {
     if (MemSeamC & 0x8000u) {
-        MemSeamB = (u4)(uintptr_t)mem_bank();
+        MemSeamB = (uintptr_t)mem_bank();
         mem_set_ax((u2)(*(u1*)(uintptr_t)(MemSeamB + MemSeamC)
             | (*(u1*)(uintptr_t)(MemSeamB + MemSeamC + 1) << 8)));
         MemSeamB = 0;
@@ -764,7 +764,7 @@ void c_regaccessbankw16(void)
         if (!writeon) {
             return;
         }
-        MemSeamB = (u4)(uintptr_t)mem_bank();
+        MemSeamB = (uintptr_t)mem_bank();
         *(u1*)(uintptr_t)(MemSeamB + MemSeamC) = (u1)(MemSeamA & 0xFFu);
         *(u1*)(uintptr_t)(MemSeamB + MemSeamC + 1) = (u1)((MemSeamA >> 8) & 0xFFu);
         MemSeamB = 0;
@@ -844,7 +844,7 @@ void c_membank0r8(void)
         return;
     }
     if (MemSeamC & 0x8000u) {
-        MemSeamB = (u4)(uintptr_t)mem_rom();
+        MemSeamB = (uintptr_t)mem_rom();
         mem_set_al(*(u1*)(uintptr_t)(MemSeamB + MemSeamC));
         MemSeamB = 0;
         return;
@@ -885,7 +885,7 @@ void c_membank0r16(void)
         return;
     }
     if (MemSeamC & 0x8000u) {
-        MemSeamB = (u4)(uintptr_t)mem_rom();
+        MemSeamB = (uintptr_t)mem_rom();
         mem_set_ax((u2)(*(u1*)(uintptr_t)(MemSeamB + MemSeamC)
             | (*(u1*)(uintptr_t)(MemSeamB + MemSeamC + 1) << 8)));
         MemSeamB = 0;
@@ -930,7 +930,7 @@ void c_membank0w8(void)
         if (!writeon) {
             return;
         }
-        MemSeamB = (u4)(uintptr_t)mem_rom();
+        MemSeamB = (uintptr_t)mem_rom();
         *(u1*)(uintptr_t)(MemSeamB + MemSeamC) = (u1)(MemSeamA & 0xFFu);
         MemSeamB = 0;
         return;
@@ -972,7 +972,7 @@ void c_membank0w16(void)
         if (!writeon) {
             return;
         }
-        MemSeamB = (u4)(uintptr_t)mem_rom();
+        MemSeamB = (uintptr_t)mem_rom();
         *(u1*)(uintptr_t)(MemSeamB + MemSeamC) = (u1)(MemSeamA & 0xFFu);
         *(u1*)(uintptr_t)(MemSeamB + MemSeamC + 1) = (u1)((MemSeamA >> 8) & 0xFFu);
         MemSeamB = 0;
@@ -1079,7 +1079,7 @@ void c_SA1RAMaccessbankr8(void)
         mem_set_al(SA1_DMA_VALUE);
         return;
     }
-    MemSeamB = ((MemSeamB & 3u) << 16) + (u4)(uintptr_t)SA1RAMArea;
+    MemSeamB = ((MemSeamB & 3u) << 16) + (uintptr_t)SA1RAMArea;
     mem_set_al(*(u1*)(uintptr_t)(MemSeamB + MemSeamC));
     MemSeamB = 0;
 }
@@ -1100,7 +1100,7 @@ void c_SA1RAMaccessbankr16(void)
         mem_set_ax((u2)(lo | (hi << 8)));
         return;
     }
-    MemSeamB = ((MemSeamB & 3u) << 16) + (u4)(uintptr_t)SA1RAMArea;
+    MemSeamB = ((MemSeamB & 3u) << 16) + (uintptr_t)SA1RAMArea;
     mem_set_ax((u2)(*(u1*)(uintptr_t)(MemSeamB + MemSeamC)
         | (*(u1*)(uintptr_t)(MemSeamB + MemSeamC + 1) << 8)));
     MemSeamB = 0;
@@ -1108,14 +1108,14 @@ void c_SA1RAMaccessbankr16(void)
 
 void c_SA1RAMaccessbankw8(void)
 {
-    MemSeamB = ((MemSeamB & 3u) << 16) + (u4)(uintptr_t)SA1RAMArea;
+    MemSeamB = ((MemSeamB & 3u) << 16) + (uintptr_t)SA1RAMArea;
     *(u1*)(uintptr_t)(MemSeamB + MemSeamC) = (u1)(MemSeamA & 0xFFu);
     MemSeamB = 0;
 }
 
 void c_SA1RAMaccessbankw16(void)
 {
-    MemSeamB = ((MemSeamB & 3u) << 16) + (u4)(uintptr_t)SA1RAMArea;
+    MemSeamB = ((MemSeamB & 3u) << 16) + (uintptr_t)SA1RAMArea;
     *(u1*)(uintptr_t)(MemSeamB + MemSeamC) = (u1)(MemSeamA & 0xFFu);
     *(u1*)(uintptr_t)(MemSeamB + MemSeamC + 1) = (u1)((MemSeamA >> 8) & 0xFFu);
     MemSeamB = 0;
@@ -1418,7 +1418,7 @@ void c_membank0w16chip(void) /* 6000-FFFF */
 void c_regaccessbankr8SA1(void)
 {
     if (MemSeamC & 0x8000u) {
-        MemSeamB = (u4)(uintptr_t)mem_bank();
+        MemSeamB = (uintptr_t)mem_bank();
         mem_set_al(*(u1*)(uintptr_t)(MemSeamB + MemSeamC));
         MemSeamB = 0;
         return;
@@ -1449,7 +1449,7 @@ void c_regaccessbankr8SA1(void)
         mem_set_al(mem_bw_read8());
         return;
     }
-    MemSeamB = (u4)(uintptr_t)CurBWPtr;
+    MemSeamB = (uintptr_t)CurBWPtr;
     mem_set_al(*(u1*)(uintptr_t)(MemSeamB + MemSeamC));
     MemSeamB = 0;
 }
@@ -1460,7 +1460,7 @@ void c_regaccessbankw8SA1(void)
         if (!writeon) {
             return;
         }
-        MemSeamB = (u4)(uintptr_t)mem_bank();
+        MemSeamB = (uintptr_t)mem_bank();
         *(u1*)(uintptr_t)(MemSeamB + MemSeamC) = (u1)(MemSeamA & 0xFFu);
         MemSeamB = 0;
         return;
@@ -1488,7 +1488,7 @@ void c_regaccessbankw8SA1(void)
         mem_bw_write8();
         return;
     }
-    MemSeamB = (u4)(uintptr_t)CurBWPtr;
+    MemSeamB = (uintptr_t)CurBWPtr;
     *(u1*)(uintptr_t)(MemSeamB + MemSeamC) = (u1)(MemSeamA & 0xFFu);
     MemSeamB = 0;
 }
@@ -1496,7 +1496,7 @@ void c_regaccessbankw8SA1(void)
 void c_regaccessbankr16SA1(void)
 {
     if (MemSeamC & 0x8000u) {
-        MemSeamB = (u4)(uintptr_t)mem_bank();
+        MemSeamB = (uintptr_t)mem_bank();
         mem_set_ax((u2)(*(u1*)(uintptr_t)(MemSeamB + MemSeamC)
             | (*(u1*)(uintptr_t)(MemSeamB + MemSeamC + 1) << 8)));
         MemSeamB = 0;
@@ -1527,7 +1527,7 @@ void c_regaccessbankr16SA1(void)
         mem_bw_read16();
         return;
     }
-    MemSeamB = (u4)(uintptr_t)CurBWPtr;
+    MemSeamB = (uintptr_t)CurBWPtr;
     mem_set_ax((u2)(*(u1*)(uintptr_t)(MemSeamB + MemSeamC)
         | (*(u1*)(uintptr_t)(MemSeamB + MemSeamC + 1) << 8)));
     MemSeamB = 0;
@@ -1539,7 +1539,7 @@ void c_regaccessbankw16SA1(void)
         if (!writeon) {
             return;
         }
-        MemSeamB = (u4)(uintptr_t)mem_bank();
+        MemSeamB = (uintptr_t)mem_bank();
         *(u1*)(uintptr_t)(MemSeamB + MemSeamC) = (u1)(MemSeamA & 0xFFu);
         *(u1*)(uintptr_t)(MemSeamB + MemSeamC + 1) = (u1)((MemSeamA >> 8) & 0xFFu);
         MemSeamB = 0;
@@ -1573,7 +1573,7 @@ void c_regaccessbankw16SA1(void)
         mem_bw_write16();
         return;
     }
-    MemSeamB = (u4)(uintptr_t)CurBWPtr;
+    MemSeamB = (uintptr_t)CurBWPtr;
     *(u1*)(uintptr_t)(MemSeamB + MemSeamC) = (u1)(MemSeamA & 0xFFu);
     *(u1*)(uintptr_t)(MemSeamB + MemSeamC + 1) = (u1)((MemSeamA >> 8) & 0xFFu);
     MemSeamB = 0;
@@ -1588,7 +1588,7 @@ void c_regaccessbankw16SA1(void)
 void c_membank0r8SA1(void)
 {
     if (MemSeamC & 0x8000u) {
-        MemSeamB = (u4)(uintptr_t)mem_rom();
+        MemSeamB = (uintptr_t)mem_rom();
         mem_set_al(*(u1*)(uintptr_t)(MemSeamB + MemSeamC));
         MemSeamB = 0;
         return;
@@ -1619,7 +1619,7 @@ void c_membank0r8SA1(void)
         mem_set_al(mem_bw_read8());
         return;
     }
-    MemSeamB = (u4)(uintptr_t)CurBWPtr;
+    MemSeamB = (uintptr_t)CurBWPtr;
     mem_set_al(*(u1*)(uintptr_t)(MemSeamB + MemSeamC));
     MemSeamB = 0;
 }
@@ -1627,7 +1627,7 @@ void c_membank0r8SA1(void)
 void c_membank0r16SA1(void)
 {
     if (MemSeamC & 0x8000u) {
-        MemSeamB = (u4)(uintptr_t)mem_rom();
+        MemSeamB = (uintptr_t)mem_rom();
         mem_set_ax((u2)(*(u1*)(uintptr_t)(MemSeamB + MemSeamC)
             | (*(u1*)(uintptr_t)(MemSeamB + MemSeamC + 1) << 8)));
         MemSeamB = 0;
@@ -1658,7 +1658,7 @@ void c_membank0r16SA1(void)
         mem_bw_read16();
         return;
     }
-    MemSeamB = (u4)(uintptr_t)CurBWPtr;
+    MemSeamB = (uintptr_t)CurBWPtr;
     mem_set_ax((u2)(*(u1*)(uintptr_t)(MemSeamB + MemSeamC)
         | (*(u1*)(uintptr_t)(MemSeamB + MemSeamC + 1) << 8)));
     MemSeamB = 0;
@@ -1692,7 +1692,7 @@ void c_membank0w8SA1(void)
         mem_bw_write8();
         return;
     }
-    MemSeamB = (u4)(uintptr_t)CurBWPtr;
+    MemSeamB = (uintptr_t)CurBWPtr;
     *(u1*)(uintptr_t)(MemSeamB + MemSeamC) = (u1)(MemSeamA & 0xFFu);
     MemSeamB = 0;
 }
@@ -1727,7 +1727,7 @@ void c_membank0w16SA1(void)
         mem_bw_write16();
         return;
     }
-    MemSeamB = (u4)(uintptr_t)CurBWPtr;
+    MemSeamB = (uintptr_t)CurBWPtr;
     *(u1*)(uintptr_t)(MemSeamB + MemSeamC) = (u1)(MemSeamA & 0xFFu);
     *(u1*)(uintptr_t)(MemSeamB + MemSeamC + 1) = (u1)((MemSeamA >> 8) & 0xFFu);
     MemSeamB = 0;
@@ -1770,7 +1770,7 @@ static inline void mem_sdd1_stop(void)
 {
     int i;
 
-    MemSeamB = (u4)(uintptr_t)mem_bank();
+    MemSeamB = (uintptr_t)mem_bank();
     mem_set_al(*(u1*)(uintptr_t)(MemSeamB + MemSeamC));
     for (i = 0xC0; i < 0x100; i++) {
         memtabler8[i] = memaccessbankr8;
@@ -1793,16 +1793,17 @@ void c_memaccessbankr8sdd1(void)
         return;
     }
     if (Sdd1Mode != 2) {
-        u4 p;
+        uintptr_t p;
 
         Sdd1Bank = MemSeamB;
         Sdd1Addr = MemSeamC;
         Sdd1NewAddr = MemSeamC;
         Sdd1Mode = 2;
-        /* Kept as 32-bit arithmetic, as the assembly has it: a bank log byte
-           of 0Fh puts the result far outside the ROM allocation. */
-        p = (u4)(uintptr_t)romdata + ((u4)mem_sdd1_banklog() << 20)
-            + ((Sdd1Bank & 0x0Fu) << 16) + (MemSeamC & 0xFFFFu);
+        /* The offset stays 32-bit, as the assembly has it: a bank log byte
+           of 0Fh puts the result far outside the ROM allocation. The base is
+           a host pointer, so only the offset wraps. */
+        p = (uintptr_t)romdata + (u4)(((u4)mem_sdd1_banklog() << 20)
+            + ((Sdd1Bank & 0x0Fu) << 16) + (MemSeamC & 0xFFFFu));
         SDD1_init((u1*)(uintptr_t)p);
     }
     if (Sdd1Bank == MemSeamB && Sdd1Addr == MemSeamC) {

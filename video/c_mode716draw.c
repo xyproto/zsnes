@@ -20,12 +20,12 @@
 #include "../types.h"
 #include "c_mode716write.h"
 
-u4 M7DrawAX; /* ax and dx are the scanline's y and x coordinates */
-u4 M7DrawDX;
-u4 M7DrawBX;
-u4 M7DrawSI;
-u4 M7DrawDI;
-u4 M7DrawBP;
+zreg M7DrawAX; /* ax and dx are the scanline's y and x coordinates */
+zreg M7DrawDX;
+zreg M7DrawBX;
+zreg M7DrawSI;
+zreg M7DrawDI;
+zreg M7DrawBP;
 u4 M7DrawMosaic; /* non-zero: the thunk tail-jumps to domosaicng16b */
 
 extern u1 scrndis; /* cpu/regs.inc */
@@ -43,11 +43,11 @@ extern u4 mode7xadder, mode7yadder;
 extern u1* vram;
 
 /* The parts already ported; each reads its own seam block. */
-extern u4 M7BWBX; /* video/c_mode716bw.c */
+extern zreg M7BWBX; /* video/c_mode716bw.c */
 void c_ProcessMode7BuildWindow(void);
-extern u4 M7StartAX, M7StartDX, M7StartSI, M7StartDI; /* c_mode716start.c */
+extern zreg M7StartAX, M7StartDX, M7StartSI, M7StartDI; /* c_mode716start.c */
 void c_Mode7Startup16b(void);
-extern u4 M7PAX, M7PBX, M7PCX, M7PDX, M7PSI, M7PDI, M7PBP; /* c_mode716proc.c */
+extern zreg M7PAX, M7PBX, M7PCX, M7PDX, M7PSI, M7PDI, M7PBP; /* c_mode716proc.c */
 extern u4 M7PWriter, M7PWriter2;
 void c_Mode7Process(void);
 void c_Mode7ProcessB(void);
@@ -114,7 +114,7 @@ static void mode7_sub(u4 const bx, enum m7_writer const w,
 
     M7StartAX = M7DrawAX;
     M7StartDX = M7DrawDX;
-    M7StartSI = (u4)(uintptr_t)esi;
+    M7StartSI = (zreg)(uintptr_t)esi;
     M7StartDI = M7DrawDI;
     c_Mode7Startup16b();
 
@@ -130,17 +130,17 @@ static void mode7_sub(u4 const bx, enum m7_writer const w,
 
     if (mainsub) {
         M7PBX = mid_routines();
-        M7PDI = (u4)(uintptr_t)vram;
+        M7PDI = (zreg)(uintptr_t)vram;
         c_Mode7Processngw216b();
     } else if ((u1)ngwinen == 1) { /* a byte compare, as in the assembly */
         M7PBX = mid_routines();
-        M7PDI = (u4)(uintptr_t)vram;
+        M7PDI = (zreg)(uintptr_t)vram;
         c_Mode7Processngw16b();
     } else if (big_step()) {
-        M7PDI = (u4)(uintptr_t)vram;
+        M7PDI = (zreg)(uintptr_t)vram;
         c_Mode7ProcessB();
     } else {
-        M7PDI = (u4)(uintptr_t)vram;
+        M7PDI = (zreg)(uintptr_t)vram;
         c_Mode7Process();
     }
     M7DrawMosaic = curmosaicsz != 1;

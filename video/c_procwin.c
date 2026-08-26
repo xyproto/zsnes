@@ -77,7 +77,7 @@ void c_procwindowback16t(pwregs* const r)
        places up - hence the shift rather than a second test. */
     al = wincolen & 0x05u;
     SETB(r->ax, al);
-    r->si = (u4)(uintptr_t)windowdata;
+    r->si = (zreg)(uintptr_t)windowdata;
     winon = 1;
     numwin = 0;
     cl = winl2;

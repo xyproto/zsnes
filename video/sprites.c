@@ -6,6 +6,7 @@
 #include <string.h>
 
 #include "../types.h"
+#include "makevid.h" /* SpriteInfo */
 
 // ---- shared globals (defined in endmem.asm / the test harness) ----
 extern u1 oamram[1024];
@@ -52,7 +53,7 @@ static inline u2 ld16(const u1* p)
 // ---- registers threaded across the asm helper calls ------------------------
 static int cx; // 16-bit signed/unsigned x position
 static u1 dl, dh; // 8-bit y position / status byte
-static u4 esi; // absolute char address into vcache4b (integer, as in asm)
+static zreg esi; // absolute char address into vcache4b (a host pointer)
 static u1* ebp; // spritetablea base
 
 // ---- .bss temporaries modelled as file-scope statics -----------------------
@@ -60,7 +61,7 @@ static u1 numleft2do;
 static u1 statusbit;
 static u4 cpri;
 static int obj_x; // word
-static u4 objloc; // esi - sprt_char (integer)
+static zreg objloc; // esi - sprt_char (a host pointer, biased)
 static int sprt_char;
 static u1 objleft;
 static int objvramloc, objvramloc2;
@@ -116,11 +117,16 @@ spec:
                         u1 oldtot = sprlefttot[y];
                         sprlefttot[y]++;
                         sprleftpr[y * 4 + cpri] = 1;
-                        u4 idx = (y << 9) + ((u4)oldtot << 3);
-                        st16(ebp + idx, U16(cx));
-                        st32(ebp + idx + 2, esi);
-                        ebp[idx + 6] = dh;
-                        ebp[idx + 7] = (u1)((statusbit & 0xF8) | (u1)cpri);
+                        /* One SpriteInfo, written as the struct: on a 64-bit
+                           build obj is eight bytes, so the record is not the
+                           8-byte one the assembly indexed by hand. */
+                        SpriteInfo* const e
+                            = (SpriteInfo*)(ebp + (u4)y * 64u * sizeof(SpriteInfo))
+                            + oldtot;
+                        e->x = U16(cx);
+                        e->obj = (u1*)(uintptr_t)esi;
+                        e->pal = dh;
+                        e->status = (u1)((statusbit & 0xF8) | (u1)cpri);
                     }
                 }
             }
@@ -167,11 +173,16 @@ specb:
                         u1 oldtot = sprlefttot[y];
                         sprlefttot[y]++;
                         sprleftpr[y * 4 + cpri] = 1;
-                        u4 idx = (y << 9) + ((u4)oldtot << 3);
-                        st16(ebp + idx, U16(cx));
-                        st32(ebp + idx + 2, esi);
-                        ebp[idx + 6] = dh;
-                        ebp[idx + 7] = (u1)((statusbit & 0xF8) | (u1)cpri);
+                        /* One SpriteInfo, written as the struct: on a 64-bit
+                           build obj is eight bytes, so the record is not the
+                           8-byte one the assembly indexed by hand. */
+                        SpriteInfo* const e
+                            = (SpriteInfo*)(ebp + (u4)y * 64u * sizeof(SpriteInfo))
+                            + oldtot;
+                        e->x = U16(cx);
+                        e->obj = (u1*)(uintptr_t)esi;
+                        e->pal = dh;
+                        e->status = (u1)((statusbit & 0xF8) | (u1)cpri);
                     }
                 }
             }
@@ -874,8 +885,8 @@ void processspritesb(void)
         if (attr_hi & 1)
             ecx0 += objvramloc2;
         ecx0 &= 0x1FFFF;
-        esi = (u4)(uintptr_t)vcache4b + (u4)ecx0;
-        objloc = esi - (u4)sprt_char;
+        esi = (zreg)(uintptr_t)vcache4b + (zreg)(u4)ecx0;
+        objloc = esi - (zreg)(u4)sprt_char;
         u1 alx = oamram[bx];
         u1 cl = (u1)bx;
         int ebxs = bx >> 4;

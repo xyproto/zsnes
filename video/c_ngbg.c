@@ -36,7 +36,9 @@ extern u1 colormodedef[][4]; /* c_vcache.c: SNES mode -> depth per layer */
 extern u2 BGPT1[], BGPT1X[], BGPT1Y[], BG1SXl[], BG1SYl[], BGOPT1[];
 extern u2 bgtxad[];
 extern u4 ng16bprval, ng16bbgval, bgtxadd, ngptrdat[], ngptrdat2;
-extern u4 ngceax[], ngcedi[], mode0add, mode0ads, cpalval[256];
+extern u4 ngceax[], mode0add, mode0ads;
+extern zreg ngcedi[];
+extern zreg cpalval[256];
 extern u4 taddnfy16x16, taddfy16x16, ngwinen, nglogicval, ngwintable[];
 extern u4 dcolortab[];
 void BuildWindow(u4 line, u4 which); /* video/c_makev16b.c */
@@ -52,12 +54,12 @@ extern u4 ng2_mosaic; /* video/c_ng2tile.c: the renderer wants the mosaic pass *
 void c_domosaicng16b(void); /* video/c_ngmosaic.c */
 
 /* video/c_ng2tile.c */
-void c_ng_drawtileng2b16b(u4* r);
-void c_ng_drawtileng4b16b(u4* r);
-void c_ng_drawtileng8b16b(u4* r);
-void c_ng_drawtileng16x162b16b(u4* r);
-void c_ng_drawtileng16x164b16b(u4* r);
-void c_ng_drawtileng16x168b16b(u4* r);
+void c_ng_drawtileng2b16b(zreg* r);
+void c_ng_drawtileng4b16b(zreg* r);
+void c_ng_drawtileng8b16b(zreg* r);
+void c_ng_drawtileng16x162b16b(zreg* r);
+void c_ng_drawtileng16x164b16b(zreg* r);
+void c_ng_drawtileng16x168b16b(zreg* r);
 
 /* A dword read of a word table, which is what the assembly does. */
 static u4 dword_at(u2 const* const p)
@@ -71,7 +73,7 @@ static u4 dword_at(u2 const* const p)
 /* ProcessBuildWindow. Leaves every register alone - the assembly pushes eax
    and ebx around it - and trims the first window run by how far into the line
    edi already is. */
-static void build_window(u4 const* const r, u4 const bg)
+static void build_window(zreg const* const r, u4 const bg)
 {
     u4 const bx = r[R_EBX];
     u4 adj;
@@ -97,8 +99,8 @@ static void build_window(u4 const* const r, u4 const bg)
    direct-colour palette swap, the window, mode 0's palette block, and the
    jump into the renderer. `edx` arrives holding the colormodedef dword,
    because the renderer is entered with its upper bytes. */
-static void bg_finish(u4* const r, u4 const bg, int const big, u4 const edx,
-    u4 eax, u4 edi, u4 ebp)
+static void bg_finish(zreg* const r, u4 const bg, int const big, u4 const edx,
+    zreg eax, zreg edi, zreg ebp)
 {
     u4 const bx = r[R_EBX];
     u4 const depth = (u1)edx;
@@ -115,7 +117,7 @@ static void bg_finish(u4* const r, u4 const bg, int const big, u4 const edx,
             prevbrightdc = vidbright;
             Gendcolortable();
         }
-        ebp = (u4)(uintptr_t)dcolortab;
+        ebp = (zreg)(uintptr_t)dcolortab;
     }
 
     r[R_EAX] = eax;
@@ -147,7 +149,7 @@ static void bg_finish(u4* const r, u4 const bg, int const big, u4 const edx,
    dispatcher cached them per scanline in ngceax/ngcedi/ngptrdat/bgtxad and
    this reads them back. Note bgtxadd is restored by a *word* store, so its
    upper half is whatever the earlier pass left there. */
-static void bg_tile_pr1(u4* const r, u4 const bg, int const big)
+static void bg_tile_pr1(zreg* const r, u4 const bg, int const big)
 {
     u4 const bx = r[R_EBX];
     u4 const i = bx + bg * 256u;
@@ -170,12 +172,13 @@ static void bg_tile_pr1(u4* const r, u4 const bg, int const big)
     bg_finish(r, bg, big, edx, ngceax[i], ngcedi[i], cpalval[bx]);
 }
 
-static void bg_tile(u4* const r, u4 const bg, int const big)
+static void bg_tile(zreg* const r, u4 const bg, int const big)
 {
     u4 const bx = r[R_EBX];
     u4 const i = bx + bg * 256u;
     u4 ecx = r[R_ECX];
-    u4 eax, edi, edx, ebp, depth;
+    zreg eax, edi, ebp;
+    u4 edx, depth;
 
     if (big) {
         taddnfy16x16 = 0;
@@ -214,7 +217,9 @@ static void bg_tile(u4* const r, u4 const bg, int const big)
        later replaces only the low one, which is what reaches the renderer. */
     memcpy(&edx, (u1 const*)colormodedef + (BGMA[bx] & 7u) * 4u + bg, 4);
     depth = (u1)edx;
-    edi = (u4)(-(s4)edi) * 2u;
+    /* A leftward pixel offset, added to esi below: sign-extend it to the slot
+       width so the add wraps, as it did when the slot was 32 bits. */
+    edi = (zreg)(s4)(-(s4)edi * 2);
     ebp = cpalval[bx];
 
     switch (depth) {
@@ -241,7 +246,7 @@ static void bg_tile(u4* const r, u4 const bg, int const big)
 }
 
 #define NG_BG_TILE(n)                                           \
-    void c_drawbg##n##tile16b(u4* const r)                      \
+    void c_drawbg##n##tile16b(zreg* const r)                    \
     {                                                           \
         u4 const bg = (n) - 1u;                                 \
                                                                 \
@@ -251,7 +256,7 @@ static void bg_tile(u4* const r, u4 const bg, int const big)
         ng16bbgval = bg;                                        \
         bg_tile(r, bg, t16x161[r[R_EBX] + bg * 256u] == 1);     \
     }                                                           \
-    void c_drawbg##n##tilepr116b(u4* const r)                   \
+    void c_drawbg##n##tilepr116b(zreg* const r)                 \
     {                                                           \
         u4 const bg = (n) - 1u;                                 \
                                                                 \
@@ -285,17 +290,17 @@ extern u2 BG3SXl[], BG3SYl[], BGPT3[], BGPT3X[];
 extern u4 cfieldad, mosstart[4], yposng, flipyposng, yposngom, flipyposngom;
 extern u4 ofsmcptr, ofsmcptr2, ofsmady, ofsmadx, ofsmtptr, ofsmtptrs;
 extern u4 ofsmmptr, ofsmcyps, ofshvaladd, ofsmval, ofsmvalh, bgtxadd2;
-extern u4 CPalPtrng;
+extern zreg CPalPtrng;
 
-void c_ng_drawlineng2b16b(u4* r), c_ng_drawlineng4b16b(u4* r);
-void c_ng_drawlineng8b16b(u4* r);
-void c_ng_drawlineng16x162b16b(u4* r), c_ng_drawlineng16x164b16b(u4* r);
-void c_ng_drawlineng16x168b16b(u4* r);
-void c_ng_drawlineng16x82b16b(u4* r), c_ng_drawlineng16x84b16b(u4* r);
-void c_ng_drawlinengom2b16b(u4* r), c_ng_drawlinengom4b16b(u4* r);
-void c_ng_drawlinengom8b16b(u4* r);
-void c_ng_drawlinengom16x162b16b(u4* r), c_ng_drawlinengom16x164b16b(u4* r);
-void c_ng_drawlinengom16x168b16b(u4* r);
+void c_ng_drawlineng2b16b(zreg* r), c_ng_drawlineng4b16b(zreg* r);
+void c_ng_drawlineng8b16b(zreg* r);
+void c_ng_drawlineng16x162b16b(zreg* r), c_ng_drawlineng16x164b16b(zreg* r);
+void c_ng_drawlineng16x168b16b(zreg* r);
+void c_ng_drawlineng16x82b16b(zreg* r), c_ng_drawlineng16x84b16b(zreg* r);
+void c_ng_drawlinengom2b16b(zreg* r), c_ng_drawlinengom4b16b(zreg* r);
+void c_ng_drawlinengom8b16b(zreg* r);
+void c_ng_drawlinengom16x162b16b(zreg* r), c_ng_drawlinengom16x164b16b(zreg* r);
+void c_ng_drawlinengom16x168b16b(zreg* r);
 
 enum { LK_PLAIN, /* .nooffsetm, 8x8 and 16x16 */
     LK_OM, /* .offsetm */
@@ -310,13 +315,13 @@ static void line_direct(u4 const bx)
         prevbrightdc = vidbright;
         Gendcolortable();
     }
-    CPalPtrng = (u4)(uintptr_t)dcolortab;
+    CPalPtrng = (zreg)(uintptr_t)dcolortab;
 }
 
 /* Everything from the direct-colour swap on down, which both line passes
    share: the window, mode 0's palette block, and the call into the renderer. */
-static void line_tail(u4* const r, u4 const bg, int const kind, int const big,
-    u4 const edx, u4 const eax, u4 const edi)
+static void line_tail(zreg* const r, u4 const bg, int const kind, int const big,
+    u4 const edx, zreg const eax, zreg const edi)
 {
     u4 const bx = r[R_EBX];
     u4 const depth = (u1)edx;
@@ -368,8 +373,8 @@ static void line_tail(u4* const r, u4 const bg, int const kind, int const big,
 }
 
 /* The priority-0 prologue: work the addresses out and cache them for pass 1. */
-static void line_finish(u4* const r, u4 const bg, int const kind, int const big,
-    u4 const edx, u4 const eax, u4 edi, u4 ecx)
+static void line_finish(zreg* const r, u4 const bg, int const kind, int const big,
+    u4 const edx, zreg const eax, zreg edi, u4 ecx)
 {
     u4 const i = r[R_EBX] + bg * 256u;
     u4 const depth = (u1)edx;
@@ -412,10 +417,11 @@ static void tadd_from_row(u4 const row)
 
 /* The offset-per-tile setup: where BG3's offset table is for this line, and
    the eight variables the om drawers walk it with. */
-static void om_setup(u4* const r, u4 const bg, int const big, int const mask16)
+static void om_setup(zreg* const r, u4 const bg, int const big, int const mask16)
 {
     u4 const bx = r[R_EBX];
-    u4 eax, edx;
+    zreg eax;
+    u4 edx;
 
     edx = BG3SYl[bx];
     if (!big && (u2)edx != 0xFFFFu)
@@ -461,12 +467,13 @@ static void om_overflow(u4 const bx)
     }
 }
 
-static void bg_line(u4* const r, u4 const bg)
+static void bg_line(zreg* const r, u4 const bg)
 {
     u4 const bx = r[R_EBX];
     u4 const i = bx + bg * 256u;
     u4 ecx = r[R_ECX];
-    u4 eax, edi, edx;
+    zreg eax, edi;
+    u4 edx;
     int big, kind;
 
     ng16bprval = 0;
@@ -483,7 +490,7 @@ static void bg_line(u4* const r, u4 const bg)
         /* The line goes to the scratch buffer instead, and esi follows it. */
         for (q = 0; q < 128u; q++)
             memcpy(xtravbuf + 32 + q * 4, "\xFF\xFF\xFF\xFF", 4);
-        r[R_ESI] = (u4)(uintptr_t)(xtravbuf + 32);
+        r[R_ESI] = (zreg)(uintptr_t)(xtravbuf + 32);
         ecx = (dword_at(&BG1SYl[i]) & 0xFFFFu) + mosstart[bg];
     }
 
@@ -553,16 +560,18 @@ static void bg_line(u4* const r, u4 const bg)
     if (kind == LK_HR)
         edi >>= 1;
     memcpy(&edx, (u1 const*)colormodedef + (BGMA[bx] & 7u) * 4u + bg, 4);
-    edi = (u4)(-(s4)edi) * 2u;
+    /* A leftward pixel offset, added to esi below: sign-extend it to the slot
+       width so the add wraps, as it did when the slot was 32 bits. */
+    edi = (zreg)(s4)(-(s4)edi * 2);
 
     line_finish(r, bg, kind, big, edx, eax, edi, ecx);
 }
 
-#define NG_BG_LINE(n)                      \
-    void c_drawbg##n##line16b(u4* const r) \
-    {                                      \
-        bg_prdat[(n) - 1u][r[R_EBX]] = 0;  \
-        bg_line(r, (n) - 1u);              \
+#define NG_BG_LINE(n)                        \
+    void c_drawbg##n##line16b(zreg* const r) \
+    {                                        \
+        bg_prdat[(n) - 1u][r[R_EBX]] = 0;    \
+        bg_line(r, (n) - 1u);                \
     }
 
 NG_BG_LINE(1)
@@ -632,7 +641,7 @@ static void om_setup_pr1_x(u4 const bx, u4 const bg, int const big)
     ofsmtptr += ecx >> (big ? 3 : 2);
 }
 
-static void line_pr1_finish(u4* const r, u4 const bg, int const kind,
+static void line_pr1_finish(zreg* const r, u4 const bg, int const kind,
     int const big)
 {
     u4 const bx = r[R_EBX];
@@ -658,7 +667,7 @@ static void line_pr1_finish(u4* const r, u4 const bg, int const kind,
     line_tail(r, bg, kind, big, edx, ngceax[i], ngcedi[i]);
 }
 
-static void bg_line_pr1(u4* const r, u4 const bg)
+static void bg_line_pr1(zreg* const r, u4 const bg)
 {
     u4 const bx = r[R_EBX];
     int const big = t16x161[bx + bg * 256u] == 1;
@@ -673,7 +682,7 @@ static void bg_line_pr1(u4* const r, u4 const bg)
     if ((mosenng[bx] & (1u << bg)) && mosszng[bx] != 0) {
         curmosaicsz = (u1)(mosszng[bx] + 1u);
         memset(xtravbuf + 32, 0xFF, 512);
-        r[R_ESI] = (u4)(uintptr_t)(xtravbuf + 32);
+        r[R_ESI] = (zreg)(uintptr_t)(xtravbuf + 32);
     }
 
     if (BGMA[bx] >= 5)
@@ -712,10 +721,10 @@ static void bg_line_pr1(u4* const r, u4 const bg)
     line_pr1_finish(r, bg, kind, big);
 }
 
-#define NG_BG_LINE_PR1(n)                     \
-    void c_drawbg##n##linepr116b(u4* const r) \
-    {                                         \
-        bg_line_pr1(r, (n) - 1u);             \
+#define NG_BG_LINE_PR1(n)                       \
+    void c_drawbg##n##linepr116b(zreg* const r) \
+    {                                           \
+        bg_line_pr1(r, (n) - 1u);               \
     }
 
 NG_BG_LINE_PR1(1)

@@ -17,13 +17,17 @@
  * seam around the call, so it behaves like the callee-saved register set it
  * replaces even when a register write starts a DMA that reenters here.
  */
-extern uint32_t MemSeamB, MemSeamC, MemSeamA, MemSeamD;
+/* Pointer-wide, not uint32_t: these stand in for the assembly's ebx/ecx/eax/
+   edx, and ebx in particular carries a host RAM base on the bank paths. On
+   i386 uintptr_t is the same type and nothing changes. */
+extern uintptr_t MemSeamB, MemSeamC, MemSeamA, MemSeamD;
 
 /* The core's esi, i.e. the 65816 program counter. Only the sound-skip hack in
    the $2140-$2143 handlers reads it, and only when SPC emulation is off; the
    assembly took it straight out of the register, which stopped holding the PC
    once the opcode core became C. mem_call and bank0_call publish it here. */
-extern uint32_t MemSeamS;
+/* Pointer-wide: this is the PC, a host pointer, not a 32-bit register. */
+extern uintptr_t MemSeamS;
 
 typedef void memfn(void);
 
@@ -31,12 +35,12 @@ typedef void memfn(void);
    live values in the upper half. */
 static inline void mem_set_al(uint8_t const v)
 {
-    MemSeamA = (MemSeamA & ~0xFFu) | v;
+    MemSeamA = (MemSeamA & ~(uintptr_t)0xFFu) | v;
 }
 
 static inline void mem_set_ax(uint16_t const v)
 {
-    MemSeamA = (MemSeamA & ~0xFFFFu) | v;
+    MemSeamA = (MemSeamA & ~(uintptr_t)0xFFFFu) | v;
 }
 
 /* Hand an access on to another memtable handler, the way the assembly's

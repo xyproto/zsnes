@@ -22,13 +22,13 @@
 #include "../types.h"
 #include "makevid.h"
 
-u4 SPPAX;
-u4 SPPBX;
-u4 SPPCX;
-u4 SPPDX;
-u4 SPPSI;
-u4 SPPDI;
-u4 SPPBP;
+zreg SPPAX;
+zreg SPPBX;
+zreg SPPCX;
+zreg SPPDX;
+zreg SPPSI;
+zreg SPPDI;
+zreg SPPBP;
 
 extern u1 cwinenabm, winonsp, scaddtype, csprbit, csprprlft;
 extern u2 scrnon;
@@ -160,7 +160,7 @@ static void draw_prio(regs* const r, int const mode, int const win)
     u4 ebx = 0;
 
     csprprlft = cl;
-    r->di = (u4)(uintptr_t)edi;
+    r->di = (zreg)(uintptr_t)edi;
     for (;;) {
         int const flip = (esi->status & 0x20u) != 0;
 
@@ -184,13 +184,13 @@ static void draw_prio(regs* const r, int const mode, int const win)
     }
     r->bx = ebx;
     r->cx = (r->cx & 0xFFFF0000u) | (u4)ch << 8 | cl;
-    r->si = (u4)(uintptr_t)esi;
+    r->si = (zreg)(uintptr_t)esi;
     csprbit = (u1)(csprbit << 1 | csprbit >> 7);
     if (csprbit == 1) {
         memset(sprpriodata + 16, 0, 256);
         r->ax = 0;
         r->cx = 0;
-        r->di = (u4)(uintptr_t)(sprpriodata + 16 + 256);
+        r->di = (zreg)(uintptr_t)(sprpriodata + 16 + 256);
     }
 }
 
@@ -204,10 +204,10 @@ static void draw_single(regs* const r, int const mode, int const win)
     u1 ch = (u1)(r->cx >> 8);
     u4 ebx = 0;
 
-    r->di = (u4)(uintptr_t)edi;
+    r->di = (zreg)(uintptr_t)edi;
     /* edx is the walk's starting address, and stays that unless a pixel draws
        over it with something. */
-    r->dx = (u4)(uintptr_t)esi + (u4)cl * 8u - 8u;
+    r->dx = (zreg)(uintptr_t)esi + (u4)cl * 8u - 8u;
     esi = (SpriteInfo const*)(uintptr_t)r->dx;
     do {
         int const flip = (esi->status & 0x20u) != 0;
@@ -220,7 +220,7 @@ static void draw_single(regs* const r, int const mode, int const win)
     } while (--cl != 0);
     r->bx = ebx;
     r->cx = (r->cx & 0xFFFF0000u) | (u4)ch << 8;
-    r->si = (u4)(uintptr_t)esi;
+    r->si = (zreg)(uintptr_t)esi;
 }
 
 /* Entered from the sprprifix test at the top of drawsprites16t. */

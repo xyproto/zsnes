@@ -19,13 +19,13 @@
 
 #include "../types.h"
 
-u4 MVSAX;
-u4 MVSBX;
-u4 MVSCX;
-u4 MVSDX;
-u4 MVSSI;
-u4 MVSDI;
-u4 MVSBP;
+zreg MVSAX;
+zreg MVSBX;
+zreg MVSCX;
+zreg MVSDX;
+zreg MVSSI;
+zreg MVSDI;
+zreg MVSBP;
 
 /* Non-zero when the caller must tail-jump to domosaic16b, which the assembly
    does with dh carrying curmosaicsz. */
@@ -182,9 +182,9 @@ static void draw_row(int const winon, int const sub, int const mosaic)
     MVSCX = r.ecx;
     MVSDX = winon ? (u4)(uintptr_t)edx
                   : ((MVSDX & ~0xFFFFu) | ((u4)dh << 8) | dl);
-    MVSSI = (u4)(uintptr_t)esi;
-    MVSBP = (u4)(uintptr_t)ebp;
-    MVSDI = (u4)(uintptr_t)edi;
+    MVSSI = (zreg)(uintptr_t)esi;
+    MVSBP = (zreg)(uintptr_t)ebp;
+    MVSDI = (zreg)(uintptr_t)edi;
 }
 
 void c_draw8x816tsms(void) { draw_row(0, 1, 0); }
@@ -321,9 +321,9 @@ static void draw_row_a(int const winon)
     MVSCX = r.ecx;
     MVSDX = winon ? (u4)(uintptr_t)edx
                   : ((MVSDX & ~0xFFFFu) | ((u4)dh << 8) | dl);
-    MVSSI = (u4)(uintptr_t)esi;
-    MVSBP = (u4)(uintptr_t)ebp;
-    MVSDI = (u4)(uintptr_t)edi;
+    MVSSI = (zreg)(uintptr_t)esi;
+    MVSBP = (zreg)(uintptr_t)ebp;
+    MVSDI = (zreg)(uintptr_t)edi;
 }
 
 void c_draw8x816tms_body(void) { draw_row_a(0); }
@@ -464,9 +464,9 @@ static void draw_row16(enum mv16var const var, int const winon)
     MVSCX = r.ecx;
     MVSDX = winon ? (u4)(uintptr_t)edx
                   : ((MVSDX & ~0xFFFFu) | ((u4)dh << 8) | dl);
-    MVSSI = (u4)(uintptr_t)esi;
-    MVSBP = (u4)(uintptr_t)ebp;
-    MVSDI = (u4)(uintptr_t)edi;
+    MVSSI = (zreg)(uintptr_t)esi;
+    MVSBP = (zreg)(uintptr_t)ebp;
+    MVSDI = (zreg)(uintptr_t)edi;
 }
 
 void c_draw16x1616tms_body(void) { draw_row16(MV16_A, 0); }

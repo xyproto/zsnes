@@ -34,7 +34,7 @@ extern u4 UnusedBit[2], HalfTrans[4];
 #define SUBOFF 75036u
 
 /* .fulltransp / .nextfa - full add, both screens' pixels through the table. */
-void c_transp_fulladd(u4* const r)
+void c_transp_fulladd(zreg* const r)
 {
     u2* p = (u2*)(uintptr_t)r[R_ESI];
     u4 ecx = 256, ebp = HalfTrans[0], edx = 0, eax = 0;
@@ -62,7 +62,7 @@ void c_transp_fulladd(u4* const r)
 
 /* .fullsubtract / .nextfs - the same shape with the main pixel complemented
    going in and the result complemented coming out. */
-void c_transp_fullsub(u4* const r)
+void c_transp_fullsub(zreg* const r)
 {
     u2* p = (u2*)(uintptr_t)r[R_ESI];
     u4 ecx = 256, ebp = HalfTrans[0], edx = 0, eax = 0;
@@ -95,7 +95,7 @@ void c_transp_fullsub(u4* const r)
  * caller's eax upper half reaches the arithmetic; hence eax comes in from the
  * register block. It also re-reads the sub pixel to decide whether to halve.
  */
-void c_transp_halfsub(u4* const r)
+void c_transp_halfsub(zreg* const r)
 {
     u2* p = (u2*)(uintptr_t)r[R_ESI];
     u4 ecx = 256, ebp = HalfTrans[0], edx = 0, eax = r[R_EAX];
@@ -132,7 +132,7 @@ void c_transp_halfsub(u4* const r)
  * caller's edx upper half survives into the arithmetic and the shr can walk
  * bit 16 down into the stored pixel.
  */
-void c_transp_halfadd(u4* const r)
+void c_transp_halfadd(zreg* const r)
 {
     u2* p = (u2*)(uintptr_t)r[R_ESI];
     u4 ecx = 256, edi = HalfTrans[0], edx = r[R_EDX], eax = 0;
@@ -164,7 +164,7 @@ void c_transp_halfadd(u4* const r)
  * but a sub pixel that already carries the unused bit goes through the
  * full-add table instead of being skipped.
  */
-void c_transp_halfaddfix(u4* const r)
+void c_transp_halfaddfix(zreg* const r)
 {
     u2* p = (u2*)(uintptr_t)r[R_ESI];
     u4 ecx = 256, edi = HalfTrans[0], edx = 0, eax = 0;
@@ -208,7 +208,7 @@ extern u1 FillSubScr[], scadtng[], SpecialLine[];
 extern u2 resolutn;
 extern u4 HiResDone, NGNoTransp;
 
-void c_process_transparencies(u4* const r)
+void c_process_transparencies(zreg* const r)
 {
     u2* esi;
 
@@ -225,7 +225,7 @@ void c_process_transparencies(u4* const r)
             for (;;) {
                 u1 const sc = scadtng[bx];
 
-                r[R_ESI] = (u4)(uintptr_t)esi;
+                r[R_ESI] = (zreg)(uintptr_t)esi;
                 if (!(sc & 0x40)) {
                     if (sc & 0x80)
                         c_transp_fullsub(r);
@@ -256,5 +256,5 @@ void c_process_transparencies(u4* const r)
         if (resolutn < (u2)(bx + 1))
             break;
     }
-    r[R_ESI] = (u4)(uintptr_t)esi;
+    r[R_ESI] = (zreg)(uintptr_t)esi;
 }

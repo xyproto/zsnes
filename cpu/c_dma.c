@@ -16,7 +16,7 @@ u1 AddrNoIncr = 0;
    in, which is what the assembly did with eax. */
 static u1 read_reg(eop* const reg, u2 const address)
 {
-    u4 const b = MemSeamB, c = MemSeamC, a = MemSeamA, d = MemSeamD;
+    uintptr_t const b = MemSeamB, c = MemSeamC, a = MemSeamA, d = MemSeamD;
     u1 al;
 
     MemSeamC = address;
@@ -97,7 +97,7 @@ static void transdmappu2cpu(u1 const al, DMAInfo* const esi)
 
 static inline void write_reg(eop* const reg, u2 const address, u1 const val)
 {
-    u4 const b = MemSeamB, c = MemSeamC, a = MemSeamA, d = MemSeamD;
+    uintptr_t const b = MemSeamB, c = MemSeamC, a = MemSeamA, d = MemSeamD;
 
     MemSeamC = address;
     MemSeamA = val;

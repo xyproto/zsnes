@@ -31,7 +31,7 @@
    in it any more. The file stays because these routines still pass values to
    each other through it - edi and ebp carry from one scanline call to the
    next, exactly as they did. */
-u4 DLR[7];
+zreg DLR[7];
 
 /* The pushad order the ported entry points use, which is not DLR's. */
 enum { R_EDI,
@@ -43,11 +43,11 @@ enum { R_EDI,
     R_ECX,
     R_EAX };
 
-void dl_call(void (*fn)(u4*));
+void dl_call(void (*fn)(zreg*));
 
-void dl_call(void (*const fn)(u4*))
+void dl_call(void (*const fn)(zreg*))
 {
-    u4 r[8];
+    zreg r[8];
 
     r[R_EAX] = DLR[0];
     r[R_EBX] = DLR[1];
@@ -70,8 +70,8 @@ void dl_call(void (*const fn)(u4*))
 #include "c_procwin.h"
 /* video/c_mv16tclr.c and video/c_mv16bclr.c take their registers in these.
    A trampoline used to spill them; the call sites below do it. */
-extern u4 CBAX, CBBX, CBCX, CBDX, CBSI, CBDI, CBBP;
-extern u4 CLBAX, CLBBX, CLBCX, CLBDX, CLBSI, CLBDI;
+extern zreg CBAX, CBBX, CBCX, CBDX, CBSI, CBDI, CBBP;
+extern zreg CLBAX, CLBBX, CLBCX, CLBDX, CLBSI, CLBDI;
 void c_clearback16t(void);
 void c_clearback16bts(void);
 #include "c_m716gate.h"
@@ -321,7 +321,8 @@ static void procwindowback(void)
    walk. Shared by the two sub-screen drivers. */
 static void sprite_setup(void)
 {
-    DLR[1] = ((u1)curypos << 9) + (u4)(uintptr_t)spritetablea;
+    DLR[1] = (zreg)((u1)curypos) * 64u * sizeof(SpriteInfo)
+        + (zreg)(uintptr_t)spritetablea;
     currentobjptr = (SpriteInfo*)(uintptr_t)DLR[1];
     cursprloc = sprleftpr;
     if (sprprifix != 0) {

@@ -23,13 +23,13 @@
 #include "../types.h"
 #include "../vcache.h"
 
-u4 CBAX;
-u4 CBBX;
-u4 CBCX;
-u4 CBDX;
-u4 CBSI;
-u4 CBDI;
-u4 CBBP;
+zreg CBAX;
+zreg CBBX;
+zreg CBCX;
+zreg CBDX;
+zreg CBSI;
+zreg CBDI;
+zreg CBBP;
 
 extern u1 scaddtype;
 extern u2 scrnon;
@@ -66,8 +66,8 @@ static void fulladd(u4 const eax, int const sub)
     }
     CBAX = 0;
     CBCX = 0;
-    CBSI = (u4)(uintptr_t)esi;
-    CBBP = (u4)(uintptr_t)ebp;
+    CBSI = (zreg)(uintptr_t)esi;
+    CBBP = (zreg)(uintptr_t)ebp;
 }
 
 void c_clearback16ts(void)
@@ -97,7 +97,7 @@ void c_clearback16t(void)
         }
         CBAX = 0;
         CBCX = 0;
-        CBDI = (u4)(uintptr_t)edi;
+        CBDI = (zreg)(uintptr_t)edi;
         return;
     }
     if (scaddtype & 0x80u) {
@@ -145,8 +145,8 @@ void c_clearback16t(void)
         }
         CBAX = 0;
         CBCX = 0;
-        CBSI = (u4)(uintptr_t)esi;
-        CBBP = (u4)(uintptr_t)ebp;
+        CBSI = (zreg)(uintptr_t)esi;
+        CBBP = (zreg)(uintptr_t)ebp;
         return;
     }
 
@@ -156,9 +156,9 @@ void c_clearback16t(void)
         CBAX = 0;
         CBBX = 0;
         CBCX = 0;
-        CBSI = (u4)(uintptr_t)(ebp + 512);
-        CBDI = (u4)(uintptr_t)(esi + 512);
-        CBBP = (u4)(uintptr_t)ebp;
+        CBSI = (zreg)(uintptr_t)(ebp + 512);
+        CBDI = (zreg)(uintptr_t)(esi + 512);
+        CBBP = (zreg)(uintptr_t)ebp;
         return;
     }
 

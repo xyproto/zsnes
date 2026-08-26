@@ -18,6 +18,7 @@ extern u1 pdh;
 extern u1 pressed[256 + 128 + 64]; // keyboard pressed keys in scancode
 extern u1 romloadskip;
 extern u1* initaddrl; // initial address location
+extern uint32_t initaddrlSt; // the save-state slot: initaddrl as a dword
 extern u2 t1cc;
 extern u4 NumberOfOpcodes2;
 extern u4 timercount;

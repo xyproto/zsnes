@@ -19,13 +19,13 @@
 #include "../types.h"
 #include "makevid.h"
 
-u4 SPTAX;
-u4 SPTBX;
-u4 SPTCX;
-u4 SPTDX;
-u4 SPTSI;
-u4 SPTDI;
-u4 SPTBP;
+zreg SPTAX;
+zreg SPTBX;
+zreg SPTCX;
+zreg SPTDX;
+zreg SPTSI;
+zreg SPTDI;
+zreg SPTBP;
 
 extern u1 cwinenabm, winonsp, scaddtype;
 extern u2 scrnon;
@@ -139,7 +139,7 @@ static void sprites_t(regs* const r, int const win, int const fulladd)
     u4 ebx = 0;
 
     r->ax = 0;
-    r->di = (u4)(uintptr_t)cvo;
+    r->di = (zreg)(uintptr_t)cvo;
     do {
         int const flip = (esi->status & 0x20u) != 0;
         u1 const* const src = esi->obj;
@@ -159,7 +159,7 @@ static void sprites_t(regs* const r, int const win, int const fulladd)
             u1 const* const ebp = (u1*)TRANSP + ebx;
 
             r->dx = 0;
-            r->bp = (u4)(uintptr_t)ebp;
+            r->bp = (zreg)(uintptr_t)ebp;
             for (u4 pos = 0; pos < 8; pos++) {
                 spr_t(r, src, ch, ebx, dst, ebp, flip ? 7 - pos : pos, pos,
                     win, tmode);
@@ -181,7 +181,7 @@ static void sprites_t(regs* const r, int const win, int const fulladd)
     currentobjptr = esi;
     r->bx = ebx;
     r->cx = (r->cx & 0xFFFF0000u) | (u4)ch << 8;
-    r->si = (u4)(uintptr_t)esi;
+    r->si = (zreg)(uintptr_t)esi;
 }
 
 /* Entered past the sprprifix test, which stays in the assembly because the

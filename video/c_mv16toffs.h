@@ -111,7 +111,8 @@ static void offs_init(u4 const ebp, u1 const* const edi)
    the assembly leaves it in edi and preserves ebx and edx. */
 static u1* offs_proc(void)
 {
-    u4 eax, ebx, edx;
+    u4 eax, edx;
+    zreg ebx; /* holds ofsmcptr + an offset: a host address */
     u1* edi;
 
     ofsmmptr = (ofsmmptr & 0xFFFF0000u) | (u2)(ofsmmptr + 2u);
@@ -127,11 +128,10 @@ static u1* offs_proc(void)
         ofsmmptr = (ofsmmptr & 0xFFFF0000u) | (u2)(ofsmmptr + ebx);
         ofsmtptr = (ofsmtptr & 0xFFFF0000u) | (u2)(ofsmtptr + ebx);
     }
-    eax += (u4)(uintptr_t)vram;
-    edi = (u1*)(uintptr_t)eax;
+    edi = vram + eax;
 
     /* The vertical offset for this column. */
-    ebx = (u4)(uintptr_t)ofsmcptr + ofsmcptr2;
+    ebx = (uintptr_t)ofsmcptr + ofsmcptr2;
     eax = OMBGTestVal;
     if (*(u4 const*)(uintptr_t)ebx & eax) {
         ebx = *(u4 const*)(uintptr_t)ebx;
@@ -147,13 +147,12 @@ static u1* offs_proc(void)
         eax = (eax & 0xFFFF0000u) | (u2)(eax + ebx);
         yadder = edx;
         yrevadder = edx ^ 0x38u;
-        eax += (u4)(uintptr_t)vram;
-        edi = (u1*)(uintptr_t)eax;
+        edi = vram + eax;
     }
 
     /* And the horizontal one, which lives 0x40 bytes earlier in the same map
        and is read before ofsmcptr2 steps on. */
-    ebx = (u4)(uintptr_t)ofsmcptr + ofsmcptr2;
+    ebx = (uintptr_t)ofsmcptr + ofsmcptr2;
     ofshvaladd += 8;
     eax = OMBGTestVal;
     ofsmcptr2 = (ofsmcptr2 + 2u) & 0x3Fu;
@@ -168,8 +167,7 @@ static u1* offs_proc(void)
         }
         ebx = (ebx & 0xF8u) >> 2;
         eax = (eax & 0xFFFF0000u) | (u2)(eax + ebx);
-        eax += (u4)(uintptr_t)vram;
-        edi = (u1*)(uintptr_t)eax;
+        edi = vram + eax;
     }
     return edi;
 }

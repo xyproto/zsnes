@@ -16,7 +16,7 @@
 #define EXT2_PIXELS 256u
 #define EXT2_BUF 75036u /* one video buffer, in 16-bit pixels */
 
-extern u4 M7SeamA, M7SeamB, M7SeamC, M7SeamD, M7SeamSI, M7SeamBP;
+extern zreg M7SeamA, M7SeamB, M7SeamC, M7SeamD, M7SeamSI, M7SeamBP;
 
 extern u1 scrndis; /* cpu/regs.inc */
 extern u1 BGMS1[]; /* endmem.c: main/sub enable, two bytes per scanline */
@@ -108,5 +108,5 @@ void c_drawmode7ngextbg216b(void)
         | ext2_run(mode, (u2 const*)(uintptr_t)M7SeamBP, (u2)M7SeamD);
     M7SeamA = 0;
     M7SeamC = 0;
-    M7SeamSI = (u4)(uintptr_t)(curvidoffset + EXT2_PIXELS * 2u);
+    M7SeamSI = (zreg)(uintptr_t)(curvidoffset + EXT2_PIXELS * 2u);
 }

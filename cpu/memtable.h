@@ -77,7 +77,7 @@ static inline void map_mem(size_t dest, mrwp* src, size_t num)
 static inline u4 mem_dispatch(memfn* const fn, u1 const bank /* bl */,
     u2 const address /* cx */, u4 const val /* eax */)
 {
-    u4 const b = MemSeamB, c = MemSeamC, a = MemSeamA, d = MemSeamD;
+    uintptr_t const b = MemSeamB, c = MemSeamC, a = MemSeamA, d = MemSeamD;
     u4 out;
 
     MemSeamB = bank;

@@ -414,7 +414,7 @@ void StartSFXdebugb(void)
 void UpdatePORSCMR(void)
 {
     {
-        u4 eax;
+        zreg eax; /* a host address: one of the line-location tables */
         if (SfxPOR & 0x10)
             goto objmode;
         switch (SfxSCMR & 0x24) // 4 + 32
@@ -437,8 +437,8 @@ void UpdatePORSCMR(void)
     }
 
     u4 const eax_ = (SfxPOR & 0x0F) << 2 | (SfxSCMR & 0x03);
-    u4 const ebx = PLOTJmpb[eax_];
-    u4 const eax = PLOTJmpa[eax_];
+    zreg const ebx = PLOTJmpb[eax_];
+    zreg const eax = PLOTJmpa[eax_];
     FxTable[0x4C] = eax;
     FxTableb[0x4C] = eax;
     FxTablec[0x4C] = eax;

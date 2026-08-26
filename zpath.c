@@ -40,7 +40,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <string.h>
 
 #include "cfg.h"
-#include "ignore.h"
 #include "zpath.h"
 
 #ifdef __WIN32__

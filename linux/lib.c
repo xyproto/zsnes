@@ -24,7 +24,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include "../ignore.h"
+#include "../gblhdr.h"
 #include "lib.h"
 
 #ifndef HAVE_AT_FUNCTIONS

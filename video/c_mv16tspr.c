@@ -24,13 +24,13 @@
 #include "../types.h"
 #include "makevid.h"
 
-u4 SPBAX;
-u4 SPBBX;
-u4 SPBCX;
-u4 SPBDX;
-u4 SPBSI;
-u4 SPBDI;
-u4 SPBBP;
+zreg SPBAX;
+zreg SPBBX;
+zreg SPBCX;
+zreg SPBDX;
+zreg SPBSI;
+zreg SPBDI;
+zreg SPBBP;
 
 extern u1 sprprifix, cwinenabm, winonsp, csprbit, csprprlft;
 extern u1 sprclprio[4], winspdata[288], sprpriodata[288];
@@ -100,14 +100,14 @@ static void draw_plain(regs* const r, int const win)
             spr_plain(r, src, ch, ebx, edi, ebp, flip ? 7 - pos : pos, pos,
                 win);
         }
-        r->di = (u4)(uintptr_t)edi;
-        r->bp = (u4)(uintptr_t)ebp;
+        r->di = (zreg)(uintptr_t)edi;
+        r->bp = (zreg)(uintptr_t)ebp;
         esi++;
     } while (--cl != 0);
     currentobjptr = esi;
     r->bx = ebx;
     r->cx = (r->cx & 0xFFFF0000u) | (u4)ch << 8;
-    r->si = (u4)(uintptr_t)esi;
+    r->si = (zreg)(uintptr_t)esi;
 }
 
 /* sprdrawpra16bt: draw unless a sprite at or above this priority bit already
@@ -169,10 +169,10 @@ static void draw_single(regs* const r)
     u1 ch = (u1)(r->cx >> 8);
     u4 ebx = 0;
 
-    r->di = (u4)(uintptr_t)edi;
+    r->di = (zreg)(uintptr_t)edi;
     /* edx is the walk's starting address, and stays that unless a pixel draws
        over it with a palette entry. */
-    r->dx = (u4)(uintptr_t)esi + (u4)cl * 8u - 8u;
+    r->dx = (zreg)(uintptr_t)esi + (u4)cl * 8u - 8u;
     esi = (SpriteInfo const*)(uintptr_t)r->dx;
     r->ax = 0;
     do {
@@ -185,7 +185,7 @@ static void draw_single(regs* const r)
     } while (--cl != 0);
     r->bx = ebx;
     r->cx = (r->cx & 0xFFFF0000u) | (u4)ch << 8;
-    r->si = (u4)(uintptr_t)esi;
+    r->si = (zreg)(uintptr_t)esi;
 }
 
 /* sprprioritydrawbt proper: every sprite is visited, and one at another
@@ -200,7 +200,7 @@ static void draw_prio(regs* const r)
     u4 ebx = 0;
 
     csprprlft = cl;
-    r->di = (u4)(uintptr_t)edi;
+    r->di = (zreg)(uintptr_t)edi;
     for (;;) {
         int const flip = (esi->status & 0x20u) != 0;
 
@@ -225,13 +225,13 @@ static void draw_prio(regs* const r)
     }
     r->bx = ebx;
     r->cx = (r->cx & 0xFFFF0000u) | (u4)ch << 8 | cl;
-    r->si = (u4)(uintptr_t)esi;
+    r->si = (zreg)(uintptr_t)esi;
     csprbit = (u1)(csprbit << 1 | csprbit >> 7);
     if (csprbit == 1) {
         memset(sprpriodata + 16, 0, 256);
         r->ax = 0;
         r->cx = 0;
-        r->di = (u4)(uintptr_t)(sprpriodata + 16 + 256);
+        r->di = (zreg)(uintptr_t)(sprpriodata + 16 + 256);
     }
 }
 

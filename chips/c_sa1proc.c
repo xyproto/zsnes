@@ -48,7 +48,7 @@ static u4 SA1makedl(u4 edx)
 
 static void call_membank0w8(u2 const cx, u1 const al)
 {
-    u4 const b = MemSeamB, c = MemSeamC, a = MemSeamA, d = MemSeamD;
+    uintptr_t const b = MemSeamB, c = MemSeamC, a = MemSeamA, d = MemSeamD;
 
     MemSeamC = cx;
     MemSeamA = al;
@@ -145,7 +145,7 @@ static u4 SA1SwapEnter(zreg* const r)
     u1 const idle = SA1IdleCharge(p);
     if (idle != 0) {
         r[R_EDX] = dh_plus(r[R_EDX], idle);
-        r[R_EAX] = (u4)p;
+        r[R_EAX] = (zreg)p;
         CurrentExecSA1 += 2;
         SA1Status = 0;
         return 0;
@@ -169,7 +169,7 @@ static u4 SA1SwapEnter(zreg* const r)
 
     r[R_EAX] = eax;
     r[R_EDX] = edx;
-    r[R_ESI] = (u4)SA1Ptr;
+    r[R_ESI] = (zreg)SA1Ptr;
     r[R_EDI] = (zreg)SA1tablead[eax];
 
     if (SA1DoIRQ & 0xFF000003) {
@@ -182,7 +182,7 @@ static u4 SA1SwapEnter(zreg* const r)
                 SA1DoIRQ &= 0xFFFFFFFD;
                 SA1switchtonmi(&r[R_EDX], &esi);
             }
-            r[R_ESI] = (u4)esi;
+            r[R_ESI] = (zreg)esi;
         } else if (--((u1*)&SA1DoIRQ)[3] == 0) {
             ((u1*)&SA1DoIRQ)[0] |= 8;
         }
@@ -203,7 +203,7 @@ static void SA1SwapLeave(zreg* const r)
     snesmap2[0] = wramdata;
 
     r[R_EDX] = dh_plus((r[R_EDX] & 0xFFFFFF00) | SNSRegP, 11);
-    r[R_ESI] = (u4)SNSPtr;
+    r[R_ESI] = (zreg)SNSPtr;
     r[R_EDI] = prevedi;
     r[R_EAX] = 0;
 
