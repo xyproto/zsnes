@@ -124,6 +124,7 @@ static void copy_spc_data(uint8_t** buffer, void (*copy_func)(uint8_t**, void*, 
    defines it. */
 extern uint8_t spc700read_run[40], opcd_run[24], oamaddr_run[56], SA1Status_run[3];
 extern uint8_t DSP1_run[6 + 32 + 32 + 1 + 256];
+extern uint8_t DSP1COp, DSP1RLeft, DSP1WLeft, DSP1CPtrW, DSP1CPtrR;
 void DSP1_copy_state(uint8_t** buffer, void (*copy_func)(uint8_t**, void*, size_t));
 
 /* How much room the DSP1 section took in a V143 state, written the way the
@@ -235,14 +236,13 @@ static void copy_state_data(uint8_t* buffer, void (*copy_func)(uint8_t**, void*,
 
     if (DSP1Enable && (method != csm_load_zst_old)) {
         if (method == csm_load_zst_143) {
-            /* A V143 state's DSP1 section is a set of fixed-length runs that
-               start at one variable of a group and read on past it - a layout
-               no compiler guarantees and this one does not produce, so
-               replaying it would write hundreds of bytes over two-byte
-               objects. Read the bytes and drop them. Nothing carries over:
-               the game issues a DSP1 command before it uses a result again,
-               and every command sets its own inputs first. */
+            /* Replaying V143's runs would write hundreds of bytes over
+               two-byte objects, so read and drop them; the game reissues a
+               command, inputs and all, before using a result. */
             copy_func(&buffer, dsp1_v143_discard, sizeof dsp1_v143_discard);
+            /* The dropped bytes include the command interface, which would
+               otherwise describe a transaction the restored CPU is not in. */
+            DSP1COp = DSP1RLeft = DSP1WLeft = DSP1CPtrW = DSP1CPtrR = 0;
         } else {
             copy_func(&buffer, DSP1_run, sizeof DSP1_run);
             DSP1_copy_state(&buffer, copy_func);
@@ -1001,6 +1001,33 @@ static bool zst_load_compressed(FILE* fp, size_t compressed_size)
     return (worked);
 }
 
+/* A state is a fixed length per cartridge, plus an optional thumbnail; any
+   other length misparses rather than fails. Real ZSNES 1.51 states are one
+   such. Only states at offset 0 are checked - a movie chapter is embedded
+   partway through a .zmv. */
+static bool zst_size_is_readable(FILE* fp)
+{
+    size_t const known[] = { cur_zst_size, v143_zst_size, old_zst_size };
+    long const pos = ftell(fp);
+    long size;
+    size_t i;
+
+    if (!cur_zst_size || pos != 0 || fseek(fp, 0, SEEK_END)) {
+        return (true);
+    }
+    size = ftell(fp);
+    if (fseek(fp, pos, SEEK_SET) || size < 0) {
+        return (true);
+    }
+
+    for (i = 0; i < sizeof(known) / sizeof(*known); i++) {
+        if ((size_t)size == known[i] || (size_t)size == known[i] + sizeof(PrevPicture)) {
+            return (true);
+        }
+    }
+    return (false);
+}
+
 bool zst_load(FILE* fp, size_t Compressed)
 {
     size_t zst_version = 0;
@@ -1011,6 +1038,10 @@ bool zst_load(FILE* fp, size_t Compressed)
         }
     } else {
         char zst_header_check[sizeof(zst_header_cur) - 1];
+
+        if (!zst_size_is_readable(fp)) {
+            return (false);
+        }
 
         Totalbyteloaded += fread(zst_header_check, 1, sizeof(zst_header_check), fp);
 
@@ -1099,14 +1130,35 @@ void zst_roundtrip_check(void)
         /* Compatibility check: load a state written by another build and
            report whether it was accepted. */
         FILE* g = fopen(pa, "rb");
-        int got = g && zst_load(g, 0);
+        long fsz = 0;
+        int got;
+        char const* fit;
+        if (g) {
+            fseek(g, 0, SEEK_END);
+            fsz = ftell(g);
+            rewind(g);
+        }
+        got = g && zst_load(g, 0);
         if (g)
             fclose(g);
-        fprintf(stderr, "ZST LOADONLY: %s\n", got ? "ACCEPTED" : "REJECTED");
+        /* Accepting a state only means the header matched. The size says
+           whether the body was read the way it was written: every section is
+           a fixed length for a given cartridge, so a layout this build
+           describes wrongly cannot come out at the right total. */
+        fit = (fsz == (long)cur_zst_size)  ? "V144"
+            : (fsz == (long)v143_zst_size) ? "V143"
+            : (fsz == (long)old_zst_size)  ? "V0.6"
+                                           : "NO-MATCH";
         {
+            char msg[192];
+            snprintf(msg, sizeof(msg),
+                "LOADONLY %s size=%ld fits=%s (V144=%zu V143=%zu V0.6=%zu)\n",
+                got ? "ACCEPTED" : "REJECTED", fsz, fit,
+                cur_zst_size, v143_zst_size, old_zst_size);
+            fputs(msg, stderr);
             FILE* r = fopen("/tmp/zsnes_zst.txt", "wb");
             if (r) {
-                fprintf(r, "LOADONLY %s\n", got ? "ACCEPTED" : "REJECTED");
+                fputs(msg, r);
                 fclose(r);
             }
         }
@@ -1327,7 +1379,9 @@ void stateloader(char* statename, bool keycheck, bool xfercheck)
             Totalbyteloaded = 0;
         }
 
-        if (zst_load(fhandle, 0)) {
+        if (!zst_size_is_readable(fhandle)) {
+            set_state_message("STATE ", " UNREADABLE.");
+        } else if (zst_load(fhandle, 0)) {
             set_state_message("STATE ", " LOADED."); // 'STATE XX LOADED.'
 
             if (PauseLoad || EMUPause) {
