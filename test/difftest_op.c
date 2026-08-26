@@ -106,7 +106,7 @@ void execloop(void);
 __asm__(".text\n.globl execloop\nexecloop: ret\n");
 
 /* Both sides call this one - the oracle directly, the port through c_COp58. */
-void switchtovirq(u4* const pedx, u1** const pesi)
+void switchtovirq(zreg* const pedx, zreg* const pesi)
 {
     *pedx ^= 0x20u;
     *pesi += 3;

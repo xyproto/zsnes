@@ -45,7 +45,7 @@ ASMDATA   := zsnes_asmdata_test
 ASMDATA_SRC := asmdata_test.c
 OBJS      := ../zpath.o
 
-.PHONY: all run clean bgt procwin spcdec fxtable fxops memops m7calc m7ext2 m7start m7win m7bw m7proc m7draw mv16 mvs mvall m716t cb16t cb16b spr16bt spr16t spr16p t8bt t16bt t8t t16t t8to thi mos sprwin ngspr regs ngeng ngframe
+.PHONY: all run clean spc64 bgt procwin spcdec fxtable fxops memops m7calc m7ext2 m7start m7win m7bw m7proc m7draw mv16 mvs mvall m716t cb16t cb16b spr16bt spr16t spr16p t8bt t16bt t8t t16t t8to thi mos sprwin ngspr regs ngeng ngframe
 
 all: $(BIN) $(NETPLAY) $(ST10) $(ST11) $(OBC1) $(MSU1) $(DSP2) $(SAI) $(SA1) $(SPC7110) $(VCACHE) $(SPRITES) $(C4) $(MODE7) $(ASMDATA)
 
@@ -454,8 +454,19 @@ run: all
 	@./$(MODE7)
 	@./$(ASMDATA)
 
+# The SPC700 core run at both word sizes and compared. Every other test here
+# builds -m32 only, where zreg and u4 are the same type, so a 64-bit width bug
+# cannot show up; this one exists to catch exactly that.
+spc64: spc64_test.c ../cpu/spc_ops.h ../cpu/spc_ioregs.h
+	@$(CC) -m32 -std=gnu99 -I.. -O2 -Wall -o zsnes_spc32_test spc64_test.c
+	@$(CC) -m64 -std=gnu99 -I.. -O2 -Wall -o zsnes_spc64_test spc64_test.c
+	@a=$$(./zsnes_spc32_test) && b=$$(./zsnes_spc64_test) && \
+	  if [ "$$a" = "$$b" ]; then echo "spc700 32 vs 64: PASS ($$a)"; \
+	  else echo "spc700 32 vs 64: FAIL"; echo "  m32 $$a"; echo "  m64 $$b"; exit 1; fi
+
 clean:
 	rm -f $(BIN) $(NETPLAY) $(ST10) $(ST11) $(OBC1) $(MSU1) $(DSP2) $(SAI) $(SA1) $(SPC7110) $(VCACHE) $(SPRITES) $(C4) $(MODE7) $(ASMDATA)
+	rm -f zsnes_spc32_test zsnes_spc64_test
 	rm -f difftest_procwin difftest_spcdec difftest_fxtable difftest_fxops difftest_memops difftest_m7calc difftest_m7ext2 difftest_m7start difftest_m7win difftest_m7bw difftest_m7proc difftest_m7draw difftest_mv16 difftest_mvs difftest_regs _*.o _*.asm _*.inc _*.raw
 
 # Port-time differential testing (difftest.h + mkdifftest.sh) proves a C port

@@ -24,7 +24,10 @@ esac; done
 [ -x "$BIN" ] || { echo "no such binary: $BIN" >&2; exit 2; }
 [ -f "$ROM" ] || { echo "no such rom: $ROM" >&2; exit 2; }
 
+# HOME below is derived from $OUT, and a relative HOME makes the emulator
+# segfault during start-up before it prints anything - so pin it absolute.
 rm -rf "$OUT"; mkdir -p "$OUT"
+OUT=$(cd "$OUT" && pwd) || exit 2
 rm -f /tmp/zsnes_*.png /tmp/zsnes_*.txt /tmp/zsnes_ppu.txt /tmp/zsnes_hashes.txt
 
 args=(-v 0 -m -ds)
