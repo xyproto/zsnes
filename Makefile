@@ -158,7 +158,18 @@ SDL3_AVAILABLE := $(call detect_pkg_for_target,sdl3)
 SDL_BACKEND_AVAILABLE := $(if $(or $(SDL3_AVAILABLE),$(strip $(SDL_CONFIG)),$(strip $(CFLAGS_SDL)),$(strip $(LDFLAGS_SDL))),yes)
 endif
 
-SKIP_AUDIO_BACKEND_CHECK := $(if $(filter clean distclean,$(MAKECMDGOALS)),yes)
+# The wrapper targets below re-invoke make with a different ARCH/BITS/CPU, so
+# checking the *current* configuration's libraries first is both useless and
+# wrong: it is what made "make linux64" demand a 32-bit SDL. They build nothing
+# themselves, so skip the checks and let the sub-make do them.
+WRAPPER_GOALS := clean distclean linux32 linux64 linux_arm64 linux_pi4 \
+                 win32 w32 win64 portcheck portasm help test fmt unused
+# An explicit WITH_SDL=/WITH_PIPEWIRE=/WITH_AO= on the command line is a
+# deliberate "link it without that backend", not a missing package.
+BACKENDS_OPTOUT := $(if $(filter command line,$(origin WITH_SDL) \
+                     $(origin WITH_PIPEWIRE) $(origin WITH_AO)),yes)
+SKIP_AUDIO_BACKEND_CHECK := $(if $(or \
+    $(filter $(WRAPPER_GOALS),$(MAKECMDGOALS)),$(BACKENDS_OPTOUT)),yes)
 
 # A cross build cannot expect the host's libraries: pkg-config finds nothing
 # for the target unless a sysroot is installed. Compile without them rather
@@ -198,6 +209,7 @@ ifeq ($(SKIP_AUDIO_BACKEND_CHECK),)
       ifeq ($(ARCH),LINUX)
         $(info )
         $(info ERROR: No SDL library found for this target ($(CPU)/$(BITS)).)
+        ifeq ($(BITS),32)
         ifeq ($(IS_FEDORA),yes)
         $(info Install the 32-bit SDL3 package (note the .i686 suffix, NOT the x86_64 package):)
         $(info   sudo dnf install SDL3-devel.i686)
@@ -208,8 +220,20 @@ ifeq ($(SKIP_AUDIO_BACKEND_CHECK),)
         else
         $(info Install the 32-bit SDL3 development package for your distribution.)
         endif
+        else
+        ifeq ($(IS_FEDORA),yes)
+        $(info   sudo dnf install SDL3-devel)
+        else ifeq ($(IS_DEBIAN_BASED),yes)
+        $(info   sudo apt install libsdl3-dev)
+        else
+        $(info Install the SDL3 development package for your distribution.)
+        endif
+        endif
         $(info )
-        $(error Missing 32-bit SDL library. See instructions above.)
+        $(info Or build without a video backend, which links but cannot draw:)
+        $(info   make $(MAKECMDGOALS) WITH_SDL= WITH_PIPEWIRE= WITH_AO=)
+        $(info )
+        $(error No SDL library for $(CPU)/$(BITS). See above.)
       else
         $(error No SDL backend available. Install SDL3 for ARCH=$(ARCH))
       endif
@@ -236,7 +260,10 @@ ifeq ($(SKIP_AUDIO_BACKEND_CHECK),)
       $(info Install the 32-bit development package for one of: PipeWire, libao, or SDL3.)
       endif
       $(info )
-      $(error Missing 32-bit audio library. See instructions above.)
+      $(info Or build without audio, which links but is silent:)
+      $(info   make $(MAKECMDGOALS) WITH_SDL= WITH_PIPEWIRE= WITH_AO=)
+      $(info )
+      $(error No audio backend for $(CPU)/$(BITS). See above.)
     else
       $(error No audio backend available. Install one of: PipeWire (libpipewire-0.3), libao, or SDL3)
     endif
@@ -722,62 +749,10 @@ help:
 	@echo '  win32         32-bit Windows, cross-built with mingw32'
 	@echo '  win64         64-bit Windows, cross-built with mingw-w64'
 	@echo '  portcheck     compile every source for x86-64 and aarch64'
-	@echo '  portasm       what the Assembly port left behind, and its rules'
 	@echo '  test          run the unit tests'
 	@echo
 	@echo 'The tree is C11 throughout; the cross targets need their'
 	@echo 'toolchain installed and will name it if it is missing.'
-
-.PHONY: portasm
-portasm:
-	@echo 'What the Assembly port left behind, and the rules that keep it honest.'
-	@echo 'The full write-up is portasm.md in the git history.'
-	@echo
-	@echo 'Difftests'
-	@echo '  Every test/difftest_*.c compares the C against the original Assembly,'
-	@echo '  which tools/mkoracle.py pulls out of git. Give mkoracle BOTH:'
-	@echo '    --requires        a pattern only the pre-port revision has'
-	@echo '    --ported-marker   a pattern the port introduces'
-	@echo '  Either alone picks the wrong revision - the marker is also absent from'
-	@echo '  the finished port, and --requires alone lands on a half-ported one.'
-	@echo '  Check the revision it prints. make op once built an oracle with no'
-	@echo '  opcodes in it and passed.'
-	@echo
-	@echo '  A dispatcher and a branch target the test records must not share a'
-	@echo '  translation unit, or the recorder cannot stand in for the real one.'
-	@echo
-	@echo '  Seed state, do not zero it. Anything the Assembly writes only on some'
-	@echo '  paths reads back as 0 either way if the harness cleared it first, so'
-	@echo '  the condition goes untested. Same for a field that is always 0 or 1'
-	@echo '  when the Assembly compares it against exactly 1.'
-	@echo
-	@echo '  A hit counter that reads zero is a test that never ran the code. Watch'
-	@echo '  the small ones too, and mutate the C (tools/sweep.py) to prove the'
-	@echo '  difftest bites.'
-	@echo
-	@echo 'ROM A/B'
-	@echo '  test/harness/zab.sh builds a baseline revision and compares frames.'
-	@echo '  Read the "identical at matching emulated frame numbers" line. The hash'
-	@echo '  and PPU streams are written per *displayed* frame, so two builds of'
-	@echo '  different speed drift apart and report a difference that is not one.'
-	@echo '  A real fault lands on the same frame every run; a moving one is the clock.'
-	@echo
-	@echo 'Host behaviour is part of the spec'
-	@echo '  ZSNES only ever ran on 32-bit x86, so an instruction the ISA calls'
-	@echo '  undefined still had one fixed result in practice. Reproduce it, do not'
-	@echo '  pick your own. Decimal ADC/SBC overflow is the worked example: measured'
-	@echo '  over all 1024 (AL, CF, AF) states, it is decimal_of() in cpu/ops65816.h,'
-	@echo '  and it took 60 opcodes from "known divergence" to bit-identical.'
-	@echo
-	@echo 'Known divergences'
-	@echo '  Deliberate, and marked KNOWN_DIVERGENCE in the difftests so a new one'
-	@echo '  still fails: CLI leaves ebx alone where the Assembly cleared it, and'
-	@echo '  SA-1 DEC d,x does a byte where the Assembly did 8 bits through 16-bit'
-	@echo '  accesses - bsnes and snes9x agree with the port.'
-	@echo
-	@echo 'Style'
-	@echo '  Brief one-line ASCII comments. Return boolean conditions directly.'
-	@echo '  Match the surrounding code. Comment only what needs it.'
 
 debug: DEBUGFLAGS += -g
 debug: $(BINARY)
