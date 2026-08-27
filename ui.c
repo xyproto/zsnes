@@ -251,6 +251,60 @@ void deallocmem()
         outofmemory();           \
     }
 
+/* ZSNES_SELFTEST=1 checks the runtime this platform actually produced, then
+   exits. Every buffer here is reached through a pointer that crosses a
+   translation unit; where one of those slots is narrower than a pointer the
+   value comes back truncated, which is the fault this looks for. Needs no ROM
+   and no display, so CI can run a cross-built binary. */
+static int selftest_buf(const char* name, void* p, size_t n)
+{
+    volatile unsigned char* b = p;
+    if (!b) {
+        printf("SELFTEST: FAIL %s not allocated\n", name);
+        return (1);
+    }
+    b[0] = 0x5A;
+    b[n - 1] = 0xA5;
+    if (b[0] != 0x5A || b[n - 1] != 0xA5) {
+        printf("SELFTEST: FAIL %s did not read back\n", name);
+        return (1);
+    }
+    return (0);
+}
+
+static _Noreturn void selftest(void)
+{
+    int bad = 0;
+
+    printf("SELFTEST: pointer %u bytes, zreg %u bytes\n",
+        (unsigned)sizeof(void*), (unsigned)sizeof(zreg));
+    if (sizeof(zreg) != sizeof(void*)) {
+        puts("SELFTEST: FAIL zreg cannot hold a pointer");
+        bad = 1;
+    }
+
+    bad |= selftest_buf("BitConv32Ptr", BitConv32Ptr, 4096 + 65536 * 16);
+    bad |= selftest_buf("RGBtoYUVPtr", RGBtoYUVPtr, 65536 * 4 + 4096);
+    bad |= selftest_buf("spcBuffera", spcBuffera, 65536 * 4 + 4096);
+    bad |= selftest_buf("vbufaptr", vbufaptr, 512 * 296 * 4 + 4096 + 512 * 296);
+    bad |= selftest_buf("vbufeptr", vbufeptr, 288 * 2 * 256 + 4096);
+    bad |= selftest_buf("ngwinptrb", ngwinptrb, 256 * 224 + 4096);
+    bad |= selftest_buf("vbufdptr", vbufdptr, 1024 * 296);
+    bad |= selftest_buf("romaptr", romaptr, 0x1000000);
+    bad |= selftest_buf("SA1RAMArea", SA1RAMArea, 131072);
+    bad |= selftest_buf("sram", sram, 65536 * 2);
+
+    /* The emulator hands these on to other units; a narrower declaration on
+       the far side shows up as a mismatch here. */
+    if (vidbuffer != vbufaptr || romdata != romaptr || ngwinptr != ngwinptrb) {
+        puts("SELFTEST: FAIL a derived pointer does not match its allocation");
+        bad = 1;
+    }
+
+    puts(bad ? "SELFTEST: FAIL" : "SELFTEST: PASS");
+    exit(bad ? 1 : 0);
+}
+
 static void allocmem()
 {
     AllocmemFail(BitConv32Ptr, 4096 + 65536 * 16);
@@ -327,6 +381,10 @@ void zstart()
     InitSPC();
 
     allocmem();
+
+    if (getenv("ZSNES_SELFTEST")) {
+        selftest();
+    }
 
     spcon = !SPCDisable;
     DSPDisable = !soundon || !spcon;
