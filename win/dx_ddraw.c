@@ -247,7 +247,8 @@ int InitDirectDraw()
     DDSURFACEDESC2 ddsd2;
     DDPIXELFORMAT format;
 
-    unsigned int color32, ScreenPtr2;
+    unsigned int color32;
+    unsigned char* ScreenPtr2;
     int i, j, k, r, g, b, Y, u, v;
 
     ScreenPtr2 = BitConv32Ptr;

@@ -1131,8 +1131,8 @@ void TestJoy()
 }
 
 // BYTE changeRes = 1;
-extern unsigned int BitConv32Ptr;
-extern unsigned int RGBtoYUVPtr;
+extern unsigned char* BitConv32Ptr; /* ui.c */
+extern unsigned char* RGBtoYUVPtr; /* ui.c */
 extern unsigned short resolutn;
 extern BYTE hqFilterlevel;
 BYTE changeRes = 1;
@@ -1208,7 +1208,7 @@ void ShutdownSemaphore()
     }
 }
 
-extern unsigned int pressed;
+extern unsigned char pressed[256 + 128 + 64]; /* cpu/execute.h */
 extern unsigned char romispal;
 
 void Start60HZ(void)
@@ -2186,7 +2186,7 @@ void WinUpdateDevices()
     for (i = 0; i < 256; i++) {
         keys2[i] = 0;
     }
-    keys = (unsigned char*)&pressed;
+    keys = pressed;
 
     if (KeyboardInput && InputEn == 1) {
         if (FAILED(IDirectInputDevice8_GetDeviceState(KeyboardInput, 256, keys2))) {

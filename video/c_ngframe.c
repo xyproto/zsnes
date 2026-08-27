@@ -185,15 +185,14 @@ static void screen_clip(zreg* const r, int const sub)
         }
     skipclipping:
         ecx = *edi++;
-    noclipping:
-        { /* sub edx,ecx sets the flags *and* keeps the result, so edx is
-             left decremented even on the way out. */
-            u4 const before = edx;
+    noclipping: { /* sub edx,ecx sets the flags *and* keeps the result, so edx is
+                     left decremented even on the way out. */
+        u4 const before = edx;
 
-            edx -= ecx;
-            if (before <= ecx)
-                goto next;
-        }
+        edx -= ecx;
+        if (before <= ecx)
+            goto next;
+    }
         p += ecx * 2u;
         ecx = *edi++;
         goto clipc;

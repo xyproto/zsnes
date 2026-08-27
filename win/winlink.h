@@ -31,8 +31,8 @@ typedef HRESULT(WINAPI* lpDirectDrawCreateEx)(GUID FAR* lpGuid, LPVOID* lplpDD, 
 extern "C" {
 #endif
 extern BYTE changeRes;
-extern unsigned int BitConv32Ptr;
-extern unsigned int RGBtoYUVPtr;
+extern unsigned char* BitConv32Ptr;
+extern unsigned char* RGBtoYUVPtr;
 extern unsigned short resolutn;
 extern BYTE PrevRes;
 extern BYTE hqFilterlevel;

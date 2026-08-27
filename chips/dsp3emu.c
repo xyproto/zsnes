@@ -552,7 +552,12 @@ void DSP3_Decode_A()
 
 void DSP3_Decode()
 {
+    /* The count comes straight from the game and indexes DSP3_Codes, which
+       holds 512. Anything larger ran off the end of it. */
     DSP3_Codewords = DSP3_DR;
+    if (DSP3_Codewords > sizeof(DSP3_Codes) / sizeof(*DSP3_Codes)) {
+        DSP3_Codewords = sizeof(DSP3_Codes) / sizeof(*DSP3_Codes);
+    }
     SetDSP3 = &DSP3_Decode_A;
 }
 
