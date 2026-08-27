@@ -193,7 +193,10 @@ PKG_CONFIG ?= pkg-config
 # than extending it, so the host's .pc files still cannot leak in.
 ifeq ($(CROSS_BUILD),yes)
 ifeq ($(shell command -v $(PKG_CONFIG) >/dev/null 2>&1 && echo yes),)
-CROSS_SYSROOT := $(shell $(or $(CC_TARGET),$(CC)) -print-sysroot 2>/dev/null)
+# Ubuntu's cross gcc answers "/" here, which is the host, not a sysroot.
+# Stripping the trailing slash turns that into the empty string the guard
+# below already rejects; a real prefix has no trailing slash to lose.
+CROSS_SYSROOT := $(patsubst %/,%,$(shell $(or $(CC_TARGET),$(CC)) -print-sysroot 2>/dev/null))
 ifneq ($(and $(strip $(CROSS_SYSROOT)),$(wildcard $(CROSS_SYSROOT)/lib/pkgconfig)),)
 $(info ===> no $(PKG_CONFIG); using pkg-config under $(CROSS_SYSROOT))
 export PKG_CONFIG_LIBDIR := $(CROSS_SYSROOT)/lib/pkgconfig
@@ -900,9 +903,11 @@ $(filter %.o, $(SRCS:.c=.o)): $(HDRS)
 clean distclean:
 	@echo '===> CLEAN'
 	$(Q)rm -fr $(HDRS) $(DEPS) $(OBJS) $(BINARY) zsnes zsnes.exe $(BUILDSTAMP)
-ifdef CLEAN_MORE
-	$(Q)find . -name "*.[do]" -delete
-endif
+	# OBJS only lists what this configuration builds, so a plain "make clean"
+	# used to leave another target's objects behind - "make clean; make win64"
+	# after a win32 build linked its 32-bit win/confloc.o and failed on the
+	# decorated names. Clean means clean.
+	$(Q)find . -name "*.[do]" -not -path "./.git/*" -delete
 
 info:
 	@echo "ARCH          = $(ARCH)"
