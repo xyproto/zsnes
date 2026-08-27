@@ -90,6 +90,31 @@ jobs:
             sudo ldconfig
             echo 'PKG_CONFIG_PATH=/usr/local/lib/pkgconfig' >> "$GITHUB_ENV"
           fi
+      - name: Install SDL3 (amd64)
+        # The i386 build above is the only SDL the runner had, so "make
+        # linux64" found none and stopped. This one lives in its own prefix so
+        # the two never answer for each other.
+        run: |
+          rm -rf /tmp/SDL64
+          git clone --depth 1 https://github.com/libsdl-org/SDL.git /tmp/SDL64
+          cmake -S /tmp/SDL64 -B /tmp/SDL64/build -GNinja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX=/opt/sdl3-amd64 \
+            -DSDL_SHARED=ON \
+            -DSDL_STATIC=OFF \
+            -DSDL_X11=OFF \
+            -DSDL_WAYLAND=OFF \
+            -DSDL_KMSDRM=OFF \
+            -DSDL_UNIX_CONSOLE_BUILD=ON \
+            -DSDL_ALSA=OFF \
+            -DSDL_PULSEAUDIO=OFF \
+            -DSDL_PIPEWIRE=OFF \
+            -DSDL_JACK=OFF \
+            -DSDL_SNDIO=OFF
+          cmake --build /tmp/SDL64/build --parallel
+          sudo cmake --install /tmp/SDL64/build
+          echo '/opt/sdl3-amd64/lib' | sudo tee /etc/ld.so.conf.d/zsnes-ci-sdl3-amd64.conf
+          sudo ldconfig
       - name: Check formatting
         run: |
           make fmt
@@ -103,6 +128,9 @@ jobs:
           make ARCH=linux
           test -x ./zsnes
       - name: Build 64-bit
+        env:
+          PKG_CONFIG_LIBDIR: /opt/sdl3-amd64/lib/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/share/pkgconfig
+          PKG_CONFIG_PATH: ""
         run: |
           make clean
           make linux64
@@ -118,7 +146,8 @@ jobs:
           SDL_AUDIODRIVER: dummy
         run: |
           make clean
-          make linux64
+          PKG_CONFIG_LIBDIR=/opt/sdl3-amd64/lib/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/share/pkgconfig \
+            PKG_CONFIG_PATH= make linux64
           ZSNES_SELFTEST=1 ./zsnes -v 0
           make clean
           make ARCH=linux
@@ -194,7 +223,23 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
-            build-essential make pkg-config zlib1g-dev
+            build-essential cmake ninja-build git make pkg-config zlib1g-dev
+      - name: Install SDL3
+        # Ubuntu has no libsdl3-dev yet, and a native build stops without one.
+        run: |
+          git clone --depth 1 https://github.com/libsdl-org/SDL.git /tmp/SDL
+          cmake -S /tmp/SDL -B /tmp/SDL/build -GNinja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX=/usr/local \
+            -DSDL_SHARED=ON -DSDL_STATIC=OFF \
+            -DSDL_X11=OFF -DSDL_WAYLAND=OFF -DSDL_KMSDRM=OFF \
+            -DSDL_UNIX_CONSOLE_BUILD=ON \
+            -DSDL_ALSA=OFF -DSDL_PULSEAUDIO=OFF -DSDL_PIPEWIRE=OFF \
+            -DSDL_JACK=OFF -DSDL_SNDIO=OFF
+          cmake --build /tmp/SDL/build --parallel
+          sudo cmake --install /tmp/SDL/build
+          sudo ldconfig
+          echo 'PKG_CONFIG_PATH=/usr/local/lib/pkgconfig' >> "$GITHUB_ENV"
       - name: Build and run
         # The cross job above proves it links; this one proves it runs.
         env:
