@@ -87,6 +87,16 @@ CPU  ?= arm64
 endif
 BITS ?= 64
 endif
+# A native build on an ARM host should target that host, the way the Darwin
+# case above does. Without this a plain "make" on a Raspberry Pi asks for
+# 32-bit x86 and fails on the first compile.
+ifeq ($(ARCH)/$(HOST_OS),LINUX/LINUX)
+ifneq ($(filter aarch64 arm64,$(HOST_CPU)),)
+CPU  ?= arm64
+BITS ?= 64
+endif
+endif
+
 BITS ?= 32
 CPU  ?= x86
 
