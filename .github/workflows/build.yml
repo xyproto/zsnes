@@ -109,6 +109,20 @@ jobs:
           test -x ./zsnes
           make clean
           make ARCH=linux
+      - name: Run the executables
+        # A binary that links is not a binary that runs. ZSNES_SELFTEST checks
+        # the allocations and the pointers handed between units, then exits,
+        # so it needs no ROM and no display.
+        env:
+          SDL_VIDEODRIVER: dummy
+          SDL_AUDIODRIVER: dummy
+        run: |
+          make clean
+          make linux64
+          ZSNES_SELFTEST=1 ./zsnes -v 0
+          make clean
+          make ARCH=linux
+          ZSNES_SELFTEST=1 ./zsnes -v 0
       - name: Portability gate
         run: make portcheck
       - name: Unit tests
@@ -153,8 +167,8 @@ jobs:
         # cross compiler can see. Building it is quicker than enabling the
         # ports archive.
         run: |
-          curl -sL https://zlib.net/fossils/zlib-1.3.1.tar.gz | tar xz
-          cd zlib-1.3.1
+          curl -sL https://zlib.net/fossils/zlib-1.3.2.tar.gz | tar xz
+          cd zlib-1.3.2
           CC=aarch64-linux-gnu-gcc ./configure --static \
             --prefix=/usr/aarch64-linux-gnu
           make -j"$(nproc)"
@@ -168,6 +182,29 @@ jobs:
           make clean
           make linux_arm64
           file ./zsnes | grep -q aarch64
+
+  arm64-native:
+    name: linux_arm64 (native)
+    runs-on: ubuntu-24.04-arm
+    env:
+      DEBIAN_FRONTEND: noninteractive
+    steps:
+      - uses: actions/checkout@v6
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            build-essential make pkg-config zlib1g-dev
+      - name: Build and run
+        # The cross job above proves it links; this one proves it runs.
+        env:
+          SDL_VIDEODRIVER: dummy
+          SDL_AUDIODRIVER: dummy
+        run: |
+          make clean
+          make
+          file ./zsnes | grep -q aarch64
+          ZSNES_SELFTEST=1 ./zsnes -v 0
 
   windows:
     name: win
@@ -191,6 +228,24 @@ jobs:
           make clean
           make win64 WITH_PNG=
           test -f ./zsnes.exe
+      - uses: actions/upload-artifact@v4
+        with:
+          name: zsnes-win64
+          path: zsnes.exe
+
+  windows-run:
+    name: win (run)
+    needs: windows
+    runs-on: windows-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: zsnes-win64
+      - name: Run the executable
+        shell: cmd
+        run: |
+          set ZSNES_SELFTEST=1
+          zsnes.exe -v 0
 
   macos:
     name: macos
@@ -208,6 +263,11 @@ jobs:
           make clean
           make
           test -x ./zsnes
+      - name: Run the executable
+        env:
+          SDL_VIDEODRIVER: dummy
+          SDL_AUDIODRIVER: dummy
+        run: ZSNES_SELFTEST=1 ./zsnes -v 0
       - name: Unit tests
         # The difftests are 32-bit x86 only - they assemble the original
         # Assembly out of git history - so only the unit tests run here.
