@@ -56,6 +56,8 @@ jobs:
             libxfixes-dev:i386 \
             libxrandr-dev:i386 \
             libgl1-mesa-dev:i386 \
+            libgl1-mesa-dev \
+            libpng-dev \
             zlib1g-dev:i386 \
             libpng-dev:i386 \
             libao-dev:i386 \
@@ -152,6 +154,23 @@ jobs:
           make clean
           make ARCH=linux
           ZSNES_SELFTEST=1 ./zsnes -v 0
+      - name: AddressSanitizer
+        # The difftests compare behaviour against the assembly, not memory
+        # validity, so two global buffer overflows survived a green suite and
+        # turned up only under ASan. The self-test covers the allocations, the
+        # pointers handed between units, and the config written on exit.
+        env:
+          SDL_VIDEODRIVER: dummy
+          SDL_AUDIODRIVER: dummy
+          PKG_CONFIG_LIBDIR: /opt/sdl3-amd64/lib/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/share/pkgconfig
+          PKG_CONFIG_PATH: ""
+        run: |
+          make clean
+          make linux64 \
+            EXTRA_CFLAGS='-fsanitize=address -fno-omit-frame-pointer -g' \
+            EXTRA_LDFLAGS='-fsanitize=address'
+          ASAN_OPTIONS=detect_leaks=0 ZSNES_SELFTEST=1 ./zsnes -v 0
+          make clean
       - name: Portability gate
         run: make portcheck
       - name: Unit tests
@@ -223,7 +242,8 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
-            build-essential cmake ninja-build git make pkg-config zlib1g-dev
+            build-essential cmake ninja-build git make pkg-config zlib1g-dev \
+            libgl1-mesa-dev libpng-dev
       - name: Install SDL3
         # Ubuntu has no libsdl3-dev yet, and a native build stops without one.
         run: |
