@@ -193,10 +193,13 @@ PKG_CONFIG ?= pkg-config
 # than extending it, so the host's .pc files still cannot leak in.
 ifeq ($(CROSS_BUILD),yes)
 ifeq ($(shell command -v $(PKG_CONFIG) >/dev/null 2>&1 && echo yes),)
-# Ubuntu's cross gcc answers "/" here, which is the host, not a sysroot.
-# Stripping the trailing slash turns that into the empty string the guard
-# below already rejects; a real prefix has no trailing slash to lose.
+# Ubuntu's cross gcc answers "/" here, which is the host rather than a
+# sysroot; stripping the trailing slash leaves the empty string. Fall back to
+# /usr/<triplet>, where both Debian and Arch put the target's tree.
 CROSS_SYSROOT := $(patsubst %/,%,$(shell $(or $(CC_TARGET),$(CC)) -print-sysroot 2>/dev/null))
+ifeq ($(strip $(CROSS_SYSROOT)),)
+CROSS_SYSROOT := $(wildcard /usr/$(shell $(or $(CC_TARGET),$(CC)) -dumpmachine 2>/dev/null))
+endif
 ifneq ($(and $(strip $(CROSS_SYSROOT)),$(wildcard $(CROSS_SYSROOT)/lib/pkgconfig)),)
 $(info ===> no $(PKG_CONFIG); using pkg-config under $(CROSS_SYSROOT))
 export PKG_CONFIG_LIBDIR := $(CROSS_SYSROOT)/lib/pkgconfig
