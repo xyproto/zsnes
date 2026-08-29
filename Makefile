@@ -187,26 +187,23 @@ CROSS_BUILD := $(if $(or $(filter WIN,$(ARCH)),$(filter-out $(HOST_OS),$(ARCH)),
 # an aarch64 build. Defined here because the probes below already use it.
 PKG_CONFIG ?= pkg-config
 
-# Not every distribution ships a prefixed wrapper - mingw-w64 has one, the
-# aarch64 toolchain on Arch does not. Fall back to the plain pkg-config aimed
-# at the target's sysroot: PKG_CONFIG_LIBDIR replaces the search path rather
-# than extending it, so the host's .pc files still cannot leak in.
+# A cross build has to look in the target's tree, not the host's. Doing this
+# only when a prefixed pkg-config is missing was not enough: Ubuntu ships one,
+# and it searches the multiarch dirs rather than the sysroot. Set the search
+# path either way, covering both layouts, and drop PKG_CONFIG_PATH because it
+# is searched in addition and the outer make exports a host one.
 ifeq ($(CROSS_BUILD),yes)
-ifeq ($(shell command -v $(PKG_CONFIG) >/dev/null 2>&1 && echo yes),)
-# Ubuntu's cross gcc answers "/" here, which is the host rather than a
-# sysroot; stripping the trailing slash leaves the empty string. Fall back to
-# /usr/<triplet>, where both Debian and Arch put the target's tree.
+CROSS_TRIPLE  := $(shell $(or $(CC_TARGET),$(CC)) -dumpmachine 2>/dev/null)
+# Ubuntu's cross gcc answers "/" here, the host rather than a sysroot;
+# stripping the trailing slash leaves the empty string /usr/<triplet> covers.
 CROSS_SYSROOT := $(patsubst %/,%,$(shell $(or $(CC_TARGET),$(CC)) -print-sysroot 2>/dev/null))
 ifeq ($(strip $(CROSS_SYSROOT)),)
-CROSS_SYSROOT := $(wildcard /usr/$(shell $(or $(CC_TARGET),$(CC)) -dumpmachine 2>/dev/null))
+CROSS_SYSROOT := $(wildcard /usr/$(CROSS_TRIPLE))
 endif
-ifneq ($(and $(strip $(CROSS_SYSROOT)),$(wildcard $(CROSS_SYSROOT)/lib/pkgconfig)),)
-$(info ===> no $(PKG_CONFIG); using pkg-config under $(CROSS_SYSROOT))
-export PKG_CONFIG_LIBDIR := $(CROSS_SYSROOT)/lib/pkgconfig
-# PKG_CONFIG_PATH is searched *in addition* to PKG_CONFIG_LIBDIR, and the outer
-# make exports a host one for 32-bit builds, so leaving it set would let the
-# host's .pc files back in through the side door.
+ifneq ($(strip $(CROSS_SYSROOT)),)
+export PKG_CONFIG_LIBDIR := $(CROSS_SYSROOT)/lib/pkgconfig:$(CROSS_SYSROOT)/lib/$(CROSS_TRIPLE)/pkgconfig:/usr/lib/$(CROSS_TRIPLE)/pkgconfig:/usr/share/pkgconfig
 export PKG_CONFIG_PATH :=
+ifeq ($(shell command -v $(PKG_CONFIG) >/dev/null 2>&1 && echo yes),)
 override PKG_CONFIG := pkg-config
 endif
 endif
