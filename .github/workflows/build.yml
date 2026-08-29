@@ -316,7 +316,7 @@ jobs:
           make clean
           make win64 WITH_PNG=
           test -f ./zsnes.exe
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: zsnes-win64
           path: zsnes.exe
@@ -326,7 +326,7 @@ jobs:
     needs: windows
     runs-on: windows-latest
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: zsnes-win64
       - name: Run the executable
