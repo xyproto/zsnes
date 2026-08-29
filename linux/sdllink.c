@@ -1691,6 +1691,77 @@ void UpdateVFrame(void)
                     ppu_frame, vidbright, forceblnk, scrnon);
             }
             fflush(ppu_fp);
+            {
+                extern unsigned char ngd_ms[32][2], ngd_ma[32], ngd_fb[32], ngd_all[32], ngd_ch[32][4];
+                extern unsigned char ngd_fs[32], ngd_win[32][4], ngd_mos[32];
+                extern unsigned short ngd_sy[32][4], ngd_sx[32][4], ngd_pt[32][4], ngd_pty[32][4];
+                extern unsigned ngd_pal[32], ngd_start, ngd_end, ngd_res, ngd_resl;
+                unsigned i;
+                fprintf(ppu_fp, "%u LINES start=%u end=%u res=%u resl=%u\n",
+                    ppu_frame, ngd_start, ngd_end, ngd_res, ngd_resl);
+                {
+                    extern unsigned char vrama[65536];
+                    extern unsigned char bgmode, bgtilesz;
+                    extern unsigned short bg1ptr, bg1ptrb, bg1ptrc, bg1ptrd;
+                    extern unsigned bg1ptrx[4], bg1ptry[4];
+                    extern unsigned short bg1objptr, bg2objptr;
+                    extern unsigned short bg1scroly[4], bg1scrolx[4];
+                    static int vd = -2;
+                    if (vd == -2) {
+                        char const* e = getenv("VRAM_DUMP");
+                        vd = e ? atoi(e) : -1;
+                    }
+                    if (vd >= 0 && (int)ppu_frame == vd) {
+                        FILE* vf = fopen("/tmp/zsnes_vram.bin", "wb");
+                        if (vf) {
+                            fwrite(vrama, 1, 65536, vf);
+                            fclose(vf);
+                        }
+                        fprintf(ppu_fp, "%u VINFO mode=%u tilesz=%02x ptr=%04x,%04x,%04x,%04x "
+                                        "ptrx=%x ptry=%x obj1=%04x obj2=%04x sy=%04x sx=%04x\n",
+                            ppu_frame, bgmode, bgtilesz, bg1ptr, bg1ptrb, bg1ptrc, bg1ptrd,
+                            bg1ptrx[0], bg1ptry[0], bg1objptr, bg2objptr,
+                            bg1scroly[0], bg1scrolx[0]);
+                    }
+                }
+                {
+                    extern unsigned dbg_regn;
+                    extern unsigned short dbg_rega[8192], dbg_regy[8192];
+                    extern unsigned char dbg_regv[8192];
+                    unsigned k;
+                    fprintf(ppu_fp, "%u WREG n=%u:", ppu_frame, dbg_regn);
+                    for (k = 0; k < dbg_regn && k < 400; k++)
+                        fprintf(ppu_fp, " %04x@%u=%02x", dbg_rega[k], dbg_regy[k], dbg_regv[k]);
+                    fputc('\n', ppu_fp);
+                    dbg_regn = 0;
+                    {
+                        extern unsigned dbg_hn;
+                        extern void* dbg_hp[16384];
+                        extern unsigned short dbg_hy[16384];
+                        extern unsigned char dbg_hv[16384];
+                        unsigned j;
+                        fprintf(ppu_fp, "%u HDMA n=%u:", ppu_frame, dbg_hn);
+                        for (j = 0; j < dbg_hn && j < 300; j++)
+                            fprintf(ppu_fp, " %p@%u=%02x", dbg_hp[j], dbg_hy[j], dbg_hv[j]);
+                        fputc('\n', ppu_fp);
+                        dbg_hn = 0;
+                    }
+                }
+                for (i = 0; i < 32; i++) {
+                    fprintf(ppu_fp,
+                        "%u L%02u ms=%02x/%02x ma=%u fb=%u all=%u fs=%02x mos=%02x pal=%08x "
+                        "ch=%u%u%u%u win=%02x%02x%02x%02x sy=%04x,%04x,%04x,%04x "
+                        "sx=%04x,%04x,%04x,%04x pt=%04x,%04x,%04x,%04x pty=%04x,%04x,%04x,%04x\n",
+                        ppu_frame, i, ngd_ms[i][0], ngd_ms[i][1], ngd_ma[i], ngd_fb[i],
+                        ngd_all[i], ngd_fs[i], ngd_mos[i], ngd_pal[i],
+                        ngd_ch[i][0], ngd_ch[i][1], ngd_ch[i][2], ngd_ch[i][3],
+                        ngd_win[i][0], ngd_win[i][1], ngd_win[i][2], ngd_win[i][3],
+                        ngd_sy[i][0], ngd_sy[i][1], ngd_sy[i][2], ngd_sy[i][3],
+                        ngd_sx[i][0], ngd_sx[i][1], ngd_sx[i][2], ngd_sx[i][3],
+                        ngd_pt[i][0], ngd_pt[i][1], ngd_pt[i][2], ngd_pt[i][3],
+                        ngd_pty[i][0], ngd_pty[i][1], ngd_pty[i][2], ngd_pty[i][3]);
+                }
+            }
         }
         {
             /* ZST_ROUNDTRIP=N: check the save-state path once, at frame N. */

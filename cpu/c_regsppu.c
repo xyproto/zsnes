@@ -443,6 +443,19 @@ void c_reg2180w(u1 const al)
 REGABI_REG_WRITE8(reg2100w); /* brightness in bits 0-3, force blank in bit 7 */
 void c_reg2100w(u1 const al)
 {
+    {
+        extern u2 curypos;
+        extern unsigned dbg_hn;
+        extern void* dbg_hp[16384];
+        extern unsigned short dbg_hy[16384];
+        extern unsigned char dbg_hv[16384];
+        if (dbg_hn < 60) {
+            dbg_hp[dbg_hn] = (void*)3;
+            dbg_hy[dbg_hn] = curypos;
+            dbg_hv[dbg_hn] = al;
+            dbg_hn++;
+        }
+    }
     vidbright = (u1)(al & 0x0Fu);
     forceblnk = (u1)(al & 0x80u);
 }

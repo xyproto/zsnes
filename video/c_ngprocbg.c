@@ -188,6 +188,42 @@ static int line_wanted(u4 const y, int const kind)
     return 1;
 }
 
+unsigned char ngd_ms[32][2], ngd_ma[32], ngd_fb[32], ngd_all[32], ngd_ch[32][4];
+unsigned char ngd_fs[32], ngd_win[32][4], ngd_mos[32];
+unsigned short ngd_sy[32][4], ngd_sx[32][4], ngd_pt[32][4], ngd_pty[32][4];
+unsigned ngd_pal[32], ngd_start, ngd_end, ngd_res, ngd_resl;
+
+void ng_snapshot(void);
+
+void ng_snapshot(void)
+{
+    extern u2 BGPT1[], BGPT1Y[];
+    unsigned y, l;
+
+    ngd_start = startlinet;
+    ngd_end = endlinet;
+    ngd_res = resolutn;
+    ngd_resl = reslbyl;
+    for (y = 0; y < 32u; y++) {
+        ngd_ms[y][0] = BGMS1[y * 2];
+        ngd_ms[y][1] = BGMS1[y * 2 + 1];
+        ngd_ma[y] = BGMA[y];
+        ngd_fb[y] = BGFB[y];
+        ngd_all[y] = bgallchange[y];
+        ngd_fs[y] = FillSubScr[y];
+        ngd_mos[y] = (unsigned char)((mosenng[y] & 15u) | (unsigned)(mosszng[y] << 4));
+        ngd_pal[y] = (unsigned)cpalval[y];
+        for (l = 0; l < 4u; l++) {
+            ngd_ch[y][l] = bg1change[y + l * 256u];
+            ngd_win[y][l] = winbg1enval[y + l * 256u];
+            ngd_sy[y][l] = BG1SYl[y + l * 256u];
+            ngd_sx[y][l] = BG1SXl[y + l * 256u];
+            ngd_pt[y][l] = BGPT1[y + l * 256u];
+            ngd_pty[y][l] = BGPT1Y[y + l * 256u];
+        }
+    }
+}
+
 /* The renderers take the scanline in ebx and the video pointer in esi, and the
    priority-0 pair also read ecx - it still holds the scroll-plus-line value the
    tile-alignment test computed. The priority-1 pair never look at it. */

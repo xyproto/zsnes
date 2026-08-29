@@ -95,9 +95,15 @@ static void transdmappu2cpu(u1 const al, DMAInfo* const esi)
     esi->offset = cx;
 }
 
+unsigned dbg_hn;
+void* dbg_hp[16384];
+unsigned short dbg_hy[16384];
+unsigned char dbg_hv[16384];
+
 static inline void write_reg(eop* const reg, u2 const address, u1 const val)
 {
     uintptr_t const b = MemSeamB, c = MemSeamC, a = MemSeamA, d = MemSeamD;
+
 
     MemSeamC = address;
     MemSeamA = val;
@@ -183,11 +189,29 @@ static void transdma(DMAInfo* const esi)
 
     esi->offset = cx;
     AddrNoIncr = 0;
+    {
+        extern u2 curypos;
+        if (dbg_hn < 60) {
+            dbg_hp[dbg_hn] = (void*)2;
+            dbg_hy[dbg_hn] = curypos;
+            dbg_hv[dbg_hn] = 0;
+            dbg_hn++;
+        }
+    }
 }
 
 void c_reg420Bw(u1 const al)
 {
     DMAInfo* esi = dmadata;
+    {
+        extern u2 curypos;
+        if (dbg_hn < 60) {
+            dbg_hp[dbg_hn] = (void*)1;
+            dbg_hy[dbg_hn] = curypos;
+            dbg_hv[dbg_hn] = al;
+            dbg_hn++;
+        }
+    }
     for (u4 eax = al; eax != 0; ++esi, eax >>= 1) {
         if (eax & 0x01)
             transdma(esi);

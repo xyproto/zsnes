@@ -393,6 +393,10 @@ void c_startdrawnewgfx16b(zreg* const r)
     zreg eax;
     u4 q;
 
+    {
+        extern void ng_snapshot(void);
+        ng_snapshot();
+    }
     WindowRedraw = 1;
     endlinet -= 8;
     if (scfbl != 0)
