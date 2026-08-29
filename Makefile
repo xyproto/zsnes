@@ -258,8 +258,17 @@ SKIP_AUDIO_BACKEND_CHECK := $(if $(or \
 ifeq ($(SKIP_AUDIO_BACKEND_CHECK),)
 ifeq ($(CROSS_BUILD),yes)
 ifeq ($(SDL_BACKEND_AVAILABLE),)
+ifneq ($(filter $(ARCH),$(UNIXSDL_ARCHES)),)
+$(info )
+$(info ERROR: no SDL for $(CPU)/$(ARCH), and these targets have no other)
+$(info video backend: __UNIXSDL__ and linux/sdllink.c are built either way.)
+$(info Install SDL3 for the target, or cross-build one into its sysroot.)
+$(info )
+$(error No SDL library for $(CPU)/$(ARCH))
+else
 $(info ===> no SDL for $(CPU)/$(ARCH); building without a video backend)
 WITH_SDL :=
+endif
 endif
 endif
 endif
@@ -318,9 +327,6 @@ ifeq ($(SKIP_AUDIO_BACKEND_CHECK),)
         $(info Install the SDL3 development package for your distribution.)
         endif
         endif
-        $(info )
-        $(info Or build without a video backend, which links but cannot draw:)
-        $(info   make $(MAKECMDGOALS) WITH_SDL= WITH_PIPEWIRE= WITH_AO=)
         $(info )
         $(error No SDL library for $(CPU)/$(BITS). See above.)
       else
@@ -966,8 +972,11 @@ install:
 # zlib.h and png.h are architecture independent, and there is no aarch64 build
 # of either here, so this asks "does it compile for ARM" without a sysroot.
 PORTCHECK_CC     ?= gcc
+# The optional audio backends carry their own per-architecture headers, which
+# a portability compile has no reason to demand.
+PORTCHECK_DEFS   := $(filter-out -D__PIPEWIRE__ -D__LIBAO__,$(CFGDEFS))
 PORTCHECK_CFLAGS ?= -std=c11 -D_DEFAULT_SOURCE -D_POSIX_C_SOURCE=200809L \
-                    -O1 -I. $(CFGDEFS)
+                    -O1 -I. $(PORTCHECK_DEFS)
 PORTCHECK_ARM_CC ?= aarch64-linux-gnu-gcc
 .PHONY: portcheck
 portcheck: $(HDRS)
