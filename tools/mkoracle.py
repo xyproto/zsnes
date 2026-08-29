@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """mkoracle.py - build a difftest oracle from a whole pre-port assembly file.
 
-The oracle for a port is the original assembly, assembled from the last git
-revision that still had it. The per-routine mk*.sh scripts did that by cutting
+The oracle for a port is the original assembly, taken from the last revision
+in test/asm-sources.zip that still had it. The per-routine mk*.sh scripts did that by cutting
 the routine and the macros it needs out of the file and hand-writing an EXTERN
 for every symbol they referenced. That is where two separate classes of bug came
 from:
@@ -30,14 +30,14 @@ import subprocess
 import sys
 import tempfile
 
-ROOT = subprocess.run(["git", "rev-parse", "--show-toplevel"],
-                      capture_output=True, text=True,
-                      check=True).stdout.strip()
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ASMGIT = os.path.join(ROOT, "test", "asmgit.sh")
 
 
 def git(*args):
-    return subprocess.run(["git", "-C", ROOT, *args],
-                          capture_output=True, text=True)
+    """The original assembly comes from test/asm-sources.zip, not git history:
+    a shallow clone has no history to read."""
+    return subprocess.run([ASMGIT, *args], capture_output=True, text=True)
 
 
 def find_rev(path, ported_marker, requires):
@@ -203,7 +203,7 @@ def main():
     ap.add_argument("--rev", help="revision to take the source from")
     ap.add_argument("--worktree", action="store_true",
                     help="take the source from the working tree instead of "
-                         "git, to build a 'current' object to compare against")
+                         "the archive, to build a 'current' object")
     ap.add_argument("--ported-marker", default=r"call c_",
                     help="regex the ported file has and the original does not")
     ap.add_argument("--define", action="append", default=["ELF"],

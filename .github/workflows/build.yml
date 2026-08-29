@@ -210,7 +210,11 @@ jobs:
         # cross compiler can see. Building it is quicker than enabling the
         # ports archive.
         run: |
-          curl -sL https://zlib.net/fossils/zlib-1.3.2.tar.gz | tar xz
+          # -f so an HTTP error fails here instead of feeding tar an error
+          # page, and retries because zlib.net is occasionally flaky.
+          curl -fsSL --retry 5 --retry-delay 3 --retry-all-errors \
+            -o zlib.tar.gz https://zlib.net/fossils/zlib-1.3.2.tar.gz
+          tar xzf zlib.tar.gz
           cd zlib-1.3.2
           CC=aarch64-linux-gnu-gcc ./configure --static \
             --prefix=/usr/aarch64-linux-gnu
