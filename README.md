@@ -4,11 +4,9 @@
 
 <img align="right" width="128" height="128" alt="logo" src="icons/128x128x32.png">
 
-The last release of [ZSNES 1](http://zsnes.sourceforge.net/) was over 18 years ago (2007-10-31). It required heavy patching and tweaking of compilation flags to build and run on a modern Linux distro. Large parts of ZSNES 1 was written in 32-bit x86 Assembly and used MMX instructions.
+The last release of [ZSNES 1](http://zsnes.sourceforge.net/) was over 18 years ago (2007-10-31). It required heavy patching and tweaking of compilation flags to build and run on a modern Linux distro. Most of it was written in 32-bit x86 Assembly and used MMX instructions.
 
 This is a fork that aims to solve this.
-
-All of the old Assembly code has been ported to C11.
 
 Goals and non-goals:
 
@@ -20,6 +18,8 @@ Goals and non-goals:
 * Supporting Windows is not a goal, but a "nice to have".
 * Improving the net-play code is a long term goal.
 * To be like an LTS release of ZSNES is a goal.
+
+All of the old Assembly code has been ported to C11.
 
 Pull requests that fixes inaccuracies with the emulation are welcome, as well as pull requests for regular bugs.
 
@@ -162,9 +162,9 @@ These are the contributors listed in the text files that are included with the 1
 * `Thorsten "mirabile" Glaser`
 * `Mitchell "The Khan Artist/Noxious Ninja" Mebane`
 
-### Old documentation
+### Previous documentation
 
-* Some of the information in the old text files in `docs/readme.txt/*.txt` has not yet been ported over to the `linux/zsnes.1` man page, or to a Markdown document.
+* Some of the information in the old text files in `docs/readme.txt/*.txt` has not yet been ported over to the `linux/zsnes.1` man page or to a Markdown document.
 * The plan is to do this. Pull requests are welcome.
 
 Additional documentation:
