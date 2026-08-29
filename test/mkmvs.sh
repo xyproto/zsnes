@@ -3,21 +3,21 @@
 set -e
 REV=$1
 if [ -z "$REV" ]; then
-    for r in $(git -C .. log --format=%H -- video/mv16tms.asm); do
-        git -C .. cat-file -e "${r}:video/mv16tms.asm" 2>/dev/null || continue
+    for r in $(./asmgit.sh log --format=%H -- video/mv16tms.asm); do
+        ./asmgit.sh cat-file -e "${r}:video/mv16tms.asm" 2>/dev/null || continue
         # Must still have the original bodies: once a port is committed the
         # newest revision has the thunks, and an oracle built from those would
         # call the very code it is meant to check.
-        if git -C .. show "${r}:video/mv16tms.asm" | grep -q '^    drawtilegrpfull draw8x816tcms' \
-           && ! git -C .. show "${r}:video/mv16tms.asm" | grep -q 'call c_draw8x8'; then
+        if ./asmgit.sh show "${r}:video/mv16tms.asm" | grep -q '^    drawtilegrpfull draw8x816tcms' \
+           && ! ./asmgit.sh show "${r}:video/mv16tms.asm" | grep -q 'call c_draw8x8'; then
             REV=$r; break
         fi
     done
 fi
 [ -n "$REV" ] || { echo "mkmvs.sh: no pre-port revision found" >&2; exit 1; }
 
-git -C .. show "${REV}:video/mv16tms.asm" > _mvs_src.asm
-git -C .. show "${REV}:video/vidmacro.mac" > _mvs_src.mac
+./asmgit.sh show "${REV}:video/mv16tms.asm" > _mvs_src.asm
+./asmgit.sh show "${REV}:video/vidmacro.mac" > _mvs_src.mac
 
 python3 - _mvs_src.asm _mvs_src.mac > _mvs.inc <<'PYEOF'
 import sys
@@ -141,4 +141,4 @@ MVS_ENTRY 1, draw8x816tswinonms
 %include "_mvs.inc"
 EOF
 nasm -Ox -f elf32 -w-orphan-labels -o _mvs.o _mvs.asm
-echo "wrote _mvs.o (oracle from $(git -C .. rev-parse --short $REV))"
+echo "wrote _mvs.o (oracle from $(./asmgit.sh rev-parse --short $REV))"

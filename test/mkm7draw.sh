@@ -8,9 +8,9 @@ set -e
 
 REV=$1
 if [ -z "$REV" ]; then
-    for r in $(git -C .. log --format=%H -- video/mode716.asm); do
-        git -C .. cat-file -e "${r}:video/mode716.asm" 2>/dev/null || continue
-        if git -C .. show "${r}:video/mode716.asm" | grep -q '^    Mode7NonMainSub Mode7Normal$'; then
+    for r in $(./asmgit.sh log --format=%H -- video/mode716.asm); do
+        ./asmgit.sh cat-file -e "${r}:video/mode716.asm" 2>/dev/null || continue
+        if ./asmgit.sh show "${r}:video/mode716.asm" | grep -q '^    Mode7NonMainSub Mode7Normal$'; then
             REV=$r
             break
         fi
@@ -18,8 +18,8 @@ if [ -z "$REV" ]; then
 fi
 [ -n "$REV" ] || { echo "mkm7draw.sh: no pre-port revision found" >&2; exit 1; }
 
-git -C .. show "${REV}:video/mode716.asm" > _m7draw_src.asm
-git -C .. show "${REV}:video/mode716.mac" > _m7draw_src.mac
+./asmgit.sh show "${REV}:video/mode716.asm" > _m7draw_src.asm
+./asmgit.sh show "${REV}:video/mode716.mac" > _m7draw_src.mac
 
 python3 - _m7draw_src.asm _m7draw_src.mac > _m7draw.inc <<'PYEOF'
 import re, sys
@@ -182,4 +182,4 @@ DRAW_ENTRY 1, drawmode7ngextbg16b
 EOF
 
 nasm -Ox -f elf32 -w-orphan-labels -o _m7draw.o _m7draw.asm
-echo "wrote _m7draw.o (oracle from $(git -C .. rev-parse --short $REV))"
+echo "wrote _m7draw.o (oracle from $(./asmgit.sh rev-parse --short $REV))"

@@ -7,10 +7,10 @@ set -e
 
 REV=$1
 if [ -z "$REV" ]; then
-    for r in $(git -C .. log --format=%H -- cpu/regs.inc); do
-        git -C .. cat-file -e "$r:cpu/regs.inc" 2>/dev/null || continue
-        if git -C .. show "$r:cpu/regs.inc" | grep -q '^NEWSYM reg2134r' \
-       && git -C .. show "$r:cpu/regsw.inc" | grep -q '^NEWSYM reg2126w'; then
+    for r in $(./asmgit.sh log --format=%H -- cpu/regs.inc); do
+        ./asmgit.sh cat-file -e "$r:cpu/regs.inc" 2>/dev/null || continue
+        if ./asmgit.sh show "$r:cpu/regs.inc" | grep -q '^NEWSYM reg2134r' \
+       && ./asmgit.sh show "$r:cpu/regsw.inc" | grep -q '^NEWSYM reg2126w'; then
             REV=$r
             break
         fi
@@ -18,8 +18,8 @@ if [ -z "$REV" ]; then
 fi
 [ -n "$REV" ] || { echo "mkregs.sh: no pre-port revision of cpu/regs.inc found" >&2; exit 1; }
 
-git -C .. show "$REV:cpu/regs.inc" > _regs_src.inc
-git -C .. show "$REV:cpu/regsw.inc" >> _regs_src.inc
+./asmgit.sh show "$REV:cpu/regs.inc" > _regs_src.inc
+./asmgit.sh show "$REV:cpu/regsw.inc" >> _regs_src.inc
 
 python3 - _regs_src.inc ../test/regs.list > _regs.inc <<'PYEOF'
 import re, sys
@@ -100,8 +100,8 @@ for l in src:
 print('\n'.join(out))
 PYEOF2
 
-git -C .. show "$REV:cpu/regs.mac" > _regs.mac
-git -C .. show "$REV:cpu/regsw.mac" >> _regs.mac
+./asmgit.sh show "$REV:cpu/regs.mac" > _regs.mac
+./asmgit.sh show "$REV:cpu/regsw.mac" >> _regs.mac
 
 cat > _regs.asm <<'EOF'
 bits 32
@@ -351,4 +351,4 @@ EOF
 
 # Match the build: reg2119's debugger branch references debstop otherwise.
 nasm -O1 -f elf32 -DNO_DEBUGGER -w-orphan-labels -o _regs.o _regs.asm
-echo "wrote _regs.o (oracle from $(git -C .. rev-parse --short $REV), $(grep -c '^NEWSYM asm_' _regs.inc) handlers)"
+echo "wrote _regs.o (oracle from $(./asmgit.sh rev-parse --short $REV), $(grep -c '^NEWSYM asm_' _regs.inc) handlers)"

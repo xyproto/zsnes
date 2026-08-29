@@ -11,9 +11,9 @@ set -e
 # last one where no handler body is a `memcop` thunk yet.
 REV=$1
 if [ -z "$REV" ]; then
-    for r in $(git -C .. log --format=%H -- cpu/memory.asm); do
-        git -C .. cat-file -e "$r:cpu/memory.asm" 2>/dev/null || continue
-        if ! git -C .. show "$r:cpu/memory.asm" | grep -q memcop; then
+    for r in $(./asmgit.sh log --format=%H -- cpu/memory.asm); do
+        ./asmgit.sh cat-file -e "$r:cpu/memory.asm" 2>/dev/null || continue
+        if ! ./asmgit.sh show "$r:cpu/memory.asm" | grep -q memcop; then
             REV=$r
             break
         fi
@@ -21,7 +21,7 @@ if [ -z "$REV" ]; then
 fi
 [ -n "$REV" ] || { echo "mkmemops.sh: no pre-port revision of cpu/memory.asm found" >&2; exit 1; }
 
-git -C .. show "$REV:cpu/memory.asm" > _memops_src.asm
+./asmgit.sh show "$REV:cpu/memory.asm" > _memops_src.asm
 
 # Pull out only the handlers under test, in file order. Each runs to the next
 # NEWSYM; none of them fall through into a neighbour.
@@ -79,8 +79,8 @@ for l in src:
 print('\n'.join(out))
 PYEOF
 
-git -C .. show "$REV:cpu/regs.mac"  | sed -n 's/^\(%define regptr(x).*\)$/\1/p' > _memops_reg.mac
-git -C .. show "$REV:cpu/regsw.mac" | sed -n 's/^\(%define regptw(x).*\)$/\1/p' >> _memops_reg.mac
+./asmgit.sh show "$REV:cpu/regs.mac"  | sed -n 's/^\(%define regptr(x).*\)$/\1/p' > _memops_reg.mac
+./asmgit.sh show "$REV:cpu/regsw.mac" | sed -n 's/^\(%define regptw(x).*\)$/\1/p' >> _memops_reg.mac
 
 cat > _memops.asm <<'EOF'
 bits 32
@@ -291,4 +291,4 @@ NEWSYM regstub_w
 EOF
 
 nasm -O1 -f elf32 -w-orphan-labels -o _memops.o _memops.asm
-echo "wrote _memops.o (oracle from $(git -C .. rev-parse --short $REV), $(grep -c '^NEWSYM asm_' _memops.inc) handlers)"
+echo "wrote _memops.o (oracle from $(./asmgit.sh rev-parse --short $REV), $(grep -c '^NEWSYM asm_' _memops.inc) handlers)"

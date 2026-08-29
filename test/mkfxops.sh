@@ -17,15 +17,15 @@ set -e
 
 # Default to the newest revision whose fxemu2b.asm predates the port, i.e. the
 # last one where no handler body is an `fxcop` thunk yet. The files are deleted
-# in current revisions, so skip any where they are absent - a failed `git show`
+# in current revisions, so skip any where they are absent - a failed lookup
 # is empty, which would otherwise look like a clean pre-port revision.
 REV=$1
 if [ -z "$REV" ]; then
-    for r in $(git -C .. log --format=%H -- chips/fxemu2b.asm); do
-        git -C .. cat-file -e "$r:chips/fxemu2b.asm" 2>/dev/null || continue
-        git -C .. cat-file -e "$r:chips/fxemu2.asm" 2>/dev/null || continue
-        if ! git -C .. show "$r:chips/fxemu2b.asm" | grep -q fxcop \
-            && ! git -C .. show "$r:chips/fxemu2.asm" | grep -q fxcop; then
+    for r in $(./asmgit.sh log --format=%H -- chips/fxemu2b.asm); do
+        ./asmgit.sh cat-file -e "$r:chips/fxemu2b.asm" 2>/dev/null || continue
+        ./asmgit.sh cat-file -e "$r:chips/fxemu2.asm" 2>/dev/null || continue
+        if ! ./asmgit.sh show "$r:chips/fxemu2b.asm" | grep -q fxcop \
+            && ! ./asmgit.sh show "$r:chips/fxemu2.asm" | grep -q fxcop; then
             REV=$r
             break
         fi
@@ -34,7 +34,7 @@ fi
 [ -n "$REV" ] || { echo "mkfxops.sh: no pre-port revision of chips/fxemu2b.asm found" >&2; exit 1; }
 
 SRC=_fxops_src.asm
-git -C .. show "$REV:chips/fxemu2b.asm" > "$SRC"
+./asmgit.sh show "$REV:chips/fxemu2b.asm" > "$SRC"
 
 # The handlers start at the first opcode entry point and run to end of file.
 FIRST=$(grep -n '^NEWSYM FxOp' "$SRC" | head -1 | cut -d: -f1)
@@ -43,7 +43,7 @@ sed -n "${FIRST},\$p" "$SRC" > _fxops.inc
 # chips/fxemu2.asm holds the base-table handlers, mixed in with data and with
 # routines the difftest has no business linking. Pull out only the opcode
 # bodies named on stdin (one per line), in file order.
-git -C .. show "$REV:chips/fxemu2.asm" > _fxops_base.asm
+./asmgit.sh show "$REV:chips/fxemu2.asm" > _fxops_base.asm
 python3 - _fxops_base.asm ../test/fxops_base.list >> _fxops.inc <<'PYEOF'
 import re, sys
 src = open(sys.argv[1]).read().split('\n')
@@ -72,7 +72,7 @@ PYEOF
 # tail-jumps to the next through FXReturn. Extract those handlers too, and emit
 # a matching thunk per handler so the C side runs the real seam and tail-chain
 # rather than the bare C body.
-git -C .. show "$REV:chips/fxemu2c.asm" > _fxops_d.asm
+./asmgit.sh show "$REV:chips/fxemu2c.asm" > _fxops_d.asm
 python3 - _fxops_d.asm >> _fxops.inc <<'PYEOF'
 import re, sys
 src = open(sys.argv[1]).read().split('\n')
@@ -123,9 +123,9 @@ sed -i -E 's/\b(call|jmp) (FxOp[A-Za-z0-9]+)/\1 asm_\2/' _fxops.inc
 # The TO/FROM macro bodies live in a .mac the port deleted; take it from git
 # too, along with fxemu2.mac for FETCHPIPE / UpdateR14 / CLRFLAGS.
 
-git -C .. show "$REV:chips/fxemu2.mac" > _fxops_m1.mac
-git -C .. show "$REV:chips/fxemu2b.mac" > _fxops_m2.mac
-git -C .. show "$REV:chips/fxemu2c.mac" > _fxops_m3.mac
+./asmgit.sh show "$REV:chips/fxemu2.mac" > _fxops_m1.mac
+./asmgit.sh show "$REV:chips/fxemu2b.mac" > _fxops_m2.mac
+./asmgit.sh show "$REV:chips/fxemu2c.mac" > _fxops_m3.mac
 sed -i -E 's/\b(call|jmp) (FxOp[A-Za-z0-9]+)/\1 asm_\2/' _fxops_m1.mac _fxops_m2.mac _fxops_m3.mac
 
 cat > _fxops.asm <<'EOF'
@@ -381,4 +381,4 @@ NEWSYM loopstop
 EOF
 
 nasm -f elf32 -w-orphan-labels -o _fxops.o _fxops.asm
-echo "wrote _fxops.o (oracle from $(git -C .. rev-parse --short $REV), $(grep -c '^NEWSYM asm_FxOp' _fxops.inc) handlers)"
+echo "wrote _fxops.o (oracle from $(./asmgit.sh rev-parse --short $REV), $(grep -c '^NEWSYM asm_FxOp' _fxops.inc) handlers)"

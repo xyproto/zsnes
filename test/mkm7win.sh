@@ -7,9 +7,9 @@ set -e
 
 REV=$1
 if [ -z "$REV" ]; then
-    for r in $(git -C .. log --format=%H -- video/mode716.mac); do
-        git -C .. cat-file -e "${r}:video/mode716.mac" 2>/dev/null || continue
-        if git -C .. show "${r}:video/mode716.mac" | grep -q '^\.rposoffxr'; then
+    for r in $(./asmgit.sh log --format=%H -- video/mode716.mac); do
+        ./asmgit.sh cat-file -e "${r}:video/mode716.mac" 2>/dev/null || continue
+        if ./asmgit.sh show "${r}:video/mode716.mac" | grep -q '^\.rposoffxr'; then
             REV=$r
             break
         fi
@@ -17,7 +17,7 @@ if [ -z "$REV" ]; then
 fi
 [ -n "$REV" ] || { echo "mkm7win.sh: no pre-port revision found" >&2; exit 1; }
 
-git -C .. show "${REV}:video/mode716.mac" > _m7win_src.mac
+./asmgit.sh show "${REV}:video/mode716.mac" > _m7win_src.mac
 
 python3 - _m7win_src.mac > _m7win.inc <<'PYEOF'
 import re, sys
@@ -126,4 +126,4 @@ EOF
 # -O0 keeps every jump long: with the cluster lifted out of its original
 # context NASM cannot converge on the short forms (label-redef-late).
 nasm -Ox -f elf32 -w-orphan-labels -w-pp-macro-params-legacy -o _m7win.o _m7win.asm
-echo "wrote _m7win.o (oracle from $(git -C .. rev-parse --short $REV))"
+echo "wrote _m7win.o (oracle from $(./asmgit.sh rev-parse --short $REV))"

@@ -6,9 +6,9 @@ set -e
 
 REV=$1
 if [ -z "$REV" ]; then
-    for r in $(git -C .. log --format=%H -- video/mv16tms.asm); do
-        git -C .. cat-file -e "${r}:video/mv16tms.asm" 2>/dev/null || continue
-        if git -C .. show "${r}:video/mv16tms.asm" | grep -q '^    mov \[bshifter\],ah'; then
+    for r in $(./asmgit.sh log --format=%H -- video/mv16tms.asm); do
+        ./asmgit.sh cat-file -e "${r}:video/mv16tms.asm" 2>/dev/null || continue
+        if ./asmgit.sh show "${r}:video/mv16tms.asm" | grep -q '^    mov \[bshifter\],ah'; then
             REV=$r
             break
         fi
@@ -16,7 +16,7 @@ if [ -z "$REV" ]; then
 fi
 [ -n "$REV" ] || { echo "mkmv16.sh: no pre-port revision found" >&2; exit 1; }
 
-git -C .. show "${REV}:video/mv16tms.asm" > _mv16_src.asm
+./asmgit.sh show "${REV}:video/mv16tms.asm" > _mv16_src.asm
 
 python3 - _mv16_src.asm > _mv16.inc <<'PYEOF'
 import sys
@@ -107,4 +107,4 @@ NEWSYM asm_mv16
 EOF
 
 nasm -Ox -f elf32 -w-orphan-labels -o _mv16.o _mv16.asm
-echo "wrote _mv16.o (oracle from $(git -C .. rev-parse --short $REV))"
+echo "wrote _mv16.o (oracle from $(./asmgit.sh rev-parse --short $REV))"

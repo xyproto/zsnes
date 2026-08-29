@@ -8,11 +8,11 @@ set -e
 
 REV=$1
 if [ -z "$REV" ]; then
-    for r in $(git -C .. log --format=%H -- video/mode716.mac); do
-        git -C .. cat-file -e "${r}:video/mode716.mac" 2>/dev/null || continue
+    for r in $(./asmgit.sh log --format=%H -- video/mode716.mac); do
+        ./asmgit.sh cat-file -e "${r}:video/mode716.mac" 2>/dev/null || continue
         # The macro *names* survive the port as thunks, so key off a line only
         # the original bodies have - otherwise the oracle becomes the port.
-        if git -C .. show "${r}:video/mode716.mac" | grep -q '^    mov dword\[mtemp\],256'; then
+        if ./asmgit.sh show "${r}:video/mode716.mac" | grep -q '^    mov dword\[mtemp\],256'; then
             REV=$r
             break
         fi
@@ -20,8 +20,8 @@ if [ -z "$REV" ]; then
 fi
 [ -n "$REV" ] || { echo "mkm7proc.sh: no pre-port revision found" >&2; exit 1; }
 
-git -C .. show "${REV}:video/mode716.mac" > _m7proc_src.mac
-git -C .. show "${REV}:video/mode716.asm" > _m7proc_src.asm
+./asmgit.sh show "${REV}:video/mode716.mac" > _m7proc_src.mac
+./asmgit.sh show "${REV}:video/mode716.asm" > _m7proc_src.asm
 
 python3 - _m7proc_src.mac _m7proc_src.asm > _m7proc.inc <<'PYEOF'
 import sys
@@ -339,4 +339,4 @@ PROC_ENTRY2 39, Mode7ExtBGsnt, Mode7ExtBG
 EOF
 
 nasm -Ox -f elf32 -w-orphan-labels -o _m7proc.o _m7proc.asm
-echo "wrote _m7proc.o (oracle from $(git -C .. rev-parse --short $REV))"
+echo "wrote _m7proc.o (oracle from $(./asmgit.sh rev-parse --short $REV))"

@@ -7,9 +7,9 @@ set -e
 
 REV=$1
 if [ -z "$REV" ]; then
-    for r in $(git -C .. log --format=%H -- video/mode716.asm); do
-        git -C .. cat-file -e "$r:video/mode716.asm" 2>/dev/null || continue
-        if ! git -C .. show "$r:video/mode716.asm" | grep -q c_CalculateNewValues; then
+    for r in $(./asmgit.sh log --format=%H -- video/mode716.asm); do
+        ./asmgit.sh cat-file -e "$r:video/mode716.asm" 2>/dev/null || continue
+        if ! ./asmgit.sh show "$r:video/mode716.asm" | grep -q c_CalculateNewValues; then
             REV=$r
             break
         fi
@@ -17,7 +17,7 @@ if [ -z "$REV" ]; then
 fi
 [ -n "$REV" ] || { echo "mkm7calc.sh: no pre-port revision found" >&2; exit 1; }
 
-git -C .. show "$REV:video/mode716.asm" > _m7calc_src.asm
+./asmgit.sh show "$REV:video/mode716.asm" > _m7calc_src.asm
 
 python3 - _m7calc_src.asm > _m7calc.inc <<'PYEOF'
 import re, sys
@@ -172,4 +172,4 @@ NEWSYM asm_m7hires
 EOF
 
 nasm -O1 -f elf32 -w-orphan-labels -o _m7calc.o _m7calc.asm
-echo "wrote _m7calc.o (oracle from $(git -C .. rev-parse --short $REV))"
+echo "wrote _m7calc.o (oracle from $(./asmgit.sh rev-parse --short $REV))"

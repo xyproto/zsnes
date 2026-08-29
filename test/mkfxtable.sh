@@ -1,5 +1,5 @@
 #!/bin/sh
-# Extract the original chips/fxtable.asm from git history and prepare it for the
+# Extract the original chips/fxtable.asm from asm-sources.zip and prepare it for the
 # InitFxTables differential test:
 #   _fxold.asm    the original, with InitFxTables and the data it defines renamed
 #                 out of the way so it can be linked beside the C port
@@ -7,10 +7,10 @@
 #                 the addresses the tables are built from, not the handlers
 set -e
 
-rev=$(git -C .. rev-list -1 HEAD -- chips/fxtable.asm)
+rev=$(./asmgit.sh rev-list -1 HEAD -- chips/fxtable.asm)
 [ -n "$rev" ] || { echo "chips/fxtable.asm not found in history" >&2; exit 1; }
-git -C .. show "$rev:chips/fxtable.asm" > _fxold.raw 2>/dev/null ||
-    git -C .. show "$rev^:chips/fxtable.asm" > _fxold.raw
+./asmgit.sh show "$rev:chips/fxtable.asm" > _fxold.raw 2>/dev/null ||
+    ./asmgit.sh show "$rev^:chips/fxtable.asm" > _fxold.raw
 
 sed -e 's/NEWSYM InitFxTables/NEWSYM InitFxTablesAsm/' \
     -e 's/sfx128lineloc/asm_sfx128lineloc/g' \

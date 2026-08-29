@@ -10,7 +10,7 @@
 # linker's --gc-sections drops every function not reachable from main, so no
 # SDL, zlib, or audio symbols are pulled in.
 
-# The difftest targets assemble the original x86 Assembly out of git history,
+# The difftest targets assemble the original x86 Assembly out of asm-sources.zip,
 # so they are 32-bit x86 only. The plain unit tests are portable C, and macOS
 # has had no 32-bit userland since 10.15 and no GNU linker at all, so build
 # those for the host there instead of not at all.
@@ -114,14 +114,14 @@ $(SPRITES): $(SPRITES_SRC) zstest.h ../video/sprites.c
 # Differential test for the SPC700 DAA/DAS opcodes against the assembly they
 # replaced (cff2b437^). Not part of `all` - it needs that old assembly.
 spcdec: difftest_spcdec.c difftest.h mkdifftest.sh ../cpu/spc_ops.h
-	git -C .. show cff2b437^:cpu/spc700.asm > /tmp/spc_old.asm
+	./asmgit.sh show cff2b437^:cpu/spc700.asm > /tmp/spc_old.asm
 	./mkdifftest.sh _spcdec /tmp/spc_old.asm "OpBE OpDF" \
 	    "spcA spcNZ spcP" 439-459 1733-1781
 	$(CC) $(CFLAGS) difftest_spcdec.c _spcdec.o $(NOPIE) -o difftest_spcdec
 	@./difftest_spcdec
 
 # Differential test for the SuperFX table builder against the assembly it
-# replaced. Not part of `all` - it needs that old assembly out of git history.
+# replaced. Not part of `all` - it needs that old assembly out of asm-sources.zip.
 fxtable: difftest_fxtable.c mkfxtable.sh ../chips/c_fxtable.c ../endmem.o
 	./mkfxtable.sh
 	$(CC) $(CFLAGS) -fcommon -fno-pic -c difftest_fxtable.c -o _fxtest.o
@@ -130,7 +130,7 @@ fxtable: difftest_fxtable.c mkfxtable.sh ../chips/c_fxtable.c ../endmem.o
 	@./difftest_fxtable
 
 # Differential test for the SuperFX opcode handlers against the assembly they
-# replaced. Not part of `all` - it needs that assembly out of git history.
+# replaced. Not part of `all` - it needs that assembly out of asm-sources.zip.
 fxops: difftest_fxops.c difftest.h mkfxops.sh ../chips/fx_ops.h
 	./mkfxops.sh
 	$(CC) $(CFLAGS) difftest_fxops.c _fxops.o $(NOPIE) -o difftest_fxops
