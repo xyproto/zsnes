@@ -10,8 +10,6 @@
 
 /* clang-format off */
 
-#define ASM_LSYM(sym) #sym ":\n"
-
 #define BSSB(sym, n) ASM_GSYM(sym) ".skip (" #n ")\n"
 #define BSSW(sym, n) ASM_GSYM(sym) ".skip (" #n ")*2\n"
 #define BSSD(sym, n) ASM_GSYM(sym) ".skip (" #n ")*4\n"
@@ -522,11 +520,11 @@ __asm__(
     ASM_GSYM(AdsrSustLevLoc)
     ".byte 58,39,27,19,13,8,3,1\n"
     ASM_GSYM(PHdspsave)
-    ".long marksave - BRRBuffer\n"
+    ".long " ASM_LSYMREF(marksave) " - " ASM_SYMREF(BRRBuffer) "\n"
     ASM_GSYM(PHdspconvb)
-    ".long marksave - Voice0Freq\n"
+    ".long " ASM_LSYMREF(marksave) " - " ASM_SYMREF(Voice0Freq) "\n"
     ASM_GSYM(PHdspsave2)
-    ".long marksave2 - echoon0\n"
+    ".long " ASM_LSYMREF(marksave2) " - " ASM_SYMREF(echoon0) "\n"
     ASM_SEC_END
     ASM_SEC_BSS(".bss")
     BSSD(NoiseInc, 1)

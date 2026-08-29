@@ -6,7 +6,7 @@
  * of the top four palettes is blended with whatever transpbuf already holds,
  * and only the video line is written. Four routines behind one entry point -
  * plain and window-masked, each with a full-add twin - plus a priority family
- * that is still assembly and keeps its own dispatch at the top of the thunk.
+ * (video/c_mv16tsprp.c) that keeps its own dispatch at the top of the thunk.
  *
  *   plain       palette 0 to 11: the colour goes down as it is
  *   half add    average with what is underneath, unless that is transparent
@@ -37,7 +37,7 @@ extern u2 fulladdtab[65537]; /* the dword load below reads one past */
 extern u1* curvidoffset;
 
 typedef struct {
-    u4 ax, bx, cx, dx, si, di, bp;
+    zreg ax, bx, cx, dx, si, di, bp;
 } regs;
 
 /* transpbuf as the assembly indexes it: `transpbuf+32` is word 16, the same

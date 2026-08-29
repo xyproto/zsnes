@@ -49,8 +49,11 @@ extern uint8_t CurrentCPU;
 extern uint8_t soundon;
 extern uint32_t cycpbl;
 
-extern uint16_t xa, xx, xy;
-extern uint8_t xdb;
+/* The core keeps these in dword slots (gblvars.h) and only the low 16 (8 for
+   the bank) mean anything, so read them through XREG16/XREG8. */
+extern uint32_t xa, xx, xy, xdb;
+#define XREG16(r) ((uint16_t)(r))
+#define XREG8(r) ((uint8_t)(r))
 
 uint8_t debuggeron; // was in the deleted dos/debug.asm
 
@@ -607,18 +610,6 @@ void startdisplay()
 //*******************************************************
 // 008000 STZ $123456,x A:0000 X:0000 Y:0000 S:01FF DB:00 D:0000 P:33 E+
 
-/*
-void addtail() {
-    debugt++;
-    if (debugt == 100)
-    debugt = 0;
-    if (debugt == debugh)
-    debugh++;
-    if (debugh == 100)
-    debugh = 0;
-}
-*/
-
 // I'm going to have to completely rip out byuu's effective address
 // stuff, it is just plain *WRONG*, besides being unsafe...
 
@@ -636,7 +627,7 @@ void out65816_addrmode(unsigned char* instr)
 {
     char* padding = "";
 
-#define GETXB() ((ocname[4 * instr[0]] != 'J') ? xdb : xpb)
+#define GETXB() ((ocname[4 * instr[0]] != 'J') ? XREG8(xdb) : xpb)
 
 #define INDEX_RIGHT(addr, index)                               \
     ((xp & 0x10)                                               \
@@ -703,7 +694,7 @@ void out65816_addrmode(unsigned char* instr)
         t = memr8(0, addr);
         t |= memr8(0, addr + 1) << 8;
         t |= memr8(0, addr + 2) << 16;
-        t = INDEX_RIGHT(t, xy);
+        t = INDEX_RIGHT(t, XREG16(xy));
         wprintw(debugwin, "[%06x] ", t);
 
         break;
@@ -719,14 +710,14 @@ void out65816_addrmode(unsigned char* instr)
     case 10: // $12,x : $12+d+x
     {
         wprintw(debugwin, "$%02x,X%5s", instr[1], padding);
-        wprintw(debugwin, "[%06x] ", INDEX_RIGHT(instr[1] + xd, xx));
+        wprintw(debugwin, "[%06x] ", INDEX_RIGHT(instr[1] + xd, XREG16(xx)));
         break;
     }
 
     case 11: // $12,y
     {
         wprintw(debugwin, "$%02x,Y%5s", instr[1], padding);
-        wprintw(debugwin, "[%06x] ", INDEX_RIGHT(instr[1] + xd, xy));
+        wprintw(debugwin, "[%06x] ", INDEX_RIGHT(instr[1] + xd, XREG16(xy)));
         break;
     }
 
@@ -734,8 +725,8 @@ void out65816_addrmode(unsigned char* instr)
     {
         unsigned int t = instr[1] | (instr[2] << 8);
         wprintw(debugwin, "$%04x,X   ", t);
-        t = INDEX_RIGHT(t, xx);
-        wprintw(debugwin, "[%02x%04x] ", xdb, t);
+        t = INDEX_RIGHT(t, XREG16(xx));
+        wprintw(debugwin, "[%02x%04x] ", XREG8(xdb), t);
 
         break;
     }
@@ -744,8 +735,8 @@ void out65816_addrmode(unsigned char* instr)
     {
         unsigned int t = instr[1] | (instr[2] << 8);
         wprintw(debugwin, "$%04x,Y   ", t);
-        t = INDEX_RIGHT(t, xy);
-        wprintw(debugwin, "[%02x%04x] ", xdb, t);
+        t = INDEX_RIGHT(t, XREG16(xy));
+        wprintw(debugwin, "[%02x%04x] ", XREG8(xdb), t);
 
         break;
     }
@@ -754,7 +745,7 @@ void out65816_addrmode(unsigned char* instr)
     {
         unsigned int t = instr[1] | (instr[2] << 8) | (instr[3] << 16);
         wprintw(debugwin, "$%06x,X ", t);
-        t = INDEX_RIGHT(t, xx);
+        t = INDEX_RIGHT(t, XREG16(xx));
         wprintw(debugwin, "[%06x] ", t);
 
         break;
@@ -797,7 +788,7 @@ void out65816_addrmode(unsigned char* instr)
         addr2 = memr8(00, addr1);
         addr2 |= memr8(00, addr1 + 1) << 8;
 
-        wprintw(debugwin, "[%02x%04x] ", xdb, addr2);
+        wprintw(debugwin, "[%02x%04x] ", XREG8(xdb), addr2);
 
         break;
     }
@@ -818,9 +809,9 @@ void out65816_addrmode(unsigned char* instr)
 
         wprintw(debugwin, "($%04x,X) [%02x", cx, xpb);
         if (xp & 0x10)
-            cx = (cx & 0xFF00) | ((cx + xx) & 0xFF);
+            cx = (cx & 0xFF00) | ((cx + XREG16(xx)) & 0xFF);
         else
-            cx += xx;
+            cx += XREG16(xx);
         // .out20n
         x = memr8(xpb, cx);
         x += memr8(xpb, cx + 1) << 8;
@@ -905,7 +896,8 @@ void out65816()
     out65816_addrmode(address);
 
     wprintw(debugwin, "A:%04x X:%04x Y:%04x S:%04x DB:%02x D:%04x P:%02x %c",
-        xa, xx, xy, xs, xdb, xd, xp, (xe == 1) ? 'E' : 'e');
+        XREG16(xa), XREG16(xx), XREG16(xy), xs, XREG8(xdb), xd, xp,
+        (xe == 1) ? 'E' : 'e');
 }
 
 void outsa1()

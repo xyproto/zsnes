@@ -1,16 +1,15 @@
 /*
- * The mosaic dispatchers and their leaves, ported from video/mv16tms.asm.
+ * The mosaic dispatchers and their leaves, from video/mv16tms.asm.
  *
- * A leaf spills the whole register file into the shared MVS seam, calls its C
- * body and reloads; a dispatcher picks one on the colour-maths registers and
- * jumps to it, so the leaf returns to the dispatcher's caller.
+ * A leaf spills the register file into the shared MVS seam, calls its C body
+ * and reloads; a dispatcher picks one on the colour-maths registers and jumps
+ * to it, so the leaf returns to the dispatcher's caller.
  *
- * The mosaic tail is handed back rather than taken - see the mosaic tail note in git history - because
- * test/difftest_mvall.c records the register state at the jump into
- * domosaic16b, which a call from in here could not reproduce.
+ * The mosaic tail is handed back rather than taken: the assembly reached
+ * domosaic16b by a jump, and test/difftest_mvall.c records the register state
+ * there.
  *
- * The window path is taken when curmosaicsz *is* 1 and winon is set. Reading
- * that the other way round caught a first attempt.
+ * The window path needs curmosaicsz == 1 *and* winon set.
  */
 
 #include "c_mv16draw.h"
@@ -21,8 +20,8 @@ extern u1 transpbuf[];
 
 extern zreg MVSAX, MVSBX, MVSCX, MVSDX, MVSSI, MVSDI, MVSBP, MVSMosaic;
 extern zreg MVAX, MVBX, MVCX, MVDX, MVSI;
-extern u4 TTAX, TTBX, TTCX, TTDX, TTSI, TTDI, TTBP, TTTail;
-extern u4 T8AX, T8BX, T8CX, T8DX, T8SI, T8DI, T8BP, T8Tail;
+extern zreg TTAX, TTBX, TTCX, TTDX, TTSI, TTDI, TTBP, TTTail;
+extern zreg T8AX, T8BX, T8CX, T8DX, T8SI, T8DI, T8BP, T8Tail;
 
 void c_draw16tms_setup(void);
 void c_draw8x816tms_body(void);

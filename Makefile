@@ -142,7 +142,10 @@ ifeq ($(ARCH),DARWIN)
 # deprecated wholesale in 10.14 and still ships.
 FEATURE_FLAGS := -D_DARWIN_C_SOURCE -DGL_SILENCE_DEPRECATION
 endif
-COMMON_FLAGS = $(ARCH_CFLAGS) -pthread $(PIC_FLAGS) -std=c11 $(FEATURE_FLAGS) -O3 -D_FORTIFY_SOURCE=2 -ffunction-sections -fdata-sections -Wfatal-errors $(WARN_FLAGS)
+# -fno-common: Apple's clang still defaults to -fcommon, so two tentative
+# definitions of one name merge silently instead of failing the link. gcc and
+# mainline clang have defaulted the other way for years.
+COMMON_FLAGS = $(ARCH_CFLAGS) -pthread $(PIC_FLAGS) -std=c11 $(FEATURE_FLAGS) -O3 -D_FORTIFY_SOURCE=2 -ffunction-sections -fdata-sections -fno-common -Wfatal-errors $(WARN_FLAGS)
 
 CFLAGS += $(COMMON_FLAGS)
 # x87-only maths, to keep the 32-bit build's floating point exactly what the
@@ -975,8 +978,11 @@ PORTCHECK_CC     ?= gcc
 # The optional audio backends carry their own per-architecture headers, which
 # a portability compile has no reason to demand.
 PORTCHECK_DEFS   := $(filter-out -D__PIPEWIRE__ -D__LIBAO__,$(CFGDEFS))
-PORTCHECK_CFLAGS ?= -std=c11 -D_DEFAULT_SOURCE -D_POSIX_C_SOURCE=200809L \
-                    -O1 -I. $(PORTCHECK_DEFS)
+# This compiles against the host's headers, so it needs the host's feature
+# macros and the -I flags pkg-config found: a host that keeps SDL and libpng
+# outside /usr/include otherwise fails every file that includes one.
+PORTCHECK_CFLAGS ?= -std=c11 $(FEATURE_FLAGS) \
+                    -O1 -I. $(PORTCHECK_DEFS) $(CFLAGS_SDL) $(CFLAGS_PNG)
 PORTCHECK_ARM_CC ?= aarch64-linux-gnu-gcc
 .PHONY: portcheck
 portcheck: $(HDRS)

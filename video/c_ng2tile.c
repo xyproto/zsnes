@@ -286,22 +286,18 @@ static void drawtile_line(zreg* const r, int const f, depth const* const d)
 
 /* --- the 8x8 line drawers ------------------------------------------------ *
  *
- * A different family from the tile drawers, and not a variation on them. A
- * line drawer writes one scanline rather than a whole tile row, and it reads
- * the *primary* cache - raw palette indices - looking each pixel up in
- * CPalPtrng as it goes, where the tile drawers read sixteen-bit colours that
- * docache converted up front. So there is no secondary cache and no cache key
- * here; a miss just calls cachesingleNbng and carries on.
+ * A separate family from the tile drawers, not a variation on them: a line
+ * drawer writes one scanline and reads the *primary* cache - raw palette
+ * indices, looked up in CPalPtrng per pixel - so there is no secondary cache
+ * and no cache key, and a miss just calls cachesingleNbng.
  *
  * Transparency is the low bits of the index: `add bl,dl` puts the pixel in its
- * palette block and `test bl,mask` asks whether it is entry zero of that
- * block, which is what the 03h/0Fh/0FFh macro argument is for. The tile
- * drawers never used it.
+ * palette block and `test bl,mask` asks whether it is entry zero, which is what
+ * the 03h/0Fh/0FFh macro argument selects.
  *
- * Note also that drawlineng16b's full-tile path is dead: the tltype test falls
- * through to an unconditional `jmp %%parttile`, so every tile takes the
- * per-pixel path whatever the cache says. Only this one macro has that - the
- * 16x16 and 16x8 line drawers do not - so do not carry the assumption over.
+ * drawlineng16b's full-tile path is dead - the tltype test falls through to an
+ * unconditional jump - but only in this macro; the 16x16 and 16x8 line drawers
+ * still take it.
  */
 enum { L_T = 1, /* the second palette, 512 bytes on */
     L_MS = 2, /* the sub screen as well */
@@ -1302,6 +1298,7 @@ static void om_advance(zreg* const r, int const mode, int const opts)
 {
     u4 eax = r[R_EAX];
     u4 ebx, ecx, edx;
+    zreg omp; /* ofsmcptr plus an offset: a host address */
 
     bg1totng[ng16bbgval]++;
     ofsmmptr = (ofsmmptr & 0xFFFF0000u) | (u2)((u2)ofsmmptr + 2u);
@@ -1321,12 +1318,12 @@ static void om_advance(zreg* const r, int const mode, int const opts)
 
     /* The vertical offset. Mode 4 reads the entry behind the cursor and wants
        the 8000h bit set; mode 2 reads the cursor itself. */
-    ebx = ofsmcptr + ofsmcptr2;
+    omp = ofsmcptr + ofsmcptr2;
     ecx = ofsmval;
     ofshvaladd += 8u;
     {
-        u4 const v = (mode == 4) ? *(u4 const*)(uintptr_t)(ebx - 0x40u)
-                                 : *(u4 const*)(uintptr_t)ebx;
+        u4 const v = (mode == 4) ? *(u4 const*)(uintptr_t)(omp - 0x40u)
+                                 : *(u4 const*)(uintptr_t)omp;
         int const take = (mode == 4) ? ((v & 0x8000u) && (v & ecx))
                                      : ((v & ecx) != 0);
         if (take) {
@@ -1345,14 +1342,14 @@ static void om_advance(zreg* const r, int const mode, int const opts)
     }
 
     /* The horizontal one, always from the entry behind the cursor. */
-    ebx = ofsmcptr + ofsmcptr2;
+    omp = ofsmcptr + ofsmcptr2;
     ofsmcptr2 = (ofsmcptr2 + 2u) & 0x3Fu;
     ecx = (opts & OM_HV_ALT) ? ofsmval : ofsmvalh;
     if ((opts & OM_WRAP) && (ofsmcptr2 & 0x3Fu) == 0)
-        ofsmcptr = (ofsmcptr & 0xFFFF0000u)
+        ofsmcptr = (ofsmcptr & ~(zreg)0xFFFFu)
             | (u2)((u2)ofsmcptr + (u2)bgtxadd2);
     {
-        u4 const v = *(u4 const*)(uintptr_t)(ebx - 0x40u);
+        u4 const v = *(u4 const*)(uintptr_t)(omp - 0x40u);
 
         if (!(mode == 4 && (v & 0x8000u)) && (v & ecx)) {
             eax = (eax & 0xFFFF0000u)
@@ -1421,6 +1418,7 @@ static void om_advance_16x16(zreg* const r, int const mode, int const opts)
 {
     u4 eax = r[R_EAX];
     u4 ebx, ecx, edx;
+    zreg omp; /* ofsmcptr plus an offset: a host address */
     int const second = (switch16x16 & 1u) != 0;
 
     if (second) {
@@ -1440,12 +1438,12 @@ static void om_advance_16x16(zreg* const r, int const mode, int const opts)
         ofsmtptr = (ofsmtptr & 0xFFFF0000u) | (u2)((u2)ofsmtptr + bx);
     }
 
-    ebx = ofsmcptr + ofsmcptr2;
+    omp = ofsmcptr + ofsmcptr2;
     ecx = ofsmval;
     ofshvaladd += 8u;
     {
-        u4 const v = (mode == 4) ? *(u4 const*)(uintptr_t)(ebx - 0x40u)
-                                 : *(u4 const*)(uintptr_t)ebx;
+        u4 const v = (mode == 4) ? *(u4 const*)(uintptr_t)(omp - 0x40u)
+                                 : *(u4 const*)(uintptr_t)omp;
         int const take = (mode == 4) ? ((v & 0x8000u) && (v & ecx))
                                      : ((v & ecx) != 0);
         if (take) {
@@ -1477,14 +1475,14 @@ static void om_advance_16x16(zreg* const r, int const mode, int const opts)
         }
     }
 
-    ebx = ofsmcptr + ofsmcptr2;
+    omp = ofsmcptr + ofsmcptr2;
     ofsmcptr2 = (ofsmcptr2 + 2u) & 0x3Fu;
     ecx = (opts & OM_HV_ALT) ? ofsmval : ofsmvalh;
     if ((opts & OM_WRAP) && (ofsmcptr2 & 0x3Fu) == 0)
-        ofsmcptr = (ofsmcptr & 0xFFFF0000u)
+        ofsmcptr = (ofsmcptr & ~(zreg)0xFFFFu)
             | (u2)((u2)ofsmcptr + (u2)bgtxadd2);
     {
-        u4 const v = *(u4 const*)(uintptr_t)(ebx - 0x40u);
+        u4 const v = *(u4 const*)(uintptr_t)(omp - 0x40u);
 
         if (!(mode == 4 && (v & 0x8000u)) && (v & ecx)) {
             eax = (eax & 0xFFFF0000u)

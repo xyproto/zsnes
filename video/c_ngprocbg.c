@@ -36,7 +36,9 @@ extern u4 csprival;
 extern u1 winon, intrlng[256], scadsng[256], vidbright, prevbrightdc;
 extern u1 Mode7HiRes16b, scanlines, mode7set;
 extern u2 BG1SXl[256], m7starty;
-extern u4 mode7A, mode7C, mode7X0;
+/* The A+B, C+D and X0+Y0 word pairs are adjacent and saved and restored a
+   dword at a time; the _dw aliases name the pair (cpu/c_regsdata.c). */
+extern u1 mode7A_dw[4], mode7C_dw[4], mode7X0_dw[4];
 extern u4 Mode7BackA, Mode7BackC, Mode7BackX0, Mode7BackSet;
 extern u4 mode7ab[256], mode7cd[256], mode7xy[256];
 extern u1 mode7st[256];
@@ -322,6 +324,16 @@ enum {
     M7_EXTBG2
 };
 
+static u4 m7dwr(void const* const p)
+{
+    u4 v;
+
+    memcpy(&v, p, 4);
+    return v;
+}
+
+static void m7dww(void* const p, u4 const v) { memcpy(p, &v, 4); }
+
 void c_procmode7ng16b(int main_, u4 mask, int kind);
 
 void c_procmode7ng16b(int const main_, u4 const mask, int const kind)
@@ -330,9 +342,9 @@ void c_procmode7ng16b(int const main_, u4 const mask, int const kind)
     u4 y = 1;
 
     winon = 0;
-    Mode7BackA = mode7A;
-    Mode7BackC = mode7C;
-    Mode7BackX0 = mode7X0;
+    Mode7BackA = m7dwr(mode7A_dw);
+    Mode7BackC = m7dwr(mode7C_dw);
+    Mode7BackX0 = m7dwr(mode7X0_dw);
     Mode7BackSet = mode7set;
     for (;;) {
         if (kind == M7_EXTBG) {
@@ -350,9 +362,9 @@ void c_procmode7ng16b(int const main_, u4 const mask, int const kind)
                 esi[-1] = 1;
             }
             DLR[6] = cpalval[y];
-            mode7A = mode7ab[y];
-            mode7C = mode7cd[y];
-            mode7X0 = mode7xy[y];
+            m7dww(mode7A_dw, mode7ab[y]);
+            m7dww(mode7C_dw, mode7cd[y]);
+            m7dww(mode7X0_dw, mode7xy[y]);
             mode7set = mode7st[y];
             curmosaicsz = 1;
             if (mosenng[y] & 1u) {
@@ -407,8 +419,8 @@ void c_procmode7ng16b(int const main_, u4 const mask, int const kind)
             break;
         }
     }
-    mode7A = Mode7BackA;
-    mode7C = Mode7BackC;
-    mode7X0 = Mode7BackX0;
+    m7dww(mode7A_dw, Mode7BackA);
+    m7dww(mode7C_dw, Mode7BackC);
+    m7dww(mode7X0_dw, Mode7BackX0);
     mode7set = (u1)Mode7BackSet;
 }

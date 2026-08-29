@@ -1,18 +1,12 @@
 /* Colour-maths variants from ProcessTransparencies (video/newgfx16.asm).
  *
- * That routine combines a finished main and sub screen pixel by pixel, in one
- * of five ways chosen by two bits of scadtng. `perf` puts it at about 9% of a
- * run - the hottest code in the emulator - so unlike most of the video files it
- * really is reachable and a pixel A/B can verify it. It is being moved one
- * variant at a time, because a first attempt at all five diverged on Super
- * Metroid and there was no way to tell which variant was at fault.
+ * Combines a finished main and sub screen pixel by pixel, one of five ways
+ * chosen by two bits of scadtng. About 9% of a run - the hottest code here.
  *
- * The register-level detail matters here. HalfTrans is 0xF7DEF7DE, so its upper
- * half is set too: `and edx,HalfTrans` does not clear the top of the register,
- * and the `shr` after it can walk bit 16 down into bit 15 of the stored pixel.
- * Hence the pushad seam and u4 everywhere. In this variant both eax and edx are
- * zeroed on entry, so nothing from the caller leaks in - that is not true of
- * every variant.
+ * Register width matters: HalfTrans is 0xF7DEF7DE, so `and edx,HalfTrans`
+ * leaves the top of the register set and the `shr` after it walks bit 16 down
+ * into bit 15 of the stored pixel. Hence the pushad seam and u4 throughout.
+ * This variant zeroes eax and edx on entry; not every variant does.
  */
 #include <stdint.h>
 

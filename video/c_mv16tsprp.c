@@ -40,7 +40,7 @@ extern u2 fulladdtab[65537]; /* the dword load below reads one past */
 extern u1* curvidoffset;
 
 typedef struct {
-    u4 ax, bx, cx, dx, si, di, bp;
+    zreg ax, bx, cx, dx, si, di, bp;
 } regs;
 
 /* transpbuf as the assembly indexes it: `transpbuf+32` is word 16, the same
@@ -207,7 +207,7 @@ static void draw_single(regs* const r, int const mode, int const win)
     r->di = (zreg)(uintptr_t)edi;
     /* edx is the walk's starting address, and stays that unless a pixel draws
        over it with something. */
-    r->dx = (zreg)(uintptr_t)esi + (u4)cl * 8u - 8u;
+    r->dx = (zreg)(uintptr_t)(esi + cl - 1);
     esi = (SpriteInfo const*)(uintptr_t)r->dx;
     do {
         int const flip = (esi->status & 0x20u) != 0;

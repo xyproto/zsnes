@@ -1005,7 +1005,6 @@ void DSP3_OP10()
         DSP3_Reset();
     } else {
         // absorb 2 bytes
-        DSP3_DR = DSP3_DR;
     }
 }
 

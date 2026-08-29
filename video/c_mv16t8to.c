@@ -23,14 +23,14 @@
 #include "c_mv16tt.h"
 #include "makevid.h"
 
-u4 TOAX;
-u4 TOBX;
-u4 TOCX;
-u4 TODX;
-u4 TOSI;
-u4 TODI;
-u4 TOBP;
-u4 TOTail; /* 1 = tail-jump to domosaic16b */
+zreg TOAX;
+zreg TOBX;
+zreg TOCX;
+zreg TODX;
+zreg TOSI;
+zreg TODI;
+zreg TOBP;
+zreg TOTail; /* 1 = tail-jump to domosaic16b */
 
 extern u1 tileleft16b, scaddtype, coadder16;
 extern u2 scrnon;
@@ -101,7 +101,7 @@ static void tiles(tt_regs* const r, u4 const hofs, u1* esi, int const mode,
     /* Every one of the six clears eax before its tail. */
     r->ax = 0;
     r->cx = ecx;
-    r->dx = winon_ ? (u4)(uintptr_t)win : edx;
+    r->dx = winon_ ? (zreg)(uintptr_t)win : edx;
     r->si = (zreg)(uintptr_t)esi;
     r->di = (zreg)(uintptr_t)edi;
     r->bp = (zreg)(uintptr_t)ebp;

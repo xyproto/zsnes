@@ -524,7 +524,7 @@ void clearback16b(void)
     while (buf += 4, --n != 0);
 }
 
-static void sprdrawpra16b(u4 const eax, u1 const cl, u1 const ch, u4 const ebx, u2* const edi, u4 const p1)
+static void sprdrawpra16b(u4 const eax, u1 const cl, u1 const ch, s4 const ebx, u2* const edi, s4 const p1)
 {
     if (eax == 0)
         return;
@@ -534,14 +534,14 @@ static void sprdrawpra16b(u4 const eax, u1 const cl, u1 const ch, u4 const ebx, 
     sprpriodata[ebx - p1 + 16] |= cl;
 }
 
-static void sprdrawprb16b(u4 const eax, u1 const cl, u1 const ch, u4 const ebx, u2* const edi, u4 const p1)
+static void sprdrawprb16b(u4 const eax, u1 const cl, u1 const ch, s4 const ebx, u2* const edi, s4 const p1)
 {
     if (eax == 0)
         return;
     edi[ebx - p1] = pal16b[(eax + ch) & 0xFF];
 }
 
-static void sprdrawa16b(u1 const cl, u1 const ch, u4 const ebx, u1* const esi, u2* const edi, void (*const f)(u4 eax, u1 cl, u1 ch, u4 ebx, u2* edi, u4 p1))
+static void sprdrawa16b(u1 const cl, u1 const ch, s4 const ebx, u1* const esi, u2* const edi, void (*const f)(u4 eax, u1 cl, u1 ch, s4 ebx, u2* edi, s4 p1))
 {
     f(esi[0], cl, ch, ebx, edi, 8);
     f(esi[1], cl, ch, ebx, edi, 7);
@@ -553,7 +553,7 @@ static void sprdrawa16b(u1 const cl, u1 const ch, u4 const ebx, u1* const esi, u
     f(esi[7], cl, ch, ebx, edi, 1);
 }
 
-static void sprdrawaf16b(u1 const cl, u1 const ch, u4 const ebx, u1* const esi, u2* const edi, void (*const f)(u4 eax, u1 cl, u1 ch, u4 ebx, u2* edi, u4 p1))
+static void sprdrawaf16b(u1 const cl, u1 const ch, s4 const ebx, u1* const esi, u2* const edi, void (*const f)(u4 eax, u1 cl, u1 ch, s4 ebx, u2* edi, s4 p1))
 {
     f(esi[0], cl, ch, ebx, edi, 1);
     f(esi[1], cl, ch, ebx, edi, 2);
@@ -565,14 +565,14 @@ static void sprdrawaf16b(u1 const cl, u1 const ch, u4 const ebx, u1* const esi, 
     f(esi[7], cl, ch, ebx, edi, 8);
 }
 
-static void sprdrawpra2(u1 const dl, u4 const ebx, u4 const p1, u1 const p2)
+static void sprdrawpra2(u1 const dl, s4 const ebx, s4 const p1, u1 const p2)
 {
     if (p2 == 0)
         return;
     sprpriodata[ebx - p1 + 16] |= dl;
 }
 
-static void sprdrawaf(u1 const dl, u4 const ebx, u1* const esi, void (*const f)(u1 dl, u4 ebx, u4 p1, u1 p2))
+static void sprdrawaf(u1 const dl, s4 const ebx, u1* const esi, void (*const f)(u1 dl, s4 ebx, s4 p1, u1 p2))
 {
     f(dl, ebx, 1, esi[0]);
     f(dl, ebx, 2, esi[1]);
@@ -584,7 +584,7 @@ static void sprdrawaf(u1 const dl, u4 const ebx, u1* const esi, void (*const f)(
     f(dl, ebx, 8, esi[7]);
 }
 
-static void sprdrawa(u1 const dl, u4 const ebx, u1* const esi, void (*const f)(u1 dl, u4 ebx, u4 p1, u1 p2))
+static void sprdrawa(u1 const dl, s4 const ebx, u1* const esi, void (*const f)(u1 dl, s4 ebx, s4 p1, u1 p2))
 {
     f(dl, ebx, 8, esi[0]);
     f(dl, ebx, 7, esi[1]);
@@ -596,7 +596,7 @@ static void sprdrawa(u1 const dl, u4 const ebx, u1* const esi, void (*const f)(u
     f(dl, ebx, 1, esi[7]);
 }
 
-static void sprdrawpraw16b(u4 const eax, u1 const cl, u1 const ch, u4 const ebx, u2* const edi, u4 const p1)
+static void sprdrawpraw16b(u4 const eax, u1 const cl, u1 const ch, s4 const ebx, u2* const edi, s4 const p1)
 {
     if (eax == 0)
         return;
@@ -608,7 +608,7 @@ static void sprdrawpraw16b(u4 const eax, u1 const cl, u1 const ch, u4 const ebx,
     sprpriodata[ebx - p1 + 16] |= cl;
 }
 
-static void sprdrawprbw16b(u4 const eax, u1 const cl, u1 const ch, u4 const ebx, u2* const edi, u4 const p1)
+static void sprdrawprbw16b(u4 const eax, u1 const cl, u1 const ch, s4 const ebx, u2* const edi, s4 const p1)
 {
     if (eax == 0)
         return;

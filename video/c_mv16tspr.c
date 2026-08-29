@@ -40,7 +40,7 @@ extern u4 pal16b[256];
 extern u1* curvidoffset;
 
 typedef struct {
-    u4 ax, bx, cx, dx, si, di, bp;
+    zreg ax, bx, cx, dx, si, di, bp;
 } regs;
 
 /* The transparency buffer as the assembly indexes it: `transpbuf+32` is word
@@ -114,7 +114,7 @@ static void draw_plain(regs* const r, int const win)
    claimed the pixel, then claim it. sprdrawprb16bt is the same without the
    mask, used where only one sprite can reach the line. */
 static void spr_pixel(regs* const r, u4 const eax, u1 const cl, u1 const ch,
-    u4 const ebx, u2* const edi, u4 const p1, int const prb)
+    s4 const ebx, u2* const edi, s4 const p1, int const prb)
 {
     r->ax = eax;
     if (eax == 0) {
@@ -172,7 +172,7 @@ static void draw_single(regs* const r)
     r->di = (zreg)(uintptr_t)edi;
     /* edx is the walk's starting address, and stays that unless a pixel draws
        over it with a palette entry. */
-    r->dx = (zreg)(uintptr_t)esi + (u4)cl * 8u - 8u;
+    r->dx = (zreg)(uintptr_t)(esi + cl - 1);
     esi = (SpriteInfo const*)(uintptr_t)r->dx;
     r->ax = 0;
     do {

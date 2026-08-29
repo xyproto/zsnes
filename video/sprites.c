@@ -42,7 +42,6 @@ void cachesprites(void);
 
 // Alignment-safe unaligned access (the asm does unaligned stores freely on x86).
 static inline void st16(u1* p, u2 v) { memcpy(p, &v, 2); }
-static inline void st32(u1* p, u4 v) { memcpy(p, &v, 4); }
 static inline u2 ld16(const u1* p)
 {
     u2 v;

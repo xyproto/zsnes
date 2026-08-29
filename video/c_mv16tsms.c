@@ -29,7 +29,7 @@ zreg MVSBP;
 
 /* Non-zero when the caller must tail-jump to domosaic16b, which the assembly
    does with dh carrying curmosaicsz. */
-u4 MVSMosaic;
+zreg MVSMosaic;
 
 extern u1 tileleft16b, drawn, temp, bshifter, curbgpr, bgcoloradder;
 extern u1 curmosaicsz;
@@ -181,7 +181,7 @@ static void draw_row(int const winon, int const sub, int const mosaic)
     MVSAX = r.eax;
     MVSBX = r.ebx;
     MVSCX = r.ecx;
-    MVSDX = winon ? (u4)(uintptr_t)edx
+    MVSDX = winon ? (zreg)(uintptr_t)edx
                   : ((MVSDX & ~0xFFFFu) | ((u4)dh << 8) | dl);
     MVSSI = (zreg)(uintptr_t)esi;
     MVSBP = (zreg)(uintptr_t)ebp;
@@ -320,7 +320,7 @@ static void draw_row_a(int const winon)
     MVSAX = r.eax;
     MVSBX = r.ebx;
     MVSCX = r.ecx;
-    MVSDX = winon ? (u4)(uintptr_t)edx
+    MVSDX = winon ? (zreg)(uintptr_t)edx
                   : ((MVSDX & ~0xFFFFu) | ((u4)dh << 8) | dl);
     MVSSI = (zreg)(uintptr_t)esi;
     MVSBP = (zreg)(uintptr_t)ebp;
@@ -463,7 +463,7 @@ static void draw_row16(enum mv16var const var, int const winon)
     MVSAX = r.eax;
     MVSBX = r.ebx;
     MVSCX = r.ecx;
-    MVSDX = winon ? (u4)(uintptr_t)edx
+    MVSDX = winon ? (zreg)(uintptr_t)edx
                   : ((MVSDX & ~0xFFFFu) | ((u4)dh << 8) | dl);
     MVSSI = (zreg)(uintptr_t)esi;
     MVSBP = (zreg)(uintptr_t)ebp;

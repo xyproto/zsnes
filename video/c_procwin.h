@@ -7,7 +7,7 @@
    straight afterwards. See video/c_procwin.c. */
 typedef struct
 {
-    u4 ax, bx, cx, si;
+    zreg ax, bx, cx, si;
 } pwregs;
 
 void c_procwindowback16t(pwregs* r);

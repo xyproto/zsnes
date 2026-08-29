@@ -207,12 +207,7 @@ static void copy_state_data(uint8_t* buffer, void (*copy_func)(uint8_t**, void*,
     if (spcon) {
         copy_spc_data(&buffer, copy_func);
         zst_mark("spc");
-        /*
-    if (buffer) //Rewind stuff
-    {
-      copy_func(&buffer, &echoon0, PHdspsave2);
-    }
-    */
+        /* The echo-on run after the DSP block is not part of the format. */
     }
 
     if (C4Enable) {
@@ -591,9 +586,9 @@ void PrepareSaveState()
     int i;
 
     spcPCRamSt = (uint32_t)(spcPCRam - SPCRAM);
-    /* initaddrl used to be a dword in the opcd run and was written straight
-       out. It is a host pointer, so it now lives in its own pointer-sized
-       slot and the run keeps the dword the file format expects. */
+    /* initaddrl used to be a dword in the opcd run. It is a host pointer, so it
+       lives in its own pointer-sized slot now and this keeps the dword the file
+       format expects; nothing reads it back. */
     initaddrlSt = (uint32_t)(uintptr_t)initaddrl;
     spcRamDPSt = (uint32_t)(spcRamDP - SPCRAM);
 
@@ -637,8 +632,11 @@ void RestoreSA1()
     CurBWPtr = romdata + CurBWPtrSt;
     SA1BWPtr = romdata + SA1BWPtrSt;
     SNSBWPtr = romdata + SNSBWPtrSt;
-    SNSPtr = (uint8_t*)(uintptr_t)SNSPtrSt;
-    SNSRegPCS = (uint8_t*)(uintptr_t)SNSRegPCSSt;
+    /* SNSPtrSt and SNSRegPCSSt are the raw host pointers a 32-bit build wrote,
+       so they cannot be restored on a 64-bit one - and need not be: both live
+       values are rewritten on the next SA-1 swap-in, before anything reads
+       them back on the way out. The save still writes the dwords the file
+       format expects. */
 
     if ((SA1Stat & 0xFF) == 1) {
         SA1RegPCS = IRAM;
@@ -656,7 +654,8 @@ void ResetState()
     int i;
 
     spcPCRam = SPCRAM + spcPCRamSt;
-    initaddrl = (u1*)(uintptr_t)initaddrlSt;
+    /* initaddrlSt is the same kind of raw pointer, and the exec loop works the
+       bank base out from xpb/xpc on entry, so there is nothing to restore. */
     spcRamDP = SPCRAM + spcRamDPSt;
 
     for (i = 0; i < 8; i++) {

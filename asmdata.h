@@ -3,34 +3,53 @@
 
 // Portable inline-asm data layout directives.  A few data blocks are emitted
 // via inline asm to force exact symbol order and adjacency (relied on by the
-// asm core and the save-state code).  ELF and PE/COFF differ in section syntax
-// and symbol naming (PE/COFF prefixes an underscore), so abstract it here.
-// ASM_GSYM exports _sym and keeps a plain sym alias for intra-block references.
-// That alias is file-local, so use ASM_SYMREF to name a symbol from another
-// object (e.g. a pointer initialised to someone else's array).
+// asm core and the save-state code).  ELF, Mach-O and PE/COFF differ in section
+// syntax and symbol naming (Mach-O and 32-bit PE/COFF prefix an underscore), so
+// abstract it here.
+// ASM_GSYM defines an exported symbol, ASM_LSYM a file-local one; name either
+// from elsewhere in the asm text with ASM_SYMREF / ASM_LSYMREF.
 // Sizes must mean the same thing on every target, so spell them
 // .byte/.short/.long: aarch64 reads .word as four bytes where x86 reads two,
 // and these blocks came from NASM's dw.
 
-#if defined(__APPLE__) || defined(__MINGW32__)
+#if defined(__APPLE__)
+// clang always emits .subsections_via_symbols, so ld64 cuts a section into
+// independently placed atoms at every symbol and -dead_strip drops the
+// unreferenced ones, collapsing the block.  .alt_entry on every symbol keeps
+// the block one atom; the first symbol of a section may not be one, hence the
+// once-per-section anchor.  Local labels take an L prefix, which keeps them out
+// of the symbol table so they do not split the atom either.
+#define ASM_MACHO_ANCHOR(name) ".ifndef zsnes_anchor" name "\nzsnes_anchor" name ":\n.endif\n"
+#define ASM_SEC_DATA(name) ".section " name ",\"dw\"\n" ASM_MACHO_ANCHOR(name)
+#define ASM_SEC_BSS(name) ".section " name ",\"bw\"\n" ASM_MACHO_ANCHOR(name)
+#define ASM_SEC_END ".text\n"
+#define ASM_GSYM(sym) ".global _" #sym "\n.alt_entry _" #sym "\n_" #sym ":\n"
+#define ASM_SYMREF(sym) "_" #sym
+#define ASM_LSYM(sym) "L" #sym ":\n"
+#define ASM_LSYMREF(sym) "L" #sym
+#elif defined(__MINGW32__)
 #define ASM_SEC_DATA(name) ".section " name ",\"dw\"\n"
 #define ASM_SEC_BSS(name) ".section " name ",\"bw\"\n"
 #define ASM_SEC_END ".text\n"
-/* Mach-O and 32-bit PE/COFF prefix an underscore; x86-64 Windows does not,
-   and mingw-w64 defines __MINGW32__ for both word sizes. */
+// 32-bit PE/COFF prefixes an underscore; x86-64 Windows does not, and
+// mingw-w64 defines __MINGW32__ for both word sizes.
 #ifdef _WIN64
 #define ASM_GSYM(sym) ".global " #sym "\n" #sym ":\n"
 #define ASM_SYMREF(sym) #sym
 #else
-#define ASM_GSYM(sym) ".global _" #sym "\n_" #sym ":\n" #sym ":\n"
+#define ASM_GSYM(sym) ".global _" #sym "\n_" #sym ":\n"
 #define ASM_SYMREF(sym) "_" #sym
 #endif
+#define ASM_LSYM(sym) #sym ":\n"
+#define ASM_LSYMREF(sym) #sym
 #else
 #define ASM_SEC_DATA(name) ".pushsection " name ",\"aw\",@progbits\n"
 #define ASM_SEC_BSS(name) ".pushsection " name ",\"aw\",@nobits\n"
 #define ASM_SEC_END ".popsection\n"
 #define ASM_GSYM(sym) ".global " #sym "\n" #sym ":\n"
 #define ASM_SYMREF(sym) #sym
+#define ASM_LSYM(sym) #sym ":\n"
+#define ASM_LSYMREF(sym) #sym
 #endif
 
 /* Spell a macro's value into the asm text, for sizes that follow the target

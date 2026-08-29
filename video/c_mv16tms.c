@@ -15,10 +15,10 @@
 
 #include "../types.h"
 
-u4 MVAX;
-u4 MVBX;
-u4 MVCX;
-u4 MVDX;
+zreg MVAX;
+zreg MVBX;
+zreg MVCX;
+zreg MVDX;
 zreg MVSI;
 
 extern u1 temp, bshifter; /* video/makevid.c */
@@ -63,12 +63,12 @@ void c_draw16tms_setup(void)
     /* Which cache the tile pointer is in decides how far a clipped tile has to
        be pulled back. The tests are unsigned and run largest cache first. */
     bgsubby = 262144u;
-    bgofwptr = (u4)(uintptr_t)vcache2b + 262144u;
+    bgofwptr = (zreg)(uintptr_t)vcache2b + 262144u;
     if (tempcach >= bgofwptr) {
         bgsubby = 131072u;
-        bgofwptr = (u4)(uintptr_t)vcache4b + 131072u;
+        bgofwptr = (zreg)(uintptr_t)vcache4b + 131072u;
         if (tempcach >= bgofwptr) {
-            bgofwptr = (u4)(uintptr_t)vcache8b + 65536u;
+            bgofwptr = (zreg)(uintptr_t)vcache8b + 65536u;
             bgsubby = 65536u;
         }
     }
@@ -125,12 +125,12 @@ void c_draw16x16tms_setup(void)
     }
 
     bgsubby = 262144u;
-    bgofwptr = (u4)(uintptr_t)vcache2b + 262144u;
+    bgofwptr = (zreg)(uintptr_t)vcache2b + 262144u;
     if (tempcach >= bgofwptr) {
         bgsubby = 131072u;
-        bgofwptr = (u4)(uintptr_t)vcache4b + 131072u;
+        bgofwptr = (zreg)(uintptr_t)vcache4b + 131072u;
         if (tempcach >= bgofwptr) {
-            bgofwptr = (u4)(uintptr_t)vcache8b + 65536u;
+            bgofwptr = (zreg)(uintptr_t)vcache8b + 65536u;
             bgsubby = 65536u;
         }
     }

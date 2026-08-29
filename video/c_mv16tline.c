@@ -337,7 +337,7 @@ static void main_line(void)
     u4 const y = curypos;
 
     DLR[1] = y << 6;
-    DLR[4] = (y << 9) + DLR[1] + 32u + (u4)(uintptr_t)vidbuffer;
+    DLR[4] = (y << 9) + DLR[1] + 32u + (zreg)(uintptr_t)vidbuffer;
     curvidoffset = (u1*)(uintptr_t)DLR[4];
 }
 

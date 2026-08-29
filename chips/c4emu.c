@@ -285,7 +285,6 @@ void C4Op1F()
     } else {
         tanval = ((double)C41FYVal) / ((double)C41FXVal);
         C41FAngleRes = (short)(atan(tanval) / (PI * 2) * 512);
-        C41FAngleRes = C41FAngleRes;
         if (C41FXVal < 0)
             C41FAngleRes += 0x100;
         C41FAngleRes &= 0x1FF;

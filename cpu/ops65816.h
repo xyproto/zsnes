@@ -1641,17 +1641,9 @@ RMW(OP(COp0Cm8), a_a_8ni, o_TSB8, a_a_8w)
 RMW(OP(COp0Cm16), a_a_16ni, o_TSB16, a_a_16w)
 
 /*
- * ADC and SBC.
- *
- * The binary forms are a plain x86 add/subtract-with-carry. The decimal forms
- * follow it with DAA or DAS, and there the port has to make a decision the
- * assembly did not: Intel documents both instructions as leaving OF undefined,
- * yet the core reads OF immediately afterwards with `seto byte[flago]`. So the
- * emulator's V flag in decimal mode has always been whatever the host CPU
- * happened to do. Measured over all 131072 inputs on an i7-9750H, DAA and DAS
- * both clear OF every time, and the 65816 itself leaves V undefined in decimal
- * mode - so this clears V there. AL and the carry follow the documented
- * algorithm, which reproduces the hardware exactly (also checked exhaustively).
+ * ADC and SBC. The binary forms are a plain x86 add/subtract-with-carry; the
+ * decimal forms follow it with DAA or DAS, whose OF the core then reads with
+ * `seto byte[flago]`. See decimal_of below for what that leaves in V.
  *
  * Carry in differs between the two: ADC does `add cl,cl` and takes bit 7 of
  * flagc, SBC does `sub cl,1` and borrows when flagc's low byte is zero. Both
@@ -1686,15 +1678,12 @@ static inline void nvzc16(zreg* const r, int const of, int const cf)
  * before the first one, and DAS - unlike DAA - leaves CF alone when it is not
  * taken.
  *
- * OF as well, because the assembly stored it: the decimal ADC/SBC macros ended
- * `daa` / `seto byte[flago]`, so the 65816's V in decimal mode is whatever the
- * host left there. Intel documents OF after DAA/DAS as undefined, but it is
- * not arbitrary - it is the signed overflow of the one *combined* adjustment
- * (0, 6, 60h or 66h) applied to the entering AL, and clear when there is no
- * adjustment at all. Verified exhaustively against hardware over all 1024
- * (AL, CF, AF) input states for both instructions; OF does not depend on the
- * incoming OF. ZSNES only ever ran on x86, so reproducing this is what makes
- * the port a port rather than a reinterpretation.
+ * OF too, because the assembly stored it. Intel documents it as undefined
+ * after DAA/DAS, but on x86 it is the signed overflow of the one *combined*
+ * adjustment (0, 6, 60h or 66h) applied to the entering AL, and clear when
+ * there is no adjustment - exhaustively checked over all 1024 (AL, CF, AF)
+ * states, and independent of the incoming OF. The 65816 leaves V undefined in
+ * decimal mode, so what lands in flago is only ever what the assembly did.
  */
 static inline int decimal_of(u1 const old, u4 const adj, u1 const res,
     int const sub)

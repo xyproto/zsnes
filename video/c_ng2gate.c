@@ -22,7 +22,10 @@ enum { R_EDI,
     R_ECX,
     R_EAX };
 
-extern u1 BGMS1[], FillSubScr[], curmosaicsz, ngwinen;
+extern u1 BGMS1[], FillSubScr[], curmosaicsz;
+/* A dword in video/newgfx.c, though the assembly only ever tested its low byte
+   - which is all it is ever set to. */
+extern u4 ngwinen;
 extern zreg CMainWinScr, CSubWinScr;
 extern u4 mosclineval, mostranspval;
 
@@ -64,13 +67,13 @@ void c_determinetransp(zreg* const r)
 
 void c_checkwindowing(zreg* const r)
 {
-    ng_branch = (ngwinen != 0 && *(u1 const*)(uintptr_t)r[R_ECX] != 0) ? 1 : 0;
+    ng_branch = ((u1)ngwinen != 0 && *(u1 const*)(uintptr_t)r[R_ECX] != 0) ? 1 : 0;
 }
 
 /* 1 = both windows, 2 = main only, 3 = sub only, 0 = no windowing. */
 void c_determinewindow(zreg* const r)
 {
-    if (ngwinen == 0) {
+    if ((u1)ngwinen == 0) {
         ng_branch = 0;
         return;
     }

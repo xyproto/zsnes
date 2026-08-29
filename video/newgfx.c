@@ -41,7 +41,7 @@ __asm__(
     ASM_GSYM(ngcwinptr)
     /* A host pointer: pointer-sized, and the same four bytes on i386. */
     ".balign " ASM_STR(__SIZEOF_POINTER__) "\n"
-    "." ASM_STR(__SIZEOF_POINTER__) "byte ngwintable\n"
+    "." ASM_STR(__SIZEOF_POINTER__) "byte " ASM_SYMREF(ngwintable) "\n"
     ASM_SEC_END
     ASM_SEC_BSS(".bss")
     BSSD(ngwinen, 1)

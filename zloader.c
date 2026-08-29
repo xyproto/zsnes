@@ -237,23 +237,6 @@ static void display_help()
 #ifndef __UNIXSDL__
     put_line("  Microsoft-style options (/option) are also accepted");
 #endif
-    /*
-  put_line("               --Netplay Parameters--");
-  put_line(" Commandline: /ABCDE <nickname> <fname> <IP Addy>");
-  put_line("   nickname = user nickname");
-  put_line("   fname = filename w/ full path (if L) or path name (if C)");
-  put_line("   IP Addy = IP Address (Client Only)");
-  put_line(" A = U (UDP - Recommended if works), T (TCP/IP)");
-  put_line(" B = S (Server), C (Client)");
-  put_line(" C = C (Chat first), L (load game first)");
-  put_line(" D = N (Stay in ZSNES after disconnect), Q (Quit after disconnect)");
-  put_line(" E = # of connections (Keep it 2 for now)");
-#ifdef __WIN32__
-  put_line("   eg: ZSNESW /UCCN2 nickname d:\\snesroms 202.36.124.28");
-#else
-  put_line("   eg: zsnes /UCCN2 nickname /home/zuser/snesroms 202.36.124.28");
-#endif
-*/
     zexit();
 }
 
@@ -479,57 +462,8 @@ static void handle_params(int argc, char* argv[])
 
     backup_all_vars();
 
-    /*
-      if (argc >= 5 && argv[1][0] == '/' && strlen(argv[1]) == 6)
-      {
-        size_t i = 0, j = 0;
-        char *strp;
-
-        if (toupper(argv[1][1]) == 'T') UDPConfig=0;
-
-        //Next should be # of connections
-
-        while (argv[2][i]!=0)
-        {
-          switch (argv[2][i])
-          {
-            case '_':
-            case '-':
-            case '^':
-            case '=':
-            case '+':
-            case '[':
-            case ']':
-            if ( j < 10)
-            {
-              strp[j] = argv[2][i];
-              j++;
-            }
-            break;
-
-            default:
-              if (((toupper(argv[2][i]) >= 'A') && (toupper(argv[2][i]) <= 'Z')) ||
-                  ((argv[2][i] >= '0') && (argv[2][i] <= '9')))
-              {
-                if (j < 10)
-                {
-                  strp[j] = argv[2][i];
-                  j++;
-                }
-              }
-              break;
-          }
-          i++;
-        }
-        strp[j] = 0;
-
-      }
-      */
-
-    /* The audio-driver choice is meant to be ephemeral, but cfg.psr persists
-     * libAoDriver across runs. Discard any saved value so a stale "-ad ao:alsa"
-     * from a previous session can't override today's default ("auto"). The
-     * command-line scan below restores any explicitly requested -ad value. */
+    /* cfg.psr persists libAoDriver, so a stale "-ad" from an earlier session
+     * would outrank today's default. The scan below puts back an explicit one. */
 #if defined(__UNIXSDL__)
     strcpy(libAoDriver, "auto");
 #endif

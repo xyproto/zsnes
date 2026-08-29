@@ -37,7 +37,7 @@ extern u1 *curvidoffset, *cwinptr;
 /* ebp is the one register the cluster never touches, so the seam leaves it
    alone. */
 typedef struct {
-    u4 ax, bx, cx, dx, si, di;
+    zreg ax, bx, cx, dx, si, di;
 } regs;
 
 /* ax = al * vidbright, then al = ax / 15 - an 8-bit divide, so the assembly

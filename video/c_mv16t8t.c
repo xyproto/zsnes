@@ -4,12 +4,11 @@
  * winon twins.
  *
  * One entry point; the other five are jumped to once the shared prologue has
- * run and the colour-maths mode has been decided. video/c_mv16t8bt.c is the
- * transparency-producing form of the same walk - this one consumes the buffer
- * instead, blending every pixel with what is underneath.
+ * decided the colour-maths mode. video/c_mv16t8bt.c produces the transparency
+ * buffer; this one consumes it, blending each pixel with what is underneath.
  *
- * The three modes and the two window forms are one body here, but the assembly
- * writes six, and they differ in more than the writer:
+ * The three modes and the two window forms are one body here, six in the
+ * assembly, and they differ in more than the writer:
  *
  *   plain   the attribute lives in dh, the column counter in dl, and the
  *           palette adder reaches the writer in dh
@@ -31,14 +30,14 @@
 #include "c_mv16tt.h"
 #include "makevid.h"
 
-u4 TTAX;
-u4 TTBX;
-u4 TTCX;
-u4 TTDX;
-u4 TTSI;
-u4 TTDI;
-u4 TTBP;
-u4 TTTail; /* 1 = tail-jump to domosaic16b */
+zreg TTAX;
+zreg TTBX;
+zreg TTCX;
+zreg TTDX;
+zreg TTSI;
+zreg TTDI;
+zreg TTBP;
+zreg TTTail; /* 1 = tail-jump to domosaic16b */
 
 extern u1 tileleft16b, scaddtype, coadder16;
 extern u2 scrnon;
@@ -122,7 +121,7 @@ static void tiles(tt_regs* const r, u4 const hofs, u1* esi, int const mode,
     } while (--tileleft16b != 0);
     r->ax = eax;
     r->cx = ecx;
-    r->dx = winon_ ? (u4)(uintptr_t)win : edx;
+    r->dx = winon_ ? (zreg)(uintptr_t)win : edx;
     r->si = (zreg)(uintptr_t)esi;
     r->di = (zreg)(uintptr_t)edi;
     r->bp = (zreg)(uintptr_t)ebp;

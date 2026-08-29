@@ -34,7 +34,7 @@ enum {
 };
 
 typedef struct {
-    u4 ax, bx, cx, dx, si, di, bp;
+    zreg ax, bx, cx, dx, si, di, bp;
 } tt_regs;
 
 /* One pixel. `n` is its place on screen, `k` its place in the tile and `w` the

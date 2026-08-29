@@ -228,11 +228,9 @@ void c_procmode716tmainextbg2(void)
  * scanline decides whether anything is drawn. The non-fix pair start by
  * redirecting to the fix one when bgfixer says so, which stays in the caller.
  *
- * drawsprites16b is already C (video/c_makev16b.c) so it is called from here;
- * drawsprites16t and drawsprites16bt are still assembly and come back through
- * SPRTail. ecx after any of them is undefined - cdecl lets a callee clobber
- * it - so what is handed back is the count byte, the value the assembly had
- * there going in.
+ * drawsprites16b is called from here; drawsprites16t and drawsprites16bt come
+ * back through SPRTail, the shape the assembly's tail-jump had. ecx after any
+ * of them is undefined, so what is handed back is the count byte.
  */
 extern u1 scrndis, winonsp, sprprifix; /* video/makevid.h, cpu/regs.h */
 void drawsprites16b(u1 cl, u4 ebp); /* video/c_makev16b.h */
@@ -271,7 +269,7 @@ static void sprites(int const sub, int const fix)
     }
 
     /* xor ebx,ebx / mov bl,[curypos]: the low byte of the scanline only. */
-    SPRBX = (u1)curypos + (u4)(uintptr_t)cursprloc;
+    SPRBX = (u1)curypos + (zreg)(uintptr_t)cursprloc;
     at = (u1 const*)(uintptr_t)SPRBX;
     count = *at;
     SPRCX = (SPRCX & ~0xFFu) | count;
@@ -309,10 +307,9 @@ void c_procspritesmain16tfix(void) { sprites(0, 1); }
  * (ebp). Same shape again: colour-mode check, screen enables, window, mosaic,
  * then the tile renderer for this layer's size and colour-maths mode.
  *
- * draw8x816b and draw16x1616b are already C and are called from here;
- * the other six renderers are still assembly and come back through BGTail.
- * The `drawn == 33` check that marks a layer fully drawn happens *after* the
- * renderer returns, so the caller does it for the assembly ones.
+ * draw8x816b and draw16x1616b are called from here; the other six come back
+ * through BGTail, the shape the assembly's tail-jump had. The `drawn == 33`
+ * check that marks a layer fully drawn happens after the renderer returns.
  *
  * Every early return leaves registers behind that the assembly set on the way:
  * esi is colormodeofs from the first instruction, bl is the colour-mode byte,
@@ -344,7 +341,7 @@ enum bgtail { B_NONE = 0,
     B_16BT,
     B_8TMS,
     B_16TMS };
-u4 BGTail;
+zreg BGTail;
 
 static void mark_drawn(void)
 {

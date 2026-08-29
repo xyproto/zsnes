@@ -142,7 +142,7 @@ static void tiles(tt_regs* const r, u4 const hofs, u1* esi, int const mode,
     } while (--tileleft16b != 0);
     r->ax = eax;
     r->cx = ecx;
-    r->dx = winon_ ? (u4)(uintptr_t)win : edx;
+    r->dx = winon_ ? (zreg)(uintptr_t)win : edx;
     r->si = (zreg)(uintptr_t)esi;
     r->di = (zreg)(uintptr_t)edi;
     r->bp = (zreg)(uintptr_t)ebp;

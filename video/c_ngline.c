@@ -10,9 +10,8 @@
  * can be drawn as whole tiles.
  *
  * This is the first two thirds of newengine16b, up to the windowing section;
- * the window and sprite-window construction that follows is still assembly and
- * runs straight after this returns. Nothing here is passed in registers, so it
- * needs no seam.
+ * the window and sprite-window construction runs straight after this returns.
+ * Nothing here is passed in registers, so it needs no seam.
  *
  * Two things to keep in mind reading it: several of these tables are written
  * *wider* than one entry - a dword store into a byte array clobbers the next

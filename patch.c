@@ -237,17 +237,6 @@ IPSDone:
         NumofBanks = NumofBytes / 32768;
     }
 
-    /*
-  //Write out patched ROM
-  {
-    FILE *fp = 0;
-    fp = fopen_dir(ZCfgPath, "zsnes.rom", "wb");
-    if (!fp) { perror("zsnes.rom"); __asm__ volatile("int $3"); }
-    fwrite(ROM, 1, curromspace, fp);
-    fclose(fp);
-  }
-  */
-
     return (true);
 }
 

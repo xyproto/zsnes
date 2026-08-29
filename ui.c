@@ -34,6 +34,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "c_intrf.h"
 #include "cfg.h"
 #include "cpu/c_dspproc.h"
+#include "cpu/dspproc.h" /* the DSP block, for the layout check in selftest() */
 #include "input.h"
 #include "mmlib/mm.h"
 #include "ui.h"
@@ -44,6 +45,12 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define BIT(x) (1 << (x))
 
 extern uint8_t* SA1RAMArea;
+/* Endpoints of a few of the inline-asm data blocks, for the layout check in
+   selftest() below. */
+extern u4 BRRTemp0, SA1Mode;
+extern u1 SA1Control;
+extern u2 mode7A, mode7B;
+extern u1 mode7A_dw[4];
 extern uint32_t xa, maxromspace;
 extern uint8_t spcon, device1, device2;
 extern char CSStatus[], CSStatus2[], CSStatus3[], CSStatus4[];
@@ -272,6 +279,23 @@ static int selftest_buf(const char* name, void* p, size_t n)
     return (0);
 }
 
+/* The inline-asm data blocks (asmdata.h) only work if the linker leaves them
+   whole. ld64 splits a section at every symbol and -dead_strip then drops the
+   unreferenced ones, which silently repacks the block; these are a few of the
+   distances the emulator and the save-state code rely on, checked in the
+   binary that ships rather than in the differently-linked unit tests. */
+static int selftest_gap(const char* name, const void* a, const void* b,
+    ptrdiff_t want)
+{
+    ptrdiff_t got = (const char*)b - (const char*)a;
+
+    if (got == want) {
+        return (0);
+    }
+    printf("SELFTEST: FAIL %s is %td bytes, want %td\n", name, got, want);
+    return (1);
+}
+
 static _Noreturn void selftest(void)
 {
     int bad = 0;
@@ -300,6 +324,13 @@ static _Noreturn void selftest(void)
         puts("SELFTEST: FAIL a derived pointer does not match its allocation");
         bad = 1;
     }
+
+    bad |= selftest_gap("BRRPlace0..BRRTemp0", &BRRPlace0[0][0], &BRRTemp0, 4);
+    bad |= selftest_gap("BRRPlace0..Voice0Freq", &BRRPlace0[0][0], Voice0Freq, 64);
+    bad |= selftest_gap("DSPInterP..PSampleBuf", DSPInterP, &PSampleBuf[0][0], 0x800);
+    bad |= selftest_gap("mode7A..mode7B", &mode7A, &mode7B, 2);
+    bad |= selftest_gap("mode7A_dw..mode7A", mode7A_dw, &mode7A, 0);
+    bad |= selftest_gap("SA1Mode..SA1Control", &SA1Mode, &SA1Control, 4);
 
     puts(bad ? "SELFTEST: FAIL" : "SELFTEST: PASS");
     exit(bad ? 1 : 0);

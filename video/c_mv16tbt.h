@@ -17,7 +17,7 @@
 extern u4 pal16b[256];
 
 typedef struct {
-    u4 ax, bx, cx, dx, si, di, bp;
+    zreg ax, bx, cx, dx, si, di, bp;
 } bt_regs;
 
 /* One pixel. `n` is its place on screen, `k` its place in the tile and `w` the

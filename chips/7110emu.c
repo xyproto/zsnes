@@ -205,48 +205,10 @@ INLINE void update_context(uint8_t con)
     }
 }
 
-/*
-For future calls, the value of pixel_left must be shifted into the first position,
-with the rest of the array moved after the first position.
-However, a pixel must be returned. The pixel returned is chosen by sorting
-pixel_left, pixel_above, and pixel_above_left into the first three positions in a
-copied array, with the rest of the array moved after the positions containing
-pixel_left, pixel_above, and pixel_above_left. Then index into this copied array.
-However this copied is never needed again.
-A stable copy and move/sort of 3 values could be done optimally in 4 loops.
-But since the array is then thrown away, it would be better to find the appropriate
-values without needing to copy and move/sort.
-
-These defines do a copy and move/sort:
-
-#define PIXEL_SHIFT(array, value) \
-  temp = array[0]; \
-  for(m = 0; temp != value; ++m) \
-  { \
-    temp2 = temp; \
-    temp = array[m+1]; \
-    array[m+1] = temp2; \
-  } \
-  array[0] = temp
-
-#define PIXEL_SHIFT_ALL(ct) \
-  PIXEL_SHIFT(pixelorder, pixel_left); \
-  memcpy(realorder, pixelorder, ct*sizeof(uint32_t)); \
-  PIXEL_SHIFT(realorder, pixel_above_left); \
-  PIXEL_SHIFT(realorder, pixel_above); \
-  PIXEL_SHIFT(realorder, pixel_left)
-
-The function below moves pixel_left where needed, but instead of copying and sorting
-to find the pixel to return, it uses the following algorithm:
-Check for equality between pixel_left, pixel_above, and pixel_above_left, and
-determine if any of the first 3 positions of the array are desired. In those cases,
-the value can be returned immediatly. In other cases, only a single pass is required
-to go through the array to account for pixel_above and pixel_above_left (pixel_left
-is always at the beginning), and then directly return the value.
-
-This method saves needing a whole array, a copy, and extra sorting loops, replacing
-with a method at maximum requiring a single loop through the array.
-*/
+/* Move pixel_left to the front of pixelorder, then return the pixel at `index`
+   of the order pixel_left, pixel_above and pixel_above_left would give if they
+   were sorted to the front of a copy. The copy is dead afterwards, so the
+   equality cases below answer directly and everything else needs one pass. */
 
 INLINE uint32_t pixel_shift(int index)
 {

@@ -26,14 +26,14 @@
 #include "c_mv16tt.h"
 #include "makevid.h"
 
-u4 THAX;
-u4 THBX;
-u4 THCX;
-u4 THDX;
-u4 THSI;
-u4 THDI;
-u4 THBP;
-u4 THTail; /* 1 = tail-jump to domosaic16b */
+zreg THAX;
+zreg THBX;
+zreg THCX;
+zreg THDX;
+zreg THSI;
+zreg THDI;
+zreg THBP;
+zreg THTail; /* 1 = tail-jump to domosaic16b */
 
 extern u1 tileleft16b, scaddtype, coadder16, res512switch;
 extern u2 scrnon, curypos;
@@ -119,10 +119,8 @@ static void tiles(tt_regs* const r, u4 const hofs, u1* esi, int const mode,
        the mask from (winptrref & ~0xFF) | temp. Reproduced; it is what the
        assembly does. */
     edx = (edx & 0xFFFFFF00u) | temp;
-    if (winon_) {
-        edx = ((u4)(uintptr_t)winptrref & 0xFFFFFF00u) | temp;
-        win = (u1 const*)(uintptr_t)edx;
-    }
+    if (winon_)
+        win = (u1 const*)(((uintptr_t)winptrref & ~(uintptr_t)0xFFu) | temp);
     do {
         u1 attr;
 
@@ -178,7 +176,7 @@ static void tiles(tt_regs* const r, u4 const hofs, u1* esi, int const mode,
     } while (--tileleft16b != 0);
     r->ax = eax;
     r->cx = ecx;
-    r->dx = winon_ ? (u4)(uintptr_t)win : edx;
+    r->dx = winon_ ? (zreg)(uintptr_t)win : edx;
     r->si = (zreg)(uintptr_t)esi;
     r->di = (zreg)(uintptr_t)edi;
     r->bp = (zreg)(uintptr_t)ebp;

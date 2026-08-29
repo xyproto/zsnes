@@ -25,14 +25,14 @@
 #include "c_mv16tbt.h"
 #include "makevid.h"
 
-u4 T8AX;
-u4 T8BX;
-u4 T8CX;
-u4 T8DX;
-u4 T8SI;
-u4 T8DI;
-u4 T8BP;
-u4 T8Tail; /* 1 = tail-jump to domosaic16b */
+zreg T8AX;
+zreg T8BX;
+zreg T8CX;
+zreg T8DX;
+zreg T8SI;
+zreg T8DI;
+zreg T8BP;
+zreg T8Tail; /* 1 = tail-jump to domosaic16b */
 
 extern u1 tileleft16b;
 extern u1 transpbuf[];
