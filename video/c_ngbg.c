@@ -1,19 +1,13 @@
 /*
- * video/c_ngbg.c - the background dispatchers from video/newgfx16.asm.
+ * The background dispatchers from video/newgfx16.asm, one per background per
+ * pass. Each finds the layer's tile map and palette for the scanline, builds
+ * the window if there is one, and hands the register set to the renderer in
+ * video/c_ng2tile.c.
  *
- * One per background per pass. Each works out where the layer's tile map and
- * palette are for this scanline, builds the window if the layer has one, and
- * hands the whole register set to the renderer in video/c_ng2tile.c.
- *
- * The assembly reached the renderer by `jmp` after a `push ebx`, which is why
- * every entry point there ended `pop ebx / ret`. Both halves are C now, so the
- * call is a plain one and the pairing is gone.
- *
- * Two things to keep from the original. The `mov eax,[BGPT1+ebx*2]` loads are
- * *dword* reads of word tables, so they pick up the next entry in the high
- * half; for eax that washes out in a later `and eax,0FFFFh`, but bgtxadd is
- * stored as a full dword and keeps it. And the second macro argument is always
- * equal to the first for all sixteen, so the two indexes collapse into one.
+ * Two things from the original: the `mov eax,[BGPT1+ebx*2]` loads are *dword*
+ * reads of word tables, so they pick the next entry up in the high half - eax
+ * loses it to a later mask, bgtxadd keeps it - and the second macro argument
+ * always equalled the first, so the two indexes collapse into one.
  */
 #include <stdint.h>
 #include <string.h>
@@ -572,11 +566,11 @@ NG_BG_LINE(2)
 NG_BG_LINE(3)
 NG_BG_LINE(4)
 
-/* Priority-1 line dispatchers: like the priority-1 tile pass, reading back
- * what pass 0 cached, but recomputing the row from BG1SYl. Three deliberate
- * differences from pass 0, all the assembly's: offset-per-tile is taken on
- * BGMA 2 only; the 8x8 form masks the map cursor with 16 bits, not 32; and an
- * interlaced mosaic line applies the mosaic start twice. */
+/* Priority-1 line dispatchers: the priority-1 tile pass reading back what pass
+ * 0 cached, but recomputing the row from BG1SYl. Three differences from pass
+ * 0, all the assembly's: offset-per-tile only on BGMA 2, the 8x8 form masks
+ * the map cursor to 16 bits, and an interlaced mosaic line applies the mosaic
+ * start twice. */
 
 /* The scanline's row: the layer's vertical scroll, replaced by the mosaic
    block's start when mosaic is on, plus the interlace field. */

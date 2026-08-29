@@ -7,14 +7,12 @@
 #include "../types.h"
 #include "memseam.h"
 
-/* --- PPU reads ported from cpu/regs.inc ---------------------------------- *
+/* --- PPU reads, from cpu/regs.inc ---------------------------------------- *
  *
- * Legacy ABI: no argument, the value comes back in al, and the trampoline in
- * chips/regabi.h keeps ecx, edx and the upper half of eax. It does not keep
- * ebx, and neither did the assembly - checkmultchange used bx as scratch. The
- * only callers are the trampolines in cpu/mem_ops.h, which restore their own
- * ebx around the call.
- */
+ * Legacy ABI: no argument, value back in al, and chips/regabi.h's trampoline
+ * keeps ecx, edx and eax's upper half but not ebx - neither did the assembly,
+ * where checkmultchange used bx as scratch. The callers in cpu/mem_ops.h
+ * restore their own ebx. */
 extern u1 vidbright, forceblnk, multchange, compmult[3];
 extern u2 mode7A, mode7B;
 extern u1 rtoflags, romispal, ppustatus, cfield, extlatch, ppu2_mdr;
@@ -1125,10 +1123,9 @@ u4 c_reg420Aw(u1 const al, u4 const edx)
 
 /* --- the $43xx DMA registers --------------------------------------------- *
  *
- * These need the address, so they use the BANK trampolines (address in ecx,
- * value in al) rather than the REG ones. The index is a 16-bit subtract, so
- * it wraps inside cx before being zero-extended.
- */
+ * These need the address, so they take the BANK trampolines (address in ecx,
+ * value in al). The index is a 16-bit subtract, wrapping inside cx before the
+ * zero-extend. */
 static u4 dma_index(u4 const addr)
 {
     return (u2)(addr - 0x4300u);

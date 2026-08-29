@@ -1,14 +1,12 @@
-/* The three gating macros from video/newg162.asm.
- *
- * Every routine in that file is a decision tree that picks one of about eight
- * parameterised bodies: transparent or not, then which combination of main and
- * sub windowing. These three macros are that tree. They each end by jumping to
- * a label passed in as a macro argument, so the C cannot simply be called - it
- * reports which branch to take in ng_branch and the seam jumps on that.
- *
- * They also adjust ecx (the window pointer) and edi (the output line), and
- * those adjustments have to survive: the seam is a pushad block, so writes into
- * it are what popad restores. */
+/* The three gating macros from video/newg162.asm: the decision tree every
+   routine there uses to pick one of about eight bodies - transparent or not,
+   then which combination of main and sub windowing. Each ended by jumping to a
+   label passed as a macro argument, so these report the branch in ng_branch
+   and the seam jumps on it.
+
+   They also adjust ecx (the window pointer) and edi (the output line), and
+   those adjustments must survive: the seam is a pushad block, so writes into
+   it are what popad restores. */
 #include <stdint.h>
 
 #include "../types.h"

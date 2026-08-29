@@ -1,9 +1,7 @@
 /*
- * video/c_ngspr.c - the sprite drawers of video/newgfx16.asm.
- *
- * drawsprng16b and drawsprng16bhr, and the fourteen arms they dispatch into.
- * The assembly writes those arms out as 58 writer macros; they are four
- * skeletons plus flags, which is what this file is:
+ * The sprite drawers of video/newgfx16.asm: drawsprng16b, drawsprng16bhr and
+ * the fourteen arms they dispatch into. The assembly's 58 writer macros are
+ * four skeletons plus flags:
  *
  *   A  no window          palette, transparency, store main, store sub
  *   B  window gates both  the window test first, then A
@@ -12,13 +10,9 @@
  *
  * and independently: which palette half, whether the unused bit is cleared for
  * a low palette entry, whether the sub screen is written, whether the main
- * store ORs the unused bit back in, and whether the priority bit is claimed
- * before the window test or after.
- *
- * The hi-res forms are not a fifth skeleton: every store is simply paired with
- * one 75036 words further on.
- *
- * Only drawsprng16b and drawsprng16bhr are entered from outside.
+ * store ORs the bit back in, and whether the priority bit is claimed before
+ * the window test or after. The hi-res forms just pair every store with one
+ * 75036 words on.
  */
 #include <stdint.h>
 #include <string.h>

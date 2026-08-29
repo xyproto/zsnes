@@ -1,12 +1,10 @@
 /*
- * DSP2 coprocessor register stubs
+ * DSP2 coprocessor register stubs, from chips/dsp2proc.asm.
  *
- * Ported from chips/dsp2proc.asm.
- *
- * DSP2Read8b    — validate address, read buffer byte, optional arithmetic shift
- * DSP2Read16b   — always returns 0
- * DSP2Write8b   — enforcer-queue dispatch to command handlers w00..w0B
- * DSP2Write16b  — always returns 0 (no-op)
+ * DSP2Read8b    validate address, read buffer byte, optional arithmetic shift
+ * DSP2Read16b   always 0
+ * DSP2Write8b   enforcer-queue dispatch to command handlers w00..w0B
+ * DSP2Write16b  no-op
  */
 
 #include <stdint.h>

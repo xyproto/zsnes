@@ -1,13 +1,10 @@
 /*
- * video/c_mode716ext2.c - drawmode7ngextbg216b, ported from video/mode716.asm.
+ * drawmode7ngextbg216b, the EXTBG second pass. drawmode7ngextbg16b stashed one
+ * priority byte per pixel a buffer on (+75036*8); this walks those 256 bytes
+ * and repaints the ones with bit 7 set, in front of what was drawn since.
  *
- * The EXTBG second pass. drawmode7ngextbg16b stashed one priority byte per
- * pixel a whole buffer on (+75036*8); this walks those 256 bytes and repaints
- * the ones with bit 7 set, so they land in front of what was drawn since.
- *
- * Reached by call from video/newgfx16.mac with the renderer's registers live:
- * ebx is the scanline and ebp the palette. esi is not an input - the assembly
- * loads it from curvidoffset on every path. See the thunk in mode716.asm.
+ * Entered with ebx = the scanline and ebp = the palette; esi is not an input,
+ * every path loads it from curvidoffset.
  */
 #include <stdint.h>
 

@@ -1,25 +1,16 @@
 /*
- * ST011 coprocessor bank-access functions
+ * ST011 coprocessor bank access, from chips/st11proc.asm. Two regions:
  *
- * Ported from chips/st11proc.asm.  Two memory regions:
+ *   Seta11*_68  reads come straight from setaramdata and also update ST011_DR;
+ *               writes go through ST011_MapW_68 via the seta11_address /
+ *               seta11_byte handshake, and are ignored when address bit 15 is
+ *               set (ROM guard)
+ *   Seta11*_60  everything through the ST011_MapR_60 / ST011_MapW_60
+ *               callbacks, address masked to 2 bits, >= 0x4000 ignored; a
+ *               16-bit access is two callbacks with the address wrapping mod 4
  *
- *   Region 68 (Seta11Read8_68 / Write8_68 / Read16_68 / Write16_68):
- *     Reads access setaramdata directly.  Writes delegate to ST011_MapW_68
- *     via the seta11_address / seta11_byte handshake variables.  Read8 and
- *     Read16 also update ST011_DR as a side effect.  Writes with bit 15 set
- *     in the address are silently ignored (ROM-area guard).
- *
- *   Region 60 (Seta11Read8_60 / Write8_60 / Read16_60 / Write16_60):
- *     All access goes through ST011_MapR_60 / ST011_MapW_60 callbacks.
- *     Address is masked to 2 bits; addresses >= 0x4000 are silently ignored
- *     (reads return 0).  16-bit operations issue two consecutive callbacks
- *     with the address wrapping modulo 4.
- *
- * Asm bug fixed — Seta11Write16_68:
- *   The original asm called ST011_MapW_68 twice but never updated seta11_byte
- *   to the high byte before the second call, so both calls wrote the low byte.
- *   Fixed to write seta11_byte = high byte before the second call, matching
- *   the correct pattern used in Seta11Write16_60.
+ * One departure: Seta11Write16_68 called ST011_MapW_68 twice without updating
+ * seta11_byte, so both calls wrote the low byte. Fixed here.
  */
 
 #include <stdint.h>

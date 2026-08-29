@@ -1,9 +1,6 @@
-/*
- * cpu/c_spc700.c - entry points for the SPC700 I/O register ($00F0-$00FF)
- * dispatch. The handlers themselves live in cpu/spc_ioregs.h; this file only
- * declares the state they touch and exposes the two functions that the SPC
- * core's WriteByte / ReadByte macros in cpu/spc700.asm call.
- */
+/* Entry points for the SPC700 I/O register ($00F0-$00FF) dispatch. The
+   handlers are in cpu/spc_ioregs.h; this only declares the state they touch
+   and exposes what the SPC core's WriteByte/ReadByte call. */
 #include <stdbool.h>
 
 #include "../types.h"

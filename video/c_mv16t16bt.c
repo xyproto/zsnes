@@ -1,19 +1,15 @@
 /*
- * video/c_mv16t16bt.c - draw16x1616bt and draw16x1616btwinon of
- * video/makev16t.asm.
+ * draw16x1616bt and draw16x1616btwinon: the 16x16 tile drawer that produces
+ * the transparency buffer. The same eight-pixel rows as the 8x8 form
+ * (video/c_mv16t8bt.c, whose writers it shares), but a 16x16 tile spans two
+ * map columns, so a toggle decides whether the map pointer or the tile number
+ * advances - and the x flip swaps which.
  *
- * The 16x16 background tile drawer that produces the transparency buffer. It
- * draws the same eight-pixel rows as the 8x8 form (video/c_mv16t8bt.c, whose
- * writers it shares) but a 16x16 tile spans two map columns, so a column
- * toggle decides whether the map pointer or the tile number advances - and the
- * x flip swaps which of the two the toggle picks.
- *
- * Reached with ebx = the tile cache pointer, ecx = the y adder, edx = the map
+ * Entered with ebx = the tile cache pointer, ecx = the y adder, edx = the map
  * pointer to reload at the column wrap, esi = the horizontal offset and
  * edi = the map pointer. eax is *four* bytes of input: `mov [temp],eax` is a
- * dword store to a byte global, and temp, bshifter, a16x16xinc and a16x16yinc
- * are four consecutive bytes in video/makevid.c - so the caller's top two
- * bytes are the x and y increment flags this routine then reads back.
+ * dword store over temp, bshifter, a16x16xinc and a16x16yinc, so the caller's
+ * top two bytes are the increment flags this routine reads back.
  */
 #include <stdint.h>
 #include <string.h>

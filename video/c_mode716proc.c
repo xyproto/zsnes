@@ -1,23 +1,16 @@
 /*
- * video/c_mode716proc.c - the four Mode7Process* macros, ported from
- * video/mode716.mac.
+ * The four Mode7Process* macros from video/mode716.mac: the Mode 7 scanline
+ * walk, in three shapes picked by mode7set.
  *
- * The main Mode 7 scanline walk, in three shapes picked by mode7set:
- *
- *   bit 7 clear      the map repeats: the tile pointer wraps and every pixel
- *                    draws (the %%nextval loop)
- *   bit 7 set        no repetition: pixels outside the 1024x1024 map are
- *                    skipped, and the walk switches to %%nextvalr once it is
- *                    back on the map
+ *   bit 7 clear      the map repeats; every pixel draws
+ *   bit 7 set        pixels outside the 1024x1024 map are skipped
  *   bit 7 + bit 6    as above, but off-map pixels repeat the edge tile
  *
- * Reached by falling into it from the Mode7Startup macro with edi = vram,
- * esi = the video pointer, ebp = the palette and the rest zeroed; the macro's
- * tail keeps the finishmode7 exit in assembly, because it is a tail-jump to
- * domosaicng16b with dh live.
+ * Entered from Mode7Startup with edi = vram, esi = the video pointer,
+ * ebp = the palette and the rest zeroed.
  *
- * The positions are 32-bit fixed point with the map coordinate in bytes 1-2,
- * which is why several reads below are unaligned dwords taken at byte 1.
+ * Positions are 32-bit fixed point with the map coordinate in bytes 1-2, which
+ * is why several reads below are unaligned dwords taken at byte 1.
  */
 #include <stdint.h>
 #include <string.h>
@@ -122,11 +115,9 @@ struct m7regs {
     u1 *esi, *edi;
 };
 
-/* The no-repetition half, identical in both macros apart from two things:
-   `mask` is the off-tile test (0x08 in Mode7Process, 0xF8 in Mode7ProcessB),
-   and `retry` says whether the off-tile handlers jump back above their own
-   test - ProcessB's do (%%roffxretb -> %%nextvalr), Mode7Process's jump
-   forward past it instead. */
+/* The no-repetition half. Both macros share it apart from `mask`, the off-tile
+   test (0x08 here, 0xF8 in Mode7ProcessB), and `retry`: ProcessB's off-tile
+   handlers jump back above their own test, Mode7Process's jump past it. */
 static void m7_norepeat(struct m7regs* const r, enum m7_writer const w,
     u2 const* const pal, u1 const mask, int const retry)
 {
@@ -300,11 +291,9 @@ void c_Mode7Process(void)
 
 /* --- Mode7ProcessB -------------------------------------------------------- *
  *
- * The same walk for adders of a whole tile or more: one pixel step can cross
- * several tiles, so a prologue works out how far the tile pointer moves per
- * step (mm7xaddof/mm7xaddof2) and the off-tile handlers apply that in one go.
- * Reached from the .nextval3 arm of Mode7NonMainSub.
- */
+ * The same walk where one pixel step can cross several tiles: a prologue works
+ * out the per-step tile-pointer move (mm7xaddof/mm7xaddof2) and the off-tile
+ * handlers apply it in one go. */
 
 /* How much of one step is whole tiles. The compare is signed, as in the
    assembly - a negated 0x80000000 stays negative and falls straight through. */
@@ -394,12 +383,10 @@ void c_Mode7ProcessB(void)
 
 /* --- Mode7Processngw16b --------------------------------------------------- *
  *
- * Mode7ProcessB again, but windowed: the run lengths in ngwleft/ngwleftb come
- * from the ngwin cluster, which is called back into whenever a run ends to
- * skip the masked pixels and start the next one. The walk itself uses the
- * unprefixed mode7* positions, while the prologue still reads the mmode7*
- * ones - that asymmetry is in the original, not a slip.
- */
+ * Mode7ProcessB windowed: ngwleft/ngwleftb hold the run lengths, and the ngwin
+ * cluster is called back into at each run end. The walk uses the unprefixed
+ * mode7* positions while the prologue reads the mmode7* ones - the original's
+ * asymmetry. */
 
 /* The cluster is C too, but it is reached through its own register seam. */
 static void call_ngwin(void (*const fn)(void), struct m7regs* const r)
@@ -669,16 +656,10 @@ tilerep_ng:
 
 /* --- Mode7Processngw216b -------------------------------------------------- *
  *
- * The main/sub window variant: it walks the whole 256 pixels but alternates
- * between two pixel writers, switching every time a window run ends. The
- * assembly writes that out as two mirrored copies of the entire body (the
- * %%...w labels), which here is one body and a `side` index.
- *
- * Two counters run at once: mtemp is the pixels left on the line and ends the
- * routine, ngwleft is the pixels left in the current run and only switches
- * sides. The window list is read directly rather than through the ngwin
- * cluster.
- */
+ * The main/sub window variant: all 256 pixels, alternating between two writers
+ * at each run end. The assembly mirrored the whole body; here it is one body
+ * and a `side` index. Two counters run at once - mtemp ends the routine,
+ * ngwleft only switches sides - and the window list is read directly. */
 
 /* Step to the next run. The assembly clears edx here every time. */
 static void next_run(struct m7regs* const r)

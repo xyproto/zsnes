@@ -3,14 +3,13 @@
 
 #include "c_m716gate.h"
 
-/* The 8x8 tile drawers, ported from video/mv16tms.asm and video/makev16t.asm.
-   Each returns non-zero when the mosaic tail is due; the caller runs
-   domosaic16b, because the assembly reached it by a jump rather than a call.
+/* The 8x8 tile drawers, from video/mv16tms.asm and video/makev16t.asm. Each
+   returns non-zero when the mosaic tail is due and the caller runs
+   domosaic16b, because the assembly jumped to it rather than calling.
 
-   draw16x816t and draw8x816toffset are defined in video/c_mv16leaf.c, on their
-   own: test/difftest_{t8t,t8bt,mvall} substitute stubs for exactly those two to
-   see which way a dispatch went, and a call inside one translation unit cannot
-   be intercepted. Keep them apart from their callers. */
+   draw16x816t and draw8x816toffset live alone in video/c_mv16leaf.c: the
+   difftests stub exactly those two to see which way a dispatch went, and a
+   call within one translation unit cannot be intercepted. */
 u4 draw16x816t(m7regs* r);
 u4 draw8x816toffset(m7regs* r);
 

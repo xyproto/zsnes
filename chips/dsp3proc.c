@@ -1,11 +1,8 @@
 /*
- * DSP3 bank access, ported from the i386 trampolines that stood in for
- * chips/dsp3proc.asm.
- *
- * The DSP3 answers in the top half of the bank; anything below $8000 belongs
- * to the I/O registers, which the assembly reached by tail-jumping into
- * regaccessbank*.  A 16-bit access is two byte transfers with the address
- * stepped in between, low byte first.
+ * DSP3 bank access, from the trampolines that stood in for
+ * chips/dsp3proc.asm. The DSP3 answers in the top half of the bank; below
+ * $8000 belongs to the I/O registers. A 16-bit access is two byte transfers
+ * with the address stepped between, low byte first.
  */
 
 #include <stdint.h>

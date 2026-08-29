@@ -1,21 +1,17 @@
 /*
- * video/c_mv16t8bt.c - draw8x816bt and draw8x816btwinon of video/makev16t.asm.
+ * draw8x816bt and draw8x816btwinon: the 8x8 tile drawer that *produces* the
+ * transparency buffer. video/c_makev16b.c's draw8x816b is the same walk
+ * without the second store. One entry point; the windowed form is jumped to
+ * once the shared prologue has run.
  *
- * The 8x8 background tile drawer that *produces* the transparency buffer.
- * video/c_makev16b.c's draw8x816b is the same walk without the second store
- * and is worth reading alongside this. One entry point; the windowed form is
- * jumped to from it once the shared prologue has run.
+ * That prologue is every renderer's in this file: stash the caller's
+ * registers, bias the video, window and transparency pointers by the
+ * horizontal offset, clear the mosaic line if one is active, and work out
+ * which of the three tile caches the tile pointer lands in.
  *
- * That prologue is the one every renderer in the file starts with: stash the
- * caller's registers in the scratch globals, bias the video, window and
- * transparency pointers by the horizontal offset, clear the mosaic line if one
- * is active, and work out which of the three tile caches the tile pointer
- * lands in.
- *
- * Reached with al = the starting column, ah = the palette shifter, ebx = the
+ * Entered with al = the starting column, ah = the palette shifter, ebx = the
  * tile cache pointer, ecx = the y adder, edx = the map pointer to reload at
- * the column wrap, esi = the horizontal offset and edi = the map pointer.
- * The bgmode 2 and 5 redirects and the mosaic tail stay in the thunk; the
+ * the column wrap, esi = the horizontal offset and edi = the map pointer. The
  * pixel writers are shared with the 16x16 form in video/c_mv16tbt.h.
  */
 #include <stdint.h>

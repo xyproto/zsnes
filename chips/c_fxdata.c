@@ -1,10 +1,8 @@
-/* C port of the SuperFX register and state block from chips/fxemu2.asm.
-   The opcode handlers moved to chips/c_fxops.c; this is the state they share.
-
-   PHnum2writesfxreg is the byte distance from SfxR0 to the end of the cache
-   RAM, which zstate.c uses as a save-state block length, so the order and size
-   of everything in between is load-bearing. Emitted through one inline-asm
-   block (see asmdata.h) to pin that layout. */
+/* The SuperFX register and state block from chips/fxemu2.asm; the opcode
+   handlers are in chips/c_fxops.c. PHnum2writesfxreg is the byte distance from
+   SfxR0 to the end of the cache RAM, which zstate.c uses as a save-state block
+   length, so everything between is load-bearing - hence the one inline-asm
+   block. */
 #include "../asmdata.h"
 
 /* Slots holding a host address: pointer-sized rather than the dword the

@@ -1,23 +1,21 @@
 /*
- * cpu/mem_ops.h - the memory access handlers ported from cpu/memory.asm.
+ * Memory access handlers, from cpu/memory.asm. Textual include
+ * (cpu/c_memops.c), which supplies the integer typedefs and wraps each body in
+ * its public name.
  *
- * Textual include (cpu/c_memops.c): the includer provides the u1/u2/u4
- * typedefs and the seam block declared below.
+ * The bank handlers and the Bank0dat* direct-page ones (reached through
+ * DPageR8/R16/W8/W16, picked per direct-page high byte in cpu/memtable.c).
+ * Everything goes through the seam:
  *
- * The bank handlers and the Bank0dat* direct-page ones, the latter reached
- * through DPageR8/DPageR16/DPageW8/DPageW16 (cpu/memtable.c picks one per
- * direct-page high byte). They take everything through the seam:
- *
- *     MemSeamB  the direct-page offset byte just fetched from the opcode stream
+ *     MemSeamB  direct-page offset byte, just fetched from the opcode stream
  *     MemSeamC  the direct page register, xd
- *     MemSeamA  al/ax carries the value on a write, and takes it on a read
+ *     MemSeamA  the value: out on a write, in on a read
  *
- * and the caller keeps whatever the handler leaves in all of them - the "inv"
- * and "romram" ones deliberately advance the address and some zero the bank.
- * cpu/c_memops.c wraps each body in its public name.
+ * and the caller keeps whatever the handler leaves in all three - the "inv"
+ * and "romram" ones advance the address and some zero the bank on purpose.
  *
- * The reg variants hand the access to an I/O register handler, which takes it
- * through the same seam; MEM_REG_DISPATCH below is the indexing.
+ * The reg variants hand the access to an I/O register handler through the same
+ * seam; MEM_REG_DISPATCH below is the indexing.
  */
 #ifndef MEM_OPS_H
 #define MEM_OPS_H
@@ -45,14 +43,11 @@ static inline void mem_add_cx_bx(void)
         | ((MemSeamC + MemSeamB) & 0xFFFFu);
 }
 
-/* Call one I/O register handler. The tables are indexed regptra[addr - 0x2000]
-   exactly as cpu/regs.mac used to write it.
-
-   The bank and the address are put back around the call. A register write can
-   start a DMA, and the transfer runs through these same handlers, so without
-   this the nested access would overwrite the outer one's address - the
-   assembly had no such problem because it kept the address in ecx, which the
-   callee preserved. */
+/* Call one I/O register handler, indexed regptra[addr - 0x2000] as
+   cpu/regs.mac wrote it. Bank and address are saved around the call: a
+   register write can start a DMA that runs through these same handlers, and
+   the nested access would otherwise clobber the outer address. The assembly
+   kept it in ecx, which the callee preserved. */
 #define MEM_REG_DISPATCH(name, table)                     \
     static void name(void)                                \
     {                                                     \
@@ -411,12 +406,10 @@ void c_sramaccessbankw16b(void)
     MemSeamB = 0;
 }
 
-/* Banks 78-7D map SRAM in 32K slices: turn the bank into a slice offset, run
-   the access, then put the caller's address back. `sub bl,78h` is a byte
-   subtract, so it wraps inside bl rather than borrowing. Kept faithful even
-   though nothing can currently observe it: after the shift the difference sits
-   above bit 22, and every SRAM access masks with ramsizeand, which a 128K
-   cartridge never takes past 0x1FFFF. */
+/* Banks 78-7D map SRAM in 32K slices: bank to slice offset, access, restore
+   the caller's address. `sub bl,78h` wraps inside bl rather than borrowing;
+   unobservable today, since the difference lands above bit 22 and ramsizeand
+   never reaches past 0x1FFFF. Kept faithful. */
 static inline void mem_sram_slice(u4 const base, void (*body)(void))
 {
     u4 const saved = MemSeamC;
@@ -428,11 +421,9 @@ static inline void mem_sram_slice(u4 const base, void (*body)(void))
     MemSeamC = saved;
 }
 
-/* Banks 70-7D. `and bl,7Fh` masks the low byte only, so anything the caller
-   left above it survives into the shift. Like the 78-7D form above, none of
-   this is observable today: initc.c caps ramsize at 0x20000, so ramsizeand
-   never reaches past bit 16, while the bank only contributes bits 18 and up.
-   Kept faithful anyway. */
+/* Banks 70-7D. `and bl,7Fh` masks the low byte only, so anything above it
+   survives into the shift. Unobservable today - ramsize caps at 0x20000 while
+   the bank contributes bits 18 and up. Kept faithful. */
 static inline void mem_sram_bank70(void (*body)(void))
 {
     MemSeamB &= ~0x80u;
@@ -572,10 +563,9 @@ MEM_ST_WRITE16(c_stsramw16b, 0x70, sram2)
 
 /* --- banks 00-3F / 80-BF: the mixed ROM, WRAM, I/O and cartridge window ---
  *
- * ebx is the bank number. The address decides everything: bit 15 set is ROM,
- * below 2000 is the WRAM mirror, 2000-48FF the I/O registers, and 6000-7FFF
- * whatever the cartridge put there - SuperFX RAM, DSP1, or HiROM SRAM in 8K
- * slices - with plain open bus in between.
+ * ebx is the bank. The address decides the rest: bit 15 set is ROM, below 2000
+ * the WRAM mirror, 2000-48FF the I/O registers, 6000-7FFF whatever the cart
+ * put there (SuperFX RAM, DSP1, HiROM SRAM in 8K slices), open bus between.
  */
 void c_regaccessbankr8(void)
 {
@@ -821,11 +811,10 @@ void c_regaccessbankw16(void)
 
 /* --- the general bank 00-3F / 80-BF dispatchers -------------------------- *
  *
- * Same windows as regaccessbank*, with three differences worth keeping in
- * sight: the address is masked to 16 bits first, ROM comes from map entry 0
- * rather than one picked by ebx, and an SA-1 cart hands the whole access to
- * the still-assembly SA-1 variant. The open-bus value also differs between the
- * 8- and 16-bit reads, and none of the cartridge paths here clear ebx.
+ * The regaccessbank* windows, with four differences: the address is masked to
+ * 16 bits first, ROM comes from map entry 0 rather than one picked by ebx, an
+ * SA-1 cart hands the whole access to the SA-1 variant, and the open-bus value
+ * differs between the 8- and 16-bit reads. No cartridge path here clears ebx.
  */
 void c_membank0r8SA1(void);
 void c_membank0r16SA1(void);
@@ -1003,10 +992,9 @@ void c_membank0w16(void)
 
 /* --- bank 00-3F low RAM on an SA-1 cart ---------------------------------- *
  *
- * While the 65816 has the bus this is the ordinary WRAM mirror; while the SA-1
- * has it, the same window is the SA-1's own 2K of IRAM, and anything above it
- * reads back zero. Only ecx is range-checked, so ebx can carry the index a
- * little past 800h - IRAM has room for that.
+ * The WRAM mirror while the 65816 has the bus, the SA-1's own 2K of IRAM while
+ * it does, zero above that. Only ecx is range-checked, so ebx can carry the
+ * index a little past 800h - IRAM has room.
  */
 void c_membank0r8ramSA1(void)
 {
@@ -1067,9 +1055,8 @@ void c_membank0w16ramSA1(void)
 
 /* --- the SA-1's view of its own RAM -------------------------------------- *
  *
- * Banks 40-4F, four 64K slices of SA1RAMArea. While a character-conversion
- * DMA is in flight the reads come from the converter instead, one byte at a
- * time - writes never take that path.
+ * Banks 40-4F, four 64K slices of SA1RAMArea. During a character-conversion
+ * DMA reads come from the converter one byte at a time; writes never do.
  */
 void c_SA1RAMaccessbankr8(void)
 {
@@ -1123,11 +1110,10 @@ void c_SA1RAMaccessbankw16(void)
 
 /* --- the SA-1's RAM seen as a bit map ------------------------------------ *
  *
- * Banks 60-6F: the same RAM as above, but addressed one pixel at a time -
- * 4 bits each, or 2 when SA1Overflow's bit 15 is set, which also widens the
- * bank field from 3 to 4 bits because a slice then covers half as much. The
- * address is a pixel index, so it is shifted down to a byte index and left
- * that way: the caller sees the shifted ecx, and ebx comes back zero.
+ * Banks 60-6F: the same RAM one pixel at a time - 4 bits each, or 2 when
+ * SA1Overflow bit 15 is set, which also widens the bank field to 4 bits since
+ * a slice then covers half as much. The pixel index is shifted down to a byte
+ * index and left that way, so the caller sees the shifted ecx and ebx is zero.
  */
 static inline u4 mem_bm_2bit(void)
 {
@@ -1218,10 +1204,9 @@ void c_SA1RAMaccessbankw16b(void)
 
 /* --- SA-1 BW-RAM, byte view or bit map ----------------------------------- *
  *
- * With BWShift set and the SA-1 holding the bus, the 6000-7FFF window is a
- * packed view of BW-RAM: two pixels per byte, or four when SA1Overflow's bit
- * 15 selects the 2-bit mode. Otherwise it is a plain byte window through
- * CurBWPtr.
+ * With BWShift set and the SA-1 on the bus, 6000-7FFF is a packed BW-RAM view:
+ * two pixels per byte, or four in SA1Overflow's 2-bit mode. Otherwise a plain
+ * byte window through CurBWPtr.
  */
 static inline int mem_bw_mapped(void)
 {
@@ -1300,11 +1285,10 @@ static inline void mem_bw_write16(void)
 
 /* --- the 6000-FFFF cartridge window -------------------------------------- *
  *
- * Whatever the cart puts there: an 8K SuperFX RAM mirror, SA-1 BW-RAM (a byte
- * window through CurBWPtr, or the bit map once BWShift is set) or the DSP1,
- * and nothing at all otherwise - a read is then zero, not open bus. Note the
- * address add is a full 32-bit one, unlike the `add cx,bx` the ram and romram
- * handlers use, and that only the two cartridge RAM paths clear ebx.
+ * An 8K SuperFX RAM mirror, SA-1 BW-RAM (byte window through CurBWPtr, or the
+ * bit map once BWShift is set), the DSP1, or nothing - in which case a read is
+ * zero, not open bus. The address add is a full 32-bit one, unlike the ram and
+ * romram handlers' `add cx,bx`, and only the two cartridge RAM paths clear ebx.
  */
 static inline u4 mem_sfx_off(void)
 {
@@ -1581,9 +1565,8 @@ void c_regaccessbankw16SA1(void)
 
 /* --- the SA-1 cart's general dispatchers --------------------------------- *
  *
- * The same windows as regaccessbank*SA1, with two differences: ROM comes from
- * map entry 0 rather than a bank-indexed one, and a write to ROM is simply
- * dropped - there is no writeon check here at all.
+ * The regaccessbank*SA1 windows, except ROM comes from map entry 0 rather than
+ * a bank-indexed one and a write to ROM is dropped - no writeon check at all.
  */
 void c_membank0r8SA1(void)
 {
@@ -1735,13 +1718,11 @@ void c_membank0w16SA1(void)
 
 /* --- S-DD1, software decompression --------------------------------------- *
  *
- * Writing 4801 points all of C0-FF at this handler (chips/sa1regs.c). It
- * decompresses one byte per read, but only for the exact bank and address the
- * stream was opened on - the DMA that drives it holds the address still
- * (AddrNoIncr), so every read lands on the same one. Anything else means the
- * transfer is over: hand the byte back from ROM and put the plain accessor
- * back in the table, which is what takes the S-DD1 out of the picture until
- * 4801 is written again.
+ * Writing 4801 points all of C0-FF here (chips/sa1regs.c). One byte per read,
+ * but only at the exact bank and address the stream was opened on - the DMA
+ * driving it holds the address still. Anything else means the transfer ended:
+ * read from ROM and put the plain accessor back in the table, which retires
+ * the S-DD1 until 4801 is written again.
  */
 
 /* Which of the four 1Mb logical banks C0-FF is mapped where. Below C0 there is

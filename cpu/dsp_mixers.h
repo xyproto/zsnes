@@ -1,23 +1,16 @@
 /*
- * cpu/dsp_mixers.h - register-machine transliterations of the DSP voice mixers.
+ * The DSP voice mixers as register machines. Included by both the emulator
+ * (cpu/c_dspproc.c) and the difftests, so what ships is what was proven
+ * bit-identical to the assembly.
  *
- * Single source of truth, included by both the emulator (cpu/c_dspproc.c) and
- * the differential tests (test/difftest_*.c), so the code that ships is exactly
- * the code that's proven bit-identical to the assembly.
+ * Textual include: the includer supplies the integer typedefs, the DSP globals
+ * the bodies name, and the DSPInterpolate function pointer.
  *
- * This is a textual include with no dependencies of its own: the includer must
- * first provide the u1/u2/u4/s2/s4 integer typedefs and declarations for the
- * globals used below - Voice0Volume, Voice0EnvInc, Voice0Freq, BRRPlace0,
- * VolumeConvTable, UniqueSoundv, powhack, DSPMem, NoiseInc, NoisePointer,
- * NoiseData, PModBuffer, DSPBuffer, EchoBuffer - and the DSPInterpolate
- * function pointer (s4 (*)(u4 edx, u4 voice)) used by the interpolated mixers.
- *
- * Each w_<name> has the mixer dispatch ABI (see `mixfn` in c_dspproc.c): it
- * reads the voice, the running DSP-buffer index (*pesi), the increment (*pebx)
- * and the decoded-sample buffer (edi), advances *pesi, and - for the
- * pitch-modulation variants - updates *pebx. The functions are `static inline`
- * so an includer that only uses some of them draws no unused-function warnings;
- * taking their address (for paramhack[]) still works.
+ * Each w_<name> has the `mixfn` ABI from c_dspproc.c: reads the voice, the
+ * DSP-buffer index (*pesi), the increment (*pebx) and the decoded samples
+ * (edi), advances *pesi and, in the pitch-modulation variants, *pebx. They are
+ * static inline so a partial includer draws no unused-function warnings;
+ * taking their address for paramhack[] still works.
  */
 #ifndef DSP_MIXERS_H
 #define DSP_MIXERS_H
@@ -209,12 +202,11 @@ static inline void w_EchoStereoPM(u4 voice, u4* const pesi, u4* const pebx, s2* 
     MIX_TAIL_PM(voice, esi);
 }
 
-/* Interpolated variants: same channel layout as the non-interpolated mixers,
- * but the sample is interpolated (mix_sample_interp) and - because each reused
- * ebx or reloaded Voice0Freq - all step BRRPlace0 by Voice0Freq (MIX_TAIL_FREQ).
- * EchoMonoInterpolated's asm leaves the decoded sample in ebx instead, but that
- * value is dead (the dispatcher reloads Voice0Freq before the next read), so we
- * return the meaningful Voice0Freq here too. */
+/* Interpolated variants: the non-interpolated channel layout, but the sample
+ * comes from mix_sample_interp and all of them step BRRPlace0 by Voice0Freq
+ * (MIX_TAIL_FREQ). EchoMonoInterpolated's asm left the decoded sample in ebx,
+ * which is dead - the dispatcher reloads Voice0Freq first - so it returns
+ * Voice0Freq here too. */
 static inline void w_NonEchoMonoInterpolated(u4 voice, u4* const pesi, u4* const pebx, s2* edi)
 {
     u4 esi = *pesi;

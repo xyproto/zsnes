@@ -1,11 +1,8 @@
 /*
- * cpu/ops65816_sa1.h - the SA-1's instantiation of the 65816 core.
- *
- * Include this instead of ops65816.h: it sets the override guards, pulls the
- * shared handlers in, and then defines the six the SA-1 does differently. The
- * caller supplies the register file (see cpu/c_ops65816_sa1.c) - which for the
- * SA-1 means its own A/X/Y/S/D, its own flags, its own opcode and direct-page
- * tables, and everything else shared with the 65816.
+ * The SA-1's instantiation of the 65816 core. Include this instead of
+ * ops65816.h: it sets the override guards, pulls the shared handlers in and
+ * defines the six the SA-1 does differently. The caller supplies the register
+ * file (cpu/c_ops65816_sa1.c).
  */
 #ifndef OPS65816_SA1_H
 #define OPS65816_SA1_H
@@ -16,13 +13,12 @@ extern u1 debstop4;
 extern u1 IRAM[2049];
 
 /*
- * The six the SA-1 does differently. Five are deliberate - it is always in
- * native mode, it has no IRQ to switch to, and BRK is a stop rather than a
- * vector - but the sixth is a defect in the original: SA1COpD6m8 is the 8-bit
- * DEC d,x and it reads and writes sixteen bits while decrementing only al, so
- * it touches the following byte and writes it back unchanged. The 65816 core
- * next door uses the 8-bit modes. Reproduced here rather than fixed, so the
- * port stays bit-identical; see the bug backlog.
+ * The six the SA-1 does differently. Five are deliberate: it is always in
+ * native mode, it has no IRQ to switch to, and BRK stops rather than vectors.
+ * The sixth is a defect in the original - SA1COpD6m8, the 8-bit DEC d,x, reads
+ * and writes sixteen bits while decrementing only al, so it touches the
+ * following byte and writes it back unchanged. Reproduced, not fixed, to keep
+ * the port bit-identical; see TODO.md.
  */
 #define OPS_OWN_COp00
 #define OPS_OWN_COp1B
@@ -258,10 +254,10 @@ void OP(COp22)(zreg* const r) /* JSL al */
 }
 
 /*
- * COP. The two halves push differently: native mode goes through the memory
- * routines, emulation mode writes work RAM directly the way BRK does. The
- * emulation half also omits `xor ebx,ebx` before loading S, which is safe only
- * because the preceding subtraction leaves the top of ebx clear.
+ * COP pushes differently in each mode: native through the memory routines,
+ * emulation straight into work RAM like BRK. The emulation half omits
+ * `xor ebx,ebx` before loading S, safe only because the subtraction before it
+ * leaves the top of ebx clear.
  */
 void OP(COp02)(zreg* const r) /* COP s */
 {

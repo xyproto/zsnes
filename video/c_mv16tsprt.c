@@ -1,12 +1,9 @@
 /*
- * video/c_mv16tsprt.c - the drawsprites16t family of video/makev16t.asm.
- *
- * The colour-maths sprite writer. Where drawsprites16bt (video/c_mv16tspr.c)
- * *produces* the transparency buffer, this one *consumes* it: a sprite in one
- * of the top four palettes is blended with whatever transpbuf already holds,
- * and only the video line is written. Four routines behind one entry point -
- * plain and window-masked, each with a full-add twin - plus a priority family
- * (video/c_mv16tsprp.c) that keeps its own dispatch at the top of the thunk.
+ * The drawsprites16t family: the colour-maths sprite writer. Where
+ * drawsprites16bt (video/c_mv16tspr.c) *produces* the transparency buffer,
+ * this one *consumes* it - a sprite in one of the top four palettes is blended
+ * with what transpbuf holds, and only the video line is written. Four routines
+ * behind one entry point, plus a priority family in video/c_mv16tsprp.c.
  *
  *   plain       palette 0 to 11: the colour goes down as it is
  *   half add    average with what is underneath, unless that is transparent
@@ -54,12 +51,10 @@ enum {
 /* One pixel of drawspr16t{a,b,c,d} and their winon twins. `dst` already
    carries the sprite's x, so every form writes at dst - n.
 
-   Which register each form uses as scratch differs, but the arm that calls
-   them zeroes ebx and edx straight afterwards, so eax is the only one that
-   survives - the windowed writers clear it, the others leave the palette
-   index in it. The arithmetic is 32-bit because the sum of two 16-bit
-   colours needs 17 bits before the shift, not because a register demands
-   it. */
+   The scratch register differs per form, but the caller zeroes ebx and edx
+   straight after, so only eax survives: cleared by the windowed writers,
+   holding the palette index otherwise. The arithmetic is 32-bit because two
+   16-bit colours need 17 bits before the shift. */
 static void spr_t(regs* const r, u1 const* const src, u1 const ch,
     u4 const ebx, u1* const dst, u1 const* const ebp, u4 const k,
     u4 const pos, int const win, int const mode)

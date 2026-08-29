@@ -1,16 +1,8 @@
 /*
- * Scalar nearest-neighbor 2x line filters
- *
- * Ported from video/2xsaiw.asm.  All three entry points share an identical
- * scale2x implementation, they only differ in name to satisfy the
- * LineFilter typedef expected by callers that pick a filter by symbol.
- *
- * Signature (LineFilter, from video/2xsaiw.h):
- *   void f(u2 *src, u1 *unused2, u4 unused3, u4 width, u1 *dst, u4 dstPitch);
- *
- * For each of the `width` source pixels, write a 2x2 block of the same
- * 16-bit pixel into dst: two copies on the top row, two on the row at
- * dst + dstPitch.
+ * Scalar nearest-neighbour 2x line filters, from video/2xsaiw.asm. All three
+ * entry points are the same scale2x body; they differ only in name, because
+ * callers pick a filter by symbol. Each source pixel becomes a 2x2 block: two
+ * copies on the top row and two at dst + dstPitch.
  */
 
 #include <stdint.h>

@@ -1,15 +1,12 @@
 /*
- * video/c_mv16tms.c - the shared prologue of video/mv16tms.asm.
- *
- * All eleven draw*ms entry points in that file are reached by falling into or
- * jumping between them, and they all run this setup first: stash the caller's
- * registers in the scratch block, bias the video and window pointers by the
- * horizontal offset, clear the mosaic line if one is active, and work out
+ * The shared prologue of video/mv16tms.asm, run by all eleven draw*ms entry
+ * points: stash the caller's registers, bias the video and window pointers by
+ * the horizontal offset, clear the mosaic line if one is active, and work out
  * which of the three tile caches the tile pointer lands in.
  *
- * Reached with al = the palette/transparency byte, ah = the shifter,
+ * Entered with al = the palette/transparency byte, ah = the shifter,
  * ebx = the tile cache pointer, ecx = the y adder, edx = the tile value and
- * esi = the horizontal offset. See the thunk in video/mv16tms.asm.
+ * esi = the horizontal offset.
  */
 #include <stdint.h>
 
@@ -79,12 +76,11 @@ void c_draw16tms_setup(void)
     MVSI = (zreg)(uintptr_t)esi;
 }
 
-/* The 16x16 prologue. Same shape, three differences: the caller's eax is
-   stored as a whole dword, so it lands on temp, bshifter, a16x16xinc and
-   a16x16yinc at once (video/makevid.c lays them out back to back) and the y
-   adders are then picked on the a16x16yinc byte it just wrote; ebx comes out
-   holding curypos rather than the reverse adder; and the cache walk runs with
-   ecx pushed, so the mosaic clear's zero survives it. */
+/* The 16x16 prologue, with three differences: the caller's eax is stored as a
+   whole dword, landing on temp, bshifter, a16x16xinc and a16x16yinc at once
+   (they are back to back in video/makevid.c) and the y adders are then picked
+   on the byte it just wrote; ebx comes out holding curypos, not the reverse
+   adder; and the cache walk keeps ecx, so the mosaic clear's zero survives. */
 extern u1 a16x16xinc, a16x16yinc, drawn; /* video/makevid.c */
 extern u2 curypos; /* u2 where it is defined; the asm reads the low byte */
 extern u2 yadd, yflipadd; /* video/c_makev16tdata.c */

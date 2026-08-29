@@ -1,17 +1,11 @@
 /*
- * cpu/spc_ioregs.h - SPC700 I/O register ($00F0-$00FF) read/write handlers,
- * ported from the SPCRegF0..FF / RSPCRegF0..FF routines in cpu/spc700.asm.
+ * SPC700 I/O register ($00F0-$00FF) handlers, from the SPCRegF0..FF and
+ * RSPCRegF0..FF routines in cpu/spc700.asm. Textual include (cpu/c_spc700.c),
+ * which supplies the integer typedefs, the SPC globals and DSPWriteReg().
  *
- * Textual include (cpu/c_spc700.c): the includer must first provide the u1/u4
- * typedefs and declarations for the globals used below - SPCRAM[], DSPMem,
- * SPCROM, spcextraram, disablespcclr, SPCSkipXtraROM, reg1read..reg4read,
- * spc700read, timeron, timincr0..2, timinl0..2, spcnumread - plus DSPWriteReg().
- *
- * Register ABI of the original asm (preserved by the callers): the dispatch
- * passes the register number in ebx (0xF0..0xFF) and, for writes, the value in
- * al; reads return the value in al. Handlers must not disturb the SPC core's
- * other registers - in C that is automatic, and the callers save eax around the
- * call because the core keeps live data in ah.
+ * The dispatch passes the register number in ebx and, for a write, the value
+ * in al; a read returns it in al. Callers save eax around the call because the
+ * core keeps live data in ah.
  */
 #ifndef SPC_IOREGS_H
 #define SPC_IOREGS_H

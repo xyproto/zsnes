@@ -19,12 +19,10 @@
 #include "regs.h"
 #include "spc700.h"
 
-// Clean C dispatch ABI for the eight-voice mixers. A mixer reads the voice,
-// the decoded-sample buffer (edi) and the running DSP-buffer index (*pesi),
-// advances *pesi, and - for the pitch-modulation variants - updates the
-// increment *pebx. paramhack[] is filled with the w_* wrappers below, so the
-// dispatch is a plain C function-pointer table and individual mixers can be
-// migrated from asm to C one at a time without touching the dispatch.
+// Dispatch ABI for the eight-voice mixers: a mixer reads the voice, the
+// decoded-sample buffer (edi) and the DSP-buffer index (*pesi), advances
+// *pesi, and updates the increment *pebx in the pitch-modulation variants.
+// paramhack[] holds the w_* wrappers, so dispatch is a plain pointer table.
 typedef void mixfn(u4 voice, u4* pesi, u4* pebx, s2* edi);
 static mixfn* paramhack[4];
 static u4 SBToSPC = 22050;
@@ -996,14 +994,12 @@ void MixEcho2(void)
     }
 }
 
-// --- BRR sample decoder (ported from cpu/dspproc.asm) -----------------------
+// --- BRR sample decoder (cpu/dspproc.asm) -----------------------------------
 //
-// A BRR block is 9 bytes: a header (range<<4 | filter<<2 | loop<<1 | end) then
-// 8 data bytes, each holding two 4-bit samples, for 16 samples per block. The
-// filter is a 2-tap IIR using the previous two output samples (prev0, prev1).
-// prev0/prev1 hold the running history and are updated per sample; the stored
-// sample is the (clamped, doubled, 16-bit-truncated) new prev0. All the shifts
-// are arithmetic, matching the original sar/imul code exactly.
+// A BRR block is 9 bytes: a header (range<<4 | filter<<2 | loop<<1 | end) and
+// 8 data bytes of two 4-bit samples each, so 16 samples. The filter is a 2-tap
+// IIR over prev0/prev1, the running output history; the stored sample is the
+// clamped, doubled, truncated new prev0. Every shift is arithmetic.
 
 // filter0 coefficient key selected by the header's filter field (0..3).
 static s4 brr_filter0(u1 const hdr)

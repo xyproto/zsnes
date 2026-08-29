@@ -1,18 +1,13 @@
 /*
- * Capcom C4 coprocessor interface, ported from chips/c4proc.asm.
+ * Capcom C4 coprocessor interface, from chips/c4proc.asm. The C4 maps into
+ * $6000-$7FFF and routes addresses the three ways the OBC1/DSP4 ports do: bit
+ * 15 set to memaccessbank, below $6000 to regaccessbank, otherwise C4 RAM. A
+ * write to $7F47 starts the ROM-to-RAM copy, one to $7F4F runs the command
+ * dispatcher; the math helpers live in c4emu.c.
  *
- * The C4 maps into $6000-$7FFF: the four C4*8b/16b entry points route
- * addresses the same three ways as the OBC1/DSP4 ports (bit 15 set to
- * memaccessbank, below $6000 to regaccessbank, otherwise C4 RAM).  A
- * write to $7F47 triggers the ROM-to-RAM copy and a write to $7F4F runs
- * the command dispatcher.  The math helpers (C4Op*, C4TransfWireFrame*,
- * C4CalcWireFrame, Sin/CosTable) live in c4emu.c.
- *
- * The asm's per-address function-pointer tables (C4RamR/C4RamW) only
- * ever held C4ReadReg/C4WriteReg plus one C4RegFunction entry, so they
- * are replaced by direct dispatch here.  The debug-only C4Edit and
- * C4ProcessVectors routines and the unreachable DoScaleRotate2 were
- * dead code and are not ported.
+ * The asm's C4RamR/C4RamW pointer tables held only two handlers plus one
+ * C4RegFunction entry, so this dispatches directly. C4Edit, C4ProcessVectors
+ * and DoScaleRotate2 were dead and are not ported.
  */
 
 #include <stdint.h>

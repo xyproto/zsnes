@@ -1,9 +1,6 @@
-/* Ssplitflags / Sjoinflags from cpu/s65816d.inc.
- *
- * The same conversion cpu/flags65816.h does for the 65816, over the SA-1's copy
- * of the flag globals. It is a separate translation unit precisely so the
- * header can be instantiated a second time rather than the logic written
- * twice. */
+/* Ssplitflags / Sjoinflags from cpu/s65816d.inc: what cpu/flags65816.h does
+   for the 65816, over the SA-1's copy of the flag globals. A separate
+   translation unit so the header can be instantiated twice. */
 #include "../types.h"
 
 extern u4 Sflagnz, Sflago, Sflagc;

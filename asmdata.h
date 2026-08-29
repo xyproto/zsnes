@@ -1,16 +1,13 @@
 #ifndef ASMDATA_H
 #define ASMDATA_H
 
-// Portable inline-asm data layout directives.  A few data blocks are emitted
-// via inline asm to force exact symbol order and adjacency (relied on by the
-// asm core and the save-state code).  ELF, Mach-O and PE/COFF differ in section
-// syntax and symbol naming (Mach-O and 32-bit PE/COFF prefix an underscore), so
-// abstract it here.
-// ASM_GSYM defines an exported symbol, ASM_LSYM a file-local one; name either
-// from elsewhere in the asm text with ASM_SYMREF / ASM_LSYMREF.
-// Sizes must mean the same thing on every target, so spell them
-// .byte/.short/.long: aarch64 reads .word as four bytes where x86 reads two,
-// and these blocks came from NASM's dw.
+// Portable inline-asm data layout directives. A few data blocks go through
+// inline asm to pin exact symbol order and adjacency, which the save-state
+// code relies on; ELF, Mach-O and PE/COFF spell sections and symbol names
+// differently, so abstract that here. ASM_GSYM defines an exported symbol,
+// ASM_LSYM a file-local one; name either from the asm text with ASM_SYMREF or
+// ASM_LSYMREF. Spell sizes .byte/.short/.long, never .word: aarch64 reads that
+// as four bytes where x86 reads two.
 
 #if defined(__APPLE__)
 // clang always emits .subsections_via_symbols, so ld64 cuts a section into

@@ -1,14 +1,11 @@
-/* The SA-1's 65816 core, ported from cpu/se65816.inc.
- *
- * cpu/se65816.inc is cpu/e65816.inc with a different register file: after
- * normalising the SA1/S prefixes away, 42 of its 2012 lines differ, and those
- * are EXTSYM lists and a debugger hook rather than opcode behaviour. So the
- * handlers are not written twice - cpu/ops65816.h is included again here with
- * the renamed globals macroed onto their SA-1 counterparts.
- *
- * What is *not* renamed matters as much as what is: xpc, xe, the memory tables,
- * the direct-page and stack masks and the memory routines themselves are shared
- * with the 65816, and membank0r8 dispatches on SA1Enable internally. */
+/* The SA-1's 65816 core, from cpu/se65816.inc - which is cpu/e65816.inc over a
+   different register file, differing in 42 of 2012 lines, all EXTSYM lists and
+   a debugger hook. So cpu/ops65816.h is included again here with the renamed
+   globals macroed onto their SA-1 counterparts.
+
+   What is *not* renamed matters as much: xpc, xe, the memory tables, the
+   direct-page and stack masks and the memory routines are shared, and
+   membank0r8 dispatches on SA1Enable internally. */
 #include <stdint.h>
 
 #include "../endmem.h"

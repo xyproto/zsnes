@@ -1,16 +1,9 @@
-/* The .data blocks that were spread through video/newgfx16.asm.
- *
- * One pinned block, in the assembly's order and at its offsets. Two things to
- * know before touching it:
- *
- *   - the gaps are `nop` (0x90), not zero. NASM's ALIGN pads with nops in a
- *     data section too, so `.balign 32, 0x90` is what reproduces it.
- *   - mosstart, moscountdown and clinemainsub were file-local labels. They are
- *     global here because the block moved out of the file that used them;
- *     nothing else may take those names.
- *
- * Data-only file so the layout test can link it on its own.
- */
+/* The .data blocks spread through video/newgfx16.asm, pinned as one block in
+   the assembly's order. The gaps are nop (0x90), not zero, because NASM's
+   ALIGN pads that way in a data section too; and mosstart, moscountdown and
+   clinemainsub were file-local labels, global here because the block moved out
+   of the file that used them. Data-only so the layout test can link it
+   alone. */
 #include "../asmdata.h"
 
 /* clang-format off */

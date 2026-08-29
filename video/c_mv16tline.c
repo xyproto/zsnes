@@ -1,36 +1,26 @@
 /*
- * video/c_mv16tline.c - the scanline drivers of video/makev16t.asm:
- * drawline16t, NextDrawLine16bt, priority216t, Priority2NextDrawLine16bt,
- * processmode716t and processmode716t2.
+ * The scanline drivers of video/makev16t.asm - the top of the transparency
+ * renderer. One scanline: set the palette, work out the colour window, clear
+ * the back area into the transparency buffer, then walk the four backgrounds
+ * and four sprite priorities twice, once into that buffer (the "sub" pass) and
+ * once into the video line ("main"). Mode 7 has its own pair of the same shape.
  *
- * The top of the transparency renderer. One scanline is: set the palette,
- * work out the colour window, clear the back area into the transparency
- * buffer, then walk the four backgrounds and the four sprite priorities twice
- * - once into the transparency buffer (the "sub" pass) and once into the video
- * line (the "main" pass). Mode 7 has its own pair of drivers with the same
- * shape.
+ * Only drawline16t is reached from outside; the other five are fallen into.
+ * The assembly's register push/pop spans drawline16t and NextDrawLine16bt,
+ * which is why they read as one function here.
  *
- * Only drawline16t is reached from outside; the other five are fallen into or
- * jumped to. The assembly's push/pop of the callee-saved registers spans the
- * pair - drawline16t pushes and NextDrawLine16bt pops - which is why they read
- * as one function here.
- *
- * Everything this calls is C, but the assembly threaded values between those
- * calls in the registers, so a register file (DLR) threads them here. dl_call
- * hands it to an entry point that takes a pushad-ordered block; the rest are
- * called with the block spilled into whatever globals they read.
+ * The assembly threaded values between calls in registers, so a register file
+ * (DLR) threads them here; dl_call hands it to entry points that want a
+ * pushad-ordered block.
  */
 #include <stdint.h>
 
 #include "../types.h"
 #include "makevid.h"
 
-/* The video pass's register file, in eax..ebp order. A shim used to move it in
-   and out of the real registers around each call into the assembly; every
-   callee is C now, so dl_call hands the block over and there are no registers
-   in it any more. The file stays because these routines still pass values to
-   each other through it - edi and ebp carry from one scanline call to the
-   next, exactly as they did. */
+/* The video pass's register file, in eax..ebp order. It stays because these
+   routines still pass values to each other through it - edi and ebp carry from
+   one scanline call to the next, as they did. */
 zreg DLR[7];
 
 /* The pushad order the ported entry points use, which is not DLR's. */

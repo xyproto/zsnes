@@ -1,21 +1,16 @@
 /*
- * video/c_mv16toffs.h - the offset-per-tile helpers of video/vidmacro.mac:
- * initoffsetmode, procoffsetmode and offsetmcachechk.
+ * The offset-per-tile helpers of video/vidmacro.mac. Modes 2 and 4 give every
+ * tile column its own scroll offset from the BG3 map: initoffsetmode finds
+ * where that map starts, procoffsetmode steps one column and returns the map
+ * pointer for the next tile, offsetmcachechk faults a tile into the 4-bit
+ * cache before it draws.
  *
- * Mode 2 and 4 give every tile column its own scroll offset, taken from the
- * BG3 map. initoffsetmode works out where that map starts, procoffsetmode
- * steps one column along it and hands back the map pointer the next tile
- * should be read through, and offsetmcachechk faults a tile into the 4-bit
- * cache before it is drawn.
- *
- * video/c_makev16b.c has its own static copies of all three for the
- * non-transparency drawers. They are *not* interchangeable with these - see
- * the notes there - so this header keeps the assembly's behaviour, which is
- * what the difftest compares against.
+ * video/c_makev16b.c has its own static copies for the non-transparency
+ * drawers; they are *not* interchangeable with these.
  *
  * Most of the arithmetic is deliberately 16-bit on the low half of a 32-bit
- * register: the assembly uses ax/bx/dx throughout and the high halves carry
- * through untouched, so a u2 local would silently drop them.
+ * register - the assembly used ax/bx/dx and the high halves carry through
+ * untouched, which a u2 local would drop.
  */
 #ifndef C_MV16TOFFS_H
 #define C_MV16TOFFS_H

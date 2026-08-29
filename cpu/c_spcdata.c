@@ -1,12 +1,8 @@
-/* C port of the SPC700 state block from cpu/spc700.asm. The opcode handlers
-   are already in cpu/c_spc700.c; this is the state they share.
-
-   PHspcsave is the byte distance from SPCRAM to the end of FutureExpandS,
-   which zstate.c uses as a save-state block length, so the order and size of
-   everything in between is load-bearing - including the 64-byte SPC boot ROM
-   that sits at the top of SPCRAM and the copy of it kept in SPCROM, which the
-   emulator swaps in and out of that window. Emitted through one inline-asm
-   block (see asmdata.h) to pin that layout. */
+/* The SPC700 state block from cpu/spc700.asm. PHspcsave is the byte distance
+   from SPCRAM to the end of FutureExpandS, which zstate.c uses as a save-state
+   block length, so everything between is load-bearing - including the 64-byte
+   boot ROM at the top of SPCRAM and the SPCROM copy the emulator swaps in and
+   out of that window. One inline-asm block pins the layout. */
 #include "../asmdata.h"
 
 /* The IPL boot ROM, mapped at $FFC0. Appears twice: once as the tail of SPCRAM

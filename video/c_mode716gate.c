@@ -1,11 +1,9 @@
 /*
- * video/c_mode716gate.c - the register seams that were left in
- * video/mode716.asm once every body in it had moved to C.
- *
- * Two shapes. The M7Seam pair is a plain spill, call, reload. The M7DRAW pair
- * also carries the mosaic tail: the assembly reached domosaicng16b by a jump,
- * not a call, so it runs on the registers the renderer ended on - eax cleared
- * and dh holding curmosaicsz - and its answer is what the caller gets back.
+ * The register seams left in video/mode716.asm once its bodies moved to C. The
+ * M7Seam pair is a plain spill, call, reload; the M7DRAW pair also carries the
+ * mosaic tail, which the assembly reached by a jump, so it runs on the
+ * registers the renderer ended on - eax cleared, dh holding curmosaicsz - and
+ * its answer is the caller's.
  */
 #include "c_mode716gate.h"
 

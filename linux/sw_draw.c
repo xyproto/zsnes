@@ -61,12 +61,10 @@ int sw_start(int width, int height, int req_depth, int FullScreen)
         render_surface = NULL;
     }
     if (sdl_window) {
-        // Reuse the existing window by resizing it in place. Destroying and
-        // recreating the window on every mode/filter change also tears down the
-        // window framebuffer's EGL/GL context (SDL_GetWindowSurface builds one
-        // behind the window on Wayland); repeating that churn corrupts the
-        // driver heap on some systems ("double free or corruption"). Keeping the
-        // window alive avoids it (and is faster / flicker-free).
+        // Resize in place. Recreating the window on every mode or filter
+        // change also tears down the framebuffer's EGL/GL context, which SDL
+        // builds behind the window on Wayland, and that churn corrupts the
+        // driver heap on some systems. Keeping the window is also faster.
         SDL_SetWindowFullscreen(sdl_window, FullScreen ? true : false);
         SDL_SetWindowSize(sdl_window, SurfaceX, SurfaceY);
         SDL_SyncWindow(sdl_window); // settle the new size before mapping the mouse
@@ -162,12 +160,8 @@ extern uint8_t prevKeep4_3Ratio;
 void sw_drawwin()
 {
     NGNoTransp = 0; // Set this value to 1 within the appropriate
-    // video mode if you want to add a custom
-    // transparency routine or hardware
-    // transparency.  This only works if
-    // the value of newengen is equal to 1.
-    // (see ProcessTransparencies in newgfx16.asm
-    //  for ZSNES' current transparency code)
+    // Where a custom or hardware transparency routine would go. Only reachable
+    // with newengen == 1; see ProcessTransparencies (video/c_ngtransp.c).
 
     UpdateVFrame();
 

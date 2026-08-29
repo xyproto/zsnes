@@ -1,10 +1,7 @@
 /*
- * video/c_mv16tclr.c - clearback16t and clearback16ts, ported from
- * video/makev16t.asm.
- *
- * The first thing each scanline does: fill the line with the backdrop colour,
- * or - when colour maths applies to the back area - blend the backdrop with
- * whatever the transparency buffer already holds. Four routes, picked by
+ * clearback16t and clearback16ts: the first thing each scanline does, filling
+ * the line with the backdrop colour or - when colour maths applies to the back
+ * area - blending it with the transparency buffer. Five routes, picked by
  * scaddtype and whether anything is on the sub screen:
  *
  *   no maths          copy the backdrop across, two pixels per store
@@ -13,9 +10,9 @@
  *   backdrop is zero  copy the transparency buffer straight over
  *   otherwise         run the pair through fulladdtab
  *
- * The averaging loop reads the transparency buffer a dword at a time for two
- * pixels; the fulladd ones read a dword but step two bytes, so each read
- * overlaps the last. Reproduced, not fixed.
+ * The averaging loop reads the buffer a dword at a time for two pixels; the
+ * fulladd ones read a dword but step two bytes, so each read overlaps the
+ * last. Reproduced, not fixed.
  */
 #include <stdint.h>
 #include <string.h>
@@ -118,12 +115,10 @@ void c_clearback16t(void)
         for (u4 n = 128; n != 0; n--) {
             u4 ebx = *(u4 const*)ebp;
 
-            /* The arms rewrite bx in place. Only the second one is
-               observable - what is left in ebx at the end is that pixel's
-               result rather than the byte that was read - because the shift
-               below throws the first one's low half away. Kept on both for
-               symmetry with the assembly; a mutant that drops the first is
-               unkillable for that reason. */
+            /* The arms rewrite bx in place. Only the second is observable -
+               the shift below throws the first's low half away - so ebx ends
+               holding that pixel's result rather than the byte read. Kept on
+               both, as the assembly has it. */
             if ((u2)ebx != 0) {
                 ebx = (ebx & ~0xFFFFu)
                     | (u2)((u2)(((u2)ebx & (u2)vesa2_clbit) >> 1) + (u2)eax);

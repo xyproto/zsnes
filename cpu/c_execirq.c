@@ -1,12 +1,7 @@
-/* The ProcessIRQStuff macro from cpu/execute.asm.
- *
- * Decides whether this scanline raises a V/H IRQ. It is used at four points in
- * the dispatch and each ends by jumping to its own `.virq` label, so the C
- * returns that decision rather than taking it: non-zero means "take .virq".
- *
- * Two dead branches in the original are kept as comments rather than
- * reproduced: `%%tryhirq` is just `jmp %%startirq`, which is also where falling
- * through lands, and `%%setagain` is never referenced. */
+/* ProcessIRQStuff from cpu/execute.asm: does this scanline raise a V/H IRQ?
+   Four dispatch sites each end by jumping to their own `.virq`, so this returns
+   the decision instead of acting on it - non-zero means take .virq. Two dead
+   branches in the original are left as comments. */
 #include <stdint.h>
 
 #include "../types.h"

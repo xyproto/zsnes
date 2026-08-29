@@ -172,11 +172,8 @@ void gl_clearwin()
     memset(glvidbuffer, 0, 512 * 448 * 2);
 }
 
-/* gl_drawspan:
- * Puts a quad on the screen for hires/lores portions, starting at line start,
- * and ending at line end..
- * Builds the 256x256/512x256 textures if gltexture256 or gltexture512 == 0
- */
+/* Put a quad on the screen for the hi-res/lo-res span from `start` to `end`,
+   building the 256x256 / 512x256 textures if they do not exist yet. */
 static void gl_drawspan(int hires, int start, int end)
 {
     int i, j;
@@ -278,12 +275,8 @@ void gl_drawwin()
     int i;
 
     NGNoTransp = 0; // Set this value to 1 within the appropriate
-    // video mode if you want to add a custom
-    // transparency routine or hardware
-    // transparency.  This only works if
-    // the value of newengen is equal to 1.
-    // (see ProcessTransparencies in newgfx16.asm
-    //  for ZSNES' current transparency code)
+    // Where a custom or hardware transparency routine would go. Only reachable
+    // with newengen == 1; see ProcessTransparencies (video/c_ngtransp.c).
     UpdateVFrame();
     if (curblank || !CheckOGLMode()) {
         return;
@@ -354,13 +347,9 @@ void gl_drawwin()
             gl_drawspan(lasthires, lasthires_line, i);
         }
 
-        /*
-         * This is here rather than right outside this if because the
-         * GUI doesn't allow scanlines to be selected while filters are
-         * on.. There is no technical reason they can't be on while
-         * filters are on, however.  Feel free to change the GUI, and
-         * move this outside the if (En2xSaI) {}, if you do.
-         */
+        /* Inside the filter branch only because the GUI does not let
+           scanlines be selected while a filter is on; nothing technical stops
+           it. Move this out if the GUI ever allows both. */
         if (sl_intensity) {
             glDisable(GL_TEXTURE_2D);
             glEnable(GL_BLEND);

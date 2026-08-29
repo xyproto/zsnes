@@ -1,13 +1,8 @@
-/* The .data and .bss blocks that were in cpu/regs.inc.
- *
- * This is the CPU/PPU register file. zstate.c saves PHnum2writeppureg bytes
- * starting at sndrot, and that length is assembled from this block's own
- * layout, so every distance here is part of the save-state format - do not
- * insert, reorder or re-align anything without changing the format.
- *
- * Generated from the assembly and byte-compared against it; the gaps are nop
- * (0x90) fill because NASM's ALIGN pads that way in a data section too.
- */
+/* The CPU/PPU register file, from cpu/regs.inc. zstate.c saves
+   PHnum2writeppureg bytes from sndrot and that length comes from this block's
+   own layout, so every distance here *is* the save-state format: inserting,
+   reordering or re-aligning changes it. The gaps are nop (0x90) fill, as
+   NASM's ALIGN pads in a data section. */
 #include "../asmdata.h"
 
 /* clang-format off */

@@ -1,22 +1,16 @@
 /*
- * video/c_mode716win.c - the ProcessMode7ngwin*16b cluster, ported from
- * video/mode716.mac.
+ * The ProcessMode7ngwin*16b cluster: five subroutines that walk the Mode 7
+ * position over the pixels a window masks out - no drawing, just advancing the
+ * accumulators and the VRAM tile pointer so the renderer resumes in the right
+ * place. ngcwinptr walks ProcessBuildWindow's run list, alternating "draw this
+ * many" with "skip this many", which is why these tail-jump into each other.
  *
- * These five subroutines walk the Mode 7 position over the pixels a window
- * masks out: no drawing, just advance the accumulators (and the VRAM tile
- * pointer, when a position crosses a tile edge) so the renderer resumes in the
- * right place. ngcwinptr walks a list of run lengths built by
- * ProcessBuildWindow - a "draw this many" entry alternating with a "skip this
- * many" one, which is why the routines tail-jump back into each other.
- *
- * Reached by call from the Mode7Processngw*16b macros with eax = the position
- * accumulator, ebx = mmode7ptr, esi = the video pointer and edi = the VRAM
- * tile base; all four come back, so the seam carries whole registers rather
- * than values. The M7Win* block is its own for the same reason M7Start* is:
- * this runs inside a renderer that has already spilled into M7Seam*.
+ * Entered with eax = the position accumulator, ebx = mmode7ptr, esi = the
+ * video pointer and edi = the VRAM tile base; all four come back. M7Win* is
+ * its own block for the same reason M7Start* is.
  *
  * Positions are 32-bit fixed point with the tile coordinate in byte 1, so the
- * off-tile tests and the wrap masks below all work on that byte alone.
+ * off-tile tests and wrap masks all work on that byte alone.
  */
 #include <stdint.h>
 

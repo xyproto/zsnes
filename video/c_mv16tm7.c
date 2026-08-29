@@ -1,18 +1,15 @@
 /*
- * video/c_mv16tm7.c - the per-scanline dispatch gates of video/makev16t.asm:
- * the eight procmode716t* entry points and the four procsprites*16t ones.
+ * The per-scanline dispatch gates of video/makev16t.asm: eight procmode716t*
+ * entry points and four procsprites*16t ones.
  *
- * Per scanline, each decides whether its Mode 7 layer is drawn at all, builds
- * the window mask if one is enabled, snaps the y position to the mosaic grid,
- * and hands the scroll values to one of six drawmode716* renderers. They
- * differ only in the enable test, whether the vertical flip and the m7starty
- * handoff apply, and which renderer they end on - so one body covers all
- * eight, and the caller does the tail-jump.
+ * Each decides whether its Mode 7 layer draws, builds the window mask, snaps y
+ * to the mosaic grid and hands the scroll values to one of six drawmode716*
+ * renderers. They differ only in the enable test, whether the vertical flip
+ * and m7starty handoff apply, and which renderer they end on, so one body
+ * covers all eight and the caller does the tail-jump.
  *
- * The renderers stay in assembly, so the registers they expect are set up
- * here and handed back through the M7T* seam: ax = bg1scroly_m7,
- * dx = bg1scrolx_m7, ebx as the mosaic divide left it, ebp = 0 from the
- * makewindow call.
+ * The renderers take their registers through the M7T* seam: ax = bg1scroly_m7,
+ * dx = bg1scrolx_m7, ebx as the mosaic divide left it, ebp = 0.
  */
 #include <stdint.h>
 
@@ -223,15 +220,13 @@ void c_procmode716tmainextbg2(void)
 
 /* --- the sprite gates ----------------------------------------------------- *
  *
- * procsprites{sub,main}16t and their *fix twins. Same shape as the Mode 7
- * gates: a few enable tests, then the sprite line buffer's count byte for this
- * scanline decides whether anything is drawn. The non-fix pair start by
- * redirecting to the fix one when bgfixer says so, which stays in the caller.
+ * procsprites{sub,main}16t and their *fix twins: enable tests, then the sprite
+ * line buffer's count byte decides whether anything draws. The non-fix pair
+ * redirect to the fix one when bgfixer says so, which stays in the caller.
  *
- * drawsprites16b is called from here; drawsprites16t and drawsprites16bt come
- * back through SPRTail, the shape the assembly's tail-jump had. ecx after any
- * of them is undefined, so what is handed back is the count byte.
- */
+ * drawsprites16b is called from here; the other two come back through SPRTail,
+ * the shape the assembly's tail-jump had. ecx is undefined after any of them,
+ * so the count byte is what gets handed back. */
 extern u1 scrndis, winonsp, sprprifix; /* video/makevid.h, cpu/regs.h */
 void drawsprites16b(u1 cl, u4 ebp); /* video/c_makev16b.h */
 
@@ -303,18 +298,17 @@ void c_procspritesmain16tfix(void) { sprites(0, 1); }
 
 /* --- the background gates ------------------------------------------------- *
  *
- * drawbackgrnd{sub,main}16t and their *fix twins, one per background layer
- * (ebp). Same shape again: colour-mode check, screen enables, window, mosaic,
- * then the tile renderer for this layer's size and colour-maths mode.
+ * drawbackgrnd{sub,main}16t and their *fix twins, one per layer (ebp):
+ * colour-mode check, screen enables, window, mosaic, then the tile renderer
+ * for this layer's size and colour-maths mode.
  *
  * draw8x816b and draw16x1616b are called from here; the other six come back
- * through BGTail, the shape the assembly's tail-jump had. The `drawn == 33`
- * check that marks a layer fully drawn happens after the renderer returns.
+ * through BGTail. The `drawn == 33` fully-drawn check happens after the
+ * renderer returns.
  *
- * Every early return leaves registers behind that the assembly set on the way:
- * esi is colormodeofs from the first instruction, bl is the colour-mode byte,
- * and al is curbgnum or - once the window has been built - winbg1en[ebp].
- */
+ * Every early return leaves the registers the assembly set on the way: esi is
+ * colormodeofs, bl the colour-mode byte, al curbgnum or - once the window is
+ * built - winbg1en[ebp]. */
 /* alreadydrawn, curbgnum, curbgpr, drawn, bgcoloradder and the bg1*loc
    tables come from video/makevid.h; bgmode/bgtilesz/winen from cpu/regs.h.
    `winbg1en+ebp` in the assembly is winen[ebp] - they are the same address,

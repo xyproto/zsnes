@@ -258,11 +258,10 @@ void deallocmem()
         outofmemory();           \
     }
 
-/* ZSNES_SELFTEST=1 checks the runtime this platform actually produced, then
-   exits. Every buffer here is reached through a pointer that crosses a
-   translation unit; where one of those slots is narrower than a pointer the
-   value comes back truncated, which is the fault this looks for. Needs no ROM
-   and no display, so CI can run a cross-built binary. */
+/* ZSNES_SELFTEST=1 checks the runtime this platform produced, then exits.
+   Every buffer here is reached through a pointer that crosses a translation
+   unit, and a slot narrower than a pointer truncates it - the fault this looks
+   for. Needs no ROM and no display. */
 static int selftest_buf(const char* name, void* p, size_t n)
 {
     volatile unsigned char* b = p;
@@ -279,11 +278,10 @@ static int selftest_buf(const char* name, void* p, size_t n)
     return (0);
 }
 
-/* The inline-asm data blocks (asmdata.h) only work if the linker leaves them
-   whole. ld64 splits a section at every symbol and -dead_strip then drops the
-   unreferenced ones, which silently repacks the block; these are a few of the
-   distances the emulator and the save-state code rely on, checked in the
-   binary that ships rather than in the differently-linked unit tests. */
+/* The inline-asm data blocks only work if the linker leaves them whole - ld64
+   splits a section at every symbol and -dead_strip then repacks it. These are
+   a few of the distances the emulator and the save-state code rely on, checked
+   in the binary that ships rather than in the differently-linked tests. */
 static int selftest_gap(const char* name, const void* a, const void* b,
     ptrdiff_t want)
 {

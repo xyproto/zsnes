@@ -426,7 +426,6 @@ void BackupCVFrame()
         EarliestRewindPos = (EarliestRewindPos + 1) % AllocatedRewindStates;
         RewindPosPassed = false;
     }
-    //  printf("Backing up in #%u, earliest: #%u, allocated: %u\n", LatestRewindPos, EarliestRewindPos, AllocatedRewindStates);
 
     LatestRewindPos = (LatestRewindPos + 1) % AllocatedRewindStates;
 
@@ -864,12 +863,9 @@ void zst_save(FILE* fp, bool Thumbnail, bool Compress)
     ResetState();
 }
 
-/*
-Merges all the passed strings into buffer. Make sure to pass an extra parameter as 0 after all the strings.
-Copies at most buffer_len characters. Result is always null terminated.
-Returns how many bytes are needed to store all strings.
-Thus if return is <= buffer_len, everything was copied.
-*/
+/* Concatenate the varargs (terminated by a 0) into buffer, at most buffer_len
+   bytes and always null terminated. Returns the length needed; <= buffer_len
+   means it all fit. */
 static size_t string_merge(char* buffer, size_t buffer_len, ...)
 {
     char* s;

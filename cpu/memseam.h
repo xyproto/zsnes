@@ -5,17 +5,15 @@
 
 /*
  * The memtable/Bank0dat calling convention, formerly the x86 register ABI of
- * cpu/memory.asm.
+ * cpu/memory.asm. A handler takes and returns nothing: the caller leaves the
+ * bank in MemSeamB, the address in MemSeamC, the value in MemSeamA and the
+ * core's edx in MemSeamD, and reads all four back - handlers advance the
+ * address, clear the bank or hand a nested access on, and the caller keeps
+ * whatever they left.
  *
- * A handler takes nothing and returns nothing.  The caller leaves the bank in
- * MemSeamB, the address in MemSeamC, the value in MemSeamA (al on an 8-bit
- * write, ax on a 16-bit one) and the core's edx in MemSeamD, and reads all
- * four back afterwards: handlers advance the address, clear the bank, or hand
- * a nested access to another handler, and the caller keeps whatever they left.
- *
- * Call sites (cpu/ops65816.h mem_call, cpu/memtable.h) save and restore the
- * seam around the call, so it behaves like the callee-saved register set it
- * replaces even when a register write starts a DMA that reenters here.
+ * Call sites save and restore the seam, so it behaves like the callee-saved
+ * register set it replaces even when a register write starts a DMA that
+ * reenters here.
  */
 /* Pointer-wide, not uint32_t: these stand in for the assembly's ebx/ecx/eax/
    edx, and ebx in particular carries a host RAM base on the bank paths. On

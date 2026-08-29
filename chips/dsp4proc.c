@@ -1,14 +1,12 @@
 /*
- * DSP4 bank access, ported from the i386 trampolines that stood in for
- * chips/dsp4proc.asm.
- *
- * Address routing, as in the legacy assembly:
+ * DSP4 bank access, from the trampolines that stood in for
+ * chips/dsp4proc.asm. Address routing:
  *   $0000-$7FFF  tail into regaccessbank*
  *   $8000-$BFFF  DSP4 transfer
- *   $C000-$FFFF  nothing at all, the value is left as the caller had it
+ *   $C000-$FFFF  nothing; the value is left as the caller had it
  *
- * A 16-bit access is two byte transfers with the address stepped in between,
- * low byte first.
+ * A 16-bit access is two byte transfers with the address stepped between, low
+ * byte first.
  */
 
 #include <stdint.h>

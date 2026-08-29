@@ -1,23 +1,17 @@
 /*
- * video/c_mv16thi.c - the twelve 16x8 colour-maths tile drawers of
- * video/makev16t.asm: draw16x816t and everything reachable from it.
+ * The twelve 16x8 colour-maths tile drawers of video/makev16t.asm - the hi-res
+ * form. A 16x8 tile is 16 pixels wide but only eight land on a 256-pixel line,
+ * so each group takes every *second* byte (`res512switch` picks which half)
+ * and the eight screen pixels come from two tiles 64 bytes apart.
  *
- * The hi-res form. A 16x8 tile is 16 pixels wide but only eight land on a
- * 256-pixel line, so each group takes every *second* byte of a tile - which
- * half is `res512switch` - and the eight screen pixels come from two tiles,
- * the second 64 bytes after the first.
- *
- * Twelve entry points, all one of two macros (Process16x816t and its windowed
- * twin) instantiated with a writer and the half selector, so they collapse to
- * one body with `mode`, `winon` and `half`. The colour-maths writers are the
- * shared ones in video/c_mv16tt.h except for half add, whose two forms here
- * swap which register carries the colour and which the transparency - so those
- * two are written out below.
+ * Twelve entry points from two macros, so one body with `mode`, `winon` and
+ * `half`. The writers are the shared ones in video/c_mv16tt.h except half add,
+ * whose two forms here swap which register carries the colour and which the
+ * transparency, so those are written out below.
  *
  * Reached with al = the starting column, ah = the palette shifter, ebx = the
  * tile cache pointer, ecx = the y adder, edx = the map pointer to reload at
  * the column wrap, esi = the horizontal offset and edi = the map pointer.
- * The mosaic tail stays in the thunk.
  */
 #include <stdint.h>
 #include <string.h>

@@ -270,12 +270,10 @@ static void PlayerDeviceFix(u4* const device)
     *device = d;
 }
 
-// Debug: scripted player-1 input, driven by the DEBUG_INPUT_SCRIPT env var.
-// Format is a comma-separated list of BUTTON,MS pairs, e.g. "A,200,B,200"
-// (hold A for 200ms, then hold B for 200ms). Buttons are case-insensitive:
-// A B X Y L R START SELECT UP DOWN LEFT RIGHT. Timing is frame-deterministic
-// (converted to NTSC 60fps frames), so it replays identically regardless of
-// host speed. Meant for headless reproduction (see ASCII_SCREENSHOT_EVERY_FIVE).
+// Debug: scripted player-1 input from DEBUG_INPUT_SCRIPT, a comma-separated
+// list of BUTTON,MS pairs like "A,200,B,200". Buttons are case-insensitive:
+// A B X Y L R START SELECT UP DOWN LEFT RIGHT NONE. Times convert to NTSC
+// frames, so a run replays identically whatever the host speed.
 static u4 DebugInputButtonMask(const char* name, size_t len)
 {
     static const struct {

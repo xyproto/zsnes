@@ -1,15 +1,9 @@
-/* C port of the Mode 7 renderer's scratch block from video/mode716.asm.
-
-   The layout is load-bearing, not incidental: the renderer keeps the current
-   position, the relative position and the per-pixel adders as pairs read 8
-   bytes at a time, so every one of them is followed by a spacer the assembly
-   labelled "keep this blank!". Those spacers are never named anywhere; they
-   exist only to space their neighbour. The mode7*pos/adder pairs at the end
-   are the same thing with the spacer folded into a two-dword reservation.
-
-   Emitted through one inline-asm block (see asmdata.h) to pin that layout.
-   video/mode716.mac and the routines left in video/mode716.asm reach these by
-   name, so they are all global here even though most were file-local before. */
+/* The Mode 7 renderer's scratch block from video/mode716.asm. The layout is
+   load-bearing: the renderer reads the current position, the relative position
+   and the per-pixel adders 8 bytes at a time, so each is followed by an unnamed
+   spacer the assembly labelled "keep this blank!". The mode7*pos/adder pairs at
+   the end fold the spacer into a two-dword reservation. One inline-asm block
+   pins it all. */
 #include "../asmdata.h"
 
 /* clang-format off */

@@ -1,23 +1,13 @@
 /*
- * The colour-window setup the mode 7 line drivers run before each scanline,
- * ported from the procwindowback macro in video/vidmacro.mac (its only user
- * was procwindowback16t in video/makev16t.asm).
+ * The colour-window setup the mode 7 line drivers run per scanline, from the
+ * procwindowback macro in video/vidmacro.mac. Reads the window registers and
+ * leaves winon, numwin and the windowdata run list: winon is 0 none, 1 a run
+ * list, 2 nothing masked, 3 dual-window colour maths, 4 clear, 5 all masked.
  *
- * It takes nothing and returns nothing: it reads the window registers and
- * leaves winon, numwin and the windowdata run list for the drawers. winon
- * selects what the drawer does - 0 none, 1 a run list, 2 nothing masked,
- * 3 the dual-window colour maths, 4 clear, 5 everything masked.
- *
- * It also has to report what it leaves in eax, ebx, ecx and esi. Both call
- * sites in video/c_mv16tline.c run it and then clearback16bts back to back,
- * and clearback16bts reads those same registers - so what this routine
- * incidentally leaves in them is the next one's input. pwregs carries them.
- *
- * The writes are partial-width on purpose: the assembly touches bl, al, cx and
- * esi, so the rest of each register has to survive.
- *
- * Verified against the assembly by test/difftest_procwin.c (make -C test
- * procwin), registers included.
+ * It also has to report eax, ebx, ecx and esi, because both call sites in
+ * video/c_mv16tline.c follow it with clearback16bts, which reads them. pwregs
+ * carries them. The writes are partial-width on purpose - the assembly touches
+ * bl, al, cx and esi - so the rest of each register survives.
  */
 
 #include <stdint.h>

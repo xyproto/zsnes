@@ -1,19 +1,14 @@
 /*
- * video/c_mv16t8to.c - the six offset-mode 8x8 colour-maths tile drawers of
- * video/makev16t.asm: draw8x816toffset, draw8x8fulladdoffset,
- * draw8x816tsoffset and their three winon twins.
+ * The six offset-mode 8x8 colour-maths tile drawers: video/c_mv16t8t.c's
+ * family with offset-per-tile scrolling. Modes 2 and 4 give every tile column
+ * its own offset out of the BG3 map, so instead of stepping the map pointer by
+ * two and wrapping at column 0x20, each iteration asks video/c_mv16toffs.h
+ * where the next tile is. There is no column counter - dl keeps whatever
+ * `temp` was seeded with for the whole line.
  *
- * video/c_mv16t8t.c's family with offset-per-tile scrolling: modes 2 and 4
- * give every tile column its own offset out of the BG3 map, so instead of
- * stepping the map pointer by two and wrapping it at column 0x20, each
- * iteration asks video/c_mv16toffs.h where the next tile lives. There is no
- * column counter here at all - dl keeps the value `temp` was seeded with for
- * the whole line.
- *
- * Reached with al = the starting column, ah = the palette shifter, ebx = the
+ * Entered with al = the starting column, ah = the palette shifter, ebx = the
  * tile cache pointer, ecx = the y adder, edx = the map pointer to stash,
  * esi = the horizontal offset, edi = the map pointer and ebp = the layer.
- * The mosaic tail stays in the thunk.
  */
 #include <stdint.h>
 #include <string.h>

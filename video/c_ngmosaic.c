@@ -1,21 +1,17 @@
 /*
- * video/c_ngmosaic.c - the mosaic pass of video/newgfx16.asm.
- *
- * domosaicng16b plus the sixty mosdraw* routines it jumps into. A mosaic block
- * is drawn by taking the first pixel of each block out of the scratch line and
- * smearing it across the block, so all sixty differ only in the block size
- * (2..16) and which of four screen combinations they write:
+ * The mosaic pass: domosaicng16b and the sixty mosdraw* routines it jumps
+ * into. A block takes its first pixel out of the scratch line and smears it
+ * across, so all sixty differ only in block size (2..16) and which of four
+ * screen combinations they write:
  *
  *   16b     one copy, straight down
  *   16bt    one copy, with the unused bit forced on
  *   16btms  two copies - main with the bit on, sub with it off
  *   16bntms two copies, neither touched
  *
- * The jump tables in cpu/c_table.c still name all sixty entry points, so they
- * stay as one-line thunks that carry the size and the variant.
- *
- * 0xFFFF in the scratch line means "nothing here"; the block is skipped and
- * whatever the earlier passes left in the video line shows through.
+ * cpu/c_table.c still names all sixty entry points, so they stay as one-line
+ * thunks carrying the size and variant. 0xFFFF in the scratch line means
+ * nothing is there and the block is skipped.
  */
 #include <stdint.h>
 

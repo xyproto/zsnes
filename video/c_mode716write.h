@@ -2,15 +2,11 @@
 #define C_MODE716WRITE_H
 
 /*
- * The Mode 7 pixel writers from video/mode716.asm, as one table.
- *
- * The assembly has fourteen Mode7Normal / Mode7ExtBG macros, but only ten are
- * distinct - the nt suffix marks a caller, not a different write. Every
- * Mode7Process* macro inlines one of these per pixel, so they live here rather
- * than in whichever port got to them first.
- *
- * Each takes the palette index in the low byte of edx and leaves edx as the
- * assembly does: zeroed when it drew, untouched when it did not.
+ * The Mode 7 pixel writers from video/mode716.asm as one table. The assembly
+ * has fourteen Mode7Normal/Mode7ExtBG macros but only ten distinct writes -
+ * the nt suffix marks a caller. Each takes the palette index in edx's low byte
+ * and leaves edx as the assembly does: zeroed when it drew, untouched
+ * otherwise.
  */
 #include "../types.h"
 

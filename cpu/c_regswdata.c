@@ -1,11 +1,7 @@
-/* The .data and .bss blocks that were in cpu/regsw.inc.
- *
- * The six sprite tables were file-local labels inside reg2101w, indexed as
- * `.objsize1+ebx`; they are global here because the block left the file, so
- * the handler names them reg2101w_* now. Their order and adjacency is what
- * that indexing relies on. Data-only file so the layout test can link it
- * alone; see cpu/c_regsdata.c for the rest of the register file.
- */
+/* The .data and .bss blocks from cpu/regsw.inc. The six sprite tables were
+   file-local labels inside reg2101w, indexed `.objsize1+ebx`; they are global
+   here (reg2101w_*) and that indexing still relies on their order and
+   adjacency. Data-only so the layout test can link it alone. */
 #include "../asmdata.h"
 
 /* clang-format off */

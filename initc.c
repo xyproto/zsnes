@@ -148,6 +148,10 @@ uint32_t infoloc;
 uint32_t ramsize;
 uint32_t ramsizeand;
 
+/* SRAM size in KB from a header byte. The cap keeps the shift defined; the
+   callers clamped the result to 1024 anyway. */
+static uint32_t sram_kb(uint8_t n) { return 8u << (n > 7 ? 7 : n); }
+
 bool SplittedROM;
 uint32_t addOnStart;
 uint32_t addOnSize;
@@ -381,10 +385,12 @@ int32_t InfoScore(uint8_t* Buffer)
     if (!Buffer[ROMSizeOffset]) {
         score += 2;
     }
-    if ((1 << (Buffer[ROMSizeOffset] - 7)) > 48) {
+    /* 1 << (n - 7) > 48 and 8 << n > 1024, spelled so an arbitrary header byte
+       cannot shift by a negative or oversized count. */
+    if (Buffer[ROMSizeOffset] >= 13) {
         score -= 2;
     }
-    if ((8 << Buffer[SRAMSizeOffset]) > 1024) {
+    if (Buffer[SRAMSizeOffset] >= 8) {
         score -= 2;
     }
     if (Buffer[CountryOffset] < 14) {
@@ -457,13 +463,8 @@ void BankCheck()
             break;
         }
 
-        /*
-    Force code.
-    ForceHiLoROM is from the GUI.
-    forceromtype is from Command line, we have a static var
-    to prevent forcing a secong game loaded from the GUI when
-    the first was loaded from the command line with forcing.
-    */
+        /* ForceHiLoROM comes from the GUI, forceromtype from the command
+           line; the static keeps a command-line force off a later GUI load. */
         if (ForceHiLoROM == 1 || (forceromtype == 1 && !CommandLineForce2)) {
             CommandLineForce2 = true;
             loscore += 50;
@@ -747,16 +748,16 @@ void SetupSramSize()
     } else if (SFXEnable) {
         if (ROM[infoloc + CompanyOffset] == 0x33) // Extended header
         {
-            ramsize = 8 << ((uint32_t)ROM[infoloc - 3]);
+            ramsize = sram_kb(ROM[infoloc - 3]);
         } else {
             ramsize = 256;
         }
     } else if (SETAEnable) {
         ramsize = 32;
     } else if (!strncmp((char*)ROM, "BANDAI SFC-ADX", 14)) { // For the Sufami Turbo
-        ramsize = 8 << ((uint32_t)ROM[0x100032]);
+        ramsize = sram_kb(ROM[0x100032]);
     } else {
-        ramsize = ((ROM[infoloc + SRAMSizeOffset]) ? (8 << ((uint32_t)ROM[infoloc + SRAMSizeOffset])) : 0);
+        ramsize = ROM[infoloc + SRAMSizeOffset] ? sram_kb(ROM[infoloc + SRAMSizeOffset]) : 0;
     }
 
     // Fix if some ROM goes nuts on size
@@ -1351,19 +1352,7 @@ extern uint8_t pal16bclha[1024];
 
 void clearSPCRAM()
 {
-    /*
-  SPC RAM is filled with alternating 0x00 and 0xFF for 0x20 bytes.
-
-  Basically the SPCRAM is initialized as follows:
-  xx00 - xx1f: $00
-  xx20 - xx3f: $ff
-  xx40 - xx5f: $00
-  xx60 - xx7f: $ff
-  xx80 - xx9f: $00
-  xxa0 - xxbf: $ff
-  xxc0 - xxdf: $00
-  xxe0 - xxff: $ff
-  */
+    /* SPC RAM powers up as alternating 0x20-byte runs of 0x00 and 0xFF. */
     uint_fast32_t i;
     for (i = 0; i < 65472; i += 0x40) {
         memset(SPCRAM + i, 0, 0x20);
@@ -1417,12 +1406,7 @@ void clearvidsound()
     memset(DSPMem, 0, 256);
 }
 
-/*
-
---------------Caution Hack City--------------
-
-Would be nice to trash this section in the future
-*/
+/* Per-game hacks. Worth retiring one day. */
 
 extern uint8_t ENVDisable, cycpb268, cycpb358, cycpbl2, cycpblt2;
 extern uint32_t cycpbl;
@@ -1901,12 +1885,8 @@ void SetupROM(void)
     CheckROMType();
     SetIRQVectors();
 
-    /* get timing (pal/ntsc)
-  ForceROMTiming is from the GUI.
-  ForcePal is from Command line, we have a static var
-  to prevent forcing a secong game loaded from the GUI when
-  the first was loaded from the command line with forcing.
-  */
+    /* PAL/NTSC. ForceROMTiming comes from the GUI, ForcePal from the command
+       line; the static keeps a command-line force off a later GUI load. */
     if (ForcePal && !CLforce) {
         CLforce = true;
     } else {
@@ -2187,8 +2167,8 @@ void map_sfx()
     // set banks 00-3F (40h x 64KB ROM banks @10000h)
     map_set(snesmmap, ROM, 0x40, 0x10000);
 
-    // set banks 40-5F (40h x128KB ROM banks @20000h)
-    // [sneed]: fix inaccuracy in mapping (40-5F is Hirom banks), this value should be 0x20 but it's being set to 0x30 for safety
+    // banks 40-5F (40h x 128KB ROM banks @ 20000h). 40-5F are HiROM banks, so
+    // this count should be 0x20; 0x30 is deliberate slack.
     map_set(snesmmap + 0x40, ROM + 0x8000, 0x30, 0x20000);
 
     // set banks 80-BF (40h x 64KB ROM banks @10000h)
@@ -2218,9 +2198,8 @@ void map_sfx()
         }
     }
 
-    // set banks 70-77/78-7F (SFXRAM & SRAM)
-    // [sneed]: fixed mapping. Later on the SRAM size should be checked (so that the 64kb, 128kb, 256kb setting work properly.)
-    // most SNES SuperFX games didn't use more than 128kb SuperFX ram, so this is fine to use.
+    // banks 70-77/78-7F (SuperFX RAM and SRAM). Should really check the SRAM
+    // size so 64/128/256 KB all map right; no SuperFX game used over 128 KB.
     for (x = 0x70; x < 0x78; x += 2) {
         map_set(snesmap2 + x, sfxramdata, 2, 0x10000);
     }

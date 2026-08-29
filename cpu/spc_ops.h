@@ -1,15 +1,10 @@
 /*
- * cpu/spc_ops.h - SPC700 opcode handlers ported from cpu/spc700.asm.
+ * SPC700 opcode handlers, from cpu/spc700.asm. Textual include
+ * (cpu/c_spc700.c), which supplies the integer typedefs, SPCRAM[],
+ * spcextraram[], spcRamDP and SPCWriteReg/SPCReadReg.
  *
- * Textual include (cpu/c_spc700.c): the includer must first provide the u1/u2/
- * u4/s1 typedefs, SPCRAM[], spcextraram[], spcRamDP and SPCWriteReg/SPCReadReg.
- *
- * The assembly core keeps the SPC program counter in ebp. A ported handler is
- * therefore `u1* Op(u1* pc)`: it takes the PC just past the opcode byte and
- * returns the updated PC. cpu/spc700.asm keeps the OpXX entry point but reduces
- * its body to the `spccop` thunk, so both SPC dispatch sites (execute() in
- * cpu/c_execute.c and the `endloop` macro in the 65816 core) pick the port up
- * and opcodes can migrate one at a time.
+ * The assembly kept the SPC program counter in ebp, so a handler is
+ * `u1* Op(u1* pc)`: in just past the opcode byte, out updated.
  */
 #ifndef SPC_OPS_H
 #define SPC_OPS_H
@@ -312,11 +307,9 @@ u1* SpcOpED(u1* const pc) { spcP ^= 0x01; return pc; }                          
 u1* SpcOpBD(u1* const pc) { spcS = (spcS & 0xFFFFFF00) | spcX; return pc; }        /* MOV SP,X */
 
 /* --- 8-bit arithmetic ------------------------------------------------------
- * The asm gets N/Z/V/C/H straight out of x86 `adc`/`sbb` + `lahf`, so the C
- * has to reconstruct each flag: V is the signed overflow of the 8-bit
- * operation, H is the carry/borrow out of bit 3 (x86's AF), and SBC reports
- * carry inverted (its `cmc`), i.e. C means "no borrow".
- */
+ * The asm took N/Z/V/C/H from x86 `adc`/`sbb` + `lahf`, so each is rebuilt
+ * here: V is the 8-bit signed overflow, H the carry out of bit 3, and SBC's C
+ * is inverted - it means "no borrow". */
 static inline void spc_setnz(u1 const r)
 {
     spcNZ = r & 0x80 ? 0x80 : r == 0 ? 0 : 1;
@@ -699,10 +692,9 @@ u1* SpcOpCF(u1* const pc)
 }
 
 /* --- 16-bit (word) direct-page operations ----------------------------------
- * The operand is the dp byte pair (dp) = low, (dp+1) = high. The assembly
- * reads the high byte first (via ReadByte2, so the I/O trap still applies) and
- * derives N/Z from the full 16-bit result.
- */
+ * Operand is the dp byte pair, low at (dp). The high byte is read first,
+ * through ReadByte2 so the I/O trap still applies, and N/Z come from the full
+ * 16-bit result. */
 static inline void spc_setnz16(u2 const r)
 {
     spcNZ = r & 0x8000 ? 0x80 : r == 0 ? 0 : 1;
@@ -854,10 +846,8 @@ u1* SpcOpEA(u1* const pc) /* NOT1 m.b */
 }
 
 /* --- ROL / ROR -------------------------------------------------------------
- * Rotate through carry. The carry-in is sampled before the read (the assembly
- * branches on it to pick a `clc`/`stc` variant), and spcNZ takes the raw
- * result byte.
- */
+ * Rotate through carry, sampled before the read; spcNZ takes the raw result
+ * byte. */
 static inline u1 spc_rol(u1 const v)
 {
     u1 const r = (u1)(v << 1 | (spcP & 1));
@@ -894,10 +884,9 @@ u1* SpcOp3C(u1* const pc) { spcA = spc_rol(spcA); return pc; } /* ROL A */
 u1* SpcOp7C(u1* const pc) { spcA = spc_ror(spcA); return pc; } /* ROR A */
 
 /* --- DIV YA,X --------------------------------------------------------------
- * A 16-bit divide (dx:ax / bx with dx cleared), so the quotient always fits.
- * X = 0 is caught before the divide; a quotient wider than 8 bits takes the
- * "overflow" path, which keeps the truncated result but sets V and clears H.
- */
+ * A 16-bit divide, so the quotient always fits. X = 0 is caught first; a
+ * quotient wider than 8 bits keeps the truncated result but sets V and clears
+ * H. */
 u1* SpcOp9E(u1* const pc)
 {
     if (spcX == 0) { /* NoDiv */
@@ -922,10 +911,8 @@ u1* SpcOp9E(u1* const pc)
 }
 
 /* --- DAA / DAS -------------------------------------------------------------
- * The assembly rebuilds an x86 flags byte from spcNZ/spcP with `sahf`, runs
- * `daa`/`das`, then re-derives N/Z/C. These reimplement the two instructions;
- * only C and the result feed back, so AF's output value is not needed.
- */
+ * The two x86 instructions, reimplemented. Only C and the result feed back, so
+ * AF's output is not needed. */
 static inline void spc_decadj(bool const sub)
 {
     u1 const old = spcA;

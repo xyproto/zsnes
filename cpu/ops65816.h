@@ -1,35 +1,26 @@
 /*
- * cpu/ops65816.h - 65816 opcode handlers ported from cpu/e65816.inc.
+ * 65816 opcode handlers, from cpu/e65816.inc. Textual include (cpu/c_65816.c);
+ * the includer supplies the integer typedefs and the register file.
  *
- * Textual include (cpu/c_65816.c): the includer provides the u1/u2/u4/s1
- * typedefs and the register file.
+ * Handlers take the whole register file, laid out as pushad left it, so R_*
+ * indexes it directly: esi is the 65816 program counter, dl the flags, dh the
+ * remaining cycles, edi the opcode table for the current M/X widths, ebp the
+ * SPC700 program counter. eax/ebx/ecx are scratch but not dead - ecx's upper
+ * half reaches flagnz through `mov cx,ax` (setnz16), and ebx is the opcode
+ * index, reloaded a byte at a time, so its upper bits stay zero.
  *
- * The core runs with its state in x86 registers, so a ported handler takes the
- * whole register file: cpu/e65816.inc keeps the COpXX entry point but reduces
- * its body to the `cop` thunk, which pushads and hands the block over. Layout
- * is pushad's, so R_* below indexes it directly. Opcodes migrate one at a time.
- *
- * Of the file, esi is the 65816 program counter, dl the processor flags, dh the
- * remaining cycles, edi the opcode table for the current M/X widths and ebp the
- * SPC700 program counter. eax/ebx/ecx are scratch, but not dead: ecx's upper
- * half reaches flagnz through `mov cx,ax` (see setnz16), and ebx is the opcode
- * index the dispatcher reloads a byte at a time, so its upper bits stay zero.
- *
- * A/X/Y/S/D are 32-bit globals holding 8- or 16-bit registers, and the assembly
- * writes them at the width the current mode selects. Preserving the bytes above
- * that width is part of the behaviour - 8-bit mode leaves the high half of X
- * intact, and a later REP can bring it back - so every store here masks.
+ * A/X/Y/S/D are 32-bit globals written at whatever width the mode selects.
+ * Keeping the bytes above that width matters - 8-bit mode leaves the high half
+ * of X intact and a later REP brings it back - so every store here masks.
  */
 #ifndef OPS65816_H
 #define OPS65816_H
 
 /*
- * The entry points are named through OP() so this file can be included twice:
- * once for the 65816 and once for the SA-1's copy of it, which cpu/se65816.inc
- * shows is the same core over a different register file. The SA-1 instantiation
- * (cpu/c_ops65816_sa1.c) defines OP and macros the renamed globals away; there
- * are about a dozen, and everything else - xpc, xe, the memory tables, the
- * stack masks - really is shared between the two.
+ * Entry points go through OP() so the file can be included twice: once for the
+ * 65816 and once for the SA-1's copy, the same core over a different register
+ * file. cpu/c_ops65816_sa1.c defines OP and renames the dozen globals that
+ * differ; xpc, xe, the memory tables and the stack masks really are shared.
  */
 #ifndef OP
 #define OP(n) c_##n
@@ -117,10 +108,10 @@ static inline void reload_table(zreg* const r)
     }
 
 /*
- * Branches. The displacement is only fetched when the branch is taken, so eax
- * keeps its old value on the untaken path; the PC advances past the operand
- * either way. Conditions read the flags in their split form - see
- * flags65816.h - and are written here the way round the assembly tests them.
+ * Branches. The displacement is fetched only when the branch is taken, so eax
+ * keeps its old value otherwise; the PC advances past the operand either way.
+ * Conditions read the split flags (flags65816.h), tested the way round the
+ * assembly tests them.
  */
 #define BRANCH(name, taken)                                \
     void name(zreg* const r)                                 \
@@ -284,11 +275,10 @@ void OP(COp5B)(zreg* const r) /* TCD i */
 }
 
 /*
- * REP and SEP. Both clear or set P bits named by an immediate. When only M, X
- * and D are involved the split flags are untouched and dl can be edited in
- * place; a bit outside those has to go the long way round through P, hence the
- * join / edit / split. Only REP re-forces the emulation-mode bits, and only SEP
- * narrows X and Y - the assembly is asymmetric here and the port keeps it.
+ * REP and SEP clear or set P bits named by an immediate. For M, X and D alone
+ * the split flags are untouched and dl is edited in place; anything else goes
+ * the long way through P. Only REP re-forces the emulation-mode bits and only
+ * SEP narrows X and Y - the assembly's asymmetry, kept.
  */
 void OP(COpC2)(zreg* const r) /* REP # */
 {
@@ -354,14 +344,10 @@ void OP(COpFB)(zreg* const r) /* XCE i */
 #endif
 
 /*
- * Stack operations.
- *
- * The core reaches memory by spilling eax/ebx/ecx/edx into the seam
- * (cpu/memseam.h) around the call. All four come back possibly changed, which
- * is why cx is always re-read after an access rather than kept in a local.
- *
- * S wraps inside a page in emulation mode and across the bank in native mode;
- * stackor / stackand carry that, and XCE sets them.
+ * Stack operations. Memory access spills eax/ebx/ecx/edx through the seam
+ * (cpu/memseam.h) and all four can come back changed, so cx is re-read after
+ * every access. S wraps inside a page in emulation mode and across the bank in
+ * native mode; stackor/stackand carry that, and XCE sets them.
  */
 static inline void bank0_call(zreg* const r, void (*const fn)(void))
 {
@@ -582,17 +568,13 @@ void OP(COp62)(zreg* const r) /* PER s */
 }
 
 /*
- * Addressing modes.
+ * Addressing modes. Each advances esi past its operand bytes and leaves the
+ * value in al or ax, reaching memory through per-bank handler tables that take
+ * bank and address through the seam block (cpu/memseam.h).
  *
- * Each one advances esi past its operand bytes and leaves the value in al or
- * ax. They reach memory through per-bank tables of handlers that take the bank
- * and the address through the seam block (cpu/memseam.h), which mem_call
- * marshals the core's register block in and out of.
- *
- * Two details are easy to lose. `add cx,bx` adds the whole of bx, not just the
- * operand byte in bl, which is only safe because the dispatcher keeps bh zero.
- * And after `add cx,<index>` a 16-bit carry steps the bank: that is the
- * page-crossing behaviour, not an optimisation to drop.
+ * Two easy losses: `add cx,bx` adds all of bx, not just bl, which is safe only
+ * because the dispatcher keeps bh zero; and the 16-bit carry out of
+ * `add cx,<index>` steps the bank, which is the page-crossing behaviour.
  */
 static inline void mem_call(zreg* const r, eop* const fn)
 {
@@ -819,11 +801,10 @@ static void a_dCs_16w(zreg* const r)
 
 /* (d) and (d),y - a 16-bit pointer from the direct page, data bank. */
 /*
- * A write form is its read form with the value in ax saved across the pointer
- * fetch. The assembly does that with `push ax` / `pop ax` - 16-bit, so only the
- * low half comes back and whatever the fetch left above it stays put. Modes
- * with no intermediate read need no save, which is exactly the split between
- * the families below that take a `save` flag and the ones that do not.
+ * A write form is its read form with ax saved across the pointer fetch. The
+ * assembly's push/pop is 16-bit, so only the low half returns and whatever the
+ * fetch left above it stays. Modes with no intermediate read need no save -
+ * exactly the families below that take no `save` flag.
  */
 #define DIND(name, tab, idx, save)        \
     static void name(zreg* const r)         \
@@ -983,12 +964,9 @@ LDA8(OP(COpB7m8), a_LdLCy_8) /* LDA [d],y */
 LDA16(OP(COpB7m16), a_LdLCy_16)
 
 /*
- * Operations. Each takes the value an addressing mode left in al or ax and is
- * composed with one by OPMODE below.
- *
- * The three logical operations are not written alike: ORA is a 16-bit `or ax`
- * but AND and EOR are 32-bit on eax, so those two carry the top half of the
- * register out of the handler changed and ORA does not.
+ * Operations, composed with an addressing mode by OPMODE below. The three
+ * logical ones differ: ORA is 16-bit, AND and EOR are 32-bit on eax, so those
+ * two change the register's top half and ORA does not.
  */
 static void o_ORA8(zreg* const r)
 {
@@ -1283,10 +1261,9 @@ OPMODE(OP(COp1Fm16), a_alCx_16, o_ORA16)
 
 
 /*
- * Stores. These run the other way round from the loads: the operation puts the
- * value in al/ax first and the addressing mode writes it. The 16-bit forms load
- * the whole of eax, and STZ's 16-bit form clears all of it, so the upper half
- * differs between the widths - that is `mov eax,[xa]` versus `mov al,[xa]`.
+ * Stores run the other way round: the operation loads al/ax and the addressing
+ * mode writes it. The 16-bit forms load all of eax, and 16-bit STZ clears all
+ * of it, so the upper half differs between the widths.
  */
 static void o_STA8(zreg* const r) { AL(r, GET8(xa)); }
 static void o_STA16(zreg* const r) { r[R_EAX] = xa; }
@@ -1363,11 +1340,9 @@ STMODE(OP(COp9Em16), o_STZ16, a_aCx_16w)
 
 
 /*
- * Read-modify-write.
- *
- * The read half leaves esi where it is - that is all `brni` means - because the
- * write half re-reads the same operand bytes and does the advancing. Only four
- * modes are ever used this way.
+ * Read-modify-write. The read half leaves esi alone - all `brni` means -
+ * because the write half re-reads the operand bytes and advances. Only four
+ * modes are used this way.
  */
 /* The no-advance form of A is `mov ax,[xa]`, a word, where the plain read form
    is `mov eax,[xa]`, a dword. The widths really do differ. */
@@ -1674,16 +1649,14 @@ static inline void nvzc16(zreg* const r, int const of, int const cf)
 }
 
 /*
- * Intel's DAA and DAS, verbatim. The second adjustment tests the values from
- * before the first one, and DAS - unlike DAA - leaves CF alone when it is not
- * taken.
+ * Intel's DAA and DAS, verbatim: the second adjustment tests the values from
+ * before the first, and DAS leaves CF alone when it is not taken.
  *
- * OF too, because the assembly stored it. Intel documents it as undefined
- * after DAA/DAS, but on x86 it is the signed overflow of the one *combined*
- * adjustment (0, 6, 60h or 66h) applied to the entering AL, and clear when
- * there is no adjustment - exhaustively checked over all 1024 (AL, CF, AF)
- * states, and independent of the incoming OF. The 65816 leaves V undefined in
- * decimal mode, so what lands in flago is only ever what the assembly did.
+ * OF too, because the assembly stored it. Documented as undefined, but on x86
+ * it is the signed overflow of the one *combined* adjustment (0, 6, 60h, 66h)
+ * on the entering AL, clear when there is none - checked over all 1024
+ * (AL, CF, AF) states and independent of the incoming OF. The 65816 leaves V
+ * undefined in decimal mode, so flago only ever holds what the assembly left.
  */
 static inline int decimal_of(u1 const old, u4 const adj, u1 const res,
     int const sub)
@@ -1989,17 +1962,14 @@ OPMODE(OP(COpFDm16d), a_aCx_16, o_SBC16d)
 OPMODE(OP(COpFFm16d), a_alCx_16, o_SBC16d)
 
 /*
- * Control flow.
- *
- * esi is a host pointer into the mapped bank, not a 65816 address, so every
- * jump has to go back through the memory map: pick snesmmap or snesmap2 by
- * where in the bank the target is, remember that bank's base in initaddrl, and
- * add the offset. Recovering the current PC runs the same thing backwards,
- * which is what `sub ebx,[initaddrl]` does.
+ * Control flow. esi is a host pointer into the mapped bank, not a 65816
+ * address, so every jump goes back through the memory map: pick snesmmap or
+ * snesmap2 by where in the bank the target is, keep that base in initaddrl and
+ * add the offset. Recovering the PC runs it backwards.
  *
  * The `dma` flag is the odd corner: the absolute jumps and JSR also route
- * $4300 and up in the low half of a register bank at dmadata, and the indirect
- * ones do not.
+ * $4300 and up in a register bank's low half at dmadata; the indirect ones do
+ * not.
  */
 static inline u1* bank_base(u4 const eax, u4 const ebx, int const dma)
 {
@@ -2264,9 +2234,9 @@ void OP(COp89m16)(zreg* const r) /* BIT # */
 }
 
 /*
- * BRK and COP push the return context straight into work RAM rather than
- * through the memory tables, then vector through brkv / copv. Emulation mode
- * pushes no bank and uses the 8-bit vectors.
+ * BRK and COP push the return context straight into work RAM, not through the
+ * memory tables, then vector through brkv/copv. Emulation mode pushes no bank
+ * and uses the 8-bit vectors.
  */
 static inline void brk_cop(zreg* const r, u2 const vec, u2 const vec8, u4 const setbits8)
 {
@@ -2323,10 +2293,9 @@ void OP(COp00)(zreg* const r) { brk_cop(r, brkv, brkv8, 0x0Cu); } /* BRK s */
 void OP(COp02)(zreg* const r) { brk_cop(r, copv, copv8, 0x04u); } /* COP s */
 
 /*
- * RTI. Pulls P, then the return address, then re-enters wherever that lands.
- * Three details are easy to miss: the opcode table is reloaded from the *pulled*
- * flags, landing on a WAI ($CB) re-arms intrset, and emulation mode returns to
- * bank zero regardless of what was pushed.
+ * RTI pulls P, then the return address, then re-enters there. The opcode table
+ * is reloaded from the *pulled* flags, landing on a WAI ($CB) re-arms intrset,
+ * and emulation mode returns to bank zero whatever was pushed.
  */
 static inline void rti_body(zreg* const r)
 {
@@ -2412,10 +2381,9 @@ void OP(COp58)(zreg* const r) /* CLI i */
 #endif
 
 /*
- * Both the SA-1 and the debug core start their stack macros with
- * `mov eax,[wramdata]`, so that pointer's upper three bytes survive into the
- * handler's result. The 65816 itself does not, hence these live here as macros
- * for the two instantiations that need them rather than in either one.
+ * The SA-1 and debug cores start their stack macros with `mov eax,[wramdata]`,
+ * so that pointer's upper three bytes reach the handler's result; the 65816
+ * itself does not. Hence macros here rather than in either instantiation.
  */
 #define WRAM_PUSH8(name, src)                    \
     void OP(name)(zreg* const r)                  \

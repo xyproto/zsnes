@@ -308,10 +308,9 @@ static void CheckValueBounds(void* ptr, int min, int max, int val, enum vtype ty
 unsigned char CalcCfgChecksum()
 {
     /* gui.asm summed 100 bytes from GUIRAdd, which headed one contiguous block
-       of GUI settings. Those are separate objects now, so the walk ran into
-       unrelated globals; half the block does not exist in this tree at all.
-       TimeChecker is written to the config and never read back, so summing the
-       settings that survive keeps it deterministic and in bounds. */
+       of GUI settings; those are separate objects now and half the block is
+       gone. TimeChecker is written to the config and never read back, so
+       summing the settings that survive keeps it in bounds. */
     unsigned char const cfg[] = { GUIRAdd, GUIGAdd, GUIBAdd, mouseshad, mousewrap };
     unsigned char i = 0;
     unsigned short chksum = 0;

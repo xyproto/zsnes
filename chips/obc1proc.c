@@ -1,20 +1,15 @@
 /*
- * OBC1 coprocessor bank-access functions
+ * OBC1 coprocessor bank access, from chips/obc1proc.asm. All four functions
+ * route the same three ways:
  *
- * Ported from chips/obc1proc.asm.  All four functions share the same
- * three-way address routing:
+ *   addr bit 15 set  memaccessbank (ROM/WRAM mirror)
+ *   addr < 0x6000    regaccessbank (PPU/CPU registers)
+ *   0x6000-0x7FFF    GetOBC1 / SetOBC1
  *
- *   addr bit 15 set  → delegate to memaccessbank (ROM/WRAM mirror)
- *   addr < 0x6000    → delegate to regaccessbank (PPU/CPU registers)
- *   [0x6000, 0x7FFF] → OBC1 local access via GetOBC1 / SetOBC1
- *
- * 16-bit operations issue two consecutive GetOBC1 / SetOBC1 calls,
- * incrementing obc1_address between them.  Low byte is transferred first.
- *
- * The c_* functions are the portable implementations; the OBC1* entry points
- * the memory map dispatches to wrap them in the seam convention (cpu/memseam.h).
- * A routed address is handed to another memtable handler, which reads the bank
- * straight out of MemSeamB, exactly as the assembly's tail-jump did.
+ * A 16-bit access is two calls with obc1_address stepped between, low byte
+ * first. The c_* bodies are portable; the OBC1* entry points wrap them in the
+ * seam convention (cpu/memseam.h), and a routed address goes to another
+ * memtable handler that reads the bank out of MemSeamB, as the tail-jump did.
  */
 
 #include <stdint.h>

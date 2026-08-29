@@ -1,22 +1,16 @@
 /*
- * video/c_ngline.c - the line-state half of newengine16b in
- * video/newgfx16.asm.
+ * The line-state half of newengine16b (video/newgfx16.asm).
  *
- * Once per scanline the new graphics engine records everything the renderer
- * will need for that line - scroll positions, tile and map pointers, the mode,
- * the mosaic and interlace settings, the palette - into a set of 256-entry
- * tables, and sets a change flag whenever a value differs from the line above.
- * StartDrawNewGfx16b reads those flags to decide whether a run of eight lines
- * can be drawn as whole tiles.
+ * Once per scanline it records what the renderer needs for that line - scroll
+ * positions, tile and map pointers, mode, mosaic, interlace, palette - into
+ * 256-entry tables, flagging any value that differs from the line above.
+ * StartDrawNewGfx16b uses those flags to decide whether eight lines can be
+ * drawn as whole tiles. Nothing is passed in registers, so there is no seam.
  *
- * This is the first two thirds of newengine16b, up to the windowing section;
- * the window and sprite-window construction runs straight after this returns.
- * Nothing here is passed in registers, so it needs no seam.
- *
- * Two things to keep in mind reading it: several of these tables are written
- * *wider* than one entry - a dword store into a byte array clobbers the next
- * three lines, which the next line then rewrites - and the comparison against
- * the previous line is often narrower than the store.
+ * Two things to keep in mind: several tables are written *wider* than one
+ * entry, so a dword store clobbers the next three lines (which then rewrite
+ * themselves), and the comparison against the previous line is often narrower
+ * than the store.
  */
 #include <stdint.h>
 #include <string.h>
@@ -76,11 +70,9 @@ extern u4 winboundary[256];
 extern u1 bg4ptr_dw[4], bg4objptr_dw[4];
 extern u1 scrnon_dw[4], forceblnk_dw[4], mode7set_dw[4], BG116x16t_dw[4], BG216x16t_dw[4], BG316x16t_dw[4], BG416x16t_dw[4], mosaicon_dw[4], mosaicsz_dw[4], interlval_dw[4], winl1_dw[4], winlogica_dw[4];
 
-/* Store a word and flag the layer if the line above held something else.
-
-   The "line above" index is signed on purpose: on line 0 the assembly read
-   the dword before the table and compared against that, which a u4 y - 1
-   only reproduces while the slot is 32 bits wide. */
+/* Store a word and flag the layer if the line above differed. The index is
+   signed on purpose: on line 0 the assembly compared against the dword before
+   the table, which u4 y - 1 only reproduces at 32-bit width. */
 static void recw(u2* const tab, u4 const y, u2 const v, u1* const chg)
 {
     tab[y] = v;
@@ -377,15 +369,13 @@ void newengine16b_windows(void)
 
 /* One alternating run of the sprite window mask.
 
-   The writes are dword-wide and overshoot the end of the run; the correction
-   afterwards backs both the pointer and the pixel count up by exactly the
-   overshoot, so a run of length L advances ecx by L and consumes L pixels no
-   matter how it lands. Both `sub`s are *unsigned* borrows, which is why edx
-   goes on being used after it has gone negative - hence the u4 arithmetic and
-   the signed cast where it becomes a pointer offset.
+   The dword-wide writes overshoot the run; the correction backs the pointer
+   and the count up by exactly that, so a run of length L advances ecx by L
+   however it lands. Both `sub`s borrow unsigned, which is why edx stays in use
+   after going negative - hence u4 arithmetic and a signed cast at the pointer.
 
-   Returns 1 when the 256 pixels are used up, at which point the last dword's
-   overshoot is left in the buffer - that is what the assembly leaves too. */
+   Returns 1 once the 256 pixels are used up, leaving the last dword's
+   overshoot in the buffer as the assembly did. */
 static int win_run(u1** const pecx, u4* const peax, u4 edx, u4 const val)
 {
     u1* ecx = *pecx;
@@ -500,12 +490,9 @@ disable:
 
 /* --- the rest of newengine16b -------------------------------------------- *
  *
- * What follows the two builders above: the colour-add cache, the back area,
- * the hi-res line duplication and the sprite-priority flag. Nothing here is
- * passed in registers either - the assembly ended `xor ebx,ebx / ret` and its
- * one caller declared every register clobbered - so the whole routine is a
- * plain C function now and video/newgfx16.asm has no entry point for it.
- */
+ * After the two builders above: the colour-add cache, the back area, the
+ * hi-res line duplication and the sprite-priority flag. Nothing in registers
+ * here either. */
 extern u1 coladdr, coladdg, coladdb, vidbright;
 extern u4 Prevcoladdr, ColResult;
 extern u4 ngrposng, nggposng, ngbposng;

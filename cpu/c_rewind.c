@@ -1,17 +1,10 @@
 /*
- * cpu/c_rewind.c - rewind bookkeeping, ported from cpu/execute.asm.
- *
- * Both routines run inside the 65816 execute loop, where the core's register
- * ABI is live: esi is the 65816 PC pointer, edi the opcode table, ebp the SPC
- * program counter and edx the cycle/flag word. They do not just read those
- * registers, they *restore* them - a rewind swaps in a previously saved frame,
- * so the core has to resume from the registers that frame was saved with.
- *
- * cpu/execute.asm therefore keeps the ProcessRewind and UpdateRewind entry
- * points and reduces each to a pushad thunk; the register file is handed over
- * as a block and read and written in place. This is the same seam that
- * chips/sa1proc.asm uses for SA1Swap, and is deliberately not an attempt to
- * restructure execute() itself.
+ * Rewind bookkeeping, from cpu/execute.asm. Both routines run inside the 65816
+ * execute loop with the core's register ABI live - esi the PC pointer, edi the
+ * opcode table, ebp the SPC program counter, edx the cycle/flag word - and
+ * they *restore* those registers, because a rewind resumes from the ones the
+ * saved frame was taken with. Hence the register file is handed over as a
+ * block and written in place, the same seam SA1Swap uses.
  */
 #include "../types.h"
 #include "c_memory.h" /* UpdateDPage */

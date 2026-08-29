@@ -3,12 +3,9 @@
 
 #include <stdint.h>
 
-/* Deliberately ignoring a result the compiler wants checked.
- *
- * The call still happens; this only records that nothing here acts on a short
- * read or a failed write. Most of these are loaders that validate the data
- * afterwards, or best-effort writes to a pipe. Grep for IGNORE_RESULT to find
- * the places that should grow real error handling. */
+/* Deliberately ignore a result the compiler wants checked: the call happens,
+   nothing acts on a short read or failed write. Mostly loaders that validate
+   afterwards, or best-effort writes to a pipe. */
 #define IGNORE_RESULT(call) \
     do {                    \
         if (call) { }       \
@@ -26,14 +23,11 @@ typedef unsigned long long u8;
 
 typedef void eop(void);
 
-/* One slot of the 65816 core's register block.
- *
- * The block is the x86 register file the assembly kept, in pushad order. Four
- * slots hold 32-bit registers whose upper bits are part of the behaviour, and
- * the rest hold host pointers: esi is the program counter, ebp the SPC700's,
- * edi the current opcode table, and eax carries a RAM base through the stack
- * macros. So a slot has to be pointer-wide, not u4 - on i386, where all of this
- * was written, the two are the same type and nothing changes. */
+/* One slot of the 65816 core's register block: the x86 register file the
+   assembly kept, in pushad order. Four slots hold 32-bit registers whose upper
+   bits matter; the rest hold host pointers - esi the program counter, ebp the
+   SPC700's, edi the opcode table, eax a RAM base through the stack macros - so
+   a slot is pointer-wide, not u4. */
 typedef uintptr_t zreg;
 
 /* A ported 65816 opcode body. It reads and writes the caller's register block,

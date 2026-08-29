@@ -1,9 +1,6 @@
-/* C port of endmem.asm: emulator scratch tables and buffers.
-
-   These are pure data symbols shared by the asm core and the C code.  The asm
-   relied on exact symbol order and adjacency within .bss/.data, so the layout
-   is reproduced verbatim with an inline-asm block (see asmdata.h).  resb N is
-   N bytes, resd N is N*4, resw N is N*2. */
+/* endmem.asm: emulator scratch tables and buffers. The assembly relied on
+   exact symbol order and adjacency, so the layout is reproduced verbatim in an
+   inline-asm block. resb N is N bytes, resd N is N*4, resw N is N*2. */
 #include "asmdata.h"
 
 /* .bss reservations */

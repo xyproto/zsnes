@@ -10,22 +10,17 @@
 #include "c_makevid.h"
 #include "makevid.h"
 
-// --- Dual-window mask engine (ported from video/makevid.asm) ----------------
+// --- Dual-window mask engine (video/makevid.asm) -----------------------------
 //
 // dualstartprocess() builds a 256-byte per-pixel mask for window 1 into
-// dwinptrproc[], then combines window 2 into it with the layer's logic
-// operator (OR/AND/XOR/XNOR). Mask bytes are always 0 or 1.
+// dwinptrproc[], then folds window 2 in with the layer's logic operator. Mask
+// bytes are 0 or 1. winl1 packs the edges as window 1 left/right then window 2
+// left/right; the enable byte `al` picks the type, bit 0 for window 1 and bit 2
+// for window 2, set meaning "outside".
 //
-// The window edges are packed into winl1 as four bytes:
-//   [0] = window 1 left   [1] = window 1 right
-//   [2] = window 2 left   [3] = window 2 right
-// The enable byte `al` selects the window "type": bit 0 for window 1 and
-// bit 2 for window 2 (set = "outside", clear = "inside").
-//
-// The exact loop bounds — the do/while forms that touch one pixel past an
-// edge, and the sides that overwrite rather than mask — are preserved
-// verbatim from the assembly. `i` is a u1 so it wraps at 256 like the 8-bit
-// index register the original used.
+// The loop bounds are verbatim from the assembly, including the do/while forms
+// that touch one pixel past an edge and the sides that overwrite rather than
+// mask. `i` is a u1 so it wraps at 256, like the original's 8-bit index.
 
 static void dualwinand(u1 const al)
 {

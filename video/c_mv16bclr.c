@@ -1,19 +1,16 @@
 /*
- * video/c_mv16bclr.c - the clearback16b* cluster of video/makev16t.asm.
- *
- * Fills the sub screen's back area with the fixed colour before anything is
- * drawn over it. Unlike clearback16t this one has no colour maths to do: the
- * work is deciding what the fixed colour is and which pixels the window lets
- * it reach. Nine routines in the assembly, one entry point - clearback16bts -
- * and everything else reached by jump, so the whole cluster is one C function.
+ * The clearback16b* cluster of video/makev16t.asm: fills the sub screen's back
+ * area with the fixed colour. No colour maths, unlike clearback16t - the work
+ * is deciding the colour and which pixels the window lets it reach. Nine
+ * assembly routines behind one entry point, so one C function here.
  *
  * Three shapes of fill:
  *
- *   flat      512 bytes of one colour, or of zero when the window covers all
+ *   flat      512 bytes of one colour, or zero when the window covers all
  *   run list  windowdata as (column, depth) pairs, colour inside or outside
  *   dual      the per-pixel mask at cwinptr, four pixels at a time
  *
- * winon selects between them as a small enum, 0 to 5, not as a bitmask.
+ * winon selects between them as an enum 0 to 5, not a bitmask.
  */
 #include <stdint.h>
 
@@ -168,12 +165,11 @@ enum {
     P_PART
 };
 
-/* clearback16bdual and its rev/b2/rev2 variants. The mask at cwinptr is read
-   four bytes at a time and a group is either drawn whole, skipped whole, or
-   resolved pixel by pixel. Which comparison comes first depends on what the
-   previous group was - the assembly has three loop heads rather than one -
-   and the choice shows up in ebx and in DoTransp even where the pixels come
-   out the same, so the state is carried rather than folded away. */
+/* clearback16bdual and its rev/b2/rev2 variants. The cwinptr mask is read four
+   bytes at a time; a group is drawn whole, skipped whole, or resolved pixel by
+   pixel. Which comparison comes first depends on the previous group - three
+   loop heads in the assembly - and shows up in ebx and DoTransp even when the
+   pixels match, so the state is carried rather than folded away. */
 static void dual(regs* const r, int const rev, int const b2)
 {
     u4 const eax = r->ax;

@@ -1,11 +1,9 @@
-/* C port of the scanline half of the 65816 dispatch loop from cpu/execute.asm:
-   cpuover, the SA-1 speed hacks, the cheat engine, pexecs and execsingle.
+/* The scanline half of the 65816 dispatch loop from cpu/execute.asm: cpuover,
+   the SA-1 speed hacks, the cheat engine, pexecs and execsingle.
 
-   The assembly expressed control flow by jumping back into the dispatch loop,
-   so nothing here "returns" in the C sense; c_cpuover reports which of those
-   jumps it wants with an enum and exec_loop (cpu/c_execute.c) takes it. The
-   core's registers travel in a pushad-ordered block, which is also what the
-   remaining assembly seams read and write. */
+   The assembly jumped back into the dispatch loop rather than returning, so
+   c_cpuover reports which jump it wants as an enum and exec_loop
+   (cpu/c_execute.c) takes it. Registers travel in a pushad-ordered block. */
 #include <string.h>
 
 #include "../types.h"
@@ -131,13 +129,11 @@ static void sa1speedhacks(zreg* const r)
             SA1SHb = 1;
     }
 
-    /* The 65816's own program counter, as a WRAM then a ROM offset. Both bases
-       are host pointers, so the subtraction is pointer-wide; the difference is
-       an offset and fits a u4 anywhere.
-
-       SA1LBound and SA1UBound are written below and read nowhere - the
-       assembly that consumed them is gone - so the narrowing on those stores
-       is harmless. They are kept because cpu/c_execdata.c pins the layout. */
+    /* The 65816's program counter as a WRAM then a ROM offset. Both bases are
+       host pointers, so the subtraction is pointer-wide and the difference
+       fits a u4. SA1LBound and SA1UBound are written here and read nowhere -
+       the assembly that consumed them is gone - but stay because
+       cpu/c_execdata.c pins the layout. */
     u4 const woff = (u4)(r[R_ESI] - (zreg)wramdata);
     if (woff >= 0x224 && woff <= 0x22E) {
         SA1LBound = 0x224 + (u4)(uintptr_t)wramdata;

@@ -157,11 +157,11 @@ static void adjustMouseYScale()
 }
 
 #ifdef __OPENGL__
-// Point the GL viewport at a w*h drawable and set up the projection, applying
-// aspect-ratio correction for the variable (20) and custom (21/22) video modes.
-// Pass the actual drawable size in pixels (which, in fullscreen, differs from
-// WindowWidth/WindowHeight and must be read via SDL_GetWindowSizeInPixels after
-// the window change has settled).
+// Point the GL viewport at a w*h drawable and set the projection, correcting
+// the aspect ratio for the variable (20) and custom (21/22) video modes. Pass
+// the real drawable size in pixels: in fullscreen it differs from
+// WindowWidth/Height and has to come from SDL_GetWindowSizeInPixels once the
+// window change has settled.
 static void SetGLViewport(int w, int h)
 {
     glViewport(0, 0, w, h);
@@ -270,13 +270,11 @@ int Main_Proc()
             }
             break;
         case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED:
-            // On Wayland the fullscreen drawable size is applied asynchronously
-            // (and may be animated by the compositor), so re-fit the GL viewport
-            // whenever the pixel size actually changes. This keeps fullscreen
-            // scaling correct without relying on the size queried right after the
-            // toggle, which can still be stale. data1/data2 are in pixels here.
-            // Modes 1, 3 and 4 are fullscreen *software* modes, so FullScreen
-            // alone would call gl_clearwin() with no context.
+            // Wayland applies the fullscreen drawable size asynchronously, so
+            // re-fit the viewport whenever the pixel size actually changes
+            // rather than trusting the size right after the toggle. Modes 1, 3
+            // and 4 are fullscreen *software* modes, where FullScreen alone
+            // would call gl_clearwin() with no context.
             if (UseOpenGL && FullScreen) {
                 SetGLViewport(event.window.data1, event.window.data2);
                 gl_clearwin();
@@ -1337,13 +1335,10 @@ int TryToggleFullScreen(void)
 
     FullScreen = GUIWFVID[cvidmode];
 
-    // Resizing the GL surface in place across a fullscreen transition is
-    // unreliable on Wayland compositors (flickering, and the frame drawn both
-    // at the top and bottom of the screen), because the surface is resized
-    // rather than recreated. Whenever the fullscreen state actually changes,
-    // fall back to a full window + context reinit, which builds a fresh
-    // surface at the correct size. The cheap in-place path is kept only for
-    // mode changes that stay within the same fullscreen/windowed state.
+    // Wayland resizes the GL surface rather than recreating it, so resizing in
+    // place across a fullscreen transition flickers and draws the frame twice.
+    // Reinit the window and context whenever the fullscreen state changes; the
+    // cheap in-place path stays for mode changes that do not.
     bool const wasFullScreen = (SDL_GetWindowFlags(sdl_window) & SDL_WINDOW_FULLSCREEN) != 0;
     if (wasFullScreen != (FullScreen != 0)) {
         return 0;

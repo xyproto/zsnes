@@ -21,13 +21,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #include "../gblhdr.h"
 
-/*
-Functions for battery probing on Linux by Nach
-I believe Linux 2.4.x+ is needed for ACPI support
-but it'll compile fine for older versions too
-
-Special thanks David Lee Lambert for most of the code here
-*/
+/* Battery probing on Linux, by Nach, most of the code from David Lee Lambert.
+   ACPI needs Linux 2.4 or later; it compiles on older ones regardless. */
 
 #ifdef __linux__
 #include <dirent.h>
@@ -157,12 +152,7 @@ int CheckBatteryPercent()
     return (BatteryLifePercent);
 }
 
-/*
-Functions for battery on FreeBSD/DragonFly by Nach
-
-If there's another FreeBSD based OS that doesn't
-define one of these three, please let me know.
-*/
+/* Battery on FreeBSD/DragonFly, by Nach. */
 #elif (defined(__FreeBSD__) || defined(__FreeBSD_kernel__) || defined(__DragonFly__))
 #include <sys/sysctl.h>
 #include <sys/types.h>
@@ -204,15 +194,7 @@ int CheckBatteryPercent()
     return (life);
 }
 
-/*
-Functions for battery on NetBSD/OpenBSD by Nach
-
-If there's another NetBSD based OS that uses
-the same API, please let me know.
-
-Note this was the least tested section for all
-the battery specific code.
-*/
+/* Battery on NetBSD/OpenBSD, by Nach. The least tested of the three. */
 
 #elif (defined(__NetBSD__) || defined(__OpenBSD__))
 #include <fcntl.h>
@@ -269,11 +251,7 @@ int CheckBatteryPercent()
     return (-1);
 }
 
-/*
-Functions for battery on macOS by drizztbsd, Nach
-
-If you have issues, please report.
-*/
+/* Battery on macOS, by drizztbsd and Nach. */
 
 #elif defined(__APPLE__)
 #include <CoreFoundation/CoreFoundation.h>

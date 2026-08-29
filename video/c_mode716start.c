@@ -1,19 +1,15 @@
 /*
- * video/c_mode716start.c - Mode7Startup16b, ported from video/mode716.mac.
+ * Mode7Startup16b: per-scanline setup for every Mode 7 renderer. Turns the
+ * caller's screen coordinate into a map position and per-pixel adder for each
+ * axis, then picks the walk direction.
  *
- * Per-scanline setup for every Mode 7 renderer in the file: turn the screen
- * coordinate the caller hands in into a map position and a per-pixel adder for
- * each axis, then decide the direction the walk will run in.
+ * Entered with ax = current y, dx = current x, esi = the video pointer; hands
+ * back eax, esi and edi. M7Start* is its own block rather than M7Seam*,
+ * because this runs inside a renderer the hi-res pass already spilled there.
  *
- * A real `call`, reached with ax = current y, dx = current x (left edge) and
- * esi = the video pointer. It hands back eax, esi and edi; see the thunk in
- * video/mode716.mac. The M7Start* block below is its own rather than the
- * M7Seam* one, because this runs *inside* a renderer that the hi-res pass
- * already has spilled into those.
- *
- * Positions are 32-bit fixed point with the map coordinate at byte offset 1,
- * so several of the adds below are 16-bit writes one byte into a dword and
- * must not carry past it.
+ * Positions are 32-bit fixed point with the map coordinate at byte 1, so
+ * several adds below are 16-bit writes one byte into a dword and must not
+ * carry past it.
  */
 #include <string.h>
 

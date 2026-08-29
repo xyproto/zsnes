@@ -1,22 +1,13 @@
 /*
- * cpu/dsp_regs.h - DSP register ($00-$FF) write handlers, ported from the
- * WDSPReg00..FF routines in cpu/dsp.asm along with the ProcessGain,
- * ProcessGain2, SwitchSustain, VoiceAdsr, VoiceAdsr2, VoiceGain and keyoffm
- * macros they were built from.
+ * DSP register ($00-$FF) write handlers, from the WDSPReg00..FF routines in
+ * cpu/dsp.asm and the ProcessGain, SwitchSustain, VoiceAdsr, VoiceGain and
+ * keyoffm macros behind them.
  *
- * Textual include (cpu/c_dsp.c): the includer must first provide the
- * u1/u2/u4/u8/s1/s4 typedefs and declarations for the globals used below -
- * DSPMem, VolumeTableb, VolumeConvTable, MusicVol, GlobalVL, GlobalVR, EchoVL,
- * EchoVR, EchoFB, FIRTAPVal0, EchoRate, MaxEcho, NoiseSpeeds, NoiseInc,
- * dspPAdj, KeyOnStA, KeyOnStB, Voice0Noise..Voice7Noise, Voice0State,
- * Voice0Status, Voice0Time, Voice0EnvInc, Voice0IncNumber, GainDecBendDataPos,
- * GainDecBendDataTime, GainDecBendDataDat, AdsrBlocksLeft, AdsrSustLevLoc,
- * AdsrNextTimeDepth, DecayRate, SustainRate, Increase, Decrease,
- * DecreaseRateExp - and the VoiceStarter() function.
+ * Textual include (cpu/c_dsp.c), which supplies the integer typedefs, the DSP
+ * globals the bodies name and VoiceStarter().
  *
- * The asm handlers took the register number in ebx and the value in al, and
- * preserved every register (each non-trivial one push/pops what it touches), so
- * the C entry point needs no register threading at all.
+ * The asm handlers took the register in ebx and the value in al and preserved
+ * every register, so the C entry point needs no register threading.
  */
 #ifndef DSP_REGS_H
 #define DSP_REGS_H

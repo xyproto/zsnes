@@ -1,15 +1,11 @@
 /*
- * video/c_mv16tt.h - the colour-maths pixel writers shared by the 16t tile
- * drawers of video/makev16t.asm.
- *
- * draw8x816t{a,b,c} and their winon / winonb twins, plus the group walkers
- * (drawtilegrp / drawtilegrpf, and the drawtilegrpfull pair, which differ only
- * in which register holds the tile pointer). The same six writers are
- * instantiated by the plain 8x8 drawers, the offset-mode ones and the 16x16
- * ones, so they live here rather than in any of them.
+ * The colour-maths pixel writers shared by the 16t tile drawers:
+ * draw8x816t{a,b,c} with their winon/winonb twins, plus the group walkers
+ * (the drawtilegrpfull pair differs only in which register holds the tile
+ * pointer). The plain 8x8, offset-mode and 16x16 drawers all instantiate them.
  *
  * Where the *bt drawers (video/c_mv16tbt.h) *produce* the transparency buffer,
- * these consume it: every pixel is blended with what is already underneath.
+ * these consume it: every pixel is blended with what is underneath.
  */
 #ifndef C_MV16TT_H
 #define C_MV16TT_H
@@ -37,11 +33,11 @@ typedef struct {
     zreg ax, bx, cx, dx, si, di, bp;
 } tt_regs;
 
-/* One pixel. `n` is its place on screen, `k` its place in the tile and `w` the
-   place the window mask is read at - the 8x8 and 16x16 forms pass n, because
-   their flipped writers index it with 7-k, and the 16x8 one passes its own
-   counter. `adder` is the palette base, which reaches the plain forms in dh
-   and the windowed ones through the coadder16 global.
+/* One pixel. `n` is its place on screen, `k` its place in the tile, `w` where
+   the window mask is read: the 8x8 and 16x16 forms pass n, since their flipped
+   writers index it with 7-k, and the 16x8 one passes its own counter. `adder`
+   is the palette base, reaching the plain forms in dh and the windowed ones
+   through coadder16.
 
    The half-add form works in eax and leaves it zero; the other two work in ebx
    and ecx and leave the palette index in eax. */

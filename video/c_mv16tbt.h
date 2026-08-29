@@ -1,11 +1,8 @@
 /*
- * video/c_mv16tbt.h - the pixel writers shared by the *16bt tile drawers of
- * video/makev16t.asm.
- *
- * draw8x816bta, draw8x816btawinon and draw8x816btawinonb, plus the
- * drawtilegrp / drawtilegrpf pair that walks them. The assembly instantiates
- * the same three macros from the 8x8 routine (video/c_mv16t8bt.c) and the
- * 16x16 one (video/c_mv16t16bt.c), so they live here rather than in either.
+ * The pixel writers shared by the *16bt tile drawers of video/makev16t.asm:
+ * draw8x816bta and its two winon forms, plus the drawtilegrp/drawtilegrpf pair
+ * that walks them. Both the 8x8 and 16x16 routines instantiate them, so they
+ * live here rather than in either.
  */
 #ifndef C_MV16TBT_H
 #define C_MV16TBT_H
@@ -20,13 +17,11 @@ typedef struct {
     zreg ax, bx, cx, dx, si, di, bp;
 } bt_regs;
 
-/* One pixel. `n` is its place on screen, `k` its place in the tile and `w` the
-   place the window mask is read at - which is not always either, see bt_row.
-
-   eax is zero on entry to the group, and each form leaves it under 256, so the
-   assembly's byte-wide `mov al` is exact here. The windowed forms put the
-   colour through eax and clear it; the plain one puts it through ecx and
-   leaves it there. */
+/* One pixel. `n` is its place on screen, `k` its place in the tile, `w` where
+   the window mask is read - not always either of the first two, see bt_row.
+   eax enters the group at zero and each form leaves it under 256, so the
+   assembly's byte-wide `mov al` is exact. The windowed forms put the colour
+   through eax and clear it, the plain one through ecx and leaves it. */
 static void bt_px(bt_regs* const r, u1 const* const tile, u1 const* const win,
     u1 const dh, u1* const esi, u1* const ebp, u4 const k, u4 const n,
     u4 const w)
@@ -56,15 +51,12 @@ static void bt_px(bt_regs* const r, u1 const* const tile, u1 const* const win,
 }
 
 /* Eight pixels in two halves, each skipped whole when its four tile bytes are
-   zero. The flipped form walks the tile backwards, so it tests the second
-   dword first - each half tests the one holding the pixels it is about to
-   draw.
+   zero; the flipped form walks backwards, so each half tests the dword holding
+   the pixels it is about to draw.
 
-   `winbyk` picks which windowed writer the flipped form uses. The 8x8 routine
-   instantiates draw8x816btawinonb, which undoes the flip and reads the mask at
-   the screen position; the 16x16 one instantiates draw8x816btawinon, which
-   does not, so its flipped tiles read the mask backwards. That asymmetry is in
-   the original. */
+   `winbyk` picks the flipped form's windowed writer: the 8x8 routine undoes
+   the flip and reads the mask at the screen position, the 16x16 one does not,
+   so its flipped tiles read the mask backwards. The original's asymmetry. */
 static void bt_row(bt_regs* const r, u1 const* const tile, u1 const* const win,
     u1 const dh, u1* const esi, u1* const ebp, int const flip,
     int const winbyk)

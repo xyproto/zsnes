@@ -1,16 +1,12 @@
 /*
- * Mode 7 16-bit background renderers, ported from mode716b.asm,
- * mode716d.asm, mode716t.asm, m716text.asm, mode716e.asm, and
- * makev16b.asm.
+ * Mode 7 16-bit background renderers, from mode716b.asm and friends. The
+ * drawmode7 entry points keep the legacy register ABI (y scroll in ax, x in
+ * dx); the assembly tail-jumped to domosaic16b with dh holding curmosaicsz, so
+ * this reads the global instead.
  *
- * The drawmode7 entry points keep the legacy register ABI (y scroll
- * in AX, x scroll in DX) through i386 trampolines; the asm renderers
- * tail-jump to domosaic16b with DH holding curmosaicsz, so the C
- * version reads the global instead.
- *
- * Positions are 24.8 fixed point kept in 32-bit words.  The asm mixed
- * byte, word, and dword accesses into those words; the masked helpers
- * below reproduce its dropped carries exactly.
+ * Positions are 24.8 fixed point in 32-bit words, and the assembly mixed byte,
+ * word and dword accesses into them - the masked helpers below reproduce its
+ * dropped carries.
  */
 
 #include <string.h>

@@ -37,15 +37,13 @@ void preparesprpr(void)
     sprsingle = (eax == 0x00000001 || eax == 0x00000100 || eax == 0x00010000 || eax == 0x01000000) ? 1 : 0;
 }
 
-// --- New-gfx window builder (ported from video/newgfx.asm) ------------------
+// --- New-gfx window builder (video/newgfx.asm) ------------------------------
 //
-// Builds the per-scanline window displacement table ngwintable[] (two parallel
-// 16-dword rows: bytes 0-63 and 64-127) for the new graphics engine. For a
-// single window it fills both rows directly; for two windows it builds two
-// boundary lists, merges them with the layer's logic operator, and converts
-// back to displacement form. eax indexes winboundary[], ebx indexes
-// winbg1enval[]. Sentinels: 0xEE00 ends a list. The table walking uses raw
-// byte offsets exactly as the assembly did.
+// Builds ngwintable[], the per-scanline window displacement table: two
+// parallel 16-dword rows at bytes 0-63 and 64-127. One window fills both rows
+// directly; two build boundary lists, merge them with the layer's logic
+// operator and convert back. eax indexes winboundary[], ebx winbg1enval[], and
+// 0xEE00 ends a list. Walked by raw byte offset, as the assembly did.
 
 extern u4 nglogicval;
 extern u4 WindowRedraw;
@@ -1027,11 +1025,7 @@ static void Draw8x816bflipmacro(u1 const dh, u1 const* const ebx, u2* const esi,
 
 // Processes & Draws 8x8 offset mode in Mode 2/4
 /* initoffsetmode, offsetmcachechk and procoffsetmode live in
-   video/c_mv16toffs.h now. The copies that used to be here diverged from the
-   assembly in three places - `& 0x3FF + ofsmcyps` binding as
-   `& (0x3FF + ofsmcyps)`, the ofsmtptr/ofsmtptrs terms carrying the wrong
-   signs, and ngptrdat2's value being written to bgsubby - and the shared ones
-   are checked against the original by `make -C test t8to`. */
+   video/c_mv16toffs.h, checked against the assembly by `make -C test t8to`. */
 static void initoffsetmode(u4 const ebp, u2 const* const edi)
 {
     offs_init(ebp, (u1 const*)edi);

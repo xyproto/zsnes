@@ -1,22 +1,17 @@
 /*
- * video/c_ngprocbg.c - the background, sprite and Mode 7 passes of
- * StartDrawNewGfx16b in video/newgfx16.asm.
+ * The background, sprite and Mode 7 passes of StartDrawNewGfx16b
+ * (video/newgfx16.asm): five macros instantiated sixteen times, once per layer
+ * per screen. One walk down the scanlines, deciding per line whether the layer
+ * draws eight lines at a time or one; only that decision differs:
  *
- * Five macros - Procbgpr016b, Procbg3pr016b, Procbgpr116b, Procbg3pr116b and
- * Procbg3pr1b16b - instantiated sixteen times between them, once per layer per
- * screen. They are one walk down the scanlines that decides, per line, whether
- * the layer can be drawn eight lines at a time or has to go line by line, and
- * they differ only in that decision:
- *
- *   pr0      tile-aligned, and nothing on these lines changed, and the mode is
- *            not 2 or 4-and-up
- *   bg3pr0   the same, but keyed on BG3's priority being steady instead
- *   pr1      whatever the priority-1 flag for this line says
- *   bg3pr1   the same, plus: skip the line in mode 1 when BG3 has priority
+ *   pr0      tile-aligned, nothing changed on these lines, mode not 2 or 4+
+ *   bg3pr0   the same, keyed on BG3's priority being steady
+ *   pr1      whatever the priority-1 flag for the line says
+ *   bg3pr1   the same, but skip the line in mode 1 when BG3 has priority
  *   bg3pr1b  the same, but draw *only* those lines
  *
- * The line and tile renderers take the scanline in ebx and the video pointer
- * in esi, so they are handed the pass's register file rather than arguments.
+ * The renderers take the scanline in ebx and the video pointer in esi, so they
+ * get the pass's register file rather than arguments.
  */
 #include <stdint.h>
 #include <string.h>
@@ -224,9 +219,10 @@ void c_procbg16b(u4 const layer, void (*const lineproc)(zreg*),
             int tile;
 
             if (kind == P_PR0 || kind == P_BG3PR0) {
-                /* Only a tile-aligned line can start a tile row, and a line
-                   that cannot goes down one at a time rather than being
-                   skipped. */
+                /* Only a tile-aligned line can start a tile row; one that
+                   cannot goes down a line at a time rather than being skipped.
+                   BG1SYl..BG4SYl are one pinned run (endmem.c), so the layer
+                   scales the index - UBSan flags the array bound. */
                 ecx = (BG1SYl[y + layer * 256u] & 0xFFFFu) + y;
                 tile = (ecx & 7u) == 0 && tile_ok(layer, y, kind);
             } else {
@@ -248,13 +244,11 @@ void c_procbg16b(u4 const layer, void (*const lineproc)(zreg*),
     }
 }
 
-/* Procsprng0116b, Procsprng23456716b and Procsprng16b: one sprite priority
-   pass down the scanlines, from line 1. The three are the same walk and differ
-   only in which background modes they run on.
-
-   csprival and the sprtlng bump happen for every line that passes the screen
-   test, whether or not a sprite is then drawn. The renderer takes the scanline
-   in ebx, the video pointer in esi and the sprite count in cl. */
+/* One sprite priority pass down the scanlines from line 1. The three forms
+   differ only in which background modes they run on. csprival and the sprtlng
+   bump happen for every line that passes the screen test, drawn or not. The
+   renderer takes the scanline in ebx, the video pointer in esi and the count
+   in cl. */
 enum {
     S_MODE01,
     S_MODE27,
@@ -310,14 +304,10 @@ void c_procspr16b(int const main_, u4 const mask, int const modes)
     }
 }
 
-/* ProcMode7ng16b, ProcMode7ngextbg16b and ProcMode7ngextbg216b: the Mode 7
-   line pass. All three save the matrix, walk the lines feeding it the
-   per-line values, and put it back; they differ in which renderer they call,
-   whether they want the interlace bit set or clear, and one flag byte.
-
-   Note the renderers are handed ebx = the *unsnapped* line for the plain form
-   but the mosaic-snapped one for the two extbg forms - the plain form pops it
-   back before the call and they do not. */
+/* The Mode 7 line pass: save the matrix, walk the lines feeding it the
+   per-line values, put it back. The three forms differ in the renderer, the
+   interlace bit and one flag byte. The plain form hands the renderer the
+   *unsnapped* line, the two extbg forms the mosaic-snapped one. */
 enum {
     M7_PLAIN,
     M7_EXTBG,

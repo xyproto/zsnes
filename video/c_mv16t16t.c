@@ -1,19 +1,15 @@
 /*
- * video/c_mv16t16t.c - the six 16x16 colour-maths tile drawers of
- * video/makev16t.asm: draw16x1616t, draw16x16fulladd, draw16x1616ts and their
- * three winon twins.
+ * The six 16x16 colour-maths tile drawers: the 16x16 column walk of
+ * video/c_mv16t16bt.c with the colour-maths writers of video/c_mv16tt.h. One
+ * entry point; the other five are jumped to once the prologue has picked the
+ * colour-maths mode.
  *
- * The cross of two things already ported: the 16x16 column walk of
- * video/c_mv16t16bt.c and the colour-maths writers of video/c_mv16tt.h. One
- * entry point; the other five are jumped to once the shared prologue has run
- * and the colour-maths mode has been decided.
+ * Beyond the walk, this differs from the 8x8 form in that all three plain
+ * forms carry the mosaic tail and none tests `drawn` first; and from the 16x16
+ * *bt* form in that the flipped windowed loops use the winonb writers, reading
+ * the window mask at the screen position.
  *
- * Differences from the 8x8 form (video/c_mv16t8t.c) beyond the walk itself:
- * all three plain forms carry the mosaic tail, and none of them tests `drawn`
- * first. Differences from the 16x16 *bt* form: the flipped windowed loops use
- * the winonb writers, so they read the window mask at the screen position.
- *
- * Reached with ebx = the tile cache pointer, ecx = the y adder, edx = the map
+ * Entered with ebx = the tile cache pointer, ecx = the y adder, edx = the map
  * pointer to reload at the column wrap, esi = the horizontal offset and
  * edi = the map pointer. eax is four bytes of input: `mov [temp],eax` is a
  * dword store over temp, bshifter, a16x16xinc and a16x16yinc.

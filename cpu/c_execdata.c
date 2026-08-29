@@ -1,11 +1,7 @@
-/* C port of the emulation-loop state block from cpu/execute.asm. The routines
-   that use it (execloop, pexecs, the rewind helpers) are still there; this is
-   only the data they and the rest of the emulator share.
-
-   Two ALIGN32 gaps inside the block are reproduced with an explicit 0x90 fill:
-   NASM's ALIGN pads with nop bytes even in a data section, so a plain .balign
-   would zero-fill and change the image. Emitted through one inline-asm block
-   (see asmdata.h) to pin the layout. */
+/* The emulation-loop state block from cpu/execute.asm. The two ALIGN32 gaps
+   are filled with 0x90 explicitly: NASM's ALIGN pads with nops even in a data
+   section, where .balign would zero-fill. One inline-asm block pins the
+   layout. */
 #include "../asmdata.h"
 
 /* Holds a host pointer, so the slot follows the pointer width. */

@@ -1,15 +1,11 @@
 /*
- * The eight mode 7 scanline gates, ported from video/makev16t.asm.
+ * The eight mode 7 scanline gates, from video/makev16t.asm. Each spilled eax,
+ * ebx, edx and ebp into the M7T seam, picked a renderer, reloaded them and
+ * tail-jumped in, so the renderer's `ret` reached the gate's own caller. ecx,
+ * esi and edi survive across a gate.
  *
- * Each one spilled eax, ebx, edx and ebp into the M7T seam, called the C body
- * that decides which renderer the layer needs, reloaded them, and tail-jumped
- * into that renderer so its `ret` went back to the gate's own caller. ecx was
- * pushed across the call because the originals never touched it and callers
- * rely on that; esi and edi were never touched at all.
- *
- * In C the choice comes back as a tail id and the caller dispatches, which is
- * what keeps the register hand-off out of here - video/c_mv16tline.c takes the
- * id and calls the renderer with the arguments its trampoline used to pass.
+ * Here the choice comes back as a tail id and video/c_mv16tline.c dispatches
+ * on it, which keeps the register hand-off out of this file.
  */
 
 #include "c_m716gate.h"
@@ -131,16 +127,11 @@ u4 procspritessub16tfix(m7regs* const r)
     return sprite_gate(c_procspritessub16tfix, r);
 }
 
-/* The background gates. Unlike the others these *call* their renderer and then
-   do one more thing, so they come in two halves: the caller runs the first,
-   dispatches on the id, and runs the second. That is what keeps the renderer
-   call - and its register set - out of here.
-
-   The whole register file crosses this seam. The assembly pushed ecx and edx
-   around the bookkeeping call because the renderers leave those live for the
-   caller and cdecl would have clobbered the registers; here they are struct
-   fields nothing touches, so the save is not needed - the difftest agrees
-   either way. */
+/* The background gates *call* their renderer and then do one more thing, so
+   they split in two: the caller runs the first half, dispatches on the id, and
+   runs the second. The whole register file crosses this seam; the assembly's
+   push of ecx and edx around the bookkeeping call is unnecessary here, where
+   they are struct fields nothing touches. */
 static u4 bg_gate(void (*const body)(void), m7regs* const r)
 {
     BGAX = r->ax;
@@ -234,11 +225,9 @@ void drawsprites16t(m7regs* const r)
     drawsprites16t_plain(r);
 }
 
-/* Two of the tile renderers a background gate calls. Same spill-and-reload,
-   then the mosaic tail - which was a *jump* into domosaic16b, so it returned
-   to the gate's caller. That is handed back rather than taken here, for the
-   same reason the gates hand back an id: the caller then reaches domosaic16b
-   the way the jump did, with the registers this routine ended on. */
+/* Two of the tile renderers a background gate calls: the same spill and
+   reload, then the mosaic tail, which was a jump into domosaic16b and so
+   returned to the gate's caller. Handed back as an id for that reason. */
 #define TILE_DRAW(name, P, body) \
     u4 name(m7regs* const r)     \
     {                            \

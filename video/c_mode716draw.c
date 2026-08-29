@@ -1,19 +1,14 @@
 /*
- * video/c_mode716draw.c - drawmode7win16b and drawmode7ngextbg16b, ported from
- * video/mode716.asm, together with the four Mode7*Sub wrappers from
- * video/mode716.mac.
+ * The top of the Mode 7 renderer: drawmode7win16b, drawmode7ngextbg16b and the
+ * four Mode7*Sub wrappers. Picks the pixel writer from the layer's main/sub
+ * and colour-add settings, sets up the window state, then runs one of the four
+ * scanline walks in video/c_mode716proc.c.
  *
- * This is the top of the Mode 7 renderer: pick the pixel writer from the
- * layer's main/sub and colour-add settings, set the window state up, then run
- * one of the four scanline walks in video/c_mode716proc.c.
+ * Mode7Startup picks the walk: a window takes the ngw one, adders of a whole
+ * tile or more take ProcessB, everything else the plain one. The MainSub
+ * wrappers always take the two-writer ngw2 walk.
  *
- * Which walk runs is decided in Mode7Startup: a window on the layer takes the
- * ngw one, adders of a whole tile or more take ProcessB, everything else the
- * plain one. The MainSub wrappers always take the two-writer ngw2 walk.
- *
- * Reached by call from video/newgfx16.mac with ebx = the scanline, esi = the
- * video pointer and ebp = the palette. The mosaic tail stays in assembly: it
- * is a tail-jump into domosaicng16b with dh carrying curmosaicsz.
+ * Entered with ebx = the scanline, esi = the video pointer, ebp = the palette.
  */
 #include <stdint.h>
 
@@ -68,13 +63,12 @@ static u4 mid_routines(void)
 }
 
 /* An adder of a whole tile or more needs the big-step walk. The compares are
-   signed, and 0x7F0 rather than 0x800 - the assembly's margin, not a slip.
+   signed and use 0x7F0, not 0x800 - the assembly's margin.
 
-   Mode7ProcessB turns out to be a strict generalisation of Mode7Process for
-   any adder a Mode 7 matrix can produce: below 0x800 its step offsets come out
-   zero and its 0xF8 off-tile test degenerates to the 0x08 one. So choosing the
-   big-step walk too often is invisible, and only choosing it too rarely shows
-   up - difftest_m7draw.c pins exactly that asymmetry. */
+   Mode7ProcessB generalises Mode7Process for any adder a matrix can produce:
+   below 0x800 its step offsets are zero and its 0xF8 off-tile test degenerates
+   to the 0x08 one. So taking the big-step walk too often is invisible; only
+   too rarely shows up. */
 static int big_step(void)
 {
     return (s4)mmode7xadder > 0x7F0 || (s4)mmode7xadder < -0x7F0

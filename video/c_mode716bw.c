@@ -1,22 +1,14 @@
 /*
- * video/c_mode716bw.c - ProcessBuildWindow, ported from video/mode716.mac.
+ * ProcessBuildWindow, from video/mode716.mac: builds the per-scanline window
+ * run list the ProcessMode7ngwin*16b walk consumes. All four call sites pass a
+ * layer offset of 0, so that argument is folded away. Entered with ebx = the
+ * scanline; eax and edx come back as the coordinates Mode7Startup16b reads.
  *
- * Builds the per-scanline window run list the ProcessMode7ngwin*16b walk then
- * consumes. All four call sites instantiate the macro with 0, so the layer
- * offset it took as an argument is folded away here.
- *
- * Reached by call with ebx = the scanline. The macro in mode716.mac keeps the
- * ngwinen clear and the enable test, because the original touched no register
- * at all when it did not window - and eax and edx are the coordinates
- * Mode7Startup16b reads immediately afterwards.
- *
- * NOTE - one deliberate difference from the assembly. BuildWindow became a
- * cdecl C function (video/c_makev16b.c) in an earlier port, but this call site
- * was left reaching it by the old register ABI, so it was passing its saved
- * ebx and eax as the two arguments instead of the scanline twice. The second
- * argument indexes winbg1enval[], i.e. the wrong scanline's window enable.
- * This passes what the assembly meant to; see difftest_m7bw.c, which pins both
- * behaviours so the difference stays visible.
+ * One deliberate difference from the assembly: this call site used to reach
+ * BuildWindow by the old register ABI and passed its saved ebx and eax rather
+ * than the scanline twice, so the second argument indexed winbg1enval[] at the
+ * wrong scanline. This passes what the assembly meant; difftest_m7bw.c pins
+ * both behaviours.
  */
 #include <stdint.h>
 

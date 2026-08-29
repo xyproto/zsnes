@@ -1,15 +1,13 @@
 /*
- * chips/c_fxtable.c - SuperFX table initialisation, ported from chips/fxtable.asm.
+ * SuperFX table initialisation, from chips/fxtable.asm. InitFxTables() runs
+ * once from initc.c and fills the opcode dispatch tables, the PLOT jump
+ * tables, the bit-expansion lookups, the screen-line offsets and the memory
+ * map. Handlers are the bodies in chips/fx_ops.h; the tables hold raw
+ * addresses in endmem.c's u4 arrays, and CMODE patches entry $4C at run time.
  *
- * InitFxTables() is called once, from initc.c, and fills the SuperFX opcode
- * dispatch tables, the PLOT jump tables, the bit-expansion lookups, the
- * screen-line offset tables and the SuperFX memory map. The handlers are the C
- * bodies in chips/fx_ops.h; the dispatch tables still hold raw addresses in the
- * u4 arrays that endmem.c lays out, and CMODE patches entry $4C at run time.
- *
- * The d table is the one MainLoop threads through. Its bodies are the base
- * table's, except for STOP and for the 8bpp dithered PLOT variants, which the
- * assembly wired to the undithered code.
+ * MainLoop threads the d table, whose bodies are the base table's except STOP
+ * and the 8bpp dithered PLOT variants, which the assembly wired to the
+ * undithered code.
  */
 #include <stdbool.h>
 #include <stdint.h>

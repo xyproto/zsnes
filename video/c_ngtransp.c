@@ -83,12 +83,9 @@ void c_transp_fullsub(zreg* const r)
     r[R_EBP] = ebp;
 }
 
-/*
- * .subtract / .nextfshs - half subtract. Unlike the two above, this one does
- * NOT clear eax on entry (the assembly only does `xor edx,edx`), so the
- * caller's eax upper half reaches the arithmetic; hence eax comes in from the
- * register block. It also re-reads the sub pixel to decide whether to halve.
- */
+/* .subtract / .nextfshs - half subtract. This one does not clear eax on entry,
+   so the caller's upper half reaches the arithmetic; it also re-reads the sub
+   pixel to decide whether to halve. */
 void c_transp_halfsub(zreg* const r)
 {
     u2* p = (u2*)(uintptr_t)r[R_ESI];
@@ -120,12 +117,9 @@ void c_transp_halfsub(zreg* const r)
     r[R_EBP] = ebp;
 }
 
-/*
- * .next2 - plain half add. Skips any pixel whose sub half already carries the
- * unused bit. This is the variant that clears eax but leaves edx alone, so the
- * caller's edx upper half survives into the arithmetic and the shr can walk
- * bit 16 down into the stored pixel.
- */
+/* .next2 - plain half add, skipping any pixel whose sub half already carries
+   the unused bit. Clears eax but leaves edx, so the caller's upper half
+   survives and the shr can walk bit 16 into the stored pixel. */
 void c_transp_halfadd(zreg* const r)
 {
     u2* p = (u2*)(uintptr_t)r[R_ESI];
@@ -188,14 +182,10 @@ void c_transp_halfaddfix(zreg* const r)
 }
 
 /*
- * ProcessTransparencies itself: walk the lines, pick a variant per line, and
- * handle the hi-res second field.
- *
- * Each variant used to be wrapped in push/pop of esi and ebx, so their writes
- * to those two never escaped - hence esi is a local here and ebx is put back
- * after every call (the half-add variants leave UnusedBit in it). Everything
- * else they clobber is meant to escape, which is why they share the caller's
- * register block rather than getting a fresh one.
+ * ProcessTransparencies: walk the lines, pick a variant per line, handle the
+ * hi-res second field. The assembly wrapped each variant in push/pop of esi
+ * and ebx, so esi is a local here and ebx is restored after every call. What
+ * they clobber otherwise is meant to escape, hence the shared register block.
  */
 extern u1* vidbuffer;
 extern u1 FillSubScr[], scadtng[], SpecialLine[];

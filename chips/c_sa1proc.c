@@ -212,12 +212,10 @@ static void SA1SwapLeave(zreg* const r)
     SA1TimerVal += 23;
 }
 
-// SA1Swap - give the SA-1 one instruction slot.
-//
-// Install the SA-1's context, run a chain of its instructions until the
-// scanline's cycles are spent, then hand the 65816 its context back. The SA-1
-// core's opcode tails jumped to one another through their own `endloop`, which
-// unlike the 65816's does not step the SPC700; the loop here is that macro.
+// SA1Swap: install the SA-1's context, run its instructions until the
+// scanline's cycles are spent, then hand the 65816 its context back. The loop
+// here is the SA-1's own `endloop`, which unlike the 65816's does not step the
+// SPC700.
 void SA1Swap(zreg* const r)
 {
     if (SA1SwapEnter(r) == 0)

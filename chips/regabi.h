@@ -7,21 +7,14 @@
 
 /*
  * The I/O register handlers ($2100-$437F, reached through regptra/regptwa).
+ * These were trampolines while the core was assembly; now they are plain C
+ * over the seam in cpu/memseam.h, the convention the memtable uses. The macro
+ * names and c_<name> signatures are unchanged, so the ~300 handlers did not
+ * have to move.
  *
- * These used to be trampolines: the 65816 core was assembly and called a
- * handler with the address in ECX, the value in AL/AX and EDX live, so a C
- * body had to be wrapped in hand-written x86.  Nothing in assembly calls a
- * handler any more, so the wrappers are plain C over the seam in
- * cpu/memseam.h - the same convention the memtable uses.  The macro names and
- * the c_<name> signatures are unchanged, so the ~300 handlers that use them
- * did not have to move.
- *
- *   REG   handlers take no address (the table index already is one)
- *   BANK  handlers take the address, out of MemSeamC
+ *   REG   no address; the table index already is one
+ *   BANK  takes the address out of MemSeamC
  *   _DX   passes MemSeamD through, for the beam and hblank registers
- *
- * REGABI_SYM/REGABI_ENTRY remain because video/c_mode716calc.c still has to
- * name a symbol in video/mode716.asm; they go when that file does.
  */
 
 #if defined(__APPLE__) || defined(__MINGW32__)

@@ -169,14 +169,10 @@ void DSPOp2B(void);
 void DSPOp2D(void);
 void DSPOp0A(void);
 
-/* DSP1 register state (was .bss in dsp1proc.asm).
- *
- * zstate.c saves this whole run, so its order and adjacency are the save-state
- * format from V144 onwards. Plain C definitions cannot express that - under
- * -fdata-sections each global is its own section and the linker ordered them
- * freely, which put unrelated DSP-2 state inside the saved span - so the run is
- * emitted through one inline-asm block, as elsewhere in this tree. The order
- * below is the original dsp1proc.asm's. */
+/* DSP1 register state, .bss in dsp1proc.asm. zstate.c saves the whole run, so
+   its order and adjacency *are* the save-state format from V144 on. Plain C
+   definitions cannot express that under -fdata-sections, hence the inline-asm
+   block; the order below is dsp1proc.asm's. */
 __asm__(
     ASM_SEC_BSS(".bss")
     /* Names the whole saved run, so the copy in zstate.c is in bounds of a

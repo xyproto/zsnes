@@ -9,13 +9,11 @@
 extern void SPC7110initC(void); /* 7110emu.c */
 void SPC7110RTCReset(void); /* Stage 4: seed the Epson RTC from the host clock */
 
-/* Save-state block (101 bytes), laid out via inline asm to keep it contiguous
-   and self-exact under -fdata-sections.
-   SPCROMtoI selects one of the two pointers below, so it holds an address and
-   has to be pointer-wide - which it cannot be inside this block without moving
-   the save-state layout. It lives just after, still initialised to &SPCROMPtr;
-   the block keeps the dword the file format expects. As a 32-bit slot the
-   initialiser was also an unrelocatable address on Win64. */
+/* Save-state block (101 bytes), laid out in inline asm to stay contiguous
+   under -fdata-sections. SPCROMtoI holds an address, so it has to be
+   pointer-wide and cannot live inside the block without moving the save-state
+   layout; it sits just after, and the block keeps the dword the file format
+   expects. */
 __asm__(
     ASM_SEC_DATA(".data.spc7110state")
     /* The section holds dwords at fixed offsets, so it has to start on a
@@ -215,13 +213,10 @@ void c_SPC482Ew(uint8_t al)
 }
 
 /* ===== Stage 4: Epson RTC-4513 (0x4840-0x4842, 0x4850-0x485F) =====
-   Independent implementation of the Epson RTC-4513 hardware: a real ticking
-   clock with bit-accurate BCD and calendar rollover, a 4-bit register file, and
-   the chip-select, mode, seek, read and write serial protocol.  The clock is
-   seeded from the host time (GetTime/GetDate) and advances by the real seconds
-   elapsed between accesses.  Behaviour cross-checked against the bsnes and
-   snes9x emulators (used only as references).  SPC7110RTC[0..15] mirrors the 16
-   registers for save-states and the direct 0x4850-0x485F reads. */
+   A ticking clock with BCD and calendar rollover, a 4-bit register file, and
+   the chip-select/mode/seek/read/write serial protocol. Seeded from the host
+   clock and advanced by the real seconds between accesses. SPC7110RTC[0..15]
+   mirrors the 16 registers for save states and the direct reads. */
 extern uint8_t SPC7110RTC[16];
 extern uint32_t GetTime(void), GetDate(void); /* ztimec.c */
 
@@ -867,12 +862,10 @@ SPC_RTC_R(SPC485D, 0x0D)
 SPC_RTC_R(SPC485E, 0x0E)
 SPC_RTC_R(SPC485F, 0x0F)
 
-/* ===== Stage 5: data ROM port (0x4810-0x481A) and bank mapping (0x4831-0x4834) =====
-   The data port walks ROM at romdata+0x100000+SPCROMPtr, optionally offset by
-   SPCROMAdj, auto-incrementing the pointer SPCROMtoI selects (either SPCROMPtr
-   or SPCROMAdj) by 1, by SPCROMInc, or by SPCROMAdj depending on the command
-   byte SPCROMCom.  SPCROMtoI holds the address of the live pointer.  See the
-   asm command-mode bit table for the encoding. */
+/* ===== Stage 5: data ROM port (0x4810-0x481A), bank mapping (0x4831-0x4834) ==
+   The port walks ROM at romdata+0x100000+SPCROMPtr, optionally offset by
+   SPCROMAdj, auto-incrementing whichever pointer SPCROMtoI names by 1, by
+   SPCROMInc or by SPCROMAdj, as the SPCROMCom command byte says. */
 extern uint8_t* romdata; /* gblvars.h */
 extern uint8_t curromsize; /* initc.c */
 extern uint8_t *snesmmap[256], *snesmap2[256]; /* SNES memory map */

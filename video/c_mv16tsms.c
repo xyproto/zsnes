@@ -1,18 +1,14 @@
 /*
- * video/c_mv16tsms.c - the eleven tile-row routines of video/mv16tms.asm.
+ * The eleven tile-row routines of video/mv16tms.asm: colour-maths rows, each
+ * pixel looked up in a palette table, averaged with the transparency buffer
+ * and run through fulladdtab. Three writers, named a/b/c after the assembly -
+ * a averages into pal16b and only when the buffer is non-zero, b and c use
+ * pal16bcl and pal16bxcl, and c inverts (the subtractive form). Each has a
+ * window-masked twin, used by the 8x8 and 16x16 walkers in seven combinations.
  *
- * Colour-maths rows: each pixel is looked up in a palette table, averaged with
- * what the transparency buffer already holds and run through fulladdtab. Three
- * pixel writers appear, named a/b/c after the assembly macros - a averages into
- * pal16b and only when the transparency buffer is non-zero, b and c use
- * pal16bcl and pal16bxcl, and c inverts the result (the subtractive form).
- * Each writer has a plain and a window-masked variant, and 8x8 and 16x16 row
- * walkers use them in the seven combinations the assembly had.
- *
- * All of them are reached by jump from the dispatch that stays in the assembly,
- * with esi = the video pointer, ebp = the transparency buffer, edi = the tile
- * map and either dl or temp holding the starting tile column; esi and ebp are
- * biased by the horizontal offset already. See video/c_mv16tms.c.
+ * Entered with esi = the video pointer, ebp = the transparency buffer,
+ * edi = the tile map and dl or temp holding the starting column; esi and ebp
+ * are already biased by the horizontal offset.
  */
 #include <stdint.h>
 #include <string.h>
@@ -195,11 +191,9 @@ void c_draw8x8fulladdwinonms(void) { draw_row(1, 0, 0); }
 
 /* --- the 'a' writer: main screen with a conditional average ---------------- *
  *
- * draw8x816tams and its two windowed forms. Unlike the b/c writers this one
- * keeps the colour in eax and the transparency value in ecx, reads the tile
- * through ebx rather than edi, and only averages when the transparency buffer
- * already holds something.
- */
+ * draw8x816tams and its two windowed forms. Unlike b/c it keeps the colour in
+ * eax and the transparency in ecx, reads the tile through ebx, and averages
+ * only when the buffer already holds something. */
 extern u4 pal16b[256];
 
 static void write_a(struct mvregs* const r, u1 const* const src, u4 const n,
@@ -332,16 +326,14 @@ void c_draw8x816twinonms_body(void) { draw_row_a(1); }
 
 /* --- the 16x16 tile rows -------------------------------------------------- *
  *
- * Same writers, but each map entry covers a 16x16 tile, so the row is walked
- * half a tile at a time: a16x16xinc toggles every column and decides whether
- * this step advances the map pointer or just moves to the tile's other half.
- * The x flip swaps which of the two that means, the y flip which row.
+ * The same writers over 16x16 map entries, walked half a tile at a time:
+ * a16x16xinc toggles per column and says whether the step advances the map
+ * pointer or moves to the tile's other half; the x flip swaps which, the y
+ * flip which row.
  *
- * The arithmetic on the tile number is 16-bit (`and ax,3FFh`, `shl ax,6`) but
- * the result reaches edi as a full dword, so the top half of eax takes part.
- * It is zero after any tile that drew, and whatever the caller left after one
- * skipped on priority.
- */
+ * The tile-number arithmetic is 16-bit but reaches edi as a full dword, so the
+ * top half of eax takes part - zero after any tile that drew, and whatever the
+ * caller left after one skipped on priority. */
 extern u1 a16x16xinc; /* video/makevid.h */
 extern u2 yadd, yflipadd; /* video/c_makev16tdata.c */
 

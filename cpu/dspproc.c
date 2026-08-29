@@ -1,11 +1,8 @@
-/* C port of cpu/dspproc.asm: the DSP/sound state block.
-
-   Everything left in dspproc.asm was pure data; the code moved to
-   cpu/c_dspproc.c long ago.  The save-state code walks this block by offset
-   (PHdspsave and friends are literal byte distances between symbols), so the
-   layout is reproduced verbatim with an inline-asm block (see asmdata.h).
-   resb N is N bytes, resw N is N*2, resd N is N*4; the asm ALIGN32/ALIGN16
-   macros pad with nop (0x90) bytes, not zeroes. */
+/* The DSP/sound state block from cpu/dspproc.asm; the code is in
+   cpu/c_dspproc.c. The save-state code walks this by offset - PHdspsave and
+   friends are literal byte distances between symbols - so the layout is
+   reproduced verbatim in an inline-asm block. resb N is N bytes, resw N is
+   N*2, resd N is N*4, and ALIGN32/ALIGN16 pad with nops, not zeroes. */
 #include "../asmdata.h"
 
 /* clang-format off */

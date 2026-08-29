@@ -1,20 +1,16 @@
 /*
- * video/c_mv16tsprp.c - the drawsprites16t priority family of
- * video/makev16t.asm.
+ * The drawsprites16t priority family of video/makev16t.asm: six entry points -
+ * half add, full add, full sub, each with a window-masked twin - from one
+ * macro with different writers. Only drawsprites16tprio is reached from
+ * outside.
  *
- * Six entry points - half add, full add, full sub, each with a window-masked
- * twin - all the same sprprioritydrawt16b macro with a different pair of
- * writers. Only drawsprites16tprio is reached from outside; the windowed three
- * are jumped to once the window test has run.
+ * Like drawsprites16t (video/c_mv16tsprt.c) it consumes transpbuf and writes
+ * only the video line, but every sprite on the line is visited on every pass:
+ * one of another priority still claims its pixels in sprpriodata, so the pass
+ * that owns them leaves those alone. After the last priority the claim mask
+ * rotates back to bit 0 and is wiped.
  *
- * Like drawsprites16t (video/c_mv16tsprt.c) this consumes transpbuf and writes
- * only the video line, but here every sprite on the line is visited on every
- * pass: one belonging to another priority still claims its pixels in
- * sprpriodata, so the pass that owns them leaves those alone. After the last
- * priority the claim mask rotates back to bit 0 and is wiped.
- *
- * ebp carries the priority being drawn and is the one register the whole
- * family leaves alone.
+ * ebp carries the priority being drawn and is the one register left alone.
  */
 #include <stdint.h>
 #include <string.h>
@@ -54,17 +50,13 @@ enum {
     W_SUB
 };
 
-/* One pixel of sprdrawpr{a,b}[w]16b, with or without one of the three blends.
-   `mask` is the sprdrawpra/sprdrawprb split: the a-forms skip a pixel a
-   higher-priority sprite already claimed and then claim it themselves, the
-   b-forms are used where only one sprite can reach the line. `idx` is the word
-   index, which the byte-wide arrays carry biased by 16.
+/* One pixel of sprdrawpr{a,b}[w]16b, with or without a blend. `mask` is the
+   a/b split: a-forms skip a pixel a higher-priority sprite already claimed and
+   then claim it, b-forms are for lines only one sprite reaches. `idx` is the
+   word index, which the byte-wide arrays carry biased by 16.
 
-   The blends leave eax zero and the plain writer leaves the palette index in
-   it; edx is whatever each form last used as scratch, and the caller does not
-   clear it. The assembly's `xor eax,eax` above each pixel group is subsumed
-   here: it only mattered because `mov al,[esi]` leaves the upper bits alone,
-   and the assignment below writes the whole of eax. */
+   The blends leave eax zero, the plain writer the palette index; edx is
+   whatever each form last used as scratch. */
 static void spr_pixel(regs* const r, u4 const eax, u1 const cl, u1 const ch,
     u4 const idx, u2* const edi, int const mode, int const mask, int const win)
 {

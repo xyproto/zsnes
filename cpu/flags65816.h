@@ -1,15 +1,13 @@
 /*
- * cpu/flags65816.h - conversion between the 65816 P register and the split
- * flag globals, from the makedl / restoredl macros in cpu/65816d.inc.
+ * Conversion between the 65816 P register and the split flag globals, from the
+ * makedl / restoredl macros in cpu/65816d.inc.
  *
- * The core does not keep N, V, Z and C in P. It keeps them spread over three
- * globals in the form the x86 flags left them, because that is free to write
- * and cheap to test: Z is "the low 16 bits of flagnz are zero", N is bit 15 or
- * bit 16 of it, and flagc / flago are 0 or 0xFF. P is only reassembled when
- * something outside the core has to see it - PHP, an interrupt, REP/SEP with a
- * bit outside MXD - which is what these two do.
+ * The core keeps N, V, Z and C as the x86 flags left them rather than in P:
+ * Z is "the low 16 bits of flagnz are zero", N is its bit 15 or 16, and flagc
+ * and flago are 0 or 0xFF. P is reassembled only when something outside the
+ * core has to see it - PHP, an interrupt, REP/SEP with a bit outside MXD.
  *
- * Textual include: the includer must have declared flagnz, flago and flagc.
+ * Textual include; the includer declares flagnz, flago and flagc.
  */
 #ifndef FLAGS65816_H
 #define FLAGS65816_H

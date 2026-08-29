@@ -98,8 +98,6 @@ bool zst_compressed_loader(FILE*);
 u1 lameExists = 0;
 u1 mencoderExists = 0;
 
-/////////////////////////////////////////////////////////
-
 #ifdef DEBUG_INPUT
 #define debug_input_start useda = usedb = usedc = usedd = usede = 0;
 #define debug_input              \
@@ -144,14 +142,10 @@ static void print_bin(uint32_t num, uint32_t* used)
 #define debug_input_used
 #endif
 
-/////////////////////////////////////////////////////////
-
 /*
 ZMV Format
 
------------------------------------------------------------------
 Header
------------------------------------------------------------------
 
 3 bytes  -  "ZMV"
 2 bytes  -  ZMV Version # (version of ZSNES)
@@ -182,10 +176,7 @@ Header
 3 bytes  -  1 bit for compressed or not, 23 bits for size
 ZST size -  ZST (no thumbnail)
 
-
------------------------------------------------------------------
 Key input  -  Repeated for all input / internal chapters
------------------------------------------------------------------
 
 1 byte   - Flag Byte
   1 bit  -  Controller 1 changed
@@ -220,17 +211,11 @@ variable - Input
   Minimum 2 bytes (12 controller bits + 4 padded bits)
   Maximum 9 bytes (20 scope controller bits + 48 regular controller bits [12*4] + 4 padded bits)
 
-
------------------------------------------------------------------
 Internal chapter offsets  -  Repeated for all internal chapters
------------------------------------------------------------------
 
 4 bytes  -  Offset to chapter from beginning of file (after input flag byte for ZST)
 
-
------------------------------------------------------------------
 External chapters  -  Repeated for all external chapters
------------------------------------------------------------------
 
 ZST Size -  ZST (never compressed)
 4 bytes  -  Frame #
@@ -238,26 +223,17 @@ ZST Size -  ZST (never compressed)
 9 bytes  -  Maximum previous input (1 Scope [20] + 4 Regular [12*4] + 4 padded bits)
 4 bytes  -  Offset to input for current chapter from beginning of file
 
-
------------------------------------------------------------------
 External chapter count
------------------------------------------------------------------
 
 2 bytes  - Number of external chapters
 
------------------------------------------------------------------
 Author name
------------------------------------------------------------------
 
 Name Len - Author's name
 
 */
 
-/*
-
-ZMV header types, vars, and functions
-
-*/
+/* ZMV header types, vars, and functions */
 
 enum zmv_start_methods { zmv_sm_zst,
     zmv_sm_power,
@@ -418,11 +394,7 @@ static bool zmv_header_read(struct zmv_header* zmv_head, FILE* fp)
     return (true);
 }
 
-/*
-
-Internal chapter types, vars, and functions
-
-*/
+/* Internal chapter types, vars, and functions */
 
 #define INTERNAL_CHAPTER_BUF_LIM 16
 struct internal_chapter_buf {
@@ -569,19 +541,9 @@ static size_t internal_chapter_count_until(struct internal_chapter_buf* icb, siz
     return (chapter_count);
 }
 
-/*
+/* Bit Encoder and Decoder */
 
-Bit Encoder and Decoder
-
-*/
-
-/*
-When working with bits, you have to find the bits in a byte.
-
-Divide the amount of bits by 8 (bit_count >> 3) to find the proper byte.
-The proper bit number in the byte is the amount of bits modulo 8 (bit_count & 7).
-To get the most signifigant bit, you want the bit which is 7 minus the proper bit number.
-*/
+/* Bit n lives in byte n>>3, at bit 7 - (n & 7). */
 size_t bit_encoder(uint32_t data, uint32_t mask, uint8_t* buffer, size_t skip_bits)
 {
     uint_fast8_t bit_loop;
@@ -625,11 +587,7 @@ size_t bit_decoder(uint32_t* data, uint32_t mask, uint8_t* buffer, size_t skip_b
     return (skip_bits);
 }
 
-/*
-
-Shared var between record/replay functions
-
-*/
+/* Shared var between record/replay functions */
 
 #define WRITE_BUFFER_SIZE 1024
 static struct
@@ -880,11 +838,7 @@ static size_t internal_chapter_length(size_t offset)
     return (icl);
 }
 
-/*
-
-Create and record ZMV
-
-*/
+/* Create and record ZMV */
 
 static bool zmv_create(char* filename)
 {
@@ -1121,11 +1075,7 @@ static size_t zmv_frames_recorded()
     return (zmv_vars.header.frames);
 }
 
-/*
-
-Open and replay ZMV
-
-*/
+/* Open and replay ZMV */
 
 typedef struct internal_chapter_buf external_chapter_buf;
 
@@ -1585,11 +1535,7 @@ static bool zmv_append(char* filename)
     }
     return (false);
 }
-/*
-
-Rewind related functions and vars
-
-*/
+/* Rewind related functions and vars */
 
 struct zmv_rewind {
     uint8_t last_joy_state[10];
@@ -1646,11 +1592,7 @@ void zmv_rewind_load(size_t state, bool playback)
     }
 }
 
-/*
-
-Save and load MZT
-
-*/
+/* Save and load MZT */
 
 size_t mzt_filename_generate()
 {
@@ -1854,13 +1796,7 @@ bool mzt_load(int position, bool playback)
     return (mzt_loaded);
 }
 
-/////////////////////////////////////////////////////////
-
-/*
-
-Code for dumping raw video
-
-*/
+/* Code for dumping raw video */
 
 #define RAW_WIDTH 256
 #define RAW_HEIGHT 224
@@ -1893,12 +1829,8 @@ uint8_t AudioLogging;
 
 extern uint8_t ZMVRawDump;
 
-/*
-Replaces a substring of str. The replace begins at the beginning of str for rep_len length.
-The new charaters are taken from new_str. The entire length of str will not exceed n.
-Amount need to contain the entire replaced str is returned.
-Thus if return is <= n, the replace was performed.
-*/
+/* Replace the first rep_len bytes of str with new_str, capped at n. Returns the
+   length the result needs; <= n means it was written. */
 static size_t string_replace(char* str, size_t rep_len, const char* new_str, size_t n)
 {
     size_t str_len = strlen(str);
@@ -2273,24 +2205,11 @@ static void raw_video_write_frame()
     }
 }
 
-/////////////////////////////////////////////////////////
+/* Movie subtitles. gamename.zmv takes gamename.sub beside it, gamename.zm1
+   takes gamename.su1, and so on. One "startframe:duration:message" per line:
 
-/*
-Nach's insane subtitle library for movies files :)
-
-The filename would be gamename.sub in the same directory the ZMV would be in.
-If you're playing gamename.zm1, then the sub file will be gamename.su1 etc...
-
-Format of the sub file:
-Start Frame:Frame Duration:Message
-
-Example:
-1:180:Hi how are you?
-300:180:Isn't this cool?
-700:180:This is great :)
-2500:375:Kill 'em!
-3500:20:Did you see this? Of course not
-*/
+     1:180:Hi how are you?
+     2500:375:Kill 'em! */
 
 static struct
 {
@@ -2368,8 +2287,6 @@ static size_t MovieSub_GetDuration()
     return (MovieSub.message_duration);
 }
 
-/////////////////////////////////////////////////////////
-
 bool RawDumpInProgress = false;
 bool PrevSRAMState;
 
@@ -2436,11 +2353,7 @@ static void DumpVideoFrame(bool playback_over)
     }
 }
 
-/*
-
-Code to playback old ZMVs
-
-*/
+/* Code to playback old ZMVs */
 
 static void OldMovieReplay()
 {

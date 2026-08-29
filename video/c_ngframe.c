@@ -1,19 +1,13 @@
 /*
- * video/c_ngframe.c - StartDrawNewGfx16b and its screen clip, from
- * video/newgfx16.asm.
+ * StartDrawNewGfx16b and its screen clip: the frame driver. Once per frame it
+ * clears the per-layer counters, then walks a fixed order - sub screen first
+ * if colour maths is on, then main - calling a background dispatcher, the
+ * sprite pass or the mode 7 pass for each layer and priority.
  *
- * The frame driver. Once per frame it clears the per-layer counters, then
- * walks a fixed running order - sub screen first if colour maths is on, then
- * the main screen - calling one of the sixteen background dispatchers, the
- * sprite pass or the mode 7 pass for each layer and priority in turn. Every
- * one of those is C already; what was left here is the order and the gates.
- *
- * It still runs on the caller's register block, because the colour-maths pass
- * it ends with reads two of them: `c_transp_halfsub` takes the caller's eax
- * and `c_transp_halfadd` the caller's edx, upper halves included. Nothing
- * here means anything by those - they are whatever the last cdecl call left -
- * but the screen clip writes both on its way through, so the block has to be
- * carried rather than invented.
+ * It runs on the caller's register block because the colour-maths pass it ends
+ * with reads two of them: c_transp_halfsub takes the caller's eax and
+ * c_transp_halfadd its edx, upper halves included. Nothing here means anything
+ * by those, but the screen clip writes both on the way through.
  */
 #include <stdint.h>
 #include <string.h>

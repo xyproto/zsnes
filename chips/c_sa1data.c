@@ -1,10 +1,7 @@
-/* The .bss block that was left in chips/sa1proc.asm.
- *
- * zstate.c saves three bytes starting at SA1Status, so those three have to
- * stay adjacent and in this order. prevedi holds a host pointer, so it is
- * pointer-wide and aligned; it is not part of the saved run. Kept in its own
- * file so the layout test can link it on its own.
- */
+/* The .bss block left in chips/sa1proc.asm. zstate.c saves three bytes from
+   SA1Status, so those stay adjacent and in this order; prevedi holds a host
+   pointer, so it is pointer-wide and outside the saved run. Its own file so
+   the layout test can link it alone. */
 #include "../asmdata.h"
 
 /* clang-format off */

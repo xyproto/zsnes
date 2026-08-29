@@ -1,16 +1,12 @@
 /*
- * cpu/ops65816_dbg.h - the debug 65816 core, ported from cpu/e65816c.inc.
+ * The debug 65816 core, from cpu/e65816c.inc: the third instantiation of
+ * cpu/ops65816.h, sharing the main core's register file and differing only in
+ * the opcode table, since the debugger single-steps through its own dispatch.
  *
- * The third instantiation of cpu/ops65816.h. This one shares the register file
- * with the main 65816 outright - only the opcode table is different, because
- * the debugger single-steps through its own dispatch. Measured against the
- * original: 4 of 517 opcode bodies differ and 13 macros, of which 4 differ only
- * in NASM's `call dword near` spelling.
- *
- * What is left is BRK's flag byte, BRL recomputing the bank base instead of
- * trusting initaddrl, RTI checking for a WAI in one more branch, CLI having no
- * IRQ to switch to, and the thirteen push/pull opcodes that start by loading
- * wramdata into eax.
+ * What actually differs: BRK's flag byte, BRL recomputing the bank base rather
+ * than trusting initaddrl, RTI checking for a WAI in one more branch, CLI
+ * having no IRQ to switch to, and the thirteen push/pull opcodes that start by
+ * loading wramdata into eax.
  */
 #ifndef OPS65816_DBG_H
 #define OPS65816_DBG_H
