@@ -27,9 +27,7 @@ Pull requests that fixes inaccuracies with the emulation are welcome, as well as
 * `python3`, `sdl3`, `pipewire` (or `libao`), and a C compiler like `gcc` or Apple `clang`.
 * `nasm` is only needed for the differential tests in `test/`, which assemble the original Assembly out of git history and compare the C against it.
 
-Tested on Arch Linux, Fedora and Debian 12 on x86_64.
-
-macOS + Apple Silicon support is under development.
+Tested on Arch Linux, Fedora and Debian 12 on x86_64, and on macOS on Apple Silicon.
 
 ### Build
 
