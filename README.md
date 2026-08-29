@@ -8,14 +8,15 @@ The last release of [ZSNES](http://zsnes.sourceforge.net/) was around 18 years a
 
 This is a fork of ZSNES that aims to solve this.
 
-The tree is C11 throughout: no Assembly is left. On Linux, `make` produces a 32-bit x86 ELF executable and `make linux64` a 64-bit one. On
+All of the old Assembly code has been ported to C11.
 
 Goals and non-goals:
 
 * Compiling ZSNES so that it works on 64-bit x86 is a goal (that has been reached).
 * Supporting 32-bit platforms is not a goal, but pull requests are welcome.
-* Porting the Assembly to C to support more platforms and CPUs was a long term goal, and is done.
-* Supporting Windows and DOS are not goals.
+* Porting the Assembly to C11 is a goal (that has been reached).
+* Supporting DOS is not a goal.
+* Supporting Windows is not a goal, but a bonus.
 * Supporting modern Linux distros (and FreeBSD and macOS, if possible) is a goal.
 * To be like an LTS release of ZSNES is a goal.
 * Improving the net-play code is a long term goal.
