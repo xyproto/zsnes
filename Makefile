@@ -956,14 +956,20 @@ fmt:
 test: $(BINARY)
 	$(MAKE) -C test run
 
-install:
-	install -Dm755 zsnes '$(DESTDIR)$(PREFIX)/bin/zsnes'
+# mkdir -p then install -m: BSD install (macOS, the BSDs) has no -D, and spells
+# its own -D as something else entirely, so `make install` used to fail there.
+INSTALL_DIRS := bin share/applications share/metainfo share/man/man1 \
+                $(foreach s,16x16 32x32 48x48 64x64 128x128,share/icons/hicolor/$(s)/apps)
+
+install: zsnes
+	mkdir -p $(foreach d,$(INSTALL_DIRS),'$(DESTDIR)$(PREFIX)/$(d)')
+	install -m755 zsnes '$(DESTDIR)$(PREFIX)/bin/zsnes'
 	for ICON_SIZE in 16x16 32x32 48x48 64x64 128x128; do \
-		install -Dm644 icons/$${ICON_SIZE}x32.png "$(DESTDIR)$(PREFIX)/share/icons/hicolor/$$ICON_SIZE/apps/io.github.xyproto.zsnes.png" ; \
+		install -m644 icons/$${ICON_SIZE}x32.png "$(DESTDIR)$(PREFIX)/share/icons/hicolor/$$ICON_SIZE/apps/io.github.xyproto.zsnes.png" ; \
 	done
-	install -Dm755 linux/zsnes.desktop '$(DESTDIR)$(PREFIX)/share/applications/io.github.xyproto.zsnes.desktop'
-	install -Dm755 linux/io.github.xyproto.zsnes.metainfo.xml -t '$(DESTDIR)$(PREFIX)/share/metainfo'
-	install -Dm644 man/zsnes.1 '$(DESTDIR)$(PREFIX)/share/man/man1/zsnes.1'
+	install -m644 linux/zsnes.desktop '$(DESTDIR)$(PREFIX)/share/applications/io.github.xyproto.zsnes.desktop'
+	install -m644 linux/io.github.xyproto.zsnes.metainfo.xml '$(DESTDIR)$(PREFIX)/share/metainfo/io.github.xyproto.zsnes.metainfo.xml'
+	install -m644 man/zsnes.1 '$(DESTDIR)$(PREFIX)/share/man/man1/zsnes.1'
 
 # Portability gate. Compiles every C source for each target below, on its own,
 # which catches a layout assuming 4-byte pointers in a file the current build
