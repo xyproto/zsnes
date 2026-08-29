@@ -687,7 +687,8 @@ void c_reg2132w(u1 const al)
     }
 }
 
-/* Keeps only interlace and pseudo-hires; bit 2 is the 239-line switch. */
+/* Keeps interlace, object interlace and EXTBG; bit 2 is the 239-line switch.
+   Pseudo-hires (bit 3) is not emulated. */
 REGABI_REG_WRITE8(reg2133w);
 void c_reg2133w(u1 const al)
 {
