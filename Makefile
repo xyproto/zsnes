@@ -190,11 +190,16 @@ CROSS_BUILD := $(if $(or $(filter WIN,$(ARCH)),$(filter-out $(HOST_OS),$(ARCH)),
 # an aarch64 build. Defined here because the probes below already use it.
 PKG_CONFIG ?= pkg-config
 
-# A cross build has to look in the target's tree, not the host's. Doing this
-# only when a prefixed pkg-config is missing was not enough: Ubuntu ships one,
-# and it searches the multiarch dirs rather than the sysroot. Set the search
-# path either way, covering both layouts, and drop PKG_CONFIG_PATH because it
-# is searched in addition and the outer make exports a host one.
+# A cross build has to look in the target's tree, not the host's. Set the search
+# path either way, covering both layouts, and drop PKG_CONFIG_PATH because it is
+# searched in addition and the outer make exports a host one.
+#
+# PKG_CONFIG_ENV, not `export`: GNU make only puts exported variables in the
+# environment of *recipe* commands, so every $(shell ...) probe below - which
+# runs while the makefile is still being read - would see the host path and
+# report the target's libraries missing. Ubuntu 24.04 also has no
+# aarch64-linux-gnu-pkg-config at all, so the fallback below is the usual case.
+PKG_CONFIG_ENV :=
 ifeq ($(CROSS_BUILD),yes)
 CROSS_TRIPLE  := $(shell $(or $(CC_TARGET),$(CC)) -dumpmachine 2>/dev/null)
 # Ubuntu's cross gcc answers "/" here, the host rather than a sysroot;
@@ -206,6 +211,7 @@ endif
 ifneq ($(strip $(CROSS_SYSROOT)),)
 export PKG_CONFIG_LIBDIR := $(CROSS_SYSROOT)/lib/pkgconfig:$(CROSS_SYSROOT)/lib/$(CROSS_TRIPLE)/pkgconfig:/usr/lib/$(CROSS_TRIPLE)/pkgconfig:/usr/share/pkgconfig
 export PKG_CONFIG_PATH :=
+PKG_CONFIG_ENV := PKG_CONFIG_LIBDIR='$(PKG_CONFIG_LIBDIR)' PKG_CONFIG_PATH=''
 ifeq ($(shell command -v $(PKG_CONFIG) >/dev/null 2>&1 && echo yes),)
 override PKG_CONFIG := pkg-config
 endif
@@ -222,9 +228,9 @@ endif
 # Check that pkg-config deps are also linkable with the current target flags (for example, -m32).
 define detect_pkg_for_target
 $(shell \
-  if $(PKG_CONFIG) --exists $(1) >/dev/null 2>&1; then \
+  if $(PKG_CONFIG_ENV) $(PKG_CONFIG) --exists $(1) >/dev/null 2>&1; then \
     printf 'int main(void){return 0;}\n' | \
-      $(or $(CC_TARGET),$(CC)) $(COMMON_FLAGS) -x c - -o /dev/null $$($(PKG_CONFIG) --libs $(1)) >/dev/null 2>&1 && \
+      $(or $(CC_TARGET),$(CC)) $(COMMON_FLAGS) -x c - -o /dev/null $$($(PKG_CONFIG_ENV) $(PKG_CONFIG) --libs $(1)) >/dev/null 2>&1 && \
       echo yes; \
   fi)
 endef
@@ -401,7 +407,7 @@ endif
 ifeq ($(WITH_SDL),yes)
   ifeq ($(strip $(SDL_CONFIG)),)
     ifeq ($(SDL3_AVAILABLE),yes)
-      SDL_CONFIG := $(PKG_CONFIG) sdl3
+      SDL_CONFIG := $(PKG_CONFIG_ENV) $(PKG_CONFIG) sdl3
       SDL_PKG := sdl3
     endif
   else
@@ -423,7 +429,7 @@ endif
 # "make win32"); fall back to a PNG-less build when the target lacks it.
 ifdef WITH_PNG
   ifeq ($(origin PNG_CONFIG),undefined)
-    ifneq ($(shell $(PKG_CONFIG) --exists libpng >/dev/null 2>&1 && echo yes),yes)
+    ifneq ($(shell $(PKG_CONFIG_ENV) $(PKG_CONFIG) --exists libpng >/dev/null 2>&1 && echo yes),yes)
       WITH_PNG :=
       $(info ===> libpng for the target not found via '$(PKG_CONFIG)'; building without PNG support)
       ifeq ($(ARCH),WIN)
@@ -433,7 +439,7 @@ ifdef WITH_PNG
   endif
 endif
 ifdef WITH_PNG
-  PNG_CONFIG ?= $(PKG_CONFIG) libpng
+  PNG_CONFIG ?= $(PKG_CONFIG_ENV) $(PKG_CONFIG) libpng
   ifndef CFLAGS_PNG
     CFLAGS_PNG  := $(shell $(PNG_CONFIG) --cflags)
   endif
@@ -452,7 +458,7 @@ else
 endif
 
 ifeq ($(WITH_AO),yes)
-  AO_CONFIG ?= $(PKG_CONFIG) ao
+  AO_CONFIG ?= $(PKG_CONFIG_ENV) $(PKG_CONFIG) ao
   ifndef CFLAGS_AO
     CFLAGS_AO := $(shell $(AO_CONFIG) --cflags)
   endif
@@ -469,7 +475,7 @@ endif
 
 ifeq ($(WITH_PIPEWIRE),yes)
   ifeq ($(PIPEWIRE_AVAILABLE),yes)
-    PIPEWIRE_CONFIG ?= $(PKG_CONFIG) libpipewire-0.3
+    PIPEWIRE_CONFIG ?= $(PKG_CONFIG_ENV) $(PKG_CONFIG) libpipewire-0.3
     ifndef CFLAGS_PIPEWIRE
       CFLAGS_PIPEWIRE := $(shell $(PIPEWIRE_CONFIG) --cflags)
     endif
