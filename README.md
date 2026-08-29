@@ -4,7 +4,7 @@
 
 <img align="right" width="128" height="128" alt="logo" src="icons/128x128x32.png">
 
-The last release of [ZSNES 1](http://zsnes.sourceforge.net/) was over 18 years ago (2007-10-31). It required heavy patching and tweaking of compilation flags to build and run on a modern Linux distro. Most of it was written in 32-bit x86 Assembly and used MMX instructions.
+The last release of [ZSNES 1](http://zsnes.sourceforge.net/) was over 18 years ago (2007-10-31). It requires heavy patching and tweaking of compilation flags to build and run on a modern Linux distro. Most of it is written in 32-bit x86 Assembly and it uses MMX instructions.
 
 This is a fork that aims to solve this.
 
