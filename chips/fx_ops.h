@@ -1494,6 +1494,8 @@ void c_FxOpb1E(void)
    not write R15 back. */
 void c_FxOpb1F(void)
 {
+    u4 pc;
+
     fx_fetchpipe();
     if (SfxB & 1) {
         u4 const v = *FxSeamSrc;
@@ -1503,10 +1505,13 @@ void c_FxOpb1F(void)
     }
     FxSeamDst = SfxR0 + 15;
     FxSeamPC++;
-    SfxR0[15] = fx_pc_rel();
+    pc = fx_pc_rel();
+    SfxR0[15] = pc;
     FxDispatch(FxTableb);
     withr15sk = 1;
-    FxSeamPC = (u1*)(uintptr_t)(SfxCPB + SfxR0[15]);
+    if (SfxR0[15] != pc) {
+        FxSeamPC = (u1*)(uintptr_t)(SfxCPB + SfxR0[15]);
+    }
     FxSeamDst = SfxR0;
 }
 
@@ -1579,13 +1584,23 @@ void c_FxOp1E(void) /* TO R14 */
     fx_update_r14();
 }
 
-void c_FxOp1F(void) /* TO R15: the nested opcode's write to R15 is the jump */
+/* TO R15: the nested opcode's write to R15 is the jump. Opcodes that are jumps
+   in their own right (IWT/IBT/LM/LMS R15, JMP, LOOP) set the program counter
+   and never touch R15, so seed R15 with the current one and only rebuild from
+   it when the nested opcode wrote something else. */
+void c_FxOp1F(void)
 {
+    u4 pc;
+
     fx_fetchpipe();
     FxSeamDst = SfxR0 + 15;
     FxSeamPC++;
+    pc = fx_pc_rel();
+    SfxR0[15] = pc;
     FxDispatch(FxTable);
-    FxSeamPC = (u1*)(uintptr_t)(SfxCPB + SfxR0[15]);
+    if (SfxR0[15] != pc) {
+        FxSeamPC = (u1*)(uintptr_t)(SfxCPB + SfxR0[15]);
+    }
     FxSeamDst = SfxR0;
 }
 
