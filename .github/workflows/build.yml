@@ -129,50 +129,6 @@ jobs:
           make clean
           make ARCH=linux
           test -x ./zsnes
-      - name: Build 64-bit
-        env:
-          PKG_CONFIG_LIBDIR: /opt/sdl3-amd64/lib/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/share/pkgconfig
-          PKG_CONFIG_PATH: ""
-        run: |
-          make clean
-          make linux64
-          test -x ./zsnes
-          make clean
-          make ARCH=linux
-      - name: Run the executables
-        # A binary that links is not a binary that runs. ZSNES_SELFTEST checks
-        # the allocations and the pointers handed between units, then exits,
-        # so it needs no ROM and no display.
-        env:
-          SDL_VIDEODRIVER: dummy
-          SDL_AUDIODRIVER: dummy
-        run: |
-          make clean
-          PKG_CONFIG_LIBDIR=/opt/sdl3-amd64/lib/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/share/pkgconfig \
-            PKG_CONFIG_PATH= make linux64
-          ZSNES_SELFTEST=1 ./zsnes -v 0
-          make clean
-          make ARCH=linux
-          ZSNES_SELFTEST=1 ./zsnes -v 0
-      - name: AddressSanitizer
-        # The difftests compare behaviour against the assembly, not memory
-        # validity, so two global buffer overflows survived a green suite and
-        # turned up only under ASan. The self-test covers the allocations, the
-        # pointers handed between units, and the config written on exit.
-        env:
-          SDL_VIDEODRIVER: dummy
-          SDL_AUDIODRIVER: dummy
-          PKG_CONFIG_LIBDIR: /opt/sdl3-amd64/lib/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/share/pkgconfig
-          PKG_CONFIG_PATH: ""
-        run: |
-          make clean
-          make linux64 \
-            EXTRA_CFLAGS='-fsanitize=address -fno-omit-frame-pointer -g' \
-            EXTRA_LDFLAGS='-fsanitize=address'
-          ASAN_OPTIONS=detect_leaks=0 ZSNES_SELFTEST=1 ./zsnes -v 0
-          make clean
-      - name: Portability gate
-        run: make portcheck
       - name: Unit tests
         run: make -C test run
       - name: Cross-word-size check
@@ -192,12 +148,50 @@ jobs:
             echo "=== $t"
             make -C test "$t" || exit 1
           done
+      - name: Run the 32-bit executable
+        # A binary that links is not a binary that runs. ZSNES_SELFTEST checks
+        # the allocations and the pointers handed between units, then exits,
+        # so it needs no ROM and no display. Reuses the build above.
+        env:
+          SDL_VIDEODRIVER: dummy
+          SDL_AUDIODRIVER: dummy
+        run: ZSNES_SELFTEST=1 ./zsnes -v 0
       - name: Verify runtime links
         run: |
           ldd ./zsnes | tee ldd.txt
           grep -E 'libSDL3|SDL3' ldd.txt
           grep -E 'libpipewire-0\.3' ldd.txt
+      - name: Build and run 64-bit
+        env:
+          SDL_VIDEODRIVER: dummy
+          SDL_AUDIODRIVER: dummy
+          PKG_CONFIG_LIBDIR: /opt/sdl3-amd64/lib/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/share/pkgconfig
+          PKG_CONFIG_PATH: ""
+        run: |
+          make clean
+          make linux64
+          test -x ./zsnes
+          ZSNES_SELFTEST=1 ./zsnes -v 0
 
+      - name: Portability gate
+        run: make portcheck
+      - name: AddressSanitizer
+        # The difftests compare behaviour against the assembly, not memory
+        # validity, so two global buffer overflows survived a green suite and
+        # turned up only under ASan. The self-test covers the allocations, the
+        # pointers handed between units, and the config written on exit.
+        env:
+          SDL_VIDEODRIVER: dummy
+          SDL_AUDIODRIVER: dummy
+          PKG_CONFIG_LIBDIR: /opt/sdl3-amd64/lib/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/share/pkgconfig
+          PKG_CONFIG_PATH: ""
+        run: |
+          make clean
+          make linux64 \
+            EXTRA_CFLAGS='-fsanitize=address -fno-omit-frame-pointer -g' \
+            EXTRA_LDFLAGS='-fsanitize=address'
+          ASAN_OPTIONS=detect_leaks=0 ZSNES_SELFTEST=1 ./zsnes -v 0
+          make clean
   arm64:
     name: linux_arm64
     runs-on: ubuntu-24.04
@@ -209,7 +203,8 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
-            gcc-aarch64-linux-gnu libc6-dev-arm64-cross make pkg-config curl
+            gcc-aarch64-linux-gnu g++-aarch64-linux-gnu libc6-dev-arm64-cross \
+            make pkg-config curl cmake ninja-build git
       - name: Build zlib for aarch64
         # -lz is unconditional, and the distribution ships no arm64 zlib the
         # cross compiler can see. Building it is quicker than enabling the
@@ -221,6 +216,29 @@ jobs:
             --prefix=/usr/aarch64-linux-gnu
           make -j"$(nproc)"
           sudo make install
+      - name: Build SDL3 for aarch64
+        # These targets have no other video backend, so the cross build needs
+        # one in the sysroot the same way the native job does.
+        run: |
+          git clone --depth 1 https://github.com/libsdl-org/SDL.git /tmp/SDL
+          cmake -S /tmp/SDL -B /tmp/SDL/build -GNinja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX=/usr/aarch64-linux-gnu \
+            -DCMAKE_SYSTEM_NAME=Linux \
+            -DCMAKE_SYSTEM_PROCESSOR=aarch64 \
+            -DCMAKE_C_COMPILER=aarch64-linux-gnu-gcc \
+            -DCMAKE_CXX_COMPILER=aarch64-linux-gnu-g++ \
+            -DCMAKE_FIND_ROOT_PATH=/usr/aarch64-linux-gnu \
+            -DCMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER \
+            -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY \
+            -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY \
+            -DSDL_SHARED=ON -DSDL_STATIC=OFF \
+            -DSDL_X11=OFF -DSDL_WAYLAND=OFF -DSDL_KMSDRM=OFF \
+            -DSDL_UNIX_CONSOLE_BUILD=ON \
+            -DSDL_ALSA=OFF -DSDL_PULSEAUDIO=OFF -DSDL_PIPEWIRE=OFF \
+            -DSDL_JACK=OFF -DSDL_SNDIO=OFF
+          cmake --build /tmp/SDL/build --parallel
+          sudo cmake --install /tmp/SDL/build
       - name: Build
         # portcheck only compiles. This links, which is what catches a symbol
         # the addressing mode cannot reach: aarch64 scales the immediate of a
