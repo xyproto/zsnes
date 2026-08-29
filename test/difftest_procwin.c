@@ -1,21 +1,15 @@
-/* Differential test: procwindowback16t in video/makev16t.asm against the C
- * port in video/c_procwin.c.
+/* procwindowback16t (video/makev16t.asm) against video/c_procwin.c. It takes
+ * no arguments and writes winon, numwin and the windowdata run list, so the
+ * comparison covers those plus the whole of windowdata - a port that writes one
+ * byte too few leaves the drawer on a stale run.
  *
- * The routine takes no arguments. It reads the window registers and writes
- * winon, numwin and the windowdata run list, so the comparison is over those -
- * plus the whole of windowdata, because a port that writes one byte too few
- * leaves the drawer reading a stale run.
+ * The registers matter too: clearback16bts runs straight after and spills eax,
+ * ebx, ecx and esi, so what this leaves in them is that one's input. edx and
+ * edi are driven and checked to hold the port to touching neither, and every
+ * register goes in with a non-zero upper half because the writes are partial.
  *
- * The registers are compared too: clearback16bts runs straight afterwards and
- * spills eax, ebx, ecx and esi into its own seam, so what this routine leaves
- * in them is that one's input. edx and edi are driven and checked as well, to
- * hold the port to touching neither. The writes are partial-width, so each
- * register goes in with a non-zero upper half.
- *
- * makedualwincol is external to makev16t.asm, so the oracle and the port call
- * the same stub here and the test only has to check that they call it with the
- * same argument, and the same number of times.
- */
+ * makedualwincol is external, so both sides call the same stub and the test
+ * only checks the arguments and the call count. */
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>

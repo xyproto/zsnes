@@ -1,40 +1,27 @@
 /*
- * test/difftest.h - reusable scaffolding for differential-testing an asm->C
- * port.
+ * Scaffolding for differential-testing an asm->C port: run both on the same
+ * random inputs and compare every output. A port-time tool - it needs the
+ * original assembly, so each difftest_<name>.c is transient.
  *
- * A differential test proves a C reimplementation is bit-identical to the
- * original assembly by running BOTH on the same random inputs and comparing
- * every output (globals, buffers, returned registers). It is a PORT-TIME tool:
- * it needs the original asm to still exist, so the per-port files
- * (difftest_<name>.c and the extracted object) are transient and get removed
- * once the asm is deleted. This header holds only the reusable bits.
+ *   1. Extract the routine into an object exposing `asm_<name>`:
+ *        ./mkdifftest.sh ../cpu/dspproc.asm 1248 1277 NonEchoMono \
+ *            "Voice0Volume Voice0EnvInc ..." > /dev/null
  *
- * Typical workflow (see difftest_nem.c for a full worked example):
+ *   2. In difftest_<name>.c define the shared globals, include the C port,
+ *      declare asm_<name>, then:
  *
- *   1. Extract the original routine into a standalone object that exposes
- *      `asm_<name>` and EXTERNs the shared globals:
- *          ./mkdifftest.sh ../cpu/dspproc.asm 1248 1277 NonEchoMono \
- *              "Voice0Volume Voice0EnvInc ..." > /dev/null
- *      (that writes _<name>.o and _<name>.inc into the current dir)
+ *        DT_MAIN(seed, iterations) {
+ *            ... randomise inputs and save the state the routine mutates ...
+ *            ... restore, run the asm, snapshot into A_* ...
+ *            ... restore, run the C,   snapshot into C_* ...
+ *            DT_EQ("esi", a_esi, c_esi);
+ *            DT_MEM("DSPBuffer", A_dsp, C_dsp, sizeof A_dsp);
+ *        }
+ *        DT_DONE("NonEchoMono");
  *
- *   2. In difftest_<name>.c: define the shared globals, `#include` your C port,
- *      declare `extern void asm_<name>(void);`, then:
- *
- *          int main(void) {
- *              DT_MAIN(seed, iterations) {
- *                  ... randomize inputs and a saved copy of mutated state ...
- *                  ... restore state; run the asm; snapshot outputs into A_* ...
- *                  ... restore state; run the C;   snapshot outputs into C_* ...
- *                  DT_EQ("esi", a_esi, c_esi);
- *                  DT_MEM("DSPBuffer", A_dsp, C_dsp, sizeof A_dsp);
- *              }
- *              DT_DONE("NonEchoMono");
- *          }
- *
- * The asm typically uses a register ABI; call it via a small inline-asm wrapper
- * (again, see difftest_nem.c). Reset every piece of state the routine mutates
- * to the same value before BOTH runs, or the second run sees the first's
- * leftovers.
+ * The asm usually wants a register ABI, so call it through a small inline-asm
+ * wrapper. Reset every piece of mutated state before *both* runs or the second
+ * sees the first's leftovers.
  */
 #ifndef DIFFTEST_H
 #define DIFFTEST_H

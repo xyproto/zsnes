@@ -1,22 +1,16 @@
-/* Differential test: drawmode7win16b / drawmode7ngextbg16b, as video/mode716.asm
- * had them, against the C port in video/c_mode716draw.c and the seam around it
- * in video/c_mode716gate.c.
+/* drawmode7win16b and drawmode7ngextbg16b as video/mode716.asm had them,
+ * against video/c_mode716draw.c and the seam in video/c_mode716gate.c: the
+ * transparency test, the writer-selection tree over the main/sub window
+ * tables, the four Mode7*Sub wrappers and the choice of scanline walk. Real
+ * games only reach a few arms of that tree, which is why this exists.
  *
- * The top of the Mode 7 renderer: the transparency test, the writer-selection
- * tree over the main/sub window tables, the four Mode7*Sub wrappers, and the
- * choice of scanline walk. The A/B on real games only reaches a few arms of
- * that tree, which is why this exists.
+ * The oracle is the whole pre-port file, so it runs the original scanline
+ * walks - an end-to-end comparison, not just of the dispatch.
  *
- * The oracle is the whole pre-port file (_m7draw.o, built by mkm7draw.sh), so
- * it runs the original scanline walks rather than the ported ones - an
- * end-to-end comparison, not just of the dispatch.
- *
- * BuildWindow is stubbed and ignores its arguments on purpose: the port
- * deliberately passes different ones (see difftest_m7bw.c, which pins that),
- * and letting it through would swamp everything else.
- *
- * domosaicng16b is stubbed as a recorder on both sides: the oracle tail-jumps
- * to it, and the ported seam in video/c_mode716gate.c calls it. */
+ * BuildWindow is stubbed and ignores its arguments, because the port passes
+ * different ones on purpose (difftest_m7bw.c pins that). domosaicng16b is a
+ * recorder on both sides: the oracle tail-jumps to it, the ported seam calls
+ * it. */
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>

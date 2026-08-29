@@ -1,18 +1,11 @@
-/* Differential test: Mode7Process in video/mode716.mac against the C port in
- * video/c_mode716proc.c.
+/* Mode7Process and its big-step sibling Mode7ProcessB (video/mode716.mac)
+ * against video/c_mode716proc.c, over all ten pixel writers and all three
+ * shapes mode7set selects. Real games only reach the first shape, which is why
+ * this exists.
  *
- * Both macros - Mode7Process and its big-step sibling Mode7ProcessB - in all
- * ten pixel writers and all three
- * shapes mode7set selects (repeating map, no repetition, no repetition with
- * tile repeat). The A/B on real games only reaches the first of those, which
- * is the whole reason this exists.
- *
- * Compared: the two screen buffers and the EXTBG priority plane, every scratch
- * position, and the six registers the macro's tail hands on to domosaicng16b -
- * plus which of the two exits it took.
- *
- * The oracle (_m7proc.o, built by mkm7proc.sh from the pre-port revision) is
- * driven through asm_m7proc<n>, one per writer. */
+ * Compared: the two screen buffers, the EXTBG priority plane, every scratch
+ * position, the six registers the tail hands to domosaicng16b, and which exit
+ * it took. The oracle is driven through asm_m7proc<n>, one per writer. */
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>

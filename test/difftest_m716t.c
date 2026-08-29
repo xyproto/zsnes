@@ -1,16 +1,12 @@
-/* Differential test: the eight procmode716t* entry points of
- * video/makev16t.asm against the C port in video/c_mv16tm7.c.
+/* The eight procmode716t* entry points of video/makev16t.asm against
+ * video/c_mv16tm7.c. They gate a Mode 7 layer per scanline and pick one of six
+ * renderers, so what is compared is which renderer each side selects and the
+ * register state handed to it.
  *
- * These are per-scanline gates: they decide whether a Mode 7 layer is drawn,
- * build its window mask, snap the y position onto the mosaic grid and pick one
- * of six renderers. The renderers themselves are still assembly, so what is
- * compared is which one each side selects and the register state handed to it.
- *
- * The globals come from the emulator's own data objects rather than from
- * declarations here, because several of these routines read them with wider
- * accesses than their declared type - `word[scrnon+1]` and `word[winenabm]`
- * both span two symbols - and only the real layout makes those agree.
- */
+ * The globals come from the emulator's own data objects, not declarations
+ * here: several of these read wider than the declared type - `word[scrnon+1]`
+ * and `word[winenabm]` both span two symbols - so only the real layout
+ * agrees. */
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>

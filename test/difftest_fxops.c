@@ -1,20 +1,13 @@
 /*
- * Differential test: every SuperFX opcode handler ported into chips/fx_ops.h -
- * all 92 from chips/fxemu2b.asm (branches, TO rN / FROM rN in the b and c
- * table groups, ALT1/ALT2/ALT3) and the 523-strong group from
- * chips/fxemu2.asm (ADD/ADC/SUB/SBC/CMP/AND/BIC/OR/XOR/INC/DEC/MULT/UMULT,
- * register
- * and immediate).
+ * Every SuperFX opcode handler in chips/fx_ops.h: the 92 from
+ * chips/fxemu2b.asm and the 523 from chips/fxemu2.asm. `make fxops` here; not
+ * part of `all`, since the oracle is the original assembly pulled out of git.
  *
- * Run `make fxops` in this directory. Not part of `all`: the oracle is the
- * original assembly, pulled out of git by mkfxops.sh.
- *
- * Both sides run against the same random flags, registers, program counter and
- * instruction stream, and both dispatch the next opcode into the same recording
- * stub. The comparison covers everything a handler can touch: the resulting
- * program counter, the ALT-mode/opcode word, the source/destination pointers,
- * the whole SuperFX register file, the flag words, and what the nested dispatch
- * saw.
+ * Both sides get the same random flags, registers, program counter and
+ * instruction stream, and dispatch the next opcode into the same recording
+ * stub. The comparison covers the resulting program counter, the
+ * ALT-mode/opcode word, the source and destination pointers, the register
+ * file, the flag words and what the nested dispatch saw.
  */
 #include "../types.h"
 #include "difftest.h"

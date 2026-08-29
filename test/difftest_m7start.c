@@ -1,18 +1,11 @@
-/* Differential test: Mode7Startup16b in video/mode716.mac against the C port in
- * video/c_mode716start.c.
+/* Mode7Startup16b (video/mode716.mac) against video/c_mode716start.c. A leaf
+ * over the Mode 7 scratch block, but its callers keep eax, esi and edi, so
+ * those are compared too - and ebx/ecx, which the assembly zeroes on the way
+ * out.
  *
- * A leaf over the Mode 7 scratch block, but the renderers that call it keep
- * eax, esi and edi afterwards, so the test compares those too - and ebx/ecx,
- * which the assembly zeroes on the way out.
- *
- * The two halves of the routine that are easy to get wrong are the map
- * coordinate living one byte into each position dword (a 16-bit add that must
- * not carry into the top byte) and the M7HROn branch, which is the same
- * arithmetic with two extra halvings and a wider y clip.
- *
- * The oracle (_m7start.o, built by mkm7start.sh from the pre-port revision) is
- * driven through asm_m7start, which sets the registers up from the same seam
- * block the ported side reads. */
+ * The two easy mistakes: the map coordinate lives one byte into each position
+ * dword, so its 16-bit add must not carry into the top byte; and the M7HROn
+ * branch is the same arithmetic with two extra halvings and a wider y clip. */
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>

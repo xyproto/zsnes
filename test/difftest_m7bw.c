@@ -1,24 +1,16 @@
-/* Differential test: ProcessBuildWindow in video/mode716.mac against the C
- * port in video/c_mode716bw.c.
+/* ProcessBuildWindow (video/mode716.mac) against video/c_mode716bw.c - the one
+ * port here that is deliberately *not* bit-identical. The assembly reached
+ * BuildWindow by the register ABI that routine had before it became C, so its
+ * push eax/push ebx were picked up as cdecl arguments and it got the caller's
+ * eax where the scanline belonged; the port passes what was meant.
  *
- * This is the one port in the set that is *not* bit-identical, on purpose. The
- * assembly reached BuildWindow by the register ABI it had before that routine
- * was ported to C, so the push eax/push ebx that were only meant to save the
- * registers were being picked up as its cdecl arguments - giving it the
- * caller's eax where the scanline belonged. The port passes what the assembly
- * meant to.
+ * So BuildWindow is stubbed and its arguments recorded: everything else must
+ * match exactly, and that one argument must differ in exactly the documented
+ * way. Either side changing fails this.
  *
- * So BuildWindow is stubbed here and its arguments recorded: everything else
- * has to match exactly, and the one argument that differs has to differ in
- * precisely the documented way. If either side ever changes, this fails.
- *
- * Only the body moved to C - clearing ngwinen and the enable test stayed in
- * the macro, because the original touched no register at all when it did not
- * window. The oracle is therefore the whole macro and the C side is driven
- * behind the same gate, so the two are compared like for like.
- *
- * The oracle (_m7bw.o, built by mkm7bw.sh from the pre-port revision) is driven
- * through asm_m7bw, which sets the registers up from the same seam block. */
+ * Only the body moved to C; clearing ngwinen and the enable test stayed in the
+ * macro, so the oracle is the whole macro and the C side is driven behind the
+ * same gate. */
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>

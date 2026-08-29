@@ -1,18 +1,13 @@
-/* Differential test: StartDrawNewGfx16b and its screen clip in
- * video/newgfx16.asm against the C port in video/c_ngframe.c.
+/* StartDrawNewGfx16b and its screen clip (video/newgfx16.asm) against
+ * video/c_ngframe.c. The routine is a running order over three workers, all C
+ * already, so what must match is the *sequence* of calls and their arguments,
+ * the clip's writes into the video buffer, and the register pair handed to the
+ * colour-maths pass (c_transp_halfsub takes eax, c_transp_halfadd edx, upper
+ * halves included).
  *
- * The routine is a running order: for each layer and priority pass it decides
- * whether to draw and calls one of three workers, all of which are C already.
- * So what has to match is the *sequence* of those calls with their arguments,
- * plus the clip's writes into the video buffer and the register pair it hands
- * to the colour-maths pass - `c_transp_halfsub` takes the caller's eax and
- * `c_transp_halfadd` its edx, upper halves included.
- *
- * The three workers and BuildWindow are recorded rather than run. Both sides
- * reach them cdecl, so one set of stand-ins serves both, and video/c_ngprocbg.c
- * is not linked at all - a dispatcher and a recorded branch target must not
- * share a translation unit.
- */
+ * The workers and BuildWindow are recorded rather than run; both sides reach
+ * them cdecl. video/c_ngprocbg.c is not linked, because a dispatcher and a
+ * recorded branch target must not share a translation unit. */
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>

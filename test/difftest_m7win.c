@@ -1,19 +1,12 @@
-/* Differential test: the ProcessMode7ngwin*16b cluster in video/mode716.mac
- * against the C port in video/c_mode716win.c.
+/* The ProcessMode7ngwin*16b cluster (video/mode716.mac) against
+ * video/c_mode716win.c. Five entry points that tail-jump into each other, so
+ * each run starts at one and compares everything they touch: the five
+ * registers the renderer keeps, the window cursor and its two counters, the
+ * four position accumulators and the tile pointer.
  *
- * Five entry points that tail-jump into each other, so every run is driven
- * from one of the five and compared on everything they can touch: the five
- * registers the renderer keeps, the window list cursor and its two counters,
- * the four position accumulators and the tile pointer.
- *
- * The parts that are easy to get wrong are which off-tile handler retries its
- * own test (B's do not, E's do), the second off-tile step inside B's handlers,
- * and the tile-repeat tail in E - which ends by writing mode7yadder into
- * mode7xrpos, an oddity of the original that the port has to keep.
- *
- * The oracle (_m7win.o, built by mkm7win.sh from the pre-port revision) is
- * driven through asm_m7win<n>, which sets the registers up from the same seam
- * block the ported side reads. */
+ * Easy to get wrong: which off-tile handler retries its own test (B's do not,
+ * E's do), the second off-tile step in B's handlers, and E's tile-repeat tail,
+ * which writes mode7yadder into mode7xrpos - an oddity the port has to keep. */
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>

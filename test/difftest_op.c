@@ -1,16 +1,13 @@
 /*
- * test/difftest_op.c - 65816 opcode handlers (cpu/ops65816.h) vs cpu/e65816.inc.
+ * 65816 opcode handlers (cpu/ops65816.h) against cpu/e65816.inc. The oracle is
+ * built with `--rewrite-macro endloop=ret`, which makes a single opcode
+ * callable - normally one ends by dispatching the next, so nothing short of a
+ * ROM exercises just one.
  *
- * The oracle is built with `--rewrite-macro endloop=ret`, which is what makes a
- * single opcode callable: normally an opcode ends by dispatching the next one,
- * so nothing short of running a ROM exercises just one. With that rewrite each
- * COpXX is an ordinary function taking the core's register file in registers.
- *
- * Both sides get the same random register file and the same random 65816
- * register globals, and every one of them is compared afterwards - the
- * assembly writes A/X/Y at the width the current mode selects and leaves the
- * bytes above it alone, so a C port that stores the whole 32 bits looks right
- * on the emulator and wrong here.
+ * Both sides get the same random register file and 65816 globals, and all are
+ * compared: the assembly writes A/X/Y at the current mode's width and leaves
+ * the bytes above alone, so a port that stores all 32 bits looks right on the
+ * emulator and wrong here.
  */
 /*
  * Parameterised the same way cpu/ops65816.h is, so test/difftest_sa1.c can

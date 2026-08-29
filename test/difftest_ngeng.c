@@ -1,17 +1,13 @@
-/* Differential test: the tail of newengine16b in video/newgfx16.asm against
- * the C port at the end of video/c_ngline.c.
+/* The tail of newengine16b (video/newgfx16.asm) against the end of
+ * video/c_ngline.c. The oracle is HEAD's copy, not the pre-port one: the first
+ * two thirds of the routine became C earlier and the assembly already reached
+ * them by ccallv, so both sides share those and this isolates the colour-add
+ * cache, the back area, the hi-res line duplication and the sprite-priority
+ * flag.
  *
- * The oracle is HEAD's copy of the file, not the pre-port one, because the
- * first two thirds of this routine - the per-line tables, the windows and the
- * sprite window - became C in an earlier pass and the assembly already reached
- * them by ccallv. Picking that revision leaves both sides sharing those three
- * and isolates what is under test here: the colour-add cache, the back area,
- * the hi-res line duplication and the sprite-priority flag.
- *
- * BackAreaFill and BuildWindow2 are recorded rather than run. Both sides reach
- * them cdecl, so one stand-in serves both, and what it records - the line and
- * the two fill colours - is the whole of what the routine hands over.
- */
+ * BackAreaFill and BuildWindow2 are recorded rather than run - both sides
+ * reach them cdecl, and the line plus two fill colours it records is all the
+ * routine hands over. */
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>

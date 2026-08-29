@@ -1,20 +1,12 @@
-/* Differential test: the four background tile dispatchers in
- * video/newgfx16.asm (drawbg1tile16b .. drawbg4tile16b) against the C port in
- * video/c_ngbg.c.
+/* The four background tile dispatchers of video/newgfx16.asm against
+ * video/c_ngbg.c. They tail-jump into video/newg162.asm's renderers with the
+ * whole register set live, so what must match is the register state *at the
+ * jump* plus everything written on the way.
  *
- * These end by tail-jumping into video/newg162.asm's renderers with the whole
- * register set live, so what has to match is the register state *at the jump*
- * plus everything the dispatcher wrote on the way - the same contract
- * difftest_m716t.c pins for the makev16t gates.
- *
- * The six renderers are recorded rather than run. The assembly reaches them by
- * jmp after a push, so its recorder pops before returning; the C reaches them
- * by a plain call and records from the register block. Both write the same
- * globals, so one comparison covers both.
- *
- * BuildWindow and Gendcolortable are recorded too: the assembly and the port
- * both call them cdecl, so a single C stand-in serves both sides.
- */
+ * The six renderers are recorded rather than run: the assembly reaches them by
+ * jmp after a push, so its recorder pops before returning, while the C calls
+ * them and records from the register block. BuildWindow and Gendcolortable are
+ * recorded too, cdecl from both sides, so one stand-in serves both. */
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>

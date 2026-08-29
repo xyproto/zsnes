@@ -1,37 +1,20 @@
 /*
- * test/difftest_ng2.c - video/newg162.asm's tile and line drawers.
+ * video/newg162.asm's tile and line drawers. Nineteen of the twenty are
+ * unreachable by any ROM here, so this is the only thing that verifies them;
+ * test/ng2_harness.h has the calling sequence and the state they need.
  *
- * Nineteen of the twenty are unreachable by any ROM here, so this is the only
- * thing that can verify them. See test/ng2_harness.h for the calling sequence
- * and the state they need.
+ * Compares the pre-port assembly (asm_) against the worktree (cur_), which
+ * routes ported leaves through C. A routine with no leaf ported yet compares
+ * identical code against itself, so watch the `leaf hits` line: all zeros means
+ * no C ran and the 20/20 is only the harness checking itself.
  *
- * FIXED (2026-08-22), was: comparing identical code against itself reported six
- * of the twenty routines - exactly the tile drawers - as differing. NG2_CALL
- * saved and restored %ebp but never loaded NG2_EBP into it, so those six read
- * their palette through [ebp+ebx*2] with ebp still holding the harness's own
- * frame pointer. That address differs between the asm_ and cur_ call sites, so
- * the two runs read different stack bytes as colours - reproducibly, and only
- * in the routines that dereference ebp, which is why it looked like a property
- * of the tile drawers. The line drawers load ebp themselves before using it.
+ * Keep the control: point both oracles at the same assembly and confirm 20/20
+ * before trusting a comparison.
  *
- * Keep the control: point both oracles at the same assembly (check out the
- * pre-port revision of video/newg162.asm over the worktree copy, run, then
- * restore) and confirm 20/20 before trusting a real comparison. Watch the
- * `leaf hits` line too - all zeros means no ported C ran and the 20/20 is only
- * the harness checking itself.
- *
- * Compares the pre-port assembly (asm_) against the current worktree (cur_),
- * which routes whichever leaves have been ported through C. A routine with no
- * leaf ported yet compares identical code against itself, which is a harness
- * check rather than a real comparison - so the count of *ported* leaves is what
- * to watch, not the pass line.
- *
- * Note what "drives cleanly" is worth. With tltype* left at zero all twenty
- * run - but zero selects the partial-tile path, so that is one path each and
- * the number means very little. Randomising tltype* over {0,1,2} exercises all
- * three and immediately shows eleven routines need state this harness does not
- * set up yet (the 16x16 line drawers and every offset-mode variant). The lower
- * number is the honest one; do not "fix" it by pinning tltype* back to zero.
+ * tltype* at zero lets all twenty run, but zero is the partial-tile path, so
+ * that is one path each. Randomising it over {0,1,2} exercises all three and
+ * shows eleven routines need state this harness does not set up yet. The lower
+ * number is the honest one; do not pin tltype* back to zero to raise it.
  */
 #include <sys/mman.h>
 #include <sys/wait.h>
