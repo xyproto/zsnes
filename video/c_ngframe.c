@@ -118,7 +118,7 @@ static void screen_clip(zreg* const r, int const sub)
     for (;;) {
         u1 al;
         u1* p = base;
-        u4 ebx;
+        u4 ebx, before;
 
         eax = (eax & 0xFFFFFF00u) | scadsng[bx];
         if (sub)
@@ -180,14 +180,12 @@ static void screen_clip(zreg* const r, int const sub)
     skipclipping:
         ecx = *edi++;
     noclipping:
-        { /* sub edx,ecx sets the flags *and* keeps the result, so edx is
-             left decremented even on the way out. */
-            u4 const before = edx;
-
-            edx -= ecx;
-            if (before <= ecx)
-                goto next;
-        }
+        /* sub edx,ecx sets the flags *and* keeps the result, so edx stays
+           decremented even on the way out. */
+        before = edx;
+        edx -= ecx;
+        if (before <= ecx)
+            goto next;
         p += ecx * 2u;
         ecx = *edi++;
         goto clipc;
