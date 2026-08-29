@@ -991,7 +991,7 @@ void outspc_addrmode()
         {
             signed char off;
             off = *(signed char*)(spcPCRam + 1);
-            HEX16(off + 2 + (spcPCRam - SPCRAM));
+            HEX16((unsigned)(off + 2 + (spcPCRam - SPCRAM)));
             // format += 3;
             break;
         }
@@ -1023,7 +1023,7 @@ void outspc_addrmode()
         {
             signed char off;
             off = *(signed char*)(spcPCRam + 1);
-            HEX16(off + 2 + spcPCRam - SPCRAM);
+            HEX16((unsigned)(off + 2 + (spcPCRam - SPCRAM)));
             // format += 2;
             break;
         }
@@ -1032,7 +1032,7 @@ void outspc_addrmode()
         {
             signed char off;
             off = *(signed char*)(spcPCRam + 2);
-            HEX16(off + 2 + spcPCRam - SPCRAM);
+            HEX16((unsigned)(off + 2 + (spcPCRam - SPCRAM)));
             // format += 2;
             break;
         }
