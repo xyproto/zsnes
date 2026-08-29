@@ -47,8 +47,8 @@ mkdir -p "$RUNHOME"
 # whatever the user is doing. Without Xvfb - macOS, or a box without it - fall
 # back to SDL's dummy video driver; on a headless box the real display is not
 # there at all, and SDL_Init fails before a single frame is logged.
-# XVFB is expanded as ${XVFB[@]+...} below: macOS ships bash 3.2, where an
-# empty array under set -u is an unbound variable.
+# XVFB and args are expanded as ${NAME[@]+...} below: macOS ships bash 3.2,
+# where an empty array under set -u is an unbound variable.
 if command -v xvfb-run >/dev/null 2>&1; then
   XVFB=(xvfb-run -a -s "-screen 0 640x480x24")
 else
@@ -85,7 +85,7 @@ run_capped env HOME="$RUNHOME" PPU_STATE_LOG=1 \
     ${ASCII:+ASCII_SCREENSHOT_EVERY_FIVE=1 ASCII_SCREENSHOT_BURST=3} \
     ${PNGEVERY:+PNG_SCREENSHOT_EVERY_N=$PNGEVERY} \
     ${INPUT:+DEBUG_INPUT_SCRIPT=$INPUT} \
-    "$BIN" "${args[@]}" "$ROM"
+    "$BIN" ${args[@]+"${args[@]}"} "$ROM"
 echo "exit=$? (124 = hit the time cap, which is the normal way a run ends)" | tee "$OUT/result.txt"
 
 for f in /tmp/zsnes_ppu.txt /tmp/zsnes_hashes.txt; do
