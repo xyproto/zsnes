@@ -42,6 +42,10 @@ u2 curbgofs[4];
 u4 CSprWinPtr;
 u4 sramb4save;
 
+/* The line renderers read a dword at colormodedef + mode*4 + bg, which slides
+   past the last row once bg is nonzero. In vcache.asm the next symbol was
+   colormoded2, so that read landed in it; the rows below are that table, kept
+   adjacent because the read depends on it. */
 u1 colormodedef[][4] = {
     { 1, 1, 1, 1 },
     { 2, 2, 1, 0 },
@@ -50,6 +54,15 @@ u1 colormodedef[][4] = {
     { 3, 1, 0, 0 },
     { 2, 1, 0, 0 },
     { 2, 0, 0, 0 },
+    { 0, 0, 0, 0 },
+    /* colormoded2 */
+    { 4, 4, 4, 4 },
+    { 5, 5, 4, 0 },
+    { 5, 5, 0, 0 },
+    { 6, 5, 0, 0 },
+    { 6, 4, 0, 0 },
+    { 5, 4, 0, 0 },
+    { 5, 0, 0, 0 },
     { 0, 0, 0, 0 }
 };
 

@@ -13,14 +13,19 @@
 #   -p N       PNG every N frames            (default 30; 0 disables)
 #   -t SECS    wall-clock cap                (default 30)
 #   -o OUTDIR  artifact directory            (required)
+#   -d         drop the forced -v 0 -m -ds and run as a user would
 #   ASCII=1    env: also write ASCII dumps + per-frame hashes (slow; off by default)
+#
+# -v 0 picks one video mode, so the other renderers never run. A global-buffer
+# overflow in the mode 7 line path survived every harness run here and showed
+# up the first time someone started the emulator normally; -d covers that.
 set -u
-BIN=./zsnes; ROM=; INPUT=; SLOT=; PNGEVERY=30; SECS=30; OUT=; ASCII=${ASCII:-}
-while getopts "b:r:i:s:p:t:o:" o; do case $o in
+BIN=./zsnes; ROM=; INPUT=; SLOT=; PNGEVERY=30; SECS=30; OUT=; DEFAULTS=; ASCII=${ASCII:-}
+while getopts "b:r:i:s:p:t:o:d" o; do case $o in
   b) BIN=$OPTARG;; r) ROM=$OPTARG;; i) INPUT=$OPTARG;; s) SLOT=$OPTARG;;
-  p) PNGEVERY=$OPTARG;; t) SECS=$OPTARG;; o) OUT=$OPTARG;;
+  p) PNGEVERY=$OPTARG;; t) SECS=$OPTARG;; o) OUT=$OPTARG;; d) DEFAULTS=1;;
 esac; done
-[ -n "$ROM" ] && [ -n "$OUT" ] || { echo "usage: zrun.sh -r ROM -o OUTDIR [-b BIN] [-i SCRIPT] [-s SLOT] [-p N] [-t SECS]" >&2; exit 2; }
+[ -n "$ROM" ] && [ -n "$OUT" ] || { echo "usage: zrun.sh -r ROM -o OUTDIR [-b BIN] [-i SCRIPT] [-s SLOT] [-p N] [-t SECS] [-d]" >&2; exit 2; }
 [ -x "$BIN" ] || { echo "no such binary: $BIN" >&2; exit 2; }
 [ -f "$ROM" ] || { echo "no such rom: $ROM" >&2; exit 2; }
 
@@ -30,7 +35,7 @@ rm -rf "$OUT"; mkdir -p "$OUT"
 OUT=$(cd "$OUT" && pwd) || exit 2
 rm -f /tmp/zsnes_*.png /tmp/zsnes_*.txt /tmp/zsnes_ppu.txt /tmp/zsnes_hashes.txt
 
-args=(-v 0 -m -ds)
+if [ -n "$DEFAULTS" ]; then args=(); else args=(-v 0 -m -ds); fi
 [ -n "$SLOT" ] && args+=(-zs "$SLOT")
 
 # The emulator writes its config back on exit, so a run against the real $HOME

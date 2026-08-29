@@ -737,7 +737,11 @@ SRCS += win/lib.c
 SRCS += win/safelib.c
 SRCS += win/winlink.c
 
-LDFLAGS += -ldxguid -ldinput -lxinput -lgdi32 -lole32 -lwinmm
+# xinput9_1_0 ships with Windows; -lxinput imports XINPUT1_3.dll, which comes
+# with the DirectX redistributable and is absent on a clean install, so the
+# binary failed to start there. Only XInputGetState and XInputSetState are
+# used, and both are in the 9_1_0 set.
+LDFLAGS += -ldxguid -ldinput -lxinput9_1_0 -lgdi32 -lole32 -lwinmm
 
 ifdef WITH_OPENGL
 SRCS += win/gl_draw.c
