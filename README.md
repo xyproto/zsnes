@@ -77,7 +77,7 @@ apt install -y git make pkg-config python3 zlib1g-dev build-essential
 git clone https://github.com/xyproto/zsnes
 cd zsnes
 make
-apt install -y gcc-multilib libgl-dev libgl-dev:i386 libpng-dev libpng-dev:i386 libsdl3-dev libsdl3-dev:i386 zlib1g-dev zlib1g-dev:i386
+apt install -y gcc-multilib libglvnd-dev libglvnd-dev:i386 libpng-dev libpng-dev:i386 libsdl3-dev libsdl3-dev:i386 zlib1g-dev zlib1g-dev:i386
 make
 ```
 
