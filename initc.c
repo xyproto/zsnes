@@ -2040,9 +2040,10 @@ void map_lorom()
     // set banks C0-FF (40h x 32KB ROM banks @ 8000h)
     map_set(snesmap2 + 0xC0, ROM + 0x200000, 0x40, 0x8000);
 
-    // set banks 70-77 (07h x SRAM)
+    // set banks 70-77 (07h x SRAM, 32K to a bank as mem_sram_bank70 slices it,
+    // mirrored to the cart's size)
     for (x = 0x70; x <= 0x77; x++) {
-        snesmap2[x] = sram;
+        snesmap2[x] = sram + (((uint32_t)(x - 0x70) << 15) & ramsizeand);
     }
 
     // set banks 7E/7F (WRAM)
@@ -2081,9 +2082,10 @@ void map_hirom()
     // set banks C0-FF (40h x 64KB ROM banks @10000h)
     map_set(snesmap2 + 0xC0, ROM, 0x40, 0x10000);
 
-    // set banks 70-77 (07h x SRAM)
+    // set banks 70-77 (07h x SRAM, 32K to a bank as mem_sram_bank70 slices it,
+    // mirrored to the cart's size)
     for (x = 0x70; x <= 0x77; x++) {
-        snesmap2[x] = sram;
+        snesmap2[x] = sram + (((uint32_t)(x - 0x70) << 15) & ramsizeand);
     }
 
     // set banks 7E/7F (WRAM)
@@ -2152,9 +2154,10 @@ void map_elorom()
     // set banks C0-FF (40h x 32KB ROM banks @ 8000h)
     map_set(snesmap2 + 0xC0, ROM + 0x200000, 0x40, 0x8000);
 
-    // set banks 70-77 (07h x SRAM)
+    // set banks 70-77 (07h x SRAM, 32K to a bank as mem_sram_bank70 slices it,
+    // mirrored to the cart's size)
     for (x = 0x70; x <= 0x77; x++) {
-        snesmap2[x] = sram;
+        snesmap2[x] = sram + (((uint32_t)(x - 0x70) << 15) & ramsizeand);
     }
 
     // set banks 7E/7F (WRAM)
@@ -2325,9 +2328,10 @@ void map_bsx()
     // set banks C0-FF (40h x 32KB ROM banks @ 8000h)
     map_set(snesmap2 + 0xC0, ROM + 0x8000, 0x40, 0x8000);
 
-    // set banks 70-77 (07h x SRAM)
+    // set banks 70-77 (07h x SRAM, 32K to a bank as mem_sram_bank70 slices it,
+    // mirrored to the cart's size)
     for (x = 0x70; x <= 0x77; x++) {
-        snesmap2[x] = sram;
+        snesmap2[x] = sram + (((uint32_t)(x - 0x70) << 15) & ramsizeand);
     }
 
     // set banks 7E/7F (WRAM)

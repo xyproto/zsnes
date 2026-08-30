@@ -96,6 +96,8 @@ static int shiftptr = 0;
 static int offset;
 uint32_t numlockptr;
 
+BOOL InitJoystickInput(void);
+
 static int joystick_index_from_id(SDL_JoystickID id)
 {
     int i;
@@ -489,6 +491,21 @@ int Main_Proc()
             pressed[offset] = 0;
             break;
         }
+        case SDL_EVENT_JOYSTICK_ADDED:
+            /* SDL announces the pads that were already there when the
+               subsystem came up; only a genuinely new one needs the slots
+               worked out again. */
+            if (joystick_index_from_id(event.jdevice.which) < 0) {
+                InitJoystickInput();
+            }
+            break;
+
+        case SDL_EVENT_JOYSTICK_REMOVED:
+            if (joystick_index_from_id(event.jdevice.which) >= 0) {
+                InitJoystickInput();
+            }
+            break;
+
         case SDL_EVENT_QUIT:
             zexit();
             break;
@@ -964,6 +981,24 @@ static void ProcessKeyBuf(int scancode)
     }
 }
 
+/* Re-enumerating gives a pad the same slot and the same pressed[] offsets it
+   would have had at startup, so a configuration keyed to those offsets keeps
+   working. Anything held down on a pad that just went away has to be let go
+   of, hence the clear. */
+static void CloseJoystickInput(void)
+{
+    int i;
+
+    for (i = 0; i < 5; i++) {
+        if (JoystickInput[i]) {
+            SDL_CloseJoystick(JoystickInput[i]);
+        }
+        JoystickInput[i] = NULL;
+        JoystickID[i] = 0;
+    }
+    memset(pressed + 256, 0, 128 + 64);
+}
+
 BOOL InitJoystickInput()
 {
     int i, max_num_joysticks, num_joysticks = 0;
@@ -971,17 +1006,14 @@ BOOL InitJoystickInput()
     int next_offset = 256;
     SDL_JoystickID* ids;
 
-    for (i = 0; i < 5; i++) {
-        JoystickInput[i] = NULL;
-        JoystickID[i] = 0;
-    }
+    CloseJoystickInput();
 
     SDL_InitSubSystem(SDL_INIT_JOYSTICK);
     ids = SDL_GetJoysticks(&num_joysticks);
     if (!ids || num_joysticks <= 0) {
         printf("No joysticks found.\n");
         SDL_free(ids);
-        SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
+        /* The subsystem stays up: it is what reports a pad plugged in later. */
         return FALSE;
     }
     SDL_SetJoystickEventsEnabled(true);

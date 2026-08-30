@@ -27,6 +27,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <ctype.h>
 #include <math.h>
 #include <memory.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -34,7 +35,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #include "fixsin.h"
 
-extern char* vidbuffer;
+extern uint8_t* vidbuffer; /* ui.c */
 
 #define SCRW 288
 #define SCRH 224

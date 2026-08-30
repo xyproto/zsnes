@@ -57,7 +57,7 @@ static void HighResProc(u2** psrc, u1** pdst, u1* ebx)
         do {
             if (*ebx & 3) {
                 do {
-                    *(u4*)dst = src[75036 * 2] << 16 | *src;
+                    *(u4*)dst = (u4)src[75036 * 2] << 16 | *src;
                     src += 1;
                     dst += 4;
                 } while (--ecx != 0);
@@ -104,7 +104,7 @@ static void HighResProc(u2** psrc, u1** pdst, u1* ebx)
                         src -= 256;
                         u4 ecx = 256;
                         do {
-                            *(u4*)dst = src[75036 * 2] << 16 | *src;
+                            *(u4*)dst = (u4)src[75036 * 2] << 16 | *src;
                             src += 1;
                             dst += 4;
                         } while (--ecx != 0);

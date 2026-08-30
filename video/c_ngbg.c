@@ -34,7 +34,7 @@ extern u4 ngceax[], mode0add, mode0ads;
 extern zreg ngcedi[];
 extern zreg cpalval[256];
 extern u4 taddnfy16x16, taddfy16x16, ngwinen, nglogicval, ngwintable[];
-extern u4 dcolortab[];
+extern u2 dcolortab[2][256]; /* video/vcache_data.c */
 void BuildWindow(u4 line, u4 which); /* video/c_makev16b.c */
 extern u1 prdata[], prdatb[], prdatc[];
 

@@ -21,6 +21,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 /* Smoke effects implementation by Stainless et al. */
 
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -33,7 +34,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define FIRE_HOTSPOTS 80
 
 static int fire_hotspot[FIRE_HOTSPOTS];
-extern char* vidbuffer;
+extern uint8_t* vidbuffer; /* ui.c */
 
 #define SCRW 288
 #define SCRH 224

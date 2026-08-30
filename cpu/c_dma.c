@@ -22,6 +22,19 @@ static void dma_charge(u4 const bytes)
     dmaowedcyc += bytes * 8u;
 }
 
+/* HDMA takes the bus too, but a slice at a time: eighteen master cycles for
+   the scanline while any channel is on, eight more for each channel it
+   visits, and eight a byte. */
+static void hdma_charge_line(void)
+{
+    dmaowedcyc += 18u;
+}
+
+static void hdma_charge_channel(u4 const bytes)
+{
+    dmaowedcyc += 8u + bytes * 8u;
+}
+
 /* An I/O register handler takes the address through the seam (cpu/memseam.h).
    The seam is put back around the call: a DMA runs inside the register write
    that started it, and the handler that is still on the stack out there reads
@@ -314,6 +327,7 @@ void starthdma(void)
 
 static void hdmatype2indirect(HDMAInfo const* const edx, DMAInfo* const esi)
 {
+    hdma_charge_channel(edx->count);
     u1 tempdecr = edx->count;
     eop* const* reg = edx->dst_reg;
     do {
@@ -344,6 +358,7 @@ static void indirectaddr(u4 const ah, HDMAInfo* const edx, DMAInfo* const esi)
         if (esi->hdma_line_counter > 0x80)
             goto hdmatype2indirect;
 
+        hdma_charge_channel(edx->count);
         u1 tempdecr = edx->count;
         u2 cx = esi->count; // increment/decrement/keep pointer location
         eop* const* reg = edx->dst_reg;
@@ -363,6 +378,7 @@ static void indirectaddr(u4 const ah, HDMAInfo* const edx, DMAInfo* const esi)
 
 static void hdmatype2(HDMAInfo* const edx, DMAInfo* const esi)
 {
+    hdma_charge_channel(edx->count);
     u1 tempdecr = edx->count;
     eop* const* reg = edx->dst_reg;
     do {
@@ -399,6 +415,7 @@ static void dohdma(u4 const ah, HDMAInfo* const edx, DMAInfo* const esi)
         if (esi->hdma_line_counter > 0x80)
             goto hdmatype2;
 
+        hdma_charge_channel(edx->count);
         u1 tempdecr = edx->count;
         u2 cx = edx->addr_inc;
         eop* const* reg = edx->dst_reg;
@@ -422,6 +439,8 @@ static void exechdmars(void)
     if (al != 0x00) {
         DMAInfo* esi = dmadata;
         HDMAInfo* edx = hdmadata;
+
+        hdma_charge_line();
         for (u1 i = 0x01; i != 0; ++esi, ++edx, i <<= 1) {
             if (!(al & i))
                 continue;
@@ -442,6 +461,8 @@ void exechdma(void)
     u1 const al = nexthdma;
     if (al == 0x00)
         return;
+
+    hdma_charge_line();
 
     DMAInfo* esi = dmadata;
     HDMAInfo* edx = hdmadata;

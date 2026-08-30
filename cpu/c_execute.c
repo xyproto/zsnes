@@ -258,12 +258,25 @@ void Donextlinecache(void)
 static int dma_stalled(zreg* const r)
 {
     extern u4 dmaowedcyc;
+    extern u1 cycpl;
+    u4 units;
 
     if (dmaowedcyc == 0) {
         return 0;
     }
-    set_dh(r, 0);
-    return 1;
+    if (dmaowedcyc >= 1364u) {
+        /* A whole scanline or more still to pay: the opcode the caller just
+           fetched does not run. cpuover unfetches it and c_execloop.c takes a
+           line off the balance. */
+        set_dh(r, 0);
+        return 1;
+    }
+    /* Less than a line left - what HDMA costs every line, and the tail of a
+       transfer - so take it out of this line's budget and carry on. */
+    units = dmaowedcyc * cycpl / 1364u;
+    dmaowedcyc = 0;
+    set_dh(r, (u1)(DH(r) > units ? DH(r) - units : 0));
+    return 0;
 }
 
 /* The `endloop` macro from cpu/65816dc.inc: step the SPC700 when its share of

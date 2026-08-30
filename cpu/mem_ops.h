@@ -316,9 +316,17 @@ void c_wramaccessbankr8(void)
     mem_set_al(*mem_wram(MemSeamC));
 }
 
+/* The second byte of a word at the top of the bank wraps to its foot rather
+   than running off the end of the buffer, which for a write meant scribbling
+   on whatever the pinned layout put next. */
+static inline u4 mem_next(u4 const off)
+{
+    return (off + 1u) & 0xFFFFu;
+}
+
 void c_wramaccessbankr16(void)
 {
-    mem_set_ax((u2)(mem_wram(MemSeamC)[0] | (mem_wram(MemSeamC)[1] << 8)));
+    mem_set_ax((u2)(*mem_wram(MemSeamC) | (*mem_wram(mem_next(MemSeamC)) << 8)));
 }
 
 void c_wramaccessbankw8(void)
@@ -328,8 +336,8 @@ void c_wramaccessbankw8(void)
 
 void c_wramaccessbankw16(void)
 {
-    mem_wram(MemSeamC)[0] = (u1)(MemSeamA & 0xFFu);
-    mem_wram(MemSeamC)[1] = (u1)((MemSeamA >> 8) & 0xFFu);
+    *mem_wram(MemSeamC) = (u1)(MemSeamA & 0xFFu);
+    *mem_wram(mem_next(MemSeamC)) = (u1)((MemSeamA >> 8) & 0xFFu);
 }
 
 void c_eramaccessbankr8(void)
@@ -339,7 +347,7 @@ void c_eramaccessbankr8(void)
 
 void c_eramaccessbankr16(void)
 {
-    mem_set_ax((u2)(ram7fa[MemSeamC] | (ram7fa[MemSeamC + 1] << 8)));
+    mem_set_ax((u2)(ram7fa[MemSeamC] | (ram7fa[mem_next(MemSeamC)] << 8)));
 }
 
 void c_eramaccessbankw8(void)
@@ -350,7 +358,7 @@ void c_eramaccessbankw8(void)
 void c_eramaccessbankw16(void)
 {
     ram7fa[MemSeamC] = (u1)(MemSeamA & 0xFFu);
-    ram7fa[MemSeamC + 1] = (u1)((MemSeamA >> 8) & 0xFFu);
+    ram7fa[mem_next(MemSeamC)] = (u1)((MemSeamA >> 8) & 0xFFu);
 }
 
 /* --- cartridge SRAM ------------------------------------------------------ */

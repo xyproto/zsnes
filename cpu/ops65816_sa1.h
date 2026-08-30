@@ -13,12 +13,14 @@ extern u1 debstop4;
 extern u1 IRAM[2049];
 
 /*
- * The six the SA-1 does differently. Five are deliberate: it is always in
- * native mode, it has no IRQ to switch to, and BRK stops rather than vectors.
- * The sixth is a defect in the original - SA1COpD6m8, the 8-bit DEC d,x, reads
- * and writes sixteen bits while decrementing only al, so it touches the
- * following byte and writes it back unchanged. Reproduced, not fixed, to keep
- * the port bit-identical; see TODO.md.
+ * What the SA-1 does differently: it is always in native mode, it has no IRQ
+ * to switch to, and BRK stops rather than vectors.
+ *
+ * One more is a defect in the original - SA1COpD6m8, the 8-bit DEC d,x, read
+ * and wrote sixteen bits while decrementing only al, touching the following
+ * byte. The port leaves that opcode alone so the shared 8-bit handler serves
+ * it, which is what bsnes and snes9x do; test/difftest_sa1.c carries it as a
+ * deliberate divergence from the assembly.
  */
 #define OPS_OWN_COp00
 #define OPS_OWN_COp1B
@@ -72,10 +74,6 @@ void OP(COp58)(zreg* const r) /* CLI i - nothing to switch to */
 {
     r[R_EDX] &= ~0x04u;
 }
-
-/* DEC d,x is deliberately NOT overridden: the shared 8-bit handler is the fix.
-   See the comment above - this is the one place the port does not reproduce the
-   assembly, and test/difftest_sa1.c records it as a known divergence. */
 
 WRAM_PUSH8(COp48m8, xa) /* PHA s */
 WRAM_PUSH8(COp8B, xdb) /* PHB s */

@@ -37,7 +37,7 @@ extern u1 mode7A_dw[4], mode7C_dw[4], mode7X0_dw[4];
 extern u4 Mode7BackA, Mode7BackC, Mode7BackX0, Mode7BackSet;
 extern u4 mode7ab[256], mode7cd[256], mode7xy[256];
 extern u1 mode7st[256];
-extern u4 dcolortab[];
+extern u2 dcolortab[2][256]; /* video/vcache_data.c */
 extern void Gendcolortable(void);
 
 /* The mode 7 renderers are C now, so they take the register block instead of

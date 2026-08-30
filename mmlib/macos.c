@@ -1016,7 +1016,6 @@ static void hid_AddDevices(void* refCon, io_iterator_t iterator)
     io_object_t ioHIDDeviceObject = 0;
 
     while ((ioHIDDeviceObject = IOIteratorNext(iterator)) != 0) {
-        pRecDevice* pNewDeviceAt = NULL;
         pRecDevice pNewDevice = hid_BuildDevice(ioHIDDeviceObject);
         if (pNewDevice) {
 #if 0 // set true for verbose output
@@ -1056,23 +1055,21 @@ static void hid_AddDevices(void* refCon, io_iterator_t iterator)
                 pNewDevice->usage);
             fflush(stdout);
 #endif
-            pNewDeviceAt = hid_AddDevice(pListDeviceHead, pNewDevice);
-        }
+            hid_AddDevice(pListDeviceHead, pNewDevice);
 
-#if USE_NOTIFICATIONS
-        // Register for an interest notification of this device being removed. Use a reference to our
-        // private data as the refCon which will be passed to the notification callback.
-        result = IOServiceAddInterestNotification(gNotifyPort, // notifyPort
-            ioHIDDeviceObject, // service
-            kIOGeneralInterest, // interestType
-            hid_DeviceNotification, // callback
-            pNewDevice, // refCon
-            &pNewDevice->notification); // notification
-        if (KERN_SUCCESS != result)
-            HIDReportErrorNum("hid_AddDevices: IOServiceAddInterestNotification error: x0%8.8lX.", result);
-#else
-        result = (*(IOHIDDeviceInterface**)pNewDevice->interface)->setRemovalCallback(pNewDevice->interface, hid_RemovalCallbackFunction, pNewDeviceAt, 0);
-#endif
+            // Register for an interest notification of this device being removed. Use a reference to
+            // our private data as the refCon which will be passed to the notification callback.
+            // A device that failed to build has no notification field to take the address of, which
+            // is why this sits inside the test.
+            result = IOServiceAddInterestNotification(gNotifyPort, // notifyPort
+                ioHIDDeviceObject, // service
+                kIOGeneralInterest, // interestType
+                hid_DeviceNotification, // callback
+                pNewDevice, // refCon
+                &pNewDevice->notification); // notification
+            if (KERN_SUCCESS != result)
+                HIDReportErrorNum("hid_AddDevices: IOServiceAddInterestNotification error: x0%8.8lX.", result);
+        }
 
         // release the device object, it is no longer needed
         result = IOObjectRelease(ioHIDDeviceObject);
