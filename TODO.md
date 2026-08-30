@@ -35,5 +35,4 @@
 - [ ] Test `linux/battery.c` on a machine that reports battery state
 - [ ] Drop the unfinished-dynarec remnants around `curexecstate` (`initc.c`)
 - [ ] Port the rest of `doc/readme.txt/*.txt` into `man/zsnes.1`
-- [ ] Point `HomebrewFormula/zsnes.rb` at the 2.3.0 tarball once it is tagged,
-      and publish it as a tap
+- [ ] Write a Homebrew formula/tap
