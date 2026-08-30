@@ -965,13 +965,13 @@ test: $(BINARY)
 # mkdir -p then install -m: BSD install (macOS, the BSDs) has no -D, and spells
 # its own -D as something else entirely, so `make install` used to fail there.
 INSTALL_DIRS := bin share/applications share/metainfo share/man/man1 \
-                $(foreach s,16x16 32x32 48x48 64x64 128x128,share/icons/hicolor/$(s)/apps)
+                $(foreach s,16x16 32x32 48x48 64x64 128x128,share/img/hicolor/$(s)/apps)
 
 install: zsnes
 	mkdir -p $(foreach d,$(INSTALL_DIRS),'$(DESTDIR)$(PREFIX)/$(d)')
 	install -m755 zsnes '$(DESTDIR)$(PREFIX)/bin/zsnes'
 	for ICON_SIZE in 16x16 32x32 48x48 64x64 128x128; do \
-		install -m644 icons/$${ICON_SIZE}x32.png "$(DESTDIR)$(PREFIX)/share/icons/hicolor/$$ICON_SIZE/apps/io.github.xyproto.zsnes.png" ; \
+		install -m644 img/$${ICON_SIZE}x32.png "$(DESTDIR)$(PREFIX)/share/icons/hicolor/$$ICON_SIZE/apps/io.github.xyproto.zsnes.png" ; \
 	done
 	install -m644 linux/zsnes.desktop '$(DESTDIR)$(PREFIX)/share/applications/io.github.xyproto.zsnes.desktop'
 	install -m644 linux/io.github.xyproto.zsnes.metainfo.xml '$(DESTDIR)$(PREFIX)/share/metainfo/io.github.xyproto.zsnes.metainfo.xml'
@@ -992,14 +992,17 @@ PORTCHECK_CC     ?= gcc
 PORTCHECK_DEFS   := $(filter-out -D__PIPEWIRE__ -D__LIBAO__,$(CFGDEFS))
 # This compiles against the host's headers, so it needs the host's feature
 # macros and the -I flags pkg-config found: a host that keeps SDL and libpng
-# outside /usr/include otherwise fails every file that includes one.
+# outside /usr/include otherwise fails every file that includes one. The
+# aarch64 leg reaches /usr/include for SDL and GL - headers do not care about
+# the word size - but with -idirafter, so the cross toolchain's own libc
+# headers still win.
 PORTCHECK_CFLAGS ?= -std=c11 $(FEATURE_FLAGS) \
                     -O1 -I. $(PORTCHECK_DEFS) $(CFLAGS_SDL) $(CFLAGS_PNG)
 PORTCHECK_ARM_CC ?= aarch64-linux-gnu-gcc
 .PHONY: portcheck
 portcheck: $(HDRS)
 	@rc=0; \
-	for t in "x86-64:$(PORTCHECK_CC):-m64" "aarch64:$(PORTCHECK_ARM_CC):-I/usr/include"; do \
+	for t in "x86-64:$(PORTCHECK_CC):-m64" "aarch64:$(PORTCHECK_ARM_CC):-idirafter/usr/include"; do \
 	  name=$${t%%:*}; rest=$${t#*:}; cc=$${rest%%:*}; extra=$${rest#*:}; \
 	  command -v $$cc >/dev/null 2>&1 || { \
 	    echo "===> PORTCHECK: $$name skipped, $$cc not installed"; continue; }; \

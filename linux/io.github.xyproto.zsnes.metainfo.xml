@@ -1,20 +1,22 @@
 <?xml version='1.0' encoding='utf-8'?>
-<component type="desktop">
-  <!--Created with jdAppStreamEdit 6.0-->
+<component type="desktop-application">
   <id>io.github.xyproto.zsnes</id>
   <name>ZSNES</name>
   <summary>Super Nintendo emulator</summary>
-  <developer_name>Alexander F. Rødseth</developer_name>
   <launchable type="desktop-id">io.github.xyproto.zsnes.desktop</launchable>
+  <developer id="io.github.xyproto">
+    <name>Alexander F. Rødseth</name>
+  </developer>
   <metadata_license>CC0-1.0</metadata_license>
-  <project_license>GPL-2.0</project_license>
+  <project_license>GPL-2.0-only</project_license>
   <description>
-    <p>ZSNES is a classical SNES Emulator. Its development started 1998 and is was one of the most used SNES Emulators for years.</p>
-    <p>Today you should use ZSNES only for historical and nostalgia reasons, as there are Emulators out there which provide more Features and a better Game compatibility.</p>
+    <p>ZSNES is a Super Nintendo emulator. Development started in 1998, and for years it was one of the most widely used SNES emulators.</p>
+    <p>This is a continuation of that project: the 32-bit x86 assembly the original was built on has been ported to C11, so it builds and runs on current systems and on 64-bit and non-x86 machines. It aims at broad game compatibility, good keyboard and joystick support and a solid audio path rather than at circuit-level accuracy.</p>
   </description>
   <screenshots>
     <screenshot type="default">
-      <image type="source">https://upload.wikimedia.org/wikipedia/commons/5/5d/ZSNES.jpg</image>
+      <caption>The ZSNES menu</caption>
+      <image type="source" width="512" height="448">https://raw.githubusercontent.com/xyproto/zsnes/main/img/screenshot.png</image>
     </screenshot>
   </screenshots>
   <releases>
