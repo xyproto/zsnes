@@ -105,7 +105,9 @@ static void M7CallDraw(void)
 void c_processmode7hires16b(void)
 {
     u4 const bx = M7SeamB;
-    u4 const si = M7SeamSI;
+    /* esi is a pointer into the video buffer, so it has to stay pointer-wide;
+       narrowing it to 32 bits aimed the renderer at a truncated address. */
+    zreg const si = M7SeamSI;
 
     if (BGMA[bx + 1] != 7) {
         return;
