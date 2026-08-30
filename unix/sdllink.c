@@ -110,6 +110,9 @@ static unsigned int AxisOffset[5] = { 256 + 128 + 64 }; // per joystick offsets 
 static unsigned int ButtonOffset[5] = { 448 }; // pressed. We have 128 + 64
 static unsigned int HatOffset[5] = { 448 }; // bytes for all joysticks. We
 // joystick balls are gone in SDL3
+/* Buttons pressed since the last GetMouseButton, so a press shorter than a
+   frame still reaches the GUI. */
+static u1 MouseButtonPressed = 0;
 static int shiftptr = 0;
 static int offset;
 uint32_t numlockptr;
@@ -375,12 +378,14 @@ int Main_Proc()
             switch (event.button.button) {
             case SDL_BUTTON_RIGHT:
                 MouseButton |= 2;
+                MouseButtonPressed |= 2;
                 break;
             case SDL_BUTTON_MIDDLE:
                 ProcessKeyBuf(SDLK_RETURN);
                 // Yes, this is intentional - DDOI
             case SDL_BUTTON_LEFT:
                 MouseButton |= event.button.button;
+                MouseButtonPressed |= event.button.button;
                 break;
             }
             break;
@@ -1896,9 +1901,17 @@ s4 GetMouseMoveY(void)
     return (MouseMove2Y);
 }
 
+/* A trackpad tap presses and releases inside a single frame, and the GUI only
+   samples the button level once a frame, so the press would fall between two
+   polls and the click would be lost. Remember what has gone down since the
+   last poll and report it once, which makes a tap as reliable as a held
+   button without making a held button behave differently. */
 s4 GetMouseButton(void)
 {
-    return ((int)MouseButton);
+    int const r = (int)(MouseButton | MouseButtonPressed);
+
+    MouseButtonPressed = 0;
+    return (r);
 }
 
 void SetMouseMinX(int MinX)
