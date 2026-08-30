@@ -308,7 +308,7 @@ static _Noreturn void selftest(void)
     bad |= selftest_buf("BitConv32Ptr", BitConv32Ptr, 4096 + 65536 * 16);
     bad |= selftest_buf("RGBtoYUVPtr", RGBtoYUVPtr, 65536 * 4 + 4096);
     bad |= selftest_buf("spcBuffera", spcBuffera, 65536 * 4 + 4096);
-    bad |= selftest_buf("vbufaptr", vbufaptr, 512 * 296 * 4 + 4096 + 512 * 296);
+    bad |= selftest_buf("vbufaptr", vbufaptr, 512 * 296 * 4 + 4096 + 512 * 296 + 75036 * 4);
     bad |= selftest_buf("vbufeptr", vbufeptr, 288 * 2 * 256 + 4096);
     bad |= selftest_buf("ngwinptrb", ngwinptrb, 256 * 224 + 4096);
     bad |= selftest_buf("vbufdptr", vbufdptr, 1024 * 296);
@@ -341,7 +341,10 @@ static void allocmem()
     AllocmemFail(spcBuffera, 65536 * 4 + 4096);
     /* 256 scanlines of 64 sprites; the GUI also borrows the tail as scratch. */
     AllocmemFail(spritetablea, 256 * 64 * sizeof(SpriteInfo) + 4096);
-    AllocmemFail(vbufaptr, 512 * 296 * 4 + 4096 + 512 * 296);
+    /* The EXTBG mode 7 writers stash a priority byte per pixel at line + 75036*8
+       and hi-res mode 7 draws its second field 75036*4 further in, so the tail
+       has to leave room for both at once. */
+    AllocmemFail(vbufaptr, 512 * 296 * 4 + 4096 + 512 * 296 + 75036 * 4);
     AllocmemFail(vbufeptr, 288 * 2 * 256 + 4096);
     AllocmemFail(ngwinptrb, 256 * 224 + 4096);
     AllocmemFail(vbufdptr, 1024 * 296);
