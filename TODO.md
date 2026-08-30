@@ -25,7 +25,6 @@
 - [ ] Retire the old graphics engine (`newengen=0`) once the new one has no
       known regressions, and drop `bgfixer` with it
 - [ ] Re-enable the FreeBSD, OpenBSD and NetBSD CI jobs
-- [ ] Install `aarch64-linux-gnu-gcc` in CI so `make portcheck` covers aarch64
 - [ ] Give the difftests a 64-bit oracle so they run off 32-bit x86
 - [ ] Give the pinned table runs (`BG1SYl`, `BGPT1` ...) flat aliases so the
       cross-table indexing stops tripping UBSan
@@ -34,9 +33,7 @@
       for granted are UB and would fault on a strict-alignment target
 - [ ] Build `test/`'s parent objects through the top Makefile, not make's implicit rule
 - [ ] Test `linux/battery.c` on a machine that reports battery state
-- [ ] Decide whether `find_next_match` needs `+ 1` (`argv.h`)
 - [ ] Drop the unfinished-dynarec remnants around `curexecstate` (`initc.c`)
 - [ ] Port the rest of `doc/readme.txt/*.txt` into `man/zsnes.1`
-- [ ] Refresh the AppStream `<releases>` list, replace `<developer_name>` with
-      `<developer>`, use an SPDX licence id, and host the screenshot ourselves
-- [ ] Write a Homebrew formula/tap
+- [ ] Point `HomebrewFormula/zsnes.rb` at the 2.3.0 tarball once it is tagged,
+      and publish it as a tap
