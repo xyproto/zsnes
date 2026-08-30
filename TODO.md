@@ -1,9 +1,7 @@
 # TODO
 
-- [ ] Fix the top 25 scanlines of Dirt Trax FX's title screen flickering between
-      the right picture and tiles from another scene; the lines are drawn with
-      stale per-line state, not force-blanked, and the eight-line tile path is
-      not the cause
+- [ ] Charge HDMA the cycles it steals as well; only general-purpose DMA is
+      accounted for (`cpu/c_dma.c`)
 - [ ] Handle joystick hot-plug (`SDL_EVENT_JOYSTICK_ADDED`/`REMOVED`); pads
       plugged in after start are invisible until restart
 - [ ] Use `SDL_Gamepad` so controllers get SDL's mapping database instead of
