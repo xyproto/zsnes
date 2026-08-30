@@ -9,18 +9,14 @@
       machine that feeds the SA-1 is what stops. Likely the same fault as #28
 - [ ] Check that a plain `make` works on Ubuntu 20 and close #19; the report is
       a 32-bit build linking against 64-bit libraries
-- [ ] Recommend `libglvnd-dev` over `libgl-dev` for Debian and Ubuntu in the
-      README (#19); only the former pulls in `libglvnd.pc`
 - [ ] Use `SDL_Gamepad` so controllers get SDL's mapping database instead of
       raw numbered axes and buttons
-- [ ] Add drift control: nudge `SDL_SetAudioStreamFrequencyRatio` from the
-      queued-samples count, the way snes9x's DynamicRateControl does
-- [ ] Always emulate the DSP at its native rate and let `SDL_AudioStream`
-      resample, rather than retuning the DSP per `SoundQuality` setting
-- [ ] Replace the legacy OpenGL 1.x path with `SDL_Renderer` and a streaming
-      texture, so macOS gets Metal and Windows D3D without an OpenGL dependency
-- [ ] Use `glTexSubImage2D` rather than reallocating the texture every frame,
-      for as long as the GL path stays
+- [ ] Check the `SDL_Renderer` path's hi-res, mode 7, filter and scanline
+      composition against the OpenGL one; only the lo-res path has been read
+      back and compared so far (`ZSNES_LEGACY_GL=1` selects the old path)
+- [ ] Relabel or retire the `SoundQuality` rate setting: SDL, PipeWire and
+      libao now always render at the DSP's 32kHz and resample, so the rates it
+      offers no longer do anything there
 - [ ] Save `SetaCmdEnable` in the save state (`zstate.c`)
 - [ ] Handle horizontal scroll and absolute mouse motion on macOS (`mmlib/macos.c`)
 - [ ] Fill in the GUI font glyphs 0x30-0x36 (`video/procvid.c`)
