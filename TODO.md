@@ -3,9 +3,10 @@
 - [ ] Verify Dirt Trax FX on the Europe ROM and close #32; the freeze and the
       glitchy top band are fixed on the USA ROM
 - [ ] Fix Super Mario RPG getting stuck on a garbled screen in the attract
-      demo, reachable from boot with no input at all; work RAM then alternates
-      between two states while the SPC keeps playing, and snes9x carries on
-      animating. Likely the same fault as #28
+      demo, reachable from boot with no input at all and older than the DMA
+      timing work. The SA-1 is idle in its normal `LDA $00`/`BEQ` handshake
+      loop and the 65816 is still frame-syncing on `BIT $4212`, so the state
+      machine that feeds the SA-1 is what stops. Likely the same fault as #28
 - [ ] Check that a plain `make` works on Ubuntu 20 and close #19; the report is
       a 32-bit build linking against 64-bit libraries
 - [ ] Recommend `libglvnd-dev` over `libgl-dev` for Debian and Ubuntu in the
