@@ -1,9 +1,5 @@
 # TODO
 
-- [ ] Charge HDMA the cycles it steals as well; only general-purpose DMA is
-      accounted for (`cpu/c_dma.c`)
-- [ ] Handle joystick hot-plug (`SDL_EVENT_JOYSTICK_ADDED`/`REMOVED`); pads
-      plugged in after start are invisible until restart
 - [ ] Use `SDL_Gamepad` so controllers get SDL's mapping database instead of
       raw numbered axes and buttons
 - [ ] Add drift control: nudge `SDL_SetAudioStreamFrequencyRatio` from the
@@ -14,8 +10,6 @@
       texture, so macOS gets Metal and Windows D3D without an OpenGL dependency
 - [ ] Use `glTexSubImage2D` rather than reallocating the texture every frame,
       for as long as the GL path stays
-- [ ] Check the SRAM size when mapping banks 70-7F so 64/128/256 KB all map
-      correctly (`initc.c`)
 - [ ] Save `SetaCmdEnable` in the save state (`zstate.c`)
 - [ ] Handle horizontal scroll and absolute mouse motion on macOS (`mmlib/macos.c`)
 - [ ] Fill in the GUI font glyphs 0x30-0x36 (`video/procvid.c`)
@@ -28,8 +22,6 @@
 - [ ] Add the missing ST-011 opcodes (`chips/seta11.c`)
 - [ ] Work out the ST-011 OPS04/05 outputs and OPS06/07 purposes (`chips/seta11.c`)
 - [ ] Verify the unverified DSP4 lookup table (`chips/dsp4emu.c`)
-- [ ] Decide whether to fix the SA-1's 8-bit DEC d,x, which reads and writes 16
-      bits (`cpu/ops65816_sa1.h`)
 - [ ] Retire the old graphics engine (`newengen=0`) once the new one has no
       known regressions, and drop `bgfixer` with it
 - [ ] Re-enable the FreeBSD, OpenBSD and NetBSD CI jobs
@@ -37,11 +29,13 @@
 - [ ] Give the difftests a 64-bit oracle so they run off 32-bit x86
 - [ ] Give the pinned table runs (`BG1SYl`, `BGPT1` ...) flat aliases so the
       cross-table indexing stops tripping UBSan
+- [ ] Read the word and dword seams (`cpu/ops65816.h`, `video/c_ng2tile.c`)
+      through `memcpy` rather than casts; the unaligned loads the assembly took
+      for granted are UB and would fault on a strict-alignment target
 - [ ] Build `test/`'s parent objects through the top Makefile, not make's implicit rule
 - [ ] Test `linux/battery.c` on a machine that reports battery state
 - [ ] Decide whether `find_next_match` needs `+ 1` (`argv.h`)
 - [ ] Drop the unfinished-dynarec remnants around `curexecstate` (`initc.c`)
-- [ ] Use or drop `pNewDeviceAt` (`mmlib/macos.c`)
 - [ ] Port the rest of `doc/readme.txt/*.txt` into `man/zsnes.1`
 - [ ] Refresh the AppStream `<releases>` list, replace `<developer_name>` with
       `<developer>`, use an SPDX licence id, and host the screenshot ourselves
