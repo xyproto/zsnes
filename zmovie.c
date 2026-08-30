@@ -26,7 +26,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <signal.h>
 #define WRITE_BINARY "w"
 #define NULL_FILE "/dev/null"
-#include "linux/safelib.h"
+#include "unix/safelib.h"
 #else
 #define _POSIX_
 #include <ctype.h>
@@ -1821,8 +1821,8 @@ bool mzt_load(int position, bool playback)
 // Code using this by Bisqwit
 // Used by raw videos for calculating sample rate
 
-static const uint32_t freqtab[] = { 8000, 11025, 22050, 44100, 16000, 32000, 48000 };
-#define RATE freqtab[SoundQuality]
+/* Matches what the mixer renders at (unix/audio.c). */
+#define RATE 32000
 
 // 0 = None; 1 Logging, but not now, 2 Log now
 uint8_t AudioLogging;

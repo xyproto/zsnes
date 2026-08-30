@@ -26,6 +26,7 @@
 typedef void mixfn(u4 voice, u4* pesi, u4* pebx, s2* edi);
 static mixfn* paramhack[4];
 static u4 SBToSPC = 22050;
+extern u4 SoundOutputRate; /* initdata.c */
 
 static void conv2speed(u4 ecx, u4* esi, u4 const* edi)
 {
@@ -321,9 +322,11 @@ void AdjustFrequency(void)
     }
     DSPInterpolate = interpolate;
 
-    static u4 const SBToSPCSpeeds[] = { 8000, 11025, 22050, 44100, 16000, 32000, 48000 };
-    u4 const eax =
-        SBToSPCSpeeds[SoundQuality];
+    /* The rate the mixer renders at. The backend owns it: a resampling one
+       leaves it at the DSP's own 32kHz, where dspPAdj is unity and the
+       envelope tables need no rescaling, and hands the conversion to the
+       sound API. SoundOutputRate defaults to that (initdata.c). */
+    u4 const eax = SoundOutputRate ? SoundOutputRate : 32000u;
     SBToSPC = eax;
     dspPAdj = ((u8)32000 << 20) / eax;
 

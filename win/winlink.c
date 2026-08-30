@@ -751,6 +751,7 @@ static int RegisterWinClass(HINSTANCE const hInst)
 
 BYTE PrevStereoSound;
 DWORD PrevSoundQuality;
+extern unsigned int SoundOutputRate; /* initdata.c */
 
 BOOL InitSound()
 {
@@ -825,6 +826,11 @@ BOOL InitSound()
         wfx.nSamplesPerSec = 11025;
         SoundBufferSize = 1024 * 2;
     }
+
+    /* DirectSound is handed the rate outright rather than resampling for us,
+       so the mixer has to render at it instead of at the DSP's own
+       (initdata.c, cpu/c_dspproc.c). */
+    SoundOutputRate = wfx.nSamplesPerSec;
 
     if (StereoSound == 1) {
         wfx.nChannels = 2;
@@ -941,6 +947,11 @@ BOOL ReInitSound()
         wfx.nSamplesPerSec = 11025;
         SoundBufferSize = 1024 * 2;
     }
+
+    /* DirectSound is handed the rate outright rather than resampling for us,
+       so the mixer has to render at it instead of at the DSP's own
+       (initdata.c, cpu/c_dspproc.c). */
+    SoundOutputRate = wfx.nSamplesPerSec;
 
     if (StereoSound == 1) {
         wfx.nChannels = 2;

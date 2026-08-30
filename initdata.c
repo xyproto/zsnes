@@ -60,6 +60,11 @@ u2 xpc;
 u1 debugger;
 u1 curnmi;
 
+/* What the DSP mixer renders at. A backend that resamples leaves this at the
+   DSP's own rate; one that cannot sets it to whatever it opened the device
+   with (win/winlink.c). */
+u4 SoundOutputRate = 32000;
+
 u4 cycpbl = 110;
 u4 cycpblt = 110;
 
