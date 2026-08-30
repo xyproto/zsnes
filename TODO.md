@@ -14,6 +14,20 @@
 - [ ] Check the `SDL_Renderer` path's hi-res, mode 7, filter and scanline
       composition against the OpenGL one; only the lo-res path has been read
       back and compared so far (`ZSNES_LEGACY_GL=1` selects the old path)
+- [ ] Port the real hqx algorithm; `hq2x/hq3x/hq4x_16b` and their `_32b`
+      twins in `video/c_hqx.c` are nearest-neighbour block doublers, so
+      turning the HQ filter on changes nothing on screen
+- [ ] Once hqx is real, re-enable the `hq3x_16b`/`hq4x_16b` call sites
+      commented out in `unix/sw_draw.c`, let `SetHQx()` (`unix/sdllink.c`)
+      offer 3x and 4x again, and dispatch on `hqFilterlevel`, which every
+      unix path currently ignores
+- [ ] Port the real 2xSaI, Super2xSaI and SuperEagle filters; all three entry
+      points in `video/2xsaiw.c` share one scale2x doubler, so the three menu
+      entries produce identical output
+- [ ] Fill in `outsa1()` (`debugger.c`), a stub since the port
+- [ ] Carry the SA-1 dispatch dot hint through the register ABI so the H/V
+      free-running counter reads (`c_sa12302r`, `chips/sa1regs.c`) stop
+      treating `dh` as 0
 - [ ] Relabel or retire the `SoundQuality` rate setting: SDL, PipeWire and
       libao now always render at the DSP's 32kHz and resample, so the rates it
       offers no longer do anything there
