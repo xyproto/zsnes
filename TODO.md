@@ -14,8 +14,6 @@
       queued-samples count, the way snes9x's DynamicRateControl does
 - [ ] Always emulate the DSP at its native rate and let `SDL_AudioStream`
       resample, rather than retuning the DSP per `SoundQuality` setting
-- [ ] Add exclusive fullscreen and a display picker (#20), so a CRT can be
-      driven at its own resolution and on a secondary monitor
 - [ ] Replace the legacy OpenGL 1.x path with `SDL_Renderer` and a streaming
       texture, so macOS gets Metal and Windows D3D without an OpenGL dependency
 - [ ] Use `glTexSubImage2D` rather than reallocating the texture every frame,
@@ -24,11 +22,8 @@
 - [ ] Handle horizontal scroll and absolute mouse motion on macOS (`mmlib/macos.c`)
 - [ ] Fill in the GUI font glyphs 0x30-0x36 (`video/procvid.c`)
 - [ ] Make transparent messages work with the small font (`cfg.psr`)
-- [ ] Attach win32/win64 (and macOS) binaries to GitHub releases
 - [ ] Build Windows on SDL3 instead of the legacy DirectDraw/DirectInput
       backend in `win/`, so all three platforms share one path
-- [ ] Improve the netplay code, and bring back what 1.42n had (#2)
-- [ ] Port netplay to the Windows build (`gui/c_guiwindp.c`)
 - [ ] Add the missing ST-011 opcodes (`chips/seta11.c`)
 - [ ] Work out the ST-011 OPS04/05 outputs and OPS06/07 purposes (`chips/seta11.c`)
 - [ ] Verify the unverified DSP4 lookup table (`chips/dsp4emu.c`)
@@ -52,4 +47,9 @@
 - [ ] Verify the ZSNES Flatpak on Flathub (#10)
 - [ ] Drop the unfinished-dynarec remnants around `curexecstate` (`initc.c`)
 - [ ] Port the rest of `doc/readme.txt/*.txt` into `man/zsnes.1`
+- [ ] Add exclusive fullscreen and a display picker (#20), so a CRT can be
+      driven at its own resolution and on a secondary monitor
+- [ ] Attach win32/win64 (and macOS) binaries to GitHub releases
+- [ ] Improve the netplay code, and bring back what 1.42n had (#2)
+- [ ] Port netplay to the Windows build (`gui/c_guiwindp.c`)
 - [ ] Write a Homebrew formula/tap
