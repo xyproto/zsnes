@@ -39,6 +39,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <stdint.h>
 
 void hq2x_16b();
+void NTSCFilterDraw(int out_width, int out_height, int out_pitch, unsigned char* rgb16_out);
+void NTSCFilterInit(void);
 
 extern SDL_Window* sdl_window;
 extern uint8_t* vidbuffer;
@@ -55,9 +57,14 @@ void sr_end(void);
 void sr_clearwin(void);
 void sr_drawwin(void);
 
-/* The composed frame, and what carries it to the GPU. */
+/* The composed frame, and what carries it to the GPU. The texture is made at
+   the largest size any mode produces - the NTSC filter's 602x446 and the
+   640x480 modes are both wider than the doubled 512x448 - and each frame
+   uploads and draws only the part it filled. */
 #define SR_W 512
 #define SR_H 448
+#define SR_MAXW 640
+#define SR_MAXH 512
 static SDL_Renderer* sr_renderer = NULL;
 static SDL_Texture* sr_texture = NULL;
 static unsigned short* sr_pixels = NULL;
@@ -75,6 +82,10 @@ int sr_start(int width, int height, int req_depth, int FullScreen)
     (void)req_depth;
     flags |= (GUIRESIZE[cvidmode] ? SDL_WINDOW_RESIZABLE : 0);
     flags |= (FullScreen ? SDL_WINDOW_FULLSCREEN : 0);
+
+    if (NTSCFilter) {
+        NTSCFilterInit();
+    }
 
     SurfaceX = width;
     SurfaceY = height;
@@ -98,7 +109,7 @@ int sr_start(int width, int height, int req_depth, int FullScreen)
     SDL_SetRenderVSync(sr_renderer, vsyncon ? 1 : SDL_RENDERER_VSYNC_DISABLED);
 
     sr_texture = SDL_CreateTexture(sr_renderer, SDL_PIXELFORMAT_RGB565,
-        SDL_TEXTUREACCESS_STREAMING, SR_W, SR_H);
+        SDL_TEXTUREACCESS_STREAMING, SR_MAXW, SR_MAXH);
     if (!sr_texture) {
         fprintf(stderr, "Could not create texture: %s\n", SDL_GetError());
         SDL_DestroyRenderer(sr_renderer);
@@ -113,12 +124,12 @@ int sr_start(int width, int height, int req_depth, int FullScreen)
                                                       : SDL_SCALEMODE_NEAREST);
 
     if (!sr_pixels) {
-        sr_pixels = (unsigned short*)malloc(SR_W * SR_H * sizeof(unsigned short));
+        sr_pixels = (unsigned short*)malloc(SR_MAXW * SR_MAXH * sizeof(unsigned short));
         if (!sr_pixels) {
             return false;
         }
     }
-    memset(sr_pixels, 0, SR_W * SR_H * sizeof(unsigned short));
+    memset(sr_pixels, 0, SR_MAXW * SR_MAXH * sizeof(unsigned short));
 
     SDL_SetWindowMouseGrab(sdl_window, FullScreen ? true : false);
     SDL_SetRenderDrawColor(sr_renderer, 0, 0, 0, 255);
@@ -210,6 +221,8 @@ static void sr_scanlines(void)
 void sr_drawwin(void)
 {
     int line;
+    /* What this frame ends up filling, which the upload and the draw follow. */
+    int w = SR_W, h = SR_H, pitch = SR_W * 2;
 
     NGNoTransp = 0; // Set this value to 1 within the appropriate
     // Where a custom or hardware transparency routine would go. Only reachable
@@ -219,10 +232,20 @@ void sr_drawwin(void)
         return;
     }
 
-    if (SurfaceX >= 512 && (hqFilter || En2xSaI)) {
+    if (NTSCFilter && SurfaceX == 602 && SurfaceY <= SR_MAXH) {
+        /* The NTSC filter produces its own picture, and only at the 602-wide
+           size the blitter's chunking is built around - a narrower width just
+           crops. It used to be reachable only from the software path, so an
+           accelerated mode resized the window for it and then stretched an
+           unfiltered frame over it. */
+        w = SurfaceX;
+        h = SurfaceY;
+        pitch = w * 2;
+        NTSCFilterDraw(w, h, pitch, (unsigned char*)sr_pixels);
+    } else if (SurfaceX >= 512 && (hqFilter || En2xSaI)) {
         /* The filters write a finished 512-wide picture themselves. */
         AddEndBytes = 0;
-        NumBytesPerLine = SR_W * 2;
+        NumBytesPerLine = pitch;
         WinVidMemStart = (void*)sr_pixels;
         if (hqFilter) {
             hq2x_16b();
@@ -238,8 +261,13 @@ void sr_drawwin(void)
         }
     }
 
-    SDL_UpdateTexture(sr_texture, NULL, sr_pixels, SR_W * sizeof(unsigned short));
-    SDL_RenderClear(sr_renderer);
-    SDL_RenderTexture(sr_renderer, sr_texture, NULL, NULL);
-    SDL_RenderPresent(sr_renderer);
+    {
+        SDL_Rect const dirty = { 0, 0, w, h };
+        SDL_FRect const src = { 0.0f, 0.0f, (float)w, (float)h };
+
+        SDL_UpdateTexture(sr_texture, &dirty, sr_pixels, pitch);
+        SDL_RenderClear(sr_renderer);
+        SDL_RenderTexture(sr_renderer, sr_texture, &src, NULL);
+        SDL_RenderPresent(sr_renderer);
+    }
 }
