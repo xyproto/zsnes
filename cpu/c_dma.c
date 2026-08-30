@@ -9,6 +9,19 @@
 
 u1 AddrNoIncr = 0;
 
+/* A general-purpose DMA moves one byte per eight master cycles and holds the
+   CPU off the bus while it runs, so a large transfer spans scanlines. The
+   balance is kept in master cycles - the scanline budget's own unit varies
+   with the SA-1 paths - and a scanline is 1364 of them. cpu/c_execute.c parks
+   the 65816 until it is gone; cpu/c_execloop.c draws it down a line at a
+   time. */
+u4 dmaowedcyc = 0;
+
+static void dma_charge(u4 const bytes)
+{
+    dmaowedcyc += bytes * 8u;
+}
+
 /* An I/O register handler takes the address through the seam (cpu/memseam.h).
    The seam is put back around the call: a DMA runs inside the register write
    that started it, and the handler that is still on the stack out there reads
@@ -66,6 +79,7 @@ static void transdmappu2cpu(u1 const al, DMAInfo* const esi)
 
     // Do loop
     u4 edx = dx != 0 ? dx : 65536;
+    dma_charge(edx);
     while (edx > 4) {
         memw8no_rom(curbank, cx, read_reg(regptr_, cx));
         cx += addrincr;
@@ -95,15 +109,9 @@ static void transdmappu2cpu(u1 const al, DMAInfo* const esi)
     esi->offset = cx;
 }
 
-unsigned dbg_hn;
-void* dbg_hp[16384];
-unsigned short dbg_hy[16384];
-unsigned char dbg_hv[16384];
-
 static inline void write_reg(eop* const reg, u2 const address, u1 const val)
 {
     uintptr_t const b = MemSeamB, c = MemSeamC, a = MemSeamA, d = MemSeamD;
-
 
     MemSeamC = address;
     MemSeamA = val;
@@ -161,6 +169,7 @@ static void transdma(DMAInfo* const esi)
 
     // Do loop
     u4 edx = dx != 0 ? dx : 65536;
+    dma_charge(edx);
     while (edx > 4) {
         u1 const vala = memr8(curbank, cx);
         write_reg(regptra, cx += addrincr, vala);
@@ -189,29 +198,11 @@ static void transdma(DMAInfo* const esi)
 
     esi->offset = cx;
     AddrNoIncr = 0;
-    {
-        extern u2 curypos;
-        if (dbg_hn < 60) {
-            dbg_hp[dbg_hn] = (void*)2;
-            dbg_hy[dbg_hn] = curypos;
-            dbg_hv[dbg_hn] = 0;
-            dbg_hn++;
-        }
-    }
 }
 
 void c_reg420Bw(u1 const al)
 {
     DMAInfo* esi = dmadata;
-    {
-        extern u2 curypos;
-        if (dbg_hn < 60) {
-            dbg_hp[dbg_hn] = (void*)1;
-            dbg_hy[dbg_hn] = curypos;
-            dbg_hv[dbg_hn] = al;
-            dbg_hn++;
-        }
-    }
     for (u4 eax = al; eax != 0; ++esi, eax >>= 1) {
         if (eax & 0x01)
             transdma(esi);

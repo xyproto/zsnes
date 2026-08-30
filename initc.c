@@ -1161,6 +1161,14 @@ void loadROM()
         return;
     }
 
+    /* An iNES image - a NES ROM sitting in a SNES directory. Its reset vector
+       means nothing to the 65816, which would then run off the memory map. */
+    if (curromspace >= 16 && !memcmp(romdata, "NES\x1a", 4)) {
+        puts("Not a SNES ROM: this is a NES image.");
+        curromspace = 0;
+        return;
+    }
+
     if (!strncmp("GAME DOCTOR SF 3", (char*)romdata, 16) || !strncmp("SUPERUFO", (char*)romdata + 8, 8)) {
         Header512 = true;
     } else {

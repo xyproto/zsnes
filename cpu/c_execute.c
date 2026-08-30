@@ -251,6 +251,21 @@ void Donextlinecache(void)
     NextLineCache = 0;
 }
 
+/* A DMA keeps the 65816 off the bus until it finishes, so the opcode the
+   caller has just fetched does not run: hand the scanline to cpuover, which
+   unfetches it and draws the balance down. HDMA, interrupts and rendering keep
+   going throughout. */
+static int dma_stalled(zreg* const r)
+{
+    extern u4 dmaowedcyc;
+
+    if (dmaowedcyc == 0) {
+        return 0;
+    }
+    set_dh(r, 0);
+    return 1;
+}
+
 /* The `endloop` macro from cpu/65816dc.inc: step the SPC700 when its share of
    the cycles has run out, fetch the next opcode and charge it. Returns zero
    where the assembly returned out of the run, the scanline's budget spent. */
@@ -269,6 +284,10 @@ static int endloop(zreg* const r)
 
     set_bl(r, *(u1*)r[R_ESI]);
     r[R_ESI]++;
+
+    if (dma_stalled(r)) {
+        return 0;
+    }
 
     {
         u1 const c = cpucycle[r[R_EBX]];
@@ -323,6 +342,8 @@ static void run_chain(zreg* const r)
 /* The dispatch loop from cpu/execute.asm. */
 void exec_loop(zreg* const r, int const at_cpuover)
 {
+    int fetched = 0;
+
     if (at_cpuover)
         goto cpuover;
 
@@ -331,6 +352,11 @@ void exec_loop(zreg* const r, int const at_cpuover)
         goto sound;
 
 startagain:
+    if (fetched) {
+        fetched = 0;
+        if (dma_stalled(r))
+            goto cpuover;
+    }
     if (xe != 1 && r[R_EDX] & 0x01 && !(INTEnab & 0xC0))
         add_dh(r, (u1)-0x50);
     if (doirqnext != 1 && SA1IRQEnable != 0 && irqon != 0)
@@ -353,6 +379,8 @@ sound:
     }
     set_bl(r, *(u1*)r[R_ESI]);
     r[R_ESI]++;
+    if (dma_stalled(r))
+        goto cpuover;
     {
         u1 const c = cpucycle[r[R_EBX]];
         u1 const dh = DH(r);
@@ -377,6 +405,7 @@ cpuover:
     case EXEC_NEXT:
         r[R_EBX] = *(u1*)r[R_ESI];
         r[R_ESI]++;
+        fetched = 1;
         goto startagain;
     case EXEC_RELOAD:
         r[R_EBX] = (u1)r[R_EDX];

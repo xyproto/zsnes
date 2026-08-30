@@ -29,14 +29,8 @@ static void irq_log(char const* const kind, u4 const pc)
         checked = 1;
     }
     if (fp) {
-        {
-            extern u2 VIRQLoc;
-            extern u1 INTEnab, doirqnext, intrset;
-            fprintf(fp, "%lu %s pc=%04x ypos=%u cyc=%u virq=%u inten=%02x doirq=%u iset=%u\n",
-                n, kind, pc, (unsigned)curypos, (unsigned)curcyc,
-                (unsigned)VIRQLoc, (unsigned)INTEnab, (unsigned)doirqnext,
-                (unsigned)intrset);
-        }
+        fprintf(fp, "%lu %s pc=%04x ypos=%u cyc=%u\n", n, kind, pc,
+            (unsigned)curypos, (unsigned)curcyc);
         fflush(fp);
     }
     n++;

@@ -37,6 +37,7 @@
    of, so those are read and written through GETB/SETB below. */
 extern u1 rtoflags;
 extern u1 cycpl;
+extern u4 dmaowedcyc; /* cpu/c_dma.c */
 extern u1 intrset;
 extern u1 CurrentExecSA1;
 extern u1 SA1SHb; /* low byte of a dword */
@@ -300,6 +301,9 @@ nosa1b:
     }
 
     curypos++;
+    if (dmaowedcyc != 0) {
+        dmaowedcyc = dmaowedcyc > 1364u ? dmaowedcyc - 1364u : 0;
+    }
     if (curypos <= resolutn) {
         if (sprtilecnt[curypos] > 34)
             rtoflags |= 0x80;

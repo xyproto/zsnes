@@ -59,29 +59,7 @@ static inline void mem_add_cx_bx(void)
     }
 
 MEM_REG_DISPATCH(MemRegRead, regptra)
-
-unsigned dbg_regn;
-unsigned short dbg_rega[8192], dbg_regy[8192];
-unsigned char dbg_regv[8192];
-
-static void MemRegWrite(void)
-{
-    uintptr_t const b = MemSeamB, c = MemSeamC;
-
-    {
-        extern u2 curypos;
-        if (dbg_regn < 8192 && ((MemSeamC >= 0x2100 && MemSeamC <= 0x2133)
-                || (MemSeamC >= 0x4200 && MemSeamC <= 0x420B))) {
-            dbg_rega[dbg_regn] = (unsigned short)MemSeamC;
-            dbg_regv[dbg_regn] = (unsigned char)(MemSeamA & 0xFFu);
-            dbg_regy[dbg_regn] = curypos;
-            dbg_regn++;
-        }
-    }
-    regptwa[MemSeamC - 0x2000]();
-    MemSeamC = c;
-    MemSeamB = b;
-}
+MEM_REG_DISPATCH(MemRegWrite, regptwa)
 
 /* --- 8-bit reads --------------------------------------------------------- */
 

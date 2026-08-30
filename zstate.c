@@ -1101,7 +1101,12 @@ bool zst_load(FILE* fp, size_t Compressed)
     initpitch();
     ResetOffset();
     ResetState();
-    procexecloop();
+    /* curexecstate rides in the extra block from V143 on, and its low byte is
+       not always what procexecloop would derive: the execution loop clears
+       bit 0 while it is parked. Only the older format needs it filled in. */
+    if (zst_version < 143) {
+        procexecloop();
+    }
 
     return (true);
 }
