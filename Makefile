@@ -923,10 +923,6 @@ $(filter %.o, $(SRCS:.c=.o)): $(HDRS)
 clean distclean:
 	@echo '===> CLEAN'
 	$(Q)rm -fr $(HDRS) $(DEPS) $(OBJS) $(BINARY) zsnes zsnes.exe $(BUILDSTAMP)
-	# OBJS only lists what this configuration builds, so a plain "make clean"
-	# used to leave another target's objects behind - "make clean; make win64"
-	# after a win32 build linked its 32-bit win/confloc.o and failed on the
-	# decorated names. Clean means clean.
 	$(Q)find . -name "*.[do]" -not -path "./.git/*" -delete
 
 info:
