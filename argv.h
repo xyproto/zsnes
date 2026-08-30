@@ -66,7 +66,10 @@ static char* get_param(char* str)
                 if ((*pos == '\"') || (*pos == '\'')) {
                     char* match_pos = 0;
                     if ((match_pos = find_next_match(pos + 1, *pos))) {
-                        pos = match_pos; // TODO: Figure out if + 1 is needed here
+                        // Land on the closing quote; the loop's own step
+                        // moves past it. Going one further would swallow the
+                        // delimiter after it and merge two tokens.
+                        pos = match_pos;
                     }
                 }
                 // Skip escaped spaces
