@@ -39,7 +39,7 @@
       through `memcpy` rather than casts; the unaligned loads the assembly took
       for granted are UB and would fault on a strict-alignment target
 - [ ] Build `test/`'s parent objects through the top Makefile, not make's implicit rule
-- [ ] Test `linux/battery.c` on a machine that reports battery state
+- [ ] Test `unix/battery.c` on a machine that reports battery state
 - [ ] Move the end-of-ROM variables out of the ROM buffer so `maxromspace` no
       longer has to be 16MB for 8MB carts (#17)
 - [ ] Re-test PAL/NTSC detection across the ROM set (#24)
