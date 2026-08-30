@@ -39,9 +39,11 @@ jobs:
           sudo apt-get install -y --no-install-recommends \
             build-essential \
             cmake \
+            gcc-aarch64-linux-gnu \
             gcc-multilib \
             g++-multilib \
             git \
+            libc6-dev-arm64-cross \
             libc6-dev-i386 \
             make \
             nasm \
