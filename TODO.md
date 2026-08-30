@@ -12,9 +12,6 @@
       queued-samples count, the way snes9x's DynamicRateControl does
 - [ ] Always emulate the DSP at its native rate and let `SDL_AudioStream`
       resample, rather than retuning the DSP per `SoundQuality` setting
-- [ ] Write a Homebrew formula/tap
-- [ ] Refresh the AppStream `<releases>` list, replace `<developer_name>` with
-      `<developer>`, use an SPDX licence id, and host the screenshot ourselves
 - [ ] Replace the legacy OpenGL 1.x path with `SDL_Renderer` and a streaming
       texture, so macOS gets Metal and Windows D3D without an OpenGL dependency
 - [ ] Use `glTexSubImage2D` rather than reallocating the texture every frame,
@@ -44,7 +41,10 @@
       cross-table indexing stops tripping UBSan
 - [ ] Build `test/`'s parent objects through the top Makefile, not make's implicit rule
 - [ ] Test `linux/battery.c` on a machine that reports battery state
-- [ ] Port the rest of `doc/readme.txt/*.txt` into `man/zsnes.1`
 - [ ] Decide whether `find_next_match` needs `+ 1` (`argv.h`)
 - [ ] Drop the unfinished-dynarec remnants around `curexecstate` (`initc.c`)
 - [ ] Use or drop `pNewDeviceAt` (`mmlib/macos.c`)
+- [ ] Port the rest of `doc/readme.txt/*.txt` into `man/zsnes.1`
+- [ ] Refresh the AppStream `<releases>` list, replace `<developer_name>` with
+      `<developer>`, use an SPDX licence id, and host the screenshot ourselves
+- [ ] Write a Homebrew formula/tap
