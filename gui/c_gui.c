@@ -40,7 +40,7 @@
 #include "guiwindp.h"
 
 #ifdef __OPENGL__
-#include "../linux/c_sdlintrf.h"
+#include "../unix/c_sdlintrf.h"
 #endif
 
 #ifdef __WIN32__

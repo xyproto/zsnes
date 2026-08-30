@@ -2,7 +2,7 @@
 # zrun.sh - run zsnes headlessly under the built-in debug instrumentation and
 # collect every artifact into one directory.
 #
-# The emulator's debug hooks (linux/sdllink.c, c_init.c) hardcode /tmp paths,
+# The emulator's debug hooks (unix/sdllink.c, c_init.c) hardcode /tmp paths,
 # so this wrapper clears them before the run and harvests them after; that also
 # keeps parallel runs from reading each other's leftovers.
 #

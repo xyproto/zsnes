@@ -37,6 +37,9 @@ extern uint64_t BitDepth;
 // OPENGL VARIABLES
 static unsigned short* glvidbuffer = 0;
 static GLuint gltextures[4];
+/* What each texture is currently allocated as, so gl_upload knows whether it
+   can write into the existing storage. */
+static int gltexture_w[4], gltexture_h[4];
 static int gltexture256, gltexture512;
 static int glfilters = GL_NEAREST;
 static int glscanready = 0;
@@ -130,6 +133,9 @@ int gl_start(int width, int height, int req_depth, int FullScreen)
      * gltextures[3]: 1D texture, 256 lines of alternating alpha
      */
     glGenTextures(4, gltextures);
+    for (i = 0; i < 4; i++) {
+        gltexture_w[i] = gltexture_h[i] = 0;
+    }
     for (i = 0; i < 3; i++) {
         glBindTexture(GL_TEXTURE_2D, gltextures[i]);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, glfilters);
@@ -143,6 +149,24 @@ int gl_start(int width, int height, int req_depth, int FullScreen)
     }
 
     return true;
+}
+
+/* Reallocating the texture every upload throws away the driver's storage and
+   makes it find new storage each frame. The size only changes when the video
+   mode does, so allocate on a change and write into the existing storage the
+   rest of the time. */
+static void gl_upload(int const tex, GLint const internal, int const w, int const h,
+    void const* const pixels)
+{
+    if (gltexture_w[tex] == w && gltexture_h[tex] == h) {
+        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, w, h, GL_RGB,
+            GL_UNSIGNED_SHORT_5_6_5, pixels);
+        return;
+    }
+    glTexImage2D(GL_TEXTURE_2D, 0, internal, w, h, 0, GL_RGB,
+        GL_UNSIGNED_SHORT_5_6_5, pixels);
+    gltexture_w[tex] = w;
+    gltexture_h[tex] = h;
 }
 
 void gl_end()
@@ -209,8 +233,7 @@ static void gl_drawspan(int hires, int start, int end)
                     vbuf2 += 32;
                 }
                 glBindTexture(GL_TEXTURE_2D, gltextures[1]);
-                glTexImage2D(GL_TEXTURE_2D, 0, 3, 256, 512, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5,
-                    glvidbuffer);
+                gl_upload(1, 3, 256, 512, glvidbuffer);
 
                 gltexture512 = 2;
             } else {
@@ -224,8 +247,7 @@ static void gl_drawspan(int hires, int start, int end)
                 }
 
                 glBindTexture(GL_TEXTURE_2D, gltextures[1]);
-                glTexImage2D(GL_TEXTURE_2D, 0, 3, 512, 256, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5,
-                    glvidbuffer);
+                gl_upload(1, 3, 512, 256, glvidbuffer);
 
                 gltexture512 = 1;
             }
@@ -248,8 +270,7 @@ static void gl_drawspan(int hires, int start, int end)
             glPixelStorei(GL_UNPACK_SKIP_PIXELS, 16);
             glPixelStorei(GL_UNPACK_ROW_LENGTH, 288);
 
-            glTexImage2D(GL_TEXTURE_2D, 0, 3, 256, 256, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5,
-                (unsigned short*)vidbuffer + 288);
+            gl_upload(0, 3, 256, 256, (unsigned short*)vidbuffer + 288);
 
             glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
             glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
@@ -296,8 +317,7 @@ void gl_drawwin()
         /* Display 1 512x448 quad for the 512x448 buffer */
         glBindTexture(GL_TEXTURE_2D, gltextures[1]);
         glTexEnvi(GL_TEXTURE_2D, GL_TEXTURE_ENV_MODE, GL_DECAL);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 512, 512, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5,
-            glvidbuffer);
+        gl_upload(1, GL_RGB, 512, 512, glvidbuffer);
 
         glDisable(GL_DEPTH_TEST);
         glDisable(GL_LIGHTING);

@@ -23,7 +23,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #ifdef __UNIXSDL__
 #include "../gblhdr.h"
-#include "../linux/sdllink.h"
+#include "../unix/sdllink.h"
 #define fnamecmp strcmp
 #define fnamencmp strncmp
 #else

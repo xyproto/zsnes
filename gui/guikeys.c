@@ -53,10 +53,10 @@
 #include "guifuncs.h"
 
 #ifdef __UNIXSDL__
-#include "../linux/sdllink.h"
+#include "../unix/sdllink.h"
 
 #ifdef __OPENGL__
-#include "../linux/gl_draw.h"
+#include "../unix/gl_draw.h"
 #endif
 #endif
 

@@ -270,7 +270,7 @@ ifeq ($(SDL_BACKEND_AVAILABLE),)
 ifneq ($(filter $(ARCH),$(UNIXSDL_ARCHES)),)
 $(info )
 $(info ERROR: no SDL for $(CPU)/$(ARCH), and these targets have no other)
-$(info video backend: __UNIXSDL__ and linux/sdllink.c are built either way.)
+$(info video backend: __UNIXSDL__ and unix/sdllink.c are built either way.)
 $(info Install SDL3 for the target, or cross-build one into its sysroot.)
 $(info )
 $(error No SDL library for $(CPU)/$(ARCH))
@@ -687,18 +687,19 @@ CFGDEFS += -D__LIBAO__
 endif
 
 ifneq ($(filter $(ARCH),$(UNIXSDL_ARCHES)),)
-SRCS += linux/audio.c
-SRCS += linux/battery.c
-SRCS += linux/c_sdlintrf.c
-SRCS += linux/lib.c
-SRCS += linux/safelib.c
+SRCS += unix/audio.c
+SRCS += unix/battery.c
+SRCS += unix/c_sdlintrf.c
+SRCS += unix/lib.c
+SRCS += unix/safelib.c
 
-SRCS += linux/sdllink.c
-SRCS += linux/sockserv.c
-SRCS += linux/sw_draw.c
+SRCS += unix/sdl_render.c
+SRCS += unix/sdllink.c
+SRCS += unix/sockserv.c
+SRCS += unix/sw_draw.c
 
 ifdef WITH_OPENGL
-SRCS += linux/gl_draw.c
+SRCS += unix/gl_draw.c
 endif
 
 CFGDEFS += -D__UNIXSDL__
@@ -965,7 +966,7 @@ test: $(BINARY)
 # mkdir -p then install -m: BSD install (macOS, the BSDs) has no -D, and spells
 # its own -D as something else entirely, so `make install` used to fail there.
 INSTALL_DIRS := bin share/applications share/metainfo share/man/man1 \
-                $(foreach s,16x16 32x32 48x48 64x64 128x128,share/img/hicolor/$(s)/apps)
+                $(foreach s,16x16 32x32 48x48 64x64 128x128,share/icons/hicolor/$(s)/apps)
 
 install: zsnes
 	mkdir -p $(foreach d,$(INSTALL_DIRS),'$(DESTDIR)$(PREFIX)/$(d)')

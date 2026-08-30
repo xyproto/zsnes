@@ -23,7 +23,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #ifdef __UNIXSDL__
 #include "gblhdr.h"
-#include "linux/safelib.h"
+#include "unix/safelib.h"
 #elif defined(__WIN32__)
 #include "win/confloc.h"
 #include "win/lib.h"

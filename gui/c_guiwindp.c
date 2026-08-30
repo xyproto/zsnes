@@ -38,7 +38,7 @@
 #include "guiwindp.h"
 
 #if defined __UNIXSDL__ && defined __OPENGL__
-#include "../linux/gl_draw.h"
+#include "../unix/gl_draw.h"
 #endif
 
 char CMovieExt = 'v';

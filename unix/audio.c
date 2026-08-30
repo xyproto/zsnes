@@ -108,6 +108,9 @@ bool sound_sdl = false;
 static bool sdl_audio_subsystem = false;
 static char sdl_audio_last_error[256];
 static SDL_AudioStream* sdl_audio_stream = NULL;
+/* Half a percent: enough to absorb the drift between two free-running clocks,
+   about nine cents of pitch, which is below what anyone picks out. */
+#define SDL_AUDIO_DRIFT_MAX 0.005f
 
 int SoundEnabled = 1;
 uint8_t PrevStereoSound;
@@ -117,8 +120,12 @@ uint32_t PrevSoundQuality;
 #define SAMPLE_NTSC_LO 59649ULL
 #define SAMPLE_PAL_HI_SCALE 1ULL
 #define SAMPLE_PAL_LO 50ULL
-static const int freqtab[7] = { 8000, 11025, 22050, 44100, 16000, 32000, 48000 };
-#define RATE freqtab[SoundQuality = ((SoundQuality > 6) ? 1 : SoundQuality)]
+/* The SNES DSP runs at 32kHz. SDL, PipeWire and libao all resample, so render
+   at that rate and let them convert: the mixer keeps unity pitch and its
+   envelope tables need no rescaling, and the conversion happens once, well,
+   rather than by retuning the emulated chip. SoundQuality no longer picks the
+   rate on this side. */
+#define RATE 32000
 
 struct
 {
@@ -1114,10 +1121,41 @@ static int SoundInit_pipewire()
 }
 #endif
 
+/* The emulated sample clock and the sound card's never agree exactly, so the
+   queue creeps towards empty or towards full and eventually clicks or lags.
+   Steer the stream a fraction of a percent either way to hold it near half
+   full - far too small a change in pitch to hear, and it removes the drift
+   rather than papering over it once it has become audible. */
+static void SDLAudioDriftControl(int const queued)
+{
+    float const target = (float)sdl_audio_buffer_len * 0.5f;
+    float ratio;
+
+    if (target <= 0.0f) {
+        return;
+    }
+    ratio = 1.0f + SDL_AUDIO_DRIFT_MAX * ((float)queued - target) / target;
+    if (ratio < 1.0f - SDL_AUDIO_DRIFT_MAX) {
+        ratio = 1.0f - SDL_AUDIO_DRIFT_MAX;
+    } else if (ratio > 1.0f + SDL_AUDIO_DRIFT_MAX) {
+        ratio = 1.0f + SDL_AUDIO_DRIFT_MAX;
+    }
+    SDL_SetAudioStreamFrequencyRatio(sdl_audio_stream, ratio);
+}
+
 void SoundWrite_sdl()
 {
+    int backlog;
+
     if (!sdl_audio_stream) {
         return;
+    }
+
+    /* Before topping up: what the device has left to play, which is what says
+       whether the emulator is running ahead of it or behind. */
+    backlog = SDL_GetAudioStreamQueued(sdl_audio_stream);
+    if (backlog >= 0) {
+        SDLAudioDriftControl(backlog);
     }
 
     for (;;) {
@@ -1210,7 +1248,7 @@ static int SoundInit_sdl_once()
         return (false);
     }
 
-    sdl_audio_buffer_len = (samptab[SoundQuality] * 128 * wanted.channels * 4 + 255) & ~255;
+    sdl_audio_buffer_len = (samptab[5] * 128 * wanted.channels * 4 + 255) & ~255;
     if (sdl_audio_buffer_len < 512) {
         sdl_audio_buffer_len = 512;
     }

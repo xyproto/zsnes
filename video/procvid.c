@@ -50,7 +50,7 @@
 #include "procvidc.h"
 
 #ifdef __UNIXSDL__
-#include "../linux/sdllink.h"
+#include "../unix/sdllink.h"
 #endif
 
 char const* Msgptr;

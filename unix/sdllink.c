@@ -76,6 +76,24 @@ static uint32_t WindowHeight = 224;
 static uint32_t FullScreen = 0;
 static vidstate_t sdl_state = vid_null;
 static int UseOpenGL = 0;
+/* The accelerated modes go through SDL_Renderer (unix/sdl_render.c), which
+   reaches Metal on macOS and D3D on Windows without an OpenGL dependency.
+   ZSNES_LEGACY_GL=1 asks for the old immediate-mode GL path instead. */
+int sr_start(int width, int height, int req_depth, int FullScreen);
+void sr_end(void);
+void sr_clearwin(void);
+void sr_drawwin(void);
+
+static int UseLegacyGL(void)
+{
+    static int cached = -1;
+
+    if (cached < 0) {
+        char const* e = getenv("ZSNES_LEGACY_GL");
+        cached = (e && *e == '1') ? 1 : 0;
+    }
+    return cached;
+}
 static const int BitDepth = 16;
 static uint32_t FirstVid = 1;
 #ifdef __OPENGL__
@@ -266,8 +284,12 @@ int Main_Proc()
                 SetHiresOpt(SurfaceX, SurfaceY);
                 adjustMouseXScale();
                 adjustMouseYScale();
-                SetGLViewport(WindowWidth, WindowHeight);
-                gl_clearwin();
+                if (UseLegacyGL()) {
+                    SetGLViewport(WindowWidth, WindowHeight);
+                    gl_clearwin();
+                } else {
+                    sr_clearwin();
+                }
                 Clear2xSaIBuffer();
             }
             break;
@@ -278,8 +300,12 @@ int Main_Proc()
             // and 4 are fullscreen *software* modes, where FullScreen alone
             // would call gl_clearwin() with no context.
             if (UseOpenGL && FullScreen) {
-                SetGLViewport(event.window.data1, event.window.data2);
-                gl_clearwin();
+                if (UseLegacyGL()) {
+                    SetGLViewport(event.window.data1, event.window.data2);
+                    gl_clearwin();
+                } else {
+                    sr_clearwin();
+                }
                 Clear2xSaIBuffer();
             }
             break;
@@ -1094,13 +1120,19 @@ int startgame()
     }
 #ifdef __OPENGL__
     else if (sdl_state == vid_gl) {
-        gl_end();
+        if (UseLegacyGL()) {
+            gl_end();
+        } else {
+            sr_end();
+        }
     }
 
     SDL_Init(SDL_INIT_VIDEO);
 
     if (UseOpenGL) {
-        status = gl_start(WindowWidth, WindowHeight, BitDepth, FullScreen);
+        status = UseLegacyGL()
+            ? gl_start(WindowWidth, WindowHeight, BitDepth, FullScreen)
+            : sr_start(WindowWidth, WindowHeight, BitDepth, FullScreen);
     } else
 #endif
     {
@@ -1325,7 +1357,9 @@ void initwinvideo(void)
     if (newmode == 1) {
 #ifdef __OPENGL__
         if (CheckOGLMode()) {
-            SetGLAttributes();
+            if (UseLegacyGL()) {
+                SetGLAttributes();
+            }
             if (sdl_window) {
                 SDL_SetWindowSize(sdl_window, WindowWidth, WindowHeight);
                 SDL_SyncWindow(sdl_window); // settle the new size before querying it
@@ -1333,12 +1367,17 @@ void initwinvideo(void)
             adjustMouseXScale();
             adjustMouseYScale();
 
-            int vp_w = (int)WindowWidth;
-            int vp_h = (int)WindowHeight;
-            if (FullScreen && sdl_window) {
-                SDL_GetWindowSizeInPixels(sdl_window, &vp_w, &vp_h);
+            /* SDL_Renderer fits its own output to the window; only the GL path
+               has a viewport to set, and calling into GL without its context
+               takes the process down. */
+            if (UseLegacyGL()) {
+                int vp_w = (int)WindowWidth;
+                int vp_h = (int)WindowHeight;
+                if (FullScreen && sdl_window) {
+                    SDL_GetWindowSizeInPixels(sdl_window, &vp_w, &vp_h);
+                }
+                SetGLViewport(vp_w, vp_h);
             }
-            SetGLViewport(vp_w, vp_h);
         }
 #endif
         clearwin();
@@ -1474,7 +1513,7 @@ int TryToggleFullScreen(void)
     adjustMouseYScale();
 
 #ifdef __OPENGL__
-    if (CheckOGLMode()) {
+    if (CheckOGLMode() && UseLegacyGL()) {
         int vp_w = (int)WindowWidth;
         int vp_h = (int)WindowHeight;
         if (FullScreen) {
@@ -1762,7 +1801,11 @@ void clearwin(void)
 
 #ifdef __OPENGL__
     if (UseOpenGL) {
-        gl_clearwin();
+        if (UseLegacyGL()) {
+            gl_clearwin();
+        } else {
+            sr_clearwin();
+        }
     } else
 #endif
     {
@@ -1796,7 +1839,11 @@ void drawscreenwin(void)
 
 #ifdef __OPENGL__
     if (UseOpenGL) {
-        gl_drawwin();
+        if (UseLegacyGL()) {
+            gl_drawwin();
+        } else {
+            sr_drawwin();
+        }
     } else
 #endif
     {
@@ -1813,7 +1860,11 @@ void UnloadSDL()
     }
 #ifdef __OPENGL__
     else if (sdl_state == vid_gl) {
-        gl_end();
+        if (UseLegacyGL()) {
+            gl_end();
+        } else {
+            sr_end();
+        }
     }
 #endif
     if (sdl_state != vid_null && sdl_window) {
