@@ -26,7 +26,7 @@ on:
 jobs:
   linux:
     name: linux
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     env:
       DEBIAN_FRONTEND: noninteractive
       PKG_CONFIG_LIBDIR: /usr/lib/i386-linux-gnu/pkgconfig:/usr/share/pkgconfig
@@ -34,16 +34,22 @@ jobs:
       - uses: actions/checkout@v6
       - name: Install dependencies
         run: |
+          # The aarch64 cross toolchain installs cleanly only while i386 is
+          # off: asked for alongside the multilib and :i386 set, apt cannot
+          # satisfy gcc-13-aarch64-linux-gnu and the whole step fails. The
+          # arm64 job installs these two on this same image without i386.
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            gcc-aarch64-linux-gnu \
+            libc6-dev-arm64-cross
           sudo dpkg --add-architecture i386
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
             build-essential \
             cmake \
-            gcc-aarch64-linux-gnu \
             gcc-multilib \
             g++-multilib \
             git \
-            libc6-dev-arm64-cross \
             libc6-dev-i386 \
             make \
             nasm \
@@ -176,7 +182,12 @@ jobs:
           ZSNES_SELFTEST=1 ./zsnes -v 0
 
       - name: Portability gate
-        run: make portcheck
+        # portcheck skips an architecture whose compiler is missing, so a
+        # failed install would quietly reduce this to the x86-64 half.
+        run: |
+          command -v aarch64-linux-gnu-gcc >/dev/null 2>&1 \
+            || { echo "aarch64 cross compiler missing; portcheck would skip it"; exit 1; }
+          make portcheck
       - name: AddressSanitizer
         # The difftests compare behaviour against the assembly, not memory
         # validity, so two global buffer overflows survived a green suite and
