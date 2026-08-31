@@ -1,17 +1,9 @@
 /*
- * The 8x8 tile drawers from video/newg162.asm: one routine per background
- * depth, each a gating tree (video/c_ng2gate.c) over the body and writers
- * here. The depths share every line of the body and differ only in the four
- * tables and two masks the `depth` descriptor carries.
- *
- * The writers are one family with four flags:
- *   t    OR the main-screen pixel with UnusedBit
- *   ms   write the sub screen too, at edi+75036*2, before OR-ing the main one
- *   s    write *only* the sub screen
- *   w    windowed: one pixel at a time, skipped while ngcwinmode is 1
- * plus a partial-tile form that tests each pixel against 0xFFFF first.
- *
- * Entered by jmp with one word pushed, so the asm seam ends `pop ebx / ret`.
+ * The 8x8 tile drawers from video/newg162.asm, one per background depth: a
+ * gating tree (video/c_ng2gate.c) over the shared body here. Depths differ
+ * only in the four tables and two masks the `depth` descriptor carries. The
+ * writers are one family flagged t/ms/s/w, plus a partial-tile form. Entered
+ * by jmp with one word pushed, so the asm seam ends `pop ebx / ret`.
  */
 #include <stdint.h>
 #include <string.h>
@@ -55,13 +47,10 @@ extern void c_cachesingle2bng(u4 ecx);
 extern void c_cachesingle4bng(u4 ecx);
 extern void c_cachesingle8bng(u4 ecx);
 
-/* What the body reads that depends on bit depth; one to one with the macro
-   arguments drawtileng16b took.
-
-   `chk` (the needs-decoding map) is the one table with a scaled index - 1, 2
-   or 4 bytes per tile, which is also the width of the test. `chks` and
-   `tltype` are byte-indexed at every depth. mode0add applies only at 2bpp,
-   because mode 0 backgrounds are 2bpp. */
+/* What the body reads that depends on bit depth, one to one with the macro
+   arguments drawtileng16b took. `chk` is the one table with a scaled index -
+   1, 2 or 4 bytes per tile, which is also the width of the test. mode0add
+   applies only at 2bpp, because mode 0 backgrounds are 2bpp. */
 typedef struct {
     u1* tltype;
     u1 const* chk;
@@ -273,13 +262,10 @@ static void drawtile_line(zreg* const r, int const f, depth const* const d)
 
 /* --- the 8x8 line drawers ------------------------------------------------ *
  *
- * A separate family, not a variation on the tile drawers: one scanline, read
- * from the *primary* cache (raw indices, looked up in CPalPtrng per pixel), so
- * no secondary cache and no cache key - a miss just calls cachesingleNbng.
- *
- * Transparency is the low bits of the index, which the 03h/0Fh/0FFh macro
- * argument masks. drawlineng16b's full-tile path is dead here only; the 16x16
- * and 16x8 line drawers still take theirs. */
+ * A separate family: one scanline read from the primary cache (raw indices,
+ * looked up in CPalPtrng per pixel), so no secondary cache and no key - a miss
+ * just calls cachesingleNbng. Transparency is the low bits of the index, which
+ * the 03h/0Fh/0FFh macro argument masks. */
 enum { L_T = 1, /* the second palette, 512 bytes on */
     L_MS = 2, /* the sub screen as well */
     L_S = 4 }; /* the sub screen only */
@@ -371,14 +357,10 @@ static u4 drawline_line(zreg* const r, int const f, depth const* const d)
 
 /* --- the 16x16 tile drawers ---------------------------------------------- *
  *
- * A 16x16 entry is two 8x8 halves from consecutive cache slots: taddnfy16x16
- * (plus taddfy16x16 when flipped vertically) picks the row pair, and flipx
- * starts at the right-hand half.
- *
- * The half index lives in cx, so it steps 16-bit and wraps inside the low word
- * while ngptrdat2's high half stays. The halves are counted by toggling the
- * global switch16x16, so an entry drawn while it is already set draws one half
- * - the assembly's behaviour. */
+ * Two 8x8 halves from consecutive cache slots; taddnfy16x16 (or taddfy16x16
+ * when flipped vertically) picks the row pair and flipx starts at the right
+ * half. The half index lives in cx, so it wraps inside the low word while
+ * ngptrdat2's high half stays. Halves are counted by toggling switch16x16. */
 static void tile_body_16x16(zreg* const r, int const f, depth const* const d)
 {
     u4 const eax = r[R_EAX];
@@ -519,12 +501,10 @@ NG2_TILE16_LEAVES(8b)
 
 /* --- the windowed arms --------------------------------------------------- *
  *
- * ngwintable is a run-length list of dwords, alternating outside and inside
- * runs; ngcwinmode says which kind the current one is and ngcpixleft how much
- * is left. A tile with more than 8 pixels left in its run is wholly one or the
- * other and takes a plain writer (or none, in the drawtile16bw arms); one that
- * straddles draws a pixel at a time and walks the list, which is why the
- * windowed traversal goes down the columns. */
+ * ngwintable is a run-length list of dwords alternating outside and inside
+ * runs. A tile with more than 8 pixels left in its run is wholly one or the
+ * other and takes a plain writer; one that straddles draws a pixel at a time
+ * and walks the list, which is why windowed traversal goes down the columns. */
 static void nextwinmode(void)
 {
     u4 const* const p = ngcwinptr;
@@ -1520,13 +1500,9 @@ static u4 drawline_line_om_16x16(zreg* const r, int const f,
 }
 
 /* The windowed line writers: same four families and WW_* flags as the tile
-   ones, but "transparent" means the second palette, not an UnusedBit OR. The
-   sub-first family reads the plain palette and ORs the bit on for the main
-   copy; the main-first one reads the second palette and masks it back out for
-   the sub. Not mirror images.
-
-   The window run steps in the writer, not the loop: a windowed line tile has
-   no per-column pass to hang it on. */
+   ones, but "transparent" means the second palette, not an UnusedBit OR, so the
+   two are not mirror images. The window run steps in the writer, not the loop:
+   a windowed line tile has no per-column pass to hang it on. */
 static void l_pix_win(u1* const edi, u1 const* const src, u4 const i,
     u4 const ofs, u1 const dl, u2 const* const pal, u4 const mask,
     int const f)

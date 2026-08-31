@@ -1,17 +1,9 @@
 /*
  * 65816 opcode handlers, from cpu/e65816.inc. Textual include (cpu/c_65816.c);
- * the includer supplies the integer typedefs and the register file.
- *
- * Handlers take the whole register file, laid out as pushad left it, so R_*
- * indexes it directly: esi is the 65816 program counter, dl the flags, dh the
- * remaining cycles, edi the opcode table for the current M/X widths, ebp the
- * SPC700 program counter. eax/ebx/ecx are scratch but not dead - ecx's upper
- * half reaches flagnz through `mov cx,ax` (setnz16), and ebx is the opcode
- * index, reloaded a byte at a time, so its upper bits stay zero.
- *
- * A/X/Y/S/D are 32-bit globals written at whatever width the mode selects.
- * Keeping the bytes above that width matters - 8-bit mode leaves the high half
- * of X intact and a later REP brings it back - so every store here masks.
+ * the includer supplies the typedefs and the register file, laid out as pushad
+ * left it: esi = PC, dl = flags, dh = cycles left, edi = the opcode table,
+ * ebp = SPC700 PC. A/X/Y/S/D are 32-bit globals written at the mode's width,
+ * so every store masks - 8-bit mode must leave the high half intact for REP.
  */
 #ifndef OPS65816_H
 #define OPS65816_H
@@ -568,13 +560,10 @@ void OP(COp62)(zreg* const r) /* PER s */
 }
 
 /*
- * Addressing modes. Each advances esi past its operand bytes and leaves the
- * value in al or ax, reaching memory through per-bank handler tables that take
- * bank and address through the seam block (cpu/memseam.h).
- *
- * Two easy losses: `add cx,bx` adds all of bx, not just bl, which is safe only
- * because the dispatcher keeps bh zero; and the 16-bit carry out of
- * `add cx,<index>` steps the bank, which is the page-crossing behaviour.
+ * Addressing modes: advance esi past the operand bytes, leave the value in al
+ * or ax, reach memory through the per-bank tables (cpu/memseam.h). Two easy
+ * losses: `add cx,bx` adds all of bx (safe only because bh is kept zero), and
+ * the 16-bit carry out of `add cx,<index>` steps the bank - page crossing.
  */
 static inline void mem_call(zreg* const r, eop* const fn)
 {
@@ -1616,13 +1605,10 @@ RMW(OP(COp0Cm8), a_a_8ni, o_TSB8, a_a_8w)
 RMW(OP(COp0Cm16), a_a_16ni, o_TSB16, a_a_16w)
 
 /*
- * ADC and SBC. The binary forms are a plain x86 add/subtract-with-carry; the
- * decimal forms follow it with DAA or DAS, whose OF the core then reads with
- * `seto byte[flago]`. See decimal_of below for what that leaves in V.
- *
- * Carry in differs between the two: ADC does `add cl,cl` and takes bit 7 of
- * flagc, SBC does `sub cl,1` and borrows when flagc's low byte is zero. Both
- * leave the modified byte behind in cl.
+ * ADC and SBC. Binary forms are a plain x86 add/subtract-with-carry; decimal
+ * forms follow with DAA or DAS, whose OF the core reads via `seto byte[flago]`.
+ * Carry in differs: ADC does `add cl,cl` and takes bit 7 of flagc, SBC does
+ * `sub cl,1` and borrows when flagc's low byte is zero. Both leave cl modified.
  */
 static inline int borrow_in(zreg* const r)
 {
@@ -1650,13 +1636,9 @@ static inline void nvzc16(zreg* const r, int const of, int const cf)
 
 /*
  * Intel's DAA and DAS, verbatim: the second adjustment tests the values from
- * before the first, and DAS leaves CF alone when it is not taken.
- *
- * OF too, because the assembly stored it. Documented as undefined, but on x86
- * it is the signed overflow of the one *combined* adjustment (0, 6, 60h, 66h)
- * on the entering AL, clear when there is none - checked over all 1024
- * (AL, CF, AF) states and independent of the incoming OF. The 65816 leaves V
- * undefined in decimal mode, so flago only ever holds what the assembly left.
+ * before the first, and DAS leaves CF alone when not taken. OF too, because
+ * the assembly stored it: on x86 it is the signed overflow of the combined
+ * adjustment on the entering AL, checked over all 1024 (AL, CF, AF) states.
  */
 static inline int decimal_of(u1 const old, u4 const adj, u1 const res,
     int const sub)
@@ -1964,12 +1946,9 @@ OPMODE(OP(COpFFm16d), a_alCx_16, o_SBC16d)
 /*
  * Control flow. esi is a host pointer into the mapped bank, not a 65816
  * address, so every jump goes back through the memory map: pick snesmmap or
- * snesmap2 by where in the bank the target is, keep that base in initaddrl and
- * add the offset. Recovering the PC runs it backwards.
- *
- * The `dma` flag is the odd corner: the absolute jumps and JSR also route
- * $4300 and up in a register bank's low half at dmadata; the indirect ones do
- * not.
+ * snesmap2 by where in the bank the target is, keep that base in initaddrl,
+ * add the offset. The `dma` flag: absolute jumps and JSR also route $4300 and
+ * up in a register bank's low half at dmadata; the indirect ones do not.
  */
 static inline u1* bank_base(u4 const eax, u4 const ebx, int const dma)
 {

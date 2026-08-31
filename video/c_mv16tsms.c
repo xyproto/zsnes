@@ -1,14 +1,9 @@
 /*
- * The eleven tile-row routines of video/mv16tms.asm: colour-maths rows, each
- * pixel looked up in a palette table, averaged with the transparency buffer
- * and run through fulladdtab. Three writers, named a/b/c after the assembly -
- * a averages into pal16b and only when the buffer is non-zero, b and c use
- * pal16bcl and pal16bxcl, and c inverts (the subtractive form). Each has a
- * window-masked twin, used by the 8x8 and 16x16 walkers in seven combinations.
- *
- * Entered with esi = the video pointer, ebp = the transparency buffer,
- * edi = the tile map and dl or temp holding the starting column; esi and ebp
- * are already biased by the horizontal offset.
+ * The eleven tile-row routines of video/mv16tms.asm: colour-maths rows run
+ * through fulladdtab. Three writers a/b/c after the asm - a averages into
+ * pal16b, b and c use pal16bcl/pal16bxcl and c inverts - each with a
+ * window-masked twin. Entered with esi = video pointer, ebp = transparency
+ * buffer, edi = tile map, dl or temp the starting column.
  */
 #include <stdint.h>
 #include <string.h>
@@ -327,14 +322,10 @@ void c_draw8x816twinonms_body(void) { draw_row_a(1); }
 
 /* --- the 16x16 tile rows -------------------------------------------------- *
  *
- * The same writers over 16x16 map entries, walked half a tile at a time:
+ * The same writers over 16x16 entries, walked half a tile at a time:
  * a16x16xinc toggles per column and says whether the step advances the map
- * pointer or moves to the tile's other half; the x flip swaps which, the y
- * flip which row.
- *
- * The tile-number arithmetic is 16-bit but reaches edi as a full dword, so the
- * top half of eax takes part - zero after any tile that drew, and whatever the
- * caller left after one skipped on priority. */
+ * pointer or moves to the other half. The tile-number arithmetic is 16-bit but
+ * reaches edi as a full dword, so the top half of eax takes part. */
 extern u1 a16x16xinc; /* video/makevid.h */
 extern u2 yadd, yflipadd; /* video/c_makev16tdata.c */
 

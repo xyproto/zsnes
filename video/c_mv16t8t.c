@@ -1,27 +1,9 @@
 /*
- * video/c_mv16t8t.c - the six 8x8 colour-maths tile drawers of
- * video/makev16t.asm: draw8x816t, draw8x8fulladd, draw8x816ts and their three
- * winon twins.
- *
- * One entry point; the other five are jumped to once the shared prologue has
- * decided the colour-maths mode. video/c_mv16t8bt.c produces the transparency
- * buffer; this one consumes it, blending each pixel with what is underneath.
- *
- * The three modes and the two window forms are one body here, six in the
- * assembly, and they differ in more than the writer:
- *
- *   plain   the attribute lives in dh, the column counter in dl, and the
- *           palette adder reaches the writer in dh
- *   winon   the attribute lives in cl, the column counter is the `temp`
- *           global, counted in memory, the palette adder goes through
- *           coadder16, and edx walks the window mask
- *
- * and only the two plain non-subtractive forms have a mosaic tail at all.
- *
- * Reached with al = the starting column, ah = the palette shifter, ebx = the
- * tile cache pointer, ecx = the y adder, edx = the map pointer to reload at
- * the column wrap, esi = the horizontal offset and edi = the map pointer.
- * The bgmode 2 and 5 redirects and the mosaic tail stay in the thunk.
+ * The six 8x8 colour-maths tile drawers of video/makev16t.asm: draw8x816t,
+ * draw8x8fulladd, draw8x816ts and their winon twins. One entry point; the rest
+ * are jumped to once the shared prologue picks the mode. video/c_mv16t8bt.c
+ * produces the transparency buffer, this one consumes it. plain keeps the
+ * attribute in dh and the column in dl; winon uses cl, `temp` and coadder16.
  */
 #include <stdint.h>
 #include <string.h>

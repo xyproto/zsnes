@@ -1,18 +1,8 @@
 /*
- * The sprite drawers of video/newgfx16.asm: drawsprng16b, drawsprng16bhr and
- * the fourteen arms they dispatch into. The assembly's 58 writer macros are
- * four skeletons plus flags:
- *
- *   A  no window          palette, transparency, store main, store sub
- *   B  window gates both  the window test first, then A
- *   C  window gates sub   store main, window test, store sub
- *   D  window gates main  store sub, window test, store main
- *
- * and independently: which palette half, whether the unused bit is cleared for
- * a low palette entry, whether the sub screen is written, whether the main
- * store ORs the bit back in, and whether the priority bit is claimed before
- * the window test or after. The hi-res forms just pair every store with one
- * 75036 words on.
+ * The sprite drawers of video/newgfx16.asm. The asm's 58 writer macros are
+ * four skeletons - A no window, B window gates both, C gates sub, D gates
+ * main - plus flags for palette half, sub-screen store and priority order.
+ * Hi-res pairs every store with one 75036 words on.
  */
 #include <stdint.h>
 #include <string.h>

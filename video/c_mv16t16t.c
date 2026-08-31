@@ -1,18 +1,9 @@
 /*
- * The six 16x16 colour-maths tile drawers: the 16x16 column walk of
- * video/c_mv16t16bt.c with the colour-maths writers of video/c_mv16tt.h. One
- * entry point; the other five are jumped to once the prologue has picked the
- * colour-maths mode.
- *
- * Beyond the walk, this differs from the 8x8 form in that all three plain
- * forms carry the mosaic tail and none tests `drawn` first; and from the 16x16
- * *bt* form in that the flipped windowed loops use the winonb writers, reading
- * the window mask at the screen position.
- *
- * Entered with ebx = the tile cache pointer, ecx = the y adder, edx = the map
- * pointer to reload at the column wrap, esi = the horizontal offset and
- * edi = the map pointer. eax is four bytes of input: `mov [temp],eax` is a
- * dword store over temp, bshifter, a16x16xinc and a16x16yinc.
+ * The six 16x16 colour-maths tile drawers: the column walk of
+ * video/c_mv16t16bt.c with the writers of video/c_mv16tt.h. Entered with
+ * ebx = tile cache, ecx = y adder, edx = map pointer to reload at the column
+ * wrap, esi = horizontal offset, edi = map pointer. eax is four bytes of
+ * input: `mov [temp],eax` stores over temp, bshifter, a16x16xinc, a16x16yinc.
  */
 #include <stdint.h>
 #include <string.h>

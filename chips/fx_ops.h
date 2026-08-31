@@ -1,21 +1,8 @@
 /*
- * The SuperFX (GSU) core, from chips/fxemu2*.asm. Textual include; the includer
- * supplies the integer typedefs and the seam block below.
- *
- * The assembly's hot registers are the FxSeam* variables now, loaded by
- * MainLoop and written back by its epilogue:
- *
- *     ebp  program counter, a host pointer into the code bank
- *     esi  source register pointer      (&SfxR0 + n*4)
- *     edi  destination register pointer (&SfxR0 + n*4)
- *     ecx  cl = next opcode byte, ch = ALT1/ALT2/ALT3 mode
- *
- * ch is an index, not a flag: dispatch is table[(ALT << 8) | opcode] and the
- * four ALT tables sit adjacently (endmem.c). Same for the b, c and d groups.
- *
- * Base tables are called and returned from; MainLoop threads the d table, so
- * its handlers also spend an opcode and can end the loop. Only STOP differs
- * between the two, so d shares the base bodies everywhere else.
+ * The SuperFX (GSU) core, from chips/fxemu2*.asm. Textual include: the includer
+ * supplies the typedefs and the seam block below. ebp is the PC, esi/edi the
+ * source/destination register pointers, cl the opcode and ch the ALT mode;
+ * dispatch is table[(ALT << 8) | opcode] over adjacent tables (endmem.c).
  */
 #ifndef FX_OPS_H
 #define FX_OPS_H
@@ -2017,15 +2004,8 @@ void c_FxOp00(void) /* STOP: halt the GSU, optionally raising an IRQ */
  *
  * PLOT writes the colour register to (R1, R2) and advances R1. CMODE picks one
  * of sixteen specialisations up front (c_FxOp4EA1) and patches the dispatch
- * tables, so depth, zero check and dither are settled before any pixel.
- *
- * The line-location table maps a packed (x, y) to a tile number, or to
- * 0xFFFFFFFF off the right edge; the number scales by the depth's shift plus
- * two bytes per tile row.
- *
- * Bitplane pairs are 16 bytes apart and every write is 32-bit, so one access
- * covers both. fxxand[x] clears the destination bit in both, and the
- * fxbitNNpcal values (refreshed by COLOR) hold the colour already expanded. */
+ * tables. Bitplane pairs are 16 bytes apart and every write is 32-bit, so one
+ * access covers both; fxxand[x] clears the destination bit in both. */
 
 enum { FX_PLOT_2BPP,
     FX_PLOT_4BPP,

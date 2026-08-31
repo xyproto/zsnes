@@ -1,13 +1,8 @@
 /*
- * StartDrawNewGfx16b and its screen clip: the frame driver. Once per frame it
- * clears the per-layer counters, then walks a fixed order - sub screen first
- * if colour maths is on, then main - calling a background dispatcher, the
- * sprite pass or the mode 7 pass for each layer and priority.
- *
- * It runs on the caller's register block because the colour-maths pass it ends
- * with reads two of them: c_transp_halfsub takes the caller's eax and
- * c_transp_halfadd its edx, upper halves included. Nothing here means anything
- * by those, but the screen clip writes both on the way through.
+ * StartDrawNewGfx16b and its screen clip: the frame driver. Sub screen first
+ * if colour maths is on, then main, per layer and priority. It runs on the
+ * caller's register block because the colour-maths pass reads two of them:
+ * c_transp_halfsub takes eax, c_transp_halfadd edx, upper halves included.
  */
 #include <stdint.h>
 #include <string.h>

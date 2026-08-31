@@ -78,13 +78,8 @@ extern uint16_t stackand, stackor, xat, xst, xdt, xxt, xyt;
 u4 Totalbyteloaded;
 
 /* ZSNES 1.51 heads its states "V143" exactly as we do, so only the length
-   separates them. Two runs have grown since: the PPU register block and the
-   DSP block. Together they account for the whole difference, which is what
-   lets a 1.51 state be recognised.
-   Reading it is a further step: the 162 bytes added to the register block are
-   interleaved, not appended, so the run cannot simply be read short - the
-   65816 comes back with registers that never resume. Mapping those fields is
-   what remains. */
+   separates them: its PPU register block and DSP block are shorter, and the
+   162 added register bytes are interleaved rather than appended. */
 #define ZST_151_PPUREG 3019
 #define ZST_151_DSPSAVE 1068
 

@@ -1,12 +1,9 @@
 /*
- * The shared prologue of video/mv16tms.asm, run by all eleven draw*ms entry
- * points: stash the caller's registers, bias the video and window pointers by
- * the horizontal offset, clear the mosaic line if one is active, and work out
- * which of the three tile caches the tile pointer lands in.
- *
- * Entered with al = the palette/transparency byte, ah = the shifter,
- * ebx = the tile cache pointer, ecx = the y adder, edx = the tile value and
- * esi = the horizontal offset.
+ * The shared prologue of video/mv16tms.asm, run by all eleven draw*ms entries:
+ * stash the caller's registers, bias the video and window pointers by the
+ * horizontal offset, clear any mosaic line, and work out which of the three
+ * tile caches the tile pointer lands in. Entered with al = palette byte,
+ * ah = shifter, ebx = tile cache, ecx = y adder, edx = tile, esi = h offset.
  */
 #include <stdint.h>
 

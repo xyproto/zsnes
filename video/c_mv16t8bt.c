@@ -1,18 +1,9 @@
 /*
- * draw8x816bt and draw8x816btwinon: the 8x8 tile drawer that *produces* the
- * transparency buffer. video/c_makev16b.c's draw8x816b is the same walk
- * without the second store. One entry point; the windowed form is jumped to
- * once the shared prologue has run.
- *
- * That prologue is every renderer's in this file: stash the caller's
- * registers, bias the video, window and transparency pointers by the
- * horizontal offset, clear the mosaic line if one is active, and work out
- * which of the three tile caches the tile pointer lands in.
- *
- * Entered with al = the starting column, ah = the palette shifter, ebx = the
- * tile cache pointer, ecx = the y adder, edx = the map pointer to reload at
- * the column wrap, esi = the horizontal offset and edi = the map pointer. The
- * pixel writers are shared with the 16x16 form in video/c_mv16tbt.h.
+ * draw8x816bt and draw8x816btwinon: the 8x8 tile drawer that produces the
+ * transparency buffer; c_makev16b.c's draw8x816b is the same walk without the
+ * second store. Entered with al = starting column, ah = palette shifter,
+ * ebx = tile cache, ecx = y adder, edx = map pointer to reload at the column
+ * wrap, esi = horizontal offset, edi = map pointer.
  */
 #include <stdint.h>
 #include <string.h>

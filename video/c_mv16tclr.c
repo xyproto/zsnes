@@ -1,18 +1,9 @@
 /*
- * clearback16t and clearback16ts: the first thing each scanline does, filling
- * the line with the backdrop colour or - when colour maths applies to the back
- * area - blending it with the transparency buffer. Five routes, picked by
- * scaddtype and whether anything is on the sub screen:
- *
- *   no maths          copy the backdrop across, two pixels per store
- *   subtractive       clearback16ts, the fulladd loop with both ends inverted
- *   main + sub on     average each transparency pixel with the backdrop
- *   backdrop is zero  copy the transparency buffer straight over
- *   otherwise         run the pair through fulladdtab
- *
- * The averaging loop reads the buffer a dword at a time for two pixels; the
- * fulladd ones read a dword but step two bytes, so each read overlaps the
- * last. Reproduced, not fixed.
+ * clearback16t and clearback16ts: fill the scanline with the backdrop, or
+ * blend it with the transparency buffer when colour maths applies to the back
+ * area. Five routes, picked by scaddtype and whether the sub screen is on.
+ * The averaging loop reads a dword for two pixels while the fulladd ones read
+ * a dword but step two bytes, so each read overlaps. Reproduced, not fixed.
  */
 #include <stdint.h>
 #include <string.h>

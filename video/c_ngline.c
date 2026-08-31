@@ -1,16 +1,9 @@
 /*
- * The line-state half of newengine16b (video/newgfx16.asm).
- *
- * Once per scanline it records what the renderer needs for that line - scroll
- * positions, tile and map pointers, mode, mosaic, interlace, palette - into
- * 256-entry tables, flagging any value that differs from the line above.
- * StartDrawNewGfx16b uses those flags to decide whether eight lines can be
- * drawn as whole tiles. Nothing is passed in registers, so there is no seam.
- *
- * Two things to keep in mind: several tables are written *wider* than one
- * entry, so a dword store clobbers the next three lines (which then rewrite
- * themselves), and the comparison against the previous line is often narrower
- * than the store.
+ * The line-state half of newengine16b (video/newgfx16.asm): once per scanline
+ * it records scroll, pointers, mode, mosaic and palette into 256-entry tables,
+ * flagging what differs from the line above. Note several tables are written
+ * wider than one entry, so a dword store clobbers the next three lines, and
+ * the comparison against the previous line is often narrower than the store.
  */
 #include <stdint.h>
 #include <string.h>
@@ -368,15 +361,11 @@ void newengine16b_windows(void)
     }
 }
 
-/* One alternating run of the sprite window mask.
-
-   The dword-wide writes overshoot the run; the correction backs the pointer
-   and the count up by exactly that, so a run of length L advances ecx by L
-   however it lands. Both `sub`s borrow unsigned, which is why edx stays in use
-   after going negative - hence u4 arithmetic and a signed cast at the pointer.
-
-   Returns 1 once the 256 pixels are used up, leaving the last dword's
-   overshoot in the buffer as the assembly did. */
+/* One alternating run of the sprite window mask. The dword-wide writes
+   overshoot; the correction backs the pointer and count up by exactly that, so
+   a run of length L advances ecx by L however it lands. Both `sub`s borrow
+   unsigned, hence u4 arithmetic and a signed cast at the pointer. Returns 1
+   once the 256 pixels are used up. */
 static int win_run(u1** const pecx, u4* const peax, u4 edx, u4 const val)
 {
     u1* ecx = *pecx;

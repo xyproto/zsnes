@@ -1,13 +1,9 @@
 /*
  * The background dispatchers from video/newgfx16.asm, one per background per
- * pass. Each finds the layer's tile map and palette for the scanline, builds
- * the window if there is one, and hands the register set to the renderer in
- * video/c_ng2tile.c.
- *
- * Two things from the original: the `mov eax,[BGPT1+ebx*2]` loads are *dword*
- * reads of word tables, so they pick the next entry up in the high half - eax
- * loses it to a later mask, bgtxadd keeps it - and the second macro argument
- * always equalled the first, so the two indexes collapse into one.
+ * pass: find the layer's map and palette for the scanline, build the window,
+ * hand the register set to video/c_ng2tile.c. Note the `mov eax,[BGPT1+ebx*2]`
+ * loads are dword reads of word tables, so they pick the next entry up in the
+ * high half - eax loses it to a later mask, bgtxadd keeps it.
  */
 #include <stdint.h>
 #include <string.h>

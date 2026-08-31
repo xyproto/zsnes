@@ -1,17 +1,9 @@
 /*
- * The scanline drivers of video/makev16t.asm - the top of the transparency
- * renderer. One scanline: set the palette, work out the colour window, clear
- * the back area into the transparency buffer, then walk the four backgrounds
- * and four sprite priorities twice, once into that buffer (the "sub" pass) and
- * once into the video line ("main"). Mode 7 has its own pair of the same shape.
- *
- * Only drawline16t is reached from outside; the other five are fallen into.
- * The assembly's register push/pop spans drawline16t and NextDrawLine16bt,
- * which is why they read as one function here.
- *
- * The assembly threaded values between calls in registers, so a register file
- * (DLR) threads them here; dl_call hands it to entry points that want a
- * pushad-ordered block.
+ * The scanline drivers of video/makev16t.asm. One scanline: set the palette,
+ * work out the colour window, clear the back area into the transparency
+ * buffer, then walk four backgrounds and four sprite priorities twice - once
+ * into that buffer (sub), once into the video line (main). The asm threaded
+ * values between calls in registers, so a register file (DLR) does it here.
  */
 #include <stdint.h>
 

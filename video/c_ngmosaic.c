@@ -1,17 +1,9 @@
 /*
  * The mosaic pass: domosaicng16b and the sixty mosdraw* routines it jumps
- * into. A block takes its first pixel out of the scratch line and smears it
- * across, so all sixty differ only in block size (2..16) and which of four
- * screen combinations they write:
- *
- *   16b     one copy, straight down
- *   16bt    one copy, with the unused bit forced on
- *   16btms  two copies - main with the bit on, sub with it off
- *   16bntms two copies, neither touched
- *
- * cpu/c_table.c still names all sixty entry points, so they stay as one-line
- * thunks carrying the size and variant. 0xFFFF in the scratch line means
- * nothing is there and the block is skipped.
+ * into. A block smears its first pixel from the scratch line across, so the
+ * sixty differ only in block size (2..16) and which of four screen
+ * combinations they write. cpu/c_table.c names all sixty, so they stay as
+ * one-line thunks. 0xFFFF in the scratch line means the block is skipped.
  */
 #include <stdint.h>
 

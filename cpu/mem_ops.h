@@ -1,21 +1,9 @@
 /*
  * Memory access handlers, from cpu/memory.asm. Textual include
- * (cpu/c_memops.c), which supplies the integer typedefs and wraps each body in
- * its public name.
- *
- * The bank handlers and the Bank0dat* direct-page ones (reached through
- * DPageR8/R16/W8/W16, picked per direct-page high byte in cpu/memtable.c).
- * Everything goes through the seam:
- *
- *     MemSeamB  direct-page offset byte, just fetched from the opcode stream
- *     MemSeamC  the direct page register, xd
- *     MemSeamA  the value: out on a write, in on a read
- *
- * and the caller keeps whatever the handler leaves in all three - the "inv"
- * and "romram" ones advance the address and some zero the bank on purpose.
- *
- * The reg variants hand the access to an I/O register handler through the same
- * seam; MEM_REG_DISPATCH below is the indexing.
+ * (cpu/c_memops.c). Everything goes through the seam: MemSeamB the direct-page
+ * offset byte, MemSeamC the direct page register xd, MemSeamA the value. The
+ * caller keeps whatever the handler leaves in all three - the "inv" and
+ * "romram" ones advance the address and some zero the bank on purpose.
  */
 #ifndef MEM_OPS_H
 #define MEM_OPS_H

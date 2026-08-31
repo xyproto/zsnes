@@ -1,17 +1,8 @@
 /*
  * The background, sprite and Mode 7 passes of StartDrawNewGfx16b
- * (video/newgfx16.asm): five macros instantiated sixteen times, once per layer
- * per screen. One walk down the scanlines, deciding per line whether the layer
- * draws eight lines at a time or one; only that decision differs:
- *
- *   pr0      tile-aligned, nothing changed on these lines, mode not 2 or 4+
- *   bg3pr0   the same, keyed on BG3's priority being steady
- *   pr1      whatever the priority-1 flag for the line says
- *   bg3pr1   the same, but skip the line in mode 1 when BG3 has priority
- *   bg3pr1b  the same, but draw *only* those lines
- *
- * The renderers take the scanline in ebx and the video pointer in esi, so they
- * get the pass's register file rather than arguments.
+ * (video/newgfx16.asm): five macros instantiated once per layer per screen.
+ * They differ only in whether a line draws eight at a time or one. The
+ * renderers take the scanline in ebx and the video pointer in esi.
  */
 #include <stdint.h>
 #include <string.h>

@@ -1,16 +1,9 @@
 /*
- * The offset-per-tile helpers of video/vidmacro.mac. Modes 2 and 4 give every
- * tile column its own scroll offset from the BG3 map: initoffsetmode finds
- * where that map starts, procoffsetmode steps one column and returns the map
- * pointer for the next tile, offsetmcachechk faults a tile into the 4-bit
- * cache before it draws.
- *
- * video/c_makev16b.c has its own static copies for the non-transparency
- * drawers; they are *not* interchangeable with these.
- *
- * Most of the arithmetic is deliberately 16-bit on the low half of a 32-bit
- * register - the assembly used ax/bx/dx and the high halves carry through
- * untouched, which a u2 local would drop.
+ * The offset-per-tile helpers of video/vidmacro.mac: modes 2 and 4 give every
+ * tile column its own scroll offset from the BG3 map. video/c_makev16b.c has
+ * its own static copies, which are *not* interchangeable. Most arithmetic is
+ * deliberately 16-bit on the low half of a 32-bit register, as the asm's
+ * ax/bx/dx were, so the high halves carry through untouched.
  */
 #ifndef C_MV16TOFFS_H
 #define C_MV16TOFFS_H

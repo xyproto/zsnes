@@ -1,18 +1,9 @@
 /*
- * The drawsprites16bt family: the 4-bit sprite writer that *produces* the
- * transparency buffer. The same unrolled eight-pixel loop as drawsprites16b,
- * but each pixel is written twice, to the video line and to transpbuf, so the
- * later colour-maths passes see it. Only drawsprites16bt is reached from
- * outside; video/c_mv16tsprt.c consumes the buffer.
- *
- *   plain     every pixel whose low nibble is non-zero
- *   winon     ... unless the sprite window covers it
- *   prio      one priority level per pass, sprpriodata masking the pixels a
- *             higher-priority sprite already claimed
- *
- * ebx means three different things here: the plain form keeps the doubled x as
- * a byte offset, the window form halves it back to a pixel index, and the
- * priority form never doubles it.
+ * The drawsprites16bt family: the 4-bit sprite writer that produces the
+ * transparency buffer, writing each pixel twice - video line and transpbuf.
+ * Forms are plain, winon and prio. ebx means three things: the plain form
+ * keeps the doubled x as a byte offset, the window form halves it back to a
+ * pixel index, and the priority form never doubles it.
  */
 #include <stdint.h>
 #include <string.h>
