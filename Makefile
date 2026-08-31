@@ -996,11 +996,16 @@ PORTCHECK_DEFS   := $(filter-out -D__PIPEWIRE__ -D__LIBAO__,$(CFGDEFS))
 PORTCHECK_CFLAGS ?= -std=c11 $(FEATURE_FLAGS) \
                     -O1 -I. $(PORTCHECK_DEFS) $(CFLAGS_SDL) $(CFLAGS_PNG)
 PORTCHECK_ARM_CC ?= aarch64-linux-gnu-gcc
+# Which legs to compile. The aarch64 cross toolchain and the i386 multilib
+# set cannot be installed together on Ubuntu 24.04 - apt removes one to get
+# the other - so CI runs the two legs in different jobs.
+PORTCHECK_ARCHS  ?= x86-64 aarch64
 .PHONY: portcheck
 portcheck: $(HDRS)
 	@rc=0; \
 	for t in "x86-64:$(PORTCHECK_CC):-m64" "aarch64:$(PORTCHECK_ARM_CC):-idirafter/usr/include"; do \
 	  name=$${t%%:*}; rest=$${t#*:}; cc=$${rest%%:*}; extra=$${rest#*:}; \
+	  case " $(PORTCHECK_ARCHS) " in *" $$name "*) ;; *) continue;; esac; \
 	  command -v $$cc >/dev/null 2>&1 || { \
 	    echo "===> PORTCHECK: $$name skipped, $$cc not installed"; continue; }; \
 	  echo "===> PORTCHECK: compiling every C source for $$name"; \
