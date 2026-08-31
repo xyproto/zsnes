@@ -52,7 +52,6 @@
 - [ ] Test `unix/battery.c` on a machine that reports battery state
 - [ ] Move the end-of-ROM variables out of the ROM buffer so `maxromspace` no
       longer has to be 16MB for 8MB carts (#17)
-- [ ] Re-test PAL/NTSC detection across the ROM set (#24)
 - [ ] Verify the ZSNES Flatpak on Flathub (#10)
 - [ ] Drop the unfinished-dynarec remnants around `curexecstate` (`initc.c`)
 - [ ] Port the rest of `doc/readme.txt/*.txt` into `man/zsnes.1`

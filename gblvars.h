@@ -35,7 +35,8 @@ extern uint32_t Sflagnz, Sflago, Sflagc;
 extern uint32_t opcd, HIRQCycNext, oamaddr, curexecstate;
 extern zreg nmiprevaddrl; /* the 65816 PC: pointer-wide */
 extern uint32_t nmirept, nmiprevline, nmistatus, joycontren;
-extern uint32_t SfxR0, ramsize;
+extern uint32_t SfxR0[16]; /* the GSU register file (chips/c_fxdata.c) */
+extern uint32_t ramsize;
 extern zreg nmiprevaddrh;
 extern uint32_t tempesi, tempedi, tempedx, tempebp;
 extern uint32_t SPCMultA, PHnum2writespc7110reg, PHdspsave2;

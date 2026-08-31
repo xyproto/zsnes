@@ -1676,7 +1676,7 @@ void initpitch()
     }
 }
 
-extern uint32_t SfxR1, SfxR2, SfxSFR, SfxSCMR;
+extern uint32_t SfxSFR, SfxSCMR;
 extern uint8_t SetaCmdEnable[4];
 extern uint8_t disablespcclr, *sfxramdata, SramExists;
 extern unsigned char* setaramdata;
@@ -1788,8 +1788,8 @@ void CheckROMType()
         // SRAM mapping, banks 78 - 79
         map_mem(0x78, &sramsbank, 2);
 
-        SfxR1 = 0;
-        SfxR2 = 0;
+        SfxR0[1] = 0;
+        SfxR0[2] = 0;
         memset(sfxramdata, 0, 262144); // clear 256kB SFX ram
 
         if (SramExists) {
@@ -1909,11 +1909,15 @@ void SetupROM(void)
         romispal = (!BSEnable);
         break;
     default:
-        // Country codes 2-12 are PAL regions (Europe through Indonesia).
-        // Code 13 (South Korea) is NTSC. Code 18 is used by some PAL games.
+        /* 2..12 are the PAL regions and 17 is Australia, also PAL. 1.51
+           tested 2..12 alone; 18 is "other", kept because some PAL releases
+           carry it. 13 (Korea), 15 (Canada) and 16 (Brazil, PAL-M at 60Hz)
+           all run NTSC timing. */
         {
             uint8_t country = ROM[infoloc + CountryOffset];
-            romispal = !BSEnable && ((country >= 2 && country <= 12) || country == 18);
+            romispal = !BSEnable
+                && ((country >= 2 && country <= 12) || country == 17
+                    || country == 18);
         }
     }
 
@@ -2006,8 +2010,6 @@ static void map_set(u1** dest, uint8_t* src, size_t count, size_t step)
 }
 
 uint32_t cromptradd;
-extern uint32_t SfxR0, SfxR1, SfxR2, SfxR3, SfxR4, SfxR5, SfxR6, SfxR7,
-    SfxR8, SfxR9, SfxR10, SfxR11, SfxR12, SfxR13, SfxR14, SfxR15;
 extern void* ram7f;
 
 void map_lorom()
@@ -2171,8 +2173,7 @@ void map_sfx()
     uint_fast8_t x;
 
     // Clear SFX registers
-    SfxR0 = SfxR1 = SfxR2 = SfxR3 = SfxR4 = SfxR5 = SfxR6 = SfxR7 = 0;
-    SfxR8 = SfxR9 = SfxR10 = SfxR11 = SfxR12 = SfxR13 = SfxR14 = SfxR15 = 0;
+    memset(SfxR0, 0, sizeof(SfxR0));
 
     // set addresses 8000-FFFF
     // set banks 00-3F (40h x 64KB ROM banks @10000h)

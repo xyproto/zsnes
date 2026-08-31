@@ -8,6 +8,25 @@
 #ifndef OPS65816_H
 #define OPS65816_H
 
+#include <string.h>
+
+/* The 65816 PC is an arbitrary byte address, so operand loads are unaligned
+   and would fault on a strict-alignment target. memcpy compiles to the same
+   instruction wherever the direct load was legal. */
+static inline u2 rd16(zreg const p)
+{
+    u2 v;
+    memcpy(&v, (void const*)(uintptr_t)p, sizeof v);
+    return v;
+}
+
+static inline u4 rd32(zreg const p)
+{
+    u4 v;
+    memcpy(&v, (void const*)(uintptr_t)p, sizeof v);
+    return v;
+}
+
 /*
  * Entry points go through OP() so the file can be included twice: once for the
  * 65816 and once for the SA-1's copy, the same core over a different register
@@ -551,7 +570,7 @@ void OP(COp62)(zreg* const r) /* PER s */
     map = (r[R_EAX] & 0x8000u) ? snesmmap : snesmap2;
     r[R_EAX] = (zreg)(uintptr_t)map[r[R_EBX]];
     r[R_EBX] = r[R_ESI] - r[R_EAX];
-    SET16(r[R_EBX], (u2)(GET16(r[R_EBX]) + *(u2 const*)r[R_ESI]));
+    SET16(r[R_EBX], (u2)(GET16(r[R_EBX]) + rd16(r[R_ESI])));
     AX(r, GET16(r[R_EBX]));
     r[R_ESI] += 2;
     AX(r, (u2)(GET16(r[R_EAX]) + 2));
@@ -636,7 +655,7 @@ static void a_I_8(zreg* const r)
 }
 static void a_I_16(zreg* const r)
 {
-    r[R_EAX] = *(u4 const*)(uintptr_t)r[R_ESI];
+    r[R_EAX] = rd32(r[R_ESI]);
     r[R_ESI] += 2;
 }
 
@@ -644,7 +663,7 @@ static void a_I_16(zreg* const r)
 #define ABS(name, tab, idx)                                     \
     static void name(zreg* const r)                               \
     {                                                           \
-        SET16(r[R_ECX], *(u2 const*)r[R_ESI]);       \
+        SET16(r[R_ECX], rd16(r[R_ESI]));       \
         SET8(r[R_EBX], GET8(xdb));                              \
         r[R_ESI] += 2;                                          \
         idx;                                                    \
@@ -667,7 +686,7 @@ ABS(a_aCy_16w, TABW16, idx_bank(r, GET16(xy)))
 #define ABSL(name, tab, idx)                                    \
     static void name(zreg* const r)                               \
     {                                                           \
-        SET16(r[R_ECX], *(u2 const*)r[R_ESI]);       \
+        SET16(r[R_ECX], rd16(r[R_ESI]));       \
         SET8(r[R_EBX], *(u1 const*)(uintptr_t)(r[R_ESI] + 2));  \
         r[R_ESI] += 3;                                          \
         idx;                                                    \
@@ -1343,7 +1362,7 @@ static void a_A_16w(zreg* const r) { SET16(xa, GET16(r[R_EAX])); }
 #define ABSNI(name, tab, idx)                             \
     static void name(zreg* const r)                         \
     {                                                     \
-        SET16(r[R_ECX], *(u2 const*)r[R_ESI]); \
+        SET16(r[R_ECX], rd16(r[R_ESI])); \
         SET8(r[R_EBX], GET8(xdb));                        \
         idx;                                              \
         tab(r);                                           \
@@ -1972,7 +1991,7 @@ static inline u2 pc_now(u4 const esi) { return (u2)(esi - (zreg)(uintptr_t)inita
 void OP(COp4C)(zreg* const r) /* JMP a */
 {
     r[R_EAX] = 0;
-    AX(r, *(u2 const*)r[R_ESI]);
+    AX(r, rd16(r[R_ESI]));
     SET8(r[R_EBX], GET8(xpb));
     xpc = GET16(r[R_EAX]);
     jump_to(r, 1);
@@ -1981,7 +2000,7 @@ void OP(COp4C)(zreg* const r) /* JMP a */
 
 void OP(COp6C)(zreg* const r) /* JMP (a) */
 {
-    SET16(r[R_ECX], *(u2 const*)r[R_ESI]);
+    SET16(r[R_ECX], rd16(r[R_ESI]));
     r[R_EAX] = 0;
     bank0_call(r, c_membank0r16);
     xpc = GET16(r[R_EAX]);
@@ -1991,7 +2010,7 @@ void OP(COp6C)(zreg* const r) /* JMP (a) */
 
 void OP(COp7C)(zreg* const r) /* JMP (a,x) */
 {
-    SET16(r[R_ECX], *(u2 const*)r[R_ESI]);
+    SET16(r[R_ECX], rd16(r[R_ESI]));
     r[R_EAX] = 0;
     SET16(r[R_ECX], (u2)(GET16(r[R_ECX]) + GET16(xx)));
     SET8(r[R_EBX], GET8(xpb));
@@ -2005,7 +2024,7 @@ void OP(COp5C)(zreg* const r) /* JMP al */
 {
     r[R_EAX] = 0;
     SET8(r[R_EBX], *(u1 const*)(uintptr_t)(r[R_ESI] + 2));
-    AX(r, *(u2 const*)r[R_ESI]);
+    AX(r, rd16(r[R_ESI]));
     SET8(xpb, GET8(r[R_EBX]));
     xpc = GET16(r[R_EAX]);
     jump_to(r, 0);
@@ -2014,7 +2033,7 @@ void OP(COp5C)(zreg* const r) /* JMP al */
 void OP(COpDC)(zreg* const r) /* JML (a) */
 {
     u4 saved;
-    SET16(r[R_ECX], *(u2 const*)r[R_ESI]);
+    SET16(r[R_ECX], rd16(r[R_ESI]));
     r[R_EAX] = 0;
     bank0_call(r, c_membank0r16);
     SET16(r[R_ECX], (u2)(GET16(r[R_ECX]) + 2));
@@ -2033,7 +2052,7 @@ void OP(COp82)(zreg* const r) /* BRL rl */
     r[R_EBX] = r[R_ESI] - (zreg)(uintptr_t)initaddrl;
     SET16(r[R_EBX], (u2)(GET16(r[R_EBX]) + 2));
     r[R_EAX] = 0;
-    SET16(r[R_EBX], (u2)(GET16(r[R_EBX]) + *(u2 const*)r[R_ESI]));
+    SET16(r[R_EBX], (u2)(GET16(r[R_EBX]) + rd16(r[R_ESI])));
     AX(r, GET16(r[R_EBX]));
     r[R_EBX] = 0;
     xpc = GET16(r[R_EAX]);
@@ -2094,7 +2113,7 @@ void OP(COp20)(zreg* const r) /* JSR a */
     push_pc(r);
     r[R_EAX] = 0;
     SET16(xs, GET16(r[R_ECX]));
-    AX(r, *(u2 const*)r[R_ESI]);
+    AX(r, rd16(r[R_ESI]));
     r[R_EBX] &= 0xFFFF00FFu;
     xpc = GET16(r[R_EAX]);
     SET8(r[R_EBX], GET8(xpb));
@@ -2113,7 +2132,7 @@ void OP(COpFC)(zreg* const r) /* JSR (a,x) */
     SET16(xs, GET16(r[R_ECX]));
     r[R_EAX] = 0;
     r[R_EBX] &= 0xFFFF00FFu;
-    SET16(r[R_ECX], *(u2 const*)r[R_ESI]);
+    SET16(r[R_ECX], rd16(r[R_ESI]));
     SET8(r[R_EBX], GET8(xpb));
     SET16(r[R_ECX], (u2)(GET16(r[R_ECX]) + GET16(xx)));
     TABR16(r);
@@ -2136,7 +2155,7 @@ void OP(COp22)(zreg* const r) /* JSL al */
     SET16(xs, GET16(r[R_ECX]));
     r[R_EAX] = 0;
     r[R_EBX] &= 0xFFFF00FFu;
-    AX(r, *(u2 const*)r[R_ESI]);
+    AX(r, rd16(r[R_ESI]));
     SET8(r[R_EBX], *(u1 const*)(uintptr_t)(r[R_ESI] + 2));
     xpc = GET16(r[R_EAX]);
     SET8(xpb, GET8(r[R_EBX]));
@@ -2148,7 +2167,7 @@ void OP(COp22)(zreg* const r) /* JSL al */
    runs again until A underflows, so the loop lives in the dispatcher. */
 static void block_move(zreg* const r, int const dir)
 {
-    AX(r, *(u2 const*)r[R_ESI]);
+    AX(r, rd16(r[R_ESI]));
     SET8(xdb, GET8(r[R_EAX]));
     SET8(r[R_EBX], (u1)(GET16(r[R_EAX]) >> 8));
     SET16(r[R_ECX], GET16(xx));
@@ -2205,7 +2224,7 @@ void OP(COp89m8)(zreg* const r) /* BIT # - immediate does not touch N or V */
 
 void OP(COp89m16)(zreg* const r) /* BIT # */
 {
-    AX(r, *(u2 const*)r[R_ESI]);
+    AX(r, rd16(r[R_ESI]));
     if (flagnz & 0x18000u)
         flagnz |= 0x10000u;
     r[R_ESI] += 2;
