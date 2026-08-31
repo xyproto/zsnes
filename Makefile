@@ -133,11 +133,16 @@ WARN_FLAGS ?= -Wall -Wno-address-of-packed-member
 # Darwin is the same story: its aarch64 ABI has no non-PIC form at all, and
 # even x86-64 macOS wants PIE, so absolute addressing is off the table there.
 PIC_FLAGS := $(if $(or $(filter arm64,$(CPU)),$(filter DARWIN,$(ARCH))),,-no-pie -fno-pic)
-FEATURE_FLAGS := -D_DEFAULT_SOURCE -D_POSIX_C_SOURCE=200809L
+# SUSv4, which is POSIX.1-2008 plus XSI: standardised and honoured by glibc,
+# musl and the BSDs alike, where _DEFAULT_SOURCE is glibc's own and does
+# nothing elsewhere. XSI rather than bare POSIX because setreuid and
+# setregid (unix/safelib.c) live there. usleep needed the wider glibc set and
+# was dropped from POSIX in 2008, so unix/lib.c uses nanosleep instead.
+FEATURE_FLAGS := -D_XOPEN_SOURCE=700
 ifeq ($(ARCH),DARWIN)
 # Darwin reads _POSIX_C_SOURCE as a restriction rather than an addition: with
 # it set, unistd.h hides getdtablesize, getpagesize and the rest of the BSD
-# side. _DARWIN_C_SOURCE alone is the superset glibc needs both macros for.
+# side, so it needs its own macro instead.
 # GL_SILENCE_DEPRECATION is for the OpenGL 1.x entry points, which Apple
 # deprecated wholesale in 10.14 and still ships.
 FEATURE_FLAGS := -D_DARWIN_C_SOURCE -DGL_SILENCE_DEPRECATION
@@ -1003,9 +1008,11 @@ PORTCHECK_ARCHS  ?= x86-64 aarch64
 .PHONY: portcheck
 portcheck: $(HDRS)
 # One psr rule makes both the header and its object, so asking for the headers
-# also builds those objects with whatever CFLAGS this invocation carries. Drop
-# them, or a later build of another word size links these instead of its own.
-	@rm -f $(PSRS:.psr=.o)
+# also builds those objects with whatever CFLAGS this invocation carries. They
+# have to go, or a later build of another word size links these instead of its
+# own - and the headers with them, since the rule is keyed on the header: drop
+# the object alone and the next build sees the header up to date and never
+# remakes either. These are not in OBJS, so `make clean` does not cover them.
 	@rc=0; \
 	for t in "x86-64:$(PORTCHECK_CC):-m64" "aarch64:$(PORTCHECK_ARM_CC):-idirafter/usr/include"; do \
 	  name=$${t%%:*}; rest=$${t#*:}; cc=$${rest%%:*}; extra=$${rest#*:}; \
@@ -1025,7 +1032,7 @@ portcheck: $(HDRS)
 	  done; \
 	  echo "===> PORTCHECK: $$name $$ok built, $$bad failed"; echo; \
 	  [ $$bad = 0 ] || rc=1; \
-	done; exit $$rc
+	done; rm -f $(PSRS:.psr=.o) $(HDRS); exit $$rc
 
 # Detect likely-unused C/ASM code via -Wunused* + linker --gc-sections reports.
 # The build already uses -ffunction-sections/-fdata-sections, so each dropped

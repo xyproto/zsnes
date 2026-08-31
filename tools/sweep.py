@@ -11,7 +11,7 @@ touched, because a sweep that is interrupted mid-run once left a broken source
 behind and it got committed.
 
     tools/sweep.py --source video/c_mv16tsms.c --mutants test/mutants_mvall.txt \\
-        --build 'gcc -m32 -std=gnu99 -I{root} {src} {root}/video/c_mv16tms.c \\
+        --build 'gcc -m32 -std=c11 -I{root} {src} {root}/video/c_mv16tms.c \\
                  {root}/video/mv16tms.o {root}/test/_mvall.o \\
                  {root}/test/difftest_mvall.c -no-pie -o {bin}'
 

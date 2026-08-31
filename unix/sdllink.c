@@ -21,6 +21,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #include "../gblhdr.h"
 #include "gl_draw.h"
+#include "lib.h"
 #include "sw_draw.h"
 
 #include <stdbool.h>
@@ -1578,9 +1579,9 @@ int sem_thread(void* param)
     while (sem_threadrun) {
         if (T60HZEnabled) {
             SDL_SignalSemaphore(sem_frames);
-            usleep(romispal ? 2000 : 1000);
+            zsleep_us(romispal ? 2000 : 1000);
         } else {
-            usleep(20000);
+            zsleep_us(20000);
         }
     }
     return (0);
@@ -1631,7 +1632,7 @@ void UpdateVFrame(void)
 
     // Quick fix for GUI CPU usage
     if (GUIOn || GUIOn2 || EMUPause) {
-        usleep(6000);
+        zsleep_us(6000);
     }
 
     CheckTimers();

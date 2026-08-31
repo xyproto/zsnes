@@ -11,6 +11,7 @@
 #include "../gui/c_gui.h"
 #include "../input.h"
 #include "../intrf.h"
+#include "lib.h"
 
 // Variables previously in sdlintrf.asm
 u4 volatile CurKeyPos = 0;
@@ -78,7 +79,7 @@ char Get_Key(void)
 }
 
 // delay(n) sleeps n/100 ms, matching the Windows port semantics
-void delay(u4 const n) { usleep(n * 10); }
+void delay(u4 const n) { zsleep_us(n * 10); }
 
 void InitPreGame(void)
 {

@@ -19,6 +19,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+/* setgroups() is neither POSIX nor XSI - it is a BSD extension, so SUSv4
+   alone does not declare it. The tree builds as C11 + _XOPEN_SOURCE=700;
+   this one file asks for the additional set rather than widening the
+   flags everywhere. Must precede any system header. */
+#define _DEFAULT_SOURCE 1
+
 #include "../gblhdr.h"
 
 #include <grp.h>
