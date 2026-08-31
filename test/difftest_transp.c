@@ -22,7 +22,7 @@ typedef uint32_t u4;
 #define SUBOFF 75036u
 #define LINE 256u
 
-u2 fulladdtab[65536];
+u2 fulladdtab[65537]; /* the colour math loads a dword from the last word */
 u4 UnusedBit[2], HalfTrans[4];
 
 /* The dispatch half of the routine needs these; only the five colour-maths
