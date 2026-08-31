@@ -24,7 +24,7 @@ extern u1 BGMS1[], FillSubScr[], curmosaicsz;
 /* A dword in video/newgfx.c, though the assembly only ever tested its low byte
    - which is all it is ever set to. */
 extern u4 ngwinen;
-extern zreg CMainWinScr, CSubWinScr;
+extern u1 *CMainWinScr, *CSubWinScr;
 extern u4 mosclineval, mostranspval;
 
 /* 0 = fall through; otherwise which of the caller's labels to jump to. */
@@ -40,7 +40,7 @@ void c_determinetransp(zreg* const r)
 
     mostranspval = dl;
     mosclineval = bx;
-    r[R_ECX] += CMainWinScr;
+    r[R_ECX] += (zreg)CMainWinScr;
     ng_branch = 0;
 
     if (curmosaicsz == 1) {
@@ -50,7 +50,7 @@ void c_determinetransp(zreg* const r)
             return;
         }
         if (FillSubScr[bx] & 1) {
-            r[R_ECX] += CSubWinScr - CMainWinScr;
+            r[R_ECX] += (zreg)(CSubWinScr - CMainWinScr);
             r[R_EDI] += NG_SUB;
         }
         return;
@@ -60,7 +60,7 @@ void c_determinetransp(zreg* const r)
         return;
     if (!(FillSubScr[bx] & 1))
         return;
-    r[R_ECX] += CSubWinScr - CMainWinScr;
+    r[R_ECX] += (zreg)(CSubWinScr - CMainWinScr);
 }
 
 void c_checkwindowing(zreg* const r)
@@ -79,6 +79,6 @@ void c_determinewindow(zreg* const r)
         ng_branch = 3;
         return;
     }
-    r[R_ECX] += CSubWinScr - CMainWinScr;
+    r[R_ECX] += (zreg)(CSubWinScr - CMainWinScr);
     ng_branch = *(u1 const*)(uintptr_t)r[R_ECX] != 0 ? 1 : 2;
 }

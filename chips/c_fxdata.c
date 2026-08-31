@@ -23,6 +23,7 @@ __asm__(
     ".skip 3\n"
     ASM_SEC_END
     ASM_SEC_DATA(".data")
+    ASM_GSYM(SfxR0_b) /* alias: SfxR0..SfxR15 as one array */
     ASM_GSYM(SfxR0)
     ".long 0\n"
     ASM_GSYM(SfxR1)

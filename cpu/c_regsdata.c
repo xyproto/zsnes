@@ -234,6 +234,7 @@ __asm__(
     ".byte 0\n"
     ASM_GSYM(wramrwadr)
     ".long 0\n"
+    ASM_GSYM(dmadata_b)  /* alias: the reservation as raw bytes */
     ASM_GSYM(dmadata)
     ".fill 129, 1, 0x0FF\n"
     ".balign 32, 0x90\n"

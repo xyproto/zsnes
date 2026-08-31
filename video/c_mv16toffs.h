@@ -20,8 +20,7 @@
 #include "../types.h"
 #include "newgfx.h"
 
-/* Declared here rather than pulled in from vcache.h, which declares
-   fulladdtab one entry shorter than the dword load in c_mv16tt.h needs. */
+/* Declared here rather than pulled in from vcache.h. */
 extern u4 OMBGTestVal, ngptrdat2, ofshvaladd, ofsmcptr2, ofsmtptrs;
 extern void c_cachesingle4bng(u4 ecx);
 extern u1* vram;

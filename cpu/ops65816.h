@@ -1971,12 +1971,14 @@ OPMODE(OP(COpFFm16d), a_alCx_16, o_SBC16d)
  * $4300 and up in a register bank's low half at dmadata; the indirect ones do
  * not.
  */
+extern u1 dmadata_b[129]; /* the DMAInfo run as bytes (cpu/regs.h) */
+
 static inline u1* bank_base(u4 const eax, u4 const ebx, int const dma)
 {
     if (eax & 0x8000u)
         return snesmmap[ebx];
     if (dma && eax >= 0x4300u && memtabler8[ebx] == regaccessbankr8)
-        return dmadata - 0x4300;
+        return dmadata_b - 0x4300;
     return snesmap2[ebx];
 }
 static inline void jump_to(zreg* const r, int const dma)

@@ -33,7 +33,7 @@ extern u1 winbg1envals[], winbg1envalm[];
 extern u1* vidbuffer;
 extern u2 winlogicaval[256], resolutn;
 extern u4 endlinet, scfbl, bgcmsung, mode0ads;
-extern zreg CMainWinScr, CSubWinScr;
+extern u1 *CMainWinScr, *CSubWinScr;
 extern u4 ngwinen, ngwintable[32];
 extern u4 bg1totng, bg2totng, bg3totng, bg4totng;
 extern u4 bg1drwng, bg2drwng, bg3drwng, bg4drwng;
@@ -243,8 +243,8 @@ static void clear_counters(void)
    both - and in which window table CMainWinScr points at. */
 static void sub_screen(zreg* const eax)
 {
-    CMainWinScr = (zreg)(uintptr_t)winbg1envals;
-    CSubWinScr = (zreg)(uintptr_t)winbg1envals;
+    CMainWinScr = winbg1envals;
+    CSubWinScr = winbg1envals;
 
     if (!(scrndis & 8u) && (bgcmsung & 0x800u))
         bg_pass(3, c_drawbg4line16b, c_drawbg4tile16b, 0, 0, 8u, 0, 0x60606060u);
@@ -313,8 +313,8 @@ static void sub_screen(zreg* const eax)
 
 static void main_screen(zreg* const eax)
 {
-    CMainWinScr = (zreg)(uintptr_t)winbg1envalm;
-    CSubWinScr = (zreg)(uintptr_t)winbg1envals;
+    CMainWinScr = winbg1envalm;
+    CSubWinScr = winbg1envals;
 
     if (!(scrndis & 8u) && (bgcmsung & 0x808u))
         bg_pass(3, c_drawbg4line16b, c_drawbg4tile16b, 0, 1, 8u, 0, 0x60606060u);

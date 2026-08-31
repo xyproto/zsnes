@@ -21,7 +21,7 @@ enum { R_EDI,
     R_ECX,
     R_EAX };
 
-extern u2 fulladdtab[65536];
+extern u2 fulladdtab[65537];
 extern u4 UnusedBit[2], HalfTrans[4];
 
 /* The sub screen, in u2 units from the main one. */

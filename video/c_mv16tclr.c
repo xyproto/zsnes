@@ -31,7 +31,7 @@ zreg CBBP;
 extern u1 scaddtype;
 extern u2 scrnon;
 extern u4 pal16b[256];
-extern u2 fulladdtab[65537]; /* the dword load below reads one past */
+extern u2 fulladdtab[65537]; /* the dword load below reads the last entry */
 extern u1 transpbuf[];
 extern u1* curvidoffset;
 

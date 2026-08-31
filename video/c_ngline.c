@@ -50,7 +50,8 @@ extern zreg cpalval[256];
 extern u1* vbufdptr;
 extern u1 vidmemch2s[];
 extern void setpalette16bng(void);
-extern u1 winbg1en[6], winenabm, winenabs, disableeffects;
+extern u1 winen[6]; /* the winbg1en..wincolen run (cpu/regs.h) */
+extern u1 winenabm, winenabs, disableeffects;
 extern u1 winbg1enval[], winbg1envalm[], winbg1envals[];
 extern u1 winbg2enval[], winbg3enval[], winbg4enval[];
 extern u1 winlogica, winl1, winlogicb;
@@ -268,7 +269,7 @@ void newengine16b_lines(void)
    of it - so this is the whole live macro. */
 static void winbg(u4 const y, u4 const n)
 {
-    u1 bl = winbg1en[n];
+    u1 bl = winen[n];
     u1 bh = bl;
     u1 const bit = (u1)(1u << n);
 
@@ -307,7 +308,7 @@ static void winbg(u4 const y, u4 const n)
    a window covering everything or nothing is dropped. */
 static void winback(u4 const y, u4 const n)
 {
-    u1 bl = winbg1en[n];
+    u1 bl = winen[n];
 
     if (!(bl & 0x0Au)) {
         bl = 0;
@@ -499,7 +500,7 @@ extern u4 ngrposng, nggposng, ngbposng;
 extern u1 winbgobjenval[];
 extern u4 BackAreaAdd, BackAreaUnFillCol, BackAreaFillCol, UnusedBit[2];
 extern u1 SpecialLine[256], Mode7HiRes16b, scanlines, hiresstuff, res640;
-extern u4 sprleftpr[256];
+extern u4 sprleftpr_b[256]; /* sprleftpr..sprleftpr3 as dwords */
 extern u1* vidbuffer;
 extern void BackAreaFill(u4 y);
 
@@ -662,7 +663,7 @@ void newengine16b(void)
 
     /* One priority left on this line and nothing else: mark it so the sprite
        pass can take the short route. */
-    p = sprleftpr[y];
+    p = sprleftpr_b[y];
     if (p == 1u || p == 0x100u || p == 0x10000u || p == 0x1000000u)
-        sprleftpr[y] |= 0x80000000u;
+        sprleftpr_b[y] |= 0x80000000u;
 }

@@ -37,7 +37,7 @@ extern u4 taddnfy16x16, taddfy16x16, switch16x16; /* video/newgfx.c */
 extern u4 yposng, flipyposng; /* video/newgfx.c: the row within the tile */
 /* The offset-per-tile block: BG3's per-column scroll offsets and the walk over
    them. video/newgfx.c and video/vcache_data.c. */
-extern zreg ofsmcptr; /* a host pointer (video/newgfx.c) */
+extern u1* ofsmcptr;
 extern u4 ofsmcptr2, ofsmtptr, ofsmtptrs, ofsmmptr, ofsmcyps;
 extern u4 ofsmady, ofsmadx, ofsmval, ofsmvalh, ofshvaladd;
 extern u4 yposngom, flipyposngom, bgtxadd2;
@@ -45,7 +45,7 @@ extern zreg CPalPtrng; /* video/c_ngprocbg.c: the converted palette */
 extern u1 res640, SpecialLine[256];
 extern u4 bg1drwng[], bg1totng[];
 extern u4 ngpalcon2b[], ngpalcon4b[], ngpalcon8b[];
-extern zreg ngcwinptr;
+extern u4* ngcwinptr;
 extern u4 ngcwinmode, ngcpixleft;
 extern u1 tleftn, curmosaicsz;
 extern u4 tleftnb;
@@ -527,11 +527,11 @@ NG2_TILE16_LEAVES(8b)
  * windowed traversal goes down the columns. */
 static void nextwinmode(void)
 {
-    u4 const* const p = (u4 const*)(uintptr_t)ngcwinptr;
+    u4 const* const p = ngcwinptr;
 
     ngcwinmode ^= 1u;
     ngcpixleft = p[1];
-    ngcwinptr += 4;
+    ngcwinptr++;
 }
 
 /* One pixel of the run. The assembly decrements first and switches on the
@@ -716,7 +716,7 @@ typedef struct {
    it back, exactly as the assembly's tleftn test does. */
 static int straddle(zreg* const r, wleaf const* const lf, depth const* const d)
 {
-    u4* const run = (u4*)(uintptr_t)ngcwinptr;
+    u4* const run = ngcwinptr;
 
     ngcpixleft = *run;
     r[R_ECX] = ((r[R_ECX] & 0xFFFF0000u) | *(u2 const*)(vrama + r[R_EAX]))
@@ -728,7 +728,7 @@ static int straddle(zreg* const r, wleaf const* const lf, depth const* const d)
     finline(r);
     if (--tleftn == 0)
         return 1;
-    *(u4*)(uintptr_t)ngcwinptr = ngcpixleft;
+    *ngcwinptr = ngcpixleft;
     return 0;
 }
 
@@ -742,17 +742,17 @@ static u4 drawtile_line_win(zreg* const r, wleaf const* const lf,
     int clip;
 
     tleftn = 33;
-    ngcwinptr = (zreg)(uintptr_t)ngwintable;
+    ngcwinptr = ngwintable;
     ngcwinmode = 0;
     clip = 0;
     if (ngwintable[0] == 0) {
-        ngcwinptr += 4;
+        ngcwinptr++;
         ngcwinmode = 1;
         clip = 1;
     }
 
     for (;;) {
-        u4* const run = (u4*)(uintptr_t)ngcwinptr;
+        u4* const run = ngcwinptr;
         u4 const tile = *(u2 const*)(vrama + r[R_EAX]);
 
         if (*run <= 8u) {
@@ -790,17 +790,17 @@ static void drawtile_line_win2(zreg* const r, wleaf const* const lf,
     int clip;
 
     tleftn = 33;
-    ngcwinptr = (zreg)(uintptr_t)ngwintable;
+    ngcwinptr = ngwintable;
     ngcwinmode = 0;
     clip = 0;
     if (ngwintable[0] == 0) {
-        ngcwinptr += 4;
+        ngcwinptr++;
         ngcwinmode = 1;
         clip = 1;
     }
 
     for (;;) {
-        u4* const run = (u4*)(uintptr_t)ngcwinptr;
+        u4* const run = ngcwinptr;
         u4 const tile = *(u2 const*)(vrama + r[R_EAX]);
 
         if (*run <= 8u) {
@@ -825,7 +825,7 @@ static void drawtile_line_win2(zreg* const r, wleaf const* const lf,
 static int straddle_16x16(zreg* const r, wleaf const* const lf,
     depth const* const d)
 {
-    u4* const run = (u4*)(uintptr_t)ngcwinptr;
+    u4* const run = ngcwinptr;
 
     ngcpixleft = *run;
     r[R_ECX] = ((r[R_ECX] & 0xFFFF0000u) | *(u2 const*)(vrama + r[R_EAX]))
@@ -841,7 +841,7 @@ static int straddle_16x16(zreg* const r, wleaf const* const lf,
     finline_16x16(r);
     if (--tleftn == 0)
         return 1;
-    *(u4*)(uintptr_t)ngcwinptr = ngcpixleft;
+    *ngcwinptr = ngcpixleft;
     return 0;
 }
 
@@ -851,17 +851,17 @@ static u4 drawtile_line_win_16x16(zreg* const r, wleaf const* const lf,
     int clip;
 
     tleftn = 17;
-    ngcwinptr = (zreg)(uintptr_t)ngwintable;
+    ngcwinptr = ngwintable;
     ngcwinmode = 0;
     clip = 0;
     if (ngwintable[0] == 0) {
-        ngcwinptr += 4;
+        ngcwinptr++;
         ngcwinmode = 1;
         clip = 1;
     }
 
     for (;;) {
-        u4* const run = (u4*)(uintptr_t)ngcwinptr;
+        u4* const run = ngcwinptr;
         u4 const tile = *(u2 const*)(vrama + r[R_EAX]);
 
         if (*run <= 16u) {
@@ -898,17 +898,17 @@ static void drawtile_line_win2_16x16(zreg* const r, wleaf const* const lf,
     int clip;
 
     tleftn = 17;
-    ngcwinptr = (zreg)(uintptr_t)ngwintable;
+    ngcwinptr = ngwintable;
     ngcwinmode = 0;
     clip = 0;
     if (ngwintable[0] == 0) {
-        ngcwinptr += 4;
+        ngcwinptr++;
         ngcwinmode = 1;
         clip = 1;
     }
 
     for (;;) {
-        u4* const run = (u4*)(uintptr_t)ngcwinptr;
+        u4* const run = ngcwinptr;
         u4 const tile = *(u2 const*)(vrama + r[R_EAX]);
 
         if (*run <= 16u) {
@@ -1280,7 +1280,7 @@ static void om_advance(zreg* const r, int const mode, int const opts)
 
     /* The vertical offset. Mode 4 reads the entry behind the cursor and wants
        the 8000h bit set; mode 2 reads the cursor itself. */
-    omp = ofsmcptr + ofsmcptr2;
+    omp = (uintptr_t)ofsmcptr + ofsmcptr2;
     ecx = ofsmval;
     ofshvaladd += 8u;
     {
@@ -1304,12 +1304,12 @@ static void om_advance(zreg* const r, int const mode, int const opts)
     }
 
     /* The horizontal one, always from the entry behind the cursor. */
-    omp = ofsmcptr + ofsmcptr2;
+    omp = (uintptr_t)ofsmcptr + ofsmcptr2;
     ofsmcptr2 = (ofsmcptr2 + 2u) & 0x3Fu;
     ecx = (opts & OM_HV_ALT) ? ofsmval : ofsmvalh;
     if ((opts & OM_WRAP) && (ofsmcptr2 & 0x3Fu) == 0)
-        ofsmcptr = (ofsmcptr & ~(zreg)0xFFFFu)
-            | (u2)((u2)ofsmcptr + (u2)bgtxadd2);
+        ofsmcptr = (u1*)(((uintptr_t)ofsmcptr & ~(uintptr_t)0xFFFFu)
+            | (u2)((u2)(uintptr_t)ofsmcptr + (u2)bgtxadd2));
     {
         u4 const v = *(u4 const*)(uintptr_t)(omp - 0x40u);
 
@@ -1399,7 +1399,7 @@ static void om_advance_16x16(zreg* const r, int const mode, int const opts)
         ofsmtptr = (ofsmtptr & 0xFFFF0000u) | (u2)((u2)ofsmtptr + bx);
     }
 
-    omp = ofsmcptr + ofsmcptr2;
+    omp = (uintptr_t)ofsmcptr + ofsmcptr2;
     ecx = ofsmval;
     ofshvaladd += 8u;
     {
@@ -1434,12 +1434,12 @@ static void om_advance_16x16(zreg* const r, int const mode, int const opts)
         }
     }
 
-    omp = ofsmcptr + ofsmcptr2;
+    omp = (uintptr_t)ofsmcptr + ofsmcptr2;
     ofsmcptr2 = (ofsmcptr2 + 2u) & 0x3Fu;
     ecx = (opts & OM_HV_ALT) ? ofsmval : ofsmvalh;
     if ((opts & OM_WRAP) && (ofsmcptr2 & 0x3Fu) == 0)
-        ofsmcptr = (ofsmcptr & ~(zreg)0xFFFFu)
-            | (u2)((u2)ofsmcptr + (u2)bgtxadd2);
+        ofsmcptr = (u1*)(((uintptr_t)ofsmcptr & ~(uintptr_t)0xFFFFu)
+            | (u2)((u2)(uintptr_t)ofsmcptr + (u2)bgtxadd2));
     {
         u4 const v = *(u4 const*)(uintptr_t)(omp - 0x40u);
 
@@ -1659,7 +1659,7 @@ static void line_body_win_16x16(zreg* const r, int const f, depth const* const d
 static int straddle_line(zreg* const r, wleaf const* const lf,
     depth const* const d)
 {
-    u4* const run = (u4*)(uintptr_t)ngcwinptr;
+    u4* const run = ngcwinptr;
 
     ngcpixleft = *run;
     r[R_ECX] = ((r[R_ECX] & 0xFFFF0000u) | *(u2 const*)(vrama + r[R_EAX]))
@@ -1671,7 +1671,7 @@ static int straddle_line(zreg* const r, wleaf const* const lf,
     finline(r);
     if (--tleftn == 0)
         return 1;
-    *(u4*)(uintptr_t)ngcwinptr = ngcpixleft;
+    *ngcwinptr = ngcpixleft;
     return 0;
 }
 
@@ -1681,17 +1681,17 @@ static u4 drawline_line_win(zreg* const r, wleaf const* const lf,
     int clip;
 
     tleftn = 33;
-    ngcwinptr = (zreg)(uintptr_t)ngwintable;
+    ngcwinptr = ngwintable;
     ngcwinmode = 0;
     clip = 0;
     if (ngwintable[0] == 0) {
-        ngcwinptr += 4;
+        ngcwinptr++;
         ngcwinmode = 1;
         clip = 1;
     }
 
     for (;;) {
-        u4* const run = (u4*)(uintptr_t)ngcwinptr;
+        u4* const run = ngcwinptr;
         u4 const tile = *(u2 const*)(vrama + r[R_EAX]);
 
         if (*run <= 8u) {
@@ -1725,17 +1725,17 @@ static u4 drawline_line_win2(zreg* const r, wleaf const* const lf,
     int clip;
 
     tleftn = 33;
-    ngcwinptr = (zreg)(uintptr_t)ngwintable;
+    ngcwinptr = ngwintable;
     ngcwinmode = 0;
     clip = 0;
     if (ngwintable[0] == 0) {
-        ngcwinptr += 4;
+        ngcwinptr++;
         ngcwinmode = 1;
         clip = 1;
     }
 
     for (;;) {
-        u4* const run = (u4*)(uintptr_t)ngcwinptr;
+        u4* const run = ngcwinptr;
         u4 const tile = *(u2 const*)(vrama + r[R_EAX]);
 
         if (*run <= 8u) {
@@ -1851,7 +1851,7 @@ NG2_LINE16_LEAVES(8b)
 static int straddle_line_16(zreg* const r, wleaf const* const lf,
     depth const* const d)
 {
-    u4* const run = (u4*)(uintptr_t)ngcwinptr;
+    u4* const run = ngcwinptr;
 
     ngcpixleft = *run;
     r[R_ECX] = ((r[R_ECX] & 0xFFFF0000u) | *(u2 const*)(vrama + r[R_EAX]))
@@ -1867,7 +1867,7 @@ static int straddle_line_16(zreg* const r, wleaf const* const lf,
     finline_16x16(r);
     if (--tleftn == 0)
         return 1;
-    *(u4*)(uintptr_t)ngcwinptr = ngcpixleft;
+    *ngcwinptr = ngcpixleft;
     return 0;
 }
 
@@ -1877,17 +1877,17 @@ static u4 drawline_line_win_16x16(zreg* const r, wleaf const* const lf,
     int clip;
 
     tleftn = 17;
-    ngcwinptr = (zreg)(uintptr_t)ngwintable;
+    ngcwinptr = ngwintable;
     ngcwinmode = 0;
     clip = 0;
     if (ngwintable[0] == 0) {
-        ngcwinptr += 4;
+        ngcwinptr++;
         ngcwinmode = 1;
         clip = 1;
     }
 
     for (;;) {
-        u4* const run = (u4*)(uintptr_t)ngcwinptr;
+        u4* const run = ngcwinptr;
         u4 const tile = *(u2 const*)(vrama + r[R_EAX]);
 
         if (*run <= 16u) {
@@ -2028,7 +2028,7 @@ static void line_body_win_om(zreg* const r, int const f, depth const* const d)
 static int straddle_om(zreg* const r, wleaf const* const lf,
     depth const* const d, int const mode)
 {
-    u4* const run = (u4*)(uintptr_t)ngcwinptr;
+    u4* const run = ngcwinptr;
 
     ngcpixleft = *run;
     r[R_ECX] = ((r[R_ECX] & 0xFFFF0000u) | *(u2 const*)(vrama + r[R_EAX]))
@@ -2040,7 +2040,7 @@ static int straddle_om(zreg* const r, wleaf const* const lf,
     om_advance(r, mode, OM_HV_ALT);
     if (--tleftn == 0)
         return 1;
-    *(u4*)(uintptr_t)ngcwinptr = ngcpixleft;
+    *ngcwinptr = ngcpixleft;
     return 0;
 }
 
@@ -2050,17 +2050,17 @@ static u4 drawline_line_win_om(zreg* const r, wleaf const* const lf,
     int clip;
 
     tleftn = 33;
-    ngcwinptr = (zreg)(uintptr_t)ngwintable;
+    ngcwinptr = ngwintable;
     ngcwinmode = 0;
     clip = 0;
     if (ngwintable[0] == 0) {
-        ngcwinptr += 4;
+        ngcwinptr++;
         ngcwinmode = 1;
         clip = 1;
     }
 
     for (;;) {
-        u4* const run = (u4*)(uintptr_t)ngcwinptr;
+        u4* const run = ngcwinptr;
         u4 const tile = *(u2 const*)(vrama + r[R_EAX]);
 
         if (*run <= 8u) {
@@ -2156,17 +2156,17 @@ static u4 drawline_line_win_om_16x16(zreg* const r, wleaf const* const lf,
     int clip;
 
     tleftn = 17;
-    ngcwinptr = (zreg)(uintptr_t)ngwintable;
+    ngcwinptr = ngwintable;
     ngcwinmode = 0;
     clip = 0;
     if (ngwintable[0] == 0) {
-        ngcwinptr += 4;
+        ngcwinptr++;
         ngcwinmode = 1;
         clip = 1;
     }
 
     for (;;) {
-        u4* const run = (u4*)(uintptr_t)ngcwinptr;
+        u4* const run = ngcwinptr;
 
         if (*run <= 8u) { /* straddles a window boundary */
             ngcpixleft = *run;
@@ -2180,7 +2180,7 @@ static u4 drawline_line_win_om_16x16(zreg* const r, wleaf const* const lf,
             om_advance_16x16(r, mode, OM_HV_ALT);
             if ((switch16x16 ^= 1u) == 0 && --tleftn == 0)
                 return curmosaicsz != 1;
-            *(u4*)(uintptr_t)ngcwinptr = ngcpixleft;
+            *ngcwinptr = ngcpixleft;
             clip = ngcwinmode == 1;
             continue;
         }

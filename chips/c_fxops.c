@@ -22,7 +22,6 @@ extern u4 SfxSCBR;
 extern u1* SCBRrel;
 extern u4 SfxSREG, SfxDREG;
 extern u4 flagnz; /* initdata.c */
-extern u4 SfxR0[16]; /* SfxR0..SfxR15 are contiguous (chips/c_fxdata.c) */
 
 /* What the assembly kept in ebp/esi/edi/ecx. MainLoop loads them from the GSU
    register block on entry and writes them back when the loop ends. */

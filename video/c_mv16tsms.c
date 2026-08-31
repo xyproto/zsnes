@@ -31,10 +31,11 @@ extern u1 tileleft16b, drawn, temp, bshifter, curbgpr, bgcoloradder;
 extern u1 curmosaicsz;
 extern u1 coadder16; /* the palette adder, in memory for the winon writers */
 extern u1* winptrref;
-extern zreg tempcach, temptile, bgofwptr; /* host pointers */
+extern u1 *tempcach, *bgofwptr;
+extern u2* temptile;
 extern u4 bgsubby, yadder, yrevadder;
 extern u4 pal16bcl[256], pal16bxcl[256];
-extern u2 fulladdtab[65536]; /* the dword load above reads one past */
+extern u2 fulladdtab[65537]; /* the dword load above reads the last entry */
 
 #define CLBIT 0xF7DEu /* 1111011111011110b - clears the low bit of each 5-6-5 channel */
 
@@ -134,7 +135,7 @@ static void draw_row(int const winon, int const sub, int const mosaic)
         edi += 2;
 
         if (!(flags & 0x20u)) {
-            u4 tile;
+            u1 const* tile;
 
             drawn++;
             r.eax &= 0x03FFu;
@@ -154,7 +155,7 @@ static void draw_row(int const winon, int const sub, int const mosaic)
                 dh = (u1)((u1)((flags & 0x1Cu) << (bshifter & 31u))
                     + bgcoloradder);
             }
-            draw_group(&r, (u1 const*)(uintptr_t)tile, edx, esi, ebp, dh,
+            draw_group(&r, tile, edx, esi, ebp, dh,
                 (flags & 0x40u) != 0, sub);
         }
         esi += 16;
@@ -162,10 +163,10 @@ static void draw_row(int const winon, int const sub, int const mosaic)
         if (winon) {
             edx += 8;
             if (++temp == 0x20u) {
-                edi = (u1 const*)(uintptr_t)temptile;
+                edi = (u1 const*)temptile;
             }
         } else if (++dl == 0x20u) {
-            edi = (u1 const*)(uintptr_t)temptile;
+            edi = (u1 const*)temptile;
         }
     } while (--tileleft16b != 0);
 
@@ -270,7 +271,7 @@ static void draw_row_a(int const winon)
         edi += 2;
 
         if (!(flags & 0x20u)) {
-            u4 tile;
+            u1 const* tile;
 
             drawn++;
             r.eax &= 0x03FFu;
@@ -279,7 +280,7 @@ static void draw_row_a(int const winon)
                 tile -= bgsubby;
             }
             tile += (flags & 0x80u) ? yrevadder : yadder;
-            r.ebx = tile;
+            r.ebx = (zreg)(uintptr_t)tile;
             r.ecx = (r.ecx & ~0xFFu) | bshifter;
             if (winon) {
                 r.eax = (r.eax & ~0xFFu) | flags;
@@ -289,7 +290,7 @@ static void draw_row_a(int const winon)
                 dh = (u1)((u1)((flags & 0x1Cu) << (bshifter & 31u))
                     + bgcoloradder);
             }
-            draw_group_a(&r, (u1 const*)(uintptr_t)tile, edx, esi, ebp, dh,
+            draw_group_a(&r, tile, edx, esi, ebp, dh,
                 (flags & 0x40u) != 0);
         }
         esi += 16;
@@ -297,10 +298,10 @@ static void draw_row_a(int const winon)
         if (winon) {
             edx += 8;
             if (++temp == 0x20u) {
-                edi = (u1 const*)(uintptr_t)temptile;
+                edi = (u1 const*)temptile;
             }
         } else if (++dl == 0x20u) {
-            edi = (u1 const*)(uintptr_t)temptile;
+            edi = (u1 const*)temptile;
         }
     } while (--tileleft16b != 0);
 
@@ -394,7 +395,7 @@ static void draw_row16(enum mv16var const var, int const winon)
             dh = flags;
         }
         if (!(flags & 0x20u)) {
-            u4 tile;
+            u1 const* tile;
 
             drawn++;
             r.eax = set_lo16(
@@ -418,11 +419,11 @@ static void draw_row16(enum mv16var const var, int const winon)
                     + bgcoloradder);
             }
             if (var == MV16_A) {
-                r.ebx = tile; /* the a writer reads the tile through ebx */
-                draw_group_a(&r, (u1 const*)(uintptr_t)tile, edx, esi, ebp,
+                r.ebx = (zreg)(uintptr_t)tile; /* the a writer reads the tile through ebx */
+                draw_group_a(&r, tile, edx, esi, ebp,
                     winon ? 0 : dh, (flags & 0x40u) != 0);
             } else {
-                draw_group(&r, (u1 const*)(uintptr_t)tile, edx, esi, ebp,
+                draw_group(&r, tile, edx, esi, ebp,
                     winon ? 0 : dh, (flags & 0x40u) != 0, var == MV16_C);
             }
         }
@@ -435,7 +436,7 @@ static void draw_row16(enum mv16var const var, int const winon)
             }
             if (temp == 0x20u) {
                 temp = 0;
-                edi = (u1 const*)(uintptr_t)temptile;
+                edi = (u1 const*)temptile;
             }
         } else {
             if (!(a16x16xinc & 1u)) {
@@ -443,7 +444,7 @@ static void draw_row16(enum mv16var const var, int const winon)
             }
             if (dl == 0x20u) {
                 dl = 0;
-                edi = (u1 const*)(uintptr_t)temptile;
+                edi = (u1 const*)temptile;
             }
         }
     } while (--tileleft16b != 0);

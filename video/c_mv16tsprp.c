@@ -32,7 +32,7 @@ extern u1 sprclprio[4], winspdata[288], sprpriodata[288];
 extern u1 transpbuf[];
 extern u4 sprsingle, vesa2_clbit;
 extern u4 pal16b[256], pal16bcl[256], pal16bxcl[256];
-extern u2 fulladdtab[65537]; /* the dword load below reads one past */
+extern u2 fulladdtab[65537]; /* the dword load below reads the last entry */
 extern u1* curvidoffset;
 
 typedef struct {

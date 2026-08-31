@@ -40,10 +40,12 @@ static inline u4 fx_pc_rel(void)
     return (u4)((uintptr_t)FxSeamPC - SfxCPB);
 }
 
+extern u4 SfxR0_b[16]; /* SfxR0..SfxR15 (chips/c_fxdata.c) */
+
 /* UpdateR14: recompute the ROM pointer R14 reads through. */
 static inline void fx_update_r14(void)
 {
-    SfxRomBuffer = SfxCROM + SfxR0[14];
+    SfxRomBuffer = SfxCROM + SfxR0_b[14];
 }
 
 /* The branch condition tests below are deliberately bit-for-bit what the asm
@@ -194,18 +196,18 @@ static inline void fx_and(u4 const rhs)
         expr;                    \
     }
 
-FX_ALU(fx_addrn, fx_add(SfxR0[n], 0))
-FX_ALU(fx_adcrn, fx_add(SfxR0[n], SfxCarry & 1))
+FX_ALU(fx_addrn, fx_add(SfxR0_b[n], 0))
+FX_ALU(fx_adcrn, fx_add(SfxR0_b[n], SfxCarry & 1))
 FX_ALU(fx_adirn, fx_add(n, 0))
 FX_ALU(fx_adcirn, fx_add(n, SfxCarry & 1))
-FX_ALU(fx_subrn, fx_sub(SfxR0[n], 0))
+FX_ALU(fx_subrn, fx_sub(SfxR0_b[n], 0))
 /* `cmp byte[SfxCarry],1` sets the borrow when the carry byte is zero. */
-FX_ALU(fx_sbcrn, fx_sub(SfxR0[n], (SfxCarry & 0xFF) == 0))
+FX_ALU(fx_sbcrn, fx_sub(SfxR0_b[n], (SfxCarry & 0xFF) == 0))
 FX_ALU(fx_subirn, fx_sub(n, 0))
-FX_ALU(fx_cmprn, fx_cmp(SfxR0[n]))
-FX_ALU(fx_andrn, fx_and(SfxR0[n]))
+FX_ALU(fx_cmprn, fx_cmp(SfxR0_b[n]))
+FX_ALU(fx_andrn, fx_and(SfxR0_b[n]))
 /* BIC rN inverts only the low 16 bits of the operand (`xor ebx,0FFFFh`). */
-FX_ALU(fx_bicrn, fx_and(SfxR0[n] ^ 0xFFFFu))
+FX_ALU(fx_bicrn, fx_and(SfxR0_b[n] ^ 0xFFFFu))
 FX_ALU(fx_andirn, fx_and(n))
 /* BIC #n complements the immediate over 16 bits, like BIC rN does its operand
  * (the asm passes the macro `n ^ 0FFFFh` rather than n). */
@@ -442,15 +444,15 @@ static inline void fx_xor(u4 const rhs)
 
 static inline void fx_incdec(u4 const n, u4 const delta)
 {
-    SfxR0[n] = fx_lo16(SfxR0[n], SfxR0[n] + delta);
+    SfxR0_b[n] = fx_lo16(SfxR0_b[n], SfxR0_b[n] + delta);
     fx_fetchpipe();
-    SfxSignZero = SfxR0[n];
+    SfxSignZero = SfxR0_b[n];
     FxSeamPC++;
 }
 
-FX_ALU(fx_orrn, fx_or(SfxR0[n]))
+FX_ALU(fx_orrn, fx_or(SfxR0_b[n]))
 FX_ALU(fx_ori, fx_or(n))
-FX_ALU(fx_xorrn, fx_xor(SfxR0[n]))
+FX_ALU(fx_xorrn, fx_xor(SfxR0_b[n]))
 FX_ALU(fx_xori, fx_xor(n))
 
 /* INC/DEC do their own fetch, so they cannot go through FX_ALU. */
@@ -572,8 +574,8 @@ static inline void fx_mult(u4 const rhs, int const sign)
     *FxSeamDst = v;
 }
 
-FX_ALU(fx_multrn, fx_mult(SfxR0[n], 1))
-FX_ALU(fx_umultrn, fx_mult(SfxR0[n], 0))
+FX_ALU(fx_multrn, fx_mult(SfxR0_b[n], 1))
+FX_ALU(fx_umultrn, fx_mult(SfxR0_b[n], 0))
 FX_ALU(fx_multirn, fx_mult(n, 1))
 FX_ALU(fx_umultirn, fx_mult(n, 0))
 
@@ -657,31 +659,31 @@ void c_FxOp8FA3(void) { fx_umultirn(15); }
 static inline void fx_torn(u4 const n)
 {
     fx_fetchpipe();
-    FxSeamDst = SfxR0 + n;
+    FxSeamDst = SfxR0_b + n;
     FxSeamPC++;
     FxDispatch(FxTable);
-    FxSeamDst = SfxR0;
+    FxSeamDst = SfxR0_b;
 }
 
 static inline void fx_fromrn(u4 const n)
 {
     fx_fetchpipe();
-    FxSeamSrc = SfxR0 + n;
+    FxSeamSrc = SfxR0_b + n;
     FxSeamPC++;
     FxDispatch(FxTable);
-    FxSeamSrc = SfxR0;
+    FxSeamSrc = SfxR0_b;
 }
 
 static inline void fx_with(u4 const n)
 {
     fx_fetchpipe();
-    FxSeamSrc = SfxR0 + n;
-    FxSeamDst = SfxR0 + n;
+    FxSeamSrc = SfxR0_b + n;
+    FxSeamDst = SfxR0_b + n;
     SfxB = 1;
     FxSeamPC++;
     FxDispatch(FxTablec);
-    FxSeamSrc = SfxR0;
-    FxSeamDst = SfxR0;
+    FxSeamSrc = SfxR0_b;
+    FxSeamDst = SfxR0_b;
     SfxB = 0;
 }
 
@@ -747,7 +749,7 @@ static inline u1* fx_ram(u4 const addr)
 
 static inline void fx_stw(u4 const n)
 {
-    u4 const addr = SfxR0[n];
+    u4 const addr = SfxR0_b[n];
     u4 const val = *FxSeamSrc;
 
     SfxLastRamAdr = SfxRAMMem + addr;
@@ -759,7 +761,7 @@ static inline void fx_stw(u4 const n)
 
 static inline void fx_stb(u4 const n)
 {
-    u4 const addr = SfxR0[n];
+    u4 const addr = SfxR0_b[n];
 
     fx_fetchpipe();
     SfxLastRamAdr = SfxRAMMem + addr;
@@ -769,7 +771,7 @@ static inline void fx_stb(u4 const n)
 
 static inline void fx_ldw(u4 const n)
 {
-    u4 const addr = SfxR0[n];
+    u4 const addr = SfxR0_b[n];
 
     SfxLastRamAdr = SfxRAMMem + addr;
     fx_fetchpipe();
@@ -781,7 +783,7 @@ static inline void fx_ldw(u4 const n)
 
 static inline void fx_ldb(u4 const n)
 {
-    u4 const addr = SfxR0[n];
+    u4 const addr = SfxR0_b[n];
 
     fx_fetchpipe();
     SfxLastRamAdr = SfxRAMMem + addr;
@@ -863,7 +865,7 @@ void c_FxOp4BA1(void) { fx_ldbrn(11); }
 /* Write only the low half of a register, as `mov [SfxR0+n*4],ax` does. */
 static inline void fx_set_lo16(u4 const n, u4 const v)
 {
-    SfxR0[n] = fx_lo16(SfxR0[n], v);
+    SfxR0_b[n] = fx_lo16(SfxR0_b[n], v);
 }
 
 static inline void fx_ibt(u4 const n)
@@ -881,7 +883,7 @@ static inline void fx_iwt(u4 const n)
 
     FxSeamCX = (FxSeamCX & ~0xFFu) | FxSeamPC[2];
     FxSeamPC += 3;
-    SfxR0[n] = imm; /* full 32-bit store: the upper half is zeroed */
+    SfxR0_b[n] = imm; /* full 32-bit store: the upper half is zeroed */
 }
 
 static inline void fx_lm(u4 const n)
@@ -896,7 +898,7 @@ static inline void fx_lm(u4 const n)
 
 static inline void fx_sm(u4 const n)
 {
-    u4 const val = SfxR0[n];
+    u4 const val = SfxR0_b[n];
     u4 const addr = (u4)FxSeamPC[0] | ((u4)FxSeamPC[1] << 8);
 
     FxSeamCX = (FxSeamCX & ~0xFFu) | FxSeamPC[2];
@@ -922,7 +924,7 @@ static inline void fx_lms(u4 const n)
 static inline void fx_sms(u4 const n)
 {
     u4 const addr = (u4)*FxSeamPC * 2u;
-    u4 const val = SfxR0[n];
+    u4 const val = SfxR0_b[n];
 
     FxSeamCX = (FxSeamCX & ~0xFFu) | FxSeamPC[1];
     SfxLastRamAdr = SfxRAMMem + addr;
@@ -1079,12 +1081,12 @@ static inline void fx_link(u4 const n)
 static inline void fx_jmp(u4 const n)
 {
     fx_fetchpipe();
-    FxSeamPC = (u1*)(uintptr_t)(SfxCPB + SfxR0[n]);
+    FxSeamPC = (u1*)(uintptr_t)(SfxCPB + SfxR0_b[n]);
 }
 
 static inline void fx_ljmp(u4 const n)
 {
-    u4 const bank = SfxR0[n] & 0x7Fu;
+    u4 const bank = SfxR0_b[n] & 0x7Fu;
     u4 saved_cx;
 
     fx_fetchpipe();
@@ -1268,14 +1270,14 @@ void c_FxOp3C(void) /* LOOP: decrement R12, branch to R13 while non-zero */
 {
     u4 v;
 
-    SfxR0[12] = fx_lo16(SfxR0[12], SfxR0[12] - 1);
+    SfxR0_b[12] = fx_lo16(SfxR0_b[12], SfxR0_b[12] - 1);
     fx_fetchpipe();
-    v = SfxR0[12];
+    v = SfxR0_b[12];
     SfxSignZero = v;
     /* `or eax,eax` tests all 32 bits, so a non-zero upper half keeps looping
        even once the counter's low half reaches zero. */
     if (v != 0) {
-        FxSeamPC = (u1*)(uintptr_t)(SfxCPB + SfxR0[13]);
+        FxSeamPC = (u1*)(uintptr_t)(SfxCPB + SfxR0_b[13]);
         return;
     }
     FxSeamPC++;
@@ -1285,7 +1287,7 @@ void c_FxOp3C(void) /* LOOP: decrement R12, branch to R13 while non-zero */
    upper half; carry is bit 15 of the lower half. */
 static inline void fx_fmult(int const keep_low)
 {
-    u4 const prod = (u4)((s4)(s2)(u2)*FxSeamSrc * (s4)(s2)(u2)SfxR0[6]);
+    u4 const prod = (u4)((s4)(s2)(u2)*FxSeamSrc * (s4)(s2)(u2)SfxR0_b[6]);
     u4 const hi = (prod >> 16) & 0xFFFFu;
 
     fx_fetchpipe();
@@ -1324,8 +1326,8 @@ void c_FxOpDE(void) /* INC R14 */
     u4 v;
 
     fx_fetchpipe();
-    v = fx_lo16(SfxR0[14], SfxR0[14] + 1);
-    SfxR0[14] = v;
+    v = fx_lo16(SfxR0_b[14], SfxR0_b[14] + 1);
+    SfxR0_b[14] = v;
     SfxSignZero = v;
     FxSeamPC++;
     fx_update_r14();
@@ -1333,9 +1335,9 @@ void c_FxOpDE(void) /* INC R14 */
 
 void c_FxOpEE(void) /* DEC R14 */
 {
-    SfxR0[14] = fx_lo16(SfxR0[14], SfxR0[14] - 1);
+    SfxR0_b[14] = fx_lo16(SfxR0_b[14], SfxR0_b[14] - 1);
     fx_fetchpipe();
-    SfxSignZero = SfxR0[14];
+    SfxSignZero = SfxR0_b[14];
     fx_update_r14();
     FxSeamPC++;
 }
@@ -1364,15 +1366,15 @@ static inline void fx_torn_b(u4 const n)
         u4 const v = *FxSeamSrc;
         withr15sk = 1;
         FxSeamPC++;
-        SfxR0[n] = v;
+        SfxR0_b[n] = v;
         return;
     }
-    FxSeamDst = SfxR0 + n;
+    FxSeamDst = SfxR0_b + n;
     FxSeamPC++;
     withr15sk = 1;
-    SfxR0[15] = fx_pc_rel();
+    SfxR0_b[15] = fx_pc_rel();
     FxDispatch(FxTableb);
-    FxSeamDst = SfxR0;
+    FxSeamDst = SfxR0_b;
 }
 
 static inline void fx_torn_c(u4 const n)
@@ -1380,28 +1382,28 @@ static inline void fx_torn_c(u4 const n)
     fx_fetchpipe();
     u4 const v = *FxSeamSrc;
     FxSeamPC++;
-    SfxR0[n] = v;
+    SfxR0_b[n] = v;
 }
 
 static inline void fx_fromrn_b(u4 const n)
 {
     fx_fetchpipe();
     if (SfxB & 1) {
-        u4 const v = SfxR0[n];
+        u4 const v = SfxR0_b[n];
         FxSeamPC++;
         fx_from_write(v);
         return;
     }
-    FxSeamSrc = SfxR0 + n;
+    FxSeamSrc = SfxR0_b + n;
     FxSeamPC++;
     FxDispatch(FxTable);
-    FxSeamSrc = SfxR0;
+    FxSeamSrc = SfxR0_b;
 }
 
 static inline void fx_fromrn_c(u4 const n)
 {
     fx_fetchpipe();
-    u4 const v = SfxR0[n];
+    u4 const v = SfxR0_b[n];
     FxSeamPC++;
     fx_from_write(v);
 }
@@ -1414,7 +1416,7 @@ static inline void fx_alt_b(u4 const mode, zreg const* const table)
     SfxB = 0;
     FxSeamCX |= mode << 8;
     FxSeamPC++;
-    SfxR0[15] = fx_pc_rel();
+    SfxR0_b[15] = fx_pc_rel();
     FxDispatch(table);
     FxSeamCX &= 0xFFu;
 }
@@ -1475,17 +1477,17 @@ void c_FxOpb1E(void)
     if (SfxB & 1) {
         u4 const v = *FxSeamSrc;
         withr15sk = 1;
-        SfxR0[14] = v;
+        SfxR0_b[14] = v;
         fx_update_r14();
         FxSeamPC++;
         return;
     }
-    FxSeamDst = SfxR0 + 14;
+    FxSeamDst = SfxR0_b + 14;
     FxSeamPC++;
     withr15sk = 1;
-    SfxR0[15] = fx_pc_rel();
+    SfxR0_b[15] = fx_pc_rel();
     FxDispatch(FxTableb);
-    FxSeamDst = SfxR0;
+    FxSeamDst = SfxR0_b;
     fx_update_r14();
 }
 
@@ -1503,16 +1505,16 @@ void c_FxOpb1F(void)
         FxSeamPC = (u1*)(uintptr_t)(SfxCPB + v);
         return;
     }
-    FxSeamDst = SfxR0 + 15;
+    FxSeamDst = SfxR0_b + 15;
     FxSeamPC++;
     pc = fx_pc_rel();
-    SfxR0[15] = pc;
+    SfxR0_b[15] = pc;
     FxDispatch(FxTableb);
     withr15sk = 1;
-    if (SfxR0[15] != pc) {
-        FxSeamPC = (u1*)(uintptr_t)(SfxCPB + SfxR0[15]);
+    if (SfxR0_b[15] != pc) {
+        FxSeamPC = (u1*)(uintptr_t)(SfxCPB + SfxR0_b[15]);
     }
-    FxSeamDst = SfxR0;
+    FxSeamDst = SfxR0_b;
 }
 
 /* FROM R15 yields the program counter itself. The non-WITH path deliberately
@@ -1527,11 +1529,11 @@ void c_FxOpbBF(void)
         fx_from_write(v);
         return;
     }
-    FxSeamSrc = SfxR0 + 15;
+    FxSeamSrc = SfxR0_b + 15;
     FxSeamPC++;
-    SfxR0[15] = fx_pc_rel();
+    SfxR0_b[15] = fx_pc_rel();
     FxDispatch(FxTableb);
-    FxSeamSrc = SfxR0;
+    FxSeamSrc = SfxR0_b;
 }
 
 void c_FxOpb3D(void) { fx_alt_b(1, FxTableb); }
@@ -1541,7 +1543,7 @@ void c_FxOpb3F(void) { fx_alt_b(3, FxTable); }
 void c_FxOpc1E(void)
 {
     fx_fetchpipe();
-    SfxR0[14] = *FxSeamSrc;
+    SfxR0_b[14] = *FxSeamSrc;
     fx_update_r14();
     FxSeamPC++;
 }
@@ -1550,7 +1552,7 @@ void c_FxOpc1F(void)
 {
     fx_fetchpipe();
     u4 const v = *FxSeamSrc;
-    SfxR0[15] = v;
+    SfxR0_b[15] = v;
     FxSeamPC = (u1*)(uintptr_t)(SfxCPB + v);
 }
 
@@ -1577,10 +1579,10 @@ FX_BRANCHES(, FxTable)
 void c_FxOp1E(void) /* TO R14 */
 {
     fx_fetchpipe();
-    FxSeamDst = SfxR0 + 14;
+    FxSeamDst = SfxR0_b + 14;
     FxSeamPC++;
     FxDispatch(FxTable);
-    FxSeamDst = SfxR0;
+    FxSeamDst = SfxR0_b;
     fx_update_r14();
 }
 
@@ -1593,49 +1595,49 @@ void c_FxOp1F(void)
     u4 pc;
 
     fx_fetchpipe();
-    FxSeamDst = SfxR0 + 15;
+    FxSeamDst = SfxR0_b + 15;
     FxSeamPC++;
     pc = fx_pc_rel();
-    SfxR0[15] = pc;
+    SfxR0_b[15] = pc;
     FxDispatch(FxTable);
-    if (SfxR0[15] != pc) {
-        FxSeamPC = (u1*)(uintptr_t)(SfxCPB + SfxR0[15]);
+    if (SfxR0_b[15] != pc) {
+        FxSeamPC = (u1*)(uintptr_t)(SfxCPB + SfxR0_b[15]);
     }
-    FxSeamDst = SfxR0;
+    FxSeamDst = SfxR0_b;
 }
 
 void c_FxOp2E(void) /* WITH R14 */
 {
     fx_fetchpipe();
-    FxSeamSrc = SfxR0 + 14;
-    FxSeamDst = SfxR0 + 14;
+    FxSeamSrc = SfxR0_b + 14;
+    FxSeamDst = SfxR0_b + 14;
     SfxB = 1;
     FxSeamPC++;
     FxDispatch(FxTablec);
     SfxB = 0;
-    FxSeamSrc = SfxR0;
-    FxSeamDst = SfxR0;
+    FxSeamSrc = SfxR0_b;
+    FxSeamDst = SfxR0_b;
     fx_update_r14();
 }
 
 void c_FxOp2F(void) /* WITH R15 */
 {
     fx_fetchpipe();
-    FxSeamSrc = SfxR0 + 15;
-    FxSeamDst = SfxR0 + 15;
+    FxSeamSrc = SfxR0_b + 15;
+    FxSeamDst = SfxR0_b + 15;
     SfxB = 1;
     FxSeamPC++;
-    SfxR0[15] = fx_pc_rel();
+    SfxR0_b[15] = fx_pc_rel();
     /* withr15sk lets the nested opcode say it already set the program counter
        itself, in which case R15 must not be applied a second time. */
     withr15sk = 0;
     FxDispatch(FxTableb);
     if (withr15sk != 1) {
-        FxSeamPC = (u1*)(uintptr_t)(SfxCPB + SfxR0[15]);
+        FxSeamPC = (u1*)(uintptr_t)(SfxCPB + SfxR0_b[15]);
     }
     SfxB = 0;
-    FxSeamSrc = SfxR0;
-    FxSeamDst = SfxR0;
+    FxSeamSrc = SfxR0_b;
+    FxSeamDst = SfxR0_b;
 }
 
 /* All three chain through the base table here, and none of them stamps R15. */
@@ -1646,11 +1648,11 @@ void c_FxOp3F(void) { fx_alt(3, FxTable); }
 void c_FxOpBF(void) /* FROM R15 */
 {
     fx_fetchpipe();
-    FxSeamSrc = SfxR0 + 15;
+    FxSeamSrc = SfxR0_b + 15;
     FxSeamPC++;
-    SfxR0[15] = fx_pc_rel();
+    SfxR0_b[15] = fx_pc_rel();
     FxDispatch(FxTableb);
-    FxSeamSrc = SfxR0;
+    FxSeamSrc = SfxR0_b;
 }
 
 /* --- The R15 operand forms and SBK ---------------------------------------
@@ -1836,7 +1838,7 @@ void c_FxOpFE(void) /* IWT R14 */
 
     FxSeamCX = (FxSeamCX & ~0xFFu) | FxSeamPC[2];
     FxSeamPC += 3;
-    SfxR0[14] = imm;
+    SfxR0_b[14] = imm;
     fx_update_r14();
 }
 
@@ -1935,7 +1937,7 @@ void c_FxOp4EA1(void) /* CMODE: plot options, screen height and plot variant */
 
 void c_FxOp70(void) /* MERGE: R7 and R8's high bytes, with hand-rolled flags */
 {
-    u4 const v = ((SfxR0[7] & 0xFF00u)) | ((SfxR0[8] >> 8) & 0xFFu);
+    u4 const v = ((SfxR0_b[7] & 0xFF00u)) | ((SfxR0_b[8] >> 8) & 0xFFu);
 
     fx_fetchpipe();
     FxSeamPC++;
@@ -2059,7 +2061,7 @@ static inline void fx_plot(int const depth, u4 const zmask, int const zcheck, in
 {
     u4 const shift = depth == FX_PLOT_2BPP ? 4 : depth == FX_PLOT_4BPP ? 5
                                                                        : 6;
-    u4 const index = (SfxR0[2] & 0xFFFF00FFu) | ((SfxR0[1] & 0xFFu) << 8);
+    u4 const index = (SfxR0_b[2] & 0xFFFF00FFu) | ((SfxR0_b[1] & 0xFFu) << 8);
     u4 tile;
 
     fx_fetchpipe();
@@ -2067,12 +2069,12 @@ static inline void fx_plot(int const depth, u4 const zmask, int const zcheck, in
     tile = ((u4 const*)(uintptr_t)sfxclineloc)[index];
     if (tile != 0xFFFFFFFFu && (!zcheck || ((u1)SfxCOLR & zmask))) {
         zreg const addr = (tile << shift) + ((index & 7u) * 2u) + (uintptr_t)SCBRrel;
-        u4 const mask = fxxand[SfxR0[1] & 0xFFu];
+        u4 const mask = fxxand[SfxR0_b[1] & 0xFFu];
 
         fx_drawpix(addr, mask, depth,
-            dither && (((SfxR0[1] ^ SfxR0[2]) & 1u) != 0));
+            dither && (((SfxR0_b[1] ^ SfxR0_b[2]) & 1u) != 0));
     }
-    fx_set_lo16(1, SfxR0[1] + 1); /* `inc word[SfxR1]` on every path */
+    fx_set_lo16(1, SfxR0_b[1] + 1); /* `inc word[SfxR1]` on every path */
 }
 
 #define FX_PLOTS(name, depth, zmask)                                  \
@@ -2099,7 +2101,7 @@ void c_FxOp4C(void) { c_FxOp4C1284b(); }
    the one CMODE cached, and reports 0xFF for an off-screen coordinate. */
 void c_FxOp4CA1(void)
 {
-    u4 const index = (SfxR0[2] & 0xFFFF00FFu) | ((SfxR0[1] & 0xFFu) << 8);
+    u4 const index = (SfxR0_b[2] & 0xFFFF00FFu) | ((SfxR0_b[1] & 0xFFu) << 8);
     zreg const lineloc = fx_lineloc();
     u4 const tile = ((u4 const*)(uintptr_t)lineloc)[index];
     u4 res = 0xFFu;
@@ -2113,7 +2115,7 @@ void c_FxOp4CA1(void)
                                                       : 4;
         zreg const addr = (SfxSCBR << 10) + (tile << shift)
             + ((index & 7u) * 2u) + (uintptr_t)sfxramdata;
-        u1 const bit = (u1)(1u << ((SfxR0[1] & 7u) ^ 7u));
+        u1 const bit = (u1)(1u << ((SfxR0_b[1] & 7u) ^ 7u));
 
         res = 0;
         for (u4 i = 0; i < planes; i++) {
@@ -2165,10 +2167,10 @@ static inline int fx_loop_next(void)
    SfxSFR. */
 void MainLoop(void)
 {
-    FxSeamPC = (u1*)(uintptr_t)(SfxCPB + SfxR0[15]);
+    FxSeamPC = (u1*)(uintptr_t)(SfxCPB + SfxR0_b[15]);
     FxSeamCX = (SfxPIPE & 0xFFu) | (((SfxSFR >> 8) & 3u) << 8);
-    FxSeamSrc = SfxR0 + SfxSREG;
-    FxSeamDst = SfxR0 + SfxDREG;
+    FxSeamSrc = SfxR0_b + SfxSREG;
+    FxSeamDst = SfxR0_b + SfxDREG;
     SfxRAMMem = (SfxRAMBR << 16) + (uintptr_t)sfxramdata;
 
     do {
@@ -2176,11 +2178,11 @@ void MainLoop(void)
         FxDispatch(FxTabled);
     } while (fx_loop_next());
 
-    SfxR0[15] = fx_pc_rel();
+    SfxR0_b[15] = fx_pc_rel();
     *(u1*)&SfxPIPE = (u1)(FxSeamCX & 0xFFu);
     *((u1*)&SfxSFR + 1) = (u1)((*((u1*)&SfxSFR + 1) & 0xFCu) | ((FxSeamCX >> 8) & 0xFFu));
-    SfxSREG = (u4)(FxSeamSrc - SfxR0);
-    SfxDREG = (u4)(FxSeamDst - SfxR0);
+    SfxSREG = (u4)(FxSeamSrc - SfxR0_b);
+    SfxDREG = (u4)(FxSeamDst - SfxR0_b);
 }
 
 #endif

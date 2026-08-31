@@ -225,7 +225,9 @@ unsigned char vrama[65536];
 
 u1 mode7tab[65536];
 
-u2 fulladdtab[65536];
+/* One entry past 64K: the colour-math writers load a dword from the
+   last word, so the table has to own the two bytes that follow. */
+u2 fulladdtab[65537];
 u2 VolumeConvTable[32768];
 
 #define deallocmemhelp(p) \

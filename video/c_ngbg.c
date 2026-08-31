@@ -274,7 +274,7 @@ extern u1* pesimpng;
 extern u1* vram;
 extern u2 BG3SXl[], BG3SYl[], BGPT3[], BGPT3X[];
 extern u4 cfieldad, mosstart[4], yposng, flipyposng, yposngom, flipyposngom;
-extern zreg ofsmcptr; /* a host pointer (video/newgfx.c) */
+extern u1* ofsmcptr;
 extern u4 ofsmcptr2, ofsmady, ofsmadx, ofsmtptr, ofsmtptrs;
 extern u4 ofsmmptr, ofsmcyps, ofshvaladd, ofsmval, ofsmvalh, bgtxadd2;
 extern zreg CPalPtrng;
@@ -430,7 +430,7 @@ static void om_setup(zreg* const r, u4 const bg, int const big, int const mask16
 
     /* mask16: the priority-1 8x8 form masks the cursor with 0FFC0h, so the
        carry out of the low word is dropped there and kept everywhere else. */
-    ofsmcptr = (zreg)(uintptr_t)vram + (eax & (mask16 ? 0xFFC0u : 0xFFFFFFC0u));
+    ofsmcptr = vram + (eax & (mask16 ? 0xFFC0u : 0xFFFFFFC0u));
     ofsmcptr2 = eax & 0x3Fu;
     ofsmady = dword_at(&BGPT1Y[bx + bg * 256u]);
     ofsmadx = dword_at(&BGPT1X[bx + bg * 256u]);

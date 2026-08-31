@@ -44,7 +44,6 @@ extern u1 xe;
 extern u4 flagnz, flago, flagc;
 extern u2 stackand, stackor;
 extern void UpdateDPage(void);
-extern u1 dmadata[129];
 extern u2 brkv, brkv8, copv, copv8;
 extern u1 intrset, doirqnext, curnmi;
 

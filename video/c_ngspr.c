@@ -38,11 +38,12 @@ extern u1 sprpriodata[288], csprbit, NGNumSpr;
 extern u1 BGMS1[], FillSubScr[256], scadtng[256];
 extern u1 winbg1enval[];
 /* sprtbng holds host pointers into the sprite table, so it is pointer-wide. */
-extern u4 csprival, sprleftpr[256];
+extern u4 csprival;
+extern u4 sprleftpr_b[256]; /* sprleftpr..sprleftpr3 as dwords */
 extern zreg cpalval[256];
 extern zreg sprtbng[256];
 /* ngwinptr is a real pointer in ui.c; objclineptr holds byte offsets into it. */
-extern zreg CMainWinScr, CSubWinScr;
+extern u1 *CMainWinScr, *CSubWinScr;
 extern u4 objclineptr[256];
 extern u1* ngwinptr;
 extern u4 UnusedBit[2], UnusedBitXor[2];
@@ -213,7 +214,7 @@ static void spr_loop(regs* const r, u2* edi, u2 const* const pal,
     if (win != 0) {
         NGNumSpr = count;
     }
-    if (sprleftpr[y] & 0x80000000u) {
+    if (sprleftpr_b[y] & 0x80000000u) {
         /* .drawsingle: one sprite's worth of pixels, walked backwards, with no
            priority mask to consult or set. */
         zreg edx = sprtbng[y] + (zreg)count * sizeof(SpriteInfo)
@@ -281,8 +282,8 @@ static void dispatch(regs* const r, u4 const y, int const hires)
 {
     u2* edi = (u2*)(uintptr_t)r->si;
     u2 const* const pal = (u2 const*)(uintptr_t)cpalval[y];
-    u1 const* const wmain = (u1 const*)(uintptr_t)CMainWinScr;
-    u1 const* const wsub = (u1 const*)(uintptr_t)CSubWinScr;
+    u1 const* const wmain = CMainWinScr;
+    u1 const* const wsub = CSubWinScr;
     int const submain = (BGMS1[y * 2] & 0x10u) != 0;
     int const fill = (FillSubScr[y] & 1u) != 0;
     /* 0xFFFFFFFF is the "no window" sentinel, and the assembly let it wrap. */

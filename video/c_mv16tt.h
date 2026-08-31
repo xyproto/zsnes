@@ -16,7 +16,7 @@
 #include "../types.h"
 
 extern u4 pal16b[256], pal16bcl[256], pal16bxcl[256];
-extern u2 fulladdtab[65537]; /* the dword load below reads one past */
+extern u2 fulladdtab[65537]; /* the dword load below reads the last entry */
 
 /* The assembly writes 1111011111011110b out in full here rather than reading
    vesa2_clbit: the low bit of each 5-6-5 channel, cleared so a sum cannot

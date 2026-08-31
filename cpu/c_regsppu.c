@@ -29,11 +29,12 @@ extern u1 winl1, winr1, winl2, winr2, winlogica, winlogicb;
 extern u1 winenabm, winenabs, scaddset, scaddtype, INTEnab, multa;
 extern u2 scrnon, diva;
 extern u1 bgscrolPrev, vramread;
-extern u2 bg1scrolx, bg2scrolx, bg3scrolx, bg4scrolx;
-extern u2 bg1scroly, bg2scroly, bg3scroly, bg4scroly;
+extern u2 bg1scrolx[4]; /* one per layer */
+extern u2 bg1scroly[4];
 extern u2 bg1scrolx_m7, bg1scroly_m7;
 extern u2 mode7C, mode7D, mode7X0, mode7Y0;
-extern u1 dmadata[129], hdmarestart, nohdmaframe, hdmadelay, SPC7110Enable;
+extern u1 dmadata_b[129]; /* the DMAInfo run as bytes (cpu/regs.h) */
+extern u1 hdmarestart, nohdmaframe, hdmadelay, SPC7110Enable;
 extern u2 resolutn, curypos;
 extern u1* wramdata;
 extern u1 NextLineCache, prevoamptr, oamlow, nexthprior, nosprincr, objhipr;
@@ -45,14 +46,10 @@ extern u1 reg2101w_objmovs1[8], reg2101w_objmovs2[8];
 extern u2 reg2101w_objadds1[8], reg2101w_objadds2[8];
 extern u1 bgmode, bg3highst, bgtilesz, mosaicon, mosaicsz;
 extern u1 BG116x16t, BG216x16t, BG316x16t, BG416x16t;
-extern u2 bg1ptr, bg2ptr, bg3ptr, bg4ptr;
-extern u2 bg1ptrb, bg2ptrb, bg3ptrb, bg4ptrb;
-extern u2 bg1ptrc, bg2ptrc, bg3ptrc, bg4ptrc;
-extern u2 bg1ptrd, bg2ptrd, bg3ptrd, bg4ptrd;
-extern u4 bg1ptrx, bg2ptrx, bg3ptrx, bg4ptrx;
-extern u4 bg1ptry, bg2ptry, bg3ptry, bg4ptry;
+extern u2 bg1ptr[4], bg1ptrb[4], bg1ptrc[4], bg1ptrd[4];
+extern u4 bg1ptrx[4], bg1ptry[4];
 extern u1 bg1scsize, bg2scsize, bg3scsize, bg4scsize;
-extern u2 bg1objptr, bg2objptr, bg3objptr, bg4objptr;
+extern u2 bg1objptr[4];
 extern u1 cgmod, winbg1en, winbg2en, winbg3en, winbg4en, winobjen, wincolen;
 extern u1 coladdr, coladdg, coladdb, interlval;
 extern u1 iohvlatch, MultiTapStat, JoyCRead;
@@ -357,23 +354,23 @@ static u2 scroll_x(u2 const cur, u1 const al)
 REGABI_REG_WRITE8(reg210Dw); /* BG1 horizontal, mirrored for mode 7 */
 void c_reg210Dw(u1 const al)
 {
-    bg1scrolx = scroll_x(bg1scrolx, al);
-    bg1scrolx_m7 = bg1scrolx;
+    bg1scrolx[0] = scroll_x(bg1scrolx[0], al);
+    bg1scrolx_m7 = bg1scrolx[0];
 }
 
 REGABI_REG_WRITE8(reg210Ew); /* BG1 vertical, mirrored for mode 7 */
 void c_reg210Ew(u1 const al)
 {
-    bg1scroly = scroll_y(al);
-    bg1scroly_m7 = bg1scroly;
+    bg1scroly[0] = scroll_y(al);
+    bg1scroly_m7 = bg1scroly[0];
 }
 
-REG_SCROLL_X(reg210Fw, bg2scrolx)
-REG_SCROLL_Y(reg2110w, bg2scroly)
-REG_SCROLL_X(reg2111w, bg3scrolx)
-REG_SCROLL_Y(reg2112w, bg3scroly)
-REG_SCROLL_X(reg2113w, bg4scrolx)
-REG_SCROLL_Y(reg2114w, bg4scroly)
+REG_SCROLL_X(reg210Fw, bg1scrolx[1])
+REG_SCROLL_Y(reg2110w, bg1scroly[1])
+REG_SCROLL_X(reg2111w, bg1scrolx[2])
+REG_SCROLL_Y(reg2112w, bg1scroly[2])
+REG_SCROLL_X(reg2113w, bg1scrolx[3])
+REG_SCROLL_Y(reg2114w, bg1scroly[3])
 
 #undef REG_SCROLL_X
 #undef REG_SCROLL_Y
@@ -609,13 +606,15 @@ static void bg_tilemap(u1 const al, u2* const p, u4* const px, u4* const py,
     REGABI_REG_WRITE8(reg);                                                   \
     void c_##reg(u1 const al)                                                 \
     {                                                                         \
-        u2 p[4] = { bg##n##ptr, bg##n##ptrb, bg##n##ptrc, bg##n##ptrd };      \
+        u2 p[4] = { bg1ptr[(n) - 1], bg1ptrb[(n) - 1], bg1ptrc[(n) - 1],      \
+            bg1ptrd[(n) - 1] };                                               \
                                                                               \
-        bg_tilemap(al, p, &bg##n##ptrx, &bg##n##ptry, &bg##n##scsize);        \
-        bg##n##ptr = p[0];                                                    \
-        bg##n##ptrb = p[1];                                                   \
-        bg##n##ptrc = p[2];                                                   \
-        bg##n##ptrd = p[3];                                                   \
+        bg_tilemap(al, p, &bg1ptrx[(n) - 1], &bg1ptry[(n) - 1],               \
+            &bg##n##scsize);                                                  \
+        bg1ptr[(n) - 1] = p[0];                                               \
+        bg1ptrb[(n) - 1] = p[1];                                              \
+        bg1ptrc[(n) - 1] = p[2];                                              \
+        bg1ptrd[(n) - 1] = p[3];                                              \
     }
 
 REG_BG_TILEMAP(reg2107w, 1)
@@ -630,15 +629,15 @@ REG_BG_TILEMAP(reg210Aw, 4)
 REGABI_REG_WRITE8(reg210Bw);
 void c_reg210Bw(u1 const al)
 {
-    bg1objptr = (u2)((u2)(al & 0x0Fu) << 13);
-    bg2objptr = (u2)((u2)(al >> 4) << 13);
+    bg1objptr[0] = (u2)((u2)(al & 0x0Fu) << 13);
+    bg1objptr[1] = (u2)((u2)(al >> 4) << 13);
 }
 
 REGABI_REG_WRITE8(reg210Cw);
 void c_reg210Cw(u1 const al)
 {
-    bg3objptr = (u2)((u2)(al & 0x0Fu) << 13);
-    bg4objptr = (u2)((u2)(al >> 4) << 13);
+    bg1objptr[2] = (u2)((u2)(al & 0x0Fu) << 13);
+    bg1objptr[3] = (u2)((u2)(al >> 4) << 13);
 }
 
 /* Rewriting the same value does not dirty the cache; the address still moves. */
@@ -1134,7 +1133,7 @@ static u4 dma_index(u4 const addr)
 
 #define REG_DMA_STORE(reg)                                                    \
     REGABI_BANK_WRITE8(reg);                                                  \
-    void c_##reg(u4 const addr, u1 const al) { dmadata[dma_index(addr)] = al; }
+    void c_##reg(u4 const addr, u1 const al) { dmadata_b[dma_index(addr)] = al; }
 
 REG_DMA_STORE(reg43x2w) /* source address, low */
 REG_DMA_STORE(reg43x3w) /* source address, high */
@@ -1152,14 +1151,14 @@ REG_DMA_STORE(reg43XBw) /* unknown DMA byte */
 REGABI_BANK_WRITE8(reg43X0w);
 void c_reg43X0w(u4 const addr, u1 const al)
 {
-    dmadata[dma_index(addr)] = al;
+    dmadata_b[dma_index(addr)] = al;
     hdmarestart = 1;
 }
 
 REGABI_BANK_WRITE8(reg43X1w);
 void c_reg43X1w(u4 const addr, u1 const al)
 {
-    dmadata[dma_index(addr)] = al;
+    dmadata_b[dma_index(addr)] = al;
     hdmarestart = 1;
 }
 
@@ -1169,7 +1168,7 @@ REGABI_BANK_WRITE8(reg43XAw);
 void c_reg43XAw(u4 const addr, u1 const al)
 {
     nohdmaframe = 0;
-    dmadata[dma_index(addr)] = al;
+    dmadata_b[dma_index(addr)] = al;
     if (curypos >= resolutn && al != 0) {
         nohdmaframe = 1;
         hdmadelay++;
@@ -1177,7 +1176,7 @@ void c_reg43XAw(u4 const addr, u1 const al)
 }
 
 REGABI_BANK_READ8(reg43XXr);
-u1 c_reg43XXr(u4 const addr) { return dmadata[dma_index(addr)]; }
+u1 c_reg43XXr(u4 const addr) { return dmadata_b[dma_index(addr)]; }
 
 /* Anything with no handler. Below $2100 there is no open bus to return, and
    an SPC7110 cart clears it too - the assembly falls through into the clear

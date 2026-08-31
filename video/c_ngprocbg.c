@@ -71,7 +71,10 @@ extern void c_drawsprng16bhr(void);
 extern zreg NGSAX, NGSBX, NGSCX, NGSDX, NGSSI, NGSDI, NGSBP;
 extern u1 BGMS1[], FillSubScr[256];
 extern u1 bgwinchange[256], bgallchange[256], bg1change[256];
-extern u1 winbg1enval[256], mosenng[256], mosszng[256];
+/* winbg1enval starts a run of six: bg1..bg4, obj, back (endmem.c), and is
+   indexed across them by layer. */
+extern u1 winbg1enval[6 * 256];
+extern u1 mosenng[256], mosszng[256];
 extern u2 BG1SYl[256];
 extern zreg cpalval[256];
 extern zreg CPalPtrng;
