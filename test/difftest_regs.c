@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "asmdata.h"
 #include "difftest.h"
 
 typedef uint8_t u1;
@@ -35,8 +36,38 @@ u1 winl1, winr1, winl2, winr2, winlogica, winlogicb;
 u1 winenabm, winenabs, scaddset, scaddtype, INTEnab, multa;
 u2 scrnon, diva;
 u1 bgscrolPrev, vramread;
-u2 bg1scrolx, bg2scrolx, bg3scrolx, bg4scrolx;
-u2 bg1scroly, bg2scroly, bg3scroly, bg4scroly;
+/* Same four-per-layer groups, pinned for the same reason. */
+__asm__(ASM_SEC_BSS(".bss")
+        ASM_GSYM(bg1ptr) ".skip 2\n" ASM_GSYM(bg2ptr) ".skip 2\n" ASM_GSYM(bg3ptr) ".skip 2\n" ASM_GSYM(bg4ptr) ".skip 2\n" ASM_SEC_END);
+extern u2 bg1ptr[4];
+__asm__(ASM_SEC_BSS(".bss")
+        ASM_GSYM(bg1ptrb) ".skip 2\n" ASM_GSYM(bg2ptrb) ".skip 2\n" ASM_GSYM(bg3ptrb) ".skip 2\n" ASM_GSYM(bg4ptrb) ".skip 2\n" ASM_SEC_END);
+extern u2 bg1ptrb[4];
+__asm__(ASM_SEC_BSS(".bss")
+        ASM_GSYM(bg1ptrc) ".skip 2\n" ASM_GSYM(bg2ptrc) ".skip 2\n" ASM_GSYM(bg3ptrc) ".skip 2\n" ASM_GSYM(bg4ptrc) ".skip 2\n" ASM_SEC_END);
+extern u2 bg1ptrc[4];
+__asm__(ASM_SEC_BSS(".bss")
+        ASM_GSYM(bg1ptrd) ".skip 2\n" ASM_GSYM(bg2ptrd) ".skip 2\n" ASM_GSYM(bg3ptrd) ".skip 2\n" ASM_GSYM(bg4ptrd) ".skip 2\n" ASM_SEC_END);
+extern u2 bg1ptrd[4];
+__asm__(ASM_SEC_BSS(".bss")
+        ASM_GSYM(bg1ptrx) ".skip 4\n" ASM_GSYM(bg2ptrx) ".skip 4\n" ASM_GSYM(bg3ptrx) ".skip 4\n" ASM_GSYM(bg4ptrx) ".skip 4\n" ASM_SEC_END);
+extern u4 bg1ptrx[4];
+__asm__(ASM_SEC_BSS(".bss")
+        ASM_GSYM(bg1ptry) ".skip 4\n" ASM_GSYM(bg2ptry) ".skip 4\n" ASM_GSYM(bg3ptry) ".skip 4\n" ASM_GSYM(bg4ptry) ".skip 4\n" ASM_SEC_END);
+extern u4 bg1ptry[4];
+__asm__(ASM_SEC_BSS(".bss")
+        ASM_GSYM(bg1objptr) ".skip 2\n" ASM_GSYM(bg2objptr) ".skip 2\n" ASM_GSYM(bg3objptr) ".skip 2\n" ASM_GSYM(bg4objptr) ".skip 2\n" ASM_SEC_END);
+extern u2 bg1objptr[4];
+
+/* cpu/c_regsppu.c indexes these as bg1scrolx[n] / bg1scroly[n] while the asm
+   reaches each layer by its own name, so the harness owns storage that has to
+   satisfy both. Eight loose scalars only line up by luck: gcc emits them in
+   declaration order at -O0 but reverses them at -O2, and bg1scroly[2] then
+   lands on bg3scrolx. Pin the layout the way cpu/c_regsdata.c does, bg1sx and
+   the trailing pad included. */
+__asm__(ASM_SEC_BSS(".bss")
+        ASM_GSYM(bg1scrolx) ".skip 2\n" ASM_GSYM(bg2scrolx) ".skip 2\n" ASM_GSYM(bg3scrolx) ".skip 2\n" ASM_GSYM(bg4scrolx) ".skip 2\n" ASM_GSYM(bg1sx) ".skip 2\n" ASM_GSYM(bg1scroly) ".skip 2\n" ASM_GSYM(bg2scroly) ".skip 2\n" ASM_GSYM(bg3scroly) ".skip 2\n" ASM_GSYM(bg4scroly) ".skip 2\n" ASM_SEC_END);
+extern u2 bg1scrolx[4], bg1scroly[4];
 u2 bg1scrolx_m7, bg1scroly_m7;
 u2 mode7C, mode7D, mode7X0, mode7Y0;
 u1 dmadata[129], hdmarestart, nohdmaframe, hdmadelay, SPC7110Enable;
@@ -52,22 +83,23 @@ u1 reg2101w_objmovs1[8] = { 2, 2, 2, 2, 2, 4, 2, 2 };
 u1 reg2101w_objmovs2[8] = { 2, 4, 8, 4, 8, 8, 4, 4 };
 u2 reg2101w_objadds1[8] = { 14, 14, 14, 14, 14, 12, 14, 14 };
 u2 reg2101w_objadds2[8] = { 14, 12, 8, 12, 8, 8, 12, 12 };
-u1 bgmode, bg3highst, bgtilesz, mosaicon, mosaicsz;
-u1 BG116x16t, BG216x16t, BG316x16t, BG416x16t;
-u2 bg1ptr, bg2ptr, bg3ptr, bg4ptr;
-u2 bg1ptrb, bg2ptrb, bg3ptrb, bg4ptrb;
-u2 bg1ptrc, bg2ptrc, bg3ptrc, bg4ptrc;
-u2 bg1ptrd, bg2ptrd, bg3ptrd, bg4ptrd;
-u4 bg1ptrx, bg2ptrx, bg3ptrx, bg4ptrx;
-u4 bg1ptry, bg2ptry, bg3ptry, bg4ptry;
+/* reg2105w clears all four tile-size flags with one `mov dword[BG116x16t],0`,
+   so they have to be a single 4-byte run. Loose scalars are contiguous at -O0
+   and reordered at -O2, where that store reaches bgtilesz instead. */
+__asm__(ASM_SEC_BSS(".bss")
+        ASM_GSYM(bgmode) ".skip 1\n" ASM_GSYM(bg3highst) ".skip 1\n" ASM_GSYM(bgtilesz) ".skip 1\n" ASM_GSYM(mosaicon) ".skip 1\n" ASM_GSYM(mosaicsz) ".skip 1\n" ASM_SEC_END);
+__asm__(ASM_SEC_BSS(".bss")
+        ASM_GSYM(BG116x16t) ".skip 1\n" ASM_GSYM(BG216x16t) ".skip 1\n" ASM_GSYM(BG316x16t) ".skip 1\n" ASM_GSYM(BG416x16t) ".skip 1\n" ASM_SEC_END);
+extern u1 bgmode, bg3highst, bgtilesz, mosaicon, mosaicsz;
+extern u1 BG116x16t, BG216x16t, BG316x16t, BG416x16t;
 u1 bg1scsize, bg2scsize, bg3scsize, bg4scsize;
-u2 bg1objptr, bg2objptr, bg3objptr, bg4objptr;
 u1 cgmod, winbg1en, winbg2en, winbg3en, winbg4en, winobjen, wincolen;
 u1 coladdr, coladdg, coladdb, interlval;
 u1 iohvlatch, MultiTapStat, JoyCRead;
 u4 JoyAOrig, JoyBOrig, JoyCOrig, JoyDOrig, JoyEOrig;
 u4 JoyANow, JoyBNow, JoyCNow, JoyDNow, JoyENow;
-u1 cycpl, cycphb, xirqb, cycpblt;
+u1 cycpl, cycphb, xirqb;
+u4 cycpblt; /* u4 in init.h: a u1 here is a 3-byte overrun */
 u1 opexec268, opexec268cph, opexec358, opexec358cph, cycpb268, cycpb358;
 u2 HIRQLoc, VIRQLoc, totlines;
 u4 HIRQCycNext;
@@ -611,8 +643,9 @@ static void run(void (*fn)(void), u4 a, u4 c, u4 d, state const* in,
     scrnon = in->scr0;
     diva = in->dv0;
     bgscrolPrev = in->prev0;
-    bg1scrolx = bg2scrolx = bg3scrolx = bg4scrolx = in->sc0;
-    bg1scroly = bg2scroly = bg3scroly = bg4scroly = in->sc0;
+    for (int i = 0; i < 4; i++) {
+        bg1scrolx[i] = bg1scroly[i] = in->sc0;
+    }
     bg1scrolx_m7 = bg1scroly_m7 = in->sc0;
     mode7C = mode7D = mode7X0 = mode7Y0 = in->sc0;
     memcpy(dmadata, dma_init, sizeof dmadata);
@@ -697,14 +730,14 @@ static void run(void (*fn)(void), u4 a, u4 c, u4 d, state const* in,
     poamaddrs = in->poams0;
     bgmode = bg3highst = bgtilesz = mosaicon = mosaicsz = in->bgb0;
     BG116x16t = BG216x16t = BG316x16t = BG416x16t = in->bgb0;
-    bg1ptr = bg2ptr = bg3ptr = bg4ptr = in->bgp0;
-    bg1ptrb = bg2ptrb = bg3ptrb = bg4ptrb = in->bgp0;
-    bg1ptrc = bg2ptrc = bg3ptrc = bg4ptrc = in->bgp0;
-    bg1ptrd = bg2ptrd = bg3ptrd = bg4ptrd = in->bgp0;
-    bg1ptrx = bg2ptrx = bg3ptrx = bg4ptrx = in->bgxy0;
-    bg1ptry = bg2ptry = bg3ptry = bg4ptry = in->bgxy0;
+    for (int i = 0; i < 4; i++) {
+        bg1ptr[i] = bg1ptrb[i] = bg1ptrc[i] = bg1ptrd[i] = in->bgp0;
+        bg1ptrx[i] = bg1ptry[i] = in->bgxy0;
+    }
     bg1scsize = bg2scsize = bg3scsize = bg4scsize = in->bgb0;
-    bg1objptr = bg2objptr = bg3objptr = bg4objptr = in->bgp0;
+    for (int i = 0; i < 4; i++) {
+        bg1objptr[i] = in->bgp0;
+    }
     vidbright = vb;
     forceblnk = fb;
     multchange = mc;
@@ -745,9 +778,9 @@ static void run(void (*fn)(void), u4 a, u4 c, u4 d, state const* in,
     }
     out->prev = bgscrolPrev;
     {
-        u2 const sc[12] = { bg1scrolx, bg2scrolx, bg3scrolx, bg4scrolx,
-            bg1scroly, bg2scroly, bg3scroly, bg4scroly, bg1scrolx_m7,
-            bg1scroly_m7, 0, 0 };
+        u2 const sc[12] = { bg1scrolx[0], bg1scrolx[1], bg1scrolx[2],
+            bg1scrolx[3], bg1scroly[0], bg1scroly[1], bg1scroly[2],
+            bg1scroly[3], bg1scrolx_m7, bg1scroly_m7, 0, 0 };
         u2 const m7[6] = { mode7A, mode7B, mode7C, mode7D, mode7X0, mode7Y0 };
         memcpy(out->sc, sc, sizeof out->sc);
         memcpy(out->m7, m7, sizeof out->m7);
@@ -808,7 +841,7 @@ static void run(void (*fn)(void), u4 a, u4 c, u4 d, state const* in,
     out->dvr = divres;
     out->mr2 = multres;
     {
-        u1 const sp[4] = { cycpl, cycphb, xirqb, cycpblt };
+        u1 const sp[4] = { cycpl, cycphb, xirqb, (u1)cycpblt };
 
         memcpy(out->spd, sp, sizeof out->spd);
     }
@@ -838,13 +871,15 @@ static void run(void (*fn)(void), u4 a, u4 c, u4 d, state const* in,
         u2 const os[2] = { oamaddrs, poamaddrs };
         u1 const mb[9] = { bgmode, bg3highst, bgtilesz, mosaicon, mosaicsz,
             BG116x16t, BG216x16t, BG316x16t, BG416x16t };
-        u2 const bp[16] = { bg1ptr, bg2ptr, bg3ptr, bg4ptr, bg1ptrb, bg2ptrb,
-            bg3ptrb, bg4ptrb, bg1ptrc, bg2ptrc, bg3ptrc, bg4ptrc, bg1ptrd,
-            bg2ptrd, bg3ptrd, bg4ptrd };
-        u4 const bxy[8] = { bg1ptrx, bg2ptrx, bg3ptrx, bg4ptrx, bg1ptry,
-            bg2ptry, bg3ptry, bg4ptry };
+        u2 const bp[16] = { bg1ptr[0], bg1ptr[1], bg1ptr[2], bg1ptr[3],
+            bg1ptrb[0], bg1ptrb[1], bg1ptrb[2], bg1ptrb[3], bg1ptrc[0],
+            bg1ptrc[1], bg1ptrc[2], bg1ptrc[3], bg1ptrd[0], bg1ptrd[1],
+            bg1ptrd[2], bg1ptrd[3] };
+        u4 const bxy[8] = { bg1ptrx[0], bg1ptrx[1], bg1ptrx[2], bg1ptrx[3],
+            bg1ptry[0], bg1ptry[1], bg1ptry[2], bg1ptry[3] };
         u1 const bs[4] = { bg1scsize, bg2scsize, bg3scsize, bg4scsize };
-        u2 const bo[4] = { bg1objptr, bg2objptr, bg3objptr, bg4objptr };
+        u2 const bo[4] = { bg1objptr[0], bg1objptr[1], bg1objptr[2],
+            bg1objptr[3] };
 
         memcpy(out->objb, ob, sizeof out->objb);
         memcpy(out->obja, oa, sizeof out->obja);

@@ -9,6 +9,28 @@
 
 u1 *romdata, *sfxramdata;
 void InitFxTablesAsm(void);
+
+/* The oracle is pre-port assembly and does not keep the C ABI: it opens with
+   `xor ebx,ebx` and never restores ebx/esi/edi/ebp. At -O0 gcc holds nothing
+   in those across the call, so it only bites once optimisation does - the
+   table walk below then reads its cursor out of a clobbered ebx. Same reason
+   difftest_regs.c goes through regs_call. */
+__asm__(".text\n"
+        ".globl fx_call\n"
+        "fx_call:\n"
+        "pushl %ebx\n"
+        "pushl %esi\n"
+        "pushl %edi\n"
+        "pushl %ebp\n"
+        "movl 20(%esp), %eax\n"
+        "call *%eax\n"
+        "popl %ebp\n"
+        "popl %edi\n"
+        "popl %esi\n"
+        "popl %ebx\n"
+        "ret\n"
+        ".text\n");
+void fx_call(void (*fn)(void));
 extern u4 asm_sfx128lineloc, asm_sfx160lineloc, asm_sfx192lineloc, asm_sfxobjlineloc;
 void InitFxTables(void);
 
@@ -63,7 +85,7 @@ int main(void)
     lines = malloc(LINEBYTES);
     u4 locs[4];
 
-    InitFxTablesAsm();
+    fx_call(InitFxTablesAsm);
     snapshot(lines);
     locs[0] = asm_sfx128lineloc;
     locs[1] = asm_sfx160lineloc;

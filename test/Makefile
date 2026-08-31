@@ -35,7 +35,12 @@ endif
 # C11 with SUSv4, matching the emulator: the tests must not quietly depend
 # on extensions the build itself forbids, and strict c11 hides POSIX until
 # the macro asks for it.
-CFLAGS := $(BITFLAG) -std=c11 $(FEATURE) \
+# Unoptimised by default so a failure is the port's and not the inliner's, but
+# the emulator ships -O3: `make regs OPT=-O3` runs the same comparison at
+# release settings, which is what catches layout the harness only gets right
+# by luck at -O0.
+OPT ?=
+CFLAGS := $(BITFLAG) -std=c11 $(FEATURE) $(OPT) \
           -I.. -Wall -Wextra -Wno-unused-parameter
 
 BIN       := zsnes_test
