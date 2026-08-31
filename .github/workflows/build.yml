@@ -251,6 +251,18 @@ jobs:
             echo "=== $t"
             make -C test "$t" || exit 1
           done
+      - name: Differential tests at release optimisation
+        # The suite above builds the port at -O0; the emulator ships -O3. A
+        # harness that only lines its globals up by luck passes at -O0 and
+        # fails once gcc reorders them, and three such bugs hid behind a green
+        # -O0 run. These are the targets that surfaced them, kept to a subset
+        # so the shard stays short.
+        if: matrix.shard == 'rest'
+        run: |
+          for t in regs cb16b cb16t fxtable mv16 procwin; do
+            echo "=== $t -O3"
+            make -C test "$t" OPT=-O3 || exit 1
+          done
 
   arm64:
     name: linux_arm64
