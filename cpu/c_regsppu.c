@@ -33,7 +33,7 @@ extern u2 bg1scrolx[4]; /* one per layer */
 extern u2 bg1scroly[4];
 extern u2 bg1scrolx_m7, bg1scroly_m7;
 extern u2 mode7C, mode7D, mode7X0, mode7Y0;
-extern u1 dmadata_b[129]; /* the DMAInfo run as bytes (cpu/regs.h) */
+extern u1 dmadata[129];
 extern u1 hdmarestart, nohdmaframe, hdmadelay, SPC7110Enable;
 extern u2 resolutn, curypos;
 extern u1* wramdata;
@@ -1133,7 +1133,7 @@ static u4 dma_index(u4 const addr)
 
 #define REG_DMA_STORE(reg)                                                    \
     REGABI_BANK_WRITE8(reg);                                                  \
-    void c_##reg(u4 const addr, u1 const al) { dmadata_b[dma_index(addr)] = al; }
+    void c_##reg(u4 const addr, u1 const al) { dmadata[dma_index(addr)] = al; }
 
 REG_DMA_STORE(reg43x2w) /* source address, low */
 REG_DMA_STORE(reg43x3w) /* source address, high */
@@ -1151,14 +1151,14 @@ REG_DMA_STORE(reg43XBw) /* unknown DMA byte */
 REGABI_BANK_WRITE8(reg43X0w);
 void c_reg43X0w(u4 const addr, u1 const al)
 {
-    dmadata_b[dma_index(addr)] = al;
+    dmadata[dma_index(addr)] = al;
     hdmarestart = 1;
 }
 
 REGABI_BANK_WRITE8(reg43X1w);
 void c_reg43X1w(u4 const addr, u1 const al)
 {
-    dmadata_b[dma_index(addr)] = al;
+    dmadata[dma_index(addr)] = al;
     hdmarestart = 1;
 }
 
@@ -1168,7 +1168,7 @@ REGABI_BANK_WRITE8(reg43XAw);
 void c_reg43XAw(u4 const addr, u1 const al)
 {
     nohdmaframe = 0;
-    dmadata_b[dma_index(addr)] = al;
+    dmadata[dma_index(addr)] = al;
     if (curypos >= resolutn && al != 0) {
         nohdmaframe = 1;
         hdmadelay++;
@@ -1176,7 +1176,7 @@ void c_reg43XAw(u4 const addr, u1 const al)
 }
 
 REGABI_BANK_READ8(reg43XXr);
-u1 c_reg43XXr(u4 const addr) { return dmadata_b[dma_index(addr)]; }
+u1 c_reg43XXr(u4 const addr) { return dmadata[dma_index(addr)]; }
 
 /* Anything with no handler. Below $2100 there is no open bus to return, and
    an SPC7110 cart clears it too - the assembly falls through into the clear

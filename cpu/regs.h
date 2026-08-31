@@ -74,7 +74,9 @@ typedef struct DMAInfo {
 } __attribute__((packed)) DMAInfo;
 _Static_assert(sizeof(DMAInfo) == 16, "DMAInfo size mismatch");
 
-extern DMAInfo dmadata[8]; // DMA data (written from ports 43xx)
+/* The reservation is 129 raw bytes (cpu/c_regsdata.c) and the $43xx
+   handlers index it as such; DMAInfo is a view over the first 128. */
+extern u1 dmadata[129]; // DMA data (written from ports 43xx)
 
 typedef struct HDMAInfo {
     eop* dst_reg[4]; // Destination registers

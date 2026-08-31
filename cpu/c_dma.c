@@ -215,7 +215,7 @@ static void transdma(DMAInfo* const esi)
 
 void c_reg420Bw(u1 const al)
 {
-    DMAInfo* esi = dmadata;
+    DMAInfo* esi = (DMAInfo*)dmadata;
     for (u4 eax = al; eax != 0; ++esi, eax >>= 1) {
         if (eax & 0x01)
             transdma(esi);
@@ -267,7 +267,7 @@ void c_reg420Cw(u1 const al)
     if (curypos < resolutn && (!(INTEnab & 0x10) || (80 <= HIRQLoc && HIRQLoc <= 176))) {
         nexthdma = al;
         if (al != 0x00) {
-            DMAInfo* esi = dmadata;
+            DMAInfo* esi = (DMAInfo*)dmadata;
             HDMAInfo* edx = hdmadata;
             for (u1 i = 0x01; i != 0; ++esi, ++edx, i <<= 1) {
                 if (al & i)
@@ -317,7 +317,7 @@ void starthdma(void)
     if (al == 0x00)
         return;
 
-    DMAInfo* esi = dmadata;
+    DMAInfo* esi = (DMAInfo*)dmadata;
     HDMAInfo* edx = hdmadata;
     for (u1 i = 0x01; i != 0; ++esi, ++edx, i <<= 1) {
         if (al & i)
@@ -437,7 +437,7 @@ static void exechdmars(void)
 {
     u1 const al = nexthdma;
     if (al != 0x00) {
-        DMAInfo* esi = dmadata;
+        DMAInfo* esi = (DMAInfo*)dmadata;
         HDMAInfo* edx = hdmadata;
 
         hdma_charge_line();
@@ -464,7 +464,7 @@ void exechdma(void)
 
     hdma_charge_line();
 
-    DMAInfo* esi = dmadata;
+    DMAInfo* esi = (DMAInfo*)dmadata;
     HDMAInfo* edx = hdmadata;
     for (u1 i = 0x01; i != 0; ++esi, ++edx, i <<= 1) {
         if (al & i)
