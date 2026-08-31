@@ -26,7 +26,7 @@ on:
 jobs:
   linux:
     name: linux
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     env:
       DEBIAN_FRONTEND: noninteractive
       # A stalled mirror otherwise hangs the step with no bound: one arm64
@@ -213,7 +213,7 @@ jobs:
     # mvall alone 363s. Sharded by measured time so the slowest shard is one
     # long target rather than a queue behind it.
     name: difftests (${{ matrix.shard }})
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     env:
       DEBIAN_FRONTEND: noninteractive
       APT_OPTS: -o Acquire::Retries=3 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20
@@ -282,7 +282,7 @@ jobs:
 
   arm64:
     name: linux_arm64
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     env:
       DEBIAN_FRONTEND: noninteractive
       # A stalled mirror otherwise hangs the step with no bound: one arm64
@@ -347,7 +347,7 @@ jobs:
 
   arm64-native:
     name: linux_arm64 (native)
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-26.04-arm
     env:
       DEBIAN_FRONTEND: noninteractive
       # A stalled mirror otherwise hangs the step with no bound: one arm64
@@ -390,7 +390,7 @@ jobs:
 
   windows:
     name: win
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     env:
       DEBIAN_FRONTEND: noninteractive
       # A stalled mirror otherwise hangs the step with no bound: one arm64
