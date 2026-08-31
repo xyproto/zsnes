@@ -59,6 +59,13 @@ MODE7     := zsnes_mode716b_test
 MODE7_SRC := mode716b_test.c
 ASMDATA   := zsnes_asmdata_test
 ASMDATA_SRC := asmdata_test.c
+# Objects from the parent tree belong to the real build, so let the top
+# Makefile make them. make's built-in %.o: %.c would use the flags below
+# instead, quietly dropping -fdata-sections and every -D the configuration
+# adds, and the difftest would link something the emulator never builds.
+../%.o:
+	$(MAKE) -C .. $*.o
+
 OBJS      := ../zpath.o
 
 .PHONY: all run clean spc64 bgt procwin spcdec fxtable fxops memops m7calc m7ext2 m7start m7win m7bw m7proc m7draw mv16 mvs mvall m716t cb16t cb16b spr16bt spr16t spr16p t8bt t16bt t8t t16t t8to thi mos sprwin ngspr regs ngeng ngframe
@@ -193,7 +200,7 @@ M16T_OBJS := ../cpu/c_regsdata.o ../cpu/c_regswdata.o \
              ../video/c_mode716data.o ../video/makevid.o ../endmem.o
 M16T_BSS  := ../video/c_makev16tdata.o
 
-m716t: difftest_m716t.c difftest.h $(M16T_SEAM)
+m716t: difftest_m716t.c difftest.h $(M16T_SEAM) $(M16T_OBJS)
 	python3 ../tools/mkoracle.py video/makev16t.asm -o _m716t.o $(M16T_ORIG) \
 	    --stub-routine $(M716T_STUBBED) \
 	    --stubs _m716t_stubs.c --provided-by $(M16T_OBJS) \
@@ -203,7 +210,7 @@ m716t: difftest_m716t.c difftest.h $(M16T_SEAM)
 	    $(NOPIE) -o difftest_m716t
 	@./difftest_m716t
 
-cb16t: difftest_cb16t.c difftest.h $(M16T_SEAM)
+cb16t: difftest_cb16t.c difftest.h $(M16T_SEAM) $(M16T_OBJS)
 	python3 ../tools/mkoracle.py video/makev16t.asm -o _cb16t.o $(M16T_ORIG) \
 	    --stubs _cb16t_stubs.c --provided-by $(M16T_OBJS) \
 	    --exclude vram transpbuf fulladdtab
@@ -212,7 +219,7 @@ cb16t: difftest_cb16t.c difftest.h $(M16T_SEAM)
 	    $(NOPIE) -o difftest_cb16t
 	@./difftest_cb16t
 
-cb16b: difftest_cb16b.c difftest.h $(M16T_SEAM)
+cb16b: difftest_cb16b.c difftest.h $(M16T_SEAM) $(M16T_OBJS) $(M16T_BSS)
 	python3 ../tools/mkoracle.py video/makev16t.asm -o _cb16b.o $(M16T_ORIG) \
 	    --stubs _cb16b_stubs.c --provided-by $(M16T_OBJS) $(M16T_BSS) \
 	    --exclude vram
@@ -221,7 +228,7 @@ cb16b: difftest_cb16b.c difftest.h $(M16T_SEAM)
 	    $(NOPIE) -o difftest_cb16b
 	@./difftest_cb16b
 
-spr16bt: difftest_spr16bt.c difftest.h $(M16T_SEAM)
+spr16bt: difftest_spr16bt.c difftest.h $(M16T_SEAM) $(M16T_OBJS) $(M16T_BSS)
 	python3 ../tools/mkoracle.py video/makev16t.asm -o _spr.o $(M16T_ORIG) \
 	    --stubs _spr_stubs.c --provided-by $(M16T_OBJS) $(M16T_BSS) \
 	    --exclude vram
@@ -230,7 +237,7 @@ spr16bt: difftest_spr16bt.c difftest.h $(M16T_SEAM)
 	    $(NOPIE) -o difftest_spr16bt
 	@./difftest_spr16bt
 
-spr16t: difftest_spr16t.c difftest.h $(M16T_SEAM)
+spr16t: difftest_spr16t.c difftest.h $(M16T_SEAM) $(M16T_OBJS) $(M16T_BSS)
 	python3 ../tools/mkoracle.py video/makev16t.asm -o _spt.o $(M16T_ORIG) \
 	    --stubs _spt_stubs.c --provided-by $(M16T_OBJS) $(M16T_BSS) \
 	    --exclude vram fulladdtab
@@ -239,7 +246,7 @@ spr16t: difftest_spr16t.c difftest.h $(M16T_SEAM)
 	    $(NOPIE) -o difftest_spr16t
 	@./difftest_spr16t
 
-spr16p: difftest_spr16p.c difftest.h $(M16T_SEAM)
+spr16p: difftest_spr16p.c difftest.h $(M16T_SEAM) $(M16T_OBJS) $(M16T_BSS)
 	python3 ../tools/mkoracle.py video/makev16t.asm -o _spp.o $(M16T_ORIG) \
 	    --stubs _spp_stubs.c --provided-by $(M16T_OBJS) $(M16T_BSS) \
 	    --exclude vram fulladdtab
@@ -248,7 +255,7 @@ spr16p: difftest_spr16p.c difftest.h $(M16T_SEAM)
 	    $(NOPIE) -o difftest_spr16p
 	@./difftest_spr16p
 
-t8bt: difftest_t8bt.c difftest.h $(M16T_SEAM) ../video/c_mv16draw.c
+t8bt: difftest_t8bt.c difftest.h $(M16T_SEAM) ../video/c_mv16draw.c $(M16T_OBJS) $(M16T_BSS)
 	python3 ../tools/mkoracle.py video/makev16t.asm -o _t8bt.o $(M16T_ORIG) \
 	    --stub-routine draw16x816t \
 	    --stubs _t8bt_stubs.c --provided-by $(M16T_OBJS) $(M16T_BSS) \
@@ -259,7 +266,7 @@ t8bt: difftest_t8bt.c difftest.h $(M16T_SEAM) ../video/c_mv16draw.c
 	    $(NOPIE) -o difftest_t8bt
 	@./difftest_t8bt
 
-t16bt: difftest_t16bt.c difftest.h $(M16T_SEAM)
+t16bt: difftest_t16bt.c difftest.h $(M16T_SEAM) $(M16T_OBJS) $(M16T_BSS)
 	python3 ../tools/mkoracle.py video/makev16t.asm -o _t16bt.o $(M16T_ORIG) \
 	    --stubs _t16bt_stubs.c --provided-by $(M16T_OBJS) $(M16T_BSS) \
 	    --exclude vram domosaic16b xtravbuf transpbuf \
@@ -271,7 +278,7 @@ t16bt: difftest_t16bt.c difftest.h $(M16T_SEAM)
 
 # c_mv16draw.c but not c_mv16leaf.c: the test defines draw16x816t and
 # draw8x816toffset itself, to see which way the dispatch went.
-t8t: difftest_t8t.c difftest.h $(M16T_SEAM) ../video/c_mv16draw.c
+t8t: difftest_t8t.c difftest.h $(M16T_SEAM) ../video/c_mv16draw.c $(M16T_OBJS) $(M16T_BSS)
 	python3 ../tools/mkoracle.py video/makev16t.asm -o _t8t.o $(M16T_ORIG) \
 	    --stub-routine draw16x816t draw8x816toffset \
 	    --stubs _t8t_stubs.c --provided-by $(M16T_OBJS) $(M16T_BSS) \
@@ -282,7 +289,7 @@ t8t: difftest_t8t.c difftest.h $(M16T_SEAM) ../video/c_mv16draw.c
 	    $(NOPIE) -o difftest_t8t
 	@./difftest_t8t
 
-t16t: difftest_t16t.c difftest.h $(M16T_SEAM)
+t16t: difftest_t16t.c difftest.h $(M16T_SEAM) $(M16T_OBJS) $(M16T_BSS)
 	python3 ../tools/mkoracle.py video/makev16t.asm -o _t16t.o $(M16T_ORIG) \
 	    --stubs _t16t_stubs.c --provided-by $(M16T_OBJS) $(M16T_BSS) \
 	    --exclude vram domosaic16b fulladdtab xtravbuf transpbuf \
@@ -292,7 +299,7 @@ t16t: difftest_t16t.c difftest.h $(M16T_SEAM)
 	    $(NOPIE) -o difftest_t16t
 	@./difftest_t16t
 
-t8to: difftest_t8to.c difftest.h $(M16T_SEAM) ../video/c_mv16leaf.c
+t8to: difftest_t8to.c difftest.h $(M16T_SEAM) ../video/c_mv16leaf.c $(M16T_OBJS) $(M16T_BSS)
 	python3 ../tools/mkoracle.py video/makev16t.asm -o _t8to.o $(M16T_ORIG) \
 	    --stubs _t8to_stubs.c --provided-by $(M16T_OBJS) $(M16T_BSS) \
 	    --exclude vram domosaic16b cachesingle4bng fulladdtab xtravbuf transpbuf \
@@ -302,7 +309,7 @@ t8to: difftest_t8to.c difftest.h $(M16T_SEAM) ../video/c_mv16leaf.c
 	    $(NOPIE) -o difftest_t8to
 	@./difftest_t8to
 
-thi: difftest_thi.c difftest.h $(M16T_SEAM) ../video/c_mv16leaf.c
+thi: difftest_thi.c difftest.h $(M16T_SEAM) ../video/c_mv16leaf.c $(M16T_OBJS) $(M16T_BSS)
 	python3 ../tools/mkoracle.py video/makev16t.asm -o _thi.o $(M16T_ORIG) \
 	    --stubs _thi_stubs.c --provided-by $(M16T_OBJS) $(M16T_BSS) \
 	    --exclude vram domosaic16b fulladdtab xtravbuf transpbuf \
@@ -326,12 +333,12 @@ NG_SEAM := ../video/c_ngmosaic.c ../video/c_ngprocbg.c \
 
 # No oracle: the loop has no symbol of its own, so difftest_sprwin.c carries a
 # verbatim transcription of the assembly instead.
-sprwin: difftest_sprwin.c difftest.h ../video/c_ngline.c
+sprwin: difftest_sprwin.c difftest.h ../video/c_ngline.c $(NG_OBJS)
 	$(CC) $(CFLAGS) difftest_sprwin.c ../video/c_ngline.c \
 	    $(NG_OBJS) $(NOPIE) -o difftest_sprwin
 	@./difftest_sprwin
 
-ngspr: difftest_ngspr.c difftest.h ../video/c_ngspr.c
+ngspr: difftest_ngspr.c difftest.h ../video/c_ngspr.c $(NG_OBJS)
 	$(CC) $(CFLAGS) difftest_ngspr.c ../video/c_ngspr.c \
 	    $(NG_OBJS) $(NOPIE) -o difftest_ngspr
 	@./difftest_ngspr
@@ -356,7 +363,7 @@ procwin: difftest_procwin.c difftest.h ../video/c_procwin.c
 	    _procwin.o _procwin_stubs.c $(NOPIE) -o difftest_procwin
 	@./difftest_procwin
 
-mos: difftest_mos.c difftest.h $(NG_SEAM)
+mos: difftest_mos.c difftest.h $(NG_SEAM) $(NG_OBJS)
 	python3 ../tools/mkoracle.py video/newgfx16.asm -o _mos.o \
 	    --stubs _mos_stubs.c --provided-by $(NG_OBJS) \
 	    --exclude vram xtravbuf pesimpng fulladdtab vidbuffer
@@ -371,7 +378,7 @@ mos: difftest_mos.c difftest.h $(NG_SEAM)
 # revision: the first two thirds of the routine are already C and the assembly
 # reaches them by ccallv there, so both sides share those three and this
 # compares only what was ported last - see difftest_ngeng.c.
-ngeng: difftest_ngeng.c difftest.h ../video/c_ngline.c
+ngeng: difftest_ngeng.c difftest.h ../video/c_ngline.c $(NG_OBJS)
 	python3 ../tools/mkoracle.py video/newgfx16.asm -o _ngeng.o \
 	    --requires 'ccallv newengine16b_lines' --ported-marker '' \
 	    --stubs _ngeng_stubs.c --provided-by $(NG_OBJS) \
@@ -385,7 +392,7 @@ ngeng: difftest_ngeng.c difftest.h ../video/c_ngline.c
 
 # StartDrawNewGfx16b and the screen clip. The three workers it calls are
 # recorded, so video/c_ngprocbg.c is not linked - see difftest_ngframe.c.
-ngframe: difftest_ngframe.c difftest.h ../video/c_ngframe.c
+ngframe: difftest_ngframe.c difftest.h ../video/c_ngframe.c ../cpu/c_regsdata.o ../cpu/c_regswdata.o ../endmem.o ../video/c_newgfx16data.o ../video/c_ng2gate.o ../video/makevid.o ../video/newgfx.o $(NG_OBJS)
 	python3 ../tools/mkoracle.py video/newgfx16.asm -o _ngframe.o \
 	    --requires 'ccallv c_procbg16b' --ported-marker '' \
 	    --stubs _ngframe_stubs.c --provided-by $(NG_OBJS) \
@@ -544,7 +551,7 @@ transp: difftest_transp.c difftest.h ../video/c_ngtransp.c
 # The four background tile dispatchers. The renderers they tail-jump into are
 # recorded rather than run, so what this compares is the register state at the
 # jump plus everything the dispatcher wrote - see difftest_bgt.c.
-bgt: difftest_bgt.c difftest.h ../video/c_ngbg.c
+bgt: difftest_bgt.c difftest.h ../video/c_ngbg.c $(NG_OBJS)
 	python3 ../tools/mkoracle.py video/newgfx16.asm -o _bgt.o \
 	    --stubs _bgt_stubs.c --provided-by $(NG_OBJS) \
 	    --define BuildWindow=BuildWindow_reg \
@@ -567,7 +574,8 @@ bgt: difftest_bgt.c difftest.h ../video/c_ngbg.c
 # entry points are C, so difftest_ng2.c calls them directly and there is only
 # one oracle here now.
 ng2: difftest_ng2.c ng2_harness.c ng2_harness.h difftest.h \
-     ../video/c_ng2tile.c ../video/c_ng2gate.c
+     ../video/c_ng2tile.c ../video/c_ng2gate.c \
+     ../video/tilecache.o ../endmem.o
 	# --requires bounds the search from above now that the file is deleted:
 	# the finished port has neither the .mac include nor the gate macros'
 	# ccall, so the marker alone would select it. The include is the thing
