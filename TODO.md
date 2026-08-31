@@ -41,9 +41,6 @@
 - [ ] Verify the unverified DSP4 lookup table (`chips/dsp4emu.c`)
 - [ ] Retire the old graphics engine (`newengen=0`) once the new one has no
       known regressions, and drop `bgfixer` with it
-- [ ] Wire the `-flto -Werror=lto-type-mismatch -Werror=odr
-      -Werror=strict-aliasing` build into CI so the gate stays closed; the 21
-      mismatches it reported are fixed (#59), but nothing enforces it yet
 - [ ] Re-enable the FreeBSD, OpenBSD and NetBSD CI jobs
 - [ ] Give the difftests a 64-bit oracle so they run off 32-bit x86
 - [ ] Give the pinned table runs (`BG1SYl`, `BGPT1` ...) flat aliases so the
