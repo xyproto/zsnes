@@ -36,7 +36,11 @@ u1 winl1, winr1, winl2, winr2, winlogica, winlogicb;
 u1 winenabm, winenabs, scaddset, scaddtype, INTEnab, multa;
 u2 scrnon, diva;
 u1 bgscrolPrev, vramread;
-/* Same four-per-layer groups, pinned for the same reason. */
+/* cpu/c_regsppu.c indexes these per layer as bg1ptr[n] while the asm reaches
+   each layer by its own name, so the harness owns storage that has to satisfy
+   both. Loose scalars line up only by luck: gcc emits them in declaration
+   order at -O0 but reverses them at -O2, where bg1scroly[2] lands on
+   bg3scrolx. Pin the layout the way cpu/c_regsdata.c does. */
 __asm__(ASM_SEC_BSS(".bss")
         ASM_GSYM(bg1ptr) ".skip 2\n" ASM_GSYM(bg2ptr) ".skip 2\n" ASM_GSYM(bg3ptr) ".skip 2\n" ASM_GSYM(bg4ptr) ".skip 2\n" ASM_SEC_END);
 extern u2 bg1ptr[4];
@@ -59,12 +63,7 @@ __asm__(ASM_SEC_BSS(".bss")
         ASM_GSYM(bg1objptr) ".skip 2\n" ASM_GSYM(bg2objptr) ".skip 2\n" ASM_GSYM(bg3objptr) ".skip 2\n" ASM_GSYM(bg4objptr) ".skip 2\n" ASM_SEC_END);
 extern u2 bg1objptr[4];
 
-/* cpu/c_regsppu.c indexes these as bg1scrolx[n] / bg1scroly[n] while the asm
-   reaches each layer by its own name, so the harness owns storage that has to
-   satisfy both. Eight loose scalars only line up by luck: gcc emits them in
-   declaration order at -O0 but reverses them at -O2, and bg1scroly[2] then
-   lands on bg3scrolx. Pin the layout the way cpu/c_regsdata.c does, bg1sx and
-   the trailing pad included. */
+/* bg1sx separates the two scroll runs in cpu/c_regsdata.c; keep it here. */
 __asm__(ASM_SEC_BSS(".bss")
         ASM_GSYM(bg1scrolx) ".skip 2\n" ASM_GSYM(bg2scrolx) ".skip 2\n" ASM_GSYM(bg3scrolx) ".skip 2\n" ASM_GSYM(bg4scrolx) ".skip 2\n" ASM_GSYM(bg1sx) ".skip 2\n" ASM_GSYM(bg1scroly) ".skip 2\n" ASM_GSYM(bg2scroly) ".skip 2\n" ASM_GSYM(bg3scroly) ".skip 2\n" ASM_GSYM(bg4scroly) ".skip 2\n" ASM_SEC_END);
 extern u2 bg1scrolx[4], bg1scroly[4];
