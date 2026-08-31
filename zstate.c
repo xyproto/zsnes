@@ -233,6 +233,8 @@ void zst_mark(char const* label);
 #define zst_mark(label) ((void)0)
 #endif
 
+extern uint8_t SetaCmdEnable[4];
+
 static void copy_state_data(uint8_t* buffer, void (*copy_func)(uint8_t**, void*, size_t), enum copy_state_method method)
 {
     copy_snes_data(&buffer, copy_func);
@@ -287,8 +289,11 @@ static void copy_state_data(uint8_t* buffer, void (*copy_func)(uint8_t**, void*,
     if (SETAEnable) {
         copy_func(&buffer, setaramdata, 256 * 16);
 
-        // Todo: copy the SetaCmdEnable?  For completeness we should do it
-        // but currently we ignore it anyway.
+        /* The ST-010 command register the game drives through $60:0000; new
+           in V144, so the older formats stop short of it. */
+        if ((method != csm_load_zst_143) && (method != csm_load_zst_old)) {
+            copy_func(&buffer, SetaCmdEnable, sizeof(SetaCmdEnable));
+        }
     }
 
     if (SPC7110Enable) {
