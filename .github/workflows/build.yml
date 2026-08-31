@@ -139,18 +139,6 @@ jobs:
         # 64-bit width bug cannot show up in one. This runs a core at both
         # widths and compares.
         run: make -C test spc64
-      - name: Differential tests
-        # These prove each ported routine still bit-identical to the assembly
-        # it replaced; they are what catches a porting regression.
-        run: |
-          for t in spcdec fxtable fxops memops mvs mvall m716t cb16t cb16b \
-                   spr16bt spr16t spr16p t8bt t16bt t8t t16t t8to thi \
-                   sprwin ngspr procwin mos ngeng ngframe mv16 m7draw \
-                   m7proc m7bw m7win m7start m7ext2 m7calc regs op sa1op \
-                   dbgop transp bgt ng2; do
-            echo "=== $t"
-            make -C test "$t" || exit 1
-          done
       - name: Run the 32-bit executable
         # A binary that links is not a binary that runs. ZSNES_SELFTEST checks
         # the allocations and the pointers handed between units, then exits,
@@ -219,6 +207,79 @@ jobs:
           test -x ./zsnes
           ZSNES_SELFTEST=1 ./zsnes -v 0
           make clean
+  difftests:
+    # These prove each ported routine still bit-identical to the assembly it
+    # replaced, and they dominated the linux job: 1008s of its 1371s, with
+    # mvall alone 363s. Sharded by measured time so the slowest shard is one
+    # long target rather than a queue behind it.
+    name: difftests (${{ matrix.shard }})
+    runs-on: ubuntu-24.04
+    env:
+      DEBIAN_FRONTEND: noninteractive
+      APT_OPTS: -o Acquire::Retries=3 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20
+      PKG_CONFIG_LIBDIR: /usr/lib/i386-linux-gnu/pkgconfig:/usr/share/pkgconfig
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - shard: mvall
+            targets: mvall
+          - shard: heavy
+            targets: t8to mvs op sa1op dbgop memops
+          - shard: rest
+            targets: >-
+              spcdec fxtable fxops m716t cb16t cb16b spr16bt spr16t spr16p
+              t8bt t16bt t8t t16t thi sprwin ngspr procwin mos ngeng ngframe
+              mv16 m7draw m7proc m7bw m7win m7start m7ext2 m7calc regs transp
+              bgt ng2
+    steps:
+      - uses: actions/checkout@v6
+      - name: Install dependencies
+        run: |
+          sudo dpkg --add-architecture i386
+          sudo apt-get $APT_OPTS update
+          sudo apt-get $APT_OPTS install -y --no-install-recommends \
+            build-essential cmake ninja-build git make nasm python3 pkg-config \
+            gcc-multilib g++-multilib libc6-dev-i386 \
+            libx11-dev:i386 libxcursor-dev:i386 libxi-dev:i386 \
+            libxinerama-dev:i386 libxfixes-dev:i386 libxrandr-dev:i386 \
+            libgl1-mesa-dev:i386 zlib1g-dev:i386 libpng-dev:i386 \
+            libao-dev:i386 libpipewire-0.3-dev:i386
+      - name: Install SDL3 (i386)
+        run: |
+          if apt-cache show libsdl3-dev:i386 >/dev/null 2>&1; then
+            sudo apt-get $APT_OPTS install -y --no-install-recommends libsdl3-dev:i386
+          else
+            rm -rf /tmp/SDL
+            git clone --depth 1 https://github.com/libsdl-org/SDL.git /tmp/SDL
+            cmake -S /tmp/SDL -B /tmp/SDL/build -GNinja \
+              -DCMAKE_BUILD_TYPE=Release \
+              -DCMAKE_INSTALL_PREFIX=/usr/local \
+              -DSDL_SHARED=ON -DSDL_STATIC=OFF \
+              -DSDL_X11=OFF -DSDL_WAYLAND=OFF -DSDL_KMSDRM=OFF \
+              -DSDL_UNIX_CONSOLE_BUILD=ON \
+              -DSDL_ALSA=OFF -DSDL_PULSEAUDIO=OFF -DSDL_PIPEWIRE=OFF \
+              -DSDL_JACK=OFF -DSDL_SNDIO=OFF \
+              -DCMAKE_C_FLAGS='-m32' -DCMAKE_CXX_FLAGS='-m32'
+            cmake --build /tmp/SDL/build --parallel
+            sudo cmake --install /tmp/SDL/build
+            echo '/usr/local/lib' | sudo tee /etc/ld.so.conf.d/zsnes-ci-sdl3.conf
+            sudo ldconfig
+            echo 'PKG_CONFIG_PATH=/usr/local/lib/pkgconfig' >> "$GITHUB_ENV"
+          fi
+      - name: Build
+        # The difftests link the parent tree's objects, so this has to run
+        # first or they fail to link rather than to compare.
+        run: |
+          make clean
+          make ARCH=linux
+      - name: Differential tests
+        run: |
+          for t in ${{ matrix.targets }}; do
+            echo "=== $t"
+            make -C test "$t" || exit 1
+          done
+
   arm64:
     name: linux_arm64
     runs-on: ubuntu-24.04
@@ -354,7 +415,7 @@ jobs:
           make clean
           make win64 WITH_PNG=
           test -f ./zsnes.exe
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v7
         with:
           name: zsnes-win64
           path: zsnes.exe
@@ -364,7 +425,7 @@ jobs:
     needs: windows
     runs-on: windows-latest
     steps:
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@v8
         with:
           name: zsnes-win64
       - name: Run the executable
@@ -380,6 +441,9 @@ jobs:
       - uses: actions/checkout@v6
       - name: Install dependencies
         run: |
+          # The runner image ships aws/tap, which Homebrew now refuses to
+          # trust and warns about on every invocation. Nothing here needs it.
+          brew untap aws/tap || true
           brew update
           brew install pkgconf sdl3 libpng libao
       - name: Build
