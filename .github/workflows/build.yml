@@ -24,14 +24,17 @@ on:
   workflow_dispatch:
 
 jobs:
-  linux:
-    name: linux
+  linux32:
+    name: linux (32-bit)
     runs-on: ubuntu-26.04
     env:
       DEBIAN_FRONTEND: noninteractive
       # A stalled mirror otherwise hangs the step with no bound: one arm64
       # run spent 31 minutes here. Fail the fetch and retry instead.
       APT_OPTS: -o Acquire::Retries=3 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20
+      # Pinned: tracking main let an upstream commit break CI with no
+      # change here.
+      SDL_TAG: release-3.4.14
       PKG_CONFIG_LIBDIR: /usr/lib/i386-linux-gnu/pkgconfig:/usr/share/pkgconfig
     steps:
       - uses: actions/checkout@v6
@@ -40,31 +43,13 @@ jobs:
           sudo dpkg --add-architecture i386
           sudo apt-get $APT_OPTS update
           sudo apt-get $APT_OPTS install -y --no-install-recommends \
-            build-essential \
-            cmake \
-            gcc-multilib \
-            g++-multilib \
-            git \
-            libc6-dev-i386 \
-            make \
-            nasm \
-            ninja-build \
-            python3 \
-            pkg-config \
+            build-essential cmake ninja-build git make nasm python3 pkg-config \
             clang-format-19 \
-            libxcursor-dev:i386 \
-            libxi-dev:i386 \
-            libxinerama-dev:i386 \
-            libx11-dev:i386 \
-            libxfixes-dev:i386 \
-            libxrandr-dev:i386 \
-            libgl1-mesa-dev:i386 \
-            libgl1-mesa-dev \
-            libpng-dev \
-            zlib1g-dev:i386 \
-            libpng-dev:i386 \
-            libao-dev:i386 \
-            libpipewire-0.3-dev:i386
+            gcc-multilib g++-multilib libc6-dev-i386 \
+            libx11-dev:i386 libxcursor-dev:i386 libxi-dev:i386 \
+            libxinerama-dev:i386 libxfixes-dev:i386 libxrandr-dev:i386 \
+            libgl1-mesa-dev:i386 zlib1g-dev:i386 libpng-dev:i386 \
+            libao-dev:i386 libpipewire-0.3-dev:i386
           sudo ln -sf /usr/bin/clang-format-19 /usr/local/bin/clang-format
       - name: Install SDL3 (i386)
         run: |
@@ -72,54 +57,23 @@ jobs:
             sudo apt-get $APT_OPTS install -y --no-install-recommends libsdl3-dev:i386
           else
             rm -rf /tmp/SDL
-            git clone --depth 1 https://github.com/libsdl-org/SDL.git /tmp/SDL
+            git clone --depth 1 --branch $SDL_TAG \
+              https://github.com/libsdl-org/SDL.git /tmp/SDL
             cmake -S /tmp/SDL -B /tmp/SDL/build -GNinja \
               -DCMAKE_BUILD_TYPE=Release \
               -DCMAKE_INSTALL_PREFIX=/usr/local \
-              -DSDL_SHARED=ON \
-              -DSDL_STATIC=OFF \
-              -DSDL_X11=OFF \
-              -DSDL_WAYLAND=OFF \
-              -DSDL_KMSDRM=OFF \
+              -DSDL_SHARED=ON -DSDL_STATIC=OFF \
+              -DSDL_X11=OFF -DSDL_WAYLAND=OFF -DSDL_KMSDRM=OFF \
               -DSDL_UNIX_CONSOLE_BUILD=ON \
-              -DSDL_ALSA=OFF \
-              -DSDL_PULSEAUDIO=OFF \
-              -DSDL_PIPEWIRE=OFF \
-              -DSDL_JACK=OFF \
-              -DSDL_SNDIO=OFF \
-              -DCMAKE_C_FLAGS='-m32' \
-              -DCMAKE_CXX_FLAGS='-m32'
+              -DSDL_ALSA=OFF -DSDL_PULSEAUDIO=OFF -DSDL_PIPEWIRE=OFF \
+              -DSDL_JACK=OFF -DSDL_SNDIO=OFF \
+              -DCMAKE_C_FLAGS='-m32' -DCMAKE_CXX_FLAGS='-m32'
             cmake --build /tmp/SDL/build --parallel
             sudo cmake --install /tmp/SDL/build
             echo '/usr/local/lib' | sudo tee /etc/ld.so.conf.d/zsnes-ci-sdl3.conf
             sudo ldconfig
             echo 'PKG_CONFIG_PATH=/usr/local/lib/pkgconfig' >> "$GITHUB_ENV"
           fi
-      - name: Install SDL3 (amd64)
-        # The i386 build above is the only SDL the runner had, so "make
-        # linux64" found none and stopped. This one lives in its own prefix so
-        # the two never answer for each other.
-        run: |
-          rm -rf /tmp/SDL64
-          git clone --depth 1 https://github.com/libsdl-org/SDL.git /tmp/SDL64
-          cmake -S /tmp/SDL64 -B /tmp/SDL64/build -GNinja \
-            -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_INSTALL_PREFIX=/opt/sdl3-amd64 \
-            -DSDL_SHARED=ON \
-            -DSDL_STATIC=OFF \
-            -DSDL_X11=OFF \
-            -DSDL_WAYLAND=OFF \
-            -DSDL_KMSDRM=OFF \
-            -DSDL_UNIX_CONSOLE_BUILD=ON \
-            -DSDL_ALSA=OFF \
-            -DSDL_PULSEAUDIO=OFF \
-            -DSDL_PIPEWIRE=OFF \
-            -DSDL_JACK=OFF \
-            -DSDL_SNDIO=OFF
-          cmake --build /tmp/SDL64/build --parallel
-          sudo cmake --install /tmp/SDL64/build
-          echo '/opt/sdl3-amd64/lib' | sudo tee /etc/ld.so.conf.d/zsnes-ci-sdl3-amd64.conf
-          sudo ldconfig
       - name: Check formatting
         run: |
           make fmt
@@ -152,34 +106,52 @@ jobs:
           ldd ./zsnes | tee ldd.txt
           grep -E 'libSDL3|SDL3' ldd.txt
           grep -E 'libpipewire-0\.3' ldd.txt
+
+  linux64:
+    name: linux (64-bit)
+    # Split from the 32-bit job on purpose. Holding both word sizes at once
+    # meant apt had to satisfy i386 and amd64 together, and it resolved that
+    # by dropping things: the aarch64 cross toolchain went to make room for
+    # the multilib set, and an SDL3 built here linked against a udev present
+    # only for i386. With no i386 in this job both problems disappear and the
+    # 64-bit SDL3 comes straight from the distribution.
+    runs-on: ubuntu-26.04
+    env:
+      DEBIAN_FRONTEND: noninteractive
+      APT_OPTS: -o Acquire::Retries=3 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20
+      # Pinned: tracking main let an upstream commit break CI with no
+      # change here.
+      SDL_TAG: release-3.4.14
+      SDL_VIDEODRIVER: dummy
+      SDL_AUDIODRIVER: dummy
+    steps:
+      - uses: actions/checkout@v6
+      - name: Install dependencies
+        run: |
+          sudo apt-get $APT_OPTS update
+          sudo apt-get $APT_OPTS install -y --no-install-recommends \
+            build-essential make nasm python3 pkg-config git \
+            gcc-aarch64-linux-gnu libc6-dev-arm64-cross \
+            libsdl3-dev libgl1-mesa-dev libpng-dev zlib1g-dev \
+            libao-dev libpipewire-0.3-dev
       - name: Build and run 64-bit
-        env:
-          SDL_VIDEODRIVER: dummy
-          SDL_AUDIODRIVER: dummy
-          PKG_CONFIG_LIBDIR: /opt/sdl3-amd64/lib/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/share/pkgconfig
-          PKG_CONFIG_PATH: ""
         run: |
           make clean
           make linux64
           test -x ./zsnes
           ZSNES_SELFTEST=1 ./zsnes -v 0
-
       - name: Portability gate
-        # x86-64 only. The aarch64 cross toolchain cannot live in this job:
-        # apt removes gcc-aarch64-linux-gnu to install the i386 multilib set,
-        # so portcheck would silently skip that leg. The arm64 job compiles
-        # and links every source for aarch64, which covers strictly more.
-        run: make portcheck PORTCHECK_ARCHS=x86-64
+        # Both legs again: without the i386 set here, the aarch64 cross
+        # compiler survives, so the ARM leg is no longer skipped.
+        run: |
+          command -v aarch64-linux-gnu-gcc >/dev/null 2>&1 \
+            || { echo "aarch64 cross compiler missing; portcheck would skip it"; exit 1; }
+          make portcheck
       - name: AddressSanitizer
         # The difftests compare behaviour against the assembly, not memory
         # validity, so two global buffer overflows survived a green suite and
         # turned up only under ASan. The self-test covers the allocations, the
         # pointers handed between units, and the config written on exit.
-        env:
-          SDL_VIDEODRIVER: dummy
-          SDL_AUDIODRIVER: dummy
-          PKG_CONFIG_LIBDIR: /opt/sdl3-amd64/lib/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/share/pkgconfig
-          PKG_CONFIG_PATH: ""
         run: |
           make clean
           make linux64 \
@@ -187,18 +159,12 @@ jobs:
             EXTRA_LDFLAGS='-fsanitize=address'
           ASAN_OPTIONS=detect_leaks=0 ZSNES_SELFTEST=1 ./zsnes -v 0
           make clean
-
       - name: Cross-unit type gate
         # Every .c file declares the assembly's symbols for itself and nothing
         # checks that two files agree, because the linker matches on name
         # alone. -flto is the first point at which the whole program's
         # declarations meet. Runs last so a failure here cannot hide the
-        # difftest and portcheck results above it.
-        env:
-          SDL_VIDEODRIVER: dummy
-          SDL_AUDIODRIVER: dummy
-          PKG_CONFIG_LIBDIR: /opt/sdl3-amd64/lib/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/share/pkgconfig
-          PKG_CONFIG_PATH: ""
+        # results above it.
         run: |
           make clean
           make linux64 \
@@ -207,6 +173,8 @@ jobs:
           test -x ./zsnes
           ZSNES_SELFTEST=1 ./zsnes -v 0
           make clean
+
+
   difftests:
     # These prove each ported routine still bit-identical to the assembly it
     # replaced, and they dominated the linux job: 1008s of its 1371s, with
@@ -217,6 +185,9 @@ jobs:
     env:
       DEBIAN_FRONTEND: noninteractive
       APT_OPTS: -o Acquire::Retries=3 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20
+      # Pinned: tracking main let an upstream commit break CI with no
+      # change here.
+      SDL_TAG: release-3.4.14
       PKG_CONFIG_LIBDIR: /usr/lib/i386-linux-gnu/pkgconfig:/usr/share/pkgconfig
     strategy:
       fail-fast: false
@@ -251,7 +222,8 @@ jobs:
             sudo apt-get $APT_OPTS install -y --no-install-recommends libsdl3-dev:i386
           else
             rm -rf /tmp/SDL
-            git clone --depth 1 https://github.com/libsdl-org/SDL.git /tmp/SDL
+            git clone --depth 1 --branch $SDL_TAG \
+              https://github.com/libsdl-org/SDL.git /tmp/SDL
             cmake -S /tmp/SDL -B /tmp/SDL/build -GNinja \
               -DCMAKE_BUILD_TYPE=Release \
               -DCMAKE_INSTALL_PREFIX=/usr/local \
@@ -288,6 +260,9 @@ jobs:
       # A stalled mirror otherwise hangs the step with no bound: one arm64
       # run spent 31 minutes here. Fail the fetch and retry instead.
       APT_OPTS: -o Acquire::Retries=3 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20
+      # Pinned: tracking main let an upstream commit break CI with no
+      # change here.
+      SDL_TAG: release-3.4.14
     steps:
       - uses: actions/checkout@v6
       - name: Install dependencies
@@ -301,10 +276,23 @@ jobs:
         # cross compiler can see. Building it is quicker than enabling the
         # ports archive.
         run: |
-          # -f so an HTTP error fails here instead of feeding tar an error
-          # page, and retries because zlib.net is occasionally flaky.
-          curl -fsSL --retry 5 --retry-delay 3 --retry-all-errors \
-            -o zlib.tar.gz https://zlib.net/fossils/zlib-1.3.2.tar.gz
+          # A short body with a 200 is not an error to curl, so a truncated
+          # download reached tar as garbage and failed there. Check the hash
+          # instead, and fall through to the second source: zlib.net and the
+          # GitHub release ship a byte-identical tarball.
+          sha=bb329a0a2cd0274d05519d61c667c062e06990d72e125ee2dfa8de64f0119d16
+          for url in \
+            https://zlib.net/fossils/zlib-1.3.2.tar.gz \
+            https://github.com/madler/zlib/releases/download/v1.3.2/zlib-1.3.2.tar.gz
+          do
+            curl -fsSL --retry 5 --retry-delay 3 --retry-all-errors \
+              -o zlib.tar.gz "$url" || continue
+            if echo "$sha  zlib.tar.gz" | sha256sum -c - >/dev/null 2>&1; then
+              break
+            fi
+            echo "zlib: bad checksum from $url, trying the next source"
+          done
+          echo "$sha  zlib.tar.gz" | sha256sum -c -
           tar xzf zlib.tar.gz
           cd zlib-1.3.2
           CC=aarch64-linux-gnu-gcc ./configure --static \
@@ -315,7 +303,8 @@ jobs:
         # These targets have no other video backend, so the cross build needs
         # one in the sysroot the same way the native job does.
         run: |
-          git clone --depth 1 https://github.com/libsdl-org/SDL.git /tmp/SDL
+          git clone --depth 1 --branch $SDL_TAG \
+            https://github.com/libsdl-org/SDL.git /tmp/SDL
           cmake -S /tmp/SDL -B /tmp/SDL/build -GNinja \
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_INSTALL_PREFIX=/usr/aarch64-linux-gnu \
@@ -353,6 +342,9 @@ jobs:
       # A stalled mirror otherwise hangs the step with no bound: one arm64
       # run spent 31 minutes here. Fail the fetch and retry instead.
       APT_OPTS: -o Acquire::Retries=3 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20
+      # Pinned: tracking main let an upstream commit break CI with no
+      # change here.
+      SDL_TAG: release-3.4.14
     steps:
       - uses: actions/checkout@v6
       - name: Install dependencies
@@ -364,7 +356,8 @@ jobs:
       - name: Install SDL3
         # Ubuntu has no libsdl3-dev yet, and a native build stops without one.
         run: |
-          git clone --depth 1 https://github.com/libsdl-org/SDL.git /tmp/SDL
+          git clone --depth 1 --branch $SDL_TAG \
+            https://github.com/libsdl-org/SDL.git /tmp/SDL
           cmake -S /tmp/SDL -B /tmp/SDL/build -GNinja \
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_INSTALL_PREFIX=/usr/local \
@@ -396,6 +389,9 @@ jobs:
       # A stalled mirror otherwise hangs the step with no bound: one arm64
       # run spent 31 minutes here. Fail the fetch and retry instead.
       APT_OPTS: -o Acquire::Retries=3 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20
+      # Pinned: tracking main let an upstream commit break CI with no
+      # change here.
+      SDL_TAG: release-3.4.14
     steps:
       - uses: actions/checkout@v6
       - name: Install dependencies
