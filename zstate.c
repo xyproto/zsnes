@@ -77,6 +77,34 @@ extern uint16_t stackand, stackor, xat, xst, xdt, xxt, xyt;
 
 u4 Totalbyteloaded;
 
+/* ZSNES 1.51 heads its states "V143" exactly as we do, so only the length
+   separates them. Two runs have grown since: the PPU register block and the
+   DSP block. Together they account for the whole difference, which is what
+   lets a 1.51 state be recognised.
+   Reading it is a further step: the 162 bytes added to the register block are
+   interleaved, not appended, so the run cannot simply be read short - the
+   65816 comes back with registers that never resume. Mapping those fields is
+   what remains. */
+#define ZST_151_PPUREG 3019
+#define ZST_151_DSPSAVE 1068
+
+/* Where 1.51's register block sits in ours. Derived by assembling its
+   cpu/regs.inc and comparing symbol offsets with this build's: we dropped two
+   bytes at 318 and added 126 at 480, four at 2578 and 32 at the end. The four
+   runs carry 3017 of its 3019 bytes; what we added keeps its reset value. */
+static const struct {
+    unsigned short from, to, len;
+} zst_151_regmap[] = {
+    { 0, 0, 318 },
+    { 320, 318, 160 },
+    { 480, 606, 2098 },
+    { 2578, 2708, 441 },
+};
+
+/* Zero means "this build's own layout". */
+static size_t zst_ppureg_run;
+static size_t zst_dspsave_run;
+
 static void copy_snes_data(uint8_t** buffer, void (*copy_func)(uint8_t**, void*, size_t))
 {
     // 65816 status, etc.
@@ -108,14 +136,26 @@ static void copy_snes_data(uint8_t** buffer, void (*copy_func)(uint8_t**, void*,
     copy_func(buffer, &cycpbl, 4);
     copy_func(buffer, &cycpblt, 4);
     // SNES PPU register block (sndrot is start; size is exported from asm).
-    copy_func(buffer, &sndrot, PHnum2writeppureg);
+    if (zst_ppureg_run) {
+        static uint8_t old[ZST_151_PPUREG];
+        void* volatile block = &sndrot;
+        size_t i;
+
+        copy_func(buffer, old, sizeof(old));
+        for (i = 0; i < sizeof(zst_151_regmap) / sizeof(*zst_151_regmap); i++) {
+            memcpy((uint8_t*)block + zst_151_regmap[i].to,
+                old + zst_151_regmap[i].from, zst_151_regmap[i].len);
+        }
+    } else {
+        copy_func(buffer, &sndrot, PHnum2writeppureg);
+    }
 }
 
 static void copy_spc_data(uint8_t** buffer, void (*copy_func)(uint8_t**, void*, size_t))
 {
     // SPC stuff, DSP stuff
     copy_func(buffer, SPCRAM, PHspcsave);
-    copy_func(buffer, BRRBuffer, PHdspsave);
+    copy_func(buffer, BRRBuffer, zst_dspsave_run ? zst_dspsave_run : (size_t)PHdspsave);
     copy_func(buffer, &DSPMem, sizeof(DSPMem));
 }
 
@@ -618,19 +658,40 @@ void SaveSA1()
     }
 
     SA1RegPCSSt = (uint32_t)(SA1RegPCS - romdata);
-    CurBWPtrSt = (uint32_t)(CurBWPtr - romdata);
-    SA1BWPtrSt = (uint32_t)(SA1BWPtr - romdata);
-    SNSBWPtrSt = (uint32_t)(SNSBWPtr - romdata);
+    /* The BW-RAM pointers are bank bases inside SA1RAMArea, so they are stored
+       against it. 1.51 stored them against romdata, which only ever worked
+       because the two allocations kept a fixed distance within one address
+       space; on 64-bit that distance does not fit a dword at all. */
+    CurBWPtrSt = (uint32_t)(CurBWPtr - SA1RAMArea);
+    SA1BWPtrSt = (uint32_t)(SA1BWPtr - SA1RAMArea);
+    SNSBWPtrSt = (uint32_t)(SNSBWPtr - SA1RAMArea);
     SNSPtrSt = (uint32_t)(uintptr_t)SNSPtr;
     SNSRegPCSSt = (uint32_t)(uintptr_t)SNSRegPCS;
 }
 
+/* Bank bases run from -0x6000 to the top of the 128K area. Anything else was
+   written by 1.51, where the dword held a difference between two unrelated
+   allocations; the reset bank is the best that can be made of it. */
+static uint8_t* sa1_bwptr(uint32_t const st)
+{
+    int32_t const off = (int32_t)st;
+
+    if (off < -0x6000 || off > 0x20000) {
+        return SA1RAMArea - 0x6000;
+    }
+
+    return SA1RAMArea + off;
+}
+
 void RestoreSA1()
 {
-    SA1RegPCS = romdata + SA1RegPCSSt;
-    CurBWPtr = romdata + CurBWPtrSt;
-    SA1BWPtr = romdata + SA1BWPtrSt;
-    SNSBWPtr = romdata + SNSBWPtrSt;
+    /* Both offsets are signed: the SA-1 bank base is romdata - 0x8000, and the
+       PC can sit below its base. A 32-bit build wrapped around to the right
+       address; widening unsigned lands 4GB away. */
+    SA1RegPCS = romdata + (int32_t)SA1RegPCSSt;
+    CurBWPtr = sa1_bwptr(CurBWPtrSt);
+    SA1BWPtr = sa1_bwptr(SA1BWPtrSt);
+    SNSBWPtr = sa1_bwptr(SNSBWPtrSt);
     /* SNSPtrSt and SNSRegPCSSt are the raw host pointers a 32-bit build wrote,
        so they cannot be restored on a 64-bit one - and need not be: both live
        values are rewritten on the next SA-1 swap-in, before anything reads
@@ -645,7 +706,7 @@ void RestoreSA1()
         SA1RegPCS = (uint8_t*)((uintptr_t)IRAM - 0x3000u);
     }
 
-    SA1Ptr = SA1RegPCS + SA1PtrSt;
+    SA1Ptr = SA1RegPCS + (int32_t)SA1PtrSt;
 }
 
 void ResetState()
@@ -996,31 +1057,65 @@ static bool zst_load_compressed(FILE* fp, size_t compressed_size)
     return (worked);
 }
 
-/* A state is a fixed length per cartridge, plus an optional thumbnail; any
-   other length misparses rather than fails. Real ZSNES 1.51 states are one
-   such. Only states at offset 0 are checked - a movie chapter is embedded
-   partway through a .zmv. */
-static bool zst_size_is_readable(FILE* fp)
+/* Which ZSNES wrote a state. 1.51 and ZSNES2 both head their files "V143",
+   so only the length separates them: ZSNES2's PPU register run is longer. */
+enum zst_origin { ZST_UNKNOWN,
+    ZST_ZSNES2,
+    ZST_151,
+    ZST_V06 };
+
+/* Length of the body a given origin writes for this cartridge. */
+static size_t zst_body_size(enum zst_origin o)
 {
-    size_t const known[] = { cur_zst_size, v143_zst_size, old_zst_size };
+    size_t const hdr = sizeof(zst_header_cur) - 1;
+    switch (o) {
+    case ZST_ZSNES2:
+        return cur_zst_size - hdr;
+    case ZST_151:
+        return v143_zst_size - hdr
+            - (PHnum2writeppureg - ZST_151_PPUREG) - (PHdspsave - ZST_151_DSPSAVE);
+    case ZST_V06:
+        return old_zst_size - (sizeof(zst_header_old) - 1);
+    default:
+        return 0;
+    }
+}
+
+/* Guess the origin from the header and the file length, allowing for the
+   thumbnail some versions append. Only a state at offset 0 is a file we can
+   measure; a movie chapter sits partway through a .zmv. */
+static enum zst_origin zst_classify(FILE* fp, size_t zst_version, long* extra)
+{
+    static enum zst_origin const order[] = { ZST_ZSNES2, ZST_151, ZST_V06 };
     long const pos = ftell(fp);
     long size;
     size_t i;
 
+    *extra = 0;
+    if (zst_version == 60) {
+        return (ZST_V06);
+    }
+    if (zst_version == 144) {
+        return (ZST_ZSNES2);
+    }
+    /* V143: ours or 1.51's. */
     if (!cur_zst_size || pos != 0 || fseek(fp, 0, SEEK_END)) {
-        return (true);
+        return (ZST_ZSNES2);
     }
     size = ftell(fp);
     if (fseek(fp, pos, SEEK_SET) || size < 0) {
-        return (true);
+        return (ZST_ZSNES2);
     }
+    size -= (long)(sizeof(zst_header_cur) - 1);
 
-    for (i = 0; i < sizeof(known) / sizeof(*known); i++) {
-        if ((size_t)size == known[i] || (size_t)size == known[i] + sizeof(PrevPicture)) {
-            return (true);
+    for (i = 0; i < sizeof(order) / sizeof(*order); i++) {
+        long const want = (long)zst_body_size(order[i]);
+        if (size == want || size == want + (long)sizeof(PrevPicture)) {
+            *extra = size - want;
+            return (order[i]);
         }
     }
-    return (false);
+    return (ZST_UNKNOWN);
 }
 
 bool zst_load(FILE* fp, size_t Compressed)
@@ -1033,10 +1128,8 @@ bool zst_load(FILE* fp, size_t Compressed)
         }
     } else {
         char zst_header_check[sizeof(zst_header_cur) - 1];
-
-        if (!zst_size_is_readable(fp)) {
-            return (false);
-        }
+        enum zst_origin origin;
+        long extra;
 
         Totalbyteloaded += fread(zst_header_check, 1, sizeof(zst_header_check), fp);
 
@@ -1056,12 +1149,29 @@ bool zst_load(FILE* fp, size_t Compressed)
             return (false);
         } // Pre v0.60 saves are no longer loaded
 
+        if (fseek(fp, -(long)sizeof(zst_header_check), SEEK_CUR) == 0) {
+            origin = zst_classify(fp, zst_version, &extra);
+            IGNORE_RESULT(fseek(fp, (long)sizeof(zst_header_check), SEEK_CUR));
+        } else {
+            origin = (zst_version == 60) ? ZST_V06
+                : (zst_version == 144)   ? ZST_ZSNES2
+                                         : ZST_ZSNES2;
+            extra = 0;
+        }
+        if (origin == ZST_UNKNOWN) {
+            return (false);
+        }
+
+        zst_ppureg_run = (origin == ZST_151) ? ZST_151_PPUREG : 0;
+        zst_dspsave_run = (origin == ZST_151) ? ZST_151_DSPSAVE : 0;
+
         load_save_size = 0;
         fhandle = fp; // Set global file handle
         copy_state_data(0, read_save_state_data,
             (zst_version == 144)       ? csm_load_zst_new
                 : (zst_version == 143) ? csm_load_zst_143
                                        : csm_load_zst_old);
+        zst_ppureg_run = zst_dspsave_run = 0;
         Totalbyteloaded += load_save_size;
     }
 
@@ -1379,9 +1489,7 @@ void stateloader(char* statename, bool keycheck, bool xfercheck)
             Totalbyteloaded = 0;
         }
 
-        if (!zst_size_is_readable(fhandle)) {
-            set_state_message("STATE ", " UNREADABLE.");
-        } else if (zst_load(fhandle, 0)) {
+        if (zst_load(fhandle, 0)) {
             set_state_message("STATE ", " LOADED."); // 'STATE XX LOADED.'
 
             if (PauseLoad || EMUPause) {

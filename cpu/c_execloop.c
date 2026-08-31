@@ -44,6 +44,7 @@ extern u1 SA1SHb; /* low byte of a dword */
 extern u4 SA1SH, SA1LBound, SA1UBound;
 extern u1* SA1Ptr;
 extern u4 lowestspc, highestspc;
+extern u1 SPCRAM[];
 extern u4 SPC700read, SPC700write;
 extern u1 tempdh;
 extern u1 newengen, ForceNewGfxOff, scanlines, ppustatus;
@@ -594,9 +595,14 @@ overy:
     ppustatus ^= 0x80;
 
     if (numspcvblleft != 0) {
-        if (lowestspc > r[R_EBP] || highestspc < r[R_EBP]) {
-            lowestspc = r[R_EBP] - 10;
-            highestspc = r[R_EBP] + 10;
+        /* The window is a pair of dwords, in the savestate too, so it holds
+           the SPC PC as an offset. The raw pointer only fitted on 32-bit;
+           widened, every compare here came out the same way and the stall
+           detection below could never trip. */
+        u4 const spcpc = (u4)((u1*)r[R_EBP] - SPCRAM);
+        if (lowestspc > spcpc || highestspc < spcpc) {
+            lowestspc = spcpc - 10;
+            highestspc = spcpc + 10;
             spc700idle = 0;
         }
         if (SPC700write == 0 && spc700read != 0 && SPC700read >= 1500) {
