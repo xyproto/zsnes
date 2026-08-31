@@ -1002,6 +1002,10 @@ PORTCHECK_ARM_CC ?= aarch64-linux-gnu-gcc
 PORTCHECK_ARCHS  ?= x86-64 aarch64
 .PHONY: portcheck
 portcheck: $(HDRS)
+# One psr rule makes both the header and its object, so asking for the headers
+# also builds those objects with whatever CFLAGS this invocation carries. Drop
+# them, or a later build of another word size links these instead of its own.
+	@rm -f $(PSRS:.psr=.o)
 	@rc=0; \
 	for t in "x86-64:$(PORTCHECK_CC):-m64" "aarch64:$(PORTCHECK_ARM_CC):-idirafter/usr/include"; do \
 	  name=$${t%%:*}; rest=$${t#*:}; cc=$${rest%%:*}; extra=$${rest#*:}; \
