@@ -31,7 +31,6 @@
 - [ ] Relabel or retire the `SoundQuality` rate setting: SDL, PipeWire and
       libao now always render at the DSP's 32kHz and resample, so the rates it
       offers no longer do anything there
-- [ ] Save `SetaCmdEnable` in the save state (`zstate.c`)
 - [ ] Handle horizontal scroll and absolute mouse motion on macOS (`mmlib/macos.c`)
 - [ ] Fill in the GUI font glyphs 0x30-0x36 (`video/procvid.c`)
 - [ ] Make transparent messages work with the small font (`cfg.psr`)
