@@ -20,17 +20,22 @@ CC      := cc
 BITFLAG :=
 NOPIE   :=
 GCSECT  := -Wl,-dead_strip
+# Darwin reads _POSIX_C_SOURCE as a restriction, so SUSv4 there hides the BSD
+# side the tests use - INADDR_LOOPBACK in netplay_test.c among it. Same swap
+# the top-level Makefile makes.
+FEATURE  := -D_DARWIN_C_SOURCE
 else
 CC      := gcc
 BITFLAG := -m32
 NOPIE   := -no-pie
 GCSECT  := -Wl,--gc-sections
+FEATURE  := -D_XOPEN_SOURCE=700
 endif
 
 # C11 with SUSv4, matching the emulator: the tests must not quietly depend
 # on extensions the build itself forbids, and strict c11 hides POSIX until
 # the macro asks for it.
-CFLAGS := $(BITFLAG) -std=c11 -D_XOPEN_SOURCE=700 \
+CFLAGS := $(BITFLAG) -std=c11 $(FEATURE) \
           -I.. -Wall -Wextra -Wno-unused-parameter
 
 BIN       := zsnes_test
@@ -485,8 +490,8 @@ run: all
 # builds -m32 only, where zreg and u4 are the same type, so a 64-bit width bug
 # cannot show up; this one exists to catch exactly that.
 spc64: spc64_test.c ../cpu/spc_ops.h ../cpu/spc_ioregs.h
-	@$(CC) -m32 -std=c11 -D_XOPEN_SOURCE=700 -I.. -O2 -Wall -o zsnes_spc32_test spc64_test.c
-	@$(CC) -m64 -std=c11 -D_XOPEN_SOURCE=700 -I.. -O2 -Wall -o zsnes_spc64_test spc64_test.c
+	@$(CC) -m32 -std=c11 $(FEATURE) -I.. -O2 -Wall -o zsnes_spc32_test spc64_test.c
+	@$(CC) -m64 -std=c11 $(FEATURE) -I.. -O2 -Wall -o zsnes_spc64_test spc64_test.c
 	@a=$$(./zsnes_spc32_test) && b=$$(./zsnes_spc64_test) && \
 	  if [ "$$a" = "$$b" ]; then echo "spc700 32 vs 64: PASS ($$a)"; \
 	  else echo "spc700 32 vs 64: FAIL"; echo "  m32 $$a"; echo "  m64 $$b"; exit 1; fi
