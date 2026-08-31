@@ -29,22 +29,17 @@ jobs:
     runs-on: ubuntu-24.04
     env:
       DEBIAN_FRONTEND: noninteractive
+      # A stalled mirror otherwise hangs the step with no bound: one arm64
+      # run spent 31 minutes here. Fail the fetch and retry instead.
+      APT_OPTS: -o Acquire::Retries=3 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20
       PKG_CONFIG_LIBDIR: /usr/lib/i386-linux-gnu/pkgconfig:/usr/share/pkgconfig
     steps:
       - uses: actions/checkout@v6
       - name: Install dependencies
         run: |
-          # The aarch64 cross toolchain installs cleanly only while i386 is
-          # off: asked for alongside the multilib and :i386 set, apt cannot
-          # satisfy gcc-13-aarch64-linux-gnu and the whole step fails. The
-          # arm64 job installs these two on this same image without i386.
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends \
-            gcc-aarch64-linux-gnu \
-            libc6-dev-arm64-cross
           sudo dpkg --add-architecture i386
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends \
+          sudo apt-get $APT_OPTS update
+          sudo apt-get $APT_OPTS install -y --no-install-recommends \
             build-essential \
             cmake \
             gcc-multilib \
@@ -74,7 +69,7 @@ jobs:
       - name: Install SDL3 (i386)
         run: |
           if apt-cache show libsdl3-dev:i386 >/dev/null 2>&1; then
-            sudo apt-get install -y --no-install-recommends libsdl3-dev:i386
+            sudo apt-get $APT_OPTS install -y --no-install-recommends libsdl3-dev:i386
           else
             rm -rf /tmp/SDL
             git clone --depth 1 https://github.com/libsdl-org/SDL.git /tmp/SDL
@@ -182,12 +177,11 @@ jobs:
           ZSNES_SELFTEST=1 ./zsnes -v 0
 
       - name: Portability gate
-        # portcheck skips an architecture whose compiler is missing, so a
-        # failed install would quietly reduce this to the x86-64 half.
-        run: |
-          command -v aarch64-linux-gnu-gcc >/dev/null 2>&1 \
-            || { echo "aarch64 cross compiler missing; portcheck would skip it"; exit 1; }
-          make portcheck
+        # x86-64 only. The aarch64 cross toolchain cannot live in this job:
+        # apt removes gcc-aarch64-linux-gnu to install the i386 multilib set,
+        # so portcheck would silently skip that leg. The arm64 job compiles
+        # and links every source for aarch64, which covers strictly more.
+        run: make portcheck PORTCHECK_ARCHS=x86-64
       - name: AddressSanitizer
         # The difftests compare behaviour against the assembly, not memory
         # validity, so two global buffer overflows survived a green suite and
@@ -205,17 +199,40 @@ jobs:
             EXTRA_LDFLAGS='-fsanitize=address'
           ASAN_OPTIONS=detect_leaks=0 ZSNES_SELFTEST=1 ./zsnes -v 0
           make clean
+
+      - name: Cross-unit type gate
+        # Every .c file declares the assembly's symbols for itself and nothing
+        # checks that two files agree, because the linker matches on name
+        # alone. -flto is the first point at which the whole program's
+        # declarations meet. Runs last so a failure here cannot hide the
+        # difftest and portcheck results above it.
+        env:
+          SDL_VIDEODRIVER: dummy
+          SDL_AUDIODRIVER: dummy
+          PKG_CONFIG_LIBDIR: /opt/sdl3-amd64/lib/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/share/pkgconfig
+          PKG_CONFIG_PATH: ""
+        run: |
+          make clean
+          make linux64 \
+            EXTRA_CFLAGS='-flto -Werror=lto-type-mismatch -Werror=odr -Werror=strict-aliasing' \
+            EXTRA_LDFLAGS='-flto -Werror=lto-type-mismatch -Werror=odr -Werror=strict-aliasing'
+          test -x ./zsnes
+          ZSNES_SELFTEST=1 ./zsnes -v 0
+          make clean
   arm64:
     name: linux_arm64
     runs-on: ubuntu-24.04
     env:
       DEBIAN_FRONTEND: noninteractive
+      # A stalled mirror otherwise hangs the step with no bound: one arm64
+      # run spent 31 minutes here. Fail the fetch and retry instead.
+      APT_OPTS: -o Acquire::Retries=3 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20
     steps:
       - uses: actions/checkout@v6
       - name: Install dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends \
+          sudo apt-get $APT_OPTS update
+          sudo apt-get $APT_OPTS install -y --no-install-recommends \
             gcc-aarch64-linux-gnu g++-aarch64-linux-gnu libc6-dev-arm64-cross \
             make pkg-config curl cmake ninja-build git
       - name: Build zlib for aarch64
@@ -272,12 +289,15 @@ jobs:
     runs-on: ubuntu-24.04-arm
     env:
       DEBIAN_FRONTEND: noninteractive
+      # A stalled mirror otherwise hangs the step with no bound: one arm64
+      # run spent 31 minutes here. Fail the fetch and retry instead.
+      APT_OPTS: -o Acquire::Retries=3 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20
     steps:
       - uses: actions/checkout@v6
       - name: Install dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends \
+          sudo apt-get $APT_OPTS update
+          sudo apt-get $APT_OPTS install -y --no-install-recommends \
             build-essential cmake ninja-build git make pkg-config zlib1g-dev \
             libgl1-mesa-dev libpng-dev
       - name: Install SDL3
@@ -310,12 +330,17 @@ jobs:
   windows:
     name: win
     runs-on: ubuntu-24.04
+    env:
+      DEBIAN_FRONTEND: noninteractive
+      # A stalled mirror otherwise hangs the step with no bound: one arm64
+      # run spent 31 minutes here. Fail the fetch and retry instead.
+      APT_OPTS: -o Acquire::Retries=3 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20
     steps:
       - uses: actions/checkout@v6
       - name: Install dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y \
+          sudo apt-get $APT_OPTS update
+          sudo apt-get $APT_OPTS install -y \
             mingw-w64 \
             libz-mingw-w64-dev \
             nasm python3 pkg-config
