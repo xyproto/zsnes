@@ -16,7 +16,7 @@
 #include "zstest.h"
 
 extern uint8_t* C4Ram;
-extern uint32_t C4values[3];
+extern uint16_t C4values[6];
 void InitC4(void);
 
 uint8_t c_C4Read8b(uint32_t addr);
@@ -197,7 +197,7 @@ static void test_math_commands(void)
     set_ramw(0x1F83, 0x0100);
     run_cmd(0x02, 0x05);
     ZT_CHECK_INT(ramw(0x1F80), 0x80);
-    ZT_CHECK_INT(((uint16_t*)C4values)[3], 0x100);
+    ZT_CHECK_INT(C4values[3], 0x100);
 
     /* immediate ROM values */
     run_cmd(0x02, 0x89);

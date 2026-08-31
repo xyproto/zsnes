@@ -161,18 +161,20 @@ void c_reg301Fw(uint8_t v)
 REGABI_REG_READ8(reg3030r);
 uint8_t c_reg3030r(void)
 {
-    uint16_t* sfr = (uint16_t*)&SfxSFR;
-    *sfr &= 0x8F60;
+    /* SfxSFR is a dword; the flags live in its low word. Reaching it through
+       a uint16_t* breaks strict aliasing, which -O3 is free to act on. */
+    uint16_t sfr = (uint16_t)(SfxSFR & 0x8F60u);
     if (SfxCarry & 1)
-        *sfr |= 0x04;
+        sfr |= 0x04;
     if ((uint16_t)SfxSignZero == 0)
-        *sfr |= 0x02;
+        sfr |= 0x02;
     if (SfxSignZero & 0x8000)
-        *sfr |= 0x08;
+        sfr |= 0x08;
     if ((uint8_t)SfxOverflow)
-        *sfr |= 0x10;
+        sfr |= 0x10;
     if ((uint8_t)SfxB)
-        *sfr |= 0x1000;
+        sfr |= 0x1000;
+    SfxSFR = (SfxSFR & 0xFFFF0000u) | sfr;
     return BYTE(SfxSFR, 0);
 }
 REGABI_REG_READ8(reg3031r);

@@ -40,7 +40,7 @@ extern memfn memaccessbankr8, memaccessbankw8, memaccessbankr16, memaccessbankw1
 
 u1* C4Ram;
 uint8_t C4ObjSelec, C4SObjSelec, C4Pause;
-uint32_t C4values[3];
+uint16_t C4values[6]; /* addressed only as 16-bit halves */
 
 static uint8_t* C4Data;
 
@@ -708,19 +708,18 @@ static void c4_activate(uint8_t cmd)
         break;
     case 0x05: /* propulsion */
     {
-        uint16_t* vals = (uint16_t*)C4values;
-        vals[1] = RAMW(0x1F83);
-        vals[0] = RAMW(0x1F81);
+        C4values[1] = RAMW(0x1F83);
+        C4values[0] = RAMW(0x1F81);
         int16_t div = (int16_t)RAMW(0x1F83);
         uint16_t result = 1;
         if (div) { /* the asm faulted on zero */
             int32_t q = 65536 / div;
-            vals[3] = (uint16_t)q;
+            C4values[3] = (uint16_t)q;
             int32_t prod = (int32_t)(int16_t)(uint16_t)q * (int16_t)RAMW(0x1F81);
             result = (uint16_t)(prod >> 8);
         }
         RAMW(0x1F80) = result;
-        vals[2] = result;
+        C4values[2] = result;
         break;
     }
     case 0x0D: /* set vector length */
