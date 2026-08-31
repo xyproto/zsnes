@@ -190,7 +190,12 @@ int main(void)
         s.prevcol = dt_mod(2) ? key : dt_u32();
         s.prevpal = (u2)(dt_mod(3) == 0 ? 0 : dt_u32());
         s.transp = (u1)dt_mod(2);
-        s.nwin = (u1)dt_mod(10);
+        /* windowdata holds eight (column, depth) pairs, and the walk reads
+           one entry past numwin, so 8 is the most it can take without
+           running off the end - where numwin itself is the next byte, and
+           the read then depends on whether it has been spilled yet. The
+           emulator only ever sets 0, 2 or 3 (video/c_procwin.c). */
+        s.nwin = (u1)dt_mod(8);
 
         /* Column/depth pairs. Sorted columns are the shape the window builder
            produces; random ones exercise the wrapping counters. */
