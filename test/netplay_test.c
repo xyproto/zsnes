@@ -15,9 +15,22 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/socket.h>
+#include <sys/time.h>
+#include <time.h>
 #include <unistd.h>
 
 #include "zstest.h"
+
+/* usleep is gone from POSIX.1-2008; nanosleep replaced it. */
+static void zsleep_us(unsigned int const usec)
+{
+    struct timespec ts;
+
+    ts.tv_sec = (time_t)(usec / 1000000u);
+    ts.tv_nsec = (long)(usec % 1000000u) * 1000L;
+    while (nanosleep(&ts, &ts) == -1 && errno == EINTR) {
+    }
+}
 
 /* Types mirroring c_guiwindp.c */
 
@@ -263,7 +276,7 @@ static void test_udp_loopback(void)
         return;
     }
 
-    usleep(20000); /* 20 ms – give server time to bind */
+    zsleep_us(20000); /* 20 ms – give server time to bind */
 
     int fd = make_udp_sock(0); /* ephemeral source port */
     if (fd < 0) {
@@ -343,7 +356,7 @@ static void test_tcp_loopback(void)
         return;
     }
 
-    usleep(20000);
+    zsleep_us(20000);
 
     int fd = socket(AF_INET, SOCK_STREAM, 0);
     if (fd < 0) {

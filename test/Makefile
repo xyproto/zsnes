@@ -27,7 +27,11 @@ NOPIE   := -no-pie
 GCSECT  := -Wl,--gc-sections
 endif
 
-CFLAGS := $(BITFLAG) -std=gnu99 -I.. -Wall -Wextra -Wno-unused-parameter
+# C11 with SUSv4, matching the emulator: the tests must not quietly depend
+# on extensions the build itself forbids, and strict c11 hides POSIX until
+# the macro asks for it.
+CFLAGS := $(BITFLAG) -std=c11 -D_XOPEN_SOURCE=700 \
+          -I.. -Wall -Wextra -Wno-unused-parameter
 
 BIN       := zsnes_test
 NETPLAY   := zsnes_netplay_test
@@ -481,8 +485,8 @@ run: all
 # builds -m32 only, where zreg and u4 are the same type, so a 64-bit width bug
 # cannot show up; this one exists to catch exactly that.
 spc64: spc64_test.c ../cpu/spc_ops.h ../cpu/spc_ioregs.h
-	@$(CC) -m32 -std=gnu99 -I.. -O2 -Wall -o zsnes_spc32_test spc64_test.c
-	@$(CC) -m64 -std=gnu99 -I.. -O2 -Wall -o zsnes_spc64_test spc64_test.c
+	@$(CC) -m32 -std=c11 -D_XOPEN_SOURCE=700 -I.. -O2 -Wall -o zsnes_spc32_test spc64_test.c
+	@$(CC) -m64 -std=c11 -D_XOPEN_SOURCE=700 -I.. -O2 -Wall -o zsnes_spc64_test spc64_test.c
 	@a=$$(./zsnes_spc32_test) && b=$$(./zsnes_spc64_test) && \
 	  if [ "$$a" = "$$b" ]; then echo "spc700 32 vs 64: PASS ($$a)"; \
 	  else echo "spc700 32 vs 64: FAIL"; echo "  m32 $$a"; echo "  m64 $$b"; exit 1; fi
