@@ -13,9 +13,22 @@
  * winon selects between them as an enum 0 to 5, not a bitmask.
  */
 #include <stdint.h>
+#include <string.h>
 
 #include "../types.h"
 #include "../vcache.h"
+
+/* The line is a byte buffer; the cluster fills it a word or dword at a
+   time. Casting the pointer punned the type, so go through memcpy. */
+static inline u4 rd32(u1 const* const p)
+{
+    u4 v;
+    memcpy(&v, p, sizeof v);
+    return v;
+}
+
+static inline void wr16(u1* const p, u2 const v) { memcpy(p, &v, sizeof v); }
+static inline void wr32(u1* const p, u4 const v) { memcpy(p, &v, sizeof v); }
 
 zreg CLBAX;
 zreg CLBBX;
@@ -27,7 +40,10 @@ zreg CLBDI;
 extern u1 DoTransp, winon, scaddset, bgmode, numwin, vidbright;
 extern u1 coladdr, coladdg, coladdb;
 extern u1 windowdata[];
-extern u2 scrnon, prevrgbpal;
+extern u2 scrnon;
+/* Four bytes are reserved (video/c_makev16tdata.c); the cluster only ever
+   uses the low word, so declaring it u2 lied about the object's size. */
+extern u4 prevrgbpal;
 extern u4 prevrgbcol;
 extern u1 *curvidoffset, *cwinptr;
 
@@ -65,7 +81,7 @@ static int backdrop(regs* const r, u4 const key)
 {
     u2 bx;
 
-    r->bx = (r->bx & ~0xFFFFu) | prevrgbpal;
+    r->bx = (r->bx & ~0xFFFFu) | (u2)prevrgbpal;
     if (key == prevrgbcol) {
         return 1;
     }
@@ -73,7 +89,7 @@ static int backdrop(regs* const r, u4 const key)
     bx = chan(coladdr, vesa2_rpos);
     bx += chan(coladdg, vesa2_gpos);
     bx += chan(coladdb, vesa2_bpos);
-    prevrgbpal = bx;
+    prevrgbpal = (prevrgbpal & 0xFFFF0000u) | bx;
     r->bx = (r->bx & ~0xFFFFu) | bx;
     return 0;
 }
@@ -82,13 +98,14 @@ static int backdrop(regs* const r, u4 const key)
    the fill is a blank line; all three also set edi to curvidoffset first. */
 static void clearing(regs* const r)
 {
-    u4* edi = (u4*)curvidoffset;
+    u1* edi = curvidoffset;
 
     if (!((scrnon >> 8) & 0x10u)) {
         DoTransp = 1;
     }
     for (u4 n = 128; n != 0; n--) {
-        *edi++ = 0;
+        wr32(edi, 0);
+        edi += 4;
     }
     r->ax = 0;
     r->cx = 0;
@@ -126,7 +143,7 @@ static void dowindow(regs* const r, int const rev)
                     DoTransp = 0;
                 }
                 do {
-                    *(u2*)(edi + edx * 2) = v;
+                    wr16(edi + edx * 2, v);
                     edx = (u1)(edx + 1);
                 } while (--cl != 0);
             }
@@ -180,11 +197,11 @@ static void dual(regs* const r, int const rev, int const b2)
     u1 const* esi = cwinptr;
     int state = P_PART; /* the entry tests are the per-pixel head's tests */
 
-    if (b2 && *(u4 const*)esi != vnone) {
+    if (b2 && rd32(esi) != vnone) {
         DoTransp = 0;
     }
     for (u4 ecx = 64; ecx != 0; ecx--) {
-        u4 const w = *(u4 const*)esi;
+        u4 const w = rd32(esi);
         int kind;
 
         switch (state) {
@@ -206,12 +223,12 @@ static void dual(regs* const r, int const rev, int const b2)
         }
         switch (kind) {
         case P_ALL:
-            *(u4*)edi = eax;
-            *(u4*)(edi + 4) = eax;
+            wr32(edi, eax);
+            wr32(edi + 4, eax);
             break;
         case P_NONE:
-            *(u4*)edi = 0;
-            *(u4*)(edi + 4) = 0;
+            wr32(edi, 0);
+            wr32(edi + 4, 0);
             break;
         default:
             if (b2) {
@@ -219,7 +236,7 @@ static void dual(regs* const r, int const rev, int const b2)
             }
             for (u4 k = 0; k < 4; k++) {
                 ebx = (esi[k] == 1) == (rev != 0) ? eax : 0;
-                *(u2*)(edi + k * 2) = (u2)ebx;
+                wr16(edi + k * 2, (u2)ebx);
             }
             break;
         }
@@ -248,7 +265,7 @@ static void dualback(regs* const r)
    the per-pixel mask when two windows are in play. */
 static void ts0b(regs* const r)
 {
-    u4* edi;
+    u1* edi;
 
     backdrop(r, rgbkey());
     r->ax = (u4)(u2)r->bx * 0x00010001u;
@@ -260,9 +277,10 @@ static void ts0b(regs* const r)
         clearing(r);
         return;
     }
-    edi = (u4*)curvidoffset;
+    edi = curvidoffset;
     for (u4 n = 128; n != 0; n--) {
-        *edi++ = r->ax;
+        wr32(edi, r->ax);
+        edi += 4;
     }
     r->ax = 0;
     r->cx = 0;
