@@ -23,7 +23,9 @@ uint32_t SA1Temp, Sdd1Mode, Sdd1Bank, Sdd1Addr, Sdd1NewAddr;
 /* DMA pointers; zstate.c saves them as one adjacent 8-byte block, so force
    their layout rather than letting -fdata-sections scatter them. */
 /* Host pointers, so pointer-sized; the same four bytes on i386. */
-__asm__(ASM_SEC_DATA(".data.sa1dmaptr") ".balign " ASM_STR(__SIZEOF_POINTER__) "\n" ASM_GSYM(sa1dmaptr) ".skip " ASM_STR(__SIZEOF_POINTER__) "\n" ASM_GSYM(sa1dmaptrs) ".skip " ASM_STR(__SIZEOF_POINTER__) "\n" ASM_SEC_END);
+/* zstate.c saves the pair as one 8-byte run; copying through sa1dmaptr
+   itself lets _FORTIFY_SOURCE bound it at 4 and abort the restore. */
+__asm__(ASM_SEC_DATA(".data.sa1dmaptr") ".balign " ASM_STR(__SIZEOF_POINTER__) "\n" ASM_GSYM(sa1dmaptr_run) ASM_GSYM(sa1dmaptr) ".skip " ASM_STR(__SIZEOF_POINTER__) "\n" ASM_GSYM(sa1dmaptrs) ".skip " ASM_STR(__SIZEOF_POINTER__) "\n" ASM_SEC_END);
 
 /* ===== Stage 2: status reads (0x2300-0x230B) + IRAM access ===== */
 #include "regabi.h"

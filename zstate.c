@@ -142,14 +142,22 @@ static void copy_snes_data(uint8_t** buffer, void (*copy_func)(uint8_t**, void*,
                 old + zst_151_regmap[i].from, zst_151_regmap[i].len);
         }
     } else {
-        copy_func(buffer, &sndrot, PHnum2writeppureg);
+        /* Through a plain &sndrot, __builtin_object_size bounds the copy at
+           sizeof(sndrot) == 1 and _FORTIFY_SOURCE aborts the restore: the
+           block being copied is the whole register file that follows it, and
+           its length lives in the assembly. The 1.51 branch above hides the
+           address the same way. */
+        void* volatile block = &sndrot;
+        copy_func(buffer, block, PHnum2writeppureg);
     }
 }
 
+extern uint8_t spcram_run[0x10140]; /* SPCRAM and the blocks saved with it */
+extern uint8_t sa1dmaptr_run[8]; /* sa1dmaptr + sa1dmaptrs */
 static void copy_spc_data(uint8_t** buffer, void (*copy_func)(uint8_t**, void*, size_t))
 {
     // SPC stuff, DSP stuff
-    copy_func(buffer, SPCRAM, PHspcsave);
+    copy_func(buffer, spcram_run, PHspcsave);
     copy_func(buffer, BRRBuffer, zst_dspsave_run ? zst_dspsave_run : (size_t)PHdspsave);
     copy_func(buffer, &DSPMem, sizeof(DSPMem));
 }
@@ -262,7 +270,7 @@ static void copy_state_data(uint8_t* buffer, void (*copy_func)(uint8_t**, void*,
         if (method != csm_load_zst_old) {
             copy_func(&buffer, SA1Status_run, 3);
             copy_func(&buffer, &SA1xpc, 1 * 4);
-            copy_func(&buffer, &sa1dmaptr, 2 * 4);
+            copy_func(&buffer, sa1dmaptr_run, 2 * 4);
         }
     }
 
@@ -412,6 +420,16 @@ void ClearCacheCheck()
     memset(vidmemch2, 1, sizeof(vidmemch2));
     memset(vidmemch4, 1, sizeof(vidmemch4));
     memset(vidmemch8, 1, sizeof(vidmemch8));
+    /* The palette is cached the same way the tiles are: video/c_newgfx16.c
+       keeps the previous cgram in prevpal2 and, for an entry it thinks is
+       unchanged, copies the already-converted colour out of the rotating
+       buffer instead of recomputing it. A state restores cgram but not that
+       cache, so after loading into a process with a different palette history
+       the untouched entries keep the old process's colours. An out-of-range
+       prevbright forces setpalallng(), which rebuilds every entry and
+       refreshes prevpal2 with it. Same idiom as the graphics-engine switch in
+       c_vcache.c. */
+    prevbright = 16;
 }
 
 // Code to handle special frames for pausing, and desync checking

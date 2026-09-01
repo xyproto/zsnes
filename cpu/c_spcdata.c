@@ -32,6 +32,11 @@
 __asm__(
     ASM_SEC_DATA(".data")
     ".balign 32\n"
+    /* PHspcsave (0x10140) bytes from here are saved as one run, which reaches
+       past SPCRAM into the blocks below it; see zstate.c. spc700.h declares
+       SPCRAM as 65536, so copying through that name instead lets
+       _FORTIFY_SOURCE bound the copy at 64K and abort the restore. */
+    ASM_GSYM(spcram_run)
     ASM_GSYM(SPCRAM)
     ".fill 65472, 1, 0xFF\n"
     SPC_BOOT_ROM
