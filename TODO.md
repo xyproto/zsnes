@@ -1,7 +1,5 @@
 # TODO
 
-- [ ] Verify Dirt Trax FX on the Europe ROM and close #32; the freeze and the
-      glitchy top band are fixed on the USA ROM
 - [ ] Fix Super Mario RPG getting stuck on a garbled screen in the attract
       demo, reachable from boot with no input at all and older than the DMA
       timing work. The SA-1 is idle in its normal `LDA $00`/`BEQ` handshake

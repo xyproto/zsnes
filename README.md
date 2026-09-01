@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/xyproto/zsnes/actions/workflows/build.yml/badge.svg)](https://github.com/xyproto/zsnes/actions/workflows/build.yml)
 
-<img align="right" width="128" height="128" alt="logo" src="icons/128x128x32.png">
+<img align="right" width="128" height="128" alt="logo" src="img/128x128x32.png">
 
 The last release of [ZSNES 1](http://zsnes.sourceforge.net/) was over 18 years ago (2007-10-31). It requires heavy patching and tweaking of compilation flags to build and run on a modern Linux distro. Most of it was written in 32-bit x86 Assembly, with MMX instructions.
 
