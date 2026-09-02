@@ -60,14 +60,14 @@ uint8_t c_sa12301r(void)
     return al;
 }
 
-/* H/V free-running counters; the asm adds `dh` (a dispatch dot hint) the reg ABI
-   can't carry, so the free-running path is approximate (dh treated as 0). */
-REGABI_REG_READ8(sa12302r);
-uint8_t c_sa12302r(void)
+/* H/V free-running counters. The H one is the dispatch position scaled by four
+   plus the cycle count the core keeps in DH, which is what the _DX form is for. */
+REGABI_REG_READ8_DX(sa12302r);
+uint8_t c_sa12302r(uint32_t const edx)
 {
     if (BYTE(SA1TimerSet, 0) & 0x80)
         return BYTE(SA1TimerCount, 0);
-    return (uint8_t)(CurrentExecSA1 << 2);
+    return (uint8_t)((CurrentExecSA1 << 2) + (uint8_t)(edx >> 8));
 }
 REGABI_REG_READ8(sa12303r);
 uint8_t c_sa12303r(void)
