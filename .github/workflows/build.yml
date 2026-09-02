@@ -24,16 +24,11 @@ on:
   workflow_dispatch:
 
 jobs:
-  linux32:
-    name: linux (32-bit)
+  linux_i686:
     runs-on: ubuntu-26.04
     env:
       DEBIAN_FRONTEND: noninteractive
-      # A stalled mirror otherwise hangs the step with no bound: one arm64
-      # run spent 31 minutes here. Fail the fetch and retry instead.
       APT_OPTS: -o Acquire::Retries=3 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20
-      # Pinned: tracking main let an upstream commit break CI with no
-      # change here.
       SDL_TAG: release-3.4.14
       PKG_CONFIG_LIBDIR: /usr/lib/i386-linux-gnu/pkgconfig:/usr/share/pkgconfig
     steps:
@@ -84,19 +79,14 @@ jobs:
       - name: Build
         run: |
           make clean
-          make ARCH=linux
+          make linux_i686
           test -x ./zsnes
+          file ./zsnes | grep -q 'ELF 32-bit'
       - name: Unit tests
         run: make -C test run
       - name: Cross-word-size check
-        # Every difftest builds -m32, where zreg and u4 are the same type, so a
-        # 64-bit width bug cannot show up in one. This runs a core at both
-        # widths and compares.
         run: make -C test spc64
       - name: Run the 32-bit executable
-        # A binary that links is not a binary that runs. ZSNES_SELFTEST checks
-        # the allocations and the pointers handed between units, then exits,
-        # so it needs no ROM and no display. Reuses the build above.
         env:
           SDL_VIDEODRIVER: dummy
           SDL_AUDIODRIVER: dummy
@@ -107,20 +97,11 @@ jobs:
           grep -E 'libSDL3|SDL3' ldd.txt
           grep -E 'libpipewire-0\.3' ldd.txt
 
-  linux64:
-    name: linux (64-bit)
-    # Split from the 32-bit job on purpose. Holding both word sizes at once
-    # meant apt had to satisfy i386 and amd64 together, and it resolved that
-    # by dropping things: the aarch64 cross toolchain went to make room for
-    # the multilib set, and an SDL3 built here linked against a udev present
-    # only for i386. With no i386 in this job both problems disappear and the
-    # 64-bit SDL3 comes straight from the distribution.
+  linux_x86_64:
     runs-on: ubuntu-26.04
     env:
       DEBIAN_FRONTEND: noninteractive
       APT_OPTS: -o Acquire::Retries=3 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20
-      # Pinned: tracking main let an upstream commit break CI with no
-      # change here.
       SDL_TAG: release-3.4.14
       SDL_VIDEODRIVER: dummy
       SDL_AUDIODRIVER: dummy
@@ -137,37 +118,26 @@ jobs:
       - name: Build and run 64-bit
         run: |
           make clean
-          make linux64
+          make linux_x86_64
           test -x ./zsnes
           ZSNES_SELFTEST=1 ./zsnes -v 0
       - name: Portability gate
-        # Both legs again: without the i386 set here, the aarch64 cross
-        # compiler survives, so the ARM leg is no longer skipped.
         run: |
           command -v aarch64-linux-gnu-gcc >/dev/null 2>&1 \
             || { echo "aarch64 cross compiler missing; portcheck would skip it"; exit 1; }
           make portcheck
       - name: AddressSanitizer
-        # The difftests compare behaviour against the assembly, not memory
-        # validity, so two global buffer overflows survived a green suite and
-        # turned up only under ASan. The self-test covers the allocations, the
-        # pointers handed between units, and the config written on exit.
         run: |
           make clean
-          make linux64 \
+          make linux_x86_64 \
             EXTRA_CFLAGS='-fsanitize=address -fno-omit-frame-pointer -g' \
             EXTRA_LDFLAGS='-fsanitize=address'
           ASAN_OPTIONS=detect_leaks=0 ZSNES_SELFTEST=1 ./zsnes -v 0
           make clean
       - name: Cross-unit type gate
-        # Every .c file declares the assembly's symbols for itself and nothing
-        # checks that two files agree, because the linker matches on name
-        # alone. -flto is the first point at which the whole program's
-        # declarations meet. Runs last so a failure here cannot hide the
-        # results above it.
         run: |
           make clean
-          make linux64 \
+          make linux_x86_64 \
             EXTRA_CFLAGS='-flto -Werror=lto-type-mismatch -Werror=odr -Werror=strict-aliasing' \
             EXTRA_LDFLAGS='-flto -Werror=lto-type-mismatch -Werror=odr -Werror=strict-aliasing'
           test -x ./zsnes
@@ -176,17 +146,11 @@ jobs:
 
 
   difftests:
-    # These prove each ported routine still bit-identical to the assembly it
-    # replaced, and they dominated the linux job: 1008s of its 1371s, with
-    # mvall alone 363s. Sharded by measured time so the slowest shard is one
-    # long target rather than a queue behind it.
     name: difftests (${{ matrix.shard }})
     runs-on: ubuntu-26.04
     env:
       DEBIAN_FRONTEND: noninteractive
       APT_OPTS: -o Acquire::Retries=3 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20
-      # Pinned: tracking main let an upstream commit break CI with no
-      # change here.
       SDL_TAG: release-3.4.14
       PKG_CONFIG_LIBDIR: /usr/lib/i386-linux-gnu/pkgconfig:/usr/share/pkgconfig
     strategy:
@@ -240,11 +204,9 @@ jobs:
             echo 'PKG_CONFIG_PATH=/usr/local/lib/pkgconfig' >> "$GITHUB_ENV"
           fi
       - name: Build
-        # The difftests link the parent tree's objects, so this has to run
-        # first or they fail to link rather than to compare.
         run: |
           make clean
-          make ARCH=linux
+          make linux_i686
       - name: Differential tests
         run: |
           for t in ${{ matrix.targets }}; do
@@ -252,11 +214,6 @@ jobs:
             make -C test "$t" || exit 1
           done
       - name: Differential tests at release optimisation
-        # The suite above builds the port at -O0; the emulator ships -O3. A
-        # harness that only lines its globals up by luck passes at -O0 and
-        # fails once gcc reorders them, and three such bugs hid behind a green
-        # -O0 run. These are the targets that surfaced them, kept to a subset
-        # so the shard stays short.
         if: matrix.shard == 'rest'
         run: |
           for t in regs cb16b cb16t fxtable mv16 procwin; do
@@ -264,16 +221,11 @@ jobs:
             make -C test "$t" OPT=-O3 || exit 1
           done
 
-  arm64:
-    name: linux_arm64
+  linux_aarch64:
     runs-on: ubuntu-26.04
     env:
       DEBIAN_FRONTEND: noninteractive
-      # A stalled mirror otherwise hangs the step with no bound: one arm64
-      # run spent 31 minutes here. Fail the fetch and retry instead.
       APT_OPTS: -o Acquire::Retries=3 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20
-      # Pinned: tracking main let an upstream commit break CI with no
-      # change here.
       SDL_TAG: release-3.4.14
     steps:
       - uses: actions/checkout@v6
@@ -284,14 +236,7 @@ jobs:
             gcc-aarch64-linux-gnu g++-aarch64-linux-gnu libc6-dev-arm64-cross \
             make pkg-config curl cmake ninja-build git
       - name: Build zlib for aarch64
-        # -lz is unconditional, and the distribution ships no arm64 zlib the
-        # cross compiler can see. Building it is quicker than enabling the
-        # ports archive.
         run: |
-          # A short body with a 200 is not an error to curl, so a truncated
-          # download reached tar as garbage and failed there. Check the hash
-          # instead, and fall through to the second source: zlib.net and the
-          # GitHub release ship a byte-identical tarball.
           sha=bb329a0a2cd0274d05519d61c667c062e06990d72e125ee2dfa8de64f0119d16
           for url in \
             https://zlib.net/fossils/zlib-1.3.2.tar.gz \
@@ -312,8 +257,6 @@ jobs:
           make -j"$(nproc)"
           sudo make install
       - name: Build SDL3 for aarch64
-        # These targets have no other video backend, so the cross build needs
-        # one in the sysroot the same way the native job does.
         run: |
           git clone --depth 1 --branch $SDL_TAG \
             https://github.com/libsdl-org/SDL.git /tmp/SDL
@@ -337,25 +280,17 @@ jobs:
           cmake --build /tmp/SDL/build --parallel
           sudo cmake --install /tmp/SDL/build
       - name: Build
-        # portcheck only compiles. This links, which is what catches a symbol
-        # the addressing mode cannot reach: aarch64 scales the immediate of a
-        # 16/32/64-bit load by its size, so an unaligned one fails here and
-        # nowhere else.
         run: |
           make clean
-          make linux_arm64
+          make linux_aarch64
           file ./zsnes | grep -q aarch64
 
-  arm64-native:
-    name: linux_arm64 (native)
+  linux_aarch64_native:
+    name: linux_aarch64 (native)
     runs-on: ubuntu-26.04-arm
     env:
       DEBIAN_FRONTEND: noninteractive
-      # A stalled mirror otherwise hangs the step with no bound: one arm64
-      # run spent 31 minutes here. Fail the fetch and retry instead.
       APT_OPTS: -o Acquire::Retries=3 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20
-      # Pinned: tracking main let an upstream commit break CI with no
-      # change here.
       SDL_TAG: release-3.4.14
     steps:
       - uses: actions/checkout@v6
@@ -366,7 +301,6 @@ jobs:
             build-essential cmake ninja-build git make pkg-config zlib1g-dev \
             libgl1-mesa-dev libpng-dev
       - name: Install SDL3
-        # Ubuntu has no libsdl3-dev yet, and a native build stops without one.
         run: |
           git clone --depth 1 --branch $SDL_TAG \
             https://github.com/libsdl-org/SDL.git /tmp/SDL
@@ -383,7 +317,6 @@ jobs:
           sudo ldconfig
           echo 'PKG_CONFIG_PATH=/usr/local/lib/pkgconfig' >> "$GITHUB_ENV"
       - name: Build and run
-        # The cross job above proves it links; this one proves it runs.
         env:
           SDL_VIDEODRIVER: dummy
           SDL_AUDIODRIVER: dummy
@@ -398,11 +331,7 @@ jobs:
     runs-on: ubuntu-26.04
     env:
       DEBIAN_FRONTEND: noninteractive
-      # A stalled mirror otherwise hangs the step with no bound: one arm64
-      # run spent 31 minutes here. Fail the fetch and retry instead.
       APT_OPTS: -o Acquire::Retries=3 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20
-      # Pinned: tracking main let an upstream commit break CI with no
-      # change here.
       SDL_TAG: release-3.4.14
     steps:
       - uses: actions/checkout@v6
@@ -416,12 +345,12 @@ jobs:
       - name: Build 32-bit
         run: |
           make clean
-          make win32 WITH_PNG=
+          make win_i686 WITH_PNG=
           test -f ./zsnes.exe
       - name: Build 64-bit
         run: |
           make clean
-          make win64 WITH_PNG=
+          make win_x86_64 WITH_PNG=
           test -f ./zsnes.exe
       - uses: actions/upload-artifact@v7
         with:
@@ -443,20 +372,15 @@ jobs:
           zsnes.exe -v 0
 
   macos:
-    name: macos
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v6
       - name: Install dependencies
         run: |
-          # The runner image ships aws/tap, which Homebrew now refuses to
-          # trust and warns about on every invocation. Nothing here needs it.
           brew untap aws/tap || true
           brew update
           brew install pkgconf sdl3 libpng libao
       - name: Build
-        # No ARCH needed: the default is the host, and on a Mac that is a
-        # native Mach-O build, Apple Silicon or Intel.
         run: |
           make clean
           make
@@ -467,67 +391,4 @@ jobs:
           SDL_AUDIODRIVER: dummy
         run: ZSNES_SELFTEST=1 ./zsnes -v 0
       - name: Unit tests
-        # The difftests are 32-bit x86 only - they assemble the original
-        # Assembly out of git history - so only the unit tests run here.
         run: make -C test run
-
-#  freebsd:
-#    name: freebsd (optional)
-#    continue-on-error: true
-#    runs-on: ubuntu-24.04
-#    steps:
-#      - uses: actions/checkout@v6
-#      - name: Build in FreeBSD VM
-#        uses: vmactions/freebsd-vm@v1
-#        with:
-#          usesh: true
-#          sync: no
-#          run: |
-#            rm -rf "$HOME/work"
-#            mkdir -p "$HOME/work"
-#            cd "$HOME/work"
-#            fetch -o src.tar.gz "https://codeload.github.com/${{ github.repository }}/tar.gz/${{ github.sha }}"
-#            tar -xzf src.tar.gz --strip-components=1
-#            pkg install -y gmake nasm pkgconf sdl3 png
-#            gmake clean
-#            gmake ARCH=freebsd WITH_AO= WITH_PIPEWIRE=
-#  openbsd:
-#    name: openbsd (optional)
-#    continue-on-error: true
-#    runs-on: ubuntu-24.04
-#    steps:
-#      - uses: actions/checkout@v6
-#      - name: Build in OpenBSD VM
-#        uses: vmactions/openbsd-vm@v1
-#        with:
-#          usesh: true
-#          sync: no
-#          run: |
-#            rm -rf "$HOME/work"
-#            mkdir -p "$HOME/work"
-#            cd "$HOME/work"
-#            ftp -o src.tar.gz "https://codeload.github.com/${{ github.repository }}/tar.gz/${{ github.sha }}"
-#            tar -xzf src.tar.gz --strip-components=1
-#            pkg_add gmake nasm pkgconf sdl3 png
-#            gmake clean
-#            gmake ARCH=openbsd WITH_AO= WITH_PIPEWIRE=
-#  netbsd:
-#    name: netbsd (optional)
-#    continue-on-error: true
-#    runs-on: ubuntu-24.04
-#    steps:
-#      - uses: actions/checkout@v6
-#      - name: Build in NetBSD VM
-#        uses: vmactions/netbsd-vm@v1
-#        with:
-#          usesh: true
-#          sync: no
-#          run: |
-#            rm -rf "$HOME/work"
-#            mkdir -p "$HOME/work"
-#            cd "$HOME/work"
-#            ftp -o src.tar.gz "https://codeload.github.com/${{ github.repository }}/tar.gz/${{ github.sha }}"
-#            tar -xzf src.tar.gz --strip-components=1
-#            /usr/sbin/pkg_add gmake nasm pkgconf SDL3 libpng
-#            gmake clean
-#            gmake ARCH=netbsd WITH_AO= WITH_PIPEWIRE=
