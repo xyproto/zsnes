@@ -3,14 +3,10 @@
 *.log
 *.raw
 *.wav
-.buildmode
 .vscode/
 build/
-cfg.h
 config.default
 include.txt
-input.h
-md.h
 parsegen
 test/_*
 test/difftest_*
@@ -19,7 +15,6 @@ test/harness/out64
 test/zsnes_*test
 tools/__pycache__
 unused-report.txt
-win/confloc.h
 zcfgloc.cfg
 zfont.txt
 zinput.cfg
