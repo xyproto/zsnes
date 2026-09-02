@@ -19,11 +19,16 @@ enum { R_EDI,
     R_ECX,
     R_EAX };
 
-extern u1 curmosaicsz, BGMA[256], t16x161[], scadsng[256];
+extern u1 curmosaicsz, BGMA[256], scadsng[256];
+extern u1 t16x16_run[4 * 256]; /* t16x161..t16x164, one run (endmem.c) */
 extern u1 vidbright, prevbrightdc;
-extern u1 winbg1enval[], winlogicaval[];
+extern u1 winlogicaval[];
+extern u1 winbgenval_run[6 * 256]; /* winbg1enval..winbgbackenval */
 extern u1 colormodedef[][4]; /* c_vcache.c: SNES mode -> depth per layer */
-extern u2 BGPT1[], BGPT1X[], BGPT1Y[], BG1SXl[], BG1SYl[], BGOPT1[];
+extern u2 BGOPT1[];
+/* Four per-layer tables each, indexed by scanline plus layer*256 (endmem.c). */
+extern u2 BGPT_run[4 * 256], BGPTX_run[4 * 256], BGPTY_run[4 * 256];
+extern u2 BGSXl_run[4 * 256], BGSYl_run[4 * 256];
 extern u2 bgtxad[];
 extern u4 ng16bprval, ng16bbgval, bgtxadd, ngptrdat[], ngptrdat2;
 extern u4 ngceax[], mode0add, mode0ads;
@@ -69,7 +74,7 @@ static void build_window(zreg const* const r, u4 const bg)
     u4 adj;
 
     ngwinen = 0;
-    if (!(winbg1enval[bx + bg * 256u] & 0x0Au))
+    if (!(winbgenval_run[bx + bg * 256u] & 0x0Au))
         return;
 
     *(u1*)&nglogicval = (u1)((winlogicaval[bx * 2u] >> (bg * 2u)) & 3u);
@@ -146,7 +151,7 @@ static void bg_tile_pr1(zreg* const r, u4 const bg, int const big)
     u4 edx;
 
     if (big) {
-        u4 const ecx = (dword_at(&BG1SYl[i]) & 0xFFFFu) + bx;
+        u4 const ecx = (dword_at(&BGSYl_run[i]) & 0xFFFFu) + bx;
 
         taddnfy16x16 = 0;
         taddfy16x16 = 16;
@@ -179,13 +184,13 @@ static void bg_tile(zreg* const r, u4 const bg, int const big)
         }
     }
 
-    eax = dword_at(&BGPT1[i]);
+    eax = dword_at(&BGPT_run[i]);
     if (ecx & (big ? 0x200u : 0x100u))
-        eax += dword_at(&BGPT1Y[i]);
+        eax += dword_at(&BGPTY_run[i]);
     eax += (ecx * (big ? 4u : 8u)) & 0x7C0u;
 
-    ecx = dword_at(&BG1SXl[i]);
-    edx = dword_at(&BGPT1X[i]);
+    ecx = dword_at(&BGSXl_run[i]);
+    edx = dword_at(&BGPTX_run[i]);
     if (ecx & (big ? 0x200u : 0x100u)) {
         eax += edx;
         /* neg dx: the low word only, the high half rides along untouched. */
@@ -235,25 +240,25 @@ static void bg_tile(zreg* const r, u4 const bg, int const big)
     bg_finish(r, bg, big, edx, eax, edi, ebp);
 }
 
-#define NG_BG_TILE(n)                                           \
-    void c_drawbg##n##tile16b(zreg* const r)                    \
-    {                                                           \
-        u4 const bg = (n) - 1u;                                 \
-                                                                \
-        bg_prdat[bg][r[R_EBX]] = 1;                             \
-        curmosaicsz = 1;                                        \
-        ng16bprval = 0;                                         \
-        ng16bbgval = bg;                                        \
-        bg_tile(r, bg, t16x161[r[R_EBX] + bg * 256u] == 1);     \
-    }                                                           \
-    void c_drawbg##n##tilepr116b(zreg* const r)                 \
-    {                                                           \
-        u4 const bg = (n) - 1u;                                 \
-                                                                \
-        curmosaicsz = 1;                                        \
-        ng16bprval = 0x2000u;                                   \
-        ng16bbgval = bg;                                        \
-        bg_tile_pr1(r, bg, t16x161[r[R_EBX] + bg * 256u] == 1); \
+#define NG_BG_TILE(n)                                              \
+    void c_drawbg##n##tile16b(zreg* const r)                       \
+    {                                                              \
+        u4 const bg = (n) - 1u;                                    \
+                                                                   \
+        bg_prdat[bg][r[R_EBX]] = 1;                                \
+        curmosaicsz = 1;                                           \
+        ng16bprval = 0;                                            \
+        ng16bbgval = bg;                                           \
+        bg_tile(r, bg, t16x16_run[r[R_EBX] + bg * 256u] == 1);     \
+    }                                                              \
+    void c_drawbg##n##tilepr116b(zreg* const r)                    \
+    {                                                              \
+        u4 const bg = (n) - 1u;                                    \
+                                                                   \
+        curmosaicsz = 1;                                           \
+        ng16bprval = 0x2000u;                                      \
+        ng16bbgval = bg;                                           \
+        bg_tile_pr1(r, bg, t16x16_run[r[R_EBX] + bg * 256u] == 1); \
     }
 
 NG_BG_TILE(1)
@@ -428,9 +433,9 @@ static void om_setup(zreg* const r, u4 const bg, int const big, int const mask16
        carry out of the low word is dropped there and kept everywhere else. */
     ofsmcptr = vram + (eax & (mask16 ? 0xFFC0u : 0xFFFFFFC0u));
     ofsmcptr2 = eax & 0x3Fu;
-    ofsmady = dword_at(&BGPT1Y[bx + bg * 256u]);
-    ofsmadx = dword_at(&BGPT1X[bx + bg * 256u]);
-    ofsmtptr = dword_at(&BGPT1[bx + bg * 256u]);
+    ofsmady = dword_at(&BGPTY_run[bx + bg * 256u]);
+    ofsmadx = dword_at(&BGPTX_run[bx + bg * 256u]);
+    ofsmtptr = dword_at(&BGPT_run[bx + bg * 256u]);
     ofsmtptrs = ofsmtptr;
 }
 
@@ -474,19 +479,19 @@ static void bg_line(zreg* const r, u4 const bg)
         for (q = 0; q < 128u; q++)
             memcpy(xtravbuf + 32 + q * 4, "\xFF\xFF\xFF\xFF", 4);
         r[R_ESI] = (zreg)(uintptr_t)(xtravbuf + 32);
-        ecx = (dword_at(&BG1SYl[i]) & 0xFFFFu) + mosstart[bg];
+        ecx = (dword_at(&BGSYl_run[i]) & 0xFFFFu) + mosstart[bg];
     }
 
     if (BGMA[bx] >= 5) {
         kind = LK_HR;
-        big = t16x161[i] == 1;
+        big = t16x16_run[i] == 1;
     } else if (osm2dis != 1
         && (BGMA[bx] == 2 || (bgmode != 4 && BGMA[bx] == 4))) {
         kind = LK_OM;
-        big = t16x161[i] == 1;
+        big = t16x16_run[i] == 1;
     } else {
         kind = LK_PLAIN;
-        big = t16x161[i] == 1;
+        big = t16x16_run[i] == 1;
     }
 
     if (kind == LK_OM)
@@ -499,9 +504,9 @@ static void bg_line(zreg* const r, u4 const bg)
         tadd_from_row(ecx);
     }
 
-    eax = (kind == LK_OM) ? ofsmtptr : dword_at(&BGPT1[i]);
+    eax = (kind == LK_OM) ? ofsmtptr : dword_at(&BGPT_run[i]);
     if (ecx & (big ? 0x200u : 0x100u))
-        eax += dword_at(&BGPT1Y[i]);
+        eax += dword_at(&BGPTY_run[i]);
 
     /* The row inside the tile: bits 3..5 of the scaled scroll. */
     edx = (ecx * 8u) & 0x38u;
@@ -513,10 +518,10 @@ static void bg_line(zreg* const r, u4 const bg)
     }
     eax += (ecx * (big ? 4u : 8u)) & 0x7C0u;
 
-    ecx = dword_at(&BG1SXl[i]);
+    ecx = dword_at(&BGSXl_run[i]);
     if (kind == LK_HR)
         ecx += ecx;
-    edx = dword_at(&BGPT1X[i]);
+    edx = dword_at(&BGPTX_run[i]);
     if (ecx & ((big || kind == LK_HR) ? 0x200u : 0x100u)) {
         eax += edx;
         if (kind == LK_OM)
@@ -572,7 +577,7 @@ NG_BG_LINE(4)
    block's start when mosaic is on, plus the interlace field. */
 static u4 line_pr1_row(u4 const bx, u4 const bg, int const interl)
 {
-    u4 row = (dword_at(&BG1SYl[bx + bg * 256u]) & 0xFFFFu) + bx;
+    u4 row = (dword_at(&BGSYl_run[bx + bg * 256u]) & 0xFFFFu) + bx;
 
     if (curmosaicsz != 1)
         row = row - bx + mosstart[bg];
@@ -601,10 +606,10 @@ static void line_pr1_ypos(u4 const row, int const om)
 static void om_setup_pr1_x(u4 const bx, u4 const bg, int const big)
 {
     u4 const i = bx + bg * 256u;
-    u4 ecx = dword_at(&BG1SXl[i]);
+    u4 ecx = dword_at(&BGSXl_run[i]);
 
     if (ecx & (big ? 0x200u : 0x100u))
-        ofsmtptr += dword_at(&BGPT1X[i]);
+        ofsmtptr += dword_at(&BGPTX_run[i]);
     ecx &= big ? 0x1F0u : 0xF8u;
     ofsmtptr += ecx >> (big ? 3 : 2);
 }
@@ -638,7 +643,7 @@ static void line_pr1_finish(zreg* const r, u4 const bg, int const kind,
 static void bg_line_pr1(zreg* const r, u4 const bg)
 {
     u4 const bx = r[R_EBX];
-    int const big = t16x161[bx + bg * 256u] == 1;
+    int const big = t16x16_run[bx + bg * 256u] == 1;
     int kind;
     u4 row;
 

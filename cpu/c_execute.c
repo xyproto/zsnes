@@ -238,7 +238,7 @@ void Donextlinecache(void)
         u1 ecx = curypos + 1;
         do {
             sprlefttot[ecx] = 0;
-            ((u4*)sprleftpr)[ecx] = 0; // XXX ugly cast
+            sprleftpr_b[ecx] = 0;
             sprcnt[ecx] = 0;
             sprstart[ecx] = 0;
             sprtilecnt[ecx] = 0;

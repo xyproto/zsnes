@@ -45,8 +45,10 @@ extern u1 vidmemch2s[];
 extern void setpalette16bng(void);
 extern u1 winen[6]; /* the winbg1en..wincolen run (cpu/regs.h) */
 extern u1 winenabm, winenabs, disableeffects;
-extern u1 winbg1enval[], winbg1envalm[], winbg1envals[];
-extern u1 winbg2enval[], winbg3enval[], winbg4enval[];
+extern u1 winbg1enval[], winbg2enval[], winbg3enval[], winbg4enval[];
+/* winbg1enval..winbgbackenval, and the sub and main copies (endmem.c). */
+extern u1 winbgenval_run[6 * 256], winbgenvals_run[6 * 256],
+    winbgenvalm_run[6 * 256];
 extern u1 winlogica, winl1, winlogicb;
 extern u4 nglogicval; /* a dword where it is defined (video/newgfx.c) */
 extern u4 objwlrpos[256], objclineptr[256], ngwinen;
@@ -292,9 +294,9 @@ static void winbg(u4 const y, u4 const n)
             }
         }
     }
-    winbg1envalm[y + n * 256u] = bl;
-    winbg1envals[y + n * 256u] = bh;
-    winbg1enval[y + n * 256u] = (u1)(bl | bh);
+    winbgenvalm_run[y + n * 256u] = bl;
+    winbgenvals_run[y + n * 256u] = bh;
+    winbgenval_run[y + n * 256u] = (u1)(bl | bh);
 }
 
 /* WinBGCheck2: the same for the back area, where the bounds check *is* live -
@@ -322,7 +324,7 @@ static void winback(u4 const y, u4 const n)
             bl = 0;
         }
     }
-    winbg1enval[y + n * 256u] = bl;
+    winbgenval_run[y + n * 256u] = bl;
 }
 
 void newengine16b_windows(void);
@@ -429,11 +431,11 @@ void newengine16b_sprwin(void)
     u4 const ebx = dwr(winl1_dw);
     u2 dx;
 
-    if (winbg1enval[y + 4u * 256u] == 0) {
+    if (winbgenval_run[y + 4u * 256u] == 0) {
         objwlrpos[y] = 0xFFFFFFFFu;
         return;
     }
-    dx = (u2)(winbg1enval[y + 4u * 256u] | (u4)(winlogicb & 3u) << 8);
+    dx = (u2)(winbgenval_run[y + 4u * 256u] | (u4)(winlogicb & 3u) << 8);
 
     /* Nothing to rebuild if this line's window matches the one above, or the
        one already built for this line. */
@@ -473,9 +475,9 @@ void newengine16b_sprwin(void)
 
 disable:
     objclineptr[y] = 0xFFFFFFFFu;
-    winbg1enval[y + 4u * 256u] = 0;
-    winbg1envals[y + 4u * 256u] = 0;
-    winbg1envalm[y + 4u * 256u] = 0;
+    winbgenval_run[y + 4u * 256u] = 0;
+    winbgenvals_run[y + 4u * 256u] = 0;
+    winbgenvalm_run[y + 4u * 256u] = 0;
 }
 
 /* --- the rest of newengine16b -------------------------------------------- *
@@ -541,7 +543,7 @@ static void back_area(u4 const y)
     u1 cl;
 
     ngwinen = 0;
-    if (winbg1enval[y + 5u * 256u] != 0) {
+    if (winbgenval_run[y + 5u * 256u] != 0) {
         nglogicval = (u1)((winlogicb >> 2) & 3u);
         BuildWindow2(y, 5u * 256u + y);
     }
@@ -633,8 +635,8 @@ void newengine16b(void)
         winbg4enval[y] = 0;
         winbgobjenval[y] = 0;
         for (q = 0; q < 5u; q++) {
-            winbg1envalm[y + q * 256u] = 0;
-            winbg1envals[y + q * 256u] = 0;
+            winbgenvalm_run[y + q * 256u] = 0;
+            winbgenvals_run[y + q * 256u] = 0;
         }
     } else {
         newengine16b_windows();

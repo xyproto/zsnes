@@ -64,9 +64,10 @@ extern u1 BGMS1[], FillSubScr[256];
 extern u1 bgwinchange[256], bgallchange[256], bg1change[256];
 /* winbg1enval starts a run of six: bg1..bg4, obj, back (endmem.c), and is
    indexed across them by layer. */
-extern u1 winbg1enval[6 * 256];
+extern u1 winbgenval_run[6 * 256]; /* winbg1enval..winbgbackenval */
 extern u1 mosenng[256], mosszng[256];
 extern u2 BG1SYl[256];
+extern u2 BGSYl_run[4 * 256]; /* BG1SYl..BG4SYl, one run (endmem.c) */
 extern zreg cpalval[256];
 extern zreg CPalPtrng;
 extern u4 startlinet, endlinet, reslbyl;
@@ -136,10 +137,10 @@ static int tile_ok(u4 const layer, u4 const y, int const kind)
     if ((dw(bgwinchange, y) & 0xFFFFFF00u) || dw(bgwinchange, y + 4)) {
         /* The window changed somewhere in these eight lines, so it is only
            safe if this layer's window is off for all of them. */
-        if (dw(winbg1enval, y + layer * 256u) & 0x0A0A0A0Au) {
+        if (dw(winbgenval_run, y + layer * 256u) & 0x0A0A0A0Au) {
             return 0;
         }
-        if (dw(winbg1enval, y + layer * 256u + 4u) & 0x0A0A0A0Au) {
+        if (dw(winbgenval_run, y + layer * 256u + 4u) & 0x0A0A0A0Au) {
             return 0;
         }
     }
@@ -214,10 +215,8 @@ void c_procbg16b(u4 const layer, void (*const lineproc)(zreg*),
 
             if (kind == P_PR0 || kind == P_BG3PR0) {
                 /* Only a tile-aligned line can start a tile row; one that
-                   cannot goes down a line at a time rather than being skipped.
-                   BG1SYl..BG4SYl are one pinned run (endmem.c), so the layer
-                   scales the index - UBSan flags the array bound. */
-                ecx = (BG1SYl[y + layer * 256u] & 0xFFFFu) + y;
+                   cannot goes down a line at a time rather than being skipped. */
+                ecx = (BGSYl_run[y + layer * 256u] & 0xFFFFu) + y;
                 tile = (ecx & 7u) == 0 && tile_ok(layer, y, kind);
             } else {
                 tile = prdat[y] == 1;

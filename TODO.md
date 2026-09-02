@@ -33,8 +33,6 @@
 - [ ] Retire the old graphics engine (`newengen=0`) once the new one has no
       known regressions, and drop `bgfixer` with it
 - [ ] Give the difftests a 64-bit oracle so they run off 32-bit x86
-- [ ] Give the pinned table runs (`BG1SYl`, `BGPT1` ...) flat aliases so the
-      cross-table indexing stops tripping UBSan
 - [ ] Read the word and dword seams (`cpu/ops65816.h`, `video/c_ng2tile.c`)
       through `memcpy` rather than casts; the unaligned loads the assembly took
       for granted are UB and would fault on a strict-alignment target

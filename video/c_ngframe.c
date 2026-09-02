@@ -21,7 +21,8 @@ enum { R_EDI,
 
 extern u4 WindowRedraw, ngmsdraw, ngextbg; /* dwords where they are defined */
 extern u1 scrndis;
-extern u1 modeused[8], scadsng[256], winbg1enval[];
+extern u1 modeused[8], scadsng[256];
+extern u1 winbgenval_run[6 * 256]; /* winbg1enval..winbgbackenval */
 extern u4 nglogicval; /* a dword where it is defined (video/newgfx.c) */
 extern u1 prdata[256], prdatb[256], prdatc[256];
 extern u1 winbg1envals[], winbg1envalm[];
@@ -128,7 +129,7 @@ static void screen_clip(zreg* const r, int const sub)
 
         /* al is 40h or 80h here: inside the window, or outside it. */
         ngwinen = 0;
-        if (winbg1enval[bx + 5u * 256u] & 0x0Au) {
+        if (winbgenval_run[bx + 5u * 256u] & 0x0Au) {
             /* The high byte of the pair, where the layer windows read the
                low one. */
             nglogicval
