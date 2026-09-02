@@ -77,10 +77,20 @@ ASMDATA_SRC := asmdata_test.c
 # Makefile make them. make's built-in %.o: %.c would use the flags below
 # instead, quietly dropping -fdata-sections and every -D the configuration
 # adds, and the difftest would link something the emulator never builds.
-../%.o:
-	$(MAKE) -C .. $*.o
+# In a directory of its own, at the word size these links need: ../build holds
+# whatever target was last built.
+PBUILD     := ../build/test
+PBUILD_REL := build/test
+ifeq ($(HOST_OS),Darwin)
+PBUILD_TARGET :=
+else
+PBUILD_TARGET := BITS=32 CPU=x86
+endif
 
-OBJS      := ../zpath.o
+$(PBUILD)/%.o:
+	$(MAKE) -C .. $(PBUILD_TARGET) BUILD_DIR=$(PBUILD_REL) $(PBUILD_REL)/$*.o
+
+OBJS      := $(PBUILD)/zpath.o
 
 .PHONY: all run clean spc64 bgt procwin spcdec fxtable fxops memops m7calc m7ext2 m7start m7win m7bw m7proc m7draw mv16 mvs mvall m716t cb16t cb16b spr16bt spr16t spr16p t8bt t16bt t8t t16t t8to thi mos sprwin ngspr regs ngeng ngframe
 
@@ -122,9 +132,9 @@ $(C4): $(C4_SRC) zstest.h ../chips/c4proc.c ../chips/c4emu.c
 $(MODE7): $(MODE7_SRC) zstest.h ../video/mode716b.c
 	$(CC) $(CFLAGS) $(MODE7_SRC) ../video/mode716b.c $(NOPIE) -o $(MODE7)
 
-# ../endmem.o supplies winbgdata, which makevid's cwinptr points at.
-$(ASMDATA): $(ASMDATA_SRC) zstest.h ../cpu/dspproc.c ../cpu/c_spcdata.c ../cpu/c_execdata.c ../cpu/c_regsdata.c ../cpu/c_regswdata.c ../video/c_mode716data.c ../chips/c_sa1data.c ../video/c_makev16tdata.c ../video/c_newgfx16data.c ../video/makevid.c ../video/newgfx.c ../endmem.o
-	$(CC) $(CFLAGS) $(ASMDATA_SRC) ../cpu/dspproc.c ../cpu/c_spcdata.c ../cpu/c_execdata.c ../cpu/c_regsdata.c ../cpu/c_regswdata.c ../video/c_mode716data.c ../chips/c_sa1data.c ../video/c_makev16tdata.c ../video/c_newgfx16data.c ../video/makevid.c ../video/newgfx.c ../endmem.o $(NOPIE) -o $(ASMDATA)
+# endmem.o supplies winbgdata, which makevid's cwinptr points at.
+$(ASMDATA): $(ASMDATA_SRC) zstest.h ../cpu/dspproc.c ../cpu/c_spcdata.c ../cpu/c_execdata.c ../cpu/c_regsdata.c ../cpu/c_regswdata.c ../video/c_mode716data.c ../chips/c_sa1data.c ../video/c_makev16tdata.c ../video/c_newgfx16data.c ../video/makevid.c ../video/newgfx.c $(PBUILD)/endmem.o
+	$(CC) $(CFLAGS) $(ASMDATA_SRC) ../cpu/dspproc.c ../cpu/c_spcdata.c ../cpu/c_execdata.c ../cpu/c_regsdata.c ../cpu/c_regswdata.c ../video/c_mode716data.c ../chips/c_sa1data.c ../video/c_makev16tdata.c ../video/c_newgfx16data.c ../video/makevid.c ../video/newgfx.c $(PBUILD)/endmem.o $(NOPIE) -o $(ASMDATA)
 
 $(VCACHE): $(VCACHE_SRC) zstest.h ../video/tilecache.c
 	$(CC) $(CFLAGS) -ffunction-sections -fdata-sections $(VCACHE_SRC) ../video/tilecache.c $(NOPIE) $(GCSECT) -o $(VCACHE)
@@ -143,11 +153,11 @@ spcdec: difftest_spcdec.c difftest.h mkdifftest.sh ../cpu/spc_ops.h
 
 # Differential test for the SuperFX table builder against the assembly it
 # replaced. Not part of `all` - it needs that old assembly out of asm-sources.zip.
-fxtable: difftest_fxtable.c mkfxtable.sh ../chips/c_fxtable.c ../endmem.o
+fxtable: difftest_fxtable.c mkfxtable.sh ../chips/c_fxtable.c $(PBUILD)/endmem.o
 	./mkfxtable.sh
 	$(CC) $(CFLAGS) -fcommon -fno-pic -c difftest_fxtable.c -o _fxtest.o
 	$(CC) $(CFLAGS) -fcommon -fno-pic -c ../chips/c_fxtable.c -o _fxtable.o
-	$(CC) -m32 $(NOPIE) -fno-pic _fxtest.o _fxtable.o _fxold.o _fxstubs.o ../endmem.o -o difftest_fxtable
+	$(CC) -m32 $(NOPIE) -fno-pic _fxtest.o _fxtable.o _fxold.o _fxstubs.o $(PBUILD)/endmem.o -o difftest_fxtable
 	@./difftest_fxtable
 
 # Differential test for the SuperFX opcode handlers against the assembly they
@@ -210,9 +220,9 @@ M16T_SEAM := ../video/c_m716gate.c ../video/c_mv16tm7.c ../video/c_mv16tclr.c \
 # defines draw16x816t and has no thunks is the last fully original one.
 M16T_ORIG := --requires 'NEWSYM draw16x816t'
 
-M16T_OBJS := ../cpu/c_regsdata.o ../cpu/c_regswdata.o \
-             ../video/c_mode716data.o ../video/makevid.o ../endmem.o
-M16T_BSS  := ../video/c_makev16tdata.o
+M16T_OBJS := $(PBUILD)/cpu/c_regsdata.o $(PBUILD)/cpu/c_regswdata.o \
+             $(PBUILD)/video/c_mode716data.o $(PBUILD)/video/makevid.o $(PBUILD)/endmem.o
+M16T_BSS  := $(PBUILD)/video/c_makev16tdata.o
 
 m716t: difftest_m716t.c difftest.h $(M16T_SEAM) $(M16T_OBJS)
 	python3 ../tools/mkoracle.py video/makev16t.asm -o _m716t.o $(M16T_ORIG) \
@@ -334,9 +344,9 @@ thi: difftest_thi.c difftest.h $(M16T_SEAM) ../video/c_mv16leaf.c $(M16T_OBJS) $
 	@./difftest_thi
 
 # newgfx16.asm - the *new* graphics engine, the one that runs by default.
-NG_OBJS := ../endmem.o ../video/c_newgfx16data.o ../video/newgfx.o \
-           ../video/makevid.o ../cpu/c_regsdata.o ../cpu/c_regswdata.o \
-           ../video/c_ngtransp.o ../video/c_ng2gate.o ngtransp_extra.c
+NG_OBJS := $(PBUILD)/endmem.o $(PBUILD)/video/c_newgfx16data.o $(PBUILD)/video/newgfx.o \
+           $(PBUILD)/video/makevid.o $(PBUILD)/cpu/c_regsdata.o $(PBUILD)/cpu/c_regswdata.o \
+           $(PBUILD)/video/c_ngtransp.o $(PBUILD)/video/c_ng2gate.o ngtransp_extra.c
 
 # Every newgfx16 difftest links a cur_ object built from the whole worktree
 # file, so it needs all of that file's C entry points - the same rule as
@@ -406,7 +416,7 @@ ngeng: difftest_ngeng.c difftest.h ../video/c_ngline.c $(NG_OBJS)
 
 # StartDrawNewGfx16b and the screen clip. The three workers it calls are
 # recorded, so video/c_ngprocbg.c is not linked - see difftest_ngframe.c.
-ngframe: difftest_ngframe.c difftest.h ../video/c_ngframe.c ../cpu/c_regsdata.o ../cpu/c_regswdata.o ../endmem.o ../video/c_newgfx16data.o ../video/c_ng2gate.o ../video/makevid.o ../video/newgfx.o $(NG_OBJS)
+ngframe: difftest_ngframe.c difftest.h ../video/c_ngframe.c $(PBUILD)/cpu/c_regsdata.o $(PBUILD)/cpu/c_regswdata.o $(PBUILD)/endmem.o $(PBUILD)/video/c_newgfx16data.o $(PBUILD)/video/c_ng2gate.o $(PBUILD)/video/makevid.o $(PBUILD)/video/newgfx.o $(NG_OBJS)
 	python3 ../tools/mkoracle.py video/newgfx16.asm -o _ngframe.o \
 	    --requires 'ccallv c_procbg16b' --ported-marker '' \
 	    --stubs _ngframe_stubs.c --provided-by $(NG_OBJS) \
@@ -422,9 +432,9 @@ ngframe: difftest_ngframe.c difftest.h ../video/c_ngframe.c ../cpu/c_regsdata.o 
 	# video/c_ngtransp.o is deliberately not here: its
 	# c_process_transparencies is one of the recorded targets.
 	$(CC) $(CFLAGS) difftest_ngframe.c ../video/c_ngframe.c \
-	    _ngframe.o _ngframe_stubs.c ../endmem.o \
-	    ../video/c_newgfx16data.o ../video/newgfx.o ../video/makevid.o \
-	    ../cpu/c_regsdata.o ../cpu/c_regswdata.o ../video/c_ng2gate.o \
+	    _ngframe.o _ngframe_stubs.c $(PBUILD)/endmem.o \
+	    $(PBUILD)/video/c_newgfx16data.o $(PBUILD)/video/newgfx.o $(PBUILD)/video/makevid.o \
+	    $(PBUILD)/cpu/c_regsdata.o $(PBUILD)/cpu/c_regswdata.o $(PBUILD)/video/c_ng2gate.o \
 	    ngtransp_extra.c $(NOPIE) -o difftest_ngframe
 	@./difftest_ngframe
 
@@ -505,6 +515,7 @@ clean:
 	rm -f $(BIN) $(NETPLAY) $(ST10) $(ST11) $(OBC1) $(MSU1) $(DSP2) $(SAI) $(SA1) $(SPC7110) $(VCACHE) $(SPRITES) $(C4) $(MODE7) $(ASMDATA)
 	rm -f zsnes_spc32_test zsnes_spc64_test
 	rm -f difftest_procwin difftest_spcdec difftest_fxtable difftest_fxops difftest_memops difftest_m7calc difftest_m7ext2 difftest_m7start difftest_m7win difftest_m7bw difftest_m7proc difftest_m7draw difftest_mv16 difftest_mvs difftest_regs _*.o _*.asm _*.inc _*.raw
+	rm -fr $(PBUILD)
 
 # Port-time differential testing (difftest.h + mkdifftest.sh) proves a C port
 # bit-identical to the original assembly. It is transient by design: the oracle
@@ -589,7 +600,7 @@ bgt: difftest_bgt.c difftest.h ../video/c_ngbg.c $(NG_OBJS)
 # one oracle here now.
 ng2: difftest_ng2.c ng2_harness.c ng2_harness.h difftest.h \
      ../video/c_ng2tile.c ../video/c_ng2gate.c \
-     ../video/tilecache.o ../endmem.o
+     $(PBUILD)/video/tilecache.o $(PBUILD)/endmem.o
 	# --requires bounds the search from above now that the file is deleted:
 	# the finished port has neither the .mac include nor the gate macros'
 	# ccall, so the marker alone would select it. The include is the thing
@@ -598,13 +609,13 @@ ng2: difftest_ng2.c ng2_harness.c ng2_harness.h difftest.h \
 	    --requires '%include "video/newg162.mac"' \
 	    --ported-marker 'ccall c_determinetransp' \
 	    --stubs _ng2_stubs.c \
-	    --provided-by ../video/tilecache.o ../endmem.o \
+	    --provided-by $(PBUILD)/video/tilecache.o $(PBUILD)/endmem.o \
 	    --exclude domosaicng16b vrama
 	# The two ported files go in as *sources*. Linking the objects the main
 	# build leaves behind means an edit to either can be tested against a
 	# stale one - which happened, and showed up as an extern of the wrong
 	# length reading whatever global followed it.
 	$(CC) $(CFLAGS) difftest_ng2.c ng2_harness.c _ng2.o \
-	    _ng2_stubs.c ../video/tilecache.o ../endmem.o ../video/c_ng2tile.c \
+	    _ng2_stubs.c $(PBUILD)/video/tilecache.o $(PBUILD)/endmem.o ../video/c_ng2tile.c \
 	    ../video/c_ng2gate.c $(NOPIE) -o difftest_ng2
 	@./difftest_ng2
