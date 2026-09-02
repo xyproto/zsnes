@@ -39,8 +39,8 @@ Linux, macOS, FreeBSD, OpenBSD, and NetBSD. Architecture-specific targets are
 also available:
 
 ```sh
-make win32
-make win64
+make win_i686
+make win_x86_64
 make linux_i686
 make linux_x86_64
 make linux_aarch64
@@ -155,7 +155,7 @@ pacman -Sy git make pkg-config python3 mingw-w64-x86_64-gcc mingw-w64-x86_64-lib
 make
 ```
 
-Use `make win32` or `make win64` when selecting an architecture explicitly.
+Use `make win_i686` or `make win_x86_64` when selecting an architecture explicitly.
 
 ### Pull requests
 
