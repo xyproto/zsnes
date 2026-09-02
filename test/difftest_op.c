@@ -28,9 +28,7 @@
 #include <string.h>
 
 /*
- * One divergence in the 65816 core itself. (The decimal ADC/SBC overflow flag
- * used to be listed here; cpu/ops65816.h reproduces the x86 DAA/DAS rule now,
- * so those 60 opcodes match bit-for-bit.)
+ * One divergence in the 65816 core itself.
  *
  * CLI: the assembly's emulation-mode restart is `xor ebx,ebx; jmp execloop` and
  * the port returns without clearing ebx. The dispatcher only ever loads bl and
@@ -42,6 +40,23 @@ static int known_65816_divergence(char const* n)
 {
     return strcmp(n, "COp58") == 0;
 }
+
+/*
+ * Decimal ADC and SBC, which the assembly ends with DAA or DAS and a
+ * `seto byte[flago]`. x86 leaves both instructions' OF undefined and the
+ * vendors really do differ, so that byte is the host CPU talking rather than
+ * anything a port can be held to: cpu/ops65816.h's rule is exact over all 1024
+ * (AL, CF, AF) states on an AMD Zen and wrong on Intel. Flag skipped for these
+ * 60 opcodes only, and only this flag - the result and every other register
+ * are still compared.
+ */
+static int decimal_adc_sbc(char const* n)
+{
+    size_t const l = strlen(n);
+    return (l > 3 && strcmp(n + l - 3, "m8d") == 0)
+        || (l > 4 && strcmp(n + l - 4, "m16d") == 0);
+}
+
 #ifndef KNOWN_DIVERGENCE
 #define KNOWN_DIVERGENCE(name) known_65816_divergence(name)
 #endif
@@ -721,7 +736,8 @@ int main(void)
             DT_EQ("initaddrl", a.initaddrl_, c.initaddrl_);
             DT_EQ("xe", a.xe, c.xe);
             DT_EQ("flagnz", a.flagnz, c.flagnz);
-            DT_EQ("flago", a.flago, c.flago);
+            if (!decimal_adc_sbc(ops[o].name))
+                DT_EQ("flago", a.flago, c.flago);
             DT_EQ("flagc", a.flagc, c.flagc);
             DT_EQ("stackand", a.stackand, c.stackand);
             DT_EQ("stackor", a.stackor, c.stackor);
