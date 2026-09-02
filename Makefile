@@ -9,8 +9,16 @@ HOST_OS := $(if $(filter MINGW% MSYS% CYGWIN%,$(HOST_OS)),WIN,$(HOST_OS))
 HOST_CPU := $(shell uname -m 2>/dev/null | tr '[:upper:]' '[:lower:]')
 HOST_CPU_FAMILY := $(if $(filter aarch64 arm64,$(HOST_CPU)),arm64,x86)
 HOST_BITS := $(if $(filter x86_64 amd64 aarch64 arm64,$(HOST_CPU)),64,32)
+HOST_ARCH := $(if $(filter arm64,$(HOST_CPU_FAMILY)),aarch64,$(if $(filter 64,$(HOST_BITS)),x86_64,i686))
+NAMED_TARGETS := linux_i686 linux_x86_64 linux_aarch64 \
+                 macos_aarch64 macos_x86_64 \
+                 freebsd_aarch64 freebsd_x86_64 \
+                 win_i686 win_x86_64
+HOST_TARGET := $(filter $(NAMED_TARGETS),$(patsubst DARWIN,macos,$(patsubst LINUX,linux,$(patsubst FREEBSD,freebsd,$(patsubst WIN,win,$(HOST_OS)))))_$(HOST_ARCH))
 
 ARCH ?= $(HOST_OS)
+# Before the override below, which erases the origin.
+ARCH_FROM_CLI := $(filter command line,$(origin ARCH))
 override ARCH := $(shell printf '%s' "$(ARCH)" | tr '[:lower:]' '[:upper:]')
 
 # Keep aliases overridden after normalizing ARCH.
@@ -144,6 +152,10 @@ ifeq ($(ARCH),DARWIN)
 # Preserve Darwin extensions and silence legacy OpenGL deprecations.
 FEATURE_FLAGS := -D_DARWIN_C_SOURCE -DGL_SILENCE_DEPRECATION
 endif
+# DEBUG=1 is the debug target, but composes: make linux_i686 DEBUG=1.
+ifneq ($(filter-out 0 no false,$(DEBUG)),)
+BUILD_MODE := debug
+endif
 BUILD_MODE ?= release
 ifeq ($(BUILD_MODE),debug)
 OPT_FLAGS := -Og -g3 -fno-omit-frame-pointer
@@ -239,11 +251,11 @@ SDL_BACKEND_AVAILABLE := $(if $(or $(SDL3_AVAILABLE),$(strip $(SDL_CONFIG)),$(st
 endif
 
 # Wrapper targets defer dependency checks to their sub-make.
-WRAPPER_GOALS := clean distclean linux32 linux64 linux_arm64 linux_pi4 \
+WRAPPER_GOALS := clean distclean debug linux_pi4 \
                  linux_i686 linux_x86_64 linux_aarch64 \
-                 macos macos_aarch64 macos_x86_64 \
+                 macos_aarch64 macos_x86_64 \
                  freebsd_aarch64 freebsd_x86_64 \
-                 win32 w32 win64 portcheck portasm help test fmt unused
+                 win_i686 win_x86_64 portcheck portasm help test fmt unused
 # Empty command-line backend variables are explicit opt-outs.
 BACKENDS_OPTOUT := $(if $(filter command line,$(origin WITH_SDL) \
                      $(origin WITH_PIPEWIRE) $(origin WITH_AO)),yes)
@@ -774,7 +786,13 @@ endif
 
 .SUFFIXES:
 
+DISPATCH := $(if $(ARCH_FROM_CLI)$(filter command line,$(origin BITS) $(origin CPU)),,$(HOST_TARGET))
+ifeq ($(DISPATCH),)
 all: $(BINARY)
+else
+all:
+	$(MAKE) $(DISPATCH)
+endif
 
 define need_tool
 @command -v $(1) >/dev/null 2>&1 || { \
@@ -821,11 +839,11 @@ MINGW64_PKG_CONFIG ?= $(if $(MINGW64_NATIVE),pkg-config,$(MINGW64_PREFIX)-pkg-co
 MINGW32_WINDRES ?= $(if $(MINGW32_NATIVE),windres,$(MINGW32_PREFIX)-windres)
 MINGW64_WINDRES ?= $(if $(MINGW64_NATIVE),windres,$(MINGW64_PREFIX)-windres)
 
-.PHONY: linux32 linux64 linux_arm64 linux_pi4
+.PHONY: linux_pi4
 .PHONY: linux_i686 linux_x86_64 linux_aarch64
-.PHONY: macos macos_aarch64 macos_x86_64
+.PHONY: macos_aarch64 macos_x86_64
 .PHONY: freebsd_aarch64 freebsd_x86_64
-.PHONY: win32 w32 win64 help
+.PHONY: win_i686 win_x86_64 help
 
 linux_i686:
 	$(call need_tool,$(LINUX_I686_CC),an i686 Linux C compiler)
@@ -845,19 +863,11 @@ linux_aarch64:
 	  CC=$(LINUX_AARCH64_CC) CC_TARGET=$(LINUX_AARCH64_CC) \
 	  PKG_CONFIG=$(LINUX_AARCH64_PKG_CONFIG) all
 
-linux32: linux_i686
-linux64: linux_x86_64
-linux_arm64: linux_aarch64
-
 linux_pi4:
 	$(call need_tool,$(LINUX_AARCH64_CC),an aarch64 Linux C compiler)
 	$(MAKE) ARCH=LINUX BITS=64 CPU=arm64 ARM64_CFLAGS='-mcpu=cortex-a72 -mtune=cortex-a72' \
 	  CC=$(LINUX_AARCH64_CC) CC_TARGET=$(LINUX_AARCH64_CC) \
 	  PKG_CONFIG=$(LINUX_AARCH64_PKG_CONFIG) all
-
-macos:
-	$(call need_host,DARWIN,macOS,macOS)
-	$(MAKE) ARCH=DARWIN BITS=$(HOST_BITS) CPU=$(HOST_CPU_FAMILY) all
 
 macos_aarch64:
 	$(call need_host,DARWIN,macOS aarch64,macOS)
@@ -879,15 +889,14 @@ freebsd_aarch64:
 	  CC=$(FREEBSD_AARCH64_CC) CC_TARGET=$(FREEBSD_AARCH64_CC) \
 	  PKG_CONFIG=$(FREEBSD_AARCH64_PKG_CONFIG) all
 
-w32: win32
-win32:
+win_i686:
 	$(call need_tool,$(MINGW32_CC),the mingw32 toolchain)
 	$(call need_tool,$(MINGW32_WINDRES),the mingw32 resource compiler)
 	$(MAKE) ARCH=WIN BITS=32 CPU=x86 \
 	  CC=$(MINGW32_CC) CC_TARGET=$(MINGW32_CC) \
 	  WINDRES=$(MINGW32_WINDRES) PKG_CONFIG=$(MINGW32_PKG_CONFIG) all
 
-win64:
+win_x86_64:
 	$(call need_tool,$(MINGW64_CC),the mingw-w64 toolchain)
 	$(call need_tool,$(MINGW64_WINDRES),the mingw-w64 resource compiler)
 	$(MAKE) ARCH=WIN BITS=64 CPU=x86 \
@@ -896,30 +905,27 @@ win64:
 
 help:
 	@echo 'Targets:'
-	@echo '  all            current operating system and CPU (the default)'
-	@echo '  debug          current operating system and CPU with debug symbols'
-	@echo '  linux_i686    32-bit x86 Linux'
-	@echo '  linux_x86_64  64-bit x86 Linux'
-	@echo '  linux_aarch64 64-bit ARM Linux'
-	@echo '  linux32       alias for linux_i686'
-	@echo '  linux64       alias for linux_x86_64'
-	@echo '  linux_arm64   alias for linux_aarch64'
-	@echo '  linux_pi4     64-bit ARM Linux, tuned for a Cortex-A72'
-	@echo '  macos          current macOS CPU'
+	@echo '  all            this machine, through the target naming it (the default)'
+	@echo '  debug          the default target with debug symbols (same as DEBUG=1)'
+	@echo '  linux_i686     32-bit x86 Linux'
+	@echo '  linux_x86_64   64-bit x86 Linux'
+	@echo '  linux_aarch64  64-bit ARM Linux'
+	@echo '  linux_pi4      the same, tuned for a Raspberry Pi 4 Cortex-A72'
 	@echo '  macos_aarch64  Apple Silicon macOS'
 	@echo '  macos_x86_64   Intel macOS'
-	@echo '  freebsd_aarch64 64-bit ARM FreeBSD'
-	@echo '  freebsd_x86_64  64-bit x86 FreeBSD'
-	@echo '  win32          32-bit Windows'
-	@echo '  win64          64-bit Windows'
-	@echo '  portcheck     compile every source for x86-64 and aarch64'
-	@echo '  test          run the unit tests'
+	@echo '  freebsd_aarch64  64-bit ARM FreeBSD'
+	@echo '  freebsd_x86_64   64-bit x86 FreeBSD'
+	@echo '  win_i686       32-bit Windows'
+	@echo '  win_x86_64     64-bit Windows'
+	@echo '  portcheck      compile every source for x86-64 and aarch64'
+	@echo '  test           run the unit tests'
 	@echo
+	@echo 'DEBUG=1 builds any of them unoptimised and with symbols.'
 	@echo 'The tree is C11 throughout; the cross targets need their'
 	@echo 'toolchain installed and will name it if it is missing.'
 
 debug:
-	$(MAKE) BUILD_MODE=debug all
+	$(MAKE) DEBUG=1 all
 
 -include $(wildcard $(DEPS))
 
