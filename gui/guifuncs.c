@@ -47,13 +47,12 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <unistd.h>
 #endif
 
-#include "../cfg.h"
 #include "../initc.h"
-#include "../input.h"
+#include "cfg.h"
+#include "input.h"
 #ifndef lengthof
 #define lengthof(x) (sizeof(x) / sizeof *(x))
 #endif
-#include "../md.h"
 #include "../ui.h"
 #include "../zdir.h"
 #include "../zloader.h"
@@ -64,6 +63,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "guicheat.h"
 #include "guifuncs.h"
 #include "guiwindp.h"
+#include "md.h"
 
 #define BIT(X) (1 << (X))
 
@@ -390,8 +390,8 @@ void GUIRestoreVars()
     CheckValueBounds(&GUIEnableTransp, 0, 1, 0, UB);
 
 #ifdef __WIN32__
-    CheckValueBounds(&cvidmode, 0, 59, 2, UB);
-    CheckValueBounds(&PrevWinMode, 0, 59, 2, UB);
+    CheckValueBounds(&cvidmode, 0, 59, 3, UB);
+    CheckValueBounds(&PrevWinMode, 0, 59, 3, UB);
     CheckValueBounds(&PrevFSMode, 0, 59, 6, UB);
 #endif
 #ifdef __UNIXSDL__

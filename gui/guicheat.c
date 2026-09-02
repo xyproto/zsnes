@@ -21,12 +21,12 @@
 
 #include <string.h>
 
-#include "../cfg.h"
 #include "../cpu/memtable.h"
 #include "../init.h"
 #include "../ui.h"
 #include "c_gui.h"
 #include "c_guiwindp.h"
+#include "cfg.h"
 #include "gui.h"
 #include "guicheat.h"
 #include "guikeys.h"

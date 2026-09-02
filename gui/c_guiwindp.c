@@ -18,10 +18,8 @@
 
 #include "../c_init.h"
 #include "../c_intrf.h"
-#include "../cfg.h"
 #include "../cpu/regs.h"
 #include "../gblhdr.h"
-#include "../input.h"
 #include "../ui.h"
 #include "../ver.h"
 #include "../zmovie.h"
@@ -30,12 +28,14 @@
 #include "../ztimec.h"
 #include "c_gui.h"
 #include "c_guiwindp.h"
+#include "cfg.h"
 #include "gui.h"
 #include "guicombo.h"
 #include "guifuncs.h"
 #include "guikeys.h"
 #include "guitools.h"
 #include "guiwindp.h"
+#include "input.h"
 
 #if defined __UNIXSDL__ && defined __OPENGL__
 #include "../unix/gl_draw.h"
@@ -1692,10 +1692,14 @@ typedef struct {
 
 static char NetplayStatusLine[64] = "IDLE";
 static char NetplayLastEvent[64] = "";
+#ifdef __UNIXSDL__
 static int NetplayClientSocket = -1;
 static int NetplayServerSocket = -1;
+#endif
 static u1 NetplaySessionState = NETPLAY_IDLE;
+#ifdef __UNIXSDL__
 static uint16_t const NetplayDefaultPort = 7845;
+#endif
 static u1 NetplayHostRole = 0;
 static u4 NetplayLocalSeq = 0;
 static u4 NetplayRemoteSeq = 0;
@@ -1704,10 +1708,12 @@ static u4 NetplayRemoteJoy = 0x00008000;
 static u4 NetplaySessionToken = 0;
 char NetplayHostName[32] = "127.0.0.1";
 char* GUINetplayTextPtr[1] = { NetplayHostName };
+#ifdef __UNIXSDL__
 static u1 NetplayPendingRemoteValid = 0;
 static u1 NetplayHandshakePending = 0;
 static NetplayInputPacket NetplayPendingRemote;
 static u4 const NetplayMagic = 0x4E455450; // "NETP"
+#endif
 
 #define NETPLAY_INPUT_DELAY 3
 #define NETPLAY_FRAME_MS 17
@@ -2167,8 +2173,10 @@ void NetplayDisconnectSession(void)
     NetplayRemoteSeqValid = 0;
     NetplayRemoteJoy = 0x00008000;
     NetplaySessionToken = 0;
+#ifdef __UNIXSDL__
     NetplayPendingRemoteValid = 0;
     NetplayHandshakePending = 0;
+#endif
 }
 
 void NetplayHostSession(void)
@@ -2696,30 +2704,52 @@ void DisplayGUIOptns(void)
 
 void DisplayGUIAbout(void)
 {
-    // This will attach compile date onto the end of GUIGUIAboutText1
-    static char GUIGUIAboutTextA1[] = "ZSNES V" ZVER "             "; // Need room for date
-    VERSION_STR = GUIGUIAboutTextA1;
-    placedate();
+    static char const about_version[] = "ZSNES V" ZVER "  " __DATE__;
+    char compiled_for[64];
+    char compiled_with[96] = "";
+    char compiled_with_next[96] = "";
+    size_t library_count = 0;
+
+    while (VERSION_LIBRARIES[library_count])
+        library_count++;
+
+    snprintf(compiled_for, sizeof(compiled_for), "Compiled for %s (%s)%c",
+        VERSION_PLATFORM, VERSION_ARCH, library_count ? ',' : '.');
+
+    if (library_count) {
+        strcpy(compiled_with, "with ");
+        for (size_t i = 0; i < library_count; i++) {
+            if (i)
+                strcat(compiled_with, i + 1 == library_count ? " and " : ", ");
+            strcat(compiled_with, VERSION_LIBRARIES[i]);
+        }
+        strcat(compiled_with, ".");
+
+        if (strlen(compiled_with) > 34) {
+            char* split = compiled_with + 34;
+            while (split != compiled_with && *split != ' ')
+                split--;
+            strcpy(compiled_with_next, split + 1);
+            *split = '\0';
+        }
+    }
+
+    if (GUIwinposx[11] + GUIwinsizex[11] > 255)
+        GUIwinposx[11] = 255 - GUIwinsizex[11];
 
     GUIDrawWindowBox(11, "ABOUT");
     if (EEgg != 1) {
-        GUIDisplayText(11, 6, 16, GUIGUIAboutTextA1); // Text
-        GUIDisplayTextY(11, 6, 46, "CODED BY:");
-        GUIDisplayText(11, 6, 56, "    ZSKNIGHT      _DEMO_");
-        GUIDisplayText(11, 6, 66, "    PAGEFAULT     NACH");
-        GUIDisplayTextY(11, 6, 76, "ASSISTANT CODERS:");
-        GUIDisplayText(11, 6, 86, "    PHAROS        STATMAT");
-        GUIDisplayText(11, 6, 96, "    TEUF          HPSOLO");
-        GUIDisplayText(11, 6, 106, "    THEODDONE33   SILOH");
-        GUIDisplayText(11, 6, 116, "    IPHER         GRINVADER");
-        GUIDisplayText(11, 6, 126, "    JONAS QUINN   DEATHLIKE");
-        GUIDisplayText(11, 15, 151, "ZSNES is released under");
-        GUIDisplayText(11, 15, 161, "the GPL2 license. See the");
-        GUIDisplayText(11, 15, 171, "contents of the `COPYING`");
-        GUIDisplayText(11, 15, 181, "file for more information.");
-
-        DrawGUIButton(11, 90, 27, 175, 37, "WWW.ZSNES.COM", 65, 0, 0);
-        DrawGUIButton(11, 90, 38, 175, 48, "DOCUMENTATION", 66, 0, 0);
+        GUIDisplayText(11, 6, 16, about_version);
+        DrawGUIButton(11, 70, 28, 165, 38, "GITHUB PROJECT", 65, 0, 0);
+        GUIDisplayText(11, 6, 56, compiled_for);
+        if (library_count)
+            GUIDisplayText(11, 6, 66, compiled_with);
+        if (compiled_with_next[0])
+            GUIDisplayText(11, 6, 76, compiled_with_next);
+        GUIDisplayText(11, 15, 121, "ZSNES is released under");
+        GUIDisplayText(11, 15, 131, "the GPL2 license. See the");
+        GUIDisplayText(11, 15, 141, "contents of the `COPYING`");
+        GUIDisplayText(11, 15, 151, "file for more information.");
     } else { // Playground
         GUIDisplayText(11, 42, 36, "HIDDEN MESSAGE!");
         GUIDisplayText(11, 30, 96, "PRESS 'E' TO RETURN");

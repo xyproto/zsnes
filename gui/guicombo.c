@@ -21,9 +21,9 @@
 
 #include <string.h>
 
-#include "../cfg.h"
 #include "../cpu/execute.h"
 #include "c_guiwindp.h"
+#include "cfg.h"
 #include "gui.h"
 #include "guicombo.h"
 #include "guiwindp.h"

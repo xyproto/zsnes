@@ -28,7 +28,7 @@
 #include "../cpu/spc700.h"
 #include "../gblvars.h"
 #include "../initc.h"
-#include "../input.h"
+#include "input.h"
 #ifndef lengthof
 #define lengthof(x) (sizeof(x) / sizeof *(x))
 #endif

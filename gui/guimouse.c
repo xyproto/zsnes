@@ -24,13 +24,13 @@
 
 #include "../c_init.h"
 #include "../c_intrf.h"
-#include "../cfg.h"
 #include "../cpu/c_dsp.h"
 #include "../cpu/execute.h"
 #include "../cpu/regs.h"
 #include "../gblvars.h"
-#include "../input.h"
 #include "../link.h"
+#include "cfg.h"
+#include "input.h"
 #ifndef lengthof
 #define lengthof(x) (sizeof(x) / sizeof *(x))
 #endif
@@ -1485,8 +1485,7 @@ static void DisplayGUIOptnsClick(void)
 static void DisplayGUIAboutClick(s4 const eax, s4 const edx)
 {
     if (EEgg != 1) {
-        GUIPHoldbutton(eax, edx, 90, 22, 175, 32, 65);
-        GUIPHoldbutton(eax, edx, 90, 33, 175, 43, 66);
+        GUIPHoldbutton(eax, edx, 70, 23, 165, 33, 65);
     }
 }
 
@@ -1855,10 +1854,14 @@ static void GUIWinClicked(u4 const i, u4 const id)
         GUIwinorder[i] = 0;
         GUIwinactiv[id] = 0;
         GUIInputBox = 0;
-        --GUIwinptr;
-        init_save_paths();
-        SetMovieForcedLength();
-        SetCustomXY();
+        if (--GUIwinptr == 0)
+            GUIcmenupos = GUIpmenupos;
+        if (id == 5)
+            SetCustomXY();
+        else if (id == 15)
+            SetMovieForcedLength();
+        else if (id == 19)
+            init_save_paths();
     } else if (ry < 10) {
         GUIHold = 1;
         GUIHoldxm = (short)GUIwinposx[id];
@@ -2381,10 +2384,7 @@ static void ProcessMouseButtons(void)
         break;
 
     case 65:
-        ZsnesPage();
-        break;
-    case 66:
-        DocsPage();
+        ProjectPage();
         break;
     case 85:
         NetplayHostSession();

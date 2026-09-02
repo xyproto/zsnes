@@ -31,10 +31,8 @@
 
 #include "../c_init.h"
 #include "../c_intrf.h"
-#include "../cfg.h"
 #include "../cpu/execute.h"
 #include "../cpu/regs.h"
-#include "../input.h"
 #include "../link.h"
 #include "../types.h"
 #include "../video/procvid.h"
@@ -44,10 +42,12 @@
 #include "../zstate.h"
 #include "c_gui.h"
 #include "c_guiwindp.h"
+#include "cfg.h"
 #include "gui.h"
 #include "guicheat.h"
 #include "guikeys.h"
 #include "guiwindp.h"
+#include "input.h"
 
 #include "../video/ntsc.h"
 #include "guifuncs.h"
@@ -1637,8 +1637,8 @@ void GUIgetcurrentinput(void)
 
 done:
     if (GUIcmenupos == 0) {
-        if (al == 27 && GUIwinptr == 0) {
-            if (romloadskip == 0)
+        if (GUIwinptr == 0) {
+            if (al == 27 && romloadskip == 0)
                 GUIQuit = 2;
         } else {
             u4 const eax = GUIwinptr - 1;
