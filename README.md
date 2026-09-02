@@ -34,13 +34,61 @@ Tested on Arch Linux, Fedora and Debian 12 on x86_64, and on macOS on aarch64.
 
     make
 
+Plain `make` builds for the current operating system and CPU on Windows/MSYS2,
+Linux, macOS, FreeBSD, OpenBSD, and NetBSD. Architecture-specific targets are
+also available:
+
+```sh
+make win32
+make win64
+make linux_i686
+make linux_x86_64
+make linux_aarch64
+make macos_x86_64
+make macos_aarch64
+make freebsd_x86_64
+make freebsd_aarch64
+```
+
+Cross targets require a suitable target compiler and target libraries. Run
+`make help` for the complete target list.
+
+### Run a ROM
+
+Point ZSNES at a ROM after building it:
+
+```sh
+# Linux, macOS, or BSD
+./zsnes ~/roms/snes/example.sfc
+
+# Windows from MSYS2 or Git Bash
+./zsnes.exe ~/roms/snes/example.sfc
+```
+
+Replace `example.sfc` with the path to your own ROM; ROM files are not included.
+
 ### Debug build
 
-Make sure that `gdb` (or `lldb`) is installed, then:
+Build `zsnes` with debug symbols and debugger-friendly optimization:
 
-    make clean debug
+    make debug
 
-Type `r` in gdb to run zsnes with the example ROM (`~/roms/snes/example.sfc` must exist). Use ie. `bt full` to see the backtrace if ZSNES crashes.
+The build-mode stamp automatically replaces incompatible release objects. To
+run the same ROM under GDB:
+
+```sh
+gdb --args ./zsnes ~/roms/snes/example.sfc
+# Use ./zsnes.exe instead on Windows.
+```
+
+At the GDB prompt, enter `run`. If ZSNES crashes, enter `bt full` to print a
+detailed backtrace. With LLDB, use:
+
+```sh
+lldb -- ./zsnes ~/roms/snes/example.sfc
+```
+
+Then enter `run`, followed by `bt all` after a crash.
 
 ### Install
 
@@ -95,9 +143,7 @@ make ARCH=win WITH_PNG= CC_TARGET=i686-w64-mingw32-gcc CC=i686-w64-mingw32-gcc W
 
 ### Compiling for Windows with MSYS2
 
-Use MSYS2 MINGW32.
-
-Depending on your installation, you may not have a shortcut created for this. If so, locate ``mingw32.exe`` in your MSYS2 installation directory.
+Use an MSYS2 MinGW shell matching the desired target architecture.
 
 Run the following commands. Please create a PR if you have issues.
 
@@ -105,9 +151,11 @@ Tested on MSYS2 x86_64 version 20260322.
 
 ```sh
 pacman -Syu
-pacman -Sy git make pkg-config python3 mingw-w64-i686-gcc mingw-w64-i686-libpng mingw-w64-i686-zlib mingw-w64-i686-SDL3
-make ARCH=win
+pacman -Sy git make pkg-config python3 mingw-w64-x86_64-gcc mingw-w64-x86_64-libpng mingw-w64-x86_64-zlib
+make
 ```
+
+Use `make win32` or `make win64` when selecting an architecture explicitly.
 
 ### Pull requests
 
