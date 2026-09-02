@@ -4,7 +4,7 @@
 
 <img align="right" width="128" height="128" alt="logo" src="img/128x128x32.png">
 
-The last release of [ZSNES 1](http://zsnes.sourceforge.net/) was over 18 years ago (2007-10-31). It requires heavy patching and tweaking of compilation flags to build and run on a modern Linux distro. Most of it was written in 32-bit x86 Assembly, with MMX instructions.
+The last release of [ZSNES](http://zsnes.sourceforge.net/) was over 18 years ago (2007-10-31). It requires heavy patching and tweaking of compilation flags to build and run on a modern Linux distro. Most of it was written in 32-bit x86 Assembly, with MMX instructions.
 
 This is a fork that aims to solve this.
 
@@ -16,10 +16,8 @@ Goals and non-goals:
 * Supporting multiple CPUs and platforms is a goal (that has been reached).
 * Supporting DOS is not a goal.
 * Supporting Windows is not a goal, but a "nice to have".
-* Improving the net-play code is a long term goal.
+* Improving the netplay feature is a long term goal.
 * To be like an LTS release of ZSNES is a goal.
-
-All of the old Assembly code has been ported to C11.
 
 Pull requests that fixes inaccuracies with the emulation are welcome, as well as pull requests for regular bugs.
 
