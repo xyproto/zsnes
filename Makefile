@@ -1,21 +1,19 @@
-.PHONY: clean distclean fmt info test unused portcheck
+.PHONY: clean debug distclean fmt info test unused portcheck
 
-# Supported ARCH values:
-#   LINUX, FREEBSD, OPENBSD, NETBSD, DARWIN, WIN
-# Backward-compatible aliases:
-#   MACOS, OSX -> DARWIN
-#   WINDOWS -> WIN
+# ARCH: LINUX, FREEBSD, OPENBSD, NETBSD, DARWIN, WIN
 SUPPORTED_ARCHES := LINUX FREEBSD OPENBSD NETBSD DARWIN WIN
 UNIXSDL_ARCHES := LINUX FREEBSD OPENBSD NETBSD DARWIN
 LEGACY_UNSUPPORTED_ARCHES := DOS BEOS AMIGA
 HOST_OS := $(shell uname -s 2>/dev/null | tr '[:lower:]' '[:upper:]')
+HOST_OS := $(if $(filter MINGW% MSYS% CYGWIN%,$(HOST_OS)),WIN,$(HOST_OS))
+HOST_CPU := $(shell uname -m 2>/dev/null | tr '[:upper:]' '[:lower:]')
+HOST_CPU_FAMILY := $(if $(filter aarch64 arm64,$(HOST_CPU)),arm64,x86)
+HOST_BITS := $(if $(filter x86_64 amd64 aarch64 arm64,$(HOST_CPU)),64,32)
 
-ARCH ?= $(shell uname -s 2>/dev/null | tr '[:lower:]' '[:upper:]')
+ARCH ?= $(HOST_OS)
 override ARCH := $(shell printf '%s' "$(ARCH)" | tr '[:lower:]' '[:upper:]')
 
-# The uppercasing above is an override directive, so these have to be too:
-# an ordinary assignment to an overridden variable is silently ignored, which
-# is why none of these aliases used to resolve.
+# Keep aliases overridden after normalizing ARCH.
 ifneq ($(filter $(ARCH),MACOS OSX),)
 override ARCH := DARWIN
 endif
@@ -30,13 +28,16 @@ ifeq ($(filter $(ARCH),$(SUPPORTED_ARCHES)),)
 $(error Unsupported ARCH '$(ARCH)'. Supported values: $(SUPPORTED_ARCHES))
 endif
 
-# Use all available cores by default unless user already passed -j/--jobs.
+.DEFAULT_GOAL := all
+
 ifeq ($(filter -j% --jobs%,$(MAKEFLAGS)),)
   NPROC ?= $(shell getconf _NPROCESSORS_ONLN 2>/dev/null || nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 1)
   MAKEFLAGS += -j$(NPROC)
 endif
 
-CC ?= gcc
+ifeq ($(origin CC),default)
+CC := $(if $(filter WIN,$(HOST_OS)),gcc,cc)
+endif
 CC_TARGET  ?= $(CC)
 WINDRES ?= windres
 CC_TARGET_TRIPLE := $(shell $(CC_TARGET) -dumpmachine 2>/dev/null)
@@ -73,32 +74,39 @@ endif
 ifeq ($(WIN_PORT_AVAILABLE),)
 $(error ARCH=WIN requested, but required win/ source files are missing in this tree)
 endif
+# Windows ACLs make permission tests unreliable; test file creation instead.
+WIN_TEMP_DIR := $(shell \
+  for d in "$${TMPDIR}" "$${TEMP}" "$${TMP}" "$${TEMPDIR}" /tmp /var/tmp .; do \
+    [ -n "$$d" ] && [ -d "$$d" ] || continue; \
+    f="$$d/.zsnes-make-tmp-$$$$"; \
+    if (umask 077 && : > "$$f") 2>/dev/null; then \
+      rm -f "$$f"; \
+      printf '%s\n' "$$d"; \
+      break; \
+    fi; \
+  done; \
+  :)
+ifeq ($(strip $(WIN_TEMP_DIR)),)
+$(error No writable temporary directory found; set TMPDIR to a writable directory)
+endif
+export TMPDIR := $(WIN_TEMP_DIR)
+export TEMP := $(WIN_TEMP_DIR)
+export TMP := $(WIN_TEMP_DIR)
+export TEMPDIR := $(WIN_TEMP_DIR)
 endif
 
-# Target word size and instruction set, separate from the OS above. The
-# emulator was written for 32-bit x86, but nothing in the tree is any more:
-# every combination below builds the same C. See "make help".
-# macOS dropped its 32-bit userland in 10.15 and half the Macs are aarch64, so
-# a native Darwin build defaults to whatever the host is instead.
-HOST_CPU := $(shell uname -m 2>/dev/null)
-ifeq ($(ARCH)/$(HOST_OS),DARWIN/DARWIN)
-ifeq ($(HOST_CPU),arm64)
-CPU  ?= arm64
-endif
-BITS ?= 64
-endif
-# A native build on an ARM host should target that host, the way the Darwin
-# case above does. Without this a plain "make" on a Raspberry Pi asks for
-# 32-bit x86 and fails on the first compile.
-ifeq ($(ARCH)/$(HOST_OS),LINUX/LINUX)
-ifneq ($(filter aarch64 arm64,$(HOST_CPU)),)
-CPU  ?= arm64
-BITS ?= 64
-endif
-endif
-
+# MSYS2 reports the kernel CPU, so use the compiler target for Windows.
+ifeq ($(ARCH)/$(HOST_OS),WIN/WIN)
+ifneq ($(findstring i686,$(CC_TARGET_TRIPLE)),)
 BITS ?= 32
-CPU  ?= x86
+CPU ?= x86
+else ifneq ($(findstring x86_64,$(CC_TARGET_TRIPLE)),)
+BITS ?= 64
+CPU ?= x86
+endif
+endif
+BITS ?= $(HOST_BITS)
+CPU  ?= $(HOST_CPU_FAMILY)
 
 ifeq ($(filter $(BITS),32 64),)
 $(error Unsupported BITS '$(BITS)'. Supported values: 32 64)
@@ -119,96 +127,71 @@ endif
 ifeq ($(CPU),arm64)
 ARCH_CFLAGS += $(ARM64_CFLAGS)
 endif
+ifeq ($(ARCH),DARWIN)
+DARWIN_ARCH ?= $(if $(filter arm64,$(CPU)),arm64,x86_64)
+ARCH_CFLAGS += -arch $(DARWIN_ARCH)
+endif
 
 IS_FEDORA       := $(if $(wildcard /etc/fedora-release),yes)
 IS_DEBIAN_BASED := $(if $(wildcard /etc/debian_version),yes)
 
-WARN_FLAGS ?= -Wall -Wno-address-of-packed-member
-# -fno-pic exists for the x86 assembly, which addresses its data absolutely.
-# aarch64 has no assembly left, and absolute addressing there is actively
-# wrong for this tree: the hand-packed data blocks reproduce the assembly's
-# byte layout, so a variable can sit at any offset, and a non-PIC load encodes
-# the low bits of the address scaled by the access size - the linker cannot
-# represent an unaligned symbol at all. PIC addressing has no such limit.
-# Darwin is the same story: its aarch64 ABI has no non-PIC form at all, and
-# even x86-64 macOS wants PIE, so absolute addressing is off the table there.
+WARN_FLAGS ?= -Wall -Werror=unused-variable -Wno-address-of-packed-member
+# x86 uses absolute addressing; ARM and Darwin require PIC.
 PIC_FLAGS := $(if $(or $(filter arm64,$(CPU)),$(filter DARWIN,$(ARCH))),,-no-pie -fno-pic)
-# SUSv4, which is POSIX.1-2008 plus XSI: standardised and honoured by glibc,
-# musl and the BSDs alike, where _DEFAULT_SOURCE is glibc's own and does
-# nothing elsewhere. XSI rather than bare POSIX because setreuid and
-# setregid (unix/safelib.c) live there. usleep needed the wider glibc set and
-# was dropped from POSIX in 2008, so unix/lib.c uses nanosleep instead.
+# XSI exposes setreuid/setregid on Linux and the BSDs.
 FEATURE_FLAGS := -D_XOPEN_SOURCE=700
 ifeq ($(ARCH),DARWIN)
-# Darwin reads _POSIX_C_SOURCE as a restriction rather than an addition: with
-# it set, unistd.h hides getdtablesize, getpagesize and the rest of the BSD
-# side, so it needs its own macro instead.
-# GL_SILENCE_DEPRECATION is for the OpenGL 1.x entry points, which Apple
-# deprecated wholesale in 10.14 and still ships.
+# Preserve Darwin extensions and silence legacy OpenGL deprecations.
 FEATURE_FLAGS := -D_DARWIN_C_SOURCE -DGL_SILENCE_DEPRECATION
 endif
-# -fno-common: Apple's clang still defaults to -fcommon, so two tentative
-# definitions of one name merge silently instead of failing the link. gcc and
-# mainline clang have defaulted the other way for years.
-COMMON_FLAGS = $(ARCH_CFLAGS) -pthread $(PIC_FLAGS) -std=c11 $(FEATURE_FLAGS) -O3 -D_FORTIFY_SOURCE=2 -ffunction-sections -fdata-sections -fno-common -Wfatal-errors $(WARN_FLAGS)
+BUILD_MODE ?= release
+ifeq ($(BUILD_MODE),debug)
+OPT_FLAGS := -Og -g3 -fno-omit-frame-pointer
+else
+OPT_FLAGS := -O3
+endif
+COMMON_FLAGS = $(ARCH_CFLAGS) -pthread $(PIC_FLAGS) -std=c11 $(FEATURE_FLAGS) $(OPT_FLAGS) -D_FORTIFY_SOURCE=2 -ffunction-sections -fdata-sections -fno-common -Wfatal-errors $(WARN_FLAGS)
 
 CFLAGS += $(COMMON_FLAGS)
-# x87-only maths, to keep the 32-bit build's floating point exactly what the
-# assembly assumed. Not available on x86-64, where SSE is the ABI for returning
-# a float, nor on ARM.
+# Preserve the original x87 behavior on 32-bit x86.
 ifeq ($(CPU)/$(BITS),x86/32)
 ifneq ($(ARCH),DARWIN)
 CFLAGS += -mno-sse -mno-sse2
 endif
 endif
-# Apple's linker spells all three of these differently, and rejects the GNU
-# names outright; -dead_strip is its equivalent of --gc-sections.
+# Darwin uses -dead_strip instead of GNU section GC.
 ifeq ($(ARCH),DARWIN)
 LDFLAGS += -Wl,-dead_strip -lz -lm
 else
 LDFLAGS += -Wl,--as-needed $(if $(filter arm64,$(CPU)),,-no-pie) -Wl,--gc-sections -lz -lm
 endif
 
-#WITH_DEBUGGER := yes
 WITH_OPENGL   := yes
 WITH_PNG      := yes
 WITH_SDL      := $(if $(filter $(ARCH),$(UNIXSDL_ARCHES)),yes,)
 WITH_PIPEWIRE :=
 WITH_AO       :=
 
-# A cross build cannot expect the host's libraries: pkg-config finds nothing
-# for the target unless a sysroot is installed. Compile without them rather
-# than refusing - the point of those targets is to build the tree for another
-# CPU, and the binary is not runnable on this machine anyway. A native build
-# really is missing a package, so it still stops and says which.
-# -m32 on an x86-64 host is not "cross" here: multilib is the normal way to
-# get those libraries, and the advice below is right for it. Neither is aarch64
-# on an aarch64 host - an Apple Silicon Mac has its own SDL and OpenGL, and
-# demanding a sysroot there would drop the video backend on the one machine
-# that actually has one.
-HOST_CPU_NORM := $(if $(filter arm64 aarch64,$(HOST_CPU)),arm64,x86)
-CROSS_BUILD := $(if $(or $(filter WIN,$(ARCH)),$(filter-out $(HOST_OS),$(ARCH)),\
-                    $(filter-out $(HOST_CPU_NORM),$(CPU))),yes,)
+# Cross builds resolve libraries from the target sysroot.
+HOST_CPU_NORM := $(HOST_CPU_FAMILY)
+CPU_CROSS_BUILD := $(if $(filter-out $(HOST_CPU_NORM),$(CPU)),yes)
+BITS_CROSS_BUILD := $(if $(and $(filter 32,$(HOST_BITS)),$(filter 64,$(BITS))),yes)
+# Apple clang uses the native SDK for both -arch values.
+ifeq ($(ARCH)/$(HOST_OS),DARWIN/DARWIN)
+CPU_CROSS_BUILD :=
+BITS_CROSS_BUILD :=
+endif
+CROSS_BUILD := $(if $(or $(filter-out $(HOST_OS),$(ARCH)),\
+                    $(CPU_CROSS_BUILD),$(BITS_CROSS_BUILD)),yes,)
 
-# Every library probe has to ask the *target's* pkg-config: the wrapper targets
-# pass a prefixed one, and the host's would happily report its own x86 SDL for
-# an aarch64 build. Defined here because the probes below already use it.
+# Always query the target's pkg-config.
 PKG_CONFIG ?= pkg-config
 
-# A cross build has to look in the target's tree, not the host's. Set the search
-# path either way, covering both layouts, and drop PKG_CONFIG_PATH because it is
-# searched in addition and the outer make exports a host one.
-#
-# PKG_CONFIG_ENV, not `export`: GNU make only puts exported variables in the
-# environment of *recipe* commands, so every $(shell ...) probe below - which
-# runs while the makefile is still being read - would see the host path and
-# report the target's libraries missing. Ubuntu 24.04 also has no
-# aarch64-linux-gnu-pkg-config at all, so the fallback below is the usual case.
+# Use an explicit environment because probes run while parsing the Makefile.
 PKG_CONFIG_ENV :=
 ifeq ($(CROSS_BUILD),yes)
 CROSS_TRIPLE  := $(shell $(or $(CC_TARGET),$(CC)) -dumpmachine 2>/dev/null)
-# Ubuntu's cross gcc answers "/" here, the host rather than a sysroot;
-# stripping the trailing slash leaves the empty string /usr/<triplet> covers.
+# Some cross compilers need /usr/<triplet> as the sysroot fallback.
 CROSS_SYSROOT := $(patsubst %/,%,$(shell $(or $(CC_TARGET),$(CC)) -print-sysroot 2>/dev/null))
 ifeq ($(strip $(CROSS_SYSROOT)),)
 CROSS_SYSROOT := $(wildcard /usr/$(CROSS_TRIPLE))
@@ -223,14 +206,13 @@ endif
 endif
 endif
 
-# Add more pkg-config paths, with Fedora and Debian/Ubuntu in mind
 ifneq ($(filter $(ARCH),LINUX),)
 ifneq ($(filter -m32,$(ARCH_CFLAGS)),)
 export PKG_CONFIG_PATH := /usr/lib/pkgconfig:/usr/lib/i386-linux-gnu/pkgconfig:/usr/share/pkgconfig:$(PKG_CONFIG_PATH)
 endif
 endif
 
-# Check that pkg-config deps are also linkable with the current target flags (for example, -m32).
+# Verify that pkg-config libraries link for the selected target.
 define detect_pkg_for_target
 $(shell \
   if $(PKG_CONFIG_ENV) $(PKG_CONFIG) --exists $(1) >/dev/null 2>&1; then \
@@ -256,20 +238,22 @@ SDL3_AVAILABLE := $(call detect_pkg_for_target,sdl3)
 SDL_BACKEND_AVAILABLE := $(if $(or $(SDL3_AVAILABLE),$(strip $(SDL_CONFIG)),$(strip $(CFLAGS_SDL)),$(strip $(LDFLAGS_SDL))),yes)
 endif
 
-# The wrapper targets below re-invoke make with a different ARCH/BITS/CPU, so
-# checking the *current* configuration's libraries first is both useless and
-# wrong: it is what made "make linux64" demand a 32-bit SDL. They build nothing
-# themselves, so skip the checks and let the sub-make do them.
+# Wrapper targets defer dependency checks to their sub-make.
 WRAPPER_GOALS := clean distclean linux32 linux64 linux_arm64 linux_pi4 \
-                 macos win32 w32 win64 portcheck portasm help test fmt unused
-# An explicit WITH_SDL=/WITH_PIPEWIRE=/WITH_AO= on the command line is a
-# deliberate "link it without that backend", not a missing package.
+                 linux_i686 linux_x86_64 linux_aarch64 \
+                 macos macos_aarch64 macos_x86_64 \
+                 freebsd_aarch64 freebsd_x86_64 \
+                 win32 w32 win64 portcheck portasm help test fmt unused
+# Empty command-line backend variables are explicit opt-outs.
 BACKENDS_OPTOUT := $(if $(filter command line,$(origin WITH_SDL) \
                      $(origin WITH_PIPEWIRE) $(origin WITH_AO)),yes)
 SKIP_AUDIO_BACKEND_CHECK := $(if $(or \
     $(filter $(WRAPPER_GOALS),$(MAKECMDGOALS)),$(BACKENDS_OPTOUT)),yes)
 
 ifeq ($(SKIP_AUDIO_BACKEND_CHECK),)
+ifeq ($(ARCH),WIN)
+# Windows does not use SDL.
+else
 ifeq ($(CROSS_BUILD),yes)
 ifeq ($(SDL_BACKEND_AVAILABLE),)
 ifneq ($(filter $(ARCH),$(UNIXSDL_ARCHES)),)
@@ -286,10 +270,8 @@ endif
 endif
 endif
 endif
+endif
 
-# Same for OpenGL. mingw ships GL/gl.h, but a bare cross sysroot usually has
-# neither the header nor libGL, so probe instead of assuming. The SDL software
-# path is a complete video backend on its own.
 ifeq ($(CROSS_BUILD),yes)
 ifdef WITH_OPENGL
 GL_HEADER_AVAILABLE := $(shell $(or $(CC_TARGET),$(CC)) $(ARCH_CFLAGS) \
@@ -401,9 +383,6 @@ ifneq ($(HOST_OS),DARWIN)
   LDFLAGS += -ldl
 endif
 endif
-# Where a multilib distribution keeps its 32-bit x86 libraries. Nothing to do
-# with an aarch64 cross build, which would otherwise pick x86 objects out of it
-# and only find out at link time.
 ifeq ($(ARCH)/$(CPU)/$(BITS),LINUX/x86/32)
   CFLAGS += -L/usr/lib32
   LDFLAGS += -L/usr/lib32
@@ -430,16 +409,10 @@ ifeq ($(WITH_SDL),yes)
   LDFLAGS += $(LDFLAGS_SDL)
 endif
 
-# libpng must come from the target's pkg-config (the mingw32 one for
-# "make win32"); fall back to a PNG-less build when the target lacks it.
 ifdef WITH_PNG
   ifeq ($(origin PNG_CONFIG),undefined)
     ifneq ($(shell $(PKG_CONFIG_ENV) $(PKG_CONFIG) --exists libpng >/dev/null 2>&1 && echo yes),yes)
       WITH_PNG :=
-      $(info ===> libpng for the target not found via '$(PKG_CONFIG)'; building without PNG support)
-      ifeq ($(ARCH),WIN)
-        $(info ===> for PNG support, install the mingw32 libpng (Arch Linux: mingw-w64-libpng from the AUR))
-      endif
     endif
   endif
 endif
@@ -449,7 +422,7 @@ ifdef WITH_PNG
     CFLAGS_PNG  := $(shell $(PNG_CONFIG) --cflags)
   endif
   ifndef LDFLAGS_PNG
-    # the win32 link is static: let pkg-config order zlib after libpng
+    # Static Windows links need pkg-config's library order.
     ifeq ($(ARCH),WIN)
       LDFLAGS_PNG := $(shell $(PNG_CONFIG) --static --libs)
     else
@@ -498,7 +471,7 @@ ifeq ($(WITH_PIPEWIRE),yes)
   endif
 endif
 
-# Debian/Ubuntu multiarch include directory, again x86-only.
+# Debian/Ubuntu x86 multiarch headers.
 ifeq ($(ARCH)/$(CPU),LINUX/x86)
 ifeq ($(wildcard /usr/lib/i386-linux-gnu/.),)
   CFLAGS += -I/usr/include/x86_64-linux-gnu
@@ -671,14 +644,8 @@ else
 CFGDEFS += -DNO_DEBUGGER
 endif
 
-DEBUGFLAGS :=
-
-# WITH_DEBUG_HOOKS=1 compiles in the diagnostic hooks: the save-state
-# round-trip checker (ZST_ROUNDTRIP, ZST_LOADONLY), the per-frame PPU state log
-# (PPU_STATE_LOG, PPU_DUMP_FRAME) and the interrupt log (IRQ_LOG). Each is then
-# still off until its environment variable is set. They live in the frame and
-# interrupt paths, so a normal build leaves them out entirely.
-# The per-opcode logger is separate and heavier: EXTRA_CFLAGS=-DSCANLINE_PC_LOG.
+# Diagnostic hooks remain runtime-gated by their environment variables.
+# Use EXTRA_CFLAGS=-DSCANLINE_PC_LOG for opcode logging.
 ifdef WITH_DEBUG_HOOKS
 CFGDEFS += -DZSNES_DEBUG_HOOKS
 endif
@@ -758,10 +725,7 @@ SRCS += win/lib.c
 SRCS += win/safelib.c
 SRCS += win/winlink.c
 
-# xinput9_1_0 ships with Windows; -lxinput imports XINPUT1_3.dll, which comes
-# with the DirectX redistributable and is absent on a clean install, so the
-# binary failed to start there. Only XInputGetState and XInputSetState are
-# used, and both are in the 9_1_0 set.
+# xinput9_1_0 is available on a clean Windows installation.
 LDFLAGS += -ldxguid -ldinput -lxinput9_1_0 -lgdi32 -lole32 -lwinmm
 
 ifdef WITH_OPENGL
@@ -770,7 +734,7 @@ LDFLAGS += -lopengl32
 endif
 
 LDFLAGS += --static
-# clock_gettime lives in winpthread; put it after objects so --as-needed keeps it.
+# Keep winpthread after objects for --as-needed.
 LDFLAGS += -lwinpthread
 
 PSRS += win/confloc.psr
@@ -781,143 +745,204 @@ CFGDEFS += -D__ZSNES_PLATFORM_WINDOWS__
 endif
 
 CFLAGS += $(CFGDEFS)
-# Append hooks for layered flags.
 CFLAGS   += $(EXTRA_CFLAGS)
 LDFLAGS  += $(EXTRA_LDFLAGS)
 DEPFLAGS_C = -MMD -MP -MF $(@:.o=.d) -MT $@
 
-HDRS := $(PSRS:.psr=.h)
-OBJS := $(filter %.o, $(SRCS:.c=.o) $(SRCS:.rc=.o) $(PSRS:.psr=.o))
+BUILD_DIR := build
+HDR_NAMES := $(PSRS:.psr=.h)
+HDRS := $(addprefix $(BUILD_DIR)/,$(HDR_NAMES))
+OBJ_NAMES := $(filter %.o, $(SRCS:.c=.o) $(SRCS:.rc=.o) $(PSRS:.psr=.o))
+OBJS := $(addprefix $(BUILD_DIR)/,$(OBJ_NAMES))
 DEPS := $(OBJS:.o=.d)
 
-# Auto-clean on build-target switch.  Native (ELF) and win32 (PE/COFF) builds
-# share the same .o paths but emit incompatible object formats, so switching
-# between "make" and "make win32" used to need a manual "make clean".  Record
-# the active target in a stamp file and wipe stale objects when it changes.
-# This runs at parse time (before any parallel recipe), and is skipped for the
-# win32 wrapper goal (its recursive "make ARCH=WIN" does the real build) and for
-# maintenance goals like clean/info/fmt.
-BUILDSTAMP := .buildmode
-# Everything that changes how a .o is compiled. ARCH and the toolchain alone
-# were not enough: linux32 and linux64 share both, so switching between them
-# silently relinked objects of the wrong word size, and toggling any WITH_
-# flag left objects built without it. Changing a define does not make anything
-# out of date by itself, so the configuration has to be part of the stamp.
-BUILD_TAG := $(ARCH)|$(BITS)|$(CPU)|$(CC_TARGET_TRIPLE)|\
+# Clean shared object paths when the build configuration changes.
+BUILDSTAMP := $(BUILD_DIR)/MODE
+BUILD_TAG := $(BUILD_MODE)|$(ARCH)|$(BITS)|$(CPU)|$(CC_TARGET_TRIPLE)|\
 $(WITH_SDL)|$(WITH_OPENGL)|$(WITH_PNG)|$(WITH_AO)|$(WITH_PIPEWIRE)|\
 $(WITH_DEBUGGER)|$(WITH_DEBUG_HOOKS)|$(EXTRA_CFLAGS)|$(ARM64_CFLAGS)
-ifneq ($(filter all debug test,$(or $(MAKECMDGOALS),all)),)
+ifneq ($(filter all test,$(or $(MAKECMDGOALS),all)),)
 PREV_BUILD_TAG := $(shell cat $(BUILDSTAMP) 2>/dev/null)
 ifneq ($(PREV_BUILD_TAG),)
 ifneq ($(PREV_BUILD_TAG),$(BUILD_TAG))
 $(info ===> build target changed ($(PREV_BUILD_TAG) -> $(BUILD_TAG)), cleaning stale objects)
-_CLEAN_SWITCH := $(shell rm -fr $(HDRS) $(DEPS) $(OBJS) $(BINARY) zsnes zsnes.exe)
+_CLEAN_SWITCH := $(shell rm -fr $(BUILD_DIR) $(BINARY) zsnes zsnes.exe)
 endif
 endif
-_WRITE_STAMP := $(shell printf '%s' '$(BUILD_TAG)' > $(BUILDSTAMP))
+_WRITE_STAMP := $(shell mkdir -p $(BUILD_DIR) && printf '%s' '$(BUILD_TAG)' > $(BUILDSTAMP))
 endif
 
 .SUFFIXES:
 
-#Q ?= @
-
 all: $(BINARY)
 
-# Named targets, one per platform. Each is a thin wrapper that picks the OS,
-# the word size, the instruction set and the toolchain; the build itself is
-# the same C for all of them. The cross targets need their toolchain
-# installed, and say which one if it is missing.
 define need_tool
 @command -v $(1) >/dev/null 2>&1 || { \
   echo "error: $(1) not found; install $(2)" >&2; exit 1; }
 endef
 
+define need_host
+@test "$(HOST_OS)" = "$(1)" || { \
+  echo "error: $(2) must be built on $(3)" >&2; exit 1; }
+endef
+
 MINGW32_PREFIX ?= i686-w64-mingw32
 MINGW64_PREFIX ?= x86_64-w64-mingw32
-ARM64_PREFIX   ?= aarch64-linux-gnu
+LINUX_I686_PREFIX ?= i686-linux-gnu
+LINUX_X86_64_PREFIX ?= x86_64-linux-gnu
+LINUX_AARCH64_PREFIX ?= aarch64-linux-gnu
+FREEBSD_X86_64_PREFIX ?= x86_64-unknown-freebsd
+FREEBSD_AARCH64_PREFIX ?= aarch64-unknown-freebsd
 
-.PHONY: linux32 linux64 linux_arm64 linux_pi4 macos win32 w32 win64 help
+LINUX_I686_NATIVE := $(if $(and $(filter LINUX,$(HOST_OS)),$(filter i386 i486 i586 i686 x86_64 amd64,$(HOST_CPU))),yes)
+LINUX_X86_64_NATIVE := $(if $(and $(filter LINUX,$(HOST_OS)),$(filter x86_64 amd64,$(HOST_CPU))),yes)
+LINUX_AARCH64_NATIVE := $(if $(and $(filter LINUX,$(HOST_OS)),$(filter aarch64 arm64,$(HOST_CPU))),yes)
+FREEBSD_X86_64_NATIVE := $(if $(and $(filter FREEBSD,$(HOST_OS)),$(filter x86_64 amd64,$(HOST_CPU))),yes)
+FREEBSD_AARCH64_NATIVE := $(if $(and $(filter FREEBSD,$(HOST_OS)),$(filter aarch64 arm64,$(HOST_CPU))),yes)
+MINGW32_NATIVE := $(if $(and $(filter WIN,$(HOST_OS)),$(findstring i686,$(CC_TARGET_TRIPLE))),yes)
+MINGW64_NATIVE := $(if $(and $(filter WIN,$(HOST_OS)),$(findstring x86_64,$(CC_TARGET_TRIPLE))),yes)
 
-linux32:
-	$(MAKE) ARCH=LINUX BITS=32 CPU=x86
+LINUX_I686_CC ?= $(if $(LINUX_I686_NATIVE),$(CC),$(LINUX_I686_PREFIX)-gcc)
+LINUX_X86_64_CC ?= $(if $(LINUX_X86_64_NATIVE),$(CC),$(LINUX_X86_64_PREFIX)-gcc)
+LINUX_AARCH64_CC ?= $(if $(LINUX_AARCH64_NATIVE),$(CC),$(LINUX_AARCH64_PREFIX)-gcc)
+LINUX_I686_PKG_CONFIG ?= $(if $(LINUX_I686_NATIVE),pkg-config,$(LINUX_I686_PREFIX)-pkg-config)
+LINUX_X86_64_PKG_CONFIG ?= $(if $(LINUX_X86_64_NATIVE),pkg-config,$(LINUX_X86_64_PREFIX)-pkg-config)
+LINUX_AARCH64_PKG_CONFIG ?= $(if $(LINUX_AARCH64_NATIVE),pkg-config,$(LINUX_AARCH64_PREFIX)-pkg-config)
 
-linux64:
-	$(MAKE) ARCH=LINUX BITS=64 CPU=x86
+FREEBSD_X86_64_CC ?= $(if $(FREEBSD_X86_64_NATIVE),$(CC),$(FREEBSD_X86_64_PREFIX)-gcc)
+FREEBSD_AARCH64_CC ?= $(if $(FREEBSD_AARCH64_NATIVE),$(CC),$(FREEBSD_AARCH64_PREFIX)-gcc)
+FREEBSD_X86_64_PKG_CONFIG ?= $(if $(FREEBSD_X86_64_NATIVE),pkg-config,$(FREEBSD_X86_64_PREFIX)-pkg-config)
+FREEBSD_AARCH64_PKG_CONFIG ?= $(if $(FREEBSD_AARCH64_NATIVE),pkg-config,$(FREEBSD_AARCH64_PREFIX)-pkg-config)
 
-# Generic ARMv8-A, for any 64-bit ARM Linux.
-linux_arm64:
-	$(call need_tool,$(ARM64_PREFIX)-gcc,the aarch64 cross toolchain)
-	$(MAKE) ARCH=LINUX CPU=arm64 \
-	  CC=$(ARM64_PREFIX)-gcc CC_TARGET=$(ARM64_PREFIX)-gcc \
-	  PKG_CONFIG=$(ARM64_PREFIX)-pkg-config
+MINGW32_CC ?= $(if $(MINGW32_NATIVE),$(CC),$(MINGW32_PREFIX)-gcc)
+MINGW64_CC ?= $(if $(MINGW64_NATIVE),$(CC),$(MINGW64_PREFIX)-gcc)
+MINGW32_PKG_CONFIG ?= $(if $(MINGW32_NATIVE),pkg-config,$(MINGW32_PREFIX)-pkg-config)
+MINGW64_PKG_CONFIG ?= $(if $(MINGW64_NATIVE),pkg-config,$(MINGW64_PREFIX)-pkg-config)
+MINGW32_WINDRES ?= $(if $(MINGW32_NATIVE),windres,$(MINGW32_PREFIX)-windres)
+MINGW64_WINDRES ?= $(if $(MINGW64_NATIVE),windres,$(MINGW64_PREFIX)-windres)
 
-# A Raspberry Pi 4 is a Cortex-A72; same target as linux_arm64, tuned for it.
+.PHONY: linux32 linux64 linux_arm64 linux_pi4
+.PHONY: linux_i686 linux_x86_64 linux_aarch64
+.PHONY: macos macos_aarch64 macos_x86_64
+.PHONY: freebsd_aarch64 freebsd_x86_64
+.PHONY: win32 w32 win64 help
+
+linux_i686:
+	$(call need_tool,$(LINUX_I686_CC),an i686 Linux C compiler)
+	$(MAKE) ARCH=LINUX BITS=32 CPU=x86 \
+	  CC=$(LINUX_I686_CC) CC_TARGET=$(LINUX_I686_CC) \
+	  PKG_CONFIG=$(LINUX_I686_PKG_CONFIG) all
+
+linux_x86_64:
+	$(call need_tool,$(LINUX_X86_64_CC),an x86-64 Linux C compiler)
+	$(MAKE) ARCH=LINUX BITS=64 CPU=x86 \
+	  CC=$(LINUX_X86_64_CC) CC_TARGET=$(LINUX_X86_64_CC) \
+	  PKG_CONFIG=$(LINUX_X86_64_PKG_CONFIG) all
+
+linux_aarch64:
+	$(call need_tool,$(LINUX_AARCH64_CC),an aarch64 Linux C compiler)
+	$(MAKE) ARCH=LINUX BITS=64 CPU=arm64 \
+	  CC=$(LINUX_AARCH64_CC) CC_TARGET=$(LINUX_AARCH64_CC) \
+	  PKG_CONFIG=$(LINUX_AARCH64_PKG_CONFIG) all
+
+linux32: linux_i686
+linux64: linux_x86_64
+linux_arm64: linux_aarch64
+
 linux_pi4:
-	$(call need_tool,$(ARM64_PREFIX)-gcc,the aarch64 cross toolchain)
-	$(MAKE) ARCH=LINUX CPU=arm64 ARM64_CFLAGS='-mcpu=cortex-a72 -mtune=cortex-a72' \
-	  CC=$(ARM64_PREFIX)-gcc CC_TARGET=$(ARM64_PREFIX)-gcc \
-	  PKG_CONFIG=$(ARM64_PREFIX)-pkg-config
+	$(call need_tool,$(LINUX_AARCH64_CC),an aarch64 Linux C compiler)
+	$(MAKE) ARCH=LINUX BITS=64 CPU=arm64 ARM64_CFLAGS='-mcpu=cortex-a72 -mtune=cortex-a72' \
+	  CC=$(LINUX_AARCH64_CC) CC_TARGET=$(LINUX_AARCH64_CC) \
+	  PKG_CONFIG=$(LINUX_AARCH64_PKG_CONFIG) all
 
-# Native macOS, Apple Silicon or Intel. Plain "make" on a Mac does the same.
 macos:
-	$(MAKE) ARCH=DARWIN
+	$(call need_host,DARWIN,macOS,macOS)
+	$(MAKE) ARCH=DARWIN BITS=$(HOST_BITS) CPU=$(HOST_CPU_FAMILY) all
+
+macos_aarch64:
+	$(call need_host,DARWIN,macOS aarch64,macOS)
+	$(MAKE) ARCH=DARWIN BITS=64 CPU=arm64 DARWIN_ARCH=arm64 all
+
+macos_x86_64:
+	$(call need_host,DARWIN,macOS x86-64,macOS)
+	$(MAKE) ARCH=DARWIN BITS=64 CPU=x86 DARWIN_ARCH=x86_64 all
+
+freebsd_x86_64:
+	$(call need_tool,$(FREEBSD_X86_64_CC),an x86-64 FreeBSD C compiler)
+	$(MAKE) ARCH=FREEBSD BITS=64 CPU=x86 \
+	  CC=$(FREEBSD_X86_64_CC) CC_TARGET=$(FREEBSD_X86_64_CC) \
+	  PKG_CONFIG=$(FREEBSD_X86_64_PKG_CONFIG) all
+
+freebsd_aarch64:
+	$(call need_tool,$(FREEBSD_AARCH64_CC),an aarch64 FreeBSD C compiler)
+	$(MAKE) ARCH=FREEBSD BITS=64 CPU=arm64 \
+	  CC=$(FREEBSD_AARCH64_CC) CC_TARGET=$(FREEBSD_AARCH64_CC) \
+	  PKG_CONFIG=$(FREEBSD_AARCH64_PKG_CONFIG) all
 
 w32: win32
 win32:
-	$(call need_tool,$(MINGW32_PREFIX)-gcc,the mingw32 toolchain)
-	$(MAKE) ARCH=WIN BITS=32 CPU=x86 CC=$(MINGW32_PREFIX)-gcc CC_TARGET=$(MINGW32_PREFIX)-gcc \
-	  WINDRES=$(MINGW32_PREFIX)-windres PKG_CONFIG=$(MINGW32_PREFIX)-pkg-config
+	$(call need_tool,$(MINGW32_CC),the mingw32 toolchain)
+	$(call need_tool,$(MINGW32_WINDRES),the mingw32 resource compiler)
+	$(MAKE) ARCH=WIN BITS=32 CPU=x86 \
+	  CC=$(MINGW32_CC) CC_TARGET=$(MINGW32_CC) \
+	  WINDRES=$(MINGW32_WINDRES) PKG_CONFIG=$(MINGW32_PKG_CONFIG) all
 
 win64:
-	$(call need_tool,$(MINGW64_PREFIX)-gcc,the mingw-w64 toolchain)
-	$(MAKE) ARCH=WIN BITS=64 CPU=x86 CC=$(MINGW64_PREFIX)-gcc CC_TARGET=$(MINGW64_PREFIX)-gcc \
-	  WINDRES=$(MINGW64_PREFIX)-windres PKG_CONFIG=$(MINGW64_PREFIX)-pkg-config
+	$(call need_tool,$(MINGW64_CC),the mingw-w64 toolchain)
+	$(call need_tool,$(MINGW64_WINDRES),the mingw-w64 resource compiler)
+	$(MAKE) ARCH=WIN BITS=64 CPU=x86 \
+	  CC=$(MINGW64_CC) CC_TARGET=$(MINGW64_CC) \
+	  WINDRES=$(MINGW64_WINDRES) PKG_CONFIG=$(MINGW64_PKG_CONFIG) all
 
 help:
 	@echo 'Targets:'
-	@echo '  linux32       32-bit x86 Linux'
-	@echo '  linux64       64-bit x86 Linux'
-	@echo '  linux_arm64   64-bit ARM Linux'
+	@echo '  all            current operating system and CPU (the default)'
+	@echo '  debug          current operating system and CPU with debug symbols'
+	@echo '  linux_i686    32-bit x86 Linux'
+	@echo '  linux_x86_64  64-bit x86 Linux'
+	@echo '  linux_aarch64 64-bit ARM Linux'
+	@echo '  linux32       alias for linux_i686'
+	@echo '  linux64       alias for linux_x86_64'
+	@echo '  linux_arm64   alias for linux_aarch64'
 	@echo '  linux_pi4     64-bit ARM Linux, tuned for a Cortex-A72'
-	@echo '  macos         native macOS, Apple Silicon or Intel'
-	@echo '  win32         32-bit Windows, cross-built with mingw32'
-	@echo '  win64         64-bit Windows, cross-built with mingw-w64'
+	@echo '  macos          current macOS CPU'
+	@echo '  macos_aarch64  Apple Silicon macOS'
+	@echo '  macos_x86_64   Intel macOS'
+	@echo '  freebsd_aarch64 64-bit ARM FreeBSD'
+	@echo '  freebsd_x86_64  64-bit x86 FreeBSD'
+	@echo '  win32          32-bit Windows'
+	@echo '  win64          64-bit Windows'
 	@echo '  portcheck     compile every source for x86-64 and aarch64'
 	@echo '  test          run the unit tests'
 	@echo
 	@echo 'The tree is C11 throughout; the cross targets need their'
 	@echo 'toolchain installed and will name it if it is missing.'
 
-# macOS ships lldb and no gdb; its argument order differs.
-ifeq ($(ARCH),DARWIN)
-DEBUG_CMD = lldb -- ./$(BINARY) ~/roms/snes/example.sfc
-else
-DEBUG_CMD = gdb $(BINARY) --args zsnes ~/roms/snes/example.sfc
-endif
-
-debug: DEBUGFLAGS += -g
-debug: $(BINARY)
-	$(DEBUG_CMD)
+debug:
+	$(MAKE) BUILD_MODE=debug all
 
 -include $(wildcard $(DEPS))
 
 $(BINARY): $(OBJS)
 	@echo '===> LD $@'
-	$(Q)$(CC_TARGET) $(CFLAGS) $(OBJS) $(LDFLAGS) $(DEBUGFLAGS) -o $@
+	$(Q)$(CC_TARGET) $(CFLAGS) $(OBJS) $(LDFLAGS) -o $@
 
-$(filter %.o, $(SRCS:.c=.o)): $(HDRS)
+$(addprefix $(BUILD_DIR)/,$(filter %.o,$(SRCS:.c=.o))): $(HDRS)
 
-%.o: %.c
+$(BUILD_DIR)/%.o: %.c
 	@echo '===> CC $<'
-	$(Q)$(CC_TARGET) $(CFLAGS) $(DEBUGFLAGS) -c $(DEPFLAGS_C) -o $@ $<
+	$(Q)mkdir -p $(@D)
+	$(Q)$(CC_TARGET) $(CFLAGS) -iquote $(BUILD_DIR) -c $(DEPFLAGS_C) -o $@ $<
 
-%.o: %.rc
+$(BUILD_DIR)/%.o: %.rc
 	@echo '===> RES $<'
-	$(Q)$(WINDRES) -o $@ $<
+	$(Q)mkdir -p $(@D)
+	$(Q)$(WINDRES) $(if $(filter WIN,$(ARCH)),-Iwin) -o $@ $<
 
-%.h %.o: %.psr $(PSR)
+$(BUILD_DIR)/%.h $(BUILD_DIR)/%.o: %.psr $(PSR)
 	@echo '===> PSR $@'
-	$(Q)$(PYTHON) ./$(PSR) $(CFGDEFS) -gcc $(CC_TARGET) -compile -flags '$(CFLAGS)' -cheader $*.h -fname $(*F) $*.o $*.psr
+	$(Q)mkdir -p $(dir $(BUILD_DIR)/$*.o)
+	$(Q)$(PYTHON) ./$(PSR) $(CFGDEFS) -gcc $(CC_TARGET) -compile -flags '$(CFLAGS)' -cheader $(BUILD_DIR)/$*.h -fname $(*F) $(BUILD_DIR)/$*.o $*.psr
 
 %.h:
 	@true
@@ -927,8 +952,7 @@ $(filter %.o, $(SRCS:.c=.o)): $(HDRS)
 
 clean distclean:
 	@echo '===> CLEAN'
-	$(Q)rm -fr $(HDRS) $(DEPS) $(OBJS) $(BINARY) zsnes zsnes.exe $(BUILDSTAMP)
-	$(Q)find . -name "*.[do]" -not -path "./.git/*" -delete
+	$(Q)rm -fr $(BUILD_DIR) $(BINARY) zsnes zsnes.exe
 
 info:
 	@echo "ARCH          = $(ARCH)"
@@ -964,8 +988,7 @@ fmt:
 test: $(BINARY)
 	$(MAKE) -C test run
 
-# mkdir -p then install -m: BSD install (macOS, the BSDs) has no -D, and spells
-# its own -D as something else entirely, so `make install` used to fail there.
+# BSD install lacks GNU install -D.
 INSTALL_DIRS := bin share/applications share/metainfo share/man/man1 \
                 $(foreach s,16x16 32x32 48x48 64x64 128x128,share/icons/hicolor/$(s)/apps)
 
@@ -979,40 +1002,17 @@ install: zsnes
 	install -m644 linux/io.github.xyproto.zsnes.metainfo.xml '$(DESTDIR)$(PREFIX)/share/metainfo/io.github.xyproto.zsnes.metainfo.xml'
 	install -m644 man/zsnes.1 '$(DESTDIR)$(PREFIX)/share/man/man1/zsnes.1'
 
-# Portability gate. Compiles every C source for each target below, on its own,
-# which catches a layout assuming 4-byte pointers in a file the current build
-# does not happen to touch. Compiling is all it checks - linux64 is what proves
-# the tree links and runs.
-#
-# aarch64 is the one target with no x86 in it at all, and it is skipped when
-# the cross compiler is not installed. It uses the host's headers on purpose:
-# zlib.h and png.h are architecture independent, and there is no aarch64 build
-# of either here, so this asks "does it compile for ARM" without a sysroot.
+# Compile every source for each requested architecture without linking.
 PORTCHECK_CC     ?= gcc
-# The optional audio backends carry their own per-architecture headers, which
-# a portability compile has no reason to demand.
 PORTCHECK_DEFS   := $(filter-out -D__PIPEWIRE__ -D__LIBAO__,$(CFGDEFS))
-# This compiles against the host's headers, so it needs the host's feature
-# macros and the -I flags pkg-config found: a host that keeps SDL and libpng
-# outside /usr/include otherwise fails every file that includes one. The
-# aarch64 leg reaches /usr/include for SDL and GL - headers do not care about
-# the word size - but with -idirafter, so the cross toolchain's own libc
-# headers still win.
+# -idirafter keeps cross-toolchain libc headers ahead of host library headers.
 PORTCHECK_CFLAGS ?= -std=c11 $(FEATURE_FLAGS) \
                     -O1 -I. $(PORTCHECK_DEFS) $(CFLAGS_SDL) $(CFLAGS_PNG)
 PORTCHECK_ARM_CC ?= aarch64-linux-gnu-gcc
-# Which legs to compile. The aarch64 cross toolchain and the i386 multilib
-# set cannot be installed together on Ubuntu 24.04 - apt removes one to get
-# the other - so CI runs the two legs in different jobs.
 PORTCHECK_ARCHS  ?= x86-64 aarch64
 .PHONY: portcheck
 portcheck: $(HDRS)
-# One psr rule makes both the header and its object, so asking for the headers
-# also builds those objects with whatever CFLAGS this invocation carries. They
-# have to go, or a later build of another word size links these instead of its
-# own - and the headers with them, since the rule is keyed on the header: drop
-# the object alone and the next build sees the header up to date and never
-# remakes either. These are not in OBJS, so `make clean` does not cover them.
+# Remove PSR outputs built with portcheck flags.
 	@rc=0; \
 	for t in "x86-64:$(PORTCHECK_CC):-m64" "aarch64:$(PORTCHECK_ARM_CC):-idirafter/usr/include"; do \
 	  name=$${t%%:*}; rest=$${t#*:}; cc=$${rest%%:*}; extra=$${rest#*:}; \
@@ -1022,7 +1022,7 @@ portcheck: $(HDRS)
 	  echo "===> PORTCHECK: compiling every C source for $$name"; \
 	  ok=0; bad=0; \
 	  for f in $(filter %.c,$(SRCS)); do \
-	    if $$cc $(PORTCHECK_CFLAGS) $$extra -c -o /dev/null $$f 2>/tmp/zs_portcheck.$$$$; then \
+	    if $$cc $(PORTCHECK_CFLAGS) $$extra -iquote $(BUILD_DIR) -c -o /dev/null $$f 2>/tmp/zs_portcheck.$$$$; then \
 	      ok=$$((ok+1)); \
 	    else \
 	      bad=$$((bad+1)); echo "  FAIL $$f"; \
@@ -1032,11 +1032,8 @@ portcheck: $(HDRS)
 	  done; \
 	  echo "===> PORTCHECK: $$name $$ok built, $$bad failed"; echo; \
 	  [ $$bad = 0 ] || rc=1; \
-	done; rm -f $(PSRS:.psr=.o) $(HDRS); exit $$rc
+	done; rm -f $(addprefix $(BUILD_DIR)/,$(PSRS:.psr=.o)) $(HDRS); exit $$rc
 
-# Detect likely-unused C/ASM code via -Wunused* + linker --gc-sections reports.
-# The build already uses -ffunction-sections/-fdata-sections, so each dropped
-# section maps to a function or datum with no reachable references.
 UNUSED_LOG ?= unused-report.txt
 UNUSED_CFLAGS  := -Wunused -Wunused-function -Wunused-variable \
                   -Wunused-but-set-variable -Wunused-label -Wunused-value \
