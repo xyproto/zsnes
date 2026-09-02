@@ -24,9 +24,6 @@
       points in `video/2xsaiw.c` share one scale2x doubler, so the three menu
       entries produce identical output
 - [ ] Fill in `outsa1()` (`debugger.c`), a stub since the port
-- [ ] Carry the SA-1 dispatch dot hint through the register ABI so the H/V
-      free-running counter reads (`c_sa12302r`, `chips/sa1regs.c`) stop
-      treating `dh` as 0
 - [ ] Handle horizontal scroll and absolute mouse motion on macOS (`mmlib/macos.c`)
 - [ ] Fill in the GUI font glyphs 0x30-0x36 (`video/procvid.c`)
 - [ ] Make transparent messages work with the small font (`cfg.psr`)
