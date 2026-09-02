@@ -32,10 +32,10 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * straight in.
  */
 
-#include "../cfg.h"
 #include "../gblhdr.h"
 #include "../link.h"
 #include "../video/copyvwin.h"
+#include "cfg.h"
 #include <stdint.h>
 
 void hq2x_16b();

@@ -3,8 +3,8 @@
 
 #define ZVER "2.3.0"
 
-void placedate(void);
-
-extern char* VERSION_STR;
+extern char const VERSION_ARCH[];
+extern char const* const VERSION_LIBRARIES[];
+extern char const VERSION_PLATFORM[];
 
 #endif

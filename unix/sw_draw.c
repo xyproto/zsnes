@@ -20,12 +20,12 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
 #include "../video/sw_draw.h"
-#include "../cfg.h"
 #include "../gblhdr.h"
 #include "../intrf.h"
 #include "../link.h"
 #include "../ui.h"
 #include "../video/copyvwin.h"
+#include "cfg.h"
 #include <stdint.h>
 
 void CheckFrame();

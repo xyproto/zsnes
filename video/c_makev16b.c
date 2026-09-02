@@ -1,11 +1,11 @@
 #include <string.h>
 
 #include "../c_vcache.h"
-#include "../cfg.h"
 #include "../cpu/regs.h"
 #include "../cpu/regsw.h"
 #include "../endmem.h"
 #include "../initc.h"
+#include "cfg.h"
 #ifndef ROL
 #define ROL(x, n) ((x) << (n) | (x) >> (sizeof(x) * 8 - (n)))
 #endif

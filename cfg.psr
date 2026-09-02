@@ -176,9 +176,9 @@ ScreenShotFormat db 0
 @ properly use custom res support.
 @ WARNING: Custom resolutions are only valid if they are supported by your system!
 @ ZSNES will hang if an invalid fullscreen resolution is used.
-cvidmode db 2
+cvidmode db 3
 @ Last windowed & fullscreen modes (used when alt-tabbing)
-PrevWinMode db 2
+PrevWinMode db 3
 PrevFSMode db 6
 
 %elifdef __UNIXSDL__

@@ -4,13 +4,13 @@
 
 #include "../c_intrf.h"
 #include "../c_vcache.h"
-#include "../cfg.h"
 #include "../cpu/c_dspproc.h"
 #include "../cpu/dspproc.h"
 #include "../cpu/execute.h"
 #include "../gui/c_gui.h"
-#include "../input.h"
 #include "../intrf.h"
+#include "cfg.h"
+#include "input.h"
 #include "lib.h"
 
 // Variables previously in sdlintrf.asm

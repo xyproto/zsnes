@@ -510,7 +510,9 @@ int remove_dir(const char* path, const char* file)
 
 int mkdir_dir(const char* path, const char* dir)
 {
+#ifdef __UNIXSDL__
     mode_t mmode = 0755;
+#endif
     return (mkdir_p(strdupcat_internal(path, dir)));
 }
 

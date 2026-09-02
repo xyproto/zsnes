@@ -29,19 +29,19 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <time.h>
 
 #include "../c_intrf.h"
-#include "../cfg.h"
 #include "../cpu/execute.h"
 #include "../gui/c_gui.h"
 #include "../gui/gui.h"
 #include "../gui/guimouse.h"
 #include "../initc.h"
-#include "../input.h"
 #include "../intrf.h"
 #include "../link.h"
 #include "../ui.h"
 #include "../video/procvidc.h"
 #include "../zip/zpng.h"
 #include "audio.h"
+#include "cfg.h"
+#include "input.h"
 #include "safelib.h"
 #include "sdllink.h"
 
@@ -1983,12 +1983,7 @@ void LaunchURL(char* url)
     _exit(0); // All browser launches failed, oh well
 }
 
-void ZsnesPage(void)
+void ProjectPage(void)
 {
-    LaunchURL("http://www.zsnes.com/");
-}
-
-void DocsPage(void)
-{
-    LaunchURL("http://zsnes-docs.sourceforge.net/");
+    LaunchURL("https://github.com/xyproto/zsnes");
 }

@@ -41,13 +41,13 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <spa/pod/builder.h>
 #endif
 
-#include "../cfg.h"
 #include "../chips/msu1emu.h"
 #include "../cpu/dspproc.h"
 #include "../cpu/execute.h"
 #include "../gui/gui.h"
 #include "../link.h"
 #include "../zmovie.h"
+#include "cfg.h"
 
 #ifdef __LIBAO__
 static int terminated = 0;

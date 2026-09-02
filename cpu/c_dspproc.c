@@ -1,7 +1,7 @@
 #include <string.h>
 
 #include "../c_init.h"
-#include "../cfg.h"
+#include "cfg.h"
 #include "../endmem.h"
 #include "../gblvars.h"
 #include "../init.h"

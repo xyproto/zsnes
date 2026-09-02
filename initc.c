@@ -295,8 +295,7 @@ bool AllASCII(unsigned char* b, int32_t size)
     return (true);
 }
 
-// Code to detect if opcode sequence is a valid and popular one for an SNES ROM
-// Code by Cowering
+// Common SNES reset sequences, based on Cowering's detector.
 static bool valid_start_sequence(uint8_t opcode1, uint8_t opcode2, uint8_t opcode3)
 {
     switch (opcode1) {
@@ -348,7 +347,7 @@ static bool valid_start_sequence(uint8_t opcode1, uint8_t opcode2, uint8_t opcod
         }
         break;
     case 0xa9:
-        if ((opcode2 == 0x00 && (opcode3 = 0x48 || opcode3 == 0x4b)) || (opcode2 == 0x8f && opcode3 == 0x8d) || (opcode2 == 0x20 && opcode3 == 0x4b) || (opcode2 == 0x1f && opcode3 == 0x4b)) {
+        if ((opcode2 == 0x00 && (opcode3 == 0x48 || opcode3 == 0x4b)) || (opcode2 == 0x8f && opcode3 == 0x8d) || (opcode2 == 0x20 && opcode3 == 0x4b) || (opcode2 == 0x1f && opcode3 == 0x4b)) {
             return (true);
         }
         break;
@@ -886,6 +885,9 @@ void loadZipFile(char* filename)
     char* incrementer = 0;
 
     unzFile zipfile = unzopen_dir(ZRomPath, filename); // Open zip file
+    if (!zipfile) {
+        return;
+    }
     int cFile = unzGoToFirstFile(zipfile); // Set cFile to first compressed file
     unz_file_info cFileInfo; // Create variable to hold info for a compressed file
 
@@ -1014,8 +1016,7 @@ void load_file_fs(char* path)
 
     if (isextension(path, "zip")) {
         loadZipFile(path);
-    }
-    if (isextension(path, "gz")) {
+    } else if (isextension(path, "gz")) {
         loadGZipFile(path);
     } else {
         loadFile(path);

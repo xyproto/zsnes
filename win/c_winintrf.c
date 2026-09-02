@@ -4,15 +4,15 @@
 
 #include "../c_intrf.h"
 #include "../c_vcache.h"
-#include "../cfg.h"
 #include "../chips/msu1emu.h"
 #include "../cpu/dspproc.h"
 #include "../cpu/execute.h"
 #include "../gblvars.h"
 #include "../gui/c_gui.h"
-#include "../input.h"
 #include "../intrf.h"
 #include "../link.h"
+#include "cfg.h"
+#include "input.h"
 #ifndef lengthof
 #define lengthof(x) (sizeof(x) / sizeof *(x))
 #endif
@@ -477,7 +477,7 @@ u4 const NumVideoModes = lengthof(GUIVideoModeNames);
  *                 0                   1                   2                   3                   4                   5
  *                 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 */
 u1 GUIBIFIL[] = { _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X };
-u1 GUIDSIZE[] = { _, _, _, X, _, X, X, X, _, _, X, _, X, _, X, X, _, X, _, X, X, _, X, _, X, _, X, X, _, X, _, X, X, _, X, X, X, _, X, X, _, _, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X };
+u1 GUIDSIZE[] = { _, _, X, X, _, X, X, X, _, _, X, _, X, _, X, X, _, X, _, X, X, _, X, _, X, _, X, X, _, X, _, X, X, _, X, X, X, _, X, X, _, _, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X };
 u1 GUIDSMODE[] = { _, _, _, _, _, X, _, X, _, _, _, _, X, _, _, X, _, X, _, _, X, _, _, _, X, _, _, X, _, X, _, _, X, _, X, _, X, _, X, X, _, _, _, _, X, X, _, X, X, X, X, _, X, X, X, X, X, X, X, X };
 u1 GUIHQ2X[] = { _, _, _, X, _, X, X, X, _, _, X, _, X, _, X, X, _, X, _, X, X, _, X, _, X, _, X, X, _, X, _, X, X, _, X, X, X, _, X, X, _, _, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X };
 u1 GUIHQ3X[] = { _, _, _, _, _, _, _, _, _, _, X, _, X, _, X, X, _, X, _, X, X, _, X, _, X, _, X, X, _, X, _, X, X, _, X, X, X, _, X, X, _, _, X, _, _, _, X, X, X, X, X, X, X, X, X, X, X, X, X, X };

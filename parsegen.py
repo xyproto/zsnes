@@ -3,6 +3,7 @@
 import sys
 import os
 import re
+import shlex
 import subprocess
 import tempfile
 import zlib
@@ -1596,9 +1597,9 @@ Options:
         o_dir = os.path.dirname(obj_file) or "."
         o_fd, tmp_o = tempfile.mkstemp(prefix=".psro.", suffix=".o", dir=o_dir)
         os.close(o_fd)
-        command = f"{gcc} {cflags} -o {tmp_o} -c {c_file}"
-        print(f"parsegen: {command}")
-        if subprocess.call(command, shell=True) == 0:
+        command = shlex.split(gcc) + shlex.split(cflags) + ["-o", tmp_o, "-c", c_file]
+        print(f"parsegen: {shlex.join(command)}")
+        if subprocess.call(command) == 0:
             os.replace(tmp_o, obj_file)
         else:
             ret_val |= 1

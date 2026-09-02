@@ -24,7 +24,6 @@
 
 #include "../c_intrf.h"
 #include "../c_vcache.h"
-#include "../cfg.h"
 #include "../cpu/execute.h"
 #include "../cpu/regs.h"
 #include "../endmem.h"
@@ -32,7 +31,8 @@
 #include "../gui/gui.h"
 #include "../init.h"
 #include "../initc.h"
-#include "../input.h"
+#include "cfg.h"
+#include "input.h"
 #ifndef lengthof
 #define lengthof(x) (sizeof(x) / sizeof *(x))
 #endif

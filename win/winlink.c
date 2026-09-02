@@ -39,10 +39,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #include "../c_init.h"
 #include "../c_intrf.h"
-#include "../cfg.h"
 #include "../gui/c_gui.h"
 #include "../gui/guimouse.h"
-#include "../input.h"
 #include "../link.h"
 #include "../types.h"
 #include "../ui.h"
@@ -50,6 +48,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "../video/sw_draw.h"
 #include "../zmovie.h"
 #include "c_winintrf.h"
+#include "cfg.h"
+#include "input.h"
 #include "resource.h"
 #include "winlink.h"
 
@@ -147,6 +147,20 @@ static char dsound_dll[] = { "dsound.dll\0" };
 static char dsound_imp[] = { "DirectSoundCreate8\0" };
 
 static HMODULE hM_ddraw = NULL, hM_dsound = NULL, hM_dinput8 = NULL;
+
+static void EnableDpiAwareness(void)
+{
+    HMODULE user32 = GetModuleHandle("user32.dll");
+    if (user32) {
+        typedef BOOL(WINAPI * lpSetProcessDPIAware)(void);
+        lpSetProcessDPIAware set_process_dpi_aware;
+
+        set_process_dpi_aware = (lpSetProcessDPIAware)GetProcAddress(user32, "SetProcessDPIAware");
+        if (set_process_dpi_aware) {
+            set_process_dpi_aware();
+        }
+    }
+}
 
 typedef HRESULT(WINAPI* lpDirectInput8Create)(HINSTANCE hinst, DWORD dwVersion, REFIID riidltf,
     LPVOID* ppvOut, LPUNKNOWN punkOuter);
@@ -311,6 +325,25 @@ void CheckAlwaysOnTop()
         SetWindowPos(hMainWindow, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
     } else {
         SetWindowPos(hMainWindow, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+    }
+}
+
+static void ActivateMainWindow(void)
+{
+    HWND const foreground = GetForegroundWindow();
+    DWORD const current_thread = GetCurrentThreadId();
+    DWORD const foreground_thread = foreground ? GetWindowThreadProcessId(foreground, NULL) : 0;
+    BOOL const attached = foreground_thread != 0 && foreground_thread != current_thread
+        && AttachThreadInput(current_thread, foreground_thread, TRUE);
+
+    ShowWindow(hMainWindow, SW_SHOW);
+    BringWindowToTop(hMainWindow);
+    SetForegroundWindow(hMainWindow);
+    SetActiveWindow(hMainWindow);
+    SetFocus(hMainWindow);
+
+    if (attached) {
+        AttachThreadInput(current_thread, foreground_thread, FALSE);
     }
 }
 
@@ -718,6 +751,8 @@ LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 static int RegisterWinClass(HINSTANCE const hInst)
 {
+    EnableDpiAwareness();
+
     if (AllowMultipleInst == 0) {
         HWND hFindWindow;
         hFindWindow = FindWindow("ZSNES", NULL);
@@ -1624,6 +1659,7 @@ void initwinvideo(void)
         clearwin();
         Clear2xSaIBuffer();
         clear_display();
+        ActivateMainWindow();
     } else if (newmode == 1 && Moving != 1) {
         ReleaseDirectDraw();
         InitDirectDraw();
@@ -1871,19 +1907,11 @@ void drawscreenwin(void)
                     //  for ZSNES' current transparency code)
 
     UpdateVFrame();
-    {
-        static int zc;
-        if (++zc % 64 == 1)
-            fprintf(stderr, "ZSDBG dsw#%d curblank=%02x res=%d prevres=%d surf=%dx%d\n", zc, (unsigned)curblank, (int)resolutn, (int)PrevRes, (int)SurfaceX, (int)SurfaceY);
-    }
     if (curblank != 0) {
         return;
     }
 
     if (!(pitch = LockSurface())) {
-        static int zl;
-        if (++zl % 64 == 1)
-            fprintf(stderr, "ZSDBG lock fail#%d\n", zl);
         return;
     }
 
@@ -2184,7 +2212,7 @@ void drawscreenwin(void)
 
 void WinUpdateDevices()
 {
-    int i, j;
+    int i;
     unsigned char* keys;
     unsigned char keys2[256];
 
@@ -2527,16 +2555,9 @@ void FrameSemaphore(void)
     }
 }
 
-void ZsnesPage(void)
+void ProjectPage(void)
 {
-    ShellExecute(NULL, NULL, "http://www.zsnes.com/", NULL, NULL, 0);
-    MouseX = 0;
-    MouseY = 0;
-}
-
-void DocsPage(void)
-{
-    ShellExecute(NULL, NULL, "http://zsnes-docs.sourceforge.net/", NULL, NULL, 0);
+    ShellExecute(NULL, "open", "https://github.com/xyproto/zsnes", NULL, NULL, SW_SHOWNORMAL);
     MouseX = 0;
     MouseY = 0;
 }
