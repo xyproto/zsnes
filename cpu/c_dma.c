@@ -329,12 +329,12 @@ static void hdmatype2indirect(HDMAInfo const* const edx, DMAInfo* const esi)
 {
     hdma_charge_channel(edx->count);
     u1 tempdecr = edx->count;
-    eop* const* reg = edx->dst_reg;
+    u4 n = 0;
     do {
         u2 const cx = esi->count++; // increment/decrement/keep pointer location
         u1 const al = memr8(esi->hdma_bank, cx);
-        write_reg(*reg, cx, al);
-    } while (++reg, --tempdecr != 0);
+        write_reg(edx->dst_reg[n], cx, al);
+    } while (++n, --tempdecr != 0);
 
     --esi->hdma_line_counter;
 }
@@ -361,11 +361,11 @@ static void indirectaddr(u4 const ah, HDMAInfo* const edx, DMAInfo* const esi)
         hdma_charge_channel(edx->count);
         u1 tempdecr = edx->count;
         u2 cx = esi->count; // increment/decrement/keep pointer location
-        eop* const* reg = edx->dst_reg;
+        u4 n = 0;
         do {
             u1 const al = memr8(esi->hdma_bank, cx);
-            write_reg(*reg, cx, al);
-        } while (++cx, ++reg, --tempdecr != 0);
+            write_reg(edx->dst_reg[n], cx, al);
+        } while (++cx, ++n, --tempdecr != 0);
     } else if (esi->hdma_line_counter & 0x80) {
     hdmatype2indirect:
         hdmatype2indirect(edx, esi);
@@ -380,12 +380,12 @@ static void hdmatype2(HDMAInfo* const edx, DMAInfo* const esi)
 {
     hdma_charge_channel(edx->count);
     u1 tempdecr = edx->count;
-    eop* const* reg = edx->dst_reg;
+    u4 n = 0;
     do {
         u2 const cx = edx->addr_inc++; // increment/decrement/keep pointer location
         u1 const al = memr8(esi->bank, cx);
-        write_reg(*reg, cx, al);
-    } while (++reg, --tempdecr != 0);
+        write_reg(edx->dst_reg[n], cx, al);
+    } while (++n, --tempdecr != 0);
 
     esi->hdma_table = edx->addr_inc;
     --esi->hdma_line_counter;
@@ -418,11 +418,11 @@ static void dohdma(u4 const ah, HDMAInfo* const edx, DMAInfo* const esi)
         hdma_charge_channel(edx->count);
         u1 tempdecr = edx->count;
         u2 cx = edx->addr_inc;
-        eop* const* reg = edx->dst_reg;
+        u4 n = 0;
         do {
             u1 const al = memr8(esi->bank, cx);
-            write_reg(*reg, cx, al);
-        } while (++cx, ++reg, --tempdecr != 0);
+            write_reg(edx->dst_reg[n], cx, al);
+        } while (++cx, ++n, --tempdecr != 0);
     } else if (esi->hdma_line_counter & 0x80) {
     hdmatype2:
         hdmatype2(edx, esi);

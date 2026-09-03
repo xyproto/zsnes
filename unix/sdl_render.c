@@ -34,6 +34,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #include "../gblhdr.h"
 #include "../link.h"
+#include "../video/2xsaiw.h"
 #include "../video/copyvwin.h"
 #include "cfg.h"
 #include <stdint.h>
@@ -44,6 +45,7 @@ void NTSCFilterInit(void);
 
 extern SDL_Window* sdl_window;
 extern uint8_t* vidbuffer;
+extern uint16_t resolutn;
 extern uint8_t curblank;
 extern uint8_t GUIRESIZE[];
 extern Uint8 GUIOn2;
@@ -132,6 +134,7 @@ int sr_start(int width, int height, int req_depth, int FullScreen)
     memset(sr_pixels, 0, SR_MAXW * SR_MAXH * sizeof(unsigned short));
 
     SDL_SetWindowMouseGrab(sdl_window, FullScreen ? true : false);
+    SDL_HideCursor(); // the emulator draws its own pointer
     SDL_SetRenderDrawColor(sr_renderer, 0, 0, 0, 255);
     SDL_RenderClear(sr_renderer);
     SDL_RenderPresent(sr_renderer);
@@ -250,7 +253,19 @@ void sr_drawwin(void)
         if (hqFilter) {
             hq2x_16b();
         } else {
-            copy640x480x16bwin();
+            /* En2xSaI: 1 = 2xSaI, 2 = Super Eagle, 3 = Super 2xSaI (cfg.psr).
+               The filters take one line at a time and read a row above and two
+               below, which the vidbuffer border already provides. */
+            LineFilter* const f = En2xSaI == 2 ? _2xSaISuperEagleLine
+                : En2xSaI == 3                 ? _2xSaISuper2xSaILine
+                                               : _2xSaILine;
+            unsigned short* const base
+                = (unsigned short*)vidbuffer + SR_SRC_SKIP + SR_SRC_STRIDE;
+
+            for (unsigned y = 0; y < resolutn; y++) {
+                f(base + (size_t)y * SR_SRC_STRIDE, NULL, SR_SRC_STRIDE * 2, 256,
+                    (unsigned char*)sr_pixels + (size_t)y * 2 * pitch, pitch);
+            }
         }
     } else {
         for (line = 0; line < 224; line++) {

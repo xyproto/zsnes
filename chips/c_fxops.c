@@ -5,6 +5,7 @@
 
 #include "../endmem.h"
 #include "../types.h"
+#include "../unaligned.h"
 
 extern u4 SfxCarry, SfxSignZero, SfxOverflow;
 extern u4 SfxB, withr15sk;

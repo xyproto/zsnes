@@ -4,6 +4,8 @@
  * source/destination register pointers, cl the opcode and ch the ALT mode;
  * dispatch is table[(ALT << 8) | opcode] over adjacent tables (endmem.c).
  */
+
+#include "../unaligned.h"
 #ifndef FX_OPS_H
 #define FX_OPS_H
 
@@ -2011,9 +2013,9 @@ enum { FX_PLOT_2BPP,
     FX_PLOT_4BPP,
     FX_PLOT_8BPP };
 
-static inline u4* fx_plane(zreg const addr, u4 const n)
+static inline void* fx_plane(zreg const addr, u4 const n)
 {
-    return (u4*)(uintptr_t)(addr + n * 16u);
+    return (void*)(uintptr_t)(addr + n * 16u);
 }
 
 /* Write one pixel. The dithered form just uses the other pair of colour
@@ -2029,11 +2031,11 @@ static inline void fx_drawpix(zreg const addr, u4 mask, int const depth, int con
     u4 const col[4] = { b01, b23, b45, b67 };
 
     for (u4 i = 0; i < planes; i++) {
-        *fx_plane(addr, i) &= mask;
+        st32u(fx_plane(addr, i), ld32u(fx_plane(addr, i)) & mask);
     }
     mask ^= 0xFFFFFFFFu;
     for (u4 i = 0; i < planes; i++) {
-        *fx_plane(addr, i) |= col[i] & mask;
+        st32u(fx_plane(addr, i), ld32u(fx_plane(addr, i)) | (col[i] & mask));
     }
 }
 

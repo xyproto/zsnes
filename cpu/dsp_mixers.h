@@ -12,6 +12,8 @@
  * static inline so a partial includer draws no unused-function warnings;
  * taking their address for paramhack[] still works.
  */
+
+#include "../unaligned.h"
 #ifndef DSP_MIXERS_H
 #define DSP_MIXERS_H
 
@@ -29,7 +31,7 @@ static inline void mix_ProcessPMod(u4 ebp, u4 esi, s2* edi, x86reg edx, x86reg e
 {
     x86reg eax;
     ecx.b[0] = ((u1*)&Voice0EnvInc[ebp])[2]; /* mov cl,[Voice0EnvInc+ebp*4+2] */
-    eax.w = *(u2*)((u1*)edi + edx.e * 2);      /* mov ax,[edi+edx*2] */
+    eax.w = ld16u((u1*)edi + edx.e * 2);      /* mov ax,[edi+edx*2] */
     {                                          /* imul cx -> dx:ax = ax * cx */
         s4 p = (s2)eax.w * (s2)ecx.w;
         eax.w = (u2)p;
@@ -47,7 +49,7 @@ static inline u2 mix_vconv(u4 voice, u1 volbyte)
     x86reg idx;
     idx.e = volbyte;                          /* movzx eax,volbyte */
     idx.b[1] = ((u1*)&Voice0EnvInc[voice])[2]; /* mov ah,[Voice0EnvInc+voice*4+2] */
-    return *(u2*)((u1*)VolumeConvTable + idx.e * 2);
+    return ld16u((u1*)VolumeConvTable + idx.e * 2);
 }
 
 /* Volume scale of one sample: (sample * volconv) >> 7, truncated to 16 bits.
@@ -104,7 +106,7 @@ static inline u4 mix_CalculatePMod(u4 voice, u4 esi)
 #define MIX_FETCH(voice, esi, edi, volbyte, sample, ecx)                     \
     u4 esi = *pesi;                                                          \
     x86reg edx;                                                             \
-    edx.e = *(u4*)((u1*)BRRPlace0 + (voice) * 8 + 3);                        \
+    edx.e = ld32u((u1*)BRRPlace0 + (voice) * 8 + 3);                        \
     x86reg ecx;                                                             \
     ecx.e = 0;                                                              \
     ecx.w = mix_vconv((voice), (volbyte));                                   \
@@ -113,7 +115,7 @@ static inline u4 mix_CalculatePMod(u4 voice, u4 esi)
 /* Non-pitch-mod tail: advance esi and step BRRPlace0 by the frequency. */
 #define MIX_TAIL(voice, esi)                                                 \
     esi += 2;                                                               \
-    *(u4*)((u1*)BRRPlace0 + (voice) * 8) += *pebx;                           \
+    st32u((u1*)BRRPlace0 + (voice) * 8, ld32u((u1*)BRRPlace0 + (voice) * 8) + (*pebx));                           \
     *pesi = esi
 
 /* Frequency-reload tail: variants that clobbered ebx to hold the sample reload
@@ -122,7 +124,7 @@ static inline u4 mix_CalculatePMod(u4 voice, u4 esi)
 #define MIX_TAIL_FREQ(voice, esi)                                            \
     esi += 2;                                                               \
     *pebx = Voice0Freq[voice];                                              \
-    *(u4*)((u1*)BRRPlace0 + (voice) * 8) += *pebx;                           \
+    st32u((u1*)BRRPlace0 + (voice) * 8, ld32u((u1*)BRRPlace0 + (voice) * 8) + (*pebx));                           \
     *pesi = esi
 
 /* Pitch-mod tail: advance esi, recompute the increment, step BRRPlace0. */
@@ -130,7 +132,7 @@ static inline u4 mix_CalculatePMod(u4 voice, u4 esi)
     esi += 2;                                                               \
     {                                                                       \
         u4 nb = mix_CalculatePMod((voice), esi);                            \
-        *(u4*)((u1*)BRRPlace0 + (voice) * 8) += nb;                         \
+        st32u((u1*)BRRPlace0 + (voice) * 8, ld32u((u1*)BRRPlace0 + (voice) * 8) + (nb));                         \
         *pebx = nb;                                                         \
     }                                                                       \
     *pesi = esi
@@ -211,7 +213,7 @@ static inline void w_NonEchoMonoInterpolated(u4 voice, u4* const pesi, u4* const
 {
     u4 esi = *pesi;
     x86reg edx;
-    edx.e = *(u4*)((u1*)BRRPlace0 + voice * 8 + 3);
+    edx.e = ld32u((u1*)BRRPlace0 + voice * 8 + 3);
     s2 s = mix_sample_interp(voice, esi, edi, edx);
     *(s4*)((u1*)DSPBuffer + esi * 2) += mix_scale(s, mix_vconv(voice, Voice0Volume[voice]));
     MIX_TAIL_FREQ(voice, esi);
@@ -221,7 +223,7 @@ static inline void w_NonEchoStereoInterpolated(u4 voice, u4* const pesi, u4* con
 {
     u4 esi = *pesi;
     x86reg edx;
-    edx.e = *(u4*)((u1*)BRRPlace0 + voice * 8 + 3);
+    edx.e = ld32u((u1*)BRRPlace0 + voice * 8 + 3);
     s2 s = mix_sample_interp(voice, esi, edi, edx);
     *(s4*)((u1*)DSPBuffer + esi * 4) += mix_scale(s, mix_vconv(voice, Voice0VolumeR[voice]));
     *(s4*)((u1*)DSPBuffer + esi * 4 + 4) += mix_scale(s, mix_vconv(voice, Voice0VolumeL[voice]));
@@ -232,7 +234,7 @@ static inline void w_EchoMonoInterpolated(u4 voice, u4* const pesi, u4* const pe
 {
     u4 esi = *pesi;
     x86reg edx;
-    edx.e = *(u4*)((u1*)BRRPlace0 + voice * 8 + 3);
+    edx.e = ld32u((u1*)BRRPlace0 + voice * 8 + 3);
     s2 s = mix_sample_interp(voice, esi, edi, edx);
     *(s4*)((u1*)DSPBuffer + esi * 2) += mix_scale(s, mix_vconv(voice, Voice0Volume[voice]));
     *(s4*)((u1*)EchoBuffer + esi * 2) += mix_scale(s, mix_vconv(voice, Voice0Volumee[voice]));
@@ -243,7 +245,7 @@ static inline void w_EchoStereoInterpolated(u4 voice, u4* const pesi, u4* const 
 {
     u4 esi = *pesi;
     x86reg edx;
-    edx.e = *(u4*)((u1*)BRRPlace0 + voice * 8 + 3);
+    edx.e = ld32u((u1*)BRRPlace0 + voice * 8 + 3);
     s2 s = mix_sample_interp(voice, esi, edi, edx);
     *(s4*)((u1*)DSPBuffer + esi * 4) += mix_scale(s, mix_vconv(voice, Voice0VolumeR[voice]));
     *(s4*)((u1*)EchoBuffer + esi * 4) += mix_scale(s, mix_vconv(voice, Voice0VolumeRe[voice]));

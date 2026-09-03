@@ -90,7 +90,7 @@ void OP(COp82)(zreg* const r) /* BRL rl */
     r[R_EBX] = r[R_ESI] - r[R_EAX];
     SET16(r[R_EBX], (u2)(GET16(r[R_EBX]) + 2));
     r[R_EAX] = 0;
-    SET16(r[R_EBX], (u2)(GET16(r[R_EBX]) + *(u2 const*)r[R_ESI]));
+    SET16(r[R_EBX], (u2)(GET16(r[R_EBX]) + rd16(r[R_ESI])));
     AX(r, GET16(r[R_EBX]));
     r[R_EBX] = 0;
     xpc = GET16(r[R_EAX]);

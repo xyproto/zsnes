@@ -175,7 +175,7 @@ void OP(COpCB)(zreg* const r) /* WAI i - does not clear doirqnext */
 void OP(COp4C)(zreg* const r) /* JMP a - no $4300 routing */
 {
     r[R_EAX] = 0;
-    AX(r, *(u2 const*)r[R_ESI]);
+    AX(r, rd16(r[R_ESI]));
     SET8(r[R_EBX], GET8(xpb));
     xpc = GET16(r[R_EAX]);
     jump_to(r, 0);
@@ -189,7 +189,7 @@ void OP(COp20)(zreg* const r) /* JSR a - no $4300 routing */
     push_pc(r);
     SET16(xs, GET16(r[R_ECX]));
     r[R_EAX] = 0;
-    AX(r, *(u2 const*)r[R_ESI]);
+    AX(r, rd16(r[R_ESI]));
     r[R_EBX] &= 0xFFFF00FFu;
     xpc = GET16(r[R_EAX]);
     SET8(r[R_EBX], GET8(xpb));
@@ -205,7 +205,7 @@ void OP(COpFC)(zreg* const r) /* JSR (a,x) */
     SET16(xs, GET16(r[R_ECX]));
     r[R_EAX] = 0;
     r[R_EBX] &= 0xFFFF00FFu;
-    SET16(r[R_ECX], *(u2 const*)r[R_ESI]);
+    SET16(r[R_ECX], rd16(r[R_ESI]));
     SET8(r[R_EBX], GET8(xpb));
     SET16(r[R_ECX], (u2)(GET16(r[R_ECX]) + GET16(xx)));
     TABR16(r);
@@ -230,7 +230,7 @@ void OP(COp22)(zreg* const r) /* JSL al */
     SET16(xs, GET16(r[R_ECX]));
     r[R_EAX] = 0;
     r[R_EBX] &= 0xFFFF00FFu;
-    AX(r, *(u2 const*)r[R_ESI]);
+    AX(r, rd16(r[R_ESI]));
     SET8(r[R_EBX], *(u1 const*)(uintptr_t)(r[R_ESI] + 2));
     xpc = GET16(r[R_EAX]);
     SET8(xpb, GET8(r[R_EBX]));

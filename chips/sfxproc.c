@@ -3,6 +3,7 @@
    Installed via REGPTR in c_sfxproc.c. */
 #include "../cpu/memseam.h"
 #include "../types.h"
+#include "../unaligned.h"
 #include "regabi.h"
 #include <stdint.h>
 

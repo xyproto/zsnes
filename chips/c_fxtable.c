@@ -9,6 +9,7 @@
  * and the 8bpp dithered PLOT variants, which the assembly wired to the
  * undithered code.
  */
+#include "../unaligned.h"
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
