@@ -1,0 +1,4 @@
+version=4
+opts=filenamemangle=s%.*/([0-9][0-9.]*)\.tar\.gz%zsnes2-$1.tar.gz% \
+ https://github.com/xyproto/zsnes/tags \
+ .*/archive/refs/tags/([0-9][0-9.]*)\.tar\.gz

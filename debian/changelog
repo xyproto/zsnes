@@ -1,0 +1,9 @@
+zsnes2 (2.2.3-1) unstable; urgency=medium
+
+  * Initial Debian release.
+  * Package ZSNES 2 as a separate zsnes2 source and binary package so it can
+    coexist with the historical zsnes package.
+  * Build the upstream 2.2.3 release as the supported 32-bit x86 Linux target
+    with SDL3 and OpenGL support.
+
+ -- Reaper <JohnGrimmReaper@disroot.org>  Thu, 03 Sep 2026 16:53:00 +0000
