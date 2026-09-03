@@ -883,33 +883,30 @@ SPC_ROT(6C, SPC_ABS, 2, spc_ror)
 u1* SpcOp3C(u1* const pc) { spcA = spc_rol(spcA); return pc; } /* ROL A */
 u1* SpcOp7C(u1* const pc) { spcA = spc_ror(spcA); return pc; } /* ROR A */
 
-/* DIV YA,X. */
+/* --- DIV YA,X --------------------------------------------------------------
+ * A 16-bit divide, so the quotient always fits. X = 0 is caught first; a
+ * quotient wider than 8 bits keeps the truncated result but sets V and clears
+ * H. */
 u1* SpcOp9E(u1* const pc)
 {
-    u2 const ya = (u2)(spcA | (u2)spcY << 8);
-    u4 const x = spcX;
-    u1 const y = spcY;
-    u4 q;
-    u4 r;
-
-    if (y < x * 2u) {
-        q = ya / x;
-        r = ya % x;
-    } else {
-        u4 const d = (u4)ya - x * 0x200u;
-        u4 const den = 0x100u - x;
-
-        q = 0xFFu - d / den;
-        r = x + d % den;
+    if (spcX == 0) { /* NoDiv */
+        spcA = 0xFF;
+        spcY = 0xFF;
+        spcP = spcP | 0x10;
+        spcP = spcP & ~0x40;
+        return pc;
     }
+    u2 const ya = (u2)(spcA | (u2)spcY << 8);
+    u2 const q = (u2)(ya / spcX);
     spcA = (u1)q;
-    spcY = (u1)r;
-    spcP &= 0xB7u;
-    if ((y & 0x0Fu) >= (spcX & 0x0Fu))
-        spcP |= 0x08u;
-    if (y >= spcX)
-        spcP |= 0x40u;
-    spc_setnz(spcA);
+    spcY = (u1)(ya % spcX);
+    if (q >> 8) { /* Over */
+        spcP = spcP | 0x40;
+        spcP = spcP & ~0x10;
+    } else {
+        spcP &= 0xAF; /* clear V and H */
+    }
+    spcNZ = (u1)q;
     return pc;
 }
 

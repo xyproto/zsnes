@@ -1738,8 +1738,7 @@ static void processmode716b(void)
     // mode 7 extbg
     if (interlval & 0x40 && !(scrndis & 0x02) && scrnon & 0x0202) { // do background 1
         winon = 0;
-        if (!(winenabm & 0x01) || winenabs & 0x01
-            || (makewindow(winen[LAYER_BG1], LAYER_BG1), winon != 0xFF)) {
+        if (!(winenabm & 0x01) || winenabs & 0x01 || (makewindow(winen[LAYER_BG1], LAYER_BG1 /* XXX not in original, but seems consistent, because winen[LAYER_BG1] is used */), winon != 0xFF)) {
             extbgdone = 1;
             procmode716bextbg(&bg1scroly_m7, &bg1scrolx_m7, 1);
         }
@@ -1756,8 +1755,7 @@ static void processmode716b(void)
     // display mode7
     if (!(interlval & 0x40) && !(scrndis & 0x01) && scrnon & 0x0101) { // do background 1
         winon = 0;
-        if (!(winenabm & 0x01) || winenabs & 0x01
-            || (makewindow(winen[LAYER_BG1], LAYER_BG1), winon != 0xFF)) {
+        if (!(winenabm & 0x01) || winenabs & 0x01 || (makewindow(winen[LAYER_BG1], LAYER_BG1 /* XXX not in original, but seems consistent, because winen[LAYER_BG1] is used */), winon != 0xFF)) {
             procmode716b(&bg1scroly_m7, &bg1scrolx_m7, 1);
         }
     }
@@ -1772,8 +1770,7 @@ static void processmode716b(void)
 
     if (interlval & 0x40 && !(scrndis & 0x01) && extbgdone == 0 && scrnon & 0x0101) { // do background 1
         winon = 0;
-        if (!(winenabm & 0x01) || winenabs & 0x01
-            || (makewindow(winen[LAYER_BG1], LAYER_BG1), winon != 0xFF)) {
+        if (!(winenabm & 0x02) || winenabs & 0x02 || (makewindow(winen[LAYER_BG1], LAYER_BG1 /* XXX not in original, but seems consistent, because winen[LAYER_BG1] is used */), winon != 0xFF)) {
             extbgdone = 1;
             procmode716bextbg(&bg1scroly_m7, &bg1scrolx_m7, 1);
         }
@@ -1782,8 +1779,7 @@ static void processmode716b(void)
     // mode 7 extbg
     if (interlval & 0x40 && extbgdone != 0 && !(scrndis & 0x01)) { // do background 1
         winon = 0;
-        if (!(winenabm & 0x01) || winenabs & 0x01
-            || (makewindow(winen[LAYER_BG1], LAYER_BG1), winon != 0xFF)) {
+        if (!(winenabm & 0x01) || winenabs & 0x01 || (makewindow(winen[LAYER_BG1], LAYER_BG1 /* XXX not in original, but seems consistent, because winen[LAYER_BG1] is used */), winon != 0xFF)) {
             procmode716bextbg2(1);
         }
     }

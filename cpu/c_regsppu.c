@@ -517,7 +517,9 @@ void c_reg2103w(u1 const al)
     NextLineCache = 1;
 }
 
-/* OAM data port. */
+/* OAM data. The low table is written a word at a time: an even address only
+   latches the byte, the odd one flushes both. The high table (bit 9) takes
+   single bytes. Running past the end of OAM leaves the byte in the latch. */
 REGABI_REG_WRITE8(reg2104w);
 void c_reg2104w(u1 const al)
 {
@@ -526,13 +528,11 @@ void c_reg2104w(u1 const al)
     NextLineCache = 1;
     if (nosprincr != 1) {
         oamaddr = ebx + 1;
-    }
-    if (ebx >= 544u) {
-        if (nosprincr != 1) {
+        if (ebx >= 544u) {
             oamaddr = 1;
+            oamlow = al;
+            return;
         }
-        oamlow = al;
-        return;
     }
     if (ebx & 0x200u) {
         oamram[ebx] = al;

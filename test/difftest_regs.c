@@ -1181,9 +1181,7 @@ int main(void)
         DT_EQ("spcnumread", x.spcnr, y.spcnr);
         DT_EQ("sndrot", x.srot, y.srot);
         DT_EQ("sndrot2", x.srot2, y.srot2);
-        DT_MEM("oamram", x.oam, y.oam, 544);
-        if (k->c_fn == reg2104w)
-            DT_MEM("oam padding", oam_init + 544, y.oam + 544, 1024 - 544);
+        DT_MEM("oamram", x.oam, y.oam, sizeof x.oam);
         DT_EQ("vidbright", x.vbo, y.vbo);
         DT_EQ("cgmod", x.cgm, y.cgm);
         DT_EQ("iohvlatch", x.iohv, y.iohv);
