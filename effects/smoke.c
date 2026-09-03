@@ -25,6 +25,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <stdlib.h>
 #include <string.h>
 
+#include "smoke.h"
+
 #define MIN(x, y) \
     (((x) < (y)) ? (x) : (y))
 
@@ -34,7 +36,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define FIRE_HOTSPOTS 80
 
 static int fire_hotspot[FIRE_HOTSPOTS];
-extern uint8_t* vidbuffer; /* ui.c */
+extern uint8_t* vidbuffer;
 
 #define SCRW 288
 #define SCRH 224
@@ -44,7 +46,7 @@ static unsigned char fire_buffer[SCRW * SCRH];
 
 static int fire_init_flag;
 
-static void draw_bottom_line_of_fire()
+static void draw_bottom_line_of_fire(void)
 {
     int count, count2;
 
@@ -72,7 +74,7 @@ static void draw_bottom_line_of_fire()
     }
 }
 
-static void init_fire()
+static void init_fire(void)
 {
     int x, y, pixel, count;
 

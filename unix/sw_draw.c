@@ -61,10 +61,7 @@ int sw_start(int width, int height, int req_depth, int FullScreen)
         render_surface = NULL;
     }
     if (sdl_window) {
-        // Resize in place. Recreating the window on every mode or filter
-        // change also tears down the framebuffer's EGL/GL context, which SDL
-        // builds behind the window on Wayland, and that churn corrupts the
-        // driver heap on some systems. Keeping the window is also faster.
+        // Preserve the window and its Wayland context.
         SDL_SetWindowFullscreen(sdl_window, FullScreen ? true : false);
         SDL_SetWindowSize(sdl_window, SurfaceX, SurfaceY);
         SDL_SyncWindow(sdl_window); // settle the new size before mapping the mouse
@@ -168,19 +165,16 @@ void sw_drawwin()
     if (curblank || CheckOGLMode()) {
         return;
     }
+
+    if (NTSCFilter != prevNTSCMode || changeRes
+        || prevKeep4_3Ratio != Keep4_3Ratio) {
+        initwinvideo();
+        if (CheckOGLMode()) {
+            return;
+        }
+    }
+
     LockSurface();
-
-    if (NTSCFilter != prevNTSCMode) {
-        initwinvideo();
-    }
-
-    if (changeRes) {
-        initwinvideo();
-    }
-
-    if (prevKeep4_3Ratio != Keep4_3Ratio) {
-        initwinvideo();
-    }
 
     ScreenPtr = vidbuffer;
     ScreenPtr += 16 * 2 + 32 * 2 + 256 * 2;

@@ -4,9 +4,7 @@
 #include "../endmem.h"
 #include "../types.h"
 
-/* The pushad register block the 65816 core's halves share.
-   eop is an unprototyped function type, so a table of them holds the ported
-   opcode bodies (void f(u4*)) and calling one with the block is well formed. */
+/* pushad register order. */
 enum { R_EDI,
     R_ESI,
     R_EBP,
@@ -36,10 +34,8 @@ static inline void set_bl(zreg* const r, u1 const v)
     r[R_EBX] = (r[R_EBX] & 0xFFFFFF00u) | v;
 }
 
-/* One SPC700 opcode. The handler takes the program counter just past the
-   opcode byte and returns the updated one; the assembly kept it in ebp, and
-   left the result in eax as well. Every dispatch site cleared ebx after. */
-static inline void spc_step(zreg* const r, u4 const op)
+/* Run one SPC700 opcode. */
+static inline void spc_step(zreg* const r, u1 const op)
 {
     r[R_EBP] = r[R_EAX] = (zreg)opcjmptab[op]((u1*)r[R_EBP]);
     r[R_EBX] = 0;

@@ -465,7 +465,6 @@ fastforb:
     if (TestKey2(KeyDisplayCPU) && frameskip == 0)
         CPUOn ^= 1;
 
-    // do state selects
     stateselcomp(&KeyStateSlc0, 0);
     stateselcomp(&KeyStateSlc1, 1);
     stateselcomp(&KeyStateSlc2, 2);
@@ -476,10 +475,6 @@ fastforb:
     stateselcomp(&KeyStateSlc7, 7);
     stateselcomp(&KeyStateSlc8, 8);
     stateselcomp(&KeyStateSlc9, 9);
-    if (TestKey2(KeyStateSlc0)) { // XXX huh?
-        sselm[11] = '0';
-        SetMessage(sselm);
-    }
 
     if (TestKey2(KeyIncStateSlot)) {
         u4 cur = current_zst + 1;

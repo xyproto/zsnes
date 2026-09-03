@@ -1,17 +1,4 @@
-/*
- * ST011 coprocessor bank access, from chips/st11proc.asm. Two regions:
- *
- *   Seta11*_68  reads come straight from setaramdata and also update ST011_DR;
- *               writes go through ST011_MapW_68 via the seta11_address /
- *               seta11_byte handshake, and are ignored when address bit 15 is
- *               set (ROM guard)
- *   Seta11*_60  everything through the ST011_MapR_60 / ST011_MapW_60
- *               callbacks, address masked to 2 bits, >= 0x4000 ignored; a
- *               16-bit access is two callbacks with the address wrapping mod 4
- *
- * One departure: Seta11Write16_68 called ST011_MapW_68 twice without updating
- * seta11_byte, so both calls wrote the low byte. Fixed here.
- */
+/* ST011 bank access. */
 
 #include <stdint.h>
 
@@ -26,9 +13,7 @@ extern void ST011_MapW_68(void);
 extern void ST011_MapR_60(void);
 extern void ST011_MapW_60(void);
 
-/* -----------------------------------------------------------------------
- * Region 68 — setaramdata buffer
- * ----------------------------------------------------------------------- */
+/* Region 68. */
 
 uint8_t c_Seta11Read8_68(uint32_t addr)
 {
@@ -49,7 +34,8 @@ void c_Seta11Write8_68(uint32_t addr, uint8_t val)
 uint16_t c_Seta11Read16_68(uint32_t addr)
 {
     uint32_t a = addr & 0xfff;
-    uint16_t val = (uint16_t)(setaramdata[a] | ((uint16_t)setaramdata[a + 1] << 8));
+    uint16_t val =
+        (uint16_t)(setaramdata[a] | ((uint16_t)setaramdata[(a + 1) & 0xfff] << 8));
     ST011_DR = (uint8_t)(val >> 8);
     return val;
 }
@@ -66,9 +52,7 @@ void c_Seta11Write16_68(uint32_t addr, uint16_t val)
     ST011_MapW_68();
 }
 
-/* -----------------------------------------------------------------------
- * Region 60 — command/status port via callbacks
- * ----------------------------------------------------------------------- */
+/* Region 60. */
 
 uint8_t c_Seta11Read8_60(uint32_t addr)
 {

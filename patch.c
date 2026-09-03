@@ -139,6 +139,7 @@ bool PatchUsingIPS(const char* ext)
     unsigned char* ROM = (unsigned char*)romdata;
     int location = 0, length = 0, last = 0;
     int sub = Header512 ? 512 : 0;
+    bool valid = false;
 
     if (!AutoPatch) {
         deinitPatch(); // Needed if the call to this function was done from findZipIPS()
@@ -153,8 +154,6 @@ bool PatchUsingIPS(const char* ext)
         }
     }
 
-    // Yup, it's goto! :)
-    // See 'IPSDone:' for explanation
     if (IPSget() != 'P') {
         goto IPSDone;
     }
@@ -170,6 +169,7 @@ bool PatchUsingIPS(const char* ext)
     if (IPSget() != 'H') {
         goto IPSDone;
     }
+    valid = true;
 
     while (IPSPatch.proccessed != IPSPatch.file_size) {
         // Location is a 3 byte value (max 16MB)
@@ -222,12 +222,13 @@ bool PatchUsingIPS(const char* ext)
         }
     }
 
-// We use gotos to break out of the nested loops,
-// as well as a simple way to check for 'PATCH' in
-// some cases like this one, goto is the way to go.
 IPSDone:
 
     deinitPatch();
+
+    if (!valid) {
+        return (false);
+    }
 
     IPSPatched = true;
 

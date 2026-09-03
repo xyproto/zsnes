@@ -149,8 +149,7 @@ static void GUIoutputcharwin(u1* dst, u1 const glyph, u1 const colour)
     u1 const* edi = newfont == 0 ? GUIFontData[glyph] : GUIFontData1[glyph];
     u4 y = 5;
     do {
-        if (vidbuffer <= dst && dst < vidbuffer + 224 * 288) // XXX possible buffer overflow by 4
-        {
+        if (vidbuffer <= dst && dst <= vidbuffer + 224 * 288 - 5) {
             u4 ah = *edi;
             u4 x = 5;
             do {
