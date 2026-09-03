@@ -163,7 +163,7 @@ jobs:
             targets: t8to mvs op sa1op dbgop memops
           - shard: rest
             targets: >-
-              spcdec fxtable fxops m716t cb16t cb16b spr16bt spr16t spr16p
+              spcdec 2xsai fxtable fxops m716t cb16t cb16b spr16bt spr16t spr16p
               t8bt t16bt t8t t16t thi sprwin ngspr procwin mos ngeng ngframe
               mv16 m7draw m7proc m7bw m7win m7start m7ext2 m7calc regs transp
               bgt ng2
