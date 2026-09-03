@@ -1,11 +1,10 @@
 /*
- * 2xSaI scalar line filter unit tests
+ * 2xSaI line filter tests (video/2xsaiw.c).
  *
- * Covers the three identical entry points ported from video/2xsaiw.asm:
- *   _2xSaILine / _2xSaISuper2xSaILine / _2xSaISuperEagleLine
- *
- * Each expands one row of 16-bit source pixels into a 2x2 block on the
- * destination, writing the top row at dst and the bottom row at dst+dstPitch.
+ * The three entry points - _2xSaILine, _2xSaISuper2xSaILine and
+ * _2xSaISuperEagleLine - are Kreed's filters. Bit-identity with the original
+ * assembly is the difftest's job (make 2xsai); these cover the shape of the
+ * output and that the three are no longer the same function.
  */
 
 #include <stdint.h>
@@ -21,80 +20,122 @@ LineFilter _2xSaILine;
 LineFilter _2xSaISuper2xSaILine;
 LineFilter _2xSaISuperEagleLine;
 
-static void check_doubled_row(LineFilter* f, const char* label)
+#define WIDTH 16
+#define MARGIN 4
+#define STRIDE (WIDTH + 2 * MARGIN)
+#define ROWS 6
+#define SRC_PITCH (STRIDE * 2)
+#define DST_PITCH (WIDTH * 2 * 2)
+
+static u2 srcbuf[ROWS * STRIDE];
+static u1 dst[DST_PITCH * 2 + 32];
+
+static u2* line(void) { return srcbuf + STRIDE + MARGIN; }
+
+static void run(LineFilter* const f)
+{
+    memset(dst, 0xC3, sizeof dst);
+    f(line(), NULL, SRC_PITCH, WIDTH, dst, DST_PITCH);
+}
+
+static u2 out(u4 const x, u4 const row)
+{
+    return ((u2*)(dst + row * DST_PITCH))[x];
+}
+
+static void check_flat(LineFilter* const f, char const* const label)
 {
     ZT_SECTION(label);
 
-    u2 src[4] = { 0x1234, 0x5678, 0x9ABC, 0xDEF0 };
-    u1 dst[64];
-    const u4 width = 4;
-    const u4 dstPitch = 16; /* bytes per output row */
+    for (u4 i = 0; i < ROWS * STRIDE; i++)
+        srcbuf[i] = 0x5AC3;
+    run(f);
 
-    memset(dst, 0xAA, sizeof(dst));
-    f(src, NULL, 0, width, dst, dstPitch);
+    int ok = 1;
+    for (u4 row = 0; row < 2; row++)
+        for (u4 x = 0; x < WIDTH * 2; x++)
+            if (out(x, row) != 0x5AC3)
+                ok = 0;
+    ZT_CHECK(ok);
 
-    /* Each source pixel produces a 2x2 block of identical 16-bit values. */
-    u2* row0 = (u2*)dst;
-    u2* row1 = (u2*)(dst + dstPitch);
-    for (u4 i = 0; i < width; i++) {
-        ZT_CHECK(row0[i * 2 + 0] == src[i]);
-        ZT_CHECK(row0[i * 2 + 1] == src[i]);
-        ZT_CHECK(row1[i * 2 + 0] == src[i]);
-        ZT_CHECK(row1[i * 2 + 1] == src[i]);
-    }
-
-    /* Bytes beyond the second row must remain untouched. */
-    for (size_t i = dstPitch * 2; i < sizeof(dst); i++) {
-        ZT_CHECK(dst[i] == 0xAA);
-    }
+    /* Nothing past the two output rows. */
+    for (size_t i = DST_PITCH * 2; i < sizeof dst; i++)
+        ZT_CHECK(dst[i] == 0xC3);
 }
 
-static void test_zero_width(void)
+static void check_zero_width(LineFilter* const f, char const* const label)
 {
-    ZT_SECTION("zero width: leaves dst untouched");
-
-    u2 src[1] = { 0xCAFE };
-    u1 dst[16];
-    memset(dst, 0x55, sizeof(dst));
-    _2xSaILine(src, NULL, 0, 0, dst, 8);
-    for (size_t i = 0; i < sizeof(dst); i++) {
-        ZT_CHECK(dst[i] == 0x55);
-    }
+    ZT_SECTION(label);
+    for (u4 i = 0; i < ROWS * STRIDE; i++)
+        srcbuf[i] = (u2)(i * 37u);
+    memset(dst, 0x55, sizeof dst);
+    f(line(), NULL, SRC_PITCH, 0, dst, DST_PITCH);
+    int clean = 1;
+    for (size_t i = 0; i < sizeof dst; i++)
+        if (dst[i] != 0x55)
+            clean = 0;
+    ZT_CHECK(clean);
 }
 
-static void test_nontrivial_pitch(void)
+/* A checkerboard is the case every one of these filters was written for, and
+   the three disagree about it - which is the whole point of having three. */
+static void check_three_differ(void)
 {
-    ZT_SECTION("dstPitch separates the two output rows");
+    ZT_SECTION("the three filters no longer produce identical output");
 
-    u2 src[2] = { 0xAAAA, 0x5555 };
-    u1 dst[64];
-    const u4 dstPitch = 24; /* deliberately larger than row size */
+    u1 a[DST_PITCH * 2], b[DST_PITCH * 2], c[DST_PITCH * 2];
 
-    memset(dst, 0, sizeof(dst));
-    _2xSaILine(src, NULL, 0, 2, dst, dstPitch);
+    for (u4 r = 0; r < ROWS; r++)
+        for (u4 x = 0; x < STRIDE; x++)
+            srcbuf[r * STRIDE + x] = ((r + x) & 1) ? 0xFFFF : 0x0000;
 
-    u2* row0 = (u2*)dst;
-    u2* row1 = (u2*)(dst + dstPitch);
-    ZT_CHECK(row0[0] == 0xAAAA && row0[1] == 0xAAAA);
-    ZT_CHECK(row0[2] == 0x5555 && row0[3] == 0x5555);
-    ZT_CHECK(row1[0] == 0xAAAA && row1[1] == 0xAAAA);
-    ZT_CHECK(row1[2] == 0x5555 && row1[3] == 0x5555);
+    run(_2xSaILine);
+    memcpy(a, dst, sizeof a);
+    run(_2xSaISuper2xSaILine);
+    memcpy(b, dst, sizeof b);
+    run(_2xSaISuperEagleLine);
+    memcpy(c, dst, sizeof c);
 
-    /* Bytes between the two rows (gap from row-width to dstPitch) untouched. */
-    for (u4 i = 8; i < dstPitch; i++) {
-        ZT_CHECK(dst[i] == 0);
-    }
+    ZT_CHECK(memcmp(a, b, sizeof a) != 0);
+    ZT_CHECK(memcmp(a, c, sizeof a) != 0);
+    ZT_CHECK(memcmp(b, c, sizeof b) != 0);
+}
+
+/* An edge has to be smoothed: output colours the input never had. */
+static void check_interpolates(LineFilter* const f, char const* const label)
+{
+    ZT_SECTION(label);
+
+    /* A checkerboard: every filter has a rule for it, and none of those
+       rules is "copy a neighbour". */
+    for (u4 r = 0; r < ROWS; r++)
+        for (u4 x = 0; x < STRIDE; x++)
+            srcbuf[r * STRIDE + x] = ((r + x) & 1) ? 0xFFFF : 0x0000;
+    run(f);
+
+    int blended = 0;
+    for (u4 row = 0; row < 2; row++)
+        for (u4 x = 0; x < WIDTH * 2; x++)
+            if (out(x, row) != 0xFFFF && out(x, row) != 0x0000)
+                blended = 1;
+    ZT_CHECK(blended);
 }
 
 int main(void)
 {
     printf("ZSNES2 2xSaI line filter tests\n");
 
-    check_doubled_row(_2xSaILine, "_2xSaILine: doubles each pixel into 2x2 block");
-    check_doubled_row(_2xSaISuper2xSaILine, "_2xSaISuper2xSaILine: doubles each pixel into 2x2 block");
-    check_doubled_row(_2xSaISuperEagleLine, "_2xSaISuperEagleLine: doubles each pixel into 2x2 block");
-    test_zero_width();
-    test_nontrivial_pitch();
+    check_flat(_2xSaILine, "_2xSaILine: a flat field is unchanged");
+    check_flat(_2xSaISuper2xSaILine, "Super2xSaI: a flat field is unchanged");
+    check_flat(_2xSaISuperEagleLine, "SuperEagle: a flat field is unchanged");
+
+    check_zero_width(_2xSaILine, "zero width leaves dst untouched");
+
+    check_interpolates(_2xSaILine, "_2xSaILine smooths an edge");
+    check_interpolates(_2xSaISuper2xSaILine, "Super2xSaI smooths an edge");
+    check_interpolates(_2xSaISuperEagleLine, "SuperEagle smooths an edge");
+
+    check_three_differ();
 
     ZT_RESULTS();
 }
