@@ -30,6 +30,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #define _POSIX_
 #include <ctype.h>
+#include <errno.h>
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -442,18 +443,22 @@ void swap_backup_vars()
     BACKUP_HELP(SWAP_BACKUP_VAR)
 }
 
+/* Digits only, and no silent wrap: atoi is undefined on overflow, so a long
+   enough number used to become whatever the conversion happened to produce. */
 static size_t zatoi(const char* str)
 {
-    const char* orig_str = str;
-    if (str) {
-        while (*str) {
-            if (!isdigit(*str++)) {
-                return (~0);
-            }
-        }
-        return ((size_t)atoi(orig_str));
+    char* end;
+    unsigned long val;
+
+    if (!str || !isdigit((unsigned char)*str)) {
+        return (~0);
     }
-    return (~0);
+    errno = 0;
+    val = strtoul(str, &end, 10);
+    if (*end || errno == ERANGE) {
+        return (~0);
+    }
+    return ((size_t)val);
 }
 
 static void handle_params(int argc, char* argv[])
@@ -545,9 +550,16 @@ static void handle_params(int argc, char* argv[])
 
                 case 'f': // Enable fixed frame rate
                     i++;
-                    if ((frameskip = zatoi(argv[i]) + 1) > 10) {
-                        puts("Frame Skip must be a value of 0 to 9!");
-                        zexit_error();
+                    {
+                        /* Bound before adding: zatoi reports failure as ~0,
+                           which adding one wraps to a valid-looking 0. */
+                        size_t const skip = zatoi(argv[i]);
+
+                        if (skip > 9) {
+                            puts("Frame Skip must be a value of 0 to 9!");
+                            zexit_error();
+                        }
+                        frameskip = skip + 1;
                     }
                     break;
 

@@ -6,7 +6,7 @@
 
 /* The DSP register file. Kept 32-byte aligned as cpu/dsp.asm had it; the mixers
  * in cpu/dspproc.c still address it. */
-u1 DSPMem[256] __attribute__((aligned(32)));
+_Alignas(32) u1 DSPMem[256];
 
 /* Other state the register handlers touch that no header declares yet: scalars
  * still defined in cpu/dspproc.c and cpu/regs.inc. */

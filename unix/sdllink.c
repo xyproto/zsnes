@@ -25,7 +25,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "sw_draw.h"
 
 #include <stdbool.h>
-#include <sys/time.h>
 #include <time.h>
 
 #include "../c_intrf.h"
@@ -163,7 +162,7 @@ static float update_ticks_pc2;
 
 // Used for semaphore code
 static SDL_Semaphore* sem_frames = NULL;
-static struct timeval sem_start;
+static struct timespec sem_start;
 
 void Game60hzcall();
 u8 copymaskRB = UINT64_C(0x001FF800001FF800);
@@ -1101,7 +1100,7 @@ int startgame()
     if (!ranonce) {
         ranonce = true;
 
-        gettimeofday(&sem_start, NULL);
+        timespec_get(&sem_start, TIME_UTC);
 
         // Start semaphore code so ZSNES multitasks nicely :)
         sem_sleep_rdy();
@@ -1946,11 +1945,12 @@ void SetMouseY(int Y)
 
 static float sem_GetTicks(void)
 {
-    struct timeval now;
+    struct timespec now;
     float ticks;
 
-    gettimeofday(&now, NULL);
-    ticks = ((float)(now.tv_sec - sem_start.tv_sec)) * 1000.f + ((float)(now.tv_usec - sem_start.tv_usec)) * .001f;
+    timespec_get(&now, TIME_UTC);
+    ticks = ((float)(now.tv_sec - sem_start.tv_sec)) * 1000.f
+        + ((float)(now.tv_nsec - sem_start.tv_nsec)) * 1e-6f;
     return (ticks);
 }
 
