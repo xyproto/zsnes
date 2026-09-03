@@ -34,8 +34,7 @@ void c_Seta11Write8_68(uint32_t addr, uint8_t val)
 uint16_t c_Seta11Read16_68(uint32_t addr)
 {
     uint32_t a = addr & 0xfff;
-    uint16_t val =
-        (uint16_t)(setaramdata[a] | ((uint16_t)setaramdata[(a + 1) & 0xfff] << 8));
+    uint16_t val = (uint16_t)(setaramdata[a] | ((uint16_t)setaramdata[(a + 1) & 0xfff] << 8));
     ST011_DR = (uint8_t)(val >> 8);
     return val;
 }
