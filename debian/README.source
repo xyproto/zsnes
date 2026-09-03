@@ -1,0 +1,45 @@
+ZSNES 2 Debian packaging notes
+==============================
+
+Package identity and coexistence
+--------------------------------
+
+The Debian source and binary package names are intentionally `zsnes2`, not
+`zsnes`. ZSNES 2 is packaged as a separate maintained continuation and must be
+co-installable with the historical `zsnes` package.
+
+The package therefore does not declare `Provides`, `Replaces`, `Breaks`, or
+`Conflicts` against `zsnes`. It installs the executable as `/usr/bin/zsnes2`,
+uses `zsnes2`-specific desktop, AppStream, icon, and manual-page names, and
+builds with `ZCONF="zsnes2"`. The latter prevents ZSNES 2 from adopting the
+legacy `~/.zsnes` directory and gives it its own XDG configuration directory,
+`$XDG_CONFIG_HOME/zsnes2` (normally `~/.config/zsnes2`).
+
+Architecture
+------------
+
+Upstream ZSNES 2.2.3 intentionally builds the Linux target as 32-bit x86
+(`-m32`). The remaining assembly implementation is 32-bit x86 code, so the
+binary package is correctly declared as Architecture: i386.
+
+Do not relabel the package as amd64 merely because an amd64 system can run the
+resulting ELF32 executable. amd64 users should install the i386 package through
+Debian multiarch instead; this lets dpkg and apt resolve the matching 32-bit
+runtime libraries correctly.
+
+SDL3 and audio
+--------------
+
+Debian unstable provides `libsdl3-dev`, which is declared directly in
+Build-Depends. No external repository is required to build the Debian package.
+
+The package disables upstream's optional PipeWire and libao autodetection at
+build time and uses SDL3 as the deterministic audio backend. This avoids build
+results changing according to whichever optional development package happens
+to be installed in the build environment.
+
+Rendering
+---------
+
+OpenGL support remains enabled, but the SDL software renderer is also built.
+A discrete GPU is therefore not a package requirement.

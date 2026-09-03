@@ -1,0 +1,46 @@
+#!/bin/sh
+set -eu
+
+binary=/usr/bin/zsnes2
+desktop=/usr/share/applications/io.github.xyproto.zsnes2.desktop
+metainfo=/usr/share/metainfo/io.github.xyproto.zsnes2.metainfo.xml
+manpage=/usr/share/man/man1/zsnes2.1.gz
+
+[ -x "$binary" ]
+file "$binary" | grep -Eq 'ELF 32-bit.*Intel 80386'
+
+if ldd "$binary" | grep -q 'not found'; then
+    echo "Unresolved runtime dependency:" >&2
+    ldd "$binary" >&2
+    exit 1
+fi
+
+[ -r "$manpage" ]
+[ -r "$metainfo" ]
+desktop-file-validate "$desktop"
+grep -qx 'Name=ZSNES 2' "$desktop"
+grep -qx 'Exec=zsnes2 %f' "$desktop"
+grep -qx 'TryExec=zsnes2' "$desktop"
+grep -qx 'Icon=io.github.xyproto.zsnes2' "$desktop"
+grep -q '<id>io.github.xyproto.zsnes2</id>' "$metainfo"
+grep -q '<binary>zsnes2</binary>' "$metainfo"
+
+for size in 16x16 32x32 48x48 64x64 128x128; do
+    [ -r "/usr/share/icons/hicolor/$size/apps/io.github.xyproto.zsnes2.png" ]
+done
+
+package_files=$(mktemp)
+trap 'rm -f "$package_files"' EXIT HUP INT TERM
+dpkg-query -L zsnes2 > "$package_files"
+
+for legacy_path in \
+    /usr/bin/zsnes \
+    /usr/share/man/man1/zsnes.1.gz \
+    /usr/share/applications/io.github.xyproto.zsnes.desktop \
+    /usr/share/metainfo/io.github.xyproto.zsnes.metainfo.xml
+do
+    if grep -Fxq "$legacy_path" "$package_files"; then
+        echo "zsnes2 unexpectedly ships legacy ZSNES path: $legacy_path" >&2
+        exit 1
+    fi
+done

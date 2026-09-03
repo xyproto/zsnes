@@ -1,0 +1,75 @@
+#!/usr/bin/make -f
+
+# Upstream requires a non-PIE 32-bit x86 build while the remaining Debian
+# hardening flags can still be applied through the environment.
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all,-pie
+export CFLAGS := $(shell dpkg-buildflags --get CFLAGS)
+export LDFLAGS := $(shell dpkg-buildflags --get LDFLAGS)
+
+include /usr/share/dpkg/architecture.mk
+
+%:
+	dh $@
+
+override_dh_auto_configure:
+	@test "$(DEB_HOST_ARCH)" = "i386" || { \
+		echo "ZSNES 2 must be built as an i386 package (got $(DEB_HOST_ARCH))." >&2; \
+		exit 1; \
+	}
+
+override_dh_auto_build:
+	dh_auto_build -- \
+		ARCH=LINUX \
+		BINARY=zsnes2 \
+		EXTRA_CFLAGS='-DZCONF=\"zsnes2\"' \
+		WITH_PIPEWIRE= \
+		WITH_AO=
+
+override_dh_auto_test:
+ifeq (,$(filter nocheck,$(DEB_BUILD_OPTIONS)))
+	dh_auto_test -- \
+		ARCH=LINUX \
+		BINARY=zsnes2 \
+		EXTRA_CFLAGS='-DZCONF=\"zsnes2\"' \
+		WITH_PIPEWIRE= \
+		WITH_AO=
+endif
+
+override_dh_auto_install:
+	install -Dm755 zsnes2 "$(CURDIR)/debian/zsnes2/usr/bin/zsnes2"
+	set -e; \
+	for ICON_SIZE in 16x16 32x32 48x48 64x64 128x128; do \
+		install -Dm644 "icons/$${ICON_SIZE}x32.png" \
+			"$(CURDIR)/debian/zsnes2/usr/share/icons/hicolor/$$ICON_SIZE/apps/io.github.xyproto.zsnes2.png"; \
+	done
+	install -d "$(CURDIR)/debian/zsnes2/usr/share/applications"
+	sed \
+		-e 's/^Name=ZSNES$$/Name=ZSNES 2/' \
+		-e 's/^Exec=zsnes /Exec=zsnes2 /' \
+		-e 's/^TryExec=zsnes$$/TryExec=zsnes2/' \
+		-e 's/^Icon=io\.github\.xyproto\.zsnes$$/Icon=io.github.xyproto.zsnes2/' \
+		-e 's/^StartupWMClass=zsnes$$/StartupWMClass=zsnes2/' \
+		linux/zsnes.desktop \
+		> "$(CURDIR)/debian/zsnes2/usr/share/applications/io.github.xyproto.zsnes2.desktop"
+	install -d "$(CURDIR)/debian/zsnes2/usr/share/metainfo"
+	sed \
+		-e 's/io\.github\.xyproto\.zsnes/io.github.xyproto.zsnes2/g' \
+		-e 's#<name>ZSNES</name>#<name>ZSNES 2</name>#' \
+		-e 's#<binary>zsnes</binary>#<binary>zsnes2</binary>#' \
+		linux/io.github.xyproto.zsnes.metainfo.xml \
+		> "$(CURDIR)/debian/zsnes2/usr/share/metainfo/io.github.xyproto.zsnes2.metainfo.xml"
+	install -d "$(CURDIR)/debian/zsnes2/usr/share/man/man1"
+	sed \
+		-e 's/^ZSNES -/zsnes2 -/' \
+		-e 's/^\.B ZSNES$$/.B zsnes2/' \
+		-e 's/^ZSNES$$/zsnes2/' \
+		-e 's#~/.zsnes#~/.config/zsnes2#g' \
+		man/zsnes.1 \
+		> "$(CURDIR)/debian/zsnes2/usr/share/man/man1/zsnes2.1"
+	chmod 0644 "$(CURDIR)/debian/zsnes2/usr/share/applications/io.github.xyproto.zsnes2.desktop"
+	chmod 0644 "$(CURDIR)/debian/zsnes2/usr/share/metainfo/io.github.xyproto.zsnes2.metainfo.xml"
+	chmod 0644 "$(CURDIR)/debian/zsnes2/usr/share/man/man1/zsnes2.1"
+
+override_dh_auto_clean:
+	dh_auto_clean -- BINARY=zsnes2
+	$(MAKE) -C test clean
