@@ -1,4 +1,3 @@
-!test/difftest_*.c
 *.[do]
 *.log
 *.raw
@@ -10,6 +9,7 @@ include.txt
 parsegen
 test/_*
 test/difftest_*
+!test/difftest_*.c
 test/harness/out/
 test/harness/out64
 test/zsnes_*test
