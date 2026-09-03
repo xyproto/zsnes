@@ -17,7 +17,7 @@
 
 /* --- Mock state ---------------------------------------------------------- */
 
-static uint8_t mock_ram[0x1001]; /* +1 so a 16-bit read at 0xFFF doesn't OOB */
+static uint8_t mock_ram[0x1000];
 uint8_t* setaramdata = mock_ram;
 
 uint8_t ST011_DR;
@@ -151,6 +151,11 @@ static void test_read16_68(void)
     mock_ram[0x001] = 0xAB;
     ZT_CHECK(c_Seta11Read16_68(0x1000) == 0xABCD); /* 0x1000 & 0xFFF = 0x000 */
     ZT_CHECK(ST011_DR == 0xAB);
+
+    mock_ram[0xfff] = 0x78;
+    mock_ram[0] = 0x56;
+    ZT_CHECK(c_Seta11Read16_68(0xfff) == 0x5678);
+    ZT_CHECK(ST011_DR == 0x56);
 }
 
 static void test_write16_68_rom_guard(void)

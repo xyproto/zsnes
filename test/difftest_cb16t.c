@@ -151,8 +151,7 @@ int main(void)
             transpbuf[i] = (u1)(dt_mod(3) ? dt_u32() : 0);
         }
         dt_fill(vseed, VIDSZ);
-        /* Leave room at both ends: the loops walk 512 bytes forward. */
-        curvidoffset = vidbuf + 128;
+        curvidoffset = vidbuf + 128 + dt_mod(2);
 
         for (u4 i = 0; i < 7; i++) {
             in[i] = dt_u32();

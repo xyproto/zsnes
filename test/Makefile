@@ -94,7 +94,7 @@ $(PBUILD)/%.o:
 
 OBJS      := $(PBUILD)/zpath.o
 
-.PHONY: all run clean spc64 2xsai bgt procwin spcdec fxtable fxops memops m7calc m7ext2 m7start m7win m7bw m7proc m7draw mv16 mvs mvall m716t cb16t cb16b spr16bt spr16t spr16p t8bt t16bt t8t t16t t8to thi mos sprwin ngspr regs ngeng ngframe
+.PHONY: all run clean spc64 2xsai bgt procwin spcdec fxtable fxops memops m7calc m7ext2 m7start m7win m7bw m7proc m7draw mv16 mvs mvall m716t cb16t cb16b spr16bt spr16t spr16p t8bt t16bt t8t t16t t8to thi mos sprwin ngspr regs ngeng ngframe op sa1op dbgop transp ng2
 
 all: $(BIN) $(NETPLAY) $(ST10) $(ST11) $(OBC1) $(MSU1) $(DSP2) $(SAI) $(SA1) $(SPC7110) $(VCACHE) $(SPRITES) $(HQX) $(C4) $(MODE7) $(ASMDATA)
 
@@ -148,13 +148,13 @@ $(HQX): $(HQX_SRC) zstest.h ../video/c_hqx.c $(PBUILD)/zpath.o
 $(SPRITES): $(SPRITES_SRC) zstest.h ../video/sprites.c
 	$(CC) $(CFLAGS) -ffunction-sections -fdata-sections $(SPRITES_SRC) ../video/sprites.c $(NOPIE) $(GCSECT) -o $(SPRITES)
 
-# Differential test for the SPC700 DAA/DAS opcodes against the assembly they
-# replaced (cff2b437^). Not part of `all` - it needs that old assembly.
+# Compare 2xSaI with its old MMX assembly.
 2xsai: difftest_2xsai.c difftest.h mk2xsai.sh ../video/2xsaiw.c
 	./mk2xsai.sh
 	$(CC) $(CFLAGS) difftest_2xsai.c ../video/2xsaiw.c _2xsai.o $(NOPIE) -o difftest_2xsai
 	@./difftest_2xsai
 
+# Compare SPC700 DAA/DAS with their old assembly.
 spcdec: difftest_spcdec.c difftest.h mkdifftest.sh ../cpu/spc_ops.h
 	./asmgit.sh show cff2b437^:cpu/spc700.asm > /tmp/spc_old.asm
 	./mkdifftest.sh _spcdec /tmp/spc_old.asm "OpBE OpDF" \
