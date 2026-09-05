@@ -13,16 +13,11 @@
 - [ ] Check the `SDL_Renderer` path's hi-res, mode 7, filter and scanline
       composition against the OpenGL one; only the lo-res path has been read
       back and compared so far (`ZSNES_LEGACY_GL=1` selects the old path)
-- [ ] Port the real hqx algorithm; `hq2x/hq3x/hq4x_16b` and their `_32b`
-      twins in `video/c_hqx.c` are nearest-neighbour block doublers, so
-      turning the HQ filter on changes nothing on screen
-- [ ] Once hqx is real, re-enable the `hq3x_16b`/`hq4x_16b` call sites
-      commented out in `unix/sw_draw.c`, let `SetHQx()` (`unix/sdllink.c`)
-      offer 3x and 4x again, and dispatch on `hqFilterlevel`, which every
-      unix path currently ignores
-- [ ] Port the real 2xSaI, Super2xSaI and SuperEagle filters; all three entry
-      points in `video/2xsaiw.c` share one scale2x doubler, so the three menu
-      entries produce identical output
+- [ ] Port the real hq4x, and the `_32b` twins of all three; those entry
+      points in `video/c_hqx.c` are still nearest-neighbour block doublers
+- [ ] Let hq3x run on the `SDL_Renderer` path: `SR_MAXW`/`SR_MAXH`
+      (`unix/sdl_render.c`) cap the surface at 640x512, too small for its
+      768x672 output, so only the software path reaches it
 - [ ] Fill in `outsa1()` (`debugger.c`), a stub since the port
 - [ ] Handle horizontal scroll and absolute mouse motion on macOS (`mmlib/macos.c`)
 - [ ] Fill in the GUI font glyphs 0x30-0x36 (`video/procvid.c`)
@@ -33,9 +28,6 @@
 - [ ] Retire the old graphics engine (`newengen=0`) once the new one has no
       known regressions, and drop `bgfixer` with it
 - [ ] Give the difftests a 64-bit oracle so they run off 32-bit x86
-- [ ] Read the word and dword seams (`cpu/ops65816.h`, `video/c_ng2tile.c`)
-      through `memcpy` rather than casts; the unaligned loads the assembly took
-      for granted are UB and would fault on a strict-alignment target
 - [ ] Test `unix/battery.c` on a machine that reports battery state
 - [ ] Move the end-of-ROM variables out of the ROM buffer so `maxromspace` no
       longer has to be 16MB for 8MB carts (#17)
