@@ -517,30 +517,35 @@ void c_reg2103w(u1 const al)
     NextLineCache = 1;
 }
 
-/* OAM data. The low table is written a word at a time: an even address only
-   latches the byte, the odd one flushes both. The high table (bit 9) takes
-   single bytes. Running past the end of OAM leaves the byte in the latch. */
+/* OAM data. The address is ten bits and wraps there; the low table is written
+   a word at a time, an even address latching the byte and the odd one flushing
+   both, while the high table (bit 9) takes single bytes and repeats every 32,
+   so a write past its end lands back at its start. The write latch is loaded
+   on every even address, whichever table it selects.
+
+   This is what snes9x (ppu.h REGISTER_2104, masking the word address with
+   0x10f) and bsnes (sfc/ppu/io.cpp with a uint10 address, and writeObject
+   masking with 0x1f) both do. The assembly this replaced instead reset the
+   address to 1 and dropped the byte into the latch once it passed 544, and
+   only when the auto-increment was live; difftest_regs.c records that
+   divergence. */
 REGABI_REG_WRITE8(reg2104w);
 void c_reg2104w(u1 const al)
 {
-    u4 const ebx = oamaddr;
+    u4 const ebx = oamaddr & 0x3FFu;
 
     NextLineCache = 1;
     if (nosprincr != 1) {
-        oamaddr = ebx + 1;
-        if (ebx >= 544u) {
-            oamaddr = 1;
-            oamlow = al;
-            return;
-        }
+        oamaddr = (oamaddr & ~0x3FFu) | ((ebx + 1u) & 0x3FFu);
+    }
+    if (!(ebx & 1u)) {
+        oamlow = al;
     }
     if (ebx & 0x200u) {
-        oamram[ebx] = al;
+        oamram[0x200u + (ebx & 0x1Fu)] = al;
     } else if (ebx & 1u) {
         oamram[ebx] = al;
         oamram[ebx - 1] = oamlow;
-    } else {
-        oamlow = al;
     }
 }
 

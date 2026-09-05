@@ -201,19 +201,9 @@ void sw_drawwin()
         WinVidMemStart = SurfBufD;
 
         if (hqFilter) {
-            switch (hqFilter) {
-            case 1:
-                hq2x_16b();
-                break;
-            case 2:
-                // hq3x_16b();
-                break;
-            case 3:
-                // hq4x_16b();
-                break;
-            default:
-                break;
-            }
+            /* A 2x surface, so 2x is the only level that fits here; 3x has a
+               block of its own below and 4x is still a doubler. */
+            hq2x_16b();
         } else {
             copy640x480x16bwin();
         }
@@ -223,24 +213,19 @@ void sw_drawwin()
         WinVidMemStart = SurfBufD;
 
         NTSCFilterDraw(SurfaceX, SurfaceY, pitch, WinVidMemStart);
+    } else if (SurfaceX == 768 && SurfaceY == 672 && hqFilter
+        && hqFilterlevel >= 3) {
+        AddEndBytes = pitch - 1536;
+        NumBytesPerLine = pitch;
+        WinVidMemStart = SurfBufD;
+
+        hq3x_16b();
     } else if (SurfaceX == 640 && SurfaceY == 480) {
         AddEndBytes = pitch - 1024;
         NumBytesPerLine = pitch;
         WinVidMemStart = SurfBufD + 16 * 640 * 2 + 64 * 2;
         if (hqFilter) {
-            switch (hqFilter) {
-            case 1:
-                hq2x_16b();
-                break;
-            case 2:
-                // hq3x_16b();
-                break;
-            case 3:
-                // hq4x_16b();
-                break;
-            default:
-                break;
-            }
+            hq2x_16b();
         } else if (NTSCFilter) {
             NTSCFilterDraw(SurfaceX, SurfaceY, pitch, WinVidMemStart - 16 * 640 * 2 - 64 * 2);
         } else {

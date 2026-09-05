@@ -233,7 +233,8 @@ void SetHQx(unsigned int ResX, unsigned int ResY)
 
     if (maxHQ >= 2) {
         GUIHQ2X[cvidmode] = 1;
-        GUIHQ3X[cvidmode] = 0;
+        /* 3x needs a mode at least 768x672; 4x waits on a real hq4x. */
+        GUIHQ3X[cvidmode] = maxHQ >= 3;
         GUIHQ4X[cvidmode] = 0;
     } else {
         GUIHQ2X[cvidmode] = 0;
