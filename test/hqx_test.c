@@ -1,7 +1,8 @@
 /*
  * hq2x filter tests (video/c_hqx.c).
  *
- * Drives hq2x_16b over a synthetic 256x224 source and checks the properties
+ * Drives hq2x_16b and hq3x_16b over a synthetic 256x224 source and checks the
+ * properties
  * the filter has to hold to: the doubler fallback when it is switched off,
  * exact reproduction of a flat field, no writing past the picture, and real
  * interpolation - not replication - across an edge.
@@ -20,6 +21,8 @@
 #define SRC_LINE 288 /* 256 drawn plus the 32-pixel skip */
 #define DSTW 512
 #define PITCH (DSTW * 2)
+#define DSTW3 768
+#define PITCH3 (DSTW3 * 2)
 
 /* Everything video/c_hqx.c reaches for; the emulator owns these normally. */
 u1* vidbuffer;
@@ -40,6 +43,7 @@ u1 FilteredGUI;
 u1 newengen;
 
 void hq2x_16b(void);
+void hq3x_16b(void);
 
 static u2* src_pixels; /* the 256 drawn pixels of each line */
 static u1* dst;
@@ -72,7 +76,8 @@ static void setup(void)
 {
     vidbuffer = calloc(1, 0x100000);
     src_pixels = (u2*)(vidbuffer + 16 * 2 + 256 * 2 + 32 * 2);
-    dst = calloc(1, (size_t)PITCH * H * 2 + 4096);
+    /* Large enough for the 3x surface too, plus a guard band. */
+    dst = calloc(1, (size_t)PITCH3 * H * 3 + 4096);
     WinVidMemStart = dst;
     NumBytesPerLine = PITCH;
     AddEndBytes = 0;
@@ -230,9 +235,101 @@ static void test_no_overrun(void)
     ZT_CHECK(clean);
 }
 
+/* hq3x over its own 3x surface: the same properties, one size up. */
+static void setup3(void)
+{
+    setup();
+    NumBytesPerLine = PITCH3;
+}
+
+static u2 out3(u4 const x, u4 const y) { return ((u2*)(dst + y * PITCH3))[x]; }
+
+static void test3_flat(void)
+{
+    ZT_SECTION("hq3x: a flat field survives the filter unchanged");
+    setup3();
+    fill(0x2B7D);
+    hq3x_16b();
+    int ok = 1;
+    for (u4 y = 0; y < H * 3; y++)
+        for (u4 x = 0; x < DSTW3; x++)
+            if (out3(x, y) != 0x2B7D)
+                ok = 0;
+    ZT_CHECK(ok);
+}
+
+static void test3_filter_off_triples(void)
+{
+    ZT_SECTION("hq3x: hqFilter 0 falls back to pixel tripling");
+    setup3();
+    hqFilter = 0;
+    for (u4 y = 0; y < H; y++)
+        for (u4 x = 0; x < W; x++)
+            src_pixels[y * SRC_LINE + x] = (u2)(x * 11u + y * 7u);
+    hq3x_16b();
+    int ok = 1;
+    for (u4 y = 0; y < H; y++) {
+        for (u4 x = 0; x < W; x++) {
+            u2 const p = src_pixels[y * SRC_LINE + x];
+
+            for (u4 dy = 0; dy < 3; dy++)
+                for (u4 dx = 0; dx < 3; dx++)
+                    if (out3(x * 3 + dx, y * 3 + dy) != p)
+                        ok = 0;
+        }
+    }
+    ZT_CHECK(ok);
+}
+
+static void test3_edge_interpolates(void)
+{
+    ZT_SECTION("hq3x: an edge is interpolated, and the centre stays exact");
+    setup3();
+    u2 const a = 0x0000, b = 0xFFFF;
+    for (u4 y = 0; y < H; y++)
+        for (u4 x = 0; x < W; x++)
+            src_pixels[y * SRC_LINE + x] = (x + y < 128) ? b : a;
+    hq3x_16b();
+
+    int blended = 0, centre_ok = 1;
+    for (u4 y = 0; y < H; y++) {
+        for (u4 x = 0; x < W; x++) {
+            /* The middle of every 3x3 block is the source pixel itself. */
+            if (out3(x * 3 + 1, y * 3 + 1) != src_pixels[y * SRC_LINE + x])
+                centre_ok = 0;
+            for (u4 dy = 0; dy < 3; dy++)
+                for (u4 dx = 0; dx < 3; dx++) {
+                    u2 const p = out3(x * 3 + dx, y * 3 + dy);
+
+                    if (p != a && p != b)
+                        blended = 1;
+                }
+        }
+    }
+    ZT_CHECK(blended);
+    ZT_CHECK(centre_ok);
+}
+
+static void test3_no_overrun(void)
+{
+    ZT_SECTION("hq3x: writes stay inside the 768x672 picture");
+    setup3();
+    size_t const used = (size_t)PITCH3 * H * 3;
+    for (u4 y = 0; y < H; y++)
+        for (u4 x = 0; x < W; x++)
+            src_pixels[y * SRC_LINE + x] = (u2)(x * 5u ^ y * 3u);
+    memset(dst + used, 0x5A, 4096);
+    hq3x_16b();
+    int clean = 1;
+    for (size_t i = 0; i < 4096; i++)
+        if (dst[used + i] != 0x5A)
+            clean = 0;
+    ZT_CHECK(clean);
+}
+
 int main(void)
 {
-    printf("ZSNES2 hq2x filter tests\n");
+    printf("ZSNES2 hqx filter tests\n");
     build_tables();
 
     test_blank();
@@ -242,6 +339,11 @@ int main(void)
     test_edge_interpolates();
     test_threshold();
     test_no_overrun();
+
+    test3_flat();
+    test3_filter_off_triples();
+    test3_edge_interpolates();
+    test3_no_overrun();
 
     ZT_RESULTS();
 }

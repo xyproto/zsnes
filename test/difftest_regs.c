@@ -891,6 +891,66 @@ static void run(void (*fn)(void), u4 a, u4 c, u4 d, state const* in,
     }
 }
 
+void c_reg2104w(u1 al);
+
+/* The behaviour $2104 no longer shares with the assembly, checked directly:
+   see the note in cpu/c_regsppu.c. */
+static int check_oam_mirroring(void)
+{
+    int bad = 0;
+
+    /* The high table repeats every 32 bytes: 0x220 folds to 0x200 and 0x230
+       to 0x210 - the second distinguishes a 0x1f mask from a narrower one. */
+    memset(oamram, 0, sizeof oamram);
+    nosprincr = 0;
+    oamaddr = 0x220u; /* one past the high table */
+    c_reg2104w(0x5Au);
+    if (oamram[0x200] != 0x5A) {
+        printf("  oam mirroring: 0x220 wrote %02X at 0x200, wanted 5A\n",
+            oamram[0x200]);
+        bad = 1;
+    }
+    if (oamaddr != 0x221u) {
+        printf("  oam mirroring: 0x220 left oamaddr %04X, wanted 0221\n",
+            (unsigned)oamaddr);
+        bad = 1;
+    }
+    oamaddr = 0x230u;
+    c_reg2104w(0xA5u);
+    if (oamram[0x210] != 0xA5) {
+        printf("  oam mirroring: 0x230 wrote %02X at 0x210, wanted A5\n",
+            oamram[0x210]);
+        bad = 1;
+    }
+    /* And it really wraps rather than running on into 0x220+. */
+    oamaddr = 0x3F0u;
+    c_reg2104w(0x3Cu);
+    if (oamram[0x210] != 0x3C || oamram[0x3F0] != 0) {
+        printf("  oam mirroring: 0x3F0 did not fold back into the table\n");
+        bad = 1;
+    }
+
+    /* Ten-bit wrap, not a reset to 1. */
+    oamaddr = 0x3FFu;
+    c_reg2104w(0x11u);
+    if (oamaddr != 0) {
+        printf("  oam mirroring: 0x3FF left oamaddr %04X, wanted 0000\n",
+            (unsigned)oamaddr);
+        bad = 1;
+    }
+
+    /* An even address loads the latch whichever table it selects. */
+    oamlow = 0;
+    oamaddr = 0x210u;
+    c_reg2104w(0x77u);
+    if (oamlow != 0x77u) {
+        printf("  oam mirroring: even high write left oamlow %02X, wanted 77\n",
+            oamlow);
+        bad = 1;
+    }
+    return bad;
+}
+
 int main(void)
 {
     dt_fill(wram_init, sizeof wram_init);
@@ -1098,9 +1158,15 @@ int main(void)
         in.bgp0 = (u2)dt_u32();
         in.bgxy0 = dt_u32();
         /* $2104 indexes oamram with the whole dword, so the high half has to
-           be clean here or both sides walk off the array. */
+           be clean here or both sides walk off the array.
+           Known divergence: the port follows snes9x and bsnes above the low
+           table - the high table repeats every 32 bytes, the address wraps at
+           ten bits, and the write latch loads on any even address - where the
+           assembly reset the address to 1 and dropped the byte once past 544.
+           The two agree exactly below 0x200, so the comparison stays there and
+           check_oam_mirroring() covers the rest. */
         if (k->c_fn == reg2104w) {
-            in.oaddr &= 0xFFFFu;
+            in.oaddr &= 0x1FFu;
         }
         /* Same for the VRAM data ports: a dirty high half in vramaddr walks
            the inc8 offset straight off the end of the buffer. */
@@ -1238,6 +1304,10 @@ int main(void)
         if (dt_bad && DT_SHOW()) {
             printf("  ^ %s eax=%x mult=%d A=%04x B=%04x\n", k->name, a, mc, m7a, m7b);
         }
+    }
+    if (check_oam_mirroring()) {
+        printf("PPU register reads and writes: FAIL ($2104 OAM mirroring)\n");
+        return 1;
     }
     DT_DONE("PPU register reads and writes");
 }

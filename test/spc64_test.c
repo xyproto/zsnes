@@ -306,9 +306,30 @@ static u4 rnd(void)
 static u4 digest;
 static void mix(u4 const v) { digest = digest * 16777619u ^ v; }
 
+static int check_div(
+    u1 const a, u1 const y, u1 const x, u1 const want_a, u1 const want_y, u1 const vh)
+{
+    spcA = a;
+    spcY = y;
+    spcX = x;
+    spcP = 0xFF;
+    SpcOp9E(SPCRAM);
+    u1 const nz = want_a & 0x80u ? 0x80u : want_a == 0 ? 0
+                                                       : 1;
+    return spcA != want_a || spcY != want_y || spcNZ != nz
+        || spcP != (u1)(0xB7u | vh);
+}
+
 int main(void)
 {
     u4 op;
+
+    if (check_div(0x34, 0x12, 0x20, 0x91, 0x14, 0x08)
+        || check_div(0xA0, 0x11, 0x12, 0xFA, 0x0C, 0x00)
+        || check_div(0x10, 0x40, 0x20, 0xFF, 0x30, 0x48)
+        || check_div(0x34, 0x12, 0x00, 0xED, 0x34, 0x48)) {
+        return 1;
+    }
 
     digest = 2166136261u;
     for (op = 0; op < 256; op++) {
