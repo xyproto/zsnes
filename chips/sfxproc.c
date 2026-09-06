@@ -278,11 +278,13 @@ uint8_t c_reg303Fr(void)
 {
     return BYTE(SfxCBR, 1);
 }
-REGABI_REG_WRITE8(reg3030w);
-void c_reg3030w(uint8_t v)
+/* The asm also set DH to 10, charging the write against the scanline. */
+REGABI_REG_WRITE8_DX(reg3030w);
+uint32_t c_reg3030w(uint8_t v, uint32_t edx)
 {
     BYTE(SfxSFR, 0) = v;
     BYTE(SfxAC, 0) = 1;
+    return (edx & 0xFFFF00FFu) | (10u << 8);
 }
 REGABI_REG_WRITE8(reg3031w);
 void c_reg3031w(uint8_t v)

@@ -50,6 +50,15 @@
     }                                          \
     void c_##name(uint32_t, uint8_t)
 
+/* $3000 also clears DH: writing the SA-1 kick byte restarts its cycle slice. */
+#define REGABI_BANK_WRITE8_DX(name)                                 \
+    uint32_t c_##name(uint32_t, uint8_t, uint32_t);                 \
+    void name(void)                                                 \
+    {                                                               \
+        MemSeamD = c_##name(MemSeamC, (uint8_t)MemSeamA, MemSeamD); \
+    }                                                               \
+    uint32_t c_##name(uint32_t, uint8_t, uint32_t)
+
 #define REGABI_BANK_WRITE16(name)               \
     void c_##name(uint32_t, uint16_t);          \
     void name(void)                             \

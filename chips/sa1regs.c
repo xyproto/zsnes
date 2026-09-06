@@ -109,8 +109,14 @@ REGABI_BANK_READ8(IRamRead);
 uint8_t c_IRamRead(uint32_t a) { return IRAM[(uint16_t)a - 0x3000]; }
 REGABI_BANK_WRITE8(IRamWrite);
 void c_IRamWrite(uint32_t a, uint8_t v) { IRAM[(uint16_t)a - 0x3000] = v; }
-REGABI_BANK_WRITE8(IRamWrite2);
-void c_IRamWrite2(uint32_t a, uint8_t v) { IRAM[(uint16_t)a - 0x3000] = v; }
+/* Installed at $3000 only. The asm cleared DH here, restarting the scanline
+   cycle count so the SA-1 gets a full slice as soon as the 65816 kicks it. */
+REGABI_BANK_WRITE8_DX(IRamWrite2);
+uint32_t c_IRamWrite2(uint32_t a, uint8_t v, uint32_t edx)
+{
+    IRAM[(uint16_t)a - 0x3000] = v;
+    return edx & 0xFFFF00FFu;
+}
 
 /* ===== Stage 3: control / IRQ / vector writes (0x2200-0x220F) ===== */
 extern uint32_t SA1DoIRQ, SA1BankPtr, SA1ResetV, SA1xpb, SA1xs;
