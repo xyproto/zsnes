@@ -12,7 +12,9 @@
       raw numbered axes and buttons
 - [ ] Check the `SDL_Renderer` path's hi-res, mode 7, filter and scanline
       composition against the OpenGL one; only the lo-res path has been read
-      back and compared so far (`ZSNES_LEGACY_GL=1` selects the old path)
+      back and compared so far (`ZSNES_LEGACY_GL=1` selects the old path). The
+      vertical offset is now settled: every consumer reads source line N+1 for
+      output row N, since scanline 0 is the pre-render line
 - [ ] Port the real hq4x, and the `_32b` twins of all three; those entry
       points in `video/c_hqx.c` are still nearest-neighbour block doublers
 - [ ] Let hq3x run on the `SDL_Renderer` path: `SR_MAXW`/`SR_MAXH`
