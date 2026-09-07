@@ -143,6 +143,8 @@ void* tableadc[256];
    sets both up and reads each side back its own way. MemSeamS is esi, which
    the $2140-$2143 sound-skip hack wants as the program counter. */
 u4 MemSeamA, MemSeamB, MemSeamC, MemSeamD, MemSeamS;
+/* edi, carried for the $2140-$2143 SPC re-enable path (cpu/memseam.h). */
+u4 MemSeamDI;
 /* The instruction stream the sound-skip hack patches. Eight bytes is two more
    than the longest scan plus the pair it writes. */
 static u1 pc_store[8], pc_init[8];

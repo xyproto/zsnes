@@ -143,6 +143,8 @@ u1* snesmap2[1024];
  * taken from it and this test's tables are 1024 entries.
  */
 u4 MemSeamA, MemSeamB, MemSeamC, MemSeamD, MemSeamS;
+/* edi, carried for the $2140-$2143 SPC re-enable path (cpu/memseam.h). */
+u4 MemSeamDI;
 
 /* Small, because it is saved and restored around both runs - without that a
    port that never writes memory would agree with the assembly by inheriting

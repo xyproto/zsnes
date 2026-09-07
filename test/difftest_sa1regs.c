@@ -67,23 +67,18 @@ static u1 bw_store[0x40000];
 static u1 rom_store[0x400000];
 /* Every bank needs 64K of addressable space plus the 4 bytes $230C/$230D read
    at the end of it, or a random VarLenAddr walks off the map. */
-#define MAPSLOT 0x10004u
+enum { MAPSLOT = 0x10004 };
 static u1 map_store[MAPSLOT * 8];
 
 static void map_init(void)
 {
     for (int i = 0; i < 256; i++) {
-        snesmmap[i] = map_store + MAPSLOT * (unsigned)(i & 7);
-        snesmap2[i] = map_store + MAPSLOT * (unsigned)((i + 3) & 7);
+        snesmmap[i] = map_store + (size_t)MAPSLOT * (size_t)(i & 7);
+        snesmap2[i] = map_store + (size_t)MAPSLOT * (size_t)((i + 3) & 7);
     }
 }
 
-void asm_IRamRead(void);
-void asm_IRamWrite(void);
-void asm_IRamWrite2(void);
-#define D(n) void asm_##n(void);
-#include "_sa1regs_decls.h"
-#undef D
+#include "_sa1regs_protos.h"
 
 /* Same trampoline shape as difftest_regs.c: load the registers the assembly
    expects, call, and capture what comes back. */
@@ -115,13 +110,7 @@ __asm__(".text\n"
 void sregs_call(void* fn, u4 eax, u4 ecx, u4 edx);
 
 /* The C entry points are the REGABI thunks, which take their operands from the
-   seam rather than registers. */
-void IRamRead(void);
-void IRamWrite(void);
-void IRamWrite2(void);
-#define D(n) void n(void);
-#include "_sa1regs_decls.h"
-#undef D
+   seam rather than registers; the generated prototypes above declare both. */
 
 typedef struct {
     char const* name;
@@ -131,48 +120,74 @@ typedef struct {
     int iram;
 } sa1case;
 
-#define CASE(n) { #n, asm_##n, n, 0 }
-#define CASE_IRAM(n) { #n, asm_##n, n, 1 }
 static sa1case const cases[] = {
-    CASE_IRAM(IRamRead),
-    CASE_IRAM(IRamWrite),
-    CASE_IRAM(IRamWrite2),
-#define D(n) CASE(n),
-#include "_sa1regs_decls.h"
-#undef D
+#include "_sa1regs_table.h"
 };
 
 /* The state the handlers may touch. Listing the fields rather than memcpy-ing
    the whole .data.sa1state block keeps this inside one object per copy (the
    block is contiguous only by the assembly's construction, not by C) and lets a
    mismatch name the register. */
-#define STATE_FIELDS(F)                                                                                 \
-    F(SA1Mode)                                                                                          \
-    F(SA1Control)                                                                                       \
-    F(SA1BankPtr)                                                                                       \
-    F(SA1ResetV)                                                                                        \
-    F(SA1NMIV)                                                                                          \
-    F(SA1IRQV)                                                                                          \
-    F(SA1IRQEn) F(SA1Message) F(SA1IRQExec) F(SA1IRQEnable)                                             \
-        F(SA1DoIRQ) F(SA1ARC) F(SA1AR1) F(SA1AR2) F(SA1ARR1) F(SA1ARR2)                                 \
-            F(SNSNMIV) F(SNSIRQV) F(SA1DMACount) F(SA1DMAInfo) F(SA1DMAChar)                            \
-                F(SA1DMASource) F(SA1DMADest) F(BWShift) F(BWAndAddr) F(BWAnd)                          \
-                    F(BWRAnd) F(SA1_in_cc1_dma) F(SA1_CC2_line) F(SA1xpb) F(SA1xs)                      \
-                        F(SA1RegPCS) F(SA1BWPtr) F(SA1Ptr) F(SA1Overflow) F(VarLenAddr)                 \
-                            F(VarLenAddrB) F(VarLenBarrel) F(SA1TimerVal) F(SA1TimerSet)                \
-                                F(SA1TimerCount) F(SA1IRQData) F(SNSBWPtr) F(CurBWPtr)                  \
-                                    F(RTCPtr) F(RTCPtr2) F(RTCRest) F(Sdd1Mode) F(Sdd1Bank) F(Sdd1Addr) \
-                                        F(Sdd1NewAddr)
-
+/* The state the handlers may touch. A plain table, not an X-macro: the
+   names sit beside the pointers and a mismatch names the register. */
 static struct {
     char const* name;
     u4* p;
 } const fields[] = {
-#define F(n) { #n, &n },
-    STATE_FIELDS(F)
-#undef F
+    { "SA1Mode", &SA1Mode },
+    { "SA1Control", &SA1Control },
+    { "SA1BankPtr", &SA1BankPtr },
+    { "SA1ResetV", &SA1ResetV },
+    { "SA1NMIV", &SA1NMIV },
+    { "SA1IRQV", &SA1IRQV },
+    { "SA1IRQEn", &SA1IRQEn },
+    { "SA1Message", &SA1Message },
+    { "SA1IRQExec", &SA1IRQExec },
+    { "SA1IRQEnable", &SA1IRQEnable },
+    { "SA1DoIRQ", &SA1DoIRQ },
+    { "SA1ARC", &SA1ARC },
+    { "SA1AR1", &SA1AR1 },
+    { "SA1AR2", &SA1AR2 },
+    { "SA1ARR1", &SA1ARR1 },
+    { "SA1ARR2", &SA1ARR2 },
+    { "SNSNMIV", &SNSNMIV },
+    { "SNSIRQV", &SNSIRQV },
+    { "SA1DMACount", &SA1DMACount },
+    { "SA1DMAInfo", &SA1DMAInfo },
+    { "SA1DMAChar", &SA1DMAChar },
+    { "SA1DMASource", &SA1DMASource },
+    { "SA1DMADest", &SA1DMADest },
+    { "BWShift", &BWShift },
+    { "BWAndAddr", &BWAndAddr },
+    { "BWAnd", &BWAnd },
+    { "BWRAnd", &BWRAnd },
+    { "SA1_in_cc1_dma", &SA1_in_cc1_dma },
+    { "SA1_CC2_line", &SA1_CC2_line },
+    { "SA1xpb", &SA1xpb },
+    { "SA1xs", &SA1xs },
+    { "SA1RegPCS", &SA1RegPCS },
+    { "SA1BWPtr", &SA1BWPtr },
+    { "SA1Ptr", &SA1Ptr },
+    { "SA1Overflow", &SA1Overflow },
+    { "VarLenAddr", &VarLenAddr },
+    { "VarLenAddrB", &VarLenAddrB },
+    { "VarLenBarrel", &VarLenBarrel },
+    { "SA1TimerVal", &SA1TimerVal },
+    { "SA1TimerSet", &SA1TimerSet },
+    { "SA1TimerCount", &SA1TimerCount },
+    { "SA1IRQData", &SA1IRQData },
+    { "SNSBWPtr", &SNSBWPtr },
+    { "CurBWPtr", &CurBWPtr },
+    { "RTCPtr", &RTCPtr },
+    { "RTCPtr2", &RTCPtr2 },
+    { "RTCRest", &RTCRest },
+    { "Sdd1Mode", &Sdd1Mode },
+    { "Sdd1Bank", &Sdd1Bank },
+    { "Sdd1Addr", &Sdd1Addr },
+    { "Sdd1NewAddr", &Sdd1NewAddr },
 };
-#define NFIELDS (sizeof fields / sizeof fields[0])
+
+enum { NFIELDS = sizeof fields / sizeof fields[0] };
 
 typedef struct {
     u4 eax, ecx, edx;
@@ -191,7 +206,6 @@ typedef struct {
 static u4 fld_save[NFIELDS];
 static u1 iram_save[2049];
 static u1 brf_save[16];
-static u1 bw_save[0x40000];
 static u2 irqv_save, nmiv_save;
 static u1* mmap_save[256];
 static u1* map2_save[256];
@@ -204,7 +218,6 @@ static void state_save(void)
         fld_save[i] = *fields[i].p;
     memcpy(iram_save, IRAM, sizeof iram_save);
     memcpy(brf_save, SA1_BRF, sizeof brf_save);
-    memcpy(bw_save, bw_store, sizeof bw_save);
     irqv_save = irqv;
     nmiv_save = nmiv;
     memcpy(mmap_save, snesmmap, sizeof mmap_save);
@@ -220,7 +233,6 @@ static void state_restore(void)
         *fields[i].p = fld_save[i];
     memcpy(IRAM, iram_save, sizeof iram_save);
     memcpy(SA1_BRF, brf_save, sizeof brf_save);
-    memcpy(bw_store, bw_save, sizeof bw_save);
     irqv = irqv_save;
     nmiv = nmiv_save;
     memcpy(snesmmap, mmap_save, sizeof mmap_save);
@@ -253,6 +265,8 @@ int main(void)
     SA1RAMArea = bw_store;
     romdata = rom_store;
     dt_fill(rom_store, sizeof rom_store);
+    dt_fill(bw_store, sizeof bw_store);
+    dt_fill(map_store, sizeof map_store);
     map_init();
 
     DT_MAIN(20260907u, 20000)
@@ -271,7 +285,6 @@ int main(void)
         dt_fill(SDD1BankA, sizeof sdd1_save);
         RTCPtr = dt_mod(20u);
         RTCPtr2 = dt_mod(20u);
-        dt_fill(bw_store, sizeof bw_store);
         SA1RAMArea = bw_store;
         romdata = rom_store;
         SA1BWPtr = (u4)(uintptr_t)bw_store;
@@ -285,7 +298,6 @@ int main(void)
         VarLenAddr &= 0xFFFFu;
         VarLenAddrB &= 0xFFFFu;
         map_init();
-        dt_fill(map_store, sizeof map_store);
         NumofBanks = (rand() & 1) ? 64u : 128u;
         CurrentExecSA1 = (u1)rand();
         SA1Status = (u1)(rand() & 1);
