@@ -146,21 +146,23 @@ static sa1case const cases[] = {
    the whole .data.sa1state block keeps this inside one object per copy (the
    block is contiguous only by the assembly's construction, not by C) and lets a
    mismatch name the register. */
-#define STATE_FIELDS(F)                                                                                     \
-    F(SA1Mode)                                                                                              \
-    F(SA1Control)                                                                                           \
-    F(SA1BankPtr)                                                                                           \
-    F(SA1ResetV) F(SA1NMIV)                                                                                 \
-        F(SA1IRQV) F(SA1IRQEn) F(SA1Message) F(SA1IRQExec) F(SA1IRQEnable)                                  \
-            F(SA1DoIRQ) F(SA1ARC) F(SA1AR1) F(SA1AR2) F(SA1ARR1) F(SA1ARR2)                                 \
-                F(SNSNMIV) F(SNSIRQV) F(SA1DMACount) F(SA1DMAInfo) F(SA1DMAChar)                            \
-                    F(SA1DMASource) F(SA1DMADest) F(BWShift) F(BWAndAddr) F(BWAnd)                          \
-                        F(BWRAnd) F(SA1_in_cc1_dma) F(SA1_CC2_line) F(SA1xpb) F(SA1xs)                      \
-                            F(SA1RegPCS) F(SA1BWPtr) F(SA1Ptr) F(SA1Overflow) F(VarLenAddr)                 \
-                                F(VarLenAddrB) F(VarLenBarrel) F(SA1TimerVal) F(SA1TimerSet)                \
-                                    F(SA1TimerCount) F(SA1IRQData) F(SNSBWPtr) F(CurBWPtr)                  \
-                                        F(RTCPtr) F(RTCPtr2) F(RTCRest) F(Sdd1Mode) F(Sdd1Bank) F(Sdd1Addr) \
-                                            F(Sdd1NewAddr)
+#define STATE_FIELDS(F)                                                                                 \
+    F(SA1Mode)                                                                                          \
+    F(SA1Control)                                                                                       \
+    F(SA1BankPtr)                                                                                       \
+    F(SA1ResetV)                                                                                        \
+    F(SA1NMIV)                                                                                          \
+    F(SA1IRQV)                                                                                          \
+    F(SA1IRQEn) F(SA1Message) F(SA1IRQExec) F(SA1IRQEnable)                                             \
+        F(SA1DoIRQ) F(SA1ARC) F(SA1AR1) F(SA1AR2) F(SA1ARR1) F(SA1ARR2)                                 \
+            F(SNSNMIV) F(SNSIRQV) F(SA1DMACount) F(SA1DMAInfo) F(SA1DMAChar)                            \
+                F(SA1DMASource) F(SA1DMADest) F(BWShift) F(BWAndAddr) F(BWAnd)                          \
+                    F(BWRAnd) F(SA1_in_cc1_dma) F(SA1_CC2_line) F(SA1xpb) F(SA1xs)                      \
+                        F(SA1RegPCS) F(SA1BWPtr) F(SA1Ptr) F(SA1Overflow) F(VarLenAddr)                 \
+                            F(VarLenAddrB) F(VarLenBarrel) F(SA1TimerVal) F(SA1TimerSet)                \
+                                F(SA1TimerCount) F(SA1IRQData) F(SNSBWPtr) F(CurBWPtr)                  \
+                                    F(RTCPtr) F(RTCPtr2) F(RTCRest) F(Sdd1Mode) F(Sdd1Bank) F(Sdd1Addr) \
+                                        F(Sdd1NewAddr)
 
 static struct {
     char const* name;

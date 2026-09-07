@@ -85,9 +85,12 @@ static void SA1switch(zreg* const pedx, u1** const pesi, u2 const vec, int const
     call_membank0w8(cx, (u1)edx);
     cx = ((cx - 1) & stackand) | stackor;
 
-    SA1xs = cx;
+    /* The asm stores cx and bl, i.e. 16 and 8 bits; widening them here would
+       clear upper halves that every other write site preserves (sa1regs.c's
+       reset, and SET8/SET16 throughout the opcode core). */
+    SA1xs = (SA1xs & 0xFFFF0000u) | cx;
 
-    SA1xpb = 0;
+    SA1xpb &= 0xFFFFFF00u;
     u1* const esi = vec & 0x8000 ? snesmmap[0] : snesmap2[0];
     initaddrl = esi;
 
