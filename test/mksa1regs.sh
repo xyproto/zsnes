@@ -102,6 +102,28 @@ with open('_sa1regs_table.h', 'w') as f:
         f.write('    { "%s", asm_%s, %s, %d },\n' % (n, n, n, 1 if n in iram else 0))
 PYEOF2
 
+# The handlers expand macros defined in the same file (BankSwitch, ccall and
+# friends), so carry the definitions across ahead of them. newsym/EXTSYM are
+# skipped: the source's own versions shadow the wrapper's GLOBAL-emitting one
+# and the oracle then links with no exported symbols at all.
+python3 - _sa1regs_src.asm > _sa1regs_inline.mac <<'PYEOF3'
+import re, sys
+
+SKIP = {'newsym', 'extsym'}
+out, on, keep = [], False, True
+for l in open(sys.argv[1], errors='replace').read().split('\n'):
+    m = re.match(r'%i?macro +(\S+)', l, re.I)
+    if m:
+        on = True
+        keep = m.group(1).lower() not in SKIP
+    if on and keep:
+        out.append(l)
+    if on and l.strip().lower() == '%endmacro':
+        on = False
+        keep = True
+print('\n'.join(out))
+PYEOF3
+
 cat > _sa1regs.asm <<'EOF'
 bits 32
 section .note.GNU-stack noalloc noexec nowrite progbits
