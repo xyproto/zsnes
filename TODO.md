@@ -48,6 +48,22 @@
 - [ ] Drop `unix/sockserv.c` and `unix/sockserv.h`, or give them content: both
       hold only the licence header, yet `sockserv.c` is still listed in `SRCS`
       and compiled as an empty translation unit
-- [ ] Check the `glvidbuffer` allocation in `unix/gl_draw.c`; `gl_clearwin()`
-      memsets it immediately afterwards, so a failed `malloc` is a null
-      dereference. Every other allocation in `unix/` is tested
+- [ ] Check the `glvidbuffer` allocation in `unix/gl_draw.c` and
+      `win/gl_draw.c`; both call `gl_clearwin()` immediately afterwards, which
+      memsets it, so a failed `malloc` is a null dereference. Every other
+      allocation in `unix/` and `win/` is tested
+- [ ] Reject a non-positive `DT_ITER` in `test/difftest.h`: `atol()` turns `0`
+      or a typo into zero iterations, so `DT_MAIN` runs nothing and `DT_DONE`
+      prints `PASS (0 iterations bit-identical to asm)` and exits 0. A difftest
+      that always mismatches passes that way
+- [ ] Use or drop `zt_section_fails` in `test/zstest.h`: `ZT_SECTION` assigns it
+      and nothing ever reads it, so the per-section pass/fail count it was meant
+      to give never appears
+- [ ] Clear the pointers in `zstate.c`'s `DeallocRewindBuffer()`,
+      `DeallocPauseFrame()` and `DeallocSystemVars()`: each frees its buffer and
+      leaves it non-NULL, so the `if (StateBackup) free(...)` in
+      `SetupRewindBuffer()` would double-free if a ROM were ever loaded after
+      `ZCleanup()`. Only the exit path calls them today
+- [ ] Honour `TMPDIR` in `zst_roundtrip_check()` (`zstate.c`): the round-trip
+      harness writes fixed `/tmp/zsnes_zst*` paths, which collide between users
+      on a shared machine. Debug builds only (`ZSNES_DEBUG_HOOKS`)
