@@ -412,6 +412,9 @@ static void internal_chapter_add_offset(struct internal_chapter_buf* icb, size_t
 
     if (icb->used == INTERNAL_CHAPTER_BUF_LIM) {
         icb->next = (struct internal_chapter_buf*)malloc(sizeof(struct internal_chapter_buf));
+        if (!icb->next) {
+            return;
+        }
         icb = icb->next;
         memset(icb, 0, sizeof(struct internal_chapter_buf));
     }
@@ -882,6 +885,11 @@ static bool zmv_create(char* filename)
 
         zst_save(zmv_vars.fp, false, true);
         zmv_vars.filename = (char*)malloc(filename_len + 1); //+1 for null
+        if (!zmv_vars.filename) {
+            fclose(zmv_vars.fp);
+            zmv_vars.fp = 0;
+            return false;
+        }
         strcpy(zmv_vars.filename, filename);
 
         debug_input_start;
@@ -1055,7 +1063,7 @@ static void zmv_record_finish(void)
     internal_chapter_write(&zmv_vars.internal_chapters, zmv_vars.fp);
     internal_chapter_free_chain(zmv_vars.internal_chapters.next);
 
-    if (!zmv_vars.filename) {
+    if (zmv_vars.filename) {
         free(zmv_vars.filename);
         zmv_vars.filename = 0;
     }
@@ -1169,6 +1177,11 @@ static bool zmv_open(char* filename)
         fseek(zmv_vars.fp, zmv_open_vars.input_start_pos, SEEK_SET);
 
         zmv_vars.filename = (char*)malloc(filename_len + 1); //+1 for null
+        if (!zmv_vars.filename) {
+            fclose(zmv_vars.fp);
+            zmv_vars.fp = 0;
+            return false;
+        }
         strcpy(zmv_vars.filename, filename);
 
         debug_input_start;
@@ -1475,7 +1488,7 @@ static void zmv_replay_finished(void)
 {
     internal_chapter_free_chain(zmv_vars.internal_chapters.next);
     internal_chapter_free_chain(zmv_open_vars.external_chapters.next);
-    if (!zmv_vars.filename) {
+    if (zmv_vars.filename) {
         free(zmv_vars.filename);
         zmv_vars.filename = 0;
     }
@@ -1564,6 +1577,9 @@ static void zmv_dealloc_rewind_buffer(void)
 
 void zmv_rewind_save(size_t state, bool playback)
 {
+    if (!zmv_rewind_buffer) {
+        return;
+    }
     save_last_joy_state(zmv_rewind_buffer[state].last_joy_state);
     zmv_rewind_buffer[state].file_pos = ftell(zmv_vars.fp) + zmv_vars.write_buffer_loc;
     zmv_rewind_buffer[state].frames = playback ? zmv_open_vars.frames_replayed : zmv_vars.header.frames;
@@ -1572,7 +1588,12 @@ void zmv_rewind_save(size_t state, bool playback)
 
 void zmv_rewind_load(size_t state, bool playback)
 {
-    size_t file_pos = zmv_rewind_buffer[state].file_pos;
+    size_t file_pos;
+
+    if (!zmv_rewind_buffer) {
+        return;
+    }
+    file_pos = zmv_rewind_buffer[state].file_pos;
     load_last_joy_state(zmv_rewind_buffer[state].last_joy_state);
 
     if (playback) {
