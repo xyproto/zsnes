@@ -62,7 +62,7 @@ struct
 bool reloadBuffer(void)
 {
     if (IPSPatch.proccessed == IPSPatch.file_size) {
-        return (false);
+        return false;
     }
 
     IPSPatch.buffer_total = IPSPatch.fp ?
@@ -72,11 +72,11 @@ bool reloadBuffer(void)
 
     IPSPatch.current = IPSPatch.data;
     if (IPSPatch.buffer_total && (IPSPatch.buffer_total <= BUFFER_SIZE)) {
-        return (true);
+        return true;
     }
 
     IPSPatch.buffer_total = 0;
-    return (false);
+    return false;
 }
 
 int IPSget(void)
@@ -103,7 +103,7 @@ bool initPatch(const char* ext)
         IPSPatch.fp = fopen_dir(ZRomPath, ZSaveName, "rb");
     }
     if (!IPSPatch.fp) {
-        return (false);
+        return false;
     }
 
     fseek(IPSPatch.fp, 0, SEEK_END);
@@ -113,7 +113,7 @@ bool initPatch(const char* ext)
     if ((IPSPatch.data = (unsigned char*)malloc(BUFFER_SIZE))) {
         return (reloadBuffer());
     }
-    return (false);
+    return false;
 }
 
 void deinitPatch(void)
@@ -144,14 +144,14 @@ bool PatchUsingIPS(const char* ext)
 
     if (!AutoPatch) {
         deinitPatch(); // Needed if the call to this function was done from findZipIPS()
-        return (false);
+        return false;
     }
 
     if (!IPSPatch.zipfile) // Regular file, not Zip
     {
         if (!initPatch(ext)) {
             deinitPatch(); // Needed because if it didn't fully init, some things could have
-            return (false);
+            return false;
         }
     }
 
@@ -228,7 +228,7 @@ IPSDone:
     deinitPatch();
 
     if (!valid) {
-        return (false);
+        return false;
     }
 
     IPSPatched = true;
@@ -239,7 +239,7 @@ IPSDone:
         NumofBanks = NumofBytes / 32768;
     }
 
-    return (true);
+    return true;
 }
 
 bool findZipIPS(char* compressedfile, const char* ext)
@@ -286,5 +286,5 @@ bool findZipIPS(char* compressedfile, const char* ext)
         unzClose(IPSPatch.zipfile);
         IPSPatch.zipfile = 0;
     }
-    return (false);
+    return false;
 }

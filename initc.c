@@ -161,9 +161,9 @@ uint32_t addOnSize;
 bool validChecksum(uint8_t* ROM, int32_t BankLoc)
 {
     if (ROM[BankLoc + InvCSLowOffset] + (ROM[BankLoc + InvCSHiOffset] << 8) + ROM[BankLoc + CSLowOffset] + (ROM[BankLoc + CSHiOffset] << 8) == 0xFFFF) {
-        return (true);
+        return true;
     }
-    return (false);
+    return false;
 }
 
 bool valid_normal_bank(uint8_t bankbyte)
@@ -173,27 +173,27 @@ bool valid_normal_bank(uint8_t bankbyte)
     case 33:
     case 48:
     case 49:
-        return (true);
+        return true;
         break;
     }
-    return (false);
+    return false;
 }
 
 bool EHiHeader(uint8_t* ROM, int32_t BankLoc)
 {
     if (validChecksum(ROM, BankLoc) && (ROM[BankLoc + BankOffset] == 53 || ROM[BankLoc + BankOffset] == 37)) {
-        return (true);
+        return true;
     }
-    return (false);
+    return false;
 }
 
 // FuSoYa: add support for ExLoROM
 bool ELoHeader(unsigned char* ROM, int BankLoc)
 {
     if (validChecksum(ROM, BankLoc) && (ROM[BankLoc + BankOffset] == 0x30 || ROM[BankLoc + BankOffset] == 0x20)) {
-        return (true);
+        return true;
     }
-    return (false);
+    return false;
 }
 
 void SwapData(uint32_t* loc1, uint32_t* loc2, uint32_t amount)
@@ -290,10 +290,10 @@ bool AllASCII(unsigned char* b, int32_t size)
     int_fast32_t i;
     for (i = 0; i < size; i++) {
         if (b[i] && (b[i] < 32 || b[i] > 126)) {
-            return (false);
+            return false;
         }
     }
-    return (true);
+    return true;
 }
 
 // Common SNES reset sequences, based on Cowering's detector.
@@ -304,56 +304,56 @@ static bool valid_start_sequence(uint8_t opcode1, uint8_t opcode2, uint8_t opcod
     case 0x5c:
     case 0x18:
     case 0xad:
-        return (true);
+        return true;
         break;
     case 0x4b:
         if (opcode2 == 0xab && (opcode3 == 0x18 || opcode3 == 0x20)) {
-            return (true);
+            return true;
         }
         break;
     case 0x4c:
         if ((opcode2 == 0x00 || opcode2 == 0xc0) && opcode3 == 0x84) {
-            return (true);
+            return true;
         }
         if (opcode2 == 0x6d && opcode3 == 0x86) {
-            return (true);
+            return true;
         }
         if (opcode2 == 0x00 && opcode3 == 0x80) {
-            return (true);
+            return true;
         }
         break;
     case 0xc2:
         if (opcode2 == 0x30 && opcode3 == 0xa9) {
-            return (true);
+            return true;
         }
         break;
     case 0x20:
         if ((opcode2 == 0x16 || opcode2 == 0x06) && opcode3 == 0x80) {
-            return (true);
+            return true;
         }
         break;
     case 0x80:
         if ((opcode2 == 0x16 && opcode3 == 0x4c) || (opcode2 == 0x07 && opcode3 == 0x82)) {
-            return (true);
+            return true;
         }
         break;
     case 0x9c:
         if (opcode2 == 0x00 && opcode3 == 0x21) {
-            return (true);
+            return true;
         }
         break;
     case 0xa2:
         if (opcode2 == 0xff && opcode3 == 0x86) {
-            return (true);
+            return true;
         }
         break;
     case 0xa9:
         if ((opcode2 == 0x00 && (opcode3 == 0x48 || opcode3 == 0x4b)) || (opcode2 == 0x8f && opcode3 == 0x8d) || (opcode2 == 0x20 && opcode3 == 0x4b) || (opcode2 == 0x1f && opcode3 == 0x4b)) {
-            return (true);
+            return true;
         }
         break;
     }
-    return (false);
+    return false;
 }
 
 static int16_t valid_reset(uint8_t* Buffer)
@@ -1126,11 +1126,11 @@ bool NSRTHead(uint8_t* ROM)
 
     if (!strncmp("NSRT", (char*)&NSRTHead[24], 4) && NSRTHead[28] == 22) {
         if ((sum(NSRTHead, 32) & 0xFF) != NSRTHead[30] || NSRTHead[30] + NSRTHead[31] != 255 || (NSRTHead[0] & 0x0F) > 13 || ((NSRTHead[0] & 0xF0) >> 4) > 3 || ((NSRTHead[0] & 0xF0) >> 4) == 0) {
-            return (false); // Corrupt
+            return false; // Corrupt
         }
-        return (true); // NSRT header
+        return true; // NSRT header
     }
-    return (false); // None
+    return false; // None
 }
 
 void calculate_state_sizes(void), InitRewindVars(void), zst_init(void);

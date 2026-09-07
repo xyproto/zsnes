@@ -1143,7 +1143,7 @@ bool zst_load(FILE* fp, size_t Compressed)
 
     if (Compressed) {
         if (!zst_load_compressed(fp, Compressed)) {
-            return (false);
+            return false;
         }
     } else {
         char zst_header_check[sizeof(zst_header_cur) - 1];
@@ -1165,7 +1165,7 @@ bool zst_load(FILE* fp, size_t Compressed)
         }
 
         if (!zst_version) {
-            return (false);
+            return false;
         } // Pre v0.60 saves are no longer loaded
 
         if (fseek(fp, -(long)sizeof(zst_header_check), SEEK_CUR) == 0) {
@@ -1176,7 +1176,7 @@ bool zst_load(FILE* fp, size_t Compressed)
             extra = 0;
         }
         if (origin == ZST_UNKNOWN) {
-            return (false);
+            return false;
         }
 
         zst_ppureg_run = (origin == ZST_151) ? ZST_151_PPUREG : 0;
@@ -1235,7 +1235,7 @@ bool zst_load(FILE* fp, size_t Compressed)
         procexecloop();
     }
 
-    return (true);
+    return true;
 }
 
 #ifdef ZSNES_DEBUG_HOOKS

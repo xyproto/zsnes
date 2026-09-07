@@ -357,7 +357,7 @@ static bool zmv_header_read(struct zmv_header* zmv_head, FILE* fp)
     IGNORE_RESULT(fread(&flag, 1, 1, fp));
 
     if (feof(fp)) {
-        return (false);
+        return false;
     }
 
     switch (flag & (BIT(7) | BIT(6))) {
@@ -389,10 +389,10 @@ static bool zmv_header_read(struct zmv_header* zmv_head, FILE* fp)
     }
 
     if (flag & (BIT(4) | BIT(3) | BIT(2) | BIT(1) | BIT(0))) {
-        return (false);
+        return false;
     }
 
-    return (true);
+    return true;
 }
 
 /* Internal chapter types, vars, and functions */
@@ -894,9 +894,9 @@ static bool zmv_create(char* filename)
 
         debug_input_start;
 
-        return (true);
+        return true;
     }
-    return (false);
+    return false;
 }
 
 static void zmv_rle_flush(void)
@@ -1033,9 +1033,9 @@ static bool zmv_insert_chapter(void)
         fwrite4(zmv_vars.header.frames, zmv_vars.fp);
         write_last_joy_state(zmv_vars.fp);
 
-        return (true);
+        return true;
     }
-    return (false);
+    return false;
 }
 
 static void zmv_record_finish(void)
@@ -1186,9 +1186,9 @@ static bool zmv_open(char* filename)
 
         debug_input_start;
 
-        return (true);
+        return true;
     }
-    return (false);
+    return false;
 }
 
 static bool zmv_replay_command(enum zmv_commands command)
@@ -1198,7 +1198,7 @@ static bool zmv_replay_command(enum zmv_commands command)
     default:
         break;
     }
-    return (false);
+    return false;
 }
 
 static void replay_pad(uint8_t pad, uint8_t flag, uint8_t* buffer, size_t* skip_bits)
@@ -1279,12 +1279,12 @@ static bool zmv_replay(void)
                 if (command == zmv_command_reset) {
                     GUIReset = 1;
                     ReturnFromSPCStall = 0;
-                    return (true);
+                    return true;
                 }
                 if (zmv_replay_command(command)) {
                     return (zmv_replay());
                 }
-                return (false);
+                return false;
             }
 
             else if (flag & BIT(1)) // RLE
@@ -1314,10 +1314,10 @@ static bool zmv_replay(void)
         }
 
         zmv_open_vars.frames_replayed++;
-        return (true);
+        return true;
     }
 
-    return (false);
+    return false;
 }
 
 static bool zmv_next_chapter(void)
@@ -1355,10 +1355,10 @@ static bool zmv_next_chapter(void)
         }
 
         zmv_vars.rle_count = 0;
-        return (true);
+        return true;
     }
 
-    return (false);
+    return false;
 }
 
 // Have playback start movie from beginning
@@ -1543,13 +1543,13 @@ static bool zmv_append(char* filename)
 
                 zmv_replay_to_record();
                 zmv_vars.header.rerecords--; // Remove the rerecord count added by replay to record
-                return (true);
+                return true;
             }
         }
         mzt_chdir_down();
         zmv_replay_finished();
     }
-    return (false);
+    return false;
 }
 /* Rewind related functions and vars */
 
@@ -2110,12 +2110,12 @@ static bool raw_video_open(void)
             if (*md_logo) {
                 raw_embed_logo(false);
             }
-            return (true);
+            return true;
         }
         break;
 
     default:
-        return (false);
+        return false;
         break;
     }
 
@@ -2123,7 +2123,7 @@ static bool raw_video_open(void)
         if (*md_logo) {
             raw_embed_logo(false);
         }
-        return (true);
+        return true;
     }
 
     if ((!MovieVideoMode || raw_vid.vp) && MovieAudio) {
@@ -2164,12 +2164,12 @@ static bool raw_video_open(void)
             if (MovieVideoMode && *md_logo) {
                 raw_embed_logo(true);
             }
-            return (true);
+            return true;
         }
     }
 
     raw_video_close();
-    return (false);
+    return false;
 }
 
 static void raw_audio_write(uint32_t samples)

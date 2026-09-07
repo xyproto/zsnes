@@ -332,7 +332,7 @@ static int SoundInit_ao_driver(const char* driver_name)
     } else {
         driver_id = ao_driver_id(driver_name);
         if (driver_id < 0) {
-            return (false);
+            return false;
         }
     }
 
@@ -367,13 +367,13 @@ static int SoundInit_ao_driver(const char* driver_name)
         }
         if (!audio_device) {
             puts("libao: no usable native audio driver found.");
-            return (false);
+            return false;
         }
     } else {
         audio_device = SoundInit_ao_try_open(driver_id, &driver_format, false);
         if (!audio_device) {
             puts("Audio Open Failed");
-            return (false);
+            return false;
         }
     }
 
@@ -381,7 +381,7 @@ static int SoundInit_ao_driver(const char* driver_name)
         ao_info* di = ao_driver_info(driver_id);
         printf("%s: %u channels, %u Hz\n", di->name, driver_format.channels, driver_format.rate);
     }
-    return (true);
+    return true;
 }
 
 static int SoundInit_ao()
@@ -1178,11 +1178,11 @@ static int EnsureSDLAudioSubsystem(void)
 {
     if (!sdl_audio_subsystem) {
         if (!SDL_InitSubSystem(SDL_INIT_AUDIO)) {
-            return (false);
+            return false;
         }
         sdl_audio_subsystem = true;
     }
-    return (true);
+    return true;
 }
 
 static void ShutdownSDLAudioSubsystem(void)
@@ -1213,7 +1213,7 @@ static int SoundInit_sdl_once(void)
     if (!EnsureSDLAudioSubsystem()) {
         SaveSDLError();
         SoundEnabled = 0;
-        return (false);
+        return false;
     }
     SDL_AudioSpec wanted;
 
@@ -1239,14 +1239,14 @@ static int SoundInit_sdl_once(void)
     if (!sdl_audio_stream) {
         SaveSDLError();
         SoundEnabled = 0;
-        return (false);
+        return false;
     }
     if (!SDL_ResumeAudioStreamDevice(sdl_audio_stream)) {
         SaveSDLError();
         SDL_DestroyAudioStream(sdl_audio_stream);
         sdl_audio_stream = NULL;
         SoundEnabled = 0;
-        return (false);
+        return false;
     }
 
     sdl_audio_buffer_len = (samptab[5] * 128 * wanted.channels * 4 + 255) & ~255;
@@ -1256,7 +1256,7 @@ static int SoundInit_sdl_once(void)
 
     sound_sdl = true;
     printf("SDL audio: %u channels, %u Hz\n", wanted.channels, wanted.freq);
-    return (true);
+    return true;
 }
 
 static int SoundInit_sdl(void)
@@ -1268,13 +1268,13 @@ static int SoundInit_sdl(void)
 
     sdl_audio_last_error[0] = '\0';
     if (SoundInit_sdl_once()) {
-        return (true);
+        return true;
     }
 
     env_driver = getenv("SDL_AUDIO_DRIVER");
     hinted_driver = SDL_GetHint(SDL_HINT_AUDIO_DRIVER);
     if ((env_driver && *env_driver) || (hinted_driver && *hinted_driver)) {
-        return (false);
+        return false;
     }
 
     num_drivers = SDL_GetNumAudioDrivers();
@@ -1287,11 +1287,11 @@ static int SoundInit_sdl(void)
         SDL_SetHint(SDL_HINT_AUDIO_DRIVER, driver);
         ShutdownSDLAudioSubsystem();
         if (SoundInit_sdl_once()) {
-            return (true);
+            return true;
         }
     }
 
-    return (false);
+    return false;
 }
 
 int InitSound(void)
@@ -1304,7 +1304,7 @@ int InitSound(void)
     sound_pipewire = false;
 #endif
     if (!SoundEnabled) {
-        return (false);
+        return false;
     }
 
     PrevSoundQuality = SoundQuality;
@@ -1320,7 +1320,7 @@ int InitSound(void)
 
     if (!strcmp(libAoDriver, "none")) {
         SoundEnabled = 0;
-        return (false);
+        return false;
     }
 
 #ifdef __PIPEWIRE__
@@ -1331,7 +1331,7 @@ int InitSound(void)
     if (!strcmp(libAoDriver, "pipewire")) {
         puts("WARNING: PipeWire backend requested, but this build has no PipeWire support.");
         SoundEnabled = 0;
-        return (false);
+        return false;
     }
 #endif
 
@@ -1339,13 +1339,13 @@ int InitSound(void)
 #ifdef __PIPEWIRE__
         prev_sound_enabled = SoundEnabled;
         if (SoundInit_pipewire()) {
-            return (true);
+            return true;
         }
         SoundEnabled = prev_sound_enabled;
 #endif
         prev_sound_enabled = SoundEnabled;
         if (SoundInit_sdl()) {
-            return (true);
+            return true;
         }
         SoundEnabled = prev_sound_enabled;
         if (!warned_auto_fallback) {
@@ -1356,7 +1356,7 @@ int InitSound(void)
             puts("WARNING: Falling back to no audio backend.");
         }
         SoundEnabled = 0;
-        return (false);
+        return false;
     }
 
     if (!strcmp(libAoDriver, "sdl")) {
@@ -1374,7 +1374,7 @@ int InitSound(void)
 #else
     printf("WARNING: Audio backend \"%s\" requested, but this build has no matching support.\n", libAoDriver);
     SoundEnabled = 0;
-    return (false);
+    return false;
 #endif
 }
 

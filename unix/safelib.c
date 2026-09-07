@@ -104,18 +104,18 @@ static bool spc_drop_privileges(void)
     }
 
     if (((newgid != oldgid) && (z_setregid(newgid) == -1)) || ((newuid != olduid) && (z_setreuid(newuid) == -1))) {
-        return (false);
+        return false;
     }
 
     // verify that the changes were successful
     if (newgid != oldgid && (setegid(oldgid) != -1 || getegid() != newgid)) {
-        return (false);
+        return false;
     }
     if (newuid != olduid && (seteuid(olduid) != -1 || geteuid() != newuid)) {
-        return (false);
+        return false;
     }
 
-    return (true);
+    return true;
 }
 
 static int open_devnull(int fd)
@@ -137,10 +137,10 @@ static bool array_contains(int* a, size_t size, int key)
     size_t i;
     for (i = 0; i < size; i++) {
         if (a[i] == key) {
-            return (true);
+            return true;
         }
     }
-    return (false);
+    return false;
 }
 
 static bool spc_sanitize_files(int* a, size_t size, int skip)
@@ -162,10 +162,10 @@ static bool spc_sanitize_files(int* a, size_t size, int skip)
     // open them using /dev/null.  If any are unsuccessful, fail.
     for (fd = 0; fd < 3; fd++) {
         if (fstat(fd, &st) == -1 && (errno != EBADF || !open_devnull(fd))) {
-            return (false);
+            return false;
         }
     }
-    return (true);
+    return true;
 }
 
 // Pass array of file descriptors to leave open

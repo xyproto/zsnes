@@ -267,14 +267,14 @@ void deinit_paths(void)
     if ((x##Path = malloc(PATH_SIZE))) { \
         x##Alloc = true;                 \
     } else {                             \
-        return (false);                  \
+        return false;                    \
     }
 #define INIT_NAME_HELPER(x)              \
     if ((x##Name = malloc(NAME_SIZE))) { \
         x##Alloc = true;                 \
         *x##Name = 0;                    \
     } else {                             \
-        return (false);                  \
+        return false;                    \
     }
 
 bool init_paths(char* launch_command)
@@ -323,9 +323,9 @@ bool init_paths(char* launch_command)
         printf("ZSStatePath: %s\n", ZSStatePath);
         printf("ZMoviePath: %s\n", ZMoviePath);
 #endif
-        return (true);
+        return true;
     }
-    return (false);
+    return false;
 }
 
 static void set_save_path(char** path, char* primary, char* secondary)
@@ -387,9 +387,9 @@ bool init_rom_path(char* path)
         printf("ZStateName: %s\n", ZStateName);
 #endif
 
-        return (true);
+        return true;
     }
-    return (false);
+    return false;
 }
 
 char* strdupcat(const char* str1, const char* str2)

@@ -730,10 +730,10 @@ static bool snes_extension_match(const char* filename)
     if (dot) {
         dot++;
         if (!strcasecmp(dot, "sfc") || !strcasecmp(dot, "zip") || !strcasecmp(dot, "gz") || !strcasecmp(dot, "st") || !strcasecmp(dot, "bs") || !strcasecmp(dot, "smc") || !strcasecmp(dot, "swc") || !strcasecmp(dot, "fig") || !strcasecmp(dot, "dx2") || !strcasecmp(dot, "ufo") || !strcasecmp(dot, "gd3") || !strcasecmp(dot, "gd7") || !strcasecmp(dot, "mgd") || !strcasecmp(dot, "mgh") || !strcasecmp(dot, "048") || !strcasecmp(dot, "058") || !strcasecmp(dot, "078") || !strcasecmp(dot, "bin") || !strcasecmp(dot, "usa") || !strcasecmp(dot, "eur") || !strcasecmp(dot, "jap") || !strcasecmp(dot, "aus") || !strcasecmp(dot, "1") || !strcasecmp(dot, "a")) {
-            return (true);
+            return true;
         }
     }
-    return (false);
+    return false;
 }
 
 #define HEADER_SIZE 512
