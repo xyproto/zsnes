@@ -165,7 +165,7 @@ jobs:
             targets: >-
               spcdec 2xsai fxtable fxops m716t cb16t cb16b spr16bt spr16t spr16p
               t8bt t16bt t8t t16t thi sprwin ngspr procwin mos ngeng ngframe
-              mv16 m7draw m7proc m7bw m7win m7start m7ext2 m7calc regs transp
+              mv16 m7draw m7proc m7bw m7win m7start m7ext2 m7calc regs sa1regs transp
               bgt ng2
     steps:
       - uses: actions/checkout@v6
