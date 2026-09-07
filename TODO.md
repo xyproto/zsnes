@@ -52,10 +52,9 @@
       `win/gl_draw.c`; both call `gl_clearwin()` immediately afterwards, which
       memsets it, so a failed `malloc` is a null dereference. Every other
       allocation in `unix/` and `win/` is tested
-- [ ] Reject a non-positive `DT_ITER` in `test/difftest.h`: `atol()` turns `0`
-      or a typo into zero iterations, so `DT_MAIN` runs nothing and `DT_DONE`
-      prints `PASS (0 iterations bit-identical to asm)` and exits 0. A difftest
-      that always mismatches passes that way
+- [ ] Quieten `difftest_ng2.c`: it includes `difftest.h` but drives its own
+      loop, so `dt_bad`, `dt_fails`, `dt_iters` and its own `setup()` are all
+      compiled unused. Either use `DT_MAIN` there or stop including the header
 - [ ] Use or drop `zt_section_fails` in `test/zstest.h`: `ZT_SECTION` assigns it
       and nothing ever reads it, so the per-section pass/fail count it was meant
       to give never appears
