@@ -1,3 +1,4 @@
+// Impeccable
 /* endmem.asm: emulator scratch tables and buffers. The assembly relied on
    exact symbol order and adjacency, so the layout is reproduced verbatim in an
    inline-asm block. resb N is N bytes, resd N is N*4, resw N is N*2. */

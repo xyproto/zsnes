@@ -1,3 +1,4 @@
+// Looks good
 #ifndef GUICHEAT_H
 #define GUICHEAT_H
 

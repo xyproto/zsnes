@@ -1,3 +1,4 @@
+// Looks good
 #ifndef REGSW_H
 #define REGSW_H
 

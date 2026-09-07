@@ -1,3 +1,4 @@
+// Impeccable
 /* The emulation-loop state block from cpu/execute.asm. The two ALIGN32 gaps
    are filled with 0x90 explicitly: NASM's ALIGN pads with nops even in a data
    section, where .balign would zero-fill. One inline-asm block pins the

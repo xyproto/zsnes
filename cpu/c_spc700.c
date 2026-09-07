@@ -1,3 +1,4 @@
+// Impeccable
 /* Entry points for the SPC700 I/O register ($00F0-$00FF) dispatch. The
    handlers are in cpu/spc_ioregs.h; this only declares the state they touch
    and exposes what the SPC core's WriteByte/ReadByte call. */

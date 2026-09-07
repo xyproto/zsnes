@@ -1,3 +1,4 @@
+// Impeccable
 /*
  * The colour-maths pixel writers shared by the 16t tile drawers:
  * draw8x816t{a,b,c} with their winon/winonb twins, plus the group walkers

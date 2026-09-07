@@ -1,3 +1,4 @@
+// Looks good
 /* SNES NTSC video filter */
 
 /* snes_ntsc 0.2.2 */

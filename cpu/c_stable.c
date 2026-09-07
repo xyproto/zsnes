@@ -1,3 +1,4 @@
+// Looks good
 #include "c_stable.h"
 #include "../endmem.h"
 #ifndef lengthof

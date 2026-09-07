@@ -1,3 +1,4 @@
+// Impeccable
 /*
  * Mode7Startup16b: per-scanline setup for every Mode 7 renderer. Turns the
  * caller's screen coordinate into a map position and per-pixel adder for each

@@ -1,3 +1,4 @@
+// Impeccable
 /*
  * Copyright (C) 1997-2008 ZSNES Team ( zsKnight, _Demo_, pagefault, Nach )
  *

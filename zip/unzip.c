@@ -1,3 +1,4 @@
+// Looks good
 /* unzip.c -- IO on .zip files using zlib
    Version 0.15 beta, Mar 19th, 1998,
 

@@ -1,3 +1,4 @@
+// Impeccable
 #ifndef MEMSEAM_H
 #define MEMSEAM_H
 

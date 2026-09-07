@@ -1,3 +1,4 @@
+// Impeccable
 /* The SA-1's 65816 core, from cpu/se65816.inc - which is cpu/e65816.inc over a
    different register file, differing in 42 of 2012 lines, all EXTSYM lists and
    a debugger hook. So cpu/ops65816.h is included again here with the renamed

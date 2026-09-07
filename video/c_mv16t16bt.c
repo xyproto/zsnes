@@ -1,3 +1,4 @@
+// Impeccable
 /*
  * draw16x1616bt and draw16x1616btwinon: the 16x16 tile drawer that produces
  * the transparency buffer. The same eight-pixel rows as the 8x8 form

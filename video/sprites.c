@@ -1,3 +1,4 @@
+// Impeccable
 // sprites.c - C11 port of the sprite routines (processsprites / processspritesb /
 // cachesprites) from vcache.asm.  Faithful, bug-for-bug translation of the 32-bit
 // x86 assembly: register widths, wrap-around and quirks are replicated exactly.

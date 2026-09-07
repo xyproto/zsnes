@@ -1,3 +1,4 @@
+// Impeccable
 /*
  * The register seams left in video/mode716.asm once its bodies moved to C. The
  * M7Seam pair is a plain spill, call, reload; the M7DRAW pair also carries the

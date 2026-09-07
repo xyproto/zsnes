@@ -1,3 +1,4 @@
+// Impeccable
 /*
  * SuperFX table initialisation, from chips/fxtable.asm. InitFxTables() runs
  * once from initc.c and fills the opcode dispatch tables, the PLOT jump

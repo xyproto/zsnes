@@ -1,3 +1,4 @@
+// Looks good
 #ifndef BURN_H
 #define BURN_H
 

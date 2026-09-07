@@ -1,3 +1,4 @@
+// Impeccable
 /*
  * SPC700 I/O register ($00F0-$00FF) handlers, from the SPCRegF0..FF and
  * RSPCRegF0..FF routines in cpu/spc700.asm. Textual include (cpu/c_spc700.c),

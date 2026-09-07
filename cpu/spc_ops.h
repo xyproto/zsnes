@@ -1,3 +1,4 @@
+// Impeccable
 /*
  * SPC700 opcode handlers, from cpu/spc700.asm. Textual include
  * (cpu/c_spc700.c), which supplies the integer typedefs, SPCRAM[],

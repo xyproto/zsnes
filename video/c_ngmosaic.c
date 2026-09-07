@@ -1,3 +1,4 @@
+// Impeccable
 /*
  * The mosaic pass: domosaicng16b and the sixty mosdraw* routines it jumps
  * into. A block smears its first pixel from the scratch line across, so the

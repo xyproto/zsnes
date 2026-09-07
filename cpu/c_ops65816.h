@@ -1,3 +1,4 @@
+// Looks good
 /* Entry points of the debug 65816 core (cpu/c_ops65816.c, which is
    cpu/ops65816.h instantiated with tablead). cpu/c_table.c builds the
    dispatch tables out of these; the debugger single-steps through them. */

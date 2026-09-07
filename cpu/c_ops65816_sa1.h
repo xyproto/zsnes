@@ -1,3 +1,4 @@
+// Impeccable
 /* Entry points of the SA-1's 65816 core (cpu/c_ops65816_sa1.c, which is
    cpu/ops65816.h instantiated with the SA-1's register file and SA1tablead).
    cpu/c_stable.c builds the dispatch tables out of these. */

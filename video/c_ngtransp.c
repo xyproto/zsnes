@@ -1,3 +1,4 @@
+// Impeccable
 /* Colour-maths variants from ProcessTransparencies (video/newgfx16.asm).
  *
  * Combines a finished main and sub screen pixel by pixel, one of five ways

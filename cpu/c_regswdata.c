@@ -1,3 +1,4 @@
+// Impeccable
 /* The .data and .bss blocks from cpu/regsw.inc. The six sprite tables were
    file-local labels inside reg2101w, indexed `.objsize1+ebx`; they are global
    here (reg2101w_*) and that indexing still relies on their order and

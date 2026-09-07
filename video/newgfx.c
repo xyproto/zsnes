@@ -1,3 +1,4 @@
+// Impeccable
 /* C port of video/newgfx.asm: new-graphics-engine scratch state.
 
    Everything left in newgfx.asm was pure data; the code moved to

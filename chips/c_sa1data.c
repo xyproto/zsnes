@@ -1,3 +1,4 @@
+// Impeccable
 /* The .bss block left in chips/sa1proc.asm. zstate.c saves three bytes from
    SA1Status, so those stay adjacent and in this order; prevedi holds a host
    pointer, so it is pointer-wide and outside the saved run. Its own file so

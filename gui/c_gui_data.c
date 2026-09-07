@@ -1,3 +1,4 @@
+// Impeccable
 /* C port of gui.asm + guiwindp.inc data (GUI state, menus, paths).
    Byte-exact with the original NASM data; generated then verified. */
 #include "../types.h"

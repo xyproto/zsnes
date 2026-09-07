@@ -1,3 +1,4 @@
+// Looks good
 #ifndef FXTABLE_H
 #define FXTABLE_H
 

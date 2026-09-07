@@ -1,3 +1,4 @@
+// Impeccable
 /* The SuperFX register and state block from chips/fxemu2.asm; the opcode
    handlers are in chips/c_fxops.c. PHnum2writesfxreg is the byte distance from
    SfxR0 to the end of the cache RAM, which zstate.c uses as a save-state block

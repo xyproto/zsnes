@@ -1,3 +1,4 @@
+// Looks good
 #ifndef INITC_H
 #define INITC_H
 

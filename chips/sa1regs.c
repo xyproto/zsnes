@@ -1,3 +1,4 @@
+// Impeccable
 /* C port of sa1regs.asm (SA-1 register interface). STAGE 1: data block.
    SA1Mode..IRAM must stay contiguous and in this exact order: zstate.c saves
    the run &SA1Mode .. PHnum2writesa1reg bytes. Shared with sa1proc.asm (asm). */

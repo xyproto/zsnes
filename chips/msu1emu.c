@@ -1,3 +1,4 @@
+// Looks good
 /*
 Copyright (C) 2023 Sneed, ZSNES Team ( zsKnight, _Demo_, pagefault, Nach )
 

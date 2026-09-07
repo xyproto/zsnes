@@ -1,3 +1,4 @@
+// Impeccable
 /* The three gating macros from video/newg162.asm: the decision tree picking
    one of about eight bodies. Each ended by jumping to a label passed as a macro
    argument, so these report the branch in ng_branch and the seam jumps on it.

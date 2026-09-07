@@ -1,3 +1,4 @@
+// Impeccable
 /*
  * The line-state half of newengine16b (video/newgfx16.asm): once per scanline
  * it records scroll, pointers, mode, mosaic and palette into 256-entry tables,
