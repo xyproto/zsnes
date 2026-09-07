@@ -1,3 +1,4 @@
+// Looks good
 #ifndef M716TEXT_H
 #define M716TEXT_H
 

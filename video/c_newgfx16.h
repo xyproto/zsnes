@@ -1,3 +1,4 @@
+// Looks good
 #ifndef C_NEWGFX16_H
 #define C_NEWGFX16_H
 

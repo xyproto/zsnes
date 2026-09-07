@@ -1,3 +1,4 @@
+// Impeccable
 #ifndef C_MODE716WRITE_H
 #define C_MODE716WRITE_H
 

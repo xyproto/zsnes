@@ -1,3 +1,4 @@
+// Looks good
 #ifndef C_MODE716GATE_H
 #define C_MODE716GATE_H
 

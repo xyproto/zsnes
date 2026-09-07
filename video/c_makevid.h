@@ -1,3 +1,4 @@
+// Looks good
 #ifndef C_MAKEVID_H
 #define C_MAKEVID_H
 

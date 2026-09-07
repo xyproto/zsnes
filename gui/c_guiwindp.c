@@ -1,3 +1,4 @@
+// Some work to be done here, please look at TODO.md
 #include <stdio.h>
 #include <string.h>
 
@@ -976,7 +977,9 @@ static u1 glscslidSet(void const* const p1) // slider variable
 static char const* glscslidText(void const* const p1) // slider var, text
 {
     static char GUIVideoTextB2z[] = "---%";
-    sprintf(GUIVideoTextB2z, "%3d", *(u1 const*)p1);
+    /* The percent sign is part of the label: the asm wrote digits into the
+       leading columns only, so sprintf must put its NUL past it. */
+    sprintf(GUIVideoTextB2z, "%3d%%", *(u1 const*)p1);
     return GUIVideoTextB2z;
 }
 
@@ -988,7 +991,7 @@ static u1 NTSCslidSet(void const* const p1) // slider variable
 static char const* NTSCslidText(void const* const p1) // slider var, text
 {
     static char GUIVideoTextCD3[] = "----%";
-    sprintf(GUIVideoTextCD3, "%4d", *(s1 const*)p1);
+    sprintf(GUIVideoTextCD3, "%4d%%", *(s1 const*)p1);
     return GUIVideoTextCD3;
 }
 

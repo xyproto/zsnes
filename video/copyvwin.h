@@ -1,3 +1,4 @@
+// Looks good
 #ifndef COPYVWIN_H
 #define COPYVWIN_H
 
