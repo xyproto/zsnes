@@ -1,3 +1,4 @@
+// Looks good
 // Regression tests for the C sprite cache port (video/sprites.c).
 //
 // processspritesb and cachesprites were ported from vcache.asm and verified

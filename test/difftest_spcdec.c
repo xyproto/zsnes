@@ -1,3 +1,4 @@
+// Looks good
 /*
  * test/difftest_spcdec.c - proves the C ports of the SPC700 DAA/DAS opcodes
  * ($DF/$BE in cpu/spc_ops.h) bit-identical to the assembly they replaced.

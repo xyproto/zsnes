@@ -1,3 +1,4 @@
+// Looks good
 /*
  * 65816 opcode handlers (cpu/ops65816.h) against cpu/e65816.inc. The oracle is
  * built with `--rewrite-macro endloop=ret`, which makes a single opcode

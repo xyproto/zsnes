@@ -1,3 +1,4 @@
+// Looks good
 /* Differential test: drawmode7ngextbg216b in video/mode716.asm against the C
  * port in video/c_mode716ext2.c.
  *

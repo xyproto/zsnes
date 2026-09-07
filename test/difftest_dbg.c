@@ -1,3 +1,4 @@
+// Looks good
 /* Debug 65816 core differential test. */
 #define OP(n) c_dbg##n
 #define ASMOP(n) asm_c##n

@@ -1,3 +1,4 @@
+// Looks good
 /* spc64_test - the SPC700 core run identically at 32 and 64 bits.
  *
  * cpu/spc_ops.h is a textual include with a small, self-contained set of

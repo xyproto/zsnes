@@ -1,3 +1,4 @@
+// Looks good
 /*
  * difftest_sa1regs.c - SA-1 register handlers (chips/sa1regs.c) against the
  * assembly they were ported from.

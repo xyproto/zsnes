@@ -1,3 +1,4 @@
+// Looks good
 /* Differential test: the direct-page memory handlers in cpu/memory.asm against
  * the C port in cpu/mem_ops.h.
  *

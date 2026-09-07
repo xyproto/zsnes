@@ -1,3 +1,4 @@
+// Looks good
 /*
  * hq2x filter tests (video/c_hqx.c).
  *

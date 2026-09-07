@@ -1,3 +1,4 @@
+// Looks good
 /*
  * test/difftest_transp.c - the colour-maths loops of ProcessTransparencies
  * (video/newgfx16.asm) against video/c_ngtransp.c.

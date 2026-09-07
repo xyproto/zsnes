@@ -1,3 +1,4 @@
+// Looks good
 /* Differential test: original InitFxTables (assembly) vs the C port. */
 #include "../chips/fxtable.h"
 #include "../endmem.h"

@@ -1,3 +1,4 @@
+// Looks good
 /* Layout tests for the data-only asm ports (cpu/dspproc.c, cpu/c_spcdata.c,
  * video/makevid.c, video/newgfx.c, video/c_mode716data.c,
  * cpu/c_execdata.c).

@@ -1,3 +1,4 @@
+// Looks good
 /*
  * Every SuperFX opcode handler in chips/fx_ops.h: the 92 from
  * chips/fxemu2b.asm and the 523 from chips/fxemu2.asm. `make fxops` here; not

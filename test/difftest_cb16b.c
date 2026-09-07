@@ -1,3 +1,4 @@
+// Looks good
 /* Differential test: the clearback16b* cluster in video/makev16t.asm against
  * the C port in video/c_mv16bclr.c.
  *

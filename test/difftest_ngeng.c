@@ -1,3 +1,4 @@
+// Looks good
 /* The tail of newengine16b (video/newgfx16.asm) against the end of
  * video/c_ngline.c. The oracle is HEAD's copy, not the pre-port one: the first
  * two thirds of the routine became C earlier and the assembly already reached

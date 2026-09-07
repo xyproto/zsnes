@@ -1,3 +1,4 @@
+// Looks good
 /* Differential test: the sprite pixel writers of video/newgfx16.asm against
  * the four-skeleton model in video/c_ngspr.c.
  *

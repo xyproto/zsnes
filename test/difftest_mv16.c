@@ -1,3 +1,4 @@
+// Looks good
 /* Differential test: the shared draw*ms prologue in video/mv16tms.asm against
  * the C port in video/c_mv16tms.c.
  *

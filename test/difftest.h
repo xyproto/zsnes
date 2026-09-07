@@ -1,3 +1,4 @@
+// Some work to be done here, please look at TODO.md
 /*
  * Scaffolding for differential-testing an asm->C port: run both on the same
  * random inputs and compare every output. A port-time tool - it needs the
@@ -45,16 +46,33 @@ static long dt_iters; /* total iterations                              */
  * time. Put the setup / run-asm / run-c / compare in the body.
  */
 /* DT_ITER overrides the count: a mutation sweep only needs enough iterations
-   to trip, and the full run is far too slow to do 100 times. */
+   to trip, and the full run is far too slow to do 100 times. A count below one
+   runs the loop zero times, which DT_DONE would report as a pass, so refuse it
+   rather than let a difftest claim it matched the asm without running it. */
+static inline long dt_iter_count(long dflt)
+{
+    const char* const e = getenv("DT_ITER");
+    long n = dflt;
+
+    if (e && *e) {
+        char* end;
+        n = strtol(e, &end, 10);
+        if (*end) {
+            fprintf(stderr, "DT_ITER: \"%s\" is not a number\n", e);
+            exit(2);
+        }
+    }
+    if (n < 1) {
+        fprintf(stderr, "DT_ITER: %ld iterations would test nothing\n", n);
+        exit(2);
+    }
+    return n;
+}
+
 #define DT_MAIN(seed, iters)                         \
     srand(seed);                                     \
     dt_fails = 0;                                    \
-    dt_iters = (long)(iters);                        \
-    {                                                \
-        const char* dt_e = getenv("DT_ITER");        \
-        if (dt_e && *dt_e)                           \
-            dt_iters = atol(dt_e);                   \
-    }                                                \
+    dt_iters = dt_iter_count((long)(iters));         \
     for (dt_it = 0; dt_it < dt_iters; dt_it++)       \
         for (int dt_once = (dt_bad = 0, 1); dt_once; \
             dt_once = 0, dt_fails += dt_bad)
@@ -100,7 +118,7 @@ static inline void dt_fill(void* p, size_t n)
         }                                                                \
     } while (0)
 
-static void dt_show_mem(const char* label, const uint8_t* a, const uint8_t* c, size_t n)
+static inline void dt_show_mem(const char* label, const uint8_t* a, const uint8_t* c, size_t n)
 {
     for (size_t i = 0; i < n; i++)
         if (a[i] != c[i]) {

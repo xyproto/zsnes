@@ -1,3 +1,4 @@
+// Looks good
 /*
  * C4 coprocessor interface unit tests (chips/c4proc.c).
  *

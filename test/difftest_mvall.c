@@ -1,3 +1,4 @@
+// Looks good
 /* Differential test: every draw*ms routine in video/mv16tms.asm against the C
  * port in video/c_mv16tms.c + video/c_mv16tsms.c + video/c_mv16msgate.c.
  *

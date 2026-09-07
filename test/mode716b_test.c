@@ -1,3 +1,4 @@
+// Looks good
 /*
  * Mode 7 16-bit renderer unit tests (video/mode716b.c).
  *

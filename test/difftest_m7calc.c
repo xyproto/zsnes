@@ -1,3 +1,4 @@
+// Looks good
 /* Differential test: CalculateNewValues in video/mode716.asm against the C
  * port in video/c_mode716calc.c.
  *

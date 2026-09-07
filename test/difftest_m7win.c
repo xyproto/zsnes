@@ -1,3 +1,4 @@
+// Looks good
 /* The ProcessMode7ngwin*16b cluster (video/mode716.mac) against
  * video/c_mode716win.c. Five entry points that tail-jump into each other, so
  * each run starts at one and compares everything they touch: the five

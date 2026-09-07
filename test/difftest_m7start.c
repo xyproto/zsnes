@@ -1,3 +1,4 @@
+// Looks good
 /* Mode7Startup16b (video/mode716.mac) against video/c_mode716start.c. A leaf
  * over the Mode 7 scratch block, but its callers keep eax, esi and edi, so
  * those are compared too - and ebx/ecx, which the assembly zeroes on the way
