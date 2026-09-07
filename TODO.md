@@ -36,3 +36,18 @@
 - [ ] Improve the netplay code, and bring back what 1.42n had (#2), possibly with a dedicated server.
 - [ ] Port netplay to the Windows build (`gui/c_guiwindp.c`)
 - [ ] Re-enable the FreeBSD, OpenBSD and NetBSD CI jobs
+- [ ] Make `zstate.h` self-contained: it uses `u4` without including `types.h`,
+      so it only compiles when a caller includes that first, and it declares
+      `statesaver()` and `SaveSramData()` twice
+- [ ] Give `gblvars.h` an include guard; it is only safe to include twice today
+      because it holds nothing but `extern` declarations
+- [ ] Check the allocations in `zmovie.c`: the chapter-buffer `malloc` (line
+      ~413), both `zmv_vars.filename` allocations and the rewind buffer are
+      dereferenced without a NULL test, while the author buffer nearby is
+      tested — make them consistent
+- [ ] Drop `unix/sockserv.c` and `unix/sockserv.h`, or give them content: both
+      hold only the licence header, yet `sockserv.c` is still listed in `SRCS`
+      and compiled as an empty translation unit
+- [ ] Check the `glvidbuffer` allocation in `unix/gl_draw.c`; `gl_clearwin()`
+      memsets it immediately afterwards, so a failed `malloc` is a null
+      dereference. Every other allocation in `unix/` is tested
