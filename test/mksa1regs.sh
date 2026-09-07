@@ -1,0 +1,119 @@
+#!/bin/sh
+# mksa1regs.sh - build the asm oracle for difftest_sa1regs.c.
+#
+# Extracts the SA-1 register handlers as they were before the port into
+# _sa1regs.o, renaming each to asm_*. The C side (../chips/sa1regs.c) owns the
+# state block, so both implementations act on the same globals.
+set -e
+
+REV=$1
+if [ -z "$REV" ]; then
+    for r in $(./asmgit.sh log --format=%H -- chips/sa1regs.asm); do
+        if ./asmgit.sh show "${r}:chips/sa1regs.asm" | grep -q '^NEWSYM IRamWrite2'; then
+            REV=$r
+            break
+        fi
+    done
+fi
+[ -n "$REV" ] || { echo "mksa1regs.sh: no pre-port chips/sa1regs.asm found" >&2; exit 1; }
+
+./asmgit.sh show "${REV}:chips/sa1regs.asm" > _sa1regs_src.asm
+
+python3 - _sa1regs_src.asm sa1regs.list > _sa1regs.inc <<'PYEOF'
+import re, sys
+src = open(sys.argv[1]).read().split('\n')
+want = set(open(sys.argv[2]).read().split())
+
+# Two shapes, as in mkregs.sh: several handlers are stacked aliases sharing one
+# body (the whole $2240..$224E bitmap file), and several bodies have more than
+# one `ret`. A NEWSYM seen before any instruction is an alias of the same body;
+# one seen after ends the handler.
+out, cur, emitted, found = [], None, False, set()
+
+def start(name):
+    global cur, emitted
+    cur = name if name in want else None
+    emitted = False
+    if cur:
+        found.add(cur)
+        out.append('NEWSYM asm_' + cur)
+
+for l in src:
+    m = re.match(r'NEWSYM +(\w+)', l.strip())
+    if m:
+        if cur and not emitted and m.group(1) in want:
+            found.add(m.group(1))
+            out.append('NEWSYM asm_' + m.group(1))
+            continue
+        start(m.group(1))
+        continue
+    # SA1QuickF <name>, <target> expands to a whole handler; emit it directly.
+    q = re.match(r'SA1Quick([FW]?) +(\w+), *(\S+)', l.strip())
+    if q:
+        cur, emitted = None, False
+        if q.group(2) in want:
+            found.add(q.group(2))
+            out.extend(['NEWSYM asm_' + q.group(2),
+                        '    mov [%s],al' % q.group(3), '    ret'])
+        continue
+    if re.match(r'[A-Za-z_]', l) and not re.match(r'(section |%)', l, re.I):
+        cur = None
+        continue
+    body_drop = (re.match(r'section ', l.strip(), re.I)
+                 or (l.strip().startswith('%')
+                     and not re.match(r'%(if|else|elif|endif)', l.strip(), re.I)))
+    if cur and not body_drop:
+        out.append(l)
+        if l.strip():
+            emitted = True
+
+missing = want - found
+if missing:
+    sys.exit('mksa1regs.sh: not found: ' + ' '.join(sorted(missing)))
+print('\n'.join(out))
+PYEOF
+echo "mksa1regs.sh: extracted $(grep -c '^NEWSYM asm_' _sa1regs.inc) handlers from ${REV}"
+
+# Declarations for difftest_sa1regs.c, kept in step with sa1regs.list.
+python3 - sa1regs.list > _sa1regs_decls.h <<'PYEOF2'
+import sys
+skip = {'IRamRead', 'IRamWrite', 'IRamWrite2'}   # spelled out in the .c
+print("/* Generated from sa1regs.list by mksa1regs.sh; do not edit. */")
+for n in open(sys.argv[1]).read().split():
+    if n not in skip:
+        print("D(%s)" % n)
+PYEOF2
+
+cat > _sa1regs.asm <<'EOF'
+bits 32
+section .note.GNU-stack noalloc noexec nowrite progbits
+%imacro newsym 1
+  GLOBAL %1
+  %1:
+%endmacro
+%imacro newsym 2+
+  GLOBAL %1
+  %1: %2
+%endmacro
+EOF
+# The state block lives in chips/sa1regs.c; everything else the bodies touch is
+# defined by the difftest. Declaring them all EXTERN keeps the oracle free of
+# its own copies, so both sides really do share one state.
+for s in BWAnd BWAndAddr BWRAnd BWShift BWUsed2 CurBWPtr CurrentExecSA1 curypos \
+         debstop3 IRAM irqv irqv2 nmiv nmiv2 romdata SA1AR1 SA1AR2 SA1ARC \
+         SA1ARR1 SA1ARR2 SA1BankPtr SA1BWPtr SA1_BRF SA1_CC2_line SA1Control \
+         SA1DMAChar SA1DMACount SA1DMADest SA1DMAInfo SA1DMASource SA1DoIRQ \
+         SA1_in_cc1_dma SA1IRQData SA1IRQEn SA1IRQEnable SA1IRQExec SA1IRQV \
+         SA1Message SA1NMIV SA1Overflow SA1Ptr SA1RAMArea SA1RegPCS SA1ResetV \
+         SA1Status SA1TimerCount SA1TimerSet SA1TimerVal SA1xpb SA1xs SNSBWPtr \
+         SNSIRQV SNSNMIV VarLenAddr VarLenAddrB VarLenBarrel \
+         SA1_DMA_CC2 sa1dmairam sa1dmabwram UpdateArithStuff memaccessbankr8sdd1; do
+    echo "EXTERN $s" >> _sa1regs.asm
+done
+cat >> _sa1regs.asm <<'EOF'
+section .text
+%include "_sa1regs.inc"
+EOF
+
+${ASM:-nasm} -f elf32 -w-orphan-labels -I. _sa1regs.asm -o _sa1regs.o
+echo "mksa1regs.sh: oracle built ($(grep -c '^NEWSYM asm_' _sa1regs.inc) handlers)"

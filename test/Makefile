@@ -94,7 +94,7 @@ $(PBUILD)/%.o:
 
 OBJS      := $(PBUILD)/zpath.o
 
-.PHONY: all run clean spc64 2xsai bgt procwin spcdec fxtable fxops memops m7calc m7ext2 m7start m7win m7bw m7proc m7draw mv16 mvs mvall m716t cb16t cb16b spr16bt spr16t spr16p t8bt t16bt t8t t16t t8to thi mos sprwin ngspr regs ngeng ngframe op sa1op dbgop transp ng2
+.PHONY: all run clean spc64 2xsai bgt procwin spcdec fxtable fxops memops m7calc m7ext2 m7start m7win m7bw m7proc m7draw mv16 mvs mvall m716t cb16t cb16b spr16bt spr16t spr16p t8bt t16bt t8t t16t t8to thi mos sprwin ngspr regs sa1regs ngeng ngframe op sa1op dbgop transp ng2
 
 all: $(BIN) $(NETPLAY) $(ST10) $(ST11) $(OBC1) $(MSU1) $(DSP2) $(SAI) $(SA1) $(SPC7110) $(VCACHE) $(SPRITES) $(HQX) $(C4) $(MODE7) $(ASMDATA)
 
@@ -494,6 +494,11 @@ regs: difftest_regs.c difftest.h mkregs.sh regs.list ../cpu/c_regsppu.c
 	./mkregs.sh
 	$(CC) $(CFLAGS) difftest_regs.c ../cpu/c_regsppu.c _regs.o $(NOPIE) -o difftest_regs
 	@./difftest_regs
+
+sa1regs: difftest_sa1regs.c difftest.h mksa1regs.sh sa1regs.list ../chips/sa1regs.c
+	./mksa1regs.sh
+	$(CC) $(CFLAGS) difftest_sa1regs.c ../chips/sa1regs.c _sa1regs.o $(NOPIE) -o difftest_sa1regs
+	@./difftest_sa1regs
 
 run: all
 	@./$(BIN)
