@@ -151,7 +151,8 @@ WARN_FLAGS ?= -Wall -Werror=unused-variable -Wno-address-of-packed-member \
               -Wduplicated-cond -Wduplicated-branches -Wlogical-op \
               -Wshift-overflow=2 -Warray-bounds=2 -Wsign-compare \
               -Wimplicit-fallthrough=3 -Wundef \
-              -Wstrict-prototypes -Wold-style-definition -Wwrite-strings
+              -Wstrict-prototypes -Wold-style-definition -Wwrite-strings \
+              -Wjump-misses-init -Wformat=2
 # x86 uses absolute addressing; ARM and Darwin require PIC.
 PIC_FLAGS := $(if $(or $(filter arm64,$(CPU)),$(filter DARWIN,$(ARCH))),,-no-pie -fno-pic)
 # XSI exposes setreuid/setregid on Linux and the BSDs.
