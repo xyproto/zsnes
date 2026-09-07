@@ -39,7 +39,6 @@ int CheckBattery(void)
     if (ac_dir) {
         char fnbuf[284]; // longer than len(ac)+len(HEXDIGIT*4)+len({state|info})
         FILE* fp;
-        const char* pattern = " %39[^:]: %39[ -~]"; // for sscanf
         char line[80], key[40], arg[40];
 
         struct dirent* ent;
@@ -51,7 +50,7 @@ int CheckBattery(void)
             snprintf(fnbuf, sizeof fnbuf, "%s%s/state", ac, ent->d_name);
             fp = fopen(fnbuf, "r");
             if (fp) {
-                while (fgets(line, 80, fp) && sscanf(line, pattern, key, arg) == 2) {
+                while (fgets(line, 80, fp) && sscanf(line, " %39[^:]: %39[ -~]", key, arg) == 2) {
                     if (!strcmp(key, "state")) {
                         if (!strcmp(arg, "on-line")) {
                             battery = 0;
@@ -81,7 +80,6 @@ static void update_battery_info(void)
     if (batt_dir) {
         char fnbuf[284]; // longer than len(ac)+len(d_name)+len({state|info})
         FILE* fp;
-        const char* pattern = " %39[^:]: %39[ -~]"; // for sscanf
         char line[80], key[40], arg[40];
 
         float x, design_capacity = 0.0f, remaining_capacity = 0.0f, present_rate = 0.0f, full_capacity = 0.0f;
@@ -94,7 +92,7 @@ static void update_battery_info(void)
             snprintf(fnbuf, sizeof fnbuf, "%s%s/info", batt, ent->d_name);
             fp = fopen(fnbuf, "r");
             if (fp) {
-                while (fgets(line, 80, fp) && sscanf(line, pattern, key, arg) == 2) {
+                while (fgets(line, 80, fp) && sscanf(line, " %39[^:]: %39[ -~]", key, arg) == 2) {
                     if (!strcmp(key, "design capacity") && sscanf(arg, "%g", &x) == 1) {
                         design_capacity += x;
                     } else if (!strcmp(key, "last full capacity") && sscanf(arg, "%g", &x) == 1) {
@@ -107,7 +105,7 @@ static void update_battery_info(void)
             fp = fopen(fnbuf, "r");
             if (fp) {
                 int charging = 0;
-                while (fgets(line, 80, fp) && sscanf(line, pattern, key, arg) == 2) {
+                while (fgets(line, 80, fp) && sscanf(line, " %39[^:]: %39[ -~]", key, arg) == 2) {
                     if (!strcmp(key, "charging state")) {
                         if (!strcmp(arg, "discharging")) {
                             charging = -1;
