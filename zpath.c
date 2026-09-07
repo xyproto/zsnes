@@ -1,3 +1,4 @@
+// Looks good
 /*
 Copyright (C) 1997-2008 ZSNES Team ( zsKnight, _Demo_, pagefault, Nach )
 
@@ -369,9 +370,12 @@ bool init_rom_path(char* path)
 
         natify_slashes(ZRomPath);
         p = strrchr(ZRomPath, DIR_SLASH_C);
-        strcpy(ZCartName, (p) ? p + 1 : ZRomPath);
-        strcpy(ZSaveName, ZCartName);
-        strcpy(ZStateName, ZCartName);
+        /* These three are NAME_SIZE, while ZRomPath is PATH_SIZE: the
+           no-separator fallback would otherwise copy a whole path into a
+           name-sized buffer. */
+        snprintf(ZCartName, NAME_SIZE, "%s", (p) ? p + 1 : ZRomPath);
+        snprintf(ZSaveName, NAME_SIZE, "%s", ZCartName);
+        snprintf(ZStateName, NAME_SIZE, "%s", ZCartName);
         setextension(ZStateName, "zst");
 
         strdirname(ZRomPath);
