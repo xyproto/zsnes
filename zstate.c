@@ -972,7 +972,7 @@ static size_t string_merge(char* buffer, size_t buffer_len, ...)
 
 static char txtmsg[30];
 
-void set_state_message(char* prefix, char* suffix)
+void set_state_message(char const* prefix, char const* suffix)
 {
     char num[3];
     sprintf(num, "%d", (unsigned int)current_zst);

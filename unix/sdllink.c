@@ -1036,7 +1036,7 @@ static void CloseJoystickInput(void)
     memset(pressed + 256, 0, 128 + 64);
 }
 
-BOOL InitJoystickInput()
+BOOL InitJoystickInput(void)
 {
     int i, max_num_joysticks, num_joysticks = 0;
     int num_axes, num_buttons, num_hats;
@@ -1195,7 +1195,7 @@ void Start36HZ(void)
     T36HZEnabled = 1;
 }
 
-void Stop36HZ()
+void Stop36HZ(void)
 {
     T36HZEnabled = 0;
 }
@@ -1960,13 +1960,15 @@ static float sem_GetTicks(void)
     return (ticks);
 }
 
-void LaunchBrowser(char* browser, char* url)
+void LaunchBrowser(char const* browser, char const* url)
 {
-    char* const arglist[] = { browser, url, 0 };
+    /* execvp's prototype predates const and does not write these; the
+       cast goes through uintptr_t so -Wcast-qual stays satisfied. */
+    char* const arglist[] = { (char*)(uintptr_t)browser, (char*)(uintptr_t)url, 0 };
     execvp(browser, arglist);
 }
 
-void LaunchURL(char* url)
+void LaunchURL(char const* url)
 {
     if (safe_fork(0, 0)) // If fork failed, or we are the parent
     {

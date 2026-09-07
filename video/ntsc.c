@@ -71,7 +71,7 @@ void set_ntsc_preset(int i)
     }
 }
 
-void NTSCFilterInit()
+void NTSCFilterInit(void)
 {
     /* Set GUI options */
     snes_ntsc_setup_t ntsc_setup = snes_ntsc_composite; /* start with preset */

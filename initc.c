@@ -776,7 +776,7 @@ char CSStatus[41], CSStatus2[41], CSStatus3[41], CSStatus4[41];
 
 void DumpROMLoadInfo(void)
 {
-    extern char *ZVERSION, *VERSION_DATE, *VERSION_PORT;
+    extern char const *ZVERSION, *VERSION_DATE, *VERSION_PORT;
 
     FILE* fp = 0;
 
@@ -1031,7 +1031,7 @@ void load_file_fs(char* path)
 char* STCart2 = 0;
 uint8_t* sram2;
 
-void SplitSetup(char* basepath, char* basefile, uint32_t MirrorSystem)
+void SplitSetup(char* basepath, char const* basefile, uint32_t MirrorSystem)
 {
     uint8_t* ROM = romdata;
 
@@ -1042,7 +1042,12 @@ void SplitSetup(char* basepath, char* basefile, uint32_t MirrorSystem)
     memmove(ROM + addOnStart, ROM, addOnSize);
 
     if (!*basepath) {
-        load_file_fs(basefile);
+        /* loadFile() increments the extension digit in place for split ROMs,
+           so it needs a writable copy, never the caller's literal. */
+        char file[PATH_SIZE];
+
+        snprintf(file, sizeof(file), "%s", basefile);
+        load_file_fs(file);
     } else {
         load_file_fs(basepath);
     }

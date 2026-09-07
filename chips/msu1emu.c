@@ -70,7 +70,7 @@ void initMSU1regsWrite(void)
 }
 
 // Read the MSU binary file (.msu file)
-int readMSU()
+int readMSU(void)
 {
     // Cleanup
     if (MSU_DATA) {
@@ -117,7 +117,7 @@ int readMSU()
     return 0;
 }
 
-void MSU1HandleTrackChange()
+void MSU1HandleTrackChange(void)
 {
     // Writes have no effect if audio busy bit set
     if (MSU_StatusRead & MSU_STATUS_AUDIO_BUSY) {
@@ -200,7 +200,7 @@ void MSU1HandleTrackChange()
 }
 
 // Handle control register bits
-void MSU1HandleControlBits()
+void MSU1HandleControlBits(void)
 {
     // Writes have no effect if audio busy bit or error bit set
     if (MSU_StatusRead & (MSU_STATUS_AUDIO_BUSY | MSU_STATUS_ERROR)) {

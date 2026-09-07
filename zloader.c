@@ -80,7 +80,7 @@ void InitDebugger();
 
 #define put_line(x) puts(x)
 
-char* ZVERSION = ZVER;
+char const* ZVERSION = ZVER;
 const unsigned int versionNumber = 0x00000098; // 1.52
 
 static void display_start_message(void)
@@ -438,7 +438,7 @@ static void mark_overridden_vars(void) {
         var ^= saved_cmdline_vars._##var; \
         saved_cmdline_vars._##var ^= var; \
     }
-void swap_backup_vars()
+void swap_backup_vars(void)
 {
     BACKUP_HELP(SWAP_BACKUP_VAR)
 }

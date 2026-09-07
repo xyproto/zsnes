@@ -22,31 +22,31 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <string.h>
 #include <zlib.h>
 
-char* VERSION_DATE = __DATE__;
+char const* VERSION_DATE = __DATE__;
 
 #if defined(__WIN32__) || defined(__ZSNES_PLATFORM_WINDOWS__)
-char* VERSION_PORT = "WIN";
+char const* VERSION_PORT = "WIN";
 char const VERSION_PLATFORM[] = "Windows";
 #elif defined(__ZSNES_PLATFORM_DARWIN__)
-char* VERSION_PORT = "SDL - Darwin";
+char const* VERSION_PORT = "SDL - Darwin";
 char const VERSION_PLATFORM[] = "macOS";
 #elif defined(__ZSNES_PLATFORM_FREEBSD__)
-char* VERSION_PORT = "SDL - FreeBSD";
+char const* VERSION_PORT = "SDL - FreeBSD";
 char const VERSION_PLATFORM[] = "FreeBSD";
 #elif defined(__ZSNES_PLATFORM_OPENBSD__)
-char* VERSION_PORT = "SDL - OpenBSD";
+char const* VERSION_PORT = "SDL - OpenBSD";
 char const VERSION_PLATFORM[] = "OpenBSD";
 #elif defined(__ZSNES_PLATFORM_NETBSD__)
-char* VERSION_PORT = "SDL - NetBSD";
+char const* VERSION_PORT = "SDL - NetBSD";
 char const VERSION_PLATFORM[] = "NetBSD";
 #elif defined(__ZSNES_PLATFORM_LINUX__) || defined(__linux__)
-char* VERSION_PORT = "SDL - Linux";
+char const* VERSION_PORT = "SDL - Linux";
 char const VERSION_PLATFORM[] = "Linux";
 #elif defined(__HAIKU__)
-char* VERSION_PORT = "SDL - Haiku";
+char const* VERSION_PORT = "SDL - Haiku";
 char const VERSION_PLATFORM[] = "Haiku";
 #else
-char* VERSION_PORT = "SDL - Unknown";
+char const* VERSION_PORT = "SDL - Unknown";
 char const VERSION_PLATFORM[] = "Unknown";
 #endif
 

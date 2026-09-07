@@ -1609,14 +1609,14 @@ size_t mzt_filename_generate(void)
     return (filename_len);
 }
 
-void mzt_chdir_up()
+void mzt_chdir_up(void)
 {
     mzt_filename_generate();
     strcat(ZMoviePath, zmv_vars.filename);
     strcatslash(ZMoviePath);
 }
 
-void mzt_chdir_down()
+void mzt_chdir_down(void)
 {
     strdirname(ZMoviePath);
     strcatslash(ZMoviePath);
@@ -2604,7 +2604,7 @@ void SkipMovie(void)
     MovieRecordWinVal = 0;
 }
 
-void MovieStop()
+void MovieStop(void)
 {
     if (MovieProcessing && !MovieWaiting) {
         if ((MovieForcedLengthEnabled == 2) || movie_current_pass) {
@@ -2655,7 +2655,7 @@ void MovieStop()
 
 void InitRewindVarsForMovie(void);
 
-void MoviePlay()
+void MoviePlay(void)
 {
     if (!MovieProcessing) {
         size_t fname_len = strlen(ZSaveName);
@@ -2706,7 +2706,7 @@ void MoviePlay()
     }
 }
 
-void MovieRecord()
+void MovieRecord(void)
 {
     if (MovieProcessing == MOVIE_PLAYBACK) {
         zmv_replay_to_record();
@@ -2764,7 +2764,7 @@ void MovieRecord()
     }
 }
 
-void MovieAppend()
+void MovieAppend(void)
 {
     if (!MovieProcessing) {
         size_t fname_len = strlen(ZSaveName);
@@ -2833,7 +2833,7 @@ void MovieDumpRaw(void)
     }
 }
 
-bool MovieInProgress()
+bool MovieInProgress(void)
 {
     return ((MovieProcessing == MOVIE_PLAYBACK) || (MovieProcessing == MOVIE_RECORD));
 }

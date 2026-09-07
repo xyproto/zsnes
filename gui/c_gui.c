@@ -224,7 +224,7 @@ static u1 MenuDat5[] = { 0, 2, 0, 0 };
 static u1 MenuDat6[] = { 6, 3, 1, 1, 1, 1, 0, 2, 0 };
 
 static bool GUIPalConv;
-static char* GUICMessage;
+static char const* GUICMessage;
 static u1 OkaySC;
 static u2 PrevResoln;
 static u2 TBVal;

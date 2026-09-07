@@ -693,7 +693,8 @@ bool mkpath(const char* path, mode_t mode)
 // Like realpath(), but will return the last element as the link it is
 char* realpath_link(const char* path, char* resolved_path)
 {
-    char buffer[PATH_SIZE], *p, *base, *last_element;
+    char buffer[PATH_SIZE], *p, *last_element;
+    char const* base;
     strcpy(buffer, path);
     natify_slashes(buffer);
     p = strrchr(buffer, DIR_SLASH_C);

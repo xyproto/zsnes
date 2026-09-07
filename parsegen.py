@@ -437,7 +437,7 @@ static char *find_next_match(char *str, char match_char)
   return(pos);
 }
 
-static char *find_str(char *str, char *match_str)
+static char *find_str(char *str, const char *match_str)
 {
   char *pos = 0;
 
@@ -594,7 +594,7 @@ static size_t base94_decode(const char *buffer)
   return(size);
 }
 
-static char *get_token(char *str, char *delim)
+static char *get_token(char *str, const char *delim)
 {
   static char *pos = 0;
   char *token = 0;
