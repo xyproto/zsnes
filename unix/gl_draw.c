@@ -113,6 +113,10 @@ int gl_start(int width, int height, int req_depth, int FullScreen)
 
     if (!glvidbuffer) {
         glvidbuffer = (unsigned short*)malloc(512 * 512 * sizeof(short));
+        if (!glvidbuffer) {
+            fprintf(stderr, "Could not allocate the GL video buffer\n");
+            return false;
+        }
     }
     gl_clearwin();
 

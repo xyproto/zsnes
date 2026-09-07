@@ -66,6 +66,9 @@ int gl_start(int width, int height, int req_depth, int FullScreen)
     SurfaceX = width;
     SurfaceY = height;
     glvidbuffer = (unsigned short*)malloc(512 * 512 * sizeof(short));
+    if (!glvidbuffer) {
+        return FALSE;
+    }
     gl_clearwin();
     if (BilinearFilter) {
         glfilters = GL_LINEAR;
