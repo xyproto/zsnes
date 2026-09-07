@@ -178,10 +178,10 @@ void sw_drawwin(void)
     LockSurface();
 
     ScreenPtr = vidbuffer;
-    ScreenPtr += 16 * 2 + 32 * 2 + 256 * 2;
+    ScreenPtr += VID_FIRST * 2;
 
     if (resolutn == 239) {
-        ScreenPtr += 8 * 288 * 2;
+        ScreenPtr += 8 * VID_STRIDE * 2;
     }
 
     pitch = surface->pitch;

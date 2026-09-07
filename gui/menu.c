@@ -268,15 +268,17 @@ void showmenu(void)
             if (PrevMenuPos == 3)
                 menucloc = 70 * 288;
 
-            char const* fmt = " BMP";
+            /* Scoped: savespckey below is jumped to from above, and a live
+               initialisation must not be skipped. */
+            {
+                char const* fmt = " BMP";
 #ifndef NO_PNG
-            if (ScreenShotFormat != 0) {
-                {
+                if (ScreenShotFormat != 0) {
                     fmt = " PNG";
                 }
-            }
 #endif
-            memcpy(menudrawbox_stringi + 13, fmt, 4);
+                memcpy(menudrawbox_stringi + 13, fmt, 4);
+            }
 
             nextmenupopup = 0;
             menu16btrans = 0;

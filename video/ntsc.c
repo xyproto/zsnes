@@ -34,6 +34,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #endif
 
 #include "cfg.h"
+#include "copyvwin.h"
 #include "ntsc.h"
 
 /* Source image */
@@ -126,8 +127,13 @@ void NTSCFilterInit(void)
 
 void NTSCFilterDraw(int out_width, int out_height, int out_pitch, unsigned char* rgb16_out)
 {
-    ntsc_blit(&ntsc_snes, (uint16_t*)vidbuffer + 16 + 576, 576, ntsc_phase,
-        out_width, out_height, rgb16_out, out_pitch);
+    /* Start on the first visible scanline, like every other display path.
+       This used to read from one line further down: the offset mixed units,
+       counting the 16-pixel border in pixels and the line in bytes, which as
+       pixel arithmetic lands a line low. That dropped the top scanline and
+       pulled a never-written line in at the bottom. */
+    ntsc_blit(&ntsc_snes, (uint16_t*)vidbuffer + VID_FIRST, VID_STRIDE * 2,
+        ntsc_phase, out_width, out_height, rgb16_out, out_pitch);
 
     /* Change phase on alternating frames unless blending is enabled */
     if (!NTSCBlend)
@@ -135,6 +141,8 @@ void NTSCFilterDraw(int out_width, int out_height, int out_pitch, unsigned char*
 }
 
 /* custom blitter that doubles image height and darkens every other row */
+/* Unlike upstream snes_ntsc_blit, whose in_row_width counts pixels, in_pitch
+   here is bytes: the row advance below is done on a char pointer. */
 static void ntsc_blit(snes_ntsc_t const* ntsc, unsigned short const* input, long in_pitch,
     int burst_phase, int out_width, int out_height, void* rgb_out, long out_pitch)
 {

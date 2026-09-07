@@ -188,22 +188,10 @@ MEM_BANK(SA1RAMaccessbankw16b)
 /* S-DD1 software decompression */
 MEM_BANK(memaccessbankr8sdd1)
 
-/* The last of cpu/memory.asm's own data. BWUsed2 and BWUsed are adjacent
-   bytes the SA-1 BW-RAM paths read as a pair, so pin the layout rather than
-   letting the compiler choose. */
-
-/* clang-format off */
-
-__asm__(
-    ASM_SEC_BSS(".bss")
-    ASM_GSYM(BWUsed2)
-    ".skip 1\n"
-    ASM_GSYM(BWUsed)
-    ".skip 1\n"
-    ASM_SEC_END
-    ASM_SEC_DATA(".data")
-    ASM_GSYM(LatestBank)
-    ".long 0xFFFF\n"
-    ASM_SEC_END);
-
-/* clang-format on */
+/* The last of cpu/memory.asm's own data. Every access is to the single object
+   named - the assembly only ever stored a byte to BWUsed2 - so nothing here
+   depends on the order or adjacency an asm block would pin. BWUsed and
+   LatestBank are written by neither side; they stay because memory.asm still
+   declares them EXTSYM. */
+uint8_t BWUsed2, BWUsed;
+uint32_t LatestBank = 0xFFFF;

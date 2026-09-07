@@ -72,10 +72,9 @@ static SDL_Renderer* sr_renderer = NULL;
 static SDL_Texture* sr_texture = NULL;
 static unsigned short* sr_pixels = NULL;
 
-/* vidbuffer is 288 pixels to the line with the picture starting at 16, and the
-   second field sits 75036 pixels on. Both are what the GL path used. */
-#define SR_SRC_STRIDE 288
-#define SR_SRC_SKIP 16
+/* The second field sits 75036 pixels on; the line geometry is in copyvwin.h. */
+#define SR_SRC_STRIDE VID_STRIDE
+#define SR_SRC_SKIP VID_SKIP
 #define SR_FIELD2 (75036 * 2)
 
 int sr_start(int width, int height, int req_depth, int FullScreen)
@@ -175,8 +174,11 @@ void sr_clearwin(void)
 /* One source line into the two output rows it occupies. */
 static void sr_line(unsigned short* dst, int const line)
 {
-    unsigned short const* src1 = (unsigned short*)vidbuffer + SR_SRC_SKIP + line * SR_SRC_STRIDE;
+    unsigned short const* src1
+        = (unsigned short*)vidbuffer + VID_FIRST + line * VID_STRIDE;
     unsigned short const* src2 = src1 + SR_FIELD2;
+    /* SpecialLine is indexed by scanline, and output row `line` is scanline
+       line+1 - the same line VID_FIRST starts src1 on. */
     int const hires = SpecialLine[line + 1];
     int i;
 
@@ -260,8 +262,7 @@ void sr_drawwin(void)
             LineFilter* const f = En2xSaI == 2 ? _2xSaISuperEagleLine
                 : En2xSaI == 3                 ? _2xSaISuper2xSaILine
                                                : _2xSaILine;
-            unsigned short* const base
-                = (unsigned short*)vidbuffer + SR_SRC_SKIP + SR_SRC_STRIDE;
+            unsigned short* const base = (unsigned short*)vidbuffer + VID_FIRST;
 
             for (unsigned y = 0; y < resolutn; y++) {
                 f(base + (size_t)y * SR_SRC_STRIDE, NULL, SR_SRC_STRIDE * 2, 256,

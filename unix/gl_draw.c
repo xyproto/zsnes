@@ -221,8 +221,8 @@ static void gl_drawspan(int hires, int start, int end)
 
     if (hires) {
         if (hires != gltexture512) {
-            unsigned short* vbuf1 = (unsigned short*)vidbuffer + 16;
-            unsigned short* vbuf2 = (unsigned short*)vidbuffer + (75036 * 2 + 16);
+            unsigned short* vbuf1 = (unsigned short*)vidbuffer + VID_FIRST;
+            unsigned short* vbuf2 = (unsigned short*)vidbuffer + VID_FIRST + 75036 * 2;
             unsigned short* vbuf = glvidbuffer;
 
             if (hires > 1) // mode 7
@@ -273,9 +273,9 @@ static void gl_drawspan(int hires, int start, int end)
         glBindTexture(GL_TEXTURE_2D, gltextures[0]);
         if (!gltexture256) {
             glPixelStorei(GL_UNPACK_SKIP_PIXELS, 16);
-            glPixelStorei(GL_UNPACK_ROW_LENGTH, 288);
+            glPixelStorei(GL_UNPACK_ROW_LENGTH, VID_STRIDE);
 
-            gl_upload(0, 3, 256, 256, (unsigned short*)vidbuffer + 288);
+            gl_upload(0, 3, 256, 256, (unsigned short*)vidbuffer + VID_STRIDE);
 
             glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
             glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);

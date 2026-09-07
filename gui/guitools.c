@@ -178,35 +178,34 @@ static void GUIOutputStringwin(s4 x, u1* const dst, char const* text, u1 const c
     }
 }
 
+/* The digit's value, or -1 when it is not a hex digit. */
+static int hexdigit(char const c)
+{
+    if ('0' <= c && c <= '9')
+        return c - '0';
+    if ('A' <= c && c <= 'F')
+        return c - 'A' + 10;
+    if ('a' <= c && c <= 'f')
+        return c - 'a' + 10;
+    return -1;
+}
+
 static void GUIOutputStringwinl(s4 x, u1* const dst, char const* text, u1 const colour)
 {
     u4 n = cloadmaxlen;
     do {
         u1 c = *text++;
         if (c == '%') {
-            u1 v;
-            u1 const c0 = text[0];
-            if ('0' <= c0 && c0 <= '9')
-                v = c0 - '0';
-            else if ('A' <= c0 && c0 <= 'F')
-                v = c0 - 'A' + 10;
-            else if ('a' <= c0 && c0 <= 'f')
-                v = c0 - 'a' + 10;
-            else
-                goto no_number;
-            v <<= 4;
-            u1 const c1 = text[1];
-            if ('0' <= c1 && c1 <= '9')
-                v |= c1 - '0';
-            else if ('A' <= c1 && c1 <= 'F')
-                v |= c1 - 'A' + 10;
-            else if ('a' <= c1 && c1 <= 'f')
-                v |= c1 - 'a' + 10;
-            else
-                goto no_number;
-            c = v;
-            text += 2;
-        no_number:;
+            /* %HH is one escaped byte. The low digit is only looked at once
+               the high one checks out, so a '%' ending the string cannot read
+               past it. Anything else leaves the '%' as itself. */
+            int const hi = hexdigit(text[0]);
+            int const lo = hi < 0 ? -1 : hexdigit(text[1]);
+
+            if (lo >= 0) {
+                c = (u1)((hi << 4) | lo);
+                text += 2;
+            }
         }
         if (c == '\0')
             break;

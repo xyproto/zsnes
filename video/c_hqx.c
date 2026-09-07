@@ -39,7 +39,7 @@ extern u1* BitConv32Ptr;
 
 // Source pixels start past the top/left border; 256 pixels are read per line
 // then 32 (64 bytes) are skipped to the next line. Skip drawing when blanked.
-#define SRC_START ((u2 const*)(vidbuffer + 16 * 2 + 256 * 2 + 32 * 2))
+#define SRC_START ((u2 const*)(vidbuffer) + VID_FIRST)
 #define SRC_LINE_SKIP 32 // u2 units
 
 static void hq2x_double_16b(void)
@@ -1981,8 +1981,8 @@ static void hq2x_pixel(u2 const w[10], u1* const dst, u4 const pitch)
     st16u(dst + pitch + 2, p11);
 }
 
-/* Source lines are 288 pixels apart: 256 drawn plus the 32-pixel skip. */
-#define SRC_LINE 288
+/* Source lines are VID_STRIDE pixels apart: 256 drawn plus the 32-pixel skip. */
+#define SRC_LINE VID_STRIDE
 
 void hq2x_16b(void)
 {

@@ -1102,6 +1102,13 @@ void DisplayGUIVideo(void)
                 if (GUINTVID[cvidmode] != 0)
                     GUIDisplayCheckboxu(5, 128, 35, &NTSCFilter, "NTSC FILTER", 0);
 
+                // Kreed 2x filters
+                if (GUIDSIZE[cvidmode] != 0) {
+                    GUIDisplayCheckboxun(5, 18, 45, &En2xSaI, 1, "2XSAI ENGINE", 2); // 2x
+                    GUIDisplayCheckboxun(5, 128, 45, &En2xSaI, 2, "SUPER EAGLE", 6); // Seagle
+                    GUIDisplayCheckboxun(5, 18, 55, &En2xSaI, 3, "SUPER 2XSAI", 2); // S2x
+                }
+
                 // Hq*x
                 if (GUIHQ2X[cvidmode] != 0) {
                     GUIDisplayCheckboxu(5, 128, 55, &hqFilter, "HQ FILTER", 1);

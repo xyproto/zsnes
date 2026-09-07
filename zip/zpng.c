@@ -35,6 +35,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <unistd.h>
 #endif
 #endif
+#include "../video/copyvwin.h"
 #include "../zpath.h"
 
 #define NUMCONV_FW2
@@ -75,7 +76,7 @@ extern uint16_t resolutn;
 
 #define SNAP_HEIGHT resolutn
 #define SNAP_WIDTH 256
-#define PIXEL (((uint16_t*)vidbuffer)[((y + 1) * 288) + x + 16])
+#define PIXEL (((uint16_t*)vidbuffer)[VID_FIRST + y * VID_STRIDE + x])
 
 #ifndef NO_PNG
 
@@ -340,7 +341,8 @@ void Grab_BMP_Data_8(void)
             for (y = height; y--;) // Have to write image upside down
             {
                 for (x = 0; x < width; x++) {
-                    fwrite((unsigned char*)vidbuffer + (y + 1) * 288 + x + 16, 1, 1, fp);
+                    /* One byte per pixel on this path, so the pixel offset is the byte one. */
+                    fwrite((unsigned char*)vidbuffer + VID_FIRST + y * VID_STRIDE + x, 1, 1, fp);
                 }
             }
             fclose(fp);

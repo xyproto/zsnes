@@ -1139,10 +1139,12 @@ static void DisplayGUIVideoClick_notmodestab(s4 const eax, s4 const edx)
                 goto nomovebar;
             }
 
-            s4 const eax = GUIwinposx[5] + 8;
-            GUIHoldXlimL = eax;
-            GUIHoldXlimR = eax + 200;
-            GUIHold = 7; // Lock mouse to bar when clicked
+            {
+                s4 const eax = GUIwinposx[5] + 8;
+                GUIHoldXlimL = eax;
+                GUIHoldXlimR = eax + 200;
+                GUIHold = 7; // Lock mouse to bar when clicked
+            }
         nomovebar:;
         }
 
@@ -1200,10 +1202,12 @@ static void DisplayGUIVideoClick_notmodestab(s4 const eax, s4 const edx)
                 goto nomovebar2;
             }
 
-            s4 const eax = GUIwinposx[5] + 8;
-            GUIHoldXlimL = eax;
-            GUIHoldXlimR = eax + 200;
-            GUIHold = 7; // Lock mouse to bar when clicked
+            {
+                s4 const eax = GUIwinposx[5] + 8;
+                GUIHoldXlimL = eax;
+                GUIHoldXlimR = eax + 200;
+                GUIHold = 7; // Lock mouse to bar when clicked
+            }
         nomovebar2:;
         }
 

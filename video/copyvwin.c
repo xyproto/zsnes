@@ -399,11 +399,11 @@ void copy640x480x16bwin(void)
     if (curblank == 0x40)
         return;
 
-    u2* src = (u2*)vidbuffer + 16 + 288;
+    u2* src = (u2*)vidbuffer + VID_FIRST;
     u1* dst = WinVidMemStart;
 #ifdef __UNIXSDL__
     if (GUIOn != 1 && resolutn == 239)
-        src += 8 * 288;
+        src += 8 * VID_STRIDE;
 #endif
 #ifdef __UNIXSDL__
     u4 dl = 224;

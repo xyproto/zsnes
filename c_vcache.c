@@ -240,6 +240,11 @@ void cachevideo(void)
     cgmod = 1;
     curblank = 0;
 
+    /* Declared ahead of the jump below: nofrskip is in their scope, and
+       neither is read on that path. */
+    u1 bl;
+    u2 ax = 1;
+
 #ifndef NO_DEBUGGER
     if (debuggeron != 0)
 #else
@@ -258,9 +263,7 @@ void cachevideo(void)
         }
     }
 
-    u1 bl;
     // if emulation paused, don't alter timing
-    u2 ax = 1;
     if (EMUPause != 1) {
         // fast forward goes over all other throttles
         // don't fast forward while dumping a movie
