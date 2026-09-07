@@ -1863,16 +1863,22 @@ done:
             switch (dh) {
             case 'K':
                 GUIcrowpos = 0;
+                break;
             case 'U':
                 GUIcrowpos = 1;
+                break;
             case 'O':
                 GUIcrowpos = 2;
+                break;
             case 'E':
                 GUIcrowpos = 3;
+                break;
             case 'S':
                 GUIcrowpos = 4;
+                break;
             case 'A':
                 GUIcrowpos = 6;
+                break;
             }
         }
 

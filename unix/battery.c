@@ -28,7 +28,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <dirent.h>
 #include <math.h>
 
-int CheckBattery()
+int CheckBattery(void)
 {
     int battery = -1; // No battery / Can't get info
     const char* ac = "/proc/acpi/ac_adapter/";
@@ -71,7 +71,7 @@ int CheckBattery()
 static int BatteryLifeTime;
 static int BatteryLifePercent;
 
-static void update_battery_info()
+static void update_battery_info(void)
 {
     const char* batt = "/proc/acpi/battery/";
 
@@ -138,14 +138,14 @@ static void update_battery_info()
     }
 }
 
-int CheckBatteryTime()
+int CheckBatteryTime(void)
 {
     BatteryLifeTime = -1;
     update_battery_info();
     return (BatteryLifeTime);
 }
 
-int CheckBatteryPercent()
+int CheckBatteryPercent(void)
 {
     BatteryLifePercent = -1;
     update_battery_info();

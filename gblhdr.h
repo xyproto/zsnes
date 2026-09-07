@@ -39,34 +39,11 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <string.h>
 #include <strings.h> /* strcasecmp: glibc leaks it through string.h, Darwin does not */
 
-// General time.h checking
+/* These were autoconf feature tests. Nothing defines them and there is no
+   configure step, so every branch was false: <time.h> alone was included and
+   dirent.h was not. Consumers include <dirent.h> themselves (zdir.h). */
 
-#if TIME_WITH_SYS_TIME
-#include <sys/time.h>
 #include <time.h>
-#else
-#if HAVE_SYS_TIME_H
-#include <sys/time.h>
-#else
-#include <time.h>
-#endif
-#endif
-
-// General dirent.h stuff
-
-#if HAVE_DIRENT_H
-#include <dirent.h>
-#else
-#if HAVE_SYS_NDIR_H
-#include <sys/ndir.h>
-#endif
-#if HAVE_SYS_DIR_H
-#include <sys/dir.h>
-#endif
-#if HAVE_NDIR_H
-#include <ndir.h>
-#endif
-#endif
 
 // more standard stuff
 
@@ -76,9 +53,9 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 // unistd.h stuff
 
-// #if HAVE_UNISTD_H
-//  Small hack for now
-#if unix
+/* Not `unix`: that spelling is only predefined in GNU mode, so under -std=c11
+   this branch never fired and unistd.h was never pulled in here. */
+#if defined(__unix__) || defined(__APPLE__)
 #include <sys/types.h>
 #include <unistd.h>
 #endif

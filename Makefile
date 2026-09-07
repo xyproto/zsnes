@@ -143,7 +143,15 @@ endif
 IS_FEDORA       := $(if $(wildcard /etc/fedora-release),yes)
 IS_DEBIAN_BASED := $(if $(wildcard /etc/debian_version),yes)
 
-WARN_FLAGS ?= -Wall -Werror=unused-variable -Wno-address-of-packed-member
+# Tightened incrementally: each flag here is clean tree-wide, so a new warning
+# means new code, not a backlog. -Wconversion, -Wmissing-prototypes,
+# -Wredundant-decls and -Wstrict-prototypes still have thousands of hits.
+WARN_FLAGS ?= -Wall -Werror=unused-variable -Wno-address-of-packed-member \
+              -Wcast-qual -Wpointer-arith -Wnull-dereference -Wvla \
+              -Wduplicated-cond -Wduplicated-branches -Wlogical-op \
+              -Wshift-overflow=2 -Warray-bounds=2 -Wsign-compare \
+              -Wimplicit-fallthrough=3 -Wundef \
+              -Wstrict-prototypes
 # x86 uses absolute addressing; ARM and Darwin require PIC.
 PIC_FLAGS := $(if $(or $(filter arm64,$(CPU)),$(filter DARWIN,$(ARCH))),,-no-pie -fno-pic)
 # XSI exposes setreuid/setregid on Linux and the BSDs.

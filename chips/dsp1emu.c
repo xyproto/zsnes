@@ -206,7 +206,7 @@ const unsigned short DSP1ROM[1024] = {
 *  DSP1 code                                                                *
 \***************************************************************************/
 
-void InitDSP()
+void InitDSP(void)
 {
 #ifdef DebugDSP1
     Start_Log();
@@ -217,7 +217,7 @@ short Op00Multiplicand;
 short Op00Multiplier;
 short Op00Result;
 
-void DSPOp00()
+void DSPOp00(void)
 {
     Op00Result = Op00Multiplicand * Op00Multiplier >> 15;
 
@@ -230,7 +230,7 @@ short Op20Multiplicand;
 short Op20Multiplier;
 short Op20Result;
 
-void DSPOp20()
+void DSPOp20(void)
 {
     Op20Result = Op20Multiplicand * Op20Multiplier >> 15;
     Op20Result++;
@@ -291,7 +291,7 @@ void DSP1_Inverse(short Coefficient, short Exponent, short* iCoefficient, short*
     }
 }
 
-void DSPOp10()
+void DSPOp10(void)
 {
     DSP1_Inverse(Op10Coefficient, Op10Exponent, &Op10CoefficientR, &Op10ExponentR);
 #ifdef DebugDSP1
@@ -488,7 +488,7 @@ short DSP1_Truncate(short C, short E)
     return C;
 }
 
-void DSPOp04()
+void DSPOp04(void)
 {
     Op04Sin = DSP1_Sin(Op04Angle) * Op04Radius >> 15;
     Op04Cos = DSP1_Cos(Op04Angle) * Op04Radius >> 15;
@@ -500,7 +500,7 @@ short Op0CY1;
 short Op0CX2;
 short Op0CY2;
 
-void DSPOp0C()
+void DSPOp0C(void)
 {
     Op0CX2 = (Op0CY1 * DSP1_Sin(Op0CA) >> 15) + (Op0CX1 * DSP1_Cos(Op0CA) >> 15);
     Op0CY2 = (Op0CY1 * DSP1_Cos(Op0CA) >> 15) - (Op0CX1 * DSP1_Sin(Op0CA) >> 15);
@@ -686,7 +686,7 @@ short Op02VVA;
 short Op02CX;
 short Op02CY;
 
-void DSPOp02()
+void DSPOp02(void)
 {
     DSP1_Parameter(Op02FX, Op02FY, Op02FZ, Op02LFE, Op02LES, Op02AAS, Op02AZS, &Op02VOF, &Op02VVA, &Op02CX, &Op02CY);
 }
@@ -697,7 +697,7 @@ short Op0AB;
 short Op0AC;
 short Op0AD;
 
-void DSPOp0A()
+void DSPOp0A(void)
 {
     DSP1_Raster(Op0AVS, &Op0AA, &Op0AB, &Op0AC, &Op0AD);
     Op0AVS++;
@@ -789,7 +789,7 @@ short Op06H;
 short Op06V;
 short Op06M;
 
-void DSPOp06()
+void DSPOp06(void)
 {
     DSP1_Project(Op06X, Op06Y, Op06Z, &Op06H, &Op06V, &Op06M);
 }
@@ -811,7 +811,7 @@ short Op21Zr;
 short Op21Xr;
 short Op21Yr;
 
-void DSPOp01()
+void DSPOp01(void)
 {
     short SinAz = DSP1_Sin(Op01Zr);
     short CosAz = DSP1_Cos(Op01Zr);
@@ -835,7 +835,7 @@ void DSPOp01()
     matrixA[2][2] = (Op01m * CosAx >> 15) * CosAy >> 15;
 }
 
-void DSPOp11()
+void DSPOp11(void)
 {
     short SinAz = DSP1_Sin(Op11Zr);
     short CosAz = DSP1_Cos(Op11Zr);
@@ -859,7 +859,7 @@ void DSPOp11()
     matrixB[2][2] = (Op11m * CosAx >> 15) * CosAy >> 15;
 }
 
-void DSPOp21()
+void DSPOp21(void)
 {
     short SinAz = DSP1_Sin(Op21Zr);
     short CosAz = DSP1_Cos(Op21Zr);
@@ -902,7 +902,7 @@ short Op2DF;
 short Op2DL;
 short Op2DU;
 
-void DSPOp0D()
+void DSPOp0D(void)
 {
     Op0DF = (Op0DX * matrixA[0][0] >> 15) + (Op0DY * matrixA[0][1] >> 15) + (Op0DZ * matrixA[0][2] >> 15);
     Op0DL = (Op0DX * matrixA[1][0] >> 15) + (Op0DY * matrixA[1][1] >> 15) + (Op0DZ * matrixA[1][2] >> 15);
@@ -913,7 +913,7 @@ void DSPOp0D()
 #endif
 }
 
-void DSPOp1D()
+void DSPOp1D(void)
 {
     Op1DF = (Op1DX * matrixB[0][0] >> 15) + (Op1DY * matrixB[0][1] >> 15) + (Op1DZ * matrixB[0][2] >> 15);
     Op1DL = (Op1DX * matrixB[1][0] >> 15) + (Op1DY * matrixB[1][1] >> 15) + (Op1DZ * matrixB[1][2] >> 15);
@@ -924,7 +924,7 @@ void DSPOp1D()
 #endif
 }
 
-void DSPOp2D()
+void DSPOp2D(void)
 {
     Op2DF = (Op2DX * matrixC[0][0] >> 15) + (Op2DY * matrixC[0][1] >> 15) + (Op2DZ * matrixC[0][2] >> 15);
     Op2DL = (Op2DX * matrixC[1][0] >> 15) + (Op2DY * matrixC[1][1] >> 15) + (Op2DZ * matrixC[1][2] >> 15);
@@ -954,7 +954,7 @@ short Op23X;
 short Op23Y;
 short Op23Z;
 
-void DSPOp03()
+void DSPOp03(void)
 {
     Op03X = (Op03F * matrixA[0][0] >> 15) + (Op03L * matrixA[1][0] >> 15) + (Op03U * matrixA[2][0] >> 15);
     Op03Y = (Op03F * matrixA[0][1] >> 15) + (Op03L * matrixA[1][1] >> 15) + (Op03U * matrixA[2][1] >> 15);
@@ -965,7 +965,7 @@ void DSPOp03()
 #endif
 }
 
-void DSPOp13()
+void DSPOp13(void)
 {
     Op13X = (Op13F * matrixB[0][0] >> 15) + (Op13L * matrixB[1][0] >> 15) + (Op13U * matrixB[2][0] >> 15);
     Op13Y = (Op13F * matrixB[0][1] >> 15) + (Op13L * matrixB[1][1] >> 15) + (Op13U * matrixB[2][1] >> 15);
@@ -976,7 +976,7 @@ void DSPOp13()
 #endif
 }
 
-void DSPOp23()
+void DSPOp23(void)
 {
     Op23X = (Op23F * matrixC[0][0] >> 15) + (Op23L * matrixC[1][0] >> 15) + (Op23U * matrixC[2][0] >> 15);
     Op23Y = (Op23F * matrixC[0][1] >> 15) + (Op23L * matrixC[1][1] >> 15) + (Op23U * matrixC[2][1] >> 15);
@@ -997,7 +997,7 @@ short Op14Zrr;
 short Op14Xrr;
 short Op14Yrr;
 
-void DSPOp14()
+void DSPOp14(void)
 {
     short CSec, ESec, CTan, CSin, C, E;
 
@@ -1063,7 +1063,7 @@ short Op0EV;
 short Op0EX;
 short Op0EY;
 
-void DSPOp0E()
+void DSPOp0E(void)
 {
     DSP1_Target(Op0EH, Op0EV, &Op0EX, &Op0EY);
 }
@@ -1081,7 +1081,7 @@ short Op2BY;
 short Op2BZ;
 short Op2BS;
 
-void DSPOp0B()
+void DSPOp0B(void)
 {
     Op0BS = (Op0BX * matrixA[0][0] + Op0BY * matrixA[0][1] + Op0BZ * matrixA[0][2]) >> 15;
 
@@ -1090,7 +1090,7 @@ void DSPOp0B()
 #endif
 }
 
-void DSPOp1B()
+void DSPOp1B(void)
 {
     Op1BS = (Op1BX * matrixB[0][0] + Op1BY * matrixB[0][1] + Op1BZ * matrixB[0][2]) >> 15;
 
@@ -1100,7 +1100,7 @@ void DSPOp1B()
 #endif
 }
 
-void DSPOp2B()
+void DSPOp2B(void)
 {
     Op2BS = (Op2BX * matrixC[0][0] + Op2BY * matrixC[0][1] + Op2BZ * matrixC[0][2]) >> 15;
 
@@ -1111,7 +1111,7 @@ void DSPOp2B()
 
 short Op08X, Op08Y, Op08Z, Op08Ll, Op08Lh;
 
-void DSPOp08()
+void DSPOp08(void)
 {
     int Op08Size = (Op08X * Op08X + Op08Y * Op08Y + Op08Z * Op08Z) << 1;
     Op08Ll = Op08Size & 0xffff;
@@ -1125,7 +1125,7 @@ void DSPOp08()
 
 short Op18X, Op18Y, Op18Z, Op18R, Op18D;
 
-void DSPOp18()
+void DSPOp18(void)
 {
     Op18D = (Op18X * Op18X + Op18Y * Op18Y + Op18Z * Op18Z - Op18R * Op18R) >> 15;
 
@@ -1136,7 +1136,7 @@ void DSPOp18()
 
 short Op38X, Op38Y, Op38Z, Op38R, Op38D;
 
-void DSPOp38()
+void DSPOp38(void)
 {
     Op38D = (Op38X * Op38X + Op38Y * Op38Y + Op38Z * Op38Z - Op38R * Op38R) >> 15;
     Op38D++;
@@ -1151,7 +1151,7 @@ short Op28Y;
 short Op28Z;
 short Op28R;
 
-void DSPOp28()
+void DSPOp28(void)
 {
     int Radius = Op28X * Op28X + Op28Y * Op28Y + Op28Z * Op28Z;
 
@@ -1187,7 +1187,7 @@ short Op1CX2;
 short Op1CY2;
 short Op1CZ2;
 
-void DSPOp1C()
+void DSPOp1C(void)
 {
     // Rotate Around Op1CZ1
     Op1CX1 = (Op1CYBR * DSP1_Sin(Op1CZ) >> 15) + (Op1CXBR * DSP1_Cos(Op1CZ) >> 15);
@@ -1215,7 +1215,7 @@ void DSPOp1C()
 unsigned short Op0FRamsize;
 unsigned short Op0FPass;
 
-void DSPOp0F()
+void DSPOp0F(void)
 {
     Op0FPass = 0x0000;
 
@@ -1227,7 +1227,7 @@ void DSPOp0F()
 short Op2FUnknown;
 short Op2FSize;
 
-void DSPOp2F()
+void DSPOp2F(void)
 {
     Op2FSize = 0x100;
 }

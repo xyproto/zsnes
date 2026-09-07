@@ -58,7 +58,7 @@ struct
     FILE* fp;
 } IPSPatch;
 
-bool reloadBuffer()
+bool reloadBuffer(void)
 {
     if (IPSPatch.proccessed == IPSPatch.file_size) {
         return (false);
@@ -78,7 +78,7 @@ bool reloadBuffer()
     return (false);
 }
 
-int IPSget()
+int IPSget(void)
 {
     int retVal;
     if (IPSPatch.current == IPSPatch.data + IPSPatch.buffer_total) {
@@ -115,7 +115,7 @@ bool initPatch(const char* ext)
     return (false);
 }
 
-void deinitPatch()
+void deinitPatch(void)
 {
     if (IPSPatch.data) {
         free(IPSPatch.data);

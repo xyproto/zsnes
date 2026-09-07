@@ -660,6 +660,7 @@ static size_t pad_bit_encoder(uint8_t pad, uint8_t* buffer, size_t skip_bits)
 
             break;
         }
+        /* fallthrough */
 
     case 1:
         if ((zmv_vars.inputs_enabled & ((pad == 1) ? BIT(0xA) : BIT(0x9)))) // Mouse ?
@@ -730,6 +731,7 @@ static size_t pad_bit_decoder(uint8_t pad, uint8_t* buffer, size_t skip_bits)
 
             break;
         }
+        /* fallthrough */
 
     case 1:
         if (zmv_vars.inputs_enabled & ((pad == 1) ? BIT(0xA) : BIT(0x9))) // Mouse ?
@@ -794,7 +796,7 @@ static void read_last_joy_state(FILE* fp)
     load_last_joy_state(zmv_vars.write_buffer);
 }
 
-static void flush_input_buffer()
+static void flush_input_buffer(void)
 {
     if (zmv_vars.write_buffer_loc) {
         fwrite(zmv_vars.write_buffer, zmv_vars.write_buffer_loc, 1, zmv_vars.fp);
@@ -816,7 +818,7 @@ static void flush_input_buffer()
     zmv_vars.header.author_len = 0; // If we're writing, then author is erased if there
 }
 
-static void flush_input_if_needed()
+static void flush_input_if_needed(void)
 {
     if (zmv_vars.write_buffer_loc > WRITE_BUFFER_SIZE - 15) // 14 is a RLE buffer (5) + flag (1) + largest input (9)
     {
@@ -888,7 +890,7 @@ static bool zmv_create(char* filename)
     return (false);
 }
 
-static void zmv_rle_flush()
+static void zmv_rle_flush(void)
 {
     if (zmv_vars.rle_count) {
         if (zmv_vars.rle_count > 5) {
@@ -1005,7 +1007,7 @@ static void zmv_record(bool pause, uint8_t combos_used, uint8_t slow)
     zmv_vars.header.frames++;
 }
 
-static bool zmv_insert_chapter()
+static bool zmv_insert_chapter(void)
 {
     if ((zmv_vars.header.internal_chapters < 65535) && zmv_vars.header.frames && (zmv_vars.last_internal_chapter_offset != (ftell(zmv_vars.fp) + zmv_vars.write_buffer_loc - INT_CHAP_SIZE(zmv_vars.last_internal_chapter_offset)))) {
         uint8_t flag = BIT(2);
@@ -1027,7 +1029,7 @@ static bool zmv_insert_chapter()
     return (false);
 }
 
-static void zmv_record_finish()
+static void zmv_record_finish(void)
 {
     FILE* fp;
 
@@ -1070,7 +1072,7 @@ static void zmv_record_finish()
     debug_input_used;
 }
 
-static size_t zmv_frames_recorded()
+static size_t zmv_frames_recorded(void)
 {
     return (zmv_vars.header.frames);
 }
@@ -1237,7 +1239,7 @@ static void replay_pad(uint8_t pad, uint8_t flag, uint8_t* buffer, size_t* skip_
     latchy = zmv_vars.last_joy_state.latchy;
 }
 
-static bool zmv_replay()
+static bool zmv_replay(void)
 {
     if (zmv_open_vars.frames_replayed < zmv_vars.header.frames) {
         if (zmv_vars.rle_count) {
@@ -1304,7 +1306,7 @@ static bool zmv_replay()
     return (false);
 }
 
-static bool zmv_next_chapter()
+static bool zmv_next_chapter(void)
 {
     size_t current_loc = ftell(zmv_vars.fp);
 
@@ -1346,7 +1348,7 @@ static bool zmv_next_chapter()
 }
 
 // Have playback start movie from beginning
-static void zmv_rewind_playback()
+static void zmv_rewind_playback(void)
 {
     fseek(zmv_vars.fp, zmv_open_vars.first_chapter_pos, SEEK_SET);
     zst_compressed_loader(zmv_vars.fp);
@@ -1357,7 +1359,7 @@ static void zmv_rewind_playback()
     memset(&zmv_vars.last_joy_state, 0, sizeof(zmv_vars.last_joy_state));
 }
 
-static void zmv_prev_chapter()
+static void zmv_prev_chapter(void)
 {
     size_t current_loc = ftell(zmv_vars.fp);
 
@@ -1420,7 +1422,7 @@ static void zmv_prev_chapter()
 }
 
 // External chapter
-static void zmv_add_chapter()
+static void zmv_add_chapter(void)
 {
     if ((zmv_open_vars.external_chapter_count < 65535) && zmv_open_vars.frames_replayed) {
         size_t current_loc = ftell(zmv_vars.fp);
@@ -1468,7 +1470,7 @@ static void zmv_add_chapter()
     }
 }
 
-static void zmv_replay_finished()
+static void zmv_replay_finished(void)
 {
     internal_chapter_free_chain(zmv_vars.internal_chapters.next);
     internal_chapter_free_chain(zmv_open_vars.external_chapters.next);
@@ -1482,7 +1484,7 @@ static void zmv_replay_finished()
     }
 }
 
-static void zmv_replay_to_record()
+static void zmv_replay_to_record(void)
 {
     internal_chapter_free_chain(zmv_open_vars.external_chapters.next);
     zmv_vars.header.rerecords++;
@@ -1501,7 +1503,7 @@ static void zmv_replay_to_record()
     IGNORE_RESULT(ftruncate(fileno(zmv_vars.fp), ftell(zmv_vars.fp)));
 }
 
-static size_t zmv_frames_replayed()
+static size_t zmv_frames_replayed(void)
 {
     return (zmv_open_vars.frames_replayed);
 }
@@ -1551,7 +1553,7 @@ static void zmv_alloc_rewind_buffer(uint8_t rewind_states)
     zmv_rewind_buffer = (struct zmv_rewind*)malloc(sizeof(struct zmv_rewind) * rewind_states);
 }
 
-static void zmv_dealloc_rewind_buffer()
+static void zmv_dealloc_rewind_buffer(void)
 {
     if (zmv_rewind_buffer) {
         free(zmv_rewind_buffer);
@@ -1594,7 +1596,7 @@ void zmv_rewind_load(size_t state, bool playback)
 
 /* Save and load MZT */
 
-size_t mzt_filename_generate()
+size_t mzt_filename_generate(void)
 {
     size_t filename_len = strlen(zmv_vars.filename);
     memcpy(zmv_vars.filename + filename_len - 3, "mz", 2);
@@ -1997,7 +1999,7 @@ static void raw_embed_logo(bool audio)
 
 static uint8_t movie_current_pass = 0;
 
-static void raw_video_close()
+static void raw_video_close(void)
 {
     bool audio_and_video = raw_vid.vp && raw_vid.ap;
 
@@ -2054,7 +2056,7 @@ static void raw_video_close()
     signal(SIGPIPE, SIG_IGN);
 }
 
-static bool raw_video_open()
+static bool raw_video_open(void)
 {
     if (ZMVRawDump) // Command line
     {
@@ -2178,7 +2180,7 @@ static void raw_audio_write(uint32_t samples)
     }
 }
 
-static void raw_video_write_frame()
+static void raw_video_write_frame(void)
 {
     if (raw_vid.vp) {
         size_t x, y;
@@ -2225,7 +2227,7 @@ static void MovieSub_Open(const char* filename)
     MovieSub.fp = fopen_dir(ZMoviePath, filename, "r");
 }
 
-static void MovieSub_Close()
+static void MovieSub_Close(void)
 {
     if (MovieSub.fp) {
         fclose(MovieSub.fp);
@@ -2273,7 +2275,7 @@ static char* MovieSub_GetData(size_t frame_count)
     return (0);
 }
 
-static void MovieSub_ResetStream()
+static void MovieSub_ResetStream(void)
 {
     if (MovieSub.fp) {
         rewind(MovieSub.fp);
@@ -2282,7 +2284,7 @@ static void MovieSub_ResetStream()
     }
 }
 
-static size_t MovieSub_GetDuration()
+static size_t MovieSub_GetDuration(void)
 {
     return (MovieSub.message_duration);
 }
@@ -2355,7 +2357,7 @@ static void DumpVideoFrame(bool playback_over)
 
 /* Code to playback old ZMVs */
 
-static void OldMovieReplay()
+static void OldMovieReplay(void)
 {
     uint8_t byte;
 
@@ -2417,7 +2419,7 @@ static void OldMoviePlay(FILE* fp)
 {
     uint8_t RecData[16];
     extern uint8_t NextLineCache;
-    void loadstate2();
+    void loadstate2(void);
 
     memset(&old_movie, 0, sizeof(old_movie));
     old_movie.fp = fp;
@@ -2540,7 +2542,7 @@ void MovieSeekBehind(void)
     MessageOn = MsgCount;
 }
 
-void Replay()
+void Replay(void)
 {
     if (zmv_replay()) {
         char* sub;
@@ -2569,7 +2571,7 @@ void Replay()
     }
 }
 
-void ProcessMovies()
+void ProcessMovies(void)
 {
     switch (MovieProcessing) {
     case MOVIE_PLAYBACK:
@@ -2651,7 +2653,7 @@ void MovieStop()
     MovieWaiting = false;
 }
 
-void InitRewindVarsForMovie();
+void InitRewindVarsForMovie(void);
 
 void MoviePlay()
 {

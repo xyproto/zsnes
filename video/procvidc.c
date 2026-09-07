@@ -44,7 +44,7 @@ extern uint32_t nggposng[];
 extern uint16_t PrevPicture[64 * 56];
 extern uint8_t *vidbuffer, *vidbufferofsb;
 
-void CapturePicture()
+void CapturePicture(void)
 {
     const uint16_t* vbuf = (uint16_t*)vidbuffer;
     unsigned short work1, work2, filter;
@@ -78,7 +78,7 @@ void CapturePicture()
 /* size_t in zstate.c, so it has to be size_t here too. */
 extern size_t cur_zst_size, v143_zst_size, old_zst_size;
 
-char* zst_name();
+char* zst_name(void);
 
 void LoadPicture(void)
 {

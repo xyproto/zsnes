@@ -1316,6 +1316,12 @@ static void reenable_spc(void)
     if (curexecstate & 0x02u)
         return;
     curexecstate |= 0x02u;
+    /* The asm tail: back to the opcode table its flags select. */
+    {
+        extern opfn** tableadc[256]; /* endmem.h, which clashes here */
+
+        MemSeamDI = (uintptr_t)tableadc[(u1)MemSeamD];
+    }
 }
 
 /* $2140-$2143: the CPU side of the APU I/O ports, mirrored every four bytes

@@ -28,7 +28,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "cfg.h"
 #include <stdint.h>
 
-void CheckFrame();
+void CheckFrame(void);
 // VIDEO VARIABLES
 extern SDL_Window* sdl_window;
 extern SDL_Surface* surface;
@@ -39,9 +39,9 @@ extern uint8_t curblank;
 extern int frametot;
 extern uint8_t GUIOn, GUIOn2;
 
-void NTSCFilterInit();
+void NTSCFilterInit(void);
 void NTSCFilterDraw(int SurfaceX, int SurfaceY, int pitch, unsigned char* buffer);
-char CheckOGLMode();
+char CheckOGLMode(void);
 
 int sw_start(int width, int height, int req_depth, int FullScreen)
 {
@@ -94,7 +94,7 @@ int sw_start(int width, int height, int req_depth, int FullScreen)
     return 1;
 }
 
-void sw_end()
+void sw_end(void)
 {
     if (render_surface) {
         SDL_DestroySurface(render_surface);
@@ -108,14 +108,14 @@ void sw_end()
     }
 }
 
-static void LockSurface()
+static void LockSurface(void)
 {
     if (SurfaceLocking) {
         SDL_LockSurface(surface);
     }
 }
 
-static void UnlockSurface()
+static void UnlockSurface(void)
 {
     if (SurfaceLocking) {
         SDL_UnlockSurface(surface);
@@ -135,12 +135,12 @@ static void UnlockSurface()
 
 extern uint32_t NGNoTransp; /* a dword where it is defined (video/c_newgfx16data.c) */
 extern uint16_t resolutn;
-void hq2x_16b();
-void hq3x_16b();
-void hq4x_16b();
+void hq2x_16b(void);
+void hq3x_16b(void);
+void hq4x_16b(void);
 uint32_t pitch;
 
-void sw_clearwin()
+void sw_clearwin(void)
 {
     pitch = surface->pitch;
     SurfBufD = surface->pixels;
@@ -154,7 +154,7 @@ extern uint8_t prevNTSCMode;
 extern uint8_t changeRes;
 extern uint8_t prevKeep4_3Ratio;
 
-void sw_drawwin()
+void sw_drawwin(void)
 {
     NGNoTransp = 0; // Set this value to 1 within the appropriate
     // Where a custom or hardware transparency routine would go. Only reachable

@@ -37,12 +37,12 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 extern opfn** Curtableaddr;
 extern opfn* tableA[256];
 
-void PrepareOffset()
+void PrepareOffset(void)
 {
     Curtableaddr = (opfn**)((uintptr_t)Curtableaddr - (uintptr_t)tableA);
 }
 
-void ResetOffset()
+void ResetOffset(void)
 {
     Curtableaddr = (opfn**)((uintptr_t)Curtableaddr + (uintptr_t)tableA);
 }
@@ -63,7 +63,7 @@ void BankSwitchSDD1C(unsigned char bankval, unsigned int offset)
 
 extern uint8_t SDD1BankA[4];
 
-void UpdateBanksSDD1()
+void UpdateBanksSDD1(void)
 {
     if (SDD1BankA[0]) {
         BankSwitchSDD1C(SDD1BankA[0], 0x0C0);
@@ -73,13 +73,13 @@ void UpdateBanksSDD1()
     }
 }
 
-extern void (*Bank0datr8[256])(), (*Bank0datr16[256])(), (*Bank0datw8[256])(), (*Bank0datw16[256])();
+extern void (*Bank0datr8[256])(void), (*Bank0datr16[256])(void), (*Bank0datw8[256])(void), (*Bank0datw16[256])(void);
 
 extern uint32_t xdb, xx, xy;
 extern uint16_t oamaddrt, xat, xst, xdt, xxt, xyt;
 extern uint8_t xdbt, xpbt;
 
-void UpdateDPageC()
+void UpdateDPageC(void)
 {
     DPageR8 = Bank0datr8[(xd >> 8) & 0xFF];
     DPageR16 = Bank0datr16[(xd >> 8) & 0xFF];
@@ -89,7 +89,7 @@ void UpdateDPageC()
 
 extern uint32_t SA1xd;
 
-void SA1UpdateDPageC()
+void SA1UpdateDPageC(void)
 {
     SA1DPageR8 = Bank0datr8[(SA1xd >> 8) & 0xFF];
     SA1DPageR16 = Bank0datr16[(SA1xd >> 8) & 0xFF];
@@ -97,7 +97,7 @@ void SA1UpdateDPageC()
     SA1DPageW16 = Bank0datw16[(SA1xd >> 8) & 0xFF];
 }
 
-void unpackfunct()
+void unpackfunct(void)
 {
     oamaddrt = (oamaddr & 0xFFFF);
     xat = (xa & 0xFFFF);
@@ -123,16 +123,16 @@ extern uint8_t Voice5Noise, Voice6Noise, Voice7Noise, bgtilesz;
 extern uint8_t BG116x16t, BG216x16t, BG316x16t, BG416x16t, vramincby8on;
 extern uint8_t vramincr;
 
-void reg2118();
-void reg2118inc();
-void reg2118inc8();
-void reg2118inc8inc();
-void reg2119();
-void reg2119inc();
-void reg2119inc8();
-void reg2119inc8inc();
+void reg2118(void);
+void reg2118inc(void);
+void reg2118inc8(void);
+void reg2118inc8inc(void);
+void reg2119(void);
+void reg2119inc(void);
+void reg2119inc8(void);
+void reg2119inc8inc(void);
 
-void repackfunct()
+void repackfunct(void)
 {
     unsigned char block;
 
@@ -218,35 +218,35 @@ void repackfunct()
     }
 }
 
-void regaccessbankr8(), regaccessbankw8(), regaccessbankr16(), regaccessbankw16();
-void memaccessbankr8(), memaccessbankw8(), memaccessbankr16(), memaccessbankw16();
-void wramaccessbankr8(), wramaccessbankw8(), wramaccessbankr16(), wramaccessbankw16();
-void sramaccessbankr8(), sramaccessbankw8(), sramaccessbankr16(), sramaccessbankw16();
-void eramaccessbankr8(), eramaccessbankw8(), eramaccessbankr16(), eramaccessbankw16();
+void regaccessbankr8(void), regaccessbankw8(void), regaccessbankr16(void), regaccessbankw16(void);
+void memaccessbankr8(void), memaccessbankw8(void), memaccessbankr16(void), memaccessbankw16(void);
+void wramaccessbankr8(void), wramaccessbankw8(void), wramaccessbankr16(void), wramaccessbankw16(void);
+void sramaccessbankr8(void), sramaccessbankw8(void), sramaccessbankr16(void), sramaccessbankw16(void);
+void eramaccessbankr8(void), eramaccessbankw8(void), eramaccessbankr16(void), eramaccessbankw16(void);
 
-void regaccessbankr8SA1(), regaccessbankw8SA1(), regaccessbankr16SA1(), regaccessbankw16SA1();
-void SA1RAMaccessbankr8(), SA1RAMaccessbankw8(), SA1RAMaccessbankr16(), SA1RAMaccessbankw16();
-void SA1RAMaccessbankr8b(), SA1RAMaccessbankw8b(), SA1RAMaccessbankr16b(), SA1RAMaccessbankw16b();
+void regaccessbankr8SA1(void), regaccessbankw8SA1(void), regaccessbankr16SA1(void), regaccessbankw16SA1(void);
+void SA1RAMaccessbankr8(void), SA1RAMaccessbankw8(void), SA1RAMaccessbankr16(void), SA1RAMaccessbankw16(void);
+void SA1RAMaccessbankr8b(void), SA1RAMaccessbankw8b(void), SA1RAMaccessbankr16b(void), SA1RAMaccessbankw16b(void);
 
-void sramaccessbankr8s(), sramaccessbankw8s(), sramaccessbankr16s(), sramaccessbankw16s();
-void DSP1Read8b3F(), DSP1Write8b3F(), DSP1Read16b3F(), DSP1Write16b3F();
-void DSP2Read8b(), DSP2Write8b(), DSP2Read16b(), DSP2Write16b();
-void DSP3Read8b(), DSP3Write8b(), DSP3Read16b(), DSP3Write16b();
-void DSP4Read8b(), DSP4Write8b(), DSP4Read16b(), DSP4Write16b();
-void setaaccessbankr8(), setaaccessbankw8(), setaaccessbankr16(), setaaccessbankw16();
-void setaaccessbankr8a(), setaaccessbankw8a(), setaaccessbankr16a(), setaaccessbankw16a();
-void Seta11Read8_60(), Seta11Write8_60(), Seta11Read16_60(), Seta11Write16_60();
-void Seta11Read8_68(), Seta11Write8_68(), Seta11Read16_68(), Seta11Write16_68();
-void sfxaccessbankr8(), sfxaccessbankw8(), sfxaccessbankr16(), sfxaccessbankw16();
-void sfxaccessbankr8b(), sfxaccessbankw8b(), sfxaccessbankr16b(), sfxaccessbankw16b();
-void sfxaccessbankr8c(), sfxaccessbankw8c(), sfxaccessbankr16c(), sfxaccessbankw16c();
-void sfxaccessbankr8d(), sfxaccessbankw8d(), sfxaccessbankr16d(), sfxaccessbankw16d();
-void OBC1Read8b(), OBC1Write8b(), OBC1Read16b(), OBC1Write16b();
-void C4Read8b(), C4Write8b(), C4Read16b(), C4Write16b();
-void memaccessspc7110r8(), memaccessspc7110r16(), memaccessspc7110w8(), memaccessspc7110w16();
-void SPC7110ReadSRAM8b(), SPC7110ReadSRAM16b(), SPC7110WriteSRAM8b(), SPC7110WriteSRAM16b();
-void stsramr8(), stsramr16(), stsramw8(), stsramw16();
-void stsramr8b(), stsramr16b(), stsramw8b(), stsramw16b();
+void sramaccessbankr8s(void), sramaccessbankw8s(void), sramaccessbankr16s(void), sramaccessbankw16s(void);
+void DSP1Read8b3F(void), DSP1Write8b3F(void), DSP1Read16b3F(void), DSP1Write16b3F(void);
+void DSP2Read8b(void), DSP2Write8b(void), DSP2Read16b(void), DSP2Write16b(void);
+void DSP3Read8b(void), DSP3Write8b(void), DSP3Read16b(void), DSP3Write16b(void);
+void DSP4Read8b(void), DSP4Write8b(void), DSP4Read16b(void), DSP4Write16b(void);
+void setaaccessbankr8(void), setaaccessbankw8(void), setaaccessbankr16(void), setaaccessbankw16(void);
+void setaaccessbankr8a(void), setaaccessbankw8a(void), setaaccessbankr16a(void), setaaccessbankw16a(void);
+void Seta11Read8_60(void), Seta11Write8_60(void), Seta11Read16_60(void), Seta11Write16_60(void);
+void Seta11Read8_68(void), Seta11Write8_68(void), Seta11Read16_68(void), Seta11Write16_68(void);
+void sfxaccessbankr8(void), sfxaccessbankw8(void), sfxaccessbankr16(void), sfxaccessbankw16(void);
+void sfxaccessbankr8b(void), sfxaccessbankw8b(void), sfxaccessbankr16b(void), sfxaccessbankw16b(void);
+void sfxaccessbankr8c(void), sfxaccessbankw8c(void), sfxaccessbankr16c(void), sfxaccessbankw16c(void);
+void sfxaccessbankr8d(void), sfxaccessbankw8d(void), sfxaccessbankr16d(void), sfxaccessbankw16d(void);
+void OBC1Read8b(void), OBC1Write8b(void), OBC1Read16b(void), OBC1Write16b(void);
+void C4Read8b(void), C4Write8b(void), C4Read16b(void), C4Write16b(void);
+void memaccessspc7110r8(void), memaccessspc7110r16(void), memaccessspc7110w8(void), memaccessspc7110w16(void);
+void SPC7110ReadSRAM8b(void), SPC7110ReadSRAM16b(void), SPC7110WriteSRAM8b(void), SPC7110WriteSRAM16b(void);
+void stsramr8(void), stsramr16(void), stsramw8(void), stsramw16(void);
+void stsramr8b(void), stsramr16b(void), stsramw8b(void), stsramw16b(void);
 
 mrwp regbank = { regaccessbankr8, regaccessbankw8, regaccessbankr16, regaccessbankw16 };
 mrwp membank = { memaccessbankr8, memaccessbankw8, memaccessbankr16, memaccessbankw16 };
@@ -278,7 +278,7 @@ mrwp SPC7110SRAMBank = { SPC7110ReadSRAM8b, SPC7110WriteSRAM8b, SPC7110ReadSRAM1
 mrwp stbanka = { stsramr8, stsramw8, stsramr16, stsramw16 };
 mrwp stbankb = { stsramr8b, stsramw8b, stsramr16b, stsramw16b };
 
-void SetAddressingModes()
+void SetAddressingModes(void)
 { //  Banks
     map_mem(0x00, &regbank, 0x40); // 00 - 3F
     map_mem(0x40, &membank, 0x3E); // 40 - 7D
@@ -288,7 +288,7 @@ void SetAddressingModes()
     map_mem(0xC0, &membank, 0x40); // C0 - FF
 }
 
-void SetAddressingModesSA1()
+void SetAddressingModesSA1(void)
 {
     map_mem(0x00, &sa1regbank, 0x40); // 00 - 3F
     map_mem(0x40, &sa1rambank, 0x20); // 40 - 5F
@@ -301,13 +301,13 @@ void SetAddressingModesSA1()
     map_mem(0xC0, &membank, 0x40); // C0 - FF
 }
 
-void membank0r8reg(), membank0w8reg(), membank0r16reg(), membank0w16reg();
-void membank0r8ram(), membank0w8ram(), membank0r16ram(), membank0w16ram();
-void membank0r8rom(), membank0w8rom(), membank0r16rom(), membank0w16rom();
-void membank0r8romram(), membank0w8romram(), membank0r16romram(), membank0w16romram();
-void membank0r8inv(), membank0w8inv(), membank0r16inv(), membank0w16inv();
-void membank0r8chip(), membank0w8chip(), membank0r16chip(), membank0w16chip();
-void membank0r8ramSA1(), membank0w8ramSA1(), membank0r16ramSA1(), membank0w16ramSA1();
+void membank0r8reg(void), membank0w8reg(void), membank0r16reg(void), membank0w16reg(void);
+void membank0r8ram(void), membank0w8ram(void), membank0r16ram(void), membank0w16ram(void);
+void membank0r8rom(void), membank0w8rom(void), membank0r16rom(void), membank0w16rom(void);
+void membank0r8romram(void), membank0w8romram(void), membank0r16romram(void), membank0w16romram(void);
+void membank0r8inv(void), membank0w8inv(void), membank0r16inv(void), membank0w16inv(void);
+void membank0r8chip(void), membank0w8chip(void), membank0r16chip(void), membank0w16chip(void);
+void membank0r8ramSA1(void), membank0w8ramSA1(void), membank0r16ramSA1(void), membank0w16ramSA1(void);
 
 mrwp regbank0 = { membank0r8reg, membank0w8reg, membank0r16reg, membank0w16reg };
 mrwp rambank0 = { membank0r8ram, membank0w8ram, membank0r16ram, membank0w16ram };
@@ -325,7 +325,7 @@ static void map_bank0(size_t dest, mrwp* src, size_t num)
     rep_stosd(Bank0datw16 + dest, src->memw16, num);
 }
 
-void GenerateBank0Table()
+void GenerateBank0Table(void)
 {
     map_bank0(0x00, &rambank0, 0x20); // 00 - 1F
     map_bank0(0x20, &regbank0, 0x28); // 20 - 47
@@ -335,7 +335,7 @@ void GenerateBank0Table()
     map_bank0(0xFF, &romrambank0, 0x01); // FF
 }
 
-void GenerateBank0TableSA1()
+void GenerateBank0TableSA1(void)
 {
     map_bank0(0x00, &sa1rambank0, 0x20); // 00 - 1F
 }

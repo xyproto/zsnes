@@ -65,9 +65,9 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define clim()
 #define stim()
 
-void SA1UpdateDPageC(), unpackfunct(), repackfunct();
-void PrepareOffset(), ResetOffset(), initpitch(), UpdateBanksSDD1();
-void procexecloop();
+void SA1UpdateDPageC(void), unpackfunct(void), repackfunct(void);
+void PrepareOffset(void), ResetOffset(void), initpitch(void), UpdateBanksSDD1(void);
+void procexecloop(void);
 
 void copy_spc7110_state_data(uint8_t**, void (*)(unsigned char**, void*, size_t), bool);
 
@@ -415,7 +415,7 @@ size_t rewind_state_size, cur_zst_size, v143_zst_size, old_zst_size;
 void zmv_rewind_save(size_t, bool);
 void zmv_rewind_load(size_t, bool);
 
-void ClearCacheCheck()
+void ClearCacheCheck(void)
 {
     memset(vidmemch2, 1, sizeof(vidmemch2));
     memset(vidmemch4, 1, sizeof(vidmemch4));
@@ -443,7 +443,7 @@ Pause frame modes
 3 - pause frame ready for reload
 */
 
-void BackupPauseFrame()
+void BackupPauseFrame(void)
 {
     if (SpecialPauseBackup) {
         copy_state_data(SpecialPauseBackup, memcpyinc, csm_save_rewind);
@@ -451,7 +451,7 @@ void BackupPauseFrame()
     }
 }
 
-void RestorePauseFrame()
+void RestorePauseFrame(void)
 {
     if (SpecialPauseBackup) {
         copy_state_data(SpecialPauseBackup, memcpyrinc, csm_load_rewind);
@@ -460,7 +460,7 @@ void RestorePauseFrame()
     }
 }
 
-void DeallocPauseFrame()
+void DeallocPauseFrame(void)
 {
     if (SpecialPauseBackup) {
         free(SpecialPauseBackup);
@@ -469,7 +469,7 @@ void DeallocPauseFrame()
 
 #define ActualRewindFrames (uint32_t)(RewindFrames * (romispal ? 10 : 12))
 
-void BackupCVFrame()
+void BackupCVFrame(void)
 {
     uint8_t* RewindBufferPos = StateBackup + LatestRewindPos * rewind_state_size;
 
@@ -496,7 +496,7 @@ void BackupCVFrame()
     //  printf("New backup slot: #%u, timer %u, check %u\n", LatestRewindPos, RewindTimer, DblRewTimer);
 }
 
-void RestoreCVFrame()
+void RestoreCVFrame(void)
 {
     uint8_t* RewindBufferPos;
 
@@ -537,7 +537,7 @@ void RestoreCVFrame()
     DblRewTimer = 2 * ActualRewindFrames;
 }
 
-void SetupRewindBuffer()
+void SetupRewindBuffer(void)
 {
     // For special rewind case to help out pauses
     DeallocPauseFrame();
@@ -557,7 +557,7 @@ void SetupRewindBuffer()
     AllocatedRewindStates = RewindStates;
 }
 
-void DeallocRewindBuffer()
+void DeallocRewindBuffer(void)
 {
     if (StateBackup) {
         free(StateBackup);
@@ -571,7 +571,7 @@ static void state_size_tally(uint8_t** dest, void* src, size_t len)
     state_size += len;
 }
 
-void InitRewindVars()
+void InitRewindVars(void)
 {
     uint8_t almost_useless_array[1]; // An array is needed for copy_state_data to give the correct size
     state_size = 0;
@@ -586,7 +586,7 @@ void InitRewindVars()
     DblRewTimer = 1;
 }
 
-void InitRewindVarsForMovie()
+void InitRewindVarsForMovie(void)
 {
     LatestRewindPos = 0;
     EarliestRewindPos = 0;
@@ -629,7 +629,7 @@ void RestoreSystemVars(void)
     }
 }
 
-void DeallocSystemVars()
+void DeallocSystemVars(void)
 {
     if (BackupSystemBuffer) {
         free(BackupSystemBuffer);
@@ -638,7 +638,7 @@ void DeallocSystemVars()
 
 extern s2* Voice0BufPtr[8]; // Ptr to Buffer Block to be played
 
-void PrepareSaveState()
+void PrepareSaveState(void)
 {
     int i;
 
@@ -662,7 +662,7 @@ extern uint8_t *SNSPtr, *SNSRegPCS;
 extern uint32_t SA1PtrSt, SA1RegPCSSt, CurBWPtrSt, SA1BWPtrSt, SNSBWPtrSt;
 extern uint32_t SNSPtrSt, SNSRegPCSSt;
 
-void SaveSA1()
+void SaveSA1(void)
 {
     SA1Stat &= 0xFFFFFF00;
     SA1PtrSt = (uint32_t)(SA1Ptr - SA1RegPCS);
@@ -701,7 +701,7 @@ static uint8_t* sa1_bwptr(uint32_t const st)
     return SA1RAMArea + off;
 }
 
-void RestoreSA1()
+void RestoreSA1(void)
 {
     /* Both offsets are signed: the SA-1 bank base is romdata - 0x8000, and the
        PC can sit below its base. A 32-bit build wrapped around to the right
@@ -727,7 +727,7 @@ void RestoreSA1()
     SA1Ptr = SA1RegPCS + (int32_t)SA1PtrSt;
 }
 
-void ResetState()
+void ResetState(void)
 {
     int i;
 
@@ -753,7 +753,7 @@ extern zreg SfxLastRamAdr, SfxRAMMem;
 extern uint32_t SfxRomBufferSt, SfxLastRamAdrSt;
 
 static FILE* fhandle;
-void CapturePicture();
+void CapturePicture(void);
 
 #ifdef ZSNES_DEBUG_HOOKS
 /* Set while ZST_ROUNDTRIP is mapping which section a differing byte falls in. */
@@ -784,7 +784,7 @@ static const char zst_header_old[] = "ZSNES Save State File V0.6\x1a\x3c";
 static const char zst_header_143[] = "ZSNES Save State File V143\x1a\x8f";
 static const char zst_header_cur[] = "ZSNES Save State File V144\x1a\x8f";
 
-void calculate_state_sizes()
+void calculate_state_sizes(void)
 {
     state_size = 0;
     copy_state_data(0, state_size_tally, csm_save_zst_new);
@@ -803,7 +803,7 @@ uint32_t current_zst = 0;
 uint32_t newest_zst = 0;
 time_t newestfiledate;
 
-char* zst_name()
+char* zst_name(void)
 {
     static char buffer[7];
     if ((MovieProcessing == MOVIE_PLAYBACK) || (MovieProcessing == MOVIE_RECORD)) {
@@ -842,7 +842,7 @@ void zst_determine_newest(void)
     }
 }
 
-void zst_init()
+void zst_init(void)
 {
     newestfiledate = 0;
 
@@ -1171,9 +1171,7 @@ bool zst_load(FILE* fp, size_t Compressed)
             origin = zst_classify(fp, zst_version, &extra);
             IGNORE_RESULT(fseek(fp, (long)sizeof(zst_header_check), SEEK_CUR));
         } else {
-            origin = (zst_version == 60) ? ZST_V06
-                : (zst_version == 144)   ? ZST_ZSNES2
-                                         : ZST_ZSNES2;
+            origin = (zst_version == 60) ? ZST_V06 : ZST_ZSNES2;
             extra = 0;
         }
         if (origin == ZST_UNKNOWN) {
@@ -1526,7 +1524,7 @@ void stateloader(char* statename, bool keycheck, bool xfercheck)
     stim();
 }
 
-void debugloadstate()
+void debugloadstate(void)
 {
     stateloader(ZStateName, 0, 0);
 }
@@ -1556,7 +1554,7 @@ void SaveSecondState(void)
 }
 
 extern uint8_t CHIPBATT, *sram2;
-void SaveCombFile();
+void SaveCombFile(void);
 
 // Sram saving
 void SaveSramData(void)
@@ -1601,7 +1599,7 @@ void SaveSramData(void)
 }
 
 extern bool SramExists;
-void OpenSramFile()
+void OpenSramFile(void)
 {
     FILE* fp;
 
@@ -1767,7 +1765,7 @@ void savespcdata(void)
     }
 }
 
-void SaveGameSpecificInput()
+void SaveGameSpecificInput(void)
 {
     if (!*ZSaveName) {
         psr_cfg_run(write_input_vars, ZCfgPath, "zinput.cfg");
@@ -1779,7 +1777,7 @@ void SaveGameSpecificInput()
     }
 }
 
-void LoadGameSpecificInput()
+void LoadGameSpecificInput(void)
 {
     if (GameSpecificInput && *ZSaveName) {
         psr_cfg_run(read_input_vars, ZCfgPath, "zinput.cfg");

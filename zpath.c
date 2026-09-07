@@ -220,13 +220,13 @@ void cfgpath_ensure(const char* launch_command)
 }
 #endif
 
-void SaveGameSpecificInput();
+void SaveGameSpecificInput(void);
 
-void deinit_paths()
+void deinit_paths(void)
 {
     // Save data that depends on paths before deinit of them
-    void SaveSramData();
-    void GUISaveVars();
+    void SaveSramData(void);
+    void GUISaveVars(void);
 
     strcpy(ROMPath, ZRomPath);
 
@@ -278,7 +278,7 @@ void deinit_paths()
 
 bool init_paths(char* launch_command)
 {
-    void GUIRestoreVars();
+    void GUIRestoreVars(void);
 
     INIT_PATH_HELPER(ZStart);
     INIT_PATH_HELPER(ZRom);

@@ -27,6 +27,11 @@ extern uintptr_t MemSeamB, MemSeamC, MemSeamA, MemSeamD;
 /* Pointer-wide: this is the PC, a host pointer, not a 32-bit register. */
 extern uintptr_t MemSeamS;
 
+/* The core's edi, i.e. the opcode dispatch table. The core picks a table once
+   and carries it across instructions, so the $2140-$2143 handlers have to hand
+   the new one back when re-enabling SPC emulation switches tables. */
+extern uintptr_t MemSeamDI;
+
 typedef void memfn(void);
 
 /* Reads land in al/ax and leave the rest of eax alone: the 65816 core keeps

@@ -181,7 +181,7 @@ double tanval;
 double c4x, c4y, c4z;
 double c4x2, c4y2, c4z2;
 
-void C4TransfWireFrame()
+void C4TransfWireFrame(void)
 {
     double s, c;
     c4x = (double)C4WFXVal;
@@ -214,7 +214,7 @@ void C4TransfWireFrame()
     C4WFYVal = (short)(c4y * C4WFScale / (0x90 * (c4z + 0x95)) * 0x95);
 }
 
-void C4TransfWireFrame2()
+void C4TransfWireFrame2(void)
 {
     double s, c;
     c4x = (double)C4WFXVal;
@@ -247,7 +247,7 @@ void C4TransfWireFrame2()
     C4WFYVal = (short)(c4y * C4WFScale / 0x100);
 }
 
-void C4CalcWireFrame()
+void C4CalcWireFrame(void)
 {
     C4WFXVal = C4WFX2Val - C4WFXVal;
     C4WFYVal = C4WFY2Val - C4WFYVal;
@@ -275,7 +275,7 @@ short C41FAngleRes;
 short C41FDist;
 short C41FDistVal;
 
-void C4Op1F()
+void C4Op1F(void)
 {
     if (C41FXVal == 0) {
         if (C41FYVal > 0)
@@ -291,13 +291,13 @@ void C4Op1F()
     }
 }
 
-void C4Op15()
+void C4Op15(void)
 {
     tanval = sqrt(((double)C41FYVal) * ((double)C41FYVal) + ((double)C41FXVal) * ((double)C41FXVal));
     C41FDist = (short)tanval;
 }
 
-void C4Op0D()
+void C4Op0D(void)
 {
     tanval = sqrt(((double)C41FYVal) * ((double)C41FYVal) + ((double)C41FXVal) * ((double)C41FXVal));
     tanval = (double)C41FDistVal / tanval;
@@ -306,7 +306,7 @@ void C4Op0D()
 }
 
 #define READ_WORD(s) (*(unsigned short*)(s))
-void C4Op22()
+void C4Op22(void)
 {
     short angle1 = READ_WORD(C4Ram + 0x1f8c) & 0x1ff;
     short angle2 = READ_WORD(C4Ram + 0x1f8f) & 0x1ff;

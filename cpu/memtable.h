@@ -28,17 +28,17 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "../types.h"
 #include "memseam.h"
 
-extern void (*memtabler8[256])();
-extern void (*memtablew8[256])();
-extern void (*memtabler16[256])();
-extern void (*memtablew16[256])();
+extern void (*memtabler8[256])(void);
+extern void (*memtablew8[256])(void);
+extern void (*memtabler16[256])(void);
+extern void (*memtablew16[256])(void);
 
 typedef struct
 {
-    void (*memr8)();
-    void (*memw8)();
-    void (*memr16)();
-    void (*memw16)();
+    void (*memr8)(void);
+    void (*memw8)(void);
+    void (*memr16)(void);
+    void (*memw16)(void);
 } mrwp;
 
 extern mrwp regbank, membank, wrambank, srambank, erambank, sramsbank;
@@ -56,7 +56,7 @@ instruction rep stosd, which is able to do that (and much more).
 Since ZSNES is just full of func pointer arrays, it'll probably come in handy.
 */
 
-static inline void rep_stosd(void (**dest)(), void(*func_ptr), size_t num)
+static inline void rep_stosd(void (**dest)(void), void(*func_ptr), size_t num)
 {
     while (num--) {
         dest[num] = func_ptr;

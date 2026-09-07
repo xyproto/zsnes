@@ -416,10 +416,10 @@ static uint8_t DecompressByte(void)
     return (buffer[buf_idx++]);
 }
 
-static void DecompressSkipBytesBuffer(uint8_t* buffer, uint16_t amount)
+static void DecompressSkipBytesBuffer(uint8_t* buf, uint16_t amount)
 {
     while (amount--) {
-        *buffer++ = DecompressByte();
+        *buf++ = DecompressByte();
     }
 }
 
@@ -483,7 +483,7 @@ static struct
     bool buffered_cache_enabled;
 } decompression_state;
 
-static void save_decompression_state()
+static void save_decompression_state(void)
 {
     if (decompression_state.graphics_buffer) {
         char fname[13];
@@ -517,7 +517,7 @@ static void save_decompression_state()
     }
 }
 
-static void load_decompression_state()
+static void load_decompression_state(void)
 {
     if (decompression_state.graphics_buffer) {
         char fname[13];
@@ -586,7 +586,7 @@ static void load_decompression_state()
     }
 }
 
-static bool SPC7110_init_decompression_state()
+static bool SPC7110_init_decompression_state(void)
 {
     if (SPC7110Cache) {
         size_t lookup_bytes = LOOKUP_AMOUNT * sizeof(struct address_lookup);
@@ -637,7 +637,7 @@ static bool SPC7110_init_decompression_state()
     return (decompression_state.graphics_buffer);
 }
 
-void SPC7110_deinit_decompression_state()
+void SPC7110_deinit_decompression_state(void)
 {
     if (decompression_state.graphics_buffer) {
         save_decompression_state();
@@ -657,7 +657,7 @@ static uint8_t read_non_buffered_current(uint8_t byte);
 void (*init_decompression)(uint32_t address, uint8_t entry, uint16_t skip_amount);
 uint8_t (*read_decompress)(uint8_t byte);
 
-static void disable_buffered_decompression()
+static void disable_buffered_decompression(void)
 {
     decompression_state.buffered_cache_enabled = false;
     decompression_state.table_current = 0;
@@ -809,11 +809,11 @@ static uint8_t read_non_buffered_current(uint8_t byte)
     return read_non_buffered_decompress(byte);
 }
 
-void copy_spc7110_state_data(uint8_t** buffer, void (*copy_func)(unsigned char**, void*, size_t), bool load)
+void copy_spc7110_state_data(uint8_t** buf, void (*copy_func)(unsigned char**, void*, size_t), bool load)
 {
-    copy_func(buffer, &decompression_state.last_address, 3);
-    copy_func(buffer, &decompression_state.last_entry, sizeof(uint8_t));
-    copy_func(buffer, &decompression_state.decompression_used_length, sizeof(uint16_t));
+    copy_func(buf, &decompression_state.last_address, 3);
+    copy_func(buf, &decompression_state.last_entry, sizeof(uint8_t));
+    copy_func(buf, &decompression_state.decompression_used_length, sizeof(uint16_t));
 
     if (load && decompression_state.last_address) {
         uint32_t last_address = decompression_state.last_address;
@@ -852,7 +852,7 @@ B - Decompression control register
 C - Decompression status
 */
 
-void SPC7110initC()
+void SPC7110initC(void)
 {
     memset(SPCCompressionRegs, 0, 0x0C);
     if (SPC7110_init_decompression_state() && decompression_state.buffered_cache_enabled) {
@@ -866,13 +866,13 @@ void SPC7110initC()
 
 // DECOMPRESSED DATA CONTINUOUS READ PORT
 // Returns a decompressed value from bank $50 and decrements 16 bit counter value at $4809/A by 1
-void SPC7110_4800()
+void SPC7110_4800(void)
 {
     WRITE_WORD16_LE(SPCCompressionRegs + 9, READ_WORD16_LE(SPCCompressionRegs + 9) - 1);
     SPCCompressionRegs[0] = read_decompress(SPCCompressionRegs[0]);
 }
 
-void SPC7110_4806w()
+void SPC7110_4806w(void)
 {
     init_decompression(READ_WORD24_LE(SPCCompressionRegs + 1), SPCCompressionRegs[4], READ_WORD16_LE(SPCCompressionRegs + 5));
     SPCCompressionRegs[0xC] = 0x80;

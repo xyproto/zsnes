@@ -39,7 +39,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "cfg.h"
 #include <stdint.h>
 
-void hq2x_16b();
+void hq2x_16b(void);
 void NTSCFilterDraw(int out_width, int out_height, int out_pitch, unsigned char* rgb16_out);
 void NTSCFilterInit(void);
 
@@ -52,7 +52,7 @@ extern Uint8 GUIOn2;
 extern uint32_t NGNoTransp; /* a dword where it is defined (video/c_newgfx16data.c) */
 extern uint8_t SpecialLine[256]; /* 0 if lo-res, > 0 if hi-res */
 
-char CheckOGLMode();
+char CheckOGLMode(void);
 
 int sr_start(int width, int height, int req_depth, int FullScreen);
 void sr_end(void);
@@ -225,7 +225,7 @@ void sr_drawwin(void)
 {
     int line;
     /* What this frame ends up filling, which the upload and the draw follow. */
-    int w = SR_W, h = SR_H, pitch = SR_W * 2;
+    int w = SR_W, h = SR_H, dst_pitch = SR_W * 2;
 
     NGNoTransp = 0; // Set this value to 1 within the appropriate
     // Where a custom or hardware transparency routine would go. Only reachable
@@ -243,12 +243,12 @@ void sr_drawwin(void)
            unfiltered frame over it. */
         w = SurfaceX;
         h = SurfaceY;
-        pitch = w * 2;
-        NTSCFilterDraw(w, h, pitch, (unsigned char*)sr_pixels);
+        dst_pitch = w * 2;
+        NTSCFilterDraw(w, h, dst_pitch, (unsigned char*)sr_pixels);
     } else if (SurfaceX >= 512 && (hqFilter || En2xSaI)) {
         /* The filters write a finished 512-wide picture themselves. */
         AddEndBytes = 0;
-        NumBytesPerLine = pitch;
+        NumBytesPerLine = dst_pitch;
         WinVidMemStart = (void*)sr_pixels;
         if (hqFilter) {
             hq2x_16b();
@@ -264,7 +264,7 @@ void sr_drawwin(void)
 
             for (unsigned y = 0; y < resolutn; y++) {
                 f(base + (size_t)y * SR_SRC_STRIDE, NULL, SR_SRC_STRIDE * 2, 256,
-                    (unsigned char*)sr_pixels + (size_t)y * 2 * pitch, pitch);
+                    (unsigned char*)sr_pixels + (size_t)y * 2 * dst_pitch, dst_pitch);
             }
         }
     } else {
@@ -280,7 +280,7 @@ void sr_drawwin(void)
         SDL_Rect const dirty = { 0, 0, w, h };
         SDL_FRect const src = { 0.0f, 0.0f, (float)w, (float)h };
 
-        SDL_UpdateTexture(sr_texture, &dirty, sr_pixels, pitch);
+        SDL_UpdateTexture(sr_texture, &dirty, sr_pixels, dst_pitch);
         SDL_RenderClear(sr_renderer);
         SDL_RenderTexture(sr_renderer, sr_texture, &src, NULL);
         SDL_RenderPresent(sr_renderer);

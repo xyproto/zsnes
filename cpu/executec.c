@@ -33,7 +33,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 extern uint16_t t1cc; // not sure about this one
 extern uint32_t nextframe; // framecounter for frameskipping
 
-void Game60hzcall()
+void Game60hzcall(void)
 {
     t1cc++;
     nextframe++;

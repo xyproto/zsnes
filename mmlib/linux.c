@@ -172,7 +172,7 @@ static int init_mouse(const char* fname, int fd)
                 is_mouse = 1;
         } /* if */
 
-#if ALLOW_DIALS_TO_BE_MICE
+#ifdef ALLOW_DIALS_TO_BE_MICE
         if (test_bit(relcaps, REL_DIAL))
             is_mouse = 1; // griffin powermate?
 #endif

@@ -164,17 +164,17 @@ static float update_ticks_pc2;
 static SDL_Semaphore* sem_frames = NULL;
 static struct timespec sem_start;
 
-void Game60hzcall();
+void Game60hzcall(void);
 u8 copymaskRB = UINT64_C(0x001FF800001FF800);
 u8 copymaskG = UINT64_C(0x0000FC000000FC00);
 u8 copymagic = UINT64_C(0x0008010000080100);
 
-static void adjustMouseXScale()
+static void adjustMouseXScale(void)
 {
     MouseXScale = (MouseMaxX - MouseMinX) / ((float)WindowWidth);
 }
 
-static void adjustMouseYScale()
+static void adjustMouseYScale(void)
 {
     MouseYScale = (MouseMaxY - MouseMinY) / ((float)WindowHeight);
 }
@@ -255,7 +255,7 @@ void SetHiresOpt(unsigned int ResX, unsigned int ResY)
 static unsigned int sdl_keysym_to_pc_scancode(int sym);
 static void ProcessKeyBuf(int scancode);
 
-int Main_Proc()
+int Main_Proc(void)
 {
     SDL_Event event;
     unsigned int key;
@@ -384,6 +384,7 @@ int Main_Proc()
             case SDL_BUTTON_MIDDLE:
                 ProcessKeyBuf(SDLK_RETURN);
                 // Yes, this is intentional - DDOI
+                /* fallthrough */
             case SDL_BUTTON_LEFT:
                 MouseButton |= event.button.button;
                 MouseButtonPressed |= event.button.button;
@@ -808,10 +809,14 @@ static void ProcessKeyBuf(int scancode)
             }
         }
     }
-    if ((scancode >= SDLK_KP_0) && (scancode <= SDLK_KP_9)) {
+    /* SDL2 numbers KP_0 above KP_9, so this is two tests, not a range. */
+    if ((scancode >= (int)SDLK_KP_1 && scancode <= (int)SDLK_KP_9)
+        || scancode == (int)SDLK_KP_0) {
         if (numlockptr) {
             accept = 1;
-            vkeyval = scancode - SDLK_KP_0 + '0';
+            vkeyval = scancode == (int)SDLK_KP_0
+                ? '0'
+                : scancode - (int)SDLK_KP_1 + '1';
         } else {
             switch (scancode) {
             case SDLK_KP_9:
@@ -1085,7 +1090,7 @@ BOOL InitJoystickInput()
     return TRUE;
 }
 
-BOOL InitInput()
+BOOL InitInput(void)
 {
     InitJoystickInput();
     return TRUE;
@@ -1093,7 +1098,7 @@ BOOL InitInput()
 
 static void sem_sleep_rdy(void);
 
-int startgame()
+int startgame(void)
 {
     static bool ranonce = false;
     int status;
@@ -1195,7 +1200,7 @@ void Stop36HZ()
     T36HZEnabled = 0;
 }
 
-void init_hqNx()
+void init_hqNx(void)
 {
     uint32_t color32;
     uint32_t* p;
@@ -1226,7 +1231,7 @@ unsigned char prevNTSCMode = 0;
 unsigned char changeRes = 1;
 unsigned char prevKeep4_3Ratio = 0;
 static unsigned char prevsync = 0;
-char CheckOGLMode();
+char CheckOGLMode(void);
 
 void initwinvideo(void)
 {
@@ -1597,7 +1602,7 @@ static void sem_sleep_rdy(void)
     sem_threadid = SDL_CreateThread(sem_thread, "sem_thread", 0);
 }
 
-static void sem_sleep_die()
+static void sem_sleep_die(void)
 {
     if (sem_threadid) {
         sem_threadrun = 0;
@@ -1857,7 +1862,7 @@ void drawscreenwin(void)
     }
 }
 
-void UnloadSDL()
+void UnloadSDL(void)
 {
     DeinitSound();
     sem_sleep_die(); // Shutdown semaphore

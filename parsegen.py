@@ -479,7 +479,7 @@ static int atoui(const char *nptr)
     def write_init_function(self):
         self.c_stream.write(f"""
 static unsigned char psr_init_done = 0;
-static void init_{family_name}_vars()
+static void init_{family_name}_vars(void)
 {{
   if (!psr_init_done)
   {{
@@ -518,11 +518,11 @@ static void write_{info.underscore}_array(int (*outf)(void *, const char *, ...)
         elif operation == "read":
             atoi_func = "atoi" if info.signed else "atoui"
             self.c_stream.write(f"""
-static void read_{info.underscore}_array(char *line, {info.space} *var, size_t size)
+static void read_{info.underscore}_array(char *text, {info.space} *var, size_t size)
 {{
   size_t i;
   char *token;
-  *var = ({info.space}){atoi_func}(strtok(line, ", \\t\\r\\n"));
+  *var = ({info.space}){atoi_func}(strtok(text, ", \\t\\r\\n"));
   for (i = 1; (i < size) && (token = strtok(0, ", \\t\\r\\n")); i++)
   {{
     var[i] = ({info.space}){atoi_func}(token);

@@ -38,7 +38,7 @@ extern const ManyMouseDriver ManyMouseDriver_hidmanager;
 extern const ManyMouseDriver ManyMouseDriver_xinput;
 
 static const ManyMouseDriver* mice_drivers[] = {
-#if SUPPORT_XINPUT
+#ifdef SUPPORT_XINPUT
     &ManyMouseDriver_xinput,
 #endif
 #ifdef __linux__

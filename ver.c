@@ -76,7 +76,7 @@ char const* const VERSION_LIBRARIES[] = {
     NULL
 };
 
-unsigned int version_hash()
+unsigned int version_hash(void)
 {
     return (~crc32(0, (const unsigned char*)__DATE__, strlen(__DATE__)));
 }

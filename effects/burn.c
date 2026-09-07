@@ -74,7 +74,7 @@ void hsi2rgb(double h, double s, double i, struct colorvalue* c)
     c->b = (unsigned char)floor(bv * t);
 }
 
-void genpal()
+void genpal(void)
 {
     int i;
     vgapalettetype pal;

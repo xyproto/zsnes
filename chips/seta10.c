@@ -33,7 +33,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define SRAM setaramdata
 
 extern uint8_t* setaramdata;
-void ST010DoCommand();
+void ST010DoCommand(void);
 
 // Mode 7 scaling constants for all raster lines
 const int16_t ST010_M7Scale[176] = {
@@ -253,7 +253,7 @@ void ST010_SortDrivers(uint16_t Positions, uint16_t Places[32], uint16_t Drivers
 #define ST010_WORD(offset) (*((short*)(SRAM + offset)))
 // #define ST010_WORD(offset) (SRAM[offset + 1] << 8) | SRAM[offset]
 
-void ST010DoCommand()
+void ST010DoCommand(void)
 {
     switch (SRAM[0x20]) {
         /*

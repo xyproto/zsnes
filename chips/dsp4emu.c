@@ -39,7 +39,7 @@ struct DSP4_vars_t DSP4_vars;
 
 // input protocol
 
-static int16_t DSP4_READ_WORD()
+static int16_t DSP4_READ_WORD(void)
 {
     int16_t out;
 
@@ -49,7 +49,7 @@ static int16_t DSP4_READ_WORD()
     return out;
 }
 
-static int32_t DSP4_READ_DWORD()
+static int32_t DSP4_READ_DWORD(void)
 {
     int32_t out;
 
@@ -216,7 +216,7 @@ void DSP4_Multiply(int16_t Multiplicand, int16_t Multiplier, int32_t* Product)
     *Product = (Multiplicand * Multiplier << 1) >> 1;
 }
 
-void DSP4_OP01()
+void DSP4_OP01(void)
 {
     DSP4.waiting4command = false;
 
@@ -420,13 +420,13 @@ void DSP4_OP01()
     DSP4.waiting4command = true;
 }
 
-void DSP4_OP03()
+void DSP4_OP03(void)
 {
     DSP4_vars.OAM_RowMax = 33;
     memset(DSP4_vars.OAM_Row, 0, 64);
 }
 
-void DSP4_OP05()
+void DSP4_OP05(void)
 {
     DSP4_vars.OAM_index = 0;
     DSP4_vars.OAM_bits = 0;
@@ -434,13 +434,13 @@ void DSP4_OP05()
     DSP4_vars.sprite_count = 0;
 }
 
-void DSP4_OP06()
+void DSP4_OP06(void)
 {
     DSP4_CLEAR_OUT();
     DSP4_WRITE_16_WORD(DSP4_vars.OAM_attr);
 }
 
-void DSP4_OP07()
+void DSP4_OP07(void)
 {
     DSP4.waiting4command = false;
 
@@ -598,7 +598,7 @@ void DSP4_OP07()
     DSP4.waiting4command = true;
 }
 
-void DSP4_OP08()
+void DSP4_OP08(void)
 {
     int16_t win_left, win_right;
     int16_t view_x[2], view_y[2];
@@ -906,7 +906,7 @@ void DSP4_OP08()
     DSP4.waiting4command = true;
 }
 
-void DSP4_OP09()
+void DSP4_OP09(void)
 {
     DSP4.waiting4command = false;
 
@@ -1231,7 +1231,7 @@ void DSP4_OP0B(bool* draw, int16_t sp_x, int16_t sp_y, int16_t sp_attr, bool siz
     }
 }
 
-void DSP4_OP0D()
+void DSP4_OP0D(void)
 {
     DSP4.waiting4command = false;
 
@@ -1406,13 +1406,13 @@ void DSP4_OP0D()
     DSP4.waiting4command = true;
 }
 
-void DSP4_OP0E()
+void DSP4_OP0E(void)
 {
     DSP4_vars.OAM_RowMax = 16;
     memset(DSP4_vars.OAM_Row, 0, 64);
 }
 
-void DSP4_OP0F()
+void DSP4_OP0F(void)
 {
     DSP4.waiting4command = false;
 
@@ -1649,7 +1649,7 @@ void DSP4_OP0F()
     DSP4.waiting4command = true;
 }
 
-void DSP4_OP10()
+void DSP4_OP10(void)
 {
     DSP4.waiting4command = false;
 
@@ -1852,13 +1852,13 @@ void DSP4_OP11(int16_t A, int16_t B, int16_t C, int16_t D, int16_t* M)
 uint8_t dsp4_byte;
 uint16_t dsp4_address;
 
-void InitDSP4()
+void InitDSP4(void)
 {
     memset(&DSP4, 0, sizeof(DSP4));
     DSP4.waiting4command = true;
 }
 
-void DSP4SetByte()
+void DSP4SetByte(void)
 {
     // clear pending read
     if (DSP4.out_index < DSP4.out_count) {
@@ -2064,7 +2064,7 @@ void DSP4SetByte()
     }
 }
 
-void DSP4GetByte()
+void DSP4GetByte(void)
 {
     if (DSP4.out_count) {
         dsp4_byte = (uint8_t)DSP4.output[DSP4.out_index & 0x1FF];

@@ -21,8 +21,8 @@ int debug1, debug2;
 int line_count;
 #endif
 
-void (*RunST011)();
-void ST011_Command();
+void (*RunST011)(void);
+void ST011_Command(void);
 
 unsigned char ST011_DR;
 unsigned char ST011_SR;
@@ -109,13 +109,13 @@ const int ST011_move_table[8 * 2][9 * 2] = {
     { MOVE_STOP, MOVE_NOP, MOVE_NOP, MOVE_NOP, MOVE_NOP, MOVE_NOP, MOVE_NOP, MOVE_NOP, MOVE_NOP },
 };
 
-void ST011_Reset()
+void ST011_Reset(void)
 {
     RunST011 = &ST011_Command;
     ST011_SR = 0xc4;
 }
 
-void ST011_OP01_A()
+void ST011_OP01_A(void)
 {
     if (ST011_dma_count--) {
         ST011_board[ST011_dma_index++] = ST011_DR;
@@ -155,7 +155,7 @@ void ST011_OP01_A()
     }
 }
 
-void ST011_OP01()
+void ST011_OP01(void)
 {
     ST011_dma_count = 128;
     ST011_dma_index = 0 + 21;
@@ -164,7 +164,7 @@ void ST011_OP01()
     ST011_SR = 0xa4;
 }
 
-void ST011_OP02_A()
+void ST011_OP02_A(void)
 {
     if (ST011_dma_count--) {
         ST011_DR = ST011_ram[ST011_dma_index--];
@@ -195,7 +195,7 @@ void ST011_OP02_A()
     }
 }
 
-void ST011_OP02()
+void ST011_OP02(void)
 {
     switch (ST011_input_length--) {
     case 4:
@@ -400,7 +400,7 @@ int ST011_Project_Valid_Moves(int color)
     return (index - 0x556) >> 1;
 }
 
-void ST011_OP04()
+void ST011_OP04(void)
 {
     ST011_Project_Moves(0x40);
 
@@ -414,7 +414,7 @@ void ST011_OP04()
     ST011_SR = 0xc4;
 }
 
-void ST011_OP05()
+void ST011_OP05(void)
 {
     ST011_Project_Moves(0x20);
 
@@ -428,7 +428,7 @@ void ST011_OP05()
     ST011_SR = 0xc4;
 }
 
-void ST011_OP0E()
+void ST011_OP0E(void)
 {
     int valid_moves;
 
@@ -441,7 +441,7 @@ void ST011_OP0E()
     ST011_SR = 0xc4;
 }
 
-void ST011_Command()
+void ST011_Command(void)
 {
 #ifdef DEBUG_DSP
     printf("OP%02X @ line %d\n", ST011_DR, line_count);
@@ -500,7 +500,7 @@ void ST011_Command()
 unsigned short seta11_address;
 unsigned char seta11_byte;
 
-void ST011_MapR_68()
+void ST011_MapR_68(void)
 {
     if (seta11_address < 0x1000) {
         ST011_DR = ST011_ram[seta11_address & 0xfff];
@@ -508,7 +508,7 @@ void ST011_MapR_68()
     seta11_byte = ST011_DR;
 }
 
-void ST011_MapW_68()
+void ST011_MapW_68(void)
 {
     ST011_DR = seta11_byte;
 
@@ -517,7 +517,7 @@ void ST011_MapW_68()
     }
 }
 
-void ST011_MapR_60()
+void ST011_MapR_60(void)
 {
     if (seta11_address == 0) {
         RunST011();
@@ -529,7 +529,7 @@ void ST011_MapR_60()
     seta11_byte = ST011_DR;
 }
 
-void ST011_MapW_60()
+void ST011_MapW_60(void)
 {
     ST011_DR = seta11_byte;
 

@@ -166,7 +166,7 @@ static void transdma(DMAInfo* const esi)
     u1 const* const edi = addrwrite[mode];
 
     // Pointer address of registers
-    eop* const regptra = REGPTW(0x2100 + esi->destination + edi[0]); // PPU memory - 21xx
+    eop* const regptr_ = REGPTW(0x2100 + esi->destination + edi[0]); // PPU memory - 21xx
     eop* const regptrb = REGPTW(0x2100 + esi->destination + edi[1]); // PPU memory - 21xx
     eop* const regptrc = REGPTW(0x2100 + esi->destination + edi[2]); // PPU memory - 21xx
     eop* const regptrd = REGPTW(0x2100 + esi->destination + edi[3]); // PPU memory - 21xx
@@ -185,7 +185,7 @@ static void transdma(DMAInfo* const esi)
     dma_charge(edx);
     while (edx > 4) {
         u1 const vala = memr8(curbank, cx);
-        write_reg(regptra, cx += addrincr, vala);
+        write_reg(regptr_, cx += addrincr, vala);
         u1 const valb = memr8(curbank, cx);
         write_reg(regptrb, cx += addrincr, valb);
         u1 const valc = memr8(curbank, cx);
@@ -195,7 +195,7 @@ static void transdma(DMAInfo* const esi)
         edx -= 4;
     }
     u1 const vala = memr8(curbank, cx);
-    write_reg(regptra, cx += addrincr, vala);
+    write_reg(regptr_, cx += addrincr, vala);
     if (--edx != 0) {
         u1 const valb = memr8(curbank, cx);
         write_reg(regptrb, cx += addrincr, valb);

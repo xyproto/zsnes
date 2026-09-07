@@ -45,8 +45,8 @@ static unsigned char vscr[SCRW * SCRH];
 static int Height[2][SCRW * SCRH];
 
 static void DrawWaterWithLight(int* ptr, int light);
-static void SineBlob(int x, int y, int radius, int height, int page);
-static void CalcWater(int* nptr, int* optr, int density);
+static void SineBlob(int x, int y, int rad, int height, int page);
+static void CalcWater(int* nptr, int* optr, int damping);
 
 static int ox = 80, oy = 60;
 static int xang, yang;
@@ -129,17 +129,17 @@ void DrawWaterWithLight(int* ptr, int light)
     int c;
     int p;
 
-    int offset = SCRW + 1;
+    int pos = SCRW + 1;
     if (ptr == NULL) {
         return;
     }
 
-    for (y = ((SCRH - 1) * SCRW); offset < y; offset += 2) {
-        for (x = offset + SCRW - 2; offset < x; offset++) {
-            dx = ptr[offset] - ptr[offset + 1];
-            dy = ptr[offset] - ptr[offset + SCRW];
+    for (y = ((SCRH - 1) * SCRW); pos < y; pos += 2) {
+        for (x = pos + SCRW - 2; pos < x; pos++) {
+            dx = ptr[pos] - ptr[pos + 1];
+            dy = ptr[pos] - ptr[pos + SCRW];
 
-            p = offset + SCRW * (dy >> 3) + (dx >> 3);
+            p = pos + SCRW * (dy >> 3) + (dx >> 3);
             if (p > (SCRH * SCRW))
                 p = (p % SCRW) + ((SCRH - ((p - (SCRH * SCRW)) / SCRW)) * SCRW);
             if (p < 0)
@@ -148,11 +148,11 @@ void DrawWaterWithLight(int* ptr, int light)
             c -= (dx >> light);
             (c < 1) ? c = 1 : (c > 31) ? c = 31
                                        : 0;
-            vscr[offset] = c;
-            offset++;
-            dx = ptr[offset] - ptr[offset + 1];
-            dy = ptr[offset] - ptr[offset + SCRW];
-            p = offset + SCRW * (dy >> 3) + (dx >> 3);
+            vscr[pos] = c;
+            pos++;
+            dx = ptr[pos] - ptr[pos + 1];
+            dy = ptr[pos] - ptr[pos + SCRW];
+            p = pos + SCRW * (dy >> 3) + (dx >> 3);
             if (p > (SCRH * SCRW))
                 p = (p % SCRW) + ((SCRH - ((p - (SCRH * SCRW)) / SCRW)) * SCRW);
             if (p < 0)
@@ -162,14 +162,14 @@ void DrawWaterWithLight(int* ptr, int light)
             c -= (dx >> light);
             (c < 1) ? c = 1 : (c > 31) ? c = 31
                                        : 0;
-            vscr[offset] = c;
+            vscr[pos] = c;
         }
     }
 
     memcpy(vidbuffer, vscr, SCRW * SCRH);
 }
 
-void CalcWater(int* nptr, int* optr, int density)
+void CalcWater(int* nptr, int* optr, int damping)
 {
     int newh;
     int count = SCRW + 1;
@@ -188,42 +188,42 @@ void CalcWater(int* nptr, int* optr, int density)
                        >> 2)
                 - nptr[count];
 
-            nptr[count] = newh - (newh >> density);
+            nptr[count] = newh - (newh >> damping);
         }
     }
 }
 
-void SineBlob(int x, int y, int radius, int height, int page)
+void SineBlob(int x, int y, int rad, int height, int page)
 {
     int cx, cy;
     int left, top, right, bottom;
     int square, dist;
-    int radsquare = radius * radius;
-    float length = (1024.0f / (float)radius) * (1024.0f / (float)radius);
+    int radsquare = rad * rad;
+    float length = (1024.0f / (float)rad) * (1024.0f / (float)rad);
 
     if (x < 0)
-        x = 1 + radius + rand() % (SCRW - 2 * radius - 1);
+        x = 1 + rad + rand() % (SCRW - 2 * rad - 1);
     if (y < 0)
-        y = 1 + radius + rand() % (SCRH - 2 * radius - 1);
+        y = 1 + rad + rand() % (SCRH - 2 * rad - 1);
 
-    radsquare = (radius * radius);
+    radsquare = (rad * rad);
 
     height /= 8;
 
-    left = -radius;
-    right = radius;
-    top = -radius;
-    bottom = radius;
+    left = -rad;
+    right = rad;
+    top = -rad;
+    bottom = rad;
 
     // Perform edge clipping...
-    if (x - radius < 1)
-        left -= (x - radius - 1);
-    if (y - radius < 1)
-        top -= (y - radius - 1);
-    if (x + radius > SCRW - 1)
-        right -= (x + radius - SCRW + 1);
-    if (y + radius > SCRH - 1)
-        bottom -= (y + radius - SCRH + 1);
+    if (x - rad < 1)
+        left -= (x - rad - 1);
+    if (y - rad < 1)
+        top -= (y - rad - 1);
+    if (x + rad > SCRW - 1)
+        right -= (x + rad - SCRW + 1);
+    if (y + rad > SCRH - 1)
+        bottom -= (y + rad - SCRH + 1);
 
     for (cy = top; cy < bottom; cy++) {
         for (cx = left; cx < right; cx++) {

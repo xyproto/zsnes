@@ -31,7 +31,7 @@ int OBC1_Shift;
 uint16_t obc1_address;
 uint8_t obc1_byte;
 
-void GetOBC1()
+void GetOBC1(void)
 {
     switch (obc1_address) {
     case 0x7ff0:
@@ -59,7 +59,7 @@ void GetOBC1()
     }
 }
 
-void SetOBC1()
+void SetOBC1(void)
 {
     switch (obc1_address) {
     case 0x7ff0: {
@@ -111,7 +111,7 @@ void SetOBC1()
 }
 
 extern uint8_t* romdata;
-void InitOBC1()
+void InitOBC1(void)
 {
     OBC1_RAM = romdata + 0x400000;
     if (OBC1_RAM[0x1ff5] & 1)

@@ -134,7 +134,7 @@ struct
     uint64_t balance;
 } sample_control;
 
-void InitSampleControl()
+void InitSampleControl(void)
 {
     extern uint8_t romispal;
     if (romispal) {
@@ -1143,7 +1143,7 @@ static void SDLAudioDriftControl(int const queued)
     SDL_SetAudioStreamFrequencyRatio(sdl_audio_stream, ratio);
 }
 
-void SoundWrite_sdl()
+void SoundWrite_sdl(void)
 {
     int backlog;
 
@@ -1173,7 +1173,7 @@ void SoundWrite_sdl()
     }
 }
 
-static int EnsureSDLAudioSubsystem()
+static int EnsureSDLAudioSubsystem(void)
 {
     if (!sdl_audio_subsystem) {
         if (!SDL_InitSubSystem(SDL_INIT_AUDIO)) {
@@ -1184,7 +1184,7 @@ static int EnsureSDLAudioSubsystem()
     return (true);
 }
 
-static void ShutdownSDLAudioSubsystem()
+static void ShutdownSDLAudioSubsystem(void)
 {
     if (!sdl_audio_subsystem) {
         return;
@@ -1193,7 +1193,7 @@ static void ShutdownSDLAudioSubsystem()
     sdl_audio_subsystem = false;
 }
 
-static void SaveSDLError()
+static void SaveSDLError(void)
 {
     char const* err = SDL_GetError();
 
@@ -1205,7 +1205,7 @@ static void SaveSDLError()
     }
 }
 
-static int SoundInit_sdl_once()
+static int SoundInit_sdl_once(void)
 {
     const int samptab[7] = { 1, 1, 2, 4, 2, 4, 4 };
 
@@ -1258,7 +1258,7 @@ static int SoundInit_sdl_once()
     return (true);
 }
 
-static int SoundInit_sdl()
+static int SoundInit_sdl(void)
 {
     int i;
     int num_drivers;
@@ -1293,7 +1293,7 @@ static int SoundInit_sdl()
     return (false);
 }
 
-int InitSound()
+int InitSound(void)
 {
     static bool warned_auto_fallback = false;
     int prev_sound_enabled;
@@ -1377,7 +1377,7 @@ int InitSound()
 #endif
 }
 
-void DeinitSound()
+void DeinitSound(void)
 {
 #ifdef __PIPEWIRE__
     pipewire_shutting_down = 1;

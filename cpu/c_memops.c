@@ -34,7 +34,7 @@ extern u4 BWShift; /* chips/sa1regs.c; the asm tests its low byte only */
 /* S-DD1 software decompression (chips/sdd1emu.c, chips/sa1regs.c). */
 extern u1 SDD1BankA[4];
 extern u1 AddrNoIncr; /* cpu/c_dma.c: the DMA holds its address still */
-extern void (*memtabler8[256])(); /* cpu/memtable.h */
+extern void (*memtabler8[256])(void); /* cpu/memtable.h */
 extern u4 Sdd1Mode, Sdd1Bank, Sdd1Addr, Sdd1NewAddr;
 void SDD1_init(u1* in);
 u1 SDD1_get_byte(void);
@@ -56,6 +56,7 @@ uintptr_t MemSeamA;
 uintptr_t MemSeamD;
 /* esi, for the $2140-$2143 sound-skip hack. */
 uintptr_t MemSeamS;
+uintptr_t MemSeamDI;
 
 #include "mem_ops.h"
 

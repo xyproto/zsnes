@@ -26,7 +26,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <stdint.h>
 
 // FUNCTIONS
-void hq2x_16b();
+void hq2x_16b(void);
 
 // VIDEO VARIABLES
 extern SDL_Window* sdl_window;
@@ -53,15 +53,15 @@ extern uint8_t GUIRESIZE[];
 extern SDL_GLContext gl_context;
 #endif
 
-void gl_clearwin();
+void gl_clearwin(void);
 
-void gl_scanlines();
+void gl_scanlines(void);
 
-char CheckOGLMode();
+char CheckOGLMode(void);
 
 char allow_glvsync = 1;
 
-void SetGLAttributes()
+void SetGLAttributes(void)
 {
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
     int const value = vsyncon ? 1 : 0;
@@ -169,7 +169,7 @@ static void gl_upload(int const tex, GLint const internal, int const w, int cons
     gltexture_h[tex] = h;
 }
 
-void gl_end()
+void gl_end(void)
 {
     if (glvidbuffer) {
         glDeleteTextures(4, gltextures);
@@ -190,7 +190,7 @@ void gl_end()
 extern uint32_t NGNoTransp; /* a dword where it is defined (video/c_newgfx16data.c) */
 extern uint8_t SpecialLine[256]; /* 0 if lo-res, > 0 if hi-res; real size (see endmem) */
 
-void gl_clearwin()
+void gl_clearwin(void)
 {
     glClear(GL_COLOR_BUFFER_BIT);
     memset(glvidbuffer, 0, 512 * 448 * 2);
@@ -291,7 +291,7 @@ static void gl_drawspan(int hires, int start, int end)
     }
 }
 
-void gl_drawwin()
+void gl_drawwin(void)
 {
     int i;
 
@@ -400,7 +400,7 @@ void gl_drawwin()
     SDL_GL_SwapWindow(sdl_window);
 }
 
-void gl_scanlines()
+void gl_scanlines(void)
 {
     GLubyte scanbuffer[256][4];
     int i, j = (100 - sl_intensity) * 256 / 100;

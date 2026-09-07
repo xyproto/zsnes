@@ -72,7 +72,7 @@ extern uint8_t ForcePal;
 extern uint8_t MovieForcedLengthEnabled;
 extern char* STCart2;
 extern uint32_t MovieForcedLength;
-void zstart();
+void zstart(void);
 
 #ifdef __WIN32__
 void InitDebugger();
@@ -83,17 +83,17 @@ void InitDebugger();
 char* ZVERSION = ZVER;
 const unsigned int versionNumber = 0x00000098; // 1.52
 
-static void display_start_message()
+static void display_start_message(void)
 {
 }
 
-static void display_version()
+static void display_version(void)
 {
     printf("ZSNES %s\n", ZVER);
     zexit();
 }
 
-static void display_help()
+static void display_help(void)
 {
 #ifdef __UNIXSDL__
 #ifdef __LIBAO__
@@ -246,7 +246,7 @@ static void display_help()
         b += 0x81;              \
     }
 
-void ConvertJoyMap1()
+void ConvertJoyMap1(void)
 {
     unsigned int bl;
     // Convert if 2,4,6, or sidewinder
@@ -297,7 +297,7 @@ void ConvertJoyMap1()
     return;
 }
 
-void ConvertJoyMap2()
+void ConvertJoyMap2(void)
 {
     unsigned int bl;
     // If pl1contrl=2 and pl2contrl=2, then set pl2 buttons to 3 & 4
@@ -420,7 +420,7 @@ struct backup_cmdline_vars saved_cmdline_vars;
                                             BACKUP_HELP_SDL(func)
 
 #define BACKUP_VAR(var) saved_cmdline_vars._##var = var;
-static void backup_all_vars() {
+static void backup_all_vars(void) {
     BACKUP_HELP(BACKUP_VAR)
 }
 
@@ -428,7 +428,7 @@ static void backup_all_vars() {
    change would be thrown away, since the snapshot predates the session. */
 #define MARK_VAR(var) cmdline_var_set._##var = (var != saved_cmdline_vars._##var);
 static struct backup_cmdline_vars cmdline_var_set;
-static void mark_overridden_vars() {
+static void mark_overridden_vars(void) {
     BACKUP_HELP(MARK_VAR)
 }
 
@@ -851,17 +851,17 @@ static void handle_params(int argc, char* argv[])
     mark_overridden_vars();
 }
 
-static void ZCleanup()
+static void ZCleanup(void)
 {
-    void SPC7110_deinit_decompression_state();
-    void deinit_paths();
-    void deallocmem();
-    void DeallocRewindBuffer();
-    void DeallocPauseFrame();
-    void DeallocSystemVars();
-    void free_all_file_lists();
+    void SPC7110_deinit_decompression_state(void);
+    void deinit_paths(void);
+    void deallocmem(void);
+    void DeallocRewindBuffer(void);
+    void DeallocPauseFrame(void);
+    void DeallocSystemVars(void);
+    void free_all_file_lists(void);
 #ifdef __UNIXSDL__
-    void UnloadSDL();
+    void UnloadSDL(void);
 #endif
 
     SPC7110_deinit_decompression_state();

@@ -31,7 +31,7 @@ extern uint32_t SA1DMAChar, SA1DMADest, SA1DMASource;
 #define DDA SA1DMADest
 #define SA1_IRAM IRAM
 
-void SA1_DMA_CC2()
+void SA1_DMA_CC2(void)
 {
     // select register file index (0-7 or 8-15)
     const unsigned char* brf = &SA1_BRF[(SA1_CC2_line & 1) << 3];
@@ -62,7 +62,7 @@ void SA1_DMA_CC2()
 unsigned char SA1_DMA_VALUE;
 unsigned int SA1_DMA_ADDR;
 
-void SA1_DMA_CC1()
+void SA1_DMA_CC1(void)
 {
     // 16 bytes/char (2bpp); 32 bytes/char (4bpp); 64 bytes/char (8bpp)
     unsigned charmask = (1 << (6 - DMACB)) - 1;

@@ -367,11 +367,13 @@ static inline void bank0_call(zreg* const r, void (*const fn)(void))
     MemSeamC = r[R_ECX];
     MemSeamD = r[R_EDX];
     MemSeamS = r[R_ESI];
+    MemSeamDI = r[R_EDI];
     fn();
     r[R_EAX] = MemSeamA;
     r[R_EBX] = MemSeamB;
     r[R_ECX] = MemSeamC;
     r[R_EDX] = MemSeamD;
+    r[R_EDI] = MemSeamDI;
 }
 
 static inline void push8(zreg* const r, u1 const al)
@@ -587,23 +589,27 @@ void OP(COp62)(zreg* const r) /* PER s */
 static inline void mem_call(zreg* const r, eop* const fn)
 {
     uintptr_t const b = MemSeamB, c = MemSeamC, a = MemSeamA, d = MemSeamD;
+    uintptr_t const di = MemSeamDI;
 
     MemSeamA = r[R_EAX];
     MemSeamB = r[R_EBX];
     MemSeamC = r[R_ECX];
     MemSeamD = r[R_EDX];
     MemSeamS = r[R_ESI];
+    MemSeamDI = r[R_EDI];
     fn();
     r[R_EAX] = MemSeamA;
     r[R_EBX] = MemSeamB;
     r[R_ECX] = MemSeamC;
     r[R_EDX] = MemSeamD;
+    r[R_EDI] = MemSeamDI;
     /* Restore, so an access nested inside a handler leaves the outer one's
        seam alone; the register ABI this replaces got that for free. */
     MemSeamB = b;
     MemSeamC = c;
     MemSeamA = a;
     MemSeamD = d;
+    MemSeamDI = di;
 }
 
 #define TABR8(r) mem_call((r), memtabler8[(r)[R_EBX]])

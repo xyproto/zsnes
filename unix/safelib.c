@@ -69,7 +69,7 @@ static int z_setregid(gid_t gid)
 #endif
 
 // Taken from the secure programming cookbook, somewhat modified
-static bool spc_drop_privileges()
+static bool spc_drop_privileges(void)
 {
     gid_t newgid = getgid(), oldgid = getegid();
     uid_t newuid = getuid(), olduid = geteuid();
@@ -214,7 +214,7 @@ pid_t safe_fork(int* a, size_t size)
 // Introducing a popen which doesn't return until it knows for sure of program launched or couldn't open -Nach
 
 // Forks, parent is paused until child successfully execs (returns child pid) or child exits (returns failure)
-static pid_t parent_pause_fork()
+static pid_t parent_pause_fork(void)
 {
     int filedes[2];
     if (!pipe(filedes)) {

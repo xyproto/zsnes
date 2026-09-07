@@ -222,7 +222,7 @@ void swapBlocks(uint32_t* blocks)
     }
 }
 
-void deintlv1()
+void deintlv1(void)
 {
     uint32_t blocks[MaxInterleaveBanks];
     int_fast32_t i;
@@ -406,7 +406,7 @@ int32_t InfoScore(uint8_t* Buffer)
 
 extern uint8_t ForceHiLoROM;
 
-void BankCheck()
+void BankCheck(void)
 {
     uint8_t* ROM = romdata;
     infoloc = 0;
@@ -490,7 +490,7 @@ bool DSP4Enable, OBCEnable, RTCEnable, SA1Enable, SDD1Enable, SFXEnable;
 bool SETAEnable; // ST010 & 11
 bool SGBEnable, SPC7110Enable, ST18Enable, MSUEnable;
 
-void chip_detect()
+void chip_detect(void)
 {
     uint8_t* ROM = romdata;
 
@@ -661,7 +661,7 @@ uint16_t sum(uint8_t* array, size_t size)
 }
 
 static uint16_t Checksumvalue;
-void CalcChecksum()
+void CalcChecksum(void)
 {
     uint8_t* ROM = romdata;
 
@@ -739,7 +739,7 @@ void MirrorROM(uint8_t* ROM)
     }
 }
 
-void SetupSramSize()
+void SetupSramSize(void)
 {
     uint8_t* ROM = romdata;
     if (BSEnable) {
@@ -774,7 +774,7 @@ bool Header512;
 
 char CSStatus[41], CSStatus2[41], CSStatus3[41], CSStatus4[41];
 
-void DumpROMLoadInfo()
+void DumpROMLoadInfo(void)
 {
     extern char *ZVERSION, *VERSION_DATE, *VERSION_PORT;
 
@@ -1072,7 +1072,7 @@ void SplitSetup(char* basepath, char* basefile, uint32_t MirrorSystem)
     SplittedROM = true;
 }
 
-void SplitSupport()
+void SplitSupport(void)
 {
     char* ROM = (char*)romdata;
     SplittedROM = false;
@@ -1127,14 +1127,14 @@ bool NSRTHead(uint8_t* ROM)
     return (false); // None
 }
 
-void calculate_state_sizes(), InitRewindVars(), zst_init();
+void calculate_state_sizes(void), InitRewindVars(void), zst_init(void);
 bool findZipIPS(char*, char*);
 bool PatchUsingIPS(char*);
 extern bool IPSPatched;
 uint8_t lorommapmode2, curromsize, snesinputdefault1, snesinputdefault2;
 bool input1gp, input1mouse, input2gp, input2mouse, input2scope, input2just;
 
-void loadROM()
+void loadROM(void)
 {
     bool isCompressed = false, isZip = false;
 
@@ -1359,7 +1359,7 @@ extern uint8_t vidmemch2[4096];
 extern uint8_t vidmemch8[4096];
 extern uint8_t pal16bclha[1024];
 
-void clearSPCRAM()
+void clearSPCRAM(void)
 {
     /* SPC RAM powers up as alternating 0x20-byte runs of 0x00 and 0xFF. */
     uint_fast32_t i;
@@ -1369,7 +1369,7 @@ void clearSPCRAM()
     }
 }
 
-void clearmem2()
+void clearmem2(void)
 {
     memset(sram, 0xFF, 65536);
     memset(vram, 0, 65536);
@@ -1406,7 +1406,7 @@ extern uint32_t PHdspsave2;
 s4 echobuf[22500];
 extern uint8_t DSPMem[256];
 
-void clearvidsound()
+void clearvidsound(void)
 {
     memset(BRRBuffer, 0, PHdspsave);
     memset(echoon0, 0, PHdspsave2);
@@ -1422,7 +1422,7 @@ extern uint32_t cycpbl;
 extern uint8_t opexec268, opexec358, opexec268b, opexec358b;
 extern uint8_t opexec268cph, opexec358cph, opexec268cphb, opexec358cphb;
 
-void headerhack()
+void headerhack(void)
 {
     char* RomData = (char*)romdata;
     ENVDisable = 0;
@@ -1663,7 +1663,7 @@ extern uint32_t Voice0Freq[8]; // Frequency of Voice (Delta Freq)
 extern uint32_t dspPAdj;
 extern uint16_t Voice0Pitch[8];
 
-void initpitch()
+void initpitch(void)
 {
     int i;
 
@@ -1684,12 +1684,12 @@ extern unsigned char* setaramdata;
 extern uint8_t* SA1RAMArea;
 extern uint8_t ForcePal, ForceROMTiming, MovieWaiting, DSP1Type;
 extern uint16_t totlines;
-void SetAddressingModes(), GenerateBank0Table();
-void SetAddressingModesSA1(), GenerateBank0TableSA1();
-void InitDSP(), InitDSP3(), InitDSP4(), InitOBC1();
+void SetAddressingModes(void), GenerateBank0Table(void);
+void SetAddressingModesSA1(void), GenerateBank0TableSA1(void);
+void InitDSP(void), InitDSP3(void), InitDSP4(void), InitOBC1(void);
 void InitFxTables(void);
 
-void CheckROMType()
+void CheckROMType(void)
 {
     char* ROM = (char*)romdata;
 
@@ -1814,7 +1814,7 @@ void CheckROMType()
             memset(SetaCmdEnable, 0, 4);
             SetaCmdEnable[0] = 0x80; // 60:0000
         } else {
-            void ST011_Reset();
+            void ST011_Reset(void);
             ST011_Reset();
             map_mem(0x68, &seta11bank, 1);
             map_mem(0x60, &seta11banka, 1);
@@ -1852,7 +1852,7 @@ void CheckROMType()
 extern uint16_t copv, brkv, abortv, nmiv, nmiv2, irqv, irqv2;
 extern uint16_t copv8, brkv8, abortv8, nmiv8, irqv8;
 
-void SetIRQVectors()
+void SetIRQVectors(void)
 { // get vectors (NMI & reset)
     uint8_t* ROM = romdata;
 
@@ -1935,7 +1935,7 @@ void SetupROM(void)
     }
 }
 
-void SaveCombFile()
+void SaveCombFile(void)
 {
     if (!romloadskip) {
         FILE* fp;
@@ -1954,7 +1954,7 @@ void SaveCombFile()
     }
 }
 
-void OpenCombFile()
+void OpenCombFile(void)
 {
     FILE* fp;
 
@@ -1979,7 +1979,7 @@ void OpenCombFile()
 uint32_t SfxAC;
 uint8_t ForceNewGfxOff;
 
-void preparesfx()
+void preparesfx(void)
 {
     char* ROM = (char*)romdata;
     int_fast16_t i;
@@ -2013,7 +2013,7 @@ static void map_set(u1** dest, uint8_t* src, size_t count, size_t step)
 uint32_t cromptradd;
 extern void* ram7f;
 
-void map_lorom()
+void map_lorom(void)
 {
     uint8_t* ROM = romdata;
     uint_fast8_t x;
@@ -2054,7 +2054,7 @@ void map_lorom()
     snesmmap[0x7F] = snesmap2[0x7F] = ram7f;
 }
 
-void map_hirom()
+void map_hirom(void)
 {
     uint8_t* ROM = romdata;
     uint_fast8_t x;
@@ -2097,7 +2097,7 @@ void map_hirom()
 }
 
 // [Sneed] fixed accuracy to official board, to-do test that 6000-7FFF writes to SRAM properly
-void map_ehirom()
+void map_ehirom(void)
 {
     uint8_t* ROM = romdata;
     // set addresses 8000-FFFF
@@ -2132,7 +2132,7 @@ void map_ehirom()
 }
 
 // FuSoYa: Add support for 64Mbit ExLoROM
-void map_elorom()
+void map_elorom(void)
 {
     unsigned char* ROM = (unsigned char*)romdata;
     int x;
@@ -2168,7 +2168,7 @@ void map_elorom()
     snesmmap[0x7F] = snesmap2[0x7F] = ram7f;
 }
 
-void map_sfx()
+void map_sfx(void)
 {
     uint8_t* ROM = romdata;
     uint_fast8_t x;
@@ -2227,7 +2227,7 @@ void map_sfx()
     preparesfx();
 }
 
-void map_sa1()
+void map_sa1(void)
 {
     uint8_t* ROM = romdata;
     uint8_t test[] = { 0xA9, 0x10, 0xCF, 0xAD };
@@ -2267,7 +2267,7 @@ void map_sa1()
     snesmmap[0x7F] = snesmap2[0x7F] = ram7f;
 }
 
-void map_sdd1()
+void map_sdd1(void)
 {
     uint8_t* ROM = romdata;
 
@@ -2302,7 +2302,7 @@ void map_sdd1()
     snesmmap[0x7F] = snesmap2[0x7F] = ram7f;
 }
 
-void map_bsx()
+void map_bsx(void)
 {
     uint8_t* ROM = romdata;
     uint_fast8_t x;
@@ -2370,7 +2370,7 @@ void initsnes(void)
     }
 }
 
-void OpenSramFile(), CheatCodeLoad(), LoadSecondState(), LoadGameSpecificInput();
+void OpenSramFile(void), CheatCodeLoad(void), LoadSecondState(void), LoadGameSpecificInput(void);
 
 bool loadfileGUI(void)
 {
@@ -2399,7 +2399,7 @@ bool loadfileGUI(void)
     return (result);
 }
 
-void GUIQuickLoadUpdate();
+void GUIQuickLoadUpdate(void);
 
 void powercycle(bool sramload, bool romload)
 {
@@ -2483,9 +2483,9 @@ uint8_t xe = 0;
 u1 xirqb = 0;
 opfn** Curtableaddr = 0;
 
-void InitC4();
-void SPC7110init();
-void SPC7110_deinit_decompression_state();
+void InitC4(void);
+void SPC7110init(void);
+void SPC7110_deinit_decompression_state(void);
 
 void init65816(void)
 {

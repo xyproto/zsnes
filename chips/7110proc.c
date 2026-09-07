@@ -1025,30 +1025,30 @@ uint8_t c_SPC4834(void) { return 0; }
    memaccess / SRAM bank handlers so 7110proc.asm can be dropped. */
 
 /* register dispatch tables in the cpu memory core (see ui.h) */
-typedef void eop();
+typedef void eop(void);
 extern eop* regptra[0x3000];
 extern eop* regptwa[0x3000];
 #define SPC_REGR(x) (regptra[(x) - 0x2000])
 #define SPC_REGW(x) (regptwa[(x) - 0x2000])
 
 /* register-ABI trampolines emitted by the REGABI_REG_* macros above */
-extern void SPC4800(), SPC4801(), SPC4802(), SPC4803(), SPC4804(), SPC4805();
-extern void SPC4806(), SPC4807(), SPC4808(), SPC4809(), SPC480A(), SPC480B();
-extern void SPC480C(), SPC4810(), SPC4811(), SPC4812(), SPC4813(), SPC4814();
-extern void SPC4815(), SPC4816(), SPC4817(), SPC4818(), SPC481A(), SPC4820();
-extern void SPC4821(), SPC4822(), SPC4823(), SPC4824(), SPC4825(), SPC4826();
-extern void SPC4827(), SPC4828(), SPC4829(), SPC482A(), SPC482B(), SPC482C();
-extern void SPC482D(), SPC482E(), SPC482F(), SPC4831(), SPC4832(), SPC4833();
-extern void SPC4834(), SPC4840(), SPC4841(), SPC4842(), SPC4850(), SPC4851();
-extern void SPC4852(), SPC4853(), SPC4854(), SPC4855(), SPC4856(), SPC4857();
-extern void SPC4858(), SPC4859(), SPC485A(), SPC485B(), SPC485C(), SPC485D();
-extern void SPC485E(), SPC485F();
-extern void SPC4801w(), SPC4802w(), SPC4803w(), SPC4804w(), SPC4805w(), SPC4806w();
-extern void SPC4807w(), SPC4808w(), SPC4809w(), SPC480Aw(), SPC480Bw(), SPC4811w();
-extern void SPC4812w(), SPC4813w(), SPC4814w(), SPC4815w(), SPC4816w(), SPC4817w();
-extern void SPC4818w(), SPC4820w(), SPC4821w(), SPC4822w(), SPC4823w(), SPC4824w();
-extern void SPC4825w(), SPC4826w(), SPC4827w(), SPC482Ew(), SPC4831w(), SPC4832w();
-extern void SPC4833w(), SPC4840w(), SPC4841w(), SPC4842w();
+extern void SPC4800(void), SPC4801(void), SPC4802(void), SPC4803(void), SPC4804(void), SPC4805(void);
+extern void SPC4806(void), SPC4807(void), SPC4808(void), SPC4809(void), SPC480A(void), SPC480B(void);
+extern void SPC480C(void), SPC4810(void), SPC4811(void), SPC4812(void), SPC4813(void), SPC4814(void);
+extern void SPC4815(void), SPC4816(void), SPC4817(void), SPC4818(void), SPC481A(void), SPC4820(void);
+extern void SPC4821(void), SPC4822(void), SPC4823(void), SPC4824(void), SPC4825(void), SPC4826(void);
+extern void SPC4827(void), SPC4828(void), SPC4829(void), SPC482A(void), SPC482B(void), SPC482C(void);
+extern void SPC482D(void), SPC482E(void), SPC482F(void), SPC4831(void), SPC4832(void), SPC4833(void);
+extern void SPC4834(void), SPC4840(void), SPC4841(void), SPC4842(void), SPC4850(void), SPC4851(void);
+extern void SPC4852(void), SPC4853(void), SPC4854(void), SPC4855(void), SPC4856(void), SPC4857(void);
+extern void SPC4858(void), SPC4859(void), SPC485A(void), SPC485B(void), SPC485C(void), SPC485D(void);
+extern void SPC485E(void), SPC485F(void);
+extern void SPC4801w(void), SPC4802w(void), SPC4803w(void), SPC4804w(void), SPC4805w(void), SPC4806w(void);
+extern void SPC4807w(void), SPC4808w(void), SPC4809w(void), SPC480Aw(void), SPC480Bw(void), SPC4811w(void);
+extern void SPC4812w(void), SPC4813w(void), SPC4814w(void), SPC4815w(void), SPC4816w(void), SPC4817w(void);
+extern void SPC4818w(void), SPC4820w(void), SPC4821w(void), SPC4822w(void), SPC4823w(void), SPC4824w(void);
+extern void SPC4825w(void), SPC4826w(void), SPC4827w(void), SPC482Ew(void), SPC4831w(void), SPC4832w(void);
+extern void SPC4833w(void), SPC4840w(void), SPC4841w(void), SPC4842w(void);
 
 void initSPC7110regs(void) /* register the read handlers */
 {

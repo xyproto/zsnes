@@ -101,8 +101,8 @@ unsigned char finterleave = 0;
 u1 DSPDisable = 0;
 u1 MusicVol = 0;
 
-void init();
-void MultiMouseInit();
+void init(void);
+void MultiMouseInit(void);
 
 _Noreturn void zexit(void);
 _Noreturn void zexit_error(void);
@@ -184,7 +184,7 @@ const unsigned char samplenoise[128] = {
     110, 123, 106, 133, 183, 209, 48, 230, 157, 205, 27, 21, 107, 63, 85, 164
 };
 
-void setnoise()
+void setnoise(void)
 {
     unsigned short ctr1, ctr2, ptr1 = 0;
     unsigned char ptr2 = 0, ptr3 = 0;
@@ -199,7 +199,7 @@ void setnoise()
     }
 }
 
-static void outofmemory()
+static void outofmemory(void)
 {
     puts("You don't have enough memory to run this program!");
     DosExit();
@@ -235,7 +235,7 @@ u2 VolumeConvTable[32768];
         free(p);          \
     }
 
-void deallocmem()
+void deallocmem(void)
 {
     deallocmemhelp(BitConv32Ptr);
     deallocmemhelp(RGBtoYUVPtr);
@@ -336,7 +336,7 @@ static _Noreturn void selftest(void)
     exit(bad ? 1 : 0);
 }
 
-static void allocmem()
+static void allocmem(void)
 {
     AllocmemFail(BitConv32Ptr, 4096 + 65536 * 16);
     AllocmemFail(RGBtoYUVPtr, 65536 * 4 + 4096);
@@ -390,7 +390,7 @@ static void allocmem()
 unsigned char txtfailedalignd[] = "Data Alignment Failure : ";
 unsigned char txtfailedalignc[] = "Code Alignment Failure : ";
 
-void zstart()
+void zstart(void)
 {
     uintptr_t ptr;
 
@@ -471,9 +471,9 @@ static char* seconds_to_asc(unsigned int seconds)
 
 void DisplayBatteryStatus(void)
 {
-    int CheckBattery();
-    int CheckBatteryTime();
-    int CheckBatteryPercent();
+    int CheckBattery(void);
+    int CheckBatteryTime(void);
+    int CheckBatteryPercent(void);
 
     *CSStatus2 = 0;
     *CSStatus3 = 0;
@@ -523,13 +523,13 @@ u2 MouseButtons[2];
 
 static bool MouseWaiting[2];
 
-void MultiMouseShutdown()
+void MultiMouseShutdown(void)
 {
     MouseCount = 0;
     ManyMouse_Quit();
 }
 
-void MultiMouseInit()
+void MultiMouseInit(void)
 {
 #ifdef __linux__
     DIR* input_dir;

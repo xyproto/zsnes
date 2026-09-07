@@ -93,7 +93,7 @@ static void InsertFontChar(char data[], u4 const glyph, u4 const y)
     GUIFontData1[glyph][y] = ConvertBinaryToInt(data);
 }
 
-void LoadCustomFont()
+void LoadCustomFont(void)
 {
     FILE* fp;
     char data[100];
@@ -305,7 +305,7 @@ static void CheckValueBounds(void* ptr, int min, int max, int val, enum vtype ty
     }
 }
 
-unsigned char CalcCfgChecksum()
+unsigned char CalcCfgChecksum(void)
 {
     /* gui.asm summed 100 bytes from GUIRAdd, which headed one contiguous block
        of GUI settings; those are separate objects now and half the block is
@@ -336,7 +336,7 @@ unsigned char CalcCfgChecksum()
     return (((chksum & 0xFF) ^ i) | 0x80);
 }
 
-void GUIRestoreVars()
+void GUIRestoreVars(void)
 {
     int i;
     FILE* cfg_fp;
@@ -1095,7 +1095,7 @@ s4 GUIcurrentdircursloc;
 s4 GUIdirentries;
 s4 GUIfileentries;
 
-void free_all_file_lists()
+void free_all_file_lists(void)
 {
     free_list(&d_names);
     free_list(&i_names);
@@ -1197,7 +1197,7 @@ void GUILoadData(void)
     }
 }
 
-void GUILoadManualDir()
+void GUILoadManualDir(void)
 {
 
     if (*GUILoadTextA) {
@@ -1528,7 +1528,7 @@ bool Keep43Check(void)
     return CustomResX * 3 != CustomResY * 4;
 }
 
-char CheckOGLMode()
+char CheckOGLMode(void)
 {
     return (GUIBIFIL[cvidmode]);
 }
