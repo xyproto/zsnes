@@ -35,6 +35,9 @@ extern u4 SA1TimerVal, SA1TimerSet, SA1TimerCount, SA1IRQData, SNSBWPtr;
 extern u4 CurBWPtr, PHnum2writesa1reg;
 extern u1 IRAM[2049];
 extern u1 SA1_BRF[16];
+extern u1 RTCData[16];
+extern u4 RTCPtr, RTCPtr2, RTCRest;
+extern u4 Sdd1Mode, Sdd1Bank, Sdd1Addr, Sdd1NewAddr;
 extern u1* SA1RAMArea;
 
 /* Referenced by the handlers but living elsewhere in the emulator. */
@@ -62,6 +65,18 @@ void memaccessbankr8sdd1(void) { stub_calls++; }
 /* Backing store: BW-RAM and a ROM image the bank handlers index. */
 static u1 bw_store[0x40000];
 static u1 rom_store[0x400000];
+/* Every bank needs 64K of addressable space plus the 4 bytes $230C/$230D read
+   at the end of it, or a random VarLenAddr walks off the map. */
+#define MAPSLOT 0x10004u
+static u1 map_store[MAPSLOT * 8];
+
+static void map_init(void)
+{
+    for (int i = 0; i < 256; i++) {
+        snesmmap[i] = map_store + MAPSLOT * (unsigned)(i & 7);
+        snesmap2[i] = map_store + MAPSLOT * (unsigned)((i + 3) & 7);
+    }
+}
 
 void asm_IRamRead(void);
 void asm_IRamWrite(void);
@@ -119,7 +134,9 @@ typedef struct {
 #define CASE(n) { #n, asm_##n, n, 0 }
 #define CASE_IRAM(n) { #n, asm_##n, n, 1 }
 static sa1case const cases[] = {
-    CASE_IRAM(IRamRead), CASE_IRAM(IRamWrite), CASE_IRAM(IRamWrite2),
+    CASE_IRAM(IRamRead),
+    CASE_IRAM(IRamWrite),
+    CASE_IRAM(IRamWrite2),
 #define D(n) CASE(n),
 #include "_sa1regs_decls.h"
 #undef D
@@ -129,16 +146,21 @@ static sa1case const cases[] = {
    the whole .data.sa1state block keeps this inside one object per copy (the
    block is contiguous only by the assembly's construction, not by C) and lets a
    mismatch name the register. */
-#define STATE_FIELDS(F)                                                   \
-    F(SA1Mode) F(SA1Control) F(SA1BankPtr) F(SA1ResetV) F(SA1NMIV)        \
-    F(SA1IRQV) F(SA1IRQEn) F(SA1Message) F(SA1IRQExec) F(SA1IRQEnable)    \
-    F(SA1DoIRQ) F(SA1ARC) F(SA1AR1) F(SA1AR2) F(SA1ARR1) F(SA1ARR2)       \
-    F(SNSNMIV) F(SNSIRQV) F(SA1DMACount) F(SA1DMAInfo) F(SA1DMAChar)      \
-    F(SA1DMASource) F(SA1DMADest) F(BWShift) F(BWAndAddr) F(BWAnd)        \
-    F(BWRAnd) F(SA1_in_cc1_dma) F(SA1_CC2_line) F(SA1xpb) F(SA1xs)        \
-    F(SA1RegPCS) F(SA1BWPtr) F(SA1Ptr) F(SA1Overflow) F(VarLenAddr)       \
-    F(VarLenAddrB) F(VarLenBarrel) F(SA1TimerVal) F(SA1TimerSet)          \
-    F(SA1TimerCount) F(SA1IRQData) F(SNSBWPtr) F(CurBWPtr)
+#define STATE_FIELDS(F)                                                                                     \
+    F(SA1Mode)                                                                                              \
+    F(SA1Control)                                                                                           \
+    F(SA1BankPtr)                                                                                           \
+    F(SA1ResetV) F(SA1NMIV)                                                                                 \
+        F(SA1IRQV) F(SA1IRQEn) F(SA1Message) F(SA1IRQExec) F(SA1IRQEnable)                                  \
+            F(SA1DoIRQ) F(SA1ARC) F(SA1AR1) F(SA1AR2) F(SA1ARR1) F(SA1ARR2)                                 \
+                F(SNSNMIV) F(SNSIRQV) F(SA1DMACount) F(SA1DMAInfo) F(SA1DMAChar)                            \
+                    F(SA1DMASource) F(SA1DMADest) F(BWShift) F(BWAndAddr) F(BWAnd)                          \
+                        F(BWRAnd) F(SA1_in_cc1_dma) F(SA1_CC2_line) F(SA1xpb) F(SA1xs)                      \
+                            F(SA1RegPCS) F(SA1BWPtr) F(SA1Ptr) F(SA1Overflow) F(VarLenAddr)                 \
+                                F(VarLenAddrB) F(VarLenBarrel) F(SA1TimerVal) F(SA1TimerSet)                \
+                                    F(SA1TimerCount) F(SA1IRQData) F(SNSBWPtr) F(CurBWPtr)                  \
+                                        F(RTCPtr) F(RTCPtr2) F(RTCRest) F(Sdd1Mode) F(Sdd1Bank) F(Sdd1Addr) \
+                                            F(Sdd1NewAddr)
 
 static struct {
     char const* name;
@@ -156,6 +178,11 @@ typedef struct {
     u1 iram[2049];
     u1 brf[16];
     u2 irqv, nmiv;
+    u1* mmap[256];
+    u1* map2[256];
+    u1 rtc[16];
+    u1 sdd1[4];
+    void* mt8[256];
     long stubs;
 } snapshot;
 
@@ -164,6 +191,10 @@ static u1 iram_save[2049];
 static u1 brf_save[16];
 static u1 bw_save[0x40000];
 static u2 irqv_save, nmiv_save;
+static u1* mmap_save[256];
+static u1* map2_save[256];
+static u1 rtc_save[16], sdd1_save[4];
+static void* mt8_save[256];
 
 static void state_save(void)
 {
@@ -174,6 +205,11 @@ static void state_save(void)
     memcpy(bw_save, bw_store, sizeof bw_save);
     irqv_save = irqv;
     nmiv_save = nmiv;
+    memcpy(mmap_save, snesmmap, sizeof mmap_save);
+    memcpy(map2_save, snesmap2, sizeof map2_save);
+    memcpy(rtc_save, RTCData, sizeof rtc_save);
+    memcpy(sdd1_save, SDD1BankA, sizeof sdd1_save);
+    memcpy(mt8_save, memtabler8, sizeof mt8_save);
 }
 
 static void state_restore(void)
@@ -185,6 +221,11 @@ static void state_restore(void)
     memcpy(bw_store, bw_save, sizeof bw_save);
     irqv = irqv_save;
     nmiv = nmiv_save;
+    memcpy(snesmmap, mmap_save, sizeof mmap_save);
+    memcpy(snesmap2, map2_save, sizeof map2_save);
+    memcpy(RTCData, rtc_save, sizeof rtc_save);
+    memcpy(SDD1BankA, sdd1_save, sizeof sdd1_save);
+    memcpy(memtabler8, mt8_save, sizeof mt8_save);
 }
 
 static void snap(snapshot* s)
@@ -195,6 +236,11 @@ static void snap(snapshot* s)
     memcpy(s->brf, SA1_BRF, sizeof s->brf);
     s->irqv = irqv;
     s->nmiv = nmiv;
+    memcpy(s->mmap, snesmmap, sizeof s->mmap);
+    memcpy(s->map2, snesmap2, sizeof s->map2);
+    memcpy(s->rtc, RTCData, sizeof s->rtc);
+    memcpy(s->sdd1, SDD1BankA, sizeof s->sdd1);
+    memcpy(s->mt8, memtabler8, sizeof s->mt8);
     s->stubs = stub_calls;
 }
 
@@ -205,6 +251,7 @@ int main(void)
     SA1RAMArea = bw_store;
     romdata = rom_store;
     dt_fill(rom_store, sizeof rom_store);
+    map_init();
 
     DT_MAIN(20260907u, 20000)
     {
@@ -218,6 +265,10 @@ int main(void)
             *fields[i].p = dt_u32();
         dt_fill(IRAM, sizeof iram_save);
         dt_fill(SA1_BRF, sizeof brf_save);
+        dt_fill(RTCData, sizeof rtc_save);
+        dt_fill(SDD1BankA, sizeof sdd1_save);
+        RTCPtr = dt_mod(20u);
+        RTCPtr2 = dt_mod(20u);
         dt_fill(bw_store, sizeof bw_store);
         SA1RAMArea = bw_store;
         romdata = rom_store;
@@ -231,6 +282,9 @@ int main(void)
            this test rather than fake a memory map. */
         VarLenAddr &= 0xFFFFu;
         VarLenAddrB &= 0xFFFFu;
+        map_init();
+        dt_fill(map_store, sizeof map_store);
+        NumofBanks = (rand() & 1) ? 64u : 128u;
         CurrentExecSA1 = (u1)rand();
         SA1Status = (u1)(rand() & 1);
         BWUsed2 = (u1)rand();
@@ -254,7 +308,10 @@ int main(void)
 
         state_save();
         stub_calls = 0;
-        if (getenv("DT_TRACE")) { printf("it=%ld %s\n", dt_it, k->name); fflush(stdout); }
+        if (getenv("DT_TRACE")) {
+            printf("it=%ld %s\n", dt_it, k->name);
+            fflush(stdout);
+        }
         sregs_call((void*)k->asm_fn, eax, ecx, edx);
         x.eax = sregs_out[0];
         x.ecx = sregs_out[1];
@@ -273,16 +330,34 @@ int main(void)
         y.edx = (u4)MemSeamD;
         snap(&y);
 
-        /* Reads return in al; the rest of eax is the caller's and not promised. */
-        DT_EQ(k->name, x.eax & 0xFFu, y.eax & 0xFFu);
-        /* DH is the scanline cycle count. This is the comparison that catches
-           a handler which forgot to charge or clear it. */
-        DT_EQ("edx", x.edx, y.edx);
+        /* $2236 is the one handler whose assembly leaves through a bare
+           `jnz near sa1chconv` rather than the register-preserving ccall
+           bridge, so the C callee's clobber of eax/ecx/edx lands in the
+           oracle's registers. That is the tail-jump's doing, not state the
+           port should reproduce; its writes are still compared below. */
+        if (strcmp(k->name, "sa12236w") != 0) {
+            /* Reads return in al; the rest of eax is the caller's. */
+            DT_EQ(k->name, x.eax & 0xFFu, y.eax & 0xFFu);
+            /* DH is the scanline cycle count. This is the comparison that
+               catches a handler which forgot to charge or clear it. */
+            DT_EQ("edx", x.edx, y.edx);
+        }
         DT_EQ("stub calls", x.stubs, y.stubs);
         for (size_t i = 0; i < NFIELDS; i++)
             DT_EQ(fields[i].name, x.v[i], y.v[i]);
         DT_EQ("irqv", x.irqv, y.irqv);
         DT_EQ("nmiv", x.nmiv, y.nmiv);
+        for (int i = 0; i < 256; i++) {
+            if (x.mmap[i] != y.mmap[i] || x.map2[i] != y.map2[i]) {
+                char lbl[64];
+
+                snprintf(lbl, sizeof lbl, "%s snesmmap[%d]", k->name, i);
+                DT_EQ(lbl, (uintptr_t)x.mmap[i], (uintptr_t)y.mmap[i]);
+                snprintf(lbl, sizeof lbl, "%s snesmap2[%d]", k->name, i);
+                DT_EQ(lbl, (uintptr_t)x.map2[i], (uintptr_t)y.map2[i]);
+                break;
+            }
+        }
         if (memcmp(x.iram, y.iram, sizeof x.iram)) {
             for (size_t i = 0; i < sizeof x.iram; i++)
                 if (x.iram[i] != y.iram[i]) {
@@ -293,6 +368,9 @@ int main(void)
                 }
         }
         DT_EQ("BRF", memcmp(x.brf, y.brf, sizeof x.brf), 0);
+        DT_EQ("RTCData", memcmp(x.rtc, y.rtc, sizeof x.rtc), 0);
+        DT_EQ("SDD1BankA", memcmp(x.sdd1, y.sdd1, sizeof x.sdd1), 0);
+        DT_EQ("memtabler8", memcmp(x.mt8, y.mt8, sizeof x.mt8), 0);
     }
     DT_DONE("sa1regs");
 }

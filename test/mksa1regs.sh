@@ -29,6 +29,7 @@ want = set(open(sys.argv[2]).read().split())
 # one `ret`. A NEWSYM seen before any instruction is an alias of the same body;
 # one seen after ends the handler.
 out, cur, emitted, found = [], None, False, set()
+in_macro = False
 
 def start(name):
     global cur, emitted
@@ -39,6 +40,15 @@ def start(name):
         out.append('NEWSYM asm_' + cur)
 
 for l in src:
+    # A %macro body is not part of any handler; the definitions are lifted
+    # separately below, and letting the body through emits stray %1 references.
+    if re.match(r'%i?macro ', l.strip(), re.I):
+        in_macro = True
+        continue
+    if in_macro:
+        if l.strip().lower() == '%endmacro':
+            in_macro = False
+        continue
     m = re.match(r'NEWSYM +(\w+)', l.strip())
     if m:
         if cur and not emitted and m.group(1) in want:
@@ -84,6 +94,28 @@ for n in open(sys.argv[1]).read().split():
         print("D(%s)" % n)
 PYEOF2
 
+# The handlers expand macros defined in the same file (BankSwitch and friends),
+# so carry the definitions across ahead of them.
+python3 - _sa1regs_src.asm > _sa1regs_inline.mac <<'PYEOF3'
+import re, sys
+# newsym/EXTSYM are redefined by the wrapper (its version emits GLOBAL, which
+# is what exports the asm_* entry points); carrying the originals across silently
+# shadows it and the oracle links with no symbols at all.
+SKIP = {'newsym', 'extsym'}
+out, on, keep = [], False, True
+for l in open(sys.argv[1], errors='replace').read().split('\n'):
+    m = re.match(r'%i?macro +(\S+)', l, re.I)
+    if m:
+        on = True
+        keep = m.group(1).lower() not in SKIP
+    if on and keep:
+        out.append(l)
+    if on and l.strip().lower() == '%endmacro':
+        on = False
+        keep = True
+print('\n'.join(out))
+PYEOF3
+
 cat > _sa1regs.asm <<'EOF'
 bits 32
 section .note.GNU-stack noalloc noexec nowrite progbits
@@ -107,11 +139,16 @@ for s in BWAnd BWAndAddr BWRAnd BWShift BWUsed2 CurBWPtr CurrentExecSA1 curypos 
          SA1Message SA1NMIV SA1Overflow SA1Ptr SA1RAMArea SA1RegPCS SA1ResetV \
          SA1Status SA1TimerCount SA1TimerSet SA1TimerVal SA1xpb SA1xs SNSBWPtr \
          SNSIRQV SNSNMIV VarLenAddr VarLenAddrB VarLenBarrel \
+         SA1BankVal snesmmap snesmap2 NumofBanks sa1chconv \
+         RTCData RTCPtr RTCPtr2 RTCRest debuggeron GetTime GetDate \
+         SDD1BankA Sdd1Mode Sdd1Bank Sdd1Addr Sdd1NewAddr AddrNoIncr \
+         memtabler8 memaccessbankr8sdd1 \
          SA1_DMA_CC2 sa1dmairam sa1dmabwram UpdateArithStuff memaccessbankr8sdd1; do
     echo "EXTERN $s" >> _sa1regs.asm
 done
 cat >> _sa1regs.asm <<'EOF'
 section .text
+%include "_sa1regs_inline.mac"
 %include "_sa1regs.inc"
 EOF
 
