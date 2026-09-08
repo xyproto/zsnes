@@ -101,4 +101,53 @@ enum {
 
 void GUICrtRows(s4 out[CRT_ROW_COUNT]);
 
+/* The Filters panel. Heights are the gaps between the rows as they stand, so
+   the layout comes out where it already was; what changes is that the numbers
+   live here instead of being repeated in the click handling. */
+enum {
+    FILT_ROW_LABEL,
+    FILT_ROW_TOP, /* bilinear or interpolation, and the NTSC box */
+    FILT_ROW_SAI1,
+    FILT_ROW_SAI2,
+    FILT_ROW_HQLEVEL,
+    FILT_ROW_MISCLABEL,
+    FILT_ROW_MISC,
+    FILT_ROW_SYNCLABEL,
+    FILT_ROW_SYNC,
+    FILT_ROW_DISPLABEL,
+    FILT_ROW_DISP,
+    FILT_ROW_COUNT
+};
+
+void GUIFilterRows(s4 out[FILT_ROW_COUNT]);
+
+/* The Monitors panel. The list is one row of the stack, six entries deep. */
+enum { MON_PITCH = 12,
+    MON_MAX = 6 };
+enum { MON_ROW_LABEL,
+    MON_ROW_LIST,
+    MON_GAP,
+    MON_ROW_NOTE,
+    MON_ROW_COUNT };
+
+void GUIMonitorRows(s4 out[MON_ROW_COUNT]);
+
+/* The Modes panel's right-hand column: the Set button, the legend, and the
+   custom resolution boxes under it. */
+enum {
+    MODE_ROW_SET,
+    MODE_ROW_LEGEND,
+    MODE_ROW_LEGEND1,
+    MODE_ROW_LEGEND2,
+    MODE_ROW_LEGEND3,
+    MODE_ROW_LEGEND4,
+    MODE_ROW_LEGEND5,
+    MODE_ROW_LEGEND6,
+    MODE_ROW_CUSTOM,
+    MODE_ROW_CUSTOMBOX,
+    MODE_ROW_COUNT
+};
+
+void GUIModeRows(s4 out[MODE_ROW_COUNT]);
+
 #endif

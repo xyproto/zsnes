@@ -293,10 +293,6 @@ sl_intensity db 50
 @ that bleeding.
 BloomLevel db 25
 
-@ Ask for an HDR surface (0 = NO, 1 = Yes). Only takes effect if the display
-@ and the renderer both report HDR; otherwise the ordinary path is used.
-HDROutput db 0
-
 @ Which monitor to open on, as the short ID shown in the Monitors tab. SDL
 @ renumbers displays every run and the ids it hands out do not survive a
 @ replug, but the name follows the monitor, so the ID is that name reduced to

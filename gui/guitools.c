@@ -418,3 +418,52 @@ void GUICrtRows(s4 out[CRT_ROW_COUNT])
 
     GUIStackLayout(rows, CRT_ROW_COUNT, 30, 178, out);
 }
+
+void GUIFilterRows(s4 out[FILT_ROW_COUNT])
+{
+    static GUIRow const rows[FILT_ROW_COUNT] = {
+        { 5, GUI_ITEM }, /* VIDEO FILTERS: */
+        { 10, GUI_ITEM }, /* bilinear / interpolation, NTSC */
+        { 10, GUI_ITEM }, /* 2xSaI, Super Eagle */
+        { 13, GUI_ITEM }, /* Super 2xSaI, HQ FILTER */
+        { 17, GUI_ITEM }, /* 2X / 3X / 4X */
+        { 5, GUI_ITEM }, /* MISC FILTERS: */
+        { 15, GUI_ITEM }, /* grayscale, hi-res mode 7 */
+        { 5, GUI_ITEM }, /* MONITOR SYNC: */
+        { 25, GUI_ITEM }, /* vsync, triple buffering */
+        { 5, GUI_ITEM }, /* DISPLAY OPTIONS: */
+        { 10, GUI_ITEM } /* keep 4:3 */
+    };
+
+    GUIStackLayout(rows, FILT_ROW_COUNT, 30, 178, out);
+}
+
+void GUIMonitorRows(s4 out[MON_ROW_COUNT])
+{
+    static GUIRow const rows[MON_ROW_COUNT] = {
+        { 12, GUI_ITEM }, /* OPEN ON MONITOR: */
+        { MON_MAX * MON_PITCH, GUI_ITEM }, /* the list */
+        { 0, GUI_EXPAND },
+        { 20, GUI_ITEM } /* two lines of note */
+    };
+
+    GUIStackLayout(rows, MON_ROW_COUNT, 30, 178, out);
+}
+
+void GUIModeRows(s4 out[MODE_ROW_COUNT])
+{
+    static GUIRow const rows[MODE_ROW_COUNT] = {
+        { 20, GUI_ITEM }, /* SET */
+        { 8, GUI_ITEM }, /* LEGEND: */
+        { 8, GUI_ITEM }, /* six lines of it */
+        { 8, GUI_ITEM },
+        { 8, GUI_ITEM },
+        { 8, GUI_ITEM },
+        { 8, GUI_ITEM },
+        { 22, GUI_ITEM },
+        { 10, GUI_ITEM }, /* CUSTOM: */
+        { 10, GUI_ITEM } /* the two resolution boxes */
+    };
+
+    GUIStackLayout(rows, MODE_ROW_COUNT, 30, 178, out);
+}

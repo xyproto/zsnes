@@ -86,6 +86,9 @@ static SDL_Texture* sr_hdr_texture = NULL;
 static float sr_hdr_headroom = 1.0f;
 static int sr_hdr_active = 0;
 
+/* Whether the window we are holding is a fullscreen one. */
+static int sr_fullscreen = -1;
+
 /* The second field sits 75036 pixels on; the line geometry is in copyvwin.h. */
 #define SR_SRC_STRIDE VID_STRIDE
 #define SR_SRC_SKIP VID_SKIP
@@ -120,7 +123,7 @@ static void sr_hdr_refresh(void)
 
     sr_hdr_active = 0;
     sr_hdr_headroom = 1.0f;
-    if (!HDROutput || !sr_hdr_texture || !sr_renderer) {
+    if (!sr_hdr_texture || !sr_renderer) {
         return;
     }
     props = SDL_GetRendererProperties(sr_renderer);
@@ -154,9 +157,19 @@ int sr_start(int width, int height, int req_depth, int FullScreen)
 
     sr_release();
 
+    /* Reuse the window only while it stays on the same side of fullscreen.
+       Resizing in place is what stops a filter toggle blanking the screen, but
+       a window that has to cross into or out of fullscreen is better made
+       again: driving the change in place leaves it blank on some compositors. */
+    if (sdl_window && FullScreen != sr_fullscreen) {
+        SDL_PumpEvents();
+        SDL_DestroyWindow(sdl_window);
+        sdl_window = NULL;
+    }
+    sr_fullscreen = FullScreen;
+
     if (sdl_window) {
         /* Resize in place rather than making a new one. */
-        SDL_SetWindowFullscreen(sdl_window, FullScreen ? true : false);
         SDL_SetWindowSize(sdl_window, SurfaceX, SurfaceY);
         SDL_SyncWindow(sdl_window); // settle the new size before it is used
     } else {
@@ -169,7 +182,7 @@ int sr_start(int width, int height, int req_depth, int FullScreen)
         PlaceWindowOnMonitor(sdl_window);
     }
 
-    sr_renderer = HDROutput ? sr_create_hdr_renderer(sdl_window) : NULL;
+    sr_renderer = VideoMonitorHDR() ? sr_create_hdr_renderer(sdl_window) : NULL;
     if (!sr_renderer) {
         sr_renderer = SDL_CreateRenderer(sdl_window, NULL);
     }
@@ -191,7 +204,7 @@ int sr_start(int width, int height, int req_depth, int FullScreen)
         sdl_window = NULL;
         return false;
     }
-    if (HDROutput) {
+    if (VideoMonitorHDR()) {
         /* Float rather than 565, so the bloom has somewhere above white to go.
            If the renderer will not take it we simply stay on the ordinary
            surface: HDR is an extra, never a requirement. */
@@ -260,6 +273,7 @@ static void sr_release(void)
 void sr_end(void)
 {
     sr_release();
+    sr_fullscreen = -1;
     if (sdl_window) {
         SDL_PumpEvents();
         SDL_DestroyWindow(sdl_window);
@@ -425,7 +439,12 @@ static void sr_build_luts(int const vscale)
 #define SR_BLOOM_W (SR_MAXW / SR_BLOOM_DIV)
 #define SR_BLOOM_H (SR_MAXH / SR_BLOOM_DIV)
 #define SR_BLOOM_TAPS 4 /* each way, so a nine tap blur */
-#define SR_BLOOM_KNEE 0.72f /* luma above which a pixel starts to spill */
+/* Luma above which a pixel starts to spill. Low enough that ordinary bright
+   sprites take part: at a high knee only large areas of near-white spilled,
+   and the blur then spread what little they gave over so many cells that the
+   result was invisible. */
+#define SR_BLOOM_KNEE 0.55f
+#define SR_BLOOM_GAIN 2.5f /* at full slider, per unit over the knee */
 
 static float sr_bloom[SR_BLOOM_W * SR_BLOOM_H];
 static float sr_bloom_row[SR_BLOOM_W * SR_BLOOM_H];
@@ -485,7 +504,7 @@ static float sr_bloom_at(int const x, int const y, int const w)
     int const bw = w / SR_BLOOM_DIV;
 
     return sr_bloom_row[(size_t)(y / SR_BLOOM_DIV) * bw + (size_t)(x / SR_BLOOM_DIV)]
-        * ((float)BloomLevel / 100.0f) * 2.0f;
+        * ((float)BloomLevel / 100.0f) * SR_BLOOM_GAIN;
 }
 
 /* Add the spill back into the 565 frame, where it has nowhere to go but up
@@ -511,16 +530,45 @@ static void sr_bloom_apply(int const w, int const h)
     }
 }
 
-/* Widen the composed frame into linear float, adding the bloom without
-   clipping it. 565 is only 32 levels a channel, so the conversion is a plain
-   scale - HDR here buys headroom above white, not tonal resolution, and
-   stretching 15-bit source would only make its banding easier to see. The
-   spill is what uses the headroom. */
+/* 565 holds sRGB, which is gamma encoded; a float texture in the linear
+   colorspace holds light. Writing the one into the other unconverted would
+   crush the mid-tones, so go through the transfer function. Only 32 and 64
+   levels exist, so a table each is enough. */
+static float sr_lin5[32];
+static float sr_lin6[64];
+static int sr_lin_ready = 0;
+
+static float sr_srgb_to_linear(double const v)
+{
+    return (float)(v <= 0.04045 ? v / 12.92 : pow((v + 0.055) / 1.055, 2.4));
+}
+
+static void sr_build_linear(void)
+{
+    int i;
+
+    for (i = 0; i < 32; i++) {
+        sr_lin5[i] = sr_srgb_to_linear(i / 31.0);
+    }
+    for (i = 0; i < 64; i++) {
+        sr_lin6[i] = sr_srgb_to_linear(i / 63.0);
+    }
+    sr_lin_ready = 1;
+}
+
+/* Widen the composed frame into linear light, adding the bloom without
+   clipping it. The source is 15-bit, so this buys headroom above white rather
+   than tonal resolution - stretching it would only make the banding easier to
+   see. The spill is what uses the headroom, and it is added here in linear
+   light, which is where light actually adds. */
 static void sr_to_hdr(int const w, int const h)
 {
     float const room = sr_hdr_headroom;
     int x, y;
 
+    if (!sr_lin_ready) {
+        sr_build_linear();
+    }
     for (y = 0; y < h; y++) {
         for (x = 0; x < w; x++) {
             unsigned const p = sr_pixels[(size_t)y * w + x];
@@ -529,11 +577,11 @@ static void sr_to_hdr(int const w, int const h)
             float c[3];
             int i;
 
-            c[0] = ((p >> 11) & 0x1Fu) / 31.0f;
-            c[1] = ((p >> 5) & 0x3Fu) / 63.0f;
-            c[2] = (p & 0x1Fu) / 31.0f;
+            c[0] = sr_lin5[(p >> 11) & 0x1Fu];
+            c[1] = sr_lin6[(p >> 5) & 0x3Fu];
+            c[2] = sr_lin5[p & 0x1Fu];
             for (i = 0; i < 3; i++) {
-                float v = c[i] + b;
+                float const v = c[i] + b;
 
                 o[i] = v > room ? room : v;
             }
@@ -641,6 +689,12 @@ void sr_drawwin(void)
        with the hq and 2xSaI filters instead of only showing on an unfiltered
        picture. Scanlines are skipped over the NTSC filter, which dims alternate
        rows itself, but brightness still applies. */
+    /* Before the scanlines dim it: what spills is a property of the picture,
+       not of which row of the beam pattern a pixel happened to land on. */
+    if (BloomLevel) {
+        sr_bloom_build(w, h);
+    }
+
     {
         int const scanlines = (sl_intensity != 0 && !ntsc_drawn);
 
@@ -650,11 +704,8 @@ void sr_drawwin(void)
     }
 
     sr_hdr_refresh();
-    if (BloomLevel) {
-        sr_bloom_build(w, h);
-        if (!sr_hdr_active) {
-            sr_bloom_apply(w, h); /* clipped into 565 */
-        }
+    if (BloomLevel && !sr_hdr_active) {
+        sr_bloom_apply(w, h); /* clipped into 565; HDR adds it in sr_to_hdr */
     }
 
     {

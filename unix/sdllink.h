@@ -16,6 +16,7 @@ char const* VideoMonitorName(u4 i);
 void VideoMonitorID(u4 i, char* out, u4 len);
 u4 VideoMonitorSelected(void);
 void VideoMonitorSelect(u4 i);
+int VideoMonitorHDR(void);
 void PlaceWindowOnMonitor(struct SDL_Window* win);
 
 void SetMouseMinX(int MinX);

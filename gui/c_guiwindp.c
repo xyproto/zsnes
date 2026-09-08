@@ -1042,29 +1042,36 @@ void DisplayGUIVideo(void)
 
     if (GUIVideoTabs[0] == 1) // Video Modes List/Options Tab
     {
-        DrawGUIButton(5, 128, 30, 164, 41, "SET", 4, 0, 0); // Mode Set Button
+        s4 row[MODE_ROW_COUNT];
 
-        GUIDisplayTextY(5, 130, 50, "LEGEND:");
-        GUIDisplayText(5, 130, 58, "D = ALLOW FILTERS");
-        GUIDisplayText(5, 130, 66, "S = STRETCH");
-        GUIDisplayText(5, 130, 74, "R = KEEP 8:7 RATIO");
-        GUIDisplayText(5, 130, 82, "W = WINDOWED");
-        GUIDisplayText(5, 130, 90, "F = FULLSCREEN");
+        GUIModeRows(row);
+        DrawGUIButton(5, 128, (u4)row[MODE_ROW_SET], 164,
+            (u4)row[MODE_ROW_SET] + 11, "SET", 4, 0, 0); // Mode Set Button
+
+        GUIDisplayTextY(5, 130, (u4)row[MODE_ROW_LEGEND], "LEGEND:");
+        GUIDisplayText(5, 130, (u4)row[MODE_ROW_LEGEND1], "D = ALLOW FILTERS");
+        GUIDisplayText(5, 130, (u4)row[MODE_ROW_LEGEND2], "S = STRETCH");
+        GUIDisplayText(5, 130, (u4)row[MODE_ROW_LEGEND3], "R = KEEP 8:7 RATIO");
+        GUIDisplayText(5, 130, (u4)row[MODE_ROW_LEGEND4], "W = WINDOWED");
+        GUIDisplayText(5, 130, (u4)row[MODE_ROW_LEGEND5], "F = FULLSCREEN");
 #ifdef __OPENGL__
-        GUIDisplayText(5, 130, 98, "O = USES OPENGL");
+        GUIDisplayText(5, 130, (u4)row[MODE_ROW_LEGEND6], "O = USES OPENGL");
 #endif
 
-        DrawGUIButton(5, 180, 115, 216, 126, "SET", 12, 0, 0); // Custom Set Button
+        DrawGUIButton(5, 180, (u4)row[MODE_ROW_CUSTOM] - 5, 216,
+            (u4)row[MODE_ROW_CUSTOM] + 6, "SET", 12, 0, 0); // Custom Set Button
 
-        GUIDisplayText(5, 130, 120, "CUSTOM:");
-        GUIDisplayText(5, 180, 135, "X");
-        GUIDisplayBBox(5, 130, 130, 170, 140, 167);
-        GUIDisplayBBox(5, 191, 130, 231, 140, 167);
+        GUIDisplayText(5, 130, (u4)row[MODE_ROW_CUSTOM], "CUSTOM:");
+        GUIDisplayText(5, 180, (u4)row[MODE_ROW_CUSTOMBOX] + 5, "X");
+        GUIDisplayBBox(5, 130, (u4)row[MODE_ROW_CUSTOMBOX], 170,
+            (u4)row[MODE_ROW_CUSTOMBOX] + 10, 167);
+        GUIDisplayBBox(5, 191, (u4)row[MODE_ROW_CUSTOMBOX], 231,
+            (u4)row[MODE_ROW_CUSTOMBOX] + 10, 167);
 
         GetCustomXY();
 
-        GUIOuttextwin2d(5, 138, 133, GUICustomX, 4, GUICustomResTextPtr, 0);
-        GUIOuttextwin2d(5, 199, 133, GUICustomY, 4, GUICustomResTextPtr, 1);
+        GUIOuttextwin2d(5, 138, (u4)row[MODE_ROW_CUSTOMBOX] + 3, GUICustomX, 4, GUICustomResTextPtr, 0);
+        GUIOuttextwin2d(5, 199, (u4)row[MODE_ROW_CUSTOMBOX] + 3, GUICustomY, 4, GUICustomResTextPtr, 1);
 
         GUIDisplayBBoxS(5, 5, 26, 115, 189, 167); // Video Modes Box
         DrawSlideBar(5, 117, 26, GUIcurrentvideoviewloc, NumVideoModes, 20, 164, GUIVStA, 5, 6);
@@ -1113,11 +1120,14 @@ void DisplayGUIVideo(void)
         GUIDrawSlider(5, 23, 100, (u4)row[CRT_ROW_BLOOM], &BloomLevel, glscslidSet,
             glscslidText);
 
+        /* HDR is not offered as a choice: it is used when the monitor is in
+           HDR mode and not otherwise, so all there is to say is which. */
         GUIDisplayTextY(5, 13, (u4)row[CRT_ROW_OUTLABEL], "OUTPUT:");
-        GUIDisplayCheckboxu(5, 18, (u4)row[CRT_ROW_HDR], &HDROutput, "HDR OUTPUT", 0);
-        GUIDisplayText(5, 13, (u4)row[CRT_ROW_NOTE], "HDR NEEDS A DISPLAY IN");
-        GUIDisplayText(5, 13, (u4)row[CRT_ROW_NOTE] + 10, "HDR MODE, AND APPLIES");
-        GUIDisplayText(5, 13, (u4)row[CRT_ROW_NOTE] + 20, "ON SET, IN THE MODES TAB.");
+        GUIDisplayText(5, 18, (u4)row[CRT_ROW_HDR],
+            VideoMonitorHDR() ? "HDR: THIS MONITOR" : "HDR: MONITOR IS SDR");
+        GUIDisplayText(5, 13, (u4)row[CRT_ROW_NOTE], "BLOOM GOES ABOVE WHITE");
+        GUIDisplayText(5, 13, (u4)row[CRT_ROW_NOTE] + 10, "ON AN HDR MONITOR, AND");
+        GUIDisplayText(5, 13, (u4)row[CRT_ROW_NOTE] + 20, "IS CLIPPED ON AN SDR ONE.");
     }
 
     if (GUIVideoTabs[0] == 4) { // Monitors tab
@@ -1126,35 +1136,41 @@ void DisplayGUIVideo(void)
            out from that ID each time rather than kept as a number, because SDL
            renumbers displays between runs. */
         u4 const count = VideoMonitorCount();
+        s4 row[MON_ROW_COUNT];
         u4 i;
 
+        GUIMonitorRows(row);
+
         monitorrow = (u1)VideoMonitorSelected();
-        GUIDisplayTextY(5, 13, 30, "OPEN ON MONITOR:");
+        GUIDisplayTextY(5, 13, (u4)row[MON_ROW_LABEL], "OPEN ON MONITOR:");
         if (count == 0) {
-            GUIDisplayText(5, 18, 42, "NONE REPORTED");
+            GUIDisplayText(5, 18, (u4)row[MON_ROW_LIST], "NONE REPORTED");
         }
-        for (i = 0; i < count && i < 6u; i++) {
+        for (i = 0; i < count && i < (u4)MON_MAX; i++) {
             char id[16], line[34];
 
             VideoMonitorID(i, id, (u4)sizeof(id));
             snprintf(line, sizeof(line), "%-10.10s %.20s", id, VideoMonitorName(i));
-            GUIDisplayButtonHoleTu(5, 18, (u4)(42 + i * 12), &monitorrow, (u4)i,
+            GUIDisplayButtonHoleTu(5, 18, (u4)(row[MON_ROW_LIST] + (s4)i * MON_PITCH), &monitorrow, (u4)i,
                 line, 0);
         }
 
-        GUIDisplayText(5, 13, 130, "APPLIES ON SET,");
-        GUIDisplayText(5, 13, 140, "IN THE MODES TAB.");
+        GUIDisplayText(5, 13, (u4)row[MON_ROW_NOTE], "APPLIES ON SET,");
+        GUIDisplayText(5, 13, (u4)row[MON_ROW_NOTE] + 10, "IN THE MODES TAB.");
     }
 
     if (GUIVideoTabs[0] == 2) {
+        s4 row[FILT_ROW_COUNT];
+
+        GUIFilterRows(row);
         // Video Filters
         {
             {
                 char const* const GUIVideoTextB1 = "VIDEO FILTERS:"; // Filters.Exclusive
                 // Bilinear
                 if (GUIBIFIL[cvidmode] != 0) {
-                    GUIDisplayTextY(5, 13, 30, GUIVideoTextB1);
-                    GUIDisplayCheckboxu(5, 18, 35, &BilinearFilter, "BILINEAR FILTER", 1);
+                    GUIDisplayTextY(5, 13, (u4)row[FILT_ROW_LABEL], GUIVideoTextB1);
+                    GUIDisplayCheckboxu(5, 18, (u4)row[FILT_ROW_TOP], &BilinearFilter, "BILINEAR FILTER", 1);
                 } else {
                     // Interpolations
 #ifdef __WIN32__
@@ -1163,45 +1179,45 @@ void DisplayGUIVideo(void)
                     if (GUII2VID[cvidmode] != 0)
 #endif
                     {
-                        GUIDisplayTextY(5, 13, 30, GUIVideoTextB1);
-                        GUIDisplayCheckboxu(5, 18, 35, &antienab, "INTERPOLATION", 0); // -y
+                        GUIDisplayTextY(5, 13, (u4)row[FILT_ROW_LABEL], GUIVideoTextB1);
+                        GUIDisplayCheckboxu(5, 18, (u4)row[FILT_ROW_TOP], &antienab, "INTERPOLATION", 0); // -y
                     }
                 }
 
                 // NTSC filter
                 if (GUINTVID[cvidmode] != 0)
-                    GUIDisplayCheckboxu(5, 128, 35, &NTSCFilter, "NTSC FILTER", 0);
+                    GUIDisplayCheckboxu(5, 128, (u4)row[FILT_ROW_TOP], &NTSCFilter, "NTSC FILTER", 0);
 
                 // Kreed 2x filters
                 if (GUIDSIZE[cvidmode] != 0) {
-                    GUIDisplayCheckboxun(5, 18, 45, &En2xSaI, 1, "2XSAI ENGINE", 2); // 2x
-                    GUIDisplayCheckboxun(5, 128, 45, &En2xSaI, 2, "SUPER EAGLE", 6); // Seagle
-                    GUIDisplayCheckboxun(5, 18, 55, &En2xSaI, 3, "SUPER 2XSAI", 2); // S2x
+                    GUIDisplayCheckboxun(5, 18, (u4)row[FILT_ROW_SAI1], &En2xSaI, 1, "2XSAI ENGINE", 2); // 2x
+                    GUIDisplayCheckboxun(5, 128, (u4)row[FILT_ROW_SAI1], &En2xSaI, 2, "SUPER EAGLE", 6); // Seagle
+                    GUIDisplayCheckboxun(5, 18, (u4)row[FILT_ROW_SAI2], &En2xSaI, 3, "SUPER 2XSAI", 2); // S2x
                 }
 
                 // Hq*x
                 if (GUIHQ2X[cvidmode] != 0) {
-                    GUIDisplayCheckboxu(5, 128, 55, &hqFilter, "HQ FILTER", 1);
+                    GUIDisplayCheckboxu(5, 128, (u4)row[FILT_ROW_SAI2], &hqFilter, "HQ FILTER", 1);
                     if (hqFilter != 0) {
-                        GUIDisplayButtonHoleTu(5, 128, 68, &hqFilterlevel, 2, "2X", 1);
+                        GUIDisplayButtonHoleTu(5, 128, (u4)row[FILT_ROW_HQLEVEL], &hqFilterlevel, 2, "2X", 1);
                         goto hq_x;
                     }
                 } else {
                 hq_x:;
                     if (GUIHQ3X[cvidmode] != 0)
-                        GUIDisplayButtonHoleTu(5, 158, 68, &hqFilterlevel, 3, "3X", 0);
+                        GUIDisplayButtonHoleTu(5, 158, (u4)row[FILT_ROW_HQLEVEL], &hqFilterlevel, 3, "3X", 0);
                     if (GUIHQ4X[cvidmode] != 0)
-                        GUIDisplayButtonHoleTu(5, 188, 68, &hqFilterlevel, 4, "4X", 0);
+                        GUIDisplayButtonHoleTu(5, 188, (u4)row[FILT_ROW_HQLEVEL], &hqFilterlevel, 4, "4X", 0);
                 }
             }
         }
 
-        GUIDisplayTextY(5, 13, 85, "MISC FILTERS:"); // Filters.Other
-        GUIDisplayCheckboxu(5, 18, 90, &GrayscaleMode, "GRAYSCALE MODE", 0); // -v8
+        GUIDisplayTextY(5, 13, (u4)row[FILT_ROW_MISCLABEL], "MISC FILTERS:"); // Filters.Other
+        GUIDisplayCheckboxu(5, 18, (u4)row[FILT_ROW_MISC], &GrayscaleMode, "GRAYSCALE MODE", 0); // -v8
 
         // Hires Mode7
         if (GUIM7VID[cvidmode] != 0 && newengen != 0) {
-            GUIDisplayCheckboxu(5, 128, 90, &Mode7HiRes16b, "HI-RES MODE 7", 0);
+            GUIDisplayCheckboxu(5, 128, (u4)row[FILT_ROW_MISC], &Mode7HiRes16b, "HI-RES MODE 7", 0);
         }
 
         // Monitor Refresh
@@ -1211,8 +1227,8 @@ void DisplayGUIVideo(void)
         if (allow_glvsync == 1 && GUIBIFIL[cvidmode] != 0)
 #endif
         {
-            GUIDisplayTextY(5, 13, 105, "MONITOR SYNC:"); // Video.Sync
-            GUIDisplayCheckboxu(5, 18, 110, &vsyncon, "VSYNC", 0); // -w
+            GUIDisplayTextY(5, 13, (u4)row[FILT_ROW_SYNCLABEL], "MONITOR SYNC:"); // Video.Sync
+            GUIDisplayCheckboxu(5, 18, (u4)row[FILT_ROW_SYNC], &vsyncon, "VSYNC", 0); // -w
         }
 #endif
 
@@ -1222,15 +1238,15 @@ void DisplayGUIVideo(void)
 #endif
 #ifdef __WIN32__
         if (GUIWFVID[cvidmode] != 0) {
-            GUIDisplayCheckboxu(5, 128, 110, &TripleBufferWin, GUIVideoTextB4b, 0);
+            GUIDisplayCheckboxu(5, 128, (u4)row[FILT_ROW_SYNC], &TripleBufferWin, GUIVideoTextB4b, 0);
         }
 #endif
 
         char const* const GUIVideoTextB5 = "DISPLAY OPTIONS:"; // Video.Display
         // Keep 4:3 Ratio
         if (GUIKEEP43[cvidmode] != 0 && Keep43Check()) {
-            GUIDisplayTextY(5, 13, 135, GUIVideoTextB5);
-            GUIDisplayCheckboxu(5, 18, 140, &Keep4_3Ratio, "USE 4:3 RATIO", 8);
+            GUIDisplayTextY(5, 13, (u4)row[FILT_ROW_DISPLABEL], GUIVideoTextB5);
+            GUIDisplayCheckboxu(5, 18, (u4)row[FILT_ROW_DISP], &Keep4_3Ratio, "USE 4:3 RATIO", 8);
         }
     }
 

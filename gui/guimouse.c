@@ -935,15 +935,18 @@ static void DisplayGUIVideoClick_notmodestab(s4 const eax, s4 const edx)
 {
     if (GUIVideoTabs[0] == 2) // Filters tab
     {
+        s4 row[FILT_ROW_COUNT];
+
+        GUIFilterRows(row);
         Clear2xSaIBuffer();
 
         {
             {
                 // Bilinear
                 if (GUIBIFIL[cvidmode] != 0) {
-                    if (GUIClickArea(eax, edx, 18 + 1, 35 + 3, 18 + 6, 35 + 8))
+                    if (GUIClickArea(eax, edx, 18 + 1, row[FILT_ROW_TOP] + 3, 18 + 6, row[FILT_ROW_TOP] + 8))
                         NTSCFilter = 0;
-                    GUIClickCButtonI(eax, edx, 18, 35, &BilinearFilter);
+                    GUIClickCButtonI(eax, edx, 18, row[FILT_ROW_TOP], &BilinearFilter);
                 } else {
                     // Interpolations
 #ifdef __WIN32__
@@ -952,100 +955,100 @@ static void DisplayGUIVideoClick_notmodestab(s4 const eax, s4 const edx)
                     if (GUII2VID[cvidmode] != 0)
 #endif
                     {
-                        if (GUIClickArea(eax, edx, 18 + 1, 35 + 3, 18 + 6, 35 + 8)) {
+                        if (GUIClickArea(eax, edx, 18 + 1, row[FILT_ROW_TOP] + 3, 18 + 6, row[FILT_ROW_TOP] + 8)) {
                             hqFilter = 0;
                             NTSCFilter = 0;
                             En2xSaI = 0;
                         }
-                        GUIClickCButton(eax, edx, 18, 35, &antienab);
+                        GUIClickCButton(eax, edx, 18, row[FILT_ROW_TOP], &antienab);
                     }
                 }
 
                 // NTSC filter
                 if (GUINTVID[cvidmode] != 0) {
-                    if (GUIClickArea(eax, edx, 128 + 1, 35 + 3, 128 + 6, 35 + 8)) {
+                    if (GUIClickArea(eax, edx, 128 + 1, row[FILT_ROW_TOP] + 3, 128 + 6, row[FILT_ROW_TOP] + 8)) {
                         En2xSaI = 0;
                         hqFilter = 0;
                         scanlines = 0;
                         antienab = 0;
                     }
 #ifdef __OPENGL__
-                    if (GUIClickArea(eax, edx, 128 + 1, 35 + 3, 128 + 6, 35 + 8))
+                    if (GUIClickArea(eax, edx, 128 + 1, row[FILT_ROW_TOP] + 3, 128 + 6, row[FILT_ROW_TOP] + 8))
                         BilinearFilter = 0;
 #endif
-                    GUIClickCButtonN(eax, edx, 128, 35, &NTSCFilter, NTSCFilterInit);
+                    GUIClickCButtonN(eax, edx, 128, row[FILT_ROW_TOP], &NTSCFilter, NTSCFilterInit);
                 }
 
                 // Kreed 2x filters
                 if (GUIDSIZE[cvidmode] != 0) {
-                    if (GUIClickArea(eax, edx, 18 + 1, 45 + 3, 18 + 6, 45 + 8)) {
+                    if (GUIClickArea(eax, edx, 18 + 1, row[FILT_ROW_SAI1] + 3, 18 + 6, row[FILT_ROW_SAI1] + 8)) {
                         hqFilter = 0;
                         scanlines = 0;
                         antienab = 0;
                         NTSCFilter = 0;
                     }
-                    if (GUIClickArea(eax, edx, 128 + 1, 45 + 3, 128 + 6, 45 + 8)) {
+                    if (GUIClickArea(eax, edx, 128 + 1, row[FILT_ROW_SAI1] + 3, 128 + 6, row[FILT_ROW_SAI1] + 8)) {
                         hqFilter = 0;
                         scanlines = 0;
                         antienab = 0;
                         NTSCFilter = 0;
                     }
-                    if (GUIClickArea(eax, edx, 18 + 1, 55 + 3, 18 + 6, 55 + 8)) {
+                    if (GUIClickArea(eax, edx, 18 + 1, row[FILT_ROW_SAI2] + 3, 18 + 6, row[FILT_ROW_SAI2] + 8)) {
                         hqFilter = 0;
                         scanlines = 0;
                         antienab = 0;
                         NTSCFilter = 0;
                     }
-                    GUIClickCButton6(eax, edx, 18, 45, &En2xSaI, 1);
-                    GUIClickCButton6(eax, edx, 128, 45, &En2xSaI, 2);
-                    GUIClickCButton6(eax, edx, 18, 55, &En2xSaI, 3);
+                    GUIClickCButton6(eax, edx, 18, row[FILT_ROW_SAI1], &En2xSaI, 1);
+                    GUIClickCButton6(eax, edx, 128, row[FILT_ROW_SAI1], &En2xSaI, 2);
+                    GUIClickCButton6(eax, edx, 18, row[FILT_ROW_SAI2], &En2xSaI, 3);
                 }
 
                 u1 const bl = cvidmode; // Hq*x filters
                 if (GUIHQ4X[bl] != 0) {
-                    GUIPButtonHole(eax, edx, 188, 68, &hqFilterlevel, 4);
+                    GUIPButtonHole(eax, edx, 188, row[FILT_ROW_HQLEVEL], &hqFilterlevel, 4);
                     goto radiobuttonhq3x;
                 }
                 if (GUIHQ3X[bl] != 0) {
                 radiobuttonhq3x:
-                    GUIPButtonHole(eax, edx, 158, 68, &hqFilterlevel, 3);
+                    GUIPButtonHole(eax, edx, 158, row[FILT_ROW_HQLEVEL], &hqFilterlevel, 3);
                     goto radiobuttonhq2x;
                 }
                 if (GUIHQ2X[bl] != 0) {
                 radiobuttonhq2x:
-                    GUIPButtonHole(eax, edx, 128, 68, &hqFilterlevel, 2);
-                    if (GUIClickArea(eax, edx, 128 + 1, 55 + 3, 128 + 6, 55 + 8)) {
+                    GUIPButtonHole(eax, edx, 128, row[FILT_ROW_HQLEVEL], &hqFilterlevel, 2);
+                    if (GUIClickArea(eax, edx, 128 + 1, row[FILT_ROW_SAI2] + 3, 128 + 6, row[FILT_ROW_SAI2] + 8)) {
                         En2xSaI = 0;
                         scanlines = 0;
                         antienab = 0;
                         NTSCFilter = 0;
                     }
-                    GUIClickCButton(eax, edx, 128, 55, &hqFilter);
+                    GUIClickCButton(eax, edx, 128, row[FILT_ROW_SAI2], &hqFilter);
                 }
             }
 
-            GUIClickCButton(eax, edx, 18, 90, &GrayscaleMode); // Grayscale
+            GUIClickCButton(eax, edx, 18, row[FILT_ROW_MISC], &GrayscaleMode); // Grayscale
 
             // Hires Mode7
             if (GUIM7VID[cvidmode] != 0)
-                GUIClickCButton5(eax, edx, 128, 90, &Mode7HiRes16b, 1);
+                GUIClickCButton5(eax, edx, 128, row[FILT_ROW_MISC], &Mode7HiRes16b, 1);
 
 #ifdef __WIN32__
             // Triple buffs/vsyncs
             if (GUIWFVID[cvidmode] != 0) {
-                GUIClickCButtonf(eax, edx, 128, 110, &TripleBufferWin, initDirectDraw);
+                GUIClickCButtonf(eax, edx, 128, row[FILT_ROW_SYNC], &TripleBufferWin, initDirectDraw);
             }
-            GUIClickCButtonf(eax, edx, 18, 110, &vsyncon, initDirectDraw);
+            GUIClickCButtonf(eax, edx, 18, row[FILT_ROW_SYNC], &vsyncon, initDirectDraw);
 #endif
 
 #ifdef __OPENGL__
             if (GUIBIFIL[cvidmode] != 0)
-                GUIClickCButtonI(eax, edx, 18, 110, &vsyncon);
+                GUIClickCButtonI(eax, edx, 18, row[FILT_ROW_SYNC], &vsyncon);
 #endif
 
             // Keep 4:3 Ratio
             if (GUIKEEP43[cvidmode] != 0)
-                GUIClickCButtonK(eax, edx, 18, 140, &Keep4_3Ratio, initwinvideo);
+                GUIClickCButtonK(eax, edx, 18, row[FILT_ROW_DISP], &Keep4_3Ratio, initwinvideo);
         }
     }
 
@@ -1183,12 +1186,19 @@ static void DisplayGUIVideoClick_skipscrol(s4 const eax, s4 const edx)
     if (GUIWinControl(eax, edx, 5, 27, 115, 27 + 20 * 8, &GUIBlankVar, &GUIcurrentvideoviewloc, &GUINumValue, 27, 8, &GUIcurrentvideocursloc, 2, 5, 0))
         return;
 
-    GUIPHoldbutton(eax, edx, 130, 31, 166, 41, 4);
+    {
+        s4 row[MODE_ROW_COUNT];
 
-    GUIPHoldbutton(eax, edx, 182, 116, 218, 126, 12);
-
-    GUITextBoxInputNach(eax, edx, 130, 130, 178, 140, 0, 5, SetCustomXY);
-    GUITextBoxInputNach(eax, edx, 191, 130, 239, 140, 1, 5, SetCustomXY);
+        GUIModeRows(row);
+        GUIPHoldbutton(eax, edx, 130, row[MODE_ROW_SET] + 1, 166,
+            row[MODE_ROW_SET] + 11, 4);
+        GUIPHoldbutton(eax, edx, 182, row[MODE_ROW_CUSTOM] - 4, 218,
+            row[MODE_ROW_CUSTOM] + 6, 12);
+        GUITextBoxInputNach(eax, edx, 130, row[MODE_ROW_CUSTOMBOX], 178,
+            row[MODE_ROW_CUSTOMBOX] + 10, 0, 5, SetCustomXY);
+        GUITextBoxInputNach(eax, edx, 191, row[MODE_ROW_CUSTOMBOX], 239,
+            row[MODE_ROW_CUSTOMBOX] + 10, 1, 5, SetCustomXY);
+    }
 
     DisplayGUIVideoClick_notmodestab(eax, edx);
 }
@@ -1270,16 +1280,18 @@ static void DisplayGUIVideoClick(s4 const eax, s4 const edx)
                 GUIHoldXlimR = wx + 23 + 100;
             }
         }
-        GUIClickCButton(eax, edx, 18, (s4)row[CRT_ROW_HDR], &HDROutput);
     }
 
     if (GUIVideoTabs[0] == 4) { // Monitors tab
         u4 const count = VideoMonitorCount();
+        s4 row[MON_ROW_COUNT];
         u4 i;
 
-        for (i = 0; i < count && i < 6u; i++) {
-            if (GUIClickArea(eax, edx, 18 + 1, (s4)(42 + i * 12) + 1, 18 + 7,
-                    (s4)(42 + i * 12) + 7)) {
+        GUIMonitorRows(row);
+        for (i = 0; i < count && i < (u4)MON_MAX; i++) {
+            s4 const y = row[MON_ROW_LIST] + (s4)i * MON_PITCH;
+
+            if (GUIClickArea(eax, edx, 18 + 1, y + 1, 18 + 7, y + 7)) {
                 VideoMonitorSelect(i); /* stores the ID, not the position */
             }
         }

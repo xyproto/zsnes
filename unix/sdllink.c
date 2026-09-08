@@ -168,6 +168,26 @@ void VideoMonitorSelect(u4 const i)
     VideoMonitorID(i, MonitorID, (u4)sizeof(MonitorID));
 }
 
+/* Whether the monitor we are about to open on is in HDR mode. Asked of the
+   display rather than the user: there is nothing to choose here, the display
+   either has the range or it does not. */
+int VideoMonitorHDR(void)
+{
+    SDL_PropertiesID props;
+    SDL_DisplayID id;
+
+    if (!sdl_displays) {
+        RefreshMonitors();
+    }
+    if (sdl_display_count <= 0) {
+        return 0;
+    }
+    id = sdl_displays[VideoMonitorSelected()];
+    props = SDL_GetDisplayProperties(id);
+    return props
+        && SDL_GetBooleanProperty(props, SDL_PROP_DISPLAY_HDR_ENABLED_BOOLEAN, false);
+}
+
 /* Put a freshly made window on the chosen monitor. Called by each of the three
    video paths right after SDL_CreateWindow, which in SDL3 cannot be given a
    position of its own. */
