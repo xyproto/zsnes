@@ -78,6 +78,12 @@ static int sdl_display_count = 0;
 
 static void RefreshMonitors(void)
 {
+    /* Asking before the emulator has started - -mo list does, while parsing
+       the command line - would otherwise find nothing, because SDL has no
+       displays until its video subsystem is up. */
+    if (!SDL_WasInit(SDL_INIT_VIDEO)) {
+        SDL_Init(SDL_INIT_VIDEO);
+    }
     SDL_free(sdl_displays);
     sdl_displays = SDL_GetDisplays(&sdl_display_count);
     if (!sdl_displays) {

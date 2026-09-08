@@ -22,6 +22,9 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #ifdef __UNIXSDL__
 #include "gblhdr.h"
+#ifdef __UNIXSDL__
+#include "unix/sdllink.h"
+#endif
 
 #ifdef __LIBAO__
 #include <ao/ao.h>
@@ -165,12 +168,16 @@ static void display_help(void)
     put_line("             1 = Raw  2 = FFV1 3 = x264");
     put_line("             4 = XviD 5 = Custom");
     put_line("  -ml #   Define movie dump length in amount of frames (use with -md)");
+    put_line("  -mo ID  Open on the monitor with this identifier");
+    put_line("  -mo list  List the monitors this machine reports");
     put_line("  -n #    Enable scanlines (when available)");
     put_line("             0 = None, 1 = Full, 2 = 25%, 3 = 50%");
     put_line("  -p #    Percentage of instructions to execute [50..150]");
+#ifndef __UNIXSDL__
     put_line("  -r #    Set sound sampling rate:");
     put_line("             0 = 8000Hz  1 = 11025Hz 2 = 22050Hz 3 = 44100Hz");
     put_line("             4 = 16000Hz 5 = 32000Hz 6 = 48000Hz");
+#endif
     put_line("  -s      Enable sound output and enable SPC700/DSP emulation");
     put_line("  -sa     Show all files in GUI (*.*)");
     put_line("  -t      Force NTSC timing");
@@ -615,10 +622,19 @@ static void handle_params(int argc, char* argv[])
 
                 case 'r': // Set sampling rate
                     i++;
+#ifdef __UNIXSDL__
+                    /* Taken and ignored, and no longer listed in the help.
+                       SDL, PipeWire and libao all render at the DSP's own rate
+                       and let the sound server resample onward, so there is no
+                       rate to pick here. Still accepted so that command lines
+                       and scripts carrying it keep working. */
+                    (void)argv[i];
+#else
                     if ((SoundQuality = zatoi(argv[i])) > 6) {
                         puts("Sound Sampling Rate must be a value of 0 to 6!");
                         zexit_error();
                     }
+#endif
                     break;
 
                 case 's': // Enable sound output, and SPC700/DSP emulation
@@ -782,6 +798,34 @@ static void handle_params(int argc, char* argv[])
                     i++;
                     MovieForcedLengthEnabled = true;
                     MovieForcedLength = zatoi(argv[i]);
+                }
+
+                /* -ml is the movie dump length, so the monitor flags live
+                   under -mo: an identifier selects that monitor, and the word
+                   "list" prints the ones this machine reports. */
+                else if (tolower(argv[i][1]) == 'm' && tolower(argv[i][2]) == 'o') // Monitor
+                {
+                    i++;
+                    if (!argv[i]) {
+                        puts("-mo needs a monitor identifier, or \"list\"");
+                        zexit_error();
+                    }
+                    if (!strcasecmp(argv[i], "list")) {
+                        u4 const count = VideoMonitorCount();
+                        u4 m;
+
+                        if (count == 0) {
+                            puts("No monitors reported.");
+                        }
+                        for (m = 0; m < count; m++) {
+                            char id[16];
+
+                            VideoMonitorID(m, id, (u4)sizeof(id));
+                            printf("  %-12s %s\n", id, VideoMonitorName(m));
+                        }
+                        zexit();
+                    }
+                    snprintf(MonitorID, sizeof(MonitorID), "%s", argv[i]);
                 }
 
                 else if (tolower(argv[i][1]) == 's' && tolower(argv[i][2]) == 'a') // Show all extensions in GUI
