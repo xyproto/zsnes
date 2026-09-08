@@ -1021,11 +1021,11 @@ static void DisplayGUIVideoClick_notmodestab(s4 const eax, s4 const edx)
                 }
             }
 
-            GUIClickCButton(eax, edx, 18, 115, &GrayscaleMode); // Grayscale
+            GUIClickCButton(eax, edx, 18, 125, &GrayscaleMode); // Grayscale
 
             // Hires Mode7
             if (GUIM7VID[cvidmode] != 0)
-                GUIClickCButton5(eax, edx, 128, 115, &Mode7HiRes16b, 1);
+                GUIClickCButton5(eax, edx, 128, 125, &Mode7HiRes16b, 1);
 
 #ifdef __WIN32__
             // Triple buffs/vsyncs
@@ -1058,11 +1058,11 @@ static void DisplayGUIVideoClick_notmodestab(s4 const eax, s4 const edx)
                     GUIHoldXlimL = eax;
                     GUIHoldXlimR = eax + 100;
                 }
-                if (GUIClickArea(eax, edx, 60, 100, 60 + 100, 104)) {
-                    sl_brightness = eax - 60;
+                if (GUIClickArea(eax, edx, 23, 107, 23 + 100, 111)) {
+                    sl_brightness = eax - 23;
                     GUIHold = 8;
-                    GUIHoldYlim = GUIwinposy[5] + 102;
-                    s4 const ebx = GUIwinposx[5] + 60;
+                    GUIHoldYlim = GUIwinposy[5] + 109;
+                    s4 const ebx = GUIwinposx[5] + 23;
                     GUIHoldXlimL = ebx;
                     GUIHoldXlimR = ebx + 100;
                 }

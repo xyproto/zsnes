@@ -351,8 +351,13 @@ int Main_Proc(void)
                 MouseX += (int)event.motion.xrel;
                 MouseY += (int)event.motion.yrel;
             } else {
-                MouseX = ((int)event.motion.x * MouseXScale);
-                MouseY = ((int)event.motion.y * MouseYScale);
+                /* Absolute, so the origin has to come back in: the scale is
+                   the *span* over the window, and a slider drag narrows that
+                   span to the bar. Without MouseMin the pointer mapped to
+                   0..span, which is below the bar's left edge, so it clamped
+                   there and the slider could not be dragged. */
+                MouseX = MouseMinX + ((int)event.motion.x * MouseXScale);
+                MouseY = MouseMinY + ((int)event.motion.y * MouseYScale);
             }
 
             if (MouseX < MouseMinX) {

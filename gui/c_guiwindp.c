@@ -1131,10 +1131,11 @@ void DisplayGUIVideo(void)
                 GUIDisplayTextY(5, 13, 80, GUIVideoTextB2); // Scanlines text
                 GUIDrawSlider(5, 23, 100, 90, &sl_intensity, glscslidSet, glscslidText);
                 /* Scanlines dim one row per group, so the picture as a whole
-                   goes darker; this puts the light back. Label and bar share a
-                   row to stay clear of MISC FILTERS just below. */
-                GUIDisplayTextY(5, 13, 101, "BRIGHT:");
-                GUIDrawSlider(5, 60, 100, 102, &sl_brightness, glscslidSet, glscslidText);
+                   goes darker; this puts the light back. Laid out like the
+                   scanlines pair above: label, then the bar under it and a
+                   little to the right. */
+                GUIDisplayTextY(5, 13, 99, "BRIGHTNESS:");
+                GUIDrawSlider(5, 23, 100, 109, &sl_brightness, glscslidSet, glscslidText);
             } else {
                 // Scanlines
                 if (GUIDSIZE[cvidmode] != 0) {
@@ -1149,12 +1150,12 @@ void DisplayGUIVideo(void)
             }
         }
 
-        GUIDisplayTextY(5, 13, 110, "MISC FILTERS:"); // Filters.Other
-        GUIDisplayCheckboxu(5, 18, 115, &GrayscaleMode, "GRAYSCALE MODE", 0); // -v8
+        GUIDisplayTextY(5, 13, 120, "MISC FILTERS:"); // Filters.Other
+        GUIDisplayCheckboxu(5, 18, 125, &GrayscaleMode, "GRAYSCALE MODE", 0); // -v8
 
         // Hires Mode7
         if (GUIM7VID[cvidmode] != 0 && newengen != 0) {
-            GUIDisplayCheckboxu(5, 128, 115, &Mode7HiRes16b, "HI-RES MODE 7", 0);
+            GUIDisplayCheckboxu(5, 128, 125, &Mode7HiRes16b, "HI-RES MODE 7", 0);
         }
 
         // Monitor Refresh
@@ -1284,6 +1285,7 @@ void DisplayGUISound(void)
         };
         GUIDisplayTextG(6, 23, 104, GUISoundTextB1[SoundQuality]);
     }
+#endif
 
     GUIDisplayTextY(6, 6, 116, "VOLUME LEVEL:");
     GUIDrawSlider(6, 15, 100, 131, &MusicRelVol, glscslidSet, glscslidText);
