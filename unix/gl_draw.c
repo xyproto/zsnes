@@ -24,6 +24,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "../link.h"
 #include "../video/copyvwin.h"
 #include "cfg.h"
+#include "sdllink.h"
 #include <stdint.h>
 
 // FUNCTIONS
@@ -100,6 +101,7 @@ int gl_start(int width, int height, int req_depth, int FullScreen)
         SDL_DestroyWindow(sdl_window);
     }
     sdl_window = SDL_CreateWindow("ZSNES", SurfaceX, SurfaceY, flags);
+    PlaceWindowOnMonitor(sdl_window);
     if (sdl_window == NULL) {
         fprintf(stderr, "Could not create %dx%d-GL window.\n", SurfaceX, SurfaceY);
         return false;

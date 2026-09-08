@@ -38,6 +38,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "../video/2xsaiw.h"
 #include "../video/copyvwin.h"
 #include "cfg.h"
+#include "sdllink.h"
+#include <math.h>
 #include <stdint.h>
 
 void hq2x_16b(void);
@@ -98,6 +100,7 @@ int sr_start(int width, int height, int req_depth, int FullScreen)
     sr_end();
 
     sdl_window = SDL_CreateWindow("ZSNES", SurfaceX, SurfaceY, flags);
+    PlaceWindowOnMonitor(sdl_window);
     if (!sdl_window) {
         fprintf(stderr, "Could not create %dx%d window: %s\n", SurfaceX, SurfaceY,
             SDL_GetError());
@@ -211,65 +214,116 @@ static void sr_line(unsigned short* dst, int const line)
 
 /* Halve every second row, which is what the GL path's blended 1D texture did. */
 /* Scale a 565 pixel by a percentage, saturating. 100 leaves it alone. */
-static unsigned short sr_shade(unsigned const p, unsigned const pct)
-{
-    unsigned r = ((p >> 11) & 0x1Fu) * pct / 100u;
-    unsigned g = ((p >> 5) & 0x3Fu) * pct / 100u;
-    unsigned b = (p & 0x1Fu) * pct / 100u;
+/* Vibrancy and scanlines are one pass over the frame, through a table per
+   row of the group: every pixel is a single lookup, and the tables are rebuilt
+   only when a setting moves.
 
-    if (r > 0x1Fu) {
-        r = 0x1Fu;
-    }
-    if (g > 0x3Fu) {
-        g = 0x3Fu;
-    }
-    if (b > 0x1Fu) {
-        b = 0x1Fu;
-    }
-    return (unsigned short)((r << 11) | (g << 5) | b);
-}
+   The shape matters more than the depth. Dimming whole rows by a flat
+   percentage reads as a grille laid over the picture, because the pattern is
+   the same whatever is underneath it. A tube instead paints each line with a
+   beam that has a soft profile, and the harder it is driven the wider that
+   beam spreads, so bright areas bloom across the gap while dark areas keep it
+   open. Making the profile depend on the pixel is what stops the scanlines
+   looking painted on, and it costs nothing per pixel: the weight is a function
+   of (row within the group, pixel), which is exactly what the table holds. */
+#define SR_MAX_VSCALE 4
+#define SR_LUMA_STEPS 256
 
-/* Brightness and scanlines are one pass over the frame, through a pair of
-   tables: every pixel is a single lookup, and the tables are only rebuilt when
-   a setting moves. Two 64K tables is 256KB, against a multiply per channel per
-   pixel on frames that reach 1024x896. */
-static unsigned short sr_lut_lit[65536];
-static unsigned short sr_lut_dim[65536];
+static unsigned short sr_lut[SR_MAX_VSCALE][65536];
 static int sr_lut_bright = -1;
 static int sr_lut_dark = -1;
+static int sr_lut_vscale = -1;
 
-static void sr_build_luts(void)
+/* Beam weight at `d` line pitches from the centre of the beam, for a line
+   driven to `luma`. Half-width runs from a fifth of the pitch when black to
+   two fifths when full, which is roughly where a tube's spot sits. */
+static double sr_beam(double const d, double const luma)
 {
-    unsigned const lit = 100u + sl_brightness;
-    /* The dim rows take the boost too, so brightness lifts the whole picture
-       rather than widening the gap between the rows. */
-    unsigned const dim = lit * (100u - sl_intensity) / 100u;
-    unsigned i;
+    double const w = 0.20 + 0.20 * luma;
+    double const t = d / w;
 
-    for (i = 0; i < 65536u; i++) {
-        sr_lut_lit[i] = sr_shade(i, lit);
-        sr_lut_dim[i] = sr_shade(i, dim);
-    }
-    sr_lut_bright = sl_brightness;
-    sr_lut_dark = sl_intensity;
+    return exp(-0.5 * t * t);
 }
 
-/* One darkened row per source scanline: the last of each group of `vscale`,
-   which for the doubled path is every other row, as it always was. Tying it to
-   the source line rather than to the output row keeps the CRT look the same
-   whether the picture was scaled 2x, 3x or 4x. */
+static void sr_build_luts(int const vscale)
+{
+    double const depth = sl_intensity / 100.0;
+    /* Vibrancy lifts the picture back after the scanlines have taken light out
+       of it. A plain multiply cannot: everything above the clipping point
+       flattens into white while the rest still scales, which drains the colour
+       out of bright areas. A gamma lift leaves white at white and opens up the
+       mid-tones instead, and a little saturation with it puts back the punch a
+       tube had. */
+    double const gamma = 1.0 + sl_vibrancy / 100.0;
+    double const sat = 1.0 + 0.5 * sl_vibrancy / 100.0;
+    /* The beam weight depends on the pixel only through its luma, so work the
+       exponential out once per luma step rather than once per colour. */
+    double weight[SR_MAX_VSCALE][SR_LUMA_STEPS];
+    int p, l;
+    unsigned i;
+
+    for (p = 0; p < vscale; p++) {
+        double d = (double)p / vscale;
+
+        if (d > 0.5) {
+            d = 1.0 - d; /* the next line's beam is nearer than this one's */
+        }
+        for (l = 0; l < SR_LUMA_STEPS; l++) {
+            double const luma = (double)l / (SR_LUMA_STEPS - 1);
+
+            weight[p][l] = 1.0 - depth * (1.0 - sr_beam(d, luma));
+        }
+    }
+    for (i = 0; i < 65536u; i++) {
+        double const ch[3] = { ((i >> 11) & 0x1Fu) / 31.0,
+            ((i >> 5) & 0x3Fu) / 63.0, (i & 0x1Fu) / 31.0 };
+        double const luma = 0.299 * ch[0] + 0.587 * ch[1] + 0.114 * ch[2];
+        int const l = (int)(luma * (SR_LUMA_STEPS - 1) + 0.5);
+
+        for (p = 0; p < vscale; p++) {
+            double out[3];
+            double lit = 0.0;
+            int c;
+
+            for (c = 0; c < 3; c++) {
+                double v = ch[c] * weight[p][l];
+
+                out[c] = pow(v, 1.0 / gamma); /* white stays white */
+                lit += (c == 0 ? 0.299 : c == 1 ? 0.587
+                                                : 0.114)
+                    * out[c];
+            }
+            for (c = 0; c < 3; c++) {
+                out[c] = lit + (out[c] - lit) * sat;
+                out[c] = out[c] < 0.0 ? 0.0 : out[c] > 1.0 ? 1.0
+                                                           : out[c];
+            }
+            sr_lut[p][i] = (unsigned short)(((unsigned)(out[0] * 31.0 + 0.5) << 11)
+                | ((unsigned)(out[1] * 63.0 + 0.5) << 5)
+                | (unsigned)(out[2] * 31.0 + 0.5));
+        }
+    }
+    sr_lut_bright = sl_vibrancy;
+    sr_lut_dark = sl_intensity;
+    sr_lut_vscale = vscale;
+}
+
+/* The beam sits on the first row of each group, so the rows after it fall away
+   and pick up again at the next line's beam. With scanlines off every row uses
+   the beam row's table, which is brightness alone. */
 static void sr_shade_frame(int const w, int const h, int const vscale,
     int const scanlines)
 {
+    int const groups = (scanlines && vscale <= SR_MAX_VSCALE) ? vscale : 1;
     int y, x;
 
-    if (sr_lut_bright != (int)sl_brightness || sr_lut_dark != (int)sl_intensity) {
-        sr_build_luts();
+    if (sr_lut_bright != (int)sl_vibrancy || sr_lut_dark != (int)sl_intensity
+        || sr_lut_vscale != groups) {
+        sr_build_luts(groups);
     }
     for (y = 0; y < h; y++) {
         unsigned short* const row = sr_pixels + (size_t)y * w;
-        unsigned short const* const lut
-            = (scanlines && (y % vscale) == vscale - 1) ? sr_lut_dim : sr_lut_lit;
+        unsigned short const* const lut = sr_lut[y % groups];
 
         for (x = 0; x < w; x++) {
             row[x] = lut[row[x]];
@@ -356,7 +410,7 @@ void sr_drawwin(void)
     {
         int const scanlines = (sl_intensity != 0 && !ntsc_drawn);
 
-        if (scanlines || sl_brightness) {
+        if (scanlines || sl_vibrancy) {
             sr_shade_frame(w, h, vscale, scanlines);
         }
     }

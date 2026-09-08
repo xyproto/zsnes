@@ -431,7 +431,7 @@ void GUIRestoreVars(void)
     CheckValueBounds(&hqFilter, 0, 1, 0, UB);
     CheckValueBounds(&hqFilterlevel, 2, 4, 2, UB);
     CheckValueBounds(&sl_intensity, 0, 100, 50, UB);
-    CheckValueBounds(&sl_brightness, 0, 100, 33, UB);
+    CheckValueBounds(&sl_vibrancy, 0, 100, 45, UB);
     CheckValueBounds(&scanlines, 0, 3, 0, UB);
     CheckValueBounds(&GrayscaleMode, 0, 1, 0, UB);
     CheckValueBounds(&Mode7HiRes16b, 0, 1, 0, UB);

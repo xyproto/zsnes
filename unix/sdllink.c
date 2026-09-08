@@ -69,6 +69,126 @@ typedef enum vidstate_e {
 
 /* VIDEO VARIABLES */
 SDL_Window* sdl_window = NULL;
+
+/* Monitor selection. SDL numbers displays afresh each run and the ids it hands
+   out do not survive a replug, so the setting is not a number: it is a short ID
+   derived from the display's name, which does follow the monitor. */
+static SDL_DisplayID* sdl_displays = NULL;
+static int sdl_display_count = 0;
+
+static void RefreshMonitors(void)
+{
+    SDL_free(sdl_displays);
+    sdl_displays = SDL_GetDisplays(&sdl_display_count);
+    if (!sdl_displays) {
+        sdl_display_count = 0;
+    }
+}
+
+u4 VideoMonitorCount(void)
+{
+    if (!sdl_displays) {
+        RefreshMonitors();
+    }
+    return (u4)sdl_display_count;
+}
+
+char const* VideoMonitorName(u4 const i)
+{
+    char const* name;
+
+    if (!sdl_displays) {
+        RefreshMonitors();
+    }
+    if ((int)i >= sdl_display_count) {
+        return "";
+    }
+    name = SDL_GetDisplayName(sdl_displays[i]);
+    return name ? name : "";
+}
+
+/* A short handle for a monitor, from its name with everything but letters and
+   digits taken out. Long names keep their head and their tail rather than
+   losing the tail to truncation: the model number lives at the end, and it is
+   what separates a KV-27 from a KV-29. A display reporting no usable name
+   falls back to its position in the list. */
+#define MONITOR_ID_MAX 12
+
+void VideoMonitorID(u4 const i, char* const out, u4 const len)
+{
+    char const* name = VideoMonitorName(i);
+    char full[64];
+    u4 n = 0;
+    u4 keep;
+
+    for (; *name && n + 1 < (u4)sizeof(full); name++) {
+        if ((*name >= '0' && *name <= '9') || (*name >= 'A' && *name <= 'Z')) {
+            full[n++] = *name;
+        } else if (*name >= 'a' && *name <= 'z') {
+            full[n++] = (char)(*name - 'a' + 'A');
+        }
+    }
+    full[n] = '\0';
+    if (n == 0) {
+        snprintf(out, len, "%u", (unsigned)(i + 1));
+        return;
+    }
+    keep = len - 1 < MONITOR_ID_MAX ? len - 1 : MONITOR_ID_MAX;
+    if (n <= keep) {
+        snprintf(out, len, "%.*s", (int)keep, full);
+    } else {
+        u4 const head = keep / 2;
+        u4 const tail = keep - head;
+
+        snprintf(out, len, "%.*s%.*s", (int)head, full, (int)tail, full + n - tail);
+    }
+}
+
+/* Which listed monitor the setting names, or the primary one when it names
+   none of them - a monitor that is unplugged today may be back tomorrow, so
+   the setting itself is left alone. */
+u4 VideoMonitorSelected(void)
+{
+    u4 const count = VideoMonitorCount();
+    u4 i;
+
+    for (i = 0; i < count; i++) {
+        char id[sizeof(MonitorID)];
+
+        VideoMonitorID(i, id, (u4)sizeof(id));
+        if (!strcmp(id, MonitorID)) {
+            return i;
+        }
+    }
+    return 0;
+}
+
+void VideoMonitorSelect(u4 const i)
+{
+    VideoMonitorID(i, MonitorID, (u4)sizeof(MonitorID));
+}
+
+/* Put a freshly made window on the chosen monitor. Called by each of the three
+   video paths right after SDL_CreateWindow, which in SDL3 cannot be given a
+   position of its own. */
+void PlaceWindowOnMonitor(SDL_Window* const win)
+{
+    SDL_DisplayID id;
+    int pos;
+
+    if (!win) {
+        return;
+    }
+    if (!sdl_displays) {
+        RefreshMonitors();
+    }
+    if (sdl_display_count <= 0) {
+        return;
+    }
+    id = sdl_displays[VideoMonitorSelected()];
+    pos = (int)SDL_WINDOWPOS_CENTERED_DISPLAY(id);
+    SDL_SetWindowPosition(win, pos, pos);
+}
 SDL_Surface* surface;
 int SurfaceLocking = 0;
 int SurfaceX, SurfaceY;

@@ -27,6 +27,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "../ui.h"
 #include "../video/copyvwin.h"
 #include "cfg.h"
+#include "sdllink.h"
 #include <stdint.h>
 
 void CheckFrame(void);
@@ -68,6 +69,7 @@ int sw_start(int width, int height, int req_depth, int FullScreen)
         SDL_SyncWindow(sdl_window); // settle the new size before mapping the mouse
     } else {
         sdl_window = SDL_CreateWindow("ZSNES", SurfaceX, SurfaceY, flags);
+        PlaceWindowOnMonitor(sdl_window);
         if (sdl_window == NULL) {
             fprintf(stderr, "Could not create %dx%d window: %s\n", SurfaceX, SurfaceY, SDL_GetError());
             return 0;

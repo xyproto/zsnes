@@ -24,6 +24,9 @@
 #include <string.h>
 
 #include "../c_init.h"
+#ifdef __UNIXSDL__
+#include "../unix/sdllink.h"
+#endif
 #include "../c_intrf.h"
 #include "../cpu/c_dsp.h"
 #include "../cpu/execute.h"
@@ -1059,7 +1062,7 @@ static void DisplayGUIVideoClick_notmodestab(s4 const eax, s4 const edx)
                     GUIHoldXlimR = eax + 100;
                 }
                 if (GUIClickArea(eax, edx, 23, 107, 23 + 100, 111)) {
-                    sl_brightness = eax - 23;
+                    sl_vibrancy = eax - 23;
                     GUIHold = 8;
                     GUIHoldYlim = GUIwinposy[5] + 109;
                     s4 const ebx = GUIwinposx[5] + 23;
@@ -1242,13 +1245,47 @@ static void DisplayGUIVideoClick_skipscrol(s4 const eax, s4 const edx)
     DisplayGUIVideoClick_notmodestab(eax, edx);
 }
 
+/* Offer every tab in `tabs` for clicking, starting at `x`, and return where the
+   next row of tabs would begin. The widths are the ones GUIDrawTabs lays out:
+   eight pixels of frame plus six a character, two between tabs. Working them
+   out from the labels keeps the click areas and the drawing from drifting
+   apart - they used to be a column of hand-written pixel pairs that had to be
+   re-derived by hand whenever a tab was added or renamed. */
+static s4 GUITabRowClick(s4 const eax, s4 const edx, u4* const tabs, s4 x,
+    u4* const others)
+{
+    char const* label = (char const*)tabs + 8; // XXX ugly cast, as in GUIDrawTabs
+    u4 const count = tabs[1];
+    u4 i;
+
+    for (i = 1; i <= count; i++) {
+        s4 const width = 8 + 6 * (s4)strlen(label);
+
+        GUIPTabClick(eax, edx, x, x + width + 1, i, tabs, others, (u4*)0);
+        x += width + 2;
+        label += strlen(label) + 1;
+    }
+    return x;
+}
+
 static void DisplayGUIVideoClick(s4 const eax, s4 const edx)
 {
-    GUIPTabClick(eax, edx, 0, 39, 1, GUIVideoTabs, GUIVntscTab, (s4*)0);
-    GUIPTabClick(eax, edx, 40, 91, 2, GUIVideoTabs, GUIVntscTab, (s4*)0);
+    s4 const next = GUITabRowClick(eax, edx, GUIVideoTabs, 0, GUIVntscTab);
+
     if (NTSCFilter == 1) {
-        GUIPTabClick(eax, edx, 92, 125, 1, GUIVntscTab, GUIVideoTabs, (s4*)0);
-        GUIPTabClick(eax, edx, 126, 184, 2, GUIVntscTab, GUIVideoTabs, (s4*)0);
+        GUITabRowClick(eax, edx, GUIVntscTab, next, GUIVideoTabs);
+    }
+
+    if (GUIVideoTabs[0] == 3) { // Monitors tab
+        u4 const count = VideoMonitorCount();
+        u4 i;
+
+        for (i = 0; i < count && i < 8u; i++) {
+            if (GUIClickArea(eax, edx, 18 + 1, (s4)(42 + i * 12) + 1, 18 + 7,
+                    (s4)(42 + i * 12) + 7)) {
+                VideoMonitorSelect(i); /* stores the ID, not the position */
+            }
+        }
     }
 
     if (GUIVideoTabs[0] == 1) { // SlideBar Implementation

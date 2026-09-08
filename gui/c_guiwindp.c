@@ -2,6 +2,7 @@
 #include <stdio.h>
 #ifdef __UNIXSDL__
 #include "../unix/audio.h"
+#include "../unix/sdllink.h"
 #endif
 #include <string.h>
 
@@ -998,6 +999,9 @@ static char const* NTSCslidText(void const* const p1) // slider var, text
     return GUIVideoTextCD3;
 }
 
+/* Which monitor row draws as filled; recomputed from MonitorID each redraw. */
+static u1 monitorrow;
+
 void DisplayGUIVideo(void)
 {
     // Check features
@@ -1079,6 +1083,31 @@ void DisplayGUIVideo(void)
     }
 
     // Filters tab
+    if (GUIVideoTabs[0] == 3) { // Monitors tab
+        /* Listed by the short ID the setting stores, so what is in the config
+           can be matched against what is on screen. The filled row is worked
+           out from that ID each time rather than kept as a number, because SDL
+           renumbers displays between runs. */
+        u4 const count = VideoMonitorCount();
+        u4 i;
+
+        monitorrow = (u1)VideoMonitorSelected();
+        GUIDisplayTextY(5, 13, 30, "OPEN ON MONITOR:");
+        if (count == 0) {
+            GUIDisplayText(5, 18, 42, "NONE REPORTED");
+        }
+        for (i = 0; i < count && i < 8u; i++) {
+            char id[16], line[34];
+
+            VideoMonitorID(i, id, (u4)sizeof(id));
+            snprintf(line, sizeof(line), "%-10.10s %.20s", id, VideoMonitorName(i));
+            GUIDisplayButtonHoleTu(5, 18, (u4)(42 + i * 12), &monitorrow, (u4)i,
+                line, 0);
+        }
+        GUIDisplayText(5, 13, 150, "TAKES EFFECT ON SET,");
+        GUIDisplayText(5, 13, 160, "IN THE MODES TAB.");
+    }
+
     if (GUIVideoTabs[0] == 2) {
         // Video Filters
         {
@@ -1137,8 +1166,8 @@ void DisplayGUIVideo(void)
                    goes darker; this puts the light back. Laid out like the
                    scanlines pair above: label, then the bar under it and a
                    little to the right. */
-                GUIDisplayTextY(5, 13, 99, "BRIGHTNESS:");
-                GUIDrawSlider(5, 23, 100, 109, &sl_brightness, glscslidSet, glscslidText);
+                GUIDisplayTextY(5, 13, 99, "VIBRANCY:");
+                GUIDrawSlider(5, 23, 100, 109, &sl_vibrancy, glscslidSet, glscslidText);
             } else {
                 // Scanlines
                 if (GUIDSIZE[cvidmode] != 0) {

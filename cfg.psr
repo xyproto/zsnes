@@ -284,12 +284,20 @@ hqFilterlevel db 3
 scanlines db 0
 @ OpenGL scanlines intensity [0..100]
 sl_intensity db 50
-@ Screen brightness boost [0..100], in percent, applied after the filters.
-@ Scanlines darken the picture by dimming one row in every group, so this
-@ lifts it back: measured over a frame, 50% scanlines cost about 17% of the
-@ brightness and a boost of 33 returns it to within 3% of the unfiltered
-@ picture. It saturates rather than wrapping, so already-bright pixels stay put.
-sl_brightness db 33
+@ Which monitor to open on, as the short ID shown in the Monitors tab. SDL
+@ renumbers displays every run and the ids it hands out do not survive a
+@ replug, but the name follows the monitor, so the ID is that name reduced to
+@ letters and digits: "DELLU2412M", "HDMI1". Empty, or a monitor that is not
+@ plugged in, opens on the primary one without forgetting the choice.
+MonitorID times 16 db ""
+
+@ Vibrancy [0..100]. Scanlines take light out of the picture; this puts it
+@ back as a gamma lift plus a little saturation, rather than as a plain
+@ multiply, which would flatten anything bright into white and drain the
+@ colour out of it. Measured over a frame, 50% scanlines at 3x cost about 12%
+@ of the brightness and 45 returns it, while a bright colour keeps essentially
+@ all of its saturation where a multiply of the same strength loses a tenth.
+sl_vibrancy db 45
 
 @
 @ Enable Grayscale Mode (0 = NO, 1 = Yes) - don't enable this for other than nostalgia
