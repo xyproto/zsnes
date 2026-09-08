@@ -288,7 +288,10 @@ static int selftest_buf(const char* name, void* p, size_t n)
 static int selftest_gap(const char* name, const void* a, const void* b,
     ptrdiff_t want)
 {
-    ptrdiff_t got = (const char*)b - (const char*)a;
+    /* Through uintptr_t on purpose: these point into different objects, and
+       subtracting such pointers directly is undefined even though the distance
+       is exactly what this checks. */
+    ptrdiff_t got = (ptrdiff_t)((uintptr_t)b - (uintptr_t)a);
 
     if (got == want) {
         return (0);

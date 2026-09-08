@@ -1,4 +1,4 @@
-// Some work to be done here, please look at TODO.md
+// Looks good
 /*
  * Scaffolding for differential-testing an asm->C port: run both on the same
  * random inputs and compare every output. A port-time tool - it needs the

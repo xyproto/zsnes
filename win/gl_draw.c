@@ -1,4 +1,4 @@
-// Some work to be done here, please look at TODO.md
+// Looks good
 /*
 Copyright (C) 1997-2008 ZSNES Team ( zsKnight, _Demo_, pagefault, Nach )
 

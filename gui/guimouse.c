@@ -631,6 +631,7 @@ static void GUIPTabClick(s4 const eax, s4 const edx, s4 const p1, s4 const p2, u
                 break;
             *p = 0;
         }
+        va_end(ap);
         GUIFreshInputSelect = 1;
     }
 }

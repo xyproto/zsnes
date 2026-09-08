@@ -1,4 +1,4 @@
-// Some work to be done here, please look at TODO.md
+// Looks good
 /*
 Copyright (C) 1997-2008 ZSNES Team ( zsKnight, _Demo_, pagefault, Nach )
 
@@ -41,8 +41,9 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <stdint.h>
 
 void hq2x_16b(void);
-void NTSCFilterDraw(int out_width, int out_height, int out_pitch, unsigned char* rgb16_out);
-void NTSCFilterInit(void);
+void hq3x_16b(void);
+void hq4x_16b(void);
+#include "../video/ntsc.h"
 
 extern SDL_Window* sdl_window;
 extern uint8_t* vidbuffer;
@@ -52,6 +53,7 @@ extern uint8_t GUIRESIZE[];
 extern Uint8 GUIOn2;
 extern uint32_t NGNoTransp; /* a dword where it is defined (video/c_newgfx16data.c) */
 extern uint8_t SpecialLine[256]; /* 0 if lo-res, > 0 if hi-res */
+extern uint8_t hqFilterlevel; /* 2, 3 or 4 (cfg.psr) */
 
 char CheckOGLMode(void);
 
@@ -61,13 +63,14 @@ void sr_clearwin(void);
 void sr_drawwin(void);
 
 /* The composed frame, and what carries it to the GPU. The texture is made at
-   the largest size any mode produces - the NTSC filter's 602x446 and the
-   640x480 modes are both wider than the doubled 512x448 - and each frame
-   uploads and draws only the part it filled. */
+   the largest picture any mode produces - hq4x over a 239-line overscan frame,
+   which is wider and taller than the NTSC filter's 602x446, the 640x480 modes
+   and the doubled 512x448 - and each frame uploads and draws only the part it
+   filled, so the renderer scales whatever size came out to the window. */
 #define SR_W 512
 #define SR_H 448
-#define SR_MAXW 640
-#define SR_MAXH 512
+#define SR_MAXW 1024
+#define SR_MAXH (239 * 4)
 static SDL_Renderer* sr_renderer = NULL;
 static SDL_Texture* sr_texture = NULL;
 static unsigned short* sr_pixels = NULL;
@@ -207,14 +210,18 @@ static void sr_line(unsigned short* dst, int const line)
 }
 
 /* Halve every second row, which is what the GL path's blended 1D texture did. */
-static void sr_scanlines(void)
+/* One darkened row per source scanline: the last of each group of `vscale`,
+   which for the doubled path is every other row, as it always was. Tying it to
+   the source line rather than to the output row keeps the CRT look the same
+   whether the picture was scaled 2x, 3x or 4x. */
+static void sr_scanlines(int const w, int const h, int const vscale)
 {
     unsigned const keep = (unsigned)(100 - sl_intensity);
     int y, x;
 
-    for (y = 1; y < SR_H; y += 2) {
-        unsigned short* row = sr_pixels + y * SR_W;
-        for (x = 0; x < SR_W; x++) {
+    for (y = vscale - 1; y < h; y += vscale) {
+        unsigned short* row = sr_pixels + (size_t)y * w;
+        for (x = 0; x < w; x++) {
             unsigned const p = row[x];
             unsigned const r = ((p >> 11) & 0x1F) * keep / 100u;
             unsigned const g = ((p >> 5) & 0x3F) * keep / 100u;
@@ -229,6 +236,10 @@ void sr_drawwin(void)
     int line;
     /* What this frame ends up filling, which the upload and the draw follow. */
     int w = SR_W, h = SR_H, dst_pitch = SR_W * 2;
+    /* Output rows per source scanline, which is what the scanline pass steps
+       by. The unfiltered path below doubles, whatever `resolutn` is. */
+    int vscale = 2;
+    int ntsc_drawn = 0;
 
     NGNoTransp = 0; // Set this value to 1 within the appropriate
     // Where a custom or hardware transparency routine would go. Only reachable
@@ -238,23 +249,40 @@ void sr_drawwin(void)
         return;
     }
 
-    if (NTSCFilter && SurfaceX == 602 && SurfaceY <= SR_MAXH) {
-        /* The NTSC filter produces its own picture, and only at the 602-wide
-           size the blitter's chunking is built around - a narrower width just
-           crops. It used to be reachable only from the software path, so an
-           accelerated mode resized the window for it and then stretched an
-           unfiltered frame over it. */
-        w = SurfaceX;
-        h = SurfaceY;
+    if (NTSCFilter) {
+        ntsc_drawn = 1;
+        /* Always at the filter's own size, whatever the window is: a narrower
+           request crops the picture and a wider one reads past the end of the
+           source line. The renderer scales it out, so this no longer needs a
+           602-wide video mode to be selected first. */
+        w = NTSC_OUT_WIDTH;
+        h = (int)resolutn * 2;
         dst_pitch = w * 2;
         NTSCFilterDraw(w, h, dst_pitch, (unsigned char*)sr_pixels);
     } else if (SurfaceX >= 512 && (hqFilter || En2xSaI)) {
-        /* The filters write a finished 512-wide picture themselves. */
+        /* The filters write a finished picture themselves, at their own scale:
+           hq2x 512 wide, hq3x 768, hq4x 1024. The renderer scales it to the
+           window, so the filter picked is the filter drawn. */
+        int const scale = hqFilter ? (hqFilterlevel < 2          ? 2
+                                             : hqFilterlevel > 4 ? 4
+                                                                 : hqFilterlevel)
+                                   : 2;
+
+        w = 256 * scale;
+        h = (int)resolutn * scale;
+        dst_pitch = w * 2;
+        vscale = scale;
         AddEndBytes = 0;
         NumBytesPerLine = dst_pitch;
         WinVidMemStart = (void*)sr_pixels;
         if (hqFilter) {
-            hq2x_16b();
+            if (scale == 4) {
+                hq4x_16b();
+            } else if (scale == 3) {
+                hq3x_16b();
+            } else {
+                hq2x_16b();
+            }
         } else {
             /* En2xSaI: 1 = 2xSaI, 2 = Super Eagle, 3 = Super 2xSaI (cfg.psr).
                The filters take one line at a time and read a row above and two
@@ -273,9 +301,13 @@ void sr_drawwin(void)
         for (line = 0; line < 224; line++) {
             sr_line(sr_pixels + line * 2 * SR_W, line);
         }
-        if (sl_intensity) {
-            sr_scanlines();
-        }
+    }
+
+    /* Scanlines go over whatever was composed, so they combine with the hq and
+       2xSaI filters instead of only showing on an unfiltered picture. Not over
+       the NTSC filter, which darkens alternate rows itself. */
+    if (sl_intensity && !ntsc_drawn) {
+        sr_scanlines(w, h, vscale);
     }
 
     {

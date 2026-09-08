@@ -142,8 +142,10 @@ $(VCACHE): $(VCACHE_SRC) zstest.h ../video/tilecache.c
 	$(CC) $(CFLAGS) -ffunction-sections -fdata-sections $(VCACHE_SRC) ../video/tilecache.c $(NOPIE) $(GCSECT) -o $(VCACHE)
 
 # c_hqx.c needs the generated cfg.h, which lives in the parent build dir.
+# hqx_test.c includes video/c_hqx.c rather than linking it, so the tests can
+# reach the interpolation helpers, which are static and carry the filter maths.
 $(HQX): $(HQX_SRC) zstest.h ../video/c_hqx.c $(PBUILD)/zpath.o
-	$(CC) $(CFLAGS) -I$(PBUILD) $(HQX_SRC) ../video/c_hqx.c $(NOPIE) -o $(HQX)
+	$(CC) $(CFLAGS) -I$(PBUILD) $(HQX_SRC) $(NOPIE) -o $(HQX)
 
 $(SPRITES): $(SPRITES_SRC) zstest.h ../video/sprites.c
 	$(CC) $(CFLAGS) -ffunction-sections -fdata-sections $(SPRITES_SRC) ../video/sprites.c $(NOPIE) $(GCSECT) -o $(SPRITES)

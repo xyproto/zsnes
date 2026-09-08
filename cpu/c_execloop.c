@@ -175,10 +175,11 @@ static void applycheats(void)
     u4 i = 0;
 
     do {
-        /* The assembly probed the flags byte of the *previous* entry, which on
-           the first pass reads the 28 bytes in front of the array. Kept: the
-           padding is part of the block and games rely on the result. */
-        if (!(cheatdata[i] & 5) && !(cheatdata[i - 28] & 0x80)) {
+        /* The assembly probes the flags byte of the *previous* entry, which on
+           the first pass is the 28 zero bytes gui/c_gui_data.c pins in front of
+           the array as cheatdataprev. The index is signed on purpose: `i` is
+           unsigned, so i - 28 would wrap to about 4G rather than step back. */
+        if (!(cheatdata[i] & 5) && !(cheatdata[(s4)i - 28] & 0x80)) {
             if (cheatdata[i] & 0x80) {
                 if (numcheat != 1) {
                     u1 const val = memr8(cheatdata[i + 4 + 28], peek16(cheatdata + i + 2 + 28));

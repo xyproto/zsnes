@@ -271,17 +271,21 @@ FILE* safe_popen(char* command, const char* mode)
     if (mode && (*mode == 'r' || *mode == 'w') && !pipe(filedes)) {
         pid_t childpid = parent_pause_fork();
         if (IS_PARENT(childpid)) {
+            /* Each descriptor is closed once: -1 marks the ones already dealt
+               with here, so the pair at the end does not close them a second
+               time. A stray close can take out a descriptor another thread has
+               just opened onto the same number. */
             FILE* fp;
-            if (*mode == 'r') {
-                close(filedes[1]);
-                fp = fdopen(filedes[0], "r");
-            } else {
-                close(filedes[0]);
-                fp = fdopen(filedes[1], "w");
-            }
+            int const keep = (*mode == 'r') ? 0 : 1;
 
+            close(filedes[!keep]);
+            filedes[!keep] = -1;
+            fp = fdopen(filedes[keep], (*mode == 'r') ? "r" : "w");
             if (fp) {
+                /* fdopen owns it now; safe_pclose's fclose releases it. */
                 struct fp_pid_link* link = &fp_pids;
+
+                filedes[keep] = -1;
                 while (link->next) {
                     link = link->next;
                 }
@@ -313,8 +317,12 @@ FILE* safe_popen(char* command, const char* mode)
             }
             close_child(childpid);
         }
-        close(filedes[0]);
-        close(filedes[1]);
+        if (filedes[0] >= 0) {
+            close(filedes[0]);
+        }
+        if (filedes[1] >= 0) {
+            close(filedes[1]);
+        }
     }
     return (0);
 }

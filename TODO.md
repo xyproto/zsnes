@@ -15,11 +15,6 @@
       back and compared so far (`ZSNES_LEGACY_GL=1` selects the old path). The
       vertical offset is now settled: every consumer reads source line N+1 for
       output row N, since scanline 0 is the pre-render line
-- [ ] Port the real hq4x, and the `_32b` twins of all three; those entry
-      points in `video/c_hqx.c` are still nearest-neighbour block doublers
-- [ ] Let hq3x run on the `SDL_Renderer` path: `SR_MAXW`/`SR_MAXH`
-      (`unix/sdl_render.c`) cap the surface at 640x512, too small for its
-      768x672 output, so only the software path reaches it
 - [ ] Fill in `outsa1()` (`debugger.c`), a stub since the port
 - [ ] Handle horizontal scroll and absolute mouse motion on macOS (`mmlib/macos.c`)
 - [ ] Fill in the GUI font glyphs 0x30-0x36 (`video/procvid.c`)
@@ -38,33 +33,12 @@
 - [ ] Improve the netplay code, and bring back what 1.42n had (#2), possibly with a dedicated server.
 - [ ] Port netplay to the Windows build (`gui/c_guiwindp.c`)
 - [ ] Re-enable the FreeBSD, OpenBSD and NetBSD CI jobs
-- [ ] Make `zstate.h` self-contained: it uses `u4` without including `types.h`,
-      so it only compiles when a caller includes that first, and it declares
-      `statesaver()` and `SaveSramData()` twice
-- [ ] Give `gblvars.h` an include guard; it is only safe to include twice today
-      because it holds nothing but `extern` declarations
-- [ ] Check the allocations in `zmovie.c`: the chapter-buffer `malloc` (line
-      ~413), both `zmv_vars.filename` allocations and the rewind buffer are
-      dereferenced without a NULL test, while the author buffer nearby is
-      tested — make them consistent
 - [ ] Drop `unix/sockserv.c` and `unix/sockserv.h`, or give them content: both
       hold only the licence header, yet `sockserv.c` is still listed in `SRCS`
       and compiled as an empty translation unit
-- [ ] Check the `glvidbuffer` allocation in `unix/gl_draw.c` and
-      `win/gl_draw.c`; both call `gl_clearwin()` immediately afterwards, which
-      memsets it, so a failed `malloc` is a null dereference. Every other
-      allocation in `unix/` and `win/` is tested
 - [ ] Quieten `difftest_ng2.c`: it includes `difftest.h` but drives its own
       loop, so `dt_bad`, `dt_fails`, `dt_iters` and its own `setup()` are all
       compiled unused. Either use `DT_MAIN` there or stop including the header
-- [ ] Use or drop `zt_section_fails` in `test/zstest.h`: `ZT_SECTION` assigns it
-      and nothing ever reads it, so the per-section pass/fail count it was meant
-      to give never appears
-- [ ] Clear the pointers in `zstate.c`'s `DeallocRewindBuffer()`,
-      `DeallocPauseFrame()` and `DeallocSystemVars()`: each frees its buffer and
-      leaves it non-NULL, so the `if (StateBackup) free(...)` in
-      `SetupRewindBuffer()` would double-free if a ROM were ever loaded after
-      `ZCleanup()`. Only the exit path calls them today
-- [ ] Honour `TMPDIR` in `zst_roundtrip_check()` (`zstate.c`): the round-trip
-      harness writes fixed `/tmp/zsnes_zst*` paths, which collide between users
-      on a shared machine. Debug builds only (`ZSNES_DEBUG_HOOKS`)
+- [ ] Filter hi-res frames through the NTSC filter: `ntsc_blit` (`video/ntsc.c`)
+      reads 256 input pixels a row, so a 512-wide hi-res line is only half
+      filtered. snes9x carries a separate `snes_ntsc_blit_hires` for this

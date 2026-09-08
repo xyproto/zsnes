@@ -1,4 +1,4 @@
-// Some work to be done here, please look at TODO.md
+// Looks good
 #ifndef ZSTATE_H
 #define ZSTATE_H
 

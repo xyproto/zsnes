@@ -2,9 +2,8 @@
 #ifndef C_HQX_H
 #define C_HQX_H
 
-/* hq2x_16b and hq3x_16b are the real filters, ported from MaxSt's assembly.
-   The 32-bit twins and hq4x are still nearest-neighbour block scalers; see
-   TODO.md. */
+/* hq2x, hq3x and hq4x are MaxSt's filters, ported from the original assembly;
+   each rule set serves both depths. See video/c_hqx.c and tools/hqxport.py. */
 void hq2x_16b(void);
 void hq2x_32b(void);
 void hq3x_16b(void);

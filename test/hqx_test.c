@@ -19,11 +19,13 @@
 
 #define W 256
 #define H 224
-#define SRC_LINE 288 /* 256 drawn plus the 32-pixel skip */
+/* SRC_LINE comes from video/c_hqx.c, included below. */
 #define DSTW 512
 #define PITCH (DSTW * 2)
 #define DSTW3 768
 #define PITCH3 (DSTW3 * 2)
+#define DSTW4 1024
+#define PITCH4 (DSTW4 * 2)
 
 /* Everything video/c_hqx.c reaches for; the emulator owns these normally. */
 u1* vidbuffer;
@@ -43,8 +45,9 @@ u1 hqFilter;
 u1 FilteredGUI;
 u1 newengen;
 
-void hq2x_16b(void);
-void hq3x_16b(void);
+/* Included, not linked: the interpolation helpers below are static, and they
+   are where the filter's arithmetic lives. */
+#include "../video/c_hqx.c"
 
 static u2* src_pixels; /* the 256 drawn pixels of each line */
 static u1* dst;
@@ -77,8 +80,8 @@ static void setup(void)
 {
     vidbuffer = calloc(1, 0x100000);
     src_pixels = (u2*)(vidbuffer + 16 * 2 + 256 * 2 + 32 * 2);
-    /* Large enough for the 3x surface too, plus a guard band. */
-    dst = calloc(1, (size_t)PITCH3 * H * 3 + 4096);
+    /* Large enough for the 3x surface at 32bpp too, plus a guard band. */
+    dst = calloc(1, (size_t)DSTW4 * 4 * H * 4 + 4096);
     WinVidMemStart = dst;
     NumBytesPerLine = PITCH;
     AddEndBytes = 0;
@@ -328,6 +331,254 @@ static void test3_no_overrun(void)
     ZT_CHECK(clean);
 }
 
+/* A pattern with plenty of edges, so the rule set really engages rather than
+   falling through to the flat-field case. */
+static void fill_edges(void)
+{
+    for (u4 y = 0; y < H; y++)
+        for (u4 x = 0; x < W; x++)
+            src_pixels[y * SRC_LINE + x]
+                = (u2)(((x * 7 + y * 13) & 3) == 0 ? 0x001F
+                        : ((x ^ y) & 4)            ? 0xF800
+                                                   : 0x07E0);
+}
+
+/* The 16- and 32-bit entry points share one rule set, so the 32-bit output
+   must be the 16-bit output put through the same 16->32bit table. Catches a
+   32-bit path that quietly replicates pixels instead of filtering. */
+static void check_32_matches_16(char const* what, void (*f16)(void),
+    void (*f32)(void), u4 const outw, u4 const outh)
+{
+    u4 const* const conv = (u4 const*)BitConv32Ptr;
+    size_t const bytes16 = (size_t)outw * 2 * outh;
+    u2* snap = malloc(bytes16);
+
+    ZT_SECTION(what);
+    setup();
+    NumBytesPerLine = outw * 2;
+    fill_edges();
+    f16();
+    memcpy(snap, dst, bytes16);
+
+    memset(dst, 0, (size_t)outw * 4 * outh);
+    NumBytesPerLine = outw * 4;
+    f32();
+
+    int same = 1, filtered = 0;
+    for (u4 y = 0; y < outh && same; y++)
+        for (u4 x = 0; x < outw; x++) {
+            u2 const p16 = snap[(size_t)y * outw + x];
+            u4 const p32 = ((u4 const*)(dst + (size_t)y * outw * 4))[x];
+
+            if (p32 != conv[p16]) {
+                same = 0;
+                break;
+            }
+        }
+    /* Guard against a vacuous pass: if the source really was filtered, some
+       output pixel differs from the source pixel it came from. */
+    for (u4 y = 0; y < outh && !filtered; y++)
+        for (u4 x = 0; x < outw; x++)
+            if (snap[(size_t)y * outw + x]
+                != src_pixels[(y / (outh / H)) * SRC_LINE + x / (outw / W)]) {
+                filtered = 1;
+                break;
+            }
+    ZT_CHECK(same);
+    ZT_CHECK(filtered);
+    free(snap);
+}
+
+static void test_32b_matches_16b(void)
+{
+    check_32_matches_16("hq2x_32b runs the same rules as hq2x_16b", hq2x_16b,
+        hq2x_32b, DSTW, H * 2);
+}
+
+static void test3_32b_matches_16b(void)
+{
+    check_32_matches_16("hq3x_32b runs the same rules as hq3x_16b", hq3x_16b,
+        hq3x_32b, DSTW3, H * 3);
+}
+
+/* Both 32-bit entry points must honour the same two guards the 16-bit ones do. */
+static void test_32b_guards(void)
+{
+    u4 const* const conv = (u4 const*)BitConv32Ptr;
+
+    ZT_SECTION("hq2x_32b: curblank 0x40 writes nothing");
+    setup();
+    NumBytesPerLine = DSTW * 4;
+    fill(0x1234);
+    memset(dst, 0xAB, (size_t)DSTW * 4 * H * 2);
+    curblank = 0x40;
+    hq2x_32b();
+    int clean = 1;
+    for (size_t i = 0; i < (size_t)DSTW * 4 * H * 2; i++)
+        if (dst[i] != 0xAB)
+            clean = 0;
+    ZT_CHECK(clean);
+
+    ZT_SECTION("hq2x_32b: filter off replicates each pixel 2x2");
+    setup();
+    NumBytesPerLine = DSTW * 4;
+    fill_edges();
+    hqFilter = 0;
+    hq2x_32b();
+    int doubled = 1;
+    for (u4 y = 0; y < H && doubled; y++)
+        for (u4 x = 0; x < W; x++) {
+            u4 const want = conv[src_pixels[y * SRC_LINE + x]];
+            u4 const* const r0 = (u4 const*)(dst + (size_t)(y * 2) * DSTW * 4);
+            u4 const* const r1 = (u4 const*)(dst + (size_t)(y * 2 + 1) * DSTW * 4);
+
+            if (r0[x * 2] != want || r0[x * 2 + 1] != want || r1[x * 2] != want
+                || r1[x * 2 + 1] != want) {
+                doubled = 0;
+                break;
+            }
+        }
+    ZT_CHECK(doubled);
+}
+
+static void test4_flat(void)
+{
+    ZT_SECTION("hq4x: a flat field survives the filter unchanged");
+    setup();
+    NumBytesPerLine = PITCH4;
+    fill(0x4A69);
+    hq4x_16b();
+    int ok = 1;
+    for (u4 y = 0; y < H * 4; y++)
+        for (u4 x = 0; x < DSTW4; x++)
+            if (((u2*)(dst + (size_t)y * PITCH4))[x] != 0x4A69)
+                ok = 0;
+    ZT_CHECK(ok);
+}
+
+static void test4_filter_off_quadruples(void)
+{
+    ZT_SECTION("hq4x: hqFilter 0 falls back to pixel quadrupling");
+    setup();
+    NumBytesPerLine = PITCH4;
+    fill_edges();
+    hqFilter = 0;
+    hq4x_16b();
+    int ok = 1;
+    for (u4 y = 0; y < H && ok; y++)
+        for (u4 x = 0; x < W; x++) {
+            u2 const want = src_pixels[y * SRC_LINE + x];
+
+            for (unsigned ry = 0; ry < 4 && ok; ry++)
+                for (unsigned rx = 0; rx < 4; rx++)
+                    if (((u2*)(dst + (size_t)(y * 4 + ry) * PITCH4))[x * 4 + rx]
+                        != want) {
+                        ok = 0;
+                        break;
+                    }
+        }
+    ZT_CHECK(ok);
+}
+
+/* The rule set must actually blend: on an edge, some output pixel is neither
+   of the two source colours. A block scaler cannot produce that. */
+static void test4_edge_interpolates(void)
+{
+    ZT_SECTION("hq4x: an edge is interpolated, within the two colours it spans");
+    setup();
+    NumBytesPerLine = PITCH4;
+    u2 const a = 0x0000, b = 0xFFFF;
+    /* Diagonal: hqx keeps an axis-aligned edge sharp by design and only
+       interpolates across a slope, so a vertical edge proves nothing here. */
+    for (u4 y = 0; y < H; y++)
+        for (u4 x = 0; x < W; x++)
+            src_pixels[y * SRC_LINE + x] = (x + y < 128) ? b : a;
+    hq4x_16b();
+    int blended = 0, inrange = 1;
+    for (u4 y = 0; y < H * 4; y++)
+        for (u4 x = 0; x < DSTW4; x++) {
+            u2 const p = ((u2*)(dst + (size_t)y * PITCH4))[x];
+
+            if (p != a && p != b)
+                blended = 1;
+            if (((p >> 11) & 0x1Fu) > 0x1Fu || ((p >> 5) & 0x3Fu) > 0x3Fu)
+                inrange = 0;
+        }
+    ZT_CHECK(blended);
+    ZT_CHECK(inrange);
+}
+
+static void test4_no_overrun(void)
+{
+    ZT_SECTION("hq4x: writes stay inside the 1024x896 picture");
+    setup();
+    NumBytesPerLine = PITCH4;
+    size_t const used = (size_t)PITCH4 * H * 4;
+    memset(dst + used, 0x5A, 4096);
+    fill_edges();
+    hq4x_16b();
+    int clean = 1;
+    for (size_t i = 0; i < 4096; i++)
+        if (dst[used + i] != 0x5A)
+            clean = 0;
+    ZT_CHECK(clean);
+}
+
+static void test4_32b_matches_16b(void)
+{
+    check_32_matches_16("hq4x_32b runs the same rules as hq4x_16b", hq4x_16b,
+        hq4x_32b, DSTW4, H * 4);
+}
+
+/* The interpolation helpers carry the filter's arithmetic: which of the two or
+   three colours a blended pixel leans towards, and by how much. Nothing else
+   in this file pins them - the structural tests pass with any weights, and
+   tools/hqxport.py only checks which helper each rule calls. So blend black
+   with white and check where the result lands, which fixes each weight and
+   catches a swapped pair.
+
+   Weights, from the assembly video/hq*.asm: interp1 (3a+b)/4, interp2
+   (2a+b+c)/4, interp3 (7a+b)/8, interp5 (a+b)/2, interp6 (5a+2b+c)/8,
+   interp7 (6a+b+c)/8, interp8 (5a+3b)/8, interp9 (2a+3b+3c)/8 and
+   interp10 (14a+b+c)/16. */
+static void check_blend(char const* what, u2 got, double b_share)
+{
+    /* Red is the top 5 bits, so a share of white lands at share * 31. */
+    unsigned const r = (got >> 11) & 0x1Fu;
+    double const want = b_share * 31.0;
+
+    if (r + 1.0 < want || r > want + 1.0) {
+        fprintf(stderr, "    FAIL [%s]: red=%u, expected about %.1f\n", what, r, want);
+        zt_failures++;
+    } else {
+        zt_passes++;
+    }
+}
+
+static void test_interp_weights(void)
+{
+    u2 const a = 0x0000, b = 0xFFFF; /* all-black and all-white */
+
+    ZT_SECTION("interpolation helpers weight their inputs as the asm did");
+    setup();
+    /* Two arguments: the second's share of the result. */
+    check_blend("interp1 (3a+b)/4", interp1(a, b), 1.0 / 4.0);
+    check_blend("interp3 (7a+b)/8", interp3(a, b), 1.0 / 8.0);
+    check_blend("interp5 (a+b)/2", interp5(a, b), 1.0 / 2.0);
+    check_blend("interp8 (5a+3b)/8", interp8(a, b), 3.0 / 8.0);
+    /* Three arguments, with the last two the same colour. */
+    check_blend("interp2 (2a+b+c)/4", interp2(a, b, b), 2.0 / 4.0);
+    check_blend("interp6 (5a+2b+c)/8", interp6(a, b, b), 3.0 / 8.0);
+    check_blend("interp7 (6a+b+c)/8", interp7(a, b, b), 2.0 / 8.0);
+    check_blend("interp9 (2a+3b+3c)/8", interp9(a, b, b), 6.0 / 8.0);
+    check_blend("interp10 (14a+b+c)/16", interp10(a, b, b), 2.0 / 16.0);
+
+    ZT_SECTION("an interpolation of one colour with itself is that colour");
+    ZT_CHECK(interp1(0x4A69, 0x4A69) == 0x4A69);
+    ZT_CHECK(interp5(0x4A69, 0x4A69) == 0x4A69);
+    ZT_CHECK(interp2(0x4A69, 0x4A69, 0x4A69) == 0x4A69);
+}
+
 int main(void)
 {
     printf("ZSNES2 hqx filter tests\n");
@@ -345,6 +596,17 @@ int main(void)
     test3_filter_off_triples();
     test3_edge_interpolates();
     test3_no_overrun();
+
+    test4_flat();
+    test4_filter_off_quadruples();
+    test4_edge_interpolates();
+    test4_no_overrun();
+
+    test_32b_matches_16b();
+    test3_32b_matches_16b();
+    test4_32b_matches_16b();
+    test_interp_weights();
+    test_32b_guards();
 
     ZT_RESULTS();
 }

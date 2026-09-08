@@ -121,6 +121,11 @@ static int Png_Dump_FP(FILE* fp, unsigned short width, unsigned short height, un
 
                 // Allocate an array of scanline pointers
                 row_pointers = (png_bytep*)malloc(height * sizeof(png_bytep));
+                if (!row_pointers) {
+                    png_destroy_write_struct(&png_ptr, &info_ptr);
+                    fclose(fp);
+                    return false;
+                }
                 for (i = 0; i < height; i++) {
 #ifdef __UPSIDE_DOWN__
                     // invert to normal image format.
@@ -164,10 +169,15 @@ void Grab_PNG_Data(void)
 {
     char* filename = generate_image_filename("png");
     if (filename) {
-        unsigned char* DBits = (unsigned char*)malloc(SNAP_HEIGHT * SNAP_WIDTH * PIXEL_SIZE);
+        /* SNAP_HEIGHT is `resolutn`, so hold it: a zero would make the
+           `while (y--)` below wrap and run four billion times. */
+        unsigned int const lines = SNAP_HEIGHT;
+        unsigned char* DBits = lines
+            ? (unsigned char*)malloc(lines * SNAP_WIDTH * PIXEL_SIZE)
+            : NULL;
         if (DBits) {
             // These are the variables used to perform the 24-bit conversion
-            unsigned int y = SNAP_HEIGHT, x;
+            unsigned int y = lines, x;
             // We can fill the array in any order, so might as well optimize loops
             while (y--) {
                 for (x = SNAP_WIDTH; x--;) {
@@ -177,7 +187,7 @@ void Grab_PNG_Data(void)
                 }
             }
             // compress and write the PNG
-            Png_Dump(filename, SNAP_WIDTH, SNAP_HEIGHT, DBits, false);
+            Png_Dump(filename, SNAP_WIDTH, lines, DBits, false);
             free(DBits);
         }
         free(filename);
@@ -187,9 +197,11 @@ void Grab_PNG_Data(void)
 // Debug: write current vidbuffer as a full-resolution PNG to an absolute path.
 void Grab_PNG_Data_Path(const char* path)
 {
-    unsigned char* DBits = (unsigned char*)malloc(SNAP_HEIGHT * SNAP_WIDTH * PIXEL_SIZE);
+    unsigned int const lines = SNAP_HEIGHT;
+    unsigned char* DBits
+        = lines ? (unsigned char*)malloc(lines * SNAP_WIDTH * PIXEL_SIZE) : NULL;
     if (DBits) {
-        unsigned int y = SNAP_HEIGHT, x;
+        unsigned int y = lines, x;
         while (y--) {
             for (x = SNAP_WIDTH; x--;) {
                 DBits[PIXEL_SIZE * (y * SNAP_WIDTH + x)] = (PIXEL & 0xF800) >> 8;
@@ -197,7 +209,7 @@ void Grab_PNG_Data_Path(const char* path)
                 DBits[PIXEL_SIZE * (y * SNAP_WIDTH + x) + 2] = (PIXEL & 0x001F) << 3;
             }
         }
-        Png_Dump_FP(fopen(path, "wb"), SNAP_WIDTH, SNAP_HEIGHT, DBits, false);
+        Png_Dump_FP(fopen(path, "wb"), SNAP_WIDTH, lines, DBits, false);
         free(DBits);
     }
 }

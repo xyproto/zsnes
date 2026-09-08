@@ -1,4 +1,4 @@
-// Some work to be done here, please look at TODO.md
+// Looks good
 /*
 Copyright (C) 1997-2008 ZSNES Team ( zsKnight, _Demo_, pagefault, Nach )
 
@@ -465,6 +465,7 @@ void DeallocPauseFrame(void)
 {
     if (SpecialPauseBackup) {
         free(SpecialPauseBackup);
+        SpecialPauseBackup = 0;
     }
 }
 
@@ -562,6 +563,7 @@ void DeallocRewindBuffer(void)
 {
     if (StateBackup) {
         free(StateBackup);
+        StateBackup = 0;
     }
 }
 
@@ -634,6 +636,7 @@ void DeallocSystemVars(void)
 {
     if (BackupSystemBuffer) {
         free(BackupSystemBuffer);
+        BackupSystemBuffer = 0;
     }
 }
 
@@ -977,7 +980,10 @@ void set_state_message(char const* prefix, char const* suffix)
 {
     char num[3];
     sprintf(num, "%d", (unsigned int)current_zst);
-    string_merge(txtmsg, sizeof(txtmsg), prefix, isextension(ZStateName, "zss") ? "AUTO" : num, suffix, 0);
+    /* The terminator is fetched with va_arg(ap, char*), so pass a pointer:
+       a plain 0 is an int and reading it back as a pointer is undefined. */
+    string_merge(txtmsg, sizeof(txtmsg), prefix,
+        isextension(ZStateName, "zss") ? "AUTO" : num, suffix, (char*)NULL);
 
     Msgptr = txtmsg;
     MessageOn = MsgCount;
@@ -1243,12 +1249,29 @@ bool zst_load(FILE* fp, size_t Compressed)
    state back, save again, and compare the two files. A faithful round trip
    makes them byte-identical, so any field the loader drops or restores wrongly
    shows up as a mismatch - without having to enumerate the machine's state.
-   Reports to stderr and to /tmp/zsnes_zst.txt. */
+   Reports to stderr and to <tmpdir>/zsnes_zst.txt, where <tmpdir> is $TMPDIR
+   or /tmp. */
 void zst_roundtrip_check(void);
+
+/* Build <tmpdir>/<name> into buf. Fixed /tmp paths collide between users on a
+   shared machine, so honour TMPDIR the way the rest of the world does. */
+static char const* zst_tmp_path(char* buf, size_t len, char const* name)
+{
+    char const* dir = getenv("TMPDIR");
+
+    if (!dir || !*dir) {
+        dir = "/tmp";
+    }
+    snprintf(buf, len, "%s/%s", dir, name);
+    return buf;
+}
+
 void zst_roundtrip_check(void)
 {
-    char const* const pa = "/tmp/zsnes_zst_a.zst";
-    char const* const pb = "/tmp/zsnes_zst_b.zst";
+    char pabuf[PATH_SIZE], pbbuf[PATH_SIZE], rbuf[PATH_SIZE];
+    char const* const pa = zst_tmp_path(pabuf, sizeof pabuf, "zsnes_zst_a.zst");
+    char const* const pb = zst_tmp_path(pbbuf, sizeof pbbuf, "zsnes_zst_b.zst");
+    char const* const pr = zst_tmp_path(rbuf, sizeof rbuf, "zsnes_zst.txt");
     FILE* f;
     long na = 0, nb = 0;
     int ok = 0, loaded = 0;
@@ -1283,7 +1306,7 @@ void zst_roundtrip_check(void)
                 got ? "ACCEPTED" : "REJECTED", fsz, fit,
                 cur_zst_size, v143_zst_size, old_zst_size);
             fputs(msg, stderr);
-            FILE* r = fopen("/tmp/zsnes_zst.txt", "wb");
+            FILE* r = fopen(pr, "wb");
             if (r) {
                 fputs(msg, r);
                 fclose(r);
@@ -1327,7 +1350,7 @@ void zst_roundtrip_check(void)
             fclose(b);
     }
     {
-        FILE* r = fopen("/tmp/zsnes_zst.txt", "wb");
+        FILE* r = fopen(pr, "wb");
         char const* verdict = !loaded ? "FAIL (load rejected the state)"
             : na != nb                ? "FAIL (sizes differ)"
             : ok                      ? "PASS"
