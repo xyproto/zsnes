@@ -31,6 +31,7 @@
 #include "cfg.h"
 #include "gui.h"
 #include "guitools.h"
+#include "guiwindp.h"
 
 static void GUIoutputchar(u1* dst, u1 const glyph, u1 const colour)
 {
@@ -363,4 +364,57 @@ void DrawSlideBarWin(u4 const win_id, u4 const x, u4 const y, u4 list_loc, u4 li
     bar_dims[1] = starty;
     bar_dims[2] = endy;
     GUIDrawSlideBar(GUIwinposx[win_id] + x, GUIwinposy[win_id] + y, bar_size, starty, endy);
+}
+
+void GUIStackLayout(GUIRow const* const rows, u4 const n, s4 const top,
+    s4 const bottom, s4* const out)
+{
+    s4 fixed = 0;
+    s4 share = 0;
+    u4 expanders = 0;
+    s4 y = top;
+    u4 i;
+
+    /* What the fixed rows take, so the rest can be shared out. Measuring
+       first is the whole point: a single pass would have to guess at the rows
+       it has not reached yet. */
+    for (i = 0; i < n; i++) {
+        if (rows[i].kind == GUI_EXPAND) {
+            expanders++;
+        }
+        fixed += rows[i].h;
+    }
+    if (expanders) {
+        s4 const left = bottom - top - fixed;
+
+        share = left > 0 ? left / (s4)expanders : 0;
+    }
+    for (i = 0; i < n; i++) {
+        out[i] = y;
+        y += rows[i].h + (rows[i].kind == GUI_EXPAND ? share : 0);
+    }
+}
+
+/* One description of where the CRT panel's rows sit. Each label sits directly
+   above the control it names, and the four groups are parted by gaps that take
+   up whatever is left, so the panel stays balanced. */
+void GUICrtRows(s4 out[CRT_ROW_COUNT])
+{
+    static GUIRow const rows[CRT_ROW_COUNT] = {
+        { 10, GUI_ITEM }, /* SCANLINES: */
+        { 10, GUI_ITEM }, /* its slider, or the step buttons */
+        { 0, GUI_EXPAND },
+        { 10, GUI_ITEM }, /* VIBRANCY: */
+        { 10, GUI_ITEM },
+        { 0, GUI_EXPAND },
+        { 10, GUI_ITEM }, /* BLOOM: */
+        { 10, GUI_ITEM },
+        { 0, GUI_EXPAND },
+        { 8, GUI_ITEM }, /* OUTPUT: */
+        { 10, GUI_ITEM }, /* the HDR checkbox */
+        { 0, GUI_EXPAND },
+        { 30, GUI_ITEM } /* three lines of note */
+    };
+
+    GUIStackLayout(rows, CRT_ROW_COUNT, 30, 178, out);
 }

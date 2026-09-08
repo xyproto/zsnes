@@ -432,7 +432,7 @@ void GUIRestoreVars(void)
     CheckValueBounds(&hqFilterlevel, 2, 4, 2, UB);
     CheckValueBounds(&sl_intensity, 0, 100, 50, UB);
     CheckValueBounds(&sl_vibrancy, 0, 100, 45, UB);
-    CheckValueBounds(&BloomLevel, 0, 100, 0, UB);
+    CheckValueBounds(&BloomLevel, 0, 100, 25, UB);
     CheckValueBounds(&HDROutput, 0, 1, 0, UB);
     CheckValueBounds(&scanlines, 0, 3, 0, UB);
     CheckValueBounds(&GrayscaleMode, 0, 1, 0, UB);

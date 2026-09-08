@@ -1085,30 +1085,39 @@ void DisplayGUIVideo(void)
     // Filters tab
     if (GUIVideoTabs[0] == 3) { // CRT tab
         /* Everything that makes the picture look like a tube rather than a
-           panel, in the order it is applied: the beam, the light it loses,
-           and the light bright areas spill. */
-        GUIDisplayTextY(5, 13, 30, "SCANLINES:");
+           panel, in the order it is applied: the beam, the light it costs, the
+           light bright areas spill, and where that spill is allowed to go.
+           Positions come from GUICrtRows, which the click handling reads too. */
+        s4 row[CRT_ROW_COUNT];
+
+        GUICrtRows(row);
+        GUIDisplayTextY(5, 13, (u4)row[CRT_ROW_SCANLABEL], "SCANLINES:");
         if (GUIBIFIL[cvidmode] != 0) {
-            GUIDrawSlider(5, 23, 100, 40, &sl_intensity, glscslidSet, glscslidText);
+            GUIDrawSlider(5, 23, 100, (u4)row[CRT_ROW_SCAN], &sl_intensity,
+                glscslidSet, glscslidText);
         } else if (GUIDSIZE[cvidmode] != 0) {
             /* The software path dims by a fixed step rather than a slider. */
-            GUIDisplayButtonHoleTu(5, 18, 38, &scanlines, 0, "NONE", 1);
-            GUIDisplayButtonHoleTu(5, 68, 38, &scanlines, 2, "25%", 0);
-            GUIDisplayButtonHoleTu(5, 118, 38, &scanlines, 3, "50%", 0);
-            GUIDisplayButtonHoleTu(5, 168, 38, &scanlines, 1, "FULL", 0);
+            u4 const y = (u4)row[CRT_ROW_SCAN] - 2;
+
+            GUIDisplayButtonHoleTu(5, 18, y, &scanlines, 0, "NONE", 1);
+            GUIDisplayButtonHoleTu(5, 68, y, &scanlines, 2, "25%", 0);
+            GUIDisplayButtonHoleTu(5, 118, y, &scanlines, 3, "50%", 0);
+            GUIDisplayButtonHoleTu(5, 168, y, &scanlines, 1, "FULL", 0);
         }
 
-        GUIDisplayTextY(5, 13, 58, "VIBRANCY:");
-        GUIDrawSlider(5, 23, 100, 68, &sl_vibrancy, glscslidSet, glscslidText);
+        GUIDisplayTextY(5, 13, (u4)row[CRT_ROW_VIBLABEL], "VIBRANCY:");
+        GUIDrawSlider(5, 23, 100, (u4)row[CRT_ROW_VIB], &sl_vibrancy, glscslidSet,
+            glscslidText);
 
-        GUIDisplayTextY(5, 13, 86, "BLOOM:");
-        GUIDrawSlider(5, 23, 100, 96, &BloomLevel, glscslidSet, glscslidText);
+        GUIDisplayTextY(5, 13, (u4)row[CRT_ROW_BLOOMLABEL], "BLOOM:");
+        GUIDrawSlider(5, 23, 100, (u4)row[CRT_ROW_BLOOM], &BloomLevel, glscslidSet,
+            glscslidText);
 
-        GUIDisplayTextY(5, 13, 114, "OUTPUT:");
-        GUIDisplayCheckboxu(5, 18, 122, &HDROutput, "HDR OUTPUT", 0);
-        GUIDisplayText(5, 13, 138, "HDR NEEDS A DISPLAY IN");
-        GUIDisplayText(5, 13, 148, "HDR MODE, AND APPLIES");
-        GUIDisplayText(5, 13, 158, "ON SET, IN THE MODES TAB.");
+        GUIDisplayTextY(5, 13, (u4)row[CRT_ROW_OUTLABEL], "OUTPUT:");
+        GUIDisplayCheckboxu(5, 18, (u4)row[CRT_ROW_HDR], &HDROutput, "HDR OUTPUT", 0);
+        GUIDisplayText(5, 13, (u4)row[CRT_ROW_NOTE], "HDR NEEDS A DISPLAY IN");
+        GUIDisplayText(5, 13, (u4)row[CRT_ROW_NOTE] + 10, "HDR MODE, AND APPLIES");
+        GUIDisplayText(5, 13, (u4)row[CRT_ROW_NOTE] + 20, "ON SET, IN THE MODES TAB.");
     }
 
     if (GUIVideoTabs[0] == 4) { // Monitors tab

@@ -288,7 +288,10 @@ sl_intensity db 50
 @ phosphor does. On an ordinary display the spill has to be clipped at white;
 @ with HDROutput on it is allowed past it, which is the point of turning HDR on
 @ at all - the source is 15-bit, so HDR buys headroom above white, not colours.
-BloomLevel db 0
+@ On by default because it is also what stops the scanlines reading as a fixed
+@ pattern: a tube's bright areas bleed across the gaps, and bloom is what does
+@ that bleeding.
+BloomLevel db 25
 
 @ Ask for an HDR surface (0 = NO, 1 = Yes). Only takes effect if the display
 @ and the renderer both report HDR; otherwise the ordinary path is used.

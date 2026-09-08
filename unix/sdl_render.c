@@ -94,6 +94,8 @@ static int sr_hdr_active = 0;
 /* A renderer whose output is linear light, which is what SDL wants before it
    will hand back an HDR surface. Falls back to the ordinary one if the request
    is refused, so asking for HDR on a machine without it costs nothing. */
+static void sr_release(void);
+
 static SDL_Renderer* sr_create_hdr_renderer(SDL_Window* const win)
 {
     SDL_PropertiesID const props = SDL_CreateProperties();
@@ -150,15 +152,22 @@ int sr_start(int width, int height, int req_depth, int FullScreen)
     SurfaceX = width;
     SurfaceY = height;
 
-    sr_end();
+    sr_release();
 
-    sdl_window = SDL_CreateWindow("ZSNES", SurfaceX, SurfaceY, flags);
-    if (!sdl_window) {
-        fprintf(stderr, "Could not create %dx%d window: %s\n", SurfaceX, SurfaceY,
-            SDL_GetError());
-        return false;
+    if (sdl_window) {
+        /* Resize in place rather than making a new one. */
+        SDL_SetWindowFullscreen(sdl_window, FullScreen ? true : false);
+        SDL_SetWindowSize(sdl_window, SurfaceX, SurfaceY);
+        SDL_SyncWindow(sdl_window); // settle the new size before it is used
+    } else {
+        sdl_window = SDL_CreateWindow("ZSNES", SurfaceX, SurfaceY, flags);
+        if (!sdl_window) {
+            fprintf(stderr, "Could not create %dx%d window: %s\n", SurfaceX,
+                SurfaceY, SDL_GetError());
+            return false;
+        }
+        PlaceWindowOnMonitor(sdl_window);
     }
-    PlaceWindowOnMonitor(sdl_window);
 
     sr_renderer = HDROutput ? sr_create_hdr_renderer(sdl_window) : NULL;
     if (!sr_renderer) {
@@ -220,7 +229,10 @@ int sr_start(int width, int height, int req_depth, int FullScreen)
     return true;
 }
 
-void sr_end(void)
+/* Everything but the window: what rebuilding for a new mode has to let go of.
+   The window itself is kept, so a filter toggle does not blank the screen and
+   build it again, and on Wayland the surface and its context survive. */
+static void sr_release(void)
 {
     if (sr_texture) {
         SDL_DestroyTexture(sr_texture);
@@ -243,6 +255,11 @@ void sr_end(void)
         free(sr_pixels);
         sr_pixels = NULL;
     }
+}
+
+void sr_end(void)
+{
+    sr_release();
     if (sdl_window) {
         SDL_PumpEvents();
         SDL_DestroyWindow(sdl_window);
@@ -317,11 +334,14 @@ static int sr_lut_dark = -1;
 static int sr_lut_vscale = -1;
 
 /* Beam weight at `d` line pitches from the centre of the beam, for a line
-   driven to `luma`. Half-width runs from a fifth of the pitch when black to
-   two fifths when full, which is roughly where a tube's spot sits. */
+   driven to `luma`. The spread with drive is the whole point: a dark line is a
+   thin bright thread with a black gap either side, a bright one swells until
+   the gap almost closes. Too narrow a range and the pattern stops responding
+   to the picture and reads as a grille painted over it. Over this range the
+   gap runs from about half brightness on black to nine tenths on white. */
 static double sr_beam(double const d, double const luma)
 {
-    double const w = 0.20 + 0.20 * luma;
+    double const w = 0.15 + 0.35 * luma;
     double const t = d / w;
 
     return exp(-0.5 * t * t);

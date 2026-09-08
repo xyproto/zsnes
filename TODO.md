@@ -31,6 +31,12 @@
       and that `SDL_EVENT_WINDOW_HDR_STATE_CHANGED` is picked up when a display
       is switched into or out of HDR mid-run
 - [ ] Make transparent messages work with the small font (`cfg.psr`)
+- [ ] Move the other video panels onto GUIStackLayout. Only the CRT tab
+      describes its rows once and lets both the drawing and the click handling
+      read the positions; Modes, Filters and Monitors still write their pixel
+      numbers out twice, in two files, which is how the grayscale, hi-res mode
+      7, vsync and 4:3 controls came to be drawn in one place and clicked in
+      another
 - [ ] Use `SDL_Gamepad` so controllers get SDL's mapping database instead of
       raw numbered axes and buttons
 - [ ] Handle horizontal scroll and absolute mouse motion on macOS (`mmlib/macos.c`)

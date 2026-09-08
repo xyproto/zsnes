@@ -50,4 +50,55 @@ extern u4 curaddrvalcs;
 extern u4 curentryval;
 extern u4 curvaluecs;
 
+/* Panel layout.
+ *
+ * Widget positions used to be literal pixel numbers written down twice: once
+ * where the panel is drawn and again where its clicks are tested, in another
+ * file. Nothing tied the two together, so moving a control meant editing both
+ * and hoping they matched - and twice they did not, leaving controls that drew
+ * correctly and ignored the mouse.
+ *
+ * Instead a panel describes itself as a list of rows and asks where they go.
+ * Both the drawing and the click handling ask the same question and get the
+ * same answer, so they cannot drift apart: a row added, resized or removed
+ * moves everything below it on both sides at once.
+ *
+ * A row is either an item with a height, a fixed gap, or a gap that expands.
+ * The expanding ones share out whatever the fixed rows leave over, which is
+ * what keeps a panel balanced when a section appears or disappears with the
+ * video mode.
+ */
+enum { GUI_ITEM,
+    GUI_GAP,
+    GUI_EXPAND };
+
+typedef struct {
+    s4 h; /* an item's height, or a gap's minimum */
+    u1 kind;
+} GUIRow;
+
+/* Place `n` rows between `top` and `bottom`, writing every row's y into out. */
+void GUIStackLayout(GUIRow const* rows, u4 n, s4 top, s4 bottom, s4* out);
+
+/* The CRT panel's rows, in the order they are stacked. Both DisplayGUIVideo
+   and DisplayGUIVideoClick lay this out and read the same answers. */
+enum {
+    CRT_ROW_SCANLABEL,
+    CRT_ROW_SCAN,
+    CRT_GAP1,
+    CRT_ROW_VIBLABEL,
+    CRT_ROW_VIB,
+    CRT_GAP2,
+    CRT_ROW_BLOOMLABEL,
+    CRT_ROW_BLOOM,
+    CRT_GAP3,
+    CRT_ROW_OUTLABEL,
+    CRT_ROW_HDR,
+    CRT_GAP4,
+    CRT_ROW_NOTE,
+    CRT_ROW_COUNT
+};
+
+void GUICrtRows(s4 out[CRT_ROW_COUNT]);
+
 #endif

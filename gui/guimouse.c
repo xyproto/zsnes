@@ -1225,27 +1225,37 @@ static void DisplayGUIVideoClick(s4 const eax, s4 const edx)
     }
 
     if (GUIVideoTabs[0] == 3) { // CRT tab
-        /* The three sliders sit on rows far enough apart that only one can
-           match, so they share the drag lock; picking a scanline step in a
-           software mode turns off the filters it cannot combine with, as it
-           did when these lived in the Filters tab. */
+        /* Read the pointer afresh rather than trusting the arguments: while a
+           bar is held, ProcessMouse re-enters here as DisplayGUIVideoClick(0,
+           0) and moves the pointer itself, so the passed-in position is not the
+           one being dragged. Row positions come from GUICrtRows, the same
+           description the drawing uses. */
+        s4 const eax = (s4)GUImouseposx - (s4)GUIwinposx[5];
+        s4 const edx = (s4)GUImouseposy - (s4)GUIwinposy[5];
+        s4 const wx = (s4)GUIwinposx[5];
         u1* const bar[3] = { &sl_intensity, &sl_vibrancy, &BloomLevel };
-        s4 const barY[3] = { 40, 68, 96 };
-        s4 const wx = GUIwinposx[5];
+        s4 row[CRT_ROW_COUNT];
+        s4 barY[3];
         u4 i;
+
+        GUICrtRows(row);
+        barY[0] = row[CRT_ROW_SCAN];
+        barY[1] = row[CRT_ROW_VIB];
+        barY[2] = row[CRT_ROW_BLOOM];
 
         if (GUIBIFIL[cvidmode] == 0 && GUIDSIZE[cvidmode] != 0) {
             s4 const stepX[4] = { 18, 68, 118, 168 };
             u1 const stepV[4] = { 0, 2, 3, 1 };
+            s4 const y = row[CRT_ROW_SCAN] - 2;
 
             for (i = 0; i < 4; i++) {
-                if (GUIClickArea(eax, edx, stepX[i] + 1, 38 + 3, stepX[i] + 38,
-                        38 + 8)) {
+                /* A scanline step turns off what it cannot combine with. */
+                if (GUIClickArea(eax, edx, stepX[i] + 1, y + 3, stepX[i] + 38, y + 8)) {
                     En2xSaI = 0;
                     hqFilter = 0;
                     NTSCFilter = 0;
                 }
-                GUIPButtonHoleS(eax, edx, stepX[i], 38, &scanlines, stepV[i]);
+                GUIPButtonHoleS(eax, edx, stepX[i], y, &scanlines, stepV[i]);
             }
         }
         for (i = 0; i < 3; i++) {
@@ -1255,12 +1265,12 @@ static void DisplayGUIVideoClick(s4 const eax, s4 const edx)
             if (GUIClickArea(eax, edx, 23, barY[i] - 2, 23 + 100, barY[i] + 2)) {
                 *bar[i] = (u1)(eax - 23);
                 GUIHold = 8; /* lock the pointer to this bar while held */
-                GUIHoldYlim = GUIwinposy[5] + barY[i];
+                GUIHoldYlim = GUIwinposy[5] + (u4)barY[i];
                 GUIHoldXlimL = wx + 23;
                 GUIHoldXlimR = wx + 23 + 100;
             }
         }
-        GUIClickCButton(eax, edx, 18, 122, &HDROutput);
+        GUIClickCButton(eax, edx, 18, (s4)row[CRT_ROW_HDR], &HDROutput);
     }
 
     if (GUIVideoTabs[0] == 4) { // Monitors tab
