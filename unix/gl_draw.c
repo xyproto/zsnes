@@ -404,6 +404,37 @@ void gl_drawwin(void)
             glEnable(GL_TEXTURE_2D);
         }
     }
+#ifdef ZSNES_DEBUG_HOOKS
+    /* glReadPixels hands back the rows bottom up, so walk the destination
+       backwards to land the picture the right way round. */
+    if (ZSnesFrameDumpWanted()) {
+        int w = 0;
+        int h = 0;
+
+        SDL_GetWindowSizeInPixels(sdl_window, &w, &h);
+        if (w > 0 && h > 0) {
+            unsigned char* const rows = (unsigned char*)malloc((size_t)w * (size_t)h * 3);
+
+            if (rows) {
+                SDL_Surface* shot = SDL_CreateSurface(w, h, SDL_PIXELFORMAT_RGB24);
+
+                glPixelStorei(GL_PACK_ALIGNMENT, 1);
+                glReadPixels(0, 0, w, h, GL_RGB, GL_UNSIGNED_BYTE, rows);
+                if (shot) {
+                    int y;
+
+                    for (y = 0; y < h; y++) {
+                        memcpy((unsigned char*)shot->pixels + (size_t)y * (size_t)shot->pitch,
+                            rows + (size_t)(h - 1 - y) * (size_t)w * 3, (size_t)w * 3);
+                    }
+                    ZSnesFrameDumpSurface(shot, "gl");
+                    SDL_DestroySurface(shot);
+                }
+                free(rows);
+            }
+        }
+    }
+#endif
     SDL_GL_SwapWindow(sdl_window);
 }
 

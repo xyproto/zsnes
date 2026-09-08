@@ -14,6 +14,7 @@ void GUIGenericJumpTo(void);
 void GUILoadData(void);
 void GUILoadKeysJumpTo(void);
 void GUIQuickLoadUpdate(void);
+u1 GUIScanlineIntensity(u1 level);
 void GUISaveVars(void);
 void GetLoadData(void);
 void GetMovieForcedLength(void);

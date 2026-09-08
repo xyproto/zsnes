@@ -3542,16 +3542,16 @@ void DisplayGUISave(void)
     GUIDisplayText(20, 9 + 45 * 2, 150, "ST+");
     GUIDisplayText(20, 9 + 45 * 3, 150, "ST-");
 
-    GUIDisplayCheckboxu(20, 11, 38, &nosaveSRAM, "DO NOT SAVE SRAM", 0);
+    GUIDisplayCheckboxu(20, 11, (u4)GUISaveRow(0), &nosaveSRAM, "DO NOT SAVE SRAM", 0);
     if (nosaveSRAM == 0) {
-        GUIDisplayCheckboxu(20, 11, 48, &SRAMSave5Sec, "SRAM CHECK+SAVE", 5); // Checkboxes
+        GUIDisplayCheckboxu(20, 11, (u4)GUISaveRow(1), &SRAMSave5Sec, "SRAM CHECK+SAVE", 5); // Checkboxes
     }
-    GUIDisplayCheckboxu(20, 11, 58, &SRAMState, "LOAD SAVESTATE W/SRAM", 0);
-    GUIDisplayCheckboxu(20, 11, 68, &LatestSave, "START AT LATEST SAVE", 0);
-    GUIDisplayCheckboxu(20, 11, 78, &AutoIncSaveSlot, "AUTO INCREMENT SAVE SLOT", 5);
-    GUIDisplayCheckboxu(20, 11, 88, &AutoState, "AUTO STATE SAVE/LOAD", 0);
-    GUIDisplayCheckboxu(20, 11, 98, &PauseLoad, "PAUSE AFTER LOADING STATE", 0);
-    GUIDisplayCheckboxu(20, 11, 108, &PauseRewind, "PAUSE AFTER REWIND", 12);
+    GUIDisplayCheckboxu(20, 11, (u4)GUISaveRow(2), &SRAMState, "LOAD SAVESTATE W/SRAM", 0);
+    GUIDisplayCheckboxu(20, 11, (u4)GUISaveRow(3), &LatestSave, "START AT LATEST SAVE", 0);
+    GUIDisplayCheckboxu(20, 11, (u4)GUISaveRow(4), &AutoIncSaveSlot, "AUTO INCREMENT SAVE SLOT", 5);
+    GUIDisplayCheckboxu(20, 11, (u4)GUISaveRow(5), &AutoState, "AUTO STATE SAVE/LOAD", 0);
+    GUIDisplayCheckboxu(20, 11, (u4)GUISaveRow(6), &PauseLoad, "PAUSE AFTER LOADING STATE", 0);
+    GUIDisplayCheckboxu(20, 11, (u4)GUISaveRow(7), &PauseRewind, "PAUSE AFTER REWIND", 12);
 
     char GUISaveTextZ3[12];
 
@@ -3563,18 +3563,17 @@ void DisplayGUISave(void)
     sprintf(GUISaveTextZ3, "%02u", RewindFrames);
     GUIDisplayTextG(20, 154, 31, GUISaveTextZ3);
 
-    DDrawBox(20, 26, 129, &KeyStateSlc0); // Boxes for State section
-    DDrawBox(20, 71, 129, &KeyStateSlc1);
-    DDrawBox(20, 116, 129, &KeyStateSlc2);
-    DDrawBox(20, 161, 129, &KeyStateSlc3);
-    DDrawBox(20, 26, 138, &KeyStateSlc4);
-    DDrawBox(20, 71, 138, &KeyStateSlc5);
-    DDrawBox(20, 116, 138, &KeyStateSlc6);
-    DDrawBox(20, 161, 138, &KeyStateSlc7);
-    DDrawBox(20, 26, 147, &KeyStateSlc8);
-    DDrawBox(20, 71, 147, &KeyStateSlc9);
-    DDrawBox(20, 116, 147, &KeyIncStateSlot);
-    DDrawBox(20, 161, 147, &KeyDecStateSlot);
+    { // Boxes for State section
+        u4 const* const slot[12] = { &KeyStateSlc0, &KeyStateSlc1, &KeyStateSlc2,
+            &KeyStateSlc3, &KeyStateSlc4, &KeyStateSlc5, &KeyStateSlc6,
+            &KeyStateSlc7, &KeyStateSlc8, &KeyStateSlc9, &KeyIncStateSlot,
+            &KeyDecStateSlot };
+        u4 i;
+
+        for (i = 0; i < 12; i++) {
+            DDrawBox(20, GUISaveSlotX(i % 4), GUISaveSlotY(i / 4), slot[i]);
+        }
+    }
     DDrawBox(20, 32, 156, &KeySaveState);
     DDrawBox(20, 89, 156, &KeyLoadState);
     DDrawBox(20, 146, 156, &KeyStateSelct);

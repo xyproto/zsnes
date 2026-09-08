@@ -342,6 +342,41 @@ static void outputchar16b5x5(u2* buf, u1 const glyph)
     u2 const c = textcolor16b;
     u1 const* src = GUIFontData[glyph];
     u4 y = 5;
+
+    if (ForceNonTransp != 1 && GUIEnableTransp != 0) {
+        /* The same shape the 8x8 font draws transparently - the glyph blended
+           half and half with the picture, and the row above it repeated one
+           pixel down and right as a shadow - in the 6x6 cell this font is
+           spaced on. The colour is carried through the blend rather than
+           dropped for the fixed grey the big font uses, so a coloured message
+           stays its colour; for white text the two come out the same. */
+        u4 const mask = (u2)vesa2_clbitng;
+        u4 const lit = (c & mask) >> 1;
+
+        y = 6;
+        do {
+            u4 eax = y != 1 ? (u4)src[0] << 1 : 0;
+            u4 ebx = y != 6 ? src[-1] : 0;
+            u4 x = 6;
+
+            do {
+                if (eax & 0x100) {
+                    buf[0] = (u2)(((buf[0] & mask) >> 1) + lit);
+                    buf[75036 * 2] = (u2)(((buf[75036 * 2] & mask) >> 1) + lit);
+                } else if (ebx & 0x100) {
+                    buf[0] = (u2)((buf[0] & mask) >> 1);
+                    buf[75036 * 2] = (u2)((buf[75036 * 2] & mask) >> 1);
+                }
+                eax <<= 1;
+                ebx <<= 1;
+                ++buf;
+            } while (--x != 0);
+            buf += 282;
+            ++src;
+        } while (--y != 0);
+        return;
+    }
+
     do {
         u1 ah = *src++;
         u1 x = 5;

@@ -545,3 +545,18 @@ s4 GUIPathRow(u4 const i)
 {
     return PATH_ROW_FIRST + PATH_ROW_PITCH * (s4)i;
 }
+
+s4 GUISaveRow(u4 const i)
+{
+    return SAVE_ROW_FIRST + SAVE_ROW_PITCH * (s4)i;
+}
+
+s4 GUISaveSlotY(u4 const row)
+{
+    return SAVE_SLOT_FIRST + SAVE_SLOT_PITCH * (s4)row;
+}
+
+s4 GUISaveSlotX(u4 const col)
+{
+    return SAVE_SLOT_COL + SAVE_SLOT_COLPITCH * (s4)col;
+}

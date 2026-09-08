@@ -4,7 +4,7 @@
 ZSNES - Super Nintendo console emulator
 .SH SYNOPSIS
 .B ZSNES
-[-?] [-1 #] [-2 #] [-dd] [-dh] [-f #] [-g #] [-h | -l] [-j] [-js #] [-k #] [-m] [-mc] [-md] [-ml #] [-n #] [-o] [-p #] [-r #] [-s] [-sa] [-t | -u] [-v #] [-y] [-z] [-zm #] [-zs #] [romname]
+[- | -? | --help] [-1 #] [-2 #] [-ad driver] [-dd] [-dh] [-ds] [-f #] [-g #] [-h | -l] [-j] [-js #] [-k #] [-m] [-mc] [-md] [-ml #] [-mo ID] [-n #] [-p #] [-r #] [-s] [-sa] [-t | -u] [-v #] [-v8] [-y] [-z] [-zm #] [-zs #] [romname]
 
 .SH DESCRIPTION
 .B ZSNES
@@ -15,8 +15,8 @@ Visit http://www.zsnes.com/ for the latest updates.
 .SH OPTIONS
 Note: Many of these options can also be set in the GUI.
 .TP
-.B -?
-Display command-line help
+.B \- | -? | -help | --help
+Display command-line help. Not \fB-h\fP, which forces HiROM.
 .TP
 .B -1 # / -2 #
 Set controls for Player 1/2
@@ -24,8 +24,15 @@ Set controls for Player 1/2
 \fI0\fP = None       \fI1\fP = Keyboard/Gamepad
 .fi
 .TP
+.B -ad \fIdriver\fP
+Select the audio driver. \fBauto\fP picks the first that works; the rest of the
+list depends on what the build has, and \fB\-\fP shows it.
+.TP
 .B -dd
 Disable sound DSP emulation
+.TP
+.B -ds
+Disable sound output, leaving SPC700/DSP emulation running
 .TP
 .B -dh
 Disable game hacks
@@ -63,17 +70,18 @@ Dump raw video (use with \fB-zm\fP)
 .B -ml
 Define movie dump length in amount of frames (use with \fB-md\fP)
 .TP
+.B -mo \fIID\fP | -mo list
+Open on the monitor with this identifier, or list the ones this machine
+reports. The choice is remembered, so an external display stays the one used.
+.TP
 .B -n #
 Enable scanlines (when available), where
 .B #
 is one of:
 .nf
-\fl0\fP = none       \fI1\fP = full            \fI2\fP = 25%
+\fI0\fP = none       \fI1\fP = full            \fI2\fP = 25%
 \fI3\fP = 50%
 .fi
-.TP
-.B -o
-Disable enhanced filter support
 .TP
 .B -p #
 Change the clock speed of the main CPU, where
@@ -81,7 +89,9 @@ Change the clock speed of the main CPU, where
 is a numerical value from \fI50-150\fP. 100 is the normal speed. Changing this value may have adverse side effects.
 .TP
 .B -r #
-Set audio sampling rate, where
+Set audio sampling rate. Accepted and ignored on Unix builds, where SDL,
+PipeWire and libao all render at the DSP's own rate and leave the resampling to
+the sound server; it is kept so existing command lines keep working. On Windows
 .B #
 is one of:
 .nf
@@ -102,6 +112,9 @@ Force NTSC (60 Hz) timing. Cannot be used with \fB-u\fP
 .TP
 .B -u
 Force PAL (50 Hz) timing. Cannot be used with \fB-t\fP
+.TP
+.B -v8
+Grayscale mode
 .TP
 .B -v #
 Select video mode, where

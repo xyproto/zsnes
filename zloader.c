@@ -24,6 +24,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "gblhdr.h"
 #ifdef __UNIXSDL__
 #include "unix/sdllink.h"
+#include "gui/guifuncs.h"
 #endif
 
 #ifdef __LIBAO__
@@ -488,8 +489,11 @@ static void handle_params(int argc, char* argv[])
         if (argv[i][0] == '-')
 #endif
         {
-            if (!argv[i][1]) // Nothing but a - or /
-            {
+            /* A lone dash has always shown the help; the spellings people
+               actually reach for now do too. -h cannot join them: it has meant
+               force HiROM since long before --help was a convention. */
+            if (!argv[i][1] || !strcmp(argv[i], "-?")
+                || !strcmp(argv[i], "-help") || !strcmp(argv[i], "--help")) {
                 display_help();
             } else if (!argv[i][2]) //- followed by a single letter
             {
@@ -499,7 +503,7 @@ static void handle_params(int argc, char* argv[])
                     i++;
 
                     if ((pl1contrl = zatoi(argv[i])) >= NumInputDevices) {
-                        printf("Player 1 Input must be a value from 0 to %u!\n", NumInputDevices);
+                        printf("Player 1 Input must be a value from 0 to %u!\n", NumInputDevices - 1);
                         zexit_error();
                     }
 
@@ -509,8 +513,8 @@ static void handle_params(int argc, char* argv[])
                 case '2': // Player 2 Input
                     i++;
 
-                    if ((pl2contrl = zatoi(argv[i])) > NumInputDevices) {
-                        printf("Player 2 Input must be a value from 0 to %u!\n", NumInputDevices);
+                    if ((pl2contrl = zatoi(argv[i])) >= NumInputDevices) {
+                        printf("Player 2 Input must be a value from 0 to %u!\n", NumInputDevices - 1);
                         zexit_error();
                     }
 
@@ -609,6 +613,7 @@ static void handle_params(int argc, char* argv[])
                         puts("Scanlines must be a value 0 to 3!");
                         zexit_error();
                     }
+                    sl_intensity = GUIScanlineIntensity(scanlines);
                     break;
 
                 case 'p': // Percentage of instructions to execute

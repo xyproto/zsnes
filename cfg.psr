@@ -127,7 +127,7 @@ ClockBox db 1
 SmallMsgText db 0
 
 @
-@ Transparent Messages - doesn't work with small font (0 = NO, 1 = Yes)
+@ Transparent Messages (0 = NO, 1 = Yes)
 GUIEnableTransp db 0
 
 @
@@ -280,7 +280,9 @@ hqFilterlevel db 3
 
 @
 @ Enable Scanlines (0 = NONE, 1 = Full, 2 = 25%, 3 = 50%) - simulate TV scanlines
-@ This is compatible with interpolation.
+@ This is compatible with interpolation. Setting it to anything but 0 also sets
+@ sl_intensity below, which is what everything except the plain software
+@ blitter actually draws its scanlines from.
 scanlines db 0
 @ OpenGL scanlines intensity [0..100]
 sl_intensity db 50

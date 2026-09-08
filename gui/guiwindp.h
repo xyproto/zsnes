@@ -222,6 +222,20 @@ enum { PATH_ROW_FIRST = 31,
 
 s4 GUIPathRow(u4 i);
 
+/* The Save panel: a column of checkboxes, then the grid of state shortcut
+   boxes under it. The clickable inside of a box sits one pixel in from the
+   border the drawing lays down, which is the +1 the click side carries. */
+enum { SAVE_ROW_FIRST = 38,
+    SAVE_ROW_PITCH = 10,
+    SAVE_SLOT_FIRST = 129,
+    SAVE_SLOT_PITCH = 9,
+    SAVE_SLOT_COL = 26,
+    SAVE_SLOT_COLPITCH = 45 };
+
+s4 GUISaveRow(u4 i);
+s4 GUISaveSlotY(u4 row);
+s4 GUISaveSlotX(u4 col);
+
 /* Which control in the open panel the keyboard is on. Up and down move it,
    left and right work it. Shared so the panel can show which one is focused;
    panels that have no focusable rows simply ignore it. */

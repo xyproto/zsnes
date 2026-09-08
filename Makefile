@@ -688,7 +688,6 @@ SRCS += unix/safelib.c
 
 SRCS += unix/sdl_render.c
 SRCS += unix/sdllink.c
-SRCS += unix/sockserv.c
 SRCS += unix/sw_draw.c
 
 ifdef WITH_OPENGL

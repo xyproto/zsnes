@@ -109,18 +109,14 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 u1 ComboHeader[23] = "Key Combination File\x1A\x01";
 u1 sramsavedis;
 
-// Some archaic code from an unfinished Dynarec
+/* Which processors the execution loop still owes time to: bit 0 the 65816,
+   bit 1 the SPC700. The loop clears bit 0 when the CPU is parked and returns
+   EXEC_SOUND once only bit 1 is left. Nothing reads above those two bits. */
 extern uint32_t curexecstate;
 
 void procexecloop(void)
 {
-    curexecstate &= 0xFFFFFF00;
-
-    if (spcon) {
-        curexecstate += 3;
-    } else {
-        curexecstate += 1;
-    }
+    curexecstate = spcon ? 3u : 1u;
 }
 
 void Debug_WriteString(char* str)
@@ -1989,7 +1985,7 @@ void preparesfx(void)
 {
     char* ROM = (char*)romdata;
     int_fast16_t i;
-    uint32_t const rom_buffer_size = (uint32_t)(sfxramdata - romdata);
+    uint32_t const rom_buffer_size = maxromspace;
 
     SfxAC = 0;
 
@@ -1998,7 +1994,7 @@ void preparesfx(void)
     }
 
     // [sneed]: bigger rom support
-    // Keep the expanded ROM below the reserved SuperFX RAM area.
+    // Keep the expanded ROM inside the buffer that holds it.
     if (NumofBanks > rom_buffer_size / 0x10000)
         return;
     for (i = (NumofBanks - 1); i >= 0; i--) {

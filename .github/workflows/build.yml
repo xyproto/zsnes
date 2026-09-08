@@ -114,7 +114,7 @@ jobs:
             build-essential make nasm python3 pkg-config git \
             gcc-aarch64-linux-gnu libc6-dev-arm64-cross \
             libsdl3-dev libgl1-mesa-dev libpng-dev zlib1g-dev \
-            libao-dev libpipewire-0.3-dev
+            libao-dev libpipewire-0.3-dev libncurses-dev
       - name: Build and run 64-bit
         run: |
           make clean
@@ -126,6 +126,14 @@ jobs:
           command -v aarch64-linux-gnu-gcc >/dev/null 2>&1 \
             || { echo "aarch64 cross compiler missing; portcheck would skip it"; exit 1; }
           make portcheck
+      # Nothing here built the debugger, so it broke unnoticed: debugasm.c was
+      # still passing a u4 where execsingle takes a zreg, and debuggeron was
+      # defined in two translation units.
+      - name: Debugger build
+        run: |
+          make clean
+          make linux_x86_64 WITH_DEBUGGER=1
+          test -x ./zsnes
       - name: AddressSanitizer
         run: |
           make clean

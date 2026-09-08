@@ -1783,6 +1783,15 @@ void DoRumble(void)
     }
 }
 
+/* Debug output goes under TMPDIR when it is set, so two runs at once do not
+   write over each other's logs. */
+static char const* ZSnesDebugDir(void)
+{
+    char const* const d = getenv("TMPDIR");
+
+    return (d && *d) ? d : "/tmp";
+}
+
 void UpdateVFrame(void)
 {
     extern u1 MultiTap;
@@ -1823,11 +1832,16 @@ void UpdateVFrame(void)
             }
             if (sshot_burst > 0) {
                 sshot_burst--;
-                char path[64];
-                snprintf(path, sizeof(path), "/tmp/zsnes_%05u.txt", sshot_seq++);
+                char path[512];
+                snprintf(path, sizeof(path), "%s/zsnes_%05u.txt", ZSnesDebugDir(), sshot_seq++);
                 Grab_ASCII_Data_Path(path);
             }
-            Grab_Frame_Hash_Path("/tmp/zsnes_hashes.txt");
+            {
+                char hpath[512];
+
+                snprintf(hpath, sizeof(hpath), "%s/zsnes_hashes.txt", ZSnesDebugDir());
+                Grab_Frame_Hash_Path(hpath);
+            }
         }
     }
 
@@ -1848,8 +1862,8 @@ void UpdateVFrame(void)
         }
         if (png_every) {
             if (png_frame % (unsigned)png_every == 0) {
-                char path[64];
-                snprintf(path, sizeof(path), "/tmp/zsnes_%06u.png", png_frame);
+                char path[512];
+                snprintf(path, sizeof(path), "%s/zsnes_%06u.png", ZSnesDebugDir(), png_frame);
                 Grab_PNG_Data_Path(path);
             }
             png_frame++;
@@ -1871,8 +1885,12 @@ void UpdateVFrame(void)
         if (!ppu_checked) {
             const char* e = getenv("PPU_STATE_LOG");
             ppu_log = (e && *e == '1') ? 1 : ((e && *e == '2') ? 2 : 0);
-            if (ppu_log)
-                ppu_fp = fopen("/tmp/zsnes_ppu.txt", "wb");
+            if (ppu_log) {
+                char ppath[512];
+
+                snprintf(ppath, sizeof(ppath), "%s/zsnes_ppu.txt", ZSnesDebugDir());
+                ppu_fp = fopen(ppath, "wb");
+            }
             ppu_checked = 1;
         }
         if (ppu_log && ppu_fp) {
@@ -1913,7 +1931,11 @@ void UpdateVFrame(void)
                         dump_at = d ? atoi(d) : -1;
                     }
                     if (dump_at >= 0 && (int)ppu_frame == dump_at) {
-                        FILE* wf = fopen("/tmp/zsnes_wram.bin", "wb");
+                        char wpath[512];
+                        FILE* wf;
+
+                        snprintf(wpath, sizeof(wpath), "%s/zsnes_wram.bin", ZSnesDebugDir());
+                        wf = fopen(wpath, "wb");
                         if (wf) {
                             fwrite(wramdataa, 1, 65536, wf);
                             fclose(wf);
@@ -1921,8 +1943,20 @@ void UpdateVFrame(void)
                     }
                 }
             } else {
-                fprintf(ppu_fp, "%u bright=%u blank=%02x scrnon=%04x\n",
-                    ppu_frame, vidbright, forceblnk, scrnon);
+                /* hires counts the lines the PPU widened to 512 and mode is
+                   the BG mode, so a filmstrip can be searched for the frames
+                   that actually exercise the hi-res and mode 7 paths rather
+                   than guessing at which game reaches them. */
+                extern u1 SpecialLine[256], bgmode;
+                extern u2 resolutn;
+                unsigned hires = 0;
+                unsigned i;
+
+                for (i = 1; i <= (unsigned)resolutn && i < 256; i++) {
+                    hires += SpecialLine[i] ? 1 : 0;
+                }
+                fprintf(ppu_fp, "%u bright=%u blank=%02x scrnon=%04x hires=%u mode=%u\n",
+                    ppu_frame, vidbright, forceblnk, scrnon, hires, (unsigned)bgmode);
             }
             fflush(ppu_fp);
         }
@@ -1976,6 +2010,38 @@ void clearwin(void)
     }
 }
 
+#ifdef ZSNES_DEBUG_HOOKS
+unsigned zsnes_frame_dump_no = 0;
+
+int ZSnesFrameDumpWanted(void)
+{
+    static int checked = 0;
+    static int every = 0;
+
+    if (!checked) {
+        char const* const e = getenv("ZSNES_FRAME_DUMP");
+
+        checked = 1;
+        if (e && atoi(e) > 0) {
+            every = atoi(e);
+        }
+    }
+    return every && (zsnes_frame_dump_no % (unsigned)every) == 0;
+}
+
+void ZSnesFrameDumpSurface(SDL_Surface* const s, char const* const tag)
+{
+    char path[512];
+
+    if (!s) {
+        return;
+    }
+    snprintf(path, sizeof(path), "%s/zsnes_out_%s_%06u.bmp", ZSnesDebugDir(), tag,
+        zsnes_frame_dump_no);
+    SDL_SaveBMP(s, path);
+}
+#endif
+
 void drawscreenwin(void)
 {
 #if defined(__LIBAO__) || defined(__PIPEWIRE__)
@@ -1999,6 +2065,10 @@ void drawscreenwin(void)
     if (sdl_state == vid_none) {
         return;
     }
+
+#ifdef ZSNES_DEBUG_HOOKS
+    zsnes_frame_dump_no++;
+#endif
 
 #ifdef __OPENGL__
     if (UseOpenGL) {

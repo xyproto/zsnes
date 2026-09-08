@@ -268,6 +268,22 @@ void LoadCustomFont(void)
     fclose(fp);
 }
 
+/* 0 = off, 1 = full, 2 = 25%, 3 = 50%, as the scanlines setting and the -n
+   flag have always been documented, on the 0..100 scale the renderers use. */
+u1 GUIScanlineIntensity(u1 const level)
+{
+    switch (level) {
+    case 1:
+        return 100;
+    case 2:
+        return 25;
+    case 3:
+        return 50;
+    default:
+        return 0;
+    }
+}
+
 static void CheckValueBounds(void* ptr, int min, int max, int val, enum vtype type)
 {
     switch (type) {
@@ -434,6 +450,12 @@ void GUIRestoreVars(void)
     CheckValueBounds(&sl_vibrancy, 0, 100, 45, UB);
     CheckValueBounds(&BloomLevel, 0, 100, 25, UB);
     CheckValueBounds(&scanlines, 0, 3, 0, UB);
+    /* The old setting is read only by the software blitter; both renderer
+       paths draw their scanlines from sl_intensity, so carry it across or it
+       does nothing at all wherever the picture is usually drawn. */
+    if (scanlines != 0) {
+        sl_intensity = GUIScanlineIntensity(scanlines);
+    }
     CheckValueBounds(&GrayscaleMode, 0, 1, 0, UB);
     CheckValueBounds(&Mode7HiRes16b, 0, 1, 0, UB);
 #ifndef __UNIXSDL__

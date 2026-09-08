@@ -1824,32 +1824,40 @@ static void DisplayGUIPathsClick(s4 const eax, s4 const edx)
 
 static void DisplayGUISaveClick(s4 const eax, s4 const edx)
 {
-    GUIClickCButton(eax, edx, 11, 38, &nosaveSRAM);
-    GUIClickCButton(eax, edx, 11, 48, &SRAMSave5Sec);
-    GUIClickCButton(eax, edx, 11, 58, &SRAMState);
-    GUIClickCButton(eax, edx, 11, 68, &LatestSave);
-    GUIClickCButton(eax, edx, 11, 78, &AutoIncSaveSlot);
-    GUIClickCButton(eax, edx, 11, 88, &AutoState);
-    GUIClickCButton(eax, edx, 11, 98, &PauseLoad);
-    GUIClickCButton(eax, edx, 11, 108, &PauseRewind);
+    {
+        /* Read before the first click: turning "do not save SRAM" on hides the
+           box below it, and the click that did so must not also toggle it. */
+        u1 const sram_shown = nosaveSRAM == 0;
+
+        GUIClickCButton(eax, edx, 11, GUISaveRow(0), &nosaveSRAM);
+        if (sram_shown) {
+            GUIClickCButton(eax, edx, 11, GUISaveRow(1), &SRAMSave5Sec);
+        }
+        GUIClickCButton(eax, edx, 11, GUISaveRow(2), &SRAMState);
+        GUIClickCButton(eax, edx, 11, GUISaveRow(3), &LatestSave);
+        GUIClickCButton(eax, edx, 11, GUISaveRow(4), &AutoIncSaveSlot);
+        GUIClickCButton(eax, edx, 11, GUISaveRow(5), &AutoState);
+        GUIClickCButton(eax, edx, 11, GUISaveRow(6), &PauseLoad);
+        GUIClickCButton(eax, edx, 11, GUISaveRow(7), &PauseRewind);
+    }
 
     GUIPHoldbutton2(eax, edx, 173, 17, 181, 24, 70, &RewindStates, 1, 99);
     GUIPHoldbutton2(eax, edx, 184, 17, 192, 24, 71, &RewindStates, -1, 0);
     GUIPHoldbutton2(eax, edx, 173, 29, 181, 36, 72, &RewindFrames, 1, 99);
     GUIPHoldbutton2(eax, edx, 184, 29, 192, 36, 73, &RewindFrames, -1, 1);
 
-    DGOptnsProcBox(eax, edx, 27, 130, &KeyStateSlc0, 0);
-    DGOptnsProcBox(eax, edx, 27 + 45, 130, &KeyStateSlc1, 0);
-    DGOptnsProcBox(eax, edx, 27 + 45 * 2, 130, &KeyStateSlc2, 0);
-    DGOptnsProcBox(eax, edx, 27 + 45 * 3, 130, &KeyStateSlc3, 0);
-    DGOptnsProcBox(eax, edx, 27, 139, &KeyStateSlc4, 0);
-    DGOptnsProcBox(eax, edx, 27 + 45, 139, &KeyStateSlc5, 0);
-    DGOptnsProcBox(eax, edx, 27 + 45 * 2, 139, &KeyStateSlc6, 0);
-    DGOptnsProcBox(eax, edx, 27 + 45 * 3, 139, &KeyStateSlc7, 0);
-    DGOptnsProcBox(eax, edx, 27, 148, &KeyStateSlc8, 0);
-    DGOptnsProcBox(eax, edx, 27 + 45, 148, &KeyStateSlc9, 0);
-    DGOptnsProcBox(eax, edx, 27 + 45 * 2, 148, &KeyIncStateSlot, 0);
-    DGOptnsProcBox(eax, edx, 27 + 45 * 3, 148, &KeyDecStateSlot, 0);
+    {
+        u4* const slot[12] = { &KeyStateSlc0, &KeyStateSlc1, &KeyStateSlc2,
+            &KeyStateSlc3, &KeyStateSlc4, &KeyStateSlc5, &KeyStateSlc6,
+            &KeyStateSlc7, &KeyStateSlc8, &KeyStateSlc9, &KeyIncStateSlot,
+            &KeyDecStateSlot };
+        u4 i;
+
+        for (i = 0; i < 12; i++) {
+            DGOptnsProcBox(eax, edx, GUISaveSlotX(i % 4) + 1,
+                GUISaveSlotY(i / 4) + 1, slot[i], 0);
+        }
+    }
     DGOptnsProcBox(eax, edx, 8 + 25, 157, &KeySaveState, 0);
     DGOptnsProcBox(eax, edx, 8 + 57 + 25, 157, &KeyLoadState, 0);
     DGOptnsProcBox(eax, edx, 8 + 114 + 25, 157, &KeyStateSelct, 0);

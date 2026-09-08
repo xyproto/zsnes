@@ -53,7 +53,7 @@ void breakops(void)
                                                                                                    : (u1*)dmadata - 0x4300; // XXX ugly cast
     initaddrl = addr;
 
-    u4 edx = curcyc /* cycles */ << 8 | xp /* flags */;
+    zreg edx = curcyc /* cycles */ << 8 | xp /* flags */;
     u1* ebp = spcPCRam;
     u1* esi = addr + pc; // add program counter to address
     opfn** edi = Curtableaddr;
@@ -83,7 +83,7 @@ void execnextop(void)
                                                                                                    : (u1*)dmadata - 0x4300; // XXX ugly cast
     initaddrl = addr;
 
-    u4 edx = curcyc /* cycles */ << 8 | xp /* flags */;
+    zreg edx = curcyc /* cycles */ << 8 | xp /* flags */;
     u1* ebp = spcPCRam;
     u1* esi = addr + pc; // add program counter to address
     opfn** edi = Curtableaddr;

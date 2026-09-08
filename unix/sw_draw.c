@@ -127,11 +127,23 @@ static void UnlockSurface(void)
     SDL_Surface* win_surface = SDL_GetWindowSurface(sdl_window);
     if (win_surface) {
         if (win_surface->w != render_surface->w || win_surface->h != render_surface->h) {
-            // fullscreen: scale game surface to fit the display
-            SDL_BlitSurfaceScaled(render_surface, NULL, win_surface, NULL, SDL_SCALEMODE_NEAREST);
+            /* Fullscreen, where the picture rarely divides into the panel a
+               whole number of times: at 448 rows into 1200 some source rows
+               land on two and some on three, and nearest neighbour shows that
+               as a coarse line pattern that crawls over anything moving. Honour
+               the bilinear setting here as the other paths do. */
+            extern u1 BilinearFilter;
+
+            SDL_BlitSurfaceScaled(render_surface, NULL, win_surface, NULL,
+                BilinearFilter ? SDL_SCALEMODE_LINEAR : SDL_SCALEMODE_NEAREST);
         } else {
             SDL_BlitSurface(render_surface, NULL, win_surface, NULL);
         }
+#ifdef ZSNES_DEBUG_HOOKS
+        if (ZSnesFrameDumpWanted()) {
+            ZSnesFrameDumpSurface(win_surface, "sw");
+        }
+#endif
         SDL_UpdateWindowSurface(sdl_window);
     }
 }

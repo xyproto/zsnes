@@ -1,5 +1,6 @@
 // Some work to be done here, please look at TODO.md
 #include <stdint.h>
+#include <stdio.h>
 
 // ST-011 SNES DSP adapted from Morita Shogi 64
 //
@@ -17,7 +18,6 @@
 // #define DEBUG_DSP
 
 #ifdef DEBUG_DSP
-#include <stdio.h>
 int debug1, debug2;
 int line_count;
 #endif
@@ -442,6 +442,23 @@ void ST011_OP0E(void)
     ST011_SR = 0xc4;
 }
 
+/* The commands below are the ones the single known binary log exercises. The
+   rest of the chip's command set is genuinely unrecorded - no other emulator
+   implements more, and guessing at outputs would be worse than doing nothing -
+   so say so once per opcode. A report from someone playing the game far enough
+   to reach them is the only thing that can fill this in. */
+static void ST011_ReportUnknown(unsigned char const op)
+{
+    static unsigned char seen[256];
+
+    if (!seen[op]) {
+        seen[op] = 1;
+        fprintf(stderr, "ST-011: command %02X is not implemented; "
+                        "please report it at https://github.com/xyproto/zsnes/issues\n",
+            op);
+    }
+}
+
 void ST011_Command(void)
 {
 #ifdef DEBUG_DSP
@@ -494,6 +511,13 @@ void ST011_Command(void)
 #ifdef DEBUG_DSP
         printf("Unknown OP @ line %d\n", line_count);
 #endif
+        /* Say the command finished. Every case above ends by clearing the busy
+           bit, and falling out of here without doing so left the chip busy for
+           good: the game polls SR and would wait on it forever, which is a
+           worse failure than a command that does nothing. */
+        ST011_ReportUnknown(ST011_DR);
+        RunST011 = &ST011_Command;
+        ST011_SR = 0xc4;
         break;
     }
 }

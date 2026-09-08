@@ -54,7 +54,7 @@ extern uint8_t curblank;
 extern uint8_t GUIRESIZE[];
 extern Uint8 GUIOn2;
 extern uint32_t NGNoTransp; /* a dword where it is defined (video/c_newgfx16data.c) */
-extern uint8_t SpecialLine[256]; /* 0 if lo-res, > 0 if hi-res */
+extern uint8_t SpecialLine[256], hirestiledat[256], GUIOn, newengen, cfield;
 extern uint8_t hqFilterlevel; /* 2, 3 or 4 (cfg.psr) */
 
 char CheckOGLMode(void);
@@ -320,19 +320,20 @@ static void sr_line(unsigned short* dst, int const line)
     unsigned short const* src1
         = (unsigned short*)vidbuffer + VID_FIRST + line * VID_STRIDE;
     unsigned short const* src2 = src1 + SR_FIELD2;
-    /* SpecialLine is indexed by scanline, and output row `line` is scanline
-       line+1 - the same line VID_FIRST starts src1 on. */
-    int const hires = SpecialLine[line + 1];
+    /* Which array says what kind of line this is: the new engine keeps
+       SpecialLine, the old one and the GUI keep hirestiledat. Both are indexed
+       by scanline, and output row `line` is scanline line+1 - the same line
+       VID_FIRST starts src1 on. */
+    u1 const* const kinds
+        = (GUIOn == 1 || newengen == 0) ? hirestiledat : SpecialLine;
+    /* 2 for the 512 wide modes and 3 for hi-res mode 7, with bit 2 set on top
+       when the screen is interlaced. It is never 1, so testing the magnitude
+       put every hi-res line down the mode 7 branch and left the interlace
+       bit - and a plain interlaced lo-res line, which is 4 - reading as one. */
+    int const kind = kinds[line + 1];
     int i;
 
-    if (!hires) {
-        for (i = 0; i < 256; i++) {
-            dst[i * 2] = dst[i * 2 + 1] = src1[i];
-        }
-        memcpy(dst + SR_W, dst, SR_W * sizeof(unsigned short));
-        return;
-    }
-    if (hires > 1) {
+    if ((kind & 3) == 3) {
         /* Mode 7: the two fields are separate 256-wide lines, one above the
            other, so each is doubled across and kept on its own row. */
         for (i = 0; i < 256; i++) {
@@ -341,10 +342,34 @@ static void sr_line(unsigned short* dst, int const line)
         }
         return;
     }
-    /* 512 across: the fields interleave column by column. */
+    if (kind & 4) {
+        /* Interlaced: this field owns one row of the pair and the other keeps
+           what the last field put there, which is what interlacing is. */
+        unsigned short* const row = (cfield & 1) ? dst + SR_W : dst;
+
+        if (kind & 3) {
+            for (i = 0; i < 256; i++) {
+                row[i * 2] = src1[i];
+                row[i * 2 + 1] = src2[i];
+            }
+        } else {
+            for (i = 0; i < 256; i++) {
+                row[i * 2] = row[i * 2 + 1] = src1[i];
+            }
+        }
+        return;
+    }
+    if (kind & 3) {
+        /* 512 across: the fields interleave column by column. */
+        for (i = 0; i < 256; i++) {
+            dst[i * 2] = src1[i];
+            dst[i * 2 + 1] = src2[i];
+        }
+        memcpy(dst + SR_W, dst, SR_W * sizeof(unsigned short));
+        return;
+    }
     for (i = 0; i < 256; i++) {
-        dst[i * 2] = src1[i];
-        dst[i * 2 + 1] = src2[i];
+        dst[i * 2] = dst[i * 2 + 1] = src1[i];
     }
     memcpy(dst + SR_W, dst, SR_W * sizeof(unsigned short));
 }
@@ -402,16 +427,42 @@ static void sr_build_luts(int const vscale)
     int p, l;
     unsigned i;
 
-    for (p = 0; p < vscale; p++) {
-        double d = (double)p / vscale;
+    /* The rows sample the beam profile, so how much of the picture ends up lit
+       depends on how many of them there are: at two rows a line one sits on
+       the beam and one in the gap, but at three or four the extra rows all
+       land in the gap and the picture goes both darker and coarser as the
+       filter scale rises. Hold the average across a line to what it is at two
+       rows, by working out the depth that gets there, so the slider means the
+       same thing whichever filter is on and switching between them does not
+       change the brightness. At two rows the two agree and nothing moves. */
+    for (l = 0; l < SR_LUMA_STEPS; l++) {
+        double const luma = (double)l / (SR_LUMA_STEPS - 1);
+        double const gap_ref = 1.0 - 0.5 * (sr_beam(0.0, luma) + sr_beam(0.5, luma));
+        double gap = 0.0;
+        double at_l = depth;
 
-        if (d > 0.5) {
-            d = 1.0 - d; /* the next line's beam is nearer than this one's */
+        for (p = 0; p < vscale; p++) {
+            double d = (double)p / vscale;
+
+            if (d > 0.5) {
+                d = 1.0 - d; /* the next line's beam is nearer than this one's */
+            }
+            gap += 1.0 - sr_beam(d, luma);
         }
-        for (l = 0; l < SR_LUMA_STEPS; l++) {
-            double const luma = (double)l / (SR_LUMA_STEPS - 1);
+        gap /= vscale;
+        if (gap > 1e-6) {
+            at_l = depth * gap_ref / gap;
+            if (at_l > 1.0) {
+                at_l = 1.0;
+            }
+        }
+        for (p = 0; p < vscale; p++) {
+            double d = (double)p / vscale;
 
-            weight[p][l] = 1.0 - depth * (1.0 - sr_beam(d, luma));
+            if (d > 0.5) {
+                d = 1.0 - d;
+            }
+            weight[p][l] = 1.0 - at_l * (1.0 - sr_beam(d, luma));
         }
     }
     for (i = 0; i < 65536u; i++) {
@@ -822,6 +873,16 @@ void sr_drawwin(void)
         }
         SDL_RenderClear(sr_renderer);
         SDL_RenderTexture(sr_renderer, tex, &src, NULL);
+#ifdef ZSNES_DEBUG_HOOKS
+        /* Read back before presenting: afterwards the back buffer is the
+           driver's business, not ours. */
+        if (ZSnesFrameDumpWanted()) {
+            SDL_Surface* const shot = SDL_RenderReadPixels(sr_renderer, NULL);
+
+            ZSnesFrameDumpSurface(shot, "sr");
+            SDL_DestroySurface(shot);
+        }
+#endif
         SDL_RenderPresent(sr_renderer);
     }
 }

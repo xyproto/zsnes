@@ -247,6 +247,8 @@ void deallocmem(void)
     deallocmemhelp(ngwinptrb);
     deallocmemhelp(vbufdptr);
     deallocmemhelp(romaptr);
+    deallocmemhelp(sfxramdata);
+    deallocmemhelp(setaramdata);
     deallocmemhelp(vcache2bs);
     deallocmemhelp(vcache4bs);
     deallocmemhelp(vcache8bs);
@@ -255,6 +257,23 @@ void deallocmem(void)
     deallocmemhelp(vcache8b);
     deallocmemhelp(sram);
 }
+
+/* The ROM buffer used to run to 16MB because the SuperFX and Seta work RAM
+   were parked inside it at 14MB, well past any cart. They are their own
+   allocations now, so the buffer only has to hold the cart and one spare bank
+   past it: a fetch that runs off the end lands on the three byte stub written
+   at maxromspace, and the fetch after that still has to be inside. */
+enum { ROM_SPACE_BYTES = 0xC00000,
+    ROM_BUFFER_BYTES = ROM_SPACE_BYTES + 0x10000,
+    /* Four 64K banks of SuperFX work RAM, then the line address tables the
+       chip's setup builds at the 1MB mark: the same two megabytes the area
+       spanned when it sat inside the ROM buffer. */
+    SFX_RAM_BYTES = 0x200000,
+    /* The chips mask their addresses to 4K, but seta11 also indexes at
+       index + 0x419 with an index this code does not bound, and there is no
+       Seta cart here to try it on, so keep a bank of room as the old shared
+       region did. */
+    SETA_RAM_BYTES = 0x10000 };
 
 #define AllocmemFail(ptr, size)  \
     if (!(ptr = malloc(size))) { \
@@ -318,7 +337,9 @@ static _Noreturn void selftest(void)
     bad |= selftest_buf("vbufeptr", vbufeptr, 288 * 2 * 256 + 4096);
     bad |= selftest_buf("ngwinptrb", ngwinptrb, 256 * 224 + 4096);
     bad |= selftest_buf("vbufdptr", vbufdptr, 1024 * 296);
-    bad |= selftest_buf("romaptr", romaptr, 0x1000000);
+    bad |= selftest_buf("romaptr", romaptr, ROM_BUFFER_BYTES);
+    bad |= selftest_buf("sfxramdata", sfxramdata, SFX_RAM_BYTES);
+    bad |= selftest_buf("setaramdata", setaramdata, SETA_RAM_BYTES);
     bad |= selftest_buf("SA1RAMArea", SA1RAMArea, 131072);
     bad |= selftest_buf("sram", sram, 65536 * 2);
 
@@ -362,10 +383,18 @@ static void allocmem(void)
     AllocmemFail(vcache4b, 131072 + 256);
     AllocmemFail(vcache8b, 65536 + 256);
     AllocmemFail(SA1RAMArea, 131072);
-    AllocmemFail(romaptr, 0x1000000);
+    AllocmemFail(romaptr, ROM_BUFFER_BYTES);
+
+    /* Zeroed, unlike the ROM buffer: the Seta chip runs a command when byte
+       0x21 of its RAM reads 0x80, so it must not start out as whatever the
+       allocator handed back. */
+    if (!(sfxramdata = calloc(SFX_RAM_BYTES, 1))
+        || !(setaramdata = calloc(SETA_RAM_BYTES, 1))) {
+        outofmemory();
+    }
 
     newgfx16b = 1;
-    maxromspace = 0xC00000;
+    maxromspace = ROM_SPACE_BYTES;
 
     // Set up memory values
     vidbuffer = vbufaptr;
@@ -375,8 +404,6 @@ static void allocmem(void)
 
     headdata = romaptr;
     romdata = romaptr;
-    sfxramdata = romaptr + 0xE00000;
-    setaramdata = romaptr + 0xE00000;
 
     // Puts this ASM after the end of the ROM:
     //         CLI

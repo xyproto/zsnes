@@ -461,7 +461,11 @@ char const GUIInputNames[][17] = {
     "                "
 };
 
-u4 const NumInputDevices;
+/* NONE and KEYBOARD/GAMEPAD, the two names above. Without the initialiser
+   this was a tentative definition, so it read as zero: the Input panel's
+   device list had no entries to move through and -1/-2 rejected every device
+   but NONE. */
+u4 const NumInputDevices = 2;
 
 char const ScanCodeListing[] = {
     "---"

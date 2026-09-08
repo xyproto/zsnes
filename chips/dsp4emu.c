@@ -128,7 +128,10 @@ static int32_t DSP4_READ_DWORD(void)
 #define U16(a) ((uint16_t)(a))
 #endif
 
-// Attention: This lookup table is not verified
+/* floor(0x8000/n), with n = 0 giving 0: every entry holds to that. What is
+   still unconfirmed is whether the chip rounds the same way, which needs a
+   DSP4 cart to settle. Note div_lut[1] is 0x8000, so DSP4_Inverse returns
+   -32768 for one segment; snes9x does the same, so leave it be. */
 static const uint16_t div_lut[64] = {
     0x0000,
     0x8000,
