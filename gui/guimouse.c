@@ -1320,39 +1320,42 @@ static void DisplayGUIVideoClick2(s4 const eax, s4 const edx)
 
 static void DisplayGUISoundClick(void)
 {
+    s4 row[SND_ROW_COUNT];
     s4 const eax = GUImouseposx - GUIwinposx[6];
     s4 const edx = GUImouseposy - GUIwinposy[6];
 
-    GUIClickCButton(eax, edx, 11, 21, &SPCDisable);
-    GUIClickCButtonf(eax, edx, 11, 31, &soundon, reInitSound);
-    GUIClickCButton(eax, edx, 11, 41, &StereoSound);
-    GUIClickCButton(eax, edx, 11, 51, &RevStereo);
-    GUIClickCButton(eax, edx, 11, 61, &Surround);
+    GUISoundRows(row);
+
+    GUIClickCButton(eax, edx, 11, row[SND_ROW_OPTS] + 0 * SND_PITCH, &SPCDisable);
+    GUIClickCButtonf(eax, edx, 11, row[SND_ROW_OPTS] + 1 * SND_PITCH, &soundon, reInitSound);
+    GUIClickCButton(eax, edx, 11, row[SND_ROW_OPTS] + 2 * SND_PITCH, &StereoSound);
+    GUIClickCButton(eax, edx, 11, row[SND_ROW_OPTS] + 3 * SND_PITCH, &RevStereo);
+    GUIClickCButton(eax, edx, 11, row[SND_ROW_OPTS] + 4 * SND_PITCH, &Surround);
 #ifdef __WIN32__
-    GUIClickCButton(eax, edx, 11, 71, &PrimaryBuffer);
+    GUIClickCButton(eax, edx, 11, row[SND_ROW_OPTS] + 5 * SND_PITCH, &PrimaryBuffer);
 #endif
 
-    GUIPButtonHole(eax, edx, 11, 157, &SoundInterpType, 0);
-    GUIPButtonHole(eax, edx, 11, 167, &SoundInterpType, 1);
-    GUIPButtonHole(eax, edx, 11, 177, &SoundInterpType, 2);
-    GUIPButtonHole(eax, edx, 11, 187, &SoundInterpType, 3);
+    GUIPButtonHole(eax, edx, 11, row[SND_ROW_LIST] + 0 * SND_PITCH, &SoundInterpType, 0);
+    GUIPButtonHole(eax, edx, 11, row[SND_ROW_LIST] + 1 * SND_PITCH, &SoundInterpType, 1);
+    GUIPButtonHole(eax, edx, 11, row[SND_ROW_LIST] + 2 * SND_PITCH, &SoundInterpType, 2);
+    GUIPButtonHole(eax, edx, 11, row[SND_ROW_LIST] + 3 * SND_PITCH, &SoundInterpType, 3);
 
-    GUIPButtonHole(eax, edx, 111, 157, &LowPassFilterType, 0);
-    GUIPButtonHole(eax, edx, 111, 167, &LowPassFilterType, 1);
-    GUIPButtonHole(eax, edx, 111, 177, &LowPassFilterType, 2);
+    GUIPButtonHole(eax, edx, 111, row[SND_ROW_LIST] + 0 * SND_PITCH, &LowPassFilterType, 0);
+    GUIPButtonHole(eax, edx, 111, row[SND_ROW_LIST] + 1 * SND_PITCH, &LowPassFilterType, 1);
+    GUIPButtonHole(eax, edx, 111, row[SND_ROW_LIST] + 2 * SND_PITCH, &LowPassFilterType, 2);
 
 #ifndef __UNIXSDL__
     /* Nothing to cycle where the backend fixes the rate; see DisplayGUISound. */
-    if (GUIClickArea(eax, edx, 15, 101, 69, 109)) {
+    if (GUIClickArea(eax, edx, 15, row[SND_ROW_RATEBOX], 69, row[SND_ROW_RATEBOX] + 8)) {
         static u1 const sampratenext[] = { 1, 4, 5, 6, 2, 3, 0, 0 };
         SoundQuality = sampratenext[SoundQuality];
     }
 #endif
 
-    if (GUIClickArea(eax, edx, 15, 129, 115, 133)) {
+    if (GUIClickArea(eax, edx, 15, row[SND_ROW_VOL] - 2, 115, row[SND_ROW_VOL] + 2)) {
         MusicRelVol = eax - 15;
         GUIHold = 5;
-        GUIHoldYlim = GUIwinposy[6] + 131;
+        GUIHoldYlim = GUIwinposy[6] + (u4)row[SND_ROW_VOL];
         u4 const vol = MusicRelVol * 128 / 100;
         MusicVol = vol < 127 ? vol : 127;
         DSPWriteReg(0x0C, DSPMem[0x0C]);

@@ -150,4 +150,23 @@ enum {
 
 void GUIModeRows(s4 out[MODE_ROW_COUNT]);
 
+/* The Sound panel. Two of its rows are groups of evenly spaced entries, so the
+   stack holds the whole group and the entries step through it by SND_PITCH. */
+enum { SND_PITCH = 10,
+    SND_OPTS = 6,
+    SND_LIST = 4 };
+enum {
+    SND_ROW_LABEL,
+    SND_ROW_OPTS, /* the six on/off boxes */
+    SND_ROW_RATELABEL,
+    SND_ROW_RATEBOX,
+    SND_ROW_VOLLABEL,
+    SND_ROW_VOL,
+    SND_ROW_LISTLABEL, /* INTERPOLATION: and LOWPASS: share the row */
+    SND_ROW_LIST,
+    SND_ROW_COUNT
+};
+
+void GUISoundRows(s4 out[SND_ROW_COUNT]);
+
 #endif

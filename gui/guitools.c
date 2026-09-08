@@ -467,3 +467,19 @@ void GUIModeRows(s4 out[MODE_ROW_COUNT])
 
     GUIStackLayout(rows, MODE_ROW_COUNT, 30, 178, out);
 }
+
+void GUISoundRows(s4 out[SND_ROW_COUNT])
+{
+    static GUIRow const rows[SND_ROW_COUNT] = {
+        { 5, GUI_ITEM }, /* SOUND: */
+        { SND_OPTS * SND_PITCH + 12, GUI_ITEM }, /* the on/off boxes */
+        { 8, GUI_ITEM }, /* OUTPUT RATE: */
+        { 15, GUI_ITEM }, /* its box */
+        { 15, GUI_ITEM }, /* VOLUME LEVEL: */
+        { 21, GUI_ITEM }, /* its slider */
+        { 5, GUI_ITEM }, /* INTERPOLATION: and LOWPASS: */
+        { SND_LIST * SND_PITCH, GUI_ITEM }
+    };
+
+    GUIStackLayout(rows, SND_ROW_COUNT, 16, 188, out);
+}

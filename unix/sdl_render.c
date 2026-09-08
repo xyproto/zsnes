@@ -448,6 +448,8 @@ static void sr_build_luts(int const vscale)
 
 static float sr_bloom[SR_BLOOM_W * SR_BLOOM_H];
 static float sr_bloom_row[SR_BLOOM_W * SR_BLOOM_H];
+static int sr_bloom_w = 0; /* the size the spill was last worked out at */
+static int sr_bloom_h = 0;
 
 /* How much light each quarter-resolution cell spills, blurred. */
 static void sr_bloom_build(int const w, int const h)
@@ -496,38 +498,113 @@ static void sr_bloom_build(int const w, int const h)
             sr_bloom_row[y * bw + x] = sum / (2 * SR_BLOOM_TAPS + 1);
         }
     }
+    sr_bloom_w = bw;
+    sr_bloom_h = bh;
 }
 
-/* The spill at a full-resolution pixel, scaled by the slider. */
-static float sr_bloom_at(int const x, int const y, int const w)
-{
-    int const bw = w / SR_BLOOM_DIV;
+/* Where each output pixel sits between the bloom cells. The mapping is the
+   same for every frame of a given size, so it is worked out once into a pair
+   of tables rather than with a floor and a divide per pixel - doing it per
+   pixel cost more than the blur it was sampling. */
+static short sr_bx0[SR_MAXW], sr_by0[SR_MAXH];
+static float sr_btx[SR_MAXW], sr_bty[SR_MAXH];
+static int sr_bmap_w = 0, sr_bmap_h = 0;
 
-    return sr_bloom_row[(size_t)(y / SR_BLOOM_DIV) * bw + (size_t)(x / SR_BLOOM_DIV)]
-        * ((float)BloomLevel / 100.0f) * SR_BLOOM_GAIN;
+static void sr_bloom_map(short* const idx, float* const frac, int const n,
+    int const cells)
+{
+    int i;
+
+    for (i = 0; i < n; i++) {
+        /* Cell centres sit half a cell in, so the sample point is offset. */
+        float const f = ((float)i + 0.5f) / SR_BLOOM_DIV - 0.5f;
+        int c = (int)f;
+
+        if (f < 0.0f) {
+            c = 0;
+        }
+        if (c > cells - 1) {
+            c = cells - 1;
+        }
+        idx[i] = (short)c;
+        frac[i] = f - (float)c;
+        if (frac[i] < 0.0f) {
+            frac[i] = 0.0f;
+        }
+    }
 }
 
 /* Add the spill back into the 565 frame, where it has nowhere to go but up
-   against white. */
+   against white. Sampled between the cells, not out of the nearest one: the
+   spill is worked out at quarter resolution, and taking the nearest cell
+   paints it as 4x4 blocks, which is what makes bloom look pixelated even
+   where the glow underneath is smooth. */
 static void sr_bloom_apply(int const w, int const h)
 {
+    float const scale = (float)BloomLevel / 100.0f * SR_BLOOM_GAIN;
+    int const bw = sr_bloom_w;
+    int const bh = sr_bloom_h;
     int x, y;
 
+    if (bw <= 0 || bh <= 0) {
+        return;
+    }
+    if (sr_bmap_w != w || sr_bmap_h != h) {
+        sr_bloom_map(sr_bx0, sr_btx, w, bw);
+        sr_bloom_map(sr_by0, sr_bty, h, bh);
+        sr_bmap_w = w;
+        sr_bmap_h = h;
+    }
     for (y = 0; y < h; y++) {
+        int const y0 = sr_by0[y];
+        int const y1 = y0 + 1 > bh - 1 ? bh - 1 : y0 + 1;
+        float const ty = sr_bty[y];
+        float const* const r0 = sr_bloom_row + (size_t)y0 * bw;
+        float const* const r1 = sr_bloom_row + (size_t)y1 * bw;
+        unsigned short* const row = sr_pixels + (size_t)y * w;
+
         for (x = 0; x < w; x++) {
-            unsigned const p = sr_pixels[(size_t)y * w + x];
-            float const b = sr_bloom_at(x, y, w);
-            unsigned r = (unsigned)(((p >> 11) & 0x1Fu) + b * 31.0f);
-            unsigned g = (unsigned)(((p >> 5) & 0x3Fu) + b * 63.0f);
-            unsigned bl = (unsigned)((p & 0x1Fu) + b * 31.0f);
+            int const x0 = sr_bx0[x];
+            int const x1 = x0 + 1 > bw - 1 ? bw - 1 : x0 + 1;
+            float const tx = sr_btx[x];
+            float const a = r0[x0] + (r0[x1] - r0[x0]) * tx;
+            float const b = r1[x0] + (r1[x1] - r1[x0]) * tx;
+            float const spill = (a + (b - a) * ty) * scale;
+            unsigned const p = row[x];
+            unsigned r = (unsigned)(((p >> 11) & 0x1Fu) + spill * 31.0f);
+            unsigned g = (unsigned)(((p >> 5) & 0x3Fu) + spill * 63.0f);
+            unsigned bl = (unsigned)((p & 0x1Fu) + spill * 31.0f);
 
             r = r > 0x1Fu ? 0x1Fu : r;
             g = g > 0x3Fu ? 0x3Fu : g;
             bl = bl > 0x1Fu ? 0x1Fu : bl;
-            sr_pixels[(size_t)y * w + x]
-                = (unsigned short)((r << 11) | (g << 5) | bl);
+            row[x] = (unsigned short)((r << 11) | (g << 5) | bl);
         }
     }
+}
+
+/* The spill at one pixel, for the HDR path, which adds it in linear light. */
+static float sr_bloom_at(int const x, int const y, int const w)
+{
+    int const bw = sr_bloom_w;
+    int const bh = sr_bloom_h;
+    int x0, x1, y0, y1;
+    float a, b;
+
+    if (bw <= 0 || bh <= 0 || sr_bmap_w != w) {
+        return 0.0f;
+    }
+    x0 = sr_bx0[x];
+    y0 = sr_by0[y];
+    x1 = x0 + 1 > bw - 1 ? bw - 1 : x0 + 1;
+    y1 = y0 + 1 > bh - 1 ? bh - 1 : y0 + 1;
+    a = sr_bloom_row[(size_t)y0 * bw + x0]
+        + (sr_bloom_row[(size_t)y0 * bw + x1] - sr_bloom_row[(size_t)y0 * bw + x0])
+            * sr_btx[x];
+    b = sr_bloom_row[(size_t)y1 * bw + x0]
+        + (sr_bloom_row[(size_t)y1 * bw + x1] - sr_bloom_row[(size_t)y1 * bw + x0])
+            * sr_btx[x];
+    return (a + (b - a) * sr_bty[y]) * ((float)BloomLevel / 100.0f) * SR_BLOOM_GAIN;
 }
 
 /* 565 holds sRGB, which is gamma encoded; a float texture in the linear

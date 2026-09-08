@@ -31,12 +31,16 @@
       and that `SDL_EVENT_WINDOW_HDR_STATE_CHANGED` is picked up when a display
       is switched into or out of HDR mid-run
 - [ ] Make transparent messages work with the small font (`cfg.psr`)
-- [ ] Move the other video panels onto GUIStackLayout. Only the CRT tab
-      describes its rows once and lets both the drawing and the click handling
-      read the positions; Modes, Filters and Monitors still write their pixel
-      numbers out twice, in two files, which is how the grayscale, hi-res mode
-      7, vsync and 4:3 controls came to be drawn in one place and clicked in
-      another
+- [ ] Move the remaining GUI windows onto GUIStackLayout. All four video
+      panels now describe their rows once and let the drawing and the click
+      handling read the same positions, but Sound, Input, Cheat and the rest
+      still write their pixel numbers out twice in two files, which is how the
+      grayscale, hi-res mode 7, vsync and 4:3 controls came to be drawn in one
+      place and clicked in another
+- [ ] Check the HDR path on hardware that can reach it. SDL only offers
+      SDL_COLORSPACE_SRGB_LINEAR on the direct3d11, direct3d12 and metal
+      renderers, so on Linux the float surface is unlikely to engage at all;
+      `sr_to_hdr` has never run against a real display
 - [ ] Use `SDL_Gamepad` so controllers get SDL's mapping database instead of
       raw numbered axes and buttons
 - [ ] Handle horizontal scroll and absolute mouse motion on macOS (`mmlib/macos.c`)

@@ -1302,53 +1302,56 @@ void DisplayGUIVideo(void)
 
 void DisplayGUISound(void)
 {
+    s4 row[SND_ROW_COUNT];
+
+    GUISoundRows(row);
     GUIDrawWindowBox(6, "SOUND CONFIG");
 
-    GUIDisplayTextY(6, 6, 16, "SOUND SWITCHES:");
-    GUIDisplayCheckboxu(6, 11, 21, &SPCDisable, "DISABLE SPC EMULATION", 0);
+    GUIDisplayTextY(6, 6, (u4)row[SND_ROW_LABEL], "SOUND SWITCHES:");
+    GUIDisplayCheckboxu(6, 11, (u4)(row[SND_ROW_OPTS] + 0 * SND_PITCH), &SPCDisable, "DISABLE SPC EMULATION", 0);
     if (SPCDisable == 0) {
-        GUIDisplayCheckboxu(6, 11, 31, &soundon, "ENABLE SOUND", 0);
+        GUIDisplayCheckboxu(6, 11, (u4)(row[SND_ROW_OPTS] + 1 * SND_PITCH), &soundon, "ENABLE SOUND", 0);
         if (soundon == 1) {
-            GUIDisplayCheckboxu(6, 11, 41, &StereoSound, "ENABLE STEREO SOUND", 7);
+            GUIDisplayCheckboxu(6, 11, (u4)(row[SND_ROW_OPTS] + 2 * SND_PITCH), &StereoSound, "ENABLE STEREO SOUND", 7);
             if (StereoSound == 1) {
-                GUIDisplayCheckboxu(6, 11, 51, &RevStereo, "REVERSE STEREO CHANNELS", 2);
-                GUIDisplayCheckboxu(6, 11, 61, &Surround, "SIMULATE SURROUND SOUND", 2);
+                GUIDisplayCheckboxu(6, 11, (u4)(row[SND_ROW_OPTS] + 3 * SND_PITCH), &RevStereo, "REVERSE STEREO CHANNELS", 2);
+                GUIDisplayCheckboxu(6, 11, (u4)(row[SND_ROW_OPTS] + 4 * SND_PITCH), &Surround, "SIMULATE SURROUND SOUND", 2);
             }
 #ifdef __WIN32__
-            GUIDisplayCheckboxu(6, 11, 71, &PrimaryBuffer, "USE PRIMARY BUFFER", 4);
+            GUIDisplayCheckboxu(6, 11, (u4)(row[SND_ROW_OPTS] + 5 * SND_PITCH), &PrimaryBuffer, "USE PRIMARY BUFFER", 4);
 #endif
         }
     }
 
     char const* const GUISoundTextF = "NONE";
 
-    GUIDisplayTextY(6, 6, 152, "INTERPOLATION:");
-    GUIDisplayButtonHoleTu(6, 11, 157, &SoundInterpType, 0, GUISoundTextF, 0);
-    GUIDisplayButtonHoleTu(6, 11, 167, &SoundInterpType, 1, "GAUSSIAN", 0);
-    GUIDisplayButtonHoleTu(6, 11, 177, &SoundInterpType, 2, "CUBIC SPLINE", 0);
-    GUIDisplayButtonHoleTu(6, 11, 187, &SoundInterpType, 3, "8-POINT", 0);
+    GUIDisplayTextY(6, 6, (u4)row[SND_ROW_LISTLABEL], "INTERPOLATION:");
+    GUIDisplayButtonHoleTu(6, 11, (u4)(row[SND_ROW_LIST] + 0 * SND_PITCH), &SoundInterpType, 0, GUISoundTextF, 0);
+    GUIDisplayButtonHoleTu(6, 11, (u4)(row[SND_ROW_LIST] + 1 * SND_PITCH), &SoundInterpType, 1, "GAUSSIAN", 0);
+    GUIDisplayButtonHoleTu(6, 11, (u4)(row[SND_ROW_LIST] + 2 * SND_PITCH), &SoundInterpType, 2, "CUBIC SPLINE", 0);
+    GUIDisplayButtonHoleTu(6, 11, (u4)(row[SND_ROW_LIST] + 3 * SND_PITCH), &SoundInterpType, 3, "8-POINT", 0);
 
-    GUIDisplayTextY(6, 106, 152, "LOWPASS:");
-    GUIDisplayButtonHoleTu(6, 111, 157, &LowPassFilterType, 0, GUISoundTextF, 1);
-    GUIDisplayButtonHoleTu(6, 111, 167, &LowPassFilterType, 1, "SIMPLE", 1);
-    GUIDisplayButtonHoleTu(6, 111, 177, &LowPassFilterType, 2, "DYNAMIC", 1);
+    GUIDisplayTextY(6, 106, (u4)row[SND_ROW_LISTLABEL], "LOWPASS:");
+    GUIDisplayButtonHoleTu(6, 111, (u4)(row[SND_ROW_LIST] + 0 * SND_PITCH), &LowPassFilterType, 0, GUISoundTextF, 1);
+    GUIDisplayButtonHoleTu(6, 111, (u4)(row[SND_ROW_LIST] + 1 * SND_PITCH), &LowPassFilterType, 1, "SIMPLE", 1);
+    GUIDisplayButtonHoleTu(6, 111, (u4)(row[SND_ROW_LIST] + 2 * SND_PITCH), &LowPassFilterType, 2, "DYNAMIC", 1);
 
 #ifdef __UNIXSDL__
     /* SDL, PipeWire and libao all render at the DSP's own rate and resample
        onward, so there is no rate to choose here: report what comes out
        instead of offering settings that do nothing. */
-    GUIDisplayTextY(6, 6, 93, "OUTPUT RATE:");
+    GUIDisplayTextY(6, 6, (u4)row[SND_ROW_RATELABEL], "OUTPUT RATE:");
     {
         static char rate[8];
 
-        GUIDisplayBBox(6, 15, 101, 69, 109, 167);
+        GUIDisplayBBox(6, 15, (u4)row[SND_ROW_RATEBOX], 69, 109, 167);
         snprintf(rate, sizeof(rate), "%5uHZ", (unsigned)AUDIO_OUTPUT_RATE);
-        GUIDisplayTextG(6, 23, 104, rate);
+        GUIDisplayTextG(6, 23, (u4)row[SND_ROW_RATEBOX] + 3, rate);
     }
 #else
-    GUIDisplayTextY(6, 6, 93, "SAMPLING RATE:");
+    GUIDisplayTextY(6, 6, (u4)row[SND_ROW_RATELABEL], "SAMPLING RATE:");
     {
-        GUIDisplayBBox(6, 15, 101, 69, 109, 167); // Sampling Rate Box
+        GUIDisplayBBox(6, 15, (u4)row[SND_ROW_RATEBOX], 69, 109, 167); // Sampling Rate Box
         static char const GUISoundTextB1[][8] = {
             " 8000HZ",
             "11025HZ",
@@ -1358,12 +1361,12 @@ void DisplayGUISound(void)
             "32000HZ",
             "48000HZ"
         };
-        GUIDisplayTextG(6, 23, 104, GUISoundTextB1[SoundQuality]);
+        GUIDisplayTextG(6, 23, (u4)row[SND_ROW_RATEBOX] + 3, GUISoundTextB1[SoundQuality]);
     }
 #endif
 
-    GUIDisplayTextY(6, 6, 116, "VOLUME LEVEL:");
-    GUIDrawSlider(6, 15, 100, 131, &MusicRelVol, glscslidSet, glscslidText);
+    GUIDisplayTextY(6, 6, (u4)row[SND_ROW_VOLLABEL], "VOLUME LEVEL:");
+    GUIDrawSlider(6, 15, 100, (u4)row[SND_ROW_VOL], &MusicRelVol, glscslidSet, glscslidText);
 }
 
 static char const* DisplayGUICheatConv(u1 const* const c)
