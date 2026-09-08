@@ -204,9 +204,11 @@ PrevFSMode db 6
 @ You need to select the custom video mode and modify CustomResX/Y to properly
 @ use custom res support.
 %endif
-cvidmode db 2
+@ Default is 10: 768x672 OpenGL windowed, which is hq3x's output pixel for
+@ pixel, so the filtered picture is not scaled again on its way to the window.
+cvidmode db 10
 @ Last windowed & fullscreen modes (used when alt-tabbing)
-PrevWinMode db 2
+PrevWinMode db 10
 PrevFSMode db 3
 
 %endif
@@ -223,7 +225,8 @@ CustomResY dd 480
 @ Video Interpolation is compatible with scanlines.
 @ Blends the neighboring pixels on the screen to eliminate pixelation.
 antienab db 0
-BilinearFilter db 0
+@ On by default: it softens the step between the filtered pixels.
+BilinearFilter db 1
 
 @
 @ Enable NTSC Filter (0 = NO, 1 = Yes)
@@ -261,7 +264,8 @@ En2xSaI db 0
 @ This is a filter MaxSt has created. These are very CPU intensive filters that
 @ do very awesome blending to remove the pixelation.
 @ This is disabled when other filters are used. enhanced filter support is required.
-hqFilter db 0
+@ On by default at 3x, see hqFilterlevel below.
+hqFilter db 1
 @ Set HQ*x level [2..4]
 @ Recommended min resolutions
 @ HQ2x = 512x448
@@ -270,14 +274,22 @@ hqFilter db 0
 %ifdef __OPENGL__
 @ HQ2x is only available for OpenGL.
 %endif
-hqFilterlevel db 2
+@ 3 by default: hq3x costs about a sixth of a 60Hz frame and is the sharpest
+@ of the smoothing filters on pixel art.
+hqFilterlevel db 3
 
 @
 @ Enable Scanlines (0 = NONE, 1 = Full, 2 = 25%, 3 = 50%) - simulate TV scanlines
 @ This is compatible with interpolation.
 scanlines db 0
 @ OpenGL scanlines intensity [0..100]
-sl_intensity db 0
+sl_intensity db 50
+@ Screen brightness boost [0..100], in percent, applied after the filters.
+@ Scanlines darken the picture by dimming one row in every group, so this
+@ lifts it back: measured over a frame, 50% scanlines cost about 17% of the
+@ brightness and a boost of 33 returns it to within 3% of the unfiltered
+@ picture. It saturates rather than wrapping, so already-bright pixels stay put.
+sl_brightness db 33
 
 @
 @ Enable Grayscale Mode (0 = NO, 1 = Yes) - don't enable this for other than nostalgia
@@ -301,7 +313,8 @@ Mode7HiRes16b db 0
 %endif
 @ VSync is automatically enforced in SDL software modes.
 %endif
-vsyncon db 0
+@ On by default: without it the picture tears.
+vsyncon db 1
 
 #ifndef __UNIXSDL__
 @

@@ -426,8 +426,13 @@ u4 const NumVideoModes = lengthof(GUIVideoModeNames);
 u1 GUIBIFIL[] = { _, _, _, _, _, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X };
 u1 GUIDSIZE[] = { _, _, X, X, X, _, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X };
 u1 GUIHQ2X[] = { _, _, X, X, X, _, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X };
-u1 GUIHQ3X[] = { _, _, X, X, X, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _ };
-u1 GUIHQ4X[] = { _, _, X, X, X, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _ };
+/* 3x and 4x used to be offered only in the software modes, because the
+   accelerated path could not compose anything but a 512-wide picture. It now
+   makes each filter at its own size and lets the renderer scale that to the
+   window, so they follow 2x. Leaving them off turned the level buttons into a
+   one-entry radio group in every OpenGL mode. */
+u1 GUIHQ3X[] = { _, _, X, X, X, _, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X };
+u1 GUIHQ4X[] = { _, _, X, X, X, _, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X };
 u1 GUII2VID[] = { _, _, X, X, X, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _ };
 u1 GUIKEEP43[] = { _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, X, _, _, X, X };
 u1 GUIM7VID[] = { _, _, X, X, X, _, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X };

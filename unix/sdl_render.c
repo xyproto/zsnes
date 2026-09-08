@@ -210,23 +210,69 @@ static void sr_line(unsigned short* dst, int const line)
 }
 
 /* Halve every second row, which is what the GL path's blended 1D texture did. */
+/* Scale a 565 pixel by a percentage, saturating. 100 leaves it alone. */
+static unsigned short sr_shade(unsigned const p, unsigned const pct)
+{
+    unsigned r = ((p >> 11) & 0x1Fu) * pct / 100u;
+    unsigned g = ((p >> 5) & 0x3Fu) * pct / 100u;
+    unsigned b = (p & 0x1Fu) * pct / 100u;
+
+    if (r > 0x1Fu) {
+        r = 0x1Fu;
+    }
+    if (g > 0x3Fu) {
+        g = 0x3Fu;
+    }
+    if (b > 0x1Fu) {
+        b = 0x1Fu;
+    }
+    return (unsigned short)((r << 11) | (g << 5) | b);
+}
+
+/* Brightness and scanlines are one pass over the frame, through a pair of
+   tables: every pixel is a single lookup, and the tables are only rebuilt when
+   a setting moves. Two 64K tables is 256KB, against a multiply per channel per
+   pixel on frames that reach 1024x896. */
+static unsigned short sr_lut_lit[65536];
+static unsigned short sr_lut_dim[65536];
+static int sr_lut_bright = -1;
+static int sr_lut_dark = -1;
+
+static void sr_build_luts(void)
+{
+    unsigned const lit = 100u + sl_brightness;
+    /* The dim rows take the boost too, so brightness lifts the whole picture
+       rather than widening the gap between the rows. */
+    unsigned const dim = lit * (100u - sl_intensity) / 100u;
+    unsigned i;
+
+    for (i = 0; i < 65536u; i++) {
+        sr_lut_lit[i] = sr_shade(i, lit);
+        sr_lut_dim[i] = sr_shade(i, dim);
+    }
+    sr_lut_bright = sl_brightness;
+    sr_lut_dark = sl_intensity;
+}
+
 /* One darkened row per source scanline: the last of each group of `vscale`,
    which for the doubled path is every other row, as it always was. Tying it to
    the source line rather than to the output row keeps the CRT look the same
    whether the picture was scaled 2x, 3x or 4x. */
-static void sr_scanlines(int const w, int const h, int const vscale)
+static void sr_shade_frame(int const w, int const h, int const vscale,
+    int const scanlines)
 {
-    unsigned const keep = (unsigned)(100 - sl_intensity);
     int y, x;
 
-    for (y = vscale - 1; y < h; y += vscale) {
-        unsigned short* row = sr_pixels + (size_t)y * w;
+    if (sr_lut_bright != (int)sl_brightness || sr_lut_dark != (int)sl_intensity) {
+        sr_build_luts();
+    }
+    for (y = 0; y < h; y++) {
+        unsigned short* const row = sr_pixels + (size_t)y * w;
+        unsigned short const* const lut
+            = (scanlines && (y % vscale) == vscale - 1) ? sr_lut_dim : sr_lut_lit;
+
         for (x = 0; x < w; x++) {
-            unsigned const p = row[x];
-            unsigned const r = ((p >> 11) & 0x1F) * keep / 100u;
-            unsigned const g = ((p >> 5) & 0x3F) * keep / 100u;
-            unsigned const b = (p & 0x1F) * keep / 100u;
-            row[x] = (unsigned short)((r << 11) | (g << 5) | b);
+            row[x] = lut[row[x]];
         }
     }
 }
@@ -303,11 +349,16 @@ void sr_drawwin(void)
         }
     }
 
-    /* Scanlines go over whatever was composed, so they combine with the hq and
-       2xSaI filters instead of only showing on an unfiltered picture. Not over
-       the NTSC filter, which darkens alternate rows itself. */
-    if (sl_intensity && !ntsc_drawn) {
-        sr_scanlines(w, h, vscale);
+    /* Brightness and scanlines go over whatever was composed, so they combine
+       with the hq and 2xSaI filters instead of only showing on an unfiltered
+       picture. Scanlines are skipped over the NTSC filter, which dims alternate
+       rows itself, but brightness still applies. */
+    {
+        int const scanlines = (sl_intensity != 0 && !ntsc_drawn);
+
+        if (scanlines || sl_brightness) {
+            sr_shade_frame(w, h, vscale, scanlines);
+        }
     }
 
     {

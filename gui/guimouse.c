@@ -1058,6 +1058,14 @@ static void DisplayGUIVideoClick_notmodestab(s4 const eax, s4 const edx)
                     GUIHoldXlimL = eax;
                     GUIHoldXlimR = eax + 100;
                 }
+                if (GUIClickArea(eax, edx, 60, 100, 60 + 100, 104)) {
+                    sl_brightness = eax - 60;
+                    GUIHold = 8;
+                    GUIHoldYlim = GUIwinposy[5] + 102;
+                    s4 const ebx = GUIwinposx[5] + 60;
+                    GUIHoldXlimL = ebx;
+                    GUIHoldXlimR = ebx + 100;
+                }
             } else {
                 // Scanlines
                 if (GUIDSIZE[cvidmode] != 0) {
