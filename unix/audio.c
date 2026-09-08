@@ -20,6 +20,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+#include "audio.h"
 #include "../gblhdr.h"
 #include "../gblvars.h"
 #include <fcntl.h>
@@ -125,8 +126,8 @@ uint32_t PrevSoundQuality;
    at that rate and let them convert: the mixer keeps unity pitch and its
    envelope tables need no rescaling, and the conversion happens once, well,
    rather than by retuning the emulated chip. SoundQuality no longer picks the
-   rate on this side. */
-#define RATE 32000
+   rate on this side; audio.h names it for the GUI. */
+#define RATE AUDIO_OUTPUT_RATE
 
 struct
 {

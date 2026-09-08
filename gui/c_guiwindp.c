@@ -1,5 +1,8 @@
 // Some work to be done here, please look at TODO.md
 #include <stdio.h>
+#ifdef __UNIXSDL__
+#include "../unix/audio.h"
+#endif
 #include <string.h>
 
 #ifdef __UNIXSDL__
@@ -1271,6 +1274,19 @@ void DisplayGUISound(void)
     GUIDisplayButtonHoleTu(6, 111, 167, &LowPassFilterType, 1, "SIMPLE", 1);
     GUIDisplayButtonHoleTu(6, 111, 177, &LowPassFilterType, 2, "DYNAMIC", 1);
 
+#ifdef __UNIXSDL__
+    /* SDL, PipeWire and libao all render at the DSP's own rate and resample
+       onward, so there is no rate to choose here: report what comes out
+       instead of offering settings that do nothing. */
+    GUIDisplayTextY(6, 6, 93, "OUTPUT RATE:");
+    {
+        static char rate[8];
+
+        GUIDisplayBBox(6, 15, 101, 69, 109, 167);
+        snprintf(rate, sizeof(rate), "%5uHZ", (unsigned)AUDIO_OUTPUT_RATE);
+        GUIDisplayTextG(6, 23, 104, rate);
+    }
+#else
     GUIDisplayTextY(6, 6, 93, "SAMPLING RATE:");
     {
         GUIDisplayBBox(6, 15, 101, 69, 109, 167); // Sampling Rate Box

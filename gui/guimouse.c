@@ -1295,10 +1295,13 @@ static void DisplayGUISoundClick(void)
     GUIPButtonHole(eax, edx, 111, 167, &LowPassFilterType, 1);
     GUIPButtonHole(eax, edx, 111, 177, &LowPassFilterType, 2);
 
+#ifndef __UNIXSDL__
+    /* Nothing to cycle where the backend fixes the rate; see DisplayGUISound. */
     if (GUIClickArea(eax, edx, 15, 101, 69, 109)) {
         static u1 const sampratenext[] = { 1, 4, 5, 6, 2, 3, 0, 0 };
         SoundQuality = sampratenext[SoundQuality];
     }
+#endif
 
     if (GUIClickArea(eax, edx, 15, 129, 115, 133)) {
         MusicRelVol = eax - 15;

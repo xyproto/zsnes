@@ -26,6 +26,11 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <stdbool.h>
 #include <stdint.h>
 
+/* The DSP's own rate. Every backend here renders at it and lets the sound
+   server resample onward, so it is what the emulator actually outputs and
+   what the GUI reports. SoundQuality does not choose it. */
+#define AUDIO_OUTPUT_RATE 32000
+
 void InitSampleControl(void);
 int InitSound(void);
 void DeinitSound(void);

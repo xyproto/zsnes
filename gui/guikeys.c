@@ -682,10 +682,12 @@ static void GUISoundKeys(char dh)
     GUIKeyCheckbox(&PrimaryBuffer, 'P', dh);
 #endif
 
+#ifndef __UNIXSDL__
     if (dh == 'R') { // Sampling Rate
         static u1 const sampratenext[] = { 1, 4, 5, 6, 2, 3, 0, 0 };
         SoundQuality = (SoundQuality & 0xFFFFFF00) | sampratenext[SoundQuality & 0xFF];
     }
+#endif
 
     GUIKeyButtonHole(&SoundInterpType, 0, 'N', dh);
     GUIKeyButtonHole(&SoundInterpType, 1, 'G', dh);
