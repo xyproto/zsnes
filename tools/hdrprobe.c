@@ -18,14 +18,19 @@
 #include <stdio.h>
 int main(void)
 {
-    if (!SDL_Init(SDL_INIT_VIDEO)) { printf("SDL_Init: %s\n", SDL_GetError()); return 1; }
+    if (!SDL_Init(SDL_INIT_VIDEO)) {
+        printf("SDL_Init: %s\n", SDL_GetError());
+        return 1;
+    }
     printf("SDL %d.%d.%d\n", SDL_MAJOR_VERSION, SDL_MINOR_VERSION, SDL_MICRO_VERSION);
     printf("video driver: %s\n", SDL_GetCurrentVideoDriver());
     int n = SDL_GetNumRenderDrivers();
     printf("render drivers (%d):", n);
-    for (int i = 0; i < n; i++) printf(" %s", SDL_GetRenderDriver(i));
+    for (int i = 0; i < n; i++)
+        printf(" %s", SDL_GetRenderDriver(i));
     printf("\n");
-    int nd = 0; SDL_DisplayID* d = SDL_GetDisplays(&nd);
+    int nd = 0;
+    SDL_DisplayID* d = SDL_GetDisplays(&nd);
     for (int i = 0; i < nd; i++) {
         SDL_PropertiesID dp = SDL_GetDisplayProperties(d[i]);
         printf("display %d \"%s\": HDR_enabled=%s\n", i + 1, SDL_GetDisplayName(d[i]),
@@ -33,7 +38,10 @@ int main(void)
     }
     SDL_free(d);
     SDL_Window* w = SDL_CreateWindow("hdr", 320, 240, 0);
-    if (!w) { printf("no window: %s\n", SDL_GetError()); return 1; }
+    if (!w) {
+        printf("no window: %s\n", SDL_GetError());
+        return 1;
+    }
     for (int i = 0; i < n; i++) {
         SDL_PropertiesID p = SDL_CreateProperties();
         SDL_SetPointerProperty(p, SDL_PROP_RENDERER_CREATE_WINDOW_POINTER, w);
@@ -49,11 +57,13 @@ int main(void)
                 SDL_GetFloatProperty(rp, SDL_PROP_RENDERER_HDR_HEADROOM_FLOAT, 1.0f));
             SDL_Texture* t = SDL_CreateTexture(r, SDL_PIXELFORMAT_RGBA128_FLOAT, SDL_TEXTUREACCESS_STREAMING, 64, 64);
             printf("  float texture: %s", t ? "ok" : "refused");
-            if (t) SDL_DestroyTexture(t);
+            if (t)
+                SDL_DestroyTexture(t);
             SDL_DestroyRenderer(r);
         }
         printf("\n");
     }
-    SDL_DestroyWindow(w); SDL_Quit();
+    SDL_DestroyWindow(w);
+    SDL_Quit();
     return 0;
 }
