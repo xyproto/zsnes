@@ -417,8 +417,9 @@ PrimaryBuffer db 0
 @
 @ Sampling Rate: (0 = 8000Hz, 1 = 11025Hz, 2 = 22050Hz, 3 = 44100Hz,
 @                             4 = 16000Hz, 5 = 32000Hz, 6 = 48000Hz)
-@ Using any other sound frequencies other than the default 32000Hz
-@ is COMPLETELY UNACCEPTABLE in use for sound bug reports.
+@ Windows only. SDL, PipeWire and libao render at the DSP's own 32000Hz and
+@ let the sound server resample onward, so this setting does nothing there and
+@ the GUI reports the output rate rather than offering a choice.
 SoundQuality dd 5
 
 @
