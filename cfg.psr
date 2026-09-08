@@ -284,6 +284,16 @@ hqFilterlevel db 3
 scanlines db 0
 @ OpenGL scanlines intensity [0..100]
 sl_intensity db 50
+@ Bloom [0..100]. Bright areas spill light into what surrounds them, the way a
+@ phosphor does. On an ordinary display the spill has to be clipped at white;
+@ with HDROutput on it is allowed past it, which is the point of turning HDR on
+@ at all - the source is 15-bit, so HDR buys headroom above white, not colours.
+BloomLevel db 0
+
+@ Ask for an HDR surface (0 = NO, 1 = Yes). Only takes effect if the display
+@ and the renderer both report HDR; otherwise the ordinary path is used.
+HDROutput db 0
+
 @ Which monitor to open on, as the short ID shown in the Monitors tab. SDL
 @ renumbers displays every run and the ids it hands out do not survive a
 @ replug, but the name follows the monitor, so the ID is that name reduced to

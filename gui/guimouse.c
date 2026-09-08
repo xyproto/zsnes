@@ -1024,80 +1024,28 @@ static void DisplayGUIVideoClick_notmodestab(s4 const eax, s4 const edx)
                 }
             }
 
-            GUIClickCButton(eax, edx, 18, 125, &GrayscaleMode); // Grayscale
+            GUIClickCButton(eax, edx, 18, 90, &GrayscaleMode); // Grayscale
 
             // Hires Mode7
             if (GUIM7VID[cvidmode] != 0)
-                GUIClickCButton5(eax, edx, 128, 125, &Mode7HiRes16b, 1);
+                GUIClickCButton5(eax, edx, 128, 90, &Mode7HiRes16b, 1);
 
 #ifdef __WIN32__
             // Triple buffs/vsyncs
             if (GUIWFVID[cvidmode] != 0) {
-                GUIClickCButtonf(eax, edx, 128, 145, &TripleBufferWin, initDirectDraw);
+                GUIClickCButtonf(eax, edx, 128, 110, &TripleBufferWin, initDirectDraw);
             }
-            GUIClickCButtonf(eax, edx, 18, 145, &vsyncon, initDirectDraw);
+            GUIClickCButtonf(eax, edx, 18, 110, &vsyncon, initDirectDraw);
 #endif
 
 #ifdef __OPENGL__
             if (GUIBIFIL[cvidmode] != 0)
-                GUIClickCButtonI(eax, edx, 18, 145, &vsyncon);
+                GUIClickCButtonI(eax, edx, 18, 110, &vsyncon);
 #endif
 
             // Keep 4:3 Ratio
             if (GUIKEEP43[cvidmode] != 0)
-                GUIClickCButtonK(eax, edx, 18, 175, &Keep4_3Ratio, initwinvideo);
-
-            // GL Scanlines
-            if (GUIBIFIL[cvidmode] != 0) {
-                // Update mouse location
-                s4 const eax = GUImouseposx - GUIwinposx[5];
-                s4 const edx = GUImouseposy - GUIwinposy[5];
-
-                if (GUIClickArea(eax, edx, 23, 88, 23 + 100, 92)) {
-                    sl_intensity = eax - 23;
-                    GUIHold = 8; // Lock mouse to bar when clicked
-                    GUIHoldYlim = GUIwinposy[5] + 90;
-                    s4 const eax = GUIwinposx[5] + 23;
-                    GUIHoldXlimL = eax;
-                    GUIHoldXlimR = eax + 100;
-                }
-                if (GUIClickArea(eax, edx, 23, 107, 23 + 100, 111)) {
-                    sl_vibrancy = eax - 23;
-                    GUIHold = 8;
-                    GUIHoldYlim = GUIwinposy[5] + 109;
-                    s4 const ebx = GUIwinposx[5] + 23;
-                    GUIHoldXlimL = ebx;
-                    GUIHoldXlimR = ebx + 100;
-                }
-            } else {
-                // Scanlines
-                if (GUIDSIZE[cvidmode] != 0) {
-                    if (GUIClickArea(eax, edx, 168 + 1, 87 + 3, 168 + 38, 87 + 8)) {
-                        En2xSaI = 0;
-                        hqFilter = 0;
-                        NTSCFilter = 0;
-                    }
-                    GUIPButtonHoleS(eax, edx, 18, 87, &scanlines, 0);
-                    GUIPButtonHoleS(eax, edx, 168, 87, &scanlines, 1);
-                }
-
-                {
-                    if (GUIDSIZE[cvidmode] != 0) {
-                        if (GUIClickArea(eax, edx, 68 + 1, 87 + 3, 68 + 38, 87 + 8)) {
-                            En2xSaI = 0;
-                            hqFilter = 0;
-                            NTSCFilter = 0;
-                        }
-                        if (GUIClickArea(eax, edx, 118 + 1, 87 + 3, 118 + 38, 87 + 8)) {
-                            En2xSaI = 0;
-                            hqFilter = 0;
-                            NTSCFilter = 0;
-                        }
-                        GUIPButtonHoleS(eax, edx, 68, 87, &scanlines, 2);
-                        GUIPButtonHoleS(eax, edx, 118, 87, &scanlines, 3);
-                    }
-                }
-            }
+                GUIClickCButtonK(eax, edx, 18, 140, &Keep4_3Ratio, initwinvideo);
         }
     }
 
@@ -1276,11 +1224,50 @@ static void DisplayGUIVideoClick(s4 const eax, s4 const edx)
         GUITabRowClick(eax, edx, GUIVntscTab, next, GUIVideoTabs);
     }
 
-    if (GUIVideoTabs[0] == 3) { // Monitors tab
+    if (GUIVideoTabs[0] == 3) { // CRT tab
+        /* The three sliders sit on rows far enough apart that only one can
+           match, so they share the drag lock; picking a scanline step in a
+           software mode turns off the filters it cannot combine with, as it
+           did when these lived in the Filters tab. */
+        u1* const bar[3] = { &sl_intensity, &sl_vibrancy, &BloomLevel };
+        s4 const barY[3] = { 40, 68, 96 };
+        s4 const wx = GUIwinposx[5];
+        u4 i;
+
+        if (GUIBIFIL[cvidmode] == 0 && GUIDSIZE[cvidmode] != 0) {
+            s4 const stepX[4] = { 18, 68, 118, 168 };
+            u1 const stepV[4] = { 0, 2, 3, 1 };
+
+            for (i = 0; i < 4; i++) {
+                if (GUIClickArea(eax, edx, stepX[i] + 1, 38 + 3, stepX[i] + 38,
+                        38 + 8)) {
+                    En2xSaI = 0;
+                    hqFilter = 0;
+                    NTSCFilter = 0;
+                }
+                GUIPButtonHoleS(eax, edx, stepX[i], 38, &scanlines, stepV[i]);
+            }
+        }
+        for (i = 0; i < 3; i++) {
+            if (i == 0 && GUIBIFIL[cvidmode] == 0) {
+                continue; /* software modes use the steps above instead */
+            }
+            if (GUIClickArea(eax, edx, 23, barY[i] - 2, 23 + 100, barY[i] + 2)) {
+                *bar[i] = (u1)(eax - 23);
+                GUIHold = 8; /* lock the pointer to this bar while held */
+                GUIHoldYlim = GUIwinposy[5] + barY[i];
+                GUIHoldXlimL = wx + 23;
+                GUIHoldXlimR = wx + 23 + 100;
+            }
+        }
+        GUIClickCButton(eax, edx, 18, 122, &HDROutput);
+    }
+
+    if (GUIVideoTabs[0] == 4) { // Monitors tab
         u4 const count = VideoMonitorCount();
         u4 i;
 
-        for (i = 0; i < count && i < 8u; i++) {
+        for (i = 0; i < count && i < 6u; i++) {
             if (GUIClickArea(eax, edx, 18 + 1, (s4)(42 + i * 12) + 1, 18 + 7,
                     (s4)(42 + i * 12) + 7)) {
                 VideoMonitorSelect(i); /* stores the ID, not the position */

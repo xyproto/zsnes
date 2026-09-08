@@ -1083,7 +1083,35 @@ void DisplayGUIVideo(void)
     }
 
     // Filters tab
-    if (GUIVideoTabs[0] == 3) { // Monitors tab
+    if (GUIVideoTabs[0] == 3) { // CRT tab
+        /* Everything that makes the picture look like a tube rather than a
+           panel, in the order it is applied: the beam, the light it loses,
+           and the light bright areas spill. */
+        GUIDisplayTextY(5, 13, 30, "SCANLINES:");
+        if (GUIBIFIL[cvidmode] != 0) {
+            GUIDrawSlider(5, 23, 100, 40, &sl_intensity, glscslidSet, glscslidText);
+        } else if (GUIDSIZE[cvidmode] != 0) {
+            /* The software path dims by a fixed step rather than a slider. */
+            GUIDisplayButtonHoleTu(5, 18, 38, &scanlines, 0, "NONE", 1);
+            GUIDisplayButtonHoleTu(5, 68, 38, &scanlines, 2, "25%", 0);
+            GUIDisplayButtonHoleTu(5, 118, 38, &scanlines, 3, "50%", 0);
+            GUIDisplayButtonHoleTu(5, 168, 38, &scanlines, 1, "FULL", 0);
+        }
+
+        GUIDisplayTextY(5, 13, 58, "VIBRANCY:");
+        GUIDrawSlider(5, 23, 100, 68, &sl_vibrancy, glscslidSet, glscslidText);
+
+        GUIDisplayTextY(5, 13, 86, "BLOOM:");
+        GUIDrawSlider(5, 23, 100, 96, &BloomLevel, glscslidSet, glscslidText);
+
+        GUIDisplayTextY(5, 13, 114, "OUTPUT:");
+        GUIDisplayCheckboxu(5, 18, 122, &HDROutput, "HDR OUTPUT", 0);
+        GUIDisplayText(5, 13, 138, "HDR NEEDS A DISPLAY IN");
+        GUIDisplayText(5, 13, 148, "HDR MODE, AND APPLIES");
+        GUIDisplayText(5, 13, 158, "ON SET, IN THE MODES TAB.");
+    }
+
+    if (GUIVideoTabs[0] == 4) { // Monitors tab
         /* Listed by the short ID the setting stores, so what is in the config
            can be matched against what is on screen. The filled row is worked
            out from that ID each time rather than kept as a number, because SDL
@@ -1096,7 +1124,7 @@ void DisplayGUIVideo(void)
         if (count == 0) {
             GUIDisplayText(5, 18, 42, "NONE REPORTED");
         }
-        for (i = 0; i < count && i < 8u; i++) {
+        for (i = 0; i < count && i < 6u; i++) {
             char id[16], line[34];
 
             VideoMonitorID(i, id, (u4)sizeof(id));
@@ -1104,8 +1132,9 @@ void DisplayGUIVideo(void)
             GUIDisplayButtonHoleTu(5, 18, (u4)(42 + i * 12), &monitorrow, (u4)i,
                 line, 0);
         }
-        GUIDisplayText(5, 13, 150, "TAKES EFFECT ON SET,");
-        GUIDisplayText(5, 13, 160, "IN THE MODES TAB.");
+
+        GUIDisplayText(5, 13, 130, "APPLIES ON SET,");
+        GUIDisplayText(5, 13, 140, "IN THE MODES TAB.");
     }
 
     if (GUIVideoTabs[0] == 2) {
@@ -1156,38 +1185,14 @@ void DisplayGUIVideo(void)
                         GUIDisplayButtonHoleTu(5, 188, 68, &hqFilterlevel, 4, "4X", 0);
                 }
             }
-
-            char const* const GUIVideoTextB2 = "SCANLINES:"; // Filters.Scanlines
-            // GL Scanlines
-            if (GUIBIFIL[cvidmode] != 0) {
-                GUIDisplayTextY(5, 13, 80, GUIVideoTextB2); // Scanlines text
-                GUIDrawSlider(5, 23, 100, 90, &sl_intensity, glscslidSet, glscslidText);
-                /* Scanlines dim one row per group, so the picture as a whole
-                   goes darker; this puts the light back. Laid out like the
-                   scanlines pair above: label, then the bar under it and a
-                   little to the right. */
-                GUIDisplayTextY(5, 13, 99, "VIBRANCY:");
-                GUIDrawSlider(5, 23, 100, 109, &sl_vibrancy, glscslidSet, glscslidText);
-            } else {
-                // Scanlines
-                if (GUIDSIZE[cvidmode] != 0) {
-                    GUIDisplayTextY(5, 13, 80, GUIVideoTextB2); // Scanlines text
-                    GUIDisplayButtonHoleTu(5, 18, 87, &scanlines, 0, "NONE", 1); // None
-                    GUIDisplayButtonHoleTu(5, 168, 87, &scanlines, 1, "FULL", 0); // Full
-                }
-                if (GUIDSIZE[cvidmode] != 0) {
-                    GUIDisplayButtonHoleTu(5, 68, 87, &scanlines, 2, "25%", 0); // 25%
-                    GUIDisplayButtonHoleTu(5, 118, 87, &scanlines, 3, "50%", 0); // 50%
-                }
-            }
         }
 
-        GUIDisplayTextY(5, 13, 120, "MISC FILTERS:"); // Filters.Other
-        GUIDisplayCheckboxu(5, 18, 125, &GrayscaleMode, "GRAYSCALE MODE", 0); // -v8
+        GUIDisplayTextY(5, 13, 85, "MISC FILTERS:"); // Filters.Other
+        GUIDisplayCheckboxu(5, 18, 90, &GrayscaleMode, "GRAYSCALE MODE", 0); // -v8
 
         // Hires Mode7
         if (GUIM7VID[cvidmode] != 0 && newengen != 0) {
-            GUIDisplayCheckboxu(5, 128, 125, &Mode7HiRes16b, "HI-RES MODE 7", 0);
+            GUIDisplayCheckboxu(5, 128, 90, &Mode7HiRes16b, "HI-RES MODE 7", 0);
         }
 
         // Monitor Refresh
@@ -1197,8 +1202,8 @@ void DisplayGUIVideo(void)
         if (allow_glvsync == 1 && GUIBIFIL[cvidmode] != 0)
 #endif
         {
-            GUIDisplayTextY(5, 13, 140, "MONITOR SYNC:"); // Video.Sync
-            GUIDisplayCheckboxu(5, 18, 145, &vsyncon, "VSYNC", 0); // -w
+            GUIDisplayTextY(5, 13, 105, "MONITOR SYNC:"); // Video.Sync
+            GUIDisplayCheckboxu(5, 18, 110, &vsyncon, "VSYNC", 0); // -w
         }
 #endif
 
@@ -1208,15 +1213,15 @@ void DisplayGUIVideo(void)
 #endif
 #ifdef __WIN32__
         if (GUIWFVID[cvidmode] != 0) {
-            GUIDisplayCheckboxu(5, 128, 145, &TripleBufferWin, GUIVideoTextB4b, 0);
+            GUIDisplayCheckboxu(5, 128, 110, &TripleBufferWin, GUIVideoTextB4b, 0);
         }
 #endif
 
         char const* const GUIVideoTextB5 = "DISPLAY OPTIONS:"; // Video.Display
         // Keep 4:3 Ratio
         if (GUIKEEP43[cvidmode] != 0 && Keep43Check()) {
-            GUIDisplayTextY(5, 13, 170, GUIVideoTextB5);
-            GUIDisplayCheckboxu(5, 18, 175, &Keep4_3Ratio, "USE 4:3 RATIO", 8);
+            GUIDisplayTextY(5, 13, 135, GUIVideoTextB5);
+            GUIDisplayCheckboxu(5, 18, 140, &Keep4_3Ratio, "USE 4:3 RATIO", 8);
         }
     }
 
