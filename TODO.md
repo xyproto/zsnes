@@ -22,13 +22,29 @@
 - [ ] Filter hi-res frames through the NTSC filter: `ntsc_blit` (`video/ntsc.c`)
       reads 256 input pixels a row, so a 512-wide hi-res line is only half
       filtered. snes9x carries a separate `snes_ntsc_blit_hires` for this
-- [ ] Support HDR output: SDL3 reports whether a display is in HDR mode
-      (`SDL_PROP_DISPLAY_HDR_ENABLED_BOOLEAN`) and can present a floating-point
-      or 10-bit surface. The whole pipeline is 16-bit 565 today - vidbuffer,
-      the hq and 2xSaI filters, the NTSC blitter and the scanline tables - so
-      this means choosing where the widening happens rather than switching a
-      flag: cheapest is to keep the emulation at 565 and widen once in the
-      renderer, alongside the vibrancy pass
+- [ ] Support HDR output, with bloom as the thing that makes it worth having.
+      SDL3 reports whether a display is in HDR mode
+      (`SDL_PROP_DISPLAY_HDR_ENABLED_BOOLEAN`) and can present a wider surface,
+      but on 15-bit source HDR alone buys almost nothing: the same 32768
+      colours in a bigger container, and stretching them makes banding worse,
+      not better. What it does buy is headroom above white, and bloom is the
+      one pass here that produces values needing it - every other filter is
+      bounded by its input, while spilling a bright region's light outward and
+      leaving the source bright genuinely exceeds 1.0. Clipping that is what
+      makes SDR bloom look washed out, the same way the old brightness gain
+      did.
+      So both belong in the same place: the post-composition pass in
+      `sr_drawwin` that already does scanlines and vibrancy, after the filters
+      and at the point of widening. Bloom cannot join the lookup table there,
+      being spatial rather than per-pixel, but it composes with it. Measured on
+      a 768x672 hq3x frame, a separable blur at full resolution costs 7.7ms a
+      frame, which is too much; at quarter resolution it is 2.3ms, about what
+      hq3x itself costs, and bloom is low-frequency so quarter resolution loses
+      nothing. Most of that is the full-resolution add-back, not the blur, so
+      the tap count is nearly free.
+      Note the luma-dependent beam width in `sr_build_luts` is already a cheap
+      stand-in for one part of this: bloom filling the scanline gaps on bright
+      content. Real bloom would do it rather than approximate it
 - [ ] Make transparent messages work with the small font (`cfg.psr`)
 - [ ] Use `SDL_Gamepad` so controllers get SDL's mapping database instead of
       raw numbered axes and buttons
