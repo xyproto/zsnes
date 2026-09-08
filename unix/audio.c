@@ -101,6 +101,15 @@ static _Atomic uint64_t pw_stat_resizes = 0;
 
 static uint32_t pw_initial_ring_ms = 250;
 static uint32_t pw_max_ring_ms = 2000;
+
+/* How much audio to hold ahead of the sound card, which is what the delay
+   between pressing a button and hearing it actually is. It is deliberately
+   not tied to the size of the ring: the ring is headroom against a late
+   producer and grows when the server hiccups, and holding it half full made
+   every one of those hiccups a permanent 125ms of extra lag that the rate
+   control then took half a minute to not quite drain. */
+static uint32_t pw_target_ms = 40;
+static atomic_uint pw_target_frames = 0;
 #endif
 
 uint8_t* sdl_audio_buffer = NULL;
@@ -548,19 +557,34 @@ static inline uint32_t pw_ring_space_locked(void) { return pw_ring_size - pw_rin
 
 static void pw_rs_update_dynamic(void)
 {
+    uint32_t const target = pw_target_frames * pw_stride_bytes;
     uint32_t fill_bytes;
-    double fill;
-    if (!pw_ring_size) {
+    double err;
+
+    if (!pw_ring_size || !target) {
         return;
     }
     pthread_mutex_lock(&pw_ring_mutex);
     fill_bytes = pw_ring_fill_locked();
+    /* Drop what is beyond three times the target outright. Coming back from
+       the GUI, a pause or a slow first few frames can leave a large backlog,
+       and bending the rate half a percent would take the better part of a
+       minute to work it off - all of it heard as lag. One click now is the
+       better trade. */
+    if (fill_bytes > target * 3U) {
+        pw_ring_tail += fill_bytes - target;
+        fill_bytes = target;
+    }
     pthread_mutex_unlock(&pw_ring_mutex);
-    fill = (double)fill_bytes / (double)pw_ring_size;
-    if (fill > 1.0)
-        fill = 1.0;
-    /* fill=0.5 -> ratio=base. fill=1 -> +max (drain). fill=0 -> -max (fill). */
-    pw_rs.ratio = pw_rs.base_ratio * (1.0 + PW_RS_MAX_DELTA * (2.0 * fill - 1.0));
+    /* How far off target, as a fraction of it, clamped so a wildly wrong fill
+       still only bends the rate by the maximum. */
+    err = ((double)fill_bytes - (double)target) / (double)target;
+    if (err > 1.0) {
+        err = 1.0;
+    } else if (err < -1.0) {
+        err = -1.0;
+    }
+    pw_rs.ratio = pw_rs.base_ratio * (1.0 + PW_RS_MAX_DELTA * err);
 }
 
 static void pw_ring_write(const uint8_t* src, uint32_t n)
@@ -661,6 +685,12 @@ static void pw_smart_size_ring(uint32_t quantum_frames)
     if (pw_observed_quantum_frames != quantum_frames) {
         pw_observed_quantum_frames = quantum_frames;
     }
+    /* The server takes a whole quantum at a time and the emulator only tops up
+       once a frame, so anything under two quanta underruns on ordinary jitter.
+       Raise the target to meet that, but never past a third of the ring. */
+    if (pw_target_frames < quantum_frames * 2U) {
+        pw_target_frames = quantum_frames * 2U;
+    }
     want_frames = quantum_frames * 8U;
     if (want_frames < pw_ring_min_frames) {
         want_frames = pw_ring_min_frames;
@@ -668,6 +698,9 @@ static void pw_smart_size_ring(uint32_t quantum_frames)
     want_bytes = want_frames * pw_stride_bytes;
     if (want_bytes > pw_ring_size) {
         pw_ring_resize(want_bytes);
+    }
+    if (pw_stride_bytes && pw_target_frames > (pw_ring_size / pw_stride_bytes) / 3U) {
+        pw_target_frames = (pw_ring_size / pw_stride_bytes) / 3U;
     }
 }
 
@@ -791,6 +824,10 @@ static void PipeWireParamChanged(void* userdata, uint32_t id, const struct spa_p
     pw_ring_max_frames = (rate * pw_max_ring_ms) / 1000U;
     if (pw_ring_min_frames < 256U) {
         pw_ring_min_frames = 256U;
+    }
+    pw_target_frames = (rate * pw_target_ms) / 1000U;
+    if (pw_target_frames > pw_ring_min_frames / 3U) {
+        pw_target_frames = pw_ring_min_frames / 3U;
     }
 
     /* Size the ring for the actual negotiated rate, not our guess. */
@@ -931,13 +968,15 @@ static void PipeWireProcess(void* userdata)
     }
 
     if (pw_stats_enabled && (pw_stat_cycles % 500U) == 0U) {
-        printf("PipeWire stats: %llu cycles, %llu underruns, %llu silence bytes, %llu ring resizes, ring=%u/%u frames\n",
+        printf("PipeWire stats: %llu cycles, %llu underruns, %llu silence bytes, %llu ring resizes, ring=%u/%u frames, target=%u frames (%u ms)\n",
             (unsigned long long)pw_stat_cycles,
             (unsigned long long)pw_stat_underruns,
             (unsigned long long)pw_stat_silent_pads,
             (unsigned long long)pw_stat_resizes,
             pw_ring_size / stride,
-            pw_ring_max_frames);
+            pw_ring_max_frames,
+            (unsigned)pw_target_frames,
+            pw_rate_hz ? (unsigned)(pw_target_frames * 1000U / pw_rate_hz) : 0U);
     }
 
     d->chunk->offset = 0;
@@ -1039,6 +1078,13 @@ static int SoundInit_pipewire()
             pw_initial_ring_ms = (uint32_t)v;
         }
     }
+    pw_target_ms = 40;
+    if ((env = getenv("ZSNES_PIPEWIRE_TARGET_MS")) && *env) {
+        long v = strtol(env, NULL, 10);
+        if (v >= 5 && v <= 500) {
+            pw_target_ms = (uint32_t)v;
+        }
+    }
     pw_max_ring_ms = 2000;
     if ((env = getenv("ZSNES_PIPEWIRE_BUFFER_MAX_MS")) && *env) {
         long v = strtol(env, NULL, 10);
@@ -1070,12 +1116,18 @@ static int SoundInit_pipewire()
                 PW_KEY_NODE_LATENCY, latency_str,
                 NULL);
         } else {
+            /* Without a hint the server is free to pick a large quantum, and
+               the buffer has to cover it whether the emulator needs to or not.
+               512 frames at the emulator's own rate is the usual ask for
+               a game, and about a SNES frame's worth of audio. */
+            snprintf(latency_str, sizeof(latency_str), "512/%u", (unsigned)RATE);
             props = pw_properties_new(
                 PW_KEY_MEDIA_TYPE, "Audio",
                 PW_KEY_MEDIA_CATEGORY, "Playback",
                 PW_KEY_MEDIA_ROLE, "Game",
                 PW_KEY_APP_NAME, "zsnes",
                 PW_KEY_NODE_RATE, rate_str,
+                PW_KEY_NODE_LATENCY, latency_str,
                 NULL);
         }
     }

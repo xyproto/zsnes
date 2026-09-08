@@ -94,25 +94,47 @@ static int sr_fullscreen = -1;
 #define SR_SRC_SKIP VID_SKIP
 #define SR_FIELD2 (75036 * 2)
 
-/* A renderer whose output is linear light, which is what SDL wants before it
-   will hand back an HDR surface. Falls back to the ordinary one if the request
-   is refused, so asking for HDR on a machine without it costs nothing. */
 static void sr_release(void);
 
-static SDL_Renderer* sr_create_hdr_renderer(SDL_Window* const win)
-{
-    SDL_PropertiesID const props = SDL_CreateProperties();
-    SDL_Renderer* r;
+/* Render drivers to try, in order, before letting SDL pick for itself.
+   Vulkan first: measured on a Wayland session it is one of only two drivers
+   that will accept the linear-light colorspace HDR needs - opengl, opengles2
+   and software all refuse it - and it is the better backend regardless. NULL
+   is the last entry and means "whatever SDL would have chosen". */
+static char const* const sr_drivers[] = { "vulkan", "gpu", NULL };
 
-    if (!props) {
-        return NULL;
+/* Make a renderer for `win`, asking for linear light when `linear` is set,
+   which is what SDL wants before it will hand back an HDR surface. Falls
+   through the list until one takes it, so asking for HDR on a machine without
+   it costs nothing but the attempts. */
+static SDL_Renderer* sr_make_renderer(SDL_Window* const win, int const linear)
+{
+    unsigned i;
+
+    for (i = 0; i < sizeof(sr_drivers) / sizeof(sr_drivers[0]); i++) {
+        SDL_PropertiesID const props = SDL_CreateProperties();
+        SDL_Renderer* r;
+
+        if (!props) {
+            return NULL;
+        }
+        SDL_SetPointerProperty(props, SDL_PROP_RENDERER_CREATE_WINDOW_POINTER, win);
+        if (sr_drivers[i]) {
+            SDL_SetStringProperty(props, SDL_PROP_RENDERER_CREATE_NAME_STRING,
+                sr_drivers[i]);
+        }
+        if (linear) {
+            SDL_SetNumberProperty(props,
+                SDL_PROP_RENDERER_CREATE_OUTPUT_COLORSPACE_NUMBER,
+                SDL_COLORSPACE_SRGB_LINEAR);
+        }
+        r = SDL_CreateRendererWithProperties(props);
+        SDL_DestroyProperties(props);
+        if (r) {
+            return r;
+        }
     }
-    SDL_SetPointerProperty(props, SDL_PROP_RENDERER_CREATE_WINDOW_POINTER, win);
-    SDL_SetNumberProperty(props, SDL_PROP_RENDERER_CREATE_OUTPUT_COLORSPACE_NUMBER,
-        SDL_COLORSPACE_SRGB_LINEAR);
-    r = SDL_CreateRendererWithProperties(props);
-    SDL_DestroyProperties(props);
-    return r;
+    return NULL;
 }
 
 /* Whether this renderer is actually showing HDR, and how far above SDR white
@@ -182,9 +204,11 @@ int sr_start(int width, int height, int req_depth, int FullScreen)
         PlaceWindowOnMonitor(sdl_window);
     }
 
-    sr_renderer = VideoMonitorHDR() ? sr_create_hdr_renderer(sdl_window) : NULL;
+    /* Linear light only where the monitor is really in HDR mode; otherwise the
+       ordinary sRGB output, still preferring Vulkan. */
+    sr_renderer = VideoMonitorHDR() ? sr_make_renderer(sdl_window, 1) : NULL;
     if (!sr_renderer) {
-        sr_renderer = SDL_CreateRenderer(sdl_window, NULL);
+        sr_renderer = sr_make_renderer(sdl_window, 0);
     }
     if (!sr_renderer) {
         fprintf(stderr, "Could not create renderer: %s\n", SDL_GetError());

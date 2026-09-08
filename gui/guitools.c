@@ -483,3 +483,65 @@ void GUISoundRows(s4 out[SND_ROW_COUNT])
 
     GUIStackLayout(rows, SND_ROW_COUNT, 16, 188, out);
 }
+
+/* Nothing to show for these outside Windows, so they are laid out at no
+   height and the expanding gaps take the space back. */
+enum {
+#ifdef __WIN32__
+    OPT_WINLABEL_H = 5,
+    OPT_WINROW_H = 10
+#else
+    OPT_WINLABEL_H = 0,
+    OPT_WINROW_H = 0
+#endif
+};
+
+void GUIOptionBasicRows(s4 out[OPT_BAS_COUNT])
+{
+    static GUIRow const rows[OPT_BAS_COUNT] = {
+        { 15, GUI_ITEM }, /* SYSTEM: */
+        { 10, GUI_ITEM },
+        { 15, GUI_EXPAND },
+        { 5, GUI_ITEM }, /* GFX ENGINES: */
+        { 10, GUI_ITEM },
+        { 10, GUI_ITEM },
+        { 15, GUI_EXPAND },
+        { 5, GUI_ITEM }, /* ROM: */
+        { 10, GUI_ITEM },
+        { 10, GUI_ITEM },
+        { 10, GUI_ITEM },
+        { 15, GUI_EXPAND },
+        { OPT_WINLABEL_H, GUI_ITEM }, /* WINDOWS SPECIFIC: */
+        { OPT_WINROW_H, GUI_ITEM },
+        { OPT_WINROW_H, GUI_ITEM },
+        { 10, GUI_ITEM }
+    };
+
+    GUIStackLayout(rows, OPT_BAS_COUNT, 26, 191, out);
+}
+
+void GUIOptionOverlayRows(s4 out[OPT_OVR_COUNT])
+{
+    static GUIRow const rows[OPT_OVR_COUNT] = {
+        { 5, GUI_ITEM }, /* OVERLAYS: */
+        { 10, GUI_ITEM },
+        { 10, GUI_ITEM },
+        { 10, GUI_ITEM },
+        { 10, GUI_ITEM },
+        { 15, GUI_EXPAND },
+        { 5, GUI_ITEM }, /* MESSAGES: */
+        { 10, GUI_ITEM },
+        { 10, GUI_ITEM },
+        { 15, GUI_EXPAND },
+        { 5, GUI_ITEM }, /* SCREENSHOT FORMAT: */
+        { 10, GUI_ITEM },
+        { 10, GUI_ITEM }
+    };
+
+    GUIStackLayout(rows, OPT_OVR_COUNT, 26, 151, out);
+}
+
+s4 GUIPathRow(u4 const i)
+{
+    return PATH_ROW_FIRST + PATH_ROW_PITCH * (s4)i;
+}

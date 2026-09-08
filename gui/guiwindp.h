@@ -169,4 +169,68 @@ enum {
 
 void GUISoundRows(s4 out[SND_ROW_COUNT]);
 
+/* The Options panel's two tabs. The Windows-only group is part of the Basic
+   stack and takes no height elsewhere, so the rows under it close up rather
+   than leaving the hole they used to. */
+enum {
+    OPT_BAS_SYSLABEL,
+    OPT_BAS_224,
+    OPT_BAS_GAP1,
+    OPT_BAS_GFXLABEL,
+    OPT_BAS_NEWENG,
+    OPT_BAS_ALTENG,
+    OPT_BAS_GAP2,
+    OPT_BAS_ROMLABEL,
+    OPT_BAS_PATCH,
+    OPT_BAS_ROMINFODISP,
+    OPT_BAS_ROMLOG,
+    OPT_BAS_GAP3,
+    OPT_BAS_WINLABEL,
+    OPT_BAS_PAUSEBG,
+    OPT_BAS_PRIORITY,
+    OPT_BAS_SAVER,
+    OPT_BAS_COUNT
+};
+
+void GUIOptionBasicRows(s4 out[OPT_BAS_COUNT]);
+
+enum {
+    OPT_OVR_LABEL,
+    OPT_OVR_FPS,
+    OPT_OVR_CPU,
+    OPT_OVR_CLOCK, /* the 12 hour box shares the row, further right */
+    OPT_OVR_CLOCKBOX,
+    OPT_OVR_GAP1,
+    OPT_OVR_MSGLABEL,
+    OPT_OVR_SMALLTEXT,
+    OPT_OVR_TRANSP,
+    OPT_OVR_GAP2,
+    OPT_OVR_SHOTLABEL,
+    OPT_OVR_BMP,
+    OPT_OVR_PNG,
+    OPT_OVR_COUNT
+};
+
+void GUIOptionOverlayRows(s4 out[OPT_OVR_COUNT]);
+
+/* Every path panel is the same column of identical rows: a label, the box ten
+   pixels under it, and the green text inside that. Only the row index differs
+   between the three tabs, so both the drawing and the click handling ask for
+   the row rather than writing the same ladder of numbers out again. */
+enum { PATH_ROW_FIRST = 31,
+    PATH_ROW_PITCH = 35 };
+
+s4 GUIPathRow(u4 i);
+
+/* Which control in the open panel the keyboard is on. Up and down move it,
+   left and right work it. Shared so the panel can show which one is focused;
+   panels that have no focusable rows simply ignore it. */
+extern u1 GUIFocus;
+
+/* The CRT panel's focusable rows, in the order up and down walk them. */
+enum { CRT_FOCUS_SCANLINES,
+    CRT_FOCUS_VIBRANCY,
+    CRT_FOCUS_BLOOM,
+    CRT_FOCUS_COUNT };
+
 #endif

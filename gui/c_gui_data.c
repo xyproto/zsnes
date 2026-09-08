@@ -40,6 +40,9 @@ u4 CalibYmin;
 u4 CalibYmin209;
 u1 CheatCompareValue;
 u1 CheatOn;
+
+/* The keyboard focus within the open panel; see guiwindp.h. */
+u1 GUIFocus;
 u1 CheatSearchStatus;
 u1 CheatWinMode;
 u1 CombinDataGlob[3300];

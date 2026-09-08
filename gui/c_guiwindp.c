@@ -929,46 +929,52 @@ void DisplayGUIOption(void)
     }
 
     if (GUIOptionTabs[0] == 1) { // Basic
-        GUIDisplayTextY(4, 11, 26, "SYSTEM:");
-        GUIDisplayCheckboxu(4, 11, 41, &Show224Lines, "SHOW 224 LINES", 9);
+        s4 row[OPT_BAS_COUNT];
 
-        GUIDisplayTextY(4, 11, 66, "GFX ENGINES:");
-        GUIDisplayCheckboxu(4, 11, 71, &newengen, "USE NEW GFX ENG", 4);
+        GUIOptionBasicRows(row);
+        GUIDisplayTextY(4, 11, (u4)row[OPT_BAS_SYSLABEL], "SYSTEM:");
+        GUIDisplayCheckboxu(4, 11, (u4)row[OPT_BAS_224], &Show224Lines, "SHOW 224 LINES", 9);
+
+        GUIDisplayTextY(4, 11, (u4)row[OPT_BAS_GFXLABEL], "GFX ENGINES:");
+        GUIDisplayCheckboxu(4, 11, (u4)row[OPT_BAS_NEWENG], &newengen, "USE NEW GFX ENG", 4);
         if (newengen == 0) {
-            GUIDisplayCheckboxu(4, 11, 81, &bgfixer, "USE ALT OLD GFX ENG", 4);
+            GUIDisplayCheckboxu(4, 11, (u4)row[OPT_BAS_ALTENG], &bgfixer, "USE ALT OLD GFX ENG", 4);
         }
 
-        GUIDisplayTextY(4, 11, 106, "ROM:");
-        GUIDisplayCheckboxu(4, 11, 111, &AutoPatch, "ENABLE IPS AUTO-PATCHING", 7);
-        GUIDisplayCheckboxu(4, 11, 121, &DisplayInfo, "SHOW ROM INFO ON LOAD", 5);
-        GUIDisplayCheckboxu(4, 11, 131, &RomInfo, "LOG ROM INFO", 2);
+        GUIDisplayTextY(4, 11, (u4)row[OPT_BAS_ROMLABEL], "ROM:");
+        GUIDisplayCheckboxu(4, 11, (u4)row[OPT_BAS_PATCH], &AutoPatch, "ENABLE IPS AUTO-PATCHING", 7);
+        GUIDisplayCheckboxu(4, 11, (u4)row[OPT_BAS_ROMINFODISP], &DisplayInfo, "SHOW ROM INFO ON LOAD", 5);
+        GUIDisplayCheckboxu(4, 11, (u4)row[OPT_BAS_ROMLOG], &RomInfo, "LOG ROM INFO", 2);
 
 #ifdef __WIN32__
-        GUIDisplayTextY(4, 11, 156, "WINDOWS SPECIFIC:");
-        GUIDisplayCheckboxu(4, 11, 161, &PauseFocusChange, "PAUSE EMU IN BACKGROUND", 13);
-        GUIDisplayCheckboxu(4, 11, 171, &HighPriority, "INCREASE EMU PRIORITY", 13);
+        GUIDisplayTextY(4, 11, (u4)row[OPT_BAS_WINLABEL], "WINDOWS SPECIFIC:");
+        GUIDisplayCheckboxu(4, 11, (u4)row[OPT_BAS_PAUSEBG], &PauseFocusChange, "PAUSE EMU IN BACKGROUND", 13);
+        GUIDisplayCheckboxu(4, 11, (u4)row[OPT_BAS_PRIORITY], &HighPriority, "INCREASE EMU PRIORITY", 13);
 #endif
-        GUIDisplayCheckboxu(4, 11, 181, &DisableScreenSaver, "DISABLE POWER MANAGEMENT", 0);
+        GUIDisplayCheckboxu(4, 11, (u4)row[OPT_BAS_SAVER], &DisableScreenSaver, "DISABLE POWER MANAGEMENT", 0);
     }
 
     if (GUIOptionTabs[0] == 2) {
-        GUIDisplayTextY(4, 11, 26, "OVERLAYS:");
-        GUIDisplayCheckboxu(4, 11, 31, &FPSAtStart, "SHOW FPS CNTR ON EMU LOAD", 5);
-        GUIDisplayCheckboxu(4, 11, 41, &CPUAtStart, "SHOW CPU PCNT ON EMU LOAD", 7);
-        GUIDisplayCheckboxu(4, 11, 51, &TimerEnable, "SHOW CLOCK", 5);
+        s4 row[OPT_OVR_COUNT];
+
+        GUIOptionOverlayRows(row);
+        GUIDisplayTextY(4, 11, (u4)row[OPT_OVR_LABEL], "OVERLAYS:");
+        GUIDisplayCheckboxu(4, 11, (u4)row[OPT_OVR_FPS], &FPSAtStart, "SHOW FPS CNTR ON EMU LOAD", 5);
+        GUIDisplayCheckboxu(4, 11, (u4)row[OPT_OVR_CPU], &CPUAtStart, "SHOW CPU PCNT ON EMU LOAD", 7);
+        GUIDisplayCheckboxu(4, 11, (u4)row[OPT_OVR_CLOCK], &TimerEnable, "SHOW CLOCK", 5);
         if (TimerEnable == 1) {
-            GUIDisplayCheckboxu(4, 89, 51, &TwelveHourClock, "12 HOUR MODE", 3);
-            GUIDisplayCheckboxu(4, 11, 61, &ClockBox, "SHOW CLOCK BOX", 13);
+            GUIDisplayCheckboxu(4, 89, (u4)row[OPT_OVR_CLOCK], &TwelveHourClock, "12 HOUR MODE", 3);
+            GUIDisplayCheckboxu(4, 11, (u4)row[OPT_OVR_CLOCKBOX], &ClockBox, "SHOW CLOCK BOX", 13);
         }
 
-        GUIDisplayTextY(4, 11, 86, "MESSAGES:");
-        GUIDisplayCheckboxu(4, 11, 91, &SmallMsgText, "USE SMALL MESSAGE TEXT", 4);
-        GUIDisplayCheckboxu(4, 11, 101, &GUIEnableTransp, "USE TRANSPARENT TEXT", 4);
+        GUIDisplayTextY(4, 11, (u4)row[OPT_OVR_MSGLABEL], "MESSAGES:");
+        GUIDisplayCheckboxu(4, 11, (u4)row[OPT_OVR_SMALLTEXT], &SmallMsgText, "USE SMALL MESSAGE TEXT", 4);
+        GUIDisplayCheckboxu(4, 11, (u4)row[OPT_OVR_TRANSP], &GUIEnableTransp, "USE TRANSPARENT TEXT", 4);
 
-        GUIDisplayTextY(4, 11, 126, "SCREENSHOT FORMAT:");
-        GUIDisplayButtonHoleTu(4, 11, 131, &ScreenShotFormat, 0, "BMP", 0);
+        GUIDisplayTextY(4, 11, (u4)row[OPT_OVR_SHOTLABEL], "SCREENSHOT FORMAT:");
+        GUIDisplayButtonHoleTu(4, 11, (u4)row[OPT_OVR_BMP], &ScreenShotFormat, 0, "BMP", 0);
 #ifndef NO_PNG
-        GUIDisplayButtonHoleTu(4, 11, 141, &ScreenShotFormat, 1, "PNG", 0);
+        GUIDisplayButtonHoleTu(4, 11, (u4)row[OPT_OVR_PNG], &ScreenShotFormat, 1, "PNG", 0);
 #endif
     }
 }
@@ -997,6 +1003,15 @@ static char const* NTSCslidText(void const* const p1) // slider var, text
     static char GUIVideoTextCD3[] = "----%";
     sprintf(GUIVideoTextCD3, "%4d%%", *(s1 const*)p1);
     return GUIVideoTextCD3;
+}
+
+/* A caret beside the slider the keyboard is on, so up and down have something
+   visible to move. Drawn only for the focused row. */
+static void GUICrtFocusMark(s4 const* const row, u4 const focus, u4 const which)
+{
+    if (GUIFocus == focus) {
+        GUIDisplayTextG(5, 6, (u4)row[which] - 1, ">");
+    }
 }
 
 /* Which monitor row draws as filled; recomputed from MonitorID each redraw. */
@@ -1099,6 +1114,7 @@ void DisplayGUIVideo(void)
 
         GUICrtRows(row);
         GUIDisplayTextY(5, 13, (u4)row[CRT_ROW_SCANLABEL], "SCANLINES:");
+        GUICrtFocusMark(row, CRT_FOCUS_SCANLINES, CRT_ROW_SCAN);
         if (GUIBIFIL[cvidmode] != 0) {
             GUIDrawSlider(5, 23, 100, (u4)row[CRT_ROW_SCAN], &sl_intensity,
                 glscslidSet, glscslidText);
@@ -1113,10 +1129,12 @@ void DisplayGUIVideo(void)
         }
 
         GUIDisplayTextY(5, 13, (u4)row[CRT_ROW_VIBLABEL], "VIBRANCY:");
+        GUICrtFocusMark(row, CRT_FOCUS_VIBRANCY, CRT_ROW_VIB);
         GUIDrawSlider(5, 23, 100, (u4)row[CRT_ROW_VIB], &sl_vibrancy, glscslidSet,
             glscslidText);
 
         GUIDisplayTextY(5, 13, (u4)row[CRT_ROW_BLOOMLABEL], "BLOOM:");
+        GUICrtFocusMark(row, CRT_FOCUS_BLOOM, CRT_ROW_BLOOM);
         GUIDrawSlider(5, 23, 100, (u4)row[CRT_ROW_BLOOM], &BloomLevel, glscslidSet,
             glscslidText);
 
@@ -3441,6 +3459,17 @@ void DisplayGUIChipConfig(void)
     }
 }
 
+/* One path row: the label, the box under it, and what is in the box. */
+static void GUIDrawPathRow(u4 const i, char const* const label,
+    char const* const path, char** const tabptr)
+{
+    u4 const y = (u4)GUIPathRow(i);
+
+    GUIDisplayText(19, 8, y, label);
+    GUIDisplayBBox(19, 8, y + 10, 236, y + 20, 167);
+    GUIOuttextwin2d(19, 10, y + 14, path, 37, tabptr, i);
+}
+
 void DisplayGUIPaths(void)
 {
     GUIDrawWindowBox(19, "SETUP PATHS");
@@ -3450,21 +3479,12 @@ void DisplayGUIPaths(void)
     GUIDrawTabs(GUIPathTabs, &eax, ebx);
 
     if (GUIPathTabs[0] == 1) { // General
-        GUIDisplayText(19, 8, 31, "SAVES:"); // Text
-        GUIDisplayText(19, 8, 66, "SAVESTATES:");
-        GUIDisplayText(19, 8, 101, "MOVIES:");
-        GUIDisplayText(19, 8, 136, "IPS:");
-        GUIDisplayText(19, 8, 171, "RELATIVE PATH BASE:");
+        GUIDrawPathRow(0, "SAVES:", SRAMPath, GUIPathsTab1Ptr);
+        GUIDrawPathRow(1, "SAVESTATES:", SStatePath, GUIPathsTab1Ptr);
+        GUIDrawPathRow(2, "MOVIES:", MoviePath, GUIPathsTab1Ptr);
+        GUIDrawPathRow(3, "IPS:", IPSPath, GUIPathsTab1Ptr);
 
-        GUIDisplayBBox(19, 8, 41, 236, 51, 167); // Input boxes
-        GUIDisplayBBox(19, 8, 76, 236, 86, 167);
-        GUIDisplayBBox(19, 8, 111, 236, 121, 167);
-        GUIDisplayBBox(19, 8, 146, 236, 156, 167);
-        // Green Text
-        GUIOuttextwin2d(19, 10, 45, SRAMPath, 37, GUIPathsTab1Ptr, 0);
-        GUIOuttextwin2d(19, 10, 80, SStatePath, 37, GUIPathsTab1Ptr, 1);
-        GUIOuttextwin2d(19, 10, 115, MoviePath, 37, GUIPathsTab1Ptr, 2);
-        GUIOuttextwin2d(19, 10, 150, IPSPath, 37, GUIPathsTab1Ptr, 3);
+        GUIDisplayText(19, 8, (u4)GUIPathRow(4), "RELATIVE PATH BASE:");
 
         // Display Radio buttons
         char const* const GUIPathsTextA5A = "CONFIG DIR";
@@ -3482,40 +3502,18 @@ void DisplayGUIPaths(void)
     }
 
     if (GUIPathTabs[0] == 2) { // More paths
-        GUIDisplayText(19, 8, 31, "SNAPSHOTS:");
-        GUIDisplayText(19, 8, 66, "SPCS:");
-        GUIDisplayText(19, 8, 101, "CHEATS:");
-        GUIDisplayText(19, 8, 136, "COMBOS:");
-        GUIDisplayText(19, 8, 171, "GAME SPECIFIC INPUT:");
-
-        GUIDisplayBBox(19, 8, 41, 236, 51, 167);
-        GUIDisplayBBox(19, 8, 76, 236, 86, 167);
-        GUIDisplayBBox(19, 8, 111, 236, 121, 167);
-        GUIDisplayBBox(19, 8, 146, 236, 156, 167);
-        GUIDisplayBBox(19, 8, 181, 236, 191, 167);
-
-        GUIOuttextwin2d(19, 10, 45, SnapPath, 37, GUIPathsTab2Ptr, 0);
-        GUIOuttextwin2d(19, 10, 80, SPCPath, 37, GUIPathsTab2Ptr, 1);
-        GUIOuttextwin2d(19, 10, 115, CHTPath, 37, GUIPathsTab2Ptr, 2);
-        GUIOuttextwin2d(19, 10, 150, ComboPath, 37, GUIPathsTab2Ptr, 3);
-        GUIOuttextwin2d(19, 10, 185, INPPath, 37, GUIPathsTab2Ptr, 4);
+        GUIDrawPathRow(0, "SNAPSHOTS:", SnapPath, GUIPathsTab2Ptr);
+        GUIDrawPathRow(1, "SPCS:", SPCPath, GUIPathsTab2Ptr);
+        GUIDrawPathRow(2, "CHEATS:", CHTPath, GUIPathsTab2Ptr);
+        GUIDrawPathRow(3, "COMBOS:", ComboPath, GUIPathsTab2Ptr);
+        GUIDrawPathRow(4, "GAME SPECIFIC INPUT:", INPPath, GUIPathsTab2Ptr);
     }
 
     if (GUIPathTabs[0] == 3) { // bc
-        GUIDisplayText(19, 8, 31, "BS-X:");
-        GUIDisplayText(19, 8, 66, "SUFAMI TURBO:");
-        GUIDisplayText(19, 8, 101, "SD GUNDAM G-NEXT:");
-        GUIDisplayText(19, 8, 136, "SAME GAME:");
-
-        GUIDisplayBBox(19, 8, 41, 236, 51, 167);
-        GUIDisplayBBox(19, 8, 76, 236, 86, 167);
-        GUIDisplayBBox(19, 8, 111, 236, 121, 167);
-        GUIDisplayBBox(19, 8, 146, 236, 156, 167);
-
-        GUIOuttextwin2d(19, 10, 45, BSXPath, 37, GUIPathsTab3Ptr, 0);
-        GUIOuttextwin2d(19, 10, 80, STPath, 37, GUIPathsTab3Ptr, 1);
-        GUIOuttextwin2d(19, 10, 115, GNextPath, 37, GUIPathsTab3Ptr, 2);
-        GUIOuttextwin2d(19, 10, 150, SGPath, 37, GUIPathsTab3Ptr, 3);
+        GUIDrawPathRow(0, "BS-X:", BSXPath, GUIPathsTab3Ptr);
+        GUIDrawPathRow(1, "SUFAMI TURBO:", STPath, GUIPathsTab3Ptr);
+        GUIDrawPathRow(2, "SD GUNDAM G-NEXT:", GNextPath, GUIPathsTab3Ptr);
+        GUIDrawPathRow(3, "SAME GAME:", SGPath, GUIPathsTab3Ptr);
     }
 }
 

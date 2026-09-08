@@ -899,34 +899,50 @@ static void DisplayGUIOptionClick(s4 const eax, s4 const edx)
     GUIPTabClick(eax, edx, 40, 74, 2, GUIOptionTabs, (s4*)0);
 
     if (GUIOptionTabs[0] == 1) { // Basic
-        GUIClickCButton(eax, edx, 11, 41, &Show224Lines);
-        GUIClickCButton(eax, edx, 11, 71, &newengen);
-        GUIClickCButton(eax, edx, 11, 81, &bgfixer);
-        GUIClickCButton(eax, edx, 11, 111, &AutoPatch);
-        GUIClickCButton(eax, edx, 11, 121, &DisplayInfo);
-        GUIClickCButton(eax, edx, 11, 131, &RomInfo);
+        s4 row[OPT_BAS_COUNT];
+
+        GUIOptionBasicRows(row);
+        GUIClickCButton(eax, edx, 11, row[OPT_BAS_224], &Show224Lines);
+        GUIClickCButton(eax, edx, 11, row[OPT_BAS_NEWENG], &newengen);
+        /* Only where it is actually drawn: the box is hidden under the new
+           engine, and a click there used to toggle it unseen. */
+        if (newengen == 0) {
+            GUIClickCButton(eax, edx, 11, row[OPT_BAS_ALTENG], &bgfixer);
+        }
+        GUIClickCButton(eax, edx, 11, row[OPT_BAS_PATCH], &AutoPatch);
+        GUIClickCButton(eax, edx, 11, row[OPT_BAS_ROMINFODISP], &DisplayInfo);
+        GUIClickCButton(eax, edx, 11, row[OPT_BAS_ROMLOG], &RomInfo);
 #ifdef __WIN32__
-        GUIClickCButton(eax, edx, 11, 161, &PauseFocusChange);
-        GUIClickCButton(eax, edx, 11, 171, &HighPriority);
+        GUIClickCButton(eax, edx, 11, row[OPT_BAS_PAUSEBG], &PauseFocusChange);
+        GUIClickCButton(eax, edx, 11, row[OPT_BAS_PRIORITY], &HighPriority);
         CheckPriority();
 #endif
-        GUIClickCButton(eax, edx, 11, 181, &DisableScreenSaver);
+        GUIClickCButton(eax, edx, 11, row[OPT_BAS_SAVER], &DisableScreenSaver);
 #ifdef __WIN32__
         CheckScreenSaver();
 #endif
     }
 
     if (GUIOptionTabs[0] == 2) {
-        GUIClickCButton(eax, edx, 11, 31, &FPSAtStart);
-        GUIClickCButton(eax, edx, 11, 41, &CPUAtStart);
-        GUIClickCButton(eax, edx, 11, 51, &TimerEnable);
-        GUIClickCButton(eax, edx, 89, 51, &TwelveHourClock);
-        GUIClickCButton(eax, edx, 11, 61, &ClockBox);
-        GUIClickCButton(eax, edx, 11, 91, &SmallMsgText);
-        GUIClickCButton(eax, edx, 11, 101, &GUIEnableTransp);
-        GUIPButtonHole(eax, edx, 11, 131, &ScreenShotFormat, 0);
+        s4 row[OPT_OVR_COUNT];
+        u1 const clock = TimerEnable;
+
+        GUIOptionOverlayRows(row);
+        GUIClickCButton(eax, edx, 11, row[OPT_OVR_FPS], &FPSAtStart);
+        GUIClickCButton(eax, edx, 11, row[OPT_OVR_CPU], &CPUAtStart);
+        GUIClickCButton(eax, edx, 11, row[OPT_OVR_CLOCK], &TimerEnable);
+        /* The two below only exist while the clock is on, and the state read
+           before this click decides that, so turning the clock on does not
+           also take a click meant for it. */
+        if (clock == 1) {
+            GUIClickCButton(eax, edx, 89, row[OPT_OVR_CLOCK], &TwelveHourClock);
+            GUIClickCButton(eax, edx, 11, row[OPT_OVR_CLOCKBOX], &ClockBox);
+        }
+        GUIClickCButton(eax, edx, 11, row[OPT_OVR_SMALLTEXT], &SmallMsgText);
+        GUIClickCButton(eax, edx, 11, row[OPT_OVR_TRANSP], &GUIEnableTransp);
+        GUIPButtonHole(eax, edx, 11, row[OPT_OVR_BMP], &ScreenShotFormat, 0);
 #ifndef NO_PNG
-        GUIPButtonHole(eax, edx, 11, 141, &ScreenShotFormat, 1);
+        GUIPButtonHole(eax, edx, 11, row[OPT_OVR_PNG], &ScreenShotFormat, 1);
 #endif
     }
 }
@@ -1769,35 +1785,40 @@ static void DisplayGUIChipClick(s4 const eax, s4 const edx)
 
 #define PATH_LENGTH 1024
 
+/* The box of one path row, at the same place DisplayGUIPaths drew it. */
+static void GUIPathRowClick(s4 const eax, s4 const edx, u4 const i)
+{
+    s4 const y = GUIPathRow(i);
+
+    GUITextBoxInputNach(eax, edx, 8, y + 10, 237, y + 20, i, PATH_LENGTH, init_save_paths);
+}
+
 static void DisplayGUIPathsClick(s4 const eax, s4 const edx)
 {
+    u4 i;
+
     GUIPTabClick(eax, edx, 0, 51, 1, GUIPathTabs, (u4*)0);
     GUIPTabClick(eax, edx, 52, 86, 2, GUIPathTabs, (u4*)0);
     GUIPTabClick(eax, edx, 87, 157, 3, GUIPathTabs, (u4*)0);
 
     if (GUIPathTabs[0] == 1) { // General
-        GUITextBoxInputNach(eax, edx, 8, 41, 237, 51, 0, PATH_LENGTH, init_save_paths); // SRAMPath
-        GUITextBoxInputNach(eax, edx, 8, 76, 237, 86, 1, PATH_LENGTH, init_save_paths); // SStatePath
-        GUITextBoxInputNach(eax, edx, 8, 111, 237, 121, 2, PATH_LENGTH, init_save_paths); // MoviePath
-        GUITextBoxInputNach(eax, edx, 8, 146, 237, 156, 3, PATH_LENGTH, init_save_paths); // IPSPath
-
+        for (i = 0; i < 4; i++) {
+            GUIPathRowClick(eax, edx, i);
+        }
         GUIPButtonHole(eax, edx, 8, 178, &RelPathBase, 0);
         GUIPButtonHole(eax, edx, 88, 178, &RelPathBase, 1);
     }
 
     if (GUIPathTabs[0] == 2) { // More paths
-        GUITextBoxInputNach(eax, edx, 8, 41, 237, 51, 0, PATH_LENGTH, init_save_paths); // SnapPath
-        GUITextBoxInputNach(eax, edx, 8, 76, 237, 86, 1, PATH_LENGTH, init_save_paths); // SPCPath
-        GUITextBoxInputNach(eax, edx, 8, 111, 237, 121, 2, PATH_LENGTH, init_save_paths); // CHTPath
-        GUITextBoxInputNach(eax, edx, 8, 146, 237, 156, 3, PATH_LENGTH, init_save_paths); // ComboPath
-        GUITextBoxInputNach(eax, edx, 8, 181, 237, 191, 4, PATH_LENGTH, init_save_paths); // INPPath
+        for (i = 0; i < 5; i++) {
+            GUIPathRowClick(eax, edx, i);
+        }
     }
 
     if (GUIPathTabs[0] == 3) { // BIOS+Carts
-        GUITextBoxInputNach(eax, edx, 8, 41, 237, 51, 0, PATH_LENGTH, init_save_paths); // BSXPath
-        GUITextBoxInputNach(eax, edx, 8, 76, 237, 86, 1, PATH_LENGTH, init_save_paths); // STPath
-        GUITextBoxInputNach(eax, edx, 8, 111, 237, 121, 2, PATH_LENGTH, init_save_paths); // GNextPath
-        GUITextBoxInputNach(eax, edx, 8, 146, 237, 156, 3, PATH_LENGTH, init_save_paths); // SGPath
+        for (i = 0; i < 4; i++) {
+            GUIPathRowClick(eax, edx, i);
+        }
     }
 }
 

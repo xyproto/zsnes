@@ -24,7 +24,11 @@ the pixel index if you use the high bits as flags, etc. */
 /* For each pixel, this is the basic operation:
 output_color = SNES_NTSC_ADJ_IN( SNES_NTSC_IN_T ) */
 
-/* Disable standard blitters */
-#define SNES_NTSC_NO_BLITTERS 1
+/* video/ntsc.c carries its own blitter for ordinary lines, which takes a byte
+   pitch and darkens the second of each doubled row. The library's are kept for
+   the hi-res one: a 512-wide line needs two input pixels where the ordinary
+   blitter takes one twice, and porting that by hand is not worth the risk of
+   getting the macro sequence subtly wrong. */
+/* #define SNES_NTSC_NO_BLITTERS 1 */
 
 #endif

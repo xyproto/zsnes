@@ -180,6 +180,48 @@ static void KeyTabInc(u4* const first, ...) // tab arrays
     va_end(ap);
 }
 
+/* Shift held, for the tab that steps backwards. Read from the scancode table
+   rather than a platform flag, so it works the same everywhere. */
+static int GUIShiftHeld(void)
+{
+    return (pressed[0x2A] & 1) || (pressed[0x36] & 1);
+}
+
+/* Tab steps forward through the tabs of a window; shift-tab steps back the
+   same way, wrapping into the previous group where a window has two of them
+   (the video window grows NTSC sub-tabs when that filter is on). A group whose
+   current tab is 0 is not the active one. */
+static void KeyTabDec(u4* const first, u4* const second)
+{
+    if (first[0] > 1) {
+        first[0]--;
+    } else if (first[0] == 1) {
+        if (second && second[1]) {
+            first[0] = 0;
+            second[0] = second[1]; /* the last tab of the other group */
+        } else {
+            first[0] = first[1]; /* wrap round within this one */
+        }
+    } else if (second && second[0] > 1) {
+        second[0]--;
+    } else if (second && second[0] == 1) {
+        second[0] = 0;
+        first[0] = first[1];
+    }
+}
+
+/* Tab, or shift-tab, over one or two groups. */
+static void KeyTabStep(u4* const first, u4* const second)
+{
+    if (GUIShiftHeld()) {
+        KeyTabDec(first, second);
+    } else if (second) {
+        KeyTabInc(first, second, (u4*)0);
+    } else {
+        KeyTabInc(first, (u4*)0);
+    }
+}
+
 static void GUIKeyCheckbox(u1* const p1, char const p2, char const dh)
 {
     if (dh == p2)
@@ -340,7 +382,7 @@ static void GUIInputKeys(char dh)
 {
     dh = ToUpperASM(dh);
     if (dh == 9) {
-        KeyTabInc(GUIInputTabs, (u4*)0);
+        KeyTabStep(GUIInputTabs, (u4*)0);
         GUIFreshInputSelect = 1;
     }
     GUIKeyCheckbox(&GameSpecificInput, 'G', dh);
@@ -356,7 +398,7 @@ static void GUIInputKeys(char dh)
 static void GUIOptionKeys(char dh)
 {
     if (dh == 9) {
-        KeyTabInc(GUIOptionTabs, (u4*)0);
+        KeyTabStep(GUIOptionTabs, (u4*)0);
     }
     dh = ToUpperASM(dh);
     if (GUIOptionTabs[0] == 1) { // Basic
@@ -397,13 +439,41 @@ static void GUIVideoKeys(char dh, char const dl)
     dh = GUIInputBoxText(GUICustomResTextPtr, SetCustomXY, dh);
     if (dh == 9) {
         if (NTSCFilter != 0 && GUINTVID[cvidmode] != 0) {
-            KeyTabInc(GUIVideoTabs, GUIVntscTab, (u4*)0);
+            KeyTabStep(GUIVideoTabs, GUIVntscTab);
         } else {
-            KeyTabInc(GUIVideoTabs, (u4*)0);
+            KeyTabStep(GUIVideoTabs, (u4*)0);
         }
+        GUIFocus = 0; /* a new tab starts at its first control */
     }
 
     dh = ToUpperASM(dh);
+
+    if (GUIVideoTabs[0] == 3) { // CRT tab: up/down pick a slider, left/right work it
+        u1* const bar[CRT_FOCUS_COUNT]
+            = { &sl_intensity, &sl_vibrancy, &BloomLevel };
+        u1* const cur = bar[GUIFocus < CRT_FOCUS_COUNT ? GUIFocus : 0];
+        /* A step of five gets across the range in a reasonable number of
+           presses; shift gives the fine one. */
+        u1 const step = GUIShiftHeld() ? 1 : 5;
+
+        IFKEY(dl, 90, 72) // Up
+        {
+            GUIFocus = (u1)(GUIFocus == 0 ? CRT_FOCUS_COUNT - 1 : GUIFocus - 1);
+        }
+        IFKEY(dl, 96, 80) // Down
+        {
+            GUIFocus = (u1)((GUIFocus + 1) % CRT_FOCUS_COUNT);
+        }
+        IFKEY(dl, 92, 75) // Left
+        {
+            *cur = (u1)(*cur > step ? *cur - step : 0);
+        }
+        IFKEY(dl, 94, 77) // Right
+        {
+            *cur = (u1)(*cur + step > 100 ? 100 : *cur + step);
+        }
+    }
+
     if (GUIVideoTabs[0] == 1) {
         IFKEY(dl, 89, 71) // "Home"
         {
@@ -1266,7 +1336,7 @@ static void GUIMovieKeys(char dh)
     dh = GUIInputBoxText(GUIMovieTextPtr, SetMovieForcedLength, dh);
     if (dh == 9) {
         if (MovieProcessing == 0)
-            KeyTabInc(GUIMovieTabs, GUIDumpingTab, (u4*)0);
+            KeyTabStep(GUIMovieTabs, GUIDumpingTab);
     }
 
     GUIKeyButtonHole((u1*)&CMovieExt, 'v', '0', dh); // XXX ugly cast
@@ -1397,7 +1467,7 @@ static void GUIPathKeys(char dh)
         dh = GUIInputBoxText(GUIPathsTab3Ptr, init_save_paths, dh);
 
     if (dh == 9)
-        KeyTabInc(GUIPathTabs, (u4*)0);
+        KeyTabStep(GUIPathTabs, (u4*)0);
 
     if (GUIPathTabs[0] == 1) { // General
         GUIKeyButtonHole(&RelPathBase, 0, 'C', dh);

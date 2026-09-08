@@ -19,17 +19,16 @@
 - [ ] Retire the old graphics engine (`newengen=0`) once the new one has no
       known regressions, and drop `bgfixer` with it
 - [ ] Drop the unfinished-dynarec remnants around `curexecstate` (`initc.c`)
-- [ ] Filter hi-res frames through the NTSC filter: `ntsc_blit` (`video/ntsc.c`)
-      reads 256 input pixels a row, so a 512-wide hi-res line is only half
-      filtered. snes9x carries a separate `snes_ntsc_blit_hires` for this
-- [ ] Test the HDR path on a display that actually has HDR. Bloom and the
-      float surface are in (`unix/sdl_render.c`), but only the fallback has
-      been exercised here: no machine to hand reports HDR, so
-      `SDL_PROP_RENDERER_HDR_ENABLED_BOOLEAN` has never come back true and
-      `sr_to_hdr` has never run against a real display. Check that the spill
-      goes above white rather than clipping, that the headroom is respected,
-      and that `SDL_EVENT_WINDOW_HDR_STATE_CHANGED` is picked up when a display
-      is switched into or out of HDR mid-run
+- [ ] Test the HDR path on a display that actually has HDR. The route exists:
+      probed on a Wayland session with tools/hdrprobe.c, the vulkan and gpu
+      renderers both accept SDL_COLORSPACE_SRGB_LINEAR and a float texture,
+      while opengl, opengles2 and software refuse it - so SDL's documentation,
+      which lists only direct3d11/12 and metal, is out of date, and
+      sdl_render.c now asks for vulkan first partly for that reason. What is
+      unproven is the path itself: no display to hand reports HDR_enabled, so
+      `sr_to_hdr` has never run. Check that the spill goes above white rather
+      than clipping, that the headroom is respected, and that
+      `SDL_EVENT_WINDOW_HDR_STATE_CHANGED` is picked up mid-run
 - [ ] Make transparent messages work with the small font (`cfg.psr`)
 - [ ] Move the remaining GUI windows onto GUIStackLayout. All four video
       panels now describe their rows once and let the drawing and the click
